@@ -167,6 +167,12 @@
 .ds doc-curr-space
 .
 .
+.\" NS doc-no-space global register (bool)
+.\" NS   whether no space shall be inserted
+.
+.nr doc-no-space 0
+.
+.
 .\" NS doc-parse-args macro
 .\" NS   parse arguments (recursively) (`.doc-parse-args arg ...')
 .\" NS
@@ -180,21 +186,9 @@
 .de doc-parse-args
 .  nr doc-arg-limit +1
 .
-.  \" handle `|' specially for some requests
-.  ie "\$1"|" \{\
-.    ie        "\*[doc-macro-name]"Op" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \{ .ie "\*[doc-macro-name]"Ar" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \{ .ie "\*[doc-macro-name]"Fl" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \{ .ie "\*[doc-macro-name]"Cm" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \{ .ie "\*[doc-macro-name]"It" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \
-.      ds doc-arg\n[doc-arg-limit] |
-.  \}\}\}\}\}
+.  \" handle `|' specially
+.  ie "\$1"|" \
+.    ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
 .  el \
 .    ds doc-arg\n[doc-arg-limit] "\$1
 .
@@ -247,10 +241,22 @@
 .  ie (\n[.$] == 1) \{\
 .    nr doc-arg-ptr 0
 .
+.    \" Usually, an mdoc macro will call `doc-print-out-string' to print
+.    \" `doc-out-string'.  This causes the insertion of a space since
+.    \" `.nop' is used.  But if we are in an enclosure, no printing occurs
+.    \" until we have left the outermost enclosure (i.e.,
+.    \" `doc-nesting-level' is zero again), so spaces must be explicitly
+.    \" inserted -- if we are neither in an diversion nor `doc-no-space'
+.    \" is set.  The latter is active for a closing/closing or
+.    \" opening/opening request.
 .    if \n[doc-nesting-level] \
 .      if !\n[doc-in-diversion] \
 .        if !\n[doc-func-arg-count] \
-.          as doc-out-string "\*[doc-curr-space]
+.          if !\n[doc-no-space] \
+.            as doc-out-string "\*[doc-curr-space]
+.
+.    nr doc-no-space 0
+.    nr doc-is-opening 0
 .
 .    \" use space after last parameter as the current one
 .    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
@@ -285,6 +291,8 @@
 .\" NS doc-parse-arg-vector macro
 .\" NS   parse argument vector (recursive)
 .\" NS
+.\" NS   cf. comments in doc-parse-args
+.\" NS
 .\" NS modifies:
 .\" NS   doc-argXXX, doc-typeXXX, doc-spaceXXX, doc-arg-limit,
 .\" NS   doc-num-args, doc-arg-ptr, doc-out-string, doc-curr-space
@@ -295,21 +303,9 @@
 .de doc-parse-arg-vector
 .  nr doc-arg-limit +1
 .
-.  \" handle `|' specially for some requests
-.  if "\*[doc-arg\n[doc-arg-limit]]"|" \{\
-.    ie        "\*[doc-macro-name]"Op" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \{ .ie "\*[doc-macro-name]"Ar" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \{ .ie "\*[doc-macro-name]"Fl" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \{ .ie "\*[doc-macro-name]"Cm" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \{ .if "\*[doc-macro-name]"It" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.  \}\}\}\}\}
+.  if "\*[doc-arg\n[doc-arg-limit]]"|" \
+.    ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
 .
-.  \" get argument type and set spacing
 .  doc-get-arg-type* \n[doc-arg-limit]
 .  nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
 .  doc-set-spacing-\n[doc-arg-type]
@@ -355,16 +351,18 @@
 .      tm1 "  Type: \*[doc-str-dpav]
 .  \}\}
 .
-.  \" check whether we have processed the last parameter
 .  ie (\n[doc-num-args] == 1) \{\
 .    nr doc-arg-ptr 0
 .
 .    if \n[doc-nesting-level] \
 .      if !\n[doc-in-diversion] \
 .        if !\n[doc-func-arg-count] \
-.          as doc-out-string "\*[doc-curr-space]
+.          if !\n[doc-no-space] \
+.            as doc-out-string "\*[doc-curr-space]
 .
-.    \" use space after last parameter as the current one
+.    nr doc-no-space 0
+.    nr doc-is-opening 0
+.
 .    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
 .
 .    nr doc-num-args 0
@@ -1765,6 +1763,12 @@
 ..
 .
 .
+.\" NS doc-is-opening global register (bool)
+.\" NS   whether current request emits an opening character
+.
+.nr doc-is-opening 0
+.
+.
 .\" NS doc-enclose-string macro
 .\" NS   enclose string with given args (e.g. [ and ])
 .\" NS
@@ -1782,6 +1786,9 @@
 .    as doc-out-string \&\*[doc-quote-left]
 .  el \{\
 .    ie \n[.$] \{\
+.      \" was the last request on the previous line an opening request?
+.      if \n[doc-is-opening] \
+.        nr doc-no-space 1
 .      doc-parse-args \$@
 .      as doc-out-string \&\*[doc-quote-left]
 .    \}
@@ -2222,6 +2229,9 @@
 .    as doc-out-string \&\*[doc-quote-left]
 .  el \{\
 .    ie \n[.$] \{\
+.      \" was the last request on the previous line an opening request?
+.      if \n[doc-is-opening] \
+.        nr doc-no-space 1
 .      doc-parse-args \$@
 .      as doc-out-string \&\*[doc-quote-left]
 .    \}
@@ -2232,21 +2242,23 @@
 .        if !(\n[doc-in-list] & \n[doc-nesting-level]) \
 .          if \n[doc-space-mode] \
 .            doc-save-and-divert
+.      nr doc-is-opening 1
 .  \}\}
 .
 .  if \n[doc-arg-limit] \{\
-.    if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.    ie (\n[doc-arg-limit] == \n[doc-arg-ptr]) \{\
+.      \" last argument
+.      doc-reset-args
+.      nr doc-is-opening 1
+.    \}
+.    el \{\
 .      nr doc-arg-ptr +1
 .      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
 .        \*[doc-arg\n[doc-arg-ptr]]
 .      el \{\
 .        nr doc-arg-ptr -1
 .        No
-.    \}\}
-.
-.    if (\n[doc-arg-limit] == \n[doc-arg-ptr]) \
-.      doc-reset-args
-.  \}
+.  \}\}\}
 ..
 .
 .
@@ -2265,15 +2277,17 @@
 .  as doc-out-string \&\*[doc-quote-right]
 .
 .  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \
+.    ie \n[.$] \{\
+.      nr doc-no-space 1
 .      doc-parse-args \$@
+.    \}
 .    el \
-.      if !\n[doc-nesting-level] \
-.        doc-print-out-string
+.      doc-print-out-string
 .  \}
 .
 .  if \n[doc-arg-limit] \{\
 .    ie (\n[doc-arg-limit] == \n[doc-arg-ptr]) \{\
+.      \" last argument
 .      ie \n[doc-nesting-level] \
 .        doc-reset-args
 .      el \
@@ -3365,6 +3379,8 @@
 .  ds doc-quote-left-saved "\*[doc-quote-left]
 .  ds doc-quote-right-saved "\*[doc-quote-right]
 .  nr doc-nesting-level-saved \n[doc-nesting-level]
+.  nr doc-no-space-saved \n[doc-no-space]
+.  nr doc-is-opening-saved \n[doc-is-opening]
 .  nr doc-in-list-saved \n[doc-in-list]
 .  ds doc-space-saved "\*[doc-space]
 .  nr doc-space-mode-saved \n[doc-space-mode]
@@ -3499,6 +3515,8 @@
 .  ds doc-quote-left "\*[doc-quote-left-saved]
 .  ds doc-quote-right "\*[doc-quote-right-saved]
 .  nr doc-nesting-level \n[doc-nesting-level-saved]
+.  nr doc-no-space \n[doc-no-space-saved]
+.  nr doc-is-opening \n[doc-is-opening-saved]
 .  nr doc-in-list \n[doc-in-list-saved]
 .  ds doc-space "\*[doc-space-saved]
 .  nr doc-space-mode \n[doc-space-mode-saved]
@@ -4389,7 +4407,6 @@
 .    ie \n[.$] \{\
 .      ds doc-macro-name D1
 .      doc-parse-args \$@
-.      nr doc-arg-ptr +1
 .      No
 .    \}
 .    el \
