@@ -1076,6 +1076,7 @@ void list::insert (text_glob *in)
     element_list *t = new element_list(in, ptr->lineno, ptr->minv, ptr->minh, ptr->maxv, ptr->maxh);
     if (ptr == tail)
       tail = t;
+    ptr->right->left = t;
     t->right = ptr->right;
     ptr->right = t;
     t->left = ptr;
@@ -1304,6 +1305,7 @@ void page::dump_page(void)
   glyphs.move_to(old_pos);
   printf("\ndebugging end\n\n");
   printf("\n-->\n");
+  fflush(stdout);
 #endif
 }
 
@@ -1534,7 +1536,7 @@ class html_printer : public printer {
   font *make_bold                     (font *f);
   int   overstrike                    (int index, const char *name, const environment *env, int w);
   void  do_body                       (void);
-  int   next_horiz_pos                (int nf);
+  int   next_horiz_pos                (text_glob *g, int nf);
   void  lookahead_for_tables          (void);
   void  insert_tab_te                 (void);
   text_glob *insert_tab_ts            (text_glob *where);
@@ -2444,10 +2446,12 @@ void html_printer::flush_globs (void)
 
 int html_printer::calc_nf (text_glob *g, int nf)
 {
-  if (g->is_fi())
-    return FALSE;
-  if (g->is_nf())
-    return TRUE;
+  if (g != NULL) {
+    if (g->is_fi())
+      return FALSE;
+    if (g->is_nf())
+      return TRUE;
+  }
   return nf;
 }
 
@@ -2476,16 +2480,19 @@ void html_printer::calc_po_in (text_glob *g, int nf)
  *                   -1 is returned if it doesn't exist.
  */
 
-int html_printer::next_horiz_pos (int nf)
+int html_printer::next_horiz_pos (text_glob *g, int nf)
 {
   int next     = -1;
-  text_glob *g = page_contents->glyphs.get_data();
 
-  if (g->is_br() || (nf && g->is_eol()))
+  if ((g != NULL) && (g->is_br() || (nf && g->is_eol())))
     if (! page_contents->glyphs.is_empty()) {
-      page_contents->glyphs.move_right();
-      next = g->minh;
-      page_contents->glyphs.move_left();
+      page_contents->glyphs.move_right_get_data();
+      if (g == NULL)
+	page_contents->glyphs.start_from_head();
+      else {
+	next = g->minh;
+	page_contents->glyphs.move_left();
+      }
     }
   return next;
 }
@@ -2679,7 +2686,11 @@ void html_printer::lookahead_for_tables (void)
     page_contents->glyphs.start_from_head();
     g = page_contents->glyphs.get_data();
     do {
-#if 0
+#if defined(DEBUG_TABLES)
+      fprintf(stderr, " [") ;
+      fprintf(stderr, g->text_string) ;
+      fprintf(stderr, "] ") ;
+      fflush(stderr);
       if (strcmp(g->text_string, "XXXXXXX") == 0)
 	stop();
 #endif
@@ -2801,29 +2812,28 @@ void html_printer::lookahead_for_tables (void)
       /*
        *  move onto next glob, check whether we are starting a new line
        */
-      page_contents->glyphs.move_right();
-      g = page_contents->glyphs.get_data();
+      g = page_contents->glyphs.move_right_get_data();
 
-#if defined(DEBUG_TABLES)
-      if (g->is_in() && (!seen_text))      
-	html.simple_comment("IGNORE .in");
-      else
-#endif
-	if (g->is_br_ni() || (nf && g->is_eol())) {
+      if (g != NULL && (g->is_br_ni() || (nf && g->is_eol()))) {
 	do {
-	  page_contents->glyphs.move_right();
-	  g = page_contents->glyphs.get_data();
+	  g = page_contents->glyphs.move_right_get_data();
 	  nf = calc_nf(g, nf);
-	} while (g->is_br_ni() || (nf && g->is_eol()));
+	} while ((g != NULL) && (g->is_br_ni() || (nf && g->is_eol())));
 	start_of_line = g;
 	seen_text = FALSE;
 	ncol = 0;
-	left = next_horiz_pos(nf);
+	left = next_horiz_pos(g, nf);
 	if (found_col)
 	  last = g;
 	found_col = FALSE;
       }
-    } while (! page_contents->glyphs.is_equal_to_head());
+    } while ((g != NULL) && (! page_contents->glyphs.is_equal_to_head()));
+
+#if defined(DEBUG_TABLES)
+    fprintf(stderr, "finished scanning for tables\n");
+#endif
+
+    page_contents->glyphs.start_from_head();
     if (start_of_table != NULL) {
       if (last != NULL)
 	while (last != page_contents->glyphs.get_data())

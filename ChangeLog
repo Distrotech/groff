@@ -1,5 +1,19 @@
 2002-08-18  Gaius Mulley  <gaius@glam.ac.uk>
 
+	Avoid endless loops while scanning for tables.
+
+	* src/devices/grohtml/post-html.cc (list::insert): Set
+	ptr->right->left.
+	(html_printer::next_horiz_pos): Add `text_glob' argument; update
+	all callers.
+	Return immediately if that argument is NULL.
+	(html_printer::calc_nf): Don't test if `g' is NULL.
+	(html_printer::lookahead_for_tables): Use
+	`glyphs.move_right_get_data'.
+	Don't test if `g' is NULL.
+
+2002-08-18  Gaius Mulley  <gaius@glam.ac.uk>
+
 	A better fix, replacing fix 2002-08-15, for increasing SIZE.
 
 	* src/devices/grohtml/post-html.cc (char_block): Make `buffer'
