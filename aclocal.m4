@@ -68,19 +68,34 @@ AC_CHECK_PROG(pnmcrop, pnmcrop, found, missing)
 AC_CHECK_PROG(pnmtopng, pnmtopng, found, missing)
 AC_CHECK_PROG(gs, gs gsos2, found, missing)
 AC_CHECK_PROG(psselect, psselect, found, missing)
-case "x$pnmcut$pnmcrop$pnmtopng$gs$psselect" in
+AC_CHECK_PROG(pnmtops, pnmtops, found, missing)
+case "x$pnmcut$pnmcrop$pnmtopng$gs$psselect$pnmtops$pstopnm" in
 *missing*)
 	make_html=
 	make_install_html=
 	AC_MSG_WARN([
 
-  Since one or more of the above five programs can't be found in the path,
+  Since one or more of the above six programs can't be found in the path,
   the HTML backend of groff (grohtml) won't work properly.  Consequently,
   no documentation in HTML format is built and installed.
 ]) ;;
 esac
 AC_SUBST(make_html)
 AC_SUBST(make_install_html)])dnl
+dnl
+dnl check to see whether pnmtops can handle the -nosetpage option
+dnl
+AC_DEFUN(GROFF_PNMTOPS_NOSETPAGE,
+[AC_MSG_CHECKING([whether pnmtops can handle the -nosetpage option])
+if echo P1 2 2 0 1 1 0 | pnmtops -nosetpage > /dev/null 2>&1 ; then
+    AC_MSG_RESULT(yes)
+    pnmtops_nosetpage="pnmtops -nosetpage"
+else
+    AC_MSG_RESULT(no)
+    pnmtops_nosetpage="pnmtops"
+fi
+AC_SUBST(pnmtops_nosetpage)
+])dnl
 dnl
 dnl
 dnl GROFF_CSH_HACK(if hack present, if not present)

@@ -142,6 +142,11 @@ tmacpath=$(systemtmacdir)$(SEP)$(localtmacdir)$(SEP)$(tmacdir)
 # `sys_tmac_prefix' is prefix (if any) for system macro packages.
 sys_tmac_prefix=@sys_tmac_prefix@
 
+# `pnmtops_nosetpag' is the command to be run to generate an eps
+# file. Some versions of pnmtops provide the -nosetpage option.
+# We detect this and use it if present.
+pnmtops_nosetpage=@pnmtops_nosetpage@
+
 # `tmac_wrap' is list of system macro packages that should be made
 # available to groff by creating a corresponding macro package
 # in the groff macro directory that references the system macro
@@ -391,6 +396,7 @@ MDEFINES= \
   "prefix=$(prefix)" \
   "revision=$(revision)" \
   "sys_tmac_prefix=$(sys_tmac_prefix)" \
+  "pnmtops_nosetpage=$(pnmtops_nosetpage)" \
   "systemtmacdir=$(systemtmacdir)" \
   "tmac_an_prefix=$(tmac_an_prefix)" \
   "tmac_m_prefix=$(tmac_m_prefix)" \

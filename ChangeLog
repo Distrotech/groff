@@ -1,3 +1,33 @@
+2003-02-25  Gaius Mulley <gaius@glam.ac.uk>
+
+	* aclocal.m4 (GROFF_HTML_PROGRAMS): Add test for pnmtops.
+	(GROFF_PNMTOPS_NOSETPAGE): New macro.
+	* configure.ac: Use it.
+	* configure: Regenerated.
+	* Makefile.in: Updated.
+
+	* tmac/Makefile.sub (NORMALFILES): Remove www.tmac.
+	(CLEANADD): Add www.tmac-sed.
+	(pnmtops_nosetpage): Define default.
+	(install_data): Handle www.tmac-sed and substitute
+	@PNMTOPS_NOSETPAGE@.
+	(stamp-sed): Add www.tmac.
+	* tmac/www.tmac: Rewritten, based on a patch by Bernd Warken.
+	It now breaks URLs at suitable places.
+	(www:substring_ok): New register set by...
+	(www:@test_substring): New macro.
+	(www:error): New alias to www-error.
+	(www:lenstr, www:splitstr, www:url_breaks, www:url_breaks_splitted):
+	New macros.
+	(URL): Use www:url_breaks.
+	(PIMG, MPIMG): Use @PNMTOPS_NOSETPAGE@.
+	(CDS, CDE): New macros.
+
+2003-02-25  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grops/ps.cc (ps_printer::define_encoding): Avoid
+	buffer overflow.
+
 2003-02-24  Werner LEMBERG  <wl@gnu.org>
 
 	Contrary to the PCL5 Developer's Guide, the ascenders in TFM files
