@@ -1,3 +1,14 @@
+2000-08-07  Paul Eggert  <eggert@twinsun.com>
+
+	Remove FILENAME_MAX limits.
+
+	* src/roff/groff/pipeline.c (is_system_shell): Do not assume
+	that the argument length is less than FILENAME_MAX.
+	* src/libs/libgroff/tmpfile.cc (add_tmp_file): Likewise.
+	Use struct hack to allocate and free file name.
+	(struct xtmpfile_list): fname is now part of the structure,
+	not a pointer to another string.
+
 2000-08-07  Tom Schmidt  <tschmidt@micron.com>
 
 	* src/include/posix.h: Add a default value for FILENAME_MAX.

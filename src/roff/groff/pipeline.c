@@ -154,9 +154,8 @@ system_shell_dash_c (void)
 int
 is_system_shell (const char *shell)
 {
-  char monocased_shell[FILENAME_MAX];
   size_t shlen;
-  int ibase = 0, idot, i;
+  size_t ibase = 0, idot, i;
 
   if (!shell)	/* paranoia */
     return 0;
@@ -164,28 +163,22 @@ is_system_shell (const char *shell)
 
   for (i = 0; i < shlen; i++)
     {
-      if (isalpha(shell[i]))
-	monocased_shell[i] = tolower(shell[i]);
-      else
+      if (shell[i] == '.')
+	idot = i;
+      else if (shell[i] == '/' || shell[i] == '\\' || shell[i] == ':')
 	{
-	  monocased_shell[i] = shell[i];
-	  if (shell[i] == '.')
-	    idot = i;
-	  else if (shell[i] == '/' || shell[i] == '\\' || shell[i] == ':')
-	    {
-	      ibase = i + 1;
-	      idot = shlen;
-	    }
+	  ibase = i + 1;
+	  idot = shlen;
 	}
     }
-  monocased_shell[i] = '\0';
 
   /* "sh" and "sh.exe" should compare equal.  */
   return
-    strncmp(monocased_shell + ibase, system_shell_name(), idot - ibase) == 0
-    && (idot == shlen
-	|| strcmp(monocased_shell + idot, ".exe") == 0
-	|| strcmp(monocased_shell + idot, ".com") == 0);
+    ((strncasecmp (monocased_shell + ibase, system_shell_name(), idot - ibase)
+      == 0)
+     && (idot == shlen
+	 || strcasecmp(monocased_shell + idot, ".exe") == 0
+	 || strcasecmp(monocased_shell + idot, ".com") == 0));
 }
 
 /* MSDOS doesn't have `fork', so we need to simulate the pipe by

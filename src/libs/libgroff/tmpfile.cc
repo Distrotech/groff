@@ -97,7 +97,7 @@ char *xtmptemplate(char *postfix)
 
 static struct xtmpfile_list {
   struct xtmpfile_list *next;
-  char *fname;
+  char fname[1];
 } *xtmpfiles_to_delete;
 
 static void remove_tmp_files(void)
@@ -108,7 +108,6 @@ static void remove_tmp_files(void)
     {
       if (unlink(p->fname) < 0)
 	error("cannot unlink `%1': %2", p->fname, strerror(errno));
-      a_delete p->fname;
       struct xtmpfile_list *old = p;
       p = p->next;
       free(old);
@@ -120,16 +119,16 @@ static void add_tmp_file(const char *name)
   if (xtmpfiles_to_delete == NULL)
     atexit(remove_tmp_files);
 
-  char *fname = new char[FILENAME_MAX];
   struct xtmpfile_list *p
-    = (struct xtmpfile_list *)malloc(sizeof(struct xtmpfile_list));
+    = (struct xtmpfile_list *)malloc(sizeof(struct xtmpfile_list)
+				     + strlen (name));
   if (p == NULL)
     {
       error("cannot unlink `%1': %2", name, strerror(errno));
       return;
     }
   p->next = xtmpfiles_to_delete;
-  p->fname = strcpy(fname, name);
+  strcpy(p->fname, name);
   xtmpfiles_to_delete = p;
 }
 
