@@ -74,6 +74,7 @@ static int auto_rule  = TRUE;                        /* by default we enable an 
 static int simple_anchors = FALSE;                   /* default to anchors with heading text     */
 static int manufacture_headings = FALSE;             /* default is to use the Hn html headings,  */
                                                      /* rather than manufacture our own.         */
+static color *default_background = NULL;             /* has user requested initial bg color?     */
 
 
 /*
@@ -1075,12 +1076,13 @@ public:
 
   int     has_been_written;
   int     has_been_found;
+  int     with_h1;
   string  text;
 };
 
 
 title_desc::title_desc ()
-  : has_been_written(FALSE), has_been_found(FALSE)
+  : has_been_written(FALSE), has_been_found(FALSE), with_h1(FALSE)
 {
 }
 
@@ -1994,6 +1996,11 @@ void html_printer::troff_tag (text_glob *g)
     do_center(a);
   } else if (strncmp(t, ".tl", 3) == 0) {
     supress_sub_sup = TRUE;
+    title.with_h1 = TRUE;
+    do_title();
+  } else if (strncmp(t, ".html-tl", 8) == 0) {
+    supress_sub_sup = TRUE;
+    title.with_h1 = FALSE;
     do_title();
   } else if (strncmp(t, ".fi", 3) == 0) {
     do_fill(TRUE);
@@ -2360,6 +2367,7 @@ void html_printer::draw(int code, int *p, int np, const environment *env)
   switch (code) {
 
   case 'l':
+# if 0
     if (np == 2) {
       page_contents->add_line(&sbuf_style,
 			      line_number,
@@ -2367,6 +2375,7 @@ void html_printer::draw(int code, int *p, int np, const environment *env)
     } else {
       error("2 arguments required for line");
     }
+# endif
     break;
   case 't':
     {
@@ -2435,7 +2444,7 @@ html_printer::html_printer()
   indentation(0),
   prev_indent(0),
   line_number(0),
-  background(NULL)
+  background(default_background)
 {
 #if defined(DEBUGGING)
   file_list.add_new_file(stdout);
@@ -2617,9 +2626,11 @@ void html_printer::write_title (int in_head)
       html.put_string("</title>").nl().nl();
     } else {
       title.has_been_written = TRUE;
-      html.put_string("<h1 align=center>");
-      html.put_string(title.text);
-      html.put_string("</h1>").nl().nl();
+      if (title.with_h1) {
+	html.put_string("<h1 align=center>");
+	html.put_string(title.text);
+	html.put_string("</h1>").nl().nl();
+      }
     }
   } else if (in_head) {
     // place empty title tags to help conform to `tidy'
@@ -2821,12 +2832,17 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "o:i:I:D:F:vdhlrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "o:i:I:D:F:vbdhlrn", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
       printf("GNU post-grohtml (groff) version %s\n", Version_string);
       exit(0);
+      break;
+    case 'b':
+      // set background color to white
+      default_background = new color;
+      default_background->set_rgb(1.0, 1.0, 1.0);
       break;
     case 'F':
       font::command_line_font_dir(optarg);
@@ -2882,6 +2898,6 @@ int main(int argc, char **argv)
 
 static void usage(FILE *stream)
 {
-  fprintf(stream, "usage: %s [-vlnh] [-D dir] [-I image_stem] [-F dir] [files ...]\n",
+  fprintf(stream, "usage: %s [-vblnh] [-D dir] [-I image_stem] [-F dir] [files ...]\n",
 	  program_name);
 }

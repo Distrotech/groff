@@ -977,8 +977,9 @@ void troff_output_file::check_charinfo(tfont *tf, charinfo *ci)
   int height = tf->get_char_height(ci).to_units();
   int width = tf->get_width(ci).to_units()
 	      + tf->get_italic_correction(ci).to_units();
+  int depth = tf->get_char_depth(ci).to_units();
   check_output_limits(output_hpos, output_vpos - height);
-  check_output_limits(output_hpos + width, output_vpos);
+  check_output_limits(output_hpos + width, output_vpos + depth);
 }
 
 void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,

@@ -57,15 +57,14 @@ extern "C" const char *Version_string;
 #include "pushback.h"
 #include "html-strings.h"
 
-#define DEFAULT_IMAGE_RES         80   // 80 pixels per inch resolution
-#ifdef PAGEA4
-#  define DEFAULT_VERTICAL_OFFSET  0   // DEFAULT_VERTICAL_OFFSET/72 of an inch
-#else
-#  define DEFAULT_VERTICAL_OFFSET 50   // DEFAULT_VERTICAL_OFFSET/72 of an inch
-#endif
-#define IMAGE_BOARDER_PIXELS       2
+#define DEFAULT_IMAGE_RES        100   // number of pixels per inch resolution
+#define IMAGE_BOARDER_PIXELS       0
 #define MAX_WIDTH                  8   // inches
 #define INLINE_LEADER_CHAR      '\\'
+#define A4_LENGTH             841890   // taken from devps/Makefile.sub
+#define LETTER_LENGTH         792000   // taken from devps/Makefile.sub
+#define A4_OFFSET                  0
+#define LETTER_OFFSET             50   // 50/72 of an inch
 
 #define TRANSPARENT  "-background white -transparent white"
 
@@ -100,10 +99,11 @@ static char *regionFileName = NULL;             // name of file containing all i
 static char *imagePageStem  = NULL;             // stem of all files containing page images
 static char *image_device   = "pnmraw";
 static int   image_res      = DEFAULT_IMAGE_RES;
-static int   vertical_offset= DEFAULT_VERTICAL_OFFSET;
+static int   vertical_offset= 0;
 static char *image_template = NULL;             // image template filename
 static int   troff_arg      = 0;                // troff arg index
 static char *image_dir      = NULL;             // user specified image directory
+static char *gsPaper        = NULL;             // the paper size that gs must use
 #if defined(DEBUGGING)
 static int   debug          = FALSE;
 static char *troffFileName  = NULL;             // output of pre-html output which is sent to troff -Tps
@@ -139,17 +139,17 @@ void sys_fatal (const char *s)
  *  get_resolution - returns the postscript resolution from devps/DESC
  */
 
-static int get_resolution (void)
+static unsigned int get_resolution (void)
 {
   char *pathp;
   FILE *f;
-  unsigned long int res;
+  unsigned int res;
   int n;
   int c;
   f = font_path.open_file("devps/DESC", &pathp);
   if (f == 0) sys_fatal("fopen");
   while (1) {
-    n = fscanf(f, " res %lu", &res);
+    n = fscanf(f, " res %u", &res);
     if (n < 0) sys_fatal("EOF");
     if (n >= 1) {
       fclose(f);
@@ -158,6 +158,42 @@ static int get_resolution (void)
     while (( c = getc(f) ) != '\n')
       if (c == EOF) sys_fatal("EOF");
   }
+}
+
+/*
+ *  get_papersize - returns an integer determining the paper length from devps/DESC
+ */
+
+static int get_papersize (void)
+{
+  char *pathp;
+  FILE *f;
+  int res;
+  int n;
+  int c;
+  f = font_path.open_file("devps/DESC", &pathp);
+  if (f == 0) sys_fatal("fopen");
+  while (1) {
+    n = fscanf(f, " paperlength %d", &res);
+    if (n < 0) sys_fatal("EOF");
+    if (n >= 1) {
+      fclose(f);
+      return res;
+    }
+    while (( c = getc(f) ) != '\n')
+      if (c == EOF) sys_fatal("EOF");
+  }
+}
+
+/*
+ *  determine_vertical_offset - works out the default vertical offset from
+ *                              the page length
+ */
+
+static void determine_vertical_offset (void)
+{
+  vertical_offset = ((A4_LENGTH-get_papersize())*72)/postscriptRes;
+  gsPaper = "-sPAPERSIZE=a4";
 }
 
 /*
@@ -734,9 +770,11 @@ static int createAllPages (void)
   }
 
   s = make_message("echo showpage | "
-		   "gs%s -q -dSAFER -sDEVICE=%s -r%d "
+		   "gs%s %s -q -dSAFER -sDEVICE=%s -r%d "
+		   "-dTextAlphaBits=4 -dGraphicsAlphaBits=4 "
 		   "-sOutputFile=%s/%%d %s -",
 		   EXE_EXT,
+		   gsPaper,
 		   image_device,
 		   image_res,
 		   imagePageStem,
@@ -812,8 +850,7 @@ static void createImage (imageItem *i)
     int  y1 = max((image_res*vertical_offset/72)+min(i->Y1, i->Y2)*image_res/postscriptRes-IMAGE_BOARDER_PIXELS, 0);
     int  x2 = max(i->X1, i->X2)*image_res/postscriptRes+1*IMAGE_BOARDER_PIXELS;
     int  y2 = (image_res*vertical_offset/72)+(max(i->Y1, i->Y2)*image_res/postscriptRes)+1+IMAGE_BOARDER_PIXELS;
-
-    s = make_message("pnmcut%s %d %d %d %d < %s/%d | pnmcrop | pnmtopng%s %s > %s \n",
+    s = make_message("pnmcut%s %d %d %d %d < %s/%d | pnmcrop -quiet | pnmtopng%s %s > %s \n",
 		     EXE_EXT,
 		     x1, y1, x2-x1+1, y2-y1+1,
 		     imagePageStem,
@@ -1022,7 +1059,7 @@ char **addZ (int argc, char *argv[])
   if (new_argv == NULL)
     sys_fatal("malloc");
 
-  while (i<troff_arg) {
+  if (argc > 0) {
     new_argv[i] = argv[i];
     i++;
   }
@@ -1207,18 +1244,21 @@ int scanArguments (int argc, char **argv)
   char *troff_name = new char[strlen(command_prefix) + strlen("troff") + 1];
   strcpy(troff_name, command_prefix);
   strcat(troff_name, "troff");
-  int c;
+  int c, i;
   static const struct option long_options[] = {
     { "help", no_argument, 0, CHAR_MAX + 1 },
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "+o:i:I:D:F:vdhlrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "+o:i:I:D:F:vbdhlrn", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
       printf("GNU pre-grohtml (groff) version %s\n", Version_string);
       exit(0);
+    case 'b':
+      // handled by post-grohtml (set background color to white)
+      break;
     case 'D':
       image_dir = optarg;
       break;
@@ -1233,6 +1273,7 @@ int scanArguments (int argc, char **argv)
       break;
     case 'o':
       vertical_offset = atoi(optarg);
+      gsPaper = "";  // do not specify the paper size now
       break;
     case 'd':
 #if defined(DEBUGGING)
@@ -1254,12 +1295,13 @@ int scanArguments (int argc, char **argv)
       break;
     }
 
-  while (optind < argc) {
-    if (strcmp(argv[optind], troff_name) == 0)
-      troff_arg = optind;
-    else if (argv[optind][0] != '-')
-      return optind;
-    optind++;
+  i = optind;
+  while (i < argc) {
+    if (strcmp(argv[i], troff_name) == 0)
+      troff_arg = i;
+    else if (argv[i][0] != '-')
+      return i;
+    i++;
   }
   a_delete troff_name;
 
@@ -1322,8 +1364,9 @@ int main(int argc, char **argv)
   int found=0;
   int ok=1;
 
-  i = scanArguments(argc, argv);
   postscriptRes = get_resolution();
+  determine_vertical_offset();
+  i = scanArguments(argc, argv);
   checkImageDir();
   makeFileName();
   while (i < argc) {

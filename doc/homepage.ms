@@ -2,18 +2,21 @@
 .\" with groff.
 .\"
 .\"
-.\" To make it work with other output devices also, we include arkup.tmac
+.\" To make it work with other output devices also, we include www.tmac
 .\" directly.
 .mso www.tmac
-.\"
-.LP
-.\"
-.\"  set a longer line than the default as we have some long ftp addresses
-.\"  which groff cannot split
-.nr LL 7i
-.TL
+.defcolor darkred rgb 0.65f 0.1f 0.2f
+.defcolor darkgreen rgb 0.1f 0.5f 0.2f
+.defcolor darkblue rgb 0.1f 0.2f 0.6f
+.ds GNU \m[darkred]G\mP\m[darkgreen]N\mP\m[darkblue]U\mP
+.nr LL 8i
+.HTML-TL
 Home of Groff (GNU Troff).
-.sp 1i
+.HTML-IMAGE-LEFT
+.PSPIC -L gnubw.eps 1i 1i
+\v'-0.5i'\h'1.0i'\s[40]\*[GNU] Troff\s0
+.HTML-IMAGE-END
+.sp
 .LP
 GNU Troff
 .URL (Groff) http://groff.ffii.org/
@@ -24,6 +27,7 @@ Hosted by
 .URL FFII http://ffii.org/ .
 .br
 .LINE
+.LINKS
 .LP
 Groff (GNU Troff) is a document processor which reads plain text mixed with
 formatting commands and produces formatted output.

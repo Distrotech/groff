@@ -140,7 +140,7 @@ xtmpfile_list_init::~xtmpfile_list_init()
 
 static void add_tmp_file(const char *name)
 {
-  char *s = new char[strlen(name)];
+  char *s = new char[strlen(name)+1];
   strcpy(s, name);
   xtmpfile_list *x = new xtmpfile_list(s);
   x->next = xtmpfiles_to_delete;

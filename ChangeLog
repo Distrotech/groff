@@ -1,3 +1,74 @@
+2001-12-30  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/www.tmac: Replace\\n[www-html] with \n[www-html] since the
+	device is already known at start-up.
+	Make all names of internal macros/registers/strings lowercase, and
+	prepend `www-'.
+	Other minor changes.
+
+	* src/roff/troff/troff.man: Add preprocessor string at BOF.
+
+2001-12-30  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Implement option `-b' in grohtml to set the HTML background colour.
+
+	* src/devices/grohtml/post-html.cc (default_background): New global
+	variable.
+	(html_printer::html_printer): Initialize `background' to
+	`default_background'.
+	(main): Implement option `-b'.
+	(usage): Updated.
+	* src/preproc/html/pre-html.cc (scanArguments): Add dummy handling
+	of `-b' option.
+	* src/devices/grohtml/grohtml.man: Updated.
+	* doc/Makefile (.ms.html): Use `-b'.
+	* tmac/html.tmac: Don't set background color.
+
+	Add new grohtml tag `.html-tl'.
+
+	* src/devices/grohtml/post-html.cc (title_desc): Add `with_h1'
+	member variable.
+	(title_desc::title_desc): Updated.
+	(html_printer::troff_tag): Handle `.html-tl'.
+	(html_printer::write_title): Use `with_h1'.
+	* tmac/www.tmac (www-end-nowhere): New auxiliary macro.
+	(HTML-TL): New macro.
+
+	Add support for unordered lists in HTML.
+
+	* tmac/www.tmac (www-level): New auxiliary register.
+	(www-level1, www-level2, www-level3): New auxiliary strings.
+	(www-push-level, www-pop-level): New auxiliary macros
+	(UL-BEGIN, UL-END, LI): User macros for unordered lists.
+
+	Miscellaneous.
+
+	* src/preproc/html/pre-html.cc (DEFAULT_IMAGE_RES): Increase to 100.
+	(DEFAULT_VERTICAL_OFFSET): Removed.
+	(IMAGE_BOARDER_PIXELS): Set to 0.
+	(A4_LENGTH, A4_OFFSET, LETTER_LENGTH, LETTER_OFFSET): New macros.
+	(vertical_offset): Initialize with 0.
+	(gsPaper): New global variable.
+	(get_resolution): Scan for and return unsigned int.
+	(get_papersize): New function to get paper length from devps/DESC.
+	(determine_vertical_offset): New function.
+	(createAllPages): Produce gray-level images and use proper page
+	length.
+	(createImage): Use `-quiet' option of pnmcrop.
+	(addZ): Fix passing of `-Z'.
+	(scanArguments): Fix handling of `-o'.
+	(main): Call `determine_vertical_offset'.
+	* src/devices/grohtml/post-html.cc (html_printer::draw): Comment out
+	code for `l'.
+
+	* src/libs/libgroff/tmpfile.cc (add_tmp_file): Fix buffer length.
+	* src/roff/troff/node.cc (troff_output_file::check_charinfo): Handle
+	glyph descenders properly.
+
+	* doc/homepage.ms: Include `gnubw.eps'.
+	* doc/Makefile (gnubw.eps): New rule.
+	(homepage.html): Depend on `gnubw.eps'.
+
 2001-12-25  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/input.cc (default_black): Fix return value.
