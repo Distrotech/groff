@@ -88,6 +88,7 @@ void vjustify();
 #endif /* COLUMN */
 void transparent();
 void transparent_file();
+void process_input_stack();
 
 const char *program_name = 0;
 token tok;

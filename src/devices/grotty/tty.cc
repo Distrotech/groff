@@ -56,15 +56,21 @@ enum {
 // Mode to use for bold-underlining.
 static unsigned char bold_underline_mode = BOLD_MODE|UNDERLINE_MODE;
 
+#ifndef IS_EBCDIC_HOST
+#define CSI "\033["
+#else
+#define CSI "\047["
+#endif
+
 // SGR handling (ISO 6429)
-#define SGR_BOLD "\033[1m"
-#define SGR_NO_BOLD "\033[22m"
-#define SGR_ITALIC "\033[3m"
-#define SGR_NO_ITALIC "\033[23m"
-#define SGR_UNDERLINE "\033[4m"
-#define SGR_NO_UNDERLINE "\033[24m"
-#define SGR_DEFAULT_COLOR "\033[39m"
-#define SGR_BACK_DEFAULT_COLOR "\033[49m"
+#define SGR_BOLD CSI "1m"
+#define SGR_NO_BOLD CSI "22m"
+#define SGR_ITALIC CSI "3m"
+#define SGR_NO_ITALIC CSI "23m"
+#define SGR_UNDERLINE CSI "4m"
+#define SGR_NO_UNDERLINE CSI "24m"
+#define SGR_DEFAULT_COLOR CSI "39m"
+#define SGR_BACK_DEFAULT_COLOR CSI "49m"
 
 #define TTY_MAX_COLORS 8
 #define DEFAULT_COLOR_IDX TTY_MAX_COLORS
@@ -425,7 +431,7 @@ void tty_printer::put_color(unsigned char color_index, int back)
 {
   if (color_index == DEFAULT_COLOR_IDX)
     color_index = 9;
-  putstring("\033[");
+  putstring(CSI);
   if (back)
     putchar('4');
   else

@@ -354,6 +354,7 @@ extern void push_env(int);
 
 void init_environments();
 void read_hyphen_file(const char *name);
+void title();
 
 extern int break_flag;
 extern symbol default_family;

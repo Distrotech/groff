@@ -237,6 +237,14 @@ inline int font_info::is_style()
   return fm == 0;
 }
 
+tfont *make_tfont(tfont_spec &spec)
+{
+  for (tfont *p = tfont::tfont_list; p; p = p->next)
+    if (*p == spec)
+      return p;
+  return new tfont(spec);
+}
+
 // this is the current_font, fontno is where we found the character,
 // presumably a special font
 
@@ -636,14 +644,6 @@ inline int tfont::get_kern(charinfo *c1, charinfo *c2, hunits *res)
     else
       return 0;
   }
-}
-
-tfont *make_tfont(tfont_spec &spec)
-{
-  for (tfont *p = tfont::tfont_list; p; p = p->next)
-    if (*p == spec)
-      return p;
-  return new tfont(spec);
 }
 
 tfont *tfont::tfont_list = 0;
