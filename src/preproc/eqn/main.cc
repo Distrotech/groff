@@ -190,7 +190,8 @@ static int inline_equation(FILE *fp, string &linebuf, string &str)
       }
       str += ptr;
       if (!read_line(fp, &linebuf))
-	fatal("end of file before `%1'", end_delim);
+	fatal("unterminated %1' at line %2, looking for %3'",
+	      start_delim, start_lineno, end_delim);
       linebuf += '\0';
       ptr = &linebuf[0];
     }
