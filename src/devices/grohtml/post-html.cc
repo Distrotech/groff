@@ -27,7 +27,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "stringclass.h"
 #include "cset.h"
 #include "html.h"
-#include "html-chars.h"
 #include "html-text.h"
 
 #include <time.h>
