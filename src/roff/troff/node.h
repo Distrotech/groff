@@ -596,4 +596,5 @@ public:
 
 font_family *lookup_family(symbol);
 symbol get_font_name(int, environment *);
+symbol get_style_name(int);
 extern search_path include_search_path;

@@ -3109,6 +3109,12 @@ const char *environment::get_font_name_string()
   return f.contents();
 }
 
+const char *environment::get_style_name_string()
+{
+  symbol f = get_style_name(fontno);
+  return f.contents();
+}
+
 const char *environment::get_name_string()
 {
   return name.contents();
@@ -3271,6 +3277,7 @@ void init_env_requests()
   init_int_env_reg(".ss", get_space_size);
   init_int_env_reg(".sss", get_sentence_space_size);
   init_string_env_reg(".sr", get_requested_point_size_string);
+  init_string_env_reg(".sty", get_style_name_string);
   init_string_env_reg(".tabs", get_tabs);
   init_int_env_reg(".u", get_fill);
   init_vunits_env_reg(".v", get_vertical_spacing);

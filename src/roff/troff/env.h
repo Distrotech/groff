@@ -309,6 +309,7 @@ public:
   const char *get_fill_color_string();
   const char *get_font_family_string();
   const char *get_font_name_string();
+  const char *get_style_name_string();
   const char *get_name_string();
   const char *get_point_size_string();
   const char *get_requested_point_size_string();

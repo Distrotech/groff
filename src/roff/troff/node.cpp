@@ -151,6 +151,7 @@ public:
   int is_special();
   int is_style();
   friend symbol get_font_name(int, environment *);
+  friend symbol get_style_name(int);
 };
 
 class tfont_spec {
@@ -397,6 +398,14 @@ symbol get_font_name(int fontno, environment *env)
     return concat(env->get_family()->nm, f);
   }
   return f;
+}
+
+symbol get_style_name(int fontno)
+{
+  if (font_table[fontno]->is_style())
+    return font_table[fontno]->get_name();
+  else
+    return EMPTY_SYMBOL;
 }
 
 hunits font_info::get_space_width(font_size fs, int space_sz)
