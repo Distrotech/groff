@@ -215,7 +215,7 @@ HGPrintElt(ELT *element,
 	      break;
 	    if (graylevel > NSTIPPLES)
 	      graylevel = NSTIPPLES;
-	    printf("\\D'f %du'", stipple_index[graylevel])
+	    printf("\\D'f %du'", stipple_index[graylevel]);
 	    cr();
 	    tmove(p1);
 	    printf("\\D'%c", command);
