@@ -212,7 +212,10 @@ $(GREEKFONTS): $(srcdir)/lgreekmap
 $(FONTS): $(DESC)
 
 symbolmap: $(TEXTMAP) $(srcdir)/symbolchars
-	cat $(TEXTMAP) $(srcdir)/symbolchars >$@
+	echo '#' >$@
+	echo '# This is a list of all predefined groff symbols.' >>$@
+	echo '#' >>$@
+	cat $(TEXTMAP) $(srcdir)/symbolchars >>$@
 
 clean:
 	-rm -f symbolmap symbol.afm zapfdr.afm

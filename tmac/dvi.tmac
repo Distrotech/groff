@@ -13,7 +13,7 @@
 .fspecial TBI CWI
 .fspecial HI CWI
 .fspecial HBI CWI
-.\" This uses the dvi-char_1 string in font CW pr CWI, dvi-char_0 otherwise.
+.\" This uses the dvi-char_1 string in font CW or CWI, dvi-char_0 otherwise.
 .char _ \
 \R'dvi-char_ ((\\n[.f] == \f[CW]\\n[.f]\f[P]) : \
               (\\n[.f] == \f[CWI]\\n[.f]\f[P]))'\\*[dvi-char_\\n[dvi-char_]]
@@ -704,4 +704,7 @@ D\v'-.33m'\s0\v'.33m'
 .defcolor yellow3 rgb #cdcd00
 .defcolor yellow4 rgb #8b8b00
 .cp \n(_C
-.do mso latin1.tmac
+.ie '\*(.T'cp1047' \
+.  do mso cp1047.tmac
+.el \
+.  do mso latin1.tmac

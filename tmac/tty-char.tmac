@@ -10,16 +10,20 @@
 .\" - represent the character's graphical shape (not its meaning)
 .\"
 .\" Note that the optical appearance of the definitions contained in this
-.\" file is inferior to the replacement characters defined in the file
-.\" tty.tmac.
+.\" file is inferior compared to that of the replacement characters defined
+.\" in the file tty.tmac.
 .\"
 .nr _C \n(.C
 .cp 0
+.
 .de tty-char
-.if !c\\$1 .char \\$1 "\\$2
+.	if !c\\$1 .char \\$1 "\\$2
 ..
-.ie c\(a- .ds tty-rn \(a-
-.el .ds tty-rn \v'-1m'_\v'+1m'
+.
+.ie c\(a- \
+.	ds tty-rn \(a-
+.el \
+.	ds tty-rn \v'-1m'_\v'+1m'
 .tty-char \(tm tm
 .tty-char \(rn \*[tty-rn]
 .tty-char \(ua \z|^
@@ -205,5 +209,8 @@
 .tty-char \[arrowvertex] |
 .tty-char \(mc \z,u
 .cp \n(_C
-.if !'\*(.T'cp1047' \
+.
+.ie '\*(.T'cp1047' \
+.	do mso cp1047.tmac
+.el \
 .	do mso latin1.tmac
