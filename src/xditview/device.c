@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 #include <X11/Xos.h>
 #include <X11/Intrinsic.h>
@@ -559,7 +560,7 @@ static
 FILE *open_device_file(device_name, file_name, result)
      char *device_name, *file_name, **result;
 {
-  char *buf, *path;
+  char *buf;
   FILE *fp;
 
   buf = XtMalloc(3 + strlen(device_name) + 1 + strlen(file_name) + 1);
