@@ -107,8 +107,9 @@ imagedir=img
 
 all: prepare_examples
 
-prepare_examples: grnexmpl.g
+prepare_examples: grnexmpl.g groff.css
 	test -f grnexmpl.g || cp $(srcdir)/grnexmpl.g .
+	test -f groff.css || cp $(srcdir)/groff.css .
 
 groff: groff.texinfo
 	$(MAKEINFO) --enable-encoding -I$(srcdir) $(srcdir)/groff.texinfo
@@ -123,7 +124,7 @@ pic.html: pic.ms
                  -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
                  -Thtml -ms >$@
 
-webpage.html: webpage.ms gnu.png gnu.eps
+webpage.html: webpage.ms gnu.png gnu.eps groff.css
 webpage.ps: gnu.eps
 
 grnexmpl.ps: grnexmpl.me grnexmpl.g

@@ -70,6 +70,7 @@ HTMLDOCIMAGEFILES=\
 
 EXAMPLEFILES=\
   webpage.ms \
+  groff.css \
   grnexmpl.g \
   grnexmpl.me
 
@@ -100,6 +101,7 @@ CLEANDIRADD=\
   $(imagedir)
 
 CLEANNOTSRCDIRADD=\
+  groff.css \
   grnexmpl.g \
   groff \
   groff-* \
@@ -124,8 +126,9 @@ all: groff $(PROCESSEDDOCFILES) prepare_examples \
 
 html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
 
-prepare_examples: grnexmpl.g
+prepare_examples: grnexmpl.g groff.css
 	test -f grnexmpl.g || cp $(srcdir)/grnexmpl.g .
+	test -f groff.css || cp $(srcdir)/groff.css .
 
 groff: groff.texinfo
 	$(MAKEINFO) --enable-encoding -I$(srcdir) $(srcdir)/groff.texinfo
@@ -141,7 +144,7 @@ pic.html: pic.ms
                  -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
                  -Thtml -ms >$@
 
-webpage.html: webpage.ms gnu.png
+webpage.html: webpage.ms gnu.png groff.css
 webpage.ps: gnu.eps
 
 grnexmpl.ps: grnexmpl.me grnexmpl.g
