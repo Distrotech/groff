@@ -498,6 +498,7 @@ print_arg:
 		  $$.filename = 0;
 		  $$.lineno = 0;
 		}
+	;
 
 simple_if:
 	IF any_expr THEN
@@ -1321,6 +1322,7 @@ relative_path:
 		  $$ = $1;
 		  $$->append($2);
 		}
+	;
 
 path:
 	relative_path
