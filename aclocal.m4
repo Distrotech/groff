@@ -246,8 +246,6 @@ if test -z "$PAGE"; then
 	if test -n "$descfile" \
 	  && grep "^paperlength 841890" $descfile >/dev/null 2>&1; then
 		PAGE=A4
-	else
-		PAGE=letter
 	fi
 fi
 if test -z "$PAGE"; then
@@ -255,7 +253,8 @@ if test -z "$PAGE"; then
 	    /etc/resolv.conf 2>/dev/null`
 	if test -z "$dom"; then
 		dom=`(domainname) 2>/dev/null | tr -d '+'`
-		if test -z "$dom"; then
+		if test -z "$dom" \
+		  || test "$dom" = '(none)'; then
 			dom=`(hostname) 2>/dev/null | grep '\.'`
 		fi
 	fi

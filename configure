@@ -4331,8 +4331,6 @@ if test -z "$PAGE"; then
 	if test -n "$descfile" \
 	  && grep "^paperlength 841890" $descfile >/dev/null 2>&1; then
 		PAGE=A4
-	else
-		PAGE=letter
 	fi
 fi
 if test -z "$PAGE"; then
@@ -4340,7 +4338,8 @@ if test -z "$PAGE"; then
 	    /etc/resolv.conf 2>/dev/null`
 	if test -z "$dom"; then
 		dom=`(domainname) 2>/dev/null | tr -d '+'`
-		if test -z "$dom"; then
+		if test -z "$dom" \
+		  || test "$dom" = '(none)'; then
 			dom=`(hostname) 2>/dev/null | grep '\.'`
 		fi
 	fi
@@ -4352,22 +4351,22 @@ if test -z "$PAGE"; then
 	esac
 fi
 test -n "$PAGE" || PAGE=letter
-echo "$as_me:4355: result: $PAGE" >&5
+echo "$as_me:4354: result: $PAGE" >&5
 echo "${ECHO_T}$PAGE" >&6
 
-echo "$as_me:4358: checking for existing troff installation" >&5
+echo "$as_me:4357: checking for existing troff installation" >&5
 echo $ECHO_N "checking for existing troff installation... $ECHO_C" >&6
 if test "x`(echo .tm '|n(.g' | tr '|' '\\\\' | troff -z -i 2>&1) 2>/dev/null`" = x0; then
-	echo "$as_me:4361: result: yes" >&5
+	echo "$as_me:4360: result: yes" >&5
 echo "${ECHO_T}yes" >&6
 	g=g
 else
-	echo "$as_me:4365: result: no" >&5
+	echo "$as_me:4364: result: no" >&5
 echo "${ECHO_T}no" >&6
 	g=
 fi
 
-echo "$as_me:4370: checking for prefix of system macro packages" >&5
+echo "$as_me:4369: checking for prefix of system macro packages" >&5
 echo $ECHO_N "checking for prefix of system macro packages... $ECHO_C" >&6
 sys_tmac_prefix=
 sys_tmac_file_prefix=
@@ -4384,11 +4383,11 @@ for d in /usr/share/lib/tmac /usr/lib/tmac; do
 		done
 	done
 done
-echo "$as_me:4387: result: $sys_tmac_prefix" >&5
+echo "$as_me:4386: result: $sys_tmac_prefix" >&5
 echo "${ECHO_T}$sys_tmac_prefix" >&6
 
 tmac_wrap=
-echo "$as_me:4391: checking which system macro packages should be made available" >&5
+echo "$as_me:4390: checking which system macro packages should be made available" >&5
 echo $ECHO_N "checking which system macro packages should be made available... $ECHO_C" >&6
 if test "x$sys_tmac_file_prefix" = "xtmac."; then
 	for f in $sys_tmac_prefix*; do
@@ -4424,7 +4423,7 @@ elif test -n "$sys_tmac_prefix"; then
 	done
 	rm -f conftest.sol
 fi
-echo "$as_me:4427: result: $tmac_wrap" >&5
+echo "$as_me:4426: result: $tmac_wrap" >&5
 echo "${ECHO_T}$tmac_wrap" >&6
 
 $srcdir/mkinstalldirs src/xditview
@@ -4539,7 +4538,7 @@ rm -f confdef2opt.sed
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:4542: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:4541: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -4707,7 +4706,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:4710: error: ambiguous option: $1
+    { { echo "$as_me:4709: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -4730,12 +4729,12 @@ Try \`$0 --help' for more information." >&2;}
   'src/xditview/Imakefile' ) CONFIG_FILES="$CONFIG_FILES src/xditview/Imakefile" ;;
 
   # This is an error.
-  -*) { { echo "$as_me:4733: error: unrecognized option: $1
+  -*) { { echo "$as_me:4732: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
    { (exit 1); exit 1; }; } ;;
-  *) { { echo "$as_me:4738: error: invalid argument: $1" >&5
+  *) { { echo "$as_me:4737: error: invalid argument: $1" >&5
 echo "$as_me: error: invalid argument: $1" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -4976,7 +4975,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:4979: creating $ac_file" >&5
+    { echo "$as_me:4978: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -4994,7 +4993,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:4997: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:4996: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5007,7 +5006,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5010: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5009: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
