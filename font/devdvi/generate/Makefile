@@ -29,10 +29,16 @@ tfmdir=/usr/local/lib/groff-tfm
 gfdir=/usr/local/lib/groff-gf
 
 TFMTODIT=tfmtodit
-FONTS=TR TI TB TBI CW CWI MI S EX HR HI HB HBI SA SB
+FONTS=TR TI TB TBI CW CWI HR HI HB HBI \
+      TREC TIEC TBEC TBIEC CWEC CWIEC HREC HIEC HBEC HBIEC \
+      TRTC TITC TBTC TBITC CWTC CWITC HRTC HITC HBTC HBITC \
+      MI S EX SA SB
 SPECIALFLAG=-s
 
 all: $(FONTS)
+
+
+#### CM fonts ####
 
 # TR is special because it contains \(pl \(eq
 
@@ -99,6 +105,91 @@ SA: $(srcdir)/msam.map
 SB: $(srcdir)/msbm.map
 	$(TFMTODIT) $(SPECIALFLAG) \
 	  $(tfmdir)/msbm10.tfm $(srcdir)/msbm.map $@
+
+
+#### EC fonts ####
+
+TREC: $(srcdir)/ec.map
+	$(TFMTODIT) -g $(gfdir)/ecrm1000.300gf \
+	  $(tfmdir)/ecrm1000.tfm $(srcdir)/ec.map $@
+
+TIEC: $(srcdir)/ec.map
+	$(TFMTODIT) -g $(gfdir)/ecti1000.300gf \
+	  $(tfmdir)/ecti1000.tfm $(srcdir)/ec.map $@
+
+TBEC: $(srcdir)/ec.map
+	$(TFMTODIT) -g $(gfdir)/ecbx1000.300gf \
+	  $(tfmdir)/ecbx1000.tfm $(srcdir)/ec.map $@
+
+TBIEC: $(srcdir)/ec.map
+	$(TFMTODIT) -g $(gfdir)/ecbi1000.300gf \
+	  $(tfmdir)/ecbi1000.tfm $(srcdir)/ec.map $@
+
+CWEC: $(srcdir)/ec.map
+	$(TFMTODIT) $(tfmdir)/ectt1000.tfm $(srcdir)/ec.map $@
+
+CWIEC: $(srcdir)/ec.map
+	$(TFMTODIT) $(tfmdir)/ecit1000.tfm $(srcdir)/ec.map $@
+
+HREC: $(srcdir)/ec.map
+	$(TFMTODIT) -g $(gfdir)/ecss1000.300gf \
+	  $(tfmdir)/ecss1000.tfm $(srcdir)/ec.map $@
+
+HBEC: $(srcdir)/ec.map
+	$(TFMTODIT) -g $(gfdir)/ecsx1000.300gf \
+	  $(tfmdir)/ecsx1000.tfm $(srcdir)/ec.map $@
+
+HIEC: $(srcdir)/ec.map
+	$(TFMTODIT) -g $(gfdir)/ecsi1000.300gf \
+	  $(tfmdir)/ecsi1000.tfm $(srcdir)/ec.map $@
+
+HBIEC: $(srcdir)/ec.map
+	$(TFMTODIT) -g $(gfdir)/ecso1000.300gf \
+	  $(tfmdir)/ecso1000.tfm $(srcdir)/ec.map $@
+
+
+#### TC fonts ####
+
+TRTC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcrm1000.300gf \
+	  $(tfmdir)/tcrm1000.tfm $(srcdir)/tc.map $@
+
+TITC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcti1000.300gf \
+	  $(tfmdir)/tcti1000.tfm $(srcdir)/tc.map $@
+
+TBTC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcbx1000.300gf \
+	  $(tfmdir)/tcbx1000.tfm $(srcdir)/tc.map $@
+
+TBITC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcbi1000.300gf \
+	  $(tfmdir)/tcbi1000.tfm $(srcdir)/tc.map $@
+
+CWTC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) \
+	  $(tfmdir)/tctt1000.tfm $(srcdir)/tc.map $@
+
+CWITC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) \
+	  $(tfmdir)/tcit1000.tfm $(srcdir)/tc.map $@
+
+HRTC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcss1000.300gf \
+	  $(tfmdir)/tcss1000.tfm $(srcdir)/tc.map $@
+
+HBTC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcsx1000.300gf \
+	  $(tfmdir)/tcsx1000.tfm $(srcdir)/tc.map $@
+
+HITC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcsi1000.300gf \
+	  $(tfmdir)/tcsi1000.tfm $(srcdir)/tc.map $@
+
+HBITC: $(srcdir)/tc.map
+	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/tcso1000.300gf \
+	  $(tfmdir)/tcso1000.tfm $(srcdir)/tc.map $@
+
 
 clean:
 
