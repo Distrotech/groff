@@ -43,7 +43,7 @@ pages continuously, rather than starting each at\ 1.
 .TP
 .B \-rD1
 Double-sided printing.
-Footers for even and odd pages look different.
+Footers for even and odd pages are formatted differently.
 .TP
 .BI \-rP nnn
 Enumeration of pages will start with
@@ -79,6 +79,24 @@ The value
 .I section
 may also have a string appended, e.g. `.pm', to indicate a specific
 subsection of the man pages.
+Both
+.I title
+and
+.I section
+are positioned at the left and right in the header line (with
+.I section
+in parentheses immediately appended to
+.IR title .
+.I extra1
+will be positioned in the middle of the footer line.
+.I extra2
+will be positioned at the left in the footer line (resp. at the left on
+even pages and at the right on odd pages if double-sided printing is
+active).
+.I extra3
+is centered in the header line.
+.IP
+For HTML output, headers and footers are completely supressed.
 .TP
 .BI ".SH [" "text for a heading" ]
 Sets up an unnumbered section heading sticking out to the left.
@@ -168,7 +186,7 @@ indentation set to\ 4:
 .HP 4
 This is a paragraph following an invocation of the `.HP' macro.
 As you can see, it produces a paragraph where all lines but the first are
-flushed right and are shorter than the preceding lines.
+indented.
 .RE
 .TP
 .BI ".RS [" nnn ]
@@ -187,7 +205,7 @@ The first level (i.e., no call to `RS' yet) has number\ 1, and each call to
 .
 .SH "MACROS TO SET FONTS"
 .
-The standard font is Roman; the default text size is 10 point.
+The standard font is Roman; the default text size is 10\ point.
 .TP
 .BI ".SM [" text ]
 Causes the text on the same line or the text on the next line to appear in a
@@ -200,8 +218,14 @@ boldface font, one point size smaller than the default font.
 .BI ".BI " text
 Causes text on the same line to appear alternately in bold face and italic.
 The text must be on the same line as the macro call.
-Thus `.BI this "word and" that' would cause `this' and `that' to appear in
-bold face, while `word and' appears in italics.
+Thus
+.RS
+.IP
+\&.BI this "word and" that
+.PP
+would cause `this' and `that' to appear in bold face, while `word and'
+appears in italics.
+.RE
 .TP
 .BI ".IB " text
 Causes text to appear alternately in italic and bold face.
@@ -223,7 +247,7 @@ The text must be on the same line as the macro call.
 Causes text on the same line to appear alternately in roman and bold face.
 The text must be on the same line as the macro call.
 .TP
-.BI ".R " text
+.BI ".R [" text ]
 Causes text to appear in roman font.
 If no text is present on the line where the macro is called, then the text
 of the next line appears in roman.
