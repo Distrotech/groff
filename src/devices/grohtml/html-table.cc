@@ -405,7 +405,7 @@ void html_table::emit_col (int n)
 
 void html_table::finish_row (void)
 {
-  int n;
+  int n = 0;
   cols *c;
 
   if (last_col != NULL) {
