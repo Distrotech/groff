@@ -377,24 +377,31 @@ void environment::space_newline()
   if (interrupted)
     return;
   hunits x = H0;
+  hunits sw = env_space_width(this);
+  hunits ssw = env_sentence_space_width(this);
   if (!translate_space_to_dummy) {
-    x = env_space_width(this);
+    x = sw;
     if (node_list_ends_sentence(line) == 1)
-      x += env_sentence_space_width(this);
+      x += ssw;
   }
-  int num_spaces = 1;
+  width_list *w = new width_list(sw, ssw);
   if (node_list_ends_sentence(line) == 1)
-    num_spaces++;
-  if (line != 0 && line->merge_space(x)) {
+    w->next = new width_list(sw, ssw);
+  if (line != 0 && line->merge_space(x, sw, ssw)) {
     width_total += x;
     return;
   }
-  add_node(new word_space_node(x, num_spaces));
+  add_node(new word_space_node(x, w));
   possibly_break_line(0, spread_flag);
   spread_flag = 0;
 }
 
 void environment::space()
+{
+  space(env_space_width(this), env_sentence_space_width(this));
+}
+
+void environment::space(hunits space_width, hunits sentence_space_width)
 {
   if (interrupted)
     return;
@@ -402,22 +409,24 @@ void environment::space()
     add_padding();
     return;
   }
-  hunits x = translate_space_to_dummy ? H0 : env_space_width(this);
+  hunits x = translate_space_to_dummy ? H0 : space_width;
   node *p = current_tab ? tab_contents : line;
   hunits *tp = current_tab ? &tab_width : &width_total;
   if (p && p->nspaces() == 1 && p->width() == x
       && node_list_ends_sentence(p->next) == 1) {
-    hunits xx = translate_space_to_dummy ? H0 : env_sentence_space_width(this);
-    if (p->merge_space(xx)) {
+    hunits xx = translate_space_to_dummy ? H0 : sentence_space_width;
+    if (p->merge_space(xx, space_width, sentence_space_width)) {
       *tp += xx;
       return;
     }
   }
-  if (p && p->merge_space(x)) {
+  if (p && p->merge_space(x, space_width, sentence_space_width)) {
     *tp += x;
     return;
   }
-  add_node(new word_space_node(x, 1));
+  add_node(new word_space_node(x,
+			       new width_list(space_width,
+					      sentence_space_width)));
   possibly_break_line(0, spread_flag);
   spread_flag = 0;
 }
@@ -2621,7 +2630,7 @@ node *environment::make_tab_node(hunits d, node *next)
     leader_node = 0;
   }
   if (!leader_node)
-    return new hmotion_node(d, 1, next);
+    return new hmotion_node(d, 1, 0, next);
   node *n = new hline_node(d, leader_node, next);
   leader_node = 0;
   return n;

@@ -682,7 +682,7 @@ static symbol read_long_escape_name()
     }
     if (i + 2 > buf_size) {
       if (buf == abuf) {
-	buf = new char [ABUF_SIZE*2];
+	buf = new char[ABUF_SIZE*2];
 	memcpy(buf, abuf, buf_size);
 	buf_size = ABUF_SIZE*2;
       }
@@ -1914,7 +1914,7 @@ symbol get_long_name(int required)
   for (;;) {
     if (i + 1 > buf_size) {
       if (buf == abuf) {
-	buf = new char [ABUF_SIZE*2];
+	buf = new char[ABUF_SIZE*2];
 	memcpy(buf, abuf, buf_size);
 	buf_size = ABUF_SIZE*2;
       }
@@ -2131,6 +2131,30 @@ int diverted_copy_file_node::reread(int *bolp)
   return 1;
 }
 
+int word_space_node::reread(int *bolp)
+{
+  if (unformat) {
+    for (width_list *w = orig_width; w; w = w->next)
+      curenv->space(w->width, w->sentence_width);
+    return 1;
+  }
+  return 0;
+}
+
+int unbreakable_space_node::reread(int *)
+{
+  return 0;
+}
+
+int hmotion_node::reread(int *bolp)
+{
+  if (unformat && was_tab) {
+    curenv->handle_tab(0);
+    return 1;
+  }
+  return 0;
+}
+
 void process_input_stack()
 {
   int_stack trap_bol_stack;
@@ -2246,7 +2270,8 @@ void process_input_stack()
 	  else {
 	    push_token(tok);
 	    curenv->do_break();
-	    curenv->add_node(new hmotion_node(curenv->get_space_width()*nspaces));
+	    curenv->add_node(new hmotion_node(curenv->get_space_width()
+					      * nspaces));
 	    bol = 0;
 	  }
 	}
@@ -2796,7 +2821,8 @@ void *small_temp_iterator::operator new(size_t n)
 {
   assert(n == sizeof(small_temp_iterator));
   if (!free_list) {
-    free_list = (small_temp_iterator *)new char[sizeof(small_temp_iterator)*BLOCK];
+    free_list =
+      (small_temp_iterator *)new char[sizeof(small_temp_iterator)*BLOCK];
     for (int i = 0; i < BLOCK - 1; i++)
       free_list[i].next = free_list + i + 1;
     free_list[BLOCK-1].next = 0;
@@ -3676,7 +3702,7 @@ void length_macro()
     set_number_reg(ret, len);
 }
 
-void do_asciify_macro(int unformat_only)
+void asciify_macro()
 {
   symbol s = get_name(1);
   if (!s.is_null()) {
@@ -3695,7 +3721,7 @@ void do_asciify_macro(int unformat_only)
 	if (c != 0)
 	  am.append(c);
 	else
-	  nd->asciify(&am, unformat_only);
+	  nd->asciify(&am);
       }
       *m = am;
     }
@@ -3703,14 +3729,33 @@ void do_asciify_macro(int unformat_only)
   skip_line();
 }
 
-void asciify_macro()
-{
-  do_asciify_macro(0);
-}
-
 void unformat_macro()
 {
-  do_asciify_macro(1);
+  symbol s = get_name(1);
+  if (!s.is_null()) {
+    request_or_macro *p = lookup_request(s);
+    macro *m = p->to_macro();
+    if (!m)
+      error("cannot unformat request");
+    else {
+      macro am;
+      string_iterator iter(*m);
+      for (;;) {
+	node *nd;
+	int c = iter.get(&nd);
+	if (c == EOF)
+	  break;
+	if (c != 0)
+	  am.append(c);
+	else {
+	  nd->set_unformat_flag();
+	  am.append(nd);
+	}
+      }
+      *m = am;
+    }
+  }
+  skip_line();
 }
 
 static void interpolate_environment_variable(symbol nm)
@@ -3906,7 +3951,7 @@ static symbol get_delim_name()
   for (;;) {
     if (i + 1 > buf_size) {
       if (buf == abuf) {
-	buf = new char [ABUF_SIZE*2];
+	buf = new char[ABUF_SIZE*2];
 	memcpy(buf, abuf, buf_size);
 	buf_size = ABUF_SIZE*2;
       }
@@ -5285,6 +5330,8 @@ void check_missing_character()
 	  tok.description());
 }
 
+// this is for \Z
+
 int token::add_to_node_list(node **pp)
 {
   hunits w;
@@ -6322,10 +6369,14 @@ void init_input_requests()
   number_reg_dictionary.define("lly", new variable_reg(&lly_reg_contents));
   number_reg_dictionary.define("urx", new variable_reg(&urx_reg_contents));
   number_reg_dictionary.define("ury", new variable_reg(&ury_reg_contents));
-  number_reg_dictionary.define("opminx", new variable_reg(&output_reg_minx_contents));
-  number_reg_dictionary.define("opminy", new variable_reg(&output_reg_miny_contents));
-  number_reg_dictionary.define("opmaxx", new variable_reg(&output_reg_maxx_contents));
-  number_reg_dictionary.define("opmaxy", new variable_reg(&output_reg_maxy_contents));
+  number_reg_dictionary.define("opminx",
+			       new variable_reg(&output_reg_minx_contents));
+  number_reg_dictionary.define("opminy",
+			       new variable_reg(&output_reg_miny_contents));
+  number_reg_dictionary.define("opmaxx",
+			       new variable_reg(&output_reg_maxx_contents));
+  number_reg_dictionary.define("opmaxy",
+			       new variable_reg(&output_reg_maxy_contents));
 }
 
 object_dictionary request_dictionary(501);
@@ -6362,7 +6413,8 @@ node *charinfo_to_node_list(charinfo *ci, const environment *envp)
   curenv->set_composite();
   token old_tok = tok;
   input_stack::add_boundary();
-  string_iterator *si = new string_iterator(*mac, "composite character", ci->nm);
+  string_iterator *si =
+    new string_iterator(*mac, "composite character", ci->nm);
   input_stack::push(si);
   // we don't use process_input_stack, because we don't want to recognise
   // requests

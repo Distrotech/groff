@@ -286,6 +286,7 @@ public:
   void add_hyphen_indicator();
   void add_italic_correction();
   void space();
+  void space(hunits, hunits);
   void space_newline();
   const char *get_font_family_string();
   const char *get_name_string();

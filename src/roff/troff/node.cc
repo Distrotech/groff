@@ -349,10 +349,10 @@ void font_info::set_constant_space(constant_space_type type, units x)
 {
   if (type != is_constant_spaced
       || (type != CONSTANT_SPACE_NONE && x != constant_space)) {
-	flush();
-	is_constant_spaced = type;
-	constant_space = x;
-      }
+    flush();
+    is_constant_spaced = type;
+    constant_space = x;
+  }
 }
 
 void font_info::set_track_kern(track_kerning_function  &tk)
@@ -1549,7 +1549,7 @@ public:
   hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
   node *add_self(node *, hyphen_list **);
   void ascii_print(ascii_output_file *);
-  void asciify(macro *, int);
+  void asciify(macro *);
   int character_type();
   int same(node *);
   const char *type();
@@ -1573,7 +1573,7 @@ public:
   node *add_self(node *, hyphen_list **);
   hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
   void ascii_print(ascii_output_file *);
-  void asciify(macro *, int);
+  void asciify(macro *);
   int same(node *);
   const char *type();
   int force_tprint();
@@ -1599,7 +1599,7 @@ public:
   hyphenation_type get_hyphenation_type();
   int ends_sentence();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *, int);
+  void asciify(macro *);
   int same(node *);
   const char *type();
   int force_tprint();
@@ -1628,7 +1628,7 @@ public:
   void split(int, node **, node **);
   hyphenation_type get_hyphenation_type();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *, int);
+  void asciify(macro *);
   int same(node *);
   const char *type();
   int force_tprint();
@@ -2189,7 +2189,7 @@ public:
   ~italic_corrected_node();
   node *copy();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *, int);
+  void asciify(macro *);
   hunits width();
   node *last_char_node();
   void vertical_extent(vunits *, vunits *);
@@ -2336,7 +2336,7 @@ public:
   void tprint(troff_output_file *);
   void zero_width_tprint(troff_output_file *);
   void ascii_print(ascii_output_file *);
-  void asciify(macro *, int);
+  void asciify(macro *);
   hyphenation_type get_hyphenation_type();
   int overlaps_vertically();
   int overlaps_horizontally();
@@ -2453,7 +2453,7 @@ node *vertical_size_node::copy()
 
 node *hmotion_node::copy()
 {
-  return new hmotion_node(n, was_tab);
+  return new hmotion_node(n, was_tab, unformat);
 }
 
 node *space_char_hmotion_node::copy()
@@ -2639,7 +2639,7 @@ int node::nspaces()
   return 0;
 }
 
-int node::merge_space(hunits)
+int node::merge_space(hunits, hunits, hunits)
 {
   return 0;
 }
@@ -2702,7 +2702,7 @@ int space_node::nspaces()
   return set ? 0 : 1;
 }
 
-int space_node::merge_space(hunits h)
+int space_node::merge_space(hunits h, hunits, hunits)
 {
   n += h;
   return 1;
@@ -2849,6 +2849,10 @@ vunits vmotion_node::vertical_width()
   return n;
 }
 
+void node::set_unformat_flag()
+{
+}
+
 int node::character_type()
 {
   return 0;
@@ -2973,85 +2977,77 @@ void space_char_hmotion_node::ascii_print(ascii_output_file *ascii)
 
 /* asciify methods */
 
-void node::asciify(macro *m, int)
+void node::asciify(macro *m)
 {
   m->append(this);
 }
 
-void glyph_node::asciify(macro *m, int unformat_only)
+void glyph_node::asciify(macro *m)
 {
-  if (unformat_only)
-    m->append(this);
-  else {
-    unsigned char c = ci->get_ascii_code();
-    if (c != 0) {
-      m->append(c);
-      delete this;
-    }
-    else
-      m->append(this);
+  unsigned char c = ci->get_ascii_code();
+  if (c != 0) {
+    m->append(c);
+    delete this;
   }
+  else
+    m->append(this);
 }
 
-void kern_pair_node::asciify(macro *m, int unformat_only)
+void kern_pair_node::asciify(macro *m)
 {
-  n1->asciify(m, unformat_only);
-  n2->asciify(m, unformat_only);
+  n1->asciify(m);
+  n2->asciify(m);
   n1 = n2 = 0;
   delete this;
 }
 
-static void asciify_reverse_node_list(macro *m, node *n, int unformat_only)
+static void asciify_reverse_node_list(macro *m, node *n)
 {
   if (n == 0)
     return;
-  asciify_reverse_node_list(m, n->next, unformat_only);
-  n->asciify(m, unformat_only);
+  asciify_reverse_node_list(m, n->next);
+  n->asciify(m);
 }
 
-void dbreak_node::asciify(macro *m, int unformat_only)
+void dbreak_node::asciify(macro *m)
 {
-  asciify_reverse_node_list(m, none, unformat_only);
+  asciify_reverse_node_list(m, none);
   none = 0;
   delete this;
 }
 
-void ligature_node::asciify(macro *m, int unformat_only)
+void ligature_node::asciify(macro *m)
 {
-  n1->asciify(m, unformat_only);
-  n2->asciify(m, unformat_only);
+  n1->asciify(m);
+  n2->asciify(m);
   n1 = n2 = 0;
   delete this;
 }
 
-void break_char_node::asciify(macro *m, int unformat_only)
+void break_char_node::asciify(macro *m)
 {
-  if (unformat_only)
-    m->append(this);
-  else {
-    ch->asciify(m, 0);
-    ch = 0;
-    delete this;
-  }
+  ch->asciify(m);
+  ch = 0;
+  delete this;
 }
 
-void italic_corrected_node::asciify(macro *m, int unformat_only)
+void italic_corrected_node::asciify(macro *m)
 {
-  n->asciify(m, unformat_only);
+  n->asciify(m);
   n = 0;
   delete this;
 }
 
-void left_italic_corrected_node::asciify(macro *m, int unformat_only)
+void left_italic_corrected_node::asciify(macro *m)
 {
   if (n) {
-    n->asciify(m, unformat_only);
+    n->asciify(m);
     n = 0;
   }
   delete this;
 }
 
-void hmotion_node::asciify(macro *m, int)
+void hmotion_node::asciify(macro *m)
 {
   if (was_tab) {
     m->append('\t');
@@ -3066,13 +3062,13 @@ space_char_hmotion_node::space_char_hmotion_node(hunits i, node *next)
 {
 }
 
-void space_char_hmotion_node::asciify(macro *m, int)
+void space_char_hmotion_node::asciify(macro *m)
 {
   m->append(ESCAPE_SPACE);
   delete this;
 }
 
-void space_node::asciify(macro *m, int)
+void space_node::asciify(macro *m)
 {
   if (was_escape_colon) {
     m->append(ESCAPE_COLON);
@@ -3082,25 +3078,25 @@ void space_node::asciify(macro *m, int)
     m->append(this);
 }
 
-void word_space_node::asciify(macro *m, int)
+void word_space_node::asciify(macro *m)
 {
-  for (int i = 0; i < num_spaces; i++)
+  for (width_list *w = orig_width; w; w = w->next)
     m->append(' ');
   delete this;
 }
 
-void unbreakable_space_node::asciify(macro *m, int)
+void unbreakable_space_node::asciify(macro *m)
 {
   m->append(ESCAPE_TILDE);
   delete this;
 }
 
-void line_start_node::asciify(macro *, int)
+void line_start_node::asciify(macro *)
 {
   delete this;
 }
 
-void vertical_size_node::asciify(macro *, int)
+void vertical_size_node::asciify(macro *)
 {
   delete this;
 }
@@ -3564,7 +3560,7 @@ public:
   void tprint(troff_output_file *);
   hyphenation_type get_hyphenation_type();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *, int);
+  void asciify(macro *);
   hyphen_list *get_hyphen_list(hyphen_list *tail);
   node *add_self(node *, hyphen_list **);
   tfont *get_tfont();
@@ -3628,19 +3624,15 @@ hyphenation_type composite_node::get_hyphenation_type()
   return HYPHEN_MIDDLE;
 }
 
-void composite_node::asciify(macro *m, int unformat_only)
+void composite_node::asciify(macro *m)
 {
-  if (unformat_only)
-    m->append(this);
-  else {
-    unsigned char c = ci->get_ascii_code();
-    if (c != 0) {
-      m->append(c);
-      delete this;
-    }
-    else
-      m->append(this);
+  unsigned char c = ci->get_ascii_code();
+  if (c != 0) {
+    m->append(c);
+    delete this;
   }
+  else
+    m->append(this);
 }
 
 void composite_node::ascii_print(ascii_output_file *ascii)
@@ -3695,19 +3687,55 @@ void composite_node::vertical_extent(vunits *min, vunits *max)
   n = reverse_node_list(n);
 }
 
-word_space_node::word_space_node(hunits d, int n, node *x)
-: space_node(d, x), num_spaces(n)
+width_list::width_list(hunits w, hunits s)
+: width(w), sentence_width(s), next(0)
 {
 }
 
-word_space_node::word_space_node(hunits d, int s, int n, node *x)
-: space_node(d, s, 0, x), num_spaces(n)
+width_list::width_list(width_list *w)
+: width(w->width), sentence_width(w->sentence_width), next(0)
 {
+}
+
+word_space_node::word_space_node(hunits d, width_list *w, node *x)
+: space_node(d, x), orig_width(w), unformat(0)
+{
+}
+
+word_space_node::word_space_node(hunits d, int s, width_list *w,
+				 int flag, node *x)
+: space_node(d, s, 0, x), orig_width(w), unformat(flag)
+{
+}
+
+word_space_node::~word_space_node()
+{
+  width_list *w = orig_width;
+  while (w != 0) {
+    width_list *tmp = w;
+    w = w->next;
+    delete tmp;
+  }
 }
 
 node *word_space_node::copy()
 {
-  return new word_space_node(n, set, num_spaces);
+  assert(orig_width != 0);
+  width_list *w_old_curr = orig_width;
+  width_list *w_new_curr = new width_list(w_old_curr);
+  width_list *w_new = w_new_curr;
+  w_old_curr = w_old_curr->next;
+  while (w_old_curr != 0) {
+    w_new_curr->next = new width_list(w_old_curr);
+    w_new_curr = w_new_curr->next;
+    w_old_curr = w_old_curr->next;
+  }
+  return new word_space_node(n, set, w_new, unformat);
+}
+
+void word_space_node::set_unformat_flag()
+{
+  unformat = 1;
 }
 
 void word_space_node::tprint(troff_output_file *out)
@@ -3716,26 +3744,30 @@ void word_space_node::tprint(troff_output_file *out)
   space_node::tprint(out);
 }
 
-int word_space_node::merge_space(hunits h)
+int word_space_node::merge_space(hunits h, hunits sw, hunits ssw)
 {
   n += h;
-  num_spaces++;
+  assert(orig_width != 0);
+  width_list *w = orig_width; 
+  for (; w->next; w = w->next)
+    ;
+  w->next = new width_list(sw, ssw);
   return 1;
 }
 
 unbreakable_space_node::unbreakable_space_node(hunits d, node *x)
-: word_space_node(d, 1, x)
+: word_space_node(d, 0, x)
 {
 }
 
-unbreakable_space_node::unbreakable_space_node(hunits d, int s, int n, node *x)
-: word_space_node(d, s, n, x)
+unbreakable_space_node::unbreakable_space_node(hunits d, int s, node *x)
+: word_space_node(d, s, 0, 0, x)
 {
 }
 
 node *unbreakable_space_node::copy()
 {
-  return new unbreakable_space_node(n, set, num_spaces);
+  return new unbreakable_space_node(n, set);
 }
 
 int unbreakable_space_node::force_tprint()
@@ -3759,7 +3791,7 @@ void unbreakable_space_node::split(int, node **, node **)
   assert(0);
 }
 
-int unbreakable_space_node::merge_space(hunits)
+int unbreakable_space_node::merge_space(hunits, hunits, hunits)
 {
   return 0;
 }
@@ -4377,6 +4409,11 @@ int hmotion_node::same(node *nd)
 const char *hmotion_node::type()
 {
   return "hmotion_node";
+}
+
+void hmotion_node::set_unformat_flag()
+{
+  unformat = 1;
 }
 
 int hmotion_node::force_tprint()

@@ -1,3 +1,40 @@
+2001-02-13  Werner LEMBERG  <wl@gnu.org>
+
+	Redesigned the `unformat' request.  It is no longer connected with
+	`asciify' but rather uses new `reread()' methods if the `unformat'
+	flag is set.  Additionally, the handling of space characters after
+	unformatting has been fixed so that they retain their width.
+
+	* src/roff/troff/node.h (width_list): New structure to store
+	original widths of spaces.
+	(node): Added `unformat' member.
+	Replaced `num_spaces' variable with `orig_width' list.
+	* src/roff/troff/node.cc (*node::asciify,
+	asciify_reverse_node_list): Removed `unformat_only' flag and related
+	code.
+	(word_space_node::asciify, word_space_node::word_space_node): Use
+	`orig_width'.
+	(word_space_node::~word_space_node): New destructor.
+	(word_space_node::copy): Updated to handle `orig_width'.
+	(hmotion_node::copy, unbreakable_space_node::copy): Updated.
+	(*node::merge_space): Update `orig_width' list if necessary.
+	(*node::set_unformat_flag): New methods to set the `unformat' flag.
+	* src/roff/troff/enc.cc (environment::space_newline): Use
+	`width_list'.
+	(environment::space): Added method to handle space width and
+	sentence space width as parameters.  Use `width_list'.
+	(environment::make_tab_node): Updated.
+	* src/roff/troff/env.h: Updated.
+	* src/roff/troff/input.cc (word_space_node::reread,
+	unbreakable_space_node::reread, hmotion_node::reread): New methods
+	to handle nodes specially if `unformat' flag is set.
+	(do_asciify_macro): Renamed back to ...
+	(asciify_macro): This.
+	(unformat_macro): New implementation to simply set the `unformat'
+	flag.
+
+	* MORE.STUFF: Added more info about deroff.
+
 2001-02-08  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/node.h (unbreakable_space_node, hmotion_node,
