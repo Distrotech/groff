@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -114,6 +115,7 @@ int main(int argc, char **argv)
   int zflag = 0;
   int iflag = 0;
   int Xflag = 0;
+  int oflag = 0;
   int safer_flag = 1;
   int opt;
   const char *command_prefix = getenv("GROFF_COMMAND_PREFIX");
@@ -246,8 +248,9 @@ int main(int argc, char **argv)
       else
 	Fargs = optarg;
       break;
-    case 'f':
     case 'o':
+      oflag = 1;
+    case 'f':
     case 'm':
     case 'r':
     case 'd':
@@ -353,8 +356,11 @@ int main(int argc, char **argv)
   }
   commands[TROFF_INDEX].append_arg("-T", device);
   // html renders equations as images via ps
-  if (strcmp(device, "html") == 0)
+  if (strcmp(device, "html") == 0) {
+    if (oflag)
+      fatal("`-o' option is invalid with device `html'");
     commands[EQN_INDEX].append_arg("-Tps:html");
+  }
   else
     commands[EQN_INDEX].append_arg("-T", device);
 
