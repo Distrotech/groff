@@ -1057,10 +1057,9 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf,
 void troff_output_file::put_char(charinfo *ci, tfont *tf,
 				 color *gcol, color *fcol)
 {
-  if (!is_on()) {
-    flush_tbuf();
+  flush_tbuf();
+  if (!is_on())
     return;
-  }
   set_font(tf);
   char c = ci->get_ascii_code();
   if (c == '\0') {
