@@ -146,11 +146,11 @@ contributions are welcome.  Send them to bug-groff@@gnu.org.
 * Output Devices::              
 * File formats::                
 * Installation::                
-* Request Index::               
+* Request and Operator Index::  
 * Register Index::              
 * String Index::                
 * Macro Index::                 
-* Program Index::               
+* Program and File Index::      
 * Concept Index::               
 @end menu
 
@@ -2262,7 +2262,7 @@ details of formatting parameters.
 * Interpolating Registers::     
 * Auto-increment::              
 * Assigning Formats::           
-* Built-in Registers::           
+* Built-in Registers::          
 @end menu
 
 @node Setting Registers, Interpolating Registers, Registers, Registers
@@ -2817,36 +2817,35 @@ in the number register @code{.hla}.
 @cindex spacing, manipulating
 
 @findex sp
-The @code{sp} request will cause troff to space downwards the
+The @code{sp} request will cause @code{gtroff} to space downwards the
 distance specified as the first argument.  With no argument it will
-advance 1 line.
-A negative argument will cause troff to move up the page the
-specified distance.
-If the argument is preceded by a @samp{|} troff will move that
-distance from the top of the page.
+advance 1@w{ }line.  A negative argument will cause @code{gtroff} to
+move up the page the specified distance.  If the argument is preceded by
+a @samp{|} @code{gtroff} will move that distance from the top of the
+page.
 
+@cindex double-spacing
 @findex ls
 @vindex .L
-Often you may want your output to be double or triple spaced.
-The @code{ls} request will cause troff to output @var{n}-1 blank
+Often you may want your output to be double or triple spaced.  The
+@code{ls} request will cause @code{troff} to output @var{n}-1 blank
 lines after each line of text, where @var{n} is the argument given to
-the @code{ls} request.  With no argument troff will go back to single
-spacing.  The number register @code{.L} contains the current line
+the @code{ls} request.  With no argument @code{gtroff} will go back to
+single spacing.  The number register @code{.L} contains the current line
 spacing setting.
 
 @findex \x
 @vindex .a
-Sometimes, extra vertical spacing is only needed occasionaly,
-i.e. to allow space for a tall construct (like an equation).
-The @code{\x} escape will do this.
-The escape is given a numerical argument (like @samp{\x'3p'}).
-If this number is positive extra vertical space will be inserted
-below the current line.  A negative number will add space above.
-If this escape is used multiple times on the same line, the maximum
-values are used.
-The @code{.a} number register contains the most recent
-extra vertical @strong{emph} line space.
+Sometimes, extra vertical spacing is only needed occasionally, i.e.@: to
+allow space for a tall construct (like an equation).  The @code{\x}
+escape will do this.  The escape is given a numerical argument (like
+@samp{\x'3p'}).  If this number is positive extra vertical space will be
+inserted below the current line.  A negative number will add space
+above.  If this escape is used multiple times on the same line, the
+maximum of the values is used.  The @code{.a} number register contains
+the most recent extra vertical line space.
 
+@c XXX
 @example
 ... example of inline equation ...
 @end example
@@ -2855,12 +2854,12 @@ extra vertical @strong{emph} line space.
 @findex rs
 @cindex no-space mode
 @cindex mode, no-space
-Spacing (via either @code{sp} or via blank lines) can be disabled
-with the @code{ns} request.  This will enable @dfn{no-space mode}.
-This mode will end when actual text is output or the @code{rs}
-request is encountered.  No-space mode will also prevent requests to
-advance to the next page unless they are accompanied by a page number
-(@pxref{Page Control}, for more information.)
+Spacing (either via @code{sp} or via blank lines) can be disabled with
+the @code{ns} request.  This will enable @dfn{no-space mode}.  This mode
+will end when actual text is output or the @code{rs} request is
+encountered.  No-space mode will also prevent requests to advance to the
+next page unless they are accompanied by a page number (@pxref{Page
+Control}, for more information).
 
 
 @node Tabs and Fields, Character Translations, Manipulating Spacing, Programming Tutorial
@@ -2870,40 +2869,44 @@ advance to the next page unless they are accompanied by a page number
 
 @findex \t
 Tab stops are much like those on a typewriter: a tab character (or the
-@code{\t} escape) on input will cause horizontal motion to the next
-tab stop.
+@code{\t} escape) on input will cause horizontal motion to the next tab
+stop.
 
 @findex ta
-Tab stops can be changed with the @code{ta} request.
-This request takes a series of numbers as arguments which indicate
-where each tab stop is to be (overriding any previous settings).
-These can be specified absolutely,
-i.e. as the distance from the left margin.
-For example, the following wil set tab stops every one inch.
+Tab stops can be changed with the @code{ta} request.  This request takes
+a series of numbers as arguments which indicate where each tab stop is
+to be (overriding any previous settings).  These can be specified
+absolutely, i.e.@: as the distance from the left margin.  For example,
+the following wil set tab stops every one inch.
 
 @example
 .ta 1i 2i 3i 4i 5i 6i
 @end example
 
 Tab stops can also be specified relatively (using a leading @samp{+})
-which means that the specified tab stop will be set that distance
-from the previous tab stop.  For example the following is equivalent
-to the previous example.
+which means that the specified tab stop will be set that distance from
+the previous tab stop.  For example, the following is equivalent to the
+previous example.
 
 @example
 .ta 1i +1i +1i +1i +1i +1i
 @end example
 
 After the specified tab stops repeat values may be set for tabs beyond
-the last one specified.  This is most commonly used to specify tabs
-set at equal intervals.  The compleat syntax for setting tabs is
-@code{ta @var{n1} @var{n2} @dots{} @var{nn} T @var{r1} @var{r2}
-@dots{} @var{rn}} This will set tabs at positions @var{n1}, @var{n2},
-@dots{}, @var{nn} and then set tabs at @var{nn}+@var{r1},
-@var{nn}+@var{r2}, @dots{}, @var{nn}+@var{rn} and then at
-@var{nn}+@var{rn}+@var{r1}, @var{nn}+@var{rn}+@var{r2}, @dots{},
-@var{nn}+@var{rn}+@var{rn}, and so on.  For example the following is,
-yet again, the same as the previous examples.
+the last one specified.  This is most commonly used to specify tabs set
+at equal intervals.  The complete syntax for setting tabs is
+
+@example
+ta @var{n1} @var{n2} @dots{} @var{nn} T @var{r1} @var{r2} @dots{} @var{rn}
+@end example
+
+@noindent
+This will set tabs at positions @var{n1}, @var{n2}, @dots{}, @var{nn}
+and then set tabs at @var{nn}+@var{r1}, @var{nn}+@var{r2}, @dots{},
+@var{nn}+@var{rn} and then at @var{nn}+@var{rn}+@var{r1},
+@var{nn}+@var{rn}+@var{r2}, @dots{}, @var{nn}+@var{rn}+@var{rn}, and so
+on.  For example the following is, yet again, the same as the previous
+examples.
 
 @example
 .ta T 1i
@@ -2912,47 +2915,48 @@ yet again, the same as the previous examples.
 The material in each tab column may be justified to the right or left
 or centered in the column.  This is specified by appending an
 @samp{R}, @samp{L} or @samp{C} to the number specifying that tab stop.
-The default justification is @samp{L}.
+The default justification is @samp{L}.  Example:
 
 @example
 .ta 1i 2iC 2iR
 @end example
 
 @vindex .tabs
-The number register @code{.tabs} contains
-a string representation of the current tab settings suitable for use as
-an argument to the @code{ta} request.
+The number register @code{.tabs} contains a string representation of the
+current tab settings suitable for use as an argument to the @code{ta}
+request.
 
 @findex tc
-Normally troff will fill the space to the next tab stop with spaces.
-In some cases you may wish to change this.  The @code{tc} request
-will do this.  With no argument troff will revert to using spaces.
+Normally @code{gtroff} will fill the space to the next tab stop with
+spaces.  In some cases you may wish to change this.  The @code{tc}
+request will do this.  With no argument @code{gtroff} will revert to
+using spaces.
 
 @subsection Leaders
 @cindex leaders
 
 @findex lc
-Sometimes you may wish to use the @code{tc} request to fill a tab
-stop with a given character, but also, you want to use normal tab
-stops on the rest of the line.  For this groff provides an alternate
-tab mechanism, called @dfn{leaders} which will do just that.
-They are used exclusively to produce a repeated run of characters to
-the next tab stop.
+Sometimes you may wish to use the @code{tc} request to fill a tab stop
+with a given character, but also, you want to use normal tab stops on
+the rest of the line.  For this @code{gtroff} provides an alternate tab
+mechanism, called @dfn{leaders} which will do just that.  They are used
+exclusively to produce a repeated run of characters to the next tab
+stop.
 
 You can declare what character will be repeated with the @code{lc}
 request.  If you do not give it an argument, the leaders will act the
 same as tabs.
 
 @findex \a
-The difference is that a leader is invoked by using the @code{\a}
-escape.
+Leader are invoked by using the @code{\a} escape while specifying the
+@code{ta} request.
 
 @cindex table of contents
 @cindex contents, table of
-So for a table of contents you may want to have tab stops defined so
+Thus for a table of contents you may want to have tab stops defined so
 that the section number is one tab stop, the title is the second with
-the remaining space being filled with a line of dots and then the
-page number slightly separated from the dots.
+the remaining space being filled with a line of dots and then the page
+number slightly separated from the dots.
 
 @example
 .lc .
@@ -2965,7 +2969,10 @@ page number slightly separated from the dots.
 
 @findex fc
 Fields are a more general way of laying out tabular data.
+
 @code{fc}
+
+@c XXX add explanation
 
 @node Character Translations, Line Layout, Tabs and Fields, Programming Tutorial
 @section Character Translations
@@ -2974,28 +2981,30 @@ Fields are a more general way of laying out tabular data.
 
 @findex cc
 @findex c2
+@findex .
+@findex '
 The control character (@samp{.}) and the no-break control character
 (@samp{'}) can be changed with the @code{cc} and @code{c2} requests,
-respectively.
-The single argument is the new character to be used, with no argument
-the normal control character is restored.
+respectively.  The single argument is the new character to be used.
+With no argument the normal control character is restored.
 
 @findex ec
 @findex eo
-The @code{eo} request will compleatly disable the escape mechanism.
-The @code{ec} request can be used to change the escape character from
-the default @samp{\} to what is specified as an argument.
+The @code{eo} request will completely disable the escape mechanism.  The
+@code{ec} request can be used to change the escape character from the
+default @samp{\} to what is specified as an argument.  It can be also
+used to re-enable the escape mechanism after an @code{eo} request.
 
 @findex tr
 The @code{tr} request will translate characters.
 
+@c XXX more info
+
 @findex trnt
 @findex \!
-@code{trnt}
-This is the same as the @code{tr} request except that the
-translations do not
-apply to text that is transparently throughput into a diversion with
-@code{\!}.  @xref{Diversions}, for more information.
+@code{trnt} is the same as the @code{tr} request except that the
+translations do not apply to text that is transparently throughput into
+a diversion with @code{\!}.  @xref{Diversions}, for more information.
 For example,
 
 @example
@@ -3006,8 +3015,9 @@ For example,
 .x
 @end example
 
-will print @samp{b}; if @code{trnt} is used instead of @code{tr} it
-will print @samp{a}.
+@noindent
+will print @samp{b}; if @code{trnt} is used instead of @code{tr} it will
+print @samp{a}.
 
 
 @node Line Layout, Page Layout, Character Translations, Programming Tutorial
@@ -3017,7 +3027,7 @@ will print @samp{a}.
 
 @cindex dimensions, line
 @cindex line dimensions
-The following drawing shows the dimensions which troff uses for
+The following drawing shows the dimensions which @code{gtroff} uses for
 placing a line of output onto the page.  They are labeled with the
 request which manipulates that dimension.
 
@@ -3031,41 +3041,51 @@ request which manipulates that dimension.
 @end group
 @end example
 
+@noindent
 These dimensions are:
 
 @ftable @code
 @item po
+@cindex left margin
+@cindex margin, left
+@cindex page offset
+@cindex offset, page
+@findex po
 @vindex .o
-@dfn{Page offset}--This is the leftmost postition of text on the final
-output.  This can be adjusted with the @code{po} request, and the
-current setting can be found in the built-in number register @code{.o}
-Note, that this request does not cause a break, so changing the page
-offset in the middle of text being filled may not do what you expect.
+@dfn{Page offset}--This is the leftmost position of text on the final
+output, defining the @dfn{left margin}.  It can be adjusted with the
+@code{po} request, and the current setting can be found in the built-in
+number register @code{.o}.  Note that this request does not cause a
+break, so changing the page offset in the middle of text being filled
+may not do what you expect.
 @item in
+@cindex indentation
+@cindex line indentation
+@findex in
 @vindex .i
 @dfn{Indentation}--This is the distance from the left margin where text
 will be printed.  This can be adjusted with the @code{in} request, and
 the current setting can be found in the built-in number register.
-@code{.i}
-This request causes a break.
+@code{.i}.  This request causes a break.
 
 @findex ti
-@findex .in
-There is also the request @code{ti} which will cause one output line
-to be indented, after which the indentation returns to 0.
-This request causes a break.
-The number register @code{.in} is the indent that applies to the
-current output line.
+@vindex .in
+There is also the request @code{ti} which will cause one output line to
+be indented, after which the indentation returns to@w{ }0.  This request
+causes a break.  The number register @code{.in} is the indent that
+applies to the current output line.
 @item ll
-@findex .l
-@findex .ll
+@cindex line length
+@cindex length of line
+@vindex .l
+@vindex .ll
+@findex ll
 @dfn{Line length}--This is the distance from the left margin to right
-margin.  This can be adjusted with the @code{.ll} request, and the
+margin.  This can be adjusted with the @code{ll} request, and the
 current setting can be found in the built-in number register @code{.l}
 Note, as the figure implies, line length is not affected by the current
-indentation.
-The number register @code{.ll} is
-the line length that applies to the current output line.
+indentation.  The number register @code{.ll} is the line length that
+applies to the current output line.
 @end ftable
 
 @example
@@ -3073,7 +3093,7 @@ the line length that applies to the current output line.
 .ll -.5i
 A bunch of really boring text which should
 be indented from both margins.
-replace me with a better (and more) example!
+Replace me with a better (and more) example!
 .in -.5i
 .ll +.5i
 @end example
@@ -3084,18 +3104,19 @@ replace me with a better (and more) example!
 @cindex page layout
 @cindex layout, page
 
-Troff provides some very primitive operations for controlling page
-layout.
+@code{gtroff} provides some very primitive operations for controlling
+page layout.
 
+@cindex page length
+@cindex length of page
 @findex pl
 @vindex .p
 Troff lets you specify the @dfn{page length} via the @code{pl} request.
-This is the length of the physical output page.
-The current setting can
+This is the length of the physical output page.  The current setting can
 be found in the built-in number register @code{.p}.  Note that this only
-specifies the size of the page, not the not the top and bottom margins.
-Those are not done by groff directly, @xref{Traps}, for further
-information on how to do this.
+specifies the size of the page, not the top and bottom margins.  Those
+are not done by groff directly.  @xref{Traps}, for further information
+on how to do this.
 
 @cindex headers
 @cindex footers
@@ -3103,39 +3124,46 @@ information on how to do this.
 Troff provides several operations which help in setting up top and
 bottom titles (or headers and footers)
 
+@cindex title line
+@cindex three-part title
 @findex tl
-The @code{tl} request will print a @dfn{title line}, which consists
-of three parts: a left justified portion, a centered portion and a
-right justified portion.  The argument to @code{tl} is specified as
-@code{'@var{left}'@var{center}'@var{right}'}
-The @samp{%} character is replaced with the current page number.
+@findex %
+The @code{tl} request will print a @dfn{title line}, which consists of
+three parts: a left justified portion, a centered portion and a right
+justified portion.  The argument to @code{tl} is specified as
+@code{'@var{left}'@var{center}'@var{right}'}.  The @samp{%} character is
+replaced with the current page number.  You can change this character
+with the @code{pc} request (see below).
 
+@cindex length of title line
+@cindex title line, length
 @findex lt
 @vindex .lt
-The title line is printed using its own line length, which is
-specified with the @code{lt} request.  The current setting of this is
-available in the @code{.lt} number register.
+The title line is printed using its own line length, which is specified
+with the @code{lt} request.  The current setting of this is available in
+the @code{.lt} number register.
 
+@cindex page number
+@cindex number, page
 @findex pn
 The @code{pn} request will change the page number of the @emph{next}
 page.  The only argument is the page number.
 
 @vindex %
 @vindex .pn
-The current page number is stored in the number register @code{%}.
-The number register @code{.pn} contains the
-number of the next page:
-either the value set by a @code{pn} request, or
-the number of the current page plus 1.
+The current page number is stored in the number register @code{%}.  The
+number register @code{.pn} contains the number of the next page: either
+the value set by a @code{pn} request, or the number of the current page
+plus@w{ }1.
 
+@cindex changing the page number character
+@cindex page number character, changing
 @findex pc
-The @code{pc} request will change the page number character (used by
-the @code{tl} request) to a different character.  With no argument,
-this mechanism is disabled.
+The @code{pc} request will change the page number character (used by the
+@code{tl} request) to a different character.  With no argument, this
+mechanism is disabled.
 
-
-@c distribute these through the text
-@xref{Traps}
+@xref{Traps}.
 
 
 @node Page Control, Fonts, Page Layout, Programming Tutorial
@@ -3144,13 +3172,12 @@ this mechanism is disabled.
 @cindex control, page
 
 @findex bp
-To stop processing the current page, and move to the next page, you
-can invoke the @code{bp} request.  This request will also cause a
-break.  This request can also take an argument of what the next page
-should be numbered.
-The only difference
-between @code{bp} and @code{pn} is that @code{pn} does not cause a
-break or actually eject a page.
+@findex pn
+To stop processing the current page, and move to the next page, you can
+invoke the @code{bp} request.  This request will also cause a break.  It
+can also take an argument of what the next page should be numbered.  The
+only difference between @code{bp} and @code{pn} is that @code{pn} does
+not cause a break or actually eject a page.
 
 @example
 .de newpage
@@ -3163,17 +3190,16 @@ break or actually eject a page.
 
 @cindex orphan
 @findex ne
-Often you may want to make sure that you have a certain amount of
-space before a new page occurs.  This is most useful to make sure
-that there is not a single @dfn{orphan} line left at the bottom of a
-page.  The @code{ne} request will ensure that there is a certain
-distance, specified by the first argument, before the next page is
-triggered (@pxref{Traps}, for further information).
-The default unit for @code{ne} is v's and the default argument
-is 1v.
+Often you may want to make sure that you have a certain amount of space
+before a new page occurs.  This is most useful to make sure that there
+is not a single @dfn{orphan} line left at the bottom of a page.  The
+@code{ne} request will ensure that there is a certain distance,
+specified by the first argument, before the next page is triggered
+(@pxref{Traps}, for further information).  The default unit for
+@code{ne} is @code{v} and the default argument is@w{ }1v.
 
-For example, to make sure that no fewer than 2 lines get orphaned,
-you can do the following before each paragraph.
+For example, to make sure that no fewer than 2@w{ }lines get orphaned,
+you can do the following before each paragraph:
 
 @example
 .ne 2
@@ -3183,12 +3209,13 @@ text
 
 @findex sv
 @findex os
-The @code{sv} is similar to the @code{ne} request, it reserves the
-specified amount of vertical space.  If the desired amount of space
-exists before the next trap (bottom page boundary), the space will be
-output immediately.  If there is not enough space, it is stored for
-later output via the @code{os} request.
-The default argument is 1v and the default units are v's.
+@findex ne
+@code{sv} is similar to the @code{ne} request; it reserves the specified
+amount of vertical space.  If the desired amount of space exists before
+the next trap (bottom page boundary), the space will be output
+immediately.  If there is not enough space, it is stored for later
+output via the @code{os} request.  The default argument is@w{ }1v and
+the default unit is @code{v}.
 
 
 @node Fonts, Sizes, Page Control, Programming Tutorial
@@ -5875,20 +5902,20 @@ entries in kernpairs section will have a negative value for @var{n}.
 
 
 
-@node Installation, Request Index, File formats, Top
+@node Installation, Request and Operator Index, File formats, Top
 @chapter Installation
 @cindex installation
 
 
 
-@node Request Index, Register Index, Installation, Top
-@chapter Request Index
+@node Request and Operator Index, Register Index, Installation, Top
+@chapter Request and Operator Index
 
 @printindex fn
 
 
 
-@node Register Index, String Index, Request Index, Top
+@node Register Index, String Index, Request and Operator Index, Top
 @chapter Register Index
 
 @printindex vr
@@ -5899,19 +5926,19 @@ entries in kernpairs section will have a negative value for @var{n}.
 
 
 
-@node Macro Index, Program Index, String Index, Top
+@node Macro Index, Program and File Index, String Index, Top
 @chapter Macro Index
 
 
 
-@node Program Index, Concept Index, Macro Index, Top
-@chapter Program Index
+@node Program and File Index, Concept Index, Macro Index, Top
+@chapter Program  and File Index
 
 @printindex pg
 
 
 
-@node Concept Index,  , Program Index, Top
+@node Concept Index,  , Program and File Index, Top
 @chapter Concept Index
 
 @printindex cp
