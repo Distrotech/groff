@@ -208,6 +208,27 @@ and
 NEWS VERSION 1.18.1
 .
 .SH 2
+troff
+
+.ULS
+.LI
+The non-slanted PostScript font definition files have been regenerated to
+include left and right italic correction values.
+Applying those to a glyph (this is, prepending the glyph with `\e,' and
+appending `\e/' to the glyph) sets the glyph width to the real value given
+by the horizontal bounding box values.
+Without those escapes, the advance width for the particular glyph is used
+(which can differ considerably).
+
+Most users will neither need this feature nor notice a difference in
+existing documents (provided \e, and \e/ is used as advertised, namely for
+italic fonts only); its main goal is to improve image generation with
+grohtml.
+
+This is an experimental change, and feedback is welcome.
+.ULE
+.
+.SH 2
 tbl
 
 .ULS

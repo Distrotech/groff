@@ -2374,6 +2374,10 @@ void title()
   curenv->char_slant = env.char_slant;
   curenv->fontno = env.fontno;
   curenv->prev_fontno = env.prev_fontno;
+  curenv->cur_glyph_color = env.cur_glyph_color;
+  curenv->prev_glyph_color = env.prev_glyph_color;
+  curenv->cur_fill_color = env.cur_fill_color;
+  curenv->prev_fill_color = env.prev_fill_color;
   node *n = 0;
   node *p = part[2];
   while (p != 0) {

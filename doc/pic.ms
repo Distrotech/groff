@@ -594,10 +594,11 @@ and a \fBheight\fP attribute, the length of the arrowhead along the shaft.
 .PP
 Arrowhead style is controlled by the style variable \fBarrowhead\fP.
 The DWB and GNU versions interpret it differently.  DWB defaults to
-open arrowheads and an \fBarrowhead\fP value of 2; the Kernighan
-paper says a value of 7 will make solid arrowheads.  GNU \fBgpic\fP
-defaults to solid arrowheads and an \fBarrowhead\fP value of 1; a
-value of 0 will produce open arrowheads.
+open arrowheads and an \fBarrowhead\fP value of\~2; the Kernighan
+paper says a value of\~7 will make solid arrowheads.  GNU \fBgpic\fP
+defaults to solid arrowheads and an \fBarrowhead\fP value of\~1; a
+value of\~0 will produce open arrowheads.  Note that solid arrowheads are
+always filled with the current outline color.
 .NH 2
 Line Thickness
 .PP
@@ -679,6 +680,9 @@ Currently, color support is not available in \*[tx] mode.  Predefined color
 names for \fIgroff\/\fP(1) are in the device macro files, for example
 \f(CWps.tmac\fP; additional colors can be defined with the \fB.defcolor\fP
 request (see the manual page of GNU \fItroff\/\fP(1) for more details).
+.PP
+\fBpic\fP assumes that at the beginning of a picture both glyph and fill
+color are set to the default value.
 .NH 1
 More About Text Placement
 .PP

@@ -7214,6 +7214,8 @@ node *charinfo_to_node_list(charinfo *ci, const environment *envp)
     else
       tok.process();
   }
+  curenv->add_node(new glyph_color_node(oldenv->get_glyph_color()));
+  curenv->add_node(new fill_color_node(oldenv->get_fill_color()));
   node *n = curenv->extract_output_line();
   input_stack::remove_boundary();
   ci->set_macro(mac);
