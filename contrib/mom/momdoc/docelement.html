@@ -343,7 +343,7 @@ and indent appropriate to where you are in your document are taken
 care of automatically.
 <p>
 By default, <strong>mom</strong> does not indent the first paragraph
-of a document, nor paragraphs that fall imediately after
+of a document, nor paragraphs that fall immediately after
 <a href="#HEAD_INTRO">heads</a>
 or
 <a href="#SUBHEAD_INTRO">subheads</a>.
@@ -467,7 +467,7 @@ with the appropriate control macros.
 <p>
 <strong>Mom</strong>'s default paragraph font is medium roman.
 
-<a name="PP_LEADING"><h3><u>3.Leading</u></h3></a>
+<a name="PP_LEADING"><h3><u>3. Leading</u></h3></a>
 The paragraph
 <a href="definitions.html#TERMS_LEADING">leading</a>
 is set with
@@ -489,7 +489,11 @@ EVERY paragraph whose leading you wish to change.
 <strong>HYPER-IMPORTANT NOTE:</strong> It is extremely unwise to change
 paragraph leading with <strong>LS</strong>, as it will, in all cases,
 screw up <strong>mom</strong>'s ability to balance the bottom margin
-of pages.
+of pages.  Should you absolutely need to change paragraph leading
+with <strong>LS</strong>, and subsequently want <strong>mom</strong>
+to get back on the right leading track, use the
+<a href="docprocessing.html#SHIM">SHIM</a>
+macro.
 <p>
 <strong>Mom</strong>'s default paragraph leading (document leading)
 is 16 points, adjusted to fill the page.
@@ -1233,7 +1237,7 @@ See
 <pre>
 .QUOTE_FAMILY default = prevailing document family; default is Times Roman
 .QUOTE_FONT   default = italic
-.QUOTE_SIZE   default = 0 (i.e. same size as paragraph text)
+.QUOTE_SIZE   default = +0 (i.e. same size as paragraph text)
 <a name="QUOTE_INDENT">.QUOTE_INDENT default = paragraph indent x 3 (typeset); x 2 (typewrite)</a>
              (note that this macro also sets the indents (left and right)
               for blockquotes)
@@ -1323,7 +1327,10 @@ although you can change the point size.  There are Very Good
 Reasons for this.  If you can't live with the limitation, change
 the leading of blockquotes (after invoking the tag) with
 <a href="typesetting.html#LS">LS</a>,
-but know that there will be Bottom Margin Consequences. 
+but know that there will be Bottom Margin Consequences unless you
+use the
+<a href="docprocessing.html#SHIM">SHIM</a>
+macro after you turn the blockquote off.
 <br>
 
 <!---BLOCKQUOTE--->
@@ -1461,7 +1468,7 @@ appropriate marker from the previous page.
 <p>
 In the unfortunate happenstance that a deferred footnote is the
 only footnote on its page (i.e. it's marked in the document body with
-a star) and the page it's deferred has its own footnotes,
+a star) and the page it's deferred to has its own footnotes,
 <strong>mom</strong> separates the deferred footnote from the page's
 proper footnote(s) with a blank line.  This avoids the confusion that
 might result from readers seeing two footnote entries on the same page

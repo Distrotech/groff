@@ -13,7 +13,7 @@
 
 <a name="TOP"></a>
 <a name="HEADFOOTPAGE">
-	<h2 align="center"><u>DOCUMENT HEADERS, FOOTERS, AND PAGINATION</u></h2>
+	<h2 align="center"><u>PAGE HEADERS, FOOTERS, AND PAGINATION</u></h2>
 </a>
 
 <ul>
@@ -188,7 +188,7 @@ the top and bottom margins of a <strong>mom</strong> document
 are the vertical start and end positions of
 <a href="definitions.html#TERMS_RUNNING">running text</a>,
 not the vertical positions of headers or footers, which, by definition,
-appear in the margin <em>above</em> (or below) running text.
+appear in the margins <em>above</em> (or below) running text.
 <p>
 The vertical placement of headers
 is controlled by the macro
@@ -212,7 +212,10 @@ running text at whatever top margin you gave.
 <strong>FOOTER_GAP</strong> and
 <a href="typesetting.html#B_MARGIN">B_MARGIN</a>
 work similarly, except they determine where running text
-<em>ends</em> on the page.
+<em>ends</em> on the page.  (See
+<a href="#FOOTER_MARGIN">FOOTER MARGIN AND BOTTOM MARGIN -- VERY IMPORTANT!</a>
+for a warning about possible conflicts between the footer margin
+and the bottom margin.)
 <p>
 Confused?  <strong>Mom</strong> apologizes.  It's really quite
 simple.  By default, <strong>mom</strong> sets headers 4-1/2
@@ -426,8 +429,8 @@ you can make the headers come out just about any way you want.
 Use of the <strong>\*[PAGE#]</strong> escape is permitted in the
 string argument (see
 <a href="#PAGE_NUMBER_INCL">Including the page number in header-left, -center or -right</a>),
-and <strong>mom</strong> provides a special mechanism whereby
-it's possible to &quot;pad&quot; it as well.
+and as an added bonus, <strong>mom</strong> provides a special
+mechanism whereby it's possible to &quot;pad&quot; the string as well.
 <br>
 
 <!---HDRFTR_RECTOVERSO--->
@@ -509,7 +512,9 @@ point in the string where you want an equalized amount of whitespace
 inserted.  (If you're unsure what padding is, see
 <a href="goodies.html#PAD">Insert space into lines</a>.)
 Note that if you're padding the string, it doesn't matter what
-quad direction you give <strong>HEADER_RECTO</strong>.
+quad direction you give <strong>HEADER_RECTO</strong> since
+padding, by it's nature, justifies text to the left and right
+margins.
 <p>
 The situation depicted above is accomplished like this:
 <p>
@@ -521,6 +526,16 @@ The situation depicted above is accomplished like this:
 Note that <strong>mom</strong> does not interpret the <kbd>#</kbd>
 in <strong>\*[PAGE#]</strong> as a padding marker (i.e. as a place
 to insert whitespace).
+<p>
+Also, notice that the argument <strong>LEFT</strong> is used in both
+cases.  When padding a header, it doesn't matter whether you use
+LEFT, CENTER or RIGHT as the argument.
+<p>
+Furthermore, should you need a user-defined header of
+the sort provided by <strong>HEADER_RECTO</strong> and
+<strong>HEADER_VERSO</strong> but aren't actually printing
+recto/verso, you can use <strong>HEADER_RECTO</strong> to design the
+header that appears at the top of every page.
 <p>
 <strong>IMPORTANT:</strong> The
 <a href="goodies.html#PAD_MARKER">PAD_MARKER</a>
@@ -649,7 +664,7 @@ you want
 <strong>NAMED</strong> "Outline"
 <p>
 but when you preview your work, you see that "Outline", in the
-centre of the page header, is uncomfortable close to the title,
+centre of the page header, is uncomfortably close to the title,
 which is to the right of it.  By invoking
 <p>
 <pre>
@@ -1052,11 +1067,61 @@ edge of the page to the baseline of type in footers.
 <p>
 <strong>Mom</strong>'s default footer margin is 3 
 <a href="definitions.html#TERMS_PICASPOINTS">picas</a>.
+
+<a name="FOOTER_MARGIN"></a>
 <p>
-<strong>NOTE:</strong> <strong>Mom</strong> uses
-<strong>HEADER_MARGIN</strong> and
+<strong>FOOTER MARGIN AND BOTTOM MARGIN -- VERY IMPORTANT!</strong> 
+<p>
+<strong>Mom</strong> requires a footer margin for proper operation,
+hence she sets one, even if you don't.  (As stated above, her default
+footer margin is 3-picas).
+<p>
+If you set a bottom margin for your document (with
+<a href="typesetting.html#B_MARGIN">B_MARGIN</a>,
+prior to
+<a href="docprocessing.html#START">START</a>)
+and the margin's too close to <strong>mom</strong>'s default
+footer margin (or a footer margin you set yourself
+with <strong>FOOTER_MARGIN</strong>), <strong>mom</strong> will
+not print your footers; additionally, she'll give you a warning
+on and some advice on standard error.  When this happens, you must
+reset either <strong>B_MARGIN</strong> or
+<strong>FOOTER_MARGIN</strong> so there's an adequate amount of
+space for <strong>mom</strong> to print the bottom line of running
+text and the footer.
+<p>
+If you see the warning even when footers and/or bottom-of-page page
+numbering are disabled, set a nominal footer margin of 0 prior to
+<a href="docprocessing.html#START">START</a>,
+as in these examples.
+<p>
+<strong>Example 1</strong>
+<p>
+<pre>
+	&lt;reference macros, etc&gt;
+	.PAGINATION    OFF
+	.B_MARGIN      .25i
+	.FOOTER_MARGIN O
+	.START
+</pre>
+
+<strong>Example 2</strong>
+<p>
+<pre>
+	&lt;reference macros, etc&gt;
+	.HEADERS       OFF
+	.PAGENUM_POS   TOP RIGHT
+	.B_MARGIN      .25i
+	.FOOTER_MARGIN O
+	.START
+</pre>
+
+<h3>A note on header/footer margins and page numbering</h3>
+<p>
+<strong>Mom</strong> uses HEADER_MARGIN</strong> and
 <strong>FOOTER_MARGIN</strong> to establish the baseline
-position of page numbers in addition to headers and footers.
+position of page numbers in addition to the baseline position of
+headers and footers.
 <p>
 By default, page numbers appear at the bottom of the page, therefore
 if you want the default position (bottom), but want to change the
@@ -1425,7 +1490,7 @@ For example, if you turn both
 and
 <a href="definitions.html#TERMS_FOOTER">footers</a> 
 off (with <code>.HEADERS OFF</code> and <code>.FOOTERS
-OFF</code)) and you want <strong>mom</strong> to number your
+OFF</code>) and you want <strong>mom</strong> to number your
 pages at the top right position, enter
 <p>
 <pre>

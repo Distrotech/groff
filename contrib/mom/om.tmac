@@ -23,7 +23,7 @@
 .\"
 .
 .
-\# Version 1.1.6-a
+\# Version 1.1.6-c
 \# ---------------
 \#
 .if (\n[.x]\n[.y] < 118) \
@@ -73,7 +73,8 @@
 \#
 \# MISCELLANEOUS
 \# =============
-.cflags 4 /\(en
+.cflags 4 /\(en      \" So slash and en-dashes get broken
+.nr #L_MARGIN \n(.o  \" Tabs, etc require #L_MARGIN
 \#
 \# ====================================================================
 \#
@@ -105,7 +106,7 @@
 .       ALD \\n[#DOC_LEAD]u*3u
 .       PRINT \\*[$AUTHOR_1]
 .    \}
-.DO_FOOTER
+.    DO_FOOTER
 .END
 \#
 \#
@@ -271,9 +272,9 @@
 \#   The trap is set in .PAGE.
 \#
 .MAC DO_B_MARGIN END
-.ev 1
+.    ev 1
 .    bp
-.ev
+.    ev
 .END
 \#
 \# =====================================================================
@@ -1430,7 +1431,8 @@
 \#   line of the previous tab.
 \# *Notes:
 \#   If the tabs being aligned fall too close to the footer
-\#   trap, the line entered after .TN will appear on the next page.
+\#   trap, the line entered after .TN will appear on the next page,
+\#   unless TRAP...TRAP OFF is used.
 \#
 .MAC TN END
 .    br
@@ -3670,6 +3672,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !r#FOOTER_MARGIN     \{ .FOOTER_MARGIN 3P \}
 .    if !r#FOOTER_GAP        \{ .FOOTER_GAP    3P \}
 .    if !r#B_MARGIN          \{ .B_MARGIN \\n[#FOOTER_MARGIN]u+\\n[#FOOTER_GAP]u \}
+.    if (\\n[#FOOTER_MARGIN]+\\n(.v)>\\n[#B_MARGIN] \{\
+.       tm1 "[mom]: Your chosen bottom margin for running text is too close to the footer margin.
+.       tm1 "       No footers or bottom-of-page page numbers will be printed.
+.       tm1 "       Please reset B_MARGIN or FOOTER_MARGIN to allow enough space.
+.       tm1 "       If no footers or bottom-of-page page numbers are required,
+.       tm1 "       place .FOOTER_MARGIN 0 before .START
+.    \}
 .    if !r#HDRFTR_RULE_GAP   \{\
 .       if \\n[#HEADERS_ON]  \{ .HDRFTR_RULE_GAP 4p \}
 .       if \\n[#FOOTERS_ON]  \{ .HDRFTR_RULE_GAP 4p \}
@@ -3799,10 +3808,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 \# Defaults for printstyle TYPESET
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       if !r#DOCHEADER_LEAD_ADJ \{\
+.       if !d$DOCHEADER_LEAD_ADJ \{\
 .          ie !'\\*[$CHAPTER_TITLE]'' \{\
 .             ie !'\\*[$CHAPTER_STRING]'' \{\
-.                DOCHEADER_LEAD +4p
+.                DOCHEADER_LEAD +4
 .             \}
 .             el \{ .DOCHEADER_LEAD +0 \}
 .          \}
@@ -4091,7 +4100,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    DEFAULTS
-\#
+\# Collate stuff
 .    ie \\n[#COLLATED_DOC]=1 \{\
 \# Collect TITLE for TOC.
 .       nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
@@ -4179,14 +4188,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    rr #COLLATE
 .    rr #PAGINATION_STATE
-\#
+\# End collate stuff
 .    ie \\n[#DOC_HEADER]=0 \{\
 .       PRINT \&
 .       if \\n[#DOC_TYPE]=4 \{\
 .          if !'\\n(.z'' \{ .di \}
 .       \}
 .       PP
-.       ie r#ADVANCE_FROM_TOP \{ .sp |\\n[#ADVANCE_FROM_TOP]u-1v \}
+.       ie r#ADVANCE_FROM_TOP \{\
+.          sp |\\n[#ADVANCE_FROM_TOP]u-1v
+.          SHIM
+.       \}
 .       el \{ .sp |\\n[#T_MARGIN]u-1v \}
 .       if \\n[#COLUMNS] \{\
 .          mk dc
@@ -4199,7 +4211,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if r#ADVANCE_FROM_TOP \{ .rr #ADVANCE_FROM_TOP \}
 .    \}
 .    el \{\
-.       if \\n[#PRINT_STYLE]=2 \{ .LS \\n[#DOC_LEAD]u+\\n[#DOCHEADER_LEAD_ADJ]u \}
+.       if \\n[#PRINT_STYLE]=2 \{ .LS \\n[#DOC_LEAD]u\\*[$DOCHEADER_LEAD_ADJ] \}
 .       nr #DOCHEADER_LEAD \\n[#LEAD]
 \# Default
 .       if \\n[#DOC_TYPE]=1 \{\
@@ -4393,8 +4405,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       if !\\n[#DOC_TYPE]=4 \{\
 .          if \\n[#PRINT_STYLE]=1 \{ .ALD \\n[#DOC_LEAD]u \}
-.          nr #DOCHEADER_SPACE_ADJ \\n[#DOCHEADER_DEPTH]%\\n[#DOC_LEAD] \"Do we need the units?
-.          ie !\\n[#DOCHEADER_SPACE_ADJ]=0 \{ .nr #DOCHEADER_EXTRA_SPACE \\n[#DOC_LEAD]u-\\n[#DOCHEADER_SPACE_ADJ]u \}
+.          nr #DOCHEADER_SPACE_ADJ \\n[#DOCHEADER_DEPTH]%\\n[#DOC_LEAD]
+.          ie !\\n[#DOCHEADER_SPACE_ADJ]=0 \{ .nr #DOCHEADER_EXTRA_SPACE \\n[#DOC_LEAD]-\\n[#DOCHEADER_SPACE_ADJ] \}
 .          el \{ .nr #DOCHEADER_EXTRA_SPACE 0 \}
 .          if \\n[#PRINT_STYLE]=2 \{ .ALD (\\n[#DOC_LEAD]u*2u)+\\n[#DOCHEADER_EXTRA_SPACE]u \}
 .          if \\n[#COLUMNS] \{\
@@ -4455,13 +4467,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# *Arguments:
 \#   <+|- amount by which to in/decrease leading of doc header>
 \# *Function:
-\#   Stores user supplied lead in/decrease in register #DOCHEADER_LEAD_ADJ.
+\#   Stores user supplied lead in/decrease in string $DOCHEADER_LEAD_ADJ.
 \# *Notes:
 \#   A unit of measure must be supplied.  Decimal fractions OK.
 \#   Default is +0, i.e. same as DOC_LEAD.
 \#
 .MAC DOCHEADER_LEAD END
-.    nr #DOCHEADER_LEAD_ADJ (\\$1)
+.    ds $DOCHEADER_LEAD_ADJ \\$1
 .END
 \#
 \#
@@ -4840,6 +4852,27 @@ y\\R'#DESCENDER \\n[.cdp]'
 .MAC DOC_LEAD_ADJUST END
 .    ie '\\$1'' \{ .nr #ADJ_DOC_LEAD 1 \}
 .    el \{ .nr #ADJ_DOC_LEAD 0 \}
+.END
+\#
+\#
+\# SHIM
+\# ----
+\# *Argument:
+\#   None
+\# *Function:
+\#   Advances to the next "legal" baseline.
+\# *Notes:
+\#   If a user plays around with spacing in a doc (say, with ALD),
+\#   it isn't easy to get mom back on track so she can achieve
+\#   perfectly flush bottom margins.  Any time SHIM is used, it
+\#   ensures that the next output line falls on a legal baseline.
+\#
+.MAC SHIM END
+.    nr #CURRENT_V_POS \\n(.d
+.    nr #LEGAL_BASELINE \\n[#T_MARGIN] \\n[#DOC_LEAD]
+.    while \\n+[#LEGAL_BASELINE]<\\n[#CURRENT_V_POS] \{ . \}
+.    nr #SHIM \\n[#LEGAL_BASELINE]-\\n[#CURRENT_V_POS]
+.    ALD \\n[#SHIM]u
 .END
 \#
 \#
@@ -5864,7 +5897,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# *Notes:
 \#   For use when users don't want 3-part headers/footers, but rather
 \#   want to design their own headers/footers and need different
-\#   headers/footers on recto and verso pages.
+\#   headers/footers on recto and verso pages.  Using just
+\#   HEADER_RECTO, even when recto/verso is not on, allows users to
+\#   design their own headers/footers for doc pages.
 \#
 .MAC HDRFTR_RECTO END
 .    nr #USERDEF_HDRFTR 1
@@ -6508,7 +6543,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Resets CAPS and UNDERLINE if they were on.
 \#
 .MAC DO_FOOTER END
-.    sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-1v
+.    ie (\\n[#FOOTER_MARGIN]+\\n(.v)>\\n[#B_MARGIN] \{\
+.       nr #SKIP_FOOTER 1
+.    \}
+.    el \{\
+.       sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-1v
+.    \}
 .    ev FOOTER
 .    po \\n[#DOC_L_MARGIN]u
 .    ll \\n[#DOC_L_LENGTH]u
@@ -6531,13 +6571,16 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       UNDERLINE OFF
 .    \}
 .    ie \\n[#FOOTERS_ON] \{\
-.       PRINT_HDRFTR
+.       if !\\n[#SKIP_FOOTER]=1 \{ .PRINT_HDRFTR \}
 .    \}
 .    el \{\
 .       if \\n[#PAGINATE] \{\
-.          if \\n[#PAGE_NUM_V_POS]=2 \{ .PRINT_PAGE_NUMBER \}
+.          if \\n[#PAGE_NUM_V_POS]=2 \{\
+.             if !\\n[#SKIP_FOOTER]=1 \{ .PRINT_PAGE_NUMBER \}
+.          \}
 .       \}
 .    \}
+.    rr #SKIP_FOOTER
 .    if \\n[#CAPS_WAS_ON] \{\
 .       CAPS
 .       rr #CAPS_WAS_ON
@@ -9920,7 +9963,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# +++TABLE OF CONTENTS+++
 \#
-\#
 \# Strings to allocate space for leaders and entry page numbers
 \#
 .ds $TOC_PN \\*[ST100]\\F[\\*[$TOC_PN_FAM]]\\f[\\*[$TOC_PN_FT]]\\s[\\n[#TOC_PS]u]#\\*[ST100X]\\*[ST101]\\s[\\*[$TOC_PN_SIZE_CHANGE]]\\|\\h'\\w'0'u*\\n[#TOC_PN_PADDING]u'\*[ST101X]
@@ -9985,7 +10027,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   measure required.
 \#
 \#   No unit of measure required (points assumed).  Default is 11.5
-\#   for TYPEWRITE.
+\#   for TYPESET.
 \#
 .MAC TOC_PT_SIZE END
 .    nr #TOC_PS (p;\\$1)
@@ -10062,7 +10104,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    el \{ .rr #TOC_RV_SWITCH \}
 .END
 \#
-\# - for TOC "doc" header (i.e. "Contents")
+\# - for TOC "doc header" (i.e. "Contents")
 \#
 \# TOC HEADER FAMILY
 \# -----------------
@@ -10124,7 +10166,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# TOC HEADER STRING
 \# -----------------
 \# *Argument:
-\#   <string for "doc" header of first toc page>
+\#   <string for "doc header" of first toc page>
 \# *Function:
 \#   Creates or modifies string $TOC_HEADER_STRING
 \# *Notes:
@@ -10134,7 +10176,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ds $TOC_HEADER_STRING \\$1
 .END
 \#
-\# - for TOC entries page number numbers
+\# - for TOC entries page number numerals
 \#
 \# TOC ENTRIES PAGE NUMBER FAMILY
 \# ------------------------------
@@ -10184,7 +10226,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# All these control macros behave the same way, setting the family,
 \# font, point size and indent from the left margin of the different
-\# kinds of entries what can appear in the toc.  The way they
+\# kinds of entries that can appear in the toc.  The way they
 \# operate is identical to all other _FAMILY, _FONT and _SIZE
 \# control macros.  _INDENT takes an absolute value.
 \# TOC_APPENDS_AUTHORS is unique in this section.
@@ -10733,8 +10775,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
-\#
-\#
 \# ====================================================================
 \#
 \# +++DOCUMENT PROCESSING ALIASES+++
@@ -10856,7 +10896,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS   SWITCH_HEADERS                  SWITCH_HDRFTR
 .ALIAS   SWITCH_FOOTERS                  SWITCH_HDRFTR
 \#
-\# SUPPORT ALIASES
+\# Support aliases
 \#
 .ALIAS   COL_BREAK                       COL_NEXT
 .ALIAS   PRINT_FOOTNOTE_RULE             FOOTNOTE_RULE

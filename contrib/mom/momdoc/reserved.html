@@ -620,6 +620,7 @@ RESTORE_PAGINATION       Restore pagination after outputting non-
                          paginated endnotes.
 REVISION_STRING          What to print whenever the word "revision"
                          is required
+SHIM                     Advance to next "legal" baseline
 SINGLESPACE_ENDNOTES     Single space TYPEWRITE endnotes
 SLANT_MEANS_SLANT        In TYPEWRITE, render \*[SLANT] as slant
 SUBHEAD_FAMILY           Family to use in subheads
@@ -768,6 +769,7 @@ TRAPS                Sets hdrftr traps; optionally adjusts #DOC_LEAD
 #COLUMNS_WERE_ON           Stores columnar state prior to outputting
                            endnotes in no-columns mode
 #COPY_STYLE                1=draft, 2=final
+#CURRENT_V_POS             \n(.d ; used in SHIM
 dc                         "mark" register for document columns
 #DATE                      Is there a date (for letters)? 1=yes
 #DEFER_PAGINATION          Tells COLLATE to restore pagination (from
@@ -779,8 +781,6 @@ dc                         "mark" register for document columns
 #DEPTH_TO_B_MARGIN         Page length minus #B_MARGIN
 #DOCHEADER_ADVANCE         Distance from top-of-page to baseline of
                            docheader
-#DOCHEADER_LEAD_ADJ        +|- value applied to #DOC_LEAD to
-                           in/decrease leading of doc header
 #DOCHEADER_LEAD            Lead of doc header
                            (#DOC_LEAD + #DOCHEADER_LEAD_ADJ)
 #DOCHEADER_SPACE_ADJ       Lead difference between #DEPTH_1 and
@@ -928,6 +928,8 @@ dc                         "mark" register for document columns
                            alone if it's on for running text.
 #ITALIC_MEANS_ITALIC       For TYPEWRITE.  1=yes; 0=no
 #LEFT_CAP_HEIGHT           Cap height of left string in headers/footers
+#LEGAL_BASELINE            Calculates vert. position of next legal
+                           baseline in SHIM
 #LETTER_STYLE              1=BUSINESS 2=PERSONAL
 #LINEBREAK                 Did we have a linebreak? (toggle)
 #LINES_PER_PAGE            # of lines (at DOC_LEAD) that fit on
@@ -1016,7 +1018,11 @@ dc                         "mark" register for document columns
 #SH_LEAD_ADJUST            #DOC_LEAD/8 (TYPESET) or /2 (TYPEWRITE)
                            (used for subhead spacing)
 #SH_NUM                    Subhead number
+#SHIM                      Amount of lead required to advance to
+                           next legal baseline
 #SINGLE_SPACE              Is TYPEWRITE in single space mode? (toggle)
+#SKIP_FOOTER               If 1, instructs DO_FOOTER to do nothing
+                           if B_MARGIN falls below FOOTER_MARGIN
 #SLANT_MEANS_SLANT         For TYPEWRITE.  1=yes; 0=no
 #SLANT_WAS_ON              Keeps track of SLANT when it needs to go off
                            for a while
@@ -1033,7 +1039,7 @@ dc                         "mark" register for document columns
 #SWITCH_HDRFTR             Switch HDRFTR_LEFT and HDRFTR_RIGHT?
                            (toggle)
 #TAB_OFFSET#               "#" at the end is from $CURRENT_TAB
-#TO                        Is there an addressee date (for letters)?
+#TO                        Is there an addressee (for letters)?
                            1=yes
 #TOC_AUTHORS               Whether to append author(s) to toc doc
                            title entries (toggle)
@@ -1106,6 +1112,8 @@ $DOC_TITLE                      Overall doc title that gets printed in
                                 different title
 $DOC_TYPE                       Document type (default, chapter, named,
                                 letter)
+$DOCHEADER_LEAD_ADJ             +|- value applied to #DOC_LEAD to
+                                in/decrease leading of doc header
 $DOCTYPE_FAM                    Family to use for DOCTYPE string in
                                 doc header
 $DOCTYPE_FT                     Font to use for DOCTYPE string in

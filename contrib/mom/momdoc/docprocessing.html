@@ -22,6 +22,8 @@
 <a href="#DEFAULTS">Some document defaults</a>
 <p>
 <a href="#LEADING_NOTE">* IMPORTANT NOTE on leading/spacing and bottom margins *</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#SHIM">The SHIM macro</a>
 <p>
 <ul>
 	<li><a href="#SETUP"><strong>DOCUMENT SETUP</strong></a>
@@ -32,6 +34,7 @@
 		<li><a href="#REFERENCE_MACROS"><strong>The Reference Macros</strong></a>
 		<ul>
 			<li><a href="#TITLE">TITLE</a>
+			<li><a href="#DOC_TITLE">DOCTITLE</a>
 			<li><a href="#SUBTITLE">SUBTITLE</a>
 			<li><a href="#AUTHOR">AUTHOR</a>
 			<li><a href="#CHAPTER">CHAPTER</a>
@@ -277,11 +280,11 @@ short).
 In order to ensure even bottom margins, <strong>mom</strong>
 uses the &quot;base&quot; document
 <a href="definitions.html#TERMS_LEADING">leading</a>
-in effect <em>at the start of each page</em> (i.e. the leading used
-in paragraphs) to calculate the spacing of every document element.
-Prior to invoking
+in effect <em>at the start of running text on each page</em> (i.e.
+the leading used in paragraphs) to calculate the spacing of every
+document element.  Prior to invoking
 <a href="#START">START</a>,
-this is done with the
+this is set with the
 <a href="typesetting.html#MACROS_TYPESETTING">typesetting macro</a>
 <a href="typesetting.html#LEADING">LS</a>,
 afterwards with the document
@@ -310,7 +313,73 @@ since &quot;v&quot; accepts decimal fractions, you can add/subtract
 half linespaces and quarter linespaces with &quot;v&quot; as well,
 <em>provided you compensate for the fractional linespace somewhere
 else on the page</em>.
+<p>
+If all this seems like too much too much work, <strong>mom</strong>
+provides a special macro to get you out of trouble if you've played
+around with leading and/or spacing.  The macro is called
+<strong>SHIM</strong> (like those little pieces of wood carpenters
+use to get their work even, level and snug), and it's described
+below.
 <br>
+
+<!---SHIM--->
+
+<hr width="66%" align="left">
+<p>
+<a name="SHIM"></a>
+Macro: <strong>SHIM</strong>
+
+<p>
+<strong>SHIM</strong> doesn't take any argument.  Use it whenever
+you've played around with the
+<a href="definitions.html#TERMS_LEADING">leading</a>
+or spacing on a page and you
+need to get <strong>mom</strong>'s document leading back on track.
+<p>
+For example, say you want to insert a picture into a document with
+the special groff macro, <strong>PSPIC</strong> (see the
+<strong>grops</strong> man page for useage).
+<p>
+Pictures aren't usually conveniently sized in multiples of document
+leading, which means that when you insert the picture, you disrupt
+<strong>mom</strong>'s ordered placement of baselines on the page.
+This will certainly result in a bottom margin that doesn't match the
+bottom margins of your document's other pages.
+<p>
+The solution is to insert <strong>SHIM</strong> after the picture,
+like this:
+<p>
+<pre>
+	&lt;some lines of text&gt;
+	.PSPIC &lt;full path to picture&gt;
+	.SHIM
+	&lt;more lines of text&gt;
+</pre>
+<strong>SHIM</strong> instructs <strong>mom</strong> to insert as
+much or a little space after the picture as is needed to ensure that
+the baseline of the next
+<a href="definitions.html#TERMS_OUTPUTLINE">output line</a>
+falls where <strong>mom</strong> would have put it had you not
+disrupted the normal flow of output lines with the picture.
+<p>
+And say, on previewing the above example, you find that the picture
+doesn't centre nicely between the lines of text, you can always do
+<p>
+<pre>
+	&lt;some lines of text&gt;
+	.RLD 3p
+	.PSPIC &lt;full path to picture&gt;
+	.SHIM
+	&lt;more lines of text&gt;
+</pre>
+
+to raise the picture slightly
+(<strong>R</strong>everse <strong>L</strong>ea<strong>D</strong>
+3 points; see
+<a href="typesetting.html#RLD">RLD</a>),
+and still have <strong>SHIM</strong> ensure that text underneath
+falls exactly where it's supposed to.
+<p>
 <hr>
 
 <a name="SETUP"><h2><u>Document setup</u></h2></a>
@@ -366,6 +435,7 @@ some reference information.  The reference macros are:
 <p>
 <ul>
 	<li>TITLE
+	<li>DOCTITLE
 	<li>SUBTITLE
 	<li>AUTHOR
 	<li>CHAPTER -- the chapter number
@@ -571,6 +641,7 @@ document processing macros.
 
 <ul>
 	<li><a href="#TITLE">TITLE</a>
+	<li><a href="#DOC_TITLE">DOCTITLE</a>
 	<li><a href="#SUBTITLE">SUBTITLE</a>
 	<li><a href="#AUTHOR">AUTHOR</a>
 	<li><a href="#CHAPTER">CHAPTER</a>
@@ -722,7 +793,7 @@ She also puts the same thing in the middle of
 If you're not using <strong>DOCTYPE CHAPTER</strong>, the macro serves
 no purpose and <strong>mom</strong> ignores it.
 <p>
-<a name="CHAPTER_STRING"><strong>CHAPTER_STRING<strong></a>
+<a name="CHAPTER_STRING"><strong>CHAPTER_STRING</strong></a>
 <p>
 If you're not writing in English, you can ask <strong>mom</strong>
 to use the word for chapter in your own language by telling
@@ -792,7 +863,7 @@ default), <strong>mom</strong> ignores <strong>DRAFT</strong>.
 &quot;Draft&quot; in the middle part of
 <a href="definitions.html#TERMS_HEADER">page headers</a>.
 <p>
-<a name="DRAFT_STRING"><strong>DRAFT STRING<strong></a>
+<a name="DRAFT_STRING"><strong>DRAFT STRING</strong></a>
 <p>
 If you're not writing in English, you can ask <strong>mom</strong>
 to use the word for draft in your own language by telling
@@ -908,10 +979,10 @@ reference macro but supply a
 backward compatability with pre-1.1.5 versions of</em>
 <strong>mom</strong><em>, you can also supply a chapter title by
 ommitting the</em> <strong>CHAPTER</strong> <em>reference macro and
-supplying a chapter title with
-<a href="#CHAPTER_STRING">CHAPTER_STRING</a>.
+supplying a chapter title with</em>
+<a href="#CHAPTER_STRING">CHAPTER_STRING</a>.)
 <p>
-The page headers in <strong>DOCTYPE CHAPTER</a> contain the author,
+The page headers in <strong>DOCTYPE CHAPTER</strong> contain the author,
 the title of the book (which you gave with
 <a href="#TITLE">TITLE</a>),
 and &quot;Chapter #&quot; (or the chapter title).  See
@@ -1234,17 +1305,17 @@ When used before
 <strong>START</strong>,
 the
 <a href="typesetting.html#MACROS_TYPESETTING">typesetting macros</a>
-(below have) the following meanings:
+(below) have the following meanings:
 <p>
 <pre>
 	L_MARGIN         Left margin of pages, including headers/footers
 	R_MARGIN         Right margin of pages, including headers/footers
 	T_MARGIN         The point at which running text (i.e. not
 	                 headers/footers or page numbers) starts on each page
-	B_MARGIN         The point at which running text (i.e. not
-	                 headers/footers or page numbers) ends on each page
+	*B_MARGIN        The point at which running text (i.e. not
+	(see note)       headers/footers or page numbers) ends on each page
 
-	(PAGE            If you use PAGE, its first four arguments have the
+	PAGE             If you use PAGE, its final four arguments have the
 	                 same meaning as L_ R_ T_ and B_MARGIN above.)
 
 	LL               The line length for everything on the page;
@@ -1253,12 +1324,13 @@ the
 	PT_SIZE          The point size of type in paragraphs; mom uses this
 	                 calculate automatic point size changes (eg. for heads,
 	                 footnotes, quotes, headers, etc)
-	*LS or AUTOLEAD  The leading used in paragraphs; all leading and spacing
+	**LS/AUTOLEAD    The leading used in paragraphs; all leading and spacing
 	                 of running text is calculated from this
 	QUAD             Affects paragraphs only
 
 ------
-*See <a href="#DOC_LEAD_ADJUST">DOC_LEAD_ADJUST</a>
+ *See <a href="headfootpage.html#FOOTER_MARGIN">FOOTER MARGIN AND BOTTOM MARGIN</a> for an important warning
+**See <a href="#DOC_LEAD_ADJUST">DOC_LEAD_ADJUST</a>
 </pre>
 
 Other macros that deal with type style, or refinements thereof
@@ -1266,7 +1338,7 @@ Other macros that deal with type style, or refinements thereof
 It is not recommended that you set up tabs or indents prior to
 <strong>START</strong>.
 <p>
-If you want to change any of the basic parameters above
+If you want to change any of the basic parameters (above)
 <em>after</em> <strong>START</strong> and have them affect a
 document globally (as if you'd entered them <em>before</em>
 <strong>START</strong>), you must use the macros listed in
@@ -1373,17 +1445,22 @@ turn it off with
 have to be <strong>OFF</strong>; it can be anything you like.
 <p>
 If you turn the docheader off, <strong>mom</strong>, by default, starts
-your document in the same place she would if the docheader were there.
-If you'd like her to start at a different vertical position, give
-her the distance you'd like as a second argument.
+the running text of your document on the same top
+<a href="definitions.html#TERMS_BASELINE">baseline</a>
+as all subsequent pages.  If you'd like her to start at a different
+vertical position, give her the distance you'd like as a second
+argument.
 <p>
 <pre>
 	.DOCHEADER OFF 1.5i
 </pre>
 
-This starts the document 1.5 inches from the top of the page.
-The distance you give is measured from the top edge of the paper
-to the
+This starts the document 1.5 inches from the top of the page PLUS
+whatever spacing adjustment <strong>mom</strong> has to make in
+order to ensure that the first baseline of running text falls on a
+&quot;legal&quot; baseline (i.e. one that ensures that the bottom
+margin of the first page falls where it should).  The distance is
+measured from the top edge of the paper to the
 <a href="definitions.html#TERMS_BASELINE">baseline</a>
 of the first line of type.
 <p>
@@ -1486,10 +1563,10 @@ to place them where you want.
 
 <a name="ADJUST_LEADING"><h3><u>2. Adjust the leading</u></h3></a>
 The
-<a href="definitions.html#TERMS_LEADING">leading</a> of
-docheaders is the same as running text (except when
+<a href="definitions.html#TERMS_LEADING">leading</a>
+of docheaders is the same as running text (except when
 <a href="#DOCTYPE">DOCTYPE</a>
-is <strong>CHAPTER</a> <em>and both</em> a chapter number and a
+is <strong>CHAPTER</strong> <em>and</em> both a chapter number and a
 chapter title have been supplied, in which case the default is 4 points
 more than running text.)
 <p>
@@ -1497,14 +1574,14 @@ If you'd like your docheaders to have a different leading, say, 2
 points more than the lead of running text, use:
 <p>
 <pre>
-	.DOCHEADER_LEAD +2p
+	.DOCHEADER_LEAD +2
 </pre>
 
 Since the leading of docheaders is calculated from the lead of running
 text, a + or - sign is required before the argument (how much to add
-or subtract from the lead of running text).  The
+or subtract from the lead of running text).  No 
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
-is also required.
+is required; points is assumed.
 
 <a name="CHANGE_FAMILY"><h3><u>3. Change the family of docheader elements</u></h3></a>
 The following macros let you change the
@@ -1520,7 +1597,9 @@ of each docheader element separately:
 <a href="#DOCTYPE">DOCTYPE</a> is NAMED)
 </ul>
 <p>
-Simply pass the appropriate macro the family you want.
+Simply pass the appropriate macro the family you want, just as you
+would with
+<a href="typesetting.html#FAMILY">FAMILY</a>.
 
 <a name="CHANGE_FONT"><h3><u>4. Change the font of docheader elements</u></h3></a>
 The following macros let you change the
