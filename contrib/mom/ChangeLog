@@ -1,7 +1,36 @@
+*Wed Jun  5 2002
+
+o Makefile.sub (TFLAG): Add `$(top_builddir)/tmac'.
+
+*Tue Jun  4 2002
+
+o Makefile.sub (groff_bin_dirs): Fix typo (forgotten `src' element).
+
+*Mon Jun  3 2002
+
+o Makefile.sub (uninstall_sub): Don't use `momdocdir' but `htmldocdir'.
+  Add missing backslash.
+
 *Sat Jun  1 2002
 
 o Makefile.in (prepare_make_examples): Test for `penguin.ps', not
   `examples/penguin.ps'.
+
+*Wed May 29 2002
+
+o Rewrote portions of PAGENUM_STYLE and COPYSTYLE so that PAGENUM_STYLE
+  behaves as advertised.
+
+*Fri May 24 2002
+
+o /Makefile.sub (momdocdir): Removed.
+  (HTMLDOCFILES): Prepend `momdoc/'.
+  (EXTRAEXAMPLEFILES): Removed.  Added entries to...
+  (EXAMPLEFILES): This.
+  (.SUFFIXES, .mom.ps): New.
+  (prepare_make_examples): Updated.
+  (examples/*.ps): Removed; .mom.ps will handle this.
+  (install_data): Updated.  
 
 *Thu May 23 2002
 
@@ -25,6 +54,62 @@ o Added mom.tmac (which simply calls om.tmac).
 
 o Added groff_mom.man for orthogonality; it simply points to the HTML
   documentation.
+
+*Thu May 16 2002
+
+o Added macro DRAFT_WITH_PAGENUMBER so user can have draft/revision
+  info attached to the pagenumber in COPYSTYLE DRAFT, instead of having
+  it HEADER center.  Always having it HEADER center was creating problems
+  with long doc titles, esp. with PRINTSTYLE TYPEWRITE (which is when
+  COPYSTYLE DRAFT is most likely to be used).  Now user has the choice,
+  in these circumstances, either to reduce HEADER_SIZE, or to displace
+  the draft/revision info.  Also rewrote portions of COPYSTYLE so that
+  if no revision number is given in the reference macros, "Rev. #"
+  doesn't appear when COPYSTYLE DRAFT.
+
+*Fri May 10 2002
+
+o Added capability of user-defined, single string recto/verso
+  headers/footers.
+
+o Added new entries to docs about the above.  Made some additional
+  small changes to toc.html, rectoverso.html, and headfootpage.html
+  to supplement the new entries.
+
+o Small fix to handling of footer separator rule -- was 1 point too low
+  owing to fuzziness of #CAP_HEIGHT as returned by SIZESPECS.
+
+o Added some more useful stuff to elvis_syntax.
+
+*Sun May 05 2002
+
+o Fix to DEFAULTS so that L_MARGIN and R_MARGIN are reprocessed if
+  DOCTYPE LETTER.  R_MARGIN, as set by DOCTYPE LETTER had no preceding
+  PAGEWIDTH or PAPER from which to get #PAGE_WIDTH for figuring out
+  line length.
+
+o Additional fix to DEFAULTS in handling DOCTYPE LETTER so that if user
+  sets line length prior to START, no reprocessing of R_MARGIN occurs.
+  This necessitated adding a new number register: #USER_SET_L_LENGTH
+
+*Sat May 04 23:48:05 EDT 2002
+
+o Added .cflags 4 /\(en -- was driving me nuts that lines wouldn't
+  break after these characters; I'm assuming others feel the same way
+
+* Fri May 03 2002
+
+o Made some small fixes to space handling around quotes, mostly to do
+  with quotes immediately after START and quotes after (sub)heads.
+
+* Wed May 01 2002
+
+o Fixed a small bug that was causing the first .PP after START to begin
+  at the top margin of the page regardless of any type that preceded
+  .PP when docheaders were off.
+
+o Fixed HEADER so that when HEADERS are off the first line of type on
+  pages after the first falls properly at the top margin
 
 *Sat Apr 27 2002
 

@@ -29,6 +29,11 @@
 		<li><a href="#HEADERS">HEADERS</a> -- on or off
 		<li><a href="#FOOTERS">FOOTERS</a> -- on or off
 		<li><a href="#FOOTER_ON_FIRST_PAGE">FOOTER_ON_FIRST_PAGE</a>
+		<li><a href="#USERDEF_HDRFTR">User-defined, single string recto/verso headers/footers</a>
+		<ul>
+			<li><a href="#USERDEF_HDRFTR_INTRO">Introduction</a>
+			<li><a href="#HDRFTR_RECTOVERSO">HEADER_RECTO, HEADER_VERSO</a>
+		</ul>
 	</ul>
 	<li><a href="#HEADFOOT_CONTROL">Control macros for headers/footers</a>
 	<ul>
@@ -38,7 +43,7 @@
 			<li><a href="#HDRFTR_STYLE_GLOBAL">Global style control</a>
 			<li><a href="#HDRFTR_STYLE_PART">Part-by-part style control</a>
 		</ul>
-		<li><a href="#HDRFTR_VERTICAL">Vertical placement and spacing</a>
+		<li><a href="#HDRFTR_VERTICAL">Vertical placement and spacing of headers/footers</a>
 		<ul>
 			<li><a href="#HDRFTR_MARGIN">HEADER_MARGIN</a>
 			<li><a href="#HDRFTR_GAP">HEADER_GAP</a>
@@ -50,6 +55,9 @@
 		</ul>
 	</ul>
 	<li><a href="#PAGINATION">Pagination</a>
+	<ul>
+	    <li><a href="#INDEX_PAGINATION">Pagination control macros</a>
+	</ul>
 </ul>
 
 <a name="HEADFOOTPAGE_INTRO">
@@ -354,6 +362,173 @@ page 1, invoke <strong>FOOTER_ON_FIRST_PAGE</strong> without any argument.
 <br>
 <hr>
 
+<!---USERDEF_HDRFTR--->
+
+<a name="USERDEF_HDRFTR">
+	<h2><u>User-defined, single string recto/verso headers/footers</u></h2>
+</a>
+
+<a name="USERDEF_HDRFTR_INTRO"><h3><u>Introduction</u></h3></a>
+
+Sometimes, you'll find you can't get <strong>mom</strong>'s handling
+of 3-part headers or footers to do exactly what you want in the
+order you want.  This is most likely happen when you want the
+information contained in the headers/footers split over two pages,
+as is often the case with recto/verso documents.
+<p>
+Say, for example, you want recto page headers to contain a document's
+author, centered, and verso page headers to contain the document's
+title, also centered, like this:
+<p>
+<pre>
+	+------------------------+   +------------------------+     
+	|         Author         |   |         Title          |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	+------------------------+   +------------------------+     
+</pre>
+
+With <strong>mom</strong>'s standard 3-part headers, this isn't
+possible, even when
+<a href="rectoverso.html#RECTO_VERSO">RECTO_VERSO</a>
+is enabled.  <strong>RECTO_VERSO</strong> switches the left and
+right parts of headers on alternate pages, but the center
+part remains unchanged.
+<p>
+Anytime you need distinctly different headers on alternate
+pages, <strong>mom</strong> has macros that let you manually
+design and determine what goes into headers on recto pages, and
+what goes into headers on verso pages.  The macros are
+<a href="#HDRFTR_RECTO">HEADER_RECTO</a>
+and
+<a href="#HDRFTR_VERSO">HEADER_VERSO</a>.
+Both allow you to state whether the header is flush left, centered,
+or flush right, and both take a single
+<a href="definitions.html#TERMS_STRINGARGUMENT">string argument</a>
+with which, by combining text and
+<a href="definitions.html#TERMS_INLINES">inline escapes</a>,
+you can make the headers come out just about any way you want.
+Use of the <strong>\*[PAGE#]</strong> escape is permitted in the
+string argument (see
+<a href="#PAGE_NUMBER_INCL">Including the page number in header-left, -center or -right</a>),
+and <strong>mom</strong> provides a special mechanism whereby
+it's possible to &quot;pad&quot; it as well.
+<br>
+
+<!---HDRFTR_RECTOVERSO--->
+
+<hr width="66%" align="left">
+<p>
+<a name="HDRFTR_RECTOVERSO"></a>
+Macro: <strong>HEADER_RECTO</strong> <var>LEFT | CENTER | RIGHT &quot;&lt;header recto string&gt;&quot;</var>
+Macro: <strong>HEADER_VERSO</strong> <var>LEFT | CENTER | RIGHT &quot;&lt;header verso string&gt;&quot;</var>
+<br>
+
+<p>
+<strong>HEADER_RECTO</strong> and <strong>HEADER_VERSO</strong> behave
+identically, hence all references to <strong>HEADER_RECTO</strong>
+in this section also refer to <strong>HEADER_VERSO</strong>.
+Furthermore, <strong>FOOTER_</strong> can be used instead of
+<strong>HEADER_</strong> to set up recto/verso footers.
+<p>
+The first argument to <strong>HEADER_RECTO</strong> is the
+direction in which you want the header
+<a href="definitions.html#TERMS_QUAD">quadded</a>.
+<strong>L, C</strong> and <strong>R</strong> may be used in
+place of <strong>LEFT, CENTER</strong> and
+<strong>RIGHT</strong>.  The second argument is a string,
+surrounded by double-quotes, containing what you want in the
+header.  <strong>HEADER_RECTO</strong> disables <strong>mom</strong>'s
+normal 3-part headers, therefore anything you want in the
+headers must be entered by hand in the string.
+<p>
+By default, <strong>HEADER_RECTO</strong> is set at the same
+size, and in the same family and font, as paragraph text.  The
+control macros
+<a href="#HDRFTR_GLOBAL_FAMILY">HEADER_FAMILY</a>
+and
+<a href="#HDRFTR_GLOBAL_SIZE">HEADER_SIZE</a>
+may be used to change the default family and size.  Changes to
+the font(s) within the string must be accomplished with the
+<a href="definitions.html#TERMS_INLINES">inline escapes</a>
+<strong>\*[ROM], \*[IT], \*[BD], \*[BDI]</strong> and
+<strong>\*[PREV]</strong> (see
+<a href="inlines.html#INLINE_FONTS_MOM">Changing fonts</a>).
+Additional refinements to the style of the header-recto string,
+including horizontal spacing and/or positioning, can also be made with
+inline escapes.
+<p>
+To include the current page number in the string, use the
+<strong>\*[PAGE#]</strong> inline.
+
+<h3><u>Padding the HEADER_RECTO/HEADER_VERSO string</u></h3>
+<p>
+You can &quot;pad&quot; the header-recto string, a convenience you'll
+appreciate in circumstances such as the following.
+<p>
+<pre>
+	           VERSO                       RECTO 
+	+------------------------+   +------------------------+     
+	| Author          Page#  |   | Page#            Title |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	|                        |   |                        |     
+	+------------------------+   +------------------------+     
+</pre>
+
+To pad the string argument passed to <strong>HEADER_RECTO</strong>,
+begin and end the string (inside the double-quotes) with the caret
+character (<kbd>^</kbd>).  Enter the pound sign (<kbd>#</kbd>) at any
+point in the string where you want an equalized amount of whitespace
+inserted.  (If you're unsure what padding is, see
+<a href="goodies.html#PAD">Insert space into lines</a>.)
+Note that if you're padding the string, it doesn't matter what
+quad direction you give <strong>HEADER_RECTO</strong>.
+<p>
+The situation depicted above is accomplished like this:
+<p>
+<pre>
+	.HEADER_RECTO LEFT "^\*[PAGE#]#Title^"
+	.HEADER_VERSO LEFT "^Author#\*[PAGE#]^"
+</pre>
+
+Note that <strong>mom</strong> does not interpret the <kbd>#</kbd>
+in <strong>\*[PAGE#]</strong> as a padding marker (i.e. as a place
+to insert whitespace).
+<p>
+<strong>IMPORTANT:</strong> The
+<a href="goodies.html#PAD_MARKER">PAD_MARKER</a>
+macro, which changes the default pad marker (<kbd>#</kbd>) used by
+<a href="goodies.html#PAD">PAD</a>,
+has no effect on the pad marker used in the
+<strong>HEADER_RECTO</strong> string.  If you absolutely must
+have a literal pound sign in your <strong>HEADER_RECTO</strong>
+string, use the escape sequence <kbd>\N'35'</kbd> where you want
+the pound sign to go.
+<br>
+<hr>
+
 <a name="HEADFOOT_CONTROL">
 	<h2><u>Control macros for headers/footers</u></h2>
 </a>
@@ -444,7 +619,7 @@ with <strong>FOOTER_</strong> to change the strings in footers.
 <a name="PAGE_NUMBER_SYMBOL">
 	<h3><u>Replacing header-left, -center or -right with the page number</u></h3>
 </a>
-If you would like the current page number to appear 
+If you would like to have the current page number to appear 
 header-left, -center, or -right <em>instead</em> of a text
 string, invoke the appropriate macro, above, with the single
 argument <code>#</code> (the &quot;number&quot; or
@@ -490,6 +665,10 @@ and so on.
 <p>
 The following macros allow you to make changes that affect all
 parts of the header at once.
+<p>
+Please note that <strong>HEADER_FAMILY</strong> and
+<strong>HEADER_FONT</strong> have no effect on
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>.
 <p>
 <ul>
 	<li><a href="#HDRFTR_GLOBAL_FAMILY">HEADER_FAMILY</a>
@@ -546,18 +725,21 @@ See
 for an explanation of how control macros ending in
 <strong>_SIZE</strong> work.
 <p>
-Normally, macros that control headers have no effect on
+<a name="FOOTER_GLOBAL_SIZE"></a>
+<strong>NOTE:</strong> Replace <strong>HEADER_</strong>, above,
+with <strong>FOOTER_</strong> to change the footer size.
+<p>
+<strong>ADDITIONAL NOTE:</strong> Normally, macros that control headers have no
+effect on
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>.
 <strong>HEADER_SIZE</strong> is an exception.  While all parts of a
-header in <strong>PRINTSTYLE TYPEWRITE</strong> are the same size, you
-can use <strong>HEADER_SIZE</strong> to reduce the header's point size.
+header in <strong>PRINTSTYLE TYPEWRITE</strong> are always the same
+size, you can use <strong>HEADER_SIZE</strong> with <strong>PRINTSTYLE
+TYPEWRITE</strong> to reduce the header's overall point size.
 You'll most likely require this when the
 <a href="docprocessing.html#COPYSTYLE">COPYSTYLE</a>
 is <strong>DRAFT</strong>, since portions of the header may overprint
 if, say, the title of your document is very long.
-<p>
-<strong>NOTE:</strong> Replace <strong>HEADER_</strong>, above,
-with <strong>FOOTER_</strong> to change the footer size.
 <br>
 
 <hr width="33%" align="left">
@@ -575,7 +757,7 @@ elements of header style interact with <strong>mom</strong>'s defaults,
 invoke <strong>HEADER_PLAIN</strong> by itself, with no argument.
 <strong>Mom</strong> will disable her default behaviour for headers,
 and reset all elements of header style to the same family, font,
-and point size as she uses in text paragraphs.
+and point size as she uses in paragraphs.
 <p>
 <strong>NOTE:</strong> Replace <strong>HEADER_</strong>, above,
 with <strong>FOOTER_</strong> to disable <strong>mom</strong>'s
@@ -591,10 +773,10 @@ replace &quot;&lt;POSITION&gt;&quot; by <strong>LEFT, CENTER,</strong>
 or <strong>RIGHT</strong> as appropriate.
 <p>
 <ul>
-	<li><a href="_FAMILY">HEADER_&lt;POSITION&gt;_FAMILY</a>
-	<li><a href="_FONT">HEADER_&lt;POSITION&gt;_FONT</a>
-	<li><a href="_SIZE">HEADER_&lt;POSITION&gt;_SIZE</a>
-	<li><a href="_CAPS">HEADER_&lt;POSITION&gt;_CAPS</a>
+	<li><a href="#_FAMILY">HEADER_&lt;POSITION&gt;_FAMILY</a>
+	<li><a href="#_FONT">HEADER_&lt;POSITION&gt;_FONT</a>
+	<li><a href="#_SIZE">HEADER_&lt;POSITION&gt;_SIZE</a>
+	<li><a href="#_CAPS">HEADER_&lt;POSITION&gt;_CAPS</a>
 </ul>
 
 <hr width="33%" align="left">
@@ -893,6 +1075,18 @@ and want to change the separator rule gap.  In footers, the gap
 is measured from the top of the tallest
 <a href="definitions.html#TERMS_ASCENDER">ascender</a>
 in the footer.
+<p>
+<strong>ADDITIONAL NOTE:</strong> When using
+<a href="#HDRFTR_RECTOVERSO">FOOTER_RECTO</a>
+and
+<a href="#HDRFTR_RECTOVERSO">FOOTER_VERSO</a>,
+make sure that the default size for footers
+(<a href="#FOOTER_GLOBAL_SIZE">FOOTER_SIZE</a>)
+is set to the largest size of type that will be used in the
+footer or <strong>mom</strong> may not get the rule gap right.
+Inline changes to the size of type in
+<strong>FOOTER_RECTO</strong> and <strong>FOOTER_VERSO</strong>
+should always be negative (smaller) than the default.
 <br>
 <hr>
 
@@ -917,6 +1111,7 @@ with control macros.
 	<li><a href="#PAGENUMBER">PAGENUMBER</a> -- user-defined (starting) page number
 	<li><a href="#PAGENUM_STYLE">PAGENUM_STYLE</a> -- digits, roman numerals, etc
 	<li><a href="#PAGENUM_ON_FIRST_PAGE">PAGENUM_ON_FIRST_PAGE</a> -- applies only when footers are enabled
+	<li><a href="#DRAFT_WITH_PAGENUMBER">DRAFT_WITH_PAGENUMBER</a> -- attach draft/revision information to page numbers
 	<li><a href="#PAGINATE_CONTROL">Control macros</a>
 </ul>
 <br>
@@ -1012,6 +1207,35 @@ page of a document, but do want one on pages that appear after
 <a href="docprocessing.html#START">START</a>
 of the document, then invoke it either just before or after your
 first <strong>COLLATE</strong>.
+<br>
+
+<!---DRAFT_WITH_PAGENUMBER--->
+
+<hr width="66%" align="left">
+<p>
+<a name="DRAFT_WITH_PAGENUMBER"></a>
+Macro: <strong>DRAFT_WITH_PAGENUMBER</strong>
+
+<p>
+Sometimes, in
+<a href="docprocessing.html#COPYSTYLE">COPYSTYLE DRAFT</a>,
+the center part of page headers gets overcrowded because of the draft
+and revision information that go there by default.
+<strong>DRAFT_WITH_PAGENUMBER</strong> is one way to 
+fix the problem.
+<p>
+Invoked without an argument, <strong>DRAFT_WITH_PAGENUMBER</strong>
+removes draft/revision information from the page headers and attaches
+it instead to the document's page numbering, in the form
+<p>
+<pre>
+    Draft #, Rev. # / &lt;pagenumber&gt;
+</pre>
+
+See the note in
+<a href="docprocessing.html#COPYSTYLE">COPYSTYLE DRAFT</a>
+for other ways of dealing with crowded page headers when formatting
+draft-style copy.
 <br>
 <hr>
 

@@ -1,7 +1,51 @@
 groff 1.18
 ----------
 
-Mom version 1.1.1b is now part of groff.
+Mom version 1.1.2 is now part of groff.
+
+Release 1.1.2
+-------------
+
+***IT'S OFFICIAL!***
+mom is now an official part of the groff.  New releases will be
+incorporated into the groff package.  I'll still be posting each new
+release on the mom homepage, so there's no need to download all of the
+most recent version of groff just to get a newer mom. :)
+
+***CHANGES***
+Fixed default footer separator rule adjustment so that it's closer to
+the advertised "4 points above the tallest ascender in the footer."
+
+Added more stuff to the elvis_syn file.  Still wouldn't mind someone
+contributing some vim/emacs syntax highlighting.
+
+Added .cflags 4 /\(em to om.tmac.  By default, mom now obligingly
+breaks after / and \(en.
+
+***NEW***
+Macro(s): HEADER_RECTO
+          HEADER_VERSO
+With these macros, users can now define single-string recto/verso
+headers/footers.  HEADER_RECTO (or FOOTER_RECTO) can be used to create
+a one-part header/footer (instead of mom's default three-parters) that
+appears on every page if RECTO_VERSO is OFF or, if RECTO_VERSO is on, if
+no HEADER_VERSO (or FOOTER_VERSO) has been defined.  If a HEADER_VERSO
+(or FOOTER_VERSO) is defined and RECTO_VERSO is on, _RECTO prints on
+even pages and _VERSO on odd pages.
+
+Added macro DRAFT_WITH_PAGENUMBER so user can have draft/revision
+info attached to the pagenumber in COPYSTYLE DRAFT, instead of having
+it HEADER center.  Always having it HEADER center was creating problems
+with long doc titles, esp. with PRINTSTYLE TYPEWRITE (which is when
+COPYSTYLE DRAFT is most likely to be used).
+
+***FIXES***
+No more "can't break line" warnings in DOCTYPE LETTER.
+
+If no REVISION number is given, Rev. 0 no longer appears HEADER_CENTER
+in COPYSTYLE DRAFT
+
+PAGENUM_STYLE now works as advertised.
 
 Release 1.1.1
 -------------

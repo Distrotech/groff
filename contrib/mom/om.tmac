@@ -1,5 +1,7 @@
 .\" om.tmac
 .\"
+.\" Mom -- a typesetting/document-processing macro set for groff.
+.\"
 .\" Copyright (C) 2002 Free Software Foundation, Inc.
 .\"      Written by Peter Schaffter (df191@ncf.ca)
 .\"
@@ -61,6 +63,11 @@
 .ALIASN  #NUM_ARGS       .$     \"number of arguments passed to a macro
 .ALIASN  #INDENT         .i     \"value of current indent
 \#
+\# ====================================================================
+\#
+\# MISCELLANEOUS
+\# =============
+.cflags 4 /\(en
 \#
 \# ====================================================================
 \#
@@ -232,8 +239,8 @@
 \#
 \# Generic macros for breaking pages.
 \# 
-\# DO_HEADER
-\# ---------
+\# DO_T_MARGIN
+\# -----------
 \# *Argument:
 \#   <none>
 \# *Function:
@@ -248,8 +255,8 @@
 .END
 \#
 \#
-\# DO_FOOTER
-\# ---------
+\# DO_B_MARGIN
+\# -----------
 \# *Argument:
 \#   <none>
 \# *Function:
@@ -3051,51 +3058,92 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# Default
 .    if \\n[#DOC_TYPE]=1 \{\
 .       ie \\n[#COPY_STYLE]=1 \{\
+.          ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
+.          el \{ .PAGENUM_STYLE roman \}
 .          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{\
-.             ds $HDRFTR_CENTER \
-             \\*[$DRAFT_STRING] \\n[#DRAFT], \
-              \\*[$REVISION_STRING] \\n[#REVISION]
-.             PAGENUM_STYLE roman
+.             ie \\n[#DRAFT_WITH_PAGENUM] \{\
+.                ds $HDRFTR_CENTER
+.             \}
+.             el \{\
+.                ie !\\n[#REVISION] \{\
+.                   ds $HDRFTR_CENTER \
+                    \\*[$DRAFT_STRING] \\n[#DRAFT]
+.                \}
+.                el \{\
+.                   ds $HDRFTR_CENTER \
+                    \\*[$DRAFT_STRING] \\n[#DRAFT], \
+                    \\*[$REVISION_STRING] \\n[#REVISION]
+.                \}
+.             \}
 .          \}
 .       \}
 .       el \{\
+.          ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
+.          el \{ .PAGENUM_STYLE DIGIT \}
 .          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{ .ds $HDRFTR_CENTER \}
-.          PAGENUM_STYLE DIGIT
 .       \}
 .    \}
 \# Chapter
 .    if \\n[#DOC_TYPE]=2 \{\
 .       ie \\n[#COPY_STYLE]=1 \{\
+.          ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
+.          el \{ .PAGENUM_STYLE roman \}
 .          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{\
-.             ds $HDRFTR_CENTER \
-              \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
-              \\*[$DRAFT_STRING] \\n[#DRAFT], \
-              \\*[$REVISION_STRING] \\n[#REVISION]
-.             PAGENUM_STYLE roman
+.             ie \\n[#DRAFT_WITH_PAGENUM] \{\
+.                ds $HDRFTR_CENTER \\*[$CHAPTER_STRING] \\*[$CHAPTER]
+.             \}
+.             el \{\
+.                ie !\\n[#REVISION] \{\
+.                   ds $HDRFTR_CENTER \
+                    \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
+                    \\*[$DRAFT_STRING] \\n[#DRAFT]
+.                \}
+.                el \{\
+.                   ds $HDRFTR_CENTER \
+                    \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
+                    \\*[$DRAFT_STRING] \\n[#DRAFT], \
+                    \\*[$REVISION_STRING] \\n[#REVISION]
+.                \}
+.             \}
 .          \}
 .       \}
 .       el \{\
 .          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{\
+.             ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
+.             el \{ .PAGENUM_STYLE DIGIT \}
 .             ds $HDRFTR_CENTER \\*[$CHAPTER_STRING] \\*[$CHAPTER]
-.             PAGENUM_STYLE DIGIT
 .          \}
 .       \}
 .    \}
 \# Named
 .    if \\n[#DOC_TYPE]=3 \{\
 .       ie \\n[#COPY_STYLE]=1 \{\
-.          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{\
-.             ds $HDRFTR_CENTER \
-              \\*[$DOC_TYPE], \
-              \\*[$DRAFT_STRING] \\n[#DRAFT], \
-              \\*[$REVISION_STRING] \\n[#REVISION]
-.             PAGENUM_STYLE roman
+.          ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
+.          el \{ .PAGENUM_STYLE roman \}
+.          ie \\n[#DRAFT_WITH_PAGENUM] \{\
+.             ds $HDRFTR_CENTER \\*[$DOC_TYPE]
+.          \}
+.          el \{\
+.             if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{\
+.                ie !\\n[#REVISION] \{\
+.                   ds $HDRFTR_CENTER \
+                    \\*[$DOC_TYPE], \
+                    \\*[$DRAFT_STRING] \\n[#DRAFT]
+.                \}
+.                el \{\
+.                   ds $HDRFTR_CENTER \
+                    \\*[$DOC_TYPE], \
+                    \\*[$DRAFT_STRING] \\n[#DRAFT], \
+                    \\*[$REVISION_STRING] \\n[#REVISION]
+.                \}
+.             \}
 .          \}
 .       \}
 .       el \{\
 .          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{
+.             ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
+.             el \{ .PAGENUM_STYLE DIGIT \}
 .             ds $HDRFTR_CENTER \\*[$DOC_TYPE]
-.             PAGENUM_STYLE DIGIT
 .          \}
 .       \}
 .    \}
@@ -3135,6 +3183,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+.MAC DRAFT_WITH_PAGENUMBER END \"Attach draft/revision strings to page number
+.    nr #DRAFT_WITH_PAGENUM 1
+.END
+\#
+\#
 .MAC AUTHOR END \"Author.  Use "..." with this macro.
 .    nr #AUTHOR_NUM -1 1
 .    while \\n[#NUM_ARGS]>\\n[#AUTHOR_NUM] \{\
@@ -3147,7 +3200,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC PAGENUMBER END \"Page # that appears on page one.
-.    nr #n%_AT_PAGENUM_SET \\n%
 .    nr #n%_AT_PAGENUM_SET \\n%
 .    nr #PAGE_NUM_ADJ \\$1-\\n[#n%_AT_PAGENUM_SET]
 .    rr #n%_AT_PAGENUM_SET
@@ -3305,7 +3357,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .MAC DEFAULTS END
 .    if !d$PAPER \{ .PAPER LETTER \}
 .    if !\\n[#DOC_TYPE]   \{ .DOCTYPE DEFAULT \}
+.    if \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
 .    if !\\n[#COPY_STYLE] \{ .COPYSTYLE FINAL \}
+.    if \\n[#DRAFT_WITH_PAGENUM] \{ .COPYSTYLE \\*[$COPY_STYLE] \}
 .    if \\n[#DOC_TYPE]=4 \{\
 .       if !\\n[#USER_SET_L_LENGTH] \{\
 .          R_MARGIN \\n[#R_MARGIN]u
@@ -5081,26 +5135,38 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC HDRFTR_RULE END   \"To print rule under header/over footer.
 .    ie '\\$0'HDRFTR_RULE_INTERNAL' \{\
-.       if \\n[#PRINT_STYLE]=1 \{\
-.          nr #CAP_HEIGHT_ADJUST \\n[#CAP_HEIGHT]
-.       \}
-.       if \\n[#PRINT_STYLE]=2 \{\
-.          ie \\n[#LEFT_CAP_HEIGHT]>\\n[#CENTER_CAP_HEIGHT] \{\
-.             nr #CAP_HEIGHT_ADJUST \\n[#LEFT_CAP_HEIGHT]
+.       ie \\n[#USERDEF_HDRFTR] \{\
+.          nr #CAP_HEIGHT_ADJUST \\n[#HDRFTR_HEIGHT]
+.          PS 12
+.          if \\n[#HEADERS_ON] \{ .ALD \\n[#HDRFTR_RULE_GAP]u \}
+.          if \\n[#FOOTERS_ON] \{\
+.              RLD \\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
 .          \}
-.          el \{ .nr #CAP_HEIGHT_ADJUST \\n[#CENTER_CAP_HEIGHT] \}
-.          ie \\n[#CAP_HEIGHT_ADJUST]>\\n[#RIGHT_CAP_HEIGHT] \{\
-.             nr #CAP_HEIGHT_ADJUST \\n[#CAP_HEIGHT_ADJUST]
+.          PRINT \\l'\\n[#DOC_L_LENGTH]u'
+.          br
+.       \}
+.       el \{\
+.          if \\n[#PRINT_STYLE]=1 \{\
+.             nr #CAP_HEIGHT_ADJUST \\n[#CAP_HEIGHT]
 .          \}
-.          el \{ .nr #CAP_HEIGHT_ADJUST \\n[#RIGHT_CAP_HEIGHT] \}
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             ie \\n[#LEFT_CAP_HEIGHT]>\\n[#CENTER_CAP_HEIGHT] \{\
+.                nr #CAP_HEIGHT_ADJUST \\n[#LEFT_CAP_HEIGHT]
+.             \}
+.             el \{ .nr #CAP_HEIGHT_ADJUST \\n[#CENTER_CAP_HEIGHT] \}
+.             ie \\n[#CAP_HEIGHT_ADJUST]>\\n[#RIGHT_CAP_HEIGHT] \{\
+.                nr #CAP_HEIGHT_ADJUST \\n[#CAP_HEIGHT_ADJUST]
+.             \}
+.             el \{ .nr #CAP_HEIGHT_ADJUST \\n[#RIGHT_CAP_HEIGHT] \}
+.          \}
+.          PS 12
+.          if \\n[#HEADERS_ON] \{ .ALD \\n[#HDRFTR_RULE_GAP]u \}
+.          if \\n[#FOOTERS_ON] \{\
+.              RLD \\n[#LEAD]u*3u+\\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
+.          \}
+.          PRINT \\l'\\n[#DOC_L_LENGTH]u'
+.          br
 .       \}
-.       PS 12
-.       if \\n[#HEADERS_ON] \{ .ALD \\n[#HDRFTR_RULE_GAP]u \}
-.       if \\n[#FOOTERS_ON] \{\
-.           RLD \\n[#LEAD]u*3u+\\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u
-.       \}
-.       PRINT \\l'\\n[#DOC_L_LENGTH]u'
-.       br
 .    \}
 .    el \{\
 .       ie '\\$1'' \{ .nr #HDRFTR_RULE 1 \}
@@ -5169,6 +5235,56 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# USER DEFINED HDRFTR RECTO
+\# -------------------------
+\# *Arguments:
+\#   L | LEFT | C | CENTER | CENTER | R | RIGHT <hdrftr_recto_string>
+\# *Function:
+\#   Toggles #USERDEF_HDRFTR on, stores quad as #USERDEF_HDRFTR_RECTO_QUAD,
+\#   stores string in $USERDEF_HDRFTR_RECTO.
+\# *Notes:
+\#   For use when users don't want 3-part headers/footers, but rather
+\#   want to design their own headers/footers and need different
+\#   headers/footers on recto and verso pages.
+\#
+.MAC HDRFTR_RECTO END
+.    nr #USERDEF_HDRFTR 1
+.    if '\\$1'L'      \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 1 \}
+.    if '\\$1'LEFT'   \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 1 \}
+.    if '\\$1'C'      \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 2 \}
+.    if '\\$1'CENTER' \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 2 \}
+.    if '\\$1'CENTRE' \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 2 \}
+.    if '\\$1'R'      \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 3 \}
+.    if '\\$1'RIGHT'  \{ .nr #USERDEF_HDRFTR_RECTO_QUAD 3 \}
+.    ds $USERDEF_HDRFTR_RECTO \\$2
+.END
+\#
+\#
+\# USER DEFINED HDRFTR VERSO
+\# -------------------------
+\# *Arguments:
+\#   L | LEFT | C | CENTER | CENTER | R | RIGHT <hdrftr_verso_string>
+\# *Function:
+\#   Toggles #USERDEF_HDRFTR on, stores quad as #USERDEF_HDRFTR_VERSO_QUAD,
+\#   stores string in $USERDEF_HDRFTR_VERSO.
+\# *Notes:
+\#   For use when users don't want 3-part headers/footers, but rather
+\#   want to design their own headers/footers and need different
+\#   headers/footers on recto and verso pages.
+\#
+.MAC HDRFTR_VERSO END
+.    nr #USERDEF_HDRFTR 1
+.    if '\\$1'L'      \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 1 \}
+.    if '\\$1'LEFT'   \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 1 \}
+.    if '\\$1'C'      \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 2 \}
+.    if '\\$1'CENTER' \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 2 \}
+.    if '\\$1'CENTRE' \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 2 \}
+.    if '\\$1'R'      \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 3 \}
+.    if '\\$1'RIGHT'  \{ .nr #USERDEF_HDRFTR_VERSO_QUAD 3 \}
+.    ds $USERDEF_HDRFTR_VERSO \\$2
+.END
+\#
+\#
 \# PRINT FOOTER ON FIRST PAGE
 \# --------------------------
 \# *Arguments:
@@ -5223,6 +5339,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if \\n[#HEADERS_ON] \{ .vs 0 \}
+.    if \\n[#USERDEF_HDRFTR] \{\
+.       PRINT_USERDEF_HDRFTR
+.       return
+.    \}
 .    if \\n[#SWITCH_HDRFTR] \{\
 .       ds $HDRFTR_TMP_SWITCH             \\*[$HDRFTR_LEFT]
 .       ds $HDRFTR_LEFT                   \\*[$HDRFTR_RIGHT]
@@ -5342,6 +5462,87 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS OFF \}
 .    \}
+.    if \\n[#HDRFTR_RULE] \{\
+.       HDRFTR_RULE_INTERNAL
+.    \}
+.END
+\#
+\#
+\# PRINT USER DEFINED HEADER/FOOTER
+\# --------------------------------
+\# *Arguments:
+\#   <none>
+\# *Function:
+\#   Based on defaults or values entered by user, prints a single part
+\#   (i.e. not 3-part) title at either the top or the bottom of the page.
+\# *Notes:
+\#   Called from within PRINT_HDRFTR.
+\#
+.MAC PRINT_USERDEF_HDRFTR END
+.    nr #PAGENUMBER \\n%+\\n[#PAGE_NUM_ADJ]
+.    fc ^ #
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       FAMILY \\*[$HDRFTR_FAM]
+.       FT     R
+.       PS     \\n[#HDRFTR_PT_SIZE]u
+.    \}
+.    ie \\n[#RECTO_VERSO] \{\
+.       if o \{\
+.          if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=1 \{ .LEFT   \}
+.          if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 \{ .CENTER \}
+.          if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 \{ .RIGHT  \}
+.          PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.          EL
+.          if \\n[#FOOTERS_ON] \{\
+.             di NULL
+.             SIZESPECS
+.             nr #HDRFTR_HEIGHT \\n[#CAP_HEIGHT]
+.             di
+.          \}
+.       \}
+.       if e \{\
+.          ie !'\\*[$USERDEF_HDRFTR_VERSO]'' \{\
+.             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=1 \{ .LEFT   \}
+.             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=2 \{ .CENTER \}
+.             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=3 \{ .RIGHT  \}
+.          \}
+.          PRINT \\*[$USERDEF_HDRFTR_VERSO]
+.          EL
+.          if \\n[#FOOTERS_ON] \{\
+.             di NULL
+.             SIZESPECS
+.             nr #HDRFTR_HEIGHT \\n[#CAP_HEIGHT]
+.             di
+.          \}
+.          el \{\
+.             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=1 \{ .LEFT   \}
+.             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 \{ .CENTER \}
+.             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 \{ .RIGHT  \}
+.             PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.             EL
+.             if \\n[#FOOTERS_ON] \{\
+.                di NULL
+.                SIZESPECS
+.                nr #HDRFTR_HEIGHT \\n[#CAP_HEIGHT]
+.                di
+.             \}
+.          \}
+.       \}
+.    \}
+.    el \{\
+.       if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=1 \{ .LEFT   \}
+.       if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=2 \{ .CENTER \}
+.       if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=3 \{ .RIGHT  \}
+.       PRINT \\*[$USERDEF_HDRFTR_RECTO]
+.       EL
+.       if \\n[#FOOTERS_ON] \{\
+.          di NULL
+.          SIZESPECS
+.          nr #HDRFTR_HEIGHT \\n[#CAP_HEIGHT]
+.          di
+.       \}
+.    \}
+.    fc
 .    if \\n[#HDRFTR_RULE] \{\
 .       HDRFTR_RULE_INTERNAL
 .    \}
@@ -7015,27 +7216,23 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ie \\n[#PP_SPACE] \{\
-.          ie \\n[#HEAD]=1 \{ . \}
+.          ie \\n[#HEAD]>0 \{ . \}
 .          el \{\
-.             if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.             ie \\n[#START] \{ . \}
+.             el \{\
+.                if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.             \}
 .          \}
 .       \}
 .       el \{\
 .          ie \\n[#Q_DEPTH]<\\n[#TRAP_DISTANCE] \{\
 .             nr #Q_FITS 1
-.             ie \\n[#HEAD] \{\
-.                if \\n[#HEAD]=1 \{ . \}
-.             \}
+.             ie \\n[#HEAD]=1 \{ . \}
 .             el \{\
 .                ie \\n[#START] \{ . \}
 .                el \{\
-.                   ie \\n[#HEAD] \{\
-.                      if \\n[#HEAD]=1 \{ . \}
-.                   \}
-.                   el \{\
-.                      ie \\n[#FULLSPACE_QUOTES] \{ .ALD \\n[#LEAD]u \}
-.                      el \{ .ALD \\n[#LEAD]u/2u \}
-.                   \}
+.                   ie \\n[#FULLSPACE_QUOTES] \{ .ALD \\n[#DOC_LEAD]u \}
+.                   el \{ .ALD \\n[#DOC_LEAD]u/2u \}
 .                \}
 .             \}
 .          \}
@@ -7065,16 +7262,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ie \\n[#START] \{\
-.          ie \\n[#PP_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
-.          el \{\
-.             ie r#HEAD \{\
-.                if \\n[#HEAD]=1 \{ .ALD \\n[#DOC_LEAD]u \}
-.             \}
-.             el \{ .ALD \\n[#DOC_LEAD]u \}
-.          \}
+.          ie \\n[#PP_SPACE] \{ . \}
+.          el \{ .ALD \\n[#DOC_LEAD]u \}
 .       \}
 .       el \{\
-.          ie \\n[#PP_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
+.          ie \\n[#PP_SPACE] \{ . \}
 .          el \{\
 .             ie \\n[#HEAD]=1 \{ .ALD \\n[#DOC_LEAD]u \}
 .             el \{\
@@ -7084,8 +7276,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                       ALD \\n[#DOC_LEAD]u
 .                    \}
 .                    el \{\
-.                       ie \\n[#FULLSPACE_QUOTES] \{ .ALD \\n[#LEAD]u \}
-.                       el \{ .ALD \\n[#LEAD]u/2u \}
+.                       ie \\n[#FULLSPACE_QUOTES] \{ .ALD \\n[#DOC_LEAD]u \}
+.                       el \{ .ALD \\n[#DOC_LEAD]u/2u \}
 .                    \}
 .                \}
 .                el \{ .ALD \\n[#DOC_LEAD]u \}
@@ -7099,11 +7291,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    rr #LINEBREAK
 .    nr #PP_STYLE  1
 .    nr #END_QUOTE 1
-\#.    if \\n[#PRINT_STYLE]=1 \{\
-\#.       if \\n[#UNDERLINE_QUOTES] \{\
-\#.          UNDERLINE OFF
-\#.       \}
-\#.    \}
 .    po \\n[#L_MARGIN]u
 .    if \\n[#COLUMNS] \{ .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u \}
 .    nr #RESET_PP_INDENT \\n[#PP_INDENT]
@@ -7261,11 +7448,27 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Assigns user entered format to #PAGENUMBER.
 \#
 .MAC PAGENUM_STYLE END
-.    if '\\$1'DIGIT'  \{ .af #PAGENUMBER 1 \}
-.    if '\\$1'ROMAN'  \{ .af #PAGENUMBER I \}
-.    if '\\$1'roman'  \{ .af #PAGENUMBER i \}
-.    if '\\$1'ALPHA'  \{ .af #PAGENUMBER A \}
-.    if '\\$1'alpha'  \{ .af #PAGENUMBER a \}
+.    nr #PAGENUM_STYLE_SET 1
+.    if '\\$1'DIGIT'  \{\
+.       ds $PAGENUM_STYLE \\$1
+.       af #PAGENUMBER 1
+.    \}
+.    if '\\$1'ROMAN'  \{\
+.       ds $PAGENUM_STYLE \\$1
+.       af #PAGENUMBER I
+.    \}
+.    if '\\$1'roman'  \{\
+.       ds $PAGENUM_STYLE \\$1
+.       af #PAGENUMBER i
+.    \}
+.    if '\\$1'ALPHA'  \{\
+.       ds $PAGENUM_STYLE \\$1
+.       af #PAGENUMBER A
+.    \}
+.    if '\\$1'alpha'  \{\
+.       ds $PAGENUM_STYLE \\$1
+.       af #PAGENUMBER a
+.    \}
 .END
 \#
 \#
@@ -7343,8 +7546,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#PAGE_NUM_H_POS]=3 \{ .RIGHT  \}
 .    \}
 .    nr #PAGENUMBER \\n%+\\n[#PAGE_NUM_ADJ]
-.    ie \\n[#PAGE_NUM_HYPHENS] \{ .PRINT "- \\n[#PAGENUMBER] -" \}
-.    el \{ .PRINT "\\n[#PAGENUMBER]" \}
+.    ie \\n[#DRAFT_WITH_PAGENUM] \{\
+.       ie !\\n[#REVISION] \{ .PRINT "\\*[$DRAFT_STRING] \\n[#DRAFT] / \\n[#PAGENUMBER]" \}
+.       el \{ .PRINT "\\*[$DRAFT_STRING] \\n[#DRAFT], \\*[$REVISION_STRING] \\n[#REVISION] / \\n[#PAGENUMBER]" \}
+.    \}
+.    el \{\
+.       ie \\n[#PAGE_NUM_HYPHENS] \{ .PRINT "- \\n[#PAGENUMBER] -" \}
+.       el \{ .PRINT "\\n[#PAGENUMBER]" \}
+.    \}
 .    ev
 .END
 \#
@@ -8071,6 +8280,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS   HEADER_RIGHT_SIZE               HDRFTR_RIGHT_SIZE
 .ALIAS   HEADER_RIGHT_PS                 HDRFTR_RIGHT_SIZE
 .ALIAS   HEADER_RIGHT_CAPS               HDRFTR_RIGHT_CAPS
+.ALIAS   HEADER_RECTO                    HDRFTR_RECTO
+.ALIAS   HEADER_VERSO                    HDRFTR_VERSO
 .ALIAS   FOOTER_FAMILY                   HDRFTR_FAMILY
 .ALIAS   FOOTER_FAM                      HDRFTR_FAMILY
 .ALIAS   FOOTER_SIZE                     HDRFTR_SIZE
@@ -8109,6 +8320,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS   FOOTER_RIGHT_SIZE               HDRFTR_RIGHT_SIZE
 .ALIAS   FOOTER_RIGHT_PS                 HDRFTR_RIGHT_SIZE
 .ALIAS   FOOTER_RIGHT_CAPS               HDRFTR_RIGHT_CAPS
+.ALIAS   FOOTER_RECTO                    HDRFTR_RECTO
+.ALIAS   FOOTER_VERSO                    HDRFTR_VERSO
 .ALIAS   SWITCH_HEADERS                  SWITCH_HDRFTR
 .ALIAS   SWITCH_FOOTERS                  SWITCH_HDRFTR
 \#
@@ -8116,5 +8329,4 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .ALIAS   COL_BREAK                       COL_NEXT
 .ALIAS   PRINT_FOOTNOTE_RULE             FOOTNOTE_RULE
-\#
 \#

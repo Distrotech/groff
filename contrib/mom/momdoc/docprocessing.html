@@ -160,10 +160,11 @@
 		<li><a href="headfootpage.html#PAGINATION"><strong>PAGINATION</strong></a>
 		<br>
 		<ul>
-			<li><a href="headfootpage.html#PAGINATE">PAGINATE -- on or off</a>
-			<li><a href="headfootpage.html#PAGENUMBER">PAGENUMBER -- user supplied page number</a>
-			<li><a href="headfootpage.html#PAGENUM_STYLE">PAGENUM_STYLE -- digits, roman numerals, etc.</a>
-			<li><a href="headfootpage.html#PAGINATION_CONTROL">Pagination control</a>
+			<li><a href="headfootpage.html#PAGINATE">PAGINATE</a> -- on or off
+			<li><a href="headfootpage.html#PAGENUMBER">PAGENUMBER</a> -- user supplied page number
+			<li><a href="headfootpage.html#PAGENUM_STYLE">PAGENUM_STYLE</a> -- digits, roman numerals, etc.
+			<li><a href="headfootpage.html#DRAFT_WITH_PAGENUMBER">DRAFT_WITH_PAGENUMBER</a> -- attach draft/revision information to page numbers
+			<li><a href="headfootpage.html#PAGINATE_CONTROL">Pagination control</a>
 		</ul>
 		<br>
 		<li><a href="rectoverso.html#RECTOVERSO"><strong>RECTO_VERSO PRINTING and COLLATING</strong></a>
@@ -1021,23 +1022,57 @@ Macro: <strong>COPYSTYLE</strong> <var>DRAFT | FINAL</var>
 <strong>FINAL</strong>, so you don't have to use this macro unless
 you want to.
 <p>
-<strong>DRAFT</strong> starts your document on page 1, regardless
-of whether you've requested a different starting page number
-with
-<a href="headfootpage.html#PAGENUMBER">PAGENUMBER</a>.
-Page numbers are set in lower case roman numerals.
-<strong>Mom</strong> puts a draft and revision number (from the
-<a href="#DRAFT">DRAFT</a>
-and
-<a href="#REVISION">REVISION</a>
-<a href="#REFERENCE_MACROS">Reference Macros</a>)
-in
-<a href="definitions.html#TERMS_HEADER">page headers</a>
-along with all other information that normally appears there.
+<strong>COPYSTYLE DRAFT</strong> exhibits the following behaviour:
+<br>
+<ol>
+	<li>documents start on page 1, whether or not you
+		request a different starting page number with
+		<a href="headfootpage.html#PAGENUMBER">PAGENUMBER</a>
+	<li>page numbers are set in lower case roman numerals
+	<li>the draft number supplied by 
+		<a href="#DRAFT">DRAFT</a>
+		and a revision number, if supplied with 
+		<a href="#REVISION">REVISION</a>
+		(see
+		<a href="#REFERENCE_MACROS">reference macros</a>),
+		appear in the center part of
+		<a href="definitions.html#TERMS_HEADER">page headers</a>
+		(or footers, depending on which you'ves selected) along with
+		any other information that normally appears there.
+</ol>
 <p>
-<strong>FINAL</strong> respects the starting page number you give
-your document.  Page numbers are set in normal (arabic) digits, and
-no draft or revision number appears in the page headers.
+<strong>IMPORTANT:</strong> If you define your own center part for page
+headers with
+<a href="headfootpage.html#HDRFTR_CENTER">HEADER_CENTER</strong>,
+no draft and/or revision number will appear there.  If you want draft
+and revision information in this circumstance, use
+<a href="headfootpage.html#DRAFT_WITH_PAGENUMBER">DRAFT_WITH_PAGENUMBER</a>.
+<p>
+<strong>COPYSTYLE FINAL</strong> differs from <strong>DRAFT</strong> in that:
+<br>
+<ol>
+	<li>it respects the starting page number you give the document
+	<li>page numbers are set in normal (arabic) digits
+	<li>no draft or revision number appears in the page headers
+</ol>
+<p>
+<strong>NOTE:</strong> The center part of page headers can get crowded,
+especially with
+<a href="docprocessing.html#DOCTYPE">DOCTYPE CHAPTER</a>
+and
+<a href="docprocessing.html#DOCTYPE">DOCTYPE NAMED</a>,
+when the <strong>COPYSTYLE</strong> is <strong>DRAFT</strong>.
+Three mechanisms are available to overcome this problem.  One is to
+reduce the overall size of headers (with
+<a href="headfootpage.html#HDRFTR_GLOBAL_SIZE">HEADER_SIZE</a>).
+Another, which only works with
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>,
+is to reduce the size of the header's centre part only (with
+<a href="headfootpage.html#_SIZE">HEADER_CENTER_SIZE</a>).
+And finally, you can elect to have the draft/revsion information
+attached to page numbers instead of having it appear in the center
+of page headers (see
+<a href="headfootpage.html#DRAFT_WITH_PAGENUMBER">DRAFT_WITH_PAGENUMBER</a>).
 <br>
 <hr>
 

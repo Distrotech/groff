@@ -243,6 +243,7 @@ t                       "mark" register set in T_MARGIN; recalled in LS and AUTO
 #T_INDENT               Value of temporary indent
 #T_MARGIN               Top margin
 #T_MARGIN_SET           Did we set the top margin with T_MARGIN? (toggle)
+#USER_SET_L_LENGTH      Did user invoke LL? (toggle)
 u                       Horiz position of start of underscore
 
 +++STRINGS+++
@@ -417,6 +418,7 @@ DOCTYPE_SIZE             ps to use for doctype string in doc header
 DOCTYPE                  Type of doc (DEFAULT, CHAPTER, NAMED, LETTER)
 DO_QUOTE                 Print quote (invoked from QUOTE or BLOCKQUOTE)
 DRAFT_STRING             What to print whenever the word "draft" is required
+DRAFT_WITH_PAGENUMBER    Attach draft/revision info to page number (instead of putting it HEADER center)
 EPIGRAPH_AUTOLEAD        Autolead value for epigraphs
 EPIGRAPH_FAMILY          Family to use in epigraphs
 EPIGRAPH_FONT            Font to use in epigraphs
@@ -453,6 +455,7 @@ HDRFTR_LEFT              String to go in left part of header/footer; default aut
 HDRFTR_LEFT              The header/footer left string
 HDRFTR_MARGIN            Distance from top of page to header
 HDRFTR_PLAIN             Header/footer fam/ft/ps all same as running text
+HDRFTR_RECTO             User-defined, single string recto header/footer
 HDRFTR_RIGHT_CAPS        Right part of header/footer in caps? (toggle)
 HDRFTR_RIGHT_FAMILY      Family of right part of headers/footers
 HDRFTR_RIGHT_FONT        Font of right part of headers/footers
@@ -463,6 +466,7 @@ HDRFTR_RULE_INTERNAL     Prints the header/footer rule
 HDRFTR_RULE              Turns header/footer rule on or off
 HDRFTR_RULE              Turns header/footer rule on or off.  When invoked internally, prints the rule.
 HDRFTR_SIZE              ps in/decrease of headers/footers*
+HDRFTR_VERSO             User-defined, single string verso header/footer
 HEAD_CAPS                Print section titles in caps? (toggle)
 HEADER_GAP               Space between header and running text
 HEADER_MARGIN            Space from top of page to header
@@ -554,6 +558,7 @@ HDRFTR_RULE          Prints rule under header or over footer
 PRINT_FOOTNOTE_RULE  An alias of PRINT_FOOTNOTE; prints footnote separator rule
 PRINT_HDRFTR         Prints header/footer (trap invoked)
 PRINT_PAGE_NUMBER    Invoked in HEADER or FOOTER
+PRINT_USERDEF_HDRFTR Prints user defined, single string recto/verso header/footer
 REMOVE_INDENT        Removes indents set with CHECK_INDENT
 TRAPS                Sets hdrftr traps; optionally adjusts #DOC_LEAD to fill page to #B_MARGIN
 
@@ -596,6 +601,7 @@ dc                         "mark" register for document columns
 #DOCS                      Always 1 after START
 #DOC_TYPE                  1=default, 2=chapter, 3=named, 4=letter
 #DRAFT                     The draft number
+#DRAFT_WITH_PAGENUM        Are we attaching draft/revision info to page number? (toggle)
 #EM_ADJUST                 Amount to raise \(em at END
 #END_QUOTE                 For PP=0 indenting; did we just end a quote? (toggle)
 #EPI_ACTIVE                Are we in an epigraph? (toggle)
@@ -639,11 +645,12 @@ dc                         "mark" register for document columns
 #GREETING                  Is there a greeting (for letters)? 1=yes
 #GUTTER                    Width of gutter between columns
 #HDRFTR_CENTER_CAPS        Center part of header/footer in caps? (toggle; default=off)
+#HDRFTR_HEIGHT             Cap height of $HDRFTR_RECTO/$HDRFTR_VERSO strings
 #HDRFTR_LEFT_CAPS          Left part of header/footer in caps? (toggle; default=off)
 #HDRFTR_RIGHT_CAPS         Right part of header/footer in caps? (toggle; default=on)
 #HDRFTR_RULE_GAP           Space between header/footer and header/footer rule
 #HDRFTR_RULE               Print head/footer rule? (toggle)
-#HDRFTR_TMP_CAPS_SWITC H   Temporarily holds HDRFTR_LEFT_CAPS value if #SWITCH_HDRFTR=1
+#HDRFTR_TMP_CAPS_SWITCH    Temporarily holds HDRFTR_LEFT_CAPS value if #SWITCH_HDRFTR=1
 #HEAD                      1=main/section head 2=subhead
 #HEAD_CAPS                 Print section titles in caps? (toggle)
 #HEADER_GAP                Distance from header to running text
@@ -672,6 +679,7 @@ dc                         "mark" register for document columns
 #NUM_COLS                  Number of columns per page
 #PAGE_NUM_ADJ              What to add to n% to get #PAGENUMBER
 #PAGENUMBER                The page number
+#PAGENUM_STYLE_SET         Did we set pagenumber style? (toggle)
 #PAGE_NUM_H_POS            1=left 2=center 3=right; default=2
 #PAGE_NUM_HYPHENS          Print hyphens surrounding page numbers? (toggle)
 #PAGE_NUM_HYPHENS_SET      Did user set (or unset) hyphens around page numbers? (toggle)
@@ -724,6 +732,9 @@ dc                         "mark" register for document columns
 #UNDERLINE_QUOTE           Underline pquotes? (toggle)
 #UNDERLINE_SLANT           For TYPEWRITE.  1=yes; 0=no
 #UNDERLINE_WAS_ON          In HEADER to re-enable running text UNDERLINE (toggle)
+#USERDEF_HDRFTR            User defined single string recto/verso header/footer? (toggle)
+#USERDEF_HDRFTR_RECTO_QUAD 1=left, 2=center, 3=right
+#USERDEF_HDRFTR_VERSO_QUAD 1=left, 2=center, 3=right
 #USER_DEF_HEADER_CENTER    User defined center title? (1=yes); used in COPYSTYLE
 #USER_DEF_HEADER_LEFT      User defined center title? (1=yes); used in COPYSTYLE
 #USER_DEF_HEADER_RIGHT     User defined center title? (1=yes); used in COPYSTYLE
@@ -783,6 +794,7 @@ $HEAD_SIZE_CHANGE               ps in/decrease of section titles*
 $LINEBREAK_CHAR                 Character that marks line breaks
 $LINEBREAK_CHAR_V_ADJ           +|- amount by which to raise/lower linebreak character
 PAGE#                           For use in hdrftr strings where page # is needed; \*[PAGE]
+$PAGENUM_STYLE                  String passed to PAGENUM_STYLE
 $PAGE_NUM_FAM                   Family of page numbers
 $PAGE_NUM_FT                    Font of page numbers
 $PAGE_NUM_SIZE_CHANGE           ps in/decrease of page numbers
@@ -804,6 +816,8 @@ $TITLE                          Document title
 $TITLE_FAM                      Family to use for title in doc header
 $TITLE_FT                       Font to use for title in doc header
 $TITLE_SIZE_CHANGE              ps in/decrease of title in doc header*
+$USERDEF_HDRFTR_RECTO           User defined header/footer recto string
+$USERDEF_HDRFTR_VERSO           User defined header/footer verso string
 
  *relative to #DOC_PT_SIZE
 **relative to overall ps of headers as set by HEADER_SIZE
@@ -851,6 +865,7 @@ FOOTER_LEFT           HDRFTR_LEFT
 FOOTER_LEFT_PS        HDRFTR_LEFT_SIZE
 FOOTER_LEFT_SIZE      HDRFTR_LEFT_SIZE
 FOOTER_PLAIN          HDRFTR_PLAIN
+FOOTER_RECTO          HDRFTR_RECTO
 FOOTER_RIGHT_CAPS     HDRFTR_RIGHT_CAPS
 FOOTER_RIGHT_FAM      HDRFTR_RIGHT_FAMILY
 FOOTER_RIGHT_FAMILY   HDRFTR_RIGHT_FAMILY
@@ -862,6 +877,7 @@ FOOTER_RIGHT_SIZE     HDRFTR_RIGHT_SIZE
 FOOTER_RULE_GAP       HDRFTR_RULE_GAP
 FOOTER_RULE           HDRFTR_RULE
 FOOTER_SIZE           HDRFTR_SIZE
+FOOTER_VERSO          HDRFTR_VERSO
 HDRFTR_RULE_INTERNAL  HDRFTR_RULE
 HEADER_CENTER_CAPS    HDRFTR_CENTER_CAPS
 HEADER_CENTER_FAM     HDRFTR_CENTER_FAMILY
@@ -890,6 +906,7 @@ HEADER_LEFT           HDRFTR_LEFT
 HEADER_LEFT_PS        HDRFTR_LEFT_SIZE
 HEADER_LEFT_SIZE      HDRFTR_LEFT_SIZE
 HEADER_PLAIN          HDRFTR_PLAIN
+HEADER_RECTO          HDRFTR_RECTO
 HEADER_RIGHT_CAPS     HDRFTR_RIGHT_CAPS
 HEADER_RIGHT_FAM      HDRFTR_RIGHT_FAMILY
 HEADER_RIGHT_FAMILY   HDRFTR_RIGHT_FAMILY
@@ -901,6 +918,7 @@ HEADER_RIGHT_SIZE     HDRFTR_RIGHT_SIZE
 HEADER_RULE_GAP       HDRFTR_RULE_GAP
 HEADER_RULE           HDRFTR_RULE
 HEADER_SIZE           HDRFTR_SIZE
+HEADER_VERSO          HDRFTR_VERSO
 PAGENUM               PAGENUMBER
 PAGINATION            PAGINATE
 PP_FT                 PP_FONT
