@@ -46,13 +46,11 @@ Home of Groff (GNU Troff).
 .
 .HnS 1
 .HR
-GNU Troff
-.URL http://\:groff.ffii.org/ (Groff)
+GNU Troff (\c
+.URL http://\:groff.ffii.org/ Groff )
 \[em] a
 .URL http://\:www.gnu.org/ GNU
 project.
-Hosted by
-.URL http://\:ffii.org/ FFII .
 .HR
 .HnE
 .LK
@@ -70,18 +68,18 @@ Download
 
 The source code of the currently released versions of groff is
 available at the 
-.URL "ftp://\:groff.ffii.org/\:pub/\:groff/" "FFII host (Germany)" ,
+.URL "http://\:groff.ffii.org/\:groff/" "FFII host (Germany)" ,
 .URL "ftp://\:ftp.gnu.org/\:gnu/\:groff/" "GNU host (USA)" ,
 and its mirrors.
 .
-The USA site also contains more old, obsolete versions.
+The USA site also contains older, obsolete versions.
 
 The most actual pre-release, development version is available from a
 CVS repository, see below.
 .
 Development snapshots (produced twice a day from the CVS repository)
-can be downloaded with FTP from
-.URL "ftp://\:groff.ffii.org/\:pub/\:groff/devel" here .
+can be downloaded from
+.URL "http://\:groff.ffii.org/\:groff/\:devel" here .
 
 For a special version of groff on the Microsoft operating systems, see
 .URL "http://\:gnuwin32.sf.net/\:packages/\:groffl.htm" "Groff for Windows" .
@@ -90,10 +88,10 @@ GNU troff is released under the
 .URL http://\:www.gnu.org/\:copyleft/\:gpl.html "GNU Copyright License" .
 
 User issues lead:
-.MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
+.MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding" .
 .br
 Technical issues lead:
-.MTO wl@\:gnu.org "Werner Lemberg"
+.MTO wl@\:gnu.org "Werner Lemberg" .
 .
 .
 .SH
@@ -104,8 +102,8 @@ The version number is given in the file VERSION.
 
 Included in this release are implementations of troff, pic, eqn, tbl,
 grn, refer, \-man, \-mdoc, and \-ms macros, and drivers for PostScript,
-TeX dvi format, HP LaserJet 4 printers, Canon CAPSL printers, HTML format
-(still alpha), and typewriter-like devices.
+TeX dvi format, HP LaserJet\~4 printers, Canon CAPSL printers, HTML format
+(beta status), and typewriter-like devices.
 Also included is a modified version of the Berkeley \-me macros, an enhanced
 version of the X11 xditview previewer, and an implementation of the \-mm
 macros contributed by
@@ -125,27 +123,28 @@ compiling, installing, and running groff.
 The most recent released version of groff is always available by anonymous
 ftp from ftp.gnu.org in the directory pub/\:gnu/\:groff.
 
-A CVS repository is available, containing the current development
-version of groff.
+A
+.URL "http://\:savannah.gnu.org/\:cvs/\:?group=groff" "CVS repository"
+is available, containing the current development version of groff.
 You can access it with the commands
 
 .in 2m
 .nf
 .ft C
-export CVSROOT=:pserver:anoncvs@anoncvs.ffii.org:/var/cvs
-cvs login
+export CVSROOT=:ext:anoncvs@savannah.gnu.org:/cvsroot/groff
+export CVS_RSH=ssh
 cvs -z9 co groff
 .ft P
 .fi
 .in
 
-(if the prompt for the password appears, just press the enter key).
-After a successful login you no longer need the first two commands; an
-update of a checked out repository should be done with
+Note that you need an SSH client for security reasons.    
+
+An update of a checked out repository should be done with
 
 .in 2m
 .ft C
-cvs -z9 update -dP
+CVS_RSH=ssh cvs -z9 update -dP
 .ft P
 .in
 
@@ -153,12 +152,12 @@ Please read the info pages of cvs for further details.
 
 Alternatively, you can download snapshots (which are updated twice a day)
 from
-.URL ftp://\:ftp.ffii.org/\:pub/\:groff/\:devel/\:groff-current.tar.gz here
+.URL http://\:groff.ffii.org/\:groff/\:devel/\:groff-current.tar.gz here
 or a diff file relative to the latest official groff release as
 
 .in 2m
 .ft C
-ftp://ftp.ffii.org/pub/groff/devel/groff-\[la]version\[ra]-current.diff.gz
+http://groff.ffii.org/groff/devel/groff-\[la]version\[ra]-current.diff.gz
 .ft P
 .in
 
@@ -180,8 +179,8 @@ Finally, it is possible to access the CVS with a browser by pointing it
 to
 
 .in 2m
-.URL http://www.ffii.org/cgi-bin/viewcvs.cgi/groff \
-     http://www.ffii.org/cgi-bin/viewcvs.cgi/groff
+.URL http://savannah.gnu.org/cvs/?group=groff \
+     http://savannah.gnu.org/cvs/?group=groff
 .in
 
 Please report bugs using the form in the file BUG-REPORT; the idea of this
@@ -200,25 +199,23 @@ Three mailing lists are available:
 for reporting bugs
 
 .LI
-.MTO groff@ffii.org groff@ffii.org
+.MTO groff@gnu.org groff@gnu.org
 for general discussion of groff
 
 .LI
-.MTO groff-commit@ffii.org groff-commit@ffii.org
-a read-only list showing logs of commitments to the CVS repository
+.MTO groff-commit@gnu.org groff-commit@gnu.org
+a read-only list showing commitments to the CVS repository
 .ULE
 
-Note that groff@gnu.org is an alias for
-.MTO groff@\:ffii.org groff@\:ffii.org ;
-you must be subscribed to the `groff' list to send mails.
+You must be subscribed to the `groff' list to send mails.
 
 To subscribe, send e-mail to \[la]list\[ra]-request@\[la]domain\[ra]
 (example:
-.MTO groff-request@\:ffii.org groff-request@\:ffii.org )
+.MTO groff-request@\:gnu.org groff-request@\:gnu.org )
 with the word `subscribe' in either the
 subject or body of the e-mail (don't include the quotes) or have a look
 at the
-.URL http://\:ffii.org/\:mailman/\:listinfo/\:groff/ \
+.URL http://\:lists.gnu.org/\:mailman/\:listinfo/\:groff/ \
      "groff mailing list webpage" .
 
 GNU groff was written by

@@ -4,7 +4,7 @@ is given in the file VERSION.
 Included in this release are implementations of troff, pic, eqn, tbl,
 grn, refer, -man, -mdoc, -mom, and -ms macros, and drivers for PostScript,
 TeX dvi format, HP LaserJet 4 printers, Canon CAPSL printers, HTML format
-(still alpha), and typewriter-like devices.  Also included is a modified
+(beta status), and typewriter-like devices.  Also included is a modified
 version of the Berkeley -me macros, an enhanced version of the X11
 xditview previewer, and an implementation of the -mm macros contributed
 by Joergen Haegg (jh@axis.se).
@@ -22,29 +22,30 @@ in compiling, installing, and running groff.
 The most recent released version of groff is always available by
 anonymous ftp from ftp.gnu.org in the directory pub/gnu/groff.
 
-A CVS repository is available, containing the current development
-version of groff.  You can access it with the commands
+A CVS repository is available (http://savannah.gnu.org/cvs/?group=groff),
+containing the current development version of groff.  You can access it
+with the commands
 
-  export CVSROOT=:pserver:anoncvs@anoncvs.ffii.org:/var/cvs
-  cvs login
+  export CVSROOT=:ext:anoncvs@savannah.gnu.org:/cvsroot/groff
+  export CVS_RSH=ssh
   cvs -z9 co groff
 
-(if the prompt for the password appears, just press the enter key).
-After a successful login you no longer need the first two commands; an
-update of a checked out repository should be done with
+Note that you need an SSH client for security reasons.
 
-  cvs -z9 update -dP
+An update of a checked out repository should be done with
+
+  CVS_RSH=ssh cvs -z9 update -dP
 
 Please read the info pages of cvs for further details.
 
 Alternatively, you can download snapshots (which are updated twice a
 day) from
 
-  ftp://ftp.ffii.org/pub/groff/devel/groff-current.tar.gz
+  http://groff.ffii.org/groff/groff-current.tar.gz
 
 or a diff file relative to the latest official groff release as
 
-  ftp://ftp.ffii.org/pub/groff/devel/groff-<version>-current.diff.gz
+  http://groff.ffii.org/groff/groff-<version>-current.diff.gz
 
 Assuming that groff-<version>.tar.gz and
 groff-<version>-current.diff.gz are in the same directory, do the
@@ -57,7 +58,7 @@ following to apply the diff file:
 Finally, it is possible to access the CVS with a browser by pointing it
 to
 
-  http://www.ffii.org/cgi-bin/viewcvs.cgi/groff
+  http://savannah.gnu.org/cvs/?group=groff
 
 Please report bugs using the form in the file BUG-REPORT; the idea of
 this is to make sure that FSF has all the information it needs to fix
@@ -69,19 +70,18 @@ enable us to determine whether it really is a bug or not.
 Three mailing lists are available:
 
   bug-groff@gnu.org          for reporting bugs
-  groff@ffii.org             for general discussion of groff
-  groff-commit@ffii.org      a read-only list showing logs of
-                             commitments to the CVS repository
+  groff@gnu.org              for general discussion of groff
+  groff-commit@gnu.org       a read-only list showing commitments
+                             to the CVS repository
 
-Note that groff@gnu.org is an alias for groff@ffii.org; you must be
-subscribed to the `groff' list to send mails.
+You must be subscribed to the `groff' list to send mails.
 
 To subscribe, send a mail to <list>-request@<domain> (example:
-groff-request@ffii.org) with the word `subscribe' in either the subject
+groff-request@gnu.org) with the word `subscribe' in either the subject
 or body of the email (don't include the quotes) or have a look at the
 groff mailing list web page at
 
-  http://ffii.org/mailman/listinfo/groff
+  http://list.gnu.org/mailman/listinfo/groff
 
 GNU groff was written by James Clark <jjc@jclark.com>.  It is now
 maintained by Ted Harding <ted.harding@nessie.mcc.ac.uk> and Werner
