@@ -287,7 +287,7 @@ make_message (const char *fmt, ...)
       strcpy(np, p);
       strcat(np, s);
       strcat(np, l);
-      search += strlen(s)-2;
+      search += strlen(s);
       break;
     case '%':
       /* remove one of the two % that we have seen */

@@ -767,9 +767,10 @@ void space_request()
 void blank_line()
 {
   curenv->do_break();
-  if (!trap_sprung_flag && !curdiv->no_space_mode)
+  if (!trap_sprung_flag && !curdiv->no_space_mode) {
     curdiv->space(curenv->get_vertical_spacing());
-  else
+    curenv->add_html_tag(".sp", 1);
+  } else
     truncated_space += curenv->get_vertical_spacing();
 }
 
