@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote output.cpp
  *  but it owes a huge amount of ideas and raw code from
@@ -253,6 +253,19 @@ simple_output &simple_output::space_or_newline (void)
 }
 
 /*
+ *  force_nl - forces a newline.
+ */
+
+simple_output &simple_output::force_nl (void)
+{
+  space_or_newline();
+  col += last_word.flush(fp);
+  FPUTC('\n', fp);
+  col = 0;
+  return *this ;
+}
+
+/*
  *  nl - writes a newline providing that we
  *       are not in the first column.
  */
@@ -261,10 +274,8 @@ simple_output &simple_output::nl (void)
 {
   space_or_newline();
   col += last_word.flush(fp);
-  if (col != 0) {
-    FPUTC('\n', fp);
-    col = 0;
-  }
+  FPUTC('\n', fp);
+  col = 0;
   return *this ;
 }
 

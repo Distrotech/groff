@@ -45,15 +45,17 @@ class macro_header;
 struct node;
 
 class macro : public request_or_macro {
-  macro_header *p;
   const char *filename;		// where was it defined?
   int lineno;
   int len;
   int empty_macro;
+  int is_a_diversion;
 public:
+  macro_header *p;
   macro();
   ~macro();
   macro(const macro &);
+  macro(int);
   macro &operator=(const macro &);
   void append(unsigned char);
   void append(node *);
@@ -67,6 +69,7 @@ public:
   macro *to_macro();
   void print_size();
   int empty();
+  int is_diversion();
   friend class string_iterator;
   friend void chop_macro();
   friend void substring_request();

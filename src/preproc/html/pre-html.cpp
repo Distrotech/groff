@@ -1546,7 +1546,7 @@ static int scanArguments(int argc, char **argv)
     { NULL, 0, 0, 0 }
   };
   while ((c = getopt_long(argc, argv,
-			  "+a:g:o:i:I:j:D:F:vbdhlrnp", long_options, NULL))
+			  "+a:g:o:i:I:j:D:F:s:vbdhlrnp", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -1582,6 +1582,9 @@ static int scanArguments(int argc, char **argv)
       break;
     case 'F':
       font_path.command_line_dir(optarg);
+      break;
+    case 's':
+      // handled by post-grohtml (use font size n as the html base font size)
       break;
     case 'j':
       // handled by post-grohtml (set job name for multiple file output)

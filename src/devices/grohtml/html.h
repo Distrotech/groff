@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2004 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -72,6 +72,7 @@ public:
   simple_output &enable_newlines(int);
   simple_output &check_newline(int n);
   simple_output &nl(void);
+  simple_output &force_nl(void);
   simple_output &space_or_newline (void);
   simple_output &begin_tag (void);
   FILE *get_file();

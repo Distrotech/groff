@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-table.h
  *
@@ -45,6 +45,7 @@ public:
   void  clear         (void);
   int   compatible    (const char *s);
   void  init          (const char *s);
+  void  check_init    (const char *s);
   int   find_tab      (int pos);
   int   get_tab_pos   (int n);
   char  get_tab_align (int n);

@@ -1,3 +1,94 @@
+2004-10-11  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* src/roff/troff/request.h (macro): Make `p' public.
+	New variable `is_a_diversion'.
+	New member function `is_diversion'.
+
+
+	* src/devices/grohtml/html.h (simple_output): New member function
+	`force_nl'.
+
+	* src/devices/grohtml/html-table.cpp (tabs::compatible): Fix
+	computation of `total'.
+	(tabs::check_init): New function.
+	(html_table::emit_table_header): Emit style data.
+	(html_table::insert_column): Improved.
+
+	* src/devices/grohtml/html-table.h: Updated.
+
+	* src/devices/grohtml/html-text.cpp (html_text::html_text):
+	Initialize `start_space' with TRUE.
+	(html_text::end_tag, html_start_tag): Fix `P_TAG' and `PRE_TAG'
+	cases.
+	(html_text::flush_text): Set `start_space' flag.
+	(html_text::uses_indent, html_text::remove_para_space,
+	html_text::get_alignment): New functions.
+	(html_text::push_para): Updated.
+	(html_text::do_para): Check for empty argument.
+	Don't set `space_emitted'.
+	(html_text::do_space, html_text::emit_space): Updated.
+
+	* src/devices/grohtml/html-text.h (tag_definition): New variable
+	`really_issued'.
+	(html_text): New member function `uses_indent', `remove_para_space',
+	`get_alignment'.
+
+	* src/devices/grohtml/output.cpp (simple_output::force_nl): New
+	function.
+	(simple_output:nl): Always emit `\n'.
+
+	* src/devices/grohtml/post-html.cpp: Include `string.h'.
+	(BASE_POINT_SIZE): Removed.
+	(base_point_size, head_info): New global variables.
+	(text_glob): New member functions `is_ll', `is_tl', `is_eo_tl',
+	`is_eo_h'.
+	(text_glob::is_nf, text_glob::is_fi): Handle `.fi 0' and `.fi 1'
+	tags, respectively.
+	(page::add_and_encode): Pass additional parameter for tag flag.
+	(assert_pos): New structure.
+	(assert_state): New class.
+	(html_printer): Remove `indentation', `prev_indent'.
+	Add variables `troff_indent', `device_indent', `temp_indent'.
+	Add variables `seen_indent', `next_indent', `seen_pageoffset',
+	`next_pageoffset', `seen_linelenght', `next_linelength',
+	`seen_center', `next_center', `seen_space', `seen_break', `as'.
+	Add member functions `do_check_center', `do_space', `do_head',
+	`get_troff_indent', `restore_troff_indent', `handle_assertion',
+	`handle_state_assertion', `do_end_para', `set_char_and_width'.
+	Change argument to `do_fill' to `char *'.
+	Update constructor.
+	(html_printer::emit_raw): Call `shutdown_table'.
+	Use new functions.
+	(html_printer::do_center): Simplified.
+	(html_printer::do_title): Improved.
+	(html_printer::write_header): Emit one more newline.
+	Use new functions.
+	(html_printer::do_heading, html_printer::do_indent,
+	html_printer::do_eol, html_printer::do_tab_ts,
+	html_printer::do_tab, html_printer::do_tab0,
+	html_printer::calc_po_in, html_printer::next_horiz_pos,
+	html_printer::remove_courier_tabs,
+	html_printer::insert_tab0_foreach_tab, html_printer::begin_page):
+	Updated.
+	(html_printer::do_linelength, html_printer::do_pageoffset,
+	html_printer::do_indentation, html_printer::do_tempindent,
+	html_printer::do_tab_te): Simplified.
+	(html_printer::do_pointsize): Check whether point size is really
+	associated a `.tl' tag.
+	(html_printer::do_break): Rewritten.
+	(html_printer::troff_tag): Improved.
+	(html_printer::flush_globs): Updated.
+	(html_printer::lookahead_for_tables): Handle `is_br'.
+	Use new functions.
+	(html_printer::set_char): Check `sbuf_style.f'.
+	(html_printer::write_navigation): Use string comparison.
+	(html_printer::~html_printer): Emit `head_info'.
+	(html_printer::special): Rewritten.
+	(get_str, make_val): New functions.
+	(main): New option `s' to set the base point size.
+
+	* src/preproc/html/pre-html.cpp (scanArguments): Handle option `s'.
+
 2004-10-10  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/roff/troff/node.cpp: New extern `debug_state'.

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-table.cpp
  *
@@ -104,7 +104,7 @@ int tabs::compatible (const char *s)
     while ((*s != (char)0) && isspace(*s))
       s++;
     // collect tab position
-    total += atoi(s);
+    total = atoi(s);
     // move over tab position
     while ((*s != (char)0) && !isspace(*s))
       s++;
@@ -159,6 +159,16 @@ void tabs::init (const char *s)
     last->position = total;
     last->next = NULL;    
   }
+}
+
+/*
+ *  check_init - define tab stops using, s, providing none already exist.
+ */
+
+void tabs::check_init (const char *s)
+{
+  if (tab == NULL)
+    init(s);
 }
 
 /*
@@ -326,10 +336,21 @@ void html_table::emit_table_header (int space)
 
     out->nl();
     out->nl();
+
+#if 0
     if (space)
       out->put_string("<p>");
+#endif
+
     start_space = space;
-    out->put_string("<table width=\"100%\" border=0 rules=\"none\" frame=\"void\"\n       cols=\"").put_number(n).put_string("\" cellspacing=\"0\" cellpadding=\"0\">").nl();
+    out->put_string("<table width=\"100%\"")
+      .put_string(" border=0 rules=\"none\" frame=\"void\"\n")
+      .put_string("       cols=\"")
+      .put_number(n)
+      .put_string("\" cellspacing=\"0\" cellpadding=\"0\"")
+      .put_string(start_space ? " style=\"margin-top: 8px; margin-bottom: 8px\"" : "")
+      .put_string(">")
+      .nl();
     out->put_string("<tr valign=\"top\" align=\"left\">").nl();
   }
 }
@@ -468,11 +489,11 @@ void html_table::emit_new_row (void)
 void html_table::emit_finish_table (void)
 {
   finish_row();
-  // out->put_string("linelength = ").put_number(linelength).nl();
   out->put_string("</table>");
+#if 0
   if (start_space)
     out->put_string("</p>");
-  out->nl();
+#endif
 }
 
 /*
@@ -516,13 +537,23 @@ cols *html_table::get_column (int coln)
 int html_table::insert_column (int coln, int hstart, int hend, char align)
 {
   cols *c = columns;
-  cols *l = NULL;
+  cols *l = columns;
   cols *n = NULL;
 
   while (c != NULL && c->no < coln) {
     l = c;
     c = c->next;
   }
+  if (l != NULL && l->no>coln && hend > l->left)
+    return FALSE;	// new column bumps into previous one
+
+  l = NULL;
+  c = columns;
+  while (c != NULL && c->no < coln) {
+    l = c;
+    c = c->next;
+  }
+
   if ((l != NULL) && (hstart < l->right))
     return FALSE;	// new column bumps into previous one
   

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.h
  *
@@ -41,6 +41,7 @@ typedef struct tag_definition {
   void           *arg1;
   int             text_emitted;
   color           col;
+  int             really_issued;
   html_indent    *indent;
   tag_definition *next;
 } tag_definition ;
@@ -89,9 +90,12 @@ public:
   int    starts_with_space (void);
   void   emit_space        (void);
   int    is_in_pre         (void);
+  int    uses_indent       (void);
   void   remove_tag        (HTML_TAG tag);
   void   remove_sub_sup    (void);
   void   remove_para_align (void);
+  void   remove_para_space (void);
+  char  *get_alignment     (void);
 
 private:
   tag_definition   *stackptr;    /* the current paragraph state */
