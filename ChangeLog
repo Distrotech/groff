@@ -1,3 +1,31 @@
+2001-03-04  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Fixed grohtml handling of any named glyph for glyph indexes < 0x80. 
+	Cosmetic changes to `.html-begin', `.html-end', `.html-image' which
+	are now `.begin', `.end', `.image'.
+
+	* src/devices/grohtml/post-html.cc: Adding UNICODE_DESC_START.
+	(html_printer::add_to_sbuf): Changing type of `code' parameter.
+	Use add_char_to_sbuf().
+	(to_unicode): New function.
+	(char_translate_to_html): Changing type of `ch' parameter.
+	Use `to_unicode()'.
+	(html_printer::~html_printer): Comment out doctype string.
+	* src/preproc/html/pre-html.cc (write_end_image): Use `.end'
+	instead of `.html-end'.
+	(write_start_image): Use `.begin' and `.image' instead of
+	`.html-begin' and `.html-image'.
+	* src/roff/troff/input.cc: Rename `html_level' to `begin_level'.
+	(html_begin): Renamed to ...
+	(begin): This.
+	(html_end): Renamed to ...
+	(end): This.
+	(html_image): Renamed to ...
+	(image): This.
+	(init_html_requests): Renamed to ...
+	(init_markup_requests): This.
+	* tmac/www.tmac: Updated.
+
 2001-02-28  Bram  <bram@avontuur.org>
 
 	* src/libs/libgroff/font.cc (font_widths_cache): Fixing syntax of

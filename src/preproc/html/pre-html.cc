@@ -258,7 +258,7 @@ void makeFileName ()
 
 static void write_end_image (int is_html)
 {
-  writeString(".html-end \\{\\\n");
+  writeString(".end \\{\\\n");
   if (is_html) {
     /*
      *  emit image name and enable output
@@ -283,21 +283,21 @@ static void write_end_image (int is_html)
 
 static void write_start_image (IMAGE_ALIGNMENT pos, int is_html)
 {
-  writeString(".html-begin \\{\\\n");
+  writeString(".begin \\{\\\n");
   switch (pos) {
 
   case LEFT:
-    writeString(".    html-image l ");
+    writeString(".    image l ");
     break;
   case RIGHT:
-    writeString(".    html-image r ");
+    writeString(".    image r ");
     break;
   case INLINE:
-    writeString(".    html-image i ");
+    writeString(".    image i ");
     break;
   case CENTERED:
   default:
-    writeString(".    html-image c ");
+    writeString(".    image c ");
   }
   writeString(image_template); writeString(".png\n");
   if (is_html) {

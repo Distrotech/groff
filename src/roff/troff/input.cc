@@ -111,7 +111,7 @@ int compatible_flag = 0;
 int ascii_output_flag = 0;
 int suppress_output_flag = 0;
 int is_html = 0;
-int html_level = 0;		// number of nested .html-begin requests
+int begin_level = 0;		// number of nested .begin requests
 
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
@@ -4477,46 +4477,46 @@ void else_request()
 }
 
 /*
- *  html_begin - if this is the outermost html_begin request then execute the
+ *  begin - if this is the outermost html_begin request then execute the
  *               rest of the line, else skip line
  */
 
-void html_begin()
+void begin()
 {
-  html_level++;
-  if (html_level == 1)
+  begin_level++;
+  if (begin_level == 1)
     begin_alternative();
   else
     skip_alternative();
 }
 
 /*
- *  html_end - if this is the outermost html_end request then execute the
- *  rest of the line, else skip line
+ *  end - if this is the outermost html_end request then execute the
+ *        rest of the line, else skip line
  */
 
-void html_end()
+void end()
 {
-  html_level--;
-  if (html_level == 0)
+  begin_level--;
+  if (begin_level == 0)
     begin_alternative();
   else
     skip_alternative();
-  if (html_level < 0)
-    html_level = 0;
+  if (begin_level < 0)
+    begin_level = 0;
 }
 
 /*
- *  html_image - implements the directive `.html_image {l|r|c|i} filename'
- *               which places the filename into a node which is later
- *               written out
+ *  image - implements the directive `.image {l|r|c|i} filename'
+ *          which places the filename into a node which is later
+ *          written out
  *
- *               . either as a special in the form of an image tag for -Thtml
- *               . or as an image region definition for all other devices
+ *          . either as a special in the form of an image tag for -Thtml
+ *          . or as an image region definition for all other devices
  *
  */
 
-void html_image()
+void image()
 {
   if (has_arg()) {
     char position = tok.ch();
@@ -6154,7 +6154,7 @@ int main(int argc, char **argv)
   init_column_requests();
 #endif /* COLUMN */
   init_node_requests();
-  init_html_requests();
+  init_markup_requests();
   number_reg_dictionary.define(".T", new constant_reg(tflag ? "1" : "0"));
   init_registers();
   init_reg_requests();
@@ -6268,11 +6268,11 @@ void get_output_registers(int *minx, int *miny, int *maxx, int *maxy)
   *maxy = output_reg_maxy_contents;
 }
 
-void init_html_requests()
+void init_markup_requests()
 {
-  init_request("html-begin", html_begin);
-  init_request("html-end", html_end);
-  init_request("html-image", html_image);
+  init_request("begin", begin);
+  init_request("end", end);
+  init_request("image", image);
 }
 
 void init_input_requests()

@@ -52,6 +52,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #define BASE_POINT_SIZE                10            /* 10 points is the base size ie html size 3 */
 #define CENTER_TOLERANCE                2            /* how many pixels off center will we still  */
 #define ANCHOR_TEMPLATE       "heading%d"            /* if simple anchor is set we use this       */
+#define UNICODE_DESC_START           0x80            /* all character entities above this are     */
+                                                     /* either encoded by their glyph names or if */
+                                                     /* there is no name then we use &#nnn;       */
 
 typedef enum {CENTERED, LEFT, RIGHT, INLINE} TAG_ALIGNMENT;
 
@@ -985,7 +988,7 @@ class html_printer : public printer {
   void  terminate_current_font        (void);
   void  flush_font                    (void);
   void  add_char_to_sbuf              (unsigned char code);
-  void  add_to_sbuf                   (char code, const char *name);
+  void  add_to_sbuf                   (unsigned char code, const char *name);
   void  write_title                   (int in_head);
   void  determine_diacritical_mark    (const char *name, const environment *env);
   int   sbuf_continuation             (unsigned char code, const char *name, const environment *env, int w);
@@ -2127,15 +2130,19 @@ void html_printer::add_char_to_sbuf (unsigned char code)
  *  add_to_sbuf - adds character code or name to the sbuf.
  */
 
-void html_printer::add_to_sbuf (char code, const char *name)
+void html_printer::add_to_sbuf (unsigned char code, const char *name)
 {
+  if (code == 255) stop();
+
   if (name == 0) {
     add_char_to_sbuf(code);
   } else {
     if (sbuf_style.f != NULL) {
       char *html_glyph = get_html_translation(sbuf_style.f, name);
 
-      if (html_glyph != NULL) {
+      if (html_glyph == NULL) {
+	add_char_to_sbuf(code);
+      } else {
 	int   l          = strlen(html_glyph);
 	int   i;
 
@@ -2300,11 +2307,24 @@ char *get_html_translation (font *f, const char *name)
 }
 
 /*
+ *  to_unicode - returns a unicode translation of char, ch.
+ */
+
+static char *to_unicode (unsigned char ch)
+{
+  static char buf[20];
+
+  stop();
+  sprintf(buf, "&#%u;", (unsigned int)ch);
+  return( buf );
+}
+
+/*
  *  char_translate_to_html - convert a single non escaped character
  *                           into the appropriate html character.
  */
 
-int char_translate_to_html (font *f, char *buf, int buflen, char ch, int b, int and_single)
+int char_translate_to_html (font *f, char *buf, int buflen, unsigned char ch, int b, int and_single)
 {
   if (and_single) {
     int    t, l;
@@ -2314,6 +2334,9 @@ int char_translate_to_html (font *f, char *buf, int buflen, char ch, int b, int 
     name[0] = ch;
     name[1] = (char)0;
     translation = get_html_translation(f, name);
+    if ((translation == NULL) && (ch >= UNICODE_DESC_START)) {
+      translation = to_unicode(ch);
+    }
     if (translation) {
       l = strlen(translation);
       t = max(0, min(l, buflen-b));
@@ -2461,6 +2484,9 @@ void html_printer::write_title (int in_head)
       html.put_string(title.text);
       html.put_string("</h1>\n\n");
     }
+  } else if (in_head) {
+    // place empty title tags to help conform to `tidy'
+    html.put_string("<title></title>\n");
   }
 }
 
@@ -2507,6 +2533,7 @@ html_printer::~html_printer()
 {
   current_paragraph->done_para();
   html.set_file(stdout);
+  // fputs("<!doctype html public \"-//IETF//DTD HTML 4.0//EN\">\n", stdout);
   fputs("<html>\n", stdout);
   fputs("<head>\n", stdout);
   fputs("<meta name=\"generator\" content=\"groff -Thtml, see www.gnu.org\">\n", stdout);

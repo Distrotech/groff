@@ -3432,16 +3432,7 @@ void suppress_node::put(troff_output_file *out, const char *s)
 }
 
 /*
- *  We prefer to remember the last position, rather than have a .html-start
- *  followed by html-end-center, html-end-left as it is more natural to
- *  express an image by:
- *
- *    .html-image-left
- *
- *    .html-image-end
- *
- *  similar to other troff commands, although this method is slightly more
- *  messy to implement.
+ *  We need to remember the start of the image and its name.
  */
 
 static char last_position = 0;
