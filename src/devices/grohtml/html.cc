@@ -1155,6 +1155,7 @@ class html_printer : public printer {
   int   get_left                      (void);
   void  can_loose_column              (text_glob *start, struct text_defn *last_guess, int limit);
   int   check_lack_of_hits            (struct text_defn *next_guess, struct text_defn *last_guess, text_glob *start, int limit);
+  int   is_in_table                   (void);
 
   // ADD HERE
 
@@ -1917,31 +1918,29 @@ void html_printer::restore_paragraph (void)
 
 void html_printer::calculate_margin (void)
 {
-  if (! margin_on) {
-    text_glob    *w;
-    graphic_glob *g;
+  text_glob    *w;
+  graphic_glob *g;
 
-    // remove margin
+  // remove margin
 
-    right_margin_indent = 0;
+  right_margin_indent = 0;
 
-    if (! page_contents->words.is_empty()) {
+  if (! page_contents->words.is_empty()) {
+    
+    // firstly check the words to determine the right margin
 
-      // firstly check the words to determine the right margin
-
-      page_contents->words.start_from_head();
-      do {
-	w = page_contents->words.get_data();
-	if ((w->maxh >= 0) && (w->maxh > right_margin_indent)) {
-	  right_margin_indent = w->maxh;
+    page_contents->words.start_from_head();
+    do {
+      w = page_contents->words.get_data();
+      if ((w->maxh >= 0) && (w->maxh > right_margin_indent)) {
+	right_margin_indent = w->maxh;
 #if 0
-	  if (right_margin_indent == 758) stop();
+	if (right_margin_indent == 758) stop();
 #endif
-	}
-	page_contents->words.move_right();
-      } while (! page_contents->words.is_equal_to_head());
-    }
-
+      }
+      page_contents->words.move_right();
+    } while (! page_contents->words.is_equal_to_head());
+    
     /*
      *  only examine graphics if no words present
      */
@@ -1960,6 +1959,7 @@ void html_printer::calculate_margin (void)
       } while (! page_contents->lines.is_equal_to_head());
     }
 
+
     /*
      *  now we know the right margin lets do the same to find left margin
      */
@@ -1968,7 +1968,7 @@ void html_printer::calculate_margin (void)
       header_indent     = right_margin_indent;
     }
     left_margin_indent  = right_margin_indent;
-    
+      
     if (! page_contents->words.is_empty()) {
       do {
 	w = page_contents->words.get_data();
@@ -3075,7 +3075,8 @@ int html_printer::is_on_same_line (text_glob *g, int vpos)
 
 void html_printer::make_html_indent (int indent)
 {
-  if (indent > 0) {
+  if ((indent > 0) && ((right_margin_indent-get_left()) > 0) &&
+      ((indent*100)/(right_margin_indent-get_left()))) {
     html.put_string("<span style=\" text-indent: ");
     html.put_number((indent*100)/(right_margin_indent-get_left()));
     html.put_string("%;\"></span>");
@@ -3142,7 +3143,7 @@ int html_printer::collect_columns (struct text_defn *next_words,
   if (start != 0) {
     int graphic_limit = end_region_vpos;
 
-    if (is_whole_line_bold(t) && (t->minh <= left_margin_indent)) {
+    if (is_whole_line_bold(t) && (t->minh <= left_margin_indent) && (guess_on)) {
       /*
        *  found header therefore terminate indentation table.
        *  Return a negative number so we know a header has
@@ -3180,7 +3181,7 @@ int html_printer::collect_columns (struct text_defn *next_words,
 	 *  if we have found a significant gap then record it
 	 */
 	if (((t->minh - prevh >= mingap) ||
-	     ((last_cols  != 0) && (last_cols [j].left != 0) && (t->minh == last_cols [j].left))) &&
+	     ((last_cols  != 0) && (last_cols [j].right != 0) && (t->minh == last_cols [j].left))) &&
 	    (t->minh != t->maxh)) {
 	  next_cols[i].left    = t->minh;
 	  next_cols[i].right   = t->maxh;
@@ -3276,11 +3277,11 @@ int html_printer::conflict_with_words (struct text_defn *column_guess, struct te
   int i=0;
   int j;
 
-  while ((column_guess[i].left != 0) && (i<MAX_WORDS_PER_LINE)) {
+  while ((column_guess[i].right != 0) && (i<MAX_WORDS_PER_LINE)) {
     j=0;
-    while ((words[j].left != 0) && (j<MAX_WORDS_PER_LINE)) {
+    while ((words[j].right != 0) && (j<MAX_WORDS_PER_LINE)) {
       if ((words[j].left <= column_guess[i].right) && (i+1<MAX_WORDS_PER_LINE) &&
-	  (column_guess[i+1].left != 0) && (words[j].right >= column_guess[i+1].left)) {
+	  (column_guess[i+1].right != 0) && (words[j].right >= column_guess[i+1].left)) {
 	if (debug_table_on) {
 	  fprintf(stderr, "is a conflict with words\n");
 	  fflush(stderr);
@@ -3306,7 +3307,7 @@ void html_printer::combine_line (struct text_defn *dest, struct text_defn *src)
 {
   int i;
 
-  for (i=0; (i<MAX_WORDS_PER_LINE) && (src[i].left != 0); i++) {
+  for (i=0; (i<MAX_WORDS_PER_LINE) && (src[i].right != 0); i++) {
     include_into_list(dest, &src[i]);
   }
   remove_redundant_columns(dest);
@@ -3318,7 +3319,7 @@ void html_printer::combine_line (struct text_defn *dest, struct text_defn *src)
 
 void html_printer::remove_entry_in_line (struct text_defn *line, int j)
 {
-  while (line[j].left != 0) {
+  while (line[j].right != 0) {
     line[j].left  = line[j+1].left;
     line[j].right = line[j+1].right;
     j++;
@@ -3334,10 +3335,10 @@ void html_printer::remove_redundant_columns (struct text_defn *line)
   int i=0;
   int j=0;
 
-  while (line[i].left != 0) {
-    if ((i<MAX_WORDS_PER_LINE) && (line[i+1].left != 0)) {
+  while (line[i].right != 0) {
+    if ((i<MAX_WORDS_PER_LINE) && (line[i+1].right != 0)) {
       j = 0;
-      while ((j<MAX_WORDS_PER_LINE) && (line[j].left != 0)) {
+      while ((j<MAX_WORDS_PER_LINE) && (line[j].right != 0)) {
 	if ((j != i) && (is_intersection(line[i].left, line[i].right, line[j].left, line[j].right))) {
 	  line[i].left  = min(line[i].left , line[j].left);
 	  line[i].right = max(line[i].right, line[j].right);
@@ -3359,11 +3360,11 @@ void html_printer::include_into_list (struct text_defn *line, struct text_defn *
 {
   int i=0;
 
-  while ((i<MAX_WORDS_PER_LINE) && (line[i].left != 0) && (line[i].left<item->left)) {
+  while ((i<MAX_WORDS_PER_LINE) && (line[i].right != 0) && (line[i].left<item->left)) {
     i++;
   }
 
-  if (line[i].left == 0) {
+  if (line[i].right == 0) {
     // add to the end
     if (i<MAX_WORDS_PER_LINE) {
       if ((i>0) && (line[i-1].left > item->left)) {
@@ -3385,7 +3386,7 @@ void html_printer::include_into_list (struct text_defn *line, struct text_defn *
       int l     = line[i].left;
       int r     = line[i].right;
 
-      while ((i+1<MAX_WORDS_PER_LINE) && (line[i].left != 0)) {
+      while ((i+1<MAX_WORDS_PER_LINE) && (line[i].right != 0)) {
 	line[i].left  = left;
 	line[i].right = right;
 	i++;
@@ -3412,7 +3413,7 @@ int html_printer::is_in_column (struct text_defn *line, struct text_defn *item, 
 {
   int i=0;
 
-  while ((i<max_words) && (line[i].left != 0)) {
+  while ((i<max_words) && (line[i].right != 0)) {
     if (line[i].left == item->left) {
       return( TRUE );
     } else {
@@ -3430,7 +3431,7 @@ void html_printer::calculate_right (struct text_defn *line, int max_words)
 {
   int i=0;
 
-  while ((i<max_words) && (line[i].left != 0)) {
+  while ((i<max_words) && (line[i].right != 0)) {
     if (i>0) {
       line[i-1].right = line[i].left;
     }
@@ -3447,7 +3448,7 @@ void html_printer::add_right_full_width (struct text_defn *line, int mingap)
 {
   int i=0;
 
-  while ((i<MAX_WORDS_PER_LINE) && (line[i].left != 0)) {
+  while ((i<MAX_WORDS_PER_LINE) && (line[i].right != 0)) {
     i++;
   }
 
@@ -3472,7 +3473,7 @@ void html_printer::determine_right_most_column (struct text_defn *line, int max_
 {
   int i=0;
 
-  while ((i<max_words) && (line[i].left != 0)) {
+  while ((i<max_words) && (line[i].right != 0)) {
     i++;
   }
   if (i>0) {
@@ -3503,7 +3504,7 @@ int html_printer::is_column_match (struct text_defn *match,
 
     include_into_list(match, &t);
   }
-  while ((line1[i].left != 0) && (line2[i].left != 0)) {
+  while ((line1[i].right != 0) && (line2[i].right != 0)) {
     if (line1[i].left == line2[j].left) {
       // same horizontal alignment found
       include_into_list(match, &line1[i]);
@@ -3541,7 +3542,7 @@ int html_printer::check_lack_of_hits (struct text_defn *next_guess,
     i=0;
     j=0;
     while ((i<n) && (j<m) &&
-	   (last_guess[i].left != 0) && (next_guess[j].left != 0)) {
+	   (last_guess[i].right != 0) && (next_guess[j].right != 0)) {
       if ((is_intersection(last_guess[i].left, last_guess[i].right,
 			   next_guess[j].left, next_guess[j].right)) &&
 	  (next_guess[j].left < last_guess[i].left) &&
@@ -3576,7 +3577,7 @@ int html_printer::remove_white_using_words (struct text_defn *next_guess,
   int k=0;
   int removed=FALSE;
 
-  while ((last_guess[j].left != 0) && (next_line[k].left != 0)) {
+  while ((last_guess[j].right != 0) && (next_line[k].right != 0)) {
     if (last_guess[j].left == next_line[k].left) {
       // same horizontal alignment found
       next_guess[i].left  = last_guess[j].left;
@@ -3584,7 +3585,7 @@ int html_printer::remove_white_using_words (struct text_defn *next_guess,
       i++;
       j++;
       k++;
-      if ((next_guess[i-1].right > last_guess[j].left) && (last_guess[j].left != 0)) {
+      if ((next_guess[i-1].right > last_guess[j].left) && (last_guess[j].right != 0)) {
 	removed = TRUE;
       }
     } else if (last_guess[j].right < next_line[k].left) {
@@ -3605,12 +3606,12 @@ int html_printer::remove_white_using_words (struct text_defn *next_guess,
       i++;
       j++;
       k++;
-      if ((next_guess[i-1].right > last_guess[j].left) && (last_guess[j].left != 0)) {
+      if ((next_guess[i-1].right > last_guess[j].left) && (last_guess[j].right != 0)) {
 	removed = TRUE;
       }
     }
   }
-  while (next_line[k].left != 0) {
+  while (next_line[k].right != 0) {
     next_guess[i].left  = next_line[k].left;
     next_guess[i].right = next_line[k].right;
     i++;
@@ -3640,7 +3641,7 @@ int html_printer::count_columns (struct text_defn *line)
 {
   int i=0;
 
-  while (line[i].left != 0) {
+  while (line[i].right != 0) {
     i++;
   }
   return( i );
@@ -3699,7 +3700,7 @@ void html_printer::display_columns (const char *word, const char *name, text_def
   int i=0;
 
   fprintf(stderr, "[%s:%s]", name, word);
-  while (line[i].left != 0) {
+  while (line[i].right != 0) {
     fprintf(stderr, " <left=%d right=%d %d%%> ", line[i].left, line[i].right, line[i].percent);
     i++;
   }
@@ -3715,7 +3716,7 @@ void html_printer::copy_line (struct text_defn *dest, struct text_defn *src)
 { 
   int k;
 
-  for (k=0; ((src[k].left != 0) && (k<MAX_WORDS_PER_LINE)); k++) {
+  for (k=0; ((src[k].right != 0) && (k<MAX_WORDS_PER_LINE)); k++) {
     dest[k].left  = src[k].left;
     dest[k].right = src[k].right;
   }
@@ -3735,15 +3736,15 @@ void html_printer::add_column_gaps (struct text_defn *line)
   struct text_defn t;
 
   // firstly lets see whether we need an initial column on the left hand side
-  if ((line[0].left != get_left()) && (line[0].left != 0) &&
+  if ((line[0].left != get_left()) && (line[0].right != 0) &&
       (get_left() < line[0].left) && (is_worth_column(get_left(), line[0].left))) {
     t.left  = get_left();
     t.right = line[0].left;
     include_into_list(line, &t);
   }
 
-  while ((i<MAX_WORDS_PER_LINE) && (line[i].left != 0)) {
-    if ((i+1<MAX_WORDS_PER_LINE) && (line[i+1].left != 0) && (line[i].right != line[i+1].left) &&
+  while ((i<MAX_WORDS_PER_LINE) && (line[i].right != 0)) {
+    if ((i+1<MAX_WORDS_PER_LINE) && (line[i+1].right != 0) && (line[i].right != line[i+1].left) &&
 	(is_worth_column(line[i].right, line[i+1].left))) {
       t.left  = line[i].right;
       t.right = line[i+1].left;
@@ -3855,7 +3856,7 @@ int html_printer::large_enough_gap (text_defn *last_col)
   if (abs(last_col[i].left - left_margin_indent) >= gap) {
     found = TRUE;
   }
-  while ((last_col[i].left != 0) && (last_col[i+1].left != 0)) {
+  while ((last_col[i].right != 0) && (last_col[i+1].right != 0)) {
     if (abs(last_col[i+1].left-last_col[i].right) >= gap) {
       found = TRUE;
       i++;
@@ -3878,13 +3879,13 @@ int html_printer::is_subset_of_columns (text_defn *a, text_defn *b)
   int j;
 
   i=0;
-  while ((i<MAX_WORDS_PER_LINE) && (a[i].left != 0)) {
+  while ((i<MAX_WORDS_PER_LINE) && (a[i].right != 0)) {
     j=0;
-    while ((j<MAX_WORDS_PER_LINE) && (b[j].left != 0) &&
+    while ((j<MAX_WORDS_PER_LINE) && (b[j].right != 0) &&
 	   ((b[j].left != a[i].left) || (b[j].right != a[i].right))) {
       j++;
     }
-    if ((j==MAX_WORDS_PER_LINE) || (b[j].left == 0)) {
+    if ((j==MAX_WORDS_PER_LINE) || (b[j].right == 0)) {
       // found a different column - not a subset
       return( FALSE );
     }
@@ -3915,7 +3916,7 @@ void html_printer::count_hits (text_defn *col, int no_of_columns, int limit)
     while ((i<no_of_columns) && (col[i].right < g->minh)) {
       i++;
     }
-    if ((col[i].left == g->minh) && (col[i].left != 0)) {
+    if ((col[i].left == g->minh) && (col[i].right != 0)) {
       col[i].is_used++;
     }
     page_contents->words.move_right();
@@ -4261,7 +4262,11 @@ int html_printer::get_left (void)
   if ((header_indent < left_margin_indent) && (header_indent != -1)) {
     return( header_indent );
   } else {
-    return( left_margin_indent );
+    if (margin_on) {
+      return( 0 );
+    } else {
+      return( left_margin_indent );
+    }
   }
 }
 
@@ -4379,7 +4384,7 @@ int html_printer::large_enough_gap_for_two (struct text_defn *col)
   if (abs(col[i].left - left_margin_indent) >= gap) {
     found = TRUE;
   }
-  while ((col[i].left != 0) && (col[i+1].left != 0)) {
+  while ((col[i].right != 0) && (col[i+1].right != 0)) {
     if (abs(col[i+1].left-col[i].right) >= gap) {
       found = TRUE;
       i++;
@@ -4566,7 +4571,7 @@ int html_printer::is_new_exact_right (struct text_defn *last_guess,
   int n=count_columns(last_guess)-1;
   return( FALSE );
 
-  if ((n>=0) && (last_guess[n].left != 0) && (last_cols[n].left != 0) && (next_cols[n].left != 0)) {
+  if ((n>=0) && (last_guess[n].right != 0) && (last_cols[n].right != 0) && (next_cols[n].right != 0)) {
     if ((last_cols[n].right != last_guess[n].right) &&
 	((next_cols[n].right == last_guess[n].right) || (next_cols[n].right == right_margin_indent))) {
       return( TRUE );
@@ -4624,8 +4629,8 @@ int html_printer::found_use_for_table (text_glob *start)
   int                limit;                              // vertical limit reached in our table
   int                limit_1;                            // vertical position after line 1
 
-#if 1
-  if (strcmp(start->text_string, "This") == 0) {
+#if 0
+  if (strcmp(start->text_string, "<hr>") == 0) {
     stop();
   }
 #endif
@@ -4999,6 +5004,17 @@ void html_printer::end_table (void)
   supress_sub_sup = TRUE;
 }
 
+
+/*
+ *  is_in_table - returns TRUE if we are inside an html table.
+ */
+
+int html_printer::is_in_table (void)
+{
+  return( indentation.no_of_columns != 0 );
+}
+
+
 /*
  *  column_calculate_right_margin - scan through the column and find the right most margin
  */
@@ -5091,7 +5107,7 @@ int html_printer::find_column_index_in_line (text_glob *t, text_defn *line)
 {
   int i=0;
 
-  while ((line != 0) && ((line[i].left != 0) || (line[i].right != 0)) &&
+  while ((line != 0) && ((line[i].right != 0) || (line[i].right != 0)) &&
 	 (! ((line[i].left<=t->minh) && (line[i].right>t->minh)))) {
     i++;
   }
@@ -5229,7 +5245,7 @@ void html_printer::assign_used_columns (text_glob *start)
   if (! page_contents->words.is_empty()) {
     do {
       i = find_column_index(t);
-      if (indentation.columns[i].left != 0) {
+      if (indentation.columns[i].right != 0) {
 	if (debug_table_on) {
 	  fprintf(stderr, "[%s] in column %d at %d..%d  limit %d\n", t->text_string,
 		  i, t->minv, t->maxv, indentation.vertical_limit); fflush(stderr);
@@ -5602,6 +5618,9 @@ char *html_printer::html_position_text (text_glob *g, int left_margin, int right
       return( postword );
     } else {
       force_begin_paragraph();
+      if ((! is_in_table()) && (margin_on)) {
+	make_html_indent(left_margin);
+      }
       if (g->minh-left_margin != 0) {
 	make_html_indent(g->minh-left_margin);
       }
