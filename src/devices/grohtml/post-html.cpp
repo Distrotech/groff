@@ -2225,6 +2225,7 @@ void html_printer::emit_raw (text_glob *g)
     current_paragraph->done_para();
     next_tag        = INLINE;
     supress_sub_sup = TRUE;
+    seen_space      = FALSE;
     restore_troff_indent();
   }
 }
@@ -2834,6 +2835,7 @@ void html_printer::do_check_center(void)
 	seen_space = seen_space || current_paragraph->retrieve_para_space();
 	current_paragraph->done_para();
 	supress_sub_sup = TRUE;
+	current_paragraph->do_para("", seen_space);
       }
     end_center = next_center;
   }

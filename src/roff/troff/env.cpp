@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1130,7 +1130,13 @@ void environment_switch()
 	error("environment stack underflow");
     }
     else {
+      int seen_space = curenv->seen_space;
+      int seen_eol   = curenv->seen_eol;
+      int suppress_next_eol = curenv->suppress_next_eol;
       curenv = env_stack->env;
+      curenv->seen_space = seen_space;
+      curenv->seen_eol   = seen_eol;
+      curenv->suppress_next_eol = suppress_next_eol;
       env_list *tem = env_stack;
       env_stack = env_stack->next;
       delete tem;

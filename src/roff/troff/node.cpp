@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -3903,6 +3903,7 @@ suppress_node::suppress_node(int on_or_off, int issue_limits)
 suppress_node::suppress_node(symbol f, char p, int id)
 : is_on(2), emit_limits(0), filename(f), position(p), image_id(id)
 {
+  is_special = 1;
 }
 
 suppress_node::suppress_node(int issue_limits, int on_or_off,

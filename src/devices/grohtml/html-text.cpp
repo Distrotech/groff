@@ -444,9 +444,11 @@ void html_text::do_pre (void)
   done_tt();
   if (is_present(P_TAG)) {
     html_indent *i = remove_indent(P_TAG);
+    int space = retrieve_para_space();
     (void)done_para();
     if (! is_present(PRE_TAG))
       push_para(PRE_TAG, NULL, i);
+    start_space = space;
   } else if (! is_present(PRE_TAG))
     push_para(PRE_TAG, NULL, NULL);
   dump_stack();
@@ -709,8 +711,11 @@ void html_text::do_para (simple_output *op, const char *arg1,
 
 char *html_text::done_para (void)
 {
+  char *result;
   space_emitted = TRUE;
-  return shutdown(P_TAG);
+  result = shutdown(P_TAG);
+  start_space = FALSE;
+  return result;
 }
 
 /*
@@ -968,8 +973,9 @@ void html_text::remove_para_align (void)
     while (p != NULL) {
       if (p->type == P_TAG && p->arg1 != NULL) {
 	html_indent *i = remove_indent(P_TAG);
+	int          space = retrieve_para_space();
 	done_para();
-	do_para("", i, space_emitted);
+	do_para("", i, space);
 	return;
       }
       p = p->next;
