@@ -183,7 +183,7 @@ FILE *xtmpfile(char **namep,
 #endif /* not HAVE_MKSTEMP */
   if (do_unlink)
     add_tmp_file(templ);
-  if ((namep != 0) && ((*namep) != 0))
+  if (namep)
     *namep = templ;
   else
     a_delete templ;

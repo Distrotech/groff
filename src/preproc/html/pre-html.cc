@@ -1365,7 +1365,6 @@ static int makeTempFiles (void)
   htmlFileName   = "/tmp/prehtml-html";
 #else
 
-#if 0
   FILE *f;
 
   f = xtmpfile(&psFileName,
@@ -1384,25 +1383,6 @@ static int makeTempFiles (void)
     return -1;
   }
   fclose(f);
-#else
-  int fd;
-
-  if ((fd = mkstemp(psFileName =
-		      xtmptemplate(PS_TEMPLATE_LONG,
-				   PS_TEMPLATE_SHORT))) == -1) {
-    sys_fatal("mkstemp");
-    return -1;
-  }
-  close(fd);
-  if ((fd = mkstemp(regionFileName =
-		      xtmptemplate(REGION_TEMPLATE_LONG,
-				   REGION_TEMPLATE_SHORT))) == -1) {
-    sys_fatal("mkstemp");
-    unlink(psFileName);
-    return -1;
-  }
-  close(fd);
-#endif
 
 #endif
   return 0;
