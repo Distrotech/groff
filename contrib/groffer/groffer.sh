@@ -29,9 +29,107 @@ export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.0';
-_LAST_UPDATE='12 July 2002';
+_PROGRAM_VERSION='0.9.1';
+_LAST_UPDATE='30 Sep 2002';
 
+########################################################################
+# Determine the shell under which to run this script;
+# if `ash' is available restart the script using `ash';
+# otherwise just go on.
+
+if test "${_groffer_run}" != 'second'; then
+  # only reached during the first run of the script
+
+  export GROFFER_OPT;
+  export _groffer_run;
+  export _this;
+
+
+  #_this="@BINDIR@/${_PROGRAM_NAME}";
+  _this='groffer.sh';
+
+  ###########################
+  # _get_opt_shell ("$@")
+  #
+  # Determine whether `--shell' was specified in $GROFF_OPT or in $*;
+  # if so echo its argument.
+  #
+  _get_opt_shell()
+  {
+    local i;
+    local _sh;
+    case " ${GROFFER_OPT} $*" in
+      *\ --shell\ *|*\ --shell=*)
+        (
+          eval set -- "${GROFFER_OPT}" '"$@"';
+          _sh='';
+          for i in "$@"; do
+            case "$1" in
+              --shell)
+                if test "$#" -ge 2; then
+                  _sh="$2";
+                  shift;
+                fi;
+                ;;
+              --shell=?*)
+                # delete up to first `=' character
+                _sh="$(echo -n "$1" | sed -e 's/^[^=]*=//')";
+                ;;
+            esac;
+            shift;
+          done;
+          echo -n "${_sh}";
+        )
+        ;;
+    esac;
+  }
+
+
+  ###########################
+  # _test_on_shell (<name>)
+  #
+  # Test whether <name> is a shell program of Bourne type (POSIX sh).
+  #
+  _test_on_shell()
+  {
+    if test "$#" -le 0 || test "$1" = ''; then
+      return 1;
+    fi;
+    # do not quote $1 to allow arguments
+    test "$($1 -c 's=ok; echo -n "$s"' 2>/dev/null)" = 'ok';
+  }
+
+  # do the shell determination
+  _shell="$(_get_opt_shell "$@")";
+  if test "${_shell}" = ''; then
+    _shell='ash';
+  fi;
+  if _test_on_shell "${_shell}"; then
+    _groffer_run='second';
+    # do not quote $_shell to allow arguments
+    exec ${_shell} "${_this}" "$@";
+    exit;
+  fi;
+
+  # clean-up of shell determination
+  unset _shell;
+  unset _this;
+  unset _groffer_run;
+  _get_opt_shell()
+  {
+    return 0;
+  }
+  _test_on_shell()
+  {
+    return 0;
+  }
+
+fi;
+
+
+########################################################################
+# diagnostic messages
+#
 export _DEBUG;
 _DEBUG='no';			# disable debugging information
 #_DEBUG='yes';			# enable debugging information
@@ -169,13 +267,7 @@ _DEBUG_LM='no';			# disable landmark messages
 # reset ()
 # save_stdin ()
 # string_contains (<string> <part>)
-# string_del_append (<string>)
-# string_del_leading (<string> <regex>)
-# string_del_trailing (<string> <regex>)
-# string_flatten()
 # string_not_contains (<string> <part>)
-# string_replace_all (<string> <regex> <replace>)
-# string_sed_s (<string> <regex> [<replace> [<flag>]])
 # tmp_cat ()
 # tmp_create (<suffix>?)
 # to_tmp (<filename>)
@@ -248,15 +340,29 @@ fi;
 
 # characters
 
-export _APPEND			# Append to string to cover final char
+export _BQUOTE;
+export _BSLASH;
+export _DQUOTE;
 export _NEWLINE;
+export _LBRACK;
+export _LPAR;
+export _RBRACK;
+export _RPAR;
 export _SPACE;
+export _SQUOTE;
 export _TAB;
 
-_APPEND='Z';
+_BQUOTE='`';
+_BSLASH='\';
+_DQUOTE='"';
 _NEWLINE='
 ';
+_LBRACK='[';
+_LPAR='(';
+_RBRACK=']';
+_RPAR=')';
 _SPACE=' ';
+_SQUOTE="'";
 _TAB='	';
 
 # function return values; `0' means ok; other values are error codes
@@ -381,7 +487,7 @@ _OPTS_GROFFER_LONG_NA="'all' 'apropos' 'ascii' 'auto' 'default' 'dvi' \
 _OPTS_GROFFER_LONG_ARG="'background' 'bd' 'bg' 'bw' 'default-modes' \
 'device' 'display' 'dvi-viewer' 'extension' 'fg' 'fn' 'font' \
 'foreground' 'geometry' 'locale' 'manpath' 'mode' 'pager' \
-'pdf-viewer' 'ps-viewer' 'resolution' 'sections' \
+'pdf-viewer' 'ps-viewer' 'resolution' 'sections' 'shell' \
 'systems' 'title' 'troff-device' 'www-viewer' 'xrm' 'x-viewer'";
 
 ##### options inhereted from groff
@@ -582,7 +688,6 @@ reset()
 {
   if test "$#" -ne 0; then
     error "reset() does not have arguments.";
-    return "${_ERROR}";
   fi;
 
   _ADDOPTS_GROFF='';
@@ -841,7 +946,7 @@ func_check()
       ;;
     *) 
       error \
-        "func_check(): second argument is not a relational operator.";
+        'func_check(): second argument is not a relational operator.';
       ;;
   esac;
   shift 3;
@@ -862,6 +967,10 @@ func_check()
 #
 # Retrieve the top element from the stack.
 #
+# The stack elements are separated by `!'; the popped element is
+# identical to the original element, except that all `!' characters
+# were removed.
+#
 # Arguments: 1
 #
 func_pop()
@@ -875,8 +984,7 @@ func_pop()
         error 'func_pop(): stack is empty.';
         ;;
       *!*)
-#        echo2 '>> pop: ('"$(echo -n "${_FUNC_STACK}" \
-#                           | sed -e 's/^\([^ !]*\).*$/\1/')"')';
+        # split at first bang `!'.
         _FUNC_STACK="$(echo -n ${_FUNC_STACK} \
                        | sed -e 's/^[^!]*!//')";
         ;;
@@ -893,6 +1001,9 @@ func_pop()
 #
 # Store another element to stack.
 #
+# The stack elements are separated by `!'; if <element> contains a `!'
+# it is removed first.
+#
 # Arguments: 1
 #
 func_push()
@@ -904,13 +1015,13 @@ func_push()
     fi;
     case "$1" in
       *'!'*)
+        # remove all bangs `!'.
         _element="$(echo -n "$1" | sed -e 's/!//g')";
         ;;
       *)
         _element="$1";
         ;;
     esac;
-#    echo2 '>> push: '"$_element";
     if test "${_FUNC_STACK}" = ''; then
       _FUNC_STACK="${_element}";
     else
@@ -932,7 +1043,9 @@ func_stack_dump()
     *!*)
       _rest="${_FUNC_STACK}";
       while test "${_rest}" != ''; do
+        # get part before the first bang `!'.
         diag "$(echo -n "${_rest}" | sed -e 's/^\([^!]*\)!.*$/\1/')";
+        # delete part up to the first bang `!'.
         _rest="$(echo -n "${_rest}" | sed -e 's/^!*[^!]*!*//')";
       done;
       ;;
@@ -1034,7 +1147,7 @@ unset _clobber;
 # Test of function `sed'.
 #
 if test "$(echo xTesTx \
-           | sed -e 's/^.\([Tt]e*x*sT\+\).*$/\1/' \
+           | sed -e 's/^.\([Tt]e*x*sTT*\).*$/\1/' \
            | sed -e '\|T|s||t|g')" != 'test';
 then
   error 'Test of "sed" command failed.';
@@ -1101,7 +1214,18 @@ landmark "3: functions";
 base_name()
 {
   func_check base_name = 1 "$@";
-  string_sed_s "$1" '^.*/\([^/]*\)$' '\1';
+  case "$1" in
+    */)
+      do_nothing;
+      ;;
+    */*)
+      # delete everything up to last slash `/'.
+      echo -n "$1" | sed -e '\|^.*/*\([^/]*\)$|s||\1|';
+      ;;
+    *)
+      echo -n "$1";
+      ;;
+  esac;
   eval "${return_ok}";
 }
 
@@ -1213,9 +1337,13 @@ dirname_chop()
   local _arg;
   local _res;
   local _sep;
-  _res="$(string_replace_all "$1" '//\+' '/')";
+  # replace all multiple slashes by a single slash `/'.
+  _res="$(echo -n "$1" | sed -e '\|///*|s||/|g')";
   case "${_res}" in
-    ?*/) string_del_trailing "${_res}" '/'; ;;
+    ?*/)
+      # remove trailing slash '/';
+      echo -n "${_res}" | sed -e '\|/$|s|||';
+      ;;
     *) echo -n "${_res}"; ;;
   esac;
   eval "${return_ok}";
@@ -1249,7 +1377,7 @@ do_filearg()
   local _filespec;
   local i;
   _filespec="$1";
-  # store sequence positional parameters
+  # store sequence into positional parameters
   case "${_filespec}" in
     '')
        eval "${return_good}";
@@ -1263,7 +1391,7 @@ do_filearg()
       ;;
     *)
       if is_yes "${_MAN_ENABLE}"; then
-        if is_yes "${_OPT_MAN}"; then
+        if is_yes "${_MAN_FORCE}"; then
           set -- 'Manpage' 'File';
         else
           set -- 'File' 'Manpage';
@@ -1686,10 +1814,12 @@ list_append()
   _res="$1";
   shift;
   for s in "$@"; do
-    # escape each single quote.
     case "$s" in
       *\'*)
-        _element="$(echo -n "$s" | sed -e s/\'/'&\\&&'/g)";
+        # escape each single quote by replacing each "'" (squote)
+        # by "'\''" (squote bslash squote squote);
+        # note that the backslash must be doubled for `sed'.
+        _element="$(echo -n "$s" | sed -e 's/'"${_SQUOTE}"'/&\\&&/g')";
         ;;
       *)
         _element="$s";
@@ -1714,7 +1844,8 @@ list_append()
 #   A list has the form "'first' 'second' '...' 'last'".
 #   So it has a leading and a final quote and the elements are separated
 #   by "' '" constructs.  If these are all removed there should not be
-#   any single-quotes left.  Watch out for "\'".
+#   any single-quotes left.  Watch out for escaped single quotes; they
+#   have the form '\'' (sq bs sq sq).
 #
 # Arguments: 1
 # Output: the argument <list> unchanged, it the check succeeded.
@@ -1732,13 +1863,20 @@ list_check()
       error "list_check() bad list: $1"
       ;;
   esac;
+  # Remove leading single quote,
+  # remove final single quote,
+  # remove escaped single quotes (squote bslash squote squote)
+  #   [note that `sed' doubles the backslash (bslash bslash)],
+  # remove field separators (squote space squote).
   _list="$(echo -n "${_list}" \
-           | sed -e s/^"[']"'\(.*\)'"[']"'$/\1/' \
-           | sed -e s/"[']"'[\]'"['][']"'//g' \
-           | sed -e 's/\([^\]\)'"'"'  *'"'"'/\1/g')"; # ' (for emacs)
+    | sed -e 's/^'"${_SQUOTE}"'//' \
+    | sed -e 's/'"${_SQUOTE}"'$//' \
+    | sed -e \
+        's/'"${_SQUOTE}${_BSLASH}${_BSLASH}${_SQUOTE}${_SQUOTE}"'//g' \
+    | sed -e 's/'"${_SQUOTE}${_SPACE}${_SPACE}"'*'"${_SQUOTE}"'//g')";
   case "${_list}" in
-    *\'*)
-      error "list_check() bad list: ${_list}"
+    *\'*)			# criterium fails if squote is left
+      error 'list_check() bad list: '"${_list}";
       ;;
   esac;
   echo -n "$1";
@@ -1833,16 +1971,18 @@ list_from_cmdline()
 {
   func_check list_from_cmdline '>=' 4 "$@";
   local _fparams;
+  local _fn;
   local _result;
-  if is_empty "${FUNCNAME}"; then
-    local FUNCNAME;
-    FUNCNAME='list_from_cmdline';
-  fi;
+  local _long_a;
+  local _long_n;
+  local _short_a;
+  local _short_n;
   _short_n="$(list_check "$1")"; # short options, no argument
   _short_a="$(list_check "$2")"; # short options with argument
   _long_n="$(list_check "$3")";	 # long options, no argument
   _long_a="$(list_check "$4")";	 # long options with argument
   shift 4;
+  _fn='list_from_cmdline():';	 # for error messages
   if test "$#" -eq 0; then
     echo -n "'--'";
     eval "${return_ok}";
@@ -1855,8 +1995,9 @@ list_from_cmdline()
     case "$_arg" in
       --) break; ;;
       --?*)
-        _opt="$(string_del_leading "${_arg}" "--")";
-        if list_has "$_long_n" "${_opt}"; then
+        # delete leading '--';
+        _opt="$(echo -n "${_arg}" | sed -e 's/^..//')";
+        if list_has "${_long_n}" "${_opt}"; then
           # long option, no argument
           _result="$(list_append "${_result}" "--${_opt}")";
           continue;
@@ -1865,34 +2006,50 @@ list_from_cmdline()
           # long option with argument
           _result="$(list_append "${_result}" "--${_opt}")";
           if test "$#" -le 0; then
-            error "${FUNCNAME}(): no argument for option --${_opt}."
+            error "${_fn} no argument for option --${_opt}."
           fi;
           _result="$(list_append "${_result}" "$1")";
           shift;
           continue;
         fi;
         # test on `--opt=arg'
-        if string_contains "${_opt}" "="; then
-          _lopt="$(string_del_trailing "${_opt}" '=.*')";
+        if string_contains "${_opt}" '='; then
+          # extract option by deleting from the first '=' to the end
+          _lopt="$(echo -n "${_opt}" | sed -e 's/=.*$//')";
           if list_has "${_long_a}" "${_lopt}"; then
-            _optarg="$(string_del_leading "${_opt}" "${_lopt}=")";
+            # get the option argument by deleting up to first `='
+            _optarg="$(echo -n "${_opt}" | sed -e 's/^[^=]*=//')";
             _result="$(list_append "${_result}" \
                                    "--${_lopt}" "${_optarg}")";
             continue;
           fi;
         fi;
-        error "${FUNCNAME}(): --${_opt} is not an option."
+        error "${_fn} --${_opt} is not an option."
         ;;
       -?*)			# short option (cluster)
-        _rest="$(string_del_leading "${_arg}" "-")";
+        # delete leading `-';
+        _rest="$(echo -n "${_arg}" | sed -e 's/^.//')";
         while is_not_empty "${_rest}"; do
-          _optchar="$(string_get_leading "${_rest}" '.')";
-          _rest="$(string_del_leading "${_rest}" '.')";
+          # get next short option from cluster (first char of $_rest)
+          _optchar="$(echo -n "${_rest}" | sed -e 's/^\(.\).*$/\1/')";
+          # remove first character from ${_rest};
+          _rest="$(echo -n "${_rest}" | 's/^.//')";
           if list_has "${_short_n}" "${_optchar}"; then
             _result="$(list_append "${_result}" "-${_optchar}")";
             continue;
           elif list_has "${_short_a}" "${_optchar}"; then
-            _rest="$(string_del_leading "${_rest}"  "${_optchar}")";
+            # remove leading character
+            case "${_optchar}" in
+              /)		# cannot use normal `sed' separator
+                _rest="$(echo -n "${_rest}" | sed -e '\|^.|s|||')";
+                ;;
+              ?)
+                _rest="$(echo -n "${_rest}" | sed -e 's/^.//')";
+                ;;
+              *)
+                error "${_fn} several chars parsed for short option."
+                ;;
+            esac;
             if is_empty "${_rest}"; then
               if test "$#" -ge 1; then
                 _result="$(list_append "${_result}" \
@@ -1901,7 +2058,7 @@ list_from_cmdline()
                 continue;
               else
                 error \
-                  "${FUNCNAME}(): no argument for option -${_optchar}."
+                  "${_fn}"' no argument for option -'"${_optchar}."
               fi;
             else		# rest is the argument
               _result="$(list_append "${_result}" \
@@ -1910,7 +2067,7 @@ list_from_cmdline()
               continue;
             fi;
           else
-            error "${FUNCNAME}(): unknown option -${_optchar}."
+            error "${_fn} unknown option -${_optchar}."
           fi;
         done;
         ;;
@@ -1926,7 +2083,7 @@ list_from_cmdline()
         ;;
     esac;
   done;
-  _result="$(list_append "${_result}" "--")";
+  _result="$(list_append "${_result}" '--')";
   if is_not_empty "${_fparams}"; then
     _result="${_result} ${_fparams}";
   fi;
@@ -1955,7 +2112,6 @@ list_from_lists()
   eval "${return_ok}";
 }
 
-
 ########################################################################
 # list_from_split (<string> <separator>)
 #
@@ -1968,13 +2124,23 @@ list_from_lists()
 list_from_split()
 {
   func_check list_from_split = 2 "$@";
-  string_replace_all \
-    "$(string_replace_all \
-       "$1" \
-       '\(['"${_SPACE}${_TAB}"']\)' \
-       '\\\1')" \
-    "$2" \
-    ' ';
+  local _s;
+
+  # precede each space or tab by a backslash `\' (doubled for `sed')
+  _s="$(echo -n "$1" | sed -e 's/\(['"${_SPACE}${_TAB}"']\)/\\\1/g')";
+
+  # replace split character of string by the list separator ` ' (space).
+  case "$2" in
+    /)				# cannot use normal `sed' separator
+      echo -n "${_s}" | sed -e '\|'"$2"'|s|| |g';
+      ;;
+    ?)				# use normal `sed' separator
+      echo -n "${_s}" | sed -e 's/'"$2"'/ /g';
+      ;;
+    ??*)
+      error 'list_from_split(): separator must be a single character.';
+      ;;
+  esac;
   eval "${return_ok}";
 }
 
@@ -2060,6 +2226,8 @@ list_length()
 ########################################################################
 # list_prepend (<list> <element>...)
 #
+# Insert new <element> at the beginning of <list>
+#
 # Arguments: >=2
 #   <list>:   a space-separated list of single-quoted elements.
 #   <element>: some sequence of characters.
@@ -2074,13 +2242,14 @@ list_prepend()
   _res="$1";
   shift;
   for s in "$@"; do
-    # escape each single quote.
+    # escape single quotes in list style (squote bslash squote squote).
     _element="$(echo -n "$s" | sed -e 's/'\''/&\\&&/g')";
     _res="'${_element}' ${_res}";
   done;
   echo -n "${_res}";
   eval "${return_ok}";
 }
+
 
 ########################################################################
 landmark '7: man_*()';
@@ -2124,28 +2293,35 @@ man_do_filespec()
   _name='';
   _section='';
   case "${_spec}" in
+    */*)			# not a man spec when it contains '/'
+      eval "${return_bad}";
+      ;;
     man:?*\(?*\))		# man:name(section)
-      _string="$(string_del_leading "${_spec}" 'man:')";
-      _string="$(string_del_trailing "${_string}" ')')";
-      _name="$(string_del_trailing "${_string}" '(.\+')";
-      _section="$(string_del_leading "${_string}" "${_name}"'(')";
+      _name="$(echo -n "${_spec}" \
+               | sed -e 's/^man:\(..*\)(\(..*\))$/\1/')";
+      _section="$(echo -n "${_spec}" \
+               | sed -e 's/^man:\(..*\)(\(..*\))$/\2/')";
       ;;
     man:?*.?*)			# man:name.section
-      _string="$(string_del_leading "${_spec}" 'man:')";
-      _name="$(string_del_trailing "${_string}" '\.[^.]*')";
-      _section="$(string_del_leading "${_string}" "${_name}"'\.')";
+      _name="$(echo -n "${_spec}" \
+               | sed -e 's/^man:\(..*\)\.\(..*\)$/\1/')";
+      _section="$(echo -n "${_spec}" \
+               | sed -e 's/^man:\(..*\)\.\(..*\)$/\2/')";
       ;;
     man:?*)			# man:name
-      _name="$(string_del_leading "${_spec}" 'man:')";
+      _name="$(echo -n "${_spec}" | sed -e 's/^man://')";
       ;;
     ?*\(?*\))			# name(section)
-      _string="$(string_del_trailing "${_spec}" ')')";
-      _name="$(string_del_trailing "${_string}" '(.\+')";
-      _section="$(string_del_leading "${_string}" "${_name}"'(')";
+      _name="$(echo -n "${_spec}" \
+               | sed -e 's/^\(..*\)(\(..*\))$/\1/')";
+      _section="$(echo -n "${_spec}" \
+               | sed -e 's/^\(..*\)(\(..*\))$/\2/')";
       ;;
     ?*.?*)			# name.section
-      _name="$(string_del_trailing "${_spec}" '\.[^.]\+')";
-      _section="$(string_del_leading "${_spec}" "${_name}"'\.')";
+      _name="$(echo -n "${_spec}" \
+               | sed -e 's/^\(..*\)\.\(..*\)$/\1/')";
+      _section="$(echo -n "${_spec}" \
+               | sed -e 's/^\(..*\)\.\(..*\)$/\2/')";
       ;;
     ?*)
       _name="${_filespec}";
@@ -2393,7 +2569,8 @@ man_setup()
       ;;
     *)
       _MAN_LANG="${_lang}";
-      _MAN_LANG2="$(string_get_leading "${_lang}" '..')";
+      # get first two characters of $_lang
+      _MAN_LANG2="$(echo -n "${_lang}" | sed -e 's/^\(..\).*$/\1/')";
       ;;
   esac;
   # from now on, use only $_LANG, forget about $_OPT_LANG, $LC_*.
@@ -2510,7 +2687,8 @@ manpath_set_from_path()
   if is_not_empty "${PATH}"; then
     eval set -- "$(path_split "${PATH}")";
     for d in "$@"; do
-      _base="$(string_del_trailing "$d" '/\+bin/*')";
+      # delete the final `/bin' part
+      _base="$(echo -n "$d" | sed -e '\|//*bin/*$|s|||')";
       for e in /share/man /man; do
         _mandir="${_base}$e";
         if test -d "${_mandir}" && test -r "${_mandir}"; then
@@ -2553,13 +2731,9 @@ path_chop()
   func_check path_chop = 1 "$@";
   local _res;
 
-#  _res="$1";
-#  _res="$(string_flatten "${_res}" ':')";
-#  _res="$(string_del_leading "${_res}" ':')";
-#  _res="$(string_del_trailing "${_res}" ':')";
-#  echo -n "${_res}";
-
-  echo -n "$1" | sed -e 's/::\+/:/g' |
+  # replace multiple colons by a single colon `:'
+  # remove leading and trailing colons
+  echo -n "$1" | sed -e 's/:::*/:/g' |
                  sed -e 's/^:*//' |
                  sed -e 's/:*$//';
   eval "${return_ok}";
@@ -2717,8 +2891,12 @@ register_title()
     eval "${return_ok}";
   fi;
   _title="$(base_name "$1")";	# remove directory part
-  _title="$(string_del_trailing "${_title}" '\.gz')"; # remove .gz
-  _title="$(string_del_trailing "${_title}" '\.Z')";  # remove .Z
+  
+  # remove extension `.gz'
+  _title="$(echo -n "${_title}" | sed -e 's/\.gz$//')";
+  # remove extension `.Z'
+  _title="$(echo -n "${_title}" | sed -e 's/\.Z$//')";
+
   if is_empty "${_title}"; then
     eval "${return_ok}";
   fi;
@@ -2781,218 +2959,6 @@ string_contains()
 
 
 ########################################################################
-# string_del_append (<string>)
-#
-# Delete $_APPEND from the end of <string>, if any.
-#
-# As this is needed within string_sed_s() this function must use `sed'.
-#
-# Arguments: <string>: arbitrary sequence of characters.
-# Globals: in: $_APPEND
-# Output: the shortened string.
-# Return: $_GOOD if successful, $_BAD if no replace took place.
-#
-string_del_append()
-{
-  func_check string_del_append = 1 "$@";
-  case "$1" in
-    *"$_APPEND")
-      echo -n "$1" | sed -e 's/'"$_APPEND"'$//'
-      eval "${return_good}";
-      ;;
-    *)
-      eval "${return_bad}";
-      ;;
-  esac;
-  eval "${return_ok}";
-}
-
-
-########################################################################
-# string_del_leading (<string> <regex>)
-#
-# Delete the beginning <regex> of <string>, if any.
-#
-# Arguments: 2
-#   <string>: arbitrary sequence of characters.
-#   <regex>: is a BRE like in `sed';
-#   Do not worry about the address delimiter, the program escapes them.
-# Output: the replaced string.
-#
-string_del_leading()
-{
-  func_check string_del_leading = 2 "$@";
-  local _del;
-  local _result;
-  local _string;
-  _string="$1";
-  _del="$2";
-  if is_empty "${_string}"; then
-    if is_empty "${_del}"; then
-      eval "${return_good}";
-    else
-      eval "${return_bad}";
-    fi;
-  fi;
-  if is_empty "${_del}"; then
-    echo -n "${_string}";
-    eval "${return_ok}";
-  fi;
-  _result="$(string_sed_s "${_string}" '^'"${_del}" '')";
-  echo -n "${_result}";
-  if is_equal "${_result}" "${_string}"; then
-    eval "${return_bad}";
-  else
-    eval "${return_ok}";
-  fi;
-  eval "${return_ok}";
-}
-
-
-########################################################################
-# string_del_trailing (<string> <regex>)
-#
-# Delete the final <regex> of <string>, if any.
-#
-# Arguments: 2
-#   <string>: arbitrary sequence of characters.
-#   <regex>: is a BRE like in `sed';
-#   Do not worry about the address delimiter, the program escapes them.
-# Output: the replaced string.
-#
-string_del_trailing()
-{
-  func_check string_del_trailing = 2 "$@";
-  local _del;
-  local _result;
-  local _string;
-  _string="$1";
-  _del="$2";
-  if is_empty "${_string}"; then
-    if is_empty "${_del}"; then
-      eval "${return_ok}";
-    else
-      eval "${return_bad}";
-    fi;
-  fi;
-  if is_empty "${_del}"; then
-    echo -n "${_string}";
-    eval "${return_good}";
-  fi;
-  _result="$(string_sed_s "${_string}" "${_del}"'$' '')";
-  echo -n "${_result}";
-  if is_equal "${_result}" "${_string}"; then
-    eval "${return_bad}";
-  else
-    eval "${return_ok}";
-  fi;
-  eval "${return_ok}";
-}
-
-
-########################################################################
-# string_flatten (<string> <char>)
-#
-# Reduce multiple occurences of character <char> in <string> to one.
-#
-# Arguments: 2
-#   <string>: arbitrary sequence of characters.
-#   <char>: a character, or escaped character for sed.
-#   Do not worry about the address delimiter, the program escapes them.
-# Output: the retrieved string.
-#
-string_flatten()
-{
-  func_check string_flatten = 2 "$@";
-  _string="$1";
-  _char="$2";
-  string_replace_all "${_string}" "${_char}${_char}\+" "${_char}";
-  eval "${return_ok}";
-}
-
-
-########################################################################
-# string_get_before (<string> <regex>)
-#
-# Get the beginning <regex> of <string>, if any.
-#
-# Arguments: 2
-#   <string>: arbitrary sequence of characters.
-#   <regex>: is a BRE like in `sed';
-#   Do not worry about the address delimiter, the program escapes them.
-# Output: the retrieved string.
-#
-string_get_before()
-{
-  func_check string_get_before = 2 "$@";
-  local _del;
-  local _regex;
-  local _res;
-  local _string;
-  if is_empty "$1"; then
-    if is_empty "$2"; then
-      eval "${return_ok}";
-    else
-      eval "${return_bad}";
-    fi;
-  fi;
-  if is_empty "$2"; then
-    echo -n "$1";
-    eval "${return_ok}";
-  fi;
-  _res="$(string_sed_s "$1" "$2"'.*$' '')";
-  echo -n "${_res}";
-  if is_equal "${_res}" "$1"; then
-    eval "${return_bad}";
-  else
-    eval "${return_ok}";
-  fi;
-  eval "${return_ok}";
-}
-
-
-########################################################################
-# string_get_leading (<string> <regex>)
-#
-# Get the beginning <regex> of <string>, if any.
-#
-# Arguments: 2
-#   <string>: arbitrary sequence of characters.
-#   <regex>: is a BRE like in `sed';
-#   Do not worry about the address delimiter, the program escapes them.
-# Output: the retrieved string.
-#
-string_get_leading()
-{
-  func_check string_get_leading = 2 "$@";
-  local _del;
-  local _result;
-  local _string;
-  _string="$1";
-  _get="$2";
-  if is_empty "${_string}"; then
-    if is_empty "${_get}"; then
-      eval "${return_ok}";
-    else
-      eval "${return_bad}";
-    fi;
-  fi;
-  if is_empty "${_get}"; then
-    echo -n "${_string}";
-    eval "${return_ok}";
-  fi;
-  _result="$(string_sed_s "${_string}" '^\('"${_get}"'\).*$' '\1')";
-  echo -n "${_result}";
-  if is_equal "${_result}" "${_string}"; then
-    eval "${return_bad}";
-  else
-    eval "${return_ok}";
-  fi;
-  eval "${return_ok}";
-}
-
-
-########################################################################
 # string_not_contains (<string> <part>)
 #
 # Test whether `part' is not substring of `string'.
@@ -3010,181 +2976,6 @@ string_not_contains()
   fi;
   eval "${return_ok}";
 }
-
-
-########################################################################
-# string_replace_all (<string> <regex> <replace>)
-#
-# Replace <regex> by <replace> in <string>. Interface to `sed s'.
-#
-# Arguments: 3
-#   <regex>: is a BRE like in `sed';
-#   <replace>: like the last element in `sed s', honors \1, etc.
-#   <string>: no special characters, no restrictions.
-#   Do not worry about the address delimiter, the program escapes them.
-# Output: the replaced string.
-# Return: `1', if no replace; `0' otherwise.
-#
-string_replace_all()
-{
-  func_check string_replace_all = 3 "$@";
-  string_sed_s "$@" 'g';
-  eval "${return_ok}";
-}
-
-
-########################################################################
-# string_sed_s (<string> <regex> [<replace> [<flag>]])
-#
-# Feed command `sed s' independently of delimiter.
-#
-# Equivalent to:
-# echo -n <string> | sed -e '/<regex>/s//<replace>/<flag>';
-#
-# Arguments: do not worry about the deliniter character `/'.
-#            2: <replace>='', <flag>=''
-#            3: <flag>=''
-#            4: with sed flag, e.g. `g' for global
-# Output: the resulting string.
-#
-string_sed_s()
-{
-  func_check string_sed_s '>=' 2 "$@";
-  local _flag;
-  local _regex;
-  local _replace;
-  local _string;
-  case "$#" in
-    2)
-      _replace='';
-      _flag='';
-      ;;
-    3)
-      _replace="$(_string_sed_s_esc_slash "$3")";
-      _flag='';
-      ;;
-    4)
-      _replace="$(_string_sed_s_esc_slash "$3")";
-      _flag="$4";
-      ;;
-    *)
-      error "string_sed_s() needs 2, 3, or 4 arguments.";
-      ;;
-  esac;
-  _string="$1";
-  _regex="$(_string_sed_s_esc_slash "$2")";
-  if is_empty "${_string}"; then
-    eval "${return_ok}";
-  fi;
-  if is_empty "${_string}"; then
-    error "string_sed_s(): empty regular expression";
-  fi;
-  echo -n "${_string}" | \
-    eval sed -e \'s/"${_regex}"/"${_replace}"/"${_flag}"\';
-  eval "${return_ok}";
-} # string_sed_s()
-
-
-_string_sed_s_esc_slash()
-{
-  # Replace each slash `/' by `\/', but not within `[]'.
-  # Global: $_APPEND
-  local _beginning;
-  local _bracketed;
-  local _end;
-  local _rest;
-  local _result;
-  local _str;
-#  if test "$#" -ne 1; then
-#    error '_string_sed_s_esc_slash() requires 1 argument.';
-#  fi;
-  if is_empty "$1"; then
-    return "${_GOOD}";
-  fi;
-  if string_not_contains "$1" '/'; then
-    echo -n "$1";
-    return "${_GOOD}";
-  fi;
-  _rest="$1""${_APPEND}";
-  _result='';
-  while true; do
-    if string_not_contains "${_rest}" '/'; then
-      string_del_append "${_result}${_rest}";
-      return "${_GOOD}";
-    fi;
-    if string_not_contains "${_rest}" '['; then
-      string_del_append \
-        "${_result}$(_string_sed_s_esc_slash_unbracketed "${_rest}")";
-      return "${_GOOD}";
-    fi;
-    # split at first bracket.
-    _beginning="$(echo -n "${_rest}" | sed -e '/^\([^[]*\).*$/s//\1/')";
-    _rest="$(echo -n "${_rest}" | sed -e 's/^[^[]*//')";
-    if is_not_empty "${_beginning}"; then
-      _str="$(_string_sed_s_esc_slash_unbracketed "${_beginning}")";
-      _result="${_result}${_str}";
-    fi;
-    if string_not_contains "${_rest}" '/'; then
-      string_del_append "${_result}${_rest}";
-      return "${_GOOD}";
-    fi;
-    case "${_rest}" in
-      \[\]*\]*)			# `[]...]' construct
-        _bracketed="$(echo -n "${_rest}" | \
-                      sed -e 's/^\(\[\][^]]*\]\).*$/\1/')";
-        _rest="$(echo -n "${_rest}" | \
-                      sed -e 's/^\(\[\][^]]*\]\)\(.*\)$/\2/')";
-        ;;
-      \[^\]*\]*)		# `[^]...]' construct
-        _bracketed="$(echo -n "${_rest}" | \
-                      sed -e 's/^\(\[^\][^]]*\]\).*$/\1/')";
-        _rest="$(echo -n "${_rest}" | \
-                      sed -e 's/^\(\[^\][^]]*\]\)\(.*\)$/\2/')";
-        ;;
-      \[*\]*)			# `[...]' construct
-        _bracketed="$(echo -n "${_rest}" | \
-                      sed -e 's/^\(\[[^]]*\]\).*$/\1/')";
-        _rest="$(echo -n "${_rest}" | \
-                      sed -e 's/^\(\[[^]]*\]\)\(.*\)$/\2/')";
-        ;;
-      *)
-        error \
-          '_string_sed_s_esc_slash(): $_rest must start with a bracket';
-        ;;
-    esac;
-    _result="$(string_del_trailing "${_result}${_bracketed}" \
-                                   "$_APPEND")";
-  done;
-  return "${_BAD}";
-} # _string_sed_s_esc_slash_line()
-
-
-_string_sed_s_esc_slash_unbracketed()
-{
-  # Do the escaping of slashes in strings that do not contain a bracket.
-  #
-  # Argument: 1, may not contain a `[' nor line breaks.
-  # Output:   precede each slash in the argument by a backslash.
-  # Return:   1, if argument has a `['; 0 otherwise.
-  #
-#   if test "$#" -ne 1; then
-#    error \
-#      '_string_sed_s_esc_slash_unbracketed() needs 1 argument).';
-#  fi;
-#  if string_contains "$1" '['; then
-#    error "_string_sed_s_esc_slash(): no bracket allowed in argument.";
-#  fi;
-  case "$1" in
-    */*)
-      echo -n "$1" | sed -e '\|/|s|/|\\/|g';
-      return "${_OK}";
-      ;;
-    *)
-      echo -n "$1";
-      return "${_OK}";
-      ;;
-  esac;
-} # _string_sed_s_esc_slash_unbracketed()
 
 
 ########################################################################
@@ -3255,10 +3046,6 @@ to_tmp()
 usage()
 {
   func_check usage = 0 "$@";
-  local _header;
-  local _gap;
-  _header="Usage: ${_PROGRAM_NAME}";
-  _gap="$(string_replace_all "${_header}" '\.' ' ')";
   echo2;
   version;
   cat >&2 <<EOF
@@ -3267,10 +3054,18 @@ This is free software licensed under the GNU General Public License.
 
 EOF
 
-  echo2 "${_header} [options] [file] [-] [[man:]manpage.x]";
-  echo2 "${_gap} [[man:]manpage(x)] [[man:]manpage]...";
+  echo2 "Usage: ${_PROGRAM_NAME} ${_header} [option]... [filespec]...";
 
   cat >&2 <<EOF
+
+where "filespec" is one of
+  "filename"       name of a readablefile
+  "-"              for standard input
+  "man:name.n"     man page "name" in section "n"
+  "man:name"       man page "name" in first section found
+  "name.n"         man page "name" in section "n"
+  "name"           man page "name" in first section found
+and some more (see groff(1) for details).
 
 Display roff files, standard input, and/or Unix manual pages with
 in a X window viewer or in a text pager.
@@ -3320,6 +3115,7 @@ The most important long options are
 --pdf-viewer     choose the viewer program for pdf mode.
 --ps             display in a Postscript viewer.
 --ps-viewer      choose the viewer program for ps mode.
+--shell          specify shell under which to run this program.
 --systems=os1,os2,...
                  search man pages for different operating systems.
 --title='text'   set the title of the viewer window (not in all modes.
@@ -3343,6 +3139,7 @@ EOF
 version()
 {
   echo2 "${_PROGRAM_NAME} ${_PROGRAM_VERSION} of ${_LAST_UPDATE}";
+  # also display groff's version, but not the called subprograms
   groff -v 2>&1 | sed -e '/^ *$/q' | sed -e '1s/^/is part of /' >&2;  
 }
 
@@ -3360,6 +3157,10 @@ warning()
 
 ########################################################################
 # what_is (<filename>)
+#
+# Interpret <filename> as a man page and display its `whatis'
+# information as a fragment written in the groff language.
+#
 what_is()
 {
   func_check what_is = 1 "$@";
@@ -3368,26 +3169,37 @@ what_is()
   if is_not_file "$1"; then
     error "what_is(): argument is not a readable file."
   fi;
-  _dot='^\.[ 	]*';
+  _dot='^\.['"${_SPACE}${_TAB}"']*';
   echo '.br';
   echo "$1: ";
     echo '.br';
   echo -n '  ';
+  # grep the line containing `.TH' macro, if any
   _res="$(catz "$1" | sed -e '/'"${_dot}"'TH /p
 d')";
   if is_not_empty "${_res}"; then	# traditional man style
+    # get the text between the first and the second `.SH' macro, by
+    # - delete up to first .SH;
+    # - of this, print everything up to next .SH, and delete the rest;
+    # - of this, delete the final .SH line;
     catz "$1" | sed -e '1,/'"${_dot}"'SH/d' \
               | sed -e '1,/'"${_dot}"'SH/p
 d' \
               | sed -e '/'"${_dot}"'SH/d';
     eval "${return_ok}";
   fi;
-  _res="$(catz "$1" | grep "${_dot}"'Dd ')";
+  # grep the line containing `.Dd' macro, if any
+  _res="$(catz "$1" | sed -e '/'"${_dot}"'Dd /p
+d')";
   if is_not_empty "${_res}"; then	# BSD doc style
-    catz "$1" |  sed -e  '/'"${_dot}"'Nd /p
+    # get the text between the first and the second `.Nd' macro, by
+    # - delete up to first .Nd;
+    # - of this, print everything up to next .Nd, and delete the rest;
+    # - of this, delete the final .Nd line;
+    catz "$1" | sed -e '1,/'"${_dot}"'Nd/d' \
+              | sed -e '1,/'"${_dot}"'Nd/p
 d' \
-              | sed -e '2q' \
-              | sed -e 's/'"${_dot}"'Nd *\(.*\)$/\1/';
+              | sed -e '/'"${_dot}"'Nd/d';
     eval "${return_ok}";
   fi;
   echo 'is not a man page.';
@@ -3501,7 +3313,7 @@ main_init()
 ########################################################################
 # main_parse_MANOPT ()
 #
-# Parse $MANOPT.
+# Parse $MANOPT; this clobbered by the command line.
 #
 # Globals:
 #   in: $MANOPT, $_OPTS_MAN_*
@@ -3690,7 +3502,8 @@ main_parse_args()
         _OPT_Z='yes';
         ;;
       -?)
-        _optchar="$(string_del_leading "${_opt}" '-')";
+        # delete leading `-'
+        _optchar="$(echo -n "${_opt}" | sed -e 's/^.//')";
         if list_has "${_OPTS_GROFF_SHORT_NA}" "${_optchar}";
         then
           _ADDOPTS_GROFF="$(list_append "${_ADDOPTS_GROFF}" \
@@ -3874,6 +3687,9 @@ main_parse_args()
         _OPT_SECTIONS="$1";
         shift;
         ;;
+      --shell)
+        shift;
+        ;;
       --systems)		# man pages for different OS's, arg
         # argument is a comma-separated list
         _OPT_SYSTEMS="$1";
@@ -3912,7 +3728,7 @@ main_parse_args()
         shift;
         ;;
       *)
-        error "error on argument parsing : \`$*'";
+        error 'error on argument parsing : '"\`$*'";
         ;;
     esac;
   done;
@@ -4390,6 +4206,7 @@ main_display()
 
   # Some display programs have trouble with empty input.  
   # This is avoided by feeding a space character in this case.
+  # Test on non-empty file by tracking a line with at least 1 character.
   if is_empty "$(tmp_cat | sed -e '/./q')"; then
     echo ' ' > "${_TMP_CAT}";
   fi;

@@ -12,10 +12,11 @@ groffer \- display groff files and man\~pages on X and tty
 .ig
 groffer.1 - man page for groffer (section 1).
 
-File position: <groff_source_top>/contrib/groffer/groffer.man
+Source file position:  <groff_source_top>/contrib/groffer/groffer.man
+Installed position:    $prefix/share/man/man1/groffer.1
 
-Version     : groffer 0.9.0
-Last update : 21 Aug 2002
+Version     : groffer 0.9.1
+Last update : 30 Sep 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -659,6 +660,7 @@ display mode automatically.
 .Opt_[alt] -- pdf-viewer prog
 .Opt_[alt] -- ps
 .Opt_[alt] -- ps-viewer prog
+.Opt_[alt] -- shell
 .Opt_[alt] -- tty
 .Opt_[alt] -- www
 .Opt_[alt] -- www-viewer prog
@@ -871,7 +873,7 @@ program is part of
 It can be used to display arbitrary documents written in the
 .BR roff (@MAN7EXT@)
 formatting language in several different ways, in an X window viewer
-program of in a text terminal.
+program or in a text terminal.
 .
 The viewer programs can be chosen as the groff native viewer
 .BR gxditview (@MAN1EXT@),
@@ -1550,6 +1552,15 @@ This feature is not available in all viewer programs.
 Restrict searching for man pages to the given
 .IR sections ,
 a colon-separated list.
+.
+.
+.Opt_def -- shell "shell_program"
+Specify the shell under which the groffer script should be run.
+.
+The script first tests whether this option is set (either within
+.Env_var $GROFF_OPT
+or as a command line option); if so, the script is rerun under the
+shell program specified with the option argument.
 .
 .
 .Opt_def -- source
@@ -2642,26 +2653,33 @@ The
 shell script is compatible to both POSIX and GNU.
 .
 POSIX compatibility refers to
-.B P1003.2/D11.2
-of September 1991.
+.B IEEE P1003.2/D11.2
+of September 1991, a very early version of this standard.
 .
 The script uses only a quite restricted set of shell language elements
-and shell utilities that is common to all POSIX versions; it should
-work on most actual commercial and free operating systems.
+and shell builtins, common to all POSIX versions; the only external
+program used is `sed', again only the most basic POSIX features of
+`sed' are used.
+.
+The groffer script should work on most actual free and commercial
+operating systems.
+.
+.
+.P
+The groffer program provides its own parser for command line options;
+it can handle option arguments and file names containing white space
+and a large set of special characters.
 .
 .
 .P
 The groffer shell script was tested with the following common
 implementations of the POSIX shell:
-.BR sh (1),
 .BR ash (1),
 .BR bash (1),
 .BR ksh (1),
+and POSIX
+.BR sh (1),
 and others.
-.
-The best performance is provided by the
-.I ash
-shell.
 .
 Free POSIX compatible shells and shell utilities for most operating
 systems are available at the
@@ -2669,8 +2687,36 @@ systems are available at the
 .
 .
 .P
-The groffer program can handle option arguments and file names that
-contain white space and a large set of special characters.
+The best performance was obtained with the
+.I ash
+shell; so groffer tries to run under
+.I ash
+whenever possible.
+.
+The procedure to determine the shell to run groffer was programmed to
+be as follows:
+.
+.
+.Topic
+the argument of the command line option
+.Opt_long shell ;
+if not set
+.
+.Topic
+the argument of the option
+.Opt_long shell
+in the environment variable
+.Env_var $GROFF_OPT ;
+if not set
+.
+.Topic
+try
+.IR ash ;
+if not available
+.
+.Topic
+continue with the shell under which the script was started in the
+first place.
 .
 .
 .\" --------------------------------------------------------------------

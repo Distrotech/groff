@@ -1,4 +1,38 @@
+2002-09-30  Bernd Warken  <bwarken@mayn.de>
+	________________________________________________________________
+	* release of groffer 0.9.1
+	
+	* TODO: remove done entries
+	- Remove request for different shells.
+	- Remove the 'sed' complaints.
+
+2002-07-15  Bernd Warken  <bwarken@mayn.de>
+
+	* groffer.sh: replace `sed' interface by direct `sed'
+	- This improves the performance of the shell programming parts
+	  and shortens the groffer script by about 5%.
+	- Remove functions: string_del_append(), string_del_leading(),
+	  string_del_trailing(), string_flatten(), string_get_before(),
+	  string_get_leading(), string_replace_all(), string_sed_s(),
+	  and their auxiliary functions.
+	- Replace all calls of these functions by direct `sed' commands.
+	- Define variables for special characters to ease `sed' calls.
+	- Remove `$APPEND'.
+	- Restrict list_from_string() to single character separators.
+	- Correct list_check() and base_name().
+	- Add comments to all calls of `sed'.
+
+	* groffer.sh: add run-time support for several shells
+	- New option `--shell': stop execution and rerun groffer under
+	  the shell specified in the argument of `--shell'.
+	- If no shell was specified at run-time, `ash' is tried first;
+	  if `ash' is not available continue with the shell with which
+	  groffer was called from the command line, or with the shell
+	  name in the first line of the script, actually `/bin/sh'.
+
 2002-07-12  Bernd Warken  <bwarken@mayn.de>
+	________________________________________________________________
+	* fixes for groffer 0.9.0
 
 	* groffer.sh: enhance version information
 	`groffer -v|--version' now print:
@@ -14,7 +48,7 @@
 	  all display modes (not for source or groff modes).
 
 	* TODO:
-	fix entry for `shoop'.
+	fix entry `shoop' (not 'shopt').
 
 2002-06-28  Bernd Warken  <bwarken@mayn.de>
 	________________________________________________________________
