@@ -1,0 +1,127 @@
+# Copyright (C) 2002 Free Software Foundation, Inc.
+#      Written by Werner Lemberg (wl@gnu.org)
+# 
+# This file is part of groff.
+# 
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2, or (at your option) any later
+# version.
+# 
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with groff; see the file COPYING.  If not, write to the Free Software
+# Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+groff_bin_dirs=\
+  $(top_builddir)/roff/groff \
+  $(top_builddir)/roff/troff \
+  $(top_builddir)/devices/grops
+groff_bin_path=`echo $(groff_bin_dirs) | sed -e 's| \+|:|g'`
+
+FFLAG=-F$(top_builddir)/font
+TFLAG=-M$(srcdir)
+
+GROFF=GROFF_BIN_PATH=$(groff_bin_path); \
+      export GROFF_BIN_PATH; \
+      $(top_builddir)/src/roff/groff/groff $(FFLAG) $(TFLAG)
+
+MAN7=\
+  groff_mom.n
+
+NORMALFILES=\
+  mom.tmac \
+  om.tmac
+
+momdocdir=$(htmldocdir)/momdoc
+
+HTMLDOCFILES=\
+  appendices.html \
+  cover.html \
+  definitions.html \
+  docelement.html \
+  docprocessing.html \
+  goodies.html \
+  headfootpage.html \
+  inlines.html \
+  intro.html \
+  letters.html \
+  rectoverso.html \
+  reserved.html \
+  toc.html \
+  typemacdoc.html \
+  typesetting.html \
+  using.html
+
+EXAMPLEFILES=\
+  examples/macros.mom \
+  examples/typeset.mom \
+  examples/typewrite.mom
+
+EXTRAEXAMPLEFILES=\
+  examples/README.mom \
+  examples/elvis_syntax \
+  examples/penguin.ps
+
+PROCESSEDEXAMPLEFILES=\
+  examples/macros.ps \
+  examples/typeset.ps \
+  examples/typewrite.ps
+
+CLEANADD=\
+  penguin.ps \
+  $(PROCESSEDEXAMPLEFILES)
+
+all: make_examples
+
+.PHONY: make_examples
+make_examples: prepare_make_examples $(PROCESSEDEXAMPLEFILES)
+
+prepare_make_examples: $(srcdir)/examples/penguin.ps
+	test -d examples || $(mkinstalldirs) examples
+	cp $< .
+	
+examples/macros.ps: $(srcdir)/examples/macros.mom
+	$(GROFF) -Tps -mom $< >$@
+
+examples/typeset.ps: $(srcdir)/examples/typeset.mom
+	$(GROFF) -Tps -mom $< >$@
+
+examples/typewrite.ps: $(srcdir)/examples/typewrite.mom
+	$(GROFF) -Tps -mom $< >$@
+
+install_data: $(NORMALFILES) \
+              $(EXAMPLEFILES) $(EXTRAEXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
+	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
+	for f in $(NORMALFILES); do \
+	  rm -f $(tmacdir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(tmacdir)/$$f; \
+	done
+	-test -d $(momdocdir) || $(mkinstalldirs) $(momdocdir)
+	for f in $(HTMLDOCFILES); do \
+	  rm -f $(momdocdir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/momdoc/$$f $(momdocdir)/$$f; \
+	done
+	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
+	for f in $(EXAMPLEFILES) $(EXTRAEXAMPLEFILES) \
+                 $(PROCESSEDEXAMPLEFILES); do \
+	  rm -f $(exampledir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(docdir)/$$f;
+	done
+
+uninstall_sub:
+	-for f in $(NORMALFILES); do \
+	  rm -f $(tmacdir)/$$f; \
+	done
+	-for f in $(HTMLDOCFILES); do \
+	  rm -f $(momdocdir)/$$f; \
+	done
+	-rmdir $(momdocdir)
+	-for f in $(EXAMPLEFILES) $(EXTRAEXAMPLEFILES) \
+                  $(PROCESSEDEXAMPLEFILES); do \
+	  rm -f $(docdir)/$$f;
+	done
