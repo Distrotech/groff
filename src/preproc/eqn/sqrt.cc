@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2003
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -40,11 +41,11 @@ sqrt_box::sqrt_box(box *pp) : pointer_box(pp)
 {
 }
 
-#define SQRT_CHAR "\\(sr"
-#define RADICAL_EXTENSION_CHAR "\\[radicalex]"
+#define SQRT_CHAR "\\[sqrt]"
+#define RADICAL_EXTENSION_CHAR "\\[sqrtex]"
 
-#define SQRT_CHAIN "\\[sr\\\\n[" INDEX_REG "]]"
-#define BAR_CHAIN "\\[radicalex\\\\n[" INDEX_REG "]]"
+#define SQRT_CHAIN "\\[sqrt\\\\n[" INDEX_REG "]]"
+#define BAR_CHAIN "\\[sqrtex\\\\n[" INDEX_REG "]]"
 
 int sqrt_box::compute_metrics(int style)
 {

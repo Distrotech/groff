@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -6001,6 +6001,7 @@ static void init_charset_table()
   get_charinfo(symbol("ul"))->set_flags(charinfo::OVERLAPS_HORIZONTALLY);
   get_charinfo(symbol("rn"))->set_flags(charinfo::OVERLAPS_HORIZONTALLY);
   get_charinfo(symbol("radicalex"))->set_flags(charinfo::OVERLAPS_HORIZONTALLY);
+  get_charinfo(symbol("sqrtex"))->set_flags(charinfo::OVERLAPS_HORIZONTALLY);
   get_charinfo(symbol("ru"))->set_flags(charinfo::OVERLAPS_HORIZONTALLY);
   get_charinfo(symbol("br"))->set_flags(charinfo::OVERLAPS_VERTICALLY);
   page_character = charset_table['%'];
