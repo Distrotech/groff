@@ -171,7 +171,7 @@ struct char_info {
   unsigned char code;
 };
 
-const uint16 NO_GLYPH = uint16(-1);
+const uint16 NO_GLYPH = 0xffff;
 const uint16 NO_SYMBOL_SET = 0;
 
 struct name_list {
@@ -179,6 +179,47 @@ struct name_list {
   name_list *next;
   name_list(const char *s, name_list *p) : name(strsave(s)), next(p) { }
   ~name_list() { a_delete name; }
+};
+
+struct symbol_set {
+  uint16 select;
+  uint16 index[256];
+};
+
+#define SYMBOL_SET(n, c) ((n) * 32 + ((c) - 64))
+
+uint16 text_symbol_sets[] = {
+  SYMBOL_SET(19, 'U'),		// Windows Latin 1 ("ANSI", code page 1252)
+  SYMBOL_SET(9, 'E'),		// Windows Latin 2, Code Page 1250
+  SYMBOL_SET(5, 'T'),		// Code Page 1254
+  SYMBOL_SET(7, 'J'),		// Desktop
+  SYMBOL_SET(6, 'J'),		// Microsoft Publishing
+  SYMBOL_SET(0, 'N'),		// Latin 1 (subset of 19U,
+				// so we should never get here)
+  SYMBOL_SET(2, 'N'),		// Latin 2 (subset of 9E,
+				// so we should never get here)
+  SYMBOL_SET(8, 'U'),		// HP Roman 8
+  SYMBOL_SET(10, 'J'),		// PS Standard
+  SYMBOL_SET(9, 'U'),		// Windows 3.0 "ANSI"
+  SYMBOL_SET(1, 'U'),		// U.S. Legal
+
+  SYMBOL_SET(12, 'J'),		// MC Text
+  SYMBOL_SET(10, 'U'),		// PC Code Page 437
+  SYMBOL_SET(11, 'U'),		// PC Code Page 437N
+  SYMBOL_SET(17, 'U'),		// PC Code Page 852
+  SYMBOL_SET(12, 'U'),		// PC Code Page 850
+  SYMBOL_SET(9, 'T'),		// PC Code Page 437T
+  0
+};
+
+uint16 special_symbol_sets[] = {
+  SYMBOL_SET(8, 'M'),		// Math 8
+  SYMBOL_SET(5, 'M'),		// PS Math
+  SYMBOL_SET(15, 'U'),		// Pi font
+  SYMBOL_SET(13, 'J'),		// Ventura International
+  SYMBOL_SET(19, 'M'),		// Symbol font
+  SYMBOL_SET(579, 'L'),		// Wingdings
+  0
 };
 
 entry tags[max_tag + 1 - min_tag];
@@ -189,6 +230,7 @@ uint32 nchars = 0;
 unsigned int charcode_name_table_size = 0;
 name_list **charcode_name_table = NULL;
 
+symbol_set *symbol_set_table;
 unsigned int n_symbol_sets;
 
 static int debug_flag = NO;
@@ -528,7 +570,9 @@ static void
 read_symbol_sets(File &f)
 {
   uint32 symbol_set_dir_length = tag_info(symbol_set_tag).count;
+  uint16 *symbol_set_selectors;
   n_symbol_sets = symbol_set_dir_length/14;
+  symbol_set_table = new symbol_set[n_symbol_sets];
   unsigned int i;
 
   for (i = 0; i < nchars; i++)
@@ -550,15 +594,52 @@ read_symbol_sets(File &f)
       else if ('A' <= c && c <= 'Z')	// terminator
 	kind = kind*32 + (c - 64);
     }
-    for (j = 0; j < 256; j++) {
-      uint16 index = f.get_uint16();
-      if (index != NO_GLYPH
-	  && char_table[index].symbol_set == NO_SYMBOL_SET) {
-	char_table[index].symbol_set = kind;
-	char_table[index].code = j;
+    symbol_set_table[i].select = kind;
+    for (j = 0; j < 256; j++)
+      symbol_set_table[i].index[j] = f.get_uint16();
+  }
+
+  symbol_set_selectors = (special_flag ? special_symbol_sets
+				       : text_symbol_sets);
+  for (i = 0; symbol_set_selectors[i] != 0; i++) {
+    unsigned int j;
+    for (j = 0; j < n_symbol_sets; j++)
+      if (symbol_set_table[j].select == symbol_set_selectors[i])
+	break;
+    if (j < n_symbol_sets) {
+      for (int k = 0; k < 256; k++) {
+	uint16 index = symbol_set_table[j].index[k];
+	if (index != NO_GLYPH
+	    && char_table[index].symbol_set == NO_SYMBOL_SET) {
+	  char_table[index].symbol_set = symbol_set_table[j].select;
+	  char_table[index].code = k;
+	}
       }
     }
   }
+
+  if (all_flag)
+    return;
+
+  symbol_set_selectors = (special_flag ? text_symbol_sets
+				       : special_symbol_sets);
+  for (i = 0; symbol_set_selectors[i] != 0; i++) {
+    unsigned int j;
+    for (j = 0; j < n_symbol_sets; j++)
+      if (symbol_set_table[j].select == symbol_set_selectors[i])
+	break;
+    if (j < n_symbol_sets) {
+      for (int k = 0; k < 256; k++) {
+	uint16 index = symbol_set_table[j].index[k];
+	if (index != NO_GLYPH
+	    && char_table[index].symbol_set == NO_SYMBOL_SET) {
+	  char_table[index].symbol_set = symbol_set_table[j].select;
+	  char_table[index].code = k;
+	}
+      }
+    }
+  }
+  return;
 }
 
 static void
@@ -748,7 +829,8 @@ output_charset(const int tfm_type)
   double slant_angle = int16(tag_info(slant_tag).value)*PI/18000.0;
   double slant = sin(slant_angle)/cos(slant_angle);
 
-  require_tag(x_height_tag);
+  if (italic_flag)
+    require_tag(x_height_tag);
   require_tag(lower_ascent_tag);
   require_tag(lower_descent_tag);
 
