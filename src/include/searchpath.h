@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -22,7 +22,8 @@ class search_path {
   char *dirs;
   unsigned init_len;
 public:
-  search_path(const char *envvar, const char *standard);
+  search_path(const char *envvar, const char *standard,
+	      int add_home, int add_current);
   ~search_path();
   void command_line_dir(const char *);
   FILE *open_file(const char *, char **);

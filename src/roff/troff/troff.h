@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -30,6 +30,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "lib.h"
 #include "assert.h"
 #include "device.h"
+#include "searchpath.h"
 
 void cleanup_and_exit(int n);
 
@@ -47,6 +48,8 @@ extern int tcommand_flag;
 extern int vresolution;
 extern int hresolution;
 extern int sizescale;
+
+extern search_path *mac_path;
 
 #include "cset.h"
 #include "cmap.h"

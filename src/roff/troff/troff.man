@@ -147,8 +147,13 @@ Read in the file
 If it isn't found, try
 .BI tmac. name
 instead.
-Normally this will be searched for in the current directory, @LOCALMACRODIR@,
-@SYSTEMMACRODIR@, or @MACRODIR@.
+It will be first searched for in directories given with the
+.B \-M
+command line option, then in the current directory, then in directories given
+in the
+.B GROFF_MACRO_PATH
+environment variable, then in @LOCALMACRODIR@, @SYSTEMMACRODIR@, and
+@MACRODIR@.
 .TP
 .B \-U
 Unsafe mode.
@@ -214,25 +219,22 @@ rather than the default
 .BR @DEVICE@ .
 .TP
 .BI \-F dir
-Search
+Search in directory (or directory path)
 .I dir
 for subdirectories
 .BI dev name
 .RI ( name
-is the name of the device)
-for the
+is the name of the device) and there for the
 .B DESC
-file and font files before the normal
-.BR @FONTDIR@ .
+file and font files.
+.I dir
+is scanned before all other font directories.
 .TP
 .BI \-M dir
-Search directory
+Search directory (or directory path)
 .I dir
-for macro files before the normal
-.BR @LOCALMACRODIR@ ,
-.BR @SYSTEMMACRODIR@ ,
-and
-.BR @MACRODIR@ .
+for macro files.
+This is scanned before all other macro directories.
 .SH USAGE
 Only the features not in Unix troff are described here.
 .SS Long names
@@ -2194,10 +2196,13 @@ escape sequence.
 A colon separated list of directories in which to search for
 macro files.
 .B troff
-will search in directories given in the
+will scan directories given in
+the
 .B \-M
-option before these, and in standard directories
-.RB ( @MACROPATH@ )
+option before these, and in standard directories (home directory,
+.BR @LOCALMACRODIR@ ,
+.BR @SYSTEMMACRODIR@ ,
+.BR @MACRODIR@ )
 after these.
 .TP
 .SM
@@ -2210,10 +2215,11 @@ A colon separated list of directories in which to search for the
 .BI dev name
 directory.
 .B troff
-will search in directories given in the
+will scan directories given in the
 .B \-F
 option before these, and in standard directories
-.RB ( @FONTPATH@ )
+(home directory,
+.BR @FONTPATH@ )
 after these.
 .SH FILES
 .Tp \w'@FONTDIR@/devname/DESC'u+3n
@@ -2237,6 +2243,13 @@ Font file for font
 .I F
 of device
 .IR name .
+.LP
+While searching for and scanning the initialization files
+.B troffrc
+and
+.BR troffrc-end ,
+a special search path is used for security reasons: The current directory
+is replaced with the home directory in the search path.
 .SH "SEE ALSO"
 .BR groff (@MAN1EXT@),
 .BR @g@tbl (@MAN1EXT@),

@@ -257,7 +257,7 @@ int main(int argc, char **argv)
       load_startup_file = 0;
       break;
     case 'M':
-      macro_path.command_line_dir(optarg);
+      safer_macro_path.command_line_dir(optarg);
       break;
     case 'v':
       {

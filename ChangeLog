@@ -1,3 +1,44 @@
+2000-11-13  Werner LEMBERG  <wl@gnu.org>
+
+	For security reasons, don't use the current directory but the home
+	directory while searching and scanning troffrc and troffrc-end.
+	Similarly, replace the current directory with the home directory
+	in the font path.
+
+	* Makefile.in (fontpath, tmacpath): Remove current directory.
+
+	* src/libs/libgroff/searchpath.cc (search_path::search_path): Add
+	two parameters `add_home' and `add_current'.
+	(search_path::~search_path, search_path::command_line_dir,
+	search_path::open_file): Remove tests for `dirs' being zero.
+	* src/include/searchpath.h: Adjust.
+	* src/libs/libgroff/macropath.cc, src/include/macropath.h: Add
+	`safer_macro_path'.
+	* src/libs/libgroff/fontfile.cc: Adjust `font_path'.
+
+	* src/roff/troff/troff.h: Add `searchpath.h' and `mac_path'.
+	* src/roff/troff/input.cc: Use `mac_path', initialized with
+	`macro_path'.
+	(process_startup_file): Set `mac_path' to `safer_macro_path'.
+	* src/roff/troff/env.cc: Use `mac_path'.
+
+	* src/preproc/eqn/main.cc (main): Use `safer_macro_path'.
+
+	* NEWS, man/roff.man, src/roff/troff/troff.man,
+	src/rof/groff/groff.man, tmac/groff_tmac.man, arch/djgpp/README:
+	Updated.
+
+2000-11-12  Werner LEMBERG  <wl@gnu.org>
+
+	* src/include/lib.h: Don't include groff-getopt.h for OSF/1.
+
+	* aclocal.m4 (GROFF_SYS_ERRLIST): Do test in C, not in C++.
+	* configure.in: Fix typo in comment.
+	* configure: Regenerated.
+
+	* src/libgroff/*, src/include/*, src/roff/troff/*: Fixing copyright
+	dates.
+
 2000-11-08  Werner LEMBERG  <wl@gnu.org>
 
 	Add system tmac directory (/usr/local/lib/groff/site-tmac).

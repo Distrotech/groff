@@ -129,15 +129,12 @@ AC_LANG_RESTORE])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_SYS_ERRLIST,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING([for sys_errlist[] in <errno.h> or <stdio.h>])
+[AC_MSG_CHECKING([for sys_errlist[] in <errno.h> or <stdio.h>])
 AC_TRY_COMPILE([#include <errno.h>
 #include <stdio.h>],
 [int k; k = (int)sys_errlist[0];],
 AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_ERRLIST),
-AC_MSG_RESULT(no))
-AC_LANG_RESTORE])dnl
+AC_MSG_RESULT(no))])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_OSFCN_H,

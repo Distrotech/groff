@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -29,7 +29,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "div.h"
 #include "reg.h"
 #include "charinfo.h"
-#include "searchpath.h"
 #include "macropath.h"
 #include <math.h>
 
@@ -3114,7 +3113,7 @@ void hyphen_trie::read_patterns_file(const char *name)
   int num[WORD_MAX+1];
   errno = 0;
   char *path = 0;
-  FILE *fp = macro_path.open_file(name, &path);
+  FILE *fp = mac_path->open_file(name, &path);
   if (fp == 0) {
     error("can't find hyphenation patterns file `%1'", name);
     return;

@@ -26,9 +26,9 @@ extern "C" {
   const char *if_to_a(int, int);
 }
 
-/* stdio.h on IRIX includes getopt.h */
+/* stdio.h on IRIX and OSF/1 include getopt.h */
 
-#ifndef __sgi
+#if !(defined(__sgi) || (defined(__osf__) && defined(__ALPHA)))
 #include <groff-getopt.h>
 #endif
 

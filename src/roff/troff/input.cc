@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -31,7 +31,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "charinfo.h"
 #include "stringclass.h"
 #include "font.h"
-#include "searchpath.h"
 #include "macropath.h"
 #include "defs.h"
 
@@ -113,6 +112,8 @@ int is_html2 = 0;
 
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
+
+search_path *mac_path = &macro_path;
 
 static int get_copy(node**, int = 0);
 static void copy_mode_error(const char *,
@@ -5641,13 +5642,13 @@ static FILE *open_mac_file(const char *mac, char **path)
   char *s1 = new char[strlen(mac)+strlen(MACRO_POSTFIX)+1];
   strcpy(s1, mac);
   strcat(s1, MACRO_POSTFIX);
-  FILE *fp = macro_path.open_file(s1, path);
+  FILE *fp = mac_path->open_file(s1, path);
   a_delete s1;
   if (!fp) {
     char *s2 = new char[strlen(mac)+strlen(MACRO_PREFIX)+1];
     strcpy(s2, MACRO_PREFIX);
     strcat(s2, mac);
-    fp = macro_path.open_file(s2, path);
+    fp = mac_path->open_file(s2, path);
     a_delete s2;
   }
   return fp;
@@ -5669,13 +5670,16 @@ static void process_macro_file(const char *mac)
 static void process_startup_file(char *filename)
 {
   char *path;
-  FILE *fp = macro_path.open_file(filename, &path);
+  // restrict path for security reasons
+  mac_path = &safer_macro_path;
+  FILE *fp = mac_path->open_file(filename, &path);
   if (fp) {
     input_stack::push(new file_iterator(fp, symbol(path).contents()));
     a_delete path;
     tok.next();
     process_input_stack();
   }
+  mac_path = &macro_path;
 }
 
 void macro_source()
@@ -5687,7 +5691,7 @@ void macro_source()
     while (!tok.newline() && !tok.eof())
       tok.next();
     char *path;
-    FILE *fp = macro_path.open_file(nm.contents(), &path);
+    FILE *fp = mac_path->open_file(nm.contents(), &path);
     // .mso doesn't (and cannot) go through open_mac_file, so we
     // need to do it here manually: If we have tmac.FOOBAR, try
     // FOOBAR.tmac and vice versa
@@ -5697,7 +5701,7 @@ void macro_source()
 	char *s = new char[strlen(fn) + sizeof(MACRO_POSTFIX)];
 	strcpy(s, fn + sizeof(MACRO_PREFIX) - 1);
 	strcat(s, MACRO_POSTFIX);
-	fp = macro_path.open_file(s, &path);
+	fp = mac_path->open_file(s, &path);
 	a_delete s;
       }
       if (!fp) {
@@ -5706,7 +5710,7 @@ void macro_source()
 	  char *s = new char[strlen(fn) + sizeof(MACRO_PREFIX)];
 	  strcpy(s, MACRO_PREFIX);
 	  strncat(s, fn, strlen(fn) - sizeof(MACRO_POSTFIX) + 1);
-	  fp = macro_path.open_file(s, &path);
+	  fp = mac_path->open_file(s, &path);
 	  a_delete s;
 	}
       }

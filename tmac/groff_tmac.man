@@ -152,7 +152,7 @@ macro package may be specified as
 .RE
 .LP
 The easiest way to find out which macro packages are available on a
-system is to check the content of the
+system is to check the contents of the
 .I tmac
 directories.
 For example, a file called
@@ -363,34 +363,35 @@ The macro files are kept in the
 all of which constitute the
 .B tmac
 .BR path.
-In accordance with the Filesystem Hierarchy Standard (FHS), the standard
-tmac directory location for groff is
-.IB /usr/share/groff/ <version> /tmac\c
-, a local installation will use
-.IB /usr/local/share/groff/ <version> /tmac\c
-\&.
-An additional directory for site-specific files which will be searched by
-default (before the standard tmac directory) is
-.I /usr/share/groff/site-tmac
-(resp.\&
-.IR /usr/local/share/groff/site-tmac ).
-Older systems used a subdirectory of
-.IR /usr/lib .
-Independently of the default tmac path, the tmac path actually used by a
-document can always be set by a shell environment variable, cf. section
-.BR ENVIRONMENT .
+.LP
+The elements of the search path for macro files are (in that order):
+.IP \(bu 4
+the directories specified with troff's resp. groff's
+.B \-M
+command line option
+.IP \(bu 4
+the directories given in the
+.B GROFF_TMAC_PATH
+environment variable
+.IP \(bu 4
+the current directory
+.IP \(bu 4
+a site-specific (platform-independent) directory, a platform-specific
+directory, and the main tmac directory:
+.IP "" 6
+@LOCALMACRODIR@
+.br
+@SYSTEMMACRODIR@
+.br
+@MACRODIR@
 .\" --------------------------------------------------------------------
 .SH ENVIRONMENT
 .\" --------------------------------------------------------------------
 .TP
 .B GROFF_TMAC_PATH
-A colon separated list of tmac directories in which to search for macro
-files, the
-.B tmac
-.BR path .
-If unset a default path is used as is outlined in the
-.B FILES
-section.
+A colon separated list of additional tmac directories in which to search
+for macro files.
+See the previous section for a detailed description.
 .\" --------------------------------------------------------------------
 .SH BUGS
 .\" --------------------------------------------------------------------

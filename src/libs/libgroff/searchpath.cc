@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -27,56 +27,70 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "searchpath.h"
 #include "nonposix.h"
 
-search_path::search_path(const char *envvar, const char *standard)
+search_path::search_path(const char *envvar, const char *standard,
+			 int add_home, int add_current)
 {
-  char *e = envvar ? getenv(envvar) : 0;
-  if (e && standard) {
-    dirs = new char[strlen(e) + strlen(standard) + 2];
-    strcpy(dirs, e);
+  char *home = 0;
+  if (add_home)
+    home = getenv("HOME");
+  char *e = 0;
+  if (envvar)
+    e = getenv(envvar);
+  dirs = new char[((e && *e) ? strlen(e) + 1 : 0)
+		  + (add_current ? 1 + 1 : 0)
+		  + ((home && *home) ? strlen(home) + 1 : 0)
+		  + ((standard && *standard) ? strlen(standard) : 0)
+		  + 1];
+  *dirs = '\0';
+  if (e && *e) {
+    strcat(dirs, e);
     strcat(dirs, PATH_SEP);
-    strcat(dirs, standard);
   }
-  else
-    dirs = strsave(e ? e : standard);
-  init_len = dirs ? strlen(dirs) : 0;
+  if (add_current) {
+    strcat(dirs, ".");
+    strcat(dirs, PATH_SEP);
+  }
+  if (home && *home) {
+    strcat(dirs, home);
+    strcat(dirs, PATH_SEP);
+  }
+  if (standard && *standard)
+    strcat(dirs, standard);
+  init_len = strlen(dirs);
 }
 
 search_path::~search_path()
 {
-  if (dirs)
-    a_delete dirs;
+  // dirs is always allocated
+  a_delete dirs;
 }
 
 void search_path::command_line_dir(const char *s)
 {
-  if (!dirs)
-    dirs = strsave(s);
-  else {
-    char *old = dirs;
-    unsigned old_len = strlen(old);
-    unsigned slen = strlen(s);
-    dirs = new char[old_len + 1 + slen + 1];
-    memcpy(dirs, old, old_len - init_len);
-    char *p = dirs;
-    p += old_len - init_len;
-    if (init_len == 0)
-      *p++ = PATH_SEP[0];
-    memcpy(p, s, slen);
-    p += slen;
-    if (init_len > 0) {
-      *p++ = PATH_SEP[0];
-      memcpy(p, old + old_len - init_len, init_len);
-      p += init_len;
-    }
-    *p++ = '\0';
-    a_delete old;
+  char *old = dirs;
+  unsigned old_len = strlen(old);
+  unsigned slen = strlen(s);
+  dirs = new char[old_len + 1 + slen + 1];
+  memcpy(dirs, old, old_len - init_len);
+  char *p = dirs;
+  p += old_len - init_len;
+  if (init_len == 0)
+    *p++ = PATH_SEP[0];
+  memcpy(p, s, slen);
+  p += slen;
+  if (init_len > 0) {
+    *p++ = PATH_SEP[0];
+    memcpy(p, old + old_len - init_len, init_len);
+    p += init_len;
   }
+  *p++ = '\0';
+  a_delete old;
 }
 
 FILE *search_path::open_file(const char *name, char **pathp)
 {
   assert(name != 0);
-  if (IS_ABSOLUTE(name) || dirs == 0 || *dirs == '\0') {
+  if (IS_ABSOLUTE(name) || *dirs == '\0') {
     FILE *fp = fopen(name, "r");
     if (fp) {
       if (pathp)
