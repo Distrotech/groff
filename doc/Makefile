@@ -1,4 +1,4 @@
-# Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+# Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
 # This file is part of groff.
@@ -25,6 +25,24 @@ DOCS=meref.ps meintro.ps pic.ps pic.html homepage.html
 MEMACROS=../tmac/tmac.e
 SOELIM=../src/preproc/soelim/soelim
 
+groff_bin_dirs=\
+  ../src/roff/groff \
+  ../src/roff/troff \
+  ../src/preproc/pic \
+  ../src/preproc/eqn \
+  ../src/preproc/tbl \
+  ../src/preproc/grn \
+  ../src/preproc/refer \
+  ../src/preproc/soelim \
+  ../src/preproc/html \
+  ../src/devices/grops \
+  ../src/devices/grodvi \
+  ../src/devices/grotty \
+  ../src/devices/grolj4 \
+  ../src/devices/grolbp \
+  ../src/devices/grohtml
+groff_bin_path=`echo $(groff_bin_dirs) | sed -e 's| \+|:|g'`
+
 version=`cat ../VERSION`
 # No additional number if revision is zero
 revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' ../REVISION`
@@ -47,18 +65,24 @@ all: $(DOCS)
 .ms.html:
 	GROFF_TMAC_PATH=../tmac; \
 	export GROFF_TMAC_PATH; \
+	GROFF_BIN_PATH=$(groff_bin_path); \
+	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -Thtml $(FFLAG) -U -ms >$@
 
 .ms.ascii:
 	GROFF_TMAC_PATH=../tmac; \
 	export GROFF_TMAC_PATH; \
+	GROFF_BIN_PATH=$(groff_bin_path); \
+	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -Tascii $(FFLAG) -U -ms -mwww >$@
 
 .ms.ps:
 	GROFF_TMAC_PATH=../tmac; \
 	export GROFF_TMAC_PATH; \
+	GROFF_BIN_PATH=$(groff_bin_path); \
+	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -Tps $(FFLAG) -U -ms -mwww >$@
 
