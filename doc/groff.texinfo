@@ -641,8 +641,8 @@ complicated syntax, but provided the basis for all future versions.
 When they got a Graphic Systems CAT Phototypesetter, J.@w{ }F.@w{
 }Ossanna wrote a version of @code{nroff} which would drive it.  It was
 dubbed @code{troff} for typesetter @code{roff}, although many people
-have speculated that it actually means Times @code{roff} because of
-@code{troff}'s use of the Times font family by default.  As such, the
+have speculated that it actually means Times @code{roff} because of the
+use of the Times font family in @code{troff} by default.  As such, the
 name @code{troff} is pronounced t-roff rather than trough.
 
 With @code{troff} came @code{nroff} (they were actually the same program
@@ -860,7 +860,7 @@ distinguish it from its original counterparts provided by the host
 is GNU @code{eqn}.  On operating systems like Linux or the Hurd, which
 don't contain proprietary software, this prefix is omitted since GNU
 @code{troff} is the only used incarnation of @code{troff}.  Exception:
-@code{groff} is never replaced by `@code{roff}'.
+@code{groff} is never replaced by @code{roff}.
 
 @menu
 * Options::                     
@@ -943,9 +943,10 @@ equivalent commands which can be included in the file.  @xref{grefer},
 for more details.
 
 @pindex troffrc
+@pindex troffrc-end
 Note that @code{gtroff} also accepts a @samp{-R} option, which is not
 accessible via @code{groff}.  This option prevents the loading of the
-@file{troffrc} file.
+@file{troffrc} and @file{troffrc-end} files.
 @item -v
 Make programs run by @code{groff} print out their version number.
 @item -V
@@ -1013,8 +1014,8 @@ Generate an @sc{ascii} approximation of the typeset output.
 @item -b
 Print a backtrace with each warning or error message.  This backtrace
 should help track down the cause of the error.  The line numbers given
-in the backtrace may not always be correct: @code{gtroff}'s idea of line
-numbers gets confused by @code{as} or @code{am} requests.
+in the backtrace may not always be correct: @code{gtroff} can get
+confused by @code{as} or @code{am} requests while couting line numbers.
 @item -i
 Read the standard input after all the named input files have been
 processed.
@@ -1035,7 +1036,7 @@ one-letter @var{name}.
 Use @var{fam} as the default font family.
 @item -m@var{name}
 Read in the file @file{tmac.@var{name}}.  Normally this will be searched
-for in @code{groff}'s lib directory.
+for in the library directory of @code{groff}.
 @item -n@var{num}
 Number the first page @var{num}.
 @item -o@var{list}
@@ -1066,8 +1067,8 @@ option.
 @cindex environment variables
 @cindex variables in environment
 
-There are also several environment variables which can modify
-@code{groff}'s behavior.
+There are also several environment variables which can modify the
+behavior of @code{groff}.
 
 @table @code
 @item GROFF_COMMAND_PREFIX
@@ -2250,8 +2251,8 @@ For large blocks of text, the @code{ig} request may be useful.
 @section Registers
 @cindex registers
 
-Registers are @code{gtroff}'s numeric variables.  @code{gtroff} has a
-number of built-in registers, supplying anything from the date to
+Numeric variables in @code{gtroff} are called @dfn{registers}.  There
+are a number of built-in registers, supplying anything from the date to
 details of formatting parameters.
 
 @xref{Identifiers}.
@@ -2496,44 +2497,33 @@ selected pages.  @xref{Options}, for more information.
 @cindex manipulating filling and adjusting
 @cindex filling and adjusting, manipulating
 @cindex adjusting and filling, manipulating
+@cindex justifying text
+@cindex text, justifying
 
 @findex br
 @cindex break
 @cindex line break
-Several ways of causing @dfn{breaks} were given in
-@ref{Implicit Line Breaks}.
-The @code{br} request will likewise cause a break.
-Several other requests will also cause breaks, implicitly.
-They are
-@code{bp},
-@code{ce},
-@code{fi},
-@code{fl},
-@code{in},
-@code{nf},
-@code{sp} and
-@code{ti}.
+Various ways of causing @dfn{breaks} were given in @ref{Implicit Line
+Breaks}.  The @code{br} request will likewise cause a break.  Several
+other requests will also cause breaks, but implicitly.  They are
+@code{bp}, @code{ce}, @code{fi}, @code{fl}, @code{in}, @code{nf},
+@code{sp}, and @code{ti}.
 
 @findex nf
 @findex fi
 @vindex .u
-Initially, groff will fill and ajust text to both margins.
-Filling can be disabled via the @code{nf} request
-and re-enabled with the @code{fi} request.
-These implicitly disable and re-enable adjusting.
-Both of these will cause break in text currently being filled.
-The number register @code{.u} is equal to 1 in fill mode and 0 in
-no-fill mode.
+Initially, @code{gtroff} will fill and ajust text to both margins.
+Filling can be disabled via the @code{nf} request and re-enabled with
+the @code{fi} request.  These implicitly disable and re-enable
+adjusting.  Both of these will cause a break in the text currently being
+filled.  The number register @code{.u} is equal to@w{ }1 in fill mode
+and@w{ }0 in no-fill mode.
 
 @findex ad
 @findex na
-@vindex .j
-Adjusting can be disabled with the @code{ad} request and re-enabled
-with the @code{na} request.
-The @code{ad} request takes a single argument to indicate how to
-adjust text.
-The current adjustment mode is available in the number register
-@code{.j}.
+Adjusting can be disabled with the @code{ad} request and re-enabled with
+the @code{na} request.  The @code{ad} request takes a single argument to
+indicate how to adjust text.
 
 @table @samp
 @item l
@@ -2541,16 +2531,19 @@ The current adjustment mode is available in the number register
 Adjust text to the left margin.  This produces what is traditionally
 called ragged-right text.
 @item r
-Adjust text to the right margin.
+@cindex ragged-left
+Adjust text to the right margin, producing ragged-left text.
 @item c
+@cindex centered text
 Center filled text.
+@c XXX difference to .ce?
 @item b
 @itemx n
-Justify to both margins.  This is groff's default.
+Justify to both margins.  This is default of @code{gtroff}.
 @end table
 
-With no argument to @code{ad}, troff will adjust lines the same way
-it was the last time it was filling.  For example:
+With no argument to @code{ad}, @code{gtroff} will adjust lines the same
+way it was the last time it was filling.  For example:
 
 @example
 text
@@ -2564,52 +2557,60 @@ text
 text
 @end example
 
+@vindex .j
+The current adjustment mode is available in the number register
+@code{.j}.
+
 @findex \p
-The escape @code{\p} will cause a break and cause the remaining text
-to be adjusted.
+The escape @code{\p} will cause a break and the remaining text to be
+adjusted.
 
+@cindex word space size
+@cindex size of word space
+@cindex space between words
+@cindex sentence space size
+@cindex size of sentence space
+@cindex space between sentences
 @findex ss
-The @code{ss} request allows you to change the minimum size of a
-space between filled words.
-This request takes it's units as one twelfth of the
-spacewidth parameter for the current font.  Initially both the word
-space size and the sentence space size are 12.
+The @code{ss} request allows you to change the minimum size of a space
+between filled words.  This request takes its units as one twelfth of
+the space width parameter for the current font.  Initially both the word
+space size and the sentence space size are@w{ }12.
 
-When two arguments are given to the @code{ss} request, the second argument
-gives the sentence space size. If the second argument is not given, the
-sentence space size will be the same as the word space size.
-The sentence space size
-is used in two circumstances: if the end of a sentence occurs at the end
-of a line in fill mode, then both an inter-word space and a sentence
-space will be added; if two spaces follow the end of a sentence in the
-middle of a line, then the second space will be a sentence space. Note
-that the behaviour of @sc{Unix} troff will be exactly that exhibited by GNU
-troff if a second argument is never given to the @code{ss} request. In GNU
-troff, as in @sc{Unix} troff, you should always follow a sentence with either
-a newline or two spaces.
+If two arguments are given to the @code{ss} request, the second argument
+gives the sentence space size.  If the second argument is not given, the
+sentence space size will be the same as the word space size.  The
+sentence space size is used in two circumstances: If the end of a
+sentence occurs at the end of a line in fill mode, then both an
+inter-word space and a sentence space will be added; if two spaces
+follow the end of a sentence in the middle of a line, then the second
+space will be a sentence space. Note that the behaviour of @sc{Unix}
+@code{troff} will be exactly that exhibited by GNU @code{troff} if a
+second argument is never given to the @code{ss} request.  In GNU
+@code{troff}, as in @sc{Unix} @code{troff}, you should always follow a
+sentence with either a newline or two spaces.
 
 @vindex .ss
 @vindex .sss
-The number registers @code{.ss} and @code{.sss} are
-the values of the parameters set by the first and second
-arguments of the @code{ss} request.
+The number registers @code{.ss} and @code{.sss} are the values of the
+parameters set by the first and second arguments of the @code{ss}
+request.
 
 @findex ce
-The @code{ce} request will center text.
-While the @samp{ad c} request will also center text, it has the side
-effect of filling the text.  The @code{.ce} request will not fill the
-text it affects.
-This request causes a break.
+@cindex centering lines
+@cindex lines, centering
+The @code{ce} request will center text.  While the @w{@samp{ad c}}
+request will also center text, it has the side effect of filling the
+text.  The @code{.ce} request will not fill the text it affects.  This
+request causes a break.
 
-With no arguments, @code{ce} will fill the next line of text.
-The single argument @code{ce} takes is a number indicating the
-number of lines to be centered.  With no argument centering is
-disabled.
+With no arguments, @code{ce} will fill the next line of text.  The
+single argument @code{ce} takes is a number indicating the number of
+lines to be centered.  If the argument is zero, centering is disabled.
 
-A common idiom is to turn on centering for a large number of lines,
-and then turn off centering when you are done with the centered text.
-This is useful for any request which takes a number of lines as an
-argument.
+A common idiom is to turn on centering for a large number of lines, and
+then turn off centering when you are done with the centered text.  This
+is useful for any request which takes a number of lines as an argument.
 
 @example
 .ce 1000
@@ -2622,18 +2623,18 @@ more interesting
 @end example
 
 @vindex .ce
-The @code{.ce} number register contains the number of lines remaining
-to be centered, as set by the @code{ce} request.
+The @code{.ce} number register contains the number of lines remaining to
+be centered, as set by the @code{ce} request.
 
-
+@cindex justifying text
+@cindex text, justifying
+@cindex right-justifying
 @findex rj
 @vindex .rj
-A similar request is @code{rj} request which will justify unfilled
-text to the right margin.  Its arguments are identical to the
-@code{ce} request.
-The @code{.rj} number register is
-the number of lines to be right-justified as set by the @code{rj}
-request.
+A similar request is @code{rj} request which will justify unfilled text
+to the right margin.  Its arguments are identical to the @code{ce}
+request.  The @code{.rj} number register is the number of lines to be
+right-justified as set by the @code{rj} request.
 
 
 @node Manipulating Hyphenation, Manipulating Spacing, Manipulating Filling and Adjusting, Programming Tutorial
@@ -2641,24 +2642,22 @@ request.
 @cindex manipulating hyphenation
 @cindex hyphenation, manipulating
 
-As discussed in @ref{Hyphenation}, groff will hyphenate words.
-There are a number of ways to modify the how hyphenation is done.
+As discussed in @ref{Hyphenation}, @code{gtroff} will hyphenate words.
+There are a number of ways to influence how hyphenation is done.
 
 @findex nh
 @findex hy
 @vindex .hy
-This hyphenation can be turned off with the @code{nh} request, and
-turned back on with the @code{hy} request.  However, troff's
-hyphenation facilities are far more flexible than this.  The @code{hy}
-request can be used to tell troff to restrict hypenation to certain
-cases.  The request takes a single numeric argument.
-The current hyphenation restrictions can be found in the number
-register @code{.hy}
+Hyphenation can be turned off with the @code{nh} request, and turned
+back on with the @code{hy} request.  However, the hyphenation facilities
+of @code{gtroff} are far more flexible than this.  The @code{hy} request
+can be used to tell @code{gtroff} to restrict hypenation to certain
+cases.  The request takes a single numeric argument.  The current
+hyphenation restrictions can be found in the number register @code{.hy}.
 
 @table @samp
 @item 1
-The default argument, which
-indicates to hyphenate without restrictions.
+The default argument, which indicates to hyphenate without restrictions.
 @item 2
 Do not hyphenate the last word on a page or column.
 @item 4
@@ -2667,27 +2666,40 @@ Do not hyphenate the last two characters of a word.
 Do not hyphenate the first two characters of a word.
 @end table
 
+The values in the previous table are additive.  For example, the
+value@w{ }12 causes @code{gtroff} to neither hyphenate the last two nor
+the first two characters of a word.
+
 @findex hlm
 @vindex .hlc
 @vindex .hlm
-The @code{hlm} request will
-set the maximum number of consecutive hyphenated lines to the value
-given as the first argument.
-If this number is
-negative, there is no maximum.  The default value is -1.
-This value is
-associated with the current environment.  Only lines output from an
-environment count towards the maximum associated with that environment.
-Hyphens resulting from @code{\%} are counted; explicit hyphens are not.
-The current setting of this is available in the @code{.hlm} request.
-Also the number of immediately preceding consecutive hyphenated lines
-are available in the number register @code{.hlc}.
+@findex \%
+@cindex explicit hyphens
+@cindex hyphen, explicit
+The @code{hlm} request will set the maximum number of consecutive
+hyphenated lines to the value given as the first argument.  If this
+number is negative, there is no maximum.  The default value is@w{ }-1.
+This value is associated with the current environment.  Only lines
+output from an environment count towards the maximum associated with
+that environment.  Hyphens resulting from @code{\%} are counted;
+explicit hyphens are not.  The current setting of this is available in
+the @code{.hlm} register.  Also the number of immediately preceding
+consecutive hyphenated lines are available in the number register
+@code{.hlc}.
 
 @findex hw
-The @code{hw} request allows you to specify how a specific word is
-to be hyphenated.  It takes only one argument which is the word with
-hyphens at the hyphenation points.  For example:
-@samp{.hw in-sa-lub-rious}.
+The @code{hw} request allows you to specify how a specific word is to be
+hyphenated.  It takes only one argument which is the word with hyphens
+at the hyphenation points.  For example: 
+
+@example
+.hw in-sa-lub-rious
+@end example
+
+@noindent
+This request can be used more than once.
+
+@c XXX
 @c In old versions of troff there was a
 @c limited amount of space to store such information, fortunately,
 @c with groff, this is no longer a restriction.
@@ -2695,14 +2707,15 @@ hyphens at the hyphenation points.  For example:
 @findex \%
 @cindex hyphenation character
 @cindex character, hyphenation
-You can also tell troff how to hyphenate words on the fly with the
-use of the @code{\%} escape, also known as the @dfn{hyphenation
-character}.  Preceding a word with this character will prevent it
-from being hyphenated, putting it in a word will indicate to troff
-that the word may be hyphenated at that point.  Note that this
-mechanism will only affect one word, if you want to change the
-hyphenation of a word for the entire document, use the @code{hw}
-request.
+@cindex disabling hyphenation
+@cindex hyphenation, disabling
+You can also tell @code{gtroff} how to hyphenate words on the fly with
+the use of the @code{\%} escape, also known as the @dfn{hyphenation
+character}.  Preceding a word with this character will prevent it from
+being hyphenated, putting it in a word will indicate to @code{gtroff}
+that the word may be hyphenated at that point.  Note that this mechanism
+will only affect one word; if you want to change the hyphenation of a
+word for the entire document, use the @code{hw} request.
 
 @findex hc
 The @code{hc} request allows you to change the hyphenation character.
@@ -2710,80 +2723,91 @@ The character specified as an argument will then work the same as the
 @code{\%} escape, and, thus, no longer appear in the output.  Without
 an argument it will return the hyphenation character to @code{\%}.
 
+@cindex hyphenation patterns
+@cindex pattern for hyphenation
 @findex hpf
-To further customize hyphenation the @code{hpf} request will read in
-a file of hyphenation patterns.
-This file will be searched for in the
+To further customize hyphenation the @code{hpf} request will read in a
+file of hyphenation patterns.  This file will be searched for in the
 same way that @file{tmac.@var{name}} is searched for when the
 @samp{-m@var{name}} option is specified.
 
-It should have the same format as the argument to the
-\patterns primitive in @TeX{}; the letters appearing in this file are
-interpreted as hyphenation codes.
-A @samp{%} character in the patterns file
+It should have the same format as the argument to the @code{\patterns}
+primitive in @TeX{}; the letters appearing in this file are interpreted
+as hyphenation codes.  A @samp{%} character in the patterns file
 introduces a comment that continues to the end of the line.
 
 @findex hla
 @findex hpf
 @pindex troffrc
-The set of
-hyphenation patterns is associated with the current language set by the
-@code{hla} request.  The @code{hpf} request is usually invoked by the
-@file{troffrc} file.
+@pindex troffrc-end
+The set of hyphenation patterns is associated with the current language
+set by the @code{hla} request.  The @code{hpf} request is usually
+invoked by the @file{troffrc} or @file{troffrc-end} file.
 
 @findex hcode
-@code{.hcode @var{c1 code1 c2 code2...}}
-Set the hyphenation code of character @var{c1} to code1 and that of
-@var{c2} to @var{code2}.
-A hyphenation code must be a single input character (not a
-special character) other than a digit or a space.  Initially each
-lower-case letter has a hyphenation code, which is itself, and each
-upper-case letter has a hyphenation code which is the lower case
-version of itself.
+The @code{hcode} request has the following syntax:
 
+@example
+.hcode @var{c1 code1 c2 code2...}
+@end example
+
+It sets the hyphenation code of character @var{c1} to @var{code1} and
+that of @var{c2} to @var{code2}.  A hyphenation code must be a single
+input character (not a special character) other than a digit or a space.
+Initially each lower-case letter has a hyphenation code, which is
+itself, and each upper-case letter has a hyphenation code which is the
+lower-case version of itself.
+
+@cindex hyphenation margin
+@cindex margin for hyphenation
 @findex hym
 @vindex .hym
 The @code{hym} request will set the hyphenation margin to the value
-given as the first argument: when the current adjustment mode is not
-@samp{b}, the line will not be hyphenated if the line is no more than
-that amount short.
-The default hyphenation margin is 0.  The default scaling
-indicator for this request is m.  The hyphenation margin is associated
-with the current environment.  The current hyphenation margin is
-available in the @code{.hym} register.
+given as its argument: when the current adjustment mode is not@w{
+}@samp{b}, the line will not be hyphenated if the line is no more than
+that amount short.  The default hyphenation margin is@w{ }0.  The
+default scaling indicator for this request is@w{ }m.  The hyphenation
+margin is associated with the current environment.  The current
+hyphenation margin is available in the @code{.hym} register.
 
+@cindex hyphenation space
 @findex hys
 @vindex .hys
-The @code{hys} request set the hyphenation space to the value given as
-the first argument: when the current adjustment mode is b, don't
-hyphenate the line if the line can be justified by adding no more than
-that amount of extra space to each word space.  The default
-hyphenation space is 0.  The default scaling indicator for this
-request is m.  The hyphenation space is associated with the current
+The @code{hys} request sets the hyphenation space to the value given as
+the first argument: when the current adjustment mode is@w{ }@samp{b},
+don't hyphenate the line if the line can be justified by adding no more
+than that amount of extra space to each word space.  The default
+hyphenation space is@w{ }0.  The default scaling indicator for this
+request is@w{ }m.  The hyphenation space is associated with the current
 environment.  The current hyphenation space is available in the
 @code{.hys} register.
 
+@cindex soft hyphen character
+@cindex character, soft hyphen
 @findex shc
 The @code{shc} request will set the soft hyphen character to the
-argument given as an argument.  If the argument is omitted, the soft
-hyphen character will be set to the default @code{\(hy}. The soft
-hyphen character is the character which will be inserted when a word
-is hyphenated at a line break.  If the soft hyphen character does not
-exist in the font of the character immediately preceding a potential
+character given as an argument.  If the argument is omitted, the soft
+hyphen character will be set to the default character @code{\(hy}. The
+soft hyphen character is the character which will be inserted when a
+word is hyphenated at a line break.  If the soft hyphen character does
+not exist in the font of the character immediately preceding a potential
 break point, then the line will not be broken at that point.  Neither
 definitions (specified with the @code{char} request) nor translations
-(specified with the @code{tr} request) are considered when finding the soft
-hyphen character.
+(specified with the @code{tr} request) are considered when finding the
+soft hyphen character.
 
 @findex hla
+@findex hpf
+@findex hw
 @vindex .hla
 @pindex troffrc
-The @code{hla} request will set the current hyphenation language to
-that given by the first argument.  Hyphenation exceptions specified
-with the @code{hw} request and hyphenation patterns specified with the
-@code{hpf} request are both associated with the current hyphenation
-language.  The @code{hla} request is usually invoked by the
-@file{troffrc} file.  The current hyphenation language is available
+@pindex troffrc-end
+The @code{hla} request will set the current hyphenation language to that
+given by the first argument.  Hyphenation exceptions specified with the
+@code{hw} request and hyphenation patterns specified with the @code{hpf}
+request are both associated with the current hyphenation language.  The
+@code{hla} request is usually invoked by the @file{troffrc} or the
+@file{troffrc-end} files.  The current hyphenation language is available
 in the number register @code{.hla}.
 
 
@@ -3177,7 +3201,7 @@ Groff gives you the ability to switch fonts at any point in your
 text.  There are two ways to do this, via the @code{ft} request and
 the @code{\f} escape.
 
-Fonts are generaly specified as uppercase strings, which are usually
+Fonts are generaly specified as upper-case strings, which are usually
 1 to 4 characters representing an abreviation of acronym of the font
 name.
 
