@@ -247,12 +247,10 @@
 .  ie (\n[.$] == 1) \{\
 .    nr doc-arg-ptr 0
 .
-.    ie \n[doc-in-diversion] \{\
-.      if (\n[doc-nesting-level] > 1) \
+.    if \n[doc-nesting-level] \{\
+.      ie \n[doc-in-diversion] \
 .        as doc-out-string "\*[doc-curr-space]
-.    \}
-.    el \{\
-.      if \n[doc-nesting-level] \
+.      el \
 .        if !\n[doc-func-arg-count] \
 .          as doc-out-string "\*[doc-curr-space]
 .    \}
@@ -364,12 +362,10 @@
 .  ie (\n[doc-num-args] == 1) \{\
 .    nr doc-arg-ptr 0
 .
-.    ie \n[doc-in-diversion] \{\
-.      if (\n[doc-nesting-level] > 1) \
+.    if \n[doc-nesting-level] \{\
+.      ie \n[doc-in-diversion] \
 .        as doc-out-string "\*[doc-curr-space]
-.    \}
-.    el \{\
-.      if \n[doc-nesting-level] \
+.      el \
 .        if !\n[doc-func-arg-count] \
 .          as doc-out-string "\*[doc-curr-space]
 .    \}
@@ -474,17 +470,17 @@
 .
 .de doc-print-out-string
 .  ie \n[doc-in-diversion] \{\
-.    if (\n[doc-nesting-level] == 1) \{\
+.    ie (\n[doc-in-list] : \n[doc-nesting-level]) \{\
 .      if !\n[doc-no-printing] \{\
 .        nop \&\*[doc-out-string]
 .        ds doc-curr-space
 .        ds doc-out-string
 .    \}\}
-.    if !\n[doc-nesting-level] \
+.    el \
 .      doc-end-diversion-and-print
 .  \}
 .  el \{\
-.    ie \n[doc-nesting-level] \{\
+.    ie (\n[doc-in-list] : \n[doc-nesting-level]) \{\
 .      if \n[doc-space-mode] \
 .        if !\n[doc-list-immediate] \
 .          doc-save-and-divert
@@ -2178,17 +2174,22 @@
 .
 .
 .\" NS doc-nesting-level global register
-.\" NS   (extension possible)
+.\" NS   used by `doc-enclose-open' and `doc-enclose-close', `.Fo', and `.Fc'
 .
 .nr doc-nesting-level 0
+.
+.
+.\" NS doc-in-list global register (bool)
+.\" NS   whether we are in (logical) .It
+.
+.nr doc-in-list 0
 .
 .
 .\" NS doc-enclose-open macro
 .\" NS   enclose string open
 .\" NS
 .\" NS modifies:
-.\" NS   doc-arg-ptr, doc-out-string, doc-nesting-level,
-.\" NS   doc-list-continue
+.\" NS   doc-arg-ptr, doc-out-string, doc-nesting-level
 .
 .de doc-enclose-open
 .  nr doc-nesting-level +1
@@ -2208,7 +2209,7 @@
 .          doc-save-and-divert
 .  \}\}
 .
-.  ie \n[doc-arg-limit] \{\
+.  if \n[doc-arg-limit] \{\
 .    if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .      nr doc-arg-ptr +1
 .      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
@@ -2218,32 +2219,17 @@
 .        No
 .    \}\}
 .
-.    \" if a macro calling doc-enclose-open is the last argument in a line,
-.    \" defer calling the doc-list-XXX macros until doc-enclose-close
-.    if (\n[doc-arg-limit] == \n[doc-arg-ptr]) \{\
-.      if \n[doc-list-immediate] \
-.        nr doc-list-continue 1
+.    if (\n[doc-arg-limit] == \n[doc-arg-ptr]) \
 .      doc-reset-args
-.  \}\}
-.  el \{\
-.    if (\n[doc-nesting-level] > 1) \
-.      as doc-out-string "\*[doc-space]
 .  \}
 ..
-.
-.
-.\" NS doc-saved-list-type global string
-.\" NS   saved list type
-.
-.ds doc-saved-list-type
 .
 .
 .\" NS doc-enclose-close macro
 .\" NS   enclose string close
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level, doc-list-continue,
-.\" NS   doc-saved-list-type
+.\" NS   doc-out-string, doc-nesting-level
 .\" NS
 .\" NS local variables:
 .\" NS   doc-str-dec
@@ -2253,19 +2239,13 @@
 .
 .  as doc-out-string \&\*[doc-quote-right]
 .
-.tm doc-arg-limit == \n[doc-arg-limit]
-.tm doc-arg-ptr   == \n[doc-arg-ptr]
-.
 .  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \
 .      doc-parse-args \$@
-.    el \{\
-.      doc-print-out-string
-.      if !"\*[doc-saved-list-type]"" \{\
-.        doc-\*[doc-list-type-stack\n[doc-list-depth]]
-.        nr doc-list-continue 0
-.        ds doc-saved-list-type
-.  \}\}\}
+.    el \
+.      if !\n[doc-nesting-level] \
+.        doc-print-out-string
+.  \}
 .
 .  if \n[doc-arg-limit] \{\
 .    ie (\n[doc-arg-limit] == \n[doc-arg-ptr]) \{\
@@ -2278,11 +2258,14 @@
 .      nr doc-str-dec (\n[doc-arg-ptr] + 1)
 .      if (\n[doc-type\n[doc-str-dec]] == 2) \
 .        as doc-out-string "\*[doc-space\n[doc-arg-limit]]
-.
-.      if \n[doc-list-immediate] \
-.        nr doc-list-continue 0
 .      No
 .  \}\}
+.
+.  \" shall we finish .It request?
+.  if !"\*[doc-macro-name]"It" \
+.    if \n[doc-in-list] \
+.      if !\n[doc-nesting-level] \
+.        doc-\*[doc-list-type-stack\n[doc-list-depth]]
 ..
 .
 .
@@ -2524,7 +2507,8 @@
 .    \}
 .    el \
 .      if r \$1 \
-.        nr doc-arg-type 1
+.        if d \$1 \
+.          nr doc-arg-type 1
 .  \}
 ..
 .
@@ -2549,7 +2533,8 @@
 .    \}
 .    el \
 .      if r \*[doc-arg\$1] \
-.        nr doc-arg-type 1
+.        if d \*[doc-arg\$1] \
+.          nr doc-arg-type 1
 .  \}
 ..
 .
@@ -3267,7 +3252,6 @@
 .      if .\*[doc-str-dBla] \{\
 .        doc-save-global-vars
 .        nr doc-in-diversion 0
-.        nr doc-nesting-level 0
 .        ds doc-out-string
 .        doc-dry-execute "\*[doc-arg\n[doc-arg-ptr]]"
 .        \" save doc-out-string
@@ -3356,7 +3340,7 @@
 .  ds doc-quote-left-saved "\*[doc-quote-left]
 .  ds doc-quote-right-saved "\*[doc-quote-right]
 .  nr doc-nesting-level-saved \n[doc-nesting-level]
-.  ds doc-saved-list-type-saved "\*[doc-saved-list-type]
+.  nr doc-in-list-saved \n[doc-in-list]
 .  ds doc-space-saved "\*[doc-space]
 .  nr doc-space-mode-saved \n[doc-space-mode]
 .  nr doc-curr-font-for-Ef-saved \n[doc-curr-font-for-Ef]
@@ -3393,7 +3377,6 @@
 .  nr doc-enum-list-count-saved \n[doc-enum-list-count]
 .  nr doc-have-diag-list-saved \n[doc-have-diag-list]
 .  nr doc-diag-list-input-line-count-saved \n[doc-diag-list-input-line-count]
-.  nr doc-list-continue-saved \n[doc-list-continue]
 .  nr doc-list-immediate-saved \n[doc-list-immediate]
 .  nr doc-num-columns-saved \n[doc-num-columns]
 .  nr doc-next-list-depth-saved \n[doc-next-list-depth]
@@ -3491,7 +3474,7 @@
 .  ds doc-quote-left "\*[doc-quote-left-saved]
 .  ds doc-quote-right "\*[doc-quote-right-saved]
 .  nr doc-nesting-level \n[doc-nesting-level-saved]
-.  ds doc-saved-list-type "\*[doc-saved-list-type-saved]
+.  nr doc-in-list \n[doc-in-list-saved]
 .  ds doc-space "\*[doc-space-saved]
 .  nr doc-space-mode \n[doc-space-mode-saved]
 .  nr doc-curr-font-for-Ef \n[doc-curr-font-for-Ef-saved]
@@ -3528,7 +3511,6 @@
 .  nr doc-enum-list-count \n[doc-enum-list-count-saved]
 .  nr doc-have-diag-list \n[doc-have-diag-list-saved]
 .  nr doc-diag-list-input-line-count \n[doc-diag-list-input-line-count-saved]
-.  nr doc-list-continue \n[doc-list-continue-saved]
 .  nr doc-list-immediate \n[doc-list-immediate-saved]
 .  nr doc-num-columns \n[doc-num-columns-saved]
 .  nr doc-next-list-depth \n[doc-next-list-depth-saved]
@@ -3638,7 +3620,7 @@
 .    el \{ .ie "\*[doc-str-El]"diag-list" \
 .      nr doc-have-diag-list 0
 .    el \{ .ie "\*[doc-str-El]"column-list" \
-.      doc-do-end-column-list
+.      doc-end-column-list
 .    el \{ .ie "\*[doc-str-El]"item-list" \
 .      doc-end-list 0
 .    el \{ .ie "\*[doc-str-El]"ohang-list" \
@@ -3678,9 +3660,8 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-macro-name, doc-num-args, doc-arg-ptr, doc-argXXX,
-.\" NS   doc-out-string, doc-nesting-level, doc-list-immediate,
-.\" NS   doc-saved-list-type, doc-saved-Pa-font, doc-curr-type,
-.\" NS   doc-curr-arg
+.\" NS   doc-out-string, doc-in-list, doc-list-immediate,
+.\" NS   doc-saved-Pa-font, doc-curr-type, doc-curr-arg
 .\" NS
 .\" NS width register `It' set in doc-common
 .\" NS
@@ -3692,6 +3673,11 @@
 .
 .  if "\*[doc-str-It]"" \
 .    tm mdoc error: .It without preceding .Bl (#\n[.c])
+.
+.  if \n[doc-nesting-level] \{\
+.    tmc "mdoc error: .It found in enclosing (e.g. .Ac ... .It ... .Ao)
+.    tm1 " (#\n[.c])
+.  \}
 .
 .  br
 .  if !\n[cR] \
@@ -3735,10 +3721,10 @@
 .
 .    if \n[doc-reg-It] \{\
 .      ie (\n[doc-reg-It] == 2) \{\
-.        \" handle remaining list types with arguments
+.        \" handle list types with arguments
 .        doc-parse-arg-vector
 .
-.        nr doc-nesting-level +1
+.        nr doc-in-list 1
 .        nr doc-list-immediate 1
 .        nr doc-arg-ptr 1
 .        nr doc-curr-type \n[doc-type1]
@@ -3757,9 +3743,9 @@
 .          No
 .        \}
 .
-.        ie \n[doc-list-continue] \
-.          ds doc-saved-list-type "\*[doc-str-It]
-.        el \
+.        \" the previous call of `.No' can contain calls to opening requests
+.        \" like `.Ac'; we then defer the call of `doc-xxx-list'
+.        if !\n[doc-nesting-level] \
 .          doc-\*[doc-str-It]
 .      \}
 .      el \{\
@@ -3776,14 +3762,14 @@
 .\" NS   .It item of list-type inset
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level, doc-list-immediate
+.\" NS   doc-out-string, doc-in-list, doc-list-immediate
 .
 .de doc-inset-list
 .  doc-set-vertical-and-indent 0
 .  br
 .  nop \&\*[doc-out-string]
 .
-.  nr doc-nesting-level -1
+.  nr doc-in-list 0
 .  nr doc-list-immediate 0
 .  ds doc-out-string
 .  doc-reset-args
@@ -3795,7 +3781,7 @@
 .\" NS   .It item of list-type hanging tag (as opposed to tagged)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level, doc-list-immediate
+.\" NS   doc-out-string, doc-in-list, doc-list-immediate
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-dhl
@@ -3810,7 +3796,7 @@
 .  el \
 .    nop \&\*[doc-out-string]\h'|\n[doc-reg-dhl]u'\c
 .
-.  nr doc-nesting-level -1
+.  nr doc-in-list 0
 .  ds doc-out-string
 .  nr doc-list-immediate 0
 .  doc-reset-args
@@ -3822,14 +3808,14 @@
 .\" NS   .It item of list-type overhanging tag
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level, doc-list-immediate
+.\" NS   doc-out-string, doc-in-list, doc-list-immediate
 .
 .de doc-ohang-list
 .  doc-set-vertical-and-indent 0
 .  nop \&\*[doc-out-string]
 .  br
 .
-.  nr doc-nesting-level -1
+.  nr doc-in-list 0
 .  ds doc-out-string
 .  nr doc-list-immediate 0
 .  doc-reset-args
@@ -3859,10 +3845,10 @@
 .\" NS   enumerated list
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level, doc-enum-list-count
+.\" NS   doc-out-string, doc-in-list, doc-enum-list-count
 .
 .de doc-enum-list
-.  nr doc-nesting-level +1
+.  nr doc-in-list 1
 .  nr doc-enum-list-count +1
 .  ds doc-out-string \n[doc-enum-list-count].
 .  doc-do-list
@@ -3873,10 +3859,10 @@
 .\" NS   bullet paragraph list
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level
+.\" NS   doc-out-string, doc-in-list
 .
 .de doc-bullet-list
-.  nr doc-nesting-level +1
+.  nr doc-in-list 1
 .  ds doc-out-string "\*[doc-Sy-font]\[bu]\f[P]
 .  doc-do-list
 ..
@@ -3886,10 +3872,10 @@
 .\" NS   hyphen paragraph list (sub bullet list)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level
+.\" NS   doc-out-string, doc-in-list
 .
 .de doc-dash-list
-.  nr doc-nesting-level +1
+.  nr doc-in-list 1
 .  ds doc-out-string "\*[doc-Sy-font]\-\f[P]
 .  doc-do-list
 ..
@@ -3949,7 +3935,7 @@
 .\" NS   .It item of list-type `tag'
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level, doc-list-immediate
+.\" NS   doc-out-string, doc-in-list, doc-list-immediate
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-dtl
@@ -3972,7 +3958,7 @@
 .    if n \
 .      ds doc-Pa-font "\*[doc-saved-Pa-font]
 .
-.  nr doc-nesting-level -1
+.  nr doc-in-list 0
 .  nr doc-list-immediate 0
 .  ds doc-out-string
 .  doc-reset-args
@@ -4028,12 +4014,6 @@
 .  if !\n[cR] \
 .    ne 2v
 ..
-.
-.
-.\" NS doc-list-continue global register (bool)
-.\" NS   whether a list is continued on the next line
-.
-.nr doc-list-continue 0
 .
 .
 .\" NS doc-list-depth global register
@@ -4222,13 +4202,13 @@
 ..
 .
 .
-.\" NS doc-do-end-column-list macro
+.\" NS doc-end-column-list macro
 .\" NS   column-list end-list
 .\" NS
 .\" NS modifies:
 .\" NS   doc-list-depth
 .
-.de doc-do-end-column-list
+.de doc-end-column-list
 '  in -(\n[doc-list-offset-stack\n[doc-list-depth]]u + \n[doc-list-indent-stack\n[doc-list-depth]]u)
 .  ta T .5i
 .  fi
