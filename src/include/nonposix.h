@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
      Written by Eli Zaretskii (eliz@is.elta.co.il)
 
 This file is part of groff.
@@ -28,7 +28,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #endif
 
 #if defined(__MSDOS__) \
-    || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN32__))
+    || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN__))
 
 /* Binary I/O nuisances.  Note: "setmode" is right for DJGPP and
    Borland; Windows compilers might need _setmode or some such.  */

@@ -1,4 +1,4 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -99,7 +99,7 @@ static char *i_to_a P((int));
    via temporary files...  */
 
 #if defined(__MSDOS__) \
-    || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN32__))
+    || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN__))
 
 #include <process.h>
 #include <fcntl.h>
