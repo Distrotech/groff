@@ -26,7 +26,6 @@ TODO
  - Add X command to include bitmaps
 */
 #define _GNU_SOURCE
-#include <getopt.h>
 
 #include <string.h>      
 #include "driver.h"

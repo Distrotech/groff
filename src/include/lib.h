@@ -26,25 +26,7 @@ extern "C" {
   const char *if_to_a(int, int);
 }
 
-#ifdef STDLIB_H_DECLARES_GETOPT
-#include <stdlib.h>
-#else /* not STDLIB_H_DECLARES_GETOPT */
-#ifdef UNISTD_H_DECLARES_GETOPT
-#include <sys/types.h>
-#include <unistd.h>
-#else /* not UNISTD_H_DECLARES_GETOPT */
-extern "C" {
-  int getopt(int, char *const *, const char *);
-}
-#endif /* not UNISTD_H_DECLARES_GETOPT */
-
-extern "C" {
-  extern char *optarg;
-  extern int optind;
-  extern int opterr;
-}
-
-#endif /* not STDLIB_H_DECLARES_GETOPT */
+#include <getopt.h>
 
 char *strsave(const char *s);
 int is_prime(unsigned);

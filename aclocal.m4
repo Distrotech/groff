@@ -103,23 +103,6 @@ AC_MSG_RESULT(no))
 AC_LANG_RESTORE])dnl
 dnl
 dnl
-AC_DEFUN(GROFF_GETOPT,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING([declaration of getopt in stdlib.h])
-AC_TRY_COMPILE([#include <stdlib.h>
-extern "C" { void getopt(int); }],,
-AC_MSG_RESULT(no),
-AC_MSG_RESULT(yes);AC_DEFINE(STDLIB_H_DECLARES_GETOPT))
-AC_MSG_CHECKING([declaration of getopt in unistd.h])
-AC_TRY_COMPILE([#include <sys/types.h>
-#include <unistd.h>
-extern "C" { void getopt(int); }],,
-AC_MSG_RESULT(no),
-AC_MSG_RESULT(yes);AC_DEFINE(UNISTD_H_DECLARES_GETOPT))
-AC_LANG_RESTORE])dnl
-dnl
-dnl
 AC_DEFUN(GROFF_PUTENV,
 [AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
