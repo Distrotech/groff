@@ -7500,6 +7500,7 @@ special symbols (Greek, mathematics).
 @cindex fonts, changing (@code{ft}, @code{\f})
 @cindex @code{sty} request, and changing fonts
 @cindex @code{fam} request, and changing fonts
+@cindex @code{\F} escape, and changing fonts
 @kindex styles
 @kindex family
 @pindex DESC
@@ -7513,8 +7514,8 @@ to @var{font} (one-character name@w{ }@var{f}, two-character name
 
 If @var{font} is a style name (as set with the @code{sty} request or
 with the @code{styles} command in the @file{DESC} file), use it within
-the current font family (as set with the @code{fam} request or with
-the @code{family} command in the @file{DESC} file).
+the current font family (as set with the @code{fam} request, @code{\F}
+escape, or with the @code{family} command in the @file{DESC} file).
 
 @cindex previous font (@code{ft}, @code{\f[]}, @code{\fP})
 @cindex font, previous (@code{ft}, @code{\f[]}, @code{\fP})
@@ -7538,7 +7539,7 @@ and sausage.
 eggs, bacon, \fBspam\fP and sausage.
 @endExample
 
-Note that @code{\f} doesn't produce an inpt token in @code{gtroff}.
+Note that @code{\f} doesn't produce an input token in @code{gtroff}.
 As a consequence, it can be used in requests like @code{mc} (which
 expects a single character as an argument) to change the font on
 the fly:
@@ -7594,13 +7595,21 @@ By default, @code{gtroff} uses the Times family with the four styles
 This way, it is possible to use the basic four fonts and to select a
 different font family on the command line (@pxref{Groff Options}).
 
-@cindex changing font family (@code{fam})
-@cindex font family, changing (@code{fam})
+@cindex changing font family (@code{fam}, @code{\F})
+@cindex font family, changing (@code{fam}, @code{\F})
 @DefreqList {fam, [@Var{family}]}
 @DefregItem {.fam}
+@DefescItem {\\F, , f, }
+@DefescItem {\\F, @lparen{}, fm, }
+@DefescItem {\\F, @lbrack{}, family, @rbrack}
 @DefregListEnd {.fn}
-Switch font family to @var{family}.  If no argument is given, switch
-back to the previous font family.  The value at start-up is @samp{T}.
+Switch font family to @var{family} (one-character name@w{ }@var{f},
+two-character name @var{fm}).  If no argument is given, switch
+back to the previous font family.  Use @code{\F[]} to do this with the
+escape.  Note that @code{\FP} doesn't work; it selects font family
+@samp{P} instead.
+
+The value at start-up is @samp{T}.
 The current font family is available in the read-only number register
 @samp{.fam} (this is a string-valued register); it is associated with
 the current environment.
@@ -7617,6 +7626,15 @@ spam,     \" used font is family T + style B = TB
 baked beans,
 .ft R     \" family T + style R = font TR
 and spam.
+@endExample
+
+Note that @code{\F} doesn't produce an input token in @code{gtroff}.
+As a consequence, it can be used in requests like @code{mc} (which
+expects a single character as an argument) to change the font family on
+the fly:
+
+@Example
+.mc \F[P]x\F[]
 @endExample
 
 The @samp{.fn} register contains the current @dfn{real font name}
@@ -7672,8 +7690,8 @@ is equivalent to
 .sty 4 BI
 @endExample
 
-@code{fam} always checks whether the current font position is valid;
-this can give surprising results if the current font position is
+@code{fam} and @code{\F} always check whether the current font position
+is valid; this can give surprising results if the current font position is
 associated with a style.
 
 In the following example, we want to access the @sc{PostScript} font
@@ -7773,6 +7791,7 @@ syntax forms to access font positions.
 @cindex font position, changing (@code{\f})
 @cindex @code{sty} request, and font positions
 @cindex @code{fam} request, and font positions
+@cindex @code{\F} escape, and font positions
 @kindex styles
 @kindex family
 @pindex DESC
@@ -7786,8 +7805,9 @@ integer.
 
 If @var{nnn} is associated with a style (as set with the @code{sty}
 request or with the @code{styles} command in the @file{DESC} file), use
-it within the current font family (as set with the @code{fam} request or
-with the @code{family} command in the @file{DESC} file).
+it within the current font family (as set with the @code{fam} request,
+the @code{\F} escape, or with the @code{family} command in the @file{DESC}
+file).
 
 @Example
 this is font 1
@@ -7884,7 +7904,8 @@ character @code{a} is not the same as @code{\[a]}.  By default,
 it is usually accessed as @code{\-}.  On the other hand, @code{gtroff}
 has the special feature that @code{\[char@var{XXX}]} is the same as the
 input character with character code @var{XXX}.  For example,
-@code{\[char97]} is identical to the letter @code{a}.}
+@code{\[char97]} is identical to the letter @code{a} if @acronym{ASCII}
+encoding is active.}
 
 If @var{name} is undefined, a warning of type @samp{char} is generated,
 and the escape is ignored.  @xref{Debugging}, for information about
@@ -8113,7 +8134,7 @@ Default unit is @samp{z}.
 
 Currently, only the @option{-Tps} device supports this feature.
 
-Note that @code{\H} doesn't produce an inpt token in @code{gtroff}.
+Note that @code{\H} doesn't produce an input token in @code{gtroff}.
 As a consequence, it can be used in requests like @code{mc} (which
 expects a single character as an argument) to change the font on
 the fly:
@@ -8134,7 +8155,7 @@ degrees.  Positive values slant to the right.
 
 Currently, only the @option{-Tps} device supports this feature.
 
-Note that @code{\S} doesn't produce an inpt token in @code{gtroff}.
+Note that @code{\S} doesn't produce an input token in @code{gtroff}.
 As a consequence, it can be used in requests like @code{mc} (which
 expects a single character as an argument) to change the font on
 the fly:
@@ -11368,10 +11389,10 @@ it sets the four number registers to zero.
 @cindex node, output
 @code{gtroff} processes input in three steps.  One or more input
 characters are converted to an @dfn{input token}.@footnote{Except the
-escapes @code{\f}, @code{\H}, @code{\R}, @code{\s}, and @code{\S}
-which are processed immediately if not in copy-in mode.}  Then, one
-or more input tokens are converted to an @dfn{output node}.  Finally,
-output nodes are converted to the intermediate output language
+escapes @code{\f}, @code{\F}, @code{\H}, @code{\R}, @code{\s}, and
+@code{\S} which are processed immediately if not in copy-in mode.}
+Then, one or more input tokens are converted to an @dfn{output node}.
+Finally, output nodes are converted to the intermediate output language
 understood by all output devices.
 
 Actually, before step one happens, @code{gtroff} converts certain

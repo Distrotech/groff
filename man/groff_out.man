@@ -80,7 +80,7 @@ after these commands, otherwise the position is not changed.
 ..
 .de ShellCommand
 .  br
-.  IR "shell>" "\h'1m'\f[CB]\$*\f[P]\/"
+.  IR "shell>" "\h'1m'\f[CB]\$*\f[]\/"
 ..
 .ec
 .\" End of macro definitions
@@ -89,7 +89,7 @@ after these commands, otherwise the position is not changed.
 .
 .nr @maxcolor 65536
 .ds @backslash \[rs]\"
-.ds @linebreak \f[R]\[la]line_break\[ra]\f[P]\"
+.ds @linebreak \f[R]\[la]line_break\[ra]\f[]\"
 .
 .\" Begin of macro definitions
 .eo
@@ -124,7 +124,7 @@ after these commands, otherwise the position is not changed.
 .  ds @arg1 \$1\"
 .  ds @arg2 \$2\"
 .  shift 2
-.  nop (\f[I]\,\*[@arg1]\/\f[P],\ \f[I]\,\*[@arg2]\/\f[P])\$*
+.  nop (\f[I]\,\*[@arg1]\/\f[],\ \f[I]\,\*[@arg2]\/\f[])\$*
 .  rm @arg1
 .  rm @arg2
 ..
@@ -151,8 +151,8 @@ after these commands, otherwise the position is not changed.
 .    \}
 .  \}
 .  el \{\
-.    nop (\f[I]\*[@arg1]\*[@index1]\f[P],\ \c
-.    nop \f[I]\*[@arg2]\*[@index2]\f[P])\$* \c
+.    nop (\f[I]\*[@arg1]\*[@index1]\f[],\ \c
+.    nop \f[I]\*[@arg2]\*[@index2]\f[])\$* \c
 .  \}
 .  rm @arg1
 .  rm @arg2
@@ -164,7 +164,7 @@ after these commands, otherwise the position is not changed.
 .  ds @arg1 \$1\"
 .  ds @arg2 \$2\"
 .  shift 2
-.  IP "\f[B]\*[@arg1]\f[P]\ \f[I]\,\*[@arg2]\/\f[P]\$*"
+.  IP "\f[B]\*[@arg1]\f[]\ \f[I]\,\*[@arg2]\/\f[]\$*"
 .  rm @arg1
 .  rm @arg2
 ..
@@ -175,7 +175,7 @@ after these commands, otherwise the position is not changed.
 .  ds @arg2 \$2\"
 .  shift 2
 .  TP+
-.  Text "\f[B]\*[@arg1]\f[P]\ \f[I]\,\*[@arg2]\/\f[P]\$*"
+.  Text "\f[B]\*[@arg1]\f[]\ \f[I]\,\*[@arg2]\/\f[]\$*"
 .  rm @arg1
 .  rm @arg2
 ..
@@ -183,7 +183,7 @@ after these commands, otherwise the position is not changed.
 .de D-command
 .  ds @sub \$1\"
 .  shift 1
-.  IP "\f[B]D\*[@sub]\f[P]\ \f[I]\,\$*\/\f[P]\|\*[@linebreak]"
+.  IP "\f[B]D\*[@sub]\f[]\ \f[I]\,\$*\/\f[]\|\*[@linebreak]"
 .  rm @sub
 ..
 .c format: .D-command+ <subcommand> "<arguments>"
@@ -192,7 +192,7 @@ after these commands, otherwise the position is not changed.
 .  ds @sub \$1\"
 .  shift 1
 .  TP+
-.  Text "\f[B]D\*[@sub]\f[P]\ \f[I]\,\$*\/\f[P]\*[@linebreak]"
+.  Text "\f[B]D\*[@sub]\f[]\ \f[I]\,\$*\/\f[]\*[@linebreak]"
 .  rm @sub
 ..
 .de Da-command
@@ -200,8 +200,8 @@ after these commands, otherwise the position is not changed.
 .  ie t \
 .    ds @args $h sub 1$\~$v sub 1$ $h sub 2$\~$v sub 2$\"
 .  el \
-.    ds @args \f[I]h1\~v1 h2\~v2\f[P]\"
-.  IP "\f[B]Da\f[P]\ \*[@args]\|\*[@linebreak]"
+.    ds @args \f[I]h1\~v1 h2\~v2\f[]\"
+.  IP "\f[B]Da\f[]\ \*[@args]\|\*[@linebreak]"
 .  rm @args
 ..
 .c graphics command .D with a variable number of arguments
@@ -214,8 +214,8 @@ after these commands, otherwise the position is not changed.
 .    as @args "$h sub n$\~$v sub n$\"
 .  \}
 .  el \
-.    ds @args \f[I]h1\~v1 h2\~v2\f[P] ... \f[I]\,hn\~vn\f[P]\"
-.  IP "\f[B]D\*[@sub]\f[P]\ \*[@args]\|\*[@linebreak]"
+.    ds @args \f[I]h1\~v1 h2\~v2\f[] ... \f[I]\,hn\~vn\f[]\"
+.  IP "\f[B]D\*[@sub]\f[]\ \*[@args]\|\*[@linebreak]"
 .  rm @args
 .  rm @sub
 ..
@@ -225,8 +225,8 @@ after these commands, otherwise the position is not changed.
 .  shift 1
 .  ds @args
 .  if (\n[.$] > 0) \
-.    ds @args \ \f[I]\,\$*\/\f[P]\"
-.  IP "\f[B]x\*[@sub]\f[P]\*[@args]\f[P]\|\*[@linebreak]"
+.    ds @args \ \f[I]\,\$*\/\f[]\"
+.  IP "\f[B]x\*[@sub]\f[]\*[@args]\f[]\|\*[@linebreak]"
 .  rm @sub
 .  rm @args
 ..
@@ -666,7 +666,7 @@ also, but
 doesn't use this.
 .
 .
-.command m "color_scheme \f[R][\f[P]component .\|.\|.\f[R]]\f[P]"
+.command m "color_scheme \f[R][\f[]component .\|.\|.\f[R]]\f[]"
 Set the color for text (glyphs), line drawing, and the outline of
 graphic objects using different color schemes; the analoguous command
 for the filling color of graphic objects is
@@ -990,7 +990,7 @@ with the leftmost point at current position; then move to the
 rightmost point of the ellipse.
 .
 .
-.D-command F "color_scheme \f[R][\f[P]component .\|.\|.\f[R]]\f[P]"
+.D-command F "color_scheme \f[R][\f[]component .\|.\|.\f[R]]\f[]"
 Set fill color for solid drawing objects using different color
 schemes; the analoguous command for setting the color of text, line
 graphics, and the outline of graphic objects is

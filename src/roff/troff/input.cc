@@ -1806,6 +1806,14 @@ void token::next()
 	    have_input = 1;
 	  break;
 	}
+      case 'F':
+	{
+	  symbol s = read_escape_name(0);
+	  if (s.is_null())
+	    break;
+	  curenv->set_family(s);
+	  break;
+	}
       case 'g':
 	{
 	  symbol s = read_escape_name();

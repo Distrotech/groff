@@ -479,7 +479,9 @@ void environment::set_font(int n)
 
 void environment::set_family(symbol fam)
 {
-  if (fam.is_null()) {
+  if (interrupted)
+    return;
+  if (fam.is_null() || fam.is_empty()) {
     if (prev_family->make_definite(fontno) < 0)
       return;
     font_family *tem = family;

@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 14 Apr 2002
+Last update : 15 Apr 2002
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -64,21 +64,21 @@ FDL in the main directory of the groff source package.
 .de squoted
 .  ds @arg1 \$1
 .  shift
-.\"  Text \[oq]\f[CB]\*[@arg1]\f[P]\[cq]\$*
-.  Text \[oq]\f[B]\*[@arg1]\f[P]\[cq]\$*
+.\"  Text \[oq]\f[CB]\*[@arg1]\f[]\[cq]\$*
+.  Text \[oq]\f[B]\*[@arg1]\f[]\[cq]\$*
 .  rm @arg1
 ..
 .\" A shell command line
 .de ShellCommand
 .  br
-.  IR "shell#" "\h'1m'\f[CB]\$*\f[P]\/"
+.  IR "shell#" "\h'1m'\f[CB]\$*\f[]\/"
 ..
 .\" reference of a request or macro
 .de request
 .  ds @arg1 \$1
 .  shift 1
-.\"  Text \f[CB]\*[@arg1]\f[P]\$*
-.  Text \f[B]\*[@arg1]\f[P]\$*
+.\"  Text \f[CB]\*[@arg1]\f[]\$*
+.  Text \f[B]\*[@arg1]\f[]\$*
 .  rm @arg1
 ..
 .als option request
@@ -87,8 +87,8 @@ FDL in the main directory of the groff source package.
 .de esc
 .  ds @arg1 \$1
 .  shift
-.\"  Text \f[CB]\[rs]\*[@arg1]\f[P]\$*
-.  Text \f[B]\[rs]\*[@arg1]\&\f[P]\$*
+.\"  Text \f[CB]\[rs]\*[@arg1]\f[]\$*
+.  Text \f[B]\[rs]\*[@arg1]\&\f[]\$*
 .  rm @arg1
 ..
 .ec
@@ -412,6 +412,23 @@ ensures that these definitions will work even if
 gets interpreted in copy-mode (for example, by being used in a macro
 argument).
 .RE
+.
+.TP
+.BI \[rs]F f
+.TQ
+.BI \[rs]F( fm
+.TQ
+.BI \[rs]F[ fam ]
+Change font family.
+.
+This is the same as the
+.B fam
+request.
+.
+.B \[rs]F[]
+switches back to the previous color (note that
+.B \[rs]FP
+won't work; it selects font family `P' instead).
 .
 .TP
 .BI \[rs]m x
