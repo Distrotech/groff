@@ -4816,6 +4816,7 @@ static void do_width()
   input_stack::push(make_temp_iterator(i_to_a(x)));
   env.width_registers();
   curenv = oldenv;
+  have_input = 0;
 }
 
 charinfo *page_character;
@@ -5275,6 +5276,7 @@ int do_if_request()
     delete_node_list(n1);
     delete_node_list(n2);
     curenv = oldenv;
+    have_input = 0;
     tok.next();
   }
   else {

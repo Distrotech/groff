@@ -1131,7 +1131,7 @@ chapter.
 Set number register@tie{}@var{c} or @var{name} to the value@tie{}@var{n}.
 @var{c}@tie{}must be a one-letter name; @var{name} can be of arbitrary
 length.  @var{n}@tie{}can be any @code{gtroff} numeric expression.  All
-register  assignments happen before loading any macro file (including
+register assignments happen before loading any macro file (including
 the start-up file).
 
 @item -F@var{dir}
@@ -1944,6 +1944,7 @@ are based on it.
 * Miscellaneous man macros::
 * Predefined man strings::
 * Preprocessors in man pages::
+* Optional man extensions::
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -1974,6 +1975,11 @@ Set title length to @var{length}.  If not specified, the title length
 defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
 line) and 6.5@tie{}inch otherwise.
 
+@item -rFT=@var{dist}
+Set the position of the footer text to @var{dist}.  If positive, the
+distance is measured relative to the top of the page, otherwise it is
+relative to the bottom.  The default is @minus{}0.5@dmn{i}.
+
 @item -rcR=1
 This option (the default if a TTY output device is used) creates a
 single, very long page instead of multiple pages.  Use @code{-rcR=0}
@@ -1998,6 +2004,17 @@ document font size instead of the default value of@tie{}10@dmn{pt}.
 After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
 @var{nnn}c, etc.  For example, the option @option{-rX2} produces the
 following page numbers: 1, 2, 2a, 2b, 2c, etc.
+
+@item -rIN=@var{length}
+Set the body text indent to @var{length}.
+If not specified, the indent defaults to 7@dmn{n}
+(7@tie{}characters) in nroff mode and 7.2@dmn{n} otherwise.
+For nroff, this value should always be an integer multiple of unit @samp{n}
+to get consistent indentation.
+
+@item -rSN=@var{length}
+Set the indent for sub-subheadings to @var{length}.
+If not specified, the indent defaults to 3@dmn{n}.
 @end table
 
 @c ---------------------------------------------------------------------
@@ -2040,30 +2057,34 @@ beginning of the file.
 Set up an unnumbered section heading sticking out to the left.  Prints
 out all the text following @code{SH} up to the end of the line (or the
 text in the next line if there is no argument to @code{SH}) in bold
-face, one size larger than the base document size.  Additionally, the
-left margin for the following text is reset to its default value.
+face (or the font specified by the string @code{HF}), one size larger than
+the base document size.  Additionally, the left margin and the indentation
+for the following text is reset to its default value.
 @endDefmac
 
 @Defmac {SS, [@Var{heading}], man}
 Set up an unnumbered (sub)section heading.  Prints out all the text
 following @code{SS} up to the end of the line (or the text in the next
-line if there is no argument to @code{SS}) in bold face, at the same
-size as the base document size.  Additionally, the left margin for the
+line if there is no argument to @code{SS}) in bold face (or the font
+specified by the string @code{HF}), at the same size as the base document
+size.  Additionally, the left margin and the indentation for the
 following text is reset to its default value.
 @endDefmac
 
 @Defmac {TP, [@Var{nnn}], man}
 Set up an indented paragraph with label.  The indentation is set to
 @var{nnn} if that argument is supplied (the default unit is @samp{n}
-if omitted), otherwise it is set to the default indentation value.
+if omitted), otherwise it is set to the previous indentation value
+specified with @code{TP}, @code{IP}, or @code{HP} (or to the default
+value if none of them have been used yet).
 
 The first line of text following this macro is interpreted as a string
 to be printed flush-left, as it is appropriate for a label.  It is not
 interpreted as part of a paragraph, so there is no attempt to fill the
 first line with text from the following input lines.  Nevertheless, if
-the label is not as wide as the indentation, then the paragraph starts
+the label is not as wide as the indentation the paragraph starts
 at the same line (but indented), continuing on the following lines.
-If the label is wider than the indentation, then the descriptive part
+If the label is wider than the indentation the descriptive part
 of the paragraph begins on the line following the label, entirely
 indented.  Note that neither font shape nor font size of the label is
 set to a default value; on the other hand, the rest of the text has
@@ -2077,18 +2098,21 @@ These macros are mutual aliases.  Any of them causes a line break at
 the current position, followed by a vertical space downwards by the
 amount specified by the @code{PD} macro.  The font size and shape are
 reset to the default value (10@dmn{pt} roman if no @option{-rS} option
-is given on the command line).  Finally, the current left margin is
-restored.
+is given on the command line).  Finally, the current left margin and the
+indentation is restored.
 @endDefmac
 
 @Defmac {IP, [@Var{designator} [@Var{nnn}]], man}
 Set up an indented paragraph, using @var{designator} as a tag to mark
 its beginning.  The indentation is set to @var{nnn} if that argument
-is supplied (default unit is @samp{n}), otherwise the default
-indentation value is used.  Font size and face of the paragraph (but
-not the designator) are reset to their default values.  To start an
-indented paragraph with a particular indentation but without a
-designator, use @samp{""} (two double quotes) as the first argument of
+is supplied (default unit is @samp{n}), otherwise it is set to the
+previous indentation value specified with @code{TP}, @code{IP}, or
+@code{HP} (or the default value if none of them have been used yet).
+Font size and face of the paragraph (but not the designator) are reset
+to their default values.
+
+To start an indented paragraph with a particular indentation but without
+a designator, use @samp{""} (two double quotes) as the first argument of
 @code{IP}.
 
 For example, to start a paragraph with bullets as the designator and
@@ -2104,23 +2128,29 @@ For example, to start a paragraph with bullets as the designator and
 @cindex @code{man} macros, hanging indentation
 Set up a paragraph with hanging left indentation.  The indentation is
 set to @var{nnn} if that argument is supplied (default unit is
-@samp{n}), otherwise the default indentation value is used.  Font size
-and face are reset to their default values.
+@samp{n}), otherwise it is set to the previous indentation value
+specified with @code{TP}, @code{IP}, or @code{HP} (or the default
+value if non of them have been used yet).  Font size and face are reset
+to their default values.
 @endDefmac
 
 @Defmac {RS, [@Var{nnn}], man}
 @cindex left margin, how to move [@code{man}]
 @cindex @code{man} macros, moving left margin
 Move the left margin to the right by the value @var{nnn} if specified
-(default unit is @samp{n}); otherwise the default indentation value
-is used.  Calls to the @code{RS} macro can be nested.
+(default unit is @samp{n}); otherwise it is set to the previous
+indentation value specified with @code{TP}, @code{IP}, or @code{HP}
+(or to the default value if none of them have been used yet).  The
+indentation value is then set to the default.
+
+Calls to the @code{RS} macro can be nested.
 @endDefmac
 
 @Defmac {RE, [@Var{nnn}], man}
-Move the left margin back to level @var{nnn}; if no argument is given,
-it moves one level back.  The first level (i.e., no call to @code{RS}
-yet) has number@tie{}1, and each call to @code{RS} increases the level
-by@tie{}1.
+Move the left margin back to level @var{nnn}, restoring the previous left
+margin.  If no argument is given, it moves one level back.  The first
+level (i.e., no call to @code{RS} yet) has number@tie{}1, and each call
+to @code{RS} increases the level by@tie{}1.
 @endDefmac
 
 @cindex line breaks, with vertical space [@code{man}]
@@ -2217,8 +2247,8 @@ macro is called, then the text of the next line appears in italic.
 @pindex grohtml
 @cindex @code{man} macros, default indentation
 @cindex default indentation [@code{man}]
-The default indentation is 7.2@tie{}en for all output devices except for
-@code{grohtml} which ignores indentation.
+The default indentation is 7.2@dmn{n} in troff mode and 7@dmn{n} in
+nroff mode except for @code{grohtml} which ignores indentation.
 
 @Defmac {DT, , man}
 @cindex tab stops [@code{man}]
@@ -2234,11 +2264,59 @@ the tab positions have been changed.
 Adjust the empty space before a new paragraph (or section).  The
 optional argument gives the amount of space (default unit is
 @samp{v}); without parameter, the value is reset to its default value
-(1@tie{}line for TTY devices, 0.4@dmn{v}@tie{}otherwise).
-@endDefmac
+(1@tie{}line in nroff mode, 0.4@dmn{v}@tie{}otherwise).
 
 This affects the macros @code{SH}, @code{SS}, @code{TP}, @code{LP} (as
 well as @code{PP} and @code{P}), @code{IP}, and @code{HP}.
+@endDefmac
+
+The following two macros are included for
+BSD compatibility.
+
+@Defmac {AT, [@Var{system} [@Var{release}]], man}
+@cindex @code{man}macros, BSD compatibility
+Alter the footer for use with @acronym{AT&T} manpages.
+This command exists only for compatibility; don't use it.
+The first argument @var{system} can be:
+
+@table @code
+@item 3
+7th Edition (the default)
+
+@item 4
+System III
+
+@item 5
+System V
+@end table
+
+An optional second argument @var{release} to @code{AT} specifies the 
+release number (such as ``System V Release 3'').
+@endDefmac
+
+@Defmac {UC, [@Var{version}], man}
+@cindex @code{man}macros, BSD compatibility
+Alters the footer for use with @acronym{BSD} manpages.
+This command exists only for compatibility; don't use it.
+The argument can be:
+
+@table @code
+@item 3
+3rd Berkeley Distribution (the default)
+
+@item 4
+4th Berkeley Distribution
+
+@item 5
+4.2 Berkeley Distribution
+
+@item 6
+4.3 Berkeley Distribution
+
+@item 7
+4.4 Berkeley Distribution
+@end table
+@endDefmac
 
 @c ---------------------------------------------------------------------
 
@@ -2249,6 +2327,11 @@ The following strings are defined:
 
 @Defstr {S, man}
 Switch back to the default font size.
+@endDefstr
+
+@Defstr {HF, man}
+The typeface used for headings.
+The default is @samp{B}.
 @endDefstr
 
 @Defstr {R, man}
@@ -2269,7 +2352,7 @@ respectively.
 
 @c ---------------------------------------------------------------------
 
-@node Preprocessors in man pages,  , Predefined man strings, man
+@node Preprocessors in man pages, Optional man extensions, Predefined man strings, man
 @subsection Preprocessors in @file{man} pages
 
 @cindex preprocessor, calling convention
@@ -2293,6 +2376,173 @@ consists of letters for the needed preprocessors: @samp{e} for
 Modern implementations of the @code{man} program read this first line
 and automatically call the right preprocessor(s).
 
+@c ---------------------------------------------------------------------
+
+@node Optional man extensions, , Preprocessors in man pages, man
+@subsection Optional @file{man} extensions
+
+@pindex man.local
+Use the file @file{man.local} for local extensions
+to the @code{man} macros or for style changes.
+
+@unnumberedsubsubsec Custom headers and footers
+@cindex @code{man} macros, custom headers and footers
+
+In groff versions 1.18.2 and later, you can specify custom
+headers and footers by redefining the following macros in
+@file{man.local}.
+
+@Defmac {PT, , man}
+Control the content of the headers.
+Normally, the header prints the command name
+and section number on either side, and the
+optional fifth argument to @code{TH} in the center.
+@endDefmac
+
+@Defmac {BT, , man}
+Control the content of the footers.
+Normally, the footer prints the page number
+and the third and fourth arguments to @code{TH}.
+
+Use the @code{FT} number register to specify the
+footer position.
+The default is @minus{}0.5@dmn{i}.
+@endDefmac
+
+@unnumberedsubsubsec Ultrix-specific man macros
+@cindex Ultrix-specific @code{man} macros
+@cindex @code{man} macros, Ultrix-specific
+
+@pindex man.ultrix
+The @code{groff} source distribution includes
+a file named @file{man.ultrix}, containing
+macros compatible with the Ultrix variant of
+@code{man}.
+Copy this file into @file{man.local} (or use the @code{mso} request to
+load it) to enable the following macros.
+
+@Defmac {CT, @Var{key}, man}
+Print @samp{<CTRL/@var{key}>}.
+@endDefmac
+
+@Defmac {CW, , man}
+Print subsequent text using the constant width (Courier) typeface.
+@endDefmac
+
+@Defmac {Ds, , man}
+Begin a non-filled display.
+@endDefmac
+
+@Defmac {De, , man}
+End a non-filled display started with @code{Ds}.
+@endDefmac
+
+@Defmac {EX, [@Var{indent}], man}
+Begins a non-filled display
+using the constant width (Courier) typeface.
+Use the optional @var{indent} argument to
+indent the display.
+@endDefmac
+
+@Defmac {EE, , man}
+End a non-filled display started with @code{EX}.
+@endDefmac
+
+@Defmac {G, [@Var{text}], man}
+Sets @var{text} in Helvetica.
+If no text is present on the line where
+the macro is called, then the text of the
+next line appears in Helvetica.
+@endDefmac
+
+@Defmac {GL, [@Var{text}], man}
+Sets @var{text} in Helvetica Oblique.
+If no text is present on the line where
+the macro is called, then the text of the
+next line appears in Helvetica Oblique.
+@endDefmac
+
+@Defmac {HB, [@Var{text}], man}
+Sets @var{text} in Helvetica Bold.
+If no text is present on the line where
+the macro is called, then all text up to
+the next @code{HB} appears in Helvetica Bold.
+@endDefmac
+
+@Defmac {TB, [@Var{text}], man}
+Identical to @code{HB}.
+@endDefmac
+
+@Defmac {MS, @Var{title} @Var{sect} [@Var{punct}], man}
+Set a manpage reference in Ultrix format.
+The @var{title} is in Courier instead of italic.
+Optional punctuation follows the section number without
+an intervening space.
+@endDefmac
+
+@Defmac {NT, [@code{C}] [@Var{title}], man}
+Begin a note.
+Print the optional @Var{title}, or the word ``Note'',
+centered on the page.
+Text following the macro makes up the body of the note,
+and is indented on both sides.
+If the first argument is @code{C}, the body of the
+note is printed centered (the second argument replaces
+the word ``Note'' if specified).
+@endDefmac
+
+@Defmac {NE, , man}
+End a note begun with @code{NT}.
+@endDefmac
+
+@Defmac {PN, @Var{path} [@Var{punct}], man}
+Set the path name in constant width (Courier),
+followed by optional punctuation.
+@endDefmac
+
+@Defmac {Pn, [@Var{punct}] @Var{path} [@Var{punct}], man}
+When called with two arguments, identical to @code{PN}.
+When called with three arguments,
+set the second argument in constant width (Courier),
+bracketed by the first and third arguments in the current font.
+@endDefmac
+
+@Defmac {R, , man}
+Switch to roman font and turn off any underlining in effect.
+@endDefmac
+
+@Defmac {RN, , man}
+Print the string @samp{<RETURN>}.
+@endDefmac
+
+@Defmac {VS, [@code{4}], man}
+Start printing a change bar in the margin if
+the number @code{4} is specified.
+Otherwise, this macro does nothing.
+@endDefmac
+
+@Defmac {VE, , man}
+End printing the change bar begun by @code{VS}.
+@endDefmac
+
+@unnumberedsubsubsec Simple example
+
+The following example @file{man.local} file
+alters the @code{SH} macro to add some extra
+vertical space before printing the heading.
+Headings are printed in Helvetica Bold.
+
+@Example
+.\" Make the heading fonts Helvetica
+.ds HF HB
+.
+.\" Put more whitespace in front of headings.
+.rn SH SH-orig
+.de SH
+.  if t .sp (u;\\n[PD]*2)
+.  SH-orig \\$*
+..
+@endExample
 
 @c =====================================================================
 

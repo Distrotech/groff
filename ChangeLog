@@ -1,3 +1,39 @@
+2003-02-26  Larry Kollar  <kollar@alltel.net>
+
+	Make man pages more customizable.
+
+	* tmac/an-old.tmac (FT): New register holding footer distance from
+	bottom.
+	(HF): New string holding the default heading font.
+	(TH): Handle registers `IN' and `SN' set on the command line.
+	Use `FT'.
+	(PT, BT): New strings to customize header and footer lines.
+	(an-header, an-footer): Use them.
+	(SH, SS): Use `HF'.
+	* tmac/groff_man.man: Document changes.
+
+	* doc/groff.texinfo: Document man changes.
+	Document Ultrix extensions of man.
+
+2003-02-26  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc (do_width, do_if_request): Reset
+	`have_input' after changing back to old environment.
+
+	* src/devices/grolbp/lbp.cc (lbp_printer::set_line_thickness): Move
+	function up to be defined before first call.  This is necessary to
+	avoid a compilation problem with Sun's WorkShop 6 C++ compiler.
+
+	* src/utils/afmtodit/afmtodit.pl: Make script search for files in
+	the default font directory also.  Based on a patch from James
+	J. Ramsey <jjramsey_6x9eq42@yahoo.com>.
+	* src/utils/afmtodit/Makefile.sub (afmtodit): Handle @FONTDIR@.
+	* src/utils/afmtodit/afmtodit.man: Document it.
+
+	* NEWS: Updated.
+
+	* tmac/groff_man.man, doc/groff.texinfo: Many minor fixes.
+
 2003-02-25  Gaius Mulley <gaius@glam.ac.uk>
 
 	* aclocal.m4 (GROFF_HTML_PROGRAMS): Add test for pnmtops.

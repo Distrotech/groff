@@ -22,6 +22,8 @@
 $prog = $0;
 $prog =~ s@.*/@@;
 
+$groff_sys_fontdir = "@FONTDIR@";
+
 do 'getopts.pl';
 do Getopts('a:d:e:i:mnsv');
 
@@ -39,6 +41,8 @@ $afm = $ARGV[0];
 $map = $ARGV[1];
 $font = $ARGV[2];
 $desc = $opt_d || "DESC";
+$sys_map = $groff_sys_fontdir . "/devps/generate/" . $map;
+$sys_desc = $groff_sys_fontdir . "/devps/" . $desc;
 
 # read the afm file
 
@@ -129,7 +133,8 @@ close(AFM);
 
 $sizescale = 1;
 
-open(DESC, $desc) || die "$prog: can't open \`$desc': $!\n";
+open(DESC, $desc) || open(DESC, $sys_desc) ||
+    die "$prog: can't open \`$desc' or \`$sys_desc': $!\n";
 while (<DESC>) {
     next if /^#/;
     chop;
@@ -143,8 +148,10 @@ close(DESC);
 
 if ($opt_e) {
     # read the encoding file
-    
-    open(ENCODING, $opt_e) || die "$prog: can't open \`$opt_e': $!\n";
+
+    $sys_opt_e = $groff_sys_fontdir . "/devps/" . $opt_e;
+    open(ENCODING, $opt_e) || open(ENCODING, $sys_opt_e) ||
+	die "$prog: can't open \`$opt_e' or \`$sys_opt_e': $!\n";
     while (<ENCODING>) {
 	next if /^#/;
 	chop;
@@ -161,7 +168,8 @@ if ($opt_e) {
 
 # read the map file
 
-open(MAP, $map) || die "$prog: can't open \`$map': $!\n";
+open(MAP, $map) || open(MAP, $sys_map) ||
+    die "$prog: can't open \`$map' or \`$sys_map': $!\n";
 while (<MAP>) {
     next if /^#/;
     chop;
@@ -217,7 +225,7 @@ if (!$opt_n && $#ligatures >= 0) {
 
 if ($#kern1 >= 0) {
     print("kernpairs\n");
-    
+
     for ($i = 0; $i <= $#kern1; $i++) {
 	$c1 = $kern1[$i];
 	$c2 = $kern2[$i];

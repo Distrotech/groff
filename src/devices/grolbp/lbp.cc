@@ -211,6 +211,30 @@ lbp_printer::~lbp_printer()
   lbpputs("\033c\033<");
 }
 
+inline void lbp_printer::set_line_thickness(int size,const environment *env)
+{
+      if (size == 0)
+	line_thickness = 1;
+      else {
+      	if (size < 0)
+		// line_thickness =
+		//   (env->size * (font::res/72)) * (linewidth_factor/1000)
+		// we ought to check for overflow
+		line_thickness =
+		  env->size * linewidth_factor * font::res / 72000;
+      	else // size > 0
+        	line_thickness = size;
+      } // else from if (size == 0)
+      if (line_thickness < 1)
+	line_thickness = 1;
+      if (vdminited())
+	vdmlinewidth(line_thickness);
+      req_linethickness = size; // an size requested
+      /*  fprintf(stderr, "thickness: %d == %d, size %d, %d \n",
+        size, line_thickness, env->size,req_linethickness); */
+   return;
+}; // lbp_printer::set_line_thickness
+
 void lbp_printer::begin_page(int)
 {
 }
@@ -405,30 +429,6 @@ inline void lbp_printer::polygon(int hpos, int vpos, int np, int *p)
   // fprintf(stderr, "\n");
   vdmpolygon((np /2) + 1, points);
 }
-
-inline void lbp_printer::set_line_thickness(int size,const environment *env)
-{
-      if (size == 0)
-	line_thickness = 1;
-      else {
-      	if (size < 0)
-		// line_thickness =
-		//   (env->size * (font::res/72)) * (linewidth_factor/1000)
-		// we ought to check for overflow
-		line_thickness =
-		  env->size * linewidth_factor * font::res / 72000;
-      	else // size > 0
-        	line_thickness = size;
-      } // else from if (size == 0)
-      if (line_thickness < 1)
-	line_thickness = 1;
-      if (vdminited())
-	vdmlinewidth(line_thickness);
-      req_linethickness = size; // an size requested
-      /*  fprintf(stderr, "thickness: %d == %d, size %d, %d \n",
-        size, line_thickness, env->size,req_linethickness); */
-   return;
-}; // lbp_printer::set_line_thickness
 
 void lbp_printer::draw(int code, int *p, int np, const environment *env)
 {

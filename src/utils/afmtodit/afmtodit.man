@@ -69,9 +69,11 @@ is written in perl;
 you must have perl version 3 or newer installed in order to run
 .BR afmtodit .
 .
+.LP
 .I afm_file
 is the AFM (Adobe Font Metric) file for the font.
 .
+.LP
 .I map_file
 is a file that says which groff character names map onto
 each PostScript character name;
@@ -98,6 +100,10 @@ Lines starting with
 .B #
 and blank lines are ignored.
 .
+If the file isn't found in the current directory, it is searched in
+the `devps/generate' subdirectory of the default font directory.
+.
+.LP
 .I font
 is the groff name of the font.
 .
@@ -155,7 +161,6 @@ These parameters are normally needed only for italic (or oblique) fonts.
 .
 .SH OPTIONS
 .TP
-.TP
 .BI \-a n
 Use
 .I n
@@ -181,6 +186,11 @@ The device description file is
 rather than the default
 .BR DESC .
 .
+If not found in the current directory, the `devps' subdirectory of the
+default font directory is searched (this is true for both the default
+device description file and a file given with option
+.BR \-d ).
+.
 .TP
 .BI \-e enc_file
 The PostScript font should be reencoded to use the encoding described
@@ -190,6 +200,9 @@ The format of
 .I enc_file
 is described in
 .BR grops (@MAN1EXT@).
+.
+If not found in the current directory, the `devps' subdirectory of the
+default font directory is searched.
 .
 .TP
 .BI \-i n

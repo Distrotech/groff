@@ -1,6 +1,6 @@
 .\" an-old.tmac
 .\"
-.\" Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+.\" Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
 .\"   Free Software Foundation, Inc.
 .\"      Written by James Clark (jjc@jclark.com)
 .\"
@@ -66,6 +66,11 @@
 .  ie n .nr LT 78n
 .  el   .nr LT 6.5i
 .\}
+.
+.nr FT -.5i
+.
+.\" Default heading font
+.ds HF B
 .
 .nr an-html 0
 .if '\*[.T]'html' .nr an-html 1
@@ -138,10 +143,13 @@
 .
 .\" We must select an integer indentation value for nroff;
 .\" see comment in an-do-tag.
-.  ie t .nr IN 7.2n
-.  el   .nr IN 7n
+.  if !r IN \{\
+.    ie t .nr IN 7.2n
+.    el   .nr IN 7n
+.  \}
 .  PD
-.  nr SN 3n \" the indentation of sub-sub-headings relative to sub-headings
+.  if !r SN \
+.    nr SN 3n \" the indentation of sub-sub-headings relative to sub-headings
 .  nr an-level 1
 .  set-an-margin
 .  nr an-prevailing-indent \\n[IN]
@@ -156,7 +164,7 @@
 .  el \{\
 .    wh 0 an-header
 .    wh -1i an-footer
-.    wh -.5i an-p-footer
+.    wh \\n[FT]u an-p-footer
 .
 .    if (\\n[nl] > 0) \{\
 .      ie \\n[C] .bp (\\n[%] + 1)
@@ -195,6 +203,21 @@
 .  el         .nr PD (.4v >? \n[.V])
 ..
 .
+.\" Redefine these to customize the header & footer
+.
+.de1 PT
+.  tl '\\*[an-title](\\*[an-section])'\\*[an-extra3]'\\*[an-title](\\*[an-section])'
+..
+.
+.de1 BT
+.  ie \\n[D] \{\
+.    if o .tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
+.    if e .tl '\\*[an-page-string]'\\*[an-extra1]'\\*[an-extra2]'
+.  \}
+.  el \
+.    tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
+..
+.
 .de1 an-header
 .  an-init
 .  ev 1
@@ -206,7 +229,7 @@
 .  el \{\
 .    if !\\n[cR] \
 .      sp .5i
-.    tl '\\*[an-title](\\*[an-section])'\\*[an-extra3]'\\*[an-title](\\*[an-section])'
+.    PT
 .    ie !\\n[cR] \
 .      sp |1i
 .    el \
@@ -246,12 +269,7 @@
 .        ds an-page-string \\n[%]
 .    \}
 .  \}
-.  ie \\n[D] \{\
-.    if o .tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
-.    if e .tl '\\*[an-page-string]'\\*[an-extra1]'\\*[an-extra2]'
-.  \}
-.  el \
-.    tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
+.  BT
 .  ev
 ..
 .
@@ -279,7 +297,7 @@
 .  nr an-no-space-flag 1
 .  nr an-break-flag 1
 .  ps \\n[PS-SH]u
-.  ft B
+.  ft \\*[HF]
 .  ne (2v + 1u)
 .  if \\n[.$] \&\\$*
 ..
@@ -296,7 +314,7 @@
 .  nr an-no-space-flag 1
 .  nr an-break-flag 1
 .  ps \\n[PS-SS]u
-.  ft B
+.  ft \\*[HF]
 .  ne (2v + 1u)
 .  if \\n[.$] \&\\$*
 ..
