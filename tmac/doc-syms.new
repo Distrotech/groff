@@ -38,7 +38,7 @@
 .\" NS   print UNIX
 .\" NS
 .\" NS modifies:
-.\" NS   doc-curr-font, doc-curr-size, doc-out-string, doc-arg-ptr
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
 .\" NS   doc-str-Ux, doc-reg-Ux
@@ -73,7 +73,7 @@
 .\" NS   print BSD (fix smaller nroff version)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
 .\" NS   doc-str-Bx, doc-str-Bx1, doc-reg-Bx
@@ -164,7 +164,7 @@
 .\" NS   print AT&T UNIX
 .\" NS
 .\" NS modifies:
-.\" NS   doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
 .\" NS   doc-str-At, doc-str-At1, doc-reg-At
@@ -259,10 +259,10 @@
 .\" NS   print FreeBSD
 .\" NS
 .\" NS modifies:
-.\" NS   doc-curr-font, doc-curr-size
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Fx, doc-str-Fx1
+.\" NS   doc-str-Fx, doc-str-Fx1, doc-reg-Fx
 .\" NS
 .\" NS width register `Fx' defined in doc-common
 .
@@ -270,42 +270,66 @@
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
 .  ds doc-str-Fx \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.  ds doc-str-Fx1 \~
 .
-.  ie !\n[.$] \
-.    ds doc-str-Fx1
-.  el \{ .ie "\$1"1.0"     \c
-.  el \{ .ie "\$1"1.1"     \c
-.  el \{ .ie "\$1"1.1.5"   \c
-.  el \{ .ie "\$1"1.1.5.1" \c
-.  el \{ .ie "\$1"2.0"     \c
-.  el \{ .ie "\$1"2.0.5"   \c
-.  el \{ .ie "\$1"2.1"     \c
-.  el \{ .ie "\$1"2.1.5"   \c
-.  el \{ .ie "\$1"2.1.6"   \c
-.  el \{ .ie "\$1"2.1.7"   \c
-.  el \{ .ie "\$1"2.2"     \c
-.  el \{ .ie "\$1"2.2.1"   \c
-.  el \{ .ie "\$1"2.2.2"   \c
-.  el \{ .ie "\$1"2.2.5"   \c
-.  el \{ .ie "\$1"2.2.6"   \c
-.  el \{ .ie "\$1"2.2.7"   \c
-.  el \{ .ie "\$1"2.2.8"   \c
-.  el \{ .ie "\$1"3.0"     \c
-.  el \{ .ie "\$1"3.1"     \c
-.  el \{ .ie "\$1"3.2"     \c
-.  el \{ .ie "\$1"3.3"     \c
-.  el \{ .ie "\$1"3.4"     \c
-.  el \{ .ie "\$1"3.5"     \c
-.  el \{ .ie "\$1"4.0"     \c
-.  el \{ .ie "\$1"4.1"     \c
-.  el \{ .ie "\$1"4.2"     \c
-.  el \{ .ie "\$1"5.0"     \c
-.  el \
-.    tm Unknown FreeBSD version ``\$1'' (#\n[.c])
-.  \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
+.  \" default value if no argument
+.  ds doc-str-Fx1 \*[doc-Tn-font-size]FreeBSD\*[doc-str-Fx]
 .
-.  nop \*[doc-Tn-font-size]FreeBSD\*[doc-str-Fx1]\*[doc-str-Fx]\$1\$2
+.  if !\n[doc-arg-limit] \
+.    if \n[.$] \{\
+.      ds doc-macro-name Fx
+.      doc-parse-args \$@
+.    \}
+.
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.      as doc-str-Fx1 \~\*[doc-arg\n[doc-arg-ptr]]
+.
+.      ie        "\*[doc-arg\n[doc-arg-ptr]]"1.0" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.1" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.1.5" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.1.5.1" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.0" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.0.5" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.1" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.1.5" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.1.6" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.1.7" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.1" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.2" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.5" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.6" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.7" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.8" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.0" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.1" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.2" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.3" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.4" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.5" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"4.0" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"4.1" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"4.2" .
+.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"5.0" .
+.      el \{\
+.        tmc "mdoc warning: .Fx: Unknown FreeBSD version
+.        tm1 " `\*[doc-arg\n[doc-arg-ptr]]' (#\n[.c])
+.    \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
+.    el \
+.      nr doc-arg-ptr -1
+.  \}
+.
+.  \" replace current argument with result
+.  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Fx1]
+.  ds doc-type\n[doc-arg-ptr] string
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.    nr doc-reg-Fx (\n[doc-arg-ptr] + 1)
+.    if !"\*[doc-type\n[doc-reg-Fx]]"punct-suffix" \
+.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  \}
+.
+.  doc-print-recursive
 ..
 .
 .
@@ -313,7 +337,7 @@
 .\" NS   print NetBSD
 .\" NS
 .\" NS modifies:
-.\" NS   doc-curr-font, doc-curr-size
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
 .\" NS   doc-str-Nx, doc-str-Nx1, doc-reg-Nx
@@ -367,10 +391,10 @@
 .\" NS   print OpenBSD
 .\" NS
 .\" NS modifies:
-.\" NS   doc-curr-font, doc-curr-size
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Ox
+.\" NS   doc-str-Ox, doc-str-Ox1, doc-reg-Ox
 .\" NS
 .\" NS width register `Ox' defined in doc-common
 .
@@ -379,13 +403,85 @@
 .  nr doc-curr-size \n[.s]
 .  ds doc-str-Ox \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .
-.  nop \*[doc-Tn-font-size]OpenBSD\~\$1\$2
+.  \" default value if no argument
+.  ds doc-str-Ox1 \*[doc-Tn-font-size]OpenBSD\*[doc-str-Ox]
+.
+.  if !\n[doc-arg-limit] \
+.    if \n[.$] \{\
+.      ds doc-macro-name Ox
+.      doc-parse-args \$@
+.    \}
+.
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \
+.      as doc-str-Ox1 \~\*[doc-arg\n[doc-arg-ptr]]
+.    el \
+.      nr doc-arg-ptr -1
+.  \}
+.
+.  \" replace current argument with result
+.  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Ox1]
+.  ds doc-type\n[doc-arg-ptr] string
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.    nr doc-reg-Ox (\n[doc-arg-ptr] + 1)
+.    if !"\*[doc-type\n[doc-reg-Ox]]"punct-suffix" \
+.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  \}
+.
+.  doc-print-recursive
+..
+.
+.
+.\" NS Bsx user macro
+.\" NS   print BSD/OS
+.\" NS
+.\" NS modifies:
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS
+.\" NS local variable:
+.\" NS   doc-str-Bsx, doc-str-Bsx1, doc-reg-Bsx
+.\" NS
+.\" NS width register `Bsx' defined in doc-common
+.
+.de Bsx
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.s]
+.  ds doc-str-Bsx \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.
+.  \" default value if no argument
+.  ds doc-str-Bsx1 \*[doc-Tn-font-size]BSD/OS\*[doc-str-Bsx]
+.
+.  if !\n[doc-arg-limit] \
+.    if \n[.$] \{\
+.      ds doc-macro-name Bsx
+.      doc-parse-args \$@
+.    \}
+.
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \
+.      as doc-str-Bsx1 \~\*[doc-arg\n[doc-arg-ptr]]
+.    el \
+.      nr doc-arg-ptr -1
+.  \}
+.
+.  \" replace current argument with result
+.  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Bsx1]
+.  ds doc-type\n[doc-arg-ptr] string
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.    nr doc-reg-Bsx (\n[doc-arg-ptr] + 1)
+.    if !"\*[doc-type\n[doc-reg-Bsx]]"punct-suffix" \
+.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  \}
+.
+.  doc-print-recursive
 ..
 .
 .
 .\" The Bt macro should go away now
 .
-.\" NS Bt user macro
+.\" NS Bt user macro (not parsed, not callable)
 .\" NS   print "is currently in beta test." (HISTORY section)
 .\" NS
 .\" NS width register `Bt' defined in doc-common
@@ -540,6 +636,77 @@
 .  tm1 "            -iso9945-1 | -ansiC | -ansiC-89 | -isoC | -iso8802-3 |
 .  tm1 "            -iso9899 | -ieee754 | -xpg3 | -xpg4 | -xpg4.2 |
 .  tm1 "            -susv2] \*[doc-punct-chars] ... (#\n[.c])
+..
+.
+.
+.\" NS Lb user macro
+.\" NS   formal library names for LIBRARY sections
+.\" NS
+.\" NS modifies:
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS 
+.\" NS local variable:
+.\" NS   doc-str-Lb, doc-reg-Lb
+.\" NS
+.\" NS width register `Lb' defined in doc-common
+.
+.de Lb
+.  if !\n[doc-arg-limit] \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name Lb
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .Lb [library name]
+.  \}
+.
+.  nr doc-arg-ptr +1
+.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    ie        "\*[doc-arg\n[doc-arg-ptr]]"libarm32" \
+.      ds doc-str-Lb ARM32 Architecture Library (libarm32, \-larm32)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libi386" \
+.      ds doc-str-Lb i386 Architecture Library (libi386, \-li386)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libc" \
+.      ds doc-str-Lb Standard C\~Library (libc, \-lc)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libcompat" \
+.      ds doc-str-Lb Compatibility Library (libcompat, \-lcompat)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libcrypt" \
+.      ds doc-str-Lb Crypt Library (libcrypt, \-lcrypt)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libcurses" \
+.      ds doc-str-Lb Curses Library (libcurses, \-lcurses)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libedit" \
+.      ds doc-str-Lb Command Line Editor Library (libedit, \-ledit)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libipsec" \
+,      ds doc-str-Lb IPsec Policy Control Library (libipsec, \-lipsec)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libkvm" \
+.      ds doc-str-Lb Kernel Data Access Library (libkvm, \-lkvm)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libm" \
+.      ds doc-str-Lb Math Library (libm, \-lm)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libmenu" \
+.      ds doc-str-Lb Curses Menu Library (libmenu, \-lmenu)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libossaudio" \
+.      ds doc-str-Lb OSS Audio Emulation Library (libossaudio, \-lossaudio)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libposix" \
+.      \*[Px] Compatibility Library (libposix, \-lposix)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libresolv" \
+.      ds doc-str-Lb DNS Resolver Library (libresolv, \-lresolv)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libtermcap" \
+.      ds doc-str-Lb Termcap Access Library (libtermcap, \-ltermcap)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libutil" \
+.      ds doc-str-Lb System Utilities Library (libutil, \-lutil)
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libz" \
+.      ds doc-str-Lb Compression Library (libz, \-lz)
+.    el \{\
+.      tmc "mdoc warning: .Lb: no description for library
+.      tm1 " `\*[doc-arg\n[doc-arg-ptr]]' available
+.      ds doc-str-Lb library ``\*[doc-arg\n[doc-arg-ptr]]''
+.    \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
+.
+.    \" replacing argument with result
+.    ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Lb]
+.
+.    doc-print-recursive
+.  \}
 ..
 .
 .\" EOF
