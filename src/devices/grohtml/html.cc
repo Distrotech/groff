@@ -795,8 +795,6 @@ public:
   char *encoding;
   char *reencoded_name;
   ~html_font();
-  void handle_unknown_font_command(const char *command, const char *arg,
-				   const char *filename, int lineno);
   static html_font *load_html_font(const char *);
 };
 
@@ -818,19 +816,6 @@ html_font::html_font(const char *nm)
 html_font::~html_font()
 {
 }
-
-void html_font::handle_unknown_font_command(const char *command, const char *arg,
-					    const char *filename, int lineno)
-{
-  if (strcmp(command, "encoding") == 0) {
-    if (arg == 0)
-      error_with_file_and_line(filename, lineno,
-			       "`encoding' command requires an argument");
-    else
-      encoding = strsave(arg);
-  }
-}
-
 
 /*
  *  a simple class to contain the header to this document
