@@ -1269,7 +1269,7 @@ grolbp}, and @ref{Invoking gxditview}.
 The command line format for @code{groff} is:
 
 @Example
-groff [ -abeghilpstvzCEGNRSUVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
+groff [ -abceghilpstvzCEGNRSUVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
       [ -T@var{def} ] [ -f@var{fam} ] [ -w@var{name} ] [ -W@var{name} ]
       [ -M@var{dir} ] [ -d@var{cs} ] [ -r@var{cn} ] [ -n@var{num} ]
       [ -o@var{list} ] [ -P@var{arg} ] [ -L@var{arg} ] [ -I@var{dir} ]
@@ -1279,7 +1279,7 @@ groff [ -abeghilpstvzCEGNRSUVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
 The command line format for @code{gtroff} is as follows.
 
 @Example
-gtroff [ -abivzCERU ] [ -w@var{name} ] [ -W@var{name} ] [ -d@var{cs} ]
+gtroff [ -abcivzCERU ] [ -w@var{name} ] [ -W@var{name} ] [ -d@var{cs} ]
        [ -f@var{fam} ] [ -m@var{name} ] [ -n@var{num} ]
        [ -o@var{list} ] [ -r@var{cn} ] [ -T@var{name} ]
        [ -F@var{dir} ] [ -M@var{dir} ] [ @var{files}@dots{} ]
@@ -1320,6 +1320,9 @@ Preprocess with @code{gpic}.
 
 @item -s
 Preprocess with @code{gsoelim}.
+
+@item -c
+Suppress color output.
 
 @item -R
 Preprocess with @code{grefer}.  No mechanism is provided for passing
@@ -1379,8 +1382,14 @@ For @TeX{} DVI format.
 @item X75
 For a 75@dmn{dpi} X11 previewer.
 
+@item X75-12
+For a 75@dmn{dpi} X11 previewer with a 12@dmn{pt} base font.
+
 @item X100
 For a 100@dmn{dpi} X11 previewer.
+
+@item X100-12
+For a 100@dmn{dpi} X11 previewer with a 12@dmn{pt} base font.
 
 @item ascii
 For typewriter-like devices.
@@ -1443,6 +1452,11 @@ X-specific fonts and metrics.
 Don't allow newlines with @code{eqn} delimiters.  This is the same as
 the @option{-N} option in @code{geqn}.
 
+@cindex @code{open} request, and safer mode
+@cindex @code{opena} request, and safer mode
+@cindex @code{pso} request, and safer mode
+@cindex @code{sy} request, and safer mode
+@cindex @code{pi} request, and safer mode
 @item -S
 Safer mode.  Pass the @option{-S} option to @code{gpic} and disable the
 @code{open}, @code{opena}, @code{pso}, @code{sy}, and @code{pi}
@@ -1562,7 +1576,7 @@ not within @code{gtroff}) which can modify the behavior of @code{groff}.
 
 @table @code
 @item GROFF_COMMAND_PREFIX
-@tindex GROFF_COMMAND_PREFIX, environment variable
+@tindex GROFF_COMMAND_PREFIX@r{, environment variable}
 If this is set to@w{ }@var{X}, then @code{groff} runs @code{@var{X}troff}
 instead of @code{gtroff}.  This also applies to @code{tbl}, @code{pic},
 @code{eqn}, @code{grn}, @code{refer}, and @code{soelim}.  It does not
@@ -2464,11 +2478,11 @@ well as @code{PP} and @code{P}), @code{IP}, and @code{HP}.
 
 The following strings are defined:
 
-@Defstr {*S, man}
+@Defstr {S, man}
 Switch back to the default font size.
 @endDefstr
 
-@Defstr {*R, man}
+@Defstr {R, man}
 The `registered' sign.
 @endDefstr
 
@@ -2518,6 +2532,9 @@ and automatically call the right preprocessor(s).
 @cindex @file{mdoc}
 
 @c XXX documentation
+@c XXX this is a placeholder until we get stuff knocked into shape
+See the @code{mdoc} manpage (type @command{man 7 groff_mdoc} at
+the command line).
 
 
 @c =====================================================================
@@ -4145,7 +4162,7 @@ it.  This means it widens the spacing between words until the text
 reaches the right margin (in the default adjustment mode).  Extra spaces
 between words are preserved, but spaces at the end of lines are ignored.
 Spaces at the front of a line cause a @dfn{break} (breaks are
-explained in @ref{Implicit Line Breaks})
+explained in @ref{Implicit Line Breaks}).
 
 @xref{Manipulating Filling and Adjusting}.
 
@@ -4271,7 +4288,7 @@ line.
 @cindex line, blank
 @cindex blank line macro (@code{blm})
 There are several ways to cause a break in @code{gtroff}.  A blank
-line not only causes a break, but it also outputs a one line vertical
+line not only causes a break, but it also outputs a one-line vertical
 space (effectively a blank line).  Note that this behaviour can be
 modified with the blank line macro request @code{blm}.
 @xref{Blank Line Traps}.
@@ -4407,7 +4424,7 @@ in the current font.
 @cindex en unit (@code{n})
 @cindex @code{n} unit
 @cindex unit, @code{n}
-Ens.  This is half of an em.
+Ens.  In @code{groff}, this is half of an em.
 
 @item v
 @cindex vertical space unit (@code{v})
@@ -10552,6 +10569,10 @@ large documents, e.g.@: keeping each chapter in a separate file.
 @Defreq {pso, command}
 Reads the standard output from the specified @var{command}
 and includes it in place of the @code{pso} request.
+
+This request causes an error if used in safer mode (which is the default).
+Use @code{groff}'s or @code{troff}'s @option{-U} option to activate unsafe
+mode.
 @endDefreq
 
 @Defreq {mso, file}
@@ -10660,15 +10681,20 @@ Dear Mr. Adollar,
 Pipes the output of @code{gtroff} to the shell command(s)
 specified by @var{pipe}.  This request must occur before
 @code{gtroff} has a chance to print anything.
+
+@code{pi} causes an error if used in safer mode (which is the default).
+Use @code{groff}'s or @code{troff}'s @option{-U} option to activate unsafe
+mode.
 @endDefreq
 
 @DefreqList {sy, cmds}
 @DefregListEnd {systat}
-In @dfn{unsafe} mode, executes the shell command(s) specified by
-@var{cmds}.  The output is not saved anyplace, so it is up to the user
-to do so.
+Execute the shell command(s) specified by @var{cmds}.  The output is not
+saved anyplace, so it is up to the user to do so.
 
-@c XXX add info about safer and unsafe mode
+This request causes an error if used in safer mode (which is the default).
+Use @code{groff}'s or @code{troff}'s @option{-U} option to activate unsafe
+mode.
 
 For example, the following example introduces the current time
 into a document:
@@ -10704,8 +10730,12 @@ of the @code{system()} function executed by the last @code{sy} request.
 Opens the specified @var{file} for writing and
 associates the specified @var{stream} with it.
 
-The @code{opena} request is like @code{open}, but if the file exists, append to
-it instead of truncating it.
+The @code{opena} request is like @code{open}, but if the file exists,
+append to it instead of truncating it.
+
+Both @code{open} and @code{opena} cause an error if used in safer mode
+(which is the default).  Use @code{groff}'s or @code{troff}'s @option{-U}
+option to activate unsafe mode.
 @endDefreq
 
 @cindex copy-in mode, and @code{write} requests

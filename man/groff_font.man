@@ -262,16 +262,20 @@ is a single character
 then it corresponds to the groff input character
 .IR c ;
 if it is of the form
-.BI \e c
+.BI \[rs] c
 where c is a single character, then it
-corresponds to the groff input character
-.BI \e c\fR;
+corresponds to the special character
+.BI \[rs][ c ]\fR;
 otherwise it corresponds to the groff input character
-.BI \e[ name ]
-(if it is exactly two characters
+.BI \[rs][ name ]\fR.
+If it is exactly two characters
 .I xx
 it can be entered as
-.BI \e( xx\fR).
+.BI \[rs]( xx\fR.
+Note that single-letter special characters can't be accessed as
+.BI \[rs] c\fR;
+the only exception is `\[rs]-' which is identical to `\[rs][-]'.
+.LP
 Groff supports eight-bit characters; however some utilities
 have difficulties with eight-bit characters.
 For this reason, there is a convention that the name
@@ -286,7 +290,7 @@ The name
 .B \-\-\-
 is special and indicates that the character is unnamed;
 such characters can only be used by means of the
-.B \eN
+.B \[rs]N
 escape sequence in
 .BR troff .
 .LP
@@ -308,7 +312,7 @@ The
 .I code
 field gives the code which the postprocessor uses to print the character.
 The character can also be input to groff using this code by means of the
-.B \eN
+.B \[rs]N
 escape sequence.
 The code can be any integer.
 If it starts with a
@@ -326,7 +330,8 @@ field gives an ascii string identifying the glyph which the postprocessor
 uses to print the character.
 This field is optional and has been introduced so that the html device driver
 can encode its character set.
-For example, the character `\e[Po]' is represented as `&pound;' in html 4.0.
+For example, the character `\[rs][Po]' is represented as `&pound;' in
+html\~4.0.
 .LP
 Anything on the line after the encoding field resp. after `-\&-' will
 be ignored.
