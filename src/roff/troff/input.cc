@@ -2730,6 +2730,7 @@ void process_input_stack()
       {
 	trap_bol_stack.push(bol);
 	bol = 1;
+	have_input = 0;
 	break;
       }
     case token::TOKEN_END_TRAP:
@@ -2738,6 +2739,7 @@ void process_input_stack()
 	  error("spurious end trap token detected!");
 	else
 	  bol = trap_bol_stack.pop();
+	have_input = 0;
 
 	/* I'm not totally happy about this.  But I can't think of any other
 	  way to do it.  Doing an output_pending_lines() whenever a
