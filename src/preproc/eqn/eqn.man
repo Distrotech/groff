@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-2000, 2001, 2004 Free Software Foundation, Inc.
+Copyright (C) 1989-2000, 2001, 2004, 2005 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -29,6 +29,13 @@ the original English.
 .de Tp
 .  ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
 .  el .TP "\\$1"
+..
+.
+.
+.de TQ
+.  br
+.  ns
+.  TP \\$1
 ..
 .
 .
@@ -623,6 +630,51 @@ define box 'special Bx'
 .ft
 .RE
 .
+.TP
+.BI space\  n
+A positive value of the integer\~\c
+.I n
+(in hundredths of an em) sets the vertical spacing before the equation,
+a negative value sets the spacing after the equation, replacing the
+default values.
+This primitive provides an interface to
+.BR groff 's
+.B \ex
+escape (but with opposite sign).
+.
+.IP
+This keyword has no effect if the equation is part of a
+.B pic
+picture.
+.
+.SS Extended primitives
+.TP
+.BI col\  n\  {\  .\|.\|.\  }
+.TQ
+.BI ccol\  n\  {\  .\|.\|.\  }
+.TQ
+.BI lcol\  n\  {\  .\|.\|.\  }
+.TQ
+.BI rcol\  n\  {\  .\|.\|.\  }
+.TQ
+.BI pile\  n\  {\  .\|.\|.\  }
+.TQ
+.BI cpile\  n\  {\  .\|.\|.\  }
+.TQ
+.BI lpile\  n\  {\  .\|.\|.\  }
+.TQ
+.BI rpile\  n\  {\  .\|.\|.\  }
+The integer value\~\c
+.I n
+(in hundredths of an em) increases the vertical spacing between rows,
+using
+.BR groff 's
+.B \ex
+escape.
+Negative values are possible but have no effect.
+If there is more than a single value given in a matrix, the biggest one
+is used.
+.
 .SS Customization
 The appearance of equations is controlled by a large number of parameters.
 These can be set using
@@ -968,8 +1020,14 @@ will not be recognized if called with arguments.
 .
 .TP
 .BI include\ \(ts file \(ts
+.TQ
+.BI copy\ \(ts file \(ts
 Include the contents of
-.IR file .
+.I file
+.RB ( include
+and
+.B copy
+are synonyms).
 Lines of
 .I file
 beginning with
@@ -994,6 +1052,28 @@ otherwise ignore
 .I X
 can be any character not appearing in
 .IR anything .
+.
+.TP
+.BI undef\  name
+Remove definition of
+.IR name ,
+making it undefined.
+.
+.LP
+Besides the macros mentioned above, the following definitions are available:
+.BR Alpha ,
+.BR Beta ,
+\&.\|.\|.,
+.B Omega
+(this is the same as
+.BR ALPHA ,
+.BR BETA ,
+\&.\|.\|.,
+.BR OMEGA ),
+.B ldots
+(three dots on the base line),
+and
+.BR dollar .
 .
 .SS Fonts
 .B eqn
@@ -1071,6 +1151,7 @@ beginning of the input line.
 .SH "SEE ALSO"
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@),
+.BR @g@pic (@MAN1EXT@),
 .BR groff_font (@MAN5EXT@),
 .I The\ \*(txbook
 .
