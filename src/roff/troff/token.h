@@ -33,7 +33,8 @@ class token {
     TOKEN_BACKSPACE,
     TOKEN_BEGIN_TRAP,
     TOKEN_CHAR,			// a normal printing character
-    TOKEN_DUMMY,
+    TOKEN_DUMMY,		// \&
+    TOKEN_TRANSPARENT_DUMMY,	// \)
     TOKEN_EMPTY,		// this is the initial value
     TOKEN_END_TRAP,
     TOKEN_ESCAPE,		// \e
@@ -77,6 +78,7 @@ public:
   int backspace();
   int delimiter(int warn = 0);	// is it suitable for use as a delimiter?
   int dummy();
+  int transparent_dummy();
   int transparent();
   int left_brace();
   int right_brace();
@@ -173,6 +175,11 @@ inline int token::eof()
 inline int token::dummy()
 {
   return type == TOKEN_DUMMY;
+}
+
+inline int token::transparent_dummy()
+{
+  return type == TOKEN_TRANSPARENT_DUMMY;
 }
 
 inline int token::left_brace()

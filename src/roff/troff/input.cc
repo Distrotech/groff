@@ -1343,8 +1343,7 @@ void token::next()
 	return;
       case ESCAPE_RIGHT_PARENTHESIS:
       ESCAPE_RIGHT_PARENTHESIS:
-	type = TOKEN_NODE;
-	nd = new transparent_dummy_node;
+	type = TOKEN_TRANSPARENT_DUMMY;
 	return;
       case '\b':
 	type = TOKEN_BACKSPACE;
@@ -1775,6 +1774,8 @@ const char *token::description()
     return buf;
   case TOKEN_DUMMY:
     return "`\\&'";
+  case TOKEN_TRANSPARENT_DUMMY:
+    return "`\\)'";
   case TOKEN_ESCAPE:
     return "`\\e'";
   case TOKEN_HYPHEN_INDICATOR:
@@ -3769,7 +3770,7 @@ static int get_line_arg(units *n, int si, charinfo **cp)
   if (start.delimiter(1)) {
     tok.next();
     if (get_number(n, si)) {
-      if (tok.dummy())
+      if (tok.dummy() || tok.transparent_dummy())
 	tok.next();
       if (start != tok) {
 	*cp = tok.get_char(1);
@@ -4848,6 +4849,9 @@ const char *asciify(int c)
   case ESCAPE_AMPERSAND:
     buf[1] = '&';
     break;
+  case ESCAPE_RIGHT_PARENTHESIS:
+    buf[1] = ')';
+    break;
   case ESCAPE_UNDERSCORE:
     buf[1] = '_';
     break;
@@ -5288,6 +5292,9 @@ int token::add_to_node_list(node **pp)
   case TOKEN_DUMMY:
     n = new dummy_node;
     break;
+  case TOKEN_TRANSPARENT_DUMMY:
+    n = new transparent_dummy_node;
+    break;
   case TOKEN_ESCAPE:
     if (escape_char != 0)
       *pp = (*pp)->add_char(charset_table[escape_char], curenv, &w, &s);
@@ -5342,6 +5349,9 @@ void token::process()
     break;
   case TOKEN_DUMMY:
     curenv->add_node(new dummy_node);
+    break;
+  case TOKEN_TRANSPARENT_DUMMY:
+    curenv->add_node(new transparent_dummy_node);
     break;
   case TOKEN_EOF:
     assert(0);

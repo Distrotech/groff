@@ -1,3 +1,20 @@
+2001-01-28  Werner LEMBERG  <wl@gnu.org>
+
+	Fixed a bug which prevented hyphenation of words which are finished
+	with `\)'.
+
+	* src/roff/troff/token.h (token): Add enum type
+	`TOKEN_TRANSPARENT_DUMMY' and method `transparent_dummy()'.
+	* src/roff/troff/input.cc (token::next, token::description,
+	get_line_arg, token::add_to_node_list, token::process): Use it.
+
+2001-01-27  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/div.h (diversion): Add `saved_prev_line_interrupted'.
+	* src/roff/troff/div.cc (do_divert): Use it.
+
+	* src/roff/troff/input.cc (asciify): Add ESCAPE_RIGHT_PARENTHESIS.
+
 2001-01-25  Werner LEMBERG  <wl@gnu.org>
 
 	Adding the `linetabs' request.  If set, tab distances are not

@@ -310,7 +310,7 @@ class vline_node : public node {
   vunits x;
   node *n;
 public:
-  vline_node(vunits  i, node *c, node *next= 0) : node(next), x(i), n(c) {}
+  vline_node(vunits i, node *c, node *next= 0) : node(next), x(i), n(c) {}
   ~vline_node();
   node *copy();
   void tprint(troff_output_file *);
@@ -335,7 +335,7 @@ public:
 
 class transparent_dummy_node : public node {
 public:
-  transparent_dummy_node() {}
+  transparent_dummy_node(node *nd = 0) : node(nd) {}
   node *copy();
   int same(node *);
   const char *type();
