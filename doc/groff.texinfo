@@ -1503,7 +1503,7 @@ or more columns on a page.
 
 @subsection Font and Size changes
 
-The builtin font and size functions are not always intuitive, so all
+The built-in font and size functions are not always intuitive, so all
 macro packages provide macros to make these operations simpler.
 
 @subsection Predefined Strings
@@ -2099,7 +2099,7 @@ arguments.
 
 @findex \&
 If you want to begin a line with a control character without it being
-interpreted, precede it with @samp{\&}.  This represents a zero width
+interpreted, precede it with @code{\&}.  This represents a zero width
 space, which means it will not affect your output.
 
 In most cases you will use the period as a control character.  Several
@@ -2115,11 +2115,10 @@ will prevent this.
 @cindex request arguments
 @cindex arguments to requests
 
-Argument to requests (and macros) are processed much like the shell:
-The line is split into arguments according to spaces.
-An argument which is intended to contain spaces can either be enclosed
-in quotes (single or double), or have the spaces @dfn{escaped} with
-backslashes.
+Arguments to requests (and macros) are processed much like the shell:
+The line is split into arguments according to spaces.  An argument which
+is intended to contain spaces can either be enclosed in quotes (single
+or double), or have the spaces @dfn{escaped} with backslashes.
 
 So, for example:
 
@@ -2129,30 +2128,25 @@ So, for example:
 .uh The\ Mouse\ Problem
 @end example
 
-The first line is the @code{.uh} macro being called with 3 arguments,
-@samp{The}, @samp{Mouse}, and @samp{Problem}.
-The latter two have the same effect or calling the @code{.uh} macro
-with one argument @samp{The Mouse Problem}.
+@noindent
+The first line is the @code{uh} macro being called with 3 arguments,
+@samp{The}, @samp{Mouse}, and @samp{Problem}.  The latter two have the
+same effect or calling the @code{uh} macro with one argument @samp{The
+Mouse Problem}.
 
-Note, however, that the @code{.ds} request works differently.
+Note, however, that the @code{ds} request works differently.
 
-@c distribute these through the text
-@xref{Strings}
+@xref{Strings}.
 
 @node Macros, Escapes, Requests, Embedded Commands
 @subsection Macros
 @cindex macros
 
-Troff has a @dfn{macro} facility for defining a series of lines which
-can be invoked by name.
-They are called in the same manner as requests
-and arguments may be passed in the same manner.
+@code{gtroff} has a @dfn{macro} facility for defining a series of lines
+which can be invoked by name.  They are called in the same manner as
+requests---arguments also may be passed in the same manner.
 
-
-@c distribute these through the text
-@xref{Writing Macros}
-@c distribute these through the text
-@xref{Request Arguments}
+@xref{Writing Macros}, and @ref{Request Arguments}.
 
 @node Escapes,  , Macros, Embedded Commands
 @subsection Escapes
@@ -2160,22 +2154,21 @@ and arguments may be passed in the same manner.
 
 @findex \e
 @findex \\
-Escapes may occur anywhere in the input to groff.
-They begin with a backslash and are followed by a single character
-which indicates the function to be performed.
-If you want to have a backslash appear in your document, you should
-use the escape sequence @code{\e}.  Merely escaping the backslash
-with another backslash will work in @emph{some} curcumstances.
+Escapes may occur anywhere in the input to @code{gtroff}.  They begin
+with a backslash and are followed by a single character which indicates
+the function to be performed.  If you want to have a backslash appear in
+your document, you should use the escape sequence @code{\e}.  Merely
+escaping the backslash with another backslash will work in @emph{some}
+curcumstances.
 
-Many escapes have no parameters, those that do, do so in one of two
+Many escapes have no parameters; those that do, do so in one of two
 ways.  For escapes which require an identifier there must be a way for
-groff to tell where the identifier ends and the text begins.
-It assumes that the next single character is the identifier, but if
-that character is an open parenthesis, it takes the next two
-characters as the identifier; and if the next character is an open
-bracket, all characters until a close bracket are taken as the
-identifier.  Note that in the second case there is no closing
-parenthesis.  For example:
+@code{gtroff} to tell where the identifier ends and the text begins.  It
+assumes that the next single character is the identifier, but if that
+character is an opening parenthesis, it takes the next two characters as
+the identifier; and if the next character is an opening bracket, all
+characters until a closing bracket are taken as the identifier.  Note
+that in the second case there is no closing parenthesis.  For example:
 
 @example
 \fB
@@ -2183,10 +2176,11 @@ parenthesis.  For example:
 \*[TeX]
 @end example
 
-Other escapes may require several arguments and/or some special
-format.  In these cases the @dfn{argument} is enclosed in single
-quotes (not required??) and the enclosing text is decoded according
-to what that escape expects.
+@findex '
+Other escapes may require several arguments and/or some special format.
+In these cases the @dfn{argument} is enclosed in single quotes
+@c XXX (not required??)
+and the enclosing text is decoded according to what that escape expects.
 
 @example
 \l'1.5i\(bu'
@@ -2195,16 +2189,13 @@ to what that escape expects.
 @findex \\
 @findex \e
 @findex \E
-If you want to have a backslash appear in your output, you can use several
-escapes: @code{\\}, @code{\e} or @code{\E}.
-These are very similar, and only differ with respect to being used in
-macros or diversions (@xref{Copy-in Mode}, and @ref{Diversions}, for
-more information)
+If you want to have a backslash appear in your output, you can use
+several escapes: @code{\\}, @code{\e} or @code{\E}.  These are very
+similar, and only differ with respect to being used in macros or
+diversions.  @xref{Copy-in Mode}, and @ref{Diversions}, for more
+information.
 
-
-
-@c distribute these through the text
-@xref{Identifiers}
+@xref{Identifiers}.
 
 @menu
 * Comments::                    
@@ -2216,62 +2207,61 @@ more information)
 
 @findex \"
 Probably one of the most@footnote{Unfortunately, this is a lie.  But
-hopefully future troff hackers will believe it :-)}
-common forms of escapes is the comment.
-They begin with the @code{\"} escape and end at the end of the input
-line.
+hopefully future @code{gtroff} hackers will believe it :-)} common forms
+of escapes is the comment.  They begin with the @code{\"} escape and end
+at the end of the input line.
 
 This may sound simple, but it can be tricky to keep the comments from
 interfering with the apperarance of your final outupt.
 
-If the escape is to the right of some text or a request, that portion
-of the line will be ignored, but the space leading up to it will be
-noticed by groff.  This only affects the @code{.ds} request (any
-others?).
+@findex ds
+If the escape is to the right of some text or a request, that portion of
+the line will be ignored, but the space leading up to it will be noticed
+by @code{gtroff}.  This only affects the @code{.ds} request.
+@c XXX (any others?)
 
-One possibly irritating idiosyncracy is that you mustn't use tabs to
-line up your comments.
-Tabs are not treated as white space between request and macro
-arguments.
+One possibly irritating idiosyncracy is that you must not use tabs to
+line up your comments.  Tabs are not treated as white space between the
+request and macro arguments.
 
-If you have a comment on a line by itself, it will be treated as a
-blank line, because after eliminating the comment, that is all that
-remains.  So, it is common to start the line with @code{.\"} which
-will cause the line to be treated as an undefined request.
+@cindex undefined request
+@cindex request, undefined
+If you have a comment on a line by itself, it will be treated as a blank
+line, because after eliminating the comment, that is all that remains.
+So, it is common to start the line with @code{.\"} which will cause the
+line to be treated as an undefined request.
 
 Another commenting scheme seen sometimes is three consecutive single
-quotes (@code{'''}) at the begining of a line.  This works, but groff
-will give a warning about an undefined macro, which is harmless, but
-irritating.
+quotes (@code{'''}) at the begining of a line.  This works, but
+@code{gtroff} will give a warning about an undefined macro, which is
+harmless, but irritating.
 
 @findex \#
-Now to avoid all this groff has a new comment mechanism using the
-@code{\#} escape.  This escape works the same as @code{\"} except
+Now to avoid all this @code{gtroff} has a new comment mechanism using
+the @code{\#} escape.  This escape works the same as @code{\"} except
 that the newline is also ignored.
 
 @findex ig
 For large blocks of text, the @code{ig} request may be useful.
-@c distribute these through the text
-@xref{Strings}
+@xref{Strings}.
 
 
 @node Registers, Manipulating Filling and Adjusting, Embedded Commands, Programming Tutorial
 @section Registers
 @cindex registers
 
-Registers are groff's numeric variables.  groff has a number of
-builtin registers, supplying anything from the date to details of
-formatting parameters.
+Registers are @code{gtroff}'s numeric variables.  @code{gtroff} has a
+number of built-in registers, supplying anything from the date to
+details of formatting parameters.
 
-@c distribute these through the text
-@xref{Identifiers}
+@xref{Identifiers}.
 
 @menu
 * Setting Registers::           
 * Interpolating Registers::     
 * Auto-increment::              
 * Assigning Formats::           
-* Builtin Registers::           
+* Built-in Registers::           
 @end menu
 
 @node Setting Registers, Interpolating Registers, Registers, Registers
@@ -2281,9 +2271,8 @@ formatting parameters.
 
 @findex nr
 @findex \R
-Registers are defined/set via the @code{nr}
-request or the @code{\R} escape, for example, the following two lines
-are equivalent:
+Registers are defined resp.@: set via the @code{nr} request or the
+@code{\R} escape.  For example, the following two lines are equivalent:
 
 @example
 .nr a 1
@@ -2291,19 +2280,19 @@ are equivalent:
 @end example
 
 @findex rr
-The @code{rr} request will
-remove the register specified by the argument.
+The @code{rr} request will remove the register specified by the
+argument.
 
 @findex rnn
-The @code{rnn} request will rename a number register.
-The format is @samp{.rnn @var{x} @var{y}}, which will
-rename number register  @var{x} to @var{y}.
+The @code{rnn} request will rename a number register.  The format is
+@w{@samp{.rnn @var{x} @var{y}}}, which will rename number register
+@var{x} to @var{y}.
 
 @findex aln
 Aliases can be created for a number register.  The format is
-@samp{.aln @var{xx} @var{yy}}, which will create an alias @var{xx} for
-number register object named @var{yy}.  The new name and the old name
-will be exactly equivalent.  If @var{yy} is undefined, a warning of
+@w{@samp{.aln @var{xx} @var{yy}}}, which will create an alias @var{xx}
+for number register object named @var{yy}.  The new name and the old
+name will be exactly equivalent.  If @var{yy} is undefined, a warning of
 type @samp{reg} will be generated, and the request will be ignored.
 @xref{Debugging}, for information about warnings.
 
@@ -2314,8 +2303,9 @@ type @samp{reg} will be generated, and the request will be ignored.
 
 @findex \n
 Numeric registers are @dfn{interpolated} via the @code{\n} escape.
-@c the following is wrong.  Should I say any more than the above??
-@c This means that the value of the number register in expanded in-place
+
+@c XXX the following is wrong.  Should I say any more than the above??
+@c This means that the value of the number register is expanded in-place
 @c on the input line before any other actions, i.e. before requests and
 @c escapes are interpreted.
 
@@ -2329,9 +2319,10 @@ Numeric registers are @dfn{interpolated} via the @code{\n} escape.
 @cindex auto-increment
 @cindex increment, automatic
 
-Number registers can also be auto incremented/decremented.  You can
-specify the increment/decrement factor with third argument to the
-@code{nr} request.  The default value is 0.  For example:
+@findex nr
+Number registers can also be auto-incremented and auto-decremented.  You
+can specify the increment resp.@: decrement factor with a third argument
+to the @code{nr} request.  The default value is@w{ }0.  For example,
 
 @example
 .nr a 0 1
@@ -2341,62 +2332,54 @@ specify the increment/decrement factor with third argument to the
 \n+(xx, \n+(xx, \n+(xx, \n+(xx, \n+(xx
 @end example
 
-Produces:
+@noindent
+produces
 
 @example
 1, 2, 3, 4, 5
 5, 10, 15, 20, 25
 @end example
 
-If you want to change the increment factor without changing the value
-of a register, the following can be used.
+If you want to change the increment factor without changing the value of
+a register, the following can be used.
 
 @example
 .nr a \na 10
 @end example
 
-@node Assigning Formats, Builtin Registers, Auto-increment, Registers
+@node Assigning Formats, Built-in Registers, Auto-increment, Registers
 @subsection Assigning Formats
 @cindex assigning formats
 @cindex formats, assigning
 
 @findex af
-When a register is used in the text of an input file
-(as opposed to part of an expression)
-it is textually replaced (or interpolated) with a representation of
-that number.
-This output format can be changed to a variety of formats
-(numbers, roman numerals, etc)
-This is done using the @code{af} request.
-The first argument to @code{af} is the name of the number register to
-be changed,
-and the second argument is the output format.
-The following output formats are available:
+When a register is used in the text of an input file (as opposed to part
+of an expression) it is textually replaced (or interpolated) with a
+representation of that number.  This output format can be changed to a
+variety of formats (numbers, roman numerals, etc).  This is done using
+the @code{af} request.  The first argument to @code{af} is the name of
+the number register to be changed, and the second argument is the output
+format.  The following output formats are available:
 
 @table @samp
 @item 1
-This is the default format, decimal numbers:
-1, 2, 3, @dots{}
+This is the default format, decimal numbers: 1, 2, 3,@w{ }@dots{}
 @item 001
-Decimal numbers with as many leading zeros as specified.
-So, @samp{001} would result in 001, 002, 003, @dots{}
+Decimal numbers with as many leading zeros as specified.  So, @samp{001}
+would result in 001, 002, 003,@w{ }@dots{}
 @item I
 @cindex roman numerals
 @cindex numerals, roman
-Upper-case roman numerals:
-0, I, II, III, IV, @dots{}
+Upper-case roman numerals: 0, I, II, III, IV,@w{ }@dots{}
 @item i
-Lower-case roman numerals:
-0, i, ii, iii, iv, @dots{}
+Lower-case roman numerals: 0, i, ii, iii, iv,@w{ }@dots{}
 @item A
-Upper-case letters:
-A, B, C, @dots{}, Z, AA, AB, @dots{}
+Upper-case letters: A, B, C, @dots{},@w{ }Z, AA, AB,@w{ }@dots{}
 @item a
-Lower-case letters:
-a, b, c, @dots{}, z, aa, ab, @dots{}
+Lower-case letters: a, b, c, @dots{},@w{ }z, aa, ab,@w{ }@dots{}
 @end table
 
-The following example will produce @samp{10, X, j, 010}.
+The following example will produce @samp{10, X, j, 010}:
 
 @example
 .nr a 10
@@ -2412,18 +2395,18 @@ The following example will produce @samp{10, X, j, 010}.
 
 @findex \g
 The @code{\g} escape returns the current format of the specified
-register.  For example, @samp{\ga} after the following example would
+register.  For example, @samp{\ga} after the previous example would
 produce @samp{001}.
 
-@node Builtin Registers,  , Assigning Formats, Registers
-@subsection Builtin Registers
-@cindex builtin registers
-@cindex registers, builtin
+@node Built-in Registers,  , Assigning Formats, Registers
+@subsection Built-in Registers
+@cindex built-in registers
+@cindex registers, built-in
 
-The following are some builtin registers, which are not listed
-elsewhere in this manual.  Any registers which begin with a @samp{.}
-are read-only.  A compleat listing of all builtin registers can be
-found in @ref{Register Index}.
+The following lists some built-in registers which are not described
+elsewhere in this manual.  Any register which begin with a @samp{.} is
+read-only.  A complete listing of all built-in registers can be found in
+@ref{Register Index}.
 
 @table @code
 @item .H
@@ -2446,24 +2429,27 @@ Current month (1-12).
 The year.
 @item yr
 @vindex yr
-The year minus 1900.  Unfortunately, the Unix Version 7 troff
-documentation had a year 2000 bug: it incorrectly claimed that
+The year minus@w{ }1900.  Unfortunately, the @sc{Unix} Version@w{ }7
+troff documentation had a year@w{ }2000 bug: It incorrectly claimed that
 @samp{\n(yr} was the last two digits of the year.  That claim has never
-been true of either traditional troff or GNU troff.  If you see old
-troff input that looks like this:
+been true of either traditional @code{troff} or GNU @code{troff}.  If
+you see old @code{troff} input that looks like this:
 
 @example
-'\" (The following line stopped working after 1999.)
+'\" The following line stopped working after 1999
 This document was formatted in 19\n(yr.
 @end example
 
+@noindent
 you can correct it as follows:
 
 @example
 This document was formatted in \n[year].
 @end example
 
-or, if you want to be portable to older troff versions, as follows:
+@noindent
+or, if you want to be portable to older @code{troff} versions, as
+follows:
 
 @example
 .nr y4 1900+\n(yr
@@ -2480,30 +2466,28 @@ The current @emph{input} line number.
 The current @emph{output} line number.
 @item .x
 @vindex .x
-The  major  version  number.  For example, if the version number is 1.03
-then @code{.x} will contain 1.
+The major version number.  For example, if the version number is@w{
+}1.03 then @code{.x} will contain@w{ }@samp{1}.
 @item .y
 @vindex .y
-The minor version number.  For example, if the version number is 1.03
-then @code{.y} will contain 03.
+The minor version number.  For example, if the version number is@w{
+}1.03 then @code{.y} will contain@w{ }@samp{03}.
 @item .Y
 @vindex .Y
-The revision number of groff.
+The revision number of @code{groff}.
 @item .g
 @vindex .g
-Always 1.
-Macros should use this to determine whether they are running
-under GNU troff.
+Always@w{ }1.  Macros should use this to determine whether they are
+running under GNU @code{troff}.
 @item .A
 @vindex .A
-If the current output device is @sc{ascii}, this is set to 1, zero
+If the current output device is @sc{ascii}, this is set to@w{ }1, zero
 otherwise.
 @item .P
 @vindex .P
-This register indicates whether the current page is actualy being
-printed, i.e. if the @samp{-o} option is being used to only print
-selected pages.
-@xref{Options}, for more information.
+This register indicates whether the current page is actually being
+printed, i.e., whether the @samp{-o} option is being used to only print
+selected pages.  @xref{Options}, for more information.
 @end table
 
 
@@ -3030,14 +3014,14 @@ These dimensions are:
 @vindex .o
 @dfn{Page offset}--This is the leftmost postition of text on the final
 output.  This can be adjusted with the @code{po} request, and the
-current setting can be found in the builtin number register @code{.o}
+current setting can be found in the built-in number register @code{.o}
 Note, that this request does not cause a break, so changing the page
 offset in the middle of text being filled may not do what you expect.
 @item in
 @vindex .i
 @dfn{Indentation}--This is the distance from the left margin where text
 will be printed.  This can be adjusted with the @code{in} request, and
-the current setting can be found in the builtin number register.
+the current setting can be found in the built-in number register.
 @code{.i}
 This request causes a break.
 
@@ -3053,7 +3037,7 @@ current output line.
 @findex .ll
 @dfn{Line length}--This is the distance from the left margin to right
 margin.  This can be adjusted with the @code{.ll} request, and the
-current setting can be found in the builtin number register @code{.l}
+current setting can be found in the built-in number register @code{.l}
 Note, as the figure implies, line length is not affected by the current
 indentation.
 The number register @code{.ll} is
@@ -3084,7 +3068,7 @@ layout.
 Troff lets you specify the @dfn{page length} via the @code{pl} request.
 This is the length of the physical output page.
 The current setting can
-be found in the builtin number register @code{.p}.  Note that this only
+be found in the built-in number register @code{.p}.  Note that this only
 specifies the size of the page, not the not the top and bottom margins.
 Those are not done by groff directly, @xref{Traps}, for further
 information on how to do this.
@@ -3703,7 +3687,7 @@ string-valued register.
 
 @findex ds
 Groff has string variables, which are entirely for user convenience
-(i.e. there are no builtin strings).  They are defined via the
+(i.e. there are no built-in strings).  They are defined via the
 @code{ds} request.
 
 @example
@@ -4548,7 +4532,7 @@ the diversion.  If not in a diversion it is the same as the register
 
 @vindex dn
 @vindex dl
-After compleating a diversion, the builtin number registers @code{dn}
+After compleating a diversion, the built-in number registers @code{dn}
 and @code{dl} contain the vertical and horizontal size of the diversion.
 
 @example

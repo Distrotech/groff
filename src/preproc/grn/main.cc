@@ -826,16 +826,16 @@ interpret(char *line)
     break;
 
   case 't':			/* thick */
-    thick[2] = defthick[0] * atoi(str2);
+    thick[2] = defthick[0] * atof(str2);
     break;
 
   case 'm':			/* medium */
-    thick[5] = defthick[0] * atoi(str2);
+    thick[5] = defthick[0] * atof(str2);
     break;
 
   case 'n':			/* narrow */
     thick[0] = thick[1] = thick[3] = thick[4] =
-	defthick[0] * atoi(str2);
+	defthick[0] * atof(str2);
     break;
 
   case 'x':			/* x */

@@ -106,15 +106,15 @@ and
 (resp.
 .BR .GF )
 even when followed by a character other than space or newline.
-.TP
-.B \-s
-This switch causes the picture to be traversed twice:
-The first time, only the interiors of filled polygons (as borderless
-polygons) are printed.
-The second time, the outline is printed as a series of line segments.
-This way, postprocessors that overwrite rather than merge picture elements
-(such as Postscript) can still have text and graphics on a shaded
-background.
+.\".TP
+.\".B \-s
+.\"This switch causes the picture to be traversed twice:
+.\"The first time, only the interiors of filled polygons (as borderless
+.\"polygons) are printed.
+.\"The second time, the outline is printed as a series of line segments.
+.\"This way, postprocessors that overwrite rather than merge picture elements
+.\"(such as Postscript) can still have text and graphics on a shaded
+.\"background.
 .TP
 .B \-v
 Print the version number.
@@ -205,11 +205,12 @@ Set the thickness of
 .IR gremlin 's
 narrow (resp. medium and thick) lines to
 .I N
-times 0.15pt
-.RI ( N
-must be an integer).
-The default is 1 (resp. 3 and 5), which corresponds to 0.15pt
+times 0.15pt (this value can be changed at compile time).
+The default is 1.0 (resp. 3.0 and 5.0), which corresponds to 0.15pt
 (resp. 0.45pt and 0.75pt).
+A thickness value of zero selects the smallest available line thickness.
+Negative values cause the line thickness to be proportional to the current
+point size.
 .TP
 .BI pointscale\  <off/on>
 Scale text to match the picture.
