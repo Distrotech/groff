@@ -39,7 +39,7 @@ sys_tmac_prefix=
 
 all: stamp-strip stamp-wrap stamp-sed
 
-install_data: $(NORMALFILES) $(SPECIALFILES) man.local mdoc.local \
+install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
               stamp-strip stamp-wrap stamp-sed
 	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
 	-test -d $(systemtmacdir) || $(mkinstalldirs) $(systemtmacdir)
@@ -73,10 +73,10 @@ install_data: $(NORMALFILES) $(SPECIALFILES) man.local mdoc.local \
 	-test -f $(localtmacdir)/man.local || \
 	  $(INSTALL_DATA) $(srcdir)/man.local $(localtmacdir)/man.local
 	-test -f $(localtmacdir)/mdoc.local || \
-	  $(INSTALL_DATA) $(srcdir)/mdoc.local $(localtmacdir)/mdoc.local
+	  $(INSTALL_DATA) $(srcdir)/mdoc.local-s $(localtmacdir)/mdoc.local
 
-stamp-strip: $(STRIPFILES) $(MDOCFILES)
-	for f in $(STRIPFILES) $(MDOCFILES); do \
+stamp-strip: $(STRIPFILES) $(MDOCFILES) mdoc.local
+	for f in $(STRIPFILES) $(MDOCFILES) mdoc.local; do \
 	  rm -f $$f-s; \
 	  sed -f $(srcdir)/strip.sed $(srcdir)/$$f >$$f-s; \
 	done
