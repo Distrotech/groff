@@ -58,6 +58,15 @@
 .  el   .nr cR 0
 .\}
 .
+.if !r LL \{\
+.  ie n .nr LL 78n
+.  el   .nr LL 6.5i
+.\}
+.if !r LT \{\
+.  ie n .nr LT 78n
+.  el   .nr LT 6.5i
+.\}
+.
 .nr an-html 0
 .if '\*[.T]'html' .nr an-html 1
 .if \n[an-html] .nr C 1
@@ -105,8 +114,6 @@
 .  nr PS-SH 10.95z
 .  nr VS    12p
 .
-.  nr LT    \n[.l]
-.
 .  \" use sizes similar to LaTeX
 .  if t \{\
 .    ie (\\n[S] == 11) \{\
@@ -127,6 +134,7 @@
 .
 .  ps \\n[PS]u
 .  vs \\n[VS]u
+.  ll \\n[LL]u
 .
 .  nr IN 7.2n
 .  PD

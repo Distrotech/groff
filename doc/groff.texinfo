@@ -362,6 +362,12 @@ Software Foundation raise funds for GNU development.''
 @end macro
 
 
+@tex
+\gdef\gobblefirst#1#2{#2}
+\gdef\putwordAppendix{\gobblefirst}
+@end tex
+
+
 @c Note: We say `Roman numerals' but `roman font'.
 
 
@@ -554,12 +560,12 @@ He rewrote it in C, although it was now 7000@w{ }lines of uncommented
 code and still dependent on the CAT.  As the CAT became less common, and
 was no longer supported by the manufacturer, the need to make it support
 other devices became a priority.  However, before this could be done,
-Ossanna was killed in an auto accident.
+Ossanna was killed in a car accident.
 
 @pindex ditroff
 @cindex @code{ditroff}, the program
 So, Brian Kernighan took on the task of rewriting @code{troff}.  The
-newly rewritten version produced a device independent code which was
+newly rewritten version produced device independent code which was
 very easy for postprocessors to read and translate to the appropriate
 printer codes.  Also, this new version of @code{troff} (called
 @code{ditroff} for ``device independent @code{troff}'') had several
@@ -585,7 +591,7 @@ The @code{soelim}, @code{pic}, @code{tbl}, and @code{eqn} preprocessors.
 
 @item
 Postprocessors for character devices, @sc{PostScript}, @TeX{} DVI, and
-X@w{ }windows.  GNU @code{troff} also eliminated the need for a
+X@w{ }Windows.  GNU @code{troff} also eliminated the need for a
 separate @code{nroff} program with a postprocessor which would produce
 @acronym{ASCII} output.
 
@@ -635,7 +641,7 @@ hyphenation
 page control
 
 @item
-font and character size control
+font and glyph size control
 
 @item
 vertical spacing (i.e.@: double spacing)
@@ -783,11 +789,18 @@ the preprocessors, @code{gtroff} and the postprocessor.
 It has become a tradition that GNU programs get the prefix @samp{g} to
 distinguish it from its original counterparts provided by the host (see
 @ref{Environment}, for more details).  Thus, for example, @code{geqn} is
-GNU @code{eqn}.  On operating systems like Linux or the Hurd, which
-don't contain proprietary software, and on MS-DOS/MS-Windows, where
-@code{troff} and associated programs are not available at all, this
-prefix is omitted since GNU @code{troff} is the only used incarnation of
-@code{troff}.  Exception: @code{groff} is never replaced by @code{roff}.
+GNU @code{eqn}.  On operating systems like GNU/Linux or the Hurd, which
+don't contain proprietary versions of @code{troff}, and on
+MS-DOS/MS-Windows, where @code{troff} and associated programs are not
+available at all, this prefix is omitted since GNU @code{troff} is the
+only used incarnation of @code{troff}.  Exception: @samp{groff} is never
+replaced by @samp{roff}.
+
+In this document, we consequently say @samp{gtroff} when talking about
+the GNU @code{troff} program.  All other implementations of @code{troff}
+are called @acronym{AT&T} @code{troff} which is the common origin of
+all @code{troff} derivates (with more or less compatible changes).
+Similarly, we say @samp{gpic}, @samp{geqn}, etc.
 
 @menu
 * Groff Options::
@@ -944,18 +957,21 @@ For @TeX{} DVI format.
 For a 75@dmn{dpi} X11 previewer.
 
 @item X75-12
-For a 75@dmn{dpi} X11 previewer with a 12@dmn{pt} base font.
+For a 75@dmn{dpi} X11 previewer with a 12@dmn{pt} base font in the
+document.
 
 @item X100
 For a 100@dmn{dpi} X11 previewer.
 
 @item X100-12
-For a 100@dmn{dpi} X11 previewer with a 12@dmn{pt} base font.
+For a 100@dmn{dpi} X11 previewer with a 12@dmn{pt} base font in the
+document.
 
 @item ascii
 @cindex encoding, @acronym{ASCII}
 @cindex @acronym{ASCII}, encoding
-For typewriter-like devices.
+For typewriter-like devices using the (7-bit) @acronym{ASCII}
+character set.
 
 @item latin1
 @cindex encoding, latin-1
@@ -979,7 +995,7 @@ For typewriter-like devices which use the @acronym{EBCDIC} encoding IBM
 cp1047.
 
 @item lj4
-For an HP LaserJet4-compatible (or other PCL5-compatible) printer.
+For HP LaserJet4-compatible (or other PCL5-compatible) printers.
 
 @item lbp
 For Canon @acronym{CAPSL} printers (@w{LBP-4} and @w{LBP-8} series laser
@@ -1034,7 +1050,8 @@ requests.  For security reasons, this is enabled by default.
 @item -U
 @cindex mode, unsafe
 @cindex unsafe mode
-Unsafe mode.  Reverts to the old unsafe behaviour.
+Unsafe mode.  This enables the @code{open}, @code{opena}, @code{pso},
+@code{sy}, and @code{pi} requests.
 
 @item -a
 @cindex @acronym{ASCII} approximation output register (@code{.A})
@@ -1073,11 +1090,11 @@ Inhibit all error messages.
 
 @item -C
 Enable compatibility mode.  @xref{Implementation Differences}, for the
-list of incompatibilities between @code{groff} and traditional @acronym{AT&T}
+list of incompatibilities between @code{groff} and @acronym{AT&T}
 @code{troff}.
 
-@item -d@var{cs}
-@itemx -d@var{name}=s
+@item -d@var{c}@var{s}
+@itemx -d@var{name}=@var{s}
 Define @var{c} or @var{name} to be a string@w{ }@var{s}.  @var{c}@w{ }must
 be a one-letter name; @var{name} can be of arbitrary length.  All string
 assignments happen before loading any macro file (including the start-up
@@ -1089,7 +1106,7 @@ Use @var{fam} as the default font family.  @xref{Font Families}.
 @item -m@var{name}
 Read in the file @file{@var{name}.tmac}.  Normally @code{groff} searches
 for this in its macro directories.  If it isn't found, it tries
-@file{tmac.@var{name}} (and searches in the same directories).
+@file{tmac.@var{name}} (searching in the same directories).
 
 @item -n@var{num}
 Number the first page @var{num}.
@@ -1110,7 +1127,7 @@ If your document restarts page numbering at the beginning of each
 chapter, then @code{gtroff} prints the specified page range for each
 chapter.
 
-@item -r@var{cn}
+@item -r@var{c}@var{n}
 @itemx -r@var{name}=@var{n}
 Set number register@w{ }@var{c} or @var{name} to the value@w{ }@var{n}.
 @var{c}@w{ }must be a one-letter name; @var{name} can be of arbitrary
@@ -1250,12 +1267,12 @@ The home directory.
 @cindex directory, site-specific
 @cindex platform-specific directory
 @cindex directory, platform-specific
-A site-specific (platform-independent) directory, a platform-specific
+A platform-dependent directory, a site-specific (platform-independent)
 directory, and the main tmac directory; the default locations are
 
 @Example
-/usr/local/share/groff/site-tmac
 /usr/local/lib/groff/site-tmac
+/usr/local/share/groff/site-tmac
 /usr/local/share/groff/1.18/tmac
 @endExample
 
@@ -1852,7 +1869,8 @@ The command line format for using the @file{man} macros with
 @code{groff} is:
 
 @Example
-groff -m man [ -rcR=1 ] [ -rC1 ] [ -rD1 ] [ -rP@var{nnn} ]
+groff -m man [ -rLL=@var{length} ] [ -rLT=@var{length} ]
+      [ -rcR=1 ] [ -rC1 ] [ -rD1 ] [ -rP@var{nnn} ]
       [ -rS@var{xx} ] [ -rX@var{nnn} ] [ @var{files}@dots{} ]
 @endExample
 
@@ -1860,6 +1878,14 @@ groff -m man [ -rcR=1 ] [ -rC1 ] [ -rD1 ] [ -rP@var{nnn} ]
 It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
 
 @table @code
+@item -rLL=@var{length}
+Set line length to @var{length}.  If not specified, the line lenght
+defaults to 78@dmn{n} in nroff mode and 6.5@dmn{i} otherwise.
+
+@item -rLT=@var{length}
+Set title length to @var{length}.  If not specified, the title lenght
+defaults to 78@dmn{n} in nroff mode and 6.5@dmn{i} otherwise.
+
 @item -rcR=1
 This option (the default if a TTY output device is used) creates a
 single, very long page instead of multiple pages.  Use @code{-rcR=0}
@@ -5367,8 +5393,9 @@ The current year.
 The current year minus@w{ }1900.  Unfortunately, the documentation of
 @acronym{UNIX} Version@w{ }7's @code{troff} had a year@w{ }2000 bug: It
 incorrectly claimed that @code{yr} contains the last two digits of the
-year.  That claim has never been true of either traditional @code{troff}
-or GNU @code{troff}.  Old @code{troff} input that looks like this:
+year.  That claim has never been true of either @acronym{AT&T}
+@code{troff} or GNU @code{troff}.  Old @code{troff} input that looks
+like this:
 
 @Example
 '\" The following line stopped working after 1999
@@ -5670,7 +5697,7 @@ values of the parameters set by the first and second arguments of the
 The word space and sentence space values are associated with the current
 environment (@pxref{Environments}).
 
-Contrary to traditional @acronym{AT&T} @code{troff}, this request is @emph{not}
+Contrary to @acronym{AT&T} @code{troff}, this request is @emph{not}
 ignored if a TTY output device is used; the given values are then
 rounded down to a multiple of@w{ }12 (@pxref{Implementation Differences}).
 
@@ -9232,7 +9259,7 @@ false
 @endExample
 
 @noindent
-The resulting motions, character sizes, and fonts have to
+The resulting motions, glyph sizes, and fonts have to
 match,@footnote{The created output nodes must be identical.
 @xref{Gtroff Internals}.} and not the individual motion, size, and
 font requests.  In the previous example, @samp{|} and @samp{\fR|\fP}
@@ -13508,8 +13535,8 @@ document.
 
 @item @acronym{AT&T} @code{troff} output
 Since a computer monitor has a very low resolution compared to modern
-printers the intermediate output for the X@w{ }devices can use the
-jump-and-write command with its 2-digit displacements.
+printers the intermediate output for the X@w{ }Window devices can use
+the jump-and-write command with its 2-digit displacements.
 
 @example
 @group
