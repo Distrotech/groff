@@ -78,7 +78,7 @@ inline int illegal_input_char(int c)
 #ifdef HAVE_STRCASECMP
 #ifdef NEED_DECLARATION_STRCASECMP
 extern "C" {
-  // Ultrix's string.h fails to declare this.
+  // Ultrix4.3's string.h fails to declare this.
   int strcasecmp(const char *, const char *);
 }
 #endif /* NEED_DECLARATION_STRCASECMP */

@@ -39,6 +39,14 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # include <sys/time.h>
 #endif
 
+#ifdef HAVE_GETTIMEOFDAY
+#ifdef NEED_DECLARATION_GETTIMEOFDAY
+extern "C" {
+  int gettimeofday(struct timeval *, void *);
+}
+#endif
+#endif
+
 #if HAVE_STDINT_H
 # include <stdint.h>
 #endif
