@@ -3618,6 +3618,9 @@ The documentation in the
 source file describes it as
 .Dq old function type (fortran) .
 .
+.It Li .Sm
+To be written.
+.
 .It Li .Ud
 prints
 .
@@ -3697,168 +3700,21 @@ extension).
 \#
 .Sh DIAGNOSTICS
 .
-The debugging facilities for
+The debugging macro
+.Ql .Db
+available in previous versions of
 .Nm \-mdoc
-are limited, but can help detect subtle errors such
-as the collision of an argument name with an internal
-register or macro name.
-(A what?)
-A register is an arithmetic storage class for
-.Xr troff
-with a one or two character name.
-All registers internal to
-.Nm \-mdoc
-for
-.Xr troff
-and
-.Xr ditroff
-are two characters and
-of the form <upper_case><lower_case> such as
-.Ql \&Ar ,
-<lower_case><upper_case> as
-.Ql \&aR
-or
-<upper or lower letter><digit> as
-.Ql \&C\&1 .
-And adding to the muddle,
-.Xr troff
-has its own internal registers all of which are either
-two lower case characters or a dot plus a letter or meta-character
-character.
-In one of the introduction examples, it was shown how to
-prevent the interpretation of a macro name with the escape sequence
-.Ql \e& .
-This is sufficient for the internal register names also.
+has been removed since
+.Tn GNU
+.Xr troff 1
+provides better facilities to check parameters; additionally, many error and
+warning messages have been added to this macro package, making it both more
+robust and verbose.
 .Pp
-.\" Every callable macro name has a corresponding register
-.\" of the same name (<upper_case><lower_case>).
-.\" There are also specific registers which have
-.\" been used for stacks and arrays and are listed in the
-.\" .Sx Appendix .
-.\" .Bd -ragged -offset 4n
-.\" [A-Z][a-z]	registers corresponding to macro names (example ``Ar'')
-.\" [a-z][A-Z]	registers corresponding to macro names (example ``aR'')
-.\" C[0-9]		argument types (example C1)
-.\" O[0-9]		offset stack (displays)
-.\" h[0-9]		horizontal spacing stack (lists)
-.\" o[0-9]		offset (stack) (lists)
-.\" t[0-9]		tag stack (lists)
-.\" v[0-9]		vertical spacing stack (lists)
-.\" w[0-9]		width tag/label stack
-.\" .Ed
-.\" .Pp
-If a non-escaped register name is given in the argument list of a request
-unpredictable behavior will occur.
-In general, any time huge portions
-of text do not appear where expected in the output, or small strings
-such as list tags disappear, chances are there is a misunderstanding
-about an argument type in the argument list.
-Your mother never intended for you to remember this evil stuff -- so here
-is a way to find out whether or not your arguments are valid: The
-.Ql \&.Db
-(debug)
-macro displays the interpretation of the argument list for most
-macros.
-Macros such as the
-.Ql \&.Pp
-(paragraph)
-macro do not contain debugging information.
-All of the callable macros do,
-and it is strongly advised whenever in doubt,
-turn on the
-.Ql \&.Db
-macro.
-.Pp
-.Dl Usage: \&.Db [on | off]
-.Pp
-An example of a portion of text with
-the debug macro placed above and below an
-artificially created problem (a flag argument
-.Ql \&aC
-which should be
-.Ql \e&aC
-in order to work):
-.
-.Bd -literal -offset indent
-\&.Db on
-\&.Op Fl aC Ar file )
-\&.Db off
-.Ed
-.Pp
-The resulting output:
-.
-.Bd -literal -offset indent
-DEBUGGING ON
-DEBUG(argv) MACRO: `.Op'  Line #: 2
-	Argc: 1  Argv: `Fl'  Length: 2
-	Space: `'  Class: Executable
-	Argc: 2  Argv: `aC'  Length: 2
-	Space: `'  Class: Executable
-	Argc: 3  Argv: `Ar'  Length: 2
-	Space: `'  Class: Executable
-	Argc: 4  Argv: `file'  Length: 4
-	Space: ` '  Class: String
-	Argc: 5  Argv: `)'  Length: 1
-	Space: ` '  Class: Closing Punctuation or suffix
-	MACRO REQUEST: .Op Fl aC Ar file )
-DEBUGGING OFF
-.Ed
-.Pp
-The first line of information tells the name of the calling
-macro, here
-.Ql \&.Op ,
-and the line number it appears on.
-If one or more files are involved
-(especially if text from another file is included) the line number
-may be bogus.
-If there is only one file, it should be accurate.
-The second line gives the argument count, the argument
-.Pq Ql \&Fl
-and its length.
-If the length of an argument is two characters, the
-argument is tested to see if it is executable (unfortunately, any
-register which contains a non-zero value appears executable).
-The third line gives the space allotted for a class, and the
-class type.
-The problem here is the argument aC should not be
-executable.
-The four types of classes are string, executable, closing
-punctuation and opening punctuation.
-The last line shows the entire
-argument list as it was read.
-In this next example, the offending
-.Ql \&aC
-is escaped:
-.
-.Bd -literal -offset indent
-\&.Db on
-\&.Em An escaped \e&aC
-\&.Db off
-.Ed
-.
-.Bd -literal -offset indent
-DEBUGGING ON
-DEBUG(fargv) MACRO: `.Em'  Line #: 2
-	Argc: 1  Argv: `An'  Length: 2
-	Space: ` '  Class: String
-	Argc: 2  Argv: `escaped'  Length: 7
-	Space: ` '  Class: String
-	Argc: 3  Argv: `aC'  Length: 2
-	Space: ` '  Class: String
-	MACRO REQUEST: .Em An escaped &aC
-DEBUGGING OFF
-.Ed
-.Pp
-The argument
-.Ql \e&aC
-shows up with the same length of 2 as the
-.Ql \e&
-sequence produces a zero width, but a register
-named
-.Ql \e&aC
-was not found and the type classified as string.
-.Pp
-Other diagnostics consist of usage statements and are self explanatory.
+The only remaining debugging macro is
+.Ql .Rd
+which yields a register dump of all global registers and strings.
+A normal user will never need it.
 .
 .
 .Sh "FORMATTING WITH GROFF, TROFF, AND NROFF"

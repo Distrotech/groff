@@ -71,49 +71,11 @@
 .eo
 .
 .
-.\" NS doc-inline-debug user register (bool)
-.\" NS   inline debug mode (inline if 1, to stderr if 0 (default))
-.
-.if !r doc-inline-debug .nr doc-inline-debug 0
-.
-.
-.\" NS doc-debug global register (bool)
-.\" NS   debug mode (1 if active, 0 otherwise (default))
-.
-.nr doc-debug 0
-.
-.
 .\" NS Db macro
-.\" NS   start/stop debug mode (`.Db'/`.Db on'/`.Db off')
-.\" NS
-.\" NS   without argument, toggle debug status
-.\" NS
-.\" NS modifies:
-.\" NS   doc-debug
+.\" NS   defunct
 .
 .de Db
-.  ie \n[.$] \{\
-.    ie "\$1"on" \{\
-.      tm DEBUGGING ON
-.      nr doc-debug 1
-.    \}
-.    el \{\
-.      ie "\$1"off" \{\
-.        tm DEBUGGING OFF
-.        nr doc-debug 0
-.      \}
-.      el \
-.        tm Usage: .Db [on | off] (#\n[.c])
-.  \}\}
-.  el \{\
-.    ie \n[doc-debug] \{\
-.      tm DEBUGGING OFF
-.      nr doc-debug 0
-.    \}
-.    el \{\
-.      tm DEBUGGING ON
-.      nr doc-debug 1
-.  \}\}
+.  tm mdoc error: .Db defunct (#\n[.c])
 ..
 .
 .
@@ -210,60 +172,9 @@
 .  nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
 .  doc-set-spacing-\n[doc-arg-type]
 .
-.  if \n[doc-debug] \{\
-.    ds doc-str-dpa \*[doc-debug-\n[doc-arg-type]]
-.
-.    ie \n[doc-inline-debug] \{\
-.      br
-.      nr doc-reg-dpa \n[.i]u
-.      in -\n[doc-reg-dpa]u
-.
-.      if (\n[doc-arg-limit] == 1) \{\
-.        nop \f[B]DEBUG(doc-parse-args) MACRO:\f[P] `.\*[doc-macro-name]'
-.        nop \) \f[B]Line #:\f[P] \n[.c]
-.      \}
-.      nop \t\f[B]Argc:\f[P] \n[doc-arg-limit]
-.      nop \ \f[B]Argv:\f[P] `\*[doc-arg\n[doc-arg-limit]]'
-.      nop \ \f[B]Length:\f[P] \n[doc-width]
-.      nop \t\f[B]Space:\f[P] `\*[doc-space\n[doc-arg-limit]]'
-.      nop \ \f[B]Type:\f[P] \*[doc-str-dpa]
-.    \}
-.    el \{\
-.      if (\n[doc-arg-limit] == 1) \{\
-.        tmc "DEBUG (doc-parse-args)
-.        tm1 " MACRO: `.\*[doc-macro-name]'  Line #: \n[.c]
-.      \}
-.      tmc "  Argc: \n[doc-arg-limit]
-.      tmc "  Argv: `\*[doc-arg\n[doc-arg-limit]]'
-.      tm1 "  Length: \n[doc-width]
-.      tmc "  Space: `\*[doc-space\n[doc-arg-limit]]'
-.      tm1 "  Type: \*[doc-str-dpa]
-.  \}\}
-.
 .  \" check whether we have processed the last parameter
-.  ie (\n[.$] == 1) \{\
+.  ie (\n[.$] == 1) \
 .    nr doc-arg-ptr 0
-.
-.    if \n[doc-debug] \{\
-.      nr doc-reg-dpa1 1
-.
-.      ie \n[doc-inline-debug] \{\
-.        nop MACRO REQUEST: \t.\*[doc-macro-name]
-.        while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
-.          nop "\*[doc-arg\n[doc-reg-dpa1]]"
-.          nr doc-reg-dpa1 +1
-.        \}
-.        br
-.        in \n[doc-reg-dpa]u
-.      \}
-.      el \{\
-.        tmc "  MACRO REQUEST: .\*[doc-macro-name]
-.        while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
-.          tmc " "\*[doc-arg\n[doc-reg-dpa1]]"
-.          nr doc-reg-dpa1 +1
-.        \}
-.        tm
-.  \}\}\}
 .  el \{\
 .    shift
 .    doc-parse-args \$@
@@ -304,62 +215,10 @@
 .  nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
 .  doc-set-spacing-\n[doc-arg-type]
 .
-.  if \n[doc-debug] \{\
-.    ds doc-str-dpav \*[doc-debug-\n[doc-arg-type]]
-.
-.    ie \n[doc-inline-debug] \{\
-.      br
-.      nr doc-reg-dpav \n[.i]u
-.      in -\n[doc-reg-dpav]u
-.
-.      if (\n[doc-arg-limit] == 1) \{\
-.        nop \f[B]DEBUG(doc-parse-arg-vector)
-.        nop MACRO:\f[P] `.\*[doc-macro-name]'
-.        nop \) \f[B]Line #:\f[P] \n[.c]
-.      \}
-.      nop \t\f[B]Argc:\f[P] \n[doc-arg-limit]
-.      nop \ \f[B]Argv:\f[P] `\*[doc-arg\n[doc-arg-limit]]'
-.      nop \ \f[B]Length:\f[P] \n[doc-width]
-.      nop \t\f[B]Space:\f[P] `\*[doc-space\n[doc-arg-limit]]'
-.      nop \ \f[B]Type:\f[P] \*[doc-str-dpav]
-.    \}
-.    el \{\
-.      if (\n[doc-arg-limit] == 1) \{\
-.        tmc "DEBUG(doc-parse-arg-vector)
-.        tm1 " MACRO: `.\*[doc-macro-name]'  Line #: \n[.c]
-.      \}
-.      tmc "  Argc: \n[doc-arg-limit]
-.      tmc "  Argv: `\*[doc-arg\n[doc-arg-limit]]'
-.      tm1 "  Length: \n[doc-width]
-.      tmc "  Space: `\*[doc-space\n[doc-arg-limit]]'
-.      tm1 "  Type: \*[doc-str-dpav]
-.  \}\}
-.
 .  ie (\n[doc-num-args] == 1) \{\
 .    nr doc-arg-ptr 0
-.
 .    nr doc-num-args 0
-.
-.    if \n[doc-debug] \{\
-.      nr doc-reg-dpav1 1
-.
-.      ie \n[doc-inline-debug] \{\
-.        nop \tMACRO REQUEST: .\*[doc-macro-name]
-.        while (\n[doc-reg-dpav1] <= \n[doc-arg-limit]) \{\
-.          nop "\*[doc-arg\n[doc-reg-dpav1]]"
-.          nr doc-reg-dpav1 +1
-.        \}
-.        br
-.        in \n[doc-reg-dpav]u
-.      \}
-.      el \{\
-.        tmc "  MACRO REQUEST: .\*[doc-macro-name]
-.        while (\n[doc-reg-dpav1] <= \n[doc-arg-limit]) \{\
-.          tmc " "\*[doc-arg\n[doc-reg-dpav1]]"
-.          nr doc-reg-dpav1 +1
-.        \}
-.        tm
-.  \}\}\}
+.  \}
 .  el \{\
 .    nr doc-num-args -1
 .    doc-parse-arg-vector
@@ -3358,7 +3217,6 @@
 .\" NS   doc-reg-dsgv
 .
 .de doc-save-global-vars
-.  nr doc-debug-saved \n[doc-debug]
 .  ds doc-macro-name-saved "\*[doc-macro-name]
 .  nr doc-arg-limit-saved \n[doc-arg-limit]
 .  nr doc-num-args-saved \n[doc-num-args]
@@ -3497,7 +3355,6 @@
 .\" NS   doc-reg-drgv
 .
 .de doc-restore-global-vars
-.  nr doc-debug \n[doc-debug-saved]
 .  ds doc-macro-name "\*[doc-macro-name-saved]
 .  nr doc-arg-limit \n[doc-arg-limit-saved]
 .  nr doc-num-args \n[doc-num-args-saved]
