@@ -58,7 +58,7 @@ groff_bin_dirs=\
   $(top_builddir)/src/devices/grolj4 \
   $(top_builddir)/src/devices/grolbp \
   $(top_builddir)/src/devices/grohtml
-groff_bin_path=`echo $(groff_bin_dirs) | sed -e 's| \+|:|g'`
+groff_bin_path=`echo $(groff_bin_dirs) | sed -e 's|  *|:|g'`
 
 version=`cat $(top_srcdir)/VERSION`
 # No additional number if revision is zero.
@@ -68,7 +68,9 @@ FFLAG=-F$(top_builddir)/font -F$(top_srcdir)/font
 TFLAG=-M$(top_builddir)/tmac -M$(top_srcdir)/tmac
 
 TROFF=$(top_builddir)/src/roff/troff/troff $(TFLAG) $(FFLAG) -ww
-GROFF=GROFF_BIN_PATH=$(groff_bin_path); \
+GROFF=GROFF_COMMAND_PREFIX=''; \
+      export GROFF_COMMAND_PREFIX; \
+      GROFF_BIN_PATH=$(groff_bin_path); \
       export GROFF_BIN_PATH; \
       sed -e "s;@VERSION@;$(version)$(revision);" $< \
       | $(top_builddir)/src/roff/groff/groff $(TFLAG) $(FFLAG) -Upet -ww
