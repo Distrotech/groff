@@ -23,7 +23,7 @@
 .\"
 .\"
 .\"
-\# Version 1.2-c
+\# Version 1.2-d
 \# -------------
 \#
 \# Antoine de St-Exupéry asserted that elegance in engineering is
@@ -379,9 +379,9 @@
 \#   Requires unit of measure.
 \#
 .MAC LL END
-.    nr #L_LENGTH (\\$1)
 .    nr #USER_SET_L_LENGTH 1
-.    ll \\n[#L_LENGTH]u
+.    ll \\$1
+.    nr #L_LENGTH \\n(.l
 .    ta \\n(.lu
 .END
 \#
@@ -563,24 +563,28 @@
 .    nr #OLD_LEAD \\n(.v
 .    vs \\$1
 .    nr #TOP_BASELINE_ADJ \\n(.v-\\n[#OLD_LEAD]
-.    if \\n[#TOP_ALD]=1 \{\
-.       sp -\\n[#TOP_BASELINE_ADJ]u
-.       rr #TOP_ALD
-.    \}
+.    if !\\n[#DOCS] \{\
+.       if \\n[#TOP_ALD]=1 \{\
+.          sp -\\n[#TOP_BASELINE_ADJ]u
+.          rr #TOP_ALD
+.       \}
 \# The following clause ensures that the first .LS call after a top
 \# margin has been set (.T_MARGIN or .PAGE) doesn't change the
 \# vertical position on the page
-.    if \\n[#T_MARGIN_SET]=1 \{\
-.       ie (\\n(nl >= \\n[#T_MARGIN]) \{\
-'          sp -\\n[#TOP_BASELINE_ADJ]u
-.          rr #T_MARGIN_SET
-.       \}
-.       el \{\
-.          if !\\n[#TOP_LEAD]=0&\\n[#TOP_ALD]=0 \{ .nr #TOP_LEAD 1 \}
-.          vs 1u
-.          sp |\\n[#T_MARGIN]u
-.          wh \\n(nlu+1v RESET_LEAD
-.          rr #T_MARGIN_SET
+.       if \\n[#T_MARGIN_SET]=1 \{\
+.          ie (\\n(nl >= \\n[#T_MARGIN]) \{\
+.             if \\n(.n=0 \{\
+'                sp -\\n[#TOP_BASELINE_ADJ]u
+.                rr #T_MARGIN_SET
+.             \}
+.          \}
+.          el \{\
+.             if !\\n[#TOP_LEAD]=0&\\n[#TOP_ALD]=0 \{ .nr #TOP_LEAD 1 \}
+.             vs 1u
+.             sp |\\n[#T_MARGIN]u
+.             wh \\n(nlu+1v RESET_LEAD
+.             rr #T_MARGIN_SET
+.          \}
 .       \}
 .    \}
 .END
@@ -609,6 +613,7 @@
 .    if \\n[#PRINT_STYLE]=1 \{ .return \}
 .    if \\n[#IGNORE]        \{ .return \}
 .    nr #AUTO_LEAD 1
+.    nr #OLD_LEAD \\n(.v
 .    nr #AUTOLEAD_VALUE (p;\\$1)
 .    ie \\n[#NUM_ARGS]=2 \{\
 .       if '\\$2'FACTOR' \{\
@@ -619,9 +624,30 @@
 .    el \{\
 .       vs \\n[#PT_SIZE]u+\\n[#AUTOLEAD_VALUE]u
 .    \}
-.    if \\n[#T_MARGIN_SET] \{\
-.       sp |\\n[#T_MARGIN]u-1v
-.       rr #T_MARGIN_SET
+.    nr #TOP_BASELINE_ADJ \\n(.v-\\n[#OLD_LEAD]
+.    if !\\n[#DOCS] \{\
+.       if \\n[#TOP_ALD]=1 \{\
+.          sp -\\n[#TOP_BASELINE_ADJ]u
+.          rr #TOP_ALD
+.       \}
+\# The following clause ensures that the first .LS call after a top
+\# margin has been set (.T_MARGIN or .PAGE) doesn't change the
+\# vertical position on the page
+.       if \\n[#T_MARGIN_SET]=1 \{\
+.          ie (\\n(nl >= \\n[#T_MARGIN]) \{\
+.             if \\n(.n=0 \{\
+'                sp -\\n[#TOP_BASELINE_ADJ]u
+.                rr #T_MARGIN_SET
+.             \}
+.          \}
+.          el \{\
+.             if !\\n[#TOP_LEAD]=0&\\n[#TOP_ALD]=0 \{ .nr #TOP_LEAD 1 \}
+.             vs 1u
+.             sp |\\n[#T_MARGIN]u
+.             wh \\n(nlu+1v RESET_LEAD
+.             rr #T_MARGIN_SET
+.          \}
+.       \}
 .    \}
 .END
 \#
@@ -987,24 +1013,32 @@
 .MAC ALD END
 .    if \\n(nl=0 \{ .nr #TOP_ALD 1 \}
 .    if \\n(nl=\\n[#T_MARGIN] \{ .nr #TOP_LEAD 1 \}
-.    if \\n[#TOP_LEAD]=1 \{\
-.       rr #TOP_ALD
-.       rr #TOP_LEAD
-.       RESET_LEAD
-.       RLD 1v
+.    if !r#DOCS \{\
+.       if \\n[#TOP_LEAD]=1 \{\
+.          rr #TOP_ALD
+.          rr #TOP_LEAD
+.          RESET_LEAD
+.          RLD 1v
+.       \}
 .    \}
 .    if '\\$0'ALD' \{\
 .       nr #ALD (\\$1)
 .       ie \\n(nl=\\n[#T_MARGIN] \{\
-.          PRINT \&
-.          sp \\n[#ALD]u-1v
+.          ie !r#DOCS \{\
+.             PRINT \&
+.             sp \\n[#ALD]u-1v
+.          \}
+.          el \{ .sp \\n[#ALD]u \}
 .       \}
 .       el \{ .sp \\n[#ALD]u \}
 .    \}
 .    if '\\$0'SPACE' \{\
 .       ie \\n(nl=\\n[#T_MARGIN] \{\
-.          PRINT \&
-.          sp \\$1-1v
+.          ie !r#DOCS \{\
+.             PRINT \&
+.             sp \\$1-1v
+.          \}
+.          el \{ .sp \\n[#ALD]u \}
 .       \}
 .       el \{ .sp \\$1u \}
 .    \}
@@ -6798,6 +6832,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             ie \\n[#EPI_LINES]%2=1 \{ .ALD \\n[#DOC_LEAD]u \}
 .             el \{ .ALD \\n[#DOC_LEAD]u/2u \}
 .          \}
+.          SHIM
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          if \\n[#EPI_WHITESPACE]<\\n[#DOC_LEAD] \{\

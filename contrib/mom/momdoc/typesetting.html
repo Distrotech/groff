@@ -1044,6 +1044,32 @@ As with other macros that require a unit of measure, the argument to
 sets the line length to 4-1/2 inches.
 
 <p>
+Additionally, you may express a new line length relative to the
+current line length by prepending a plus or minus sign to the
+argument.  Thus, if you wanted to increase the line length by 3
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>, you could
+do
+<p>
+<pre>
+	.LL +3p
+</pre>
+
+This is especially handy when you want to &quot;hang&quot;
+punctuation outside the right margin since you can pass groff's
+<a href="inlines.html#INLINE_STRINGWIDTH_GROFF"><strong>\w</strong></a>
+escape as the argument to <strong>LL</strong>, like this:
+<p>
+<pre>
+	.LL +\w'.'u
+</pre>
+
+The above example increases the current line length by the width of
+a period.  Notice that you must append the
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>,
+<strong>u</strong>, to the escape since .LL requires a unit of
+measure.
+
+<p>
 <strong>NOTE:</strong> The <a href="#R_MARGIN">right margin
 macro</a> (<strong>R_MARGIN</strong>) can also be used to set line
 length.
