@@ -10,7 +10,8 @@ grog: grog.pl grog.sh
 	  sed -e 's;/usr/bin/perl;$(PERLPATH);' $(srcdir)/grog.pl >$@; \
 	else \
 	  rm -f $@; \
-	  sed -e 's/@g@/$(g)/g' "$(SH_SCRIPT_SED_CMD)" $(srcdir)/grog.sh >$@; \
+	  sed -e 's/@g@/$(g)/g' \
+	      -e "$(SH_SCRIPT_SED_CMD)" $(srcdir)/grog.sh >$@; \
 	fi
 	chmod +x $@
 
