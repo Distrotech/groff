@@ -3499,7 +3499,7 @@ special_node::special_node(const macro &m, int n)
   font_size fs = curenv->get_font_size();
   int char_height = curenv->get_char_height();
   int char_slant = curenv->get_char_slant();
-  int fontno = curenv->get_font();
+  int fontno = env_definite_font(curenv);
   tf = font_table[fontno]->get_tfont(fs, char_height, char_slant,
 				     fontno);
   if (curenv->is_composite())

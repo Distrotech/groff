@@ -644,7 +644,7 @@ page control
 font and glyph size control
 
 @item
-vertical spacing (i.e.@: double spacing)
+vertical spacing (i.e.@: double-spacing)
 
 @item
 line length and indenting
@@ -1510,11 +1510,13 @@ hyphens out and join a word back together.  Also, words such as
 can occur where not wanted, such as ``@w{mother- in}-law''.
 @end itemize
 
-@cindex double spacing (@code{ls})
+@cindex double-spacing (@code{ls})
 @cindex spacing
-@code{gtroff} double spaces output text automatically if you use the
-request @w{@samp{.ls 2}}.  Reactivate single spaced mode by typing
-@w{@samp{.ls 1}}.
+@code{gtroff} double-spaces output text automatically if you use the
+request @w{@samp{.ls 2}}.  Reactivate single-spaced mode by typing
+@w{@samp{.ls 1}}.@footnote{If you need finer granularity of the
+vertical space, use the @code{pvs} request (@pxref{Changing Type
+Sizes}).}
 
 A number of requests allow to change the way the output looks,
 sometimes called the @dfn{layout} of the output page.  Most of these
@@ -1640,7 +1642,9 @@ A variation of this is a bulleted list.
 
 @Example
 .     Bulleted lists start with a bullet.   It is possible
-      to use other glyphs instead of the bullet.
+      to use other glyphs instead of the bullet.  In nroff
+      mode using the ASCII character set for output, a dot
+      is used instead of a real bullet.
 @endExample
 
 
@@ -1660,11 +1664,15 @@ supply macros for starting chapters and appendices.
 @node Headers and Footers, Page Layout Adjustment, Sections and Chapters, Common Features
 @subsection Headers and Footers
 
-Every macro package gives some way to manipulate the headers and footers
-(or @dfn{titles}) on each page.  Some packages allow for different ones
-on the even and odd pages (for material printed in a book form).
+Every macro package gives some way to manipulate the @dfn{headers} and
+@dfn{footers} (also called @dfn{titles}) on each page.  This is text
+put at the top and bottom of each page, respectively, which contain
+data like the current page number, the current chapter title, and so
+on.  Its appearance is not affected by the running text.  Some packages
+allow for different ones on the even and odd pages (for material printed
+in a book form).
 
-The titles are called three-part titles, that is, there is a
+The titles are called @dfn{three-part titles}, that is, there is a
 left-justified part, a centered part, and a right-justified part.  An
 automatically generated page number may be put in any of these fields
 with the @samp{%} character (see @ref{Page Layout}, for more details).
@@ -1683,9 +1691,9 @@ other details about the appearance of the printed pages.
 @subsection Displays
 @cindex displays
 
-Displays are sections of text to be set off from the body of the paper.
-Major quotes, tables, and figures are types of displays, as are all the
-examples used in this document.
+@dfn{Displays} are sections of text to be set off from the body of
+the paper.  Major quotes, tables, and figures are types of displays, as
+are all the examples used in this document.
 
 @cindex quotes, major
 @cindex major quotes
@@ -1693,7 +1701,7 @@ examples used in this document.
 are set in from the rest of the text without quote marks around them.
 
 @cindex list
-A @dfn{list} is an indented, single spaced, unfilled display.  Lists
+A @dfn{list} is an indented, single-spaced, unfilled display.  Lists
 should be used when the material to be printed should not be filled and
 justified like normal text, such as columns of figures or the examples
 used in this paper.
@@ -1706,7 +1714,7 @@ not.
 
 @cindex keep, floating
 @cindex floating keep
-Floating keeps move relative to the text.  Hence, they are good for
+@dfn{Floating keeps} move relative to the text.  Hence, they are good for
 things which are referred to by name, such as ``See figure@w{ }3''.  A
 floating keep appears at the bottom of the current page if it fits;
 otherwise, it appears at the top of the next page.  Meanwhile, the
@@ -1756,6 +1764,10 @@ While some macro packages use the term @dfn{index}, none actually
 provide that functionality.  The facilities they call indices are
 actually more appropriate for tables of contents.
 
+@pindex makeindex
+To produce a real index in a document, external tools like the
+@code{makeindex} program are necessary.
+
 @c ---------------------------------------------------------------------
 
 @node Paper Formats, Multiple Columns, Indices, Common Features
@@ -1797,12 +1809,12 @@ various special characters.
 @node Preprocessor Support, Configuration and Customization, Predefined Strings, Common Features
 @subsection Preprocessor Support
 
-All macro packages provide support for the various preprocessors and may
+All macro packages provide support for various preprocessors and may
 extend their functionality.
 
 For example, all macro packages mark tables (which are processed with
-@code{gtbl}) by placing them between @code{.TS} and @code{.TE} macros.
-The @file{ms} macro package has an option, @code{.TS@w{}H}, that prints
+@code{gtbl}) by placing them between @code{TS} and @code{TE} macros.
+The @file{ms} macro package has an option, @samp{.TS@w{ }H}, that prints
 a caption at the top of a new page (when the table is too long to fit on
 a single page).
 
@@ -1879,12 +1891,14 @@ It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
 
 @table @code
 @item -rLL=@var{length}
-Set line length to @var{length}.  If not specified, the line lenght
-defaults to 78@dmn{n} in nroff mode and 6.5@dmn{i} otherwise.
+Set line length to @var{length}.  If not specified, the line length
+defaults to 78@w{ }en in nroff mode (this is 78@w{ }characters per
+line) and 6.5@w{ }inch otherwise.
 
 @item -rLT=@var{length}
-Set title length to @var{length}.  If not specified, the title lenght
-defaults to 78@dmn{n} in nroff mode and 6.5@dmn{i} otherwise.
+Set title length to @var{length}.  If not specified, the title length
+defaults to 78@w{ }en in nroff mode (this is 78@w{ }characters per
+line) and 6.5@w{ }inch otherwise.
 
 @item -rcR=1
 This option (the default if a TTY output device is used) creates a
@@ -1925,7 +1939,7 @@ further customization, put additional macros and requests into the file
 @file{man.local} which is loaded immediately after the @file{man}
 package.
 
-@Defmac {TH, title section [@Var{extra1}] [@Var{extra2}] [@Var{extra3}], man}
+@Defmac {TH, title section [@Var{extra1} [@Var{extra2} [@Var{extra3}]]], man}
 Set the title of the man page to @var{title} and the section to
 @var{section}, which must have a value between 1 and@w{ }8.  The value
 of @var{section} may also have a string appended, e.g.@: @samp{.pm},
@@ -1988,11 +2002,12 @@ default font settings.
 These macros are mutual aliases.  Any of them causes a line break at
 the current position, followed by a vertical space downwards by the
 amount specified by the @code{PD} macro.  The font size and shape are
-reset to the default value (10@dmn{pt} roman).  Finally, the current
-left margin is restored.
+reset to the default value (10@dmn{pt} roman if no @option{-rS} option
+is given on the command line).  Finally, the current left margin is
+restored.
 @endDefmac
 
-@Defmac {IP, [@Var{designator}] [@Var{nnn}], man}
+@Defmac {IP, [@Var{designator} [@Var{nnn}]], man}
 Set up an indented paragraph, using @var{designator} as a tag to mark
 its beginning.  The indentation is set to @var{nnn} if that argument
 is supplied (default unit is @samp{n}), otherwise the default
@@ -2003,7 +2018,7 @@ designator, use @samp{""} (two double quotes) as the first argument of
 @code{IP}.
 
 For example, to start a paragraph with bullets as the designator and
-4@dmn{en} indentation, write
+4@w{ }en indentation, write
 
 @Example
 .IP \(bu 4
@@ -2054,6 +2069,8 @@ vertical space.
 @cindex @code{man} macros, how to set fonts
 
 The standard font is roman; the default text size is 10@w{ }point.
+If command line option @option{-rS=@var{n}} is given, use
+@var{n}@dmn{pt} as the default text size.
 
 @Defmac {SM, [@Var{text}], man}
 Set the text on the same line or the text on the next line in a font
@@ -2120,15 +2137,15 @@ macro is called, then the text of the next line appears in italic.
 @pindex grohtml
 @cindex @code{man} macros, default indentation
 @cindex default indentation [@code{man}]
-The default indentation is 7.2@dmn{n} for all output devices except for
+The default indentation is 7.2@w{ }en for all output devices except for
 @code{grohtml} which ignores indentation.
 
 @Defmac {DT, , man}
 @cindex tab stops [@code{man}]
 @cindex @code{man} macros, tab stops
-Set tabs every 0.5@w{ }inches.  Since this macro is always called
-during a @code{TH} request, it makes sense to call it only if the tab
-positions have been changed.
+Set tabs every 0.5@w{ }inches.  Since this macro is always executed
+during a call to the @code{TH} macro, it makes sense to call it only if
+the tab positions have been changed.
 @endDefmac
 
 @Defmac {PD, [@Var{nnn}], man}
@@ -4378,6 +4395,16 @@ expect an identifier as a parameter.  For example, @samp{\[foo]]}
 accesses the glyph @samp{foo}, followed by @samp{]}, whereas
 @samp{\C'foo]'} really asks for glyph @samp{foo]}.
 
+@cindex @code{refer}, and macro names starting with @code{[} or @code{]}
+@cindex @code{[}, macro names starting with, and @code{refer}
+@cindex @code{]}, macro names starting with, and @code{refer}
+@cindex macro names, starting with @code{[} or @code{]}, and @code{refer}
+To avoid problems with the @code{refer} preprocessor, macro names
+should not start with @samp{[} or @samp{]}.  Due to backwards
+compatibility, everything after @samp{.[} and @samp{.]} is handled as
+a special argument to @code{refer}.  For example, @samp{.[foo} makes
+@code{refer} to start a reference, using @samp{foo} as a parameter.
+
 @Defesc {\\A, ', ident, '}
 Test whether an identifier @var{ident} is valid in @code{gtroff}.  It
 expands to the character@w{ }1 or@w{ }0 according to whether its
@@ -6105,7 +6132,7 @@ request causes a line break.  The default scaling indicator is @samp{v}.
 
 @DefreqList {ls, [@Var{nnn}]}
 @DefregListEnd {.L}
-@cindex double spacing (@code{ls})
+@cindex double-spacing (@code{ls})
 Output @w{@var{nnn}@minus{}1} blank lines after each line of text.
 With no argument, @code{gtroff} uses the previous value before the
 last @code{ls} call.
@@ -6113,7 +6140,7 @@ last @code{ls} call.
 @Example
 .ls 2    \" This causes double-spaced output
 .ls 3    \" This causes triple-spaced output
-.ls      \" Again double spaced
+.ls      \" Again double-spaced
 @endExample
 
 The line spacing is associated with the current environment
@@ -8758,11 +8785,11 @@ using a positive value.  This is vertical space which will be added once
 after the current line has been output.
 @end itemize
 
-@cindex double spacing (@code{vs}, @code{pvs})
+@cindex double-spacing (@code{vs}, @code{pvs})
 It is usually better to use @code{vs} or @code{pvs} instead of @code{ls}
 to produce double-spaced documents: @code{vs} and @code{pvs} have a finer
 granularity for the inserted vertical space compared to @code{ls};
-furthermore, certain preprocessors assume single spacing.
+furthermore, certain preprocessors assume single-spacing.
 
 @xref{Manipulating Spacing}, for more details on the @code{\x} escape
 and the @code{ls} request.
@@ -9352,8 +9379,8 @@ Use the @code{ie} and @code{el} requests to write an if-then-else.
 The first request is the `if' part and the latter is the `else' part.
 
 @Example
-.ie n .ls 2 \" double spacing in nroff
-.el   .ls 1 \" single spacing in troff
+.ie n .ls 2 \" double-spacing in nroff
+.el   .ls 1 \" single-spacing in troff
 @endExample
 @endDefreq
 
@@ -10835,6 +10862,20 @@ prints@w{ }4.
 @endExample
 
 Both escapes read the data in copy mode.
+
+@cindex @code{\!}, in top-level diversion
+@cindex top-level diversion, and @code{\!}
+@cindex diversion, top-level, and @code{\!}
+If @code{\!} is used in the top-level diversion, its argument is
+directly embedded into the @code{gtroff} intermediate output.  This can
+be used for example to control a postprocessor which processes the data
+before it is sent to the device driver.
+
+@cindex @code{\?}, in top-level diversion
+@cindex top-level diversion, and @code{\?}
+@cindex diversion, top-level, and @code{\?}
+The @code{\?} escape used in the top-level diversion produces no output
+at all; its argument is simply ignored.
 @endDefesc
 
 @Defreq {asciify, div}

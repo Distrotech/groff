@@ -820,7 +820,7 @@ More generally, objects of a given type are implicitly numbered
 current picture with \fB3rd ellipse\fP, or to the first box as \fB1st
 box\fP, or to the fifth line as \fB5th line\fP.
 .PP
-Objects are also numbered backwards by type from the last one of 
+Objects are also numbered backwards by type from the last one.
 You can say \fB2nd last box\fP to get the second-to-last box, or
 \fB3rd last ellipse\fP to get the third-to-last box.
 .PP
@@ -1230,7 +1230,7 @@ compass([junction()]);
 To refer to one of the composite's attachment points, you can say
 (for example) \fBA .s\fP.  For purposes of object naming, composites
 are a class.  You could write \fBlast [] .s\fP as an equivalent
-refrence, usable anywhere a location is needed.  This construction is
+reference, usable anywhere a location is needed.  This construction is
 very important for putting together large, multi-part diagrams.
 .PP 
 Blocks are also a variable-scoping mechanism, like a \fIgroff\fP(1)
@@ -1435,7 +1435,7 @@ As an example of macro use, consider the following:
 .DS
 .CW
 \&.PS
-# Plot a single jumper in a $1 by $2 box, $3 is the on-off state
+# Plot a single jumper in a box, $1 is the on-off state.
 define jumper { [
     shrinkfactor = 0.8;
     Outer: box invis wid 0.5 ht 1;
@@ -1448,7 +1448,7 @@ define jumper { [
     box fill ($1)  with .n at center of Outer;
 ] }
 
-# Plot a block of six jumpers
+# Plot a block of six jumpers.
 define jumperblock {
     jumper($1);
     jumper($2);
@@ -1467,7 +1467,7 @@ define jumperblock {
     {"Jumpers in state $1$2$3$4$5$6" at last box .s + (0, -0.2);}
 }
 
-# Sample macro invocations
+# Sample macro invocations.
 jumperblock(1,1,0,0,1,0);
 move;
 jumperblock(1,0,1,0,1,1);
@@ -2162,9 +2162,10 @@ surrounded with single quotes.
 The top-level \fBpic\fP object is a picture.
 .DS
 .CW
-<picture>    ::= .PS [width [height]]\en
-                 <statement> ...
-                 .PE \en
+<picture> ::=
+  .PS [width [height]]\en
+  <statement> ...
+  .PE \en
 .R
 .DE
 .LP
@@ -2185,23 +2186,25 @@ normally supplied by the post-processor.
 .DS
 .CW
 
-<statement>  ::= <command> ;
-                 <command> \en
+<statement> ::=
+  <command> ;
+  <command> \en
 
-<command>    ::= <primitive> <modifier>...
-                 <label> : <command>
-                 <label> : <position>
-                 <variable> = <expr>
-                 <direction>
-                 { <command> ... }
-                 '[' <command> ... ']'
-                 for <var> = <expr> to <expr> [by <expr>] do { <command> ... }
-                 if <expr> then { <command> ... } [else { <command> ... }]
-                 copy <filename> [until <word>]
-                 copy <filename> thru <macroname> [until <word>] 
-                 sh <balanced-text>
-                 print <print-item>
-                 reset [ <variable> ... ]
+<command> ::=
+  <primitive> <modifier>...
+  <label> : <command>
+  <label> : <position>
+  <variable> = <expr>
+  <direction>
+  { <command> ... }
+  '[' <command> ... ']'
+  for <var> = <expr> to <expr> [by <expr>] do { <command> ... }
+  if <expr> then { <command> ... } [else { <command> ... }]
+  copy <filename> [until <word>]
+  copy <filename> thru <macroname> [until <word>] 
+  sh <balanced-text>
+  print <print-item>
+  reset [ <variable> ... ]
 .R
 .DE
 .LP
@@ -2217,45 +2220,48 @@ current position becomes the exit position for the current direction
 on the block's bounding box.
 .DS
 .CW
-<primitive>  ::= box                   \fR# Closed object -- rectangle\fP
-                 circle                \fR# Closed object -- circle\fP
-                 ellipse               \fR# Closed object -- ellipse\fP
-                 arc                   \fR# Open object -- quarter-circle\fP
-                 line                  \fR# Open object -- line\fP
-                 arrow                 \fR# Open object -- line with arrowhead\fP
-                 spline                \fR# Open object -- spline curve\fP
-                 move
-                 <text> <text> ...     \fR# Text within invisible box\fP
+<primitive> ::=
+  box                   \fR# Closed object -- rectangle\fP
+  circle                \fR# Closed object -- circle\fP
+  ellipse               \fR# Closed object -- ellipse\fP
+  arc                   \fR# Open object -- quarter-circle\fP
+  line                  \fR# Open object -- line\fP
+  arrow                 \fR# Open object -- line with arrowhead\fP
+  spline                \fR# Open object -- spline curve\fP
+  move
+  <text> <text> ...     \fR# Text within invisible box\fP
 
-<attribute>  ::= h[eigh]t <expr>       \fR# Set height of closed figure \fP
-                 wid[th] <expr>        \fR# Set width of closed figure \fP
-                 rad[ius] <expr>       \fR# Set radius of circle/arc \fP
-                 diam[eter] <expr>     \fR# Set diameter of circle/arc \fP
-                 up [ <expr> ]         \fR# Move up \fP
-                 down [ <expr> ]       \fR# Move down \fP
-                 left [ <expr> ]       \fR# Move left \fP
-                 right [ <expr> ]      \fR# Move right \fP
-                 from <position>       \fR# Set from position of open figure\fP
-                 to <position>         \fR# Set to position of open figure\fP
-                 at <position>         \fR# Set center of open figure\fP
-                 with <corner>         \fR# Fix corner at specified location\fP
-                 by <expr> <expr>      \fR# Set object's attachment point\fP
-                 then                  \fR# Sequential segment composition\fP
-                 dotted [ <expr> ]     \fR# Set dotted line style\fP
-                 dashed [ <expr> ]     \fR# Set dashed line style\fP
-                 chop [ <expr> ]       \fR# Chop end(s) of segment\fP
-                 ->                    \fR# Decorate with "to" arrow\fP
-                 <-                    \fR# Decorate with "from" arrow\fP
-                 <->                   \fR# Decorate with both arrows\fP
-                 invis                 \fR# Make primitive invisible\fP
-                 solid                 \fR# Make closed figure solid\fP
-                 fill <expr>           \fR# Set fill density for figure\fP
-                 colo[u]r[ed] <word>   \fR# Set fill and outline color for figure\fP
-                 outline[d] <word>     \fR# Set outline color for figure\fP
-                 shaded <word>         \fR# Set fill color for figure\fP
-                 same                  \fR# Copy size of previous object\fP
-                 <text> <text> ...     \fR# Text within object\fP
-                 <expr>                \fR# Motion in the current direction\fR
+<attribute> ::=
+  h[eigh]t <expr>       \fR# Set height of closed figure \fP
+  wid[th] <expr>        \fR# Set width of closed figure \fP
+  rad[ius] <expr>       \fR# Set radius of circle/arc \fP
+  diam[eter] <expr>     \fR# Set diameter of circle/arc \fP
+  up [ <expr> ]         \fR# Move up \fP
+  down [ <expr> ]       \fR# Move down \fP
+  left [ <expr> ]       \fR# Move left \fP
+  right [ <expr> ]      \fR# Move right \fP
+  from <position>       \fR# Set from position of open figure\fP
+  to <position>         \fR# Set to position of open figure\fP
+  at <position>         \fR# Set center of open figure\fP
+  with <corner>         \fR# Fix corner at specified location\fP
+  by <expr> <expr>      \fR# Set object's attachment point\fP
+  then                  \fR# Sequential segment composition\fP
+  dotted [ <expr> ]     \fR# Set dotted line style\fP
+  dashed [ <expr> ]     \fR# Set dashed line style\fP
+  chop [ <expr> ]       \fR# Chop end(s) of segment\fP
+  ->                    \fR# Decorate with "to" arrow\fP
+  <-                    \fR# Decorate with "from" arrow\fP
+  <->                   \fR# Decorate with both arrows\fP
+  invis[ible]           \fR# Make primitive invisible\fP
+  solid                 \fR# Make closed figure solid\fP
+  fill <expr>           \fR# Set fill density for figure\fP
+  colo[u]r[ed] <word>   \fR# Set fill and outline color for figure\fP
+  outline[d] <word>     \fR# Set outline color for figure\fP
+  shaded <word>         \fR# Set fill color for figure\fP
+  thick[ness] <expr>    \fR# Set thickness for figure\fP
+  same                  \fR# Copy size of previous object\fP
+  <text> <text> ...     \fR# Text within object\fP
+  <expr>                \fR# Motion in the current direction\fR
 .R
 .DE
 .LP
@@ -2273,10 +2279,12 @@ the Kernighan paper, and should probably be considered unreliable.
 The primitive \fBarrow\fR is a synonym for \fBline ->\fR.
 .DS
 .CW
-<text>  ::=      <string> [ <placement> ... ]
-                 sprintf("format", <expr> ...) [ <placement> ... ]
+<text> ::=
+  <string> [ <placement> ... ]
+  sprintf("format", <expr> ...) [ <placement> ... ]
 
-<placement> ::=  center | ljust | rjust | above | below
+<placement> ::=
+  center | ljust | rjust | above | below
 .R
 .DE
 .LP
@@ -2294,25 +2302,29 @@ A position is an (x, y) coordinate pair.  There are lots of different
 ways to specify positions:
 .DS
 .CW
-<position>  ::=  <expr> , <expr>
-                 <place> {+-} <expr> , <expr> 
-                 <place> {+-} ( <expr> , <expr> )
-                 ( <position> , <position> )
-                 <expr> [of the way] between <position> and <position> 
-                 <expr> '<' <position> , <position> '>'
-                 ( <position> )
+<position> ::=
+  <expr> , <expr>
+  <place> {+-} <expr> , <expr> 
+  <place> {+-} ( <expr> , <expr> )
+  ( <position> , <position> )
+  <expr> [of the way] between <position> and <position> 
+  <expr> '<' <position> , <position> '>'
+  ( <position> )
 
-<place>  ::=     <label> [ <dot-corner> ]
-                 <corner> of <label>
-                 [0|1|2|3|4|5|6|7|8|9]th [last] <primitive> <dot-corner>
-                 <expr>'th [last]<primitive> <dot-corner>
-                 <corner> of [0|1|2|3|4|5|6|7|8|9]th [last] <primitive>
-                 <corner> of <expr>'th [last] <primitive>
-                 Here
+<place> ::=
+  <label> [ <dot-corner> ]
+  <corner> of <label>
+  [0|1|2|3|4|5|6|7|8|9]th [last] <primitive> <dot-corner>
+  <expr>'th [last]<primitive> <dot-corner>
+  <corner> of [0|1|2|3|4|5|6|7|8|9]th [last] <primitive>
+  <corner> of <expr>'th [last] <primitive>
+  Here
 
-<dot-corner> ::= .n | .e | .w | .s | .ne | .nw | .se | .sw | .c | .start | .end
+<dot-corner> ::=
+  .n | .e | .w | .s | .ne | .nw | .se | .sw | .c | .start | .end
 
-<corner> ::=     top | bot | left | right | start | end
+<corner> ::=
+  top | bot | left | right | start | end
 .R
 .DE
 .LP
@@ -2369,31 +2381,33 @@ default to inches.  Expressions have the following simple grammar,
 with semantics very similar to C expressions:
 .DS
 .CW
-<expr> ::=       <expr> <op> <expr>
-                 ! <expr>
-                 ( <expr> )
-                 - <expr>
-                 <variable>
-                 <number>
-                 <place> .x
-                 <place> .y
-                 <place> .ht
-                 <place> .wid
-                 <place> .rad
-                 sin(<expr>)
-                 cos(<expr>)
-                 log(<expr>)
-                 exp(<expr>)
-                 sqrt(<expr>)
-                 max(<expr>, <expr>...)
-                 atan2(<expr>, <expr>)
-                 min(<expr>, <expr>...)
-                 int(<expr>)
-                 rand()
+<expr> ::=
+  <expr> <op> <expr>
+  ! <expr>
+  ( <expr> )
+  - <expr>
+  <variable>
+  <number>
+  <place> .x
+  <place> .y
+  <place> .ht
+  <place> .wid
+  <place> .rad
+  sin(<expr>)
+  cos(<expr>)
+  atan2(<expr>, <expr>)
+  log(<expr>)
+  exp(<expr>)
+  sqrt(<expr>)
+  min(<expr>, <expr>...)
+  max(<expr>, <expr>...)
+  int(<expr>)
+  rand()
 
-<op>  :=         + | - | * | / | % | ^ |
-                 != | == | '<' | '>' | >= | <= |
-                 '||' | &&
+<op> :=
+  + | - | * | / | % | ^ |
+  != | == | '<' | '>' | >= | <= |
+  '||' | &&
 .R
 .DE
 .LP
