@@ -38,6 +38,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 extern "C" {
   // Sun's stdlib.h fails to declare this.
   char *mktemp(char *);
+  int mkstemp(char *);
 }
 
 #define DEFAULT_HASH_TABLE_SIZE 997

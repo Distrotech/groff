@@ -36,7 +36,10 @@ esac
 opts=
 safer=-S
 
-for i; do
+# `for i; do' doesn't work with some versions of sh
+
+for i
+  do
   case $1 in
     -h)
       opts="$opts -P-h" ;;

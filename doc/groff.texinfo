@@ -4241,7 +4241,6 @@ macros inadvertently insert some vertical space before the text starts
 is associated with the current diversion level.
 
 @c XXX xref
-
 @end_Deffn
 
 @Deffn{Request, rs, }
@@ -4249,7 +4248,6 @@ Disable no-space mode.  This request is associated with the current
 diversion level.
 
 @c XXX xref
-
 @end_Deffn
 
 
@@ -4570,6 +4568,26 @@ no-break control character is associated with the current environment
 @Deffn{Request, eo, }
 Disable the escape mechanism completely.  After executing this request,
 the backslash character @samp{\} no longer starts an escape sequence.
+
+This request can be very helpful in writing macros since it is not
+necessary then to double the escape character.  Here an example:
+
+@example
+.\" This is a simplified version of the
+.\" .BR request from the man macro package
+.eo
+.de BR
+.  ds result \&
+.  while (\n[.$] >= 2) \{\
+.    as result \fB\$1\fR\$2
+.    shift 2
+.  \}
+.  if \n[.$] .as result \fB\$1
+\*[result]
+.  ft R
+..
+.ec
+@end example
 @end_Deffn
 
 @cindex escape character
@@ -4696,7 +4714,6 @@ string), it is no longer affected by @code{tr}.
 @item
 Without an argument, the @code{tr} request is ignored.
 @end itemize
-
 @end_Deffn
 
 @findex \!
