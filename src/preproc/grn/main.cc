@@ -85,7 +85,7 @@
 /* database imports */
 
 extern void HGPrintElt(ELT *element, int baseline);
-extern ELT *DBInit(void);
+extern ELT *DBInit();
 extern ELT *DBRead(register FILE *file);
 extern POINT *PTInit();
 extern POINT *PTMakePoint(float x, float y, POINT **pplist);
@@ -211,10 +211,10 @@ int SUNFILE = FALSE;		/* TRUE if SUN gremlin file */
 int compatibility_flag = FALSE;	/* TRUE if in compatibility mode */
 
 
-void getres(void);
+void getres();
 char *doinput(FILE *fp);
 void conv(register FILE *fp, int baseline);
-void savestate(void);
+void savestate();
 int has_polygon(register ELT *elist);
 void interpret(char *line);
 
@@ -361,7 +361,7 @@ operand(int *argcp,
  *----------------------------------------------------------------------------*/
 
 void
-getres(void)
+getres()
 {
   int linepiece;
 
@@ -420,7 +420,7 @@ doinput(FILE *fp)
  *----------------------------------------------------------------------------*/
 
 void
-initpic(void)
+initpic()
 {
   register int i;
 
@@ -654,7 +654,7 @@ conv(register FILE *fp,
  *----------------------------------------------------------------------------*/
 
 void
-savestate(void)
+savestate()
 {
   register int i;
 

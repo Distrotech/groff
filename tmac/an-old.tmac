@@ -1,6 +1,6 @@
 .\" an-old.tmac
 .\"
-.\" Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+.\" Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
 .\"      Written by James Clark (jjc@jclark.com)
 .\"
 .\" This file is part of groff.
@@ -52,13 +52,9 @@
 .  el   .nr cR 0
 .\}
 .
-.\" compute the value of '\*(.T'html':'\*(.T'html-old'
-.\" XXX: it would be nice to allow logical or with strings
-.
-.nr html-or-html-old 0
-.if '\*(.T'html-old' .nr html-or-html-old 1
-.if '\*(.T'html'     .nr html-or-html-old 1
-.if \n[html-or-html-old] .nr C 1
+.nr an-html 0
+.if '\*(.T'html' .nr an-html 1
+.if \n[an-html] .nr C 1
 .if r ps4html .nr C 1
 .
 .de set-an-margin
@@ -67,7 +63,7 @@
 .
 .\" .TH title section extra1 extra2 extra3
 .de TH
-.  if '\*(.T'html' \{\
+.  if \\n[an-html] \{\
 .     HTML-TAG ".tl"
 \\$1
 .  \}
@@ -112,8 +108,7 @@
 .  ps \\n[PS]u
 .  vs \\n[VS]u
 .
-.  ie '\*[.T]'html-old' .nr IN 1.2i
-.  el                   .nr IN 7.2n
+.  nr IN 7.2n
 .  PD
 .  nr SN 3n \" the indentation of sub-sub-headings relative to sub-headings
 .  nr an-level 1
@@ -153,7 +148,7 @@
 .  ev 1
 .  ps \\n[PS]u
 .  vs \\n[VS]u
-.  ie \\n[html-or-html-old] \
+.  ie \\n[an-html] \
 .    tl ''''
 .  el \{\
 .    if !\\n[cR] \
@@ -178,7 +173,7 @@
 .  ev 1
 .  ps \\n[PS]u
 .  vs \\n[VS]u
-.  ie \\n[html-or-html-old] \{\
+.  ie \\n[an-html] \{\
 .    ds an-page-string
 .    ds an-extra1
 .    ds an-extra2
@@ -282,7 +277,7 @@
 .  if \\n[.$] .nr an-prevailing-indent (n;\\$1)
 .  it 1 an-trap
 .  if !\\n[an-div?] .di an-div
-.  ie \\n[html-or-html-old] .in \\n[an-margin]u
+.  ie \\n[an-html] .in \\n[an-margin]u
 .  el \{\
 .    in 0
 .    ll -\\n[an-margin]u
@@ -473,7 +468,7 @@
 .ds lq \(lq
 .ds rq \(rq
 .
-.if !\n[html-or-html-old] .hy 14
+.if !\n[an-html] .hy 14
 .
 .\" Load local modifications.
 .mso man.local

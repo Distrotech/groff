@@ -277,10 +277,10 @@ public:
   void possibly_break_line(int start_here = 0, int forced = 0);
   void do_break();			// .br
   void final_break();
-  void add_html_tag_eol(void);
+  void add_html_tag_eol();
   void add_html_tag(const char *);
   void add_html_tag(const char *, int);
-  void add_html_tag_tabs(void);
+  void add_html_tag_tabs();
   void newline();
   void handle_tab(int is_leader = 0); // do a tab or leader
   void add_node(node *);

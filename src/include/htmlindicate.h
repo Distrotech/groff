@@ -38,7 +38,7 @@ extern void graphic_start(int is_inline);
  *                been issued.
  *
  */
-extern void graphic_end(void);
+extern void graphic_end();
 
 /*
  *  html_begin_suppress - suppresses output for the html device

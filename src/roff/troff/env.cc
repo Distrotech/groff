@@ -2016,7 +2016,7 @@ void environment::final_break()
  *  add_html_tag_eol - add an end of line tag if appropriate.
  */
 
-void environment::add_html_tag_eol(void)
+void environment::add_html_tag_eol()
 {
   if (is_html) {
     if (ignore_next_eol > 0)
@@ -2096,7 +2096,7 @@ void environment::add_html_tag(const char *name, int i)
  *  add_html_tag_tabs - emits the tab settings for post-grohtml
  */
 
-void environment::add_html_tag_tabs(void)
+void environment::add_html_tag_tabs()
 {
   if (is_html) {
     /*

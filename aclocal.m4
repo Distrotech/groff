@@ -1,5 +1,5 @@
 dnl Autoconf macros for groff.
-dnl Copyright (C) 1989, 1990, 1991, 1992, 1995 Free Software Foundation, Inc.
+dnl Copyright (C) 1989-1995, 2001 Free Software Foundation, Inc.
 dnl 
 dnl This file is part of groff.
 dnl 

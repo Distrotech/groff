@@ -37,7 +37,7 @@ int DBGetType(register char *s);
  * would be the only element in an empty list.
  */
 ELT *
-DBInit(void)
+DBInit()
 {
   return ((ELT *) NULL);
 }				/* end DBInit */

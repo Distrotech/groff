@@ -100,7 +100,7 @@ static struct xtmpfile_list {
   char fname[1];
 } *xtmpfiles_to_delete;
 
-static void remove_tmp_files(void)
+static void remove_tmp_files()
 {
   struct xtmpfile_list *p = xtmpfiles_to_delete;
 

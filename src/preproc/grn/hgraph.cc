@@ -57,7 +57,7 @@ void HGSetBrush(int mode);
 void tmove2(int px, int py);
 void doarc(POINT cp, POINT sp, int angle);
 void tmove(POINT * ptr);
-void cr(void);
+void cr();
 void drawwig(POINT * ptr);
 void HGtline(int x1, int y1);
 void dx(double x);
@@ -507,7 +507,7 @@ tmove(POINT * ptr)
  *----------------------------------------------------------------------------*/
 
 void
-cr(void)
+cr()
 {
   printf("\n.sp -1\n");
   lastx = xleft;

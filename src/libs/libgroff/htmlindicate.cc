@@ -78,7 +78,6 @@ void html_end_suppress(int is_inline)
 void graphic_start(int is_inline)
 {
   if (!is_in_graphic_start) {
-    // put_string(".if '\\*(.T'html-old' \\X(graphic-start(\\c\n", stdout);
     html_begin_suppress(is_inline);
     is_inline_image = is_inline;
     is_in_graphic_start = 1;
@@ -89,11 +88,10 @@ void graphic_start(int is_inline)
  *  graphic_end - tell troff that the image region is ending.
  */
 
-void graphic_end(void)
+void graphic_end()
 {
   if (is_in_graphic_start) {
     html_end_suppress(is_inline_image);
-    // put_string(".if '\\*(.T'html-old' \\X(graphic-end(\\c\n", stdout);
     is_in_graphic_start = 0;
   }
 }
