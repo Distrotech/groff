@@ -7008,6 +7008,12 @@ static node *read_draw_node()
 	  if (no_last_v)
 	    error("even number of arguments needed for spline");
 	  break;
+	case 'f':
+	  if (npoints != 1 || !no_last_v) {
+	    error("one argument needed for gray shade");
+	    npoints = 1;
+	    point[0].v = V0;
+	  }
 	default:
 	  // silently pass it through
 	  break;
