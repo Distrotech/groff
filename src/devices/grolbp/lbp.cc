@@ -33,17 +33,6 @@ TODO
 
 #include "nonposix.h"
 
-#if !defined(_AIX) && !defined(sinix) && !defined(__sinix__)
-#ifdef HAVE_STRNCASECMP
-#ifdef NEED_DECLARATION_STRNCASECMP
-extern "C" {
-  // SunOS's string.h fails to declare this.
-  int strncasecmp(const char *, const char *, int);
-}
-#endif /* NEED_DECLARATION_STRNCASECMP */
-#endif /* HAVE_STRNCASECMP */
-#endif /* !_AIX && !sinix && !__sinix__ */
-
 static short int papersize = -1,  // papersize
 		 orientation = -1 , // orientation
 		 paperlength = 0, // Custom Paper size

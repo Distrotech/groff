@@ -3316,9 +3316,25 @@ static symbol dot_symbol(".");
 
 enum define_mode { DEFINE_NORMAL, DEFINE_APPEND, DEFINE_IGNORE };
 
-void do_define_macro(define_mode mode)
+void do_define_macro(define_mode mode, int indirect)
 {
-  symbol nm;
+  symbol nm, term;
+  if (indirect) {
+    symbol temp1 = get_name(1);
+    if (temp1.is_null()) {
+      skip_line();
+      return;
+    }
+    symbol temp2 = get_name();
+    input_stack::push(make_temp_iterator("\n"));
+    if (!temp2.is_null()) {
+      interpolate_string(temp2);
+      input_stack::push(make_temp_iterator(" "));
+    }
+    interpolate_string(temp1);
+    input_stack::push(make_temp_iterator(" "));
+    tok.next();
+  }
   if (mode == DEFINE_NORMAL || mode == DEFINE_APPEND) {
     nm = get_name(1);
     if (nm.is_null()) {
@@ -3326,7 +3342,7 @@ void do_define_macro(define_mode mode)
       return;
     }
   }
-  symbol term = get_name();	// the request that terminates the definition
+  term = get_name();	// the request that terminates the definition
   if (term.is_null())
     term = dot_symbol;
   while (!tok.newline() && !tok.eof())
@@ -3427,18 +3443,23 @@ void do_define_macro(define_mode mode)
 
 void define_macro()
 {
-  do_define_macro(DEFINE_NORMAL);
+  do_define_macro(DEFINE_NORMAL, 0);
+}
+
+void define_indirect_macro()
+{
+  do_define_macro(DEFINE_NORMAL, 1);
 }
 
 void append_macro()
 {
-  do_define_macro(DEFINE_APPEND);
+  do_define_macro(DEFINE_APPEND, 0);
 }
 
 void ignore()
 {
   ignoring = 1;
-  do_define_macro(DEFINE_IGNORE);
+  do_define_macro(DEFINE_IGNORE, 0);
   ignoring = 0;
 }
 
@@ -5817,6 +5838,7 @@ int main(int argc, char **argv)
       break;
     case '?':
       usage(argv[0]);
+      break;		// never reached
     default:
       assert(0);
     }
@@ -5999,6 +6021,7 @@ void init_input_requests()
   init_request("ds", define_string);
   init_request("as", append_string);
   init_request("de", define_macro);
+  init_request("dei", define_indirect_macro);
   init_request("am", append_macro);
   init_request("ig", ignore);
   init_request("rm", remove_macro);

@@ -36,6 +36,10 @@ char *strsave(const char *s);
 int is_prime(unsigned);
 
 #include <stdio.h>
+#include <string.h>
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
 
 FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1);
 char *xtmptemplate(char *extension=0);
@@ -60,6 +64,17 @@ inline int illegal_input_char(int c)
 {
   return c >= 0 && illegal_char_table[c];
 }
+
+#if !defined(_AIX) && !defined(sinix) && !defined(__sinix__)
+#ifdef HAVE_STRNCASECMP
+#ifdef NEED_DECLARATION_STRNCASECMP
+extern "C" {
+  // SunOS's string.h fails to declare this.
+  int strncasecmp(const char *, const char *, int);
+}
+#endif /* NEED_DECLARATION_STRNCASECMP */
+#endif /* HAVE_STRNCASECMP */
+#endif /* !_AIX && !sinix && !__sinix__ */
 
 #ifndef HAVE_STRCASECMP
 #define strcasecmp(a,b) strcmp((a),(b))
