@@ -57,6 +57,7 @@
 		<ul>
 			<li><a href="#HDRFTR_RULE">HEADER_RULE</a> -- on or off
 			<li><a href="#HDRFTR_RULE_GAP">HEADER_RULE_GAP</a> -- distance of rule from header/footer
+			<li><a href="#HDRFTR_RULE_COLOR">HEADER_RULE_COLOR</a> -- colour of the header/footer rule
 		</ul>
 	</ul>
 	<li><a href="#PAGINATION">Pagination</a>
@@ -167,6 +168,7 @@ TYPE SPEC    HEADER LEFT         HEADER CENTER       HEADER RIGHT
 ---------    -----------         -------------       ------------
 Family       document default    document default    document default
 Font         roman               italic              roman
+Colour       (black)             (black)             (black)
 All caps     no                  no                  yes
 Size*        -.5 (points)        -.5 (points)        -2 (points)
             (-2 if all caps)    (-2 if all caps)    (-.5 if not all caps)
@@ -463,7 +465,10 @@ place of <strong>LEFT, CENTER</strong> and
 surrounded by double-quotes, containing what you want in the
 header.  <strong>HEADER_RECTO</strong> disables <strong>mom</strong>'s
 normal 3-part headers, therefore anything you want in the
-headers must be entered by hand in the string.
+headers must be entered by hand in the string, including colours
+(via the
+<a href="definitions.html#TERMS_INLINES">inline escape</a>
+<a href="color.html#COLOR_INLINE">\*[&lt;colorname&gt;]</a>).
 <p>
 By default, <strong>HEADER_RECTO</strong> is set at the same
 size, and in the same family and font, as paragraph text.  The
@@ -548,8 +553,8 @@ macro, which changes the default pad marker (<kbd>#</kbd>) used by
 has no effect on the pad marker used in the
 <strong>HEADER_RECTO</strong> string.  If you absolutely must
 have a literal pound sign in your <strong>HEADER_RECTO</strong>
-string, use the escape sequence <kbd>\N'35'</kbd> where you want
-the pound sign to go.
+string, use the escape sequence for the pound sign
+(<kbd>\[sh]</kbd>) where you want the pound sign to go.
 <p>
 <hr>
 
@@ -584,7 +589,8 @@ can be designed to your own specifications.
 		<li><a href="#HDRFTR_STYLE_GLOBAL"><strong>Global changes</strong></a>
 		<li><a href="#HDRFTR_GLOBAL_FAMILY">HEADER_FAMILY</a>&nbsp;-- family for entire header
 		<li><a href="#HDRFTR_GLOBAL_SIZE">HEADER_SIZE</a>&nbsp;&nbsp;&nbsp;-- size for entire header
-		<li><a href="HDRFTR_PLAIN">HDRFTR_PLAIN</a>&nbsp;&nbsp;-- disable default adjustments to header parts
+		<li><a href="#HDRFTR_PLAIN">HEADER_PLAIN</a>&nbsp;&nbsp;-- disable default adjustments to header parts
+		<li><a href="#HDRFTR_COLOR">HEADER_COLOR</a>&nbsp;&nbsp;-- colourize the header
 	</ul>
 	<ul>
 		<li><a href="#HDRFTR_STYLE_PART"><strong>Part-by-part changes</strong></a>
@@ -592,6 +598,7 @@ can be designed to your own specifications.
 		<li><a href="#_FONT">_FONT</a>&nbsp;&nbsp;&nbsp;-- left, centre or right font
 		<li><a href="#_SIZE">_SIZE</a>&nbsp;&nbsp;&nbsp;-- left, centre or right size
 		<li><a href="#_CAPS">_CAPS</a>&nbsp;&nbsp;&nbsp;-- left, centre or right all caps
+		<li><a href="#_COLOR">_COLOR</a>&nbsp;&nbsp;-- left, centre or right colour
 	</ul>
 	<li><a href="#HDRFTR_VERTICAL"><strong>VERTICAL PLACEMENT AND SPACING</strong></a>
 	<ul>
@@ -602,6 +609,7 @@ can be designed to your own specifications.
 	<ul>
 		<li><a href="#HDRFTR_RULE">HEADER_RULE</a>
 		<li><a href="#HDRFTR_RULE_GAP">HEADER_RULE_GAP</a>
+		<li><a href="#HDRFTR_RULE_COLOR">HEADER_RULE_COLOR</a>
 	</ul>
 </ul>
 
@@ -789,8 +797,9 @@ position.
 <a name="PAGE_NUMBER_SYMBOL">
 	<h3><u>*Replacing header-left, -CENTER or -right with the page number</u></h3>
 </a>
+<p>
 If you would like to have the current page number to appear 
-header-left, -CENTER, or -right <em>instead</em> of a text
+header-left, -center, or -right <em>instead</em> of a text
 string, invoke the appropriate macro, above, with the single
 argument <code>#</code> (the &quot;number&quot; or
 &quot;pound&quot; sign).  Do <strong>NOT</strong> use
@@ -807,6 +816,7 @@ headers.
 <a name="PAGE_NUMBER_INCL">
 	<h3><u>*Including the page number in header-left, -CENTER or -right</u></h3>
 </a>
+<p>
 If you would like to <em>include</em> the current page number in
 the string you pass to <strong>HEADER_LEFT, _CENTER,</strong> or
 <strong>_RIGHT</strong>, use the special
@@ -845,6 +855,7 @@ Please note that <strong>HEADER_FAMILY</strong> and
 	<li><a href="#HDRFTR_GLOBAL_FAMILY">HEADER_FAMILY</a>
 	<li><a href="#HDRFTR_GLOBAL_SIZE">HEADER_SIZE</a>
 	<li><a href="#HDRFTR_PLAIN">HEADER_PLAIN</a>
+	<li><a href="#HDRFTR_COLOR">HEADER_COLOR</a>
 </ul>
 
 <hr width="33%" align="left">
@@ -935,6 +946,32 @@ with <strong>FOOTER_</strong> to disable <strong>mom</strong>'s
 default behaviour for the various elements of footer style.
 <p>
 
+<hr width="33%" align="left">
+<p>
+<a name="HDRFTR_COLOR">
+	Macro: <strong>HEADER_COLOR</strong> <var>&lt;colorname&gt;</var>
+</a>
+
+<p>
+If you want your headers in a colour different from the document
+default (usually black), invoke <strong>HEADER_COLOR</strong> with
+the name of a colour pre-defined (or &quot;initialized&quot;) with
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+or
+<a href="color.html#XCOLOR">XCOLOR</a>.
+<p>
+<strong>HEADER_COLOR</strong> will set all the parts of the header
+AND the header rule in the colour you give it as an argument.  If
+you wish finer control over colour in headers, you can use
+<a href="#_COLOR">HEADER_&lt;POSITION&gt;_COLOR</a>
+to colourize each part of the header separately, as well as
+<a href="#HDRFTR_RULE_COLOR">HEADER_RULE_COLOR</a>
+to change the colour of the header rule.
+<p>
+<strong>NOTE:</strong> Replace <strong>HEADER_</strong>, above,
+with <strong>FOOTER_</strong> to colourize footers.
+<p>
+
 <hr width="66%" align="left">
 <p>
 <a name="HDRFTR_STYLE_PART"><strong>Part by part changes</strong></a>
@@ -948,6 +985,7 @@ or <strong>RIGHT</strong> as appropriate.
 	<li><a href="#_FONT">HEADER_&lt;POSITION&gt;_FONT</a>
 	<li><a href="#_SIZE">HEADER_&lt;POSITION&gt;_SIZE</a>
 	<li><a href="#_CAPS">HEADER_&lt;POSITION&gt;_CAPS</a>
+	<li><a href="#_COLOR">HEADER_&lt;POSITION&gt;_COLOR</a>
 </ul>
 
 <hr width="33%" align="left">
@@ -1024,6 +1062,49 @@ QUIT, END, X...</strong>).
 <strong>NOTE:</strong> Replace <strong>HEADER_</strong>, above,
 with <strong>FOOTER_</strong> to change a footer part's
 capitalization style.
+
+<p>
+<hr width="33%" align="left">
+<p>
+<a name="_COLOR">
+	Macro: <strong>HEADER_&lt;POSITION&gt;_COLOR</strong> <var>&lt;colorname&gt;</var>
+</a>
+<p>
+<strong>HEADER_&lt;POSITION&gt;_COLOR</strong> allows you to set a
+colour for each of the three possible parts of a page header
+separately.  For example, say you want the right part of the header
+(by default, the document title) in red, this is how you'd get it:
+<p>
+<pre>
+	.HEADER_RIGHT_COLOR red
+</pre>
+
+The other parts of the header will be in the default header colour
+(usually black, but that can be changed with
+<a href="#HDRFTR_COLOR">HEADER_COLOR</a>).
+<p>
+Remember that you have to define (or &quot;initialize&quot;) a
+colour with
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+or
+<a href="color.html#XCOLOR">XCOLOR</a>
+before you can use the colour.
+<p>
+If you create a
+<a href="#USERDEF_HDRFTR">user-defined header</a>
+with
+<a href="#HDRFTR_RECTO">HEADER_RECTO</a>
+or
+<a href="#HDRFTR_VERSO">HEADER_VERSO</a>,
+and you want various elements within the header to be colourized,
+embed the colours in the string passed to <strong>HEADER_RECTO</strong>
+or <strong>HEADER_VERSO</strong> with the
+<a href="color.html#COLOR_INLINE">\*[&lt;colorname&gt;]</a>
+<a href="definitions.html#TERMS_INLINES">inline escape</a>.
+<p>
+<strong>NOTE:</strong> Replace <strong>HEADER_</strong>, above,
+with <strong>FOOTER_</strong> to set the colours for the various
+elements of footers.
 <p>
 <hr>
 
@@ -1090,7 +1171,7 @@ and the margin's too close to <strong>mom</strong>'s default
 footer margin (or a footer margin you set yourself
 with <strong>FOOTER_MARGIN</strong>), <strong>mom</strong> will
 not print your footers; additionally, she'll give you a warning
-on and some advice on standard error.  When this happens, you must
+and some advice on standard error.  When this happens, you must
 reset either <strong>B_MARGIN</strong> or
 <strong>FOOTER_MARGIN</strong> so there's an adequate amount of
 space for <strong>mom</strong> to print the bottom line of running
@@ -1307,6 +1388,33 @@ footer or <strong>mom</strong> may not get the rule gap right.
 Inline changes to the size of type in
 <strong>FOOTER_RECTO</strong> and <strong>FOOTER_VERSO</strong>
 should always be negative (smaller) than the default.
+<p>
+
+<!---HDRFTR_RULE_COLOR--->
+
+<hr width="66%" align="left">
+<p>
+<a name="HDRFTR_RULE_COLOR"></a>
+Macro: <strong>HEADER_RULE_COLOR</strong> <var>&lt;colorname&gt;</var>
+
+<p>
+If you wish to change the colour of the header rule, invoke
+<strong>HEADER_RULE_COLOR</strong> with the name of a colour
+pre-defined (or &quot;initialized&quot;) with
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+or
+<a href="color.html#XCOLOR">XCOLOR</a>.
+<p>
+Please note that <strong>HEADER_RULE_COLOR</strong> overrides the
+colour set with
+<a href="#HDRFTR_COLOR">HDRFTR_COLOR</a>,
+so that it's possible to have the heads entirely in, say, blue (set
+with <strong>HEADER_COLOR</strong>), and the header rule in, say,
+red.
+<p>
+<strong>NOTE:</strong> Replace <strong>HEADER_</strong>, above,
+with <strong>FOOTER_</strong> to change the colour of the footer
+rule.
 <p>
 <hr>
 

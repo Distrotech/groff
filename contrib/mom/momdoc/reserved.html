@@ -49,11 +49,12 @@ T_MARGIN  Advance lead from page top
 
 Page control
 ------------
-DO_B_MARGIN  Margin at bottom of page
-DO_T_MARGIN  Margin at top of page
+DO_B_MARGIN  Margin at bottom of page; trap-invoked
+DO_T_MARGIN  Margin at top of page; trap-invoked
 
 Style
 -----
+COLOR      Change color of text to predefined value
 CONDENSE   Set percentage of pseudo-condense (alias of
            CONDENSE_OR_EXTEND)
 EXTEND     Set percentage of pseudo-extend (alias of
@@ -62,9 +63,11 @@ FAMILY     Family
 FT         Font
 LL         Line length
 LS         Leading (.vs)
+NEWCOLOR   Define a text color
 PT_SIZE    Point size
 SETBOLDER  Set degree of emboldening (pseudo-bold) in units
 SETSLANT   Set degree of pseudo-italic
+XCOLOR     Initialize a color from rgb.txt
 
 Autolead
 --------
@@ -308,6 +311,7 @@ u                       Horiz position of start of underscore
 +++STRINGS+++
 
 $COND_PERCENT        Percentage by which to pseudo-condense type
+$COLOR_SCHEME        Color scheme used in NEWCOLOR
 $CURRENT_QUAD        Restores current quad value in RULE
 $CURRENT_TAB         Current tab number
 $DC_ADJUST           +|- # of points to subtract from dropcap
@@ -337,6 +341,10 @@ $WS_CONSTANT         12; used to hold groff default wordspace
 $WS                  Holds WS value; concatenation of WS_CONSTANT and
                      WS_VAR
 $WS_VAR              + or - value to add to $WS_CONSTANT
+BLACK                Pre-defined black color
+black                Pre-defined black color
+WHITE                Pre-defined white color
+white                Pre-defined white color
 
 +++ALIASES+++
 
@@ -344,6 +352,7 @@ ALIAS         als
 ALIASN        aln
 BR            br
 CENTRE        CENTER
+COLOUR        COLOR
 COMMENT       SILENT
 CONDENSE      CONDENSE_OR_EXTEND
 EXTEND        CONDENSE_OR_EXTEND
@@ -355,6 +364,7 @@ LIG           LIGATURES
 LL            LINE_LENGTH
 MAC           de
 NEW_PAGE      bp
+NEWCOLOUR     NEWCOLOR
 NEWPAGE       NEW_PAGE
 PAGELENGTH    PAGE_LENGTH
 PAGE_LENGTH   pl
@@ -366,6 +376,7 @@ TABSET        TAB_SET
 TB            TAB
 TI            IT
 UNDERSCORE_2  UNDERSCORE2
+XCOLOUR       XCOLOR
 
 +++ALIASES FOR NUMBER REGISTERS+++
 
@@ -491,6 +502,7 @@ ATTRIBUTE_STRING         What to print before author (default is "by")
 AUTHOR_FAMILY            Family to use for author in doc header
 AUTHOR_FONT              Font to use for author in doc header
 AUTHOR_SIZE              ps to use for author in doc header
+BLOCKQUOTE_COLOR         Blockquote color
 BLOCKQUOTE_FAMILY        Family to use in blockquotes
 BLOCKQUOTE_FONT          Font to use in blockquotes
 BLOCKQUOTE_QUAD          How to quad blockquotes
@@ -503,11 +515,12 @@ CHAPTER_TITLE_SIZE       ps in/decrease of chapter title
                          (relative to size of running text)
 COLUMNS                  Print in columns
 DOC_FAMILY               Overall doc family
+DOCHEADER                Print doc header?
 DOCHEADER_ADVANCE        Start position of docheader (relative to top
                          of page)
+DOCHEADER_COLOR          Color of docheader
 DOCHEADER_LEAD           +|- value applied to #DOC_LEAD to in/decrease
                          leading of doc header
-DOC_HEADER               Print doc header?
 DOC_LEAD_ADJUST          Adjust #DOC_LEAD to fill page to #B_MARGIN
 DOC_LEAD                 Overall doc leading
 DOC_LEFT_MARGIN          Doc left margin
@@ -523,60 +536,65 @@ DOCTYPE_FAMILY           Family to use for doctype string in doc header
 DOCTYPE_FONT             Font to use for doctype string in doc header
 DOCTYPE_SIZE             ps to use for doctype string in doc header
 DOCTYPE                  Type of doc (DEFAULT, CHAPTER, NAMED, LETTER)
-DO_QUOTE                 Print quote (invoked from QUOTE or BLOCKQUOTE)
+DO_QUOTE                 Print quote (invoked internally from QUOTE or
+                         BLOCKQUOTE)
 DRAFT_STRING             What to print whenever the word "draft" is
                          required
 DRAFT_WITH_PAGENUMBER    Attach draft/revision info to page number
                          (instead of putting it HEADER centre)
-ENDNOTE_FAMILY           Family for endnotes
-ENDNOTE_FONT             Font for endnotes
-ENDNOTE_LEAD             Leading for endnotes page
-ENDNOTE_PARA_INDENT      First line indent of paras in multi-para
-                         endnotes
-ENDNOTE_PARA_SPACE       Whether to space paras in multi-para endnotes
-ENDNOTE_PT_SIZE          Base point size for endnotes page
-ENDNOTE_QUAD             Endnote quad
-ENDNOTE_STRING           Endnotes page head
-ENDNOTE_STRING_CAPS      Capitalize the endnotes string
-ENDNOTE_STRING_FAMILY    Family for endnotes page head
-ENDNOTE_STRING_FONT      Font for endnotes page head
-ENDNOTE_STRING_QUAD      Quad direction for endnotes page head
-ENDNOTE_STRING_SIZE      Size for endnotes page head***
-ENDNOTE_STRING_UNDERSCORE Underscoring of endnotes page head
-ENDNOTE_TITLE            Endnotes identifying title
-ENDNOTE_TITLE_FAMILY     Family for endnotes identifying title
-ENDNOTE_TITLE_FONT       Font for endnotes identifying title
-ENDNOTE_TITLE_QUAD       Quad direction for endnotes identifying title
-ENDNOTE_TITLE_SIZE       Size for endnotes identifying title***
-ENDNOTE_TITLE_UNDERSCORE Underscoring of endnotes identifying title
-ENDNOTE_NUMBER_FAMILY    Family of endnote numbers
-ENDNOTE_NUMBER_FONT      Font of endnote numbers
-ENDNOTE_NUMBER_SIZE      Size of endnote numbers***
+ENDNOTE_FAMILY              Family for endnotes
+ENDNOTE_FONT                Font for endnotes
+ENDNOTE_LEAD                Leading for endnotes page
+ENDNOTE_PARA_INDENT         First line indent of paras in multi-para
+                            endnotes
+ENDNOTE_PARA_SPACE          Whether to space paras in multi-para endnotes
+ENDNOTE_PT_SIZE             Base point size for endnotes page
+ENDNOTE_QUAD                Endnote quad
+ENDNOTE_STRING              Endnotes page head
+ENDNOTE_STRING_CAPS         Capitalize the endnotes string
+ENDNOTE_STRING_FAMILY       Family for endnotes page head
+ENDNOTE_STRING_FONT         Font for endnotes page head
+ENDNOTE_STRING_QUAD         Quad direction for endnotes page head
+ENDNOTE_STRING_SIZE         Size for endnotes page head***
+ENDNOTE_STRING_UNDERSCORE   Underscoring of endnotes page head
+ENDNOTE_TITLE               Endnotes identifying title
+ENDNOTE_TITLE_FAMILY        Family for endnotes identifying title
+ENDNOTE_TITLE_FONT          Font for endnotes identifying title
+ENDNOTE_TITLE_QUAD          Quad direction for endnotes identifying title
+ENDNOTE_TITLE_SIZE          Size for endnotes identifying title***
+ENDNOTE_TITLE_UNDERSCORE    Underscoring of endnotes identifying title
+ENDNOTE_NUMBER_FAMILY       Family of endnote numbers
+ENDNOTE_NUMBER_FONT         Font of endnote numbers
+ENDNOTE_NUMBER_SIZE         Size of endnote numbers***
 ENDNOTE_NUMBERS_ALIGN_RIGHT Hang endnote numbers and align right
 ENDNOTE_NUMBERS_ALIGN_LEFT  Don't hang endnote numbers and align left
-ENDNOTES_ALLOWS_HEADERS  Page headers on endnotes pages? (toggle)
+ENDNOTES_ALLOWS_HEADERS     Page headers on endnotes pages? (toggle)
 ENDNOTES_FIRST_PAGENUMBER   Page number to appear on page 1 of endnotes
                             pages
-ENDNOTES_HDRFTR_CENTER   Print header/footer centre string on endnotes
-                         pages?
-ENDNOTES_HEADER_CENTER   Print header centre string on endnotes pages?
-ENDNOTES_FOOTER_CENTER   Print footer centre string on endnotes pages?
-ENDNOTES_NO_COLUMNS      Turn columnar mode off for endnotes pages
+ENDNOTES_HDRFTR_CENTER      Print header/footer centre string on endnotes
+                            pages?
+ENDNOTES_HEADER_CENTER      Print header centre string on endnotes pages?
+ENDNOTES_FOOTER_CENTER      Print footer centre string on endnotes pages?
+ENDNOTES_NO_COLUMNS         Turn columnar mode off for endnotes pages
 ENDNOTES_NO_FIRST_PAGENUM   Don't print a pagenumber on page 1 of
                             endnotes.
-ENDNOTES_PAGENUM_STYLE   Set numbering style for endnotes pages page
-                         numbers
+ENDNOTES_PAGENUM_STYLE      Set numbering style for endnotes pages page
+                            numbers
 EPIGRAPH_AUTOLEAD        Autolead value for epigraphs
+EPIGRAPH_COLOR           Epigraph color
 EPIGRAPH_FAMILY          Family to use in epigraphs
 EPIGRAPH_FONT            Font to use in epigraphs
 EPIGRAPH_INDENT          Value by which to multiply PP_INDENT for
                          block epigraphs
 EPIGRAPH_QUAD            Quad value of block style epigraphs
 EPIGRAPH_SIZE            ps de/increase of epigraphs*
+FINIS_COLOR              Finis string color
 FINIS_STRING             What to print when FINIS is invoked
+FOOTER_COLOR             Footer color
 FOOTER_GAP               Distance between running text and footer
 FOOTER_MARGIN            Distance from footer to bottom of page
 FOOTERS                  Turns footers on or off
+FOOTNOTE_COLOR           Footnote color
 FOOTNOTE_AUTOLEAD        Autolead to use in footnotes
 FOOTNOTE_FAMILY          Family to use in footnotes
 FOOTNOTE_FONT            Font to use in footnotes
@@ -597,6 +615,7 @@ HDRFTR_CENTER_FONT       Font of centre part of header/footer
 HDRFTR_CENTER_PAD        Pad hdrftr CENTER left or right by specified
                          amount
 HDRFTR_CENTER_SIZE       ps in/decrease of CENTER part of header/footer**
+HDRFTR_COLOR             Header/footer color
 HDRFTR_FAMILY            Family to use in the headers/footers
 HDRFTR_GAP               Distance from header/footer to running text
 HDRFTR_LEFT_CAPS         Left part of header/footer in caps? (toggle)
@@ -617,6 +636,7 @@ HDRFTR_RIGHT_FAMILY      Family of right part of headers/footers
 HDRFTR_RIGHT_FONT        Font of right part of headers/footers
 HDRFTR_RIGHT_SIZE        Size of right part of headers/footers
 HDRFTR_RIGHT             The header/footer right string
+HDRFTR_RULE_COLOR        Header/footer rule color
 HDRFTR_RULE_GAP          Space between header/footer and header/footer
                          rule
 HDRFTR_RULE_INTERNAL     Prints the header/footer rule
@@ -627,6 +647,7 @@ HDRFTR_SIZE              ps in/decrease of headers/footers*
 HDRFTR_VERSO             User-defined, single string verso
                          header/footer
 HEAD_CAPS                Print section titles in caps? (toggle)
+HEAD_COLOR               Head color
 HEADER_GAP               Space between header and running text
 HEADER_MARGIN            Space from top of page to header
 HEADERS                  Turns headers on or off
@@ -640,9 +661,12 @@ HEAD_SPACE               Give HEADs 2 line-spaces before. If OFF,
 HEAD_UNDERLINE           Underline section titles? (toggle)
 INDENT_FIRST_PARAS       Indent 1st paras? (doc default=not indented) 
 ITALIC_MEANS_ITALIC      For TYPEWRITE; render .FT I in italic.
+LINEBREAK_CHAR           Linebreak character, iterations and positioning
+LINEBREAK_COLOR          Linebreak color
 NUMBER_HEADS             Print head numbers
 NUMBER_PARAHEADS         Print parahead numbers
 NUMBER_SUBHEADS          Print subhead numbers
+PAGENUM_COLOR            Page number color
 PAGENUM_FAMILY           Family to use in footers
 PAGENUM_FONT             Font to use for page numbers
 PAGENUM_HYPHENS          Turns on/off hyphens surrounding page numbers
@@ -653,6 +677,7 @@ PAGENUM_POS              Controls placement of page numbers;
 PAGENUM_SIZE             How much to in/decrease point size of page
                          numbers*
 PAGENUM_STYLE            Page # in roman, Arabic, or alphabetic
+PARAHEAD_COLOR           Parahead color
 PARAHEAD_FAMILY          Family to use for paraheads
 PARAHEAD_FONT            Font to use for paraheads
 PARAHEAD_INDENT          How much to indent paraheads
@@ -662,6 +687,7 @@ PARA_SPACE               Put a line space before paras
 PP_FONT                  Overall doc font
 PROCESS_SHIM             Calculates #SHIM when \n(.d is lower on the
                          page than #T_MARGIN
+QUOTE_COLOR              Quote (poetic) color
 QUOTE_FAMILY             Family to use in pquotes
 QUOTE_FONT               Font to use in pquotes
 QUOTE_INDENT             Value by which to multiply PP_INDENT for
@@ -680,6 +706,7 @@ REVISION_STRING          What to print whenever the word "revision"
 SHIM                     Advance to next "legal" baseline
 SINGLESPACE_ENDNOTES     Single space TYPEWRITE endnotes
 SLANT_MEANS_SLANT        In TYPEWRITE, render \*[SLANT] as slant
+SUBHEAD_COLOR            Subhead color
 SUBHEAD_FAMILY           Family to use in subheads
 SUBHEAD_FONT             Font to use in subheads
 SUBHEAD_SIZE             How much to in/decrease point size of
@@ -805,6 +832,7 @@ TRAPS                Sets hdrftr traps; optionally adjusts #DOC_LEAD
                            AUTHOR_&lt;#&gt; in AUTHOR
 #AUTHORS                   Equals final value of AUTHOR_NUM;
                            used for authors in doc header
+#BQUOTE_COLOR              Colored blockquotes? (toggle)
 #BROKEN_QUOTE              Did we invoke BREAK_QUOTE? (toggle)
 #CAP_HEIGHT_ADJUST         Tallest cap height of strings LEFT, CENTER,
                            and RIGHT in footers; used to place rule
@@ -840,6 +868,7 @@ dc                         "mark" register for document columns
 #DEPTH_TO_B_MARGIN         Page length minus #B_MARGIN
 #DOCHEADER_ADVANCE         Distance from top-of-page to baseline of
                            docheader
+#DOCHEADER_COLOR           Colored docheader? (toggle)
 #DOCHEADER_LEAD            Lead of doc header
                            (#DOC_LEAD + #DOCHEADER_LEAD_ADJ)
 #DOCHEADER_SPACE_ADJ       Lead difference between #DEPTH_1 and
@@ -897,6 +926,7 @@ dc                         "mark" register for document columns
 #EN_HDRFTR_CENTER          Should we print centre string of
                            headers/footers on endnotes pages? (toggle)
 #EPI_ACTIVE                Are we in an epigraph? (toggle)
+#EPI_COLOR                 Colored epigraphs? (toggle)
 #EPI_DEPTH                 Depth of epigraph from first baseline to
                            last
 #EPI_FITS                  Does epigraph fit on page/column? (toggle)
@@ -953,10 +983,12 @@ dc                         "mark" register for document columns
 #FOOTERS_ON                Are we using footers? (toggle)
 #FOOTERS_WERE_ON           Were footers on? - used in FINIS and BLANKPAGE
                            (toggle)
+#FOOTNOTE_COLOR            Colored footnotes? (toggle)
 #FULLSPACE_QUOTES          Should we fullspace quotes? (toggle)
 #GUTTER                    Width of gutter between columns
 #HDRFTR_CENTER_CAPS        CENTER part of header/footer in caps?
                            (toggle; default=off)
+#HDRFTR_COLOR              Colored headers/footers? (toggle)
 #HDRFTR_CTR_PAD_LEFT       Amount of hdrftr CENTER padding on the left
 #HDRFTR_CTR_PAD_RIGHT      Amount of hdrftr CENTER padding on the right
 #HDRFTR_CTR_PAD_TMP        Temp storage of left hdrftr CENTER padding
@@ -967,6 +999,7 @@ dc                         "mark" register for document columns
                            (toggle; default=off)
 #HDRFTR_RIGHT_CAPS         Right part of header/footer in caps?
                            (toggle; default=on)
+#HDRFTR_RULE_COLOR         Colored header/footer rule? (toggle)
 #HDRFTR_RULE_GAP           Space between header/footer and
                            header/footer rule
 #HDRFTR_RULE               Print head/footer rule? (toggle)
@@ -974,6 +1007,7 @@ dc                         "mark" register for document columns
                            #SWITCH_HDRFTR=1
 #HEAD                      1=main/section head 2=subhead
 #HEAD_CAPS                 Print section titles in caps? (toggle)
+#HEAD_COLOR                Colored heads? (toggle)
 #HEADER_GAP                Distance from header to running text
 #HEADER_MARGIN             Distance from top of page to header
 #HEADERS_ON                Headers on? (toggle)
@@ -1030,6 +1064,7 @@ dc                         "mark" register for document columns
 #PAGE_NUMS                 Print page numbers? (toggle)
 #PAGE_NUM_V_POS            1=top 2=bottom; default=2
 #PAGE_TOP                  \n(nl after HEADER completes itself
+#PH_COLOR                  Colored paraheads? (toggle)
 #PH_NUM                    Parahead number
 #PAGINATE_TOC              Is toc pagination on? (toggle)
 #PAGINATE_WAS_ON           Keeps track of pagination state while
@@ -1062,6 +1097,7 @@ dc                         "mark" register for document columns
                            ENDQUOTE.
 #Q_TOP                     Vertical place on page that a quote starts
 #QUOTE                     1=PQUOTE, 2=BQUOTE
+#QUOTE_COLOR               Color quotes (poetic)? (toggle)
 #RECTO_VERSO               Switch HEADER_LEFT and HEADER_RIGHT on
                            alternate pages? (toggle); default=0
 #REPEAT                    Number of times to repeat linebreak
@@ -1146,6 +1182,7 @@ dc                         "mark" register for document columns
 #VARIABLE_FOOTER_POS       Wandering trap position for processing
                            footnotes and footers; pos depends on
                            footnotes
+y                          Vertical position stored with mk in hdrftrs.
  
 +++STRINGS+++
 
@@ -1155,6 +1192,7 @@ $AUTHOR_FAM                     Family to use for author in doc header
 $AUTHOR_FT                      Font to use for author in doc header
 $AUTHOR_SIZE_CHANGE             ps in/decrease of author in doc header*
 $AUTHOR_PT_SIZE                 Absolute ps of authors
+$BQUOTE_COLOR                   Blockquote color
 $BQUOTE_FAM                     Family to use for blockquotes
 $BQUOTE_FT                      Font to use for blockquotes
 $BQUOTE_QUAD                    Quad value for blockquotes
@@ -1180,6 +1218,7 @@ $DOC_TITLE                      Overall doc title that gets printed in
                                 article with a different title
 $DOC_TYPE                       Document type (default, chapter, named,
                                 letter)
+$DOCHEADER_COLOR                Color of docheader
 $DOCHEADER_LEAD_ADJ             +|- value applied to #DOC_LEAD to
                                 in/decrease leading of doc header
 $DOCTYPE_FAM                    Family to use for DOCTYPE string in
@@ -1212,11 +1251,13 @@ $EN_NUMBER_FT                   Endnote numbering font
 $EN_NUMBER_SIZE_CHANGE          Endnote numbering size***
 $EPI_AUTOLEAD                   Autolead value (decimals ok) of
                                 epigraphs
+$EPI_COLOR                      Color of epigraphs
 $EPI_FAM                        Family to use in epigraphs
 $EPI_FT                         Font to use in epigraphs
 $EPI_QUAD                       Quad in block-style epigraphs
                                 (justified or left)
 $EPI_SIZE_CHANGE                ps in/decrease of epigraphs*
+$FINIS_COLOR                    Color of FINIS string
 $FINIS_STRING                   What to print when FINIS macro is
                                 invoked
 $FIRST_DOC_TITLE                1st doc's title captured in COLLATE
@@ -1224,6 +1265,7 @@ $FN_FAM                         Family used in footnotes
 $FN_FT                          Font used in footnotes
 $FN_QUAD                        Quad used in footnotes
 $FN_SIZE_CHANGE                 ps in/decrease of footnotes*
+$FOOTNOTE_COLOR                 Footnote color
 $HDRFTR_CENTER                  What to put in CENTER part of headers;
                                 default doctype
 $HDRFTR_CENTER_FAM              Family of CENTER part of headers
@@ -1238,6 +1280,7 @@ $HDRFTR_CENTER_OLD              HDRFTR_CENTER just prior to start of
                                 FOOTER_CENTER
 $HDRFTR_CENTER_SIZE_CHANGE      ps in/decrease of centre title in
                                 headers**
+$HDRFTR_COLOR                   Color of headers/footers
 $HDRFTR_FAM                     Family to use in headers
 $HDRFTR_LEFT_FAM                Family of left part of headers
 $HDRFTR_LEFT_FT                 Font of left part of headers
@@ -1256,6 +1299,7 @@ $HDRFTR_TMP_SIZE_CHANGE_SWITCH  Temporarily holds
                                 #SWITCH_HDRFTRS=1
 $HDRFTR_TMP_SWITCH              Temporarily holds HDRFTR_LEFT if
                                 #SWITCH_HDRFTRS=1
+$HEAD_COLOR                     Head color
 $HEAD_FAM                       Family to use for section titles
 $HEAD_FT                        Font to use for section titles
 $HEAD_QUAD                      Quad value of section titles
@@ -1263,15 +1307,19 @@ $HEAD_SIZE_CHANGE               ps in/decrease of section titles*
 $LINEBREAK_CHAR                 Character that marks line breaks
 $LINEBREAK_CHAR_V_ADJ           +|- amount by which to raise/lower
                                 linebreak character
+$LINEBREAK_COLOR                Linebreak color
 PAGE#                           For use in hdrftr strings where page #
                                 is needed; \*[PAGE]
+$PAGENUM_COLOR                  Page number color
 $PAGENUM_STYLE                  String passed to PAGENUM_STYLE
 $PAGE_NUM_FAM                   Family of page numbers
 $PAGE_NUM_FT                    Font of page numbers
 $PAGE_NUM_SIZE_CHANGE           ps in/decrease of page numbers
 $PAPER                          Paper size (LETTER, A4, LEGAL);
                                 default=LETTER
+$PH_COLOR                       Parahead color
 $PP_FT                          Font used in paragraphs
+$QUOTE_COLOR                    Quote (poetic) color
 $QUOTE_FAM                      Family to use for pquotes
 $QUOTE_FT                       Font to use for pquotes
 $QUOTE_SIZE_CHANGE              ps in/decrease of pquotes*
@@ -1281,6 +1329,7 @@ $REVISION_STRING                What to print whenever the word
 $SH_FAM                         Family to use in subheads
 $SH_FT                          Font to use in subheads
 $SH_SIZE_CHANGE                 ps in/decrease of subheads*
+$SH_COLOR                       Subhead color
 $SUBTITLE                       Document subtitle
 $SUBTITLE_FAM                   Family to use for subtitle in doc
                                 header
@@ -1371,6 +1420,9 @@ cstart
 cend
 
 +++ALIASES+++
+
+All macros that include the word COLOR have aliases that use COLOUR instead,
+e.g. NEWCOLOUR, XCOLOUR, COLOUR, HEAD_COLOUR, SUBHEAD_COLOUR, etc.
 
 BREAK_BLOCKQUOTE      BREAK_QUOTE
 BREAK_CITATION        BREAK_QUOTE

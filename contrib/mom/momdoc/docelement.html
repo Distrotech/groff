@@ -89,8 +89,8 @@ Equally,
 can be used in tags that take
 <a href="definitions.html#TERMS_STRINGARGUMENT">string arguments.</a>
 <p>
-<strong>IMPORTANT NOTE:</strong> The family, font, point size and
-leading control macros have no effect in
+<strong>IMPORTANT NOTE:</strong> The family, font, point size,
+colour and leading control macros have no effect in
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
 which sets EVERYTHING in Courier roman, 12/24 (i.e. 12-point type on
 a linespace of 24 points).
@@ -138,6 +138,22 @@ subheads to 1-1/2 points larger than the type in paragraphs, do
 There's no need for a
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
 with the <strong>_SIZE</strong> control macros; points is assumed.
+
+<h3>Colour</h3>
+Control macros that end in <strong>_COLOR</strong> take as their
+argument a colour name pre-defined (or &quot;initialized&quot;)
+with
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+or
+<a href="color.html#XCOLOR">XCOLOR</a>.
+For example, if you want your heads to be red, once you've defined
+or initialized the color, red,
+<p>
+<pre>
+	.HEAD_COLOR red
+</pre>
+
+will turn your heads red.
 
 <h3>Lead/linespacing</h3>
 Control macros that end in <strong>_AUTOLEAD</strong> take the
@@ -208,6 +224,7 @@ arguments as
 	<ul>
 		<li><a href="#LINEBREAK">LINEBREAK</a>
 		<li><a href="#LINEBREAK_CHAR">Linebreak character</a>
+		<li><a href="#LINEBREAK_COLOR">Linebreak colour</a>
 	</ul>
 	<li><a href="#QUOTE_INTRO">Quotes (line for line)</a>
 	<ul>
@@ -235,7 +252,10 @@ arguments as
 	<li><a href="#FINIS_INTRO">Document termination</a>
 	<ul>
 		<li><a href="#FINIS">FINIS</a>
-		<li><a href="#FINIS_STRING">Finis control</a> -- changing the FINIS string
+		<ul>
+			<li><a href="#FINIS_STRING">Changing the FINIS string</a>
+			<li><a href="#FINIS_COLOR">Changing the FINIS colour</a>
+		</ul>
 	</ul>
 	<li><a href="#ENDNOTE_INTRO">Endnotes</a>
 	<ul>
@@ -326,6 +346,7 @@ See
 .EPIGRAPH_FAMILY    default = prevailing document family; default is Times Roman
 .EPIGRAPH_FONT      default = roman
 .EPIGRAPH_SIZE      default = -1.5 (points)
+.EPIGRAPH_COLOR     default = black
 .EPIGRAPH_AUTOLEAD  default = 2 points
 
 (The next two apply to &quot;block&quot; style epigraphs only)
@@ -434,6 +455,7 @@ element tags.
 <ol>
 	<li><a href="#PP_FAMILY">Family control</a>
 	<li><a href="#PP_FONT">Font control</a>
+	<li><a href="#PP_COLOR">Paragraph colour</a>
 	<li><a href="#PP_LEADING">Leading/linespacing control</a>
 	<li><a href="#PP_JUST_QUAD">Justification/quad control</a>
 	<li><a href="#PARA_INDENT">First-line indent control</a>
@@ -483,7 +505,57 @@ with the appropriate control macros.
 <strong>Mom</strong>'s default paragraph font is medium roman.
 <p>
 
-<a name="PP_LEADING"><h3><u>3. Leading</u></h3></a>
+<a name="PP_COLOR"><h3><u>3. Paragraph colour</u></h3></a>
+<p>
+<strong>Mom</strong> has no special control macro for colourizing
+paragraphs.  If you wish a colourized paragraph, you must use the
+macro,
+<a href="color.html#COLOR">COLOR</a>,
+or the
+<a href="definitions.html#TERMS_INLINE">inline escape</a>,
+<a href="color.html#COLOR_INLINE">\*[&lt;colorname&gt;]</a>,
+<em>after</em> <strong>.PP</strong>.  The colour must be one
+pre-defined (or &quot;initialized&quot;) with
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+or
+<a href="color.html#XCOLOR">XCOLOR</a>.
+<p>
+Please note that unless you change the colour back to it's default
+(usually black) at the end of the paragraph, all subsequent
+paragraphs will be set in the new colour, although most other
+elements of your document will continue to be set in the default
+colour (usually black).
+<p>
+For example, assuming you have defined the colour, blue,
+<p>
+<pre>
+	.PP
+	.COLOR blue
+	&lt;first paragraph&gt;
+	.HEAD "Monty Python"
+	.SUBHEAD "The Origins of Spam"
+	.PP
+	&lt;second paragraph&gt;
+</pre>
+
+the first paragraph will be blue, the head and subhead will be in
+the document's default colour (usually black), and the second
+paragraph will be in blue.
+<p>
+The one document element that is affected by changing the colour
+of paragraphs are
+<a href="#PARAHEAD">paraheads</a>,
+since they are attached directly to the body of paragraphs.  In
+other words, if you change the colour of a paragraph and do not
+reset the paragraph colour back to its default, subsequent paraheads
+will appear in the same colour as your paragraphs unless you have
+explicitly told <strong>mom</strong> you want a pre-defined (or
+&quot;initialized&quot;) color (usually black) for your paraheads.
+<p>
+See the footnote to
+<a href="#PARAHEAD_COLOR">.PARAHEAD_COLOR</a>.
+
+<a name="PP_LEADING"><h3><u>4. Leading</u></h3></a>
 <p>
 The paragraph
 <a href="definitions.html#TERMS_LEADING">leading</a>
@@ -516,7 +588,7 @@ macro.
 is 16 points, adjusted to fill the page.
 <p>
 
-<a name="PP_JUST_QUAD"><h3><u>4. Justification/quad</u></h3></a>
+<a name="PP_JUST_QUAD"><h3><u>5. Justification/quad</u></h3></a>
 <p>
 The justification/quad-direction of regular text paragraphs (i.e.
 <a href="definitions.html#TERMS_JUST">justified</a>,
@@ -562,7 +634,7 @@ paragraphs is
         <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE_TYPEWRITE</a>
 </ul>
 <p>
-<a name="PARA_INDENT"><h3><u>5. First-line indent -- PARA_INDENT</u></h3></a>
+<a name="PARA_INDENT"><h3><u>6. First-line indent -- PARA_INDENT</u></h3></a>
 <p>
 The first-line indent of paragraphs is controlled by
 <strong>PARA_INDENT</strong>, which takes one argument: the size
@@ -598,7 +670,7 @@ and 3 picas (1/2 inch) for
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE_TYPEWRITE</a>.
 <p>
 
-<a name="PARA_INDENT_FIRST"><h3><u>6. Indenting initial paragraphs -- INDENT_FIRST_PARAS</u></h3></a>
+<a name="PARA_INDENT_FIRST"><h3><u>7. Indenting initial paragraphs -- INDENT_FIRST_PARAS</u></h3></a>
 <p>
 By default, <strong>mom</strong> does not indent the first paragraph
 of a document, nor the first paragraph after a head or
@@ -620,7 +692,7 @@ its effect, meaning that first paragraphs will once again NOT be
 indented.
 <p>
 
-<a name="PP_SPACE"><h3><u>7. Spacing paragraphs -- PARA_SPACE</u></h3></a>
+<a name="PP_SPACE"><h3><u>8. Spacing paragraphs -- PARA_SPACE</u></h3></a>
 <p>
 By default, <strong>mom</strong> does not insert a blank line
 between paragraphs.  If you would like her to do so, invoke the
@@ -631,7 +703,8 @@ before or after
 it any argument (<strong>OFF, QUIT, Q, X</strong>...) cancels its
 effect, meaning that paragraphs will once again NOT be separated by
 a blank line.
-<p>
+
+<br>
 <hr>
 
 <!====================================================================>
@@ -713,7 +786,7 @@ underlining, and so on.  Check them out if you're unhappy with
 <strong>mom</strong>'s defaults.
 <p>
 <ol>
-	<li><a href="#HEAD_GENERAL">Family/font/size/quad</a>
+	<li><a href="#HEAD_GENERAL">Family/font/size/colour/quad</a>
 	<li><a href="#HEAD_CAPS">Caps</a>
 	<li><a href="#HEAD_SPACE">Pre-head space</a>
 	<li><a href="#HEAD_UNDERLINE">Underlining</a>
@@ -731,6 +804,7 @@ See
 .HEAD_FAMILY default = prevailing document family; default is Times Roman
 .HEAD_FONT   default = bold
 .HEAD_SIZE   default = +1 (point)
+.HEAD_COLOR  default = black
 .HEAD_QUAD   default = CENTER
 </pre>
 
@@ -907,7 +981,7 @@ In addition to the usual family/font/size/quad control
 macros, there are macros to manage subhead numbering.
 <p>
 <ol>
-	<li><a href="#SUBHEAD_GENERAL">Family/font/size/quad</a>
+	<li><a href="#SUBHEAD_GENERAL">Family/font/size/colour/quad</a>
 	<li><a href="#NUMBER_SUBHEADS">Numbering</a>
 	<li><a href="#RESET_SUBHEAD_NUMBER">Reset subhead numbering</a>
 	<li><a href="#SUBHEAD_INLINES">Vertical inline escapes inside subheads</a>
@@ -922,6 +996,7 @@ See
 .SUBHEAD_FAMILY default = prevailing document family; default is Times Roman
 .SUBHEAD_FONT   default = bold
 .SUBHEAD_SIZE   default = +.5 (point)
+.SUBHEAD_COLOR  default = black
 .SUBHEAD_QUAD   default = LEFT
 </pre>
 
@@ -1013,17 +1088,17 @@ and
 
 <a name="PARAHEAD_CONTROL"><h3><u>Parahead control macros</u></h3></a>
 <p>
-In addition to the family/font/size/indent control macros, there are
-macros to manage parahead numbering.
+In addition to the family/font/size/colour/indent control macros,
+there are macros to manage parahead numbering.
 <p>
 <ol>
-	<li><a href="#PARAHEAD_GENERAL">Family/font/size</a>
+	<li><a href="#PARAHEAD_GENERAL">Family/font/colour/size</a>
 	<li><a href="#PARAHEAD_INDENT">Indent</a>
 	<li><a href="#NUMBER_PARAHEADS">Numbering</a>
 	<li><a href="#RESET_PARAHEAD_NUMBER">Reset parahead numbering</a>
 </ol>
 <p>
-<a name="PARAHEAD_GENERAL"><h3><u>1. Family/font/size</u></h3></a>
+<a name="PARAHEAD_GENERAL"><h3><u>1. Family/font/size/colour</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -1032,6 +1107,14 @@ See
 .PARAHEAD_FAMILY default = prevailing document family; default is Times Roman
 .PARAHEAD_FONT   default = bold italic
 .PARAHEAD_SIZE   default = +.5 (point)
+<a name="PARAHEAD_COLOR">.PARAHEAD_COLOR  default = black*</a>
+
+*If you colourize paragraph text, paraheads will appear in the same
+colour as the text unless you explicitly tell mom to colour them
+otherwise by invoking .PARAHEAD_COLOR.  If you do want paraheads
+that are coloured the same as paragraph text, it's generally a good
+idea to invoke .PARAHEAD_COLOR anyway (with the same colour used
+for paragraph text), just to let mom know.
 </pre>
 
 <a name="PARAHEAD_INDENT"><h3><u>2. Indent</u></h3></a>
@@ -1180,7 +1263,17 @@ position (for
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>;
 the vertical adjustment is -2 points for
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>).
+
+<h3><u>Linebreak colour control macro</u></h3>
 <p>
+<a name="LINEBREAK_COLOR">
+	Macro: <strong>LINEBREAK_COLOR</strong> <var>&lt;color name&gt;</var>
+</a>
+<p>
+To change the colour of the linebreak character(s), simply invoke
+<strong>LINBREAK_COLOR</strong> with the name of a pre-defined (or
+&quot;initialized&quot;) colour.
+<br>
 <hr>
 
 <!====================================================================>
@@ -1244,7 +1337,7 @@ as does the control macro
 <p>
 <a name="QUOTE_TIP"><strong>TIP:</strong></a>
 If you want to include snippets of programming code in
-<strong>mom</strong> documents, you may come a cropper of the fact
+<strong>mom</strong> documents, you may come acropper of the fact
 that groff (and <strong>mom</strong>'s) escape character is the
 backslash.  In order for <strong>mom</strong> not to interpret
 backslashes that occur in code snippets as escapes, you have to
@@ -1311,7 +1404,7 @@ argument (e.g. OFF, END, X, Q...) to turn it off.  Example:
 
 <a name="QUOTE_CONTROL"><h3><u>Quote control macros</u></h3></a>
 <ol>
-	<li><a href="#QUOTE_GENERAL">Family/font/size/indent</a>
+	<li><a href="#QUOTE_GENERAL">Family/font/size/colour/indent</a>
 	<li><a href="#ALWAYS_FULLSPACE_QUOTES">Spacing above and below (typeset only)</a>
 	<li><a href="#UNDERLINE_QUOTES">Underline quotes (typewrite only)</a>
 	<li><a href="#BREAK_QUOTE">Manually break a footnoted quote that crosses pages/columns</a>
@@ -1326,6 +1419,7 @@ See
 .QUOTE_FAMILY default = prevailing document family; default is Times Roman
 .QUOTE_FONT   default = italic
 .QUOTE_SIZE   default = +0 (i.e. same size as paragraph text)
+.QUOTE_COLOR  default = black
 <a name="QUOTE_INDENT">.QUOTE_INDENT default = paragraph indent x 3 (typeset); x 2 (typewrite)</a>
              (note that this macro also sets the indents (left and right)
               for blockquotes)
@@ -1465,7 +1559,7 @@ in any of the tag's control macros.
 
 <a name="BLOCKQUOTE_CONTROL"><h3><u>Blockquote control macros</u></h3></a>
 <ol>
-	<li><a href="#BLOCKQUOTE_GENERAL">Family/font/size/indent</a>
+	<li><a href="#BLOCKQUOTE_GENERAL">Family/font/size/colour/indent</a>
 	<li><a href="#ALWAYS_FULLSPACE_QUOTES">Spacing above and below (typeset only)</a>
 	<li><a href="#BREAK_QUOTE">Manually break a footnoted blockquote that crosses pages/columns</a>
 </ol>
@@ -1479,6 +1573,7 @@ See
 .BLOCKQUOTE_FAMILY default = prevailing document family; default is Times Roman
 .BLOCKQUOTE_FONT   default = italic
 .BLOCKQUOTE_SIZE   default = -1 (point)
+.BLOCKQUOTE_COLOR  default = black
 .QUOTE_INDENT      default = paragraph indent x 3 (typeset); x 2 (typewrite)</a>
                   (note that this macro also sets the left indent for quotes)
 </pre>
@@ -1625,7 +1720,6 @@ example, if you want a list enumerated with <strong>=&gt;</strong>,
 </pre>
 
 will produce
-
 <p>
 <pre>
 	=&gt; A list item
@@ -2003,7 +2097,7 @@ above.
 <p>
 <a name="FOOTNOTE_CONTROL"><h3><u>Footnote control macros</u></h3></a>
 <ol>
-	<li><a href="#FOOTNOTE_GENERAL">Family/font/size/lead/quad</a>
+	<li><a href="#FOOTNOTE_GENERAL">Family/font/size/colour/lead/quad</a>
 	<li><a href="#FOOTNOTE_MARKERS">Footnote markers</a> -- on or off
 	<li><a href="#FOOTNOTE_MARKER_STYLE">Footnote marker style</a> -- star+dagger or numbered
 	<li><a href="#RESET_FOOTNOTE_NUMBER">Reset footnote number</a> -- set footnote marker number to 1
@@ -2021,6 +2115,7 @@ See
 .FOOTNOTE_FAMILY    default = prevailing document family; default is Times Roman
 .FOOTNOTE_FONT      default = roman
 .FOOTNOTE_SIZE      default = -2 (points)
+.FOOTNOTE_COLOR     default = black
 .FOOTNOTE_AUTOLEAD  default = 2 points (typeset); single-spaced (typewrite)
 .FOOTNOTE_QUAD      default = same as paragraphs
 </pre>
@@ -2204,6 +2299,18 @@ short, centred horizontal rule that terminates the document.
 (In
 <a href="docprocessing.html.#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
 it's a short, dashed line composed of four hyphens.)
+
+<a name="FINIS_COLOR"><h3><u>Changing the FINIS colour</u></h3></a>
+<p>
+Invoking <strong>FINIS_COLOR</strong> with a pre-defined (or
+&quot;initalized&quot;) color changes the colour of both the FINIS
+string and the em-dashes that surround it.  If you use the
+<a href="definitions.html#TERMS_INLINE">inline escape</a>,
+<a href="color.html#COLOR_INLINE">\*[&lt;colorname&gt;]</a>,
+in the argument passed to <strong>FINIS</strong>, only the text
+will be in the new colour; the em-dashes will be in the default
+document colour (usually black).
+
 <p>
 <hr>
 

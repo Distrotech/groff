@@ -23,8 +23,8 @@
 .\"
 .\"
 .\"
-\# Version 1.1.7-1
-\# ---------------
+\# Version 1.1.8
+\# -------------
 \#
 .if (\n[.x]\n[.y] < 118) \
 .  ab You need GNU troff version 1.18 or higher to run this version of mom!
@@ -971,7 +971,7 @@
 \# *Arguments:
 \#   [ ,, ] | [ << ] | [ >> ] | <anything>
 \#   or
-\#   [ DA | DE | EN | ES | FR | IT | NL | NO | PT | SV ] | <anything>
+\#   [ DA | DE | ES | FR | IT | NL | NO | PT | SV ] | <anything>
 \# *Function:
 \#   Turns smartquotes on (optionally with a quoting style from the
 \#   argument list, or off).
@@ -1380,9 +1380,10 @@
 .        in 0
 .        nr #TAB_ACTIVE 1
 .        nr #CURRENT_TAB \\n[#TAB_NUMBER]
-.        po \\n[#L_MARGIN]u+\\n[#TAB_OFFSET]u
-.        nr #ST_OFFSET \\n[#TAB_OFFSET]
+.        ds $CURRENT_TAB \\*[$CURRENT_TAB]
 .        nr #TAB_OFFSET\\*[$CURRENT_TAB] \\n[#TAB_OFFSET]
+.        nr #ST_OFFSET \\n[#TAB_OFFSET]
+.        po \\\\n[#L_MARGIN]u+\\\\n[#TAB_OFFSET\\\\*[$CURRENT_TAB]]u
 .        ll \\n[#TAB_LENGTH]u
 .        ta \En(.lu
 .        ie '\\$5'QUAD' \{\
@@ -1414,7 +1415,6 @@
 .    ds $TAB_NUMBER \\$1
 .    TAB\\*[$TAB_NUMBER]
 .    nr #IN_TAB 1
-.    po \\n[#L_MARGIN]u+\\n[#TAB_OFFSET\\*[$TAB_NUMBER]]u
 .END
 \#
 \#
@@ -1472,6 +1472,85 @@
 .       if '\\*[$RESTORE_QUAD_VALUE]'CENTER' \{ .CENTER \}
 .    \}
 .END
+\#
+\# ====================================================================
+\#
+\# COLOR HANDLING
+\# ==============
+\#
+\# COLOR
+\# -----
+\# *Arguments:
+\#   <pre-defined NEWCOLOR or XCOLOR>
+\# *Function:
+\#   Allows the inline escape for setting color to be called
+\#   as a macro.
+\#
+.MAC COLOR END
+.ie \\n(.u=1 \{\
+\c
+\\*[\\$1]\c
+.   \}
+.el \{ \\*[\\$1] \}
+.END
+\#
+\#
+\# NEWCOLOR
+\# --------
+\# *Arguments:
+\#   <color name> [<color scheme>] <color definition>
+\# *Function:
+\#   Based on .defcolor, allows users to name and define colors using
+\#   one of the four color schemes rgb, cmy, cmyk and grey.  The new
+\#   color is then defined as a string so that it can be called inline
+\#   with \*[COLORNAME] or with .COLOR.
+\# *Notes:
+\#   With only two args, the default color scheme is rgb.
+\#
+\#   It is highly recommended that users define new colors as
+\#   all-cap strings, to differentiate them from x colors, which must
+\#   be in lower case.
+\#
+.MAC NEWCOLOR END
+.    if \\n[#NUM_ARGS]=2 \{\
+.       defcolor \\$1 rgb \\$2
+.    \}
+.    if \\n[#NUM_ARGS]=3 \{\
+.       if '\\$2'RGB'  .ds $COLOR_SCHEME rgb
+.       if '\\$2'CYM'  .ds $COLOR_SCHEME cym
+.       if '\\$2'CMYK' .ds $COLOR_SCHEME cmyk
+.       if '\\$2'GRAY' .ds $COLOR_SCHEME gray
+.       if '\\$2'GREY' .ds $COLOR_SCHEME gray
+.       defcolor \\$1  \\*[$COLOR_SCHEME] \\$3
+.    \}
+.    ds \\$1 \\m[\\$1]
+.END
+\#
+\#
+\# XCOLOR
+\# ------
+\# *Arguments:
+\#   <x color name> [<alias>]
+\# *Function:
+\#   Defines a string of x color name (i.e. a predefined x
+\#   color).  If <alias> is given, creates a string of <alias name>
+\#   that references the x color name of the first argument.
+\# *Notes:
+\#   The color name must be a legal color name from rgb.txt, and
+\#   must be given entirely in lower case, all one word.
+\#
+.MAC XCOLOR END
+.    ds \\$1 \m[\\$1]
+.    if \\n[#NUM_ARGS]=2 .ds \\$2 \m[\\$1]
+.END
+\#
+\#
+\# Pre-define xcolors black and white
+\#
+.ds black \m[black]
+.ds BLACK \m[black]
+.ds white \m[white]
+.ds WHITE \m[WHITE]
 \#
 \# =====================================================================
 \#
@@ -2156,6 +2235,23 @@
 .END
 \#
 \#
+\# DROPCAP COLOR
+\# -------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Defines string $DC_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   DC_COLOR.
+\#
+.MAC DROPCAP_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #DC_COLOR 1
+.    ds $DC_COLOR \\$1
+.END
+\#
+\#
 \# DROP CAP GUTTER
 \# ---------------
 \# *Argument:
@@ -2247,8 +2343,20 @@
 .    if d$DC_ADJUST \{ .ps \\*[$DC_ADJUST]p \}
 .    mk x
 .    sp \\n[#DC_LINES]v
-.    ie '\\$3'COND' \{ .PRINT \\*[COND]\\*[$DROPCAP]\\*[CONDX] \}
-.    el \{ .PRINT \\*[$DROPCAP] \}
+.    ie \\n[#DC_COLOR]=1 \{\
+.       ie !'\\$3'' \{\
+.          ie '\\$3'COND' \{ .PRINT \m[\\*[$DC_COLOR]]\\*[COND]\\*[$DROPCAP]\\*[CONDX]\m[] \}
+.          el \{ .PRINT \m[\\*[$DC_COLOR]]\\*[EXT]\\*[$DROPCAP]\\*[EXTX]\m[] \}
+.       \}
+.       el \{ .PRINT \m[\\*[$DC_COLOR]]\\*[$DROPCAP]\m[] \}
+.    \}
+.    el \{\
+.       ie !'\\$3'' \{\
+.          ie '\\$3'COND' \{ .PRINT \\*[COND]\\*[$DROPCAP]\\*[CONDX] \}
+.          el \{ .PRINT \\*[EXT]\\*[$DROPCAP]\\*[EXTX] \}
+.       \}
+.       el \{ .PRINT \m[\\*[$DC_COLOR]]\\*[$DROPCAP]\m[] \}
+.    \}
 .    if '\\$3'COND' \{ \E*[COND] \}
 .    if '\\$3'EXT'  \{ \E*[EXT]  \}
 .    ie \\n(.i \{ .in +\w'\\*[$DROPCAP]'u+\\n[#DC_GUT]u \}
@@ -2290,7 +2398,9 @@
 \# *Notes:
 \#
 .MAC RULE END
-.    if \\n(.j=1 \{\
+\c
+.    EL
+.    if \\n(.u=1 \{\
 .       ds $CURRENT_QUAD \\*[$QUAD_VALUE]
 .       nf
 .    \}
@@ -2300,7 +2410,7 @@
 .       if \\n[#INDENT_LEFT_ACTIVE] \{ .ll \\n(.lu-\\n[#L_INDENT]u \}
 .       PRINT \El'\En(.lu'
 .       ll \\n[#RESTORE_L_LENGTH]u
-.       rr #RESTORE_L_LENGTH]u
+.       rr #RESTORE_L_LENGTH
 .    \}
 .    el \{\
 .       PRINT \El'\En(.lu'
@@ -2941,6 +3051,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# +++TYPESETTING ALIASES+++
 \#
 .ALIAS    CENTRE          CENTER
+.ALIAS    COLOUR          COLOR
 .ALIAS    COMMENT         SILENT
 .ALIAS    CONDENSE        CONDENSE_OR_EXTEND
 .ALIAS    EXTEND          CONDENSE_OR_EXTEND
@@ -2948,15 +3059,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS    HYPHENATE       HY
 .ALIAS    HYPHENATION     HY
 .ALIAS    HYSET           HY_SET
-.ALIAS    LIG             LIGATURES
 .ALIAS    IBQ             IBX
 .ALIAS    ILQ             ILX
 .ALIAS    IQ              IX
 .ALIAS    IRQ             IRX
+.ALIAS    LIG             LIGATURES
+.ALIAS    NEWCOLOUR       NEWCOLOR
 .ALIAS    PADMARKER       PAD_MARKER
 .ALIAS    TABSET          TAB_SET
 .ALIAS    TB              TAB
 .ALIAS    UNDERSCORE_2    UNDERSCORE2
+.ALIAS    XCOLOUR         XCOLOUR
 \#
 \#
 \# ====================================================================
@@ -3058,6 +3171,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       fam  C
 .       ft   R
 .       ps   12
+.       color 0
 .       ie '\\$2'SINGLESPACE' \{\
 .           nr #SINGLE_SPACE 1
 .           vs 12
@@ -3578,7 +3692,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       FOOTER_LEFT ""
 .       FOOTER_CENTER ""
 .       FOOTER_RIGHT_SIZE +0
-.       FOOTER_RIGHT ".../\E*[$SUITE]
+.       FOOTER_RIGHT "\&.../\E*[$SUITE]
 .       FOOTER_ON_FIRST_PAGE
 .       em ALL_DONE
 .    \}
@@ -3677,7 +3791,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# *Arguments:
 \#   <none>
 \# *Function:
-\#   Redefines $SUITE to blank so that a suite number doesn't
+\#   Redefines $FOOTER_RIGHT to blank so that a suite number doesn't
 \#   appear at the bottom of letter pages.
 \#
 .MAC NO_SUITE END
@@ -3960,7 +4074,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d$EN_TITLE_FT               \{ .ENDNOTE_TITLE_FONT  B               \}
 .       if !d$EN_TITLE_SIZE_CHANGE      \{ .ENDNOTE_TITLE_SIZE  +0              \}
 .       if !d$EN_NUMBER_FT              \{ .ENDNOTE_NUMBER_FONT B               \}
-.       if !$EN_NUMBER_SIZE_CHANGE      \{ .ENDNOTE_NUMBER_SIZE +0              \}
+.       if !d$EN_NUMBER_SIZE_CHANGE      \{ .ENDNOTE_NUMBER_SIZE +0              \}
 .       if !r#EN_PP_INDENT              \{ .ENDNOTE_PARA_INDENT 1.5m            \}
 .       if !d$TOC_FAM                   \{ .TOC_FAMILY  \\*[$DOC_FAM]           \}
 .       if !r#TOC_PS                    \{ .TOC_PT_SIZE \\n[#DOC_PT_SIZE]u      \}
@@ -3980,7 +4094,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d$TOC_PH_FT                 \{ .TOC_PARAHEAD_FONT   I               \}
 .       if !d$TOC_TITLE_SIZE_CHANGE     \{ .TOC_TITLE_SIZE   +.5                \}
 .       if !d$TOC_PN_SIZE_CHANGE        \{ .TOC_PN_SIZE  +0                     \}
-.       if !d$TOC_HEAD_SIZE_CHANGE      \{ .TOC_HEAD_SIZE  +.5                   \}
+.       if !d$TOC_HEAD_SIZE_CHANGE      \{ .TOC_HEAD_SIZE  +.5                  \}
 .       if !d$TOC_SH_SIZE_CHANGE        \{ .TOC_SUBHEAD_SIZE  +0                \}
 .       if !d$TOC_PH_SIZE_CHANGE        \{ .TOC_PARAHEAD_SIZE  +0               \}
 .    \}
@@ -4051,7 +4165,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #AUTHORS \\n[#AUTHOR_NUM]
 .    nr #NEXT_AUTHOR 0 1
 .    while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
-.       PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]
+.       ie \\n[#AUTHOR_COLOR]=1 \{\
+.          PRINT \m[\\*[$AUTHOR_COLOR]]\\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]\m[]
+.       \}
+.       el \{ .PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]] \}
 .    \}
 .END
 \#
@@ -4061,18 +4178,29 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    FT      \\*[$TITLE_FT]
 .    PT_SIZE \\*[$TITLE_PT_SIZE]
 .    LS      \\n[#DOCHEADER_LEAD]u
-.    PRINT   \\*[$TITLE]
+.    ie \\n[#TITLE_COLOR]=1 \{\
+.       PRINT \m[\\*[$TITLE_COLOR]]\\*[$TITLE]\m[]
+.    \}
+.    el \{ .PRINT \\*[$TITLE] \}
 .    if !'\\*[$SUBTITLE]'' \{\
 .       FAMILY  \\*[$SUBTITLE_FAM]
 .       FT      \\*[$SUBTITLE_FT]
 .       PT_SIZE \\*[$SUBTITLE_PT_SIZE]
-.       PRINT   \\*[$SUBTITLE]
+.       ie \\n[#SUBTITLE_COLOR]=1 \{\
+.          PRINT \m[\\*[$SUBTITLE_COLOR]]\\*[$TITLE]\m[]
+.       \}
+.       el \{ .PRINT \\*[$SUBTITLE] \}
 .    \}
 .    if !'\\*[$AUTHOR_1]'' \{\
 .       FAMILY  \\*[$AUTHOR_FAM]
 .       FT      \\*[$AUTHOR_FT]
 .       PT_SIZE \\*[$AUTHOR_PT_SIZE]
-.       if !'\\*[$ATTRIBUTE_STRING]'' \{ .PRINT \\*[$ATTRIBUTE_STRING] \}
+.       if !'\\*[$ATTRIBUTE_STRING]'' \{\
+.          ie \\n[#ATTRIBUTE_COLOR]=1 \{\
+.             PRINT \m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.          \}
+.          el \{ .PRINT \\*[$ATTRIBUTE_STRING] \}
+.       \}
 .       PRINT_AUTHORS
 .    \}
 .END
@@ -4084,6 +4212,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    FT      \\*[$TITLE_FT]
 .    PT_SIZE \\*[$TITLE_PT_SIZE]
 .    LS      \\n[#DOCHEADER_LEAD]u
+\# Chapter title only
 .    ie '\\*[$CHAPTER]'' \{\
 .       ie !'\\*[$CHAPTER_TITLE]'' \{\
 .          if \\n[#PRINT_STYLE]=2 \{\
@@ -4092,22 +4221,35 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             PT_SIZE \\*[$CHAPTER_TITLE_PT_SIZE]
 .             LS      \\n[#DOCHEADER_LEAD]u
 .          \}
-.          PRINT \\*[$CHAPTER_TITLE]
+.          ie \\n[#TITLE_COLOR]=1 \{\
+.             PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_TITLE]\m[]
+.          \}
+.          el \{ .PRINT \\*[$CHAPTER_TITLE] \}
 .       \}
 .       el \{\
-.          PRINT \\*[$CHAPTER_STRING]
+.          ie \\n[#TITLE_COLOR]=1 \{\
+.             PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_STRING]\m[]
+.          \}
+.          el \{ .PRINT \\*[$CHAPTER_STRING] \}
 .       \}
 .    \}
+\# Chapter string, possibly with a chapter title
 .    el \{\
-.       PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER]
+.       ie \\n[#TITLE_COLOR]=1 \{\
+.          PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_STRING] \\*[$CHAPTER]\m[]
+.       \}
+.       el \{ .PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER] \}
 .       if !'\\*[$CHAPTER_TITLE]'' \{\
-.       if \\n[#PRINT_STYLE]=1 \{ .PRINT   \\*[$CHAPTER_TITLE] \}
+.          if \\n[#PRINT_STYLE]=1 \{ .PRINT \\*[$CHAPTER_TITLE] \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             FAMILY  \\*[$CHAPTER_TITLE_FAM]
 .             FT      \\*[$CHAPTER_TITLE_FT]
 .             PT_SIZE \\*[$CHAPTER_TITLE_PT_SIZE]
 .             LS      \\n[#DOCHEADER_LEAD]u
-.             PRINT   \\*[$CHAPTER_TITLE]
+.             ie \\n[#TITLE_COLOR]=1 \{\
+.                PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_TITLE]\m[]
+.             \}
+.             el \{ .PRINT \\*[$CHAPTER_TITLE] \}
 .             RLD \\n[#DOC_LEAD]u \" Just looks better this way
 .          \}
 .       \}
@@ -4121,18 +4263,30 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    FT      \\*[$TITLE_FT]
 .    PT_SIZE \\*[$TITLE_PT_SIZE]
 .    LS      \\n[#DOCHEADER_LEAD]u
-.    PRINT   \\*[$TITLE]
+.    ie \\n[#TITLE_COLOR]=1 \{\
+.       PRINT \m[\\*[$TITLE_COLOR]]\\*[$TITLE]\m[]
+.    \}
+.    el \{ .PRINT \\*[$TITLE] \}
 .    if !'\\*[$SUBTITLE]'' \{\
 .       FAMILY  \\*[$SUBTITLE_FAM]
 .       FT      \\*[$SUBTITLE_FT]
 .       PT_SIZE \\*[$SUBTITLE_PT_SIZE]
-.       PRINT   \\*[$SUBTITLE]
+.       ie \\n[#SUBTITLE_COLOR]=1 \{\
+.          PRINT \m[\\*[$SUBTITLE_COLOR]]\\*[$TITLE]\m[]
+.       \}
+.       el \{ .PRINT \\*[$SUBTITLE] \}
 .    \}
 .    if !'\\*[$AUTHOR_1]'' \{\
 .       FAMILY  \\*[$AUTHOR_FAM]
 .       FT      \\*[$AUTHOR_FT]
 .       PT_SIZE \\*[$AUTHOR_PT_SIZE]
-.       if !'\\*[$ATTRIBUTE_STRING]'' \{ .PRINT \\*[$ATTRIBUTE_STRING] \}
+.       if !'\\*[$ATTRIBUTE_STRING]'' \{\
+.          ie \\n[#ATTRIBUTE_COLOR]=1 \{\
+.             PRINT \m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.          \}
+.          el \{ .PRINT \\*[$ATTRIBUTE_STRING] \}
+.       \}
+.       \}
 .       PRINT_AUTHORS
 .    \}
 .    FAMILY  \\*[$DOCTYPE_FAM]
@@ -4140,7 +4294,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    PT_SIZE \\*[$DOCTYPE_PT_SIZE]
 .    LS      \\n[#DOCHEADER_LEAD]u
 .    ALD     \\n[#DOCHEADER_LEAD]u
-.    UNDERSCORE "\\*[$DOC_TYPE]
+.    ie \\n[#DOCTYPE_COLOR]=1 \{\
+.       COLOR \\*[$DOCTYPE_COLOR]
+.       UNDERSCORE "\\*[$DOC_TYPE]
+.    \}
+.    el .UNDERSCORE "\\*[$DOC_TYPE]
 .END
 \#
 \#
@@ -4278,6 +4436,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          mk dc
 .          nr #COL_NUM 0 1
 .          po \\n[#COL_\\n+[#COL_NUM]_L_MARGIN]u
+.          nr #L_MARGIN \\n(.o
 .          ll \\n[#COL_L_LENGTH]u
 .       \}
 .       nr #PP 0
@@ -4291,7 +4450,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#DOC_TYPE]=1 \{\
 .          PRINT \&
 .          sp |\\n[#DOCHEADER_ADVANCE]u-1v
-.          ev TITLE
+.          ev DOCHEADER
+.          if \\n[#DOCHEADER_COLOR]=1 \{\
+.             nf
+\m[\\*[$DOCHEADER_COLOR]]
+.             EL
+.          \}
 .          L_MARGIN \\n[#DOC_L_MARGIN]u
 .          LL       \\n[#DOC_L_LENGTH]u
 .          ta \\n(.lu
@@ -4359,7 +4523,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#DOC_TYPE]=2 \{\
 .          PRINT \&
 .          sp |\\n[#DOCHEADER_ADVANCE]u-1v
-.          ev TITLE
+.          ev DOCHEADER
+.          if \\n[#DOCHEADER_COLOR]=1 \{\
+.             nf
+\m[\\*[$DOCHEADER_COLOR]]
+.             EL
+.          \}
 .          L_MARGIN \\n[#DOC_L_MARGIN]u
 .          LL       \\n[#DOC_L_LENGTH]u
 .          ta \\n(.lu
@@ -4408,7 +4577,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#DOC_TYPE]=3 \{\
 .          PRINT \&
 .          sp |\\n[#DOCHEADER_ADVANCE]u-1v
-.          ev NAMED
+.          ev DOCHEADER
+.          if \\n[#DOCHEADER_COLOR]=1 \{\
+.             nf
+\m[\\*[$DOCHEADER_COLOR]]
+.             EL
+.          \}
 .          L_MARGIN \\n[#DOC_L_MARGIN]u
 .          LL       \\n[#DOC_L_LENGTH]u
 .          ta \\n(.lu
@@ -4487,12 +4661,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             nr #COL_NUM 0 1
 .             nr #L_LENGTH_FOR_EPI \\n[#L_LENGTH]
 .             po \\n[#COL_\\n+[#COL_NUM]_L_MARGIN]u
+.             nr #L_MARGIN \\n(.o
 .             LL \\n[#COL_L_LENGTH]u
 .             ta \\n(.lu
 .             mk dc
 .          \}
 .       \}
 .    \}
+.    QUAD \\*[$DOC_QUAD]
 .    rr #DOCHEADER_LEAD
 .    rr #DOCHEADER_LEAD_ADJ
 .    rr #DEPTH_1
@@ -4566,6 +4742,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# DOCHEADER COLOR
+\# ---------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Sets register #DOCHEADER_COLOR to 1; defines string
+\#   $DOCHEADER_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   DOCHEADER_COLOR.
+\#
+.MAC DOCHEADER_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #DOCHEADER_COLOR 1
+.    ds $DOCHEADER_COLOR \\$1
+.END
+\#
+\#
 \# TITLE FAMILY
 \# ------------
 \# *Argument:
@@ -4609,6 +4803,21 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC TITLE_SIZE END
 .    ds $TITLE_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# TITLE COLOR
+\# -----------
+\# *Argument:
+\#   <pre-defined color name>
+\# *Function:
+\#   Sets register #TITLE_COLOR to 1; creates string $TITLE_COLOR 
+\# *Notes:
+\#   The color name must be pre-defined with NEWCOLOR or XCOLOR.
+\#
+.MAC TITLE_COLOR END
+.    nr #TITLE_COLOR 1
+.    ds $TITLE_COLOR \\$1
 .END
 \#
 \#
@@ -4704,6 +4913,37 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# SUBTITLE COLOR
+\# --------------
+\# *Argument:
+\#   <pre-defined color name>
+\# *Function:
+\#   Sets register #SUBTITLE_COLOR to 1; creates string
+\#   $SUBTITLE_COLOR.
+\# *Notes:
+\#   The color name must be pre-defined with NEWCOLOR or XCOLOR.
+\#
+.MAC SUBTITLE_COLOR END
+.    nr #SUBTITLE_COLOR 1
+.    ds $SUBTITLE_COLOR \\$1
+.END
+\#
+\#
+\# ATTRIBUTE COLOR
+\# ---------------
+\# *Argument:
+\#   <pre-defined color name>
+\# *Function:
+\#   Sets register #ATTRIBUTE_COLOR to 1; creates string $ATTRIBUTE_COLOR 
+\# *Notes:
+\#   The color name must be pre-defined with NEWCOLOR or XCOLOR.
+\#
+.MAC ATTRIBUTE_COLOR END
+.    nr #ATTRIBUTE_COLOR 1
+.    ds $ATTRIBUTE_COLOR \\$1
+.END
+\#
+\#
 \# AUTHOR FAMILY
 \# -------------
 \# *Argument:
@@ -4749,6 +4989,21 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# AUTHOR COLOR
+\# ------------
+\# *Argument:
+\#   <pre-defined color name>
+\# *Function:
+\#   Sets register #AUTHOR_COLOR to 1; creates string $AUTHOR_COLOR 
+\# *Notes:
+\#   The color name must be pre-defined with NEWCOLOR or XCOLOR.
+\#
+.MAC AUTHOR_COLOR END
+.    nr #AUTHOR_COLOR 1
+.    ds $AUTHOR_COLOR \\$1
+.END
+\#
+\#
 \# DOCTYPE FAMILY
 \# --------------
 \# *Argument:
@@ -4791,6 +5046,21 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC DOCTYPE_SIZE END
 .    ds $DOCTYPE_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# DOCTYPE COLOR
+\# -------------
+\# *Argument:
+\#   <pre-defined color name>
+\# *Function:
+\#   Sets register #DOCTYPE_COLOR to 1; creates string $DOCTYPE_COLOR 
+\# *Notes:
+\#   The color name must be pre-defined with NEWCOLOR or XCOLOR.
+\#
+.MAC DOCTYPE_COLOR END
+.    nr #DOCTYPE_COLOR 1
+.    ds $DOCTYPE_COLOR \\$1
 .END
 \#
 \#
@@ -4914,6 +5184,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #DOC_LEAD \\n[#LEAD]
 .    if '\\$2'ADJUST' \{ .TRAPS \}
 .END
+\#
 \#
 \# ADJUST DOCUMENT LEAD
 \# --------------------
@@ -5068,6 +5339,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    CAPS OFF
 .END
 \#
+\# FINIS COLOR
+\# -----------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Defines string $FINIS_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   FINIS_COLOR.
+\#
+.MAC FINIS_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    ds $FINIS_COLOR \\$1
+.END
+\#
+\#
 \# ====================================================================
 \#
 \# +++RECTO/VERSO+++
@@ -5135,6 +5422,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC EPIGRAPH_SIZE END
 .    ds $EPI_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# EPIGRAPH COLOR
+\# --------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Sets register #EPI_COLOR to 1; defines string
+\#   $EPI_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   EPI_COLOR.
+\#
+.MAC EPIGRAPH_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #EPI_COLOR 1
+.    ds $EPI_COLOR \\$1
 .END
 \#
 \#
@@ -5239,6 +5544,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          FAMILY   \\*[$EPI_FAM]
 .          FT       \\*[$EPI_FT]
 .          PT_SIZE  \\n[#DOC_PT_SIZE]u\\*[$EPI_SIZE_CHANGE]
+.          if \\n[#EPI_COLOR]=1 \{\
+.             nf
+\m[\\*[$EPI_COLOR]]
+.             EL
+.          \}
 .          AUTOLEAD \\n[#EPI_AUTOLEAD]
 .          nr #EPI_LEAD      \\n[#LEAD]
 .          nr #EPI_LEAD_DIFF \\n[#DOC_LEAD]-\\n[#EPI_LEAD]
@@ -5289,6 +5599,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             FAMILY   \\*[$EPI_FAM]
 .             FT       \\*[$EPI_FT]
 .             PT_SIZE  \\n[#DOC_PT_SIZE]u\\*[$EPI_SIZE_CHANGE]
+.          if \\n[#EPI_COLOR]=1 \{\
+.             nf
+\m[\\*[$EPI_COLOR]]
+.             EL
+.          \}
 .             AUTOLEAD \\n[#EPI_AUTOLEAD]
 .             QUAD     \\*[$EPI_QUAD]
 .             HY
@@ -5375,7 +5690,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if \\n[#EPIGRAPH]=1 \{\
 .       po \\n[#L_MARGIN]u
-.       if \\n[#COLUMNS] \{ .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u \}
+.       if \\n[#COLUMNS] \{\
+.          po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
+.          nr #L_MARGIN \\n(.o
+.       \}
 .    \}
 .    if \\n[#EPIGRAPH]=2 \{\
 .       nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
@@ -5453,10 +5771,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ALD \\n[#DOC_LEAD]u
 .    QUAD \\*[$DOC_QUAD]
 .    po \\n[#L_MARGIN]u
-.    if \\n[#COLUMNS] \{ .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u \}
+.    if \\n[#COLUMNS] \{\
+.       po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
+.       nr #L_MARGIN \\n(.o
+.    \}
 .    if \\n[#START] \{\
 .       if \\n[#COLUMNS] \{\
 .          po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
+.          nr #L_MARGIN \\n(.o
 .          mk dc
 .       \}
 .    \}
@@ -5474,6 +5796,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Deposits --END-- at the end of a document.
 \#
 .MAC FINIS END
+.    ev FINIS
+.    evc 0
 .    nr #FINIS 1
 .    if \\n[#TAB_ACTIVE] \{ .TQ \}
 .    if \\n[#INDENT_ACTIVE] \{ .IQ CLEAR \}
@@ -5488,13 +5812,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    nr #EM_ADJUST (1m/8)
-.    if \\n[#COLUMNS] \{ .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u \}
+.    if \\n[#COLUMNS] \{\
+.       po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
+.       nr #L_MARGIN \\n(.o
+.    \}
 .    ALD \\n[#DOC_LEAD]u
 .    CENTER
 .    if \\n[#PRINT_STYLE]=1 \{ .PRINT "--\\*[$FINIS_STRING]--\}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       PRINT "\v'-\\n[#EM_ADJUST]u'\(em\v'+\\n[#EM_ADJUST]u'\\*[$FINIS_STRING]\v'-\\n[#EM_ADJUST]u'\*[FU1]\(em
+.       PRINT "\m[\\*[$FINIS_COLOR]]\v'-\\n[#EM_ADJUST]u'\(em\v'+\\n[#EM_ADJUST]u'\\*[$FINIS_STRING]\v'-\\n[#EM_ADJUST]u'\*[FU1]\(em\m[]
 .    \}
+.    ev
 .END
 \#
 \# ====================================================================
@@ -5546,6 +5874,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC HDRFTR_SIZE END
 .    ds $HDRFTR_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# HDRFTR COLOR
+\# ------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Sets register #HDRFTR_COLOR to 1; defines string $HDRFTR_COLOR to
+\#   argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   HDRFTR_COLOR.
+\#
+.MAC HDRFTR_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #HDRFTR_COLOR 1
+.    ds $HDRFTR_COLOR \\$1
 .END
 \#
 \#
@@ -5634,6 +5980,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# HDRFTR LEFT COLOR
+\# -----------------
+\# *Argument:
+\#   <pre-defined color name>
+\# *Function:
+\#   Sets register #HDRFTR_LEFT_COLOR to 1; creates string
+\#   $HDRFTR_LEFT_COLOR
+\# *Notes:
+\#   The color name must be pre-defined with NEWCOLOR or XCOLOR.
+\#
+.MAC HDRFTR_LEFT_COLOR END
+.    nr #HDRFTR_LEFT_COLOR 1
+.    ds $HDRFTR_LEFT_COLOR \\$1
+.END
+\#
+\#
 \# HDRFTR LEFT CAPS
 \# ----------------
 \# *Argument:
@@ -5650,7 +6012,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    el \{\
 .       nr #HDRFTR_LEFT_CAPS 0
-.       ds $HDRFTR_RIGHT_SIZE_CHANGE +0
+.       ds $HDRFTR_LEFT_SIZE_CHANGE +0
 .    \}
 .END
 \#
@@ -5729,6 +6091,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC HDRFTR_CENTER_SIZE END
 .    ds $HDRFTR_CENTER_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# HDRFTR CENTER COLOR
+\# -------------------
+\# *Argument:
+\#   <pre-defined color name>
+\# *Function:
+\#   Sets register #HDRFTR_CENTER_COLOR to 1; creates string
+\#   $HDRFTR_CENTER_COLOR
+\# *Notes:
+\#   The color name must be pre-defined with NEWCOLOR or XCOLOR.
+\#
+.MAC HDRFTR_CENTER_COLOR END
+.    nr #HDRFTR_CENTER_COLOR 1
+.    ds $HDRFTR_CENTER_COLOR \\$1
 .END
 \#
 \#
@@ -5865,6 +6243,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# HDRFTR RIGHT COLOR
+\# ------------------
+\# *Argument:
+\#   <pre-defined color name>
+\# *Function:
+\#   Sets register #HDRFTR_RIGHT_COLOR to 1; creates string
+\#   $HDRFTR_RIGHT_COLOR
+\# *Notes:
+\#   The color name must be pre-defined with NEWCOLOR or XCOLOR.
+\#
+.MAC HDRFTR_RIGHT_COLOR END
+.    nr #HDRFTR_RIGHT_COLOR 1
+.    ds $HDRFTR_RIGHT_COLOR \\$1
+.END
+\#
+\#
 \# HDRFTR RIGHT CAPS
 \# -----------------
 \# *Argument:
@@ -5885,6 +6279,25 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .END
 \#
+\#
+\# HDRFTR RULE COLOR
+\# -----------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Sets register #HDRFTR_COLOR to 1; defines string
+\#   $HDRFTR_RULE_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   HDRFTR_RULE_COLOR.
+\#
+.MAC HDRFTR_RULE_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #HDRFTR_RULE_COLOR 1
+.    ds $HDRFTR_RULE_COLOR \\$1
+.END
+\#
+\#
 \# HDRFTR RULE
 \# -----------
 \# *Arguments:
@@ -5897,12 +6310,21 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ie '\\$0'HDRFTR_RULE_INTERNAL' \{\
 .       ie \\n[#USERDEF_HDRFTR] \{\
 .          nr #CAP_HEIGHT_ADJUST \\n[#HDRFTR_HEIGHT]
-.          PT_SIZE 12
-.          if \\n[#HEADERS_ON] \{ .ALD \\n[#HDRFTR_RULE_GAP]u \}
+.          ps 12
+.          if \\n[#HEADERS_ON] \{\
+.             rt \\nyu
+.             ALD \\n[#HDRFTR_RULE_GAP]u
+.          \}
 .          if \\n[#FOOTERS_ON] \{\
+.              rt \\nyu
 .              RLD \\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
 .          \}
-.          PRINT \\l'\\n[#DOC_L_LENGTH]u'
+.          ie \\n[#HDRFTR_RULE_COLOR]=1 \{\
+.             PRINT \m[\\*[$HDRFTR_RULE_COLOR]]\\l'\\n[#DOC_L_LENGTH]u'\m[]
+.          \}
+.          el \{\
+.             PRINT \\l'\\n[#DOC_L_LENGTH]u'
+.          \}
 .          br
 .       \}
 .       el \{\
@@ -5919,12 +6341,21 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             \}
 .             el \{ .nr #CAP_HEIGHT_ADJUST \\n[#RIGHT_CAP_HEIGHT] \}
 .          \}
-.          PT_SIZE 12
-.          if \\n[#HEADERS_ON] \{ .ALD \\n[#HDRFTR_RULE_GAP]u \}
-.          if \\n[#FOOTERS_ON] \{\
-.             RLD \\n[#LEAD]u*3u+\\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
+.          ps 12
+.          if \\n[#HEADERS_ON] \{\
+.             rt \\nyu
+.             ALD \\n[#HDRFTR_RULE_GAP]u
 .          \}
-.          PRINT \\l'\\n[#DOC_L_LENGTH]u'
+.          if \\n[#FOOTERS_ON] \{\
+.             rt \\nyu
+.             RLD \\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
+.          \}
+.          ie \\n[#HDRFTR_RULE_COLOR]=1 \{\
+.             PRINT \m[\\*[$HDRFTR_RULE_COLOR]]\\l'\\n[#DOC_L_LENGTH]u'\m[]
+.          \}
+.          el \{\
+.             PRINT \\l'\\n[#DOC_L_LENGTH]u'
+.          \}
 .          br
 .       \}
 .    \}
@@ -6100,7 +6531,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if !\\n[#PRINT_FOOTER_ON_PAGE_1] \{ .return \}
 .       \}
 .    \}
-.    if \\n[#HEADERS_ON] \{ .vs 0 \}
 .    if \\n[#USERDEF_HDRFTR] \{\
 .       PRINT_USERDEF_HDRFTR
 .       return
@@ -6115,9 +6545,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #HDRFTR_TMP_CAPS_SWITCH        \\n[#HDRFTR_LEFT_CAPS]
 .       nr #HDRFTR_LEFT_CAPS              \\n[#HDRFTR_RIGHT_CAPS]
 .       nr #HDRFTR_RIGHT_CAPS             \\n[#HDRFTR_TMP_CAPS_SWITCH]
+.       ds $HDRFTR_TMP_COLOR_SWITCH       \\*[$HDRFTR_LEFT_COLOR]
+.       ds $HDRFTR_LEFT_COLOR             \\*[$HDRFTR_RIGHT_COLOR]
+.       ds $HDRFTR_RIGHT_COLOR            \\*[$HDRFTR_TMP_COLOR_SWITCH]
 .       rr #HDRFTR_TMP_CAPS_SWITCH
 .       rm $HDRFTR_TMP_SWITCH
 .       rm $HDRFTR_TMP_SIZE_CHANGE_SWITCH
+.       rm $HDRFTR_TMP_COLOR_SWITCH
 .       nr #SWITCH_HDRFTR 0
 .    \}
 .    nr #PAGENUMBER \\n%+\\n[#PAGE_NUM_ADJ]
@@ -6143,11 +6577,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#HDRFTR_LEFT_CAPS] \{ .CAPS OFF \}
 .       CENTER
 .       if \\n[#HDRFTR_CENTER_CAPS] \{ .CAPS \}
+.       rt \\nyu
 .       ie '\\*[$HDRFTR_CENTER]'#' \{\
-.           PRINT \\v'-(\\n[#LEAD]u*1u)'\\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\\n[#PAGENUMBER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u'
+.           PRINT \\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\\n[#PAGENUMBER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u'
 .       \}
 .       el \{\
-.          ie !'\\*[$HDRFTR_CENTER]'' \{ .PRINT \\v'-(\\n[#LEAD]u*1u)'\\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\\*[$HDRFTR_CENTER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u' \}
+.          ie !'\\*[$HDRFTR_CENTER]'' \{ .PRINT \\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\\*[$HDRFTR_CENTER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u' \}
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_CENTER_CAPS] \{ .CAPS OFF \}
@@ -6155,19 +6590,26 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if e                       \{ .RIGHT \}
 .       if \\n[#RECTO_VERSO]=0     \{ .RIGHT \}
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS  \}
+.       rt \\nyu
 .       ie '\\*[$HDRFTR_RIGHT]'#' \{\
-.           PRINT \\v'-(\\n[#LEAD]u*2u)'\\n[#PAGENUMBER]
+.           PRINT \\n[#PAGENUMBER]
 .       \}
 .       el \{\
-.          ie !'\\*[$HDRFTR_RIGHT]'' \{ .PRINT \\v'-(\\n[#LEAD]u*2u)'\\*[$HDRFTR_RIGHT] \}
+.          ie !'\\*[$HDRFTR_RIGHT]'' \{ .PRINT \\*[$HDRFTR_RIGHT] \}
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS OFF \}
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       FAMILY  \\*[$HDRFTR_LEFT_FAM]
-.       FT      \\*[$HDRFTR_LEFT_FT]
-.       PT_SIZE \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_LEFT_SIZE_CHANGE]
+.       if \\n[#HDRFTR_COLOR]=1 \{\
+.          nf
+\m[\\*[$HDRFTR_COLOR]]
+.          EL
+.       \}
+.       fam     \\*[$HDRFTR_LEFT_FAM]
+.       ft      \\*[$HDRFTR_LEFT_FT]
+.       ps      \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_LEFT_SIZE_CHANGE]
+.       vs      12
 .       if \\n[#FOOTERS_ON] \{\
 .          di NULL
 .          SIZESPECS
@@ -6178,15 +6620,30 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if e                      \{ .RIGHT \}
 .       if \\n[#RECTO_VERSO]=0    \{ .LEFT  \}
 .       if \\n[#HDRFTR_LEFT_CAPS] \{ .CAPS  \}
-.       ie '\\*[$HDRFTR_LEFT]'#' \{ .PRINT \\n[#PAGENUMBER] \}
+.       ie '\\*[$HDRFTR_LEFT]'#' \{\
+.          ie \\n[#HDRFTR_LEFT_COLOR]=1 \{\
+.             PRINT \m[\\*[$HDRFTR_LEFT_COLOR]]\\n[#PAGENUMBER]\m[]
+.          \}
+.          el \{\
+.             PRINT \\n[#PAGENUMBER]
+.          \}
+.       \}
 .       el \{\
-.          ie !'\\*[$HDRFTR_LEFT]'' \{ . PRINT \\*[$HDRFTR_LEFT] \}
+.          ie !'\\*[$HDRFTR_LEFT]'' \{\
+.             ie \\n[#HDRFTR_LEFT_COLOR]=1 \{\
+.                 PRINT \m[\\*[$HDRFTR_LEFT_COLOR]]\\*[$HDRFTR_LEFT]\m[]
+.             \}
+.             el \{\
+.                 PRINT \\*[$HDRFTR_LEFT]
+.             \}
+.          \}
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_LEFT_CAPS] \{ .CAPS OFF \}
-.       FAMILY  \\*[$HDRFTR_CENTER_FAM]
-.       FT      \\*[$HDRFTR_CENTER_FT]
-.       PT_SIZE \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_CENTER_SIZE_CHANGE]
+.       fam     \\*[$HDRFTR_CENTER_FAM]
+.       ft      \\*[$HDRFTR_CENTER_FT]
+.       ps      \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_CENTER_SIZE_CHANGE]
+.       vs      12
 .       if \\n[#FOOTERS_ON] \{\
 .          di NULL
 .          SIZESPECS
@@ -6195,17 +6652,31 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       CENTER
 .       if \\n[#HDRFTR_CENTER_CAPS] \{ .CAPS \}
+.       rt \\nyu
 .       ie '\\*[$HDRFTR_CENTER]'#' \{\
-.           PRINT \\v'-(\\n[#LEAD]u*1u)'\\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\\n[#PAGENUMBER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u'
+.           ie \\n[#HDRFTR_CENTER_COLOR]=1 \{\
+.              PRINT \\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\m[\\*[$HDRFTR_CENTER_COLOR]]\\n[#PAGENUMBER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u'\m[]
+.           \}
+.           el \{\
+.              PRINT \\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\\n[#PAGENUMBER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u'
+.           \}
 .       \}
 .       el \{\
-.          ie !'\\*[$HDRFTR_CENTER]'' \{ .PRINT \\v'-(\\n[#LEAD]u*1u)'\\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\\*[$HDRFTR_CENTER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u' \}
+.          ie !'\\*[$HDRFTR_CENTER]'' \{\
+.             ie \\n[#HDRFTR_CENTER_COLOR]=1 \{\
+.                PRINT \\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\m[\\*[$HDRFTR_CENTER_COLOR]]\\*[$HDRFTR_CENTER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u'\m[]
+.             \}
+.             el \{\
+.                PRINT \\h'\\n[#HDRFTR_CTR_PAD_LEFT]u'\\*[$HDRFTR_CENTER]\\h'\\n[#HDRFTR_CTR_PAD_RIGHT]u'
+.             \}
+.          \}
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_CENTER_CAPS] \{ .CAPS OFF \}
-.       FAMILY  \\*[$HDRFTR_RIGHT_FAM]
-.       FT      \\*[$HDRFTR_RIGHT_FT]
-.       PT_SIZE \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_RIGHT_SIZE_CHANGE]
+.       fam     \\*[$HDRFTR_RIGHT_FAM]
+.       ft      \\*[$HDRFTR_RIGHT_FT]
+.       ps      \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_RIGHT_SIZE_CHANGE]
+.       vs      12
 .       if \\n[#FOOTERS_ON] \{\
 .          di NULL
 .          SIZESPECS
@@ -6216,11 +6687,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if e                       \{ .LEFT  \}
 .       if \\n[#RECTO_VERSO]=0     \{ .RIGHT \}
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS  \}
+.       rt \\nyu
 .       ie '\\*[$HDRFTR_RIGHT]'#' \{\
-.           PRINT \\v'-(\\n[#LEAD]u*2u)'\\n[#PAGENUMBER]
+.          ie \\n[#HDRFTR_RIGHT_COLOR]=1 \{\
+.             PRINT \m[\\*[$HDRFTR_RIGHT_COLOR]]\\n[#PAGENUMBER]\m[]
+.          \}
+.          el \{\
+.             PRINT \\n[#PAGENUMBER]
+.          \}
 .       \}
 .       el \{\
-.          ie !'\\*[$HDRFTR_RIGHT]'' \{ .PRINT \\v'-(\\n[#LEAD]u*2u)'\\*[$HDRFTR_RIGHT] \}
+.          ie !'\\*[$HDRFTR_RIGHT]'' \{\
+.             ie \\n[#HDRFTR_RIGHT_COLOR]=1 \{\
+.                PRINT \m[\\*[$HDRFTR_RIGHT_COLOR]]\\*[$HDRFTR_RIGHT]\m[]
+.             \}
+.             el \{\
+.                PRINT \\*[$HDRFTR_RIGHT]
+.             \}
+.          \}
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS OFF \}
@@ -6248,6 +6732,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       FAMILY  \\*[$HDRFTR_FAM]
 .       FT      R
 .       PT_SIZE \\n[#HDRFTR_PT_SIZE]u
+.       if \\n[#HDRFTR_COLOR]=1 \{\
+.          nf
+.          COLOR \\*[$HDRFTR_COLOR]
+.       \}
 .    \}
 .    ie \\n[#RECTO_VERSO] \{\
 .       if o \{\
@@ -6306,6 +6794,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    fc
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       ie \\n[#HDRFTR_COLOR]=1 \m[\\*[$HDRFTR_COLOR]]
+.       el \m[black]
+.    \}
 .    if \\n[#HDRFTR_RULE] \{\
 .       HDRFTR_RULE_INTERNAL
 .    \}
@@ -6391,9 +6883,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       rr #TOC_RV_SWITCH
 .    \}
 .    ev HEADER
-.    if \\n[#PRINT_STYLE]=1 \{ .vs 0 \}
-.    if \\n[#PRINT_STYLE]=2 \{ .LS 0 \}
+.    if \\n[#PAGE_NUM_V_POS]=1 \{ .vs 0 \}
 .    sp |\\n[#HEADER_MARGIN]u-1v
+.    mk y
 .    ll \\n[#DOC_L_LENGTH]u
 .    ta \\n(.lu
 .    if \\n[#PRINT_STYLE]=1 \{\
@@ -6402,9 +6894,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ps  12\\*[$HDRFTR_SIZE_CHANGE]
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.      FAMILY  \\*[$HDRFTR_FAM]
-.      FT      R
-.      PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
+.      fam \\*[$HDRFTR_FAM]
+.      ft  R
+.      ps  \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
+.      vs  12
 .    \}
 .    nr #HDRFTR_PT_SIZE \\n[#PT_SIZE]
 .    if \\n[#CAPS_ON] \{\
@@ -6482,15 +6975,18 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       el \{\
 .          ie \\n[#EPI_FITS] \{ .ns \}
 .          el \{ .ALD \\n[#DOC_LEAD]u-\\n[#EPI_LEAD]u \}
-.          \}
+.       \}
 .    \}
 .    el \{ .ns \}
 .    ns
 .    if \\n[#COLUMNS] \{\
+.       nr #L_MARGIN \\n[#DOC_L_MARGIN]
 .       if \\n[#RECTO_VERSO] \{ .COLUMNS \\n[#NUM_COLS] \\n[#GUTTER]u \}
 .       nr #COL_NUM 0 1
 .       mk dc
 .       po \\n[#COL_\\n+[#COL_NUM]_L_MARGIN]u
+.       nr #L_MARGIN \\n(.o
+.       if \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .       ll \\n[#COL_L_LENGTH]u
 .       ta \\n(.lu
 .       if \\n[#QUOTE] \{\
@@ -6582,18 +7078,23 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC FOOTER END
 .    ev PAGE_BOTTOM
-.    if \\n[#START]=1 \{\
-.       bp
-.       ev
-.       return
-.    \}
+\# Removed this next bit; can't figure out why I needed it.
+\#.    if \\n[#START]=1 \{\
+\#.       bp
+\#.       ev
+\#.       rr #START
+\#.       return
+\#.    \}
 .    nr #L_MARGIN_DIFF \\n[#L_MARGIN]-\\n[#DOC_L_MARGIN]
 .    if !\\n[#FN_DEFER] \{\
 .       nr #DIVER_DEPTH 0
 .       if \\n[#FN_COUNT] \{\
 .          sp |\\n[#PAGE_LENGTH]u-(\\n[#B_MARGIN]u+\\n[#FN_DEPTH]u)
 .          po \\n[#DOC_L_MARGIN]u
-.          if \\n[#COLUMNS] \{ .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u \}
+.          if \\n[#COLUMNS] \{\
+.             po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
+.             nr #L_MARGIN \\n(.o
+.          \}
 .          nf
 .          FOOTNOTES
 .          rm FOOTNOTES
@@ -6611,18 +7112,26 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ie \\n[#ENDNOTES] \{ .sp |\\n(ecu-\\n[#EN_LEAD]u \}
 .          el \{ .sp |\\n(dcu \}
 .          po \\n[#COL_\\n+[#COL_NUM]_L_MARGIN]u
+.          nr #L_MARGIN \\n(.o
 .          PROCESS_FN_LEFTOVER
 .          if !\\n[#EPIGRAPH] \{ .rr #COL_NEXT \}
 .          if !\\n[#QUOTE]    \{ .rr #COL_NEXT \}
+.          if \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .          if \\n[#QUOTE] \{\
-.             nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
-.             if \\n[#COLUMNS] \{ .nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE]) \}
-.             po \\n[#Q_OFFSET]u
+.             ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
+.             el \{\
+.                nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.                if \\n[#COLUMNS] \{ .nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE]) \}
+.                po \\n[#Q_OFFSET]u
+.             \}
 .          \}
 .          if \\n[#EPIGRAPH] \{\
-.             nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
-.             if \\n[#COLUMNS] \{ .nr #EPI_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE]) \}
-.             po \\n[#EPI_OFFSET]u
+.             ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
+.             el \{\
+.                nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.                if \\n[#COLUMNS] \{ .nr #EPI_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE]) \}
+.                po \\n[#EPI_OFFSET]u
+.             \}
 .          \}
 .          ie \\n[#EPIGRAPH] \{\
 .             ie !\\n[#EPI_ACTIVE] \{\
@@ -6656,7 +7165,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #SKIP_FOOTER 1
 .    \}
 .    el \{\
+.       vs 12
 .       sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-1v
+.       mk y
 .    \}
 .    ev FOOTER
 .    po \\n[#DOC_L_MARGIN]u
@@ -6902,6 +7413,23 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# HEAD COLOR
+\# ----------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Defines string $HEAD_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   HEAD_COLOR.
+\#
+.MAC HEAD_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #HEAD_COLOR 1
+.    ds $HEAD_COLOR \\$1
+.END
+\#
+\#
 \# HEAD SPACE
 \# ----------
 \# *Arguments:
@@ -7084,6 +7612,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# Print head
 .    nr #ARG_NUM 0 1
 .    if \\n[#HEAD_CAPS] \{ .CAPS \}
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       if \\n[#HEAD_COLOR]=1 \{\
+.          TRAP OFF
+.          COLOR \\*[$HEAD_COLOR]
+.          EL
+.          TRAP
+.       \}
+.    \}
 .    while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
 .       ie \\n[#NUMBER_HEAD] \{\
 .          ie \\n[#ARG_NUM]=0 \{\
@@ -7170,6 +7706,23 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC SUBHEAD_SIZE END
 .    ds $SH_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# SUBHEAD COLOR
+\# -------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Defines string $SH_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   SUBHEAD_COLOR.
+\#
+.MAC SUBHEAD_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #SH_COLOR 1
+.    ds $SH_COLOR \\$1
 .END
 \#
 \#
@@ -7353,6 +7906,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
+.       if \\n[#SH_COLOR]=1 \{ .COLOR \\*[$SH_COLOR] \}
 .       ie \\n[#PP_SPACE]=0 \{\
 .          while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
 .             ie \\n[#NUMBER_SH] \{\
@@ -7449,6 +8003,23 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC PARAHEAD_SIZE END
 .    ds $PH_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# PARAHEAD COLOR
+\# --------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Defines string $PH_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   PARAHEAD_COLOR.
+\#
+.MAC PARAHEAD_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #PH_COLOR 1
+.    ds $PH_COLOR \\$1
 .END
 \#
 \#
@@ -7578,32 +8149,35 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       FAM     \\*[$PH_FAM]
 .       FT      \\*[$PH_FT]
 .       PT_SIZE \\*[$PH_SIZE_CHANGE]
-.       ie \\n[#NUMBER_PH] \{\
-.          if \\n[#NUMBER_HEAD] \{\
+.       if \\n[#PH_COLOR]=1 \{ .COLOR \\*[$PH_COLOR] \}
+.          ie \\n[#NUMBER_PH] \{\
+.             if \\n[#NUMBER_HEAD] \{\
+.                ie \\n[#NUMBER_SH] \{\
+.                   PRINT "\R'#NUMBERED 1'\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                \}
+.                el \{\
+.                   PRINT "\R'#NUMBERED 1'\\n[#HEAD_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                \}
+.             \}
 .             ie \\n[#NUMBER_SH] \{\
-.                PRINT "\R'#NUMBERED 1'\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                if !\\n[#NUMBERED] \{\
+.                   PRINT "\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                \}
 .             \}
 .             el \{\
-.                PRINT "\R'#NUMBERED 1'\\n[#HEAD_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
-.             \}
-.          \}
-.          ie \\n[#NUMBER_SH] \{\
-.             if !\\n[#NUMBERED] \{\
-.                PRINT "\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                if !\\n[#NUMBERED] \{\
+.                   PRINT "\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                \}
 .             \}
 .          \}
 .          el \{\
-.             if !\\n[#NUMBERED] \{\
-.                PRINT "\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
-.             \}
+.             PRINT "\\$1\h'.6m'\c"
 .          \}
-.       \}
-.       el \{\
-.          PRINT "\\$1\h'.6m'\c"
 .       \}
 .       FAMILY  \\*[$DOC_FAM]
 .       FT      \\*[$PP_FT]
 .       PT_SIZE \\n[#DOC_PT_SIZE]u
+.       if \\n[#PH_COLOR]=1 \m[]\c
 .       if \\n[#SLANT_WAS_ON] \{\
 .          rr #SLANT_WAS_ON 1
 \E*[SLANT]\c
@@ -7646,6 +8220,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# LINEBREAK COLOR
+\# ---------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Defines string $LINEBREAK_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   LINEBREAK_COLOR.
+\#
+.MAC LINEBREAK_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    ds $LINEBREAK_COLOR \\$1
+.END
+\#
+\#
 \# LINE BREAK
 \# ----------
 \# *Arguments:
@@ -7668,10 +8258,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ie \\n[#END_QUOTE] \{ . \}
 .          el \{ .ALD \\n[#DOC_LEAD]u \}
 .       \}
+.       ev LINEBREAK
+.       evc 0
 .       CENTER
-.       PRINT \\v'\\*[$LINEBREAK_CHAR_V_ADJ]'\\*[$LINEBREAK_CHAR]\\v'\\*[$LINEBREAK_CHAR_V_ADJ]'
+.       PRINT \m[\\*[$LINEBREAK_COLOR]]\\v'\\*[$LINEBREAK_CHAR_V_ADJ]'\\*[$LINEBREAK_CHAR]\\v'\\*[$LINEBREAK_CHAR_V_ADJ]'\m[]
 .       if \\n[#PRINT_STYLE]=1 \{ .ALD \\n[#DOC_LEAD]u \}
 .       if \\n[#PRINT_STYLE]=2 \{ .ALD \\n[#DOC_LEAD]u \}
+.       ev
 .       QUAD \\*[$DOC_QUAD]
 .    \}
 .    nr #LINEBREAK 1
@@ -7803,7 +8396,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       br
 .       if !\\n[#ENDNOTE] \{ .po \\n[#L_MARGIN]u \}
 .       if \\n[#COLUMNS] \{\
-.          if !\\n[#ENDNOTE] \{ .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u \}
+.          if !\\n[#ENDNOTE] \{\
+.             po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
+.             nr #L_MARGIN \\n(.o
+.          \}
 .       \}
 .       if \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .       ie \\n[#PRINT_STYLE]=1 \{\
@@ -7970,6 +8566,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# QUOTE COLOR
+\# -----------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Sets register #QUOTE_COLOR to 1; defines string $QUOTE_COLOR to
+\#   argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   QUOTE_COLOR.
+\#
+.MAC QUOTE_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #QUOTE_COLOR 1
+.    ds $QUOTE_COLOR \\$1
+.END
+\#
+\#
 \# UNDERLINE QUOTES
 \# ----------------
 \# *Arguments:
@@ -8055,6 +8669,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$QUOTE_SIZE_CHANGE]
 .          LS      \\n[#DOC_LEAD]u
 .          LEFT
+.          if \\n[#QUOTE_COLOR]=1 \{\
+.             nf
+\m[\\*[$QUOTE_COLOR]]
+.             EL
+.          \}
 .       \}
 .       nr #Q_TOP \\n(nl
 .       if \\n[#PRINT_STYLE]=1 \{\
@@ -8111,6 +8730,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC BLOCKQUOTE_SIZE END
 .    ds $BQUOTE_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# BLOCKQUOTE COLOR
+\# ----------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Sets register #BQUOTE_COLOR to 1; defines string
+\#   $BQUOTE_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   BLOCKQUOTE_COLOR.
+\#
+.MAC BLOCKQUOTE_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #BQUOTE_COLOR 1
+.    ds $BQUOTE_COLOR \\$1
 .END
 \#
 \#
@@ -8190,7 +8827,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if \\n[#ENDNOTE] \{\
 .             PT_SIZE \\n[#EN_PS]u\\*[$BQUOTE_SIZE_CHANGE]
 .          \}
-.          QUAD    \\*[$BQUOTE_QUAD]
+.          if \\n[#BQUOTE_COLOR]=1 \{\
+.             nf
+\m[\\*[$BQUOTE_COLOR]]
+.             EL
+.          \}
+.          QUAD \\*[$BQUOTE_QUAD]
 .          HY
 .       \}
 .       nr #Q_TOP \\n(nl
@@ -8217,7 +8859,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   <none>
 \# *Function:
 \#   Ends the diversion P_QUOTE or B_QUOTE.  Spaces them according to
-\#   PRINT_STYLE, whether there's inter-paragraph spacing, and page
+\#   PRINTSTYLE, whether there's inter-paragraph spacing, and page
 \#   position.  TYPEWRITE treats spacing the same way in all circumstance
 \#   (viz. an extra line space).  TYPESET puts in only half
 \#   line spaces if the entire quote plus 1 line of body under the quote
@@ -8342,7 +8984,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       in \\n[#EN_TEXT_INDENT]u
 .    \}
 .    if \\n[#COLUMNS] \{\
-.       if !\\n[#ENDNOTE] \{ .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u \}
+.       if !\\n[#ENDNOTE] \{\
+.          po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
+.          nr #L_MARGIN \\n(.o
+.       \}
 .       if \\n[#ENDNOTE] \{\
 .          in \\n[#EN_TEXT_INDENT]u
 .       \}
@@ -8386,7 +9031,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #BROKEN_QUOTE 1
 .    REMOVE_INDENT
 .    ev
-.    nr #Q_DEPTH \\n[#DIVER_DEPTH]+(\\n[#LEAD]*1)
+.    nr #Q_DEPTH \\n[#DIVER_DEPTH]+\\n[#LEAD]
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
 .       if \\n[#HEAD] \{\
@@ -8432,7 +9077,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    po \\n[#L_MARGIN]u
-.    if \\n[#COLUMNS] \{ .po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u \}
+.    if \\n[#COLUMNS] \{\
+.       po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
+.       nr #L_MARGIN \\n(.o
+.    \}
 .    QUAD \\*[$DOC_QUAD]
 .    sp |\\n[#PAGE_LENGTH]u  \" To trip footer/header
 .    BLOCKQUOTE
@@ -8447,9 +9095,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# *Arguments:
 \#   <none> | <anything>
 \# *Function:
-\#   Turns page numbering off or on.
+\#   Turns page numbering off or on during document processing.
 \# *Notes:
-\#   Page numbering is on by default with .PAPER.
 \#   Default is on.
 \#
 .MAC PAGINATE END
@@ -8533,6 +9180,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# PAGNUMBER COLOR
+\# ---------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Defines string $PAGENUM_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   PAGENUM_COLOR.
+\#
+.MAC PAGENUM_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    ds $PAGENUM_COLOR \\$1
+.END
+\#
+\#
 \# PAGE NUMBER FORMAT
 \# ------------------
 \# *Arguments:
@@ -8603,15 +9266,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+.MAC PN_WITH_HYPHENS END
+.    nr #HYPHEN_ADJ \\n[#CAP_HEIGHT]/12
+.    ds $HYPHEN \v'-\En[#HYPHEN_ADJ]u'-\v'\En[#HYPHEN_ADJ]u'
+.    PRINT \m[\\*[$PAGENUM_COLOR]]\\*[$HYPHEN]\|\\n[#PAGENUMBER]\|\\*[$HYPHEN]
+.END
+\#
+\#
 \# PRINT PAGE NUMBER
 \# -----------------
 \# *Arguments:
 \#   <none>
 \# *Function:
-\#   Prints page number if PAGEINATE=1.
+\#   Prints page number if PAGINATE=1.
 \#
 .MAC PRINT_PAGE_NUMBER END
 .    ev PAGENUMBER
+.    nf
+.    na
 .    po \\n[#DOC_L_MARGIN]u
 .    ll \\n[#DOC_L_LENGTH]u
 .    ta \\n(.lu
@@ -8623,16 +9295,16 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ft  R
 .       ps 12
 .    \}
-.    if \\n[#PAGE_NUM_V_POS]=1 \{ .vs 0 \}
+.    if \\n[#PAGE_NUM_V_POS]=1 \{ .EL \}
 .    if o \{\
 .       ie \\n[#PAGE_NUM_H_POS]=1 \{ .LEFT  \}
 .       el                        \{ .RIGHT \}
 .    \}
 .    if e \{\
-.       ie \\n[#PAGE_NUM_H_POS]=1 \{ .RIGHT \}
-.       el                        \{ .LEFT  \}
+.       ie \\n[#PAGE_NUM_H_POS]=1 \{ .RIGHT  \}
+.       el                        \{ .LEFT   \}
 .    \}
-.    if \\n[#PAGE_NUM_H_POS]=2    \{.CENTER \}
+.    if \\n[#PAGE_NUM_H_POS]=2    \{ .CENTER \}
 .    if \\n[#RECTO_VERSO]=0 \{\
 .       if \\n[#PAGE_NUM_H_POS]=1 \{ .LEFT   \}
 .       if \\n[#PAGE_NUM_H_POS]=2 \{ .CENTER \}
@@ -8661,8 +9333,33 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    el \{\
-.       ie \\n[#PAGE_NUM_HYPHENS] \{ .PRINT "- \\n[#PAGENUMBER] -" \}
-.       el \{ .PRINT "\\n[#PAGENUMBER]" \}
+.       ie \\n[#PAGE_NUM_HYPHENS] \{\
+.          if '\\*[$PAGENUM_STYLE]'DIGIT' \{\
+.             di NULL
+1\\R'#CAP_HEIGHT \\n[.cht]'
+.             di
+.             PN_WITH_HYPHENS
+.          \}
+.          if '\\*[$PAGENUM_STYLE]'ROMAN' \{\
+.             di NULL
+I\\R'#CAP_HEIGHT \\n[.cht]'
+.             di
+.             PN_WITH_HYPHENS
+.          \}
+.          if '\\*[$PAGENUM_STYLE]'ALPHA' \{\
+.             di NULL
+E\\R'#CAP_HEIGHT \\n[.cht]'
+.             di
+.             PN_WITH_HYPHENS
+.          \}
+.          if '\\*[$PAGENUM_STYLE]'roman' \{\
+.             PRINT \m[\\*[$PAGENUM_COLOR]]-\|\\n[#PAGENUMBER]\|-
+.          \}
+.          if '\\*[$PAGENUM_STYLE]'alpha' \{\
+.             PRINT "\m[\\*[$PAGENUM_COLOR]]-\|\\n[#PAGENUMBER]\|-"
+.          \}
+.       \}
+.       el \{ .PRINT "\m[\\*[$PAGENUM_COLOR]]\\n[#PAGENUMBER]" \}
 .    \}
 .    ev
 .END
@@ -8713,6 +9410,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC FOOTNOTE_SIZE END
 .    ds $FN_SIZE_CHANGE \\$1
+.END
+\#
+\#
+\# FOOTNOTE COLOR
+\# --------------
+\# *Arguments:
+\#   <pre-defined XCOLOR or NEWCOLOR>
+\# *Function:
+\#   Sets register #FOOTNOTE_COLOR to 1; defines string
+\#   $FOOTNOTE_COLOR to argument.
+\# *Notes:
+\#   User must define an XCOLOR or NEWCOLOR before using
+\#   FOOTNOTE_COLOR.
+\#
+.MAC FOOTNOTE_COLOR END
+.    if \\n[#PRINT_STYLE]=1 \{ .return \}
+.    nr #FOOTNOTE_COLOR 1
+.    ds $FOOTNOTE_COLOR \\$1
 .END
 \#
 \#
@@ -8953,6 +9668,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       nr #FN_LEAD \\n[#LEAD]
 .       da FOOTNOTES
+.          if \\n[#FOOTNOTE_COLOR]=1 \{\
+.             TRAP OFF
+.             nf
+\m[\\*[$FOOTNOTE_COLOR]]
+.             EL
+.             fi
+.             TRAP
+.          \}
 .       if \\n[#EPIGRAPH] \{ .nr #FN_FOR_EPI 1 \}
 .       if \\n[#FN_DEFER_SPACE] \{\
 .          if \\n[#FN_MARKER_STYLE]=1 \{ .ALD 1v \}
@@ -9616,7 +10339,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 \# ENDNOTES PAGES PAGE NUMBERING STYLE
-\# ----
+\# -----------------------------------
 \# *Argument:
 \#   DIGIT | ROMAN | roman | ALPHA | alpha
 \# *Function:
@@ -11036,6 +11759,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       rm $RESTORE_PAGENUM_STYLE
 .    \}
 .    rm $EN_TITLE
+.    rr #PAGENUM_STYLE_SET
 .END
 \#
 \#
@@ -11095,7 +11819,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Sets header/footer/footnotes/etc... traps.
 \#     Calculates the number of lines that actually fit on a
 \#   page based on #B_MARGIN and resets page bottom trap to coincide
-\#   with the depth of that number of lines , or, if #ADJ_DOC_LEAD=1,
+\#   with the depth of that number of lines, or, if #ADJ_DOC_LEAD=1,
 \#   adjusts #DOC_LEAD so that the last line of text on a page falls
 \#   exactly on #B_MARGIN.
 \#
@@ -11218,6 +11942,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# Set up a default papersize of US letter
+\#
+.PAPER LETTER
+\#
 \# ====================================================================
 \#
 \# +++DOCUMENT PROCESSING ALIASES+++
@@ -11227,11 +11955,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# Macros
 \# ------
+.ALIAS   BLOCKQUOTE_COLOUR               BLOCKQUOTE_COLOR
 .ALIAS   BREAK_BLOCKQUOTE                BREAK_QUOTE
 .ALIAS   BREAK_CITATION                  BREAK_QUOTE
 .ALIAS   BREAK_CITE                      BREAK_QUOTE
 .ALIAS   CITATION                        BLOCKQUOTE
+.ALIAS   CITATION_COLOUR                 CITATION_COLOR
+.ALIAS   CITATION_FAMILY                 BLOCKQUOTE_FAMILY
+.ALIAS   CITATION_FONT                   BLOCKQUOTE_FONT
+.ALIAS   CITATION_SIZE                   BLOCKQUOTE_SIZE
+.ALIAS   CITATION_COLOR                  BLOCKQUOTE_COLOR
+.ALIAS   CITATION_QUAD                   BLOCKQUOTE_QUAD
 .ALIAS   CITE                            BLOCKQUOTE
+.ALIAS   CITE_COLOUR                     CITE_COLOR
+.ALIAS   CITE_FAMILY                     BLOCKQUOTE_FAMILY
+.ALIAS   CITE_FONT                       BLOCKQUOTE_FONT
+.ALIAS   CITE_SIZE                       BLOCKQUOTE_SIZE
+.ALIAS   CITE_COLOR                      BLOCKQUOTE_COLOR
+.ALIAS   CITE_QUAD                       BLOCKQUOTE_QUAD
 .ALIAS   DOC_R_MARGIN                    DOC_RIGHT_MARGIN
 .ALIAS   DOC_L_MARGIN                    DOC_LEFT_MARGIN
 .ALIAS   DOC_L_LENGTH                    DOC_LINE_LENGTH
@@ -11239,105 +11980,138 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS   DOC_LMARGIN                     DOC_LEFT_MARGIN
 .ALIAS   DOC_LLENGTH                     DOC_LINE_LENGTH
 .ALIAS   DOC_FAM                         DOC_FAMILY
-.ALIAS   FILL                            QUAD
-.ALIAS   PP_FT                           PP_FONT
-.ALIAS   DOC_PS                          DOC_PT_SIZE
 .ALIAS   DOC_LS                          DOC_LEAD
+.ALIAS   DOC_PS                          DOC_PT_SIZE
+.ALIAS   DOCHEADER_COLOUR                DOCHEADER_COLOUR
+.ALIAS   EPIGRAPH_COLOUR                 EPIGRAPH_COLOR
+.ALIAS   FILL                            QUAD
+.ALIAS   FINIS_COLOUR                    FINIS_COLOR
+.ALIAS   HEAD_COLOUR                     HEAD_COLOR
+.ALIAS   LINEBREAK_COLOUR                LINEBREAK_COLOR
 .ALIAS   PAGENUM                         PAGENUMBER
+.ALIAS   PAGENUM_COLOUR                  PAGENUM_COLOR
 .ALIAS   PAGINATION                      PAGINATE
+.ALIAS   PARAHEAD_COLOUR                 PARAHEAD_COLOR
+.ALIAS   PP_FT                           PP_FONT
+.ALIAS   QUOTE_COLOUR                    QUOTE_COLOR
+.ALIAS   SUBHEAD_COLOUR                  SUBHEAD_COLOR
 .ALIAS   TOC_FAM                         TOC_FAM
 .ALIAS   TOC_PS                          TOC_PT_SIZE
 \#
 \# HEADER and FOOTER aliases for HDRFTR macros.
 \#
-.ALIAS   ENDNOTES_HEADER_CENTER          ENDNOTES_HDRFTR_CENTER
-.ALIAS   HEADER_FAMILY                   HDRFTR_FAMILY
-.ALIAS   HEADER_FAM                      HDRFTR_FAMILY
-.ALIAS   HEADER_SIZE                     HDRFTR_SIZE
-.ALIAS   HEADER_PLAIN                    HDRFTR_PLAIN
-.ALIAS   HEADER_RULE_GAP                 HDRFTR_RULE_GAP
-.ALIAS   HEADER_RULE                     HDRFTR_RULE
-.ALIAS   HEADER_LEFT                     HDRFTR_LEFT
-.ALIAS   HEADER_LEFT_FAMILY              HDRFTR_LEFT_FAMILY
-.ALIAS   HEADER_LEFT_FAM                 HDRFTR_LEFT_FAMILY
-.ALIAS   HEADER_LEFT_FONT                HDRFTR_LEFT_FONT
-.ALIAS   HEADER_LEFT_FT                  HDRFTR_LEFT_FONT
-.ALIAS   HEADER_LEFT_SIZE                HDRFTR_LEFT_SIZE
-.ALIAS   HEADER_LEFT_PS                  HDRFTR_LEFT_SIZE
-.ALIAS   HEADER_LEFT_CAPS                HDRFTR_LEFT_CAPS
-.ALIAS   HEADER_CENTER                   HDRFTR_CENTER
-.ALIAS   HEADER_CENTRE                   HDRFTR_CENTER
-.ALIAS   HEADER_CENTER_FAMILY            HDRFTR_CENTER_FAMILY
-.ALIAS   HEADER_CENTRE_FAMILY            HDRFTR_CENTER_FAMILY
-.ALIAS   HEADER_CENTER_FAM               HDRFTR_CENTER_FAMILY
-.ALIAS   HEADER_CENTRE_FAM               HDRFTR_CENTER_FAMILY
-.ALIAS   HEADER_CENTER_FONT              HDRFTR_CENTER_FONT
-.ALIAS   HEADER_CENTRE_FONT              HDRFTR_CENTER_FONT
-.ALIAS   HEADER_CENTER_FT                HDRFTR_CENTER_FONT
-.ALIAS   HEADER_CENTRE_FT                HDRFTR_CENTER_FONT
-.ALIAS   HEADER_CENTER_SIZE              HDRFTR_CENTER_SIZE
-.ALIAS   HEADER_CENTRE_SIZE              HDRFTR_CENTER_SIZE
-.ALIAS   HEADER_CENTER_PS                HDRFTR_CENTER_SIZE
-.ALIAS   HEADER_CENTRE_PS                HDRFTR_CENTER_SIZE
-.ALIAS   HEADER_CENTER_PAD               HDRFTR_CENTER_PAD
-.ALIAS   HEADER_CENTRE_PAD               HDRFTR_CENTER_PAD
-.ALIAS   HEADER_CENTER_CAPS              HDRFTR_CENTER_CAPS
-.ALIAS   HEADER_CENTRE_CAPS              HDRFTR_CENTER_CAPS
-.ALIAS   HEADER_RIGHT                    HDRFTR_RIGHT
-.ALIAS   HEADER_RIGHT_FAMILY             HDRFTR_RIGHT_FAMILY
-.ALIAS   HEADER_RIGHT_FAM                HDRFTR_RIGHT_FAMILY
-.ALIAS   HEADER_RIGHT_FONT               HDRFTR_RIGHT_FONT
-.ALIAS   HEADER_RIGHT_FT                 HDRFTR_RIGHT_FONT
-.ALIAS   HEADER_RIGHT_SIZE               HDRFTR_RIGHT_SIZE
-.ALIAS   HEADER_RIGHT_PS                 HDRFTR_RIGHT_SIZE
-.ALIAS   HEADER_RIGHT_CAPS               HDRFTR_RIGHT_CAPS
-.ALIAS   HEADER_RECTO                    HDRFTR_RECTO
-.ALIAS   HEADER_VERSO                    HDRFTR_VERSO
 .ALIAS   ENDNOTES_FOOTER_CENTER          ENDNOTES_HDRFTR_CENTER
-.ALIAS   FOOTER_FAMILY                   HDRFTR_FAMILY
+.ALIAS   ENDNOTES_HEADER_CENTER          ENDNOTES_HDRFTR_CENTER
+.ALIAS   ENDNOTES_FOOTER_CENTRE          ENDNOTES_HDRFTR_CENTRE
+.ALIAS   ENDNOTES_HEADER_CENTRE          ENDNOTES_HDRFTR_CENTRE
+.ALIAS   FOOTER_CENTER_CAPS              HDRFTR_CENTER_CAPS
+.ALIAS   FOOTER_CENTER_COLOR             HDRFTR_CENTER_COLOR
+.ALIAS   FOOTER_CENTER_COLOUR            HDRFTR_CENTER_COLOUR
+.ALIAS   FOOTER_CENTER_FAM               HDRFTR_CENTER_FAMILY
+.ALIAS   FOOTER_CENTER_FAMILY            HDRFTR_CENTER_FAMILY
+.ALIAS   FOOTER_CENTER_FONT              HDRFTR_CENTER_FONT
+.ALIAS   FOOTER_CENTER_FT                HDRFTR_CENTER_FONT
+.ALIAS   FOOTER_CENTER                   HDRFTR_CENTER
+.ALIAS   FOOTER_CENTER_PAD               HDRFTR_CENTER_PAD
+.ALIAS   FOOTER_CENTER_PS                HDRFTR_CENTER_SIZE
+.ALIAS   FOOTER_CENTER_SIZE              HDRFTR_CENTER_SIZE
+.ALIAS   FOOTER_CENTRE_CAPS              HDRFTR_CENTER_CAPS
+.ALIAS   FOOTER_CENTRE_COLOR             HDRFTR_CENTRE_COLOR
+.ALIAS   FOOTER_CENTRE_COLOUR            HDRFTR_CENTRE_COLOUR
+.ALIAS   FOOTER_CENTRE_FAM               HDRFTR_CENTER_FAMILY
+.ALIAS   FOOTER_CENTRE_FAMILY            HDRFTR_CENTER_FAMILY
+.ALIAS   FOOTER_CENTRE_FONT              HDRFTR_CENTER_FONT
+.ALIAS   FOOTER_CENTRE_FT                HDRFTR_CENTER_FONT
+.ALIAS   FOOTER_CENTRE                   HDRFTR_CENTER
+.ALIAS   FOOTER_CENTRE_PAD               HDRFTR_CENTER_PAD
+.ALIAS   FOOTER_CENTRE_PS                HDRFTR_CENTER_SIZE
+.ALIAS   FOOTER_CENTRE_SIZE              HDRFTR_CENTER_SIZE
+.ALIAS   FOOTER_COLOR                    HDRFTR_COLOR
+.ALIAS   FOOTER_COLOUR                   HDRFTR_COLOR
 .ALIAS   FOOTER_FAM                      HDRFTR_FAMILY
-.ALIAS   FOOTER_SIZE                     HDRFTR_SIZE
-.ALIAS   FOOTER_PLAIN                    HDRFTR_PLAIN
-.ALIAS   FOOTER_RULE_GAP                 HDRFTR_RULE_GAP
-.ALIAS   FOOTER_RULE                     HDRFTR_RULE
-.ALIAS   FOOTER_LEFT                     HDRFTR_LEFT
-.ALIAS   FOOTER_LEFT_FAMILY              HDRFTR_LEFT_FAMILY
+.ALIAS   FOOTER_FAMILY                   HDRFTR_FAMILY
+.ALIAS   FOOTER_LEFT_CAPS                HDRFTR_LEFT_CAPS
+.ALIAS   FOOTER_LEFT_COLOR               HDRFTR_LEFT_COLOR
+.ALIAS   FOOTER_LEFT_COLOUR              HDRFTR_LEFT_COLOUR
 .ALIAS   FOOTER_LEFT_FAM                 HDRFTR_LEFT_FAMILY
+.ALIAS   FOOTER_LEFT_FAMILY              HDRFTR_LEFT_FAMILY
 .ALIAS   FOOTER_LEFT_FONT                HDRFTR_LEFT_FONT
 .ALIAS   FOOTER_LEFT_FT                  HDRFTR_LEFT_FONT
-.ALIAS   FOOTER_LEFT_SIZE                HDRFTR_LEFT_SIZE
+.ALIAS   FOOTER_LEFT                     HDRFTR_LEFT
 .ALIAS   FOOTER_LEFT_PS                  HDRFTR_LEFT_SIZE
-.ALIAS   FOOTER_LEFT_CAPS                HDRFTR_LEFT_CAPS
-.ALIAS   FOOTER_CENTER                   HDRFTR_CENTER
-.ALIAS   FOOTER_CENTRE                   HDRFTR_CENTER
-.ALIAS   FOOTER_CENTER_FAMILY            HDRFTR_CENTER_FAMILY
-.ALIAS   FOOTER_CENTRE_FAMILY            HDRFTR_CENTER_FAMILY
-.ALIAS   FOOTER_CENTER_FAM               HDRFTR_CENTER_FAMILY
-.ALIAS   FOOTER_CENTRE_FAM               HDRFTR_CENTER_FAMILY
-.ALIAS   FOOTER_CENTER_FONT              HDRFTR_CENTER_FONT
-.ALIAS   FOOTER_CENTRE_FONT              HDRFTR_CENTER_FONT
-.ALIAS   FOOTER_CENTER_FT                HDRFTR_CENTER_FONT
-.ALIAS   FOOTER_CENTRE_FT                HDRFTR_CENTER_FONT
-.ALIAS   FOOTER_CENTER_SIZE              HDRFTR_CENTER_SIZE
-.ALIAS   FOOTER_CENTRE_SIZE              HDRFTR_CENTER_SIZE
-.ALIAS   FOOTER_CENTER_PAD               HDRFTR_CENTER_PAD
-.ALIAS   FOOTER_CENTRE_PAD               HDRFTR_CENTER_PAD
-.ALIAS   FOOTER_CENTER_PS                HDRFTR_CENTER_SIZE
-.ALIAS   FOOTER_CENTRE_PS                HDRFTR_CENTER_SIZE
-.ALIAS   FOOTER_CENTER_CAPS              HDRFTR_CENTER_CAPS
-.ALIAS   FOOTER_CENTRE_CAPS              HDRFTR_CENTER_CAPS
-.ALIAS   FOOTER_RIGHT                    HDRFTR_RIGHT
-.ALIAS   FOOTER_RIGHT_FAMILY             HDRFTR_RIGHT_FAMILY
+.ALIAS   FOOTER_LEFT_SIZE                HDRFTR_LEFT_SIZE
+.ALIAS   FOOTER_PLAIN                    HDRFTR_PLAIN
+.ALIAS   FOOTER_RECTO                    HDRFTR_RECTO
+.ALIAS   FOOTER_RIGHT_CAPS               HDRFTR_RIGHT_CAPS
+.ALIAS   FOOTER_RIGHT_COLOR              HDRFTR_RIGHT_COLOR
+.ALIAS   FOOTER_RIGHT_COLOUR             HDRFTR_RIGHT_COLOUR
 .ALIAS   FOOTER_RIGHT_FAM                HDRFTR_RIGHT_FAMILY
+.ALIAS   FOOTER_RIGHT_FAMILY             HDRFTR_RIGHT_FAMILY
 .ALIAS   FOOTER_RIGHT_FONT               HDRFTR_RIGHT_FONT
 .ALIAS   FOOTER_RIGHT_FT                 HDRFTR_RIGHT_FONT
-.ALIAS   FOOTER_RIGHT_SIZE               HDRFTR_RIGHT_SIZE
+.ALIAS   FOOTER_RIGHT                    HDRFTR_RIGHT
 .ALIAS   FOOTER_RIGHT_PS                 HDRFTR_RIGHT_SIZE
-.ALIAS   FOOTER_RIGHT_CAPS               HDRFTR_RIGHT_CAPS
-.ALIAS   FOOTER_RECTO                    HDRFTR_RECTO
+.ALIAS   FOOTER_RIGHT_SIZE               HDRFTR_RIGHT_SIZE
+.ALIAS   FOOTER_RULE_COLOR               HDRFTR_RULE_COLOR
+.ALIAS   FOOTER_RULE_GAP                 HDRFTR_RULE_GAP
+.ALIAS   FOOTER_RULE                     HDRFTR_RULE
+.ALIAS   FOOTER_SIZE                     HDRFTR_SIZE
 .ALIAS   FOOTER_VERSO                    HDRFTR_VERSO
-.ALIAS   SWITCH_HEADERS                  SWITCH_HDRFTR
+.ALIAS   HEADER_CENTER_CAPS              HDRFTR_CENTER_CAPS
+.ALIAS   HEADER_CENTER_COLOR             HDRFTR_CENTER_COLOR
+.ALIAS   HEADER_CENTER_COLOUR            HDRFTR_CENTER_COLOUR
+.ALIAS   HEADER_CENTER_FAM               HDRFTR_CENTER_FAMILY
+.ALIAS   HEADER_CENTER_FAMILY            HDRFTR_CENTER_FAMILY
+.ALIAS   HEADER_CENTER_FONT              HDRFTR_CENTER_FONT
+.ALIAS   HEADER_CENTER_FT                HDRFTR_CENTER_FONT
+.ALIAS   HEADER_CENTER                   HDRFTR_CENTER
+.ALIAS   HEADER_CENTER_PAD               HDRFTR_CENTER_PAD
+.ALIAS   HEADER_CENTER_PS                HDRFTR_CENTER_SIZE
+.ALIAS   HEADER_CENTER_SIZE              HDRFTR_CENTER_SIZE
+.ALIAS   HEADER_CENTRE_CAPS              HDRFTR_CENTER_CAPS
+.ALIAS   HEADER_CENTRE_COLOR             HDRFTR_CENTRE_COLOR
+.ALIAS   HEADER_CENTRE_COLOUR            HDRFTR_CENTRE_COLOUR
+.ALIAS   HEADER_CENTRE_FAM               HDRFTR_CENTER_FAMILY
+.ALIAS   HEADER_CENTRE_FAMILY            HDRFTR_CENTER_FAMILY
+.ALIAS   HEADER_CENTRE_FONT              HDRFTR_CENTER_FONT
+.ALIAS   HEADER_CENTRE_FT                HDRFTR_CENTER_FONT
+.ALIAS   HEADER_CENTRE                   HDRFTR_CENTER
+.ALIAS   HEADER_CENTRE_PAD               HDRFTR_CENTER_PAD
+.ALIAS   HEADER_CENTRE_PS                HDRFTR_CENTER_SIZE
+.ALIAS   HEADER_CENTRE_SIZE              HDRFTR_CENTER_SIZE
+.ALIAS   HEADER_COLOR                    HDRFTR_COLOR
+.ALIAS   HEADER_COLOUR                   HDRFTR_COLOR
+.ALIAS   HEADER_FAM                      HDRFTR_FAMILY
+.ALIAS   HEADER_FAMILY                   HDRFTR_FAMILY
+.ALIAS   HEADER_LEFT_CAPS                HDRFTR_LEFT_CAPS
+.ALIAS   HEADER_LEFT_COLOR               HDRFTR_LEFT_COLOR
+.ALIAS   HEADER_LEFT_COLOUR              HDRFTR_LEFT_COLOUR
+.ALIAS   HEADER_LEFT_FAM                 HDRFTR_LEFT_FAMILY
+.ALIAS   HEADER_LEFT_FAMILY              HDRFTR_LEFT_FAMILY
+.ALIAS   HEADER_LEFT_FONT                HDRFTR_LEFT_FONT
+.ALIAS   HEADER_LEFT_FT                  HDRFTR_LEFT_FONT
+.ALIAS   HEADER_LEFT                     HDRFTR_LEFT
+.ALIAS   HEADER_LEFT_PS                  HDRFTR_LEFT_SIZE
+.ALIAS   HEADER_LEFT_SIZE                HDRFTR_LEFT_SIZE
+.ALIAS   HEADER_PLAIN                    HDRFTR_PLAIN
+.ALIAS   HEADER_RECTO                    HDRFTR_RECTO
+.ALIAS   HEADER_RIGHT_CAPS               HDRFTR_RIGHT_CAPS
+.ALIAS   HEADER_RIGHT_COLOR              HDRFTR_RIGHT_COLOR
+.ALIAS   HEADER_RIGHT_COLOUR             HDRFTR_RIGHT_COLOUR
+.ALIAS   HEADER_RIGHT_FAM                HDRFTR_RIGHT_FAMILY
+.ALIAS   HEADER_RIGHT_FAMILY             HDRFTR_RIGHT_FAMILY
+.ALIAS   HEADER_RIGHT_FONT               HDRFTR_RIGHT_FONT
+.ALIAS   HEADER_RIGHT_FT                 HDRFTR_RIGHT_FONT
+.ALIAS   HEADER_RIGHT                    HDRFTR_RIGHT
+.ALIAS   HEADER_RIGHT_PS                 HDRFTR_RIGHT_SIZE
+.ALIAS   HEADER_RIGHT_SIZE               HDRFTR_RIGHT_SIZE
+.ALIAS   HEADER_RULE_COLOR               HDRFTR_RULE_COLOR
+.ALIAS   HEADER_RULE_GAP                 HDRFTR_RULE_GAP
+.ALIAS   HEADER_RULE                     HDRFTR_RULE
+.ALIAS   HEADER_SIZE                     HDRFTR_SIZE
+.ALIAS   HEADER_VERSO                    HDRFTR_VERSO
 .ALIAS   SWITCH_FOOTERS                  SWITCH_HDRFTR
+.ALIAS   SWITCH_HEADERS                  SWITCH_HDRFTR
 \#
 \# Support aliases
 \#

@@ -2336,26 +2336,32 @@ divorced from groff's notion of tabs.  I recommend reading this
 section carefully in order to understand how
 <strong>mom</strong> handles tabs.
 <p>
+<strong>NOTE:</strong> see the section
+<a href="typemacdoc.html#TYPESETTING">Using typesetting macros during document processing</a>
+for re-assuring information on the use of tabs during
+<a href="docprocessing.html#DOCPROCESSING">document processing</a>.
+<p>
+
 <a name="TYPESETTING_TABS"><h3><u>Typesetting tabs</u></h3></a>
 <p>
 Typesetting tabs are defined by both an indent from the left margin and
 a line length.  This is quite different from typewriter-style tab stops
 (the groff norm) that only define the left indent.  In conjunction
-with the multi-column macros, typesetting tabs significantly facilitate
+with the
+<a href="#MULTI_COLUMNS">multi-column macros</a>,
+typesetting tabs significantly facilitate
 tabular and columnar work.
 <p>
-Typesetting tabs are created with the <strong>TAB_SET</strong>
+Typesetting tabs are created with the
+<a href="#TAB_SET">TAB_SET</a>
 macro. <strong>TAB_SET</strong> identifies the tab (by number),
 establishes its left indent and line length, and optionally sets
 a quad direction and fill mode.  After tabs have been created with
 <strong>TAB_SET</strong>, they can be called at any time with the
-<strong>TAB</strong> macro.
+<a href="#TAB">TAB</a>
+macro.
 <p>
-<strong>NOTE:</strong> see the section
-<a href="typemacdoc.html#TYPESETTING">Typesetting Macros in Document Processing</a>
-for information and advice on using tabs with the
-<a href="docprocessing.html#DOCPROCESSING">document processing macros</a>.
-<p>
+
 <a name="TYPESETTING_TABS_TUT"><h3><u>Quickie tutorial on typesetting tabs</u></h3></a>
 <p>
 Say you want to set up three tabs to produce an employee evaluation
@@ -2516,10 +2522,14 @@ the tab and sets the type flush left.
 <p>
 <a name="STRING_TABS"><h3><u>String tabs (autotabs)</u></h3></a>
 <p>
-String tabs let you mark off tab positions inline.  Left indents
-and line lengths are calculated from the beginning and end positions of
-the marks.  This is especially useful when tab indents and lengths
-need to be determined from the text that goes in each tab.
+String tabs let you mark off tab positions with
+<a href="definitions.html#TERMS_INLINES">inline escapes</a>
+embedded in
+<a href="definitions.html#TERMS_INPUTLINE">input lines</a>.
+Left indents and line lengths are calculated from the beginning and
+end positions of the marks.  This is especially useful when tab
+indents and lengths need to be determined from the text that goes in
+each tab.
 <p>
 Setting up string tabs is a two-step procedure.  First, you enter an
 input line in which you mark off where you want tabs to begin and end.
@@ -2567,8 +2577,12 @@ The first thing you need for string tabs is an
 <a href="definitions.html#TERMS_INPUTLINE">input line</a>
 with tab positions marked on it.  Tabs are marked with the
 <a href="definitions.html#TERMS_INLINES">inline escapes</a>
-<strong>\*[ST#]</strong> and <strong>\*[ST#X]</strong>.  (In this
-example, we enclose the input line with the
+<a href="#ST_INLINE">\*[ST&lt;n&gt;]</a>
+and
+<a href="#ST_INLINE">\*[ST&lt;n&gt;X]</a>,
+where <strong>&lt;n&gt;</strong>
+is the number you want the tab to have.  (In this example, we
+enclose the input line with the
 <a href="goodies.html#SILENT">SILENT</a>
 macro so the line doesn't print.  We also use the
 <a href="goodies.html#PAD">PAD</a>
@@ -2579,7 +2593,7 @@ The setup looks like this:
 <p>
 <pre>
 	.SILENT
-	.PAD "\*[ST1]CRITERION\*[ST1X]\*[FP12]\*[ST2]EVALUATION\*[ST2X]\*[FP12]\*[ST3]#\*[ST3X]"
+	.PAD "\*[ST1]CRITERION\*[ST1X]\*[FWD 12p]\*[ST2]EVALUATION\*[ST2X]\*[FWD 12p]\*[ST3]#\*[ST3X]"
 	.SILENT OFF
 </pre>
 
@@ -2593,10 +2607,10 @@ Here's what it means when broken down into its component parts:
 		<kbd>\*[ST1]CRITERION\*[ST1X]</kbd>
 		<br>
 	<li>We want a 1 pica (12 points) gutter between tab 1 and 2,
-		so we insert 12 points of space with \*[FP12]
-		(<strong>F</strong>orward <strong>P</strong>oints 12):
+		so we insert 12 points of space with \*[FWD 12p]
+		(<strong>F</strong>or<strong>W</strong>ar<strong>D</strong> 12 points):
 		<p>
-		<kbd>\*[FP12]</kbd>
+		<kbd>\*[FWD 12p]</kbd>
 		<br>
 	<li>The longest line in tab 2 is &quot;EVALUATION&quot;, so
 		we enclose EVALUATION with begin/end markers for string
@@ -2605,9 +2619,9 @@ Here's what it means when broken down into its component parts:
 		<kbd>\*[ST2]EVALUATION\*[ST2X]</kbd>
 		<br>
 	<li>We want 1 pica (12 points) between tab 2 and 3, so we
-		insert 12 points of space with another \*[FP12]:
+		insert 12 points of space with another \*[FWD 12p]:
 		<p>
-		<kbd>\*[FP12]</kbd>
+		<kbd>\*[FWD 12p]</kbd>
 		<br>
 	<li>We want tab 3 to be as long as whatever space remains on
 		the current line length, so we enclose the
@@ -2659,7 +2673,7 @@ evaluation form utilizing string tabs.
 	.HY OFF
 	.SS 0
 	.SILENT
-	.PAD "\*[ST1]CRITERION\*[ST1X]\*[FP12]\*[ST2]EVALUATION\*[ST2X]\*[FP12]\*[ST3]#\*[ST3X]"
+	.PAD "\*[ST1]CRITERION\*[ST1X]\*[FWD 12p]\*[ST2]EVALUATION\*[ST2X]\*[FWD 12p]\*[ST3]#\*[ST3X]"
 	.SILENT OFF
 	.ST  1  L
 	.ST  2  L
@@ -2707,8 +2721,8 @@ it again.  You'll see that the tab structure remains identical (tab
 between tabs is still 1 pica), while the position and length 
 of the tabs have altered because of the new point size.
 <p>
-Now try increasing the gutters to 2 picas (put an additional
-<kbd>\*[FP12]</kbd> after each <kbd>\*[FP12]</kbd>).  Preview the
+Now try increasing the gutters to 2 picas (<kbd>\*[FWD 24p]</kbd> or
+<kbd>\*[FWD 2P]</kbd> instead of <kbd>\*[FWD 12p]</kbd>).  Preview the
 file again, and notice how the tab structure remains the same, but
 the gutters are wider.
 <p>

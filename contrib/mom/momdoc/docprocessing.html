@@ -8,7 +8,7 @@
 <!====================================================================>
 
 <a href="docelement.html#TOP">Next</a>&nbsp;&nbsp;
-<a href="inlines.html#TOP">Prev</a>&nbsp;&nbsp;
+<a href="color.html#TOP">Prev</a>&nbsp;&nbsp;
 <a href="toc.html">Back to Table of Contents</a>
 <p>
 <a name="TOP"></a>
@@ -50,6 +50,9 @@
 		<li><a href="#STYLE_BEFORE_START"><strong>Changing type/style parameters prior to START</strong></a>
 		<ul>
 			<li><a href="#TYPE_BEFORE_START">Using typesetting macros prior to START</a>
+			<ul>
+				<li><a href="#COLOR">Colour</a>
+			</ul>
 			<li><a href="#DOC_LEAD_ADJUST">Adjusting document leading to fill pages -- DOC_LEAD_ADJUST</a>
 			<li><a href="#DOCHEADER">Managing the document header</a>
 			<ul>
@@ -1087,6 +1090,23 @@ as well as in page headers.
 <a href="headfootpage.html#HEADER_STYLE">Default specs for headers</a>
 for how <strong>mom</strong> outputs each part of the page header.)
 <p>
+Additionally, if you wish the name of this particular kind of
+document to be coloured, you can pass <strong>DOCTYPE NAMED</strong>
+a third (optional) argument: the name of a colour pre-defined (or
+&quot;initialized&quot;) with
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+or
+<a href="color.html#XCOLOR">XCOLOR</a>.
+For example, if you have a doctype named &quot;Warning&quot;, and
+you'd like &quot;Warning&quot; to be in red, assuming you've
+pre-defined (or &quot;initialized&quot;) the color, red, this is
+what the <strong>DOCTYPE</strong> entry would look like:
+<p>
+<pre>
+	.DOCTYPE NAME "Warning" red
+</pre>
+
+<p>
 <strong>LETTER</strong> tells mom you're writing a letter.  See
 the section
 <a href="letters.html#INTRO">Writing Letters</a>
@@ -1394,29 +1414,34 @@ the
 (below) have the following meanings:
 <p>
 <pre>
-	L_MARGIN         Left margin of pages, including headers/footers
-	R_MARGIN         Right margin of pages, including headers/footers
-	T_MARGIN         The point at which running text (i.e. not
-	                 headers/footers or page numbers) starts on each page
-	*B_MARGIN        The point at which running text (i.e. not
-	(see note)       headers/footers or page numbers) ends on each page
+	L_MARGIN       Left margin of pages, including headers/footers
+	R_MARGIN       Right margin of pages, including headers/footers
+	T_MARGIN       The point at which running text (i.e. not
+	               headers/footers or page numbers) starts on each page
+	B_MARGIN*      The point at which running text (i.e. not
+	(see note)     headers/footers or page numbers) ends on each page
 
-	PAGE             If you use PAGE, its final four arguments have the
-	                 same meaning as L_ R_ T_ and B_MARGIN above.)
+	PAGE           If you use PAGE, its final four arguments have the
+	               same meaning as L_ R_ T_ and B_MARGIN above.)
 
-	LL               The line length for everything on the page;
-	                 equivalent to setting the right margin with R_MARGIN
-	FAMILY           The family of all type in the document
-	PT_SIZE          The point size of type in paragraphs; mom uses this
-	                 calculate automatic point size changes (e.g. for heads,
-	                 footnotes, quotes, headers, etc)
-	**LS/AUTOLEAD    The leading used in paragraphs; all leading and spacing
-	                 of running text is calculated from this
-	QUAD             Affects paragraphs only
+	LL             The line length for everything on the page;
+	               equivalent to setting the right margin with R_MARGIN
+	FAMILY         The family of all type in the document
+	PT_SIZE        The point size of type in paragraphs; mom uses this
+	               calculate automatic point size changes (e.g. for heads,
+	               footnotes, quotes, headers, etc)
+	LS/AUTOLEAD**  The leading used in paragraphs; all leading and spacing
+	               of running text is calculated from this
+
+	QUAD/JUSTIFY   Affects paragraphs only
+	LEFT           No effect***
+	RIGHT          No effect***
+	CENTER         No effect***
 
 ------
- *See <a href="headfootpage.html#FOOTER_MARGIN">FOOTER MARGIN AND BOTTOM MARGIN</a> for an important warning
-**See <a href="#DOC_LEAD_ADJUST">DOC_LEAD_ADJUST</a>
+  *See <a href="headfootpage.html#FOOTER_MARGIN">FOOTER MARGIN AND BOTTOM MARGIN</a> for an important warning
+ **See <a href="#DOC_LEAD_ADJUST">DOC_LEAD_ADJUST</a>
+***See <a href="#LRC_NOTE">Special note</a>
 </pre>
 
 Other macros that deal with type style, or refinements thereof
@@ -1429,7 +1454,55 @@ If you want to change any of the basic parameters (above)
 document globally (as if you'd entered them <em>before</em>
 <strong>START</strong>), you must use the macros listed in
 <a href="#DOC_PARAM_MACROS">Changing document-wide style parameters after START</a>.
+
+<a name="LRC_NOTE"></a>
+<h3><u>Special note on .LEFT, .RIGHT and .CENTER prior to START</u></h3>
 <p>
+In a word, these three macros have no effect on document processing
+when invoked prior to <strong>START</strong>.
+<p>
+All <strong>mom</strong>'s document element tags
+(<strong>PP</strong>, <strong>HEAD</strong>,
+<strong>BLOCKQUOTE</strong>, <strong>FOOTNOTE</strong>, etc.)
+except
+<a href="docelement.html#QUOTE">QUOTE</a>
+set a
+<a href="definitions.html#TERMS_FILLED">fill mode</a>
+as soon as they're invoked.  If you wish to turn fill mode off for
+the duration of any tag (with
+<a href="typesetting.html#LRC">.LEFT, .RIGHT or .CENTER</a>)
+you must do so immediately after invoking the tag.  Furthermore,
+the change affects <em>only</em> the current invocation of the tag.
+Subsequent invocations of the same tag for which you want the same
+change require that you invoke <strong>LEFT</strong>,
+<strong>RIGHT</strong> or <strong>CENTER</strong> immediately after
+every invocation of the tag.
+
+<!---COLOR--->
+<a name="COLOR"><h2><u>Colour</u></h2></a>
+
+Although it doesn't really matter where you define/initialize
+colours for use in document processing (see
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+and
+<a href="color.html#XCOLOR">XCOLOR</a>
+in the section
+<a href="color.html#COLOR_INTRO">Coloured text</a>),
+I recommend doing so before you begin document processing with
+<a href="#START">START</a>.
+<p>
+The macro,
+<a href="color.html#COLOR">COLOR</a>,
+and the
+<a href="definitions.html#TERMS_INLINES">inline escape</a>,
+<a href="color.html#COLOR_INLINE">\[&lt;colorname&gt;]</a>,
+can be used at any time during document processing for occasional
+colour effects.  However, consistent and reliable colourizing of
+various document elements (the docheader, heads, linebreaks,
+footnotes, pagenumbers, and so on) must be managed through the use
+of the
+<a href="docelement.html#DOCELEMENT_CONTROL">document element control macros</a>.
+<br>
 
 <!---DOC_LEAD_ADJUST--->
 
@@ -1602,6 +1675,25 @@ is CHAPTER,
 The
 <a href="definitions.html#TERMS_FAMILY">family</a>
 is the prevailing family of the whole document.
+<p>
+<strong>NOTE:</strong> If your <strong>DOCTYPE</strong> is
+<strong>CHAPTER</strong> and you have both &quot;Chapter #&quot;
+and a &quot;Chapter Title&quot; (as above), you may find the
+<a href="definitions.html#TERMS_LEADING">leading</a>
+a bit cramped (owing to <strong>mom</strong>'s default docheader
+leading.  If this is the case, you can adjust the leading either
+with
+<a href="#ADJUST_LEADING">DOCHEADER_LEAD</a>
+or by including the
+<a name="definitions.html#TERMS_INLINES">inline escape</a>,
+<a href="inlines.html#DOWN">\*[DOWN]</a>,
+in the argument you pass to
+<a href="#CHAPTER_TITLE">CHAPTER_TITLE</a>, like this:
+<p>
+<pre>
+	.CHAPTER_TITLE "\*[DOWN 2p]Why Not Patent Calculus?"
+</pre>
+
 
 <h3><u>The docheader macros to:</u></h3>
 <ol>
@@ -1609,6 +1701,7 @@ is the prevailing family of the whole document.
 	<li><a href="#ADJUST_LEADING">Adjust the docheader leading</a>
 	<li><a href="#CHANGE_FAMILY">Change the family of docheader elements</a>
 	<li><a href="#CHANGE_FONT">Change the font of docheader elements</a>
+	<li><a href="#CHANGE_COLOR">Change the colour of the docheader</a>
 	<li><a href="#CHANGE_SIZE">Adjust the size of docheader elements</a>
 	<li><a href="#CHANGE_ATTRIBUTE">Change the attribution string (&quot;by&quot;)</a>
 </ol>
@@ -1713,7 +1806,47 @@ they do for
 <a href="typesetting.html#FONT">FT</a>.
 <p>
 
-<a name="CHANGE_SIZE"><h3><u>5. Adjust the size of docheader elements</u></h3></a>
+<a name="CHANGE_COLOR"><h3><u>5. Change the colour of the docheader</u></h3></a>
+<p>
+The following macros let you change the color of each docheader
+element separately.  You must pre-define (or
+&quot;initialize&quot;) the color with
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+or
+<a href="color.html#XCOLOR">XCOLOR</a>.
+<p>
+<ul>
+<li><strong>TITLE_COLOR</strong> <var>&lt;colorname&gt;</var>
+<li><strong>SUBTITLE_COLOR</strong> <var>&lt;colorname&gt;</var>
+<li><strong>ATTRIBUTE_COLOR</strong> <var>&lt;colorname&gt;</var>
+(the &quot;by&quot; string that precedes the author[s] name[s])
+<li><strong>AUTHOR_COLOR</strong> <var>&lt;colorname&gt;</var>
+<li><strong>DOCTYPE_COLOR</strong>  <var>&lt;colorname&gt;</var> (if
+<a href="#DOCTYPE">DOCTYPE</a> is NAMED)
+</ul>
+<p>
+It is not recommended that you embed colour (with the
+<a href="definitions.html#TERMS_INLINES">inline escape</a>,
+<a href="color.html#COLOR_INLINE">\*[&lt;colorname&gt;]</a>)
+in the strings passed to
+<strong>TITLE</strong>, <strong>SUBTITLE</strong>,
+<strong>AUTHOR</strong> or the name you give <strong>DOCTYPE
+NAMED</strong>.  The strings passed to these macros are used to
+generate page
+<a href="definitions.html#TERMS_HEADER">headers</a>
+and
+<a href="definitions.html#TERMS_FOOTER">footers</a>.
+An embedded colour will cause the string to be colourized any time
+it appears in headers or footers.  (If you want headers or footers
+colourized, or parts thereof, use the header/footer control macros
+<p>
+If you want to colourize the entire docheader, use the macro
+<p>
+<ul>
+<li><strong>DOCHEADER_COLOR</strong> <var>&lt;color name&gt;</var>.
+</ul>
+
+<a name="CHANGE_SIZE"><h3><u>6. Adjust the size of docheader elements</u></h3></a>
 <p>
 The following macros let you adjust the point size of each docheader
 element separately.
@@ -1748,7 +1881,7 @@ default = +3
 Simply pass the appropriate macro the size adjustment you want.
 <p>
 
-<a name="CHANGE_ATTRIBUTE"><h3><u>6. Change the attribution string (&quot;by&quot;)</u></h3></a>
+<a name="CHANGE_ATTRIBUTE"><h3><u>7. Change the attribution string (&quot;by&quot;)</u></h3></a>
 <p>
 If you're not writing in English, you can change what
 <strong>mom</strong> prints where &quot;by&quot; appears in
@@ -1855,6 +1988,19 @@ when the
 <a href="#PRINTSTYLE">PRINTSTYLE</a>
 is <strong>TYPEWRITE</strong>.	The notion of typewriter-style
 output in columns is just too ghastly for her to bear.
+
+<h3><u>Using tabs when COLUMNS are enabled</u></h3>
+<strong>Mom</strong>'s tabs
+(both
+<a href="typesetting.html#TYPESETTING_TABS">typesetting tabs</a>
+and
+<a href="typesetting.html#STRING_TABS">string tabs</a>)
+behave normally during document processing EXCEPT when
+<strong>COLUMNS</strong> are enabled.  Your tabs will work in the
+document column in which they were originally set, but not across
+columns.  When <strong>mom</strong> (or you) breaks to a new column,
+you must redefine your tabs to make them function properly in the
+new column.
 
 <a name="BREAKING_COLUMNS"></a>
 <h3><u>Breaking columns manually</u></h3>
@@ -2115,7 +2261,7 @@ for an explanation of how to disable this default behaviour.
 
 <hr>
 <a href="docelement.html#TOP">Next</a>&nbsp;&nbsp;
-<a href="inlines.html#TOP">Prev</a>&nbsp;&nbsp;
+<a href="color.html#TOP">Prev</a>&nbsp;&nbsp;
 <a href="#TOP">Top</a>&nbsp;&nbsp;
 <a href="toc.html">Back to Table of Contents</a>
 </body>
