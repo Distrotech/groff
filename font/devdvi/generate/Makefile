@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000 Free Software Foundation, Inc.
+# Copyright (C) 1989-2002 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
 # This file is part of groff.
@@ -24,12 +24,12 @@
 # Note that the following font files have manually added kerning values for
 # `` and '': B, BI, I, R.
 
-srcdir=.
+srcdir=generate
 tfmdir=/usr/local/lib/groff-tfm
 gfdir=/usr/local/lib/groff-gf
 
 TFMTODIT=tfmtodit
-FONTS=R I B BI CW CWI MI S EX H HI HB SA SB
+FONTS=R I B BI CW CWI MI S EX H HI HB HBI SA SB
 SPECIALFLAG=-s
 
 all: $(FONTS)
@@ -87,6 +87,10 @@ HB: $(srcdir)/texb.map
 HI: $(srcdir)/texb.map
 	$(TFMTODIT) -g $(gfdir)/cmssi10.300gf \
 	  $(tfmdir)/cmssi10.tfm $(srcdir)/texb.map $@
+
+HBI: $(srcdir)/texb.map
+	$(TFMTODIT) -g $(gfdir)/cmssbxo10.300gf \
+	  $(tfmdir)/cmssbxo10.tfm $(srcdir)/texb.map $@
 
 SA: $(srcdir)/msam.map
 	$(TFMTODIT) $(SPECIALFLAG) \
