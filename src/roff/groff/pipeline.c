@@ -529,7 +529,7 @@ xstrsignal(int n)
   static char buf[sizeof("Signal ") + 1 + sizeof(int) * 3];
 
 #ifdef NSIG
-#ifdef HAVE_DECL_SYS_SIGLIST
+#if HAVE_DECL_SYS_SIGLIST
   if (n >= 0 && n < NSIG && sys_siglist[n] != 0)
     return sys_siglist[n];
 #endif /* HAVE_DECL_SYS_SIGLIST */
