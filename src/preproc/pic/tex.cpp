@@ -117,7 +117,7 @@ void tex_output::start_picture(double sc, const position &ll,
   printf("\\expandafter\\ifx\\csname %s\\endcsname\\relax\n"
 	 "  \\newbox\\%s\n"
 	 "\\fi\n"
-	 "\\expandafter\\ifx\\graphtemp\\relax\n"
+	 "\\ifx\\graphtemp\\undefined\n"
 	 "  \\newdimen\\graphtemp\n"
 	 "\\fi\n"
 	 "\\setbox\\%s=\\vtop{\\vskip 0pt\\hbox{%%\n",
