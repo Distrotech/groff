@@ -204,6 +204,7 @@ as follows:
 .
 .  Bl -tag -width 2n -compact
 .    It "Section Headers"
+.    It "Subsection Headers"
 .    It "Paragraphs and Line Spacing"
 .    It "Keeps"
 .    It "Examples and Displays"
@@ -615,9 +616,9 @@ and
 .Sx DESCRIPTION
 are mandatory.
 The headers are discussed in
-.Sx PAGE STRUCTURE DOMAIN ,
+.Sx "PAGE STRUCTURE DOMAIN" ,
 after presentation of
-.Sx MANUAL DOMAIN .
+.Sx "MANUAL DOMAIN" .
 Several content macros are used to demonstrate page layout macros; reading
 about content macros before page layout macros is recommended.
 .
@@ -1365,7 +1366,9 @@ The default width is 12n.
 .
 The 
 .Ql .Fn
-macro is modeled on ANSI C conventions.
+macro is modeled on
+.Tn ANSI\~C
+conventions.
 .Pp
 .Dl Usage: .Fn Ao function Ac Oo Ao parameter Ac Oc Ld
 .Pp
@@ -2046,6 +2049,14 @@ have a default width value of 12n.
 .It Li .Ec , .Eo
 These macros expect the first argument to be the opening and closing strings
 respectively.
+.It Li .Es , .En
+Due to the nine-argument limit in the original troff program two other
+macros have been implemented which are now rather obsolete:
+.Ql .Es
+takes the first and second parameter as the left and right enclosure string,
+which are then used to enclose the arguments of
+.Ql .En .
+The default width value is 12n for both macros.
 .It Li .Eq
 The first and second argument of this macro are the opening resp.\& the
 closing string (followed by the arguments to be enclosed).
@@ -2555,7 +2566,7 @@ section.
 .It Li ".Sh SEE ALSO"
 References to other material on the man page topic and cross references to
 other relevant man pages should be placed in the
-.Sx SEE ALSO
+.Sx "SEE ALSO"
 section.
 Cross references are specified using the
 .Ql .Xr
@@ -2609,8 +2620,20 @@ User-specified
 sections may be added; for example, this section was set with:
 .
 .Bd -literal -offset 15n
-\&.Sh PAGE STRUCTURE DOMAIN
+\&.Sh "PAGE STRUCTURE DOMAIN"
 .Ed
+.
+.Ss "Subsection Headers"
+.
+Subsection headers have exactly the same syntax as section headers:
+.Ql .Ss
+is parsed but not generally callable.
+It can be used as an argument in a call to
+.Ql .Ss
+only; it then reactivates the default font for
+.Ql .Ss .
+.Pp
+The default width is 8n.
 .
 .Ss "Paragraphs and Line Spacing"
 .
@@ -3483,6 +3506,15 @@ Suppress insertion of vertical space before the list and between list items.
 \#
 .Sh "MISCELLANEOUS MACROS"
 .
+Here a list of the remaining macros which don't fit well into one of the
+above sections.
+We couldn't find real examples for the following macros:
+.Ql .Vt
+They are documented here for completeness \- if you know how to use them
+properly please send a mail to
+.Mt bug-groff@gnu.org
+(including an example).
+.
 .Bl -tag -xwidth ".Li .Bt"
 .It Li .Bt
 prints
@@ -3491,7 +3523,44 @@ prints
 .Bt
 .Ed
 .Pp
-It is neither callable no parsable and takes no arguments.
+It is neither callable nor parsable and takes no arguments.
+.
+.It Li .Fr
+.Pp
+.Dl Usage: .Fr Ao function return value Ac Ld
+.Pp
+Don't use this macro.
+It allows a break right before the return value (usually a single digit)
+which is bad typographical behaviour.
+Use
+.Ql \e~
+to tie the return value to the previous word.
+.
+.It Li .Hf
+Use this macro to include a (header) file literally.
+It first prints
+.Ql File:
+followed by the file name, then the contents of
+.Ao file Ac .
+.Pp
+.Dl Usage: .Hf Ao file Ac
+.Pp
+It is neither callable nor parsable.
+.
+.It Li .In
+Specify C\~header file as being called in a C\~program.
+.Pp
+.Dl Usage: .In Ao header file Ac
+.Pp
+This function causes a break.
+For example, the line
+.Pp
+.In stdio.h
+.Pp
+is produced by
+.Ql ".In stdio.h" .
+.Pp
+It is neither callable nor parsable.
 .
 .It Li .Ld
 This macro is similar to TeX's \eldots command; it prints
@@ -3504,7 +3573,14 @@ prints
 .Ud
 .Ed
 .Pp
-It is neither callable no parsable and takes no arguments.
+It is neither callable nor parsable and takes no arguments.
+.
+.It Li .Vt
+Exact usage unknown.
+The spare documentation in the
+.Nm \-mdoc
+source file describes it as
+.Dq "variable type (for forcing old style variable declarations)" .
 .El
 .
 .

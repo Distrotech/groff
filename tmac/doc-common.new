@@ -669,6 +669,17 @@
 .nr doc-in-authors-section 0
 .
 .
+.\" NS doc-first-parameter macro
+.\" NS   return first parameter
+.\" NS
+.\" NS local variables:
+.\" NS   doc-str-dfp
+.
+.de doc-first-parameter
+.  ds doc-str-dfp "\$1
+..
+.
+.
 .\" NS Sh user macro (not callable)
 .\" NS   section headers
 .\" NS
@@ -728,7 +739,10 @@
 .      if t \
 '        ad
 .
-.      ie "\$1"\*[doc-section-name]" \{\
+.      \" this resolves e.g. `.Sh "SEE ALSO"'
+.      doc-first-parameter \$*
+.
+.      ie "\*[doc-str-dfp]"\*[doc-section-name]" \{\
 .        doc-setup-header
 '        in 0
 .      \}
@@ -737,25 +751,25 @@
 .        nr doc-in-files-section 0
 .        nr doc-in-authors-section 0
 .
-.        ie        "\$1"\*[doc-section-synopsis]" \{\
+.        ie        "\*[doc-str-dfp]"\*[doc-section-synopsis]" \{\
 .          if t \
 .            na
 .          nr doc-in-synopsis-count 1
 .        \}
-.        el \{ .ie "\$1"\*[doc-section-description]" \{\
+.        el \{ .ie "\*[doc-str-dfp]"\*[doc-section-description]" \{\
 .          nr doc-is-func 0
 .          nr doc-func-count 0
 .          nr doc-func-args-processed 0
 .          nr doc-num-func-args 0
 .        \}
-.        el \{ .ie "\$1"\*[doc-section-see-also]" \{\
+.        el \{ .ie "\*[doc-str-dfp]"\*[doc-section-see-also]" \{\
 .          if t \
 .            na
 .          nr doc-in-see-also-section 1
 .        \}
-.        el \{ .ie "\$1"\*[doc-section-files]" \
+.        el \{ .ie "\*[doc-str-dfp]"\*[doc-section-files]" \
 .          nr doc-in-files-section 1
-.        el .if    "\$1"\*[doc-section-authors]" \
+.        el .if    "\*[doc-str-dfp]"\*[doc-section-authors]" \
 .          nr doc-in-authors-section 1
 .        \}\}\}
 .

@@ -967,38 +967,38 @@
 .\" NS width register `Fd' set in doc-common
 .
 .de Fd
-.  ie \n[doc-arg-limit] \{\
-.    tm Usage: .Fd function_declaration -- Fd is not callable (#\n[.c])
-.    doc-reset-args
-.  \}
-.  el \{\
+.  ie ((\n[.$] >= 1) & (\n[doc-arg-limit] == 0)) \{\
 .    doc-do-func-decl
 .    nop \*[doc-Fd-font]\$*
 .    br
 .    ft \n[doc-curr-font]
 .    ps \n[doc-curr-size]u
 .  \}
+.  el \{\
+.    tm Usage: .Fd function_declaration -- Fd is not callable (#\n[.c])
+.    doc-reset-args
+.  \}
 ..
 .
 .
 .\" NS In user macro
-.\" NS   #include statement - not callable (& no err check)
+.\" NS   #include statement - not callable
 .\" NS
 .\" NS   this function causes a break; it uses the `Fd' font
 .\" NS
 .\" NS width register `In' set in doc-common
 .
 .de In
-.  ie \n[doc-arg-limit] \{\
-.    tm Usage: .In #include_statement -- In is not callable (#\n[.c])
-.    doc-reset-args
-.  \}
-.  el \{\
+.  ie ((\n[.$] == 1) & (\n[doc-arg-limit] == 0)) \{\
 .    doc-do-func-decl
 .    nop \*[doc-Fd-font]#include <\$1>
 .    br
 .    ft \n[doc-curr-font]
 .    ps \n[doc-curr-size]u
+.  \}
+.  el \{\
+.    tm Usage: .In include_file -- In is not callable (#\n[.c])
+.    doc-reset-args
 .  \}
 ..
 .
@@ -1502,8 +1502,8 @@
 .de Es
 .  if !\n[doc-arg-limit] \{\
 .    ie (\n[.$] > 2) \{\
-.        ds doc-macro-name Es
-.        doc-parse-args \$@
+.      ds doc-macro-name Es
+.      doc-parse-args \$@
 .    \}
 .    el \{\
 .      ds doc-quote-left "\$1
@@ -4435,8 +4435,8 @@
 .      doc-reset-args
 .  \}
 .  el \{\
-.    tm1 "Usage: Ta must follow column entry: e.g. (#\n[.c])
-.    tm1 "         .It column_string [Ta [column_string ...]]
+.    tm1 "Usage: Ta must follow column entry: e.g.
+.    tm1 "         .It column_string [Ta [column_string ...]] (#\n[.c])
 .  \}
 ..
 .
@@ -6181,15 +6181,19 @@
 .\" NS width register `Hf' set in doc-common
 .
 .de Hf
-.  doc-paragraph
-.  nop File:
-.  Pa \$1
+.  ie ((\n[.$] == 1) & (\n[doc-arg-limit] == 0)) \{\
+.    doc-paragraph
+.    nop File:
+.    Pa \$1
 .
-.  Bd -literal
-.  so \$1
-.  Ed
+.    Bd -literal
+.    so \$1
+.    Ed
 .
-.  doc-paragraph
+.    doc-paragraph
+.  \}
+.  el \
+.    Usage: .Hf file (#\n[.c])
 ..
 .
 .
