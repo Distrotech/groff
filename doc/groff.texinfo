@@ -4,7 +4,7 @@
 @c Please convert this manual with `texi2dvi -e groff.texinfo' due to a bug
 @c in texinfo regarding expansion of user-defined macros.
 @c
-@c You need texinfo 4.1 to format this document!
+@c You need texinfo 4.2 or newer to format this document!
 @c
 
 @c %**start of header (This is for running Texinfo on a region.)
@@ -4268,8 +4268,7 @@ There are several ways to cause a break in @code{gtroff}.  A blank
 line not only causes a break, but it also outputs a one line vertical
 space (effectively a blank line).  Note that this behaviour can be
 modified with the blank line macro request @code{blm}.
-
-@c XXX xref for blm
+@xref{Blank Line Traps}.
 
 @cindex fill mode
 @cindex mode, fill
@@ -4565,6 +4564,13 @@ signs indicate increments and decrements.
 @c XXX add more xref
 @xref{Setting Registers}.
 
+@cindex numeric expression, valid
+@cindex valid numeric expression
+@Defesc {\\B, ', anything, '}
+Returns@w{ }1 if @var{anything} is a valid numeric expression;
+or@w{ }0 if @var{anything} is empty or not a valid numeric expression.
+@endDefesc
+
 @cindex space characters in expressions
 @cindex expressions and space characters
 Due to the way arguments are parsed, spaces are not allowed in
@@ -4790,7 +4796,7 @@ by assigning an empty macro to it.
 .blm             \" deactivate blank line macro
 @endExample
 
-@c XXX xref to blm
+@xref{Blank Line Traps}.
 
 @cindex zero width space character (@code{\&})
 @cindex character, zero width space (@code{\&})
@@ -5788,7 +5794,8 @@ The adjustment mode status is associated with the current environment
 (@pxref{Environments}).
 @endDefreq
 
-@Defesc {\\p, , , }
+@DefreqList {brp, }
+@DefescListEnd {\\p, , , }
 Adjust the current line and cause a break.
 
 In most cases this produces very ugly results, since @code{gtroff}
@@ -5810,7 +5817,7 @@ is formatted as
   uninteresting                            sentence.
   This is an uninteresting sentence.
 @endExample
-@endDefesc
+@endDefreq
 
 @cindex word space size register (@code{.ss})
 @cindex size of word space register (@code{.ss})
@@ -6025,7 +6032,8 @@ longer a restriction.
 @cindex character, hyphenation (@code{\%})
 @cindex disabling hyphenation (@code{\%})
 @cindex hyphenation, disabling (@code{\%})
-@Defesc {\\%, , , }
+@DefescList {\\%, , , }
+@DefescListEnd {\\:, , , }
 To tell @code{gtroff} how to hyphenate words on the fly, use the
 @code{\%} escape, also known as the @dfn{hyphenation character}.
 Preceding a word with this character prevents it from being
@@ -6034,6 +6042,13 @@ the word may be hyphenated at that point.  Note that this mechanism
 only affects that one occurrence of the word; to change the
 hyphenation of a word for the entire document, use the @code{hw}
 request.
+
+The @code{\\:} escape inserts a zero-width break point
+(that is, the word breaks but without adding a hyphen).
+
+@Example
+... check the /var/log/\\:httpd/\\:access_log file ...
+@endExample
 @endDefesc
 
 @Defreq {hc, [@Var{char}]}
@@ -6049,21 +6064,61 @@ The hyphenation character is associated with the current environment
 @cindex hyphenation patterns (@code{hpf})
 @cindex patterns for hyphenation (@code{hpf})
 @DefreqList {hpf, pattern_file}
-@DefreqListEnd {hpfa, pattern_file}
+@DefreqItem {hpfa, pattern_file}
+@DefreqListEnd {hpfcode, a b [c d @dots{}]}
 Read in a file of hyphenation patterns.  This file is searched for in
 the same way as @file{@var{name}.tmac} (or @file{tmac.@var{name}}) is
 searched for if the @option{-m@var{name}} option is specified.
 
-It should have the same format as the argument to the @code{\patterns}
-primitive in @TeX{} (without using @TeX{}'s macro expansion); the
-letters appearing in this file are interpreted as hyphenation codes.  A
-@samp{%} character in the patterns file introduces a comment that
-continues to the end of the line.
+It should have the same format as (simple) @TeX{} patterns files.
+More specifically, the following scanning rules are implemented.
+
+@itemize @bullet
+@item
+A percent sign starts a comment (up to the end of the line)
+even if preceded by a backslash.
+
+@item
+No support for `digraphs' like @code{\$}.
+
+@item
+The only multi-character construction recognized is @code{^^@var{xx}}
+(@var{x} is 0-9 or a-f);  other use of @code{^} causes an error.
+
+@item
+No macro expansion.
+
+@item
+@code{hpf} checks for the expression @code{\patterns@{...@}}
+(possibly with whitespace before and after the braces).
+Everything between the braces is taken as hyphenation patterns.
+Consequently, @code{@{} and @code{@}} are not allowed in patterns.
+
+@item
+Similarly, @code{\hyphenation@{...@}} gives a list of hyphenation
+exceptions.
+
+@item
+@code{\endinput} is recognized also.
+
+@item
+For backwards compatibility, if @code{\patterns} is missing,
+the whole file is treated as a list of hyphenation patterns
+(only recognizing the @code{%} character as the start of a comment).
+@end itemize
 
 If no @code{hpf} request is specified (either in the document or in a
 macro package), @code{gtroff} won't hyphenate at all.
 
 The @code{hpfa} request appends a file of patterns to the current list.
+
+The @code{hpfcode} request defines mapping values for character codes in
+hyphenation patterns.  @code{hpf} or @code{hpfa} then apply the mapping
+(after reading the patterns) before replacing or appending them to
+the current list of patterns.  Its arguments are pairs of character codes
+-- integers from 0 to@w{ }255.  The request maps character code@w{ }@var{a}
+to code@w{ }@var{b}, code@w{ }@var{c} to code@w{ }@var{d}, and so on.  You
+can use character codes which would be invalid otherwise.
 
 @pindex troffrc
 @pindex troffrc-end
@@ -6088,7 +6143,7 @@ Set the hyphenation code of character @var{c1} to @var{code1}, that of
 @var{c2} to @var{code2}, etc.  A hyphenation code must be a single
 input character (not a special character) other than a digit or a
 space.  Initially each lower-case letter (@samp{a}-@samp{z}) has its
-hyphenation set to itself, and each upper-case letter
+hyphenation code set to itself, and each upper-case letter
 (@samp{A}-@samp{Z}) has a hyphenation code which is the lower-case
 version of itself.
 
@@ -6260,9 +6315,10 @@ by a page number (see @ref{Page Control}, for more information).  This
 mode ends when actual text is output or the @code{rs} request is
 encountered.  The read-only number register @code{.ns} is set to@w{ }1.
 
-This request is useful for macros which want to avoid that subsequent
-macros inadvertently insert some vertical space before the text starts
-(for example, to set up the first paragraph after a section header).
+This request is useful for macros that conditionally
+insert vertical space before the text starts
+(for example, a paragraph macro could insert some space
+except when it is the first paragraph after a section header).
 
 @c XXX xref
 @endDefreq
@@ -6449,6 +6505,46 @@ default.  The value of this @dfn{tab repetition} character is
 associated with the current environment (@pxref{Environments}).
 @endDefreq
 
+@cindex tab, line-tabs mode
+@cindex line-tabs mode
+@DefreqList {linetabs, n}
+@DefregListEnd {.linetabs}
+If @var{n} is missing or not zero, enable @dfn{line-tabs} mode,
+or disable it otherwise (the default).
+In line-tabs mode, @code{gtroff} computes tab distances
+relative to the (current) output line instead of the input line.
+
+For example, the following code:
+
+@Example
+.ds x a\\t\\c
+.ds y b\\t\\c
+.ds z c
+.ta 1i 3i
+\*x
+\*y
+\*z
+@endExample
+
+@noindent
+in normal mode, results in the output
+
+@Example
+a         b         c
+@endExample
+
+@noindent
+in line-tabs mode, the same code outputs
+
+@Example
+a         b                   c
+@endExample
+
+Line-tabs mode is associated with the current environment.
+The read-only register @code{.linetabs} is set to@w{ }1 if in line-tabs
+mode, and 0 in normal mode.
+@endDefreq
+
 @menu
 * Leaders::
 * Fields::
@@ -6633,9 +6729,35 @@ form which is independent of its representation.  If a macro is
 called, it is executed literally.
 @endDefreq
 
-@Defesc {\\e, , , }
+@DefreqList {ecs, }
+@DefreqListEnd {ecr, }
+The @code{ecs} request saves the current escape character
+in an internal register.
+Use this request in combination with the @code{ec} request to
+temporarily change the escape character.
+
+The @code{ecr} request restores the escape character
+saved with @code{ecs}.
+Without a previous call to @code{ecs}, this request
+sets the escape character to @code{\\}.
+@endDefreq
+
+@DefescList {\\e, , , }
+@DefescListEnd {\\E, , , }
 This escape sequence prints the current escape character (which is the
 backslash character @samp{\} by default).
+
+The @code{\\E} escape prints an escape character that
+is not interpreted in copy mode.
+Use this to define strings with escapes that work
+when used in copy mode (for example, as a macro argument).
+The following example defines strings to begin and end
+a superscript:
+
+@Example
+.ds @{ \\v'-.3m'\\s'\\Es[.s]*60/100'
+.ds @} \\s0\\v'.3m'
+@endExample
 @endDefesc
 
 A @dfn{translation} is a mapping of an input character to an output
@@ -7346,7 +7468,8 @@ the current family.
 
 @cindex postscript fonts
 @cindex fonts, postscript
-Currently, only @sc{PostScript} fonts are set up to this mechanism.
+Currently, fonts for the devices @option{-Tps}, @option{-Tdvi}, and
+@option{-Tlpb} are set up to this mechanism.
 By default, @code{gtroff} uses the Times family with the four styles
 @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
 
@@ -7356,7 +7479,8 @@ different font family on the command line (@pxref{Groff Options}).
 @cindex changing font family (@code{fam})
 @cindex font family, changing (@code{fam})
 @DefreqList {fam, [@Var{family}]}
-@DefregListEnd {.fam}
+@DefregItem {.fam}
+@DefregListEnd {.fn}
 Switch font family to @var{family}.  If no argument is given, switch
 back to the previous font family.  The value at start-up is @samp{T}.
 The current font family is available in the read-only number register
@@ -7376,6 +7500,12 @@ baked beans,
 .ft R     \" family T + style R = font TR
 and spam.
 @endExample
+
+The @samp{.fn} register contains the current @dfn{real font name}
+of the current font.
+This is a string-valued register.
+If the current font is a style, the value of @code{\\n[.fn]}
+is the proper concatenation of family and style name.
 @endDefreq
 
 @cindex changing font style (@code{sty})
@@ -7756,7 +7886,8 @@ characters @samp{"')]*\(dg\(rq} have this property).
 @cindex @code{\&}, and character definitions
 @cindex @code{\e}, and character definitions
 @cindex @code{hcode} request, and character definitions
-@Defreq {char, c [@Var{string}]}
+@DefreqList {char, c [@Var{string}]}
+@DefreqListEnd {fchar, c [@Var{string}]}
 Define a new character@w{ }@var{c} to be @var{string} (which can be
 empty).  Every time character@w{ }@var{c} needs to be printed,
 @var{string} is processed in a temporary environment and the result is
@@ -7793,6 +7924,11 @@ X
 X
     @result{} Z
 @endExample
+
+The @code{fchar} request defines a fallback character:
+@code{gtroff} only checks for characters defined with @code{fchar}
+if it cannot find the glyph in the current font.
+@code{gtroff} carries out this test before checking special fonts.
 @endDefreq
 
 @cindex removing character definition (@code{rchar})
@@ -7813,9 +7949,18 @@ It is possible to omit the whitespace between arguments.
 @cindex special fonts
 @cindex fonts, special
 
-@c XXX
+@c XXX Add some more wrapper text up here.
+Special fonts are those that @code{gtroff} searches
+when it cannot find the requested character in the current font.
+The Symbol font is usually a special font.
 
-To be written.
+@DefreqList {special, s1 s2 @dots{}}
+@DefreqListEnd {fspecial, f s1 s2 @dots{}}
+Use the @code{special} request to define special fonts.
+
+Use the @code{fspecial} request to designate special fonts
+only when font@w{ }@var{f} font is active.
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -8124,6 +8269,31 @@ request (@pxref{Character Translations}).
 @end itemize
 @endDefesc
 
+@Defesc {\\), , , }
+Similar to @code{\\&} except that it behaves like a character
+declared with the @code{cflags} request to be transparent for the
+purposes of an end-of-sentence character.
+
+Its main usage is in macro definitions to protect against arguments
+starting with a control character.
+
+@Example
+.de xxx
+\)\\$1
+..
+.de yyy
+\&\\$1
+..
+This is a test.\c
+.xxx '
+This is a test.
+    @result{}This is a test.'  This is a test.
+This is a test.\c
+.yyy '
+This is a test.
+    @result{}This is a test.' This is a test.
+@endExample
+@endDefesc
 
 @c =====================================================================
 
@@ -8228,9 +8398,25 @@ must be exactly two digits.
 
 @xref{Fractional Type Sizes}, for yet another syntactical form of
 using the @code{\s} escape.
+@endDefreq
 
+@Defreq {sizes, s1 s2 @dots{} sn [0]}
 Some devices may only have certain permissible sizes, in which case
 @code{gtroff} rounds to the nearest permissible size.
+The @file{DESC} file specifies which sizes are permissible for the device.
+
+Use the @code{sizes} request to change the permissible sizes
+for the current output device.
+Arguments are in scaled points;
+the @code{sizescale} line in the
+@file{DESC} file for the output device
+provides the scaling factor.
+For example, if the scaling factor is 1000,
+then the value 12000 is 12@w{ }points.
+
+Each argument can be a single point size (such as 12000),
+or a range of sizes (such as 4000-72000).
+You can optionally end the list with a zero.
 @endDefreq
 
 @cindex changing vertical spacing (@code{vs})
@@ -8379,6 +8565,7 @@ even this is a read-write string variable).
 @cindex interpolation of strings (@code{\*})
 @cindex expansion of strings (@code{\*})
 @DefreqList {ds, name [@Var{string}]}
+@DefreqItem {ds1, name [@Var{string}]}
 @DefescItem {\\*, , n, }
 @DefescItem {\\*, @lparen{}, nm, }
 @DefescListEnd {\\*, @lbrack{}, name, @rbrack{}}
@@ -8452,6 +8639,25 @@ next several lines
 @endExample
 
 It is not possible to have real newlines in a string.
+
+The @code{ds1} request turns off compatibility mode
+while interpreting a string.  To be more precise, a @dfn{compatibility
+save} token is inserted at the beginning of  the string, and a
+@dfn{compatibility restore} token at the end.
+
+@Example
+.nr xxx 12345
+.ds aa The value of xxx is \\n[xxx].
+.ds1 bb The value of xxx ix \\n[xxx].
+.
+.cp 1
+.
+\*(aa
+    @result{} warning: number register `[' not defined
+    @result{} The value of xxx is 0xxx].
+\*(bb
+    @result{} The value of xxx ix 12345.
+@endExample
 
 @cindex name space of macros and strings
 @cindex macros, shared name space with strings
@@ -8547,7 +8753,8 @@ This is \*[xxx].
 
 @cindex appending to strings (@code{as})
 @cindex strings, appending (@code{as})
-@Defreq {as, name [@Var{string}]}
+@DefreqList {as, name [@Var{string}]}
+@DefreqListEnd {as1, name [@Var{string}]}
 The @code{as} request is similar to @code{ds} but appends @var{string}
 to the string stored as @var{name} instead of redefining it.  If
 @var{name} doesn't exist yet, it is created.
@@ -8555,6 +8762,12 @@ to the string stored as @var{name} instead of redefining it.  If
 @Example
 .as sign " with shallots, onions and garlic,
 @endExample
+
+The @code{as1} request is similar to @code{as}, but compatibility mode
+is switched off while the appended string is interpreted.  To be more
+precise, a @dfn{compatibility save} token is inserted at the beginning
+of the appended string, and a @dfn{compatibility restore} token at the
+end.
 @endDefreq
 
 Rudimentary string manipulation routines are given with the next two
@@ -8634,6 +8847,8 @@ nodes inserted by @code{gtroff} automatically.
 @section Conditionals and Loops
 @cindex conditionals and loops
 @cindex loops and conditionals
+
+@c XXX Introductory text
 
 @menu
 * Operators in Conditionals::
@@ -8763,7 +8978,10 @@ more info.
 @endExample
 @endDefreq
 
-@c XXX .nop request
+@Defreq{nop, anything}
+Executes @var{anything}.
+This is similar to @code{.if@w{ }1}.
+@endDefreq
 
 @DefreqList {ie, expr anything}
 @DefreqListEnd {el, anything}
@@ -8776,8 +8994,10 @@ The first request is the `if' part and the latter is the `else' part.
 @endExample
 @endDefreq
 
-@c this is a bug in makeinfo: you can't have `@{' as an argument
-@c to deffn
+@c there is a bug in makeinfo <= 4.1a: you can't have `@{' as an argument
+@c to @deffn
+@c
+@c and in 4.2 you still can't use @{ in macros.
 
 @cindex begin of conditional block (@code{\@{})
 @cindex end of conditional block (@code{\@}})
@@ -8785,8 +9005,12 @@ The first request is the `if' part and the latter is the `else' part.
 @cindex conditional block, end (@code{\@}})
 @cindex block, conditional, begin (@code{\@{})
 @cindex block, condititional, end (@code{\@}})
-@c @DefescList {\\@@@{, , , }
-@c @DefescListEnd {\\@@@}, , , }
+@c @DefescList {\@{, , , }
+@c @DefescListEnd {\@}, , , }
+@deffn Escape @t{\@{}
+@deffnx Escape @t{\@}}
+@esindex \@{
+@esindex \@}
 In many cases, an if (or if-else) construct needs to execute more than
 one request.  This can be done using the @code{\@{} and @code{\@}}
 escapes.  The following example shows the possible ways to use these
@@ -8803,6 +9027,7 @@ escapes (note the position of the opening and closing braces).
 .    ds rq "\@}
 @endExample
 @c @endDefesc
+@end deffn
 
 @xref{Expressions}.
 
@@ -8917,7 +9142,9 @@ restarting the next iteration.
 A @dfn{macro} is a collection of text and embedded commands which can
 be invoked multiple times.  Use macros to define common operations.
 
-@Defreq {de, name [@Var{end}]}
+@DefreqList {de, name [@Var{end}]}
+@DefreqItem {de1, name [@Var{end}]}
+@DefreqListEnd {dei, name [@Var{end}]}
 Define a new macro named @var{name}.  @code{gtroff} copies subsequent
 lines (starting with the next one) into an internal buffer until it
 encounters the line @samp{..} (two dots).  The optional second
@@ -8940,14 +9167,50 @@ inserts some vertical space.  It could be used to separate paragraphs.
 
 @c XXX give example for end macro.
 
-@c XXX add info about indirect macro calls:
-@c
-@c .de xxx
-@c from yyy\c
-@c ..
-@c
-@c test \*[xxx] test
-@c   => test from yyy test
+The @code{de1} request turns off compatibility mode
+while executing the macro.  On entry, the current compatibility mode
+is saved and restored at exit.
+
+@Example
+.nr xxx 12345
+.
+.de aa
+The value of xxx is \\n[xxx].
+..
+.de1 bb
+The value of xxx ix \\n[xxx].
+..
+.
+.cp 1
+.
+.aa
+    @result{} warning: number register ' not defined
+    @result{} The value of xxx is 0xxx].
+.bb
+    @result{} The value of xxx ix 12345.
+@endExample
+
+The @code{dei} request defines a macro indirectly.
+That is, it expands strings whose names
+are @var{name} or @var{end} before performing the append.
+
+This:
+
+@Example
+.ds xx aa
+.ds yy bb
+.dei xx yy
+@endExample
+
+@noindent
+is equivalent to:
+
+@Example
+.de aa bb
+@endExample
+
+@pindex trace.tmac
+Using @file{trace.tmac}, you can trace calls to @code{de}.
 
 @c XXX info about common identifier pool for strings, macros, and
 @c     diversions.
@@ -8955,7 +9218,9 @@ inserts some vertical space.  It could be used to separate paragraphs.
 
 @cindex appending, to a macro (@code{am})
 @cindex macro appending (@code{am})
-@Defreq {am, xx}
+@DefreqList {am, xx}
+@DefreqItem {am1, xx}
+@DefreqListEnd {ami, xx yy}
 Works similarly to @code{de} except it appends onto the macro named
 @var{xx}.  So, to make the previously defined @samp{P} macro actually
 do indented instead of block paragraphs, add the necessary code to the
@@ -8966,6 +9231,18 @@ existing macro like this:
 .ti +5n
 ..
 @endExample
+
+The @code{am1} request turns off compatibility mode
+while executing the appended macro piece.  To be more precise, a
+@dfn{compatibility save} token is inserted at the beginning of the
+appended code, and a @dfn{compatibility restore} token at the end.
+
+The @code{ami} request appends indirectly,
+meaning that @code{gtroff} expands strings whose names
+are @var{xx} or @var{yy} before performing the append.
+
+@pindex trace.tmac
+Using @file{trace.tmac}, you can trace calls to @code{am}.
 @endDefreq
 
 @cindex alias, creating (@code{als})
@@ -8977,6 +9254,11 @@ The @code{de}, @code{am}, @code{di}, @code{da}, @code{ds}, and
 diversion or string diversion is currently undefined or if it is
 defined to be a request; normally they modify the value of an existing
 object.
+
+@Defreq {return, }
+Exits a macro,
+immediately returning to the caller.
+@endDefreq
 
 @menu
 * Copy-in Mode::
@@ -9213,7 +9495,13 @@ The following string sets the @TeX{} logo:
 
 @cindex width escape (@code{\w})
 @cindex escape, width (@code{\w})
-@Defesc {\\w, ', text, '}
+@DefescList {\\w, ', text, '}
+@DefregItem {st}
+@DefregItem {sb}
+@DefregItem {rst}
+@DefregItem {rsb}
+@DefregItem {ssc}
+@DefregListEnd {skw}
 Used as @code{\w'@var{text}'},
 returns the width of the specified @var{text} in basic units.
 This allows horizontal movement based on the width of some
@@ -9235,19 +9523,15 @@ After use, @code{\w} sets several registers:
 @table @code
 @item st
 @itemx sb
-@vindex st
-@vindex sb
-The highest and lowest point, respectively, in @var{text}.
+The highest and lowest point of the baseline, respectively, in @var{text}.
 
 @item rst
 @itemx rsb
-@vindex rst
-@vindex rsb
 Like the @code{st} and @code{sb} registers, but takes account of the
-heights and depths of characters.
+heights and depths of characters.  With other words, this gives the
+highest and lowest point of @var{text}.
 
 @item ct
-@vindex ct
 Defines the kinds of characters occurring in @var{text}:
 
 @table @asis
@@ -9265,12 +9549,10 @@ at least one each of a descender and a tall character.
 @end table
 
 @item ssc
-@vindex ssc
 The amount of horizontal space (possibly negative) that should be added
 to the last character before a subscript.
 
 @item skw
-@vindex skw
 How far to right of the center of the last character in the @code{\w}
 argument, the center of an accent from a roman font should be placed
 over that character.
@@ -9283,10 +9565,32 @@ Use this, for example, to return to the beginning of a string
 for highlighting or other decoration.
 @endDefesc
 
+@Defreg {hp}
+The current horizontal position at the input line.
+@endDefreg
+
 @Defreg {.k}
 A read-only number register containing the current horizontal output
 position.
 @endDefreg
+
+@Defesc {\\Z, ', anything, '}
+Prints @var{anything} then restores the horizontal and vertical position.
+The argument may not contain tabs or leaders.
+
+The following is an example of a strike-through macro:
+
+@Example
+.de ST
+.nr ww \\w'\\$1'
+\Z@@\\v'-.25m'\\l'\\n[ww]u'@@\\$1
+..
+.
+This is
+.ST "a test"
+an actual emergency!
+@endExample
+@endDefesc
 
 @c XXX documentation
 
@@ -9500,13 +9804,16 @@ to build large brackets and braces.
 
 @dfn{Traps} are locations, which, when reached, call a specified
 macro.  These traps can occur at a given location on the page, at a
-given location in the current diversion, after a certain number of input
-lines or at the end of input.
+given location in the current diversion,
+at a blank line,
+after a certain number of input lines,
+or at the end of input.
 
 @menu
 * Page Location Traps::
 * Diversion Traps::
 * Input Line Traps::
+* Blank Line Traps::
 * End-of-input Traps::
 @end menu
 
@@ -9643,7 +9950,7 @@ number register @code{.t} still works within diversions.
 
 @c ---------------------------------------------------------------------
 
-@node Input Line Traps, End-of-input Traps, Diversion Traps, Traps
+@node Input Line Traps, Blank Line Traps, Diversion Traps, Traps
 @subsection Input Line Traps
 @cindex input line traps
 @cindex traps, input line
@@ -9651,7 +9958,9 @@ number register @code{.t} still works within diversions.
 @cindex setting input line trap (@code{it})
 @cindex input line trap, setting (@code{it})
 @cindex trap, input line, setting (@code{it})
-@Defreq {it, n macro}
+@DefreqList {it, n macro}
+@DefreqItem {itc, n macro}
+@DefregListEnd {.int}
 Sets an input line trap.
 @var{n}@w{ }is the number of lines of input which may be read before
 @dfn{springing} the trap, @var{macro} is the macro to be invoked.
@@ -9669,11 +9978,31 @@ next @var{n}@w{ }lines in a bold font.
 .ft R
 ..
 @endExample
+
+The @code{itc} request is identical,
+except that a line interrupted with @code{\\c}
+counts as one input line.
+
+The @code{.int} register contains a positive value
+if the last output line was interrupted with @code{\\c}.
 @endDefreq
 
 @c ---------------------------------------------------------------------
 
-@node End-of-input Traps,  , Input Line Traps, Traps
+@node Blank Line Traps, End-of-input Traps, Input Line Traps, Traps
+@subsection Blank Line Traps
+@cindex blank line traps
+@cindex traps, blank line
+@cindex blank line macro (@code{blm})
+@Defreq {blm, macro}
+Sets a blank line trap.
+@code{gtroff} executes the @var{macro} specified
+when it encounters a blank line in the input file.
+@endDefreq
+
+@c ---------------------------------------------------------------------
+
+@node End-of-input Traps,  , Blank Line Traps, Traps
 @subsection End-of-input Traps
 @cindex end-of-input traps
 @cindex traps, end-of-input
@@ -9744,6 +10073,45 @@ into.  The @code{da} macro appends to an existing diversion.
 ... end-note example ...
 @endExample
 @end ignore
+@endDefreq
+
+@DefreqList {box, macro}
+@DefreqListEnd {boxa, macro}
+Begins (or appends to) a diversion like the
+@code{di} and @code{da} requests.
+The difference is that @code{box} and @code{boxa}
+do not include a partially-filled line in the diversion.
+
+Compare this:
+
+@Example
+Before the box.
+.box xxx
+In the box.
+.br
+.box
+After the box.
+.br
+    @result{} Before the box.  After the box.
+.xxx
+    @result{} In the box.
+@endExample
+
+@noindent
+with this:
+
+@Example
+Before the diversion.
+.di yyy
+In the diversion.
+.br
+.di
+After the diversion.
+.br
+    @result{} After the diversion.
+.yyy
+    @result{} Before the diversion.  In the diversion.
+@endExample
 @endDefreq
 
 @cindex @code{nl} register, and @code{.d}
@@ -9861,9 +10229,11 @@ prints@w{ }4.
 
 @cindex unformatting diversions (@code{asciify})
 @cindex diversion, unformatting (@code{asciify})
+@cindex @code{trin} and @code{asciify} request
 @Defreq {asciify, div}
 @dfn{Unformats} the diversion specified by @var{div}
-in such a way that @acronym{ASCII} and space characters that
+in such a way that @acronym{ASCII} characters, characters translated with
+the @code{trin} request, space characters, and some escape sequences that
 were formatted and diverted are treated like ordinary input
 characters when the diversion is reread.  It can be also used for gross
 hacks; for example, the following sets register@w{ }@code{n} to@w{ }1.
@@ -9882,6 +10252,16 @@ hacks; for example, the following sets register@w{ }@code{n} to@w{ }1.
 @xref{Copy-in Mode}.
 @endDefreq
 
+@Defreq {unformat, div}
+Like @code{asciify}, unformats the specified diversion.
+However, @code{unformat} only unformats spaces and tabs
+between words.
+Unformatted tabs are treated as input tokens,
+and spaces are stretchable again.
+
+The vertical size of lines is not preserved; glyph information (font,
+font size, space width, etc.)@: is retained.
+@endDefreq
 
 @c =====================================================================
 
@@ -9973,6 +10353,23 @@ Here is an example:
 Copies the environment @var{env} into the current environment.
 @endDefreq
 
+@cindex environment, last character
+@DefregList {.chf}
+@DefregItem {.cdp}
+@DefregListEnd {.csk}
+The @code{\n[chf]} register contains the
+maximum extent (above the baseline)
+of the last character added to the current environment.
+
+The @code{\n[cdp]} register contains the
+maximum extent (below the baseline)
+of the last character added to the current environment.
+
+The @code{\n[csk]} register contains the
+@dfn{skew} (how far to the right of the character's center
+that @code{gtroff} shold place an accent)
+of the last character added to the current environment.
+@endDefreg
 
 @c =====================================================================
 
@@ -10120,6 +10517,11 @@ Reads in the specified @var{file} and
 includes it in place of the @code{so} request.  This is quite useful for
 large documents, e.g.@: keeping each chapter in a separate file.
 @xref{gsoelim}, for more information.
+@endDefreq
+
+@Defreq {pso, command}
+Reads the standard output from the specified @var{command}
+and includes it in place of the @code{pso} request.
 @endDefreq
 
 @Defreq {mso, file}
@@ -10292,6 +10694,17 @@ The @code{writec} request is like @code{write}, but only
 @code{write} appends a newline to the data.
 @endDefreq
 
+@cindex @code{asciify} and @code{writem}
+@Defreq {writem, stream xx}
+Writes the contents of the macro or string @var{xx}
+to the file associated with the specified @var{stream}.
+
+@var{xx} is read in copy mode, i.e., already formatted elements are
+ignored.  Consequently, diversions must be unformatted with the
+@code{asciify} request before calling @code{writem}.  Usually, this
+means a loss of information.
+@endDefreq
+
 @cindex closing file (@code{close})
 @cindex file, closing (@code{close})
 @Defreq {close, stream}
@@ -10437,6 +10850,24 @@ intelligible to the user.
 @end ignore
 @endDefreq
 
+@cindex PostScript, bounding box
+@cindex bounding box
+@DefreqList {psbb, filename}
+@DefregItem {llx}
+@DefregItem {lly}
+@DefregItem {urx}
+@DefregListEnd {ury}
+Retrieves the bounding box of the PostScript image
+found in @var{filename}.
+The file must conform to
+Adobe's @dfn{Document Structuring Conventions} (DSC);
+the command searches for a @code{%%BoundingBox} comment
+and extracts the bounding box values into the number registers
+@code{llx}, @code{lly}, @code{urx}, and @code{ury}.
+If an error occurs (e.g. @code{psbb} cannot find
+the @code{%%BoundingBox} comment),
+it sets the four number registers to zero.
+@endDefreq
 
 @c =====================================================================
 
@@ -10519,9 +10950,20 @@ and strategies for debugging.
 
 @cindex printing to stderr (@code{tm})
 @cindex stderr, printing to (@code{tm})
-@Defreq {tm, string}
-Sends the @var{string} to the standard error stream;
+@DefreqList {tm, string}
+@DefreqItem {tm1, string}
+@DefreqListEnd {tmc, string}
+Sends @var{string} to the standard error stream;
 this is very useful for printing debugging output among other things.
+
+@var{string} is read in copy mode.
+
+The @code{tm} request ignores leading spaces of @var{string}; @code{tm1}
+handles its argument similar to the @code{ds} request: a leading double
+quote in @var{string} is stripped to allow initial blanks.
+
+The @code{tmc} request is similar to @code{tm1} but does
+not append a newline (as is done in @code{tm} and @code{tm1}).
 @endDefreq
 
 @cindex aborting (@code{ab})
@@ -10551,8 +10993,6 @@ To activate these statements say
 @Example
 groff -rDB=1 file
 @endExample
-
-@c XXX .tm1, .tmc requests
 
 If it is known in advance that there will be many errors and no useful
 output, @code{gtroff} can be forced to suppress formatted output with
@@ -10597,6 +11037,15 @@ request causes a line break.
 The @code{backtrace} request prints a backtrace of the input stack
 to the standard error stream.
 @endDefreq
+
+@cindex input stack, setting limit
+@Defreg {slimit}
+Use the @code{slimit} number register
+to set the maximum number of objects on the input stack.
+If @code{slimit} is less than or equal to@w{ }0,
+there is no limit set.
+With no limit, a buggy recursive macro can exhaust virtual memory.
+@endDefreg
 
 @cindex warnings
 @code{gtroff} has command line options for printing out more warnings
@@ -10777,10 +11226,34 @@ called @samp{[}.  In GNU @code{troff}, however, this is normally
 interpreted as the start of a long name.  In compatibility mode GNU
 @code{troff} interprets long names in the traditional way
 (which means that they are not recognized as names).
-Compatibility mode can be turned on with the @option{-C} command line
-option, and turned on or off with the @code{cp} request.  The number
+
+@DefreqList {cp, n}
+@DefreqItem {do, cmd}
+@DefregListEnd {.C}
+If @var{n} is missing or non-zero, turn on compatibility mode;
+otherwise, turn it off.
+
+The number
 register @code{.C} is@w{ }1 if compatibility mode is on, 0@w{
 }otherwise.
+
+Compatibility mode can be turned on with the
+@option{-C} command line option.
+
+The @code{do} request turns off compatibility mode
+while executing its arguments as a @code{gtroff} command.
+
+@Example
+.do fam T
+@endExample
+
+@noindent
+executes the @code{fam} request when compatibility mode
+is enabled.
+
+@code{gtroff} restores the previous compatibility setting
+before interpreting any files sourced by the @var{cmd}.
+@endDefreq
 
 @cindex input level in delimited arguments
 @cindex delimited arguments, incompatibilities with Unix @code{troff}
