@@ -493,20 +493,13 @@ FILE *find_file(file, result)
   FILE *fp;
   char *path;
   char *env;
-  char *home;
 
   env = getenv(FONTPATH_ENV_VAR);
-  home = getenv("HOME");
   path = XtMalloc(((env && *env) ? strlen(env) + 1 : 0)
-		  + ((home && *home) ? strlen(home) + 1 : 0)
 		  + strlen(FONTPATH) + 1);
   *path = '\0';
   if (env && *env) {
     strcat(path, env);
-    strcat(path, ":");
-  }
-  if (home && *home) {
-    strcat(path, home);
     strcat(path, ":");
   }
   strcat(path, FONTPATH);
