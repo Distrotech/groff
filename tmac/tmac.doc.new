@@ -112,6 +112,7 @@
 .\" NS   name of calling request (set in each user-requestable macro)
 .
 .ds doc-macro-name
+.als doc-arg0 doc-macro-name
 .
 .
 .\" NS doc-arg-limit global register
@@ -187,6 +188,9 @@
 .\" NS   doc-str-dpa, doc-reg-dpa, doc-reg-dpa1
 .
 .de doc-parse-args
+.  if !\n[doc-arg-limit] \
+.    doc-set-spacing-1
+.
 .  ie \n[.$] \{\
 .    nr doc-arg-limit +1
 .
@@ -312,6 +316,9 @@
 .\" NS   doc-str-dpav, doc-reg-dpav, doc-reg-dpav1
 .
 .de doc-parse-arg-vector
+.  if !\n[doc-arg-limit] \
+.    doc-set-spacing-1
+.
 .  nr doc-arg-limit +1
 .
 .  if "\*[doc-arg\n[doc-arg-limit]]"|" \
@@ -2189,14 +2196,9 @@
 .      \" last argument
 .      doc-reset-args
 .    \}
-.    el \{\
-.      nr doc-arg-ptr +1
-.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
-.        \*[doc-arg\n[doc-arg-ptr]]
-.      el \{\
-.        nr doc-arg-ptr -1
-.        No
-.  \}\}\}
+.    el \
+.      No
+.  \}
 ..
 .
 .
@@ -2542,16 +2544,20 @@
 .  \" closing macros like .Ac, Bc., etc. have value 3 (remove space before
 .  \" argument)
 .  ie (\n[doc-reg-dssfm1] == 3) \{\
-.    nr doc-reg-dssfm (\n[doc-arg-limit] - 1)
-.    ds doc-space\n[doc-reg-dssfm]
+.    if \n[doc-arg-limit] \{\
+.      nr doc-reg-dssfm (\n[doc-arg-limit] - 1)
+.      ds doc-space\n[doc-reg-dssfm]
+.    \}
 .    ds doc-space\n[doc-arg-limit] "\*[doc-space]
 .  \}
 .  el \{\
 .    \" macros like .Ap and .Ns have value 2 (remove space before and after
 .    \" argument)
 .    ie (\n[doc-reg-dssfm1] == 2) \{\
-.      nr doc-reg-dssfm (\n[doc-arg-limit] - 1)
-.      ds doc-space\n[doc-reg-dssfm]
+.      if \n[doc-arg-limit] \{\
+.        nr doc-reg-dssfm (\n[doc-arg-limit] - 1)
+.        ds doc-space\n[doc-reg-dssfm]
+.      \}
 .      ds doc-space\n[doc-arg-limit]
 .    \}
 .    el \
@@ -5942,8 +5948,9 @@
 .rn em e@
 .
 .de em
-.  tm mdoc error: end-macro (.em) respecification is not allowed. (#\n[.c])
-.  ab Should this have been `.Em ...'?
+.  tm1 "mdoc error: end-macro (.em) respecification is not allowed. (#\n[.c])
+.  tm1 "            Should this have been `.Em ...'?
+.  ab
 ..
 .
 .
@@ -5952,7 +5959,7 @@
 .
 .de doc-empty-line
 .  if !"\*[doc-macro-name]"Bd" \
-.    tm mdoc warning: Empty input line #\n[.c]!
+.    tm mdoc warning: Empty input line #\n[.c]
 .  sp
 ..
 .
