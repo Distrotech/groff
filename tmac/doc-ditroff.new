@@ -211,23 +211,13 @@
 .\" NS
 .\" NS width register `.Ql' set in doc-common
 .\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Ql
+.\" NS local variables:
+.\" NS   doc-reg-Ql, doc-reg-Ql1
 .
 .de Ql
-.tm doc-arg-ptr==\n[doc-arg-ptr]
-.tm doc-args-processed==\n[doc-args-processed]
 .  if !\n[doc-args-processed] \{\
 .    ds doc-macro-name Ql
-.
-.    nr doc-reg-Ql 1
-.    while (\n[doc-reg-Ql] <= \n[.$]) \{\
-.      ds doc-arg\n[doc-reg-Ql] "\$[\n[doc-reg-Ql]]
-.      nr doc-reg-Ql +1
-.    \}
-.
-.    nr doc-num-args \n[.$]
-.    doc-parse-arg-vector
+.    doc-parse-args \$@
 .  \}
 .
 .  nr doc-reg-Ql (\n[doc-arg-ptr] + 1)
@@ -236,6 +226,29 @@
 .  ie (\n[doc-width] > 2) \
 .    Li
 .  el \{\
+.    ie \n[doc-arg-ptr] \{\
+.      \" we replace `Ql' with `Li'
+.      ds doc-arg\n[doc-arg-ptr] Li
+.      nr doc-arg-ptr -1
+.    \}
+.    el \{\
+.      \" if .Ql has been called directly, we must shift all elements in
+.      \" the argument vector to the right so that we can insert `Li'
+.      nr doc-reg-Ql \n[doc-args-processed]
+.      nr doc-reg-Ql1 (\n[doc-args-processed] + 1)
+.      while \n[doc-reg-Ql] \{\
+.        rn doc-arg\n[doc-reg-Ql] doc-arg\n[doc-reg-Ql1]
+.        rn doc-type\n[doc-reg-Ql] doc-type\n[doc-reg-Ql1]
+.        rn doc-space\n[doc-reg-Ql] doc-space\n[doc-reg-Ql1]
+.        nr doc-reg-Ql -1
+.        nr doc-reg-Ql1 -1
+.      \}
+.      ds doc-arg1 Li
+.      ds doc-type1 macro
+.      ds doc-space1
+.      nr doc-args-processed +1
+.    \}
+.
 .    ds doc-quote-left "\*[doc-left-singlequote]
 .    ds doc-quote-right "\*[doc-right-singlequote]
 .    doc-enclose-string
@@ -302,7 +315,7 @@
 .    ne 3
 '  fi
 .
-.  ie !\n[.$] \{\
+.  ie \n[.$] \{\
 .    nop \*[doc-Sh-font]\$1\c
 .    nr doc-reg-Sh 2
 .    while (\n[doc-reg-Sh] <= \n[.$]) \{\

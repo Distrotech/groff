@@ -590,7 +590,7 @@
 .
 .    ie "\*[doc-str-dfr]"string" \{\
 .      \" handle vertical bar -- doc-reg-Fl is set for the first call of
-.      \" doc-flag-recursion only; we need this to handle `.Fl | ...'
+.      \" doc-flag-recursion only; we need this to make `.Fl | ...' work
 .      \" correctly
 .      ie "\*[doc-str-dfr1]"\*[Ba]" \{\
 .        if \n[doc-reg-Fl] \
@@ -646,31 +646,35 @@
 .\" NS doc-print-recursive macro
 .\" NS   general name recursion routine (print remaining arguments)
 .\" NS
+.\" NS   hyphenation is disabled
+.\" NS
 .\" NS local variables:
-.\" NS   doc-str-dpr, doc-reg-dpr
+.\" NS   doc-str-dpr, doc-str-dpr1, doc-reg-dpr
 .
 .de doc-print-recursive
 .  ds doc-str-dpr \*[doc-type\n[doc-arg-ptr]]
+.  ds doc-str-dpr1 "\*[doc-arg\n[doc-arg-ptr]]
 .
 .  hy 0
 .
 .  ie "\*[doc-str-dpr]"macro" \{\
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.    \*[doc-arg\n[doc-arg-ptr]]
+.    \*[doc-str-dpr1]
 .  \}
 .  el \{\
 .    nr doc-reg-dpr \n[doc-arg-ptr]
 .
 .    ie "\*[doc-str-dpr]"string" \
-.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
+.      as doc-out-string \&\*[doc-str-dpr1]
 .    el \{\
 .      \" punctuation character
 .      as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.      as doc-out-string "\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
+.      as doc-out-string "\*[doc-str-dpr1]\f[P]\s[0]
 .    \}
 .
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \{\
+.      \" last argument
 .      as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .      doc-print-and-reset
 .    \}
@@ -731,12 +735,12 @@
 .
 .de Ad
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Ad address ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Ad
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Ad address ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -750,31 +754,22 @@
 .
 .
 .\" NS Cd user macro
-.\" NS   Config declaration (for section 4 SYNOPSIS) (not callable)
+.\" NS   Config declaration (for section 4 SYNOPSIS)
+.\" NS
+.\" NS   this function causes a break; it uses the `Nm' font
 .\" NS
 .\" NS width register `.Cd' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Cd
 .\"
 .\" needs work - not very translatable
 .
 .de Cd
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Cd Configuration file declaration (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Cd
-.
-.      nr doc-reg-Cd 1
-.      while (\n[doc-reg-Cd] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Cd] "\$[\n[doc-reg-Cd]]
-.        nr doc-reg-Cd +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Cd Configuration file declaration (#\n[.c])
 .  \}
 .
 .  br
@@ -812,27 +807,16 @@
 .\" NS   Interactive command modifier (flag)
 .\" NS
 .\" NS width register `.Cm' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Cm
 .
 .de Cm
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
-.      tmc Usage: .Cm Interactive command modifier ...
-.      tm1 " \*[doc-punct-chars] (#\n[.c])
+.    ie \n[.$] \{\
+.      ds doc-macro-name Cm
+.      doc-parse-args \$@
 .    \}
 .    el \{\
-.      ds doc-macro-name Cm
-.
-.      nr doc-reg-Cm 1
-.      while (\n[doc-reg-Cm] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Cm] "\$[\n[doc-reg-Cm]]
-.        nr doc-reg-Cm +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      tmc Usage: .Cm Interactive command modifier ...
+.      tm1 " \*[doc-punct-chars] (#\n[.c])
 .    \}
 .  \}
 .
@@ -849,16 +833,18 @@
 .\" NS Dv user macro
 .\" NS   define variable
 .\" NS
+.\" NS   this function uses the `Er' font
+.\" NS
 .\" NS width register `.Dv' set in doc-common
 .
 .de Dv
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Dv define_variable ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Dv
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Dv define_variable ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -875,26 +861,15 @@
 .\" NS   emphasis
 .\" NS
 .\" NS width register `.Em' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Em
 .
 .de Em
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Em text ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Em
-.
-.      nr doc-reg-Em 1
-.      while (\n[doc-reg-Em] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Em] "\$[\n[doc-reg-Em]]
-.        nr doc-reg-Em +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Em text ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -910,16 +885,16 @@
 .\" NS Er user macro
 .\" NS   errno type
 .\" NS
-.\" NS width register `.Em' set in doc-common
+.\" NS width register `.Er' set in doc-common
 .
 .de Er
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Er ERRNOTYPE ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Er
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Er ERRNOTYPE ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -939,12 +914,12 @@
 .
 .de Ev
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Ev ENVIRONMENT_VARIABLE ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Ev
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Ev ENVIRONMENT_VARIABLE ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -964,10 +939,10 @@
 .
 .
 .\" NS doc-do-function-declaration macro
+.\" NS
+.\" NS   do someting special while in SYNOPSIS
 .
 .de doc-do-function-declaration
-.  ds doc-macro-name \$1
-.
 .  if \n[doc-in-synopsis-section] \{\
 .    \" if a variable type was the last thing given, want vertical space
 .    if \n[doc-variable-type] \{\
@@ -976,12 +951,12 @@
 .    \}
 .    \" if a subroutine was the last thing given, want vertical space
 .    if \n[doc-function-count] \{\
-.      ie !\n[doc-declaration-count] \{\
+.      ie \n[doc-declaration-count] \
+.        br
+.      el \{\
 .        doc-paragraph
 .        rs
 .      \}
-.      el \
-.        br
 .    \}
 .    nr doc-declaration-count +1
 .  \}
@@ -992,46 +967,60 @@
 .
 .
 .\" NS Fd user macro
-.\" NS   function declaration - not callable (& no err check)
+.\" NS   function declaration -- not callable
+.\" NS
+.\" NS   this function causes a break
 .\" NS
 .\" NS width register `.Fd' set in doc-common
 .
 .de Fd
-.  doc-do-function-declaration Fd
-.  nop \*[doc-Fd-font]\$*
-.  br
-.  ft \n[doc-curr-font]
-.  fs \n[doc-curr-size]
+.  ie \n[doc-args-processed] \
+.    tm Usage: .Fd function_declaration -- Fd is not callable (#\n[.c])
+.  el \{\
+.    doc-do-function-declaration
+.    nop \*[doc-Fd-font]\$*
+.    br
+.    ft \n[doc-curr-font]
+.    fs \n[doc-curr-size]
+.  \}
 ..
 .
 .
 .\" NS In user macro
 .\" NS   #include statement - not callable (& no err check)
 .\" NS
+.\" NS   this function causes a break; it uses the `Fd' font
+.\" NS
 .\" NS width register `.In' set in doc-common
 .
 .de In
-.  doc-do-function-declaration In
-.  nop \*[doc-Fd-font]#include <\$1>
-.  br
-.  ft \n[doc-curr-font]
-.  fs \n[doc-curr-size]
+.  ie \n[doc-args-processed] \
+.    tm Usage: .In #include_statement -- In is not callable (#\n[.c])
+.  el \{\
+.    doc-do-function-declaration
+.    nop \*[doc-Fd-font]#include <\$1>
+.    br
+.    ft \n[doc-curr-font]
+.    fs \n[doc-curr-size]
+.  \}
 ..
 .
 .
 .\" NS Fr user macro
-.\" NS   function return value - not callable (at the moment)
+.\" NS   function return value
+.\" NS
+.\" NS   this function uses the `Ar' font
 .\" NS
 .\" NS width register `.Fr' set in doc-common
 .
 .de Fr
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Fr Function_return_value... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Fr
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Fr Function_return_value... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1051,12 +1040,12 @@
 .
 .de Ic
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Ic Interactive command ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Ic
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Ic Interactive command ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1073,26 +1062,15 @@
 .\" NS   literals
 .\" NS
 .\" NS width register `.Li' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Li
 .
 .de Li
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage .Li argument ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Li
-.
-.      nr doc-reg-Li 1
-.      while (\n[doc-reg-Li] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Li] "\$[\n[doc-reg-Li]]
-.        nr doc-reg-Li +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage .Li argument ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1112,12 +1090,12 @@
 .
 .de Or
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Or ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Or
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Or ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1133,16 +1111,18 @@
 .\" NS Ms user macro
 .\" NS   math symbol
 .\" NS
+.\" NS   this function uses the `Sy' font
+.\" NS
 .\" NS width register `.Ms' set in doc-common
 .
 .de Ms
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Ms Math symbol ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Ms
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Ms Math symbol ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1167,37 +1147,33 @@
 .\" NS width register `.Nm' set in doc-common
 .\" NS
 .\" NS local variable:
-.\" NS   doc-reg-Nm
+.\" NS   doc-str-Nm
 .
 .de Nm
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name Nm
+.
+.      \" handle empty first parameter
+.      ie "\$1"" \
+.        ds doc-str-Nm "\*[doc-command-name]
+.      el \
+.        ds doc-str-Nm "\$1
+.      shift
+.      doc-parse-args "\*[doc-str-Nm]" \$@
+.    \}
+.    el \{\
 .      ie "\*[doc-command-name]"" \
 .        tm Usage: .Nm Name(s) ... \*[doc-punct-chars] (#\n[.c])
 .      el \
 .        nop \*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
-.    \}
-.    el \{\
-.      ds doc-macro-name Nm
-.
-.      ie "\$1"" \
-.        ds doc-arg1 "\*[doc-command-name]
-.      el \
-.        ds doc-arg1 "\$1
-.      nr doc-reg-Nm 2
-.      while (\n[doc-reg-Nm] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Nm] "\$[\n[doc-reg-Nm]]
-.        nr doc-reg-Nm +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
 .    \}
 .  \}
 .
 .  if \n[doc-args-processed] \{\
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \{\
+.      \" last argument
 .      as doc-out-string \*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
 .      doc-print-and-reset
 .    \}
@@ -1210,6 +1186,8 @@
 .      el \{\
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
+.
+.        \" handle `.Nm ...' in SYNOPSIS
 .        if \n[doc-in-synopsis-section] \{\
 .          if "\*[doc-macro-name]"Nm" \{\
 .            rs
@@ -1243,11 +1221,13 @@
 .
 .de Pa
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      nop \*[doc-Pa-font]~\f[P]\s[0]
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Pa
 .      doc-parse-args \$@
+.    \}
+.    el \{\
+.      \" default value
+.      nop \*[doc-Pa-font]~\f[P]\s[0]
 .    \}
 .  \}
 .
@@ -1265,26 +1245,15 @@
 .\" NS   symbolics
 .\" NS
 .\" NS width register `.Sy' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Sy
 .
 .de Sy
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Sy symbolic_text ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Sy
-.
-.      nr doc-reg-Sy 1
-.      while (\n[doc-reg-Sy] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Sy] "\$[\n[doc-reg-Sy]]
-.        nr doc-reg-Sy +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Sy symbolic_text ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1301,26 +1270,15 @@
 .\" NS   menu entries
 .\" NS
 .\" NS width register `.Me' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Me
 .
 .de Me
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Me menu entry ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Me
-.
-.      nr doc-reg-Me 1
-.      while (\n[doc-reg-Me] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Me] "\$[\n[doc-reg-Me]]
-.        nr doc-reg-Me +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Me menu entry ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1340,12 +1298,12 @@
 .
 .de Tn
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Tn Trade_name(s) ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Tn
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Tn Trade_name(s) ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1361,16 +1319,16 @@
 .\" NS doc-reference-trademark macro
 .\" NS   .Tn for inside of references
 .\" NS
-.\" NS code for references checks for `Tn'!
+.\" NS   the code for references below checks for `Tn'!
 .
 .de doc-reference-trademark
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Tn Trade_name(s) ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Tn
 .      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Tn Trade_name(s) ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1390,12 +1348,12 @@
 .
 .de Va
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Va variable_name(s) ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Va
 .      doc-parse-args \$@
 .    \}
+.    el
+.      tm Usage: .Va variable_name(s) ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1417,12 +1375,12 @@
 .  as doc-out-string \*[doc-No-font]
 .
 .  if !\n[doc-args-processed] \{\
-.    ie \n[.$] \
+.    ie \n[.$] \{\
 .      ds doc-macro-name No
 .      doc-parse-args \$@
-.    el \{\
-.      tm Usage: .No must be called with arguments (#\n[.c])
 .    \}
+.    el \
+.      tm Usage: .No must be called with arguments (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1439,7 +1397,7 @@
 .
 .
 .\" NS Op user macro
-.\" NS   option expression
+.\" NS   option expression (i.e., enclose string in square brackets)
 .\" NS
 .\" NS width register `.Op' set in doc-common
 .
@@ -1538,8 +1496,7 @@
 .\" NS Ql user macro
 .\" NS   quoted literal
 .\"
-.\"   is in file doc-[dit|n]roff (too large an if-else to carry along
-.\"   recursively for `if n ...')
+.\"   is in file doc-[dit|n]roff
 .
 .
 .\" NS Qq user macro
@@ -1595,23 +1552,24 @@
 .  \" .tm1 "  doc-saved-list-immediate==\n[doc-saved-list-immediate]
 .  \" .tm1 "  doc-args-processed==\n[doc-args-processed]
 .
-.  ie !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
-.      as doc-out-string \&\*[doc-quote-left]\*[doc-quote-right]
-.      doc-print-out-string
-.    \}
-.    el \{\
+.  ie \n[doc-args-processed] \
+.    as doc-out-string \&\*[doc-quote-left]
+.  el \{\
+.    ie \n[.$] \{\
 .      \".as doc-macro-name (doc-enclose-string)
 .      doc-parse-args \$@
 .      as doc-out-string \&\*[doc-quote-left]
 .    \}
+.    el \{\
+.      as doc-out-string \&\*[doc-quote-left]\*[doc-quote-right]
+.      doc-print-out-string
+.    \}
 .  \}
-.  el \
-.    as doc-out-string \&\*[doc-quote-left]
 .
 .  if \n[doc-args-processed] \{\
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \{\
+.      \" last argument
 .      as doc-out-string \&\*[doc-quote-right]
 .      doc-print-and-reset
 .    \}
@@ -1625,6 +1583,7 @@
 .      \}
 .      el \
 .        doc-append-arg "\*[doc-quote-right]" punct-suffix
+.
 .      doc-do-\*[doc-type\n[doc-arg-ptr]]
 .      \}
 .    \}
@@ -1735,7 +1694,7 @@
 .
 .
 .\" NS Eo user macro
-.\" NS   enclose open (using first argument as beginning of enclosion)
+.\" NS   enclose open (using first argument as beginning of enclosure)
 .\" NS
 .\" NS width register `.Eo' set in doc-common
 .
@@ -1751,7 +1710,7 @@
 .
 .
 .\" NS Ec user macro
-.\" NS   enclose close (using first argument as end of enclosion)
+.\" NS   enclose close (using first argument as end of enclosure)
 .\" NS
 .\" NS width register `.Ec' set in doc-common
 .
@@ -1937,7 +1896,9 @@
 .  \" .tm1 "  doc-nesting-level==\n[doc-nesting-level]
 .  \" .tm1 "  doc-in-diversion==\n[doc-in-diversion]
 .
-.  ie !\n[doc-args-processed] \{\
+.  ie \n[doc-args-processed] \
+.    as doc-out-string \&\*[doc-quote-left]
+.  el \{\
 .    ie \n[.$] \{\
 .      doc-parse-args \$@
 .      as doc-out-string \&\*[doc-quote-left]
@@ -1950,8 +1911,6 @@
 .          doc-save-and-divert
 .    \}
 .  \}
-.  el \
-.    as doc-out-string \&\*[doc-quote-left]
 .
 .  ie \n[doc-args-processed] \{\
 .    if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
@@ -2015,12 +1974,12 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > 0) \{\
+.  if \n[doc-args-processed] \{\
 .    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
-.      ie !\n[doc-nesting-level] \
-.        doc-print-and-reset
-.      el \
+.      ie \n[doc-nesting-level] \
 .        doc-reset-args
+.      el \
+.        doc-print-and-reset
 .    \}
 .    el \{\
 .      nr doc-str-dec (\n[doc-arg-ptr] + 1)
@@ -2037,7 +1996,6 @@
 .        \" .tm UNSETTING doc-saved-list-immediate==\n[doc-saved-list-immediate]!
 .        if \n[doc-saved-list-immediate] \
 .          nr doc-saved-list-immediate 0
-.        \" .tm NOW doc-saved-list-immediate==\n[doc-saved-list-immediate]!
 .      \}
 .      No
 .    \}
@@ -2585,7 +2543,7 @@
 .    \" .tm Here is argc: \n[.$] and here is doc-reg-Bd \n[doc-reg-Bd]
 .    if ((\n[doc-reg-Bd] >= 1) & (\n[.$] > \n[doc-reg-Bd])) \{\
 .      shift
-.      doc-do-Bv-args \$@
+.      doc-do-Bd-args \$@
 .    \}
 .
 .    if \n[doc-indent-stack\n[doc-display-depth]] \
@@ -2608,14 +2566,14 @@
 ..
 .
 .
-.\" NS doc-do-Bv-args macro
+.\" NS doc-do-Bd-args macro
 .\" NS   resolve remaining .Bd arguments
 .\" NS
 .\" NS local variables:
 .\" NS   doc-str-ddBa, doc-reg-ddBa
 .
-.de doc-do-Bv-args
-.  \" .tm in doc-do-Bv-args with args: \$@
+.de doc-do-Bd-args
+.  \" .tm in doc-do-Bd-args with args: \$@
 .
 .  nr doc-reg-ddBa 1
 .  ds doc-str-ddBa
@@ -2655,7 +2613,7 @@
 .        ie ((\*[doc-str-ddBa] > 9n) & (\*[doc-str-ddBa] < 100n)) \
 .          nr doc-indent-stack\n[doc-display-depth] \*[doc-str-ddBa]
 .        el \
-.          nr doc-indent-stack\n[doc-display-depth] (\n[doc-width] * \n[doc-fixed-width])
+.          nr doc-indent-stack\n[doc-display-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
 .      \}
 .      el \{\
 .        if (\n[doc-width] == 2) \
@@ -2676,11 +2634,11 @@
 .  if (\n[doc-reg-ddBa] < \n[.$]) \{\
 .    ie "\*[doc-str-ddBa]"" \{\
 .      shift
-.      doc-do-Bv-args \$@
+.      doc-do-Bd-args \$@
 .    \}
 .    el \{\
 .      shift 2
-.      doc-do-Bv-args \$@
+.      doc-do-Bd-args \$@
 .    \}
 .  \}
 ..
@@ -2882,7 +2840,7 @@
 .
 .      doc-get-arg-width \n[doc-arg-ptr]
 .      ie (\n[doc-width] > 2) \{\
-.        nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width] * \n[doc-fixed-width])
+.        nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
 .        if (\n[doc-width] == 3) \
 .          if \A'\*[doc-str-dBla]' \
 .            if r doc-width-\*[doc-str-dBla] \
@@ -2908,7 +2866,7 @@
 .
 .        doc-get-arg-width \n[doc-arg-ptr]
 .        ie (\n[doc-width] > 2) \{\
-.          nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width] * \n[doc-fixed-width])
+.          nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
 .          if \A'\*[doc-str-dBla]' \
 .            if r doc-width-\*[doc-str-dBla] \
 .              nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
