@@ -8,18 +8,16 @@ DviGetAndPut(dw, cp)
     DviWidget	dw;
     int		*cp;
 {
-    if (dw->dvi.ungot)
-    {
-	dw->dvi.ungot = 0;
-	*cp = getc (dw->dvi.file);
-    }
-    else
-    {
-	*cp = getc (dw->dvi.file);
-	if (*cp != EOF)
-		putc (*cp, dw->dvi.tmpFile);
-    }
-    return *cp;
+	if (dw->dvi.ungot) {
+		dw->dvi.ungot =	0;
+		*cp = getc (dw->dvi.file);
+	}
+	else {
+		*cp = getc (dw->dvi.file);
+		if (*cp != EOF)
+			putc (*cp, dw->dvi.tmpFile);
+	}
+	return *cp;
 }
 
 char *
@@ -29,20 +27,20 @@ GetLine(dw, Buffer, Length)
 	int	Length;
 {
 	int 	i = 0, c;
-	char	*p = Buffer;
 	
-	Length--;			    /* Save room for final NULL */
+	Length--;		     /* Save room for final '\0' */
 	
-	while (i < Length && DviGetC (dw, &c) != EOF && c != '\n')
-		if (p)
-			*p++ = c;
-	if (c == '\n' && p)		    /* Retain the newline like fgets */
-		*p++ = c;
-	if (c == '\n')
-		DviUngetC(dw, c);
-	if (p)	
-		*p = NULL;
-	return (Buffer);
+	while (DviGetC (dw, &c) != EOF) {
+		if (Buffer && i < Length)
+			Buffer[i++] = c;
+		if (c == '\n') {
+			DviUngetC(dw, c);
+			break;
+		}
+	}
+	if (Buffer)
+		Buffer[i] = '\0';
+	return Buffer;
 } 
 
 char *
@@ -52,21 +50,21 @@ GetWord(dw, Buffer, Length)
 	int	Length;
 {
 	int 	i = 0, c;
-	char	*p = Buffer;
 	
-	Length--;			    /* Save room for final NULL */
-	while (DviGetC(dw, &c) != EOF && (c == ' ' || c == '\n'))
+	Length--;			    /* Save room for final '\0' */
+	while (DviGetC(dw, &c) == ' ' || c == '\n')
 		;
-	if (c != EOF)
-		DviUngetC(dw, c);
-	while (i < Length && DviGetC(dw, &c) != EOF && c != ' ' && c != '\n')
-		if (p)
-			*p++ = c;
-	if (c != EOF)
-		DviUngetC(dw, c);
-	if (p)
-		*p = NULL;
-	return (Buffer);
+	while (c != EOF) {
+		if (Buffer && i < Length)
+			Buffer[i++] = c;
+		if (DviGetC(dw, &c) == ' ' || c == '\n') {
+			DviUngetC(dw, c);
+			break;
+		}
+	}
+	if (Buffer)
+		Buffer[i] = '\0';
+	return Buffer;
 } 
 
 GetNumber(dw)
@@ -75,21 +73,22 @@ GetNumber(dw)
 	int	i = 0,  c;
 	int	negative = 0;
 
-	while (DviGetC(dw, &c) != EOF && (c == ' ' || c == '\n'))
+	while (DviGetC(dw, &c) == ' ' || c == '\n')
 		;
-	if (c != EOF)
-		DviUngetC(dw, c);
-	
-	while (DviGetC(dw, &c) != EOF && c >= '0' && c <= '9') {
+	if (c == '-') {
+		negative = 1;
+		DviGetC(dw, &c);
+	}
+
+	for (; c >= '0' && c <= '9'; DviGetC(dw, &c)) {
 		if (negative)
 			i = i*10 - (c - '0');
 		else
 			i = i*10 + c - '0';
 	}
-
 	if (c != EOF)
 		DviUngetC(dw, c);
-	return (i);
+	return i;
 }
 	
 /*

@@ -20,12 +20,12 @@ do
 	esac
 done
 
-egrep -h '^\.(P|[LI]P|[pnil]p|Dd|TS|EQ|TH|SH|so|\[|R1)' $* \
+egrep -h '^\.(P|[LI]P|[pnil]p|Dd|Tp|Dp|De|Cx|Cl|Oo|Oc|TS|EQ|TH|SH|so|\[|R1)' $* \
 | sed -e '/^\.so/s/^.*$/.SO_START\
 &\
 .SO_END/' \
 | $soelim \
-| egrep '^\.(P|[LI]P|[pnil]p|Dd|TS|EQ|TH|SH|\[|R1|SO_START|SO_END)' \
+| egrep '^\.(P|[LI]P|[pnil]p|Dd|Tp|Dp|De|Cx|Cl|Oo|Oc|TS|EQ|TH|SH|\[|R1|SO_START|SO_END)' \
 | awk '
 /^\.SO_START$/ { so = 1 }
 /^\.SO_END$/ { so = 0 }
@@ -39,6 +39,9 @@ egrep -h '^\.(P|[LI]P|[pnil]p|Dd|TS|EQ|TH|SH|so|\[|R1)' $* \
 /^\.SH/ { SH++ }
 /^\.[pnil]p/ { me++ }
 /^\.Dd/ { mdoc++ }
+/^\.(Tp|Dp|De|Cx|Cl)/ { mdoc_old++ }
+/^\.Oo/ { Oo++ }
+/^\.Oc/ { Oo-- }
 
 END {
 	if (files ~ /^-/)
@@ -60,8 +63,12 @@ END {
 		printf " -ms"
 	else if (P > 0)
 		printf " -mm"
-	else if (mdoc > 0)
-		printf " -mdoc"
+	else if (mdoc > 0) {
+		if (mdoc_old > 0 || Oo > 0)
+			printf " -mdoc.old"
+		else
+			printf " -mdoc"
+	}
 	if (opts != "")
 		printf "%s", opts
 	if (files != "")

@@ -224,7 +224,7 @@ matrix_box::~matrix_box()
 {
   for (int i = 0; i < len; i++)
     delete p[i];
-  delete p;
+  a_delete p;
 }
 
 void matrix_box::append(column *pp)
@@ -234,7 +234,7 @@ void matrix_box::append(column *pp)
     maxlen *= 2;
     p = new column*[maxlen];
     memcpy(p, oldp, sizeof(column*)*len);
-    delete oldp;
+    a_delete oldp;
   }
   p[len++] = pp;
 }

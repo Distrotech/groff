@@ -35,7 +35,7 @@ output::output() : desired_height(0.0), desired_width(0.0), args(0)
 
 output::~output()
 {
-  delete args;
+  a_delete args;
 }
 
 void output::set_desired_width_height(double wid, double ht)
@@ -46,7 +46,7 @@ void output::set_desired_width_height(double wid, double ht)
 
 void output::set_args(const char *s)
 {
-  delete args;
+  a_delete args;
   if (s == 0 || *s == '\0')
     args = 0;
   else
@@ -100,9 +100,9 @@ double output::compute_scale(double sc, const position &ll, const position &ur)
     if (sc <= 0.0)
       sc = 1.0;
     distance sdim = dim/sc;
-    double max_width;
+    double max_width = 0.0;
     lookup_variable("maxpswid", &max_width);
-    double max_height;
+    double max_height = 0.0;
     lookup_variable("maxpsht", &max_height);
     if ((max_width > 0.0 && sdim.x > max_width)
 	|| (max_height > 0.0 && sdim.y > max_height)) {
@@ -401,7 +401,7 @@ text_item::text_item(char *t, const char *fn, int ln)
 
 text_item::~text_item()
 {
-  delete text;
+  a_delete text;
 }
 
 object_spec::object_spec(object_type t) : type(t)
@@ -456,7 +456,7 @@ command_object::command_object(char *p, const char *fn, int ln)
 
 command_object::~command_object()
 {
-  delete s;
+  a_delete s;
 }
 
 void command_object::print()
@@ -536,7 +536,7 @@ text_piece::text_piece()
 
 text_piece::~text_piece()
 {
-  delete text;
+  a_delete text;
 }
 
 class graphic_object : public object {
@@ -623,7 +623,8 @@ void graphic_object::print_text()
 
 graphic_object::~graphic_object()
 {
-  delete [ntext] text;
+  if (text)
+    ad_delete(ntext) text;
 }
 
 class rectangle_object : public graphic_object {
@@ -1292,7 +1293,7 @@ void spline_object::print()
 
 line_object::~line_object()
 {
-  delete v;
+  a_delete v;
 }
 
 linear_object *object_spec::make_line(position *curpos, direction *dirp)
@@ -1727,7 +1728,7 @@ string_list::string_list(char *s)
 
 string_list::~string_list()
 {
-  delete str;
+  a_delete str;
 }
   
 /* A path is used to hold the argument to the with attribute. For example,

@@ -59,7 +59,7 @@ vertical_size::vertical_size(vunits vs, int ls)
     post = V0;
 }
 
-void node::set_vertical_size(vertical_size *v)
+void node::set_vertical_size(vertical_size *)
 {
 }
 
@@ -870,6 +870,8 @@ void mark()
   symbol s = get_name();
   if (s.is_null())
     curdiv->marked_place = curdiv->get_vertical_position();
+  else if (curdiv == topdiv)
+    set_number_reg(s, nl_reg_contents);
   else
     set_number_reg(s, curdiv->get_vertical_position().to_units());
   skip_line();

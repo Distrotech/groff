@@ -144,7 +144,7 @@ const char *bmpattern::search(const char *buf, const char *end) const
 
 bmpattern::~bmpattern()
 {
-  delete pat;
+  a_delete pat;
 }
 
 inline int bmpattern::length() const
@@ -285,7 +285,7 @@ file_buffer::file_buffer()
 
 file_buffer::~file_buffer()
 {
-  delete buffer;
+  a_delete buffer;
 }
 
 const char *file_buffer::get_start() const
@@ -334,7 +334,7 @@ int file_buffer::load(int fd, const char *filename)
 	return 1;
       }
     }
-    delete buffer;
+    a_delete buffer;
     buffer = 0;
   }
   close(fd);
@@ -368,7 +368,7 @@ linear_searcher::linear_searcher(const char *query, int query_len,
   }
   assert(nkeys <= nk);
   if (nkeys == 0) {
-    delete keys;
+    a_delete keys;
     keys = 0;
   }
 }
@@ -377,7 +377,7 @@ linear_searcher::~linear_searcher()
 {
   for (int i = 0; i < nkeys; i++)
     delete keys[i];
-  delete keys;
+  a_delete keys;
 }
 
 int linear_searcher::search(const char *buffer, const char *bufend,

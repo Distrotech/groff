@@ -42,6 +42,11 @@ environment_list::environment_list(const environment &e, environment_list *p)
 {
 }
 
+inline int get_char()
+{
+  return getc(current_file);
+}
+
 void do_file(const char *filename)
 {
   int npages = 0;
@@ -187,7 +192,9 @@ void do_file(const char *filename)
       break;
     case 'w':
     case ' ':
+      break;
     case '\n':
+      current_lineno++;
       break;
     case 'p':
       if (npages)
@@ -218,11 +225,17 @@ void do_file(const char *filename)
 	int c = get_char();
 	while (c == ' ')
 	  c = get_char();
-	while (c != EOF && c != ' ' && c != '\n') {
+	while (c != EOF) {
+	  if (c == '\n') {
+	    current_lineno++;
+	    break;
+	  }
 	  int w;
 	  pr->set_ascii_char(c, &env, &w);
 	  env.hpos += w + kern;
 	  c = get_char();
+	  if (c == ' ')
+	    break;
 	}
       }
       break;
@@ -231,7 +244,11 @@ void do_file(const char *filename)
 	if (npages == 0)
 	  fatal("`t' command illegal before first `p' command");
 	int c;
-	while ((c = get_char()) != EOF && c != ' ' && c != '\n') {
+	while ((c = get_char()) != EOF && c != ' ') {
+	  if (c == '\n') {
+	    current_lineno++;
+	    break;
+	  }
 	  int w;
 	  pr->set_ascii_char(c, &env, &w);
 	  env.hpos += w;
@@ -261,7 +278,7 @@ void do_file(const char *filename)
 	      p = new int[szp*2];
 	      memcpy(p, oldp, szp*sizeof(int));
 	      szp *= 2;
-	      delete oldp;
+	      a_delete oldp;
 	    }
 	  }
 	  p[np] = n;
@@ -280,7 +297,7 @@ void do_file(const char *filename)
 	  if (i*2 < np)
 	    env.hpos += p[i*2];
 	}
-	delete p;
+	a_delete p;
 	skip_line();
       }
       break;
@@ -342,23 +359,15 @@ void do_file(const char *filename)
     pr->end_page();
 }
 
-int get_char()
-{
-  int c = getc(current_file);
-  if (c == '\n')
-    current_lineno++;
-  return c;
-}
-
 int get_integer()
 {
-  int c = getc(current_file);
+  int c = get_char();
   while (c == ' ')
-    c = getc(current_file);
+    c = get_char();
   int neg = 0;
   if (c == '-') {
     neg = 1;
-    c = getc(current_file);
+    c = get_char();
   }
   if (!isascii(c) || !isdigit(c))
     fatal("integer expected");
@@ -369,7 +378,7 @@ int get_integer()
       total -= c - '0';
     else
       total += c - '0';
-    c = getc(current_file);
+    c = get_char();
   }  while (isascii(c) && isdigit(c));
   if (c != EOF)
     ungetc(c, current_file);
@@ -378,13 +387,13 @@ int get_integer()
 
 int possibly_get_integer(int *res)
 {
-  int c = getc(current_file);
+  int c = get_char();
   while (c == ' ')
-    c = getc(current_file);
+    c = get_char();
   int neg = 0;
   if (c == '-') {
     neg = 1;
-    c = getc(current_file);
+    c = get_char();
   }
   if (!isascii(c) || !isdigit(c)) {
     if (c != EOF)
@@ -398,7 +407,7 @@ int possibly_get_integer(int *res)
       total -= c - '0';
     else
       total += c - '0';
-    c = getc(current_file);
+    c = get_char();
   }  while (isascii(c) && isdigit(c));
   if (c != EOF)
     ungetc(c, current_file);
@@ -411,9 +420,9 @@ char *get_string(int is_long)
 {
   static char *buf;
   static int buf_size;
-  int c = getc(current_file);
+  int c = get_char();
   while (c == ' ')
-    c = getc(current_file);
+    c = get_char();
   for (int i = 0;; i++) {
     if (i >= buf_size) {
       if (buf_size == 0) {
@@ -426,7 +435,7 @@ char *get_string(int is_long)
 	buf_size *= 2;
 	buf = new char[buf_size];
 	memcpy(buf, old_buf, old_size);
-	delete old_buf;
+	a_delete old_buf;
       }
     }
     if ((!is_long && (c == ' ' || c == '\n')) || c == EOF) {
@@ -435,7 +444,7 @@ char *get_string(int is_long)
     }
     if (is_long && c == '\n') {
       current_lineno++;
-      c = getc(current_file);
+      c = get_char();
       if (c == '+')
 	c = '\n';
       else {
@@ -444,7 +453,7 @@ char *get_string(int is_long)
       }
     }  
     buf[i] = c;
-    c = getc(current_file);
+    c = get_char();
   }
   if (c != EOF)
     ungetc(c, current_file);
@@ -454,7 +463,10 @@ char *get_string(int is_long)
 void skip_line()
 {
   int c;
-  while ((c = get_char()) != EOF && c != '\n')
-    ;
+  while ((c = get_char()) != EOF)
+    if (c == '\n') {
+      current_lineno++;
+      break;
+    }
 }
 

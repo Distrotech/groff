@@ -643,7 +643,8 @@ void draw_dvi_printer::draw(int code, int *p, int np, const environment *env)
       fill_next();
     else
       set_line_thickness(env);
-    int rad = milliinches(p[0]/2);
+    int rad;
+    rad = milliinches(p[0]/2);
     sprintf(buf, "%s 0 0 %d %d 0 6.28319",
 	    (fill_flag ? "ia" : "ar"),
 	    rad,

@@ -20,7 +20,7 @@ typedef union {
 #define	VARIABLE	259
 #define	NUMBER	260
 #define	TEXT	261
-#define	COMMAND	262
+#define	COMMAND_LINE	262
 #define	DELIMITED	263
 #define	ORDINAL	264
 #define	LEFT_ARROW_HEAD	265
@@ -122,8 +122,9 @@ typedef union {
 #define	FILL	361
 #define	ALIGNED	362
 #define	SPRINTF	363
-#define	DEFINE	364
-#define	UNDEF	365
+#define	COMMAND	364
+#define	DEFINE	365
+#define	UNDEF	366
 
 
 extern YYSTYPE yylval;

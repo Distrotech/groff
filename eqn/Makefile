@@ -46,7 +46,7 @@ eqn.tab.c: eqn.y
 	mv y.tab.c eqn.tab.c
 	mv y.tab.h eqn.tab.h
 
-eqn.tab.o: eqn.h box.h
+eqn.tab.o: box.h
 box.o: eqn.h box.h pbox.h
 limit.o: eqn.h box.h pbox.h
 text.o: eqn.h box.h pbox.h ../lib/ptable.h

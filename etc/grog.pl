@@ -76,6 +76,17 @@ sub process {
 	elsif (/^\.Dd/) {
 	    $mdoc++;
 	}
+	elsif (/^\.(Tp|Dp|De|Cx|Cl)/) {
+	    $mdoc_old = 1;
+	}
+        # In the old version of -mdoc `Oo' is a toggle, in the new it's
+	# closed by `Oc'.
+	elsif (/^\.Oo/) {
+	    $Oo++;
+	}
+	elsif (/^\.Oc/) {
+	    $Oo--;
+	}
 	if (/^\.so/) {
 	    chop;
 	    s/^.so *//;
@@ -110,7 +121,7 @@ elsif ($P > 0) {
     push(@command, "-mm");
 }
 elsif ($mdoc > 0) {
-    push(@command, "-mdoc");
+    push(@command, ($mdoc_old || $Oo > 0) ? "-mdoc.old" : "-mdoc");
 }
 
 push(@command, "--") if @ARGV && $ARGV[0] =~ /^-./;

@@ -1,6 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991 Free Software Foundation, Inc.
-     Written by James Clark (jjc@jclark.uucp)
+/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+     Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
 
@@ -33,8 +33,14 @@ static int form_feed_flag = 0;
 static int bold_flag = 1;
 static int underline_flag = 1;
 static int overstrike_flag = 1;
+static int draw_flag = 1;
 
-enum { UNDERLINE_MODE = 01, BOLD_MODE = 02 };
+enum {
+  UNDERLINE_MODE = 01,
+  BOLD_MODE = 02,
+  VDRAW_MODE = 04,
+  HDRAW_MODE = 010
+};
 
 // Mode to use for bold-underlining.
 static unsigned char bold_underline_mode = BOLD_MODE|UNDERLINE_MODE;
@@ -90,34 +96,61 @@ void tty_font::handle_x_command(int argc, const char **argv)
 }
 #endif
 
-// hpos and vpos must be non-adjacent, to work round a bug in g++ 1.37.1
-
-struct glyph {
+class glyph {
+  static glyph *free_list;
+public:
+  glyph *next;
   unsigned short hpos;
-  unsigned short serial;
-  unsigned short vpos;
   unsigned char code;
   unsigned char mode;
+  void *operator new(size_t);
+  void operator delete(void *);
+  inline int draw_mode() { return mode & (VDRAW_MODE|HDRAW_MODE); }
 };
 
+glyph *glyph::free_list = 0;
+
+void *glyph::operator new(size_t)
+{
+  if (!free_list) {
+    const int BLOCK = 1024;
+    free_list = (glyph *)new char[sizeof(glyph)*BLOCK];
+    for (int i = 0; i < BLOCK - 1; i++)
+      free_list[i].next = free_list + i + 1;
+    free_list[BLOCK - 1].next = 0;
+  }
+  glyph *p = free_list;
+  free_list = free_list->next;
+  p->next = 0;
+  return p;
+}
+
+void glyph::operator delete(void *p)
+{
+  if (p) {
+    ((glyph *)p)->next = free_list;
+    free_list = (glyph *)p;
+  }
+}
+
 class tty_printer : public printer {
-  enum { INITIAL_VEC_SIZE = 32 };
-  glyph *vec;
-  int vec_used;
-  int vec_size;
+  glyph **lines;
   int lines_per_page;
   int columns_per_page;
+  int cached_v;
+  int cached_vpos;
+  void add_char(unsigned char, int, int, unsigned char);
 public:
   tty_printer();
   ~tty_printer();
   void set_char(int, font *, const environment *, int);
+  void draw(int code, int *p, int np, const environment *env);
   void begin_page(int) { }
   void end_page();
   font *make_font(const char *);
 };
 
-tty_printer::tty_printer()
-: vec_used(0), vec_size(0), vec(0)
+tty_printer::tty_printer() : cached_v(0)
 {
   if (font::paperlength == 0)
     lines_per_page = DEFAULT_LINES_PER_PAGE;
@@ -125,8 +158,11 @@ tty_printer::tty_printer()
     fatal("paperlength not a multiple of vertical resolution");
   else
     lines_per_page = font::paperlength/font::vert;
-  if (lines_per_page > USHRT_MAX || lines_per_page <= 0)
-    fatal("ridiculous paperlength");
+  if (lines_per_page <= 0)
+    fatal("paperlength too small");
+  lines = new glyph *[lines_per_page];
+  for (int i = 0; i < lines_per_page; i++)
+    lines[i] = 0;
   columns_per_page = font::paperwidth/font::hor;
   // If columns_per_page is zero, we won't truncate.
   if (columns_per_page < 0)
@@ -135,149 +171,185 @@ tty_printer::tty_printer()
 
 tty_printer::~tty_printer()
 {
-  delete vec;
+  a_delete lines;
 }
 
 void tty_printer::set_char(int i, font *f, const environment *env, int w)
 {
-  int h = env->hpos;
+  if (w != font::hor)
+    fatal("width of character not equal to horizontal resolution");
+  add_char(f->get_code(i), env->hpos, env->vpos, ((tty_font *)f)->get_mode());
+}
+
+void tty_printer::add_char(unsigned char c, int h, int v, unsigned char mode)
+{
+#if 0
+  // This is too expensive.
   if (h % font::hor != 0)
     fatal("horizontal position not a multiple of horizontal resolution");
-  h /= font::hor;
-  if (h < 0) {
+#endif
+  int hpos = h / font::hor;
+  if (hpos < 0) {
     error("character to the left of first column discarded");
     return;
   }
-  if (columns_per_page != 0 && h >= columns_per_page) {
+  if (columns_per_page != 0 && hpos >= columns_per_page) {
     error("character to the right of last column discarded");
     return;
   }
-  if (h > USHRT_MAX) {
+  if (hpos > USHRT_MAX) {
     error("character with ridiculously large horizontal position discarded");
     return;
   }
-  int v = env->vpos;
-  if (v % font::vert != 0)
-    fatal("vertical position not a multiple of vertical resolution");
-  v /= font::vert;
-  // Note that the first output line corresponds to groff position font::vert.
-  if (v <= 0) {
-    error("character above first line discarded");
-    return;
-  }
-  if (v > lines_per_page) {
-    error("character below last line discarded");
-    return;
-  }
-  if (w != font::hor)
-    fatal("width of character not equal to horizontal resolution");
-  if (vec_used >= vec_size) {
-    if (vec_size == 0)
-      vec_size = INITIAL_VEC_SIZE;
-    else {
-      if (vec_size > USHRT_MAX/2) {
-	if (vec_size >= USHRT_MAX)
-	  fatal("too many characters on the page");
-	vec_size = USHRT_MAX;
-      }
-      else
-	vec_size *= 2;
+  int vpos;
+  if (v == cached_v && cached_v != 0)
+    vpos = cached_vpos;
+  else {
+    if (v % font::vert != 0)
+      fatal("vertical position not a multiple of vertical resolution");
+    vpos = v / font::vert;
+    if (vpos > lines_per_page) {
+      error("character below last line discarded");
+      return;
     }
-    glyph *old_vec = vec;
-    vec = new glyph [vec_size];
-    if (vec_used)
-      memcpy(vec, old_vec, vec_used*sizeof(glyph));
-    delete old_vec;
+    // Note that the first output line corresponds to groff
+    // position font::vert.
+    if (vpos <= 0) {
+      error("character above first line discarded");
+      return;
+    }
+    cached_v = v;
+    cached_vpos = vpos;
   }
-  // We need a stable sort, but qsort is not stable, so we fake it.
-  vec[vec_used].serial = vec_used;
-  vec[vec_used].hpos = h;
-  vec[vec_used].vpos = v;
-  vec[vec_used].code = f->get_code(i);
-  vec[vec_used].mode = ((tty_font *)f)->get_mode();
-  vec_used++;
+  glyph *g = new glyph;
+  g->hpos = hpos;
+  g->code = c;
+  g->mode = mode;
+
+  // The list will be reversed later.  After reversal, it must be in
+  // increasing order of hpos, with HDRAW characters before VDRAW
+  // characters before normal characters at each hpos, and otherwise
+  // in order of occurrence.
+
+  for (glyph **pp = lines + (vpos - 1); *pp; pp = &(*pp)->next)
+    if ((*pp)->hpos < hpos
+	|| ((*pp)->hpos == hpos && (*pp)->draw_mode() >= g->draw_mode()))
+      break;
+
+  g->next = *pp;
+  *pp = g;
 }
 
-extern "C" {
-static int compare_glyph(void *p1, void *p2)
+void tty_printer::draw(int code, int *p, int np, const environment *env)
 {
-  int v1 = ((glyph *)p1)->vpos;
-  int v2 = ((glyph *)p2)->vpos;
-  if (v1 < v2)
-    return -1;
-  if (v1 > v2)
-    return 1;
-  int h1 = ((glyph *)p1)->hpos;
-  int h2 = ((glyph *)p2)->hpos;
-  if (h1 < h2)
-    return -1;
-  if (h1 > h2)
-    return 1;
-  if (((glyph *)p1)->serial < ((glyph *)p2)->serial)
-    return -1;
-  return 1;
-}
+  if (code != 'l' || !draw_flag)
+    return;
+  if (np != 2) {
+    error("2 arguments required for line");
+    return;
+  }
+  if (p[0] == 0) {
+    // vertical line
+    int v = env->vpos;
+    int len = p[1];
+    if (len < 0) {
+      v += len;
+      len = -len;
+    }
+    while (len >= 0) {
+      add_char('|', env->hpos, v, VDRAW_MODE);
+      len -= font::vert;
+      v += font::vert;
+    }
+  }
+  if (p[1] == 0) {
+    // horizontal line
+    int h = env->hpos;
+    int len = p[0];
+    if (len < 0) {
+      h += len;
+      len = -len;
+    }
+    while (len >= 0) {
+      add_char('-', h, env->vpos, HDRAW_MODE);
+      len -= font::hor;
+      h += font::hor;
+    }
+  }
 }
 
 void tty_printer::end_page()
 {
-  qsort(vec, vec_used, sizeof(glyph), compare_glyph);
-  int hpos = 0;
-  int vpos = 1;
-  // We have already discarded characters with vpos < 1 or > lines_per_page.
-  for (int i = 0; i < vec_used; i++) {
-    assert(vpos <= vec[i].vpos);
-    if (!overstrike_flag
-	&& i + 1 < vec_used
-	&& vec[i].hpos == vec[i + 1].hpos
-	&& vec[i].vpos == vec[i + 1].vpos)
-      continue;
-    for (; vpos < vec[i].vpos; vpos++) {
-      putchar('\n');
-      hpos = 0;
+  for (int last_line = lines_per_page; last_line > 0; last_line--)
+    if (lines[last_line - 1])
+      break;
+  
+  for (int i = 0; i < last_line; i++) {
+    glyph *p = lines[i];
+    lines[i] = 0;
+    glyph *g = 0;
+    while (p) {
+      glyph *tem = p->next;
+      p->next = g;
+      g = p;
+      p = tem;
     }
-    if (hpos > vec[i].hpos) {
-      putchar('\b');
-      hpos--;
-    }
-    else {
-      if (horizontal_tab_flag) {
-	for (;;) {
-	  int next_tab_pos = ((hpos + TAB_WIDTH) / TAB_WIDTH) * TAB_WIDTH;
-	  if (next_tab_pos > vec[i].hpos)
-	    break;
-	  putchar('\t');
-	  hpos = next_tab_pos;
+    int hpos = 0;
+    
+    glyph *nextp;
+    for (p = g; p; delete p, p = nextp) {
+      nextp = p->next;
+      if (nextp && p->hpos == nextp->hpos) {
+	if (!overstrike_flag)
+	  continue;
+	if (p->draw_mode() == HDRAW_MODE && nextp->draw_mode() == VDRAW_MODE) {
+	  nextp->code = '+';
+	  continue;
+	}
+	if (p->draw_mode() != 0 && p->draw_mode() == nextp->draw_mode()) {
+	  nextp->code = p->code;
+	  continue;
 	}
       }
-      for (; hpos < vec[i].hpos; hpos++)
-	putchar(' ');
+      if (hpos > p->hpos) {
+	putchar('\b');
+	hpos--;
+      }
+      else {
+	if (horizontal_tab_flag) {
+	  for (;;) {
+	    int next_tab_pos = ((hpos + TAB_WIDTH) / TAB_WIDTH) * TAB_WIDTH;
+	    if (next_tab_pos > p->hpos)
+	      break;
+	    putchar('\t');
+	    hpos = next_tab_pos;
+	  }
+	}
+	for (; hpos < p->hpos; hpos++)
+	  putchar(' ');
+      }
+      assert(hpos == p->hpos);
+      if (p->mode & UNDERLINE_MODE) {
+	putchar('_');
+	putchar('\b');
+      }
+      if (p->mode & BOLD_MODE) {
+	putchar(p->code);
+	putchar('\b');
+      }
+      putchar(p->code);
+      hpos++;
     }
-    assert(hpos == vec[i].hpos && vpos == vec[i].vpos);
-    if (vec[i].mode & UNDERLINE_MODE) {
-      putchar('_');
-      putchar('\b');
-    }
-    if (vec[i].mode & BOLD_MODE) {
-      putchar(vec[i].code);
-      putchar('\b');
-    }
-    putchar(vec[i].code);
-    hpos++;
+    putchar('\n');
   }
   if (form_feed_flag) {
-    if (hpos != 0) {
-      putchar('\n');
-      vpos++;
-    }
-    if (vpos <= lines_per_page)
+    if (last_line < lines_per_page)
       putchar('\f');
   }
   else {
-    for (; vpos <= lines_per_page; vpos++)
+    for (; last_line < lines_per_page; last_line++)
       putchar('\n');
   }
-  vec_used = 0;
 }
 
 font *tty_printer::make_font(const char *nm)
@@ -298,7 +370,7 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
-  while ((c = getopt(argc, argv, "F:vhfbuoBU")) != EOF)
+  while ((c = getopt(argc, argv, "F:vhfbuoBUd")) != EOF)
     switch(c) {
     case 'v':
       {
@@ -337,6 +409,10 @@ int main(int argc, char **argv)
     case 'F':
       font::command_line_font_dir(optarg);
       break;
+    case 'd':
+      // Ignore \D commands.
+      draw_flag = 0;
+      break;
     case '?':
       usage();
       break;
@@ -355,7 +431,7 @@ int main(int argc, char **argv)
 
 static void usage()
 {
-  fprintf(stderr, "usage: %s [-hfvbuoBU] [-F dir] [files ...]\n",
+  fprintf(stderr, "usage: %s [-hfvbuodBU] [-F dir] [files ...]\n",
 	  program_name);
   exit(1);
 }

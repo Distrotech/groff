@@ -588,7 +588,7 @@ static symbol read_long_escape_name()
     int c = get_char_for_escape_name();
     if (c == 0) {
       if (buf != abuf)
-	delete buf;
+	a_delete buf;
       return NULL_SYMBOL;
     }
     if (i + 2 > buf_size) {
@@ -602,7 +602,7 @@ static symbol read_long_escape_name()
 	buf = new char[buf_size*2];
 	memcpy(buf, old_buf, buf_size);
 	buf_size *= 2;
-	delete old_buf;
+	a_delete old_buf;
       }
     }
     if (c == ']' && input_stack::get_level() == start_level)
@@ -619,7 +619,7 @@ static symbol read_long_escape_name()
   }
   else {
     symbol s(buf);
-    delete buf;
+    a_delete buf;
     return s;
   }
 }
@@ -1206,13 +1206,15 @@ void token::next()
 	type = TOKEN_LEADER;
 	return;
       case 0:
-	assert(n != 0);
-	token_node *tn = n->get_token_node();
-	if (tn)
-	  *this = tn->tk;
-	else {
-	  nd = n;
-	  type = TOKEN_NODE;
+	{
+	  assert(n != 0);
+	  token_node *tn = n->get_token_node();
+	  if (tn)
+	    *this = tn->tk;
+	  else {
+	    nd = n;
+	    type = TOKEN_NODE;
+	  }
 	}
 	return;
       default:
@@ -1743,7 +1745,7 @@ symbol get_long_name(int required)
 	buf = new char[buf_size*2];
 	memcpy(buf, old_buf, buf_size);
 	buf_size *= 2;
-	delete old_buf;
+	a_delete old_buf;
       }
     }
     if ((buf[i] = tok.ch()) == 0)
@@ -1760,7 +1762,7 @@ symbol get_long_name(int required)
     return symbol(buf);
   else {
     symbol s(buf);
-    delete buf;
+    a_delete buf;
     return s;
   }
 }
@@ -2522,7 +2524,7 @@ temp_iterator::temp_iterator(const char *s, int len)
 
 temp_iterator::~temp_iterator()
 {
-  delete base;
+  a_delete base;
 }
 
 class small_temp_iterator : public input_iterator {
@@ -3474,7 +3476,7 @@ static symbol get_delim_name()
 	buf = new char[buf_size*2];
 	memcpy(buf, old_buf, buf_size);
 	buf_size *= 2;
-	delete old_buf;
+	a_delete old_buf;
       }
     }
     tok.next();
@@ -3484,7 +3486,7 @@ static symbol get_delim_name()
     if ((buf[i] = tok.ch()) == 0) {
       error("missing delimiter (got %1)", tok.description());
       if (buf != abuf)
-	delete buf;
+	a_delete buf;
       return NULL_SYMBOL;
     }
     i++;
@@ -3500,7 +3502,7 @@ static symbol get_delim_name()
   }
   else {
     symbol s(buf);
-    delete buf;
+    a_delete buf;
     return s;
   }
 }
@@ -4149,11 +4151,13 @@ const char *input_char_description(int c)
 
 void terminal()
 {
-  int c;
-  while ((c = get_copy(NULL)) == ' ' || c == '\t')
-    ;
-  for (; c != '\n' && c != EOF; c = get_copy(NULL))
-    fputs(asciify(c), stderr);
+  if (!tok.newline() && !tok.eof()) {
+    int c;
+    while ((c = get_copy(NULL)) == ' ' || c == '\t')
+      ;
+    for (; c != '\n' && c != EOF; c = get_copy(NULL))
+      fputs(asciify(c), stderr);
+  }
   fputc('\n', stderr);
   fflush(stderr);
   tok.next();
@@ -4229,6 +4233,7 @@ void write_request()
   for (; c != '\n' && c != EOF; c = get_copy(NULL))
     fputs(asciify(c), fp);
   fputc('\n', fp);
+  fflush(fp);
   tok.next();
 }
 
@@ -4667,7 +4672,7 @@ char *read_string()
 	s = new char[len*2];
 	memcpy(s, tem, len);
 	len *= 2;
-	delete tem;
+	a_delete tem;
       }
       s[i++] = c;
     }
@@ -4676,7 +4681,7 @@ char *read_string()
   s[i] = '\0';
   tok.next();
   if (i == 0) {
-    delete s;
+    a_delete s;
     return 0;
   }
   return s;
@@ -4703,7 +4708,7 @@ void system_request()
     error("empty command");
   else {
     system_status = system(command);
-    delete command;
+    a_delete command;
   }
 }
 
@@ -4880,7 +4885,7 @@ static FILE *open_file(const char *filename, string_list *dirs, char **pathp)
       *pathp = path;
       return fp;
     }
-    delete path;
+    a_delete path;
     dirs = dirs->next;
   }
   return 0;
@@ -4913,7 +4918,7 @@ static FILE *open_mac_file(const char *mac, char **path)
   strcpy(s, MACRO_PREFIX);
   strcat(s, mac);
   FILE *fp = open_file(s, mac_dirs, path);
-  delete s;
+  a_delete s;
   return fp;
 }
 
@@ -4924,7 +4929,7 @@ static void process_macro_file(const char *mac)
   if (!fp)
     fatal("can't find macro file %1", mac);
   const char *s = symbol(path).contents();
-  delete path;
+  a_delete path;
   input_stack::push(new file_iterator(fp, s));
   tok.next();
   process_input_stack();
@@ -4942,7 +4947,7 @@ void macro_source()
     FILE *fp = open_file(nm.contents(), mac_dirs, &path);
     if (fp) {
       input_stack::push(new file_iterator(fp, symbol(path).contents()));
-      delete path;
+      a_delete path;
     }
     else
       error("can't find macro file `%1'", nm.contents());
@@ -4999,7 +5004,7 @@ static void do_register_assignment(const char *s)
     units n;
     if (evaluate_expression(p + 1, &n))
       set_number_reg(buf, n);
-    delete buf;
+    a_delete buf;
   }
 }
 
@@ -5027,7 +5032,7 @@ static void do_string_assignment(const char *s)
     memcpy(buf, s, p - s);
     buf[p - s] = 0;
     set_string(buf, p + 1);
-    delete buf;
+    a_delete buf;
   }
 }
 
@@ -5541,14 +5546,14 @@ static request_or_macro *lookup_request(symbol nm)
 }
 
 
-node *charinfo_to_node(charinfo *ci, const environment *envp)
+node *charinfo_to_node_list(charinfo *ci, const environment *envp)
 {
   macro *mac = ci->set_macro(0);
   assert(mac != 0);
   environment *oldenv = curenv;
   environment env(envp);
   curenv = &env;
-  font_size sz = env.get_font_size();
+  curenv->set_composite();
   token old_tok = tok;
   input_stack::add_boundary();
   string_iterator *si = new string_iterator(*mac, "composite character", ci->nm);
@@ -5569,12 +5574,11 @@ node *charinfo_to_node(charinfo *ci, const environment *envp)
       tok.process();
   }
   node *n = curenv->extract_output_line();
-  composite_node *cn = new composite_node(n, ci, sz);
   input_stack::remove_boundary();
   ci->set_macro(mac);
   tok = old_tok;
   curenv = oldenv;
-  return cn;
+  return n;
 }
 
 static node *read_draw_node()
@@ -5606,7 +5610,7 @@ static node *read_draw_node()
 	  for (int j = 0; j < maxpoints; j++)
 	    point[j] = oldpoint[j];
 	  maxpoints *= 2;
-	  delete oldpoint;
+	  a_delete oldpoint;
 	}
 	if (!get_hunits(&point[i].h, 'm')) {
 	  err = 1;
@@ -5664,11 +5668,11 @@ static node *read_draw_node()
 	}
 	draw_node *dn = new draw_node(type, point, npoints,
 				      curenv->get_font_size());
-	delete point;
+	a_delete point;
 	return dn;
       }
       else {
-	delete point;
+	a_delete point;
       }
     }
   }

@@ -22,6 +22,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "font.h"
 #include "lib.h"
 #include "fontpath.h"
@@ -62,13 +63,13 @@ void font::command_line_font_dir(const char *dir)
     if (need_colon)
       strcat(cl_font_dirs, ":");
     strcat(cl_font_dirs, dir);
-    delete old_dirs;
+    a_delete old_dirs;
   }
 }
 
 void font::forget_command_line_font_dirs()
 {
-  delete cl_font_dirs;
+  a_delete cl_font_dirs;
   cl_font_dirs = 0;
 }
 
@@ -107,7 +108,7 @@ FILE *font::open_file(const char *name, char **pathp)
 	    *pathp = path;
 	    return fp;
 	  }
-	  delete path;
+	  a_delete path;
 	  if (*p == '\0')
 	    break;
 	}

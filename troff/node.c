@@ -106,7 +106,7 @@ public:
   int is_named(symbol);
   symbol get_name();
   tfont *get_tfont(font_size, int, int, int);
-  hunits get_space_width(font_size);
+  hunits get_space_width(font_size, int);
   hunits get_narrow_space_width(font_size);
   hunits get_half_narrow_space_width(font_size);
   int get_bold(hunits *);
@@ -345,9 +345,16 @@ symbol font_info::get_name()
   return internal_name;
 }
 
-hunits font_info::get_space_width(font_size fs)
+hunits font_info::get_space_width(font_size fs, int space_size)
 {
-  return hunits(fm->get_space_width(fs.to_scaled_points()));
+  if (is_constant_spaced == CONSTANT_SPACE_NONE)
+    return scale(hunits(fm->get_space_width(fs.to_scaled_points())),
+			space_size, 12);
+  else if (is_constant_spaced == CONSTANT_SPACE_ABSOLUTE)
+    return constant_space;
+  else
+    return scale(constant_space*fs.to_scaled_points(),
+		 units_per_inch, 36*72*sizescale);
 }
 
 hunits font_info::get_narrow_space_width(font_size fs)
@@ -982,7 +989,7 @@ void troff_output_file::set_font(tfont *tf)
       font_position = new symbol[nfont_positions];
       memcpy(font_position, old_font_position,
 	     old_nfont_positions*sizeof(symbol));
-      delete old_font_position;
+      a_delete old_font_position;
     }
     font_position[n] = nm;
   }
@@ -1118,7 +1125,7 @@ troff_output_file::~troff_output_file()
     put('\n');
   }
   put("x stop\n");
-  delete font_position;
+  a_delete font_position;
 }
 
 troff_output_file::troff_output_file()
@@ -2774,17 +2781,6 @@ void ligature_node::asciify(macro *m)
   delete this;
 }
 
-void composite_node::asciify(macro *m)
-{
-  unsigned char c = ci->get_ascii_code();
-  if (c != 0) {
-    m->append(c);
-    delete this;
-  }
-  else
-    m->append(this);
-}
-
 void break_char_node::asciify(macro *m)
 {
   ch->asciify(m);
@@ -3044,8 +3040,34 @@ void special_node::tprint_end(troff_output_file *out)
 
 /* composite_node */
 
-composite_node::composite_node(node *p, charinfo *c, font_size s, node *x)
-     : node(x), n(p), ci(c), sz(s)
+class composite_node : public node {
+  charinfo *ci;
+  node *n;
+  tfont *tf;
+public:
+  composite_node(node *, charinfo *, tfont *, node * = 0);
+  ~composite_node();
+  node *copy();
+  hunits width();
+  node *last_char_node();
+  units size();
+  void tprint(troff_output_file *);
+  hyphenation_type get_hyphenation_type();
+  int overlaps_horizontally();
+  int overlaps_vertically();
+  void ascii_print(ascii_output_file *);
+  void asciify(macro *);
+  hyphen_list *get_hyphen_list(hyphen_list *tail);
+  node *add_self(node *, hyphen_list **);
+  tfont *get_tfont();
+  int same(node *);
+  const char *type();
+  void vertical_extent(vunits *, vunits *);
+  vunits vertical_width();
+};
+
+composite_node::composite_node(node *p, charinfo *c, tfont *t, node *x)
+: node(x), n(p), ci(c), tf(t)
 {
 }
 
@@ -3056,14 +3078,21 @@ composite_node::~composite_node()
 
 node *composite_node::copy()
 {
-  return new composite_node(copy_node_list(n), ci, sz);
+  return new composite_node(copy_node_list(n), ci, tf);
 }
 
 hunits composite_node::width()
 {
-  hunits x = H0;
+  hunits x;
+  if (tf->get_constant_space(&x))
+    return x;
+  x = H0;
   for (node *tem = n; tem; tem = tem->next)
     x += tem->width();
+  hunits offset;
+  if (tf->get_bold(&offset))
+    x += offset;
+  x += tf->get_track_kern();
   return x;
 }
 
@@ -3082,7 +3111,7 @@ vunits composite_node::vertical_width()
 
 units composite_node::size()
 {
-  return sz.to_units();
+  return tf->get_size().to_units();
 }
 
 hyphenation_type composite_node::get_hyphenation_type()
@@ -3098,6 +3127,17 @@ int composite_node::overlaps_horizontally()
 int composite_node::overlaps_vertically()
 {
   return ci->overlaps_vertically();
+}
+
+void composite_node::asciify(macro *m)
+{
+  unsigned char c = ci->get_ascii_code();
+  if (c != 0) {
+    m->append(c);
+    delete this;
+  }
+  else
+    m->append(this);
 }
 
 void composite_node::ascii_print(ascii_output_file *ascii)
@@ -3131,10 +3171,7 @@ node *composite_node::add_self(node *nn, hyphen_list **p)
 
 tfont *composite_node::get_tfont()
 {
-  if (n)
-    return n->get_tfont();
-  else
-    return 0;
+  return tf;
 }
 
 node *reverse_node_list(node *n)
@@ -3243,7 +3280,7 @@ const char *draw_node::type()
 draw_node::~draw_node()
 {
   if (point)
-    delete point;
+    a_delete point;
 }
 
 hunits draw_node::width()
@@ -3531,7 +3568,53 @@ void dbreak_node::tprint(troff_output_file *out)
 
 void composite_node::tprint(troff_output_file *out)
 {
+  hunits bold_offset;
+  int is_bold = tf->get_bold(&bold_offset);
+  hunits track_kern = tf->get_track_kern();
+  hunits constant_space;
+  int is_constant_spaced = tf->get_constant_space(&constant_space);
+  hunits x = H0;
+  if (is_constant_spaced) {
+    x = constant_space;
+    for (node *tem = n; tem; tem = tem->next)
+      x -= tem->width();
+    if (is_bold)
+      x -= bold_offset;
+    hunits x2 = x/2;
+    out->right(x2);
+    x -= x2;
+  }
+  if (is_bold) {
+    int hpos = out->get_hpos();
+    int vpos = out->get_vpos();
+    tprint_reverse_node_list(out, n);
+    out->moveto(hpos, vpos);
+    out->right(bold_offset);
+  }
   tprint_reverse_node_list(out, n);
+  if (is_constant_spaced)
+    out->right(x);
+  else
+    out->right(track_kern);
+}
+
+node *make_composite_node(charinfo *s, environment *env)
+{
+  int fontno = env_definite_font(env);
+  if (fontno < 0) {
+    error("no current font");
+    return 0;
+  }
+  assert(fontno < font_table_size && font_table[fontno] != 0);
+  node *n = charinfo_to_node_list(s, env);
+  font_size fs = env->get_font_size();
+  int char_height = env->get_char_height();
+  int char_slant = env->get_char_slant();
+  tfont *tf = font_table[fontno]->get_tfont(fs, char_height, char_slant,
+					    fontno);
+  if (env->is_composite())
+    tf = tf->get_plain();
+  return new composite_node(n, s, tf);
 }
 
 node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
@@ -3601,6 +3684,8 @@ node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
   int char_height = env->get_char_height();
   int char_slant = env->get_char_slant();
   tfont *tf = font_table[fontno]->get_tfont(fs, char_height, char_slant, fn);
+  if (env->is_composite())
+    tf = tf->get_plain();
   return new glyph_node(s, tf);
 }
 
@@ -3617,7 +3702,7 @@ node *make_node(charinfo *ci, environment *env)
     ci = tem;
   macro *mac = ci->get_macro();
   if (mac)
-    return charinfo_to_node(ci, env);
+    return make_composite_node(ci, env);
   else
     return make_glyph_node(ci, env);
 }
@@ -3655,7 +3740,7 @@ node *node::add_char(charinfo *ci, environment *env, hunits *widthp)
     ci = tem;
   macro *mac = ci->get_macro();
   if (mac) {
-    res = charinfo_to_node(ci, env);
+    res = make_composite_node(ci, env);
     if (res) {
       res->next = this;
       *widthp += res->width();
@@ -4150,6 +4235,7 @@ static void grow_font_table(int n)
   if (old_font_table_size)
     memcpy(font_table, old_font_table,
 	   old_font_table_size*sizeof(font_info *));
+  a_delete old_font_table;
   for (int i = old_font_table_size; i < font_table_size; i++)
     font_table[i] = 0;
 }
@@ -4269,7 +4355,7 @@ font_family::font_family(symbol s)
 
 font_family::~font_family()
 {
-  delete map;
+  a_delete map;
 }
 
 int font_family::make_definite(int i)
@@ -4288,7 +4374,7 @@ int font_family::make_definite(int i)
 	    map_size = i + 10;
 	  map = new int[map_size];
 	  memcpy(map, old_map, old_map_size*sizeof(int));
-	  delete old_map;
+	  a_delete old_map;
 	  for (int j = old_map_size; j < map_size; j++)
 	    map[j] = -1;
 	}
@@ -4491,11 +4577,20 @@ hunits env_space_width(environment *env)
   int fn = env_definite_font(env);
   font_size fs = env->get_font_size();
   if (fn < 0 || fn >= font_table_size || font_table[fn] == 0)
-    return fs.to_units()/3;
+    return scale(fs.to_units()/3, env->get_space_size(), 12);
   else
-    return font_table[fn]->get_space_width(fs);
+    return font_table[fn]->get_space_width(fs, env->get_space_size());
 }
 
+hunits env_sentence_space_width(environment *env)
+{
+  int fn = env_definite_font(env);
+  font_size fs = env->get_font_size();
+  if (fn < 0 || fn >= font_table_size || font_table[fn] == 0)
+    return scale(fs.to_units()/3, env->get_sentence_space_size(), 12);
+  else
+    return font_table[fn]->get_space_width(fs, env->get_sentence_space_size());
+}
 
 hunits env_half_narrow_space_width(environment *env)
 {

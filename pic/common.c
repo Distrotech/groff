@@ -112,6 +112,8 @@ void common_output::dashed_arc(const position &start, const position &cent,
   double rad = hypot(c - start);
   double dash_angle = lt.dash_width/rad;
   double total_angle = end_angle - start_angle;
+  while (total_angle < 0)
+    total_angle += M_PI + M_PI;
   if (total_angle <= dash_angle*2.0) {
     solid_arc(cent, rad, start_angle, end_angle, lt);
     return;
@@ -138,6 +140,8 @@ void common_output::dotted_arc(const position &start, const position &cent,
   distance end_offset = end - c;
   double start_angle = atan2(start_offset.y, start_offset.x);
   double total_angle = atan2(end_offset.y, end_offset.x) - start_angle;
+  while (total_angle < 0)
+    total_angle += M_PI + M_PI;
   double rad = hypot(c - start);
   int ndots = int(total_angle/(lt.dash_width/rad) + .5);
   if (ndots == 0)
@@ -292,6 +296,8 @@ void common_output::dash_line(const position &start, const position &end,
 {
   distance dist = end - start;
   double length = hypot(dist);
+  if (length == 0.0)
+    return;
   double pos = 0.0;
   for (;;) {
     if (*offsetp >= dash_width) {

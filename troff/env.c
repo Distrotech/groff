@@ -192,7 +192,7 @@ void widow_control_request()
 size_range *font_size::size_table = 0;
 int font_size::nranges = 0;
 
-static int compare_ranges(void *p1, void *p2)
+static int compare_ranges(const void *p1, const void *p2)
 {
   return ((size_range *)p1)->min - ((size_range *)p2)->min;
 }
@@ -373,42 +373,17 @@ void environment::add_italic_correction()
     line = line->add_italic_correction(&width_total);
 }
 
-int environment::get_space_size()
-{
-  return space_size;
-}
-
-int environment::get_sentence_space_size()
-{
-  return sentence_space_size;
-}
-
-hunits environment::get_space_width()
-{ 
-  return scale(env_space_width(this), space_size, 12);
-}
-
-hunits environment::get_narrow_space_width()
-{
-  return env_narrow_space_width(this);
-}
-
-hunits environment::get_half_narrow_space_width()
-{
-  return env_half_narrow_space_width(this);
-}
-
 void environment::space_newline()
 {
   assert(!current_tab && !current_field);
   if (interrupted)
     return;
-  int ss = space_size;
-  if (node_list_ends_sentence(line) == 1)
-    ss += sentence_space_size;
-  hunits x = (translate_space_to_dummy
-	      ? H0
-	      : scale(env_space_width(this), ss, 12));
+  hunits x = H0;
+  if (!translate_space_to_dummy) {
+    x = env_space_width(this);
+    if (node_list_ends_sentence(line) == 1)
+      x += env_sentence_space_width(this);
+  }
   if (line != 0 && line->merge_space(x)) {
     width_total += x;
     return;
@@ -429,16 +404,12 @@ void environment::space()
     *hp += 1;
     return;
   }
-  hunits x = (translate_space_to_dummy
-	      ? H0
-	      : scale(env_space_width(this), space_size, 12));
+  hunits x = translate_space_to_dummy ? H0 : env_space_width(this);
   node *p = current_tab ? tab_contents : line;
   hunits *tp = current_tab ? &tab_width : &width_total;
   if (p && p->nspaces() == 1 && p->width() == x
       && node_list_ends_sentence(p->next) == 1) {
-    hunits xx = (translate_space_to_dummy
-		 ? H0
-		 : scale(env_space_width(this), sentence_space_size, 12));
+    hunits xx = translate_space_to_dummy ? H0 : env_sentence_space_width(this);
     if (p->merge_space(xx)) {
       *tp += xx;
       return;
@@ -607,7 +578,8 @@ environment::environment(symbol nm)
   hyphen_line_count(0),
   hyphen_line_max(-1),
   hyphenation_space(H0),
-  hyphenation_margin(H0)
+  hyphenation_margin(H0),
+  composite(0)
 {
   prev_family = family = lookup_family(default_family);
   prev_fontno = fontno = 1;
@@ -684,7 +656,8 @@ environment::environment(const environment *e)
   hyphen_line_max(e->hyphen_line_max),
   hyphen_line_count(0),
   hyphenation_space(e->hyphenation_space),
-  hyphenation_margin(e->hyphenation_margin)
+  hyphenation_margin(e->hyphenation_margin),
+  composite(0)
 {
 }
 
@@ -2062,7 +2035,7 @@ const char *tab_stops::to_string()
   int need = count*12 + 3;
   if (buf == 0 || need > buf_size) {
     if (buf)
-      delete buf;
+      a_delete buf;
     buf_size = need;
     buf = new char[buf_size];
   }
@@ -2724,7 +2697,7 @@ static void hyphen_word()
       memcpy(tem, pos, npos+1);
       tem = (unsigned char *)exception_dictionary.lookup(symbol(buf), tem);
       if (tem)
-	delete tem;
+	a_delete tem;
     }
   }
   skip_line();

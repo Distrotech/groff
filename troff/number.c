@@ -402,9 +402,10 @@ static int parse_term(units *v, int scale_indicator, int parenthesised)
     tok.next();
     if (!parse_term(v, scale_indicator, parenthesised))
       return 0;
-    int tem = (scale_indicator == 'v'
-	       ? curdiv->get_vertical_position().to_units()
-	       : curenv->get_input_line_position().to_units());
+    int tem;
+    tem = (scale_indicator == 'v'
+	   ? curdiv->get_vertical_position().to_units()
+	   : curenv->get_input_line_position().to_units());
     if (tem >= 0) {
       if (*v < INT_MIN + tem) {
 	error("numeric overflow");

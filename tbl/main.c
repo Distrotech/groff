@@ -486,7 +486,7 @@ entry_modifier::~entry_modifier()
 {
 }
 
-entry_format::entry_format() : type(LEFT)
+entry_format::entry_format() : type(FORMAT_LEFT)
 {
 }
 
@@ -497,31 +497,31 @@ entry_format::entry_format(format_type t) : type(t)
 void entry_format::debug_print() const
 {
   switch (type) {
-  case LEFT:
+  case FORMAT_LEFT:
     putc('l', stderr);
     break;
-  case CENTER:
+  case FORMAT_CENTER:
     putc('c', stderr);
     break;
-  case RIGHT:
+  case FORMAT_RIGHT:
     putc('r', stderr);
     break;
-  case NUMERIC:
+  case FORMAT_NUMERIC:
     putc('n', stderr);
     break;
-  case ALPHABETIC:
+  case FORMAT_ALPHABETIC:
     putc('a', stderr);
     break;
-  case SPAN:
+  case FORMAT_SPAN:
     putc('s', stderr);
     break;
-  case VSPAN:
+  case FORMAT_VSPAN:
     putc('^', stderr);
     break;
-  case HLINE:
+  case FORMAT_HLINE:
     putc('_', stderr);
     break;
-  case DOUBLE_HLINE:
+  case FORMAT_DOUBLE_HLINE:
     putc('=', stderr);
     break;
   default:
@@ -607,7 +607,7 @@ void format::add_rows(int n)
   vline = new char*[nrows + n];
   for (i = 0; i < nrows; i++)
     vline[i] = old_vline[i];
-  delete old_vline;
+  a_delete old_vline;
   for (i = 0; i < n; i++) {
     vline[nrows + i] = new char[ncolumns + 1];
     for (int j = 0; j < ncolumns + 1; j++)
@@ -617,7 +617,7 @@ void format::add_rows(int n)
   entry = new entry_format *[nrows + n];
   for (i = 0; i < nrows; i++)
     entry[i] = old_entry[i];
-  delete old_entry;
+  a_delete old_entry;
   for (i = 0; i < n; i++)
     entry[nrows + i] = new entry_format[ncolumns];
   nrows += n;
@@ -625,15 +625,15 @@ void format::add_rows(int n)
 
 format::~format()
 {
-  delete separation;
-  delete [ncolumns] width;
-  delete equal;
+  a_delete separation;
+  ad_delete(ncolumns) width;
+  a_delete equal;
   for (int i = 0; i < nrows; i++) {
-    delete vline[i];
-    delete [ncolumns] entry[i];
+    a_delete vline[i];
+    ad_delete(ncolumns) entry[i];
   }
-  delete vline;
-  delete entry;
+  a_delete vline;
+  a_delete entry;
 }
 
 struct input_entry_format : entry_format {
@@ -716,45 +716,45 @@ format *process_format(table_input &in, options *opt,
       switch (c) {
       case 'n':
       case 'N':
-	t = entry_format::NUMERIC;
+	t = FORMAT_NUMERIC;
 	got_format = 1;
 	break;
       case 'a':
       case 'A':
 	got_format = 1;
-	t = entry_format::ALPHABETIC;
+	t = FORMAT_ALPHABETIC;
 	break;
       case 'c':
       case 'C':
 	got_format = 1;
-	t = entry_format::CENTER;
+	t = FORMAT_CENTER;
 	break;
       case 'l':
       case 'L':
 	got_format = 1;
-	t = entry_format::LEFT;
+	t = FORMAT_LEFT;
 	break;
       case 'r':
       case 'R':
 	got_format = 1;
-	t = entry_format::RIGHT;
+	t = FORMAT_RIGHT;
 	break;
       case 's':
       case 'S':
 	got_format = 1;
-	t = entry_format::SPAN;
+	t = FORMAT_SPAN;
 	break;
       case '^':
 	got_format = 1;
-	t = entry_format::VSPAN;
+	t = FORMAT_VSPAN;
 	break;
       case '_':
 	got_format = 1;
-	t = entry_format::HLINE;
+	t = FORMAT_HLINE;
 	break;
       case '=':
 	got_format = 1;
-	t = entry_format::DOUBLE_HLINE;
+	t = FORMAT_DOUBLE_HLINE;
 	break;
       case '.':
 	got_period = 1;
@@ -817,12 +817,14 @@ format *process_format(table_input &in, options *opt,
       case '7':
       case '8':
       case '9':
-	int w = 0;
-	do {
-	  w = w*10 + (c - '0');
-	  c = in.get();
-	} while (c != EOF && csdigit(c));
-	list->separation = w;
+	{
+	  int w = 0;
+	  do {
+	    w = w*10 + (c - '0');
+	    c = in.get();
+	  } while (c != EOF && csdigit(c));
+	  list->separation = w;
+	}
 	break;
       case 'f':
       case 'F':
@@ -1085,9 +1087,9 @@ format *process_format(table_input &in, options *opt,
   free_input_entry_format_list(list);
   for (col = 0; col < ncolumns; col++) {
     entry_format *e = f->entry[f->nrows-1] + col;
-    if (e->type != entry_format::HLINE
-	&& e->type != entry_format::DOUBLE_HLINE
-	&& e->type != entry_format::SPAN)
+    if (e->type != FORMAT_HLINE
+	&& e->type != FORMAT_DOUBLE_HLINE
+	&& e->type != FORMAT_SPAN)
       break;
   }
   if (col >= ncolumns) {
@@ -1160,10 +1162,10 @@ table *process_data(table_input &in, format *f, options *opt)
 	while (format_index < f->nrows - 1) {
 	  for (int c = 0; c < ncolumns; c++) {
 	    entry_format *e = f->entry[format_index] + c;
-	    if (e->type != entry_format::HLINE
-		&& e->type != entry_format::DOUBLE_HLINE
+	    if (e->type != FORMAT_HLINE
+		&& e->type != FORMAT_DOUBLE_HLINE
 		// Unfortunately tbl treats a span as needing data.
-		// && e->type != entry_format::SPAN
+		// && e->type != FORMAT_SPAN
 		)
 	      break;
 	  }
@@ -1185,7 +1187,7 @@ table *process_data(table_input &in, format *f, options *opt)
 	    if (c == '\n')
 	      --ln;
 	    while (col < ncolumns
-		   && line_format[col].type == entry_format::SPAN) {
+		   && line_format[col].type == FORMAT_SPAN) {
 	      tbl->add_entry(current_row, col, "", &line_format[col],
 			     current_filename, ln);
 	      col++;

@@ -76,4 +76,4 @@ extern int no_break_flag;	// indicates whether request was invoked with . or '
 class charinfo;
 class environment;
 
-node *charinfo_to_node(charinfo *, const environment *);
+node *charinfo_to_node_list(charinfo *, const environment *);

@@ -403,33 +403,6 @@ public:
   const char *type();
 };
 
-class charinfo;
-
-class composite_node : public node {
-  charinfo *ci;
-  node *n;
-  font_size sz;
-public:
-  composite_node(node *, charinfo *, font_size, node * = 0);
-  ~composite_node();
-  node *copy();
-  hunits width();
-  node *last_char_node();
-  units size();
-  void tprint(troff_output_file *);
-  hyphenation_type get_hyphenation_type();
-  int overlaps_horizontally();
-  int overlaps_vertically();
-  void ascii_print(ascii_output_file *);
-  void asciify(macro *);
-  hyphen_list *get_hyphen_list(hyphen_list *tail);
-  node *add_self(node *, hyphen_list **);
-  tfont *get_tfont();
-  int same(node *);
-  const char *type();
-  void vertical_extent(vunits *, vunits *);
-  vunits vertical_width();
-};
 
 struct hvpair {
   hunits h;
@@ -454,6 +427,7 @@ public:
   const char *type();
 };
 
+class charinfo;
 node *make_node(charinfo *ci, environment *);
 int character_exists(charinfo *, environment *);
 
@@ -462,10 +436,6 @@ node *reverse_node_list(node *n);
 void delete_node_list(node *);
 node *copy_node_list(node *);
 
-hunits env_digit_width(environment *);
-hunits env_space_width(environment *);
-hunits env_narrow_space_width(environment *);
-hunits env_half_narrow_space_width(environment *);
 int get_bold_fontno(int f);
 
 inline hyphen_list::hyphen_list(unsigned char code, hyphen_list *p)

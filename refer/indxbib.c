@@ -170,7 +170,7 @@ int main(int argc, char **argv)
   if (!directory) {
     char *path = get_cwd();
     store_filename(path);
-    delete path;
+    a_delete path;
   }
   else
     store_filename(directory);
@@ -187,7 +187,7 @@ int main(int argc, char **argv)
     char *dir = strsave(basename);
     dir[p - basename] = '\0';
     name_max = dir_name_max(dir);
-    delete dir;
+    a_delete dir;
   }
   else
     name_max = dir_name_max(".");
@@ -314,7 +314,7 @@ static char *get_cwd()
       break;
     if (errno != ERANGE)
       fatal("cannot get current working directory: %1", strerror(errno));
-    delete buf;
+    a_delete buf;
     if (size == INT_MAX)
       fatal("current working directory longer than INT_MAX");
     if (size > INT_MAX/2)

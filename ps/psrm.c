@@ -80,7 +80,7 @@ resource::resource(resource_type t, string &n, string &v, unsigned r)
 
 resource::~resource()
 {
-  delete filename;
+  a_delete filename;
 }
 
 void resource::print_type_and_name(FILE *outfp)
@@ -181,8 +181,8 @@ void resource_manager::document_setup(ps_output &out)
 	*tail[i] = resource_list;
 	resource_list = head[i];
       }
-    delete head;
-    delete tail;
+    a_delete head;
+    a_delete tail;
     // check it
     for (r = resource_list; r; r = r->next)
       if (r->next)
@@ -236,7 +236,7 @@ void resource_manager::output_prolog(ps_output &out)
   putc('\n', outfp);
   process_file(-1, fp, path, outfp);
   fclose(fp);
-  delete path;
+  a_delete path;
   fputs("%%EndResource\n", outfp);
 }
 
@@ -267,7 +267,7 @@ void resource_manager::supply_resource(resource *r, int rank, FILE *outfp,
       fp = font::open_file(r->filename, &path);
       if (!fp) {
 	error("can't find `%1'", r->filename);
-	delete r->filename;
+	a_delete r->filename;
 	r->filename = 0;
       }
     }
@@ -276,7 +276,7 @@ void resource_manager::supply_resource(resource *r, int rank, FILE *outfp,
       fp = fopen(r->filename, "r");
       if (!fp) {
 	error("can't open `%1': %2", r->filename, strerror(errno));
-	delete r->filename;
+	a_delete r->filename;
 	r->filename = 0;
       }
       else
@@ -299,7 +299,7 @@ void resource_manager::supply_resource(resource *r, int rank, FILE *outfp,
     process_file(rank, fp, path, outfp);
     fclose(fp);
     if (r->type == RESOURCE_FONT)
-      delete path;
+      a_delete path;
     if (outfp) {
       if (r->type == RESOURCE_FILE && is_document)
 	fputs("%%EndDocument\n", outfp);
@@ -1003,7 +1003,7 @@ void resource_manager::read_download_file()
       fatal_with_file_and_line(path, lineno, "missing filename");
     lookup_font(p)->filename = strsave(q);
   }
-  delete path;
+  a_delete path;
   fclose(fp);
 }
 

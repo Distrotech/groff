@@ -62,6 +62,13 @@ inline int font_size::to_points()
   return p/sizescale;
 }
 
+struct environment;
+
+hunits env_digit_width(environment *);
+hunits env_space_width(environment *);
+hunits env_sentence_space_width(environment *);
+hunits env_narrow_space_width(environment *);
+hunits env_half_narrow_space_width(environment *);
 
 struct tab;
 
@@ -160,6 +167,7 @@ class environment {
   int hyphen_line_max;
   hunits hyphenation_space;
   hunits hyphenation_margin;
+  int composite;		// used for construction of composite char?
   pending_output_line *pending_lines;
 #ifdef WIDOW_CONTROL
   int widow_control;
@@ -192,6 +200,8 @@ public:
   ~environment();
   int is_dummy() { return dummy; }
   int is_empty();
+  int is_composite() { return composite; }
+  void set_composite() { composite = 1; }
   vunits get_vertical_spacing(); // .v
   int get_line_spacing();	 // .L
   int get_point_size() { return size.to_scaled_points(); }
@@ -218,11 +228,12 @@ public:
   vunits get_prev_char_depth();
   hunits get_text_length();	// .k 
   hunits get_prev_text_length(); // .n
-  hunits get_space_width();
-  int get_space_size();		// in ems/36
-  int get_sentence_space_size();
-  hunits get_narrow_space_width();
-  hunits get_half_narrow_space_width();
+  hunits get_space_width() { return env_space_width(this); }
+  int get_space_size() { return space_size; }	// in ems/36
+  int get_sentence_space_size() { return sentence_space_size; }
+  hunits get_narrow_space_width() { return env_narrow_space_width(this); }
+  hunits get_half_narrow_space_width()
+    { return env_half_narrow_space_width(this); }
   hunits get_input_line_position();
   const char *get_tabs();
   int get_hyphenation_flags();

@@ -32,3 +32,4 @@
 .if !c\(rh .tr \(rh\(rA
 .if '\*(.T'X100' .char \(rn \h'-\w'\(sr'u'\(rn\h'\w'\(sr'u'
 .cp \n(_C
+.if !\n(.C .mso tmac.pspic

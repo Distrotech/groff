@@ -105,7 +105,7 @@ symbol::symbol(const char *p, int how)
 	 --pp) {
 	   symbol temp(*pp, 1); /* insert it into the new table */
 	 }
-    delete old_table;
+    a_delete old_table;
     for (pp = table + hc % table_size;
 	 *pp != 0; 
 	 (pp == table ? pp = table + table_size - 1 : --pp))
@@ -134,7 +134,7 @@ symbol concat(symbol s1, symbol s2)
   strcpy(buf, s1.contents());
   strcat(buf, s2.contents());
   symbol res(buf);
-  delete buf;
+  a_delete buf;
   return res;
 }
 

@@ -68,3 +68,16 @@ inline int illegal_input_char(int c)
 (not including the -). */
 
 #define INT_DIGITS 10
+
+/* ad_delete deletes an array of objects with destructors;
+a_delete deletes an array of objects without destructors */
+
+#ifdef ARRAY_DELETE_NEEDS_SIZE
+/* for 2.0 systems */
+#define ad_delete(size) delete [size]
+#define a_delete delete
+#else /* not ARRAY_DELETE_NEEDS_SIZE */
+/* for ARM systems */
+#define ad_delete(size) delete []
+#define a_delete delete []
+#endif /* not ARRAY_DELETE_NEEDS_SIZE */

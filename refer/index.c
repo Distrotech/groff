@@ -138,12 +138,12 @@ index_search_item::~index_search_item()
     out_of_date_files = out_of_date_files->next;
     delete tem;
   }
-  delete filename_buffer;
-  delete key_buffer;
+  a_delete filename_buffer;
+  a_delete key_buffer;
   if (common_words_table) {
     for (int i = 0; i < common_words_table_size; i++)
-      delete common_words_table[i];
-    delete common_words_table;
+      a_delete common_words_table[i];
+    a_delete common_words_table;
   }
 }
 
@@ -291,7 +291,7 @@ search_item *make_index_search_item(const char *filename, int fid)
   if (fd < 0)
     return 0;
   index_search_item *item = new index_search_item(index_filename, fid);
-  delete index_filename;
+  a_delete index_filename;
   if (!item->load(fd)) {
     close(fd);
     delete item;
@@ -324,9 +324,9 @@ index_search_item_iterator::index_search_item_iterator(index_search_item *ind,
 
 index_search_item_iterator::~index_search_item_iterator()
 {
-  delete temp_list;
-  delete buf;
-  delete query;
+  a_delete temp_list;
+  a_delete buf;
+  a_delete query;
   delete out_of_date_files_iter;
 }
 
@@ -414,7 +414,7 @@ int index_search_item_iterator::get_tag(int tagno,
     }
     if (!err) {
       if (length + 2 > buflen) {
-	delete buf;
+	a_delete buf;
 	buflen = length + 2;
 	buf = new char[buflen];
       }
@@ -442,7 +442,7 @@ const char *index_search_item::munge_filename(const char *filename)
   int need_slash = (cwd[0] != 0 && strchr(cwd, '\0')[-1] != '/');
   int len = strlen(cwd) + strlen(filename) + need_slash + 1;
   if (len > filename_buflen) {
-    delete filename_buffer;
+    a_delete filename_buffer;
     filename_buflen = len;
     filename_buffer = new char[len];
   }
@@ -509,7 +509,7 @@ const int *index_search_item::search(const char *ptr, int length,
 {
   const char *end = ptr + length;
   if (*temp_listp) {
-    delete *temp_listp;
+    a_delete *temp_listp;
     *temp_listp = 0;
   }
   const int *first_list = 0;
@@ -539,12 +539,12 @@ const int *index_search_item::search(const char *ptr, int length,
     const int *list = search1(&ptr, end);
     if (list != 0) {
       if (*list < 0) {
-	delete matches;
+	a_delete matches;
 	return list;
       }
       merge(matches, matches, list);
       if (*matches < 0) {
-	delete matches;
+	a_delete matches;
 	return &minus_one;
       }
     }

@@ -438,7 +438,7 @@ text_entry::text_entry(char *s, const entry_modifier *m)
 
 text_entry::~text_entry()
 {
-  delete contents;
+  a_delete contents;
 }
 
 
@@ -618,7 +618,7 @@ block_entry::block_entry(char *s, const entry_modifier *m)
 
 block_entry::~block_entry()
 {
-  delete contents;
+  a_delete contents;
 }
 
 void block_entry::position_vertically()
@@ -1199,19 +1199,19 @@ table::table(int nc, unsigned f, int ls)
 table::~table()
 {
   for (int i = 0; i < nrows; i++) {
-    delete entry[i];
-    delete vline[i];
+    a_delete entry[i];
+    a_delete vline[i];
   }
-  delete entry;
-  delete vline;
+  a_delete entry;
+  a_delete vline;
   while (entry_list) {
     table_entry *tem = entry_list;
     entry_list = entry_list->next;
     delete tem;
   }
-  delete [ncolumns] minimum_width;
-  delete column_separation;
-  delete equal;
+  ad_delete(ncolumns) minimum_width;
+  a_delete column_separation;
+  a_delete equal;
   while (stuff_list) {
     stuff *tem = stuff_list;
     stuff_list = stuff_list->next;
@@ -1222,7 +1222,7 @@ table::~table()
     vrule_list = vrule_list->next;
     delete tem;
   }
-  delete row_is_all_lines;
+  a_delete row_is_all_lines;
 }
 
 void table::set_delim(char c1, char c2)
@@ -1465,11 +1465,11 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
     int is_block = str.search('\n') >= 0;
     char *s;
     switch (f->type) {
-    case entry_format::SPAN:
+    case FORMAT_SPAN:
       assert(str.empty());
       do_hspan(r, c);
       break;
-    case entry_format::LEFT:
+    case FORMAT_LEFT:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block)
@@ -1480,7 +1480,7 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       else
 	e = new empty_entry(f);
       break;
-    case entry_format::CENTER:
+    case FORMAT_CENTER:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block)
@@ -1491,7 +1491,7 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       else
 	e = new empty_entry(f);
       break;
-    case entry_format::RIGHT:
+    case FORMAT_RIGHT:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block)
@@ -1502,7 +1502,7 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       else
 	e = new empty_entry(f);
       break;
-    case entry_format::NUMERIC:
+    case FORMAT_NUMERIC:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block) {
@@ -1520,7 +1520,7 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       else
 	e = new empty_entry(f);
       break;
-    case entry_format::ALPHABETIC:
+    case FORMAT_ALPHABETIC:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block)
@@ -1531,16 +1531,16 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       else
 	e = new empty_entry(f);
       break;
-    case entry_format::VSPAN:
+    case FORMAT_VSPAN:
       do_vspan(r, c);
       break;
-    case entry_format::HLINE:
+    case FORMAT_HLINE:
       if (str.length() != 0)
 	error_with_file_and_line(fn, ln,
 				 "non-empty data entry for `_' format ignored");
       e = new single_line_entry(f);
       break;
-    case entry_format::DOUBLE_HLINE:
+    case FORMAT_DOUBLE_HLINE:
       if (str.length() != 0)
 	error_with_file_and_line(fn, ln,
 				 "non-empty data entry for `=' format ignored");

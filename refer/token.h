@@ -18,9 +18,16 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file LICENSE.  If not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
+enum token_type {
+  TOKEN_OTHER,
+  TOKEN_UPPER,
+  TOKEN_LOWER,
+  TOKEN_ACCENT,
+  TOKEN_PUNCT,
+  TOKEN_HYPHEN
+};
+
 class token_info {
-public:
-  enum token_type { OTHER, UPPER, LOWER, ACCENT, PUNCT, HYPHEN };
 private:
   token_type type;
   const char *sort_key;
@@ -42,32 +49,32 @@ public:
 
 inline int token_info::is_upper() const
 {
-  return type == UPPER;
+  return type == TOKEN_UPPER;
 }
 
 inline int token_info::is_lower() const
 {
-  return type == LOWER;
+  return type == TOKEN_LOWER;
 }
 
 inline int token_info::is_accent() const
 {
-  return type == ACCENT;
+  return type == TOKEN_ACCENT;
 }
 
 inline int token_info::is_other() const
 {
-  return type == OTHER;
+  return type == TOKEN_OTHER;
 }
 
 inline int token_info::is_punct() const
 {
-  return type == PUNCT;
+  return type == TOKEN_PUNCT;
 }
 
 inline int token_info::is_hyphen() const
 {
-  return type == HYPHEN;
+  return type == TOKEN_HYPHEN;
 }
 
 int get_token(const char **ptr, const char *end);

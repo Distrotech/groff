@@ -369,8 +369,8 @@ ps_font::ps_font(const char *nm)
 
 ps_font::~ps_font()
 {
-  delete encoding;
-  delete reencoded_name;
+  a_delete encoding;
+  a_delete reencoded_name;
 }
 
 void ps_font::handle_unknown_font_command(int argc, const char **argv)
@@ -650,7 +650,7 @@ void ps_printer::define_encoding(const char *encoding, int encoding_index)
     }
     lineno++;
   }
-  delete path;
+  a_delete path;
   out.put_literal_symbol(make_encoding_name(encoding_index));
   out.put_delimiter('[');
   for (i = 0; i < 256; i++) {
@@ -688,7 +688,7 @@ void ps_printer::encode_fonts()
       reencode_font((ps_font *)f->p);
     }
   }
-  delete done_encoding;
+  a_delete done_encoding;
 }
 
 void ps_printer::set_style(const style &sty)

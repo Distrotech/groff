@@ -5,7 +5,7 @@ grotty \- groff driver for typewriter-like devices
 .SH SYNOPSIS
 .B grotty
 [
-.B \-hfbuoBUv
+.B \-hfbuodBUv
 ] [
 .BI \-F dir
 ] [
@@ -127,6 +127,23 @@ Use only underlining for bold, italic characters.
 .B \-o
 Suppress overstriking (other than for bold or underlined characters).
 .TP
+.B \-d
+Ignore all
+.B \eD
+commands.
+Without this
+.B grotty
+will render
+.B \eD'l\|.\|.\|.'
+commands that have at least at least one zero argument
+(and so are either horizontal or vertical)
+using
+.BR \- ,
+.B |
+and
+.B +
+characters.
+.TP
 .B \-v
 Print the version number.
 .SH FILES
@@ -163,7 +180,10 @@ is intended only for simple documents.
 .LP
 There is no support for fractional horizontal or vertical motions.
 .LP
-There is no pic support.
+There is no support for
+.B \eD
+commands
+other than horizontal and vertical lines.
 .LP
 Characters above the first line (ie with a vertical position of 0)
 cannot be printed.

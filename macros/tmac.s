@@ -1575,7 +1575,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .ie \\n[.$]<2 .@error bad arguments to PS (not preprocessed with pic?)
 .el \{\
 .	ds@need (u;\\$1)+1v
-.	in +(u;\\n[.l]-\\n[.i]-\\$2/2)
+.	in +(u;\\n[.l]-\\n[.i]-\\$2/2>?0)
 .\}
 ..
 .de PE

@@ -48,19 +48,20 @@ struct entry_modifier {
   ~entry_modifier();
 };
 
+enum format_type {
+  FORMAT_LEFT, 
+  FORMAT_CENTER, 
+  FORMAT_RIGHT, 
+  FORMAT_NUMERIC,
+  FORMAT_ALPHABETIC,
+  FORMAT_SPAN, 
+  FORMAT_VSPAN,
+  FORMAT_HLINE,
+  FORMAT_DOUBLE_HLINE
+};
+
 struct entry_format : entry_modifier {
-  enum format_type {
-    LEFT, 
-    CENTER, 
-    RIGHT, 
-    NUMERIC,
-    ALPHABETIC,
-    SPAN, 
-    VSPAN,
-    HLINE,
-    DOUBLE_HLINE,
-    }
-  type;
+  format_type type;
 
   entry_format(format_type);
   entry_format();

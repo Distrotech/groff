@@ -65,7 +65,7 @@ special_box::special_box(char *s, box *pp) :macro_name(s), pointer_box(pp)
 
 special_box::~special_box()
 {
-  delete macro_name;
+  a_delete macro_name;
 }
 
 int special_box::compute_metrics(int style)

@@ -21,6 +21,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <string.h>
 #include <stdlib.h>
 
+#include "lib.h"
 #include "box.h"
 extern int non_empty_flag;
 char *strsave(const char *);
@@ -263,7 +264,7 @@ number:
 		  int n;
 		  if (sscanf($1, "%d", &n) == 1)
 		    $$ = n;
-		  delete $1;
+		  a_delete $1;
 		}
 	;
 

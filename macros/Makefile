@@ -18,37 +18,37 @@
 #Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 MACRODIR=/usr/local/lib/groff/tmac
+MACROMODE=444
 TMAC_S=gs
+STRIP=sed -e '/%beginstrip%/,$$s/[	 ]*\\".*//' -e '/^\.$$/d'
 
-all: tmac.e.strip
-
-tmac.e.strip: tmac.e
-	-rm -f $@
-	sed -e '/%beginstrip%/,$$s/[	 ]*\\".*//' -e '/^\.$$/d' tmac.e >$@
-
+all:
 clean:
-	-rm -f tmac.e.strip
-
 distclean: clean
 realclean: distclean
-
 TAGS:
 
 install.nobin: all
 	-[ -d $(MACRODIR) ] || mkdir $(MACRODIR)
-	-rm -f $(MACRODIR)/tmac.an
-	cp tmac.an $(MACRODIR)
-	-rm -f $(MACRODIR)/tmac.e
-	cp tmac.e.strip $(MACRODIR)/tmac.e
+	-for file in tmac.an tmac.andoc tmac.pic; do \
+	  rm -f $(MACRODIR)/$$file; \
+	  cp $$file $(MACRODIR)/$$file; \
+	  chmod $(MACROMODE) $(MACRODIR)/$$file; \
+	done
+	-for file in tmac.e tmac.doc tmac.doc.old; do \
+	  rm -f $(MACRODIR)/$$file; \
+	  $(STRIP) $$file >$(MACRODIR)/$$file; \
+	  chmod $(MACROMODE) $(MACRODIR)/$$file; \
+	done
 	-rm -f $(MACRODIR)/tmac.$(TMAC_S)
 	cp tmac.s $(MACRODIR)/tmac.$(TMAC_S)
-	-rm -f $(MACRODIR)/tmac.pic
-	cp tmac.pic $(MACRODIR)
-	-rm -f $(MACRODIR)/tmac.doc
-	cp tmac.doc $(MACRODIR)
-	-rm -f $(MACRODIR)/tmac.andoc
-	cp tmac.andoc $(MACRODIR)
+	chmod $(MACROMODE) $(MACRODIR)/tmac.$(TMAC_S)
+	-[ -d $(MACRODIR)/mdoc ] || mkdir $(MACRODIR)/mdoc
+	-for file in doc-common doc-ditroff doc-nroff doc-syms; do \
+	  rm -f $(MACRODIR)/mdoc/$$file; \
+	  $(STRIP) $$file >$(MACRODIR)/mdoc/$$file; \
+	  chmod $(MACROMODE) $(MACRODIR)/mdoc/$$file; \
+	done
 
 install.bin:
-
 install: install.bin install.nobin

@@ -1,8 +1,31 @@
 If you are using g++, you will need to install the header files from
-libg++.  The only other parts of libg++ used by groff are contained in
-the files xyzzy.c and gnulib3.c; the libg++.a that I use contains only
-xyzzy.o and gnulib3.o.  You don't need xyzzy.o unless you're using GNU
-ld.
+the appropriate version of libg++.  With g++ version 1.x, you will
+also need a libg++.a that contains at least xyzzy.o (if you're using
+GNU ld) and gnulib3.o.  With gcc/g++ version 2.0, you don't need
+libg++.a at all.
+
+If you're using gcc/g++ version 2.0, you'll need the following patch:
+
+*** cp-parse.y.~1~	Sat Feb 22 08:35:51 1992
+--- cp-parse.y	Sun Mar  1 15:20:10 1992
+***************
+*** 1075,1081 ****
+  		    }
+  		  $$ = build_delete (type, expr, integer_three_node,
+  				     LOOKUP_NORMAL|LOOKUP_HAS_IN_CHARGE,
+! 				     TYPE_HAS_DESTRUCTOR (TREE_TYPE (type)) ? $$ : 0, 1);
+  		}
+  	| delete '[' ']' cast_expr  %prec UNARY
+  		{
+--- 1075,1081 ----
+  		    }
+  		  $$ = build_delete (type, expr, integer_three_node,
+  				     LOOKUP_NORMAL|LOOKUP_HAS_IN_CHARGE,
+! 				     TYPE_HAS_DESTRUCTOR (TREE_TYPE (type)) ? $$ : 0, 0);
+  		}
+  	| delete '[' ']' cast_expr  %prec UNARY
+  		{
+
 
 On a Sun 3 and other 68k machines, using libg++ 1.37.0 you will need
 to apply the following change to g++-include/math.h:
@@ -144,7 +167,7 @@ magnifications. The CompileFonts script in the dvi/devdvi directory
 may help you to do this. (It will take a *long* time.)
 
 If you have problems printing existing troff documents, read the
-section on `Incompatbilities' in gtroff(1).  If you have existing
+section on `Incompatibilities' in gtroff(1).  If you have existing
 macro packages that are in the habit of omitting the space between a
 macro or request and its arguments, it is good idea to produce a
 version with spaces so that you can use it with groff (without having

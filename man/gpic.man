@@ -246,19 +246,24 @@ can be any character not occurring in
 can be any character not occurring in
 .IR if-false .
 .TP
-\fBprint\fR \fIexpr\fR
-.ns
+\fBprint\fR \fIarg\fR\|.\|.\|.
+Concatenate the arguments and print as a line on stderr.
+Each
+.I arg
+must be an expression, a position, or text.
+This is useful for debugging.
 .TP
-\fBprint\fR \fIposition\fR
-.ns
-.TP
-\fBprint\fR \fB"\fItext\*(ic\fB"\fR
-Print the value of
-.IR expr ,
-.I position
+\fBcommand\fR \fIarg\fR\|.\|.\|.
+Concatenate the arguments
+and pass them through as a line to troff or\*(tx.
+Each
+.I arg
+must be an expression, a position, or text.
+This has a similar effect to a line beginning with
+.B .
 or
-.I text
-on stderr.
+.BR \e ,
+but allows the values of variables to be passed through.
 .TP
 \fBsh\fR \fIX\fR \fIcommand\fR \fIX\fR
 Pass
@@ -377,6 +382,20 @@ Be very careful that you specify an appropriate format string;
 gpic does only very limited checking of the string.
 This is deprecated in favour of
 .BR sprintf .
+.TP
+.IB variable := expr
+This is similar to
+.B =
+except
+.I variable
+must already be defined,
+and the value of
+.I variable
+will be changed only in the innermost block in which it is defined.
+(By contrast,
+.B =
+defines the variable in the current block if it is not already defined there,
+and then changes the value in the current block.)
 .LP
 Arguments of the form
 .IP
@@ -450,6 +469,13 @@ deprecated)
 .br
 \fIe1\fB < \fIe2\fR
 .br
+\fB"\fIstr1\*(ic\fB" == "\fIstr2\*(ic\fB"\fR
+.br
+\fB"\fIstr1\*(ic\fB" != "\fIstr2\*(ic\fB"\fR
+.br
+.LP
+String comparison expressions must be parenthesised in some contexts
+to avoid ambiguity.
 .SS Other Changes
 .LP
 A bare expression,

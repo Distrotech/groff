@@ -135,7 +135,7 @@ macro_input::macro_input(const char *str)
 
 macro_input::~macro_input()
 {
-  delete s;
+  a_delete s;
 }
 
 int macro_input::get()
@@ -184,8 +184,8 @@ argument_macro_input::argument_macro_input(const char *body, int ac, char **av)
 argument_macro_input::~argument_macro_input()
 {
   for (int i = 0; i < argc; i++)
-    delete argv[i];
-  delete s;
+    a_delete argv[i];
+  a_delete s;
 }
 
 int argument_macro_input::get()
@@ -445,6 +445,7 @@ int lookup_keyword(const char *str, int len)
     "center", CENTER,
     "chop", CHOP,
     "circle", CIRCLE,
+    "command", COMMAND,
     "copy", COPY,
     "cos", COS,
     "cw", CW,
@@ -828,7 +829,7 @@ int get_token(int lookup_flag)
 	token_buffer += char(c);
       }
       context_buffer = token_buffer;
-      return COMMAND;
+      return COMMAND_LINE;
     }
     switch (c) {
     case EOF:
@@ -1313,8 +1314,8 @@ for_input::for_input(char *vr, double t, int bim, double b, char *bd)
 
 for_input::~for_input()
 {
-  delete var;
-  delete body;
+  a_delete var;
+  a_delete body;
 }
 
 int for_input::get()
@@ -1475,8 +1476,8 @@ copy_thru_input::copy_thru_input(const char *b, const char *u)
 
 copy_thru_input::~copy_thru_input()
 {
-  delete body;
-  delete until;
+  a_delete body;
+  a_delete until;
 }
 
 int copy_thru_input::get()
@@ -1742,7 +1743,7 @@ int yylex()
     case NUMBER:
       yylval.x = token_double;
       return t;
-    case COMMAND:
+    case COMMAND_LINE:
     case TEXT:
       token_buffer += '\0';
       if (!input_stack::get_location(&yylval.lstr.filename,

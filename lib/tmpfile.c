@@ -82,7 +82,7 @@ FILE *xtmpfile()
 #endif /* not HAVE_MKSTEMP */
   if (unlink(templ) < 0)
     error("cannot unlink `%1': %2", templ, strerror(errno));
-  delete templ;
+  a_delete templ;
   return fp;
 }
 

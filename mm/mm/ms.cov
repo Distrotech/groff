@@ -1,13 +1,21 @@
 .\"------------
 .\" Cover sheet. Mostly like ms cover.
-.\" version 0.8
 .\"------------
 .nr cov*title-size 14
 .\"------------
 .de cov@print-title
 .in 0
-.ce \\n[cov*title-size]
+.misc@ev-keep cov*ev
+.init@reset
+.ad c
+.hy 0
+.fi
+.B
 .cov*title
+.br
+.ad b
+.R
+.ev
 ..
 .\"------------
 .de cov@print-authors
@@ -19,8 +27,10 @@
 .	nr cov*j 0 1
 .	while \\n+[cov*j]<=9 \{\
 .		if d cov*at!\\n[cov*i]!\\n[cov*j] \{\
-.			ce
+.			if \w'\\*[cov*at!\\n[cov*i]!\\n[cov*j]]' \{\
+.				ce
 \s-1\\*[cov*at!\\n[cov*i]!\\n[cov*j]]\s0
+.			.\}
 .		\}
 .	\}
 .\}
@@ -32,21 +42,23 @@
 \\*[cov*firm]
 ..
 .\"------------
-.nr cur*abstract-ll 12.6c
-.\"
 .de cov@print-abstract
 .SP 2
-.if \\n[.$] \{\
+.if d cov*abstract \{\
+.	misc@ev-keep cov*ev
+.	init@reset
+.	if \\n[cov*abs-ind]>0 \{\
+.		in +\\n[cov*abs-ind]u
+.		ll -\\n[cov*abs-ind]u
+.	\}
 .	ce
-\\$1
+\fI\\$1\fP
+.	SP 1.5
+.	fi
+.	cov*abstract
+.	br
+.	ev
 .\}
-.ev cov*ev
-.init@reset
-.nf
-.ll \\n[@ll]u
-.in (u;(\\n[@ll]-\\n[cov*abstract-width])/2)
-.cov*abstract
-.ev
 ..
 .\"------------
 .de cov@print-date
@@ -55,13 +67,18 @@
 ..
 .\"-----------------
 .de COVEND
+.if d cov*default-firm .if !d cov*firm .ds cov*firm \\*[cov*default-firm]
 .sp |4.2c
 .cov@print-title
 .cov@print-authors
 .cov@print-firm
-.cov@print-abstract
+.cov@print-abstract ABSTRACT
 .cov@print-date
 .pg@enable-top-trap
 .bp 1
 .pg@enable-trap
+.if \\n[cov*abs-arg] \{\
+.	cov@print-abstract ABSTRACT
+.	SP 2
+.\}
 ..

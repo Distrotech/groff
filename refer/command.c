@@ -53,7 +53,7 @@ input_item::input_item(string &s, const char *fn, int ln)
 
 input_item::~input_item()
 {
-  delete filename;
+  a_delete filename;
 }
 
 inline int input_item::peek_char()
@@ -786,7 +786,7 @@ static void command_loop()
     for (int i = 0; i < argc; i++)
       argv[i].s = ptr = strchr(ptr, '\0') + 1;
     execute_command(command.contents(), argc, argv);
-    delete argv;
+    a_delete argv;
     if (res == -1)
       break;
   }

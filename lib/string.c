@@ -39,7 +39,7 @@ static char *salloc(int len, int *sizep)
 
 static void sfree(char *ptr, int)
 {
-  delete ptr;
+  a_delete ptr;
 }
 
 static char *sfree_alloc(char *ptr, int oldsz, int len, int *sizep)
@@ -48,7 +48,7 @@ static char *sfree_alloc(char *ptr, int oldsz, int len, int *sizep)
     *sizep = oldsz;
     return ptr;
   }
-  delete ptr;
+  a_delete ptr;
   if (len == 0) {
     *sizep = 0;
     return 0;
@@ -64,7 +64,7 @@ static char *srealloc(char *ptr, int oldsz, int oldlen, int newlen, int *sizep)
     return ptr;
   }
   if (newlen == 0) {
-    delete ptr;
+    a_delete ptr;
     *sizep = 0;
     return 0;
   }
@@ -72,7 +72,7 @@ static char *srealloc(char *ptr, int oldsz, int oldlen, int newlen, int *sizep)
     char *p = new char[*sizep = newlen*2];
     if (oldlen < newlen && oldlen != 0)
       memcpy(p, ptr, oldlen);
-    delete ptr;
+    a_delete ptr;
     return p;
   }
 }

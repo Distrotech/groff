@@ -1,3 +1,262 @@
+Wed Mar 18 09:29:10 1992  James Clark  (jjc at jclark)
+
+	* Version 1.05 released.
+
+Tue Mar 17 16:50:45 1992  James Clark  (jjc at jclark)
+
+	* tty/tty.c: Instead of keeping an array of glyphs and then
+	sorting it, keep a ordered linked list of glyphs for each line.
+
+	* driver/driver.h: Include stddef.h.
+
+	* tty/tty.c (compare_glyph):
+	* refer/refer.c (rcompare):
+	* troff/env.c (compare_ranges): Arguments of qsort comparison
+	function should be const void *.
+
+	* troff/number.c (parse_term):
+	* dvi/dvi.c (draw_dvi_printer::draw): Avoid initialization in
+	switch statement.
+
+	* refer/label.y (consider_authors): Don't access variables
+	constructed under a condition outside that condition: put braces
+	round for statement containing declaration; redeclare use of same
+	variable later.
+
+	* pic/pic.y (text_expr): Delete production that allows
+	parenthesised text_expr.
+	(expr): Allow a conditional_expr to appear in parentheses.
+	(conditional_expr): Rename to any_expr.
+
+	* mm: Install new version 1.01 from jh.
+
+	* lib/font.c (font::get_width): Cache scaled widths.
+	(font::font): Initialize widths_cache.
+	(font::~font): Destroy widths_cache.
+	* lib/font.h: Add font::widths_cache. Declare font_widths_cache.
+
+Mon Mar 16 10:16:10 1992  James Clark  (jjc at jclark)
+
+	* c++test.c, c++test.ref: New files.
+	* Makefile: Check that the C++ compiler works.
+
+	* ps/tmac.pspic (PSPIC): Do a break.
+
+	* ps/tmac.ps: Move definition of PSPIC into...
+	* ps/tmac.pspic: New file.
+	(PSPIC): Draw box around picture, but make it invisible to grops.
+	* ps/tmac.ps: Load tmac.pspic.
+	* ps/Makefile: Install tmac.pspic.
+
+Sun Mar 15 14:18:08 1992  James Clark  (jjc at jclark)
+
+	* lib/font.c (scale_round): If n is negative,
+	subtract .5 before truncating floating point result.
+
+	* lib/fontfile.c: Include <errno.h>.
+
+Tue Mar 10 14:17:03 1992  James Clark  (jjc at jclark)
+
+	* driver/input.c (get_char): Inline. Don't update current_lineno.
+	Change callers to up date current_lineno if necessary.
+	Use get_char() instead of getc(current_file).
+
+Sun Mar  8 18:05:28 1992  James Clark  (jjc at jclark)
+
+	* ps/tmac.ps: Fix up spacing of \(mo and \(nm.
+
+Fri Mar  6 19:38:58 1992  James Clark  (jjc at jclark)
+
+	* tty/tty.c (tmac.tty): Define \(rg as (R).
+
+Tue Mar  3 10:11:25 1992  James Clark  (jjc at jclark)
+
+	* lib/lib.h: New define a_delete.
+	* Use a_delete instead of delete when deleting an array of objects
+	without destructors.
+
+	* lib/lib.h: Rename adelete to ad_delete.
+	* Change uses of adelete.
+
+Mon Mar  2 12:41:05 1992  James Clark  (jjc at jclark)
+
+	* eqn/eqn.y: Include lib.h.
+
+	* troff/node.c (grow_font_table): Delete old_font_table.
+
+	* mm: Install new version from jh.
+
+Fri Feb 28 10:42:23 1992  James Clark  (jjc at jclark)
+
+	* tbl/table.h (format_type): Make global instead of local to class
+	entry_format.  Prefix enumerators with FORMAT_.
+	* tbl/table.c, tbl/main.c: Corresponding changes.
+	* refer/token.h (token_type): Make global.  Prefix enumerators
+	with TOKEN_.
+	* refer/token.[ch]: Corresponding changes.
+	* Makefile: Get rid of -DNO_NESTED_TYPES configuration option.
+
+	* troff/div.c (node::set_vertical_size): Don't name argument.
+
+Thu Feb 27 10:29:19 1992  James Clark  (jjc at jclark)
+
+	* Makefile: New configuration option ARRAY_DELETE_NEEDS_SIZE.
+	* lib/lib.h: Define adelete accordingly.
+	* pic/object.c (graphic_object::graphic_object):
+	* tbl/main.c (format::~format):
+	* tbl/table.c (table::~table):
+	* refer/ref.c (reference::~reference, reference::merge,
+	reference::insert_field, reference::delete_field): Use adelete.
+
+	* Makefile: Change NESTED_TYPES to NO_NESTED_TYPES.
+	* refer/token.h:
+	* tbl/table.h: Corresponding changes.
+
+	* common.c (common_output::dashed_arc, common_output::dotted_arc):
+	Ensure total_angle is positive.
+
+Wed Feb 26 08:49:26 1992  James Clark  (jjc at jclark)
+
+	* refer/ref.c (reference::merge, reference::insert_field,
+	reference::delete_field): Avoid delete[0].
+
+	* refer/token.c (init_special_chars): Move calls to cmupper
+	outside calls to init_two_char_letter to work around bug in gcc
+	2.0.
+
+Mon Feb 24 14:20:00 1992  James Clark  (jjc at jclark)
+
+	* lib/new.c (operator new): Use __builtin_new for g++.
+
+	* pic/object.c (graphic_object::~graphic_object):  Don't use
+	delete [] on 0.
+
+	* pic/object.c (output::compute_scale): Initialize max_width and
+	max_height.
+
+Sat Feb 15 09:55:20 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (write_request): Call fflush.
+
+	* troff/node.h (class composite_node): Move declaration to node.c
+	* troff/input.c (charinfo_to_node): Rename to ...
+	(charinfo_to_node_list): Return node list rather than composite
+	node.
+	* troff/node.c (make_composite_node): New function.
+	(make_node, add_char): Call make_composite_node instead of
+	charinfo_to_node.
+	(class composite_node): Add a tfont * member.  Delete font_size
+	member.
+	(composite_node::composite_node, composite_node::copy,
+	composite_node::size): Corresponding changes.
+	(composite_node::tprint): Provide constant spacing, emboldening
+	and track kerning as specified in tfont.
+	(composite_node::width): Change width calculation accordingly.
+	* troff/env.h (environment::composite): New member.
+	(environment::is_composite, environment::set_composite): New
+	functions.
+	* troff/env.c (environment::environment): Initialize composite.
+	* troff/input.c (charinfo_to_node): Call
+	environment::set_composite.
+	* troff/node.c (make_composite_node, make_glyph_node): Use the
+	plain version of the tfont if the environment is composite.
+
+	* troff/node.c (font_info::get_space_width): Additional argument
+	giving space_size.  Handle constance space correctly. Scale by
+	space_size unless constant spaced.
+	(env_sentence_space_width): New function.
+	* troff/node.h: Declare it.
+	* troff/env.h (environment::get_space_size,
+	environment::get_sentence_space_size,
+	environment::get_narrow_space_width,
+	environment::get_half_narrow_space_width): Make inline.
+	(environment::get_space_width): Make inline.  Just call
+	env_space_width.
+	* troff/env.c: Delete definitions for funtions made inline.
+	(environment::space_newline, environment::space): Use
+	env_sentence_space_width(). Don't scale by space_size.
+	* troff/node.h: Move declarations of env*space_width() functions
+	into env.h.
+
+Sat Feb  8 09:30:22 1992  James Clark  (jjc at jclark)
+
+	* macros/tmac.s (PS): Don't try to set negative indent.
+
+Thu Feb  6 09:00:35 1992  James Clark  (jjc at jclark)
+
+	* pic/pic.y: Fix min function.
+
+Tue Jan 28 07:52:29 1992  James Clark  (jjc at jclark)
+
+	* man/mdate.sh: Clear LANGUAGE.
+
+Sun Jan 19 13:02:41 1992  James Clark  (jjc at jclark)
+
+	* pic/pic.y, pic/lex.c: Rename COMMAND token to COMMAND_LINE.
+	* pic/lex.c: New COMMAND keyword.
+	* pic/pic.y (print_args, print_arg): New rules.
+	(placeless_element): Use print_args for PRINT.
+	New COMMAND element.
+
+Tue Jan  7 13:14:31 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (terminal): Handle missing argument correctly.
+
+	* pic/pic.y (text_expr): New rule.
+
+	* pic/pic.y: Implement := operator.
+
+Sun Jan  5 10:23:02 1992  James Clark  (jjc at jclark)
+
+	* etc/grog.pl, etc/grog.sh: Distinguish old and new versions of
+	mdoc.
+
+Sat Jan  4 14:42:26 1992  James Clark  (jjc at jclark)
+
+	* ps/devps/dingbatsrmap: Include this in the distribution.
+
+	* macros/tmac.doc: Replace with new version from 2nd Networking
+	Release. Fix loading of doc-* files.
+	* macros/{doc-common,doc-ditroff,doc-nroff,doc-syms}: New files.
+	* macros/tmac.doc.old: New file.  Apply fixes that had been
+	applied to old tmac.doc.
+	* macros/tmac.andoc: Check that we're running under groff.
+	* macros/Makefile: Rework.
+
+Fri Jan  3 13:27:51 1992  James Clark  (jjc at jclark)
+
+	* tbl/table.h (format_type): 
+	* refer/token.h (token_type): If NESTED_TYPES is defined, use
+	typedef to make these types visible at file scope.
+	* Makefile: Add NESTED_TYPES configuration option.
+
+	* troff/div.c (mark): At the top level use the value of
+	nl_reg_contents rather than the current vertical position.
+
+Thu Jan  2 10:34:51 1992  James Clark  (jjc at jclark)
+
+	* tty/tty.c: Implement \D for horizontal or vertical lines.
+	(tty_printer::set_char): Use vec_used+2 as serial number.
+	Don't allow size of vector to exceed USHRT_MAX-2.
+	Split off part into...
+	(tty_printer::add_char): New function.
+	(tty_printer::draw): New function.
+	(compare_glyph): Handle equal serial numbers.
+	(tty_printer::end_page): Handle overstruck characters from \D.
+	(main, usage): Implement -d option.
+
+Mon Dec 23 10:37:51 1991  James Clark  (jjc at jclark)
+
+	* tbl/main.c (process_format):
+	* eqn/text.c (split_text):
+	* troff/input.c (token::next): Use inner block for declarations
+	with initializers in switch statement.
+
+Mon Dec 16 20:52:03 1991  James Clark  (jjc at jclark)
+
+	* pic/common.c (common_output::dash_line): Cope with zero-length
+	lines.
+
 Sun Nov 17 12:04:08 1991  James Clark  (jjc at jclark)
 
 	* Version 1.04 released.

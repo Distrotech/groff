@@ -1,5 +1,5 @@
 #Copyright (C) 1989, 1990, 1991 Free Software Foundation, Inc.
-#     Written by James Clark (jjc@jclark.uucp)
+#     Written by James Clark (jjc@jclark.com)
 #
 #This file is part of groff.
 #
@@ -156,6 +156,10 @@ D9=-DWAIT_COREDUMP_0200
 # when using wait().  Use this with the libg++ header files.
 D10=-DNO_SYS_WAIT_H
 
+# Uncomment the next line if you C++ compiler requires delete [n] rather
+# than delete []. This is needed for g++ 1.x and cfront 2.0.
+D11=#-DARRAY_DELETE_NEEDS_SIZE
+
 # Uncomment the next line if you do not have the POSIX pathconf()
 # function.  You will need this on old UNIX systems that do not
 # support POSIX.
@@ -207,14 +211,21 @@ GROG=grog.sh
 
 # CC is the C++ compiler
 CC=g++
+# This is the flag that tells the C++ compiler to treat a .c file as C++.
+C++LANG_FLAG=
 # I'm told that -fno-inline is needed on a 68030-based Apollo
 # CC=g++ -fno-inline
+
+# Use this with gcc/g++ version 2.
+# CC=gcc
+# C++LANG_FLAG=-xc++
 
 # OLDCC is the C compiler.
 OLDCC=gcc
 
 PROFILE_FLAG=
-DEBUG_FLAG=
+DEBUG_FLAG=-g
+# With gcc/g++ 2.0 on a sparc, -O works better than -O2.
 OPTIMIZE_FLAG=-O
 WARNING_FLAGS=#-Wall -Wcast-qual -Wwrite-strings
 
@@ -222,8 +233,9 @@ WARNING_FLAGS=#-Wall -Wcast-qual -Wwrite-strings
 XCFLAGS=
 
 # CFLAGS are passed to sub makes
-CFLAGS=$(PROFILE_FLAG) $(DEBUG_FLAG) $(OPTIMIZE_FLAG) $(WARNING_FLAGS) \
-$(D1) $(D2) $(D3) $(D4) $(D5) $(D6) $(D7) $(D8) $(D9) $(D10) $(XCFLAGS)
+CFLAGS=$(C++LANG_FLAG) $(PROFILE_FLAG) $(DEBUG_FLAG) $(OPTIMIZE_FLAG) \
+$(WARNING_FLAGS) $(XCFLAGS) \
+$(D1) $(D2) $(D3) $(D4) $(D5) $(D6) $(D7) $(D8) $(D9) $(D10) $(D11)
 
 XOLDCFLAGS=
 # OLDCFLAGS are passed to sub makes
@@ -291,6 +303,16 @@ $(SUBDIRS): FORCE
 troff pic tbl eqn refer etc ps tty dvi: lib
 ps tty dvi: driver
 
+lib: c++tested
+
+c++tested: Makefile
+	@echo Testing your C++ compiler
+	$(CC) -c $(INCLUDES) $(CFLAGS) c++test.c
+	$(CC) $(LDFLAGS) -o c++test c++test.o $(LIBS)
+	./c++test >c++test.out
+	cmp -s c++test.out c++test.ref
+	touch $@
+
 TAGS: FORCE
 	@for dir in $(SUBDIRS); do \
 	echo Making TAGS in $$dir; \
@@ -300,6 +322,7 @@ TAGS: FORCE
 topclean: FORCE
 	-rm -f shgroff
 	-rm -f groff *.o core device.h
+	-rm -f c++test c++test.o c++test.out c++tested
 
 clean: topclean FORCE
 	@for dir in $(SUBDIRS) doc; do \

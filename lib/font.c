@@ -52,6 +52,15 @@ struct font_kern_list {
   font_kern_list(int, int, int, font_kern_list * = 0);
 };
 
+struct font_widths_cache {
+  font_widths_cache *next;
+  int point_size;
+  int *width;
+
+  font_widths_cache(int, int, font_widths_cache *);
+  ~font_widths_cache();
+};
+
 /* text_file */
 
 struct text_file {
@@ -77,8 +86,8 @@ text_file::text_file(FILE *p, char *s)
 
 text_file::~text_file()
 {
-  delete buf;
-  delete path;
+  a_delete buf;
+  a_delete path;
   if (fp)
     fclose(fp);
 }
@@ -105,7 +114,7 @@ int text_file::next()
 	  char *old_buf = buf;
 	  buf = new char[size*2];
 	  memcpy(buf, old_buf, size);
-	  delete old_buf;
+	  a_delete old_buf;
 	  size *= 2;
 	}
 	buf[i++] = c;
@@ -139,7 +148,7 @@ void text_file::error(const char *format,
 
 font::font(const char *s)
 : special(0), ligatures(0), kern_hash_table(0), space_width(0),
-  ch(0), ch_used(0), ch_size(0), ch_index(0), nindices(0)
+  ch(0), ch_used(0), ch_size(0), ch_index(0), nindices(0), widths_cache(0)
 {
   name = new char[strlen(s) + 1];
   strcpy(name, s);
@@ -150,8 +159,8 @@ font::font(const char *s)
 
 font::~font()
 {
-  delete ch;
-  delete ch_index;
+  a_delete ch;
+  a_delete ch_index;
   if (kern_hash_table) {
     for (int i = 0; i < KERN_HASH_TABLE_SIZE; i++) {
       font_kern_list *kerns = kern_hash_table[i];
@@ -161,10 +170,15 @@ font::~font()
 	delete tem;
       }
     }
-    delete kern_hash_table;
+    a_delete kern_hash_table;
   }
-  delete name;
-  delete internalname;
+  a_delete name;
+  a_delete internalname;
+  while (widths_cache) {
+    font_widths_cache *tem = widths_cache;
+    widths_cache = widths_cache->next;
+    delete tem;
+  }
 }
 
 static int scale_round(int n, int x, int y)
@@ -176,12 +190,13 @@ static int scale_round(int n, int x, int y)
   if (n >= 0) {
     if (n <= (INT_MAX - y2)/x)
       return (n*x + y2)/y;
+    return int(n*double(x)/double(y) + .5);
   }
   else {
     if (-(unsigned)n <= (-(unsigned)INT_MIN - y2)/x)
       return (n*x - y2)/y;
+    return int(n*double(x)/double(y) - .5);
   }
-  return int(n*double(x)/double(y) + .5);
 }
 
 inline int font::scale(int w, int sz)
@@ -205,10 +220,48 @@ int font::is_special()
   return special;
 }
 
+font_widths_cache::font_widths_cache(int ps, int ch_size,
+				     font_widths_cache *p = 0)
+: next(p), point_size(ps)
+{
+  width = new int[ch_size];
+  for (int i = 0; i < ch_size; i++)
+    width[i] = -1;
+}
+
+font_widths_cache::~font_widths_cache()
+{
+  a_delete width;
+}
+
 int font::get_width(int c, int point_size)
 {
-  assert(c >= 0 && c < nindices && ch_index[c] >= 0);
-  return scale(ch[ch_index[c]].width, point_size);
+  assert(c >= 0 && c < nindices);
+  int i = ch_index[c];
+  assert(i >= 0);
+
+  if (point_size == unitwidth)
+    return ch[i].width;
+
+  if (!widths_cache)
+    widths_cache = new font_widths_cache(point_size, ch_size);
+  else if (widths_cache->point_size != point_size) {
+    for (font_widths_cache **p = &widths_cache; *p; p = &(*p)->next)
+      if ((*p)->point_size == point_size)
+	break;
+    if (*p) {
+      font_widths_cache *tem = *p;
+      *p = (*p)->next;
+      tem->next = widths_cache;
+      widths_cache = tem;
+    }
+    else
+      widths_cache = new font_widths_cache(point_size, ch_size, widths_cache);
+  }
+  int &w = widths_cache->width[i];
+  if (w < 0)
+    w = scale(ch[i].width, point_size);
+  return w;
 }
 
 int font::get_height(int c, int point_size)
@@ -325,7 +378,7 @@ void font::alloc_ch_index(int index)
     memcpy(ch_index, old_ch_index, sizeof(short)*old_nindices);
     for (int i = old_nindices; i < nindices; i++)
       ch_index[i] = -1;
-    delete old_ch_index;
+    a_delete old_ch_index;
   }
 }
 
@@ -339,7 +392,7 @@ void font::extend_ch()
     font_char_metric *old_ch = ch;
     ch = new font_char_metric[ch_size];
     memcpy(ch, old_ch, old_ch_size*sizeof(font_char_metric));
-    delete old_ch;
+    a_delete old_ch;
   }
 }
 
@@ -353,14 +406,14 @@ void font::compact()
     short *old_ch_index = ch_index;
     ch_index = new short[i];
     memcpy(ch_index, old_ch_index, i*sizeof(short));
-    delete old_ch_index;
+    a_delete old_ch_index;
     nindices = i;
   }
   if (ch_used < ch_size) {
     font_char_metric *old_ch = ch;
     ch = new font_char_metric[ch_used];
     memcpy(ch, old_ch, ch_used*sizeof(font_char_metric));
-    delete old_ch;
+    a_delete old_ch;
     ch_size = ch_used;
   }
 }
@@ -477,13 +530,13 @@ int font::load()
 	  nargv *= 2;
 	  argv = new char *[nargv];
 	  memcpy(argv, old_argv, sizeof(char*)*old_nargv);
-	  delete old_argv;
+	  a_delete old_argv;
 	}
 	argv[argc++] = p;
 	p = strtok(0, WS);
       } while (p != 0);
       handle_unknown_font_command(argc, argv);
-      delete argv;
+      a_delete argv;
     }
     else
       break;
@@ -757,7 +810,7 @@ int font::load_desc()
 	  sizes = new int[n*2];
 	  memcpy(sizes, old_sizes, n*sizeof(int));
 	  n *= 2;
-	  delete old_sizes;
+	  a_delete old_sizes;
 	}
 	sizes[i++] = lower;
 	if (lower == 0)
@@ -788,7 +841,7 @@ int font::load_desc()
 	    style_table[j] = old_style_table[j];
 	  for (; j < style_table_size; j++)
 	    style_table[j] = 0;
-	  delete old_style_table;
+	  a_delete old_style_table;
 	}
 	char *tem = new char[strlen(p) + 1];
 	strcpy(tem, p);

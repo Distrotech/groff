@@ -2,6 +2,10 @@
 
 # Print the modification date of $1 `nicely'.
 
+# Don't want foreign dates.
+
+LANGUAGE=
+
 (date; ls -l $1) | awk '
 BEGIN {
 	full["Jan"] = "January"; number["Jan"] = 1;

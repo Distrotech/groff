@@ -85,6 +85,8 @@ install.nobin:
 	-[ -d $(MACRODIR) ] || mkdir $(MACRODIR)
 	-rm -f $(MACRODIR)/tmac.ps
 	cp tmac.ps $(MACRODIR)
+	-rm -f $(MACRODIR)/tmac.pspic
+	cp tmac.pspic $(MACRODIR)
 	-rm -f $(MACRODIR)/tmac.psatk
 	cp tmac.psatk $(MACRODIR)
 	@echo Making install.nobin in devps

@@ -21,6 +21,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 struct font_kern_list;
 struct font_char_metric;
+struct font_widths_cache;
 
 class font {
 public:
@@ -88,6 +89,7 @@ private:
   char *name;
   char *internalname;
   double slant;
+  font_widths_cache *widths_cache;
 
   static char *dev_name;
   static char *cl_font_dirs;

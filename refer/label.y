@@ -516,7 +516,7 @@ void format_expr::evaluate(int tentative, const reference &ref,
     sprintf(ptr, "%0*d", width, num + first_number);
     result += ptr;
     if (ptr != buf)
-      delete ptr;
+      a_delete ptr;
   }
 }
 
@@ -981,7 +981,7 @@ label_info *lookup_label(const string &label)
 	    ;
 	*p = old_table[i];
 	}
-    delete old_table;
+    a_delete old_table;
   }
   return result;
 }
@@ -1056,14 +1056,16 @@ static void consider_authors(reference **start, reference **end, int i)
       }
     }
     consider_authors(name_start, p, i + 1);
-    if (last_name_start == name_start)
+    if (last_name_start == name_start) {
       for (reference **q = last_name_start; q < p; q++)
 	(*q)->set_last_name_unambiguous(i);
+    }
     // If we have an author list <A B C D> and <A B C E>, then the lists
     // need author D and E respectively.
-    if (name_start > start || p < end)
-      for (q = last_name_start; q < p; q++)
+    if (name_start > start || p < end) {
+      for (reference **q = last_name_start; q < p; q++)
 	(*q)->need_author(i);
+    }
   }
 }
 

@@ -28,7 +28,9 @@ MAN7DIR=/usr/local/man/man$(MAN7EXT)
 MAN1EXT=1
 SHELL=/bin/sh
 
-FILES=0.MT ms.MT ms.cov se_ms.cov 
+FILES=0.MT 5.MT 4.MT ms.cov se_ms.cov 
+# local configurationfiles with defaultvalues.
+LOCALE = locale se_locale
 
 .SUFFIXES: .man .n
 
@@ -50,7 +52,7 @@ all: groff_mm.n groff_mmse.n
 groff_mm.n: ../VERSION
 
 tar:
-	tar cvf mm.tar tmac* mm *.man Makefile ChangeLog README
+	tar cvf mm.tar tmac* mm *.man Makefile ChangeLog README NOTES
 clean:
 	-rm -f groff_mm.n groff_mmse.n
 
@@ -62,8 +64,11 @@ TAGS:
 install.nobin: install.m all
 	-[ -d $(MACRODIR)/mm ] || mkdir $(MACRODIR)/mm
 	for f in $(FILES); do \
-	rm -f $(MACRODIR)/mm/$$f; \
-	cp mm/$$f $(MACRODIR)/mm; \
+		rm -f $(MACRODIR)/mm/$$f; \
+		cp mm/$$f $(MACRODIR)/mm; \
+	done
+	for f in $(LOCALE); do \
+		[ -f $(MACRODIR)/mm/$$f ] || touch $(MACRODIR)/mm/$$f; \
 	done
 	-[ -d $(MAN7DIR) ] || mkdir $(MAN7DIR)
 	-rm -f $(MAN7DIR)/groff_mm.$(MAN7EXT)

@@ -83,7 +83,7 @@ PTABLE(T)::PTABLE(T)()							      \
 PTABLE(T)::~PTABLE(T)()							      \
 {									      \
   for (unsigned i = 0; i < size; i++) {					      \
-    delete v[i].key;							      \
+    a_delete v[i].key;							      \
     delete v[i].val;							      \
   }									      \
 }									      \
@@ -110,7 +110,7 @@ void PTABLE(T)::define(const char *key, T *val)				      \
     for (unsigned i = 0; i < old_size; i++)				      \
       if (oldv[i].key != 0) {						      \
 	if (oldv[i].val == 0)						      \
-	  delete oldv[i].key;						      \
+	  a_delete oldv[i].key;						      \
 	else {								      \
 	  for (unsigned j = unsigned(hash_string(oldv[i].key) % size);	      \
 	       v[j].key != 0;						      \
@@ -124,7 +124,7 @@ void PTABLE(T)::define(const char *key, T *val)				      \
 	 v[n].key != 0;							      \
 	 n = (n == 0 ? size - 1 : n - 1))				      \
       ;									      \
-    delete oldv;							      \
+    a_delete oldv;							      \
   }									      \
   char *temp = new char[strlen(key)+1];					      \
   strcpy(temp, key);							      \

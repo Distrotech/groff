@@ -79,13 +79,13 @@ int get_token(const char **ptr, const char *end)
 }
 
 token_info::token_info()
-: type(OTHER), sort_key(0), other_case(0)
+: type(TOKEN_OTHER), sort_key(0), other_case(0)
 {
 }
 
 void token_info::set(token_type t, const char *sk, const char *oc)
 {
-  assert(oc == 0 || t == UPPER || t == LOWER);
+  assert(oc == 0 || t == TOKEN_UPPER || t == TOKEN_LOWER);
   type = t;
   sort_key = sk;
   other_case = oc;
@@ -96,7 +96,7 @@ void token_info::sortify(const char *start, const char *end, string &result)
 {
   if (sort_key)
     result += sort_key;
-  else if (type == UPPER || type == LOWER) {
+  else if (type == TOKEN_UPPER || type == TOKEN_LOWER) {
     for (; start < end; start++)
       if (csalpha(*start))
 	result += cmlower(*start);
@@ -107,7 +107,7 @@ int token_info::sortify_non_empty(const char *start, const char *end) const
 {
   if (sort_key)
     return *sort_key != '\0';
-  if (type != UPPER && type != LOWER)
+  if (type != TOKEN_UPPER && type != TOKEN_LOWER)
     return 0;
   for (; start < end; start++)
     if (csalpha(*start))
@@ -119,7 +119,7 @@ int token_info::sortify_non_empty(const char *start, const char *end) const
 void token_info::lower_case(const char *start, const char *end,
 			    string &result) const
 {
-  if (type != UPPER) {
+  if (type != TOKEN_UPPER) {
     while (start < end)
       result += *start++;
   }
@@ -134,7 +134,7 @@ void token_info::lower_case(const char *start, const char *end,
 void token_info::upper_case(const char *start, const char *end,
 			    string &result) const
 {
-  if (type != LOWER) {
+  if (type != TOKEN_LOWER) {
     while (start < end)
       result += *start++;
   }
@@ -194,31 +194,31 @@ static void init_ascii()
     char buf[2];
     buf[0] = *p;
     buf[1] = '\0';
-    store_token(strsave(buf), token_info::LOWER);
+    store_token(strsave(buf), TOKEN_LOWER);
     buf[0] = cmupper(buf[0]);
-    store_token(strsave(buf), token_info::UPPER);
+    store_token(strsave(buf), TOKEN_UPPER);
   }
   for (p = "0123456789"; *p; p++) {
     char buf[2];
     buf[0] = *p;
     buf[1] = '\0';
     const char *s = strsave(buf);
-    store_token(s, token_info::OTHER, s);
+    store_token(s, TOKEN_OTHER, s);
   }
   for (p = ".,:;?!"; *p; p++) {
     char buf[2];
     buf[0] = *p;
     buf[1] = '\0';
-    store_token(strsave(buf), token_info::PUNCT);
+    store_token(strsave(buf), TOKEN_PUNCT);
   }
-  store_token("-", token_info::HYPHEN);
+  store_token("-", TOKEN_HYPHEN);
 }
 
 static void store_letter(const char *lower, const char *upper,
 		  const char *sort_key = 0)
 {
-  store_token(lower, token_info::LOWER, sort_key, upper);
-  store_token(upper, token_info::UPPER, sort_key, lower);
+  store_token(lower, TOKEN_LOWER, sort_key, upper);
+  store_token(upper, TOKEN_UPPER, sort_key, lower);
 }
 
 static void init_letter(unsigned char uc_code, unsigned char lc_code,
@@ -267,8 +267,8 @@ static void init_latin1()
   init_letter(0xdd, 0xfd, "y");
   init_letter(0xde, 0xfe, THORN_SORT_KEY);
 
-  store_token("\337", token_info::LOWER, "ss", "SS");
-  store_token("\377", token_info::LOWER, "y", "Y");
+  store_token("\337", TOKEN_LOWER, "ss", "SS");
+  store_token("\377", TOKEN_LOWER, "y", "Y");
 }
 
 static void init_two_char_letter(char l1, char l2, char u1, char u2,
@@ -297,23 +297,30 @@ static void init_two_char_letter(char l1, char l2, char u1, char u2,
 static void init_special_chars()
 {
   for (const char *p = "':^`~"; *p; p++)
-    for (const char *q = "aeiouy"; *q; q++)
-      init_two_char_letter(*p, *q, *p, cmupper(*q));
-  for (p = "/l/o~n,coeaeij"; *p; p += 2)
-    init_two_char_letter(p[0], p[1], cmupper(p[0]), cmupper(p[1]));
+    for (const char *q = "aeiouy"; *q; q++) {
+      // Use a variable to work around bug in gcc 2.0
+      char c = cmupper(*q);
+      init_two_char_letter(*p, *q, *p, c);
+    }
+  for (p = "/l/o~n,coeaeij"; *p; p += 2) {
+    // Use variables to work around bug in gcc 2.0
+    char c0 = cmupper(p[0]);
+    char c1 = cmupper(p[1]);
+    init_two_char_letter(p[0], p[1], c0, c1);
+  }
   init_two_char_letter('v', 's', 'v', 'S', "s");
   init_two_char_letter('v', 'z', 'v', 'Z', "z");
   init_two_char_letter('o', 'a', 'o', 'A', "a");
   init_two_char_letter('T', 'p', 'T', 'P', THORN_SORT_KEY);
   init_two_char_letter('-', 'd', '-', 'D');
   
-  store_token("\\(ss", token_info::LOWER, 0, "SS");
-  store_token("\\[ss]", token_info::LOWER, 0, "SS");
+  store_token("\\(ss", TOKEN_LOWER, 0, "SS");
+  store_token("\\[ss]", TOKEN_LOWER, 0, "SS");
 
-  store_token("\\(Sd", token_info::LOWER, "d", "\\(-D");
-  store_token("\\[Sd]", token_info::LOWER, "d", "\\[-D]");
-  store_token("\\(hy", token_info::HYPHEN);
-  store_token("\\[hy]", token_info::HYPHEN);
+  store_token("\\(Sd", TOKEN_LOWER, "d", "\\(-D");
+  store_token("\\[Sd]", TOKEN_LOWER, "d", "\\[-D]");
+  store_token("\\(hy", TOKEN_HYPHEN);
+  store_token("\\[hy]", TOKEN_HYPHEN);
 }
 
 static void init_strings()
@@ -324,12 +331,12 @@ static void init_strings()
   for (const char *p = "'`^^,:~v_o./;"; *p; p++) {
     buf[2] = *p;
     buf[3] = '\0';
-    store_token(strsave(buf), token_info::ACCENT);
+    store_token(strsave(buf), TOKEN_ACCENT);
     buf[2] = '[';
     buf[3] = *p;
     buf[4] = ']';
     buf[5] = '\0';
-    store_token(strsave(buf), token_info::ACCENT);
+    store_token(strsave(buf), TOKEN_ACCENT);
   }
 
   // -ms special letters
@@ -342,9 +349,9 @@ static void init_strings()
   store_letter("\\*(oe", "\\*(Oe", "oe");
   store_letter("\\*[oe]", "\\*[Oe]", "oe");
 
-  store_token("\\*3", token_info::LOWER, "y", "Y");
-  store_token("\\*8", token_info::LOWER, "ss", "SS");
-  store_token("\\*q", token_info::LOWER, "o", "O");
+  store_token("\\*3", TOKEN_LOWER, "y", "Y");
+  store_token("\\*8", TOKEN_LOWER, "ss", "SS");
+  store_token("\\*q", TOKEN_LOWER, "o", "O");
 }
 
 struct token_initer {
@@ -359,5 +366,5 @@ token_initer::token_initer()
   init_latin1();
   init_special_chars();
   init_strings();
-  default_token_info.set(token_info::OTHER);
+  default_token_info.set(TOKEN_OTHER);
 }

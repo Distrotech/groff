@@ -679,7 +679,7 @@ static void store_citation(reference *ref)
       citation_max *= 2;
       citation = new reference *[citation_max];
       memcpy(citation, old_citation, ncitations*sizeof(reference *));
-      delete old_citation;
+      a_delete old_citation;
     }
   }
   citation[ncitations++] = ref;
@@ -736,7 +736,7 @@ static unsigned store_reference(const string &str)
 	    ;
 	  *p = old_table[i];
 	}
-      delete old_table;
+      a_delete old_table;
     }
   }
   if (label_in_text)
@@ -915,7 +915,7 @@ void label_processing_state::process(int c)
 
 extern "C" {
 
-static int rcompare(void *p1, void *p2)
+static int rcompare(const void *p1, const void *p2)
 {
   return compare_reference(**(reference **)p1, **(reference **)p2);
 }

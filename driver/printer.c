@@ -34,7 +34,7 @@ printer::printer()
 
 printer::~printer()
 {
-  delete font_table;
+  a_delete font_table;
   while (font_list) {
     font_pointer_list *tem = font_list;
     font_list = font_list->next;

@@ -29,7 +29,11 @@ static void ewrite(const char *s)
   write(2, s, strlen(s));
 }
 
+#ifdef __GNUG__
+void *__builtin_new(size_t size)
+#else
 void *operator new(size_t size)
+#endif
 {
   char *p = (char *)malloc(unsigned(size));
   if (p != 0)

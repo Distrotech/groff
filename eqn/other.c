@@ -412,7 +412,7 @@ void size_box::output()
 
 size_box::~size_box()
 {
-  delete size;
+  a_delete size;
 }
 
 void size_box::debug_print()
@@ -429,7 +429,7 @@ font_box::font_box(char *s, box *pp) : pointer_box(pp), f(s)
 
 font_box::~font_box()
 {
-  delete f;
+  a_delete f;
 }
 
 int font_box::compute_metrics(int style)
