@@ -433,16 +433,16 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"------------
 .de nP
 .\"	skip P if previous heading
-.ie !((\\n[nl]=\\n[hd*last-pos]):(\\n[nl]=(\\n[hd*last-pos]-.5v))) \{\
-.	if \\n[D]>2 .tm Paragraph nl=\\n[nl]
-.	par@doit \\$*
-\\n[H2].\\n+[par*number2]\ \ \c
+.if \\n[D]>2 \{\
+.	tm Paragraph nl=\\n[nl], last=\\n[hd*last-pos]
+.	tm Paragraph .k=\\n[.k], hsize=\\n[hd*last-hsize]
 .\}
-.el .if !(\\n[hd*last-hsize]=\\n[.k]) \{\
-.	if \\n[D]>2 .tm Paragraph nl=\\n[nl]
-.	par@doit \\$*
-\\n[H2].\\n+[par*number2]\ \ \c
+.if !((\\n[nl]=\\n[hd*last-pos]):(\\n[hd*last-hsize]=\\n[.k])) \{\
+.	if \\n[D]>2 .tm Paragraph set ind-flag=1
+.	nr par@ind-flag 1
 .\}
+.par@doit \\$*
+\\n[H2].\\n+[par*number2]\ \ \c
 .nr par@ind-flag 1
 ..
 .\"------------
@@ -1109,8 +1109,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr pg*top-margin 0
 .nr pg*foot-margin 0
 .nr pg*block-size 0
-.nr pg*footer-size 5\"			 1v+footer+even/odd footer+2v
-.nr pg*header-size 7\"			 3v+header+even/odd header+2v
+.nr pg*footer-size 5v\"			 1v+footer+even/odd footer+2v
+.nr pg*header-size 7v\"			 3v+header+even/odd header+2v
 .nr pg*extra-footer-size 0
 .nr pg*extra-header-size 0
 .nr ft*note-size 0
@@ -1124,14 +1124,14 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"-------------------------
 .\" footer TRAPS: set, enable and disable
 .de pg@set-new-trap
-.nr pg*foot-trap \\n[@pl]u-(\\n[pg*block-size]u+\\n[ft*note-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]v+\\n[pg*extra-footer-size]u)
+.nr pg*foot-trap \\n[@pl]u-(\\n[pg*block-size]u+\\n[ft*note-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u+\\n[pg*extra-footer-size]u)
 .\"
-.if \\n[D]>2 .tm pg*foot-trap \\n[@pl]u-(\\n[pg*block-size]u+\\n[ft*note-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]v+\\n[pg*extra-footer-size]u) = \\n[pg*foot-trap]
+.if \\n[D]>2 .tm pg*foot-trap \\n[@pl]u-(\\n[pg*block-size]u+\\n[ft*note-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u+\\n[pg*extra-footer-size]u) = \\n[pg*foot-trap]
 .\"
 .\" last-pos points to the position of the footer and bottom 
 .\" block below foot-notes.
-.nr pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]v)
-.if \\n[D]>2 .tm pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]v) = \\n[pg*last-pos]
+.nr pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u)
+.if \\n[D]>2 .tm pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u) = \\n[pg*last-pos]
 ..
 .de pg@enable-trap
 .wh \\n[pg*foot-trap]u pg@footer
@@ -1395,16 +1395,28 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 ..
 .\"-------------------------
 .\" set top and bottom margins 
+.\" -T	sets pg*footer-size and pg*header-size instead
 .de VM
-.if \\n[.$]=0 \{\
-.	nr pg*extra-footer-size 0
-.	nr pg*extra-header-size 0
+.ie '\\$1'-T' \{\
+.	shift
+.	if \\n[.$]=0 \{\
+.		nr pg*footer-size 5v
+.		nr pg*header-size 7v
+.	\}
+.	if \\n[.$]>0 .nr pg*header-size (v;\\$1)
+.	if \\n[.$]>1 .nr pg*footer-size (v;\\$2)
 .\}
-.if \\n[.$]>0 .nr pg*extra-header-size (v;\\$1)
-.if \\n[.$]>1 .nr pg*extra-footer-size (v;\\$2)
-.if \\n[D]>2 \{\
-.	tm extra top \\n[pg*extra-footer-size]
-.	tm extra bottom \\n[pg*extra-header-size]
+.el \{
+.	if \\n[.$]=0 \{\
+.		nr pg*extra-footer-size 0
+.		nr pg*extra-header-size 0
+.	\}
+.	if \\n[.$]>0 .nr pg*extra-header-size (v;\\$1)
+.	if \\n[.$]>1 .nr pg*extra-footer-size (v;\\$2)
+.	if \\n[D]>2 \{\
+.		tm extra top \\n[pg*extra-footer-size]
+.		tm extra bottom \\n[pg*extra-header-size]
+.	\}
 .\}
 .pg@move-trap
 ..
@@ -2029,7 +2041,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 'nf
 .\" calculate needed space
 .nr ds*need \\n[ds*height]
-.nr ds*i \\n[pg*foot-trap]-\\n[pg*header-size]v-\\n[pg*extra-header-size]v
+.nr ds*i \\n[pg*foot-trap]-\\n[pg*header-size]u-\\n[pg*extra-header-size]u
 .if (\\n[ds*height]>\\n[ds*i])&(\\n[.t]<(\\n[ds*i]/2)) .nr ds*need \\n[.t]u+1v
 .if (\\n[ds*height]<\\n[ds*i])&(\\n[.t]<(\\n[ds*height])) .nr ds*need \\n[.t]u+1v
 .\"	Eject page if display will fit one page and
