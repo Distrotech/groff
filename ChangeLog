@@ -1,3 +1,33 @@
+2002-04-13  Werner LEMBERG  <wl@gnu.org>
+
+	Implement \f[] as an alternative to \fP.  Change \mP and \MP to
+	\m[] and \M[], respectively.
+
+	* src/roff/troff/symbol.cc (EMPTY_SYMBOL): New global variable.
+	(symbol::symbol): Handle NULL string and empty string differently.
+	* src/roff/troff/symbol.h (symbol::is_empty): New inline function.
+	* src/roff/troff/input.cc (read_escape_name, read_long_escape_name):
+	Add optional parameter.
+	Updated calling functions.
+	(get_copy, do_glyph_color, do_fill_color, token::next): Use
+	`symbol::is_empty'.
+	* src/roff/troff/env.cc (environment::set_font): Ditto.
+
+	* src/preproc/pic/troff.cc (troff_output::set_fill,
+	troff_output::reset_color: Updated.
+
+	* tmac/www.tmac: Updated.
+
+	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo,
+	doc/homepage.ms, src/devices/grotty/grotty.man, tmac/groff_www.man:
+	Updated.
+
+2002-04-13  Bernd Warken  <bwarken@mayn.de>
+
+	* src/include/printer.h, src/libs/libdriver/printer.cc
+	(printer::change_fill_color): New member function.
+	* src/libs/libdriver/input.cc (parse_D_command): Use it.
+
 2002-04-12  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/groff.texinfo: Completed pass on gtroff reference.

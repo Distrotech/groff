@@ -484,7 +484,7 @@ void troff_output::set_fill(double f)
   if (last_filled) {
     free(last_filled);
     last_filled = 0;
-    printf("\\MP\n.sp -1\n");
+    printf("\\M[]\n.sp -1\n");
   }
 }
 
@@ -509,12 +509,12 @@ void troff_output::reset_color()
 {
   if (driver_extension_flag) {
     if (last_filled) {
-      printf("\\MP\n.sp -1\n");
+      printf("\\M[]\n.sp -1\n");
       free(last_filled);
       last_filled = 0;
     }
     if (last_outlined) {
-      printf("\\mP\n.sp -1\n");
+      printf("\\m[]\n.sp -1\n");
       free(last_outlined);
       last_outlined = 0;
     }

@@ -24,7 +24,7 @@
 .defcolor darkgreen rgb 0.1f 0.5f 0.2f
 .defcolor darkblue rgb 0.1f 0.2f 0.6f
 .
-.ds GNU \m[darkred]G\mP\m[darkgreen]N\mP\m[darkblue]U\mP
+.ds GNU \m[darkred]G\m[]\m[darkgreen]N\m[]\m[darkblue]U\m[]
 .
 .HTL
 .

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -29,6 +29,7 @@ char *symbol::block = 0;
 int symbol::block_size = 0;
 
 const symbol NULL_SYMBOL;
+const symbol EMPTY_SYMBOL("");
 
 #ifdef BLOCK_SIZE
 #undef BLOCK_SIZE
@@ -73,8 +74,12 @@ inline void unused(void *) { }
 
 symbol::symbol(const char *p, int how)
 {
-  if (p == 0 || *p == 0) {
+  if (p == 0) {
     s = 0;
+    return;
+  }
+  if (*p == 0) {
+    s = "";
     return;
   }
   if (table == 0) {
@@ -147,4 +152,3 @@ symbol concat(symbol s1, symbol s2)
   a_delete buf;
   return res;
 }
-

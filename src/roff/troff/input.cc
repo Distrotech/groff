@@ -130,7 +130,8 @@ static void copy_mode_error(const char *,
 			    const errarg & = empty_errarg,
 			    const errarg & = empty_errarg);
 
-static symbol read_escape_name();
+static symbol read_escape_name(int no_empty = 1);
+static symbol read_long_escape_name(int no_empty = 1);
 static void interpolate_string(symbol);
 static void interpolate_macro(symbol);
 static void interpolate_number_format(symbol);
@@ -724,7 +725,7 @@ static symbol read_two_char_escape_name()
   return symbol(buf);
 }
 
-static symbol read_long_escape_name()
+static symbol read_long_escape_name(int no_empty)
 {
   int start_level = input_stack::get_level();
   char abuf[ABUF_SIZE];
@@ -759,8 +760,9 @@ static symbol read_long_escape_name()
   buf[i] = 0;
   if (buf == abuf) {
     if (i == 0) {
-      copy_mode_error("empty escape name");
-      return NULL_SYMBOL;
+      if (no_empty)
+        copy_mode_error("empty escape name");
+      return EMPTY_SYMBOL;
     }
     return symbol(abuf);
   }
@@ -771,7 +773,7 @@ static symbol read_long_escape_name()
   }
 }
 
-static symbol read_escape_name()
+static symbol read_escape_name(int no_empty)
 {
   int c = get_char_for_escape_name();
   if (c == 0)
@@ -779,7 +781,7 @@ static symbol read_escape_name()
   if (c == '(')
     return read_two_char_escape_name();
   if (c == '[' && !compatible_flag)
-    return read_long_escape_name();
+    return read_long_escape_name(no_empty);
   char buf[2];
   buf[0] = c;
   buf[1] = '\0';
@@ -848,7 +850,7 @@ static int get_copy(node **nd, int defining)
       {
 	(void)input_stack::get(0);
 	symbol s = read_escape_name();
-	if (!s.is_null())
+	if (!(s.is_null() || s.is_empty()))
 	  interpolate_arg(s);
 	break;
       }
@@ -856,7 +858,7 @@ static int get_copy(node **nd, int defining)
       {
 	(void)input_stack::get(0);
 	symbol s = read_escape_name();
-	if (!s.is_null())
+	if (!(s.is_null() || s.is_empty()))
 	  interpolate_string(s);
 	break;
       }
@@ -874,7 +876,7 @@ static int get_copy(node **nd, int defining)
 	(void)input_stack::get(0);
 	int inc;
 	symbol s = read_increment_and_escape_name(&inc);
-	if (!s.is_null())
+	if (!(s.is_null() || s.is_empty()))
 	  interpolate_number_reg(s, inc);
 	break;
       }
@@ -882,7 +884,7 @@ static int get_copy(node **nd, int defining)
       {
 	(void)input_stack::get(0);
 	symbol s = read_escape_name();
-	if (!s.is_null())
+	if (!(s.is_null() || s.is_empty()))
 	  interpolate_number_format(s);
 	break;
       }
@@ -893,7 +895,7 @@ static int get_copy(node **nd, int defining)
       {
 	(void)input_stack::get(0);
 	symbol s = read_escape_name();
-	if (!s.is_null())
+	if (!(s.is_null() || s.is_empty()))
 	  interpolate_environment_variable(s);
 	break;
       }
@@ -1033,7 +1035,7 @@ static node *do_glyph_color(symbol nm)
 {
   if (nm.is_null())
     return 0;
-  if (nm == symbol("P"))
+  if (nm.is_empty())
     curenv->set_glyph_color(curenv->get_prev_glyph_color());
   else {
     color *tem = lookup_color(nm);
@@ -1049,7 +1051,7 @@ static node *do_fill_color(symbol nm)
 {
   if (nm.is_null())
     return 0;
-  if (nm == symbol("P"))
+  if (nm.is_empty())
     curenv->set_fill_color(curenv->get_prev_fill_color());
   else {
     color *tem = lookup_color(nm);
@@ -1738,14 +1740,14 @@ void token::next()
       case '$':
 	{
 	  symbol nm = read_escape_name();
-	  if (!nm.is_null())
+	  if (!(nm.is_null() || nm.is_empty()))
 	    interpolate_arg(nm);
 	  break;
 	}
       case '*':
 	{
 	  symbol nm = read_escape_name();
-	  if (!nm.is_null())
+	  if (!(nm.is_null() || nm.is_empty()))
 	    interpolate_string(nm);
 	  break;
 	}
@@ -1789,14 +1791,14 @@ void token::next()
 	goto handle_escape_char;
       case 'f':
 	{
-	  symbol s = read_escape_name();
+	  symbol s = read_escape_name(0);
 	  if (s.is_null())
 	    break;
 	  const char *p;
 	  for (p = s.contents(); *p != '\0'; p++)
 	    if (!csdigit(*p))
 	      break;
-	  if (*p)
+	  if (*p || s.is_empty())
 	    curenv->set_font(s);
 	  else
 	    curenv->set_font(atoi(s.contents()));
@@ -1807,7 +1809,7 @@ void token::next()
       case 'g':
 	{
 	  symbol s = read_escape_name();
-	  if (!s.is_null())
+	  if (!(s.is_null() || s.is_empty()))
 	    interpolate_number_format(s);
 	  break;
 	}
@@ -1825,7 +1827,7 @@ void token::next()
 	break;
       case 'k':
 	nm = read_escape_name();
-	if (nm.is_null())
+	if (nm.is_null() || nm.is_empty())
 	  break;
 	type = TOKEN_MARK_INPUT;
 	return;
@@ -1846,13 +1848,13 @@ void token::next()
 	  return;
 	}
       case 'm':
-	nd = do_glyph_color(read_escape_name());
+	nd = do_glyph_color(read_escape_name(0));
 	if (!nd)
 	  break;
 	type = TOKEN_NODE;
 	return;
       case 'M':
-	nd = do_fill_color(read_escape_name());
+	nd = do_fill_color(read_escape_name(0));
 	if (!nd)
 	  break;
 	type = TOKEN_NODE;
@@ -1861,7 +1863,7 @@ void token::next()
 	{
 	  int inc;
 	  symbol nm = read_increment_and_escape_name(&inc);
-	  if (!nm.is_null())
+	  if (!(nm.is_null() || nm.is_empty()))
 	    interpolate_number_reg(nm, inc);
 	  break;
 	}
@@ -1921,7 +1923,7 @@ void token::next()
       case 'V':
 	{
 	  symbol nm = read_escape_name();
-	  if (!nm.is_null())
+	  if (!(nm.is_null() || nm.is_empty()))
 	    interpolate_environment_variable(nm);
 	  break;
 	}
@@ -1943,7 +1945,7 @@ void token::next()
       case 'Y':
 	{
 	  symbol s = read_escape_name();
-	  if (s.is_null())
+	  if (s.is_null() || s.is_empty())
 	    break;
 	  request_or_macro *p = lookup_request(s);
 	  macro *m = p->to_macro();
@@ -1987,7 +1989,7 @@ void token::next()
       case '[':
 	if (!compatible_flag) {
 	  nm = read_long_escape_name();
-	  if (nm.is_null())
+	  if (nm.is_null() || nm.is_empty())
 	    break;
 	  type = TOKEN_SPECIAL;
 	  return;
@@ -4631,7 +4633,7 @@ extern int image_no;		// from node.cc
 
 static node *do_suppress(symbol nm)
 {
-  if (nm.is_null()) {
+  if (nm.is_null() || nm.is_empty()) {
     error("expecting an argument to escape \\O");
     return 0;
   }

@@ -2,7 +2,7 @@
 .ig
 groff.man
 
-Last update: 15 Mar 2002
+Last update: 14 Apr 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -1543,6 +1543,8 @@ will be special.
 .REQ .ft
 Return to previous font.
 Same as
+.request \[rs]f[]
+or
 .request \[rs]fP .
 .
 .REQ .ft font
@@ -2514,6 +2516,9 @@ Equivalent to an escape character, but is not interpreted in copy-mode.
 Change to font with 1-character name or 1-digit number
 .IR F .
 .
+.ESC fP
+Switch back to previous font.
+.
 .ESC f( fo
 Change to font with 2-characer name or 2-digit number
 .IR fo .
@@ -2521,6 +2526,9 @@ Change to font with 2-characer name or 2-digit number
 .ESC[] f font
 Change to font with arbitrary length name or number expression
 .IR font .
+.
+.ESC[] f ""
+Switch back to previous font.
 .
 .ESC[] g reg
 Return format of register with name
@@ -2567,6 +2575,9 @@ Alternative forms
 and
 .escarg m c .
 .
+.ESC[] m ""
+Switch back to previous color.
+.
 .ESC[] M color
 Change filling color for closed drawn objects to color
 .IR color .
@@ -2575,6 +2586,9 @@ Alternative forms
 .escarg M( co
 and
 .escarg M c .
+.
+.ESC[] M ""
+Switch to previous fill color.
 .
 .ESC n r
 The numerical value stored in the register variable with the

@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 10 Apr 2002
+   Last update: 12 Apr 2002
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -60,6 +60,7 @@
    - Unknown subcommands of `D' and `x' are now ignored like in the
      classical case, but a warning is issued.  This was also
      implemented for the other commands.
+   - A warning is emitted if `x stop' is missing.
    - `DC' and `DE' commands didn't position to the right end after
      drawing (now they do), see discussion below.
    - So far, `x stop' was ignored.  Now it terminates the processing
@@ -85,16 +86,12 @@
      checks whether its argument agrees with the file name used so far,
      otherwise a warning is issued.  Then the new name is remembered
      and used for the following error messages.
-   - Positioning of drawing commands is corrected according to the
-     classical rule, see the discussion below.
-     - Setting commands (`Dt', `Df', `DF') and polygons (`Dp' and `DP')
-       do not change position now.
-     - Filled circles and ellipses (`DC' and `DE') position at their
-       most right point (outlined ones `Dc' and `De' did this anyway).
-     - As before, all open graphical objects position to their final
-       drawing point (alternate sum of the command arguments).
-     There is a macro STUPID_DRAWING_POSITIONING that implements the
-     old behavior for testing purposes.
+   - For the positioning after drawing commands, an alternative, easier
+     scheme is provided, but not yet activated; it can be chosen by
+     undefining the preprocessor macro STUPID_DRAWING_POSITIONING.
+     It extends the rule of the classical troff output language in a
+     logical way instead of the rather strange actual positioning.
+     For details, see the discussion below.
    - For the `D' commands that only set the environment, the calling of
      pr->send_draw() was removed because this doesn't make sense for
      the `DF' commands; the (changed) environment is sent with the
@@ -138,19 +135,18 @@
    - Various comments were added.
 
    TODO
-   - Add scaling facility for classical device independence and
-     non-groff devices.
-   - Should a missing `x stop' be warned?
    - Get rid of the stupid drawing positioning.
    - Can the `Dt' command be completely handled by setting environment
      within do_file() instead of sending to pr?
    - Integer arguments must be >= 32 bits, use conditional #define.
-   - Classical troff output had a quasi device independence by scaling
-     the intermediate output to the resolution of the postprocessor
-     device if different from the one specified with `x T', groff does
-     not.  So implement full quasi device indepedence, including
-     the mapping of the strange classical devices to the postprocessor
-     device (seems to be reasonably easy).
+   - Add scaling facility for classical device independence and
+     non-groff devices.  Classical troff output had a quasi device
+     independence by scaling the intermediate output to the resolution
+     of the postprocessor device if different from the one specified
+     with `x T', groff have not.  So implement full quasi device
+     indepedence, including the mapping of the strange classical
+     devices to the postprocessor device (seems to be reasonably
+     easy).
    - The external, global pointer variables are not optimally handled.
      - `pr' isn't used outside besides initialization and deletion.
        So it could be replaced by a static local variable.  For
@@ -159,14 +155,16 @@
      - The global variables `current_filename' and `current_lineno' are
        only used for error reporting.  So implement a static class
        `Error' (`::' calls).
-     - Stop using global `device'; design a new scheme based on
-       postprocessors.
+     - The global `device' is the name used during the formatting
+       process; there should be a new variable for the device name used
+       during the postprocessing.
   - Implement the B-spline drawing `D~' for all graphical devices.
   - Make `environment' a class with an overflow check for its members
     and a delete method to get rid of delete_current_env().
+  - Implement the `EnvStack' to use `new' instead of `malloc'.
   - The class definitions of this document could go into a new file.
-  - Once things will have been settled the comments in this document
-    could be strongly reduced.
+  - The comments in this section should go to a `Changelog' or some
+    `README' file in this directory.
 */
 
 /*
@@ -229,6 +227,15 @@
   classical specification with its clear end-of-drawing rule that is
   suitable for all cases.  But a macro STUPID_DRAWING_POSITIONING is
   provided for testing the funny former behavior.
+
+  The new rule implies the following behavior.
+  - Setting commands (`Dt', `Df', `DF') and polygons (`Dp' and `DP')
+    do not change position now.
+  - Filled circles and ellipses (`DC' and `DE') position at their
+    most right point (outlined ones `Dc' and `De' did this anyway).
+  - As before, all open graphical objects position to their final
+    drawing point (alternate sum of the command arguments).
+
 */
 
 #ifndef STUPID_DRAWING_POSITIONING
@@ -1353,7 +1360,7 @@ parse_D_command()
 	delete current_env->fill;
 	current_env->fill = new color(current_env->col);
       }
-      pr->change_color(current_env);
+      pr->change_fill_color(current_env);
       // skip unused `vertical' component (\D'...' always emits pairs)
       (void) get_integer_arg();
       // no positioning
@@ -1362,7 +1369,7 @@ parse_D_command()
     }
   case 'F':			// DF: set fill color, several formats
     parse_color_command(current_env->fill);
-    pr->change_color(current_env);
+    pr->change_fill_color(current_env);
     // no positioning (setting-only command)
     skip_line_x();
     break;

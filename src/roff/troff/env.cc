@@ -438,7 +438,7 @@ void environment::set_font(symbol nm)
 {
   if (interrupted)
     return;
-  if (nm == symbol("P")) {
+  if (nm == symbol("P") || nm.is_empty()) {
     if (family->make_definite(prev_fontno) < 0)
       return;
     int tem = fontno;

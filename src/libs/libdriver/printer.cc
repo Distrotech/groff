@@ -1,23 +1,30 @@
 // -*- C++ -*-
+
+// <groff_src_dir>/src/libs/libdriver/printer.cc
+
 /* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
    Free Software Foundation, Inc.
-     Written by James Clark (jjc@jclark.com)
+   Written by James Clark (jjc@jclark.com)
 
-This file is part of groff.
+   Last update: 12 Apr 2002
 
-groff is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2, or (at your option) any later
-version.
+   This file is part of groff.
 
-groff is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-for more details.
+   groff is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
 
-You should have received a copy of the GNU General Public License along
-with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
+   groff is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with groff; see the file COPYING.  If not, write to the Free
+   Software Foundation, 59 Temple Place - Suite 330, Boston, MA
+   02111-1307, USA.
+*/
 
 #include "driver.h"
 
@@ -107,6 +114,10 @@ void printer::draw(int, int *, int, const environment *)
 }
 
 void printer::change_color(const environment *)
+{
+}
+
+void printer::change_fill_color(const environment *)
 {
 }
 

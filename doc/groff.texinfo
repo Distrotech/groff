@@ -7516,11 +7516,11 @@ with the @code{styles} command in the @file{DESC} file), use it within
 the current font family (as set with the @code{fam} request or with
 the @code{family} command in the @file{DESC} file).
 
-@cindex previous font (@code{ft}, @code{\fP})
-@cindex font, previous (@code{ft}, @code{\fP})
+@cindex previous font (@code{ft}, @code{\f[]}, @code{\fP})
+@cindex font, previous (@code{ft}, @code{\f[]}, @code{\fP})
 With no argument or using @samp{P} as an argument, @code{.ft} switches
-to the previous font.  Use @code{\fP} or @code{\f[P]} to do this with
-the escape.
+to the previous font.  Use @code{\f[]} to do this with the escape.  The
+old syntax forms @code{\fP} or @code{\f[P]} are also supported.
 
 Fonts are generally specified as upper-case strings, which are usually
 1@w{ }to 4 characters representing an abbreviation or acronym of the
@@ -7544,7 +7544,7 @@ expects a single character as an argument) to change the font on
 the fly:
 
 @Example
-.mc \f[I]x\f[P]
+.mc \f[I]x\f[]
 @endExample
 
 @xref{Font Positions}, for an alternative syntax.
@@ -10866,10 +10866,10 @@ Set drawing color.  The following example shows how to turn the next four
 words red.
 
 @Example
-\m[red]these are in red\mP and these words are in black.
+\m[red]these are in red\m[] and these words are in black.
 @endExample
 
-The escape @code{\mP} returns to the previous color.
+The escape @code{\m[]} returns to the previous color.
 
 The drawing color is associated with the current environment
 (@pxref{Environments}).
@@ -10884,10 +10884,10 @@ Set background color for filled objects drawn with the
 A red ellipse can be created with the following code:
 
 @Example
-\M[red]\h'0.5i'\D'E 2i 1i'\Mp
+\M[red]\h'0.5i'\D'E 2i 1i'\M[]
 @endExample
 
-The escape @code{\MP} returns to the previous fill color.
+The escape @code{\M[]} returns to the previous fill color.
 
 The fill color is associated with the current environment
 (@pxref{Environments}).
