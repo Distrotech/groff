@@ -72,7 +72,10 @@ DEFINES = \
 DEVDIR = $(top_builddir)/font
 MKINSTALLDIRS = $(top_srcdir)/mkinstalldirs
 
+#undef ProgramTargetHelper
+#define ProgramTargetHelper ProgramTargetHelperNoMan
 ComplexProgramTarget_1(gxditview,$(LOCAL_LIBRARIES),$(MATHLIB))
+InstallManPageLong($(srcdir)/gxditview,$(MANDIR),gxditview)
 NormalProgramTarget(xtotroff,$(OBJS2),$(DEPXLIB),$(XLIB), /**/)
 
 InstallAppDefaults(GXditview)
