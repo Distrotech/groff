@@ -12,12 +12,16 @@
 @c   cindex: concepts
 @c   findex: requests, escapes, and functions
 @c   vindex: registers
+@c   kindex: commands in font files
 @c   pindex: programs
 @c   tindex: environment variables
 @c
 @c tindex and cindex are merged.
 
 @syncodeindex tp cp
+
+
+@c XXX comment all examples
 
 
 @dircategory Miscellaneous
@@ -148,8 +152,7 @@ contributions are welcome.  Send them to bug-groff@@gnu.org.
 * Installation::                
 * Request and Operator Index::  
 * Register Index::              
-* String Index::                
-* Macro Index::                 
+* Font File Keyword Index::     
 * Program and File Index::      
 * Concept Index::               
 @end menu
@@ -1609,13 +1612,13 @@ read this chapter.
 * Conditionals and Loops::      
 * Writing Macros::              
 * Page Motions::                
-* Drawing Functions::           
+* Drawing Requests::            
 * Traps::                       
 * Diversions::                  
 * Environments::                
 * I/O::                         
 * Postprocessor Access::        
-* Miscellany::                  
+* Miscellaneous::               
 * Debugging::                   
 * Implementation Differences::  
 * Summary::                     
@@ -3297,15 +3300,15 @@ amount of space is also called @dfn{italic correction}.
 @c this problem.
 
 @findex \,
-@cindex roman correction
-@cindex correction, roman
+@cindex left italic correction
+@cindex correction, left italic
 The @code{\,} escape modifies the spacing of the following character so
 that the spacing between that character and the preceding character will
 be correct if the preceding character is a roman character.  It is a
 good idea to use this escape sequence whenever a roman character is
 immediately followed by an italic character without any intervening
-space.  In analogy to above, this space could be called @dfn{roman
-correction}, but this term isn't used.
+space.  In analogy to above, this space could be called @dfn{left italic
+correction}, but this term isn't used widely.
 
 @c XXX example
 @c For example, inserting \, between the parenthesis and the f changes
@@ -4165,21 +4168,6 @@ Macros can be aliased with the @code{als} request.
 
 @c XXX example
 
-@findex rn
-@code{rn}
-
-@c XXX
-
-@findex rm
-@code{rm}
-
-@c XXX
-
-@findex chop
-@code{chop}
-
-@c XXX
-
 @menu
 * Copy-in Mode::                
 * Parameters::                  
@@ -4280,7 +4268,7 @@ This would be called as
 @xref{Request Arguments}.
 
 
-@node Page Motions, Drawing Functions, Writing Macros, Programming Tutorial
+@node Page Motions, Drawing Requests, Writing Macros, Programming Tutorial
 @section Page Motions
 @cindex page motions
 @cindex motions, page
@@ -4430,10 +4418,10 @@ over that character.
 @c XXX documentation
 
 
-@node Drawing Functions, Traps, Page Motions, Programming Tutorial
-@section Drawing Functions
-@cindex drawing functions
-@cindex functions for drawing
+@node Drawing Requests, Traps, Page Motions, Programming Tutorial
+@section Drawing Requests
+@cindex drawing requests
+@cindex requests for drawing
 
 @code{gtroff} provides a number of ways to draw lines and other figures
 on the page.  Used in combination with the page motion commands
@@ -4596,20 +4584,16 @@ used to build large brackets and braces.
 \b'\(lt\(bv\(lk\(bv\(lb'
 @end example
 
+@xref{Drawing Functions}.
 
-@node Traps, Diversions, Drawing Functions, Programming Tutorial
+@node Traps, Diversions, Drawing Requests, Programming Tutorial
 @section Traps
 @cindex traps
 
-Traps are locations, which, when reached, will call a specified macro.
-These traps can occur at a given location on the page, at a given
-location in the current diversion, after a certain number of input
+@dfn{Traps} are locations, which, when reached, will call a specified
+macro.  These traps can occur at a given location on the page, at a
+given location in the current diversion, after a certain number of input
 lines or at the end of input.
-
-@findex ch
-Any of these traps can be changed after they have been set with the
-@code{ch} request.  The first arguemnt is the name of the trap or
-macro, and the second is the new value for that trap.
 
 @menu
 * Page Location Traps::         
@@ -4623,34 +4607,45 @@ macro, and the second is the new value for that trap.
 @cindex page location traps
 @cindex traps, page location
 
-Page location traps are frequently used for page headers and
-footers.  The following is a simple example of this.
+@c XXX definition of wh request
+
+@cindex page headers
+@cindex page footers
+@cindex headers
+@cindex footers
+Page location traps are frequently used for page headers and footers.
+The following is a simple example of this.
 
 @example
-.de hd                          \" Page header
+.de hd                \" Page header
 'sp .5i
 .tl 'Title''date'
 'sp .3i
 ..
-.de fo                          \" Page footer
+.de fo                \" Page footer
 'sp 1v
 .tl ''%''
 'bp
 ..
-.wh 0   hd                      \" top of the page
-.wh -1i fo                      \" one inch from bottom
+.wh 0   hd            \" trap at top of the page
+.wh -1i fo            \" trap one inch from bottom
 @end example
 
 @vindex .t
+@cindex distance to next trap
+@cindex trap, distance
 The number register @code{.t} is the distance to the next trap.
 
 @findex ch
+@cindex changing trap location
+@cindex trap, changing location
 The location of a trap can be changed later on with the @code{ch}
-request.
-The first argument is the name of the macro to be invoked at the trap
-and the second argument is the new location for the trap.
-This is useful when you are building up footnotes in a diversion, and
-you need to allow more space at the bottom of the page for them.
+request.  The first argument is the name of the macro to be invoked at
+the trap and the second argument is the new location for the trap.  This
+is useful when you are building up footnotes in a diversion, and you
+need to allow more space at the bottom of the page for them.
+
+@c XXX
 
 @example
 ... (simplified) footnote example ...
@@ -4660,9 +4655,9 @@ you need to allow more space at the bottom of the page for them.
 @findex wh
 @findex dt
 @vindex .vpt
-The @code{vpt} request will enable vertical position traps if the argment is
-non-zero, disable them otherwise.  Vertical position traps are traps
-set by the @code{wh} or @code{dt} requests.  Traps set by the
+The @code{vpt} request will enable vertical position traps if the
+argument is non-zero, disable them otherwise.  Vertical position traps
+are traps set by the @code{wh} or @code{dt} requests.  Traps set by the
 @code{it} request are not vertical position traps.  The parameter that
 controls whether vertical position traps are enabled is global.
 Initially vertical position traps are enabled.  The current setting of
@@ -4670,20 +4665,19 @@ this is available in the number register @code{.vpt}.
 
 @vindex .trunc
 @findex ne
-The number register @code{.trunc} contains
-the amount of vertical space truncated by the most recently
-sprung vertical position trap, or, if the trap was sprung by a
-@code{ne} request, minus the amount of vertical motion produced by
-the @code{ne} request.  In other words, at the point a trap is
-sprung, it represents the difference of what the vertical position
-would have been but for the trap, and what the vertical position
-actually is.
+The number register @code{.trunc} contains the amount of vertical space
+truncated by the most recently sprung vertical position trap, or, if the
+trap was sprung by a @code{ne} request, minus the amount of vertical
+motion produced by the @code{ne} request.  In other words, at the point
+a trap is sprung, it represents the difference of what the vertical
+position would have been but for the trap, and what the vertical
+position actually is.
 
 @vindex .ne
-The number register @code{.ne} contains
-the amount of space that was needed in the last @code{ne} request that caused
-a trap to be sprung.  Useful in conjunction with the @code{.trunc}
-register.  @xref{Page Control}, for more information.
+The number register @code{.ne} contains the amount of space that was
+needed in the last @code{ne} request that caused a trap to be sprung.
+Useful in conjunction with the @code{.trunc} register.  @xref{Page
+Control}, for more information.
 
 @node Diversion Traps, Input Line Traps, Page Location Traps, Traps
 @subsection Diversion Traps
@@ -4693,9 +4687,9 @@ register.  @xref{Page Control}, for more information.
 @findex dt
 @vindex .t
 Traps can also be set @emph{within} a diversion using the @code{dt}
-request.  Like @code{wh} the first argument is the location of the
-trap and the second argument is the name of the macro to be invoked.
-The number register @code{.t} will still work within diversions.
+request.  Like @code{wh} the first argument is the location of the trap
+and the second argument is the name of the macro to be invoked.  The
+number register @code{.t} will still work within diversions.
 @xref{Diversions}, for more information.
 
 @node Input Line Traps, End-of-input Traps, Diversion Traps, Traps
@@ -4705,13 +4699,19 @@ The number register @code{.t} will still work within diversions.
 
 @findex it
 The @code{it} request will set an input line trap.  The format for
-calling this is @samp{.it @var{n} @var{name}}, where @var{n} is the
-number of lines of input which may be read before @dfn{springing} the
-trap, @var{name} is the macro to be invoked.  Request lines are not
-counted as input lines.
+calling this is
+
+@example
+.it @var{n} @var{name}
+@end example
+
+@noindent
+where @var{n} is the number of lines of input which may be read before
+@dfn{springing} the trap, @var{name} is the macro to be invoked.
+Request lines are not counted as input lines.
 
 For example, one possible use is to have a macro which will print the
-next @var{n} lines in a bold font.
+next @var{n}@w{ }lines in a bold font.
 
 @example
 .de B
@@ -4729,13 +4729,13 @@ next @var{n} lines in a bold font.
 @cindex traps, end-of-input
 
 @findex em
-The @code{em} request will set a trap at the end of input.
-The macro specified as an arguement will be executed after the last
-line of the input file has been processed.
+The @code{em} request will set a trap at the end of input.  The macro
+specified as an arguement will be executed after the last line of the
+input file has been processed.
 
-For example, if your document had to have a section at the bottom of
-the last page for someone to approve you document, you could set it
-up with @code{em}.
+For example, if your document had to have a section at the bottom of the
+last page for someone to approve your document, you could set it up with
+@code{em}.
 
 @example
 .de approval
@@ -4756,17 +4756,21 @@ Date:\t\t\a
 @section Diversions
 @cindex diversions
 
-In Troff you can divert text into a named storage area, due to the
-similarity to defining macros it is sometimes said to be stored in a
-macro.  This is used for saving text for output at a later time,
-which is useful for keeping blocks of text on the same page,
-footnotes, tables of contents and indexes.
+In @code{gtroff} you can @dfn{divert} text into a named storage area.
+Due to the similarity to defining macros it is sometimes said to be
+stored in a macro.  This is used for saving text for output at a later
+time, which is useful for keeping blocks of text on the same page,
+footnotes, tables of contents and indices.
 
 @findex di
 @findex da
-Diversion is initiated by the @code{di} request, like the @code{de}
-request it takes an argument of a macro name to divert subsequent
-text to into.  The @code{da} macro will append to an existing diversion.
+A diversion is initiated by the @code{di} request.  Like the @code{de}
+request, it takes an argument of a macro name to divert subsequent text
+into.  The @code{da} macro will append to an existing diversion.
+
+@code{di} (resp.@: @code{da}) without an argument ends the diversion.
+
+@c XXX example
 
 @example
 ... end-note example ...
@@ -4776,16 +4780,20 @@ text to into.  The @code{da} macro will append to an existing diversion.
 @vindex .d
 @vindex nl
 @vindex .h
-Diversions may be nested.
-The number register @code{.z} contains the name of the current diversion.
-The number register @code{.d} contains the current vertical place in
-the diversion.  If not in a diversion it is the same as the register
-@code{nl}.
+@cindex nested diversions
+@cindex diversion, nested
+Diversions may be nested.  The number register @code{.z} contains the
+name of the current diversion.  The number register @code{.d} contains
+the current vertical place in the diversion.  If not in a diversion it
+is the same as the register @code{nl}.
+
+@c XXX more info
+
 @code{.h}
 
 @vindex dn
 @vindex dl
-After compleating a diversion, the built-in number registers @code{dn}
+After completing a diversion, the built-in number registers @code{dn}
 and @code{dl} contain the vertical and horizontal size of the diversion.
 
 @example
@@ -4813,25 +4821,31 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 @end example
 
 @findex \!
-Requests, macros and escapes are interpreted when read into a
-diversion.
-There are two ways to prevent this, either way will take the given
-text and @dfn{transparently} embed it into the diversion.
-The first method is to prefix the line with @code{\!}.  This will
-cause the entire line to be transparently inserted into the diversion.
-This is useful for macros you do not want invoked until the diverted
-text is actually output.
+@cindex transparent output
+@cindex output, transparent
+Requests, macros and escapes are interpreted when read into a diversion.
+There are two ways to prevent this; either way will take the given text
+and @dfn{transparently} embed it into the diversion.  The first method
+is to prefix the line with @code{\!}.  This will cause the entire line
+to be transparently inserted into the diversion.  This is useful for
+macros you do not want invoked until the diverted text is actually
+output.
 
-@c anything  is  read  in  copy  mode. (what about \! ??)
+@c XXX anything is read in copy mode. (what about \! ??)
 
 @findex \?
 The other way is to surround the text by the @code{\?} escape, i.e.
-@samp{\?@var{anything}\?}.
-@var{anything} may not  contain
-newlines; use @code{\!} if you want to embed newlines in a diversion.  The
-escape sequence @code{\?} is also recognised in copy mode and turned into a
-single internal code; it is this code that terminates anything.  Thus
-the followin example will print 4.
+
+@example
+\?@var{anything}\?
+@end example
+
+@noindent
+@var{anything} may not contain newlines; use @code{\!} if you want to
+embed newlines in a diversion.  The escape sequence @code{\?} is also
+recognized in copy mode and turned into a single internal code; it is
+this code that terminates anything.  Thus the following example will
+print@w{ }4.
 
 @example
 .nr x 1
@@ -4851,89 +4865,79 @@ the followin example will print 4.
 .f
 @end example
 
-@findex rn
-@code{rn}
-
-@findex rm
-@code{rm}
-
-@findex als
-@code{als}
-
-@findex chop
-@code{chop}
-
 @findex asciify
-@code{asciify}
-This request only exists in order to make it possible to make certain
-gross hacks work with GNU troff.  It @dfn{unformats} the diversion
-specified as an argument in
-such a way that @sc{ascii} characters that were formatted and diverted
-will be treated like ordinary input characters when the diversion is
-reread.  For example, the following will set register @code{n} to 1.
+@cindex unformatting diversions
+@cindex diversion, unformatting
+The @code{asciify} request only exists in order to make certain gross
+hacks work with GNU @code{troff}.  It @dfn{unformats} the diversion
+specified as an argument in such a way that @sc{ascii} characters that
+were formatted and diverted will be treated like ordinary input
+characters when the diversion is reread.  For example, the following
+will set register @code{n} to@w{ }1.
 
 @example
-.tr  @@.
-.di  x
-@@nr\  n\  1
+.tr @@.
+.di x
+@@nr\ n\ 1
 .br
 .di
-.tr  @@@@
-.asciify  x
+.tr @@@@
+.asciify x
 .x
 @end example
 
-
-@c distribute these through the text
-@xref{Copy-in Mode}
+@xref{Copy-in Mode}.
 
 
 @node Environments, I/O, Diversions, Programming Tutorial
 @section Environments
 @cindex environments
 
-Often you will need to print some text in a certain format regardless
-of what may be in effect at the time, for example, in a trap invoked
-macro to print headers and footers.
-To solve this groff has @dfn{environments} in which text is processed.
-An environment contains most of the parameters that control
-text processing.  You can switch amongst these environments, by
-default groff processes text in environment 0.
-The following is the information kept in an environment.
+Often you will need to print some text in a certain format regardless of
+what may be in effect at the time, for example, in a trap invoked macro
+to print headers and footers.  To solve this @code{gtroff} has
+@dfn{environments} in which text is processed.  An environment contains
+most of the parameters that control text processing.  You can switch
+amongst these environments; by default @code{gtroff} processes text in
+environment@w{ }0.  The following is the information kept in an
+environment.
 
 @itemize @bullet{}
 @item
-Type size
+type size
 @item
-Font (family and style)
+font (family and style)
 @item
-Page parameters
+page parameters
 @item
-Fill/adjust mode
+fill/adjust mode
 @item
-Tab stops
+tab stops
 @item
-Partially collected lines
+partially collected lines
 @end itemize
 
-These environments may be given arbitrary names
-(@pxref{Identifiers}, for more info.)
-Old versions of troff only had environments named 0, 1 and 2.
+These environments may be given arbitrary names (@pxref{Identifiers},
+for more info).  Old versions of troff only had environments named
+@samp{0}, @samp{1} and@w{ }@samp{2}.
 
 @findex ev
 @vindex .ev
-The @code{ev} request will switch among these environments.
-The single argument is the name of the environment to switch to, with
-no argument groff will switch back to the previous enviroment.
-There is no limit on the number of named environments;
-they will be created the first time that they are referenced.
-The @code{.ev} number register contains
+The @code{ev} request will switch among environments.  The single
+argument is the name of the environment to switch to.  With no argument
+@code{gtroff} will switch back to the previous environment.  There is no
+limit on the number of named environments; they will be created the
+first time that they are referenced.  The @code{.ev} register contains
 the name or number of the current environment.  This is a string-valued
 register.
+
+@c XXX example
 
 @example
 ... page break macro, revised ...
 @end example
+
+Here another example:
 
 @example
 .ev footnote-env
@@ -4952,28 +4956,30 @@ register.
 @node I/O, Postprocessor Access, Environments, Programming Tutorial
 @section I/O
 @cindex i/o
+@cindex input and output requests
+@cindex requests for input and output
+@cindex output and input requests
 
 @findex so
 The @code{so} request will read in the file given as an argument and
-include it in place of the @code{so} request.  This is quite useful
-for large documents, i.e.@: keeping each chapter in a separate file.
+include it in place of the @code{so} request.  This is quite useful for
+large documents, i.e.@: keeping each chapter in a separate file.
 @xref{gsoelim}, for more information.
 
 @findex mso
-The @code{mso} request is
-the same as the @code{so} request except that file is searched for in
-the same way that @file{tmac.@var{name}} is searched for when the
-@samp{-m@var{name}} option is specified.
+The @code{mso} request is the same as the @code{so} request except that
+the file is searched for in the same way that @file{tmac.@var{name}} is
+searched for when the @samp{-m@var{name}} option is specified.
 
 @findex cf
-@findex trf
-The @code{cf} and @code{trf} requests are to include a file.
-It will transparently output the contents of file filename.  Each
-line is output
-as it would be were it preceded by @code{\!}; however, the lines are not
-subject to copy-mode interpretation.  If the file does not end with a
-newline, then a newline will be added.  For example, you can define a
-macro @code{x} containing the contents of file @file{f}, using
+@cindex transparent output
+@cindex output, transparent
+The @code{cf} and @code{trf} requests are to include a file.  It will
+transparently output the contents of file filename.  Each line is output
+as it were preceded by @code{\!}; however, the lines are not subject to
+copy-mode interpretation.  If the file does not end with a newline, then
+a newline will be added.  For example, you can define a macro@w{
+}@code{x} containing the contents of file@w{ }@file{f}, using
 
 @example
 .di x
@@ -4981,31 +4987,31 @@ macro @code{x} containing the contents of file @file{f}, using
 .di
 @end example
 
-.cf filename
-When  used  in  a  diversion, this will embed in the diversion an object
-which,  when  reread,  will  cause  the  contents  of  filename  to   be
-transparently copied through to the output.  In @sc{Unix} troff, the contents
-of filename is immediately copied through to the  output  regardless  of
-whether  there  is  a  current diversion; this behaviour is so anomalous
-that it must be considered a bug.
+The request @w{@code{.cf @var{filename}}}, when used in a diversion,
+will embed in the diversion an object which, when reread, will cause the
+contents of @var{filename} to be transparently copied through to the
+output.  In @sc{Unix} @code{troff}, the contents of @var{filename} is
+immediately copied through to the output regardless of whether there is
+a current diversion; this behaviour is so anomalous that it must be
+considered a bug.
 
-
+@findex trf
 With @code{trf}, unlike @code{cf}, the file cannot contain characters
 such as NUL that are not legal troff input characters.
 
 @findex nx
-The @code{nx} request will force groff to continue processing of the
-file specified as an argument.
+The @code{nx} request will force @code{gtroff} to continue processing of
+the file specified as an argument.
 
 @findex rd
-The @code{rd} request will read from standard input, and include what
-is read as though it were part of the input file.  Text is read until
-a blank line is encountered.
+The @code{rd} request will read from standard input, and include what is
+read as though it were part of the input file.  Text is read until a
+blank line is encountered.
 
 @cindex form letters
 @cindex letters, form
-Using these two requests you can set up form letters.
-The form letter template is constructed like this:
+Using these two requests you can set up form letters.  The form letter
+template is constructed like this:
 
 @example
 .ce
@@ -5022,13 +5028,13 @@ Body of letter.
 @end example
 
 @findex ex
-When this is run, the following file should be redirected in.
-Note that requests included in this file are executed as though they
-were part of the form letter.  The last block of input is the
-@code{ex} requests which tells groff to stop processing.  If this was
-not there, groff would not know when to stop.
+@noindent
+When this is run, the following file should be redirected in.  Note that
+requests included in this file are executed as though they were part of
+the form letter.  The last block of input is the @code{ex} requests
+which tells groff to stop processing.  If this was not there, groff
+would not know when to stop.
 
-@cindex Beagle Brothers
 @example
 Trent A. Fisher
 708 NW 19th Av., #202
@@ -5048,15 +5054,20 @@ Dear Mr. Adollar,
 @findex pi
 @code{pi}
 
+@c XXX documentation
+
 @findex sy
 The @code{sy} request will allow arbitrary system commands to be
-executed from within a groff document.  The output is not saved
+executed from within a @code{gtroff} document.  The output is not saved
 anyplace, so it is up to you to do so.
+
+@c XXX add info about safer and unsafe mode
 
 For example, the following example will introduce the current time
 into your document:
 
-@cindex time
+@cindex time, current
+@cindex current time
 @pindex perl
 @example
 .sy perl -e 'printf ".nr H %d\\n.nr M %d\\n.nr S %d\\n",\
@@ -5066,127 +5077,130 @@ into your document:
 \nH:\nM:\nS
 @end example
 
-Note that this works by having the perl script (run by @code{sy})
+@noindent
+Note that this works by having the @code{perl} script (run by @code{sy})
 print out the @code{nr} requests which will set the number registers
-@samp{H}, @samp{M} and @samp{S}, and then reads those commands in
-with the @code{so} request.
+@samp{H}, @samp{M} and @samp{S}, and then reads those commands in with
+the @code{so} request.
 
 @vindex systat
-The @code{systat} number register contains
-The return value of the @code{system()} function executed by the last
-@code{sy} request.
+The @code{systat} number register contains the return value of the
+@code{system()} function executed by the last @code{sy} request.
 
 @findex open
-The @code{open} request will open
-a file (specified as the second argument) for writing and associate
-the stream (specified as the first argument) with it.
+The @code{open} request will open a file (specified as the second
+argument) for writing and associate the stream (specified as the first
+argument) with it.
 
 @findex opena
-The @code{opena} is
-like open, but if filename exists, append to it instead of truncating
-it.
+The @code{opena} is like @code{open}, but if the file exists, append to
+it instead of truncating it.
 
 @findex write
 @findex ds
 @cindex copy-in mode
 @cindex mode, copy-in
 The @code{write} request will write to the file associated with the
-stream specified by the first argument.  The stream must previously
-have been the subject of an open request.  The remainder of the line
-in interpreted as the @code{ds} request reads its second argument: a
-leading @code{"} will be stripped, and it will be read in copy-in mode.
+stream specified by the first argument.  The stream must previously have
+been the subject of an open request.  The remainder of the line is
+interpreted as the @code{ds} request reads its second argument: A
+leading @samp{"} will be stripped, and it will be read in copy-in mode.
 
 @findex close
-The @code{close} request will
-close the stream specified by the first argument; stream will no
-longer be an acceptable argument to the @code{write} request.
+The @code{close} request will close the stream specified by the first
+argument; stream will no longer be an acceptable argument to the
+@code{write} request.
+
+@c XXX example
 
 @example
 ... example of open write &c...
 @end example
 
-@findex \v
-The @code{\V} escape will
-interpolate the contents of the specified environment variable, as returned
-by getenv(3).
-The argument to @code{\V} is specified as an identifier, i.e.
-@samp{\V@var{x}}, @samp{\V(@var{xx}} or @samp{\V[@var{xxx}]}.
-@code{\V} is interpreted in copy-in mode.
+@findex \V
+The @code{\V} escape will interpolate the contents of the specified
+environment variable, as returned by @code{getenv()}.  The argument to
+@code{\V} is specified as an identifier, i.e.@: @samp{\V@var{x}},
+@samp{\V(@var{xx}} or @samp{\V[@var{xxx}]}.  @code{\V} is interpreted in
+copy-in mode.
 
 
-@node Postprocessor Access, Miscellany, I/O, Programming Tutorial
+@node Postprocessor Access, Miscellaneous, I/O, Programming Tutorial
 @section Postprocessor Access
 @cindex postprocessor access
 @cindex access of postprocessor
 
-There are two escapes which will allow you to give information
-directly to the postprocessor.  This is particularly useful for
-embedding PostScript into your final document.
+There are two escapes which will allow you to give information directly
+to the postprocessor.  This is particularly useful for embedding
+@sc{PostScript} into your final document.
 
 @findex \X
-The @code{\X} escape will embed its argument into the gtroff output
-preceded with @samp{x X}.
+The @code{\X} escape will embed its argument into the @code{gtroff}
+output preceded with @w{@samp{x X}}.
 
 @findex \Y
-The @code{\Y} escape is called with an identifier (i.e.
-@code{\Y@var{x}},
-@code{\Y(@var{xx}} or
-@code{\Y[@var{xxx}]}).
-This is approximately equivalent to @samp{\X'\*[@var{xxx}]'}.
-However the contents
-of the string or macro @var{xxx} are not interpreted; also it is
-permitted for
-@var{xxx} to have been defined as a macro and thus contain newlines
-(it is not permitted for the argument to @code{\X} to contain newlines).
-The inclusion of
-newlines requires an extension to the @sc{Unix} troff output format, and will
-confuse drivers that do not know about this extension.
+The @code{\Y} escape is called with an identifier (i.e.@:
+@code{\Y@var{x}}, @code{\Y(@var{xx}} or @code{\Y[@var{xxx}]}).  This is
+approximately equivalent to @samp{\X'\*[@var{xxx}]'}.  However, the
+contents of the string or macro @var{xxx} are not interpreted; also it
+is permitted for @var{xxx} to have been defined as a macro and thus
+contain newlines (it is not permitted for the argument to @code{\X} to
+contain newlines).  The inclusion of newlines requires an extension to
+the @sc{Unix} @code{troff} output format, and will confuse drivers that
+do not know about this extension.
+
+@xref{Output Devices}.
 
 
-@c distribute these through the text
-@xref{Output Devices}
+@node Miscellaneous, Debugging, Postprocessor Access, Programming Tutorial
+@section Miscellaneous
+@cindex miscellaneous
 
-
-@node Miscellany, Debugging, Postprocessor Access, Programming Tutorial
-@section Miscellany
-@cindex miscellany
-
-This section contains parts of troff which cannot (yet) be
+This section contains parts of @code{gtroff} which cannot (yet) be
 categorized elsewhere in this manual.
 
 @findex nm
-Line numbers can be printed in the left margin
-using the @code{nm} request.
-The first argument is the line number of the @emph{next} output line,
-this defaults to 1.
-The second argument indicates on which lines numbers will be printed,
-i.e.@: 5 means put line numbers on every 5 lines, this defaults to 1.
-The third argument is the space to be left between the number and
-your text, this defaults to 1.
-The fourth argument is the indentation of the line numbers.
+@cindex line numbers
+@cindex numbers, line
+Line numbers can be printed in the left margin using the @code{nm}
+request.  The first argument is the line number of the @emph{next}
+output line; this defaults to@w{ }1.  The second argument indicates on
+which lines numbers will be printed, i.e.@: 5 means put line numbers on
+every 5@w{ }lines; this defaults to@w{ }1.  The third argument is the
+space to be left between the number and your text; this defaults to@w{
+}1.  The fourth argument is the indentation of the line numbers.
 Without arguments, line numbers are turned off.
 
 @findex nn
-The @code{nn} request will temporarily turn off line numbering.
-The first argument is the number of lines not to be numbered,
-this defaults to 1.  (does this disable incrementing or display?)
+The @code{nn} request will temporarily turn off line numbering.  The
+first argument is the number of lines not to be numbered; this defaults
+to@w{ }1.
+
+@c XXX (does this disable incrementing or display?)
+
+@c XXX example
 
 @example
 ... line numbering example ...
 @end example
 
 @findex mc
-margin characters can be automatically printed to the right of your
-text with the @code{mc} request.
-The first argument is the character to be printed and the second
-argument is the distance away from your text.
-With no arguments the margin characters are turned off.
-If this occurs before a break, no margin character will be printed.
+@cindex margin characters
+@cindex characters for margins
+Margin characters can be automatically printed to the right of your text
+with the @code{mc} request.  The first argument is the character to be
+printed, and the second argument is the distance away from your text.
+With no arguments the margin characters are turned off.  If this occurs
+before a break, no margin character will be printed.
 
-This is quite useful for indicating text that has changed, and, in
-fact, there are programs available for doing this (they are called
+@pindex nrchbar
+@pindex changebar
+This is quite useful for indicating text that has changed, and, in fact,
+there are programs available for doing this (they are called
 @code{nrchbar} and @code{changebar} and can be found in any
 @samp{comp.sources.unix} archive.
+
+@c XXX example
 
 @example
 ... margin char example ...
@@ -5194,40 +5208,43 @@ fact, there are programs available for doing this (they are called
 
 @findex lf
 @pindex soelim
-The @code{lf} primary reason for existence is to make debugging
-documents which are split into many files, which are then put
-together with @code{soelim} and other preprocessors.
-The first argument is the name of the file and the second argument is
-the input line number in that file.
-This way troff can produce error messages which are intelligible to
-the user.
+@cindex multi-file documents
+@cindex documents, multi-file
+The primary reason for the existence of @code{lf} is to make debugging
+documents which are split into many files, which are then put together
+with @code{soelim} and other preprocessors.  The first argument is the
+name of the file and the second argument is the input line number in
+that file.  This way troff can produce error messages which are
+intelligible to the user.
+
+@c XXX example
 
 @example
 ... example of soelim'ed doc ...
 @end example
 
 
-@node Debugging, Implementation Differences, Miscellany, Programming Tutorial
+@node Debugging, Implementation Differences, Miscellaneous, Programming Tutorial
 @section Debugging
 @cindex debugging
 
-Troff is not easy to debug, but there are some useful features and
-strategies for debugging.
+@code{gtroff} is not easy to debug, but there are some useful features
+and strategies for debugging.
 
 @itemize @bullet{}
 @item
 @findex tm
-The @code{tm} request will send output to stderr, this is very useful for
-printing debugging output.
+The @code{tm} request will send output to stderr; this is very useful
+for printing debugging output.
 @item
 When doing something involved it is useful to leave the debugging
-statements in the code and have them turned on by a command line
-flag.
+statements in the code and have them turned on by a command line flag.
 
 @example
 .if \n(DB .tm debugging output
 @end example
 
+@noindent
 Then you can activate these statements with:
 
 @example
@@ -5236,114 +5253,133 @@ groff -rDB=1 file
 
 @item
 @findex ab
-The @code{ab} request is similar to the @code{tm} request,
-except that it will cause groff to stop processing.
-With no argument it will print @samp{User Abort}.
+@cindex aborting
+The @code{ab} request is similar to the @code{tm} request, except that
+it will cause @code{gtroff} to stop processing.  With no argument it
+will print @samp{User Abort}.
 @item
 @findex ex
-The @code{ex} request will also cause groff to stop processing.
+@cindex exiting
+The @code{ex} request will also cause @code{gtroff} to stop processing
+(if encountered at the topmost level; see also @ref{I/O}.
 @item
-If you know you are going to get many errors and no useful output,
-you can tell groff to suppress formatted output with the @samp{-z}
+If you know you are going to get many errors and no useful output, you
+can tell @code{gtroff} to suppress formatted output with the @samp{-z}
 flag.
 @item
 @findex pm
+@cindex dumping symbol table
+@cindex symbol table, dumping
 The @code{pm} request will dump out the entire symbol table.
 @item
 @findex pnr
+@cindex dumping number registers
+@cindex number registers, dumping
 The @code{pnr} request will print the names and contents of all
 currently defined number registers on stderr.
 @item
 @findex ptr
-The @code{ptr} request will
-print the names and positions of all traps (not including input line
-traps and diversion traps) on stderr.  Empty slots in the page trap list
-are printed as well, because they can affect the priority of
-subsequently planted traps.
+@cindex dumping traps
+@cindex traps, dumping
+The @code{ptr} request will print the names and positions of all traps
+(not including input line traps and diversion traps) on stderr.  Empty
+slots in the page trap list are printed as well, because they can affect
+the priority of subsequently planted traps.
 @item
 @findex fl
-The @code{fl} request instructs groff to flush its output immediately.
-The intention is that this be used when using troff interactively.
-There is little other use for it.
+@cindex flush output
+@cindex output, flush
+@cindex interactive use of @code{gtroff}
+@cindex @code{gtroff}, interactive use
+The @code{fl} request instructs @code{gtroff} to flush its output
+immediately.  The intention is that this be used when using
+@code{gtroff} interactively.  There is little other use for it.
 @item
 @findex backtrace
-The @code{backtrace} request will
-print a backtrace of the input stack on stderr.
+@cindex backtrace of input stack
+@cindex input stack, backtrace
+The @code{backtrace} request will print a backtrace of the input stack
+on stderr.
 @item
-Groff has command line options for printing out more warnings
-(@samp{-w}) and for printing backtraces (@samp{-b}) when a warning or
-an error occurs.  The most verbose level of warnings is @samp{-ww}.
+@cindex warnings
+@code{gtroff} has command line options for printing out more warnings
+(@samp{-w}) and for printing backtraces (@samp{-b}) when a warning or an
+error occurs.  The most verbose level of warnings is @samp{-ww}.
 @item
 @findex warn
 @vindex .warn
-The @code{warn} request controls the level of warnings checked for.
-The one argument is the sum of the numbers associated with each
-warning that is to be enabled; all other warnings will be disabled.
-The number associated with each warning is listed below.
-For example, @code{.warn 0} will disable all warnings, and
-@code{.warn 1} will disable
-all warnings except that about missing characters.  If an argument
-is not given, all warnings will be enabled.
-The number register @code{.warn} contains the current warning level.
+@cindex level of warnings
+@cindex warnings, level
+The @code{warn} request controls the level of warnings checked for.  The
+only argument is the sum of the numbers associated with each warning
+that is to be enabled; all other warnings will be disabled.  The number
+associated with each warning is listed below.  For example,
+@w{@code{.warn 0}} will disable all warnings, and @w{@code{.warn 1}}
+will disable all warnings except that about missing characters.  If an
+argument is not given, all warnings will be enabled.  The number
+register @code{.warn} contains the current warning level.
 @end itemize
 
 @subsection Warnings
 @cindex warnings
 
-The warnings that can be given by troff are divided into the
-following categories.  The name associated with each warning is used
-by the @samp{-w} and @samp{-W} options; the number is used by the
-@code{warn} request, and by the @code{.warn} register.
+The warnings that can be given to @code{gtroff} are divided into the
+following categories.  The name associated with each warning is used by
+the @samp{-w} and @samp{-W} options; the number is used by the
+@code{warn} request and by the @code{.warn} register.
 
 @table @samp
-@item  char
+@item char
 @itemx 1
 Non-existent characters.  This is enabled by default.
-@item  number
+@item number
 @itemx 2
 Invalid numeric expressions.  This is enabled by default.
-@item  break
+@xref{Expressions}.
+@item break
 @itemx 4
-In fill mode, lines which could not be broken so that
-their length was less than the line length.  This is
-enabled by default.
-@item  delim
+In fill mode, lines which could not be broken so that their length was
+less than the line length.  This is enabled by default.
+@item delim
 @itemx 8
 Missing or mismatched closing delimiters.
-@item  el
+@item el
 @itemx 16
+@findex ie
+@findex el
 Use of the @code{el} request with no matching @code{ie} request.
-@xref{if-else}, for more information.
-@item  scale
+@xref{if-else}.
+@item scale
 @itemx 32
 Meaningless scaling indicators.
-@item  range
+@item range
 @itemx 64
 Out of range arguments.
-@item  syntax
+@item syntax
 @itemx 128
 Dubious syntax in numeric expressions.
-@item  di
+@item di
 @itemx 256
 @findex di
 @findex da
 Use of @code{di} or @code{da} without an argument when there is no
 current diversion.
-@item  mac
+@item mac
 @itemx 512
-Use of undefined strings, macros and diversions.
-When an undefined string, macro or diversion is used,
-that string is automatically defined as empty.  So,
-in most cases, at most one warning will be given for
-each name.
+@findex de
+@c XXX more findex entries
+Use of undefined strings, macros and diversions.  When an undefined
+string, macro or diversion is used, that string is automatically defined
+as empty.  So, in most cases, at most one warning will be given for each
+name.
 @item  reg
 @itemx 1024
-Use of undefined number registers.  When an undefined
-number register is used, that register is
-automatically defined to have a value of 0.  a
-definition is automatically made with a value of 0.
-So, in most cases, at most one warning will be given
-for use of a particular name.
+@findex nr
+@c XXX more findex entries
+Use of undefined number registers.  When an undefined number register is
+used, that register is automatically defined to have a value of@w{ }0.
+A definition is automatically made with a value of@w{ }0.  So, in most
+cases, at most one warning will be given for use of a particular name.
 @item  tab
 @itemx 2048
 Use of a tab character where a number was expected.
@@ -5359,26 +5395,24 @@ Requests that are missing non-optional arguments.
 Illegal input characters.
 @item  escape
 @itemx 32768
-Unrecognized escape sequences.  When an unrecognized
-escape sequence is encountered, the escape character
-is ignored.
+Unrecognized escape sequences.  When an unrecognized escape sequence is
+encountered, the escape character is ignored.
 @item  space
 @itemx 65536
-Missing space between a request or macro and its
-argument.  This warning will be given when  an
-undefined name longer than two characters is
-encountered, and the first two characters of the name
-make a defined name.  The request or macro will not
-be invoked.  When this warning is given, no macro is
-automatically defined.  This is enabled by default.
+@cindex compatibility mode
+Missing space between a request or macro and its argument.  This warning
+will be given when an undefined name longer than two characters is
+encountered, and the first two characters of the name make a defined
+name.  The request or macro will not be invoked.  When this warning is
+given, no macro is automatically defined.  This is enabled by default.
 This warning will never occur in compatibility mode.
 @item  font
 @itemx 131072
 Non-existent fonts.  This is enabled by default.
 @item all
 All warnings except @samp{di}, @samp{mac} and @samp{reg}.  It is
-intended that this covers
-all warnings that are useful with traditional macro packages.
+intended that this covers all warnings that are useful with traditional
+macro packages.
 @item w
 All warnings.
 @end table
@@ -5388,11 +5422,16 @@ All warnings.
 @section Implementation Differences
 @cindex implementation differences
 @cindex differences in implementation
+@cindex compatibility mode
+@cindex mode, compatibility
 
-GNU troff has a number of features which cause incompatibilites with
-documents written with old versions of troff.
+GNU @code{troff} has a number of features which cause incompatibilities
+with documents written with old versions of @code{troff}.
 
-Long names cause some incompatibilities.  @sc{Unix} troff will interpret
+@cindex long names
+@cindex names, long
+Long names cause some incompatibilities.  @sc{Unix} @code{troff} will
+interpret
 
 @example
 .dsabcd
@@ -5402,60 +5441,79 @@ Long names cause some incompatibilities.  @sc{Unix} troff will interpret
 @findex \n
 @findex cp
 @vindex .C
-as defining a string @samp{ab} with contents @samp{cd}.
-Normally, GNU troff will interpret this as a call of a macro named
-@code{dsabcd}.  Also @sc{Unix} troff will interpret @code{\*[} or
-@code{\n[} as references to a string or number register called
-@samp{[}.  In GNU troff, however, this will normally be interpreted as the
-start of a long name.  In compatibility mode GNU troff will interpret
-these things in the traditional way.  In compatibility mode, however,
-long names are not recognised.  Compatibility mode can be turned on with
-the @samp{-C} command line option, and turned on or off with the
-@code{cp} request.
-The number register @code{.C} is 1 if compatibility mode is on, 0 otherwise.
+@noindent
+as defining a string @samp{ab} with contents @samp{cd}.  Normally, GNU
+@code{troff} will interpret this as a call of a macro named
+@code{dsabcd}.  Also @sc{Unix} @code{troff} will interpret @code{\*[} or
+@code{\n[} as references to a string or number register called @samp{[}.
+In GNU @code{troff}, however, this will normally be interpreted as the
+start of a long name.  In compatibility mode GNU @code{troff} will
+interpret these things in the traditional way.  In compatibility mode,
+however, long names are not recognized.  Compatibility mode can be
+turned on with the @samp{-C} command line option, and turned on or off
+with the @code{cp} request.  The number register @code{.C} is@w{ }1 if
+compatibility mode is on, 0@w{ }otherwise.
 
 @findex \A
-GNU troff does not allow the use of the escape sequences
-@samp{\| \^ \& \@} \@{ \@key{SP} \' \` \- \_ \! \% \c} in names of
-strings, macros,
-diversions, number registers, fonts or environments; @sc{Unix} troff does.
-The @code{\A} escape sequence may be helpful in avoiding use of these escape
+@findex \|
+@findex \^
+@findex \&
+@findex \@}
+@findex \@{
+@findex \@key{SP}
+@findex \'
+@findex \`
+@findex \-
+@findex \_
+@findex \!
+@findex \%
+@findex \c
+GNU @code{troff} does not allow the use of the escape sequences
+@code{\|}, @code{\^}, @code{\&}, @code{\@}}, @code{\@{},
+@code{\@key{SP}}, @code{\'}, @code{\`}, @code{\-}, @code{\_}, @code{\!},
+@code{\%}, and @code{\c} in names of strings, macros, diversions, number
+registers, fonts or environments; @sc{Unix} @code{troff} does.  The
+@code{\A} escape sequence may be helpful in avoiding use of these escape
 sequences in names.
 
 @cindex fractional point sizes
 @cindex point sizes, fractional
 @findex ps
-Fractional pointsizes cause one noteworthy incompatibility.  In @sc{Unix}
-troff the @code{ps} request ignores scale indicators and so
+Fractional pointsizes cause one noteworthy incompatibility.  In
+@sc{Unix} @code{troff} the @code{ps} request ignores scale indicators
+and thus
 
 @example
 .ps 10u
 @end example
 
-will set the pointsize to 10 points, whereas in GNU troff it will set
-the pointsize to 10 scaled points.
-@xref{Fractional Type Sizes}, for more information.
+@noindent
+will set the pointsize to 10@w{ }points, whereas in GNU @code{troff} it
+will set the pointsize to 10@w{ }scaled points.  @xref{Fractional Type
+Sizes}, for more information.
 
 @findex bd
 @findex cs
 @findex tkf
 @findex tr
 @findex fp
-In GNU troff there is a fundamental difference between unformatted,
-input characters, and formatted, output characters.  Everything that
-affects how an output character will be output is stored with the
-character; once an output character has been constructed it  is
+@cindex input and output characters
+@cindex output characters
+@cindex characters, input and output
+In GNU @code{troff} there is a fundamental difference between
+unformatted, input characters, and formatted, output characters.
+Everything that affects how an output character will be output is stored
+with the character; once an output character has been constructed it is
 unaffected by any subsequent requests that are executed, including
-@code{bd}, @code{cs}, @code{tkf}, @code{tr}, or @code{fp}
-requests.  Normally output characters are constructed
-from input characters at the moment immediately before the character is
-added to the current output line.  Macros, diversions and strings are
-all, in fact, the same type of object; they contain lists of input
-characters and output characters in any combination.  An  output
-character does not behave like an input character for the purposes of
-macro processing; it does not inherit any of the special properties that
-the input character from which it was constructed might have had.  For
-example,
+@code{bd}, @code{cs}, @code{tkf}, @code{tr}, or @code{fp} requests.
+Normally output characters are constructed from input characters at the
+moment immediately before the character is added to the current output
+line.  Macros, diversions and strings are all, in fact, the same type of
+object; they contain lists of input characters and output characters in
+any combination.  An output character does not behave like an input
+character for the purposes of macro processing; it does not inherit any
+of the special properties that the input character from which it was
+constructed might have had.  For example,
 
 @example
 .di x
@@ -5468,27 +5526,31 @@ example,
 @findex \e
 @findex \!
 @findex \?
-will print @samp{\\} in GNU troff; each pair of input backslashes is
-turned into one
-output backslash and the resulting output backslashes are not
-interpreted as escape
-characters when they are reread.  @sc{Unix} troff would interpret them as
-escape characters when they were reread and would end up printing one
-@samp{\}.
-The correct way to obtain a printable backslash is to use the
-@code{\e} escape
-sequence: this will always print a single instance of the current escape
+@cindex transparent output
+@cindex output, transparent
+@noindent
+will print @samp{\\} in GNU @code{troff}; each pair of input backslashes
+is turned into one output backslash and the resulting output backslashes
+are not interpreted as escape characters when they are reread.
+@sc{Unix} @code{troff} would interpret them as escape characters when
+they were reread and would end up printing one @samp{\}.  The correct
+way to obtain a printable backslash is to use the @code{\e} escape
+sequence: This will always print a single instance of the current escape
 character, regardless of whether or not it is used in a diversion; it
-will also work in both GNU troff and @sc{Unix} troff.  If you wish for some
-reason to store in a diversion an escape sequence that will be
-interpreted when the diversion is reread, you can either use the
-traditional @code{\!} transparent output facility, or, if this is unsuitable,
-the new @code{\?} escape sequence.  @xref{Diversions}, for more information.
+will also work in both GNU @code{troff} and @sc{Unix} @code{troff}.  If
+you wish for some reason to store in a diversion an escape sequence that
+will be interpreted when the diversion is reread, you can either use the
+traditional @code{\!} transparent output facility, or, if this is
+unsuitable, the new @code{\?} escape sequence.
+
+@xref{Diversions}, for more information.
 
 
 @node Summary,  , Implementation Differences, Programming Tutorial
 @section Summary
 @cindex summary
+
+@c XXX documentation
 
 
 
@@ -5496,8 +5558,8 @@ the new @code{\?} escape sequence.  @xref{Diversions}, for more information.
 @chapter Preprocessors
 @cindex preprocessors
 
-This chapter covers describes all preprocessors that come with
-@code{groff} or which are freely available.
+This chapter describes all preprocessors that come with @code{groff} or
+which are freely available.
 
 @menu
 * geqn::                        
@@ -5515,6 +5577,8 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{eqn}
 @cindex @code{geqn}
 
+@c XXX
+
 @menu
 * Invoking geqn::               
 @end menu
@@ -5524,11 +5588,15 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{geqn}
 @cindex @code{geqn}, invoking
 
+@c XXX
+
 
 @node gtbl, gpic, geqn, Preprocessors
 @section @code{gtbl}
 @cindex @code{tbl}
 @cindex @code{gtbl}
+
+@c XXX
 
 @menu
 * Invoking gtbl::               
@@ -5539,11 +5607,15 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{gtbl}
 @cindex @code{gtbl}, invoking
 
+@c XXX
+
 
 @node gpic, ggrn, gtbl, Preprocessors
 @section @code{gpic}
 @cindex @code{pic}
 @cindex @code{gpic}
+
+@c XXX
 
 @menu
 * Invoking gpic::               
@@ -5554,11 +5626,15 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{gpic}
 @cindex @code{gpic}, invoking
 
+@c XXX
+
 
 @node ggrn, grap, gpic, Preprocessors
 @section @code{ggrn}
 @cindex @code{grn}
 @cindex @code{ggrn}
+
+@c XXX
 
 @menu
 * Invoking ggrn::               
@@ -5569,18 +5645,27 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{ggrn}
 @cindex @code{ggrn}, invoking
 
+@c XXX
+
 
 @node grap, grefer, ggrn, Preprocessors
 @section @code{grap}
 @cindex @code{grap}
 
-@code{grap} is available as an extra package, written by Ted Faber.
+A freely available implementation of @code{grap}, written by Ted Faber,
+is available as an extra package from the following address:
+
+@display
+@url{http://www.lunabase.org/~faber/Vault/software/grap/}
+@end display
 
 
 @node grefer, gsoelim, grap, Preprocessors
 @section @code{grefer}
 @cindex @code{refer}
 @cindex @code{grefer}
+
+@c XXX
 
 @menu
 * Invoking grefer::             
@@ -5591,11 +5676,15 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{grefer}
 @cindex @code{grefer}, invoking
 
+@c XXX
+
 
 @node gsoelim,  , grefer, Preprocessors
 @section @code{gsoelim}
 @cindex @code{soelim}
 @cindex @code{gsoelim}
+
+@c XXX
 
 @menu
 * Invoking gsoelim::            
@@ -5606,6 +5695,8 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{gsoelim}
 @cindex @code{gsoelim}, invoking
 
+@c XXX
+
 
 
 @node Output Devices, File formats, Preprocessors, Top
@@ -5613,12 +5704,15 @@ This chapter covers describes all preprocessors that come with
 @cindex output devices
 @cindex devices for output
 
+@c XXX
+
 @menu
 * Special Characters::          
 * grotty::                      
 * grops::                       
 * grodvi::                      
 * grolj4::                      
+* grolbp::                      
 * grohtml::                     
 * gxditview::                   
 @end menu
@@ -5629,13 +5723,16 @@ This chapter covers describes all preprocessors that come with
 @cindex special characters
 @cindex characters, special
 
-@c distribute these through the text
-@xref{Font Files}
+@c XXX
+
+@xref{Font Files}.
 
 
 @node grotty, grops, Special Characters, Output Devices
 @section @code{grotty}
 @cindex @code{grotty}
+
+@c XXX
 
 @menu
 * Invoking grotty::             
@@ -5646,10 +5743,14 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{grotty}
 @cindex @code{grotty}, invoking
 
+@c XXX
+
 
 @node grops, grodvi, grotty, Output Devices
 @section @code{grops}
 @cindex @code{grops}
+
+@c XXX
 
 @menu
 * Invoking grops::              
@@ -5661,15 +5762,21 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{grops}
 @cindex @code{grops}, invoking
 
+@c XXX
+
 @node Embedding PostScript,  , Invoking grops, grops
 @subsection Embedding PostScript
 @cindex embedding postscript
 @cindex postscript, embedding
 
+@c XXX
+
 
 @node grodvi, grolj4, grops, Output Devices
 @section @code{grodvi}
 @cindex @code{grodvi}
+
+@c XXX
 
 @menu
 * Invoking grodvi::             
@@ -5680,10 +5787,14 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{grodvi}
 @cindex @code{grodvi}, invoking
 
+@c XXX
 
-@node grolj4, grohtml, grodvi, Output Devices
+
+@node grolj4, grolbp, grodvi, Output Devices
 @section @code{grolj4}
 @cindex @code{grolj4}
+
+@c XXX
 
 @menu
 * Invoking grolj4::             
@@ -5694,10 +5805,32 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{grolj4}
 @cindex @code{grolj4}, invoking
 
+@c XXX
 
-@node grohtml, gxditview, grolj4, Output Devices
+
+@node grolbp, grohtml, grolj4, Output Devices
+@section @code{grolbp}
+@cindex @code{grolbp}
+
+@c XXX
+
+@menu
+* Invoking grolbp::             
+@end menu
+
+@node Invoking grolbp,  , grolbp, grolbp
+@subsection Invoking @code{grolbp}
+@cindex invoking @code{grolbp}
+@cindex @code{grolbp}, invoking
+
+@c XXX
+
+
+@node grohtml, gxditview, grolbp, Output Devices
 @section @code{grohtml}
 @cindex @code{grohtml}
+
+@c XXX
 
 @menu
 * Invoking grohtml::            
@@ -5708,10 +5841,14 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{grohtml}
 @cindex @code{grohtml}, invoking
 
+@c XXX
+
 
 @node gxditview,  , grohtml, Output Devices
 @section @code{gxditview}
 @cindex @code{gxditview}
+
+@c XXX
 
 @menu
 * Invoking gxditview::          
@@ -5722,12 +5859,17 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{gxditview}
 @cindex @code{gxditview}, invoking
 
+@c XXX
+@c X11's xditview
+
 
 
 @node File formats, Installation, Output Devices, Top
 @chapter File formats
 @cindex file formats
 @cindex formats, file
+
+@c XXX
 
 @menu
 * gtroff Output::               
@@ -5740,82 +5882,116 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{gtroff} output
 @cindex output, @code{gtroff}
 
+This section describes the format output of GNU @code{troff}.  The
+output format used by GNU @code{troff} is very similar to that used by
+@sc{Unix} device-independent @code{troff} (@code{ditroff}).
 
-This section describes the format output by GNU troff.  The output
-format used by GNU troff is very similar to that used by @sc{Unix}
-device-independent troff.
+@menu
+* Output Format::               
+* Device Control::              
+* Drawing Functions::           
+* Line Continuation::           
+@end menu
 
+@node Output Format, Device Control, gtroff Output, gtroff Output
+@subsection Output Format
+@cindex output format
+@cindex format of output
+
+@cindex 8-bit input
+@cindex input, 8-bit
 The output format is text based, as opposed to a binary format (like
-@TeX{} dvi).
-The output format is 8 bit clean, thus single characters can have the
-eighth bit set, as can the names of fonts and special characters.
+@TeX{} dvi).  The output format is @w{8-bit} clean, thus single
+characters can have the eighth bit set, as can the names of fonts and
+special characters.
 
 The output format consists of single command characters with attached
-parameters which are separated from subsequent text by whitespace, or
-a newline.
+parameters which are separated from subsequent text by whitespace or a
+newline.
 
-The names of characters and fonts an be of arbitrary length; drivers
+The names of characters and fonts can be of arbitrary length; drivers
 should not assume that they will be only two characters long (as
-device-independent troff did).
+@code{ditroff} does).
 
 When a character is to be printed, that character will always be in the
-current font.
-Unlike device-independent troff, it is not necessary for
-drivers to search special fonts to find a character.
+current font.  Unlike @code{ditroff}, it is not necessary for drivers to
+search special fonts to find a character.
 
 @table @code
 @item H@var{n}
+@c XXX
 @item V@var{n}
+@c XXX
 @item h@var{n}
+@c XXX
 @item v@var{n}
+@c XXX
 @item c@var{n}
+@c XXX
 @item C@var{n}
+@c XXX
 @item @var{nn}@var{c}
+@c XXX
 @item t@var{xxx}
 @var{xxx} is any sequence of characters terminated by a space or a
-newline; the first character should be printed at the current
-position, the the current horizontal position should be increased by
-the width of the first character, and so on for each character.
-The width of the character is that given in the font file,
-appropriately scaled for the current point size,
-and rounded so that it is a multiple of the horizontal resolution.
-Special characters cannot be printed using this command.
+newline; the first character should be printed at the current position,
+the the current horizontal position should be increased by the width of
+the first character, and so on for each character.  The width of the
+character is that given in the font file, appropriately scaled for the
+current point size, and rounded so that it is a multiple of the
+horizontal resolution.  Special characters cannot be printed using this
+command.
 
-This command is only allowed if the @samp{tcommand} line is present
-in the @file{DESC} file.
-@item u@var{n} @var{xxx}
+@kindex tcommand
 @pindex DESC
-This is same as the @code{t} command except that after printing each
+This command is only allowed if the @samp{tcommand} line is present in
+the @file{DESC} file.
+@item u@var{n} @var{xxx}
+This is same as the @samp{t} command except that after printing each
 character, the current horizontal position is increased by the sum of
-the width of that character and @code{n}.
+the width of that character and@w{ }@var{n}.
 
-This command is only allowed if the @samp{tcommand} line is present
-in the @file{DESC} file.
+This command is only allowed if the @samp{tcommand} line is present in
+the @file{DESC} file.
 @item n@var{a}@var{b}
+@c XXX
 @item p@var{n}
+@c XXX
 @item s@var{n}
-The argument to the s command is in scaled points (units of points/n,
-where n is the argument to the sizescale command  in the DESC file.)
+@kindex sizescale
+@pindex DESC
+The argument to the @samp{s} command is in scaled points (units of
+points/@var{n}, where @var{n} is the argument to the @samp{sizescale}
+command in the @file{DESC} file).
 @item f@var{n}
 @item x @dots{} \n
 Device control.
+@c XXX more info
 @item D@var{c} @var{x}@dots{}\n
+@c XXX
 @end table
 
+@node Device Control, Drawing Functions, Output Format, gtroff Output
 @subsection Device Control
+@cindex device control
+@cindex control of devices
 
-The @code{x} command is normally followed by a letter or word
-indicating the function to perform, followed by white space separated
-arguments.
+The @samp{x} command is normally followed by a letter or word indicating
+the function to perform, followed by white space separated arguments.
 
 The first argument can be abreviated to the first letter.
 
 @table @code
 @item x init
+@c XXX
 @item x T
+@c XXX
 @item x res @var{n} @var{h} @var{v}
+@c XXX
 @item x H
-The argument to the x Height command is also in scaled points.
+@c XXX more info
+The argument to the @w{@samp{x Height}} command is also in scaled
+points.
 @end table
 
 The first three output commands are guaranteed to be:
@@ -5826,88 +6002,124 @@ x res n h v
 x init
 @end example
 
-For example, the input @samp{crunchy \fH\s+2frog\s0\fP!?} will produce:
+@noindent
+For example, the input
+
+@example
+crunchy \fH\s+2frog\s0\fP!?
+@end example
+
+@noindent
+will produce
+
+@c XXX example
 
 @example
 ... sample output here ...
 @end example
 
+@node Drawing Functions, Line Continuation, Device Control, gtroff Output
 @subsection Drawing Functions
+@cindex drawing functions
+@cindex functions for drawing
 
-The D drawing command has been extended.  These extensions will only be
-used by GNU pic if the -x option is given.
+@pindex gpic
+The @samp{D} drawing command has been extended.  These extensions will
+only be used by GNU @code{pic} if the @samp{-x} option is given.
+
+@xref{Drawing Requests}.
 
 @table @code
-...
-@item Df n\n
-Set the shade of gray to be used for filling solid objects to n; n must
-be an integer between 0 and 1000, where 0 corresponds solid white and
-1000 to solid black, and values in between correspond to intermediate
-shades of gray.  This applies only to solid circles, solid ellipses and
-solid polygons.  By default, a level of 1000 will be used.  Whatever
-color a solid object has, it should completely obscure everything
-beneath it.  A value greater than 1000 or less than 0 can also be used:
-this means fill with the shade of gray that is currently being used for
-lines and text.  Normally this will be black, but some drivers may
-provide a way of changing this.
-@item DC d\n
-Draw a solid circle with a diameter of d with the leftmost point at the
-current position.
-@item DE dx dy\n
-Draw a solid ellipse with a horizontal diameter of dx and a vertical
-diameter of dy with the leftmost point at the current position.
-@item Dp $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub
-n$\n
-Draw a polygon with, for $i = 1 ,..., n+1$, the i-th vertex at the
-current position $+ sum from j=1 to i-1 ( dx sub j , dy sub j )$.  At
-the moment, GNU pic only uses this command to generate triangles and
-rectangles.
-@item DP $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub
-n$\n
-Like Dp but draw a solid rather than outlined polygon.
-@item Dt n\n
-Set the current line thickness to n machine units.  Traditionally @sc{Unix}
-troff drivers use a line thickness proportional to the current point
-size; drivers should continue to do this if no Dt command has been
-given, or if a Dt command has been given with a negative value of n.  A
-zero value of n selects the smallest available line thickness.
+@c XXX ...
+@item Df @var{n}
+Set the shade of gray to be used for filling solid objects to@w{
+}@var{n}; @var{n}@w{ }must be an integer between 0 and@w{ }1000, where 0
+corresponds solid white and 1000 to solid black, and values in between
+correspond to intermediate shades of gray.  This applies only to solid
+circles, solid ellipses and solid polygons.  By default, a level of@w{
+}1000 will be used.  Whatever color a solid object has, it should
+completely obscure everything beneath it.  A value greater than@w{ }1000
+or less than@w{ }0 can also be used: this means fill with the shade of
+gray that is currently being used for lines and text.  Normally this
+will be black, but some drivers may provide a way of changing this.
+@item DC @var{d}
+Draw a solid circle with a diameter of@w{ }@var{d} with the leftmost
+point at the current position.
+@item DE @var{dx} @var{dy}
+Draw a solid ellipse with a horizontal diameter of@w{ }@var{dx} and a
+vertical diameter of@w{ }@var{dy} with the leftmost point at the current
+position.
+@item Dp @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{} @var{dxn} @var{dyn}
+Draw a polygon with.  The first vertex is at the current position, the
+second vertex at an offset (@var{dx1},@var{dy1}) from the current
+position, the second vertex at an offset (@var{dx2},@var{dy2}) from the
+first vertex, and so on up to the @var{n}-th vertex.  At the moment, GNU
+@code{pic} only uses this command to generate triangles and rectangles.
+@item DP @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{} @var{dxn} @var{dyn}
+Like @code{Dp} but draw a solid rather than outlined polygon.
+@item Dt @var{n}
+@cindex line thickness
+@cindex thickness of lines
+Set the current line thickness to @var{n}@w{ }machine units.
+Traditionally, @sc{Unix} @code{troff} drivers use a line thickness
+proportional to the current point size; drivers should continue to do
+this if no @code{Dt} command has been given, or if a @code{Dt} command
+has been given with a negative value of@w{ }@var{n}.  A zero value of@w{
+}@var{n} selects the smallest available line thickness.
 @end table
 
+@findex \D
 A difficulty arises in how the current position should be changed after
 the execution of these commands.  This is not of great importance since
-the code generated by GNU pic does not depend on this.  Given a drawing
-command of the form
+the code generated by GNU @code{pic} does not depend on this.  Given a
+drawing command of the form
 
-\D'c $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$ $x sub n$ $y sub n$'
+@example
+\D'@var{c} @var{x1} @var{y1} @var{x2} @var{y2} @dots{} @var{xn} @var{yn}'
+@end example
 
-where c is not one of c, e, l, a or ~, @sc{Unix} troff will treat each of the
-$x sub i$ as a horizontal quantity, and each of the $y sub i$ as a
-vertical quantity and will assume that the width of the drawn object is
-$sum from i=1 to n x sub i$, and that the height is $sum from i=1 to n y
-sub i$.  (The assumption about the height can be seen by examining the
-st and sb registers after using such a D command in a \w escape
-sequence.)  This rule also holds for all the original drawing commands
-with the exception of De.  For the sake of compatibility GNU troff also
-follows this rule, even though it produces an ugly result in the case of
-the Df, Dt, and, to a lesser extent, DE commands.  Thus after executing
-a D command of the form
+@findex \w
+@vindex st
+@findex sb
+@noindent
+where @var{c} is not one of @samp{c}, @samp{e}, @samp{l}, @samp{a} or
+@samp{~}, @sc{Unix} @code{troff} will treat each of the x@w{ }value as a
+horizontal quantity, and each of the y@w{ }values as a vertical quantity
+and will assume that the width of the drawn object is sum if all x@w{
+}values, and that the height is the sum of all y@w{ }values.  (The
+assumption about the height can be seen by examining the @code{st} and
+@code{sb} registers after using such a @code{D}@w{ }command in a
+@code{\w} escape sequence.)  This rule also holds for all the original
+drawing commands with the exception of @code{De}.  For the sake of
+compatibility GNU @code{troff} also follows this rule, even though it
+produces an ugly result in the case of the @code{Df}, @code{Dt}, and, to
+a lesser extent, @code{DE}@w{ }commands.  Thus after executing a
+@code{D}@w{ }command of the form
 
-Dc $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$ $x sub n$ $y sub n$\n
+@example
+D@var{c} @var{x1} @var{y1} @var{x2} @var{y2} @dots{} @var{xn} @var{yn}
+@end example
 
-the current position should be increased by $( sum from i=1 to n x sub i
-, sum from i=1 to n y sub i )$.
+@noindent
+the current position should be increased horizontally by the sum of all
+x@w{ }values and vertically by the sum of all y@w{ }values.
 
+@node Line Continuation,  , Drawing Functions, gtroff Output
 @subsection Line Continuation
+@cindex line continuation in output commands
+@cindex output commands, line continuation
 
-There is a continuation convention which permits the argument to the x X
-command to contain newlines: when outputting the argument to the x X
-command,  GNU troff will follow each newline in the argument with a +
-character (as usual, it will terminate the entire argument with a
-newline); thus if the line after the line containing the x X command
-starts with +, then the newline ending the line containing the x X
-command should be treated as part of the argument to the x X command,
-the + should be ignored, and the part of the line following the + should
-be treated like the part of the line following the x X command.
+There is a continuation convention which permits the argument to the
+@w{@samp{x X}} command to contain newlines: When outputting the argument
+to the @w{@samp{x X}} command, GNU @code{troff} will follow each newline
+in the argument with a @samp{+} character (as usual, it will terminate
+the entire argument with a newline); thus if the line after the line
+containing the @w{@samp{x X}} command starts with @samp{+}, then the
+newline ending the line containing the @w{@samp{x X}} command should be
+treated as part of the argument to the @w{@samp{x X}} command, the
+@samp{+} should be ignored, and the part of the line following the
+@samp{+} should be treated like the part of the line following the
+@w{@samp{x X}} command.
 
 
 @node Font Files,  , gtroff Output, File formats
@@ -5915,142 +6127,187 @@ be treated like the part of the line following the x X command.
 @cindex font files
 @cindex files, font
 
-The groff font format is roughly a superset of the ditroff font
-format.  Unlike the ditroff font format, there is no associated binary
-format.  The font files for device name are stored in a directory
-@file{dev@var{name}}.  There are two types of file: a device
-description file called @file{DESC} and for each font @samp{F} a font
-file called @file{F}.  These are text files; there is no associated
-binary format.
+The @code{gtroff} font format is roughly a superset of the
+@code{ditroff} font format.  Unlike the @code{ditroff} font format,
+there is no associated binary format; all files are text files.  The
+font files for device @var{name} are stored in a directory
+@file{dev@var{name}}.  There are two types of file: a device description
+file called @file{DESC} and for each font@w{ }@samp{F} a font file
+called@w{ }@file{F}.
 
+@menu
+* DESC file format::            
+* Font file format::            
+@end menu
+
+@node DESC file format, Font file format, Font Files, Font Files
 @subsection @file{DESC} file format
+@cindex @file{DESC} file format
+@cindex font description file format
+@cindex format of font description file
 @pindex DESC
 
 The @file{DESC} file can contain the following types of line:
 
 @table @code
+@kindex res
 @item res @var{n}
 There are @var{n} machine units per inch.
+@kindex hor
 @item hor @var{n}
 The horizontal resolution is @var{n} machine units.
+@kindex vert
 @item vert @var{n}
 The vertical resolution is @var{n} machine units.
+@kindex sizescale
 @item sizescale @var{n}
-The scale factor for pointsizes.  By default this has a value of 1.  One
-scaled point is equal to one point/@var{n}.  The arguments to the
+The scale factor for pointsizes.  By default this has a value of@w{ }1.
+One scaled point is equal to one point/@var{n}.  The arguments to the
 @code{unitwidth} and @code{sizes} commands are given in scaled points.
 @xref{Fractional Type Sizes}, for more information.
+@kindex unitwidth
 @item unitwidth @var{n}
-Quantities in the font files are given in machine units for fonts  whose
-point size is @var{n} scaled points.
+Quantities in the font files are given in machine units for fonts whose
+point size is @var{n}@w{ }scaled points.
+@kindex tcommand
 @item tcommand
-This means that the postprocessor can handle the @code{t} and
-@code{u} output commands.
-@item sizes @var{s1} @var{s2}@dots{}@var{sn} 0
-This means that the device has fonts at @var{s1}, @var{s2},
-@dots{}@var{sn} scaled points.  The list of sizes must be terminated
-by a 0.  Each @var{si} can also be a range of
-sizes @var{m}-@var{n}.  The list can extend over more than one line.
-@item styles @var{S1 S2@dots{}Sm}
-The first @var{m} font positions will be associated with styles
-@var{S1}@dots{}@var{Sm}.
-@item fonts @var{n} @var{F1 F2 F3@dots{}Fn}
-Fonts @var{F1@dots{}Fn} will be mounted in the font positions
-@var{m}+1, @dots{}, @var{m}+@var{n} where @var{m}
-is the number of styles.  This command may extend over more than one
-line.  A font name of 0 will cause no font to be mounted on the
-corresponding font position.
+This means that the postprocessor can handle the @samp{t} and @samp{u}
+output commands.
+@kindex sizes
+@item sizes @var{s1} @var{s2} @dots{} @var{sn} 0
+This means that the device has fonts at @var{s1}, @var{s2}, @dots{}
+@var{sn} scaled points.  The list of sizes must be terminated by a@w{
+}0.  Each @var{si} can also be a range of sizes @var{m}-@var{n}.  The
+list can extend over more than one line.
+@kindex styles
+@item styles @var{S1} @var{S2} @dots{} @var{Sm}
+The first @var{m}@w{ }font positions will be associated with styles
+@var{S1} @dots{} @var{Sm}.
+@kindex fonts
+@item fonts @var{n} @var{F1} @var{F2} @var{F3} @dots{} @var{Fn}
+Fonts @var{F1} @dots{} @var{Fn} will be mounted in the font positions
+@var{m}+1, @dots{}, @var{m}+@var{n} where @var{m} is the number of
+styles.  This command may extend over more than one line.  A font name
+of@var{ }0 will cause no font to be mounted on the corresponding font
+position.
+@kindex family
 @item family @var{fam}
 The default font family is @var{fam}.
+@kindex charset
 @item charset
 This line and everything following in the file are ignored.  It is
 allowed for the sake of backwards compatibility.
 @end table
 
 The @code{res}, @code{unitwidth}, @code{fonts} and @code{sizes} lines
-are compulsory.  Other commands are ignored by troff but may be used
-by postprocessors to store arbitrary information about the device in
-the @file{DESC} file.
+are compulsory.  Other commands are ignored by @code{gtroff} but may be
+used by postprocessors to store arbitrary information about the device
+in the @file{DESC} file.
 
+@c XXX add other commands resp. xrefs to output devices
+@c XXX add obsolete commands
 
+@node Font file format,  , DESC file format, Font Files
 @subsection Font file format
+@cindex font file format
+@cindex format of font files
 
 A font file has two sections.  The first section is a sequence of lines
 each containing a sequence of blank delimited words; the first word in
 the line is a key, and subsequent words give a value for that key.
 
 @table @code
+@kindex name
 @item name @var{F}
-The name of the font is @var{F}.
+The name of the font is@w{ }@var{F}.
+@kindex spacewidth
 @item spacewidth @var{n}
-The normal width of a space is @var{n}.
+The normal width of a space is@w{ }@var{n}.
+@kindex slant
 @item slant @var{n}
-The characters of the font have a slant of @var{n} degrees.
+The characters of the font have a slant of @var{n}@w{ }degrees.
 (Positive means forward.)
-@item ligatures @var{lig1} @var{lig2}@dots{}@var{lign} [0]
+@kindex ligatures
+@item ligatures @var{lig1} @var{lig2} @dots{} @var{lign} [0]
 Characters @var{lig1}, @var{lig2}, @dots{}, @var{lign} are ligatures;
-possible ligatures are ff, fi, fl and ffl.  For backwards
-compatibiliy, the list of ligatures may be terminated with a 0.  The
-list of ligatures may not extend over more than one line.
+possible ligatures are @samp{ff}, @samp{fi}, @samp{fl}, @samp{ffi} and
+@samp{ffl}.  For backwards compatibiliy, the list of ligatures may be
+terminated with a@w{ }0.  The list of ligatures may not extend over more
+than one line.
+@kindex special
 @item special
 The font is special; this means that when a character is requested that
 is not present in the current font, it will be searched for in any
 special fonts that are mounted.
 @end table
 
-Other commands are ignored by troff but may be used by postprocessors to
-store arbitrary information about the font in the font file.
+Other commands are ignored by @code{gtroff} but may be used by
+postprocessors to store arbitrary information about the font in the font
+file.
 
-The first section can contain comments which start with the # character
-and extend to the end of a line.
+@cindex comments in font files
+@cindex font files, comments
+@kindex #
+The first section can contain comments which start with the @samp{#}
+character and extend to the end of a line.
 
 The second section contains one or two subsections.  It must contain a
 @code{charset} subsection and it may also contain a @code{kernpairs}
 subsection.  These subsections can appear in any order.  Each
 subsection starts with a word on a line by itself.
 
-The word @code{charset} starts the @code{charset} subsection.  The
-@code{charset} line is followed by a sequence of lines.  Each line
-gives information for one character.  A line comprises a number of
-fields separated by blanks or tabs.  The format is
+@kindex charset
+The word @code{charset} starts the character set subsection.  The
+@code{charset} line is followed by a sequence of lines.  Each line gives
+information for one character.  A line comprises a number of fields
+separated by blanks or tabs.  The format is
 
-@display
+@c XXX fix it for new HTML additions
+
+@example
 @var{name} @var{metrics} @var{type} @var{code} @var{comment}
-@end display
+@end example
 
-@var{name} identifies the character: if @var{name} is a single
-character @var{c} then it corresponds to the groff input character
-@var{c}; if it is of the form @samp{\@var{c}} where @var{c} is a
-single character, then it corresponds to the groff input character
-@samp{\@var{c}}; otherwise it corresponds to the groff input character
-@samp{\[@var{name}]} (if it is exactly two characters @var{xx} it can
-be entered as @samp{\(@var{xx}}.) Groff supports eight bit characters;
-however some utilities has difficulties with eight bit characters.
-For this reason, there is a convention that the @var{name}
-@samp{char@var{n}} is equivalent to the single character whose code is
-@var{n}.  For example, @samp{char163} would be equivalent to the
-character with @var{code} 163 which is the pounds sterling sign in ISO
-Latin-1 character set.  The name @samp{---} is special and indicates
-that the character is unnamed; such characters can only be used by
-means of the @code{\N} escape sequence in troff.
+@cindex 8-bit input
+@cindex input, 8-bit
+@findex \N
+@kindex ---
+@noindent
+@var{name} identifies the character: If @var{name} is a single
+character@w{ }@var{c} then it corresponds to the @code{gtroff} input
+character @var{c}; if it is of the form @samp{\@var{c}} where @var{c} is
+a single character, then it corresponds to the @code{gtroff} input
+character@w{ }\@var{c}; otherwise it corresponds to the groff input
+character @samp{\[@var{name}]}.  (If it is exactly two characters
+@var{xx} it can be entered as @samp{\(@var{xx}}.)  @code{gtroff}
+supports 8-bit characters; however some utilities have difficulties with
+eight-bit characters.  For this reason, there is a convention that the
+name @samp{char@var{n}} is equivalent to the single character whose code
+is@w{ }@var{n}.  For example, @samp{char163} would be equivalent to the
+character with code@w{ }163 which is the pounds sterling sign in @w{ISO
+Latin-1} character set.  The name @samp{---} is special and indicates
+that the character is unnamed; such characters can only be used by means
+of the @code{\N} escape sequence in troff.
+
+@c XXX input encodings vs. output encodings
 
 The @var{type} field gives the character type:
 
 @table @code
 @item 1
-means the character has an descender, for example, p;
+the character has an descender, for example, `p';
 @item 2
-means the character has an ascender, for example, b;
+the character has an ascender, for example, `b';
 @item 3
-means the character has both an ascender and a descender, for example,
-@samp{(}.
+the character has both an ascender and a descender, for example, `('.
 @end table
 
 The @var{code} field gives the code which the postprocessor uses to
-print the character.  The character can also be input to groff using
-this code by means of the @code{\N} escape sequence.  The code can be any
-integer.  If it starts with a 0 it will be interpreted as octal; if it
-starts with 0x or 0X it will be intepreted as hexdecimal.
+print the character.  The character can also be input to @code{gtroff}
+using this code by means of the @code{\N} escape sequence.  The code can
+be any integer.  If it starts with @samp{0} it will be interpreted as
+octal; if it starts with @samp{0x} or @samp{0X} it will be intepreted as
+hexadecimal.
 
 Anything on the line after the @var{code} field will be ignored.
 
@@ -6060,24 +6317,24 @@ The @var{metrics} field has the form:
 @var{width[,height[,depth[,italic_correction[,left_italic_correction[,subscript_correction]]]]]}
 @end smallexample
 
-There must not be any spaces between these subfields.  Missing
-subfields are assumed to be 0.  The subfields are all decimal
-integers.  Since there is no associated binary format, these values
-are not required to fit into a variable of type @samp{char} as they
-are in ditroff.  The @var{width} subfields gives the width of the
-character.  The @var{height} subfield gives the height of the
-character (upwards is positive); if a character does not extend above
-the baseline, it should be given a zero height, rather than a negative
-height.  The @var{depth} subfield gives the depth of the character,
-that is, the distance below the lowest point below the baseline to
-which the character extends (downwards is positive); if a character
-does not extend below above the baseline, it should be given a zero
-depth, rather than a negative depth.  The @var{italic_correction}
-subfield gives the amount of space that should be added after the
-character when it is immediately to be followed by a character from a
-roman font.  The @var{left_italic_correction} subfield gives the
-amount of space that should be added before the character when it is
-immediately to be preceded by a character from a roman font.  The
+There must not be any spaces between these subfields.  Missing subfields
+are assumed to be@w{ }0.  The subfields are all decimal integers.  Since
+there is no associated binary format, these values are not required to
+fit into a variable of type @samp{char} as they are in @code{ditroff}.
+The @var{width} subfield gives the width of the character.  The
+@var{height} subfield gives the height of the character (upwards is
+positive); if a character does not extend above the baseline, it should
+be given a zero height, rather than a negative height.  The @var{depth}
+subfield gives the depth of the character, that is, the distance below
+the lowest point below the baseline to which the character extends
+(downwards is positive); if a character does not extend below above the
+baseline, it should be given a zero depth, rather than a negative depth.
+The @var{italic_correction} subfield gives the amount of space that
+should be added after the character when it is immediately to be
+followed by a character from a roman font.  The
+@var{left_italic_correction} subfield gives the amount of space that
+should be added before the character when it is immediately to be
+preceded by a character from a roman font.  The
 @var{subscript_correction} gives the amount of space that should be
 added after a character before adding a subscript.  This should be less
 than the italic correction.
@@ -6088,25 +6345,30 @@ A line in the @code{charset} section can also have the format
 @var{name} "
 @end example
 
+@noindent
 This indicates that @var{name} is just another name for the character
 mentioned in the preceding line.
 
+@kindex kernpairs
 The word @code{kernpairs} starts the kernpairs section.  This contains a
 sequence of lines of the form:
 
-@display
-@var{c1 c2 n}
-@end display
+@example
+@var{c1} @var{c2} @var{n}
+@end example
 
 This means that when character @var{c1} appears next to character
-@var{c2} the space between them should be increased by @var{n}.  Most
-entries in kernpairs section will have a negative value for @var{n}.
+@var{c2} the space between them should be increased by@w{ }@var{n}.
+Most entries in kernpairs section will have a negative value for@w{
+}@var{n}.
 
 
 
 @node Installation, Request and Operator Index, File formats, Top
 @chapter Installation
 @cindex installation
+
+@c XXX
 
 
 
@@ -6117,23 +6379,21 @@ entries in kernpairs section will have a negative value for @var{n}.
 
 
 
-@node Register Index, String Index, Request and Operator Index, Top
+@node Register Index, Font File Keyword Index, Request and Operator Index, Top
 @chapter Register Index
 
 @printindex vr
 
 
-@node String Index, Macro Index, Register Index, Top
-@chapter String Index
+
+@node Font File Keyword Index, Program and File Index, Register Index, Top
+@chapter Font File Keyword Index
+
+@printindex ky
 
 
 
-@node Macro Index, Program and File Index, String Index, Top
-@chapter Macro Index
-
-
-
-@node Program and File Index, Concept Index, Macro Index, Top
+@node Program and File Index, Concept Index, Font File Keyword Index, Top
 @chapter Program  and File Index
 
 @printindex pg
