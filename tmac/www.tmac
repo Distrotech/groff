@@ -22,7 +22,7 @@
 .\" the main auxiliary macro for the HTML interface
 .\"
 .de HTML
-.  if \n[www-html] \{\
+.  if \\n[www-html] \{\
 .    \" the following line makes the vertical mode leave, so to say
 .    nop \&
 .    nop \X^html:\\$*^
@@ -32,7 +32,7 @@
 .\"
 .\"
 .de HTMLINDEX
-.  if \n[www-html] \
+.  if \\n[www-html] \
 .    nop \X^index:\\$*^
 ..
 .\"
@@ -57,7 +57,7 @@
 .\"        $3 is optional stuff printed immediately after $3
 .\"
 .de URL
-.  ie \n[www-html] \
+.  ie \\n[www-html] \
 .    HTML <a href="\\$2">\\$1</a>\\$3
 .  el \
 .    nop \m[blue]\\$1\mP \%\[la]\fC\\$2\fP\[ra]\\$3
@@ -68,7 +68,7 @@
 .\"        $3 is optional stuff printed immediately after $2
 .\"
 .de FTP
-.  ie \n[www-html] \
+.  ie \\n[www-html] \
 .    HTML <a href=\\$2>\\$1</a>\\$3
 .  el \
 .    nop \m[blue]\\$1\mP \%\[la]\fC\\$2\fP\[ra]\\$3
@@ -89,7 +89,7 @@
 .\" force reset after a potential heading by performing some motion..
 .\" how do we do this --fixme--
 .\"  \h'\w' ''\h'-\w' '' doesn't work..
-.  ie \n[www-html] \{\
+.  ie \\n[www-html] \{\
 .    ie '\\$2'' \
 .      HTML "<a href=mailto:\\$1>\\$1</a>\\$3"
 .    el \
@@ -116,7 +116,7 @@
 .\"         $4 is the y width (default if absent is the x value)
 .\"
 .de IMAGE
-.  ie \n[www-html] \{\
+.  ie \\n[www-html] \{\
 .    ie '\\$2'r' \
 .      HTML-TAG ".right-image"
 .    el \{\
@@ -143,7 +143,7 @@
 .\" HTML-TAG - emit a tag for the grohtml
 .\"
 .de HTML-TAG
-.  if \n[www-html] \{\
+.  if \\n[www-html] \{\
 .    \" the following line makes the vertical mode leave, so to say
 .    nop \&
 .    nop \X^html-tag:\\$*^
@@ -185,7 +185,7 @@
 .\"
 .de HTML-TL
 .  HTML-TAG ".html-tl"
-.  if !\n[www-html] \{\
+.  if !\\n[www-html] \{\
 .    di www-nowhere
 .    it 2 www-end-nowhere
 .  \}
@@ -218,7 +218,7 @@
 .\"
 .de UL-BEGIN
 .  www-push-level
-.  ie \n[www-html] \
+.  ie \\n[www-html] \
 .    HTML "<ul>"
 .  el \{\
 .    br
@@ -229,7 +229,7 @@
 .\" end an unordered list
 .\"
 .de UL-END
-.  ie \n[www-html] \
+.  ie \\n[www-html] \
 .    HTML "</ul>"
 .  el \{\
 .    br
@@ -241,7 +241,7 @@
 .\" insert a list item
 .\"
 .de LI
-.  ie \n[www-html] \
+.  ie \\n[www-html] \
 .    HTML "<li>"
 .  el \{\
 .    br
@@ -261,7 +261,7 @@
 .de www-do-image
 .  if r ps4html \
 .    nop \O[3]\O[5\\$2\\$1.png]\O[0]\O[1]
-.  if \n[www-html] \
+.  if \\n[www-html] \
 .    nop \O[3]\O[5\\$2\\$1.png]\O[0]
 ..
 .\"
@@ -270,7 +270,7 @@
 .de HTML-IMAGE-END
 .  if r ps4html \
 .    nop \O[2]\O[1]\O[4]
-.  if \n[www-html] \
+.  if \\n[www-html] \
 .    nop \O[2]\O[1]\O[4]
 ..
 .
@@ -314,7 +314,7 @@
 ..
 .
 .
-.if \n[www-html] \{\
+.if \\n[www-html] \{\
 .   nh
 .   nr HY 0
 .\}
