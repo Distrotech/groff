@@ -2276,7 +2276,8 @@ static string &generate_img_src (const char *filename)
     filename++;
   }
   if (exists(filename))
-    *s += string("<img src=\"") + filename + "\">";
+    *s += string("<img src=\"") + filename + "\" "
+	  + "alt=\"Image " + filename + "\">";
   return *s;
 }
 

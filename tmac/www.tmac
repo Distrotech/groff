@@ -398,7 +398,8 @@ www functionality.  It should work with any macro set.
 .    nr www-height \\n[www-width]
 .    if !'\\$4'' \
 .      nr www-height \\$4
-.    HTML <img src="\\$1" width=\\n[www-width] height=\\n[www-height]>
+.    HTML <img src="\\$1" alt="Image \\$1" \
+           width=\\n[www-width] height=\\n[www-height]>
 .  \}
 .  el \
 .    nop \[la]\f[C]\\$1\f[]\[ra]
@@ -461,15 +462,16 @@ www functionality.  It should work with any macro set.
 .      nr www-height (\\$4 * 100 / 240)
 .    ie (\\n[www-width] == 0) \{\
 .      ie (\\n[www-height] == 0) \
-.        HTML <img src="\\$2">
+.        HTML <img src="\\$2" alt="Image \\$2">
 .      el \
-.        HTML <img src="\\$1" height=\\n[www-height]>
+.        HTML <img src="\\$1" alt="Image \\$2" height=\\n[www-height]>
 .    \}
 .    el \{\
 .      ie (\\n[www-height] == 0) \
-.        HTML <img src="\\$2" width=\\n[www-width]>
+.        HTML <img src="\\$2" alt="Image \\$2" width=\\n[www-width]>
 .      el \
-.        HTML <img src="\\$2" width=\\n[www-width] height=\\n[www-height]>
+.        HTML <img src="\\$2" alt="Image \\$2" width=\\n[www-width] \
+               height=\\n[www-height]>
 .    \}
 .  \}
 .  el \{\
@@ -582,10 +584,10 @@ www functionality.  It should work with any macro set.
 .
 .  ie \\n[www-html] \{\
 .    ie !\\n[www-image-just] \
-.      HTML <img src="\\$1" hspace=\\n[www-htmlimage-gap] \
+.      HTML <img src="\\$1" alt="Image \\$1" hspace=\\n[www-htmlimage-gap] \
              align=right width=\\n[www-width] height=\\n[www-height]>
 .    el \
-.      HTML <img src="\\$1" hspace=\\n[www-htmlimage-gap] \
+.      HTML <img src="\\$1" alt="Image \\$1" hspace=\\n[www-htmlimage-gap] \
              align=left width=\\n[www-width] height=\\n[www-height]>
 .  \}
 .  el \{\

@@ -10,8 +10,8 @@
 .if '\*[.T]'html' .nr LL 10i
 .if r ps4html .nr LL 10i
 .
-.HEAD "<link rel=""stylesheet"" type=""text/css"" href=""groff.css"" />"
-.\" .HEAD "<link rel=""icon"" type=""image/png"" href=""http://www.gnu.org/graphics/gnu-mini.png"" />"
+.HEAD "<link rel=""stylesheet"" type=""text/css"" href=""groff.css"" >"
+.\" .HEAD "<link rel=""icon"" type=""image/png"" href=""http://www.gnu.org/graphics/gnu-mini.png"" >"
 .
 .mso www.tmac
 .
@@ -44,15 +44,15 @@ Home of Groff (GNU Troff).
 .  nop \v'-0.66i'\h'2.0i'\s[60]\*[GNU] Troff\s0
 .HTML-IMAGE-END
 .
-.HnS 1
 .HR
+.HnS 1
 GNU Troff (\c
 .URL http://\:groff.ffii.org/ Groff )
 \[em] a
 .URL http://\:www.gnu.org/ GNU
 project.
-.HR
 .HnE
+.HR
 .LK
 .
 .LP
@@ -312,7 +312,7 @@ tbl
 New key character `x' to make tbl call a user-defined macro on a table
 cell.
 Patch by
-.MTO hj.oertel@\:surfeu.de "Heinz-Jürgen Oertel" .
+.MTO hj.oertel@\:surfeu.de "Heinz-J\[:u]rgen Oertel" .
 .ULE
 .
 .
