@@ -49,6 +49,103 @@ static void usage(FILE *stream)
   fprintf(stream, "usage: %s [-v] [pfb_file]\n", program_name);
 }
 
+static void get_text(int n)
+{
+  int c, c1;
+  int in_string = 0;
+  int is_comment = 0;
+  int count = 0;
+
+  while (--n >= 0) {
+    c = getchar();
+    if (c == '(' && !is_comment)
+      in_string++;
+    else if (c == ')' && !is_comment)
+      in_string--;
+    else if (c == '%' && !in_string)
+      is_comment = 1;
+    else if (c == '\\' && in_string) {
+      count++;
+      putchar(c);
+      c = getchar();
+      /* don't split octal character representations */
+      if (c >= '0' && c <= '7') {
+	count++;
+	putchar(c);
+	c = getchar();
+	if (c >= '0' && c <= '7') {
+	  count++;
+	  putchar(c);
+	  c = getchar();
+	  if (c >= '0' && c <= '7') {
+	    count++;
+	    putchar(c);
+	    c = getchar();
+	  }
+	}
+      }
+    }
+    if (c == EOF)
+      error("end of file in text packet");
+    else if (c == '\r') {
+      c1 = getchar();
+      if (c1 != '\n')
+	ungetc(c1, stdin);
+      c = '\n';
+    }
+    if (c == '\n') {
+      count = 0;
+      is_comment = 0;
+    }
+    else if (count >= MAX_LINE_LENGTH) {
+      if (in_string > 0) {
+	count = 1;
+	putchar('\\');
+	putchar('\n');
+      }
+      else if (is_comment) {
+	count = 2;
+	putchar('\n');
+	putchar('%');
+      }
+      else {
+	/* split at the next whitespace character */
+	while (c != ' ' && c != '\t' && c != '\f') {
+	  putchar(c);
+	  c = getchar();
+	}
+	count = 0;
+	putchar('\n');
+	continue;
+      }
+    }
+    count++;
+    putchar(c);
+  }
+  if (c != '\n')
+    putchar('\n');
+}
+
+static void get_binary(int n)
+{
+  int c;
+  int count = 0;
+
+  while (--n >= 0) {
+    c = getchar();
+    if (c == EOF)
+      error("end of file in binary packet");
+    if (count >= BYTES_PER_LINE) {
+      putchar('\n');
+      count = 0;
+    }
+    count++;
+    putchar(HEX_DIGITS[(c >> 4) & 0xf]);
+    putchar(HEX_DIGITS[c & 0xf]);
+  }
+  putchar('\n');
+}
+
 int main(argc, argv)
      int argc;
      char **argv;
@@ -93,7 +190,7 @@ int main(argc, argv)
   }
   SET_BINARY(fileno(stdin));
   for (;;) {
-    int type, c, c1, i;
+    int type, c, i;
     long n;
 
     c = getchar();
@@ -113,38 +210,10 @@ int main(argc, argv)
     }
     if (n < 0)
       error("negative packet length");
-    if (type == 1) {
-      while (--n >= 0) {
-	c = getchar();
-	if (c == EOF)
-	  error("end of file in text packet");
-	if (c == '\r') {
-	  c1 = getchar();
-	  if (c1 != '\n')
-	    ungetc(c1, stdin);
-	  c = '\n';
-	}  
-	putchar(c);
-      }
-      if (c != '\n')
-        putchar('\n');
-    }
-    else {
-      int count = 0;
-      while (--n >= 0) {
-	c = getchar();
-	if (c == EOF)
-	  error("end of file in binary packet");
-	if (count >= BYTES_PER_LINE) {
-	  putchar('\n');
-	  count = 0;
-	}
-	count++;
-	putchar(HEX_DIGITS[(c >> 4) & 0xf]);
-	putchar(HEX_DIGITS[c & 0xf]);
-      }
-      putchar('\n');
-    }
+    if (type == 1)
+      get_text(n);
+    else
+      get_binary(n);
   }
   exit(0);
 }

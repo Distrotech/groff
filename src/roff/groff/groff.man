@@ -430,12 +430,12 @@ Preprocess with
 .BR @g@pic .
 .
 .
-.OptDef P "" "-option"
-.OptDef+ P "" "-option \f[CB]-P\f[] arg"
+.OptDef P "" "\*[@-]option"
+.OptDef+ P "" "\*[@-]option \f[CB]\*[@-]P\f[] arg"
 Pass
-.I -option
+.I \*[@-]option
 or
-.I -option arg
+.I \*[@-]option arg
 to the postprocessor.
 .
 The option must be specified with the necessary preceding minus
@@ -449,11 +449,12 @@ postprocessor.
 For example, to pass a title to the gxditview postprocessor, the shell
 command
 .IP
-.ShellCommand groff -X -P -title -P 'groff it' \f[I]foo\f[]
+.ShellCommand groff \*[@-]X \*[@-]P \*[@-]title \*[@-]P 'groff it' \f[I]foo\f[]
 .IP
 is equivalent to
 .IP
-.ShellCommand groff -X -Z \f[I]foo\f[] | gxditview -title 'groff it' -
+.ShellCommand groff \*[@-]X \*[@-]Z \f[I]foo\f[] | \
+gxditview \*[@-]title 'groff it' \*[@-]
 .
 .
 .OptDef R
@@ -550,11 +551,11 @@ selects the output encoding:
 .IP ascii
 7bit ASCII.
 .IP cp1047
-Latin-1 character set for EBCDIC hosts.
+\%Latin-1 character set for EBCDIC hosts.
 .IP latin1
-ISO 8859-1.
+ISO \%8859-1.
 .IP utf8
-Unicode character set in UTF-8 encoding.
+Unicode character set in \%UTF-8 encoding.
 .RE
 .RE
 .
@@ -615,7 +616,7 @@ and
 is carried over to 
 .BR \%gxditview (@MAN1EXT@)
 by determining an argument for the
-.B -printCommand
+.B \*[@-]printCommand
 option of
 .BR \%gxditview (@MAN1EXT@).
 .
@@ -641,7 +642,7 @@ option to
 for example
 .
 .IP
-.ShellCommand groff -X -P-resolution -P100 -man foo.1
+.ShellCommand groff \*[@-]X \*[@-]P\*[@-]resolution \*[@-]P100 \*[@-]man foo.1
 .
 .
 .OptDef z
@@ -1008,12 +1009,12 @@ HTML output.
 .
 .TP
 .B latin1
-Text output using the ISO Latin-1 (ISO 8859-1) character set; see
-.BR iso_8859_1 (7).
+Text output using the ISO \%Latin-1 (ISO \%8859-1) character set; see
+.BR \%iso_8859_1 (7).
 .
 .TP
 .B lbp
-Output for Canon CAPSL printers (LBP-4 and LBP-8 series laser printers).
+Output for Canon CAPSL printers (\%LBP-4 and \%LBP-8 series laser printers).
 .
 .TP 
 .B lj4
@@ -1026,7 +1027,7 @@ PostScript output; suitable for printers and previewers like
 .
 .TP
 .B utf8
-Text output using the Unicode (ISO 10646) character set with UTF-8
+Text output using the Unicode (ISO 10646) character set with \%UTF-8
 encoding; see
 .BR unicode (7).
 .
@@ -1037,7 +1038,7 @@ encoding; see
 and
 .BR \%gxditview (@MAN1EXT@).
 A variant for a 12\|pt document base font is
-.BR X75-12 .
+.BR \%X75-12 .
 .
 .TP
 .B X100
@@ -1046,7 +1047,7 @@ A variant for a 12\|pt document base font is
 and
 .BR \%gxditview (@MAN1EXT@).
 A variant for a 12\|pt document base font is
-.BR X100-12 .
+.BR \%X100-12 .
 .
 .P
 The postprocessor to be used for a device is specified by the
@@ -1055,7 +1056,7 @@ command in the device description file; see
 .BR \%groff_font (@MAN5EXT@).
 .
 This can be overridden with the
-.B \-X
+.B \*[@-]X
 option.
 .
 .P
@@ -1398,22 +1399,22 @@ and the
 macro set, classical troff had to be called by
 .
 .P
-.ShellCommand pic foo.me | tbl | troff -me -Tlatin1 | grotty
+.ShellCommand pic foo.me | tbl | troff \*[@-]me \*[@-]Tlatin1 | grotty
 .
 .P
 Using
 .BR groff ,
 this pipe can be shortened to the equivalent command
 .P
-.ShellCommand groff -p -t -me -T latin1 foo.me
+.ShellCommand groff \*[@-]p \*[@-]t \*[@-]me \*[@-]T latin1 foo.me
 .
 .P
 An even easier way to call this is to use
 .BR grog (@MAN1EXT@)
 to guess the preprocessor and macro options and execute the generated
-command (by specifying shell left quotes)
+command (by using backquotes to specify shell command substitution)
 .P
-.ShellCommand `grog -Tlatin1 foo.me`
+.ShellCommand \`grog \*[@-]Tlatin1 foo.me\`
 .
 .P
 The simplest way is to view the contents in an automated way by

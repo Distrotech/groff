@@ -295,6 +295,8 @@ YACCFLAGS=-v
 
 EXEEXT=@EXEEXT@
 OBJEXT=@OBJEXT@
+# a simple heuristic assumption
+LIBEXT=`case $(OBJEXT) in obj) echo lib;; *) echo a;; esac`
 LIBS=@LIBS@
 LIBM=@LIBM@
 RANLIB=@RANLIB@
@@ -345,6 +347,7 @@ MDEFINES= \
   "INSTALL_PROGRAM=$(INSTALL_PROGRAM)" \
   "INSTALL_SCRIPT=$(INSTALL_SCRIPT)" \
   "LDFLAGS=$(LDFLAGS)" \
+  "LIBEXT=$(LIBEXT)" \
   "LIBM=$(LIBM)" \
   "LIBOBJS=$(LIBOBJS)" \
   "LIBS=$(LIBS)" \
