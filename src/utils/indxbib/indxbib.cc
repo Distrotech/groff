@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001, 2002 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -285,6 +285,9 @@ int main(int argc, char **argv)
   strcpy(index_file, basename);
   strcat(index_file, INDEX_SUFFIX);
 #ifdef HAVE_RENAME
+#ifdef __EMX__
+  unline(index_file);
+#endif /* __EMX__ */
   if (rename(temp_index_file, index_file) < 0) {
 #ifdef __MSDOS__
     // RENAME could fail on plain MSDOS filesystems because

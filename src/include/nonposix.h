@@ -135,3 +135,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #ifndef NULL_DEV
 # define NULL_DEV      "/dev/null"
 #endif
+#ifndef GS_NAME
+# define GS_NAME       "gs"
+#endif

@@ -99,7 +99,8 @@ static char *i_to_a P((int));
    via temporary files...  */
 
 #if defined(__MSDOS__) \
-    || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN__))
+    || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN__)) \
+    || defined(__EMX__)
 
 #include <process.h>
 #include <fcntl.h>

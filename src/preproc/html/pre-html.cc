@@ -765,8 +765,9 @@ static int createAllPages (void)
   }
 
   s = make_message("echo showpage | "
-		   "gs%s %s -q -dSAFER -sDEVICE=%s -r%d %s"
+		   "%s%s %s -q -dSAFER -sDEVICE=%s -r%d %s"
 		   "-sOutputFile=%s/%%d %s -",
+		   GS_NAME,
 		   EXE_EXT,
 		   gsPaper,
 		   image_device,

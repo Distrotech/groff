@@ -476,7 +476,7 @@ void usage(FILE *stream)
 #endif
 }
 
-#ifdef __MSDOS__
+#if defined(__MSDOS__) || defined(__EMX__)
 static char *fix_program_name(char *arg, char *dflt)
 {
   if (!arg)
@@ -499,13 +499,13 @@ static char *fix_program_name(char *arg, char *dflt)
       *p = 'a' + (*p - 'A');
   return prog;
 }
-#endif /* __MSDOS__ */
+#endif /* __MSDOS__ || __EMX__ */
 
 int main(int argc, char **argv)
 {
-#ifdef __MSDOS__
+#if defined(__MSDOS__) || defined(__EMX__)
   argv[0] = fix_program_name(argv[0], "pic");
-#endif /* __MSDOS__ */
+#endif /* __MSDOS__ || __EMX__ */
   program_name = argv[0];
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
