@@ -1231,20 +1231,23 @@ static node *do_overstrike()
 {
   token start;
   overstrike_node *on = new overstrike_node;
+  int start_level = input_stack::get_level();
   start.next();
-  tok.next();
-  while (tok != start) {
+  for (;;) {
+    tok.next();
     if (tok.newline() || tok.eof()) {
       warning(WARN_DELIM, "missing closing delimiter");
       break;
     }
+    if (tok == start
+	&& (compatible_flag || input_stack::get_level() == start_level))
+      break;
     charinfo *ci = tok.get_char(1);
     if (ci) {
       node *n = curenv->make_char_node(ci);
       if (n)
 	on->overstrike(n);
     }
-    tok.next();
   }
   return on;
 }
@@ -1254,8 +1257,9 @@ static node *do_bracket()
   token start;
   bracket_node *bn = new bracket_node;
   start.next();
-  tok.next();
-  while (tok != start) {
+  int start_level = input_stack::get_level();
+  for (;;) {
+    tok.next();
     if (tok.eof()) {
       warning(WARN_DELIM, "missing closing delimiter");
       break;
@@ -1265,13 +1269,15 @@ static node *do_bracket()
       input_stack::push(make_temp_iterator("\n"));
       break;
     }
+    if (tok == start
+	&& (compatible_flag || input_stack::get_level() == start_level))
+      break;
     charinfo *ci = tok.get_char(1);
     if (ci) {
       node *n = curenv->make_char_node(ci);
       if (n)
 	bn->bracket(n);
     }
-    tok.next();
   }
   return bn;
 }
@@ -4195,19 +4201,20 @@ static int get_line_arg(units *n, int si, charinfo **cp)
 {
   token start;
   start.next();
-  if (start.delimiter(1)) {
-    tok.next();
-    if (get_number(n, si)) {
-      if (tok.dummy() || tok.transparent_dummy())
-	tok.next();
-      if (start != tok) {
-	*cp = tok.get_char(1);
-	tok.next();
-      }
-      if (start != tok)
-	warning(WARN_DELIM, "closing delimiter does not match");
-      return 1;
+  int start_level = input_stack::get_level();
+  if (!start.delimiter(1))
+    return 0;
+  tok.next();
+  if (get_number(n, si)) {
+    if (tok.dummy() || tok.transparent_dummy())
+      tok.next();
+    if (!(start == tok && input_stack::get_level() == start_level)) {
+      *cp = tok.get_char(1);
+      tok.next();
     }
+    if (!(start == tok && input_stack::get_level() == start_level))
+      warning(WARN_DELIM, "closing delimiter does not match");
+    return 1;
   }
   return 0;
 }
