@@ -15,7 +15,7 @@ groff_tmac.5
 
 File position: <groff-source>/man/groff_tmac.man
 
-Last update: 25 June 2002
+Last update: 26 June 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -95,30 +95,6 @@ FDL in the main directory of the groff source package.
 .    Text \\*[@tmp@]\fR\\$*\f[]
 .    rm @tmp@
 .  \}
-..
-.c --------------------------------------------------------------------
-.de CB
-.  nr @+f \\n[.f]
-.  ft CB
-.  Text \\$@
-.  ft \\n[@+f]
-.  rr @+f
-..
-.c --------------------------------------------------------------------
-.de CI
-.  nr @+f \\n[.f]
-.  ft CI
-.  Text \\$@
-.  ft \\n[@+f]
-.  rr @+f
-..
-.c --------------------------------------------------------------------
-.de CR
-.  nr @+f \\n[.f]
-.  ft CR
-.  Text \\$@
-.  ft \\n[@+f]
-.  rr @+f
 ..
 .c --------------------------------------------------------------------
 .c .Env_var  (<env_var_name> [<punct>])
@@ -353,9 +329,9 @@ This is the classical macro package for UNIX manual pages
 .B doc
 .TP+
 .B mdoc
-An alternative macro package for man\~pages mainly used in BSD systems; it
-provides many new features, but is not the standard for man\~pages;
-see
+An alternative macro package for man\~pages mainly used in BSD
+systems; it provides many new features, but it is not the standard for
+man\~pages; see
 .BR groff_mdoc (@MAN7EXT@).
 .
 .
@@ -363,7 +339,7 @@ see
 .SS "Full Packages"
 .\" --------------------------------------------------------------------
 .
-The packages in this section are provide a complete set of macros for
+The packages in this section provide a complete set of macros for
 writing documents of any kind, up to whole books.
 .
 They are similar in functionality; it is a matter of taste which one
@@ -374,8 +350,7 @@ to use.
 .B me
 The classical
 .I me
-macro package;
-see
+macro package; see
 .BR groff_me (@MAN7EXT@).
 .
 .
@@ -383,8 +358,7 @@ see
 .B mm
 The semi-classical
 .I mm
-macro package;
-see
+macro package; see
 .BR groff_mm (@MAN7EXT@).
 .
 .
@@ -406,8 +380,7 @@ See
 .B ms
 The classical
 .I ms
-macro package;
-see
+macro package; see
 .BR groff_ms (@MAN7EXT@).
 .
 .
@@ -501,13 +474,12 @@ the
 .I man
 macro package may be specified as on of the following four methods:
 .
-.RS
-.P
+.IP
 .Shell_cmd "groff\~\-m\~man"
 .Shell_cmd "groff\~\-man"
 .Shell_cmd "groff\~\-mman"
 .Shell_cmd "groff\~\-m\~an"
-.RE
+.
 .
 .P
 Recent packages that do not start with
@@ -520,15 +492,14 @@ For example, the
 .I www
 macro package may be specified only as one of the two methods:
 .
-.P
-.RS
+.IP
 .Shell_cmd "groff\~\-m\~www"
 .Shell_cmd "groff\~\-mwww"
-.RE
+.
 .
 .P
 Obviously, variants like
-.CR -mmwww
+.I -mmwww
 would not make much sense.
 .
 .
@@ -537,7 +508,7 @@ A second strange feature of classical troff was to name macro files
 according to
 .BIR tmac. name .
 In modern operating systems, the type of a file is specified as
-postfix, the extension.
+postfix, the file name extension.
 .
 Again, groff copes with this situation by searching both
 .IB anything .tmac
@@ -626,34 +597,41 @@ For example, suppose a macro file is stored as
 and is used in some document called
 .IR docu.roff .
 .
+.
 .P
 At run-time, the formatter call for this is
-.RS
-.P
+.
+.IP
 .Shell_cmd "groff\~\-m\~" "macrofile\~document.roff"
-.RE
+.
 .
 .P
 To include the macro file directly in the document either
-.RS
-.CR .mso macrofile.tmac
-.RE
+.
+.IP
+.Example
+.  Text .mso macrofile.tmac
+./Example
+.
+.P
 is used or
-.RS
-.CR .so @MACRODIR@/macros.tmac
-.RE
+.
+.IP
+.Example
+.  Text .so @MACRODIR@/macros.tmac
+./Example
+.
 .
 .P
 In both cases, the formatter is called with
-.RS
+.IP
 .Shell_cmd "troff\~\-s\~" docu.roff
-.RE
 .
 .
 .P
 If you want to write your own groff macro file, call it
 .IB whatever .tmac
-and put it in some directory of the tmac path, cf.\& section
+and put it in some directory of the tmac path, see section
 .BR FILES .
 Then documents can include it with the
 .request mso
@@ -665,6 +643,8 @@ request or the option
 .\" --------------------------------------------------------------------
 .SH CONVENTION
 .\" --------------------------------------------------------------------
+.
+.\" This section does not fit into the framework of this document.
 .
 There is a convention that is supported by many modern roff
 type-setters and
@@ -805,11 +785,11 @@ say.
 .ds @1 \[rs]f[I]\[rs]\[rs]$0\[rs]f[]\"
 .ds @2 arguments:\"
 .Example
-.Text .ds midpart was called with
-.Text .de print_args
-.Text .\~\~tm\~\*[@1]\~\[rs]\[rs]*[midpart]\~\[rs]\[rs]n[.$]\~\*[@2]
-.Text .\~\~tm\~\[rs]\[rs]$*
-.Text ..
+.  Text .ds midpart was called with
+.  Text .de print_args
+.  Text .\~\~tm\~\*[@1]\~\[rs]\[rs]*[midpart]\~\[rs]\[rs]n[.$]\~\*[@2]
+.  Text .\~\~tm\~\[rs]\[rs]$*
+.  Text ..
 ./Example
 .rm @1
 .rm @2
@@ -819,12 +799,12 @@ say.
 When calling this macro by
 .P
 .Example
-.Text .print_args arg1 arg2
+.  Text .print_args arg1 arg2
 ./Example
 .P
 the following text is printed to the terminal:
 .Example
-\f[CI]print_args\f[] was called with the following 2 arguments:
+.  Text \f[CI]print_args\f[] was called with the following 2 arguments:
 arg1 arg2
 ./Example
 .
@@ -884,13 +864,13 @@ For example, the code above can be written in a simpler way by
 .ds @1 \[rs]f[I]\[rs]$0\[rs]f[]\"
 .ds @2 arguments:\"
 .Example
-.Text .eo
-.Text .ds midpart was called with
-.Text .de print_args
-.Text .\~\~tm\~\*[@1]\~\[rs]*[midpart]\~\[rs]n[.$]\~\*[@2]
-.Text .\~\~tm\~\[rs]$*
-.Text ..
-.Text .ec
+.  Text .eo
+.  Text .ds midpart was called with
+.  Text .de print_args
+.  Text .\~\~tm\~\*[@1]\~\[rs]*[midpart]\~\[rs]n[.$]\~\*[@2]
+.  Text .\~\~tm\~\[rs]$*
+.  Text ..
+.  Text .ec
 ./Example
 .rm @1
 .rm @2
@@ -921,11 +901,11 @@ with a leading dot.
 .
 .IP
 .Example
-.Text .de Text
-.Text .\~\~if (\[rs]\[rs]n[.$] == 0)\~\[rs]
-.Text .\~\~\~\~return
-.Text .\~nop\~\[rs])\[rs]\[rs]$*[rs]\)
-.Text ..
+.  Text .de Text
+.  Text .\~\~if (\[rs]\[rs]n[.$] == 0)\~\[rs]
+.  Text .\~\~\~\~return
+.  Text .\~nop\~\[rs])\[rs]\[rs]$*[rs]\)
+.  Text ..
 ./Example
 .
 .Topic
@@ -938,9 +918,9 @@ acts like a comment line:
 .
 .IP
 .Example
-.Text .de\~c
-.Text ..
-.Text .c\~This\~is\~like\~a\~comment\~line.
+.  Text .de\~c
+.  Text ..
+.  Text .c\~This\~is\~like\~a\~comment\~line.
 ./Example
 .
 .Topic
@@ -976,7 +956,7 @@ Most of the problems arising with diversions can be avoided if you are
 conscious about the fact that diversions always deal with complete
 lines.
 .
-If diversions are used if the line buffer has not been flashed,
+If diversions are used when the line buffer has not been flashed,
 strange results are produced; not knowing this, many people get
 desperate about diversions.
 .
@@ -1106,7 +1086,8 @@ it is maintained by
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
 .
-A complete reference for all parts of the groff system is found in the groff
+A complete reference for all parts of the groff system is found in the
+groff
 .BR info (1)
 file.
 .
