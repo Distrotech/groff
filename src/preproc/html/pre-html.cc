@@ -1151,7 +1151,7 @@ static void alterDeviceTo (int argc, char *argv[], int toImage)
 char **addZ (int argc, char *argv[])
 {
   char **new_argv = (char **)malloc((argc+2)*sizeof(char *));
-  int   i=0;
+  int    i=0;
 
   if (new_argv == NULL)
     sys_fatal("malloc");
@@ -1241,7 +1241,7 @@ int char_buffer::do_html(int argc, char *argv[])
 char **addps4html (int argc, char *argv[])
 {
   char **new_argv = (char **)malloc((argc+2)*sizeof(char *));
-  int   i=0;
+  int    i=0;
 
   if (new_argv == NULL)
     sys_fatal("malloc");
@@ -1329,43 +1329,61 @@ void usage(FILE *stream)
 }
 
 /*
- *  scanArguments - scans for -P-i, -P-o, -P-D and -P-I arguments.
+ *  scanArguments - scans for all arguments including -P-i, -P-o, -P-D and -P-I. It returns
+ *                  the argument index of the first non option.
  */
 
 int scanArguments (int argc, char **argv)
 {
-  int i=1;
-
-  while (i<argc) {
-    if (strncmp(argv[i], "-D", 2) == 0) {
-      image_dir = (char *)(argv[i]+2);
-    } else if (strncmp(argv[i], "-I", 2) == 0) {
-      image_template = (char *)(argv[i]+2);
-    } else if (strncmp(argv[i], "-i", 2) == 0) {
-      image_res = atoi((char *)(argv[i]+2));
-    } else if (strncmp(argv[i], "-o", 2) == 0) {
-      vertical_offset = atoi((char *)(argv[i]+2));
-    } else if ((strcmp(argv[i], "-v") == 0)
-	       || (strcmp(argv[i], "--version") == 0)) {
+  int c;
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((c = getopt_long(argc, argv, "+o:i:I:D:F:vd?lrn", long_options, NULL))
+	 != EOF)
+    switch(c) {
+    case 'v':
       printf("GNU pre-grohtml (groff) version %s\n", Version_string);
       exit(0);
-    } else if ((strcmp(argv[i], "-h") == 0)
-	       || (strcmp(argv[i], "--help") == 0)
-	       || (strcmp(argv[i], "-?") == 0)) {
-      usage(stdout);
-      exit(0);
-    } else if (strcmp(argv[i], TROFF_COMMAND) == 0) {
-      /* remember troff argument number */
-      troff_arg = i;
+    case 'D':
+      image_dir = optarg;
+      break;
+    case 'I':
+      image_template = optarg;
+      break;
+    case 'i':
+      image_res = atoi(optarg);
+      break;
+    case 'o':
+      vertical_offset = atoi(optarg);
+      break;
+    case 'd':
 #if defined(DEBUGGING)
-    } else if (strcmp(argv[i], "-d") == 0) {
       debug = TRUE;
 #endif
-    } else if (argv[i][0] != '-') {
-      return( i );
+      break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
+    case '?':
+      usage(stderr);
+      exit(1);
+      break;
+    default:
+      break;
     }
-    i++;
+
+  while (optind < argc) {
+    if (strcmp(argv[optind], "troff") == 0)
+      troff_arg = optind;
+    else if (argv[optind][0] != '-')
+      return optind;
+    optind++;
   }
+
   return( argc );
 }
 

@@ -2900,6 +2900,9 @@ int main(int argc, char **argv)
     case 'r':
       auto_rule = FALSE;
       break;
+    case 'd':
+      /* handled by pre-html */
+      break;
     case 'o':
       /* handled by pre-html */
       break;

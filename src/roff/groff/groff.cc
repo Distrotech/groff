@@ -77,6 +77,7 @@ public:
   const char *get_name();
   void append_arg(const char *, const char * = 0);
   void insert_arg(const char *);
+  void insert_args(string s);
   void clear_args();
   char **get_argv();
   void print(int is_last, FILE *fp);
@@ -283,14 +284,9 @@ int main(int argc, char **argv)
 
   if (predriver && !zflag) {
     commands[TROFF_INDEX].insert_arg(commands[TROFF_INDEX].get_name());
-    const char *p = Pargs.contents();
-    const char *end = p + Pargs.length();
-    while (p < end) {
-      // pass the device arguments to the predrivers as well
-      commands[TROFF_INDEX].insert_arg(p);
-      p = strchr(p, '\0') + 1;
-    }
     commands[TROFF_INDEX].set_name(predriver);
+    // pass the device arguments to the predrivers as well
+    commands[TROFF_INDEX].insert_args(Pargs);
   }
 
   const char *real_driver = 0;
@@ -547,6 +543,27 @@ void possible_command::insert_arg(const char *s)
   str += '\0';
   str += args;
   args = str;
+}
+
+void possible_command::insert_args(string s)
+{
+  const char *p =  s.contents();
+  const char *end = p + s.length();
+  int l = 0;
+  if (p >= end)
+    return;
+  // find the total number of arguments in our string
+  do {
+    l++;
+    p = strchr(p, '\0') + 1;
+  } while (p < end);
+  // now insert each argument preserving the order
+  for (int i = l - 1; i >= 0; i--) {
+    p = s.contents();
+    for (int j = 0; j < i; j++)
+      p = strchr(p, '\0') + 1;
+    insert_arg(p);
+  }
 }
 
 void possible_command::build_argv()

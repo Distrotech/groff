@@ -42,6 +42,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #define S_IROTH 0004
 #endif
 
+#ifndef S_IWUSR
+#define S_IWUSR 0200
+#endif
+
 #ifndef S_ISREG
 #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
 #endif
