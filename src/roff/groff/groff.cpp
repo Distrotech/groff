@@ -340,7 +340,7 @@ int main(int argc, char **argv)
   }
   if (gxditview_flag)
     commands[POST_INDEX].append_arg("-");
-  if (lflag && !Xflag && spooler) {
+  if (lflag && !vflag && !Xflag && spooler) {
     commands[SPOOL_INDEX].set_name(BSHELL);
     commands[SPOOL_INDEX].append_arg(BSHELL_DASH_C);
     Largs += '\0';
