@@ -19,6 +19,12 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+/*
+ * PostScript documentation:
+ *   http://www.adobe.com/products/postscript/pdfs/PLRM.pdf
+ *   http://partners.adobe.com/asn/developer/pdfs/tn/5001.DSC_Spec.pdf
+ */
+
 #include "driver.h"
 #include "stringclass.h"
 #include "cset.h"
@@ -530,6 +536,11 @@ class ps_printer : public printer {
   void define_encoding(const char *, int);
   void reencode_font(ps_font *);
   void set_color(color *c, int fill = 0);
+
+  const char *media_name();
+  int media_width();
+  int media_height();
+  void media_set();
 
 public:
   ps_printer(double);
@@ -1137,6 +1148,71 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
   output_hpos = output_vpos = -1;
 }
 
+const char *ps_printer::media_name()
+{
+  return "Default";
+}
+
+int ps_printer::media_width()
+{
+  /*
+   *  NOTE:
+   *  Although paper size is defined as real numbers, it seems to be
+   *  a common convention to round to the nearest postscript unit.
+   *  For example, a4 is really 595.276 by 841.89 but we use 595 by 842.
+   *
+   *  This is probably a good compromise, especially since the
+   *  Postscript definition specifies that media
+   *  matching should be done within a tolerance of 5 units.
+   */
+  return int(font::paperwidth*72.0/font::res + 0.5);
+}
+
+int ps_printer::media_height()
+{
+  return int(paper_length*72.0/font::res + 0.5);
+}
+
+void ps_printer::media_set()
+{
+  /*
+   *  The setpagedevice implies an erasepage and initgraphics, and
+   *  must thus precede any descriptions for a particular page.
+   *
+   *  NOTE:
+   *  This does not work with ps2pdf when there are included eps
+   *  segments that contain PageSize/setpagedevice.
+   *  This might be a bug in ghostscript -- must be investigated.
+   *  Using setpagedevice in an .eps is really the wrong concept, anyway.
+   *
+   *  NOTE:
+   *  For the future, this is really the place to insert other
+   *  media selection features, like:
+   *    MediaColor
+   *    MediaPosition
+   *    MediaType
+   *    MediaWeight
+   *    MediaClass
+   *    TraySwitch
+   *    ManualFeed
+   *    InsertSheet
+   *    Duplex
+   *    Collate
+   *    ProcessColorModel
+   *  etc.
+   */
+  if (!(broken_flags & (USE_PS_ADOBE_2_0|NO_PAPERSIZE))) { 
+    out.begin_comment("BeginFeature:")
+       .comment_arg("*PageSize")
+       .comment_arg(media_name())
+       .end_comment();
+    fprintf(out.get_file(),
+	    "<< /PageSize [ %d %d ] /ImagingBBox null >> setpagedevice\n",
+	    media_width(), media_height());
+    out.simple_comment("EndFeature");
+  }
+}
+
 void ps_printer::begin_page(int n)
 {
   out.begin_comment("Page:")
@@ -1149,8 +1225,17 @@ void ps_printer::begin_page(int n)
   output_line_thickness = -1;
   output_hpos = output_vpos = -1;
   ndefined_styles = 0;
-  out.simple_comment("BeginPageSetup")
-     .put_symbol("BP")
+  out.simple_comment("BeginPageSetup");
+
+#if 0
+  /*
+   *  NOTE:
+   *  may decide to do this once per page
+   */
+  media_set();
+#endif
+
+  out.put_symbol("BP")
      .simple_comment("EndPageSetup");
   if (sbuf_color != default_color)
     set_color(&sbuf_color);
@@ -1213,11 +1298,19 @@ ps_printer::~ps_printer()
   out.begin_comment("PageOrder:")
      .comment_arg("Ascend")
      .end_comment();
-#if 0
-  fprintf(out.get_file(), "%%%%DocumentMedia: () %g %g 0 () ()\n",
-	  font::paperwidth*72.0/font::res,
-	  paper_length*72.0/font::res);
-#endif
+
+  if (!(broken_flags & NO_PAPERSIZE)) {
+      fprintf(out.get_file(),
+	      "%%%%DocumentMedia: %s %d %d %d %s %s\n",
+	      media_name(),			/* tag name of media */
+	      media_width(),			/* media width */
+	      media_height(),			/* media height */
+	      0,				/* weight in g/m2 */
+	      "()",				/* paper color, e.g. white */
+	      "()"				/* preprinted form type */
+      );
+  }
+
   out.begin_comment("Orientation:")
      .comment_arg(landscape_flag ? "Landscape" : "Portrait")
      .end_comment(); 
@@ -1226,12 +1319,29 @@ ps_printer::~ps_printer()
     fprintf(out.get_file(), "%%%%Requirements: numcopies(%d)\n", ncopies);
   }
   out.simple_comment("EndComments");
+
+  if (!(broken_flags & NO_PAPERSIZE)) {
+    /* gv works fine without this one, but it really should be there. */
+    out.simple_comment("BeginDefaults");
+    fprintf(out.get_file(), "%%%%PageMedia: %s\n", media_name());
+    out.simple_comment("EndDefaults");
+  }
+
   out.simple_comment("BeginProlog");
   rm.output_prolog(out);
   if (!(broken_flags & NO_SETUP_SECTION)) {
     out.simple_comment("EndProlog");
     out.simple_comment("BeginSetup");
   }
+
+#if 1
+  /*
+   * Define paper (i.e., media) size for entire document here.
+   * This allows ps2pdf to correctly determine page size, for instance.
+   */
+  media_set();
+#endif
+
   rm.document_setup(out);
   out.put_symbol(dict_name)
      .put_symbol("begin");

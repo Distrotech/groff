@@ -1,3 +1,39 @@
+2003-02-27  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/texinfo.tex: New version 2003-02-11.06.
+
+	* tmac/doc-common (Dt): Don't emit warning for unknown section.
+	* tmac/groff_mdoc.man: Fix description of `Dt'.
+
+2003-02-26  Egil Kvaleberg  <egil@kvaleberg.no>
+
+	* font/devps/prologue.ps: Fix for included Postscript that does
+	a setpagedevice -- which is now safely ignored.
+
+	* NEWS: Updated.
+
+	* src/devices/grops/ps.cc: Now sets the page size in the generated
+	document.  This is done in two ways: Via a %%-comment for gv and
+	the like, and via a PageSize and setpagedevice for programs that
+	understands Postscript proper, like ps2pdf.
+
+	* src/devices/grops/ps.h: New broken-flag to avoid page size
+	definition, if required.
+
+	* src/devices/grops/grops.man: New broken-flag 16 mentioned.
+
+	* doc/Makefile.in: Added -nosetpage flag (via @pnmtops_nosetpage@).
+	Not really necessary due to the fix in prologue.ps, but cleaner:
+	Such information does not belong in an .eps file.
+
+	* doc/Makefile.sub: See doc/Makefile.in.
+
+2003-02-26  Ralph Corderoy  <ralph@inputplus.co.uk>
+
+	* aclocal.m4 (GROFF_PNMTOPS_NOSETPAGE): Use P2 format for testing
+	instead of P1 since the latter is broken in some versions of netpbm.
+	* configure: Updated.
+
 2003-02-26  Larry Kollar  <kollar@alltel.net>
 
 	Make man pages more customizable.

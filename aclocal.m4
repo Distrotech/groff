@@ -87,7 +87,7 @@ dnl check to see whether pnmtops can handle the -nosetpage option
 dnl
 AC_DEFUN(GROFF_PNMTOPS_NOSETPAGE,
 [AC_MSG_CHECKING([whether pnmtops can handle the -nosetpage option])
-if echo P1 2 2 0 1 1 0 | pnmtops -nosetpage > /dev/null 2>&1 ; then
+if echo P2 2 2 255 0 1 2 0 | pnmtops -nosetpage > /dev/null 2>&1 ; then
     AC_MSG_RESULT(yes)
     pnmtops_nosetpage="pnmtops -nosetpage"
 else

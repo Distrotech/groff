@@ -1,4 +1,4 @@
-# Copyright (C) 2002 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 #      Written by Werner Lemberg <wl@gnu.org>
 # 
 # This file is part of groff.
@@ -122,7 +122,8 @@ groff: groff.texinfo
 	$(MAKEINFO) -I$(srcdir) $(srcdir)/groff.texinfo
 
 gnu.eps: gnu.xpm
-	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | pnmtops -noturn -rle >$@
+	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | \
+          $(pnmtops_nosetpage) -noturn -rle >$@
 gnu.png: gnu.xpm
 	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | pnmtopng >$@
 

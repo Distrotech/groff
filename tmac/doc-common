@@ -180,7 +180,7 @@
 .eo
 .
 .
-.\" punctuation values (suffix=3, prefix = 4)
+.\" punctuation values (suffix=3, prefix=4)
 .
 .nr doc-punct. 3
 .nr doc-punct, 3
@@ -321,11 +321,12 @@
 .          as doc-volume " \*[doc-volume-ds-\$2]
 .    \}\}\}
 .    el \{\
-.      ie "\$2"unass" .ds doc-volume DRAFT
-.      el \{ .ie "\$2"draft" .ds doc-volume DRAFT
-.      el \{ .ie "\$2"paper" .ds doc-volume UNTITLED
-.      el \
-.        tm mdoc warning: .Dt: unknown section `\$2' (#\n[.c])
+.      ie "\$2"unass" \
+.        ds doc-volume DRAFT
+.      el \{ .ie "\$2"draft" \
+.        ds doc-volume DRAFT
+.      el .if "\$2"paper" \
+.        ds doc-volume UNTITLED
 .      \}\}
 .      if \A\$3 \{\
 .        if d doc-volume-ds-\$3 \
