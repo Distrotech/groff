@@ -3863,28 +3863,54 @@ Other diagnostics consist of usage statements and are self explanatory.
 .
 .Sh "FORMATTING WITH GROFF, TROFF, AND NROFF"
 .
-The
-.Nm \-mdoc
-package does not need compatibility mode with
-.Xr groff .
-.Pp
-The package inhibits page breaks, and the headers and footers
-which normally occur at those breaks with
-.Xr nroff ,
+By default, the package inhibits page breaks, headers, and footers if
+displayed with a
+.Tn TTY
+device like
+.Sq latin-1
+or
+.Sq unicode
 to make the manual more efficient for viewing on-line.
-At the moment,
-.Xr groff
-with
-.Fl T Ns Ar ascii
-does eject the imaginary remainder of the page at end of file.
-The inhibiting of the page breaks makes
-.Xr nroff Ns 'd
-files unsuitable for hardcopy.
-There is a register named
-.Ql \&cR
-which can be set to zero in the site dependent style file
-.Pa /usr/\:src/\:share/\:tmac/\:doc-nroff
-to restore the old style behavior.
+This behaviour can be changed (e.g.\& to create a hardcopy of the
+.Tn TTY
+output) by setting the register
+.Ql cR
+to zero while calling groff:
+.Pp
+.Dl groff -Tlatin1 -rcR=0 -mdoc foo.man > foo.txt
+.Pp
+.Nm \-mdoc
+is completely independent from the font size; it simply uses the value which
+is in effect before loading
+.Nm \-mdoc .
+For example, to prepare an eleven-point
+.Tn DVI
+printout, create a small file called
+.Pa 11pt.tmac ,
+containing the following two lines:
+.Pp
+.Dl .ps 10.95z
+.Dl .vs 13.6p
+.Pp
+.Ql .ps
+specifies the font size (10.95\|pt as used by TeX),
+.Ql .vs
+the vertical spacing (13.6\|pt) between adjacent lines.
+For historical reasons, you should always use
+.Ql z
+instead of 
+.Ql p
+as the scale indicator for the
+.Ql .ps
+request.
+Now you can say
+.Pp
+.Dl groff -Tdvi -M. -m11pt -mdoc foo.man > foo.dvi
+.Pp
+The
+.Fl M
+option adds a directory (the current one in our example) to the search path
+for macro files.
 .
 .
 .Sh FILES
