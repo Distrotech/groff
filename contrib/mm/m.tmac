@@ -402,7 +402,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" ####### module par #################################
 .nr par@ind-flag 1	\" indent on following P if Pt=2
 .nr hd*last-pos -1
-.nr hd*last-hpos -1
+.nr hd*last-hsize -1
 .nr par*number 0 1
 .af par*number 01
 .nr par*number2 0 1
@@ -418,17 +418,17 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" paragraph
 .de P
 .\"	skip P if previous heading
-.ie !((\\n[nl]=\\n[hd*last-pos]):(\\n[nl]=(\\n[hd*last-pos]-.5v))) \{\
-.	if \\n[D]>2 .tm Paragraph nl=\\n[nl]
-.	par@doit \\$*
-.	if \\n[Np] \\n[H1].\\n+[par*number]\ \ \c
+.if \\n[D]>2 \{\
+.	tm Paragraph nl=\\n[nl], last=\\n[hd*last-pos]
+.	tm Paragraph .k=\\n[.k], hsize=\\n[hd*last-hsize]
 .\}
-.el .if !(\\n[hd*last-hpos]=\\n[.k]) \{\
-.	if \\n[D]>2 .tm Paragraph nl=\\n[nl]
-.	par@doit \\$*
-.	if \\n[Np] \\n[H1].\\n+[par*number]\ \ \c
+.if !((\\n[nl]=\\n[hd*last-pos]):(\\n[hd*last-hsize]=\\n[.k])) \{\
+.	if \\n[D]>2 .tm Paragraph set ind-flag=1
+.	nr par@ind-flag 1
 .\}
-.nr par@ind-flag 1
+.\" any collected unprinted text?
+.par@doit \\$*
+.if \\n[Np] \\n[H1].\\n+[par*number]\ \ \c
 ..
 .\"------------
 .de nP
@@ -438,7 +438,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	par@doit \\$*
 \\n[H2].\\n+[par*number2]\ \ \c
 .\}
-.el .if !(\\n[hd*last-hpos]=\\n[.k]) \{\
+.el .if !(\\n[hd*last-hsize]=\\n[.k]) \{\
 .	if \\n[D]>2 .tm Paragraph nl=\\n[nl]
 .	par@doit \\$*
 \\n[H2].\\n+[par*number2]\ \ \c
@@ -771,10 +771,12 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .		shift
 .	\}
 .\}
+.\" let mmroff know the filename and id
 .if \\n[Ref]>0 \{\
 .	tm .\\\\" PIC id \\n[pict*id]
 .	tm .\\\\" PIC file \\*[pict*f]
 .\}
+.\" these are defined by mmroff in the second pass
 .if d pict*file!\\n[pict*id] \{\
 .	ds pict*f \\*[pict*file!\\n[pict*id]]
 .	nr pict*llx \\n[pict*llx!\\n[pict*id]]
@@ -810,27 +812,31 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	ds pict*h "
 .	if \\n[pict*h]>0 .ds pict*h \\n[pict*h]
 .	\"
-.	ne \\n[pict*h]u
+.	ne \\n[pict*h]u-1v
 .	\"
 .	\" these lines are copied and modified from tmac.pspic.
 .	\" Originally written by James Clark
 .	br
 .	ie \\n[pict*box]>0 \{\
-\h'\\n[pict*in]u'\
+\v'-1v'\h'\\n[pict*in]u'\
 \Z'\D'p 0 \\n[pict*h]u \\n[pict*w]u 0 0 -\\n[pict*h]u''\
 \v'\\n[pict*h]u'\X'ps: import \\*[pict*f] \
-\\n[pict*llx] \\n[pict*lly] \\n[pict*urx] \\n[pict*ury] \\n[pict*w] \\n[pict*h]'
+\\n[pict*llx] \\n[pict*lly] \
+\\n[pict*urx] \\n[pict*ury] \
+\\n[pict*w] \\n[pict*h]'
 .\}
 .	el \{\
-\h'\\n[pict*in]u'\
+\v'-1v'\h'\\n[pict*in]u'\
 \X'ps: invis'\
 \Z'\D'p 0 \\n[pict*h]u \\n[pict*w]u 0 0 -\\n[pict*h]u''\
 \X'ps: endinvis'\
 \v'\\n[pict*h]u'\X'ps: import \\*[pict*f] \
-\\n[pict*llx] \\n[pict*lly] \\n[pict*urx] \\n[pict*ury] \\n[pict*w] \\n[pict*h]'
+\\n[pict*llx] \\n[pict*lly] \
+\\n[pict*urx] \\n[pict*ury] \
+\\n[pict*w] \\n[pict*h]'
 .	\}
 .	br
-.	sp \\n[pict*h]u
+.	sp \\n[pict*h]u-1v
 .\}
 ..
 .\" external picture
@@ -847,7 +853,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr pict*h \\$2
 .ds pict*name "External picture
 .if !''$3' .ds pict*name \\$3
-.ne \\n[pict*h]u-1v
+.ne \\n[pict*h]u
 .sp \\n[pict*h]u-1v
 .nr pict*ind 0
 .if !\\n[pict*adj] .nr pict*ind (u;(\\n[.l]-\\n[.i]-\\n[pict*w])/2)
@@ -1064,7 +1070,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"---------- user macro HZ ----------
 .if d HZ .HZ \\n[hd*level] \\n[hd*arg1] "\\$2\\$3"
 .nr hd*last-pos \\n[nl]
-.nr hd*last-hpos \\n[.k]
+.nr hd*last-hsize \\n[.k]
 .nr par@ind-flag 0
 ..
 .\"--------
@@ -3108,7 +3114,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"########################### module ind ############################
 .\" Support for mgs-style indexing, borrowed from mgs.
 .de IX
-.tm \\$1\t\\$2\t\\$3\t\\$4 ... \\n[%]
+.	tm \\$1\t\\$2\t\\$3\t\\$4 ... \\n[%]
 ..
 .\"--------------------
 .\" Another type of index system
