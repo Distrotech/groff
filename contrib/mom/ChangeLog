@@ -1,3 +1,36 @@
+*Jun 3 2004
+
+o Rewrote the routines dealing with _FAMILY, _FONT, _SIZE, _COLOR
+  and _QUAD.  A single macro for each checks for the calling alias
+  (e.g. TITLE_FAMILY in _FAMILY), and performs the appropriate
+  action.
+
+o All "COLOUR" aliases of "COLOR", no matter where, have been
+  removed.
+
+o Added cover and doc cover page generation.
+
+o Added reference macros COVERTITLE, DOC_COVERTITLE, MISC and
+  COPYRIGHT (for use with covers only)
+
+o Fixed EL and TN so they don't spring page traps; in nofill modes
+  the preceding input line must be terminated by \c.
+
+o Added #T_MARGIN_LEAD_ADJ to DO_B_MARGIN, DO_T_MARGIN and NEWPAGE
+  to ensure accurate placement of first lines on new pages when
+  docprocessing is not taking place.
+
+o Made NEWPAGE it's own macro; formerly just an alias of .bp.
+
+o Made BREAKQUOTE obsolete; rewrote sections of footnote handling,
+  including adding support macros to deal with processing of
+  footnotes that were started inside quotes, blockquotes and
+  epigraphs.
+
+o Added a TERMINATE .em to docprocessing (except letters) to ensure
+  that deferred footnotes print on the last page of a doc.
+
+
 *Mar 15 2004
 
 o Added color support

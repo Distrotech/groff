@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
@@ -30,6 +31,7 @@ nearly indispensable) routines to simplify typesetting.
 	<li><a href="#TRAP">TRAP</a> (suspend/re-invoke traps)
 	<li><a href="#SMARTQUOTES">SMARTQUOTES</a> (convert typewriter doublequotes to proper doublequotes)
 	<li><a href="#CAPS">CAPS</a> (convert to upper case)
+	<li><a href="#STRING">STRING</a> (user-definable strings)
 	<br>
 	<li><strong>Underscore/underline</strong>
 	<ul>
@@ -56,6 +58,7 @@ nearly indispensable) routines to simplify typesetting.
 			<li><a href="#DROPCAP_FAMILY">DROPCAP_FAMILY</a> (change drop cap family)
 			<li><a href="#DROPCAP_FONT">DROPCAP_FONT</a> (change drop cap font)
 			<li><a href="#DROPCAP_ADJUST">DROPCAP_ADJUST</a> (alter size of drop cap)
+			<li><a href="#DROPCAP_COLOR">DROPCAP_COLOR</a> (change colour of drop cap) 
 			<li><a href="#DROPCAP_GUTTER">DROPCAP_GUTTER</a> (change space between drop cap and running text) 
 		</ul>
 	</ul>
@@ -220,13 +223,8 @@ something automatically.  Commonly, this is near the bottom of
 the page, where automatic behind-the-scenes processing is needed
 in order for one page to finish and another to start.
 <p>
-Sometimes, traps get sprung when you don't want them, notably
-when using the
-<a href="typesetting.html#EL">EL</a>
-and
-<a href="typesetting.html#TN">TN</a>
-macros.  If this happens, surround just the offending macros and
-input lines with
+Sometimes, traps get sprung when you don't want them.  If this
+happens, surround just the offending macros and input lines with
 <p>
 <pre>
 	.TRAP OFF
@@ -237,10 +235,6 @@ input lines with
 <strong>TRAP</strong> is a toggle, therefore any argument 
 turns it off (i.e. suspends the trap), and no argument turns it
 (back) on.
-<p>
-Have a look at the <strong>IMPORTANT</strong> sections
-of <strong>EL</strong> and <strong>TN</strong> to see
-<strong>TRAP</strong> in action.
 <p>
 
 <!---SMARTQUOTES--->
@@ -398,6 +392,51 @@ produces, on output
 <pre>
 	ALL WORK AND NO PLAY MAKES JACK A DULL BOY.
 </pre>
+
+<!---STRING--->
+
+<hr width="66%" align="left">
+<a name="STRING"><h3><u>User-defined strings</u></h3></a>
+<br>
+Macro: <strong>STRING</strong> <var>&lt;name&gt; &lt;what you want in the string&gt;</var>
+
+<p>
+You may find sometimes that you have to type out portions of text
+repeatedly.  If you'd like not to wear out your fingers, you can
+define a &quot;string&quot; that, whenever you call it by name,
+outputs whatever you put into it.
+<p>
+For example, say you're creating a document that repeatedly uses
+the phrase &quot;the Montreal/Windsor corridor&quot;.  Instead of
+typing all that out every time, you could define a string, like
+this:
+<p>
+<pre>
+	.STRING mw the Montreal/Windsor corridor
+</pre>
+
+Once a string is defined, you can call it any time with the
+<a href="definitions.html#INLINES">inline escape</a>
+<kbd>\*[&lt;stringname&gt;]</kbd>.  Using the example string above
+<p>
+<pre>
+	The schedule for trains along \*[mw]:
+</pre>
+
+produces, on output
+<p>
+<pre>
+	The schedule for trains along the Montreal/Windsor corridor:
+</pre>
+
+<strong>NOTE:</strong> Be very careful not to put any spaces at the
+ends of strings you're defining, unless you want them.  Everything
+after the name argument you pass to <strong>STRING</strong> goes
+into the string, including trailing spaces.
+<p>
+<strong>Experts: STRING</strong> is an alias for <strong>ds</strong>.
+You can use either, or mix 'n' match with impunity.
+<p>
 
 <!---UNDERSCORE--->
 
@@ -942,6 +981,18 @@ therefore do not append any
 to the argument.  And always be sure to prepend the plus or
 minus sign, depending on whether you want the drop cap larger or
 smaller.
+
+
+<h3><a name="DROPCAP_COLOR"><u>DROPCAP_COLOR</u></a></h3>
+
+If you'd like your drop cap colourized, simply invoke
+<strong>DROPCAP_COLOR</strong> with the name of a colour you've already
+created (&quot;initialized&quot;) with
+<a href="color.html#NEWCOLOR">NEWCOLOR</a>
+or
+<a href="color.html#XCOLOR">XCOLOR</a>.  Only the drop cap will be
+colourized; all other text will remain at the current colour
+default (usually black).
 
 <h3><a name="DROPCAP_GUTTER"><u>DROPCAP_GUTTER</u></a></h3>
 

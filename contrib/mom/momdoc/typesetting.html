@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
@@ -546,9 +547,15 @@ processing the current page and move you to the top of a new one
 (subject to the top margin set with
 <a href="#T_MARGIN">T_MARGIN</a>.
 <p>
-<strong>Experts:</strong> <strong>NEWPAGE</strong> is an alias of
-<strong>.bp</strong>.  You can use either, or mix 'n' match with
-impunity.
+<strong>Experts:</strong> Prior to version 1.1.9,
+<strong>NEWPAGE</strong> was simply an alias of
+<strong>.bp</strong>.  As of 1.1.9, <strong>NEWPAGE</strong>,
+is its own <strong>mom</strong> macro.  While the new macro
+should be backwardly compatible with documents created using
+pre-1.1.9 <strong>mom</strong>s, I suggest that from this version
+onward, if you were in the habit of using <strong>.bp</strong>
+whenever you wanted to break to a new page, you now begin to use
+<strong>NEWPAGE</strong> instead.
 <p>
 <hr>
 
@@ -1079,6 +1086,11 @@ You can use either, or mix 'n' match with impunity.
 <a name="EL"><h3><u>Manually break a line without advancing on the page</u></h3></a>
 <br>
 Macro: <strong>EL</strong>
+<br>
+<em>*In nofill modes (LEFT, RIGHT, CENTER), you must terminate the
+line preceding EL with the \c inline escape. See the
+<a href="#EL_NOTE">NOTE</a>,
+below.</em>
 
 <p>
 The mnemonic "EL" is borrowed from old Compugraphic typesetting
@@ -1090,7 +1102,8 @@ with no linefeed.
 <em>Note to groff jocks:</em> <strong>EL</strong> is
 unrelated to groff's <strong>.el</strong>.  If you find the
 similarity confusing, you may want to alias <strong>EL</strong> as
-<strong>EOL</strong>.
+something else (but don't use <strong>EOL</strong>; it's already
+taken.)
 
 <p>
 <strong>EL</strong>'s function is simple: it breaks a line without
@@ -1129,47 +1142,48 @@ you don't have to recalculate the extra space.
 from Compugraphic), which is covered in the section
 <a href="#ALDRLD">Vertical movement</a>.
 <p>
-<strong>IMPORTANT:</strong>
-<strong>EL</strong> does not work as advertised on the last
+<a name="EL_NOTE"><strong>NOTE:</strong></a>
+In versions of mom prior to 1.1.9, <strong>EL</strong> did not
+always work as advertised on the last
 <a name="TERMS_OUTPUTLINE">output line</a>
-of pages that contain a footer trap (e.g. one set with
+of pages that contained a footer trap (e.g. one set with
 <a href="#B_MARGIN">B_MARGIN</a>
 or in  documents formatted using the
 <a href="docprocessing.html#DOCPROCESSING">document processing macros</a>).
-The reason is that the <strong>EL</strong> macro itself deposits
-a line break that trips the trap (hey, I like that --
-&quot;trips the trap&quot;), and once the trap has been sprung,
-<strong>mom</strong> can't recover.  She places the line after
-the <strong>EL</strong> on the next page.
 <p>
-If you need <strong>EL</strong> functionality on the last line of a
-page that has a footer trap, turn the trap off by surrounding the
-line to be <strong>EL</strong>'d with
-<a href="goodies.html#TRAP">TRAP</a>
-requests, as in following example.
-<p>
-<pre>
-	.TRAP OFF  \" Turn trap off
-	3.		   \" Input the first line
-	.EL        \" Invoke EL...
-	.TRAP      \" ...and turn trap back on *before* inputting next line
-	\*[FP12]Establish, once and for all, if 42 really is the answer.
-</pre>
-
-The above looks something like this upon output:
+<strong>EL</strong> has been re-written so that this should no longer be the
+case.  However, in order for it to work in the
+<a href="definitions.html#TERMS_NOFILL">nofill</a>
+modes
+(<a href="#LRC">LEFT</a>,
+<a href="#LRC">RIGHT</a>
+or
+<a href="#LRC">CENTER</a>),
+you must always &quot;join&quot; <strong>.EL</strong> to the line
+before it using the
+<a href="#JOIN">\c</a>
+<a href="definitions.html#TERMS_INLINES">inline escape</a>,
+like this:
 <p>
 <pre>
-	3.  Establish, once and for all, if 42 really is the answer.
+	.LEFT
+	A line I don't want to advance\c
+	.EL
 </pre>
 
-with &quot;3.&quot; flush at the left margin, and &quot;Establish,
-once and for all...&quot; on the same line as &quot;3.&quot; but
-starting 12 points in from the left margin.
+Conversely, in
+<a href="definitions.html#TERMS_FILLED">fill modes</a>
+(<a href="#QUAD">QUAD LEFT</a>,
+<a href="#QUAD">QUAD RIGHT</a>,
+<a href="#QUAD">QUAD CENTER</a>
+or
+<a href="#JUSTIFY">JUSTIFY</a>),
+the <strong>\c</strong> must not be used.
 <p>
-If you hadn't turned the trap off for <kbd>.EL</kbd>,
-&quot;3.&quot; would have appeared at the bottom of the page by
-itself, with &quot;Establish, once and for all...&quot;
-appearing at the top of the next page.
+If <strong>EL</strong> is used after a macro or a groff
+<a href="definitions.html#TERMS_PRIMITIVES">primitive</a>,
+you don't have to worry about this, regardless of the fill mode.
+Just type <kbd>.EL</kbd>
 <p>
 
 <!---SP--->
@@ -1807,7 +1821,7 @@ off.
 <p>
 Kerning of individual character pairs can be controlled with the
 <a href="definitions.html#TERMS_INLINES">inline escapes</a>
-<strong>\*[BU #]</strong> and <strong>\*[FU #]</strong>.  See
+<strong>\*[BU &lt;n&gt;]</strong> and <strong>\*[FU &lt;n&gt;]</strong>.  See
 <a href="inlines.html#INLINE_KERNING_MOM">Inline Escapes, kerning</a>.
 <p>
 
@@ -2993,6 +3007,11 @@ not 6 picas plus the 2 pica indent.
 <br>
 Macro: <strong>TN</strong>
 <br>
+<em>*In tabs that aren't given the QUAD argument when they're set up
+with TAB_SET or ST, you must terminate the line preceding TN with
+the \c inline escape.  See the
+<a href="#TN_NOTE">ADDITIONAL NOTE</a>,
+below.</em>
 
 <p>
 <strong>TN</strong> moves over to the next tab in numeric
@@ -3028,36 +3047,45 @@ The above example, assuming tabs numbered from 1 to 4, should be entered
 	Yet more text
 </pre>
 <p>
-<strong>ADDITIONAL NOTE:</strong> <strong>TN</strong> is like
-<a href="#EL">EL</a>
-in that it doesn't work as advertised on the last line before a
-footer trap is sprung.  If you need to use <strong>TN</strong> on
-the last line of a page that has a footer trap, turn the trap off by
-surrounding the line to be <strong>TN</strong>'d with
-<a href="goodies.html#TRAP">TRAP</a>,
-requests, as in the following example.
+<a name="TN_NOTE"><strong>ADDITIONAL NOTE:</strong></a>
+In versions of mom prior to 1.1.9, <strong>TN</strong> did not
+always work as advertised on the last
+<a name="TERMS_OUTPUTLINE">output line</a>
+of pages that contained a footer trap (e.g. one set with
+<a href="#B_MARGIN">B_MARGIN</a>
+or in  documents formatted using the
+<a href="docprocessing.html#DOCPROCESSING">document processing macros</a>).
+<p>
+<strong>TN</strong> has been re-written so that this should no longer be the
+case.  However, in order for it to work in tabs that have not been
+given a <kbd>QUAD</kbd> argument (see
+<a href="#TAB_SET">TAB_SET</a>
+and
+<a href="#ST">ST</a>)
+you must always &quot;join&quot; <strong>.TN</strong> to the line
+before it using the
+<a href="#JOIN">\c</a>
+<a href="definitions.html#TERMS_INLINES">inline escape</a>,
+as in the following example:
 <p>
 <pre>
 	.TAB_SET 1 0  1P  L
 	.TAB_SET 2 1P 20P L
 	.TAB 1
-	.TRAP OFF  \" Turn trap off
-	1.         \" Input the first line
-	.TN        \" Invoke TN...
-	.TRAP      \" ...and turn trap back on *before* inputting next line
+	1.\c
+	.TN
 	The first rule of survival is &quot;make and keep good friends.&quot;
 </pre>
 
-The above, at the bottom of a page, will look something like this:
+When output, the example will look like this:
 <p>
 <pre>
 	1.  The first rule of survival is &quot;make and keep good friends.&quot;
 </pre>
 
-If you hadn't turned the trap off before <kbd>.TN</kbd>,
-&quot;1.&quot; would have appeared as the last line on the page,
-with &quot;The first rule of survival...&quot; being the first
-line on the next page.
+Conversely, if you did give a <kbd>QUAD</kbd> argument
+to <strong>TAB_SET</strong> or <strong>ST</strong>, the
+<strong>\c</strong> must not be used.
 <p>
 
 <!---TQ--->
@@ -3765,7 +3793,7 @@ now also be invoked as</em> <strong>ILQ, IRQ</strong> <em>and</em>
 <strong>IBQ</strong><em>.  Both forms are acceptable.</em>
 <p>
 Without an argument, the macros to quit indents merely restore your
-original left margin and line length.  The measures stored in the
+original margins and line length.  The measures stored in the
 indent macros themselves are saved so you can call them again without
 having to supply a measure.
 <p>
@@ -3784,5 +3812,6 @@ the values for all indent styles at once.
 <a href="definitions.html#TOP">Prev</a>&nbsp;&nbsp;
 <a href="#TOP">Top</a>&nbsp;&nbsp;
 <a href="toc.html">Back to Table of Contents</a>
+
 </body>
 </html>

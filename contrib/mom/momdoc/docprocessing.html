@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
@@ -37,8 +38,11 @@
 			<li><a href="#SUBTITLE">SUBTITLE</a>
 			<li><a href="#AUTHOR">AUTHOR</a>
 			<li><a href="#CHAPTER">CHAPTER</a>
+			<li><a href="#CHAPTER_TITLE">CHAPTER_TITLE</a>
 			<li><a href="#DRAFT">DRAFT</a>
 			<li><a href="#REVISION">REVISION</a>
+			<li><a href="#COPYRIGHT">COPYRIGHT</a>
+			<li><a href="#MISC">MISC</a>
 		</ul>
 		<li><a href="#DOCSTYLE_MACROS"><strong>The Docstyle Macros</strong></a>
 		<ul>
@@ -438,11 +442,16 @@ some reference information.  The reference macros are:
 <ul>
 	<li>TITLE
 	<li>DOCTITLE
+	<li>COVERTITLE
 	<li>SUBTITLE
 	<li>AUTHOR
 	<li>CHAPTER -- the chapter number
 	<li>DRAFT -- the draft number
 	<li>REVISION -- the revision number
+	<li>COPYRIGHT -- only used on cover pages
+	<li>MISC -- only used on cover pages
+	<li>COVER_TITLE -- only on cover pages; only if needed
+	<li>DOC_COVER_TITLE -- only on document cover pages; only if needed
 </ul>
 <p>
 You can use as many or as few as you wish, although at a minimum,
@@ -512,7 +521,10 @@ here to change <strong>mom</strong>'s document defaults (paper
 size, margins, family, point size, line space, rag, etc), or
 any of the document processing macros that set/change/control
 the appearance of document elements.  Think of this as the
-&quot;style-sheet &quot; section of a document.
+&quot;style-sheet &quot; section of a document.  And please note:
+you MUST give <strong>mom</strong> a
+<a href="#PRINTSTYLE">PRINTSTYLE</a>
+directive <strong>before</strong> making any such changes.
 <p>
 Joe Blow wants his story printed in Helvetica, 12 on 14, rag
 right, with
@@ -647,8 +659,12 @@ document processing macros.
 	<li><a href="#SUBTITLE">SUBTITLE</a>
 	<li><a href="#AUTHOR">AUTHOR</a>
 	<li><a href="#CHAPTER">CHAPTER</a>
+	<li><a href="#CHAPTER_TITLE">CHAPTER_TITLE</a>
 	<li><a href="#DRAFT">DRAFT</a>
 	<li><a href="#REVISION">REVISION</a>
+	<li><a href="#COPYRIGHT">COPYRIGHT</a>
+	<li><a href="#MISC">MISC</a>
+	<li><a href="#COVERTITLE">COVERTITLE</a>
 </ul>
 <br>
 
@@ -685,7 +701,7 @@ title of the opus, not &quot;CHAPTER whatever&quot;.
 
 <hr width="66%" align="left">
 <p>
-<a name="DOC_TITLE"></a>
+<a name="DOCTITLE"></a>
 Macro: <strong>DOCTITLE</strong> <var>&quot;&lt;overall document title&gt;&quot;</var>
 <br>
 <em>*Argument must be enclosed in double-quotes</em>
@@ -794,6 +810,10 @@ single line
 She also puts the same thing in the middle of
 <a href="definitions.html#TERMS_HEADER">page headers</a>.
 <p>
+Please note that if your argument to <strong>CHAPTER</strong> runs
+to more than one word, you must enclose the argument in
+double-quotes.
+<p>
 If you're not using <strong>DOCTYPE CHAPTER</strong>, the macro serves
 no purpose and <strong>mom</strong> ignores it.
 <p>
@@ -823,7 +843,7 @@ Macro: <strong>CHAPTER_TITLE</strong> <var>&quot;&lt;chapter title&gt;&quot;</va
 <p>
 If, either in addition to or instead of &quot;Chapter #&quot; appearing
 at the top of chapters, you want your chapter to have a title, use
-<strong>CHAPTER_TITLE</strong> with your title enclosed in
+<strong>CHAPTER_TITLE</strong>, with your title enclosed in
 double-quotes, like this:
 <p>
 <pre>
@@ -832,8 +852,8 @@ double-quotes, like this:
 
 If you've used
 <a href="#CHAPTER">CHAPTER</a> to give the chapter a number,
-&quot;Chapter #&quot; and the title will appear at the top of the
-chapter, like this:
+both &quot;Chapter #&quot; and the chapter title will appear at the
+top of the chapter, like this:
 <p>
 <pre>
                        Chapter 1
@@ -991,8 +1011,80 @@ roll your own <strong>.DRAFT</strong> and/or
 <strong>.DRAFT_STRING</strong> as well, simply supply arguments to
 either or both.
 <p>
-<hr>
 
+<!---COPYRIGHT--->
+
+<hr width="66%" align="left">
+<p>
+<a name="COPYRIGHT"></a>
+Macro: <strong>COPYRIGHT</strong> <var>&quot;&lt;copyright info&gt;&quot;</var>
+
+<p>
+The argument passed to <strong>COPYRIGHT</strong> is only used on
+cover or doc cover pages, and then only if the argument COPYRIGHT is
+passed to
+<a href="cover.html#COVER">COVER</a>
+or
+<a href="cover.html#DOC_COVER">DOC_COVER</a>.
+Do not include the copyright symbol in the argument passed to
+<strong>COPYRIGHT</strong>; <strong>mom</strong> puts it in for
+you.
+<p>
+
+<!---MISC--->
+
+<hr width="66%" align="left">
+<p>
+<a name="MISC"></a>
+Macro: <strong>MISC</strong> <var>&quot;&lt;argument 1&gt;&quot; [&quot;&lt;argument 2&gt;&quot; &quot;&lt;argument 3&gt;&quot; ...]</var>
+
+<p>
+The argument(s) passed to <strong>MISC</strong> are only used on
+cover or doc cover pages, and then only if the argument MISC is
+passed to
+<a href="cover.html#COVER">COVER</a>
+or
+<a href="cover.html#DOC_COVER">DOC_COVER</a>.
+<strong>MISC</strong> can contain any information you like.  Each
+argument appears on a separate line at the bottom of the cover or
+doc cover page.
+<p>
+For example, if you're submitting an essay where the prof has
+requested that you include the course number, his name and the
+date, you could do
+<p>
+<pre>
+	.MISC &quot;Music History 101&quot; &quot;Professor Hasbeen&quot; &quot;Dec. 24, 2006&quot;
+</pre>
+
+and the information would appear on the essay's cover page.
+<p>
+
+<!---COVER_TITLE--->
+
+<hr width="66%" align="left">
+<p>
+<a name="COVERTITLE"></a>
+Macro: <strong>COVERTITLE</strong> <var>&quot;&lt;user defined cover page title&gt;&quot;</var>
+<br>
+Macro: <strong>DOC_COVERTITLE</strong> <var>&quot;&lt;user defined document cover page title&gt;&quot;</var>
+
+<p>
+The argument passed to <strong>COVERTITLE</strong> or
+<strong>DOC_COVERTITLE</strong>is only used on cover or doc cover
+pages, and then only if the argument COVERTITLE is passed to
+<a href="cover.html#COVER">COVER</a>
+or
+<a href="cover.html#DOC_COVER">DOC_COVER</a>.
+<p>
+The only time you require a <strong>COVERTITLE</strong> or
+<strong>DOC_COVERTITLE</strong>is when none of the required first
+arguments to <strong>COVER</strong> or <strong>DOC_COVER</strong>
+fits your needs for the title you want to appear on cover (or doc
+cover) pages.
+
+<p>
+<hr>
 <!========================================================================>
 
 <a name="DOCSTYLE_MACROS">
@@ -1132,10 +1224,16 @@ a document, or to print it out &quot;typewritten, doubled-spaced&quot;.
 document processing to take place, <strong>mom</strong> requires
 a <strong>PRINTSTYLE</strong>.  If you don't give one,
 <strong>mom</strong> will warn you on stderr and print a single
-page with a nasty message.  Furthermore, <strong>PRINTSTYLE</strong>
-must come before any changes to <strong>mom</strong>'s default
-typestyle parameters.  (This applies primarily to
-<strong>PRINTSTYLE TYPESET</strong>.
+page with a nasty message.
+<p>
+Furthermore, <strong>PRINTSTYLE</strong> must come before any
+changes to <strong>mom</strong>'s default typestyle parameters.
+(This applies primarily to, but is by no means restricted to,
+<strong>PRINTSTYLE TYPESET</strong>.)  <strong>PRINTSTYLE</strong>
+sets up complete &quot;templates&quot; that include default
+papersize, margins, family, fonts, point sizes, and so on.
+Therefore, changes to any aspect of document style must come
+afterwards.
 <p>
 <strong>TYPESET</strong>, as the argument implies, typesets documents
 (by default in Times Roman; see
@@ -1146,20 +1244,22 @@ as well as the
 <a href="definitions.html#STYLE_CONTROL">style control macros</a>
 of document processing.
 <p>
-As mentioned in the above paragraph, <strong>PRINTSTYLE
-TYPESET</strong> must come before any changes to
-<strong>mom</strong>'s default typographic settings.  For example,
+As mentioned above, <strong>PRINTSTYLE TYPESET</strong> must come
+before any changes to <strong>mom</strong>'s default typographic
+settings.  For example,
 
 <pre>
+	.PAPER A4
 	.LS 14
 	.PRINTSTYLE TYPESET
 </pre>
 
-will not changes <strong>mom</strong>'s default document leading
-of 16 points to 14 points, whereas
+will not changes <strong>mom</strong>'s default paper size to A4,
+nor her default document leading 14 points, whereas
 
 <pre>
 	.PRINTSTYLE TYPESET
+	.PAPER A4
 	.LS 14
 </pre>
 
@@ -1261,6 +1361,7 @@ these macros in the midst of a document,
 <strong>.UNDERLINE_SLANT</strong> restore underlining of
 italics and pseudo-italics.
 <p>
+<a name="UNDERLINE_QUOTES"></a>
 Additionally, by default, <strong>mom</strong> underlines
 <a href="definitions.html#TERMS_QUOTES">quotes</a>
 (but not
@@ -1401,11 +1502,35 @@ or have different left and/or right page margins.
 <p>
 To accomplish such alterations, use the appropriate
 <a href="typesetting.html#MACROS_TYPESETTING">typesetting macros</a>
-(listed below) prior to
+(listed below) <strong>after</strong>
+<a href="#PRINTSTYLE">PRINTSTYLE</a>
+and <strong>before</strong>
 <a href="#START">START</a>.
-Do <strong>NOT</strong> use the macros listed in
-<a href="#DOC_PARAM_MACROS">Changing document-wide typesetting parameters after START</a>
-prior to <strong>START</strong>; they are exclusively for use afterwards.
+<p>
+More than one user has, quite understandably, not fully grasped
+the significance of the preceding sentence.  The part they've missed
+is &quot;<u>after <strong>PRINTSTYLE</strong></u>&quot;.
+<p>
+Changes to any aspect of the default look and/or formatting
+of a <strong>mom</strong> document must come after
+<strong>PRINTSTYLE</strong>.  For example, it might seem natural to
+set up page margins at the very top of a document with
+<p>
+<pre>
+	.L_MARGIN 1i
+	.R_MARGIN 1.5i
+</pre>
+
+However, when you invoke <strong>.PRINTSTYLE</strong>, those
+margins will be overridden.  The correct place to set margins--and
+all other changes to the look of a document--is <strong>after
+PRINTSTYLE</strong>.
+
+<p>
+<strong>NOTE:</strong> Don't use the macros listed in <a
+href="#DOC_PARAM_MACROS">Changing document-wide typesetting
+parameters after START</a> prior to <strong>START</strong>; they are
+exclusively for use afterwards.
 <p>
 When used before
 <strong>START</strong>,
@@ -1422,14 +1547,14 @@ the
 	(see note)     headers/footers or page numbers) ends on each page
 
 	PAGE           If you use PAGE, its final four arguments have the
-	               same meaning as L_ R_ T_ and B_MARGIN above.)
+	               same meaning as L_ R_ T_ and B_MARGIN (above).
 
 	LL             The line length for everything on the page;
 	               equivalent to setting the right margin with R_MARGIN
 	FAMILY         The family of all type in the document
 	PT_SIZE        The point size of type in paragraphs; mom uses this
-	               calculate automatic point size changes (e.g. for heads,
-	               footnotes, quotes, headers, etc)
+	               to calculate automatic point size changes (e.g. for
+	               heads, footnotes, quotes, headers, etc)
 	LS/AUTOLEAD**  The leading used in paragraphs; all leading and spacing
 	               of running text is calculated from this
 
@@ -1457,7 +1582,6 @@ document globally (as if you'd entered them <em>before</em>
 
 <a name="LRC_NOTE"></a>
 <h3><u>Special note on .LEFT, .RIGHT and .CENTER prior to START</u></h3>
-<p>
 In a word, these three macros have no effect on document processing
 when invoked prior to <strong>START</strong>.
 <p>
@@ -1477,10 +1601,11 @@ Subsequent invocations of the same tag for which you want the same
 change require that you invoke <strong>LEFT</strong>,
 <strong>RIGHT</strong> or <strong>CENTER</strong> immediately after
 every invocation of the tag.
+<p>
 
 <!---COLOR--->
 <a name="COLOR"><h2><u>Colour</u></h2></a>
-
+<br>
 Although it doesn't really matter where you define/initialize
 colours for use in document processing (see
 <a href="color.html#NEWCOLOR">NEWCOLOR</a>
@@ -1502,6 +1627,26 @@ various document elements (the docheader, heads, linebreaks,
 footnotes, pagenumbers, and so on) must be managed through the use
 of the
 <a href="docelement.html#DOCELEMENT_CONTROL">document element control macros</a>.
+<p>
+<strong>PLEASE NOTE:</strong> If you plan to have <strong>mom</strong>
+generate a
+<a href="docelement.html#TOC">table of contents</a>,
+do NOT embed colour
+<a href="definitions.html#TERMS_INLINES">inline escapes</a>
+(<a href="color.html#COLOR_INLINE">\[&lt;colorname&gt;]</a>)
+in the
+<a href="definitions.html#TERMS_STRINGARGUMENT">string arguments</a>
+given to any of the
+<a href="docprocessing.html#REFERENCE_MACROS">reference macros</a>,
+nor in the string arguments given to
+<a href="docelement.html#HEAD">.HEAD</a>,
+<a href="docelement.html#SUBHEAD">.SUBHEAD</a>
+or
+<a href="docelement.html#PARAHEAD">.PARAHEAD</a>.
+Use, rather, the
+<a href="definitions.html#TERMS_CONTROLMACRO">control macros</a>
+<strong>mom</strong> provides to automatically colourize these
+elements.
 <br>
 
 <!---DOC_LEAD_ADJUST--->
@@ -1681,7 +1826,7 @@ is the prevailing family of the whole document.
 and a &quot;Chapter Title&quot; (as above), you may find the
 <a href="definitions.html#TERMS_LEADING">leading</a>
 a bit cramped (owing to <strong>mom</strong>'s default docheader
-leading.  If this is the case, you can adjust the leading either
+leading).  If this is the case, you can adjust the leading either
 with
 <a href="#ADJUST_LEADING">DOCHEADER_LEAD</a>
 or by including the
@@ -1695,11 +1840,12 @@ in the argument you pass to
 </pre>
 
 
-<h3><u>The docheader macros to:</u></h3>
+<a name="DOCHEADER_CONTROL_INDEX"><h3><u>The docheader macros to:</u></h3></a>
 <ol>
-	<li><a href="#CHANGE_START">Change the starting position</a>
+	<li><a href="#CHANGE_START">Change the starting position of the docheader</a>
+	<li><a href="#DOCHEADER_FAMILY">Change the family of the entire docheader</a>
 	<li><a href="#ADJUST_LEADING">Adjust the docheader leading</a>
-	<li><a href="#CHANGE_FAMILY">Change the family of docheader elements</a>
+	<li><a href="#CHANGE_FAMILY">Change the family of individual docheader elements</a>
 	<li><a href="#CHANGE_FONT">Change the font of docheader elements</a>
 	<li><a href="#CHANGE_COLOR">Change the colour of the docheader</a>
 	<li><a href="#CHANGE_SIZE">Adjust the size of docheader elements</a>
@@ -1741,7 +1887,33 @@ Use
 to place them where you want.
 <p>
 
-<a name="ADJUST_LEADING"><h3><u>2. Adjust the leading</u></h3></a>
+<a name="DOCHEADER_FAMILY"><h3><u>2. Change the family of the entire docheader</u></h3></a>
+<p>
+By default, <strong>mom</strong> sets the docheader in the same
+family used for 
+<a href="definitions.html#TERMS_RUNNING">running text</a>.
+If you'd prefer to have your docheaders set in a different family,
+invoke <strong>DOCHEADER_FAMILY</strong> with the family you want.
+The argument for <strong>DOCHEADER_FAMILY</strong> is the same as
+for
+<a href="typesetting.html#FAMILY">FAMILY</a>.
+<p>
+For example, <strong>mom</strong>'s default family for running text
+is Times Roman.  If you'd like to keep that default, but have the
+docheaders set entirely in Helvetica,
+<p>
+<pre>
+	.DOCHEADER_FAMILY H
+</pre>
+
+is how you'd do it.
+<p>
+Please note that if you use <strong>DOCHEADER_FAMILY</strong>,
+you can still alter the family of individual parts of the docheader
+with the macros listed
+<a href="#CHANGE_FAMILY">here</a>.
+
+<a name="ADJUST_LEADING"><h3><u>3. Adjust the leading</u></h3></a>
 <p>
 The
 <a href="definitions.html#TERMS_LEADING">leading</a>
@@ -1765,7 +1937,7 @@ or subtract from the lead of running text).  No
 is required; points is assumed.
 <p>
 
-<a name="CHANGE_FAMILY"><h3><u>3. Change the family of docheader elements</u></h3></a>
+<a name="CHANGE_FAMILY"><h3><u>4. Change the family of docheader elements</u></h3></a>
 <p>
 The following macros let you change the
 <a href="definitions.html#TERMS_FAMILY">family</a>
@@ -1785,7 +1957,7 @@ would with
 <a href="typesetting.html#FAMILY">FAMILY</a>.
 <p>
 
-<a name="CHANGE_FONT"><h3><u>4. Change the font of docheader elements</u></h3></a>
+<a name="CHANGE_FONT"><h3><u>5. Change the font of docheader elements</u></h3></a>
 <p>
 The following macros let you change the
 <a href="definitions.html#TERMS_FONT">font</a>
@@ -1806,7 +1978,7 @@ they do for
 <a href="typesetting.html#FONT">FT</a>.
 <p>
 
-<a name="CHANGE_COLOR"><h3><u>5. Change the colour of the docheader</u></h3></a>
+<a name="CHANGE_COLOR"><h3><u>6. Change the colour of the docheader elements individually</u></h3></a>
 <p>
 The following macros let you change the color of each docheader
 element separately.  You must pre-define (or
@@ -1816,23 +1988,32 @@ or
 <a href="color.html#XCOLOR">XCOLOR</a>.
 <p>
 <ul>
-<li><strong>TITLE_COLOR</strong> <var>&lt;colorname&gt;</var>
-<li><strong>SUBTITLE_COLOR</strong> <var>&lt;colorname&gt;</var>
-<li><strong>ATTRIBUTE_COLOR</strong> <var>&lt;colorname&gt;</var>
-(the &quot;by&quot; string that precedes the author[s] name[s])
-<li><strong>AUTHOR_COLOR</strong> <var>&lt;colorname&gt;</var>
-<li><strong>DOCTYPE_COLOR</strong>  <var>&lt;colorname&gt;</var> (if
-<a href="#DOCTYPE">DOCTYPE</a> is NAMED)
+	<li><strong>TITLE_COLOR</strong> <var>&lt;colorname&gt;</var>
+	<li><strong>CHAPTER_TITLE_COLOR</strong> <var>&lt;colorname&gt;</var>
+	<ul>
+        <li><strong>Note: CHAPTER_TITLE_COLOR</strong> is needed
+            only if you enter both a <strong>CHAPTER</strong>
+            reference macro AND a <strong>CHAPTER_TITLE</strong>
+            macro.  Otherwise, the macro,
+            <strong>TITLE_COLOR</strong> takes care of colorizing
+            the chapter header.
+	</ul>
+	<li><strong>SUBTITLE_COLOR</strong> <var>&lt;colorname&gt;</var>
+	<li><strong>ATTRIBUTE_COLOR</strong> <var>&lt;colorname&gt;</var>
+		(the &quot;by&quot; string that precedes the author[s] name[s])
+	<li><strong>AUTHOR_COLOR</strong> <var>&lt;colorname&gt;</var>
+	<li><strong>DOCTYPE_COLOR</strong>  <var>&lt;colorname&gt;</var> (if
+		<a href="#DOCTYPE">DOCTYPE</a> is NAMED)
 </ul>
 <p>
 It is not recommended that you embed colour (with the
 <a href="definitions.html#TERMS_INLINES">inline escape</a>,
 <a href="color.html#COLOR_INLINE">\*[&lt;colorname&gt;]</a>)
 in the strings passed to
-<strong>TITLE</strong>, <strong>SUBTITLE</strong>,
-<strong>AUTHOR</strong> or the name you give <strong>DOCTYPE
-NAMED</strong>.  The strings passed to these macros are used to
-generate page
+<strong>TITLE</strong>, <strong>CHAPTER_TITLE</strong>,
+<strong>SUBTITLE</strong>, <strong>AUTHOR</strong> or the name you
+give <strong>DOCTYPE NAMED</strong>.  The strings passed to these
+macros are used to generate page
 <a href="definitions.html#TERMS_HEADER">headers</a>
 and
 <a href="definitions.html#TERMS_FOOTER">footers</a>.
@@ -1840,13 +2021,14 @@ An embedded colour will cause the string to be colourized any time
 it appears in headers or footers.  (If you want headers or footers
 colourized, or parts thereof, use the header/footer control macros
 <p>
+<a name="DOCHEADER_COLOR"></a>
 If you want to colourize the entire docheader, use the macro
 <p>
 <ul>
 <li><strong>DOCHEADER_COLOR</strong> <var>&lt;color name&gt;</var>.
 </ul>
 
-<a name="CHANGE_SIZE"><h3><u>6. Adjust the size of docheader elements</u></h3></a>
+<a name="CHANGE_SIZE"><h3><u>7. Adjust the size of docheader elements</u></h3></a>
 <p>
 The following macros let you adjust the point size of each docheader
 element separately.
@@ -1881,7 +2063,7 @@ default = +3
 Simply pass the appropriate macro the size adjustment you want.
 <p>
 
-<a name="CHANGE_ATTRIBUTE"><h3><u>7. Change the attribution string (&quot;by&quot;)</u></h3></a>
+<a name="CHANGE_ATTRIBUTE"><h3><u>8. Change the attribution string (&quot;by&quot;)</u></h3></a>
 <p>
 If you're not writing in English, you can change what
 <strong>mom</strong> prints where &quot;by&quot; appears in
@@ -1911,7 +2093,7 @@ in the argument to <strong>ATTRIBUTE_STRING</strong>.  For
 example,
 <p>
 <pre>
-	.ATTRIBUTE_STRING "\f[HBI]\*S[-2p] by \*S[+2p]\*[PREV]"
+	.ATTRIBUTE_STRING "\f[HBI]\*[SIZE -2p] by \*[SIZE +2p]\*[PREV]"
 </pre>
 
 would set &quot;by&quot; in Helvetica bold italic, 2 points
@@ -1995,12 +2177,10 @@ output in columns is just too ghastly for her to bear.
 <a href="typesetting.html#TYPESETTING_TABS">typesetting tabs</a>
 and
 <a href="typesetting.html#STRING_TABS">string tabs</a>)
-behave normally during document processing EXCEPT when
-<strong>COLUMNS</strong> are enabled.  Your tabs will work in the
-document column in which they were originally set, but not across
-columns.  When <strong>mom</strong> (or you) breaks to a new column,
-you must redefine your tabs to make them function properly in the
-new column.
+behave as you'd expect during document processing, even when
+<strong>COLUMNS</strong> are enabled.  Tab structures set up
+during document processing carry over from page to page and column
+to column.
 
 <a name="BREAKING_COLUMNS"></a>
 <h3><u>Breaking columns manually</u></h3>
@@ -2091,7 +2271,7 @@ parameters of a document <em>before</em>
 using
 <a href="typesetting.html#MACROS_TYPESETTING">typesetting macros</a>
 (<strong>L_MARGIN, FAMILY, PT_SIZE, LS,</strong> etc).  After
-<strong>START</strong>, you must use the following macros to make
+<strong>START</strong>, you MUST use the following macros to make
 global changes to the basic type parameters of a document.
 <p>
 

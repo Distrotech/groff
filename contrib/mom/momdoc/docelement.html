@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html;charset=iso-8859-1">
@@ -703,7 +704,27 @@ before or after
 it any argument (<strong>OFF, QUIT, Q, X</strong>...) cancels its
 effect, meaning that paragraphs will once again NOT be separated by
 a blank line.
-
+<p>
+<strong>NOTE:</strong> If <strong>PARA_SPACE</strong> is on,
+<strong>mom</strong> spaces only those paragraphs that come after
+an &quot;initial&quot; paragraph.  Initial paragraphs are those
+that come immediately after the
+<a href="definitions.html#TERMS_DOCHEADER">docheader</a>,
+<a href="#EPIGRAPH_INTRO">epigraphs</a>,
+<a href="#HEAD_INTRO">heads</a>,
+<a href="#SUBHEAD_INTRO">subheads</a>
+and
+<a href="#LINEBREAK_INTRO">linebreaks</a>.
+(The first paragraph after these document elements requires no
+blank line to separate it from other paragraphs.)
+<p>
+Sometimes, you can be fairly deep into a document before using
+<strong>.PP</strong> for the first time, and when you do, because
+<strong>mom</strong> is still waiting for that &quot;initial&quot;
+paragraph, she doesn't space it with a blank line, even though
+you expect her to.  The simple workaround for this is to invoke
+<strong>.PP</strong> <em>twice</em> (in succession) at the point you
+expect the blank line to appear.
 <br>
 <hr>
 
@@ -795,7 +816,7 @@ underlining, and so on.  Check them out if you're unhappy with
 	<li><a href="#HEAD_INLINES">Vertical inline escapes inside heads</a>
 </ol>
 <p>
-<a name="HEAD_GENERAL"><h3><u>1. Family/font/size/quad</u></h3></a>
+<a name="HEAD_GENERAL"><h3><u>1. Family/font/size/colour/quad</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -914,8 +935,8 @@ For example,
 <p>
 <pre>
 	.HEAD "\[ALD3]Text of head"
-        or
-    .HEAD "\[DOWN 3p]Text of head"
+	    or
+	.HEAD "\[DOWN 3p]Text of head"
 </pre>
 
 will lower the baseline of the head by three points.  Note that
@@ -926,8 +947,8 @@ the escape in the string for each line, like this:
 <p>
 <pre>
 	.HEAD "\[ALD3]First line" "\[ALD3]Next line" 
-        or
-    .HEAD "\[DOWN 3p]First line" "\[DOWN 3p]Next line" 
+	    or
+	.HEAD "\[DOWN 3p]First line" "\[DOWN 3p]Next line" 
 </pre>
 <hr>
 
@@ -1092,7 +1113,7 @@ In addition to the family/font/size/colour/indent control macros,
 there are macros to manage parahead numbering.
 <p>
 <ol>
-	<li><a href="#PARAHEAD_GENERAL">Family/font/colour/size</a>
+	<li><a href="#PARAHEAD_GENERAL">Family/font/size/color</a>
 	<li><a href="#PARAHEAD_INDENT">Indent</a>
 	<li><a href="#NUMBER_PARAHEADS">Numbering</a>
 	<li><a href="#RESET_PARAHEAD_NUMBER">Reset parahead numbering</a>
@@ -1410,7 +1431,7 @@ argument (e.g. OFF, END, X, Q...) to turn it off.  Example:
 	<li><a href="#BREAK_QUOTE">Manually break a footnoted quote that crosses pages/columns</a>
 </ol>
 <p>
-<a name="QUOTE_GENERAL"><h3><u>1. Family/font/size/indent</u></h3></a>
+<a name="QUOTE_GENERAL"><h3><u>1. Family/font/size/colour/indent</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -1462,6 +1483,16 @@ is enabled (see
 <p>
 
 <a name="BREAK_QUOTE"><h3><u>4. Manually break a footnoted quote -- BREAK_QUOTE</u></h3></a>
+<p>
+<strong>NOTE:</strong> <em>As of version 1.1.9, the macro</em>
+<strong>BREAK_QUOTE</strong> <em>has become obsolete (or, at least,
+should have become obsolete.)  It remains here for backward
+compatibility with documents created prior to 1.1.9, and just in
+case, despite my efforts to make it obsolete, you still encounter the
+problem it's supposed to fix.  Should you find yourself having to
+use</em> <strong>BREAK_QUOTE</strong> <em>while running</em> <strong>mom</strong>
+1.1.9 <em>or higher, please notify me immediately.</em>
+
 <p>
 Exceptionally, a quote or blockquote containing a footnote may cross
 a page or column.  When this happens, the footnote marker may not be
@@ -1553,18 +1584,18 @@ with
 <p>
 <strong>NOTE:</strong> The aliases <strong>CITE</strong>
 and <strong>CITATION</strong> may be used in place of the
-<strong>BLOCKQUOTE</strong> tag, but &quot;CITE&quot; and
-&quot;CITATION&quot; must not be used to replace &quot;BLOCKQUOTE&quot;
-in any of the tag's control macros.
+<strong>BLOCKQUOTE</strong> tag, as well as in any of the control
+macros that begin with <strong>BLOCKQUOTE_</strong> or end with
+<strong>_BLOCKQUOTE</strong>.
 
 <a name="BLOCKQUOTE_CONTROL"><h3><u>Blockquote control macros</u></h3></a>
 <ol>
-	<li><a href="#BLOCKQUOTE_GENERAL">Family/font/size/colour/indent</a>
+	<li><a href="#BLOCKQUOTE_GENERAL">Family/font/size/colour/quad/indent</a>
 	<li><a href="#ALWAYS_FULLSPACE_QUOTES">Spacing above and below (typeset only)</a>
 	<li><a href="#BREAK_QUOTE">Manually break a footnoted blockquote that crosses pages/columns</a>
 </ol>
 <p>
-<a name="BLOCKQUOTE_GENERAL"><h3><u>1. Family/font/size/indent</u></h3></a>
+<a name="BLOCKQUOTE_GENERAL"><h3><u>1. Family/font/size/colour/quad/indent</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -1574,6 +1605,7 @@ See
 .BLOCKQUOTE_FONT   default = italic
 .BLOCKQUOTE_SIZE   default = -1 (point)
 .BLOCKQUOTE_COLOR  default = black
+.BLOCKQUOTE_QUAD   default = left
 .QUOTE_INDENT      default = paragraph indent x 3 (typeset); x 2 (typewrite)</a>
                   (note that this macro also sets the left indent for quotes)
 </pre>
@@ -1925,9 +1957,12 @@ When your choice of enumerators is <strong>DIGIT</strong> AND the
 number of items in the list exceeds nine (9), you have to make a
 design decision: should <strong>mom</strong> leave room for the
 extra numeral in two-numeral digits to the right or the left of
-the single-numeral digits?  If you want the extra space to the
-right, just invoke the macro, <strong>PAD_LIST_DIGITS</strong> by
-itself.  This will produce something like
+the single-numeral digits?
+<p>
+If you want the extra space to the right, invoke the macro,
+<strong>.PAD_LIST_DIGITS</strong> (with no argument), after
+<strong>LIST</strong> and before <strong>ITEM</strong>.  This will
+produce something like
 <p>
 <pre>
 	8.  List item
@@ -1991,11 +2026,12 @@ document that's footnote-heavy, you might want to read the following.
 
 <a name="FOOTNOTE_BEHAVIOUR"><h3><u>Footnote behaviour</u></h3></a>
 <p>
-By default, <strong>mom</strong> marks footnotes with
-alternating stars (asterisks) and daggers.  The first footnote
-gets a star, the second a dagger, the third two stars,
-the fourth two daggers, etc.  If you prefer numbered footnotes, rest
-assured <strong>mom</strong> is happy to oblige.
+By default, <strong>mom</strong> marks footnotes with alternating
+stars (asterisks), daggers, and double-daggers.  The first footnote
+gets a star, the second a dagger, the third a double-dagger, the
+fourth two stars, the fifth two daggers, etc.  If you prefer
+numbered footnotes, rest assured <strong>mom</strong> is happy to
+oblige.
 <p>
 A small amount of vertical whitespace and a short horizontal rule
 separate footnotes from the document body.  The amount of whitespace
@@ -2007,10 +2043,18 @@ are always flush with the document's bottom margin.
 <p>
 If <strong>mom</strong> sees that a portion of a footnote cannot
 be fit on its page, she carries that portion over to the next
-page.  If an entire footnote can't be fitted on its page (i.e.
+page.  If an entire footnote can't be fit on its page (i.e.
 <strong>FOOTNOTE</strong> has been called too close to the bottom),
 she defers the footnote to the next page, but sets it with the
 appropriate marker from the previous page.
+<p>
+When footnotes occur within cited text, for example a
+<a href="#QUOTE">QUOTE</a>
+or a
+<a href="#BLOCKQUOTE">BLOCKQUOTE</a>,
+<strong>mom</strong> will usually opt for deferring the footnote
+over to the next page if it allows her to complete the cited text
+on one page.
 <p>
 In the unfortunate happenstance that a deferred footnote is the
 only footnote on its page (i.e. it's marked in the document body with
@@ -2023,21 +2067,38 @@ numbered footnotes that begin at 1 on every page).  The blank line
 makes it clear that the first footnote entry belongs to the previous
 page.
 <p>
-In the circumstance where a deferred footnote is not the only one on
-its page, and is consequently marked by something other than a single
-star, there's no confusion and <strong>mom</strong> doesn't bother
-with the blank line.  (By convention, the first footnote on a page is
-always marked with a single star, so if readers see, say, a dagger or two
-stars marking the first footnote entry, they'll know the entry belongs
-to the previous page).
+In the circumstance where a deferred footnote is not the only one
+on its page, and is consequently marked by something other than a
+single star, there's no confusion and <strong>mom</strong> doesn't
+bother with the blank line.  (By convention, the first footnote on
+a page is always marked with a single star, so if readers see, say,
+a dagger or double-dagger marking the first footnote entry, they'll
+know the entry belongs to the previous page).
 <p>
 Obviously, deferred footnotes aren't an issue if you request numbered
 footnotes that increase incrementally throughout the whole document --
 yet another convenience <strong>mom</strong> has thought of.
 <p>
-Exceptionally, you may encounter problems with footnotes inside
-quotes and blockquotes that cross a page or column.  See
-<a href="#BREAK_QUOTE">BREAK_QUOTE</a>
+While <strong>mom</strong>'s handling of footnotes is
+sophisticated, and tries to take nearly every imaginable situation
+under which they might occur into account, some situations are
+simply impossible from a typographic standpoint.  For example, if
+you have a
+<a href="#HEAD">HEAD</a>
+near the bottom of the page AND that page has some footnotes on it,
+<strong>mom</strong> may simply not have room to set any text under
+the head (normally, she insists on having room for at least one line
+of text beneath a head).  In such an instance, <strong>mom</strong>
+will either set the head, with nothing under it but footnotes,
+or transfer the head to the next page.  Either way, you'll have a
+gaping hole at the bottom of the page.  It's a sort of typographic
+Catch-22, and can only be resolved by you, the writer or formatter
+of the document, adjusting the type on the offending page so as to
+circumvent the problem.
+<p>
+<strong>NOTE:</strong> Exceptionally, you may encounter problems with footnotes inside
+quotes and blockquotes that cross a page or column.  See <a
+href="#BREAK_QUOTE">BREAK_QUOTE</a>
 for a solution.
 <p>
 
@@ -2106,7 +2167,7 @@ above.
 	<li><a href="#FOOTNOTE_RULE_ADJ">Adjust vertical position of footnote separator rule</a>
 </ol>
 <p>
-<a name="FOOTNOTE_GENERAL"><h3><u>1. Family/font/size/quad/lead</u></h3></a>
+<a name="FOOTNOTE_GENERAL"><h3><u>1. Family/font/size/colour/lead/quad</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -2184,7 +2245,7 @@ which sets the length to 1 inch.  Note that a
 is required.  The default is 4
 <a href="definitions.html#TERMS_PICASPOINTS">picas</a>
 for both
-<a href="docprocessing.html#PRINTSTYLE">printstyles</a>.
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLES</a>.
 <p>
 
 <a name="FOOTNOTE_RULE_ADJ"><h3><u>7. Adjust vertical position of footnote separator rule -- FOOTNOTE_RULE_ADJ</u></h3></a>
@@ -2225,13 +2286,18 @@ The use of <strong>FINIS</strong> is optional.  If you invoke it
 <a href="#TOC">TOC</a>
 or
 <a href="#ENDNOTES">ENDNOTES</a>),
-<strong>mom</strong> turns off
-<a href="definitions.html#TERMS_FOOTER">footers</a>
-(if they're on) and page numbering (if page
-numbers are at the bottom of the page) and deposits the word
-END, centred after a blank line, beneath the last
+<strong>mom</strong>
+deposits the word END, centred after a blank line, beneath the last
 line of the document.  END is enclosed between
 <a href="definitions.html#TERMS_EM">em-dashes</a>.
+<p>
+<strong>Please note</strong> that in versions of
+<strong>mom</strong> prior to 1.1.9, <strong>FINIS</strong> used to
+turn off
+<a href="definitions.html#TERMS_FOOTER">footers</a>
+(if they were on) and page numbering (if page numbers were at the
+bottom of the page).  Damned if I can recall why I thought anyone
+would want this behaviour, but it has been removed.
 <p>
 If you're writing in a language other than English, you can
 change what <strong>mom</strong> prints for END with
@@ -2520,14 +2586,23 @@ after the previous invocation.
 
 <a name="ENDNOTE_CONTROL"><h3><u>Endnote control macros</u></h3></a>
 <p>
-Every time you embed an endnote in the body of a document,
-<strong>mom</strong> collects <em>and processes</em> the endnote for
-later outputting when you invoke
-<a href="#ENDNOTES">ENDNOTES</a>.
-For this reason, endnote control macros should always be invoked prior
-to the first instance of
-<a href="#ENDNOTE">ENDNOTE/ENDNOTE OFF</a>.
+<strong>VERY IMPORTANT NOTE!</strong>
 <br>
+Endnote control macros must always be invoked prior to the first
+instance of
+<a href="#ENDNOTE">ENDNOTE/ENDNOTE OFF</a>.
+<p>
+When you embed endnotes in the body of a document,
+<strong>mom</strong> collects <em>and processes</em> them for later
+outputting (when you invoke
+<a href="#ENDNOTES">ENDNOTES</a>).
+By the time you do invoke <strong>ENDNOTES</strong>, it's much too
+late to change your mind about how you want them to look.
+<p>
+My advice?  If you're planning to change the default appearance of
+endnotes pages, set them up prior to
+<a href="docprocessing.html#START">START</a>.
+<p>
 <ol>
 	<li><a href="#ENDNOTES_GENERAL"><strong>General endnotes-pages style control</strong></a>
 		<ul>
@@ -2954,8 +3029,8 @@ See
 <p>
 <pre>
 .ENDNOTE_STRING_FAMILY    default = prevailing document family; default is Times Roman
-.ENDNOTE_STRING_FONT*     default = bold
-.ENDNOTE_STRING_SIZE      default = +1
+.ENDNOTE_STRING_FONT      default = bold
+.ENDNOTE_STRING_SIZE*     default = +1
 .ENDNOTE_STRING_QUAD      default = centred
 
 *Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
@@ -3292,6 +3367,7 @@ the toc.  The choice is yours.
 	    </ul>
 	<li><a href="#TOC_ADDITIONAL"><strong>Additional toc control macros</strong></a>
 	    <ul>
+	        <li><a href="#TOC_TITLE_ENTRY">Change the wording of a toc title entry</a>
 	        <li><a href="#TOC_APPENDS_AUTHOR">Append author(s) to toc title entries</a>
 	        <li><a href="#TOC_RV_SWITCH">TOC_RV_SWITCH</a>
 	        <li><a href="#TOC_PADDING">TOC_PADDING</a>
@@ -3621,6 +3697,51 @@ want an odd, or vice versa.
 <p>
 The same result can be accomplished by outputting a
 <a href="#BLANK_PAGE">BLANKPAGE</a>.
+<p>
+
+<hr width="33%" align="left">
+
+<!---TOC_TITLE_ENTRY--->
+
+<p>
+<a name="TOC_TITLE_ENTRY">
+	Macro: <strong>TOC_TITLE_ENTRY</strong> <var>&lt;&quot;alternate wording for a title entry in the toc&quot;&gt;</var>
+</a>
+<p>
+In 
+<a href="rectoverso.html#COLLATE">collated</a>
+documents, the title of each separate document appears in the table
+of contents.  It may sometimes happen that you don't want the title
+as it appears in the toc to be the same as what appears in
+the
+<a href="definitions.html#TERMS_DOCHEADER">docheader</a>.
+You might, for example, want to shorten it.  Or, in the case of
+chapters where the docheader contains both a chapter number and a
+chapter title, like this
+<p>
+<pre>
+	           Chapter 6
+	Burning Bush -- Maybe God Was Right
+</pre>
+
+you might want only the chapter title, not the chapter number, to
+show up in the toc.  (By default, <strong>TOC</strong> generates
+both.)
+<p>
+If you want to change the wording of a title entry in the toc,
+simply invoke <strong>TOC_TITLE_ENTRY</strong> with the desired
+wording, enclosed in double-quotes.  Using the example, above,
+<p>
+<pre>
+	.CHAPTER 6
+	.CHAPTER_TITLE "Burning Bush -- Maybe God Was Right"
+	.TOC_TITLE_ENTRY "Burning Bush"
+	.DOCTYPE CHAPTER
+</pre>
+
+would identify chapter 6 in the toc simply as &quot;Burning
+Bush&quot;.
+
 <p>
 
 <hr width="33%" align="left">

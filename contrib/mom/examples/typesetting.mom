@@ -1,43 +1,51 @@
+\# Most mom users rely on mom's document processing macros to format
+\# their work.  The doc processing macros take care of all things
+\# typographic and are simple, clear and easy to learn.  The kind of
+\# "by hand" typesetting this file shows off is really geared toward
+\# professional typographers.  Bear in mind, though, that the full
+\# power of mom's typesetting capabilities can be brought to bear
+\# on document processing as well.
+\#
 \# Basic page setup
 \#
 .PAGE 8.5i 11i \" Printer sheet size
 .L_MARGIN 1i   \" Left margin 1 inch
 .R_MARGIN 1i   \" Right margin 1 inch (calculates the line length)
 \#
-\# Refinements
-\#
-.KERN          \" Automatic pairwise kerning
-.SS 0          \" No extra space between sentences
-.HY            \" Hyphenate
-.LIGATURES     \" Automatic ligature generation
-.SMARTQUOTES   \" Enable smartquotes
-\#
 \# Basic type parameters
 \#
-.FAM T         \" Times Roman family
-.FT  B         \" Bold font
+.FAMILY  T     \" Times Roman family
+.FT      B     \" Bold font
 .PT_SIZE 12    \" Point size
-.LS  14        \" Leading (line spacing)
+.LS      14    \" Leading (line spacing)
 .LEFT          \" Set lines flush left, nofill mode
 \#
+\# Refinements
 \#
-.ALD |1i-1v    \" Advance 1 inch from top of paper to first baseline
+.HY            \" Hyphenate
+.KERN          \" Automatic pairwise kerning
+.LIGATURES     \" Automatic ligature generation
+.SMARTQUOTES   \" Enable smartquotes
+.SS 0          \" No extra space between sentences
+\#
+.ALD 1i-1v     \" Advance 1 inch from top of paper to first baseline
 Example 1\*[BU 2]:
 .ALD .25v      \" Advance an extra 1/4 linespace
 .UNDERSCORE 3.75p "T\*[BU 4]asting notes using padding, string tabs \
 and multi-columns"
-.SP            \" Add an extra line space
 \#
+.SP            \" Add an extra line space
 \#
 .FAM H         \" Helvetica family
 .PT_SIZE 10
 .LS  11        \" New leading
 \#
-\# The following uses a combination of padding, string tabs, and the FWD escape
-\# to set up five tabs with 12-point (1-pica) gutters over the full line length.
+\# The following uses a combination of padding, string tabs, and the
+\# FWD escape to set up five tabs with 1-pica gutters stretched over
+\# the full line length.
 \# 
 .SILENT        \" Don't print the next line
-.PAD "\*[ST1]VIN#\*[ST1X]\*[FWD 12p]\*[ST2]ROBE#\*[ST2X]\*[FWD 12p]\*[ST3]NEZ#\*[ST3X]\*[FWD 12p]\*[ST4]BOUCHE#\*[ST4X]\*[FWD 12p]\*[ST5]COMMENTAIRES\*[ST5X]"
+.PAD "\*[ST1]VIN#\*[ST1X]\*[FWD 1P]\*[ST2]ROBE#\*[ST2X]\*[FWD 1P]\*[ST3]NEZ#\*[ST3X]\*[FWD 1P]\*[ST4]BOUCHE#\*[ST4X]\*[FWD 1P]\*[ST5]COMMENTAIRES\*[ST5X]"
 .SILENT OFF    \" Resume normal printing of text
 \#
 \# Now that the string tabs have been marked off, we "set" them.
@@ -47,7 +55,6 @@ and multi-columns"
 .ST 3 L QUAD
 .ST 4 L QUAD
 .ST 5 L QUAD
-\#
 \#
 .TAB 1         \" Call first tab
 .UNDERSCORE "VIN"
@@ -61,11 +68,9 @@ and multi-columns"
 .UNDERSCORE "COMMENTAIRES"
 .TQ            \" Quit tabs
 \#
-\#
 .ALD 6p        \" Advance an extra 6 points
 .FT  R         \" Change font to roman (medium)
 .MCO           \" Turn multi-column mode on
-\#
 \#
 .TAB 1                 \" Notice that this tab gets set line-for-line
 \*[IT]Peelee Island    \" Set italic
@@ -85,9 +90,9 @@ Doux, fruité, bien équilibré avec une bonne acidité.
 .MCR
 .TB 5
 Bon apéro.  Servir avec des plats
-.RW .1
+.RW .1         \" Reduce Whitespace between letters to tighten this line
 indiens ou \%chinois.
-.RW 0
+.RW 0          \" Back to normal spacing between letters
 .BR
 Excellent rapport qualité/prix.
 .MCX 8p        \" Multi-column mode off; advance an extra 8 points
@@ -107,7 +112,7 @@ Odeurs tertiares de cuir, cèdre, violets, eucalyptus, avec une trace
 exotique de Band-Aid*\*[BU 12].
 \#
 \# The \*[BU 12], above, pulls the period back so that it falls
-\# underneath the asterisk. \*[BP<#>] could have been used instead
+\# underneath the asterisk. \*[BP<n>] could have been used instead
 \# if you prefer to use points rather than kern units.
 \#
 .MCR
@@ -125,9 +130,9 @@ Superbe\|!  Une aubaine à ne pas manquer.  Prêt à boire maintenant.
 \# with the text in the tasting notes.  Notice that in order to use a
 \# hanging indent, you must first set a left indent.
 \#
-.FT I          \" Change font to italic
+.FT      I     \" Change font to italic
 .PT_SIZE -.5   \" Reduce point size by 1/2 point
-.LS -.5        \" Reduce leading by 1/2 point
+.LS      -.5   \" Reduce leading by 1/2 point
 .JUSTIFY       \" Set text justified
 \#
 \# Now, move the left margin back by the width of an asterisk plus 2 points...
@@ -161,23 +166,22 @@ Otherwise, it smells like cheap lipstick.
 \# italic font, the letter T doesn't align visually with the rest of
 \# the text.  As already noted, this is an extremely fussy example. :)
 \#
-\#
-\#
 .IQ CLEAR      \" Cancel and clear stored indent values 
 .L_MARGIN 1i   \" Reset left margin to its original value.
 \#
-\#
 .ALD 2P        \" Add 2-picas extra space before next example
-.FAM T
-.FT  B
+\#
+.FAM     T
+.FT      B
 .PT_SIZE 12
-.LS  14
+.LS      14
+\#
 Example 2:
 .ALD .25v
 \#
 .COMMENT       \" COMMENT lets you enter comments without using \# or \"
 In the next line, because the string to be underscored must be
-enclosed by double-quotes, you can't use the double-quote character
+enclosed in double-quotes, you can't use the double-quote character
 itself around the word "Massaging".  We circumvent this by using the
 groff inline escapes \(lq and \(rq (leftquote and rightquote).
 .COMMENT OFF   \" Remember to turn COMMENT off!
@@ -185,16 +189,17 @@ groff inline escapes \(lq and \(rq (leftquote and rightquote).
 .UNDERSCORE 3.75p "\(lqMassaging\(rq \*[BCK 1p]a passage of rag right text"
 .SP            \" Add an extra linespace
 \#
-\#
 .PT_SIZE 12.5
-.LS 14
+.LS      14
 .PT_SIZE -1   \" Reduce point size by 1 point
-Passage using groff defaults
+Passage using groff spacing defaults
+\#
 .ALD .5v      \" Add an extra 1/2 line space
+\#
 .PT_SIZE +1   \" Restore point size
-.QUAD LEFT    \" Set quad left, fill mode
-.IB 3P        \" Indent 3 picas from both the left and right margins
-.FT R
+.QUAD    LEFT \" Set quad left, fill mode
+.IB      3P   \" Indent 3 picas from both the left and right margins
+.FT      R
 The thousand injuries of Fortunato I had borne as I best could;
 but when he ventured upon insult, I vowed revenge.  You, who so well
 know the nature of my soul, will not suppose, however, that I gave
@@ -208,10 +213,10 @@ felt as such to him who has done the wrong.
 .ALD 6p
 \#
 \# The next line is set quad right, nofill mode, 1/2 point smaller
-\# than the preceding text (using the \*S[...] inline escape.
+\# than the preceding text (using the \*[SIZE <n>] inline escape.
 \#
 .RIGHT
-\*S[-.5]\(emEdgar Allen Poe, \*[IT]The Cask of Amontillado\*[PREV]\*S[+.5]
+\*[SIZE -.5]\(emEdgar Allen Poe, \*[IT]The Cask of Amontillado\*[PREV]\*[SIZE +.5]
 .SP            \" Extra linespace
 .IBQ           \" Disable "indent both"
 \#
@@ -229,19 +234,20 @@ felt as such to him who has done the wrong.
 \# them until a pleasing rag is achieved.  The remainder of the little
 \# flaws are fixed with inline escapes.
 \#
-.FT B
+.FT       B
 .PT_SIZE -1
 .LEFT
 The same passage, \*[BU 4]"massaged"
+\#
 .ALD .5v
-.FT R
+\#
+.FT       R
 .PT_SIZE +1 
-.QUAD LEFT
+.QUAD     LEFT
 .HY OFF           \" Turn automatic hyphenation off
 .BR_AT_LINE_KERN  \" Automatically insert a line break (.BR) with each invocation of .RW and .EW 
 .WS +1            \" Increase word space slightly
 .IB               \" Turn "indent both" back on; values are the same as before
-\#
 \#
 The thousand injuries of Fortunato I had borne as I best could; but
 when he ventured upon insult, I \*[BU 2]vowed revenge.  \*[BU 4]Y\*[BU 6]ou,
@@ -264,7 +270,7 @@ when the
 .RW .1
 avenger fails to make himself felt as such to him \*[BU 2]who has done
 the wrong.
-.RW  0
+.RW  0         \" Restore normal kerning
 .WS  +0        \" Restore normal wordspacing
 .ALD 6p
 .PT_SIZE -.5
@@ -274,22 +280,22 @@ the wrong.
 \#
 \#
 .NEWPAGE       \" Start a new page
-.T_MARGIN 1i   \" Set top margin to 1i (approx. equivalent to .ALD |1i-1v above)
+.T_MARGIN 1i   \" Set top margin to 1i (approx. equivalent to .ALD 1i-1v above)
 \#
-\#
-.FAM T
-.FT  B
+.FAM     T
+.FT      B
 .PT_SIZE 12
-.LS  14
+.LS      14
 .LEFT
+\#
 Example 3:
 .ALD .25v
 .UNDERSCORE 3.75p "A \*[BU 2]recipe for enumerated lists using indents"
 .SP .5v        \" Add an extra half line space
-.FAM N         \" New Century Schoolbook family
-.FT  R
+.FAM      N    \" New Century Schoolbook family
+.FT       R
 .PT_SIZE 11
-.LS  13
+.LS      13
 .HY            \" Turn hyphenation back on
 .JUSTIFY       \" Justify text
 This example demonstrates the use of left and hanging indents for
@@ -300,7 +306,6 @@ to use (string) tabs, as seen in Example 4.
 \*[BD]Please note: mom\*[PREV] has macros that allow you to set
 enumerated lists automatically.  These examples merely show hanging
 indents and string tabs in use.
-\#
 \#
 .JUSTIFY       \" Justify text
 .IL \w'\0.\0'  \" Establish a left indent equal to the width of 2 figure spaces plus a period.
@@ -320,7 +325,6 @@ notice the use of the \*[BU 8]\\0 escape sequence in the input text.  It's
 there to ensure that the space after the number/period combination
 always remains the same (i.e. doesn't stretch when the line is
 justified).  That way, the text of each item always lines up perfectly.
-\#
 \#
 .COMMENT
 Now we're going to set a bullet-point list, indented from the text
@@ -366,14 +370,12 @@ list...
 4.\0In order not to make the example too long, we'll stop here.
 .IQ CLEAR      \" Don't forget to cancel and/or clear indents!
 \#
-\#
 .FAM T
 .FT  B
 .PT_SIZE 12
 .LS  14
 .LEFT
 .SP
-\#
 \#
 Example 4:
 .ALD .25v
@@ -394,12 +396,11 @@ is exactly the length of two figure spaces and a period.  The
 second (ST2) is simply "the remainder of the line."
 .COMMENT OFF
 \#
-.SILENT
+.SILENT        \" Don't print any of this
 .PAD "\*[ST1]\0.\0\*[ST1X]\*[ST2]#\*[ST2X]"
 .ST 1 L        \" String tabs must be "set" after being marked off in a line
 .ST 2 J        \" ST 1 will be set flush left, nofill; ST 2 will be justified.
-.SILENT OFF
-\#
+.SILENT OFF    \" Restore printing
 \#
 .TB 1
 1.
@@ -445,7 +446,6 @@ it, lets add in an
 en-dashed sub-sublist.
 .BR  \" We're in a fill mode right now, so you *must* terminate the line with BR
 \#
-\#
 .SILENT
 .PAD "\*[FWD 12p]\*[ST5]\(en\*[ST5X]\*[FWD 4p]\*[ST6]#\*[ST6X]"
 .ST 5 L
@@ -480,11 +480,12 @@ Generally speaking, once you get the hang of string tabs and the
 .TQ
 \#
 .NEWPAGE
-.FAM T
-.FT  B
+.FAM     T
+.FT      B
 .PT_SIZE 12
-.LS  14
+.LS      14
 .LEFT
+\#
 Example 5:
 .ALD .25v
 .UNDERSCORE 3.75p "Word spacing"
@@ -496,7 +497,8 @@ Example 5:
 \# The "label" lines for the following are set in Helvetica bold, one
 \# point smaller than the examples themselves.  This demonstrates the
 \# use of the groff inline escape \f[...] to change both family and
-\# font inline.  It also shows using the mom inline \*S[...].
+\# font inline.  It also shows using the mom inline \*S[...], which is
+\# an alternate form of the inline, \*[SIZE <n>]
 \#
 \f[HB]\*S[-1]Normal word spacing\*S[+1]\*[PREV]
 .FT R
@@ -521,26 +523,25 @@ N\*[BU 1]o\*[BU 1]w \*[BU 1]is the time for all good men to come to the aid of t
 .WS +0
 .SP 1.5v
 \#
-\#
-.FAM T
-.FT  B
+.FAM     T
+.FT      B
 .PT_SIZE 12
-.LS  14
+.LS      14
+\#
 .LEFT
 Example 6:
 .ALD .25v
 .UNDERSCORE 3.75p "Line kerning"
 .ALD 8p
-.FAM P         \" Palatino family
-.FT  R
+.FAM     P     \" Palatino family
+.FT      R
 .PT_SIZE 11
-.LS  15
+.LS      15
 \#
 \# Here, we set up some tabs so the examples can go into facing columns.
 \#
 .TAB_SET 1 0 19.5P L
 .TAB_SET 2 19.5P 19.5P L
-\#
 \#
 .MCO           \" Turn multi-columns on
 .TB 1
@@ -581,24 +582,22 @@ Example 6:
 "But this is \*[IT]important!\/"\*[PREV]she exclaimed.
 .MCX 1.5v
 \#
-\#
-.FAM T
-.FT  B
+.FAM     T
+.FT      B
 .PT_SIZE 12
-.LS  14
+.LS      14
 .LEFT
+\#
 Example 7:
 .ALD .25v
 .UNDERSCORE 3.75p "Cutaround using left\*[FU 2]/right indents, multi columns \
 and a dropcap"
 .SP
 \#
-\#
 .FT R
 .PT_SIZE 11
 .LS 12
 .BR_AT_LINE_KERN OFF    \" In justified text, it's best to have this OFF
-\#
 \#
 .TAB_SET 1  0      18.5P  J
 .TAB_SET 2  20.5P  18.5P  J
@@ -610,7 +609,9 @@ and a dropcap"
 .PSPIC penguin.ps
 .MCR
 .TAB 1
-.DROPCAP_FONT B
+.XCOLOR        red   \" Initialize the X11 color, red
+.DROPCAP_COLOR red
+.DROPCAP_FONT  B
 .DROPCAP L 3 COND 80 \" i.e. the letter L dropped 3 lines, condensed to 80% of its normal width
 .EW .2
 orem ipsum dolor sit amet, consetetur sa\%dip\%scing elitr, sed diam
@@ -620,7 +621,7 @@ sed diam voluptua.
 .TI 1P
 At vero eos et accusam et justo duo dolores et ea rebum.  Stet clita
 kasd gubergren, no sea taki-
-.SPREAD        \" Force justify preceding line before starting indent
+.SPREAD              \" Force justify preceding line before starting indent
 .IR 3.5P
 kimata sanctus est lorem ipsum dolor sit amet.
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
@@ -633,7 +634,7 @@ At
 vero eos et accusam et justo duo dolores et ea rebum.
 .TI
 Stet clita kasd gubergren, no sea ta-
-.SPREAD        \" Force justify preceding line before quitting indent
+.SPREAD             \" Force justify preceding line before quitting indent
 .IRQ
 kimata sanctus est lorem ipsum dolor sit amet.  Lorem ipsum dolor
 sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
