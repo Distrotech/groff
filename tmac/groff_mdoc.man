@@ -3318,15 +3318,11 @@ numerical id of parent of process priority
 .It Fl diag
 Diag lists create section four diagnostic lists and are similar to inset
 lists except callable macros are ignored.
-This list type can't be nested; the flags
-.Fl offset
-and
-.Fl compact
-are ignored
-.Pf ( Fl width
+The flags
+.Fl width
 and
 .Fl xwidth
-are not meaningful in this context).
+are not meaningful in this context.
 .Pp
 Example:
 .
@@ -3528,22 +3524,15 @@ the width of
 .Ao string Ac
 (typeset with a fixed-width font) is taken as the offset.
 .Pp
-If a width is not specified for the tag list type, the first time
+If a width is not specified for the tag list type, every time
 .Ql .It
 is invoked, an attempt is made to determine an appropriate width.
 If the first argument to
 .Ql .It
-is a callable macro, the default width for that macro will be used as if the
-macro name had been supplied as the width (otherwise, the default width of
+is a callable macro, the default width for that macro will be used;
+otherwise, the default width of
 .Ql .No
-is used).
-However, if another item in the list is given with a different callable
-macro name, a new and nested list is assumed.
-This effectively means that
-.Fl width
-or
-.Fl xwidth
-is required for more complicated tag lists.
+is used.
 .It Fl xwidth Ao Ar string Ac
 Interpret
 .Ao string Ac

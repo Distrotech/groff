@@ -2891,10 +2891,13 @@
 .nr doc-list-indent-stack1 0
 .
 .
-.\" NS doc-have-indent global register (bool)
+.\" NS doc-list-have-indent-stackXXX global register (bool)
 .\" NS   an indentation value is active
+.\" NS
+.\" NS limit:
+.\" NS   doc-list-depth
 .
-.nr doc-have-indent 0
+.nr doc-list-have-indent-stack1 0
 .
 .
 .\" NS Bl user macro
@@ -2905,9 +2908,8 @@
 .\" NS modifies:
 .\" NS   doc-arg-ptr
 .\" NS   doc-argXXX
-.\" NS   doc-have-diag-list
 .\" NS   doc-list-depth
-.\" NS   doc-have-indent
+.\" NS   doc-list-have-indent-stackXXX
 .\" NS   doc-list-indent-stackXXX
 .\" NS   doc-list-type-stackXXX
 .\" NS   doc-macro-name
@@ -2930,47 +2932,46 @@
 .  ie        "\$1"-hang" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] hang-list
 .    nr doc-list-indent-stack\n[doc-list-depth] 6n
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-tag" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] tag-list
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-item" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] item-list
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-enum" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] enum-list
 .    nr doc-list-indent-stack\n[doc-list-depth] 3n
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-bullet" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] bullet-list
 .    nr doc-list-indent-stack\n[doc-list-depth] 2n
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-dash" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] dash-list
 .    nr doc-list-indent-stack\n[doc-list-depth] 2n
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-hyphen" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] dash-list
 .    nr doc-list-indent-stack\n[doc-list-depth] 2n
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-inset" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] inset-list
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-diag" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] diag-list
-.    nr doc-have-diag-list 1
 .  \}
 .  el \{ .ie "\$1"-ohang" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] ohang-list
-.    nr doc-have-indent 1
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 1
 .  \}
 .  el \{ .ie "\$1"-column" \{\
 .    ds doc-list-type-stack\n[doc-list-depth] column-list
@@ -2987,6 +2988,7 @@
 .  if !\n[doc-arg-ptr] \{\
 .    doc-Bl-usage
 .    doc-reset-args
+.    nr doc-list-depth -1
 .    return
 .  \}
 .
@@ -3006,10 +3008,11 @@
 .    nr doc-arg-ptr 0
 .    doc-do-Bl-args
 .
+.    in +\n[doc-list-offset-stack\n[doc-list-depth]]u
+.
 .    \" initialize column list
 .    if "\*[doc-list-type-stack\n[doc-list-depth]]"column-list" \{\
 .      doc-set-column-tab \n[doc-num-columns]
-.      nr doc-list-indent-stack\n[doc-list-depth] 0
 '      in -\n[doc-column-indent-width]u
 .      if !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .        sp \n[doc-display-vertical]u
@@ -3282,6 +3285,7 @@
 .  nr doc-reg-dsgv 1
 .  while (\n[doc-reg-dsgv] <= \n[doc-list-depth]) \{\
 .    ds doc-list-type-stack\n[doc-reg-dsgv]-saved "\*[doc-list-type-stack\n[doc-reg-dsgv]]
+.    nr doc-list-have-indent-stack\n[doc-reg-dsgv]-saved \n[doc-list-have-indent-stack\n[doc-reg-dsgv]]
 .    nr doc-list-indent-stack\n[doc-reg-dsgv]-saved \n[doc-list-indent-stack\n[doc-reg-dsgv]]
 .    nr doc-compact-list-stack\n[doc-reg-dsgv]-saved \n[doc-compact-list-stack\n[doc-reg-dsgv]]
 .    ds doc-tag-prefix-stack\n[doc-reg-dsgv]-saved "\*[doc-tag-prefix-stack\n[doc-reg-dsgv]]
@@ -3291,14 +3295,11 @@
 .    nr doc-reg-dsgv +1
 .  \}
 .
-.  nr doc-have-indent-saved \n[doc-have-indent]
 .  ds doc-saved-Pa-font-saved "\*[doc-saved-Pa-font]
 .  nr doc-curr-type-saved \n[doc-curr-type]
 .  ds doc-curr-arg-saved "\*[doc-curr-arg]
-.  nr doc-have-diag-list-saved \n[doc-have-diag-list]
 .  nr doc-diag-list-input-line-count-saved \n[doc-diag-list-input-line-count]
 .  nr doc-num-columns-saved \n[doc-num-columns]
-.  nr doc-next-list-depth-saved \n[doc-next-list-depth]
 .  nr doc-column-indent-width-saved \n[doc-column-indent-width]
 .  nr doc-is-func-saved \n[doc-is-func]
 .  nr doc-have-old-func-saved \n[doc-have-old-func]
@@ -3400,6 +3401,7 @@
 .  nr doc-reg-drgv 0
 .  while (\n[doc-reg-drgv] <= \n[doc-display-depth]) \{\
 .    ds doc-display-type-stack\n[doc-reg-drgv] "\*[doc-display-type-stack\n[doc-reg-drgv]-saved]
+.    nr doc-display-have-indent-stack\n[doc-reg-drgv] \n[doc-display-have-indent-stack\n[doc-reg-drgv]-saved]
 .    nr doc-display-indent-stack\n[doc-reg-drgv] \n[doc-display-indent-stack\n[doc-reg-drgv]-saved]
 .    nr doc-display-ad-stack\n[doc-reg-drgv] \n[doc-display-ad-stack\n[doc-reg-drgv]-saved]
 .    nr doc-display-fi-stack\n[doc-reg-drgv] \n[doc-display-fi-stack\n[doc-reg-drgv]-saved]
@@ -3429,14 +3431,11 @@
 .    nr doc-reg-drgv +1
 .  \}
 .
-.  nr doc-have-indent \n[doc-have-indent-saved]
 .  ds doc-saved-Pa-font "\*[doc-saved-Pa-font-saved]
 .  nr doc-curr-type \n[doc-curr-type-saved]
 .  ds doc-curr-arg "\*[doc-curr-arg-saved]
-.  nr doc-have-diag-list \n[doc-have-diag-list-saved]
 .  nr doc-diag-list-input-line-count \n[doc-diag-list-input-line-count-saved]
 .  nr doc-num-columns \n[doc-num-columns-saved]
-.  nr doc-next-list-depth \n[doc-next-list-depth-saved]
 .  nr doc-column-indent-width \n[doc-column-indent-width-saved]
 .  nr doc-is-func \n[doc-is-func-saved]
 .  nr doc-have-old-func \n[doc-have-old-func-saved]
@@ -3499,7 +3498,6 @@
 .\" NS   end list
 .\" NS
 .\" NS modifies:
-.\" NS   doc-have-diag-list
 .\" NS   doc-list-depth
 .\" NS   doc-macro-name
 .\" NS
@@ -3517,10 +3515,8 @@
 .  ds doc-macro-name El
 .  ds doc-str-El \*[doc-list-type-stack\n[doc-list-depth]]
 .
-.  ie        "\*[doc-str-El]"diag-list" \{\
-.    nr doc-have-diag-list 0
+.  ie        "\*[doc-str-El]"diag-list" \
 .    doc-end-list 0
-.  \}
 .  el \{ .ie "\*[doc-str-El]"column-list" \
 .    doc-end-column-list
 .  el \{ .ie "\*[doc-str-El]"item-list" \
@@ -3836,14 +3832,6 @@
 .als doc-do-list doc-hang-list
 .
 .
-.\" NS doc-have-diag-list global register (bool)
-.\" NS   set if last item was a diag list
-.
-.\" XXX: this should be modified to handle nested lists of any type
-.
-.nr doc-have-diag-list 0
-.
-.
 .\" NS doc-diag-list-input-line-count global register
 .\" NS   saved line number to be checked in next diag-list item
 .
@@ -3862,8 +3850,8 @@
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.ps]
 .
-.  ie \n[doc-have-diag-list] \{\
-.    ie ((\n[.c] - \n[doc-diag-list-input-line-count]) > 1) \
+.  ie ((\n[.c] - \n[doc-diag-list-input-line-count]) > 1) \{\
+.    ie !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .      doc-paragraph
 .    el \
 .      br
@@ -3913,8 +3901,13 @@
 .  ev
 .  box
 .
-.  if !"TagwidtH"\*[doc-tag-width-stack\n[doc-list-depth]]" \
+.  if !"TagwidtH"\*[doc-tag-width-stack\n[doc-list-depth]]" \{\
+.    if !\n[doc-list-have-indent-stack\n[doc-list-depth]] \{\
+.      in -(\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
+.      nr doc-list-have-indent-stack\n[doc-list-depth] 1
+.    \}
 .    doc-get-tag-width
+.  \}
 .  doc-set-vertical-and-indent 1
 .  nr doc-reg-dtl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-dtl]u
@@ -3945,7 +3938,6 @@
 .\" NS   resolve unknown tag width (`tag' list-type only)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-have-indent
 .\" NS   doc-list-indent-stackXXX
 .\" NS   doc-tag-width-stackXXX
 .\" NS
@@ -3970,20 +3962,16 @@
 .\" NS   offset if argument is non-zero)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-have-indent
+.\" NS   doc-list-have-indent-stackXXX
 .
 .de doc-set-vertical-and-indent
-.  ie \n[doc-have-indent] \{\
-.    nr doc-have-indent 0
-.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
-.      sp \n[doc-display-vertical]u
-.    in +\n[doc-list-offset-stack\n[doc-list-depth]]u
+.  if !\n[doc-compact-list-stack\n[doc-list-depth]] \
+.    sp \n[doc-display-vertical]u
+.
+.  if \n[doc-list-have-indent-stack\n[doc-list-depth]] \{\
+.    nr doc-list-have-indent-stack\n[doc-list-depth] 0
 .    if \$1 \
 .      in +(\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
-.  \}
-.  el \{\
-.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
-.      sp \n[doc-display-vertical]u
 .  \}
 .
 .  if !\n[cR] \
@@ -4056,21 +4044,13 @@
 '    in -(\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .
 '  in -\n[doc-list-offset-stack\n[doc-list-depth]]u
-.  nr doc-list-offset-stack\n[doc-list-depth] 0
 .
 .  if (\n[doc-list-depth] <= 0) \
 .    tm mdoc warning: extraneous .El call (#\n[.c])
 .
 .  doc-decrement-list-stack
 .  nr doc-list-depth -1
-.  doc-increment-list-stack
 ..
-.
-.
-.\" NS doc-next-list-depth global register
-.\" NS   next possible doc-list-depth value
-.
-.nr doc-next-list-depth 1
 .
 .
 .\" NS doc-increment-list-stack macro
@@ -4078,23 +4058,27 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-compact-list-stackXXX
+.\" NS   doc-list-have-indent-stackXXX
 .\" NS   doc-list-indent-stackXXX
 .\" NS   doc-list-offset-stackXXX
 .\" NS   doc-list-type-stackXXX
-.\" NS   doc-next-list-depth
 .\" NS   doc-tag-prefix-stackXXX
 .\" NS   doc-tag-width-stackXXX
 .\" NS   doc-enum-list-count-stackXXX
+.\" NS
+.\" NS local variables:
+.\" NS   doc-reg-dils
 .
 .de doc-increment-list-stack
-.  nr doc-next-list-depth (\n[doc-list-depth] + 1)
-.  nr doc-list-indent-stack\n[doc-next-list-depth] 0
-.  nr doc-list-offset-stack\n[doc-next-list-depth] 0
-.  ds doc-tag-prefix-stack\n[doc-next-list-depth]
-.  ds doc-tag-width-stack\n[doc-next-list-depth] \*[doc-tag-width-stack\n[doc-list-depth]]
-.  ds doc-list-type-stack\n[doc-next-list-depth]
-.  nr doc-compact-list-stack\n[doc-next-list-depth] 0
-.  nr doc-enum-list-count-stack\n[doc-next-list-depth] 0
+.  nr doc-reg-dils (\n[doc-list-depth] + 1)
+.  nr doc-list-have-indent-stack\n[doc-reg-dils] 0
+.  nr doc-list-indent-stack\n[doc-reg-dils] 0
+.  nr doc-list-offset-stack\n[doc-reg-dils] 0
+.  ds doc-tag-prefix-stack\n[doc-reg-dils]
+.  ds doc-tag-width-stack\n[doc-reg-dils] \*[doc-tag-width-stack\n[doc-list-depth]]
+.  ds doc-list-type-stack\n[doc-reg-dils]
+.  nr doc-compact-list-stack\n[doc-reg-dils] 0
+.  nr doc-enum-list-count-stack\n[doc-reg-dils] 0
 ..
 .
 .
@@ -4103,23 +4087,23 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-compact-list-stackXXX
+.\" NS   doc-list-have-indent-stackXXX
 .\" NS   doc-list-indent-stackXXX
 .\" NS   doc-list-offset-stackXXX
 .\" NS   doc-list-type-stackXXX
-.\" NS   doc-next-list-depth
 .\" NS   doc-tag-prefix-stackXXX
 .\" NS   doc-tag-width-stackXXX
 .\" NS   doc-enum-list-count-stackXXX
 .
 .de doc-decrement-list-stack
-.  ds doc-list-type-stack\n[doc-next-list-depth]
-.  nr doc-list-indent-stack\n[doc-next-list-depth] 0
-.  nr doc-list-offset-stack\n[doc-next-list-depth] 0
-.  ds doc-tag-prefix-stack\n[doc-next-list-depth]
-.  ds doc-tag-width-stack\n[doc-next-list-depth]
-.  nr doc-compact-list-stack\n[doc-next-list-depth] 0
-.  nr doc-enum-list-count-stack\n[doc-next-list-depth] 0
-.  nr doc-next-list-depth -1
+.  ds doc-list-type-stack\n[doc-list-depth]
+.  nr doc-list-have-indent-stack\n[doc-list-depth] 0
+.  nr doc-list-indent-stack\n[doc-list-depth] 0
+.  nr doc-list-offset-stack\n[doc-list-depth] 0
+.  ds doc-tag-prefix-stack\n[doc-list-depth]
+.  ds doc-tag-width-stack\n[doc-list-depth]
+.  nr doc-compact-list-stack\n[doc-list-depth] 0
+.  nr doc-enum-list-count-stack\n[doc-list-depth] 0
 ..
 .
 .
@@ -4206,7 +4190,6 @@
 .  fi
 .  doc-decrement-list-stack
 .  nr doc-list-depth -1
-.  doc-increment-list-stack
 ..
 .
 .
@@ -4250,7 +4233,7 @@
 .  \}
 .
 .  ta \*[doc-str-dsct]
-'  in +(\n[doc-column-indent-width]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
+'  in +\n[doc-column-indent-width]u
 ..
 .
 .
