@@ -4605,6 +4605,7 @@ node *node::add_char(charinfo *ci, environment *env,
     return res;
   case charinfo::TRANSLATE_STRETCHABLE_SPACE:
     res = new unbreakable_space_node(env->get_space_width(), this);
+    res->freeze_space();
     *widthp += res->width();
     *spacep += res->nspaces();
     return res;
