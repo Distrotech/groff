@@ -1,3 +1,16 @@
+2003-08-31  Werner LEMBERG  <wl@gnu.org>
+
+	* contrib/mom/Makefile.sub: Fix last change to make it really work.
+	* Makefile.comm: Use `test ... ||' in favor of `if test ...; then'.
+	(install_dev, uninstall_dev): Check whether $(DEVSCRIPTS) and
+	$(DEVFILES) are not empty.
+	* Makefile.in: Use `test ... ||' in favor of `if test ...; then'.
+
+2003-08-26  Chuck Silvers  <chuq@chuq.com>
+
+	* contrib/mom/Makefile.sub (prepare_make_examples): Make it work
+	with parallel runs of `make'.
+
 2003-08-23  Stephen Gildea  <gildea@stop.mail-abuse.org>
 
 	* src/preproc/ref/ref.cpp (reference::compute_sort_key): Always
@@ -37,7 +50,8 @@
 2003-08-07  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/Makefile.sub: Not all shells expand wildcards in the `for'
-	argument list.  Use `ls' to expand, similar to autoconf.
+	argument list to nothing if there is no file to match.  Use `ls' as
+	a protection, similar to autoconf.
 
 	* Makefile.comm (install_dev, uninstall_dev): Protect `for' against
 	empty argument lists.

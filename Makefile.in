@@ -496,8 +496,8 @@ TARGETS=all install install_bin install_data clean distclean mostlyclean \
 # where Make needs to be case-sensitive to find files like BI and VERSION.
 ENVSETUP=\
 	if test -f $(srcdir)/makefile.ccpg* && \
-	   test -f $(srcdir)/Makefile.ccpg*; \
-	then FNCASE=y; export FNCASE; \
+	   test -f $(srcdir)/Makefile.ccpg*; then \
+	  FNCASE=y; export FNCASE; \
 	else :; \
 	fi
 
@@ -518,9 +518,10 @@ dot: FORCE
 
 $(LIBDIRS): FORCE
 	@$(ENVSETUP); \
-	if test $(srcdir) = .; \
-	then srcdir=.; \
-	else srcdir=`cd $(srcdir); pwd`/$@; \
+	if test $(srcdir) = .; then \
+	  srcdir=.; \
+	else \
+	  srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -533,9 +534,10 @@ $(LIBDIRS): FORCE
 
 $(CPROGDIRS): FORCE
 	@$(ENVSETUP); \
-	if test $(srcdir) = .; \
-	then srcdir=.; \
-	else srcdir=`cd $(srcdir); pwd`/$@; \
+	if test $(srcdir) = .; then \
+	  srcdir=.; \
+	else \
+	  srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -548,9 +550,10 @@ $(CPROGDIRS): FORCE
 
 $(CCPROGDIRS): FORCE
 	@$(ENVSETUP); \
-	if test $(srcdir) = .; \
-	then srcdir=.; \
-	else srcdir=`cd $(srcdir); pwd`/$@; \
+	if test $(srcdir) = .; then \
+	  srcdir=.; \
+	else \
+	  srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -563,9 +566,10 @@ $(CCPROGDIRS): FORCE
 
 $(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE
 	@$(ENVSETUP); \
-	if test $(srcdir) = .; \
-	then srcdir=.; \
-	else srcdir=`cd $(srcdir); pwd`/$@; \
+	if test $(srcdir) = .; then \
+	  srcdir=.; \
+	else \
+	  srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
@@ -576,9 +580,10 @@ $(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE
 
 $(INCDIRS) $(OTHERDIRS): FORCE
 	@$(ENVSETUP); \
-	if test $(srcdir) = .; \
-	then srcdir=.; \
-	else srcdir=`cd $(srcdir); pwd`/$@; \
+	if test $(srcdir) = .; then \
+	  srcdir=.; \
+	else \
+	  srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
