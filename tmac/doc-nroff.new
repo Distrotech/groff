@@ -38,6 +38,7 @@
 .\" use -rcR=0 to have multiple pages instead of a single, very long page
 .if !rcR .nr cR 1
 .
+.\" the `doc-xx-font' strings must not be empty!
 .ds doc-caption-font \f[R]
 .ds doc-caption-font2 \f[R]
 .ds doc-Ad-font \f[I]
@@ -72,14 +73,15 @@
 .ds doc-left-bracket \f[R]\|[\|\f[P]
 .ds doc-right-bracket \f[R]\|]\f[P]
 .
-.\" MISCELLANEOUS
+.\" miscellaneous
 .ds doc-punct-chars {\ .\ ,\ ;\ :\ (\ )\ [\ ]}
 .nr doc-subheader-indent .5i
 .nr doc-paragraph-space 1v
 .
-.ds doc-digit-string \0\0
 .ec
+.ds doc-digit-string \0\0
 .nr doc-digit-width \w'\0\0'u
+.nr doc-fixed-width \w'0'
 .eo
 .
 .
@@ -114,7 +116,7 @@
 .\" q is `official'
 .ds q \&"
 .
-.\" Math stuff -- all macro names are `official'
+.\" math stuff -- all macro names are `official'
 .ds Pi pi
 .ds Ne !=
 .ds Le <=
@@ -126,9 +128,10 @@
 .ds Na \f[I]NaN\f[P]
 .ds Ba \f[R]|\f[P]
 .
+.
 .de doc-setup-header
 .  nr % 1
-.  ds doc-header-string \*[doc-document-title]
+.  ds doc-header-string "\*[doc-document-title]
 .  if !"\*[doc-section]"Null" \
 .    as doc-header-string \|(\|\*[doc-section]\|)
 .
@@ -144,11 +147,6 @@
 .
 .  e@ doc-end-macro
 ..
-.
-.
-.ec
-.nr doc-fixed-width \w'0'
-.eo
 .
 .
 .\" NS doc-get-width macro
@@ -213,8 +211,8 @@
 .    doc-parse-arg-vector
 .  \}
 .
-.  ds doc-quote-left \&\*[doc-left-singlequote]
-.  ds doc-quote-right \&\*[doc-right-singlequote]
+.  ds doc-quote-left "\*[doc-left-singlequote]
+.  ds doc-quote-right "\*[doc-right-singlequote]
 .
 .  doc-enclose-string \$@
 ..
@@ -243,11 +241,14 @@
 .    nr doc-in-standards-section 0
 .    nr doc-in-authors-section 0
 .
-.    if "\$1"SEE" .nr doc-in-see-also-section 1
-.    if "\$1"FILES" .nr doc-in-files-section 1
-.    if "\$1"STANDARDS" .nr doc-in-standards-section 1
-.    if "\$1"SYNOPSIS" .nr doc-in-synopsis-section 1
-.
+.    if "\$1"SEE" \
+.      nr doc-in-see-also-section 1
+.    if "\$1"FILES" \
+.      nr doc-in-files-section 1
+.    if "\$1"STANDARDS" \
+.      nr doc-in-standards-section 1
+.    if "\$1"SYNOPSIS" \
+.      nr doc-in-synopsis-section 1
 .    if "\$1"DESCRIPTION" \{\
 .      nr doc-is-func-type 0
 .      nr doc-function-count 0
@@ -255,7 +256,6 @@
 .      nr doc-num-function-args 0
 .      ds doc-function-arg
 .    \}
-.
 .    if "\$1"AUTHORS" \
 .      nr doc-in-authors-section 1
 .
@@ -270,10 +270,8 @@
 .    ne 3
 '  fi
 .
-.  ie !\n[.$] \
-.    tm Usage: .Sh section name
-.  el \{\
-.    nop \&\*[doc-Sh-font]\$1\c
+.  ie \n[.$] \{\
+.    nop \*[doc-Sh-font]\$1\c
 .    nr doc-reg-Sh 2
 .    while (\n[doc-reg-Sh] <= \n[.$]) \{\
 .      nop \& \|\$[\n[doc-reg-Sh]]\c
@@ -281,6 +279,8 @@
 .    \}
 .    nop \f[P]\s[0]
 .  \}
+.  el \
+.    tm Usage: .Sh section name (#\n[.c])
 .
 .  in (\n[.i]u + \n[doc-subheader-indent]u)
 .  ns

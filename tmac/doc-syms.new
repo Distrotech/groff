@@ -44,8 +44,8 @@
 .de Ux
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
-.  ds doc-str-Ux \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.  as doc-out-string \&\*[doc-Tn-font-size]UNIX\*[doc-str-Ux]
+.  ds doc-str-Ux \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.  as doc-out-string \*[doc-Tn-font-size]UNIX\*[doc-str-Ux]
 .
 .  if !\n[doc-args-processed] \
 .    if \n[.$] \
@@ -74,11 +74,11 @@
 .de Bx
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
-.  ds doc-str-Bx \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.  ds doc-str-Bx \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .
 .  if !\n[doc-args-processed] \{\
 .    ie !\n[.$] \{\
-.      nop \&\*[doc-Tn-font-size]BSD\*[doc-str-Bx]
+.      nop \*[doc-Tn-font-size]BSD\*[doc-str-Bx]
 .      nop \*[doc-Tn-font-size]UNIX\*[doc-str-Bx]
 .    \}
 .    el \
@@ -103,7 +103,7 @@
 .  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
 .    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
-.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]\&\*[doc-Tn-font-size]
+.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]\*[doc-Tn-font-size]
 .      as doc-out-string BSD\*[doc-str-Bx]
 .      ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .        nr doc-reg-Bx (\n[doc-arg-ptr] + 1)
@@ -142,7 +142,7 @@
 .        doc-print-and-reset
 .    \}
 .    el \{\
-.      as doc-out-string \&\*[doc-Tn-font-size]BSD\*[doc-str-Bx]
+.      as doc-out-string \*[doc-Tn-font-size]BSD\*[doc-str-Bx]
 .      as doc-out-string " U\*[doc-Tn-font-size]NIX\*[doc-str-Bx]
 .      doc-print-recursive
 .    \}
@@ -171,24 +171,48 @@
 .de At
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
-.  ds doc-str-At \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.  ds doc-str-At \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .
 .  if (\n[.$] == 2) \{\
-.    if "\$1"32v" \&Version 32V \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
-.    if "\$1"v6" \&Version 6 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
-.    if "\$1"v7" \&Version 7 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
-.    if "\$1"V" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
-.    if "\$1"V.1" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V.1 \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
-.    if "\$1"V.4" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V.4 \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
+.    if "\$1"32v" \
+.      nop \&Version\~32V \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
+.    if "\$1"v6" \
+.      nop \&Version\~6 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
+.    if "\$1"v7" \
+.      nop \&Version\~7 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
+.    if "\$1"V" \{\
+.      nop \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V
+.      nop \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
+.    \}
+.    if "\$1"V.1" \{\
+.      nop \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.1
+.      nop \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
+.    \}
+.    if "\$1"V.4" \{\
+.      nop \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.4
+.      nop \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
+.    \}
 .  \}
 .
 .  if (\n[.$] == 1) \{\
-.    if "\$1"32v" \&Version 32V \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.    if "\$1"v6" \&Version 6 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.    if "\$1"v7" \&Version 7 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.    if "\$1"V" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V \*[doc-Tn-font-size]UNIX\*[doc-str-At]
-.    if "\$1"V.1" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V.1 \*[doc-Tn-font-size]UNIX\*[doc-str-At]
-.    if "\$1"V.4" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V.4 \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.    if "\$1"32v" \
+.      nop \&Version\~32V \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.    if "\$1"v6" \
+.      nop \&Version\~6 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.    if "\$1"v7" \
+.      nop \&Version\~7 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.    if "\$1"V" \{\
+.      nop \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V
+.      nop \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.    \}
+.    if "\$1"V.1" \{\
+.      nop \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.1
+.      nop \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.    \}
+.    if "\$1"V.4" \{\
+.      nop \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.4
+.      nop \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.    \}
 .  \}
 ..
 .
@@ -217,11 +241,7 @@
 .
 .de St
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
-.      tmc "Usage: .St [-p1003.1-88 | -p1003.2 | -ansiC-89 | -iso ]
-.      tm1 " \*[doc-punct-chars] ... (#\n[.c])
-.    \}
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name St
 .
 .      nr doc-reg-St 1
@@ -233,44 +253,44 @@
 .      nr doc-num-args \n[.$]
 .      doc-parse-arg-vector
 .    \}
+.    el \{\
+.      tmc "Usage: .St [-p1003.1-88 | -p1003.2 | -ansiC-89 | -iso]
+.      tm1 " \*[doc-punct-chars] ... (#\n[.c])
+.    \}
 .  \}
 .
 .  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
-.    ds doc-str-St \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.    ds doc-str-St \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .    nr doc-arg-ptr +1
 .
 .    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-88" \{\
-.      ds doc-out-string \&\*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string \*[doc-str-St]1003.1-1988\*[doc-space]
-.      as doc-out-string (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
+.      as doc-out-string " \*[doc-str-St]1003.1-1988
+.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
 .    \}
-.
 .    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2" \{\
-.      ds doc-out-string \&\*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string \*[doc-str-St]1003.2\*[doc-space]
-.      as doc-out-string (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
+.      as doc-out-string " \*[doc-str-St]1003.2
+.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
 .    \}
-.
 .    if "\*[doc-arg\n[doc-arg-ptr]]"-ansiC" \{\
-.      ds doc-out-string \&\*[doc-Tn-font-size]ANSI C
-.      as doc-out-string \*[doc-str-St]3.159-1989\*[doc-space]
-.      as doc-out-string (``\*[doc-Tn-font-size]ANSI C\*[doc-str-St]'')
+.      ds doc-out-string \*[doc-Tn-font-size]ANSI\~C
+.      as doc-out-string " \*[doc-str-St]3.159-1989
+.      as doc-out-string " (``\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]'')
 .    \}
-.
 .    if "\*[doc-arg\n[doc-arg-ptr]]"-ansiC-89" \{\
-.      ds doc-out-string \&\*[doc-Tn-font-size]ANSI C
-.      as doc-out-string \*[doc-str-St]3.159-1989\*[doc-space]
-.      as doc-out-string (``\*[doc-Tn-font-size]ANSI C\*[doc-str-St]'')
+.      ds doc-out-string \*[doc-Tn-font-size]ANSI\~C
+.      as doc-out-string " \*[doc-str-St]3.159-1989
+.      as doc-out-string " (``\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]'')
 .    \}
-.
 .    if "\*[doc-arg\n[doc-arg-ptr]]"-iso8802-3" \{\
-.      ds doc-out-string \&\*[doc-Tn-font-size]
-.      as doc-out-string ISO \*[doc-str-St]8802-3: 1989
-.      \" .ds doc-out-string \&\*[doc-Tn-font-size]
-.      \" .as doc-out-string ISO \*[doc-str-St]8802-3: 1989\*[doc-space]
-.      \" .as doc-out-string (``\*[doc-Tn-font-size]ANSI C\*[doc-str-St]'')
+.      ds doc-out-string \*[doc-Tn-font-size]
+.      as doc-out-string ISO\~\*[doc-str-St]8802-3:\~1989
+.      \" .ds doc-out-string \*[doc-Tn-font-size]
+.      \" .as doc-out-string ISO\~\*[doc-str-St]8802-3:\~1989
+.      \" .as doc-out-string " (``\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]'')
 .    \}
 .
 .    ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\

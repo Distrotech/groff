@@ -99,9 +99,11 @@
 .nr In 12n\" ?
 .nr It 8n\" ?
 .nr Li 16n
+.nr Lk 6n\" ?
 .nr Lp 8n\" ?
 .nr Me 6n
 .nr Ms 6n
+.nr Mt 6n\" ?
 .nr Nd 8n\" ?
 .nr Nm 10n
 .nr No 12n
@@ -135,7 +137,7 @@
 .nr St 8n\" ?
 .nr Sx 16n
 .nr Sy 6n
-.nr Ta 1
+.nr Ta 2
 .nr Tn 10n
 .nr Ud 8n\" ?
 .nr Ux 10n
@@ -151,8 +153,8 @@
 .
 .\" space strings
 .
-.ds doc-soft-space \& \&
-.ds doc-hard-space \&\ \&
+.ds doc-soft-space " \"
+.ds doc-hard-space "\ \"
 .
 .
 .\" punctuation values
@@ -201,6 +203,7 @@
 .
 .  if !"\$1"" \
 .    ds doc-document-title \$1
+.
 .  if !"\$2"" \{\
 .    ds doc-section \$2
 .    \" .if "\$3"" \{\
@@ -213,30 +216,45 @@
 .        ds doc-volume System Manager's Manual
 .    \}
 .
-.    if "\$2"unass" .ds doc-volume DRAFT
-.    if "\$2"draft" .ds doc-volume DRAFT
-.    if "\$2"paper" .ds doc-volume UNTITLED
+.    if "\$2"unass" \
+.      ds doc-volume DRAFT
+.    if "\$2"draft" \
+.      ds doc-volume DRAFT
+.    if "\$2"paper" \
+.      ds doc-volume UNTITLED
 .    \" .\}
 .  \}
 .
 .  if !"\$3"" \{\
-.    if "\$3"USD" .ds doc-volume User's Supplementary Documents
-.    if "\$3"PS1" .ds doc-volume Programmers's Supplementary Documents
-.    if "\$3"AMD" .ds doc-volume Ancestral Manual Documents
-.    if "\$3"SMM" .ds doc-volume System Manager's Manual
-.    if "\$3"URM" .ds doc-volume Reference Manual
-.    if "\$3"PRM" .ds doc-volume Programmers's Manual
-.    if "\$3"IND" .ds doc-volume Manual Master Index
+.    if "\$3"USD" \
+.      ds doc-volume User's Supplementary Documents
+.    if "\$3"PS1" \
+.      ds doc-volume Programmers's Supplementary Documents
+.    if "\$3"AMD" \
+.      ds doc-volume Ancestral Manual Documents
+.    if "\$3"SMM" \
+.      ds doc-volume System Manager's Manual
+.    if "\$3"URM" \
+.      ds doc-volume Reference Manual
+.    if "\$3"PRM" \
+.      ds doc-volume Programmers's Manual
+.    if "\$3"IND" \
+.      ds doc-volume Manual Master Index
 .    \" .if "\$3"CON" .ds doc-volume Contributed Software Manual
 .    \" .if "\$3"IMP" .ds doc-volume Implementation Notes
 .    \" .if "\$3"HOW" .ds doc-volume How Pocket Manual
-.    if "\$3"LOCAL" .ds doc-volume Local Manual
+.    if "\$3"LOCAL" \
+.      ds doc-volume Local Manual
 .
-.    if "\$3"tahoe" .as doc-volume \ (Tahoe Architecture)
-.    if "\$3"vax" .as doc-volume \ (VAX Architecture)
-.    if "\$3"hp300" .as doc-volume \ (HP300 Architecture)
+.    if "\$3"tahoe" \
+.      as doc-volume " (Tahoe Architecture)
+.    if "\$3"vax" \
+.      as doc-volume " (VAX Architecture)
+.    if "\$3"hp300" \
+.      as doc-volume " (HP300 Architecture)
 .
-.    if "\*[doc-volume]"LOCAL" .ds doc-volume \$3
+.    if "\*[doc-volume]"LOCAL" \
+.      ds doc-volume \$3
 .\}
 ..
 .
@@ -261,34 +279,53 @@
 .  if "\$1"ATT" \{\
 .    ds doc-operating-system AT&T
 .
-.    if "\$2""    .as doc-operating-system \0UNIX
-.    if "\$2"7th" .as doc-operating-system \07th Edition
-.    if "\$2"7"   .as doc-operating-system \07th Edition
-.    if "\$2"III" .as doc-operating-system \0System III
-.    if "\$2"3"   .as doc-operating-system \0System III
-.    if "\$2"V"   .as doc-operating-system \0System V
-.    if "\$2"V.2" .as doc-operating-system \0System V Release 2
-.    if "\$2"V.3" .as doc-operating-system \0System V Release 3
-.    if "\$2"V.4" .as doc-operating-system \0System V Release 4
+.    if "\$2"" \
+.      as doc-operating-system " UNIX
+.    if "\$2"7th" \
+.      as doc-operating-system " 7th\~Edition
+.    if "\$2"7" \
+.      as doc-operating-system " 7th\~Edition
+.    if "\$2"III" \
+.      as doc-operating-system " System\~III
+.    if "\$2"3" \
+.      as doc-operating-system " System\~III
+.    if "\$2"V" \
+.      as doc-operating-system " System\~V
+.    if "\$2"V.2" \
+.      as doc-operating-system " System\~V Release\~2
+.    if "\$2"V.3" \
+.      as doc-operating-system " System\~V Release\~3
+.    if "\$2"V.4" \
+.      as doc-operating-system " System\~V Release\~4
 .  \}
 .
 .  if "\$1"BSD" \{\
-.    if "\$2"3"    .ds doc-operating-system 3rd Berkeley Distribution
-.    if "\$2"4"    .ds doc-operating-system 4th Berkeley Distribution
-.    if "\$2"4.1"  .ds doc-operating-system 4.1 Berkeley Distribution
-.    if "\$2"4.2"  .ds doc-operating-system 4.2 Berkeley Distribution
-.    if "\$2"4.3"  .ds doc-operating-system 4.3 Berkeley Distribution
-.    if "\$2"4.3T" .ds doc-operating-system 4.3-Tahoe Berkeley Distribution
-.    if "\$2"4.3R" .ds doc-operating-system 4.3-Reno Berkeley Distribution
-.    if "\$2"4.3t" .ds doc-operating-system 4.3-Tahoe Berkeley Distribution
-.    if "\$2"4.3r" .ds doc-operating-system 4.3-Reno Berkeley Distribution
-.    if "\$2"4.4"  .ds doc-operating-system BSD Experimental
+.    if "\$2"3" \
+.      ds doc-operating-system 3rd\~Berkeley Distribution
+.    if "\$2"4" \
+.      ds doc-operating-system 4th\~Berkeley Distribution
+.    if "\$2"4.1" \
+.      ds doc-operating-system 4.1\~Berkeley Distribution
+.    if "\$2"4.2" \
+.      ds doc-operating-system 4.2\~Berkeley Distribution
+.    if "\$2"4.3" \
+.      ds doc-operating-system 4.3\~Berkeley Distribution
+.    if "\$2"4.3T" \
+.      ds doc-operating-system 4.3-Tahoe Berkeley Distribution
+.    if "\$2"4.3R" \
+.      ds doc-operating-system 4.3-Reno Berkeley Distribution
+.    if "\$2"4.3t" \
+.      ds doc-operating-system 4.3-Tahoe Berkeley Distribution
+.    if "\$2"4.3r" \
+.      ds doc-operating-system 4.3-Reno Berkeley Distribution
+.    if "\$2"4.4" \
+.      ds doc-operating-system BSD Experimental
 .  \}
 .
 .  if "\*[doc-operating-system]"Null" \
-.    ds doc-operating-system \0\$1
+.    ds doc-operating-system " \$1
 .  if "\*[doc-str-Os]"Non-Null" \
-.    as doc-operating-system \0\$2
+.    as doc-operating-system " \$2
 ..
 .
 .
@@ -299,27 +336,39 @@
 .
 .de Dd
 .  \" XXX why do we need gX?
-.  if !ddoc-date-string \
+.  if !d doc-date-string \
 .    nr gX 1
 .
 .  ie \n[.$] \{\
 .    ie (\n[.$] == 3) \
 .      ds doc-date-string \$1 \$2 \$3
 .    el \{\
-.      if "\n[mo]"1" .ds doc-date-string January
-.      if "\n[mo]"2" .ds doc-date-string February
-.      if "\n[mo]"3" .ds doc-date-string March
-.      if "\n[mo]"4" .ds doc-date-string April
-.      if "\n[mo]"5" .ds doc-date-string May
-.      if "\n[mo]"6" .ds doc-date-string June
-.      if "\n[mo]"7" .ds doc-date-string July
-.      if "\n[mo]"8" .ds doc-date-string August
-.      if "\n[mo]"9" .ds doc-date-string September
-.      if "\n[mo]"10" .ds doc-date-string October
-.      if "\n[mo]"11" .ds doc-date-string November
-.      if "\n[mo]"12" .ds doc-date-string December
+.      if "\n[mo]"1" \
+.        ds doc-date-string January
+.      if "\n[mo]"2" \
+.        ds doc-date-string February
+.      if "\n[mo]"3" \
+.        ds doc-date-string March
+.      if "\n[mo]"4" \
+.        ds doc-date-string April
+.      if "\n[mo]"5" \
+.        ds doc-date-string May
+.      if "\n[mo]"6" \
+.        ds doc-date-string June
+.      if "\n[mo]"7" \
+.        ds doc-date-string July
+.      if "\n[mo]"8" \
+.        ds doc-date-string August
+.      if "\n[mo]"9" \
+.        ds doc-date-string September
+.      if "\n[mo]"10" \
+.        ds doc-date-string October
+.      if "\n[mo]"11" \
+.        ds doc-date-string November
+.      if "\n[mo]"12" \
+.        ds doc-date-string December
 .
-.      as doc-date-string \&\ \n[dy], \n[year]
+.      as doc-date-string \~\n[dy], \n[year]
 .    \}
 .  \}
 .  el \
@@ -423,7 +472,7 @@
 .\" NS width register `.Nd' set above
 .
 .de Nd
-.  nop \&\-\& \$*
+.  nop \- \$*
 ..
 .
 .
@@ -436,25 +485,27 @@
 .\" NS   doc-reg-Ss
 .
 .de Ss
-.  ie !\n[.$] \
-.    tm Usage: .Ss subsection name
-.  el \{\
+.  ie \n[.$] \{\
 .    sp
 .    if !\n[cR] \
 .      ne 3
 .    ti -.25i
-.    nop \&\*[doc-Sh-font]\$1\c
+.
+.    nop \*[doc-Sh-font]\$1\c
 .    nr doc-reg-Ss 2
 .    while (\n[doc-reg-Ss] <= \n[.$]) \{\
 .      nop \& \|\$[\n[doc-reg-Ss]]\c
 .      nr doc-reg-Ss +1
 .    \}
 .    nop \f[P]\s[0]
+.
 .    ta T .5i
 .    if !\n[cR] \
 .      ne 2
 .    br
 .  \}
+.  el \
+.    tm Usage: .Ss subsection name (#\n[.c])
 ..
 .
 .
