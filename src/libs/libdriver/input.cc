@@ -2,13 +2,13 @@
 
 // <groff_src_dir>/src/libs/libdriver/input.cc
 
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 12 Apr 2002
+   Last update: 12 Feb 2003
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -599,17 +599,10 @@ StringBuf::reset(void)
 
    The Df command is obsoleted by command DFg, but kept for
    compatibility.
-
-   XXX: Add proper handling for values < 0 or > 1000 as documented in
-        groff_out(5).
 */
 ColorArg
 color_from_Df_command(IntArg Df_gray)
 {
-  if (Df_gray <= 0)
-    return COLORARG_MAX;
-  if (Df_gray >= 1000)
-    return 0;
   return ColorArg((1000-Df_gray) * COLORARG_MAX / 1000); // scaling
 }
 
@@ -1399,7 +1392,9 @@ parse_D_command()
       pr->change_fill_color(current_env);
       // skip unused `vertical' component (\D'...' always emits pairs)
       (void) get_integer_arg();
-      // no positioning
+#   ifdef STUPID_DRAWING_POSITIONING
+      current_env->hpos += arg;
+#   endif
       skip_line_x();
       break;
     }
@@ -1437,7 +1432,6 @@ parse_D_command()
       // final args positioning
       position_to_end_of_args(args);
 #   endif
-      // no positioning?
       delete args;
       break;
     }

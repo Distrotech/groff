@@ -70,6 +70,7 @@ void init_column_requests();
 #endif /* COLUMN */
 
 static node *read_draw_node();
+static void read_color_draw_node(token &);
 void handle_first_page_transition();
 static void push_token(const token &);
 void copy_file();
@@ -140,6 +141,7 @@ static void interpolate_arg(symbol);
 static request_or_macro *lookup_request(symbol);
 static int get_delim_number(units *, int);
 static int get_delim_number(units *, int, units);
+static symbol do_get_long_name(int, char);
 static int get_line_arg(units *res, int si, charinfo **cp);
 static int read_size(int *);
 static symbol get_delim_name();
@@ -653,7 +655,7 @@ void backtrace_request()
 
 void next_file()
 {
-  symbol nm = get_long_name(0);
+  symbol nm = get_long_name();
   while (!tok.newline() && !tok.eof())
     tok.next();
   if (nm.is_null())
@@ -1090,9 +1092,9 @@ static unsigned int get_color_element(const char *scheme, const char *col)
   return (unsigned int)val;
 }
 
-static color *read_rgb()
+static color *read_rgb(char end = 0)
 {
-  symbol component = get_long_name(0);
+  symbol component = do_get_long_name(0, end);
   if (component.is_null()) {
     warning(WARN_COLOR, "missing rgb color values");
     return 0;
@@ -1107,7 +1109,8 @@ static color *read_rgb()
     }
   }
   else {
-    input_stack::push(make_temp_iterator(" "));
+    if (!end)
+      input_stack::push(make_temp_iterator(" "));
     input_stack::push(make_temp_iterator(s));
     tok.next();
     unsigned int r = get_color_element("rgb color", "red component");
@@ -1118,9 +1121,9 @@ static color *read_rgb()
   return col;
 }
 
-static color *read_cmy()
+static color *read_cmy(char end = 0)
 {
-  symbol component = get_long_name(0);
+  symbol component = do_get_long_name(0, end);
   if (component.is_null()) {
     warning(WARN_COLOR, "missing cmy color values");
     return 0;
@@ -1135,7 +1138,8 @@ static color *read_cmy()
     }
   }
   else {
-    input_stack::push(make_temp_iterator(" "));
+    if (!end)
+      input_stack::push(make_temp_iterator(" "));
     input_stack::push(make_temp_iterator(s));
     tok.next();
     unsigned int c = get_color_element("cmy color", "cyan component");
@@ -1146,9 +1150,9 @@ static color *read_cmy()
   return col;
 }
 
-static color *read_cmyk()
+static color *read_cmyk(char end = 0)
 {
-  symbol component = get_long_name(0);
+  symbol component = do_get_long_name(0, end);
   if (component.is_null()) {
     warning(WARN_COLOR, "missing cmyk color values");
     return 0;
@@ -1163,7 +1167,8 @@ static color *read_cmyk()
     }
   }
   else {
-    input_stack::push(make_temp_iterator(" "));
+    if (!end)
+      input_stack::push(make_temp_iterator(" "));
     input_stack::push(make_temp_iterator(s));
     tok.next();
     unsigned int c = get_color_element("cmyk color", "cyan component");
@@ -1175,9 +1180,9 @@ static color *read_cmyk()
   return col;
 }
 
-static color *read_gray()
+static color *read_gray(char end = 0)
 {
-  symbol component = get_long_name(0);
+  symbol component = do_get_long_name(0, end);
   if (component.is_null()) {
     warning(WARN_COLOR, "missing gray values");
     return 0;
@@ -1192,7 +1197,8 @@ static color *read_gray()
     }
   }
   else {
-    input_stack::push(make_temp_iterator("\n"));
+    if (!end)
+      input_stack::push(make_temp_iterator("\n"));
     input_stack::push(make_temp_iterator(s));
     tok.next();
     unsigned int g = get_color_element("gray", "gray value");
@@ -1246,8 +1252,11 @@ static void define_color()
     skip_line();
     return;
   }
-  if (col)
-    (void)color_dictionary.lookup(color_name, col);
+  if (col) {
+    color *old_col = (color *)color_dictionary.lookup(color_name, col);
+    if (old_col)
+      delete old_col;
+  }
   skip_line();
 }
 
@@ -1261,6 +1270,7 @@ static node *do_overstrike()
     tok.next();
     if (tok.newline() || tok.eof()) {
       warning(WARN_DELIM, "missing closing delimiter");
+      input_stack::push(make_temp_iterator("\n"));
       break;
     }
     if (tok == start
@@ -1317,6 +1327,7 @@ static int do_name_test()
     tok.next();
     if (tok.newline() || tok.eof()) {
       warning(WARN_DELIM, "missing closing delimiter");
+      input_stack::push(make_temp_iterator("\n"));
       break;
     }
     if (tok == start
@@ -1353,6 +1364,7 @@ static int do_expr_test()
     tok.next();
     if (tok.newline() || tok.eof()) {
       warning(WARN_DELIM, "missing closing delimiter");
+      input_stack::push(make_temp_iterator("\n"));
       break;
     }
     if (tok == start && input_stack::get_level() == start_level)
@@ -1408,6 +1420,7 @@ static node *do_zero_width()
     tok.next();
     if (tok.newline() || tok.eof()) {
       warning(WARN_DELIM, "missing closing delimiter");
+      input_stack::push(make_temp_iterator("\n"));
       break;
     }
     if (tok == start
@@ -1605,6 +1618,7 @@ void token::next()
 			      curenv->get_fill_color());
 	return;
       case ESCAPE_NEWLINE:
+	have_input = 0;
 	break;
       case ESCAPE_LEFT_BRACE:
       ESCAPE_LEFT_BRACE:
@@ -1669,6 +1683,7 @@ void token::next()
 	return;
       case '\n':
 	type = TOKEN_NEWLINE;
+	have_input = 0;
 	return;
       case '\001':
 	type = TOKEN_LEADER;
@@ -1842,6 +1857,7 @@ void token::next()
 	  if (s.is_null())
 	    break;
 	  curenv->set_family(s);
+	  have_input = 1;
 	  break;
 	}
       case 'g':
@@ -2032,6 +2048,7 @@ void token::next()
       case '}':
 	goto ESCAPE_RIGHT_BRACE;
       case '\n':
+	have_input = 0;
 	break;
       case '[':
 	if (!compatible_flag) {
@@ -2286,6 +2303,11 @@ symbol get_name(int required)
 
 symbol get_long_name(int required)
 {
+  return do_get_long_name(required, 0);
+}
+
+static symbol do_get_long_name(int required, char end)
+{
   while (tok.space())
     tok.next();
   char abuf[ABUF_SIZE];
@@ -2293,7 +2315,8 @@ symbol get_long_name(int required)
   int buf_size = ABUF_SIZE;
   int i = 0;
   for (;;) {
-    if (i + 1 > buf_size) {
+    // If end != 0 we normally have to append a null byte
+    if (i + 2 > buf_size) {
       if (buf == abuf) {
 	buf = new char[ABUF_SIZE*2];
 	memcpy(buf, abuf, buf_size);
@@ -2307,7 +2330,7 @@ symbol get_long_name(int required)
 	a_delete old_buf;
       }
     }
-    if ((buf[i] = tok.ch()) == 0)
+    if ((buf[i] = tok.ch()) == 0 || buf[i] == end)
       break;
     i++;
     tok.next();
@@ -2316,7 +2339,10 @@ symbol get_long_name(int required)
     empty_name_warning(required);
     return NULL_SYMBOL;
   }
-  non_empty_name_warning();
+  if (end && buf[i] == end)
+    buf[i+1] = '\0';
+  else
+    non_empty_name_warning();
   if (buf == abuf)
     return symbol(buf);
   else {
@@ -2570,7 +2596,6 @@ void process_input_stack()
 	  else
 	    interpolate_macro(nm);
 	  suppress_next = 1;
-	  have_input = 0;
 	}
 	else {
 	  if (possibly_handle_first_page_transition())
@@ -2619,7 +2644,6 @@ void process_input_stack()
 	else {
 	  curenv->newline();
 	  bol = 1;
-	  have_input = 0;
 	}
 	break;
       }
@@ -2647,7 +2671,6 @@ void process_input_stack()
 	  break;
 	}
 	suppress_next = 1;
-	have_input = 0;
 	break;
       }
     case token::TOKEN_SPACE:
@@ -2708,7 +2731,6 @@ void process_input_stack()
       {
 	trap_bol_stack.push(bol);
 	bol = 1;
-	have_input = 0;
 	break;
       }
     case token::TOKEN_END_TRAP:
@@ -3646,7 +3668,7 @@ void composite_request()
       if (strcmp(from_gn, to_gn) == 0)
 	composite_dictionary.remove(symbol(from_gn));
       else
-	composite_dictionary.lookup(symbol(from_gn), (void *)to_gn);
+	(void)composite_dictionary.lookup(symbol(from_gn), (void *)to_gn);
     }
   }
   skip_line();
@@ -7383,6 +7405,10 @@ static node *read_draw_node()
       error("missing argument");
     else {
       unsigned char type = tok.ch();
+      if (type == 'F') {
+	read_color_draw_node(start);
+	return 0;
+      }
       tok.next();
       int maxpoints = 10;
       hvpair *point = new hvpair[maxpoints];
@@ -7473,6 +7499,47 @@ static node *read_draw_node()
     }
   }
   return 0;
+}
+
+static void read_color_draw_node(token &start)
+{
+  tok.next();
+  if (tok == start) {
+    error("missing color scheme");
+    return;
+  }
+  unsigned char scheme = tok.ch();
+  tok.next();
+  color *col;
+  char end = start.ch();
+  switch (scheme) {
+  case 'c':
+    col = read_cmy(end);
+    break;
+  case 'd':
+    col = &default_color;
+    break;
+  case 'g':
+    col = read_gray(end);
+    break;
+  case 'k':
+    col = read_cmyk(end);
+    break;
+  case 'r':
+    col = read_rgb(end);
+    break;
+  }
+  if (col)
+    curenv->set_fill_color(col);
+  while (tok != start) {
+    if (tok.newline() || tok.eof()) {
+      warning(WARN_DELIM, "missing closing delimiter");
+      input_stack::push(make_temp_iterator("\n"));
+      break;
+    }
+    tok.next();
+  }
+  have_input = 1;
 }
 
 static struct {
@@ -7781,7 +7848,7 @@ charinfo *get_charinfo_by_number(int n)
     if (!ci) {
       ci = new charinfo(UNNAMED_SYMBOL);
       ci->set_number(n);
-      numbered_charinfo_dictionary.lookup(ns, ci);
+      (void)numbered_charinfo_dictionary.lookup(ns, ci);
     }
     return ci;
   }

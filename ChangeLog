@@ -1,3 +1,62 @@
+2003-02-13  Werner LEMBERG  <wl@gnu.org>
+
+	New commands \D'Fr ...', \D'Fc ...', etc. for orthogonality.
+	Make \D'f ...' move horizontally again for backwards compatibility.
+	Replace it with \D'Fg ...' where appropriate to avoid dependency
+	on horizontal resolution.
+
+	* src/roff/troff/input.cc (do_get_long_name): New function.
+	(get_long_name): Call it.
+
+	(read_draw_node): Handle `\D'Fx ...' by calling ...
+	(read_color_draw_node): New function.
+
+	(read_rgb, read_cmy, read_cmyk, read_gray): New optional argument
+	`end'.
+	Pass it to `do_get_long_name' which is used instead of
+	`get_long_name'.
+
+	* src/libs/libdriver/input.cc (color_from_Df_command): Remove
+	unnecessary value guard.
+	(parse_D_command) <'f'>: Add horizontal shift.
+
+	* src/preproc/grn/hgraph.cc (HGPrintElt) <POLYGON>: Use \D'Fg ...'.
+	* src/preproc/pic/troff.cc (troff_output::set_fill): Ditto.
+	(FILL_MAX): Removed.
+
+	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo:
+	Updated.
+
+2003-02-12  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc (do_name_test, do_expr_test,
+	do_zero_width): Push `\n' if closing delimiter is missing.
+
+	(token::next) <ESCAPE_NEWLINE>, <'\n'>, <'\ '>: Reset `have_input'.
+	<'F'>: Make \F non-transparent at the beginning of line.
+	(process_input_stack) <token::TOKEN_CHAR, token::TOKEN_NEWLINE,
+	token::TOKEN_REQUEST, token::TOKEN_BEGIN_TRAP>: Don't handle
+	`have_input'.
+
+	(define_color): Free color in case of reassignment.
+
+	* doc/groff.texinfo (@Defesc, @DefescList, @DefescItem,
+	@DefescListEnd): Use @Var, not @var.
+	Fix all calls.
+
+	* src/preproc/grn/hgraph.cc (HGPrintElt): Fix typo.
+
+	* src/preproc/pic/object.cc (object_spec::~object_spec): Free
+	`shaded' and `outlined' arrays.
+	(object_spec::object_spec): Initialize `shaded' and `outlined'.
+	(graphic_object::set_fill_color, graphic_object::set_outline_color):
+	Use strsave.
+	(closed_object::set_fill_color): Ditto.
+	* src/preproc/pic/troff.cc (troff_output::set_color): Use strsave
+	instead of strdup.
+	(troff_output::reset_color): Use a_delete instead of free.
+	* src/preproc/pic/main.cc (do_file): Free `out' in case of error.
+
 2003-02-11  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/groff.texinfo: Improve documentation of `ad'.

@@ -21,7 +21,7 @@
 
 
 @copying
-This manual documents GNU @code{troff} version 1.18.
+This manual documents GNU @code{troff} version 1.18.2.
 
 Copyright @copyright{} 1994-2000, 2001, 2002, 2003
 Free Software Foundation, Inc.
@@ -150,24 +150,24 @@ Software Foundation raise funds for GNU development.''
 @c definition of escapes
 
 @macro Defesc{name, delimI, arg, delimII}
-@deffn Escape @t{\name\\delimI\}@var{\arg\}@t{\delimII\}
+@deffn Escape @t{\name\\delimI\}@Var{\arg\}@t{\delimII\}
 @esindex \name\
 @end macro
 
 @macro DefescList{name, delimI, arg, delimII}
-@deffn Escape @t{\name\\delimI\}@var{\arg\}@t{\delimII\}
+@deffn Escape @t{\name\\delimI\}@Var{\arg\}@t{\delimII\}
 @defdummy
 @esindex \name\
 @end macro
 
 @macro DefescItem{name, delimI, arg, delimII}
-@deffnx Escape @t{\name\\delimI\}@var{\arg\}@t{\delimII\}
+@deffnx Escape @t{\name\\delimI\}@Var{\arg\}@t{\delimII\}
 @defdummy
 @esindex \name\
 @end macro
 
 @macro DefescListEnd{name, delimI, arg, delimII}
-@deffnx Escape @t{\name\\delimI\}@var{\arg\}@t{\delimII\}
+@deffnx Escape @t{\name\\delimI\}@Var{\arg\}@t{\delimII\}
 @esindex \name\
 @end macro
 
@@ -1274,11 +1274,11 @@ directory, and the main tmac directory; the default locations are
 @Example
 /usr/local/lib/groff/site-tmac
 /usr/local/share/groff/site-tmac
-/usr/local/share/groff/1.18/tmac
+/usr/local/share/groff/1.18.2/tmac
 @endExample
 
 @noindent
-assuming that the version of @code{groff} is 1.18, and the installation
+assuming that the version of @code{groff} is 1.18.2, and the installation
 prefix was @file{/usr/local}.  It is possible to fine-tune those
 directories during the installation process.
 @end itemize
@@ -1332,11 +1332,11 @@ locations are
 
 @Example
 /usr/local/share/groff/site-font
-/usr/local/share/groff/1.18/font
+/usr/local/share/groff/1.18.2/font
 @endExample
 
 @noindent
-assuming that the version of @code{groff} is 1.18, and the installation
+assuming that the version of @code{groff} is 1.18.2, and the installation
 prefix was @file{/usr/local}.  It is possible to fine-tune those
 directories during the installation process.
 @end itemize
@@ -5164,8 +5164,8 @@ increment or decrement a register.
 
 @DefreqList {nr, ident @t{+}@Var{value}}
 @DefreqItem {nr, ident @t{-}@Var{value}}
-@DefescItem {\\R, ', ident @t{+}@Var{value}, '}
-@DefescListEnd {\\R, ', ident @t{-}@Var{value}, '}
+@DefescItem {\\R, ', ident @t{+}value, '}
+@DefescListEnd {\\R, ', ident @t{-}value, '}
 Increment (decrement) register @var{ident} by @var{value}.
 
 @Example
@@ -8482,8 +8482,8 @@ did not have a wide variety of fonts, and when @code{nroff} and
 necessary in GNU @code{troff}.  Nevertheless, they are supported.
 
 @DefescList {\\H, ', height, '}
-@DefescItem {\\H, ', @t{+}@Var{height}, '}
-@DefescListEnd {\\H, ', @t{-}@Var{height}, '}
+@DefescItem {\\H, ', @t{+}height, '}
+@DefescListEnd {\\H, ', @t{-}height, '}
 @cindex changing the font height (@code{\H})
 @cindex font height, changing (@code{\H})
 @cindex height, font, changing (@code{\H})
@@ -10331,7 +10331,7 @@ A read-only number register containing the current horizontal output
 position.
 @endDefreg
 
-@Defesc {\\o, ', @Var{a}@Var{b}@Var{c}, '}
+@Defesc {\\o, ', abc, '}
 @cindex overstriking glyphs (@code{\o})
 @cindex glyphs, overstriking (@code{\o})
 Overstrike glyphs @var{a}, @var{b}, @var{c}, @dots{}; the glyphs
@@ -10384,8 +10384,8 @@ information.
 
 All drawing is done via escapes.
 
-@DefescList {\\l, ', @Var{l}, '}
-@DefescListEnd {\\l, ', @Var{l}@Var{g}, '}
+@DefescList {\\l, ', l, '}
+@DefescListEnd {\\l, ', lg, '}
 @cindex drawing horizontal lines (@code{\l})
 @cindex horizontal line, drawing (@code{\l})
 @cindex line, horizontal, drawing (@code{\l})
@@ -10430,8 +10430,8 @@ beginning of the @emph{input} line -- this works because the line
 length is negative, not moving the current point.
 @endDefesc
 
-@DefescList {\\L, ', @Var{l}, '}
-@DefescListEnd {\\L, ', @Var{l}@Var{g}, '}
+@DefescList {\\L, ', l, '}
+@DefescListEnd {\\L, ', lg, '}
 @cindex drawing vertical lines (@code{\L})
 @cindex vertical line drawing (@code{\L})
 @cindex line, vertical, drawing (@code{\L})
@@ -10470,7 +10470,8 @@ of the available drawing functions.
 The default scaling indicator for all subcommands of @code{\D} is
 @samp{m} for horizontal distances and @samp{v} for vertical ones.
 Exceptions are @w{@code{\D'f @dots{}'}} and @w{@code{\D't @dots{}'}}
-which use @code{u} as the default.
+which use @code{u} as the default, and @w{@code{\D'F@var{x} @dots{}'}}
+which arguments are treated similar to the @code{defcolor} request.
 
 @table @code
 @item \D'l @var{dx} @var{dy}'
@@ -10507,27 +10508,30 @@ containing the largest height and depth of the whole string.
 @cindex circle, drawing (@w{@code{\D'c @dots{}'}})
 @cindex drawing a circle (@w{@code{\D'c @dots{}'}})
 Draw a circle with a diameter of@tie{}@var{d} with the leftmost point at the
-current position.
+current position.  After drawing, the current location is positioned at the
+rightmost point of the circle.
 
 @item \D'C @var{d}'
 @cindex circle, solid, drawing (@w{@code{\D'C @dots{}'}})
 @cindex drawing a solid circle (@w{@code{\D'C @dots{}'}})
 @cindex solid circle, drawing (@w{@code{\D'C @dots{}'}})
-Draw a solid circle with the same parameters as an outlined circle.  No
-outline is drawn.
+Draw a solid circle with the same parameters and behaviour as an outlined
+circle.  No outline is drawn.
 
 @item \D'e @var{x} @var{y}'
 @cindex drawing an ellipse (@w{@code{\D'e @dots{}'}})
 @cindex ellipse, drawing (@w{@code{\D'e @dots{}'}})
 Draw an ellipse with a horizontal diameter of @var{x} and a vertical
 diameter of @var{y} with the leftmost point at the current position.
+After drawing, the current location is positioned at the rightmost point of
+the ellipse.
 
 @item \D'E @var{x} @var{y}'
 @cindex ellipse, solid, drawing (@w{@code{\D'E @dots{}'}})
 @cindex drawing a solid ellipse (@w{@code{\D'E @dots{}'}})
 @cindex solid ellipse, drawing (@w{@code{\D'E @dots{}'}})
-Draw a solid ellipse with the same parameters as an outlined ellipse.
-No outline is drawn.
+Draw a solid ellipse with the same parameters and behaviour as an
+outlined ellipse.  No outline is drawn.
 
 @item \D'a @var{dx1} @var{dy1} @var{dx2} @var{dy2}'
 @cindex arc, drawing (@w{@code{\D'a @dots{}'}})
@@ -10536,13 +10540,15 @@ Draw an arc clockwise from the current location through the two
 specified relative locations (@var{dx1},@var{dy1}) and
 (@var{dx2},@var{dy2}).  The coordinates of the first point are relative
 to the current position, and the coordinates of the second point are
-relative to the first point.
+relative to the first point.  After drawing, the current position is moved
+to the final point of the arc.
 
 @item \D'~ @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{}'
 @cindex drawing a spline (@w{@code{\D'~ @dots{}'}})
 @cindex spline, drawing (@w{@code{\D'~ @dots{}'}})
 Draw a spline from the current location to the relative point
 (@var{dx1},@var{dy1}) and then to (@var{dx2},@var{dy2}), and so on.
+The current position is moved to the terminal point of the drawn curve.
 
 @item \D'f @var{n}'
 @cindex gray shading (@w{@code{\D'f @dots{}'}})
@@ -10554,11 +10560,14 @@ correspond to intermediate shades of gray.  This applies only to solid
 circles, solid ellipses, and solid polygons.  By default, a level of
 1000 is used.
 
+Despite of being silly, the current point is moved horizontally to the
+right by@tie{}@var{n}.
+
 @cindex @w{@code{\D'f @dots{}'}} and horizontal resolution
 Don't use this command!  It has the serious drawback that it will be
 always rounded to the next integer multiple of the horizontal resolution
 (the value of the @code{hor} keyword in the @file{DESC} file).  Use
-@code{\M} with a gray value instead (@pxref{Colors}).
+@code{\M} (@pxref{Colors}) or @w{@code{\D'Fg @dots{}'}} instead.
 
 @item \D'p @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{}'
 @cindex drawing a polygon (@w{@code{\D'p @dots{}'}})
@@ -10566,14 +10575,16 @@ always rounded to the next integer multiple of the horizontal resolution
 Draw a polygon from the current location to the relative position
 (@var{dx1},@var{dy1}) and then to (@var{dx2},@var{dy2}) and so on.
 When the specified data points are exhausted, a line is drawn back
-to the starting point.
+to the starting point.  The current position is changed by adding the
+sum of all arguments with odd index to the actual horizontal position and
+the even ones to the vertical position.
 
 @item \D'P @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{}'
 @cindex polygon, solid, drawing (@w{@code{\D'P @dots{}'}})
 @cindex drawing a solid polygon (@w{@code{\D'P @dots{}'}})
 @cindex solid polygon, drawing (@w{@code{\D'P @dots{}'}})
-Draw a solid polygon with the same parameters as an outlined polygon.
-No outline is drawn.
+Draw a solid polygon with the same parameters and behaviour as an
+outlined polygon.  No outline is drawn.
 
 Here a better variant of the box macro to fill the box with some color.
 Note that the box must be drawn before the text since colors in
@@ -10604,6 +10615,28 @@ Set the current line thickness to @var{n}@tie{}machine units.  A value of
 zero selects the smallest available line thickness.  A negative value
 makes the line thickness proportional to the current point size (this is
 the default behaviour of @acronym{AT&T} @code{troff}).
+
+Despite of being silly, the current point is moved horizontally to the
+right by@tie{}@var{n}.
+
+@item \D'F@var{scheme} @var{color_components}'
+@cindex unnamed fill colors (@code{\D'F@dots{}'})
+@cindex fill colors, unnamed (@code{\D'F@dots{}'})
+@cindex colors, fill, unnamed (@code{\D'F@dots{}'})
+Change current fill color.  @var{scheme} is a single letter denoting the
+color scheme: @samp{r} (rgb), @samp{c} (cmy), @samp{k} (cmyk), @samp{g}
+(gray), or @samp{d} (default color).  The color components use exactly
+the same syntax as in the @code{defcolor} request (@pxref{Colors}); the
+command @code{\D'Fd'} doesn't take an argument.
+
+@emph{No} position changing!
+
+Examples:
+
+@Example
+@endExample
+\D'Fg .3'      \" same gray as \D'f 700'
+\D'Fr #0000ff' \" blue
 @end table
 @endDefesc
 
@@ -11152,7 +11185,7 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 @endDefreg
 
 @DefescList {\\!, , , }
-@DefescListEnd {\\?, , @Var{anything}, \\?}
+@DefescListEnd {\\?, , anything, \\?}
 @cindex transparent output (@code{\!}, @code{\?})
 @cindex output, transparent (@code{\!}, @code{\?})
 Prevent requests, macros, and escapes from being
@@ -11509,7 +11542,7 @@ Colors can be also turned off with the @option{-c} command line option.
 
 @Defreq {defcolor, ident scheme color_components}
 Define color with name @var{ident}.  @var{scheme} can be one of  the
-following values: @code{rgb} (three components), @code{cym} (three
+following values: @code{rgb} (three components), @code{cmy} (three
 components), @code{cmyk} (four components), and @code{gray} or
 @code{grey} (one component).
 
@@ -12256,16 +12289,16 @@ of the fallback glyph.  Anyway, the translation is still active;
 @code{gtroff} is not easy to debug, but there are some useful features
 and strategies for debugging.
 
-@Defreq {lf, line filename}
+@Defreq {lf, line [@Var{filename}]}
 @pindex soelim
 @cindex multi-file documents
 @cindex documents, multi-file
 @cindex setting input line number (@code{lf})
 @cindex input line number, setting (@code{lf})
 @cindex number, input line, setting (@code{lf})
-Change the line number and the file name @code{gtroff} shall use for
-error and warning messages.  @var{line} is the input line number of the
-@emph{next} line.
+Change the line number and optionally the file name @code{gtroff} shall
+use for error and warning messages.  @var{line} is the input line number
+of the @emph{next} line.
 
 Without argument, the request is ignored.
 
@@ -13629,9 +13662,8 @@ negative left.  The arguments called @var{v1}, @var{v2}, @dots{},
 negative up.  All these distances are offsets relative to the current
 location.
 
-Unless indicated otherwise, each graphics command directly corresponds
-to a similar @code{gtroff} @code{\D} escape sequence.  @xref{Drawing
-Requests}.
+Each graphics command directly corresponds to a similar @code{gtroff}
+@code{\D} escape sequence.  @xref{Drawing Requests}.
 
 Unknown @samp{D} commands are assumed to be device-specific.
 Its arguments are parsed as strings; the whole information is then

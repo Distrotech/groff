@@ -5358,10 +5358,10 @@ static int mount_font_no_translate(int n, symbol name, symbol external_name)
     if (!fm) {
       if (not_found)
 	warning(WARN_FONT, "can't find font `%1'", external_name.contents());
-      font_dictionary.lookup(external_name, &a_char);
+      (void)font_dictionary.lookup(external_name, &a_char);
       return 0;
     }
-    font_dictionary.lookup(name, fm);
+    (void)font_dictionary.lookup(name, fm);
   }
   else if (p == &a_char) {
 #if 0
@@ -5422,7 +5422,7 @@ void font_translate()
     if (to.is_null() || from == to)
       font_translation_dictionary.remove(from);
     else
-      font_translation_dictionary.lookup(from, (void *)to.contents());
+      (void)font_translation_dictionary.lookup(from, (void *)to.contents());
   }
   skip_line();
 }
@@ -5436,7 +5436,7 @@ void font_position()
     else {
       symbol internal_name = get_name(1);
       if (!internal_name.is_null()) {
-	symbol external_name = get_long_name(0);
+	symbol external_name = get_long_name();
 	mount_font(n, internal_name, external_name); // ignore error
       }
     }

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
      Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -410,6 +410,8 @@ object_spec::object_spec(object_type t) : type(t)
   segment_width = segment_height = 0.0;
   segment_is_absolute = 0;
   text = 0;
+  shaded = 0;
+  outlined = 0;
   with = 0;
   dir = RIGHT_DIRECTION;
 }
@@ -434,6 +436,10 @@ object_spec::~object_spec()
     delete tem;
   }
   delete with;
+  if (shaded)
+    a_delete shaded;
+  if (outlined)
+    a_delete outlined;
 }
 
 class command_object : public object {
@@ -590,12 +596,12 @@ void graphic_object::set_fill(double)
 
 void graphic_object::set_fill_color(char *c)
 {
-  color_fill = c;
+  color_fill = strsave(c);
 }
 
 void graphic_object::set_outline_color(char *c)
 {
-  outline_color = c;
+  outline_color = strsave(c);
 }
 
 char *graphic_object::get_outline_color()
@@ -714,7 +720,7 @@ void closed_object::set_fill(double f)
 
 void closed_object::set_fill_color(char *fill)
 {
-  color_fill = fill;
+  color_fill = strsave(fill);
 }
 
 class box_object : public closed_object {

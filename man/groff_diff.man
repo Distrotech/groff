@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 10 Feb 2003
+Last update : 13 Feb 2003
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -2396,6 +2396,19 @@ is read in copy mode.
 .
 .
 .\" --------------------------------------------------------------------
+.SS "Extended escape sequences"
+.\" --------------------------------------------------------------------
+.
+.TP
+.BI \[rs]D' .\|.\|. '
+All drawing commands of groff's intermediate output are accepted.
+.
+See subsection
+.B "Drawing Commands"
+below for more information.
+.
+.
+.\" --------------------------------------------------------------------
 .SS "Extended requests"
 .\" --------------------------------------------------------------------
 .
@@ -3281,7 +3294,9 @@ exception of
 .BR De .
 For the sake of compatibility GNU troff also follows this rule, even
 though it produces an ugly result in the case of the
-.BR Dt ,
+.B Dt
+and
+.BR Df ,
 and, to a lesser extent,
 .B DE
 commands.
@@ -3316,11 +3331,7 @@ Set the color components of the filling color similar to the
 commands above.
 .
 .P
-Note that
-.B Df
-is now mapped onto
-.BR DFg .
-The current position isn't changed by those colour commands (including
+The current position isn't changed by those colour commands (contrary to
 .BR Df ).
 .
 .

@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2003
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -302,8 +303,10 @@ void do_file(const char *filename)
   else {
     errno = 0;
     fp = fopen(filename, "r");
-    if (fp == 0)
+    if (fp == 0) {
+      delete out;
       fatal("can't open `%1': %2", filename, strerror(errno));
+    }
   }
   out->set_location(filename, 1);
   current_filename = filename;

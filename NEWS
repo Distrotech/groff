@@ -44,9 +44,6 @@ o Composite glyphs are now supported.  To do this, a subset of the Adobe
   Please refer to the info pages of groff and to the groff_char man page
   for more details.
 
-o The font cmtex10 has been added as the special font `SC' to the DVI fonts.
-  It is used as a font-specific special font for CW and CWI.
-
 o A new request `fschar' has been added to define font-specific fallback
   characters.  They are searched after the list of fonts declared with the
   `fspecial' request but before the list of fonts declared with `special'.
@@ -58,6 +55,27 @@ o A new request `schar' has been added to define global fallback
   characters.  They are searched after the list of fonts declared with the
   `special' request but before the already mounted special fonts.
 
+o In groff versions 1.18 and 1.18.1, \D'f ...' didn't move the current
+  point horizontally.  Despite of being silly, this change has been
+  reverted for backwards compatibility.  Consequently, the intermediate
+  output command `Df' also moves the position horizontally again.
+
+  \D'f ...' is deprecated since it depends on the horizontal resolution of
+  the output device (given with the `hor' parameter in the DESC file).
+  Use the new \D'Fg ...' instead.
+
+o For orthogonality, new \D subcommands to change the fill color are
+  available:
+
+    \D'Fr ...' (rgb)
+    \D'Fc ...' (cmy)
+    \D'Fg ...' (gray)
+    \D'Fk ...' (cmyk)
+    \D'Fd'     (default color)
+
+  The arguments are the same as with the `defcolor' request.  The current
+  position is *not* changed.
+
 o The `.pe' number register isn't new but hasn't been documented before.
   It is set to 1 during a page ejection caused by the `bp' request.
 
@@ -68,6 +86,12 @@ Grops
 
 o The font `freeeuro.pfa' has been added to provide various default glyph
   shapes for `eu' and `Eu'.
+
+Grodvi
+-----
+
+o The font cmtex10 has been added as the special font `SC' to the DVI fonts.
+  It is used as a font-specific special font for CW and CWI.
 
 Grotty
 ------

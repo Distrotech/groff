@@ -206,8 +206,6 @@ void simple_output::ellipse(const position &cent, const distance &dim,
   }
 }
 
-#define FILL_MAX 1000
-
 class troff_output : public simple_output {
   const char *last_filename;
   position upper_left;
@@ -478,7 +476,7 @@ void troff_output::line_thickness(double p)
 void troff_output::set_fill(double f)
 {
   if (driver_extension_flag && f != last_fill) {
-    printf("\\D'f %du'\n.sp -1\n", int(f*FILL_MAX));
+    printf("\\D'Fg %.3f'\n.sp -1\n", 1.0 - f);
     last_fill = f;
   }
   if (last_filled) {
@@ -496,11 +494,11 @@ void troff_output::set_color(char *color_fill, char *color_outlined)
     }
     if (color_fill) {
       printf("\\M[%s]\n.sp -1\n", color_fill);
-      last_filled = strdup(color_fill);
+      last_filled = strsave(color_fill);
     }
     if (color_outlined) {
       printf("\\m[%s]\n.sp -1\n", color_outlined);
-      last_outlined = strdup(color_outlined);
+      last_outlined = strsave(color_outlined);
     }
   }
 }
@@ -510,12 +508,12 @@ void troff_output::reset_color()
   if (driver_extension_flag) {
     if (last_filled) {
       printf("\\M[]\n.sp -1\n");
-      free(last_filled);
+      a_delete last_filled;
       last_filled = 0;
     }
     if (last_outlined) {
       printf("\\m[]\n.sp -1\n");
-      free(last_outlined);
+      a_delete last_outlined;
       last_outlined = 0;
     }
   }
