@@ -437,46 +437,16 @@ dnl Check for OS/390 Unix.  We test for EBCDIC also -- the Linux port (with
 dnl gcc) to OS/390 uses ASCII internally.
 dnl
 AC_DEFUN(GROFF_OS390,
-[groff_cv_os390="no"
-if test "$groff_cv_ebcdic" = "yes"; then
+[if test "$groff_cv_ebcdic" = "yes"; then
 	AC_MSG_CHECKING([for OS/390 Unix])
 	case `uname` in
 	OS/390)
 		CFLAGS="$CFLAGS -D_ALL_SOURCE"
-		groff_cv_os390="yes"
 		AC_MSG_RESULT(yes) ;;
 	*)
 		AC_MSG_RESULT(no) ;;
 	esac
 fi])dnl
-dnl
-dnl
-dnl Finally, we must modify a base function of autoconf to replace the
-dnl ASCII char `012' with its generic equivalent `\n' if we run under
-dnl OS/390 Unix -- unfortunately, not all `tr' variants understand `\n',
-dnl so this hack is necessary.
-dnl
-define([AC_OUTPUT_MAKE_DEFS],
-[# Transform confdefs.h into DEFS.
-dnl Using a here document instead of a string reduces the quoting nightmare.
-# Protect against shell expansion while executing Makefile rules.
-# Protect against Makefile macro expansion.
-cat > conftest.defs <<\EOF
-changequote(<<, >>)dnl
-s%<<#define>> \([A-Za-z_][A-Za-z0-9_]*\) *\(.*\)%-D\1=\2%g
-s%[ 	`~<<#>>$^&*(){}\\|;'"<>?]%\\&%g
-s%\[%\\&%g
-s%\]%\\&%g
-s%\$%$$%g
-changequote([, ])dnl
-EOF
-if test "$groff_cv_os390" = "yes"; then
-	DEFS=`sed -f conftest.defs confdefs.h | tr '\n' ' '`
-else
-	DEFS=`sed -f conftest.defs confdefs.h | tr '\012' ' '`
-fi
-rm -f conftest.defs
-])dnl
 dnl
 dnl
 dnl Check whether we need a declaration for a function.
