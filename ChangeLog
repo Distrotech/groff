@@ -1,3 +1,25 @@
+2004-07-02  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.h: s/COMPATIBLE_SAVE/PUSH_GROFF_MODE/.
+	s/COMPATIBLE_RESTORE/POP_GROFFCOMP_MODE/.
+	Update all users.
+	(PUSH_COMP_MODE): New internal character constant.
+	Update all users.
+
+	* src/roff/troff/input.cpp (get_copy): Handle PUSH_GROFF_MODE,
+	PUSH_COMP_MODE, and POP_GROFFCOMP_MODE.
+	(token::next, macro::append): Handle PUSH_COMP_MODE.
+	(decode_args): Add PUSH_GROFF_MODE or PUSH_COMP_MODE before and
+	POP_GROFFCOMP after each of the decoded arguments to make them
+	independent from the compatibility mode status.
+	(comp_mode): Add `COMP_ENABLE'.
+	(do_define_string, do_define_macro): Handle COMP_ENABLE.
+	(define_string, append_string, define_macro, define_indirect_macro,
+	append_macro, append_indirect_macro): Handle `compatible_flag'.
+	(chop_macro, substring_request, asciify): Handle PUSH_COMP_MODE.
+
+	* man/groff_diff.man, doc/groff.texinfo: Updated.
+
 2004-07-01  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/groff.texinfo: Improve documentation of `hcode'.

@@ -836,6 +836,20 @@ static int get_copy(node **nd, int defining)
 {
   for (;;) {
     int c = input_stack::get(nd);
+    if (c == PUSH_GROFF_MODE) {
+      input_stack::save_compatible_flag(compatible_flag);
+      compatible_flag = 0;
+      continue;
+    }
+    if (c == PUSH_COMP_MODE) {
+      input_stack::save_compatible_flag(compatible_flag);
+      compatible_flag = 1;
+      continue;
+    }
+    if (c == POP_GROFFCOMP_MODE) {
+      compatible_flag = input_stack::get_compatible_flag();
+      continue;
+    }
     if (c == ESCAPE_NEWLINE) {
       if (defining)
 	return c;
@@ -1559,11 +1573,15 @@ void token::next()
     if (cc != escape_char || escape_char == 0) {
     handle_normal_char:
       switch(cc) {
-      case COMPATIBLE_SAVE:
+      case PUSH_GROFF_MODE:
 	input_stack::save_compatible_flag(compatible_flag);
 	compatible_flag = 0;
 	continue;
-      case COMPATIBLE_RESTORE:
+      case PUSH_COMP_MODE:
+	input_stack::save_compatible_flag(compatible_flag);
+	compatible_flag = 1;
+	continue;
+      case POP_GROFFCOMP_MODE:
 	compatible_flag = input_stack::get_compatible_flag();
 	continue;
       case EOF:
@@ -3032,7 +3050,7 @@ void macro::append(unsigned char c)
   }
   p->cl.append(c);
   ++len;
-  if (c != COMPATIBLE_SAVE && c != COMPATIBLE_RESTORE)
+  if (c != PUSH_GROFF_MODE && c != PUSH_COMP_MODE && c != POP_GROFFCOMP_MODE)
     empty_macro = 0;
 }
 
@@ -3521,12 +3539,13 @@ static void decode_args(macro_iterator *mi)
       macro arg;
       int quote_input_level = 0;
       int done_tab_warning = 0;
-      if (c == '\"') {
+      if (c == '"') {
 	quote_input_level = input_stack::get_level();
 	c = get_copy(&n);
       }
+      arg.append(compatible_flag ? PUSH_COMP_MODE : PUSH_GROFF_MODE);
       while (c != EOF && c != '\n' && !(c == ' ' && quote_input_level == 0)) {
-	if (quote_input_level > 0 && c == '\"'
+	if (quote_input_level > 0 && c == '"'
 	    && (compatible_flag
 		|| input_stack::get_level() == quote_input_level)) {
 	  c = get_copy(&n);
@@ -3550,6 +3569,7 @@ static void decode_args(macro_iterator *mi)
 	  c = get_copy(&n);
 	}
       }
+      arg.append(POP_GROFFCOMP_MODE);
       mi->add_arg(arg);
     }
   }
@@ -3571,14 +3591,14 @@ static void decode_string_args(macro_iterator *mi)
     macro arg;
     int quote_input_level = 0;
     int done_tab_warning = 0;
-    if (c == '\"') {
+    if (c == '"') {
       quote_input_level = input_stack::get_level();
       c = get_copy(&n);
     }
     while (c != EOF && c != '\n'
 	   && !(c == ']' && quote_input_level == 0)
 	   && !(c == ' ' && quote_input_level == 0)) {
-      if (quote_input_level > 0 && c == '\"'
+      if (quote_input_level > 0 && c == '"'
 	  && input_stack::get_level() == quote_input_level) {
 	c = get_copy(&n);
 	if (c == '"') {
@@ -3830,7 +3850,7 @@ void read_request()
 
 enum define_mode { DEFINE_NORMAL, DEFINE_APPEND, DEFINE_IGNORE };
 enum calling_mode { CALLING_NORMAL, CALLING_INDIRECT };
-enum comp_mode { COMP_IGNORE, COMP_DISABLE };
+enum comp_mode { COMP_IGNORE, COMP_DISABLE, COMP_ENABLE };
 
 void do_define_string(define_mode mode, comp_mode comp)
 {
@@ -3863,7 +3883,9 @@ void do_define_string(define_mode mode, comp_mode comp)
   if (mode == DEFINE_APPEND && mm)
     mac = *mm;
   if (comp == COMP_DISABLE)
-    mac.append(COMPATIBLE_SAVE);
+    mac.append(PUSH_GROFF_MODE);
+  else if (comp == COMP_ENABLE)
+    mac.append(PUSH_COMP_MODE);
   while (c != '\n' && c != EOF) {
     if (c == 0)
       mac.append(n);
@@ -3875,15 +3897,16 @@ void do_define_string(define_mode mode, comp_mode comp)
     mm = new macro;
     request_dictionary.define(nm, mm);
   }
-  if (comp == COMP_DISABLE)
-    mac.append(COMPATIBLE_RESTORE);
+  if (comp == COMP_DISABLE || comp == COMP_ENABLE)
+    mac.append(POP_GROFFCOMP_MODE);
   *mm = mac;
   tok.next();
 }
 
 void define_string()
 {
-  do_define_string(DEFINE_NORMAL, COMP_IGNORE);
+  do_define_string(DEFINE_NORMAL,
+		   compatible_flag ? COMP_ENABLE: COMP_IGNORE);
 }
 
 void define_nocomp_string()
@@ -3893,7 +3916,8 @@ void define_nocomp_string()
 
 void append_string()
 {
-  do_define_string(DEFINE_APPEND, COMP_IGNORE);
+  do_define_string(DEFINE_APPEND,
+		   compatible_flag ? COMP_ENABLE : COMP_IGNORE);
 }
 
 void append_nocomp_string()
@@ -4150,7 +4174,9 @@ void do_define_macro(define_mode mode, calling_mode calling, comp_mode comp)
   }
   int bol = 1;
   if (comp == COMP_DISABLE)
-    mac.append(COMPATIBLE_SAVE);
+    mac.append(PUSH_GROFF_MODE);
+  else if (comp == COMP_ENABLE)
+    mac.append(PUSH_COMP_MODE);
   for (;;) {
     while (c == ESCAPE_NEWLINE) {
       if (mode == DEFINE_NORMAL || mode == DEFINE_APPEND)
@@ -4186,8 +4212,8 @@ void do_define_macro(define_mode mode, calling_mode calling, comp_mode comp)
 	    mm = new macro;
 	    request_dictionary.define(nm, mm);
 	  }
-	  if (comp == COMP_DISABLE)
-	    mac.append(COMPATIBLE_RESTORE);
+	  if (comp == COMP_DISABLE || comp == COMP_ENABLE)
+	    mac.append(POP_GROFFCOMP_MODE);
 	  *mm = mac;
 	}
 	if (term != dot_symbol) {
@@ -4237,7 +4263,8 @@ void do_define_macro(define_mode mode, calling_mode calling, comp_mode comp)
 
 void define_macro()
 {
-  do_define_macro(DEFINE_NORMAL, CALLING_NORMAL, COMP_IGNORE);
+  do_define_macro(DEFINE_NORMAL, CALLING_NORMAL,
+		  compatible_flag ? COMP_ENABLE : COMP_IGNORE);
 }
 
 void define_nocomp_macro()
@@ -4247,7 +4274,8 @@ void define_nocomp_macro()
 
 void define_indirect_macro()
 {
-  do_define_macro(DEFINE_NORMAL, CALLING_INDIRECT, COMP_IGNORE);
+  do_define_macro(DEFINE_NORMAL, CALLING_INDIRECT,
+		  compatible_flag ? COMP_ENABLE : COMP_IGNORE);
 }
 
 void define_indirect_nocomp_macro()
@@ -4257,7 +4285,8 @@ void define_indirect_nocomp_macro()
 
 void append_macro()
 {
-  do_define_macro(DEFINE_APPEND, CALLING_NORMAL, COMP_IGNORE);
+  do_define_macro(DEFINE_APPEND, CALLING_NORMAL,
+		  compatible_flag ? COMP_ENABLE : COMP_IGNORE);
 }
 
 void append_nocomp_macro()
@@ -4267,7 +4296,8 @@ void append_nocomp_macro()
 
 void append_indirect_macro()
 {
-  do_define_macro(DEFINE_APPEND, CALLING_INDIRECT, COMP_IGNORE);
+  do_define_macro(DEFINE_APPEND, CALLING_INDIRECT,
+		  compatible_flag ? COMP_ENABLE : COMP_IGNORE);
 }
 
 void append_indirect_nocomp_macro()
@@ -4332,11 +4362,12 @@ void chop_macro()
       // we have to check for additional save/restore pairs which could be
       // there due to empty am1 requests.
       for (;;) {
-	if (m->get(m->len - 1) != COMPATIBLE_RESTORE)
+	if (m->get(m->len - 1) != POP_GROFFCOMP_MODE)
           break;
 	have_restore = 1;
 	m->len -= 1;
-	if (m->get(m->len - 1) != COMPATIBLE_SAVE)
+	if (m->get(m->len - 1) != PUSH_GROFF_MODE
+	    && m->get(m->len - 1) != PUSH_COMP_MODE)
           break;
 	have_restore = 0;
 	m->len -= 1;
@@ -4347,7 +4378,7 @@ void chop_macro()
 	error("cannot chop empty macro");
       else {
 	if (have_restore)
-	  m->set(COMPATIBLE_RESTORE, m->len - 1);
+	  m->set(POP_GROFFCOMP_MODE, m->len - 1);
 	else
 	  m->len -= 1;
       }
@@ -4372,7 +4403,9 @@ void substring_request()
 	string_iterator iter1(*m);
 	for (int l = 0; l < m->len; l++) {
 	  int c = iter1.get(0);
-	  if (c == COMPATIBLE_SAVE || c == COMPATIBLE_RESTORE)
+	  if (c == PUSH_GROFF_MODE
+	      || c == PUSH_COMP_MODE
+	      || c == POP_GROFFCOMP_MODE)
 	    continue;
 	  if (c == EOF)
 	    break;
@@ -4414,7 +4447,9 @@ void substring_request()
 	int i;
 	for (i = 0; i < start; i++) {
 	  int c = iter.get(0);
-	  while (c == COMPATIBLE_SAVE || c == COMPATIBLE_RESTORE)
+	  while (c == PUSH_GROFF_MODE
+		 || c == PUSH_COMP_MODE
+		 || c == POP_GROFFCOMP_MODE)
 	    c = iter.get(0);
 	  if (c == EOF)
 	    break;
@@ -4423,7 +4458,9 @@ void substring_request()
 	for (; i <= end; i++) {
 	  node *nd = 0;		// pacify compiler
 	  int c = iter.get(&nd);
-	  while (c == COMPATIBLE_SAVE || c == COMPATIBLE_RESTORE)
+	  while (c == PUSH_GROFF_MODE
+		 || c == PUSH_COMP_MODE
+		 || c == POP_GROFFCOMP_MODE)
 	    c = iter.get(0);
 	  if (c == EOF)
 	    break;
@@ -5781,8 +5818,9 @@ const char *asciify(int c)
   case ESCAPE_COLON:
     buf[1] = ':';
     break;
-  case COMPATIBLE_SAVE:
-  case COMPATIBLE_RESTORE:
+  case PUSH_GROFF_MODE:
+  case PUSH_COMP_MODE:
+  case POP_GROFFCOMP_MODE:
     buf[0] = '\0';
     break;
   default:

@@ -9426,6 +9426,7 @@ roman glyph without any intervening space.  This small amount of
 space is also called @dfn{italic correction}.
 
 @iftex
+@c can't use @Example...@endExample here
 @example
 @group
 \f[I]f\f[R])
@@ -9452,6 +9453,7 @@ space could be called @dfn{left italic correction}, but this term
 isn't used widely.
 
 @iftex
+@c can't use @Example...@endExample here
 @example
 @group
 q\f[I]f
@@ -9496,14 +9498,12 @@ an input line.
 It prevents kerning between two glyphs.
 
 @ifnotinfo
-@example
-@group
+@Example
 VA
     @result{} @r{VA}
 V\&A
     @result{} @r{V@w{}A}
-@end group
-@end example
+@endExample
 @end ifnotinfo
 
 @item
@@ -10560,7 +10560,7 @@ The value of xxx ix \\n[xxx].
 .cp 1
 .
 .aa
-    @result{} warning: number register ' not defined
+    @result{} warning: number register `[' not defined
     @result{} The value of xxx is 0xxx].
 .bb
     @result{} The value of xxx ix 12345.
@@ -10587,6 +10587,13 @@ is equivalent to:
 
 The @code{dei1} request is similar to @code{dei} but with compatibility
 mode switched off during execution of the defined macro.
+
+If compatibility mode is on, @code{de} (and @code{dei}) behave similar to
+@code{de1} (and @code{dei1}): A `compatibility save' token is inserted at
+the beginning, and a `compatibility restore' token at the end, with
+compatibility mode switched on during execution.  @xref{Gtroff Internals},
+for more information on switching compatibility mode on and off in a
+single document.
 
 @pindex trace.tmac
 Using @file{trace.tmac}, you can trace calls to @code{de} and @code{de1}.
@@ -13039,6 +13046,30 @@ Since glyphs defined with @code{fchar} are searched before glyphs
 in special fonts, we must call @code{rchar} to remove the definition
 of the fallback glyph.  Anyway, the translation is still active;
 @samp{x} now maps to the real glyph @samp{foo}.
+
+@cindex compatibility mode
+@cindex mode, compatibility
+Macro arguments preserve the compatibility mode:
+
+@Example
+.cp 1     \" switch to compatibility mode
+.de xx
+\\$1
+..
+.cp 0     \" switch compatibility mode off
+.xx caf\['e]
+    @result{} café
+@endExample
+
+@noindent
+Since compatibility mode is on while @code{de} is called, the macro
+@code{xx} activates compatibility mode while executing.  Argument
+@code{$1} can still be handled properly because it inherits the
+compatibility mode status which was active at the point where @code{xx}
+is called.
+
+After expansion of the macro arguments, the compatibility save and restore
+tokens are removed.
 
 
 @c =====================================================================
