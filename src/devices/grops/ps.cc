@@ -895,7 +895,6 @@ void ps_printer::flush_sbuf()
   sbuf_len = 0;
 }
 
-
 void ps_printer::set_line_thickness(const environment *env)
 {
   if (line_thickness < 0) {
@@ -923,16 +922,13 @@ void ps_printer::set_line_thickness(const environment *env)
 void ps_printer::fill_path()
 {
   double k;
-
   if (fill_color->is_gray()) {
     // gray shade is a special case
     fill_color->get_gray(&k);
     output_color = fill_color;
-     
     out.put_float(1.0-k)
        .put_symbol("FL");
   }
-  else if (fill_color->is_equal(output_color))
   else {
     set_color(fill_color, 0);
     out.put_symbol("FC");
