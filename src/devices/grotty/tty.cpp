@@ -192,11 +192,6 @@ void glyph::operator delete(void *p)
   }
 }
 
-int printer::round_width(int x)
-{
-  return x;
-}
-
 class tty_printer : public printer {
   int is_utf8;
   glyph **lines;

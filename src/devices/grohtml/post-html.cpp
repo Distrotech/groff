@@ -2074,6 +2074,7 @@ class html_printer : public printer {
   void handle_assertion               (int minv, int minh, int maxv, int maxh, const char *s);
   void handle_state_assertion         (text_glob *g);
   void do_end_para                    (text_glob *g);
+  int  round_width                    (int x);
   // ADD HERE
 
 public:
@@ -4786,7 +4787,7 @@ void html_printer::special(char *s, const environment *env, char type)
  *  taken from number.cpp in src/roff/troff, [hunits::hunits(units x)]
  */
 
-int printer::round_width(int x)
+int html_printer::round_width(int x)
 {
   int r = font::hor;
   int n;

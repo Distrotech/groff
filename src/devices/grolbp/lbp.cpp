@@ -59,11 +59,6 @@ private:
   lbp_font(const char *);
 };
 
-int printer::round_width(int x)
-{
-  return x;
-}
-
 class lbp_printer : public printer {
 public:
   lbp_printer(int, double, double);

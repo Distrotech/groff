@@ -112,11 +112,6 @@ struct output_font {
   output_font() : f(0) { }
 };
 
-int printer::round_width(int x)
-{
-  return x;
-}
-
 class dvi_printer : public printer {
   FILE *fp;
   int max_drift;
