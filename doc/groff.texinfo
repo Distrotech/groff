@@ -11350,6 +11350,15 @@ The escape @code{\m[]} returns to the previous color.
 
 The drawing color is associated with the current environment
 (@pxref{Environments}).
+
+Note that @code{\m} doesn't produce an input token in @code{gtroff}.
+As a consequence, it can be used in requests like @code{mc} (which
+expects a single character as an argument) to change the color on
+the fly:
+
+@Example
+.mc \m[red]x\m[]
+@endExample
 @endDefesc
 
 @DefescList {\\M, , c, }
@@ -11368,6 +11377,8 @@ The escape @code{\M[]} returns to the previous fill color.
 
 The fill color is associated with the current environment
 (@pxref{Environments}).
+
+Note that @code{\M} doesn't produce an input token in @code{gtroff}.
 @endDefesc
 
 
@@ -11740,7 +11751,7 @@ file, special characters no longer cause an error; the name @var{xx} is
 represented as @samp{\(@var{xx})} in the @w{@samp{x X}} output command.
 Additionally, the backslash is represented as @code{\\}.
 
-This mechanism is currently used by @code{grohtml} only.
+@samp{use_charnames_in_special} is currently used by @code{grohtml} only.
 @endDefesc
 
 @DefescList {\\Y, , n, }
@@ -11928,11 +11939,11 @@ it sets the four number registers to zero.
 @cindex node, output
 @code{gtroff} processes input in three steps.  One or more input
 characters are converted to an @dfn{input token}.@footnote{Except the
-escapes @code{\f}, @code{\F}, @code{\H}, @code{\R}, @code{\s}, and
-@code{\S} which are processed immediately if not in copy-in mode.}
-Then, one or more input tokens are converted to an @dfn{output node}.
-Finally, output nodes are converted to the intermediate output language
-understood by all output devices.
+escapes @code{\f}, @code{\F}, @code{\H}, @code{\m}, @code{\M}, @code{\R},
+@code{\s}, and @code{\S} which are processed immediately if not in
+copy-in mode.}  Then, one or more input tokens are converted to an
+@dfn{output node}.  Finally, output nodes are converted to the
+intermediate output language understood by all output devices.
 
 Actually, before step one happens, @code{gtroff} converts certain
 escape sequences into reserved input characters (not accessible by
@@ -12465,13 +12476,12 @@ device).
 
 @cindex @code{\f}, incompatibilities with @acronym{AT&T} @code{troff}
 @cindex @code{\H}, incompatibilities with @acronym{AT&T} @code{troff}
-@cindex @code{\R}, incompatibilities with @acronym{AT&T} @code{troff}
 @cindex @code{\s}, incompatibilities with @acronym{AT&T} @code{troff}
 @cindex @code{\S}, incompatibilities with @acronym{AT&T} @code{troff}
-Finally, the escapes @code{\f}, @code{\H}, @code{\R}, @code{\s}, and
-@code{\S} are transparent for recognizing the beginning of a line only
-in compatibility mode (this is a rather obscure feature).  For example,
-the code
+Finally, the escapes @code{\f}, @code{\H}, @code{\m}, @code{\M},
+@code{\R}, @code{\s}, and @code{\S} are transparent for recognizing the
+beginning of a line only in compatibility mode (this is a rather obscure
+feature).  For example, the code
 
 @Example
 .de xx

@@ -394,7 +394,7 @@ void environment::space_newline()
     width_total += x;
     return;
   }
-  add_node(new word_space_node(x, w));
+  add_node(new word_space_node(x, get_fill_color(), w));
   possibly_break_line(0, spread_flag);
   spread_flag = 0;
 }
@@ -428,6 +428,7 @@ void environment::space(hunits space_width, hunits sentence_space_width)
     return;
   }
   add_node(new word_space_node(x,
+			       get_fill_color(),
 			       new width_list(space_width,
 					      sentence_space_width)));
   possibly_break_line(0, spread_flag);
@@ -1095,8 +1096,6 @@ void environment_switch()
     }
   }
   skip_line();
-  curenv->add_node(new glyph_color_node(curenv->get_glyph_color()));
-  curenv->add_node(new fill_color_node(curenv->get_fill_color()));
 }
 
 void environment_copy()
@@ -1125,8 +1124,6 @@ void environment_copy()
   else
     curenv->copy(e);
   skip_line();
-  curenv->add_node(new glyph_color_node(curenv->get_glyph_color()));
-  curenv->add_node(new fill_color_node(curenv->get_fill_color()));
 }
 
 static symbol P_symbol("P");
@@ -1714,7 +1711,7 @@ void environment::output_line(node *n, hunits width)
   if (margin_character_flags) {
     hunits d = line_length + margin_character_distance - saved_indent - width;
     if (d > 0) {
-      n = new hmotion_node(d, n);
+      n = new hmotion_node(d, get_fill_color(), n);
       width += d;
     }
     margin_character_flags &= ~MARGIN_CHARACTER_NEXT;
@@ -1737,7 +1734,7 @@ void environment::output_line(node *n, hunits width)
     n = tem;
   }
   if (!saved_indent.is_zero())
-    nn = new hmotion_node(saved_indent, nn);
+    nn = new hmotion_node(saved_indent, get_fill_color(), nn);
   width += saved_indent;
   if (no_number_count > 0)
     --no_number_count;
@@ -1745,11 +1742,11 @@ void environment::output_line(node *n, hunits width)
     hunits w = (line_number_digit_width
 		*(3+line_number_indent+number_text_separation));
     if (next_line_number % line_number_multiple != 0)
-      nn = new hmotion_node(w, nn);
+      nn = new hmotion_node(w, get_fill_color(), nn);
     else {
       hunits x = w;
-      nn = new hmotion_node(number_text_separation*line_number_digit_width,
-			    nn);
+      nn = new hmotion_node(number_text_separation * line_number_digit_width,
+			    get_fill_color(), nn);
       x -= number_text_separation*line_number_digit_width;
       char buf[30];
       sprintf(buf, "%3d", next_line_number);
@@ -1762,7 +1759,7 @@ void environment::output_line(node *n, hunits width)
 	gn->next = nn;
 	nn = gn;
       }
-      nn = new hmotion_node(x, nn);
+      nn = new hmotion_node(x, get_fill_color(), nn);
     }
     width += w;
     ++next_line_number;
@@ -2290,7 +2287,8 @@ void environment::do_break(int spread)
   if (current_tab)
     wrap_up_tab();
   if (line) {
-    line = new space_node(H0, line); // this is so that hyphenation works
+    // this is so that hyphenation works
+    line = new space_node(H0, 0, line);
     space_total++;
     possibly_break_line(0, spread);
   }
@@ -2389,7 +2387,7 @@ void title()
   hunits title_length(curenv->title_length);
   hunits f = title_length - part_width[1];
   hunits f2 = f/2;
-  n = new hmotion_node(f2 - part_width[2], n);
+  n = new hmotion_node(f2 - part_width[2], curenv->get_fill_color(), n);
   p = part[1];
   while (p != 0) {
     node *tem = p;
@@ -2397,7 +2395,7 @@ void title()
     tem->next = n;
     n = tem;
   }
-  n = new hmotion_node(f - f2 - part_width[0], n);
+  n = new hmotion_node(f - f2 - part_width[0], curenv->get_fill_color(), n);
   p = part[0];
   while (p != 0) {
     node *tem = p;
@@ -2863,7 +2861,7 @@ node *environment::make_tab_node(hunits d, node *next)
     leader_node = 0;
   }
   if (!leader_node)
-    return new hmotion_node(d, 1, 0, next);
+    return new hmotion_node(d, 1, 0, get_fill_color(), next);
   node *n = new hline_node(d, leader_node, next);
   leader_node = 0;
   return n;
@@ -2975,13 +2973,13 @@ void environment::wrap_up_field()
 void environment::add_padding()
 {
   if (current_tab) {
-    tab_contents = new space_node(H0, tab_contents);
+    tab_contents = new space_node(H0, 0, tab_contents);
     tab_field_spaces++;
   }
   else {
     if (line == 0)
       start_line();
-    line = new space_node(H0, line);
+    line = new space_node(H0, 0, line);
     field_spaces++;
   }
 }

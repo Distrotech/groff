@@ -1,3 +1,63 @@
+2002-10-02  Werner LEMBERG  <wl@gnu.org>
+
+	Redesigning color support in troff.  Colors are no longer
+	represented as separate nodes but are now part of glyph nodes and
+	friends.  This fixes the current formatting misbehaviour due to the
+	changes introduced on 2002-09-20.  Some extra code is necessary for
+	proper grotty support: Without adding color variables to
+	space-related nodes, the background color would be changed too late.
+
+	* src/roff/troff/node.h, src/roff/troff/node.cc:
+	s/current_pagecolor/current_fill_color/.
+	s/current_glyphcolor/current_glyph_color/.
+	(glyph_color_node, fill_color_node): Removed.
+	(node::get_glyph_color, node::get_fill_color): New virtual member
+	functions.
+	(space_node::col): New variable.
+	Updated constructors of space_node and derived classes accordingly.
+	(hmotion_node::col): New variable.
+	Updated constructors of hmotion_node and space_char_hmotion_node
+	accordingly.
+	(vmotion_node::col): New variable.
+	Updated constructor accordingly.
+	(draw_node::gcol, draw_node::fcol): New variables.
+	Updated constructor accordingly.
+	(special_node::gcol, special_node::fcol): New variables.
+	Updated constructors accordingly.
+	(troff_output_file::put_char, troff_output_file::put_charwidth,
+	troff_output_file::draw): Set glyph and fill color.
+	(troff_output_file::start_special): Set glyph and fill color.
+	Always set current font.
+	(troff_output_file::fill_color, troff_output_file::glyph_color):
+	Don't call `do_motion'.
+	(glyph_node::gcol, glyph_node::fcol): New variables.
+	Updated constructors of glyph_node and ligature_node accordingly.
+	(glyph_node::get_glyph_color, glyph_node::get_fill_color): New
+	member functions.
+	(glyph_node::merge_glyph_node,
+	kern_pair_node::add_discretionary_hyphen,
+	node::add_discretionary_hyphen): Updated.
+	(break_char_node::merge_self): Updated.
+	(word_space_node::tprint, space_node::tprint, hmotion_node::tprint,
+	vmotion_node::tprint): Handle color.
+	(make_glyph_node, make_node, node::add_char): Updated.
+
+	* src/roff/troff/env.cc (environment::space_newline,
+	environment::space, environment::output_line, environment::do_break,
+	environment::make_tab_node, environment::add_padding, title):
+	Updated.
+	(environment_switch, environment_copy): Don't add color nodes.
+
+	* src/roff/troff/input.cc (do_glyph_color, do_fill_color): Return
+	nothing.
+	(token::next): Updated.
+	\m and \M now are as transparent as \s.
+	(process_input_stack, token::add_to_node_list, token::process,
+	read_draw_node): Updated.
+	(charinfo_to_node_list): Don't add color nodes.
+
+	* doc/groff.texinfo: Updated.
+
 2002-09-27  Ruslan Ermilov  <ru@FreeBSD.org>
 
 	* tmac/doc-common (ds-operating-system-FreeBSD-4.*): New version

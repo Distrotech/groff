@@ -1038,10 +1038,10 @@ static color *lookup_color(symbol nm)
   return c;
 }
 
-static node *do_glyph_color(symbol nm)
+void do_glyph_color(symbol nm)
 {
   if (nm.is_null())
-    return 0;
+    return;
   if (nm.is_empty())
     curenv->set_glyph_color(curenv->get_prev_glyph_color());
   else {
@@ -1051,13 +1051,12 @@ static node *do_glyph_color(symbol nm)
     else
       (void)color_dictionary.lookup(nm, new color);
   }
-  return new glyph_color_node(curenv->get_glyph_color());
 }
 
-static node *do_fill_color(symbol nm)
+void do_fill_color(symbol nm)
 {
   if (nm.is_null())
-    return 0;
+    return;
   if (nm.is_empty())
     curenv->set_fill_color(curenv->get_prev_fill_color());
   else {
@@ -1067,7 +1066,6 @@ static node *do_fill_color(symbol nm)
     else
       (void)color_dictionary.lookup(nm, new color);
   }
-  return new fill_color_node(curenv->get_fill_color());
 }
 
 static unsigned int get_color_element(const char *scheme, const char *col)
@@ -1595,12 +1593,14 @@ void token::next()
       case ESCAPE_BAR:
       ESCAPE_BAR:
 	type = TOKEN_NODE;
-	nd = new hmotion_node(curenv->get_narrow_space_width());
+	nd = new hmotion_node(curenv->get_narrow_space_width(),
+			      curenv->get_fill_color());
 	return;
       case ESCAPE_CIRCUMFLEX:
       ESCAPE_CIRCUMFLEX:
 	type = TOKEN_NODE;
-	nd = new hmotion_node(curenv->get_half_narrow_space_width());
+	nd = new hmotion_node(curenv->get_half_narrow_space_width(),
+			      curenv->get_fill_color());
 	return;
       case ESCAPE_NEWLINE:
 	break;
@@ -1716,7 +1716,8 @@ void token::next()
       case ' ':
 	goto ESCAPE_SPACE;
       case '0':
-	nd = new hmotion_node(curenv->get_digit_width());
+	nd = new hmotion_node(curenv->get_digit_width(),
+			      curenv->get_fill_color());
 	type = TOKEN_NODE;
 	return;
       case '|':
@@ -1803,7 +1804,8 @@ void token::next()
 	return;
       case 'd':
 	type = TOKEN_NODE;
-	nd = new vmotion_node(curenv->get_size()/2);
+	nd = new vmotion_node(curenv->get_size() / 2,
+			      curenv->get_fill_color());
 	return;
       case 'D':
 	nd = read_draw_node();
@@ -1851,7 +1853,7 @@ void token::next()
 	if (!get_delim_number(&x, 'm'))
 	  break;
 	type = TOKEN_NODE;
-	nd = new hmotion_node(x);
+	nd = new hmotion_node(x, curenv->get_fill_color());
 	return;
       case 'H':
 	// don't take height increments relative to previous height if
@@ -1892,17 +1894,15 @@ void token::next()
 	  return;
 	}
       case 'm':
-	nd = do_glyph_color(read_escape_name(ALLOW_EMPTY));
-	if (!nd)
-	  break;
-	type = TOKEN_NODE;
-	return;
+	do_glyph_color(read_escape_name(ALLOW_EMPTY));
+	if (!compatible_flag)
+	  have_input = 1;
+	break;
       case 'M':
-	nd = do_fill_color(read_escape_name(ALLOW_EMPTY));
-	if (!nd)
-	  break;
-	type = TOKEN_NODE;
-	return;
+	do_fill_color(read_escape_name(ALLOW_EMPTY));
+	if (!compatible_flag)
+	  have_input = 1;
+	break;
       case 'n':
 	{
 	  int inc;
@@ -1931,7 +1931,7 @@ void token::next()
 	return;
       case 'r':
 	type = TOKEN_NODE;
-	nd = new vmotion_node(-curenv->get_size());
+	nd = new vmotion_node(-curenv->get_size(), curenv->get_fill_color());
 	return;
       case 'R':
 	do_register();
@@ -1956,13 +1956,14 @@ void token::next()
 	return;
       case 'u':
 	type = TOKEN_NODE;
-	nd = new vmotion_node(-curenv->get_size()/2);
+	nd = new vmotion_node(-curenv->get_size() / 2,
+			      curenv->get_fill_color());
 	return;
       case 'v':
 	if (!get_delim_number(&x, 'v'))
 	  break;
 	type = TOKEN_NODE;
-	nd = new vmotion_node(x);
+	nd = new vmotion_node(x, curenv->get_fill_color());
 	return;
       case 'V':
 	{
@@ -2641,7 +2642,8 @@ void process_input_stack()
 	  else {
 	    push_token(tok);
 	    curenv->do_break();
-	    curenv->add_node(new hmotion_node(space_width * nspaces));
+	    curenv->add_node(new hmotion_node(space_width * nspaces,
+					      curenv->get_fill_color()));
 	    bol = 0;
 	  }
 	}
@@ -6096,22 +6098,25 @@ int token::add_to_node_list(node **pp)
   case TOKEN_RIGHT_BRACE:
     break;
   case TOKEN_SPACE:
-    n = new hmotion_node(curenv->get_space_width());
+    n = new hmotion_node(curenv->get_space_width(),
+			 curenv->get_fill_color());
     break;
   case TOKEN_SPECIAL:
     *pp = (*pp)->add_char(get_charinfo(nm), curenv, &w, &s);
     break;
   case TOKEN_STRETCHABLE_SPACE:
-    n = new unbreakable_space_node(curenv->get_space_width());
+    n = new unbreakable_space_node(curenv->get_space_width(),
+				   curenv->get_fill_color());
     break;
   case TOKEN_UNSTRETCHABLE_SPACE:
-    n = new space_char_hmotion_node(curenv->get_space_width());
+    n = new space_char_hmotion_node(curenv->get_space_width(),
+				    curenv->get_fill_color());
     break;
   case TOKEN_TRANSPARENT_DUMMY:
     n = new transparent_dummy_node;
     break;
   case TOKEN_ZERO_WIDTH_BREAK:
-    n = new space_node(H0);
+    n = new space_node(H0, 0);
     n->freeze_space();
     n->is_escape_colon();
     break;
@@ -6131,7 +6136,8 @@ void token::process()
     return;
   switch (type) {
   case TOKEN_BACKSPACE:
-    curenv->add_node(new hmotion_node(-curenv->get_space_width()));
+    curenv->add_node(new hmotion_node(-curenv->get_space_width(),
+				      curenv->get_fill_color()));
     break;
   case TOKEN_CHAR:
     curenv->add_char(charset_table[c]);
@@ -6196,10 +6202,12 @@ void token::process()
     curenv->spread();
     break;
   case TOKEN_STRETCHABLE_SPACE:
-    curenv->add_node(new unbreakable_space_node(curenv->get_space_width()));
+    curenv->add_node(new unbreakable_space_node(curenv->get_space_width(),
+						curenv->get_fill_color()));
     break;
   case TOKEN_UNSTRETCHABLE_SPACE:
-    curenv->add_node(new space_char_hmotion_node(curenv->get_space_width()));
+    curenv->add_node(new space_char_hmotion_node(curenv->get_space_width(),
+						 curenv->get_fill_color()));
     break;
   case TOKEN_TAB:
     curenv->handle_tab(0);
@@ -6211,7 +6219,7 @@ void token::process()
     break;
   case TOKEN_ZERO_WIDTH_BREAK:
     {
-      node *tmp = new space_node(H0);
+      node *tmp = new space_node(H0, 0);
       tmp->freeze_space();
       tmp->is_escape_colon();
       curenv->add_node(tmp);
@@ -7214,8 +7222,6 @@ node *charinfo_to_node_list(charinfo *ci, const environment *envp)
     else
       tok.process();
   }
-  curenv->add_node(new glyph_color_node(oldenv->get_glyph_color()));
-  curenv->add_node(new fill_color_node(oldenv->get_fill_color()));
   node *n = curenv->extract_output_line();
   input_stack::remove_boundary();
   ci->set_macro(mac);
@@ -7319,7 +7325,9 @@ static node *read_draw_node()
 	  break;
 	}
 	draw_node *dn = new draw_node(type, point, npoints,
-				      curenv->get_font_size());
+				      curenv->get_font_size(),
+				      curenv->get_glyph_color(),
+				      curenv->get_fill_color());
 	a_delete point;
 	return dn;
       }
