@@ -38,6 +38,8 @@
 .\"
 .\" Modified by wl@gnu.org to make it more readable: using long names and
 .\" many groff features, updating and extending documentation.
+.\"
+.\" %beginstrip%
 .
 .
 .if !\n(.g \
@@ -136,13 +138,13 @@
 .ds doc-arg1
 .
 .
-.\" NS doc-typeXXX global string
-.\" NS   argument type vector (`macro', `string', `punct-suffix',
-.\" NS   `punct-prefix')
+.\" NS doc-typeXXX global register
+.\" NS   argument type vector (macro=1, string=2, punctuation suffix=3,
+.\" NS   punctuation prefix=4)
 .\" NS
 .\" NS   limit: doc-arg-limit
 .
-.ds doc-type1
+.nr doc-type1 0
 .
 .
 .\" NS doc-spaceXXX global string
@@ -198,17 +200,17 @@
 .
 .  \" get argument type and set spacing
 .  doc-get-arg-type* \n[doc-arg-limit]
-.  ds doc-type\n[doc-arg-limit] \*[doc-arg-type]
-.  doc-set-spacing-for-\*[doc-arg-type]
+.  nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
+.  doc-set-spacing-\n[doc-arg-type]
 .
 .  if \n[doc-debug] \{\
-.    ie "\*[doc-arg-type]"macro" \
+.    ie (\n[doc-arg-type] == 1) \
 .      ds doc-str-dpa macro
 .    el \{\
-.      ie "\*[doc-arg-type]"string" \
+.      ie (\n[doc-arg-type] == 2) \
 .        ds doc-str-dpa string
 .      el \{\
-.        ie "\*[doc-arg-type]"punct-suffix" \
+.        ie (\n[doc-arg-type] == 3) \
 .          ds doc-str-dpa closing punctuation or suffix
 .        el \
 .          ds doc-str-dpa opening punctuation or prefix
@@ -314,17 +316,17 @@
 .
 .  \" get argument type and set spacing
 .  doc-get-arg-type* \n[doc-arg-limit]
-.  ds doc-type\n[doc-arg-limit] \*[doc-arg-type]
-.  doc-set-spacing-for-\*[doc-arg-type]
+.  nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
+.  doc-set-spacing-\n[doc-arg-type]
 .
 .  if \n[doc-debug] \{\
-.    ie "\*[doc-arg-type]"macro" \
+.    ie (\n[doc-arg-type] == 1) \
 .      ds doc-str-dpav macro
 .    el \{\
-.      ie "\*[doc-arg-type]"string" \
+.      ie (\n[doc-arg-type] == 2) \
 .        ds doc-str-dpav string
 .      el \{\
-.        ie "\*[doc-arg-type]"punct-suffix" \
+.        ie (\n[doc-arg-type] == 3) \
 .          ds doc-str-dpav closing punctuation or suffix
 .        el \
 .          ds doc-str-dpav opening punctuation or prefix
@@ -437,8 +439,8 @@
 .de doc-append-arg
 .  nr doc-arg-limit +1
 .  ds doc-arg\n[doc-arg-limit] "\$1
-.  ds doc-type\n[doc-arg-limit] \$2
-.  doc-set-spacing-for-\$2
+.  nr doc-type\n[doc-arg-limit] \$2
+.  doc-set-spacing-\$2
 ..
 .
 .
@@ -613,7 +615,7 @@
 .      doc-print-and-reset
 .    \}
 .    el \{\
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
 .        as doc-out-string \|\-\f[P]\s[0]
 .        \*[doc-arg\n[doc-arg-ptr]]
 .      \}
@@ -621,7 +623,7 @@
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
 .
-.        if "\*[doc-type\n[doc-arg-ptr]]"punct-suffix" \
+.        if (\n[doc-type\n[doc-arg-ptr]] == 3) \
 .          as doc-out-string \|\-\|
 .
 .        nr doc-reg-Fl 1
@@ -637,59 +639,59 @@
 .\" NS   doc-arg-ptr, doc-out-string
 .\" NS
 .\" NS local variables:
-.\" NS   doc-str-dfr, doc-str-dfr1, doc-reg-dfr
+.\" NS   doc-str-dfr, doc-reg-dfr, doc-reg-dfr1
 .
 .de doc-flag-recursion
-.  ds doc-str-dfr \*[doc-type\n[doc-arg-ptr]]
-.  ds doc-str-dfr1 "\*[doc-arg\n[doc-arg-ptr]]
+.  nr doc-reg-dfr1 \n[doc-type\n[doc-arg-ptr]]
+.  ds doc-str-dfr "\*[doc-arg\n[doc-arg-ptr]]
 .
 .  hy 0
 .
-.  ie "\*[doc-str-dfr]"macro" \{\
+.  ie (\n[doc-reg-dfr1] == 1) \{\
 .    as doc-out-string \f[P]\s[0]
-.    \*[doc-str-dfr1]
+.    \*[doc-str-dfr]
 .  \}
 .  el \{\
 .    nr doc-reg-dfr \n[doc-arg-ptr]
 .
-.    ie "\*[doc-str-dfr]"string" \{\
+.    ie (\n[doc-reg-dfr1] == 2) \{\
 .      \" handle vertical bar -- doc-reg-Fl is set for the first call of
 .      \" doc-flag-recursion only; we need this to make `.Fl | ...' work
 .      \" correctly
-.      ie "\*[doc-str-dfr1]"\*[Ba]" \{\
+.      ie "\*[doc-str-dfr]"\*[Ba]" \{\
 .        if \n[doc-reg-Fl] \
 .          as doc-out-string \|\-\*[doc-space]
 .        as doc-out-string \&\*[Ba]
 .      \}
 .      el \{\
-.        ie "\*[doc-str-dfr1]"\f[R]|\f[P]" \{\
+.        ie "\*[doc-str-dfr]"\f[R]|\f[P]" \{\
 .          if \n[doc-reg-Fl] \
 .            as doc-out-string \|\-\*[doc-space]
 .          as doc-out-string \f[R]|\f[P]
 .        \}
 .        el \{\
 .          \" two consecutive hyphen characters?
-.          ie "\*[doc-str-dfr1]"-" \
+.          ie "\*[doc-str-dfr]"-" \
 .            as doc-out-string \|\-\^\-\|
 .          el \
-.            as doc-out-string \|\-\*[doc-str-dfr1]
+.            as doc-out-string \|\-\*[doc-str-dfr]
 .    \}\}\}
 .    el \{\
 .      as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.      as doc-out-string "\*[doc-str-dfr1]\f[P]\s[0]
+.      as doc-out-string "\*[doc-str-dfr]\f[P]\s[0]
 .    \}
 .
 .    ie (\n[doc-arg-limit] == \n[doc-arg-ptr]) \{\
 .      \" last argument
-.      if "\*[doc-str-dfr]"punct-prefix" \
+.      if (\n[doc-reg-dfr1] == 4) \
 .        as doc-out-string \|\-
 .      as doc-out-string \f[P]\s[0]
 .      doc-print-and-reset
 .    \}
 .    el \{\
 .      nr doc-arg-ptr +1
-.      ie "\*[doc-type\n[doc-arg-ptr]]"punct-suffix" \{\
-.        ie "\*[doc-type\n[doc-reg-dfr]]"punct-prefix" \
+.      ie (\n[doc-type\n[doc-arg-ptr]] == 3) \{\
+.        ie (\n[doc-type\n[doc-reg-dfr]] == 4) \
 .          as doc-out-string \|\-
 .        el \
 .          as doc-out-string "\*[doc-space\n[doc-reg-dfr]]
@@ -713,27 +715,27 @@
 .\" NS   doc-arg-ptr, doc-out-string
 .\" NS
 .\" NS local variables:
-.\" NS   doc-str-dpr, doc-str-dpr1, doc-reg-dpr
+.\" NS   doc-str-dpr, doc-reg-dpr, doc-reg-dpr1
 .
 .de doc-print-recursive
-.  ds doc-str-dpr \*[doc-type\n[doc-arg-ptr]]
-.  ds doc-str-dpr1 "\*[doc-arg\n[doc-arg-ptr]]
+.  nr doc-reg-dpr1 \n[doc-type\n[doc-arg-ptr]]
+.  ds doc-str-dpr "\*[doc-arg\n[doc-arg-ptr]]
 .
 .  hy 0
 .
-.  ie "\*[doc-str-dpr]"macro" \{\
+.  ie (\n[doc-reg-dpr1] == 1) \{\
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.    \*[doc-str-dpr1]
+.    \*[doc-str-dpr]
 .  \}
 .  el \{\
 .    nr doc-reg-dpr \n[doc-arg-ptr]
 .
-.    ie "\*[doc-str-dpr]"string" \
-.      as doc-out-string \&\*[doc-str-dpr1]
+.    ie (\n[doc-reg-dpr1] == 2) \
+.      as doc-out-string \&\*[doc-str-dpr]
 .    el \{\
 .      \" punctuation character
 .      as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.      as doc-out-string "\*[doc-str-dpr1]\f[P]\s[0]
+.      as doc-out-string "\*[doc-str-dpr]\f[P]\s[0]
 .    \}
 .
 .    nr doc-arg-ptr +1
@@ -779,14 +781,14 @@
 .      doc-print-and-reset
 .    \}
 .    el \{\
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
 .        as doc-out-string \&file\ ...\f[P]\s[0]
 .        \*[doc-arg\n[doc-arg-ptr]]
 .      \}
 .      el \{\
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
-.        if "\*[doc-type\n[doc-arg-ptr]]"punct-suffix" \
+.        if (\n[doc-type\n[doc-arg-ptr]] == 3) \
 .          as doc-out-string \&file\ ...
 .        doc-print-recursive
 .  \}\}\}
@@ -1318,7 +1320,7 @@
 .    \}
 .    el \{\
 .      as doc-out-string \*[doc-Nm-font]
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
 .        as doc-out-string \&\*[doc-command-name]\f[P]\s[0]
 .        \*[doc-arg\n[doc-arg-ptr]]
 .      \}
@@ -1547,7 +1549,7 @@
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
 .      \*[doc-arg\n[doc-arg-ptr]]
 .    el \{\
 .      nr doc-curr-font \n[.f]
@@ -1737,7 +1739,7 @@
 .\" NS   doc-arg-ptr, doc-argXXX, doc-out-string
 .\" NS
 .\" NS local variables:
-.\" NS   doc-register-des (for communication with doc-skip-punct-backwards)
+.\" NS   doc-reg-des (for communication with doc-skip-punct-backwards)
 .\" NS
 .\" NS requires:
 .\" NS   doc-quote-left, doc-quote-right
@@ -1764,17 +1766,17 @@
 .      doc-print-and-reset
 .    \}
 .    el \{\
-.      ie "\*[doc-type\n[doc-arg-limit]]"punct-suffix" \{\
-.        nr doc-register-des (\n[doc-arg-limit] - 1)
+.      ie (\n[doc-type\n[doc-arg-limit]] == 3) \{\
+.        nr doc-reg-des (\n[doc-arg-limit] - 1)
 .        doc-skip-punct-backwards
-.        nr doc-register-des +1
-.        ds doc-arg\n[doc-register-des] "\*[doc-quote-right]\&\*[doc-arg\n[doc-register-des]]
-.        nr doc-register-des 0
+.        nr doc-reg-des +1
+.        ds doc-arg\n[doc-reg-des] "\*[doc-quote-right]\&\*[doc-arg\n[doc-reg-des]]
+.        nr doc-reg-des 0
 .      \}
 .      el \
-.        doc-append-arg "\*[doc-quote-right]" punct-suffix
+.        doc-append-arg "\*[doc-quote-right]" 3
 .
-.      doc-do-\*[doc-type\n[doc-arg-ptr]]
+.      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .  \}\}
 ..
 .
@@ -1782,10 +1784,13 @@
 .\" NS doc-skip-punct-backwards macro
 .\" NS   vector routine (for `doc-enclose-string': trace backwards past
 .\" NS   trailing punctuation)
+.\" NS
+.\" NS requires:
+.\" NS   doc-reg-des
 .
 .de doc-skip-punct-backwards
-.  if "\*[doc-type\n[doc-register-des]]"punct-suffix" \{\
-.    nr doc-register-des -1
+.  if (\n[doc-type\n[doc-reg-des]] == 3) \{\
+.    nr doc-reg-des -1
 .    doc-skip-punct-backwards
 .  \}
 ..
@@ -2151,7 +2156,7 @@
 .  ie \n[doc-arg-limit] \{\
 .    if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .      nr doc-arg-ptr +1
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
+.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
 .        \*[doc-arg\n[doc-arg-ptr]]
 .      el \{\
 .        nr doc-arg-ptr -1
@@ -2213,7 +2218,7 @@
 .    \}
 .    el \{\
 .      nr doc-str-dec (\n[doc-arg-ptr] + 1)
-.      if "\*[doc-type\n[doc-str-dec]]"string" \
+.      if (\n[doc-type\n[doc-str-dec]] == 2) \
 .        as doc-out-string "\*[doc-space\n[doc-arg-limit]]
 .
 .      if \n[doc-list-immediate] \{\
@@ -2265,7 +2270,7 @@
 .    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \
 .      doc-print-and-reset
 .    el \
-.      doc-do-\*[doc-type\n[doc-arg-ptr]]
+.      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .  \}
 ..
 .
@@ -2439,15 +2444,15 @@
 ..
 .
 .
-.\" NS doc-arg-type immediate string
-.\" NS   argument type
+.\" NS doc-arg-type immediate register
+.\" NS   argument type (macro=1, string=2, punctuation suffix=3,
+.\" NS   punctuation prefix=4)
 .
-.ds doc-arg-type
+.nr doc-arg-type 0
 .
 .
 .\" NS doc-get-arg-type macro
-.\" NS   get argument type (`macro', `string', `punct-suffix', or
-.\" NS   `punct-prefix')
+.\" NS   get argument type
 .\" NS
 .\" NS   this macro expects the width of the argument in `doc-width'
 .\" NS
@@ -2455,16 +2460,16 @@
 .\" NS   doc-arg-type
 .
 .de doc-get-arg-type
-.  ds doc-arg-type string
+.  nr doc-arg-type 2
 .
 .  if ((\n[doc-width] < 4) & \A\$1) \{\
 .    ie (\n[doc-width] == 1) \{\
-.      if d doc-punct\$1 \
-.        ds doc-arg-type \*[doc-punct\$1]
+.      if r doc-punct\$1 \
+.        nr doc-arg-type \n[doc-punct\$1]
 .    \}
 .    el \
 .      if r \$1 \
-.        ds doc-arg-type macro
+.        nr doc-arg-type 1
 .  \}
 ..
 .
@@ -2479,22 +2484,22 @@
 .\" NS   doc-arg-type, doc-width
 .
 .de doc-get-arg-type*
-.  ds doc-arg-type string
+.  nr doc-arg-type 2
 .  length doc-width "\*[doc-arg\$1]
 .
 .  if ((\n[doc-width] < 4) & \A\*[doc-arg\$1]) \{\
 .    ie (\n[doc-width] == 1) \{\
-.      if d doc-punct\*[doc-arg\$1] \
-.        ds doc-arg-type \*[doc-punct\*[doc-arg\$1]]
+.      if r doc-punct\*[doc-arg\$1] \
+.        nr doc-arg-type \n[doc-punct\*[doc-arg\$1]]
 .    \}
 .    el \
 .      if r \*[doc-arg\$1] \
-.        ds doc-arg-type macro
+.        nr doc-arg-type 1
 .  \}
 ..
 .
 .
-.\" NS doc-set-spacing-for-macro macro
+.\" NS doc-set-spacing-1 macro
 .\" NS   set spacing for macros
 .\" NS
 .\" NS modifies:
@@ -2503,7 +2508,7 @@
 .\" NS local variables:
 .\" NS   doc-reg-dssfm, doc-reg-dssfm1
 .
-.de doc-set-spacing-for-macro
+.de doc-set-spacing-1
 .  nr doc-reg-dssfm1 \n[\*[doc-arg\n[doc-arg-limit]]]
 .
 .  \" closing macros like .Ac, Bc., etc. have value 3 (remove space before
@@ -2527,18 +2532,18 @@
 ..
 .
 .
-.\" NS doc-set-spacing-for-string macro
+.\" NS doc-set-spacing-2 macro
 .\" NS   set spacing for strings
 .\" NS
 .\" NS modifies:
 .\" NS   doc-spaceXXX
 .
-.de doc-set-spacing-for-string
+.de doc-set-spacing-2
 .  ds doc-space\n[doc-arg-limit] "\*[doc-space]
 ..
 .
 .
-.\" NS doc-set-spacing-for-punct-suffix macro
+.\" NS doc-set-spacing-3 macro
 .\" NS   set spacing for punctuation suffixes
 .\" NS
 .\" NS modifies:
@@ -2547,7 +2552,7 @@
 .\" NS local variables:
 .\" NS   doc-reg-dssfps
 .
-.de doc-set-spacing-for-punct-suffix
+.de doc-set-spacing-3
 .  if \n[doc-arg-limit] \{\
 .    nr doc-reg-dssfps (\n[doc-arg-limit] - 1)
 .    ds doc-space\n[doc-reg-dssfps]
@@ -2557,13 +2562,13 @@
 ..
 .
 .
-.\" NS doc-set-spacing-for-punct-prefix macro
+.\" NS doc-set-spacing-4 macro
 .\" NS   set spacing for punctuation prefixes
 .\" NS
 .\" NS modifies:
 .\" NS   doc-spaceXXX
 .
-.de doc-set-spacing-for-punct-prefix
+.de doc-set-spacing-4
 .  ds doc-space\n[doc-arg-limit]
 ..
 .
@@ -2571,71 +2576,71 @@
 .\" type switches (on current argument doc-arg-ptr)
 .
 .
-.\" NS doc-do-macro macro
+.\" NS doc-do-1 macro
 .\" NS   call request if macro
 .
-.de doc-do-macro
+.de doc-do-1
 .  \*[doc-arg\n[doc-arg-ptr]]
 ..
 .
 .
-.\" NS doc-do-string macro
+.\" NS doc-do-2 macro
 .\" NS   call .No if string
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr
 .
-.de doc-do-string
+.de doc-do-2
 .  nr doc-arg-ptr -1
 .  No
 ..
 .
 .
-.\" NS doc-do-punct-suffix macro
+.\" NS doc-do-3 macro
 .\" NS   call .No if punctuation suffix
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr
 .
-.de doc-do-punct-suffix
+.de doc-do-3
 .  nr doc-arg-ptr -1
 .  No
 ..
 .
 .
-.\" NS doc-do-punct-prefix macro
+.\" NS doc-do-4 macro
 .\" NS   call .No if punctuation prefix
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr
 .
-.de doc-do-punct-prefix
+.de doc-do-4
 .  nr doc-arg-ptr -1
 .  No
 ..
 .
 .
-.\" NS doc-do-xref-macro macro
+.\" NS doc-do-xref-1 macro
 .\" NS   ignore if macro
 .
-.de doc-do-xref-macro
+.de doc-do-xref-1
 ..
 .
 .
-.\" NS doc-do-xref-string macro
+.\" NS doc-do-xref-2 macro
 .\" NS   ignore if string
 .
-.de doc-do-xref-string
+.de doc-do-xref-2
 ..
 .
 .
-.\" NS doc-do-xref-punct-suffix macro
+.\" NS doc-do-xref-3 macro
 .\" NS   append if punctuation suffix
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr, doc-out-string
 .
-.de doc-do-xref-punct-suffix
+.de doc-do-xref-3
 .  as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .  nr doc-arg-ptr +1
 .  \" XXX: ?
@@ -2643,13 +2648,13 @@
 ..
 .
 .
-.\" NS doc-do-xref-punct-prefix macro
+.\" NS doc-do-xref-4 macro
 .\" NS   append if punctuation prefix
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr, doc-out-string
 .
-.de doc-do-xref-punct-prefix
+.de doc-do-xref-4
 .  as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .  nr doc-arg-ptr +1
 .  \" XXX: ?
@@ -2940,7 +2945,7 @@
 .          \" if the offset parameter is a macro, use the macro's
 .          \" width as specified in doc-common
 .          doc-get-arg-type "\$2"
-.          ie "\*[doc-arg-type]"macro" \
+.          ie (\n[doc-arg-type] == 1) \
 .            nr doc-display-indent-stack\n[doc-display-depth] \n[\$2]
 .          el \
 .            nr doc-display-indent-stack\n[doc-display-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
@@ -3187,7 +3192,7 @@
 .          \" if the width parameter is a macro, use the macro's
 .          \" width as specified in doc-common
 .          doc-get-arg-type \*[doc-str-dBla]
-.          ie "\*[doc-arg-type]"macro" \
+.          ie (\n[doc-arg-type] == 1) \
 .            nr doc-list-indent-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
 .          el \
 .            nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
@@ -3231,7 +3236,7 @@
 .          doc-get-arg-width \n[doc-arg-ptr]
 .          ie (\n[doc-width] == 2) \{\
 .            doc-get-arg-type \*[doc-str-dBla]
-.            ie "\*[doc-arg-type]"macro" \
+.            ie (\n[doc-arg-type] == 1) \
 .              nr doc-list-offset-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
 .            el \
 .              nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
@@ -3277,7 +3282,7 @@
 .  nr doc-reg-dsgv 1
 .  while (\n[doc-reg-dsgv] <= \n[doc-arg-limit]) \{\
 .    ds doc-arg\n[doc-reg-dsgv]-saved "\*[doc-arg\n[doc-reg-dsgv]]
-.    ds doc-type\n[doc-reg-dsgv]-saved "\*[doc-type\n[doc-reg-dsgv]]
+.    nr doc-type\n[doc-reg-dsgv]-saved \n[doc-type\n[doc-reg-dsgv]]
 .    ds doc-space\n[doc-reg-dsgv]-saved "\*[doc-space\n[doc-reg-dsgv]]
 .    nr doc-reg-dsgv +1
 .  \}
@@ -3328,7 +3333,7 @@
 .  nr doc-have-tag-width-saved \n[doc-have-tag-width]
 .  nr doc-no-printing-saved \n[doc-no-printing]
 .  ds doc-saved-Pa-font-saved "\*[doc-saved-Pa-font]
-.  ds doc-curr-type-saved "\*[doc-curr-type]
+.  nr doc-curr-type-saved \n[doc-curr-type]
 .  ds doc-curr-arg-saved "\*[doc-curr-arg]
 .  nr doc-enum-list-count-saved \n[doc-enum-list-count]
 .  nr doc-have-diag-list-saved \n[doc-have-diag-list]
@@ -3412,7 +3417,7 @@
 .  nr doc-reg-drgv 1
 .  while (\n[doc-reg-drgv] <= \n[doc-arg-limit]) \{\
 .    ds doc-arg\n[doc-reg-drgv] "\*[doc-arg\n[doc-reg-drgv]-saved]
-.    ds doc-type\n[doc-reg-drgv] "\*[doc-type\n[doc-reg-drgv]-saved]
+.    nr doc-type\n[doc-reg-drgv] \n[doc-type\n[doc-reg-drgv]-saved]
 .    ds doc-space\n[doc-reg-drgv] "\*[doc-space\n[doc-reg-drgv]-saved]
 .    nr doc-reg-drgv +1
 .  \}
@@ -3463,7 +3468,7 @@
 .  nr doc-have-tag-width \n[doc-have-tag-width-saved]
 .  nr doc-no-printing \n[doc-no-printing-saved]
 .  ds doc-saved-Pa-font "\*[doc-saved-Pa-font-saved]
-.  ds doc-curr-type "\*[doc-curr-type-saved]
+.  nr doc-curr-type \n[doc-curr-type-saved]
 .  ds doc-curr-arg "\*[doc-curr-arg-saved]
 .  nr doc-enum-list-count \n[doc-enum-list-count-saved]
 .  nr doc-have-diag-list \n[doc-have-diag-list-saved]
@@ -3619,10 +3624,10 @@
 .ds doc-saved-Pa-font
 .
 .
-.\" NS doc-curr-type global string
+.\" NS doc-curr-type global register
 .\" NS   current argument type
 .
-.ds doc-curr-type
+.nr doc-curr-type 0
 .
 .
 .\" NS doc-curr-arg global string
@@ -3637,7 +3642,8 @@
 .\" NS modifies:
 .\" NS   doc-macro-name, doc-num-args, doc-arg-ptr, doc-argXXX,
 .\" NS   doc-out-string, doc-nesting-level, doc-list-immediate,
-.\" NS   doc-saved-list-type, doc-saved-Pa-font, doc-curr-type, doc-curr-arg,
+.\" NS   doc-saved-list-type, doc-saved-Pa-font, doc-curr-type,
+.\" NS   doc-curr-arg
 .\" NS
 .\" NS width register `It' set in doc-common
 .\" NS
@@ -3698,7 +3704,7 @@
 .        nr doc-nesting-level +1
 .        nr doc-list-immediate 1
 .        nr doc-arg-ptr 1
-.        ds doc-curr-type \*[doc-type1]
+.        nr doc-curr-type \n[doc-type1]
 .        ds doc-curr-arg "\*[doc-arg1]
 .
 .        if \n[doc-in-files-section] \{\
@@ -3707,7 +3713,7 @@
 .            ds doc-Pa-font "\*[doc-No-font]
 .        \}
 .
-.        ie "\*[doc-type1]"macro" \
+.        ie (\n[doc-type1] == 1) \
 .          \*[doc-arg1]
 .        el \{\
 .          nr doc-arg-ptr 0
@@ -3946,7 +3952,7 @@
 .
 .de doc-get-tag-width
 .  if !"TagwidtH"\*[doc-tag-width-stack\n[doc-list-depth]]" \{\
-.    ie "\*[doc-curr-type]"macro" \{\
+.    ie (\n[doc-curr-type] == 1) \{\
 .
 .\" XXX: what is `lN'?
 .
@@ -4127,26 +4133,26 @@
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
 .      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
 .    el \{\
-.      ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.      ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .        as doc-out-string \*[doc-Xr-font]
 .        as doc-out-string "\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
 .
 .        nr doc-arg-ptr +1
 .        if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.          if "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.          if (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .            as doc-out-string \&\*[lp]\*[doc-arg\n[doc-arg-ptr]]\*[rp]
 .            nr doc-arg-ptr +1
 .        \}\}
 .        ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \
-.          doc-do-\*[doc-type\n[doc-arg-ptr]]
+.          doc-do-\n[doc-type\n[doc-arg-ptr]]
 .        el \
 .          doc-print-and-reset
 .      \}
 .      el \
-.        doc-do-xref-\*[doc-type\n[doc-arg-ptr]]
+.        doc-do-xref-\n[doc-type\n[doc-arg-ptr]]
 .  \}\}
 ..
 .
@@ -4261,7 +4267,7 @@
 .      nr doc-reg-dcl (\n[doc-arg-ptr] - 1)
 .      ds doc-space\n[doc-reg-dcl]
 .    \}
-.    doc-do-\*[doc-type\n[doc-arg-ptr]]
+.    doc-do-\n[doc-type\n[doc-arg-ptr]]
 .  \}
 .  el \
 .    tm Usage: .It column_string [Ta [column_string ...] ] (#\n[.c])
@@ -4281,7 +4287,7 @@
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      as doc-out-string \t
-.      doc-do-\*[doc-type\n[doc-arg-ptr]]
+.      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .    \}
 .    el \{\
 .      as doc-out-string \t\c
@@ -4658,7 +4664,7 @@
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      as doc-out-string \*[doc-Fa-font]
-.      doc-do-func-\*[doc-type\n[doc-arg-ptr]]
+.      doc-do-func-\n[doc-type\n[doc-arg-ptr]]
 .    \}
 .    el \{\
 .      as doc-out-string \|\*[rp]
@@ -4671,13 +4677,13 @@
 ..
 .
 .
-.\" NS doc-do-func-macro macro
+.\" NS doc-do-func-1 macro
 .\" NS   prepare `doc-out-string' and execute doc-argXXX
 .\" NS
 .\" NS modifies:
 .\" NS   doc-out-string
 .
-.de doc-do-func-macro
+.de doc-do-func-1
 .  ie \n[doc-in-synopsis-count] \{\
 .    as doc-out-string \&\*[rp]\f[R];\f[P]
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
@@ -4689,7 +4695,7 @@
 ..
 .
 .
-.\" NS doc-do-func-string macro
+.\" NS doc-do-func-2 macro
 .\" NS   handle function arguments
 .\" NS
 .\" NS modifies:
@@ -4699,7 +4705,7 @@
 .\" NS local variables:
 .\" NS   doc-reg-ddfs
 .
-.de doc-do-func-string
+.de doc-do-func-2
 .  if \n[doc-in-synopsis-count] \{\
 .    ds doc-func-arg
 .    nr doc-num-func-args 0
@@ -4715,11 +4721,11 @@
 .  ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-reg-ddfs \n[doc-arg-ptr]
 .    nr doc-arg-ptr +1
-.    if "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.    if (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .      as doc-out-string \|\f[\n[doc-curr-font]]\s[\n[doc-curr-size]],
 .      as doc-out-string "\*[doc-space\n[doc-reg-ddfs]]\f[P]\s[0]\|
 .    \}
-.    doc-do-func-\*[doc-type\n[doc-arg-ptr]]
+.    doc-do-func-\n[doc-type\n[doc-arg-ptr]]
 .  \}
 .  el \{\
 .    ie \n[doc-in-synopsis-count] \{\
@@ -4734,13 +4740,13 @@
 ..
 .
 .
-.\" NS doc-do-func-punct-suffix macro
+.\" NS doc-do-func-3 macro
 .\" NS   handle punctuation suffixes in functions
 .\" NS
 .\" NS modifies:
 .\" NS   doc-out-string
 .
-.de doc-do-func-punct-suffix
+.de doc-do-func-3
 .  ie \n[doc-in-synopsis-count] \{\
 .    as doc-out-string \&\*[rp]\f[R];\f[P]
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
@@ -4758,13 +4764,13 @@
 ..
 .
 .
-.\" NS doc-do-func-punct-prefix macro
+.\" NS doc-do-func-4 macro
 .\" NS   handle punctuation prefixes in functions
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr, doc-out-string
 .
-.de doc-do-func-punct-prefix
+.de doc-do-func-4
 .  ie \n[doc-in-synopsis-count] \{\
 .    as doc-out-string \&\*[rp]\f[R];\f[P]
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
@@ -5697,19 +5703,19 @@
 .\" NS   doc-volume-name, doc-date, doc-page-number-string, doc-book-name
 .\" NS
 .\" NS local variables:
-.\" NS   doc-str-ddr, doc-reg-ddr
+.\" NS   doc-reg-ddr, doc-reg-ddr1
 .
 .de doc-do-references
 .  hy 0
 .
-.  ds doc-str-ddr "\*[doc-type\n[doc-arg-ptr]]
+.  nr doc-reg-ddr1 \n[doc-type\n[doc-arg-ptr]]
 .
-.  ie "\*[doc-str-ddr]"macro" \{\
+.  ie (\n[doc-reg-ddr1] == 1) \{\
 .    \" .as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .    ie "\*[doc-arg\n[doc-arg-ptr]]"Tn" \
 .      doc-reference-trademark
 .    el \{\
-.      doc-append-arg doc-do-references macro
+.      doc-append-arg doc-do-references 1
 .      \*[doc-arg\n[doc-arg-ptr]]
 .  \}\}
 .  el \{\

@@ -58,10 +58,10 @@
 .
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] \*[doc-Tn-font-size]UNIX\*[doc-str-Ux]
-.  ds doc-type\n[doc-arg-ptr] string
+.  nr doc-type\n[doc-arg-ptr] 2
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-reg-Ux (\n[doc-arg-ptr] + 1)
-.    if !"\*[doc-type\n[doc-reg-Ux]]"punct-suffix" \
+.    if !(\n[doc-type\n[doc-reg-Ux]] == 3) \
 .      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
 .  \}
 .
@@ -96,7 +96,7 @@
 .
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .      ie        "\*[doc-arg\n[doc-arg-ptr]]"-alpha" \
 .        as doc-str-Bx1 " (currently in alpha test)
 .      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-beta" \
@@ -109,7 +109,7 @@
 .
 .        if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .          nr doc-arg-ptr +1
-.          ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.          ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .            ie        "\*[doc-arg\n[doc-arg-ptr]]"Reno" \
 .              as doc-str-Bx1 \-Reno
 .            el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"reno" \
@@ -139,10 +139,10 @@
 .
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Bx1]
-.  ds doc-type\n[doc-arg-ptr] string
+.  nr doc-type\n[doc-arg-ptr] 2
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-reg-Bx (\n[doc-arg-ptr] + 1)
-.    if !"\*[doc-type\n[doc-reg-Bx]]"punct-suffix" \
+.    if !(\n[doc-type\n[doc-reg-Bx]] == 3) \
 .      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
 .  \}
 .
@@ -187,7 +187,7 @@
 .
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .      ie        "\*[doc-arg\n[doc-arg-ptr]]"32v" \{\
 .        ds doc-str-At1 "\&Version\~32V
 .        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
@@ -244,10 +244,10 @@
 .
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-At1]
-.  ds doc-type\n[doc-arg-ptr] string
+.  nr doc-type\n[doc-arg-ptr] 2
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-reg-At (\n[doc-arg-ptr] + 1)
-.    if !"\*[doc-type\n[doc-reg-At]]"punct-suffix" \
+.    if !(\n[doc-type\n[doc-reg-At]] == 3) \
 .      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
 .  \}
 .
@@ -282,7 +282,7 @@
 .
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .      as doc-str-Fx1 \~\*[doc-arg\n[doc-arg-ptr]]
 .
 .      ie        "\*[doc-arg\n[doc-arg-ptr]]"1.0" .
@@ -322,10 +322,10 @@
 .
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Fx1]
-.  ds doc-type\n[doc-arg-ptr] string
+.  nr doc-type\n[doc-arg-ptr] 2
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-reg-Fx (\n[doc-arg-ptr] + 1)
-.    if !"\*[doc-type\n[doc-reg-Fx]]"punct-suffix" \
+.    if !(\n[doc-type\n[doc-reg-Fx]] == 3) \
 .      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
 .  \}
 .
@@ -361,7 +361,7 @@
 .
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .      ie        "\*[doc-arg\n[doc-arg-ptr]]"0.8a" .as doc-str-Nx1 \~0.8A
 .      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"0.9a" .as doc-str-Nx1 \~0.9A
 .      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.0a" .as doc-str-Nx1 \~1.0A
@@ -376,10 +376,10 @@
 .
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Nx1]
-.  ds doc-type\n[doc-arg-ptr] string
+.  nr doc-type\n[doc-arg-ptr] 2
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-reg-Nx (\n[doc-arg-ptr] + 1)
-.    if !"\*[doc-type\n[doc-reg-Nx]]"punct-suffix" \
+.    if !(\n[doc-type\n[doc-reg-Nx]] == 3) \
 .      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
 .  \}
 .
@@ -414,7 +414,7 @@
 .
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \
 .      as doc-str-Ox1 \~\*[doc-arg\n[doc-arg-ptr]]
 .    el \
 .      nr doc-arg-ptr -1
@@ -422,10 +422,10 @@
 .
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Ox1]
-.  ds doc-type\n[doc-arg-ptr] string
+.  nr doc-type\n[doc-arg-ptr] 2
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-reg-Ox (\n[doc-arg-ptr] + 1)
-.    if !"\*[doc-type\n[doc-reg-Ox]]"punct-suffix" \
+.    if !(\n[doc-type\n[doc-reg-Ox]] == 3) \
 .      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
 .  \}
 .
@@ -460,7 +460,7 @@
 .
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \
 .      as doc-str-Bsx1 \~\*[doc-arg\n[doc-arg-ptr]]
 .    el \
 .      nr doc-arg-ptr -1
@@ -468,10 +468,10 @@
 .
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Bsx1]
-.  ds doc-type\n[doc-arg-ptr] string
+.  nr doc-type\n[doc-arg-ptr] 2
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-reg-Bsx (\n[doc-arg-ptr] + 1)
-.    if !"\*[doc-type\n[doc-reg-Bsx]]"punct-suffix" \
+.    if !(\n[doc-type\n[doc-reg-Bsx]] == 3) \
 .      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
 .  \}
 .
@@ -533,62 +533,62 @@
 .    ie        "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
 .      as doc-str-St1 " \*[doc-str-St]1003.1
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-88" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
 .      as doc-str-St1 " \*[doc-str-St]1003.1-1988
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-90" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
 .      as doc-str-St1 " \*[doc-str-St]1003.1-1990
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1b" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
 .      as doc-str-St1 " \*[doc-str-St]1003.1b
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1b-93" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
 .      as doc-str-St1 " \*[doc-str-St]1003.1b-1993
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1g" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
 .      as doc-str-St1 " \*[doc-str-St]1003.1g
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
 .      as doc-str-St1 " \*[doc-str-St]1003.2
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2-92" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
 .      as doc-str-St1 " \*[doc-str-St]1003.2-1992
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-iso9945-1" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]ISO/IEC
 .      as doc-str-St1 " \*[doc-str-St]9945-1:1996
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px].1\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px].1\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ansiC" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]ISO
 .      as doc-str-St1 " \*[doc-str-St]9899:1990
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ansiC-89" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]ANSI
 .      as doc-str-St1 " \*[doc-str-St]X\~3.159-1989
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-iso9899" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]ISO
 .      as doc-str-St1 " \*[doc-str-St]9899-1990
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ieee754" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
@@ -601,17 +601,17 @@
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg3" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
 .      as doc-str-St1 " Issue\~3\*[doc-str-St]
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]NXPG3\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]NXPG3\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg4" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
 .      as doc-str-St1 " Issue\~4\*[doc-str-St]
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]NXPG4\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]NXPG4\*[doc-str-St]\*[Rq])
 .    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg4.2" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
 .      as doc-str-St1 " Issue\~4.2\*[doc-str-St]
-.      as doc-str-St1 " (``\*[doc-Tn-font-size]NXPG4.2\*[doc-str-St]'')
+.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]NXPG4.2\*[doc-str-St]\*[Rq])
 .    \}
 .    el .ie "\*[doc-arg\n[doc-arg-ptr]]"-susv2" \{\
 .      ds doc-str-St1 \*[doc-Tn-font-size]Version\~2 of the
@@ -699,7 +699,7 @@
 .    el \{\
 .      tmc "mdoc warning: .Lb: no description for library
 .      tm1 " `\*[doc-arg\n[doc-arg-ptr]]' available
-.      ds doc-str-Lb library ``\*[doc-arg\n[doc-arg-ptr]]''
+.      ds doc-str-Lb library \*[Lq]\*[doc-arg\n[doc-arg-ptr]]\*[Rq]
 .    \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
 .
 .    \" replacing argument with result
