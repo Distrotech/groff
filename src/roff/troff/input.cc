@@ -3959,13 +3959,13 @@ void substring_macro()
       error("cannot substring request");
     else {
       if (start <= 0)
-	start += m->length;
+	start += m->length - 1;
       else
 	start--;
       int end = 0;
       if (!has_arg() || get_integer(&end)) {
 	if (end <= 0)
-	  end += m->length;
+	  end += m->length - 1;
 	else
 	  end--;
 	if (start > end) {
@@ -3973,16 +3973,22 @@ void substring_macro()
 	  start = end;
 	  end = tem;
 	}
-	if (start >= m->length || start == end) {
+	if (start >= m->length || end < 0) {
 	  m->length = 0;
 	  if (m->p) {
 	    if (--(m->p->count) <= 0)
 	      delete m->p;
 	    m->p = 0;
 	  }
+	  skip_line();
+	  return;
 	}
-	else if (start == 0)
-	  m->length = end;
+	if (start < 0)
+	  start = 0;
+	if (end >= m->length)
+	  end = m->length - 1;
+	if (start == 0)
+	  m->length = end + 1;
 	else {
 	  string_iterator iter(*m);
 	  int i;
@@ -3990,7 +3996,7 @@ void substring_macro()
 	    if (iter.get(0) == EOF)
 	      break;
 	  macro mac;
-	  for (; i < end; i++) {
+	  for (; i <= end; i++) {
 	    node *nd;
 	    int c = iter.get(&nd);
 	    if (c == EOF)
