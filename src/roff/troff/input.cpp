@@ -105,7 +105,7 @@ static int compatible_flag = 0;
 int ascii_output_flag = 0;
 int suppress_output_flag = 0;
 int is_html = 0;
-int begin_level = 0;		// number of nested .begin requests
+int begin_level = 0;		// number of nested \O escapes
 
 int have_input = 0;		// whether \f, \F, \D'F...', \H, \m, \M,
 				// \R, \s, or \S has been processed in
@@ -497,7 +497,8 @@ int input_stack::finish_get(node **np)
 #if defined(DEBUGGING)
   if (debug_state)
     if (tem->is_diversion)
-      fprintf(stderr, "in diversion level = %d\n", input_stack::get_div_level());
+      fprintf(stderr,
+	      "in diversion level = %d\n", input_stack::get_div_level());
 #endif
     top = top->next;
     level--;
@@ -590,7 +591,8 @@ void input_stack::push(input_iterator *in)
 #if defined(DEBUGGING)
   if (debug_state)
     if (top->is_diversion) {
-      fprintf(stderr, "in diversion level = %d\n", input_stack::get_div_level());
+      fprintf(stderr,
+	      "in diversion level = %d\n", input_stack::get_div_level());
       fflush(stderr);
     }
 #endif
