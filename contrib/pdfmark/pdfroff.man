@@ -64,10 +64,16 @@ pdfroff \- create PDF documents using
 .   ie \\n(.$>1 .opt \\$1 \0\\$2
 .   el .opt \\$1
 ..
+.de opte
+.   tr -\-
+.   RB [ -\\$1 =\c
+.   IR \&\\$2 ]
+.   tr --
+..
 .de optx
 .   tr -\-
 .   RB [ --no\\$1 \0|\0\c
-.   B -\\$1\c
+.   BR -\\$1 =\c
 .   IR \&\\$2 ]
 .   tr --
 ..
@@ -91,9 +97,9 @@ pdfroff \- create PDF documents using
 .opta w name
 .opta W name
 .opt  -no-toc-relocation
-.opt  -stylesheet= name
-.optx -pdf-output= name
-.optx -reference-dictionary= name
+.opte -stylesheet name
+.optx -pdf-output name
+.optx -reference-dictionary name
 .opt  -report-progress
 .B file
 .I ...
