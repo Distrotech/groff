@@ -49,6 +49,13 @@ int is_prime(unsigned);
 #include <strings.h>
 #endif
 
+#ifndef HAVE_SNPRINTF
+extern "C" {
+  int snprintf(char *, size_t, const char *, /*args*/ ...);
+  int vsnprintf(char *, size_t, const char *, va_list);
+}
+#endif
+
 #ifndef HAVE_MKSTEMP
 /* since mkstemp() is defined as a real C++ function if taken from
    groff's mkstemp.cc we need a declaration */
