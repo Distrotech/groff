@@ -274,7 +274,7 @@ int font::get_width(int c, int point_size)
   int i = ch_index[c];
   assert(i >= 0);
 
-  if (point_size == unitwidth)
+  if (point_size == unitwidth || font::unscaled_charwidths)
     return ch[i].width;
 
   if (!widths_cache)
@@ -396,7 +396,12 @@ const char *font::get_internal_name()
 const char *font::get_special_device_encoding(int c)
 {
   assert(c >= 0 && c < nindices && ch_index[c] >= 0);
-  return( ch[ch_index[c]].special_device_coding );
+  return ch[ch_index[c]].special_device_coding;
+}
+
+const char *font::get_image_generator()
+{
+  return image_generator;
 }
 
 void font::alloc_ch_index(int idx)
@@ -815,7 +820,7 @@ static struct {
   { "spare1", &font::biggestfont },
   { "biggestfont", &font::biggestfont },
   { "spare2", &font::spare2 },
-  { "sizescale", &font::sizescale }
+  { "sizescale", &font::sizescale },
   };
 
 int font::load_desc()
@@ -910,6 +915,8 @@ int font::load_desc()
 	return 0;
       }
     }
+    else if (strcmp("unscaled_charwidths", p) == 0)
+      unscaled_charwidths = 1;
     else if (strcmp("pass_filenames", p) == 0)
       pass_filenames = 1;
     else if (strcmp("sizes", p) == 0) {
@@ -986,6 +993,14 @@ int font::load_desc()
       tcommand = 1;
     else if (strcmp("use_charnames_in_special", p) == 0)
       use_charnames_in_special = 1;
+    else if (strcmp("image_generator", p) == 0) {
+      p = strtok(0, WS);
+      if (!p) {
+	t.error("image_generator command requires an argument");
+	return 0;
+      }
+      image_generator = strdup(p);
+    }
     else if (strcmp("charset", p) == 0)
       break;
     else if (unknown_desc_command_handler) {

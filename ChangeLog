@@ -1,3 +1,30 @@
+2004-10-05  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* src/include/font.h (font): New member function
+	`get_image_generator'.
+	New variables `unscaled_charwidths' and `image_generator'.
+
+	* src/libs/libgroff/font.cpp (font::get_width): Always return the
+	character's unscaled width if `font::unscaled_charwidths' is set.
+	(font::get_image_generator): New function.
+	(font::load_desc): Check the `unscaled_charwidths' and
+	`image_generator' keywords.
+
+	* src/libs/libgroff/fontfile.cpp: Initialize
+	`font::unscaled_charwidths' and `font::image_generator'.
+
+	* font/devhtml/DESC.proto: s/html/unscaled_charwidths/.
+
+	* font/devhtml/Makefile.sub (DESC): Set `image_generator' keyword.
+
+	* man/groff_font.man: Document `unscaled_charwidths' and
+	`image_generator'.
+
+	* src/preproc/html/pre-html.cpp: Include `device.h'.
+	(image_gen): New global variable.
+	(imageList::createPage): Use `image_gen'.
+	(main): Use `image_generator' keyword.
+
 2004-10-04  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* tmac/html.tmac: Handle \[sqrtex].

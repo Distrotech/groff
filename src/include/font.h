@@ -54,6 +54,7 @@ public:
   const char *get_special_device_encoding(int index);
   const char *get_name();
   const char *get_internal_name();
+  const char *get_image_generator();
 
   static int scan_papersize(const char *, const char **, double *, double *);
 
@@ -77,8 +78,10 @@ public:
   static int spare2;
   static int sizescale;
   static int tcommand;
+  static int unscaled_charwidths;
   static int pass_filenames;
   static int use_charnames_in_special;
+  static const char *image_generator;
 
   static const char **font_name_table;
   static const char **style_table;

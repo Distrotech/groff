@@ -34,6 +34,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "defs.h"
 #include "searchpath.h"
 #include "paper.h"
+#include "device.h"
 #include "font.h"
 
 #include <errno.h>
@@ -210,6 +211,7 @@ static char *htmlFileName = NULL;	// output of pre-html output which
 
 static char *linebuf = NULL;		// for scanning devps/DESC
 static int linebufsize = 0;
+static const char *image_gen = NULL;    // the `gs' program
 
 const char *const FONT_ENV_VAR = "GROFF_FONT_PATH";
 static search_path font_path(FONT_ENV_VAR, FONTPATH, 0, 0);
@@ -926,11 +928,12 @@ int imageList::createPage(int pageno)
   html_system(s, 1);
 
   s = make_message("echo showpage | "
-		   "gs%s -q -dBATCH -dSAFER "
+		   "%s%s -q -dBATCH -dSAFER "
 		   "-dDEVICEHEIGHTPOINTS=792 "
 		   "-dDEVICEWIDTHPOINTS=%d -dFIXEDMEDIA=true "
 		   "-sDEVICE=%s -r%d %s "
 		   "-sOutputFile=%s %s -\n",
+		   image_gen,
 		   EXE_EXT,
 		   (getMaxX(pageno) * image_res) / postscriptRes,
 		   image_device,
@@ -1701,6 +1704,12 @@ int main(int argc, char **argv)
   }
   exit(1);
 #endif /* CAPTURE_MODE */
+  device = "html";
+  if (!font::load_desc())
+    fatal("cannot find devhtml/DESC exiting");
+  image_gen = font::image_generator;
+  if (image_gen == NULL || (strcmp(image_gen, "") == 0))
+    fatal("devhtml/DESC must set the image_generator field, exiting");
   postscriptRes = get_resolution();
   i = scanArguments(argc, argv);
   setupAntiAlias();
