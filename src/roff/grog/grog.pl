@@ -148,7 +148,7 @@ sub process {
 	    }
 	    redo;
 	}
-	elseif (/^\.(PRINTSTYLE|START)$sp/) {
+	elsif (/^\.(PRINTSTYLE|START)$sp/) {
 	    $mom++;
 	}
 	if (/^\.so$sp/) {
