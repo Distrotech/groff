@@ -48,8 +48,27 @@
 .
 .if !r cR .nr cR 0
 .
+.\" use -rS={11,12} to change the font size from 10pt to 11pt or 12pt.
+.
+.if !r S .nr S 10
+.
 .
 .ec
+.
+.
+.ie        (\n[S] == 11) \{\
+.  ps 10.95z
+.  vs 13.6p
+.\}
+.el \{ .ie (\n[S] == 12) \{\
+.  ps 12z
+.  vs 14.5p
+.\}
+.el \{\
+.  ps 10z
+.  vs 12p
+.\}\}
+.
 .
 .\" the `doc-xx-font' strings must not be empty!
 .
