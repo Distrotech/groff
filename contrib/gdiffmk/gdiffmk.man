@@ -1,5 +1,5 @@
 .ig \"-*- nroff -*-
-Copyright (C) 2004 Free Software Foundation, Inc.
+Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the gdiffmk utility, which is part of groff.
 Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
@@ -43,14 +43,19 @@ gdiffmk \- mark differences between groff/nroff/troff files
 .OP \-a \%addmark
 .OP \-c \%changemark
 .OP \-d \%deletemark
+[\ \c
+.B \-D
+.OP \-B
+.OP \-M "\ mark1 mark2"
+]
 .OP \-x \%diffcmd
 .OP \-\-
 .OP \-\-help
-.OP \-\-version
+.OP \%\-\-version
 .I \%file1
 .I \%file2
-[
-.I \%output
+[\ \c
+.IR \%output \ \c
 ]
 .br
 .ad \na
@@ -112,6 +117,20 @@ Default:
 .BR + .
 .
 .TP
+.B \-B
+By default, the deleted texts marked by the
+.B \-D
+option end
+with an added troff break command,
+.BR .br ,
+to ensure that the deletions are marked properly.
+This is the only way to guarantee that deletions and small
+changes get flagged.
+This option directs the program not to insert these breaks; it makes no
+sense to use it without
+.BR \-D .
+.
+.TP
 .BI \-c changemark
 Use the
 .I changemark
@@ -128,6 +147,20 @@ Default:
 .BR * .
 .
 .TP
+.B \-D
+Show the deleted portions from changed and deleted text.
+Default delimiting marks:
+.BR "[[" " .\&.\&.\&. " "]]" .
+.
+.TP
+.BI \-M " mark1 mark2
+Change the delimiting marks for the
+.B \-D
+option.
+It makes no sense to use this option without
+.BR \-D .
+.
+.TP
 .BI \-x diffcmd
 Use the
 .I diffcmd
@@ -137,7 +170,8 @@ and
 .IR file2 .
 In particular,
 .I diffcmd
-should accept the
+should accept the GNU
+.B diff
 .BI \-D name
 option.
 Default:
@@ -213,7 +247,7 @@ Free Documentation License (FDL).
 .
 .
 .SH COPYRIGHT
-Copyright \(co 2004 Free Software Foundation, Inc.
+Copyright \(co 2004, 2005 Free Software Foundation, Inc.
 .
 .LP
 .B gdiffmk

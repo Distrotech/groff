@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2004 Free Software Foundation, Inc.
+# Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 # Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
 
 # This file is part of the gdiffmk utility, which is part of groff.
@@ -36,17 +36,25 @@ FILE1 and FILE2 are compared, using \`diff', and FILE2 is output with
 groff \`.mc' requests added to indicate how it is different from FILE1.
 
   FILE1   Previous version of the groff file.  \`-' means standard input.
-  FILE2   Current version of the groff file.  \`-' means standard input.
+  FILE2   Current version of the groff file.   \`-' means standard input.
           Either FILE1 or FILE2 can be standard input, but not both.
   OUTPUT  Copy of FILE2 with \`.mc' commands added.
           \`-' means standard output (the default).
 
 OPTIONS:
-  -a addmark     Mark for added groff source lines.    Default: +.
-  -c changemark  Mark for changed groff source lines.  Default: |.
-  -d deletemark  Mark for deleted groff source lines.  Default: *.
-  -x diffcmd     Use a different diff(1) command;
-  	          one that accepts the \`-Dname' option, such as GNU diff.
+  -a ADDMARK     Mark for added groff source lines.    Default: \`+'.
+  -c CHANGEMARK  Mark for changed groff source lines.  Default: \`|'.
+  -d DELETEMARK  Mark for deleted groff source lines.  Default: \`*'.
+
+  -D             Show the deleted portions from changed and deleted text.
+                  Default delimiting marks:  \`[[' .... \`]]'.
+  -B             By default, the deleted texts marked by the \`-D' option end
+                  with an added troff \`.br\' command.  This option prevents
+                  the added \`.br\'.
+  -M MARK1 MARK2 Change the delimiting marks for the \`-D' option.
+
+  -x DIFFCMD     Use a different diff(1) command;
+                  one that accepts the \`-Dname' option, such as GNU diff.
   --version      Print version information on the standard output and exit.
   --help         Print this message on the standard error.
 "
@@ -124,9 +132,11 @@ function WouldClobber {
 	fi
 }
 
-addmark='+'
-changemark='|'
-deletemark='*'
+ADDMARK='+'
+CHANGEMARK='|'
+DELETEMARK='*'
+MARK1='[['
+MARK2=']]'
 
 function RequiresArgument {
 	#	Process flags that take either concatenated or
@@ -148,24 +158,38 @@ function RequiresArgument {
 }
 
 badoption=
-diffcmd=diff
+DIFFCMD=diff
+D_option=
+br=.br
 for OPTION
 do
 	case "${OPTION}" in
 	-a*)
-		addmark=$( RequiresArgument "${OPTION}" $2 )		&&
+		ADDMARK=$( RequiresArgument "${OPTION}" $2 )		&&
 			shift
 		;;
 	-c*)
-		changemark=$( RequiresArgument "${OPTION}" $2 )		&&
+		CHANGEMARK=$( RequiresArgument "${OPTION}" $2 )		&&
 			shift
 		;;
 	-d*)
-		deletemark=$( RequiresArgument "${OPTION}" $2 )		&&
+		DELETEMARK=$( RequiresArgument "${OPTION}" $2 )		&&
 			shift
 		;;
+	-D )
+		D_option=D_option
+		;;
+	-M )
+		shift
+		MARK1=$1
+		shift
+		MARK2=$1
+		;;
+	-B )
+		br=.
+		;;
 	-x* )
-		diffcmd=$( RequiresArgument "${OPTION}" $2 )		&&
+		DIFFCMD=$( RequiresArgument "${OPTION}" $2 )		&&
 			shift
 		;;
 	--version)
@@ -193,10 +217,10 @@ do
 	shift
 done
 
-${diffcmd} -Dx /dev/null /dev/null >/dev/null 2>&1  ||
-	Usage "The \`${diffcmd}' program does not accept"	\
+${DIFFCMD} -Dx /dev/null /dev/null >/dev/null 2>&1  ||
+	Usage "The \`${DIFFCMD}' program does not accept"	\
 		"the required \`-Dname' option.
-Use GNU diff instead.  See the \`-x diffcmd' option."
+Use GNU diff instead.  See the \`-x DIFFCMD' option."
 
 if test -n "${badoption}"
 then
@@ -239,23 +263,22 @@ fi
 #	To make a very unlikely label even more unlikely ...
 label=__diffmk_$$__
 
-diff -D"${label}" -- ${FILE1} ${FILE2}  |
-	sed -n '
+sed_script='
 		/^#ifdef '"${label}"'/,/^#endif \/\* '"${label}"'/ {
-		  /^#ifdef '"${label}"'/          s/.*/.mc '"${addmark}"'/
+		  /^#ifdef '"${label}"'/          s/.*/.mc '"${ADDMARK}"'/
 		  /^#endif \/\* '"${label}"'/     s/.*/.mc/
 		  p
 		  d
 		}
 		/^#ifndef '"${label}"'/,/^#endif \/\* [!not ]*'"${label}"'/ {
 		  /^#else \/\* '"${label}"'/,/^#endif \/\* '"${label}"'/ {
-		    /^#else \/\* '"${label}"'/    s/.*/.mc '"${changemark}"'/
+		    /^#else \/\* '"${label}"'/    s/.*/.mc '"${CHANGEMARK}"'/
 		    /^#endif \/\* '"${label}"'/   s/.*/.mc/
 		    p
 		    d
 		  }
 		  /^#endif \/\* \(not\|!\) '"${label}"'/ {
-		   s/.*/.mc '"${deletemark}"'/p
+		   s/.*/.mc '"${DELETEMARK}"'/p
 		   a\
 .mc
 		  }
@@ -263,5 +286,57 @@ diff -D"${label}" -- ${FILE1} ${FILE2}  |
 		}
 		p
 	'
+
+if [ ${D_option} ]
+then
+	sed_script='
+		/^#ifdef '"${label}"'/,/^#endif \/\* '"${label}"'/ {
+		  /^#ifdef '"${label}"'/          s/.*/.mc '"${ADDMARK}"'/
+		  /^#endif \/\* '"${label}"'/     s/.*/.mc/
+		  p
+		  d
+		}
+		/^#ifndef '"${label}"'/,/^#endif \/\* [!not ]*'"${label}"'/ {
+		  /^#ifndef '"${label}"'/ {
+		   i\
+'"${MARK1}"'
+		   d
+		  }
+		  /^#else \/\* '"${label}"'/ ! {
+		   /^#endif \/\* [!not ]*'"${label}"'/ ! {
+		    p
+		    d
+		   }
+		  }
+		  /^#else \/\* '"${label}"'/,/^#endif \/\* '"${label}"'/ {
+		    /^#else \/\* '"${label}"'/ {
+		     i\
+'"${MARK2}"'\
+'"${br}"'
+		     s/.*/.mc '"${CHANGEMARK}"'/
+		     a\
+.mc '"${CHANGEMARK}"'
+		     d
+		    }
+		    /^#endif \/\* '"${label}"'/   s/.*/.mc/
+		    p
+		    d
+		  }
+		  /^#endif \/\* \(not\|!\) '"${label}"'/ {
+		   i\
+'"${MARK2}"'\
+'"${br}"'
+		   s/.*/.mc '"${DELETEMARK}"'/p
+		   a\
+.mc
+		  }
+		  d
+		}
+		p
+	'
+fi
+
+diff -D"${label}" -- ${FILE1} ${FILE2}  |
+	sed -n "${sed_script}"
 
 # EOF
