@@ -967,29 +967,35 @@ For a 100@dmn{dpi} X11 previewer with a 12@dmn{pt} base font in the
 document.
 
 @item ascii
-@cindex encoding, @acronym{ASCII}
-@cindex @acronym{ASCII}, encoding
+@cindex encoding, output, @acronym{ASCII}
+@cindex @acronym{ASCII}, output encoding
+@cindex output encoding, @acronym{ASCII}
 For typewriter-like devices using the (7-bit) @acronym{ASCII}
 character set.
 
 @item latin1
-@cindex encoding, latin-1
-@cindex latin-1, encoding
+@cindex encoding, output, @w{latin-1} (ISO @w{8859-1})
+@cindex @w{latin-1} (ISO @w{8859-1}), output encoding
+@cindex ISO @w{8859-1} (@w{latin-1}), output encoding
+@cindex output encoding, @w{latin-1} (ISO @w{8859-1})
 For typewriter-like devices that support the @w{Latin-1}
 (ISO@tie{}@w{8859-1}) character set.
 
 @item utf8
-@cindex encoding, utf-8
-@cindex utf-8, encoding
+@cindex encoding, output, @w{utf-8}
+@cindex @w{utf-8}, output encoding
+@cindex output encoding, @w{utf-8}
 For typewriter-like devices which use the Unicode (ISO@tie{}10646)
 character set with @w{UTF-8} encoding.
 
 @item cp1047
-@cindex @acronym{EBCDIC} encoding
-@cindex encoding, @acronym{EBCDIC}
-@cindex encoding, cp1047
-@cindex cp1047
-@cindex IBM cp1047
+@cindex encoding, output, @acronym{EBCDIC}
+@cindex @acronym{EBCDIC}, output encoding
+@cindex output encoding, @acronym{EBCDIC}
+@cindex encoding, output, cp1047
+@cindex cp1047, output encoding
+@cindex output encoding, cp1047
+@cindex IBM cp1047 output encoding
 For typewriter-like devices which use the @acronym{EBCDIC} encoding IBM
 cp1047.
 
@@ -1707,7 +1713,6 @@ A variation of this is a bulleted list.
       is used instead of a real bullet.
 @endExample
 
-
 @c ---------------------------------------------------------------------
 
 @node Sections and Chapters, Headers and Footers, Paragraphs, Common Features
@@ -1957,7 +1962,7 @@ The command line format for using the @file{man} macros with
 
 @Example
 groff -m man [ -rLL=@var{length} ] [ -rLT=@var{length} ] [ -rFT=@var{dist} ]
-      [ -rcR=1 ] [ -rC1 ] [ -rD1 ] 
+      [ -rcR=1 ] [ -rC1 ] [ -rD1 ]
       [ -rP@var{nnn} ] [ -rS@var{xx} ] [ -rX@var{nnn} ]
       [ -rIN=@var{length} ] [ -rSN=@var{length} ] [ @var{files}@dots{} ]
 @endExample
@@ -2291,7 +2296,7 @@ System III
 System V
 @end table
 
-An optional second argument @var{release} to @code{AT} specifies the 
+An optional second argument @var{release} to @code{AT} specifies the
 release number (such as ``System V Release 3'').
 @endDefmac
 
@@ -2379,7 +2384,7 @@ and automatically call the right preprocessor(s).
 
 @c ---------------------------------------------------------------------
 
-@node Optional man extensions, , Preprocessors in man pages, man
+@node Optional man extensions,  , Preprocessors in man pages, man
 @subsection Optional @file{man} extensions
 
 @pindex man.local
@@ -4096,7 +4101,6 @@ Users of macro packages may skip it if not interested in details.
 
 @menu
 * Text::
-* Input Conventions::
 * Measurements::
 * Expressions::
 * Identifiers::
@@ -4135,7 +4139,7 @@ Users of macro packages may skip it if not interested in details.
 
 @c =====================================================================
 
-@node Text, Input Conventions, gtroff Reference, gtroff Reference
+@node Text, Measurements, gtroff Reference, gtroff Reference
 @section Text
 @cindex text, @code{gtroff} processing
 
@@ -4163,6 +4167,8 @@ inserting implicit line breaks
 * Sentences::
 * Tab Stops::
 * Implicit Line Breaks::
+* Input Conventions::
+* Input Encodings::
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -4293,7 +4299,7 @@ produces
 
 @c ---------------------------------------------------------------------
 
-@node Implicit Line Breaks,  , Tab Stops, Text
+@node Implicit Line Breaks, Input Conventions, Tab Stops, Text
 @subsection Implicit Line Breaks
 @cindex implicit line breaks
 @cindex implicit breaks of lines
@@ -4328,11 +4334,10 @@ the document may vanish!
 Certain requests also cause breaks, implicitly or explicitly.  This is
 discussed in @ref{Manipulating Filling and Adjusting}.
 
+@c ---------------------------------------------------------------------
 
-@c =====================================================================
-
-@node Input Conventions, Measurements, Text, gtroff Reference
-@section Input Conventions
+@node Input Conventions, Input Encodings, Implicit Line Breaks, Text
+@subsection Input Conventions
 @cindex input conventions
 @cindex conventions for input
 
@@ -4356,10 +4361,90 @@ Do not try to do any formatting in a @acronym{WYSIWYG} manner (i.e.,
 don't try using spaces to get proper indentation).
 @end itemize
 
+@c ---------------------------------------------------------------------
+
+@node Input Encodings,  , Input Conventions, Text
+@subsection Input Encodings
+
+Currently, the following input encodings are available.
+
+@table @asis
+@item cp1047
+@cindex encoding, input, @acronym{EBCDIC}
+@cindex @acronym{EBCDIC}, input encoding
+@cindex input encoding, @acronym{EBCDIC}
+@cindex encoding, input, cp1047
+@cindex cp1047, input encoding
+@cindex input encoding, cp1047
+@cindex IBM cp1047 input encoding
+@pindex cp1047.tmac
+This input encoding works only on @acronym{EBCDIC} platforms (and vice
+versa, the other input encodings don't work with @acronym{EBCDIC}); the
+file @file{cp1047.tmac} is by default loaded at start-up.
+
+@item latin-1
+@cindex encoding, input, @w{latin-1} (ISO @w{8859-1})
+@cindex @w{latin-1} (ISO @w{8859-1}), input encoding
+@cindex ISO @w{8859-1} (@w{latin-1}), input encoding
+@cindex input encoding, @w{latin-1} (ISO @w{8859-1})
+@pindex latin1.tmac
+This is the default input encoding on non-@acronym{EBCDIC} platforms;
+the file @file{latin1.tmac} is loaded at start-up.
+
+@item latin-2
+@cindex encoding, input, @w{latin-2} (ISO @w{8859-2})
+@cindex @w{latin-2} (ISO @w{8859-2}), input encoding
+@cindex ISO @w{8859-2} (@w{latin-2}), input encoding
+@cindex input encoding, @w{latin-2} (ISO @w{8859-2})
+@pindex latin2.tmac
+To use this encoding, either say @w{@samp{.mso latin2.tmac}} at the very
+beginning of your document or use @samp{-mlatin2} as a command line
+argument for @code{groff}.
+
+@item latin-9 (latin-0)
+@cindex encoding, input, @w{latin-9} (@w{latin-0}, ISO @w{8859-15})
+@cindex @w{latin-9} (@w{latin-0}, ISO @w{8859-15}), input encoding
+@cindex ISO @w{8859-15} (@w{latin-9}, @w{latin-0}), input encoding
+@cindex input encoding, @w{latin-9} (@w{latin-9}, ISO @w{8859-15})
+@pindex latin9.tmac
+This encoding is intended (at least in Europe) to replace @w{latin-1}
+encoding.  The main difference to @w{latin-1} is that @w{latin-9}
+contains the Euro character.  To use this encoding, either say
+@w{@samp{.mso latin9.tmac}} at the very beginning of your document or
+use @samp{-mlatin9} as a command line argument for @code{groff}.
+@end table
+
+Note that it can happen that some input encoding characters are not
+available for a particular output device.  For example, saying
+
+@Example
+groff -Tlatin1 -mlatin9 ...
+@endExample
+
+@noindent
+will fail if you use the Euro character in the input.  Usually, this
+limitation is present only for devices which have a limited set of
+output glyphs (e.g.@: @option{-Tascii} and @option{-Tlatin1}); for other
+devices it is usually sufficient to install proper fonts which contain
+the necessary glyphs.
+
+@pindex freeeuro.pfa
+@pindex ec.tmac
+Due to the importance of the Euro glyph in Europe, the groff package now
+comes with a @sc{PostScript} font called @file{freeeuro.pfa} which
+provides various glyph shapes for the Euro.  With other words,
+@w{latin-9} encoding is supported for the @option{-Tps} device out of
+the box (@w{latin-2} isn't).
+
+By its very nature, @option{-Tutf8} supports all input encodings;
+@option{-Tdvi} has support for both @w{latin-2} and @w{latin-9} if the
+command line @option{-mec} is used also to load the file @file{ec.tmac}
+(which flips to the EC fonts).
+
 
 @c =====================================================================
 
-@node Measurements, Expressions, Input Conventions, gtroff Reference
+@node Measurements, Expressions, Text, gtroff Reference
 @section Measurements
 @cindex measurements
 
@@ -9341,7 +9426,6 @@ post-vertical spacing; it is associated with the current environment
 (@pxref{Environments}).
 @endDefreq
 
-
 @c ---------------------------------------------------------------------
 
 @node Fractional Type Sizes,  , Changing Type Sizes, Sizes
@@ -11137,7 +11221,7 @@ only the second call to@tie{}@code{x} is caused by @code{bp}.
 
 @Example
 .de x
-\&.pe=\\n[.pe]       
+\&.pe=\\n[.pe]
 .br
 ..
 .wh 1v x
@@ -14592,7 +14676,6 @@ in the @file{DESC} file.
 Here a list of obsolete keywords which are recognized by @code{groff}
 but completely ignored: @code{spare1}, @code{spare2},
 @code{biggestfont}.
-
 
 @c ---------------------------------------------------------------------
 
