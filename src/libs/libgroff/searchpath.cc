@@ -88,7 +88,11 @@ FILE *search_path::open_file(const char *name, char **pathp)
   unsigned namelen = strlen(name);
   char *p = dirs;
   for (;;) {
+#ifdef _MSC_VER
+    char *end = strchr(p, ';');
+#else
     char *end = strchr(p, ':');
+#endif
     if (!end)
       end = strchr(p, '\0');
     int need_slash = end > p && end[-1] != '/';
