@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -1631,7 +1631,7 @@ void table::print()
   compute_widths();
   if (!(flags & CENTER))
     prints(".if \\n[" SAVED_CENTER_REG "] \\{");
-  prints(".in +(u;\\n[.l]-\\n[.i]-\\n[TW]/2)\n"
+  prints(".in +(u;\\n[.l]-\\n[.i]-\\n[TW]/2>?-\\n[.i])\n"
 	 ".nr " SAVED_INDENT_REG " \\n[.i]\n");
   if (!(flags & CENTER))
     prints(".\\}\n");
