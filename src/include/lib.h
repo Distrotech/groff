@@ -59,7 +59,8 @@ int is_prime(unsigned);
 #include <strings.h>
 #endif
 
-#ifndef HAVE_SNPRINTF
+/* HP-UX 10.20 doesn't declare snprintf() */
+#if !defined(HAVE_SNPRINTF) || defined(NEED_DECLARATION_SNPRINTF)
 #include <stdarg.h>
 extern "C" {
   int snprintf(char *, size_t, const char *, /*args*/ ...);
