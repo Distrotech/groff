@@ -1,3 +1,40 @@
+2004-04-07  Werner Lemberg  <wl@gnu.org>
+
+	* Makefile.sub (DISTCLEANFILES): Add `test-groff'.
+
+2004-04-06  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	Make scripts like nroff.sh and neqn.sh portable across various
+	(Unix-like) shell implementations from Cygwin, MSYS, etc., which use
+	non-POSIX path separators.  The idea is to extend those scripts to
+	decide at run-time (of the script) which path separator to use.
+
+	* arch/misc/Makefile.sub: New file.
+	* arch/misc/shdeps.sh: New file, generating OS dependency fixups.
+	This script handles @GROFF_BIN_PATH_SETUP@, replacing it with
+	a proper definition of the variable `GROFF_RUNTIME'.
+
+	* Makefile.in (SH_DEPS_SED_SCRIPT): New variable.
+	(MDEFINES): Add SH_DEPS_SED_SCRIPT.
+	(PROGDEPDIRS): New variable.
+	`FORCE' it.
+	(PROGDIRS): Add PROGDEPDIRS.
+
+	* src/preproc/eqn/Makefile.sub (neqn): Call SH_DEPS_SED_SCRIPT.
+	Don't substitute @SEP@ and @BINDIR@.
+	* src/preproc/eqn/neqn.sh: Use @GROFF_BIN_PATH_SETUP@.
+	(PATH): Use GROFF_RUNTIME.
+
+	* src/roff/nroff/Makefile.sub (nroff): Call SH_DEPS_SED_SCRIPT.
+	Don't substitute @SEP@ and @BINDIR@.
+	* src/roff/nroff/nroff.sh: Use @GROFF_BIN_PATH_SETUP@.
+	(PATH): Use GROFF_RUNTIME.
+
+2004-04-05  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	* src/roff/nroff/nroff.sh: Implement work-around for sh.exe from
+	Cygwin which doesn't handle stderr correctly.
+
 2004-03-08  Werner LEMBERG  <wl@gnu.org>
 
 	* Makefile.comm (install_dev, uninstall_dev): Protect `for' loops

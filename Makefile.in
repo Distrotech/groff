@@ -337,6 +337,8 @@ ETAGSCCFLAG=-C
 PERLPATH=@PERLPATH@
 # Sed command with which to edit sh scripts.
 SH_SCRIPT_SED_CMD=@SH_SCRIPT_SED_CMD@
+# Sed script to deal with OS dependencies in sh scripts.
+SH_DEPS_SED_SCRIPT=$(top_builddir)/arch/misc/shdeps.sed
 
 # The program to create directory hierarchies.
 mkinstalldirs= $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -386,6 +388,7 @@ MDEFINES= \
   "SH_SEP=$(SH_SEP)" \
   "SHELL=$(SHELL)" \
   "SH_SCRIPT_SED_CMD=$(SH_SCRIPT_SED_CMD)" \
+  "SH_DEPS_SED_SCRIPT=$(SH_DEPS_SED_SCRIPT)" \
   "TTYDEVDIRS=$(TTYDEVDIRS)" \
   "YACC=$(YACC)" \
   "YACCFLAGS=$(YACCFLAGS)" \
@@ -463,7 +466,8 @@ CCPROGDIRS=\
   src/utils/lkbib \
   src/utils/addftinfo
 CPROGDIRS=src/utils/pfbtops
-PROGDIRS=$(CCPROGDIRS) $(CPROGDIRS)
+PROGDEPDIRS=arch/misc
+PROGDIRS=$(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
 DEVDIRS=\
   font/devps \
   font/devdvi \
@@ -597,7 +601,7 @@ $(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE
 	  -f $$srcdir/Makefile.sub \
 	  -f $(top_srcdir)/Makefile.dev $(do)
 
-$(INCDIRS) $(OTHERDIRS): FORCE
+$(INCDIRS) $(PROGDEPDIRS) $(OTHERDIRS): FORCE
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \

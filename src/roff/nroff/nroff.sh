@@ -5,7 +5,7 @@ prog="$0"
 # Default device.
 # First try the "locale charmap" command, because it's most reliable.
 # On systems where it doesn't exist, look at the environment variables.
-case "`locale charmap 2>/dev/null`" in
+case "`exec 2>/dev/null ; locale charmap`" in
   UTF-8)
     T=-Tutf8 ;;
   ISO-8859-1)
@@ -84,11 +84,15 @@ for i
   shift
 done
 
+# Set up the `GROFF_BIN_PATH' variable
+# to be exported in the current `GROFF_RUNTIME' environment.
+
+@GROFF_BIN_PATH_SETUP@
+export GROFF_BIN_PATH
+
 # This shell script is intended for use with man, so warnings are
 # probably not wanted.  Also load nroff-style character definitions.
 
-: ${GROFF_BIN_PATH=@BINDIR@}
-export GROFF_BIN_PATH
-PATH=$GROFF_BIN_PATH@SEP@$PATH groff -mtty-char $T $opts ${1+"$@"}
+PATH="$GROFF_RUNTIME$PATH" groff -mtty-char $T $opts ${1+"$@"}
 
 # eof
