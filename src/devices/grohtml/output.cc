@@ -51,7 +51,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
  */
 
 simple_output::simple_output(FILE *f, int n)
-: fp(f), col(0), max_line_length(n), need_space(0), fixed_point(0)
+: fp(f), max_line_length(n), col(0), need_space(0), fixed_point(0)
 {
 }
 

@@ -21,7 +21,7 @@
 extern int linenum;		/* current line number in input file */
 extern char gremlinfile[];	/* name of file currently reading */
 extern int SUNFILE;		/* TRUE if SUN gremlin file */
-extern int savebounds(float x, float y);
+extern void savebounds(float x, float y);
 
 /* imports from hpoint.cc */
 

@@ -395,7 +395,7 @@ HGSetBrush(int mode)
   }
   if (linethickness != thick[mode]) {
     linethickness = thick[mode];
-    printf("\\h'-%.2lfp'\\D't %.2lfp'", linethickness, linethickness);
+    printf("\\h'-%.2fp'\\D't %.2fp'", linethickness, linethickness);
     printed = 1;
   }
   if (printed)
@@ -458,11 +458,11 @@ tmove2(int px,
   register int dx;
   register int dy;
 
-  if (dy = py - lasty) {
+  if ((dy = py - lasty)) {
     printf("\\v'%du'", dy);
   }
   lastyline = lasty = py;	/* lasty is always set to current */
-  if (dx = px - lastx) {
+  if ((dx = px - lastx)) {
     printf("\\h'%du'", dx);
     lastx = px;
   }
@@ -486,11 +486,11 @@ tmove(POINT * ptr)
   register int dx;
   register int dy;
 
-  if (dy = iy - lasty) {
+  if ((dy = iy - lasty)) {
     printf(".sp %du\n", dy);
   }
   lastyline = lasty = iy;	/* lasty is always set to current */
-  if (dx = ix - lastx) {
+  if ((dx = ix - lastx)) {
     printf("\\h'%du'", dx);
     lastx = ix;
   }
@@ -936,8 +936,6 @@ change(register int x,
        register int y,
        register int vis)
 {
-  static int xorg;
-  static int yorg;
   static int length = 0;
 
   if (vis) {			/* leaving a visible area, draw it. */

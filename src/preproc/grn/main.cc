@@ -249,7 +249,6 @@ main(int argc,
   register int gfil = 0;
   char *file[50];
   char *operand(int *argcp, char ***argvp);
-  char *p;
 
   while (--argc) {
     if (**++argv != '-')
@@ -472,7 +471,7 @@ conv(register FILE *fp,
   register ELT *e;		/* current element pointer */
   ELT *PICTURE;			/* whole picture data base pointer */
   double temp;			/* temporary calculating area */
-  POINT ptr;			/* coordinates of a point to pass to `mov' */
+  /* POINT ptr; */		/* coordinates of a point to pass to `mov' */
 				/* routine                                 */
   int flyback;			/* flag `want to end up at the top of the */
 				/* picture?'                              */
@@ -680,7 +679,7 @@ savestate(void)
  |		place, though.
  *----------------------------------------------------------------------------*/
 
-int
+void
 savebounds(float x,
 	   float y)
 {

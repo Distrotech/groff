@@ -420,8 +420,8 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
 			   * vdmstart() */
 			};
 			if (vdminited()) vdmlinewidth(line_thickness);
-			// fprintf(stderr,"\nthickness: %d == %d, size %d\n",\
-			// p[0],line_thickness,env->size );
+			// fprintf(stderr,"\nthickness: %d == %d, size %d\n",
+			//         p[0],line_thickness,env->size );
 			break;
 		} // else
 

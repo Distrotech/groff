@@ -2311,6 +2311,8 @@ There are several ways to cause a break in @code{gtroff}.  A blank line
 will not only cause a break, but it will also cause a one line vertical
 space (effectively a blank line) to be output.
 
+@cindex fill mode
+@cindex mode, fill
 A line which begins with a space will cause a break and the space will
 be output at the beginning of the next line.  Note that this space isn't
 adjusted, even in fill mode.
@@ -3300,8 +3302,10 @@ Decimal numbers.  This is the default format: 1, 2, 3,@w{ }@dots{}
 Decimal numbers with as many digits as specified.  So, @samp{00} would
 result in printing numbers as 01, 02, 03,@w{ }@dots{}
 
-In fact, any digit instead of zeros will do; @code{gtroff} only counts
-how many digits are specified.
+In fact, any digit instead of zero will do; @code{gtroff} only counts
+how many digits are specified.  As a consequence, @code{af}'s default
+format @samp{1} could be specified as @samp{0} also (and exactly this is
+returned by the @code{\g} escape).
 
 @item I
 @cindex roman numerals
@@ -3537,12 +3541,16 @@ Initially, @code{gtroff} will fill and adjust text to both margins.
 Filling can be disabled via the @code{nf} request and re-enabled with
 the @code{fi} request.
 
+@cindex fill mode
+@cindex mode, fill
 @Deffn{Request, fi, }
 Activate fill mode (which is the default).  This request implicitly
 enables adjusting; it will also cause a break in the text currently
 being filled.  The number register @code{.u} is set to@w{ }1.
 @end_Deffn
 
+@cindex no-fill mode
+@cindex mode, no-fill
 @Deffn{Request, nf, }
 Activate no-fill mode.  Input lines are output as-is, retaining line
 breaks.  The current line length will be ignored.  This command
@@ -3551,7 +3559,13 @@ register @code{.u} will be set to@w{ }0.
 @end_Deffn
 
 @Deffn{Request, ad, [@var{mode}]}
-Enable adjusting.  @var{mode} can have one of the following values:
+
+Set adjusting mode.
+
+Activation and deactivation of adjusting will be implicitly done with
+calls to the @code{fi} resp.@: @code{nf} requests.
+
+@var{mode} can have one of the following values:
 
 @table @code
 @item l
@@ -3635,6 +3649,8 @@ units as one twelfth of the space width parameter for the current font.
 Initially both the @var{word_space_size} and @var{sentence_space_size}
 are@w{ }12.
 
+@cindex fill mode
+@cindex mode, fill
 If two arguments are given to the @code{ss} request, the second argument
 sets the sentence space size.  If the second argument is not given,
 @var{sentence_space_size} will be the same as @var{word_space_size}.
@@ -3664,7 +3680,7 @@ text it affects.  This request causes a break.
 
 With no arguments, @code{ce} will center the next line of text.
 @var{nnn} is a number indicating the number of lines to be centered.  If
-the argument is zero, centering is disabled.
+the argument is zero or negative, centering is disabled.
 
 A common idiom is to turn on centering for a large number of lines, and
 to turn off centering after text to be centered.  This is useful for any
@@ -3759,15 +3775,22 @@ register.  Also the number of immediately preceding consecutive
 hyphenated lines are available in the number register @samp{.hlc}.
 @end_Deffn
 
-@Deffn{Request, hw, word}
-Define how @var{word} is to be hyphenated.  @var{word} must be given
-with hyphens at the hyphenation points.  For example:
+@Deffn{Request, hw, word1 word2 @dots{}}
+Define how @var{word1}, @var{word2}, etc.@: are to be hyphenated.  The
+words must be given with hyphens at the hyphenation points.  For
+example:
 
 @example
 .hw in-sa-lub-rious
 @end example
 
-This request can be used more than once.
+@noindent
+Besides the space character, any character which hyphenation code value
+is zero can be used to separate the arguments of @code{hw} (see the
+documentation for the @code{hcode} request below for more information).
+In addition, this request can be used more than once.
+
+It will cause an error if there is no current hyphenation language.
 
 In old versions of @code{troff} there was a limited amount of space to
 store such information; fortunately, with @code{gtroff}, this is no
@@ -3792,11 +3815,11 @@ document, use the @code{hw} request.
 Change the hyphenation character to @var{char}.  This character will
 then work the same as the @code{\%} escape, and, thus, no longer appear
 in the output.  Without an argument, @code{hc} will reset the
-hyphenation character to @code{\%} only.
+hyphenation character to be @code{\%} only.
 @end_Deffn
 
 @cindex hyphenation patterns
-@cindex pattern for hyphenation
+@cindex patterns for hyphenation
 @Deffn{Request, hpf, pattern_file}
 Read in a file of hyphenation patterns.  This file will be searched for
 in the same way as @file{tmac.@var{name}} is searched for if the
@@ -3820,6 +3843,8 @@ set by the @code{hla} request.  The @code{hpf} request is usually
 invoked by the @file{troffrc} or @file{troffrc-end} file; by default,
 @file{troffrc} loads hyphenation patterns for American English (in file
 @file{hyphen.us}).
+
+It will cause an error if there is no current hyphenation language.
 @end_Deffn
 
 @cindex hyphenation code
@@ -3828,7 +3853,7 @@ invoked by the @file{troffrc} or @file{troffrc-end} file; by default,
 Sets the hyphenation code of character @var{c1} to @var{code1}, that of
 @var{c2} to @var{code2}, etc.  A hyphenation code must be a single input
 character (not a special character) other than a digit or a space.
-Initially each lower-case letter (@samp{a}-@samp{z})has a hyphenation
+Initially each lower-case letter (@samp{a}-@samp{z}) has a hyphenation
 code, which is itself, and each upper-case letter (@samp{A}-@samp{Z})
 has a hyphenation code which is the lower-case version of itself.
 @end_Deffn
@@ -6843,6 +6868,8 @@ Invalid numeric expressions.  This is enabled by default.
 
 @item break
 @itemx 4
+@cindex fill mode
+@cindex mode, fill
 In fill mode, lines which could not be broken so that their length was
 less than the line length.  This is enabled by default.
 

@@ -7,33 +7,9 @@ VERSION 1.16
 Groff
 -----
 
-The anachronism of calling the man package with `-man' has been fixed; now
-you can say `-m man' also.  The same is true for `ms', `me', `markup',
+The anachronism of calling the man macro package with `-man' has been fixed;
+now you can say `-m man' also. The same is true for `ms', `me', `markup',
 `mandoc', and `mdoc'.
-
-Some additions to the font description files have been implemented for
-better support of HTML output:
-
-  The new format of lines in the `charset' subsection of font description
-  files is
-
-     name metrics type code [entity_name] [-- comment]
-
-  Currently, only the font description files in devhtml use the optional
-  entity_name string to define glyph entities in HTML.  Everything after the
-  entity_name field is ignored; in case this field isn't used, two hyphen
-  characters are now necessary to start a comment.
-
-  Two new requests are available in DESC files (currently used only with
-  grohtml):
-
-    use_charnames_in_special
-      This  command  indicates  that  troff should encode named characters
-      inside special commands.
-
-    pass_filenames
-      requests that troff tells  the  driver  the  source file name being
-      processed.  This is achieved by another tcommand: `F filename'.
 
 A new switch `-g' for calling `grn' is available.
 
@@ -86,11 +62,35 @@ tmac.html; thus no need for users to specify -mhtml anymore.
 The soft hyphen character now has a glyph name: `shc'.
 
 The latin-1 character 173 (PS name `periodcentered') has got the troff glyph
-name `ps' and is no longer intermixed with the symbol character `md' (PS
+name `pc' and is no longer intermixed with the symbol character `md' (PS
 name `mathdot').
 
 ASCII character 34 (PS name `quotedbl') has got the troff glyph name `dq'
 (which is an alias to character `"').
+
+Some additions to the font description files have been implemented for
+better support of HTML output:
+
+  The new format of lines in the `charset' subsection of font description
+  files is
+
+     name metrics type code [entity_name] [-- comment]
+
+  Currently, only the font description files in devhtml use the optional
+  entity_name string to define glyph entities in HTML.  Everything after the
+  entity_name field is ignored; in case this field isn't used, two hyphen
+  characters are now necessary to start a comment.
+
+  Two new requests are available in DESC files (currently used only with
+  grohtml):
+
+    use_charnames_in_special
+      This command indicates that troff should encode named characters
+      inside special commands.
+
+    pass_filenames
+      requests that troff tells the driver the source file name being
+      processed.  This is achieved by another tcommand: `F filename'.
 
 Grotty
 ------
@@ -146,6 +146,16 @@ Documentation
 Three new man pages are available: groff_tmac.5 (documenting how troff macros
 are accessed and where they are found), groff.7 (a short reference of the GNU
 roff language), and roff.7 (a general survey on GNU troff).
+
+Miscellaneous
+-------------
+
+A port to win32 (for use with Microsoft Visual C++ 6.0) is now part of the
+distribution.  It has been contributed by Blake McBride
+<blake@florida-software.com>.
+
+More information about programs, macros, documentation, etc. which is
+related to groff has been collected in the file `MORE.STUFF'.
 
 VERSION 1.13, 1.14, 1.15
 ========================
