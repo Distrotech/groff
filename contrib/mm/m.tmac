@@ -650,9 +650,15 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	\}
 .\}
 .nr @ps \\n[.ps]
+.nr @psu \\n[.ps]s
 .nr @vs \\n[.v]
+.nr @vsp \\n[.v]u/1p
+.nr @res 1i
 .\"
-.if \\n[D]>1 .tm S(\\$*): ma:\\*[misc*a], mb:\\*[misc*b] => ps:\\n[@ps]s, vs:\\n[@vs]u
+.if \\n[D]>1 \{\
+.	tmc "S(\\$*): ma:\\*[misc*a], mb:\\*[misc*b]
+.	tm1 " => ps:\\n[.s]p (\\n[@psu]u), vs:\\n[@vsp]p (\\n[@vs]u) (res:\\n[@res])
+.\}
 .nr misc*S-ps \\n[misc*S-ps1]
 .nr misc*S-vs \\n[misc*S-vs1]
 .nr misc*S-ps1 \\n[@ps]
