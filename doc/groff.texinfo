@@ -7,6 +7,19 @@
 @c %**end of header (This is for running Texinfo on a region.)
 
 
+@c We use the following indices:
+@c
+@c   cindex: concepts
+@c   findex: requests
+@c   vindex: registers
+@c   pindex: programs
+@c   tindex: environment variables
+@c
+@c tindex and cindex are merged.
+
+@syncodeindex tp cp
+
+
 @dircategory Miscellaneous
 @direntry
 * Groff: (groff).   The GNU troff document formatting system.
@@ -547,8 +560,6 @@ documents.  @code{troff} is very flexible and has been in existence (and
 use) for about 3@w{ }decades.  It is quite widespread and firmly
 entrenched in the @sc{Unix} community.
 
-
-
 @menu
 * What Is groff?::              
 * History::                     
@@ -559,11 +570,11 @@ entrenched in the @sc{Unix} community.
 * Credits::                     
 @end menu
 
+
 @node What Is groff?, History, Introduction, Introduction
 @section What Is @code{groff}?
 @cindex what is @code{groff}?
 @cindex @code{groff} -- what is it?
-
 
 @code{groff} is of an older generation of document preparation systems,
 which operate more like compilers than the more recent interactive
@@ -604,7 +615,6 @@ impossible to accomplish complex actions.''  --Doug Gwyn (22/Jun/91 in
 @end quotation
 
 
-
 @node History, groff Capabilities, What Is groff?, Introduction
 @section History
 @cindex history
@@ -634,7 +644,7 @@ name @code{troff} is pronounced t-roff rather than trough.
 
 With @code{troff} came @code{nroff} (they were actually the same program
 except for some @samp{#ifdefs}), which was for producing output for line
-printers and ascii terminals.  It understood everything @code{troff}
+printers and character terminals.  It understood everything @code{troff}
 did, and ignored the commands which were not aplicable (i.e.@: font
 changes).
 
@@ -682,9 +692,9 @@ A replacement for @code{ditroff} with many extentions.
 @item
 The @code{soelim}, @code{pic}, @code{tbl}, and @code{eqn} preprocessors.
 @item
-Postprocessors for ascii devices, PostScript, @TeX{} DVI, and X@w{
+Postprocessors for character devices, PostScript, @TeX{} DVI, and X@w{
 }windows.  GNU @code{troff} also eliminated the need for a separate
-@code{nroff} program with a postprocessor which would produce ascii
+@code{nroff} program with a postprocessor which would produce @sc{ascii}
 output.
 @item
 A version of the @code{-me} macros and an implementation of the
@@ -706,7 +716,6 @@ Beginning in@w{ }1999, @code{groff} has new maintainers (the package was
 an orphan for a few years).  As a result, new features and programs like
 @code{grn}, a preprocessor for gremlin images, and @code{grohtml}, an
 output device to produce HTML output, have been added.
-
 
 
 @node groff Capabilities, Macro Package Intro, History, Introduction
@@ -796,16 +805,16 @@ preprocessors to use.
 @code{groff} currently has preprocessors for producing tables
 (@code{tbl}), typesetting equations (@code{eqn}), drawing pictures
 (@code{pic} and @code{grn}), and for processing bibliographies
-(@code{refer}). An associated program which is useful when dealing with
+(@code{refer}).  An associated program which is useful when dealing with
 preprocessors is @code{soelim}.
 
 There are other preprocessors in existence, but there are,
 unfortunately, no free implementations available.  They are for drawing
-pictures (@code{ideal}), for drawing graphs
-(@code{grap}), and chemical structures (@code{chem}).
+pictures (@code{ideal}) and chemical structures (@code{chem}).
 
 A free implementation of @code{grap}, a preprocessor for drawing graphs,
 can be obtained as an extra package.
+
 
 @node Output device intro, Credits, Preprocessor Intro, Introduction
 @section Output Devices
@@ -815,14 +824,14 @@ can be obtained as an extra package.
 
 @code{groff} actually produces device independent code which may be fed
 into a postprocessor which will produce output for a particular device.
-Currently, @code{groff} has postprocessors for PostScript, ascii
-terminals, X@w{ }Windows (for previewing), @TeX{} DVI format, and HTML.
+Currently, @code{groff} has postprocessors for PostScript, character
+terminals, X@w{ }Windows (for previewing), @TeX{} DVI format, HP
+LaserJet@w{ }4 printers, and HTML.
 
 
 @node Credits,  , Output device intro, Introduction
 @section Credits
 @cindex credits
-
 
 Large portions of this manual were taken from existing documents, most
 notably, the manual pages for the @code{groff} package by James Clark,
@@ -834,7 +843,6 @@ and Eric Allman's papers on the @code{-me} macro package.
 @chapter Invoking @code{groff}
 @cindex invoking @code{groff}
 @cindex @code{groff} invocation
-
 
 @pindex groff
 @pindex gtroff
@@ -850,17 +858,16 @@ don't contain proprietary software, this prefix is omitted since GNU
 @code{troff} is the only used incarnation of @code{troff}.  Exception:
 @code{groff} is never replaced by `roff'.
 
-
 @menu
 * Options::                     
 * Environment::                 
 * Invocation Examples::         
 @end menu
 
+
 @node Options, Environment, Invoking groff, Invoking groff
 @section Options
 @cindex options
-
 
 @pindex groff
 @pindex gtroff
@@ -876,21 +883,21 @@ appropriate for the selected device.  The default device is @samp{ps}.
 It can optionally preprocess with any of @code{gpic}, @code{geqn},
 @code{gtbl}, @code{ggrn}, @code{grefer}, or @code{gsoelim}.
 
-This section only documents options to the @code{groff} front end. 
-Many of the arguments to @code{groff} are passed on to @code{gtroff},
+This section only documents options to the @code{groff} front end.  Many
+of the arguments to @code{groff} are passed on to @code{gtroff},
 therefore those are also included.  Arguments to pre- or postprocessors
 can be found in @ref{Invoking gpic}, @ref{Invoking geqn}, @ref{Invoking
 gtbl}, @ref{Invoking ggrn}, @ref{Invoking grefer}, @ref{Invoking
 gsoelim}, @ref{Invoking grotty}, @ref{Invoking grops}, @ref{Invoking
-grohtml}, @ref{Invoking grodvi}, and @ref{Invoking gxditview}
+grohtml}, @ref{Invoking grodvi}, and @ref{Invoking gxditview}.
 
 The command line format for @code{groff} is:
 
 @example
-groff [ -abeghilpstvzCENRSVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
+groff [ -abeghilpstvzCENRSUVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
       [ -T@var{def} ] [ -f@var{fam} ] [ -w@var{name} ] [ -W@var{name} ]
       [ -M@var{dir} ] [ -d@var{cs} ] [ -r@var{cn} ] [ -n@var{num} ]
-      [ -o@var{list} ] [ -P@var{arg} ] [ -L@var{arg} ]
+      [ -o@var{list} ] [ -P@var{arg} ] [ -L@var{arg} ] [ -I@var{dir} ]
       [ @var{files}@dots{} ]
 @end example
 
@@ -899,7 +906,7 @@ see, many of the options to @code{groff} are actually passed on to
 @code{gtroff}.
 
 @example
-gtroff [ -abivzCER ] [ -w@var{name} ] [ -W@var{name} ] [ -d@var{cs} ]
+gtroff [ -abivzCERU ] [ -w@var{name} ] [ -W@var{name} ] [ -d@var{cs} ]
        [ -f@var{fam} ] [ -m@var{name} ] [ -n@var{num} ]
        [ -o@var{list} ] [ -r@var{cn} ] [ -T@var{name} ]
        [ -F@var{dir} ] [ -M@var{dir} ] [ @var{files}@dots{} ]
@@ -940,13 +947,14 @@ Make programs run by @code{groff} print out their version number.
 @item -V
 Print the pipeline on stdout instead of executing it.
 @item -z
-Suppress output from @code{gtroff}.  Only error messages will be printed.
+Suppress output from @code{gtroff}.  Only error messages will be
+printed.
 @item -Z
 Do not postprocess the output of @code{gtroff}.  Normally @code{groff}
 will automatically run the appropriate postprocessor.
 @item -P@var{arg}
 Pass @var{arg} to the postprocessor.  Each argument should be passed
-with a separate @samp{-P} option. Note that groff does not prepend
+with a separate @samp{-P} option.  Note that groff does not prepend
 @samp{-} to @var{arg} before passing it to the postprocessor.
 @item -l
 Send the output to a printer.  The command used for this is specified by
@@ -962,18 +970,19 @@ The following are the output devices currently available:
 @item ps
 For PostScript printers and previewers.
 @item dvi
-For TeX dvi format.
+For @TeX{} dvi format.
 @item X75
-For a 75 dpi X11 previewer.
+For a 75dpi X11 previewer.
 @item X100
 For a 100dpi X11 previewer.
-@item ascii
+@item @sc{ascii}
 For typewriter-like devices.
 @item latin1
-For typewriter-like devices using the ISO Latin-1 (ISO 8859-1) character set.
+For typewriter-like devices using the ISO@w{ }Latin@w{-}1 (ISO@w{
+}8859@w{-}1) character set.
 @item utf8
-For typewriter-like devices using the Unicode (ISO 10646) character set with
-UTF-8 encoding.
+For typewriter-like devices using the Unicode (ISO@w{ }10646) character
+set with UTF@w{-}8 encoding.
 @item lj4
 For an HP LaserJet4-compatible (or other PCL5-compatible) printer.
 @item html
@@ -992,9 +1001,11 @@ Don't allow newlines with @code{eqn} delimiters.  This is the same as
 the @samp{-N} option in @code{geqn}.
 @item -S
 Safer mode.  Pass the @samp{-S} option to @code{gpic} and use the
-@samp{-msafer} macros with @code{gtroff}.
+@samp{-msafer} macros with @code{gtroff} (enabled by default).
+@item -U
+Unsafe mode.  Reverts to the old unsafe behaviour.
 @item -a
-Generate an ASCII approximation of the typeset output.
+Generate an @sc{ascii} approximation of the typeset output.
 @item -b
 Print a backtrace with each warning or error message.  This backtrace
 should help track down the cause of the error.  The line numbers given
@@ -1040,36 +1051,45 @@ name of the device) for the @file{DESC} file and font files before the
 normal directory.
 @item -M@var{dir}
 Search directory @var{dir} for macro files before the normal directory.
+@item -I@var{dir}
+This option is as described in @ref{gsoelim}.  It implies the @samp{-s}
+option.
 @end table
-
 
 
 @node Environment, Invocation Examples, Options, Invoking groff
 @section Environment
-@cindex environment
-
+@cindex environment variables
+@cindex variables in environment
 
 There are also several environment variables which can modify groff's
 behavior.
 
 @table @code
 @item GROFF_COMMAND_PREFIX
+@tindex GROFF_COMMAND_PREFIX
 If this is set to @var{X}, then @code{groff} will run
 @var{X}@code{troff} instead of @code{gtroff}.  This also applies to
-@code{tbl}, @code{pic}, @code{eqn}, @code{refer}, and @code{soelim}.  It
-does not apply to @code{grops}, @code{grodvi}, @code{grotty},
-@code{grohtml}, @code{grolj4}, and @code{gxditview}.
+@code{tbl}, @code{pic}, @code{eqn}, @code{grn}, @code{refer}, and
+@code{soelim}.  It does not apply to @code{grops}, @code{grodvi},
+@code{grotty}, @code{grohtml}, @code{grolj4}, and @code{gxditview}.
 @item GROFF_TMAC_PATH
+@tindex GROFF_TMAC_PATH
 A colon separated list of directories in which to search for macro
 files.
 @item GROFF_TYPESETTER
-Default device.
+@tindex GROFF_TYPESETTER
+The default output device.
 @item GROFF_FONT_PATH
+@tindex GROFF_FONT_PATH
 A colon separated list of directories in which to search for the
 @code{dev}@var{name} directory.
 @item PATH
-The search path for commands executed by groff.
+@tindex PATH
+The search path for commands executed by @code{groff}.
 @item GROFF_TMPDIR
+@tindex GROFF_TMPDIR
+@tindex TMPDIR
 The directory in which temporary files will be created.  If this is not
 set and @code{TMPDIR} is set, temporary files will be created in that
 directory.  Otherwise temporary files will be created in @code{/tmp}.
@@ -1082,17 +1102,44 @@ The @code{grops} and @code{grefer} commands can create temporary files.
 @cindex invocation examples
 @cindex examples of invocation
 
-
 This section will list several common uses of @code{groff} and the
 command line which will accomplish it.
 
 @example
 groff file
-groff -X -me file
-groff -mm -rD1 -z file
-groff -tps -me file | lpr -Plw2
-... any more?? ...
 @end example
+
+@noindent
+This command processes @var{file} without a macro package or a
+preprocessor.  The output device is the default, @var{ps}, and the
+output is sent to stdout.
+
+@example
+groff -t -mandoc -Tascii file | less
+@end example
+
+@noindent
+This is basically what a call to @code{man} does.  The manual page
+@var{file} is processed with the @code{-mandoc} macros (which in turn
+either call the @code{-man} or the @code{-mdoc} macro package), using
+the @code{tbl} preprocessor and the @sc{ascii} output device.  Finally,
+the result is displayed with the @code{less} pager.
+
+@example
+groff -X -me file
+@end example
+
+@noindent
+Preview @var{file} with @code{gxditview}, using the @code{-me} macro
+package.
+
+@example
+groff -man -rD1 -z file
+@end example
+
+@noindent
+Check @var{file} with the @code{-man} macro package, forcing
+double-sided printing---don't produce any output.
 
 @subsection @code{grog}
 
@@ -1100,8 +1147,8 @@ groff -tps -me file | lpr -Plw2
 preprocessors and/or macro packages are are required for formatting
 them, and prints the @code{groff} command including those options on the
 standard output.  The options generated are one of @samp{-e},
-@samp{-man}, @samp{-me}, @samp{-mm}, @samp{-ms}, @samp{-p}, @samp{-s},
-and @samp{-t}.
+@samp{-man}, @samp{-me}, @samp{-mm}, @samp{-ms}, @samp{-p}, @samp{-R},
+@samp{-g}, @samp{-s}, and @samp{-t}.
 
 A filename of @samp{-} is taken to refer to the standard input.  If no
 files are specified the standard input will be read.  Any specified
@@ -1112,8 +1159,21 @@ between options and their arguments.  For example,
 grog -Tdvi paper.ms
 @end example
 
-will guess the approriate command to print @file{paper.ms} and then run
-it after adding the @samp{-Tdvi} option.
+@noindent
+will guess the appropriate command to print @file{paper.ms} and then
+print it to the command line after adding the @samp{-Tdvi} option.  If
+you want to directly execute it, enclose the call to @code{grog} in
+backquotes on the @sc{Unix} shell prompt:
+
+@example
+`grog -Tdvi paper.ms` > paper.dvi
+@end example
+
+@noindent
+As you can see, it is still necessary to redirect the output to
+something meaningful (i.e.@: either a file or a pager program like
+@code{less}).
+
 
 
 @node Tutorial for Macro Users, Macro Packages, Invoking groff, Top
@@ -1128,16 +1188,15 @@ means that the whole breadth of @code{groff} is not neccessary for most
 people.  This chapter covers the material needed to efficiently use a
 macro package.
 
-
 @menu
 * Basics::                      
 * Common Features::             
 @end menu
 
+
 @node Basics, Common Features, Tutorial for Macro Users, Tutorial for Macro Users
 @section Basics
 @cindex basics
-
 
 This section covers some of the basic concepts you will need to
 understand to use a macro package.@footnote{This section is derived from
@@ -1216,7 +1275,7 @@ keep the input lines short.  Short input lines are easier to edit, and
 keeping with this, it is helpful to begin a new line after every period,
 comma, or phrase, since common corrections are to add or delete
 sentences or phrases.  Secondly, do not hyphenate words at the end of
-lines -- @code{groff} is smart enough to hyphenate words for you as
+lines---@code{groff} is smart enough to hyphenate words for you as
 needed, but is not smart enough to take hyphens out and join a word back
 together.  Also, words such as ``mother-in-law'' should not be broken
 over a line, since then you will get a space where not wanted, such as
@@ -1226,8 +1285,8 @@ over a line, since then you will get a space where not wanted, such as
 @cindex double spacing
 @cindex spacing
 Groff will double space output text automatically if you use the request
-@samp{.ls 2}.  You can revert to single spaced mode by typing @samp{.ls
-1}.
+@w{@samp{.ls 2}}.  You can revert to single spaced mode by typing
+@w{@samp{.ls 1}}.
 
 A number of requests allow you to change the way the printed copy looks,
 sometimes called the @dfn{layout} of the output page.  Most of these
@@ -1286,7 +1345,6 @@ action, use @samp{.br}.
 @section Common Features
 @cindex common features
 @cindex features, common
-
 
 Groff provides very low level operations for formatting a document.
 There are many common routine operations which are done in all documents.
@@ -1455,6 +1513,7 @@ how the package behaves.  This ranges from setting the default type
 size to changing the appearance of section headers.
 
 
+
 @node Macro Packages, Programming Tutorial, Tutorial for Macro Users, Top
 @chapter Macro Packages
 @cindex macro packages
@@ -1462,7 +1521,6 @@ size to changing the appearance of section headers.
 
 This chapter documents the main macro packages that come with
 @code{groff}.
-
 
 @menu
 * -man::                        
@@ -1472,10 +1530,10 @@ This chapter documents the main macro packages that come with
 * -mm::                         
 @end menu
 
+
 @node -man, -mdoc, Macro Packages, Macro Packages
 @section -man
 @cindex @code{-man}
-
 
 
 @node -mdoc, -ms, -man, Macro Packages
@@ -1483,17 +1541,14 @@ This chapter documents the main macro packages that come with
 @cindex @code{-mdoc}
 
 
-
 @node -ms, -me, -mdoc, Macro Packages
 @section -ms
 @cindex @code{-ms}
 
 
-
 @node -me, -mm, -ms, Macro Packages
 @section -me
 @cindex @code{-me}
-
 
 
 @node -mm,  , -me, Macro Packages
@@ -1510,7 +1565,6 @@ This chapter documents the main macro packages that come with
 This chapter covers @strong{all} of the facilities of groff.
 If you are intending to use a macro package, you probably do not want
 to read this chapter.
-
 
 @menu
 * Text::                        
@@ -1546,6 +1600,7 @@ to read this chapter.
 * Summary::                     
 @end menu
 
+
 @node Text, Input Conventions, Programming Tutorial, Programming Tutorial
 @section Text
 @cindex text
@@ -1559,7 +1614,6 @@ hyphenating
 and
 inserting implicit line breaks.
 
-
 @menu
 * Filling and Adjusting::       
 * Hyphenation::                 
@@ -1572,7 +1626,6 @@ inserting implicit line breaks.
 @subsection Filling and Adjusting
 @cindex filling and adjusting
 @cindex adjusting and filling
-
 
 When troff reads in text it collects words from input and fits as many
 of them together on one output line as it can.  This is known as
@@ -1593,7 +1646,6 @@ Spaces at the front of a line will cause a @dfn{break}
 @subsection Hyphenation
 @cindex hyphenation
 
-
 Since the odds of finding a set of words, for every output line,
 which will fit nicely on a
 line without inserting excessive amounts of space between words
@@ -1612,7 +1664,6 @@ and the other portion will be added to the next line to be filled.
 @node Sentences, Tab Stops, Hyphenation, Text
 @subsection Sentences
 @cindex sentences
-
 
 Although it is often debated,
 some typesetting rules say there should be different amounts of space
@@ -1633,13 +1684,10 @@ will append two @dfn{sentence spaces} in the formatted output.
 @c also describe how characters like ) are treated here -jjc
 @c gotta do some research on this -trent
 
-
-
 @node Tab Stops, Implicit Line Breaks, Sentences, Text
 @subsection Tab Stops
 @cindex tab stops
 @cindex stops, tabulator
-
 
 Groff translates tabs in the input into movements to the next tab
 stop.  These tab stops are initially located every half inch across
@@ -1705,11 +1753,11 @@ This will be discussed later.
 @c distribute these through the text
 @xref{Manipulating Filling and Adjusting}
 
+
 @node Input Conventions, Measurements, Text, Programming Tutorial
 @section Input Conventions
 @cindex input conventions
 @cindex conventions for input
-
 
 Since groff does filling automatically, it is traditional in groff not
 to try and type things in as nicely formatted paragraphs.  These are
@@ -1733,7 +1781,6 @@ try and use spaces to get proper indentation).
 @node Measurements, Expressions, Input Conventions, Programming Tutorial
 @section Measurements
 @cindex measurements
-
 
 @cindex units of measurement
 @cindex basic units
@@ -1807,7 +1854,6 @@ Vertical space.  This is equivalent to the current line spacing.
 @cindex default units
 @cindex units, default
 
-
 Many requests take a default unit.  While this can be helpful at
 times, it can cause strange errors in some expressions.
 For example, the line  length  request  expects  em's.
@@ -1824,10 +1870,10 @@ Here are several attempts to get 3.5 inches and the results:
 As you can see, the safest way to specify measurements is to always
 attach a scaling indicator.
 
+
 @node Expressions, Identifiers, Measurements, Programming Tutorial
 @section Expressions
 @cindex expressions
-
 
 Troff has most of operators common to other languages:
 
@@ -1870,6 +1916,7 @@ expressions, unless the entire expression is surrounded by parenthesis.
 @xref{Request Arguments}
 @c distribute these through the text
 @xref{Conditionals and Loops}
+
 
 @node Identifiers, Embedded Commands, Expressions, Programming Tutorial
 @section Identifiers
@@ -1924,11 +1971,11 @@ silently ignored or expanded to nothing.
 @c distribute these through the text
 @xref{Strings}
 
+
 @node Embedded Commands, Registers, Identifiers, Programming Tutorial
 @section Embedded Commands
 @cindex embedded commands
 @cindex commands, embedded
-
 
 With most documents you need more funtionality beyond filling,
 adjusting and implicit line breaking.
@@ -1943,8 +1990,6 @@ in your text, or even as an argument to a request. (Not always?)
 Escapes generally do more minor operations like sub- and super-
 scripts, print a symbol, &c.
 
-
-
 @menu
 * Requests::                    
 * Macros::                      
@@ -1954,7 +1999,6 @@ scripts, print a symbol, &c.
 @node Requests, Macros, Embedded Commands, Embedded Commands
 @subsection Requests
 @cindex requests
-
 
 @cindex control character
 @cindex character, control
@@ -1974,7 +2018,6 @@ In most cases you will use the period as a control character.
 Several requests will cause a break, using the single quote control
 character will prevent this.
 
-
 @menu
 * Request Arguments::           
 @end menu
@@ -1983,7 +2026,6 @@ character will prevent this.
 @subsubsection Request Arguments
 @cindex request arguments
 @cindex arguments to requests
-
 
 Argument to requests (and macros) are processed much like the shell:
 The line is split into arguments according to spaces.
@@ -2013,7 +2055,6 @@ Note, however, that the @code{.ds} request works differently.
 @subsection Macros
 @cindex macros
 
-
 Troff has a @dfn{macro} facility for defining a series of lines which
 can be invoked by name.
 They are called in the same manner as requests
@@ -2028,7 +2069,6 @@ and arguments may be passed in the same manner.
 @node Escapes,  , Macros, Embedded Commands
 @subsection Escapes
 @cindex escapes
-
 
 @findex \e
 @findex \\
@@ -2086,7 +2126,6 @@ more information)
 @subsubsection Comments
 @cindex comments
 
-
 @findex \"
 Probably one of the most@footnote{Unfortunately, this is a lie.  But
 hopefully future troff hackers will believe it :-)}
@@ -2127,10 +2166,10 @@ For large blocks of text, the @code{ig} request may be useful.
 @c distribute these through the text
 @xref{Strings}
 
+
 @node Registers, Manipulating Filling and Adjusting, Embedded Commands, Programming Tutorial
 @section Registers
 @cindex registers
-
 
 Registers are groff's numeric variables.  groff has a number of
 builtin registers, supplying anything from the date to details of
@@ -2151,7 +2190,6 @@ formatting parameters.
 @subsection Setting Registers
 @cindex setting registers
 @cindex registers, setting
-
 
 @findex nr
 @findex \R
@@ -2181,12 +2219,10 @@ will be exactly equivalent.  If @var{yy} is undefined, a warning of
 type @samp{reg} will be generated, and the request will be ignored.
 @xref{Debugging}, for information about warnings.
 
-
 @node Interpolating Registers, Auto-increment, Setting Registers, Registers
 @subsection Interpolating Registers
 @cindex interpolating registers
 @cindex registers, interpolating
-
 
 @findex \n
 Numeric registers are @dfn{interpolated} via the @code{\n} escape.
@@ -2199,7 +2235,6 @@ Numeric registers are @dfn{interpolated} via the @code{\n} escape.
 .nr as \na+\na
 \n(as
 @end example
-
 
 @node Auto-increment, Assigning Formats, Interpolating Registers, Registers
 @subsection Auto-increment
@@ -2232,12 +2267,10 @@ of a register, the following can be used.
 .nr a \na 10
 @end example
 
-
 @node Assigning Formats, Builtin Registers, Auto-increment, Registers
 @subsection Assigning Formats
 @cindex assigning formats
 @cindex formats, assigning
-
 
 @findex af
 When a register is used in the text of an input file
@@ -2294,13 +2327,10 @@ The @code{\g} escape returns the current format of the specified
 register.  For example, @samp{\ga} after the following example would
 produce @samp{001}.
 
-
-
 @node Builtin Registers,  , Assigning Formats, Registers
 @subsection Builtin Registers
 @cindex builtin registers
 @cindex registers, builtin
-
 
 The following are some builtin registers, which are not listed
 elsewhere in this manual.  Any registers which begin with a @samp{.}
@@ -2378,8 +2408,8 @@ Macros should use this to determine whether they are running
 under GNU troff.
 @item .A
 @vindex .A
-If the current output device is ascii, this is set to 1,
-zero otherwise.
+If the current output device is @sc{ascii}, this is set to 1, zero
+otherwise.
 @item .P
 @vindex .P
 This register indicates whether the current page is actualy being
@@ -2388,12 +2418,12 @@ selected pages.
 @xref{Options}, for more information.
 @end table
 
+
 @node Manipulating Filling and Adjusting, Manipulating Hyphenation, Registers, Programming Tutorial
 @section Manipulating Filling and Adjusting
 @cindex manipulating filling and adjusting
 @cindex filling and adjusting, manipulating
 @cindex adjusting and filling, manipulating
-
 
 @findex br
 @cindex break
@@ -2534,12 +2564,10 @@ the number of lines to be right-justified as set by the @code{rj}
 request.
 
 
-
 @node Manipulating Hyphenation, Manipulating Spacing, Manipulating Filling and Adjusting, Programming Tutorial
 @section Manipulating Hyphenation
 @cindex manipulating hyphenation
 @cindex hyphenation, manipulating
-
 
 As discussed in @ref{Hyphenation}, groff will hyphenate words.
 There are a number of ways to modify the how hyphenation is done.
@@ -2687,12 +2715,10 @@ language.  The @code{hla} request is usually invoked by the
 in the number register @code{.hla}.
 
 
-
 @node Manipulating Spacing, Tabs and Fields, Manipulating Hyphenation, Programming Tutorial
 @section Manipulating Spacing
 @cindex manipulating spacing
 @cindex spacing, manipulating
-
 
 @findex sp
 The @code{sp} request will cause troff to space downwards the
@@ -2745,7 +2771,6 @@ advance to the next page unless they are accompanied by a page number
 @section Tabs and Fields
 @cindex tabs and fields
 @cindex fields and tabs
-
 
 @findex \t
 Tab stops are much like those on a typewriter: a tab character (or the
@@ -2851,7 +2876,6 @@ Fields are a more general way of laying out tabular data.
 @cindex character translations
 @cindex translations of characters
 
-
 @findex cc
 @findex c2
 The control character (@samp{.}) and the no-break control character
@@ -2894,7 +2918,6 @@ will print @samp{a}.
 @section Line Layout
 @cindex line layout
 @cindex layout, line
-
 
 @cindex dimensions, line
 @cindex line dimensions
@@ -2965,7 +2988,6 @@ replace me with a better (and more) example!
 @cindex page layout
 @cindex layout, page
 
-
 Troff provides some very primitive operations for controlling page
 layout.
 
@@ -3019,11 +3041,11 @@ this mechanism is disabled.
 @c distribute these through the text
 @xref{Traps}
 
+
 @node Page Control, Fonts, Page Layout, Programming Tutorial
 @section Page Control
 @cindex page control
 @cindex control, page
-
 
 @findex bp
 To stop processing the current page, and move to the next page, you
@@ -3077,7 +3099,6 @@ The default argument is 1v and the default units are v's.
 @section Fonts
 @cindex fonts
 
-
 @findex ft
 @findex \f
 Groff gives you the ability to switch fonts at any point in your
@@ -3094,7 +3115,6 @@ font which contains various special symbols (greek, mathematics).
 These latter fonts cannot be used directly, but should be used via an
 escape.
 
-
 @menu
 * Changing Fonts::              
 * Font Families::               
@@ -3108,7 +3128,6 @@ escape.
 @subsection Changing Fonts
 @cindex changing fonts
 @cindex fonts, changing
-
 
 @findex ft
 You can change fonts with both the @code{ft} request.
@@ -3178,7 +3197,6 @@ missing, or equal to @var{F} then font @var{F} will not be translated.
 @cindex font families
 @cindex families, font
 
-
 Due to the variety of fonts available, groff has added the concept of
 font families.  Each of these families has four styles (R, I, B and BI),
 
@@ -3211,13 +3229,10 @@ baked beans,
 and spam.
 @end example
 
-
-
 @node Font Positions, Using Symbols, Font Families, Fonts
 @subsection Font Positions
 @cindex font positions
 @cindex positions, font
-
 
 For the sake of old phototypesetters and compatability with old
 versions of troff, groff has the concept of font
@@ -3282,13 +3297,10 @@ mounted.  If there is no third argument then the internal name will be
 used as the external name.  This feature allows you to use fonts with
 long names in compatibility mode.
 
-
-
 @node Using Symbols, Artificial Fonts, Font Positions, Fonts
 @subsection Using Symbols
 @cindex using symbols
 @cindex symbols, using
-
 
 @findex \(
 @findex \[
@@ -3392,7 +3404,6 @@ a @code{char} request.
 @cindex artificial fonts
 @cindex fonts, artificial
 
-
 There are a number of requests for artificially creating fonts.
 These are largely vestigal remains from the days when output devices
 did not have a wide variety of fonts, and when nroff and troff were
@@ -3400,10 +3411,10 @@ separate programs.
 These are no longer necessary in GNU Troff.
 
 @findex ul
-The @code{ul} request will print subsequent lines in italics on a
-device capable of it, or underline the text on an ascii output device.
-The single argument is the number of lines to be ``underlined,''
-with no argument, the next line will be underlined.
+The @code{ul} request will print subsequent lines in italics on a device
+capable of it, or underline the text on an character output device.  The
+single argument is the number of lines to be ``underlined,'' with no
+argument, the next line will be underlined.
 
 @findex cu
 The @code{cu} request is similar to @code{ul} ...
@@ -3420,12 +3431,10 @@ the number of basic units, minus one, by which the two characters
 will be offset.  If the second argument is missing, emboldening will
 be turned off.
 
-
 @node Ligatures and Kerning,  , Artificial Fonts, Fonts
 @subsection Ligatures and Kerning
 @cindex ligatures and kerning
 @cindex kerning and ligatures
-
 
 @findex lg
 @vindex .lg
@@ -3462,7 +3471,6 @@ function of the point size.
 @section Sizes
 @cindex sizes
 
-
 @cindex baseline
 Groff uses two dimensions with each line of text, type size and
 vertical spacing.  The type size is the height from the text
@@ -3478,7 +3486,6 @@ type on 12 point spacing.
 The difference between type size and vertical spacing is known, by
 typesetters, as @dfn{leading}.
 
-
 @menu
 * Changing Type Sizes::         
 * Fractional Type Sizes::       
@@ -3488,7 +3495,6 @@ typesetters, as @dfn{leading}.
 @subsection Changing Type Sizes
 @cindex changing type sizes
 @cindex type sizes, changing
-
 
 @findex ps
 @findex vs
@@ -3542,7 +3548,6 @@ groff will round to the nearest permissible size.
 @subsection Fractional Type Sizes
 @cindex fractional type sizes
 @cindex type sizes, fractional
-
 
 A @dfn{scaled point} is equal to 1/@var{sizescale} points, where
 @var{sizescale} is specified in the @file{DESC} file (1 by default.)
@@ -3599,10 +3604,10 @@ string-valued register.
 @c distribute these through the text
 @xref{Font Files}
 
+
 @node Strings, Conditionals and Loops, Sizes, Programming Tutorial
 @section Strings
 @cindex strings
-
 
 @findex ds
 Groff has string variables, which are entirely for user convenience
@@ -3710,11 +3715,11 @@ Compute the length of string and return it in the number register@w{ }xx
 @c distribute these through the text
 @xref{Comments}
 
+
 @node Conditionals and Loops, Writing Macros, Strings, Programming Tutorial
 @section Conditionals and Loops
 @cindex conditionals and loops
 @cindex loops and conditionals
-
 
 @findex if
 @findex while
@@ -3728,7 +3733,7 @@ True if the current page is even or odd numbered (respectively)
 @item n
 @itemx t
 True if the document is being processed by
-nroff (or an ascii device) or troff.
+nroff (or a character device) or troff.
 @item '@var{xxx}'@var{yyy}'
 True if the string @var{xxx} is equal to the string @var{yyy}.
 Other characters can be used in place of the single quotes.
@@ -3740,11 +3745,10 @@ True if there is a number register named @var{xxx}.
 True if there is a string, macro, diversion, or request named @var{xxx}.
 @item c@var{ch}
 True if there is a character @var{ch} available;  @var{ch} is
-either an ASCII character or a special character @code{\(@var{ch}} or
+either an @sc{ascii} character or a special character @code{\(@var{ch}} or
 @code{\[@var{ch}]}; the condition will also be true if @var{ch} has been
 defined by the @code{char} request.
 @end table
-
 
 @menu
 * if-else::                     
@@ -3754,7 +3758,6 @@ defined by the @code{char} request.
 @node if-else, while, Conditionals and Loops, Conditionals and Loops
 @subsection if-else
 @cindex if-else
-
 
 Troff has if-then-else constructs like other languages, although
 the formatting can be painful.
@@ -3814,7 +3817,6 @@ The following example shows the possible ways to use these escapes.
 @subsection while
 @cindex while
 
-
 @findex while
 Groff provides a looping construct using the @code{while} request,
 which is used much like the @code{if} (and related) requests.
@@ -3845,11 +3847,11 @@ finish the current iteration of a while loop.
 @c distribute these through the text
 @xref{Expressions}
 
+
 @node Writing Macros, Page Motions, Conditionals and Loops, Programming Tutorial
 @section Writing Macros
 @cindex writing macros
 @cindex macros, writing
-
 
 @findex de
 A macro is a collection of text and embedded commands which can be
@@ -3897,7 +3899,6 @@ Macros can be aliased with the @code{als} request.
 @findex chop
 @code{chop}
 
-
 @menu
 * Copy-in Mode::                
 * Parameters::                  
@@ -3907,7 +3908,6 @@ Macros can be aliased with the @code{als} request.
 @subsection Copy-in Mode
 @cindex copy-in mode
 @cindex mode, copy-in
-
 
 @findex \n
 @findex \$
@@ -3938,12 +3938,9 @@ printed.
 .y
 @end example
 
-
-
 @node Parameters,  , Copy-in Mode, Writing Macros
 @subsection Parameters
 @cindex parameters
-
 
 @findex \$
 @vindex .$
@@ -4002,11 +3999,11 @@ This would be called as
 @c distribute these through the text
 @xref{Request Arguments}
 
+
 @node Page Motions, Drawing Functions, Writing Macros, Programming Tutorial
 @section Page Motions
 @cindex page motions
 @cindex motions, page
-
 
 @findex sp
 Motions up and down the page can be done with the @code{sp} request.
@@ -4141,11 +4138,11 @@ placed over that character.
 @code{\k}
 @code{.k}
 
+
 @node Drawing Functions, Traps, Page Motions, Programming Tutorial
 @section Drawing Functions
 @cindex drawing functions
 @cindex functions for drawing
-
 
 Groff provides a number of ways to draw lines, and other figures on
 the page.  Used in combination with the page motion commands
@@ -4200,7 +4197,7 @@ continue where the line ends.
 
 @findex \D
 More flexible drawing functions are available via the @code{\D}
-escape.  While the previous escapes will work on an ascii device,
+escape.  While the previous escapes will work on a character device,
 these escapes will not.
 
 @table @code
@@ -4271,12 +4268,9 @@ This can be used to build large brackets and braces.
 @end example
 
 
-
-
 @node Traps, Diversions, Drawing Functions, Programming Tutorial
 @section Traps
 @cindex traps
-
 
 Traps are locations, which, when reached, will call a specified macro.
 These traps can occur at a given location on the page, at a given
@@ -4287,7 +4281,6 @@ lines or at the end of input.
 Any of these traps can be changed after they have been set with the
 @code{ch} request.  The first arguemnt is the name of the trap or
 macro, and the second is the new value for that trap.
-
 
 @menu
 * Page Location Traps::         
@@ -4300,7 +4293,6 @@ macro, and the second is the new value for that trap.
 @subsection Page Location Traps
 @cindex page location traps
 @cindex traps, page location
-
 
 Page location traps are frequently used for page headers and
 footers.  The following is a simple example of this.
@@ -4364,13 +4356,10 @@ the amount of space that was needed in the last @code{ne} request that caused
 a trap to be sprung.  Useful in conjunction with the @code{.trunc}
 register.  @xref{Page Control}, for more information.
 
-
-
 @node Diversion Traps, Input Line Traps, Page Location Traps, Traps
 @subsection Diversion Traps
 @cindex diversion traps
 @cindex traps, diversion
-
 
 @findex dt
 @vindex .t
@@ -4384,7 +4373,6 @@ The number register @code{.t} will still work within diversions.
 @subsection Input Line Traps
 @cindex input line traps
 @cindex traps, input line
-
 
 @findex it
 The @code{it} request will set an input line trap.  The format for
@@ -4410,7 +4398,6 @@ next @var{n} lines in a bold font.
 @subsection End-of-input Traps
 @cindex end-of-input traps
 @cindex traps, end-of-input
-
 
 @findex em
 The @code{em} request will set a trap at the end of input.
@@ -4439,7 +4426,6 @@ Date:\t\t\a
 @node Diversions, Environments, Traps, Programming Tutorial
 @section Diversions
 @cindex diversions
-
 
 In Troff you can divert text into a named storage area, due to the
 similarity to defining macros it is sometimes said to be stored in a
@@ -4553,7 +4539,7 @@ the followin example will print 4.
 This request only exists in order to make it possible to make certain
 gross hacks work with GNU troff.  It @dfn{unformats} the diversion
 specified as an argument in
-such a way that ASCII characters that were formatted and diverted
+such a way that @sc{ascii} characters that were formatted and diverted
 will be treated like ordinary input characters when the diversion is
 reread.  For example, the following will set register @code{n} to 1.
 
@@ -4572,10 +4558,10 @@ reread.  For example, the following will set register @code{n} to 1.
 @c distribute these through the text
 @xref{Copy-in Mode}
 
+
 @node Environments, I/O, Diversions, Programming Tutorial
 @section Environments
 @cindex environments
-
 
 Often you will need to print some text in a certain format regardless
 of what may be in effect at the time, for example, in a trap invoked
@@ -4634,12 +4620,9 @@ register.
 @end example
 
 
-
-
 @node I/O, Postprocessor Access, Environments, Programming Tutorial
 @section I/O
 @cindex i/o
-
 
 @findex so
 The @code{so} request will read in the file given as an argument and
@@ -4807,7 +4790,6 @@ The argument to @code{\V} is specified as an identifier, i.e.
 @cindex postprocessor access
 @cindex access of postprocessor
 
-
 There are two escapes which will allow you to give information
 directly to the postprocessor.  This is particularly useful for
 embedding PostScript into your final document.
@@ -4835,10 +4817,10 @@ confuse drivers that do not know about this extension.
 @c distribute these through the text
 @xref{Output Devices}
 
+
 @node Miscellany, Debugging, Postprocessor Access, Programming Tutorial
 @section Miscellany
 @cindex miscellany
-
 
 This section contains parts of troff which cannot (yet) be
 categorized elsewhere in this manual.
@@ -4895,10 +4877,10 @@ the user.
 ... example of soelim'ed doc ...
 @end example
 
+
 @node Debugging, Implementation Differences, Miscellany, Programming Tutorial
 @section Debugging
 @cindex debugging
-
 
 Troff is not easy to debug, but there are some useful features and
 strategies for debugging.
@@ -5078,7 +5060,6 @@ All warnings.
 @cindex implementation differences
 @cindex differences in implementation
 
-
 GNU troff has a number of features which cause incompatibilites with
 documents written with old versions of troff.
 
@@ -5181,6 +5162,7 @@ the new @code{\?} escape sequence.  @xref{Diversions}, for more information.
 @cindex summary
 
 
+
 @node Preprocessors, Output Devices, Programming Tutorial, Top
 @chapter Preprocessors
 @cindex preprocessors
@@ -5204,7 +5186,6 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{eqn}
 @cindex @code{geqn}
 
-
 @menu
 * Invoking geqn::               
 @end menu
@@ -5215,12 +5196,10 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{geqn}, invoking
 
 
-
 @node gtbl, gpic, geqn, Preprocessors
 @section @code{gtbl}
 @cindex @code{tbl}
 @cindex @code{gtbl}
-
 
 @menu
 * Invoking gtbl::               
@@ -5237,7 +5216,6 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{pic}
 @cindex @code{gpic}
 
-
 @menu
 * Invoking gpic::               
 @end menu
@@ -5248,12 +5226,10 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{gpic}, invoking
 
 
-
 @node ggrn, grap, gpic, Preprocessors
 @section @code{ggrn}
 @cindex @code{grn}
 @cindex @code{ggrn}
-
 
 @menu
 * Invoking ggrn::               
@@ -5265,7 +5241,6 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{ggrn}, invoking
 
 
-
 @node grap, grefer, ggrn, Preprocessors
 @section @code{grap}
 @cindex @code{grap}
@@ -5273,12 +5248,10 @@ This chapter covers describes all preprocessors that come with
 @code{grap} is available as an extra package, written by Ted Faber.
 
 
-
 @node grefer, gsoelim, grap, Preprocessors
 @section @code{grefer}
 @cindex @code{refer}
 @cindex @code{grefer}
-
 
 @menu
 * Invoking grefer::             
@@ -5290,12 +5263,10 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{grefer}, invoking
 
 
-
 @node gsoelim,  , grefer, Preprocessors
 @section @code{gsoelim}
 @cindex @code{soelim}
 @cindex @code{gsoelim}
-
 
 @menu
 * Invoking gsoelim::            
@@ -5313,8 +5284,6 @@ This chapter covers describes all preprocessors that come with
 @cindex output devices
 @cindex devices for output
 
-
-
 @menu
 * Special Characters::          
 * grotty::                      
@@ -5325,20 +5294,19 @@ This chapter covers describes all preprocessors that come with
 * gxditview::                   
 @end menu
 
+
 @node Special Characters, grotty, Output Devices, Output Devices
 @section Special Characters
 @cindex special characters
 @cindex characters, special
 
-
 @c distribute these through the text
 @xref{Font Files}
+
 
 @node grotty, grops, Special Characters, Output Devices
 @section @code{grotty}
 @cindex @code{grotty}
-
-
 
 @menu
 * Invoking grotty::             
@@ -5350,12 +5318,9 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{grotty}, invoking
 
 
-
 @node grops, grodvi, grotty, Output Devices
 @section @code{grops}
 @cindex @code{grops}
-
-
 
 @menu
 * Invoking grops::              
@@ -5367,20 +5332,15 @@ This chapter covers describes all preprocessors that come with
 @cindex invoking @code{grops}
 @cindex @code{grops}, invoking
 
-
-
 @node Embedding PostScript,  , Invoking grops, grops
 @subsection Embedding PostScript
 @cindex embedding postscript
 @cindex postscript, embedding
 
 
-
 @node grodvi, grolj4, grops, Output Devices
 @section @code{grodvi}
 @cindex @code{grodvi}
-
-
 
 @menu
 * Invoking grodvi::             
@@ -5392,12 +5352,9 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{grodvi}, invoking
 
 
-
 @node grolj4, grohtml, grodvi, Output Devices
 @section @code{grolj4}
 @cindex @code{grolj4}
-
-
 
 @menu
 * Invoking grolj4::             
@@ -5409,12 +5366,9 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{grolj4}, invoking
 
 
-
 @node grohtml, gxditview, grolj4, Output Devices
 @section @code{grohtml}
 @cindex @code{grohtml}
-
-
 
 @menu
 * Invoking grohtml::            
@@ -5426,12 +5380,9 @@ This chapter covers describes all preprocessors that come with
 @cindex @code{grohtml}, invoking
 
 
-
 @node gxditview,  , grohtml, Output Devices
 @section @code{gxditview}
 @cindex @code{gxditview}
-
-
 
 @menu
 * Invoking gxditview::          
@@ -5449,12 +5400,11 @@ This chapter covers describes all preprocessors that come with
 @cindex file formats
 @cindex formats, file
 
-
-
 @menu
 * gtroff Output::               
 * Font Files::                  
 @end menu
+
 
 @node gtroff Output, Font Files, File formats, File formats
 @section @code{gtroff} Output
@@ -5466,7 +5416,7 @@ This section describes the format output by GNU troff.  The output
 format used by GNU troff is very similar to that used by @sc{Unix}
 device-independent troff.
 
-The output format is ascii based, as opposed to a binary format (like
+The output format is text based, as opposed to a binary format (like
 @TeX{} dvi).
 The output format is 8 bit clean, thus single characters can have the
 eighth bit set, as can the names of fonts and special characters.
@@ -5631,13 +5581,10 @@ the + should be ignored, and the part of the line following the + should
 be treated like the part of the line following the x X command.
 
 
-
-
 @node Font Files,  , gtroff Output, File formats
 @section Font Files
 @cindex font files
 @cindex files, font
-
 
 The groff font format is roughly a superset of the ditroff font
 format.  Unlike the ditroff font format, there is no associated binary
@@ -5838,6 +5785,7 @@ entries in kernpairs section will have a negative value for @var{n}.
 @chapter Request Index
 
 @printindex fn
+
 
 
 @node Register Index, String Index, Request Index, Top

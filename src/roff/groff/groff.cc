@@ -556,7 +556,7 @@ void synopsis()
   fprintf(stderr,
 "usage: %s [-abeghilpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
 "       [-wname] [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
-"       [-Larg] [files...]\n",
+"       [-Larg] [-Idir] [files...]\n",
 	  program_name);
 }
 
@@ -579,7 +579,7 @@ void help()
 "-nnum\tnumber first page n\n"
 "-olist\toutput only pages in list\n"
 "-ffam\tuse fam as the default font family\n"
-"-Fdir\tsearch directory dir for device directories\n"
+"-Fdir\tsearch dir for device directories\n"
 "-Mdir\tsearch dir for macro files\n"
 "-v\tprint version number\n"
 "-z\tsuppress formatted output\n"
@@ -598,6 +598,7 @@ void help()
 "-N\tdon't allow newlines within eqn delimiters\n"
 "-S\tenable safer mode (the default)\n"
 "-U\tenable unsafe mode\n"
+"-Idir\tsearch dir for soelim.  Implies -s\n"
 "\n",
 	stderr);
   exit(0);

@@ -533,12 +533,12 @@ conv(register FILE *fp,
 	  tsize[i] = (int) (troffscale * (double) tsize[i] + 0.5);
       }
 
-      /* change to device units */
+						/* change to device units */
       troffscale *= SCREENtoINCH * res;		/* from screen units */
 
-      ytop = (int) (toppoint * troffscale);	/* calculate integer */
-      ybottom = (int) (bottompoint * troffscale);	/* versions of the */
-      xleft = (int) (leftpoint * troffscale);	/* picture limits */
+      ytop = (int) (toppoint * troffscale);		/* calculate integer */
+      ybottom = (int) (bottompoint * troffscale);	/* versions of the   */
+      xleft = (int) (leftpoint * troffscale);		/* picture limits    */
       xright = (int) (rightpoint * troffscale);
 
       /* save stuff in number registers,    */
@@ -560,8 +560,8 @@ conv(register FILE *fp,
 
       if (stipple)		/* stipple requested for this picture */
 	printf(".st %s\n", stipple);
-      lastx = xleft;		/* note where we are, (upper left */
-      lastyline = lasty = ytop;	/* corner of the picture)         */
+      lastx = xleft;		/* note where we are (upper left */
+      lastyline = lasty = ytop;	/* corner of the picture)        */
 
       /* Just dump everything in the order it appears.
        *
