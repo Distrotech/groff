@@ -31,7 +31,6 @@
 .\"
 .\"     @(#)doc-ditroff 5.8 (Berkeley) 8/5/91
 .\"
-.\" tmac.mdoc-ditroff
 .\"     %beginstrip%
 .
 .
@@ -40,11 +39,14 @@
 .if !r C .nr C 0
 .
 .\" use -rcR=1 to force the creation of a single, very long page
+.
 .if !r cR .nr cR 0
+.
 .
 .ec
 .
 .\" the `doc-xx-font' strings must not be empty!
+.
 .ds doc-caption-font \f[R]\s[\n[.s]]
 .ds doc-caption-font2 \f[R]\s[\n[.s]]
 .ds doc-Ad-font \f[I]\s[\n[.s]]
@@ -92,6 +94,30 @@
 .eo
 .
 .
+.\" NS doc-header-space global register
+.\" NS   the space between header and body
+.
+.nr doc-header-space 0
+.
+.
+.\" NS doc-footer-space global register
+.\" NS   the space between body and footer
+.
+.nr doc-footer-space 0
+.
+.
+.\" NS doc-display-vertical global register
+.\" NS   vertical space between list elements etc.
+.
+.nr doc-display-vertical 0
+.
+.
+.\" NS doc-setup-page-layout macro
+.\" NS   set up page layout
+.\" NS
+.\" NS modifies:
+.\" NS   doc-header-space, doc-footer-space, doc-display-vertical
+.
 .de doc-setup-page-layout
 .  nr doc-header-space .5i
 .  nr doc-footer-space .5i
@@ -132,6 +158,18 @@
 .
 .nr gX 0
 .
+.
+.\" NS doc-header-string global string
+.\" NS   the final string used for the manual page header
+.
+.ds doc-header-string
+.
+.
+.\" NS doc-setup-header macro
+.\" NS   install and initialize header and footer support
+.\" NS
+.\" NS modifies:
+.\" NS   doc-header-string
 .
 .de doc-setup-header
 .  ds doc-header-string "\*[doc-document-title]
@@ -209,10 +247,14 @@
 .\" NS Ql macro
 .\" NS   quoted literal define
 .\" NS
-.\" NS width register `.Ql' set in doc-common
+.\" NS modifies:
+.\" NS   doc-macro-name, doc-argXXX, doc-arg-ptr, doc-typeXXX, doc-spaceXXX,
+.\" NS   doc-quote-right, doc-quote-left, doc-arg-limit
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-Ql, doc-reg-Ql1
+.\" NS
+.\" NS width register `Ql' set in doc-common
 .
 .de Ql
 .  if !\n[doc-arg-limit] \{\
@@ -260,13 +302,37 @@
 ..
 .
 .
+.\" NS doc-in-see-also-section global register (bool)
+.\" NS   whether we are in the `see also' section
+.
+.nr doc-in-see-also-section 0
+.
+.
+.\" NS doc-in-files-section global register (bool)
+.\" NS   whether we are in the `files' section
+.
+.nr doc-in-files-section 0
+.
+.
+.\" NS doc-in-authors-section global register (bool)
+.\" NS   whether we are in the `authors' section
+.
+.nr doc-in-authors-section 0
+.
+.
 .\" NS Sh macro
 .\" NS   section headers
 .\" NS
-.\" NS width register `.Sh' set in doc-common
+.\" NS modifies:
+.\" NS   doc-in-synopsis-count, doc-indent-synopsis, doc-in-see-also-section,
+.\" NS   doc-in-files-section, doc-in-authors-section, doc-have-author,
+.\" NS   doc-is-func, doc-func-count, doc-func-args-processed,
+.\" NS   doc-num-func-args, doc-func-arg
 .\" NS
 .\" NS local variable:
 .\" NS   doc-reg-Sh
+.\" NS
+.\" NS width register `Sh' set in doc-common
 .
 .de Sh
 .  nr doc-in-synopsis-count 0
@@ -279,10 +345,8 @@
 '    in 0
 .  \}
 .  el \{\
-.    nr doc-in-synopsis-count 0
 .    nr doc-in-see-also-section 0
 .    nr doc-in-files-section 0
-.    nr doc-in-standards-section 0
 .    nr doc-in-authors-section 0
 .
 .    if "\$1"SYNOPSIS" \{\
@@ -302,8 +366,6 @@
 .    \}
 .    if "\$1"FILES" \
 .      nr doc-in-files-section 1
-.    if "\$1"STANDARDS" \
-.      nr doc-in-standards-section 1
 .    if "\$1"AUTHORS" \
 .      nr doc-in-authors-section 1
 .
@@ -329,7 +391,7 @@
 .    nop \f[P]\s[0]
 .  \}
 .  el \
-.    tm Usage: .Sh section name (#\n[.c])
+.    tm Usage: .Sh section_name ... (#\n[.c])
 .
 .  in (\n[.i]u + \n[doc-subheader-indent]u)
 .  ns

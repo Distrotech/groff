@@ -94,6 +94,7 @@
 .nr Fo 16n
 .nr Fr 12n\" ?
 .nr Ft 8n\" ?
+.nr Fx 12n\" ?
 .nr Hf 8n\" ?
 .nr Ic 10n
 .nr In 12n\" ?
@@ -108,12 +109,14 @@
 .nr Nm 10n
 .nr No 12n
 .nr Ns 2
+.nr Nx 12n\" ?
 .nr Oc 3
 .nr Oo 10n
 .nr Op 14n
 .nr Or 6n\" ?
 .nr Os 6n\" ?
 .nr Ot 8n\" ?
+.nr Ox 12n\" ?
 .nr Pa 32n
 .nr Pc 3
 .nr Pf 12n
@@ -171,16 +174,33 @@
 .
 .\" Header assembly macros
 .
+.\" NS doc-document-title global string
+.\" NS   the title of the manual page
+.
+.ds doc-document-title UNTITLED
+.
+.
+.\" NS doc-volume global string
+.\" NS   the volume where the manual page belongs to
+.
+.ds doc-volume LOCAL
+.
+.
+.\" NS doc-section global string
+.\" NS   the manual section
+.
+.ds doc-section Null
+.
+.
 .\" NS Dt user macro
 .\" NS   document title
 .\" NS
-.\" NS width register `.Dt' set above
+.\" NS modifies:
+.\" NS   doc-document-title, doc-volume, doc-section
+.\" NS
+.\" NS width register `Dt' set above
 .
 .de Dt
-.  ds doc-document-title UNTITLED
-.  ds doc-volume LOCAL
-.  ds doc-section Null
-.
 .  if !"\$1"" \
 .    ds doc-document-title \$1
 .
@@ -239,17 +259,24 @@
 ..
 .
 .
+.\" NS doc-operating-system global string
+.\" NS   the exact version of the operating system
+.
+.ds doc-operating-system Null
+.
+.
 .\" NS Os user macro
 .\" NS   operating system (behaviour changes after first call)
 .\" NS
-.\" NS width register `.Os' set above
+.\" NS width register `Os' set above
+.\" NS
+.\" NS modifies:
+.\" NS   doc-operating-system
 .\" NS
 .\" NS local variable:
 .\" NS   doc-str-Os
 .
 .de Os
-.  ds doc-operating-system Null
-.
 .  if "\$1"" \
 .    ds doc-operating-system BSD Experimental
 .
@@ -309,14 +336,23 @@
 ..
 .
 .
+.\" NS doc-date-string global string
+.\" NS   the manual page date as set by `Dd'
+.
+.ds doc-date-string
+.
+.
 .\" NS Dd user macro
 .\" NS   set document date
 .\" NS
-.\" NS width register `.Dd' set above
+.\" NS modifies:
+.\" NS   doc-date-string
+.\" NS
+.\" NS width register `Dd' set above
 .
 .de Dd
 .  \" XXX: why do we need gX?
-.  if !d doc-date-string \
+.  if "\*[doc-date-string]"" \
 .    nr gX 1
 .
 .  ie \n[.$] \{\
@@ -356,6 +392,9 @@
 ..
 .
 .
+.\" NS doc-header macro
+.\" NS   print page header
+.
 .de doc-header
 .  ev doc-caption-environment
 .  doc-setup-page-layout
@@ -366,6 +405,9 @@
 .  ev
 ..
 .
+.
+.\" NS doc-footer macro
+.\" NS   print page footer
 .
 .de doc-footer
 .  ie \n[cR] \
@@ -378,9 +420,11 @@
 '    bp
 .    ev
 .  \}
-.  \" .tm IN 444 doc-footer .k == \n[.k] and nl == \n[nl]
 ..
 .
+.
+.\" NS doc-end-macro macro
+.\" NS   finish output
 .
 .de doc-end-macro
 .  \" We may still have a partial line in the enviroment.  If this is the
@@ -390,6 +434,7 @@
 .  \" would never get a chance to output the footer.  So we fudge the page
 .  \" length to make sure that the last page is never ejected until we want
 .  \" it to be.
+.
 .  if \n[cR] \
 .    pl +3v
 .  fl
@@ -408,7 +453,7 @@
 .\" NS Pp user macro
 .\" NS   new paragraph
 .\" NS
-.\" NS width register `.Pp' set above
+.\" NS width register `Pp' set above
 .
 .de Pp
 .  sp \n[doc-paragraph-space]u
@@ -421,7 +466,7 @@
 .\" NS Lp user macro
 .\" NS   same as .Pp
 .\" NS
-.\" NS width register `.Lp' set above
+.\" NS width register `Lp' set above
 .
 .als Lp Pp
 .
@@ -447,9 +492,9 @@
 .
 .
 .\" NS Nd user macro
-.\" NS   name description
+.\" NS   print name description
 .\" NS
-.\" NS width register `.Nd' set above
+.\" NS width register `Nd' set above
 .
 .de Nd
 .  nop \- \$*
@@ -459,7 +504,7 @@
 .\" NS Ss user macro
 .\" NS   subsection
 .\" NS
-.\" NS width register `.Ss' set above
+.\" NS width register `Ss' set above
 .\" NS
 .\" NS local variable:
 .\" NS   doc-reg-Ss
@@ -485,7 +530,7 @@
 .    br
 .  \}
 .  el \
-.    tm Usage: .Ss subsection name (#\n[.c])
+.    tm Usage: .Ss subsection_name ... (#\n[.c])
 ..
 .
 .
