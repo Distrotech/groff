@@ -140,7 +140,7 @@ void html_text::issue_table_begin (tag_definition *t)
     int width=current_indentation*100/linelength;
 
     if (width > 0) {
-      out->put_string("<table width=\"100%\" rules=\"none\" frame=\"none\"\n       cols=\"2\" cellspacing=\"0\" cellpadding=\"0\">").nl();
+      out->put_string("<table width=\"100%\" border=0 rules=\"none\" frame=\"void\"\n       cols=\"2\" cellspacing=\"0\" cellpadding=\"0\">").nl();
       out->put_string("<tr valign=\"top\" align=\"left\">").nl();
       if ((t->arg1 == 0) || (strcmp(t->arg1, "") == 0))
 	out->put_string("<td width=\"").put_number(width).put_string("%\"></td>");
@@ -612,7 +612,11 @@ char *html_text::done_para (void)
 
 void html_text::do_space (void)
 {
-  do_para(done_para());
+  if (is_in_pre()) {
+    do_emittext("", 0);
+  } else {
+    do_para(done_para());
+  }
   space_emitted = TRUE;
 }
 

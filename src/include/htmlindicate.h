@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-#if !defined(HTMLINDICATE_H)
-#  define HTMLINDICATE_H
+#ifndef HTMLINDICATE_H
+#define HTMLINDICATE_H
 
 /*
  *  graphic_start - emit a html graphic start indicator, but only
@@ -30,9 +30,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
  *                  FALSE if this is called via EQ, TS, PS, and
  *                  TRUE if issued via delim $$  $ x over y $ etc.
  */
-
-extern void graphic_start (int is_inline);
-
+extern void graphic_start(int is_inline);
 
 /*
  *  graphic_end - emit a html graphic end indicator, but only
@@ -40,9 +38,7 @@ extern void graphic_start (int is_inline);
  *                been issued.
  *
  */
-
-extern void graphic_end (void);
-
+extern void graphic_end(void);
 
 /*
  *  html_begin_suppress - suppresses output for the html device
@@ -53,15 +49,11 @@ extern void graphic_end (void);
  *                        FALSE if this is called via EQ, TS, PS, and
  *                        TRUE if issued via delim $$  $ x over y $ etc.
  */
-
-extern void html_begin_suppress (int is_inline);
-
+extern void html_begin_suppress(int is_inline);
 
 /*
  *  html_end_suppress - end the suppression of output.
  */
-
-extern void html_end_suppress (void);
+extern void html_end_suppress(int is_inline);
 
 #endif
-

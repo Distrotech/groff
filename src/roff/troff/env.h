@@ -183,6 +183,7 @@ class environment {
 #endif /* WIDOW_CONTROL */
   int need_eol;
   int ignore_next_eol;
+  int emitted_node;    // have we emitted a node since the last html eol tag?
 
   tab_type distance_to_next_tab(hunits *);
   void start_line();

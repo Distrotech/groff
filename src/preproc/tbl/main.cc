@@ -243,7 +243,7 @@ void process_input_file(FILE *fp)
 	    while ((c = getc(fp)) != '\n') {
 	      if (c == EOF) {
 		printf(".if '\\*(.T'html' \\X(table-end(\n");
-		html_end_suppress();
+		html_end_suppress(0);
 		putchar('\n');
 		return;
 	      }
@@ -251,7 +251,7 @@ void process_input_file(FILE *fp)
 	    }
 	    putchar('\n');
 	    printf(".if '\\*(.T'html' \\X(table-end(\n");
-	    html_end_suppress();
+	    html_end_suppress(0);
 	    current_lineno++;
 	  }
 	}

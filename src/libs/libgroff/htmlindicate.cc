@@ -26,42 +26,47 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "html-strings.h"
 
 /*
- *  this file contains a very simple set of routines shared by
+ *  This file contains a very simple set of routines shared by
  *  tbl, pic, eqn which help the html device driver to make
- *  sensible formatting choices. Currently it simply indicates
+ *  sensible formatting choices.  Currently it simply indicates
  *  to pre-html when an image is about to be created this is then
  *  passes to pre-html.
- *  Pre-html runs troff twice once with -Thtml and once with -Tps.
+ *  Pre-html runs troff twice, once with -Thtml and once with -Tps.
  *  troff -Thtml device driver emits a <src='image'.png> tag
  *  and the postscript device driver works out the min/max limits
- *  of the graphic region. These region limits are read by pre-html
+ *  of the graphic region.  These region limits are read by pre-html
  *  and an image is generated via troff -Tps -> gs -> png
  */
 
 static int is_in_graphic_start = 0;
+static int is_inline_image = 0;
 
 /*
- *  html_begin_suppress - 
+ *  html_begin_suppress - emit a start of image tag which will be seen
+ *                        by pre-html.
  */
-
-void html_begin_suppress (int is_inline)
+void html_begin_suppress(int is_inline)
 {
-  if (is_inline) {
-    put_string(HTML_IMAGE_INLINE, stdout);
-  } else {
+  if (is_inline)
+    put_string(HTML_IMAGE_INLINE_BEGIN, stdout);
+  else {
     put_string(HTML_IMAGE_CENTERED, stdout);
+    put_string("\n", stdout);
   }
-  put_string("\n", stdout);
 }
 
 /*
- *  html_end_suppress - 
+ *  html_end_suppress - emit an end of image tag which will be seen
+ *                      by pre-html.
  */
-
-void html_end_suppress (void)
+void html_end_suppress(int is_inline)
 {
-  put_string(HTML_IMAGE_END, stdout);
-  put_string("\n", stdout);
+  if (is_inline)
+    put_string(HTML_IMAGE_INLINE_END, stdout);
+  else {
+    put_string(HTML_IMAGE_END, stdout);
+    put_string("\n", stdout);
+  }
 }
 
 /*
@@ -70,12 +75,12 @@ void html_end_suppress (void)
  *                  FALSE if this is called via EQ, TS, PS, and
  *                  TRUE if issued via delim $$  $ x over y $ etc.
  */
-
-void graphic_start (int is_inline)
+void graphic_start(int is_inline)
 {
-  if (! is_in_graphic_start) {
-    put_string(".if '\\*(.T'html-old' \\X(graphic-start(\\c\n", stdout);
+  if (!is_in_graphic_start) {
+    // put_string(".if '\\*(.T'html-old' \\X(graphic-start(\\c\n", stdout);
     html_begin_suppress(is_inline);
+    is_inline_image = is_inline;
     is_in_graphic_start = 1;
   }
 }
@@ -84,11 +89,11 @@ void graphic_start (int is_inline)
  *  graphic_end - tell troff that the image region is ending.
  */
 
-void graphic_end (void)
+void graphic_end(void)
 {
   if (is_in_graphic_start) {
-    html_end_suppress();
-    put_string(".if '\\*(.T'html-old' \\X(graphic-end(\\c\n", stdout);
+    html_end_suppress(is_inline_image);
+    // put_string(".if '\\*(.T'html-old' \\X(graphic-end(\\c\n", stdout);
     is_in_graphic_start = 0;
   }
 }

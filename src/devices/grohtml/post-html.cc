@@ -340,16 +340,19 @@ char *char_buffer::add_string (char *s, unsigned int length)
 class text_glob {
 public:
   text_glob  (style *s, char *string, unsigned int length,
-	      int min_vertical, int min_horizontal,
-	      int max_vertical, int max_horizontal,
-	      int is_html     , int is_troff_command,
-	      int is_a_line   , int thickness);
+	      int min_vertical , int min_horizontal,
+	      int max_vertical , int max_horizontal,
+	      int is_html      , int is_troff_command,
+	      int is_auto_image,
+	      int is_a_line    , int thickness);
   text_glob  (void);
   ~text_glob (void);
-  int         is_a_line (void);
-  int         is_a_tag  (void);
-  int         is_raw    (void);
-  int         is_eol    (void);
+  int         is_a_line   (void);
+  int         is_a_tag    (void);
+  int         is_raw      (void);
+  int         is_eol      (void);
+  int         is_auto_img (void);
+  int         is_br       (void);
 
   style           text_style;
   char           *text_string;
@@ -358,6 +361,7 @@ public:
   int             is_raw_command;       // should the text be sent directly to the device?
   int             is_tag;               // is this a .br, .sp, .tl etc
   int             is_line;              // is the command a <line>?
+  int             is_img_auto;          // image created by eqn delim
   int             thickness;            // the thickness of a line
 };
 
@@ -365,11 +369,12 @@ text_glob::text_glob (style *s, char *string, unsigned int length,
 		      int min_vertical, int min_horizontal,
 		      int max_vertical, int max_horizontal,
 		      int is_html, int is_troff_command,
+		      int is_auto_image,
 		      int is_a_line, int line_thickness)
   : text_style(*s), text_string(string), text_length(length),
     minv(min_vertical), minh(min_horizontal), maxv(max_vertical), maxh(max_horizontal),
-    is_raw_command(is_html), is_tag(is_troff_command), is_line(is_a_line),
-    thickness(line_thickness)
+    is_raw_command(is_html), is_tag(is_troff_command), is_img_auto(is_auto_image),
+    is_line(is_a_line), thickness(line_thickness)
 {
 }
 
@@ -417,6 +422,25 @@ int text_glob::is_eol (void)
 int text_glob::is_raw (void)
 {
   return( is_raw_command );
+}
+
+/*
+ *  is_auto_img - returns TRUE if the glob contains an automatically
+ *                generated image.
+ */
+
+int text_glob::is_auto_img (void)
+{
+  return( is_img_auto );
+}
+
+/*
+ *  is_br - returns TRUE if the glob is a tag containing a .br
+ */
+
+int text_glob::is_br (void)
+{
+  return( is_a_tag() && (strcmp("html-tag:.br", text_string) == 0) );
 }
 
 /*
@@ -748,7 +772,7 @@ void page::add (style *s, char *string, unsigned int length,
   if (length > 0) {
     text_glob *g=new text_glob(s, buffer.add_string(string, length), length,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
-			       FALSE, FALSE, FALSE, 0);
+			       FALSE, FALSE, FALSE, FALSE, 0);
     glyphs.add(g, line_number, min_vertical, min_horizontal, max_vertical, max_horizontal);
   }
 }
@@ -765,7 +789,7 @@ void page::add_html (style *s, char *string, unsigned int length,
   if (length > 0) {
     text_glob *g=new text_glob(s, buffer.add_string(string, length), length,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
-			       TRUE, FALSE, FALSE, 0);
+			       TRUE, FALSE, FALSE, FALSE, 0);
     glyphs.add(g, line_number, min_vertical, min_horizontal, max_vertical, max_horizontal);
   }
 }
@@ -782,7 +806,9 @@ void page::add_tag (style *s, char *string, unsigned int length,
   if (length > 0) {
     text_glob *g=new text_glob(s, buffer.add_string(string, length), length,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
-			       FALSE, TRUE, FALSE, 0);
+			       FALSE, TRUE,
+			       (strncmp(string, "html-tag:.auto-image", 20) == 0),
+			       FALSE, 0);
     glyphs.add(g, line_number, min_vertical, min_horizontal, max_vertical, max_horizontal);
   }
 }
@@ -799,7 +825,7 @@ void page::add_line (style *s,
   if (y1 == y2) {
     text_glob *g = new text_glob(s, "", 0,
 				 min(y1, y2), min(x1, y2), max(y1, y2), max(x1, x2),
-				 FALSE, TRUE, FALSE, thickness);
+				 FALSE, TRUE, FALSE, FALSE, thickness);
     glyphs.add(g, line_number, min(y1, y2), min(x1, y2), max(y1, y2), max(x1, x2));
   }
 }
@@ -1196,6 +1222,30 @@ static int exists (const char *filename)
 }
 
 /*
+ *  generate_img_src - returns a html image tag for the filename
+ *                     providing that the image exists.
+ */
+
+static char *generate_img_src (const char *filename)
+{
+  static char buffer[MAX_STRING_LENGTH];
+
+  while (filename && (filename[0] == ' ')) {
+    filename++;
+  }
+  if (exists(filename)) {
+    strcpy(buffer, "<img src=\"");
+    strncat(buffer, filename, MAX_STRING_LENGTH-strlen("<img src=\"")-1);
+    if (strlen(buffer) < MAX_STRING_LENGTH-3) {
+      strncat(buffer, "\">", 3);
+    }
+    return( (char *)&buffer );
+  } else {
+    return( 0 );
+  }
+}
+
+/*
  *  do_auto_image - tests whether the image, indicated by filename,
  *                  is present, if so then it emits an html image tag.
  *                  An image tag may be passed through from pic, eqn
@@ -1205,24 +1255,17 @@ static int exists (const char *filename)
 
 void html_printer::do_auto_image (text_glob *g, const char *filename)
 {
-  while (filename && (filename[0] == ' ')) {
-    filename++;
-  }
-  if (exists(filename)) {
+  char *buffer = generate_img_src(filename);
+  
+  if (buffer) {
     /*
      *  utilize emit_raw by creating a new text_glob.
      */
     text_glob h = *g;
-    char buffer[MAX_STRING_LENGTH];
 
-    strcpy(buffer, "<img src=\"");
-    strncat(buffer, filename, MAX_STRING_LENGTH-strlen("<img src=\"")-1);
-    if (strlen(buffer) < MAX_STRING_LENGTH-3) {
-      strncat(buffer, "\">", 3);
-      h.text_string = (char *)&buffer;
-      h.text_length = strlen(buffer);
-      emit_raw(&h);
-    }
+    h.text_string = buffer;
+    h.text_length = strlen(buffer);
+    emit_raw(&h);
   } else {
     next_tag = INLINE;
   }
@@ -1245,7 +1288,21 @@ void html_printer::do_title (void)
       do {
 	t = page_contents->glyphs.get_data();
 	removed_from_head = FALSE;
-	if (t->is_raw_command) {
+	if (t->is_auto_img()) {
+	  char *img=generate_img_src((char *)(t->text_string + 20));
+
+	  if (img) {
+	    if (found_title_start) {
+	      strcat(title.text, " ");
+	    }
+	    found_title_start = TRUE;
+	    title.has_been_found = TRUE;
+	    strcat(title.text, img);
+	  }
+	  page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
+	  removed_from_head = ((!page_contents->glyphs.is_empty()) &&
+			       (page_contents->glyphs.is_equal_to_head()));
+	} else if (t->is_raw_command) {
 	  /* skip raw commands
 	   */
 	  page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
@@ -1304,7 +1361,7 @@ void html_printer::write_header (void)
 				 strlen(header.header_buffer),
 				 header.no_of_headings, header.header_level,
 				 header.no_of_headings, header.header_level,
-				 FALSE, FALSE, FALSE, FALSE);
+				 FALSE, FALSE, FALSE, FALSE, FALSE);
       header.headers.add(h,
 			 header.no_of_headings,
 			 header.no_of_headings, header.no_of_headings,
@@ -1368,7 +1425,18 @@ void html_printer::do_heading (char *arg)
   if (! page_contents->glyphs.is_equal_to_head()) {
     g = page_contents->glyphs.get_data();
     do {
-      if (! (g->is_a_line() || g->is_a_tag() || g->is_raw())) {
+      if (g->is_auto_img()) {
+	char *img=generate_img_src((char *)(g->text_string + 20));
+
+	if (img) {
+	  simple_anchors = TRUE;  // we cannot use full heading anchors with images
+	  if (l != 0) {
+	    strcat(header.header_buffer, " ");
+	  }
+	  l = g;
+	  strcat(header.header_buffer, img);
+	}
+      } else if (! (g->is_a_line() || g->is_a_tag() || g->is_raw())) {
 	/*
 	 *  we ignore raw commands when constructing a heading
 	 */
@@ -1382,7 +1450,7 @@ void html_printer::do_heading (char *arg)
       page_contents->glyphs.move_right();
       g = page_contents->glyphs.get_data();
     } while ((! page_contents->glyphs.is_equal_to_head()) &&
-	     (! g->is_a_tag()));
+	     (! g->is_br()));
   }
 
   determine_header_level(level);
@@ -1505,7 +1573,18 @@ void html_printer::do_indentedparagraph (void)
     do {
       t = page_contents->glyphs.get_data();
       removed_from_head = FALSE;
-      if (t->is_raw_command) {
+      if (t->is_auto_img()) {
+	char *img=generate_img_src((char *)(t->text_string + 20));
+
+	if (img) {
+	  if (found_indent_start) {
+	    strcat(indent.text, " ");
+	  }
+	  found_indent_start = TRUE;
+	  strcat(indent.text, img);
+	}
+	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
+      } else if (t->is_raw_command) {
 	/* skip raw commands
 	 */
 	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
@@ -1568,12 +1647,10 @@ void html_printer::do_fill (int on)
   supress_sub_sup = TRUE;
 
   if (fill_on != on) {
-    if (is_font_courier(output_style.f) && (is_courier_until_eol())) {
-      if (on) {
-	current_paragraph->do_pre();
-      } else {
-	current_paragraph->done_pre();
-      }
+    if (on) {
+      current_paragraph->done_pre();
+    } else {
+      current_paragraph->do_pre();
     }
   }
   fill_on = on;
@@ -2276,9 +2353,14 @@ void html_printer::add_to_sbuf (unsigned char code, const char *name)
 	int   l          = strlen(html_glyph);
 	int   i;
 
+ 	// Escape the name, so that "&" doesn't get expanded to "&amp;"
+ 	// later during translate_to_html.
+ 	add_char_to_sbuf('\\'); add_char_to_sbuf('(');
+
 	for (i=0; i<l; i++) {
 	  add_char_to_sbuf(html_glyph[i]);
 	}
+ 	add_char_to_sbuf('\\'); add_char_to_sbuf(')');
       }
     }
   }
@@ -2632,7 +2714,9 @@ static void write_rule (void)
 void html_printer::begin_page(int n)
 {
   page_number            =  n;
+#if defined(DEBUGGING)
   html.begin_comment("Page: ").put_string(i_to_a(page_number)).end_comment();;
+#endif
   no_of_printed_pages++;
 
   output_style.f         =  0;
@@ -2700,10 +2784,13 @@ html_printer::~html_printer()
 #endif
     t = time(0);
     html.begin_comment("CreationDate: ")
-      .put_string(ctime(&t))
+      .put_string(ctime(&t), strlen(ctime(&t))-1)
       .end_comment();
   }
+#if defined(DEBUGGING)
   html.begin_comment("Total number of pages: ").put_string(i_to_a(no_of_printed_pages)).end_comment();
+#endif
+  html.end_line();
   html.end_line();
   /*
    *  now run through the file list copying each temporary file in turn and emitting the links.

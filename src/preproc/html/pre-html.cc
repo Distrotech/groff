@@ -55,13 +55,17 @@ extern char *strerror();
 
 #define POSTSCRIPTRES          72000   // maybe there is a better way to find this? --fixme--
 #define DEFAULT_IMAGE_RES         80   // 80 pixels per inch resolution
-#define DEFAULT_VERTICAL_OFFSET   40   // 40/72 of an inch
-#define IMAGE_BOARDER_PIXELS      10
+#define DEFAULT_VERTICAL_OFFSET   45   // DEFAULT_VERTICAL_OFFSET/72 of an inch
+#define IMAGE_BOARDER_PIXELS       0
+#define MAX_WIDTH                  8   // inches
+#define INLINE_LEADER_CHAR      '\\'
 
 #define TRANSPARENT  "-background \"#FFF\" -transparent \"#FFF\""
 
-// #define  DEBUGGING
-// #define  DEBUG_HTML
+#if 0
+#   define  DEBUGGING
+#   define  DEBUG_HTML
+#endif
 
 #if !defined(TRUE)
 #   define TRUE (1==1)
@@ -146,7 +150,7 @@ public:
   int  do_image(int argc, char *argv[]);
   void write_file_html(void);
   void write_file_troff(void);
-  void write_upto_newline (char_block **t, int *i);
+  void write_upto_newline (char_block **t, int *i, int is_html);
   int  can_see(char_block **t, int *i, char *string);
   int  skip_spaces(char_block **t, int *i);
   void skip_to_newline(char_block **t, int *i);
@@ -258,19 +262,17 @@ void makeFileName ()
 
 static void write_end_image (int is_html)
 {
-  writeString(".end \\{\\\n");
   if (is_html) {
     /*
      *  emit image name and enable output
      */
-    writeString("\\O2\\O1\n");
+    writeString("\\O2\\O1\\O4\n");
   } else {
     /*
      *  postscript, therefore emit image boundaries
      */
-    writeString("\\O2\n");
+    writeString("\\O2\\O4\n");
   }
-  writeString(".\\}\n");
 }
 
 /*
@@ -283,57 +285,77 @@ static void write_end_image (int is_html)
 
 static void write_start_image (IMAGE_ALIGNMENT pos, int is_html)
 {
-  writeString(".begin \\{\\\n");
-  switch (pos) {
+  if (pos == INLINE) {
+    writeString("\\O3\\O5'");
+    writeString(image_template); writeString(".png'");
+  } else {
+    writeString(".begin \\{\\\n");
+    switch (pos) {
 
-  case LEFT:
-    writeString(".    image l ");
-    break;
-  case RIGHT:
-    writeString(".    image r ");
-    break;
-  case INLINE:
-    writeString(".    image i ");
-    break;
-  case CENTERED:
-  default:
-    writeString(".    image c ");
+    case LEFT:
+      writeString(".    image l ");
+      break;
+    case RIGHT:
+      writeString(".    image r ");
+      break;
+    case CENTERED:
+    default:
+      writeString(".    image c ");
+    }
+    writeString(image_template); writeString(".png\n");
+    if (! is_html) {
+      writeString(".bp\n");
+      writeString(".tl ''''\n");
+    }
+    writeString("\\}\n");
   }
-  writeString(image_template); writeString(".png\n");
   if (is_html) {
     writeString("\\O0\n");
   } else {
-    writeString(".bp\n");
-    writeString(".tl ''''\n");
     // reset min/max registers
     writeString("\\O0\\O1\n");
   }
-  writeString("\\}\n");
 }
 
 /*
  *  write_upto_newline - writes the contents of the buffer until a newline is seen.
+ *                       It checks for HTML_IMAGE_INLINE_BEGIN and HTML_IMAGE_INLINE_END
+ *                       and if they are present it processes them.
  */
 
-void char_buffer::write_upto_newline (char_block **t, int *i)
+void char_buffer::write_upto_newline (char_block **t, int *i, int is_html)
 {
   int j=*i;
 
   if (*t) {
-    while ((j < (*t)->used) && ((*t)->buffer[j] != '\n')) {
+    while ((j < (*t)->used) && ((*t)->buffer[j] != '\n') &&
+	   ((*t)->buffer[j] != INLINE_LEADER_CHAR)) {
       j++;
     }
     if ((j < (*t)->used) && ((*t)->buffer[j] == '\n')) {
       j++;
     }
     writeNbytes((*t)->buffer+(*i), j-(*i));
+    if ((*t)->buffer[j] == INLINE_LEADER_CHAR) {
+      if (can_see(t, &j, HTML_IMAGE_INLINE_BEGIN))
+	write_start_image(INLINE, is_html);
+      else if (can_see(t, &j, HTML_IMAGE_INLINE_END))
+	write_end_image(is_html);
+      else {
+	if (j < (*t)->used) {
+	  *i = j;
+	  j++;
+	  writeNbytes((*t)->buffer+(*i), j-(*i));
+	}
+      }
+    }
     if (j == (*t)->used) {
       *i = 0;
       if ((*t)->buffer[j-1] == '\n') {
 	*t = (*t)->next;
       } else {
 	*t = (*t)->next;
-	write_upto_newline(t, i);
+	write_upto_newline(t, i, is_html);
       }
     } else {
       // newline was seen
@@ -451,14 +473,11 @@ void char_buffer::write_file_troff (void)
       } else if (can_see(&t, &i, HTML_IMAGE_RIGHT)) {
 	write_start_image(RIGHT, FALSE);
 	skip_to_newline(&t, &i);
-      } else if (can_see(&t, &i, HTML_IMAGE_INLINE)) {
-	write_start_image(INLINE, FALSE);
-	skip_to_newline(&t, &i);
       } else if (can_see(&t, &i, HTML_IMAGE_CENTERED)) {
 	write_start_image(CENTERED, FALSE);
 	skip_to_newline(&t, &i);
       } else {
-	write_upto_newline(&t, &i);
+	write_upto_newline(&t, &i, FALSE);
       }
     } while (t != 0);
   }
@@ -582,13 +601,14 @@ static void createAllPages (void)
 
 static void removeAllPages (void)
 {
-  char buffer[4096];
-
 #if !defined(DEBUGGING)
-  sprintf(buffer,
-	  "/bin/rm -f %s* \n",
-	  imagePageStem);
-  system(buffer);
+  char buffer[4096];
+  int  i=1;
+
+  do {
+    sprintf(buffer, "%s%d", imagePageStem, i);
+    i++;
+  } while (remove(buffer) == 0);
 #endif
 }
 
@@ -640,13 +660,13 @@ static void createImage (imageItem *i)
   if (i->X1 != -1) {
     char buffer[4096];
     int  x1 = max(min(i->X1, i->X2)*image_res/POSTSCRIPTRES-1*IMAGE_BOARDER_PIXELS, 0);
-    int  y1 = max((image_res*vertical_offset/72)+min(i->Y1, i->Y2)*image_res/POSTSCRIPTRES, 0);
-    int  x2 = min(max(i->X1, i->X2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS, i->maxx*image_res/POSTSCRIPTRES);
-    int  y2 = (image_res*vertical_offset/72)+max(i->Y1, i->Y2)*image_res/POSTSCRIPTRES+2*IMAGE_BOARDER_PIXELS;
+    int  y1 = max((image_res*vertical_offset/72)+min(i->Y1, i->Y2)*image_res/POSTSCRIPTRES-IMAGE_BOARDER_PIXELS, 0);
+    int  x2 = max(i->X1, i->X2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
+    int  y2 = (image_res*vertical_offset/72)+max(i->Y1, i->Y2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
 
     sprintf(buffer,
 	    "pnmcut %d %d %d %d < %s%d | pnmtopng %s > %s \n",
-	    x1, y1, x2-x1, y2-y1,
+	    x1, y1, x2-x1+1, y2-y1+1,
 	    imagePageStem,
 	    i->pageNo,
 	    TRANSPARENT,
@@ -710,16 +730,12 @@ void char_buffer::write_file_html (void)
       } else if (can_see(&t, &i, HTML_IMAGE_RIGHT)) {
 	write_start_image(RIGHT, TRUE);
 	skip_to_newline(&t, &i);
-      } else if (can_see(&t, &i, HTML_IMAGE_INLINE)) {
-	stop();
-	write_start_image(INLINE, TRUE);
-	skip_to_newline(&t, &i);
       } else if (can_see(&t, &i, HTML_IMAGE_CENTERED)) {
 	stop();
 	write_start_image(CENTERED, TRUE);
 	skip_to_newline(&t, &i);
       } else {
-	write_upto_newline(&t, &i);
+	write_upto_newline(&t, &i, TRUE);
       }
     } while (t != 0);
   }
@@ -753,7 +769,7 @@ static void generateImages (char *regionFileName)
       int y1     = f->readInt();
       int x2     = f->readInt();
       int y2     = f->readInt();
-      int maxx   = f->readInt();
+      int maxx   = max(f->readInt(), MAX_WIDTH*image_res);
       char *name = f->readString();
       int res    = POSTSCRIPTRES;  // --fixme--    prefer (f->readInt()) providing that troff can discover the value
       listOfImages.add(x1, y1, x2, y2, page, res, maxx, name);
@@ -1053,6 +1069,18 @@ static void makeTempFiles (void)
 }
 
 /*
+ *  removeTempFiles - remove the temporary files
+ */
+
+static void removeTempFiles (void)
+{
+#if !defined(DEBUGGING)
+  remove(psFileName);
+  remove(regionFileName);
+#endif
+}
+
+/*
  *  findPrefix - finds the optional prefix to the groff utilities.
  *               It also builds the 'troff' executable name.
  */
@@ -1103,6 +1131,7 @@ int main(int argc, char **argv)
     ok = inputFile.do_html(argc, argv);
     removeAllPages();
   }
+  removeTempFiles();
   return ok;
 }
 

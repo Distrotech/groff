@@ -4273,15 +4273,35 @@ node *do_suppress()
 {
   tok.next();
   int c = tok.ch();
-
-  if (c == '0')
-    return new suppress_node(0, 0);
-  else if (c == '1')
-    return new suppress_node(1, 0);
-  else if (c == '2')
-    return new suppress_node(1, 1);
-  else
-    error("invalid argument to \\O");
+  switch (c) {
+  case '0':
+    if (begin_level == 1)
+      return new suppress_node(0, 0);
+    break;
+  case '1':
+    if (begin_level == 1)
+      return new suppress_node(1, 0);
+    break;
+  case '2':
+    if (begin_level == 1)
+      return new suppress_node(1, 1);
+    break;
+  case '3':
+    begin_level++;
+    break;
+  case '4':
+    begin_level--;
+    break;
+  case '5': {
+    symbol filename = get_delim_name();
+    if (begin_level == 1)
+      return new suppress_node(filename, 'i');
+    return 0;
+    break;
+  }
+  default:
+    error("`%1' is an invalid argument to \\O", char(c));
+  }
   return 0;
 }
 
@@ -4567,12 +4587,10 @@ void image()
       error("l, r, c, or i expected (got %1)", tok.description());
       position = 'c';
     }
-    else {
-      tok.next();
-      symbol filename = get_long_name(1);
-      if (!filename.is_null())
-        curenv->add_node(new suppress_node(filename, position));
-    }
+    tok.next();
+    symbol filename = get_long_name(1);
+    if (!filename.is_null())
+      curenv->add_node(new suppress_node(filename, position));
   }
   skip_line();
 }
@@ -6285,7 +6303,6 @@ static int output_reg_minx_contents = -1;
 static int output_reg_miny_contents = -1;
 static int output_reg_maxx_contents = -1;
 static int output_reg_maxy_contents = -1;
-static int output_low_mark_miny = -1;		// internal only (limits miny)
 
 void check_output_limits(int x, int y)
 {
@@ -6293,8 +6310,7 @@ void check_output_limits(int x, int y)
     output_reg_minx_contents = x;
   if (x > output_reg_maxx_contents)
     output_reg_maxx_contents = x;
-  if (((output_reg_miny_contents == -1) || (y < output_reg_miny_contents))
-      && (y >= output_low_mark_miny))
+  if ((output_reg_miny_contents == -1) || (y < output_reg_miny_contents))
     output_reg_miny_contents = y;
   if (y > output_reg_maxy_contents)
     output_reg_maxy_contents = y;
@@ -6303,7 +6319,6 @@ void check_output_limits(int x, int y)
 void reset_output_registers(int miny)
 {
   // fprintf(stderr, "reset_output_registers\n");
-  output_low_mark_miny =  miny;
   output_reg_minx_contents = -1;
   output_reg_miny_contents = -1;
   output_reg_maxx_contents = -1;

@@ -348,7 +348,7 @@ int main(int argc, char **argv)
   commands[TROFF_INDEX].append_arg("-T", device);
   // html renders equations as images via ps
   if (strcmp(device, "html") == 0)
-    commands[EQN_INDEX].append_arg("-Tps");
+    commands[EQN_INDEX].append_arg("-Tps:html");
   else
     commands[EQN_INDEX].append_arg("-T", device);
 

@@ -765,6 +765,7 @@ public:
   void really_off();
   void draw(char, hvpair *, int, font_size);
   void determine_line_limits (char code, hvpair *point, int npoints);
+  void check_charinfo(tfont *tf, charinfo *ci);
   int get_hpos() { return hpos; }
   int get_vpos() { return vpos; }
 };
@@ -928,13 +929,26 @@ void troff_output_file::flush_tbuf()
     put(tbuf_kern);
     put(' ');
   }
-
-  check_output_limits(output_hpos, output_vpos);
+  check_output_limits(hpos, vpos);
+  check_output_limits(hpos, vpos + current_size + current_height);
 
   for (int i = 0; i < tbuf_len; i++)
     put(tbuf[i]);
   put('\n');
   tbuf_len = 0;
+}
+
+void troff_output_file::check_charinfo(tfont *tf, charinfo *ci)
+{
+  int size = tf->get_size().to_scaled_points();
+  int height = tf->get_char_height(ci).to_units();
+  int width = tf->get_width(ci).to_units()
+	      + tf->get_italic_correction(ci).to_units();
+  int depth = tf->get_char_depth(ci).to_units();
+  check_output_limits(output_hpos,
+		      output_vpos - height);
+  check_output_limits(output_hpos + width,
+		      output_vpos + size + depth);
 }
 
 void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,
@@ -949,6 +963,7 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,
   if (c == '\0') {
     flush_tbuf();
     do_motion();
+    check_charinfo(tf, ci);
     if (ci->numbered()) {
       put('N');
       put(ci->get_number());
@@ -970,6 +985,7 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,
     if (tbuf_len > 0 && hpos == output_hpos && vpos == output_vpos
 	&& kk == tbuf_kern
 	&& tbuf_len < TBUF_SIZE) {
+      check_charinfo(tf, ci);
       tbuf[tbuf_len++] = c;
       output_hpos += w.to_units() + kk;
       hpos = output_hpos;
@@ -977,6 +993,7 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,
     }
     flush_tbuf();
     do_motion();
+    check_charinfo(tf, ci);
     tbuf[tbuf_len++] = c;
     output_hpos += w.to_units() + kk;
     tbuf_kern = kk;
@@ -985,6 +1002,8 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,
   else {
     // flush_tbuf();
     int n = hpos - output_hpos;
+    check_charinfo(tf, ci);
+    // check_output_limits(output_hpos, output_vpos);
     if (vpos == output_vpos && n > 0 && n < 100 && !force_motion) {
       put(char(n/10 + '0'));
       put(char(n%10 + '0'));
@@ -1096,35 +1115,53 @@ void troff_output_file::set_font(tfont *tf)
   current_tfont = tf;
 }
 
-/*
- *  determine_line_limits - works out the smallest box which will contain
- *                          the entity, code, built from the point array.
- */
-
-void troff_output_file::determine_line_limits (char code, hvpair *point, int npoints)
+// determine_line_limits - works out the smallest box which will contain
+//			   the entity, code, built from the point array.
+void troff_output_file::determine_line_limits(char code, hvpair *point,
+					      int npoints)
 {
   int i, x, y;
-
   switch (code) {
-
   case 'c':
   case 'C':
-    /* only the h field is used when defining a circle */
-    check_output_limits(output_hpos, output_vpos-point[0].h.to_units()/2);
-    check_output_limits(output_hpos+point[0].h.to_units(), output_vpos+point[0].h.to_units()/2);
+    // only the h field is used when defining a circle
+    check_output_limits(output_hpos,
+			output_vpos - point[0].h.to_units()/2);
+    check_output_limits(output_hpos + point[0].h.to_units(),
+			output_vpos + point[0].h.to_units()/2);
     break;
   case 'E':
   case 'e':
-    check_output_limits(output_hpos, output_vpos-point[1].v.to_units()/2);
-    check_output_limits(output_hpos+point[0].h.to_units(), output_vpos+point[1].v.to_units()/2);
+    check_output_limits(output_hpos,
+			output_vpos - point[0].v.to_units()/2);
+    check_output_limits(output_hpos + point[0].h.to_units(),
+			output_vpos + point[0].v.to_units()/2);
+    break;
+  case 'P':
+  case 'p':
+    x = output_hpos;
+    y = output_vpos;
+    check_output_limits(x, y);
+    for (i = 0; i < npoints; i++) {
+      x += point[i].h.to_units();
+      y += point[i].v.to_units();
+      check_output_limits(x, y);
+    }
+    break;
+  case 't':
+    x = output_hpos;
+    y = output_vpos;
+    for (i = 0; i < npoints; i++) {
+      x += point[i].h.to_units();
+      y += point[i].v.to_units();
+      check_output_limits(x, y);
+    }
     break;
   default:
-    /*
-     *  remember this doesn't work for arc..
-     */
-    x=output_hpos;
-    y=output_vpos;
-    for (i=0; i<npoints; i++) {
+    // remember this doesn't work for arc.. yet
+    x = output_hpos;
+    y = output_vpos;
+    for (i = 0; i < npoints; i++) {
       x += point[i].h.to_units();
       y += point[i].v.to_units();
       check_output_limits(x, y);
@@ -3385,7 +3422,8 @@ suppress_node::suppress_node(symbol f, char p)
 {
 }
 
-suppress_node::suppress_node(int issue_limits, int on_or_off, symbol f, char p)
+suppress_node::suppress_node(int issue_limits, int on_or_off,
+			     symbol f, char p)
 : is_on(on_or_off), emit_limits(issue_limits), filename(f), position(p)
 {
 }
@@ -3409,31 +3447,30 @@ node *suppress_node::copy()
   return new suppress_node(emit_limits, is_on, filename, position);
 }
 
-int get_reg_int (const char *p)
+int get_reg_int(const char *p)
 {
   reg *r = (reg *)number_reg_dictionary.lookup(p);
   units prev_value;
   if (r && (r->get_value(&prev_value)))
-    return( (int)prev_value );
+    return (int)prev_value;
   else
     warning(WARN_REG, "number register `%1' not defined", p);
-  return( 0 );
+  return 0;
 }
 
-const char *get_reg_str (const char *p)
+const char *get_reg_str(const char *p)
 {
   reg *r = (reg *)number_reg_dictionary.lookup(p);
   if (r)
     return r->get_string();
   else
     warning(WARN_REG, "register `%1' not defined", p);
-  return( 0 );
+  return 0;
 }
 
 void suppress_node::put(troff_output_file *out, const char *s)
 {
-  int i=0;
-
+  int i = 0;
   while (s[i] != (char)0) {
     out->special_char(s[i]);
     i++;
@@ -3518,13 +3555,12 @@ void suppress_node::tprint(troff_output_file *out)
 	  error("suppression limit registers span more than one page;\n"
 	        "image description %1 will be wrong", image_no);
 	// remember that the filename will contain a %d in which the
-	// image_no is placed */
+	// image_no is placed
 	fprintf(stderr,
 		"grohtml-info:page %d  %d  %d  %d  %d  %d  %s  %d  %d  %s\n",
 		current_page,
 		get_reg_int("opminx"), get_reg_int("opminy"),
-		get_reg_int("opmaxx"), min(get_reg_int("opmaxy"),
-		out->get_vpos()),
+		get_reg_int("opmaxx"), get_reg_int("opmaxy"),
 		// page offset + line length
 		get_reg_int(".o") + get_reg_int(".l"),
 		name, hresolution, vresolution, get_reg_str(".F"));

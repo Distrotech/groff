@@ -1,3 +1,59 @@
+2001-04-12  Gaius Mulley <gaius@glam.ac.uk>
+
+	* src/devices/grohtml/grohtml.man: Updated manual page regarding
+	simple anchor.
+	* src/preproc/html/pre-html.cc (createImage): Fixed right hand
+	cropping of images.
+	(removeTempFiles): New function to tidy up temporary files.
+	* src/preproc/html/pre-html.cc (main): Calls `removeTempFiles()'.
+	Many fixes to do with the new inline suppress node and image regions
+	are much tighter.
+	* src/devices/grohtml/post-html.cc: New method `is_auto_img'.
+	(generate_img_src): New function.
+	(html_printer::do_auto_image): Utilizes it.
+	(do_heading, do_title): Include inline images within their contents.
+	(html_printer::begin_page): Tidied up comments that are issued to
+	the html output file.
+	(html_printer::do_fill): Fixed so that `.nf' works with fonts other
+	than courier.
+	(text_glob::is_br): New method used by do_heading.
+	* tmac/s.tmac: If -Thtml then emit $1 in .IP rather than its
+	equivalent diversion.
+	* src/include/html-strings.h: Altered image tags to reflect the
+	inline image node.
+	* src/include/htmlindicate.h (html_end_suppress): Added `is_inline'
+	parameter.
+	* src/preproc/eqn/main.cc: Will suppress generation of image tags if
+	it is already inside a pic image.  Only emit tags if the argument
+	`-Tps:html' is present.
+	* src/preproc/tbl/main.cc: Changes to reflect additional
+	`html_end_suppress' parameter.
+	* src/roff/troff/env.cc: Only emit eol tag if a node has been
+	emitted since the last eol tag was written.
+	* src/roff/troff/env.h: New boolean `emitted_node'.
+	* src/roff/troff/input.cc (do_suppress): Handles extra suppress
+	nodes \O3, \O4, \O5.  No longer use `output_low_mark_miny'.
+	* src/roff/troff/node.cc (check_charinfo): New method. 
+	(troff_output_file::determine_line_limits): Alterations to limit
+	checking.
+	* tmac/www.tmac: Changes to reflect new suppress nodes.
+	  
+2001-04-08  Bruno Haible  <haible@clisp.cons.org>
+
+	* src/devices/grohtml/post-html.cc (html_printer::add_to_sbuf):
+	Escape the html_glyph in the buffer.
+	(str_translate_to_html): Output the unescaped escaped_char.
+	* src/devices/grohtml/html-text.cc (issue_table_begin): Set
+	`frame=void', not `frame=none'.  Add `border=0'.
+
+2001-04-10  Ruslan Ermilov  <ru@FreeBSD.org>
+
+	* contrib/mm/groff_mm.man: Fixing some typos.
+
+2001-04-12  Werner LEMBERG  <wl@gnu.org>
+
+	* PROBLEMS: Add some words on how to avoid wrapper macros.
+
 2001-04-11  Blake McBride  <blake@florida-software.com>
 
 	* src/include/nonposix.h (fileno) [_MSC_VER]: Removed.
@@ -1341,7 +1397,7 @@
 	* NEWS, src/roff/nroff/nroff.man, src/roff/groff/groff.man,
 	doc/groff.texinfo: Document it.
 
-        * doc/groff.texinfo: Improve documentation of troff's -a option.
+	* doc/groff.texinfo: Improve documentation of troff's -a option.
 
 2000-10-17  Gaius Mulley  <gaius@glam.ac.uk>
 
@@ -3444,7 +3500,7 @@ Fri Aug 15 08:51:47 1997  Eric S. Raymond  <esr@snark.thyrsus.com>
 	* README, PROJECTS, NEWS, INSTALL, VERSION, 
 	doc/Makefile. doc/pic.ms, groff/groff.man:
 	Prepare for 1.11 release.  No code changes.
-  	Documentation for pic added (doc/pic.ms).
+	Documentation for pic added (doc/pic.ms).
 
 Sun Nov 26 11:45:13 1995  James Clark  <jjc@jclark.com>
 

@@ -133,9 +133,10 @@ void environment::output(node *nd, int no_fill, vunits vs, vunits post_vs,
 #ifdef WIDOW_CONTROL
       && (!widow_control || no_fill)
 #endif /* WIDOW_CONTROL */
-      )
+      ) {
     curdiv->output(nd, no_fill, vs, post_vs, width);
-  else {
+    emitted_node = 1;
+  } else {
     pending_output_line **p;
     for (p = &pending_lines; *p; p = &(*p)->next)
       ;
@@ -598,6 +599,7 @@ environment::environment(symbol nm)
 #endif /* WIDOW_CONTROL */
   need_eol(0),
   ignore_next_eol(0),
+  emitted_node(0),
   name(nm),
   control_char('.'),
   no_break_control_char('\''),
@@ -2023,8 +2025,9 @@ void environment::add_html_tag_eol(void)
       need_eol--;
       add_html_tag("eol");
     }
-    else if (!fill) {
+    else if (!fill && emitted_node) {
       add_html_tag("eol");
+      emitted_node = 0;
     }
   }
 }

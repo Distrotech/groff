@@ -232,6 +232,19 @@ request.
 
 ----------------------------------------------------------------------
 
+* groff produces wrapper macros for `ms' and friends which call the
+  system's original macros.  Then, to get groff's ms macro package I
+  have to use `-mgs' instead `-ms'.  Can I avoid this?
+
+Yes.  Configure and compile groff as usual, but install it with
+
+  make install tmac_wrap=""
+
+Then no wrapper files are produced, and `-ms' will use groff's `ms'
+macros.
+
+----------------------------------------------------------------------
+
 * Groff doesn't use the font names I'm used to.
 
 Use the `ftr' request.  See (g)troff(1).
