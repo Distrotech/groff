@@ -68,7 +68,7 @@ all: $(DOCS)
 	GROFF_BIN_PATH=$(groff_bin_path); \
 	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
-	| $(GROFF) -Thtml $(FFLAG) -U -ms >$@
+	| $(GROFF) -P-I$< -P-D -Pimg -Thtml $(FFLAG) -U -ms >$@
 
 .ms.ascii:
 	GROFF_TMAC_PATH=../tmac; \
@@ -99,6 +99,7 @@ clean:
 	-rm -f *.aux *.dvi *.log *.toc texput.log
 	-rm -f *.cp *.cps *.cv *.cn *.fn *.fns *.gl *.gls *.ky *.kys \
                *.ma *.mas *.op *.ops *.pg *.pgs *.tp *.tps *.tr *.vr *.vrs
+	-rm -rf img
 
 distclean: clean
 
