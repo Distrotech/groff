@@ -234,12 +234,11 @@ static char *delim_search(char *ptr, int delim)
   return 0;
 }
 
-void usage()
+void usage(FILE *stream)
 {
-  fprintf(stderr,
+  fprintf(stream,
         "usage: %s [ -rvDCNR ] -dxx -fn -sn -pn -mn -Mdir -Ts [ files ... ]\n",
 	program_name);
-  exit(1);
 }
 
 int main(int argc, char **argv)
@@ -249,7 +248,14 @@ int main(int argc, char **argv)
   setbuf(stderr, stderr_buf);
   int opt;
   int load_startup_file = 1;
-  while ((opt = getopt(argc, argv, "DCRvd:f:p:s:m:T:M:rN")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "DCRvd:f:p:s:m:T:M:rN", long_options,
+			    NULL))
+	 != EOF)
     switch (opt) {
     case 'C':
       compatible_flag = 1;
@@ -317,8 +323,13 @@ int main(int argc, char **argv)
     case 'N':
       no_newline_in_delim_flag = 1;
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -32,11 +32,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "refid.h"
 #include "search.h"
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [-nv] [-p database] [-i XYZ] [-t N] keys ...\n",
+  fprintf(stream, "usage: %s [-nv] [-p database] [-i XYZ] [-t N] keys ...\n",
 	  program_name);
-  exit(1);
 }
 
 int main(int argc, char **argv)
@@ -47,7 +46,13 @@ int main(int argc, char **argv)
   int search_default = 1;
   search_list list;
   int opt;
-  while ((opt = getopt(argc, argv, "nvVi:t:p:")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "nvVi:t:p:", long_options, NULL))
+	 != EOF)
     switch (opt) {
     case 'V':
       verify_flag = 1;
@@ -81,13 +86,21 @@ int main(int argc, char **argv)
     case 'p':
       list.add_file(optarg);
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
+      break;
     default:
       assert(0);
     }
-  if (optind >= argc)
-    usage();
+  if (optind >= argc) {
+    usage(stderr);
+    exit(1);
+  }
   char *filename = getenv("REFER");
   if (filename)
     list.add_file(filename);

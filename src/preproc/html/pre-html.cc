@@ -985,14 +985,14 @@ static char_buffer inputFile;
 
 
 /*
- *  usage - emit usage arguments and exit.
+ *  usage - emit usage arguments.
  */
 
-void usage()
+void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s troffname [-P-o vertical_image_offset] [-P-i image_resolution] [troff flags] [files]\n", program_name);
-  fprintf(stderr, "    vertical_image_offset (default %d/72 of an inch)\n", vertical_offset);
-  fprintf(stderr, "    image_resolution (default %d) pixels per inch\n", image_res);
+  fprintf(stream, "usage: %s troffname [-P-o vertical_image_offset] [-P-i image_resolution] [troff flags] [files]\n", program_name);
+  fprintf(stream, "    vertical_image_offset (default %d/72 of an inch)\n", vertical_offset);
+  fprintf(stream, "    image_resolution (default %d) pixels per inch\n", image_res);
 }
 
 /*
@@ -1008,12 +1008,15 @@ int scanArguments (int argc, char **argv)
       image_res = atoi((char *)(argv[i]+2));
     } else if (strncmp(argv[i], "-o", 2) == 0) {
       vertical_offset = atoi((char *)(argv[i]+2));
-    } else if (strcmp(argv[i], "-v") == 0) {
+    } else if ((strcmp(argv[i], "-v") == 0)
+	       || (strcmp(argv[i], "--version") == 0)) {
       extern const char *Version_string;
       printf("GNU pre-grohtml (groff) version %s\n", Version_string);
       exit(0);
-    } else if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "-?") == 0)) {
-      usage();
+    } else if ((strcmp(argv[i], "-h") == 0)
+	       || (strcmp(argv[i], "--help") == 0)
+	       || (strcmp(argv[i], "-?") == 0)) {
+      usage(stdout);
       exit(0);
     } else if (strcmp(argv[i], "troff") == 0) {
       /* remember troff argument number */

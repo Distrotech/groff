@@ -846,7 +846,7 @@ printer *make_printer()
     return new dvi_printer;
 }
 
-static void usage();
+static void usage(FILE *stream);
 
 int main(int argc, char **argv)
 {
@@ -854,7 +854,12 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
-  while ((c = getopt(argc, argv, "F:vw:d")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((c = getopt_long(argc, argv, "F:vw:d", long_options, NULL)) != EOF)
     switch(c) {
     case 'v':
       {
@@ -876,8 +881,13 @@ int main(int argc, char **argv)
     case 'F':
       font::command_line_font_dir(optarg);
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);
@@ -895,9 +905,8 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [-dv] [-F dir] [-w n] [files ...]\n",
+  fprintf(stream, "usage: %s [-dv] [-F dir] [-w n] [files ...]\n",
 	  program_name);
-  exit(1);
 }

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -595,7 +595,7 @@ void handle_unknown_desc_command(const char *command, const char *arg,
   }
 }
 
-static void usage();
+static void usage(FILE *stream);
 
 extern "C" int optopt, optind;
 
@@ -606,7 +606,13 @@ int main(int argc, char **argv)
   setbuf(stderr, stderr_buf);
   font::set_unknown_desc_command_handler(handle_unknown_desc_command);
   int c;
-  while ((c = getopt(argc, argv, ":F:p:d:lvw:c:")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((c = getopt_long(argc, argv, ":F:p:d:lvw:c:", long_options, NULL))
+	 != EOF)
     switch(c) {
     case 'l':
       landscape_flag = 1;
@@ -671,8 +677,13 @@ int main(int argc, char **argv)
 	  line_width_factor = int(n);
 	break;
       }
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);
@@ -690,11 +701,10 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr,
+  fprintf(stream,
 	  "usage: %s [-lv] [-d [n]] [-c n] [-p paper_size]\n"
 	  "       [-w n] [-F dir] [files ...]\n",
 	  program_name);
-  exit(1);
 }

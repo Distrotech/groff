@@ -1476,7 +1476,7 @@ printer *make_printer()
   return new ps_printer;
 }
 
-static void usage();
+static void usage(FILE *stream);
 
 int main(int argc, char **argv)
 {
@@ -1485,7 +1485,13 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
-  while ((c = getopt(argc, argv, "F:P:glmc:w:vb:")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((c = getopt_long(argc, argv, "F:P:glmc:w:vb:", long_options, NULL))
+	 != EOF)
     switch(c) {
     case 'v':
       {
@@ -1531,8 +1537,13 @@ int main(int argc, char **argv)
       broken_flags = atoi(optarg);
       bflag = 1;
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);
@@ -1551,11 +1562,9 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(
-    stderr,
+  fprintf(stream,
     "usage: %s [-glmv] [-b n] [-c n] [-w n] [-P prologue] [-F dir] [files ...]\n",
     program_name);
-  exit(1);
 }

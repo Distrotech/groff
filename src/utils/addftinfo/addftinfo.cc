@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -31,6 +31,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "cset.h"
 #include "guess.h"
 
+static void usage(FILE *stream);
 static void usage();
 static void version();
 static void convert_font(const font_params &, FILE *, FILE *);
@@ -67,8 +68,12 @@ int main(int argc, char **argv)
 {
   program_name = argv[0];
   for (int i = 1; i < argc; i++) {
-    if (!strcmp(argv[i], "-v"))
+    if (!strcmp(argv[i], "-v") || !strcmp(argv[i],"--version"))
       version();
+    if (!strcmp(argv[i],"--help")) {
+      usage(stdout);
+      exit(0);
+    }
   }
   if (argc < 4)
     usage();
@@ -123,11 +128,15 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [-v] [-param value] ... "
+  fprintf(stream, "usage: %s [-v] [-param value] ... "
 		  "resolution unitwidth font\n",
 	  program_name);
+}
+static void usage()
+{
+  usage(stderr);
   exit(1);
 }
 

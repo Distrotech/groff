@@ -1447,10 +1447,9 @@ void process_table(table_input &in)
     error("premature end of file");
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [ -vC ] [ files... ]\n", program_name);
-  exit(1);
+  fprintf(stream, "usage: %s [ -vC ] [ files... ]\n", program_name);
 }
 
 int main(int argc, char **argv)
@@ -1459,7 +1458,12 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int opt;
-  while ((opt = getopt(argc, argv, "vCT:")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "vCT:", long_options, NULL)) != EOF)
     switch (opt) {
     case 'C':
       compatible_flag = 1;
@@ -1474,8 +1478,13 @@ int main(int argc, char **argv)
     case 'T':
       // I'm sick of getting bug reports from IRIX users
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);

@@ -1058,7 +1058,7 @@ printer *make_printer()
   return new html_printer;
 }
 
-static void usage();
+static void usage(FILE *stream);
 
 void html_printer::set_style(const style &sty)
 {
@@ -2785,13 +2785,19 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
-  while ((c = getopt(argc, argv, "o:i:F:vd?lrn")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((c = getopt_long(argc, argv, "o:i:F:vd?lrn", long_options, NULL))
+	 != EOF)
     switch(c) {
     case 'v':
       {
 	extern const char *Version_string;
-	fprintf(stderr, "post-grohtml version %s\n", Version_string);
-	fflush(stderr);
+	printf("GNU post-grohtml (groff) version %s\n", Version_string);
+	exit(0);
 	break;
       }
     case 'F':
@@ -2803,9 +2809,6 @@ int main(int argc, char **argv)
     case 'r':
       auto_rule = FALSE;
       break;
-    case '?':
-      usage();
-      break;
     case 'o':
       /* handled by pre-html */
       break;
@@ -2814,6 +2817,14 @@ int main(int argc, char **argv)
       break;
     case 'n':
       simple_anchors = TRUE;
+      break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
+    case '?':
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);
@@ -2828,9 +2839,8 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [-vld?n] [-F dir] [files ...]\n",
+  fprintf(stream, "usage: %s [-vld?n] [-F dir] [files ...]\n",
 	  program_name);
-  exit(1);
 }

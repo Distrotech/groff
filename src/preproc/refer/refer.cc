@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -99,7 +99,7 @@ static void immediately_output_references();
 static unsigned store_reference(const string &);
 static void divert_to_temporary_file();
 static reference *make_reference(const string &, unsigned *);
-static void usage();
+static void usage(FILE *stream);
 static void do_file(const char *);
 static void split_punct(string &line, string &punct);
 static void output_citation_group(reference **v, int n, label_type, FILE *fp);
@@ -172,7 +172,8 @@ int main(int argc, char **argv)
 	    }
 	    else {
 	      error("option `f' requires an argument");
-	      usage();
+	      usage(stderr);
+	      exit(1);
 	    }
 	  }
 	  else {
@@ -300,7 +301,8 @@ int main(int argc, char **argv)
 	    }
 	    else {
 	      error("option `p' requires an argument");
-	      usage();
+	      usage(stderr);
+	      exit(1);
 	    }
 	  }
 	  else {
@@ -334,23 +336,29 @@ int main(int argc, char **argv)
 	  opt = ptr;
 	  break;
 	}
-      case 'v':
-	{
-	  extern const char *Version_string;
-	  printf("GNU refer (groff) version %s\n", Version_string);
-	  exit(0);
-	  break;
-	}
       case '-':
 	if (opt[1] == '\0') {
 	  finished_options = 1;
 	  opt++;
 	  break;
 	}
+	if (strcmp(opt,"-version")==0) {
+      case 'v':
+	  extern const char *Version_string;
+	  printf("GNU refer (groff) version %s\n", Version_string);
+	  exit(0);
+	  break;
+	}
+	if (strcmp(opt,"-help")==0) {
+	  usage(stdout);
+	  exit(0);
+	  break;
+	}
 	// fall through
       default:
 	error("unrecognized option `%1'", *opt);
-	usage();
+	usage(stderr);
+	exit(1);
 	break;
       }
     }
@@ -378,13 +386,12 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr,
+  fprintf(stream,
 "usage: %s [-benvCPRS] [-aN] [-cXYZ] [-fN] [-iXYZ] [-kX] [-lM,N] [-p file]\n"
 "       [-sXYZ] [-tN] [-BL.M] [files ...]\n",
 	  program_name);
-  exit(1);
 }
 
 static void possibly_load_default_database()

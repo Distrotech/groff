@@ -13,7 +13,8 @@ push(@command, "groff");
 while ($ARGV[0] =~ /^-./) {
     $arg = shift(@ARGV);
     $sp = "" if $arg eq "-C";
-    &usage(0) if $arg eq "-v";
+    &usage(0) if $arg eq "-v" || $arg eq "--version";
+    &help() if $arg eq "--help";
     last if $arg eq "--";
     push(@command, $arg);
 }
@@ -131,6 +132,11 @@ sub usage {
     local($exit_status) = $_;
     print "GNU grog (groff) version @VERSION@\n";
     exit $exit_status;
+}
+
+sub help {
+    print "usage: grog [ option ...] [files...]\n";
+    exit 0;
 }
 
 if ($pic || $tbl || $eqn || $grn || $grap || $refer) {

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000, 2001 Free Software Foundation, Inc.
      Written by Francisco Andrés Verdú <pandres@dragonet.es> with many ideas
      taken from the other groff drivers.
 
@@ -663,19 +663,19 @@ static void handle_unknown_desc_command(const char *command, const char *arg,
 };
 
 static struct option long_options[] = {
-  {"orientation",1,NULL,'o'},
-  {"version",0,NULL,'v'},
-  {"copies",1,NULL,'c'},
-  {"landscape",0,NULL,'l'},
-  {"papersize",1,NULL,'p'},
-  {"fontdir",1,NULL,'F'},
-  {"help",0,NULL,'h'},
-  {0, 0, 0, 0}
+  { "orientation", required_argument, NULL, 'o' },
+  { "version", no_argument, NULL, 'v' },
+  { "copies", required_argument, NULL, 'c' },
+  { "landscape", no_argument, NULL, 'l' },
+  { "papersize", required_argument, NULL, 'p' },
+  { "fontdir", required_argument, NULL, 'F' },
+  { "help", no_argument, NULL, 'h' },
+  { NULL, 0, 0, 0 }
  };
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr,
+  fprintf(stream,
 	  "usage: %s [-lvh] [-c n] [-p paper_size] [-F dir] [-o or] "\
 	  " [files ...]\n"\
 	  "          -o --orientation=[portrait|landscape]\n"\
@@ -686,7 +686,6 @@ static void usage()
 	  "	  -F --fontdir=dir\n"\
 	  "	  -h --help\n",
 	  program_name);
-  exit(1);
 }; // usage
 
 int main(int argc, char **argv)
@@ -717,8 +716,8 @@ int main(int argc, char **argv)
 		  		break;
 		  case 'v'  :	{
 				extern const char *Version_string;
-				printf("GNU grolbp (groff) version %s\n",\
-				Version_string);
+				printf("GNU grolbp (groff) version %s\n",
+				       Version_string);
 				exit(0);
 				break;
       				};
@@ -744,9 +743,12 @@ int main(int argc, char **argv)
 	  				ncopies = unsigned(n);
 				break;
       			      }
-    		  case 'h'  : usage();
+    		  case 'h'  : usage(stdout);
+			      exit(0);
       			      break;
-				
+		  case '?'  : usage(stderr);
+			      exit(1);
+			      break;
 				
 		}; // switch (c)
 	}; // while (c > 0 )

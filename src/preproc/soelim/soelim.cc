@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -58,10 +58,9 @@ include_path_append(char *path)
 }
 
 
-void usage()
+void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [ -vC ] [ -I file ] [ files ]\n", program_name);
-  exit(1);
+  fprintf(stream, "usage: %s [ -vC ] [ -I file ] [ files ]\n", program_name);
 }
 
 int main(int argc, char **argv)
@@ -69,7 +68,12 @@ int main(int argc, char **argv)
   program_name = argv[0];
   include_path_append(".");
   int opt;
-  while ((opt = getopt(argc, argv, "CI:v")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "CI:v", long_options, NULL)) != EOF)
     switch (opt) {
     case 'v':
       {
@@ -84,8 +88,13 @@ int main(int argc, char **argv)
     case 'I':
       include_path_append(optarg);
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);

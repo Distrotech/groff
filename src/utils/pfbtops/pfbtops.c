@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <getopt.h>
+#include <limits.h>
 
 #include "nonposix.h"
 
@@ -18,10 +19,9 @@ static void error(s)
   exit(2);
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [-v] [pfb_file]\n", program_name);
-  exit(1);
+  fprintf(stream, "usage: %s [-v] [pfb_file]\n", program_name);
 }
 
 int main(argc, argv)
@@ -30,10 +30,15 @@ int main(argc, argv)
 {
   int opt;
   extern int optind;
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
 
   program_name = argv[0];
 
-  while ((opt = getopt(argc, argv, "v")) != EOF) {
+  while ((opt = getopt_long(argc, argv, "v", long_options, NULL)) != EOF) {
     switch (opt) {
     case 'v':
       {
@@ -42,13 +47,21 @@ int main(argc, argv)
 	exit(0);
 	break;
       }
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
+      break;
     }
   }
 
-  if (argc - optind > 1)
-    usage();
+  if (argc - optind > 1) {
+    usage(stderr);
+    exit(1);
+  }
   if (argc > optind && !freopen(argv[optind], "r", stdin))
     {
       perror(argv[optind]);

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -98,7 +98,7 @@ int truncate_len = 6;
 int shortest_len = 3;
 int max_keys_per_item = 100;
 
-static void usage();
+static void usage(FILE *stream);
 static void write_hash_table();
 static void init_hash_table();
 static void read_common_words_file();
@@ -131,7 +131,14 @@ int main(int argc, char **argv)
   const char *directory = 0;
   const char *foption = 0;
   int opt;
-  while ((opt = getopt(argc, argv, "c:o:h:i:k:l:t:n:c:d:f:vw")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "c:o:h:i:k:l:t:n:c:d:f:vw",
+			    long_options, NULL))
+	 != EOF)
     switch (opt) {
     case 'c':
       common_words_file = optarg;
@@ -178,8 +185,13 @@ int main(int argc, char **argv)
 	exit(0);
 	break;
       }
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);
@@ -323,13 +335,12 @@ int main(int argc, char **argv)
   return failed;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr,
+  fprintf(stream,
 "usage: %s [-vw] [-c file] [-d dir] [-f file] [-h n] [-i XYZ] [-k n]\n"
 "       [-l n] [-n n] [-o base] [-t n] [files...]\n",
 	  program_name);
-  exit(1);
 }
 
 static void check_integer_arg(char opt, const char *arg, int min, int *res)

@@ -220,12 +220,11 @@ void interpret(char *line);
 
 
 void
-usage()
+usage(FILE *stream)
 {
-  fprintf(stderr,
+  fprintf(stream,
 	  "usage: %s [ -vCs ] [ -M dir ] [ -F dir ] [ -T dev ] [ file ]\n",
 	  program_name);
-  exit(1);
 }
 
 
@@ -260,14 +259,6 @@ main(int argc,
 	file[gfil++] = NULL;
 	break;
 
-      case 'v':
-      {
-	extern const char *Version_string;
-	printf("GNU grn (groff) version %s\n", Version_string);
-	fflush(stdout);
-	exit(0);
-	break;
-      }
       case 'C':		/* compatibility mode */
 	compatibility_flag = TRUE;
 	break;
@@ -288,13 +279,25 @@ main(int argc,
 	sflag = 1;
 	break;
 
+      case '-':
+	if (strcmp(*argv,"--version")==0) {
+      case 'v':
+	  extern const char *Version_string;
+	  printf("GNU grn (groff) version %s\n", Version_string);
+	  exit(0);
+	  break;
+	}
+	if (strcmp(*argv,"--help")==0) {
       case '?':
-	usage();
-	break;
-
+	  usage(stdout);
+	  exit(0);
+	  break;
+	}
+	// fallthrough
       default:
 	error("unknown switch: %1", c);
-	usage();
+	usage(stderr);
+	exit(1);
       }
   }
 

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -680,7 +680,7 @@ struct {
   { CH_ff, CH_l, CH_ffl, "ffl" },
   };
 
-static void usage();
+static void usage(FILE *stream);
   
 int main(int argc, char **argv)
 {
@@ -689,7 +689,12 @@ int main(int argc, char **argv)
   int skewchar = -1;
   int opt;
   const char *gf_file = 0;
-  while ((opt = getopt(argc, argv, "svg:k:")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "svg:k:", long_options, NULL)) != EOF)
     switch (opt) {
     case 'g':
       gf_file = optarg;
@@ -717,14 +722,21 @@ int main(int argc, char **argv)
 	exit(0);
 	break;
       }
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     case EOF:
       assert(0);
     }
-  if (argc - optind != 3)
-    usage();
+  if (argc - optind != 3) {
+    usage(stderr);
+    exit(1);
+  }
   gf g;
   if (gf_file) {
     if (!g.load(gf_file))
@@ -855,9 +867,8 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [-sv] [-g gf_file] [-k skewchar] tfm_file map_file font\n",
+  fprintf(stream, "usage: %s [-sv] [-g gf_file] [-k skewchar] tfm_file map_file font\n",
 	  program_name);
-  exit(1);
 }

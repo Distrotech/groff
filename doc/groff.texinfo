@@ -317,7 +317,7 @@ contributions are welcome.  Send them to bug-groff@@gnu.org.
 * Invoking groff::              
 * Tutorial for Macro Users::    
 * Macro Packages::              
-* Programming Tutorial::        
+* gtroff Reference::            
 * Preprocessors::               
 * Output Devices::              
 * File formats::                
@@ -896,10 +896,10 @@ A replacement for @code{ditroff} with many extensions.
 The @code{soelim}, @code{pic}, @code{tbl}, and @code{eqn} preprocessors.
 
 @item
-Postprocessors for character devices, @acronym{PostScript}, @TeX{} DVI,
-and X@w{ }windows.  GNU @code{troff} also eliminated the need for a
-separate @code{nroff} program with a postprocessor which would produce
-@acronym{ASCII} output.
+Postprocessors for character devices, @acronym{PostScript}, @TeX{}
+DVI, and X@w{ }windows.  GNU @code{troff} also eliminated the need for
+a separate @code{nroff} program with a postprocessor which would
+produce @acronym{ASCII} output.
 
 @item
 A version of the @file{me} macros and an implementation of the
@@ -1670,8 +1670,8 @@ Four score and seven years ago,...
 Sometimes a new output line should be started even though the current
 line is not yet full; for example, at the end of a paragraph.  To do
 this it is possible to cause a @dfn{break}, which starts a new output
-line.  Some requests cause a break automatically, as do blank input
-lines and input lines beginning with a space.
+line.  Some requests cause a break automatically, as normally do blank
+input lines and input lines beginning with a space.
 
 Not all input lines are text to be formatted.  Some input lines are
 requests which describe how to format the text.  Requests always have a
@@ -1714,16 +1714,17 @@ can occur where not wanted, such as ``@w{mother- in}-law''.
 request @w{@samp{.ls 2}}.  Reactivate single spaced mode by typing
 @w{@samp{.ls 1}}.
 
-A number of requests allow to change the way the output looks, sometimes
-called the @dfn{layout} of the output page.  Most of these requests
-adjust the placing of @dfn{white space} (blank lines or spaces).
+A number of requests allow to change the way the output looks,
+sometimes called the @dfn{layout} of the output page.  Most of these
+requests adjust the placing of @dfn{white space} (blank lines or
+spaces).
 
 @cindex new page
 The @samp{.bp} request starts a new page, causing a line break.
 
-@cindex blank lines
-@cindex empty lines
-@cindex lines, empty
+@cindex blank line
+@cindex empty line
+@cindex line, empty
 The request @w{@samp{.sp @var{N}}} leaves @var{N}@w{ }lines of blank
 space.  @var{N}@w{ }can be omitted (meaning skip a single line) or can
 be of the form @var{N}i (for @var{N}@w{ }inches) or @var{N}c (for
@@ -1805,12 +1806,12 @@ the following categories.
 @subsection Paragraphs
 @cindex paragraphs
 
-One of the most common and most used capability is starting a paragraph.
-There are a number of different types of paragraphs, any of which can be
-initiated with macros supplied by the macro package.  Normally,
-paragraphs start with a blank line and the first line indented, like the
-text in this manual.  There are also block style paragraphs, which omit
-the indentation:
+One of the most common and most used capability is starting a
+paragraph.  There are a number of different types of paragraphs, any
+of which can be initiated with macros supplied by the macro package.
+Normally, paragraphs start with a blank line and the first line
+indented, like the text in this manual.  There are also block style
+paragraphs, which omit the indentation:
 
 @Example
 Some   men  look   at  constitutions   with  sanctimonious
@@ -2017,7 +2018,7 @@ to changing the appearance of section headers.
 @c =====================================================================
 @c =====================================================================
 
-@node Macro Packages, Programming Tutorial, Tutorial for Macro Users, Top
+@node Macro Packages, gtroff Reference, Tutorial for Macro Users, Top
 @chapter Macro Packages
 @cindex macro packages
 @cindex packages, macros
@@ -2075,8 +2076,9 @@ It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
 
 @table @code
 @item -rcR=1
-This option (the default in nroff mode) creates a single, very long page
-instead of multiple pages.  Use @code{-rcR=0} to disable it.
+This option (the default if a tty output device is used) creates a
+single, very long page instead of multiple pages.  Use @code{-rcR=0}
+to disable it.
 
 @item -rC1
 If more than one manual page is given on the command line, number the
@@ -2439,10 +2441,10 @@ and automatically call the right preprocessor(s).
 @c =====================================================================
 @c =====================================================================
 
-@node Programming Tutorial, Preprocessors, Macro Packages, Top
-@chapter Programming Tutorial
-@cindex programming tutorial
-@cindex tutorial for programming
+@node gtroff Reference, Preprocessors, Macro Packages, Top
+@chapter @code{gtroff} Reference
+@cindex reference, @code{gtroff}
+@cindex @code{gtroff} reference
 
 This chapter covers @strong{all} of the facilities of @code{gtroff}.
 Users of macro packages may skip it if not interested in details.
@@ -2487,7 +2489,7 @@ Users of macro packages may skip it if not interested in details.
 
 @c =====================================================================
 
-@node Text, Input Conventions, Programming Tutorial, Programming Tutorial
+@node Text, Input Conventions, gtroff Reference, gtroff Reference
 @section Text
 @cindex text, @code{gtroff} processing
 
@@ -2660,9 +2662,14 @@ line.
 @cindex blank line
 @cindex empty line
 @cindex line, blank
-There are several ways to cause a break in @code{gtroff}.  A blank line
-not only causes a break, but it also outputs a one line vertical
-space (effectively a blank line).
+@cindex blank line macro
+@rqindex blm
+There are several ways to cause a break in @code{gtroff}.  A blank
+line not only causes a break, but it also outputs a one line vertical
+space (effectively a blank line).  Note that this behaviour can be
+modified with the blank line macro request @code{blm}.
+
+@c XXX xref for blm
 
 @cindex fill mode
 @cindex mode, fill
@@ -2679,7 +2686,7 @@ discussed in @ref{Manipulating Filling and Adjusting}.
 
 @c =====================================================================
 
-@node Input Conventions, Measurements, Text, Programming Tutorial
+@node Input Conventions, Measurements, Text, gtroff Reference
 @section Input Conventions
 @cindex input conventions
 @cindex conventions for input
@@ -2707,7 +2714,7 @@ don't try using spaces to get proper indentation).
 
 @c =====================================================================
 
-@node Measurements, Expressions, Input Conventions, Programming Tutorial
+@node Measurements, Expressions, Input Conventions, gtroff Reference
 @section Measurements
 @cindex measurements
 
@@ -2845,7 +2852,7 @@ certain scalar value, use @samp{u} as the unit for that value.
 
 @c =====================================================================
 
-@node Expressions, Identifiers, Measurements, Programming Tutorial
+@node Expressions, Identifiers, Measurements, gtroff Reference
 @section Expressions
 @cindex expressions
 
@@ -2964,7 +2971,7 @@ expressions, unless the entire expression is surrounded by parentheses.
 
 @c =====================================================================
 
-@node Identifiers, Embedded Commands, Expressions, Programming Tutorial
+@node Identifiers, Embedded Commands, Expressions, gtroff Reference
 @section Identifiers
 @cindex identifiers
 
@@ -3098,7 +3105,7 @@ defines it with a value of@w{ }0.
 
 @c =====================================================================
 
-@node Embedded Commands, Registers, Identifiers, Programming Tutorial
+@node Embedded Commands, Registers, Identifiers, gtroff Reference
 @section Embedded Commands
 @cindex embedded commands
 @cindex commands, embedded
@@ -3143,6 +3150,49 @@ optional tabs or spaces followed by an identifier which is the name of
 the request.  This may be followed by any number of space-separated
 arguments (@emph{no} tabs here).
 
+@cindex structuring source code of documents or macro packages
+@cindex documents, structuring the source code
+@cindex macro packages, strucuring the source code
+Since a control character followed by whitespace only is ignored, it
+is common practice to use this feature for structuring the source code
+of documents or macro packages.
+
+@Example
+.de foo
+.  tm This is foo.
+..
+.
+.
+.de bar
+.  tm This is bar.
+..
+@endExample
+
+@cindex blank line
+@cindex blank line macro
+@rqindex blm
+Another possibility is to use the blank line macro request @code{blm}
+by assigning an empty macro to it.
+
+@Example
+.de do-nothing
+..
+.blm do-nothing  \" activate blank line macro
+
+.de foo
+.  tm This is foo.
+..
+
+
+.de bar
+.  tm This is bar.
+..
+
+.blm             \" deactivate blank line macro
+@endExample
+
+@c XXX xref to blm
+
 @cindex zero width space character
 @cindex character, zero width space
 @cindex space character, zero width
@@ -3166,9 +3216,9 @@ character prevents this.
 @cindex arguments to requests
 
 Arguments to requests (and macros) are processed much like the shell:
-The line is split into arguments according to spaces.  An argument which
-is intended to contain spaces can either be enclosed in quotes (single
-or double), or have the spaces @dfn{escaped} with backslashes.
+The line is split into arguments according to spaces.  An argument
+which is intended to contain spaces can either be enclosed in double
+quotes, or have the spaces @dfn{escaped} with backslashes.
 
 Here are a few examples:
 
@@ -3191,8 +3241,22 @@ documents.  Nevertheless, it is not optimal in all situations, since
 can't stretch.  @code{gtroff} provides a different command @code{\~} to
 insert a stretchable, non-breaking space.}
 
+@cindex @code{"}, as a macro argument
+@cindex double quote, as a macro argument
+A double quote which isn't preceded by a space doesn't start a macro
+argument.  If not closing a string, it is printed literally.
+
+For example,
+
+@Example
+.xxx a" "b c" "de"fg"
+@endExample
+
+@noindent
+has the arguments @samp{a"}, @w{@samp{b c}}, @samp{de}, and @samp{fg"}.
+
 @rqindex ds
-Note, however, that the @code{ds} request works differently.
+Duoble quotes in the @code{ds} request are handled differently.
 @xref{Strings}, for more details.
 
 @c ---------------------------------------------------------------------
@@ -3526,7 +3590,7 @@ affected (@pxref{Auto-increment}).
 
 @c =====================================================================
 
-@node Registers, Manipulating Filling and Adjusting, Embedded Commands, Programming Tutorial
+@node Registers, Manipulating Filling and Adjusting, Embedded Commands, gtroff Reference
 @section Registers
 @cindex registers
 
@@ -3976,7 +4040,7 @@ example, @samp{latin1} or @samp{ps}).
 
 @c =====================================================================
 
-@node Manipulating Filling and Adjusting, Manipulating Hyphenation, Registers, Programming Tutorial
+@node Manipulating Filling and Adjusting, Manipulating Hyphenation, Registers, gtroff Reference
 @section Manipulating Filling and Adjusting
 @cindex manipulating filling and adjusting
 @cindex filling and adjusting, manipulating
@@ -4170,8 +4234,10 @@ The word space and sentence space values are associated with the current
 environment (@pxref{Environments}).
 
 Contrary to traditional Unix @code{troff}, this request is @emph{not}
-ignored in nroff mode; the given values are then rounded down to a
-multiple of@w{ }12.
+ignored if a tty output device is used; the given values are then
+rounded down to a multiple of@w{ }12.
+
+@c XXX xref implementation differences
 
 The request is ignored if there is no parameter.
 @endDefreq
@@ -4246,7 +4312,7 @@ This request causes a break.
 
 @c =====================================================================
 
-@node Manipulating Hyphenation, Manipulating Spacing, Manipulating Filling and Adjusting, Programming Tutorial
+@node Manipulating Hyphenation, Manipulating Spacing, Manipulating Filling and Adjusting, gtroff Reference
 @section Manipulating Hyphenation
 @cindex manipulating hyphenation
 @cindex hyphenation, manipulating
@@ -4498,7 +4564,7 @@ read-only number register @samp{.hla}.
 
 @c =====================================================================
 
-@node Manipulating Spacing, Tabs and Fields, Manipulating Hyphenation, Programming Tutorial
+@node Manipulating Spacing, Tabs and Fields, Manipulating Hyphenation, gtroff Reference
 @section Manipulating Spacing
 @cindex manipulating spacing
 @cindex spacing, manipulating
@@ -4596,7 +4662,7 @@ top-level diversion (@pxref{Diversions}).
 
 @c =====================================================================
 
-@node Tabs and Fields, Character Translations, Manipulating Spacing, Programming Tutorial
+@node Tabs and Fields, Character Translations, Manipulating Spacing, gtroff Reference
 @section Tabs and Fields
 @cindex tabs and fields
 @cindex fields and tabs
@@ -4738,10 +4804,12 @@ Tab stops are associated with the current environment
 Calling @code{ta} without an argument removes all tab stops.
 
 @item
-@cindex tab stops, in nroff mode
-The start-up value of @code{gtroff} is @w{@samp{T 0.5i}}.  This value is
-used even in nroff mode (contrary to @acronym{UNIX} @code{nroff} which
-has tab stops preset every 0.8@dmn{i}).
+@cindex tab stops, for tty output devices
+The start-up value of @code{gtroff} is @w{@samp{T 0.5i}}.  This value
+is used even for tty output devices (contrary to @acronym{UNIX}
+@code{nroff} which has tab stops preset every 0.8@dmn{i}).
+
+@c XXX xref implementation differences
 @end itemize
 
 @cindex current tab settings register
@@ -4879,7 +4947,7 @@ foo            bar       smurf
 
 @c =====================================================================
 
-@node Character Translations, Troff and Nroff Mode, Tabs and Fields, Programming Tutorial
+@node Character Translations, Troff and Nroff Mode, Tabs and Fields, gtroff Reference
 @section Character Translations
 @cindex character translations
 @cindex translations of characters
@@ -5087,7 +5155,7 @@ prints @samp{a}.
 
 @c =====================================================================
 
-@node Troff and Nroff Mode, Line Layout, Character Translations, Programming Tutorial
+@node Troff and Nroff Mode, Line Layout, Character Translations, gtroff Reference
 @section Troff and Nroff Mode
 @cindex troff mode
 @cindex mode, troff
@@ -5096,43 +5164,67 @@ prints @samp{a}.
 
 Originally, @code{nroff} and @code{troff} were two separate programs,
 the former for tty output, the latter for everything else.  With GNU
-@code{troff}, both programs are merged into one executable.
+@code{troff}, both programs are merged into one executable, sending
+its output to a device driver (@code{grotty} for tty devices,
+@code{grops} for @acronym{PostScript}, etc.) which interprets the
+intermediate output of @code{gtroff}.  For @acronym{UNIX} @code{troff}
+it makes sense to talk about @dfn{Nroff mode} and @dfn{Troff mode}
+since the differences are hardcoded.  For GNU @code{troff}, this
+distinction is not appropriate because @code{gtroff} simply takes the
+information given in the font files for a particular device without
+handling requests specially if a tty output device is used.
 
-Usually, a macro package can be used with both @code{nroff} and
-@code{troff}.  Nevertheless, it is sometimes necessary to make a
-distinction between the two programs (modes), and @code{gtroff}
-provides two built-in conditions @samp{n} and @samp{t} for the
-@code{if}, @code{ie}, and @code{while} requests to decide whether
-@code{gtroff} shall behave like @code{nroff} or like @code{troff}.
+Usually, a macro package can be used with all output devices.
+Nevertheless, it is sometimes necessary to make a distinction between
+tty and non-tty devices: @code{gtroff} provides two built-in
+conditions @samp{n} and @samp{t} for the @code{if}, @code{ie}, and
+@code{while} requests to decide whether @code{gtroff} shall behave
+like @code{nroff} or like @code{troff}.
 
 @pindex troffrc
 @pindex troffrc-end
 @Defreq {troff, }
 Make the @samp{t} built-in condition true (and the @samp{n} built-in
-condition false) for @code{if}, @code{ie}, and @code{while} conditional
-requests.  This is the default if @code{gtroff} (@emph{not}
-@code{groff}) is started with the @option{-R} switch to avoid loading of
-the start-up files @file{troffrc} and @file{troffrc-end}.  Without
-@option{-R}, @code{gtroff} stays in troff mode if the output device is
-not a tty (e.g.@: `ps').
+condition false) for @code{if}, @code{ie}, and @code{while}
+conditional requests.  This is the default if @code{gtroff}
+(@emph{not} @code{groff}) is started with the @option{-R} switch to
+avoid loading of the start-up files @file{troffrc} and
+@file{troffrc-end}.  Without @option{-R}, @code{gtroff} stays in troff
+mode if the output device is not a tty (e.g.@: `ps').
 @endDefreq
 
 @pindex tty.tmac
 @Defreq {nroff, }
 Make the @samp{n} built-in condition true (and the @samp{t} built-in
-condition false) for @code{if}, @code{ie}, and @code{while} conditional
-requests.  This is the default if @code{gtroff} uses a tty output
-device; the code for switching to nroff mode is in the file
-@file{tty.tmac} which is loaded by the start-up file
-@code{troffrc}.
+condition false) for @code{if}, @code{ie}, and @code{while}
+conditional requests.  This is the default if @code{gtroff} uses a tty
+output device; the code for switching to nroff mode is in the file
+@file{tty.tmac} which is loaded by the start-up file @code{troffrc}.
 @endDefreq
 
-@xref{Conditionals and Loops}, for more details on built-in conditions.
+@xref{Conditionals and Loops}, for more details on built-in
+conditions.
 
+@c XXX move the following to grotty section
+
+@pindex less
+@cindex Teletype
+@cindex ISO 6249 SGR
+@cindex terminal control sequences
+@cindex control sequences, for terminals
+For tty output devices, underlining is done by emitting sequences of
+@samp{_} and @samp{\b} (the backspace character) before the actual
+character.  Literally, this is printing an underline character, then
+moving back one character position, and printing the actual character
+at the same position as the underline character (similar to a
+typewriter).  Usually, a modern terminal can't interpret this (and the
+original Teletype machines for which this sequence was appropriate are
+no longer in use).  You need a pager program like @code{less} which
+translates this into ISO 6429 SGR sequences to control terminals.
 
 @c =====================================================================
 
-@node Line Layout, Page Layout, Troff and Nroff Mode, Programming Tutorial
+@node Line Layout, Page Layout, Troff and Nroff Mode, gtroff Reference
 @section Line Layout
 @cindex line layout
 @cindex layout, line
@@ -5190,22 +5282,19 @@ Replace me with a better (and more) example!
 .ll +.5i
 @endExample
 
-@cindex troff mode
-@cindex mode, troff
-@cindex nroff mode
-@cindex mode, nroff
+@pindex troffrc
 @Defreq {po, [@Var{offset}]}
 @Defreqx {po, @t{+}@Var{offset}}
 @Defreqx {po, @t{-}@Var{offset}}
 @Defregx {.o}
-Set horizontal page offset to @var{offset} (or increment or
-decrement the current value by @var{offset}).  Note that this request
-does not cause a break, so changing the page offset in the middle of
-text being filled may not yield the expected result.  The initial value
-is 1@dmn{i} if in troff mode, and 0 if in nroff mode (@pxref{Troff and
-Nroff Mode}); the default scaling indicator is@w{ }@code{m} (and not@w{
-}@code{v} as incorrectly documented in the original @acronym{UNIX} troff
-manual).
+Set horizontal page offset to @var{offset} (or increment or decrement
+the current value by @var{offset}).  Note that this request does not
+cause a break, so changing the page offset in the middle of text being
+filled may not yield the expected result.  The initial value is
+1@dmn{i}.  For tty output devices, it is set to 0 in the startup file
+@file{troffrc}; the default scaling indicator is@w{ }@code{m} (and
+not@w{ }@code{v} as incorrectly documented in the original
+@acronym{UNIX} troff manual).
 
 The current page offset can be found in the read-only number register
 @samp{.o}.
@@ -5311,7 +5400,7 @@ collected line still uses the old line length value.
 
 @c =====================================================================
 
-@node Page Layout, Page Control, Line Layout, Programming Tutorial
+@node Page Layout, Page Control, Line Layout, gtroff Reference
 @section Page Layout
 @cindex page layout
 @cindex layout, page
@@ -5449,7 +5538,7 @@ register @code{%}.
 
 @c =====================================================================
 
-@node Page Control, Fonts, Page Layout, Programming Tutorial
+@node Page Control, Fonts, Page Layout, gtroff Reference
 @section Page Control
 @cindex page control
 @cindex control, page
@@ -5512,23 +5601,23 @@ unit is @samp{v}.
 
 @c =====================================================================
 
-@node Fonts, Sizes, Page Control, Programming Tutorial
+@node Fonts, Sizes, Page Control, gtroff Reference
 @section Fonts
 @cindex fonts
 
 @code{gtroff} can switch fonts at any point in the text.
 
 The basic set of fonts is @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
-These are Times Roman, Italic, Bold, and Bold Italic.  There is also at
-least one symbol font which contains various special symbols (Greek,
-mathematics).  Such symbols fonts cannot be used directly, but should be
-used via an escape (@pxref{Using Symbols}).
+These are Times Roman, Italic, Bold, and Bold Italic.  For non-tty
+devices, there is also at least one symbol font which contains various
+special symbols (Greek, mathematics).
 
 @menu
 * Changing Fonts::              
 * Font Families::               
 * Font Positions::              
 * Using Symbols::               
+* Special Fonts::               
 * Artificial Fonts::            
 * Ligatures and Kerning::       
 @end menu
@@ -5819,10 +5908,47 @@ this is font 1 again
 
 @c ---------------------------------------------------------------------
 
-@node Using Symbols, Artificial Fonts, Font Positions, Fonts
+@node Using Symbols, Special Fonts, Font Positions, Fonts
 @subsection Using Symbols
 @cindex using symbols
 @cindex symbols, using
+
+@cindex glyph
+@cindex character
+@cindex ligature
+A @dfn{glyph} is a graphical representation of a @dfn{character}.
+While a character is an abstract entity containing semantic
+information, a glyph is something which can be actually seen on screen
+or paper.  It is possible that a character has multiple glyph
+representation forms (for example, the character `A' can be either
+written in a roman or an italic font, yielding two different glyphs);
+sometimes more than one character maps to a single glyph (this is a
+@dfn{ligature} -- the most common is `fi').
+
+@c XXX
+
+Please note that currently the distinction between glyphs and
+characters in this reference is not clearly carried out.  This will be
+improved eventually in the next revision.
+
+@cindex symbol
+@cindex special fonts
+@kindex fonts
+@pindex DESC
+@rqindex fspecial
+A @dfn{symbol} is simply a named glyph.  Within @code{gtroff}, all
+glyph names of a particular font are defined in its font file.  If the
+user requests a glyph not available in this font, @code{gtroff} looks
+up an ordered list of @dfn{special fonts}.  By default, the
+@acronym{PostScript} output device supports the two special fonts
+@samp{SS} (slanted symbols) and @samp{S} (symbols) (the former is
+looked up before the latter).  Other output devices use different
+names for special fonts.  Fonts mounted with the @code{fonts} keyword
+in the @file{DESC} file are globally available.  To install additional
+special fonts locally (i.e.@: for a particular font), use the
+@code{fspecial} request.
+
+@xref{Font Files}, and @ref{Special Fonts}, for more details.
 
 @Defesc {\\, @lparen{}, nm, }
 @Defescx {\\, @lbrack{}, name, @rbrack}
@@ -5854,13 +5980,13 @@ Typesets the character with code@w{ }@var{n} in the current font (this
 is @strong{not} the input character code).  @var{n} can be any
 integer.  Most devices only have characters with codes between 0
 and@w{ }255; the Unicode output device uses codes in the range
-0--65536.  If the current font does not contain a character with that
+0--65535.  If the current font does not contain a character with that
 code, special fonts are @emph{not} searched.  The @code{\N} escape
 sequence can be conveniently used in conjunction with the @code{char}
 request:
 
 @Example
-.char \[phone] \f(ZD\N'37'
+.char \[phone] \f[ZD]\N'37'
 @endExample
 @endDefesc
 
@@ -5869,9 +5995,10 @@ request:
 @cindex unnamed characters
 @cindex characters, unnamed
 The code of each character is given in the fourth column in the font
-description file after the charset command.  It is possible to include
-unnamed characters in the font description file by using a name of
-@samp{---}; the @code{\N} escape sequence is the only way to use these.
+description file after the @code{charset} command.  It is possible to
+include unnamed characters in the font description file by using a
+name of @samp{---}; the @code{\N} escape sequence is the only way to
+use these.
 
 @c XXX should be `glyph', not `character'
 
@@ -5880,8 +6007,8 @@ unnamed characters in the font description file by using a name of
 @cindex properties of characters
 Each character has certain properties associated with it.  These
 properties can be modified with the @code{cflags} request.  The first
-argument is the the sum of the desired flags and the remaining arguments
-are the characters to have those properties.
+argument is the the sum of the desired flags and the remaining
+arguments are the characters to have those properties.
 
 @table @code
 @item 1
@@ -5928,104 +6055,183 @@ this property)
 @glindex rq
 an end of sentence character followed by any number of characters with
 this property is treated as the end of a sentence if followed by a
-newline or two spaces; in other words the character is @dfn{transparent}
-for the purposes of end of sentence recognition -- this is the same as
-having a zero space factor in @TeX{} (initially characters
-@samp{"')]*\(dg\(rq} have this property).
+newline or two spaces; in other words the character is
+@dfn{transparent} for the purposes of end of sentence recognition --
+this is the same as having a zero space factor in @TeX{} (initially
+characters @samp{"')]*\(dg\(rq} have this property).
 @end table
 
 @cindex defining characters
 @cindex characters, defining
 @cindex creating new characters
-@Defreq {char, c string}
-New characters can be created with the @code{char} request.  It is
-called as
-
-@Example
-.char @var{c} @var{string}
-@endExample
-
+@cindex escape character
+@cindex character, escape
 @rqindex tr
+@rqindex cp
+@rqindex rc
 @rqindex lc
 @esindex \l
 @esindex \L
+@esindex \&
+@esindex \e
 @rqindex hcode
-@noindent
-This defines character@w{ }@var{c} to be @var{string}.  Every time
-character@w{ }@var{c} needs to be printed, @var{string} is
-processed in a temporary environment and the result is wrapped up
-into a single object.  Compatibility mode is turned off and the
-escape character is set to @samp{\} while @var{string} is being
+@Defreq {char, c [@Var{string}]}
+Define a new character@w{ }@var{c} to be @var{string} (which can be
+empty).  Every time character@w{ }@var{c} needs to be printed,
+@var{string} is processed in a temporary environment and the result is
+wrapped up into a single object.  Compatibility mode is turned off and
+the escape character is set to @samp{\} while @var{string} is being
 processed.  Any emboldening, constant spacing or track kerning is
 applied to this object rather than to individual characters in
-@var{string}.  A character defined by this request can be used just like
-a normal character provided by the output device.  In particular other
-characters can be translated to it with the @code{tr} request; it can be
-made the leader character by the @code{lc} request; repeated patterns
-can be drawn with the character using the @code{\l} and @code{\L} escape
-sequences; words containing the character can be hyphenated correctly,
-if the @code{hcode} request is used to give the character a hyphenation
-code.  There is a special anti-recursion feature: use of character
-within the character's definition is handled like normal characters
-not defined with @code{char}.
+@var{string}.  A character defined by this request can be used just
+like a normal character provided by the output device.  In particular,
+other characters can be translated to it with the @code{tr} request;
+it can be made the leader character by the @code{lc} request; repeated
+patterns can be drawn with the character using the @code{\l} and
+@code{\L} escape sequences; words containing the character can be
+hyphenated correctly, if the @code{hcode} request is used to give the
+character a hyphenation code.  There is a special anti-recursion
+feature: Use of character within the character's definition is handled
+like normal characters not defined with @code{char}.
 @endDefreq
 
 @cindex removing character definition
 @cindex character, removing definition
-@Defreq {rchar, def}
-A character definition can be removed with the @code{rchar} request.
-Its arguments are the characters to be removed.  This undoes the effect
-of a @code{char} request.
+@Defreq {rchar, c1 c2 @dots{}}
+Remove the definitions of characters @var{c1}, @var{c2},@w{
+}@enddots{} This undoes the effect of a @code{char} request.
+
+It is possible to omit the whitespace between arguments.
 @endDefreq
 
 @xref{Special Characters}.
 
 @c ---------------------------------------------------------------------
 
-@node Artificial Fonts, Ligatures and Kerning, Using Symbols, Fonts
+@node Special Fonts, Artificial Fonts, Using Symbols, Fonts
+@subsection Special Fonts
+@cindex special fonts
+@cindex fonts, special
+
+@c XXX
+
+To be written.
+
+@c ---------------------------------------------------------------------
+
+@node Artificial Fonts, Ligatures and Kerning, Special Fonts, Fonts
 @subsection Artificial Fonts
 @cindex artificial fonts
 @cindex fonts, artificial
 
 There are a number of requests for artificially creating fonts.  These
-are largely vestiges of the days when output devices did not
-have a wide variety of fonts, and when @code{nroff} and @code{troff}
-were separate programs.  These are no longer necessary in GNU
-@code{troff}.
+are largely vestiges of the days when output devices did not have a
+wide variety of fonts, and when @code{nroff} and @code{troff} were
+separate programs.  These are no longer necessary in GNU
+@code{troff}.  Nevertheless, they are supported.
 
 @cindex underlining
-@Defreq {ul, lines}
-The @code{ul} request prints subsequent lines in italics on a device
-capable of it, or underlines the text on a character output device.  The
-single argument is the number of lines to be ``underlined,'' with no
-argument, the next line is underlined.
+@Defreq {ul, [@Var{lines}]}
+The @code{ul} request normally underlines subsequent lines if a tty
+output device is used.  Otherwise, the lines are printed in italics
+(only the term `underlined' is used in the following).  The single
+argument is the number of input lines to be underlined; with no
+argument, the next line is underlined.  If @var{lines} is zero or
+negative, stop the effects of @code{ul} (if it was active).  Requests
+and empty lines do not count for computing the number of underlined
+input lines, even if they produce some output like @code{tl}.  Lines
+inserted by macros (e.g.@: invoked by a trap) do count.
+
+At the beginning of @code{ul}, the current font is stored and the
+underline font is activated.  Within the span of a @code{ul} request,
+it is possible to change fonts, but after the last line affected by
+@code{ul} the saved font is restored.
+
+@cindex underline font
+@cindex font, for underlining
+@rqindex uf
+This command is associated with the current environment.  The
+underline font can be changed with the @code{uf} request.
+
+@c XXX @xref should be changed to grotty
+
+@xref{Troff and Nroff Mode}, for a discussion how underlining is
+implemented in for tty output devices, and which problems can arise.
+
 The @code{ul} request does not underline spaces.
 @endDefreq
 
 @cindex continuous underlining
 @cindex underlining, continuous
-@Defreq {cu, lines}
-The @code{cu} request is similar to @code{ul}
-but underlines spaces as well.
+@Defreq {cu, [@Var{lines}]}
+The @code{cu} request is similar to @code{ul} but underlines spaces as
+well (if a tty output device is used).
 @endDefreq
-
-@c XXX more info
 
 @cindex underline font
 @cindex font for underlining
+@rqindex ul
+@rqindex cu
 @Defreq {uf, font}
-The @code{uf} request sets the underline font used by @code{ul} and
-@code{cu}.
+The @code{uf} request globally sets the underline font used by
+@code{ul} and @code{cu}.  By default, this is the font at position@w{
+}2.  @var{font} can be either a non-negative font position or the name
+of a font.
 @endDefreq
 
 @cindex imitating bold face
 @cindex bold face, imitating
-@Defreq {bd, font offset}
-The @code{bd} request artificially creates a bold font by printing each
-character twice, slightly offset.  The first argument specifies the font
-to embolden, and the second is the number of basic units, minus one, by
-which the two characters is offset.  If the second argument is
+@Defreq {bd, font [@Var{offset}]}
+@Defreqx {bd, font1 font2 [@Var{offset}]}
+@Defregx {.b}
+The @code{bd} request artificially creates a bold font by printing
+each character twice, slightly offset.
+
+Two syntax forms are available.
+
+@itemize @bullet
+@item
+Imitate a bold font unconditionally.  The first argument specifies the
+font to embolden, and the second is the number of basic units, minus
+one, by which the two characters is offset.  If the second argument is
 missing, emboldening is turned off.
+
+@var{font} can be either a non-negative font position or the name of a
+font.
+
+@var{offset} is available in the @code{.b} read-only register if a
+special font is active; in the @code{bd} request, its default unit is
+@samp{u}.
+
+@rqindex fspecial
+@kindex special
+@cindex embolding of special fonts
+@cindex special fonts, emboldening
+@item
+Imitate a bold form conditionally.  Embolden @var{font1} by
+@var{offset} only if font @var{font2} is the current font.  This
+command can be issued repeatedly to set up different emboldening
+values for different current fonts.  If the second argument is
+missing, emboldening is turned off for this particular current font.
+
+This affects special fonts only (either set up with the @code{special}
+command in font files or with the @code{fspecial} request).
+@end itemize
+@endDefreq
+
+@cindex constant character space mode
+@cindex mode for constant character space
+@cindex character, constant space
+@rqindex ps
+@Defreq {cs, font [@Var{width} [@Var{em-size}]]}
+Switch to and from constant character space mode.  If activated, the
+width of every character is @math{@var{width}/36} ems.  The em size is
+given absolutely by @var{em-size}; if this argument is missing, the em
+value is taken from the current font size (as set with the @code{ps}
+request) when the font is effectively in use.  Without second and
+third argument, constant character space mode is deactivated.
+
+Default unit for @var{em-size} is @samp{z}; @var{width} is an integer.
 @endDefreq
 
 @c ---------------------------------------------------------------------
@@ -6035,81 +6241,78 @@ missing, emboldening is turned off.
 @cindex ligatures and kerning
 @cindex kerning and ligatures
 
-Ligatures are groups of characters that are run together.
-For example, look at the letters @code{f} and @code{i}
-in the word "file."
-This produces a cleaner look (albeit subtle) to the printed output.
+Ligatures are groups of characters that are run together.  For
+example, the letters `f' and `i' can form a ligature `fi' as in the
+word `file'.  This produces a cleaner look (albeit subtle) to the
+printed output.  Usually, ligatures are not available in fonts for tty
+output devices.
 
-Most PostScript fonts support the fi and fl ligatures.
-The C/A/T typesetter that was the target of AT&T @code{troff}
-also supported ff, ffi, and ffl ligatures.
-Advanced typesetters or "expert" fonts may include ligatures
-for ft and ct, although GNU @code{troff} does not support these yet.
-
-@c XXX more info -> nroff mode
+Most @acronym{PostScript} fonts support the fi and fl ligatures.  The
+C/A/T typesetter that was the target of AT&T @code{troff} also
+supported `ff', `ffi', and `ffl' ligatures.  Advanced typesetters or
+`expert' fonts may include ligatures for `ft' and `ct', although GNU
+@code{troff} does not support these (yet).
 
 @cindex ligatures enabled register
 @Defreq {lg, [@Var{flag}]}
 @Defregx {.lg}
 The ligature mechanism can be switched on or off with the @code{lg}
-request; if the parameter is non-zero or missing, ligatures are enabled,
-otherwise disabled.  Default is on.  The current ligature mode can be
-found in the read-only number register @code{.lg} (set to 1 or@w{ }2 if
-ligatures are enabled, 0@w{ }otherwise).
+request; if the parameter is non-zero or missing, ligatures are
+enabled, otherwise disabled.  Default is on.  The current ligature
+mode can be found in the read-only number register @code{.lg} (set to
+1 or@w{ }2 if ligatures are enabled, 0@w{ }otherwise).
 
-Setting the ligature mode to@w{ }2 enables the two-character
-ligatures (fi, fl, and ff) and disables the three-character
-ligatures (ffi and ffl).
+Setting the ligature mode to@w{ }2 enables the two-character ligatures
+(fi, fl, and ff) and disables the three-character ligatures (ffi and
+ffl).
 @endDefreq
 
-@dfn{Pairwise kerning} is another subtle typesetting mechanism
-that moves characters closer together when space permits.
-@iftex
-For example, look at the letters @code{T} and @code{a}
-in the word "Tape."
-The @code{a} is tucked slightly under the @code{T}.
-@end iftex
+@dfn{Pairwise kerning} is another subtle typesetting mechanism that
+modifies the distance between a character pair to improve readability.
+In most cases (but not always) the distance is decreased.
+@ifnotinfo
+For example, compare the combination of the letters `V' and `A'.  With
+kerning, `VA' is printed.  Without kerning it appears as `V@w{}A'.
+@end ifnotinfo
+Typewriter-like fonts and fonts for terminals where all characters
+have the same width don't use kerning.
 
-@c XXX more info
 @cindex kerning enabled register
 @Defreq {kern, [@Var{flag}]}
 @Defregx {.kern}
-@Defescx {\\&, , , }
-Kerning can be activated with the @code{kern} request.  If the parameter
-is non-zero or missing, enable pairwise kerning, otherwise disable it.
-The read-only number register @code{.kern} is set to@w{ }1 if pairwise
-kerning is enabled, 0@w{ }otherwise.
+Kerning can be activated with the @code{kern} request.  If the
+parameter is non-zero or missing, enable pairwise kerning, otherwise
+disable it.  The read-only number register @code{.kern} is set to@w{
+}1 if pairwise kerning is enabled, 0@w{ }otherwise.
 
 @cindex zero width space character
 @cindex character, zero width space
 @cindex space character, zero width
 If the font description file contains pairwise kerning information,
-characters from that font are kerned.  Kerning between two
-characters can be inhibited by placing @code{\&} between them.
+characters from that font are kerned.  Kerning between two characters
+can be inhibited by placing @code{\&} between them: @samp{V\&A}.
 @endDefreq
-
 
 @cindex track kerning
 @cindex kerning, track
-Track kerning expands or reduces the space between characters.
-This can be handy, for example,
-if you need to squeeze a long word onto a single line
-or spread some text to fill a narrow column.
-@c XXX more info
-
-Track kerning must be used with great care since it is usually
-considered bad typography if the reader notices the effect.
+Track kerning expands or reduces the space between characters.  This
+can be handy, for example, if you need to squeeze a long word onto a
+single line or spread some text to fill a narrow column.  It must be
+used with great care since it is usually considered bad typography if
+the reader notices the effect.
 
 @Defreq {tkf, f s1 n1 s2 n2}
 Enable track kerning for font@w{ }@var{f}.  If the current font is@w{
 }@var{f} the width of every character is increased by an amount
-between @var{n1} and @var{n2}; if the current point size is less than or
-equal to @var{s1} the width is increased by @var{n1}; if it is
-greater than or equal to @var{s2} the width is increased by
-@var{n2}; if the point size is greater than or equal to @var{s1} and
-less than or equal to @var{s2} the increase in width is a linear
-function of the point size.
-@c XXX can n1 or n2 be negative?
+between @var{n1} and @var{n2} (@var{n1}, @var{n2} can be negative); if
+the current point size is less than or equal to @var{s1} the width is
+increased by @var{n1}; if it is greater than or equal to @var{s2} the
+width is increased by @var{n2}; if the point size is greater than or
+equal to @var{s1} and less than or equal to @var{s2} the increase in
+width is a linear function of the point size.
+
+The default unit is @samp{z} for @var{s1} and @var{s2}, @samp{p} for
+@var{n1} and @var{n2}.
 @endDefreq
 
 Sometimes, when typesetting letters of different fonts, more or less
@@ -6155,10 +6358,59 @@ isn't used widely.
 @c (f to (f.
 @endDefesc
 
+@Defesc {\\&, , , }
+This inserts a zero-width character, which is invisible.  Its intended
+use is to stop interaction of a character with its surroundings.
+
+@itemize @bullet
+@item
+It prevents the insertion of extra space after an end of sentence
+character.
+
+@Example
+Test.
+Test.
+    @result{} Test.  Test.
+Test.\&
+Test.
+    @result{} Test. Test.
+@endExample
+
+@item
+It prevents interpretation of a control character at the beginning of
+an input line.
+
+@Example
+.Test
+    @result{} warning: `Test' not defined
+\&.Test
+    @result{} .Test
+@endExample
+
+@item
+It prevents kerning between two characters.
+
+@ifnotinfo
+@example
+@group
+VA
+    @result{} @r{VA}
+V\&A
+    @result{} @r{V@w{}A}
+@end group
+@end example
+@end ifnotinfo
+
+@item
+It is needed to map an arbitrary character to nothing in the @code{tr}
+request (@pxref{Character Translations}).
+@end itemize
+@endDefesc
+
 
 @c =====================================================================
 
-@node Sizes, Strings, Fonts, Programming Tutorial
+@node Sizes, Strings, Fonts, gtroff Reference
 @section Sizes
 @cindex sizes
 
@@ -6167,15 +6419,15 @@ isn't used widely.
 @cindex size of type
 @cindex vertical spacing
 @cindex spacing, vertical
-@code{gtroff} uses two dimensions with each line of text, type size and
-vertical spacing.  The @dfn{type size} is the height from the text
-@dfn{baseline} to the top of the tallest character (descenders may drop
-below this baseline).  @dfn{Vertical spacing} is the amount of space
-@code{gtroff} allows for a line of text; normally, this is about 20%@w{
-}larger than the current type size.  Ratios smaller than this can result
-in hard-to-read text; larger than this, it spreads the text out more
-vertically (useful for term papers).  By default, @code{gtroff} uses
-10@w{ }point type on 12@w{ }point spacing.
+@code{gtroff} uses two dimensions with each line of text, type size
+and vertical spacing.  The @dfn{type size} is the height from the text
+@dfn{baseline} to the top of the tallest character (descenders may
+drop below this baseline).  @dfn{Vertical spacing} is the amount of
+space @code{gtroff} allows for a line of text; normally, this is about
+20%@w{ }larger than the current type size.  Ratios smaller than this
+can result in hard-to-read text; larger than this, it spreads the text
+out more vertically (useful for term papers).  By default,
+@code{gtroff} uses 10@w{ }point type on 12@w{ }point spacing.
 
 @cindex leading
 The difference between type size and vertical spacing is known, by
@@ -6197,12 +6449,14 @@ typesetters, as @dfn{leading}.
 @Defescx {\\s, , size, }
 @Defregx {.s}
 Use the @code{ps} request or the @code{\s} escape to change the type
-size (in points).  Specify the @var{size} as either an absolute point
-size, or as a relative change from the current size.  The size@w{ }0, or
-no argument, goes back to the previous size.
+size (in points).  Specify @var{size} as either an absolute point
+size, or as a relative change from the current size.  The size@w{ }0,
+or no argument, goes back to the previous size.
 
-The read-only number register @code{.s} returns the point size in points
-as a decimal fraction.
+Default unit of @code{ps} is @samp{z}.
+
+The read-only number register @code{.s} returns the point size in
+points as a decimal fraction.
 
 @Example
 snap, snap,
@@ -6219,28 +6473,28 @@ and the text begins.  Any of the following forms are valid:
 
 @table @code
 @item \s@var{n}
-Set the point size to @var{n}@w{ }points.  @var{n}@w{ }must be either 0
-or in the range 4 to@w{ }39.
+Set the point size to @var{n}@w{ }points.  @var{n}@w{ }must be either
+0 or in the range 4 to@w{ }39.
 
 @item \s+@var{n}
 @itemx \s-@var{n}
-Increase or decrease the point size by @var{n}@w{ }points.
-@var{n}@w{ }must be exactly one digit.
+Increase or decrease the point size by @var{n}@w{ }points.  @var{n}@w{
+}must be exactly one digit.
 
 @item \s(@var{nn}
-Set the point size to @var{nn}@w{ }points.  @var{nn} must be exactly two
-digits.
+Set the point size to @var{nn}@w{ }points.  @var{nn} must be exactly
+two digits.
 
 @item \s+(@var{nn}
 @itemx \s-(@var{nn}
 @itemx \s(+@var{nn}
 @itemx \s(-@var{nn}
-Increase or decrease the point size by @var{nn}@w{ }points.
-@var{nn} must be exactly two digits.
+Increase or decrease the point size by @var{nn}@w{ }points.  @var{nn}
+must be exactly two digits.
 @end table
 
-@xref{Fractional Type Sizes}, for yet another syntactical form of using
-the @code{\s} escape.
+@xref{Fractional Type Sizes}, for yet another syntactical form of
+using the @code{\s} escape.
 
 Some devices may only have certain permissible sizes, in which case
 @code{gtroff} rounds to the nearest permissible size.
@@ -6281,17 +6535,17 @@ spacing.
 @esindex \H
 @esindex \s
 A @dfn{scaled point} is equal to 1/@var{sizescale} points, where
-@var{sizescale} is specified in the @file{DESC} file (1@w{ }by default.)
-There is a new scale indicator @samp{z} which has the effect of
-multiplying by @var{sizescale}.  Requests and escape sequences in
-@code{gtroff} interpret arguments that represent a point size as being
-in units of scaled points, but they evaluate each such argument using a
-default scale indicator of @samp{z}.  Arguments treated in this way are
-the argument to the @code{ps} request, the third argument to the
-@code{cs} request, the second and fourth arguments to the @code{tkf}
-request, the argument to the @code{\H} escape sequence, and those
-variants of the @code{\s} escape sequence that take a numeric expression
-as their argument (see below).
+@var{sizescale} is specified in the @file{DESC} file (1@w{ }by
+default.)  There is a new scale indicator @samp{z} which has the
+effect of multiplying by @var{sizescale}.  Requests and escape
+sequences in @code{gtroff} interpret arguments that represent a point
+size as being in units of scaled points, but they evaluate each such
+argument using a default scale indicator of @samp{z}.  Arguments
+treated in this way are the argument to the @code{ps} request, the
+third argument to the @code{cs} request, the second and fourth
+arguments to the @code{tkf} request, the argument to the @code{\H}
+escape sequence, and those variants of the @code{\s} escape sequence
+that take a numeric expression as their argument (see below).
 
 For example, suppose @var{sizescale} is@w{ }1000; then a scaled point
 is equivalent to a millipoint; the request @w{@samp{.ps 10.25}} is
@@ -6352,7 +6606,7 @@ Increase or or decrease the point size by @var{n} scaled points;
 
 @c =====================================================================
 
-@node Strings, Conditionals and Loops, Sizes, Programming Tutorial
+@node Strings, Conditionals and Loops, Sizes, gtroff Reference
 @section Strings
 @cindex strings
 
@@ -6510,7 +6764,7 @@ interpolated as strings.
 
 @c =====================================================================
 
-@node Conditionals and Loops, Writing Macros, Strings, Programming Tutorial
+@node Conditionals and Loops, Writing Macros, Strings, gtroff Reference
 @section Conditionals and Loops
 @cindex conditionals and loops
 @cindex loops and conditionals
@@ -6529,11 +6783,13 @@ True if the current page is even or odd numbered (respectively).
 
 @item n
 @rqindex nroff
-True if the document is being processed in nroff mode.
+True if the document is being processed in nroff mode (i.e., the
+@code{.nroff} command has been issued).
 
 @item t
 @rqindex troff
-True if the document is being processed in troff mode.
+True if the document is being processed in troff mode (i.e., the
+@code{.troff} command has been issued).
 
 @item "@var{xxx}"@var{yyy}"
 True if the string @var{xxx} is equal to the string @var{yyy}.  Other
@@ -6696,7 +6952,7 @@ loop, immediately restarting the next iteration.
 
 @c =====================================================================
 
-@node Writing Macros, Page Motions, Conditionals and Loops, Programming Tutorial
+@node Writing Macros, Page Motions, Conditionals and Loops, gtroff Reference
 @section Writing Macros
 @cindex writing macros
 @cindex macros, writing
@@ -6881,7 +7137,7 @@ This would be called as
 
 @c =====================================================================
 
-@node Page Motions, Drawing Requests, Writing Macros, Programming Tutorial
+@node Page Motions, Drawing Requests, Writing Macros, gtroff Reference
 @section Page Motions
 @cindex page motions
 @cindex motions, page
@@ -6953,21 +7209,23 @@ There are a number of special case escapes for horizontal motion:
 
 @ftable @code
 @item \@key{SP}
-an unbreakable and unpaddable (i.e.@: not expanded during filling)
+An unbreakable and unpaddable (i.e.@: not expanded during filling)
 space.  (Note: This is a backslash followed by a space.)
 
 @item \~
-an unbreakable space that stretches like a normal inter-word space when
-a line is adjusted.
+An unbreakable space that stretches like a normal inter-word space
+when a line is adjusted.
 
 @item \|
-a 1/6@dmn{th} em space.  Ignored in nroff mode.
+A 1/6@dmn{th} em space.  Ignored for tty output devices (rounded to
+zero).
 
 @item \^
-a 1/12@dmn{th} em space.  Ignored in nroff mode.
+A 1/12@dmn{th} em space.  Ignored for tty output devices (rounded to
+zero).
 
 @item \0
-a space the size of a digit.
+A space the size of a digit.
 
 @item \&
 @cindex zero width space character
@@ -7069,7 +7327,7 @@ position.
 
 @c =====================================================================
 
-@node Drawing Requests, Traps, Page Motions, Programming Tutorial
+@node Drawing Requests, Traps, Page Motions, gtroff Reference
 @section Drawing Requests
 @cindex drawing requests
 @cindex requests for drawing
@@ -7270,7 +7528,7 @@ to build large brackets and braces.
 
 @c =====================================================================
 
-@node Traps, Diversions, Drawing Requests, Programming Tutorial
+@node Traps, Diversions, Drawing Requests, gtroff Reference
 @section Traps
 @cindex traps
 
@@ -7474,7 +7732,7 @@ Date:\t\t\a
 
 @c =====================================================================
 
-@node Diversions, Environments, Traps, Programming Tutorial
+@node Diversions, Environments, Traps, gtroff Reference
 @section Diversions
 @cindex diversions
 
@@ -7632,7 +7890,7 @@ hacks; for example, the following sets register @code{n} to@w{ }1.
 
 @c =====================================================================
 
-@node Environments, Suppressing output, Diversions, Programming Tutorial
+@node Environments, Suppressing output, Diversions, gtroff Reference
 @section Environments
 @cindex environments
 
@@ -7721,7 +7979,7 @@ Copies the environment @var{env} into the current environment.
 
 @c =====================================================================
 
-@node Suppressing output, I/O, Environments, Programming Tutorial
+@node Suppressing output, I/O, Environments, gtroff Reference
 @section Suppressing output
 @cindex suppressing output
 
@@ -7763,7 +8021,7 @@ written since the last call to @code{\O}.
 
 @c =====================================================================
 
-@node I/O, Postprocessor Access, Suppressing output, Programming Tutorial
+@node I/O, Postprocessor Access, Suppressing output, gtroff Reference
 @section I/O
 @cindex i/o
 @cindex input and output requests
@@ -7960,7 +8218,7 @@ is interpreted in copy-in mode.
 
 @c =====================================================================
 
-@node Postprocessor Access, Miscellaneous, I/O, Programming Tutorial
+@node Postprocessor Access, Miscellaneous, I/O, gtroff Reference
 @section Postprocessor Access
 @cindex postprocessor access
 @cindex access of postprocessor
@@ -7991,7 +8249,7 @@ that do not know about this extension.
 
 @c =====================================================================
 
-@node Miscellaneous, Debugging, Postprocessor Access, Programming Tutorial
+@node Miscellaneous, Debugging, Postprocessor Access, gtroff Reference
 @section Miscellaneous
 @cindex miscellaneous
 
@@ -8077,7 +8335,7 @@ intelligible to the user.
 
 @c =====================================================================
 
-@node Debugging, Implementation Differences, Miscellaneous, Programming Tutorial
+@node Debugging, Implementation Differences, Miscellaneous, gtroff Reference
 @section Debugging
 @cindex debugging
 
@@ -8314,7 +8572,7 @@ All warnings.
 
 @c =====================================================================
 
-@node Implementation Differences, Summary, Debugging, Programming Tutorial
+@node Implementation Differences, Summary, Debugging, gtroff Reference
 @section Implementation Differences
 @cindex implementation differences
 @cindex differences in implementation
@@ -8460,7 +8718,7 @@ is unsuitable, the new @code{\?} escape sequence.
 
 @c =====================================================================
 
-@node Summary,  , Implementation Differences, Programming Tutorial
+@node Summary,  , Implementation Differences, gtroff Reference
 @section Summary
 @cindex summary
 
@@ -8471,7 +8729,7 @@ is unsuitable, the new @code{\?} escape sequence.
 @c =====================================================================
 @c =====================================================================
 
-@node Preprocessors, Output Devices, Programming Tutorial, Top
+@node Preprocessors, Output Devices, gtroff Reference, Top
 @chapter Preprocessors
 @cindex preprocessors
 

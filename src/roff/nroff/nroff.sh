@@ -66,8 +66,11 @@ for i
       # Solaris 2.2 `man' uses -u0; ignore it,
       # since `less' and `more' can use the emboldening info.
       ;;
-    -v)
+    -v | --version)
       echo "GNU nroff (groff) version @VERSION@"
+      exit 0 ;;
+    --help)
+      echo "usage: nroff [-h] [-i] [-mNAME] [-nNUM] [-oLIST] [-rCN] [-Tname] [FILE...]"
       exit 0 ;;
     --)
       shift

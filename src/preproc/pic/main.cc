@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -464,16 +464,15 @@ void do_whole_file(const char *filename)
 }
 #endif
 
-void usage()
+void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [ -nvC ] [ filename ... ]\n", program_name);
+  fprintf(stream, "usage: %s [ -nvC ] [ filename ... ]\n", program_name);
 #ifdef TEX_SUPPORT
-  fprintf(stderr, "       %s -t [ -cvzC ] [ filename ... ]\n", program_name);
+  fprintf(stream, "       %s -t [ -cvzC ] [ filename ... ]\n", program_name);
 #endif
 #ifdef FIG_SUPPORT
-  fprintf(stderr, "       %s -f [ -v ] [ filename ]\n", program_name);
+  fprintf(stream, "       %s -f [ -v ] [ filename ]\n", program_name);
 #endif
-  exit(1);
 }
 
 #ifdef __MSDOS__
@@ -518,7 +517,13 @@ int main(int argc, char **argv)
   int whole_file_flag = 0;
   int fig_flag = 0;
 #endif
-  while ((opt = getopt(argc, argv, "T:CDSUtcvnxzpf")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "T:CDSUtcvnxzpf", long_options, NULL))
+	 != EOF)
     switch (opt) {
     case 'C':
       compatible_flag = 1;
@@ -572,8 +577,13 @@ int main(int argc, char **argv)
       // zero length lines will be printed as dots
       zero_length_line_flag++;
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);
@@ -601,9 +611,10 @@ int main(int argc, char **argv)
   if (whole_file_flag) {
     if (optind >= argc)
       do_whole_file("-");
-    else if (argc - optind > 1)
-      usage();
-    else
+    else if (argc - optind > 1) {
+      usage(stderr);
+      exit(1);
+    } else
       do_whole_file(argv[optind]);
   }
   else {

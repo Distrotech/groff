@@ -6533,7 +6533,7 @@ printer *make_printer()
   return new html_printer;
 }
 
-static void usage();
+static void usage(FILE *stream);
 
 int main(int argc, char **argv)
 {
@@ -6541,7 +6541,13 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
-  while ((c = getopt(argc, argv, "F:atTvdgmx?I:r:")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((c = getopt_long(argc, argv, "F:atTvdgmx?I:r:", long_options, NULL))
+	 != EOF)
     switch(c) {
     case 'v':
       {
@@ -6585,8 +6591,13 @@ int main(int argc, char **argv)
       // leave margins alone
       margin_on = TRUE;
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);
@@ -6601,9 +6612,8 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [-avdgmt?] [-r resolution] [-F dir] [-I imagetype] [files ...]\n",
+  fprintf(stream, "usage: %s [-avdgmt?] [-r resolution] [-F dir] [-I imagetype] [files ...]\n",
 	  program_name);
-  exit(1);
 }

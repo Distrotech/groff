@@ -96,7 +96,7 @@ void handle_unknown_desc_command(const char *command, const char *arg,
 				 const char *filename, int lineno);
 const char *xbasename(const char *);
 
-void usage();
+void usage(FILE *stream);
 void help();
 
 int main(int argc, char **argv)
@@ -117,8 +117,14 @@ int main(int argc, char **argv)
   if (!command_prefix)
     command_prefix = PROG_PREFIX;
   commands[TROFF_INDEX].set_name(command_prefix, "troff");
-  while ((opt = getopt(argc, argv,
-		       "abCd:eEf:F:gGhiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ"))
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, 'h' },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv,
+			    "abCd:eEf:F:gGhiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
+			    long_options, NULL))
 	 != EOF) {
     char buf[3];
     buf[0] = '-';
@@ -171,7 +177,7 @@ int main(int argc, char **argv)
       {
 	extern const char *Version_string;
 	printf("GNU groff version %s\n", Version_string);
-	printf("Copyright (C) 2000 Free Software Foundation, Inc.\n"
+	printf("Copyright (C) 1989-2001 Free Software Foundation, Inc.\n"
 	       "GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
 	       "You may redistribute copies of groff and its subprograms\n"
 	       "under the terms of the GNU General Public License.\n"
@@ -256,7 +262,8 @@ int main(int argc, char **argv)
       Xflag++;
       break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
       break;
     default:
       assert(0);
@@ -647,9 +654,9 @@ char **possible_command::get_argv()
   return argv;
 }
 
-void synopsis()
+void synopsis(FILE *stream)
 {
-  fprintf(stderr,
+  fprintf(stream,
 "usage: %s [-abeghilpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
 "       [-wname] [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
 "       [-Larg] [-Idir] [files...]\n",
@@ -658,7 +665,7 @@ void synopsis()
 
 void help()
 {
-  synopsis();
+  synopsis(stdout);
   fputs("\n"
 "-h\tprint this message\n"
 "-t\tpreprocess with tbl\n"
@@ -697,15 +704,14 @@ void help()
 "-U\tenable unsafe mode\n"
 "-Idir\tsearch dir for soelim.  Implies -s\n"
 "\n",
-	stderr);
+	stdout);
   exit(0);
 }
 
-void usage()
+void usage(FILE *stream)
 {
-  synopsis();
-  fprintf(stderr, "%s -h gives more help\n", program_name);
-  exit(1);
+  synopsis(stream);
+  fprintf(stream, "%s -h gives more help\n", program_name);
 }
 
 extern "C" {

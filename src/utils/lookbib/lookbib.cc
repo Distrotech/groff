@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -36,11 +36,10 @@ extern "C" {
   int isatty(int);
 }
 
-static void usage()
+static void usage(FILE *stream)
 {
-  fprintf(stderr, "usage: %s [-v] [-i XYZ] [-t N] database ...\n",
+  fprintf(stream, "usage: %s [-v] [-i XYZ] [-t N] database ...\n",
 	  program_name);
-  exit(1);
 }
 
 int main(int argc, char **argv)
@@ -49,7 +48,12 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int opt;
-  while ((opt = getopt(argc, argv, "vVi:t:")) != EOF)
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "vVi:t:", long_options, NULL)) != EOF)
     switch (opt) {
     case 'V':
       verify_flag = 1;
@@ -77,13 +81,21 @@ int main(int argc, char **argv)
 	exit(0);
 	break;
       }
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
-      usage();
+      usage(stderr);
+      exit(1);
+      break;
     default:
       assert(0);
     }
-  if (optind >= argc)
-    usage();
+  if (optind >= argc) {
+    usage(stderr);
+    exit(1);
+  }
   search_list list;
   for (int i = optind; i < argc; i++)
     list.add_file(argv[i]);

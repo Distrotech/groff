@@ -58,7 +58,6 @@ extern "C" {
 #endif /* not isatty */
 #endif /* not ISATTY_MISSING */
 
-#define USAGE_EXIT_CODE 1
 #define MACRO_PREFIX "tmac."
 #define MACRO_POSTFIX ".tmac"
 #define INITIAL_STARTUP_FILE "troffrc"
@@ -6031,13 +6030,12 @@ static void add_string(const char *s, string_list **p)
   *p = new string_list(s);
 }
 
-void usage(const char *prog)
+void usage(FILE *stream, const char *prog)
 {
-  errprint(
-"usage: %1 -abivzCERU -wname -Wname -dcs -ffam -mname -nnum -olist\n"
+  fprintf(stream,
+"usage: %s -abivzCERU -wname -Wname -dcs -ffam -mname -nnum -olist\n"
 "       -rcn -Tname -Fdir -Mdir [files...]\n",
 	  prog);
-  exit(USAGE_EXIT_CODE);
 }
 
 int main(int argc, char **argv)
@@ -6068,7 +6066,13 @@ int main(int argc, char **argv)
     if (putenv(strsave(e.contents())))
       fatal("putenv failed");
   }
-  while ((c = getopt(argc, argv, "abivw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU"))
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((c = getopt_long(argc, argv, "abivw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU",
+			  long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -6154,8 +6158,13 @@ int main(int argc, char **argv)
     case 'U':
       safer_flag = 0;	// unsafe behaviour
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout,argv[0]);
+      exit(0);
+      break;
     case '?':
-      usage(argv[0]);
+      usage(stderr,argv[0]);
+      exit(1);
       break;		// never reached
     default:
       assert(0);

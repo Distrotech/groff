@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -173,6 +173,7 @@ static int special_flag = 0;
 static int italic_flag = 0;
 static int italic_sep;
 
+static void usage(FILE *stream);
 static void usage();
 static const char *xbasename(const char *);
 static void read_tags(File &);
@@ -206,7 +207,12 @@ int main(int argc, char **argv)
   int opt;
   int debug_flag = 0;
 
-  while ((opt = getopt(argc, argv, "dsvi:")) != EOF) {
+  static const struct option long_options[] = {
+    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "version", no_argument, 0, 'v' },
+    { NULL, 0, 0, 0 }
+  };
+  while ((opt = getopt_long(argc, argv, "dsvi:", long_options, NULL)) != EOF) {
     switch (opt) {
     case 'd':
       debug_flag = 1;
@@ -225,8 +231,13 @@ int main(int argc, char **argv)
 	exit(0);
       }
       break;
+    case CHAR_MAX + 1: // --help
+      usage(stdout);
+      exit(0);
+      break;
     case '?':
       usage();
+      break;
     default:
       assert(0);
     }
@@ -264,10 +275,15 @@ int main(int argc, char **argv)
 }
 
 static
+void usage(FILE *stream)
+{
+  fprintf(stream, "usage: %s [-s] [-i n] tfm_file map_file output_font\n",
+	  program_name);
+}
+static
 void usage()
 {
-  fprintf(stderr, "usage: %s [-s] [-i n] tfm_file map_file output_font\n",
-	  program_name);
+  usage(stderr);
   exit(1);
 }
 
