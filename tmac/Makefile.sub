@@ -32,6 +32,7 @@ all: stamp-strip stamp-wrap stamp-sed
 install_data: $(NORMALFILES) $(SPECIALFILES) \
               stamp-wrap stamp-strip stamp-sed man.local
 	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
+	-test -d $(localtmacdir) || $(mkinstalldirs) $(localtmacdir)
 	if test -n "$(tmac_wrap)"; then \
 	  for m in ""$(tmac_wrap); do \
 	    $(INSTALL_DATA) $$m-wrap $(tmacdir)/tmac.$$m; \
@@ -58,8 +59,8 @@ install_data: $(NORMALFILES) $(SPECIALFILES) \
 	  rm -f $(mdocdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(mdocdir)/$$f; \
 	done
-	-test -f $(tmacdir)/man.local || \
-	  $(INSTALL_DATA) $(srcdir)/man.local $(tmacdir)/man.local
+	-test -f $(localtmacdir)/man.local || \
+	  $(INSTALL_DATA) $(srcdir)/man.local $(localtmacdir)/man.local
 	-rm -f temp
 
 stamp-strip: $(STRIPFILES) $(MDOCFILES)
@@ -101,8 +102,8 @@ uninstall_sub:
 	-rm -f $(tmacdir)/tmac.$(tmac_s_prefix)s
 	-rm -f $(tmacdir)/tmac.$(tmac_an_prefix)an
 	-rm -f $(tmacdir)/tmac.man $(tmacdir)/tmac.ms
-	-if cmp -s $(tmacdir)/man.local $(srcdir)/man.local; then \
-	  rm -f $(tmacdir)/man.local; \
+	-if cmp -s $(localtmacdir)/man.local $(srcdir)/man.local; then \
+	  rm -f $(localtmacdir)/man.local; \
 	fi
 	-for f in $(MDOCFILES); do rm -f $(mdocdir)/$$f; done
 	-rmdir $(mdocdir)

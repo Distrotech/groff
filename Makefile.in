@@ -100,8 +100,11 @@ fontpath=.:$(fontdir):/usr/lib/font
 # tmacdir says where to install macros.
 tmacdir=$(datasubdir)/tmac
 
+# localtmacdir says where local files will be installed
+localtmacdir=$(dataprogramdir)/site-tmac
+
 # tmacpath says where to look for macro files.
-tmacpath=.:$(tmacdir)
+tmacpath=.:$(localtmacdir):$(tmacdir)
 
 # sys_tmac_prefix is prefix (if any) for system macro packages
 sys_tmac_prefix=@sys_tmac_prefix@
@@ -266,6 +269,7 @@ MDEFINES= \
   "fontdir=$(fontdir)" \
   "fontpath=$(fontpath)" \
   "tmacdir=$(tmacdir)" \
+  "localtmacdir=$(localtmacdir)" \
   "tmacpath=$(tmacpath)" \
   "indexext=$(indexext)" \
   "indexdir=$(indexdir)" \
@@ -523,7 +527,7 @@ uninstall: uninstall_sub uninstall_dirs
 uninstall_dirs:
 # Use rmdir here so that the directories are only removed if they're empty
 	-rmdir $(man1dir) $(man5dir) $(man7dir) $(manroot) \
-	  $(tmacdir) $(fontdir) $(bindir) \
+	  $(tmacdir) $(localtmacdir) $(fontdir) $(bindir) \
 	  $(datasubdir) $(dataprogramdir) $(datadir)
 
 
