@@ -11,7 +11,7 @@
 .ftr TT CW
 .ftr H HR
 .
-.special TR TI MI S CW
+.special TR TI MI S SA SB CW
 .fspecial TI CWI
 .fspecial TBI CWI
 .fspecial HI CWI
@@ -23,7 +23,6 @@
 .\" otherwise.
 .fchar _ \R'dvi-char (\w'M' == \w'i')'\\*[dvi-char-_-\\n[dvi-char]]
 .\" Normally use a rule.
-.\" This is designed so that \(ul, \(rn and \(br form corners.
 .ds dvi-char-_-0 \Z'\v'.08m'\D'R .54m .04m''\h'.5m'
 .\" In fixed-width fonts (CW and CWI) use a real _ character.
 .ds dvi-char-_-1 _
@@ -42,11 +41,15 @@
 .ds dvi-char-/L-1 \Z'\v'0.22v'\h'-0.14m'\''L
 .ds dvi-char-/L-2 \Z'\v'0.22v'\h'-0.21m'\''L
 .
+.\" This is designed so that \(ul, \(rn and \(br form corners.
+.char \[br] \Z'\v'.25m'\D'R .04m -1m''
+.char \[ul] \Z'\v'.23m'\D'R .54m .04m''\h'.5m'
+.char \[rn] \Z'\v'-.77m'\D'R .54m .04m''\h'.5m'
+.
+.char \[or] \h'.1m'\Z'\D'l 0 -.675m''\h'.1m'
+.char \[ru] \Z'\v'-.02m'\D'R .54m .04m''\h'.5m'
+.
 .fchar \[radicalex] \D'R .5m -.04m'\v'.04m'
-.fchar \[ul] \Z'\v'.23m'\D'R .54m .04m''\h'.5m'
-.fchar \[br] \Z'\v'.25m'\D'R .04m -1m''
-.fchar \[ru] \Z'\v'-.02m'\D'R .54m .04m''\h'.5m'
-.fchar \[rn] \Z'\v'-.77m'\D'R .54m .04m''\h'.5m'
 .fchar \[co] \
 \z\s-2\[ci]\s0\
 \h'\w'\s-2\[ci]\s0'u-\w'\s-4C\s0'u/2u'\
@@ -78,7 +81,9 @@ D\v'-.33m'\s0\v'.33m'
 .fchar \[Tp] \zlp
 .fchar \[nb] \[slashnot]\[sb]
 .cflags 8 \[an]
-.fchar \[an] \h'-.167m'\[mi]\h'-.167m'
+.schar \[an] \h'-.167m'\[mi]\h'-.167m'
+.fschar CW \[an] -
+.fschar CWI \[an] \f[CW]\[mi]
 .\" we follow the EC ligatures for fixed-width dashes
 .fchar \[em] --
 .fchar \[en] -

@@ -4,7 +4,7 @@
 @c Please convert this manual with `texi2dvi -e groff.texinfo' due to a bug
 @c in texinfo regarding expansion of user-defined macros.
 @c
-@c You need texinfo 4.2 or newer to format this document!
+@c You need texinfo 4.3 or newer to format this document!
 @c
 
 @c %**start of header (This is for running Texinfo on a region.)
@@ -326,17 +326,6 @@ Software Foundation raise funds for GNU development.''
 @end macro
 
 
-@c due to a bug in texinfo 4.2, the spacing of `<' is bad in @item
-
-@tex
-\gdef\LT{\string<}
-@end tex
-
-@macro LT
-<
-@end macro
-
-
 @c We need special parentheses and brackets:
 @c
 @c . Real parentheses in @deffn produce an error while compiling with
@@ -382,7 +371,7 @@ Software Foundation raise funds for GNU development.''
 @subtitle The GNU implementation of @code{troff}
 @subtitle Edition 1.18
 @subtitle Spring 2002
-@author by Trent A.@w{ }Fisher
+@author by Trent A.@tie{}Fisher
 @author and Werner Lemberg (@email{bug-groff@@gnu.org})
 
 @page
@@ -441,7 +430,7 @@ Software Foundation raise funds for GNU development.''
 
 GNU @code{troff} (or @code{groff}) is a system for typesetting
 documents.  @code{troff} is very flexible and has been in existence (and
-use) for about 3@w{ }decades.  It is quite widespread and firmly
+use) for about 3@tie{}decades.  It is quite widespread and firmly
 entrenched in the @acronym{UNIX} community.
 
 @menu
@@ -514,7 +503,7 @@ impossible to accomplish complex actions.''  --Doug Gwyn (22/Jun/91 in
 @cindex @code{runoff}, the program
 @cindex @code{rf}, the program
 @code{troff} can trace its origins back to a formatting program called
-@code{runoff}, written by J.@w{ }E.@w{ }Saltzer, which ran on MIT's CTSS
+@code{runoff}, written by J.@tie{}E.@tie{}Saltzer, which ran on MIT's CTSS
 operating system in the mid-sixties.  This name came from the common
 phrase of the time ``I'll run off a document.''  Bob Morris ported it to
 the 635 architecture and called the program @code{roff} (an abbreviation
@@ -530,7 +519,7 @@ was sitting around Bell Labs.  In 1971 the developers wanted to get a
 justify the cost for this system, they proposed that they would
 implement a document formatting system for the @acronym{AT&T} patents
 division.  This first formatting program was a reimplementation of
-McIllroy's @code{roff}, written by J.@w{ }F.@w{ }Ossanna.
+McIllroy's @code{roff}, written by J.@tie{}F.@tie{}Ossanna.
 
 @cindex @code{nroff}, the program
 When they needed a more flexible language, a new version of @code{roff}
@@ -562,7 +551,7 @@ according to a bibliographic database.
 
 Unfortunately, Ossanna's @code{troff} was written in @w{PDP-11} assembly
 language and produced output specifically for the CAT phototypesetter.
-He rewrote it in C, although it was now 7000@w{ }lines of uncommented
+He rewrote it in C, although it was now 7000@tie{}lines of uncommented
 code and still dependent on the CAT.  As the CAT became less common, and
 was no longer supported by the manufacturer, the need to make it support
 other devices became a priority.  However, before this could be done,
@@ -585,8 +574,8 @@ preprocessor did the same, although via a much different paradigm.  The
 other preprocessors, produced @code{pic} code.
 
 James Clark began work on a GNU implementation of @code{ditroff} in
-early@w{ }1989.  The first version, @code{groff}@w{ }0.3.1, was released
-June@w{ }1990.  @code{groff} included:
+early@tie{}1989.  The first version, @code{groff}@tie{}0.3.1, was released
+June@tie{}1990.  @code{groff} included:
 
 @itemize @bullet
 @item
@@ -597,7 +586,7 @@ The @code{soelim}, @code{pic}, @code{tbl}, and @code{eqn} preprocessors.
 
 @item
 Postprocessors for character devices, @sc{PostScript}, @TeX{} DVI, and
-X@w{ }Windows.  GNU @code{troff} also eliminated the need for a
+X@tie{}Windows.  GNU @code{troff} also eliminated the need for a
 separate @code{nroff} program with a postprocessor which would produce
 @acronym{ASCII} output.
 
@@ -615,9 +604,9 @@ additions of a replacement for @code{refer}, an implementation of the
 document (@code{grog}).
 
 It was declared a stable (i.e.@: non-beta) package with the release of
-version@w{ }1.04 around November@w{ }1991.
+version@tie{}1.04 around November@tie{}1991.
 
-Beginning in@w{ }1999, @code{groff} has new maintainers (the package was
+Beginning in@tie{}1999, @code{groff} has new maintainers (the package was
 an orphan for a few years).  As a result, new features and programs like
 @code{grn}, a preprocessor for gremlin images, and an output device to
 produce @acronym{HTML} output have been added.
@@ -704,9 +693,9 @@ output and error messages
 
 Since @code{groff} provides such low-level facilities, it can be quite
 difficult to use by itself.  However, @code{groff} provides a
-@dfn{macro} facility to specify how certain routine operations (e.g.@w{
-}starting paragraphs, printing headers and footers, etc.)@: should be
-done.  These macros can be collected together into a @dfn{macro
+@dfn{macro} facility to specify how certain routine operations
+(e.g.@tie{}starting paragraphs, printing headers and footers, etc.)@:
+should be done.  These macros can be collected together into a @dfn{macro
 package}.  There are a number of macro packages available; the most
 common (and the ones described in this manual) are @file{man},
 @file{mdoc}, @file{me}, @file{ms}, and @file{mm}.
@@ -759,8 +748,8 @@ mathematical pictures (@code{ideal}) and chemical structures
 @code{groff} actually produces device independent code which may be
 fed into a postprocessor to produce output for a particular device.
 Currently, @code{groff} has postprocessors for @sc{PostScript}
-devices, character terminals, X@w{ }Windows (for previewing), @TeX{}
-DVI format, HP LaserJet@w{ }4 and Canon LBP printers (which use
+devices, character terminals, X@tie{}Windows (for previewing), @TeX{}
+DVI format, HP LaserJet@tie{}4 and Canon LBP printers (which use
 @acronym{CAPSL}), and @acronym{HTML}.
 
 
@@ -774,9 +763,9 @@ Large portions of this manual were taken from existing documents, most
 notably, the manual pages for the @code{groff} package by James Clark,
 and Eric Allman's papers on the @file{me} macro package.
 
-The section on the @file{man} macro package is partly based on Susan@w{
-}G.@: Kleinmann's @file{groff_man} manual page written for the Debian
-GNU/Linux system.
+The section on the @file{man} macro package is partly based on
+Susan@tie{}G.@: Kleinmann's @file{groff_man} manual page written for the
+Debian GNU/Linux system.
 
 Larry Kollar contributed the section in the @file{ms} macro package.
 
@@ -872,8 +861,8 @@ gtroff [ -abcivzCERU ] [ -w@var{name} ] [ -W@var{name} ] [ -d@var{cs} ]
 Obviously, many of the options to @code{groff} are actually passed on to
 @code{gtroff}.
 
-Options without an argument can be grouped behind a single@w{ }@option{-}.
-A filename of@w{ }@file{-} denotes the standard input.  It is possible to
+Options without an argument can be grouped behind a single@tie{}@option{-}.
+A filename of@tie{}@file{-} denotes the standard input.  It is possible to
 have whitespace between an option and its parameter.
 
 The @code{grog} command can be used to guess the correct @code{groff}
@@ -985,13 +974,13 @@ character set.
 @item latin1
 @cindex encoding, latin-1
 @cindex latin-1, encoding
-For typewriter-like devices that support the @w{Latin-1} (@w{ISO
-8859-1}) character set.
+For typewriter-like devices that support the @w{Latin-1}
+(ISO@tie{}@w{8859-1}) character set.
 
 @item utf8
 @cindex encoding, utf-8
 @cindex utf-8, encoding
-For typewriter-like devices which use the Unicode (@w{ISO 10646})
+For typewriter-like devices which use the Unicode (ISO@tie{}10646)
 character set with @w{UTF-8} encoding.
 
 @item cp1047
@@ -1023,7 +1012,7 @@ postprocessor (@code{post-grohtml}).
 @cindex output device usage number register (@code{.T})
 The predefined @code{gtroff} string register @code{.T} contains the
 current output device; the read-only number register @code{.T} is set
-to@w{ }1 if this option is used (which is always true if @code{groff} is
+to@tie{}1 if this option is used (which is always true if @code{groff} is
 used to call @code{gtroff}).  @xref{Built-in Registers}.
 
 The postprocessor to be used for a device is specified by the
@@ -1065,7 +1054,7 @@ Unsafe mode.  This enables the @code{open}, @code{opena}, @code{pso},
 @item -a
 @cindex @acronym{ASCII} approximation output register (@code{.A})
 Generate an @acronym{ASCII} approximation of the typeset output.  The
-read-only register @code{.A} is then set to@w{ }1.  @xref{Built-in
+read-only register @code{.A} is then set to@tie{}1.  @xref{Built-in
 Registers}.  A typical example is
 
 @Example
@@ -1104,7 +1093,7 @@ list of incompatibilities between @code{groff} and @acronym{AT&T}
 
 @item -d@var{c}@var{s}
 @itemx -d@var{name}=@var{s}
-Define @var{c} or @var{name} to be a string@w{ }@var{s}.  @var{c}@w{ }must
+Define @var{c} or @var{name} to be a string@tie{}@var{s}.  @var{c}@tie{}must
 be a one-letter name; @var{name} can be of arbitrary length.  All string
 assignments happen before loading any macro file (including the start-up
 file).
@@ -1123,10 +1112,10 @@ Number the first page @var{num}.
 @item -o@var{list}
 @cindex print current page register (@code{.P})
 Output only pages in @var{list}, which is a comma-separated list of page
-ranges; @samp{@var{n}} means print page@w{ }@var{n}, @samp{@var{m}-@var{n}}
-means print every page between @var{m} and@w{ }@var{n}, @samp{-@var{n}}
-means print every page up to@w{ }@var{n}, @samp{@var{n}-} means print every
-page beginning with@w{ }@var{n}.  @code{gtroff} exits after printing the
+ranges; @samp{@var{n}} means print page@tie{}@var{n}, @samp{@var{m}-@var{n}}
+means print every page between @var{m} and@tie{}@var{n}, @samp{-@var{n}}
+means print every page up to@tie{}@var{n}, @samp{@var{n}-} means print every
+page beginning with@tie{}@var{n}.  @code{gtroff} exits after printing the
 last page in the list.  All the ranges are inclusive on both ends.
 
 Within @code{gtroff}, this information can be extracted with the
@@ -1138,9 +1127,9 @@ chapter.
 
 @item -r@var{c}@var{n}
 @itemx -r@var{name}=@var{n}
-Set number register@w{ }@var{c} or @var{name} to the value@w{ }@var{n}.
-@var{c}@w{ }must be a one-letter name; @var{name} can be of arbitrary
-length.  @var{n}@w{ }can be any @code{gtroff} numeric expression.  All
+Set number register@tie{}@var{c} or @var{name} to the value@tie{}@var{n}.
+@var{c}@tie{}must be a one-letter name; @var{name} can be of arbitrary
+length.  @var{n}@tie{}can be any @code{gtroff} numeric expression.  All
 register  assignments happen before loading any macro file (including
 the start-up file).
 
@@ -1176,7 +1165,7 @@ not within @code{gtroff}) which can modify the behavior of @code{groff}.
 @tindex GROFF_COMMAND_PREFIX@r{, environment variable}
 @cindex command prefix
 @cindex prefix, for commands
-If this is set to@w{ }@var{X}, then @code{groff} runs @code{@var{X}troff}
+If this is set to@tie{}@var{X}, then @code{groff} runs @code{@var{X}troff}
 instead of @code{gtroff}.  This also applies to @code{tbl}, @code{pic},
 @code{eqn}, @code{grn}, @code{refer}, and @code{soelim}.  It does not
 apply to @code{grops}, @code{grodvi}, @code{grotty}, @code{pre-grohtml},
@@ -1424,7 +1413,7 @@ generates one or more of the options @option{-e}, @option{-man},
 @option{-mdoc-old}, @option{-p}, @option{-R}, @option{-g}, @option{-G},
 @option{-s}, and @option{-t}.
 
-A special file name@w{ }@file{-} refers to the standard input.  Specifying
+A special file name@tie{}@file{-} refers to the standard input.  Specifying
 no files also means to read the standard input.  Any specified options
 are included in the printed command.  No space is allowed between
 options and their arguments.  The only options recognized are
@@ -1484,7 +1473,7 @@ macro package.
 
 This section covers some of the basic concepts necessary to understand
 how to use a macro package.@footnote{This section is derived from
-@cite{Writing Papers with nroff using -me} by Eric P.@w{ }Allman.}
+@cite{Writing Papers with nroff using -me} by Eric P.@tie{}Allman.}
 References are made throughout to more detailed information, if desired.
 
 @code{gtroff} reads an input file prepared by the user and outputs a
@@ -1510,7 +1499,7 @@ spaces one line, but
 @endExample
 
 @noindent
-spaces four lines.  The number@w{ }4 is an argument to the @code{sp}
+spaces four lines.  The number@tie{}4 is an argument to the @code{sp}
 request which says to space four lines instead of one.  Arguments are
 separated from the request and from each other by spaces (@emph{no}
 tabs).  More details on this can be found in @ref{Request Arguments}.
@@ -1598,10 +1587,10 @@ The @code{bp} request starts a new page, causing a line break.
 @cindex blank line (@code{sp})
 @cindex empty line (@code{sp})
 @cindex line, empty (@code{sp})
-The request @w{@samp{.sp @var{N}}} leaves @var{N}@w{ }lines of blank
-space.  @var{N}@w{ }can be omitted (meaning skip a single line) or can
-be of the form @var{N}i (for @var{N}@w{ }inches) or @var{N}c (for
-@var{N}@w{ }centimeters).  For example, the input:
+The request @w{@samp{.sp @var{N}}} leaves @var{N}@tie{}lines of blank
+space.  @var{N}@tie{}can be omitted (meaning skip a single line) or can
+be of the form @var{N}i (for @var{N}@tie{}inches) or @var{N}c (for
+@var{N}@tie{}centimeters).  For example, the input:
 
 @Example
 .sp 1.5i
@@ -1619,7 +1608,7 @@ measurement units are available, see @ref{Measurements}).
 Text lines can be centered by using the @code{ce} request.  The line
 after @code{ce} is centered (horizontally) on the page.  To center more
 than one line, use @w{@samp{.ce @var{N}}} (where @var{N} is the number
-of lines to center), followed by the @var{N}@w{ }lines.  To center many
+of lines to center), followed by the @var{N}@tie{}lines.  To center many
 lines without counting them, type:
 
 @Example
@@ -1784,7 +1773,7 @@ not.
 @cindex keep, floating
 @cindex floating keep
 @dfn{Floating keeps} move relative to the text.  Hence, they are good for
-things which are referred to by name, such as ``See figure@w{ }3''.  A
+things which are referred to by name, such as ``See figure@tie{}3''.  A
 floating keep appears at the bottom of the current page if it fits;
 otherwise, it appears at the top of the next page.  Meanwhile, the
 surrounding text `flows' around the keep, thus leaving no blank areas.
@@ -1883,7 +1872,7 @@ extend their functionality.
 
 For example, all macro packages mark tables (which are processed with
 @code{gtbl}) by placing them between @code{TS} and @code{TE} macros.
-The @file{ms} macro package has an option, @samp{.TS@w{ }H}, that prints
+The @file{ms} macro package has an option, @samp{.TS@tie{}H}, that prints
 a caption at the top of a new page (when the table is too long to fit on
 a single page).
 
@@ -1975,13 +1964,13 @@ It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
 @table @code
 @item -rLL=@var{length}
 Set line length to @var{length}.  If not specified, the line length
-defaults to 78@w{ }en in nroff mode (this is 78@w{ }characters per
-line) and 6.5@w{ }inch otherwise.
+defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
+line) and 6.5@tie{}inch otherwise.
 
 @item -rLT=@var{length}
 Set title length to @var{length}.  If not specified, the title length
-defaults to 78@w{ }en in nroff mode (this is 78@w{ }characters per
-line) and 6.5@w{ }inch otherwise.
+defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
+line) and 6.5@tie{}inch otherwise.
 
 @item -rcR=1
 This option (the default if a TTY output device is used) creates a
@@ -1990,18 +1979,18 @@ to disable it.
 
 @item -rC1
 If more than one manual page is given on the command line, number the
-pages continuously, rather than starting each at@w{ }1.
+pages continuously, rather than starting each at@tie{}1.
 
 @item -rD1
 Double-sided printing.  Footers for even and odd pages are formatted
 differently.
 
 @item -rP@var{nnn}
-Page numbering starts with @var{nnn} rather than with@w{ }1.
+Page numbering starts with @var{nnn} rather than with@tie{}1.
 
 @item -rS@var{xx}
-Use @var{xx} (which can be 10, 11, or@w{ }12@dmn{pt}) as the base
-document font size instead of the default value of@w{ }10@dmn{pt}.
+Use @var{xx} (which can be 10, 11, or@tie{}12@dmn{pt}) as the base
+document font size instead of the default value of@tie{}10@dmn{pt}.
 
 @item -rX@var{nnn}
 After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
@@ -2024,7 +2013,7 @@ package.
 
 @Defmac {TH, title section [@Var{extra1} [@Var{extra2} [@Var{extra3}]]], man}
 Set the title of the man page to @var{title} and the section to
-@var{section}, which must have a value between 1 and@w{ }8.  The value
+@var{section}, which must have a value between 1 and@tie{}8.  The value
 of @var{section} may also have a string appended, e.g.@: @samp{.pm},
 to indicate a specific subsection of the man pages.
 
@@ -2038,7 +2027,7 @@ header line.
 
 For @acronym{HTML} output, headers and footers are completely suppressed.
 
-Additionally, this macro starts a new page; the new line number is@w{ }1
+Additionally, this macro starts a new page; the new line number is@tie{}1
 again (except if the @option{-rC1} option is given on the command line)
 -- this feature is intended only for formatting multiple man pages; a
 single man page should contain exactly one @code{TH} macro at the
@@ -2101,7 +2090,7 @@ designator, use @samp{""} (two double quotes) as the first argument of
 @code{IP}.
 
 For example, to start a paragraph with bullets as the designator and
-4@w{ }en indentation, write
+4@tie{}en indentation, write
 
 @Example
 .IP \(bu 4
@@ -2128,8 +2117,8 @@ is used.  Calls to the @code{RS} macro can be nested.
 @Defmac {RE, [@Var{nnn}], man}
 Move the left margin back to level @var{nnn}; if no argument is given,
 it moves one level back.  The first level (i.e., no call to @code{RS}
-yet) has number@w{ }1, and each call to @code{RS} increases the level
-by@w{ }1.
+yet) has number@tie{}1, and each call to @code{RS} increases the level
+by@tie{}1.
 @endDefmac
 
 @cindex line breaks, with vertical space [@code{man}]
@@ -2157,7 +2146,7 @@ and @code{RS} reset the indentation to its default value.
 @cindex font selection [@code{man}]
 @cindex @code{man} macros, how to set fonts
 
-The standard font is roman; the default text size is 10@w{ }point.
+The standard font is roman; the default text size is 10@tie{}point.
 If command line option @option{-rS=@var{n}} is given, use
 @var{n}@dmn{pt} as the default text size.
 
@@ -2226,13 +2215,13 @@ macro is called, then the text of the next line appears in italic.
 @pindex grohtml
 @cindex @code{man} macros, default indentation
 @cindex default indentation [@code{man}]
-The default indentation is 7.2@w{ }en for all output devices except for
+The default indentation is 7.2@tie{}en for all output devices except for
 @code{grohtml} which ignores indentation.
 
 @Defmac {DT, , man}
 @cindex tab stops [@code{man}]
 @cindex @code{man} macros, tab stops
-Set tabs every 0.5@w{ }inches.  Since this macro is always executed
+Set tabs every 0.5@tie{}inches.  Since this macro is always executed
 during a call to the @code{TH} macro, it makes sense to call it only if
 the tab positions have been changed.
 @endDefmac
@@ -2243,7 +2232,7 @@ the tab positions have been changed.
 Adjust the empty space before a new paragraph (or section).  The
 optional argument gives the amount of space (default unit is
 @samp{v}); without parameter, the value is reset to its default value
-(1@w{ }line for TTY devices, 0.4@dmn{v}@w{ }otherwise).
+(1@tie{}line for TTY devices, 0.4@dmn{v}@tie{}otherwise).
 @endDefmac
 
 This affects the macros @code{SH}, @code{SS}, @code{TP}, @code{LP} (as
@@ -2794,7 +2783,7 @@ The following describes the heading macros:
 @DefmacListEnd {NH, @t{S} @Var{level0} @dots{}, ms}
 Numbered heading.
 The argument is either a numeric argument to indicate the
-level of the heading, or the letter@w{ }@code{S} followed by numeric
+level of the heading, or the letter@tie{}@code{S} followed by numeric
 arguments to set the heading level explicitly.
 
 If you specify heading levels out of sequence, such as invoking
@@ -2838,22 +2827,22 @@ the next highlighting, paragraph, or heading macro.
 
 @Defmac {R, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in roman (or regular) type.
-It operates similarly to the @code{B}@w{ }macro otherwise.
+It operates similarly to the @code{B}@tie{}macro otherwise.
 @endDefmac
 
 @Defmac {I, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in @emph{italic type}.
-It operates similarly to the @code{B}@w{ }macro otherwise.
+It operates similarly to the @code{B}@tie{}macro otherwise.
 @endDefmac
 
 @Defmac {CW, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in a @code{constant width face}.
-It operates similarly to the @code{B}@w{ }macro otherwise.
+It operates similarly to the @code{B}@tie{}macro otherwise.
 @endDefmac
 
 @Defmac {BI, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in bold italic type.
-It operates similarly to the @code{B}@w{ }macro otherwise.
+It operates similarly to the @code{B}@tie{}macro otherwise.
 @endDefmac
 
 @Defmac {BX, [@Var{txt}], ms}
@@ -3256,7 +3245,7 @@ in pairs of tags as follows.
 @DefmacList {TS, [@code{H}], ms}
 @DefmacListEnd {TE, , ms}
 Denotes a table, to be processed by the @code{tbl} preprocessor.
-The optional argument@w{ }@code{H} to @code{TS} instructs @code{groff}
+The optional argument@tie{}@code{H} to @code{TS} instructs @code{groff}
 to create a running header with the information
 up to the @code{TH} macro.
 @code{groff} prints the header at the beginning of the
@@ -3275,8 +3264,9 @@ a graphics program such as @code{xfig}.
 @DefmacList {EQ, [@Var{align}], ms}
 @DefmacListEnd {EN, , ms}
 Denotes an equation, to be processed by the @code{eqn} preprocessor.
-The optional @var{align} argument can be @code{C}, @code{L}, or@w{
-}@code{I} to center (the default), left-justify, or indent the equation.
+The optional @var{align} argument can be @code{C}, @code{L},
+or@tie{}@code{I} to center (the default), left-justify, or indent the
+equation.
 @endDefmac
 
 @DefmacList {[, , ms}
@@ -3519,7 +3509,7 @@ Details of Galactic Formation
 
 @Defmac {TC, [@code{no}], ms}
 Prints the table of contents on a new page,
-setting the page number to@w{ }@strong{i} (Roman numeral one).
+setting the page number to@tie{}@strong{i} (Roman numeral one).
 You should usually place this macro at the end of the
 file, since @code{groff} is a single-pass formatter and
 can only print what has been collected up to the point
@@ -4105,7 +4095,7 @@ and in other logical places.  Keep separate phrases on lines by
 themselves, as entire phrases are often added or deleted when editing.
 
 @item
-Try to keep lines less than 40-60@w{ }characters, to allow space for
+Try to keep lines less than 40-60@tie{}characters, to allow space for
 inserting more text.
 
 @item
@@ -4149,27 +4139,27 @@ current settings (e.g.@: type size) of @code{gtroff}.
 @cindex unit, @code{i}
 Inches.  An antiquated measurement unit still in use in certain
 backwards countries with incredibly low-cost computer equipment.  One
-inch is equal to@w{ }2.54@dmn{cm}.
+inch is equal to@tie{}2.54@dmn{cm}.
 
 @item c
 @cindex centimeter unit (@code{c})
 @cindex @code{c} unit
 @cindex unit, @code{c}
-Centimeters.  One centimeter is equal to@w{ }0.3937@dmn{in}.
+Centimeters.  One centimeter is equal to@tie{}0.3937@dmn{in}.
 
 @item p
 @cindex point unit (@code{p})
 @cindex @code{p} unit
 @cindex unit, @code{p}
 Points.  This is a typesetter's measurement used for measure type size.
-It is 72@w{ }points to an inch.
+It is 72@tie{}points to an inch.
 
 @item P
 @cindex pica unit (@code{P})
 @cindex @code{P} unit
 @cindex unit, @code{P}
-Pica.  Another typesetting measurement.  6@w{ }Picas to an inch (and
-12@w{ }points to a pica).
+Pica.  Another typesetting measurement.  6@tie{}Picas to an inch (and
+12@tie{}points to a pica).
 
 @item s
 @itemx z
@@ -4197,7 +4187,7 @@ text.
 @cindex @code{m} unit
 @cindex unit, @code{m}
 Ems.  This unit is equal to the current font size in points.  So called
-because it is @emph{approximately} the width of the letter@w{ }@samp{m}
+because it is @emph{approximately} the width of the letter@tie{}@samp{m}
 in the current font.
 
 @item n
@@ -4234,7 +4224,7 @@ Vertical space.  This is equivalent to the current line spacing.
 Many requests take a default unit.  While this can be helpful at times,
 it can cause strange errors in some expressions.  For example, the line
 length request expects em units.  Here are several attempts to get a
-line length of 3.5@w{ }inches and their results:
+line length of 3.5@tie{}inches and their results:
 
 @Example
 3.5i      @result{}   3.5i
@@ -4247,9 +4237,9 @@ line length of 3.5@w{ }inches and their results:
 
 @noindent
 Everything is converted to basic units first.  In the above example it
-is assumed that 1@dmn{i} equals@w{ }240@dmn{u}, and 1@dmn{m} equals@w{
-}10@dmn{p} (thus 1@dmn{m} equals@w{ }33@dmn{u}).  The value 7@dmn{i}/2
-is first handled as 7@dmn{i}/2@dmn{m}, then converted to
+is assumed that 1@dmn{i} equals@tie{}240@dmn{u}, and 1@dmn{m}
+equals@tie{}10@dmn{p} (thus 1@dmn{m} equals@tie{}33@dmn{u}).  The value
+7@dmn{i}/2 is first handled as 7@dmn{i}/2@dmn{m}, then converted to
 1680@dmn{u}/66@dmn{u} which is 25@dmn{u}, and this is approximately
 0.1@dmn{i}.  As can be seen, a scaling indicator after a closing
 parenthesis is simply ignored.
@@ -4338,14 +4328,14 @@ Example:
 @endExample
 
 @noindent
-The register@w{ }@code{z} now contains@w{ }5.
+The register@tie{}@code{z} now contains@tie{}5.
 
 @item
 @cindex scaling operator
 @cindex operator, scaling
-Scaling: @code{(@var{c};@var{e})}.  Evaluate@w{ }@var{e} using@w{ }@var{c}
+Scaling: @code{(@var{c};@var{e})}.  Evaluate@tie{}@var{e} using@tie{}@var{c}
 as the default scaling indicator.  If @var{c} is missing, ignore scaling
-indicators in the evaluation of@w{ }@var{e}.
+indicators in the evaluation of@tie{}@var{e}.
 @end itemize
 
 @cindex parentheses
@@ -4377,22 +4367,22 @@ For vertical movements, it specifies the distance from the top of the
 page; for horizontal movements, it gives the distance from the beginning
 of the @emph{input} line.
 
-@cindex @code{bp} request, using @code{+} and@w{ }@code{-}
-@cindex @code{in} request, using @code{+} and@w{ }@code{-}
-@cindex @code{ll} request, using @code{+} and@w{ }@code{-}
-@cindex @code{lt} request, using @code{+} and@w{ }@code{-}
-@cindex @code{nm} request, using @code{+} and@w{ }@code{-}
-@cindex @code{nr} request, using @code{+} and@w{ }@code{-}
-@cindex @code{pl} request, using @code{+} and@w{ }@code{-}
-@cindex @code{pn} request, using @code{+} and@w{ }@code{-}
-@cindex @code{po} request, using @code{+} and@w{ }@code{-}
-@cindex @code{ps} request, using @code{+} and@w{ }@code{-}
-@cindex @code{pvs} request, using @code{+} and@w{ }@code{-}
-@cindex @code{rt} request, using @code{+} and@w{ }@code{-}
-@cindex @code{ti} request, using @code{+} and@w{ }@code{-}
-@cindex @code{\H}, using @code{+} and@w{ }@code{-}
-@cindex @code{\R}, using @code{+} and@w{ }@code{-}
-@cindex @code{\s}, using @code{+} and@w{ }@code{-}
+@cindex @code{bp} request, using @code{+} and@tie{}@code{-}
+@cindex @code{in} request, using @code{+} and@tie{}@code{-}
+@cindex @code{ll} request, using @code{+} and@tie{}@code{-}
+@cindex @code{lt} request, using @code{+} and@tie{}@code{-}
+@cindex @code{nm} request, using @code{+} and@tie{}@code{-}
+@cindex @code{nr} request, using @code{+} and@tie{}@code{-}
+@cindex @code{pl} request, using @code{+} and@tie{}@code{-}
+@cindex @code{pn} request, using @code{+} and@tie{}@code{-}
+@cindex @code{po} request, using @code{+} and@tie{}@code{-}
+@cindex @code{ps} request, using @code{+} and@tie{}@code{-}
+@cindex @code{pvs} request, using @code{+} and@tie{}@code{-}
+@cindex @code{rt} request, using @code{+} and@tie{}@code{-}
+@cindex @code{ti} request, using @code{+} and@tie{}@code{-}
+@cindex @code{\H}, using @code{+} and@tie{}@code{-}
+@cindex @code{\R}, using @code{+} and@tie{}@code{-}
+@cindex @code{\s}, using @code{+} and@tie{}@code{-}
 @samp{+} and @samp{-} are also treated differently by the following
 requests and escapes: @code{bp}, @code{in}, @code{ll}, @code{lt},
 @code{nm}, @code{nr}, @code{pl}, @code{pn}, @code{po}, @code{ps},
@@ -4404,8 +4394,8 @@ Here, leading plus and minus signs indicate increments and decrements.
 @Defesc {\\B, ', anything, '}
 @cindex numeric expression, valid
 @cindex valid numeric expression
-Return@w{ }1 if @var{anything} is a valid numeric expression;
-or@w{ }0 if @var{anything} is empty or not a valid numeric expression.
+Return@tie{}1 if @var{anything} is a valid numeric expression;
+or@tie{}0 if @var{anything} is empty or not a valid numeric expression.
 @endDefesc
 
 @cindex space characters, in expressions
@@ -4438,8 +4428,8 @@ Whitespace characters (spaces, tabs, and newlines).
 @cindex character, backspace
 @cindex backspace character
 @cindex @acronym{EBCDIC} encoding of backspace
-Backspace (@acronym{ASCII}@w{ }@code{0x08} or @acronym{EBCDIC}@w{
-}@code{0x16}) and character code @code{0x01}.
+Backspace (@acronym{ASCII}@tie{}@code{0x08} or
+@acronym{EBCDIC}@tie{}@code{0x16}) and character code @code{0x01}.
 
 @item
 @cindex invalid input characters
@@ -4496,10 +4486,10 @@ a special argument to @code{refer}.  For example, @samp{.[foo} makes
 
 @Defesc {\\A, ', ident, '}
 Test whether an identifier @var{ident} is valid in @code{gtroff}.  It
-expands to the character@w{ }1 or@w{ }0 according to whether its
+expands to the character@tie{}1 or@tie{}0 according to whether its
 argument (usually delimited by quotes) is or is not acceptable as the
 name of a string, macro, diversion, number register, environment, or
-font.  It returns@w{ }0 if no argument is given.  This is useful for
+font.  It returns@tie{}0 if no argument is given.  This is useful for
 looking up user input in some sort of associative table.
 
 @Example
@@ -4526,7 +4516,7 @@ Two characters.  Must be prefixed with @samp{(} in some situations.
 @cindex @code{]}, ending an identifier
 @item
 Arbitrary length (@code{gtroff} only).  Must be bracketed with @samp{[}
-and@w{ }@samp{]} in some situations.  Any length identifier can be put
+and@tie{}@samp{]} in some situations.  Any length identifier can be put
 in brackets.
 @end itemize
 
@@ -4544,7 +4534,7 @@ If the identifier is a string, macro, or diversion,
 
 @item
 If the identifier is a number register, @code{gtroff}
-defines it with a value of@w{ }0.
+defines it with a value of@tie{}0.
 @end itemize
 
 @xref{Warnings}., @ref{Interpolating Registers}, and @ref{Strings}.
@@ -4683,7 +4673,7 @@ character prevents this.
 
 Arguments to requests (and macros) are processed much like the shell:
 The line is split into arguments according to
-spaces.@footnote{Plan@w{ }9's @code{troff} implementation also allows
+spaces.@footnote{Plan@tie{}9's @code{troff} implementation also allows
 tabs for argument separation -- @code{gtroff} intentionally doesn't
 support this.}  An argument which is intended to contain spaces can
 either be enclosed in double quotes, or have the spaces @dfn{escaped}
@@ -5259,10 +5249,11 @@ Numeric registers can be accessed via the @code{\n} escape.
 @cindex assignments, nested
 @cindex indirect assignments
 @cindex assignments, indirect
-Interpolate number register with name @var{ident} (one-character name@w{
-}@var{i}, two-character name @var{id}). This means that the value of the
-register is expanded in-place while @code{gtroff} is parsing the input line.
-Nested assignments (also called indirect assignments) are possible.
+Interpolate number register with name @var{ident} (one-character
+name@tie{}@var{i}, two-character name @var{id}).  This means that the value
+of the register is expanded in-place while @code{gtroff} is parsing the
+input line.  Nested assignments (also called indirect assignments) are
+possible.
 
 @Example
 .nr a 5
@@ -5315,7 +5306,7 @@ syntax form.
 @DefescItem {\\n, +@lbrack{}, ident, @rbrack{}}
 @DefescListEnd {\\n, -@lbrack{}, ident, @rbrack{}}
 Before interpolating, increment or decrement @var{ident}
-(one-character name@w{ }@var{i}, two-character name @var{id}) by the
+(one-character name@tie{}@var{i}, two-character name @var{id}) by the
 auto-increment value as specified with the @code{nr} request (or the
 @code{\R} escape).  If no auto-increment value has been specified,
 these syntax forms are identical to @code{\n}.
@@ -5373,12 +5364,12 @@ output formats are available:
 
 @table @code
 @item 1
-Decimal arabic numbers.  This is the default format: 0, 1, 2, 3,@w{
-}@enddots{}
+Decimal arabic numbers.  This is the default format: 0, 1, 2,
+3,@tie{}@enddots{}
 
 @item 0@dots{}0
 Decimal numbers with as many digits as specified.  So, @samp{00} would
-result in printing numbers as 01, 02, 03,@w{ }@enddots{}
+result in printing numbers as 01, 02, 03,@tie{}@enddots{}
 
 In fact, any digit instead of zero will do; @code{gtroff} only counts
 how many digits are specified.  As a consequence, @code{af}'s default
@@ -5388,16 +5379,16 @@ returned by the @code{\g} escape, see below).
 @item I
 @cindex Roman numerals
 @cindex numerals, Roman
-Upper-case Roman numerals: 0, I, II, III, IV,@w{ }@enddots{}
+Upper-case Roman numerals: 0, I, II, III, IV,@tie{}@enddots{}
 
 @item i
-Lower-case Roman numerals: 0, i, ii, iii, iv,@w{ }@enddots{}
+Lower-case Roman numerals: 0, i, ii, iii, iv,@tie{}@enddots{}
 
 @item A
-Upper-case letters: 0, A, B, C, @dots{},@w{ }Z, AA, AB,@w{ }@enddots{}
+Upper-case letters: 0, A, B, C, @dots{},@tie{}Z, AA, AB,@tie{}@enddots{}
 
 @item a
-Lower-case letters: 0, a, b, c, @dots{},@w{ }z, aa, ab,@w{ }@enddots{}
+Lower-case letters: 0, a, b, c, @dots{},@tie{}z, aa, ab,@tie{}@enddots{}
 @end table
 
 Omitting the number register format causes a warning of type
@@ -5443,7 +5434,7 @@ then apply the @code{af} request to this other register.
 @cindex format of register (@code{\g})
 @cindex register, format (@code{\g})
 Return the current format of the specified register @var{ident}
-(one-character name@w{ }@var{i}, two-character name @var{id}).  For
+(one-character name@tie{}@var{i}, two-character name @var{id}).  For
 example, @samp{\ga} after the previous example would produce the
 string @samp{000}.  If the register hasn't been defined yet, nothing
 is returned.
@@ -5459,7 +5450,7 @@ is returned.
 The following lists some built-in registers which are not described
 elsewhere in this manual.  Any register which begins with a @samp{.} is
 read-only.  A complete listing of all built-in registers can be found in
-appendix@w{ }@ref{Register Index}.
+appendix@tie{}@ref{Register Index}.
 
 @table @code
 @item .F
@@ -5485,8 +5476,8 @@ Vertical resolution in basic units.
 @cindex time, current, seconds (@code{seconds})
 @cindex current time, seconds (@code{seconds})
 @vindex seconds
-The number of seconds after the minute, normally in the range@w{ }0
-to@w{ }59, but can be up to@w{ }61 to allow for leap seconds.  Initialized
+The number of seconds after the minute, normally in the range@tie{}0
+to@tie{}59, but can be up to@tie{}61 to allow for leap seconds.  Initialized
 at start-up of @code{gtroff}.
 
 @item minutes
@@ -5494,7 +5485,7 @@ at start-up of @code{gtroff}.
 @cindex time, current, minutes (@code{minutes})
 @cindex current time, minutes (@code{minutes})
 @vindex minutes
-The number of minutes after the hour, in the range@w{ }0 to@w{ }59.
+The number of minutes after the hour, in the range@tie{}0 to@tie{}59.
 Initialized at start-up of @code{gtroff}.
 
 @item hours
@@ -5502,7 +5493,7 @@ Initialized at start-up of @code{gtroff}.
 @cindex time, current, hours (@code{hours})
 @cindex current time, hours (@code{hours})
 @vindex hours
-The number of hours past midnight, in the range@w{ }0 to@w{ }23.
+The number of hours past midnight, in the range@tie{}0 to@tie{}23.
 Initialized at start-up of @code{gtroff}.
 
 @item dw
@@ -5531,8 +5522,8 @@ The current year.
 
 @item yr
 @vindex yr
-The current year minus@w{ }1900.  Unfortunately, the documentation of
-@acronym{UNIX} Version@w{ }7's @code{troff} had a year@w{ }2000 bug: It
+The current year minus@tie{}1900.  Unfortunately, the documentation of
+@acronym{UNIX} Version@tie{}7's @code{troff} had a year@tie{}2000 bug: It
 incorrectly claimed that @code{yr} contains the last two digits of the
 year.  That claim has never been true of either @acronym{AT&T}
 @code{troff} or GNU @code{troff}.  Old @code{troff} input that looks
@@ -5581,15 +5572,15 @@ request to activate line numbering.
 @vindex .x
 @cindex major version number register (@code{.x})
 @cindex version number, major, register (@code{.x})
-The major version number.  For example, if the version number is@w{
-}1.03 then @code{.x} contains@w{ }@samp{1}.
+The major version number.  For example, if the version number
+is 1.03 then @code{.x} contains@tie{}@samp{1}.
 
 @item .y
 @vindex .y
 @cindex minor version number register (@code{.y})
 @cindex version number, minor, register (@code{.y})
-The minor version number.  For example, if the version number is@w{
-}1.03 then @code{.y} contains@w{ }@samp{03}.
+The minor version number.  For example, if the version number
+is 1.03 then @code{.y} contains@tie{}@samp{03}.
 
 @item .Y
 @vindex .Y
@@ -5606,19 +5597,19 @@ The process ID of @code{gtroff}.
 @vindex .g
 @cindex @code{gtroff}, identification register (@code{.g})
 @cindex GNU-specific register (@code{.g})
-Always@w{ }1.  Macros should use this to determine whether they are
+Always@tie{}1.  Macros should use this to determine whether they are
 running under GNU @code{troff}.
 
 @item .A
 @vindex .A
 @cindex @acronym{ASCII} approximation output register (@code{.A})
 If the command line option @option{-a} is used to produce an
-@acronym{ASCII} approximation of the output, this is set to@w{ }1, zero
+@acronym{ASCII} approximation of the output, this is set to@tie{}1, zero
 otherwise.  @xref{Groff Options}.
 
 @item .P
 @vindex .P
-This register is set to@w{ }1 (and to@w{ }0 otherwise) if the current
+This register is set to@tie{}1 (and to@tie{}0 otherwise) if the current
 page is actually being printed, i.e., if the @option{-o} option is being
 used to only print selected pages.  @xref{Groff Options}, for more
 information.
@@ -5626,7 +5617,7 @@ information.
 @item .T
 @vindex .T
 If @code{gtroff} is called with the @option{-T} command line option, the
-number register @code{.T} is set to@w{ }1, and zero otherwise.
+number register @code{.T} is set to@tie{}1, and zero otherwise.
 @xref{Groff Options}.
 
 @stindex .T
@@ -5691,7 +5682,7 @@ the @code{fi} request.
 @cindex mode, fill (@code{fi})
 Activate fill mode (which is the default).  This request implicitly
 enables adjusting; it also inserts a break in the text currently being
-filled.  The read-only number register @code{.u} is set to@w{ }1.
+filled.  The read-only number register @code{.u} is set to@tie{}1.
 
 The fill mode status is associated with the current environment
 (@pxref{Environments}).
@@ -5705,7 +5696,7 @@ See @ref{Line Control}, for interaction with the @code{\c} escape.
 Activate no-fill mode.  Input lines are output as-is, retaining line
 breaks and ignoring the current line length.  This command implicitly
 disables adjusting; it also causes a break.  The number register
-@code{.u} is set to@w{ }0.
+@code{.u} is set to@tie{}0.
 
 The fill mode status is associated with the current environment
 (@pxref{Environments}).
@@ -5734,7 +5725,7 @@ Adjust text to the right margin, producing ragged-left text.
 
 @item c
 @cindex centered text
-@cindex @code{ce} request, difference to @samp{.ad@w{ }c}
+@cindex @code{ce} request, difference to @samp{.ad@tie{}c}
 Center filled text.  This is different to the @code{ce} request which
 only centers text without filling.
 
@@ -5814,7 +5805,7 @@ is formatted as
 Change the minimum size of a space between filled words.  It takes its
 units as one twelfth of the space width parameter for the current
 font.  Initially both the @var{word_space_size} and
-@var{sentence_space_size} are@w{ }12.
+@var{sentence_space_size} are@tie{}12.
 
 @cindex fill mode
 @cindex mode, fill
@@ -5840,7 +5831,7 @@ environment (@pxref{Environments}).
 
 Contrary to @acronym{AT&T} @code{troff}, this request is @emph{not}
 ignored if a TTY output device is used; the given values are then
-rounded down to a multiple of@w{ }12 (@pxref{Implementation Differences}).
+rounded down to a multiple of@tie{}12 (@pxref{Implementation Differences}).
 
 The request is ignored if there is no parameter.
 @endDefreq
@@ -5944,9 +5935,9 @@ Do not hyphenate the last two characters of a word.
 Do not hyphenate the first two characters of a word.
 @end table
 
-Values in the previous table are additive.  For example, the value@w{
-}12 causes @code{gtroff} to neither hyphenate the last two nor the first
-two characters of a word.
+Values in the previous table are additive.  For example, the
+value@tie{}12 causes @code{gtroff} to neither hyphenate the last
+two nor the first two characters of a word.
 
 @cindex hyphenation restrictions register (@code{.hy})
 The current hyphenation restrictions can be found in the read-only
@@ -5975,7 +5966,7 @@ The hyphenation mode is associated with the current environment
 @cindex hyphenated lines, consecutive (@code{hlm})
 Set the maximum number of consecutive hyphenated lines to @var{nnn}.
 If this number is negative, there is no maximum.  The default value
-is@w{ }@minus{}1 if @var{nnn} is omitted.  This value is associated
+is@tie{}@minus{}1 if @var{nnn} is omitted.  This value is associated
 with the current environment (@pxref{Environments}).  Only lines
 output from a given environment count towards the maximum associated
 with that environment.  Hyphens resulting from @code{\%} are counted;
@@ -6045,8 +6036,8 @@ The @code{\:} escape inserts a zero-width break point
 @cindex @code{\Y}, followed by @code{\%}
 @cindex @code{\%}, following @code{\X} or @code{\Y}
 Note that @code{\X} and @code{\Y} start a word, that is, the @code{\%}
-escape in (say) @w{@samp{ \X'...'\%foobar}} and
-@w{@samp{ \Y'...'\%foobar}} no longer prevents hyphenation but inserts
+escape in (say) @w{@samp{\X'...'\%foobar}} and
+@w{@samp{\Y'...'\%foobar}} no longer prevents hyphenation but inserts
 a hyphenation point at the beginning of @samp{foobar}; most likely
 this isn't what you want to do.
 @endDefesc
@@ -6117,8 +6108,8 @@ The @code{hpfcode} request defines mapping values for character codes in
 hyphenation patterns.  @code{hpf} or @code{hpfa} then apply the mapping
 (after reading the patterns) before replacing or appending them to
 the current list of patterns.  Its arguments are pairs of character codes
--- integers from 0 to@w{ }255.  The request maps character code@w{ }@var{a}
-to code@w{ }@var{b}, code@w{ }@var{c} to code@w{ }@var{d}, and so on.  You
+-- integers from 0 to@tie{}255.  The request maps character code@tie{}@var{a}
+to code@tie{}@var{b}, code@tie{}@var{c} to code@tie{}@var{d}, and so on.  You
 can use character codes which would be invalid otherwise.
 
 @pindex troffrc
@@ -6159,7 +6150,7 @@ This request is ignored if it has no parameter.
 Set the (right) hyphenation margin to @var{length}.  If the current
 adjustment mode is not @samp{b} or @samp{n}, the line is not
 hyphenated if it is shorter than @var{length}.  Without an argument,
-the hyphenation margin is reset to its default value, which is@w{ }0.
+the hyphenation margin is reset to its default value, which is@tie{}0.
 The default scaling indicator for this request is @samp{m}.  The
 hyphenation margin is associated with the current environment
 (@pxref{Environments}).
@@ -6180,7 +6171,7 @@ Set the hyphenation space to @var{hyphenation_space}.  If the current
 adjustment mode is @samp{b} or @samp{n}, don't hyphenate the line
 if it can be justified by adding no more than @var{hyphenation_space}
 extra space to each word space.  Without argument, the hyphenation
-space is set to its default value, which is@w{ }0.  The default
+space is set to its default value, which is@tie{}0.  The default
 scaling indicator for this request is @samp{m}.  The hyphenation
 space is associated with the current environment
 (@pxref{Environments}).
@@ -6247,8 +6238,8 @@ read-only number register @samp{.hla}.
 @cindex spacing, manipulating
 
 @Defreq {sp, [@Var{distance}]}
-Space downwards @var{distance}.  With no argument it advances 1@w{
-}line.  A negative argument causes @code{gtroff} to move up the page
+Space downwards @var{distance}.  With no argument it advances
+1@tie{}line.  A negative argument causes @code{gtroff} to move up the page
 the specified distance.  If the argument is preceded by a @samp{|}
 then @code{gtroff} moves that distance from the top of the page.  This
 request causes a line break.  The default scaling indicator is @samp{v}.
@@ -6382,7 +6373,7 @@ advance to the next page is also disabled, except if it is accompanied
 by a page number (see @ref{Page Control}, for more information).  This
 mode ends when actual text is output or the @code{rs} request is
 encountered which ends no-space mode.  The read-only number register
-@code{.ns} is set to@w{ }1 as long as no-space mode is active.
+@code{.ns} is set to@tie{}1 as long as no-space mode is active.
 
 This request is useful for macros that conditionally
 insert vertical space before the text starts
@@ -6399,8 +6390,8 @@ except when it is the first paragraph after a section header).
 @cindex fields, and tabs
 
 @cindex @acronym{EBCDIC} encoding of a tab
-A tab character (@acronym{ASCII} char@w{ }9, @acronym{EBCDIC} char@w{
-}5) causes a horizontal movement to the next tab stop (much
+A tab character (@acronym{ASCII} char@tie{}9, @acronym{EBCDIC}
+char@tie{}5) causes a horizontal movement to the next tab stop (much
 like it did on a typewriter).
 
 @Defesc {\\t, , , }
@@ -6418,7 +6409,7 @@ letter @samp{T}) which indicate where each tab stop is to be
 (overriding any previous settings).
 
 Tab stops can be specified absolutely, i.e., as the distance from the
-left margin.  For example, the following sets 6@w{ }tab stops every
+left margin.  For example, the following sets 6@tie{}tab stops every
 one inch.
 
 @Example
@@ -6479,7 +6470,7 @@ can be neither stretched nor squeezed.  For example,
 @endExample
 
 @noindent
-creates a single line which is a bit longer than 10@w{ }inches (a string
+creates a single line which is a bit longer than 10@tie{}inches (a string
 is used to show exactly where the tab characters are).  Now consider the
 following:
 
@@ -6552,9 +6543,9 @@ argument to the @code{ta} request.
     @result{} T120u
 @endExample
 
-@cindex @code{.S} register, Plan@w{ }9 alias for @code{.tabs}
-@cindex @code{.tabs} register, Plan@w{ }9 alias (@code{.S})
-The @code{troff} version of the Plan@w{ }9 operating system uses
+@cindex @code{.S} register, Plan@tie{}9 alias for @code{.tabs}
+@cindex @code{.tabs} register, Plan@tie{}9 alias (@code{.S})
+The @code{troff} version of the Plan@tie{}9 operating system uses
 register @code{.S} for the same purpose.
 @endDefreq
 
@@ -6608,7 +6599,7 @@ a         b                   c
 @endExample
 
 Line-tabs mode is associated with the current environment.
-The read-only register @code{.linetabs} is set to@w{ }1 if in line-tabs
+The read-only register @code{.linetabs} is set to@tie{}1 if in line-tabs
 mode, and 0 in normal mode.
 @endDefreq
 
@@ -6630,7 +6621,7 @@ this @code{gtroff} provides an alternate tab mechanism, called
 @dfn{leaders} which does just that.
 
 @cindex leader character
-A leader character (character code@w{ }1) behaves similarly to a tab
+A leader character (character code@tie{}1) behaves similarly to a tab
 character: It moves to the next tab stop.  The only difference is that
 for this movement, the fill glyph defaults to a period character and
 not to space.
@@ -6744,14 +6735,14 @@ The control character (@samp{.}) and the no-break control character
 respectively.
 
 @Defreq {cc, [@Var{c}]}
-Set the control character to@w{ }@var{c}.  With no argument the default
+Set the control character to@tie{}@var{c}.  With no argument the default
 control character @samp{.} is restored.  The value of the control
 character is associated with the current environment
 (@pxref{Environments}).
 @endDefreq
 
 @Defreq {c2, [@Var{c}]}
-Set the no-break control character to@w{ }@var{c}.  With no argument the
+Set the no-break control character to@tie{}@var{c}.  With no argument the
 default control character @samp{'} is restored.  The value of the
 no-break control character is associated with the current environment
 (@pxref{Environments}).
@@ -6788,7 +6779,7 @@ necessary then to double the escape character.  Here an example:
 @Defreq {ec, [@Var{c}]}
 @cindex escape character, changing (@code{ec})
 @cindex character, escape, changing (@code{ec})
-Set the escape character to@w{ }@var{c}.  With no argument the default
+Set the escape character to@tie{}@var{c}.  With no argument the default
 escape character @samp{\} is restored.  It can be also used to
 re-enable the escape mechanism after an @code{eo} request.
 
@@ -6906,8 +6897,8 @@ Internals}, for more on this process).
 
 @DefreqList {tr, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
 @DefreqListEnd {trin, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
-Translate character @var{a} to glyph@w{ }@var{b}, character @var{c} to
-glyph@w{ }@var{d}, etc.  If there is an odd number of arguments, the
+Translate character @var{a} to glyph@tie{}@var{b}, character @var{c} to
+glyph@tie{}@var{d}, etc.  If there is an odd number of arguments, the
 last one is translated to an unstretchable space (@w{@samp{\ }}).
 
 The @code{trin} request is identical to @code{tr},
@@ -6969,9 +6960,8 @@ set with the @code{shc} request.
 
 @item
 @cindex @code{\&}, and translations
-The pair @samp{@var{c}\&} (this is an arbitrary character@w{
-}@var{c} followed by the zero width space character) maps this
-character to nothing.
+The pair @samp{@var{c}\&} (this is an arbitrary character@tie{}@var{c}
+followed by the zero width space character) maps this character to nothing.
 
 @Example
 .tr a\&
@@ -7553,7 +7543,7 @@ parameter.
 
 The read-only number register @code{.pn} contains the number of the next
 page: either the value set by a @code{pn} request, or the number of the
-current page plus@w{ }1.
+current page plus@tie{}1.
 @endDefreq
 
 @Defreg {%}
@@ -7567,7 +7557,7 @@ A read-write register holding the current page number.
 @vindex %
 Change the page number character (used by the @code{tl} request) to a
 different character.  With no argument, this mechanism is disabled.
-Note that this doesn't affect the number register@w{ }@code{%}.
+Note that this doesn't affect the number register@tie{}@code{%}.
 @endDefreq
 
 @xref{Traps}.
@@ -7617,10 +7607,10 @@ single @dfn{orphan} line left at the bottom of a page.  The @code{ne}
 request ensures that there is a certain distance, specified by the
 first argument, before the next page is triggered (see @ref{Traps},
 for further information).  The default scaling indicator for @code{ne}
-is @samp{v}; the default value of @var{space} is@w{ }1@dmn{v} if no
+is @samp{v}; the default value of @var{space} is@tie{}1@dmn{v} if no
 argument is given.
 
-For example, to make sure that no fewer than 2@w{ }lines get orphaned,
+For example, to make sure that no fewer than 2@tie{}lines get orphaned,
 do the following before each paragraph:
 
 @Example
@@ -7640,7 +7630,7 @@ specified amount of vertical space.  If the desired amount of space
 exists before the next trap (or the bottom page boundary if no trap is
 set), the space is output immediately (ignoring a partially filled line
 which stays untouched).  If there is not enough space, it is stored for
-later output via the @code{os} request.  The default value is@w{ }1@dmn{v}
+later output via the @code{os} request.  The default value is@tie{}1@dmn{v}
 if no argument is given; the default scaling indicator is @samp{v}.
 
 @cindex @code{sv} request, and no-space mode
@@ -7740,7 +7730,7 @@ special symbols (Greek, mathematics).
 @kindex family
 @pindex DESC
 The @code{ft} request and the @code{\f} escape change the current font
-to @var{font} (one-character name@w{ }@var{f}, two-character name
+to @var{font} (one-character name@tie{}@var{f}, two-character name
 @var{fn}).
 
 If @var{font} is a style name (as set with the @code{sty} request or
@@ -7755,7 +7745,7 @@ to the previous font.  Use @code{\f[]} to do this with the escape.  The
 old syntax forms @code{\fP} or @code{\f[P]} are also supported.
 
 Fonts are generally specified as upper-case strings, which are usually
-1@w{ }to 4 characters representing an abbreviation or acronym of the
+1@tie{}to 4 characters representing an abbreviation or acronym of the
 font name.  This is no limitation, just a convention.
 
 The example below produces two identical lines.
@@ -7793,11 +7783,11 @@ the fly:
 @cindex @code{fspecial} request, and font translations
 @cindex @code{fp} request, and font translations
 @cindex @code{sty} request, and font translations
-Translate font@w{ }@var{f} to font@w{ }@var{g}.  Whenever a font named@w{
-}@var{f} is referred to in a @code{\f} escape sequence, or in the
+Translate font@tie{}@var{f} to font@tie{}@var{g}.  Whenever a font
+named@tie{}@var{f} is referred to in a @code{\f} escape sequence, or in the
 @code{ft}, @code{ul}, @code{bd}, @code{cs}, @code{tkf},
 @code{special}, @code{fspecial}, @code{fp}, or @code{sty} requests,
-font@w{ }@var{g} is used.  If @var{g} is missing or equal to@w{ }@var{f}
+font@tie{}@var{g} is used.  If @var{g} is missing or equal to@tie{}@var{f}
 the translation is undone.
 @endDefreq
 
@@ -7834,7 +7824,7 @@ different font family on the command line (@pxref{Groff Options}).
 @DefregListEnd {.fn}
 @cindex changing font family (@code{fam}, @code{\F})
 @cindex font family, changing (@code{fam}, @code{\F})
-Switch font family to @var{family} (one-character name@w{ }@var{f},
+Switch font family to @var{family} (one-character name@tie{}@var{f},
 two-character name @var{fm}).  If no argument is given, switch
 back to the previous font family.  Use @code{\F[]} to do this with the
 escape.  Note that @code{\FP} doesn't work; it selects font family
@@ -7883,13 +7873,13 @@ is the proper concatenation of family and style name.
 @cindex @code{tkf} request, and font styles
 @cindex @code{uf} request, and font styles
 @cindex @code{fspecial} request, and font styles
-Associate @var{style} with font position@w{ }@var{n}.  A font position
+Associate @var{style} with font position@tie{}@var{n}.  A font position
 can be associated either with a font or with a style.  The current
 font is the index of a font position and so is also either a font or a
 style.  If it is a style, the font that is actually used is the font
 which name is the concatenation of the name of the current
 family and the name of the current style.  For example, if the current
-font is@w{ }1 and font position@w{ }1 is associated with style
+font is@tie{}1 and font position@tie{}1 is associated with style
 @samp{R} and the current font family is @samp{T}, then font
 @samp{TR} will be used.  If the current font is not a style, then the
 current family is ignored.  If the requests @code{cs}, @code{bd},
@@ -7897,7 +7887,7 @@ current family is ignored.  If the requests @code{cs}, @code{bd},
 they will instead be applied to the member of the current family
 corresponding to that style.
 
-@var{n}@w{ }must be a non-negative integer value.
+@var{n}@tie{}must be a non-negative integer value.
 
 @pindex DESC
 @kindex styles
@@ -7935,7 +7925,7 @@ In the following example, we want to access the @sc{PostScript} font
 @endExample
 
 @noindent
-The default font position at start-up is@w{ }1; for the
+The default font position at start-up is@tie{}1; for the
 @sc{PostScript} device, this is associated with style @samp{R}, so
 @code{gtroff} tries to open @code{FooR}.
 
@@ -7971,7 +7961,7 @@ on which various fonts are mounted.
 Mount font @var{font} at position @var{pos} (which must be a
 non-negative integer).  This numeric position can then be referred to
 with font changing commands.  When @code{gtroff} starts it is using
-font position@w{ }1 (which must exist; position@w{ }0 is unused
+font position@tie{}1 (which must exist; position@tie{}0 is unused
 usually at start-up).
 
 @cindex font position register (@code{.f})
@@ -8030,9 +8020,9 @@ syntax forms to access font positions.
 @kindex styles
 @kindex family
 @pindex DESC
-Change the current font position to @var{nnn} (one-digit position@w{
-}@var{n}, two-digit position @var{nn}), which must be a non-negative
-integer.
+Change the current font position to @var{nnn} (one-digit
+position@tie{}@var{n}, two-digit position @var{nn}), which must be a
+non-negative integer.
 
 If @var{nnn} is associated with a style (as set with the @code{sty}
 request or with the @code{styles} command in the @file{DESC} file), use
@@ -8132,7 +8122,7 @@ fonts 3 0 0 FOO
 @endExample
 
 @noindent
-This mounts font @code{foo} at font position@w{ }3.  We assume that
+This mounts font @code{foo} at font position@tie{}3.  We assume that
 @code{FOO} is a special font, containing glyph @code{foo},
 and that no font has been loaded yet.  The line
 
@@ -8146,7 +8136,7 @@ further assume that @code{BAZ} is really a special font, i.e., the font
 description file contains the @code{special} keyword, and that it
 also contains glyph @code{foo} with a special shape fitting to font
 @code{BAR}.  After executing @code{fspecial}, font @code{BAR} is loaded at
-font position@w{ }1, and @code{BAZ} at position@w{ }2.
+font position@tie{}1, and @code{BAZ} at position@tie{}2.
 
 We now switch to a new font @code{XXX}, trying to access glyph @code{foo}
 which is assumed to be missing.  There are neither font-specific special
@@ -8216,10 +8206,10 @@ that it is compatible with newer versions of @acronym{AT&T}
 @cindex glyph, numbered (@code{\N})
 @cindex @code{char} request, used with @code{\N}
 @cindex Unicode
-Typeset the glyph with code@w{ }@var{n} in the current font
-(@code{n}@w{ }is @strong{not} the input character code).  The
-number @var{n}@w{ }can be any non-negative decimal integer.  Most devices
-only have glyphs with codes between 0 and@w{ }255; the Unicode
+Typeset the glyph with code@tie{}@var{n} in the current font
+(@code{n}@tie{}is @strong{not} the input character code).  The
+number @var{n}@tie{}can be any non-negative decimal integer.  Most devices
+only have glyphs with codes between 0 and@tie{}255; the Unicode
 output device uses codes in the range 0--65535.  If the current
 font does not contain a glyph with that code, special fonts are
 @emph{not} searched.  The @code{\N} escape sequence can be
@@ -8353,9 +8343,9 @@ property).
 @cindex @code{\&}, and glyph definitions
 @cindex @code{\e}, and glyph definitions
 @cindex @code{hcode} request, and glyph definitions
-Define a new glyph@w{ }@var{g} to be @var{string} (which can be
+Define a new glyph@tie{}@var{g} to be @var{string} (which can be
 empty).@footnote{@code{char} is a misnomer since an output glyph is
-defined.}  Every time glyph@w{ }@var{g} needs to be printed,
+defined.}  Every time glyph@tie{}@var{g} needs to be printed,
 @var{string} is processed in a temporary environment and the result is
 wrapped up into a single object.  Compatibility mode is turned off and
 the escape character is set to @samp{\} while @var{string} is being
@@ -8396,7 +8386,7 @@ The @code{fchar} request defines a fallback glyph:
 if it cannot find the glyph in the current font.
 @code{gtroff} carries out this test before checking special fonts.
 
-@code{fschar} defines a fallback glyph for font@w{ }@var{f}: @code{gtroff}
+@code{fschar} defines a fallback glyph for font@tie{}@var{f}: @code{gtroff}
 checks for glyphs defined with @code{fschar} after the list of fonts
 declared as font-specific special fonts with the @code{fspecial} request,
 but before the list of fonts declared as global special fonts with the
@@ -8416,14 +8406,14 @@ searching mechanism in @code{gtroff}.
 @cindex removing glyph definition (@code{rchar}, @code{rfschar})
 @cindex glyph, removing definition (@code{rchar}, @code{rfschar})
 @cindex fallback glyph, removing definition (@code{rchar}, @code{rfschar})
-Remove the definitions of glyphs @var{c1}, @var{c2},@w{
-}@enddots{} This undoes the effect of a @code{char}, @code{fchar}, or
+Remove the definitions of glyphs @var{c1}, @var{c2},@tie{}@enddots{}
+This undoes the effect of a @code{char}, @code{fchar}, or
 @code{schar} request.
 
 It is possible to omit the whitespace between arguments.
 
 The request @code{rfschar} removes glyph definitions defined with
-@code{fschar} for glyph@w{ }f.
+@code{fschar} for glyph@tie{}f.
 @endDefreq
 
 @xref{Special Characters}.
@@ -8453,7 +8443,7 @@ Use the @code{special} request to define special fonts.  Initially, this
 list is empty.
 
 Use the @code{fspecial} request to designate special fonts only when
-font@w{ }@var{f} is active.  Initially, this list is empty.
+font@tie{}@var{f} is active.  Initially, this list is empty.
 
 Previous calls to @code{special} or @code{fspecial} are overwritten;
 without arguments, the particular list of special fonts is set to empty.
@@ -8576,7 +8566,7 @@ well (if a TTY output device is used).
 @cindex underline font (@code{uf})
 @cindex font for underlining (@code{uf})
 Set the underline font (globally) used by @code{ul} and @code{cu}.  By
-default, this is the font at position@w{ }2.  @var{font} can be either
+default, this is the font at position@tie{}2.  @var{font} can be either
 a non-negative font position or the name of a font.
 @endDefreq
 
@@ -8663,9 +8653,9 @@ supported `ff', `ffi', and `ffl' ligatures.  Advanced typesetters or
 Switch the ligature mechanism on or off; if the parameter is non-zero
 or missing, ligatures are enabled, otherwise disabled.  Default is on.
 The current ligature mode can be found in the read-only number register
-@code{.lg} (set to 1 or@w{ }2 if ligatures are enabled, 0@w{ }otherwise).
+@code{.lg} (set to 1 or@tie{}2 if ligatures are enabled, 0@tie{}otherwise).
 
-Setting the ligature mode to@w{ }2 enables the two-character ligatures
+Setting the ligature mode to@tie{}2 enables the two-character ligatures
 (fi, fl, and ff) and disables the three-character ligatures (ffi and
 ffl).
 @endDefreq
@@ -8687,8 +8677,8 @@ have the same width don't use kerning.
 @cindex kerning enabled register (@code{.kern})
 Switch kerning on or off.  If the parameter is non-zero or missing,
 enable pairwise kerning, otherwise disable it.  The read-only number
-register @code{.kern} is set to@w{ }1 if pairwise kerning is enabled,
-0@w{ }otherwise.
+register @code{.kern} is set to@tie{}1 if pairwise kerning is enabled,
+0@tie{}otherwise.
 
 @cindex zero width space character (@code{\&})
 @cindex character, zero width space (@code{\&})
@@ -8711,8 +8701,8 @@ typography if the reader notices the effect.
 @Defreq {tkf, f s1 n1 s2 n2}
 @cindex activating track kerning (@code{tkf})
 @cindex track kerning, activating (@code{tkf})
-Enable track kerning for font@w{ }@var{f}.  If the current font is@w{
-}@var{f} the width of every glyph is increased by an amount
+Enable track kerning for font@tie{}@var{f}.  If the current font
+is@tie{}@var{f} the width of every glyph is increased by an amount
 between @var{n1} and @var{n2} (@var{n1}, @var{n2} can be negative); if
 the current point size is less than or equal to @var{s1} the width is
 increased by @var{n1}; if it is greater than or equal to @var{s2} the
@@ -8742,8 +8732,8 @@ with this.
 Increase the width of the preceding glyph so that the spacing
 between that glyph and the following glyph is correct if the
 following glyph is a roman glyph.  For example, if an
-italic@w{ }@code{f} is immediately followed by a roman right
-parenthesis, then in many fonts the top right portion of the@w{ }@code{f}
+italic@tie{}@code{f} is immediately followed by a roman right
+parenthesis, then in many fonts the top right portion of the@tie{}@code{f}
 overlaps the top left of the right parenthesis.  Use this escape
 sequence whenever an italic glyph is immediately followed by a
 roman glyph without any intervening space.  This small amount of
@@ -8884,11 +8874,11 @@ are @emph{not} related to its type size!  For example, the standard
 output, the size of `Helvetica' has to be reduced by one point, and
 the size of `Courier' must be increased by one point.}  @dfn{Vertical
 spacing} is the amount of space @code{gtroff} allows for a line of
-text; normally, this is about 20%@w{ }larger than the current type
+text; normally, this is about 20%@tie{}larger than the current type
 size.  Ratios smaller than this can result in hard-to-read text;
 larger than this, it spreads the text out more vertically (useful for
-term papers).  By default, @code{gtroff} uses 10@w{ }point type on
-12@w{ }point spacing.
+term papers).  By default, @code{gtroff} uses 10@tie{}point type on
+12@tie{}point spacing.
 
 @cindex leading
 The difference between type size and vertical spacing is known, by
@@ -8915,7 +8905,7 @@ typesetters, as @dfn{leading} (this is pronounced `ledding').
 Use the @code{ps} request or the @code{\s} escape to change (increase,
 decrease) the type size (in points).  Specify @var{size} as either an
 absolute point size, or as a relative change from the current size.
-The size@w{ }0, or no argument, goes back to the previous size.
+The size@tie{}0, or no argument, goes back to the previous size.
 
 Default scaling indicator of @code{size} is @samp{z}.  If @code{size}
 is zero or negative, it is set to 1@dmn{u}.
@@ -8944,23 +8934,23 @@ and the text begins.  Any of the following forms are valid:
 
 @table @code
 @item \s@var{n}
-Set the point size to @var{n}@w{ }points.  @var{n}@w{ }must be either
-0 or in the range 4 to@w{ }39.
+Set the point size to @var{n}@tie{}points.  @var{n}@tie{}must be either
+0 or in the range 4 to@tie{}39.
 
 @item \s+@var{n}
 @itemx \s-@var{n}
-Increase or decrease the point size by @var{n}@w{ }points.  @var{n}@w{
-}must be exactly one digit.
+Increase or decrease the point size by @var{n}@tie{}points.
+@var{n}@tie{}must be exactly one digit.
 
 @item \s(@var{nn}
-Set the point size to @var{nn}@w{ }points.  @var{nn} must be exactly
+Set the point size to @var{nn}@tie{}points.  @var{nn} must be exactly
 two digits.
 
 @item \s+(@var{nn}
 @itemx \s-(@var{nn}
 @itemx \s(+@var{nn}
 @itemx \s(-@var{nn}
-Increase or decrease the point size by @var{nn}@w{ }points.  @var{nn}
+Increase or decrease the point size by @var{nn}@tie{}points.  @var{nn}
 must be exactly two digits.
 @end table
 
@@ -8989,7 +8979,7 @@ the @code{sizescale} line in the
 @file{DESC} file for the output device
 provides the scaling factor.
 For example, if the scaling factor is 1000,
-then the value 12000 is 12@w{ }points.
+then the value 12000 is 12@tie{}points.
 
 Each argument can be a single point size (such as @samp{12000}),
 or a range of sizes (such as @samp{4000-72000}).
@@ -9099,7 +9089,7 @@ post-vertical spacing; it is associated with the current environment
 @cindex @code{\H}, with fractional type sizes
 @cindex @code{\s}, with fractional type sizes
 A @dfn{scaled point} is equal to @math{1/@var{sizescale}} points,
-where @var{sizescale} is specified in the @file{DESC} file (1@w{ }by
+where @var{sizescale} is specified in the @file{DESC} file (1@tie{}by
 default).  There is a new scale indicator @samp{z} which has the
 effect of multiplying by @var{sizescale}.  Requests and escape
 sequences in @code{gtroff} interpret arguments that represent a point
@@ -9111,10 +9101,10 @@ arguments to the @code{tkf} request, the argument to the @code{\H}
 escape sequence, and those variants of the @code{\s} escape sequence
 that take a numeric expression as their argument (see below).
 
-For example, suppose @var{sizescale} is@w{ }1000; then a scaled point
+For example, suppose @var{sizescale} is@tie{}1000; then a scaled point
 is equivalent to a millipoint; the request @w{@samp{.ps 10.25}} is
 equivalent to @w{@samp{.ps 10.25z}} and thus sets the point size to
-10250@w{ }scaled points, which is equal to 10.25@w{ }points.
+10250@tie{}scaled points, which is equal to 10.25@tie{}points.
 
 @code{gtroff} disallows the use of the @samp{z} scale indicator in
 instances where it would make no sense, such as a numeric
@@ -9163,7 +9153,7 @@ fractional type sizes:
 @table @code
 @item \s[@var{n}]
 @itemx \s'@var{n}'
-Set the point size to @var{n}@w{ }scaled points; @var{n}@w{ }is a numeric
+Set the point size to @var{n}@tie{}scaled points; @var{n}@tie{}is a numeric
 expression with a default scale indicator of @samp{z}.
 
 @item \s[+@var{n}]
@@ -9174,8 +9164,8 @@ expression with a default scale indicator of @samp{z}.
 @itemx \s'-@var{n}'
 @itemx \s+'@var{n}'
 @itemx \s-'@var{n}'
-Increase or or decrease the point size by @var{n}@w{ }scaled points;
-@var{n}@w{ }is a numeric expression with a default scale indicator of
+Increase or or decrease the point size by @var{n}@tie{}scaled points;
+@var{n}@tie{}is a numeric expression with a default scale indicator of
 @samp{z}.
 @end table
 
@@ -9203,9 +9193,9 @@ even this is a read-write string variable).
 @cindex expansion of strings (@code{\*})
 @cindex string arguments
 @cindex arguments, of strings
-Define and access a string variable @var{name} (one-character name@w{
-}@var{n}, two-character name @var{nm}).  If @var{name} already exists,
-@code{ds} overwrites the previous definition.  Only the syntax form
+Define and access a string variable @var{name} (one-character
+name@tie{}@var{n}, two-character name @var{nm}).  If @var{name} already
+exists, @code{ds} overwrites the previous definition.  Only the syntax form
 using brackets can take arguments which are handled identically to
 macro arguments; the single exception is that a closing bracket as an
 argument must be enclosed in double quotes.  @xref{Request Arguments},
@@ -9417,12 +9407,12 @@ requests.
 @Defreq {substring, str n1 [@Var{n2}]}
 @cindex substring (@code{substring})
 Replace the string named @var{str} with the substring
-defined by the indices @var{n1} and@w{ }@var{n2}.  The first character
-in the string has index@w{ }0.  If @var{n2} is omitted, it is taken to
+defined by the indices @var{n1} and@tie{}@var{n2}.  The first character
+in the string has index@tie{}0.  If @var{n2} is omitted, it is taken to
 be equal to the string's length.  If the index value @var{n1} or
 @var{n2} is negative, it is counted from the end of the
-string, going backwards: The last character has index@w{ }@minus{}1, the
-character before the last character has index@w{ }@minus{}2, etc.
+string, going backwards: The last character has index@tie{}@minus{}1, the
+character before the last character has index@tie{}@minus{}2, etc.
 
 @Example
 .ds xxx abcdefgh
@@ -9561,7 +9551,7 @@ match,@footnote{The created output nodes must be identical.
 font requests.  In the previous example, @samp{|} and @samp{\fR|\fP}
 both result in a roman @samp{|} glyph with the same point size and
 at the same location on the page, so the strings are equal.  If
-@samp{.ft@w{ }I} had been added before the @samp{.ie}, the result
+@samp{.ft@tie{}I} had been added before the @samp{.ie}, the result
 would be ``false'' because (the first) @samp{|} produces an italic
 @samp{|} rather than a roman one.
 
@@ -9639,7 +9629,7 @@ more info.
 
 @Defreq{nop, anything}
 Executes @var{anything}.
-This is similar to @code{.if@w{ }1}.
+This is similar to @code{.if@tie{}1}.
 @endDefreq
 
 @DefreqList {ie, expr anything}
@@ -9702,7 +9692,7 @@ request, which is used much like the @code{if} (and related) requests.
 @Defreq {while, expr anything}
 Evaluate the expression @var{expr}, and repeatedly execute
 @var{anything} (the remainder of the line) until @var{expr} evaluates
-to@w{ }0.
+to@tie{}0.
 
 @Example
 .nr a 0 1
@@ -9758,7 +9748,7 @@ instead which is parsed only once during its definition.
 @endExample
 
 @noindent
-Note that the number of available recursion levels is set to@w{ }1000
+Note that the number of available recursion levels is set to@tie{}1000
 (this is a compile-time constant value of @code{gtroff}).
 
 @item
@@ -9968,7 +9958,7 @@ evaluated (either at copy-in time or at the time of use) by insulating
 the escapes with an extra backslash.  Compare this to the @code{\def}
 and @code{\edef} commands in @TeX{}.
 
-The following example prints the numbers 20 and@w{ }10:
+The following example prints the numbers 20 and@tie{}10:
 
 @Example
 .nr x 20
@@ -10007,17 +9997,17 @@ escapes:
 Retrieve the @var{n}@dmn{th}, @var{nn}@dmn{th} or @var{nnn}@dmn{th}
 argument.  As usual, the first form only accepts a single number
 (larger than zero), the second a two-digit number (larger or equal
-to@w{ }10), and the third any positive integer value (larger
+to@tie{}10), and the third any positive integer value (larger
 than zero).  Macros and strings can have an unlimited number of arguments.
 Note that due to copy-in mode, use two backslashes on these in actual use
 to prevent interpolation until the macro is actually invoked.
 @endDefesc
 
 @Defreq {shift, [@Var{n}]}
-Shift the arguments 1@w{ }position, or as
+Shift the arguments 1@tie{}position, or as
 many positions as specified by its argument.  After executing this
-request, argument@w{ }@var{i} becomes argument @math{@var{i}-@var{n}};
-arguments 1 to@w{ }@var{n} are no longer available.  Shifting by
+request, argument@tie{}@var{i} becomes argument @math{@var{i}-@var{n}};
+arguments 1 to@tie{}@var{n} are no longer available.  Shifting by
 negative amounts is currently undefined.
 @endDefreq
 
@@ -10157,7 +10147,7 @@ The following escapes give fine control of movements about the page.
 @cindex motion, vertical (@code{\v})
 Move vertically, usually from the current location on the page (if no
 absolute position operator @samp{|} is used).  The
-argument@w{ }@var{e} specifies the distance to move; positive is
+argument@tie{}@var{e} specifies the distance to move; positive is
 downwards and negative upwards.  The default scaling indicator for this
 escape is @samp{v}.  Beware, however, that @code{gtroff} continues text
 processing at the point where the motion ends, so you should always
@@ -10171,15 +10161,15 @@ indicate continuation of a footnote or something similar.
 There are some special-case escapes for vertical motion.
 
 @Defesc {\\r, , , }
-Move upwards@w{ }1@dmn{v}.
+Move upwards@tie{}1@dmn{v}.
 @endDefesc
 
 @Defesc {\\u, , , }
-Move upwards@w{ }.5@dmn{v}.
+Move upwards@tie{}.5@dmn{v}.
 @endDefesc
 
 @Defesc {\\d, , , }
-Move down@w{ }.5@dmn{v}.
+Move down@tie{}.5@dmn{v}.
 @endDefesc
 
 @Defesc {\\h, ', e, '}
@@ -10189,7 +10179,7 @@ Move down@w{ }.5@dmn{v}.
 @cindex horizontal motion (@code{\h})
 @cindex motion, horizontal (@code{\h})
 Move horizontally, usually from the current location (if no absolute
-position operator @samp{|} is used).  The expression@w{ }@var{e}
+position operator @samp{|} is used).  The expression@tie{}@var{e}
 indicates how far to move: positive is rightwards and negative
 leftwards.  The default scaling indicator for this escape is @samp{m}.
 @endDefesc
@@ -10301,7 +10291,7 @@ over that glyph.
 @cindex position, horizontal input line, saving (@code{\k})
 @cindex line, input, horizontal position, saving (@code{\k})
 Store the current horizontal position in the @emph{input} line in
-number register with name @var{position} (one-character name@w{ }@var{p},
+number register with name @var{position} (one-character name@tie{}@var{p},
 two-character name @var{ps}).  Use this, for example, to return to the
 beginning of a string for highlighting or other decoration.
 @endDefesc
@@ -10395,7 +10385,7 @@ Default scaling indicator is @samp{m}.
 @cindex glyph, underscore (@code{\[ru]})
 @cindex line drawing glyph
 @cindex glyph, for line drawing
-The optional second parameter@w{ }@var{g} is a glyph to draw the line
+The optional second parameter@tie{}@var{g} is a glyph to draw the line
 with.  If this second argument is not specified, @code{gtroff} uses
 the underscore glyph, @code{\[ru]}.
 
@@ -10498,7 +10488,7 @@ containing the largest height and depth of the whole string.
 @item \D'c @var{d}'
 @cindex circle, drawing (@w{@code{\D'c @dots{}'}})
 @cindex drawing a circle (@w{@code{\D'c @dots{}'}})
-Draw a circle with a diameter of@w{ }@var{d} with the leftmost point at the
+Draw a circle with a diameter of@tie{}@var{d} with the leftmost point at the
 current position.
 
 @item \D'C @var{d}'
@@ -10539,8 +10529,8 @@ Draw a spline from the current location to the relative point
 @item \D'f @var{n}'
 @cindex gray shading (@w{@code{\D'f @dots{}'}})
 @cindex shading filled objects (@w{@code{\D'f @dots{}'}})
-Set the shade of gray to be used for filling solid objects to@w{
-}@var{n}; @var{n}@w{ }must be an integer between 0 and@w{ }1000, where 0
+Set the shade of gray to be used for filling solid objects to@tie{}@var{n};
+@var{n}@tie{}must be an integer between 0 and@tie{}1000, where 0
 corresponds solid white and 1000 to solid black, and values in between
 correspond to intermediate shades of gray.  This applies only to solid
 circles, solid ellipses, and solid polygons.  By default, a level of
@@ -10586,7 +10576,7 @@ text completely.
 @item \D't @var{n}'
 @cindex line thickness (@w{@code{\D't @dots{}'}})
 @cindex thickness of lines (@w{@code{\D't @dots{}'}})
-Set the current line thickness to @var{n}@w{ }machine units.  A value of
+Set the current line thickness to @var{n}@tie{}machine units.  A value of
 zero selects the smallest available line thickness.  A negative value
 makes the line thickness proportional to the current point size (this is
 the default behaviour of @acronym{AT&T} @code{troff}).
@@ -10854,12 +10844,12 @@ number register @code{.t} still works within diversions.
 @cindex input line trap, setting (@code{it})
 @cindex trap, input line, setting (@code{it})
 Set an input line trap.
-@var{n}@w{ }is the number of lines of input which may be read before
+@var{n}@tie{}is the number of lines of input which may be read before
 springing the trap, @var{macro} is the macro to be invoked.
 Request lines are not counted as input lines.
 
 For example, one possible use is to have a macro which prints the
-next @var{n}@w{ }lines in a bold font.
+next @var{n}@tie{}lines in a bold font.
 
 @Example
 .de B
@@ -11121,7 +11111,7 @@ occurrence of the @code{\?} escape.  For example:
 newlines in a diversion.  The escape sequence @code{\?} is also
 recognized in copy mode and turned into a single internal code; it is
 this code that terminates @var{anything}.  Thus the following example
-prints@w{ }4.
+prints@tie{}4.
 
 @Example
 .nr x 1
@@ -11185,7 +11175,7 @@ in such a way that @acronym{ASCII} characters, characters translated with
 the @code{trin} request, space characters, and some escape sequences that
 were formatted and diverted are treated like ordinary input
 characters when the diversion is reread.  It can be also used for gross
-hacks; for example, the following sets register@w{ }@code{n} to@w{ }1.
+hacks; for example, the following sets register@tie{}@code{n} to@tie{}1.
 
 @Example
 .tr @@.
@@ -11225,7 +11215,7 @@ a trap invoked macro to print headers and footers.  To solve this
 @code{gtroff} processes text in @dfn{environments}.  An
 environment contains most of the parameters that control text
 processing.  It is possible to switch amongst these environments; by
-default @code{gtroff} processes text in environment@w{ }0.  The
+default @code{gtroff} processes text in environment@tie{}0.  The
 following is the information kept in an environment.
 
 @itemize @bullet
@@ -11408,7 +11398,7 @@ End a nesting level.
 This escape is @code{grohtml} specific.  Provided that this escape
 occurs at the outer nesting level write the @code{filename} to
 @code{stderr}.  The position of the image, @var{P}, must be specified
-and must be one of @code{l}, @code{r}, @code{c}, or@w{ }@code{i} (left,
+and must be one of @code{l}, @code{r}, @code{c}, or@tie{}@code{i} (left,
 right, centered, inline).  @var{filename} will be associated with the
 production of the next inline image.
 @end table
@@ -11425,8 +11415,8 @@ production of the next inline image.
 If @var{n} is missing or non-zero, activate colors (this is the default);
 otherwise, turn it off.
 
-The read-only number register @code{.color} is@w{ }1 if colors are active,
-0@w{ }otherwise.
+The read-only number register @code{.color} is@tie{}1 if colors are active,
+0@tie{}otherwise.
 
 Internally, @code{color} sets a global flag; it does not produce a token.
 Similar to the @code{cp} request, you should use it at the beginning of
@@ -11447,7 +11437,7 @@ Color components can be given either as a hexadecimal string or as
 positive decimal integers in the range 0--65535.  A hexadecimal string
 contains all color components concatenated.  It must start with either
 @code{#} or @code{##}; the former specifies hex values in the range
-0--255 (which are internally multiplied by@w{ }257), the latter in the
+0--255 (which are internally multiplied by@tie{}257), the latter in the
 range 0--65535.  Examples: @code{#FFC0CB} (pink), @code{##ffff0000ffff}
 (magenta).  The default color name @c{default} can't be redefined; its
 value is device-specific (usually black).  It is possible that the
@@ -11455,9 +11445,9 @@ default color for @code{\m} and @code{\M} is not identical.
 
 @cindex @code{f} unit, and colors
 @cindex unit, @code{f}, and colors
-A new scaling indicator@w{ }@code{f} has been introduced which multiplies
+A new scaling indicator@tie{}@code{f} has been introduced which multiplies
 its value by 65536; this makes it convenient to specify color components
-as fractions in the range 0 to@w{ }1 (1f equals 65536u).  Example:
+as fractions in the range 0 to@tie{}1 (1f equals 65536u).  Example:
 
 @Example
 .defcolor darkgreen rgb 0.1f 0.5f 0.2f
@@ -11583,7 +11573,7 @@ Transparently output the contents of @var{file}.  Each line is output
 as if it were preceded by @code{\!}; however, the lines are not subject
 to copy mode interpretation.  If the file does not end with a newline,
 then a newline is added (@code{trf} only).  For example, to define a
-macro@w{ }@code{x} containing the contents of file@w{ }@file{f}, use
+macro@tie{}@code{x} containing the contents of file@tie{}@file{f}, use
 
 @Example
 .di x
@@ -11843,7 +11833,7 @@ Here a simple macro to write an index entry.
 @DefescItem {\\V, @lparen{}, ev, }
 @DefescListEnd {\\V, @lbrack{}, env, @rbrack}
 Interpolate the contents of the specified environment variable
-@var{env} (one-character name@w{ }@var{e}, two-character name @var{ev})
+@var{env} (one-character name@tie{}@var{e}, two-character name @var{ev})
 as returned by the function @code{getenv}.  @code{\V} is interpreted
 in copy-in mode.
 @endDefesc
@@ -11893,7 +11883,7 @@ Additionally, the backslash is represented as @code{\\}.
 @DefescItem {\\Y, @lparen{}, nm, }
 @DefescListEnd {\\Y, @lbrack{}, name, @rbrack}
 This is approximately equivalent to @samp{\X'\*[@var{name}]'}
-(one-character name@w{ }@var{n}, two-character name @var{nm}).
+(one-character name@tie{}@var{n}, two-character name @var{nm}).
 However, the contents of the string or macro @var{name} are not
 interpreted; also it is permitted for @var{name} to have been defined
 as a macro and thus contain newlines (it is not permitted for the
@@ -11921,8 +11911,8 @@ categorized elsewhere in this manual.
 Print line numbers.
 @var{start} is the line number of the @emph{next}
 output line.  @var{inc} indicates which line numbers are printed.
-For example, the value@w{ }5 means to emit only line numbers which
-are multiples of@w{ }5; this defaults to@w{ }1.  @var{space} is the
+For example, the value@tie{}5 means to emit only line numbers which
+are multiples of@tie{}5; this defaults to@tie{}1.  @var{space} is the
 space to be left between the number and the text; this defaults to
 one digit space.  The fourth argument is the indentation of the line
 numbers, defaulting to zero.  Both @var{space} and @var{indent} are
@@ -11985,7 +11975,7 @@ And here the result:
 
 @Defreq {nn, [@Var{skip}]}
 Temporarily turn off line numbering.  The argument is the number
-of lines not to be numbered; this defaults to@w{ }1.
+of lines not to be numbered; this defaults to@tie{}1.
 @endDefreq
 
 @Defreq {mc, glyph [@Var{dist}]}
@@ -12088,7 +12078,7 @@ are valid input.  @xref{Identifiers}, for more on this topic.
 
 For example, the input string @samp{fi\[:u]} is converted into a
 character token @samp{f}, a character token @samp{i}, and a special
-token @samp{:u} (representing u@w{ }umlaut).  Later on, the character
+token @samp{:u} (representing u@tie{}umlaut).  Later on, the character
 tokens @samp{f} and @samp{i} are merged to a single output node
 representing the ligature glyph @samp{fi} (provided the current font
 has a glyph for this ligature); the same happens with @samp{:u}.  All
@@ -12129,7 +12119,7 @@ It contains these elements.
 
 @cindex @code{\v}, internal representation
 @noindent
-Elements 1, 7, and@w{ }8 are inserted by @code{gtroff}; the latter two
+Elements 1, 7, and@tie{}8 are inserted by @code{gtroff}; the latter two
 (which are always present) specify the vertical extent of the last
 line, possibly modified by @code{\x}.  The @code{br} request finishes
 the current partial line, inserting a newline input token which is
@@ -12331,7 +12321,7 @@ this request on each error and warning.
 @cindex input stack, setting limit
 Use the @code{slimit} number register
 to set the maximum number of objects on the input stack.
-If @code{slimit} is less than or equal to@w{ }0,
+If @code{slimit} is less than or equal to@tie{}0,
 there is no limit set.
 With no limit, a buggy recursive macro can exhaust virtual memory.
 
@@ -12471,7 +12461,7 @@ for each name.
 @cindex @code{\R}, and warnings
 @cindex @code{\n}, and warnings
 Use of undefined number registers.  When an undefined number register is
-used, that register is automatically defined to have a value of@w{ }0.
+used, that register is automatically defined to have a value of@tie{}0.
 So, in most cases, at most one warning is given for use of a particular
 name.
 
@@ -12572,8 +12562,8 @@ interpreted as the start of a long name.  In compatibility mode GNU
 If @var{n} is missing or non-zero, turn on compatibility mode;
 otherwise, turn it off.
 
-The read-only number register @code{.C} is@w{ }1 if compatibility mode is
-on, 0@w{ }otherwise.
+The read-only number register @code{.C} is@tie{}1 if compatibility mode is
+on, 0@tie{}otherwise.
 
 Compatibility mode can be also turned on with the @option{-C} command line
 option.
@@ -12665,8 +12655,8 @@ indicators and thus
 @endExample
 
 @noindent
-sets the point size to 10@w{ }points, whereas in GNU @code{troff} it
-sets the point size to 10@w{ }scaled points.  @xref{Fractional Type
+sets the point size to 10@tie{}points, whereas in GNU @code{troff} it
+sets the point size to 10@tie{}scaled points.  @xref{Fractional Type
 Sizes}, for more information.
 
 @cindex @code{bd} request, incompatibilities with @acronym{AT&T} @code{troff}
@@ -13414,15 +13404,15 @@ position; the glyph's size is read from the font file.  The print
 position is not changed.
 
 @item c @var{g}
-Print glyph@w{ }@var{g} at the current print position;@footnote{@samp{c}
+Print glyph@tie{}@var{g} at the current print position;@footnote{@samp{c}
 is actually a misnomer since it outputs a glyph.} the glyph's size is
 read from the font file.  The print position is not changed.
 
 @item f @var{n}
-Set font to font number@w{ }@var{n} (a non-negative integer).
+Set font to font number@tie{}@var{n} (a non-negative integer).
 
 @item H @var{n}
-Move right to the absolute vertical position@w{ }@var{n} (a
+Move right to the absolute vertical position@tie{}@var{n} (a
 non-negative integer in basic units @samp{u} relative to left edge
 of current page.
 
@@ -13443,7 +13433,7 @@ These commands are a @code{gtroff} extension.
 
 @table @code
 @item mc @var{cyan} @var{magenta} @var{yellow}
-Set color using the CMY color scheme, having the 3@w{ }color components
+Set color using the CMY color scheme, having the 3@tie{}color components
 @var{cyan}, @var{magenta}, and @var{yellow}.
 
 @item md
@@ -13455,37 +13445,37 @@ Set color to the shade of gray given by the argument, an integer
 between 0 (black) and 65536 (white).
 
 @item mk @var{cyan} @var{magenta} @var{yellow} @var{black}
-Set color using the CMYK color scheme, having the 4@w{ }color components
+Set color using the CMYK color scheme, having the 4@tie{}color components
 @var{cyan}, @var{magenta}, @var{yellow}, and @var{black}.
 
 @item mr @var{red} @var{green} @var{blue}
-Set color using the RGB color scheme, having the 3@w{ }color components
+Set color using the RGB color scheme, having the 3@tie{}color components
 @var{red}, @var{green}, and @var{blue}.
 
 @end table
 
 @item N @var{n}
-Print glyph with index@w{ }@var{n} (a non-negative integer) of the
+Print glyph with index@tie{}@var{n} (a non-negative integer) of the
 current font.  This command is a @code{gtroff} extension.
 
 @item n @var{b} @var{a}
 Inform the device about a line break, but no positioning is done by
 this command.  In @acronym{AT&T} @code{troff}, the integer arguments
-@var{b} and@w{ }@var{a} informed about the space before and after the
+@var{b} and@tie{}@var{a} informed about the space before and after the
 current line to make the intermediate output more human readable
 without performing any action.  In @code{groff}, they are just ignored, but
 they must be provided for compatibility reasons.
 
 @item p @var{n}
 Begin a new page in the outprint.  The page number is set
-to@w{ }@var{n}.  This page is completely independent of pages formerly
+to@tie{}@var{n}.  This page is completely independent of pages formerly
 processed even if those have the same page number.  The vertical
-position on the outprint is automatically set to@w{ }0.  All
+position on the outprint is automatically set to@tie{}0.  All
 positioning, writing, and drawing is always done relative to a page,
 so a @samp{p} command must be issued before any of these commands.
 
 @item s @var{n}
-Set point size to @var{n}@w{ }scaled points (this is unit @samp{z}).
+Set point size to @var{n}@tie{}scaled points (this is unit @samp{z}).
 @acronym{AT&T} @code{troff} used the unit points (@samp{p}) instead.
 @xref{Output Language Compatibility}.
 
@@ -13509,18 +13499,18 @@ file contains the @code{tcommand} keyword (@pxref{DESC File Format}).
 Print word with track kerning.  This is the same as the @samp{t}
 command except that after printing each glyph, the current
 horizontal position is increased by the sum of the width of that
-glyph and@w{ }@var{n} (an integer in basic units @samp{u}).
+glyph and@tie{}@var{n} (an integer in basic units @samp{u}).
 This command is a @code{gtroff} extension; it is only used for devices
 whose @file{DESC} file contains the @code{tcommand} keyword
 (@pxref{DESC File Format}).
 
 @item V @var{n}
-Move down to the absolute vertical position@w{ }@var{n} (a
+Move down to the absolute vertical position@tie{}@var{n} (a
 non-negative integer in basic units @samp{u}) relative to upper edge
 of current page.
 
 @item v @var{n}
-Move @var{n}@w{ }basic units @samp{u} down (@var{n} is a non-negative
+Move @var{n}@tie{}basic units @samp{u} down (@var{n} is a non-negative
 integer).  The original @acronym{UNIX} troff manual allows negative
 values for @var{n} also, but @code{gtroff} doesn't use this.
 
@@ -13585,27 +13575,27 @@ of the arc.
 @item DC @var{d}@angles{line break}
 @itemx DC @var{d} @var{dummy-arg}@angles{line break}
 Draw a solid circle using the current fill color with
-diameter@w{ }@var{d} (integer in basic units @samp{u}) with leftmost
+diameter@tie{}@var{d} (integer in basic units @samp{u}) with leftmost
 point at the current position; then move the current position to the
 rightmost point of the circle.  An optional second integer argument is
 ignored (this allows the formatter to generate an even number of
 arguments).  This command is a @code{gtroff} extension.
 
 @item Dc @var{d}@angles{line break}
-Draw circle line with diameter@w{ }@var{d} (integer in basic units
+Draw circle line with diameter@tie{}@var{d} (integer in basic units
 @samp{u}) with leftmost point at the current position; then move the
 current position to the rightmost point of the circle.
 
 @item DE @var{h} @var{v}@angles{line break}
 Draw a solid ellipse in the current fill color with a horizontal
-diameter of@w{ }@var{h} and a vertical diameter of@w{ }@var{v} (both
+diameter of@tie{}@var{h} and a vertical diameter of@tie{}@var{v} (both
 integers in basic units @samp{u}) with the leftmost point at the
 current position; then move to the rightmost point of the ellipse.
 This command is a @code{gtroff} extension.
 
 @item De @var{h} @var{v}@angles{line break}
-Draw an outlined ellipse with a horizontal diameter of@w{ }@var{h}
-and a vertical diameter of@w{ }@var{v} (both integers in basic units
+Draw an outlined ellipse with a horizontal diameter of@tie{}@var{h}
+and a vertical diameter of@tie{}@var{v} (both integers in basic units
 @samp{u}) with the leftmost point at current position; then move to
 the rightmost point of the ellipse.
 
@@ -13623,7 +13613,7 @@ is a @code{gtroff} extension.
 @table @code
 @item DFc @var{cyan} @var{magenta} @var{yellow}@angles{line break}
 Set fill color for solid drawing objects using the CMY color scheme,
-having the 3@w{ }color components @var{cyan}, @var{magenta}, and
+having the 3@tie{}color components @var{cyan}, @var{magenta}, and
 @var{yellow}.
 
 @item DFd@angles{line break}
@@ -13636,17 +13626,17 @@ the argument, an integer between 0 (black) and 65536 (white).
 
 @item DFk @var{cyan} @var{magenta} @var{yellow} @var{black}@angles{line break}
 Set fill color for solid drawing objects using the CMYK color scheme,
-having the 4@w{ }color components @var{cyan}, @var{magenta}, @var{yellow},
+having the 4@tie{}color components @var{cyan}, @var{magenta}, @var{yellow},
 and @var{black}.
 
 @item DFr @var{red} @var{green} @var{blue}@angles{line break}
 Set fill color for solid drawing objects using the RGB color scheme,
-having the 3@w{ }color components @var{red}, @var{green}, and @var{blue}.
+having the 3@tie{}color components @var{red}, @var{green}, and @var{blue}.
 
 @end table
 
 @item Df @var{n}@angles{line break}
-The argument@w{ }@var{n} must be an integer in the range @math{-32767}
+The argument@tie{}@var{n} must be an integer in the range @math{-32767}
 to 32767.
 
 @table @asis
@@ -13656,7 +13646,7 @@ where 0 corresponds to solid white, 1000 (the default) to solid black,
 and values in between to intermediate shades of gray; this is
 obsoleted by command @samp{DFg}.
 
-@item @math{@var{n} @LT 0} or @math{@var{n} @LT 1000}
+@item @math{@var{n} < 0} or @math{@var{n} > 1000}
 Set the filling color to the color that is currently being used for
 the text and the outline, see command @samp{m}.  For example, the
 command sequence
@@ -13703,7 +13693,7 @@ No position changing.
 This command is a @code{gtroff} extension.
 
 @item Dt @var{n}@angles{line break}
-Set the current line thickness to@w{ }@var{n} (an integer in basic
+Set the current line thickness to@tie{}@var{n} (an integer in basic
 units @samp{u}) if @math{@var{n}>0}; if @math{@var{n}=0} select the
 smallest available line thickness; if @math{@var{n}<0} set the line
 thickness proportional to the point size (this is the default before
@@ -13751,13 +13741,13 @@ not changed by this command.  This command is a @code{gtroff} extension.
 @item xf @var{n} @var{s}@angles{line break}
 The @samp{f} stands for @var{font}.
 
-Mount font position@w{ }@var{n} (a non-negative integer) with font
-named@w{ }@var{s} (a text word).  @xref{Font Positions}.
+Mount font position@tie{}@var{n} (a non-negative integer) with font
+named@tie{}@var{s} (a text word).  @xref{Font Positions}.
 
 @item xH @var{n}@angles{line break}
 The @samp{H} stands for @var{Height}.
 
-Set glyph height to@w{ }@var{n} (a positive integer in scaled
+Set glyph height to@tie{}@var{n} (a positive integer in scaled
 points @samp{z}).  @acronym{AT&T} @code{troff} uses the unit points
 (@samp{p}) instead.  @xref{Output Language Compatibility}.
 
@@ -13778,7 +13768,7 @@ pause device, can be restarted
 @item xr @var{n} @var{h} @var{v}@angles{line break}
 The @samp{r} stands for @var{resolution}.
 
-Resolution is@w{ }@var{n}, while @var{h} is the minimal horizontal
+Resolution is@tie{}@var{n}, while @var{h} is the minimal horizontal
 motion, and @var{v} the minimal vertical motion possible with this
 device; all arguments are positive integers in basic units @samp{u}
 per inch.  This is the second command of the prologue.
@@ -13786,7 +13776,7 @@ per inch.  This is the second command of the prologue.
 @item xS @var{n}@angles{line break}
 The @samp{S} stands for @var{Slant}.
 
-Set slant to@w{ }@var{n} (an integer in basic units @samp{u}).
+Set slant to@tie{}@var{n} (an integer in basic units @samp{u}).
 
 @item xs@angles{line break}
 The @samp{s} stands for @var{stop}.
@@ -13811,8 +13801,8 @@ command of the prologue.
 @item xu @var{n}@angles{line break}
 The @samp{u} stands for @var{underline}.
 
-Configure underlining of spaces.  If @var{n} is@w{ }1, start
-underlining of spaces; if @var{n} is@w{ }0, stop underlining of spaces.
+Configure underlining of spaces.  If @var{n} is@tie{}1, start
+underlining of spaces; if @var{n} is@tie{}0, stop underlining of spaces.
 This is needed for the @code{cu} request in nroff mode and is ignored
 otherwise.  This command is a @code{gtroff} extension.
 
@@ -13837,12 +13827,12 @@ In @acronym{AT&T} @code{troff} output, the writing of a single
 glyph is mostly done by a very strange command that combines a
 horizontal move and a single character giving the glyph name.  It
 doesn't have a command code, but is represented by a 3-character
-argument consisting of exactly 2@w{ }digits and a character.
+argument consisting of exactly 2@tie{}digits and a character.
 
 @table @asis
 @item @var{dd}@var{g}
 Move right @var{dd} (exactly two decimal digits) basic units @samp{u},
-then print glyph@w{ }@var{g} (represented as a single character).
+then print glyph@tie{}@var{g} (represented as a single character).
 
 In @code{gtroff}, arbitrary syntactical space around and within this
 command is allowed to be added.  Only when a preceding command on the
@@ -13953,7 +13943,7 @@ document.
 
 @item @acronym{AT&T} @code{troff} output
 Since a computer monitor has a very low resolution compared to modern
-printers the intermediate output for the X@w{ }Window devices can use
+printers the intermediate output for the X@tie{}Window devices can use
 the jump-and-write command with its 2-digit displacements.
 
 @example
@@ -13982,7 +13972,7 @@ x stop
 
 @noindent
 This output can be fed into @code{xditview} or @code{gxditview}
-for displaying in@w{ }X.
+for displaying in@tie{}X.
 
 Due to the obsolete jump-and-write command, the text clusters in the
 @acronym{AT&T} @code{troff} output are almost unreadable.
@@ -14069,11 +14059,11 @@ The @code{gtroff} font format is roughly a superset of the
 @code{ditroff} font format (as used in later versions of @acronym{AT&T}
 @code{troff} and its descendants).  Unlike the @code{ditroff} font
 format, there is no associated binary format; all files are text
-files.@footnote{Plan@w{ }9 @code{troff} has also abandoned the binary
+files.@footnote{Plan@tie{}9 @code{troff} has also abandoned the binary
 format.}  The font files for device @var{name} are stored in a directory
 @file{dev@var{name}}.  There are two types of file: a device description
-file called @file{DESC} and for each font@w{ }@var{f} a font file
-called@w{ }@file{@var{f}}.
+file called @file{DESC} and for each font@tie{}@var{f} a font file
+called@tie{}@file{@var{f}}.
 
 @menu
 * DESC File Format::
@@ -14096,19 +14086,19 @@ order of the lines is not important.
 @table @code
 @item res @var{n}
 @kindex res
-There are @var{n}@w{ }machine units per inch.
+There are @var{n}@tie{}machine units per inch.
 
 @item hor @var{n}
 @kindex hor
-The horizontal resolution is @var{n}@w{ }machine units.
+The horizontal resolution is @var{n}@tie{}machine units.
 
 @item vert @var{n}
 @kindex vert
-The vertical resolution is @var{n}@w{ }machine units.
+The vertical resolution is @var{n}@tie{}machine units.
 
 @item sizescale @var{n}
 @kindex sizescale
-The scale factor for point sizes.  By default this has a value of@w{ }1.
+The scale factor for point sizes.  By default this has a value of@tie{}1.
 One scaled point is equal to one point/@var{n}.  The arguments to the
 @code{unitwidth} and @code{sizes} commands are given in scaled points.
 @xref{Fractional Type Sizes}, for more information.
@@ -14116,7 +14106,7 @@ One scaled point is equal to one point/@var{n}.  The arguments to the
 @item unitwidth @var{n}
 @kindex unitwidth
 Quantities in the font files are given in machine units for fonts whose
-point size is @var{n}@w{ }scaled points.
+point size is @var{n}@tie{}scaled points.
 
 @item prepro @var{program}
 @kindex prepro
@@ -14143,13 +14133,13 @@ intermediate output commands.
 @item sizes @var{s1} @var{s2} @dots{} @var{sn} 0
 @kindex sizes
 This means that the device has fonts at @var{s1}, @var{s2}, @dots{}
-@var{sn} scaled points.  The list of sizes must be terminated by@w{ }0
+@var{sn} scaled points.  The list of sizes must be terminated by@tie{}0
 (this is digit zero).  Each @var{si} can also be a range of sizes
 @var{m}-@var{n}.  The list can extend over more than one line.
 
 @item styles @var{S1} @var{S2} @dots{} @var{Sm}
 @kindex styles
-The first @var{m}@w{ }font positions are associated with styles
+The first @var{m}@tie{}font positions are associated with styles
 @var{S1} @dots{} @var{Sm}.
 
 @item fonts @var{n} @var{F1} @var{F2} @var{F3} @dots{} @var{Fn}
@@ -14157,7 +14147,7 @@ The first @var{m}@w{ }font positions are associated with styles
 Fonts @var{F1} @dots{} @var{Fn} are mounted in the font positions
 @var{m}+1, @dots{}, @var{m}+@var{n} where @var{m} is the number of
 styles.  This command may extend over more than one line.  A font name
-of@w{ }0 means no font is mounted on the corresponding font position.
+of@tie{}0 means no font is mounted on the corresponding font position.
 
 @item family @var{fam}
 @kindex family
@@ -14239,15 +14229,15 @@ key.
 @table @code
 @item name @var{f}
 @kindex name
-The name of the font is@w{ }@var{f}.
+The name of the font is@tie{}@var{f}.
 
 @item spacewidth @var{n}
 @kindex spacewidth
-The normal width of a space is@w{ }@var{n}.
+The normal width of a space is@tie{}@var{n}.
 
 @item slant @var{n}
 @kindex slant
-The glyphs of the font have a slant of @var{n}@w{ }degrees.
+The glyphs of the font have a slant of @var{n}@tie{}degrees.
 (Positive means forward.)
 
 @item ligatures @var{lig1} @var{lig2} @dots{} @var{lign} [0]
@@ -14255,7 +14245,7 @@ The glyphs of the font have a slant of @var{n}@w{ }degrees.
 Glyphs @var{lig1}, @var{lig2}, @dots{}, @var{lign} are ligatures;
 possible ligatures are @samp{ff}, @samp{fi}, @samp{fl}, @samp{ffi} and
 @samp{ffl}.  For backwards compatibility, the list of ligatures may be
-terminated with a@w{ }0.  The list of ligatures may not extend over more
+terminated with a@tie{}0.  The list of ligatures may not extend over more
 than one line.
 
 @item special
@@ -14306,8 +14296,8 @@ tabs.  The format is
 input, characters, and output, glyphs, is not clearly separated in the
 terminology of @code{groff}; for example, the @code{char} request
 should be called @code{glyph} since it defines an output entity.}:
-If @var{name} is a single character@w{ }@var{c} then it corresponds
-to the @code{gtroff} input character@w{ }@var{c}; if it is of the form
+If @var{name} is a single character@tie{}@var{c} then it corresponds
+to the @code{gtroff} input character@tie{}@var{c}; if it is of the form
 @samp{\@var{c}} where @var{c} is a single character, then it
 corresponds to the special character @code{\[@var{c}]}; otherwise it
 corresponds to the special character @samp{\[@var{name}]}.  If it
@@ -14319,9 +14309,9 @@ is identical to @code{\[-]}.
 @code{gtroff} supports 8-bit input characters; however some utilities
 have difficulties with eight-bit characters.  For this reason, there is
 a convention that the entity name @samp{char@var{n}} is equivalent to
-the single input character whose code is@w{ }@var{n}.  For example,
-@samp{char163} would be equivalent to the character with code@w{ }163
-which is the pounds sterling sign in the @w{ISO Latin-1} character set.
+the single input character whose code is@tie{}@var{n}.  For example,
+@samp{char163} would be equivalent to the character with code@tie{}163
+which is the pounds sterling sign in the ISO@tie{}@w{Latin-1} character set.
 You shouldn't use @samp{char@var{n}} entities in font description files
 since they are related to input, not output.  Otherwise, you get
 hard-coded connections between input and output encoding which
@@ -14374,7 +14364,7 @@ The @var{metrics} field has the form:
 @noindent
 There must not be any spaces between these subfields (it has been split
 here into two lines for better legibility only).  Missing subfields are
-assumed to be@w{ }0.  The subfields are all decimal integers.  Since
+assumed to be@tie{}0.  The subfields are all decimal integers.  Since
 there is no associated binary format, these values are not required to
 fit into a variable of type @samp{char} as they are in @code{ditroff}.
 The @var{width} subfield gives the width of the glyph.  The @var{height}
@@ -14414,8 +14404,8 @@ sequence of lines of the form:
 
 @noindent
 This means that when glyph @var{c1} appears next to glyph @var{c2}
-the space between them should be increased by@w{ }@var{n}.  Most
-entries in the kernpairs section have a negative value for@w{ }@var{n}.
+the space between them should be increased by@tie{}@var{n}.  Most
+entries in the kernpairs section have a negative value for@tie{}@var{n}.
 
 
 
@@ -14489,7 +14479,7 @@ emits a warning, printing glyph @var{X}.
 The macro package or program a specific register belongs to is appended in
 brackets.
 
-A register name@w{ }@code{x} consisting of exactly one character can be
+A register name@tie{}@code{x} consisting of exactly one character can be
 accessed as @samp{\nx}.  A register name @code{xx} consisting of exactly
 two characters can be accessed as @samp{\n(xx}.  Register names @code{xxx}
 of any length can be accessed as @samp{\n[xxx]}.
@@ -14520,7 +14510,7 @@ They appear without the leading control character (normally @samp{.}).
 The macro package or program a specific string belongs to is appended in
 brackets.
 
-A string name@w{ }@code{x} consisting of exactly one character can be
+A string name@tie{}@code{x} consisting of exactly one character can be
 accessed as @samp{\*x}.  A string name @code{xx} consisting of exactly
 two characters can be accessed as @samp{\*(xx}.  String names @code{xxx}
 of any length can be accessed as @samp{\*[xxx]}.
