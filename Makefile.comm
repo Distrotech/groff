@@ -25,7 +25,7 @@ INCLUDES=-I. -I$(srcdir) \
 ALL_CCFLAGS=$(INCLUDES) $(CCDEFINES) $(CCFLAGS) $(CPPFLAGS)
 COMPILE.cc=$(CCC) $(ALL_CCFLAGS) -c
 ALL_CFLAGS=$(INCLUDES) $(CDEFINES) $(CFLAGS) $(CPPFLAGS)
-COMPILE.c=$(CC) $(ALL_CFLAGS)  -c
+COMPILE.c=$(CC) $(ALL_CFLAGS) -c
 LINK.cc=$(CCC) $(CCFLAGS) $(LDFLAGS)
 LINK.c=$(CC) $(CFLAGS) $(LDFLAGS)
 LIBGROFF=$(top_builddir)/src/libs/libgroff/libgroff.a
@@ -239,7 +239,7 @@ depend_src: depend.temp
 
 depend.temp: FORCE
 	> depend.temp;
-	test -z "$(CCSRCS)$(YTABC)"  \
+	test -z "$(CCSRCS)$(YTABC)" \
 	  || $(CCC) $(ALL_CCFLAGS) -MM $(CCSRCS) $(YTABC) >>depend.temp
 	test -z "$(CSRCS)" \
 	  || $(CC) $(ALL_CFLAGS) -MM $(CSRCS) >>depend.temp

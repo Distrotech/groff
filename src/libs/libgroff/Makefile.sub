@@ -76,7 +76,8 @@ CSRCS=\
   $(srcdir)/matherr.c \
   $(srcdir)/putenv.c \
   $(srcdir)/strerror.c \
-  $(srcdir)/strtol.c
+  $(srcdir)/strtol.c \
+  $(srcdir)/../snprintf/snprintf.c
 GENSRCS=\
   version.cc
 
@@ -89,3 +90,6 @@ version.cc: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
 	@echo const char \*revision_string = \"$(revision)\"\; >>$@
 	@echo extern \"C\" const char \*Version_string = \"$(version).$(revision)\"\; | \
 	  sed -e 's/\.0\"/\"/' >>$@
+
+snprintf.o: $(srcdir)/../snprintf/snprintf.c
+	$(COMPILE.c) $(srcdir)/../snprintf/snprintf.c
