@@ -1116,7 +1116,7 @@ sprintf_args:
 		      // workaround for bug in Compaq C++ V6.5-033
 		      // for Compaq Tru64 UNIX V5.1A (Rev. 1885)
 		      double *foo = new double[$$.maxv];
-		      memcpy(foo, oldv, $$nv*sizeof(double));
+		      memcpy(foo, oldv, $$.nv*sizeof(double));
 		      $$.v = foo;
 #endif
 		      a_delete oldv;
