@@ -246,14 +246,12 @@
 .    \" `.nop' is used.  But if we are in an enclosure, no printing occurs
 .    \" until we have left the outermost enclosure (i.e.,
 .    \" `doc-nesting-level' is zero again), so spaces must be explicitly
-.    \" inserted -- if we are neither in an diversion nor `doc-no-space'
-.    \" is set.  The latter is active for a closing/closing or
-.    \" opening/opening request.
+.    \" inserted -- if `doc-no-space' isn't set.  The latter is active for
+.    \" a closing/closing or opening/opening request.
 .    if \n[doc-nesting-level] \
-.      if !\n[doc-in-diversion] \
-.        if !\n[doc-func-arg-count] \
-.          if !\n[doc-no-space] \
-.            as doc-out-string "\*[doc-curr-space]
+.      if !\n[doc-func-arg-count] \
+.        if !\n[doc-no-space] \
+.          as doc-out-string "\*[doc-curr-space]
 .
 .    nr doc-no-space 0
 .    nr doc-is-opening 0
@@ -355,10 +353,9 @@
 .    nr doc-arg-ptr 0
 .
 .    if \n[doc-nesting-level] \
-.      if !\n[doc-in-diversion] \
-.        if !\n[doc-func-arg-count] \
-.          if !\n[doc-no-space] \
-.            as doc-out-string "\*[doc-curr-space]
+.      if !\n[doc-func-arg-count] \
+.        if !\n[doc-no-space] \
+.          as doc-out-string "\*[doc-curr-space]
 .
 .    nr doc-no-space 0
 .    nr doc-is-opening 0
@@ -417,18 +414,25 @@
 ..
 .
 .
+.\" NS doc-have-append global register (bool)
+.\" NS   whether an argument has been appended to the argument vector
+.
+.nr doc-have-append 0
+.
+.
 .\" NS doc-append-arg macro
 .\" NS   append one argument to argument vector:
 .\" NS   `.doc-append-arg [arg] [type]'
 .\" NS
 .\" NS modifies:
-.\" NS   doc-argXXX, doc-typeXXX, doc-arg-limit
+.\" NS   doc-argXXX, doc-typeXXX, doc-arg-limit, doc-have-append
 .
 .de doc-append-arg
 .  nr doc-arg-limit +1
 .  ds doc-arg\n[doc-arg-limit] "\$1
 .  nr doc-type\n[doc-arg-limit] \$2
 .  doc-set-spacing-\$2
+.  nr doc-have-append 1
 ..
 .
 .
@@ -445,113 +449,30 @@
 .\" NS   reset argument counters
 .\" NS
 .\" NS modifies:
-.\" NS   doc-arg-limit, doc-arg-ptr
+.\" NS   doc-arg-limit, doc-arg-ptr, doc-have-append
 .
 .de doc-reset-args
 .  nr doc-arg-limit 0
 .  nr doc-arg-ptr 0
+.  nr doc-have-append 0
 ..
 .
 .
 .\" NS doc-print-out-string macro
-.\" NS   print `doc-out-string', possibly ending a diversion, enabling
-.\" NS   hyphenation afterwards
+.\" NS   print `doc-out-string', enabling hyphenation afterwards
 .\" NS
 .\" NS modifies:
 .\" NS   doc-out-string, doc-curr-space
 .
 .de doc-print-out-string
-.  ie \n[doc-in-diversion] \{\
-.    ie (\n[doc-in-list] : \n[doc-nesting-level]) \{\
-.      if !\n[doc-no-printing] \{\
-.        if !\n[doc-space-mode] \
-.          as doc-out-string \c
-.        nop \&\*[doc-out-string]
-.        ds doc-curr-space
-.        ds doc-out-string
-.    \}\}
-.    el \
-.      doc-end-diversion-and-print
-.  \}
-.  el \{\
-.    ie (\n[doc-in-list] : \n[doc-nesting-level]) \{\
-.      if \n[doc-space-mode] \
-.        if !\n[doc-list-immediate] \
-.          doc-save-and-divert
+.  if !(\n[doc-in-list] : \n[doc-nesting-level]) \
+.    if !\n[doc-no-printing] \{\
+.      nop \&\*[doc-out-string]
+.      ds doc-curr-space
+.      ds doc-out-string
 .    \}
-.    el \{\
-.      if !\n[doc-no-printing] \{\
-.        nop \&\*[doc-out-string]
-.        ds doc-curr-space
-.        ds doc-out-string
-.  \}\}\}
 .
 .  hy
-..
-.
-.
-.\" NS doc-diversion diversion
-.\" NS   diversion string
-.
-.
-.\" NS doc-saved-out-string global string
-.\" NS   saved doc-out-string
-.
-.ds doc-saved-out-string
-.
-.
-.\" NS doc-in-diversion global register (bool)
-.\" NS   whether we are in a diversion
-.
-.nr doc-in-diversion 0
-.
-.
-.\" NS doc-save-and-divert macro
-.\" NS   save doc-out-string, restore fill mode, and divert
-.\" NS
-.\" NS modifies:
-.\" NS   doc-out-string, doc-saved-out-string, doc-diversion,
-.\" NS   doc-in-diversion
-.
-.de doc-save-and-divert
-.  nr doc-in-diversion 1
-.  ds doc-saved-out-string "\*[doc-out-string]
-.  ds doc-out-string
-.  ev doc-divert-environment
-.  fi
-.
-.  if \n[doc-debug] \
-.    tm begin of `doc-diversion' at line #\n[.c]
-.  di doc-diversion
-..
-.
-.
-.\" NS doc-end-diversion-and-print macro
-.\" NS   end diversion and print
-.\" NS
-.\" NS modifies:
-.\" NS   doc-out-string, doc-in-diversion
-.\" NS
-.\" NS local variables:
-.\" NS   doc-str-dedap
-.
-.de doc-end-diversion-and-print
-.  br
-.  di
-.  ev
-.
-.  \" insert diversion only if it contains printable stuff
-.  ie \n[dn] \{\
-.    ds doc-str-dedap \&\*[doc-diversion]\c
-.    ds doc-out-string "\*[doc-saved-out-string]\*[doc-str-dedap]\*[doc-out-string]
-.  \}
-.  el \
-.    ds doc-out-string "\*[doc-saved-out-string]\*[doc-out-string]
-.
-.  nop \&\*[doc-out-string]
-.
-.  ds doc-out-string
-.  nr doc-in-diversion 0
 ..
 .
 .
@@ -1806,6 +1727,9 @@
 .      doc-print-and-reset
 .    \}
 .    el \{\
+.      \" We test the last argument.  If it isn't a closing punctuation
+.      \" resp. suffix, we append one so that we have an anchor for
+.      \" prepending nested closing delimiters.
 .      ie (\n[doc-type\n[doc-arg-limit]] == 3) \{\
 .        nr doc-reg-des (\n[doc-arg-limit] - 1)
 .        doc-skip-punct-backwards
@@ -2237,19 +2161,23 @@
 .    \}
 .    el \{\
 .      as doc-out-string \&\*[doc-quote-left]
-.
-.      if !\n[doc-in-diversion] \
-.        if !(\n[doc-in-list] & \n[doc-nesting-level]) \
-.          if \n[doc-space-mode] \
-.            doc-save-and-divert
 .      nr doc-is-opening 1
 .  \}\}
 .
 .  if \n[doc-arg-limit] \{\
+.    \" the following code makes things like
+.    \"
+.    \"   .Op Ar foo Ns Xo
+.    \"   .Op Ar bar Xc
+.    \"
+.    \" work as expected -- the .Op macro possibly appends an argument
+.    \" which we must ignore here
+.    if ((\n[doc-arg-limit] - \n[doc-have-append]) == \n[doc-arg-ptr]) \
+.      nr doc-is-opening 1
+.
 .    ie (\n[doc-arg-limit] == \n[doc-arg-ptr]) \{\
 .      \" last argument
 .      doc-reset-args
-.      nr doc-is-opening 1
 .    \}
 .    el \{\
 .      nr doc-arg-ptr +1
@@ -3290,7 +3218,6 @@
 .      substring doc-str-dBla 1 2
 .      if .\*[doc-str-dBla] \{\
 .        doc-save-global-vars
-.        nr doc-in-diversion 0
 .        ds doc-out-string
 .        doc-dry-execute "\*[doc-arg\n[doc-arg-ptr]]"
 .        \" save doc-out-string
@@ -3367,8 +3294,6 @@
 .
 .  ds doc-out-string-saved "\*[doc-out-string]
 .  ds doc-curr-space-saved "\*[doc-curr-space]
-.  ds doc-saved-out-string-saved "\*[doc-saved-out-string]
-.  nr doc-in-diversion-saved \n[doc-in-diversion]
 .  nr doc-curr-font-saved \n[doc-curr-font]
 .  nr doc-curr-size-saved \n[doc-curr-size]
 .  nr doc-in-synopsis-count-saved \n[doc-in-synopsis-count]
@@ -3381,6 +3306,7 @@
 .  nr doc-nesting-level-saved \n[doc-nesting-level]
 .  nr doc-no-space-saved \n[doc-no-space]
 .  nr doc-is-opening-saved \n[doc-is-opening]
+.  nr doc-have-append-saved \n[doc-have-append]
 .  nr doc-in-list-saved \n[doc-in-list]
 .  ds doc-space-saved "\*[doc-space]
 .  nr doc-space-mode-saved \n[doc-space-mode]
@@ -3418,7 +3344,6 @@
 .  nr doc-enum-list-count-saved \n[doc-enum-list-count]
 .  nr doc-have-diag-list-saved \n[doc-have-diag-list]
 .  nr doc-diag-list-input-line-count-saved \n[doc-diag-list-input-line-count]
-.  nr doc-list-immediate-saved \n[doc-list-immediate]
 .  nr doc-num-columns-saved \n[doc-num-columns]
 .  nr doc-next-list-depth-saved \n[doc-next-list-depth]
 .  nr doc-column-indent-width-saved \n[doc-column-indent-width]
@@ -3503,8 +3428,6 @@
 .
 .  ds doc-out-string "\*[doc-out-string-saved]
 .  ds doc-curr-space "\*[doc-curr-space-saved]
-.  ds doc-saved-out-string "\*[doc-saved-out-string-saved]
-.  nr doc-in-diversion \n[doc-in-diversion-saved]
 .  nr doc-curr-font \n[doc-curr-font-saved]
 .  nr doc-curr-size \n[doc-curr-size-saved]
 .  nr doc-in-synopsis-count \n[doc-in-synopsis-count-saved]
@@ -3517,6 +3440,7 @@
 .  nr doc-nesting-level \n[doc-nesting-level-saved]
 .  nr doc-no-space \n[doc-no-space-saved]
 .  nr doc-is-opening \n[doc-is-opening-saved]
+.  nr doc-have-append \n[doc-have-append-saved]
 .  nr doc-in-list \n[doc-in-list-saved]
 .  ds doc-space "\*[doc-space-saved]
 .  nr doc-space-mode \n[doc-space-mode-saved]
@@ -3554,7 +3478,6 @@
 .  nr doc-enum-list-count \n[doc-enum-list-count-saved]
 .  nr doc-have-diag-list \n[doc-have-diag-list-saved]
 .  nr doc-diag-list-input-line-count \n[doc-diag-list-input-line-count-saved]
-.  nr doc-list-immediate \n[doc-list-immediate-saved]
 .  nr doc-num-columns \n[doc-num-columns-saved]
 .  nr doc-next-list-depth \n[doc-next-list-depth-saved]
 .  nr doc-column-indent-width \n[doc-column-indent-width-saved]
@@ -3705,8 +3628,8 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-macro-name, doc-num-args, doc-arg-ptr, doc-argXXX,
-.\" NS   doc-out-string, doc-in-list, doc-list-immediate,
-.\" NS   doc-saved-Pa-font, doc-curr-type, doc-curr-arg
+.\" NS   doc-out-string, doc-in-list, doc-saved-Pa-font, doc-curr-type,
+.\" NS   doc-curr-arg
 .\" NS
 .\" NS width register `It' set in doc-common
 .\" NS
@@ -3770,7 +3693,6 @@
 .        doc-parse-arg-vector
 .
 .        nr doc-in-list 1
-.        nr doc-list-immediate 1
 .        nr doc-arg-ptr 1
 .        nr doc-curr-type \n[doc-type1]
 .        ds doc-curr-arg "\*[doc-arg1]
@@ -3807,7 +3729,7 @@
 .\" NS   .It item of list-type inset
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-in-list, doc-list-immediate
+.\" NS   doc-out-string, doc-in-list
 .
 .de doc-inset-list
 .  doc-set-vertical-and-indent 0
@@ -3815,7 +3737,6 @@
 .  nop \&\*[doc-out-string]
 .
 .  nr doc-in-list 0
-.  nr doc-list-immediate 0
 .  ds doc-out-string
 .  doc-reset-args
 '  fi
@@ -3826,7 +3747,7 @@
 .\" NS   .It item of list-type hanging tag (as opposed to tagged)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-in-list, doc-list-immediate
+.\" NS   doc-out-string, doc-in-list
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-dhl
@@ -3843,7 +3764,6 @@
 .
 .  nr doc-in-list 0
 .  ds doc-out-string
-.  nr doc-list-immediate 0
 .  doc-reset-args
 '  fi
 ..
@@ -3853,7 +3773,7 @@
 .\" NS   .It item of list-type overhanging tag
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-in-list, doc-list-immediate
+.\" NS   doc-out-string, doc-in-list
 .
 .de doc-ohang-list
 .  doc-set-vertical-and-indent 0
@@ -3862,7 +3782,6 @@
 .
 .  nr doc-in-list 0
 .  ds doc-out-string
-.  nr doc-list-immediate 0
 .  doc-reset-args
 '  fi
 ..
@@ -3980,7 +3899,7 @@
 .\" NS   .It item of list-type `tag'
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-in-list, doc-list-immediate
+.\" NS   doc-out-string, doc-in-list
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-dtl
@@ -4004,7 +3923,6 @@
 .      ds doc-Pa-font "\*[doc-saved-Pa-font]
 .
 .  nr doc-in-list 0
-.  nr doc-list-immediate 0
 .  ds doc-out-string
 .  doc-reset-args
 '  fi
@@ -4065,12 +3983,6 @@
 .\" NS   list type stack counter
 .
 .nr doc-list-depth 0
-.
-.
-.\" NS doc-list-immediate global register (bool)
-.\" NS   tag flag (for diversions)
-.
-.nr doc-list-immediate 0
 .
 .
 .\" NS doc-num-columns global register
@@ -5998,9 +5910,8 @@
 .\" NS   emit warning and print empty line
 .
 .de doc-empty-line
-.  if !\n[doc-in-diversion] \
-.    if !"\*[doc-macro-name]"Bd" \
-.      tm mdoc warning: Empty input line #\n[.c]!
+.  if !"\*[doc-macro-name]"Bd" \
+.    tm mdoc warning: Empty input line #\n[.c]!
 .  sp
 ..
 .
