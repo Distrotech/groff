@@ -107,10 +107,13 @@ install_data: $(NORMALFILES) \
 	  $(INSTALL_DATA) $(srcdir)/momdoc/$$f $(momdocdir)/$$f; \
 	done
 	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
-	for f in $(EXAMPLEFILES) $(EXTRAEXAMPLEFILES) \
-                 $(PROCESSEDEXAMPLEFILES); do \
+	for f in $(EXAMPLEFILES) $(EXTRAEXAMPLEFILES); do \
 	  rm -f $(exampledir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(docdir)/$$f;
+	  $(INSTALL_DATA) $(srcdir)/$$f $(docdir)/$$f; \
+	done
+	for f in $(PROCESSEDEXAMPLEFILES); do \
+	  rm -f $(exampledir)/$$f; \
+	  $(INSTALL_DATA) $$f $(docdir)/$$f; \
 	done
 
 uninstall_sub:
