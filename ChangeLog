@@ -1,3 +1,23 @@
+2003-10-26  Werner LEMBERG  <wl@gnu.org>
+
+	* src/preproc/pic/troff.cpp (troff_output::simple_circle,
+	troff_output::simple_ellipse, troff_output::simple_arc,
+	troff_output::simple_line, troff_output::simple_spline,
+	troff_output::simple_polygon): Insert a space before arguments.
+	(troff_output::set_fill): Emit `\&' before `\D'Fg...' since the
+	latter doesn't produce a node, so the following `.sp -1' would do
+	the wrong thing.
+	Don't emit `.sp -1' after \M.  This also doesn't produce a token
+	(and we don't have to care about compatibility mode).
+	(troff_output::set_color, troff_output::reset_color): Don't emit
+	`.sp -1' after \M and \m.
+
+	* src/roff/troff/input.cpp (old_have_input): New global variable.
+	(input_stack::get): Handle `old_have_input'.
+	(process_input_stack) <token::TOKEN_NEWLINE>: Call
+	`trapping_blank_line' depending on `old_have_input', not
+	`have_input'.
+
 2003-10-20  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
 	* src/libs/libgroff/tmpfile.cpp [__MSDOS__, _Win32]

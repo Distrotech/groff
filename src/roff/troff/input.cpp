@@ -110,6 +110,7 @@ int begin_level = 0;		// number of nested .begin requests
 int have_input = 0;		// whether \f, \F, \D'F...', \H, \m, \M,
 				// \R, \s, or \S has been processed in
 				// token::next()
+int old_have_input = 0;		// value of have_input right before \n
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
 
@@ -442,8 +443,10 @@ inline int input_stack::get_level()
 inline int input_stack::get(node **np)
 {
   int res = (top->ptr < top->eptr) ? *top->ptr++ : finish_get(np);
-  if (res == '\n')
+  if (res == '\n') {
+    old_have_input = have_input;
     have_input = 0;
+  }
   return res;
 }
 
@@ -2642,7 +2645,7 @@ void process_input_stack()
       }
     case token::TOKEN_NEWLINE:
       {
-	if (bol && !have_input
+	if (bol && !old_have_input
 	    && !curenv->get_prev_line_interrupted())
 	  trapping_blank_line();
 	else {
