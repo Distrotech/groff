@@ -39,7 +39,6 @@ extern char *strerror();
 #ifdef _POSIX_VERSION
 
 #include <sys/wait.h>
-
 #define PID_T pid_t
 
 #else /* not _POSIX_VERSION */
@@ -78,22 +77,13 @@ extern char *strerror();
 
 #include "pipeline.h"
 
-#ifdef __STDC__
-#define P(parms) parms
-#else
-#define P(parms) ()
-#ifndef _WIN32
-#define const /* as nothing */
-#endif
-#endif
-
 #define error c_error
-extern void error P((const char *, const char *, const char *, const char *));
-extern void c_fatal P((const char *, const char *, const char *, const char *));
+extern void error(const char *, const char *, const char *, const char *);
+extern void c_fatal(const char *, const char *, const char *, const char *);
 
-static void sys_fatal P((const char *));
-static const char *xstrsignal P((int));
-static char *i_to_a P((int));
+static void sys_fatal(const char *);
+static const char *xstrsignal(int);
+const char *i_to_a(int);		// from libgroff
 
 /* MSVC can support asynchronous processes, but it's unlikely to have
    fork().  So, until someone writes an emulation, let them at least
@@ -123,8 +113,7 @@ static RETSIGTYPE signal_catcher(int signo)
 static const char *sh = "sh";
 static const char *command = "command";
 
-const char *
-system_shell_name(void)
+const char *system_shell_name(void)
 {
   static const char *shell_name;
 
@@ -142,8 +131,7 @@ system_shell_name(void)
   return shell_name;
 }
 
-const char *
-system_shell_dash_c(void)
+const char *system_shell_dash_c(void)
 {
   if (strcmp(system_shell_name(), sh) == 0)
     return "-c";
@@ -151,8 +139,7 @@ system_shell_dash_c(void)
     return "/c";
 }
 
-int
-is_system_shell(const char *shell)
+int is_system_shell(const char *shell)
 {
   size_t shlen;
   size_t ibase = 0, idot, i;
@@ -181,8 +168,7 @@ is_system_shell(const char *shell)
 
 /* Windows 32 doesn't have fork() */
 
-int
-run_pipeline(int ncommands, char ***commands, int no_pipe)
+int run_pipeline(int ncommands, char ***commands, int no_pipe)
 {
   int save_stdin, save_stdout;
   int i;
@@ -290,22 +276,21 @@ run_pipeline(int ncommands, char ***commands, int no_pipe)
 	  ret |= 1;
       }
       else
-        error("unexpected status %1", itoa(status), (char *)0, (char *)0);
+        error("unexpected status %1", i_to_a(status), (char *)0, (char *)0);
       break;
     }
   }
   return ret;
 }
 
-#else  /* _WIN32 */
+#else  /* not _WIN32 */
 
 /* MSDOS doesn't have `fork', so we need to simulate the pipe by running
    the programs in sequence with standard streams redirected fot and
    from temporary files.
 */
 
-int
-run_pipeline(int ncommands, char ***commands, int no_pipe)
+int run_pipeline(int ncommands, char ***commands, int no_pipe)
 {
   int save_stdin = dup(0);
   int save_stdout = dup(1);
@@ -389,12 +374,11 @@ run_pipeline(int ncommands, char ***commands, int no_pipe)
   return ret;
 }
 
-#endif /* MS-DOS */
+#endif /* not _WIN32 */
 
 #else /* not __MSDOS__, not _WIN32 */
 
-int
-run_pipeline(int ncommands, char ***commands, int no_pipe)
+int run_pipeline(int ncommands, char ***commands, int no_pipe)
 {
   int i;
   int last_input = 0;
@@ -509,22 +493,12 @@ run_pipeline(int ncommands, char ***commands, int no_pipe)
 
 #endif /* not __MSDOS__, not _WIN32 */
 
-static void
-sys_fatal(const char *s)
+static void sys_fatal(const char *s)
 {
   c_fatal("%1: %2", s, strerror(errno), (char *)0);
 }
 
-static char *
-i_to_a(int n)
-{
-  static char buf[12];
-  sprintf(buf, "%d", n);
-  return buf;
-}
-
-static const char *
-xstrsignal(int n)
+static const char *xstrsignal(int n)
 {
   static char buf[sizeof("Signal ") + 1 + sizeof(int) * 3];
 
