@@ -10,8 +10,8 @@ groffer \- display groff files and man\~pages on X and tty
 .ig
 groffer.man - man page for groffer (section 1).
 
-Version     : groffer 0.6
-Last update : 28 May 2002
+Version     : groffer 0.7
+Last update : 31 May 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -57,7 +57,7 @@ FDL in the main directory of the groff source package.
 .ds Ellpisis .\|.\|.\"
 .
 ./" static registers (@+...) used for inter-macro communication"
-.nr @.Shell_cmd_width 2m\"      total width of prompt
+.nr @.Shell_cmd_width 4m\"      total width of prompt
 .
 .nr @+Synopsis_level 0
 .
@@ -70,54 +70,7 @@ FDL in the main directory of the groff source package.
 .\" --------------------------------------------------------------------
 .\" Start macro definitions
 .
-.c --------------------------------------------------------------------
-.c .-  ([<punct>])
-.c
-.c Print `-' (minus sign); optional punctuation. 
-.c
-.de -
-.  ie (\\n[.$] == 0) \
-.    Opt_alt - ""
-.  el \
-.    Opt_alt - "" "\\$1"
-..
-.c --------------------------------------------------------------------
-.c .[-]  ([<punct>])
-.c
-.c Print `[-]' (minus sign in brackets); optional punctuation. 
-.c
-.de [-]
-.  ie (\\n[.$] == 0) \
-.    [Opt_alt] - ""
-.  el \
-.    [Opt_alt] - "" "\\$1"
-..
-.c --------------------------------------------------------------------
-.c .--  ([<punct>])
-.c
-.c Print `--' (double minus); optional punctuation. 
-.c
-.de --
-.  ie (\\n[.$] == 0) \
-.    Opt_alt -- ""
-.  el \
-.    Opt_alt -- "" "\\$1"
-..
-.c --------------------------------------------------------------------
-.c .[--]  ([<punct>])
-.c
-.c Print `[--]' (double minus in brackets); optional punctuation. 
-.c
-.de [--]
-.  ie (\\n[.$] == 0) \
-.    [Opt_alt] -- ""
-.  el \
-.    [Opt_alt] -- "" "\\$1"
-..
-.c --------------------------------------------------------------------
-.c .c  ([<ignored>...])
-.c
-.c Ignore all arguments like a comment, even after a .eo call.
+.\" Ignore all arguments like a comment, even after a .eo call.
 .c
 .de c
 ..
@@ -142,20 +95,48 @@ FDL in the main directory of the groff source package.
 .  hy
 ..
 .c --------------------------------------------------------------------
-.c .Long_opt  ([<name> [<punct>]])
+.c .Opt_-  ([<punct>])
 .c
-.c Print `--name' somewhere in the text; optional punctuation.
+.c Print `-' (minus sign); optional punctuation. 
 .c
-.de Long_opt
-.  Opt_alt -- "\\$1" "" "\\$2"
+.de Opt_-
+.  ie (\\n[.$] == 0) \
+.    Opt_alt - ""
+.  el \
+.    Opt_alt - "" "\\$1"
 ..
 .c --------------------------------------------------------------------
-.c .[Long_opt]  ([<name> [<punct>]])
+.c .Opt_[-]  ([<punct>])
 .c
-.c Print `--name' somewhere in the text; optional punctuation.
+.c Print `Opt_[-]' (minus sign in brackets); optional punctuation. 
 .c
-.de [Long_opt]
-.  [Opt_alt] -- "\\$1" "" "\\$2"
+.de Opt_[-]
+.  ie (\\n[.$] == 0) \
+.    Opt_[alt] - ""
+.  el \
+.    Opt_[alt] - "" "\\$1"
+..
+.c --------------------------------------------------------------------
+.c .Opt_--  ([<punct>])
+.c
+.c Print `--' (double minus); optional punctuation. 
+.c
+.de Opt_--
+.  ie (\\n[.$] == 0) \
+.    Opt_alt -- ""
+.  el \
+.    Opt_alt -- "" "\\$1"
+..
+.c --------------------------------------------------------------------
+.c .Opt_[--]  ([<punct>])
+.c
+.c Print `Opt_[--]' (double minus in brackets); optional punctuation. 
+.c
+.de Opt_[--]
+.  ie (\\n[.$] == 0) \
+.    Opt_[alt] -- ""
+.  el \
+.    Opt_[alt] -- "" "\\$1"
 ..
 .c --------------------------------------------------------------------
 .c .Opt_alt  ([<minus> <opt>]... [<arg> [<punct>]])
@@ -181,7 +162,7 @@ FDL in the main directory of the groff source package.
 .  Opt_alt_base "" | "" \\$@
 ..
 .c --------------------------------------------------------------------
-.c .[Opt_alt]  ([<minus> <opt>]... [<arg> [<punct>]])
+.c .Opt_[alt]  ([<minus> <opt>]... [<arg> [<punct>]])
 .c
 .c Alternate options in brackets for section SYNOPSIS.
 .c
@@ -199,11 +180,11 @@ FDL in the main directory of the groff source package.
 .c   bar `|', optionally add 'arg', separated by a space character ` '.
 .c
 .c Example:
-.c  .[Opt_alt] - T -- device -- device-troff device .
+.c  .Opt_[alt] - T -- device -- device-troff device .
 .c  results in
 .c  [-T|--device|--device-troff device].
 .c
-.de [Opt_alt]
+.de Opt_[alt]
 .  Opt_alt_base [ | ] \\$@
 ..
 .c --------------------------------------------------------------------
@@ -233,7 +214,7 @@ FDL in the main directory of the groff source package.
 .  ds @post \)\\$3\)\"                  postfix
 .  shift 3
 .  nr @count 0
-.  ds @res \f[CW]\\*[@pre]\"
+.  ds @res \f[CR]\\*[@pre]\"
 .  while (\\n[.$] >= 2) \{\
 .    c                                  do the pairs, break on no `-'
 .    if !'\\$1'-' \{\
@@ -242,7 +223,7 @@ FDL in the main directory of the groff source package.
 .    \}
 .    c                                  separator
 .    if (\\n[@count] > 0) \
-.      as @res \f[CW]\\*[@sep]\"
+.      as @res \f[CR]\\*[@sep]\"
 .    nr @count +1
 .    as @res \f[CB]\\$1\\$2\:\"           combine minus with option name
 .    shift 2
@@ -251,13 +232,13 @@ FDL in the main directory of the groff source package.
 .    Error .\\0: wrong arguments: \\$@
 .  c                                     all pairs are done
 .  ie (\\n[.$] == 0) \
-.    as @res \f[CW]\\*[@post]\"
+.    as @res \f[CR]\\*[@post]\"
 .  el \{\
 .    c                                   optional option argument
 .    if !'\\$1'' \
-.      as @res \f[CW] \:\,\f[I]\\$1\"
+.      as @res \f[CR] \,\f[I]\\$1\"
 .    shift
-.    as @res \\f[CW]\\*[@post]\"         postfix
+.    as @res \\f[CR]\\*[@post]\"         postfix
 .    if (\\n[.$] >= 1) \{\
 .      c                                 add punctuation
 .      as @res \f[\\n[@font]]\\$1\"
@@ -326,6 +307,38 @@ FDL in the main directory of the groff source package.
 .c --------------------------------------------------------------------
 .als Opt_list Opt_element
 .
+.c --------------------------------------------------------------------
+.c .Opt_long  ([<name> [<punct>]])
+.c
+.c Print `--name' somewhere in the text; optional punctuation.
+.c
+.de Opt_long
+.  Opt_alt -- "\\$1" "" "\\$2"
+..
+.c --------------------------------------------------------------------
+.c .Opt_[long]  ([<name> [<punct>]])
+.c
+.c Print `--name' somewhere in the text; optional punctuation.
+.c
+.de Opt_[long]
+.  Opt_[alt] -- "\\$1" "" "\\$2"
+..
+.c --------------------------------------------------------------------
+.c .Opt_short  ([<name> [<punct>]])
+.c
+.c Print `-name' somewhere in the Text; optional punctuation.
+.c
+.de Opt_short
+.  Opt_alt - "\\$1" "" "\\$2"
+..
+.c --------------------------------------------------------------------
+.c .Opt_[short]  ([name [punct]])
+.c
+.c Print `[-name]' somewhere in the Text; optional punctuation.
+.c
+.de Opt_[short]
+.  Opt_[alt] - "\\$1" "" "\\$2"
+..
 .c --------------------------------------------------------------------
 .c .Shell_cmd  (<CR> [<CI>] ...)
 .c
@@ -399,20 +412,20 @@ FDL in the main directory of the groff source package.
 .  rm @res
 ..
 .c --------------------------------------------------------------------
-.c .Short_opt  ([<name> [<punct>]])
+.c .Opt_short  ([<name> [<punct>]])
 .c
 .c Print `-name' somewhere in the Text; optional punctuation.
 .c
-.de Short_opt
+.de Opt_short
 .  Opt_alt - "\\$1" "" "\\$2"
 ..
 .c --------------------------------------------------------------------
-.c .[Short_opt]  ([name [punct]])
+.c .Opt_[short]  ([name [punct]])
 .c
 .c Print `[-name]' somewhere in the Text; optional punctuation.
 .c
-.de [Short_opt]
-.  [Opt_alt] - "\\$1" "" "\\$2"
+.de Opt_[short]
+.  Opt_[alt] - "\\$1" "" "\\$2"
 ..
 .c --------------------------------------------------------------------
 .c .Synopsis  ()
@@ -490,6 +503,7 @@ FDL in the main directory of the groff source package.
 .  if (\\n[@+TP_level] < 0) \
 .    Error .\\$0: wrong level.
 .  nr @+TP_level +1
+.  P
 .  ie (\\n[.$] == 0) \
 .    rr @+TP_indent
 .  el \
@@ -550,7 +564,7 @@ FDL in the main directory of the groff source package.
 .RI [ mode_options ]
 .RI [ man_options ]
 .RI [ groff_options ]
-.[--]
+.Opt_[--]
 .RI [ "filespec" "\*[Ellipsis]]"
 ./Synopsis
 .
@@ -574,17 +588,17 @@ and GNU
 .
 .P
 .RS
-.[Opt_alt] - P to_postprocessor
-.[Opt_alt] - Q -- source
-.[Opt_alt] - T -- device -- troff-device device
-.[Opt_alt] - W arg
-.[Opt_alt] - X
-.[Opt_alt] - Z -- ditroff -- intermediate-output
-.[Opt_alt] -- dpi value
-.[Opt_alt] -- mode display_mode
-.[Opt_alt] -- pager program
-.[Opt_alt] -- title string
-.[Opt_alt] -- tty
+.Opt_[alt] - P to_postprocessor
+.Opt_[alt] - Q -- source
+.Opt_[alt] - T -- device -- troff-device device
+.Opt_[alt] - W arg
+.Opt_[alt] - X
+.Opt_[alt] - Z -- ditroff -- intermediate-output
+.Opt_[alt] -- dpi value
+.Opt_[alt] -- mode display_mode
+.Opt_[alt] -- pager program
+.Opt_[alt] -- title string
+.Opt_[alt] -- tty
 .RE
 .
 .
@@ -599,19 +613,19 @@ program.
 .
 .P
 .RS
-.[Opt_alt] -- all
-.[Opt_alt] -- apropos
-.[Opt_alt] -- extension suffix
-.[Opt_alt] -- lang -- locale language
-.[Opt_alt] -- local-file
-.[Opt_alt] -- location -- where
-.[Opt_alt] -- man
-.[Opt_alt] -- manpath man_page_dirs
-.[Opt_alt] -- no-location
-.[Opt_alt] -- no-man
-.[Opt_alt] -- sections colon_list
-.[Opt_alt] -- systems comma_list
-.[Opt_alt] -- whatis
+.Opt_[alt] -- all
+.Opt_[alt] -- apropos
+.Opt_[alt] -- extension suffix
+.Opt_[alt] -- lang -- locale language
+.Opt_[alt] -- local-file
+.Opt_[alt] -- location -- where
+.Opt_[alt] -- man
+.Opt_[alt] -- manpath man_page_dirs
+.Opt_[alt] -- no-location
+.Opt_[alt] -- no-man
+.Opt_[alt] -- sections colon_list
+.Opt_[alt] -- systems comma_list
+.Opt_[alt] -- whatis
 .RE
 .
 The full set of long and short options of the GNU man program can be
@@ -650,7 +664,7 @@ the path name of an existing file.
 .
 .
 .TP
-.Short_opt
+.Opt_short
 stands for standard input (can occur several times).
 .
 .
@@ -762,13 +776,13 @@ Normally, the input is run through the
 text processor before being displayed.
 .
 By using the option
-.Short_opt Q ,
+.Opt_short Q ,
 the roff source code is displayed without formatting.
 .
 .
 .P
 The
-.Short_opt T
+.Opt_short T
 option allows to produce output for any output devices provided by
 groff.
 .
@@ -791,7 +805,7 @@ program.
 .\" --------------------------------------------------------------------
 .
 If your system does not support GNU long options you can use the
-.Short_opt W
+.Opt_short W
 to simulate long options.
 .
 POSIX has reserved this option for such uses.
@@ -826,11 +840,11 @@ when displaying in X.
 If the postprocessor option needs to be preceded by a single or double
 minus sign then this prefix must also be specified in the argument to
 option
-.Short_opt P .
+.Opt_short P .
 .
 If the postprocessor option needs an argument this must be specified
 as the argument of another, directly following
-.Short_opt P
+.Opt_short P
 option.
 .
 .
@@ -900,11 +914,11 @@ There are two applications for this option.
 If the argument
 .I arg
 starts with a
-.--
+.Opt_--
 (double minus sign), it represents a long option, which is useful on
 systems that do not support the GNU long options; otherwise it is
 passed as option
-.Short_opt W
+.Opt_short W
 to groff (disable a warning), see
 .BR troff (@MAN1EXT@).
 .
@@ -914,18 +928,18 @@ to groff (disable a warning), see
 .TP
 .Opt_alt - W "\*[@i--]longopt"
 is equivalent to the groffer long option
-.Long_opt longopt
+.Opt_long longopt
 without an argument.
 .
 .
 .TP_header
-.Opt_alt - W "\*[@i--]longopt\f[CW]=\f[]optarg"
+.Opt_alt - W "\*[@i--]longopt\f[CR]=\f[]optarg"
 .br
 .Opt_alt - W "\*[@i--]longopt"
 .Opt_alt - W optarg
 .TP_body
 are both equivalent to the groffer long option
-.Long_opt longopt
+.Opt_long longopt
 with the argument
 .IR optarg .
 .TP_end
@@ -934,29 +948,29 @@ with the argument
 .TP
 .Opt_alt - W warning
 is equivalent to the groff/troff option
-.Short_opt W
+.Opt_short W
 .I warning
 (disable the warning named
 .IR warning );
 internally, this is sent transparently to groff.
 .
 More exactly, an argument to
-.Short_opt W
+.Opt_short W
 that is supposed to represent long options must always be specified
 together with a leading
-.--
+.Opt_--
 (double minus); an argument to the option must either be appended to
 the long option with a separating \f[CB]=\f[] (equals sign) or goes as
 argument to another
-.Short_opt W
+.Opt_short W
 option.
 .
 .
 .P
 An argument to
-.Short_opt W
+.Opt_short W
 that does not start with a leading
-.--
+.Opt_--
 (double minus) is interpreted as a groff warning option.
 .
 .RE
@@ -974,11 +988,11 @@ equivalent to
 .Opt_alt -- mode Z .
 .
 The short option
-.Short_opt Z
+.Opt_short Z
 is inhereted from
 .BR groff (@MAN1EXT@) ,
 while the name of the long option
-.Long_opt ditroff
+.Opt_long ditroff
 originates from
 .BR man (1)
 and was only implemented for compatibility.
@@ -1013,7 +1027,7 @@ If the actual display mode is not X then this option is ignored.
 .
 .Opt_def -- ditroff
 Eqivalent to
-.Short_opt Z .
+.Opt_short Z .
 This is kept for compatibiliy with GNU
 .BR man (1).
 .
@@ -1058,7 +1072,7 @@ If the actual display mode is not X then this option is ignored.
 .
 .Opt_def -- device
 Eqivalent to
-.Short_opt T .
+.Opt_short T .
 .
 .
 .Opt_def -- geometry size_pos
@@ -1074,12 +1088,12 @@ If the actual display mode is not X then this option is ignored.
 .
 .Opt_def -- help
 Eqivalent to
-.Short_opt h .
+.Opt_short h .
 .
 .
 .Opt_def -- intermediate-output
 Equivalent to
-.Short_opt Z .
+.Opt_short Z .
 .
 .
 .Opt_def -- lang language
@@ -1094,7 +1108,7 @@ Print the location of the retrieved files to standard error.
 .Opt_def -- locale language
 .
 Equivalent to
-.Long_opt lang .
+.Opt_long lang .
 .
 This option originates from GNU
 .BR man (1).
@@ -1132,37 +1146,37 @@ Let groffer choose where to display; this is the default.
 .TP
 .B tty
 Display in a text terminal; same as
-.Long_opt tty .
+.Opt_long tty .
 .
 .
 .TP
 .B X
 Display in a X window; same as
-.Short_opt X .
+.Opt_short X .
 .
 .
 .TP
 .BR Q
 Display source code; same as
-.Short_opt Q .
+.Opt_short Q .
 .
 .
 .TP
 .B source
 Display source code; same as
-.Short_opt Q .
+.Opt_short Q .
 .
 .
 .TP
 .B Z
 Display groff intermediate output; same as
-.Short_opt Z .
+.Opt_short Z .
 .
 .
 .TP
 .B intermediate-output
 Display groff intermediate output; same as
-.Short_opt Z .
+.Opt_short Z .
 .
 .
 .TP
@@ -1177,7 +1191,7 @@ Useful for restoring default behavior when other options are active.
 .Opt_def -- no-location
 Do not display the location of retireved files; this resets a former
 call to
-.Long_opt location .
+.Opt_long location .
 .
 .
 .Opt_def -- no-man
@@ -1197,7 +1211,7 @@ a colon-separated list.
 .
 .Opt_def -- source
 Equivalent to
-.Short_opt Q .
+.Opt_short Q .
 .
 .
 .Opt_def -- systems
@@ -1214,12 +1228,12 @@ This effects only the X mode.
 .
 .Opt_def -- to-postproc opt_or_arg
 Eqivalent to
-.Short_opt P .
+.Opt_short P .
 .
 .
 .Opt_def -- troff-device
 Eqivalent to
-.Short_opt T .
+.Opt_short T .
 This option is only kept for compatibility with GNU
 .BR man (1).
 .
@@ -1227,12 +1241,12 @@ This option is only kept for compatibility with GNU
 .Opt_def -- tty
 Choose tty display mode, that means use output on a text pager even
 when in X; eqivalent to
-.Long_opt mode\~tty .
+.Opt_long mode\~tty .
 .
 .
 .Opt_def -- version
 Eqivalent to
-.Short_opt v .
+.Opt_short v .
 .
 .
 .Opt_def -- whatis
@@ -1242,11 +1256,11 @@ the retrieved man page files \[em] or say that it is not a man page.
 .
 .Opt_def -- where
 Eqivalent to
-.Long_opt location .
+.Opt_long location .
 .
 .
 .TP
-.--
+.Opt_--
 Signals the end of option processing; all remaining arguments are
 interpreted as
 .I filespec
@@ -1313,15 +1327,15 @@ is set and no other mode was forced;
 .
 .Topic
 by the options
-.Short_opt X ,
-.Long_opt X ,
+.Opt_short X ,
+.Opt_long X ,
 or
 .Opt_alt -- mode X ;
 .
 .
 .Topic
 by specifying one of the groff X* devices with option
-.Short_opt T .
+.Opt_short T .
 .
 .
 .P
@@ -1366,7 +1380,7 @@ in these options, the corresponding 75 dpi mode is activated.
 .P
 The resolution can be preset to a fixed value for all calls to groffer
 by including the option
-.Long_opt dpi
+.Opt_long dpi
 into the environment variable
 .Env_var GROFFER_OPT .
 For example,
@@ -1380,7 +1394,7 @@ and its subshells.
 Note that the
 .Opt_alt - TX ...
 options force displaying in X, while the
-.Long_opt dpi
+.Opt_long dpi
 is ignored when not displaying in X.
 .
 .
@@ -1394,7 +1408,7 @@ is not set or empty groffer assumes that it should produce output on a
 text terminal.
 .
 This mode can be enforced by the options
-.Long_opt tty
+.Opt_long tty
 or
 .Opt_alt -- mode tty .
 .
@@ -1419,10 +1433,10 @@ Instead of the formatted output, it is also possible to have the
 source code displayed.
 .
 This mode must deliberately be requested by one of the options
-.Short_opt Q ,
-.Long_opt source ,
-.Long_opt "mode Q" ,
-.Long_opt "mode source" .
+.Opt_short Q ,
+.Opt_long source ,
+.Opt_long "mode Q" ,
+.Opt_long "mode source" .
 .
 .
 .P
@@ -1437,7 +1451,7 @@ output without any pager or further processing.
 If a device other than the
 .B X
 devices is specified with the
-.Short_opt T
+.Opt_short T
 then the input is formatted for this device and then send to standard
 output without further actions.
 .
@@ -1473,14 +1487,14 @@ This behavior can be modified by options.
 .
 .
 .TP
-.Long_opt man
+.Opt_long man
 forces to interpret all file parameters as filespecs for searching
 man\~pages.
 .
 .TP
-.Long_opt no-man
+.Opt_long no-man
 .TP+
-.Long_opt local_file
+.Opt_long local_file
 disable the man searching; so only local files are displayed.
 .
 .
@@ -1592,7 +1606,7 @@ They are successively tried until a method works.
 .
 .Topic
 The search path can be manually specified by using the option
-.Long_opt manpath .
+.Opt_long manpath .
 An empty argument disables the man\~page searching.
 .
 This overwrites the other methods.
@@ -1639,9 +1653,9 @@ environment variables and command line options.
 The locale is determined like in GNU man, that is from highest to
 lowest precedence:
 .Topic
-.Long_opt lang
+.Opt_long lang
 and
-.Long_opt locale
+.Opt_long locale
 .
 .Topic
 .Env_var $GROFFER_OPT
@@ -1678,8 +1692,8 @@ well.
 If still not found the corresponding man\~page in the default language
 is used instead.
 .
-As usual, this default can be specified by one of \f[CW]C\f[] or
-\f[CW]POSIX\f[].
+As usual, this default can be specified by one of \f[CR]C\f[] or
+\f[CR]POSIX\f[].
 .
 The man\~pages in the default language are usually in English.
 .
@@ -1691,12 +1705,12 @@ separated by a comma.
 This is then specified by the environment variable
 .Env_var $SYSTEM
 or by the command line option
-.Long_opt systems .
+.Opt_long systems .
 The precedence is similar to the locale case above from highest to
 lowest precedence:
 .
 Topic
-.Long_opt systems
+.Opt_long systems
 .
 .Topic
 .Env_var $GROFFER_OPT
@@ -1719,7 +1733,7 @@ sections.
 .
 A single section can be specified within a filespec, several sections
 as a colon-separated list in command line option
-.Long_opt sections
+.Opt_long sections
 or environment variable
 .Env_var $MANSECT .
 .
@@ -1733,7 +1747,7 @@ Finally, the search can be restricted to a so-called
 This is a postfix that acts like a subsection.
 .
 It can be specified by
-.Long_opt extension
+.Opt_long extension
 or environment variable
 .Env_var $EXTENSION .
 .
@@ -1919,7 +1933,7 @@ which in turn is overwritten by the command line.
 Restrict the search for man\~pages to files having this extension.
 .
 This is overridden by option
-.Long_opt extension ;
+.Opt_long extension ;
 see there for details.
 .
 .
@@ -1943,7 +1957,7 @@ If set, this variable contains the directories in which the man\~page
 trees are stored.
 .
 This is overridden by option
-.Long_opt manpath .
+.Opt_long manpath .
 .
 .
 .TP
@@ -1952,7 +1966,7 @@ If this is a colon separated list of section names, the search for
 man\~pages is restricted to those manual sections in that order.
 .
 This is overridden by option
-.Long_opt sections .
+.Opt_long sections .
 .
 .
 .TP
@@ -1961,7 +1975,7 @@ If this is set to a comma separated list of names these are interpreted
 as man\~page trees for different operating systems.
 .
 This variable can be overwritten by option
-.Long_opt systems ;
+.Opt_long systems ;
 see there for details.
 .
 .
@@ -2033,7 +2047,7 @@ program, decompress it, convert it into html format and write the
 result into the file
 .IR ls.html .
 The option
-.Long_opt man
+.Opt_long man
 guarantees that the man\~page is retrieved, even when a local file
 .I ls
 exists in the actual directory.
@@ -2059,16 +2073,16 @@ as pager program instead of the default pager
 .Shell_cmd "groffer\~-X\~-W--title\~-W\~hello\~-W\~mac\~file"
 .
 The first two
-.Short_opt W
+.Opt_short W
 options simulate groffer's long option
-.Long_opt title
+.Opt_long title
 with its argument
 .IR hello .
 .
 But as
 .I mac
 does not start with a minus sign, the third
-.Short_opt W
+.Opt_short W
 option is passed unchanged to
 .BR groff (@MAN1EXT@),
 where it disables the warning named
@@ -2095,14 +2109,14 @@ using color yellow on red background.
 .
 If your shell does not have long options the options must be written as
 .br
-\f[CW]-TX100\~\:-W--bg\~\:-Wred\~\:-W--fg\~\:-Wyellow\~\:-W\c
+\f[CR]-TX100\~\:-W--bg\~\:-Wred\~\:-W--fg\~\:-Wyellow\~\:-W\c
 --geometry\\~\:200x100\f[].
 .br
 The equivalent options when using
-.Short_opt P
+.Opt_short P
 are
 .br
-\f[CW]-TX100\~\:-P-bg\~\:-Pred\~\:-P-fg\~\:-Pyellow\~\:-P\c
+\f[CR]-TX100\~\:-P-bg\~\:-Pred\~\:-P-fg\~\:-Pyellow\~\:-P\c
 -geometry 200x100\f[].
 .
 .
@@ -2142,7 +2156,7 @@ On systems without GNU
 long options might not be available.
 .
 In these cases, the groffer option
-.Short_opt W
+.Opt_short W
 can be used to specify long options nevertheless; the option character
 .B W
 was reserved by the POSIX standard for applications like this.

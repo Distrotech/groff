@@ -29,8 +29,8 @@ export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
 _PROGRAM_NAME=groffer
-_PROGRAM_VERSION="0.6"
-_LAST_UPDATE="27 May 2002"
+_PROGRAM_VERSION="0.7"
+_LAST_UPDATE="31 May 2002"
 
 
 ########################################################################
@@ -64,7 +64,7 @@ _LAST_UPDATE="27 May 2002"
 # `exit' can only escape from the current shell; trouble occurs in
 # subshells.  This was solved by sending kill signals, see
 # $_PROCESS_ID and error().
-# 
+#
 
 
 ### TODO
@@ -135,12 +135,13 @@ _LAST_UPDATE="27 May 2002"
 # is_file (<name>)
 # is_not_empty (<string>)
 # is_not_equal (<string1> <string2>)
+# is_not_file (<name>)
 # is_prog (<name>)
 # is_yes (<string>)
 # leave ()
 #   main_*(), see after the functions
 # man_do_filespec (<filespec>)
-# man_is_setup ()
+# man_setup ()
 # man_register_file (<file> [<name> [<section>]])
 # man_search_section (<name> <section>)
 # manpath_add_lang(<path> <language>)
@@ -151,14 +152,19 @@ _LAST_UPDATE="27 May 2002"
 # path_clean (<path>)
 # path_contains (<path> <dir>)
 # path_not_contains (<path> <dir>)
-# register_title (<filespec>*)
+# path_split (<path>)
+# register_file (<filename>)
+# register_title (<filespec>)
 # save_stdin ()
 # string_contains (<string> <part>)
+# string_del_append (<string>)
 # string_del_leading (<string> <regex>)
 # string_del_trailing (<string> <regex>)
 # string_flatten()
+# string_not_contains (<string> <part>)
 # string_replace_all (<string> <regex> <replace>)
 # string_sed_s (<string> <regex> [<replace> [<flag>]])
+# string_split (<string> <separator>)
 # tmp_cat ()
 # tmp_create (<suffix>?)
 # to_tmp (<filename>)
@@ -182,55 +188,69 @@ _LAST_UPDATE="27 May 2002"
 #   [A-Z]*     system variables,      e.g. $MANPATH
 #   _[A-Z_]*   global file variables, e.g. $_MAN_PATH
 #   _[a-z_]*   temporary variables,   e.g. $_manpath
-#   _[a-z]     local loop variables,  e.g. $_i
+
+# Due to incompatibilities of the `ash' shell, the name of loop
+# variables in `for' must be single character
+#   [a-z]      local loop variables,   e.g. $i
 
 
 ########################################################################
-# external system environment variables that are explicitly used
+# External envirnoment variables
 
-export DISPLAY;			# Presets the X display.
-export LANG;			# For language specific man pages.
-export LC_ALL;			# For language specific man pages.
-export LC_MESSAGES;		# For language specific man pages.
-export OPTARG;			# For option processing with getopts().
-export OPTIND;			# For option processing with getopts().
-export PAGER;			# Paging program for tty mode.
-export PATH;			# Path for the programs called (: list).
+# If these variables are exported here then the `ash' shell coughs
+# when calling `groff' in `main_display()'.
 
-# groffer native environment variables
-export GROFFER_OPT		# preset options for groffer.
+_export_externals='no';
+if test "${_export_externals}" = 'yes'; then
 
-# all groff environment variables are used, see groff(1)
-export GROFF_BIN_PATH;		# Path for all groff programs.
-export GROFF_COMMAND_PREFIX;	# '' (normally) or 'g' (several troffs).
-export GROFF_FONT_PATH;		# Path to non-default groff fonts.
-export GROFF_TMAC_PATH;		# Path to non-default groff macro files.
-export GROFF_TYPESETTER;	# Preset default device.
-export GROFF_TMPDIR;		# Directory for groff temporary files.
+  # external system environment variables that are explicitly used
+  export DISPLAY;		# Presets the X display.
+  export LANG;			# For language specific man pages.
+  export LC_ALL;		# For language specific man pages.
+  export LC_MESSAGES;		# For language specific man pages.
+  export OPTARG;		# For option processing with getopts().
+  export OPTIND;		# For option processing with getopts().
+  export PAGER;			# Paging program for tty mode.
+  export PATH;			# Path for the programs called (: list).
 
-# variables from `man'
-export EXTENSION;		# Restrict to man pages with extension.
-export MANOPT;			# Preset options for man pages.
-export MANPATH;			# Search path for man pages (: list).
-export MANSECT;			# Search man pages only in sections (:).
-export SYSTEM;			# Man pages for different OS's (, list).
-export MANROFFSEQ;		# Ignored because of grog guessing.
+  # groffer native environment variables
+  export GROFFER_OPT		# preset options for groffer.
 
-# do not export IFS.
-unset IFS;
+  # all groff environment variables are used, see groff(1)
+  export GROFF_BIN_PATH;	# Path for all groff programs.
+  export GROFF_COMMAND_PREFIX;	# '' (normally) or 'g' (several troffs).
+  export GROFF_FONT_PATH;	# Path to non-default groff fonts.
+  export GROFF_TMAC_PATH;	# Path to non-default groff macro files.
+  export GROFF_TMPDIR;		# Directory for groff temporary files.
+  export GROFF_TYPESETTER;	# Preset default device.
+
+  # all GNU man environment variables are used, see man(1).
+  export MANOPT;		# Preset options for man pages.
+  export MANPATH;		# Search path for man pages (: list).
+  export MANSECT;		# Search man pages only in sections (:).
+  export SYSTEM;		# Man pages for different OS's (, list).
+  export MANROFFSEQ;		# Ignored because of grog guessing.
+
+fi;
+
+unset _export_externals;
 
 
 ########################################################################
 # read-only variables (global to this file)
 
+# characters
+
+export _APPEND			# Append to string to cover final char
+export _NEWLINE;
 export _SPACE;
 export _TAB;
-export _NEWLINE;
 
-_SPACE=' ';
-_TAB='	';
+_APPEND='Z';
 _NEWLINE='
 ';
+_SPACE=' ';
+_TAB='	';
 
 # function return values; `0' means ok; other values are error codes
 export _BAD;
@@ -248,9 +268,9 @@ _BAD2='2';			# return negatively, error code `2'
 _BAD3='3';			# return negatively, error code `3'
 _ERROR='-1';			# syntax errors, etc.
 
-_NO="$_BAD";
-_YES="$_GOOD";
-_OK="$_GOOD";
+_NO="${_BAD}";
+_YES="${_GOOD}";
+_OK="${_GOOD}";
 
 export _PROCESS_ID;		# for shutting down the program
 _PROCESS_ID="$$";
@@ -367,12 +387,12 @@ _OPTS_CMDLINE_LONG="${_OPTS_GROFFER_LONG} ${_OPTS_GROFF_LONG}";
 ########################################################################
 # read-write variables (global to this file)
 
-export _DISPLAY_MODE;		# From command line arguments.
-export _DISPLAY_PAGER;		# Pager to be used on tty.
-export _FILEARGS;		# Stores filespec parameters.
 export _ADDOPTS_GROFF;		# Transp. options for groff (`eval').
 export _ADDOPTS_POST;		# Transp. options postproc (`eval').
 export _ADDOPTS_X;		# Transp. options X postproc (`eval').
+export _DISPLAY_MODE;		# From command line arguments.
+export _DISPLAY_PAGER;		# Pager to be used on tty.
+export _FILEARGS;		# Stores filespec parameters.
 export _REGISTERED_TITLE;	# Processed file names.
 _ADDOPTS_GROFF='';
 _ADDOPTS_POST='';
@@ -462,12 +482,12 @@ _OPT_XRDB='';
 
 # _TMP_* temporary files
 export _TMP_DIR;		# directory for temporary files
-export _TMP_PREFIX;		# dir and base name for temporary files
 export _TMP_CAT;		# stores concatenation of everything
+export _TMP_PREFIX;		# dir and base name for temporary files
 export _TMP_STDIN;		# stores stdin, if any
 _TMP_DIR='';
-_TMP_PREFIX='';
 _TMP_CAT='';
+_TMP_PREFIX='';
 _TMP_STDIN='';
 
 
@@ -495,10 +515,12 @@ fi;
 #
 _test_func()
 {
-  return 0;
+  return "${_OK}";
 }
 
-if ! _test_func; then
+if _test_func; then
+  :
+else
   echo 'shell does not support function definitions.' >&2;
   exit -1;
 fi;
@@ -508,23 +530,26 @@ fi;
 # Test of builtin `local'
 #
 _global='outside';
+
 test_local()
 {
   _global='inside';
-  local _local >/dev/null 2>&1 || return 1;
+  local _local >/dev/null 2>&1 || return "${_BAD}";
 }
-if ! test_local; then
+
+if test_local; then
+  :
+else
   local()
   {
-    for _i in "$@"; do
-      unset "${_i}";
-    done;
+    return "${_OK}";
   }
-  unset _i;
 fi;
+
 if test "${_global}" != 'inside'; then
   error "Cannot assign to global variables from within functions.";
 fi;
+
 unset _global;
 
 
@@ -551,10 +576,7 @@ clean_up()
 #
 clean_up_secondary()
 {
-  local _i;
-  for _i in "${_TMP_STDIN}"; do
-    rm -f "${_i}";
-  done;
+  rm -f "${_TMP_STDIN}";
 }
 
 
@@ -585,6 +607,17 @@ echo2n()
 
 
 #############
+# diag (text>*)
+#
+# Output a diagnostic message to stderr
+#
+diag()
+{
+  echo2 '>>>>>'"$*";
+}
+
+
+#############
 # error (<text>*)
 #
 # Print an error message to standard error; exit with an error condition
@@ -610,22 +643,11 @@ error()
 
 
 #############
-# diag (text>*)
-#
-# Output a diagnostic message to stderr
-#
-function diag ()
-{
-  echo2 '>>>>>'"$*";
-}
-
-
-#############
 # abort (<text>*)
 #
 # Terminate program with error condition
 #
-function abort ()
+abort()
 {
   error "Program aborted.";
   exit 1;
@@ -642,15 +664,17 @@ function abort ()
 ########################################################################
 # Test of function `true'.
 #
-if ! true >/dev/null 2>&1; then
-  true ()
+if true >/dev/null 2>&1; then
+  true;
+else
+  true()
   {
-    return 0;
+    return "${_GOOD}";
   }
 
-  false ()
+  false()
   {
-    return 1;
+    return "${_BAD}";
   }
 fi;
 
@@ -687,17 +711,17 @@ fi;
 #
 
 # determine temporary directory into `$_TMP_DIR'
-for _i in "${GROFF_TMPDIR}" "${TMPDIR}" "${TMP}" "${TEMP}" \
-          "${TEMPDIR}" "${HOME}"/tmp /tmp "${HOME}" .;
+for d in "${GROFF_TMPDIR}" "${TMPDIR}" "${TMP}" "${TEMP}" \
+         "${TEMPDIR}" "${HOME}"/tmp /tmp "${HOME}" .;
 do
-  if test "${_i}" != ""; then
-    if test -d "${_i}" && test -r "${_i}" && test -w "${_i}"; then
-      _TMP_DIR="${_i}";
+  if test "$d" != ""; then
+    if test -d "$d" && test -r "$d" && test -w "$d"; then
+      _TMP_DIR="$d";
       break;
     fi;
   fi;
 done;
-unset _i;
+unset d;
 if test "${_TMP_DIR}" = ""; then
   error "Couldn't find a directory for storing temorary files.";
 fi;
@@ -759,7 +783,7 @@ base_name()
 {
   if test "$#" != 1; then
     error "base_name() needs 1 argument.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   string_sed_s "$1" '^.*/\([^/]*\)$' '\1';
 }
@@ -776,7 +800,7 @@ if test "${_HAS_COMPRESSION}" = 'yes'; then
   {
     if test "$#" -ne 1; then
       error "catz() needs exactly 1 argument.";
-      return "$_ERROR";
+      return "${_ERROR}";
     fi;
     cat "$1" | gzip -c -d -f 2>/dev/null;
   }
@@ -785,7 +809,7 @@ else
   {
     if test "$#" -ne 1; then
       error "catz() needs exactly 1 argument.";
-      return "$_ERROR";
+      return "${_ERROR}";
     fi;
     cat "$1";
   }
@@ -821,19 +845,23 @@ fi;
 #
 # Append `name' to `dir' with clean handling of `/'.
 #
-# Arguments : >=1
-# Output    : the generated new directory name
+# Arguments : 2
+# Output    : the generated new directory name <dir>/<name>
 #
 dirname_append()
 {
   local _res;
   if test "$#" -ne 2; then
     error "dir_append() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   if is_empty "$1"; then
-    echo -n "$2";
-    return "$_OK";
+    error "dir_append(): first argument is empty.";
+    return "${_ERROR}";
+  fi;
+  if is_empty "$2"; then
+    echo -n "$1";
+    return "${_OK}";
   fi;
   dirname_chop "$1"/"$2";
 }
@@ -854,12 +882,12 @@ dirname_chop()
   local _sep;
   if test "$#" -ne 1; then
     error 'dirname_chop() needs 1 argument.';
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   _res="$(string_replace_all "$1" '//\+' '/')";
-  case "$_res" in
-    ?*/) string_del_trailing "$_res" '/'; ;;
-    *) echo -n "$_res"; ;;
+  case "${_res}" in
+    ?*/) string_del_trailing "${_res}" '/'; ;;
+    *) echo -n "${_res}"; ;;
   esac;
 }
 
@@ -883,71 +911,70 @@ dirname_chop()
 #   $_TMP_STDIN, $_MAN_ENABLE, $_MAN_IS_SETUP, $_OPT_MAN
 #
 # Output  : none
-# Return  : $_GOOD if found, $_BAD otherwise.
+# Return  : $_GOOD if found, ${_BAD} otherwise.
 #
 do_filearg()
 {
   local _filespec;
-  local _mode;
-  local _sequence;
+  local i;
   if test "$#" -ne 1; then
     error "do_filearg() expects 1 argument.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   _filespec="$1";
-  case "$_filespec" in
+  # store sequence positional parameters
+  case "${_filespec}" in
     '')
-       return "$_GOOD";
+       return "${_GOOD}";
        ;;
     '-')
-      to_tmp "${_TMP_STDIN}";
-      register_title "-";
-      return "$_GOOD";       
+      register_file '-';
+      return "${_GOOD}";
       ;;
     */*)			# with directory part; so no man search
-      sequence="File";
+      set -- 'File';
       ;;
     *)
       if is_yes "${_MAN_ENABLE}"; then
         if is_yes "${_OPT_MAN}"; then
-          _sequence="Manpage File";
+          set -- 'Manpage' 'File';
         else
-         _sequence="File Manpage";
+          set -- 'File' 'Manpage';
         fi;
       else
-       _sequence="File";
+        set -- 'File';
       fi;
       ;;
   esac;
-  for _mode in ${_sequence}; do
-    case "${_mode}" in
+  for i in "$@"; do
+    case "$i" in
       File)
         if test -f "${_filespec}"; then
-          if test ! -r "${_filespec}"; then
+          if test -r "${_filespec}"; then
+            register_file "${_filespec}";
+	    return "${_GOOD}";
+          else
 	    echo2 "could not read \`${_filespec}'";
-	    return "$_BAD";
+	    return "${_BAD}";
           fi;
-          to_tmp "${_filespec}";
-          register_title "$(base_name "${_filespec}")";
-	  return "$_GOOD";
         else
           continue;
         fi;
         ;;
       Manpage)			# parse filespec as man page
-        if is_not_yes "$_MAN_IS_SETUP"; then
+        if is_not_yes "${_MAN_IS_SETUP}"; then
           man_setup;
         fi;
         if man_do_filespec "${_filespec}"; then
-	  return "$_GOOD";
+	  return "${_GOOD}";
         else
           continue;
 	fi;
         ;;
     esac;
   done;
-  return "$_BAD";
-}
+  return "${_BAD}";
+} # do_filearg()
 
 
 ########################################################################
@@ -957,7 +984,7 @@ do_filearg()
 #
 do_nothing()
 {
-  return "$_OK";
+  return "${_OK}";
 }
 
 
@@ -995,16 +1022,17 @@ do_nothing()
 #
 get_first_essential()
 {
-  local _i;
+  local i;
   if test "$#" -eq 0; then
-    return "$_OK";
+    return "${_OK}";
   fi;
-  for _i in "$@"; do
-    if is_not_empty "${_i}"; then
-      echo -n "${_i}";
-      return "$_OK";
+  for i in "$@"; do
+    if is_not_empty "$i"; then
+      echo -n "$i";
+      return "${_OK}";
     fi;
   done;
+  return "${_BAD}";
 }
 
 
@@ -1018,10 +1046,14 @@ get_first_essential()
 #
 is_dir()
 {
+  if test "$#" -ne 1; then
+    error "is_dir() needs 1 argument.";
+    return "${_ERROR}";
+  fi;
   if is_not_empty "$1" && test -d "$1" && test -r "$1"; then
-    return "$_GOOD";
+    return "${_YES}";
   else
-    return "$_BAD";
+    return "${_NO}";
   fi;
 }
 
@@ -1038,12 +1070,12 @@ is_empty()
 {
   if test "$#" -ne 1; then
     error "is_empty() needs 1 argument.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   if test -z "$1"; then
-    return "$_YES";
+    return "${_YES}";
   else
-    return "$_NO";
+    return "${_NO}";
   fi;
 }
 
@@ -1060,12 +1092,12 @@ is_equal()
 {
   if test "$#" -ne 2; then
     error "is_equal() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   if test "$1" = "$2"; then
-    return "$_YES";
+    return "${_YES}";
   else
-    return "$_NO";
+    return "${_NO}";
   fi;
 }
 
@@ -1080,10 +1112,36 @@ is_equal()
 #
 is_file()
 {
+  if test "$#" -ne 1; then
+    error "is_file() needs 1 argument.";
+    return "${_ERROR}";
+  fi;
   if is_not_empty "$1" && test -f "$1" && test -r "$1"; then
-    return "$_GOOD";
+    return "${_YES}";
   else
-    return "$_BAD";
+    return "${_NO}";
+  fi;
+}
+
+
+########################################################################
+# is_not_dir (<name>)
+#
+# Test whether `name' is not a readable directory.
+#
+# Arguments : 1
+# Return    : `0' if arg1 is a directory, `1' otherwise.
+#
+is_not_dir()
+{
+  if test "$#" -ne 1; then
+    error "is_not_dir() needs 1 argument.";
+    return "${_ERROR}";
+  fi;
+  if is_dir "$1"; then
+    return "${_NO}";
+  else
+    return "${_YES}";
   fi;
 }
 
@@ -1100,12 +1158,12 @@ is_not_empty()
 {
   if test "$#" -ne 1; then
     error "is_not_empty() needs 1 argument.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
-  if test -n "$1"; then
-    return "$_YES";
+  if is_empty "$1"; then
+    return "${_NO}";
   else
-    return "$_NO";
+    return "${_YES}";
   fi;
 }
 
@@ -1113,21 +1171,41 @@ is_not_empty()
 ########################################################################
 # is_not_equal (<string1> <string2>)
 #
-# Test whether `string1' is not equal to <string2>.
+# Test whether `string1' and <string2> differ.
 #
 # Arguments : 2
-# Return    : `0' the arguments are different strings, `1' otherwise.
 #
 is_not_equal()
 {
   if test "$#" -ne 2; then
     error "is_not_equal() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
-  if test "$1" != "$2"; then
-    return "$_YES";
+  if is_equal "$1" "$2"; then
+    return "${_NO}";
   else
-    return "$_NO";
+    return "${_YES}";
+  fi;
+}
+
+
+########################################################################
+# is_not_file (<filename>)
+#
+# Test whether `name' is a not readable file.
+#
+# Arguments : 1
+#
+is_not_file()
+{
+  if test "$#" -ne 1; then
+    error "is_not_file() needs 1 argument.";
+    return "${_ERROR}";
+  fi;
+  if is_file "$1"; then
+    return "${_NO}";
+  else
+    return "${_YES}";
   fi;
 }
 
@@ -1137,19 +1215,18 @@ is_not_equal()
 #
 # Test whether `string' is not "yes".
 #
-# Arguments : <=1
-# Return    : `0' if arg1 is `yes', `1' otherwise.
+# Arguments : 1
 #
 is_not_yes()
 {
   if test "$#" -ne 1; then
     error "is_not_yes() needs 1 argument.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
-  if test "$1" != "yes"; then
-    return "$_GOOD";
+  if is_yes "$1"; then
+    return "${_NO}";
   else
-    return "$_BAD";
+    return "${_YES}";
   fi;
 }
 
@@ -1160,11 +1237,18 @@ is_not_yes()
 # Determine whether arg is a program in $PATH
 #
 # Arguments : 1 (empty allowed)
-# Return    : `0' if arg is a program in $PATH, `1' otherwise.
 #
 is_prog()
 {
-  where "$@" >/dev/null;
+  if test "$#" -ne 1; then
+    error "is_prog() needs 1 argument.";
+    return "${_ERROR}";
+  fi;
+  if where "$1" >/dev/null; then
+    return "${_YES}";
+  else
+    return "${_NO}";
+  fi;
 }
 
 
@@ -1180,12 +1264,12 @@ is_yes()
 {
   if test "$#" -ne 1; then
     error "is_yes() needs 1 argument.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   if is_equal "$1" 'yes'; then
-    return "$_GOOD";
+    return "${_YES}";
   else
-    return "$_BAD";
+    return "${_NO}";
   fi;
 }
 
@@ -1198,7 +1282,7 @@ is_yes()
 leave()
 {
   clean_up;
-  exit "$_OK";
+  exit "${_OK}";
 }
 
 
@@ -1212,10 +1296,10 @@ leave()
 #               `man:name(section)', `name.section', `name'.
 #
 # Globals   : $_OPT_ALL
-#             
+#
 # Output    : none.
 # Return    : `0' if man page was found, `1' else.
-# 
+#
 # Only called from do_fileargs(), checks on $MANPATH and
 # $_MAN_ENABLE are assumed.
 #
@@ -1225,22 +1309,22 @@ man_do_filespec()
   local _name;
   local _prevsec;
   local _res;
-  local _s;
   local _section;
   local _spec;
   local _string;
+  local s;
   if is_empty "${MANPATH}"; then
-    return "$_BAD";
+    return "${_BAD}";
   fi;
   case "$#" in
     1) true; ;;
     *)
       error "man_do_filespec() needs exactly 1 argument.";
-      return "$_ERROR";
+      return "${_ERROR}";
       ;;
   esac;
   if is_empty "$1"; then
-    return "$_BAD";
+    return "${_BAD}";
   fi;
   _spec="$1";
   _name='';
@@ -1252,7 +1336,7 @@ man_do_filespec()
       _name="$(string_del_trailing "${_string}" '(.\+')";
       _section="$(string_del_leading "${_string}" "${_name}"'(')";
       ;;
-    man:?*.[^.]*)			# man:name.section
+    man:?*.?*)			# man:name.section
       _string="$(string_del_leading "${_spec}" 'man:')";
       _name="$(string_del_trailing "${_string}" '\.[^.]*')";
       _section="$(string_del_leading "${_string}" "${_name}"'\.')";
@@ -1265,7 +1349,7 @@ man_do_filespec()
       _name="$(string_del_trailing "${_string}" '(.\+')";
       _section="$(string_del_leading "${_string}" "${_name}"'(')";
       ;;
-    *.[^.]*)			# name.section
+    ?*.?*)			# name.section
       _name="$(string_del_trailing "${_spec}" '\.[^.]\+')";
       _section="$(string_del_leading "${_spec}" "${_name}"'\.')";
       ;;
@@ -1274,32 +1358,188 @@ man_do_filespec()
       ;;
   esac;
   if is_empty "${_name}"; then
-    return "$_BAD";
+    return "${_BAD}";
   fi;
   _got_one='no';
   if is_empty "${_section}"; then
-    for _s in $_MAN_AUTO_SEC; do
-      if man_search_section "$_name" "$_s"; then # found
-        if is_yes "$_MAN_ALL"; then
+    eval set -- "${_MAN_AUTO_SEC}";
+    for s in "$@"; do
+      if man_search_section "${_name}" "$s"; then # found
+        if is_yes "${_MAN_ALL}"; then
           _got_one='yes';
         else
-          return "$_GOOD";
+          return "${_GOOD}";
         fi;
       fi;
     done;
   else
-    man_search_section "$_name" "$_section";
+    man_search_section "${_name}" "${_section}";
     return "$?";
   fi;
-  if is_yes "$_MAN_ALL" && is_yes "$_got_one"; then
-    return "$_GOOD";
+  if is_yes "${_MAN_ALL}" && is_yes "${_got_one}"; then
+    return "${_GOOD}";
   fi;
-  return "$_BAD";
+  return "${_BAD}";
+} # man_do_filespec()
+
+
+########################################################################
+# man_parse_name (<filespec>)
+#
+# Parse the man page name part off from a filespec
+#
+# Arguments: 1, 2, or 3; maybe empty
+# Output: none
+#
+man_parse_name()
+{
+  return;
 }
 
 
 ########################################################################
-# man_is_setup ()
+# man_register_file (<file> <name> [<section>])
+#
+# Write a found man page file and register the title element.
+#
+# Arguments: 1, 2, or 3; maybe empty
+# Output: none
+#
+man_register_file()
+{
+  case "$#" in
+    2|3) do_nothing; ;;
+    *)
+      error "man_register_file() expects 1 argument.";
+      return "${_ERROR}";
+      ;;
+  esac;
+  if is_empty "$1"; then
+    error 'man_register_file(): file name is empty';
+  fi;
+  to_tmp "$1";
+  case "$#" in
+    2)
+       register_title "man:$2";
+       return "${_OK}";
+       ;;
+    3)
+       register_title "$2($3)";
+       return "${_OK}";
+       ;;
+  esac;
+}
+
+
+########################################################################
+# man_search_section (<name> <section>)
+#
+# Retrieve man pages.
+#
+# Arguments : 2
+# Globals   : $_MAN_PATH, $_MAN_EXT
+# Return    : 0 if found, 1 otherwise
+#
+man_search_section()
+{
+  local _dir;
+  local _ext;
+  local _got_one;
+  local _name;
+  local _prefix
+  local _section;
+  local d;
+  local f;
+  if is_empty "${_MAN_PATH}"; then
+    return "${_BAD}";
+  fi;
+  if test "$#" -ne 2; then
+    error "man_sec_first() needs 2 arguments.";
+    return "${_ERROR}";
+  fi;
+  if is_empty "$1"; then
+    return "${_BAD}";
+  fi;
+  if is_empty "$2"; then
+    return "${_BAD}";
+  fi;
+  _name="$1";
+  _section="$2";
+  eval set -- "$(path_split "${_MAN_PATH}")";
+  _got_one='no';
+  if is_empty "${_MAN_EXT}"; then
+    for d in "$@"; do
+      _dir="$(dirname_append "$d" "man${_section}")";
+      if is_dir "${_dir}"; then
+        _prefix="$(dirname_append "${_dir}" "${_name}.${_section}")";
+        for f in $(echo -n ${_prefix}*); do
+          if is_file "$f"; then
+            if is_yes "${_got_one}"; then
+              register_file "$f";
+            elif is_yes "${_MAN_ALL}"; then
+              man_register_file "$f" "${_name}";
+            else
+              man_register_file "$f" "${_name}" "${_section}";
+              return "${_GOOD}";
+            fi;
+            _got_one='yes';
+          fi;
+        done;
+      fi;
+    done;
+  else
+    _ext="${_MAN_EXT}";
+    # check for directory name having trailing extension
+    for d in "$@"; do
+      _dir="$(dirname_append $d man${_section}${_ext})";
+      if is_dir "${_dir}"; then
+        _prefix="$(dirname_append "${_dir}" "${_name}.${_section}")";
+        for f in ${_prefix}*; do
+          if is_file "$f"; then
+            if is_yes "${_got_one}"; then
+              register_file "$f";
+            elif is_yes "${_MAN_ALL}"; then
+              man_register_file "$f" "${_name}";
+            else
+              man_register_file "$f" "${_name}" "${_section}";
+              return "${_GOOD}";
+            fi;
+            _got_one='yes';
+          fi;
+        done;
+      fi;
+    done;
+    # check for files with extension in directories without extension
+    for d in "$@"; do
+      _dir="$(dirname_append "$d" "man${_section}")";
+      if is_dir "${_dir}"; then
+        _prefix="$(dirname_append "${_dir}" \
+                                  "${_name}.${_section}${_ext}")";
+        for f in ${_prefix}*; do
+          if is_file "$f"; then
+            if is_yes "${_got_one}"; then
+              register_file "$f";
+            elif is_yes "${_MAN_ALL}"; then
+              man_register_file "$f" "${_name}";
+            else
+              man_register_file "$f" "${_name}" "${_section}";
+              return "${_GOOD}";
+            fi;
+            _got_one='yes';
+          fi;
+        done;
+      fi;
+    done;
+  fi;
+  if is_yes "${_MAN_ALL}" && is_yes "${_got_one}"; then
+    return "${_GOOD}";
+  fi;
+  return "${_BAD}";
+} # man_search_section()
+
+
+########################################################################
+# man_setup ()
 #
 # Setup the variables $_MAN_* needed for man page searching.
 #
@@ -1324,20 +1564,22 @@ man_setup()
 {
   local _lang;
 
-  if is_yes "$_MAN_IS_SETUP"; then
-    return "$_GOOD";
+  if is_yes "${_MAN_IS_SETUP}"; then
+    return "${_GOOD}";
   fi;
   _MAN_IS_SETUP='yes';
 
   if is_not_yes "${_MAN_ENABLE}"; then
-    return "$_GOOD";
+    return "${_BAD}";
   fi;
 
   # determine basic path for man pages
   _MAN_PATH="$(get_first_essential \
                "${_OPT_MANPATH}" "${_MANOPT_PATH}" "${MANPATH}")";
   if is_empty "${_MAN_PATH}"; then
-    _MAN_PATH="$(manpath 2>/dev/null)"; # not on all systems available
+    if is_prog 'manpath'; then
+      _MAN_PATH="$(manpath 2>/dev/null)"; # not on all systems available
+    fi;
   fi;
   if is_empty "${_MAN_PATH}"; then
     manpath_set_from_path;
@@ -1350,7 +1592,7 @@ man_setup()
   fi;
 
   _MAN_ALL="$(get_first_essential "${_OPT_ALL}" "${_MANOPT_ALL}")";
-  if is_empty "$_MAN_ALL"; then
+  if is_empty "${_MAN_ALL}"; then
     _MAN_ALL='no';
   fi;
 
@@ -1385,156 +1627,7 @@ man_setup()
 
   _MAN_EXT="$(get_first_essential \
               "${_OPT_EXTENSION}" "${_MANOPT_EXTENSION}")";
-}
-
-
-########################################################################
-# man_parse_name (<filespec>)
-#
-# Parse the man page name part off from a filespec
-#
-# Arguments: 1, 2, or 3; maybe empty
-# Output: none
-#
-man_parse_name()
-{
-  return;
-}
-
-
-########################################################################
-# man_register_file (<file> [<name> [<section>]])
-#
-# Write a found man page file and register the title element.
-#
-# Arguments: 1, 2, or 3; maybe empty
-# Output: none
-#
-man_register_file()
-{
-  case "$#" in
-    1)
-       if is_empty "$1"; then
-         error 'man_register_file(): file name is empty';
-       else
-         to_tmp "$1";
-         return "${_OK}";
-       fi;
-       ;;
-    2)
-       if is_not_empty "$1"; then
-         to_tmp "$1";
-       fi;
-       register_title "man:$2";
-       return "${_OK}";
-       ;;
-    3)
-       if is_not_empty "$1"; then
-         to_tmp "$1";
-       fi;
-       register_title "$2($3)";
-       return "${_OK}";
-       ;;
-    *) error 'man_register_file(): wrong number of arguments'; ;;
-  esac;
-}
-
-
-########################################################################
-# man_search_section (<name> <section>)
-#
-# Retrieve man pages.
-#
-# Arguments : 2
-# Globals   : $_MAN_PATH, $_MAN_EXT
-# Return    : 0 if found, 1 otherwise
-#
-man_search_section()
-{
-  local _d;
-  local _dir;
-  local _ext;
-  local _got_one;
-  local _f;
-  local _name;
-  local _prefix
-  local _section;
-  if is_empty "${_MAN_PATH}"; then
-    return "${_BAD}";
-  fi;
-  if test "$#" -ne 2; then
-    error "man_sec_first() needs 2 arguments.";
-    return "${_ERROR}";
-  fi;
-  if is_empty "$1"; then
-    return "${_BAD}";
-  fi;
-  if is_empty "$2"; then
-    return "${_BAD}";
-  fi;
-  _name="$1";
-  _section="$2";
-  IFS=:
-  set -- ${_MAN_PATH}
-  unset IFS;
-  _got_one='no';
-  if is_empty "$_MAN_EXT"; then
-    for _d in "$@"; do
-      _dir="$(dirname_append "${_d}" "man${_section}")";
-      if is_dir "$_dir"; then
-        _prefix="$(dirname_append "$_dir" "${_name}.${_section}")";
-        for _f in $(echo -n ${_prefix}*); do
-          if is_file "$_f"; then
-            man_register_file "$_f" "$_name" "$_section";
-            if is_not_empty "$_MAN_ALL"; then
-              _got_one='yes';
-              return "$_GOOD";
-            fi;
-          fi;
-        done;
-      fi;
-    done;
-  else
-    _ext="${_MAN_EXT}";
-    # check for directory name having trailing extension
-    for _d in "$@"; do
-      _dir="$(dirname_append ${_d} man${_section}${_ext})";
-      if is_dir "$_dir"; then
-        _prefix="$(dirname_append "$_dir" "${_name}.${_section}")";
-        for _f in ${_prefix}*; do
-          if is_file "$_f"; then
-            man_register_file "$_f" "$_name" "$_section";
-            if is_not_empty "$_MAN_ALL"; then
-              _got_one='yes';
-              return "$_GOOD";
-            fi;
-          fi;
-        done;
-      fi;
-    done;
-    # check for files with extension in directories without extension
-    for _d in "$@"; do
-      _dir="$(dirname_append "${_d}" "man${_section}")";
-      if is_dir "$_dir"; then
-        _prefix="$(dirname_append "$_dir" \
-                                  "${_name}.${_section}${_ext}")";
-        for _f in ${_prefix}*; do
-          if is_file "$_f"; then
-            man_register_file "$_f" "$_name" "$_section";
-            if is_not_empty "$_MAN_ALL"; then
-              _got_one='yes';
-              return "$_GOOD";
-            fi;
-          fi;
-        done;
-      fi;
-    done;
-  fi;
-  if is_yes "$_MAN_ALL" && is_yes "$_got_one"; then
-    return "$_GOOD";
-  fi;
-  return "$_BAD";
-}
+} # man_setup()
 
 
 ########################################################################
@@ -1545,7 +1638,7 @@ man_search_section()
 # Arguments : 0
 # Output    : none
 # Globals:
-#   in:     $_MAN_SYS: has the form `os1,os2,...', a comma separated 
+#   in:     $_MAN_SYS: has the form `os1,os2,...', a comma separated
 #             list of names of operating systems.
 #           $_MAN_LANG and $_MAN_LANG2: each a single name
 #   in/out: $_MAN_PATH: has the form `dir1:dir2:...', a colon
@@ -1553,28 +1646,24 @@ man_search_section()
 #
 manpath_add_lang_sys()
 {
-  local _p;
+  local p;
   local _mp;
   if test "$#" -ne 0; then
     error "manpath_add_system() does not have arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   if is_empty "${_MAN_PATH}"; then
     return "${_GOOD}";
   fi;
   # twice test both sys and lang
-  IFS=:
-  set -- ${_MAN_PATH};
-  unset IFS;
+  eval set -- "$(path_split "${_MAN_PATH}")";
   _mp='';
-  for _p in "$@"; do		# loop on man path directories
-    _mp="$(_manpath_add_lang_sys_single "$_mp" "$_p")";
+  for p in "$@"; do		# loop on man path directories
+    _mp="$(_manpath_add_lang_sys_single "${_mp}" "$p")";
   done;
-  IFS=:
-  set -- ${_mp};
-  unset IFS;
-  for _p in "$@"; do		# loop on man path directories
-    _mp="$(_manpath_add_lang_sys_single "$_mp" "$_p")";
+  eval set -- "$(path_split "${_mp}")";
+  for p in "$@"; do		# loop on man path directories
+    _mp="$(_manpath_add_lang_sys_single "${_mp}" "$p")";
   done;
   _MAN_PATH="$(path_chop "${_mp}")";
 }
@@ -1589,23 +1678,27 @@ _manpath_add_lang_sys_single()
   # argument: 2: `man_path' and `dir'
   # output: colon-separated path of the retrieved subdirectories
   #
-  local _d;
+  local d;
+#  if test "$#" -ne 2; then
+#    error "manpath_add_system_single() needs 2 arguments.";
+#    return "${_ERROR}";
+#  fi;
   _res="$1";
   _parent="$2";
-  IFS=,
-  set -- ${_MAN_SYS} ;
-  unset IFS;
-  for _d in "$@" "$_MAN_LANG" "$_MAN_LANG2"; do
-    _dir="$(dirname_append "$_parent" "$_d")";
-    if path_not_contains "$_res" "$_dir" && is_dir "$_dir"; then
+  eval set -- "$(string_split "${_MAN_SYS}" ',')";
+  for d in "$@" "${_MAN_LANG}" "${_MAN_LANG2}"; do
+    _dir="$(dirname_append "${_parent}" "$d")";
+    if path_not_contains "${_res}" "${_dir}" && is_dir "${_dir}"; then
       _res="${_res}:${_dir}";
     fi;
   done;
-  if path_not_contains "$_res" "$_parent"; then
+  if path_not_contains "${_res}" "${_parent}"; then
     _res="${_res}:${_parent}";
   fi;
-  path_chop "$_res";
+  path_chop "${_res}";
 }
+
+# end manpath_add_lang_sys ()
 
 
 ########################################################################
@@ -1622,20 +1715,19 @@ _manpath_add_lang_sys_single()
 manpath_set_from_path()
 {
   local _base;
-  local _d;
   local _mandir;
   local _manpath;
+  local d;
+  local e;
   _manpath='';
 
   # get a basic man path from $PATH
   if is_not_empty "${PATH}"; then
-    IFS=:
-    set -- ${PATH}
-    unset IFS;
-    for _d in "$@"; do
-      _base="$(string_del_trailing "${_d}" '/\+bin/*')";
-      for _e in /share/man /man; do
-        _mandir="${_base}${_e}";
+    eval set -- "$(path_split "${PATH}")";
+    for d in "$@"; do
+      _base="$(string_del_trailing "$d" '/\+bin/*')";
+      for e in /share/man /man; do
+        _mandir="${_base}$e";
         if test -d "${_mandir}" && test -r "${_mandir}"; then
         _manpath="${_manpath}:${_mandir}";
         fi;
@@ -1644,18 +1736,18 @@ manpath_set_from_path()
   fi;
 
   # append some default directories
-  for _d in /usr/local/share/man /usr/local/man \
-               /usr/share/man /usr/man \
-               /usr/X11R6/man /usr/openwin/man \
-               /opt/share/man /opt/man \
-               /opt/gnome/man /opt/kde/man; do
-    if path_not_contains "${_manpath}" "${_d}" && is_dir "${_d}"; then
-      _manpath="${_manpath}:${_d}";
+  for d in /usr/local/share/man /usr/local/man \
+            /usr/share/man /usr/man \
+            /usr/X11R6/man /usr/openwin/man \
+            /opt/share/man /opt/man \
+            /opt/gnome/man /opt/kde/man; do
+    if path_not_contains "${_manpath}" "$d" && is_dir "$d"; then
+      _manpath="${_manpath}:$d";
     fi;
   done;
 
   _MAN_PATH="${_manpath}";
-}
+} # manpath_set_from_path()
 
 
 ########################################################################
@@ -1674,31 +1766,31 @@ if is_yes "${_HAS_OPTS_GNU}"; then
   {
     local _long_opts;
     local _short_opts;
-    local _i;
     local _res;
+    local i;
     if test "$#" -lt 2; then
       error "normalize_args() needs at least 2 arguments";
-      return "$_ERROR";
+      return "${_ERROR}";
     fi;
     _short_opts="$1";
     _long_opts="";
     if is_not_empty "$2"; then
-      for _i in $2; do
-        _long_opts="${_long_opts} -l '${_i}'";
+      for i in $2; do
+        _long_opts="${_long_opts} -l '$i'";
       done;
     fi;
     shift 2;
     if test "$#" -eq 0; then
-      set -- -;
+      set -- '-';
     fi;
     if _res="$(eval getopt "${_long_opts}" -o \"${_short_opts}\" \
                            -- '"$@"')"; then
       echo -n "${_res}";
-      return "$_GOOD";
+      return "${_GOOD}";
     else
       error 'normalize_args(): wrong option';
-      return "$_ERROR";
-    fi;   
+      return "${_ERROR}";
+    fi;
   }
 
 elif is_yes "${_HAS_OPTS_POSIX}"; then # POSIX getopts
@@ -1711,13 +1803,13 @@ elif is_yes "${_HAS_OPTS_POSIX}"; then # POSIX getopts
     local _short_opts;
     if test "$#" -lt 2; then
       error "normalize_args() needs at least 2 arguments";
-      return "$_ERROR";
+      return "${_ERROR}";
     fi;
     _short_opts="$1";
     # ignore long options in $2
     shift 2;
     if test "$#" -eq 0; then
-      set -- -;
+      set -- '-';
     fi;
     OPTIND=1;
     OPTARG="";
@@ -1734,11 +1826,11 @@ elif is_yes "${_HAS_OPTS_POSIX}"; then # POSIX getopts
 	  else
             error "unknown option \`-${OPTARG}'.";
           fi;
-          return "$_ERROR";
+          return "${_ERROR}";
           ;;
         :)			# argument not found (in silent mode)
           error "no argument found for option \`-${OPTARG}'.";
-          return "$_ERROR";
+          return "${_ERROR}";
           ;;
       esac;
       _res="${_res} -${_opt}";
@@ -1764,17 +1856,19 @@ elif is_yes "${_HAS_OPTS_POSIX}"; then # POSIX getopts
         done;
       fi;
       echo -n "${_res}"
-      return "$_OK";
+      return "${_OK}";
     else
       error 'error in option parsing';
-      return "$_ERROR";
+      return "${_ERROR}";
     fi;
   }
 
 else
   error 'no option processor available.';
-  return "$_ERROR";
+  return "${_ERROR}";
 fi;
+
+# end normalize_args()
 
 
 ########################################################################
@@ -1790,14 +1884,14 @@ path_chop()
   local _res;
   if test "$#" -ne 1; then
     error 'path_chop() needs 1 argument.';
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
 
 #  _res="$1";
-#  _res="$(string_flatten "$_res" ':')";
-#  _res="$(string_del_leading "$_res" ':')";
-#  _res="$(string_del_trailing "$_res" ':')";
-#  echo -n "$_res";
+#  _res="$(string_flatten "${_res}" ':')";
+#  _res="$(string_del_leading "${_res}" ':')";
+#  _res="$(string_del_trailing "${_res}" ':')";
+#  echo -n "${_res}";
 
   echo -n "$1" | sed -e '\|::\+|s||:|g' |
                  sed -e '\|^:*|s|||' |
@@ -1818,22 +1912,23 @@ path_clean()
   local _arg;
   local _dir;
   local _res;
+  local i;
   if test "$#" -ne 1; then
     error 'path_clean() needs 1 argument.';
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   _arg="$1";
-  IFS=:
-  set -- ${_arg};
-  unset IFS;
+  eval set -- "$(path_split "${_arg}")";
   _res="";
-  for _i in "$@"; do
-    if is_not_empty "$_i" \
-       && path_not_contains "${_res}" "$_i" \
-       && is_dir "$_i";
+  for i in "$@"; do
+    if is_not_empty "$i" \
+       && path_not_contains "${_res}" "$i" \
+       && is_dir "$i";
     then
-      _dir="$(dirname_chop "$_i")";
-      _res="${_res}:${_dir}";
+      case "$i" in
+        ?*/) _res="${_res}$(dirname_chop "$i")"; ;;
+        *)  _res="${_res}:$i";
+      esac;
     fi;
   done;
   path_chop "${_res}";
@@ -1852,11 +1947,11 @@ path_contains()
 {
   if test "$#" -ne 2; then
     error "path_contains() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   case ":$1:" in
-    *":$2:"*) return "$_YES"; ;;
-    *)        return "$_NO"; ;;
+    *":$2:"*) return "${_YES}"; ;;
+    *)        return "${_NO}"; ;;
   esac;
 }
 
@@ -1867,18 +1962,64 @@ path_contains()
 # Test whether `dir' is not contained in colon separated `path'.
 #
 # Arguments : 2 arguments.
-# Return    : `1' if arg2 is substring of arg1, `0' otherwise.
 #
 path_not_contains()
 {
   if test "$#" -ne 2; then
     error "path_not_contains() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
-  case ":$1:" in
-    *":$2:"*) return "$_NO"; ;;
-    *)        return "$_YES"; ;;
-  esac;
+  if path_contains "$1" "$2"; then
+    return "${_NO}";
+  else
+    return "${_YES}";
+  fi;
+}
+
+
+########################################################################
+# path_split (<path>)
+#
+# In `path' escape white space and replace each colon by a space.
+#
+# Arguments: 1: a colon-separated path
+# Output:    the resulting string
+#
+path_split()
+{
+  if test "$#" -ne 1; then
+    error "path_split() needs 1 argument.";
+    return "${_ERROR}";
+  fi;
+  string_split "$1" ':';
+}
+
+
+########################################################################
+# register_file (<filename>)
+#
+# Write a found file and register the title element.
+#
+# Arguments: 1: a file name
+# Output: none
+#
+register_file()
+{
+  if test "$#" -ne 1; then
+    error 'register_file() needs 1 argument';
+    return "${_ERROR}";
+  fi;
+  if is_empty "$1"; then
+    error 'register_file(): file name is empty';
+    return "${_ERROR}";
+  fi;
+  if is_equal "$1" '-'; then
+    to_tmp "${_TMP_STDIN}";
+    register_title '-';
+  else
+    to_tmp "$1";
+    register_title "$(base_name "$1")";
+  fi;
 }
 
 
@@ -1891,21 +2032,21 @@ path_not_contains()
 #
 register_title()
 {
-  local _t;
+  local _title;
   if test "$#" -ne 1; then
     error "register_title() needs exactly 1 argument.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   if is_empty "$1"; then
-    return "$_OK";
+    return "${_OK}";
   fi;
-  _t="$(base_name "$1")";	# remove directory part
-  _t="$(string_del_trailing "${_t}" '\.gz')"; # remove .gz
-  _t="$(string_del_trailing "${_t}" '\.Z')";  # remove .Z
-  if is_empty "${_t}"; then
-    return "$_OK";
+  _title="$(base_name "$1")";	# remove directory part
+  _title="$(string_del_trailing "${_title}" '\.gz')"; # remove .gz
+  _title="$(string_del_trailing "${_title}" '\.Z')";  # remove .Z
+  if is_empty "${_title}"; then
+    return "${_OK}";
   fi;
-  _REGISTERED_TITLE="${_REGISTERED_TITLE} ${_t}";
+  _REGISTERED_TITLE="${_REGISTERED_TITLE} ${_title}";
 }
 
 
@@ -1932,11 +2073,39 @@ string_contains()
 {
   if test "$#" != 2; then
     error 'string_contains() needs 2 arguments.';
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   case "$1" in
-    *"$2"*) return "$_YES"; ;;
-    *)      return "$_NO"; ;;
+    *"$2"*) return "${_YES}"; ;;
+    *)      return "${_NO}"; ;;
+  esac;
+}
+
+
+########################################################################
+# string_del_append (<string>)
+#
+# Delete $_APPEND from the end of <string>, if any.
+#
+# As this is needed within string_sed_s() this function must use `sed'.
+#
+# Arguments: <string>: arbitrary sequence of characters.
+# Globals: in: $_APPEND
+# Output: the shortened string.
+# Return: $_GOOD if successful, $_BAD if no replace took place.
+#
+string_del_append()
+{
+  if test "$#" -ne 1; then
+    error "string_del_append() needs 1 argument.";
+    return "${_ERROR}";
+  fi;
+  case "$1" in
+    *"$_APPEND")
+      echo -n "$1" | sed -e 's/'"$_APPEND"'$//'
+      return "${_GOOD}";
+      ;;
+    *) return "${_BAD}"; ;;
   esac;
 }
 
@@ -1959,7 +2128,7 @@ string_del_leading()
   local _string;
   if test "$#" -ne 2; then
     error "string_del_leading() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   _string="$1";
   _del="$2";
@@ -1969,11 +2138,11 @@ string_del_leading()
     else
       return "${_BAD}";
     fi;
-  fi; 
+  fi;
   if is_empty "${_del}"; then
     echo -n "${_string}";
     return "${_GOOD}";
-  fi; 
+  fi;
   _result="$(string_sed_s "${_string}" '^'"${_del}" '')";
   echo -n "${_result}";
   if is_equal "${_result}" "${_string}"; then
@@ -2002,27 +2171,27 @@ string_del_trailing()
   local _string;
   if test "$#" -ne 2; then
     error "string_del_trailing() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   _string="$1";
   _del="$2";
   if is_empty "${_string}"; then
     if is_empty "${_del}"; then
-      return "$_GOOD";
+      return "${_GOOD}";
     else
-      return "$_BAD";
+      return "${_BAD}";
     fi;
-  fi; 
+  fi;
   if is_empty "${_del}"; then
     echo -n "${_string}";
-    return "$_GOOD";
-  fi; 
+    return "${_GOOD}";
+  fi;
   _result="$(string_sed_s "${_string}" "${_del}"'$' '')";
   echo -n "${_result}";
   if is_equal "${_result}" "${_string}"; then
-    return "$_BAD";
+    return "${_BAD}";
   else
-    return "$_GOOD";
+    return "${_GOOD}";
   fi;
 }
 
@@ -2042,11 +2211,11 @@ string_flatten()
 {
   if test "$#" -ne 2; then
     error "string_flatten() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   _string="$1";
   _char="$2";
-  string_replace_all "$_string" "${_char}${_char}\+" "$_char";
+  string_replace_all "${_string}" "${_char}${_char}\+" "${_char}";
 }
 
 
@@ -2068,7 +2237,7 @@ string_get_leading()
   local _string;
   if test "$#" -ne 2; then
     error "string_get_leading() needs 2 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   _string="$1";
   _get="$2";
@@ -2078,17 +2247,39 @@ string_get_leading()
     else
       return "${_BAD}";
     fi;
-  fi; 
+  fi;
   if is_empty "${_get}"; then
     echo -n "${_string}";
     return "${_GOOD}";
-  fi; 
+  fi;
   _result="$(string_sed_s "${_string}" '^\('"${_get}"'\).*$' '\1')";
   echo -n "${_result}";
   if is_equal "${_result}" "${_string}"; then
     return "${_BAD}";
   else
     return "${_GOOD}";
+  fi;
+}
+
+
+########################################################################
+# string_not_contains (<string> <part>)
+#
+# Test whether `part' is not substring of `string'.
+#
+# Arguments : 2 text arguments.
+# Return    : `0' if arg2 is substring of arg1, `1' otherwise.
+#
+string_not_contains()
+{
+  if test "$#" != 2; then
+    error 'string_not_contains() needs 2 arguments.';
+    return "${_ERROR}";
+  fi;
+  if string_contains "$1" "$2"; then
+    return "${_NO}";
+  else
+    return "${_YES}";
   fi;
 }
 
@@ -2110,7 +2301,7 @@ string_replace_all()
 {
   if test "$#" -ne 3; then
     error "string_replace_all() needs exactly 3 arguments.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   string_sed_s "$@" 'g';
 }
@@ -2151,17 +2342,17 @@ string_sed_s()
       ;;
     *)
       error "string_sed_s() needs 2, 3, or 4 arguments.";
-      return "$_ERROR";
+      return "${_ERROR}";
       ;;
   esac;
   _string="$1";
   _regex="$(_string_sed_s_esc_slash "$2")";
   if is_empty "${_string}"; then
-    return "$_OK";
+    return "${_OK}";
   fi;
   if is_empty "${_string}"; then
     error "string_sed_s(): empty regular expression";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   echo -n "${_string}" | \
     eval sed -e \'/"${_regex}"/s//"${_replace}"/"${_flag}"\';
@@ -2170,84 +2361,47 @@ string_sed_s()
 
 _string_sed_s_esc_slash()
 {
-  # Replace each slash `/' by `\/' outside of `[]' as in `sed s'.
-  # This makes the `sed' input independent of the delimiter '/'.
-  #
-  # Argument: 1, arbitrary string, may even contain line breaks.
-  # Output: the replaced string.
-  #
-  local _append;
-  local _last;
-  _append='Z';
-  if test "$#" -ne 1; then
-    error '_string_sed_s_esc_slash() requires 1 argument.';
-    return "$_ERROR";
-  fi;
-  if is_empty "$1"; then
-    return "$_GOOD";
-  fi;
-  # append a character to the argument to cover a final line break
-  unset IFS;
-  set -- "${1}${_append}";
-  # split at line breaks
-  IFS="${_NEWLINE}"
-  set -- $1;
-  unset IFS;   
-  while test "$#" -ge 2; do
-    _string_sed_s_esc_slash_line "$1";
-    shift;
-  done;
-  if test "$#" -ne 1; then
-    error "string_sed_s_esc_slash() unexpected \`$#'";
-    return "$_ERROR";
-  fi;
-  if is_equal "${_last}" "${_append}"; then
-    echo;
-    return "$_GOOD";
-  fi;
-  _last=$(echo -n "$1" | eval sed -e \''/'"${_append}"'$/s///'\');
-  _string_sed_s_esc_slash_line "${_last}";
-} # _string_sed_s_esc_slash()
-
-
-_string_sed_s_esc_slash_line()
-{
-  # In a text line replace each slash `/' by `\/', but not within `[]'.
+  # Replace each slash `/' by `\/', but not within `[]'.
+  # Global: $_APPEND
   local _beginning;
   local _bracketed;
   local _end;
   local _rest;
   local _result;
-  local _s;
-  if test "$#" -ne 1; then
-    error '_string_sed_s_esc_slash_line() requires 1 argument.';
-    return "$_ERROR";
+  local _str;
+#  if test "$#" -ne 1; then
+#    error '_string_sed_s_esc_slash() requires 1 argument.';
+#    return "${_ERROR}";
+#  fi;
+  if is_empty "$1"; then
+    return "${_GOOD}";
   fi;
-  _rest="$1";
+  if string_not_contains "$1" '/'; then
+    echo -n "$1";
+    return "${_GOOD}";
+  fi;
+  _rest="$1""${_APPEND}";
   _result='';
   while true; do
-    if ! string_contains "${_rest}" '/'; then
-      _result="${_result}${_rest}";
-      echo -n "${_result}";
-      return "$_GOOD";
+    if string_not_contains "${_rest}" '/'; then
+      string_del_append "${_result}${_rest}";
+      return "${_GOOD}";
     fi;
-    if ! string_contains "${_rest}" '['; then
-      _result="${_result}$(_string_sed_s_esc_slash_unbracketed \
-                           "${_rest}")";
-      echo -n "${_result}";
-      return "$_GOOD";
+    if string_not_contains "${_rest}" '['; then
+      string_del_append \
+        "${_result}$(_string_sed_s_esc_slash_unbracketed "${_rest}")";
+      return "${_GOOD}";
     fi;
     # split at first bracket.
     _beginning="$(echo -n "${_rest}" | sed -e '/^\([^[]*\).*$/s//\1/')";
     _rest="$(echo -n "${_rest}" | sed -e '/^[^[]*/s///')";
     if is_not_empty "${_beginning}"; then
-      _s="$(_string_sed_s_esc_slash_unbracketed "${_beginning}")";
-      _result="${_result}${_s}";
+      _str="$(_string_sed_s_esc_slash_unbracketed "${_beginning}")";
+      _result="${_result}${_str}";
     fi;
-    if ! string_contains "${_rest}" '/'; then
-      _result="${_result}${_rest}";
-      echo -n "${_result}";
-      return "$_GOOD";
+    if string_not_contains "${_rest}" '/'; then
+      string_del_append "${_result}${_rest}";
+      return "${_GOOD}";
     fi;
     case "${_rest}" in
       \[\]*\]*)			# `[]...]' construct
@@ -2271,15 +2425,13 @@ _string_sed_s_esc_slash_line()
       *)
         error \
           '_string_sed_s_esc_slash(): $_rest must start with a bracket';
-        return "$_ERROR";
+        return "${_ERROR}";
         ;;
     esac;
-    _result="${_result}${_bracketed}";
-    if ! string_contains "${_rest}" '/'; then
-      echo -n "${_result}${_rest}";
-      return "$_GOOD";
-    fi;
+    _result="$(string_del_trailing "${_result}${_bracketed}" \
+                                   "$_APPEND")";
   done;
+  return "${_BAD}";
 } # _string_sed_s_esc_slash_line()
 
 
@@ -2291,52 +2443,51 @@ _string_sed_s_esc_slash_unbracketed()
   # Output:   precede each slash in the argument by a backslash.
   # Return:   1, if argument has a `['; 0 otherwise.
   #
-  local _arg;
-  local _result;
-  local _separator;
-  local _i;
-  if test "$#" -ne 1; then
-    error \
-'_string_sed_s_esc_slash_unbracketed() needs 1 argument).';
-    return "$_ERROR";
-  fi;
-  _arg="$1";
-  if string_contains "$_arg" '['; then
-    error "_string_sed_s_esc_slash(): no bracket allowed in argument.";
-    return "$_ERROR";
-  fi;
-  case "${_arg}" in
-    /)
-      echo -n '\/';
-      return "$_OK";
-      ;;
+#   if test "$#" -ne 1; then
+#    error \
+#      '_string_sed_s_esc_slash_unbracketed() needs 1 argument).';
+#    return "${_ERROR}";
+#  fi;
+#  if string_contains "$1" '['; then
+#    error "_string_sed_s_esc_slash(): no bracket allowed in argument.";
+#    return "${_ERROR}";
+#  fi;
+  case "$1" in
     */*)
-      _result="";
-      # split argument at `/' into the positional parameters
-      IFS=/
-      set -- $(echo -n "${_arg}");
-      unset IFS;
-      _result="";
-      _separator="";
-      while test "$#" -ge 1; do
-        _result="${_result}${_separator}$1";
-        _separator='\/';
-        shift;
-      done;
-      case "${_arg}" in		# IFS character at the end is omitted
-        */)
-          _result="${_result}\/";
-          ;;
-      esac;
-      echo -n "${_result}";
-      return "$_OK";
+      echo -n "$1" | sed -e '\|/|s|/|\\/|g';
+      return "${_OK}";
       ;;
     *)
-      echo -n "${_arg}";
-      return "$_OK";
+      echo -n "$1";
+      return "${_OK}";
       ;;
   esac;
 } # _string_sed_s_esc_slash_unbracketed()
+
+
+########################################################################
+# string_split (<string> <separator>)
+#
+# In <string> escape white space and replace each <separator> by space.
+#
+# Arguments: 2: a <string> that is to be split into parts divided by
+#               <separator>
+# Output:    the resulting string
+#
+string_split()
+{
+  if test "$#" -ne 2; then
+    error "string_split() needs 2 arguments.";
+    return "${_ERROR}";
+  fi;
+  string_replace_all \
+    "$(string_replace_all \
+       "$1" \
+       '\(['"${_SPACE}${_TAB}"']\)' \
+       '\\\1')" \
+    "$2" \
+    ' ';
+}
 
 
 ########################################################################
@@ -2353,7 +2504,7 @@ tmp_cat()
 ########################################################################
 # tmp_create (<suffix>?)
 #
-# create temporary file 
+# create temporary file
 #
 # It's safe to use the shell process ID together with a suffix to
 # have multiple temporary files.
@@ -2373,25 +2524,26 @@ tmp_create()
 ########################################################################
 # to_tmp (<filename>)
 #
-# print file (decompressed) to the temporary cat file 
+# print file (decompressed) to the temporary cat file
+#
 to_tmp()
 {
   if test "$#" -ne 1; then
     error "to_tmp() expects 1 file argument."
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   if is_file "$1"; then
-    if is_yes "$_OPT_LOCATION"; then
+    if is_yes "${_OPT_LOCATION}"; then
       echo2 "$1";
     fi;
-    if is_yes "$_OPT_WHATIS"; then
+    if is_yes "${_OPT_WHATIS}"; then
       what_is "$1" >>"${_TMP_CAT}";
     else
       catz "$1" >>"${_TMP_CAT}";
     fi;
   else
     error "to_tmp(): could not read file \`$1'.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
 }
 
@@ -2486,42 +2638,42 @@ warning()
 
 ########################################################################
 # what_is (<filename>)
-what_is ()
+what_is()
 {
   local _res;
   local _dot;
   if test "$#" -ne 1; then
-    error "to_tmp() expects 1 file argument."
-    return "$_ERROR";
+    error "what_is() expects 1 file argument."
+    return "${_ERROR}";
   fi;
-  if ! is_file "$1"; then
-    error "to_tmp(): argument is not a readable file."
-    return "$_ERROR";
+  if is_not_file "$1"; then
+    error "what_is(): argument is not a readable file."
+    return "${_ERROR}";
   fi;
   _dot='^\.[ 	]*';
   echo '.br';
   echo "$1: ";
     echo '.br';
   echo -n '  ';
-  _res="$(catz "$1" | sed -e '/'"$_dot"'TH /p
+  _res="$(catz "$1" | sed -e '/'"${_dot}"'TH /p
 d')";
-  if is_not_empty "$_res"; then	# traditional man style
-    catz "$1" | sed -e '1,/'"$_dot"'SH/d' \
-              | sed -e '1,/'"$_dot"'SH/p
+  if is_not_empty "${_res}"; then	# traditional man style
+    catz "$1" | sed -e '1,/'"${_dot}"'SH/d' \
+              | sed -e '1,/'"${_dot}"'SH/p
 d' \
-              | sed -e '/'"$_dot"'SH/d';
-    return "$_GOOD";
+              | sed -e '/'"${_dot}"'SH/d';
+    return "${_GOOD}";
   fi;
-  _res="$(catz "$1" | grep "$_dot"'Dd ')";
-  if is_not_empty "$_res"; then	# BSD doc style
-    catz "$1" |  sed -e  '/'"$_dot"'Nd /p
+  _res="$(catz "$1" | grep "${_dot}"'Dd ')";
+  if is_not_empty "${_res}"; then	# BSD doc style
+    catz "$1" |  sed -e  '/'"${_dot}"'Nd /p
 d' \
               | sed -e '2q' \
-              | sed -e '/'"$_dot"'Nd *\(.*\)$/s//\1/';
-    return "$_GOOD";
+              | sed -e '/'"${_dot}"'Nd *\(.*\)$/s//\1/';
+    return "${_GOOD}";
   fi;
   echo 'is not a man page.';
-  return "$_BAD";
+  return "${_BAD}";
 }
 
 
@@ -2535,40 +2687,38 @@ d' \
 #
 where()
 {
-  local _p;
   local _file;
   local _arg;
+  local p;
   if test "$#" -ne 1; then
     error "where() needs 1 argument.";
-    return "$_ERROR";
+    return "${_ERROR}";
   fi;
   _arg="$1";
   if is_empty "${_arg}"; then
-    return "$_BAD";
+    return "${_BAD}";
   fi;
   case "${_arg}" in
     /*)
       if test -f "${_arg}" && test -x "${_arg}"; then
-        return "$_GOOD";
+        return "${_GOOD}";
       else
-        return "$_BAD";
+        return "${_BAD}";
       fi;
       ;;
   esac;
-  IFS=:
-  set -- ${PATH}
-  unset IFS
-  for _p in "$@"; do
-    case "${_p}" in
-      */) _file=${_p}${_arg}; ;;
-      *)  _file=${_p}/${_arg}; ;;
+  eval set -- "$(path_split "${PATH}")";
+  for p in "$@"; do
+    case "$p" in
+      */) _file=$p${_arg}; ;;
+      *)  _file=$p/${_arg}; ;;
     esac;
     if test -f "${_file}" && test -x "${_file}"; then
       echo -n "${_file}";
-      return "$_GOOD";
+      return "${_GOOD}";
     fi;
   done;
-  return "$_BAD";
+  return "${_BAD}";
 }
 
 
@@ -2635,6 +2785,7 @@ main_parse_args()
   eval set -- "$(normalize_args \
                 "${_OPTS_CMDLINE_SHORT}" "${_OPTS_CMDLINE_LONG}" "$@")";
 
+
 # By the call of `eval', unnecessary quoting was removed.  So the
 # positional shell parameters ($1, $2, ...) are now guaranteed to
 # represent an option or an argument to the previous option, if any;
@@ -2649,7 +2800,7 @@ main_parse_args()
     shift;
 
 
-# The special option `-W warg' can introduce a long groffer option 
+# The special option `-W warg' can introduce a long groffer option
 # (when `warg' starts with `--') or it is passed to groff (otherwise).
 #  It is worked on as follows.
 #
@@ -2660,7 +2811,7 @@ main_parse_args()
 #
 # Otherwise, `warg' starts with `--'; so check whether `warg' can
 # represent a long option by the following steps:
-# 
+#
 # 2) If `warg' is exactly a long groffer option without an argument then
 #    - store `warg' to `$_opt' (with the leading `--');
 #    - go to the option handler.
@@ -2696,13 +2847,13 @@ main_parse_args()
             _opt="--${_stripped}";
             if "$#" -eq 0; then
               error "no argument found for \`${_opt}'";
-              return "$_ERROR";
+              return "${_ERROR}";
             fi
             if is_equal "$1" '-W'; then
               shift;		# long option argument is now $1
             else
               error "no argument found for \`${_opt}'";
-              return "$_ERROR";
+              return "${_ERROR}";
             fi
           else			# test on `=' (step 4)
             case "${_stripped}" in
@@ -2719,12 +2870,12 @@ main_parse_args()
                   set -- "${_optarg}" "$@";
                 else
                   error "wrong option \`-W ${_warg}'";
-                  return "$_ERROR";
+                  return "${_ERROR}";
                 fi;
                 ;;
               *)
                 error "wrong option \`-W ${_warg}'";
-                return "$_ERROR";
+                return "${_ERROR}";
                 ;;
             esac;
           fi;
@@ -2786,7 +2937,7 @@ main_parse_args()
           _ADDOPTS_GROFF="${_ADDOPTS_GROFF} '${_opt}' '${_arg}'";
         else
           error "Unknown option : \`$1'";
-          return "$_ERROR";
+          return "${_ERROR}";
         fi;
         ;;
       --all)
@@ -2816,7 +2967,7 @@ main_parse_args()
             ;;
           *)
             error "only resoutions of 75 or 100 dpi are supported";
-            return "$_ERROR";
+            return "${_ERROR}";
             ;;
         esac;
         _string="-P -resolution -P '${_dpi}'";
@@ -2875,7 +3026,7 @@ main_parse_args()
             ;;
 	  *)
             error "unknown mode ${_arg}";
-            return "$_ERROR";
+            return "${_ERROR}";
             ;;
         esac;
         _OPT_MODE="${_mode}";
@@ -2925,30 +3076,29 @@ main_parse_args()
         ;;
       *)
         error "error on argument parsing : \`$*'";
-        return "$_ERROR";
+        return "${_ERROR}";
         ;;
     esac;
   done;
   shift;			# remove `--' argument
-  # Remaining arguments are file names (filespecs).
 
-  # Save filespecs to $_FILEARGS; must be retrieved with
-  # `eval set -- $_FILEARGS'
+  # Remaining arguments are file names (filespecs).
+  # Save them to $_FILEARGS
   if test "$#" -eq 0; then         # use "-" for standard input
     _FILEARGS="'-'";
     save_stdin;
   else
-    if is_yes "$_OPT_APROPOS"; then
+    if is_yes "${_OPT_APROPOS}"; then
       apropos "$@";
       _code="$?";
       clean_up;
-      exit "$_code";
+      exit "${_code}";
     fi;
 
     _FILEARGS="";
     _stdin_done="no";
-    while test "$#" -gt 0 && is_not_yes "${_stdin_done}"; do
-      if is_equal "$1" '-'; then
+    for i in "$@"; do
+      if is_equal "$1" '-' && is_not_yes "${_stdin_done}"; then
         save_stdin;
         _stdin_done="yes";
       fi;
@@ -2956,6 +3106,7 @@ main_parse_args()
       shift;
     done;
   fi;
+  # $_FILEARGS must be retrieved with `eval set -- $_FILEARGS'
 }
 
 
@@ -2977,7 +3128,7 @@ main_set_mode()
     X)
       if is_empty "${DISPLAY}"; then
         error "you must be in X Window for this mode.";
-        return "$_ERROR";
+        return "${_ERROR}";
       fi;
       _DISPLAY_MODE="X";
       ;;
@@ -2988,7 +3139,7 @@ main_set_mode()
           ;;
         X*)
           error "cannot display X device in a text terminal."
-          return "$_ERROR";
+          return "${_ERROR}";
           ;;
         *)
           _DISPLAY_MODE="device";
@@ -3007,7 +3158,7 @@ main_set_mode()
         X*)
           if is_empty "${DISPLAY}"; then
             error "cannot display X device in a text terminal."
-            return "$_ERROR";
+            return "${_ERROR}";
           else
             _DISPLAY_MODE="X";
           fi;
@@ -3035,7 +3186,7 @@ main_parse_MANOPT()
   local _arg;
   local _opt;
   if is_not_yes "${_MAN_ENABLE}"; then
-    return "$_GOOD";
+    return "${_GOOD}";
   fi;
   eval set -- "$(normalize_args "${_OPTS_MAN_SHORT}" \
                  "${_OPTS_MAN_LONG}" "${MANOPT}")";
@@ -3044,7 +3195,7 @@ main_parse_MANOPT()
     shift;
     case "${_opt}" in
       -a|--all)
-        _OPT_ALL="yes";
+        _MANOPT_ALL="yes";
         ;;
       -D|--default)
         # undo all man configuration so far (env vars and options)
@@ -3099,7 +3250,7 @@ main_parse_MANOPT()
 # Process filespec arguments in $_FILEARGS.
 #
 # Globals:
-#   in: $_FILEARGS
+#   in: $_FILEARGS (process with `eval set -- "$_FILEARGS"')
 #
 main_do_fileargs()
 {
@@ -3107,42 +3258,53 @@ main_do_fileargs()
   local _name;
   local _ok;
   local _sec;
-  eval set -- ${_FILEARGS};
+  eval set -- "${_FILEARGS}";
   unset _FILEARGS;
   # temporary storage of all input to $_TMP_CAT
   while test "$#" -gt 0; do
-    _filespec="$1";
-    shift;
-
     # test for `s name' arguments, with `s' a 1-char standard section
-    while true; do			# just to allow `break'
-      _sec="$_filespec";
-      if ! string_contains "$_MAN_AUTO_SEC" "$_sec"; then
-        break;
-      fi;
-      case "$_sec" in
-        [^\ ]) do_nothing; ;;	# non-space character
-        *) break; ;;
-      esac;
+    while true; do			# `break' means not such an s
       if test "$#" -le 0; then
         break;
       fi;
-      _name="$1";
-      case "$_name" in
-        */*|man:*|*\(*\)|*."$_sec") break; ;;
+      _filespec="$1";
+      shift;
+      case "${_filespec}" in
+        '') continue; ;;
+        '-')
+          register_file '-';
+          continue;
+          ;;
+        ?) 
+          if test "$#" -le 0; then
+            break;
+          fi;
+          _sec="${_filespec}";
+          if string_not_contains "${_MAN_AUTO_SEC}" "${_sec}"; then
+            break;
+          fi;
+          _name="$1";
+          case "${_name}" in
+            */*) break; ;;
+            man:*) break; ;;
+            *\(*\)) break; ;;
+            *."${_sec}") break; ;;
+          esac;
+          if do_filearg "man:${_name}(${_sec})"; then
+            continue;
+          else
+            break;
+          fi;
+          ;;
+        *) break; ;;
       esac;
-      if do_filearg "man:${_name}(${_sec})"; then
-        shift;
-        _filespec="$1";
-        continue;
-      else
-        break;
-      fi;
     done;			# end of `s name' test
- 
-    do_filearg "$_filespec";
-    if test "$?" != "$_GOOD"; then
-      echo2 "\`${1}' is neither a file nor a man-page.";
+    do_filearg "${_filespec}";
+    if test "$?" != "${_GOOD}"; then
+      warning "\`${_filespec}' is neither a file nor a man-page.";
+    fi;
+    if test "$#" -eq 0; then
+      return "$_OK";
     fi;
   done;
 }
@@ -3165,10 +3327,10 @@ main_display()
   local _groggy;
   local _title;
   local _old_tmp;
-  local _p;
   local _pager;
   export _addopts;
   export _groggy;
+  local p;
   case "${_DISPLAY_MODE}" in
     source)
       tmp_cat;
@@ -3177,10 +3339,13 @@ main_display()
     intermediate-output)
       _options="-Z";
       if is_not_empty "${_OPT_DEVICE}"; then
-        _options="$_options -T'${_OPT_DEVICE}'";
+        _options="${_options} -T'${_OPT_DEVICE}'";
       fi;
+
+      _groggy="$(eval grog "${_options}" "${_ADDOPTS_GROFF}" \
+                           "${_TMP_CAT}" )";
       _groggy="$(tmp_cat | eval grog "${_options}")";
-      tmpcat | eval "${_groggy}" "${_ADDOPTS_GROFF}";
+      tmp_cat | eval "${_groggy}" "${_ADDOPTS_GROFF}";
       clean_up;
       ;;
     device)
@@ -3192,9 +3357,9 @@ main_display()
       _addopts="${_ADDOPTS_GROFF} ${_ADDOPTS_POST} ${_ADDOPTS_X}";
       if is_not_empty "${_REGISTERED_TITLE}"; then
         _title="${_REGISTERED_TITLE}";
-        _addopts="-P -title -P '${_title}' $_addopts";
+        _addopts="-P -title -P '${_title}' ${_addopts}";
       fi;
-      if ! is_empty "${_OPT_DEVICE}"; then
+      if is_not_empty "${_OPT_DEVICE}"; then
         _addopts="-T '${_OPT_DEVICE}' ${_addopts}";
       fi;
       clean_up_secondary;
@@ -3207,7 +3372,7 @@ main_display()
         _old_tmp="${_TMP_CAT}";
         _TMP_CAT="${_TMP_PREFIX}${_PROCESS_ID}";
         rm -f "${_TMP_CAT}";
-        mv "$_old_tmp" "${_TMP_CAT}";
+        mv "${_old_tmp}" "${_TMP_CAT}";
         cat "${_TMP_CAT}" | \
         (
           clean_up()
@@ -3222,9 +3387,10 @@ main_display()
       _addopts="${_ADDOPTS_GROFF} ${_ADDOPTS_POST}";
       _groggy="$(tmp_cat | grog -Tlatin1)";
       _pager="";
-      for _p in "${_OPT_PAGER}" "${PAGER}" "less" "${_MANOPT_PAGER}"; do
-        if is_prog "${_p}"; then
-          _pager="${_p}";
+# TODO ?
+      for p in "${_OPT_PAGER}" "${PAGER}" "less" "${_MANOPT_PAGER}"; do
+        if is_prog "$p"; then
+          _pager="$p";
           break;
         fi;
       done;
