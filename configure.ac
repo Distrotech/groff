@@ -26,7 +26,7 @@ AC_SUBST([SH_SCRIPT_SED_CMD])
 
 # checks for headers
 AC_CHECK_HEADERS([stdlib.h unistd.h dirent.h limits.h sys/dir.h \
-                  string.h strings.h math.h sys/time.h])
+                  string.h strings.h math.h sys/time.h direct.h process.h])
 GROFF_ISC_SYSV3
 GROFF_POSIX
 
@@ -93,6 +93,7 @@ GROFF_PNMTOPS_NOSETPAGE
 
 AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
 AC_CONFIG_FILES([Makefile doc/Makefile src/xditview/Imakefile])
+AC_CONFIG_FILES([test-groff], [chmod +x test-groff])
 AC_OUTPUT
 
 AC_MSG_NOTICE([

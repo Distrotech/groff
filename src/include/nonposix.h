@@ -36,13 +36,23 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 # endif
+# ifndef STDIN_FILENO
+#  define STDIN_FILENO	0
+#  define STDOUT_FILENO	1
+#  define STDERR_FILENO	2
+# endif
+# ifdef HAVE_DIRECT_H
+#  include <direct.h>
+# endif
+# ifdef HAVE_PROCESS_H
+#  include <process.h>
+# endif
 # if defined(_MSC_VER) || defined(__MINGW32__)
 #  define POPEN_RT	"rt"
 #  define POPEN_WT	"wt"
 #  define popen(c,m)	_popen(c,m)
 #  define pclose(p)	_pclose(p)
 #  define pipe(pfd)	_pipe((pfd),0,_O_BINARY|_O_NOINHERIT)
-#  define getpid()	(1)
 #  define mkdir(p,m)	_mkdir(p)
 #  define setmode(f,m)	_setmode(f,m)
 #  define WAIT(s,p,m)	_cwait(s,p,m)

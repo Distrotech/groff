@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2003
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -33,6 +34,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /* for isatty() */
 #include "posix.h"
+#include "nonposix.h"
 
 extern "C" {
   const char *Version_string;

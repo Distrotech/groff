@@ -3765,7 +3765,7 @@ void suppress_node::tprint(troff_output_file *out)
     const char *tem = last_image_filename;
     last_image_filename = strsave(filename.contents());
     if (tem)
-      a_delete(tem);
+      a_delete tem;
     last_image_id = image_id;
     // printf("start of image and page = %d\n", current_page);
   }

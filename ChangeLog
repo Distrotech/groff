@@ -1,3 +1,28 @@
+2003-12-29  Werner LEMBERG  <wl@gnu.org>
+
+	More fixes for MSVC compiler.
+
+	* doc/Makefile.sub, contrib/mom/Makefile.sub (GROFF_BIN_PATH): Use
+	$(SEP).
+
+	* src/include/nonposix.h (STDIN_FILENO, STDOUT_FILENO,
+	STDERR_FILENO) [_MSC_VER]: Define conditionally.
+	(getpid) [_MSC_VER]: Remove.
+	Include direct.h and process.h conditionally.
+
+	* src/roff/troff/node.cpp (suppress_node::tprint): Don't use
+	parentheses for a_delete.
+
+	* src/utils/lookbib/lookbib.cpp: Include nonposix.h.
+
+	* test-groff: Replaced with...
+	* test-groff.in: This new template to handle path separator
+	properly.
+
+	* configure.ac: Check for direct.h and process.h.
+	Generate test-groff script.
+	* configure, src/include/config.hin: Regenerated.
+
 2003-12-28  Werner LEMBERG  <wl@gnu.org>
 
 	Add integral extension glyph.
