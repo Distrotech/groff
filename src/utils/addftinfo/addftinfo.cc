@@ -67,7 +67,8 @@ static struct {
 int main(int argc, char **argv)
 {
   program_name = argv[0];
-  for (int i = 1; i < argc; i++) {
+  int i;
+  for (i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "-v") || !strcmp(argv[i],"--version"))
       version();
     if (!strcmp(argv[i],"--help")) {
@@ -99,7 +100,6 @@ int main(int argc, char **argv)
   param.comma_depth = DEFAULT_COMMA_DEPTH;
   param.desc_depth = DEFAULT_DESC_DEPTH;
   param.body_depth = DEFAULT_BODY_DEPTH;
-  int i;
   for (i = 1; i < argc && argv[i][0] == '-'; i++) {
     if (argv[i][1] == '-' && argv[i][2] == '\0') {
       i++;
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
     }
     if (i + 1 >= argc)
       usage();
-    int j;
+    size_t j;
     for (j = 0;; j++) {
       if (j >= sizeof(param_table)/sizeof(param_table[0]))
 	fatal("parameter `%1' not recognized", argv[i] + 1);

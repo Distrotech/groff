@@ -521,8 +521,8 @@ void dvi_printer::moveto(int h, int v)
 void dvi_printer::draw(int code, int *p, int np, const environment *env)
 {
   if (code == 'l') {
-    int x, y;
-    int height = 0, width;
+    int x = 0, y = 0;
+    int height = 0, width = 0;
     int thickness;
     if (line_thickness < 0)
       thickness = env->size*RES_7227*linewidth/1000;

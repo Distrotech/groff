@@ -187,8 +187,6 @@ char_buffer::~char_buffer()
 
 int char_buffer::read_file (FILE *fp)
 {
-  int i=0;
-  unsigned int old_used;
   int n;
 
   while (! feof(fp)) {
@@ -456,7 +454,6 @@ void char_buffer::skip_to_newline (char_block **t, int *i)
 void char_buffer::write_file_troff (void)
 {
   char_block *t=head;
-  int r;
   int         i=0;
 
   if (t != 0) {
@@ -613,19 +610,6 @@ static void removeAllPages (void)
 }
 
 /*
- *  abs - returns the absolute value.
- */
-
-int abs (int x)
-{
-  if (x < 0) {
-    return( -x );
-  } else {
-    return( x );
-  }
-}
-
-/*
  *  min - returns the minimum of two numbers.
  */
 
@@ -712,7 +696,6 @@ static imageList listOfImages;  // list of images defined by the region file.
 void char_buffer::write_file_html (void)
 {
   char_block *t      =head;
-  char       *name;
   int         i=0;
 
   if (t != 0) {
@@ -760,7 +743,6 @@ void char_buffer::write_file_html (void)
 static void generateImages (char *regionFileName)
 {
   pushBackBuffer *f=new pushBackBuffer(regionFileName);
-  char ch;
 
   while (f->putPB(f->getPB()) != eof) {
     if (f->isString("grohtml-info:page")) {
@@ -775,10 +757,10 @@ static void generateImages (char *regionFileName)
       listOfImages.add(x1, y1, x2, y2, page, res, maxx, name);
       while ((f->putPB(f->getPB()) != '\n') &&
 	     (f->putPB(f->getPB()) != eof)) {
-	ch = f->getPB();
+	(void)f->getPB();
       }
       if (f->putPB(f->getPB()) == '\n') {
-	ch = f->getPB();
+	(void)f->getPB();
       }
     } else {
       /*
@@ -1034,7 +1016,7 @@ int scanArguments (int argc, char **argv)
 	       || (strcmp(argv[i], "-?") == 0)) {
       usage(stdout);
       exit(0);
-    } else if (strcmp(argv[i], "troff") == 0) {
+    } else if (strcmp(argv[i], troff_command) == 0) {
       /* remember troff argument number */
       troff_arg = i;
 #if defined(DEBUGGING)

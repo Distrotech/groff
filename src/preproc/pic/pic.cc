@@ -3217,7 +3217,8 @@ void define_variable(const char *name, double val)
   if (strcmp(name, "scale") == 0) {
     // When the scale changes, reset all scaled pre-defined variables to
     // their default values.
-    for (int i = 0; i < sizeof(defaults_table)/sizeof(defaults_table[0]); i++) 
+    for (unsigned int i = 0;
+	 i < sizeof(defaults_table)/sizeof(defaults_table[0]); i++) 
       if (defaults_table[i].scaled)
 	define_variable(defaults_table[i].name, val*defaults_table[i].val);
   }
@@ -3236,7 +3237,8 @@ void parse_init()
 
 void reset(const char *nm)
 {
-  for (int i = 0; i < sizeof(defaults_table)/sizeof(defaults_table[0]); i++)
+  for (unsigned int i = 0;
+       i < sizeof(defaults_table)/sizeof(defaults_table[0]); i++)
     if (strcmp(nm, defaults_table[i].name) == 0) {
       double val = defaults_table[i].val;
       if (defaults_table[i].scaled) {
@@ -3256,7 +3258,8 @@ void reset_all()
   // aren't scaled because `scale' is not scaled, and changing the
   // value of `scale' will reset all the pre-defined variables that
   // are scaled.
-  for (int i = 0; i < sizeof(defaults_table)/sizeof(defaults_table[0]); i++)
+  for (unsigned int i = 0;
+       i < sizeof(defaults_table)/sizeof(defaults_table[0]); i++)
     if (!defaults_table[i].scaled)
       define_variable(defaults_table[i].name, defaults_table[i].val);
 }

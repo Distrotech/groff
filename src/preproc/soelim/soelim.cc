@@ -30,7 +30,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "stringclass.h"
 #include "nonposix.h"
 
-static int include_list_length;
+static size_t include_list_length;
 static char **include_list;
 
 int compatible_flag = 0;
@@ -183,18 +183,18 @@ int do_file(const char *filename)
     {
       char *path = include_list[j];
       if (0 == strcmp(path, "."))
-      	whole_filename = filename;
+	whole_filename = filename;
       else
-        whole_filename = string(path) + "/" + filename;
+	whole_filename = string(path) + "/" + filename;
       whole_filename += '\0';
       errno = 0;
       fp = fopen(whole_filename.contents(), "r");
       if (fp != 0)
-      	break;
+	break;
       if (errno != ENOENT) {
-        error("can't open `%1': %2",
+	error("can't open `%1': %2",
 	      whole_filename.contents(), strerror(errno));
-        return 0;
+	return 0;
       }
     }
     if (j >= include_list_length)

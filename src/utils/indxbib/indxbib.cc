@@ -232,7 +232,8 @@ int main(int argc, char **argv)
   else
     name_max = dir_name_max(".");
   const char *filename = p ? p + 1 : basename;
-  if (name_max >= 0 && strlen(filename) + sizeof(INDEX_SUFFIX) - 1 > name_max)
+  if (name_max >= 0 &&
+      long(strlen(filename) + sizeof(INDEX_SUFFIX) - 1) > name_max)
     fatal("`%1.%2' is too long for a filename", filename, INDEX_SUFFIX);
   if (p) {
     p++;
@@ -502,7 +503,7 @@ static int do_file(const char *filename)
     // every CR character before a Newline.
     if (c == '\r') {
       int peek = getc(fp);
-      if (peek = '\n') {
+      if (peek == '\n') {
 	byte_count++;
 	c = peek;
       }
@@ -784,7 +785,7 @@ static void write_hash_table()
 
 static void fwrite_or_die(const void *ptr, int size, int nitems, FILE *fp)
 {
-  if (fwrite(ptr, size, nitems, fp) != nitems)
+  if (fwrite(ptr, size, nitems, fp) != (size_t)nitems)
     fatal("fwrite failed: %1", strerror(errno));
 }
 

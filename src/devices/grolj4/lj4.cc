@@ -123,7 +123,8 @@ void lj4_font::handle_unknown_font_command(const char *command,
 					   const char *arg,
 					   const char *filename, int lineno)
 {
-  for (int i = 0; i < sizeof(command_table)/sizeof(command_table[0]); i++) {
+  for (unsigned int i = 0;
+       i < sizeof(command_table)/sizeof(command_table[0]); i++) {
     if (strcmp(command, command_table[i].s) == 0) {
       if (arg == 0)
 	fatal_with_file_and_line(filename, lineno,
@@ -568,7 +569,8 @@ printer *make_printer()
 static
 int lookup_paper_size(const char *s)
 {
-  for (int i = 0; i < sizeof(paper_table)/sizeof(paper_table[0]); i++) {
+  for (unsigned int i = 0;
+       i < sizeof(paper_table)/sizeof(paper_table[0]); i++) {
     // FIXME Perhaps allow unique prefix.
     if (strcasecmp(s, paper_table[i].name) == 0)
       return i;

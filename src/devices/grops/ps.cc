@@ -1248,7 +1248,7 @@ void ps_printer::special(char *arg, const environment *env, char type)
     error("X command without `ps:' tag ignored");
     return;
   }
-  for (int i = 0; i < sizeof(proc_table)/sizeof(proc_table[0]); i++)
+  for (unsigned int i = 0; i < sizeof(proc_table)/sizeof(proc_table[0]); i++)
     if (strncmp(command, proc_table[i].name, p - command) == 0) {
       (this->*(proc_table[i].proc))(p, env);
       return;

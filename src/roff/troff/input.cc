@@ -3505,7 +3505,7 @@ void do_define_macro(define_mode mode, int indirect)
     }
     if (bol && c == '.') {
       const char *s = term.contents();
-      int d;
+      int d = 0;
       // see if it matches term
       int i;
       for (i = 0; s[i] != 0; i++) {
@@ -6034,12 +6034,14 @@ struct string_list {
   string_list(const char *ss) : s(ss), next(0) {}
 };
 
+#if 0
 static void prepend_string(const char *s, string_list **p)
 {
   string_list *l = new string_list(s);
   l->next = *p;
   *p = l;
 }
+#endif
 
 static void add_string(const char *s, string_list **p)
 {
@@ -6638,7 +6640,7 @@ static struct {
 
 static int lookup_warning(const char *name)
 {
-  for (int i = 0;
+  for (unsigned int i = 0;
        i < sizeof(warning_table)/sizeof(warning_table[0]);
        i++)
     if (strcmp(name, warning_table[i].name) == 0)

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -26,9 +26,11 @@ extern "C" {
   const char *if_to_a(int, int);
 }
 
-/* stdio.h on IRIX and OSF/1 include getopt.h */
+/* stdio.h on IRIX, OSF/1, and UWIN includes getopt.h */
 
-#if !(defined(__sgi) || (defined(__osf__) && defined(__alpha)))
+#if !(defined(__sgi) \
+      || (defined(__osf__) && defined(__alpha)) \
+      || defined(_UWIN))
 #include <groff-getopt.h>
 #endif
 

@@ -151,7 +151,7 @@ void lbp_font::handle_unknown_font_command(const char *command,
 
 static void wp54charset()
 {
-  int i;
+  unsigned int i;
   
   lbpputs("\033[714;100;29;0;32;120.}");
   for (i = 0; i < sizeof(symset) ; i++) lbpputc(symset[i]);
@@ -561,7 +561,7 @@ static struct
 
 static int set_papersize(const char *papersize)
 {
-  int i;
+  unsigned int i;
 
   // First test for a standard (i.e. supported directly by the printer)
   // papersize

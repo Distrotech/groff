@@ -731,7 +731,7 @@ format *process_format(table_input &in, options *opt,
     int pre_vline = 0;
     int got_format = 0;
     int got_period = 0;
-    format_type t;
+    format_type t = FORMAT_LEFT;
     for (;;) {
       if (c == EOF) {
 	error("end of input while processing format");
