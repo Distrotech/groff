@@ -30,7 +30,7 @@ export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
 _PROGRAM_VERSION='0.9.2';
-_LAST_UPDATE='12 Oct 2002';
+_LAST_UPDATE='14 Oct 2002';
 
 ########################################################################
 # Determine the shell under which to run this script;
@@ -44,9 +44,7 @@ if test "${_groffer_run}" != 'second'; then
   export _groffer_run;
   export _this;
 
-
-  #_this="@BINDIR@/${_PROGRAM_NAME}";
-  _this='groffer.sh';
+  _this="@BINDIR@/${_PROGRAM_NAME}";
 
   ###########################
   # _get_opt_shell ("$@")

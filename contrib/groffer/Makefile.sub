@@ -34,6 +34,7 @@ all: groffer
 groffer: groffer.sh
 	rm -f $@; \
 	sed -e "s|@g@|$(g)|g" \
+	    -e "s|@BINDIR@|$(bindir)|" \
 	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/groffer.sh >$@; \
 	chmod +x $@
