@@ -240,11 +240,16 @@ public:
   static int peek_char();
   static int get_location(const char **fnp, int *lnp);
   static void push_back(unsigned char c, int was_bol = 0);
-  static inline int bol() { return bol_flag; }
+  static int bol();
 };
 
 input *input_stack::current_input = 0;
 int input_stack::bol_flag = 0;
+
+inline int input_stack::bol()
+{
+  return bol_flag;
+}
 
 void input_stack::clear()
 {
@@ -359,6 +364,7 @@ void interpolate_macro_with_args(const char *body)
     argv[i] = 0;
   int level = 0;
   int c;
+  enum { NORMAL, IN_STRING, IN_STRING_QUOTED } state = NORMAL;
   do {
     token_buffer.clear();
     for (;;) {
@@ -367,7 +373,7 @@ void interpolate_macro_with_args(const char *body)
 	lex_error("end of input while scanning macro arguments");
 	break;
       }
-      if (level == 0 && (c == ',' || c == ')')) {
+      if (state == NORMAL && level == 0 && (c == ',' || c == ')')) {
 	if (token_buffer.length() > 0) {
 	  token_buffer +=  '\0';
 	  argv[argc] = strsave(token_buffer.contents());
@@ -378,10 +384,25 @@ void interpolate_macro_with_args(const char *body)
 	break;
       }
       token_buffer += char(c);
-      if (c == '(')
-	level++;
-      else if (c == ')')
-	level--;
+      switch (state) {
+      case NORMAL:
+	if (c == '"')
+	  state = IN_STRING;
+	else if (c == '(')
+	  level++;
+	else if (c == ')')
+	  level--;
+	break;
+      case IN_STRING:
+	if (c == '"')
+	  state = NORMAL;
+	else if (c == '\\')
+	  state = IN_STRING_QUOTED;
+	break;
+      case IN_STRING_QUOTED:
+	state = IN_STRING;
+	break;
+      }
     }
   } while (c != ')' && c != EOF);
   input_stack::push(new argument_macro_input(body, argc, argv));
@@ -1174,7 +1195,7 @@ int get_delimited()
 {
   token_buffer.clear();
   int c = input_stack::get_char();
-  while (c == ' ' || c == '\n')
+  while (c == ' ' || c == '\t' || c == '\n')
     c = input_stack::get_char();
   if (c == EOF) {
     lex_error("missing delimiter");
@@ -1361,6 +1382,7 @@ void do_for(char *var, double from, double to, int by_is_multiplicative,
 
 void do_copy(const char *filename)
 {
+  errno = 0;
   FILE *fp = fopen(filename, "r");
   if (fp == 0) {
     lex_error("can't open `%1': %2", filename, strerror(errno));
@@ -1604,6 +1626,7 @@ int simple_file_input::get_location(const char **fnp, int *lnp)
 
 void copy_file_thru(const char *filename, const char *body, const char *until)
 {
+  errno = 0;
   FILE *fp = fopen(filename, "r");
   if (fp == 0) {
     lex_error("can't open `%1': %2", filename, strerror(errno));

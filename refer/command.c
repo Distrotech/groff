@@ -153,6 +153,7 @@ void input_stack::push_file(const char *fn)
     fn = "<standard input>";
   }
   else {
+    errno = 0;
     fp = fopen(fn, "r");
     if (fp == 0) {
       error("can't open `%1': %2", fn, strerror(errno));

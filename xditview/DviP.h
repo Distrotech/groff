@@ -72,6 +72,8 @@ typedef struct _dviFontList {
 	char			*dvi_name;
 	char			*x_name;
 	int			dvi_number;
+	Boolean			initialized;
+	Boolean			scalable;
 	DviFontSizeList		*sizes;
 	DviCharNameMap		*char_map;
 	DeviceFont		*device_font;

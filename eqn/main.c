@@ -24,6 +24,9 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 extern int yyparse();
 
+static char *delim_search(char *, int);
+static int inline_equation(FILE *, string &, string &);
+
 char start_delim = '\0';
 char end_delim = '\0';
 int non_empty_flag;
@@ -65,7 +68,6 @@ void do_file(const char *filename)
   current_filename = filename;
   current_lineno = 0;
   while (read_line(fp, &linebuf)) {
-    int i;
     if (linebuf.length() >= 4
 	&& linebuf[0] == '.' && linebuf[1] == 'l' && linebuf[2] == 'f'
 	&& (linebuf[3] == ' ' || linebuf[3] == '\n' || compatible_flag)) {
@@ -111,65 +113,124 @@ void do_file(const char *filename)
       printf(".lf %d\n", current_lineno);
       put_string(linebuf, stdout);
     }
-    else if (start_delim != '\0' && (i = linebuf.search(start_delim)) >= 0
-	     && (i == 0 || linebuf[i - 1] != '\\')) {
-      start_string();
-      linebuf += '\0';
-      char *ptr = &linebuf[0];
-      inline_flag = 1;
-      for (;;) {
-	char *start = strchr(ptr, start_delim);
-	if (start == 0) {
-	  char *nl = strchr(ptr, '\n');
-	  if (nl != 0)
-	    *nl = '\0';
-          do_text(ptr);
-	  break;
-        }
-	if (no_newline_in_delim_flag && strchr(start + 1, end_delim) == 0) {
-	  error("missing `%1'", end_delim);
-	  char *nl = strchr(start + 1, '\n');
-	  if (nl != 0)
-	    *nl = '\0';
-	  do_text(ptr);
-	  break;
-	}
-	int start_lineno = current_lineno;
-	*start = '\0';
-	do_text(ptr);
-	ptr = start + 1;
-	str.clear();
-	for (;;) {
-	  char *end = strchr(ptr, end_delim);
-	  if (end != 0) {
-	    *end = '\0';
-	    str += ptr;
-	    ptr = end + 1;
-	    break;
-	  }
-	  str += ptr;
-	  if (!read_line(fp, &linebuf))
-	    fatal("end of file before `%1'", end_delim);
-	  linebuf += '\0';
-	  ptr = &linebuf[0];
-	}
-	str += '\0';
-	init_lex(str.contents(), current_filename, start_lineno);
-	yyparse();
-      }
-      printf(".lf %d\n", current_lineno);
-      output_string();
-      restore_compatibility();
-      printf(".lf %d\n", current_lineno + 1);
-    }
-    else {
+    else if (start_delim != '\0' && linebuf.search(start_delim) >= 0
+	     && inline_equation(fp, linebuf, str))
+      ;
+    else
       put_string(linebuf, stdout);
-    }
   }
   if (fp != stdin)
     fclose(fp);
   current_filename = 0;
   current_lineno = 0;
+}
+
+/* Handle an inline equation.  Return 1 if it was an inline equation,
+0 otherwise. */
+
+static int inline_equation(FILE *fp, string &linebuf, string &str)
+{
+  linebuf += '\0';
+  char *ptr = &linebuf[0];
+  char *start = delim_search(ptr, start_delim);
+  if (!start) {
+    // It wasn't a delimiter after all.
+    linebuf.set_length(linebuf.length() - 1); // strip the '\0'
+    return 0;
+  }
+  start_string();
+  inline_flag = 1;
+  for (;;) {
+    if (no_newline_in_delim_flag && strchr(start + 1, end_delim) == 0) {
+      error("missing `%1'", end_delim);
+      char *nl = strchr(start + 1, '\n');
+      if (nl != 0)
+	*nl = '\0';
+      do_text(ptr);
+      break;
+    }
+    int start_lineno = current_lineno;
+    *start = '\0';
+    do_text(ptr);
+    ptr = start + 1;
+    str.clear();
+    for (;;) {
+      char *end = strchr(ptr, end_delim);
+      if (end != 0) {
+	*end = '\0';
+	str += ptr;
+	ptr = end + 1;
+	break;
+      }
+      str += ptr;
+      if (!read_line(fp, &linebuf))
+	fatal("end of file before `%1'", end_delim);
+      linebuf += '\0';
+      ptr = &linebuf[0];
+    }
+    str += '\0';
+    init_lex(str.contents(), current_filename, start_lineno);
+    yyparse();
+    start = delim_search(ptr, start_delim);
+    if (start == 0) {
+      char *nl = strchr(ptr, '\n');
+      if (nl != 0)
+	*nl = '\0';
+      do_text(ptr);
+      break;
+    }
+  }
+  printf(".lf %d\n", current_lineno);
+  output_string();
+  restore_compatibility();
+  printf(".lf %d\n", current_lineno + 1);
+  return 1;
+}
+
+/* Search for delim.  Skip over number register and string names etc. */
+
+static char *delim_search(char *ptr, int delim)
+{
+  while (*ptr) {
+    if (*ptr == delim)
+      return ptr;
+    if (*ptr++ == '\\') {
+      switch (*ptr) {
+      case 'n':
+      case '*':
+      case 'f':
+      case 'g':
+      case 'k':
+	switch (*++ptr) {
+	case '\0':
+	case '\\':
+	  break;
+	case '(':
+	  if (*++ptr != '\\' && *ptr != '\0' && *++ptr != '\\' && *ptr != '\0')
+	      ptr++;
+	  break;
+	case '[':
+	  while (*++ptr != '\0')
+	    if (*ptr == ']') {
+	      ptr++;
+	      break;
+	    }
+	  break;
+	default:
+	  ptr++;
+	  break;
+	}
+	break;
+      case '\\':
+      case '\0':
+	break;
+      default:
+	ptr++;
+	break;
+      }
+    }
+  }
+  return 0;
 }
 
 void usage()
@@ -221,9 +282,13 @@ int main(int argc, char **argv)
       break;
     case 's':
       {
-	int n;
-	if (sscanf(optarg, "%d", &n) == 1)
-	  set_gsize(n);
+	const char *ptr = optarg;
+	if (*ptr == '+' || *ptr == '-')
+	  ptr++;
+	while (csdigit(*ptr))
+	  ptr++;
+	if (*ptr == '\0')
+	  set_gsize(optarg);
 	else
 	  error("bad size `%1'", optarg);
       }

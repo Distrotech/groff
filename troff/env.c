@@ -53,7 +53,7 @@ static int next_line_number = 0;
 charinfo *field_delimiter_char;
 charinfo *padding_indicator_char;
 
-
+int translate_space_to_dummy = 0;
 
 class pending_output_line {
   node *nd;
@@ -314,6 +314,7 @@ void environment::add_node(node *n)
   else {
     if (line == 0) {
       if (discarding && n->discardable()) {
+	// XXX possibly: input_line_start -= n->width();
 	delete n;
 	return;
       }
@@ -405,7 +406,9 @@ void environment::space_newline()
   int ss = space_size;
   if (node_list_ends_sentence(line) == 1)
     ss += sentence_space_size;
-  hunits x = scale(env_space_width(this), ss, 12);
+  hunits x = (translate_space_to_dummy
+	      ? H0
+	      : scale(env_space_width(this), ss, 12));
   if (line != 0 && line->merge_space(x)) {
     width_total += x;
     return;
@@ -426,12 +429,16 @@ void environment::space()
     *hp += 1;
     return;
   }
-  hunits x = scale(env_space_width(this), space_size, 12);
+  hunits x = (translate_space_to_dummy
+	      ? H0
+	      : scale(env_space_width(this), space_size, 12));
   node *p = current_tab ? tab_contents : line;
   hunits *tp = current_tab ? &tab_width : &width_total;
   if (p && p->nspaces() == 1 && p->width() == x
       && node_list_ends_sentence(p->next) == 1) {
-    hunits xx = scale(env_space_width(this), sentence_space_size, 12);
+    hunits xx = (translate_space_to_dummy
+		 ? H0
+		 : scale(env_space_width(this), sentence_space_size, 12));
     if (p->merge_space(xx)) {
       *tp += xx;
       return;
@@ -1654,13 +1661,15 @@ void environment::hyphenate_line()
     tem1->next = forward;
     forward = tem1;
   }
-  // this is for characters like hyphen and emdash
-  int prev_code = 0;
-  for (hyphen_list *h = sl; h; h = h->next) {
-    h->breakable = (prev_code != 0
-		    && h->next != 0
-		    && h->next->hyphenation_code != 0);
-    prev_code = h->hyphenation_code;
+  if (!inhibit) {
+    // this is for characters like hyphen and emdash
+    int prev_code = 0;
+    for (hyphen_list *h = sl; h; h = h->next) {
+      h->breakable = (prev_code != 0
+		      && h->next != 0
+		      && h->next->hyphenation_code != 0);
+      prev_code = h->hyphenation_code;
+    }
   }
   if (hyphenation_flags != 0
       && !inhibit
@@ -1964,15 +1973,12 @@ struct tab {
   hunits pos;
   tab_type type;
   tab(hunits, tab_type);
-#ifndef OP_DELETE_BROKEN
   enum { BLOCK = 1024 };
   static tab *free_list;
   void *operator new(size_t);
   void operator delete(void *);
-#endif /* not OP_DELETE_BROKEN */
 };
 
-#ifndef OP_DELETE_BROKEN
 tab *tab::free_list = 0;
 
 void *tab::operator new(size_t n)
@@ -2001,8 +2007,6 @@ void tab::operator delete(void *p)
     free_list = (tab *)p;
   }
 }
-
-#endif /* not OP_DELETE_BROKEN */
 
 tab::tab(hunits x, tab_type t) : next(0), pos(x), type(t)
 {
@@ -2866,6 +2870,7 @@ void hyphen_trie::read_patterns_file(const char *name)
   clear();
   char buf[WORD_MAX];
   int num[WORD_MAX+1];
+  errno = 0;
   FILE *fp = fopen(name, "r");
   if (fp == 0)
     fatal("can't open hyphenation patterns file `%1': %2",

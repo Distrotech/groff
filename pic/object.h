@@ -127,30 +127,27 @@ struct text_item {
   ~text_item();
 };
 
-
-enum {
-  IS_DOTTED = 01,
-  IS_DASHED = 02,
-  IS_CLOCKWISE = 04,
-  IS_INVISIBLE = 020,
-  HAS_LEFT_ARROW_HEAD = 040,
-  HAS_RIGHT_ARROW_HEAD = 0100,
-  HAS_SEGMENT = 0200,
-  IS_SAME = 0400,
-  HAS_FROM = 01000,
-  HAS_AT = 02000,
-  HAS_WITH = 04000,
-  HAS_HEIGHT = 010000,
-  HAS_WIDTH = 020000,
-  HAS_RADIUS = 040000,
-  HAS_TO = 0100000,
-  IS_CHOPPED = 0200000,
-  IS_DEFAULT_CHOPPED = 0400000,
-  HAS_THICKNESS = 01000000,
-  IS_FILLED = 02000000,
-  IS_DEFAULT_FILLED = 04000000,
-  IS_ALIGNED = 010000000,
-};
+const unsigned long IS_DOTTED = 01;
+const unsigned long IS_DASHED = 02;
+const unsigned long IS_CLOCKWISE = 04;
+const unsigned long IS_INVISIBLE = 020;
+const unsigned long HAS_LEFT_ARROW_HEAD = 040;
+const unsigned long HAS_RIGHT_ARROW_HEAD = 0100;
+const unsigned long HAS_SEGMENT = 0200;
+const unsigned long IS_SAME = 0400;
+const unsigned long HAS_FROM = 01000;
+const unsigned long HAS_AT = 02000;
+const unsigned long HAS_WITH = 04000;
+const unsigned long HAS_HEIGHT = 010000;
+const unsigned long HAS_WIDTH = 020000;
+const unsigned long HAS_RADIUS = 040000;
+const unsigned long HAS_TO = 0100000;
+const unsigned long IS_CHOPPED = 0200000;
+const unsigned long IS_DEFAULT_CHOPPED = 0400000;
+const unsigned long HAS_THICKNESS = 01000000;
+const unsigned long IS_FILLED = 02000000;
+const unsigned long IS_DEFAULT_FILLED = 04000000;
+const unsigned long IS_ALIGNED = 010000000;
 
 struct segment {
   int is_absolute;
@@ -164,7 +161,7 @@ struct graphic_object;
 struct linear_object;
 
 struct object_spec {
-  unsigned flags;
+  unsigned long flags;
   object_type type;
   object_list oblist;
   PTABLE(place) *tbl;

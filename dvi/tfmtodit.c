@@ -51,6 +51,7 @@ both be zero. */
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <errno.h>
 #include "lib.h"
 #include "errarg.h"
 #include "error.h"
@@ -271,6 +272,7 @@ int read4(unsigned char *&s)
 
 int tfm::load(const char *file)
 {
+  errno = 0;
   FILE *fp = fopen(file, "r");
   if (!fp) {
     error("can't open `%1': %2", file, strerror(errno));
@@ -410,6 +412,7 @@ int gf::load(const char *file)
   int pending_adjustment = 0;
   int left_adj, right_adj;
   const int gf_id_byte = 131;
+  errno = 0;
   FILE *fp = fopen(file, "r");
   if (!fp) {
     error("can't open `%1': %2", file, strerror(errno));
@@ -595,6 +598,7 @@ char_list::char_list(const char *s, char_list *p) : ch(strsave(s)), next(p)
 
 int read_map(const char *file, char_list **table)
 {
+  errno = 0;
   FILE *fp = fopen(file, "r");
   if (!fp) {
     error("can't open `%1': %2", file, strerror(errno));
@@ -734,6 +738,7 @@ int main(int argc, char **argv)
   char_list *table[256];
   if (!read_map(map_file, table))
     return 1;
+  errno = 0;
   if (!freopen(font_file, "w", stdout)) {
     error("can't open `%1' for writing: %2", font_file, strerror(errno));
     return 1;

@@ -119,9 +119,3 @@ enum {
   STRIP_PERCENT_BANG = 02,
   STRIP_STRUCTURE_COMMENTS = 04
   };
-
-
-extern "C" {
-  // Sun's stdlib.h fails to declare this.
-  char *mktemp(char *);
-}

@@ -315,7 +315,7 @@ void troff_output::simple_ellipse(int filled, const position &cent,
   position c = transform(cent);
   printf("\\h'%.3fi'"
 	 "\\v'%.3fi'"
-	 "\\D'%c%.3fi %.3fi%'"
+	 "\\D'%c%.3fi %.3fi'"
 	 "\n.sp -1\n",
 	 c.x - dim.x/(2.0*scale),
 	 c.y,
@@ -358,11 +358,11 @@ void troff_output::simple_spline(const position &start,
   fputs("\\D'~", stdout);
   for (int i = 0; i < n; i++) {
     position temp = transform(v[i]);
-    distance v = temp - pos;
+    distance d = temp - pos;
     pos = temp;
     if (i != 0)
       putchar(' ');
-    printf("%.3fi %.3fi", v.x, v.y);
+    printf("%.3fi %.3fi", d.x, d.y);
   }
   printf("'\n.sp -1\n");
 }
@@ -378,11 +378,11 @@ void troff_output::simple_polygon(int filled, const position *v, int n)
   printf("\\D'%c", (filled ? 'P' : 'p'));
   for (int i = 1; i < n; i++) {
     position temp = transform(v[i]);
-    distance v = temp - pos;
+    distance d = temp - pos;
     pos = temp;
     if (i != 1)
       putchar(' ');
-    printf("%.3fi %.3fi", v.x, v.y);
+    printf("%.3fi %.3fi", d.x, d.y);
   }
   printf("'\n.sp -1\n");
 }

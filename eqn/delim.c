@@ -319,9 +319,11 @@ int delim_box::compute_metrics(int style)
   printf(".nr " DELTA_REG " 0\\n[" DELTA_REG "]*%d/500"
 	 ">?(\\n[" DELTA_REG "]*2-%dM)\n",
 	 delimiter_factor, delimiter_shortfall);
-  define_extensible_string(left, uid, LEFT_DELIM);
-  printf(".rn " DELIM_STRING " " LEFT_DELIM_STRING_FORMAT "\n",
-	 uid);
+  if (left) {
+    define_extensible_string(left, uid, LEFT_DELIM);
+    printf(".rn " DELIM_STRING " " LEFT_DELIM_STRING_FORMAT "\n",
+	   uid);
+  }
   if (r)
     printf(".nr " MARK_REG " +\\n[" DELIM_WIDTH_REG "]\n");
   if (right) {
@@ -334,7 +336,8 @@ int delim_box::compute_metrics(int style)
 
 void delim_box::output()
 {
-  printf("\\*[" LEFT_DELIM_STRING_FORMAT "]", uid);
+  if (left)
+    printf("\\*[" LEFT_DELIM_STRING_FORMAT "]", uid);
   p->output();
   if (right)
     printf("\\*[" RIGHT_DELIM_STRING_FORMAT "]", uid);
@@ -347,7 +350,7 @@ void delim_box::check_tabs(int level)
 
 void delim_box::debug_print()
 {
-  fprintf(stderr, "left \"%s\" { ", left);
+  fprintf(stderr, "left \"%s\" { ", left ? left : "");
   p->debug_print();
   fprintf(stderr, " }");
   if (right)

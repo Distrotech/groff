@@ -693,10 +693,9 @@ void input_entry_format::debug_print()
     putc(',', stderr);
 }
 
-
-// return zero if we should give up on this table
-// if this is a continuation format line, current_format will be the current
-// format line
+// Return zero if we should give up on this table.
+// If this is a continuation format line, current_format will be the current
+// format line.
 
 format *process_format(table_input &in, options *opt,
 		       format *current_format = 0)
@@ -704,76 +703,89 @@ format *process_format(table_input &in, options *opt,
   input_entry_format *list = 0;
   int c = in.get();
   for (;;) {
-    while (c == ' ' || c == '\t' || c == opt->tab_char || c == '\n')
-      c = in.get();
     int pre_vline = 0;
-    if (c == '|') {
-      pre_vline = 1;
-      c = in.get();
-      while (c == ' ' || c == '\t' || c == opt->tab_char)
-	c = in.get();
-      if (c == '|') {
-	pre_vline = 2;
-	c = in.get();
-	while (c == ' ' || c == '\t' || c == opt->tab_char)
-	  c = in.get();
-      }
-    }
-    if (c == '.')
-      break;
-    if (c == EOF) {
-      error("end of input while processing format");
-      free_input_entry_format_list(list);
-      return 0;
-    }
+    int got_format = 0;
+    int got_period = 0;
     format_type t;
-    switch (c) {
-    case 'n':
-    case 'N':
-      t = entry_format::NUMERIC;
-      break;
-    case 'a':
-    case 'A':
-      t = entry_format::ALPHABETIC;
-      break;
-    case 'c':
-    case 'C':
-      t = entry_format::CENTER;
-      break;
-    case 'l':
-    case 'L':
-      t = entry_format::LEFT;
-      break;
-    case 'r':
-    case 'R':
-      t = entry_format::RIGHT;
-      break;
-    case 's':
-    case 'S':
-      t = entry_format::SPAN;
-      break;
-    case '^':
-      t = entry_format::VSPAN;
-      break;
-    case '_':
-      t = entry_format::HLINE;
-      break;
-    case '=':
-      t = entry_format::DOUBLE_HLINE;
-      break;
-    default:
-      error("unrecognised format `%1'", char(c));
-      free_input_entry_format_list(list);
-      return 0;
+    for (;;) {
+      if (c == EOF) {
+	error("end of input while processing format");
+	free_input_entry_format_list(list);
+	return 0;
+      }
+      switch (c) {
+      case 'n':
+      case 'N':
+	t = entry_format::NUMERIC;
+	got_format = 1;
+	break;
+      case 'a':
+      case 'A':
+	got_format = 1;
+	t = entry_format::ALPHABETIC;
+	break;
+      case 'c':
+      case 'C':
+	got_format = 1;
+	t = entry_format::CENTER;
+	break;
+      case 'l':
+      case 'L':
+	got_format = 1;
+	t = entry_format::LEFT;
+	break;
+      case 'r':
+      case 'R':
+	got_format = 1;
+	t = entry_format::RIGHT;
+	break;
+      case 's':
+      case 'S':
+	got_format = 1;
+	t = entry_format::SPAN;
+	break;
+      case '^':
+	got_format = 1;
+	t = entry_format::VSPAN;
+	break;
+      case '_':
+	got_format = 1;
+	t = entry_format::HLINE;
+	break;
+      case '=':
+	got_format = 1;
+	t = entry_format::DOUBLE_HLINE;
+	break;
+      case '.':
+	got_period = 1;
+	break;
+      case '|':
+	pre_vline++;
+	break;
+      case ' ':
+      case '\t':
+      case '\n':
+	break;
+      default:
+	if (c == opt->tab_char)
+	  break;
+	error("unrecognised format `%1'", char(c));
+	free_input_entry_format_list(list);
+	return 0;
+      }
+      if (got_period)
+	break;
+      c = in.get();
+      if (got_format)
+	break;
     }
-    c = in.get();
+    if (got_period)
+      break;
     list = new input_entry_format(t, list);
     if (pre_vline)
       list->pre_vline = pre_vline;
     int success = 1;
     do {
-      while (c == ' ' || c == '\t' || c == opt->tab_char)
-	c = in.get();
       switch (c) {
       case 't':
       case 'T':
@@ -955,8 +967,15 @@ format *process_format(table_input &in, options *opt,
 	c = in.get();
 	list->font = "I";
 	break;
+      case ' ':
+      case '\t':
+	c = in.get();
+	break;
       default:
-	success = 0;
+	if (c == opt->tab_char)
+	  c = in.get();
+	else
+	  success = 0;
 	break;
       }
     } while (success);
@@ -1078,7 +1097,6 @@ format *process_format(table_input &in, options *opt,
   }
   return f;
 }
-
 
 table *process_data(table_input &in, format *f, options *opt)
 {
@@ -1426,6 +1444,7 @@ int main(int argc, char **argv)
 	process_input_file(stdin);
       }
       else {
+	errno = 0;
 	FILE *fp = fopen(argv[i], "r");
 	if (fp == 0) {
 	  current_lineno = -1;

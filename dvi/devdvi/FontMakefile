@@ -20,7 +20,7 @@
 TFMDIR=tfm
 GFDIR=gf
 TFMTODIT=../tfmtodit
-FONTS=R I B BI CW MI S EX H HI HB
+FONTS=R I B BI CW MI S EX H HI HB SA SB
 SPECIALFLAG=-s
 
 all: $(FONTS)
@@ -70,5 +70,11 @@ HB: texr.map
 HI: texr.map
 	$(TFMTODIT) -g $(GFDIR)/cmssi10.300gf \
 	  $(TFMDIR)/cmssi10.tfm texb.map $@
+
+SA: msam.map
+	$(TFMTODIT) $(SPECIALFLAG) $(TFMDIR)/msam10.tfm msam.map $@
+
+SB: msbm.map
+	$(TFMTODIT) $(SPECIALFLAG) $(TFMDIR)/msbm10.tfm msbm.map $@
 
 $(FONTS): $(TFMTODIT)

@@ -405,9 +405,17 @@ static int parse_term(units *v, int scale_indicator, int parenthesised)
     int tem = (scale_indicator == 'v'
 	       ? curdiv->get_vertical_position().to_units()
 	       : curenv->get_input_line_position().to_units());
-    if (*v < INT_MIN + tem) {
-      error("numeric overflow");
-      return 0;
+    if (tem >= 0) {
+      if (*v < INT_MIN + tem) {
+	error("numeric overflow");
+	return 0;
+      }
+    }
+    else {
+      if (*v > INT_MAX + tem) {
+	error("numeric overflow");
+	return 0;
+      }
     }
     *v -= tem;
     if (negative) {

@@ -19,6 +19,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 struct bounding_box {
   int llx, lly, urx, ury;
@@ -44,6 +45,7 @@ char **argv;
     fprintf(stderr, "usage: %s filename\n", argv[0]);
     exit(3);
   }
+  errno = 0;
   fp = fopen(argv[1], "r");
   if (fp == NULL) {
     fprintf(stderr, "%s: can't open `%s': ", argv[0], argv[1]);

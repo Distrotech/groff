@@ -32,6 +32,7 @@
 .if rP .pn 0\nP
 .\" .TH title section extra1 extra2 extra3
 .de TH
+.de an-init \" We have to do it like this to get multiple man pages right.
 .ds an-title "\\$1
 .ds an-section "\\$2
 .ds an-extra1 "\\$3
@@ -39,6 +40,8 @@
 .el .ds an-extra2 \"Sun Release 4.0
 .ie \\n[.$]>4 .ds an-extra3 "\\$5
 .el .ds an-extra3 \"UNIX Programmer's Manual
+.ds an-init
+\\..
 .DT
 .nr IN 7.2n
 .nr LL 6.5i
@@ -66,6 +69,7 @@
 ..
 .wh 0 an-header
 .de an-header
+.an-init
 .ev 1
 .sp .5i
 .tl '\\*[an-title](\\*[an-section])'\\*[an-extra3]'\\*[an-title](\\*[an-section])'

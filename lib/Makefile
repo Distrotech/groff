@@ -28,12 +28,14 @@ MALLOC=malloc.o
 MALLOCFLAGS=
 FMOD=#fmod.o
 STRTOL=#strtol.o
+GETCWD=#getcwd.o
 OBJECTS=$(MALLOC) new.o itoa.o strerror.o error.o errarg.o fatal.o prime.o \
 	strsave.o matherr.o assert.o iftoa.o string.o cset.o cmap.o \
 	ptable.o font.o fontfile.o nametoindex.o filename.o lineno.o \
-	progname.o lf.o change_lf.o version.o $(FMOD) $(STRTOL)
+	progname.o lf.o change_lf.o version.o tmpfile.o \
+	$(FMOD) $(STRTOL) $(GETCWD)
 SOURCES=new.c itoa.c strerror.c error.c errarg.c fatal.c prime.c \
-	strsave.c matherr.c fmod.c assert.c iftoa.c \
+	strsave.c matherr.c fmod.c assert.c iftoa.c tmpfile.c getcwd.c \
         string.c cset.c cmap.c ptable.c font.c fontfile.c nametoindex.c \
         filename.c lineno.c progname.c lf.c change_lf.c version.c \
 	assert.h cset.h cmap.h errarg.h error.h font.h getpagesize.h \
@@ -73,14 +75,16 @@ fmod.o: fmod.c
 strtol.o: strtol.c
 	$(OLDCC) $(OLDCFLAGS) -c strtol.c
 
+getcwd.o: getcwd.c
+	$(OLDCC) $(OLDCFLAGS) -c getcwd.c
+
 string.o: stringclass.h
 lf.o: stringclass.h
 fontfile.o: fontpath.h
+tmpfile.o: lib.h errarg.h error.h
 
 fontpath.h: FORCE
-	@echo \#define FONTPATH \"$(FONTPATH)\" >fontpath.h.n
-	@cmp -s fontpath.h fontpath.h.n || cp fontpath.h.n fontpath.h
-	@rm -f fontpath.h.n
+	@$(SHELL) ../gendef $@ "FONTPATH=\"$(FONTPATH)\""
 
 TAGS : $(SOURCES)
 	etags $(ETAGSFLAGS) $(SOURCES)

@@ -55,9 +55,7 @@ psrm.o: ps.h ../driver/printer.h ../driver/driver.h ../lib/font.h \
       ../lib/stringclass.h ../lib/cset.h
 
 broken.h: FORCE
-	@echo \#define BROKEN_SPOOLER_FLAGS $(BROKEN_SPOOLER_FLAGS) >broken.h.n
-	@cmp -s broken.h broken.h.n || cp broken.h.n broken.h
-	@rm -f broken.h.n
+	@$(SHELL) ../gendef $@ "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)"
 
 psbb: psbb.o
 	$(OLDCC) $(LDFLAGS) -o $@ psbb.o
@@ -65,17 +63,17 @@ psbb: psbb.o
 psbb.o: psbb.c
 	$(OLDCC) $(OLDCFLAGS) -c psbb.c
 
-pfbtops: pfbtops.o
-	$(OLDCC) $(LDFLAGS) -o $@ pfbtops.o
+pfbtops: pfbtops.o ../lib/libgroff.a
+	$(OLDCC) $(LDFLAGS) -o $@ pfbtops.o ../lib/libgroff.a
 
 pfbtops.o: pfbtops.c
 	$(OLDCC) $(OLDCFLAGS) -c pfbtops.c
 
 saber_grops:
-	#load $(INCLUDES) $(CFLAGS) $(DEFINES) ps.c psrm.c \
-	../driver/libdriver.a ../lib/libgroff.a -lm
+	#load $(INCLUDES) $(CFLAGS) $(DEFINES) psrm.c ps.c \
+	-L../driver -ldriver -L../lib -lgroff -lm
 
-install.bin: grops psbb
+install.bin: grops psbb pfbtops
 	-[ -d $(BINDIR) ] || mkdir $(BINDIR)
 	-rm -f $(BINDIR)/grops $(BINDIR)/psbb
 	cp grops psbb pfbtops $(BINDIR)
@@ -101,7 +99,7 @@ TAGS : $(SOURCES)
 	$(ETAGS) $(ETAGSFLAGS) $(SOURCES)
 
 clean:
-	-rm -f *.o psbb core grops broken.h
+	-rm -f *.o psbb pfbtops core grops broken.h
 
 distclean: clean
 	-rm -f TAGS

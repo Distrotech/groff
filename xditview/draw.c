@@ -309,7 +309,7 @@ int FakeCharacter (dw, buf, wid)
 
 	if (buf[0] == '\0' || buf[1] == '\0' || buf[2] != '\0')
 		return 0;
-#define pack2(c1, c2) (((unsigned char)(c1) << 8) | (unsigned char)(c2))
+#define pack2(c1, c2) (((c1) << 8) | (c2))
 
 	switch (pack2(buf[0], buf[1])) {
 	case pack2('f', 'i'):
@@ -327,9 +327,11 @@ int FakeCharacter (dw, buf, wid)
 	case pack2('F', 'l'):
 		chars = "ffl";
 		break;
+#if 0
 	case pack2('e', 'm'):	/* em dash */
 		chars = "--";
 		break;
+#endif
 	case pack2('f', '/'):	/* fraction slash */
 		chars = "/";
 		break;
@@ -415,9 +417,9 @@ setGC (dw)
 	int desired_line_width;
 	
 	if (dw->dvi.line_thickness < 0)
-		desired_line_width = ((dw->dvi.device_resolution
-				       * dw->dvi.state->font_size)
-				      / (10*72*dw->dvi.sizescale));
+		desired_line_width = (int)(((double)dw->dvi.device_resolution
+					    * dw->dvi.state->font_size)
+					   / (10.0*72.0*dw->dvi.sizescale));
 	else
 		desired_line_width = dw->dvi.line_thickness;
 	
@@ -563,7 +565,6 @@ DrawPolygon (dw, v, n)
 	int		*v;
 	int		n;
 {
-	extern char *malloc();
 	XPoint *p;
 	int i;
 	int dx, dy;
@@ -572,9 +573,7 @@ DrawPolygon (dw, v, n)
 	
 	AdjustCacheDeltas (dw);
 	setGC (dw);
-	p = (XPoint *)malloc((n + 2)*sizeof(XPoint));
-	if (!p)
-		return;
+	p = (XPoint *)XtMalloc((n + 2)*sizeof(XPoint));
 	p[0].x = XPos (dw);
 	p[0].y = YPos (dw);
 	dx = 0;
@@ -589,7 +588,7 @@ DrawPolygon (dw, v, n)
 	p[n+1].y = p[0].y;
 	XDrawLines (XtDisplay (dw), XtWindow (dw), dw->dvi.normal_GC,
 		   p, n + 2, CoordModeOrigin);
-	free(p);
+	XtFree(p);
 }
 
 
@@ -598,7 +597,6 @@ DrawFilledPolygon (dw, v, n)
 	int		*v;
 	int		n;
 {
-	extern char *malloc();
 	XPoint *p;
 	int i;
 	int dx, dy;
@@ -609,9 +607,7 @@ DrawFilledPolygon (dw, v, n)
 	
 	AdjustCacheDeltas (dw);
 	setFillGC (dw);
-	p = (XPoint *)malloc((n + 1)*sizeof(XPoint));
-	if (!p)
-		return;
+	p = (XPoint *)XtMalloc((n + 1)*sizeof(XPoint));
 	p[0].x = XPos (dw);
 	p[0].y = YPos (dw);
 	dx = 0;
@@ -624,7 +620,7 @@ DrawFilledPolygon (dw, v, n)
 	}
 	XFillPolygon (XtDisplay (dw), XtWindow (dw), dw->dvi.fill_GC,
 		      p, n + 1, Complex, CoordModeOrigin);
-	free(p);
+	XtFree(p);
 }
 
 #define POINTS_MAX 10000

@@ -53,7 +53,6 @@ public:
   ~linear_searcher();
   int search(const char *buf, const char *bufend,
 	     const char **startp, int *lengthp) const;
-  int get_nkeys() const;
 };
 
 class search_list_iterator {

@@ -49,7 +49,7 @@ eqn.tab.c: eqn.y
 eqn.tab.o: eqn.h box.h
 box.o: eqn.h box.h pbox.h
 limit.o: eqn.h box.h pbox.h
-text.o: eqn.h box.h pbox.h
+text.o: eqn.h box.h pbox.h ../lib/ptable.h
 over.o: eqn.h box.h pbox.h
 list.o: eqn.h box.h pbox.h
 script.o: eqn.h box.h pbox.h
@@ -60,12 +60,10 @@ sqrt.o: eqn.h box.h pbox.h
 pile.o: eqn.h box.h pbox.h
 special.o: eqn.h box.h pbox.h
 main.o: device.h eqn.h box.h  ../lib/stringclass.h
-lex.o: eqn.h eqn.tab.c box.h ../lib/stringclass.h
+lex.o: eqn.h eqn.tab.c box.h ../lib/stringclass.h ../lib/ptable.h
 
 device.h: FORCE
-	@echo \#define DEVICE \"$(DEVICE)\" >device.h.n
-	@cmp -s device.h device.h.n || cp device.h.n device.h
-	@rm -f device.h.n
+	@$(SHELL) ../gendef $@ "DEVICE=\"$(DEVICE)\""
 
 install.bin: eqn
 	-[ -d $(BINDIR) ] || mkdir $(BINDIR)

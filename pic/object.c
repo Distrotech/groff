@@ -219,6 +219,10 @@ void draw_arrow(const position &pos, const distance &dir,
 		const arrow_head_type &aht, const line_type &lt)
 {
   double hyp = hypot(dir);
+  if (hyp == 0.0) {
+    error("cannot draw arrow on object with zero length");
+    return;
+  }
   position base = -dir;
   base *= aht.height/hyp;
   position n(dir.y, -dir.x);

@@ -24,11 +24,11 @@ NR == 1 {
 }
 
 NR == 2 {
-	if ($8 ~ /:/) {
-		if (number[$6] > number[month])
+	if ($(NF-1) ~ /:/) {
+		if (number[$(NF-3)] > number[month])
 			year--;
 	}
 	else
-		year = $8;
-	print $7, full[$6], year
+		year = $(NF-1);
+	print $(NF-2), full[$(NF-3)], year
 }'

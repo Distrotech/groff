@@ -903,7 +903,7 @@ case 19:
 		    break;
 		  default:
 		    yyval.expr = yyvsp[-4].expr;
-		    command_error("unknown function `%1'", char(yyvsp[-4].expr));
+		    command_error("unknown function `%1'", char(yyvsp[-1].num));
 		    break;
 		  }
 		;

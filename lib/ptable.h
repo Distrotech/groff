@@ -22,12 +22,18 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <generic.h>
 #include <string.h>
 
+#ifdef __BORLANDC__
+#ifndef name2
+#define name2 _Paste2
+#endif
+#endif
+
 #define PTABLE(T) name2(T,_ptable)
 #define PASSOC(T) name2(T,_passoc)
 #define PTABLE_ITERATOR(T) name2(T,_ptable_iterator)
 
-extern int next_ptable_size(int);
-extern unsigned hash_string(const char *);
+extern unsigned next_ptable_size(unsigned);
+extern unsigned long hash_string(const char *);
 
 #define declare_ptable(T)						      \
 									      \
@@ -41,7 +47,7 @@ struct PTABLE(T);							      \
 									      \
 class PTABLE_ITERATOR(T) {						      \
   PTABLE(T) *p;								      \
-  int i;								      \
+  unsigned i;								      \
 public:									      \
   PTABLE_ITERATOR(T)(PTABLE(T) *);					      \
   int next(const char **, T **);					      \
@@ -49,8 +55,8 @@ public:									      \
 									      \
 class PTABLE(T) {							      \
   PASSOC(T) *v;								      \
-  int size;								      \
-  int used;								      \
+  unsigned size;							      \
+  unsigned used;							      \
   enum { FULL_NUM = 2, FULL_DEN = 3, INITIAL_SIZE = 17 };		      \
 public:									      \
   PTABLE(T)();								      \
@@ -76,7 +82,7 @@ PTABLE(T)::PTABLE(T)()							      \
 									      \
 PTABLE(T)::~PTABLE(T)()							      \
 {									      \
-  for (int i = 0; i < size; i++) {					      \
+  for (unsigned i = 0; i < size; i++) {					      \
     delete v[i].key;							      \
     delete v[i].val;							      \
   }									      \
@@ -85,8 +91,8 @@ PTABLE(T)::~PTABLE(T)()							      \
 void PTABLE(T)::define(const char *key, T *val)				      \
 {									      \
   assert(key != 0);							      \
-  int h = hash_string(key);						      \
-  for (int n = h % size;						      \
+  unsigned long h = hash_string(key);					      \
+  for (unsigned n = unsigned(h % size);					      \
        v[n].key != 0;							      \
        n = (n == 0 ? size - 1 : n - 1))					      \
     if (strcmp(v[n].key, key) == 0) {					      \
@@ -98,15 +104,15 @@ void PTABLE(T)::define(const char *key, T *val)				      \
     return;								      \
   if (used*FULL_DEN >= size*FULL_NUM) {					      \
     PASSOC(T) *oldv = v;						      \
-    int old_size = size;						      \
+    unsigned old_size = size;						      \
     size = next_ptable_size(size);					      \
     v = new PASSOC(T)[size];						      \
-    for (int i = 0; i < old_size; i++)					      \
+    for (unsigned i = 0; i < old_size; i++)				      \
       if (oldv[i].key != 0) {						      \
 	if (oldv[i].val == 0)						      \
 	  delete oldv[i].key;						      \
 	else {								      \
-	  for (int j = hash_string(oldv[i].key) % size;			      \
+	  for (unsigned j = unsigned(hash_string(oldv[i].key) % size);	      \
 	       v[j].key != 0;						      \
 	       j = (j == 0 ? size - 1 : j - 1))				      \
 		 ;							      \
@@ -114,7 +120,7 @@ void PTABLE(T)::define(const char *key, T *val)				      \
 	  v[j].val = oldv[i].val;					      \
 	}								      \
       }									      \
-    for (n = h % size;							      \
+    for (n = unsigned(h % size);					      \
 	 v[n].key != 0;							      \
 	 n = (n == 0 ? size - 1 : n - 1))				      \
       ;									      \
@@ -130,7 +136,7 @@ void PTABLE(T)::define(const char *key, T *val)				      \
 T *PTABLE(T)::lookup(const char *key)					      \
 {									      \
   assert(key != 0);							      \
-  for (int n = hash_string(key) % size;					      \
+  for (unsigned n = unsigned(hash_string(key) % size);			      \
        v[n].key != 0;							      \
        n = (n == 0 ? size - 1 : n - 1))					      \
     if (strcmp(v[n].key, key) == 0)					      \
@@ -145,7 +151,7 @@ PTABLE_ITERATOR(T)::PTABLE_ITERATOR(T)(PTABLE(T) *t)			      \
 									      \
 int PTABLE_ITERATOR(T)::next(const char **keyp, T **valp)		      \
 {									      \
-  int size = p->size;							      \
+  unsigned size = p->size;						      \
   PASSOC(T) *v = p->v;							      \
   for (; i < size; i++)							      \
     if (v[i].key != 0) {						      \

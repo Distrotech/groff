@@ -33,8 +33,10 @@ DEFAULT_INDEX_NAME=Ind
 # If your system provides /usr/lib/eign it will be copied onto this,
 # otherwise the supplied eign file will be used.
 COMMON_WORDS_FILE=/usr/local/lib/groff/eign
+# Uncomment this if the POSIX pathconf() function is missing.
+PATHCONF_MISSING=#-DPATHCONF_MISSING
 
-CFLAGS=-g -O -Wall #-DHAVE_MMAP -DHAVE_RENAME -DHAVE_GETWD
+CFLAGS=-g -O -Wall #-DHAVE_MMAP -DHAVE_RENAME -DPATHCONF_MISSING
 LDFLAGS=-g
 INCLUDES=-I../lib
 OLDCFLAGS=-g
@@ -48,7 +50,7 @@ ETAGSFLAGS=-p
 
 PROGS=refer lookbib indxbib lkbib
 
-INDXBIB_OBJECTS=indxbib.o common.o ../lib/libgroff.a
+INDXBIB_OBJECTS=indxbib.o common.o dirnamemax.o ../lib/libgroff.a
 LOOKBIB_OBJECTS=lookbib.o search.o linear.o index.o common.o \
 	../lib/libgroff.a
 REFER_OBJECTS=refer.o ref.o token.o search.o linear.o index.o \
@@ -76,34 +78,30 @@ label.tab.c: label.y
 	$(YACC) $(YACCFLAGS) label.y
 	mv y.tab.c label.tab.c
 
-limits.h: genlimits
-	genlimits >$@
-
-genlimits: genlimits.c
+dirnamemax.o: dirnamemax.c
 	defs=; \
 	if [ -f /usr/include/limits.h ]; \
 	then defs=-DHAVE_LIMITS_H; \
 	fi; \
 	if [ -f /usr/include/dirent.h ]; \
 	then defs="$$defs -DHAVE_DIRENT_H"; \
+	elif [ -f /usr/include/sys/dir.h ]; \
+	then defs="$$defs -DHAVE_SYS_DIR_H"; \
 	fi; \
-	$(OLDCC) -o $@ $$defs genlimits.c
+	$(OLDCC) $(OLDCFLAGS) -c $$defs $(PATHCONF_MISSING) dirnamemax.c
 
 suffix.h: FORCE
-	@echo \#define INDEX_SUFFIX \"$(INDEX_SUFFIX)\" >suffix.h.n
-	@cmp -s suffix.h.n suffix.h || cp suffix.h.n suffix.h
-	@rm -f suffix.h.n
+	@$(SHELL) ../gendef $@ "INDEX_SUFFIX=\"$(INDEX_SUFFIX)\""
 
 path.h: FORCE
-	@echo \#define COMMON_WORDS_FILE \"$(COMMON_WORDS_FILE)\" >path.h.n
-	@echo \#define DEFAULT_INDEX_DIR \"$(DEFAULT_INDEX_DIR)\" >>path.h.n
-	@echo \#define DEFAULT_INDEX_NAME \"$(DEFAULT_INDEX_NAME)\" >>path.h.n
-	@cmp -s path.h.n path.h || cp path.h.n path.h
-	@rm -f path.h.n
+	@$(SHELL) ../gendef $@ \
+	"COMMON_WORDS_FILE=\"$(COMMON_WORDS_FILE)\"" \
+	"DEFAULT_INDEX_DIR=\"$(DEFAULT_INDEX_DIR)\"" \
+	"DEFAULT_INDEX_NAME \"$(DEFAULT_INDEX_NAME)\""
 
 index.o: refid.h search.h index.h suffix.h ../lib/lib.h ../lib/cset.h \
 	../lib/cmap.h ../lib/errarg.h ../lib/error.h
-indxbib.o: refer.h path.h limits.h index.h suffix.h \
+indxbib.o: refer.h path.h index.h suffix.h \
 	../lib/errarg.h ../lib/error.h ../lib/cset.h ../lib/cmap.h \
 	../lib/stringclass.h ../lib/lib.h
 linear.o: refid.h search.h ../lib/lib.h ../lib/errarg.h \
@@ -131,10 +129,10 @@ lkbib.o: refer.h path.h refid.h search.h ../lib/errarg.h ../lib/error.h \
 	../lib/stringclass.h 
 
 clean:
-	-rm -f *.o $(PROGS) core a.out *.n gmon.out path.h suffix.h
+	-rm -f *.o $(PROGS) core a.out *.n gmon.out path.h suffix.h y.output
 
 distclean: clean
-	-rm -f genlimits TAGS limits.h
+	-rm -f TAGS
 
 realclean: distclean
 	-rm -f label.tab.c

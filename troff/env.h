@@ -307,3 +307,4 @@ void read_hyphen_file(const char *name);
 
 extern int break_flag;
 extern symbol default_family;
+extern int translate_space_to_dummy;

@@ -18,11 +18,13 @@ with groff; see the file LICENSE.  If not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #include "ptable.h"
+#include "errarg.h"
+#include "error.h"
 
-unsigned hash_string(const char *s)
+unsigned long hash_string(const char *s)
 {
   assert(s != 0);
-  unsigned h = 0, g;
+  unsigned long h = 0, g;
   while (*s != 0) {
     h <<= 4;
     h += *s++;
@@ -34,16 +36,16 @@ unsigned hash_string(const char *s)
   return h;
 }
 
-static const int table_sizes[] = { 
+static const unsigned table_sizes[] = { 
 101, 503, 1009, 2003, 3001, 4001, 5003, 10007, 20011, 40009,
 80021, 160001, 500009, 1000003, 2000003, 4000037, 8000009,
 16000057, 32000011, 64000031, 128000003, 0 
 };
 
-int next_ptable_size(int n)
+unsigned next_ptable_size(unsigned n)
 {
-  for (const int *p = table_sizes; *p <= n && *p != 0; p++)
-    ;
-  assert(*p != 0);
+  for (const unsigned *p = table_sizes; *p <= n; p++)
+    if (*p == 0)
+      fatal("cannot expand table");
   return *p;
 }

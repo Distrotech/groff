@@ -23,6 +23,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "lib.h"
 #include "errarg.h"
 #include "error.h"
@@ -107,6 +108,7 @@ int main(int argc, char **argv)
   }    
   if (argc - i != 3)
     usage();
+  errno = 0;
   FILE *infp = fopen(font, "r");
   if (infp == 0)
     fatal("can't open `%1': %2", font, strerror(errno));

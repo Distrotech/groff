@@ -4,20 +4,28 @@
  * convert X font metrics into troff font metrics
  */
 
-# include	<X11/Xlib.h>
-# include	<stdio.h>
-# include	<ctype.h>
-# include	"XFontName.h"
-# include	"DviChar.h"
+#include	<X11/Xlib.h>
+#include	<stdio.h>
+#include	<ctype.h>
+#include	"XFontName.h"
+#include	"DviChar.h"
 
-# define charWidth(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].width)
-# define charHeight(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].ascent)
-# define charDepth(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].descent)
-# define charLBearing(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].lbearing)
-# define charRBearing(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].rbearing)
+#ifdef X_NOT_STDC_ENV
+char *malloc();
+#else 
+#include <stdlib.h>
+#endif
+
+#define charWidth(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].width)
+#define charHeight(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].ascent)
+#define charDepth(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].descent)
+#define charLBearing(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].lbearing)
+#define charRBearing(fi,c)	((fi)->per_char[(c) - (fi)->min_char_or_byte2].rbearing)
 
 Display		*dpy;
 int		groff_flag = 0;
+unsigned	resolution = 75;
+unsigned	point_size = 10;
 
 int charExists (fi, c)
 	XFontStruct	*fi;
@@ -30,6 +38,53 @@ int charExists (fi, c)
 	p = fi->per_char + (c - fi->min_char_or_byte2);
 	return (p->lbearing != 0 || p->rbearing != 0 || p->width != 0
 		|| p->ascent != 0 || p->descent != 0 || p->attributes != 0);
+}
+
+/* Canonicalize the font name by replacing scalable parts by *s. */
+
+CanonicalizeFontName (font_name, canon_font_name)
+	char *font_name, *canon_font_name;
+{
+	unsigned int	attributes;
+	XFontName	parsed;
+
+	if (!XParseFontName(font_name, &parsed, &attributes)) {
+		fprintf (stderr, "not a standard name: %s\n", font_name);
+		return 0;
+	}
+
+	attributes &= ~(FontNamePixelSize|FontNameAverageWidth
+			|FontNamePointSize
+			|FontNameResolutionX|FontNameResolutionY);
+	XFormatFontName(&parsed, attributes, canon_font_name);
+	return 1;
+}
+
+int FontNamesAmbiguous(font_name, names, count)
+char *font_name;
+char **names;
+int count;
+{
+	char name1[2048], name2[2048];
+	int i;
+
+	if (count == 1)
+		return 0;
+
+	for (i = 0; i < count; i++) {
+		if (!CanonicalizeFontName(names[i], i == 0 ? name1 : name2)) {
+			fprintf(stderr, "bad font name: %s\n", names[i]);
+			return 1;
+		}
+		if (i > 0 && strcmp(name1, name2) != 0) {
+			fprintf(stderr, "ambiguous font name: %s\n", font_name);
+			fprintf(stderr, "  matches %s\n", names[0]);
+			fprintf(stderr, "  and %s\n", names[i]);
+			return 1;
+		}
+
+	}
+	return 0;
 }
 
 MapFont (font_name, troff_name)
@@ -48,20 +103,32 @@ MapFont (font_name, troff_name)
 	char		encoding[256];
 	char		*s;
 	int		wid;
+	char		name_string[2048];
 
-	names = XListFonts (dpy, font_name, 100000, &count);
+	if (!XParseFontName(font_name, &parsed, &attributes)) {
+		fprintf (stderr, "not a standard name: %s\n", font_name);
+		return 0;
+	}
+
+	attributes &= ~(FontNamePixelSize|FontNameAverageWidth);
+	attributes |= FontNameResolutionX;
+	attributes |= FontNameResolutionY;
+	attributes |= FontNamePointSize;
+	parsed.ResolutionX = resolution;
+	parsed.ResolutionY = resolution;
+	parsed.PointSize = point_size*10;
+	XFormatFontName(&parsed, attributes, name_string);
+
+	names = XListFonts (dpy, name_string, 100000, &count);
 	if (count < 1) {
 		fprintf (stderr, "bad font name: %s\n", font_name);
 		return 0;
 	}
-	if (count > 1) {
-		fprintf (stderr, "ambiguous font name: %s\n", font_name);
+
+	if (FontNamesAmbiguous(font_name, names, count))
 		return 0;
-	}
-	if (!XParseFontName (names[0], &parsed, &attributes)) {
-		fprintf (stderr, "not a standard name: %s\n", names[0]);
-		return 0;
-	}
+
+	XParseFontName(names[0], &parsed, &attributes);
 	sprintf (encoding, "%s-%s", parsed.CharSetRegistry,
 				    parsed.CharSetEncoding);
 	for (s = encoding; *s; s++)
@@ -73,6 +140,14 @@ MapFont (font_name, troff_name)
 		return 0;
 	}
 
+	fi = XLoadQueryFont (dpy, names[0]);
+	if (!fi) {
+		fprintf (stderr, "font does not exist: %s\n", names[0]);
+		return 0;
+	}
+		
+	printf ("%s -> %s\n", names[0], troff_name);
+
 	(void) unlink (troff_name);
 	out = fopen (troff_name, "w");
 	if (!out) {
@@ -82,7 +157,6 @@ MapFont (font_name, troff_name)
 	fprintf (out, "name %s\n", troff_name);
 	if (!strcmp (char_map->encoding, "adobe-fontspecific"))
 		fprintf (out, "special\n");
-	fi = XLoadQueryFont (dpy, names[0]);
 	if (charExists (fi, ' ')) {
 		int w = charWidth (fi, ' ');
 		if (w > 0)
@@ -132,8 +206,24 @@ MapFont (font_name, troff_name)
 static usage(prog)
 	char	*prog;
 {
-	fprintf (stderr, "usage: %s [-g] FontMap\n", prog);
+	fprintf (stderr,
+		 "usage: %s [-g] [-r resolution] [-s pointsize FontMap\n",
+		 prog);
 	exit (1);
+}
+
+
+/* For use by DviChar.c */
+
+char *xmalloc(n)
+int n;
+{
+	char *p = malloc(n);
+	if (!p) {
+		fprintf(stderr, "Out of memory\n");
+		exit(1);
+	}
+	return p;
 }
 
 main (argc, argv)
@@ -147,14 +237,21 @@ main (argc, argv)
 	FILE	*map;
 	int	opt;
 	extern int optind;
+	extern char *optarg;
 
-	while ((opt = getopt(argc, argv, "g")) != EOF) {
+	while ((opt = getopt(argc, argv, "gr:s:")) != EOF) {
 		switch (opt) {
 		case 'g':
 			groff_flag = 1;
 			break;
+		case 'r':
+			sscanf(optarg, "%u", &resolution);
+			break;
+		case 's':
+			sscanf(optarg, "%u", &point_size);
+			break;
 		default:
-			usage();
+			usage(argv[0]);
 		}
 	}
 	if (argc - optind != 1)
@@ -187,7 +284,6 @@ main (argc, argv)
 			if ((*b = *a) == '\n')
 				break;
 		*b = '\0';
-		printf ("%s -> %s\n", font_name, troff_name);
 		if (!MapFont (font_name, troff_name))
 			exit (1);
 		++position;

@@ -22,6 +22,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 #include "errarg.h"
 #include "error.h"
@@ -30,6 +31,10 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #include "refid.h"
 #include "search.h"
+
+extern "C" {
+  int isatty(int);
+}
 
 static void usage()
 {
@@ -85,7 +90,6 @@ main(int argc, char **argv)
   if (list.nfiles() == 0)
     fatal("no databases");
   char line[1024];
-  int first = 1;
   int interactive = isatty(fileno(stdin));
   for (;;) {
     if (interactive) {
@@ -103,15 +107,12 @@ main(int argc, char **argv)
     char *start;
     int len;
     for (int count = 0; iter.next(&start, &len); count++) {
-      if (first)
-	first = 0;
-      else
-	putchar('\n');
       if (fwrite(start, 1, len, stdout) != len)
 	fatal("write error on stdout: %1", strerror(errno));
       // Can happen for last reference in file.
       if (start[len - 1] != '\n')
 	putchar('\n');
+      putchar('\n');
     }
     fflush(stdout);
     if (interactive) {

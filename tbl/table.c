@@ -158,8 +158,8 @@ public:
   virtual double_line_entry *to_double_line_entry();
   virtual simple_entry *to_simple_entry();
   virtual int line_type();
-  virtual void note_double_vrule_on_right();
-  virtual void note_double_vrule_on_left();
+  virtual void note_double_vrule_on_right(int);
+  virtual void note_double_vrule_on_left(int);
 };
 
 class simple_entry : public table_entry {
@@ -232,6 +232,7 @@ public:
   alphabetic_text_entry(char *s, const entry_modifier *m);
   void do_width();
   void simple_print(int);
+  void add_tab();
 };
 
 class line_entry : public simple_entry {
@@ -240,8 +241,8 @@ protected:
   char double_vrule_on_left;
 public:
   line_entry(const entry_modifier *);
-  void note_double_vrule_on_right();
-  void note_double_vrule_on_left();
+  void note_double_vrule_on_right(int);
+  void note_double_vrule_on_left(int);
   void simple_print(int) = 0;
 };
 
@@ -362,11 +363,11 @@ int table_entry::line_type()
   return -1;
 }
 
-void table_entry::note_double_vrule_on_right()
+void table_entry::note_double_vrule_on_right(int)
 {
 }
 
-void table_entry::note_double_vrule_on_left()
+void table_entry::note_double_vrule_on_left(int)
 {
 }
 
@@ -603,6 +604,13 @@ void alphabetic_text_entry::simple_print(int)
   printfs("\\*[%1]", text_string_name(start_row, start_col));
 }
 
+// The only point of this is to make `\a' ``work'' as in Unix tbl.  Grrr.
+
+void alphabetic_text_entry::add_tab()
+{
+  printfs(" \\n[%1]u", column_end_reg(end_col));
+}
+
 block_entry::block_entry(char *s, const entry_modifier *m)
 : table_entry(m), contents(s)
 {
@@ -767,14 +775,14 @@ line_entry::line_entry(const entry_modifier *m)
 {
 }
 
-void line_entry::note_double_vrule_on_right()
+void line_entry::note_double_vrule_on_right(int is_corner)
 {
-  double_vrule_on_right = 1;
+  double_vrule_on_right = is_corner ? 1 : 2;
 }
 
-void line_entry::note_double_vrule_on_left()
+void line_entry::note_double_vrule_on_left(int is_corner)
 {
-  double_vrule_on_left = 1;
+  double_vrule_on_left = is_corner ? 1 : 2;
 }
 
 
@@ -792,15 +800,19 @@ void single_line_entry::simple_print(int dont_move)
 {
   printfs("\\h'|\\n[%1]u",
 	  column_divide_reg(start_col));
-  if (double_vrule_on_left)
-    prints("+" HALF_DOUBLE_LINE_SEP);
+  if (double_vrule_on_left) {
+    prints(double_vrule_on_left == 1 ? "-" : "+");
+    prints(HALF_DOUBLE_LINE_SEP);
+  }
   prints("'");
   if (!dont_move)
     prints("\\v'-" BAR_HEIGHT "'");
   printfs("\\s[\\n[" LINESIZE_REG "]]" "\\D'l |\\n[%1]u",
 	  column_divide_reg(end_col+1));
-  if (double_vrule_on_right)
-    prints("-" HALF_DOUBLE_LINE_SEP);
+  if (double_vrule_on_right) {
+    prints(double_vrule_on_left == 1 ? "+" : "-");
+    prints(HALF_DOUBLE_LINE_SEP);
+  }
   prints("0'\\s0");
   if (!dont_move)
     prints("\\v'" BAR_HEIGHT "'");
@@ -827,8 +839,10 @@ void double_line_entry::simple_print(int dont_move)
     prints("\\v'-" BAR_HEIGHT "'");
   printfs("\\h'|\\n[%1]u",
 	  column_divide_reg(start_col));
-  if (double_vrule_on_left)
-    prints("+" HALF_DOUBLE_LINE_SEP);
+  if (double_vrule_on_left) {
+    prints(double_vrule_on_left == 1 ? "-" : "+");
+    prints(HALF_DOUBLE_LINE_SEP);
+  }
   prints("'");
   printfs("\\v'-" HALF_DOUBLE_LINE_SEP "'"
 	  "\\s[\\n[" LINESIZE_REG "]]"
@@ -840,8 +854,10 @@ void double_line_entry::simple_print(int dont_move)
   printfs("\\v'" DOUBLE_LINE_SEP "'"
 	  "\\D'l |\\n[%1]u",
 	  column_divide_reg(start_col));
-  if (double_vrule_on_left)
-    prints("+" HALF_DOUBLE_LINE_SEP);
+  if (double_vrule_on_right) {
+    prints(double_vrule_on_left == 1 ? "+" : "-");
+    prints(HALF_DOUBLE_LINE_SEP);
+  }
   prints(" 0'");
   prints("\\s0"
 	 "\\v'-" HALF_DOUBLE_LINE_SEP "'");
@@ -1996,11 +2012,11 @@ void table::compute_separation_factor()
     for (int i = 0; i < ncolumns - 1; i++)
       total_sep += column_separation[i];
     if (total_sep != 0) {
-      // don't let the separation factor be less than 1n
+      // Don't let the separation factor be negative.
       prints(".nr " SEPARATION_FACTOR_REG " \\n[.l]-\\n[.i]");
       for (i = 0; i < ncolumns; i++)
 	printfs("-\\n[%1]", span_width_reg(i, i));
-      printfs("/%1>?1n\n", as_string(total_sep));
+      printfs("/%1>?0\n", as_string(total_sep));
     }
   }
 }
@@ -2387,11 +2403,15 @@ void table::build_vrule_list()
     if (p->is_double)
       for (int r = p->start_row; r <= p->end_row; r++) {
 	if (p->col > 0 && entry[r][p->col-1] != 0
-	    && entry[r][p->col-1]->end_col == p->col-1)
-	  entry[r][p->col-1]->note_double_vrule_on_right();
+	    && entry[r][p->col-1]->end_col == p->col-1) {
+	  int is_corner = r == p->start_row || r == p->end_row;
+	  entry[r][p->col-1]->note_double_vrule_on_right(is_corner);
+	}
 	if (p->col < ncolumns && entry[r][p->col] != 0
-	    && entry[r][p->col]->start_col == p->col)
-	  entry[r][p->col]->note_double_vrule_on_left();
+	    && entry[r][p->col]->start_col == p->col) {
+	  int is_corner = r == p->start_row || r == p->end_row;
+	  entry[r][p->col]->note_double_vrule_on_left(is_corner);
+	}
       }
 }
 

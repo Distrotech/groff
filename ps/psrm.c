@@ -272,6 +272,7 @@ void resource_manager::supply_resource(resource *r, int rank, FILE *outfp,
       }
     }
     else {
+      errno = 0;
       fp = fopen(r->filename, "r");
       if (!fp) {
 	error("can't open `%1': %2", r->filename, strerror(errno));
@@ -338,13 +339,17 @@ static int ps_get_line(char *buf, FILE *fp)
   }
   current_lineno++;
   int i = 0;
+  int err = 0;
   while (c != '\r' && c != '\n' && c != EOF) {
     if ((c < 0x1b && !white_space(c)) || c == 0x7f)
       error("illegal input character code %1", int(c));
     else if (i < PS_LINE_MAX)
       buf[i++] = c;
-    else if (++i == PS_LINE_MAX)
-      error("line too long");
+    else if (!err) {
+      err = 1;
+      error("PostScript file non-conforming "
+	    "because length of line exceeds 255");
+    }
     c = getc(fp);
   }
   buf[i++] = '\n';
@@ -1057,7 +1062,7 @@ static void print_ps_string(const string &s, FILE *outfp)
       break;
     default:
       if (str[i] < 040 || str[i] > 0176)
-	fprintf(outfp, "\\%03o", str[i]);
+	fprintf(outfp, "\\%03o", str[i] & 0377);
       else
 	putc(str[i], outfp);
       break;

@@ -50,6 +50,7 @@ void do_file(const char *filename)
     current_file = stdin;
   }
   else {
+    errno = 0;
     current_file = fopen(filename, "r");
     if (current_file == 0) {
       error("can't open `%1'", filename);

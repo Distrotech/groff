@@ -450,6 +450,7 @@ class ps_printer : public printer {
   string defs;
   int ndefs;
   resource_manager rm;
+  int invis_count;
 
   void flush_sbuf();
   void set_style(const style &);
@@ -460,6 +461,8 @@ class ps_printer : public printer {
   void do_def(char *, const environment *);
   void do_mdef(char *, const environment *);
   void do_file(char *, const environment *);
+  void do_invis(char *, const environment *);
+  void do_endinvis(char *, const environment *);
   void set_line_thickness(const environment *);
   void fill_path();
   void encode_fonts();
@@ -487,16 +490,10 @@ ps_printer::ps_printer()
   next_encoding_index(0),
   line_thickness(-1),
   fill(FILL_MAX + 1),
-  ndefs(0)
+  ndefs(0),
+  invis_count(0)
 {
-  static char temp_filename[] = "/tmp/gropsXXXXXX";
-  mktemp(temp_filename);
-  tempfp = fopen(temp_filename, "w+");
-  if (tempfp == 0)
-    fatal("can't open temporary file `%1': %2",
-	  temp_filename, strerror(errno));
-  if (unlink(temp_filename) < 0)
-    error("can't unlink `%1': %2", temp_filename, strerror(errno));
+  tempfp = xtmpfile();
   out.set_file(tempfp);
   if (linewidth < 0)
     linewidth = DEFAULT_LINEWIDTH;
@@ -539,7 +536,7 @@ int ps_printer::set_encoding_index(ps_font *f)
 
 void ps_printer::set_char(int i, font *f, const environment *env, int w)
 {
-  if (i == space_char_index)
+  if (i == space_char_index || invis_count > 0)
     return;
   unsigned char code = f->get_code(i);
   style sty(f, env->size, env->height, env->slant);
@@ -860,6 +857,8 @@ void ps_printer::fill_path()
 
 void ps_printer::draw(int code, int *p, int np, const environment *env)
 {
+  if (invis_count > 0)
+    return;
   int fill_flag = 0;
   switch (code) {
   case 'C':
@@ -1067,6 +1066,10 @@ void ps_printer::end_page()
 {
   flush_sbuf();
   out.put_symbol("EP");
+  if (invis_count != 0) {
+    error("missing `endinvis' command");
+    invis_count = 0;
+  }
 }
 
 font *ps_printer::make_font(const char *nm)
@@ -1165,6 +1168,8 @@ void ps_printer::special(char *arg, const environment *env)
     "mdef", &ps_printer::do_mdef,
     "import", &ps_printer::do_import,
     "file", &ps_printer::do_file,
+    "invis", &ps_printer::do_invis,
+    "endinvis", &ps_printer::do_endinvis,
   };
   for (char *p = arg; *p == ' ' || *p == '\n'; p++)
     ;
@@ -1187,7 +1192,6 @@ void ps_printer::special(char *arg, const environment *env)
   }
   for (int i = 0; i < sizeof(proc_table)/sizeof(proc_table[0]); i++)
     if (strncmp(command, proc_table[i].name, p - command) == 0) {
-      flush_sbuf();
       (this->*(proc_table[i].proc))(p, env);
       return;
     }
@@ -1214,6 +1218,7 @@ static int check_line_lengths(const char *p)
 
 void ps_printer::do_exec(char *arg, const environment *env)
 {
+  flush_sbuf();
   while (csspace(*arg))
     arg++;
   if (*arg == '\0') {
@@ -1238,6 +1243,7 @@ void ps_printer::do_exec(char *arg, const environment *env)
 
 void ps_printer::do_file(char *arg, const environment *env)
 {
+  flush_sbuf();
   while (csspace(*arg))
     arg++;
   if (*arg == '\0') {
@@ -1262,6 +1268,7 @@ void ps_printer::do_file(char *arg, const environment *env)
 
 void ps_printer::do_def(char *arg, const environment *)
 {
+  flush_sbuf();
   while (csspace(*arg))
     arg++;
   if (!check_line_lengths(arg)) {
@@ -1278,6 +1285,7 @@ void ps_printer::do_def(char *arg, const environment *)
 
 void ps_printer::do_mdef(char *arg, const environment *)
 {
+  flush_sbuf();
   char *p;
   int n = (int)strtol(arg, &p, 10);
   if (n == 0 && p == arg) {
@@ -1303,6 +1311,7 @@ void ps_printer::do_mdef(char *arg, const environment *)
 
 void ps_printer::do_import(char *arg, const environment *env)
 {
+  flush_sbuf();
   while (*arg == ' ' || *arg == '\n')
     arg++;
   for (char *p = arg; *p != '\0' && *p != ' ' && *p != '\n'; p++)
@@ -1380,13 +1389,24 @@ void ps_printer::do_import(char *arg, const environment *env)
      .put_fix_number(env->hpos)
      .put_fix_number(env->vpos)
      .put_symbol("PBEGIN");
-  out.put_symbol("userdict")
-     .put_symbol("begin");
   rm.import_file(arg, out);
+  // do this here just in case application defines PEND
   out.put_symbol("end");
   out.put_symbol("PEND");
 }
 
+void ps_printer::do_invis(char *, const environment *)
+{
+  invis_count++;
+}
+
+void ps_printer::do_endinvis(char *, const environment *)
+{
+  if (invis_count == 0)
+    error("unbalanced `endinvis' command");
+  else
+    --invis_count;
+}
 
 printer *make_printer()
 {

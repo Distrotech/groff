@@ -24,11 +24,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <osfcn.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-extern "C" {
-  int stat(const char *, struct stat *);
-  int fstat(int, struct stat *);
-}
+#include <errno.h>
 
 #ifdef HAVE_MMAP
 #ifdef __GNUG__
@@ -562,6 +558,7 @@ void index_search_item::read_common_words_file()
   if (header.common <= 0)
     return;
   const char *common_words_file = munge_filename(strchr(pool, '\0') + 1);
+  errno = 0;
   FILE *fp = fopen(common_words_file, "r");
   if (!fp) {
     error("can't open `%1': %2", common_words_file, strerror(errno));

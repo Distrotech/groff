@@ -20,7 +20,7 @@ Include -DCFRONT_ANSI_BUG in CPPDEFINES in the top-level Makefile.  If
 that doesn't solve the problem, define INT_MIN as -INT_MAX in
 lib/lib.h.
 
-* Using SunOS 4.1, gtroff aborts in malloc.
+* Using SunOS 4.1 or 4.1.1, gtroff aborts in malloc.
 
 Include -DSUNOS_LOCALTIME_BUG in MALLOCFLAGS in the top-level Makefile.
 
@@ -38,21 +38,30 @@ INSTALL file.
 
 * I get errors when I try to compile groff with Sun C++.
 
-Groff requires ANSI C style header files.  The Sun C++ header files
-need some changes to meet this requirement: <string.h> must declare
-the mem* functions, (just add `#include <memory.h>' to <string.h>);
-the first argument to fopen and freopen should be declared as `const
-char *'; the first argument to fread should be declared as `void *';
-malloc should be declared to return `void *'.  You can either change
+Groff requires header files that are moderately compatible with AT&T
+C++ and ANSI C.  With some versions of Sun C++, the supplied header
+files need some of the following changes to meet this requirement:
+<string.h> must declare the mem* functions, (just add `#include
+<memory.h>' to <string.h>); the first argument to fopen and freopen
+should be declared as `const char *'; the first argument to fread
+should be declared as `void *'; the first argument to fwrite should be
+declared as `const void *'; malloc should be declared to return `void
+*'; in <alloca.h>, the declaration `extern "C" { void
+*__builtin_alloca(int); }' should be added; declarations of getopt(),
+optarg, optind and opterr should be added to <stdlib.h>; in
+<sys/signal.h> the return type and the second argument type of
+signal() should be changed to be `void (*)(int)'.
+
+  You can either change
 them in place, or copy them to some other directory and include that
 directory with a -I option.
 
 * I get the error `make[2]: execve: /bin/sh: Arg list too long.'.
 
-If you're using GNU make, try using /bin/make instead.  Otherwise if
-you have the `env' command, try changing occurrences of $(MAKE) in the
-top-level Makefile to
-   env - PATH=/bin:/usr/bin $(MAKE)
+If you're using GNU make, try using /bin/make instead.  Alternatively,
+if you're using GNU make 3.59 or later, do something like:
+  echo .NOEXPORT: >make.noexport
+  MAKEFILES=`pwd`/make.noexport; export MAKEFILES
 
 * pic output is not centered horizontally; pictures sometimes run off
 the bottom of the page.
@@ -246,3 +255,11 @@ Use groff -TXps.
 * In gpic expressions don't work at all. I'm using g++ 1.39 on a sparc.
 
 This is a bug in gcc/g++ 1.39.  Apply the fix given in the INSTALL file.
+
+* When I try to run gxditview, I get the error:
+Error: Widget viewport has zero width and/or height
+
+This error means you haven't correctly installed the application
+defaults file, GXditview.ad; ``make install'' does this for you
+automatically, so either you didn't do ``make install'', or you don't
+have imake configured correctly.

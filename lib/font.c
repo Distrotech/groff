@@ -122,7 +122,6 @@ int text_file::next()
       ptr++;
     if (*ptr != 0 && (!skip_comments || *ptr != '#'))
       return 1;
-    return 1;
   }
   return 0;
 }

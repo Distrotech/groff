@@ -26,8 +26,8 @@ const char *current_roman_font;
 char *gfont = 0;
 char *grfont = 0;
 char *gbfont = 0;
+char *gsize = 0;
 
-int gsize = 0;
 int script_size_reduction = -1;	// negative means reduce by a percentage 
 
 int positive_space = -1;
@@ -148,9 +148,10 @@ void set_space(int n)
     positive_space = n;
 }
 
-void set_gsize(int n)
+void set_gsize(const char *s)
 {
-  gsize = n;
+  delete gsize;
+  gsize = strsave(s);
 }
 
 void set_script_reduction(int n)
@@ -252,8 +253,9 @@ void box::top_level()
   printf(".ft\n");
   printf(".nr " SAVED_PREV_FONT_REG " \\n[.f]\n");
   printf(".ft %s\n", get_gfont());
-  if (gsize > 0)
-    b = new size_box(strsave(itoa(gsize)), b);
+  printf(".nr " SAVED_SIZE_REG " \\n[.s]z\n");
+  if (gsize)
+    b = new size_box(strsave(gsize), b);
   current_roman_font = get_grfont();
   // This catches tabs used within \Z (which aren't allowed).
   b->check_tabs(0);
@@ -274,15 +276,23 @@ void box::top_level()
   // so we cannot use \E there; so we hide it in a string instead.
   printf(".ds " RESTORE_FONT_STRING " "
 	 "\\f[\\\\n[" SAVED_INLINE_PREV_FONT_REG "]]"
-	 "\\f[\\\\n[" SAVED_INLINE_FONT_REG "]]\n");
+	 "\\f[\\\\n[" SAVED_INLINE_FONT_REG "]]"
+	 "\n");
   printf(".as " LINE_STRING " "
 	 "\\R'" SAVED_INLINE_FONT_REG " \\En[.f]'"
 	 "\\fP"
-	 "\\R'" SAVED_INLINE_PREV_FONT_REG " \\En[.f]'");
+	 "\\R'" SAVED_INLINE_PREV_FONT_REG " \\En[.f]'"
+	 "\\R'" SAVED_INLINE_SIZE_REG " \\En[.s]z'"
+	 "\\s0"
+	 "\\R'" SAVED_INLINE_PREV_SIZE_REG " \\En[.s]z'");
   printf("\\f[%s]", get_gfont());
+  printf("\\s'\\En[" SAVED_SIZE_REG "]u'");
   current_roman_font = get_grfont();
   b->output();
-  printf("\\E*[" RESTORE_FONT_STRING "]\n");
+  printf("\\E*[" RESTORE_FONT_STRING "]"
+	 "\\s'\\En[" SAVED_INLINE_PREV_SIZE_REG "]u'"
+	 "\\s'\\En[" SAVED_INLINE_SIZE_REG "]u'"
+	 "\n");
   if (r == FOUND_LINEUP)
     printf(".if r" SAVED_MARK_REG " .as " LINE_STRING " \\h'\\n["
 	   MARK_WIDTH_REG "]u-\\n[" SAVED_MARK_REG "]u-(\\n["

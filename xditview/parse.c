@@ -161,9 +161,8 @@ push_env(dw)
 	DviWidget	dw;
 {
 	DviState	*new;
-	extern char *malloc();
 
-	new = (DviState *) malloc (sizeof (*new));
+	new = (DviState *) XtMalloc (sizeof (*new));
 	if (dw->dvi.state)
 		*new = *(dw->dvi.state);
 	else {
@@ -184,7 +183,7 @@ pop_env(dw)
 
 	old = dw->dvi.state;
 	dw->dvi.state = old->next;
-	free ((char *) old);
+	XtFree ((char *) old);
 }
 
 static

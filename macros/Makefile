@@ -20,20 +20,26 @@
 MACRODIR=/usr/local/lib/groff/tmac
 TMAC_S=gs
 
-all:
+all: tmac.e.strip
+
+tmac.e.strip: tmac.e
+	-rm -f $@
+	sed -e '/%beginstrip%/,$$s/[	 ]*\\".*//' -e '/^\.$$/d' tmac.e >$@
+
 clean:
-distclean:
-realclean:
+	-rm -f tmac.e.strip
+
+distclean: clean
+realclean: distclean
+
 TAGS:
 
-install.nobin:
+install.nobin: all
 	-[ -d $(MACRODIR) ] || mkdir $(MACRODIR)
 	-rm -f $(MACRODIR)/tmac.an
 	cp tmac.an $(MACRODIR)
 	-rm -f $(MACRODIR)/tmac.e
-	@echo Installing tmac.e
-	@sed -e '/%beginstrip%/,$$s/[	 ]*\\".*//' -e '/^\.$$/d' \
-	   tmac.e > $(MACRODIR)/tmac.e
+	cp tmac.e.strip $(MACRODIR)/tmac.e
 	-rm -f $(MACRODIR)/tmac.$(TMAC_S)
 	cp tmac.s $(MACRODIR)/tmac.$(TMAC_S)
 	-rm -f $(MACRODIR)/tmac.pic

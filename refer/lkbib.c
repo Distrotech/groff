@@ -102,13 +102,12 @@ main(int argc, char **argv)
   char *start;
   int len;
   for (int count = 0; iter.next(&start, &len); count++) {
-    if (count > 0)
-      putchar('\n');
     if (fwrite(start, 1, len, stdout) != len)
       fatal("write error on stdout: %1", strerror(errno));
     // Can happen for last reference in file.
     if (start[len - 1] != '\n')
       putchar('\n');
+    putchar('\n');
   }
   exit(!count);
 }

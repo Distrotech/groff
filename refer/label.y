@@ -345,7 +345,7 @@ string:
 		    break;
 		  default:
 		    $$ = $1;
-		    command_error("unknown function `%1'", char($1));
+		    command_error("unknown function `%1'", char($4));
 		    break;
 		  }
 		}

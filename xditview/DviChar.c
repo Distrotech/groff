@@ -5,9 +5,11 @@
  * font indexes and back
  */
 
-# include   "DviChar.h"
+#include   "DviChar.h"
 
-# define allocHash()	((DviCharNameHash *) malloc (sizeof (DviCharNameHash)))
+extern char *xmalloc();
+
+#define allocHash() ((DviCharNameHash *) xmalloc (sizeof (DviCharNameHash)))
 
 struct map_list {
 	struct map_list	*next;
@@ -19,6 +21,7 @@ static struct map_list	*world;
 static int	standard_maps_loaded = 0;
 static void	load_standard_maps ();
 static int	hash_name ();
+static		dispose_hash(), compute_hash();
 
 DviCharNameMap *
 DviFindMap (encoding)
@@ -39,8 +42,6 @@ DviRegisterMap (map)
 	DviCharNameMap	*map;
 {
 	struct map_list	*m;
-	static dispose_hash(), compute_hash();
-	extern char *malloc();
 
 	if (!standard_maps_loaded)
 		load_standard_maps ();
@@ -48,7 +49,7 @@ DviRegisterMap (map)
 		if (!strcmp (m->map->encoding, map->encoding))
 			break;
 	if (!m) {
-		m = (struct map_list *) malloc (sizeof *m);
+		m = (struct map_list *) xmalloc (sizeof *m);
 		m->next = world;
 		world = m;
 	}
@@ -661,4 +662,3 @@ load_standard_maps ()
 	DviRegisterMap (&ISO8859_1_map);
 	DviRegisterMap (&Adobe_Symbol_map);
 }
-

@@ -17,7 +17,7 @@
 #with groff; see the file LICENSE.  If not, write to the Free Software
 #Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
-FONTS=R I B BI CW MI S EX H HI HB
+FONTS=R I B BI CW MI S EX H HI HB SA SB
 FONTDIR=/usr/local/lib/groff/font
 DEVICEDIR=$(FONTDIR)/devdvi
 

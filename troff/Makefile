@@ -54,7 +54,7 @@ majorminor.c: ../VERSION
 	@echo const char \*major_version = \
 	\"`sed -e 's/^\(.*\)\..*$$/\1/' ../VERSION`\"\; >$@
 	@echo const char \*minor_version = \
-	\"`sed -e 's/^.*\.\(.*\)$$/\1/' ../VERSION`\"\; >>$@
+	\"`sed -e 's/^.*\.\([0-9]*\).*$$/\1/' ../VERSION`\"\; >>$@
 
 dictionary.o: dictionary.h $(TROFF_H) symbol.h
 symbol.o: $(TROFF_H) symbol.h
@@ -73,11 +73,8 @@ column.o: dictionary.h div.h env.h $(TROFF_H) hvunits.h \
 	node.h reg.h request.h symbol.h token.h ../lib/stringclass.h
 
 config.h: FORCE
-	@echo \#define MACROPATH \"$(MACROPATH)\" >config.h.n
-	@echo \#define HYPHENFILE \"$(HYPHENFILE)\" >>config.h.n
-	@echo \#define DEVICE \"$(DEVICE)\" >>config.h.n
-	@cmp -s config.h config.h.n || cp config.h.n config.h
-	@rm -f config.h.n
+	@$(SHELL) ../gendef $@ "MACROPATH=\"$(MACROPATH)\"" \
+	"HYPHENFILE=\"$(HYPHENFILE)\"" "DEVICE=\"$(DEVICE)\""
 
 TAGS : $(SOURCES)
 	$(ETAGS) $(ETAGSFLAGS) $(SOURCES) $(HEADERS)
@@ -94,7 +91,7 @@ distclean: clean
 
 realclean: distclean
 
-install.bin : troff
+install.bin: troff
 	-[ -d $(BINDIR) ] || mkdir $(BINDIR)
 	-rm -f $(BINDIR)/gtroff
 	cp troff $(BINDIR)/gtroff

@@ -11,6 +11,10 @@
 #include <ctype.h>
 #include "DviP.h"
 
+#ifdef X_NOT_STDC_ENV
+extern long	ftell();
+#endif
+
 static DviFileMap *
 MapPageNumberToFileMap (dw, number)
 	DviWidget	dw;
@@ -31,7 +35,7 @@ DestroyFileMap (m)
 
 	for (; m; m = next) {
 		next = m->next;
-		free ((char *) m);
+		XtFree ((char *) m);
 	}
 }
 
@@ -46,12 +50,10 @@ RememberPagePosition(dw, number)
 	DviWidget	dw;
 	int		number;
 {
-	extern long	ftell();
 	DviFileMap	*m;
-	extern char *malloc();
 
 	if (!(m = MapPageNumberToFileMap (dw, number))) {
-		m = (DviFileMap *) malloc (sizeof *m);
+		m = (DviFileMap *) XtMalloc (sizeof *m);
 		m->page_number = number;
 		m->next = dw->dvi.file_map;
 		dw->dvi.file_map = m;

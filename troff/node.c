@@ -1085,6 +1085,7 @@ void troff_output_file::really_copy_file(hunits x, vunits y, const char *filenam
   moveto(x, y);
   flush_tbuf();
   do_motion();
+  errno = 0;
   FILE *ifp = fopen(filename, "r");
   if (ifp == 0)
     error("can't open `%1': %2", filename, strerror(errno));
@@ -1272,11 +1273,11 @@ void suppress_output_file::really_print_line(hunits, vunits, node *, vunits, vun
 {
 }
 
-void suppress_output_file::really_begin_page(int pageno, vunits page_length)
+void suppress_output_file::really_begin_page(int, vunits)
 {
 }
 
-void suppress_output_file::really_transparent_char(unsigned char c)
+void suppress_output_file::really_transparent_char(unsigned char)
 {
 }
 
@@ -1292,14 +1293,10 @@ protected:
   glyph_node(charinfo *, tfont *, hunits, node * = 0);
 #endif
 public:
-#ifndef OP_DELETE_BROKEN
   void *operator new(size_t);
   void operator delete(void *);
-#endif /* not OP_DELETE_BROKEN */
   glyph_node(charinfo *, tfont *, node * = 0);
-#ifndef OP_DELETE_BROKEN
   ~glyph_node() {}
-#endif /* not OP_DELETE_BROKEN */
   node *copy();
   node *merge_glyph_node(glyph_node *);
   node *merge_self(node *);
@@ -1336,10 +1333,8 @@ class ligature_node : public glyph_node {
   ligature_node(charinfo *, tfont *, hunits, node *gn1, node *gn2, node *x = 0);
 #endif
 public:
-#ifndef OP_DELETE_BROKEN
   void *operator new(size_t);
   void operator delete(void *);
-#endif /* OP_DELETE_BROKEN */
   ligature_node(charinfo *, tfont *, node *gn1, node *gn2, node *x = 0);
   ~ligature_node();
   node *copy();
@@ -1403,7 +1398,6 @@ public:
   const char *type();
 };
 
-#ifndef OP_DELETE_BROKEN
 void *glyph_node::operator new(size_t n)
 {
   assert(n == sizeof(glyph_node));
@@ -1437,7 +1431,6 @@ void ligature_node::operator delete(void *p)
 {
   delete p;
 }
-#endif /* OP_DELETE_BROKEN */
 
 glyph_node::glyph_node(charinfo *c, tfont *t, node *x)
      : ci(c), tf(t), node(x)
@@ -2710,7 +2703,7 @@ void kern_pair_node::ascii_print(ascii_output_file *ascii)
 }
 
 
-void node::ascii_print(ascii_output_file *ascii)
+void node::ascii_print(ascii_output_file *)
 {
 }
 
@@ -3489,7 +3482,7 @@ void bracket_node::tprint(troff_output_file *out)
   out->down(totalh - y);
 }
 
-void node::tprint(troff_output_file *out)
+void node::tprint(troff_output_file *)
 {
 }
 

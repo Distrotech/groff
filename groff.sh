@@ -272,7 +272,7 @@ X100|X75|X100-12|X75-12)
 	;;
 
 Xps)
-	trflags="-mps $trflags"
+	trflags="-mXps $trflags"
 	eqnchar=@FONTDIR@/devps/eqnchar
 	postpro="| gxditview $optP -printCommand 'grops | @PSPRINT@' -"
 	picflag="-x -p"

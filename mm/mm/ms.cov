@@ -1,0 +1,67 @@
+.\"------------
+.\" Cover sheet. Mostly like ms cover.
+.\" version 0.8
+.\"------------
+.nr cov*title-size 14
+.\"------------
+.de cov@print-title
+.in 0
+.ce \\n[cov*title-size]
+.cov*title
+..
+.\"------------
+.de cov@print-authors
+.SP
+.nr cov*i 0 1
+.while \\n+[cov*i]<=\\n[cov*au] \{\
+.	ce
+\fI\\*[cov*au!\\n[cov*i]!1]\fP
+.	nr cov*j 0 1
+.	while \\n+[cov*j]<=9 \{\
+.		if d cov*at!\\n[cov*i]!\\n[cov*j] \{\
+.			ce
+\s-1\\*[cov*at!\\n[cov*i]!\\n[cov*j]]\s0
+.		\}
+.	\}
+.\}
+..
+.\"------------
+.de cov@print-firm
+.SP .5
+.ce
+\\*[cov*firm]
+..
+.\"------------
+.nr cur*abstract-ll 12.6c
+.\"
+.de cov@print-abstract
+.SP 2
+.if \\n[.$] \{\
+.	ce
+\\$1
+.\}
+.ev cov*ev
+.init@reset
+.nf
+.ll \\n[@ll]u
+.in (u;(\\n[@ll]-\\n[cov*abstract-width])/2)
+.cov*abstract
+.ev
+..
+.\"------------
+.de cov@print-date
+.SP 2
+\\*[cov*new-date]
+..
+.\"-----------------
+.de COVEND
+.sp |4.2c
+.cov@print-title
+.cov@print-authors
+.cov@print-firm
+.cov@print-abstract
+.cov@print-date
+.pg@enable-top-trap
+.bp 1
+.pg@enable-trap
+..

@@ -21,13 +21,17 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #ifdef __cplusplus
 extern "C" {
-  const char *strerror(int);
+  char *strerror(int);
+#ifndef __BORLANDC__
   const char *itoa(int);
   const char *iftoa(int, int);
+#endif /* __BORLANDC__ */
 };
 
 char *strsave(const char *s);
 int is_prime(unsigned);
+#include <stdio.h>
+FILE *xtmpfile();
 
 int interpret_lf_args(const char *p);
 

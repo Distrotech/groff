@@ -1,4 +1,383 @@
+Sun Nov 17 12:04:08 1991  James Clark  (jjc at jclark)
+
+	* Version 1.04 released.
+
+Wed Nov 13 05:27:21 1991  James Clark  (jjc at jclark)
+
+	* macros/tmac.an (TH): Define a macro an-init to define variables
+	based on command line arguments.
+	(an-header): Call it.
+
+Sun Nov  3 12:07:34 1991  James Clark  (jjc at jclark)
+
+	* Makefile (install.mm): Rename to install.dwbmm.
+
+	* Makefile: Integrate mm.
+	* mm: New directory.
+
+Wed Oct 30 10:11:34 1991  James Clark  (jjc at jclark)
+
+	* refer/dirnamemax.c: If PATHCONF_MISSING is defined, include
+	<sys/types.h>.
+
+	* pic/troff.c (troff_output::simple_spline,
+	troff_output::simple_polygon): Rename variable `v' to `d' to avoid
+	shadowing parameter.
+
+	* lib/tmpfile.c (xtmpfile): Declare dir as const char *.
+
+	* lib/ptable.h: Add explicit casts when converting from unsigned
+	long to unsigned.
+
+	* dvi/devdvi/{SA,SB,msam.map,msbm.map}: New files.
+	* dvi/devdvi/Makefile: Install SA, SB.
+
+	* refer/indxbib.c: Add declaration of mktemp.
+
+	* refer/lookbib.c: Add declaration of isatty.
+
+Fri Oct 25 09:00:17 1991  James Clark  (jjc at jclark)
+
+	* pic/lex.c (interpolate_macro_with_args):  While collecting
+	arguments, keep track of whether we're in a string.
+
+Wed Oct 23 08:42:48 1991  James Clark  (jjc at jclark)
+
+	* ps/tmac.ps (PSPIC): Do the .sp after the \X, and move the \X
+	down with \v, so as to avoid problems with top of page trap
+	setting no space mode.
+
+Tue Oct 22 17:38:49 1991  James Clark  (jjc at jclark)
+
+	* eqn/lex.c (get_delimited_text): Allow tab before macro body.
+
+Tue Oct 15 17:24:53 1991  James Clark  (jjc at jclark)
+
+	* ps/psrm.c (ps_get_line): Fix bug when lines longer than 255.
+	Improve error message.
+
+Fri Oct 11 11:09:38 1991  James Clark  (jjc at jclark)
+
+	* ps/psrm.c (print_ps_string): Don't pass negative numbers to
+	printf("%03o");
+
+Wed Oct  9 17:50:14 1991  James Clark  (jjc at jclark)
+
+	* groff.c (possible_command::execp): Always use _exit() after a
+	failed exec.
+
+	* Makefile: Add HAVE_UNION_WAIT, HAVE_PID_T, WAIT_COREDUMP_0200,
+	NO_SYS_WAIT_H 	configuration options.
+	* groff.c: Use these options.  Use POSIX-style macros to extract
+	fields from the status returned by wait().
+
+Fri Oct  4 12:12:27 1991  James Clark  (jjc at jclark)
+
+	* tbl/table.c (table::compute_separation_factor): Allow the
+	separation factor to drop to 0.
+
+Tue Oct  1 18:12:38 1991  James Clark  (jjc at jclark)
+
+	* refer/search.c: Include <errno.h>.
+
+Sun Sep 29 08:40:57 1991  James Clark  (jjc at jclark)
+
+	* pic/pic.y (YYDEBUG): Don't define for Borland C++.
+
+	* lib/lib.h: #ifdef out declarations of itoa and iftoa for Borland
+	C++. 
+
+	* pic/lex.c (input_stack::bol): Move definition out of class body.
+
+	* pic/main.c: On MSDOS munge argv[0].
+
+	* lib/ptable.h: Define name2 as _Paste2 for Borland C++.
+
+	* lib/ptable.c (hash_string): Use unsigned long rather than
+	unsigned.
+	(next_ptable_size): Use unsigned rather than int.  Give an error
+	message if we've hit the largest table size.
+	* lib/ptable.c: Corresponding changes.  Also use unsigneds for the
+	table size.
+
+	* pic/object.h (object_spec): Make flags unsigned long.  Declare
+	flags as const unisgned long rather than as enums.
+
+	* pic/output.c: Deleted.
+
+	* pic/troff.c (troff_output::simple_ellipse): Remove spurious %.
+
+	* tbl/table.c (simple_entry::note_double_vrule_on_{left,right}):
+	Add additional argument.
+	(line_entry::note_double_vrule_on_{left,right}): Set value of
+	douvle_vrule_on_{right,left} flag according to argument.
+	(simple_line_entry::simple_print,
+	simple_line_entry::double_line_print): If adjacent to double vrule
+	on a corner extend rather than shorten the rule by half the double
+	vrule sep.
+
+	* troff/number.c (parse_term): In checking for overflow, handle the
+	case where the current horizontal position is negative.
+
+Thu Sep 12 08:26:09 1991  James Clark  (jjc at jclark)
+
+	* pic/object.c (draw_arrow): Check for object having zero length.
+
+Wed Sep 11 10:32:38 1991  James Clark  (jjc at jclark)
+
+	* eqn/main.c (do_file): Split off inline equation handling into...
+	(inline_equation): New function.  Search for starting delimiter
+	using...
+	(delim_search): New function. Don't recognize a delimiter that
+	occurs in the name of an escape sequence, number register, string
+	etc.
+
+Tue Sep 10 04:01:11 1991  James Clark  (jjc at jclark)
+
+	* eqn/delim.c (delim_box::compute_metrics): Don't call
+	define_extensible_string if left is 0.
+	(delim_box::output):  Don't print the left delimiter if left is 0.
+	(delim_box::debug_print): Check for left == 0 before calling printf.
+
+Fri Aug 23 13:02:30 1991  James Clark  (jjc at jclark)
+
+	* troff/Makefile (majorminor.c): Include only digits in
+	minor_version.
+
+Thu Aug 22 09:35:37 1991  James Clark  (jjc at jclark)
+
+	* refer/dirnamemax.c: new file.
+	* refer/genlimits.c: Deleted.
+	* refer/indxbib.c (main): Use dir_name_max() instead of NAME_MAX.
+	Don't check path length.
+	* refer/Makefile: Add dir_name_max.o; delete genlimits.
+	* Makefile: Add PATHCONF_MISSING option.
+
+	* refer/indxbib.c (get_cwd): New function.
+	(main): Use get_cwd().
+	* lib/getcwd.c: New file.
+	* Makefile: Delete -DHAVE_GETWD. Include GETCWD variable. Pass
+	GETCWD in SUBFLAGS.
+	* lib/Makefile: Compile getcwd.o.
+
+	* ps/tmac.psatk (psatk-defs): Define showpage after pushing
+	userdict.
+
+	* refer/indxbib.c (main): Check success of mktemp.
+
+	* lib/tmpfile.c: New file.
+	* lib/Makefile: Add tmpfile.c.
+	* lib/lib.h: Declare xtmpfile(); include <stdio.h>.
+	* ps/ps.h: Delete declaration of mktemp().
+	* ps/ps.c (ps_printer::ps_printer): Use xtmpfile().
+	* refer/refer.c (divert_to_temporary_file): Use xtmpfile().
+	* driver/driver.h: No need now to include errno.h.
+
+	* everywhere: Set errno to 0 before calling fopen().
+
+	* eqn/eqn.h, etc/soelim.c, driver/driver.h, etc/addftinfo.c,
+	dvi/tfmtodit.c, groff.c, refer/index.c, refer/linear.c,
+	refer/lookbib.c, refer/refer.h, ps/psbb.c: Include <errno.h>.
+
+Mon Aug 19 10:52:18 1991  James Clark  (jjc at jclark)
+
+	* troff/env.h (translate_space_to_dummy): Declare it.
+	* troff/env.c (environment::space_newline, environment::space):
+	If translate_space_to_dummy is set then make the width of spaces 0.
+	* troff/input.c (translate): If the second character of a
+	translation is a space, translate to unbreakable space.  If the
+	first character is a space, set or clear translate_space_to_dummy
+	according to whether the second character is \&.  Weird!
+
+Tue Jul 30 10:03:56 1991  James Clark  (jjc at jclark)
+
+	* groff.c (run_commands): Don't use non-zero exit code because a
+	command gets SIGPIPE.
+
+	* groff.c, groff.sh: Use -mXps with -TXps.
+
+	* ps/ps.c (ps_printer::special): Move call to flush_sbuf() into...
+	(ps_printer::do_exec, ps_printer::do_file, ps_printer::do_def,
+	ps_printer::do_mdef, ps_printer::do_import): Call flush_sbuf().
+	(ps_printer::special): New specials invis and endinvis.
+	(ps_printer::do_invis, ps_printer::do_endinvis): New functions.
+	(ps_printer::set_char, ps_printer::draw): Return if invis_count>0. 
+	(ps_printer::end_page): Check that invis_count == 0.
+	(ps_printer::invis_count): New member.
+	(ps_printer::ps_printer): Initialize invis_count to 0.
+
+	* troff/env.c (environment::hyphenate_line): Hyphenation
+	indicator at beginning of word inhibits splitting after -, \(em
+	etc.
+
+	* pic/pic.y (element): Allow another element to follow } without
+	any intervening separator.
+
+Mon Jul 22 12:27:37 1991  James Clark  (jjc at jclark)
+
+	* pic/lex.c (get_delimited): Allow tabs before delimiter.
+
+Wed Jul 17 10:59:08 1991  James Clark  (jjc at jclark)
+
+	* groff.c: Get rid of HAVE_UNION_WAIT stuff.  Instead suppress
+	declaration of wait() in header files.
+	* Makefile: Get rid of -DHAVE_UNION_WAIT.
+
+	* tbl/table.c (alphabetic_text_entry::add_tab): New function.
+
+	* lib/lib.h: Declare return type of strerror as char *.
+
+	* man/Makefile: Add g flag to sed substitutions.
+	* Makefile (shgroff, bindist): Likewise.
+
+Sun Jul 14 11:57:02 1991  James Clark  (jjc at jclark)
+
+	* ps/ps.c (ps_printer::do_import): Move push of userdict into...
+	* ps/devps/prologue (PBEGIN): Define showpage after pushing
+	userdict.
+
+Sat Jul 13 20:53:04 1991  James Clark  (jjc at jclark)
+
+	* ps/devps/prologue (PBEGIN): Zap any definition of showpage in
+	userdict.
+
+Fri Jul 12 07:10:09 1991  James Clark  (jjc at jclark)
+
+	* man/mdate.sh: Handle the fact that BSD ls -l does not print the
+	group.
+
+Sun Jul  7 08:00:23 1991  James Clark  (jjc at jclark)
+
+	* troff/input.c (define_number_reg):  If currently undefined,
+	don't define it if the argument is an invalid expression.
+
+	* Makefile: Ignore return value of `if' commands without `else'
+	parts.
+
+	* Makefile: Split up CPPDEFINES into a series of separate
+	configuration options.
+
+	* troff/input.c (init_registers): Use time_t instead of long
+	unless LONG_FOR_TIME_T is defined.  Use returned result rather
+	than passing pointer.
+	* Makefile: Document LONG_FOR_TIME_T as a CPPDEFINE.
+
+	* lib/Makefile (fontpath.h): Use gendef.
+
+Thu Jul  4 09:48:05 1991  James Clark  (jjc at jclark)
+
+	* troff/input.c (input_iterator::shift): Delete argument name.
+	* troff/node.c (suppress_output_file::really_begin_page,
+	suppress_output_file::really_transparent_char, node::ascii_print,
+	node::tprint): Delete names of unused arguments.
+
+Wed Jul  3 17:34:57 1991  James Clark  (jjc at jclark)
+
+	* refer/label.y (string):  Pass $4 to command_error.
+
+Tue Jul  2 15:06:01 1991  James Clark  (jjc at jclark)
+
+	* Version 1.03 released.
+
+Sat Jun 29 08:14:01 1991  James Clark  (jjc at jclark)
+
+	* Makefile: Pass definition of SHELL in SUBFLAGS.
+
+	* gendef: New file.
+	* Makefile, eqn/Makefile, refer/Makefile, troff/Makefile,
+	ps/Makefile: Use gendef to construct header files that are
+	constructed from the Makefile.
+
+	* macros/Makefile: make all should build stripped version of tmac.e.
+
+	* refer/Makefile (clean): Remove y.output.
+
+Fri Jun 28 09:44:36 1991  James Clark  (jjc at jclark)
+
+	* ps/pfbtops.c (main): Add -v option which prints out a version
+	number.
+	* ps/Makefile (pfbtops): Link with libgroff.a.
+
+Fri Jun 21 07:43:23 1991  James Clark  (jjc at jclark)
+
+	* refer/search.h (linear_searcher::get_nkeys): Delete declaration.
+	* refer/linear.c (linear_searcher::get_nkeys): Delete definition.
+
+	* refer/lkbib.c (main): Always terminate reference with blank
+	line.
+	* refer/lookbib.c (main): Likewise.
+
+	* refer/linear.c (file_buffer::load): Check that the file is not a
+	binary file.
+
+	* refer/Makefile (genlimits): Possibly add -DHAVE_SYS_DIR_H.
+	(genlimits.c): Include <sys/dir.h> if HAVE_SYS_DIR_H is defined.
+	Delete second inclusion of <sys/param.h>.
+
+Tue Jun 18 01:32:26 1991  James Clark  (jjc at jclark)
+
+	* troff/token.h (token::special): Deleted.
+
+	* tbl/main.c (process_format): Rework so that opt->tab_char is
+	recognized only when appropriate.
+
+	* ps/Makefile (clean): Remove pfbtops.
+
+Sun Jun 16 09:37:19 1991  James Clark  (jjc at jclark)
+
+	* lib/font.c (text_file::next): Don't return if we have got a
+	blank line.
+
+Fri Jun 14 09:52:26 1991  James Clark  (jjc at jclark)
+
+	* refer/refer.c (store_reference): Get hash code from old_table[i]
+	when rehashing the table.
+
+Thu Jun 13 01:26:43 1991  James Clark  (jjc at jclark)
+
+	* eqn/box.c (box::top_level): Save size and prev size using \R and
+	restore it afterwards. Set the size to the size at the beginning
+	of the line.
+	* eqn/pbox.h: Declare SAVED_INLINE_PREV_SIZE_REG,
+	SAVED_INLINE_SIZE_REG, and SAVED_SIZE_REG.
+
+	* refer/Makefile (limits.h): Use ./genlimits.
+
+Wed Jun 12 16:05:34 1991  James Clark  (jjc at jclark)
+
+	* refer/index.c: Delete declarations of stat() and fstat().
+
+Tue Jun 11 14:52:49 1991  James Clark  (jjc at jclark)
+
+	* tty/tmac.tty: Add character definitions for \(>= and \(<=.
+
+Mon Jun 10 22:49:48 1991  James Clark  (jjc at jclark)
+
+	* etc/grog.sh, etc/grog.pl: Change regex for .PS.
+
+Fri Jun  7 09:13:06 1991  James Clark  (jjc at jclark)
+
+	* troff/input.c (token::get_char): Handle \e.
+
+	* refer/linear.c: Delete declarations of fstat() and stat().
+
+Wed Jun  5 09:11:59 1991  James Clark  (jjc at jclark)
+
+	* troff/node.c, troff/env.c, troff/input.c, Makefile: Remove
+	OP_DELETE_BROKEN stuff, since we now have a fix for g++.
+
+Mon Jun  3 13:41:32 1991  James Clark  (jjc at jclark)
+
+	* troff/input.c (do_define_macro): Improve error handling for end
+	of file while defining macro.
+
 Sun Jun  2 10:20:24 1991  James Clark  (jjc at jclark)
+
+	* eqn/box.h: Fix declaration of set_gsize.
+	* eqn/box.c (set_gsize): Make argument const char *.
+	(gsize): Declare as char *.
+	* eqn/main.c (main): Don't convert gsize to int.
+	* eqn/lex.c (do_gsize): Pass char * to set_gsize.
 
 	* Version 1.02 released.
 

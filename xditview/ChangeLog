@@ -1,3 +1,70 @@
+Sat Oct 12 22:58:52 1991  James Clark  (jjc at jclark)
+
+	* Dvi.c (SetDevice): If the size change request is refused but a
+	larger geometry is offered, request that.
+
+Wed Oct  9 12:27:48 1991  James Clark  (jjc at jclark)
+
+	* font.c (InstallFontSizes): Ignore FontNameAverageWidth component.
+
+	* Dvi.c (default_font_map): Add `adobe' to font names to avoid
+	ambiguity.
+
+	* FontMap: New file.
+	* FontMap.X100, FontMap.X75: Deleted.
+	* xtotroff.c (main, usage): Add -s and -r options.
+	(MapFont): Change the font pattern to have the selected resolution and
+	size.
+	* Imakefile (install.dev): Use FontMap and supply appropriate -s
+	and -r options.
+
+	* xtotroff.c (MapFont): Check for ambiguity by comparing canonicalized
+	font names.
+
+	* DviP.h (DviFontList): Add initialized and scalable members.
+	(font.c):  Add support for scalable fonts based on R5 xditview.
+
+	* DviChar.c: Use xmalloc rather than malloc.
+	* xditview.c (xmalloc): New function.
+	* xtotroff.c (xmalloc): New function.
+	* other files: Use XtMalloc and XtFree instead of malloc and free.
+
+Thu Aug 29 20:15:31 1991  James Clark  (jjc at jclark)
+
+	* draw.c (setGC): Do multiplication in floating point to avoid
+	overflow.
+
+Tue Aug 13 12:04:41 1991  James Clark  (jjc at jclark)
+
+	* draw.c (FakeCharacter): Remove casts in defintion of pack2.
+
+Tue Jul 30 11:42:39 1991  James Clark  (jjc at jclark)
+
+	* tmac.Xps: New file.
+	* Imakefile (install): Install tmac.Xps.
+
+Tue Jul  2 09:31:37 1991  James Clark  (jjc at jclark)
+
+	* xtotroff.c (main): Pass argv[0] to usage().
+
+Sun Jun 30 12:34:06 1991  James Clark  (jjc at jclark)
+
+	* xtotroff.c (MapFont): Handle the case where XLoadQueryFont
+	returns NULL.
+
+Sat Jun 29 12:32:52 1991  James Clark  (jjc at jclark)
+
+	* Imakefile: Use ../gendef to generate path.h.
+
+Sun Jun 16 13:26:34 1991  James Clark  (jjc at jclark)
+
+	* Imakefile (depend.o): Change to device.o.
+
+Sun Jun  2 12:17:56 1991  James Clark  (jjc at jclark)
+
+	* Imakefile: Remove spaces from the beginning of variable
+	assignment lines.
+
 Sun May 26 14:14:01 1991  James Clark  (jjc at jclark)
 
 	* xditview.c (Syntax): Update.

@@ -294,15 +294,15 @@ void define_number_reg()
     return;
   }
   reg *r = (reg *)number_reg_dictionary.lookup(nm);
-  if (r == 0) {
-    r = new number_reg;
-    number_reg_dictionary.define(nm, r);
-  }
   units v;
   units prev_value;
-  if (!r->get_value(&prev_value))
+  if (!r || !r->get_value(&prev_value))
     prev_value = 0;
   if (get_number(&v, 'u', prev_value)) {
+    if (r == 0) {
+      r = new number_reg;
+      number_reg_dictionary.define(nm, r);
+    }
     r->set_value(v);
     if (tok.space() && has_arg() && get_number(&v, 'u'))
       r->set_increment(v);

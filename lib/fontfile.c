@@ -101,6 +101,7 @@ FILE *font::open_file(const char *name, char **pathp)
 	  strcat(path, dev_name);
 	  strcat(path, "/");
 	  strcat(path, name);
+	  errno = 0;
 	  FILE *fp = fopen(path, "r");
 	  if (fp != 0) {
 	    *pathp = path;

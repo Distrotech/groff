@@ -167,7 +167,7 @@ private:
   virtual int set_location(const char *, int)
     { return 0; }
   virtual int next_file(FILE *, const char *) { return 0; }
-  virtual void shift(int n) {}
+  virtual void shift(int) {}
   virtual int is_boundary();
   virtual int internal_level() { return 0; }
 };
@@ -523,6 +523,7 @@ void next_file()
   while (!tok.newline() && !tok.eof())
     tok.next();
   if (!nm.is_null()) {
+    errno = 0;
     FILE *fp = fopen(nm.contents(), "r");
     if (!fp)
       error("can't open `%1': %2", nm.contents(), strerror(errno));
@@ -2527,19 +2528,16 @@ temp_iterator::~temp_iterator()
 class small_temp_iterator : public input_iterator {
 private:
   small_temp_iterator(const char *, int);
-#ifndef OP_DELETE_BROKEN
   ~small_temp_iterator();
   enum { BLOCK = 16 };
   static small_temp_iterator *free_list;
   void *operator new(size_t);
   void operator delete(void *);
-#endif /* not OP_DELETE_BROKEN */
   enum { SIZE = 12 };
   unsigned char buf[SIZE];
   friend input_iterator *make_temp_iterator(const char *);
 };
 
-#ifndef OP_DELETE_BROKEN
 small_temp_iterator *small_temp_iterator::free_list = 0;
 
 void *small_temp_iterator::operator new(size_t n)
@@ -2572,7 +2570,6 @@ small_temp_iterator::~small_temp_iterator()
 {
 }
 
-#endif /* not OP_DELETE_BROKEN */
 
 #ifdef __GNUG__
 inline
@@ -3098,6 +3095,10 @@ void do_define_macro(define_mode mode)
     term = dot_symbol;
   while (!tok.newline() && !tok.eof())
     tok.next();
+  const char *start_filename;
+  int start_lineno;
+  int have_start_location = input_stack::get_location(0, &start_filename,
+						      &start_lineno);
   node *n;
   // doing this here makes the line numbers come out right
   int c = get_copy(&n, 1);
@@ -3118,11 +3119,6 @@ void do_define_macro(define_mode mode)
 	mac.append(c);
       c = get_copy(&n, 1);
     }
-    if (c == EOF) {
-      error("end of file while defining macro");
-      tok.next();
-      return;
-    }
     if (bol && c == '.') {
       const char *s = term.contents();
       int d;
@@ -3131,11 +3127,6 @@ void do_define_macro(define_mode mode)
 	d = get_copy(&n);
 	if ((unsigned char)s[i] != d)
 	  break;
-      }
-      if (d == EOF) {
-	error("end of file while defining macro");
-	tok.next();
-	return;
       }
       if (s[i] == 0
 	  && ((i == 2 && compatible_flag)
@@ -3164,6 +3155,25 @@ void do_define_macro(define_mode mode)
 	  mac.append(s[j]);
       }
       c = d;
+    }
+    if (c == EOF) {
+      if (mode == DEFINE_NORMAL || mode == DEFINE_APPEND) {
+	if (have_start_location)
+	  error_with_file_and_line(start_filename, start_lineno,
+				   "end of file while defining macro `%1'",
+				   nm.contents());
+	else
+	  error("end of file while defining macro `%1'", nm.contents());
+      }
+      else {
+	if (have_start_location)
+	  error_with_file_and_line(start_filename, start_lineno,
+				   "end of file while ignoring input lines");
+	else
+	  error("end of file while ignoring input lines");
+      }
+      tok.next();
+      return;
     }
     if (mode == DEFINE_NORMAL || mode == DEFINE_APPEND) {
       if (c == 0)
@@ -4022,6 +4032,7 @@ void source()
   else {
     while (!tok.newline() && !tok.eof())
       tok.next();
+    errno = 0;
     FILE *fp = fopen(nm.contents(), "r");
     if (fp)
       input_stack::push(new file_iterator(fp, nm.contents()));
@@ -4156,6 +4167,7 @@ void do_open(int append)
   if (!stream.is_null()) {
     symbol filename = get_long_name(1);
     if (!filename.is_null()) {
+      errno = 0;
       FILE *fp = fopen(filename.contents(), append ? "a" : "w");
       if (!fp) {
 	error("can't open `%1' for %2: %3",
@@ -4253,16 +4265,27 @@ static void init_charset_table()
 void translate()
 {
   tok.skip();
-  while (!tok.newline() && !tok.space() && !tok.eof()) {
+  while (!tok.newline() && !tok.eof()) {
+    if (tok.space()) {
+      // This is a really bizarre troff feature.
+      tok.next();
+      translate_space_to_dummy = tok.dummy();
+      if (tok.newline() || tok.eof())
+	break;
+      tok.next();
+      continue;
+    }
     charinfo *ci1 = tok.get_char(1);
     if (ci1 == 0)
       break;
     tok.next();
-    if (tok.newline() || tok.space() || tok.eof()) {
+    if (tok.newline() || tok.eof()) {
       ci1->set_special_translation(charinfo::TRANSLATE_SPACE);
       break;
     }
-    if (tok.dummy())
+    if (tok.space())
+      ci1->set_special_translation(charinfo::TRANSLATE_SPACE);
+    else if (tok.dummy())
       ci1->set_special_translation(charinfo::TRANSLATE_DUMMY);
     else {
       charinfo *ci2 = tok.get_char(1);
@@ -4328,6 +4351,14 @@ charinfo *token::get_char(int required)
     return get_charinfo(nm);
   if (type == TOKEN_NUMBERED_CHAR)
     return get_charinfo_by_number(val);
+  if (type == TOKEN_ESCAPE) {
+    if (escape_char != 0)
+      return charset_table[escape_char];
+    else {
+      error("`\\e' used while no current escape character");
+      return 0;
+    }
+  }
   if (required) {
     if (type == TOKEN_EOF || type == TOKEN_NEWLINE)
       warning(WARN_MISSING, "missing normal or special character");
@@ -4720,6 +4751,7 @@ void transparent_file()
   if (break_flag)
     curenv->do_break();
   if (!filename.is_null()) {
+    errno = 0;
     FILE *fp = fopen(filename.contents(), "r");
     if (!fp)
       error("can't open `%1': %2", filename.contents(), strerror(errno));
@@ -4842,6 +4874,7 @@ static FILE *open_file(const char *filename, string_list *dirs, char **pathp)
     if (need_slash)
       strcat(path, "/");
     strcat(path, filename);
+    errno = 0;
     FILE *fp = fopen(path, "r");
     if (fp) {
       *pathp = path;
@@ -4926,6 +4959,7 @@ static void process_input_file(const char *name)
     fp = stdin;
   }
   else {
+    errno = 0;
     fp = fopen(name, "r");
     if (!fp)
       fatal("can't open `%1': %2", name, strerror(errno));
@@ -5395,8 +5429,12 @@ void warn_request()
 
 static void init_registers()
 {
-  long t;
-  time(&t);
+#ifdef LONG_FOR_TIME_T
+  long
+#else /* not LONG_FOR_TIME_T */
+  time_t
+#endif /* not LONG_FOR_TIME_T */
+    t = time(0);
   tm *tt = localtime(&t);
   set_number_reg("dw", int(tt->tm_wday + 1));
   set_number_reg("dy", int(tt->tm_mday));

@@ -61,23 +61,23 @@ MANPAGES= $(MAN1PAGES) $(MAN5PAGES) $(MAN7PAGES)
 .man.n:
 	@echo Making $@ from $<
 	@-rm -f $@
-	@sed -e "s;@HYPHENFILE@;$(HYPHENFILE);" \
-	-e "s;@FONTDIR@;$(FONTDIR);" \
-	-e "s;@FONTPATH@;$(FONTPATH);" \
-	-e "s;@MACRODIR@;$(MACRODIR);" \
-	-e "s;@MACROPATH@;$(MACROPATH);" \
-	-e "s;@DEVICE@;$(DEVICE);" \
-	-e "s;@DEFAULT_INDEX@;$(DEFAULT_INDEX_DIR)/$(DEFAULT_INDEX_NAME);" \
-	-e "s;@DEFAULT_INDEX_NAME@;$(DEFAULT_INDEX_NAME);" \
-	-e "s;@INDEX_SUFFIX@;$(INDEX_SUFFIX);" \
-	-e "s;@COMMON_WORDS_FILE@;$(COMMON_WORDS_FILE);" \
-	-e "s;@MAN1EXT@;$(MAN1EXT);" \
-	-e "s;@MAN5EXT@;$(MAN5EXT);" \
-	-e "s;@MAN7EXT@;$(MAN7EXT);" \
-	-e "s;@TMAC_S@;$(TMAC_S);" \
-	-e "s;@BROKEN_SPOOLER_FLAGS@;$(BROKEN_SPOOLER_FLAGS);" \
-	-e "s;@VERSION@;`cat ../VERSION`;" \
-	-e "s;@MDATE@;`$(SHELL) mdate.sh $<`;" \
+	@sed -e "s;@HYPHENFILE@;$(HYPHENFILE);g" \
+	-e "s;@FONTDIR@;$(FONTDIR);g" \
+	-e "s;@FONTPATH@;$(FONTPATH);g" \
+	-e "s;@MACRODIR@;$(MACRODIR);g" \
+	-e "s;@MACROPATH@;$(MACROPATH);g" \
+	-e "s;@DEVICE@;$(DEVICE);g" \
+	-e "s;@DEFAULT_INDEX@;$(DEFAULT_INDEX_DIR)/$(DEFAULT_INDEX_NAME);g" \
+	-e "s;@DEFAULT_INDEX_NAME@;$(DEFAULT_INDEX_NAME);g" \
+	-e "s;@INDEX_SUFFIX@;$(INDEX_SUFFIX);g" \
+	-e "s;@COMMON_WORDS_FILE@;$(COMMON_WORDS_FILE);g" \
+	-e "s;@MAN1EXT@;$(MAN1EXT);g" \
+	-e "s;@MAN5EXT@;$(MAN5EXT);g" \
+	-e "s;@MAN7EXT@;$(MAN7EXT);g" \
+	-e "s;@TMAC_S@;$(TMAC_S);g" \
+	-e "s;@BROKEN_SPOOLER_FLAGS@;$(BROKEN_SPOOLER_FLAGS);g" \
+	-e "s;@VERSION@;`cat ../VERSION`;g" \
+	-e "s;@MDATE@;`$(SHELL) mdate.sh $<`;g" \
 	$< >$@
 	@chmod 444 $@
 

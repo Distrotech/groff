@@ -17,7 +17,7 @@ static void error(s)
 
 static void usage()
 {
-  fprintf(stderr, "usage: %s [pfb_file]\n", program_name);
+  fprintf(stderr, "usage: %s [-v] [pfb_file]\n", program_name);
   exit(1);
 }
 
@@ -25,12 +25,30 @@ int main(argc, argv)
      int argc;
      char **argv;
 {
+  int opt;
+  extern int optind;
+
   program_name = argv[0];
-  if (argc > 2)
+
+  while ((opt = getopt(argc, argv, "v")) != EOF) {
+    switch (opt) {
+    case 'v':
+      {
+	extern char *version_string;
+	fprintf(stderr, "pfbtops groff version %s\n", version_string);
+	fflush(stderr);
+	break;
+      }
+    case '?':
+      usage();
+    }
+  }
+
+  if (argc - optind > 1)
     usage();
-  if (argc == 2 && !freopen(argv[1], "r", stdin))
+  if (argc > optind && !freopen(argv[optind], "r", stdin))
     {
-      perror(argv[1]);
+      perror(argv[optind]);
       exit(1);
     }
   for (;;)

@@ -12,8 +12,6 @@
 #include "DviP.h"
 #include "XFontName.h"
 
-extern char	*malloc ();
-
 static char *
 savestr (s)
 	char	*s;
@@ -22,7 +20,7 @@ savestr (s)
 
 	if (!s)
 		return 0;
-	n = malloc (strlen (s) + 1);
+	n = XtMalloc (strlen (s) + 1);
 	if (n)
 		strcpy (n, s);
 	return n;
@@ -55,15 +53,44 @@ MaxFontPosition (dw)
 }
 
 static DviFontSizeList *
-LookupFontSizeBySize (f, size, sizescale)
+LookupFontSizeBySize (dw, f, size)
+	DviWidget	dw;
 	DviFontList	*f;
-	int		size, sizescale;
+	int		size;
 {
 	DviFontSizeList	*fs, *best = 0, *smallest = 0;
 	int		bestsize = 0;
-
+	XFontName	fontName;
+	unsigned int    fontNameAttributes;
+	char	    	fontNameString[2048];
+	int		decipointsize;
+	
+	if (f->scalable) {
+		decipointsize = (10*size)/dw->dvi.sizescale;
+		for (best = f->sizes; best; best = best->next)
+			if (best->size == decipointsize)
+				return best;
+		best = (DviFontSizeList *) XtMalloc(sizeof *best);
+		best->next = f->sizes;
+		best->size = decipointsize;
+		f->sizes = best;
+		XParseFontName (f->x_name, &fontName, &fontNameAttributes);
+		fontNameAttributes &= ~(FontNamePixelSize|FontNameAverageWidth);
+		fontNameAttributes |= FontNameResolutionX;
+		fontNameAttributes |= FontNameResolutionY;
+		fontNameAttributes |= FontNamePointSize;
+		fontName.ResolutionX = dw->dvi.display_resolution;
+		fontName.ResolutionY = dw->dvi.display_resolution;
+		fontName.PointSize = decipointsize;
+		XFormatFontName (&fontName, fontNameAttributes, fontNameString);
+		best->x_name = savestr (fontNameString);
+		best->doesnt_exist = 0;
+		best->font = 0;
+		return best;
+	}
 	for (fs = f->sizes; fs; fs=fs->next) {
-		if (sizescale*fs->size <= 10*size && fs->size >= bestsize) {
+		if (dw->dvi.sizescale*fs->size <= 10*size
+		    && fs->size >= bestsize) {
 			best = fs;
 			bestsize = fs->size;
 		}
@@ -115,9 +142,10 @@ ConvertFontNameToEncoding (n)
 }
 
 DviFontSizeList *
-InstallFontSizes (dw, x_name)
+InstallFontSizes (dw, x_name, scalablep)
 	DviWidget	dw;
 	char		*x_name;
+	Boolean		*scalablep;
 {
 	char	fontNameString[2048];
 	char	**fonts;
@@ -127,9 +155,11 @@ InstallFontSizes (dw, x_name)
 	XFontName	fontName;
 	unsigned int	fontNameAttributes;
 
+	*scalablep = FALSE;
 	if (!XParseFontName (x_name, &fontName, &fontNameAttributes))
 		return 0;
-	fontNameAttributes &= ~(FontNamePixelSize|FontNamePointSize);
+	fontNameAttributes &= ~(FontNamePixelSize|FontNamePointSize
+				|FontNameAverageWidth);
 	fontNameAttributes |= FontNameResolutionX;
 	fontNameAttributes |= FontNameResolutionY;
 	fontName.ResolutionX = dw->dvi.display_resolution;
@@ -138,8 +168,15 @@ InstallFontSizes (dw, x_name)
 	fonts = XListFonts (XtDisplay (dw), fontNameString, 10000000, &count);
 	sizes = 0;
 	for (i = 0; i < count; i++) {
-		if ((size = ConvertFontNameToSize (fonts[i])) != -1) {
-			new = (DviFontSizeList *) malloc (sizeof *new);
+		size = ConvertFontNameToSize (fonts[i]);
+		if (size == 0) {
+			DisposeFontSizes (dw, sizes);
+			sizes = 0;
+			*scalablep = TRUE;
+			break;
+		}
+		if (size != -1) {
+			new = (DviFontSizeList *) XtMalloc (sizeof *new);
 			new->next = sizes;
 			new->size = size;
 			new->x_name = savestr (fonts[i]);
@@ -153,7 +190,8 @@ InstallFontSizes (dw, x_name)
 }
 
 static
-DisposeFontSizes (fs)
+DisposeFontSizes (dw, fs)
+	DviWidget	dw;
 	DviFontSizeList	*fs;
 {
 	DviFontSizeList	*next;
@@ -161,10 +199,12 @@ DisposeFontSizes (fs)
 	for (; fs; fs=next) {
 		next = fs->next;
 		if (fs->x_name)
-			free (fs->x_name);
-		if (fs->font)
+			XtFree (fs->x_name);
+		if (fs->font) {
+			XUnloadFont (XtDisplay (dw), fs->font->fid);
 			XFree ((char *)fs->font);
-		free ((char *) fs);
+		}
+		XtFree ((char *) fs);
 	}
 }
 
@@ -176,7 +216,6 @@ InstallFont (dw, position, dvi_name, x_name)
 	char		*x_name;
 {
 	DviFontList	*f;
-	DviFontSizeList	*sizes;
 	char		*encoding;
 
 	if ((f = LookupFontByPosition (dw, position)) != NULL) {
@@ -187,29 +226,24 @@ InstallFont (dw, position, dvi_name, x_name)
 		    !strcmp (f->x_name, x_name))
 			return f;
 
-		sizes = InstallFontSizes (dw, x_name);
-		if (!sizes)
-		    return f;
-
-		DisposeFontSizes (f->sizes);
+		DisposeFontSizes (dw, f->sizes);
 		if (f->dvi_name)
-			free (f->dvi_name);
+			XtFree (f->dvi_name);
 		if (f->x_name)
-			free (f->x_name);
+			XtFree (f->x_name);
 		f->device_font = 0;
 	} else {
-		sizes = InstallFontSizes (dw, x_name);
-		if (!sizes)
-		    return 0;
-		f = (DviFontList *) malloc (sizeof (*f));
+		f = (DviFontList *) XtMalloc (sizeof (*f));
 		f->next = dw->dvi.fonts;
 		dw->dvi.fonts = f;
 	}
+	f->initialized = FALSE;
 	f->dvi_name = savestr (dvi_name);
 	f->device_font = device_find_font (dw->dvi.device, dvi_name);
 	f->x_name = savestr (x_name);
 	f->dvi_number = position;
-	f->sizes = sizes;
+	f->sizes = 0;
+	f->scalable = FALSE;
 	if (f->x_name) {
 		encoding = ConvertFontNameToEncoding (f->x_name);
 		f->char_map = DviFindMap (encoding);
@@ -236,13 +270,13 @@ ForgetFonts (dw)
 		DviFontList *tem = f;
 
 		if (f->sizes)
-			DisposeFontSizes (f->sizes);
+			DisposeFontSizes (dw, f->sizes);
 		if (f->dvi_name)
-			free (f->dvi_name);
+			XtFree (f->dvi_name);
 		if (f->x_name)
-			free (f->x_name);
+			XtFree (f->x_name);
 		f = f->next;
-		free ((char *) tem);
+		XtFree ((char *) tem);
 	}
 	
 	/* 
@@ -311,7 +345,7 @@ ParseFontMap (dw)
 			++m;
 		strncpy (x_name, s, m-s);
 		x_name[m-s] = '\0';
-		new = (DviFontMap *) malloc (sizeof *new);
+		new = (DviFontMap *) XtMalloc (sizeof *new);
 		new->x_name = savestr (x_name);
 		new->dvi_name = savestr (dvi_name);
 		new->next = fm;
@@ -329,10 +363,10 @@ DestroyFontMap (font_map)
 	for (; font_map; font_map = next) {
 		next = font_map->next;
 		if (font_map->x_name)
-			free (font_map->x_name);
+			XtFree (font_map->x_name);
 		if (font_map->dvi_name)
-			free (font_map->dvi_name);
-		free ((char *) font_map);
+			XtFree (font_map->dvi_name);
+		XtFree ((char *) font_map);
 	}
 }
 
@@ -363,7 +397,13 @@ QueryFont (dw, position, size)
 	f = LookupFontByPosition (dw, position);
 	if (!f)
 		return dw->dvi.default_font;
-	fs = LookupFontSizeBySize (f, size, dw->dvi.sizescale);
+	if (!f->initialized) {
+		f->sizes = InstallFontSizes (dw, f->x_name, &f->scalable);
+		f->initialized = TRUE;
+	}
+	fs = LookupFontSizeBySize (dw, f, size);
+	if (!fs)
+		return dw->dvi.default_font;
 	if (!fs->font) {
 		if (fs->x_name)
 			fs->font = XLoadQueryFont (XtDisplay (dw), fs->x_name);

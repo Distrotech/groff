@@ -30,7 +30,7 @@ egrep -h '^\.(P|[LI]P|[pnil]p|Dd|TS|EQ|TH|SH|so|\[|R1)' $* \
 /^\.SO_START$/ { so = 1 }
 /^\.SO_END$/ { so = 0 }
 /^\.TS/ { tbl++; if (so > 0) soelim++ }
-/^\.PS/ { pic++; if (so > 0) soelim++ }
+/^\.PS([ 0-9.<].*)?$/ { pic++; if (so > 0) soelim++ }
 /^\.EQ/ { eqn++; if (so > 0) soelim++ }
 /^\.(R1|\[)/ { refer++; if (so > 0) soelim++ }
 /^\.TH/ { TH++ }

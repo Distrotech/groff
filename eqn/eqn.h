@@ -22,6 +22,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "cset.h"
 #include "errarg.h"
 #include "error.h"

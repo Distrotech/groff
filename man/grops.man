@@ -507,6 +507,55 @@ and
 .I height
 high.
 .RE
+.TP
+.B \eX'ps:\ invis'
+.br
+.ns
+.TP
+.B \eX'ps:\ endinvis'
+No output will be generated for text and drawing commands
+that are bracketed with these
+.B \eX
+commands.
+These commands are intended for use when output from
+.B gtroff
+will be previewed before being processed with
+.BR grops ;
+if the previewer is unable to display certain characters
+or other constructs, then other substitute characters or constructs
+can be used for previewing by bracketing them with these
+.B \eX
+commands.
+.RS
+.LP
+For example,
+.B gxditview
+is not able to display a proper
+.B \e(em
+character because the standard X11 fonts do not provide it;
+this problem can be overcome by executing the following
+request
+.IP
+.ft B
+.nf
+\&.char \e(em \eX'ps: invis'\e
+\eZ'\ev'-.25m'\eh'.05m'\eD'l .9m 0'\eh'.05m''\e
+\eX'ps: endinvis'\e(em
+.ft
+.fi
+.LP
+In this case,
+.B gxditview
+will be unable to display the
+.B \e(em
+character and will draw the line,
+whereas
+.B grops
+will print the
+.B \e(em
+character
+and ignore the line.
+.RE
 .LP
 The input to
 .B grops

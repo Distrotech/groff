@@ -31,30 +31,30 @@ static char Xrcsid[] = "$XConsortium: Dvi.c,v 1.9 89/12/10 16:12:25 rws Exp $";
 /* Private Data */
 
 static char default_font_map[] =  "\
-TR	-*-times-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
-TI	-*-times-medium-i-normal--*-100-*-*-*-*-iso8859-1\n\
-TB	-*-times-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
-TBI	-*-times-bold-i-normal--*-100-*-*-*-*-iso8859-1\n\
-CR	-*-courier-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
-CI	-*-courier-medium-o-normal--*-100-*-*-*-*-iso8859-1\n\
-CB	-*-courier-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
-CBI	-*-courier-bold-o-normal--*-100-*-*-*-*-iso8859-1\n\
-HR	-*-helvetica-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
-HI	-*-helvetica-medium-o-normal--*-100-*-*-*-*-iso8859-1\n\
-HB	-*-helvetica-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
-HBI	-*-helvetica-bold-o-normal--*-100-*-*-*-*-iso8859-1\n\
-NR	-*-new century schoolbook-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
-NI	-*-new century schoolbook-medium-i-normal--*-100-*-*-*-*-iso8859-1\n\
-NB	-*-new century schoolbook-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
-NBI	-*-new century schoolbook-bold-i-normal--*-100-*-*-*-*-iso8859-1\n\
-S	-*-symbol-medium-r-normal--*-100-*-*-*-*-adobe-fontspecific\n\
-SS	-*-symbol-medium-r-normal--*-100-*-*-*-*-adobe-fontspecific\n\
+TR	-adobe-times-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
+TI	-adobe-times-medium-i-normal--*-100-*-*-*-*-iso8859-1\n\
+TB	-adobe-times-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
+TBI	-adobe-times-bold-i-normal--*-100-*-*-*-*-iso8859-1\n\
+CR	-adobe-courier-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
+CI	-adobe-courier-medium-o-normal--*-100-*-*-*-*-iso8859-1\n\
+CB	-adobe-courier-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
+CBI	-adobe-courier-bold-o-normal--*-100-*-*-*-*-iso8859-1\n\
+HR	-adobe-helvetica-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
+HI	-adobe-helvetica-medium-o-normal--*-100-*-*-*-*-iso8859-1\n\
+HB	-adobe-helvetica-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
+HBI	-adobe-helvetica-bold-o-normal--*-100-*-*-*-*-iso8859-1\n\
+NR	-adobe-new century schoolbook-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
+NI	-adobe-new century schoolbook-medium-i-normal--*-100-*-*-*-*-iso8859-1\n\
+NB	-adobe-new century schoolbook-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
+NBI	-adobe-new century schoolbook-bold-i-normal--*-100-*-*-*-*-iso8859-1\n\
+S	-adobe-symbol-medium-r-normal--*-100-*-*-*-*-adobe-fontspecific\n\
+SS	-adobe-symbol-medium-r-normal--*-100-*-*-*-*-adobe-fontspecific\n\
 ";
 
 #define offset(field) XtOffset(DviWidget, field)
 
-# define MY_WIDTH(dw)	((int)(dw->dvi.paperwidth * dw->dvi.scale_factor + .5))
-# define MY_HEIGHT(dw)	((int)(dw->dvi.paperlength * dw->dvi.scale_factor + .5))
+#define MY_WIDTH(dw) ((int)(dw->dvi.paperwidth * dw->dvi.scale_factor + .5))
+#define MY_HEIGHT(dw) ((int)(dw->dvi.paperlength * dw->dvi.scale_factor + .5))
 
 static XtResource resources[] = { 
 	{XtNfontMap, XtCFontMap, XtRString, sizeof (char *),
@@ -272,18 +272,17 @@ SetValues (current, request, new)
 	DviWidget current, request, new;
 {
 	Boolean		redisplay = FALSE;
-	extern char	*malloc ();
 	char		*new_map;
 	int		cur, req;
 
 	if (current->dvi.font_map_string != request->dvi.font_map_string) {
-		new_map = malloc (strlen (request->dvi.font_map_string) + 1);
+		new_map = XtMalloc (strlen (request->dvi.font_map_string) + 1);
 		if (new_map) {
 			redisplay = TRUE;
 			strcpy (new_map, request->dvi.font_map_string);
 			new->dvi.font_map_string = new_map;
 			if (current->dvi.font_map_string)
-				free (current->dvi.font_map_string);
+				XtFree (current->dvi.font_map_string);
 			current->dvi.font_map_string = 0;
 			ParseFontMap (new);
 		}
@@ -383,6 +382,7 @@ SetDevice (dw, name)
 	char 		*name;
 {
 	XtWidgetGeometry	request, reply;
+	XtGeometryResult ret;
 
 	ForgetFonts (dw);
 	dw->dvi.device = device_load (name);
@@ -405,7 +405,14 @@ SetDevice (dw, name)
 	request.request_mode = CWWidth|CWHeight;
 	request.width = MY_WIDTH(dw);
 	request.height = MY_HEIGHT(dw);
-	XtMakeGeometryRequest (dw, &request, &reply);
+	ret = XtMakeGeometryRequest (dw, &request, &reply);
+	if (ret == XtGeometryAlmost
+	    && reply.height >= request.height
+	    && reply.width >= request.width) {
+		request.width = reply.width;
+		request.height = reply.height;
+		XtMakeGeometryRequest (dw, &request, &reply);
+	}
 }
 
 static void

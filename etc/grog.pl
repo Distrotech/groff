@@ -47,7 +47,7 @@ sub process {
 		$soelim++ if $level;
 	    }
 	}
-	elsif (/^\.PS/) {
+	elsif (/^\.PS([ 0-9.<].*)?$/) {
 	    $_ = <FILE>;
 	    if (!/^\./ || /^\.ps/) {
 		$pic++;

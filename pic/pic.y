@@ -35,7 +35,9 @@ extern "C" {
   int rand();
 }
 
+#ifndef __BORLANDC__
 #define YYDEBUG 1
+#endif /* __BORLANDC__ */
 
 int yylex();
 void yyerror(const char *);
@@ -494,6 +496,9 @@ element:
 		  current_position.x = $<state>2.x;
 		  current_position.y = $<state>2.y;
 		  current_direction = $<state>2.dir;
+		}
+	  optional_element
+		{
 		  $$ = $3;
 		}
 	| placeless_element
@@ -502,6 +507,13 @@ element:
 		  $$.x = current_position.x;
 		  $$.y = current_position.y;
 		}
+	;
+
+optional_element:
+	/* empty */
+		{}
+	| element
+		{}
 	;
 
 object_spec:

@@ -93,6 +93,9 @@ MAN7DIR=$(MANROOT)/man$(MAN7EXT)
 # groff -ms -M/usr/lib/tmac.
 TMAC_S=gs
 
+# Similarily, the groff mm macros will be available as -m$(TMAC_M).
+TMAC_M=gm
+
 # Normally the Postscript driver, grops, produces output that conforms
 # to version 3.0 of the Adobe Document Structuring Conventions.
 # Unfortunately some spoolers and previewers can't handle such output.
@@ -114,28 +117,62 @@ TMAC_S=gs
 # A value of 7 is equivalent to -DBROKEN_SPOOLER of earlier releases.
 BROKEN_SPOOLER_FLAGS=7
 
-# Include -DCFRONT_ANSI_BUG in CPPDEFINES if you are using AT&T C++
-# 2.0 with an ANSI C compiler backend.
-# Include -DOP_DELETE_BROKEN if you're using g++ 1.39.0 or 1.39.1.
-# Include -DHAVE_VFORK if you have vfork().
-# Include -DHAVE_SYS_SIGLIST if you have sys_siglist[].
-# Include -DHAVE_UNION_WAIT if wait() is declared by osfcn.h to take
-# an argument of type union wait * (Sun C++ does this).  Don't include
-# it if you're using the libg++ header files.
-# Include -DHAVE_MMAP if you have the mmap() system call
-# (and you want to use it).
-# Include -DHAVE_RENAME if you have the rename() system call.
-# Include -DHAVE_GETWD if you have the getwd() library function.
+# Uncomment the next line if you are using AT&T C++ 2.0 with an ANSI C
+# compiler backend.
+D1=#-DCFRONT_ANSI_BUG
 
-CPPDEFINES=#-DCFRONT_ANSI_BUG -DOP_DELETE_BROKEN -DHAVE_VFORK -DHAVE_SYS_SIGLIST -DHAVE_UNION_WAIT  -DHAVE_MMAP -DHAVE_RENAME -DHAVE_GETWD
+# Uncomment the next line if you have vfork().
+D2=#-DHAVE_VFORK
+
+# Uncomment the next line if you have sys_siglist[].
+D3=#-DHAVE_SYS_SIGLIST
+
+# Uncomment the next line if you have the mmap() system call (and you
+# want to use it).
+D4=#-DHAVE_MMAP
+
+# Uncomment the next line if you have the rename() system call.
+D5=#-DHAVE_RENAME
+
+# Uncomment the next line if the argument to localtime() is a long*
+# rather than a time_t*.
+D6=#-DLONG_FOR_TIME_T
+
+# Uncomment the next line if wait is declared by your C++ header files
+# to take an argument of type union wait *.
+D7=#-DHAVE_UNION_WAIT
+
+# Uncoment the next line if your C++ header files declare a type pid_t
+# which is used as the return type of fork() and wait().
+D8=#-DHAVE_PID_T
+
+# Uncomment the next line if the 0200 bit of the status returned by
+# wait() indicates whether a core image was produced for a process
+# that was terminated by a signal.  This is true for traditional Unix
+# implementations, but not necessarily for all POSIX systems.
+D9=-DWAIT_COREDUMP_0200
+
+# Uncomment the next line if <sys/wait.h> should not be included
+# when using wait().  Use this with the libg++ header files.
+D10=-DNO_SYS_WAIT_H
+
+# Uncomment the next line if you do not have the POSIX pathconf()
+# function.  You will need this on old UNIX systems that do not
+# support POSIX.
+PATHCONF_MISSING=#-DPATHCONF_MISSING
 
 # Uncomment the next line if you don't have fmod in your math library.
-# I believe this is needed on Ultrix and BSD 4.3.
-# FMOD=fmod.o
+# I believe this is needed on old versions of Ultrix and BSD 4.3.
+FMOD=#fmod.o
 
 # Uncomment the next line if you don't have strtol in your C library.
 # I believe this is needed on BSD 4.3.
-# STRTOL=strtol.o
+STRTOL=#strtol.o
+
+# Uncomment the next line if you don't have getcwd in your library.
+# An emulation in terms of getwd() will be provided. I believe this
+# is needed on BSD 4.3.
+GETCWD=#getcwd.o
 
 # Additional flags needed to compile the GNU Emacs malloc.
 # Use this with BSD.
@@ -166,7 +203,7 @@ GROFF=groff
 GROG=grog.sh
 # The next line should be uncommented if you want to use the new perl
 # version.
-#  GROG=grog.pl
+# GROG=grog.pl
 
 # CC is the C++ compiler
 CC=g++
@@ -177,7 +214,7 @@ CC=g++
 OLDCC=gcc
 
 PROFILE_FLAG=
-DEBUG_FLAG=-g
+DEBUG_FLAG=
 OPTIMIZE_FLAG=-O
 WARNING_FLAGS=#-Wall -Wcast-qual -Wwrite-strings
 
@@ -186,7 +223,7 @@ XCFLAGS=
 
 # CFLAGS are passed to sub makes
 CFLAGS=$(PROFILE_FLAG) $(DEBUG_FLAG) $(OPTIMIZE_FLAG) $(WARNING_FLAGS) \
-	$(CPPDEFINES) $(XCFLAGS)
+$(D1) $(D2) $(D3) $(D4) $(D5) $(D6) $(D7) $(D8) $(D9) $(D10) $(XCFLAGS)
 
 XOLDCFLAGS=
 # OLDCFLAGS are passed to sub makes
@@ -217,26 +254,27 @@ ETAGSFLAGS=-p
 
 SHELL=/bin/sh
 
-SUBDIRS=lib troff pic tbl eqn refer etc driver ps tty dvi macros man
+SUBDIRS=lib troff pic tbl eqn refer etc driver ps tty dvi macros man mm
 
 # SUBFLAGS says what flags to pass to sub makes
-SUBFLAGS="CC=$(CC)" "CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)" \
+SUBFLAGS="SHELL=$(SHELL)" "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)" \
 	"OLDCC=$(OLDCC)" "OLDCFLAGS=$(OLDCFLAGS)" \
 	"YACC=$(YACC)" "YACCFLAGS=$(YACCFLAGS)" \
 	"DEVICE=$(DEVICE)" "FONTPATH=$(FONTPATH)" "MACROPATH=$(MACROPATH)" \
 	"MALLOCFLAGS=$(MALLOCFLAGS)" "MALLOC=$(MALLOC)" \
-	"FMOD=$(FMOD)" "STRTOL=$(STRTOL)" "GROG=$(GROG)" \
+	"FMOD=$(FMOD)" "STRTOL=$(STRTOL)" "GETCWD=$(GETCWD)" "GROG=$(GROG)" \
 	"AR=$(AR)" "RANLIB=$(RANLIB)" "LIBS=$(LIBS)" "MLIBS=$(MLIBS)" \
 	"FONTDIR=$(FONTDIR)" "BINDIR=$(BINDIR)" "PAGE=$(PAGE)" \
 	"MACRODIR=$(MACRODIR)" "HYPHENFILE=$(HYPHENFILE)" \
-	"TMAC_S=$(TMAC_S)" "MAN1EXT=$(MAN1EXT)" "MAN1DIR=$(MAN1DIR)" \
-	"MAN5EXT=$(MAN5EXT)" "MAN5DIR=$(MAN5DIR)" \
+	"TMAC_S=$(TMAC_S)" "TMAC_M=$(TMAC_M)" "MAN1EXT=$(MAN1EXT)" \
+	"MAN1DIR=$(MAN1DIR)" "MAN5EXT=$(MAN5EXT)" "MAN5DIR=$(MAN5DIR)" \
 	"MAN7EXT=$(MAN7EXT)" "MAN7DIR=$(MAN7DIR)" \
 	"BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
 	"INDEX_SUFFIX=$(INDEX_SUFFIX)" \
 	"DEFAULT_INDEX_DIR=$(DEFAULT_INDEX_DIR)" \
 	"DEFAULT_INDEX_NAME=$(DEFAULT_INDEX_NAME)" \
-	"COMMON_WORDS_FILE=$(COMMON_WORDS_FILE)"
+	"COMMON_WORDS_FILE=$(COMMON_WORDS_FILE)" \
+	"PATHCONF_MISSING=$(PATHCONF_MISSING)"
 
 INCLUDES=-Ilib
 
@@ -261,7 +299,7 @@ TAGS: FORCE
 
 topclean: FORCE
 	-rm -f shgroff
-	-rm -f groff *.o core device.h device.h.n
+	-rm -f groff *.o core device.h
 
 clean: topclean FORCE
 	@for dir in $(SUBDIRS) doc; do \
@@ -286,7 +324,7 @@ install.nobin: FORCE shgroff
 	@for dir in $(SUBDIRS); do \
 	echo Making install.nobin in $$dir; \
 	(cd $$dir; $(MAKE) $(SUBFLAGS) install.nobin); done
-	if [ -z "$(GROFF)" ] ; \
+	-if [ -z "$(GROFF)" ] ; \
 	then rm -f $(BINDIR)/groff ; \
 	cp shgroff $(BINDIR)/groff ; fi
 
@@ -295,13 +333,13 @@ install.bin: FORCE $(GROFF)
 	@for dir in $(SUBDIRS); do \
 	echo Making install.bin in $$dir; \
 	(cd $$dir; $(MAKE) $(SUBFLAGS) install.bin); done
-	if [ -n "$(GROFF)" ] ; \
+	-if [ -n "$(GROFF)" ] ; \
 	then rm -f $(BINDIR)/groff ; \
 	cp groff $(BINDIR)/groff ; fi
 
 install: install.bin install.nobin
 
-install.mm: FORCE
+install.dwbmm: FORCE
 	-[ -d $(GROFFLIBDIR) ] || mkdir $(GROFFLIBDIR)
 	-[ -d $(MACRODIR) ] || mkdir $(MACRODIR)
 	-rm -f $(MACRODIR)/tmac.m
@@ -315,12 +353,12 @@ install.mm: FORCE
 shgroff: groff.sh
 	@echo Making $@ from groff.sh
 	@-rm -f $@
-	@sed -e "s;@BINDIR@;$(BINDIR);" \
-	-e "s;@DEVICE@;$(DEVICE);" \
-	-e "s;@PROG_PREFIX@;$(PROG_PREFIX);" \
-	-e "s;@FONTDIR@;$(FONTDIR);" \
-	-e "s;@PSPRINT@;$(PSPRINT);" \
-	-e "s;@DVIPRINT@;$(DVIPRINT);" \
+	@sed -e "s;@BINDIR@;$(BINDIR);g" \
+	-e "s;@DEVICE@;$(DEVICE);g" \
+	-e "s;@PROG_PREFIX@;$(PROG_PREFIX);g" \
+	-e "s;@FONTDIR@;$(FONTDIR);g" \
+	-e "s;@PSPRINT@;$(PSPRINT);g" \
+	-e "s;@DVIPRINT@;$(DVIPRINT);g" \
 	groff.sh >$@ || rm -f $@
 	@chmod +x $@
 
@@ -330,11 +368,10 @@ groff: groff.o lib/libgroff.a
 lib/libgroff.a: lib
 
 device.h: FORCE
-	@echo \#define DEVICE \"$(DEVICE)\" >device.h.n
-	@echo \#define PSPRINT `$(SHELL) stringify $(PSPRINT)` >>device.h.n
-	@echo \#define DVIPRINT `$(SHELL) stringify $(DVIPRINT)` >>device.h.n
-	@cmp -s device.h device.h.n || cp device.h.n device.h
-	@rm -f device.h.n
+	@$(SHELL) gendef $@ \
+	"DEVICE=\"$(DEVICE)\"" \
+	"PSPRINT=`$(SHELL) stringify $(PSPRINT)`" \
+	"DVIPRINT=`$(SHELL) stringify $(DVIPRINT)`"
 
 groff.o: device.h lib/lib.h lib/errarg.h lib/error.h lib/stringclass.h \
 	lib/font.h
@@ -346,16 +383,16 @@ bindist: all VERSION Makefile.bd README.bd FORCE
 	(cd $$dir; $(MAKE) $(SUBFLAGS) "BINDIR=$$topdir/bindist" install.bin); done
 	cp README.bd bindist/README
 	cp VERSION bindist
-	if [ -n "$(GROFF)" ] ; then cp groff bindist/groff ; fi
+	-if [ -n "$(GROFF)" ] ; then cp groff bindist/groff ; fi
 	@echo Making bindist/Makefile
-	@sed -e "s;@GROFFLIBDIR@;$(GROFFLIBDIR);" \
-	-e "s;@FONTDIR@;$(FONTDIR);" \
-	-e "s;@FONTPATH@;$(FONTPATH);" \
-	-e "s;@MACRODIR@;$(MACRODIR);" \
-	-e "s;@MACROPATH@;$(MACROPATH);" \
-	-e "s;@HYPHENFILE@;$(HYPHENFILE);" \
-	-e "s;@DEVICE@;$(DEVICE);" \
-	-e "s;@GROFF@;$(GROFF);" \
+	@sed -e "s;@GROFFLIBDIR@;$(GROFFLIBDIR);g" \
+	-e "s;@FONTDIR@;$(FONTDIR);g" \
+	-e "s;@FONTPATH@;$(FONTPATH);g" \
+	-e "s;@MACRODIR@;$(MACRODIR);g" \
+	-e "s;@MACROPATH@;$(MACROPATH);g" \
+	-e "s;@HYPHENFILE@;$(HYPHENFILE);g" \
+	-e "s;@DEVICE@;$(DEVICE);g" \
+	-e "s;@GROFF@;$(GROFF);g" \
 	Makefile.bd >bindist/Makefile
 
 FORCE:

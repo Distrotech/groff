@@ -25,6 +25,11 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <osfcn.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <errno.h>
+#include <sys/types.h>
+#ifndef NO_SYS_WAIT_H
+#include <sys/wait.h>
+#endif /* not NO_SYS_WAIT_H */
 
 #include "lib.h"
 #include "assert.h"
@@ -35,17 +40,52 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #include "device.h"
 
-const char *strsignal(int);
+#ifdef HAVE_PID_T
+typedef pid_t PID_T;
+#else
+typedef int PID_T;
+#endif
 
-// HAVE_UNION_WAIT exists only because Sun's osfcn.h includes sys/wait.h.
-
-extern "C" {
 #ifdef HAVE_UNION_WAIT
-  int wait(union wait *);
-#else /* !HAVE_UNION_WAIT */
-  int wait(int *);
-#endif /* !HAVE_UNION_WAIT */
+typedef union wait WAIT_STATUS_T;
+#else
+typedef int WAIT_STATUS_T;
+#endif
+
+#ifdef NO_SYS_WAIT_H
+extern "C" {
+  PID_T wait(WAIT_STATUS_T *);
 }
+#endif /* NO_SYS_WAIT_H */
+
+
+#ifdef HAVE_UNION_WAIT
+/* Convert the argument which must be an lvalue of type union wait *
+to an int. */
+#define WTOI(s) (*(int *)&(s))
+#else
+#define WTOI(s) (s)
+#endif
+
+#ifndef WIFEXITED
+#define WIFEXITED(s) ((WTOI(s) & 0377) == 0)
+#define WIFSTOPPED(s) ((WTOI(s) & 0377) == 0177)
+#define WIFSIGNALED(s) ((WTOI(s) & 0377) != 0 && ((WTOI(s) & 0377) != 0177))
+#endif /* WIFEXITED */
+
+#ifndef WEXITSTATUS
+#define WEXITSTATUS(s) ((WTOI(s) >> 8) & 0377)
+#define WTERMSIG(s) (WTOI(s) & 0177)
+#define WSTOPSIG(s) ((WTOI(s) >> 8) & 0377)
+#endif /* not WEXITSTATUS */
+
+#ifdef WAIT_COREDUMP_0200
+#define WCOREDUMPED(s) (WTOI(s) & 0200)
+#else
+#define WCOREDUMPED(s) 0
+#endif
+
+const char *strsignal(int);
 
 const char *ps_print[] = { PSPRINT 0 };
 
@@ -149,7 +189,7 @@ struct {
     "X11 previewer with PostScript metrics",
     gxditview,
     EQN_D_OPTION|PIC_X_OPTION|PIC_P_OPTION|XT_OPTION|PRINT_OPTION,
-    "ps",
+    "Xps",
     0
     },
 };
@@ -173,7 +213,7 @@ class possible_command {
   string args;
   char **argv;
 public:
-  int pid;
+  PID_T pid;
 
   possible_command();
   ~possible_command();
@@ -452,11 +492,11 @@ int run_commands()
 	  sys_fatal("pipe");
       }
 #ifdef HAVE_VFORK
-      int pid = vfork();
+      PID_T pid = vfork();
       if (pid < 0)
 	sys_fatal("vfork");
 #else /* !HAVE_VFORK */
-      int pid = fork();
+      PID_T pid = fork();
       if (pid < 0)
 	sys_fatal("fork");
 #endif /* !HAVE_VFORK */
@@ -496,35 +536,32 @@ int run_commands()
     }
   int ret = 0;
   while (proc_count > 0) {
-    int status;
-#ifdef HAVE_UNION_WAIT
-    // union wait is just syntactic sugar: it's really just an int.
-    int pid = wait((union wait *)&status);
-#else /* !HAVE_UNION_WAIT */
-    int pid = wait(&status);
-#endif /* !HAVE_UNION_WAIT */
+    WAIT_STATUS_T status;
+    PID_T pid = wait(&status);
     if (pid < 0)
       sys_fatal("wait");
     for (i = 0; i < NCOMMANDS; i++)
       if (commands[i].pid == pid) {
 	--proc_count;
-	if ((status & 0xffff) != 0) {
-	  if ((status & 0xff) != 0) {
-	    if ((status & 0x7f) != SIGPIPE)
-	      error("%1: %2%3",
-		    commands[i].get_name(),
-		    strsignal(status & 0x7f),
-		    (status & 0x80) ? " (core dumped)" : "");
+	if (WIFSIGNALED(status)) {
+	  int sig = WTERMSIG(status);
+	  if (sig != SIGPIPE) {
+	    error("%1: %2%3",
+		  commands[i].get_name(),
+		  strsignal(sig),
+		  WCOREDUMPED(status) ? " (core dumped)" : "");
 	    ret |= 2;
 	  }
-	  else {
-	    int exit_status = (status >> 8) & 0xff;
-	    if (exit_status == EXEC_FAILED_EXIT_STATUS)
-	      ret |= 4;
-	    else if (exit_status != 0)
-	      ret |= 1;
-	  }
 	}
+	else if (WIFEXITED(status)) {
+	  int exit_status = WEXITSTATUS(status);
+	  if (exit_status == EXEC_FAILED_EXIT_STATUS)
+	    ret |= 4;
+	  else if (exit_status != 0)
+	    ret |= 1;
+	}
+	else
+	  error("unexpected status %1", WTOI(status));
 	break;
       }
   }
@@ -670,12 +707,8 @@ void possible_command::execp()
   build_argv();
   execvp(name, argv);
   error("couldn't exec %1: %2", name, strerror(errno));
-#ifdef HAVE_VFORK
-  // vfork(2) says not to call exit when execve fails after vforking.
+  fflush(stderr);		// just in case
   _exit(EXEC_FAILED_EXIT_STATUS);
-#else
-  exit(EXEC_FAILED_EXIT_STATUS);
-#endif
 }
 
 void synopsis()

@@ -27,8 +27,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include "search.h"
 #include "command.h"
 
-#define TEMP_TEMPLATE "/tmp/greferXXXXXX"
-
 const char PRE_LABEL_MARKER = '\013';
 const char POST_LABEL_MARKER = '\014';
 const char LABEL_MARKER = '\015'; // label_type is added on
@@ -420,6 +418,7 @@ static void do_file(const char *filename)
     fp = stdin;
   }
   else {
+    errno = 0;
     fp = fopen(filename, "r");
     if (fp == 0) {
       error("can't open `%1': %2", filename, strerror(errno));
@@ -667,15 +666,7 @@ static void split_punct(string &line, string &punct)
 
 static void divert_to_temporary_file()
 {
-  char temp_filename[sizeof(TEMP_TEMPLATE)];
-  strcpy(temp_filename, TEMP_TEMPLATE);
-  mktemp(temp_filename);
-  outfp = fopen(temp_filename, "w+");
-  if (outfp == 0)
-    fatal("can't open temporary file `%1': %2",
-	  temp_filename, strerror(errno));
-  if (unlink(temp_filename) < 0)
-    error("can't unlink `%1': %2", temp_filename, strerror(errno));
+  outfp = xtmpfile();
 }
 
 static void store_citation(reference *ref)
@@ -736,7 +727,8 @@ static unsigned store_reference(const string &str)
 	reference_hash_table[i] = 0;
       for (i = 0; i < old_size; i++)
 	if (old_table[i]) {
-	  for (reference **p = reference_hash_table + (h % hash_table_size);
+	  for (reference **p = (reference_hash_table
+				+ (old_table[i]->hash() % hash_table_size));
 	       *p;
 	       ((p == reference_hash_table)
 		? (p = reference_hash_table + hash_table_size - 1)
@@ -1092,6 +1084,7 @@ void do_bib(const char *filename)
   if (strcmp(filename, "-") == 0)
     fp = stdin;
   else {
+    errno = 0;
     fp = fopen(filename, "r");
     if (fp == 0) {
       error("can't open `%1': %2", filename, strerror(errno));

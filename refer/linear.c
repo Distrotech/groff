@@ -25,11 +25,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-extern "C" {
-  int stat(const char *, struct stat *);
-  int fstat(int, struct stat *);
-}
+#include <errno.h>
 
 #include "lib.h"
 #include "errarg.h"
@@ -327,6 +323,8 @@ int file_buffer::load(int fd, const char *filename)
       nread = read(fd, &c, 1);
       if (nread != 0)
 	error("size of `%1' increased", filename);
+      else if (memchr(buffer + 4, '\0', size < 1024 ? size : 1024) != 0)
+	error("database `%1' is a binary file", filename);
       else {
 	close(fd);
 	buffer[3] = '\n';
@@ -407,11 +405,6 @@ int linear_searcher::search(const char *buffer, const char *bufend,
     buffer = refend;
   }
   return 0;
-}
-
-int linear_searcher::get_nkeys() const
-{
-  return nkeys;
 }
 
 class linear_search_item : public search_item {

@@ -81,7 +81,6 @@ public:
   int leader();
   int backspace();
   int delimiter(int warn = 0);	// is it suitable for use as a delimiter?
-  symbol special();
   int dummy();
   int transparent();
   int left_brace();
@@ -164,11 +163,6 @@ inline unsigned char token::ch()
 inline int token::eof()
 {
   return type == TOKEN_EOF;
-}
-
-inline symbol token::special()
-{
-  return type == TOKEN_SPECIAL ? nm : symbol();
 }
 
 inline int token::dummy()

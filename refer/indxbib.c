@@ -24,9 +24,12 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #include "refer.h"
 
-// limits.h defines NAME_MAX and PATH_MAX
-#include "limits.h"
 #include "index.h"
+
+extern "C" {
+  // Sun's stdlib.h fails to declare this.
+  char *mktemp(char *);
+}
 
 #define DEFAULT_HASH_TABLE_SIZE 997
 #define TEMP_INDEX_TEMPLATE "indxbibXXXXXX"
@@ -90,8 +93,11 @@ static void store_reference(int filename_index, int pos, int len);
 static void check_integer_arg(char opt, const char *arg, int min, int *res);
 static void store_filename(const char *);
 static void fwrite_or_die(const void *ptr, int size, int nitems, FILE *fp);
+static char *get_cwd();
 
 extern "C" { void fatal_signal(int); }
+
+extern "C" { long dir_name_max(const char *); }
 
 int main(int argc, char **argv)
 {
@@ -162,16 +168,9 @@ int main(int argc, char **argv)
   if (optind >= argc && foption == 0)
     fatal("no files and no -f option");
   if (!directory) {
-#ifdef HAVE_GETWD
-    char path[PATH_MAX + 1];
-    if (!getwd(path))
-      fatal("getwd: %1", path);
-#else /* !HAVE_GETWD */
-    char path[PATH_MAX + 2];
-    if (!getcwd(path, PATH_MAX + 2))
-      fatal("getcwd: %1", strerror(errno));
-#endif /* !HAVE_GETWD */
+    char *path = get_cwd();
     store_filename(path);
+    delete path;
   }
   else
     store_filename(directory);
@@ -183,9 +182,18 @@ int main(int argc, char **argv)
   if (!basename)
     basename = optind < argc ? argv[optind] : DEFAULT_INDEX_NAME;
   const char *p = strrchr(basename, '/');
-  if (strlen(p ? p + 1 : basename) + 2 > NAME_MAX
-      || strlen(basename) + 2 > PATH_MAX)
-    fatal("`%1.i' would not be a valid filename", basename);
+  long name_max;
+  if (p) {
+    char *dir = strsave(basename);
+    dir[p - basename] = '\0';
+    name_max = dir_name_max(dir);
+    delete dir;
+  }
+  else
+    name_max = dir_name_max(".");
+  const char *filename = p ? p + 1 : basename;
+  if (name_max >= 0 && strlen(filename) + sizeof(INDEX_SUFFIX) - 1 > name_max)
+    fatal("`%1.%2' is too long for a filename", filename, INDEX_SUFFIX);
   if (p) {
     p++;
     temp_index_file = new char[p - basename + sizeof(TEMP_INDEX_TEMPLATE)];
@@ -195,7 +203,8 @@ int main(int argc, char **argv)
   else {
     temp_index_file = strsave(TEMP_INDEX_TEMPLATE);
   }
-  mktemp(temp_index_file);
+  if (!mktemp(temp_index_file) || !temp_index_file[0])
+    fatal("cannot create file name for temporary file");
   signal(SIGHUP, fatal_signal);
   signal(SIGINT, fatal_signal);
   signal(SIGTERM, fatal_signal);
@@ -211,6 +220,7 @@ int main(int argc, char **argv)
   if (foption) {
     FILE *fp = stdin;
     if (strcmp(foption, "-") != 0) {
+      errno = 0;
       fp = fopen(foption, "r");
       if (!fp)
 	fatal("can't open `%1': %2", foption, strerror(errno));
@@ -293,6 +303,27 @@ static void check_integer_arg(char opt, const char *arg, int min, int *res)
   }
 }
 
+static char *get_cwd()
+{
+  char *buf;
+  int size = 12;
+
+  for (;;) {
+    buf = new char[size];
+    if (getcwd(buf, size))
+      break;
+    if (errno != ERANGE)
+      fatal("cannot get current working directory: %1", strerror(errno));
+    delete buf;
+    if (size == INT_MAX)
+      fatal("current working directory longer than INT_MAX");
+    if (size > INT_MAX/2)
+      size = INT_MAX;
+    else
+      size *= 2;
+  }
+  return buf;
+}
 
 word_list::word_list(const char *s, int n, word_list *p)
 : next(p), len(n)
@@ -305,6 +336,7 @@ static void read_common_words_file()
 {
   if (n_ignore_words <= 0)
     return;
+  errno = 0;
   FILE *fp = fopen(common_words_file, "r");
   if (!fp)
     fatal("can't open `%1': %2", common_words_file, strerror(errno));
@@ -341,6 +373,7 @@ static void read_common_words_file()
 
 static int do_whole_file(const char *filename)
 {
+  errno = 0;
   FILE *fp = fopen(filename, "r");
   if (!fp) {
     error("can't open `%1': %2", filename, strerror(errno));
@@ -375,6 +408,7 @@ static int do_whole_file(const char *filename)
 
 static int do_file(const char *filename)
 {
+  errno = 0;
   FILE *fp = fopen(filename, "r");
   if (fp == 0) {
     error("can't open `%1': %2", filename, strerror(errno));

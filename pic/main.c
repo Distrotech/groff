@@ -292,6 +292,7 @@ void do_file(const char *filename)
   if (strcmp(filename, "-") == 0)
     fp = stdin;
   else {
+    errno = 0;
     fp = fopen(filename, "r");
     if (fp == 0)
       fatal("can't open `%1': %2", filename, strerror(errno));
@@ -443,6 +444,7 @@ void do_whole_file(const char *filename)
   if (strcmp(filename, "-") == 0)
     fp = stdin;
   else {
+    errno = 0;
     fp = fopen(filename, "r");
     if (fp == 0)
       fatal("can't open `%1': %2", filename, strerror(errno));
@@ -466,8 +468,36 @@ void usage()
   exit(1);
 }
 
+#ifdef __MSDOS__
+static char *fix_program_name(char *arg, char *dflt)
+{
+  if (!arg)
+    return dflt;
+  char *prog = strchr(arg, '\0');
+  for (;;) {
+    if (prog == arg)
+      break;
+    --prog;
+    if (strchr("\\/:", *prog)) {
+      prog++;
+      break;
+    }
+  }	
+  char *ext = strchr(prog, '.');
+  if (ext)
+    *ext = '\0';
+  for (char *p = prog; *p; p++)
+    if ('A' <= *p && *p <= 'Z')
+      *p = 'a' + (*p - 'A');
+  return prog;
+}
+#endif /* __MSDOS__ */
+
 int main(int argc, char **argv)
 {
+#ifdef __MSDOS__
+  argv[0] = fix_program_name(argv[0], "pic");
+#endif /* __MSDOS__ */
   program_name = argv[0];
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);

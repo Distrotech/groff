@@ -652,7 +652,7 @@ void get_delimited_text()
   int lineno;
   int got_location = get_location(&filename, &lineno);
   int start = get_char();
-  while (start == ' ' || start == '\n')
+  while (start == ' ' || start == '\t' || start == '\n')
     start = get_char();
   token_buffer.clear();
   if (start == EOF) {
@@ -872,6 +872,7 @@ void do_include()
   }
   token_buffer += '\0';
   const char *filename = token_buffer.contents();
+  errno = 0;
   FILE *fp = fopen(filename, "r");
   if (fp == 0) {
     lex_error("can't open included file `%1'", filename);
@@ -933,12 +934,15 @@ void do_gsize()
     return;
   }
   token_buffer += '\0';
-  char *ptr;
-  long n = strtol(token_buffer.contents(), &ptr, 10);
-  if (n == 0 && ptr == token_buffer.contents())
-    lex_error("bad argument `%1' to gsize command", ptr);
+  const char *ptr = token_buffer.contents();
+  if (*ptr == '+' || *ptr == '-')
+    ptr++;
+  while (csdigit(*ptr))
+    ptr++;
+  if (*ptr != '\0')
+    lex_error("bad argument `%1' to gsize command", token_buffer.contents());
   else
-    set_gsize(int(n));
+    set_gsize(token_buffer.contents());
 }
 
 void do_gfont()
