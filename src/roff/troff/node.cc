@@ -1046,6 +1046,8 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf,
       output_hpos = hpos;
     }
     else {
+      glyph_color(gcol);
+      fill_color(fcol);
       do_motion();
       put('c');
       put(c);
@@ -4578,7 +4580,7 @@ node *make_node(charinfo *ci, environment *env)
   if (tem)
     ci = tem;
   macro *mac = ci->get_macro();
-  if (mac && !ci->is_fallback())
+  if (mac && ci->is_normal())
     return make_composite_node(ci, env);
   else
     return make_glyph_node(ci, env);
@@ -4627,7 +4629,7 @@ node *node::add_char(charinfo *ci, environment *env,
   if (tem)
     ci = tem;
   macro *mac = ci->get_macro();
-  if (mac && !ci->is_fallback()) {
+  if (mac && ci->is_normal()) {
     res = make_composite_node(ci, env);
     if (res) {
       res->next = this;

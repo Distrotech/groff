@@ -83,6 +83,7 @@ public:
   void set_number(int);
   int get_number();
   int numbered();
+  int is_normal();
   int is_fallback();
   int is_special();
   symbol *get_symbol();
@@ -125,6 +126,11 @@ inline int charinfo::transparent()
 inline int charinfo::numbered()
 {
   return flags & NUMBERED;
+}
+
+inline int charinfo::is_normal()
+{
+  return mode == CHAR_NORMAL;
 }
 
 inline int charinfo::is_fallback()

@@ -44,7 +44,7 @@ while [ "$1" ]
 do
     case $1 in
     -unsafe)
-	groffpic_opts="-U"
+	groffpic_opts="-U";;
     -format)
 	format=$2
 	shift;;
