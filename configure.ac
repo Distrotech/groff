@@ -117,8 +117,7 @@ GROFF_PDFDOC_PROGRAMS
 GROFF_PNMTOPS_NOSETPAGE
 
 AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
-AC_CONFIG_FILES([Makefile doc/Makefile src/utils/xtotroff/Makefile
-                 contrib/pdfmark/Makefile])
+AC_CONFIG_FILES([Makefile doc/Makefile src/utils/xtotroff/Makefile])
 AC_CONFIG_FILES([contrib/gdiffmk/tests/runtests],
                 [chmod +x contrib/gdiffmk/tests/runtests])
 AC_CONFIG_FILES([test-groff], [chmod +x test-groff])
