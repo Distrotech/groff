@@ -24,7 +24,7 @@
 	<li><a href="#DESCRIPTION_GENERAL">General description of headers/footers</a>
 	<li><a href="#HEADER_STYLE">Default specs for headers/footers</a>
 	<li><a href="#VERTICAL_SPACING">Vertical placement and spacing of headers/footers</a>
-	<li><a href="#HEADFOOT_MANAGEMENT">Managing headers/footers</a>
+	<li><a href="#HEADFOOT_MANAGEMENT">Managing headers/footers</a> -- see also <a href="#HEADFOOT_TOC">Control macros for headers/footers</a>
 	<ul>
 		<li><a href="#HEADERS">HEADERS</a> -- on or off
 		<li><a href="#FOOTERS">FOOTERS</a> -- on or off
@@ -35,9 +35,13 @@
 			<li><a href="#HDRFTR_RECTOVERSO">HEADER_RECTO, HEADER_VERSO</a>
 		</ul>
 	</ul>
+	<a name="HEADFOOT_TOC"></a>
 	<li><a href="#HEADFOOT_CONTROL">Control macros for headers/footers</a>
 	<ul>
 		<li><a href="#HDRFTR_STRINGS">Header/footer strings</a>
+		<ul>
+			<li><a href="#RESERVED_STRINGS">Using mom's &quot;reserved&quot; strings in header/footer definitions</a>
+		</ul>
 		<li><a href="#HDRFTR_STYLE">Header/footer style</a>
 		<ul>
 			<li><a href="#HDRFTR_STYLE_GLOBAL">Global style control</a>
@@ -432,6 +436,7 @@ it's possible to &quot;pad&quot; it as well.
 <p>
 <a name="HDRFTR_RECTOVERSO"></a>
 Macro: <strong>HEADER_RECTO</strong> <var>LEFT | CENTER | RIGHT &quot;&lt;header recto string&gt;&quot;</var>
+<br>
 Macro: <strong>HEADER_VERSO</strong> <var>LEFT | CENTER | RIGHT &quot;&lt;header verso string&gt;&quot;</var>
 <br>
 
@@ -472,7 +477,7 @@ inline escapes.
 To include the current page number in the string, use the
 <strong>\*[PAGE#]</strong> inline.
 
-<h3><u>Padding the HEADER_RECTO/HEADER_VERSO string</u></h3>
+<h3><u>*Padding the HEADER_RECTO/HEADER_VERSO string</u></h3>
 <p>
 You can &quot;pad&quot; the header-recto string, a convenience you'll
 appreciate in circumstances such as the following.
@@ -548,6 +553,9 @@ can be designed to your own specifications.
 	<ul>
 		<li><a href="#HDRFTR_LEFT">HEADER_LEFT</a>
 		<li><a href="#HDRFTR_CENTER">HEADER_CENTER</a>
+		<ul>
+			<li><a href="#HDRFTR_CENTER_PAD">HEADER_CENTER_PAD</a> -- stick some space left of right of the center string
+		</ul>
 		<li><a href="#HDRFTR_RIGHT">HEADER_RIGHT</a>
 		<li><a href="#PAGE_NUMBER_SYMBOL">Replacing header left, center or right with the page number</a>
 		<li><a href="#PAGE_NUMBER_INCL">Including the  page number in header left, center or right</a>
@@ -614,10 +622,152 @@ they must be enclosed in double-quotes.
 <p>
 <strong>NOTE:</strong> Replace <strong>HEADER_</strong>, above,
 with <strong>FOOTER_</strong> to change the strings in footers.
+
+<a name="HDRFTR_CENTER_PAD"><h3><u>*Padding the header/footer center string</u></h3></a>
+<p>
+Macro: <strong>HEADER_CENTER_PAD</strong> <var>LEFT | RIGHT &lt;amount of space by which to pad center string left or right&gt;</var>
+<br>
+<em>*Requires a <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a></em>
+<p>
+By default, <strong>mom</strong> centres the header centre string
+literally on the line length in effect for page headers.  In some
+cases, notably when the header left or header right strings are
+particularly long, the effect isn't pretty.  The offendingly long
+header left or right crowds, or even overprints, the header centre.
+That's where <strong>HEADER_CENTER_PAD</strong> comes in.  With a
+bit of experimentation (yes, you have to preview the document), you
+can use <strong>HEADER_CENTER_PAD</strong> to move the header
+centre string left or right until it looks acceptably centred
+between the two other strings.
+<p>
+For example, say your document is an outline for a novel called "By
+the Shores of Lake Attica."  You've told <strong>mom</strong>
+you want
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="docprocessing.html#DOCTYPE">DOCTYPE</a>
+<halign="center">
+<strong>NAMED</strong> "Outline"
+<p>
+but when you preview your work, you see that "Outline", in the
+centre of the page header, is uncomfortable close to the title,
+which is to the right of it.  By invoking
+<p>
+<pre>
+	.HEADER_CENTER_PAD RIGHT 3P
+</pre>
+
+you can scoot the word "Outline" over three
+<a href="definitions.html#TERMS_PICASPOINTS">picas</a>
+to the left (the padding's added to the right of the string)
+so that your head looks nicely spaced out.  Invoking
+<strong>HEADER_CENTER_PAD</strong> with the <strong>LEFT</strong>
+argument obviously puts the padding on the left side of the string.
+<p>
+Most reassuring of all is that if you use
+<strong>HEADER_CENTER_PAD</strong> conjunction with
+<a href="rectoverso.html#RECTO_VERSO">RECTO_VERSO</a>,
+<strong>mom</strong> will pad the center string appropriately left
+OR right, depending on which page you're on, without you having to
+tell her to do so.
 <br>
 
+<hr width="66%" align="left">
+<p>
+<a name="RESERVED_STRINGS"><h3><u>Using mom's &quot;reserved&quot; strings in header/footer definitions</u></h3></a>
+<p>
+As pointed out in the author's note in the introduction to
+headers/footers, headers and footers are something you don't
+normally have to worry much about.  <strong>Mom</strong> usually
+knows what to do.
+<p>
+However, situations do arise where you need to manipulate what goes
+in the header/footer strings, setting and resetting them as you go
+along.  A case where you might want to do this would be if you want
+to output endnotes at the end of each document in a series of
+<a href="rectoverso.html#COLLATE">collated</a>
+documents, and you want the word "Endnotes" to go in the header
+center position of the endnotes, but want, say, the
+<a href="docprocessing.html#TITLE">TITLE</a>
+to go back into the center position for the next output document.
+<p>
+In scenarios like the above, <strong>mom</strong> has a number of
+&quot;reserved&quot; strings that you can plug into the
+<strong>HEADER_LEFT, _CENTER</strong> and <strong>_RIGHT</strong>
+macros.  They are:
+<p>
+<pre>
+	\*[$TITLE]          -- the argument passed to .TITLE
+	\*[$DOCTITLE]       -- the argument passed to .DOCTITLE
+	\*[$AUTHOR_1]       -- the first argument passed to .AUTHOR
+	\*[$CHAPTER_STRING] -- the argument passed to .CHAPTER_STRING,
+	                       if invoked, otherwise, "Chapter"
+	\*[$CHAPTER]        -- the argument (typically a number) passed
+	                       to .CHAPTER
+	\*[$CHAPTER_TITLE]  -- the argument passed to .CHAPTER_TITLE
+</pre>
+
+Returning to the scenario above, first, you'd define a center
+string for the endnotes page:
+<p>
+<pre>
+	.HEADER_CENTER "Endnotes"
+</pre>
+
+Then, you'd output the endnotes:
+<p>
+<pre>
+	.ENDNOTES
+</pre>
+
+Then, you'd prepare <strong>mom</strong> for the next document:
+<p>
+<pre>
+	.COLLATE
+	.TITLE "New Doc Title"
+	.AUTHOR "Josephine Blough"
+</pre>
+
+Then, you'd redefine the header center string using the reserved
+string \*[$TITLE], like this:
+<p>
+<pre>
+	.HEADER_CENTER "\*[$TITLE]"
+</pre>
+
+And last, you'd do:
+<p>
+<pre>
+	.START
+</pre>
+
+Voilà!  Any argument you pass to <strong>TITLE</strong> from here
+on in (say, for subsequent documents) is back in the header centre
+position.  Here's the whole routine again:
+<p>
+<pre>
+	.HEADER_CENTER "Endnotes"
+	.ENDNOTES
+	.COLLATE
+	.TITLE         "New Doc Title"
+	.AUTHOR        "Josephine Blough"
+	.HEADER_CENTER "\*[$TITLE]"
+	.START
+</pre>
+
+If need be, you can concatenate the strings, as in the following
+example.
+<p>
+<pre>
+	.HEADER_CENTER "\*[$CHAPTER_STRING] \*[$CHAPTER]"
+</pre>
+
+which, assuming a <strong>.CHAPTER_STRING</strong> of
+&quot;Chapter&quot; and a <strong>.CHAPTER</strong> of
+&quot;2&quot;, would put &quot;Chapter 2&quot; in the header centre
+position.
+
 <a name="PAGE_NUMBER_SYMBOL">
-	<h3><u>Replacing header-left, -center or -right with the page number</u></h3>
+	<h3><u>*Replacing header-left, -center or -right with the page number</u></h3>
 </a>
 If you would like to have the current page number to appear 
 header-left, -center, or -right <em>instead</em> of a text
@@ -634,7 +784,7 @@ will print the current page number in the center part of
 headers.
 
 <a name="PAGE_NUMBER_INCL">
-	<h3><u>Including the page number in header-left, -center or -right</u></h3>
+	<h3><u>*Including the page number in header-left, -center or -right</u></h3>
 </a>
 If you would like to <em>include</em> the current page number in
 the string you pass to <strong>HEADER_LEFT, _CENTER,</strong> or

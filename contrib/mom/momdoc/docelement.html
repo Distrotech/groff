@@ -221,16 +221,22 @@ arguments as
 		<li><a href="#FOOTNOTE">FOOTNOTE</a>
 		<li><a href="#FOOTNOTE_CONTROL">Footnote control</a>
 	</ul>
-	<li><a href="#ENDNOTE_INTRO">Endnotes</a>
-	<ul>
-		<li><a href="#ENDNOTE">ENDNOTE</a>
-		<li><a href="#ENDNOTE_CONTROL">Endnote control</a>
-	</ul>
 	<li><a href="#FINIS_INTRO">Document termination</a>
 	<ul>
 		<li><a href="#FINIS">FINIS</a>
 		<li><a href="#FINIS_STRING">Finis control</a> -- changing the FINIS string
 	</ul>
+	<li><a href="#ENDNOTE_INTRO">Endnotes</a>
+	<ul>
+		<li><a href="#ENDNOTE">ENDNOTE</a>
+		<li><a href="#ENDNOTE_CONTROL">Endnote control</a>
+	</ul>
+	<li><a href="#TOC_INTRO">Table of contents</a>
+	<ul>
+		<li><a href="#TOC">TOC</a>
+		<li><a href="#TOC_CONTROL">Table of contents control</a>
+	</ul>
+	<li><a href="#BLANK_PAGE_TITLE">Blank page</a>
 </ul>
 <hr>
 
@@ -639,6 +645,33 @@ head, simply surround each line with double-quotes.
 and <strong>mom</strong> is unable to fit the head <em>plus at least
 one line of text underneath it</em>, she will set the head at the
 top of the next page.
+<p>
+<strong>ADDITIONAL NOTE:</strong> If an
+<a href="definitions.html#TERMS_INPUTLINE">input line</a>
+in a head (i.e. one of the lines surrounded by double-quotes) has
+to be broken by <strong>mom</strong> in order to fit the current
+line-length (say, a narrow column measure), the head underline
+(underscore) will not behave.  You'll recognise the problem as soon
+as you preview your document.  If you encounter a head that
+misbehaves with respect to underlining, the solution is to
+supply each line <em>as you want it</em> as a separate argument
+(surrounded by double-quotes) to the <strong>HEAD</strong> macro.
+<p>
+For example, if <strong>mom</strong> breaks
+<pre>
+	.HEAD "This is a very, very, very long head"
+</pre>
+into
+<pre>
+	This is a very, very, very
+	        long head        
+</pre>
+
+you'll see the misbehaving underscore and should change the
+argument to <strong>HEAD</strong> to
+<pre>
+	.HEAD "This is a very, very very" "long head"
+</pre>
 
 <a name="HEAD_CONTROL"><h3><u>Head control macros</u></h3></a>
 <p>
@@ -1462,7 +1495,7 @@ for a solution.
 <a name="FOOTNOTE">
 	Macro: <strong>FOOTNOTE</strong> <var>&lt;toggle&gt; | INDENT LEFT | RIGHT | BOTH &lt;indent value&gt;</var>
 	<br>
-	<em>*See <a href="#FOOTNOTE_NOTE">HYPER-IMPORTANT NOTE</a>!!!
+	<em>*See <a href="#FOOTNOTE_NOTE">HYPER-IMPORTANT NOTE</a>!!!</em>
 	<br>
 	&lt;indent value&gt; requires a
 	<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a></em>
@@ -1614,6 +1647,98 @@ is required.
 
 <!====================================================================>
 
+<a name="FINIS_INTRO"><h2><u>Terminate document processing</u></h2></a>
+<ul>
+	<li><a href="#FINIS">Tag: FINIS</a>
+	<li><a href="#FINIS_STRING">Changing the FINIS string</a>
+</ul>
+
+<p>
+The use of <strong>FINIS</strong> is optional.  If you invoke it
+(at the end of a document before
+<a href="#TOC">TOC</a>
+or
+<a href="#ENDNOTES">ENDNOTES</a>),
+<strong>mom</strong> turns off
+<a href="definitions.html#TERMS_FOOTER">footers</a>
+(if they're on) and page numbering (if page
+numbers are at the bottom of the page) and deposits the word
+END, centered after a blank line, beneath the last
+line of the document.  END is enclosed between
+<a href="definitions.html#TERMS_EM">em-dashes</a>.
+<p>
+If you're writing in a language other than English, you can
+change what <strong>mom</strong> prints for END with
+the control macro <strong>FINIS_STRING</strong>.
+<br>
+
+<!---FINIS--->
+
+<hr width="66%" align="left">
+<p>
+<a name="FINIS">
+	Macro: <strong>FINIS</strong>
+</a>
+
+<p>
+The use of <strong>FINIS</strong> is optional, but if you use
+it, it should be the last macro you invoke in a document (before
+<a href="#ENDNOTES">ENDNOTES</a>
+or
+<a href="#TOC">TOC</a>).
+See
+<a href="#FINIS_INTRO">above</a>
+for a description of how <strong>FINIS</strong> behaves.
+<p>
+<strong>NOTE:</strong> If you don't use <strong>FINIS</strong>,
+and you don't want
+<a href="definitions.html#TERMS_FOOTER">footers</a>
+(if they're on) or a page number at the bottom of the last page of
+a document, you have to turn them off manually, as the last two
+lines of your document file, like this:
+<p>
+<pre>
+	.FOOTERS OFF
+	.PAGINATE OFF
+</pre>
+
+<a name="FINIS_STRING"><h3><u>Changing the FINIS string</u></h3></a>
+
+<p>
+By default, <strong>FINIS</strong> prints the word
+END between
+<a href="definitions.html#TERMS_EM">em-dashes</a>.
+If you'd like <strong>mom</strong> to print something else
+between the dashes, use the <strong>FINIS_STRING</strong> macro
+(anywhere in the document prior to <strong>FINIS</strong>).
+<p>
+For example, if your document's in French, you'd do
+<p>
+<pre>
+	.FINIS_STRING "FIN"
+</pre>
+
+Double-quotes must enclose the macro's argument.
+<p>
+<strong>NOTE:</strong> If you pass <strong>FINIS_STRING</strong>
+a blank string, i.e.
+<p>
+<pre>
+	.FINIS_STRING ""
+</pre>
+
+<strong>mom</strong> will still print the em-dashes if you
+invoke <strong>FINIS</strong>.  This, in effect, produces a
+short, centered horizontal rule that terminates the document.
+(In
+<a href="docprocessing.html.#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
+it's a short, dashed line composed of four hyphens.)
+
+<br>
+<hr>
+
+<!====================================================================>
+
 <a name="ENDNOTE_INTRO"><h2><u>Endnotes</u></h2></a>
 <ul>
 	<li><a href="#ENDNOTE_BEHAVIOUR">Endnote behaviour</a>
@@ -1623,7 +1748,7 @@ is required.
 	</ul>
 	<li><a href="#ENDNOTE">Tag: ENDNOTE</a>
 	<li><a href="#ENDNOTES">Macro: ENDNOTES</a> -- tell <strong>mom</strong> to output endnotes
-	<li><a href="#ENDNOTE_CONTROL">ENDNOTE control macros</a>
+	<li><a href="#ENDNOTE_CONTROL">ENDNOTES control macros</a>
 </ul>
 
 <p>
@@ -1741,10 +1866,12 @@ rather than at the top.
 	<h3><u>Endnotes and columnar documents</u></h3>
 </a>
 <p>
-At present, there is no way to set a document in columns (see
+Formerly (pre 1.1.6), there was no way to set a document in columns
+(see
 <a href="docprocessing.html#COLUMNS">COLUMNS</a>)
-and then turn off column mode for endnotes.  If your document is set in
-columns, your endnotes will be, too.
+and then turn off column mode for endnotes.  As of version 1.1.6,
+you may now do so.  See
+<a href="#ENDNOTES_NO_COLUMNS">ENDNOTES_NO_COLUMS</a>.
 <br>
 <hr>
 
@@ -1754,7 +1881,7 @@ columns, your endnotes will be, too.
 <a name="ENDNOTE">
 	Macro: <strong>ENDNOTE</strong> <var>&lt;toggle&gt;</var>
 	<br>
-	<em>*See <a href="#ENDNOTE_NOTE">HYPER-IMPORTANT NOTE</a>!!!
+	<em>*See <a href="#ENDNOTE_NOTE">HYPER-IMPORTANT NOTE</a>!!!</em>
 </a>
 
 <p>
@@ -1829,15 +1956,30 @@ to the first instance of
 			<li><a href="#ENDNOTE_GENERAL">Base family/font/quad for endnotes-pages</a>
 			<li><a href="#ENDNOTE_PT_SIZE">Base point size for the endnotes-pages</a>
 			<li><a href="#ENDNOTE_LEAD">Leading of endnotes-pages</a>
+			<li><a href="#SINGLESPACE_ENDNOTES">Singlespace endnotes (for TYPEWRITE only)</a>
 			<li><a href="#ENDNOTE_PARA_INDENT">Size of paragraph first line indent in multi-paragraph endnotes</a>
 			<li><a href="#ENDNOTE_PARA_SPACE">Inserting space between paragraphs of multi-paragraph endnotes</a>
+			<li><a href="#ENDNOTES_NO_COLUMNS">Turning off column mode during endnotes output</a>
+			<li>Pagination of endnotes
+			<ul>
+				<li><a href="#ENDNOTES_PAGENUM_STYLE">Endnotes-pages page numbering style</a>
+				<li><a href="#ENDNOTES_FIRST_PAGENUMBER">Setting the first page number of endnotes pages</a>
+				<li><a href="#ENDNOTES_NO_FIRST_PAGENUM">Omitting a page number on the first page of endnotes</a>
+			</ul>
+			<li><a href="#SUSPEND_PAGINATION">Suspending pagination of endotes pages</a>
 		</ul>
 	<li><a href="#ENDNOTES_HEADER_CONTROL"><strong>Endnotes-page header/footer control</strong></a>
-	<li><a href="#ENDNOTES_MAIN_TITLE"><strong>Endnotes-page head control</strong></a>
+		<ul>
+			<li><a href="#ENDNOTES_MODIFY_HDRFTR">Modifying what goes in the endnotes-pages header/footer</a>
+			<li><a href="#ENDNOTES_HDRFTR_CENTER">Enabling a header/footer centre when doctype is CHAPTER</a>
+			<li><a href="#ENDNOTES_ALLOWS_HEADERS">Allow headers on endnotes-pages</a>
+		</ul>
+	<li><a href="#ENDNOTES_MAIN_TITLE"><strong>Endnotes-page head (i.e. the title at the top) control</strong></a>
 		<ul>
 			<li><a href="#ENDNOTE_STRING">Creating/modifying the endnotes-page head</a>
 			<li><a href="#ENDNOTE_STRING_CONTROL">Endnotes-page head control</a>
 			<li><a href="#ENDNOTE_STRING_UNDERSCORE">Endnotes-page head underscoring</a>
+			<li><a href="#ENDNOTE_STRING_CAPS">Endnotes-page head capitalisation</a>
 		</ul>
 	<li><a href="#ENDNOTES_DOC_TITLE"><strong>Endnote document-identification title</strong></a>
 		<ul>
@@ -1859,7 +2001,7 @@ to the first instance of
 
 <a name="ENDNOTES_GENERAL"><h2><u>1. General endnotes page style control</u></h2>
 
-<a name="ENDNOTE_GENERAL"><h3><u>Endnote family/font/quad</u></h3></a>
+<a name="ENDNOTE_GENERAL"><h3><u>*Endnote family/font/quad</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -1872,7 +2014,7 @@ See
 
 <!---ENDNOTE_PT_SIZE--->
 
-<a name="ENDNOTE_PT_SIZE"><h3><u>Endnote point size</u></h3></a>
+<a name="ENDNOTE_PT_SIZE"><h3><u>*Endnote point size</u></h3></a>
 <p>
 Macro: <strong>ENDNOTE_PT_SIZE</strong> <var>&lt;base type size of endnotes&gt;</var>
 
@@ -1906,13 +2048,15 @@ the point size of other endnote page elements is calculated.
 <p>
 The default for
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>
-is 12 points (the same default size used in the body of the document).
+is 12.5 points (the same default size used in the body of the document).
 
 <!---ENDNOTE_LEAD--->
 
-<a name="ENDNOTE_LEAD"><h3><u>Endnote lead</u></h3></a>
+<a name="ENDNOTE_LEAD"><h3><u>*Endnote lead</u></h3></a>
 <p>
-Macro: <strong>ENDNOTE_LEAD</strong> <var>&lt;base leading of endnotes&gt;</var>
+Macro: <strong>ENDNOTE_LEAD</strong> <var>&lt;base leading of endnotes&gt; [ ADJUST ] </var>
+<br>
+<em>*Does not require a <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>; points is assumed</em>
 
 <p>
 Unlike most other control macros that deal with leading of document
@@ -1939,13 +2083,48 @@ points, whereas
 
 sets the base leading of type on the endnotes page to 1/2 inch.
 <p>
+If you want the leading of endnotes adjusted to fill the page, pass
+<strong>ENDNOTE_LEAD</strong> the optional argument
+<strong>ADJUST</strong>.  (See
+<a href="docprocessing.html#DOC_LEAD_ADJUST">DOC_LEAD_ADJUST</a>
+for an explanation of leading adjustment.)
+<p>
 The default for
 <a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>
-is 14 points.
+is 14 points, adjusted.
+<p>
+<strong>NOTE:</strong> Even if you give <strong>mom</strong> a
+<strong>DOC_LEAD_ADJUST OFF</strong> command, she will still, by
+default, adjust endnote leading.  You MUST enter
+<strong>ENDNOTE_LEAD &lt;lead&gt;</strong> with no
+<strong>ADJUST</strong> argument to disable this default behaviour.
+
+<!---SINGLESPACE_ENDNOTES--->
+
+<a name="SINGLESPACE_ENDNOTES"><h3><u>*Singlespace endnotes (TYPEWRITE only)</u></h3></a>
+<p>
+Macro: <strong>SINGLESPACE_ENDNOTES</strong> <var>&lt;toggle&gt;</var>
+
+<p>
+If your 
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE</a>
+is <strong>TYPEWRITE</strong> and you use TYPEWRITE's default
+double-spacing, endnotes are double-spaced.  If your document is
+single-spaced, endnotes are single-spaced.
+<p>
+If, for some reason, you'd prefer that endnotes be single-spaced
+in an otherwise double-spaced document (including double-spaced
+<a href="rectoverso.html#COLLATE">collated</a> documents), invoke
+<strong>SINGLESPACE_ENDNOTES</strong> with no argument.  And if,
+god help you, you want to change endnote single-spacing back to
+double-spacing for different spacing of endnotes output at the ends
+of separate docs in a collated doc, invoke
+<strong>SINGLESPACE_ENDNOTES</strong> with any argument(<strong>OFF,
+QUIT, Q, X</strong>...).
 
 <!---ENDNOTE_PARA_INDENT--->
 
-<a name="ENDNOTE_PARA_INDENT"><h3><u>Endnote paragraph indent</u></h3></a>
+<a name="ENDNOTE_PARA_INDENT"><h3><u>*Endnote paragraph indenting</u></h3></a>
 <p>
 Macro: <strong>ENDNOTE_PARA_INDENT</strong> <var>&lt;amount to indent first line of paragraphs in endnotes&gt;</var>
 <br>
@@ -1972,7 +2151,7 @@ never indented.  Only subsequent paragraphs are affected by
 
 <!---ENDNOTE_PARA_SPACE--->
 
-<a name="ENDNOTE_PARA_SPACE"><h3><u>Endnote paragraph spacing</u></h3></a>
+<a name="ENDNOTE_PARA_SPACE"><h3><u>*Endnote paragraph spacing</u></h3></a>
 <p>
 Macro: <strong>ENDNOTE_PARA_SPACE</strong> <var>&lt;toggle&gt;</var>
 
@@ -1989,10 +2168,102 @@ endnotes.
 previous endnote by a line space.  <strong>ENDNOTE_PARA_SPACE</strong>
 refers only to paragraphs that appear within each discrete endnote.
 
+<!---ENDNOTES_NO_COLUMNS--->
+
+<a name="ENDNOTES_NO_COLUMNS"><h3><u>*Turning off column mode during endnotes output</u></h3></a>
+<p>
+Macro: <strong>ENDNOTES_NO_COLUMNS</strong> <var>&lt;toggle&gt;</var>
+
+<p>
+By default, if your document is
+<a href="columns.html#COLUMNS">set in columns</a>,
+<strong>mom</strong> sets the endnotes in columns, too.  However,
+if your document is set in columns and you'd like the endnotes not
+to be, just invoke <strong>ENDNOTES_NO_COLUMNS</strong> with no
+argument.  The endnotes pages will be set to the full page measure
+of your document.
+<p>
+If you output endnotes at the end of each document in a
+<a href="rectoverso.html#COLLATE">collated</a>
+document set in columns, column mode will automatically
+be reinstated for each document, even with
+<strong>ENDNOTES_NO_COLUMNS</strong> turned on.
+
+<!---ENDNOTES_PAGENUM_STYLE--->
+
+<a name="ENDNOTES_PAGENUM_STYLE"><h3><u>*Endnotes-pages page numbering style</u></h3></a>
+<p>
+Macro: <strong>ENDNOTES_PAGENUM_STYLE</strong> <var>DIGIT | ROMAN | roman | ALPHA | alpha</var>
+
+<p>
+Use this macro to set the page numbering style of endnotes pages.
+The arguments are identical to those for
+<a href="headfootpage.html#PAGENUM_STYLE">PAGENUM_STYLE</a>.
+The default is <strong>digit</strong>.  You may want to change it
+to, say, <strong>alpha</strong>, which you would do with
+<p>
+<pre>
+	.ENDNOTES_PAGENUM_STYLE alpha
+</pre>
+
+<!---ENDNOTES_FIRST_PAGENUMBER--->
+
+<a name="ENDNOTES_FIRST_PAGENUMBER"><h3><u>*Setting the first page number of endnotes pages</u></h3></a>
+<p>
+Macro: <strong>ENDNOTES_FIRST_PAGENUMBER</strong> <var>&lt;page # that appears on page 1 of endnotes&gt;</var>
+
+<p>
+Use this macro with caution.  If all endnotes for several
+<a href="rectoverso.html#COLLATE">collated</a>
+documents are to be output at once, i.e. not at the end of each
+separate doc, <strong>ENDNOTES_FIRST_PAGENUMBER</strong> tells
+<strong>mom</strong> what page number to put on the first page of
+the endnotes.
+<p>
+If you set <strong>ENDNOTES_FIRST_PAGENUMBER</strong> in collated
+documents where the endnotes are output after each separate doc,
+you have to reset every separate document's first page number after
+<a href="rectoverso.html#COLLATE">COLLATE</a>
+and before
+<a href="docprocessing.html#START">START</a>.
+
+<!---ENDNOTES_NO_FIRST_PAGENUN--->
+
+<a name="ENDNOTES_NO_FIRST_PAGENUM"><h3><u>*Omitting a page number on the first page of endnotes</u></h3></a>
+<p>
+Macro: <strong>ENDNOTES_NO_FIRST_PAGENUM</strong> <var>&lt;toggle&gt;</var>
+
+<p>
+This macro is for use only if <strong>FOOTERS</strong> are on.  It
+tells
+<a href="#ENDNOTES">ENDNOTES</a>
+not to print a page number on the first endnotes page.
+<strong>Mom</strong>'s default is to print the page number.
+
+<!---SUSPEND_PAGINATION--->
+
+<a name="SUSPEND_PAGINATION"><h3><u>*Suspending pagination of endnotes pages</u></h3></a>
+<p>
+Macro: <strong>SUSPEND_PAGINATION</strong>
+<br>
+Macro: <strong>RESTORE_PAGINATION</strong>
+
+<p>
+<strong>SUSPEND_PAGINATION</strong> doesn't take an argument.
+Invoked immediately prior to
+<a href="#ENDNOTES">ENDNOTES</a>,
+it turns off endnotes pages pagination.  <strong>Mom</strong>
+continues, however to increment page numbers silently.
+<p>
+To restore normal document pagination after endnotes, invoke
+<strong>RESTORE_PAGINATION</strong> (again, with no argument)
+immediately after <strong>ENDNOTES</strong>.
+
 <a name="ENDNOTES_HEADER_CONTROL"><h2><u>2. Endnotes-page header/footer control</u></h2></a>
 <p>
-If you wish to modify the header/footer that appears on endnotes
-page(s), make the changes before you invoke
+<a name="ENDNOTES_MODIFY_HDRFTR"></a>
+If you wish to modify what appears in the header/footer that appears
+on endnotes page(s), make the changes before you invoke
 <a href="#ENDNOTES">ENDNOTES</a>,
 not afterwards.
 <p>
@@ -2007,8 +2278,24 @@ title.)  In most cases, this is what you want.  However, should you
 the endnotes page(s) headers/footers, invoke
 <a href="#ENDNOTES_HDRFTR_CENTER">ENDNOTES_HEADER_CENTER</a>
 with no argument. 
+<p>
+An important change you may want to make is to put the word
+&quot;Endnotes&quot; in the header/footer center position.
+To do so, do
+<p>
+<pre>
+	.HEADER_CENTER "Endnotes"
+	           or
+	.FOOTER_CENTER "Endnotes"
+</pre>
 
-<a name="ENDNOTES_HDRFTR_CENTER"><h3><u>Endnotes page(s) header/footer center string</u></h3></a>
+prior to invoking <strong>.ENDNOTES</strong>.  If your
+<a href="docprocessing.html#DOCTYPE">DOCTYPE</a>
+is <kbd>CHAPTER</kbd>, you must also invoke
+<a href="#ENDNOTES_HDRFTR_CENTER">ENDNOTES_HEADER_CENTER</a>
+for the <strong>HEADER_CENTER</strong> to appear.
+
+<a name="ENDNOTES_HDRFTR_CENTER"><h3><u>*Endnotes page(s) header/footer center string</u></h3></a>
 <p>
 Macro: <strong>ENDNOTES_HEADER_CENTER</strong> <var>toggle</var>
 
@@ -2021,16 +2308,39 @@ invoke <strong>ENDNOTES_HEADER_CENTER</strong> (or
 <strong>ENDNOTES_FOOTER_CENTER</strong>) with no argument.
 <strong>Mom</strong>'s default is NOT to print the center string.
 <p>
-If, for some
-reason, having enabled the header/footer center string on endnotes
-pages, you wish to disable it, invoke the same macro with any argument
-(<strong>OFF, QUIT, Q, X</strong>...).
+If, for some reason, having enabled the header/footer center string
+on endnotes pages, you wish to disable it, invoke the same macro
+with any argument (<strong>OFF, QUIT, Q, X</strong>...).
 
-<a name="ENDNOTES_MAIN_TITLE"><h2><u>3. Endnotes page head control</u></h2>
+<a name="ENDNOTES_ALLOWS_HEADERS"><h3><u>*Allow headers on endnotes_pages</u></h3></a>
+<p>
+Macro: <strong>ENDNOTES_ALLOWS_HEADERS</strong> <var>&lt;none&gt; | ALL</var>
+
+<p>
+By default, if <strong>HEADERS</strong> are on, <strong>mom</strong>
+prints page headers on all endnotes pages except the first.  If you
+don't want her to print headers on endnotes pages, do
+<p>
+<pre>
+	.ENDNOTES_ALLOWS_HEADERS OFF
+</pre>
+
+If you want headers on every page <em>including the first</em>, do
+<p>
+<pre>
+	.ENDNOTES_ALLOWS_HEADERS ALL
+</pre>
+
+<strong>NOTE:</strong> If <strong>FOOTERS</strong> are on,
+<strong>mom</strong> prints footers on every endnotes page.  This is
+a style convention.  In <strong>mom</strong>, there is no such beast
+as <strong>ENDNOTES_ALLOWS_FOOTERS OFF</strong>.
+
+<a name="ENDNOTES_MAIN_TITLE"><h2><u>3. Endnotes-page first page head (title) control</u></h2>
 
 <!---ENDNOTE_STRING--->
 
-<a name="ENDNOTE_STRING"><h3><u>Endnotes-page head string</u></h3></a>
+<a name="ENDNOTE_STRING"><h3><u>*Endnotes-page first page head (title) string</u></h3></a>
 <p>
 Macro: <strong>ENDNOTE_STRING</strong> <var>&quot;&lt;head to print at the top of endnotes&gt;&quot;</var>
 
@@ -2046,7 +2356,7 @@ at all).
 
 <!---ENDNOTE_STRING_CONTROL--->
 
-<a name="ENDNOTE_STRING_CONTROL"><h3><u>Endnotes-page head control</u></h3></a>
+<a name="ENDNOTE_STRING_CONTROL"><h3><u>*Endnotes-page first page head (title) control</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -2062,7 +2372,7 @@ See
 
 <!---ENDNOTE_STRING_UNDERSCORE--->
 
-<a name="ENDNOTE_STRING_UNDERSCORE"><h3><u>Endnotes-page head underscoring</h3></u></a>
+<a name="ENDNOTE_STRING_UNDERSCORE"><h3><u>*Endnotes-page head (title) underscoring</h3></u></a>
 <p>
 Macro: <strong>ENDNOTE_STRING_UNDERSCORE</strong> <var>toggle | 2</var>
 
@@ -2079,10 +2389,32 @@ head, therefore if you want no underscoring, you must insert
 NONE,</kbd> etc.) into your document prior to outputting endnotes with
 <a href="#ENDNOTES">ENDNOTES</a>.
 
+<!---ENDNOTE_STRING_CAPS--->
+
+<a name="ENDNOTE_STRING_CAPS"><h3><u>*Endnotes-page head (title) automatic capitalisation</h3></u></a>
+<p>
+Macro: <strong>ENDNOTE_STRING_CAPS</strong> <var>toggle</var>
+
+<p>
+Invoked by itself, <strong>ENDNOTE_STRING_CAPS</strong> will
+automatically capitalise the endnotes-page head.  Invoked with any
+other argument, the macro disables automatic capitalisation of the
+head.
+<p>
+If you're generating a table of contents, you may want the
+endnotes-pages head string in caps, but the toc entry in caps/lower
+case.  If the argument to
+<a href="#ENDNOTE_STRING">ENDNOTE_STRING</a>
+is in caps/lower case and <strong>ENDNOTE_STRING_CAPS</strong> is
+on, this is exactly what will happen.
+<p>
+<strong>Mom</strong>'s default is to capitalise the endnotes-pages
+head string.
+
 <!---ENDNOTE_TITLE--->
 
 <a name="ENDNOTES_DOC_TITLE"><h2><u>4. Endnote document-identification title</u></h2>
-<a name="ENDNOTE_TITLE"><h3><u>Endnote document-identification title string</u></h3></a>
+<a name="ENDNOTE_TITLE"><h3><u>*Endnote document-identification title string</u></h3></a>
 <p>
 Macro: <strong>ENDNOTE_TITLE</strong> <var>&quot;&lt;title to identify a document in endnotes&gt;&quot;</var>
 
@@ -2090,16 +2422,20 @@ Macro: <strong>ENDNOTE_TITLE</strong> <var>&quot;&lt;title to identify a documen
 By default, <strong>mom</strong> identifies the document(s) to which
 endnotes belong by the document title(s) given to the
 <a href="docprocessing.html#TITLE">TITLE</a>
-macro.  If you want her to identify the document(s) another way,
-invoke <strong>ENDNOTE_TITLE</strong> with the identifying title you
-want, surrounded by double-quotes.  If you don't any identifying title,
-invoke <strong>ENDNOTE_TITLE</strong> with a blank argument (either two
-double-quotes side by side -- <kbd>&quot;&quot;</kbd> -- or no argument
-at all).
+macro.  If you'd want her to identify the document(s) another way,
+just invoke <strong>ENDNOTE_TITLE</strong> with the identifying
+title you want, surrounded by double-quotes.
+<p>
+If you don't want any identifying title, invoke
+<strong>ENDNOTE_TITLE</strong> with a blank argument (either two
+double-quotes side by side -- <kbd>&quot;&quot;</kbd> -- or no
+argument at all).  This is particularly useful if you have a single
+(i.e. non-collated) document and find having the document's title
+included in the endnotes redundant.
 
 <!---ENDNOTE_TITLE_CONTROL--->
 
-<a name="ENDNOTE_TITLE_CONTROL"><h3><u>Endnote document-identification title control</u></h3></a>
+<a name="ENDNOTE_TITLE_CONTROL"><h3><u>*Endnote document-identification title control</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -2115,27 +2451,25 @@ See
 
 <!---ENDNOTE_TITLE_UNDERSCORE--->
 
-<a name="ENDNOTE_TITLE_UNDERSCORE"><h3><u>Endnote document-identification title underscoring</h3></u></a>
+<a name="ENDNOTE_TITLE_UNDERSCORE"><h3><u>*Endnote document-identification title underscoring</h3></u></a>
 <p>
 Macro: <strong>ENDNOTE_TITLE_UNDERSCORE</strong> <var>toggle</var>
 
 <p>
 Inovked by itself, <strong>ENDNOTE_TITLE_UNDERSCORE</strong> will
-underscore the endnote document-identification title.  Invoked with any
-other argument, the macro disables underscoring of the title.
+underscore the endnote document-identification title(s).  Invoked with any
+other argument, the macro disables underscoring of the title(s).
 <p>
 <strong>Mom</strong>'s default is to underscore the document-identification title, therefore if you want no underscoring, you must
 insert <kbd>.ENDNOTE_TITLE_UNDERSCORE OFF</kbd> (or <kbd>QUIT, X, NO,
 NONE,</kbd> etc.) into your document prior to outputting endnotes with
 <a href="#ENDNOTES">ENDNOTES</a>.
 
-at all.
-
 <!---ENDNOTE_NUMBERING--->
 
 <a name="ENDNOTES_NUMBERING"><h2><u>5. Endnotes-pages endnote numbering style</u></h2>
 
-<a name="ENDNOTE_NUMBER_CONTROL"><h3><u>Endnote numbering style control</u></h3></a>
+<a name="ENDNOTE_NUMBER_CONTROL"><h3><u>*Endnote numbering style control</u></h3></a>
 <p>
 See
 <a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
@@ -2152,7 +2486,7 @@ endnote numbers that appear in the body of the document(s).
 *Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
 </pre>
 
-<a name="ENDNOTE_NUMBER_ALIGNMENT"><h3><u>Endnote numbering alignment</u></h3></a>
+<a name="ENDNOTE_NUMBER_ALIGNMENT"><h3><u>*Endnote numbering alignment</u></h3></a>
 <p>
 By default, <strong>mom</strong> hangs the numbers on endnotes pages,
 aligned right to two placeholders, producing this:
@@ -2235,84 +2569,542 @@ comes out like this:
 
 <!====================================================================>
 
-<a name="FINIS_INTRO"><h2><u>Terminate document processing</u></h2></a>
+<a name="TOC_INTRO"><h2><u>Table of contents</u></h2></a>
 <ul>
-	<li><a href="#FINIS">Tag: FINIS</a>
-	<li><a href="#FINIS_STRING">Changing the FINIS string</a>
+	<li><a href="#TOC_BEHAVIOUR">TOC behaviour</a>
+	<li><a href="#TOC">Macro: TOC</a> -- tell <strong>mom</strong> to output a table of contents
+	<li><a href="#TOC_CONTROL">TOC control macros</a>
 </ul>
 
 <p>
-The use of <strong>FINIS</strong> is optional.  If you invoke it
-(at the end of a document, of course), <strong>mom</strong> turns off
-<a href="definitions.html#TERMS_FOOTER">footers</a>
-(if they're on) and page numbering (if page
-numbers are at the bottom of the page) and deposits the word
-END, centered after a blank line, beneath the last
-line of the document.  END is enclosed between
-<a href="definitions.html#TERMS_EM">em-dashes</a>.
+Want a table of contents for your document?  Easy.  Just enter
 <p>
-If you're writing in a language other than English, you can
-change what <strong>mom</strong> prints for END with
-the control macro <strong>FINIS_STRING</strong>.
+<pre>
+	.TOC
+</pre>
+
+as the very last macro of your document file. <strong>Mom</strong>
+will have picked up all document titles (in
+<a href="docprocessing.html#COLLATE">collated</a>
+documents), all heads, subheads, and paragraph heads, as well as any
+endnotes pages that have been output, and assigned them the
+appropriate page number (and page numbering style).  Talk about a
+no-brainer!
+
+That said, tables of contents (tocs) have even more control macros
+than endnotes.  As always, the reason for so many control macros is
+so that if you want to change just about any aspect of the toc's
+typographic appearance, you can.  <strong>Mom</strong> is all about
+simplicity AND flexibility.
+
+<a name="TOC_BEHAVIOUR"><h3><u>TOC behaviour</u></h3></a>
+<p>
+When you output a toc (with
+<a href="#TOC">TOC</a>),
+<strong>mom</strong> finishes processing the last page of your document,
+then breaks to a new page for printing the toc.
+<p>
+<strong>Mom</strong> follows standard typesetting conventions for
+tables of contents.  To this end, if
+<a href="headfootpage.html#HEADERS">HEADERS</a>
+are on for the document, the first page of the toc has no page
+header, but does have a first page (roman numeral) number, always
+&quot;1&quot;, in the bottom margin.  If
+<a href="headfootpage.html#FOOTERS">FOOTERS</a>
+are on for the document, the first page has neither a footer, nor a
+page number in the top margin.  (If you absolutely must have a page
+footer on the first page of the toc, simply invoke
+<a href="headfootpage.html#FOOTER_ON_FIRST_PAGE">FOOTER_ON_FIRST_PAGE</a>
+immediately before <strong>TOC</strong>.)  Subsequent toc pages have
+both page headers or footers and a page number.
+<p>
+Entries in the toc are hierarchically indented, as you would
+expect.  By default, each type of entry (e.g. a head or a subhead)
+is set in a different font as well.  If any of heads, subheads or
+paragraph heads are numbered in the body of the document, they are
+also numbered in the toc.  Head numbering in the toc is NOT
+concatenated as it is in the body of the document, which would be
+visually redundant in a toc.
+<p>
+Tocs are never set in columns, regardless of whether the rest of
+the document is.  Lastly, if
+<a href="rectoverso.html#RECTO_VERSO">recto/verso</a>
+printing is enabled, the toc respects it.  This sometimes leads to
+tocs that begin with the wrong margins, but the margins can be
+corrected either by outputting a
+<a href="#BLANK_PAGE">BLANKPAGE</a>
+or by using the toc control macro
+<a href="#TOC_RV_SWITCH">TOC_RV_SWITCH</a>.
+<p>
+The overall toc
+<a href="definitions.html#TERMS_FAMILY">family</a>,
+<a href="definitions.html#TERMS_PS">point size</a>
+and
+<a href="definitions.html#TERMS_LEADING">lead</a>
+can be altered with the toc 
+<a href="definitions.html#TERMS_CONTROLMACRO">control macros</a>,
+as can the family,
+<a href="definitions.html#TERMS_FONT">font</a>,
+point size and indent of each type of toc entry (i.e. title, head,
+subhead, paragraph head).  Furthermore, the page numbering style
+can be changed, as can the amount of visual space reserved for toc
+entry page numbers.
 <br>
 
-<!---FINIS--->
+<!---TOC--->
 
 <hr width="66%" align="left">
 <p>
-<a name="FINIS">
-	Macro: <strong>FINIS</strong>
+<a name="TOC">Macro: <strong>TOC</strong></a>
+
+<p>
+If you want a toc, just put <strong>TOC</strong> as the last macro
+in a document.  <strong>Mom</strong> takes care of the rest.
+<br>
+<hr width="66%" align="left">
+
+<a name="TOC_CONTROL"><h3><u>TOC control macros</u></h3></a>
+<p>
+Toc entries are not actually processed when <strong>mom</strong>
+collects them, so you can put any toc control macros anywhere you
+like in your document.  Some may prefer to place them at the top of
+the file.  Others may prefer to place them just before outputting
+the toc.  The choice is yours.
+<br>
+<ol>
+	<li><a href="#TOC_GENERAL"><strong>General toc page style control</strong></a>
+		<ul>
+			<li><a href="#TOC_FAMILY">Base family for toc pages</a>
+			<li><a href="#TOC_PT_SIZE">Base point size for toc pages</a>
+			<li><a href="#TOC_LEAD">Leading of toc pages</a>
+		</ul>
+	<li><a href="#TOC_PAGENUMBERING"><strong>Toc page numbering</strong></a>
+		<ul>
+			<li><a href="#PAGINATE_TOC">Turn toc pagination on or off</a>
+			<li><a href="#TOC_PAGENUM_STYLE">Toc page numbering style</a>
+		</ul>
+	<li><a href="#TOC_HEADER"><strong>Changing the toc header (title), string and style</strong></a>
+		<ul>
+			<li><a href="#TOC_HEADER_STRING">Changing the string (title)</a>
+			<li><a href="#TOC_HEADER_STYLE">Changing the string (title) style</a>
+		</ul>
+	<li><a href="#TOC_STYLE"><strong>Changing the style for toc entries</strong></a>
+	    <ul>
+	        <li><a href="#TOC_INDENT">The toc _INDENT control macros</a>
+	        <li><a href="#TOC_TITLE">Changing the style for toc title entries</a>
+	        <li><a href="#TOC_HEAD">Changing the style for toc head entries</a>
+	        <li><a href="#TOC_SUBHEAD">Changing the style for toc subhead entries</a>
+	        <li><a href="#TOC_PARAHEAD">Changing the style for toc paragraph head entries</a>
+	        <li><a href="#TOC_PN">Changing the style for toc page number listings</a>
+	    </ul>
+	<li><a href="#TOC_ADDITIONAL"><strong>Additional toc control macros</strong></a>
+	    <ul>
+	        <li><a href="#TOC_APPENDS_AUTHOR">Append author(s) to toc title entries</a>
+	        <li><a href="#TOC_RV_SWITCH">TOC_RV_SWITCH</a>
+	        <li><a href="#TOC_PADDING">TOC_PADDING</a>
+	    </ul>
+</ol>
+<hr>
+
+<a name="TOC_GENERAL"><h2><u>1. General toc page style control</u></h2>
+
+<a name="TOC_FAMILY"><h3><u>*Toc family</u></h3></a>
+<p>
+See
+<a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
+<p>
+Set the family of toc pages with <strong>TOC_FAMILY</strong>, which
+establishes the default family for every element of a toc page,
+including the toc title (&quot;Contents&quot;) and the page number
+in the top or bottom margin.  The default is the prevailing document
+family.
+<p>
+All elements on a toc page also have their own _FAMILY
+control macros, which override the default set by
+<strong>TOC_FAMILY</strong>.
+<!---TOC_PT_SIZE--->
+
+<a name="TOC_PT_SIZE"><h3><u>*Toc point size</u></h3></a>
+<p>
+Macro: <strong>TOC_PT_SIZE</strong> <var>&lt;base type size of the toc&gt;</var>
+
+<p>
+Unlike most other control macros that deal with size of document
+elements, <strong>TOC_PT_SIZE</strong> takes as its argument an
+absolute value, relative to nothing.  Therefore, the argument
+represents the size of toc type in
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>,
+unless you append an alternative
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>.
+For example,
+<p>
+<pre>
+	.TOC_PT_SIZE 12
+</pre>
+
+sets the base point size of type for the toc to 12 points, whereas
+<p>
+<pre>
+	.TOC_PT_SIZE .6i
+</pre>
+
+sets the base point size of type for the toc to 1/6 of an inch.
+<p>
+The type size set with <strong>TOC_PT_SIZE</strong> forms the basis
+from which the point size of other toc page elements are calculated.
+<p>
+The default for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>
+is 12.5 points (the same default size used in the body of the
+document).
+
+<!---TOC_LEAD--->
+
+<a name="TOC_LEAD"><h3><u>*Toc lead</u></h3></a>
+<p>
+Macro: <strong>TOC_LEAD</strong> <var>&lt;leading of the toc&gt; [ ADJUST ]</var>
+<br>
+<em>*Does not require a <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>; points is assumed</em>
+
+<p>
+Unlike most other control macros that deal with leading of document
+elements, <strong>TOC_LEAD</strong> takes as its argument an
+absolute value, relative to nothing.  Therefore, the argument
+represents the
+<a href="definitions.html#TERMS_LEADING">leading</a>
+of tocs in
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>
+unless you append an alternative
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>.
+For example,
+<p>
+<pre>
+	.TOC_LEAD 14
+</pre>
+
+sets the base leading of type on the endnotes page to 14
+points, whereas
+<p>
+<pre>
+	.TOC_LEAD .5i
+</pre>
+
+sets the base leading of type on the endnotes page to 1/2 inch.
+<p>
+If you want the leading of toc pages adjusted to fill the
+page, pass <strong>TOC_LEAD</strong> the optional argument
+<strong>ADJUST</strong>.  (See
+<a href="docprocessing.html#DOC_LEAD_ADJUST">DOC_LEAD_ADJUST</a>
+for an explanation of leading adjustment.)
+<p>
+The default for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>
+is the prevailing document lead (16 by default), adjusted.
+<p>
+<strong>NOTE:</strong> Even if you give <strong>mom</strong> a
+<strong>DOC_LEAD_ADJUST OFF</strong> command, she will still, by
+default, adjust toc leading.  You MUST enter
+<strong>TOC_LEAD &lt;lead&gt;</strong> with no
+<strong>ADJUST</strong> argument to disable this default behaviour.
+<p>
+<strong>ADDITIONAL NOTE:</strong> Tocs are always double-spaced in
+<strong>PRINTSTYLE TYPEWRITE</strong>, regardless of whether the
+body of the document is single-spaced.
+
+<a name="TOC_PAGENUMBERING"><h2><u>2. Toc page numbering</u></h2></a>
+<p>
+The page numbering of toc pages is controlled by the same macros
+that control
+<a href="headfootpage.html#PAGINATION">document page numbering</a>,
+except
+<a href="headfootpage.html#PAGENUM">PAGENUM</a>
+(tocs always start on page 1).  The defaults are the same as the
+rest of the document.
+<p>
+If you wish to change some aspect of toc pagination, use the
+document pagination control macros immediately prior to
+<strong>.TOC</strong>.
+<p>
+A special macro,
+<a href="#TOC_PAGENUM_STYLE">TOC_PAGENUM_STYLE</a>
+controls the style of toc pages page numbers.
+<br>
+
+<hr width="33%" align="left">
+
+<!---PAGINATE_TOC--->
+
+<p>
+<a name="PAGINATE_TOC">
+	Macro: <strong>PAGINATE_TOC</strong> <var>&lt;toggle&gt;</var>
+</a>
+<p>
+By default, <strong>mom</strong> paginates the toc.  If you'd like
+her not to, do 
+<p>
+<pre>
+	.PAGINATE_TOC OFF
+</pre>
+
+<strong>NOTE:</strong> Simply invoking <strong>PAGINATION
+OFF</strong> or <strong>PAGINATE OFF</strong> disables toc
+pagination <em>for the first toc page only.</em> You MUST use
+<strong>.PAGINATE_TOC OFF</strong> to disable toc pagination, even
+if pagination is turned off elsewhere in your document.
+
+<p>
+<hr width="33%" align="left">
+<p>
+
+<!---TOC_PAGENUM_STYLE--->
+
+<a name="TOC_PAGENUM_STYLE">
+	Macro: <strong>TOC_PAGENUM_STYLE</strong> <var>&lt;DIGIT | ROMAN | roman | ALPHA | alpha&gt;</var>
+</a>
+<p>
+By default, <strong>mom</strong> uses roman numerals to number
+toc pages.  Use <strong>TOC_PAGENUM_STYLE</strong>if you'd prefer
+something else.  For example, to have standard digits instead of
+roman numerals, do the following:
+<p>
+<pre>
+	.TOC_PAGENUM_STYLE DIGIT
+</pre>
+
+<br>
+<hr width="33%" align="left">
+<br>
+
+<a name="TOC_HEADER"><h2><u>3. Changing the toc header (title) string and style</u></h2></a>
+<p>
+The toc header string is the title that appears at to top of the
+toc.  By default, it's &quot;Contents&quot;.  If you'd like
+something else, say, &quot;Table of Contents&quot;, do
+<p>
+<a name="TOC_HEADER_STRING"></a>
+<pre>
+	.TOC_HEADER_STRING "Table of Contents"
+</pre>
+
+<a name="TOC_HEADER_STYLE"></a>
+The style of the toc header (title) is managed by the usual control
+macros (see
+<a href="#CONTROL_MACRO_ARGS">arguments to the control macros</a>).
+<p>
+<pre>
+	.TOC_HEADER_FAMILY  default = prevailing doc family (Times Roman in TYPEWRITE)
+	.TOC_HEADER_FONT    default = bold
+	.TOC_HEADER_SIZE    default = +4
+	.TOC_HEADER_QUAD    default = left
+</pre>
+
+<a name="TOC_STYLE"><h2><u>4. Changing the style for toc entries</u></h2></a>
+<p>
+&quot;Toc entries&quot; refers to titles, heads, subheads and
+paragraph heads as they appear in the toc.  Their style is managed
+by the usual
+<a href="definitions.html#TERMS_CONTROLMACRO">control macros</a>,
+starting with TOC_
+
+<a name="TOC_INDENT"><h3><u>The toc _INDENT control macros</u></h3></a>
+<p>
+The toc control macros that end in _INDENT all take a single
+argument that requires a
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>.
+The argument is the distance to indent the entry from the left
+margin.  For example,
+<p>
+<pre>
+	.TOC_HEAD_INDENT 2P
+</pre>
+
+indents head entries 2
+<a href="definitions.html#TERMS_PICASPOINTS">picas</a>
+from the left margin.
+
+<a name="TOC_TITLE"><h3><u>*Changing the style for toc title entries</u></h3></a>
+<p>
+(See
+<a href="#CONTROL_MACRO_ARGS">arguments to the control macros</a>).
+<p>
+Toc title entries are the titles of documents that have been
+<a href="rectoverso.html#COLLATE">collated</a>
+together.
+<p>
+<pre>
+	.TOC_TITLE_FAMILY  default = prevailing doc family (Times Roman in TYPEWRITE)
+	.TOC_TITLE_FONT    default = bold italic
+	.TOC_TITLE_SIZE    default = +0
+	.TOC_TITLE_INDENT  default = 0 for TYPESET and TYPEWRITE
+</pre>
+
+<a name="TOC_HEAD"><h3><u>*Changing the style for toc head entries</u></h3></a>
+<p>
+(See
+<a href="#CONTROL_MACRO_ARGS">arguments to the control macros</a>).
+<p>
+Toc head entries are main heads that appear in the body of a
+document.
+<p>
+<pre>
+	.TOC_HEAD_FAMILY  default = prevailing doc family (Times Roman in TYPEWRITE)
+	.TOC_HEAD_FONT    default = bold
+	.TOC_HEAD_SIZE    default = +.5
+	.TOC_HEAD_INDENT  default = 18p for TYPESET; 2m for TYPEWRITE
+</pre>
+
+<a name="TOC_SUBHEAD"><h3><u>*Changing the style for toc subhead entries</u></h3></a>
+<p>
+(See
+<a href="#CONTROL_MACRO_ARGS">arguments to the control macros</a>).
+<p>
+Toc subhead entries are subheads that appear in the body of a
+document.
+<p>
+<pre>
+	.TOC_SUBHEAD_FAMILY  default = prevailing doc family (Times Roman in TYPEWRITE)
+	.TOC_SUBHEAD_FONT    default = roman
+	.TOC_SUBHEAD_SIZE    default = +0
+	.TOC_SUBHEAD_INDENT  default = 30p for TYPESET; 4m for TYPEWRITE
+</pre>
+
+<a name="TOC_PARAHEAD"><h3><u>*Changing the style for toc paragraph head entries</u></h3></a>
+<p>
+(See
+<a href="#CONTROL_MACRO_ARGS">arguments to the control macros</a>).
+<p>
+Toc paragraph head entries are paragraph heads that appear in the
+body of a document.
+<p>
+<pre>
+	.TOC_PARAHEAD_FAMILY  default = prevailing doc family (Times Roman in TYPEWRITE)
+	.TOC_PARAHEAD_FONT    default = italic
+	.TOC_PARAHEAD_SIZE    default = +0
+	.TOC_PARAHEAD_INDENT  default = 42p for TYPESET; 6m for TYPEWRITE
+</pre>
+
+<a name="TOC_PN"><h3><u>*Changing the style for toc paragraph page number listings</u></h3></a>
+<p>
+(See
+<a href="#CONTROL_MACRO_ARGS">arguments to the control macros</a>).
+<p>
+Toc paragraph head entries are paragraph heads that appear in the
+body of a document.
+<p>
+<pre>
+	.TOC_PN_FAMILY  default = prevailing doc family (Times Roman in TYPEWRITE)
+	.TOC_PN_FONT    default = roman
+	.TOC_PN_SIZE    default = +0
+</pre>
+
+<a name="TOC_ADDITIONAL"><h2><u>5. Additional toc macros</u></h2></a>
+<p>
+The following macros allow you to switch page margins should
+they be incorrect for recto/verso printing, to establish how
+many placeholders to leave for page listings, and to have
+<strong>mom</strong> append author(s) to toc title entries.
+
+<br>
+<hr width="33%" align="left">
+
+<!---TOC_RV_SWITCH--->
+
+<p>
+<a name="TOC_RV_SWITCH">
+	Macro: <strong>TOC_RV_SWITCH</strong>
+</a>
+<p>
+<strong>TOC_RV_SWITCH</strong> doesn't take an argument.  It simply
+instructs <strong>mom</strong> to switch the left and right margins
+of
+<a href="rectoverso.html#RECTO_VERSO">recto/verso</a>
+documents should the toc happen to begin on an even page when you
+want an odd, or vice versa.
+<p>
+The same result can be accomplished by outputting a
+<a href="#BLANK_PAGE">BLANKPAGE</a>.
+
+<br>
+<hr width="33%" align="left">
+
+<!---TOC_APPENDS_AUTHOR--->
+
+<p>
+<a name="TOC_APPENDS_AUTHOR">
+	Macro: <strong>TOC_APPENDS_AUTHOR</strong> <var>&lt;none&gt; | &lt;&quot;name(s) of authors&quot;&gt;</var>
+</a>
+<p>
+In certain kinds of collated documents, different authors are
+responsible for the articles or stories contained within them.  In
+such documents, you may wish to have the author or authors
+appended to the toc's title entry for each story or article.
+<p>
+If you invoke <strong>TOC_APPENDS_AUTHOR</strong> with no argument,
+<strong>mom</strong> appends the first argument you passed to
+<a href="docprocessing.html#AUTHOR">AUTHOR</a>
+to toc title entries, separated by a front-slash.
+<p>
+If you invoke <strong>TOC_APPENDS_AUTHOR</strong> with an argument
+(surrounded by double-quotes), <strong>mom</strong> will append it
+to the toc title entries instead.  This is useful if you have
+multiple authors you wish to identify by last name only.  For
+example, if three authors--Joe Blough, Jane Doe, and John
+Deere--are responsible for a single article
+<p>
+<pre>
+	.TOC_APPENDS_AUTHOR "Blough et al."
+</pre>
+
+would be a good way to identify them in the toc.
+
+<br>
+<hr width="33%" align="left">
+
+<!---TOC_PADDING--->
+
+<p>
+<a name="TOC_PADDING">
+	Macro: <strong>TOC_PADDING</strong> <var>&lt;# of placeholders to allow for page number listings&gt</var>
+</a>
+<p>
+By default, <strong>mom</strong> allows room for 3 digits in the
+page number listings of tocs.  If you'd like some other number of
+placeholders, say 2, do
+<p>
+<pre>
+	.TOC_PADDING 2
+</pre>
+
+<br>
+<hr>
+
+<!====================================================================>
+
+<a name="BLANK_PAGE_TITLE"><h2><u>Inserting a blank page into the document</u></h2></a>
+<p>
+<a name="BLANK_PAGE">
+	Macro: <strong>BLANKPAGE</strong> <var>&lt;# of blank pages to insert&gt;</var>
 </a>
 
 <p>
-The use of <strong>FINIS</strong> is optional, but if you use
-it, it should be the last macro you invoke in a document.  See
-<a href="#FINIS_INTRO">above</a>
-for a description of how <strong>FINIS</strong> behaves.
+This one does exactly what you'd expect -- inserts a blank page into
+the document. <strong>Mom</strong> silently increments the page
+number of every blank page and keeps track of
+<a href="rectoverso.html#RECTO_VERSO">recto/verso</a>
+stuff, but otherwise, does nothing.  It's up to you, the user, to
+figure out what to do with this feature.  However, it's worth
+noting that without it, inserting completely blank pages, to use
+a vernacular Québécois phrase, &quot;c'est pas évident&quot;
+(somewhere between &quot;isn't easy&quot;, &quot;isn't
+obvious&quot; and &quot;isn't fun&quot;).
 <p>
-<strong>NOTE:</strong> If you don't use <strong>FINIS</strong>,
-and you don't want
-<a href="definitions.html#TERMS_FOOTER">footers</a>
-(if they're on) or a page number at the bottom of the last page of
-a document, you have to turn them off manually, as the last two
-lines of your document file, like this:
-<p>
-<pre>
-	.FOOTERS OFF
-	.PAGINATE OFF
-</pre>
-
-<a name="FINIS_STRING"><h3><u>Changing the FINIS string</u></h3></a>
-
-<p>
-By default, <strong>FINIS</strong> prints the word
-END between
-<a href="definitions.html#TERMS_EM">em-dashes</a>.
-If you'd like <strong>mom</strong> to print something else
-between the dashes, use the <strong>FINIS_STRING</strong> macro
-(anywhere in the document prior to <strong>FINIS</strong>).
-<p>
-For example, if your document's in French, you'd do
+The argument to <strong>BLANK_PAGE</strong> is the number of blank
+pages to insert.  The argument is not optional, hence even if you
+only want one blank page, you have to tell <strong>mom</strong>:
 <p>
 <pre>
-	.FINIS_STRING "FIN"
+	.BLANKPAGE 1
 </pre>
-
-Double-quotes must enclose the macro's argument.
-<p>
-<strong>NOTE:</strong> If you pass <strong>FINIS_STRING</strong>
-a blank string, i.e.
-<p>
-<pre>
-	.FINIS_STRING ""
-</pre>
-
-<strong>mom</strong> will still print the em-dashes if you
-invoke <strong>FINIS</strong>.  This, in effect, produces a
-short, centered horizontal rule that terminates the document.
-(In
-<a href="docprocessing.html.#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
-it's a short, dashed line composed of four hyphens.)
 
 <p>
 <hr>

@@ -607,6 +607,47 @@ is <strong>CHAPTER</strong>, <strong>TITLE</strong> should be the
 title of the opus, not &quot;CHAPTER whatever&quot;.
 <br>
 
+<!---DOCTITLE--->
+
+<hr width="66%" align="left">
+<p>
+<a name="DOCTITLE"></a>
+Macro: <strong>DOCTITLE</strong> <var>&quot;&lt;overall document title&gt;&quot;</var>
+<br>
+<em>*Argument must be enclosed in double-quotes</em>
+
+<p>
+When you're creating a single document, say, an essay or a short
+story, you have no need of this macro.
+<a href="#TITLE">TITLE</a>
+takes care of all your title needs.
+<p>
+However if you're 
+<a href="rectoverso.html#COLLATE">collating</a>
+a bunch of documents together, say, to print out a report containing
+many articles with different titles, or a book of short stories, you
+need <strong>DOCTITLE</strong>.
+<p>
+<strong>DOCTITLE</strong> tells <strong>mom</strong> the title
+of the complete document (as opposed to the title of each article
+or entitled section).
+<p>
+The doctitle string can be caps or caps/lower-case; it's up to you.
+In
+<a href="#PRINTSTYLE">PRINTSTYLE TYPESET</a>,
+by default, the doctitle appears in the rightmost position of
+<a href="definitions.html#TERMS_HEADER">page headers</a>,
+all in caps unless you turn that feature off (see
+<a href="headfootpage.html#_CAPS">HEADER_&lt;POSITION&gt;_CAPS</a>). In
+<a href="#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
+the doctitle always gets converted to caps.
+<p>
+<strong>NOTE:</strong> If your
+<a href="#DOCTYPE">DOCTYPE</a>
+is <strong>CHAPTER</strong>, you don't need
+<strong>DOCTITLE</strong>.  <strong>TITLE</strong> takes care of
+everything.
+<br>
 <!---SUBTITLE--->
 
 <hr width="66%" align="left">
@@ -854,8 +895,9 @@ for how <strong>mom</strong>'s outputs each part of the page header.)
 If you give the chapter a title with
 <a href="#CHAPTER_TITLE">CHAPTER TITLE</a>,
 <strong>mom</strong> prints &quot;Chapter #&quot; and the title
-underneath.  If you omit the <strong>CHAPTER</strong> reference
-macro but supply a
+underneath.  If you omit the
+<a href="#CHAPTER">CHAPTER</a>
+reference macro but supply a
 <a href="#CHAPTER_TITLE">CHAPTER_TITLE</a>,
 <strong>mom</strong> prints only the chapter title. <em>(*For
 backward compatability with pre-1.1.5 versions of</em>
@@ -898,6 +940,8 @@ for instructions on using <strong>mom</strong> to format letters.
 Macro: <strong>PRINTSTYLE</strong> <var>TYPESET | TYPEWRITE [ SINGLESPACE ]</var>
 <br>
 <em>*Required for document processing.</em>
+<br>
+<em>*Must come before any changes to default document style</em>
 
 <p>
 <strong>PRINTSTYLE</strong> tells <strong>mom</strong> whether to typeset
@@ -907,7 +951,10 @@ a document, or to print it out &quot;typewritten, doubled-spaced&quot;.
 document processing to take place, <strong>mom</strong> requires
 a <strong>PRINTSTYLE</strong>.  If you don't give one,
 <strong>mom</strong> will warn you on stderr and print a single
-page with a nasty message.
+page with a nasty message.  Furthermore, <strong>PRINTSTYLE</strong>
+must come before any changes to <strong>mom</strong>'s default
+typestyle parameters.  (This applies primarily to
+<strong>PRINTSTYLE TYPESET</strong>.
 <p>
 <strong>TYPESET</strong>, as the argument implies, typesets documents
 (by default in Times Roman; see
@@ -917,6 +964,25 @@ You have full access to all the
 as well as the
 <a href="definitions.html#STYLE_CONTROL">style control macros</a>
 of document processing.
+<p>
+As mentioned in the above paragraph, <strong>PRINTSTYLE
+TYPESET</strong> must come before any changes to
+<strong>mom</strong>'s default typographic settings.  For example,
+
+<pre>
+	.LS 14
+	.PRINTSTYLE TYPESET
+</pre>
+
+will not changes <strong>mom</strong>'s default document leading
+of 16 points to 14 points, whereas
+
+<pre>
+	.PRINTSTYLE TYPESET
+	.LS 14
+</pre>
+
+will.
 <p>
 With <strong>TYPEWRITE</strong>, <strong>mom</strong> does her best
 to reproduce the look and feel of typewritten, double-spaced copy (see
@@ -1143,11 +1209,27 @@ adjusted to fill pages fully to the bottom margin.
 <hr width="66%" align="left">
 <a name="TYPE_BEFORE_START"><h2><u>Using the typesetting macros prior to START</u></h2></a>
 
-When used before the
-<a href="#START">START</a>
-macro, the following
+From time to time (or maybe frequently), you'll want the overall
+look of a document to differ from <strong>mom</strong>'s defaults.
+Perhaps you'd like her to use a different
+<a href="definitions.html#TERMS_FAMILY">family</a>,
+or a different overall
+<a href="definitions.html#TERMS_LEADING">leading</a>,
+or have different left and/or right page margins.
+<p>
+To accomplish such alterations, use the appropriate
 <a href="typesetting.html#MACROS_TYPESETTING">typesetting macros</a>
-have these meanings:
+(listed below) prior to
+<a href="#START">START</a>.
+Do <strong>NOT</strong> use the macros listed in
+<a href="#DOC_PARAM_MACROS">Changing document-wide typesetting parameters after START</a>
+prior to <strong>START</strong>; they are exclusively for use afterwards.
+<p>
+When used before
+<strong>START</strong>,
+the
+<a href="typesetting.html#MACROS_TYPESETTING">typesetting macros</a>
+(below have) the following meanings:
 <p>
 <pre>
 	L_MARGIN         Left margin of pages, including headers/footers
@@ -1208,41 +1290,57 @@ leading, then incrementally adds
 to the leading until the maximum number of lines at the new leading
 matches the bottom margin.  In most instances, the difference
 between the requested lead and the adjusted lead is
-unnoticeable.
+unnoticeable, and since in almost all cases adjusted leading is
+what you want, it's <strong>mom</strong>'s default.
 <p>
-<strong>Mom</strong> uses <strong>DOC_LEAD_ADJUST</strong> with
-her default document settings, but if you invoke
-<a href="typesetting.html#LS">LS</a>
-or
-<a href="typesetting.html#AUTOLEAD">AUTOLEAD</a>
-prior to
-<a href="#START">START</a>,
-you have to do
-<p>
-<pre>
-	.DOC_LEAD_ADJUST
-</pre>
-in order to enable it.
-<p>
-If you don't like the idea of <strong>mom</strong> playing around
-with the leading by default, you can turn adjusting off with
+Should you NOT want adjusted document leading, you MUST turn it
+off manually, like this:
 <p>
 <pre>
 	.DOC_LEAD_ADJUST OFF
 </pre>
+  If you set the document leading prior to <strong>START</strong>
+with
+<a href="typesetting.html#LS">LS</a>
+or
+<a href="typesetting.html#AUTOLEAD">AUTOLEAD</a>,
+<strong>DOC_LEAD_ADJUST OFF</strong> must come afterwards, like
+this:
+<p>
+<pre>
+	.LS 12
+	.DOC_LEAD_ADJUST OFF
+</pre>
 
 In this scenario, the maximum number of lines that fit on a page at
-the current document leading determine where <strong>mom</strong> ends
+a
+<a href="definitions.html#TERMS_LEADING">leading</a>
+of 12
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>
+determine where <strong>mom</strong> ends
 a page.  The effect will be that last lines usually fall (slightly)
-short of your expected bottom margin.
+short of the &quot;official&quot; bottom margin.
+<p>
+In
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE</a>
+<strong>TYPEWRITE</strong>, the leading is always adjusted and
+can't be turned off.
 <p>
 <strong>NOTE:</strong> <strong>DOC_LEAD_ADJUST</strong>, if
 used, must be invoked after
-<a href="typesetting.html#LS">LS</a>
+<a href="typesetting.html#LEADING">LS</a>
 or
 <a href="typesetting.html#AUTOLEAD">AUTOLEAD</a>
 and before
 <a href="#START">START</a>
+<p>
+<strong>ADDITIONAL NOTE:</strong> Even if you disable
+<strong>DOC_LEAD_ADJUST</strong>, <strong>mom</strong> will still
+adjust the leading of endnotes pages and toc pages.  See
+<a href="docelement.html#ENDNOTE_LEAD">ENDNOTE_LEAD</a>
+and
+<a href="docelement.html#TOC_LEAD">TOC_LEAD</a>
+for an explanation of how to disable this default behaviour.
 <br>
 
 <!---DOCHEADER--->
@@ -1813,6 +1911,16 @@ immediately prior to a new page, like this:
 	.DOC_LEAD &lt;new value&gt;
 	.NEWPAGE
 </pre>
+
+<strong>NOTE:</strong> Even if you don't pass
+<strong>DOC_LEAD</strong> the optional argument
+<strong>ADJUST</strong>, <strong>mom</strong> will still adjust the
+leading of endnotes pages and toc pages.  See
+<a href="docelement.html#ENDNOTE_LEAD">ENDNOTE_LEAD</a>
+and
+<a href="docelement.html#TOC_LEAD">TOC_LEAD</a>
+for an explanation of how to disable this default behaviour.
+<br>
 
 <hr width="66%" align="left">
 <p>
