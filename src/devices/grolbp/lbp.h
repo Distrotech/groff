@@ -1,5 +1,5 @@
 // -*- C -*-
-/* Copyright (C) 1994, 2000, 2001, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
      Written by Francisco Andrés Verdú <pandres@dragonet.es>
 
 groff is free software; you can redistribute it and/or modify it under
@@ -228,7 +228,7 @@ vdmvarc(int centerx, int centery,int radius, int startx, int starty, int endx, i
 {
   char x[4],y[4],rad[4],stx[4],sty[4],enx[4],eny[4],styl[4],op[4];
   
-	vdmprintf("}6%s%s%s%s%s%s%s%s\x1e",vdmnum(arcopen,op),\
+	vdmprintf("}6%s%s%s%s%s%s%s%s%s\x1e",vdmnum(arcopen,op),\
 		vdmnum(centerx,x),vdmnum(centery,y),\
 		vdmnum(radius,rad),vdmnum(startx,stx),vdmnum(starty,sty),\
 		vdmnum(endx,enx),vdmnum(endy,eny),vdmnum(style,styl));
