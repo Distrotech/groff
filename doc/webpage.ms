@@ -42,9 +42,9 @@ Home of Groff (GNU Troff).
 .HnS 1
 .HR
 GNU Troff
-.URL http://\:groff.ffii.org/ (Groff) 
+.URL http://\:groff.ffii.org/ (Groff)
 \[em] a
-.URL http://\:www.gnu.org/ GNU 
+.URL http://\:www.gnu.org/ GNU
 project.
 Hosted by
 .URL http://\:ffii.org/ FFII .
@@ -62,15 +62,26 @@ Groff now supports HTML.
 .SH
 Download
 
-.URL "ftp://\:groff.ffii.org/\:pub/\:groff/" Germany 
-|
-.URL "ftp://\:ftp.gnu.org/\:gnu/\:groff/" USA 
+The source code of the currently released versions of groff is
+available at the 
+.URL "ftp://\:groff.ffii.org/\:pub/\:groff/" "FFII host (Germany)" ,
+.URL "ftp://\:ftp.gnu.org/\:gnu/\:groff/" "GNU host (USA)" ,
+and its mirrors.
+.
+The USA site also contains more old, obsolete versions.
 
-.URL http://\:www.gnu.org/\:copyleft/\:gpl.html License 
-|
-.URL http://\:ffii.org/\:mailman/\:listinfo/\:groff/ "Mailing list" 
-|
-.URL "http://\:gnuwin32.sf.net/\:packages/\:groffl.htm" "Groff for Windows" 
+The most actual pre-release, development version is available from a
+CVS repository, see below.
+.
+Development snapshots (produced twice a day from the CVS repository)
+can be downloaded with FTP from
+.URL "ftp://\:groff.ffii.org/\:pub/\:groff/devel" here .
+
+For a special version of groff on the Microsoft operating systems, see
+.URL "http://\:gnuwin32.sf.net/\:packages/\:groffl.htm" "Groff for Windows" .
+
+GNU troff is released under the
+.URL http://\:www.gnu.org/\:copyleft/\:gpl.html "GNU Copyright License" .
 
 User issues lead:
 .MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
@@ -194,7 +205,10 @@ To subscribe, send e-mail to \[la]list\[ra]-request@\[la]domain\[ra]
 (example:
 .MTO groff-request@\:ffii.org groff-request@\:ffii.org )
 with the word `subscribe' in either the
-subject or body of the e-mail (don't include the quotes).
+subject or body of the e-mail (don't include the quotes) or have a look
+at the
+.URL http://\:ffii.org/\:mailman/\:listinfo/\:groff/ \
+     "groff mailing list webpage" .
 
 GNU groff was written by
 .MTO jjc@\:jclark.com "James Clark" .
