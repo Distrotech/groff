@@ -19,6 +19,10 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "driver.h"
+#ifdef _MSC_VER
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 #define DEFAULT_LINEWIDTH 40
 static int linewidth = DEFAULT_LINEWIDTH;
@@ -850,6 +854,9 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
+#ifdef	_MSC_VER
+  _setmode(_fileno(stdout), _O_BINARY);
+#endif
   while ((c = getopt(argc, argv, "F:vw:d")) != EOF)
     switch(c) {
     case 'v':

@@ -915,7 +915,7 @@ int page_offset_reg::get_value(units *res)
 
 const char *page_offset_reg::get_string()
 {
-  return itoa(topdiv->get_page_offset().to_units());
+  return i_to_a(topdiv->get_page_offset().to_units());
 }
 
 class page_length_reg : public reg {
@@ -932,7 +932,7 @@ int page_length_reg::get_value(units *res)
 
 const char *page_length_reg::get_string()
 {
-  return itoa(topdiv->get_page_length().to_units());
+  return i_to_a(topdiv->get_page_length().to_units());
 }
 
 class vertical_position_reg : public reg {
@@ -955,7 +955,7 @@ const char *vertical_position_reg::get_string()
   if (curdiv == topdiv && topdiv->before_first_page)
     return "-1";
   else
-    return itoa(curdiv->get_vertical_position().to_units());
+    return i_to_a(curdiv->get_vertical_position().to_units());
 }
 
 class high_water_mark_reg : public reg {
@@ -972,7 +972,7 @@ int high_water_mark_reg::get_value(units *res)
 
 const char *high_water_mark_reg::get_string()
 {
-  return itoa(curdiv->get_high_water_mark().to_units());
+  return i_to_a(curdiv->get_high_water_mark().to_units());
 }
 
 class distance_to_next_trap_reg : public reg {
@@ -989,7 +989,7 @@ int distance_to_next_trap_reg::get_value(units *res)
 
 const char *distance_to_next_trap_reg::get_string()
 {
-  return itoa(curdiv->distance_to_next_trap().to_units());
+  return i_to_a(curdiv->distance_to_next_trap().to_units());
 }
 
 class diversion_name_reg : public reg {
@@ -1031,7 +1031,7 @@ public:
 
 const char *next_page_number_reg::get_string()
 {
-  return itoa(topdiv->get_next_page_number());
+  return i_to_a(topdiv->get_next_page_number());
 }
 
 class page_ejecting_reg : public reg {
@@ -1041,7 +1041,7 @@ public:
 
 const char *page_ejecting_reg::get_string()
 {
-  return itoa(topdiv->get_ejecting());
+  return i_to_a(topdiv->get_ejecting());
 }
 
 class constant_vunits_reg : public reg {
@@ -1057,7 +1057,7 @@ constant_vunits_reg::constant_vunits_reg(vunits *q) : p(q)
 
 const char *constant_vunits_reg::get_string()
 {
-  return itoa(p->to_units());
+  return i_to_a(p->to_units());
 }
 
 class nl_reg : public variable_reg {

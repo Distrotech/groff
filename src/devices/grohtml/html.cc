@@ -2581,8 +2581,8 @@ void html_printer::flush_page (void)
 #if 0
   dump_page();
 #endif
-  html.begin_comment("left  margin: ").comment_arg(itoa(left_margin_indent)).end_comment();;
-  html.begin_comment("right margin: ").comment_arg(itoa(right_margin_indent)).end_comment();;
+  html.begin_comment("left  margin: ").comment_arg(i_to_a(left_margin_indent)).end_comment();;
+  html.begin_comment("right margin: ").comment_arg(i_to_a(right_margin_indent)).end_comment();;
   remove_redundant_regions();
   page_contents->calculate_region();
   remove_duplicate_regions();
@@ -6180,7 +6180,7 @@ void html_printer::draw(int code, int *p, int np, const environment *env)
 void html_printer::begin_page(int n)
 {
   page_number            =  n;
-  html.begin_comment("Page: ").comment_arg(itoa(page_number)).end_comment();;
+  html.begin_comment("Page: ").comment_arg(i_to_a(page_number)).end_comment();;
   no_of_printed_pages++;
   
   output_style.f         =  0;
@@ -6253,7 +6253,7 @@ html_printer::~html_printer()
        .comment_arg(ctime(&t))
        .end_comment();
   }
-  html.begin_comment("Total number of pages: ").comment_arg(itoa(no_of_printed_pages)).end_comment();
+  html.begin_comment("Total number of pages: ").comment_arg(i_to_a(no_of_printed_pages)).end_comment();
   html.end_line();
   html.copy_file(tempfp);
   fputs("</body>\n", stdout);

@@ -2398,6 +2398,7 @@ node_list::~node_list()
 }
 
 struct macro_header {
+public:
   int count;
   char_list cl;
   node_list nl;
@@ -3868,7 +3869,7 @@ static void do_width()
   }
   env.wrap_up_tab();
   units x = env.get_input_line_position().to_units();
-  input_stack::push(make_temp_iterator(itoa(x)));
+  input_stack::push(make_temp_iterator(i_to_a(x)));
   env.width_registers();
   curenv = oldenv;
 }
@@ -4409,7 +4410,11 @@ void pipe_source()
     }
     buf[buf_used] = '\0';
     errno = 0;
+#ifdef _MSC_VER
+    FILE *fp = popen(buf, "rt");
+#else
     FILE *fp = popen(buf, "r");
+#endif
     if (fp)
       input_stack::push(new file_iterator(fp, symbol(buf).contents(), 1));
     else
@@ -4836,7 +4841,7 @@ static void init_charset_table()
   char buf[16];
   strcpy(buf, "char");
   for (int i = 0; i < 256; i++) {
-    strcpy(buf + 4, itoa(i));
+    strcpy(buf + 4, i_to_a(i));
     charset_table[i] = get_charinfo(symbol(buf));
     charset_table[i]->set_ascii_code(i);
     if (csalpha(i))
@@ -5143,7 +5148,7 @@ public:
 
 const char *nargs_reg::get_string()
 {
-  return itoa(input_stack::nargs());
+  return i_to_a(input_stack::nargs());
 }
 
 class lineno_reg : public reg {
@@ -5157,7 +5162,7 @@ const char *lineno_reg::get_string()
   const char *file;
   if (!input_stack::get_location(0, &file, &line))
     line = 0;
-  return itoa(line);
+  return i_to_a(line);
 }
 
 
@@ -5225,7 +5230,7 @@ constant_int_reg::constant_int_reg(int *q) : p(q)
 
 const char *constant_int_reg::get_string()
 {
-  return itoa(*p);
+  return i_to_a(*p);
 }
 
 void abort_request()
@@ -5805,6 +5810,13 @@ void warn_request()
   skip_line();
 }
 
+#ifdef _MSC_VER
+static int getpid(void)
+{
+  return 1;
+}
+#endif
+
 static void init_registers()
 {
 #ifdef LONG_FOR_TIME_T
@@ -6330,7 +6342,7 @@ charinfo *get_charinfo_by_number(int n)
     return ci;
   }
   else {
-    symbol ns(itoa(n));
+    symbol ns(i_to_a(n));
     charinfo *ci = (charinfo *)numbered_charinfo_dictionary.lookup(ns);
     if (!ci) {
       ci = new charinfo(UNNAMED_SYMBOL);

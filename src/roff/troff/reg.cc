@@ -72,7 +72,7 @@ static const char *number_value_to_ascii(int value, char format, int width)
   switch(format) {
   case '1':
     if (width <= 0)
-      return itoa(value);
+      return i_to_a(value);
     else if (width > sizeof(buf) - 2)
       sprintf(buf, "%.*d", int(sizeof(buf) - 2), int(value));
     else
@@ -88,7 +88,7 @@ static const char *number_value_to_ascii(int value, char format, int width)
       int n = int(value);
       if (n >= 40000 || n <= -40000) {
 	error("magnitude of `%1' too big for i or I format", n);
-	return itoa(n);
+	return i_to_a(n);
       }
       if (n == 0) {
 	*p++ = '0';

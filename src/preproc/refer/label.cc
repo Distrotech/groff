@@ -558,7 +558,7 @@ void format_expr::evaluate(int tentative, const reference &ref,
   if (type != '0')
     result += format_serial(type, num + 1);
   else {
-    const char *ptr = itoa(num + first_number);
+    const char *ptr = i_to_a(num + first_number);
     int pad = width - strlen(ptr);
     while (--pad >= 0)
       result += '0';
@@ -579,7 +579,7 @@ static const char *format_serial(char c, int n)
       // numerals; I can find no historical basis for this usage
       const char *s = c == 'i' ? "zwmdclxvi" : "ZWMDCLXVI";
       if (n >= 40000)
-	return itoa(n);
+	return i_to_a(n);
       while (n >= 10000) {
 	*p++ = s[0];
 	n -= 10000;

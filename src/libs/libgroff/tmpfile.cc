@@ -82,6 +82,8 @@ char *xtmptemplate(char *postfix=0)
 
 // Open a temporary file and with fatal error on failure.
 
+#ifndef _MSC_VER
+
 FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1)
 {
   char *templ = xtmptemplate(postfix);
@@ -113,7 +115,8 @@ FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1)
   return fp;
 }
 
-#if 0
+#else
+
 // If you're not running Unix, the following will do:
 FILE *xtmpfile(char **namep, char *postfix=0, int do_unlink=1)
 {
@@ -122,4 +125,5 @@ FILE *xtmpfile(char **namep, char *postfix=0, int do_unlink=1)
     fatal("couldn't create temporary file");
   return fp;
 }
-#endif
+
+#endif /* _MSC_VER */

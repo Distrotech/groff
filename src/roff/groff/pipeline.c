@@ -95,7 +95,7 @@ extern void c_fatal P((const char *, const char *, const char *, const char *));
 
 static void sys_fatal P((const char *));
 static const char *xstrsignal P((int));
-static char *itoa P((int));
+static char *i_to_a P((int));
 
 int run_pipeline(ncommands, commands)
      int ncommands;
@@ -203,7 +203,7 @@ int run_pipeline(ncommands, commands)
 	}
 	else
 	  error("unexpected status %1",
-		itoa(status), (char *)0, (char *)0);
+		i_to_a(status), (char *)0, (char *)0);
 	break;
       }
   }
@@ -216,7 +216,7 @@ static void sys_fatal(s)
   c_fatal("%1: %2", s, strerror(errno), (char *)0);
 }
 
-static char *itoa(n)
+static char *i_to_a(n)
      int n;
 {
   static char buf[12];

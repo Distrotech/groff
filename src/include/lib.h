@@ -22,10 +22,8 @@ extern "C" {
 #ifndef strerror
   char *strerror(int);
 #endif
-#ifndef __BORLANDC__
-  const char *itoa(int);
-  const char *iftoa(int, int);
-#endif /* __BORLANDC__ */
+  const char *i_to_a(int);
+  const char *if_to_a(int, int);
 }
 
 #ifdef STDLIB_H_DECLARES_GETOPT

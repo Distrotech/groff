@@ -2584,7 +2584,7 @@ sentence space size is used in two circumstances: If the end of a
 sentence occurs at the end of a line in fill mode, then both an
 inter-word space and a sentence space will be added; if two spaces
 follow the end of a sentence in the middle of a line, then the second
-space will be a sentence space. Note that the behaviour of @sc{Unix}
+space will be a sentence space.  Note that the behaviour of @sc{Unix}
 @code{troff} will be exactly that exhibited by GNU @code{troff} if a
 second argument is never given to the @code{ss} request.  In GNU
 @code{troff}, as in @sc{Unix} @code{troff}, you should always follow a
@@ -2787,7 +2787,7 @@ environment.  The current hyphenation space is available in the
 @findex shc
 The @code{shc} request will set the soft hyphen character to the
 character given as an argument.  If the argument is omitted, the soft
-hyphen character will be set to the default character @code{\(hy}. The
+hyphen character will be set to the default character @code{\(hy}.  The
 soft hyphen character is the character which will be inserted when a
 word is hyphenated at a line break.  If the soft hyphen character does
 not exist in the font of the character immediately preceding a potential
@@ -3224,19 +3224,19 @@ the default unit is @code{v}.
 
 @findex ft
 @findex \f
-Groff gives you the ability to switch fonts at any point in your
-text.  There are two ways to do this, via the @code{ft} request and
-the @code{\f} escape.
+@code{gtroff} gives you the ability to switch fonts at any point in your
+text.  There are two ways to do this, via the @code{ft} request and the
+@code{\f} escape.
 
 Fonts are generaly specified as upper-case strings, which are usually
-1 to 4 characters representing an abreviation of acronym of the font
+1@w{ }to 4 characters representing an abreviation or acronym of the font
 name.
 
-The basic set of fonts are R, I, B, and BI.  These are Times Roman,
-Italic, Bold, and Bold Italic.  There is also at least one symbol
-font which contains various special symbols (greek, mathematics).
-These latter fonts cannot be used directly, but should be used via an
-escape.
+The basic set of fonts are @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
+These are Times Roman, Italic, Bold, and Bold Italic.  There is also at
+least one symbol font which contains various special symbols (greek,
+mathematics).  Such symbols fonts cannot be used directly, but should be
+used via an escape.
 
 @menu
 * Changing Fonts::              
@@ -3253,9 +3253,10 @@ escape.
 @cindex fonts, changing
 
 @findex ft
-You can change fonts with both the @code{ft} request.
-With no arguments it
-will switch to the previous font (also known as P).
+@cindex previous font
+@cindex font, previous
+You can change fonts with both the @code{ft} request.  With no arguments
+it will switch to the previous font (also known as @samp{P}).
 
 @example
 eggs, bacon,
@@ -3266,76 +3267,87 @@ and sausage.
 @end example
 
 @findex \f
-The @code{\f} escape is useful for changing fonts in the middle of words
+The @code{\f} escape is useful for changing fonts in the middle of
+words:
 
 @example
 eggs, bacon, \fBspam\fP and sausage.
 @end example
 
-Both of the above examples will produce the same output.
+@noindent
+Both of the above examples will produce the same output.  Note the usage
+of @samp{P} to indicate the previous font---using @code{\f} it is not
+possible to omit this parameter.
 
-Sometimes when putting letters of different fonts, you need more or
-less space at such boundaries.  There are two escapes to help with
-this.
+Sometimes when putting letters of different fonts, you need more or less
+space at such boundaries.  There are two escapes to help with this.
 
 @findex \/
-The @code{\/} escape
-increases the width of the preceding character so that the spacing
-between that character and the following character will be correct if
-the following character is a roman character.  For example, if an italic
-f is immediately followed by a roman right parenthesis,  then in many
-fonts the top right portion of the f will overlap the top left of the
-right parenthesis.
-It is a good idea to use this escape sequence
-whenever an italic character is immediately followed by a roman
-character without any intervening space.
+@cindex italic correction
+@cindex correction, italic
+The @code{\/} escape increases the width of the preceding character so
+that the spacing between that character and the following character will
+be correct if the following character is a roman character.  For
+example, if an italic@w{ }f is immediately followed by a roman right
+parenthesis, then in many fonts the top right portion of the f will
+overlap the top left of the right parenthesis.  It is a good idea to use
+this escape sequence whenever an italic character is immediately
+followed by a roman character without any intervening space.  This small
+amount of space is also called @dfn{italic correction}.
 
-@c producing @i{f}), which is ugly.  Inserting \/ produces f) and avoids this problem.
+@c XXX example
+@c producing @i{f}), which is ugly.  Inserting \/ produces f) and avoids
+@c this problem.
 
 @findex \,
-The @code{\,} escape
-modifies the spacing of the following character so that the spacing
-between that character and the preceding character will correct if the
-preceding character is a roman character.
-It is a good idea
-to use this escape sequence whenever a roman character is immediately
-followed by an italic character without any intervening space.
+@cindex roman correction
+@cindex correction, roman
+The @code{\,} escape modifies the spacing of the following character so
+that the spacing between that character and the preceding character will
+be correct if the preceding character is a roman character.  It is a
+good idea to use this escape sequence whenever a roman character is
+immediately followed by an italic character without any intervening
+space.  In analogy to above, this space could be called @dfn{roman
+correction}, but this term isn't used.
 
-@c For example, inserting \, between the parenthesis and the f changes (f to (f.
+@c XXX example
+@c For example, inserting \, between the parenthesis and the f changes
+@c (f to (f.
 
 @findex ftr
-The @code{ftr} request will translate fonts, it is called as
-@samp{.ftr @var{F G}}, which
-Translate font @var{F} to @var{G}.
-Whenever a font named @var{F} is referred to in @code{\f}
-escape sequence,
-or in the @code{ft}, @var{ul}, @var{bd}, @var{cs}, @var{tkf},
-@var{special}, @var{fspecial}, @var{fp},
-or @var{sty} requests, font @var{G} will be used.  If @var{G} is
-missing, or equal to @var{F} then font @var{F} will not be translated.
+The @code{ftr} request will translate fonts; its syntax is
 
+@example
+.ftr @var{F} @var{G}
+@end example
+which translates font@w{ }@var{F} to font@w{ }@var{G}.  Whenever a font
+named @var{F} is referred to in a @code{\f} escape sequence, or in the
+@code{ft}, @var{ul}, @var{bd}, @var{cs}, @var{tkf}, @var{special},
+@var{fspecial}, @var{fp}, or @var{sty} requests, font@w{ }@var{G} will
+be used.  If @var{G} is missing, or equal to @var{F} then font@w{
+}@var{F} will not be translated.
 
 @node Font Families, Font Positions, Changing Fonts, Fonts
 @subsection Font Families
 @cindex font families
 @cindex families, font
 
-Due to the variety of fonts available, groff has added the concept of
-font families.  Each of these families has four styles (R, I, B and BI),
+Due to the variety of fonts available, @code{gtroff} has added the
+concept of font families.  Each of these families has four styles
+(@samp{R}, @samp{I}, @samp{B} and @samp{BI}).
 
 The fonts are specified as the concatenation of the font family and
-style.  Specifying a font without the family part will cause groff to
-use that style of the current family.
-By default, groff uses the Times family.
+style.  Specifying a font without the family part will cause
+@code{gtroff} to use that style of the current family.  By default,
+@code{gtroff} uses the Times family.
 
-This way, you can just use the basic four fonts and select a
-different font family on the command line.
+This way, you can just use the basic four fonts and select a different
+font family on the command line.
 
 @findex fam
 @vindex .fam
-You can also switch font families with the @code{fam} request
-The current font family is available in the number register
-@code{.fam}.
+You can also switch font families with the @code{fam} request.  The
+current font family is available in the number register @code{.fam}.
 This is a string-valued register.
 
 @example
@@ -3357,15 +3369,15 @@ and spam.
 @cindex font positions
 @cindex positions, font
 
-For the sake of old phototypesetters and compatability with old
-versions of troff, groff has the concept of font
-@dfn{positions}, on which various fonts are mounted.
-The last one or two are reserved for the symbol font(s).
+For the sake of old phototypesetters and compatability with old versions
+of @code{troff}, @code{gtroff} has the concept of font @dfn{positions},
+on which various fonts are mounted.  The last one or two are reserved
+for the symbol font(s).
 
 @findex fp
-New fonts can be mounted with the @code{fp} request.
-These numeric positions can then be referred to with font changing commands.
-When groff starts it is using font number one.
+New fonts can be mounted with the @code{fp} request.  These numeric
+positions can then be referred to with font changing commands.  When
+@code{gtroff} starts it is using font number one.
 
 @example
 .fp 1 H
@@ -3380,12 +3392,14 @@ say no more!
 .ft
 @end example
 
-(note that after these font changes have taken place the original
-font is restored.)
+@noindent
+Nnote that after these font changes have taken place the original font
+is restored.
 
 @vindex .f
-The current font in use, as a font position.
-This can be useful to remember the current font, for later recall.
+The current font in use, as a font position, is available in number
+register @code{.f}.  This can be useful to remember the current font,
+for later recall.
 
 @example
 .nr save-font \n(.f
@@ -3403,21 +3417,21 @@ register @code{.fp}.  This is useful when mounting a new font, like so:
 
 @pindex DESC
 Fonts not listed in the @file{DESC} file are automatically mounted on
-the next available font position when they are referenced.
-If a font is to be
-mountfed explicitly with the @code{fp} request on an unused font position, it
-should be mounted on the first unused font position, which can be found
-in the @code{.fp} register; although troff does not enforce this strictly,
-it will not allow a font to be mounted at a position whose number is
-much greater than that of any currently used position.
+the next available font position when they are referenced.  If a font is
+to be mounted explicitly with the @code{fp} request on an unused font
+position, it should be mounted on the first unused font position, which
+can be found in the @code{.fp} register.  Although @code{gtroff} does
+not enforce this strictly, it will not allow a font to be mounted at a
+position whose number is much greater than that of any currently used
+position.
 
-The @code{fp} request has an optional third argument.
-This argument gives the
-external name of the font, which is used for finding the font
+@findex fp
+The @code{fp} request has an optional third argument.  This argument
+gives the external name of the font, which is used for finding the font
 description file.  The second argument gives the internal name of the
-font which is used to refer to the font in troff after it has been
-mounted.  If there is no third argument then the internal name will be
-used as the external name.  This feature allows you to use fonts with
+font which is used to refer to the font in @code{gtroff} after it has
+been mounted.  If there is no third argument then the internal name will
+be used as the external name.  This feature allows you to use fonts with
 long names in compatibility mode.
 
 @node Using Symbols, Artificial Fonts, Font Positions, Fonts
@@ -3427,166 +3441,226 @@ long names in compatibility mode.
 
 @findex \(
 @findex \[
-Symbols can be inserted by using a special escape sequence.
-This escape is simply the escape character (a backslash) followed by
-an identifier.  The symbol identifiers have to be two or more
-characters, since single characters conflict with all the other
-escapes.  The identifier can be either preceded by a parenthesis if
-it is two character, or surrounded by square brackets.
-So, the symbol for pi can be produced either by @code{\(*p} or
-@code{\[*p]}.
+Symbols can be inserted by using a special escape sequence.  This escape
+is simply the escape character (usually a backslash) followed by an
+identifier.  The symbol identifiers have to be two or more characters,
+since single characters conflict with all the other escapes.  The
+identifier can be either preceded by a parenthesis if it is two
+characters long, or surrounded by square brackets.  So, the symbol for
+the mathematical Greek letter `pi' can be produced either by @code{\(*p}
+or @code{\[*p]}.
 
 @example
 area = \(*p\fIr\fP\u2\d
 @end example
 
 @findex \C
-The escape @code{\C'@var{xxx}'} will typeset character named
+The escape @code{\C'@var{xxx}'} will typeset the character named
 @var{xxx}.  Normally it is more convenient to use @code{\[@var{xxx}]}.
 But @code{\C} has the advantage that it is compatible with recent
-versions of ditroff and is available in compatibility mode.
+versions of @code{ditroff} and is available in compatibility mode.
 
 @findex \N
-The escape @code{\N'@var{n}'} will typeset the character with code
-@var{n} in the current font.  @var{n} can be any integer.  Most devices only
-have characters with codes between 0 and 255.  If the current font
-does not contain a character with that code, special fonts will not be
-searched.  The @code{\N} escape sequence can be conveniently used on
-conjunction with the @code{char} request:
+@findex char
+The escape @code{\N'@var{n}'} will typeset the character with code@w{
+}@var{n} in the current font.  @var{n} can be any integer.  Most devices
+only have characters with codes between 0 and@w{ }255.  If the current
+font does not contain a character with that code, special fonts will
+@emph{not} be searched.  The @code{\N} escape sequence can be
+conveniently used on conjunction with the @code{char} request:
 
 @example
 .char \[phone] \f(ZD\N'37'
 @end example
 
+@noindent
+@pindex DESC
+@cindex unnamed characters
+@cindex characters, unnamed
 The code of each character is given in the fourth column in the font
 description file after the charset command.  It is possible to include
 unnamed characters in the font description file by using a name of
 @samp{---}; the @code{\N} escape sequence is the only way to use these.
 
 @findex cflags
-Each character has certain properties associated with it.
-These properties can be modified with the @code{cflags} request.
-The first argument is the the sum of the desired flags and the
-remaining arguments are the characters to have those properties.
+@cindex character properties
+@cindex properties of characters
+Each character has certain properties associated with it.  These
+properties can be modified with the @code{cflags} request.  The first
+argument is the the sum of the desired flags and the remaining arguments
+are the characters to have those properties.
+
 @table @code
 @item 1
+@cindex end of sentence characters
+@cindex characters, end of sentence
 the character ends sentences (initially characters @samp{.?!} have this
-property);
+property)
 @item 2
+@cindex hyphenating characters
+@cindex characters, hyphenation
 lines can be broken before the character (initially no characters have
-this property);
+this property)
 @item 4
 lines can be broken after the character (initially characters
-@samp{-\(hy\(em} have this property);
+@samp{-\(hy\(em} have this property)
 @item 8
+@cindex overlapping characters
+@cindex characters, overlapping
 the character overlaps horizontally (initially characters
-@samp{\(ul\(rn\(ru} have this property);
+@samp{\(ul\(rn\(ru} have this property)
 @item 16
 the character overlaps vertically (initially character @samp{\(br} has
-this property);
+this property)
 @item 32
+@cindex transparent characters
+@cindex characters, transparent
 an end of sentence character followed by any number of characters with
 this property will be treated as the end of a sentence if followed by a
-newline or two spaces; in other words the character is transparent for
-the purposes of end of sentence recognition; this is the same as having
-a zero space factor in @TeX{} (initially characters
-@samp{"')]*\(dg\(rq} have this property).
+newline or two spaces; in other words the character is @dfn{transparent}
+for the purposes of end of sentence recognition---this is the same as
+having a zero space factor in @TeX{} (initially characters
+@samp{"')]*\(dg\(rq} have this property)
 @end table
 
 @findex char
+@cindex defining characters
+@cindex characters, defining
 You can create new characters with the @code{char} request.  It is
-called as @samp{.char @var{c} @var{string}} Define character @var{c}
-to be @var{string}. Every time character @var{c} needs to be printed,
-@var{string} will be processed in a temporary environment and the
-result will be wrapped up into a single object.  Compatibility mode
-will be turned off and the escape character will be set to \ while
-@var{string} is being processed.  Any emboldening, constant spacing or
-track kerning will be applied to this object rather than to individual
-characters in @var{string}.  A character defined by this request can
-be used just like a normal character provided by the output device.
-In particular other characters can be translated to it with the
-@code{tr} request; it can be made the leader character by the
-@code{lc} request; repeated patterns can be drawn with the character
-using the @code{\l} and @code{\L} escape sequences;  words containing
-the character can be hyphenated correctly, if the @code{hcode} request
-is used to give the character a hyphenation code. There is a special
-anti-recursion feature: use of character within the character's
-definition will be handled like normal characters not defined with
-@code{char}.
+called as
+
+@example
+.char @var{c} @var{string}
+@end example
+
+@findex tr
+@findex lc
+@findex \l
+@findex \L
+@findex hcode
+@noindent
+This defines character@w{ }@var{c} to be @var{string}.  Every time
+character@w{ }@var{c} needs to be printed, @var{string} will be
+processed in a temporary environment and the result will be wrapped up
+into a single object.  Compatibility mode will be turned off and the
+escape character will be set to @samp{\} while @var{string} is being
+processed.  Any emboldening, constant spacing or track kerning will be
+applied to this object rather than to individual characters in
+@var{string}.  A character defined by this request can be used just like
+a normal character provided by the output device.  In particular other
+characters can be translated to it with the @code{tr} request; it can be
+made the leader character by the @code{lc} request; repeated patterns
+can be drawn with the character using the @code{\l} and @code{\L} escape
+sequences; words containing the character can be hyphenated correctly,
+if the @code{hcode} request is used to give the character a hyphenation
+code.  There is a special anti-recursion feature: use of character
+within the character's definition will be handled like normal characters
+not defined with @code{char}.
 
 @findex rchar
-A character definition can be removed with the @code{rchar} request.  Its
-arguments are the characters to be removed.  This undoes the effect of
-a @code{char} request.
+@cindex removing character definition
+@cindex character, removing definition
+A character definition can be removed with the @code{rchar} request.
+Its arguments are the characters to be removed.  This undoes the effect
+of a @code{char} request.
 
-@c distribute these through the text
-@xref{Special Characters}
+@xref{Special Characters}.
 
 @node Artificial Fonts, Ligatures and Kerning, Using Symbols, Fonts
 @subsection Artificial Fonts
 @cindex artificial fonts
 @cindex fonts, artificial
 
-There are a number of requests for artificially creating fonts.
-These are largely vestigal remains from the days when output devices
-did not have a wide variety of fonts, and when nroff and troff were
-separate programs.
-These are no longer necessary in GNU Troff.
+There are a number of requests for artificially creating fonts.  These
+are largely vestigal remains from the days when output devices did not
+have a wide variety of fonts, and when @code{nroff} and @code{troff}
+were separate programs.  These are no longer necessary in GNU
+@code{troff}.
 
 @findex ul
+@cindex underlining
 The @code{ul} request will print subsequent lines in italics on a device
 capable of it, or underline the text on an character output device.  The
 single argument is the number of lines to be ``underlined,'' with no
 argument, the next line will be underlined.
 
 @findex cu
+@cindex continuous underlining
+@cindex underlining, continuous
 The @code{cu} request is similar to @code{ul} ...
 
+@c XXX more info
+
 @findex uf
-The @code{uf} request will set the underline font used by @code{ul}
-and @code{cu}.
+@cindex underline font
+@cindex font for underlining
+The @code{uf} request will set the underline font used by @code{ul} and
+@code{cu}.
 
 @findex bd
-The @code{bd} request artificially creates a bold font by printing
-each character twice, slightly offset.
-The first argument specifies the font to embolden, and the second is
-the number of basic units, minus one, by which the two characters
-will be offset.  If the second argument is missing, emboldening will
-be turned off.
+@cindex imitating bold face
+@cindex bold face, imitating
+The @code{bd} request artificially creates a bold font by printing each
+character twice, slightly offset.  The first argument specifies the font
+to embolden, and the second is the number of basic units, minus one, by
+which the two characters will be offset.  If the second argument is
+missing, emboldening will be turned off.
 
 @node Ligatures and Kerning,  , Artificial Fonts, Fonts
 @subsection Ligatures and Kerning
 @cindex ligatures and kerning
 @cindex kerning and ligatures
 
+What are ligatures?
+
+@c XXX more info
+
 @findex lg
 @vindex .lg
-@code{lg}
-@code{.lg}
-The current ligature mode.
+You can switch the ligature mechanism on or off with the @code{lg}
+request; if the parameter is non-zero or missing, ligatures are enabled,
+otherwise disabled.  Default is on.  The current ligature mode can be
+found in the number register @code{.lg} (set to@w{ }1 if ligatures are
+enabled, 0@w{ }otherwise).
 
-What is kerning??
+What is kerning?
+
+@c XXX more info
 
 If the font description file contains pairwise kerning information,
 characters from that font will be kerned.  Kerning between two
-characters can be inhibited by placing a @code{\&} between them.
+characters can be inhibited by placing @code{\&} between them.
 
 @findex kern
 @vindex .kern
-@code{kern}
-If n is non-zero or missing, enable pairwise kerning, otherwise disable
-it.
-@code{.kern}
-1 if pairwise kerning is enabled, 0 otherwise.
+You can activate kerning with the @code{kern} request.  If the parameter
+is non-zero or missing, enable pairwise kerning, otherwise disable it.
+The number register @code{.kern} is set to@w{ }1 if pairwise kerning is
+enabled, 0@w{ }otherwise.
 
 @findex tkf
-.tkf f s1 n1 s2 n2
-Enable track kerning for font f.  When the current font is f the width
-of every character will be increased by an amount between n1 and n2;
-when the current point size is less than or equal to s1 the width will
-be increased by n1; when it is greater than or equal to s2 the width
-will be increased by n2; when the point size is greater than or equal to
-s1 and less than or equal to s2 the increase in width is a linear
+@cindex track kerning
+@cindex kerning, track
+What is track kerning?
+
+@c XXX more info
+
+Track kerning must be used with great care since it is usually
+considered bad typography if the reader notices the effect.  The syntax
+of the @code{tkf} request is
+
+@example
+.tkf @var{f} @var{s1} @var{n1} @var{s2} @var{n2}
+@end example
+
+@noindent
+Enable track kerning for font@w{ }@var{f}.  If the current font is@w{
+}@var{f} the width of every character will be increased by an amount
+between @var{n1} and @var{n2}; if the current point size is less than or
+equal to @var{s1} the width will be increased by @var{n1}; if it is
+greater than or equal to @var{s2} the width will be increased by
+@var{n2}; if the point size is greater than or equal to @var{s1} and
+less than or equal to @var{s2} the increase in width is a linear
 function of the point size.
 
 
@@ -3595,15 +3669,19 @@ function of the point size.
 @cindex sizes
 
 @cindex baseline
-Groff uses two dimensions with each line of text, type size and
-vertical spacing.  The type size is the height from the text
+@cindex type size
+@cindex size of type
+@cindex vertical spacing
+@cindex spacing, vertical
+@code{gtroff} uses two dimensions with each line of text, type size and
+vertical spacing.  The @dfn{type size} is the height from the text
 @dfn{baseline} to the top of the tallest character (decenders may drop
-below this baseline).  Vertical spacing is the amount of space groff
-allows for a line of text, normally, this is about 20% larger than the
-current type size.  Ratios smaller than this can result in
-hard-to-read text, larger that this, it will spread your text out more
-vertically (useful for term papers).  By default, troff uses 10 point
-type on 12 point spacing.
+below this baseline).  @dfn{Vertical spacing} is the amount of space
+@code{gtroff} allows for a line of text; normally, this is about 20%@w{
+}larger than the current type size.  Ratios smaller than this can result
+in hard-to-read text; larger that this, it will spread your text out
+more vertically (useful for term papers).  By default, @code{gtroff}
+uses 10@w{ }point type on 12@w{ }point spacing.
 
 @cindex leading
 The difference between type size and vertical spacing is known, by
@@ -3624,17 +3702,16 @@ typesetters, as @dfn{leading}.
 @findex \s
 @vindex .s
 @vindex .v
-Using the @code{ps} request and the @code{\s} escape you can change
-the type size.  The @code{vs} request will change the vertical
-spacing. The default unit for the @code{ps} and @code{vs} requests are
-points.
-The number registers @code{.s} and @code{.v} contain the current
-type size and vertical spacing.
+Using the @code{ps} request and the @code{\s} escape you can change the
+type size.  The @code{vs} request will change the vertical spacing.  The
+default unit for the @code{ps} and @code{vs} requests are points.  The
+number registers @code{.s} and @code{.v} contain the current type size
+and vertical spacing.
 
 These requests take parameters in units of points.  You can specify
 sizes as an absolute size, or as a relative change from the current
-size.  The size 0 means go back to the previous size.  With no
-argument it will revert to the previous size.
+size.  The size@w{ }0 means go back to the previous size.  With no
+argument it will also revert to the previous size.
 
 @example
 snap, snap,
@@ -3645,20 +3722,29 @@ wink, wink, \s+2nudge, nudge,\s+8 say no more!
 .ps 10
 @end example
 
-The @code{\s} escape may be called in a variety of ways.
-Much like other escapes there must be a way to determine where the
-argument ends and the text begins.
-Any of the following forms are valid:
-@code{\s@var{n}},
-@code{\s+@var{n}},
-@code{\s-@var{n}},
-@code{\s(@var{nn}},
-@code{\s+(@var{nn}},
-@code{\s-(@var{nn}},
-@code{\s[+@var{nnn}]},
-@code{\s[-@var{nnn}]},
-@code{\s+[@var{nnn}]},
-@code{\s-[@var{nnn}]}.
+The @code{\s} escape may be called in a variety of ways.  Much like
+other escapes there must be a way to determine where the argument ends
+and the text begins.  Any of the following forms are valid:
+
+@table @code
+@item \s@var{n}
+Set the point size to @var{n}@w{ }points.  @var{n} must be exactly one
+digit.
+@itemx \s+@var{n}
+@itemx \s-@var{n}
+Increase resp.@: decrease the point size by @var{n}@w{ }points.  @var{n}
+must be exactly one digit.
+@item \s(@var{nn}
+Set the point size to @var{nn}@w{ }points.  @var{nn} must be exactly two
+digits.
+@item \s+(@var{nn}
+@itemx \s-(@var{nn}
+Increase resp.@: decrease the point size by @var{nn}@w{ }points.
+@var{nn} must be exactly two digits.
+@item \s[+@var{nnn}]
+@itemx \s[-@var{nnn}]
+@itemx \s+[@var{nnn}]
+@itemx \s-[@var{nnn}]
 
 Some devices may only have certain permissible sizes, in which case
 groff will round to the nearest permissible size.
@@ -3738,7 +3824,7 @@ string-valued register.
 
 @findex ds
 Groff has string variables, which are entirely for user convenience
-(i.e. there are no built-in strings).  They are defined via the
+(i.e.@: there are no built-in strings).  They are defined via the
 @code{ds} request.
 
 @example
@@ -4185,7 +4271,7 @@ There are a number of special case escapes for horizontal motion:
 
 @ftable @code
 @item \@key{SP}
-An unbreakable and unpadable (i.e. not expanded during filling) space.
+An unbreakable and unpadable (i.e.@: not expanded during filling) space.
 (Note: it is a backslash followed by a space.)
 @item \~
 This produces an unbreakable space that stretches like a normal
@@ -4212,7 +4298,7 @@ of sentence recognition.
 @cindex width escape
 @cindex escape, width
 Often you will want to do horizontal movement based on the width of
-some arbitrary text (e.g. given as an argument to a macro).
+some arbitrary text (e.g.@: given as an argument to a macro).
 For that, there is the escape @code{\w'@var{text}'} which will
 interpolate to the width of the given @var{text} in basic units.
 
@@ -4286,7 +4372,7 @@ The full syntax for this escape is @samp{\l'@var{l}@var{c}'}, where
 @var{l} is the length of the line to be drawn, starting at the
 current location, positive numbers will draw to the right, and
 negative will draw towards the left.  This can also be specified
-absolutely (i.e. with a leading |) which will draw back to the
+absolutely (i.e.@: with a leading |) which will draw back to the
 begining of the line.
 
 The optional second parameter @var{c} is a character to draw the line
@@ -4754,7 +4840,7 @@ register.
 @findex so
 The @code{so} request will read in the file given as an argument and
 include it in place of the @code{so} request.  This is quite useful
-for large documents, i.e. keeping each chapter in a separate file.
+for large documents, i.e.@: keeping each chapter in a separate file.
 @xref{gsoelim}, for more information.
 
 @findex mso
@@ -4958,7 +5044,7 @@ using the @code{nm} request.
 The first argument is the line number of the @emph{next} output line,
 this defaults to 1.
 The second argument indicates on which lines numbers will be printed,
-i.e. 5 means put line numbers on every 5 lines, this defaults to 1.
+i.e.@: 5 means put line numbers on every 5 lines, this defaults to 1.
 The third argument is the space to be left between the number and
 your text, this defaults to 1.
 The fourth argument is the indentation of the line numbers.
@@ -4967,7 +5053,7 @@ Without arguments, line numbers are turned off.
 @findex nn
 The @code{nn} request will temporarily turn off line numbering.
 The first argument is the number of lines not to be numbered,
-this defaults to 1. (does this disable incrementing or display?)
+this defaults to 1.  (does this disable incrementing or display?)
 
 @example
 ... line numbering example ...
@@ -5167,14 +5253,14 @@ argument.  This warning will be given when  an
 undefined name longer than two characters is
 encountered, and the first two characters of the name
 make a defined name.  The request or macro will not
-be invoked. When this warning is given, no macro is
+be invoked.  When this warning is given, no macro is
 automatically defined.  This is enabled by default.
 This warning will never occur in compatibility mode.
 @item  font
 @itemx 131072
-Non-existent fonts. This is enabled by default.
+Non-existent fonts.  This is enabled by default.
 @item all
-All warnings except @samp{di}, @samp{mac} and @samp{reg}. It is
+All warnings except @samp{di}, @samp{mac} and @samp{reg}.  It is
 intended that this covers
 all warnings that are useful with traditional macro packages.
 @item w
@@ -5252,7 +5338,7 @@ all, in fact, the same type of object; they contain lists of input
 characters and output characters in any combination.  An  output
 character does not behave like an input character for the purposes of
 macro processing; it does not inherit any of the special properties that
-the input character from which it was constructed might have had. For
+the input character from which it was constructed might have had.  For
 example,
 
 @example
@@ -5270,14 +5356,14 @@ will print @samp{\\} in GNU troff; each pair of input backslashes is
 turned into one
 output backslash and the resulting output backslashes are not
 interpreted as escape
-characters when they are reread. @sc{Unix} troff would interpret them as
+characters when they are reread.  @sc{Unix} troff would interpret them as
 escape characters when they were reread and would end up printing one
 @samp{\}.
 The correct way to obtain a printable backslash is to use the
 @code{\e} escape
 sequence: this will always print a single instance of the current escape
 character, regardless of whether or not it is used in a diversion; it
-will also work in both GNU troff and @sc{Unix} troff. If you wish for some
+will also work in both GNU troff and @sc{Unix} troff.  If you wish for some
 reason to store in a diversion an escape sequence that will be
 interpreted when the diversion is reread, you can either use the
 traditional @code{\!} transparent output facility, or, if this is unsuitable,
@@ -5644,7 +5730,7 @@ be an integer between 0 and 1000, where 0 corresponds solid white and
 shades of gray.  This applies only to solid circles, solid ellipses and
 solid polygons.  By default, a level of 1000 will be used.  Whatever
 color a solid object has, it should completely obscure everything
-beneath it. A value greater than 1000 or less than 0 can also be used:
+beneath it.  A value greater than 1000 or less than 0 can also be used:
 this means fill with the shade of gray that is currently being used for
 lines and text.  Normally this will be black, but some drivers may
 provide a way of changing this.
@@ -5657,7 +5743,7 @@ diameter of dy with the leftmost point at the current position.
 @item Dp $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub
 n$\n
 Draw a polygon with, for $i = 1 ,..., n+1$, the i-th vertex at the
-current position $+ sum from j=1 to i-1 ( dx sub j , dy sub j )$. At
+current position $+ sum from j=1 to i-1 ( dx sub j , dy sub j )$.  At
 the moment, GNU pic only uses this command to generate triangles and
 rectangles.
 @item DP $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub
@@ -5672,8 +5758,8 @@ zero value of n selects the smallest available line thickness.
 @end table
 
 A difficulty arises in how the current position should be changed after
-the execution of these commands. This is not of great importance since
-the code generated by GNU pic does not depend on this. Given a drawing
+the execution of these commands.  This is not of great importance since
+the code generated by GNU pic does not depend on this.  Given a drawing
 command of the form
 
 \D'c $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$ $x sub n$ $y sub n$'
@@ -5756,7 +5842,7 @@ The first @var{m} font positions will be associated with styles
 Fonts @var{F1@dots{}Fn} will be mounted in the font positions
 @var{m}+1, @dots{}, @var{m}+@var{n} where @var{m}
 is the number of styles.  This command may extend over more than one
-line. A font name of 0 will cause no font to be mounted on the
+line.  A font name of 0 will cause no font to be mounted on the
 corresponding font position.
 @item family @var{fam}
 The default font family is @var{fam}.
@@ -5807,10 +5893,10 @@ The second section contains one or two subsections.  It must contain a
 subsection.  These subsections can appear in any order.  Each
 subsection starts with a word on a line by itself.
 
-The word @code{charset} starts the @code{charset} subsection. The
-@code{charset} line is followed by a sequence of lines. Each line
+The word @code{charset} starts the @code{charset} subsection.  The
+@code{charset} line is followed by a sequence of lines.  Each line
 gives information for one character.  A line comprises a number of
-fields separated by blanks or tabs. The format is
+fields separated by blanks or tabs.  The format is
 
 @display
 @var{name} @var{metrics} @var{type} @var{code} @var{comment}
@@ -5826,7 +5912,7 @@ be entered as @samp{\(@var{xx}}.) Groff supports eight bit characters;
 however some utilities has difficulties with eight bit characters.
 For this reason, there is a convention that the @var{name}
 @samp{char@var{n}} is equivalent to the single character whose code is
-@var{n}. For example, @samp{char163} would be equivalent to the
+@var{n}.  For example, @samp{char163} would be equivalent to the
 character with @var{code} 163 which is the pounds sterling sign in ISO
 Latin-1 character set.  The name @samp{---} is special and indicates
 that the character is unnamed; such characters can only be used by
@@ -5846,7 +5932,7 @@ means the character has both an ascender and a descender, for example,
 
 The @var{code} field gives the code which the postprocessor uses to
 print the character.  The character can also be input to groff using
-this code by means of the @code{\N} escape sequence. The code can be any
+this code by means of the @code{\N} escape sequence.  The code can be any
 integer.  If it starts with a 0 it will be interpreted as octal; if it
 starts with 0x or 0X it will be intepreted as hexdecimal.
 
@@ -5877,7 +5963,7 @@ roman font.  The @var{left_italic_correction} subfield gives the
 amount of space that should be added before the character when it is
 immediately to be preceded by a character from a roman font.  The
 @var{subscript_correction} gives the amount of space that should be
-added after a character before adding a subscript. This should be less
+added after a character before adding a subscript.  This should be less
 than the italic correction.
 
 A line in the @code{charset} section can also have the format

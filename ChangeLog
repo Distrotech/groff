@@ -1,3 +1,33 @@
+2000-02-28  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo: Further checking/updating.  Adding more index
+	entries.
+
+2000-02-27  Blake McBride  <blake@florida-software.com>
+
+	Adapting groff to MS Visual C++ 6.0 compiler (tested with
+	Windows NT 4.0).
+
+	* src/devices/grodvi/dvi.cc: Making stdout a binary stream.
+	* src/devices/grolj4/lj4.cc: Making getopt variables `extern "C"'.
+	* src/devices/grohtml/html.cc, src/devices/grops/ps.cc,
+	src/include/lib.h, src/libs/libgroff/errarg.cc,
+	src/libs/libgroff/itoa.c, src/libs/libgroff/nametoindex.cc,
+	src/preproc/refer/label.y, src/preproc/refer/label.cc,
+	src/roff/groff/pipeline.c, src/roff/troff/column.cc,
+	src/roff/troff/div.cc, src/roff/troff/env.cc,
+	src/roff/troff/input.cc, src/roff/troff/node.cc,
+	src/roff/troff/reg.cc: Renaming itoa() to i_to_a() and iftoa() to
+	if_to_a() to avoid name	clashes.
+	* src/include/posix.h: Don't use unistd.h.
+	* src/libs/libgroff/tmpfile.cc: Use `#ifndef...#else...#endif'
+	clause for integrating non-Unix xtmpfile() code.
+	* src/roff/troff/input.cc: Adding `public' keyword to macro_header
+	structure; use "rt" for popen() in pipe_source(); add getpid()
+	dummy function.
+	* src/roff/troff/node.cc: Use special versions of popen() in
+	real_output_file() and pclose() in ~real_output_file().
+
 2000-02-27  Werner LEMBERG  <wl@gnu.org>
 
 	Adding a new driver, grolbp, for Canon CAPSL printers (LBP-4 and
@@ -16,6 +46,12 @@
 	entries.
 
 	* NEWS: Updated.
+
+	* src/devices/grolbp/Makefile.sub: Adding $(srcdir).
+
+	* man/groff_font.man: Adding info about obsolete DESC keywords.
+	* src/devices/grolj4/grolj4.man: Documenting additional DESC
+	keywords.
 
 2000-02-26  Werner LEMBERG  <wl@gnu.org>
 

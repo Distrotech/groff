@@ -749,7 +749,7 @@ inline void troff_output_file::put(const char *s)
 
 inline void troff_output_file::put(int i)
 {
-  put_string(itoa(i), fp);
+  put_string(i_to_a(i), fp);
 }
 
 void troff_output_file::start_special()
@@ -1195,7 +1195,11 @@ real_output_file::real_output_file()
 {
 #ifndef POPEN_MISSING
   if (pipe_command) {
+#ifdef _MSC_VER
+    if ((fp = _popen(pipe_command, "wt")) != 0) {
+#else
     if ((fp = popen(pipe_command, "w")) != 0) {
+#endif
       piped = 1;
       return;
     }
@@ -1217,7 +1221,11 @@ real_output_file::~real_output_file()
   }
 #ifndef POPEN_MISSING
   if (piped) {
+#ifdef _MSC_VER
+    int result = _pclose(fp);
+#else
     int result = pclose(fp);
+#endif
     fp = 0;
     if (result < 0)
       fatal("pclose failed");
@@ -4856,7 +4864,7 @@ public:
 
 const char *next_available_font_position_reg::get_string()
 {
-  return itoa(next_available_font_position());
+  return i_to_a(next_available_font_position());
 }
 
 class printing_reg : public reg {

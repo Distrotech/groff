@@ -289,7 +289,7 @@ ps_output &ps_output::put_number(int n)
 
 ps_output &ps_output::put_fix_number(int i)
 {
-  const char *p = iftoa(i, fixed_point);
+  const char *p = if_to_a(i, fixed_point);
   int len = strlen(p);
   if (col > 0 && col + len + need_space > max_line_length) {
     putc('\n', fp);
@@ -1066,8 +1066,8 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
 
 void ps_printer::begin_page(int n)
 {
-  out.begin_comment("Page:").comment_arg(itoa(n));
-  out.comment_arg(itoa(++pages_output)).end_comment();
+  out.begin_comment("Page:").comment_arg(i_to_a(n));
+  out.comment_arg(i_to_a(++pages_output)).end_comment();
   output_style.f = 0;
   output_space_code = 32;
   output_draw_point_size = -1;
@@ -1128,7 +1128,7 @@ ps_printer::~ps_printer()
     rm.need_font(psf->get_internal_name());
   }
   rm.print_header_comments(out);
-  out.begin_comment("Pages:").comment_arg(itoa(pages_output)).end_comment();
+  out.begin_comment("Pages:").comment_arg(i_to_a(pages_output)).end_comment();
   out.begin_comment("PageOrder:").comment_arg("Ascend").end_comment();
 #if 0
   fprintf(out.get_file(), "%%%%DocumentMedia: () %g %g 0 () ()\n",

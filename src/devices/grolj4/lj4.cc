@@ -596,6 +596,8 @@ void handle_unknown_desc_command(const char *command, const char *arg,
 
 static void usage();
 
+extern "C" int optopt, optind;
+
 int main(int argc, char **argv)
 {
   program_name = argv[0];
@@ -603,7 +605,6 @@ int main(int argc, char **argv)
   setbuf(stderr, stderr_buf);
   font::set_unknown_desc_command_handler(handle_unknown_desc_command);
   int c;
-  extern int optopt, optind;
   while ((c = getopt(argc, argv, ":F:p:d:lvw:c:")) != EOF)
     switch(c) {
     case 'l':

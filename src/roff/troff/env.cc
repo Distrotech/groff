@@ -896,11 +896,11 @@ void environment_switch()
 	if (n >= 0 && n < NENVIRONMENTS) {
 	  env_stack = new env_list(curenv, env_stack);
 	  if (env_table[n] == 0)
-	    env_table[n] = new environment(itoa(n));
+	    env_table[n] = new environment(i_to_a(n));
 	  curenv = env_table[n];
 	}
 	else
-	  nm = itoa(n);
+	  nm = i_to_a(n);
       }
       else
 	pop = 2;
@@ -2117,7 +2117,7 @@ const char *tab_stops::to_string()
   }
   char *ptr = buf;
   for (p = initial_list; p; p = p->next) {
-    strcpy(ptr, itoa(p->pos.to_units()));
+    strcpy(ptr, i_to_a(p->pos.to_units()));
     ptr = strchr(ptr, '\0');
     *ptr++ = 'u';
     *ptr = '\0';
@@ -2138,7 +2138,7 @@ const char *tab_stops::to_string()
   if (repeated_list)
     *ptr++ = TAB_REPEAT_CHAR;
   for (p = repeated_list; p; p = p->next) {
-    strcpy(ptr, itoa(p->pos.to_units()));
+    strcpy(ptr, i_to_a(p->pos.to_units()));
     ptr = strchr(ptr, '\0');
     *ptr++ = 'u';
     *ptr = '\0';
@@ -2521,7 +2521,7 @@ int int_env_reg::get_value(units *val)
 
 const char *int_env_reg::get_string()
 {
-  return itoa((curenv->*func)());
+  return i_to_a((curenv->*func)());
 }
  
 vunits_env_reg::vunits_env_reg(VUNITS_FUNCP f) : func(f)
@@ -2536,7 +2536,7 @@ int vunits_env_reg::get_value(units *val)
 
 const char *vunits_env_reg::get_string()
 {
-  return itoa((curenv->*func)().to_units());
+  return i_to_a((curenv->*func)().to_units());
 }
 
 hunits_env_reg::hunits_env_reg(HUNITS_FUNCP f) : func(f)
@@ -2551,7 +2551,7 @@ int hunits_env_reg::get_value(units *val)
 
 const char *hunits_env_reg::get_string()
 {
-  return itoa((curenv->*func)().to_units());
+  return i_to_a((curenv->*func)().to_units());
 }
 
 string_env_reg::string_env_reg(STRING_FUNCP f) : func(f)
@@ -2602,9 +2602,9 @@ const char *sptoa(int sp)
   assert(sp > 0);
   assert(sizescale > 0);
   if (sizescale == 1)
-    return itoa(sp);
+    return i_to_a(sp);
   if (sp % sizescale == 0)
-    return itoa(sp/sizescale);
+    return i_to_a(sp/sizescale);
   // See if 1/sizescale is exactly representable as a decimal fraction,
   // ie its only prime factors are 2 and 5.
   int n = sizescale;
@@ -2628,7 +2628,7 @@ const char *sptoa(int sp)
       for (t = decimal_point - power5; --t >= 0;)
 	factor *= 5;
       if (factor == 1 || sp <= INT_MAX/factor)
-	return iftoa(sp*factor, decimal_point);
+	return if_to_a(sp*factor, decimal_point);
     }
   }
   double s = double(sp)/double(sizescale);
@@ -2642,7 +2642,7 @@ const char *sptoa(int sp)
     val = v;
     factor *= 10.0;
   } while (++decimal_point < 10);
-  return iftoa(int(val), decimal_point);
+  return if_to_a(int(val), decimal_point);
 }
 
 const char *environment::get_point_size_string()
