@@ -136,6 +136,19 @@ AC_MSG_RESULT(yes);AC_DEFINE(STDIO_H_DECLARES_PCLOSE))
 AC_LANG_RESTORE])dnl
 dnl
 dnl
+dnl srand() of SunOS 4.1.3 has return type int instead of void
+dnl
+AC_DEFUN(GROFF_SRAND,
+[AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_MSG_CHECKING([for return type of srand])
+AC_TRY_COMPILE([#include <stdlib.h>
+extern "C" { void srand(unsigned int); }],,
+AC_MSG_RESULT(void);AC_DEFINE(RET_TYPE_SRAND_IS_VOID),
+AC_MSG_RESULT(int))
+AC_LANG_RESTORE])dnl
+dnl
+dnl
 AC_DEFUN(GROFF_SYS_NERR,
 [AC_LANG_SAVE
 AC_LANG_CPLUSPLUS

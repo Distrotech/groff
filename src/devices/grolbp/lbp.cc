@@ -31,6 +31,12 @@ TODO
 #include "lbp.h"
 #include "charset.h"
 
+#ifdef HAVE_STRNCASECMP
+extern "C" {
+  // SunOS's string.h fails to declare this.
+  int strncasecmp(const char *, const char *, int);
+}
+#endif
 
 static short int papersize = -1,  // papersize
 		 orientation = -1 , // orientation

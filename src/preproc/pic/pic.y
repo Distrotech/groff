@@ -40,7 +40,11 @@ extern "C" {
 #undef srand
 extern "C" {
   int rand();
+#ifdef RET_TYPE_SRAND_IS_VOID
   void srand(unsigned int);
+#else
+  int srand(unsigned int);
+#endif
 }
 
 /* Maximum number of characters produced by printf("%g") */

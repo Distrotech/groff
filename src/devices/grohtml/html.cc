@@ -35,6 +35,11 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <unistd.h>
 #endif
 
+extern "C" {
+  // SunOS 4.1.3 fails to declare this in stdlib.h
+  char *mktemp(char *);
+}
+
 #include <stdio.h>
 #include <fcntl.h>
 
