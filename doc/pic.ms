@@ -1886,6 +1886,16 @@ then
 .I variable
 will instead be multiplied by
 \fIexpr3\fR.
+The value of
+.I expr3
+can be negative for the additive case;
+.I variable
+is then tested whether it is greater than or equal to
+\fIexpr2\fR.
+For the multiplicative case,
+.I expr3
+must be greater than zero.
+If the constraints aren't met, the loop isn't executed.
 .I X
 can be any character not occurring in
 \fIbody\fR; or the two \fIX\/\fPs may be paired braces (as in the
