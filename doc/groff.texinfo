@@ -9608,32 +9608,36 @@ spacing; it is associated with the current environment
 @endDefreq
 
 @cindex vertical line spacing, effective value
-The effective vertical line spacing consists of four components.
+The effective vertical line spacing consists of four components.  Breaking
+a line causes the following actions (in the given order).
 
 @itemize @bullet
 @item
-The vertical line spacing as set with the @code{vs} request.
-
-@cindex post-vertical line spacing
-@cindex line spacing, post-vertical (@code{pvs})
-@item
-The @dfn{post-vertical line spacing} as set with the @code{pvs} request.
-This is vertical space which will be added after a line has been
-output.
-
 @cindex extra pre-vertical line space (@code{\x})
 @cindex line space, extra pre-vertical (@code{\x})
-@item
-The @dfn{extra pre-vertical line space} as set with the @code{\x} request,
-using a negative value.  This is vertical space which will be added once
-before the current line has been output.
+Move the current point vertically by the @dfn{extra pre-vertical line
+space}.  This is the minimum value of all @code{\x} escapes with a
+negative argument in the current output line.
 
+@item
+Move the current point vertically by the vertical line spacing as set with
+the @code{vs} request.
+
+@item
+Output the current line.
+
+@item
 @cindex extra post-vertical line space (@code{\x})
 @cindex line space, extra post-vertical (@code{\x})
+Move the current point vertically by the @dfn{extra post-vertical line
+space}.  This is the maximum value of all @code{\x} escapes with a
+positive argument in the line which has just been output.
+
 @item
-The @dfn{extra post-vertical line space} as set with the @code{\x} request,
-using a positive value.  This is vertical space which will be added once
-after the current line has been output.
+@cindex post-vertical line spacing
+@cindex line spacing, post-vertical (@code{pvs})
+Move the current point vertically by the @dfn{post-vertical line spacing}
+as set with the @code{pvs} request.
 @end itemize
 
 @cindex double-spacing (@code{vs}, @code{pvs})
@@ -10592,6 +10596,8 @@ escapes.
 @cindex number of arguments register (@code{.$})
 The number of arguments passed to a macro or string.  This is a read-only
 number register.
+
+Note that the @code{shift} request can change its value.
 @endDefreg
 
 Any individual argument can be retrieved with one of the following
@@ -10618,6 +10624,8 @@ many positions as specified by its argument.  After executing this
 request, argument@tie{}@var{i} becomes argument @math{@var{i}-@var{n}};
 arguments 1 to@tie{}@var{n} are no longer available.  Shifting by
 negative amounts is currently undefined.
+
+The register @code{.$} is adjusted accordingly.
 @endDefreq
 
 @DefescList {\\$*, , , }
@@ -11073,7 +11081,8 @@ which arguments are treated similar to the @code{defcolor} request.
 @cindex line, drawing (@w{@code{\D'l @dots{}'}})
 @cindex drawing a line (@w{@code{\D'l @dots{}'}})
 Draw a line from the current location to the relative point specified by
-(@var{dx},@var{dy}).
+(@var{dx},@var{dy}), where positive values mean down and right,
+respectively.  The end point of the line is the new current location.
 
 The following example is a macro for creating a box around a text string;
 for simplicity, the box margin is taken as a fixed value, 0.2@dmn{m}.
