@@ -247,12 +247,10 @@ int main(int argc, char **argv)
       break;
     }
   }
-  if (safer_flag) {
+  if (safer_flag)
     commands[PIC_INDEX].append_arg("-S");
-    commands[TROFF_INDEX].insert_arg("-msafer");
-  } else {
+  else
     commands[TROFF_INDEX].insert_arg("-U");
-  }
   font::set_unknown_desc_command_handler(handle_unknown_desc_command);
   if (!font::load_desc())
     fatal("invalid device `%1'", device);

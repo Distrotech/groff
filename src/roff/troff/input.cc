@@ -104,6 +104,7 @@ int suppress_output_flag = 0;
 int is_html2 = 0;
 
 int tcommand_flag = 0;
+int safer_flag = 1;		// safer by default
 
 static int get_copy(node**, int = 0);
 static void copy_mode_error(const char *,
@@ -4497,44 +4498,50 @@ void source()
 
 void pipe_source()
 {
-#ifdef POPEN_MISSING
-  error("pipes not available on this system");
-  skip_line();
-#else /* not POPEN_MISSING */
-  if (tok.newline() || tok.eof())
-    error("missing command");
-  else {
-    int c;
-    while ((c = get_copy(NULL)) == ' ' || c == '\t')
-      ;
-    int buf_size = 24;
-    char *buf = new char[buf_size];
-    int buf_used = 0;
-    for (; c != '\n' && c != EOF; c = get_copy(NULL)) {
-      const char *s = asciify(c);
-      int slen = strlen(s);
-      if (buf_used + slen + 1> buf_size) {
-	char *old_buf = buf;
-	int old_buf_size = buf_size;
-	buf_size *= 2;
-	buf = new char[buf_size];
-	memcpy(buf, old_buf, old_buf_size);
-	a_delete old_buf;
-      }
-      strcpy(buf + buf_used, s);
-      buf_used += slen;
-    }
-    buf[buf_used] = '\0';
-    errno = 0;
-    FILE *fp = popen(buf, POPEN_RT);
-    if (fp)
-      input_stack::push(new file_iterator(fp, symbol(buf).contents(), 1));
-    else
-      error("can't open pipe to process `%1': %2", buf, strerror(errno));
-    a_delete buf;
+  if (safer_flag) {
+    error(".pso request not allowed in safer mode");
+    skip_line();
   }
-  tok.next();
+  else {
+#ifdef POPEN_MISSING
+    error("pipes not available on this system");
+    skip_line();
+#else /* not POPEN_MISSING */
+    if (tok.newline() || tok.eof())
+      error("missing command");
+    else {
+      int c;
+      while ((c = get_copy(NULL)) == ' ' || c == '\t')
+	;
+      int buf_size = 24;
+      char *buf = new char[buf_size];
+      int buf_used = 0;
+      for (; c != '\n' && c != EOF; c = get_copy(NULL)) {
+	const char *s = asciify(c);
+	int slen = strlen(s);
+	if (buf_used + slen + 1> buf_size) {
+	  char *old_buf = buf;
+	  int old_buf_size = buf_size;
+	  buf_size *= 2;
+	  buf = new char[buf_size];
+	  memcpy(buf, old_buf, old_buf_size);
+	  a_delete old_buf;
+	}
+	strcpy(buf + buf_used, s);
+	buf_used += slen;
+      }
+      buf[buf_used] = '\0';
+      errno = 0;
+      FILE *fp = popen(buf, POPEN_RT);
+      if (fp)
+	input_stack::push(new file_iterator(fp, symbol(buf).contents(), 1));
+      else
+	error("can't open pipe to process `%1': %2", buf, strerror(errno));
+      a_delete buf;
+    }
+    tok.next();
 #endif /* not POPEN_MISSING */
+  }
 }
 
 
@@ -4898,12 +4905,22 @@ void do_open(int append)
 
 void open_request()
 {
-  do_open(0);
+  if (safer_flag) {
+    error(".open request not allowed in safer mode");
+    skip_line();
+  }
+  else
+    do_open(0);
 }
 
 void opena_request()
 {
-  do_open(1);
+  if (safer_flag) {
+    error(".opena request not allowed in safer mode");
+    skip_line();
+  }
+  else
+    do_open(1);
 }
 
 void close_request()
@@ -5429,31 +5446,43 @@ char *read_string()
 
 void pipe_output()
 {
-#ifdef POPEN_MISSING
-  error("pipes not available on this system");
-  skip_line();
-#else /* not POPEN_MISSING */
-  if (the_output) {
-    error("can't pipe: output already started");
+  if (safer_flag) {
+    error(".pi request not allowed in safer mode");
     skip_line();
   }
   else {
-    if ((pipe_command = read_string()) == 0)
-      error("can't pipe to empty command");
-  }
+#ifdef POPEN_MISSING
+    error("pipes not available on this system");
+    skip_line();
+#else /* not POPEN_MISSING */
+    if (the_output) {
+      error("can't pipe: output already started");
+      skip_line();
+    }
+    else {
+      if ((pipe_command = read_string()) == 0)
+	error("can't pipe to empty command");
+    }
 #endif /* not POPEN_MISSING */
+  }
 }
 
 static int system_status;
 
 void system_request()
 {
-  char *command = read_string();
-  if (!command)
-    error("empty command");
+  if (safer_flag) {
+    error(".sy request not allowed in safer mode");
+    skip_line();
+  }
   else {
-    system_status = system(command);
-    a_delete command;
+    char *command = read_string();
+    if (!command)
+      error("empty command");
+    else {
+      system_status = system(command);
+      a_delete command;
+    }
   }
 }
 
@@ -5797,7 +5826,6 @@ int main(int argc, char **argv)
   int tflag = 0;
   int fflag = 0;
   int nflag = 0;
-  int safer_flag = 1;		// safer by default
   int no_rc = 0;		// don't process troffrc and troffrc-end
   int next_page_number;
   opterr = 0;
@@ -5945,8 +5973,6 @@ int main(int argc, char **argv)
   }
   if (!no_rc)
     process_startup_file(INITIAL_STARTUP_FILE);
-  if (safer_flag)
-    prepend_string("safer", &macros);
   while (macros) {
     process_macro_file(macros->s);
     string_list *tem = macros;
