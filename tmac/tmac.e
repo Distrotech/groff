@@ -233,7 +233,7 @@
 .if \\n(?T \
 \{\
 .	nr _i \\n(.i
-.	in \\n($iu
+.	in 0
 .	|h			\" output the table header
 .	in \\n(_iu
 .	rr _i
@@ -498,17 +498,26 @@
 .if \\n(.$>1 \
 .	nr _0 \\$2n
 .@p \\n(_0u
-.if \\w"\\$1" \
+.nr _I \\n(.iu
+.in 0
+.di |i
+\&\\$1
+.br
+.di
+.in \\n(_Iu
+.ds |j \\*(|i\\
+.if \\w"\\*(|j" \
 \{\
 .	ti -\\n(_0u
-.	ie \\w"\\$1">=\\n(_0 \
+.	ie \\w"\\*(|j">=\\n(_0 \
 \{\
-\&\\$1
+\\*(|j
 .		br
 .	\}
-.	el \&\\$1\h'|\\n(_0u'\c
+.	el \\*(|j\h'|\\n(_0u'\c
 .\}
 .rr _0
+.rm |i |j
 ..
 .de np			\" *** numbered paragraph
 .\" use string comparison in case user has changed format of $p

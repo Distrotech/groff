@@ -16,7 +16,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <string.h>
@@ -41,7 +41,10 @@ extern "C" {
   int unmap(void *, int len);
 }
 
-const int minus_one = -1;
+#if 0
+const 
+#endif
+int minus_one = -1;
 
 int verify_flag = 0;
 
@@ -510,7 +513,8 @@ const int *index_search_item::search(const char *ptr, int length,
     return first_list;
   if (*second_list < 0)
     return second_list;
-  for (const int *p = first_list; *p >= 0; p++)
+  const int *p;
+  for (p = first_list; *p >= 0; p++)
     ;
   int len = p - first_list;
   for (p = second_list; *p >= 0; p++)
@@ -590,7 +594,8 @@ void index_search_item::read_common_words_file()
 void index_search_item::add_out_of_date_file(int fd, const char *filename,
 					     int fid)
 {
-  for (search_item **pp = &out_of_date_files; *pp; pp = &(*pp)->next)
+  search_item **pp;
+  for (pp = &out_of_date_files; *pp; pp = &(*pp)->next)
     if ((*pp)->is_named(filename))
       return;
   *pp = make_linear_search_item(fd, filename, fid);

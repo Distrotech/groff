@@ -17,7 +17,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ..
 .if !\n(.g .ab These ms macros require groff.
 .if \n(.C \
@@ -210,6 +210,8 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .als IP LP
 .als PP LP
 .als XP LP
+.als QP LP
+.als RS LP
 .als NH LP
 .als SH LP
 .als MC LP
@@ -233,6 +235,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .als MC @MC
 .als EQ @EQ
 .als EN @EN
+.als TS @TS
 .als AB cov*err-not-after-ab
 .als AU par@AU
 .als AI par@AI
@@ -963,8 +966,24 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .\" ******** module par ********
 .\" ****************************
 .\" Paragraph-level formatting.
-.nr PS 10
-.nr LL 6i
+.\" Load time initialization.
+.de par@load-init
+.\" PS and VS might have been set on the command-line
+.if !rPS .nr PS 10
+.if !rLL .nr LL 6i
+.ll \\n[LL]u
+.\" don't set LT so that it can be defaulted from LL
+.ie rLT .lt \\n[LT]u
+.el .lt \\n[LL]u
+.ps \\n[PS]
+.\" don't set VS so that it can be defaulted from PS
+.ie rVS .par*vs \\n[VS]
+.el .par*vs \\n[PS]+2
+.if dFAM .fam \\*[FAM]
+.if !rHY .nr HY 14
+.hy \\n[HY]
+.TA
+..
 .de par*vs
 .\" If it's too big to be in points, treat it as units.
 .ie (p;\\$1)>=40p .vs (u;\\$1)
@@ -985,21 +1004,26 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .aln \\n[.ev]:PD PD
 .ad \\n[par*adj]
 .par@reset-env
-.par@reset
 ..
 .\" happens when the first page begins
 .de par@init
 .if !rLT .nr LT \\n[LL]
 .if !rFL .nr FL \\n[LL]*5/6
 .if !rVS .nr VS \\n[PS]+2
-.ps \\n[PS]
 .if !rDI .nr DI .5i
+.if !rFPS .nr FPS \\n[PS]-2
+.if !rFVS .nr FVS \\n[FPS]+2
+.\" don't change environment 0
+.ev h
+.ps \\n[PS]
 .if !rQI .nr QI 5n
 .if !rPI .nr PI 5n
 .par*vs \\n[VS]
 .if !rPD .nr PD .3v>?\n(.V
 .if !rDD .nr DD .5v>?\n(.V
-.if !rHY .nr HY 14
+.if !rFI .nr FI 2n
+.if !rFPD .nr FPD \\n[PD]/2
+.ev
 .if !dFAM .ds FAM \\n[.fam]
 .nr par*adj \\n[.j]
 .par*env-init
@@ -1016,10 +1040,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .aln 0:MCLT pg@colw
 .aln k:MCLL pg@colw
 .aln k:MCLT pg@colw
-.if !rFPS .nr FPS \\n[PS]-2
-.if !rFVS .nr FVS \\n[FPS]+2
-.if !rFI .nr FI 2n
-.if !rFPD .nr FPD \\n[PD]/2
 .aln fn:PS FPS
 .aln fn:VS FVS
 .aln fn:LL FL
@@ -1443,7 +1463,8 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .		el .ds toc*num "\\$1
 .	\}
 .	el .ds toc*num \\n[PN]
-.	LP
+.	br
+.	par@reset
 .	na
 .	ll -8n
 .	in (n;0\\$2)
@@ -1546,9 +1567,9 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 \t\\*[eqn*num]
 .		\}
 .		sp \\n[DD]u
-.		fi
 .		ta \\*[eqn*tabs]
 .	\}
+.	fi
 .\}
 ..
 .\" ****************************
@@ -1556,9 +1577,13 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .\" ****************************
 .\" Tbl support.
 .nr tbl*have-header 0
+.\" This gets called if TS occurs before the first paragraph.
 .de TS
-.\" The break is necessary in the case where the first page has not yet begun.
-.br
+.LP
+.\" cov*ab-init aliases TS to @TS
+\\*[TS]\\
+..
+.de @TS
 .sp \\n[DD]u
 .if '\\$1'H' .di tbl*header-div
 ..
@@ -1841,4 +1866,5 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .ds ? \(r?\"			upside down ?
 .ds ! \(r!\"			upside down !
 ..
+.par@load-init
 .\" Make sure that no blank lines creep in at the end of this file.

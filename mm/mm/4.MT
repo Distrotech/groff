@@ -1,7 +1,9 @@
 .\"------------
+.\" $Id: 4.MT,v 1.27 1995/04/24 05:37:50 jh Exp $
 .\" Cover sheet. Memorandum type 4
 .\"------------
 .de cov@print-title
+.if !d cov*title .@error title (.TL) not defined!
 .MOVE 2.4c
 .S 12
 .ad c
@@ -29,6 +31,7 @@
 ..
 .\"------------
 .de cov@print-firm
+.if !d cov*firm .@error firm (.AF) not defined!
 .SP 0.5
 .ce
 \\*[cov*firm]

@@ -3,7 +3,12 @@
 
 prog="$0"
 # Default device.
-T=-Tascii
+if test "X$LC_CTYPE" = "Xiso_8859_1" || test "X$LESSCHARSET" = "Xlatin1"
+then
+	T=-Tlatin1
+else
+	T=-Tascii
+fi
 opts=
 
 for i

@@ -16,7 +16,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "troff.h"
 #include "symbol.h"
@@ -94,6 +94,7 @@ static void disable_warning(const char *);
 
 static int escape_char = '\\';
 static symbol end_macro_name;
+static symbol blank_line_macro_name;
 static int compatible_flag = 0;
 int ascii_output_flag = 0;
 int suppress_output_flag = 0;
@@ -120,6 +121,7 @@ static int get_line_arg(units *res, int si, charinfo **cp);
 static int read_size(int *);
 static symbol get_delim_name();
 static void init_registers();
+static void trapping_blank_line();
 
 struct input_iterator;
 input_iterator *make_temp_iterator(const char *);
@@ -541,7 +543,8 @@ int input_stack::set_location(const char *filename, int lineno)
 
 void input_stack::next_file(FILE *fp, const char *s)
 {
-  for (input_iterator **pp = &top; *pp != &nil_iterator; pp = &(*pp)->next)
+  input_iterator **pp;
+  for (pp = &top; *pp != &nil_iterator; pp = &(*pp)->next)
     if ((*pp)->next_file(fp, s))
       return;
   if (++level > limit && limit > 0)
@@ -623,8 +626,10 @@ static int get_char_for_escape_name()
     if (!illegal_input_char(c))
       break;
     // fall through
-  case ' ':
   case '\n':
+    if (c == '\n')
+      input_stack::push(make_temp_iterator("\n"));
+  case ' ':
   case '\t':
   case '\001':
   case '\b':
@@ -1429,7 +1434,8 @@ void token::next()
 	  symbol s = read_escape_name();
 	  if (s.is_null())
 	    break;
-	  for (const char *p = s.contents(); *p != '\0'; p++)
+	  const char *p;
+	  for (p = s.contents(); *p != '\0'; p++)
 	    if (!csdigit(*p))
 	      break;
 	  if (*p)
@@ -1900,6 +1906,20 @@ void end_macro()
   skip_line();
 }
 
+void blank_line_macro()
+{
+  blank_line_macro_name = get_name();
+  skip_line();
+}
+
+static void trapping_blank_line()
+{
+  if (!blank_line_macro_name.is_null())
+    spring_trap(blank_line_macro_name);
+  else
+    blank_line();
+}
+
 void do_request()
 {
   int saved_compatible_flag = compatible_flag;
@@ -2009,7 +2029,7 @@ int node::reread(int *)
 int diverted_space_node::reread(int *bolp)
 {
   if (curenv->get_fill())
-    blank_line();
+    trapping_blank_line();
   else
     curdiv->space(n);
   *bolp = 1;
@@ -2090,7 +2110,7 @@ void process_input_stack()
     case token::TOKEN_NEWLINE:
       {
 	if (bol && !curenv->get_prev_line_interrupted())
-	  blank_line();
+	  trapping_blank_line();
 	else {
 	  curenv->newline();
 	  bol = 1;
@@ -2134,7 +2154,7 @@ void process_input_stack()
 	    tok.next();
 	  } while (tok.space());
 	  if (tok.newline())
-	    blank_line();
+	    trapping_blank_line();
 	  else {
 	    push_token(tok);
 	    curenv->do_break();
@@ -2731,7 +2751,7 @@ class macro_iterator : public string_iterator {
   arg_list *args;
   int argc;
 public:
-  macro_iterator(symbol, macro &);
+  macro_iterator(symbol, macro &, const char *how_invoked = "macro");
   macro_iterator();
   ~macro_iterator();
   int has_args() { return 1; }
@@ -2759,7 +2779,8 @@ input_iterator *macro_iterator::get_arg(int i)
 
 void macro_iterator::add_arg(const macro &m)
 {
-  for (arg_list **p = &args; *p; p = &((*p)->next))
+  arg_list **p;
+  for (p = &args; *p; p = &((*p)->next))
     ;
   *p = new arg_list(m);
   ++argc;
@@ -2829,7 +2850,8 @@ static void interpolate_macro(symbol nm)
 	macro *m = r->to_macro();
 	if (!m || !m->empty())
 	  warned = warning(WARN_SPACE,
-			   "space required between `%1' and argument", buf);
+			   "`%1' not defined (probable missing space after `%2')",
+			   nm.contents(), buf);
       }
     }
     if (!warned) {
@@ -2911,8 +2933,8 @@ int macro::empty()
   return length == 0;
 }
 
-macro_iterator::macro_iterator(symbol s, macro &m)
-: string_iterator(m, "macro", s), args(0), argc(0)
+macro_iterator::macro_iterator(symbol s, macro &m, const char *how_invoked)
+: string_iterator(m, how_invoked, s), args(0), argc(0)
 {
 }
 
@@ -2927,6 +2949,47 @@ macro_iterator::~macro_iterator()
     args = args->next;
     delete tem;
   }
+}
+
+int trap_sprung_flag = 0;
+int postpone_traps_flag = 0;
+symbol postponed_trap;
+
+void spring_trap(symbol nm)
+{
+  assert(!nm.is_null());
+  trap_sprung_flag = 1;
+  if (postpone_traps_flag) {
+    postponed_trap = nm;
+    return;
+  }
+  static char buf[2] = { BEGIN_TRAP, 0 };
+  static char buf2[2] = { END_TRAP, '\0' };
+  input_stack::push(make_temp_iterator(buf2));
+  request_or_macro *p = lookup_request(nm);
+  macro *m = p->to_macro();
+  if (m)
+    input_stack::push(new macro_iterator(nm, *m, "trap-invoked macro"));
+  else
+    error("you can't invoke a request with a trap");
+  input_stack::push(make_temp_iterator(buf));
+}
+
+void postpone_traps()
+{
+  postpone_traps_flag = 1;
+}
+
+int unpostpone_traps()
+{
+  postpone_traps_flag = 0;
+  if (!postponed_trap.is_null()) {
+    spring_trap(postponed_trap);
+    postponed_trap = NULL_SYMBOL;
+    return 1;
+  }
+  else
+    return 0;
 }
 
 void read_request()
@@ -3147,7 +3210,8 @@ static void interpolate_arg(symbol nm)
     }
   }
   else {
-    for (const char *p = s; *p && csdigit(*p); p++)
+    const char *p;
+    for (p = s; *p && csdigit(*p); p++)
       ;
     if (*p)
       copy_mode_error("bad argument name `%1'", s);
@@ -3194,47 +3258,6 @@ void handle_initial_request(unsigned char code)
 void handle_initial_title()
 {
   handle_initial_request(TITLE_REQUEST);
-}
-
-int trap_sprung_flag = 0;
-int postpone_traps_flag = 0;
-symbol postponed_trap;
-
-void spring_trap(symbol nm)
-{
-  assert(!nm.is_null());
-  trap_sprung_flag = 1;
-  if (postpone_traps_flag) {
-    postponed_trap = nm;
-    return;
-  }
-  static char buf[2] = { BEGIN_TRAP, 0 };
-  static char buf2[2] = { END_TRAP, '\0' };
-  input_stack::push(make_temp_iterator(buf2));
-  request_or_macro *p = lookup_request(nm);
-  macro *m = p->to_macro();
-  if (m)
-    input_stack::push(new string_iterator(*m, "trap-invoked macro", nm));
-  else
-    error("you can't invoke a request with a trap");
-  input_stack::push(make_temp_iterator(buf));
-}
-
-void postpone_traps()
-{
-  postpone_traps_flag = 1;
-}
-
-int unpostpone_traps()
-{
-  postpone_traps_flag = 0;
-  if (!postponed_trap.is_null()) {
-    spring_trap(postponed_trap);
-    postponed_trap = NULL_SYMBOL;
-    return 1;
-  }
-  else
-    return 0;
 }
 
 // this should be local to define_macro, but cfront 1.2 doesn't support that
@@ -3285,7 +3308,8 @@ void do_define_macro(define_mode mode)
       const char *s = term.contents();
       int d;
       // see if it matches term
-      for (int i = 0; s[i] != 0; i++) {
+      int i;
+      for (i = 0; s[i] != 0; i++) {
 	d = get_copy(&n);
 	if ((unsigned char)s[i] != d)
 	  break;
@@ -3414,6 +3438,66 @@ void chop_macro()
       error("cannot chop empty macro");
     else
       m->length -= 1;
+  }
+  skip_line();
+}
+
+void substring_macro()
+{
+  int start;
+  symbol s = get_name(1);
+  if (!s.is_null() && get_integer(&start)) {
+    request_or_macro *p = lookup_request(s);
+    macro *m = p->to_macro();
+    if (!m)
+      error("cannot substring request");
+    else {
+      if (start <= 0)
+	start += m->length;
+      else
+	start--;
+      int end = 0;
+      if (!has_arg() || get_integer(&end)) {
+	if (end <= 0)
+	  end += m->length;
+	else
+	  end--;
+	if (start > end) {
+	  int tem = start;
+	  start = end;
+	  end = tem;
+	}
+	if (start >= m->length || start == end) {
+	  m->length = 0;
+	  if (m->p) {
+	    if (--(m->p->count) <= 0)
+	      delete m->p;
+	    m->p = 0;
+	  }
+	}
+	else if (start == 0)
+	  m->length = end;
+	else {
+	  string_iterator iter(*m);
+	  int i;
+	  for (i = 0; i < start; i++)
+	    if (iter.get(0) == EOF)
+	      break;
+	  macro mac;
+	  for (; i < end; i++) {
+	    node *nd;
+	    int c = iter.get(&nd);
+	    if (c == EOF)
+	      break;
+	    if (c == 0)
+	      mac.append(nd);
+	    else
+	      mac.append((unsigned char)c);
+	  }
+	  *m = mac;
+	}
+      }
+    }
   }
   skip_line();
 }
@@ -4060,8 +4144,8 @@ int do_if_request()
     result = same_node_list(n1, n2);
     delete_node_list(n1);
     delete_node_list(n2);
-    tok.next();
     curenv = oldenv;
+    tok.next();
   }
   else {
     units n;
@@ -4452,6 +4536,41 @@ void write_request()
   tok.next();
 }
 
+void write_macro_request()
+{
+  symbol stream = get_name(1);
+  if (stream.is_null()) {
+    skip_line();
+    return;
+  }
+  FILE *fp = (FILE *)stream_dictionary.lookup(stream);
+  if (!fp) {
+    error("no stream named `%1'", stream.contents());
+    skip_line();
+    return;
+  }
+  symbol s = get_name(1);
+  if (s.is_null()) {
+    skip_line();
+    return;
+  }
+  request_or_macro *p = lookup_request(s);
+  macro *m = p->to_macro();
+  if (!m)
+    error("cannot write request");
+  else {
+    string_iterator iter(*m);
+    for (;;) {
+      int c = iter.get(0);
+      if (c == EOF)
+	break;
+      fputs(asciify(c), fp);
+    }
+    fflush(fp);
+  }
+  skip_line();
+}
+
 static void init_charset_table()
 {
   char buf[16];
@@ -4611,15 +4730,19 @@ charinfo *get_optional_char()
   while (tok.space())
     tok.next();
   charinfo *ci = tok.get_char();
-  if (!ci) {
-    if (!tok.newline() && !tok.eof() && !tok.right_brace() && !tok.tab())
-      error("normal or special character expected (got %1): "
-	    "treated as missing",
-	    tok.description());
-  }
+  if (!ci)
+    check_missing_character();
   else
     tok.next();
   return ci;
+}
+
+void check_missing_character()
+{
+  if (!tok.newline() && !tok.eof() && !tok.right_brace() && !tok.tab())
+    error("normal or special character expected (got %1): "
+	  "treated as missing",
+	  tok.description());
 }
 
 int token::add_to_node_list(node **pp)
@@ -5449,6 +5572,7 @@ void init_input_requests()
   init_request("tm", terminal);
   init_request("ex", exit_request);
   init_request("em", end_macro);
+  init_request("blm", blank_line_macro);
   init_request("tr", translate);
   init_request("trnt", translate_no_transparent);
   init_request("ab", abort_request);
@@ -5469,12 +5593,14 @@ void init_input_requests()
   init_request("als", alias_macro);
   init_request("backtrace", backtrace_request);
   init_request("chop", chop_macro);
+  init_request("substring", substring_macro);
   init_request("asciify", asciify_macro);
   init_request("warn", warn_request);
   init_request("open", open_request);
   init_request("opena", opena_request);
   init_request("close", close_request);
   init_request("write", write_request);
+  init_request("writem", write_macro_request);
   init_request("trf", transparent_file);
 #ifdef WIDOW_CONTROL
   init_request("fpl", flush_pending_lines);

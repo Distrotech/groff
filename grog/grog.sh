@@ -74,5 +74,5 @@ END {
 		printf "%s", opts
 	if (files != "")
 		printf " %s", files
-	print
+	print ""
 }' "opts=$opts" "files=$*" -

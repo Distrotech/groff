@@ -16,7 +16,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 struct size_range {
   int min;
@@ -124,6 +124,8 @@ class environment {
   int right_justify_lines;
   vunits prev_vertical_spacing;
   vunits vertical_spacing;
+  vunits prev_post_vertical_spacing;
+  vunits post_vertical_spacing;
   int prev_line_spacing;
   int line_spacing;
   hunits prev_indent;
@@ -180,8 +182,9 @@ class environment {
   tab_type distance_to_next_tab(hunits *);
   void start_line();
   void output_line(node *, hunits);
-  void output(node *nd, int retain_size, vunits vs, int ls, hunits width);
-  void output_title(node *nd, int retain_size, vunits vs, int ls,
+  void output(node *nd, int retain_size, vunits vs, vunits post_vs,
+	      hunits width);
+  void output_title(node *nd, int retain_size, vunits vs, vunits post_vs,
 		    hunits width);
 #ifdef WIDOW_CONTROL
   void mark_last_line();
@@ -208,7 +211,9 @@ public:
   int is_composite() { return composite; }
   void set_composite() { composite = 1; }
   vunits get_vertical_spacing(); // .v
+  vunits get_post_vertical_spacing(); // .pvs
   int get_line_spacing();	 // .L
+  vunits total_post_vertical_spacing();
   int get_point_size() { return size.to_scaled_points(); }
   font_size get_font_size() { return size; }
   int get_size() { return size.to_units(); }
@@ -287,6 +292,7 @@ public:
   friend void center();
   friend void right_justify();
   friend void vertical_spacing();
+  friend void post_vertical_spacing();
   friend void line_spacing();
   friend void line_length();
   friend void indent();

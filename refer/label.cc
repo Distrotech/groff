@@ -1,8 +1,27 @@
+#if defined(__STDC__) || defined(__cplusplus)
+#define YYCONST const
+#define YYPARAMS(x) x
+#define YYDEFUN(name, arglist, args) name(args)
+#define YYAND ,
+#define YYPTR void *
+#else
+#define YYCONST
+#define YYPARAMS(x) ()
+#define YYDEFUN(name, arglist, args) name arglist args;
+#define YYAND ;
+#define YYPTR char *
+#endif
 #ifndef lint
-static char yysccsid[] = "@(#)yaccpar	1.8 (Berkeley) 01/20/90";
+YYCONST static char yysccsid[] = "@(#)yaccpar	1.8 (Berkeley +Cygnus.28) 01/20/91";
 #endif
 #define YYBYACC 1
-#line 22 "/u/jjc/groff/refer/label.y"
+#ifndef YYDONT_INCLUDE_STDIO
+#include <stdio.h>
+#endif
+#ifdef __cplusplus
+#include <stdlib.h> /* for malloc/realloc/free */
+#endif
+#line 22 "label.y"
 
 #include "refer.h"
 #include "refid.h"
@@ -200,59 +219,59 @@ static expression *parse_result;
 
 string literals;
 
-#line 221 "/u/jjc/groff/refer/label.y"
+#line 221 "label.y"
 typedef union {
   int num;
   expression *expr;
   struct { int ndigits; int val; } dig;
   struct { int start; int len; } str;
 } YYSTYPE;
-#line 211 "y.tab.c"
+#line 230 "y.tab.c"
 #define TOKEN_LETTER 257
 #define TOKEN_LITERAL 258
 #define TOKEN_DIGIT 259
 #define YYERRCODE 256
-short yylhs[] = {                                        -1,
+static YYCONST short yylhs[] = {                                        -1,
     0,    1,    1,    6,    6,    2,    2,    2,    3,    3,
     5,    5,    4,    4,    4,    4,    4,    4,    4,    4,
     4,    4,    4,    4,    9,    9,    7,    7,    8,    8,
    10,   10,   10,
 };
-short yylen[] = {                                         2,
+static YYCONST short yylen[] = {                                         2,
     1,    1,    5,    0,    1,    1,    3,    3,    1,    2,
     1,    3,    1,    1,    1,    2,    2,    2,    5,    3,
     3,    2,    3,    3,    0,    1,    1,    2,    1,    2,
     0,    1,    1,
 };
-short yydefred[] = {                                      0,
+static YYCONST short yydefred[] = {                                      0,
     0,   14,   13,    0,    0,    0,    0,    5,    0,    0,
     0,    0,    1,   27,    0,   17,   29,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,   22,    0,   28,
    30,   23,   24,    0,    0,    0,   32,   33,    0,    0,
     0,    0,    0,    0,    3,    0,   19,
 };
-short yydgoto[] = {                                       7,
+static YYCONST short yydgoto[] = {                                       7,
     8,    9,   10,   11,   12,   13,   15,   18,   47,   39,
 };
-short yysindex[] = {                                    -32,
+static YYCONST short yysindex[] = {                                    -32,
  -257,    0,    0, -240,  -32,  -32,    0,    0,  -18,  -32,
   -36, -114,    0,    0, -246,    0,    0, -241,  -14,  -39,
   -32,  -32,  -32, -114,  -21, -257, -257,    0,  -32,    0,
     0,    0,    0,  -25,  -32,  -32,    0,    0, -223, -246,
  -246,  -36,  -32, -257,    0, -246,    0,
 };
-short yyrindex[] = {                                     35,
+static YYCONST short yyrindex[] = {                                     35,
     1,    0,    0,    0,   -5,   -4,    0,    0,   14,  208,
   159,  224,    0,    0,   11,    0,    0,   40,    0,    0,
     2,    0,    0,  253, -220,    0,    0,    0,    0,    0,
     0,    0,    0,    0,  263,  281,    0,    0,    0,   50,
   105,  214,    0,  115,    0,  149,    0,
 };
-short yygindex[] = {                                      0,
+static YYCONST short yygindex[] = {                                      0,
    19,    0,    7,   37,  -10,   10,  -23,    0,    0,    0,
 };
 #define YYTABLESIZE 511
-short yytable[] = {                                      24,
+static YYCONST short yytable[] = {                                      24,
    15,   14,   40,   41,    4,   28,   26,    5,   27,   25,
    16,   29,   30,    2,   19,   20,   16,   31,   17,   23,
    46,   37,   33,   38,   24,   24,   32,    6,   35,   36,
@@ -306,7 +325,7 @@ short yytable[] = {                                      24,
     0,    0,    0,    0,    0,    0,    0,    0,    0,   10,
    10,
 };
-short yycheck[] = {                                      10,
+static YYCONST short yycheck[] = {                                      10,
     0,  259,   26,   27,   37,   42,   43,   40,   45,   46,
     0,  126,  259,    0,    5,    6,  257,  259,  259,   38,
    44,   43,   62,   45,   35,   36,   41,   60,   22,   23,
@@ -366,7 +385,7 @@ short yycheck[] = {                                      10,
 #endif
 #define YYMAXTOKEN 259
 #if YYDEBUG
-char *yyname[] = {
+static YYCONST char *YYCONST yyname[] = {
 "end-of-file",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,"'%'","'&'",0,"'('","')'","'*'","'+'",0,"'-'","'.'",0,0,0,0,0,0,0,0,0,0,0,
 "':'",0,"'<'",0,"'>'","'?'","'@'",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -376,7 +395,7 @@ char *yyname[] = {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,"TOKEN_LETTER","TOKEN_LITERAL","TOKEN_DIGIT",
 };
-char *yyrule[] = {
+static YYCONST char *YYCONST yyrule[] = {
 "$accept : expr",
 "expr : optional_conditional",
 "conditional : alternative",
@@ -413,32 +432,38 @@ char *yyrule[] = {
 "flag : '-'",
 };
 #endif
-#define yyclearin (yychar=(-1))
+#define YYLEX yylex()
+#define YYEMPTY -1
+#define yyclearin (yychar=(YYEMPTY))
 #define yyerrok (yyerrflag=0)
-#ifdef YYSTACKSIZE
-#ifndef YYMAXDEPTH
-#define YYMAXDEPTH YYSTACKSIZE
+#ifndef YYINITDEPTH
+#define YYINITDEPTH 200
 #endif
+#ifdef YYSTACKSIZE
+#undef YYMAXDEPTH
+#define YYMAXDEPTH YYSTACKSIZE
 #else
 #ifdef YYMAXDEPTH
 #define YYSTACKSIZE YYMAXDEPTH
 #else
-#define YYSTACKSIZE 500
-#define YYMAXDEPTH 500
+#define YYSTACKSIZE 10000
+#define YYMAXDEPTH 10000
 #endif
 #endif
 int yydebug;
 int yynerrs;
 int yyerrflag;
 int yychar;
-short *yyssp;
-YYSTYPE *yyvsp;
 YYSTYPE yyval;
 YYSTYPE yylval;
-short yyss[YYSTACKSIZE];
-YYSTYPE yyvs[YYSTACKSIZE];
-#define yystacksize YYSTACKSIZE
-#line 397 "/u/jjc/groff/refer/label.y"
+static short *yyss;
+static YYSTYPE *yyvs;
+static int yystacksize;
+static int yygrow ();
+static YYPTR yymalloc YYPARAMS((unsigned));
+static YYPTR yyrealloc YYPARAMS((YYPTR, unsigned));
+#define yyfree(x) free(x)
+#line 397 "label.y"
 
 /* bison defines const to be empty unless __STDC__ is defined, which it
 isn't under cfront */
@@ -917,7 +942,8 @@ int reference::merge_labels_by_number(reference **v, int n, label_type type,
   if (v[0]->get_number() != num + 1
       || v[1]->get_number() != num + 2)
     return 0;
-  for (int i = 2; i < n; i++)
+  int i;
+  for (i = 2; i < n; i++)
     if (v[i]->get_number() != num + i + 1)
       break;
   result = get_label(type);
@@ -990,7 +1016,8 @@ label_info *lookup_label(const string &label)
       label_table[i] = 0;
   }
   unsigned h = hash_string(label.contents(), label.length()) % label_table_size;
-  for (label_info **ptr = label_table + h;
+  label_info **ptr;
+  for (ptr = label_table + h;
        *ptr != 0;
        (ptr == label_table)
        ? (ptr = label_table + label_table_size - 1)
@@ -1015,7 +1042,8 @@ label_info *lookup_label(const string &label)
       if (old_table[i]) {
 	unsigned h = hash_string(label_pool.contents() + old_table[i]->start,
 				 old_table[i]->length);
-	for (label_info **p = label_table + (h % label_table_size);
+	label_info **p;
+	for (p = label_table + (h % label_table_size);
 	     *p != 0;
 	     (p == label_table)
 	     ? (p = label_table + label_table_size - 1)
@@ -1210,23 +1238,35 @@ int reference::get_nauthors() const
 {
   if (nauthors < 0) {
     const char *dummy;
-    for (int na = 0; get_author(na, &dummy) != 0; na++)
+    int na;
+    for (na = 0; get_author(na, &dummy) != 0; na++)
       ;
     ((reference *)this)->nauthors = na;
   }
   return nauthors;
 }
-#line 1220 "y.tab.c"
+#line 1249 "y.tab.c"
 #define YYABORT goto yyabort
 #define YYACCEPT goto yyaccept
 #define YYERROR goto yyerrlab
+
+#if YYDEBUG
+#ifdef __cplusplus
+extern "C" char *getenv();
+#else
+extern char *getenv();
+#endif
+#endif
+
 int
 yyparse()
 {
     register int yym, yyn, yystate;
+    register YYSTYPE *yyvsp;
+    register short *yyssp;
+    short *yysse;
 #if YYDEBUG
-    register char *yys;
-    extern char *getenv();
+    register YYCONST char *yys;
 
     if (yys = getenv("YYDEBUG"))
     {
@@ -1240,6 +1280,20 @@ yyparse()
     yyerrflag = 0;
     yychar = (-1);
 
+    if (yyss == 0)
+    {
+        yyss = (short *) yymalloc (YYINITDEPTH * sizeof (short));
+        if (yyss == 0)
+          goto yyabort;
+        yyvs = (YYSTYPE *) yymalloc (YYINITDEPTH * sizeof (YYSTYPE));
+        if (yyvs == 0)
+        {
+            yyfree (yyss);
+            goto yyabort;
+        }
+        yystacksize = YYINITDEPTH;
+    }
+    yysse = yyss + yystacksize - 1;
     yyssp = yyss;
     yyvsp = yyvs;
     *yyssp = yystate = 0;
@@ -1268,9 +1322,15 @@ yyloop:
             printf("yydebug: state %d, shifting to state %d\n",
                     yystate, yytable[yyn]);
 #endif
-        if (yyssp >= yyss + yystacksize - 1)
+        if (yyssp >= yysse)
         {
-            goto yyoverflow;
+            /* FIXME: Rework so there's only one of these.  */
+            int depth = yyssp - yyss;
+            if (yygrow () != 0)
+              goto yyoverflow;
+            yysse = yyss + yystacksize - 1;
+            yyssp = yyss + depth;
+            yyvsp = yyvs + depth;
         }
         *++yyssp = yystate = yytable[yyn];
         *++yyvsp = yylval;
@@ -1309,9 +1369,14 @@ yyinrecovery:
                     printf("yydebug: state %d, error recovery shifting\
  to state %d\n", *yyssp, yytable[yyn]);
 #endif
-                if (yyssp >= yyss + yystacksize - 1)
+                if (yyssp >= yysse)
                 {
-                    goto yyoverflow;
+                    int depth = yyssp - yyss;
+                    if (yygrow () != 0)
+                      goto yyoverflow;
+                    yysse = yyss + yystacksize - 1;
+                    yyssp = yyss + depth;
+                    yyvsp = yyvs + depth;
                 }
                 *++yyssp = yystate = yytable[yyn];
                 *++yyvsp = yylval;
@@ -1357,74 +1422,74 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 250 "/u/jjc/groff/refer/label.y"
+#line 250 "label.y"
 { parse_result = (yyvsp[0].expr ? new analyzed_expr(yyvsp[0].expr) : 0); }
 break;
 case 2:
-#line 255 "/u/jjc/groff/refer/label.y"
+#line 255 "label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 3:
-#line 257 "/u/jjc/groff/refer/label.y"
+#line 257 "label.y"
 { yyval.expr = new conditional_expr(yyvsp[-4].expr, yyvsp[-2].expr, yyvsp[0].expr); }
 break;
 case 4:
-#line 262 "/u/jjc/groff/refer/label.y"
+#line 262 "label.y"
 { yyval.expr = 0; }
 break;
 case 5:
-#line 264 "/u/jjc/groff/refer/label.y"
+#line 264 "label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 6:
-#line 269 "/u/jjc/groff/refer/label.y"
+#line 269 "label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 7:
-#line 271 "/u/jjc/groff/refer/label.y"
+#line 271 "label.y"
 { yyval.expr = new alternative_expr(yyvsp[-2].expr, yyvsp[0].expr); }
 break;
 case 8:
-#line 273 "/u/jjc/groff/refer/label.y"
+#line 273 "label.y"
 { yyval.expr = new conditional_expr(yyvsp[-2].expr, yyvsp[0].expr, 0); }
 break;
 case 9:
-#line 278 "/u/jjc/groff/refer/label.y"
+#line 278 "label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 10:
-#line 280 "/u/jjc/groff/refer/label.y"
+#line 280 "label.y"
 { yyval.expr = new list_expr(yyvsp[-1].expr, yyvsp[0].expr); }
 break;
 case 11:
-#line 285 "/u/jjc/groff/refer/label.y"
+#line 285 "label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 12:
-#line 287 "/u/jjc/groff/refer/label.y"
+#line 287 "label.y"
 { yyval.expr = new substitute_expr(yyvsp[-2].expr, yyvsp[0].expr); }
 break;
 case 13:
-#line 292 "/u/jjc/groff/refer/label.y"
+#line 292 "label.y"
 { yyval.expr = new at_expr; }
 break;
 case 14:
-#line 294 "/u/jjc/groff/refer/label.y"
+#line 294 "label.y"
 {
 		  yyval.expr = new literal_expr(literals.contents() + yyvsp[0].str.start,
 					yyvsp[0].str.len);
 		}
 break;
 case 15:
-#line 299 "/u/jjc/groff/refer/label.y"
+#line 299 "label.y"
 { yyval.expr = new field_expr(yyvsp[0].num, 0); }
 break;
 case 16:
-#line 301 "/u/jjc/groff/refer/label.y"
+#line 301 "label.y"
 { yyval.expr = new field_expr(yyvsp[-1].num, yyvsp[0].num - 1); }
 break;
 case 17:
-#line 303 "/u/jjc/groff/refer/label.y"
+#line 303 "label.y"
 {
 		  switch (yyvsp[0].num) {
 		  case 'I':
@@ -1441,13 +1506,13 @@ case 17:
 		}
 break;
 case 18:
-#line 319 "/u/jjc/groff/refer/label.y"
+#line 319 "label.y"
 {
 		  yyval.expr = new format_expr('0', yyvsp[0].dig.ndigits, yyvsp[0].dig.val);
 		}
 break;
 case 19:
-#line 323 "/u/jjc/groff/refer/label.y"
+#line 323 "label.y"
 {
 		  switch (yyvsp[-1].num) {
 		  case 'l':
@@ -1479,62 +1544,62 @@ case 19:
 		}
 break;
 case 20:
-#line 354 "/u/jjc/groff/refer/label.y"
+#line 354 "label.y"
 { yyval.expr = new truncate_expr(yyvsp[-2].expr, yyvsp[0].num); }
 break;
 case 21:
-#line 356 "/u/jjc/groff/refer/label.y"
+#line 356 "label.y"
 { yyval.expr = new truncate_expr(yyvsp[-2].expr, -yyvsp[0].num); }
 break;
 case 22:
-#line 358 "/u/jjc/groff/refer/label.y"
+#line 358 "label.y"
 { yyval.expr = new star_expr(yyvsp[-1].expr); }
 break;
 case 23:
-#line 360 "/u/jjc/groff/refer/label.y"
+#line 360 "label.y"
 { yyval.expr = yyvsp[-1].expr; }
 break;
 case 24:
-#line 362 "/u/jjc/groff/refer/label.y"
+#line 362 "label.y"
 { yyval.expr = new separator_expr(yyvsp[-1].expr); }
 break;
 case 25:
-#line 367 "/u/jjc/groff/refer/label.y"
+#line 367 "label.y"
 { yyval.num = -1; }
 break;
 case 26:
-#line 369 "/u/jjc/groff/refer/label.y"
+#line 369 "label.y"
 { yyval.num = yyvsp[0].num; }
 break;
 case 27:
-#line 374 "/u/jjc/groff/refer/label.y"
+#line 374 "label.y"
 { yyval.num = yyvsp[0].num; }
 break;
 case 28:
-#line 376 "/u/jjc/groff/refer/label.y"
+#line 376 "label.y"
 { yyval.num = yyvsp[-1].num*10 + yyvsp[0].num; }
 break;
 case 29:
-#line 381 "/u/jjc/groff/refer/label.y"
+#line 381 "label.y"
 { yyval.dig.ndigits = 1; yyval.dig.val = yyvsp[0].num; }
 break;
 case 30:
-#line 383 "/u/jjc/groff/refer/label.y"
+#line 383 "label.y"
 { yyval.dig.ndigits = yyvsp[-1].dig.ndigits + 1; yyval.dig.val = yyvsp[-1].dig.val*10 + yyvsp[0].num; }
 break;
 case 31:
-#line 389 "/u/jjc/groff/refer/label.y"
+#line 389 "label.y"
 { yyval.num = 0; }
 break;
 case 32:
-#line 391 "/u/jjc/groff/refer/label.y"
+#line 391 "label.y"
 { yyval.num = 1; }
 break;
 case 33:
-#line 393 "/u/jjc/groff/refer/label.y"
+#line 393 "label.y"
 { yyval.num = -1; }
 break;
-#line 1538 "y.tab.c"
+#line 1603 "y.tab.c"
     }
     yyssp -= yym;
     yystate = *yyssp;
@@ -1577,9 +1642,14 @@ break;
         printf("yydebug: after reduction, shifting from state %d \
 to state %d\n", *yyssp, yystate);
 #endif
-    if (yyssp >= yyss + yystacksize - 1)
+    if (yyssp >= yysse)
     {
-        goto yyoverflow;
+        int depth = yyssp - yyss;
+        if (yygrow () != 0)
+          goto yyoverflow;
+        yysse = yyss + yystacksize - 1;
+        yyssp = yyss + depth;
+        yyvsp = yyvs + depth;
     }
     *++yyssp = yystate;
     *++yyvsp = yyval;
@@ -1589,5 +1659,54 @@ yyoverflow:
 yyabort:
     return (1);
 yyaccept:
+    return (0);
+}
+
+static int
+yygrow ()
+{
+    int old_stacksize = yystacksize;
+    short *new_yyss;
+    YYSTYPE *new_yyvs;
+
+    if (yystacksize >= YYMAXDEPTH)
+        return (1);
+    yystacksize *= 2;
+    if (yystacksize > YYMAXDEPTH)
+        yystacksize = YYMAXDEPTH;
+#if YYDEBUG
+    if (yydebug)
+        printf("yydebug: growing stack size from %d to %d\n",
+               old_stacksize, yystacksize);
+#endif
+    new_yyss = (short *) yyrealloc (yyss, yystacksize * sizeof (short));
+    if (new_yyss == 0)
+        return (1);
+    new_yyvs = (YYSTYPE *) yyrealloc (yyvs, yystacksize * sizeof (YYSTYPE));
+    if (new_yyvs == 0)
+    {
+        yyfree (new_yyss);
+        return (1);
+    }
+    yyss = new_yyss;
+    yyvs = new_yyvs;
+    return (0);
+}
+
+static YYPTR
+YYDEFUN (yymalloc, (bytes), unsigned bytes)
+{
+    YYPTR ptr = (YYPTR) malloc (bytes);
+    if (ptr != 0) return (ptr);
+    yyerror ("yyparse: memory exhausted");
+    return (0);
+}
+
+static YYPTR
+YYDEFUN (yyrealloc, (old, bytes), YYPTR old YYAND unsigned bytes)
+{
+    YYPTR ptr = (YYPTR) realloc (old, bytes);
+    if (ptr != 0) return (ptr);
+    yyerror ("yyparse: memory exhausted");
     return (0);
 }

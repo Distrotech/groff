@@ -16,7 +16,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -242,7 +242,8 @@ int main(int argc, char **argv)
     string path;
     int lineno = 1;
     for (;;) {
-      for (int c = getc(fp); c != '\n' && c != EOF; c = getc(fp)) {
+      int c;
+      for (c = getc(fp); c != '\n' && c != EOF; c = getc(fp)) {
 	if (c == '\0')
 	  error_with_file_and_line(foption, lineno,
 				   "nul character in pathname ignored");

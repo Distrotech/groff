@@ -16,7 +16,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 class diversion {
   friend void do_divert(int append);
@@ -30,7 +30,8 @@ public:
   vunits marked_place;
   diversion(symbol s = NULL_SYMBOL);
   virtual ~diversion();
-  virtual void output(node *nd, int retain_size, vunits vs, int ls, hunits width) = 0;
+  virtual void output(node *nd, int retain_size, vunits vs, vunits post_vs,
+		      hunits width) = 0;
   virtual void transparent_output(unsigned char) = 0;
   virtual void transparent_output(node *) = 0;
   virtual void space(vunits distance, int forced = 0) = 0;
@@ -57,7 +58,8 @@ class macro_diversion : public diversion {
 public:
   macro_diversion(symbol, int);
   ~macro_diversion();
-  void output(node *nd, int retain_size, vunits vs, int ls, hunits width);
+  void output(node *nd, int retain_size, vunits vs, vunits post_vs,
+	      hunits width);
   void transparent_output(unsigned char);
   void transparent_output(node *);
   void space(vunits distance, int forced = 0);
@@ -95,7 +97,8 @@ public:
   int before_first_page;
   int no_space_mode;
   top_level_diversion();
-  void output(node *nd, int retain_size, vunits vs, int ls, hunits width);
+  void output(node *nd, int retain_size, vunits vs, vunits post_vs,
+	      hunits width);
   void transparent_output(unsigned char);
   void transparent_output(node *);
   void space(vunits distance, int forced = 0);

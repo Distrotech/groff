@@ -16,7 +16,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "driver.h"
 #include "stringclass.h"
@@ -26,6 +26,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <time.h>
 
 static int landscape_flag = 0;
+static int manual_feed_flag = 0;
 static int ncopies = 1;
 static int linewidth = -1;
 // Non-zero means generate PostScript code that guesses the paper
@@ -183,7 +184,8 @@ ps_output &ps_output::put_delimiter(char c)
 ps_output &ps_output::put_string(const char *s, int n)
 {
   int len = 0;
-  for (int i = 0; i < n; i++) {
+  int i;
+  for (i = 0; i < n; i++) {
     char c = s[i];
     if (is_ascii(c) && csprint(c)) {
       if (c == '(' || c == ')' || c == '\\')
@@ -647,7 +649,8 @@ const char *const WS = " \t\n\r";
 void ps_printer::define_encoding(const char *encoding, int encoding_index)
 {
   char *vec[256];
-  for (int i = 0; i < 256; i++)
+  int i;
+  for (i = 0; i < 256; i++)
     vec[i] = 0;
   char *path;
   FILE *fp = font::open_file(encoding, &path);
@@ -1178,6 +1181,14 @@ ps_printer::~ps_printer()
   out.put_literal_symbol("LS")
      .put_symbol(landscape_flag ? "true" : "false")
      .put_symbol("def");
+  if (manual_feed_flag) {
+    out.begin_comment("BeginFeature:")
+       .comment_arg("*ManualFeed")
+       .comment_arg("True")
+       .end_comment()
+       .put_symbol("MANUAL")
+       .simple_comment("EndFeature");
+  }
   encode_fonts();
   out.simple_comment((broken_flags & NO_SETUP_SECTION)
 		     ? "EndProlog"
@@ -1202,7 +1213,8 @@ void ps_printer::special(char *arg, const environment *env)
     { "invis", &ps_printer::do_invis },
     { "endinvis", &ps_printer::do_endinvis },
   };
-  for (char *p = arg; *p == ' ' || *p == '\n'; p++)
+  char *p;
+  for (p = arg; *p == ' ' || *p == '\n'; p++)
     ;
   char *tag = p;
   for (; *p != '\0' && *p != ':' && *p != ' ' && *p != '\n'; p++)
@@ -1349,7 +1361,8 @@ void ps_printer::do_import(char *arg, const environment *env)
   flush_sbuf();
   while (*arg == ' ' || *arg == '\n')
     arg++;
-  for (char *p = arg; *p != '\0' && *p != ' ' && *p != '\n'; p++)
+  char *p;
+  for (p = arg; *p != '\0' && *p != ' ' && *p != '\n'; p++)
     ;
   if (*p != '\0')
     *p++ = '\0';
@@ -1456,7 +1469,7 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
-  while ((c = getopt(argc, argv, "F:glc:w:vb:")) != EOF)
+  while ((c = getopt(argc, argv, "F:glmc:w:vb:")) != EOF)
     switch(c) {
     case 'v':
       {
@@ -1477,12 +1490,15 @@ int main(int argc, char **argv)
     case 'l':
       landscape_flag = 1;
       break;
+    case 'm':
+      manual_feed_flag = 1;
+      break;
     case 'F':
       font::command_line_font_dir(optarg);
       break;
     case 'w':
       if (sscanf(optarg, "%d", &linewidth) != 1 || linewidth < 0) {
-	error("bad linewidth `%s'", optarg);
+	error("bad linewidth `%1'", optarg);
 	linewidth = -1;
       }
       break;
@@ -1510,7 +1526,7 @@ int main(int argc, char **argv)
 
 static void usage()
 {
-  fprintf(stderr, "usage: %s [-glv] [-b n] [-c n] [-w n] [-F dir] [files ...]\n",
+  fprintf(stderr, "usage: %s [-glmv] [-b n] [-c n] [-w n] [-F dir] [files ...]\n",
 	  program_name);
   exit(1);
 }

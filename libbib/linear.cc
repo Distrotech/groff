@@ -16,7 +16,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 
 #include <string.h>
@@ -58,7 +58,8 @@ static map_init the_map_init;
 
 map_init::map_init()
 {
-  for (int i = 0; i < 256; i++)
+  int i;
+  for (i = 0; i < 256; i++)
     map[i] = csalnum(i) ? cmlower(i) : '\0';
   for (i = 0; i < 256; i++) {
     if (cslower(i)) {
@@ -175,7 +176,8 @@ static const char *skip_field(const char *end, const char *p)
     if (*p++ == '\n') {
       if (p == end || *p == '%')
 	break;
-      for (const char *q = p; *q == ' ' || *q == '\t'; q++)
+      const char *q;
+      for (q = p; *q == ' ' || *q == '\t'; q++)
 	;
       if (*q == '\n')
 	break;
@@ -190,7 +192,8 @@ static const char *find_end(const char *bufend, const char *p)
     if (*p++ == '\n') {
       if (p == bufend)
 	break;
-      for (const char *q = p; *q == ' ' || *q == '\t'; q++)
+      const char *q;
+      for (q = p; *q == ' ' || *q == '\t'; q++)
 	;
       if (*q == '\n')
 	break;
@@ -262,7 +265,8 @@ int linear_searcher::check_match(const char *buf, const char *bufend,
 	  *start = p + 1;
 	return 1;
       }
-      for (const char *q = p - 1; *q == ' ' || *q == '\t'; q--)
+      const char *q;
+      for (q = p - 1; *q == ' ' || *q == '\t'; q--)
 	;
       if (*q == '\n') {
 	if (start)
@@ -392,7 +396,8 @@ int linear_searcher::search(const char *buffer, const char *bufend,
     if (!found)
       break;
     const char *refend = find_end(bufend, found + keys[0]->length());
-    for (int i = 1; i < nkeys; i++)
+    int i;
+    for (i = 1; i < nkeys; i++)
       if (!search_and_check(keys[i], refstart, refend))
 	break;
     if (i >= nkeys) {

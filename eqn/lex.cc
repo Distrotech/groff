@@ -16,7 +16,7 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
-Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
+Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "eqn.h"
 #include "eqn.tab.h"
@@ -251,7 +251,8 @@ static struct {
 
 void init_table(const char *device)
 {
-  for (int i = 0; i < sizeof(token_table)/sizeof(token_table[0]); i++) {
+  int i;
+  for (i = 0; i < sizeof(token_table)/sizeof(token_table[0]); i++) {
     definition *def = new definition;
     def->is_macro = 0;
     def->tok = token_table[i].token;
@@ -472,7 +473,8 @@ argument_macro_input::argument_macro_input(const char *body, int ac,
 					   char **av, input *x)
 : input(x), argc(ac), ap(0)
 {
-  for (int i = 0; i < argc; i++)
+  int i;
+  for (i = 0; i < argc; i++)
     argv[i] = av[i];
   p = s = strsave(body);
   int j = 0;
@@ -687,7 +689,8 @@ void interpolate_macro_with_args(const char *body)
 {
   char *argv[9];
   int argc = 0;
-  for (int i = 0; i < 9; i++)
+  int i;
+  for (i = 0; i < 9; i++)
     argv[i] = 0;
   int level = 0;
   int c;
@@ -731,7 +734,9 @@ int get_token(int lookup_flag = 0)
       c = get_char();
     switch (c) {
     case EOF:
-      add_context("end of input");
+      {
+	add_context("end of input");
+      }
       return 0;
     case '"':
       {
@@ -984,7 +989,7 @@ void do_space()
   char *ptr;
   long n = strtol(token_buffer.contents(), &ptr, 10);
   if (n == 0 && ptr == token_buffer.contents())
-    lex_error("bad argument `%1' to space command");
+    lex_error("bad argument `%1' to space command", token_buffer.contents());
   else
     set_space(int(n));
 }

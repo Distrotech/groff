@@ -1,4 +1,21 @@
-.\" -*- nroff -*-
+.ig \"-*- nroff -*-
+Copyright (C) 1989-1995 Free Software Foundation, Inc.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be included in
+translations approved by the Free Software Foundation instead of in
+the original English.
+..
 .TH @G@TBL @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
 @g@tbl \- format tables for troff
@@ -138,6 +155,24 @@ and use
 .B BP
 instead of
 .BR bp .
+.LP
+Using \ea directly in a table to get leaders will not work.
+This is correct behaviour: \ea is a
+.B uninterpreted
+leader.
+To get leaders use a real leader, either by using a control A or like
+this:
+.IP
+.nf
+.ft B
+\&.ds a \ea
+\&.TS
+tab(;);
+lw(1i) l.
+A\e*a;B
+\&.TE
+.ft
+.fi
 .SH "SEE ALSO"
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@)
