@@ -4720,7 +4720,7 @@ const char *input_char_description(int c)
   case '\001':
     return "a leader character";
   case '\t':
-    return "a tab character ";
+    return "a tab character";
   case ' ':
     return "a space character";
   case '\0':

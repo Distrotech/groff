@@ -1057,6 +1057,13 @@ printers).
 To produce @acronym{HTML} output.
 @end table
 
+@vindex .T
+@maindex \*(.T
+The predefined @code{gtroff} string register @code{.T} contains the
+current output device; the read-only number register @code{.T} is set
+to@w{ }1 if this option is used (which is always true if @code{groff} is
+used to call @code{gtroff}).  @xref{Built-in Registers}.
+
 The postprocessor to be used for a device is specified by the
 @code{postpro} command in the device description file.  (@xref{Font
 Files}, for more info.)  This can be overridden with the @option{-X}
@@ -1078,7 +1085,10 @@ Safer mode.  Pass the @option{-S} option to @code{gpic} and use the
 @item -U
 Unsafe mode.  Reverts to the old unsafe behaviour.
 @item -a
-Generate an @acronym{ASCII} approximation of the typeset output.
+@vindex .A
+Generate an @acronym{ASCII} approximation of the typeset output.  The
+read-only register @code{.A} is then set to@w{ }1.  @xref{Built-in
+Registers}.
 @item -b
 Print a backtrace with each warning or error message.  This backtrace
 should help track down the cause of the error.  The line numbers given
@@ -2156,12 +2166,12 @@ character (at the end of a line), append @code{\&}.
 @cindex character, tabulator
 
 @code{gtroff} translates @dfn{tabulator characters}, also called
-@dfn{tabs} (normally code point @code{0x09}), in the input into
-movements to the next tabulator stop.  These tab stops are initially
-located every half inch across the page.  Using this simple tables can
-easily be made.  However, it can often be deceptive as the appearance
-(and width) of the text on a terminal and the results from @code{gtroff}
-can vary greatly.
+@dfn{tabs} (normally code point @acronym{ASCII} @code{0x09} resp.@:
+@acronym{EBCDIC} @code{0x05}), in the input into movements to the next
+tabulator stop.  These tab stops are initially located every half inch
+across the page.  Using this simple tables can easily be made.  However,
+it can often be deceptive as the appearance (and width) of the text on a
+terminal and the results from @code{gtroff} can vary greatly.
 
 Also, a possible sticking point is that lines beginning with tab
 characters will still be filled, again producing unexpected results.
@@ -2329,8 +2339,6 @@ Vertical space.  This is equivalent to the current line spacing.
 100ths of an em.
 @end table
 
-@xref{Fractional Type Sizes}.
-
 @menu
 * Default Units::               
 @end menu
@@ -2491,18 +2499,26 @@ Whitespace characters (space, tabs, and newlines).
 @cindex character, backspace
 @cindex backspace character
 @item
-Backspace (@code{0x08}) and character code @code{0x01}.
+Backspace (@acronym{ASCII}@w{ }@code{0x08} resp.@: @acronym{EBCDIC}@w{
+}@code{0x16}) and character code @code{0x01}.
 @cindex illegal input characters
 @cindex input characters, illegal
 @cindex characters, illegal input
 @cindex unicode
 @item
-The following input characters are illegal and will be ignored, causing
-a warning message: @code{0x00}, @code{0x0B}, @code{0x0D}-@code{0x1F},
-@code{0x80}-@code{0x9F}.  Currently, some of these reserved codepoints
-are used internally, thus making it non-trivial to extend @code{gtroff}
-to cover Unicode or other character sets resp.@: encodings which use
-characters of these ranges.
+The following input characters are illegal and will be ignored if
+@code{groff} runs on a machine based on @acronym{ASCII}, causing a
+warning message: @code{0x00}, @code{0x0B}, @code{0x0D}-@code{0x1F},
+@code{0x80}-@code{0x9F}.
+
+And here the illegal input characters if @code{groff} runs on an
+@acronym{EBCDIC} host: @code{0x00}, @code{0x08}, @code{0x09},
+@code{0x0B}, @code{0x0D}-@code{0x14}, @code{0x17}-@code{0x1F},
+@code{0x30}-@code{0x3F}.
+
+Currently, some of these reserved codepoints are used internally, thus
+making it non-trivial to extend @code{gtroff} to cover Unicode or other
+character sets resp.@: encodings which use characters of these ranges.
 
 Note that illegal characters will be removed before parsing; an
 identifier `foo', followed by an illegal character, followed by `bar'
@@ -2522,7 +2538,9 @@ end-list
 @findex ]
 Note that identifiers longer than two characters with a closing bracket
 (@samp{]}) in its name can't be accessed with escape sequences which
-expect an identifier as a parameter.
+expect an identifier as a parameter.  For example, @samp{\[foo]]} will
+access the glyph @samp{foo}, followed by @samp{]}, whereas
+@samp{\C'foo]'} really asks for glyph @samp{foo]}.
 
 @c XXX xref
 
@@ -3279,13 +3297,24 @@ Always@w{ }1.  Macros should use this to determine whether they are
 running under GNU @code{troff}.
 @item .A
 @vindex .A
-If the current output device is @acronym{ASCII}, this is set to@w{ }1,
-zero otherwise.
+If the command line option @option{-a} is used to produce an
+@acronym{ASCII} approximation of the output, this is set to@w{ }1, zero
+otherwise.  @xref{Groff Options}.
 @item .P
 @vindex .P
 This register indicates whether the current page is actually being
 printed, i.e., whether the @option{-o} option is being used to only
 print selected pages.  @xref{Groff Options}, for more information.
+@item .T
+@vindex .T
+If @code{gtroff} is called with the @option{-T} command line option, the
+number register @code{.T} is set to@w{ }1, and zero otherwise.
+@xref{Groff Options}.
+
+@maindex \*(.T
+Additionally, @code{gtroff} predefines a single (read/write) string
+register @code{.T} which contains the current output device (for
+example, @samp{latin1} or @samp{ps}).
 @end table
 
 
@@ -3746,22 +3775,29 @@ macros inadvertently insert some vertical space before the text starts
 Disable no-space mode.
 @end_Deffn
 
+
 @node Tabs and Fields, Character Translations, Manipulating Spacing, Programming Tutorial
 @section Tabs and Fields
 @cindex tabs and fields
 @cindex fields and tabs
 
-@findex \t
-Tab stops are much like those on a typewriter: a tab character (or the
-@code{\t} escape) on input will cause horizontal motion to the next tab
-stop.
+A tab character (@acronym{ASCII} char@w{ }9) causes a horizontal
+movement to the next tab stop (which is much like that on a typewriter).
 
-@findex ta
-Tab stops can be changed with the @code{ta} request.  This request takes
-a series of numbers as arguments which indicate where each tab stop is
-to be (overriding any previous settings).  These can be specified
-absolutely, i.e.@: as the distance from the left margin.  For example,
-the following will set tab stops every one inch.
+@Deffn{Escape, \\t, }
+This escape is a non-interpreted tab character.  In copy mode
+(@pxref{Copy-in Mode}), @code{\t} is the same as a real tab character.
+@end_Deffn
+
+@Deffn{Request, ta, n1 n2 @dots{} nn @t{T} r1 r2 @dots{} rn}
+Change tab stop positions.  This request takes a series of tab
+specifiers as arguments (optionally divided into two groups with the
+letter @samp{T}) which indicate where each tab stop is to be (overriding
+any previous settings).
+
+Tab stops can be specified absolutely, i.e., as the distance from the
+left margin.  For example, the following will set 6@w{ }tab stops every
+one inch.
 
 @example
 .ta 1i 2i 3i 4i 5i 6i
@@ -3776,39 +3812,80 @@ previous example.
 .ta 1i +1i +1i +1i +1i +1i
 @end example
 
-After the specified tab stops repeat values may be set for tabs beyond
-the last one specified.  This is most commonly used to specify tabs set
-at equal intervals.  The complete syntax for setting tabs is
-
-@example
-ta @var{n1} @var{n2} @dots{} @var{nn} T @var{r1} @var{r2} @dots{} @var{rn}
-@end example
-
-@noindent
-This will set tabs at positions @var{n1}, @var{n2}, @dots{}, @var{nn}
-and then set tabs at @var{nn}+@var{r1}, @var{nn}+@var{r2}, @dots{},
-@var{nn}+@var{rn} and then at @var{nn}+@var{rn}+@var{r1},
-@var{nn}+@var{rn}+@var{r2}, @dots{}, @var{nn}+@var{rn}+@var{rn}, and so
-on.  For example the following is, yet again, the same as the previous
-examples.
+@code{gtroff} supports an extended syntax to specify repeat values after
+the @samp{T} mark (these values are always taken as relative)---this is
+the usual way to specify tabs set at equal intervals.  The following is,
+yet again, the same as the previous examples.  It does even more since
+it defines an infinite number of tab stops separated by one inch.
 
 @example
 .ta T 1i
 @end example
 
-The material in each tab column may be justified to the right or left
-or centered in the column.  This is specified by appending an
-@samp{R}, @samp{L} or @samp{C} to the number specifying that tab stop.
-The default justification is @samp{L}.  Example:
+Now we are ready to interpret the full syntax given at the beginning:
+Set tabs at positions @var{n1}, @var{n2}, @dots{}, @var{nn} and then set
+tabs at @var{nn}+@var{r1}, @var{nn}+@var{r2}, @dots{}, @var{nn}+@var{rn}
+and then at @var{nn}+@var{rn}+@var{r1}, @var{nn}+@var{rn}+@var{r2},
+@dots{}, @var{nn}+@var{rn}+@var{rn}, and so on.
+
+Example: @samp{4c +6c T 3c 5c 2c} is equivalent to @samp{4c 10c 13c 18c
+20c 23c 28c 30c @dots{}}.
+
+The material in each tab column may be justified to the right or left or
+centered in the column.  This is specified by appending an @samp{R},
+@samp{L}, or @samp{C} to the tab specifier.  The default justification
+is @samp{L}.  Example:
 
 @example
 .ta 1i 2iC 2iR
 @end example
 
+Some notes:
+
+@itemize @bullet
+@item
+The default unit of the @code{ta} request is @samp{m}.
+
+@item
+A tab stop is converted into a non-breakable horizontal movement which
+can't be neither stretched nor squeezed.  For example,
+
+@example
+.de foo
+a\tb\tc
+..
+.ta T 5i
+.foo
+@end example
+
+@noindent
+creates a single line which is a bit longer than 10@w{ }inches (a macro
+is used to show exactly where the tab characters are).  Now consider the
+following:
+
+@example
+.de bar
+a\tb b\tc
+..
+.ta T 5i
+.bar
+@end example
+
+@noindent
+@code{gtroff} first converts the tab stops of the line into unbreakable
+horizontal movements, then splits the line after the second @samp{b}
+(assuming a sufficiently short line length).  Usually, this isn't what
+the user wants.
+
+@c XXX superfluous tab stops
+
+@end itemize
+
 @vindex .tabs
 The number register @code{.tabs} contains a string representation of the
 current tab settings suitable for use as an argument to the @code{ta}
 request.
+@end_Deffn
 
 @findex tc
 Normally @code{gtroff} will fill the space to the next tab stop with
@@ -5091,7 +5168,8 @@ the text (including request lines, but excluding escapes) into an
 internal buffer.  Escapes will be converted into an internal form,
 except for @code{\n}, @code{\$}, @code{\*}, @code{\\} and
 @code{\@key{RET}} which are evaluated and inserted into the text where
-the escape was located.  This is known as @dfn{copy-in} mode.
+the escape was located.  This is known as @dfn{copy-in} mode or
+@dfn{copy} mode.
 
 What this means is that you can specify when these escapes are to be
 evaluated (either at copy-in time or at the time of use) by insulating
@@ -5894,7 +5972,7 @@ searched for when the @option{-m@var{name}} option is specified.
 The @code{cf} and @code{trf} requests are to include a file.  It will
 transparently output the contents of file filename.  Each line is output
 as it were preceded by @code{\!}; however, the lines are not subject to
-copy-mode interpretation.  If the file does not end with a newline, then
+copy mode interpretation.  If the file does not end with a newline, then
 a newline will be added.  For example, to define a macro@w{ }@code{x}
 containing the contents of file@w{ }@file{f}, use
 

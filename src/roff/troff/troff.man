@@ -84,7 +84,7 @@ approximation of the typeset output.
 Print a backtrace with each warning or error message.  This backtrace
 should help track down the cause of the error.  The line numbers given
 in the backtrace may not always be correct:
-.B troff 's
+.BR troff 's
 idea of line numbers
 gets confused by
 .B as
@@ -145,9 +145,10 @@ as the default font family.
 Read in the file
 .BI tmac. name\fR.
 Normally this will be searched for in @MACRODIR@.
-By default is used the 
+By default, the 
 .I safer
-macro (reverted using -U ).
+macro is used (this can be reverted using
+.BR \-U ).
 .TP
 .B \-U
 Unsafe option, avoids default use of 
@@ -1749,9 +1750,26 @@ The current year.
 Note that the traditional
 .B troff
 number register
-.B \en[yr]
+.B \en(yr
 is the current year minus 1900.
 .SS Miscellaneous
+.B @g@troff
+predefines a single (read/write) string-based register,
+.BR \e*(.T ,
+which contains the argument given to the
+.B -T
+command line option, namely the current output device (for example,
+.I latin1
+or
+.IR ascii ).
+Note that this is not the same as the (read-only) number register
+.B \en(.T
+which is defined to be\ 1 if
+.B troff
+is called with the
+.B -T
+command line option, and zero otherwise.  This behaviour is different to
+Unix troff.
 .LP
 Fonts not listed in the
 .SM DESC
@@ -1773,7 +1791,7 @@ greater than that of any currently used position.
 Interpolating a string does not hide existing macro arguments.
 Thus in a macro, a more efficient way of doing
 .IP
-.BI . xx\  \e\e$@
+I . xx\  \e\e$@
 .LP
 is
 .IP
@@ -1795,7 +1813,7 @@ request.
 In a
 .B \ew
 escape sequence,
-a character that appears at a different input level to
+character that appears at a different input level to
 the starting delimiter character will not be recognised
 as the closing delimiter character.
 When decoding a macro argument that is delimited

@@ -819,8 +819,13 @@ void ps_printer::flush_sbuf()
   if (sbuf_kern != 0)
     out.put_fix_number(sbuf_kern);
   out.put_string(sbuf, sbuf_len);
+  char command_array[] = {'A', 'B', 'C', 'D',
+			  'E', 'F', 'G', 'H',
+			  'I', 'J', 'K', 'L',
+			  'M', 'N', 'O', 'P',
+			  'Q', 'R', 'S', 'T'};
   char sym[2];
-  sym[0] = 'A' + motion*4 + space_flag + 2*(sbuf_kern != 0);
+  sym[0] = command_array[motion*4 + space_flag + 2*(sbuf_kern != 0)];
   sym[1] = '\0';
   switch (motion) {
   case NONE:
