@@ -1385,7 +1385,7 @@ table *process_data(table_input &in, format *f, options *opt)
 	    f = newf;
 	}
 	if (line.length() >= 3
-	    && line[0] == '.' && line[1] == 'f' && line[2] == 'f') {
+	    && line[0] == '.' && line[1] == 'l' && line[2] == 'f') {
 	  line += '\0';
 	  interpret_lf_args(line.contents() + 3);
 	}
