@@ -83,7 +83,7 @@ private:
 
 //   Compatibility section.
 //
-//   Here we define some functions not present in some of the targets 
+//   Here we define some functions not present in some of the targets
 //   platforms
 #ifndef HAVE_STRSEP
 // Solaris 8 doesn't have the strsep function
@@ -94,7 +94,7 @@ static char *strsep(char **pcadena, const char *delim)
 	p = strtok(*pcadena,delim);
  	*pcadena = strtok(NULL,delim);
     return p;
- 
+
 };
 #endif
 
@@ -111,7 +111,7 @@ lbp_font *lbp_font::load_lbp_font(const char *s)
 {
   lbp_font *f = new lbp_font(s);
   f->lbpname = NULL;
-  f->is_scalable = 1; // Default is that fonts are scalable 
+  f->is_scalable = 1; // Default is that fonts are scalable
   if (!f->load()) {
         delete f;
     	return 0;
@@ -141,7 +141,7 @@ void lbp_font::handle_unknown_font_command(const char *command,
 static void wp54charset()
 {
   unsigned int i;
-  
+
   lbpputs("\033[714;100;29;0;32;120.}");
   for (i = 0; i < sizeof(symset) ; i++) lbpputc(symset[i]);
   lbpputs("\033[100;0 D");
@@ -213,13 +213,13 @@ char *lbp_printer::font_name(const lbp_font *f, const int siz)
         ori, // Normal or Rotated
 	*nam; // The font name without other data.
 //	nam[strlen(f->lbpname)-2]; // The font name without other data.
-  int cpi; // The font size in characters per inch 
+  int cpi; // The font size in characters per inch
   	   // (Bitmaped fonts are monospaced).
 
 
-  /*    Bitmap font selection is ugly in this printer, so don't expect 
+  /*    Bitmap font selection is ugly in this printer, so don't expect
   	this function to be elegant. */
-	
+
   bfont_name[0] = 0x00;
   if (orientation) // Landscape
   	ori = 'R';
@@ -253,7 +253,7 @@ char *lbp_printer::font_name(const lbp_font *f, const int siz)
   	sprintf(bfont_name,"%c%s%d%c",ori,nam,cpi,type);
 
   return bfont_name;
-	
+
 }; // lbp_printer::font_name
 
 void lbp_printer::set_char(int index, font *f, const environment *env, int w, const char *name)
@@ -269,7 +269,7 @@ void lbp_printer::set_char(int index, font *f, const environment *env, int w, co
     {  // Scalable font selection is different from bitmaped
     	lbpprintf("\033Pz%s.IBML\033\\\033[%d C",psf->lbpname,\
 	(int)((env->size*300)/72));
-    } else 
+    } else
     {  // Bitmaped font
        lbpprintf("\033Pz%s.IBML\033\\\n",font_name(psf,env->size));
     };
@@ -279,7 +279,7 @@ void lbp_printer::set_char(int index, font *f, const environment *env, int w, co
     cur_symbol_set = 0;
   }
   if (symbol_set != cur_symbol_set) {
-    if ( cur_symbol_set == 3 ) { 
+    if ( cur_symbol_set == 3 ) {
        	// if current symbol set is Symbol we must restore the font
       	lbpprintf("\033Pz%s.IBML\033\\\033[%d C",cur_font->lbpname,\
 						(int)((env->size*300)/72));
@@ -293,18 +293,18 @@ void lbp_printer::set_char(int index, font *f, const environment *env, int w, co
 		break;
 	case 3:	lbpprintf("\033PzSymbol.SYML\033\\\033[%d C",\
 						(int)((env->size*300)/72));
-		lbpputs("\033(\"!!0\033)\"!!1"); // Select symbol font 
+		lbpputs("\033(\"!!0\033)\"!!1"); // Select symbol font
 		break;
 	case 4:	lbpputs("\033)\"! 1\033(\"!$2"); // Select PS symbol set
 		break;
     }; // switch (symbol_set)
-		
+
 //    if (symbol_set == 1) lbpputs("\033(d"); // Select wp54 symbol set
 //    else lbpputs("\033('$2\033)' 1"); // Select IBML and IBMR1 symbol sets
     cur_symbol_set = symbol_set;
   }
   if (env->size != cur_size) {
-  
+
     if (!cur_font->is_scalable)
        lbpprintf("\033Pz%s.IBML\033\\\n",font_name(cur_font,env->size));
     else
@@ -328,7 +328,7 @@ lbp_printer::vdmstart()
 {
   FILE *f;
   static int changed_origin = 0;
-  
+
    errno = 0;
    f = tmpfile();
    // f = fopen("/tmp/gtmp","w+");
@@ -339,7 +339,7 @@ lbp_printer::vdmstart()
      vdmorigin(-63,0);
      };
    vdmlinewidth(line_thickness);
-   
+
 };
 
 void
@@ -347,7 +347,7 @@ lbp_printer::vdmflush()
 {
   char buffer[1024];
   int bytes_read = 1;
- 
+
   vdmend();
   fflush(lbpoutput);
   /* lets copy the vdm code to the output */
@@ -357,11 +357,11 @@ lbp_printer::vdmflush()
     bytes_read = fread(buffer,1,sizeof(buffer),vdmoutput);
     bytes_read = fwrite(buffer,1,bytes_read,lbpoutput);
   } while ( bytes_read == sizeof(buffer));
-  
- fclose(vdmoutput); // This will also delete the file, 
+
+ fclose(vdmoutput); // This will also delete the file,
  		    // since it is created by tmpfile()
  vdmoutput = NULL;
- 
+
 }; // lbp_printer::vdmflush
 
 inline void
@@ -394,7 +394,7 @@ lbp_printer::polygon( int hpos,int vpos,int np,int *p)
 void lbp_printer::draw(int code, int *p, int np, const environment *env)
 {
    switch (code) {
-   	case 't': 
+   	case 't':
       	  	if (np == 0) line_thickness = 1;
       	  	else { // troff gratuitously adds an extra 0
 	    		if (np != 1 && np != 2) {
@@ -441,10 +441,10 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
 		     lbpruleabs(env->hpos - 64,env->vpos -64 ,  p[0],  p[1]);
 		     cur_vpos = p[1];
 		     cur_hpos = p[0];
-	     }; 
+	     };
 	     fprintf(stderr,"\nrule: thickness %d == %d\n", env->size, line_thickness);
 	     break;
-	case 'P': // Filled Polygon	     
+	case 'P': // Filled Polygon
 		if (!vdminited()) vdmstart();
 		setfillmode(fill_pattern);
 		polygon(env->hpos,env->vpos,np,p);
@@ -484,7 +484,7 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
 		vdmvarc(env->hpos + p[0],env->vpos+p[1],\
 				int(sqrt( double((p[0]*p[0])+(p[1]*p[1])))),\
 				p[2],p[3],\
-				(-p[0]),(-p[1]),1,2);	
+				(-p[0]),(-p[1]),1,2);
 		break;
 	case '~': // Spline
 		if (!vdminited()) vdmstart();
@@ -498,7 +498,7 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
     		};
 		// fprintf(stderr,"Fill %d\n",p[0]);
 		if ((p[0] == 1) || (p[0] >= 1000)) { // Black
-			fill_pattern = 1; 
+			fill_pattern = 1;
 			break;
 		}; // if (p[0] == 1)
 		if (p[0] == 0) { // White
@@ -507,7 +507,7 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
 		};
 		if ((p[0] > 1) && (p[0] < 1000))
 		{
-		  if (p[0] >= 990)  fill_pattern = -23; 
+		  if (p[0] >= 990)  fill_pattern = -23;
 		  else if (p[0] >= 700)  fill_pattern = -28;
 		  else if (p[0] >= 500)  fill_pattern = -27;
 		  else if (p[0] >= 400)  fill_pattern = -26;
@@ -524,7 +524,7 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
 	     error("unrecognised drawing command `%1'", char(code));
 	     break;
   }; // switch (code)
-  return ;				
+  return ;
 };
 
 font *lbp_printer::make_font(const char *nm)
@@ -532,18 +532,18 @@ font *lbp_printer::make_font(const char *nm)
   return lbp_font::load_lbp_font(nm);
 }
 
-  
+
 
 printer *make_printer()
 {
   return new lbp_printer;
 }
 
-static struct 
+static struct
 {
     const char *name;
     int code;
-} papersizes[] = 
+} papersizes[] =
 {{ "A4", 14 },
 { "letter", 30 },
 { "legal", 32 },
@@ -559,21 +559,21 @@ static int set_papersize(const char *papersize)
   // papersize
   for (i = 0 ; i < sizeof(papersizes)/sizeof(papersizes[0]); i++)
   {
-  	if (strcasecmp(papersizes[i].name,papersize) == 0) 
-				return papersizes[i].code; 
+  	if (strcasecmp(papersizes[i].name,papersize) == 0)
+				return papersizes[i].code;
    };
-   
+
    // Now test for a custom papersize
    if (strncasecmp("cust",papersize,4) == 0)
    {
-     char *p , 
-     	  *p1, 
+     char *p ,
+     	  *p1,
 	  *papsize;
-	  
+
       p = papsize = strsave(&papersize[4]);
       if (papsize == NULL) return -1;
       p1 = strsep(&p,"x");
-      if (p == NULL) 
+      if (p == NULL)
       {  // let's test for an uppercase x
         p = papsize ;
         p1 = strsep(&p,"X");
@@ -586,7 +586,7 @@ static int set_papersize(const char *papersize)
       a_delete papsize;
       return 82;
     }; // if (strcnasecmp("cust",papersize,4) == 0)
-      
+
    return -1;
 };
 
@@ -606,11 +606,11 @@ static int handle_papersize_command(const char *arg)
 	    // set_papersize doesn't like the trailing \n
 	    p = psize; while (*p) p++;
 	    if (*(--p) == '\n') *p = 0x00;
-	    
+
 	    n = set_papersize(psize);
 	  }; // if (f != NULL)
        }; // if (n < 0)
-       
+
    return n;
 }; // handle_papersize_command
 
@@ -625,7 +625,7 @@ static void handle_unknown_desc_command(const char *command, const char *arg,
     if (arg == 0)
       error_with_file_and_line(filename, lineno,
 			       "`papersize' command requires an argument");
-    else 
+    else
      {
        int n = handle_papersize_command(arg);
        if (n < 0)
@@ -637,7 +637,7 @@ static void handle_unknown_desc_command(const char *command, const char *arg,
       }; // if (arg == 0) ... else ...
     }; // if (strcasecmp(command, "papersize")
 
-  // orientation command  
+  // orientation command
   if (strcasecmp(command, "orientation") == 0) {
     // We give priority to command line options
     if (orientation > 0) return;
@@ -651,7 +651,7 @@ static void handle_unknown_desc_command(const char *command, const char *arg,
 	     	  "`orientation' command requires an argument");
 	     };
     }; // if (arg == 0) ... else ...
-  }; // if (strcasecmp(command, "orientation") == 0) 
+  }; // if (strcasecmp(command, "orientation") == 0)
 };
 
 static struct option long_options[] = {
@@ -683,13 +683,13 @@ static void usage(FILE *stream)
 int main(int argc, char **argv)
 {
    if (program_name == NULL) program_name = strsave(argv[0]);
-   
+
 	font::set_unknown_desc_command_handler(handle_unknown_desc_command);
 	// command line parsing
   	int c = 0;
 	int  option_index = 0;
 
-	while (c >= 0 ) 
+	while (c >= 0 )
 	{
 		c = getopt_long (argc, argv, "F:p:lvo:c:h",\
 				long_options, &option_index);
@@ -713,14 +713,14 @@ int main(int argc, char **argv)
 				break;
       				};
 		  case 'o'  : {
-    				if (strcasecmp(optarg,"portrait") == 0) 
+    				if (strcasecmp(optarg,"portrait") == 0)
 							orientation = 0;
-				else { 
-				   if (strcasecmp(optarg,"landscape") == 0) 
+				else {
+				   if (strcasecmp(optarg,"landscape") == 0)
 				   			orientation = 1;
-				   else 
+				   else
 				     error("unknown orientation '%1'", optarg);
-				 }; 
+				 };
                                 break;
 			      };
     		  case 'c'  : {
@@ -740,17 +740,18 @@ int main(int argc, char **argv)
 		  case '?'  : usage(stderr);
 			      exit(1);
 			      break;
-				
+
 		}; // switch (c)
 	}; // while (c > 0 )
-			
+
   	if (optind >= argc)
     		do_file("-");
 
-	while (optind < argc) {	
+	while (optind < argc) {
 		do_file(argv[optind++]);
 	};
-		
+
 	lbpputs("\033c\033<");
+	delete pr;
 	return 0;
 };

@@ -3,7 +3,7 @@
 .ig
 groff_out.5
 
-Last update: 08 Jan 2002
+Last update: 31 Jan 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -42,15 +42,30 @@ delim $$
 .EN
 .\}
 .
+.\" ----------------- Document configuration
+.
+.\" Number register to decide whether the commands `{' and `}' are used
+.\" 0: disable (actual default); 1: enable
+.nr @USE_ENV_STACK 0
+.
+.ig
+Unfortunately, old versions of groff used an illogical position change
+after some D-commands (Dp, DP, Dt).  If the number register
+@STUPID_DRAWING_POSITIONING is 1 (actual default) then change position
+after these commands, otherwise the position is not changed.
+..
+.nr @STUPID_DRAWING_POSITIONING 1
+.
 .\" ----------------- Syntactical definitions
 .
+.\" comments when escapes are switched off
+.de c
+..
 .\" Begin of macro definitions
 .eo
 .
-.de c
-..
 .de Text
-.  RI "\$*"
+.  nop \)\$*
 ..
 .c follow-up line for a .TP header
 .de TP+
@@ -109,7 +124,7 @@ delim $$
 .  ds @arg1 \$1\"
 .  ds @arg2 \$2\"
 .  shift 2
-.  nop (\f[I]\*[@arg1]\/\f[P],\ \f[I]\*[@arg2]\/\f[P])\$*
+.  nop (\f[I]\,\*[@arg1]\/\f[P],\ \f[I]\,\*[@arg2]\/\f[P])\$*
 .  rm @arg1
 .  rm @arg2
 ..
@@ -147,15 +162,37 @@ delim $$
 .c format: .command <name> "<arguments>" <punctuation>
 .de command
 .  ds @arg1 \$1\"
-.  shift 1
-.  IP "\f[B]\*[@arg1]\f[P]\ \f[I]\$*\/\f[P]"
+.  ds @arg2 \$2\"
+.  shift 2
+.  IP "\f[B]\*[@arg1]\f[P]\ \f[I]\,\*[@arg2]\/\f[P]\$*"
 .  rm @arg1
+.  rm @arg2
+..
+.c format: .command+ <name> "<arguments>" <punctuation>
+.c continue previous .command heading
+.de command+
+.  ds @arg1 \$1\"
+.  ds @arg2 \$2\"
+.  shift 2
+.  TP+
+.  Text "\f[B]\*[@arg1]\f[P]\ \f[I]\,\*[@arg2]\/\f[P]\$*"
+.  rm @arg1
+.  rm @arg2
 ..
 .c format: .D-command <subcommand> "<arguments>"
 .de D-command
 .  ds @sub \$1\"
 .  shift 1
-.  IP "\f[B]D\*[@sub]\f[P]\ \f[I]\$*\/\f[P]\|\*[@linebreak]"
+.  IP "\f[B]D\*[@sub]\f[P]\ \f[I]\,\$*\/\f[P]\|\*[@linebreak]"
+.  rm @sub
+..
+.c format: .D-command+ <subcommand> "<arguments>"
+.c continue previous .D-command heading
+.de D-command+
+.  ds @sub \$1\"
+.  shift 1
+.  TP+
+.  Text "\f[B]D\*[@sub]\f[P]\ \f[I]\,\$*\/\f[P]\*[@linebreak]"
 .  rm @sub
 ..
 .de Da-command
@@ -177,7 +214,7 @@ delim $$
 .    as @args "$h sub n$\~$v sub n$\"
 .  \}
 .  el \
-.    ds @args \f[I]h1\~v1 h2\~v2\f[P] ... \f[I]hn\~vn\f[P]\"
+.    ds @args \f[I]h1\~v1 h2\~v2\f[P] ... \f[I]\,hn\~vn\f[P]\"
 .  IP "\f[B]D\*[@sub]\f[P]\ \*[@args]\|\*[@linebreak]"
 .  rm @args
 .  rm @sub
@@ -188,7 +225,7 @@ delim $$
 .  shift 1
 .  ds @args
 .  if (\n[.$] > 0) \
-.    ds @args \ \f[I]\$*\/\f[P]\"
+.    ds @args \ \f[I]\,\$*\/\f[P]\"
 .  IP "\f[B]x\*[@sub]\f[P]\*[@args]\f[P]\|\*[@linebreak]"
 .  rm @sub
 .  rm @args
@@ -494,8 +531,7 @@ Positioning, writing, and drawing commands are always done within the
 current page, so they cannot occur before the first
 .BR p \~command.
 .
-Absolute positioning (by
-the
+Absolute positioning (by the
 .B H
 and
 .BR V \~commands)
@@ -557,6 +593,7 @@ A separating syntactical space is only necessary when two integer
 arguments would clash or if the preceding argument ends with a string
 argument.
 .
+.if (\n[@USE_ENV_STACK] == 1) \{\
 .command {
 Open a new environment by copying the actual device configuration data
 to the environment stack.
@@ -564,19 +601,15 @@ to the environment stack.
 The current environment is setup by the device specification and
 manipulated by the setting commands.
 .
-Currently, this is not used by GNU
-.BR troff .
-.
 .command }
 Close the actual environment (opened by a preceding
 .BR { \~command)
 and restore the previous environment from the environment
 stack as the actual device configuration data.
 .
-Currently, this is not used by GNU
-.BR troff .
+\}			\" endif @USE_ENV_STACK
 .
-.command C xxx\[la]white_space\[ra]
+.command C xxx \[la]white_space\[ra]
 Print a special groff character named
 .argument xxx .
 .
@@ -627,27 +660,39 @@ Set color for glyphs and line drawing using the CMY color scheme,
 where all arguments are integers between 0 and \n[@maxcolor] with black
 having all arguments\~0.
 .
+This command is a groff extension.
+.
 .command md
 Set color for glyphs and line drawing to the default drawing color value
 (black in most cases).
+.
+This command is a groff extension.
 .
 .command mg "gray"
 Set color for glyphs and line drawing to the shade of gray given by
 the argument, an integer between\~0 (black) and \n[@maxcolor] (white).
 .
+This command is a groff extension.
+.
 .command mk "cyan magenta yellow black"
 Set color for glyphs and line drawing using the CMYK color scheme,
 where all arguments are integers between\~0 and \n[@maxcolor].
+.
+This command is a groff extension.
 .
 .command mr "red green blue"
 Set color for glyphs and line drawing using the RGB color scheme,
 where all arguments are integers between\~0 and \n[@maxcolor] with black
 having all arguments\~0.
 .
+This command is a groff extension.
+.
 .command N n
 Print character with index\~\c
 .argument n
 (a non-negative integer) of the current font.
+.
+This command is a groff extension.
 .
 .command n b\ a
 Inform the device about a line break, but no positioning is done by
@@ -696,10 +741,13 @@ Classical troff used the unit
 instead; see section
 .BR COMPATIBILITY .
 .
-.command t xxx\[la]white_space\[ra]
+.command t xxx \[la]white_space\[ra]
+.command+ t "xxx dummy_arg" \[la]white_space\[ra]
 Print a word, i.e.\& a sequence of characters
 .argument xxx
-terminated by a space character or a line break.
+terminated by a space character or a line break; an optional second
+integer argument is ignored (this allows the formatter to generate
+an even number of arguments).
 .
 The first character should be printed at the current position, the
 current horizontal position should be increased by the width of the
@@ -712,15 +760,15 @@ resolution.
 Special characters cannot be printed using this command (use the
 .B C
 command for named characters).
-.I troff
-uses this command only for devices whose
+.
+This command is a groff extension; it is only used for devices whose
 .I DESC
 file contains the
 .B tcommand
 line; see
 .BR groff_font (@MAN5EXT@).
 .
-.command u n\ xxx\[la]white_space\[ra]
+.command u "n xxx" \[la]white_space\[ra]
 Print word with track kerning.
 .
 This is the same as the
@@ -732,8 +780,7 @@ character and\~\c
 (an integer in
 basic units\~\c
 .unit u ).
-.I troff
-uses this command only for devices whose
+This command is a groff extension; it is only used for devices whose
 .I DESC
 file contains the
 .B tcommand
@@ -823,6 +870,12 @@ escape sequence; see
 .BR groff (@MAN7EXT@).
 .
 .P
+Unknown D-commands are assumed to be device-specific.
+.
+Its arguments are parsed as strings; the whole information is then
+sent to the postprocessor.
+.
+.P
 In the following command references, the syntax element
 .I \[la]line_break\[ra]
 means a
@@ -849,12 +902,18 @@ with center at
 then move the current position to the final point of the arc.
 .
 .D-command C d
+.D-command+ C d dummy_arg
 Draw a solid circle using the current fill color with diameter\~\c
 .argument d
 (integer in basic units\~\c
 .unit u )
 with leftmost point at the current position; then move the current
 position to the rightmost point of the circle.
+.
+An optional second integer argument is ignored (this allows to the
+formatter to generate an even number of arguments).
+.
+This command is a groff extension.
 .
 .D-command c d
 Draw circle line with diameter\~\c
@@ -875,6 +934,8 @@ and a vertical diameter of\~\c
 with the leftmost point at the current position; then move to the
 rightmost point of the ellipse.
 .
+This command is a groff extension.
+.
 .D-command e "h v"
 Draw an outlined ellipse with a horizontal diameter of\~\c
 .argument h
@@ -892,11 +953,15 @@ having all arguments\~0.
 .
 No position changing.
 .
+This command is a groff extension.
+.
 .D-command Fd
 Set fill color for solid drawing objects to the default fill color value
 (black in most cases).
 .
 No position changing.
+.
+This command is a groff extension.
 .
 .D-command Fg "gray"
 Set fill color for solid drawing objects to the shade of gray given by
@@ -904,11 +969,15 @@ the argument, an integer between 0 (black) and \n[@maxcolor] (white).
 .
 No position changing.
 .
+This command is a groff extension.
+.
 .D-command Fk "cyan magenta yellow black"
 Set fill color for solid drawing objects using the CMYK color scheme,
 where all arguments are integers between 0 and \n[@maxcolor].
 .
 No position changing.
+.
+This command is a groff extension.
 .
 .D-command Fr "red green blue"
 Set fill color for solid drawing objects using the RGB color scheme,
@@ -916,6 +985,8 @@ where all arguments are integers between 0 and \n[@maxcolor] with black
 having all arguments\~0.
 .
 No position changing.
+.
+This command is a groff extension.
 .
 .D-command f n
 Obsolete color command; sets the shade of gray for filling solid
@@ -933,6 +1004,8 @@ command.
 .
 No position changing.
 .
+This command is a groff extension.
+.
 .D-command l "h v"
 Draw line from current position to offset
 .offset h v
@@ -949,8 +1022,20 @@ etc.\& up to offset
 .offset hn vn ,
 and from there back to the starting position.
 .
+.ie (\n[@STUPID_DRAWING_POSITIONING] == 1) \{\
+For historical reasons, the position is changed by adding the sum of
+all arguments with odd index to the actual horizontal position and the
+even ones to the vertical position.
+.
+Although this doesn't make sense it is kept for compatibility.
+.
+\}
+.el \{\
 As the polygon is closed, the end of drawing is the starting point, so
 the position doesn't change.
+\}
+.
+This command is a groff extension.
 .
 .D-multiarg P
 The same macro as the corresponding
@@ -958,7 +1043,14 @@ The same macro as the corresponding
 command with the same arguments, but draws a solid polygon in the
 current fill color rather than an outlined polygon.
 .
+.ie (\n[@STUPID_DRAWING_POSITIONING] == 1) \{\
+The position is changed in the same way as with
+.BR Dp .
+\}
+.el \
 No position changing.
+.
+This command is a groff extension.
 .
 .D-command t n
 Set the current line thickness to\~\c
@@ -966,7 +1058,7 @@ Set the current line thickness to\~\c
 (an integer in basic units\~\c
 .unit u )
 if
-.argument n >0 ;
+.argument n >0;
 if
 .argument n =0
 select the smallest available line thickness; if
@@ -976,7 +1068,18 @@ default before the first
 .B Dt
 command was specified).
 .
+.ie (\n[@STUPID_DRAWING_POSITIONING] == 1) \{\
+For historical reasons, the horizontal position is changed by adding
+the argument to the actual horizontal position, while the vertical
+position is not changed.
+.
+Although this doesn't make sense it is kept for compatibility.
+.
+\}
+.el \
 No position changing.
+.
+This command is a groff extension.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1039,6 +1142,8 @@ an internal piping mechanism.
 .
 The input file is not changed by this command.
 .
+This command is a groff extension.
+.
 .x-command f "n\ s"
 .xsub font
 Mount font position\~\c
@@ -1077,7 +1182,7 @@ The classical documentation reads
 .IR restarted .
 .
 .x-command r "n\ h\ v"
-.xsub res
+.xsub resolution
 Resolution is\~\c
 .argument n ,
 while
@@ -1136,6 +1241,8 @@ request in
 .I nroff
 mode and is ignored otherwise.
 .
+This command is a groff extension.
+.
 .x-command X anything
 .xsub X-escape
 Send string
@@ -1161,6 +1268,8 @@ This command is generated by the
 .I groff
 escape sequence
 .BR \*[@backslash]X .
+.
+The line continuing feature is a groff extension.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1415,7 +1524,18 @@ resolution.
 .
 So conflicts with classical devices are very unlikely.
 .
-.P
+.ie (\n[@STUPID_DRAWING_POSITIONING] == 1) \{\
+.Topic
+The position changing after the commands
+.BR Dp ,
+.BR DP ,
+and
+.B Dt
+is illogical, but as old versions of groff used this feature it is
+kept for compatibility reasons.
+.\}			\" @STUPID_DRAWING_POSITIONING
+.el \{\
+.Topic
 Temporarily, there existed some confusion on the positioning after the
 .B D
 commands that are groff extensions.
@@ -1432,6 +1552,11 @@ groff drawing commands:
 .P
 From this, the positionings specified for the drawing commands above
 follow quite naturally.
+.\}			\" @STUPID_DRAWING_POSITIONING
+.
+.P
+The differences between groff and classical troff are documented in
+.BR groff_diff (@MAN7EXT@).
 .
 .
 .\" --------------------------------------------------------------------
@@ -1504,6 +1629,11 @@ file.
 .BR roff (@MAN7EXT@)
 for historical aspects, a list of the available postprocessors, and
 further readings.
+.
+.TP
+.BR groff_diff (@MAN7EXT@)
+The differences between the intermediate output in groff and classical
+troff.
 .
 .P
 The main source of information on all aspects of the groff system is
@@ -1578,7 +1708,6 @@ It has been rewritten 2001 by
 .URL "Bernd Warken" mailto:bwarken@mayn.de
 and is maintained by
 .URL "Werner Lemberg" mailto:wl@gnu.org .
-.
 .
 .\" --------------------------------------------------------------------
 .\" Emacs settings
