@@ -1,5 +1,7 @@
 '\" t
 .\" The above line should force the use of tbl as a preprocessor
+.\" vim: set syntax=nroff : 
+.\" The above line should set vim into nroff mode
 .ig
 Copyright (C) 1994-2000 Free Software Foundation, Inc.
 
@@ -263,6 +265,74 @@ file.
 Or you can use the
 .B \-l
 option to force the pages to be printed in landscape.
+.SH FONT FILE FORMAT
+In addition to the usual commands described in
+.BR groff_font (@MAN5EXT@),
+.B grolbp
+provides the command
+.I lbpname
+which sets the font name sent to the printer when requesting this font.
+The syntax of this command is:
+.sp 1
+.in +2m
+.B lbpname
+.I printer_font_name
+.in -2m
+.IP \(bu
+For bitmapped fonts,
+.I printer_font_name
+has the form
+.sp 1
+.in +2m
+.RI N\(la base_fontname \(ra\(la font_style \(ra
+.in -2m
+.sp 1
+.I base_fontname 
+is the font name as it appears in the printers font listings without the
+first letter, up to (but not including) the font size.
+.I font_style
+can be one of the letters
+.BR R ,
+.BR I ,
+or
+.BR B ,
+indicating the font styles Roman, Italic and Bold respectively.
+.IP
+For instance, if the printer's 
+.I font listing A
+shows font `Nelite12I.ISO_USA', the corresponding entry in the font
+description file is
+.sp 1
+.in +2m
+.B lbpname NeliteI
+.in -2m
+.IP
+Note that you may need to modify
+.B grolbp
+to add support for new bitmapped fonts, since the available font names and
+font sizes of bitmapped fonts (as documented above) are hard-coded into the
+program.
+.IP \(bu
+For scalable fonts,
+.I printer_font_name
+is identical to the font name as it appears in the printer's 
+.IR "font listing A" .
+.IP
+For instance, to select the `Swiss' font in bold style, which appears in
+the printer's
+.I font listing A
+as `Swiss-Bold', the required
+.B lbpname
+command line is
+.sp 1
+.in +2m
+.B lbpname Swiss-Bold
+.in -2m
+.sp 1
+.PP
+The argument of
+.B lbpname
+is case sensitive.
 .SH FILES
 .TP
 .B @FONTDIR@/devlbp/DESC
