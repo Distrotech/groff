@@ -80,6 +80,36 @@ private:
   int line_thickness;
 };
 
+//   Compatibility section.
+//
+//   Here we define some functions not present in some of the targets 
+//   platforms
+#ifndef HAVE_STRSEP
+// Solaris 8 doesn't have the strsep function
+static char *strsep(char **pcadena, const char *delim)
+{
+  char *p;
+
+	p = strtok(*pcadena,delim);
+ 	*pcadena = strtok(NULL,delim);
+    return p;
+ 
+};
+#endif
+
+#ifndef HAVE_STRDUP
+// Ditto with OS/390 and strdup
+static char *strdup(const char *s)
+{
+  char *result;
+
+  result = (char *)malloc(strlen(s)+1);
+  if (result != NULL) strcpy(result,s);
+  return result;
+  
+}; // strdup
+
+#endif
 lbp_font::lbp_font(const char *nm)
 : font(nm)
 {
@@ -190,7 +220,8 @@ char *lbp_printer::font_name(const lbp_font *f, const int siz)
   static char bfont_name[255] ; // The resulting font name
   char	type, // Italic, Roman, Bold
         ori, // Normal or Rotated
-	nam[strlen(f->lbpname)-2]; // The font name without other data.
+	*nam; // The font name without other data.
+//	nam[strlen(f->lbpname)-2]; // The font name without other data.
   int cpi; // The font size in characters per inch 
   	   // (Bitmaped fonts are monospaced).
 
@@ -204,12 +235,14 @@ char *lbp_printer::font_name(const lbp_font *f, const int siz)
   else		// Portrait
   	ori = 'N';
   type = f->lbpname[strlen(f->lbpname)-1];
+  nam = new char[strlen(f->lbpname)-2];
   strncpy(nam,&(f->lbpname[1]),strlen(f->lbpname)-2);
   nam[strlen(f->lbpname)-2] = 0x00;
    // fprintf(stderr,"Bitmap font '%s' %d %c %c \n",nam,siz,type,ori);
   /* Since these fonts are avaiable only at certain sizes,
     10 and 17 cpi for courier,  12 and 17 cpi for elite,
     we adjust the resulting size. */
+    cpi = 17;
     // Fortunately there were only two bitmaped fonts shiped with the printer.
     if (!strcasecmp(nam,"courier"))
     { // Courier font
@@ -354,8 +387,10 @@ lbp_printer::setfillmode(int mode)
 inline void
 lbp_printer::polygon( int hpos,int vpos,int np,int *p)
 {
- int points[np+2],i;
+ //int points[np+2],i;
+ int *points,i;
 
+ points = new int[np+2];
  points[0] = hpos;
  points[1] = vpos;
 /* fprintf(stderr,"Poligon (%d,%d) ", points[0],points[1]);*/
@@ -521,18 +556,6 @@ static struct
 { "executive", 40 },
 };
 
-#ifndef HAVE_STRSEP
-// Solaris 8 doesn't have the strsep function
-char *strsep(char **pcadena, const char *delim)
-{
-  char *p;
-
-	p = strtok(*pcadena,delim);
- 	*pcadena = strtok(NULL,delim);
-    return p;
- 
-};
-#endif
 
 static int set_papersize(const char *papersize)
 {
@@ -671,7 +694,7 @@ int main(int argc, char **argv)
 	font::set_unknown_desc_command_handler(handle_unknown_desc_command);
 	// command line parsing
   	int c = 0;
-	int digit_optind = 0, option_index = 0;
+	int  option_index = 0;
 
 	while (c >= 0 ) 
 	{
@@ -706,7 +729,7 @@ int main(int argc, char **argv)
 				   else 
 				     error("unknown orientation '%1'", optarg);
 				 }; 
-				break;
+                                break;
 			      };
     		  case 'c'  : {
 				char *ptr;
