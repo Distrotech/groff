@@ -2188,7 +2188,7 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr, doc-out-string, doc-nesting-level,
-.\" NS   doc-saved-list-immediate
+.\" NS   doc-list-continue
 .
 .de doc-enclose-open
 .  nr doc-nesting-level +1
@@ -2218,11 +2218,11 @@
 .        No
 .    \}\}
 .
+.    \" if a macro calling doc-enclose-open is the last argument in a line,
+.    \" defer calling the doc-list-XXX macros until doc-enclose-close
 .    if (\n[doc-arg-limit] == \n[doc-arg-ptr]) \{\
-.      if \n[doc-list-immediate] \{\
-.        \" .tm SETTING doc-saved-list-immediate!
-.        nr doc-saved-list-immediate 1
-.      \}
+.      if \n[doc-list-immediate] \
+.        nr doc-list-continue 1
 .      doc-reset-args
 .  \}\}
 .  el \{\
@@ -2242,7 +2242,7 @@
 .\" NS   enclose string close
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-nesting-level, doc-saved-list-immediate,
+.\" NS   doc-out-string, doc-nesting-level, doc-list-continue,
 .\" NS   doc-saved-list-type
 .\" NS
 .\" NS local variables:
@@ -2253,6 +2253,9 @@
 .
 .  as doc-out-string \&\*[doc-quote-right]
 .
+.tm doc-arg-limit == \n[doc-arg-limit]
+.tm doc-arg-ptr   == \n[doc-arg-ptr]
+.
 .  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \
 .      doc-parse-args \$@
@@ -2260,7 +2263,7 @@
 .      doc-print-out-string
 .      if !"\*[doc-saved-list-type]"" \{\
 .        doc-\*[doc-list-type-stack\n[doc-list-depth]]
-.        nr doc-saved-list-immediate 0
+.        nr doc-list-continue 0
 .        ds doc-saved-list-type
 .  \}\}\}
 .
@@ -2276,11 +2279,8 @@
 .      if (\n[doc-type\n[doc-str-dec]] == 2) \
 .        as doc-out-string "\*[doc-space\n[doc-arg-limit]]
 .
-.      if \n[doc-list-immediate] \{\
-.        \" .tm UNSETTING doc-saved-list-immediate==\n[doc-saved-list-immediate]!
-.        if \n[doc-saved-list-immediate] \
-.          nr doc-saved-list-immediate 0
-.      \}
+.      if \n[doc-list-immediate] \
+.        nr doc-list-continue 0
 .      No
 .  \}\}
 ..
@@ -3393,7 +3393,7 @@
 .  nr doc-enum-list-count-saved \n[doc-enum-list-count]
 .  nr doc-have-diag-list-saved \n[doc-have-diag-list]
 .  nr doc-diag-list-input-line-count-saved \n[doc-diag-list-input-line-count]
-.  nr doc-saved-list-immediate-saved \n[doc-saved-list-immediate]
+.  nr doc-list-continue-saved \n[doc-list-continue]
 .  nr doc-list-immediate-saved \n[doc-list-immediate]
 .  nr doc-num-columns-saved \n[doc-num-columns]
 .  nr doc-next-list-depth-saved \n[doc-next-list-depth]
@@ -3528,7 +3528,7 @@
 .  nr doc-enum-list-count \n[doc-enum-list-count-saved]
 .  nr doc-have-diag-list \n[doc-have-diag-list-saved]
 .  nr doc-diag-list-input-line-count \n[doc-diag-list-input-line-count-saved]
-.  nr doc-saved-list-immediate \n[doc-saved-list-immediate-saved]
+.  nr doc-list-continue \n[doc-list-continue-saved]
 .  nr doc-list-immediate \n[doc-list-immediate-saved]
 .  nr doc-num-columns \n[doc-num-columns-saved]
 .  nr doc-next-list-depth \n[doc-next-list-depth-saved]
@@ -3757,7 +3757,7 @@
 .          No
 .        \}
 .
-.        ie \n[doc-saved-list-immediate] \
+.        ie \n[doc-list-continue] \
 .          ds doc-saved-list-type "\*[doc-str-It]
 .        el \
 .          doc-\*[doc-str-It]
@@ -4030,10 +4030,10 @@
 ..
 .
 .
-.\" NS doc-saved-list-immediate global register (bool)
-.\" NS   saved `doc-list-immediate' value
+.\" NS doc-list-continue global register (bool)
+.\" NS   whether a list is continued on the next line
 .
-.nr doc-saved-list-immediate 0
+.nr doc-list-continue 0
 .
 .
 .\" NS doc-list-depth global register
@@ -5958,6 +5958,9 @@
 ..
 .
 .
+.\" NS doc-empty-line macro
+.\" NS   emit warning and print empty line
+.
 .de doc-empty-line
 .  tm mdoc warning: Empty input line #\n[.c]!
 .  sp
@@ -5967,5 +5970,9 @@
 .
 .
 .ec
+.
+.
+.\" load local modifications
+.mso mdoc.local
 .
 .\" EOF

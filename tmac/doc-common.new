@@ -209,6 +209,18 @@
 .\" NS
 .\" NS width register `Dt' set above
 .
+.\" an alternative, more detailed scheme for naming the manual sections
+.\"
+.\" .ds volume-ds-1 System General Commands Manual
+.\" .ds volume-ds-2 System Calls Manual
+.\" .ds volume-ds-3 System Library Functions Manual
+.\" .ds volume-ds-4 System Kernel Interfaces Manual
+.\" .ds volume-ds-5 System File Formats Manual
+.\" .ds volume-ds-6 System Games Manual
+.\" .ds volume-ds-7 System Miscellaneous Information Manual
+.\" .ds volume-ds-8 System Manager's Manual
+.\" .ds volume-ds-9 System Kernel Developer's Manual
+.
 .ds doc-volume-ds-USD   System User's Supplementary Documents
 .ds doc-volume-ds-PS1   System Programmers's Supplementary Documents
 .ds doc-volume-ds-AMD   System Ancestral Manual Documents
@@ -257,19 +269,21 @@
 .
 .de Dt
 .  if !"\$1"" \
-.    ds doc-document-title \$1
+.    ds doc-document-title "\$1
 .
 .  if !"\$2"" \{\
 .    ds doc-section \$2
 .    ie        ((\$2 >= 1) & (\$2 <= 9)) \{\
 .      ds doc-volume "\*[doc-volume-ds-URM]
-.      ie        ((\$2 > 1) & (\$2 < 6)) \
+.      ie d doc-volume-ds-\$2 \
+.        ds doc-volume "\*[doc-volume-ds-\$2]
+.      el \{ .ie ((\$2 > 1) & (\$2 < 6)) \
 .        ds doc-volume "\*[doc-volume-ds-PRM]
 .      el \{ .ie (\$2 == 8) \
 .        ds doc-volume "\*[doc-volume-ds-SMM]
 .      el \{ .if (\$2 == 9) \
 .        ds doc-volume "\*[doc-volume-ds-KM]
-.    \}\}\}
+.    \}\}\}\}
 .    el \{ .ie "\$2"unass" .ds doc-volume DRAFT
 .    el \{ .ie "\$2"draft" .ds doc-volume DRAFT
 .    el \{ .ie "\$2"paper" .ds doc-volume UNTITLED
