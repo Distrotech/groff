@@ -45,7 +45,9 @@ extern "C" const char *Version_string;
 extern const char *hp_msl_to_unicode_code(const char *);
 
 #define SIZEOF(v) (sizeof(v)/sizeof(v[0]))
-#define equal(a, b)      (strcmp(a, b) == 0)
+#define equal(a, b) (strcmp(a, b) == 0)
+// only valid if is_uname(c) has returned true
+#define is_decomposed(c) strchr(c, '_')
 
 #define NO       0
 #define YES      1
@@ -206,7 +208,7 @@ uint16 text_symbol_sets[] = {
   SYMBOL_SET(7, 'J'),		// Desktop
   SYMBOL_SET(6, 'J'),		// Microsoft Publishing
   SYMBOL_SET(9, 'E'),		// Windows Latin 2, Code Page 1250
-  SYMBOL_SET(2, 'N'),		// Latin 2 (subset of 9E,
+  SYMBOL_SET(2, 'N'),		// Latin 2 (subset of 9M,
 				// so we should never get here)
   SYMBOL_SET(0, 'N'),		// Latin 1 (subset of 19U,
 				// so we should never get here)
@@ -214,10 +216,9 @@ uint16 text_symbol_sets[] = {
   SYMBOL_SET(10, 'J'),		// PS Standard
   SYMBOL_SET(9, 'U'),		// Windows 3.0 "ANSI"
 
-#if 0
-  SYMBOL_SET(13, 'J'),		// Ventura International
-  SYMBOL_SET(6, 'M'),		// Ventura Math
-  SYMBOL_SET(14, 'J'),		// Ventura US
+//SYMBOL_SET(13, 'J'),		// Ventura International (deprecated)
+//SYMBOL_SET(6, 'M'),		// Ventura Math (deprecated)
+//SYMBOL_SET(14, 'J'),		// Ventura US (deprecated)
   SYMBOL_SET(5, 'T'),		// Code Page 1254
   SYMBOL_SET(0, 'D'),		// ISO 60, 7-bit Norwegian version 1
   SYMBOL_SET(5, 'N'),		// ISO 8859-9, Latin 5
@@ -235,7 +236,6 @@ uint16 text_symbol_sets[] = {
   SYMBOL_SET(0, 'S'),		// ISO 11, 7-bit Swedish
   SYMBOL_SET(1, 'E'),		// ISO 4, 7-bit UK English
   SYMBOL_SET(0, 'U'),		// ISO 6, 7-bit ASCII English
-#endif
   0
 };
 
@@ -259,6 +259,7 @@ name_list **charcode_name_table = NULL;
 unsigned int n_symbol_sets;
 symbol_set *symbol_set_table;
 
+static int debug_flag = NO;
 static int special_flag = NO;	// not a special font
 static int italic_flag = NO;	// don't add italic correction
 static int italic_sep;
@@ -268,6 +269,8 @@ static int quiet_flag = NO;	// don't suppress warnings about symbols not found
 static char *hp_msl_to_ucode_name(int);
 static char *unicode_to_ucode_name(int);
 static int is_uname(char *);
+static int get_printcode(uint32, uint16 *, uint16 *);
+static char *show_symset(unsigned int);
 static void usage(FILE *);
 static void usage();
 static const char *xbasename(const char *);
@@ -304,7 +307,6 @@ int main(int argc, char **argv)
   program_name = argv[0];
 
   int opt;
-  int debug_flag = NO;
   int res = 1200;		// PCL unit of measure for cursor moves
   int scalesize = 4;		// LaserJet 4 only allows 1/4 point increments
   int unitwidth = 6350;		
@@ -332,13 +334,11 @@ int main(int argc, char **argv)
       italic_sep = atoi(optarg);	// design units
       break;
     case 'q':
-	quiet_flag = YES;	// suppress warnings about symbols not found
-	break;
+      quiet_flag = YES;		// suppress warnings about symbols not found
+      break;
     case 'v':
-      {
-	printf("GNU hpftodit (groff) version %s\n", Version_string);
-	exit(0);
-      }
+      printf("GNU hpftodit (groff) version %s\n", Version_string);
+      exit(0);
       break;
     case CHAR_MAX + 1: // --help
       usage(stdout);
@@ -619,9 +619,8 @@ void read_symbol_sets(File &f)
   for (i = 0; i < nchars; i++)
     char_table[i].symbol_set = NO_SYMBOL_SET;
 
-  uint16 *symbol_set_selectors = (special_flag
-				  ? special_symbol_sets
-				  : text_symbol_sets);
+  uint16 *symbol_set_selectors = special_flag ? special_symbol_sets
+					      : text_symbol_sets;
   for (i = 0; symbol_set_selectors[i] != 0; i++) {
     unsigned int j;
     for (j = 0; j < n_symbol_sets; j++)
@@ -836,7 +835,7 @@ void output_charset(const int tfm_type)
   for (i = 0; i < nchars; i++) {
     uint16 charcode = char_table[i].charcode;
 
-    // the TFM supports the character
+    // the glyph is bound to one of the searched symbol sets
     if (char_table[i].symbol_set != NO_SYMBOL_SET) {
       // the character was in the map file
       if (charcode < charcode_name_table_size && charcode_name_table[charcode])
@@ -899,9 +898,8 @@ void output_charset(const int tfm_type)
       }
       else
 	printf("\t\t-- MSL %4d", charcode);
-      int symset = char_table[i].symbol_set;
-      printf(" (%2d%c %3d)\n",
-	     symset / 32, (symset & 31) + 64, char_table[i].code);
+      printf(" (%3s %3d)\n",
+	     show_symset(char_table[i].symbol_set), char_table[i].code);
 
       if (charcode < charcode_name_table_size
 	  && charcode_name_table[charcode])
@@ -925,7 +923,7 @@ void output_charset(const int tfm_type)
 	fprintf(stderr, ") not in any searched symbol set\n");
       }
       else if (!quiet_flag && !equal(name, UNNAMED) && !is_uname(name)) {
-	fprintf(stderr, "%s:warning: symbol MSL %d (%s",
+	fprintf(stderr, "%s: warning: symbol MSL %d (%s",
 		program_name, charcode, name);
 	for (name_list *p = charcode_name_table[charcode]->next;
 	     p; p = p->next)
@@ -1204,11 +1202,10 @@ void dump_symbols(int tfm_type)
     if (charcode < charcode_name_table_size
 	&& charcode_name_table[charcode]) {
       if (char_table[i].symbol_set != NO_SYMBOL_SET) {
-	printf(tfm_type == UNICODE ? "%4d (U+%04X)   (%2d%c %3d)  %s"
-				   : "%4d (MSL %4d) (%2d%c %3d)  %s",
+	printf(tfm_type == UNICODE ? "%4d (U+%04X)   (%3s %3d)  %s"
+				   : "%4d (MSL %4d) (%3s %3d)  %s",
 	       i, charcode,
-	       char_table[i].symbol_set / 32,
-	       (char_table[i].symbol_set % 32) + 64,
+	       show_symset(char_table[i].symbol_set),
 	       char_table[i].code,
 	       charcode_name_table[charcode]->name);
 	for (name_list *p = charcode_name_table[charcode]->next;
@@ -1217,11 +1214,55 @@ void dump_symbols(int tfm_type)
 	putchar('\n');
       }
     }
-    else
-      printf(tfm_type == UNICODE ? "%4d (U+%04X)\n"
-				 : "%4d (MSL %4d)\n",
+    else {
+      printf(tfm_type == UNICODE ? "%4d (U+%04X)   "
+				 : "%4d (MSL %4d) ",
 	     i, charcode);
+      uint16 symset, code;
+      if (char_table[i].symbol_set != NO_SYMBOL_SET)
+	printf("(%3s %3d)",
+	       show_symset(char_table[i].symbol_set), char_table[i].code);
+      else if (get_printcode(i, &symset, &code))
+	printf("[%3s %3d]  (set not searched)", show_symset(symset), code);
+      putchar('\n');
+    }
   }
+}
+
+static char *
+show_symset(unsigned int symset)
+{
+   static char symset_str[8];
+
+   sprintf(symset_str, "%d%c", symset / 32, (symset & 31) + 64);
+   return symset_str;
+}
+
+// search symbol sets opposite the state of the 's' option
+static int
+get_printcode(uint32 index, uint16 *symset, uint16 *code)
+{
+  uint16 *symbol_set_selectors = special_flag ? text_symbol_sets
+					      : special_symbol_sets;
+  for (unsigned int i = 0; symbol_set_selectors[i] != 0; i++) {
+    unsigned int j;
+    for (j = 0; j < n_symbol_sets; j++)
+      if (symbol_set_table[j].select == symbol_set_selectors[i])
+	break;
+    if (j < n_symbol_sets) {
+      for (unsigned int k = 0; k < 256; k++) {
+	uint16 ndx = symbol_set_table[j].index[k];
+	if (ndx == index) {
+	  *symset = symbol_set_table[j].select;
+	  *code = k;
+	  return 1;
+	}
+      }
+    }
+  }
+
+  // not found in text or special symbol sets
+  return 0;
 }
 
 static char *
@@ -1367,6 +1408,9 @@ int read_map(const char *file, const int tfm_type)
       fclose(fp);
       return 0;
     }
+    // leave decomposed Unicode values alone
+    else if (is_uname(ptr) && !is_decomposed(ptr))
+      ptr = unicode_to_ucode_name(strtol(ptr + 1, &nonum, 16));
 
     if (size_t(n) >= charcode_name_table_size) {
       size_t old_size = charcode_name_table_size;
