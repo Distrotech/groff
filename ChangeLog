@@ -1,3 +1,33 @@
+2001-04-06  Ruslan Ermilov  <ru@freebsd.org>
+
+	Many fixes.  Diag lists can now be nested also; additionally,
+	`-compact' and `-offset' are supported.
+
+	* tmac/doc.tmac (doc-have-indent): Replaced with ...
+	(doc-list-have-indent-stackXXX): A new register stack.
+	(doc-have-diag-list): Removed.
+	(Bl): Use `doc-list-have-indent-stackXXX'.
+	(El): Updated.
+	(doc-diag-list): Use `doc-compact-list-stackXXX'.
+	(doc-tag-list): Use `doc-list-have-indent-stackXXX'.
+	(doc-set-vertical-and-indent): Ditto.
+	(doc-next-list-depth): Removed.
+	(doc-increment-list-stack): Set values for `doc-list-depth + 1'
+	instead of `doc-list-depth'.
+	(doc-decrement-list-stack): Use `doc-list-depth' instead of
+	`doc-next-list-depth'.
+	(doc-end-list, doc-end-column-list): Don't use
+	`doc-decrement-list-stack'.
+	(doc-set-column-tab): Don't use `doc-list-column-stackXXX'.
+	(doc-save-global-vars, doc-restore-global-vars): Updated.
+	* tmac/doc-common: Updated.
+	* tmac/groff_mdoc.man: Updated.
+	* NEWS: Fix typo.
+
+2001-04-02  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grotty/grotty.man: Fix grammatical error.
+
 2001-03-30  Ruslan Ermilov  <ru@freebsd.org>
 
 	Remove .Ld from mdoc package; replace it with special handling of
