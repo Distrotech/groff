@@ -1,3 +1,40 @@
+2002-06-03  Werner LEMBERG  <wl@gnu.org>
+
+	* Makefile.comm (CLEANNOTSRCDIRADD): New target for files which
+	should be removed only if builddir is not srcdir.
+	(mostlyclean): Handle `CLEANNOTSRCDIRADD'.
+	(clean): Depend on `mostlyclean'.
+	(distclean): Depend on `clean'.
+	(realclean, extraclean): Depend on `distclean'.
+	(.y.cc, .y.o): Simplified.  The output files are no longer written
+	to srcdir but to builddir.
+	* Makefile.in (MDEFINES): Add `version' and `revision'.
+	(uninstall_dirs): Fix order of directories.
+	* doc/Makefile.sub (version, revision): Removed.
+	(CLEANADD): Removed grnexmpl.g, groff, groff-*.
+	Added `HTMLDOCFILES'.
+	(CLEANNOTSRCDIRADD): New target for grnexmpl.h, groff, groff-*.
+	* contrib/mom/Makefile.sub (uninstall_sub): Don't use `momdocdir'
+	but `htmldocdir'.
+	Add missing backslash.
+	* src/preproc/eqn/Makefile.sub, src/preproc/pic/Makefile.sub,
+	src/preproc/refer/Makefile.sub (YTABC, YTABH): Don't use `srcdir'
+	as prefix.
+
+	* doc/texinfo.tex (\authortt): New macro.
+	(\shortcontt): Define.
+	(\titlepage): Set \tt to \authortt while defining \authorfont.
+	(\appendixbox): New macro.
+	(\chapmacro, \appendixentry): Use \appendixbox to get even
+	indentation for letters.
+	(\summarycontents): Set \tt.
+	(\internalpagesize): Add two arguments for real paper width and
+	height as needed by pdfTeX.
+	(\letterpaper, \smallbook, \afourpaper, \afivepaper, \afourlatex):
+	Updated.
+	(\tempdima, \tempdimb): New temporary dimensions.
+	(\pagesizesyyy): Updated.
+
 2002-06-02  Werner LEMBERG  <wl@gnu.org>
 
 	Adding a new keyword `papersize' to the DESC file format (similar
@@ -6037,7 +6074,7 @@ Version 1.16 released
 
 	Some other changes:
 
-	* Man pages no depend on the files `VERSION' and `REVISION'.
+	* Man pages now depend on the files `VERSION' and `REVISION'.
 
 	* The added shell script `mkinstalldirs' will replace `mkdir' in
 	almost all cases.
