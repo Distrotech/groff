@@ -238,6 +238,13 @@ if test -z "$PAGE"; then
 		descfile=$prefix/share/groff/font/devps/DESC
 	elif test -r $prefix/lib/groff/font/devps/DESC; then
 		descfile=$prefix/lib/groff/font/devps/DESC
+	else
+		for f in $prefix/share/groff/*/font/devps/DESC; do
+			if test -r $f; then
+				descfile=$f
+				break
+			fi
+		done
 	fi
 	if test -n "$descfile" \
 	  && grep "^paperlength 841890" $descfile >/dev/null 2>&1; then
