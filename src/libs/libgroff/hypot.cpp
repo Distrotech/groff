@@ -22,10 +22,6 @@ Cambridge, MA 02139, USA.  */
 
 #include <math.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef NEED_DECLARATION_HYPOT
   double hypot(double, double);
 #endif /* NEED_DECLARATION_HYPOT */
@@ -42,7 +38,3 @@ double groff_hypot(double x, double y)
 
   return result;
 }
-
-#ifdef __cplusplus
-}
-#endif
