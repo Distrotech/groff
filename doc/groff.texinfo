@@ -3845,9 +3845,15 @@ Cedilla.
 Tilde.
 @endDefstr
 
-@Defstr {:, ms}
+@deffn String @t{\*[:]}
+@ifnotinfo
+@stindex : @r{[}ms@r{]}
+@end ifnotinfo
+@ifinfo
+@stindex @r{<colon>} @r{[}ms@r{]}
+@end ifinfo
 Umlaut.
-@endDefstr
+@end deffn
 
 @Defstr {v, ms}
 Hacek.
@@ -4500,7 +4506,12 @@ Comparison: @samp{<} (less than), @samp{>} (greater than), @samp{<=}
 @cindex logical operators
 @cindex operators, logical
 @opindex &
+@ifnotinfo
 @opindex :
+@end ifnotinfo
+@ifinfo
+@opindex @r{<colon>}
+@end ifinfo
 Logical: @samp{&} (logical and), @samp{:} (logical or).
 
 @item
@@ -5028,7 +5039,12 @@ The digits @code{0}-@code{9}.
 @cindex @code{>}, as delimiter
 @cindex @code{=}, as delimiter
 @cindex @code{&}, as delimiter
+@ifnotinfo
 @cindex @code{:}, as delimiter
+@end ifnotinfo
+@ifinfo
+@cindex <colon>, as delimiter
+@end ifinfo
 @cindex @code{(}, as delimiter
 @cindex @code{)}, as delimiter
 @cindex @code{.}, as delimiter
@@ -6035,7 +6051,13 @@ longer a restriction.
 @cindex disabling hyphenation (@code{\%})
 @cindex hyphenation, disabling (@code{\%})
 @DefescList {\\%, , , }
-@DefescListEnd {\\:, , , }
+@deffnx Escape @t{\:}
+@ifnotinfo
+@esindex \:
+@end ifnotinfo
+@ifinfo
+@esindex @r{<colon>}
+@end ifinfo
 To tell @code{gtroff} how to hyphenate words on the fly, use the
 @code{\%} escape, also known as the @dfn{hyphenation character}.
 Preceding a word with this character prevents it from being
@@ -6045,11 +6067,11 @@ only affects that one occurrence of the word; to change the
 hyphenation of a word for the entire document, use the @code{hw}
 request.
 
-The @code{\\:} escape inserts a zero-width break point
+The @code{\:} escape inserts a zero-width break point
 (that is, the word breaks but without adding a hyphen).
 
 @Example
-... check the /var/log/\\:httpd/\\:access_log file ...
+... check the /var/log/\:httpd/\:access_log file ...
 @endExample
 @endDefesc
 
@@ -6689,8 +6711,8 @@ no-break control character is associated with the current environment
 (@pxref{Environments}).
 @endDefreq
 
-@cindex disabling @code{\\} (@code{eo})
-@cindex @code{\\}, disabling (@code{eo})
+@cindex disabling @code{\} (@code{eo})
+@cindex @code{\}, disabling (@code{eo})
 @Defreq {eo, }
 Disable the escape mechanism completely.  After executing this
 request, the backslash character @samp{\} no longer starts an escape
@@ -6741,7 +6763,7 @@ temporarily change the escape character.
 The @code{ecr} request restores the escape character
 saved with @code{ecs}.
 Without a previous call to @code{ecs}, this request
-sets the escape character to @code{\\}.
+sets the escape character to @code{\}.
 @endDefreq
 
 @DefescList {\\e, , , }
@@ -6749,7 +6771,7 @@ sets the escape character to @code{\\}.
 This escape sequence prints the current escape character (which is the
 backslash character @samp{\} by default).
 
-The @code{\\E} escape prints an escape character that
+The @code{\E} escape prints an escape character that
 is not interpreted in copy mode.
 Use this to define strings with escapes that work
 when used in copy mode (for example, as a macro argument).
@@ -6757,8 +6779,8 @@ The following example defines strings to begin and end
 a superscript:
 
 @Example
-.ds @{ \\v'-.3m'\\s'\\Es[.s]*60/100'
-.ds @} \\s0\\v'.3m'
+.ds @{ \v'-.3m'\s'\Es[.s]*60/100'
+.ds @} \s0\v'.3m'
 @endExample
 @endDefesc
 
@@ -7506,7 +7528,7 @@ and spam.
 The @samp{.fn} register contains the current @dfn{real font name}
 of the current font.
 This is a string-valued register.
-If the current font is a style, the value of @code{\\n[.fn]}
+If the current font is a style, the value of @code{\n[.fn]}
 is the proper concatenation of family and style name.
 @endDefreq
 
@@ -8272,7 +8294,7 @@ request (@pxref{Character Translations}).
 @endDefesc
 
 @Defesc {\\), , , }
-Similar to @code{\\&} except that it behaves like a character
+Similar to @code{\&} except that it behaves like a character
 declared with the @code{cflags} request to be transparent for the
 purposes of an end-of-sentence character.
 
@@ -9584,8 +9606,8 @@ The following is an example of a strike-through macro:
 
 @Example
 .de ST
-.nr ww \\w'\\$1'
-\Z@@\\v'-.25m'\\l'\\n[ww]u'@@\\$1
+.nr ww \w'\\$1'
+\Z@@\v'-.25m'\l'\\n[ww]u'@@\\$1
 ..
 .
 This is
@@ -9988,11 +10010,11 @@ next @var{n}@w{ }lines in a bold font.
 @endExample
 
 The @code{itc} request is identical,
-except that a line interrupted with @code{\\c}
+except that a line interrupted with @code{\c}
 counts as one input line.
 
 The @code{.int} register contains a positive value
-if the last output line was interrupted with @code{\\c}.
+if the last output line was interrupted with @code{\c}.
 @endDefreq
 
 @c ---------------------------------------------------------------------
