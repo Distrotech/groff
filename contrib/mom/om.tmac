@@ -23,8 +23,8 @@
 .\"
 .
 .
-\# Version 1.1.3
-\# -------------
+\# Version 1.1.3c
+\# --------------
 \#
 .if (\n[.x]\n[.y] < 118) \
 .  ab You need GNU troff version 1.18 or higher to run this version of mom!
@@ -2042,6 +2042,8 @@
 \#   String tabs may be marked off during PAD.
 \#
 .MAC PAD END
+.    if \\n(.u=1 \{ .nr #FILL_MODE 1 \}
+.    nf
 .    if !d$PAD_MARKER \{ .ds $PAD_MARKER # \}
 .    char \\*[$PAD_MARKER] \R'#PAD_COUNT \En[#PAD_COUNT]+1'
 .    ds $FAMILY_FOR_PAD \\n[.fam]
@@ -2063,15 +2065,19 @@
 .    char \\*[$PAD_MARKER] \h'\En[#PAD_SPACE]u'
 .    ie \\n[#SILENT] \{\
 .       SILENT
-.    fam \\*[$FAMILY_FOR_PAD]
+.       fam \\*[$FAMILY_FOR_PAD]
 \\f\\n[#FONT_FOR_PAD]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
-.    br
-.    SILENT OFF
+.       br
+.       SILENT OFF
 .    \}
 .    el \{\
-.    fam \\*[$FAMILY_FOR_PAD]
+.       fam \\*[$FAMILY_FOR_PAD]
 \\f\\n[#FONT_FOR_PAD]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
-.    br
+.       br
+.    \}
+.    if \\n[#FILL_MODE]=1 \{\
+.       fi
+.       rr #FILL_MODE
 .    \}
 .    rr #PAD_COUNT
 .    rr #SPACE_TO_END
@@ -8350,6 +8356,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# ENDNOTES_HDRFTR_CENTER
+\# ----------------------
+\# *Argument:
+\#   toggle
+\# *Function:
+\#   Creates or removes toggle register #EN_HDRFTR_CENTER, used to
+\#   determine whether mom should print a/the hdrftr center string
+\#   on the endnotes page.  Primarily to enable/disable printing of the
+\#   chapter name in hdrftrs when DOCTYPE CHAPTER.
+\# *Notes:
+\#   Default is OFF
+\#
+.MAC ENDNOTES_HDRFTR_CENTER END
+.    ie '\\$1'' \{ .nr #EN_HDRFTR_CENTER 1 \}
+.    el         \{ .rr #EN_HDRFTR_CENTER   \}
+.END
+\#
+\#
 \# ENDNOTE STRING 
 \# --------------
 \# *Argument:
@@ -8816,10 +8840,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   with endnotes, then outputs diversion END_NOTES.
 \#
 .MAC ENDNOTES END
+.    if \\n[#DOC_TYPE]=2 \{\
+.       ie \\n[#EN_HDRFTR_CENTER]=1 \{ . \}
+.       el \{ .HDRFTR_CENTER \}
+.    \}
+.    NEWPAGE
 .    nr #RESTORE_DOC_LEAD \\n[#DOC_LEAD]
 .    if \\n[#PRINT_STYLE]=2 \{ .DOC_LEAD \\n[#EN_LEAD]u ADJUST \}
-.    if \\n[#DOC_TYPE]=2 \{ .HDRFTR_CENTER \}
-.    NEWPAGE
 .    if \\n[#SLANT_ON] \{\
 \*[SLANTX]\c
 .    \}
@@ -8955,7 +8982,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \*[SLANTX]
 \*[CONDX]
 \*[EXTX]
-.    NEWPAGE
+'    NEWPAGE
 .    rr #PAGENUM_STYLE_SET
 .    rm $EN_TITLE
 .END
@@ -9117,6 +9144,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# HEADER and FOOTER aliases for HDRFTR macros.
 \#
+.ALIAS   ENDNOTES_HEADER_CENTER          ENDNOTES_HDRFTR_CENTER
 .ALIAS   HEADER_FAMILY                   HDRFTR_FAMILY
 .ALIAS   HEADER_FAM                      HDRFTR_FAMILY
 .ALIAS   HEADER_SIZE                     HDRFTR_SIZE
@@ -9157,6 +9185,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS   HEADER_RIGHT_CAPS               HDRFTR_RIGHT_CAPS
 .ALIAS   HEADER_RECTO                    HDRFTR_RECTO
 .ALIAS   HEADER_VERSO                    HDRFTR_VERSO
+.ALIAS   ENDNOTES_FOOTER_CENTER          ENDNOTES_HDRFTR_CENTER
 .ALIAS   FOOTER_FAMILY                   HDRFTR_FAMILY
 .ALIAS   FOOTER_FAM                      HDRFTR_FAMILY
 .ALIAS   FOOTER_SIZE                     HDRFTR_SIZE

@@ -1828,6 +1828,7 @@ to the first instance of
 			<li><a href="#ENDNOTE_PARA_INDENT">Size of paragraph first line indent in multi-paragraph endnotes</a>
 			<li><a href="#ENDNOTE_PARA_SPACE">Inserting space between paragraphs of multi-paragraph endnotes</a>
 		</ul>
+	<li><a href="#ENDNOTES_HEADER_CONTROL"><strong>Endnotes-page header/footer control</strong></a>
 	<li><a href="#ENDNOTES_MAIN_TITLE"><strong>Endnotes-page head control</strong></a>
 		<ul>
 			<li><a href="#ENDNOTE_STRING">Creating/modifying the endnotes-page head</a>
@@ -1984,7 +1985,44 @@ endnotes.
 previous endnote by a line space.  <strong>ENDNOTE_PARA_SPACE</strong>
 refers only to paragraphs that appear within each discrete endnote.
 
-<a name="ENDNOTES_MAIN_TITLE"><h2><u>2. Endnotes page head control</u></h2>
+<a name="ENDNOTES_HEADER_CONTROL"><h2><u>2. Endnotes-page header/footer control</u></h2></a>
+<p>
+If you wish to modify the header/footer that appears on endnotes
+page(s), make the changes before you invoke
+<a href="#ENDNOTES">ENDNOTES</a>,
+not afterwards.
+<p>
+Except in the case of
+<a href="docprocessing.html#DOCTYPE">DOCTYPE CHAPTER</a>,
+<strong>mom</strong> prints the same header or footer used throughout
+the document on the endnotes page(s).  Chapters get treated differently
+in that, by default, <strong>mom</strong> does not print the
+header/footer centre string (normally the chapter number or chapter
+title.)  In most cases, this is what you want.  However, should you
+<em>not</em> want <strong>mom</strong> to remove the centre string from
+the endnotes page(s) headers/footers, invoke
+<a href="#ENDNOTES_HDRFTR_CENTER">ENDNOTES_HEADER_CENTER</a>
+with no argument. 
+
+<a name="ENDNOTES_HDRFTR_CENTER"><h3><u>Endnotes page(s) header/footer center string</u></h3></a>
+<p>
+Macro: <strong>ENDNOTES_HEADER_CENTER</strong> <var>toggle</var>
+
+<p>
+If your
+<a href="docprocessing.html#DOCTYPE">DOCTYPE</a>
+is <kbd>CHAPTER</kbd> and you want <strong>mom</strong> to include
+a centre string in the headers/footers that appear on endnotes pages,
+invoke <strong>ENDNOTES_HEADER_CENTER</strong> (or
+<strong>ENDNOTES_FOOTER_CENTER</strong>) with no argument.
+<strong>Mom</strong>'s default is NOT to print the center string.
+<p>
+If, for some
+reason, having enabled the header/footer center string on endnotes
+pages, you wish to disable it, invoke the same macro with any argument
+(<strong>OFF, QUIT, Q, X</strong>...).
+
+<a name="ENDNOTES_MAIN_TITLE"><h2><u>3. Endnotes page head control</u></h2>
 
 <!---ENDNOTE_STRING--->
 
@@ -2039,7 +2077,7 @@ NONE,</kbd> etc.) into your document prior to outputting endnotes with
 
 <!---ENDNOTE_TITLE--->
 
-<a name="ENDNOTES_DOC_TITLE"><h2><u>3. Endnote document-identification title</u></h2>
+<a name="ENDNOTES_DOC_TITLE"><h2><u>4. Endnote document-identification title</u></h2>
 <a name="ENDNOTE_TITLE"><h3><u>Endnote document-identification title string</u></h3></a>
 <p>
 Macro: <strong>ENDNOTE_TITLE</strong> <var>&quot;&lt;title to identify a document in endnotes&gt;&quot;</var>
@@ -2091,7 +2129,7 @@ at all.
 
 <!---ENDNOTE_NUMBERING--->
 
-<a name="ENDNOTES_NUMBERING"><h2><u>4. Endnotes-pages endnote numbering style</u></h2>
+<a name="ENDNOTES_NUMBERING"><h2><u>5. Endnotes-pages endnote numbering style</u></h2>
 
 <a name="ENDNOTE_NUMBER_CONTROL"><h3><u>Endnote numbering style control</u></h3></a>
 <p>
