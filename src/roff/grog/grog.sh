@@ -2,7 +2,7 @@
 # grog -- guess options for groff command
 # Like doctype in Kernighan & Pike, Unix Programming Environment, pp 306-8.
 
-soelim=gsoelim
+soelim=@g@soelim
 
 opts=
 
