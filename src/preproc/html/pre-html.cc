@@ -75,7 +75,6 @@ extern "C" const char *Version_string;
 #define PS_TEMPLATE_LONG "-ps-"
 #define REGION_TEMPLATE_SHORT "rg"
 #define REGION_TEMPLATE_LONG "-regions-"
-#define TROFF_COMMAND "troff"
 
 #if 0
 #   define  DEBUGGING
@@ -1202,6 +1201,12 @@ void usage(FILE *stream)
 
 int scanArguments (int argc, char **argv)
 {
+  const char *command_prefix = getenv("GROFF_COMMAND_PREFIX");
+  if (!command_prefix)
+    command_prefix = PROG_PREFIX;
+  char *troff_name = new char[strlen(command_prefix) + strlen("troff") + 1];
+  strcpy(troff_name, command_prefix);
+  strcat(troff_name, "troff");
   int c;
   static const struct option long_options[] = {
     { "help", no_argument, 0, CHAR_MAX + 1 },
@@ -1250,12 +1255,13 @@ int scanArguments (int argc, char **argv)
     }
 
   while (optind < argc) {
-    if (strcmp(argv[optind], "troff") == 0)
+    if (strcmp(argv[optind], troff_name) == 0)
       troff_arg = optind;
     else if (argv[optind][0] != '-')
       return optind;
     optind++;
   }
+  a_delete troff_name;
 
   return( argc );
 }
