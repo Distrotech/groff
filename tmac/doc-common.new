@@ -312,17 +312,18 @@
 .
 .  if !"\$2"" \{\
 .    ds doc-section \$2
-.    ie        ((\$2 >= 1) & (\$2 <= 9)) \{\
-.      ds doc-volume "\*[doc-volume-ds-URM]
-.      ie d doc-volume-ds-\$2 \
-.        ds doc-volume "\*[doc-volume-ds-\$2]
-.      el \{ .ie ((\$2 > 1) & (\$2 < 6)) \
-.        ds doc-volume "\*[doc-volume-ds-PRM]
-.      el \{ .ie (\$2 == 8) \
-.        ds doc-volume "\*[doc-volume-ds-SMM]
-.      el \{ .if (\$2 == 9) \
-.        ds doc-volume "\*[doc-volume-ds-KM]
-.    \}\}\}\}
+.    ie \B\$2 \{\
+.      if ((\$2 >= 1) & (\$2 <= 9)) \{\
+.        ds doc-volume "\*[doc-volume-ds-URM]
+.        ie d doc-volume-ds-\$2 \
+.          ds doc-volume "\*[doc-volume-ds-\$2]
+.        el \{ .ie ((\$2 > 1) & (\$2 < 6)) \
+.          ds doc-volume "\*[doc-volume-ds-PRM]
+.        el \{ .ie (\$2 == 8) \
+.          ds doc-volume "\*[doc-volume-ds-SMM]
+.        el \{ .if (\$2 == 9) \
+.          ds doc-volume "\*[doc-volume-ds-KM]
+.    \}\}\}\}\}
 .    el \{ .ie "\$2"unass" .ds doc-volume DRAFT
 .    el \{ .ie "\$2"draft" .ds doc-volume DRAFT
 .    el \{ .ie "\$2"paper" .ds doc-volume UNTITLED

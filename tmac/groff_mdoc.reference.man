@@ -1,6 +1,6 @@
 .\" groff_mdoc.reference.man
 .\"
-.\"   A complete reference for mdocNG (not finished yet)
+.\"   A complete reference of the mdoc macro package for GNU troff.
 .\"
 .\" Based on NetBSD's mdoc.samples.7, version 1.21.
 .\"
@@ -45,9 +45,6 @@
 .\" times and is guaranteed to give a worst case performance
 .\" for an already extremely slow package.
 .\"
-.
-.ds doc-punct-chars \f[R]{.\ ,\ :\ ;\ (\ )\ [\ ]}
-.
 .
 .Dd January 1, 2001
 .Os
@@ -114,7 +111,7 @@ manual pages, a manual entry is simply referred to as a man page, regardless
 of actual length and without sexist intention.
 .
 .
-.Sh GETTING STARTED
+.Sh "GETTING STARTED"
 .
 The material presented in the remainder of this document is outlined
 as follows:
@@ -132,11 +129,7 @@ as follows:
 .  El
 .
 .  It
-.  Tn "THE ANATOMY OF A MAN PAGE"
-.
-.  Bl -tag -width 2n -compact
-.    It "A Manual Page Template"
-.  El
+.  Tn "A MANUAL PAGE TEMPLATE"
 .
 .  It
 .  Tn "CONVENTIONS"
@@ -157,6 +150,7 @@ as follows:
 .
 .  Bl -tag -width 2n -compact
 .    It "Addresses"
+.    It "Author Name"
 .    It "Arguments"
 .    It "Configuration Declarations (Section Four Only)"
 .    It "Command Modifiers"
@@ -175,7 +169,7 @@ as follows:
 .    It "Options"
 .    It "Pathnames"
 .    It "Variables"
-.    It "Cross References"
+.    It "Manual Page Cross References"
 .  El
 .
 .  It
@@ -183,27 +177,19 @@ as follows:
 .
 .  Bl -tag -width 2n -compact
 .    It "AT&T Macro"
-.    It "BSD Macros"
+.    It "BSD Macro"
+.    It "NetBSD Macro"
+.    It "FreeBSD Macro"
 .    It "UNIX Macro"
 .    It "Emphasis Macro"
-.    It "Enclosure/Quoting Macros"
-.
-.    Bl -tag -width 2n -compact
-.      It "Angle Bracket Quote/Enclosure"
-.      It "Bracket Quotes/Enclosure"
-.      It "Double Quote macro/Enclosure"
-.      It "Parenthesis Quote/Enclosure"
-.      It "Single Quotes/Enclosure"
-.      It "Prefix Macro"
-.    El
-.
-.    It "Extended Arguments"
-.    It "No\-Op or Normal Text Macro"
-.    It "No\-Space Macro"
+.    It "Enclosure and Quoting Macros"
+.    It "No-Op or Normal Text Macro"
+.    It "No-Space Macro"
 .    It "Section Cross References"
-.    It "Symbolic Macro"
+.    It "Symbolics"
 .    It "References and Citations"
-.    It "Trade Names (Acronyms and Type Names)"
+.    It "Trade Names (or Acronyms and Type Names)"
+.    It "Extended Arguments"
 .  El
 .
 .  It
@@ -213,8 +199,8 @@ as follows:
 .    It "Section Headers"
 .    It "Paragraphs and Line Spacing"
 .    It "Keeps"
-.    It "Displays"
-.    It "Lists and Columns"
+.    It "Examples and Displays"
+.    It "Tagged Lists and Columns"
 .  El
 .
 .  It
@@ -227,6 +213,12 @@ as follows:
 .  Tn "FORMATTING WITH GROFF, TROFF, AND NROFF"
 .
 .  It
+.  Tn "FILES"
+.
+.  It
+.  Tn "SEE ALSO"
+.
+.  It
 .  Tn "BUGS"
 .El
 .
@@ -234,7 +226,7 @@ as follows:
 .ne 7
 .
 .
-.Sh TROFF IDIOSYNCRASIES
+.Sh "TROFF IDIOSYNCRASIES"
 .
 The
 .Nm \-mdoc
@@ -250,7 +242,7 @@ And, too, be forewarned, this package is
 .Em not
 fast.
 .
-.Ss Macro Usage
+.Ss "Macro Usage"
 .
 As in
 .Tn GNU
@@ -356,7 +348,7 @@ are parsed, but as it was cumbersome to constantly refer to macros as
 being callable and being able to call other macros, the term parsed
 has been used.
 .
-.Ss Passing Space Characters in an Argument
+.Ss "Passing Space Characters in an Argument"
 .
 Sometimes it is desirable to give as an argument a string containing one or
 more blank space characters.
@@ -423,7 +415,7 @@ boundary, see the
 .Sx BUGS
 section.
 .
-.Ss Trailing Blank Space Characters
+.Ss "Trailing Blank Space Characters"
 .
 .Xr Troff
 can be confused by blank space characters at the end of a line.
@@ -438,7 +430,7 @@ escape character.
 For example,
 .Ql string\e\ \e& .
 .
-.Ss Escaping Special Characters
+.Ss "Escaping Special Characters"
 .
 Special characters like the newline character
 .Ql \en
@@ -450,7 +442,7 @@ with
 .Ql \een )
 to preserve the backslash.
 .
-.Ss Other Possible Pitfalls
+.Ss "Other Possible Pitfalls"
 .
 A warning is emitted when an empty input line is found outside of displays
 (see below).
@@ -489,6 +481,7 @@ To change this, insert
 .Ql \e&
 before or after the dot:
 .
+.Pp
 .Bd -literal -offset indent -compact
 The
 \&.Ql .
@@ -547,7 +540,7 @@ anywhere (the latter is a
 extension); the rest of such a line is ignored.
 .
 .
-.Sh THE ANATOMY OF A MAN PAGE
+.Sh "A MANUAL PAGE TEMPLATE"
 .
 The body of a man page is easily constructed from a basic template:
 .
@@ -648,9 +641,24 @@ Example:
 .
 .Pp
 Except stated explicitly, all macros are parsed and callable.
+.Pp
+Most macros have a default width value which can be used to specify a label
+width
+.Pf ( Fl width )
+or offset
+.Pf ( Fl offset )
+for the
+.Ql .Bl
+and
+.Ql .Bd
+macros.
+It is recommended not to use this rather obscure feature to avoid
+dependencies on local modifications of the
+.Nm \-mdoc
+package.
 .
 .
-.Sh TITLE MACROS
+.Sh "TITLE MACROS"
 .
 The title macros are part of the page structure domain but are presented
 first and separately for someone who wishes to start writing a man page
@@ -847,9 +855,9 @@ This macro is neither callable nor parsable.
 .El
 .
 .
-.Sh INTRODUCTION OF MANUAL AND GENERAL TEXT DOMAINS
+.Sh "INTRODUCTION OF MANUAL AND GENERAL TEXT DOMAINS"
 .
-.Ss What's in a name Ns Ld
+.Ss "What's in a name" Ns Ld
 .
 The manual domain macro names are derived from the day to day informal
 language used to describe commands, subroutines and related files.
@@ -995,7 +1003,7 @@ and
 macros are explained in
 .Sx Keeps .
 .
-.Ss General Syntax
+.Ss "General Syntax"
 .
 The manual domain and general text domain macros share a similar syntax with
 a few minor deviations; most notably,
@@ -1054,7 +1062,10 @@ To prevent the accidental evaluation of these characters, escape them with
 Typical syntax is shown in the first content macro displayed below,
 .Ql \&.Ad .
 .
-.Ss Address Macro
+.
+.Sh "MANUAL DOMAIN"
+.
+.Ss Addresses
 .
 The address macro identifies an address construct.
 .Pp
@@ -1074,7 +1085,52 @@ The address macro identifies an address construct.
 .El
 .Pp
 .
-.Ss Argument Macro
+The default width is 12n.
+.
+.Ss "Author Name"
+.
+The
+.Ql .An
+macro is used to specify the name of the author of the item being
+documented, or the name of the author of the actual manual page.
+.Pp
+.Dl Usage: .An Ao author name Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .An\ \*[q]Joe\ Author\*[q]\ )\ )\ ," -offset 15n
+.It Li ".An \*[q]Joe Author\*[q]"
+.An "Joe Author"
+.It Li ".An \*[q]Joe Author\*[q] ,"
+.An "Joe Author" ,
+.It Li ".An \*[q]Joe Author\*[q] Aq nobody@FreeBSD.ORG"
+.An "Joe Author" Aq nobody@FreeBSD.ORG
+.It Li ".An \*[q]Joe Author\*[q] ) ) ,"
+.An "Joe Author" ) ) ,
+.El
+.Pp
+.
+The default width is 12n.
+.Pp
+In the
+.Sx AUTHORS
+section, the
+.Ql .An
+request causes a line break allowing each new name to appear on its own
+line.
+If this is not desirable,
+.
+.Bd -literal -offset indent
+\&.An -nosplit
+.Ed
+.Pp
+.
+call will turn this off.
+To turn splitting back on, say
+.
+.Bd -literal -offset indent
+\&.An -split
+.Ed
+.
+.Ss "Arguments"
 .
 The
 .Li .Ar
@@ -1098,7 +1154,9 @@ argument macro may be used whenever an argument is referenced.
 .El
 .Pp
 .
-.Ss Configuration Declaration (Section Four Only)
+The default width is 12n.
+.
+.Ss "Configuration Declaration (Section Four Only)"
 .
 The
 .Ql .Cd
@@ -1115,12 +1173,13 @@ declaration for a device interface in a section four manual.
 .El
 .Pp
 .
-.Ss Command Modifier
+The default width is 12n.
+.
+.Ss "Command Modifiers"
 .
 The command modifier is identical to the
 .Ql .Fl
-(flag) command with the exception
-the
+(flag) command with the exception that the
 .Ql .Cm
 macro does not assert a dash in front of every argument.
 Traditionally flags are marked by the preceding dash, however, some commands
@@ -1129,8 +1188,10 @@ Command modifiers may also be specified in conjunction with interactive
 commands such as editor commands.
 See
 .Sx Flags .
+.Pp
+The default width is 10n.
 .
-.Ss Defined Variables
+.Ss "Defined Variables"
 .
 A variable which is defined in an include file is specified by the macro
 .Ql .Dv .
@@ -1145,7 +1206,9 @@ A variable which is defined in an include file is specified by the macro
 .El
 .Pp
 .
-.Ss Errno's (Section Two Only)
+The default width is 12n.
+.
+.Ss "Errno's (Section Two Only)"
 .
 The
 .Ql .Er
@@ -1169,7 +1232,9 @@ general text domain macro, as it would be used in a section two manual page.
 .El
 .Pp
 .
-.Ss Environment Variables
+The default width is 17n.
+.
+.Ss "Environment Variables"
 .
 The
 .Ql .Ev
@@ -1187,7 +1252,9 @@ macro specifies an environment variable.
 .El
 .Pp
 .
-.Ss Function Argument
+The default width is 15n.
+.
+.Ss "Function Arguments"
 .
 The
 .Ql .Fa
@@ -1215,7 +1282,9 @@ may also be used to refer to structure members.
 .El
 .Pp
 .
-.Ss Function Declaration
+The default width is 12n.
+.
+.Ss "Function Declarations"
 .
 The
 .Ql .Fd
@@ -1280,8 +1349,10 @@ macro without any arguments results in a dash representing stdin/stdout.
 Note that giving
 .Ql .Fl
 a single dash will result in two dashes.
+.Pp
+The default width is 12n.
 .
-.Ss Functions (Library Routines)
+.Ss "Functions (Library Routines)"
 .
 The 
 .Ql .Fn
@@ -1354,8 +1425,14 @@ If there is more than one function presented in the
 section and a function type has not been given, a line break will occur,
 leaving a nice vertical space between the current function name and the one
 prior.
+.Pp
+The default width values of
+.Ql .Fn
+and
+.Ql .Fo
+are 12n and 16n, respectively.
 .
-.Ss Function Type
+.Ss "Function Types"
 .
 This macro is intended for the
 .Sx SYNOPSIS
@@ -1373,7 +1450,7 @@ name to appear on the next line).
 .Ft struct stat
 .El
 .
-.Ss Interactive Commands
+.Ss "Interactive Commands"
 .
 The
 .Ql .Ic
@@ -1389,6 +1466,9 @@ macro designates an interactive or internal command.
 .It Li ".Ic setenv , unsetenv"
 .Ic setenv , unsetenv
 .El
+.Pp
+.
+The default width is 12n.
 .
 .Ss Literals
 .
@@ -1409,6 +1489,9 @@ literal macro may be used for special characters, variable constants, etc.\&
 .It Li ".Li 1024 Ld"
 .Li 1024 Ld
 .El
+.Pp
+.
+The default width is 16n.
 .
 .Ss Names
 .
@@ -1456,6 +1539,9 @@ it can not recall the first argument it was invoked with.
 .It Li ".Nm :"
 .Nm :
 .El
+.Pp
+.
+The default width is 10n.
 .
 .Ss Options
 .
@@ -1518,6 +1604,13 @@ Produces:
 .Op Fl c Ar count
 .Oc
 .Ed
+.Pp
+.
+The default width values of
+.Ql .Op
+and
+.Ql .Oo
+are 14n resp.\& 10n.
 .
 .Ss Pathnames
 .
@@ -1535,6 +1628,9 @@ macro formats path or file names.
 .It Li ".Pa /tmp/fooXXXXX ) ."
 .Pa /tmp/fooXXXXX ) .
 .El
+.Pp
+.
+The default width is 32n.
 .
 .Ss Variables
 .
@@ -1552,8 +1648,11 @@ Generic variable reference.
 .It Li ".Va \*[q]char s\*[q] ] ) ) ,"
 .Va "char s" ] ) ) ,
 .El
+.Pp
 .
-.Ss Manual Page Cross References
+The default width is 12n.
+.
+.Ss "Manual Page Cross References"
 .
 The
 .Ql .Xr
@@ -1573,11 +1672,14 @@ put into parentheses.
 .It Li ".Xr xinit 1x ;"
 .Xr xinit 1x ;
 .El
+.Pp
+.
+The default width is 10n.
 .
 .
-.Sh GENERAL TEXT DOMAIN
+.Sh "GENERAL TEXT DOMAIN"
 .
-.Ss AT&T Macro
+.Ss "AT&T Macro"
 .
 .Pp
 .Dl Usage: .At Oo Ao version Ac Oc Ld
@@ -1595,7 +1697,7 @@ are possible:
 .Pp
 .Dl 32v, v1, v2, v3, v4, v5, v6, v7, V, V.1, V.2, V.3, V.4
 .
-.Ss BSD Macro
+.Ss "BSD Macro"
 .
 .Pp
 .Dl "Usage: .Bx" Bro -alpha | -beta | -devel Brc Ld
@@ -1619,7 +1721,7 @@ are possible:
 .Pp
 .Dl Reno, reno, Tahoe, tahoe, Lite, lite, Lite2, lite2
 .
-.Ss NetBSD Macro
+.Ss "NetBSD Macro"
 .
 .Pp
 .Dl Usage: .Nx Oo Ao version Ac Oc Ld
@@ -1638,7 +1740,7 @@ see the description of the
 request above in section
 .Sx "TITLE MACROS" .
 .
-.Ss FreeBSD Macro
+.Ss "FreeBSD Macro"
 .
 .Pp
 .Dl Usage: .Fx Oo Ao version Ac Oc Ld
@@ -1657,7 +1759,7 @@ see the description of the
 request above in section
 .Sx "TITLE MACROS" .
 .
-.Ss UNIX Macro
+.Ss "UNIX Macro"
 .
 .Pp
 .Dl Usage: .Ux Ld
@@ -1667,7 +1769,7 @@ request above in section
 .Ux
 .El
 .
-.Ss Emphasis Macro
+.Ss "Emphasis Macro"
 .
 Text may be stressed or emphasized with the
 .Ql .Em
@@ -1684,6 +1786,10 @@ The usual font for emphasis is italic.
 .It Li ".Em vide infra ) ) ,"
 .Em vide infra ) ) ,
 .El
+.Pp
+.
+The default width is 10n.
+.
 .\" XXX
 .\" The emphasis can be forced across several lines of text by using
 .\" the
@@ -1701,7 +1807,7 @@ The usual font for emphasis is italic.
 .\" word that does it to them. Ruins them.
 .\" .Ef
 .
-.Ss Enclosure and Quoting Macros
+.Ss "Enclosure and Quoting Macros"
 .
 The concept of enclosure is similar to quoting.
 The object being to enclose one or more strings between a pair of characters
@@ -1718,7 +1824,9 @@ and
 .Ql c
 respectively.
 .Pp
-.ne 10
+\# XXX
+.if t \
+.  ne 10
 .
 .Bd -filled -offset 4n
 .Bl -column "quote" "close" "open" "Angle Bracket Enclosure" "`string' or string"
@@ -1735,6 +1843,11 @@ respectively.
 .El
 .Ed
 .Pp
+All macros ending with
+.Sq q
+and
+.Sq o
+have a default width value of 12n.
 .
 .Bl -tag -xwidth ".Li .Ec , .Eo"
 .It Li .Ec , .Eo
@@ -1749,6 +1862,8 @@ If formatted with troff, an item is only quoted if the width of the item is
 less than three constant width characters.
 This is to make short strings more visible where the font change to literal
 (constant width) is less noticeable.
+.Pp
+The default width is 16n.
 .It Li .Pf
 The prefix macro suppresses the whitespace between its first and second
 argument:
@@ -1759,6 +1874,8 @@ argument:
 .El
 .Pp
 .
+The default width is 12n.
+.Pp
 The
 .Ql .Ns
 macro (see below) performs the analogous suffix function.
@@ -1772,8 +1889,8 @@ mode.
 .Pp
 .
 Examples of quoting:
-.Pp
 .
+.Pp
 .Bl -tag -xwidth ".Li .Bq\ Em\ Greek\ ,\ French\ ." -compact -offset indent
 .It Li .Aq
 .Aq
@@ -1817,7 +1934,7 @@ and
 .Ql .Xc
 extended argument list macros are discussed below.
 .
-.Ss No\-Op or Normal Text Macro
+.Ss "No-Op or Normal Text Macro"
 .
 The macro
 .Ql .No
@@ -1837,8 +1954,11 @@ if you really want that English word (and not the macro) as a parameter.
 .It Li ".No test Ta with Ta tabs"
 .No test Ta with Ta tabs
 .El
+.Pp
 .
-.Ss No\-Space Macro
+The default width is 12n.
+.
+.Ss "No-Space Macro"
 .
 The
 .Ql .Ns
@@ -1867,7 +1987,7 @@ line,
 is identical to
 .Ql .No .
 .
-.Ss Section Cross References
+.Ss "Section Cross References"
 .
 The
 .Ql .Sx
@@ -1879,8 +1999,11 @@ macro designates a reference to a section header within the same document.
 .It Li ".Sx FILES"
 .Sx FILES
 .El
+.Pp
 .
-.Ss Symbolic
+The default width is 16n.
+.
+.Ss Symbolics
 .
 The symbolic emphasis macro is generally a boldface macro in either the
 symbolic sense or the traditional English usage.
@@ -1893,7 +2016,9 @@ symbolic sense or the traditional English usage.
 .El
 .Pp
 .
-.Ss References and Citations
+The default width is 6n.
+.
+.Ss "References and Citations"
 .
 The following macros make a modest attempt to handle references.
 At best, the macros make it convenient to manually drop in a subset of
@@ -1978,7 +2103,7 @@ produces
 .Re
 .Ed
 .
-.Ss Trade Names (or Acronyms and Type Names)
+.Ss "Trade Names (or Acronyms and Type Names)"
 .
 The trade name macro prints its arguments in a smaller font.
 Its intended use is to imitate a small caps fonts for uppercase acronyms.
@@ -1993,7 +2118,9 @@ Its intended use is to imitate a small caps fonts for uppercase acronyms.
 .El
 .Pp
 .
-.Ss Extended Arguments
+The default width is 10n.
+.
+.Ss "Extended Arguments"
 .
 The
 .Li .Xo
@@ -2049,6 +2176,7 @@ Another one:
 .Pp
 .
 produces
+.
 .Bd -filled -offset indent
 .Bl -tag -compact
 .Sm off
@@ -2088,9 +2216,9 @@ produces
 .Pp
 .
 .
-.Sh PAGE STRUCTURE DOMAIN
+.Sh "PAGE STRUCTURE DOMAIN"
 .
-.Ss Section Headers
+.Ss "Section Headers"
 .
 The first three
 .Ql .Sh
@@ -2104,6 +2232,8 @@ It can be used as an argument in a call to
 .Ql .Sh
 only; it then reactivates the default font for
 .Ql .Sh .
+.Pp
+The default width is 8n.
 .
 .Bl -tag -xwidth ".Li .Sh\ DESCRIPTION"
 .It Li ".Sh NAME"
@@ -2263,7 +2393,7 @@ sections may be added; for example, this section was set with:
 \&.Sh PAGE LAYOUT MACROS
 .Ed
 .
-.Ss Paragraphs and Line Spacing
+.Ss "Paragraphs and Line Spacing"
 .
 .Bl -tag -xwidth ".Li .Pp"
 .It Li .Pp
@@ -2433,7 +2563,7 @@ More work needs to be done with the keep macros; specifically, a
 .Fl line
 option should be added.
 .
-.Ss Examples and Displays
+.Ss "Examples and Displays"
 .
 There are six types of displays.
 .Pp
@@ -2581,7 +2711,7 @@ Suppress insertion of vertical space before begin of display.
 End display (doesn't take parameters).
 .El
 .
-.Ss Tagged Lists and Columns
+.Ss "Tagged Lists and Columns"
 .
 There are several types of lists which may be initiated with the
 .Ql .Bl
@@ -2601,6 +2731,7 @@ Most of this document has been formatted with a tag style list
 .Pf ( Fl tag ) .
 .Pp
 It has the following syntax forms:
+.
 .Pp
 .Bl -tag -xwidth ".Li .Bl" -offset indent -compact
 .It Li .Bl Xo
@@ -3033,7 +3164,9 @@ means that
 .Fl width
 is required for the tag list type.
 .
-.Sh PREDEFINED STRINGS
+.
+.Sh "PREDEFINED STRINGS"
+.
 The following strings are predefined as may be used by
 preceding with the troff string interpreting sequence
 .Ql \&\e*(xx
@@ -3076,7 +3209,10 @@ The string named
 should be written as
 .Ql \e*q
 since it is only one char.
+.
+.
 .Sh DIAGNOSTICS
+.
 The debugging facilities for
 .Nm \-mdoc
 are limited, but can help detect subtle errors such
@@ -3239,7 +3375,10 @@ named
 was not found and the type classified as string.
 .Pp
 Other diagnostics consist of usage statements and are self explanatory.
-.Sh GROFF, TROFF AND NROFF
+.
+.
+.Sh "FORMATTING WITH GROFF, TROFF, AND NROFF"
+.
 The
 .Nm \-mdoc
 package does not need compatibility mode with
@@ -3262,18 +3401,27 @@ There is a register named
 which can be set to zero in the site dependent style file
 .Pa /usr/\:src/\:share/\:tmac/\:doc-nroff
 to restore the old style behavior.
+.
+.
 .Sh FILES
+.
 .Bl -tag -width /usr/share/misc/mdoc.template -compact
 .It Pa /usr/share/tmac/tmac.doc
 manual macro package
 .It Pa /usr/share/misc/mdoc.template
 template for writing a man page
 .El
-.Sh SEE ALSO
+.
+.
+.Sh "SEE ALSO"
+.
 .Xr mdoc 7 ,
 .Xr man 1 ,
 .Xr troff 1
+.
+.
 .Sh BUGS
+.
 Undesirable hyphenation on the dash of a flag
 argument is not yet resolved, and causes
 occasional mishaps in the

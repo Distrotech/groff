@@ -36,8 +36,13 @@
 .\" `tmac.doc-common' would be too long); when using groff, the doc-* files
 .\" are loaded using the `mso' request.
 .\"
-.\" Modified by wl@gnu.org to make it more readable: using long names and
-.\" many groff features, updating and extending documentation.
+.\" Modified by
+.\"
+.\"   Werner LEMBERG <wl@gnu.org>      and
+.\"   Ruslan Ermilov <ru@freebsd.org>
+.\"
+.\" to make it more readable: using long names and many groff features,
+.\" updating and extending documentation, etc.
 .\"
 .\" %beginstrip%
 .
@@ -1075,7 +1080,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Fr Function_return_value... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Fr function_return_value ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1171,7 +1176,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Or ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Or ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1204,7 +1209,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Ms Math symbol ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Ms Math symbol ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1389,7 +1394,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Me menu_entry ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Me menu_entry ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -4461,7 +4466,7 @@
 .\" NS doc-Xr-usage macro
 .
 .de doc-Xr-usage
-.  tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
+.  tm Usage: .Xr manpage_name [section#] ... (#\n[.c])
 ..
 .
 .
@@ -4708,7 +4713,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Vt variable_type ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Vt variable_type ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -6376,9 +6381,10 @@
 .        ds doc-macro-name An
 .        doc-parse-args \$@
 .    \}\}\}
-.    el \
-.      tm Usage: .An author_name ... \*[doc-punct-chars] (#\n[.c])
-.  \}
+.    el \{\
+.      tm1 "Usage: .An {-nosplit | -split}
+.      tm1         .An author_name ... (#\n[.c])
+.  \}\}
 .
 .  if \n[doc-in-authors-section] \{\
 .    ie \n[doc-have-author] \
