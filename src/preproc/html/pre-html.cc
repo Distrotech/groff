@@ -58,12 +58,16 @@ extern "C" const char *Version_string;
 
 #define POSTSCRIPTRES          72000   // maybe there is a better way to find this? --fixme--
 #define DEFAULT_IMAGE_RES         80   // 80 pixels per inch resolution
-#define DEFAULT_VERTICAL_OFFSET   45   // DEFAULT_VERTICAL_OFFSET/72 of an inch
+#ifdef PAGEA4
+#  define DEFAULT_VERTICAL_OFFSET  0   // DEFAULT_VERTICAL_OFFSET/72 of an inch
+#else
+#  define DEFAULT_VERTICAL_OFFSET 50   // DEFAULT_VERTICAL_OFFSET/72 of an inch
+#endif
 #define IMAGE_BOARDER_PIXELS       0
 #define MAX_WIDTH                  8   // inches
 #define INLINE_LEADER_CHAR      '\\'
 
-#define TRANSPARENT  "-background \"#FFF\" -transparent \"#FFF\""
+#define TRANSPARENT  "-background white -transparent white"
 
 #define PAGE_TEMPLATE_SHORT "pg"
 #define PAGE_TEMPLATE_LONG "-page-"

@@ -260,6 +260,9 @@ changequote(,)dnl
 changequote([,])dnl
 fi
 test -n "$PAGE" || PAGE=letter
+if test "x$PAGE" = "xA4"; then
+	AC_DEFINE(PAGEA4)
+fi
 AC_MSG_RESULT($PAGE)
 AC_SUBST(PAGE)])dnl
 dnl
