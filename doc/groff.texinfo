@@ -4888,6 +4888,50 @@ For example,
 
 @noindent
 has the arguments @samp{a"}, @w{@samp{b c}}, @samp{de}, and @samp{fg"}.
+Don't rely on this obscure behaviour!
+
+There are two possibilities to get a double quote reliably.
+
+@itemize @bullet
+@item
+Enclose the whole argument with double quotes and use two consecutive double
+quotes to represent a single one.  This traditional solution has the
+disadvantage that double quotes don't survive argument expansion again if
+called in compatibility mode (using the @option{-C} option of @code{groff}):
+
+@Example
+.de xx
+.  tm xx: `\\$1' `\\$2' `\\$3'
+.
+.  yy "\\$1" "\\$2" "\\$3"
+..
+.de yy
+.  tm yy: `\\$1' `\\$2' `\\$3'
+..
+.xx A "test with ""quotes""" .
+    @result{} xx: `A' `test with "quotes"' `.'
+    @result{} yy: `A' `test with ' `quotes""'
+@endExample
+
+@noindent
+If not in compatibility mode, you get the expected result
+
+@Example
+xx: `A' `test with "quotes"' `.'
+yy: `A' `test with "quotes"' `.'
+@endExample
+
+@noindent
+since @code{gtroff} preserves the input level.
+
+@item
+Use the double quote glyph @code{\(dq}.  This works with and without
+compatibility mode enabled since @code{gtroff} doesn't convert @code{\(dq}
+back to a double quote input character.
+
+Not that this method won't work with @acronym{UNIX} @code{troff} in general
+since the glyph `dq' isn't defined normally.
+@end itemize
 
 @cindex @code{ds} request, and double quotes
 Double quotes in the @code{ds} request are handled differently.
@@ -4997,6 +5041,12 @@ possible, but it is better not to use this feature to avoid confusion.
 @cindex @code{\/}, used as delimiter
 @cindex @code{\,}, used as delimiter
 @cindex @code{\&}, used as delimiter
+@ifnotinfo
+@cindex @code{\:}, used as delimiter
+@end ifnotinfo
+@ifinfo
+@cindex @code{\@r{<colon>}}, used as delimiter
+@end ifinfo
 @cindex @code{\~}, used as delimiter
 @cindex @code{\0}, used as delimiter
 @cindex @code{\a}, used as delimiter
@@ -5013,16 +5063,17 @@ characters since they don't take a parameter) are also allowed as
 delimiters: @code{\%}, @w{@samp{\ }}, @code{\|}, @code{\^}, @code{\@{},
 @code{\@}}, @code{\'}, @code{\`}, @code{\-}, @code{\_}, @code{\!},
 @code{\?}, @code{\@@}, @code{\)}, @code{\/}, @code{\,}, @code{\&},
-@code{\~}, @code{\0}, @code{\a}, @code{\c}, @code{\d}, @code{\e},
-@code{\E}, @code{\p}, @code{\r}, @code{\t}, and @code{\u}.  Again, don't
-use these if possible.
+@code{\:}, @code{\~}, @code{\0}, @code{\a}, @code{\c}, @code{\d},
+@code{\e}, @code{\E}, @code{\p}, @code{\r}, @code{\t}, and @code{\u}.
+Again, don't use these if possible.
 
 @cindex @code{\A}, allowed delimiters
+@cindex @code{\B}, allowed delimiters
 @cindex @code{\Z}, allowed delimiters
 @cindex @code{\C}, allowed delimiters
 @cindex @code{\w}, allowed delimiters
 No newline characters as delimiters are allowed in the following
-escapes: @code{\A}, @code{\Z}, @code{\C}, and @code{\w}.
+escapes: @code{\A}, @code{\B}, @code{\Z}, @code{\C}, and @code{\w}.
 
 @cindex @code{\D}, allowed delimiters
 @cindex @code{\h}, allowed delimiters
@@ -5036,8 +5087,8 @@ escapes: @code{\A}, @code{\Z}, @code{\C}, and @code{\w}.
 @cindex @code{\v}, allowed delimiters
 @cindex @code{\x}, allowed delimiters
 Finally, the escapes @code{\D}, @code{\h}, @code{\H}, @code{\l},
-@code{\L}, @code{\N}, @code{\R}, @code{\s}, @code{\S}, @code{\v}, and
-@code{\x} can't use the following characters as delimiters:
+@code{\L}, @code{\N}, @code{\R}, @code{\s}, @code{\S}, @code{\v},
+and @code{\x} can't use the following characters as delimiters:
 
 @itemize @bullet
 @item
@@ -5078,6 +5129,12 @@ The space, tab, and newline characters.
 
 @item
 @cindex @code{\%}, used as delimiter
+@ifnotinfo
+@cindex @code{\:}, used as delimiter
+@end ifnotinfo
+@ifinfo
+@cindex @code{\@r{<colon>}}, used as delimiter
+@end ifinfo
 @cindex @code{\@{}, used as delimiter
 @cindex @code{\@}}, used as delimiter
 @cindex @code{\'}, used as delimiter
@@ -5090,7 +5147,7 @@ The space, tab, and newline characters.
 @cindex @code{\c}, used as delimiter
 @cindex @code{\e}, used as delimiter
 @cindex @code{\p}, used as delimiter
-All escape sequences except @code{\%}, @code{\@{}, @code{\@}},
+All escape sequences except @code{\%}, @code{\:}, @code{\@{}, @code{\@}},
 @code{\'}, @code{\`}, @code{\-}, @code{\_}, @code{\!}, @code{\@@},
 @code{\/}, @code{\c}, @code{\e}, and @code{\p}.
 @end itemize
@@ -5126,11 +5183,13 @@ This may sound simple, but it can be tricky to keep the comments from
 interfering with the appearance of the final output.
 
 @cindex @code{ds} request, and comments
+@cindex @code{ds1} request, and comments
 @cindex @code{as} request, and comments
+@cindex @code{as1} request, and comments
 If the escape is to the right of some text or a request, that portion
 of the line is ignored, but the space leading up to it is noticed by
 @code{gtroff}.  This only affects the @code{.ds} and @code{.as}
-request.
+request and its variants.
 
 @cindex tabs before comments
 @cindex comments, lining up with tabs
@@ -5833,7 +5892,7 @@ The adjustment mode status is associated with the current environment
 @DefescListEnd {\\p, , , }
 Adjust the current line and cause a break.
 
-In most cases this produces very ugly results, since @code{gtroff}
+In most cases this produces very ugly results since @code{gtroff}
 doesn't have a sophisticated paragraph building algorithm (as @TeX{}
 have, for example); instead, @code{gtroff} fills and adjusts a paragraph
 line by line:
@@ -6260,9 +6319,9 @@ soft hyphen character.
 @DefregListEnd {.hla}
 Set the current hyphenation language to the string @var{language}.
 Hyphenation exceptions specified with the @code{hw} request and
-hyphenation patterns specified with the @code{hpf} request are both
-associated with the current hyphenation language.  The @code{hla}
-request is usually invoked by the @file{troffrc} or the
+hyphenation patterns specified with the @code{hpf} and @code{hpfa}
+requests are both associated with the current hyphenation language.
+The @code{hla} request is usually invoked by the @file{troffrc} or the
 @file{troffrc-end} files; @file{troffrc} sets the default language to
 @samp{us}.
 
@@ -6764,10 +6823,10 @@ escape character @samp{\} is restored.  It can be also used to
 re-enable the escape mechanism after an @code{eo} request.
 
 Note that changing the escape character globally will likely break
-macro packages since @code{gtroff} has no mechanism (like @TeX{}) to
-`intern' macros, i.e., to convert a macro definition into an internal
-form which is independent of its representation.  If a macro is
-called, it is executed literally.
+macro packages since @code{gtroff} has no mechanism to `intern' macros,
+i.e., to convert a macro definition into an internal form which is
+independent of its representation (@TeX{} has this mechanism).
+If a macro is called, it is executed literally.
 @endDefreq
 
 @DefreqList {ecs, }
@@ -6993,23 +7052,6 @@ output device; the code for switching to nroff mode is in the file
 
 @xref{Conditionals and Loops}, for more details on built-in
 conditions.
-
-@c XXX move the following to grotty section
-
-@pindex less
-@cindex Teletype
-@cindex ISO 6249 SGR
-@cindex terminal control sequences
-@cindex control sequences, for terminals
-For tty output devices, underlining is done by emitting sequences of
-@samp{_} and @samp{\b} (the backspace character) before the actual
-character.  Literally, this is printing an underline character, then
-moving back one character position, and printing the actual character
-at the same position as the underline character (similar to a
-typewriter).  Usually, a modern terminal can't interpret this (and the
-original Teletype machines for which this sequence was appropriate are
-no longer in use).  You need a pager program like @code{less} which
-translates this into ISO 6429 SGR sequences to control terminals.
 
 @c =====================================================================
 
@@ -11709,6 +11751,22 @@ is available as an extra package from the following address:
 
 @c XXX
 
+@c The following is no longer true; fix and extend it.
+
+@c @pindex less
+@c @cindex Teletype
+@c @cindex ISO 6249 SGR
+@c @cindex terminal control sequences
+@c @cindex control sequences, for terminals
+@c For tty output devices, underlining is done by emitting sequences of
+@c @samp{_} and @samp{\b} (the backspace character) before the actual
+@c character.  Literally, this is printing an underline character, then
+@c moving back one character position, and printing the actual character
+@c at the same position as the underline character (similar to a
+@c typewriter).  Usually, a modern terminal can't interpret this (and the
+@c original Teletype machines for which this sequence was appropriate are
+@c no longer in use).  You need a pager program like @code{less} which
+@c translates this into ISO 6429 SGR sequences to control terminals.
 
 @c =====================================================================
 
