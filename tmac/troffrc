@@ -24,8 +24,11 @@
 .do rm troffrc!ps troffrc!Xps troffrc!dvi troffrc!X75 troffrc!X75-12 \
 troffrc!X100 troffrc!X100-12 troffrc!lj4 troff!lbp troffrc!html
 .
-.ie '\*(.T'cp1047' .do tr \[char65]\~
-.el .do tr \[char160]\~
+.\" test whether we work under EBCDIC
+.do ie '\[char97]'a' \
+.	do tr \[char160]\~
+.el \
+.	do tr \[char65]\~
 .
 .\" Set the hyphenation language to `us'.
 .do hla us

@@ -2,6 +2,7 @@
 .\"
 .nr _C \n(.C
 .cp 0
+.
 .ftr AX ABI
 .ftr KR BMR
 .ftr KI BMI
@@ -22,6 +23,7 @@
 .ftr PX PBI
 .ftr ZI ZCMI
 .ftr C CR
+.
 .cflags 8 \(an
 .char \[radicalex] \h'-\w'\(sr'u'\[radicalex]\h'\w'\(sr'u'
 .char \(mo \h'.08m'\(mo\h'-.08m'
@@ -32,11 +34,12 @@
 .char \[parenrighttp] \[parenrighttp]\h'.016m'
 .char \[parenrightbt] \[parenrightbt]\h'.016m'
 .char \[parenrightex] \[parenrightex]\h'.016m'
+.
 .if !c\[va] .char \[va] \o'\[ua]\[da]'
 .if !c\[ci] \
-.char \[ci] \v'-.25m'\h'.05m'\D'c .5m'\h'.05m'\v'.25m'
+.  char \[ci] \v'-.25m'\h'.05m'\D'c .5m'\h'.05m'\v'.25m'
 .if !c\[sq] \
-.char \[sq] \h'.05m'\D'l .5m 0'\D'l 0 -.5m'\D'l -.5m 0'\D'l 0 .5m'\h'.55m'
+.  char \[sq] \h'.05m'\D'l .5m 0'\D'l 0 -.5m'\D'l -.5m 0'\D'l 0 .5m'\h'.55m'
 .if !c\[ru] .char \[ru] \D'l .5m 0'
 .if !c\[ul] .char \[ul] \v'.25m'\D'l .5m 0'\v'-.25m'
 .if !c\[br] .char \[br] \Z'\v'.25m'\D'l 0 -1m''
@@ -48,13 +51,14 @@
 .if !c\[ij] .char \[ij] ij
 .if !c\[IJ] .char \[IJ] IJ
 .if !c\[tm] .char \[tm] \s-3\v'-.3m'TM\v'+.3m'\s+3
+.
 .\" pic tests this register to see whether it should use \X'ps:...'
 .nr 0p 1
+.
 .\" now for color definitions
 .\"
 .\" this is a composite of MIT's X Consortium red/green/blue (rgb) color
 .\" specifications, X Consortium version 10.41, 1994.
-.\"
 .defcolor black rgb #000000
 .defcolor grey rgb #bebebe
 .defcolor dimgrey rgb #696969
@@ -599,10 +603,15 @@
 .defcolor yellow2 rgb #eeee00
 .defcolor yellow3 rgb #cdcd00
 .defcolor yellow4 rgb #8b8b00
+.
 .cp \n(_C
-.if !\n(.C .mso pspic.tmac
-.ie '\*(.T'cp1047' \
-.  do mso cp1047.tmac
-.el \
+.
+.if !\n(.C \
+.  mso pspic.tmac
+.
+.do ie '\[char97]'a' \
 .  do mso latin1.tmac
+.el \
+.  do mso cp1047.tmac
+.
 .\" make sure that no blank lines creep in at the end of this file.

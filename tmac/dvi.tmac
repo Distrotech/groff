@@ -2,17 +2,20 @@
 .\"
 .nr _C \n(.C
 .cp 0
+.
 .ftr CR CW
 .ftr C CW
 .ftr CO CWI
 .ftr CI CWI
 .ftr TT CW
 .ftr H HR
+.
 .special TR TI
 .fspecial TI CWI
 .fspecial TBI CWI
 .fspecial HI CWI
 .fspecial HBI CWI
+.
 .\" This uses the dvi-char_1 string in font CW or CWI, dvi-char_0 otherwise.
 .char _ \
 \R'dvi-char_ ((\\n[.f] == \f[CW]\\n[.f]\f[P]) : \
@@ -23,6 +26,7 @@
 .ds dvi-char_0 \Z'\v'.23m'\D'R .54m .04m''\h'.5m'
 .\" In font CW and CWI use a real _ character.
 .ds dvi-char_1 _
+.
 .if !c\[radicalex] .char \[radicalex] \D'R .5m -.04m'\v'.04m'
 .if !c\[br] .char \[br] \Z'\v'.25m'\D'R .04m -1m''
 .if !c\[ru] .char \[ru] \Z'\v'-.02m'\D'R .54m .04m''\h'.5m'
@@ -59,6 +63,7 @@ D\v'-.33m'\s0\v'.33m'
 .if !c\[nb] .char \[nb] \[slashnot]\[sb]
 .cflags 8 \[an]
 .if !c\[an] .char \[an] \h'-.167m'\[mi]\h'-.167m'
+.
 .\" Define some fractions.
 .de dvi-frac
 .  if !c\[\\$1\\$2] \
@@ -66,6 +71,7 @@ D\v'-.33m'\s0\v'.33m'
 \v'-.25m'\s[\\\\n[.s]*7u/10u]\\$1\s0\v'.25m'\h'-.2m'\
 /\h'-.2m'\v'.25m'\s[\\\\n[.s]*7u/10u]\\$2\s0\v'-.25m'
 ..
+.
 .dvi-frac 1 2
 .dvi-frac 3 4
 .dvi-frac 1 4
@@ -73,6 +79,7 @@ D\v'-.33m'\s0\v'.33m'
 .dvi-frac 3 8
 .dvi-frac 5 8
 .dvi-frac 7 8
+.
 .\" support for ISO Latin-1
 .if !c\[S1] .char \[S1] \v'-.2m'\s-31\s+3\v'+.2m'
 .if !c\[S2] .char \[S2] \v'-.2m'\s-32\s+3\v'+.2m'
@@ -84,6 +91,7 @@ D\v'-.33m'\s0\v'.33m'
 .if !c\[bb] .char \[bb] |
 .if !c\[Ye] .char \[Ye] \o'-Y'
 .if !c\[Cs] .char \[Cs] \o'\[mu]o'
+.
 .de dvi-achar
 .  \" Note that character definitions are always interpreted with
 .  \" compatibility mode off.
@@ -99,6 +107,7 @@ D\v'-.33m'\s0\v'.33m'
 .  \}
 .  hcode \\$1\\$4
 ..
+.
 .dvi-achar \[`A] \`    A     a
 .dvi-achar \['A] \'    A     a
 .dvi-achar \[^A] ^     A     a
@@ -154,6 +163,7 @@ D\v'-.33m'\s0\v'.33m'
 .hcode \[,C]c
 .if !c\[,c] .char \[,c] \o'\[ac]c'
 .hcode \[,c]c
+.
 .\" now for color definitions
 .\"
 .\" this is a composite of MIT's X Consortium red/green/blue (rgb) color
@@ -703,8 +713,10 @@ D\v'-.33m'\s0\v'.33m'
 .defcolor yellow2 rgb #eeee00
 .defcolor yellow3 rgb #cdcd00
 .defcolor yellow4 rgb #8b8b00
+.
 .cp \n(_C
-.ie '\*(.T'cp1047' \
-.  do mso cp1047.tmac
-.el \
+.
+.do ie '\[char97]'a' \
 .  do mso latin1.tmac
+.el \
+.  do mso cp1047.tmac
