@@ -1226,7 +1226,9 @@ Use @var{fam} as the default font family.
 
 @item -m@var{name}
 Read in the file @file{tmac.@var{name}}.  Normally this will be searched
-for in the library directory of @code{groff}.
+for in the library directory of @code{groff}.  If it isn't found,
+@file{@var{name}.tmac} will be tried (and searched in the same
+directories).
 
 @item -n@var{num}
 Number the first page @var{num}.
@@ -4100,8 +4102,9 @@ The hyphenation character is associated with the current environment
 @cindex patterns for hyphenation
 @Deffn{Request, hpf, pattern_file}
 Read in a file of hyphenation patterns.  This file will be searched for
-in the same way as @file{tmac.@var{name}} is searched for if the
-@option{-m@var{name}} option is specified.
+in the same way as @file{tmac.@var{name}} (resp.@:
+@file{@var{name}.tmac}) is searched for if the @option{-m@var{name}}
+option is specified.
 
 It should have the same format as the argument to the @code{\patterns}
 primitive in @TeX{} (without using @TeX{}'s macro expansion); the
@@ -7106,9 +7109,10 @@ large documents, i.e.@: keeping each chapter in a separate file.
 
 @findex mso
 The @code{mso} request is the same as the @code{so} request except that
-the file is searched for in the same directories as
-@file{tmac.@var{name}} is searched for when the @option{-m@var{name}}
-option is specified.
+the file is searched for in the same directories as macro files for the
+the @option{-m} command line option.  If the file name to be included
+has the form @file{tmac.@var{name}} and it isn't found, @code{mso} tries
+to include @file{@var{name}.tmac}.
 
 @findex cf
 @cindex transparent output

@@ -117,7 +117,7 @@ By a similar reasoning, macro packages that did not start with an
 .'char m
 were often referred to by adding an
 .'char m ,
- e.g., the package corresponding to
+e.g., the package corresponding to
 .I tmac.doc
 was called
 .I mdoc
@@ -175,6 +175,9 @@ makes the definitions in the macro file
 .BI tmac. name
 available as described in the section
 .BR NAMING .
+If this file isn't found,
+.IB name .tmac
+will be searched.
 .LP
 It is also possible to include the macro file into the document by using 
 the groff requests
@@ -188,7 +191,14 @@ directory where it is kept.
 If the macro file is stored in one of the tmac directories it is more
 convenient to use
 .request .mso
-instead because it additionally searches the tmac path for the filename.
+instead because it searches the tmac path for the filename.
+Additionally, if the file name to be included has the form
+.BI tmac. name
+and it isn't found,
+.request .mso
+will try to open
+.IB name .tmac
+instead.
 .LP
 Note that in order to resolve the
 .request .so
@@ -286,7 +296,9 @@ section.
 .LP
 To use the tmac functionality, call the macro file
 .BI tmac. whatever
-and put it in some directory of the tmac path, cf. section
+(or 
+.IB whatever .tmac\c
+) and put it in some directory of the tmac path, cf. section
 .BR FILES .
 Then documents can include it with the
 .request .mso
@@ -333,9 +345,11 @@ and
 .\" --------------------------------------------------------------------
 .SH FILES
 .\" --------------------------------------------------------------------
-All macro names that want to use the tmac mechanism must be named
-according to the form
-.BIR tmac. name .
+All macro names must be named
+.BI tmac. name
+or
+.IB name .tmac
+to use the tmac mechanism.
 .LP
 The macro files are kept in the
 .B tmac

@@ -144,6 +144,9 @@ as the default font family.
 .BI \-m name
 Read in the file
 .BI tmac. name\fR.
+If it isn't found, try
+.IB name .tmac
+instead.
 Normally this will be searched for in @MACRODIR@.
 By default, the 
 .I safer
@@ -1071,11 +1074,18 @@ The same as the
 .B so
 request except that
 .I file
-is searched for in the same directories as
+is searched for in the same directories as macro files for the
+the
+.B \-m
+command line option.
+If the file name to be included
+has the form
 .BI tmac. name
-is searched for when the
-.BI \-m name
-option is specified.
+and it isn't found,
+.B mso
+tries to include
+.IB name .tmac
+instead.
 .TP
 .B .nroff
 Make the
@@ -2135,6 +2145,8 @@ Initialization file (called before any other macro package).
 Initialization file (called after any other macro package).
 .TP
 .BI @MACRODIR@/tmac. name
+.TQ
+.BI @MACRODIR@/ name .tmac
 Macro files
 .TP
 .BI @FONTDIR@/dev name /DESC

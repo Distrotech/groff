@@ -70,6 +70,12 @@ FDL in the main directory of the groff source package.
 .  rm @tmp@
 ..
 .
+.de TQ
+.br
+.ns
+.TP \\$1
+..
+.
 .\" --------------------------------------------------------------------
 .\" Title
 .\" --------------------------------------------------------------------
@@ -277,7 +283,9 @@ special kind of documents in a convenient way.
 This greatly eases the usage of roff.
 The macro definitions of a package are kept in a file called
 .BI tmac. name
-where
+(or
+.IR name .tmac\c
+) where
 .I name
 is the internal roff name for this package.
 All tmac files are stored in a single or few directories at standard
@@ -404,6 +412,8 @@ In the following, this directory is referred to as
 Initialization file for troff.
 .TP
 .IB <groff_dir> /tmac/tmac. name
+.TQ
+.IB <groff_dir> /tmac/ name .tmac
 Macro files.
 .TP
 .IB <groff_dir> /font/dev name /DESC

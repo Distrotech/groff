@@ -5505,6 +5505,15 @@ static FILE *open_mac_file(const char *mac, char **path)
   strcpy(s, MACRO_PREFIX);
   strcat(s, mac);
   FILE *fp = macro_path.open_file(s, path);
+  // Try FOOBAR.tmac if tmac.FOOBAR failed.  Some tmac.* file names
+  // clash after truncation to 8+3 DOS limits, so this allows to
+  // rename them to *.tmac instead.
+  if (!fp) {
+    strcpy(s, mac);
+    strcat(s, ".");
+    strncat(s, MACRO_PREFIX, strcspn(MACRO_PREFIX, "."));
+    fp = macro_path.open_file(s, path);
+  }
   a_delete s;
   return fp;
 }
@@ -5544,6 +5553,19 @@ void macro_source()
       tok.next();
     char *path;
     FILE *fp = macro_path.open_file(nm.contents(), &path);
+    // .mso doesn't (and cannot) go through open_mac_file, so we
+    // need to do it here manually...
+    if (!fp) {
+      const char *fn = nm.contents();
+      if (strncasecmp(fn, MACRO_PREFIX, sizeof(MACRO_PREFIX) - 1) == 0) {
+	char *s = new char[strlen(fn) + 1];
+	strcpy(s, fn + sizeof(MACRO_PREFIX) - 1);
+	strcat(s, ".");
+	strncat(s, MACRO_PREFIX, strcspn(MACRO_PREFIX, "."));
+	fp = macro_path.open_file(s, &path);
+	a_delete s;
+      }
+    }
     if (fp) {
       input_stack::push(new file_iterator(fp, symbol(path).contents()));
       a_delete path;
