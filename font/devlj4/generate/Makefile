@@ -206,8 +206,9 @@ CORONET: $(AUTOFONT)/9nb00077.tfm $(TEXTMAP)
 CLARENDON: $(AUTOFONT)/9nb00060.tfm $(TEXTMAP)
 	$(HPFTODIT) $(AUTOFONT)/9nb00060.tfm $(TEXTMAP) $@
 
-S: $(AUTOFONT)/9nb00086.tfm $(SPECIALMAP)
-	$(HPFTODIT) $(SFLAG) $(AUTOFONT)/9nb00086.tfm $(SPECIALMAP) $@
+S: $(AUTOFONT)/9nb00086.tfm $(SPECIALMAP) $(srcdir)/special.awk
+	$(HPFTODIT) $(SFLAG) $(AUTOFONT)/9nb00086.tfm $(SPECIALMAP) - \
+	| awk -f $(srcdir)/special.awk > $@
 
 #
 # TrueType
