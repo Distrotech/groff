@@ -6048,7 +6048,8 @@ The hyphenation character is associated with the current environment
 
 @cindex hyphenation patterns (@code{hpf})
 @cindex patterns for hyphenation (@code{hpf})
-@Defreq {hpf, pattern_file}
+@DefreqList {hpf, pattern_file}
+@DefreqListEnd {hpfa, pattern_file}
 Read in a file of hyphenation patterns.  This file is searched for in
 the same way as @file{@var{name}.tmac} (or @file{tmac.@var{name}}) is
 searched for if the @option{-m@var{name}} option is specified.
@@ -6061,6 +6062,8 @@ continues to the end of the line.
 
 If no @code{hpf} request is specified (either in the document or in a
 macro package), @code{gtroff} won't hyphenate at all.
+
+The @code{hpfa} request appends a file of patterns to the current list.
 
 @pindex troffrc
 @pindex troffrc-end
@@ -6642,10 +6645,16 @@ with @code{tr} and in the font definition files) occur at output time,
 i.e., the input character gets assigned the metric information of the
 mapped output character.
 
-@Defreq {tr, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
+@DefreqList {tr, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
+@DefreqListEnd {trin, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
 Translate character @var{a} to@w{ }@var{b}, character @var{c} to@w{
 }@var{d}, etc.  If there is an odd number of arguments, the last one is
 translated to the space character.
+
+The @code{trin} request is identical to @code{tr},
+but when you unformat a diversion with @code{asciify}
+it ignores the translation.
+@xref{Diversions}, for details about the @code{asciify} request.
 
 Some notes:
 
