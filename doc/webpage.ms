@@ -27,6 +27,7 @@
 .ds GNU \m[darkred]G\m[]\m[darkgreen]N\m[]\m[darkblue]U\m[]
 .
 .HTL
+.NHR
 .
 Home of Groff (GNU Troff).
 .

@@ -402,6 +402,12 @@ ac_dir=`cd $ac_aux_dir; pwd`
 ac_install_sh="$ac_dir/install-sh -c"])dnl
 dnl
 dnl
+dnl Test whether install-info is available.
+dnl
+AC_DEFUN(GROFF_INSTALL_INFO,
+[AC_CHECK_PROGS(INSTALL_INFO, install-info, :)])dnl
+dnl
+dnl
 dnl At least one UNIX system, Apple Macintosh Rhapsody 5.5,
 dnl does not have -lm.
 dnl

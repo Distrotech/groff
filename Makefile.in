@@ -98,6 +98,9 @@ datadir=@datadir@
 dataprogramdir=$(datadir)/groff
 datasubdir=$(dataprogramdir)/$(version)$(revision)
 
+# infodir says where to install info files
+infodir=@infodir@
+
 # docdir says where to install documentation files
 docdir=$(datadir)/doc/groff/$(version)$(revision)
 
@@ -277,6 +280,7 @@ INSTALL=@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
 INSTALL_SCRIPT=@INSTALL_SCRIPT@
 INSTALL_DATA=@INSTALL_DATA@
+INSTALL_INFO=@INSTALL_INFO@
 LN_S=@LN_S@
 AR=ar
 ETAGS=etags
@@ -316,6 +320,7 @@ MDEFINES= \
   "datadir=$(datadir)" \
   "dataprogramdir=$(dataprogramdir)" \
   "datasubdir=$(datasubdir)" \
+  "infodir=$(infodir)" \
   "docdir=$(docdir)" \
   "exampledir=$(exampledir)" \
   "htmldocdir=$(htmldocdir)" \
@@ -422,7 +427,8 @@ OTHERDIRS=\
   contrib/mm \
   contrib/pic2graph \
   contrib/groffer \
-  contrib/mom
+  contrib/mom \
+  doc
 ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
   $(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS) $(OTHERDIRS)
 EXTRADIRS=\
@@ -589,7 +595,7 @@ uninstall_dirs:
 # Use rmdir here so that the directories are only removed if they're empty
 	-rmdir $(man1dir) $(man5dir) $(man7dir) $(manroot) \
 	  $(tmacdir) $(systemtmacdir) $(localtmacdir) $(fontdir) $(bindir) \
-	  $(datasubdir) $(dataprogramdir) $(datadir) \
+	  $(datasubdir) $(dataprogramdir) $(datadir) $(infodir) \
 	  $(docdir) $(exampledir) $(htmldocdir) \
 	  $(libprogramdir) $(libdir)
 

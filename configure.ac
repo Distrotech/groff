@@ -15,6 +15,7 @@ AC_PATH_PROG(PERLPATH, perl, /usr/bin/perl)
 GROFF_PROG_YACC
 AC_PROG_RANLIB
 GROFF_INSTALL_SH
+GROFF_INSTALL_INFO
 AC_PROG_INSTALL
 AC_PROG_LN_S
 dnl use a dummy substitution if no csh hack is necessary to avoid errors
@@ -67,7 +68,7 @@ GROFF_PAGE
 GROFF_G
 GROFF_TMAC
 AC_CONFIG_FILES(stamp-h, [echo timestamp > stamp-h])
-AC_CONFIG_FILES([Makefile src/xditview/Imakefile])
+AC_CONFIG_FILES([Makefile doc/Makefile src/xditview/Imakefile])
 AC_OUTPUT
 dnl
 AC_MSG_NOTICE([

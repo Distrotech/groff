@@ -37,32 +37,28 @@ NORMALFILES=\
   mom.tmac \
   om.tmac
 
-momdocdir=$(htmldocdir)/momdoc
-
 HTMLDOCFILES=\
-  appendices.html \
-  cover.html \
-  definitions.html \
-  docelement.html \
-  docprocessing.html \
-  goodies.html \
-  headfootpage.html \
-  inlines.html \
-  intro.html \
-  letters.html \
-  rectoverso.html \
-  reserved.html \
-  toc.html \
-  typemacdoc.html \
-  typesetting.html \
-  using.html
+  momdoc/appendices.html \
+  momdoc/cover.html \
+  momdoc/definitions.html \
+  momdoc/docelement.html \
+  momdoc/docprocessing.html \
+  momdoc/goodies.html \
+  momdoc/headfootpage.html \
+  momdoc/inlines.html \
+  momdoc/intro.html \
+  momdoc/letters.html \
+  momdoc/rectoverso.html \
+  momdoc/reserved.html \
+  momdoc/toc.html \
+  momdoc/typemacdoc.html \
+  momdoc/typesetting.html \
+  momdoc/using.html
 
 EXAMPLEFILES=\
   examples/macros.mom \
   examples/typeset.mom \
-  examples/typewrite.mom
-
-EXTRAEXAMPLEFILES=\
+  examples/typewrite.mom \
   examples/README.mom \
   examples/elvis_syntax \
   examples/penguin.ps
@@ -76,38 +72,34 @@ CLEANADD=\
   penguin.ps \
   $(PROCESSEDEXAMPLEFILES)
 
+.SUFFIXES: .mom .ps
+.mom.ps:
+	$(GROFF) -Tps -mom $< >$@
+
+
 all: make_examples
 
 .PHONY: make_examples
 make_examples: prepare_make_examples $(PROCESSEDEXAMPLEFILES)
 
-prepare_make_examples: $(srcdir)/examples/penguin.ps
+prepare_make_examples: examples/penguin.ps
 	test -d examples || $(mkinstalldirs) examples
-	cp $< .
-	
-examples/macros.ps: $(srcdir)/examples/macros.mom
-	$(GROFF) -Tps -mom $< >$@
+	test -f examples/penguin.ps || cp $(srcdir)/examples/penguin.ps .
 
-examples/typeset.ps: $(srcdir)/examples/typeset.mom
-	$(GROFF) -Tps -mom $< >$@
-
-examples/typewrite.ps: $(srcdir)/examples/typewrite.mom
-	$(GROFF) -Tps -mom $< >$@
-
-install_data: $(NORMALFILES) \
-              $(EXAMPLEFILES) $(EXTRAEXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
+install_data: $(NORMALFILES) $(HTMLDOCFILES) \
+              $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
 	for f in $(NORMALFILES); do \
 	  rm -f $(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(tmacdir)/$$f; \
 	done
-	-test -d $(momdocdir) || $(mkinstalldirs) $(momdocdir)
+	-test -d $(htmldocdir)/momdoc || $(mkinstalldirs) $(htmldocdir)/momdoc
 	for f in $(HTMLDOCFILES); do \
-	  rm -f $(momdocdir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/momdoc/$$f $(momdocdir)/$$f; \
+	  rm -f $(htmldocdir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(htmldocdir)/$$f; \
 	done
 	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
-	for f in $(EXAMPLEFILES) $(EXTRAEXAMPLEFILES); do \
+	for f in $(EXAMPLEFILES); do \
 	  rm -f $(exampledir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(docdir)/$$f; \
 	done
@@ -124,7 +116,6 @@ uninstall_sub:
 	  rm -f $(momdocdir)/$$f; \
 	done
 	-rmdir $(momdocdir)
-	-for f in $(EXAMPLEFILES) $(EXTRAEXAMPLEFILES) \
-                  $(PROCESSEDEXAMPLEFILES); do \
+	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES); do \
 	  rm -f $(docdir)/$$f;
 	done
