@@ -70,6 +70,8 @@
 .\" Default heading font
 .ds HF B
 .
+.nr an-first 1
+.
 .nr an-html 0
 .if '\*[.T]'html' .nr an-html 1
 .if \n[an-html] .nr C 1
@@ -220,6 +222,12 @@
 .
 .de1 an-header
 .  an-init
+.  if \\n[cR] \{\
+.    ie \\n[an-first] \
+.      nr an-first 0
+.    el \
+.      sp .5i
+.  \}
 .  ev 1
 .  ps \\n[PS]u
 .  vs \\n[VS]u
@@ -576,7 +584,12 @@
 .ds rq \(rq
 .
 .if !\n[an-html] \{\
-.  if !rHY .nr HY 14
+.  if !rHY \{\
+.    ie \n[cR] \
+.      nr HY 12
+.    el \
+.      nr HY 14
+.  \}
 .  hy \n[HY]
 .\}
 .
