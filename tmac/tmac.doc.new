@@ -247,13 +247,10 @@
 .  ie (\n[.$] == 1) \{\
 .    nr doc-arg-ptr 0
 .
-.    if \n[doc-nesting-level] \{\
-.      ie \n[doc-in-diversion] \
-.        as doc-out-string "\*[doc-curr-space]
-.      el \
+.    if \n[doc-nesting-level] \
+.      if !\n[doc-in-diversion] \
 .        if !\n[doc-func-arg-count] \
 .          as doc-out-string "\*[doc-curr-space]
-.    \}
 .
 .    \" use space after last parameter as the current one
 .    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
@@ -362,13 +359,10 @@
 .  ie (\n[doc-num-args] == 1) \{\
 .    nr doc-arg-ptr 0
 .
-.    if \n[doc-nesting-level] \{\
-.      ie \n[doc-in-diversion] \
-.        as doc-out-string "\*[doc-curr-space]
-.      el \
+.    if \n[doc-nesting-level] \
+.      if !\n[doc-in-diversion] \
 .        if !\n[doc-func-arg-count] \
 .          as doc-out-string "\*[doc-curr-space]
-.    \}
 .
 .    \" use space after last parameter as the current one
 .    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
@@ -472,6 +466,8 @@
 .  ie \n[doc-in-diversion] \{\
 .    ie (\n[doc-in-list] : \n[doc-nesting-level]) \{\
 .      if !\n[doc-no-printing] \{\
+.        if !\n[doc-space-mode] \
+.          as doc-out-string \c
 .        nop \&\*[doc-out-string]
 .        ds doc-curr-space
 .        ds doc-out-string
