@@ -32,6 +32,9 @@ static void ewrite(const char *s)
 
 void *operator new(size_t size)
 {
+  // Avoid relying on the behaviour of malloc(0).
+  if (size == 0)
+    size++;
 #ifdef COOKIE_BUG
   char *p = (char *)malloc(unsigned(size + 8));
   if (p != 0) {

@@ -15,6 +15,7 @@
 .char ^ \v'-.55m'\\s[\\n(.s/2u]\v'.3m'\(ha\v'-.3m'\s0\v'.55m'
 .if !c\(va .char \(va \o'\(ua\(da'
 .if !c\(em .char \(em --
+.if !c\(en .char \(en \-
 .if !c\(fi .char \(fi fi
 .if !c\(fl .char \(fl fl
 .if !c\(ff .char \(ff ff

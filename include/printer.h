@@ -48,10 +48,11 @@ public:
   void set_numbered_char(int n, const environment *env, int *widthp = 0);
   virtual void draw(int code, int *p, int np, const environment *env);
   virtual void begin_page(int) = 0;
-  virtual void end_page() = 0;
+  virtual void end_page(int page_length) = 0;
   virtual font *make_font(const char *nm);
   virtual void end_of_line();
   virtual void special(char *arg, const environment *env);
+  static int adjust_arc_center(const int *, double *);
 protected:
   font_pointer_list *font_list;
 private:

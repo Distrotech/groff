@@ -59,13 +59,13 @@ broken variable-item list.
 As VL but text begins always at the next line
 .TP
 .B "COVER [arg]"
-\fBCOVER\fP begins a coversheet definition. It is important
+\&\fBCOVER\fP begins a coversheet definition. It is important
 that \fB.COVER\fP appears before any normal text.
-\fB.COVER\fP uses \fIarg\fP to build the filename 
+\&\fB.COVER\fP uses \fIarg\fP to build the filename 
 @TMAC_MDIR@/\fIarg\fP.cov. Therefore it is possible to create unlimited
 types of coversheets.
 \fIms.cov\fP is supposed to look like the \fBms\fP coversheet.
-\fB.COVER\fP requires a \fB.COVEND\fP at the end of the coverdefinition.
+\&\fB.COVER\fP requires a \fB.COVEND\fP at the end of the coverdefinition.
 Always use this order of the covermacros:
 .nf
 \&.COVER
@@ -134,6 +134,21 @@ If \fIline-length\fP is not given, the difference between
 current and new pageoffset is used.
 Use \fBPGFORM\fP without arguments to return to normal.
 .TP
+.B "MULB cw1 space1 [cw2 space2 [cw3 ...]]"
+Begin a special multi-column mode. Every columns width must be specified.
+Also the space between the columns must be specified. The last column
+does not need any space-definition. MULB starts a diversion and MULE
+ends the diversion and prints the columns.
+The unit for width and space is 'n', but MULB accepts all 
+normal unitspecifications like 'c' and 'i'.
+MULB operates in a separate environment.
+.TP
+.B "MULN"
+Begin the next column. This is the only way to switch column.
+.TP
+.B "MULE"
+End the multi-column mode and print the columns.
+.TP
 .B "PGFORM [linelength [pagelength [pageoffset]]]"
 Sets linelength, pagelength and/or pageoffset.
 This macro can be used for special formatting, like letterheads
@@ -156,15 +171,20 @@ See \fBINITR\fP.
 .B TAB
 reset tabs to every 5n. Normally used to reset any previous tabpositions.
 .TP
-.B VERBON
+.B VERBON [1/0 [pointsize [font]]]
 Begin verbatim output using courier font.
 Usually for printing programs.
 All character has equal width.
+Escape-character (\e) is normally turned off, but can be enabled by
+setting the first argument to 1. Th pointsize can also be changed with
+the second argument. By specifying the font-argument
+it is possible to use another font instead of courier.
 .TP
 .B VERBOFF
 End verbatim output.
 .sp
 .LP
+.\"########################################################################
 New variables in m@TMAC_M@:
 .TP
 .B App
@@ -216,8 +236,17 @@ Strings containing \fIJanuary\fI to \fIDecember\fP.
 .B Qrf
 String containing "See chapter \e\e*[Qrfh], page \e\en[Qrfp].".
 .TP
+.B Sectf
+Flag controlling "section-figures". A non-zero value enables this.
+Se also register N.
+.TP
+.B Sectp
+Flag controlling "section-page-numbers". A non-zero value enables this.
+Se also register N.
+.TP
 .B .mgm
 Always 1.
+.\"########################################################################
 .LP
 A file called \fBlocale\fP or \fIlang\fP\fB_locale\fP is read
 after the initiation of the global variables. It is therefore
@@ -243,6 +272,9 @@ Start autoincrement list
 .TP
 .B "AS [arg [indent]]"
 Abstract start. Indent is specified in 'ens', but scaling is allowed.
+.TP
+.B "AST [title]"
+Abstract title. Default is 'ABSTRACT'.
 .TP
 .B "AT title1 [title2 ...]"
 Authors title
@@ -288,7 +320,7 @@ right adjusted text and block may be used (R or RB as \fIformat\fP).
 .B "EC [title [override [flag [refname]]]]"
 Equation title.
 If \fIrefname\fP is used, then the equationnumber is saved with
-\fB.SETR\fP, and can be retrieved with \fB.GETST\fP \fIrefname\fP.
+\&\fB.SETR\fP, and can be retrieved with \fB.GETST\fP \fIrefname\fP.
 .TP
 .B "EF [arg]"
 Even-page footer.
@@ -305,7 +337,7 @@ Equation start.
 .B "EX [title [override [flag [refname]]]]"
 Exhibit title.
 If \fIrefname\fP is used, then the exhibitnumber is saved with
-\fB.SETR\fP, and can be retrieved with \fB.GETST\fP \fIrefname\fP.
+\&\fB.SETR\fP, and can be retrieved with \fB.GETST\fP \fIrefname\fP.
 .TP
 .B "FD [arg [1]]"
 Footnote default format.
@@ -316,7 +348,7 @@ Footnote end.
 .B "FG [title [override [flag [refname]]]]"
 Figure title.
 If \fIrefname\fP is used, then the figurenumber is saved with
-\fB.SETR\fP, and can be retrieved with \fB.GETST\fP \fIrefname\fP.
+\&\fB.SETR\fP, and can be retrieved with \fB.GETST\fP \fIrefname\fP.
 .TP
 .B FS
 Footnote start.
@@ -449,7 +481,7 @@ Space vertically. \fIlines\fP can have any scalingfactor, like \fI3i\fP or
 .B "TB [title [override [flag [refname]]]]"
 Table title.
 If \fIrefname\fP is used, then the tablenumber is saved with
-\fB.SETR\fP, and can be retrieved with \fB.GETST\fP \fIrefname\fP.
+\&\fB.SETR\fP, and can be retrieved with \fB.GETST\fP \fIrefname\fP.
 .TP
 .B "TC [slevel [spacing [tlevel [tab [h1 [h2 [h3 [h4 [h5]]]]]]]]]"
 Table of contents.
@@ -602,6 +634,18 @@ List space, if current listlevel > Ls then no spacing will occur around lists.
 .TP
 .B N=0
 Numbering style [0:5]
+0 == (default) normal header for all pages.
+.br
+1 == header replaces footer on first page, header is empty.
+.br
+2 == page header is removed on the first page.
+.br
+3 == "section-page" numbering enabled.
+.br
+4 == page header is removed on the first page.
+.br
+5 == "section-page" and "section-figure" numbering enabled.
+Se also the number-register Sectf and Sectp.
 .TP
 .B Np=0
 Numbered paragraphs.
@@ -616,6 +660,10 @@ Format of figure,table,exhibit,equation titles.
 0= ". "
 .br
 1= " - "
+.TP
+.B P
+Current page-number, normally the same as % unless "section-page" numbering
+is enabled.
 .TP
 .B Pi=5
 paragraph indent
@@ -642,17 +690,17 @@ Jörgen Hägg, Lund Institute of Technology, Sweden <jh@efd.lth.se>
 .TP
 .B @MACRODIR@/tmac.@TMAC_M@
 .TP
-.B @TMAC_MDIR@*.cov
+.B @TMAC_MDIR@/*.cov
 .TP
-.B @TMAC_MDIR@*.MT
+.B @TMAC_MDIR@/*.MT
 .TP
-.B @TMAC_MDIR@locale
+.B @TMAC_MDIR@/locale
 .SH "SEE ALSO"
-.BR @PROG_PREFIX@roff (@MAN1EXT@),
-.BR @PROG_PREFIX@troff (@MAN1EXT@),
-.BR @PROG_PREFIX@tbl (@MAN1EXT@),
-.BR @PROG_PREFIX@pic (@MAN1EXT@),
-.BR @PROG_PREFIX@eqn (@MAN1EXT@)
+.BR groff (@MAN1EXT@),
+.BR @g@troff (@MAN1EXT@),
+.BR @g@tbl (@MAN1EXT@),
+.BR @g@pic (@MAN1EXT@),
+.BR @g@eqn (@MAN1EXT@)
 .br
 .BR mm (@MAN7EXT@)
 .BR m@TMAC_M@se (@MAN7EXT@)

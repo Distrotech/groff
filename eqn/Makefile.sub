@@ -10,3 +10,17 @@ GRAM=eqn.y
 YTABC=eqn.cc
 YTABH=eqn.tab.h
 NAMEPREFIX=$(g)
+CLEANADD=neqn
+
+all: neqn
+
+neqn: neqn.sh
+	-rm -f neqn
+	sed -e 's/@g@/$(g)/g' $(srcdir)/neqn.sh >neqn
+
+install_data: neqn
+	-rm -f $(bindir)/$(NAMEPREFIX)neqn
+	$(INSTALL_PROGRAM) neqn $(bindir)/$(NAMEPREFIX)neqn
+
+uninstall_sub:
+	-rm -f $(bindir)/$(NAMEPREFIX)neqn

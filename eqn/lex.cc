@@ -34,8 +34,9 @@ struct definition {
   ~definition();
 };
 
-definition::definition() : is_macro(1), contents(0), is_simple(0)
+definition::definition() : is_macro(1), is_simple(0)
 {
+  contents = 0;
 }
 
 definition::~definition()
@@ -935,15 +936,8 @@ void do_gsize()
     return;
   }
   token_buffer += '\0';
-  const char *ptr = token_buffer.contents();
-  if (*ptr == '+' || *ptr == '-')
-    ptr++;
-  while (csdigit(*ptr))
-    ptr++;
-  if (*ptr != '\0')
-    lex_error("bad argument `%1' to gsize command", token_buffer.contents());
-  else
-    set_gsize(token_buffer.contents());
+  if (!set_gsize(token_buffer.contents()))
+    lex_error("invalid size `%1'", token_buffer.contents());
 }
 
 void do_gfont()
@@ -1084,12 +1078,20 @@ int yylex()
     case SDEFINE:
       do_definition(1);
       break;
-    case TDEFINE:
     case DEFINE:
       do_definition(0);
       break;
+    case TDEFINE:
+      if (!nroff)
+	do_definition(0);
+      else
+	ignore_definition();
+      break;
     case NDEFINE:
-      ignore_definition();
+      if (nroff)
+	do_definition(0);
+      else
+	ignore_definition();
       break;
     case GSIZE:
       do_gsize();

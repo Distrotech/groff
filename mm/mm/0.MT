@@ -1,9 +1,6 @@
 .\"------------
 .\" Cover sheet. Memorandum type 0-3 and "string".
 .\"------------
-.PH "''''"
-.OH "''''"
-.EH "''''"
 .if !r Au .nr Au 1
 .nr cov*mt0-ind 1.1c
 .de cov@print-title
@@ -15,6 +12,7 @@ subject:
 .PGFORM
 .B
 .ll 9c
+.fi
 .cov*title
 .R
 .ll
@@ -127,7 +125,7 @@ TM
 .	cov@print-title subject
 .	cov@print-date date
 .	cov@print-authors from
-.	cov@print-abstract ABSTRACT
+.	cov@print-abstract \\*[cov*abs-name]
 .	SP 3
 .	if (\*[cov*mt-type]>=1)&(\*[cov*mt-type]<=3) \{\
 .		ce

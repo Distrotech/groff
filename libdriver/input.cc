@@ -26,7 +26,6 @@ int current_lineno;
 const char *device = 0;
 FILE *current_file;
 
-int get_char();
 int get_integer();		// don't read the newline
 int possibly_get_integer(int *);
 char *get_string(int is_long = 0);
@@ -199,7 +198,7 @@ void do_file(const char *filename)
       break;
     case 'p':
       if (npages)
-	pr->end_page();
+	pr->end_page(env.vpos);
       npages++;
       pr->begin_page(get_integer());
       env.vpos = 0;
@@ -358,7 +357,7 @@ void do_file(const char *filename)
     }
   }
   if (npages)
-    pr->end_page();
+    pr->end_page(env.vpos);
 }
 
 int get_integer()

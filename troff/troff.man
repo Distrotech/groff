@@ -20,6 +20,7 @@
 .SH NAME
 @g@troff \- format documents
 .SH SYNOPSIS
+.nr a \n(.j
 .ad l
 .nr i \n(.i
 .in +\w'\fB@g@troff 'u
@@ -41,10 +42,9 @@
 .OP \-T name
 .OP \-F dir
 .OP \-M dir
-.OP \-H file
 .RI "[\ " files\|.\|.\|. "\ ]"
 .br
-.ad b
+.ad \na
 .SH DESCRIPTION
 This manual page describes the GNU version of
 .BR troff ,
@@ -145,7 +145,7 @@ means print every page between
 and
 .IR n ,
 .BI \- n
-mans print every page up to
+means print every page up to
 .IR n ,
 .IB n \-
 means print every page from
@@ -182,12 +182,6 @@ for the
 .B DESC
 file and font files before the normal
 .BR @FONTDIR@ .
-.TP
-.BI \-H file
-Read hyphenation patterns from
-.IR file ,
-rather than the default
-.BR @HYPHENFILE@ .
 .TP
 .BI \-M dir
 Search directory
@@ -899,12 +893,23 @@ character (not a special character) other than a digit or a space.
 Initially each lower-case letter has a hyphenation code, which
 is itself, and each upper-case letter has a hyphenation code
 which is the lower case version of itself.
-Hyphenation is controlled by a file of hyphenation patterns
-(normally @HYPHENFILE@);
-this file should have the same format as the argument to
-the \epatterns primitive in \*(tx;
-the letters appearing in this file are interpreted as hyphenation
-codes.
+See also the
+.B hpf
+request.
+.TP
+.BI .hla\  lang
+Set the current hyphenation language to
+.IR lang .
+Hyphenation exceptions specified with the
+.B hw
+request and hyphenation patterns specified with the
+.B hpf
+request are both associated with the current hyphenation language.
+The
+.B hla
+request is usually invoked by the
+.B troffrc
+file.
 .TP
 .BI .hlm\  n
 Set the maximum number of consecutive hyphenated lines to
@@ -919,6 +924,33 @@ with that environment.
 Hyphens resulting from
 .B \e%
 are counted; explicit hyphens are not.
+.TP
+.BI .hpf\  file
+Read hyphenation patterns from
+.IR file ;
+this will be searched for in the same way that
+.BI tmac. name
+is searched for when the
+.BI \-m name
+option is specified.
+It should have the same format as the argument to
+the \epatterns primitive in \*(tx;
+the letters appearing in this file are interpreted as hyphenation
+codes.
+A
+.B %
+character in the patterns file introduces a comment that continues
+to the end of the line.
+The set of hyphenation patterns is associated with the current language
+set by the
+.B hla
+request.
+The
+.B hpf
+request
+is usually invoked by the
+.B troffrc
+file.
 .TP
 .BI .hym\  n
 Set the
@@ -1137,7 +1169,7 @@ the width of every character will be increased by an amount
 between
 .I n1
 and
-.IR n2 :
+.IR n2 ;
 when the current point size is less than or equal to
 .I s1
 the width will be increased by
@@ -1179,6 +1211,35 @@ request,
 the file cannot contain characters such as
 .SM NUL
 that are not legal troff input characters.
+.RE
+.TP
+.B .trnt abcd
+This is the same as the
+.B tr
+request except that the translations do not apply to text that is
+transparently throughput into a diversion with
+.BR \e! .
+For example,
+.RS
+.LP
+.nf
+.ft B
+\&.tr ab
+\&.di x
+\e!.tm a
+\&.di
+\&.x
+.fi
+.ft
+.LP
+will print
+.BR b ;
+if
+.B trnt
+is used instead of
+.B tr
+it will print
+.BR a .
 .RE
 .TP
 .B .troff
@@ -1382,6 +1443,11 @@ The number of the next free font position.
 Always 1.
 Macros should use this to determine whether they are running
 under GNU troff.
+.TP
+.B \en[.hla]
+The current hyphenation language as set by the
+.B hla
+request.
 .TP
 .B \en[.hlc]
 The number of immediately preceding consecutive hyphenated lines.
@@ -1739,6 +1805,10 @@ The request or macro will not be invoked.
 When this warning is given, no macro is automatically defined.
 This is enabled by default.
 This warning will never occur in compatibility mode.
+.TP
+.BR font \t131072
+Non-existent fonts.
+This is enabled by default.
 .LP
 There are also names that can be used to refer to groups of warnings:
 .TP
@@ -1892,15 +1962,8 @@ will search in directories given in the
 option before these, and in standard directories
 .RB ( @FONTPATH@ )
 after these.
-.TP
-.SM
-.B GROFF_HYPHEN
-File containing hyphenation patterns.
 .SH FILES
 .Tp \w'@FONTDIR@/devname/DESC'u+3n
-.B @HYPHENFILE@
-Hyphenation patterns
-.TP
 .B @MACRODIR@/troffrc
 Initialization file
 .TP

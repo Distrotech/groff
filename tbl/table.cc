@@ -23,8 +23,8 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #define BAR_HEIGHT ".25m"
 #define DOUBLE_LINE_SEP "2p"
 #define HALF_DOUBLE_LINE_SEP "1p"
+#define LINE_SEP "2p"
 #define BODY_DEPTH ".25m"
-#define BODY_HEIGHT ".75m"
 
 const int DEFAULT_COLUMN_SEPARATION = 3;
 
@@ -76,8 +76,6 @@ const int DEFAULT_COLUMN_SEPARATION = 3;
 #define COLUMN_END_PREFIX PREFIX "ce"
 #define COLUMN_DIVIDE_PREFIX PREFIX "cd"
 #define ROW_TOP_PREFIX PREFIX "rt"
-#define TEXT_STRING_PREFIX PREFIX "s"
-#define RIGHT_TEXT_STRING_PREFIX PREFIX "ss"
 
 string block_width_reg(int r, int c);
 string block_diversion_name(int r, int c);
@@ -92,8 +90,6 @@ string column_start_reg(int c);
 string column_end_reg(int c);
 string column_divide_reg(int c);
 string row_top_reg(int r);
-string text_string_name(int r, int c);
-string right_text_string_name(int r, int c);
 
 void set_inline_modifier(const entry_modifier *);
 void restore_inline_modifier(const entry_modifier *m);
@@ -110,9 +106,7 @@ void printfs(const char *,
 	     const string &arg4 = an_empty_string,
 	     const string &arg5 = an_empty_string);
 
-void prints(const char *);
 void prints(const string &);
-void prints(char);
 
 inline void prints(char c)
 {
@@ -156,7 +150,7 @@ public:
   void set_location();
   table_entry(const entry_modifier *);
   virtual ~table_entry();
-  virtual int divert(int ncols, const string *mw);
+  virtual int divert(int ncols, const string *mw, int *sep);
   virtual void do_width();
   virtual void do_depth();
   virtual void print() = 0;
@@ -188,10 +182,18 @@ public:
 class text_entry : public simple_entry {
 protected:
   char *contents;
+  void print_contents();
 public:
   text_entry(char *, const entry_modifier *);
   ~text_entry();
 };
+
+void text_entry::print_contents()
+{
+  set_inline_modifier(mod);
+  prints(contents);
+  restore_inline_modifier(mod);
+}
 
 class repeated_char_entry : public text_entry {
 public:
@@ -286,11 +288,11 @@ public:
 class block_entry : public table_entry {
   char *contents;
 protected:
-  void do_divert(int alphabetic, int ncols, const string *mw);
+  void do_divert(int alphabetic, int ncols, const string *mw, int *sep);
 public:
   block_entry(char *s, const entry_modifier *m);
   ~block_entry();
-  int divert(int ncols, const string *mw);
+  int divert(int ncols, const string *mw, int *sep);
   void do_width();
   void do_depth();
   void position_vertically();
@@ -319,7 +321,7 @@ class alphabetic_block_entry : public block_entry {
 public:
   alphabetic_block_entry(char *s, const entry_modifier *m);
   void print();
-  int divert(int ncols, const string *mw);
+  int divert(int ncols, const string *mw, int *sep);
 };
 
 table_entry::table_entry(const entry_modifier *m)
@@ -332,7 +334,7 @@ table_entry::~table_entry()
 {
 }
 
-int table_entry::divert(int, const string *)
+int table_entry::divert(int, const string *, int *)
 {
   return 0;
 }
@@ -461,7 +463,8 @@ void repeated_char_entry::simple_print(int)
 {
   printfs("\\h'|\\n[%1]u'", column_start_reg(start_col));
   set_inline_modifier(mod);
-  printfs("\\l" DELIMITER_CHAR "\\n[%1]u\\&", span_width_reg(start_col, end_col));
+  printfs("\\l" DELIMITER_CHAR "\\n[%1]u\\&",
+	  span_width_reg(start_col, end_col));
   prints(contents);
   prints(DELIMITER_CHAR);
   restore_inline_modifier(mod);
@@ -474,15 +477,11 @@ simple_text_entry::simple_text_entry(char *s, const entry_modifier *m)
 
 void simple_text_entry::do_width()
 {
-  printfs(".ds %1 \"", text_string_name(start_row, start_col));
-  set_inline_modifier(mod);
-  prints(contents);
-  restore_inline_modifier(mod);
-  prints('\n');
   set_location();
-  printfs(".nr %1 \\n[%1]>?\\w'\\*[%2]'\n",
-	  span_width_reg(start_col, end_col),
-	  text_string_name(start_row, start_col));
+  printfs(".nr %1 \\n[%1]>?\\w" DELIMITER_CHAR,
+	  span_width_reg(start_col, end_col));
+  print_contents();
+  prints(DELIMITER_CHAR "\n");
 }
 
 left_text_entry::left_text_entry(char *s, const entry_modifier *m)
@@ -493,7 +492,7 @@ left_text_entry::left_text_entry(char *s, const entry_modifier *m)
 void left_text_entry::simple_print(int)
 {
   printfs("\\h'|\\n[%1]u'", column_start_reg(start_col));
-  printfs("\\*[%1]", text_string_name(start_row, start_col));
+  print_contents();
 }
 
 // The only point of this is to make `\a' ``work'' as in Unix tbl.  Grrr.
@@ -511,7 +510,9 @@ right_text_entry::right_text_entry(char *s, const entry_modifier *m)
 void right_text_entry::simple_print(int)
 {
   printfs("\\h'|\\n[%1]u'", column_start_reg(start_col));
-  printfs("\002\003\\*[%1]\002", text_string_name(start_row, start_col));
+  prints("\002\003");
+  print_contents();
+  prints("\002");
 }
 
 void right_text_entry::add_tab()
@@ -527,7 +528,9 @@ center_text_entry::center_text_entry(char *s, const entry_modifier *m)
 void center_text_entry::simple_print(int)
 {
   printfs("\\h'|\\n[%1]u'", column_start_reg(start_col));
-  printfs("\002\003\\*[%1]\003\002", text_string_name(start_row, start_col));
+  prints("\002\003");
+  print_contents();
+  prints("\003\002");
 }
 
 void center_text_entry::add_tab()
@@ -543,16 +546,14 @@ numeric_text_entry::numeric_text_entry(char *s, const entry_modifier *m, int pos
 void numeric_text_entry::do_width()
 {
   if (dot_pos != 0) {
-    printfs(".ds %1 \"", text_string_name(start_row, start_col));
+    set_location();
+    printfs(".nr %1 0\\w" DELIMITER_CHAR,
+	    block_width_reg(start_row, start_col));
     set_inline_modifier(mod);
     for (int i = 0; i < dot_pos; i++)
       prints(contents[i]);
     restore_inline_modifier(mod);
-    prints('\n');
-    set_location();
-    printfs(".nr %1 0\\w'\\*[%2]'\n",
-	    block_width_reg(start_row, start_col),
-	    text_string_name(start_row, start_col));
+    prints(DELIMITER_CHAR "\n");
     printfs(".nr %1 \\n[%1]>?\\n[%2]\n",
 	    span_left_numeric_width_reg(start_col, end_col),
 	    block_width_reg(start_row, start_col));
@@ -560,15 +561,13 @@ void numeric_text_entry::do_width()
   else
     printfs(".nr %1 0\n", block_width_reg(start_row, start_col));
   if (contents[dot_pos] != '\0') {
-    printfs(".ds %1 \"", right_text_string_name(start_row, start_col));
+    set_location();
+    printfs(".nr %1 \\n[%1]>?\\w" DELIMITER_CHAR,
+	    span_right_numeric_width_reg(start_col, end_col));
     set_inline_modifier(mod);
     prints(contents + dot_pos);
     restore_inline_modifier(mod);
-    prints('\n');
-    set_location();
-    printfs(".nr %1 \\n[%1]>?\\w'\\*[%2]'\n",
-	    span_right_numeric_width_reg(start_col, end_col),
-	    right_text_string_name(start_row, start_col));
+    prints(DELIMITER_CHAR "\n");
   }
 }
 
@@ -580,11 +579,7 @@ void numeric_text_entry::simple_print(int)
 	  span_right_numeric_width_reg(start_col, end_col),
 	  column_start_reg(start_col),
 	  block_width_reg(start_row, start_col));
-  if (dot_pos != 0) {
-    printfs("\\*[%1]", text_string_name(start_row, start_col));
-  }
-  if (contents[dot_pos] != '\0')
-    printfs("\\*[%1]", right_text_string_name(start_row, start_col));
+  print_contents();
 }
 
 alphabetic_text_entry::alphabetic_text_entry(char *s, const entry_modifier *m)
@@ -594,15 +589,11 @@ alphabetic_text_entry::alphabetic_text_entry(char *s, const entry_modifier *m)
 
 void alphabetic_text_entry::do_width()
 {
-  printfs(".ds %1 \"", text_string_name(start_row, start_col));
-  set_inline_modifier(mod);
-  prints(contents);
-  restore_inline_modifier(mod);
-  prints('\n');
   set_location();
-  printfs(".nr %1 \\n[%1]>?\\w'\\*[%2]'\n",
-	  span_alphabetic_width_reg(start_col, end_col),
-	  text_string_name(start_row, start_col));
+  printfs(".nr %1 \\n[%1]>?\\w" DELIMITER_CHAR,
+	  span_alphabetic_width_reg(start_col, end_col));
+  print_contents();
+  prints(DELIMITER_CHAR "\n");
 }
 
 void alphabetic_text_entry::simple_print(int)
@@ -611,7 +602,7 @@ void alphabetic_text_entry::simple_print(int)
   printfs("\\h'\\n[%1]u-\\n[%2]u/2u'",
 	  span_width_reg(start_col, end_col),
 	  span_alphabetic_width_reg(start_col, end_col));
-  printfs("\\*[%1]", text_string_name(start_row, start_col));
+  print_contents();
 }
 
 // The only point of this is to make `\a' ``work'' as in Unix tbl.  Grrr.
@@ -658,23 +649,36 @@ void block_entry::position_vertically()
     prints(".sp -.5v\n");
 }
 
-int block_entry::divert(int ncols, const string *mw)
+int block_entry::divert(int ncols, const string *mw, int *sep)
 {
-  do_divert(0, ncols, mw);
+  do_divert(0, ncols, mw, sep);
   return 1;
 }
 
-void block_entry::do_divert(int alphabetic, int ncols, const string *mw)
+void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
+			    int *sep)
 {
   printfs(".di %1\n", block_diversion_name(start_row, start_col));
   prints(".if \\n[" SAVED_FILL_REG "] .fi\n"
 	 ".in 0\n");
-  if (start_col == end_col && !mw[start_col].empty())
-    printfs(".ll (n;%1)>?\\n[%2]u",
-	    mw[start_col],
-	    span_width_reg(start_col, start_col));
+  prints(".ll ");
+  for (int i = start_col; i <= end_col; i++)
+    if (mw[i].empty())
+      break;
+  if (i > end_col) {
+    // Every column spanned by this entry has a minimum width.
+    for (int i = start_col; i <= end_col; i++) {
+      if (i > start_col) {
+	if (sep)
+	  printfs("+%1n", as_string(sep[i - 1]));
+	prints('+');
+      }
+      printfs("(n;%1)", mw[i]);
+    }
+    printfs(">?\\n[%1]u", span_width_reg(start_col, end_col));
+  }
   else
-    printfs(".ll (u;\\n[%1]>?(\\n[.l]*%2/%3))", 
+    printfs("(u;\\n[%1]>?(\\n[.l]*%2/%3))", 
 	    span_width_reg(start_col, end_col), 
 	    as_string(end_col - start_col + 1),
 	    as_string(ncols + 1));
@@ -767,9 +771,9 @@ alphabetic_block_entry::alphabetic_block_entry(char *s,
 {
 }
 
-int alphabetic_block_entry::divert(int ncols, const string *mw)
+int alphabetic_block_entry::divert(int ncols, const string *mw, int *sep)
 {
-  do_divert(1, ncols, mw);
+  do_divert(1, ncols, mw, sep);
   return 1;
 }
 
@@ -778,7 +782,7 @@ void alphabetic_block_entry::print()
   printfs(".in +\\n[%1]u+(\\n[%2]u-\\n[%3]u/2u)\n",
 	  column_start_reg(start_col),
 	  span_width_reg(start_col, end_col),
-	  span_alphabetic_width_reg(start_row, end_col));
+	  span_alphabetic_width_reg(start_col, end_col));
   printfs(".%1\n", block_diversion_name(start_row, start_col));
   prints(".in\n");
 }
@@ -1199,7 +1203,7 @@ table::table(int nc, unsigned f, int ls)
   vrule_list(0), row_is_all_lines(0), span_list(0)
 {
   minimum_width = new string[ncolumns];
-  column_separation = new int[ncolumns - 1];
+  column_separation = ncolumns > 1 ? new int[ncolumns - 1] : 0;
   equal = new char[ncolumns];
   int i;
   for (i = 0; i < ncolumns; i++)
@@ -1715,65 +1719,6 @@ void table::init_output()
 	 ".nr " NEED_BOTTOM_RULE_REG " 1\n"
 	 ".nr " SUPPRESS_BOTTOM_REG " 0\n"
 	 ".eo\n"
-	 ".de " KEEP_MACRO_NAME "\n"
-	 ".if '\\n[.z]'' \\{.ds " QUOTE_STRING_NAME " \\\\\n"
-	 ".ds " TRANSPARENT_STRING_NAME " \\!\n"
-	 ".di " SECTION_DIVERSION_NAME "\n"
-	 ".nr " SECTION_DIVERSION_FLAG_REG " 1\n"
-	 ".in 0\n"
-	 ".\\}\n"
-	 "..\n"
-	 ".de " RELEASE_MACRO_NAME "\n"
-	 ".if \\n[" SECTION_DIVERSION_FLAG_REG "] \\{"
-	 ".di\n"
-	 ".in \\n[" SAVED_INDENT_REG "]u\n"
-	 ".nr " SAVED_DN_REG " \\n[dn]\n"
-	 ".ds " QUOTE_STRING_NAME "\n"
-	 ".ds " TRANSPARENT_STRING_NAME "\n"
-	 ".nr " SECTION_DIVERSION_FLAG_REG " 0\n"
-	 ".if \\n[.t]<=\\n[dn] \\{"
-	 ".nr T. 1\n"
-	 ".T#\n"
-	 ".nr " SUPPRESS_BOTTOM_REG " 1\n"
-	 ".sp \\n[.t]u\n"
-	 ".nr " SUPPRESS_BOTTOM_REG " 0\n"
-	 ".mk #T\n"
-	 ".\\}\n"
-	 ".if \\n[.t]<=\\n[" SAVED_DN_REG "] "
-	 /* Since we turn off traps, it won't get into an infinite loop
-	 when we try and print it; it will just go off the bottom of the
-	 page. */
-	 ".tm warning: page \\n%: table text block will not fit on one page\n"
-	 ".nf\n"
-	 ".ls 1\n"
-	 "." SECTION_DIVERSION_NAME "\n"
-	 ".ls\n"
-	 ".rm " SECTION_DIVERSION_NAME "\n"
-	 ".\\}\n"
-         "..\n"
-	 ".nr " TABLE_DIVERSION_FLAG_REG " 0\n"
-	 ".de " TABLE_KEEP_MACRO_NAME "\n"
-	 ".if '\\n[.z]'' \\{"
-	 ".di " TABLE_DIVERSION_NAME "\n"
-	 ".nr " TABLE_DIVERSION_FLAG_REG " 1\n"
-	 ".\\}\n"
-	 "..\n"
-	 ".de " TABLE_RELEASE_MACRO_NAME "\n"
-	 ".if \\n[" TABLE_DIVERSION_FLAG_REG "] \\{.br\n"
-	 ".di\n"
-	 ".nr " SAVED_DN_REG " \\n[dn]\n"
-	 ".ne \\n[dn]u+\\n[.V]u\n"
-	 ".ie \\n[.t]<=\\n[" SAVED_DN_REG "] "
-	 ".tm error: page \\n%: table will not fit on one page; use .TS H/.TH\n"
-	 ".el \\{"
-	 ".in 0\n"
-	 ".ls 1\n"
-	 ".nf\n"
-	 "." TABLE_DIVERSION_NAME "\n"
-	 ".\\}\n"
-	 ".rm " TABLE_DIVERSION_NAME "\n"
-	 ".\\}\n"
-	 "..\n"
 	 ".de " REPEATED_MARK_MACRO "\n"
 	 ".mk \\$1\n"
 	 ".if !'\\n(.z'' \\!." REPEATED_MARK_MACRO " \"\\$1\"\n"
@@ -1781,8 +1726,68 @@ void table::init_output()
 	 ".de " REPEATED_VPT_MACRO "\n"
 	 ".vpt \\$1\n"
 	 ".if !'\\n(.z'' \\!." REPEATED_VPT_MACRO " \"\\$1\"\n"
-	 "..\n"
-	 ".ec\n"
+	 "..\n");
+  if (!(flags & NOKEEP))
+    prints(".de " KEEP_MACRO_NAME "\n"
+	   ".if '\\n[.z]'' \\{.ds " QUOTE_STRING_NAME " \\\\\n"
+	   ".ds " TRANSPARENT_STRING_NAME " \\!\n"
+	   ".di " SECTION_DIVERSION_NAME "\n"
+	   ".nr " SECTION_DIVERSION_FLAG_REG " 1\n"
+	   ".in 0\n"
+	   ".\\}\n"
+	   "..\n"
+	   ".de " RELEASE_MACRO_NAME "\n"
+	   ".if \\n[" SECTION_DIVERSION_FLAG_REG "] \\{"
+	   ".di\n"
+	   ".in \\n[" SAVED_INDENT_REG "]u\n"
+	   ".nr " SAVED_DN_REG " \\n[dn]\n"
+	   ".ds " QUOTE_STRING_NAME "\n"
+	   ".ds " TRANSPARENT_STRING_NAME "\n"
+	   ".nr " SECTION_DIVERSION_FLAG_REG " 0\n"
+	   ".if \\n[.t]<=\\n[dn] \\{"
+	   ".nr T. 1\n"
+	   ".T#\n"
+	   ".nr " SUPPRESS_BOTTOM_REG " 1\n"
+	   ".sp \\n[.t]u\n"
+	   ".nr " SUPPRESS_BOTTOM_REG " 0\n"
+	   ".mk #T\n"
+	   ".\\}\n"
+	   ".if \\n[.t]<=\\n[" SAVED_DN_REG "] "
+	   /* Since we turn off traps, it won't get into an infinite loop
+	   when we try and print it; it will just go off the bottom of the
+	   page. */
+	   ".tm warning: page \\n%: table text block will not fit on one page\n"
+	   ".nf\n"
+	   ".ls 1\n"
+	   "." SECTION_DIVERSION_NAME "\n"
+	   ".ls\n"
+	   ".rm " SECTION_DIVERSION_NAME "\n"
+	   ".\\}\n"
+	   "..\n"
+	   ".nr " TABLE_DIVERSION_FLAG_REG " 0\n"
+	   ".de " TABLE_KEEP_MACRO_NAME "\n"
+	   ".if '\\n[.z]'' \\{"
+	   ".di " TABLE_DIVERSION_NAME "\n"
+	   ".nr " TABLE_DIVERSION_FLAG_REG " 1\n"
+	   ".\\}\n"
+	   "..\n"
+	   ".de " TABLE_RELEASE_MACRO_NAME "\n"
+	   ".if \\n[" TABLE_DIVERSION_FLAG_REG "] \\{.br\n"
+	   ".di\n"
+	   ".nr " SAVED_DN_REG " \\n[dn]\n"
+	   ".ne \\n[dn]u+\\n[.V]u\n"
+	   ".ie \\n[.t]<=\\n[" SAVED_DN_REG "] "
+	   ".tm error: page \\n%: table will not fit on one page; use .TS H/.TH with a supporting macro package\n"
+	   ".el \\{"
+	   ".in 0\n"
+	   ".ls 1\n"
+	   ".nf\n"
+	   "." TABLE_DIVERSION_NAME "\n"
+	   ".\\}\n"
+	   ".rm " TABLE_DIVERSION_NAME "\n"
+	   ".\\}\n"
+	   "..\n");
+  prints(".ec\n"
 	 ".ce 0\n"
 	 ".nf\n");
 }
@@ -1798,20 +1803,6 @@ string block_diversion_name(int r, int c)
 {
   static char name[sizeof(BLOCK_DIVERSION_PREFIX)+INT_DIGITS+1+INT_DIGITS];
   sprintf(name, BLOCK_DIVERSION_PREFIX "%d,%d", r, c);
-  return string(name);
-}
-
-string text_string_name(int r, int c)
-{
-  static char name[sizeof(TEXT_STRING_PREFIX) + INT_DIGITS + 1 + INT_DIGITS];
-  sprintf(name, TEXT_STRING_PREFIX "%d,%d", r, c);
-  return string(name);
-}
-
-string right_text_string_name(int r, int c)
-{
-  static char name[sizeof(RIGHT_TEXT_STRING_PREFIX)+INT_DIGITS+ 1+INT_DIGITS];
-  sprintf(name, RIGHT_TEXT_STRING_PREFIX "%d,%d", r, c);
   return string(name);
 }
 
@@ -2122,7 +2113,8 @@ void table::compute_widths()
   int had_spanning_block = 0;
   int had_equal_block = 0;
   for (q = entry_list; q; q = q->next)
-    if (q->divert(ncolumns, minimum_width)) {
+    if (q->divert(ncolumns, minimum_width,
+		  (flags & EXPAND) ? column_separation : 0)) {
       if (q->end_col > q->start_col)
 	had_spanning_block = 1;
       for (i = q->start_col; i <= q->end_col && !had_equal_block; i++)
@@ -2142,7 +2134,7 @@ void table::compute_widths()
 
 void table::print_single_hline(int r)
 {
-  prints(".vs \\n[.v]u-" BODY_HEIGHT "-" BODY_DEPTH ">?\\n[.V]u\n"
+  prints(".vs " LINE_SEP ">?\\n[.V]u\n"
 	 ".ls 1\n"
 	 "\\v'" BODY_DEPTH "'"
 	 "\\s[\\n[" LINESIZE_REG "]]");
@@ -2185,7 +2177,7 @@ void table::print_single_hline(int r)
 
 void table::print_double_hline(int r)
 {
-  prints(".vs \\n[.v]u-" BODY_HEIGHT "-" BODY_DEPTH "+" DOUBLE_LINE_SEP
+  prints(".vs " LINE_SEP "+" DOUBLE_LINE_SEP
 	 ">?\\n[.V]u\n"
 	 ".ls 1\n"
 	 "\\v'" BODY_DEPTH "'"
@@ -2195,8 +2187,7 @@ void table::print_double_hline(int r)
 	   "\\D'l |\\n[TW]u 0'"
 	   "\\v'" DOUBLE_LINE_SEP "'"
 	   "\\h'|0'"
-	   "\\D'l |\\n[TW]u 0'"
-	   "\n");
+	   "\\D'l |\\n[TW]u 0'");
   else {
     int start_col = 0;
     for (;;) {
@@ -2254,9 +2245,9 @@ void table::compute_vrule_top_adjust(int start_row, int col, string &result)
 {
   if (row_is_all_lines[start_row] && start_row < nrows - 1) {
     if (row_is_all_lines[start_row] == 2)
-      result = "\\n[.v]u-" BODY_HEIGHT "-" BODY_DEPTH "+" DOUBLE_LINE_SEP;
+      result = LINE_SEP ">?\\n[.V]u" "+" DOUBLE_LINE_SEP;
     else
-      result = "\\n[.v]u-" BODY_HEIGHT "-" BODY_DEPTH;
+      result = LINE_SEP ">?\\n[.V]u";
     start_row++;
   }
   else {
@@ -2324,9 +2315,9 @@ void table::compute_vrule_bot_adjust(int end_row, int col, string &result)
       return;
     }
     if (row_is_all_lines[end_row+1] == 1)
-      result = "\\n[.v]u-" BODY_HEIGHT "-" BODY_DEPTH;
+      result = LINE_SEP;
     else if (row_is_all_lines[end_row+1] == 2)
-      result = "\\n[.v]u-" BODY_HEIGHT "-" BODY_DEPTH "+" DOUBLE_LINE_SEP;
+      result = LINE_SEP "+" DOUBLE_LINE_SEP;
     else
       result = "";
   }
@@ -2502,7 +2493,7 @@ int table::row_ends_section(int r)
 
 void table::do_row(int r)
 {
-  if (row_begins_section(r))
+  if (!(flags & NOKEEP) && row_begins_section(r))
     prints("." KEEP_MACRO_NAME "\n");
   int had_line = 0;
   for (stuff *p = stuff_list; p && p->row < r; p = p->next)
@@ -2515,8 +2506,6 @@ void table::do_row(int r)
   if (!had_line && !row_is_all_lines[r])
     printfs("." REPEATED_MARK_MACRO " %1\n", row_top_reg(r));
   had_line = 0;
-  printfs("\\*[" TRANSPARENT_STRING_NAME "].nr " CURRENT_ROW_REG " %1\n",
-	  as_string(r));
   for (; p && p->row == r; p = p->next)
     if (!p->printed) {
       p->print(this);
@@ -2525,10 +2514,13 @@ void table::do_row(int r)
 	had_line = 1;
       }
     }
+  // Change the row *after* printing the stuff list (which might contain .TH).
+  printfs("\\*[" TRANSPARENT_STRING_NAME "].nr " CURRENT_ROW_REG " %1\n",
+	  as_string(r));
   if (!had_line && row_is_all_lines[r])
     printfs("." REPEATED_MARK_MACRO " %1\n", row_top_reg(r));
   // we might have had a .TH, for example,  since we last tried
-  if (row_begins_section(r))
+  if (!(flags & NOKEEP) && row_begins_section(r))
     prints("." KEEP_MACRO_NAME "\n");
   printfs(".mk %1\n", row_start_reg(r));
   prints(".mk " BOTTOM_REG "\n"
@@ -2551,7 +2543,7 @@ void table::do_row(int r)
   if (row_is_blank)
     prints(".nr " BOTTOM_REG " +1v\n");
   if (row_is_all_lines[r]) {
-    prints(".vs \\n[.v]u-" BODY_HEIGHT "-" BODY_DEPTH);
+    prints(".vs " LINE_SEP);
     if (row_is_all_lines[r] == 2)
       prints("+" DOUBLE_LINE_SEP);
     prints(">?\\n[.V]u\n.ls 1\n");
@@ -2653,7 +2645,7 @@ void table::do_row(int r)
       }
     if (printed_one)
       prints("." REPEATED_VPT_MACRO " 1\n");
-    if (row_ends_section(r))
+    if (!(flags & NOKEEP) && row_ends_section(r))
       prints("." RELEASE_MACRO_NAME "\n");
   }
 }
@@ -2661,12 +2653,12 @@ void table::do_row(int r)
 void table::do_top()
 {
   prints(".fc \002\003\n");
-  if (flags & (BOX|DOUBLEBOX|ALLBOX))
+  if (!(flags & NOKEEP) && (flags & (BOX|DOUBLEBOX|ALLBOX)))
     prints("." TABLE_KEEP_MACRO_NAME "\n");
   if (flags & DOUBLEBOX) {
     prints(".ls 1\n"
-	   ".vs \\n[.v]u-" BODY_HEIGHT "-" BODY_DEPTH ">?\\n[.V]u\n"
-	   "\\v'" BODY_DEPTH "'\\s[\\n[" LINESIZE_REG "]]\\D'l \\n[TW]u 0'\n"
+	   ".vs " LINE_SEP ">?\\n[.V]u\n"
+	   "\\v'" BODY_DEPTH "'\\s[\\n[" LINESIZE_REG "]]\\D'l \\n[TW]u 0'\\s0\n"
 	   ".vs\n"
 	   "." REPEATED_MARK_MACRO " " TOP_REG "\n"
 	   ".vs " DOUBLE_LINE_SEP ">?\\n[.V]u\n");
@@ -2693,12 +2685,13 @@ void table::do_bottom()
   for (stuff *p = stuff_list; p; p = p->next)
     if (p->row > nrows - 1)
       p->print(this);
-  prints("." RELEASE_MACRO_NAME "\n");
+  if (!(flags & NOKEEP))
+    prints("." RELEASE_MACRO_NAME "\n");
   printfs(".mk %1\n", row_top_reg(nrows));
   prints(".nr " NEED_BOTTOM_RULE_REG " 1\n"
 	 ".nr T. 1\n"
 	 ".T#\n");
-  if (flags & (BOX|DOUBLEBOX|ALLBOX))
+  if (!(flags & NOKEEP) && (flags & (BOX|DOUBLEBOX|ALLBOX)))
     prints("." TABLE_RELEASE_MACRO_NAME "\n");
   if (flags & DOUBLEBOX)
     prints(".sp " DOUBLE_LINE_SEP "\n");

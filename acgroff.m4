@@ -77,7 +77,7 @@ EOM
 GROFF_EXIT
 ,)
 GROFF_CC_COMPILE_CHECK([C++ header files],[#include <stdio.h>],
-[fputs(0, 0);],,
+[fopen(0, 0);],,
 [cat <<\EOF
 Your header files do not appear to support C++.
 I was unable to compile and link a simple C++ program that used a function
@@ -206,6 +206,10 @@ define(GROFF_SYS_SIGLIST,
 [extern char *sys_siglist[]; sys_siglist[0] = 0;],changequote([,])dnl
 AC_DEFINE(HAVE_SYS_SIGLIST))])dnl
 dnl
+define(GROFF_STRUCT_EXCEPTION,
+[AC_COMPILE_CHECK([struct exception],[#include <math.h>],
+[struct exception e;],
+AC_DEFINE(HAVE_STRUCT_EXCEPTION))])dnl
 define(GROFF_COOKIE_BUG,
 [echo checking for gcc/g++ delete bug
 GROFF_CC_TEST_PROGRAM([
@@ -277,7 +281,28 @@ echo using default value of ${BROKEN_SPOOLER_FLAGS} for grops -b option
 AC_SUBST(BROKEN_SPOOLER_FLAGS)])dnl
 dnl
 define(GROFF_PRINT,
-[AC_PROGRAMS_CHECK(PSPRINT,lpr lp)
+[if test -z "$PSPRINT"
+then
+	AC_PROGRAMS_CHECK(LPR,lpr)
+	AC_PROGRAMS_CHECK(LP,lp)
+	if test -n "$LPR" && test -n "$LP"
+	then
+		# HP-UX provides an lpr command that emulates lpr using lp,
+		# but it doesn't have lpq; in this case we want to use lp
+		# rather than lpr.
+		AC_PROGRAMS_CHECK(LPQ,lpq)
+		test -n "$LPQ" || LPR=
+	fi
+	if test -n "$LPR"
+	then
+		PSPRINT="$LPR"
+	elif test -n "$LP"
+	then
+		PSPRINT="$LP"
+	fi
+fi
+AC_SUBST(PSPRINT)
+# Figure out DVIPRINT from PSPRINT.
 if test -n "$PSPRINT" && test -z "$DVIPRINT"
 then
 	if test "X$PSPRINT" = "Xlpr"
@@ -289,9 +314,16 @@ then
 fi
 AC_SUBST(DVIPRINT)])dnl
 define(GROFF_GETOPT,
-[GROFF_CC_COMPILE_CHECK([declaration of getopt],[#include <stdlib.h>],
+[GROFF_CC_COMPILE_CHECK([declaration of getopt in stdlib.h],
+[#include <stdlib.h>],
 [int opt = getopt(0, 0, 0); optarg = "foo"; optind = 1;],
-AC_DEFINE(STDLIB_H_DECLARES_GETOPT))])dnl
+AC_DEFINE(STDLIB_H_DECLARES_GETOPT))
+GROFF_CC_COMPILE_CHECK([declaration of getopt in unistd.h],
+[#include <sys/types.h>
+#include <unistd.h>],
+[int opt = getopt(0, 0, 0); optarg = "foo"; optind = 1;],
+AC_DEFINE(UNISTD_H_DECLARES_GETOPT))
+])dnl
 define(GROFF_PUTENV,
 [GROFF_CC_COMPILE_CHECK([declaration of putenv],[#include <stdlib.h>],
 [putenv((char *)0);],

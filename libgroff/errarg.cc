@@ -22,8 +22,9 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include "assert.h"
 #include "errarg.h"
 
-errarg::errarg(const char *p) : s(p ? p : "(null)"), type(STRING)
+errarg::errarg(const char *p) : type(STRING)
 {
+  s = p ? p : "(null)";
 }
 
 errarg::errarg() : type(EMPTY)
@@ -35,16 +36,19 @@ errarg::errarg(unsigned char cc) : type(CHAR)
   c = cc;
 }
 
-errarg::errarg(int nn) : type(INTEGER), n(nn)
+errarg::errarg(int nn) : type(INTEGER)
 {
+  n = nn;
 }
 
-errarg::errarg(char cc) : type(CHAR), c(cc)
+errarg::errarg(char cc) : type(CHAR)
 {
+  c = cc;
 }
 
-errarg::errarg(double dd) : type(DOUBLE), d(dd)
+errarg::errarg(double dd) : type(DOUBLE)
 {
+  d = dd;
 }
 
 int errarg::empty() const

@@ -1,6 +1,50 @@
 This file describes recent user-visible changes in groff.  Bug fixes
 are not described.  There are more details in the man pages.
 
+VERSION 1.07
+============
+
+Groff
+-----
+
+The environment variable GROFF_COMMAND_PREFIX can be used to control
+whether groff looks for `gtroff' or `troff' (similarily for the
+preprocessors.)
+
+Troff
+-----
+
+Multilingual hyphenation is supported by new `hpf' and `hla' requests,
+and by a `\n[.hla]' number register.  The -H option has been removed.
+Files of hyphenation patterns can have comments.
+
+When a font cannot be found, troff gives a warning (of type `font',
+enabled by default) instead of an error.
+
+There's a new request `trnt' that's like `tr' except that it doesn't
+apply to text transparently throughput into a diversion with \!.
+
+Tbl
+---
+
+There is a `nokeep' option which tells tbl not to use diversions to
+try to keep the table on one page.
+
+Eqn
+---
+
+Setting the parameter `nroff' to a non-zero value causes `ndefine' to
+behave like `define' and `tdefine' to be ignored.  This is done by
+eqnrc when the current device is ascii or latin1.  There's a `neqn'
+script that just does `eqn -Tascii'.
+
+Grotty
+------
+
+grotty uses whatever page length was specified using the `pl' request
+rather than using the paperlength command in the DESC file.  The
+paperwidth command in the DESC file is also ignored.
+
 VERSION 1.06
 ============
 
@@ -150,7 +194,7 @@ Xditview
 --------
 
 The `n', Space and Return keys are bound to the Next Page action.  The
-`q', BackSpace and Delete keys are bound to the Previous Page action.
+`p', BackSpace and Delete keys are bound to the Previous Page action.
 The `q' key is bound to the Quit action.
 
 The `r' key is bound to a rerasterize action that reruns groff, and

@@ -334,24 +334,29 @@ install:: GXditview.ad
 	else (set -x; $(MKDIRHIER) $(DESTDIR)$(XAPPLOADDIR)); fi
 	$(INSTALL) -c $(INSTAPPFLAGS) GXditview.ad $(DESTDIR)$(XAPPLOADDIR)/GXditview
 
-install.dev: xtotroff
-	-[ -d $(GROFF_FONTDIR) ] || mkdir $(GROFF_FONTDIR)
+fonts: xtotroff DESC FontMap
 	@dir=`pwd`; \
+	fonts=`sed -e 's/[	 ].*//' FontMap`; \
 	for dpi in $(DPIS); do \
-	echo Installing devX$$dpi; \
-	[ -d $(GROFF_FONTDIR)/devX$$dpi ] \
-	|| mkdir $(GROFF_FONTDIR)/devX$$dpi; \
-	rm -f $(GROFF_FONTDIR)/devX$$dpi/DESC; \
-	sed -e "s/res 75/res $$dpi/" DESC >$(GROFF_FONTDIR)/devX$$dpi/DESC; \
-	(cd $(GROFF_FONTDIR)/devX$$dpi; \
-	$$dir/xtotroff -g -r $$dpi -s 10 $$dir/FontMap); \
-	[ -d $(GROFF_FONTDIR)/devX$$dpi-12 ] \
-	|| mkdir $(GROFF_FONTDIR)/devX$$dpi-12; \
-	rm -f $(GROFF_FONTDIR)/devX$$dpi-12/DESC; \
-	sed -e "s/res 75/res $$dpi/" -e 's/unitwidth 10/unitwidth 12/' DESC \
-	>$(GROFF_FONTDIR)/devX$$dpi-12/DESC; \
-	(cd $(GROFF_FONTDIR)/devX$$dpi-12; \
-	$$dir/xtotroff -g -r $$dpi -s 12 $$dir/FontMap); \
+	  echo Making devX$$dpi; \
+	  test -d ../devX$$dpi || mkdir ../devX$$dpi; \
+	  rm -f ../devX$$dpi/DESC; \
+	  sed -e "s/res 75/res $$dpi/" DESC >../devX$$dpi/DESC; \
+	  (cd ../devX$$dpi; \
+	  rm -f Makefile.sub; \
+	  echo DEV=X$$dpi >Makefile.sub; \
+	  echo DEVFILES=DESC $$fonts >>Makefile.sub; \
+	  $$dir/xtotroff -g -r $$dpi -s 10 $$dir/FontMap); \
+	  echo Making devX$$dpi-12; \
+	  test -d ../devX$$dpi-12 || mkdir ../devX$$dpi-12; \
+	  rm -f ../devX$$dpi-12/DESC; \
+	  sed -e "s/res 75/res $$dpi/" -e 's/unitwidth 10/unitwidth 12/' DESC \
+	    >../devX$$dpi-12/DESC; \
+	  (cd ../devX$$dpi-12; \
+	  rm -f Makefile.sub; \
+	  echo DEV=X$$dpi-12 >Makefile.sub; \
+	  echo DEVFILES=DESC $$fonts >>Makefile.sub; \
+	  $$dir/xtotroff -g -r $$dpi -s 12 $$dir/FontMap); \
 	done
 
 extraclean: clean

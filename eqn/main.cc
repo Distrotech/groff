@@ -279,17 +279,8 @@ int main(int argc, char **argv)
       device = optarg;
       break;
     case 's':
-      {
-	const char *ptr = optarg;
-	if (*ptr == '+' || *ptr == '-')
-	  ptr++;
-	while (csdigit(*ptr))
-	  ptr++;
-	if (*ptr == '\0')
-	  set_gsize(optarg);
-	else
-	  error("bad size `%1'", optarg);
-      }
+      if (!set_gsize(optarg))
+	error("invalid size `%1'", optarg);
       break;
     case 'p':
       {
@@ -327,6 +318,9 @@ int main(int argc, char **argv)
     }
   init_table(device);
   init_char_table();
+  printf(".if !'\\*(.T'%s' "
+	 ".tm warning: %s should have been given a `-T\\*(.T' option\n",
+	 device, program_name);
   if (load_startup_file) {
     char *path;
     FILE *fp = macro_path.open_file(STARTUP_FILE, &path);
@@ -339,16 +333,19 @@ int main(int argc, char **argv)
   if (optind >= argc)
     do_file(stdin, "-");
   else
-    for (int i = optind; i < argc; i++) {
-      errno = 0;
-      FILE *fp = fopen(argv[i], "r");
-      if (!fp)
-	fatal("can't open `%1': %2", argv[i], strerror(errno));
+    for (int i = optind; i < argc; i++)
+      if (strcmp(argv[i], "-") == 0)
+	do_file(stdin, "-");
       else {
-	do_file(fp, argv[i]);
-	fclose(fp);
+	errno = 0;
+	FILE *fp = fopen(argv[i], "r");
+	if (!fp)
+	  fatal("can't open `%1': %2", argv[i], strerror(errno));
+	else {
+	  do_file(fp, argv[i]);
+	  fclose(fp);
+	}
       }
-    }
   if (ferror(stdout) || fflush(stdout) < 0)
     fatal("output error");
   exit(0);

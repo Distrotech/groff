@@ -108,7 +108,7 @@ main(int argc, char **argv)
     ptr = strchr(ptr, '\0');
   }
   search_list_iterator iter(&list, buffer);
-  char *start;
+  const char *start;
   int len;
   for (int count = 0; iter.next(&start, &len); count++) {
     if (fwrite(start, 1, len, stdout) != len)

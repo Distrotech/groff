@@ -31,6 +31,8 @@ class charinfo {
   unsigned char flags;
   unsigned char ascii_code;
   char not_found;
+  char transparent_translate;	// non-zero means translation applies to
+				// to transparent throughput
 public:
   enum { 
     ENDS_SENTENCE = 1,
@@ -61,11 +63,11 @@ public:
   unsigned char get_ascii_code();
   void set_hyphenation_code(unsigned char);
   void set_ascii_code(unsigned char);
-  charinfo *get_translation();
-  void set_translation(charinfo *);
+  charinfo *get_translation(int = 0);
+  void set_translation(charinfo *, int);
   void set_flags(unsigned char);
-  void set_special_translation(int);
-  int get_special_translation();
+  void set_special_translation(int, int);
+  int get_special_translation(int = 0);
   macro *set_macro(macro *);
   macro *get_macro();
   int first_time_not_found();
@@ -113,9 +115,11 @@ inline int charinfo::numbered()
   return flags & NUMBERED;
 }
 
-inline charinfo *charinfo::get_translation()
+inline charinfo *charinfo::get_translation(int transparent_throughput)
 {
-  return translation;
+  return (transparent_throughput && !transparent_translate
+	  ? 0
+	  : translation);
 }
 
 inline unsigned char charinfo::get_hyphenation_code()
@@ -138,9 +142,11 @@ inline int charinfo::get_index()
   return index;
 }
 
-inline int charinfo::get_special_translation()
+inline int charinfo::get_special_translation(int transparent_throughput)
 {
-  return special_translation;
+  return (transparent_throughput && !transparent_translate
+	  ? TRANSLATE_NONE
+	  : special_translation);
 }
 
 inline macro *charinfo::get_macro()

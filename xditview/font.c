@@ -12,6 +12,8 @@
 #include "DviP.h"
 #include "XFontName.h"
 
+static DisposeFontSizes();
+
 static char *
 savestr (s)
 	char	*s;

@@ -26,13 +26,20 @@ extern "C" {
 #endif /* __BORLANDC__ */
 };
 
-#ifndef STDLIB_H_DECLARES_GETOPT
+#ifdef STDLIB_H_DECLARES_GETOPT
+#include <stdlib.h>
+#else /* not STDLIB_H_DECLARES_GETOPT */
+#ifdef UNISTD_H_DECLARES_GETOPT
+#include <sys/types.h>
+#include <unistd.h>
+#else /* not UNISTD_H_DECLARES_GETOPT */
 extern "C" {
-  int getopt(int, const char **, const char *);
+  int getopt(int, char **, const char *);
   extern char *optarg;
   extern int optind;
   extern int opterr;
 }
+#endif /* not UNISTD_H_DECLARES_GETOPT */
 #endif /* not STDLIB_H_DECLARES_GETOPT */
 
 char *strsave(const char *s);

@@ -57,14 +57,14 @@ public:
   void clear();
   void move(string &);
 
-  friend string operator+(const string &, const string &);
-  friend string operator+(const string &, const char *);
-  friend string operator+(const char *, const string &);
-  friend string operator+(const string &, char);
-  friend string operator+(char, const string &);
+  friend inline string operator+(const string &, const string &);
+  friend inline string operator+(const string &, const char *);
+  friend inline string operator+(const char *, const string &);
+  friend inline string operator+(const string &, char);
+  friend inline string operator+(char, const string &);
 
-  friend int operator==(const string &, const string &);
-  friend int operator!=(const string &, const string &);
+  friend inline int operator==(const string &, const string &);
+  friend inline int operator!=(const string &, const string &);
   friend int operator<=(const string &, const string &);
   friend int operator<(const string &, const string &);
   friend int operator>=(const string &, const string &);

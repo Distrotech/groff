@@ -165,7 +165,7 @@ public:
   ~dvi_printer();
   font *make_font(const char *);
   void begin_page(int);
-  void end_page();
+  void end_page(int);
   void set_char(int, font *, const environment *, int w);
   void special(char *arg, const environment *env);
   void end_of_line();
@@ -182,7 +182,7 @@ public:
   draw_dvi_printer();
   ~draw_dvi_printer();
   void draw(int code, int *p, int np, const environment *env);
-  void end_page();
+  void end_page(int);
 };
 
 dvi_printer::dvi_printer()
@@ -465,7 +465,7 @@ void dvi_printer::begin_page(int i)
   end_h = 0;
 }
 
-void dvi_printer::end_page()
+void dvi_printer::end_page(int)
 {
   if (pushed)
     end_of_line();
@@ -473,9 +473,9 @@ void dvi_printer::end_page()
   cur_font = 0;
 }
 
-void draw_dvi_printer::end_page()
+void draw_dvi_printer::end_page(int len)
 {
-  dvi_printer::end_page();
+  dvi_printer::end_page(len);
   output_pen_size = -1;
 }
 
@@ -745,32 +745,26 @@ void draw_dvi_printer::draw(int code, int *p, int np, const environment *env)
 	break;
       }
       set_line_thickness(env);
-      int ch = p[0];
-      int cv = p[1];
-      int eh = p[0] + p[2];
-      int ev = p[1] + p[3];
-      double n = (double(ch)*eh) + (double(cv)*ev);
-      if (n == 0) {
-	moveto(env->hpos, env->vpos);
-	do_special("pa 0 0");
-	sprintf(buf, "pa %d %d", milliinches(eh), milliinches(ev));
-	do_special(buf);
-	do_special("fp");
-      }
-      else {
-	double k = (double(eh)*eh + double(ev)*ev)/(2.0*n);
-	double h = k*ch;
-	double v = k*cv;
-	double start_angle = atan2(-v, -h);
-	double end_angle = atan2(ev - v, eh - h);
-	int rad = milliinches(int(sqrt(h*h + v*v) + .5));
-	moveto(env->hpos + int(h), env->vpos + int(v));
+      double c[2];
+      if (adjust_arc_center(p, c)) {
+	int rad = milliinches(int(sqrt(c[0]*c[0] + c[1]*c[1]) + .5));
+	moveto(env->hpos + int(c[0]), env->vpos + int(c[1]));
 	sprintf(buf, "ar 0 0 %d %d %f %f",
 		rad,
 		rad,
-		end_angle,
-		start_angle);
+		atan2(p[1] + p[3] - c[1], p[0] + p[2] - c[0]),
+		atan2(-c[1], -c[0]));
 	do_special(buf);
+      }
+      else {
+	moveto(env->hpos, env->vpos);
+	do_special("pa 0 0");
+	sprintf(buf,
+		"pa %d %d",
+		milliinches(p[0] + p[2]),
+		milliinches(p[1] + p[3]));
+	do_special(buf);
+	do_special("fp");
       }
       break;
     }

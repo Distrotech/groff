@@ -32,3 +32,12 @@ install_data: $(FILES) $(STRIPFILES) $(MDOCFILES) man.local
 	-test -f $(tmacdir)/man.local || \
 	  $(INSTALL_DATA) $(srcdir)/man.local $(tmacdir)/man.local
 	-rm -f temp
+
+uninstall_sub:
+	-for f in $(FILES) $(STRIPFILES); do rm -f $(tmacdir)/$$f; done
+	-rm -f $(tmacdir)/tmac.$(tmac_s)
+	-if cmp -s $(tmacdir)/man.local $(srcdir)/man.local; then \
+	  rm -f $(tmacdir)/man.local; \
+	fi
+	-for f in $(MDOCFILES); do rm -f $(mdocdir)/$$f; done
+	-rmdir $(mdocdir)

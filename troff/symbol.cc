@@ -30,6 +30,10 @@ int symbol::block_size = 0;
 
 const symbol NULL_SYMBOL;
 
+#ifdef BLOCK_SIZE
+#undef BLOCK_SIZE
+#endif
+
 const int BLOCK_SIZE = 1024;
 // the table will increase in size as necessary
 // the size will be chosen from the following array
@@ -72,7 +76,7 @@ symbol::symbol(const char *p, int how)
   }
   if (table == 0) {
     table_size = table_sizes[0];
-    table = new char*[table_size];
+    table = (const char **)new char*[table_size];
     for (int i = 0; i < table_size; i++)
       table[i] = 0;
     table_used = 0;
@@ -97,7 +101,7 @@ symbol::symbol(const char *p, int how)
 	fatal("too many symbols");
     table_size = table_sizes[i];
     table_used = 0;
-    table = new char*[table_size];
+    table = (const char **)new char*[table_size];
     for (i = 0; i < table_size; i++)
       table[i] = 0;
     for (pp = old_table + old_table_size - 1; 

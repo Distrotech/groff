@@ -25,9 +25,6 @@ groff \- front end for the groff document formatting system
 .BI \-W name
 ]
 [
-.BI \-H file
-]
-[
 .BI \-m name
 ]
 [
@@ -109,6 +106,11 @@ Options without an argument can be grouped behind a single
 A filename of
 .B \-
 denotes the standard input.
+.LP
+The
+.B grog
+command can be used to guess the correct groff command to use to
+format a file.
 .SH OPTIONS
 .TP
 .B \-h
@@ -238,14 +240,36 @@ option in
 .TQ
 .BI \-M dir
 .TQ
-.BI \-H file
-.TQ
 .BI \-f fam
 .TQ
 .BI \-n num
 These are as described in
 .BR @g@troff (@MAN1EXT@) .
 .SH ENVIRONMENT
+.TP
+.SM
+.B GROFF_COMMAND_PREFIX
+If this is set
+.IR X ,
+then
+.B groff
+will run
+.IB X troff
+instead of
+.BR @g@troff .
+This also applies to
+.BR tbl ,
+.BR pic ,
+.BR eqn ,
+.B refer
+and
+.BR soelim .
+It does not apply to
+.BR grops ,
+.BR grodvi ,
+.BR grotty
+and
+.BR gxditview .
 .TP
 .SM
 .B GROFF_TMAC_PATH
@@ -261,10 +285,6 @@ Default device.
 A colon separated list of directories in which to search for the
 .BI dev name
 directory.
-.TP
-.SM
-.B GROFF_HYPHEN
-File containing hyphenation patterns.
 .TP
 .SM
 .B PATH
@@ -287,9 +307,6 @@ and
 commands can create temporary files.
 .SH FILES
 .Tp \w'\fB@FONTDIR@/dev\fIname\fB/DESC'u+3n
-.B @HYPHENFILE@
-Hyphenation patterns
-.TP
 .BI @FONTDIR@/dev name /DESC
 Device description file for device
 .IR name .

@@ -612,25 +612,20 @@ diversion::~diversion()
 void page_offset()
 {
   hunits n;
-  if (!has_arg()) {
-    hunits temp = topdiv->page_offset;
-    topdiv->page_offset = topdiv->prev_page_offset;
-    topdiv->prev_page_offset = temp;
-  }
-  else if (get_hunits(&n, 'v', topdiv->page_offset)) {
-    topdiv->prev_page_offset = topdiv->page_offset;
-    topdiv->page_offset = n;
-  }
+  if (!has_arg() || !get_hunits(&n, 'v', topdiv->page_offset))
+    n = topdiv->prev_page_offset;
+  topdiv->prev_page_offset = topdiv->page_offset;
+  topdiv->page_offset = n;
   skip_line();
 }
 
 void page_length()
 {
   vunits n;
-  if (!has_arg())
-    topdiv->set_page_length(11*units_per_inch);
-  else if (get_vunits(&n, 'v', topdiv->get_page_length()))
+  if (has_arg() && get_vunits(&n, 'v', topdiv->get_page_length()))
     topdiv->set_page_length(n);
+  else
+    topdiv->set_page_length(11*units_per_inch);
   skip_line();
 }
 
@@ -731,23 +726,16 @@ void space_request()
   postpone_traps();
   if (break_flag)
     curenv->do_break();
-  int err = 0;
   vunits n;
-  if (!has_arg())
+  if (!has_arg() || !get_vunits(&n, 'v'))
     n = curenv->get_vertical_spacing();
-  else if (!get_vunits(&n, 'v'))
-    err = 1;
   while (!tok.newline() && !tok.eof())
     tok.next();
-  if (!unpostpone_traps()) {
-    if (!err)
-      curdiv->space(n);
-  }
-  else {
+  if (!unpostpone_traps())
+    curdiv->space(n);
+  else
     // The line might have had line spacing that was truncated.
-    if (!err)
-      truncated_space += n;
-  }
+    truncated_space += n;
   tok.next();
 }
 
@@ -765,16 +753,12 @@ BEGIN_TRAP token is not skipped over. */
 
 void need_space()
 {
-  int err = 0;
   vunits n;
-  if (!has_arg())
+  if (!has_arg() || !get_vunits(&n, 'v'))
     n = curenv->get_vertical_spacing();
-  else if (!get_vunits(&n, 'v'))
-    err = 1;
   while (!tok.newline() && !tok.eof())
     tok.next();
-  if (!err)
-    curdiv->need(n);
+  curdiv->need(n);
   tok.next();
 }
 
@@ -888,10 +872,11 @@ void mark()
   skip_line();
 }
 
+// This is truly bizarre.  It is documented in the SQ manual.
+
 void return_request()
 {
-  vunits dist = V0;
-  // This is truly bizarre.  It is documented in the SQ manual.
+  vunits dist = curdiv->marked_place - curdiv->get_vertical_position();
   if (has_arg()) {
     if (tok.ch() == '-') {
       tok.next();
@@ -901,12 +886,10 @@ void return_request()
     }
     else {
       vunits x;
-      if (get_vunits(&x, 'v') && x >= V0)
-	dist = x - curdiv->get_vertical_position();
+      if (get_vunits(&x, 'v'))
+	dist = x >= V0 ? x - curdiv->get_vertical_position() : V0;
     }
   }
-  else
-    dist = curdiv->marked_place - curdiv->get_vertical_position();
   if (dist < V0)
     curdiv->space(dist);
   skip_line();
@@ -915,10 +898,10 @@ void return_request()
 void vertical_position_traps()
 {
   int n;
-  if (!has_arg())
-    vertical_position_traps_flag = 1;
-  else if (get_integer(&n))
+  if (has_arg() && get_integer(&n))
     vertical_position_traps_flag = (n != 0);
+  else
+    vertical_position_traps_flag = 1;
   skip_line();
 }
 

@@ -982,6 +982,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .aln \\n[.ev]:MCLT LT
 .aln \\n[.ev]:PI PI
 .aln \\n[.ev]:PD PD
+.ad \\n[par*adj]
 .par@reset-env
 ..
 .\" happens when the first page begins
@@ -1041,7 +1042,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .rj 0
 .ul 0
 .fi
-.ad \\n[par*adj]
 .ie \\n[pg@ncols]>1 \{\
 .	ll (u;\\n[\\n[.ev]:MCLL]-\\n[\\n[.ev]:ri]-\\n[\\n[.ev]:pri])
 .	lt \\n[\\n[.ev]:MCLT]u
@@ -1251,21 +1251,20 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .de R
 .ft R
 ..
-.de par*set-font
-.ie \\n[.$] \{\
-.	nr par*prev-font \\n[.f]
-\&\\$3\f[\\*[par*font-name!\\$0]]\\$1\f[\\n[par*prev-font]]\\$2
+.\" par*define-font-macro macro font
+.de par*define-font-macro
+.de \\$1
+.ie \\\\n[.$] \{\
+.	nr par*prev-font \\\\n[.f]
+\&\\\\$3\f[\\$2]\\\\$1\f[\\\\n[par*prev-font]]\\\\$2
 .\}
-.el .ft \\*[par*font-name!\\$0]
+.el .ft \\$2
+\\..
 ..
-.ds par*font-name!B B
-.ds par*font-name!I I
-.ds par*font-name!BI BI
-.ds par*font-name!CW CR
-.als B par*set-font
-.als I par*set-font
-.als BI par*set-font
-.als CW par*set-font
+.par*define-font-macro B B
+.par*define-font-macro I I
+.par*define-font-macro BI BI
+.par*define-font-macro CW CR
 .\" underline a word
 .de UL
 \Z'\\$1'\v'.25m'\D'l \w'\\$1'u 0'\v'-.25m'\\$2

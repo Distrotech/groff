@@ -40,22 +40,24 @@ GRAM=
 LIBCLEAN=
 CLEANADD=
 MOSTLYCLEANFILES=$(MANCLEAN) $(PROG) $(OBJS) $(GENSRCS) $(GENHDRS) \
-  depend.temp core $(CLEANADD)
+  depend.temp core y.output $(CLEANADD)
 CLEANFILES=$(LIBCLEAN)
 DISTCLEANFILES=TAGS Makefile
-REALCLEANFILES=$(YTABC) $(YTABH) Makefile.dep
+REALCLEANFILES=$(YTABC) $(YTABH)
 NAMEPREFIX=
 HDRS=
 MANPAGES=$(MAN1) $(MAN5) $(MAN7)
 MANCLEAN=$(MANPAGES)
 fontsubdir=$(fontdir)/dev$(DEV)
 
-all install install_bin install_data TAGS depend distfiles:
+all install install_bin install_data TAGS depend distfiles uninstall_sub:
 
 install: install_bin install_data
+uninstall: uninstall_sub
 
 .PHONY: all clean distclean mostlyclean realclean extraclean depend distfiles
 .PHONY: install install_bin install_data
+.PHONY: uninstall uninstall_sub
 
 mostlyclean:
 	-rm -f $(MOSTLYCLEANFILES)
@@ -72,7 +74,7 @@ realclean:
 
 extraclean:
 	-rm -f $(DISTCLEANFILES) $(CLEANFILES) $(MOSTLYCLEANFILES) \
-	  \#* *~ core junk grot old temp tmp tem
+	  \#* *~ =* core junk grot old temp tmp tem
 
 .SUFFIXES:
 .SUFFIXES: .o .cc .c .y .man .n
@@ -95,8 +97,7 @@ extraclean:
 .man.n:
 	@echo Making $@ from $<
 	@-rm -f $@
-	@sed -e "s;@HYPHENFILE@;$(hyphenfile);g" \
-	-e "s;@FONTDIR@;$(fontdir);g" \
+	@sed -e "s;@FONTDIR@;$(fontdir);g" \
 	-e "s;@FONTPATH@;$(fontpath);g" \
 	-e "s;@MACRODIR@;$(tmacdir);g" \
 	-e "s;@MACROPATH@;$(tmacpath);g" \
@@ -110,7 +111,7 @@ extraclean:
 	-e "s;@MAN7EXT@;$(man7ext);g" \
 	-e "s;@TMAC_S@;$(tmac_s);g" \
 	-e "s;@TMAC_M@;$(tmac_m);g" \
-	-e "s;@TMAC_MDIR@;$(macrodir)/mm;g" \
+	-e "s;@TMAC_MDIR@;$(tmacdir)/mm;g" \
 	-e "s;@BROKEN_SPOOLER_FLAGS@;$(BROKEN_SPOOLER_FLAGS);g" \
 	-e "s;@VERSION@;`cat $(srcdir)/../VERSION`;g" \
 	-e "s;@MDATE@;`$(SHELL) $(srcdir)/../mdate.sh $<`;g" \
@@ -147,11 +148,36 @@ install_man:
 	 $(INSTALL_DATA) $$p $$target; \
 	done
 
+.PHONY: uninstall_man
+uninstall_man:
+	@-pages="$(MAN1)"; \
+	for p in $$pages; do \
+	 target=$(man1dir)/$(NAMEPREFIX)`basename $$p .n`.$(man1ext); \
+	 echo rm -f $$target; \
+	 rm -f $$target; \
+	done
+	@-pages="$(MAN5)"; \
+	for p in $$pages; do \
+	 target=$(man5dir)/`basename $$p .n`.$(man5ext); \
+	 echo rm -f $$target; \
+	 rm -f $$target; \
+	done
+	@-pages="$(MAN7)"; \
+	for p in $$pages; do \
+	 target=$(man7dir)/`basename $$p .n`.$(man7ext); \
+	 echo rm -f $$target; \
+	 rm -f $$target; \
+	done
+
 .PHONY: install_prog
 install_prog:
 	-test -d $(bindir) || mkdir $(bindir)
 	rm -f $(bindir)/$(NAMEPREFIX)$(PROG)
 	$(INSTALL_PROGRAM) $(PROG) $(bindir)/$(NAMEPREFIX)$(PROG)
+
+.PHONY: uninstall_prog
+uninstall_prog:
+	-rm -f $(bindir)/$(NAMEPREFIX)$(PROG)	
 
 .PHONY: install_dev
 install_dev:
@@ -170,6 +196,14 @@ install_dev:
 	    $(INSTALL_DATA) $(srcdir)/$$f $(fontsubdir)/$$f; \
 	  fi; \
 	done
+
+.PHONY: uninstall_dev
+uninstall_dev:
+	-for f in $(DEVFILES); do rm -f $(fontsubdir)/$$f; done
+	-if test -d $(fontsubdir)/generate; then \
+	  rmdir $(fontsubdir)/generate; \
+	fi
+	-rmdir $(fontsubdir)
 
 .PHONY: depend_src
 depend_src: depend.temp

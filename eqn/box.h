@@ -254,7 +254,7 @@ box *make_underline_box(box *);
 box *make_special_box(char *, box *);
 
 void set_space(int);
-void set_gsize(const char *);
+int set_gsize(const char *);
 void set_gfont(const char *);
 void set_grfont(const char *);
 void set_gbfont(const char *);

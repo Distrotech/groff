@@ -23,6 +23,8 @@
                   (dw)->dvi.text_device_width) + (dw)->dvi.text_x_width)
 #define YPos(dw) (DeviceToX((dw), (dw)->dvi.state->y))
 
+static int FakeCharacter();
+
 HorizontalMove(dw, delta)
 	DviWidget	dw;
 	int		delta;
@@ -568,7 +570,7 @@ DrawPolygon (dw, v, n)
 	p[n+1].y = p[0].y;
 	XDrawLines (XtDisplay (dw), XtWindow (dw), dw->dvi.normal_GC,
 		   p, n + 2, CoordModeOrigin);
-	XtFree(p);
+	XtFree((char *)p);
 }
 
 
@@ -600,7 +602,7 @@ DrawFilledPolygon (dw, v, n)
 	}
 	XFillPolygon (XtDisplay (dw), XtWindow (dw), dw->dvi.fill_GC,
 		      p, n + 1, Complex, CoordModeOrigin);
-	XtFree(p);
+	XtFree((char *)p);
 }
 
 #define POINTS_MAX 10000

@@ -24,6 +24,10 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <stdlib.h>
 #include <errno.h>
 
+extern "C" {
+  double hypot(double, double);
+}
+
 #include "assert.h"
 #include "cset.h"
 #include "lib.h"
@@ -36,6 +40,10 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #ifndef M_SQRT2
 #define M_SQRT2	1.41421356237309504880
+#endif
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
 #endif
 
 class input {

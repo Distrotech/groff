@@ -26,7 +26,7 @@ public:
   reference_id(int fid, int off) : filename_id(fid), pos(off) { }
   unsigned hash() const { return (filename_id << 4) + pos; }
   int is_null() const { return filename_id < 0; }
-  friend int operator==(const reference_id &, const reference_id &);
+  friend inline int operator==(const reference_id &, const reference_id &);
 };
 
 inline int operator==(const reference_id &r1, const reference_id &r2)

@@ -1,4 +1,4 @@
-# Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+# Copyright (C) 1989, 1990, 1991, 1992, 1993 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
 # This file is part of groff.
@@ -79,7 +79,7 @@ exec_prefix=$(prefix)
 # bindir says where to install executables.
 bindir=$(exec_prefix)/bin
 
-# datasubdir says where to install executables
+# datasubdir says where to install data files
 datadir=$(prefix)/lib
 datasubdir=$(datadir)/groff
 
@@ -94,9 +94,6 @@ tmacdir=$(datasubdir)/tmac
 
 # tmacpath says where to look for macro files.
 tmacpath=.:$(tmacdir):/usr/lib/tmac
-
-# hyphenfile is the file containing the hyphenation patterns.
-hyphenfile=$(datasubdir)/hyphen
 
 # Extension to be used for refer index files.  Index files are not
 # shareable between different architectures, so you might want to use
@@ -134,8 +131,8 @@ man7dir=$(manroot)/man$(man7ext)
 # -DHAVE_MMAP			if you have mmap() and <sys/mman.h>
 # -DCFRONT_ANSI_BUG		if you're using cfront 2.0 (or later?) with
 #				an ANSI C compiler
-# -DCOOKIE_BUG			if you're using gcc/g++ 2.[012] but haven't
-#				applied the patch in gcc.patch.
+# -DCOOKIE_BUG			if you're using gcc/g++ 2.[012] (you should
+#				upgrade to 2.3).
 # -DARRAY_DELETE_NEEDS_SIZE	if your C++ doesn't understand `delete []'
 # -DHAVE_SYS_SIGLIST		if you have sys_siglist[]
 # -DWCOREFLAG=0200		if the 0200 bit of the status returned by
@@ -148,19 +145,23 @@ man7dir=$(manroot)/man$(man7ext)
 # -DHAVE_LIMITS_H		if you have <limits.h>
 # -DHAVE_CC_LIMITS_H		if you have a C++ <limits.h>
 # -DHAVE_SYS_DIR_H		if you have <sys/dir.h>
+# -DHAVE_STDLIB_H		if you have <stdlib.h>
 # -DHAVE_VFORK_H		if you have <vfork.h>
 # -Dvfork=fork			if you don't have a working vfork()
 # -DHAVE_RENAME			if you have rename()
 # -DHAVE_MKSTEMP		if you have mkstemp()
 # -DSTDLIB_H_DECLARES_GETOPT	if your C++ <stdlib.h> declares getopt()
+# -DUNISTD_H_DECLARES_GETOPT	if your C++ <unistd.h> declares getopt()
 # -DSTDLIB_H_DECLARES_PUTENV	if your C++ <stdlib.h> declares putenv()
 # -DTRADITIONAL_CPP		if your C++ compiler uses a traditional
 #				(Reiser) preprocessor.
 # -DLONG_FOR_TIME_T		if localtime() takes a long * not a time_t *
+# -DHAVE_STRUCT_EXCEPTION	if <math.h> defines struct exception
+# -DRETSIGTYPE=int		if signal handlers return int not void	
 DEFINES=@DEFS@
 
-# Include fmod.o, strtol.o, getcwd.o, strerror.o in LIBOBJS if your C library
-# is missing the corresponding function.
+# Include fmod.o, strtol.o, getcwd.o, strerror.o, putenv.o  in LIBOBJS if
+# your C library is missing the corresponding function.
 LIBOBJS=@LIBOBJS@
 
 # CCC is the compiler for C++ (.cc) files.
@@ -201,7 +202,7 @@ MDEFINES="PAGE=$(PAGE)" "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
   "g=$(g)" "datadir=$(datadir)" "datasubdir=$(datasubdir)" \
   "fontdir=$(fontdir)" "fontpath=$(fontpath)" \
   "tmacdir=$(tmacdir)" "tmacpath=$(tmacpath)" \
-  "hyphenfile=$(hyphenfile)" "indexext=$(indexext)" "indexdir=$(indexdir)" \
+  "indexext=$(indexext)" "indexdir=$(indexdir)" \
   "indexname=$(indexname)" "common_words_file=$(common_words_file)" \
   "manroot=$(manroot)" "man1ext=$(man1ext)" "man1dir=$(man1dir)" \
   "man5ext=$(man5ext)" "man5dir=$(man5dir)" \
@@ -223,13 +224,13 @@ CCPROGDIRS=groff troff tbl pic eqn grops grotty grodvi tfmtodit \
   refer lookbib indxbib lkbib soelim addftinfo
 CPROGDIRS=pfbtops psbb
 PROGDIRS=$(CCPROGDIRS) $(CPROGDIRS)
-DEVDIRS=devps devdvi devascii devlatin1
+DEVDIRS=devps devdvi devascii devlatin1 devX75 devX75-12 devX100 devX100-12
 OTHERDIRS=man tmac afmtodit grog nroff mm
 ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(OTHERDIRS)
 EXTRADIRS=devps/generate devdvi/generate xditview doc
 DISTDIRS=$(ALLDIRS) $(EXTRADIRS)
 TARGETS=all install install_bin install_data clean distclean mostlyclean \
-  realclean extraclean distfiles TAGS depend
+  realclean extraclean distfiles TAGS depend uninstall_sub
 
 do=all
 dodirs=$(ALLDIRS) dot
@@ -238,11 +239,11 @@ subdir=troff
 
 
 $(TARGETS):
-	@$(MAKE) do=$@ $(dodirs)
+	@$(MAKE) $(MDEFINES) do=$@ $(dodirs)
 
 dot: FORCE
-	@$(MAKE) srcdir=$(srcdir) VPATH=$(srcdir) -f $(srcdir)/Makefile.comm \
-		-f $(srcdir)/Makefile.sub $(do)
+	@$(MAKE) $(MDEFINES) srcdir=$(srcdir) VPATH=$(srcdir) \
+		-f $(srcdir)/Makefile.comm -f $(srcdir)/Makefile.sub $(do)
 	
 $(LIBDIRS): FORCE
 	@if test $(srcdir) = .; \
@@ -315,17 +316,19 @@ dist:
 	done
 	srcdir=`cd $(srcdir); pwd`; \
 	cd tmp; \
+	$(LN_S) ../Makefile .; \
 	$(LN_S) $$srcdir/* . 2>/dev/null; \
 	for d in $(DISTDIRS); do \
 	  (cd $$d; $(LN_S) $$srcdir/$$d/* . 2>/dev/null); \
 	done; \
-	$(MAKE) -f ../Makefile srcdir=$$srcdir VPATH=$$srcdir extraclean; \
+	$(MAKE) srcdir=$$srcdir VPATH=$$srcdir extraclean; \
 	for d in $(EXTRADIRS); do \
 	  (cd $$d; $(MAKE) extraclean); \
 	done; \
+	rm -f Makefile; \
 	$(LN_S) $$srcdir/Makefile.init Makefile
 	mv tmp groff-$(version)
-	tar cfh - groff-$(version) | compress >groff-$(version).tar.Z
+	tar cfh - groff-$(version) | gzip -c >groff-$(version).tar.z
 	rm -fr groff-$(version)
 
 # $(PROGDIRS): libgroff
@@ -354,6 +357,15 @@ srcdir_must_be_dot:
 
 Makefile: Makefile.in
 	$(SHELL) config.status
+
+.PHONY: uninstall
+uninstall: uninstall_sub uninstall_dirs
+
+.PHONY: uninstall_dirs
+uninstall_dirs:
+# Use rmdir here so that the directories are only removed if they're empty
+	-rmdir $(man1dir) $(man5dir) $(man7dir) $(manroot) \
+	  $(tmacdir) $(fontdir) $(bindir) $(datasubdir) $(datadir)
 
 FORCE:
 

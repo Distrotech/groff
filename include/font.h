@@ -53,7 +53,7 @@ public:
   const char *get_name();
   const char *get_internal_name();
 
-  static font *load_font(const char *);
+  static font *load_font(const char *, int *not_found = 0);
   static void command_line_font_dir(const char *path);
   static FILE *open_file(const char *name, char **pathp);
   static int load_desc();
@@ -109,5 +109,5 @@ private:
 					   const char *file, int lineno);
 protected:
   font(const char *);
-  int load();
+  int load(int *not_found = 0);
 };

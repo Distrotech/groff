@@ -22,7 +22,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <signal.h>
 #include <errno.h>
 
 #include "posix.h"
@@ -47,6 +46,10 @@ extern "C" {
 // (2^n - MALLOC_OVERHEAD) should be a good argument for malloc().
 
 #define MALLOC_OVERHEAD 16
+
+#ifdef BLOCK_SIZE
+#undef BLOCK_SIZE
+#endif
 
 const int BLOCK_SIZE = ((1024 - MALLOC_OVERHEAD - sizeof(struct block *)
 			 - sizeof(int)) / sizeof(int));
@@ -105,9 +108,12 @@ static void store_filename(const char *);
 static void fwrite_or_die(const void *ptr, int size, int nitems, FILE *fp);
 static char *get_cwd();
 
-extern "C" { void fatal_signal(int); }
-
-extern "C" { long dir_name_max(const char *); }
+extern "C" {
+  void cleanup();
+  long dir_name_max(const char *);
+  void catch_fatal_signals();
+  void ignore_fatal_signals();
+}
 
 int main(int argc, char **argv)
 {
@@ -215,9 +221,7 @@ int main(int argc, char **argv)
   }
   if (!mktemp(temp_index_file) || !temp_index_file[0])
     fatal("cannot create file name for temporary file");
-  signal(SIGHUP, fatal_signal);
-  signal(SIGINT, fatal_signal);
-  signal(SIGTERM, fatal_signal);
+  catch_fatal_signals();
   int fd = creat(temp_index_file, S_IRUSR|S_IRGRP|S_IROTH);
   if (fd < 0)
     fatal("can't create temporary index file: %1", strerror(errno));
@@ -271,9 +275,7 @@ int main(int argc, char **argv)
   if (rename(temp_index_file, index_file) < 0)
     fatal("can't rename temporary index file: %1", strerror(errno));
 #else /* not HAVE_RENAME */
-  signal(SIGHUP, SIG_IGN);
-  signal(SIGINT, SIG_IGN);
-  signal(SIGTERM, SIG_IGN);
+  ignore_fatal_signals();
   if (unlink(index_file) < 0) {
     if (errno != ENOENT)
       fatal("can't unlink `%1': %2", index_file, strerror(errno));
@@ -725,19 +727,16 @@ static void fwrite_or_die(const void *ptr, int size, int nitems, FILE *fp)
 
 void fatal_error_exit()
 {
-  if (temp_index_file)
-    unlink(temp_index_file);
+  cleanup();
   exit(3);
 }
 
 extern "C" {
 
-void fatal_signal(int signum)
+void cleanup()
 {
-  signal(signum, SIG_DFL);
   if (temp_index_file)
     unlink(temp_index_file);
-  kill(getpid(), signum);
 }
 
 }

@@ -4265,15 +4265,20 @@ static int mount_font_no_translate(int n, symbol name, symbol external_name)
   font *fm = 0;
   void *p = font_dictionary.lookup(external_name);
   if (p == 0) {
-    fm = font::load_font(external_name.contents());
+    int not_found;
+    fm = font::load_font(external_name.contents(), &not_found);
     if (!fm) {
+      if (not_found)
+	warning(WARN_FONT, "can't find font `%1'", external_name.contents());
       font_dictionary.lookup(external_name, &a_char);
       return 0;
     }
     font_dictionary.lookup(name, fm);
   }
   else if (p == &a_char) {
+#if 0
     error("invalid font `%1'", external_name.contents());
+#endif
     return 0;
   }
   else
@@ -4626,27 +4631,19 @@ void bold_font()
       if (tok.delimiter()) {
 	int f = get_fontno();
 	if (f >= 0) {
-	  if (has_arg()) {
-	    units offset;
-	    if (get_number(&offset, 'u')) {
-	      if (offset >= 1)
-		font_table[f]->set_conditional_bold(n, hunits(offset - 1));
-	      else
-		font_table[f]->conditional_unbold(n);
-	    }
-	  }
+	  units offset;
+	  if (has_arg() && get_number(&offset, 'u') && offset >= 1)
+	    font_table[f]->set_conditional_bold(n, hunits(offset - 1));
 	  else
 	    font_table[f]->conditional_unbold(n);
 	}
       }
       else {
 	units offset;
-	if (get_number(&offset, 'u')) {
-	  if (offset >= 1)
-	    font_table[n]->set_bold(hunits(offset - 1));
-	  else
-	    font_table[n]->unbold();
-	}
+	if (get_number(&offset, 'u') && offset >= 1)
+	  font_table[n]->set_bold(hunits(offset - 1));
+	else
+	  font_table[n]->unbold();
       }
     }
     else
@@ -4712,18 +4709,15 @@ void track_kern()
 {
   int n = get_fontno();
   if (n >= 0) {
-    if (has_arg()) {
-      int min_s, max_s;
-      hunits min_a, max_a;
-      if (!get_number(&min_s, 'z')
-	  || !get_hunits(&min_a, 'p')
-	  || !get_number(&max_s, 'z')
-	  || !get_hunits(&max_a, 'p'))
-	error("bad arguments for track kerning");
-      else {
-	track_kerning_function tk(min_s, min_a, max_s, max_a);
-	font_table[n]->set_track_kern(tk);
-      }
+    int min_s, max_s;
+    hunits min_a, max_a;
+    if (has_arg()
+	&& get_number(&min_s, 'z')
+	&& get_hunits(&min_a, 'p')
+	&& get_number(&max_s, 'z')
+	&& get_hunits(&max_a, 'p')) {
+      track_kerning_function tk(min_s, min_a, max_s, max_a);
+      font_table[n]->set_track_kern(tk);
     }
     else {
       track_kerning_function tk;
@@ -4735,15 +4729,15 @@ void track_kern()
 
 void constant_space()
 {
-  int x, y;
   int n = get_fontno();
   if (n >= 0) {
-    if (!has_arg())
+    int x, y;
+    if (!has_arg() || !get_integer(&x))
       font_table[n]->set_constant_space(CONSTANT_SPACE_NONE);
-    else if (get_integer(&x)) {
-      if (!has_arg())
+    else {
+      if (!has_arg() || !get_number(&y, 'z'))
 	font_table[n]->set_constant_space(CONSTANT_SPACE_RELATIVE, x);
-      else if (get_number(&y, 'z'))
+      else
 	font_table[n]->set_constant_space(CONSTANT_SPACE_ABSOLUTE, 
 					  scale(y*x,
 						units_per_inch,
@@ -4755,14 +4749,9 @@ void constant_space()
 
 void ligature()
 {
-  if (has_arg()) {
-    int lig;
-    if (get_integer(&lig)) {
-      if (lig > 2 || lig < 0)
-	lig = 1;
-      global_ligature_mode = lig;
-    }
-  }
+  int lig;
+  if (has_arg() && get_integer(&lig) && lig >= 0 && lig <= 2)
+    global_ligature_mode = lig;
   else
     global_ligature_mode = 1;
   skip_line();
@@ -4770,11 +4759,9 @@ void ligature()
 
 void kern_request()
 {
-  if (has_arg()) {
-    int k;
-    if (get_integer(&k))
-      global_kern_mode = k != 0;
-  }
+  int k;
+  if (has_arg() && get_integer(&k))
+    global_kern_mode = k != 0;
   else
     global_kern_mode = 1;
   skip_line();

@@ -61,7 +61,7 @@
 .ps \\n(_S
 .vs \\n(_Vu
 .ft \\n(_F
-.do fam \\*(_A
+.do @fam \\*(_A
 'in \\n(_Iu
 .xl \\n($lu
 .lt \\n($lu
@@ -393,6 +393,16 @@
 .@O \\$1
 .nr _o \\n(.o
 ..
+.\" Redefine the fam request to set the family in
+.\" environment 2 as well as the current environment.
+.if !\n(.g .ig
+.do rn fam @fam		\" --- set family in current environment
+.do de fam		\" *** set font family in ev 2 and current ev
+.do @fam \\$1
+.ev 2
+.do @fam \\$1
+.ev
+..
 .\"		*** MISCELLANEOUS ROFF COMMANDS ***
 .de hx			\" *** suppress headers and footers next page
 .nr ?H 1
@@ -450,8 +460,13 @@
 .nr ?s 1
 ..
 .\"		*** MISCELLANEOUS USER SUPPORT COMMANDS ***
+.if !\n(.g .ig
 .de re			\" *** reset tabs (TROFF defines 15 stops default)
 .ta T 0.5i
+..
+.if \n(.g .ig
+.de re
+.ta 0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i +0.5i
 ..
 .de ba			\" *** set base indent
 .ie \\n(.$ \
@@ -890,6 +905,8 @@
 .nr _Q \\n(dnu
 .ev
 .sp \\n(esu			\" output rest of preceeding text
+.if !"\\n(.z"" \!.ne \\n(_Qu
+.ne \\n(_Qu+\n(.Vu		\" keep it on one page
 .@C 2				\" .ev 2 may be jumbled from header
 .if \\n(_d=1 \
 .	in (\\n(.lu+\\n($iu-\\n(dlu)/2u
@@ -899,8 +916,6 @@
 .	in \\n(biu+\\n($iu
 .if \\n(_d=4 \
 .	in 0
-.if !"\\n(.z"" \!.ne \\n(_Qu
-.ne \\n(_Qu+\n(.Vu		\" keep it on one page
 .mk _q
 .if \n@>1 .tm --@e: _Q=\\n(_Q _q=\\n(_q nl=\\n(nl |p=\\*(|p
 .if !"\\*(|p"" \
@@ -1235,8 +1250,19 @@ in \\f2\\*([B\\f1, \c
 .el \
 \{\
 .	ev 2
+.	in 0
+.	xl \\n($lu-\\n(fuu
+.	@F \\n(ff
+.	sz \\n(fp
+.	vs \\n(.sp*\\n($Vu/100u
+.	fi
 \!.(f \\$1
+\!.@N
 .\}
+..
+.de @N			\" --- set no fill mode in the top-level diversion
+.ie "\\n(.z"" .nf
+.el \!.@N
 ..
 .de )f			\" *** end footnote
 .ie "\\n(.z"|f" \
@@ -1413,6 +1439,8 @@ in \\f2\\*([B\\f1, \c
 .nr ch 0 1
 .if (\\n(_0=3):(\\n(_0=5) \
 .	pn 1			\" must do before .ep
+.if !\\n(_0=\\n(_M .if \\n(_M=3 \
+.	pn 1			\" must do before .ep
 .ep				\" end page for correct page number types
 .if \\n(_0=1 \
 \{\
@@ -1432,8 +1460,6 @@ in \\f2\\*([B\\f1, \c
 .	af % 1
 .if \\n(.$>1 \
 .	he \\$2
-.if !\\n(_0=\\n(_M .if \\n(_M=3 \
-.	pn 1
 .nr _M \\n(_0
 .rr _0
 ..
@@ -1510,13 +1536,15 @@ in \\f2\\*([B\\f1, \c
 .nr ss 12p			\" section prespacing
 .nr si 0			\" section indent
 .\"		*** OTHER INITIALIZATION ***
-.ds { \v'-0.4m'\x'-0.2m'\s-3
+.\" GNU pic sets this register to 1, to indicate that \x should not be used.
+.@R 0x
+.ds { \v'-0.4m'\x'\\n(0x=0*-0.2m'\s-3
 .ds } \s0\v'0.4m'
 .\" for compatibility with traditional -me
 .\" (the first will work only in compatibility mode)
 .ds [ \*{
 .ds ] \*}
-.ds < \v'0.4m'\x'0.2m'\s-3
+.ds < \v'0.4m'\x'\\n(0x=0*0.2m'\s-3
 .ds > \s0\v'-0.4m'
 .ds - \(em
 .\" Avoid warnings from groff -ww.

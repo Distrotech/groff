@@ -168,3 +168,73 @@ void printer::set_numbered_char(int num, const environment *env, int *widthp)
     *widthp = w;
   set_char(i, f, env, w);
 }
+
+// This utility function adjusts the specified center of the
+// arc so that it is equidistant between the specified start
+// and end points. (p[0], p[1]) is a vector from the current
+// point to the center; (p[2], p[3]) is a vector from the 
+// center to the end point.  If the center can be adjusted,
+// a vector from the current point to the adjusted center is
+// stored in c[0], c[1] and 1 is returned.  Otherwise 0 is
+// returned.
+
+#if 1
+int printer::adjust_arc_center(const int *p, double *c)
+{
+  // We move the center along a line parallel to the line between
+  // the specified start point and end point so that the center
+  // is equidistant between the start and end point.
+  // It can be proved (using Lagrange multipliers) that this will
+  // give the point nearest to the specified center that is equidistant
+  // between the start and end point.
+
+  double x = p[0] + p[2];	// (x, y) is the end point
+  double y = p[1] + p[3];
+  double n = x*x + y*y;
+  if (n != 0) {
+    c[0]= double(p[0]);
+    c[1] = double(p[1]);
+    double k = .5 - (c[0]*x + c[1]*y)/n;
+    c[0] += k*x;
+    c[1] += k*y;
+    return 1;
+  }
+  else
+    return 0;
+}
+#else
+int printer::adjust_arc_center(const int *p, double *c)
+{
+  int x = p[0] + p[2];	// (x, y) is the end point
+  int y = p[1] + p[3];
+  // Start at the current point; go in the direction of the specified
+  // center point until we reach a point that is equidistant between
+  // the specified starting point and the specified end point. Place
+  // the center of the arc there.
+  double n = p[0]*double(x) + p[1]*double(y);
+  if (n > 0) {
+    double k = (double(x)*x + double(y)*y)/(2.0*n);
+    // (cx, cy) is our chosen center
+    c[0] = k*p[0];
+    c[1] = k*p[1];
+    return 1;
+  }
+  else {
+    // We would never reach such a point.  So instead start at the
+    // specified end point of the arc.  Go towards the specified
+    // center point until we reach a point that is equidistant between
+    // the specified start point and specified end point. Place
+    // the center of the arc there.
+    n = p[2]*double(x) + p[3]*double(y);
+    if (n > 0) {
+      double k = 1 - (double(x)*x + double(y)*y)/(2.0*n);
+      // (c[0], c[1]) is our chosen center
+      c[0] = p[0] + k*p[2];
+      c[1] = p[1] + k*p[3];
+      return 1;
+    }
+    else
+      return 0;
+  }
+}  
+#endif

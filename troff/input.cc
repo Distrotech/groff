@@ -44,7 +44,8 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #ifndef DEFAULT_WARNING_MASK
 // warnings that are enabled by default
-#define DEFAULT_WARNING_MASK (WARN_CHAR|WARN_NUMBER|WARN_BREAK|WARN_SPACE)
+#define DEFAULT_WARNING_MASK \
+     (WARN_CHAR|WARN_NUMBER|WARN_BREAK|WARN_SPACE|WARN_FONT)
 #endif
 
 // initial size of buffer for reading names; expanded as necessary
@@ -137,12 +138,16 @@ const int ESCAPE_RIGHT_PARENTHESIS = 0206;
 
 void set_escape_char()
 {
-  if (!has_arg())
-    escape_char = '\\';
-  else if (!tok.ch())
-    error("bad escape character");
+  if (has_arg()) {
+    if (tok.ch() == 0) {
+      error("bad escape character");
+      escape_char = '\\';
+    }
+    else
+      escape_char = tok.ch();
+  }
   else
-    escape_char = tok.ch();
+    escape_char = '\\';
   skip_line();
 }
 
@@ -482,7 +487,7 @@ int input_stack::get_location(int allow_macro, const char **filenamep, int *line
 
 void input_stack::backtrace()
 {
-  char *f;
+  const char *f;
   int n;
   // only backtrace down to (not including) the topmost file
   for (input_iterator *p = top;
@@ -571,9 +576,10 @@ void next_file()
 
 void shift()
 {
-  int n = 1;
-  if (!has_arg() || get_integer(&n))
-    input_stack::shift(n);
+  int n;
+  if (!has_arg() || !get_integer(&n))
+    n = 1;
+  input_stack::shift(n);
   skip_line();
 }
 
@@ -1073,14 +1079,18 @@ token::~token()
 token::token(const token &t)
 : nm(t.nm), c(t.c), val(t.val), dim(t.dim), type(t.type)
 {
-  nd = t.nd ? t.nd->copy() : 0;
+  // Use two statements to work around bug in SGI C++.
+  node *tem = t.nd;
+  nd = tem ? tem->copy() : 0;
 }
 
 void token::operator=(const token &t)
 {
   delete nd;
   nm = t.nm;
-  nd = t.nd ? t.nd->copy() : 0;
+  // Use two statements to work around bug in SGI C++.
+  node *tem = t.nd;
+  nd = tem ? tem->copy() : 0;
   c = t.c;
   val = t.val;
   dim = t.dim;
@@ -1511,14 +1521,18 @@ void token::next()
       case 'z':
 	{
 	  next();
-	  charinfo *ci = get_char(1);
-	  if (ci == 0)
-	    break;
-	  node *gn = curenv->make_char_node(ci);
-	  if (gn == 0)
-	    break;
-	  nd = new zero_width_node(gn);
-	  type = TOKEN_NODE;
+          if (type == TOKEN_NODE)
+            nd = new zero_width_node(nd);
+          else {
+  	    charinfo *ci = get_char(1);
+	    if (ci == 0)
+	      break;
+	    node *gn = curenv->make_char_node(ci);
+	    if (gn == 0)
+	      break;
+	    nd = new zero_width_node(gn);
+	    type = TOKEN_NODE;
+          }
 	  return;
 	}
       case 'Z':
@@ -1688,13 +1702,12 @@ void skip_line()
 void compatible()
 {
   int n;
-  if (!has_arg())
-    compatible_flag = 1;
-  else if (get_integer(&n))
+  if (has_arg() && get_integer(&n))
     compatible_flag = n != 0;
+  else
+    compatible_flag = 1;
   skip_line();
 }
-
 
 static void empty_name_warning(int required)
 {
@@ -1808,8 +1821,8 @@ NO_RETURN void exit_troff()
   end_diversions();
   done_end_macro = 1;
   topdiv->set_ejecting();
-  static char buf[2] = { LAST_PAGE_EJECTOR, '\0' };
-  input_stack::push(make_temp_iterator(buf));
+  static unsigned char buf[2] = { LAST_PAGE_EJECTOR, '\0' };
+  input_stack::push(make_temp_iterator((char *)buf));
   topdiv->space(topdiv->get_page_length(), 1);
   tok.next();
   process_input_stack();
@@ -1868,19 +1881,25 @@ static int transparent_translate(int cc)
 {
   if (!illegal_input_char(cc)) {
     charinfo *ci = charset_table[cc];
-    if (ci->get_special_translation() == charinfo::TRANSLATE_SPACE)
+    switch (ci->get_special_translation(1)) {
+    case charinfo::TRANSLATE_SPACE:
       return ' ';
-    if (ci->get_special_translation() == charinfo::TRANSLATE_DUMMY)
+    case charinfo::TRANSLATE_DUMMY:
       return ESCAPE_AMPERSAND;
-#if 0
-    // This is just too ugly.
-    ci = ci->get_translation();
+    case charinfo::TRANSLATE_HYPHEN_INDICATOR:
+      return ESCAPE_PERCENT;
+    }
+    // This is realy ugly.
+    ci = ci->get_translation(1);
     if (ci) {
       int c = ci->get_ascii_code();
       if (c != '\0')
 	return c;
+      error("can't translate %1 to special character `%2'"
+	    " in transparent throughput",
+	    input_char_description(cc),
+	    ci->nm.contents());
     }
-#endif
   }
   return cc;
 }
@@ -4350,7 +4369,8 @@ static void init_charset_table()
   page_character = charset_table['%'];
 }
 
-void translate()
+static
+void do_translate(int translate_transparent)
 {
   tok.skip();
   while (!tok.newline() && !tok.eof()) {
@@ -4368,29 +4388,42 @@ void translate()
       break;
     tok.next();
     if (tok.newline() || tok.eof()) {
-      ci1->set_special_translation(charinfo::TRANSLATE_SPACE);
+      ci1->set_special_translation(charinfo::TRANSLATE_SPACE,
+				   translate_transparent);
       break;
     }
     if (tok.space())
-      ci1->set_special_translation(charinfo::TRANSLATE_SPACE);
+      ci1->set_special_translation(charinfo::TRANSLATE_SPACE,
+				   translate_transparent);
     else if (tok.dummy())
-      ci1->set_special_translation(charinfo::TRANSLATE_DUMMY);
+      ci1->set_special_translation(charinfo::TRANSLATE_DUMMY,
+				   translate_transparent);
     else if (tok.hyphen_indicator())
-      ci1->set_special_translation(charinfo::TRANSLATE_HYPHEN_INDICATOR);
+      ci1->set_special_translation(charinfo::TRANSLATE_HYPHEN_INDICATOR,
+				   translate_transparent);
     else {
       charinfo *ci2 = tok.get_char(1);
       if (ci2 == 0)
 	break;
       if (ci1 == ci2)
-	ci1->set_translation(0);
+	ci1->set_translation(0, translate_transparent);
       else
-	ci1->set_translation(ci2);
+	ci1->set_translation(ci2, translate_transparent);
     }
     tok.next();
   }
   skip_line();
 }
 
+void translate()
+{
+  do_translate(1);
+}
+
+void translate_no_transparent()
+{
+  do_translate(0);
+}
 
 void char_flags()
 {
@@ -5056,7 +5089,7 @@ void usage(const char *prog)
 {
   errprint(
 "usage: %1 -abivzCER -wname -Wname -dcstring -mname -nN -olist -rcN\n"
-"       -Tname -Fdir -Mdir -Hfile [ files ]\n",
+"       -Tname -Fdir -Mdir [ files ]\n",
 	  prog);
   exit(USAGE_EXIT_CODE);
 }
@@ -5070,7 +5103,6 @@ int main(int argc, char **argv)
   string_list *macros = 0;
   string_list *register_assignments = 0;
   string_list *string_assignments = 0;
-  const char *hyphen_file = HYPHENFILE;
   int iflag = 0;
   int tflag = 0;
   int fflag = 0;
@@ -5079,10 +5111,7 @@ int main(int argc, char **argv)
   int next_page_number;
   opterr = 0;
   hresolution = vresolution = 1;
-  const char *tem = getenv("GROFF_HYPHEN");
-  if (tem)
-    hyphen_file = tem;
-  while ((c = getopt(argc, argv, "abivw:W:zCEf:m:n:o:r:d:F:H:M:T:tqs:R"))
+  while ((c = getopt(argc, argv, "abivw:W:zCEf:m:n:o:r:d:F:M:T:tqs:R"))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -5104,9 +5133,6 @@ int main(int argc, char **argv)
       break;
     case 'F':
       font::command_line_font_dir(optarg);
-      break;
-    case 'H':
-      hyphen_file = optarg;
       break;
     case 'm':
       add_string(optarg, &macros);
@@ -5206,7 +5232,6 @@ int main(int argc, char **argv)
   number_reg_dictionary.define(".T", new constant_reg(tflag ? "1" : "0"));
   init_registers();
   init_reg_requests();
-  read_hyphen_file(hyphen_file);
   init_hyphen_requests();
   init_environments();
   while (string_assignments) {
@@ -5239,15 +5264,15 @@ int main(int argc, char **argv)
 void warn_request()
 {
   int n;
-  if (!has_arg())
-    warning_mask = WARN_TOTAL;
-  else if (get_integer(&n)) {
+  if (has_arg() && get_integer(&n)) {
     if (n & ~WARN_TOTAL) {
       warning(WARN_RANGE, "warning mask must be between 0 and %1", WARN_TOTAL);
       n &= WARN_TOTAL;
     }
     warning_mask = n;
   }
+  else
+    warning_mask = WARN_TOTAL;
   skip_line();
 }
 
@@ -5294,6 +5319,7 @@ void init_input_requests()
   init_request("ex", exit_request);
   init_request("em", end_macro);
   init_request("tr", translate);
+  init_request("trnt", translate_no_transparent);
   init_request("ab", abort_request);
   init_request("pi", pipe_output);
   init_request("cf", copy_file);
@@ -5526,6 +5552,7 @@ static struct {
   "input", WARN_INPUT,
   "escape", WARN_ESCAPE,
   "space", WARN_SPACE,
+  "font", WARN_FONT,
   "di", WARN_DI,
   "mac", WARN_MAC,
   "reg", WARN_REG,
@@ -5670,7 +5697,8 @@ int charinfo::next_index = 0;
 
 charinfo::charinfo(symbol s)
 : nm(s), hyphenation_code(0), translation(0), flags(0), ascii_code(0),
-  special_translation(TRANSLATE_NONE), mac(0), not_found(0)
+  special_translation(TRANSLATE_NONE), mac(0), not_found(0),
+  transparent_translate(1)
 {
   index = next_index++;
 }
@@ -5680,16 +5708,18 @@ void charinfo::set_hyphenation_code(unsigned char c)
   hyphenation_code = c;
 }
 
-void charinfo::set_translation(charinfo *ci)
+void charinfo::set_translation(charinfo *ci, int tt)
 {
   translation = ci;
   special_translation = TRANSLATE_NONE;
+  transparent_translate = tt;
 }
 
-void charinfo::set_special_translation(int c)
+void charinfo::set_special_translation(int c, int tt)
 {
   special_translation = c;
   translation = 0;
+  transparent_translate = tt;
 }
 
 void charinfo::set_ascii_code(unsigned char c)

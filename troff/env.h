@@ -89,6 +89,9 @@ public:
   const char *to_string();
 };
 
+const unsigned MARGIN_CHARACTER_ON = 1;
+const unsigned MARGIN_CHARACTER_NEXT = 2;
+
 struct charinfo;
 struct node;
 struct breakpoint;
@@ -154,6 +157,7 @@ class environment {
   int tab_precedes_field;
   int discarding;
   int spread_flag;		// set by \p
+  unsigned margin_character_flags;
   node *margin_character_node;
   hunits margin_character_distance;
   node *numbering_nodes;

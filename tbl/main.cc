@@ -465,6 +465,11 @@ options *process_options(table_input &in)
 	error("`allbox' option does not take a argument");
       opt->flags |= table::ALLBOX;
     }
+    else if (strieq(p, "nokeep")) {
+      if (arg)
+	error("`nokeep' option does not take a argument");
+      opt->flags |= table::NOKEEP;
+    }
     else {
       error("unrecognised global option `%1'", p);
       // delete opt;
@@ -582,7 +587,7 @@ struct format {
 format::format(int nr, int nc) : nrows(nr), ncolumns(nc)
 {
   int i;
-  separation = new int[ncolumns - 1];
+  separation = ncolumns > 1 ? new int[ncolumns - 1] : 0;
   for (i = 0; i < ncolumns-1; i++)
     separation[i] = -1;
   width = new string[ncolumns];

@@ -1,6 +1,12 @@
 .\" -*- nroff -*-
 .ie \n(.V<\n(.v .ds tx T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X
 .el .ds tx TeX
+.\" Like TP, but if specified indent is more than half
+.\" the current line-length - indent, use the default indent.
+.de Tp
+.ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
+.el .TP "\\$1"
+..
 .\" The BSD man macros can't handle " in arguments to font change macros,
 .\" so use \(ts instead of ".
 .tr \(ts"
@@ -699,6 +705,31 @@ will be added as extra space after the line containing the equation
 (using
 .BR \ex .)
 The default value is 35.
+.TP
+.B nroff
+If this is non-zero,
+then
+.B ndefine
+will behave like
+.B define
+and
+.B tdefine
+will be ignored,
+otherwise
+.B tdefine
+will behave like
+.B define
+and
+.B ndefine
+will be ignored.
+The default value is 0
+(This is typically changed to 1 by the
+.B eqnrc
+file for the
+.B ascii
+and
+.B latin1
+devices.)
 .LP
 A more precise description of the role of many of these
 parameters can be found in Appendix H of

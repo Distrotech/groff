@@ -27,7 +27,7 @@ BEGIN {
 
 NR == 1 {
 	month = $2;
-	year = $6;
+	year = $NF;
 }
 
 NR == 2 {

@@ -22,11 +22,11 @@ long dir_name_max(dir)
 
 #ifdef HAVE_DIRENT_H
 #include <dirent.h>
-#endif /* HAVE_DIRENT_H */
-
+#else /* not HAVE_DIRENT_H */
 #ifdef HAVE_SYS_DIR_H
 #include <sys/dir.h>
 #endif /* HAVE_SYS_DIR_H */
+#endif /* not HAVE_DIRENT_H */
 
 #ifndef NAME_MAX
 #ifdef MAXNAMLEN

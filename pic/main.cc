@@ -532,7 +532,7 @@ int main(int argc, char **argv)
       break;
     case 'p':
     case 'x':
-      warning("-%c option is obsolete", opt);
+      warning("-%1 option is obsolete", char(opt));
       break;
     case 't':
 #ifdef TEX_SUPPORT

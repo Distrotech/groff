@@ -24,8 +24,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #define USHRT_MAX 65535
 #endif
 
-#define DEFAULT_LINES_PER_PAGE 66
-
 #define TAB_WIDTH 8
 
 static int horizontal_tab_flag = 0;
@@ -135,8 +133,7 @@ void glyph::operator delete(void *p)
 
 class tty_printer : public printer {
   glyph **lines;
-  int lines_per_page;
-  int columns_per_page;
+  int nlines;
   int cached_v;
   int cached_vpos;
   void add_char(unsigned char, int, int, unsigned char);
@@ -146,27 +143,16 @@ public:
   void set_char(int, font *, const environment *, int);
   void draw(int code, int *p, int np, const environment *env);
   void begin_page(int) { }
-  void end_page();
+  void end_page(int page_length);
   font *make_font(const char *);
 };
 
 tty_printer::tty_printer() : cached_v(0)
 {
-  if (font::paperlength == 0)
-    lines_per_page = DEFAULT_LINES_PER_PAGE;
-  else if (font::paperlength % font::vert != 0)
-    fatal("paperlength not a multiple of vertical resolution");
-  else
-    lines_per_page = font::paperlength/font::vert;
-  if (lines_per_page <= 0)
-    fatal("paperlength too small");
-  lines = new glyph *[lines_per_page];
-  for (int i = 0; i < lines_per_page; i++)
+  nlines = 66;
+  lines = new glyph *[nlines];
+  for (int i = 0; i < nlines; i++)
     lines[i] = 0;
-  columns_per_page = font::paperwidth/font::hor;
-  // If columns_per_page is zero, we won't truncate.
-  if (columns_per_page < 0)
-    columns_per_page = 0;
 }
 
 tty_printer::~tty_printer()
@@ -193,10 +179,6 @@ void tty_printer::add_char(unsigned char c, int h, int v, unsigned char mode)
     error("character to the left of first column discarded");
     return;
   }
-  if (columns_per_page != 0 && hpos >= columns_per_page) {
-    error("character to the right of last column discarded");
-    return;
-  }
   if (hpos > USHRT_MAX) {
     error("character with ridiculously large horizontal position discarded");
     return;
@@ -208,9 +190,14 @@ void tty_printer::add_char(unsigned char c, int h, int v, unsigned char mode)
     if (v % font::vert != 0)
       fatal("vertical position not a multiple of vertical resolution");
     vpos = v / font::vert;
-    if (vpos > lines_per_page) {
-      error("character below last line discarded");
-      return;
+    if (vpos > nlines) {
+      glyph **old_lines = lines;
+      lines = new glyph *[vpos + 1];
+      memcpy(lines, old_lines, nlines*sizeof(glyph *));
+      for (int i = nlines; i <= vpos; i++)
+	lines[i] = 0;
+      a_delete old_lines;
+      nlines = vpos + 1;
     }
     // Note that the first output line corresponds to groff
     // position font::vert.
@@ -278,12 +265,25 @@ void tty_printer::draw(int code, int *p, int np, const environment *env)
   }
 }
 
-void tty_printer::end_page()
+void tty_printer::end_page(int page_length)
 {
-  for (int last_line = lines_per_page; last_line > 0; last_line--)
+  if (page_length % font::vert != 0)
+    error("vertical position at end of page not multiple of vertical resolution");
+  int lines_per_page = page_length / font::vert;
+  for (int last_line = nlines; last_line > 0; last_line--)
     if (lines[last_line - 1])
       break;
-  
+  if (last_line > lines_per_page) {
+    error("characters past last line discarded");
+    do {
+      --last_line;
+      while (lines[last_line]) {
+	glyph *tem = lines[last_line];
+	lines[last_line] = tem->next;
+	delete tem;
+      }
+    } while (last_line > lines_per_page);
+  }
   for (int i = 0; i < last_line; i++) {
     glyph *p = lines[i];
     lines[i] = 0;

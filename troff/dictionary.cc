@@ -49,7 +49,7 @@ dictionary::dictionary(int n) : threshold(0.5), factor(1.5), used(0), size(n)
 
 void *dictionary::lookup(symbol s, void *v)
 {
-  for (int i = s.hash() % size; 
+  for (int i = int(s.hash() % size); 
        table[i].v != 0;
        i == 0 ? i = size - 1: --i)
     if (s == table[i].s) {
@@ -96,7 +96,7 @@ void *dictionary::lookup(const char *p)
 void *dictionary::remove(symbol s)
 {
   // this relies on the fact that we are using linear probing
-  for (int i = s.hash() % size;
+  for (int i = int(s.hash() % size);
        table[i].v != 0 && s != table[i].s;
        i == 0 ? i = size - 1: --i)
     ;
@@ -111,7 +111,7 @@ void *dictionary::remove(symbol s)
 	i = size - 1;
       if (table[i].v == 0)
 	break;
-      r = table[i].s.hash() % size;
+      r = int(table[i].s.hash() % size);
     } while ((i <= r && r < j) || (j < i && i <= r));
     table[j] = table[i];
   }

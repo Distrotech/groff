@@ -117,8 +117,11 @@ double output::compute_scale(double sc, const position &ll, const position &ur)
 
 position::position(const place &pl)
 {
-  if (pl.obj != 0)
-    *this = pl.obj->origin();
+  if (pl.obj != 0) {
+    // Use two statements to work around bug in SGI C++.
+    object *tem = pl.obj;
+    *this = tem->origin();
+  }
   else {
     x = pl.x;
     y = pl.y;

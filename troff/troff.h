@@ -45,9 +45,6 @@ extern units scale(units n, units x, units y); // scale n by x/y
 
 extern units units_per_inch;
 
-extern units points_to_units(units n);
-extern units scale(units, double);
-
 extern int ascii_output_flag;
 extern int suppress_output_flag;
 
@@ -78,11 +75,12 @@ enum warning_type {
   WARN_MISSING = 020000,
   WARN_INPUT = 040000,
   WARN_ESCAPE = 0100000,
-  WARN_SPACE = 0200000
+  WARN_SPACE = 0200000,
+  WARN_FONT = 0400000
   // change WARN_TOTAL if you add more warning types
 };
 
-const int WARN_TOTAL = 0377777;
+const int WARN_TOTAL = 0777777;
 
 int warning(warning_type, const char *,
 	    const errarg & = empty_errarg,

@@ -2,9 +2,9 @@ PROG=indxbib
 MAN1=indxbib.n
 XLIBS=$(LIBBIB) $(LIBGROFF)
 MLIB=$(LIBM)
-OBJS=indxbib.o dirnamemax.o
+OBJS=indxbib.o dirnamemax.o signal.o
 CCSRCS=indxbib.cc
-CSRCS=dirnamemax.c
+CSRCS=dirnamemax.c signal.c
 NAMEPREFIX=$(g)
 
 install_data: eign
@@ -19,3 +19,6 @@ install_data: eign
 	  rm -f $(common_words_file); \
 	  $(INSTALL_DATA) $(srcdir)/eign $(common_words_file); \
 	fi
+
+uninstall_sub:
+	-rm -f $(common_words_file)

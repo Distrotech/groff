@@ -1,9 +1,6 @@
 .\"------------
 .\" Cover sheet. Memorandum type 4
 .\"------------
-.PH "''''"
-.OH "''''"
-.EH "''''"
 .de cov@print-title
 .MOVE 2.4c
 .S 12
@@ -46,7 +43,7 @@
 .		ll -\\n[cov*abs-ind]u
 .	\}
 .	ce
-\fIABSTRACT\fP
+\fI\\*[cov*abs-name]\fP
 .	SP 2
 .	fi
 .	cov*abstract
@@ -62,7 +59,7 @@
 .	cov@print-firm
 .	cov@print-abstract
 .	SP 3
+.	ds cov*mt-printed
 .	pg@enable-top-trap
 .	pg@enable-trap
-.	ds cov*mt-printed
 .\}

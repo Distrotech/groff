@@ -40,7 +40,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #define BSHELL "/bin/sh"
 #define GXDITVIEW "gxditview"
 
-// troff will be passed an argument or -rXREG=1 if the -X option is
+// troff will be passed an argument of -rXREG=1 if the -X option is
 // specified
 #define XREG ".X"
 
@@ -73,6 +73,7 @@ public:
   possible_command();
   ~possible_command();
   void set_name(const char *);
+  void set_name(const char *, const char *);
   const char *get_name();
   void append_arg(const char *, const char * = 0);
   void clear_args();
@@ -108,9 +109,12 @@ int main(int argc, char **argv)
   int iflag = 0;
   int Xflag = 0;
   int opt;
-  commands[TROFF_INDEX].set_name(PROG_PREFIX "troff");
+  const char *command_prefix = getenv("GROFF_COMMAND_PREFIX");
+  if (!command_prefix)
+    command_prefix = PROG_PREFIX;
+  commands[TROFF_INDEX].set_name(command_prefix, "troff");
   while ((opt = getopt(argc, argv,
-		       "itpeRszavVhblCENXZH:F:m:T:f:w:W:M:d:r:n:o:P:L:"))
+		       "itpeRszavVhblCENXZF:m:T:f:w:W:M:d:r:n:o:P:L:"))
 	 != EOF) {
     char buf[3];
     buf[0] = '-';
@@ -121,19 +125,19 @@ int main(int argc, char **argv)
       iflag = 1;
       break;
     case 't':
-      commands[TBL_INDEX].set_name(PROG_PREFIX "tbl");
+      commands[TBL_INDEX].set_name(command_prefix, "tbl");
       break;
     case 'p':
-      commands[PIC_INDEX].set_name(PROG_PREFIX "pic");
+      commands[PIC_INDEX].set_name(command_prefix, "pic");
       break;
     case 'e':
-      commands[EQN_INDEX].set_name(PROG_PREFIX "eqn");
+      commands[EQN_INDEX].set_name(command_prefix, "eqn");
       break;
     case 's':
-      commands[SOELIM_INDEX].set_name(PROG_PREFIX "soelim");
+      commands[SOELIM_INDEX].set_name(command_prefix, "soelim");
       break;
     case 'R':
-      commands[REFER_INDEX].set_name(PROG_PREFIX "refer");
+      commands[REFER_INDEX].set_name(command_prefix, "refer");
       break;
     case 'z':
     case 'a':
@@ -188,7 +192,6 @@ int main(int argc, char **argv)
     case 'o':
     case 'm':
     case 'r':
-    case 'H':
     case 'd':
     case 'n':
     case 'w':
@@ -382,6 +385,13 @@ void possible_command::set_name(const char *s)
   name = strsave(s);
 }
 
+void possible_command::set_name(const char *s1, const char *s2)
+{
+  name = new char[strlen(s1) + strlen(s2) + 1];
+  strcpy(name, s1);
+  strcat(name, s2);
+}
+
 const char *possible_command::get_name()
 {
   return name;
@@ -508,9 +518,9 @@ char **possible_command::get_argv()
 void synopsis()
 {
   fprintf(stderr,
-"usage: %s [-abehilpstvzCENRVXZ] [-Hfile] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
-"       [-wname] [-Wname] [ -Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
-"       [-Larg] [files...]\n",
+"usage: %s [-abehilpstvzCENRVXZ] [-Fdir] [-mname] [-Tdev] [-ffam] [-wname]\n"
+"       [-Wname] [ -Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg] [-Larg]\n"
+"       [files...]\n",
 	  program_name);
 }
 
@@ -534,7 +544,6 @@ void help()
 "-ffam\tuse fam as the default font family\n"
 "-Fdir\tsearch directory dir for device directories\n"
 "-Mdir\tsearch dir for macro files\n"
-"-Hfile\tread hyphenation patterns from file\n"
 "-v\tprint version number\n"
 "-z\tsuppress formatted output\n"
 "-Z\tdon't postprocess\n"

@@ -104,7 +104,7 @@ Syntax(call)
 	(void) printf ("       [-display displayname] [-geometry geom]\n");
 	(void) printf ("       [-page <page-number>] [-backing <backing-store>]\n");
 	(void) printf ("       [-resolution <res>] [-print <command>]\n");
-	(void) printf ("       [filename]\n\n");
+	(void) printf ("       [-filename <file>] [filename]\n\n");
 	exit(1);
 }
 

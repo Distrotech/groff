@@ -31,7 +31,7 @@ class symbol {
 public:
   symbol(const char *p, int how = 0);
   symbol();
-  int hash() const;
+  unsigned long hash() const;
   operator ==(symbol) const;
   operator !=(symbol) const;
   const char *contents() const;
@@ -55,12 +55,9 @@ inline int symbol::operator!=(symbol p) const
   return s != p.s;
 }
 
-// guaranteed to return a positive integer
-
-inline int symbol::hash() const
+inline unsigned long symbol::hash() const
 {
-  int i = int(s);
-  return i < 0 ? -i : i;
+  return (unsigned long)s;
 }
 
 inline const char *symbol::contents() const

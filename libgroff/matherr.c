@@ -20,6 +20,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <math.h>
 #include <errno.h>
 
+#ifdef HAVE_STRUCT_EXCEPTION
 #ifdef TLOSS
 
 int matherr(exc)
@@ -41,4 +42,4 @@ struct exception *exc;
 }
 
 #endif /* TLOSS */
-
+#endif /* HAVE_STRUCT_EXCEPTION */

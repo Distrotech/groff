@@ -124,7 +124,8 @@ public:
     EXPAND = 02,
     BOX = 04,
     ALLBOX = 010,
-    DOUBLEBOX = 020
+    DOUBLEBOX = 020,
+    NOKEEP = 040
     };
   table(int nc, unsigned flags, int linesize);
   ~table();

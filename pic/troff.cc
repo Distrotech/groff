@@ -276,6 +276,9 @@ void troff_output::start_picture(double sc,
   printf(".\\\" %.3fi %.3fi %.3fi %.3fi\n", 0.0, height, width, 0.0);
   printf(".nr " FILL_REG " \\n(.u\n.nf\n");
   printf(".nr " EQN_NO_EXTRA_SPACE_REG " 1\n");
+  // This guarantees that if the picture is used in a diversion it will
+  // have the right width.
+  printf("\\h'%.3fi'\n.sp -1\n", width);
 }
 
 void troff_output::finish_picture()
@@ -286,7 +289,7 @@ void troff_output::finish_picture()
     printf(".sp %.3fi+1\n", height);
   printf(".if \\n(" FILL_REG " .fi\n");
   printf(".br\n");
-  printf(".rr " EQN_NO_EXTRA_SPACE_REG "\n");
+  printf(".nr " EQN_NO_EXTRA_SPACE_REG " 0\n");
   // this is a little gross
   set_location(current_filename, current_lineno);
   fputs(flyback_flag ? ".PF\n" : ".PE\n", stdout);
@@ -409,7 +412,7 @@ void troff_output::text(const position &center, text_piece *v, int n,
   if (driver_extension_flag && ang != 0.0) {
     rotate_flag = 1;
     position c = transform(center);
-    printf(".if '\\n(" GROPS_REG " \\{\\\n"
+    printf(".if \\n(" GROPS_REG " \\{\\\n"
 	   "\\h'%.3fi'"
 	   "\\v'%.3fi'"
 	   "\\X'ps: exec gsave currentpoint 2 copy translate %.4f rotate neg exch neg exch translate'"

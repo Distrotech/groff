@@ -378,7 +378,7 @@ static const short yycheck[] = {     0,
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 1, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -593,7 +593,8 @@ yyparse()
 
   /* Initialize stack pointers.
      Waste one element of value and location stack
-     so that they stay on the same level as the state stack.  */
+     so that they stay on the same level as the state stack.
+     The wasted elements are never initialized.  */
 
   yyssp = yyss - 1;
   yyvsp = yyvs;
@@ -676,6 +677,7 @@ yynewstate:
     fprintf(stderr, "Entering state %d\n", yystate);
 #endif
 
+  goto yybackup;
  yybackup:
 
 /* Do appropriate processing given the current state.  */
@@ -800,7 +802,7 @@ yyreduce:
       fprintf (stderr, "Reducing via rule %d (line %d), ",
 	       yyn, yyrline[yyn]);
 
-      /* Print the symboles being reduced, and their result.  */
+      /* Print the symbols being reduced, and their result.  */
       for (i = yyprhs[yyn]; yyrhs[i] > 0; i++)
 	fprintf (stderr, "%s ", yytname[yyrhs[i]]);
       fprintf (stderr, " -> %s\n", yytname[yyr1[yyn]]);
@@ -1115,7 +1117,7 @@ case 74:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 440 "/usr/local/lib/bison.simple"
+#line 442 "/usr/local/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1216,6 +1218,7 @@ yyerrlab:   /* here on detecting error */
 	yyerror("parse error");
     }
 
+  goto yyerrlab1;
 yyerrlab1:   /* here on error raised explicitly by an action */
 
   if (yyerrstatus == 3)

@@ -37,6 +37,7 @@ extern int inline_flag;
 extern int draw_flag;
 extern int one_size_reduction_flag;
 extern int compatible_flag;
+extern int nroff;
 
 void init_lex(const char *str, const char *filename, int lineno);
 void lex_error(const char *message,

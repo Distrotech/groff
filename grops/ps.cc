@@ -492,7 +492,7 @@ public:
   void set_char(int i, font *f, const environment *env, int w);
   void draw(int code, int *p, int np, const environment *env);
   void begin_page(int);
-  void end_page();
+  void end_page(int);
   void special(char *arg, const environment *env);
   font *make_font(const char *);
   void end_of_line();
@@ -1009,57 +1009,20 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
 	break;
       }
       set_line_thickness(env);
-      // We're given a starting point, a center point and an end point,
-      // and we've got to adjust them so that they all lie on a circle.
-      // We choose to adjust the center.
-      int x = p[0] + p[2];	// (x, y) is the end point
-      int y = p[1] + p[3];
-      // Start at the current point; go in the direction of the specified
-      // center point until we reach a point that is equidistant between
-      // the specified starting point and the specified end point. Place
-      // the center of the arc there.
-      double n = p[0]*double(x) + p[1]*double(y);
-      if (n > 0) {
-	double k = (double(x)*x + double(y)*y)/(2.0*n);
-	// (cx, cy) is our chosen center
-	double cx = k*p[0];
-	double cy = k*p[1];
-	out.put_fix_number(env->hpos + int(cx))
-	   .put_fix_number(env->vpos + int(cy))
-	   .put_fix_number(int(sqrt(cx*cx + cy*cy)))
-	   .put_float(degrees(atan2(-cy, -cx)))
-	   .put_float(degrees(atan2(y - cy, x - cx)))
+      double c[2];
+      if (adjust_arc_center(p, c))
+	out.put_fix_number(env->hpos + int(c[0]))
+	   .put_fix_number(env->vpos + int(c[1]))
+	   .put_fix_number(int(sqrt(c[0]*c[0] + c[1]*c[1])))
+	   .put_float(degrees(atan2(-c[1], -c[0])))
+	   .put_float(degrees(atan2(p[1] + p[3] - c[1], p[0] + p[2] - c[0])))
 	   .put_symbol("DA");
-      }
-      else {
-	// We would never reach such a point.  So instead start at the
-	// specified end point of the arc.  Go towards the specified
-	// center point until we reach a point that is equidistant between
-	// the specified start point and specified end point. Place
-	// the center of the arc there.
-	n = p[2]*double(x) + p[3]*double(y);
-	if (n > 0) {
-	  double k = 1 - (double(x)*x + double(y)*y)/(2.0*n);
-	  // (cx, cy) is our chosen center
-	  double cx = p[0] + k*p[2];
-	  double cy = p[1] + k*p[3];
-	  out.put_fix_number(env->hpos + int(cx))
-	     .put_fix_number(env->vpos + int(cy))
-	     .put_fix_number(int(sqrt(cx*cx + cy*cy)))
-	     .put_float(degrees(atan2(-cy, -cx)))
-	     .put_float(degrees(atan2(y - cy, x - cx)))
-	     .put_symbol("DA");
-	}
-	else {
-	  // That didn't work out either. So just draw a line between the
-	  // specified start and end points. (Can this happen?)
-	  out.put_fix_number(x + env->hpos)
-	     .put_fix_number(y + env->vpos)
-	     .put_fix_number(env->hpos)
-	     .put_fix_number(env->vpos)
-	     .put_symbol("DL");
-	}
-      }
+      else
+	out.put_fix_number(p[0] + p[2] + env->hpos)
+	   .put_fix_number(p[1] + p[3] + env->vpos)
+	   .put_fix_number(env->hpos)
+	   .put_fix_number(env->vpos)
+	   .put_symbol("DL");
     }
     break;
   case 't':
@@ -1098,6 +1061,7 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
   output_hpos = output_vpos = -1;
 }
 
+
 void ps_printer::begin_page(int n)
 {
   out.begin_comment("Page:").comment_arg(itoa(n));
@@ -1113,7 +1077,7 @@ void ps_printer::begin_page(int n)
   out.simple_comment("EndPageSetup");
 }
 
-void ps_printer::end_page()
+void ps_printer::end_page(int)
 {
   flush_sbuf();
   out.put_symbol("EP");

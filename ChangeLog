@@ -1,3 +1,525 @@
+Wed Mar  3 04:53:38 1993  James Clark  (jjc at jclark)
+
+	* Version 1.07 released.
+
+	* Integrate mm 1.11.
+
+	* tbl/table.cc (alphabetic_block_entry::print): start_row was used
+	where start_col was meant.
+
+Thu Feb 25 07:55:36 1993  James Clark  (jjc at jclark)
+
+	* grog/grog.sh, grog/grog.pl: Recognize PH and SA as -mm macros.
+
+Wed Feb 24 10:15:34 1993  James Clark  (jjc at jclark)
+
+	* troff/input.cc (token::next): Make \z\o'...' and similar things
+	work.
+
+	* env.h (MARGIN_CHARACTER_ON, MARGIN_CHARACTER_NEXT): New
+	constants.
+	(environment): Add margin_character_flags member.
+	* env.cc (environment::environment(symbol),
+	environment::environment(const environment *): Initialize
+	margin_character_flags.
+	(margin_character): Rewrite.
+	(environment::output_line): Add a margin character if
+	margin_character_flags is non-zero.  Turn off the
+	MARGIN_CHARACTER_NEXT bit.  If that makes margin_character_flags
+	zero, use margin_character_node without copying and then set
+	margin_character_node to 0.
+
+	* devps/DESC.in: Change minimum size to 1000.
+
+Tue Feb 23 14:57:49 1993  James Clark  (jjc at jclark)
+
+	* troff/symbol.h (symbol::hash): Change return type to unsigned
+	long.
+	* troff/dictionary.cc (dictionary::lookup, dictionary::remove):
+	Add casts to int.
+
+	* test-groff: Use -r rather than -x.
+
+	* grops/psfig.diff: Include in distribution again.
+
+Mon Feb 22 09:10:44 1993  James Clark  (jjc at jclark)
+
+	* Makefile.in (dist): Use gzip.
+
+Sun Feb 21 11:12:53 1993  James Clark  (jjc at jclark)
+
+	* acgroff.m4 (GROFF_GETOPT): Check for declaration of getopt() in
+	unistd.h as well as in stdlib.h.
+	* include/lib.h: Include <stdlib.h> is STDLIB_H_DECLARES_GETOPT is
+	defined; otherwise include <sys/types.h> and <unistd.h> if
+	UNISTD_H_DECLARES_GETOPT is defined.
+
+	* configure.in: use builtin(include, ... rather than include(...
+	* configure: Regenerate with autoconf 1.3.
+
+	* libdriver/print.cc (printer::adjust_arc_center): Use new
+	algorithm suggested by Andy Fyfe.
+
+	* libdriver/printer.cc (printer::adjust_arc_center): New function.
+	* include/printer.h: Declare this.
+	* grops/ps.cc (ps_printer::draw): Use it.
+	* grodvi/dvi.cc (dvi_printer::draw): Use it.
+
+Fri Feb 19 23:13:51 1993  James Clark  (jjc at jclark)
+
+	* Makefile.comm (.man.n): Replace macrodir by tmacdir.
+
+Thu Feb 11 16:46:59 1993  James Clark  (jjc at jclark)
+
+	* eqn/main.cc (main): Handle "eqn -".
+
+Mon Jan  4 20:29:56 1993  James Clark  (jjc at jclark)
+
+	* tmac/tmac.e (++): Install fix from comp.bugs.4sd.
+
+	* mm: Integrate version 1.08.
+
+	* pic/troff.cc (troff_output::finish_picture): Set
+	EQN_NO_EXTRA_SPACE reg to 0 rather than removing it.
+	* eqn/box.cc (box::extra_space): Set EQN_NO_EXTRA_SPACE_REG to 0
+	if it's not defined. Check whether the register is non-zero rather
+	than whether it's not defined.
+	* tmac.e ({, <): Make argument to \x zero if \n(0x is non-zero.
+
+	* indxbib/indxbib.cc: Move all signal handling into...
+	* indxbib/signal.c: New file.
+	* configure.in: Call AC_RETSIGTYPE.
+
+	* acgroff.m4 (GROFF_STRUCT_EXCEPTION): New macro.
+	* configure.in: Call GROFF_STRUCT_EXCEPTION.
+	* libgroff/matherr.c: Protect with ifdef HAVE_STRUCT_EXCEPTION.
+
+	* troff/input.cc (token::token, token::operator=): Work round SGI
+	C++ bug.
+	* pic/object.cc (position::position): Likewise.
+
+Mon Dec 28 21:50:21 1992  James Clark  (jjc at jclark)
+
+	* pic/pic.h: Move declaration of hypot().
+
+Wed Dec 16 12:28:29 1992  James Clark  (jjc at jclark)
+
+	* pic/pic.h: Declare hypot().
+
+	* pic/pic.h: Define M_PI if necessary.
+
+Thu Dec 10 12:03:29 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.e (re): Add alternative version that doesn't use groff
+	`.ta T' feature.
+
+	* devps/prologue.ps (RE): Handle the possibility that the old font
+	doesn't have a FontName entry.
+
+Wed Dec  2 10:25:29 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.e (fam): Redefine to set family in environment 2.
+	(@C): Use @fam not fam.
+
+Thu Nov 26 16:01:25 1992  James Clark  (jjc at jclark)
+
+	* lookbib/lookbib.cc (main): Change type of start to const char *.
+	* lkbib/lkbib.cc (main): Likewise.
+
+	* eqn/lex.cc (definition::definition): Don't use member
+	initializer syntax for members of anonymous unions.
+
+	* troff/input.cc (input_stack::backtrace): Change type of to const
+	char *.
+
+Wed Nov 25 13:43:09 1992  James Clark  (jjc at jclark)
+
+	* include/stringclass.h (class string): Declare inline friend
+	functions as inline in class declaration.
+	* troff/hvunits.h (class hunits, class vunits): Likewise.
+	* include/refid.h (class reference_id): Likewise
+	* troff/troff.h (points_to_units(units), scale(units, double)):
+	Delete declarations.
+	* libdriver/input.cc (get_char): Delete declaration.
+	* include/lib.h: Change 2nd argument of getopt from const char **
+	to char **.
+	* troff/symbol.cc (symbol::symbol): Cast `new char *[n]' to `const
+	char **' before assigning to a `const char **'.
+	* tbl/table.cc: Delete extra declarations of prints().
+
+Tue Nov 24 14:33:13 1992  James Clark  (jjc at jclark)
+
+	* libgroff/font.cc (font::load_desc): Cast `new char *[n]' to `const
+	char **' before assigning to a `const char **'.
+
+	* libgroff/errarg.cc (errarg::errarg): Don't use member
+	initializer syntax for members of anonymous unions.
+
+Sat Nov 21 05:02:23 1992  James Clark  (jjc at jclark)
+
+	* mm: Integrate version 1.07.
+
+Tue Nov 17 16:44:27 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (translate2): Rename to
+	(translate_no_transparent).
+	(init_input_requests): Rename tr2 to trnt.
+
+Mon Nov 16 09:49:32 1992  James Clark  (jjc at jclark)
+
+	* troff/charinfo.h (class charinfo): Add transparent_translate field.
+	(charinfo::set_translation, charinfo::set_special_translation):
+	Add second argument that specifies value for
+	transparent_translate.
+	(charinfo::get_translation, charinfo::get_special_translation):
+	Add optional second argument that specifies whether translation is
+	being used for transparent throughput.
+	* troff/input.cc (charinfo::set_translation,
+	charinfo::set_special_translation): Handle second argument.
+	(charinfo::charinfo): Initialize transparent_translate.
+	(translate): Split main part off into
+	(do_translate): New function.  Pass argument saying whether
+	translation applies to transparent throughput.
+	(translate2): New request.
+	(init_input_requests): Bind translate2 to `tr2'.
+
+Wed Nov 11 11:43:20 1992  James Clark  (jjc at jclark)
+
+	* tbl/table.h (class table): Add `nokeep' flag.
+	* tbl/main.cc (process_options): Handle `nokeep' option.
+	* tbl/table.cc (table::init_output, table::do_row, table::do_top,
+	table::do_bottom): Don't output keep/release macro definitions or
+	calls when `nokeep' option has been specified.
+
+Sat Nov  7 01:28:33 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.Xps (Xps-char): Use " as delimiter for \Z.
+
+Wed Nov  4 16:29:04 1992  James Clark  (jjc at jclark)
+
+	* tbl/table.cc (table_entry::divert, block_entry::do_divert,
+	block_entry::divert, alphabetic_block_entry::divert): Add extra
+	argument giving column separation.
+	(table::compute_widths): Pass column separation to
+	table_entry::divert().
+	(block_entry::do_divert): If an entry spans multiple columns and a
+	minimumum width has been specified for each column, then set the
+	line length to the sum of the widths (plus possibly the column
+	separations).
+
+	* troff/input.cc (set_escape_char): Don't set the escape_char
+	until after calling has_arg().
+
+Tue Nov  3 11:23:27 1992  James Clark  (jjc at jclark)
+
+	* tbl/table.cc (table::do_top): Add missing \s0 for double box
+	case.
+
+	* tbl/table.cc (table::print_double_hline): Avoid extra new line
+	in case where r > nrows - 1.
+
+	* tbl/table.cc (BODY_HEIGHT): Deleted.
+	(LINE_SEP): New definition.
+	(table::print_single_hline, table::print_double_hline,
+	table::compute_vrule_top_adjust, table::compute_vrule_bot_adjust,
+	table::do_row, table::do_top): Use LINE_SEP space before a line
+	instead of \n[.v]-BODY_HEIGHT-BODY_DEPTH.
+
+	* tbl/table.cc (text_entry::print_contents): New function.
+	(text_string_name, right_text_string_name): Deleted.
+	(TEXT_STRING, RIGHT_TEXT_STRING): Deleted.
+	(simple_text_entry::do_width, numeric_text_entry::do_width,
+	alphabetic_text_entry::do_width): Don't store the contents of the
+	entry in a string.
+	(left_text_entry::simple_print, right_text_entry::simple_print,
+	center_text_entry::simple_print,
+	alphabetic_text_entry::simple_print,
+	numeric_text_entry::simple_print): Print the entry directly
+	instead of using the stored string.
+
+Fri Oct 30 10:39:32 1992  James Clark  (jjc at jclark)
+
+	* devps/Makefile: Strip PostScript files.
+	* devps/prologue: Rename to...
+	* devps/prologue.ps.
+	* devps/psstrip.sed: New file.
+	* devps/download: Use .pfa rather than .ps for installed versions
+	of fonts.
+
+Thu Oct 29 09:14:43 1992  James Clark  (jjc at jclark)
+
+	* troff/env.cc (input_trap): Give a warning if the argument is out
+	of range.
+
+	* troff/env.cc (adjust): Treat negative argument as missing. Round
+	argument > 5 down to 5.
+
+	* troff/env.cc (center, right_justify): Make negative argument zero.
+
+	* troff/div.cc (page_offset, vertical_position_traps): Treat
+	invalid argument as missing.
+	* troff/env.cc (line_spacing, line_length, title_length, indent,
+	underline, hyphen_line_max_request, control_char,
+	no_break_control_char, widow_control_request, adjust, input_trap,
+	point_size): Likewise.
+	* troff/node.cc (ligature, kern_request, bold_font, track_kern,
+	constant_space): Likewise.
+	* troff/input.cc (compatible, shift, warn_request,
+	set_escape_char): Likewise.
+
+	* tbl/main.cc (format::format): Avoid doing `new int[0]'.
+	* tbl/table.cc (table::table): Likewise.
+
+	* Makefile.dev (install_dev): depends on $(DEVFILES).
+
+Wed Oct 28 08:30:57 1992  James Clark  (jjc at jclark)
+
+	* devX75, devX75-12, devX100, devX100-12: New directories.
+	* Makefile.in: Add these to DEVDIRS.
+
+	* troff/Makefile.sub, eqn/Makefile.sub, indxbib/Makefile.sub,
+	afmtodit/Makefile.sub, tmac/Makefile.sub, nroff/Makefile.sub,
+	grog/Makefile.sub, mm/Makefile.sub (uninstall_sub): New target.
+	* Makefile.in (uninstall, uninstall_sub, uninstall_dirs): New
+	targets.
+	* Makefile.ccpg, Makefile.cpg, Makefile.dev, Makefile.man
+	(uninstall): New target.
+	* Makefile.comm (uninstall, uninstall_sub, uninstall_man,
+	uninstall_prog, uninstall_dev): New targets.
+
+	* troff/div.cc (return_request): Treat an invalid argument as
+	missing.
+
+Mon Oct 26 11:33:47 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.e ((f): Set up the environment even when there's a
+	current diversion.  Transperently throughput a call to @N.
+	(@N): New macro.
+
+Thu Oct 22 05:05:59 1992  James Clark  (jjc at jclark)
+
+	* tbl/table.cc (table::compute_vrule_top_adjust): Round adjustment
+	up to vertical resolution.
+
+	* tbl/table.cc (table::do_row): Change row number after printing
+	stuff list.
+
+	* pic/lex.cc (get_token_after_dot): Make .left and .right work.
+
+Wed Oct 21 14:46:45 1992  James Clark  (jjc at jclark)
+
+	* Rename CHANGES to NEWS.
+
+Tue Oct 20 23:25:21 1992  James Clark  (jjc at jclark)
+
+	* libgroff/new.cc (operator new): Avoid calling malloc(0).
+
+Mon Oct 19 09:10:13 1992  James Clark  (jjc at jclark)
+
+	* man.ultrix: Removed.
+
+Sun Oct 18 06:35:15 1992  James Clark  (jjc at jclark)
+
+	* Makefile.comm (extraclean): Delete files whose names begin with
+	`='.
+
+	* pic/troff.cc (troff_output::text): Fix typo in implementation of
+	aligned text.
+
+Sat Oct 10 09:32:29 1992  James Clark  (jjc at jclark)
+
+	* troff/env.cc (hyphenate_request, vertical_spacing, no_number):
+	* troff/div.cc (page_length, need_space, space_request): Treat
+	invalid optional argument as missing.
+	* troff/env.cc (number_lines): If the first argument is present
+	but not a number, turn on line numbering, don't change the next
+	line number and parse the remaining arguments.
+
+	* tmac/tmac.e (@q): Do the `ne' before changing to environment 2.
+
+Thu Oct  8 10:24:40 1992  James Clark  (jjc at jclark)
+
+	* eqn/box.h: Change declaration accordingly.
+	* eqn/box.cc (set_gsize): Change return type to int.  Return 0 if
+	the specified size was bad but don't give an error.  Check for
+	overflow.
+	* eqn/main.cc (main): Change caller. Leave validation to set_gsize.
+	* eqn/lex (do_size): Likewise.
+
+Wed Oct  7 09:48:59 1992  James Clark  (jjc at jclark)
+
+	* acgroff.m4 (GROFF_PROG_CCC): Use fopen when checking for C++
+	compatible headers.
+
+Sun Oct  4 18:24:02 1992  James Clark  (jjc at jclark)
+
+	* tbl/table.cc (table::init_output): Improve error message when
+	table won't fit on one page.
+
+Fri Oct  2 10:41:40 1992  James Clark  (jjc at jclark)
+
+	* pic/troff.cc (troff_output::start_picture): Generate line
+	containing a horizontal motion equal to the width of the picture.
+
+	* groff/groff.cc (main): Allow PROG_PREFIX to be set at runtime
+	using GROFF_COMMAND_PREFIX environment variable.
+
+Fri Sep 25 11:40:40 1992  James Clark  (jjc at jclark)
+
+	* mdate.sh: Use $NF rather than $(NF).
+
+Tue Sep 22 09:47:24 1992  James Clark  (jjc at jclark)
+
+	* pic/main.cc (main):  Use %1 not %c in argument to warning.
+
+	* eqn/main.cc (main): Output code to check that geqn was given the
+	correct -T option.
+
+Mon Sep 21 10:59:16 1992  James Clark  (jjc at jclark)
+
+	* Makefile.in (dist): Instead of doing `make -f ../Makefile', do
+	`ln -s ../Makefile .; make; rm -f Makefile'.
+
+	* troff/hyphen: Rename to...
+	* troff/hyphen.us:
+	* troff/input.cc (main): Delete -H option. Don't call
+	read_hyphen_file().
+	* troff/env.cc: Include searchpath.h and macropath.h.
+	(exception_dictionary): Deleted.
+	(ht): Deleted.
+	(read_hyphen_file): Deleted.
+	(hyphenation_language): New struct.
+	(class trie, class hyphen_trie): Move declarations up.
+	(trie_node::~trie_node): Deleted.
+	(trie::delete_trie_node): New function.
+	(trie::do_delete): New pure virtual function.
+	(hyphen_trie::do_delete): New function.
+	(trie::~trie): New function.
+	(hyphen_trie::~hyphen_trie): New function.
+	(trie::clear): No need to chcek that tp is not 0.
+	(current_language, language_dictionary): New variables.
+	(hyphen_word): Give an error if no current language.  Use
+	exceptions dictionary in current language.
+	(hyphen_trie::read_patterns_file): Find file using macro_path.
+	Allow comments (starting with %) in patterns file.  Don't make it
+	a fatal error if the file can't be found.
+	(hyphenate): Return if no current language.  Get the exceptions
+	dictionary and the hyphenation patterns from the current language.
+	(set_hyphenation_language): New variable.
+	(hyphenation_patterns_file): New function.
+	(hyphenation_language_reg): New class.
+	(hyphenation_language_reg::get_string): New function.
+	(init_hyphen_requests): Bind "hla" to set_hyphenation_language and
+	"hpf" to hyphenation_patterns_file.  Initialize `.hla' number
+	register.
+	* groff/groff.cc (main, help, synopsis): Delete -H option.
+	* include/Makefile.sub: Don't define HYPHENFILE.
+	* Makefile.in: Delete hyphenfile variable and remove from MDEFINES.
+	* Makefile.comm (.man.n): Don't substitute for HYPHENFILE.
+	* tmac/troffrc: Set hyphenation language to `us'. Load `hyphen.us'
+	hyphenation patterns.
+
+Sun Sep 20 09:33:02 1992  James Clark  (jjc at jclark)
+
+	* eqn/neqn.sh: New file.
+	* eqn/Makefile.sub: Handle neqn.sh.
+
+	* eqn/eqn.h: Declare `nroff' variable.
+	* eqn/box.cc (param_table): Add `nroff' param.
+	(nroff): Define it.
+	* eqn/lex.cc (yylex): Handle TDEFINE and NDEFINE using `nroff'
+	variable.
+	* tmac/eqnrc: Set `nroff' to 1 for -Tascii or -Tlatin1.
+
+	* troff/troff.h (WARN_FONT): New warning.
+	(WARN_TOTAL): Change accordingly.
+	* troff/input.cc (DEFAULT_WARNING_MASK): Include WARN_FONT.
+	(warning_table): Add WARN_FONT.
+	* troff/node.cc (mount_font_no_translate): Pass argument to
+	font::load_font.  If this is non-zero, give a warning.
+	Don't give an error message when accessing a font that has already
+	been found to be invalid.
+	* include/font.h (font::load, font::load_font): Add additional
+	optional argument which suppresses error message if the font is
+	not found.
+	* libgroff/font.cc (font::load_font): Handle additional argument.
+	(font::load): Add additional argument. If this is non-null, set it
+	to 1 and don't give error message.
+
+	* include/printer.h (printer::end_page): Add argument giving
+	length of page.
+	* libdriver/input.cc (do_file): Pass this.
+	* grops/ps.cc (ps_printer::end_page): Add argument.
+	* grodvi/dvi.cc (dvi_printer::end_page,
+	draw_dvi_printer::end_page): Add argument.
+	* grotty/tty.cc (class tty_printer): Remove lines_per_page and
+	columns_per_page members. New member nlines.
+	(DEFAULT_LINES_PER_PAGE): Deleted.
+	(tty_printer::tty_printer): Don't compute lines_per_page from
+	font::paperlength. Don't compute columns_per_page from
+	font::paperwidth.
+	(tty_printer::add_char): Don't check horizontal position against
+	columns_per_page. Grow glyphs vector if neccessary.
+	(tty_printer::end_page): Add argument giving page_length in units.
+	Discard lines past end of page.
+
+Wed Sep 16 06:29:52 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.tty-char: Fix definition of \(/l.
+
+	* tmac/tmac.X: Define \(en.
+
+Tue Sep 15 10:37:13 1992  James Clark  (jjc at jclark)
+
+	* acgroff.m4 (GROFF_PRINT): If a system has lpr and lp but not
+	lpq, then use lp rather than lpr.
+
+	* tmac/tmac.s (par@reset): Don't call `ad'.
+	(par*env-init): Call `ad'.
+
+Sun Sep 13 18:48:20 1992  James Clark  (jjc at jclark)
+
+	* mdate.sh: Use $(NF) instead of $6 to extract year from output of
+	date.
+
+	* troff/symbol.cc: #undef BLOCK_SIZE if it's defined.
+	* indxbib/indxbib.cc: Likewise.
+
+Sun Sep  6 09:44:46 1992  James Clark  (jjc at jclark)
+
+	* libgroff/putenv.c: New file.
+	* libgroff/Makefile.sub: Add putenv.c to CSRCS.
+	* Makefile.in: Say that putenv.o can be one of LIBOBJS.
+	* configure.in: Test for putenv with AC_REPLACE_FUNCS. Test for
+	stdlib.h with AC_HAVE_HEADERS.
+
+Sat Sep  5 18:11:52 1992  James Clark  (jjc at jclark)
+
+	* indxbib/dirnamemax.c: Include <sys/dir.h> only if <dirent.h>
+	does not exist.
+
+Fri Sep  4 09:43:26 1992  James Clark  (jjc at jclark)
+
+	* eqn/box.cc (gsize): Make it an int.
+	(set_gsize): Parse argument handling increment or decrement.
+	(box::top_level): Convert gsize to a string.
+
+	* troff/input.cc (exit_troff): Make buf unsigned char [].
+	Call to make_temp_iterator casts buf to char*.
+
+	* Makefile.in ($(TARGETS), dot): Pass $(MDEFINES) to recursive makes.
+
+	* Makefile.ccpg (depend.temp): Depends on $(YTABC).
+	* Makefile.cpg (depend.temp): Likewise.
+
+	* Makefile.dep: Remove Makefile.dep from $(REALCLEANFILES).
+
+	* Makefile.comm: Add y.output to MOSTLYCLEANFILES.
+
+Thu Sep  3 08:01:55 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.s (B, I, BI, CW): Rewrite avoiding aliases.
+
 Tue Sep  1 18:24:53 1992  James Clark  (jjc at jclark)
 
 	* Version 1.06 released.

@@ -405,13 +405,13 @@ SetDevice (dw, name)
 	request.request_mode = CWWidth|CWHeight;
 	request.width = MY_WIDTH(dw);
 	request.height = MY_HEIGHT(dw);
-	ret = XtMakeGeometryRequest (dw, &request, &reply);
+	ret = XtMakeGeometryRequest ((Widget)dw, &request, &reply);
 	if (ret == XtGeometryAlmost
 	    && reply.height >= request.height
 	    && reply.width >= request.width) {
 		request.width = reply.width;
 		request.height = reply.height;
-		XtMakeGeometryRequest (dw, &request, &reply);
+		XtMakeGeometryRequest ((Widget)dw, &request, &reply);
 	}
 }
 

@@ -439,10 +439,10 @@ void font::copy_entry(int new_index, int old_index)
   ch_index[new_index] = ch_index[old_index];
 }
 
-font *font::load_font(const char *s)
+font *font::load_font(const char *s, int *not_found)
 {
   font *f = new font(s);
-  if (!f->load()) {
+  if (!f->load(not_found)) {
     delete f;
     return 0;
   }
@@ -462,12 +462,18 @@ static char *trim_arg(char *p)
   return p;
 }
 
-int font::load()
+// If the font can't be found, then if not_found is NULL it will be set
+// to 1 otherwise a message will be printed.
+
+int font::load(int *not_found)
 {
   char *path;
   FILE *fp;
   if ((fp = open_file(name, &path)) == NULL) {
-    error("can't find font file `%1'", name);
+    if (not_found)
+      *not_found = 1;
+    else
+      error("can't find font file `%1'", name);
     return 0;
   }
   text_file t(fp, path);
@@ -757,7 +763,7 @@ int font::load_desc()
 	t.error("bad number of fonts `%1'", p);
 	return 0;
       }
-      font_name_table = new char *[nfonts+1]; 
+      font_name_table = (const char **)new char *[nfonts+1]; 
       for (int i = 0; i < nfonts; i++) {
 	p = strtok(0, WS);
 	while (p == 0) {
@@ -823,7 +829,7 @@ int font::load_desc()
     }
     else if (strcmp("styles", p) == 0) {
       int style_table_size = 5;
-      style_table = new char *[style_table_size];
+      style_table = (const char **)new char *[style_table_size];
       for (int j = 0; j < style_table_size; j++)
 	style_table[j] = 0;
       int i = 0;
@@ -835,7 +841,7 @@ int font::load_desc()
 	if (i + 1 >= style_table_size) {
 	  const char **old_style_table = style_table;
 	  style_table_size *= 2;
-	  style_table = new char*[style_table_size];
+	  style_table = (const char **)new char*[style_table_size];
 	  for (j = 0; j < i; j++)
 	    style_table[j] = old_style_table[j];
 	  for (; j < style_table_size; j++)

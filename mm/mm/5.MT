@@ -1,13 +1,11 @@
 .\"------------
 .\" Cover sheet. Memorandum type 5
 .\"------------
-.PH "''''"
-.OH "''''"
-.EH "''''"
 .nr cov*mt0-ind 1.1c
 .de cov@print-title
 .B
 .ll 9c
+.fi
 .cov*title
 .R
 .ll

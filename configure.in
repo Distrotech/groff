@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-include([acgroff.m4])dnl
+builtin([include],[acgroff.m4])dnl
 AC_INIT(groff/groff.cc)
 GROFF_PREFIX
 dnl checks for programs
@@ -14,19 +14,21 @@ AC_LN_S
 GROFF_ETAGSCCFLAG
 dnl checks for headers
 AC_UNISTD_H
-AC_HAVE_HEADERS(dirent.h limits.h sys/dir.h)
+AC_HAVE_HEADERS(dirent.h limits.h sys/dir.h stdlib.h)
 GROFF_LIMITS_H
 GROFF_UNISTD_H
 GROFF_GETOPT
 GROFF_PUTENV
 dnl checks for typedefs
 GROFF_TIME_T
+AC_RETSIGTYPE
+GROFF_STRUCT_EXCEPTION
 dnl checks for functions
 GROFF_MMAP
 AC_VFORK
 saved_libs="$LIBS"
 LIBS="$LIBS -lm"
-AC_REPLACE_FUNCS(fmod strtol getcwd strerror)
+AC_REPLACE_FUNCS(fmod strtol getcwd strerror putenv)
 LIBS="$saved_libs"
 AC_HAVE_FUNCS(rename mkstemp)
 GROFF_SYS_SIGLIST

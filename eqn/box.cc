@@ -26,7 +26,7 @@ const char *current_roman_font;
 char *gfont = 0;
 char *grfont = 0;
 char *gbfont = 0;
-char *gsize = 0;
+int gsize = 0;
 
 int script_size_reduction = -1;	// negative means reduce by a percentage 
 
@@ -78,6 +78,7 @@ int shift_down = 26;		// = axis_height
 int column_sep = 100;		// = em space
 int matrix_side_sep = 17;	// = thin space
 
+int nroff = 0;			// should we grok ndefine or tdefine?
 
 struct {
   const char *name;
@@ -120,6 +121,7 @@ struct {
 "draw_lines", &draw_flag,
 "body_height", &body_height,
 "body_depth", &body_depth,
+"nroff", &nroff,
 0, 0
 };
 
@@ -151,10 +153,33 @@ void set_space(int n)
     positive_space = n;
 }
 
-void set_gsize(const char *s)
+// Return 0 if the specified size is bad.
+// The caller is responsible for giving the error message.
+
+int set_gsize(const char *s)
 {
-  a_delete gsize;
-  gsize = strsave(s);
+  const char *p = (*s == '+' || *s == '-') ? s + 1 : s;
+  char *end;
+  long n = strtol(p, &end, 10);
+  if (n <= 0 || *end != '\0' || n > INT_MAX)
+    return 0;
+  if (p > s) {
+    if (!gsize)
+      gsize = 10;
+    if (*s == '+') {
+      if (gsize > INT_MAX - n)
+	return 0;
+      gsize += int(n);
+    }
+    else {
+      if (gsize - n <= 0)
+	return 0;
+      gsize -= int(n);
+    }
+  }
+  else
+    gsize = int(n);
+  return 1;
 }
 
 void set_script_reduction(int n)
@@ -257,8 +282,11 @@ void box::top_level()
   printf(".nr " SAVED_PREV_FONT_REG " \\n[.f]\n");
   printf(".ft %s\n", get_gfont());
   printf(".nr " SAVED_SIZE_REG " \\n[.s]z\n");
-  if (gsize)
-    b = new size_box(strsave(gsize), b);
+  if (gsize > 0) {
+    char buf[INT_DIGITS + 1];
+    sprintf(buf, "%d", gsize);
+    b = new size_box(strsave(buf), b);
+  }
   current_roman_font = get_grfont();
   // This catches tabs used within \Z (which aren't allowed).
   b->check_tabs(0);
@@ -318,22 +346,24 @@ void box::top_level()
 
 void box::extra_space()
 {
+  printf(".if !r" EQN_NO_EXTRA_SPACE_REG " "
+	 ".nr " EQN_NO_EXTRA_SPACE_REG " 0\n");
   if (positive_space >= 0 || negative_space >= 0) {
     if (positive_space > 0)
-      printf(".if !r" EQN_NO_EXTRA_SPACE_REG " "
+      printf(".if !\\n[" EQN_NO_EXTRA_SPACE_REG "] "
 	     ".as " LINE_STRING " \\x'-%dM'\n", positive_space);
     if (negative_space > 0)
-      printf(".if !r" EQN_NO_EXTRA_SPACE_REG " "
+      printf(".if !\\n[" EQN_NO_EXTRA_SPACE_REG "] "
 	     ".as " LINE_STRING " \\x'%dM'\n", negative_space);
     positive_space = negative_space = -1;
   }
   else {
-    printf(".if !r" EQN_NO_EXTRA_SPACE_REG " "
+    printf(".if !\\n[" EQN_NO_EXTRA_SPACE_REG "] "
 	   ".if \\n[" HEIGHT_FORMAT "]>%dM .as " LINE_STRING
 	   " \\x'-(\\n[" HEIGHT_FORMAT
 	   "]u-%dM)'\n",
 	   uid, body_height, uid, body_height);
-    printf(".if !r" EQN_NO_EXTRA_SPACE_REG " "
+    printf(".if !\\n[" EQN_NO_EXTRA_SPACE_REG "] "
 	   ".if \\n[" DEPTH_FORMAT "]>%dM .as " LINE_STRING
 	   " \\x'\\n[" DEPTH_FORMAT
 	   "]u-%dM'\n",

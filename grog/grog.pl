@@ -71,6 +71,9 @@ sub process {
 	elsif (/^\.P$/) {
 	    $P++;
 	}
+        elsif (/^\.(PH|SA)/) {
+            $mm++;
+	}
 	elsif (/^\.TH/) {
 	    $TH++;
 	}
@@ -124,7 +127,7 @@ elsif ($SH > 0 && $TH > 0) {
 elsif ($PP > 0) {
     push(@command, "-ms");
 }
-elsif ($P > 0) {
+elsif ($P > 0 || $mm > 0) {
     push(@command, "-mm");
 }
 elsif ($mdoc > 0) {

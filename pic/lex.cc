@@ -733,6 +733,7 @@ int get_token_after_dot(int c)
 	if (c == 't') {
 	  input_stack::get_char();
 	  context_buffer = ".left";
+	  return DOT_W;
 	}
 	input_stack::push_back('f');
       }
@@ -765,6 +766,7 @@ int get_token_after_dot(int c)
 	  if (c == 't') {
 	    input_stack::get_char();
 	    context_buffer = ".right";
+	    return DOT_E;
 	  }
 	  input_stack::push_back('h');
 	}
