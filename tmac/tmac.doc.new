@@ -2466,11 +2466,10 @@
 .
 .  ie \n[.$] \{\
 .    nr doc-is-compact 0
-.    nr doc-reg-Bd 0
+.    nr doc-reg-Bd 1
 .    nr doc-display-depth +1
 .
-.    if "\$1"-literal" \{\
-.      nr doc-reg-Bd 1
+.    ie "\$1"-literal" \{\
 .      ds doc-display-type-stack\n[doc-display-depth] literal
 .      nr doc-curr-font \n[.f]
 .      nr doc-curr-size \n[.s]
@@ -2483,28 +2482,30 @@
 '        ta T 8n
 .      nf
 .    \}
-.
-.    if "\$1"-filled" \{\
-.      nr doc-reg-Bd 1
-.      ds doc-display-type-stack\n[doc-display-depth] filled
-.      br
-.    \}
-.
-.    if "\$1"-ragged" \{\
-.      nr doc-reg-Bd 1
-.      ds doc-display-type-stack\n[doc-display-depth] ragged
-.      na
-.    \}
-.
-.    if "\$1"-unfilled" \{\
-.      nr doc-reg-Bd 1
-.      ds doc-display-type-stack\n[doc-display-depth] unfilled
-.      nf
-.    \}
+.    el \{\
+.      ie "\$1"-filled" \{\
+.        ds doc-display-type-stack\n[doc-display-depth] filled
+.        br
+.      \}
+.      el \{\
+.        ie "\$1"-ragged" \{\
+.          ds doc-display-type-stack\n[doc-display-depth] ragged
+.          na
+.        \}
+.        el \{\
+.          ie "\$1"-unfilled" \{\
+.            ds doc-display-type-stack\n[doc-display-depth] unfilled
+.            nf
+.          \}
+.          el \{\
+.            tm mdoc warning: Unknown keyword `\$1' in .Bd request (#\n[.c])
+.            nr doc-reg-Bd 0
+.    \}\}\}\}
 .
 .    \" have we seen an argument?
 .    if \n[doc-reg-Bd] \{\
 .      shift
+.      \" check other arguments
 .      if \n[.$] \
 .        doc-do-Bd-args \$@
 .    \}
@@ -2546,62 +2547,55 @@
 .  nr doc-reg-ddBa 1
 .  ds doc-str-ddBa
 .
-.  if "\$1"-offset" \{\
+.  ie "\$1"-offset" \{\
 .    ds doc-str-ddBa "\$2
+.    nr doc-reg-ddBa 2
 .
-.    if "\$2"left" \{\
-.      nr doc-reg-ddBa 2
+.    ie "\$2"left" \
 .      nr doc-indent-stack\n[doc-display-depth] 0
-.    \}
-.
-.    if "\$2"right" \{\
-.      nr doc-reg-ddBa 2
-.      nr doc-indent-stack\n[doc-display-depth] (\n[.l]u / 3u)
-.    \}
-.
-.    if "\$2"center" \{\
-.      nr doc-reg-ddBa 2
-.      nr doc-indent-stack\n[doc-display-depth] ((\n[.l]u - \n[.i]u) / 4u)
-.    \}
-.
-.    if "\$2"indent" \{\
-.      nr doc-reg-ddBa 2
-.      nr doc-indent-stack\n[doc-display-depth] \n[doc-display-indent]u
-.    \}
-.
-.    if "\$2"indent-two" \{\
-.      nr doc-reg-ddBa 2
-.      nr doc-indent-stack\n[doc-display-depth] (\n[doc-display-indent]u + \n[doc-display-indent]u)
-.    \}
+.    el \{\
+.      ie "\$2"right" \
+.        nr doc-indent-stack\n[doc-display-depth] (\n[.l]u / 3u)
+.      el \{\
+.        ie "\$2"center" \
+.          nr doc-indent-stack\n[doc-display-depth] ((\n[.l]u - \n[.i]u) / 4u)
+.        el \{\
+.          ie "\$2"indent" \
+.            nr doc-indent-stack\n[doc-display-depth] \n[doc-display-indent]u
+.          el \{\
+.            ie "\$2"indent-two" \
+.              nr doc-indent-stack\n[doc-display-depth] (\n[doc-display-indent]u + \n[doc-display-indent]u)
+.            el \
+.              nr doc-reg-ddBa 1
+.    \}\}\}\}
 .
 .    \" not a known keyword
 .    if (\n[doc-reg-ddBa] == 1) \{\
 .      nr doc-reg-ddBa 2
-.      doc-get-width "\$2"
-.      \" if the offset parameter has the form `XXn', 10 <= XX < 100, take
-.      \" this parameter as the offset value; otherwise, use the width of the
-.      \" parameter
-.      ie (\n[doc-width] > 2) \{\
-.        ie ((\$2 > 9n) & (\$2 < 100n)) \
-.          nr doc-indent-stack\n[doc-display-depth] \$2
+.      \" test whether argument is a valid numeric expression
+.      ie \B"\$2" \
+.        nr doc-indent-stack\n[doc-display-depth] \$2
+.      el \{\
+.        doc-get-width "\$2"
+.        ie (\n[doc-width] == 2) \{\
+.          \" if the offset parameter is a macro, use the macro's
+.          \" width as specified in doc-common
+.          doc-get-arg-type "\$2"
+.          ie "\*[doc-arg-type]"macro" \
+.            nr doc-indent-stack\n[doc-display-depth] \n[\$2]
+.          el \
+.            nr doc-indent-stack\n[doc-display-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.        \}
 .        el \
 .          nr doc-indent-stack\n[doc-display-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
-.      \}
-.      el \{\
-.        \" if the offset parameter is a (two-letter) macro, use the macro's
-.        \" width as specified in doc-comon; otherwise, use the parameter
-.        \" numerically
-.        if (\n[doc-width] == 2) \
-.          doc-get-arg-type "\$2"
-.        ie "\*[doc-arg-type]"macro" \
-.          nr doc-indent-stack\n[doc-display-depth] \n[\$2]
-.        el \
-.          nr doc-indent-stack\n[doc-display-depth] \$2
 .    \}\}
 .  \}
-.
-.  if "\$1"-compact" \
-.    nr doc-is-compact 1
+.  el \{\
+.    ie "\$1"-compact" \
+.      nr doc-is-compact 1
+.    el \
+.      tm mdoc warning: Unknown keyword `\$1' in .Bd request (#\n[.c])
+.  \}
 .
 .  if (\n[doc-reg-ddBa] < \n[.$]) \{\
 .    \" have we seen `-offset' or `-compact'?
@@ -2719,7 +2713,7 @@
 .                          ds doc-list-stack\n[doc-list-depth] column-list
 .                        el \{\
 .                          tmc "mdoc warning:
-.                          tmc " Unknown list type `\$1' in .Bl request
+.                          tm1 " Unknown list type `\$1' in .Bl request
 .                          tm
 .                          nr doc-arg-ptr 0
 .    \}\}\}\}\}\}\}\}\}\}\}
@@ -2754,28 +2748,23 @@
 .          nr doc-num-columns 0
 .    \}\}\}
 .    el \{\
-.      tm1 "Usage: .Bl [[-hang | -tag] [-width]]
-.      tm1 "           [ -item | -enum | -bullet | -diag] (#\n[.c])
+.      tm1 "Usage: .Bl [-hang | -ohang | -tag | -diag | -inset]
+.      tm1 "             [-width [string]] [-offset [string]] [-compact]
+.      tm1 "       .Bl [-column] [-offset [string]] [string1] [string2] ...
+.      tm1 "       .Bl [-item | -enum | -bullet | -hyphen | -dash]
+.      tm1 "             [-offset [string]] [-compact] (#\n[.c])
 .    \}
 .
 .    doc-reset-args
 .  \}
 .  el \{\
-.    tm1 "Usage: .Bl [[-hang | -tag] [-width]]
-.    tm1 "           [ -item | -enum | -bullet | -diag] (#\n[.c])
+.    tm1 "Usage: .Bl [-hang | -ohang | -tag | -diag | -inset]
+.    tm1 "             [-width [string]] [-offset [string]] [-compact]
+.    tm1 "       .Bl [-column] [-offset [string]] [string1] [string2] ...
+.    tm1 "       .Bl [-item | -enum | -bullet | -hyphen | -dash]
+.    tm1 "             [-offset [string]] [-compact] (#\n[.c])
 .  \}
 ..
-.
-.
-.ec
-.
-.nr i 10
-.while (\n[i] < 100) \{\
-.  nr doc-width-\n[i]n 1
-.  nr i +1
-.\}
-.
-.eo
 .
 .
 .\" NS doc-do-Bl-args macro
@@ -2787,59 +2776,60 @@
 .de doc-do-Bl-args
 .  nr doc-arg-ptr +1
 .  if (\n[doc-num-args] >= \n[doc-arg-ptr]) \{\
-.    nr doc-reg-dBla 0
+.    nr doc-reg-dBla 1
 .
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-compact" \{\
-.      nr doc-reg-dBla 1
+.    ie "\*[doc-arg\n[doc-arg-ptr]]"-compact" \
 .      nr doc-compact-list-stack\n[doc-list-depth] 1
-.    \}
-.
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-width" \{\
-.      nr doc-reg-dBla 1
-.      nr doc-arg-ptr +1
-.      nr have-tag-width 1
-.      ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
-.      ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
-.
-.      doc-get-arg-width \n[doc-arg-ptr]
-.      ie (\n[doc-width] > 2) \{\
-.        nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
-.        if (\n[doc-width] == 3) \
-.          if \A'\*[doc-str-dBla]' \
-.            if r doc-width-\*[doc-str-dBla] \
-.              nr doc-list-indent-stack\n[doc-list-depth] \*[doc-str-dBla]
-.      \}
-.      el \{\
-.        doc-get-arg-type \*[doc-str-dBla]
-.        ie "\*[doc-arg-type]"macro" \
-.          nr doc-list-indent-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
-.        el \
-.          nr doc-list-indent-stack\n[doc-list-depth] \*[doc-str-dBla]u
-.    \}\}
-.
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-offset" \{\
-.      nr doc-reg-dBla 1
-.      nr doc-arg-ptr +1
-.
-.      ie "\*[doc-arg\n[doc-arg-ptr]]"indent" \
-.        nr doc-list-offset-stack\n[doc-list-depth] \n[doc-display-indent]u
-.      el \{\
+.    el \{\
+.      ie "\*[doc-arg\n[doc-arg-ptr]]"-width" \{\
+.        nr doc-arg-ptr +1
+.        nr have-tag-width 1
+.        ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
 .        ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
 .
-.        doc-get-arg-width \n[doc-arg-ptr]
-.        ie (\n[doc-width] > 2) \{\
-.          nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
-.          if \A'\*[doc-str-dBla]' \
-.            if r doc-width-\*[doc-str-dBla] \
-.              nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
-.        \}
+.        \" test whether argument is a valid numeric expression
+.        ie \B"\*[doc-str-dBla]" \
+.          nr doc-list-indent-stack\n[doc-list-depth] \*[doc-str-dBla]
 .        el \{\
-.          doc-get-arg-type \*[doc-str-dBla]
-.          ie "\*[doc-arg-type]"macro" \
-.            nr doc-list-offset-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
+.          doc-get-arg-width \n[doc-arg-ptr]
+.          ie (\n[doc-width] == 2) \{\
+.            \" if the width parameter is a macro, use the macro's
+.            \" width as specified in doc-common
+.            doc-get-arg-type \*[doc-str-dBla]
+.            ie "\*[doc-arg-type]"macro" \
+.              nr doc-list-indent-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
+.            el \
+.              nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.          \}
 .          el \
-.            nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
-.    \}\}\}
+.            nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.      \}\}
+.      el \{\
+.        ie "\*[doc-arg\n[doc-arg-ptr]]"-offset" \{\
+.          nr doc-arg-ptr +1
+.
+.          ie "\*[doc-arg\n[doc-arg-ptr]]"indent" \
+.            nr doc-list-offset-stack\n[doc-list-depth] \n[doc-display-indent]u
+.          el \{\
+.            ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
+.
+.            ie \B"\*[doc-str-dBla]" \
+.              nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
+.            el \{\
+.              doc-get-arg-width \n[doc-arg-ptr]
+.              ie (\n[doc-width] == 2) \{\
+.                doc-get-arg-type \*[doc-str-dBla]
+.                ie "\*[doc-arg-type]"macro" \
+.                  nr doc-list-offset-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
+.                el \
+.                  nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.              \}
+.              el \
+.                nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.        \}\}\}
+.        el \
+.          nr doc-reg-dBla 0
+.    \}\}
 .
 .    \" not a known keyword, so it specifies the width of the next column
 .    \" (if it is a column list)
@@ -2869,7 +2859,7 @@
 .
 .de El
 .  ie \n[.$] \
-.    tm Usage: .El (#\n[.c])
+.    tm Usage: .El (does not take arguments) (#\n[.c])
 .  el \{\
 .    ds doc-macro-name El
 .    nr doc-reg-El 0
