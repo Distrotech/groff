@@ -71,7 +71,7 @@ o In groff versions 1.18 and 1.18.1, \D'f ...' didn't move the current
 
   \D'f ...' is deprecated since it depends on the horizontal resolution of
   the output device (given with the `hor' parameter in the DESC file).
-  Use the new \D'Fg ...' instead.
+  Use the new \D'Fg ...' escape instead.
 
 o For orthogonality, new \D subcommands to change the fill color are
   available:
@@ -102,6 +102,10 @@ Grops
 o The font `freeeuro.pfa' has been added to provide various default glyph
   shapes for `eu' and `Eu'.
 
+o It is now possible to access all glyphs in a Type 1 font, not only 256
+  (provided the font file created by afmtodit has proper entries).  grops
+  constructs additional encoding vectors on the fly if necessary.
+
 o Now emits paper size via %%DocumentMedia and PageSize mechanisms, so
   that it is no longer required to tell `gv' or `ps2pdf' about the paper
   size.  The `broken' flag 16 omits this feature (the used PostScript
@@ -129,6 +133,9 @@ o The environment variable `REFER' to override the name of the default
 Afmtodit
 --------
 
+o Unencoded glyphs in an AFM file are output also (since grops can emit
+  multiple encoding vectors for a single font).
+
 o New option `-m' to prevent negative left italic correction values.
 
 o The mapping and encoding file together with file `DESC' are now searched
@@ -138,11 +145,15 @@ o The mapping and encoding file together with file `DESC' are now searched
 Macro Packages
 --------------
 
-o Larry Kollar <kollar@alltel.net> made the man macros more customizable.
+o Larry Kollar <kollar@alltel.net> and others made the man macros more
+  customizable.
 
   . New command line options -rFT, -rIN, and -rSN to set the vertical
     location of the footer line, the body text indentation, and the
     sub-subheading indentation.
+
+  . New command line option -rHY (similar to the ms macros) to control
+    hyphenation.
 
   . New macros `.PT' and `.BT' to print the header and footer strings.
     They can be replaced with a customized version in `man.local'.

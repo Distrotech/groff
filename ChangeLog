@@ -1,3 +1,60 @@
+2003-03-08  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/an-old.tmac: Use register `HY' to control hyphenation.
+	* NEWS, tmac/groff_man.man, doc/groff.texinfo: Document it.
+
+2003-03-07  Werner LEMBERG  <wl@gnu.org>
+
+	Added support to access more than 256 glyphs in Type 1 fonts.
+
+	* src/devices/grops/ps.cc (subencoding): New structure.
+	(style): Add `sub' field.
+	Updated all users.
+	(ps_printer): Add `subencodings' and `next_subencoding_index' fields.
+	Add `set_subencoding', `get_subfont' and `encode_subfont' member
+	functions.
+	Updated all users.
+	(ps_printer::set_char): Use `set_subencoding'.
+	(make_subencoding_name): New function.
+	(ps_printer::set_style): Handle case where `sty.sub' is not zero.
+	(ps_printer::~ps_printer): Emit subencoding definitions.
+
+	* src/devices/grops/psrm.cc (valid_input_table): New array to
+	properly support EBCDIC.
+	(white_space): Add `\f'.
+	(ps_get_line): Change first argument to be of type `string &'.
+	Updated all callers.
+	This allows to get lines of arbitrary length.
+	Use `valid_input_table'.
+	Remove warning about non-conforming PS line length.  This seems
+	not to be of great importance -- for example, dvips don't emit
+	a warning either.
+	(PS_LINE_MAX): Removed.
+	(matches_comment): Change first argument to be of type `string &'.
+
+	* src/devices/grops/grops.man, src/devices/grops/TODO: Updated.
+
+	* src/utils/afmtodit/afmtodit.pl (%unicode_decomposed,
+	%AGL_to_unicode, %default_ligatures): New hash tables.
+	Read all map entries.
+	Add unencoded characters.
+	Check for default ligatures if there are no `L' entries.
+	Print all kern entries.
+	Print all characters in charset.
+	* src/utils/afmtodit/afmtodit.man: Updated.
+
+	* font/devps/*: Regerated all fonts.
+
+	* tmac/latin[129].tmac, tmac/cp1047.tmac: Don't test for existence
+	of characters, just use `.trin'.  Otherwise the mapping is depending
+	on the font encoding.
+	* tmac/ps.tmac: Add `fi' and `fl'.
+	Improve `Fi' and `Fl'.
+	* tmac/X.tmac, tmac/lbp.tmac, tmac/tty.tmac: Improve `Fi' and `Fl'.
+	* tmac/Xps.tmac: Fix `em'.
+
+	* NEWS: Updated.
+
 2003-03-04  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/input.cc (charinfo_to_node_list): Reset

@@ -1962,7 +1962,7 @@ The command line format for using the @file{man} macros with
 
 @Example
 groff -m man [ -rLL=@var{length} ] [ -rLT=@var{length} ] [ -rFT=@var{dist} ]
-      [ -rcR=1 ] [ -rC1 ] [ -rD1 ]
+      [ -rcR=1 ] [ -rC1 ] [ -rD1 ] [-rHY=@var{flags} ]
       [ -rP@var{nnn} ] [ -rS@var{xx} ] [ -rX@var{nnn} ]
       [ -rIN=@var{length} ] [ -rSN=@var{length} ] [ @var{files}@dots{} ]
 @endExample
@@ -1971,21 +1971,6 @@ groff -m man [ -rLL=@var{length} ] [ -rLT=@var{length} ] [ -rFT=@var{dist} ]
 It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
 
 @table @code
-@item -rLL=@var{length}
-Set line length to @var{length}.  If not specified, the line length
-defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
-line) and 6.5@tie{}inch otherwise.
-
-@item -rLT=@var{length}
-Set title length to @var{length}.  If not specified, the title length
-defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
-line) and 6.5@tie{}inch otherwise.
-
-@item -rFT=@var{dist}
-Set the position of the footer text to @var{dist}.  If positive, the
-distance is measured relative to the top of the page, otherwise it is
-relative to the bottom.  The default is @minus{}0.5@dmn{i}.
-
 @item -rcR=1
 This option (the default if a TTY output device is used) creates a
 single, very long page instead of multiple pages.  Use @code{-rcR=0}
@@ -1999,17 +1984,17 @@ pages continuously, rather than starting each at@tie{}1.
 Double-sided printing.  Footers for even and odd pages are formatted
 differently.
 
-@item -rP@var{nnn}
-Page numbering starts with @var{nnn} rather than with@tie{}1.
+@item -rFT=@var{dist}
+Set the position of the footer text to @var{dist}.  If positive, the
+distance is measured relative to the top of the page, otherwise it is
+relative to the bottom.  The default is @minus{}0.5@dmn{i}.
 
-@item -rS@var{xx}
-Use @var{xx} (which can be 10, 11, or@tie{}12@dmn{pt}) as the base
-document font size instead of the default value of@tie{}10@dmn{pt}.
-
-@item -rX@var{nnn}
-After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
-@var{nnn}c, etc.  For example, the option @option{-rX2} produces the
-following page numbers: 1, 2, 2a, 2b, 2c, etc.
+@item -rHY=@var{flags}
+Set hyphenation flags.  Possible values are 1@tie{}to hyphenate without
+restrictions, 2@tie{} to not hyphenate the last word on a page,
+4@tie{}to not hyphenate the last two characters of a word, and
+8@tie{}to not hyphenate the first two characters of a word.  These
+values are additive; the default is@tie{}14.
 
 @item -rIN=@var{length}
 Set the body text indent to @var{length}.
@@ -2018,9 +2003,31 @@ If not specified, the indent defaults to 7@dmn{n}
 For nroff, this value should always be an integer multiple of unit @samp{n}
 to get consistent indentation.
 
+@item -rLL=@var{length}
+Set line length to @var{length}.  If not specified, the line length
+defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
+line) and 6.5@tie{}inch otherwise.
+
+@item -rLT=@var{length}
+Set title length to @var{length}.  If not specified, the title length
+defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
+line) and 6.5@tie{}inch otherwise.
+
+@item -rP@var{nnn}
+Page numbering starts with @var{nnn} rather than with@tie{}1.
+
+@item -rS@var{xx}
+Use @var{xx} (which can be 10, 11, or@tie{}12@dmn{pt}) as the base
+document font size instead of the default value of@tie{}10@dmn{pt}.
+
 @item -rSN=@var{length}
 Set the indent for sub-subheadings to @var{length}.
 If not specified, the indent defaults to 3@dmn{n}.
+
+@item -rX@var{nnn}
+After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
+@var{nnn}c, etc.  For example, the option @option{-rX2} produces the
+following page numbers: 1, 2, 2a, 2b, 2c, etc.
 @end table
 
 @c ---------------------------------------------------------------------

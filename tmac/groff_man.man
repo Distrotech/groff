@@ -80,24 +80,6 @@ macros understand the following command line options (which define various
 registers).
 .
 .TP
-.BI \-rLL= line-length
-Set line length.
-If this option is not given, the line length defaults to 78n in nroff mode
-and 6.5i in troff mode.
-.
-.TP
-.BI \-rLT= title-length
-Set title length.
-If this option is not given, the title length defaults to 78n in nroff mode
-and 6.5i in troff mode.
-.
-.TP
-.BI \-rFT= dist
-Set distance of the footer relative to the bottom of the page if negative
-or relative to the top if positive.
-The default is -0.5i.
-.
-.TP
 .B \-rcR=1
 This option (the default if in nroff mode) will create a single, very long
 page instead of multiple pages.
@@ -116,30 +98,21 @@ Double-sided printing.
 Footers for even and odd pages are formatted differently.
 .
 .TP
-.BI \-rP nnn
-Enumeration of pages will start with
-.I nnn
-rather than with\ 1.
+.BI \-rFT= dist
+Set distance of the footer relative to the bottom of the page if negative
+or relative to the top if positive.
+The default is -0.5i.
 .
 .TP
-.BI \-rS xx
-Base document font size is
-.I xx
-points
-.RI ( xx
-can be 10, 11, or\ 12) rather than 10\ points.
+.BI \-rHY= flags
+Set hyphenation flags.
 .
-.TP
-.BI \-rX nnn
-After page\ \c
-.IR nnn ,
-number pages as
-.IR nnn a,
-.IR nnn b,
-.IR nnn c,
-etc.
-For example, the option `\-rX2' will produce the following page numbers:
-1, 2, 2a, 2b, 2c, etc.
+Possible values are 1\ to hyphenate without restrictions, 2\ to not
+hyphenate the last word on a page, 4\ to not hyphenate the last two
+characters of a word, and 8\ to not hyphenate the first two characters
+of a word.
+.
+These values are additive; the default is\ 14.
 .
 .TP
 .BI \-rIN= width
@@ -155,10 +128,48 @@ this value should always be an integer multiple of unit `n' to get
 consistent indentation.
 .
 .TP
+.BI \-rLL= line-length
+Set line length.
+If this option is not given, the line length defaults to 78n in nroff mode
+and 6.5i in troff mode.
+.
+.TP
+.BI \-rLT= title-length
+Set title length.
+If this option is not given, the title length defaults to 78n in nroff mode
+and 6.5i in troff mode.
+.
+.TP
+.BI \-rP nnn
+Enumeration of pages will start with
+.I nnn
+rather than with\ 1.
+.
+.TP
+.BI \-rS xx
+Base document font size is
+.I xx
+points
+.RI ( xx
+can be 10, 11, or\ 12) rather than 10\ points.
+.
+.TP
 .BI \-rSN= width
 Set sub-subheading indentation to
 .IR width .
 The default is 3n.
+.
+.TP
+.BI \-rX nnn
+After page\ \c
+.IR nnn ,
+number pages as
+.IR nnn a,
+.IR nnn b,
+.IR nnn c,
+etc.
+For example, the option `\-rX2' will produce the following page numbers:
+1, 2, 2a, 2b, 2c, etc.
 .
 .
 .\" -----------------------------------------------------------------

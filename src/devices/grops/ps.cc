@@ -451,13 +451,38 @@ static void handle_unknown_desc_command(const char *command, const char *arg,
   }
 }
 
+struct subencoding {
+  font *p;
+  unsigned int num;
+  int idx;
+  char *subfont;
+  const char *glyphs[256];
+  subencoding *next;
+
+  subencoding(font *, unsigned int, int, subencoding *);
+  ~subencoding();
+};
+
+subencoding::subencoding(font *f, unsigned int n, int ix, subencoding *s)
+: p(f), num(n), idx(ix), subfont(0), next(s)
+{
+  for (int i = 0; i < 256; i++)
+    glyphs[i] = 0;
+}
+
+subencoding::~subencoding()
+{
+  a_delete subfont;
+}
+
 struct style {
   font *f;
+  subencoding *sub;
   int point_size;
   int height;
   int slant;
   style();
-  style(font *, int, int, int);
+  style(font *, subencoding *, int, int, int);
   int operator==(const style &) const;
   int operator!=(const style &) const;
 };
@@ -466,15 +491,18 @@ style::style() : f(0)
 {
 }
 
-style::style(font *p, int sz, int h, int sl)
-: f(p), point_size(sz), height(h), slant(sl)
+style::style(font *p, subencoding *s, int sz, int h, int sl)
+: f(p), sub(s), point_size(sz), height(h), slant(sl)
 {
 }
 
 int style::operator==(const style &s) const
 {
-  return (f == s.f && point_size == s.point_size
-	  && height == s.height && slant == s.slant);
+  return (f == s.f
+	  && sub == s.sub
+	  && point_size == s.point_size
+	  && height == s.height
+	  && slant == s.slant);
 }
 
 int style::operator!=(const style &s) const
@@ -504,6 +532,7 @@ class ps_printer : public printer {
   style sbuf_style;
   color sbuf_color;		// the current PS color
   style output_style;
+  subencoding *subencodings;
   int output_hpos;
   int output_vpos;
   int output_draw_point_size;
@@ -514,6 +543,7 @@ class ps_printer : public printer {
   style defined_styles[MAX_DEFINED_STYLES];
   int ndefined_styles;
   int next_encoding_index;
+  int next_subencoding_index;
   string defs;
   int ndefs;
   resource_manager rm;
@@ -523,6 +553,8 @@ class ps_printer : public printer {
   void set_style(const style &);
   void set_space_code(unsigned char c);
   int set_encoding_index(ps_font *);
+  subencoding *set_subencoding(font *, int, unsigned char *);
+  char *get_subfont(subencoding *, const char *);
   void do_exec(char *, const environment *);
   void do_import(char *, const environment *);
   void do_def(char *, const environment *);
@@ -533,6 +565,7 @@ class ps_printer : public printer {
   void set_line_thickness_and_color(const environment *);
   void fill_path(const environment *);
   void encode_fonts();
+  void encode_subfont(subencoding *);
   void define_encoding(const char *, int);
   void reencode_font(ps_font *);
   void set_color(color *c, int fill = 0);
@@ -545,7 +578,8 @@ class ps_printer : public printer {
 public:
   ps_printer(double);
   ~ps_printer();
-  void set_char(int i, font *f, const environment *env, int w, const char *name);
+  void set_char(int i, font *f, const environment *env, int w,
+		const char *name);
   void draw(int code, int *p, int np, const environment *env);
   void begin_page(int);
   void end_page(int);
@@ -559,11 +593,13 @@ ps_printer::ps_printer(double pl)
 : out(0, MAX_LINE_LENGTH),
   pages_output(0),
   sbuf_len(0),
+  subencodings(0),
   output_hpos(-1),
   output_vpos(-1),
   line_thickness(-1),
   ndefined_styles(0),
   next_encoding_index(0),
+  next_subencoding_index(0),
   ndefs(0),
   invis_count(0)
 {
@@ -611,13 +647,43 @@ int ps_printer::set_encoding_index(ps_font *f)
   return f->encoding_index = next_encoding_index++;
 }
 
+subencoding *ps_printer::set_subencoding(font *f, int i, unsigned char *codep)
+{
+  unsigned int idx = f->get_code(i);
+  *codep = idx % 256;
+  unsigned int num = idx >> 8;
+  if (num == 0)
+    return 0;
+  subencoding *p = 0;
+  for (p = subencodings; p; p = p->next)
+    if (p->p == f && p->num == num)
+      break;
+  if (p == 0)
+    p = subencodings = new subencoding(f, num, next_subencoding_index++,
+				       subencodings);
+  p->glyphs[*codep] = f->get_special_device_encoding(i);
+  return p;
+}
+
+char *ps_printer::get_subfont(subencoding *sub, const char *stem)
+{
+  assert(sub != 0);
+  if (!sub->subfont) {
+    char *tem = new char[strlen(stem) + 2 + INT_DIGITS + 1];
+    sprintf(tem, "%s@@%d", stem, next_subencoding_index);
+    sub->subfont = tem;
+  }
+  return sub->subfont;
+}
+
 void ps_printer::set_char(int i, font *f, const environment *env, int w,
 			  const char *)
 {
   if (i == space_char_index || invis_count > 0)
     return;
-  unsigned char code = f->get_code(i);
-  style sty(f, env->size, env->height, env->slant);
+  unsigned char code;
+  subencoding *sub = set_subencoding(f, i, &code);
+  style sty(f, sub, env->size, env->height, env->slant);
   if (sty.slant != 0) {
     if (sty.slant > 80 || sty.slant < -80) {
       error("silly slant `%1' degrees", sty.slant);
@@ -694,6 +760,13 @@ static char *make_encoding_name(int encoding_index)
   return buf;
 }
 
+static char *make_subencoding_name(int subencoding_index)
+{
+  static char buf[6 + INT_DIGITS + 1];
+  sprintf(buf, "SUBENC%d", subencoding_index);
+  return buf;
+}
+
 const char *const WS = " \t\n\r";
 
 void ps_printer::define_encoding(const char *encoding, int encoding_index)
@@ -724,8 +797,8 @@ void ps_printer::define_encoding(const char *encoding, int encoding_index)
     lineno++;
   }
   a_delete path;
-  out.put_literal_symbol(make_encoding_name(encoding_index));
-  out.put_delimiter('[');
+  out.put_literal_symbol(make_encoding_name(encoding_index))
+     .put_delimiter('[');
   for (i = 0; i < 256; i++) {
     if (vec[i] == 0)
       out.put_literal_symbol(".notdef");
@@ -768,6 +841,22 @@ void ps_printer::encode_fonts()
   a_delete done_encoding;
 }
 
+void ps_printer::encode_subfont(subencoding *sub)
+{
+  assert(sub->glyphs != 0);
+  out.put_literal_symbol(make_subencoding_name(sub->idx))
+     .put_delimiter('[');
+  for (int i = 0; i < 256; i++)
+  {
+    if (sub->glyphs[i])
+      out.put_literal_symbol(sub->glyphs[i]);
+    else
+      out.put_literal_symbol(".notdef");
+  }
+  out.put_delimiter(']')
+     .put_symbol("def");
+}
+
 void ps_printer::set_style(const style &sty)
 {
   char buf[1 + INT_DIGITS + 1];
@@ -785,18 +874,22 @@ void ps_printer::set_style(const style &sty)
   if (psname == 0)
     fatal("no internalname specified for font `%1'", sty.f->get_name());
   char *encoding = ((ps_font *)sty.f)->encoding;
-  if (encoding != 0) {
-    char *s = ((ps_font *)sty.f)->reencoded_name;
-    if (s == 0) {
-      int ei = set_encoding_index((ps_font *)sty.f);
-      char *tem = new char[strlen(psname) + 1 + INT_DIGITS + 1];
-      sprintf(tem, "%s@%d", psname, ei);
-      psname = tem;
-      ((ps_font *)sty.f)->reencoded_name = tem;
+  if (sty.sub == 0) {
+    if (encoding != 0) {
+      char *s = ((ps_font *)sty.f)->reencoded_name;
+      if (s == 0) {
+	int ei = set_encoding_index((ps_font *)sty.f);
+	char *tem = new char[strlen(psname) + 1 + INT_DIGITS + 1];
+	sprintf(tem, "%s@%d", psname, ei);
+	psname = tem;
+	((ps_font *)sty.f)->reencoded_name = tem;
+      }
+      else
+        psname = s;
     }
-    else
-      psname = s;
   }
+  else
+    psname = get_subfont(sty.sub, psname);
   out.put_fix_number((font::res/(72*font::sizescale))*sty.point_size);
   if (sty.height != 0 || sty.slant != 0) {
     int h = sty.height == 0 ? sty.point_size : sty.height;
@@ -1302,12 +1395,12 @@ ps_printer::~ps_printer()
   if (!(broken_flags & NO_PAPERSIZE)) {
       fprintf(out.get_file(),
 	      "%%%%DocumentMedia: %s %d %d %d %s %s\n",
-	      media_name(),			/* tag name of media */
-	      media_width(),			/* media width */
-	      media_height(),			/* media height */
-	      0,				/* weight in g/m2 */
-	      "()",				/* paper color, e.g. white */
-	      "()"				/* preprinted form type */
+	      media_name(),			// tag name of media
+	      media_width(),			// media width
+	      media_height(),			// media height
+	      0,				// weight in g/m2
+	      "()",				// paper color, e.g. white
+	      "()"				// preprinted form type
       );
   }
 
@@ -1388,6 +1481,16 @@ ps_printer::~ps_printer()
        .simple_comment("EndFeature");
   }
   encode_fonts();
+  while (subencodings) {
+    subencoding *tem = subencodings;
+    subencodings = subencodings->next;
+    encode_subfont(tem);
+    out.put_literal_symbol(tem->subfont)
+       .put_symbol(make_subencoding_name(tem->idx))
+       .put_literal_symbol(tem->p->get_internal_name())
+       .put_symbol("RE");
+    delete tem;
+  }
   out.simple_comment((broken_flags & NO_SETUP_SECTION)
 		     ? "EndProlog"
 		     : "EndSetup");

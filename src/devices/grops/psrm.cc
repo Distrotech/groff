@@ -35,8 +35,50 @@ extern "C" {
 
 static void print_ps_string(const string &s, FILE *outfp);
 
-cset white_space("\n\r \t");
+cset white_space("\n\r \t\f");
 string an_empty_string;
+
+char valid_input_table[256]= {
+#ifndef IS_EBCDIC_HOST
+  // ASCII
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#else
+  // CP 1047
+  0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0,
+  0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+  1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
+
+  0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+  0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+  0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+  1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+#endif
+};
 
 const char *extension_table[] = {
   "DPS",
@@ -373,34 +415,23 @@ void resource_manager::supply_resource(resource *r, int rank, FILE *outfp,
   r->flags &= ~resource::BUSY;
 }
 
-
-#define PS_LINE_MAX 255
 #define PS_MAGIC "%!PS-Adobe-"
 
-static int ps_get_line(char *buf, FILE *fp)
+static int ps_get_line(string &buf, FILE *fp)
 {
+  buf.clear();
   int c = getc(fp);
-  if (c == EOF) {
-    buf[0] = '\0';
+  if (c == EOF)
     return 0;
-  }
   current_lineno++;
-  int i = 0;
-  int err = 0;
   while (c != '\r' && c != '\n' && c != EOF) {
-    if ((c < 0x1b && !white_space(c)) || c == 0x7f)
+    if (!valid_input_table[c])
       error("invalid input character code %1", int(c));
-    else if (i < PS_LINE_MAX)
-      buf[i++] = c;
-    else if (!err) {
-      err = 1;
-      error("PostScript file non-conforming "
-	    "because length of line exceeds 255");
-    }
+    buf += c;
     c = getc(fp);
   }
-  buf[i++] = '\n';
-  buf[i] = '\0';
+  buf += '\n';
+  buf += '\0';
   if (c == '\r') {
     c = getc(fp);
     if (c != EOF && c != '\n')
@@ -551,17 +582,20 @@ resource *resource_manager::read_resource_arg(const char **ptr)
   return lookup_resource(resource_type(ri), arg);
 }
 
-static const char *matches_comment(const char *buf, const char *comment)
+static const char *matches_comment(string &buf, const char *comment)
 {
+  if ((size_t)buf.length() < strlen(comment) + 3)
+    return 0;
   if (buf[0] != '%' || buf[1] != '%')
     return 0;
-  for (buf += 2; *comment; comment++, buf++)
-    if (*buf != *comment)
+  const char *bufp = buf.contents() + 2;
+  for (; *comment; comment++, bufp++)
+    if (*bufp != *comment)
       return 0;
   if (comment[-1] == ':')
-    return buf;
-  if (*buf == '\0' || white_space(*buf))
-    return buf;
+    return bufp;
+  if (*bufp == '\0' || white_space(*bufp))
+    return bufp;
   return 0;
 }
 
@@ -697,7 +731,7 @@ int resource_manager::change_to_end_resource(const char *, int, FILE *,
 
 int resource_manager::do_begin_preview(const char *, int, FILE *fp, FILE *)
 {
-  char buf[PS_LINE_MAX + 2];
+  string buf;
   do {
     if (!ps_get_line(buf, fp)) {
       error("end of file in preview section");
@@ -817,7 +851,7 @@ int resource_manager::do_begin_data(const char *ptr, int, FILE *fp,
     } while ((unit == Bytes ? bytecount : linecount) < numberof);
   }
   skip_possible_newline(fp, outfp);
-  char buf[PS_LINE_MAX + 2];
+  string buf;
   if (!ps_get_line(buf, fp)) {
     error("missing %%%%EndData line");
     return 0;
@@ -825,7 +859,7 @@ int resource_manager::do_begin_data(const char *ptr, int, FILE *fp,
   if (!matches_comment(buf, "EndData"))
     error("bad %%%%EndData line");
   if (outfp)
-    fputs(buf, outfp);
+    fputs(buf.contents(), outfp);
   return 0;
 }
 
@@ -859,7 +893,7 @@ int resource_manager::do_begin_binary(const char *ptr, int, FILE *fp,
       current_lineno++;
   }
   skip_possible_newline(fp, outfp);
-  char buf[PS_LINE_MAX + 2];
+  string buf;
   if (!ps_get_line(buf, fp)) {
     error("missing %%%%EndBinary line");
     return 0;
@@ -867,7 +901,7 @@ int resource_manager::do_begin_binary(const char *ptr, int, FILE *fp,
   if (!matches_comment(buf, "EndBinary")) {
     error("bad %%%%EndBinary line");
     if (outfp)
-      fputs(buf, outfp);
+      fputs(buf.contents(), outfp);
   }
   else if (outfp)
     fputs("%%EndData\n", outfp);
@@ -952,7 +986,7 @@ void resource_manager::process_file(int rank, FILE *fp, const char *filename,
   };
   
   const int NCOMMENTS = sizeof(comment_table)/sizeof(comment_table[0]);
-  char buf[PS_LINE_MAX + 2];
+  string buf;
   int saved_lineno = current_lineno;
   const char *saved_filename = current_filename;
   current_filename = filename;
@@ -962,19 +996,19 @@ void resource_manager::process_file(int rank, FILE *fp, const char *filename,
     current_lineno = saved_lineno;
     return;
   }
-  if (strlen(buf) < sizeof(PS_MAGIC) - 1
-      || memcmp(buf, PS_MAGIC, sizeof(PS_MAGIC) - 1) != 0) {
+  if ((size_t)buf.length() < sizeof(PS_MAGIC)
+      || memcmp(buf.contents(), PS_MAGIC, sizeof(PS_MAGIC) - 1) != 0) {
     if (outfp) {
       do {
 	if (!(broken_flags & STRIP_PERCENT_BANG)
 	    || buf[0] != '%' || buf[1] != '!')
-	  fputs(buf, outfp);
+	  fputs(buf.contents(), outfp);
       } while (ps_get_line(buf, fp));
     }
   }
   else {
     if (!(broken_flags & STRIP_PERCENT_BANG) && outfp)
-      fputs(buf, outfp);
+      fputs(buf.contents(), outfp);
     int in_header = 1;
     int interesting = 0;
     int had_extensions_comment = 0;
@@ -1033,7 +1067,7 @@ void resource_manager::process_file(int rank, FILE *fp, const char *filename,
       if (!outfp && !in_header && !interesting)
 	break;
       if (copy_this_line && outfp)
-	fputs(buf, outfp);
+	fputs(buf.contents(), outfp);
     }
   }
   current_filename = saved_filename;
@@ -1144,4 +1178,3 @@ void resource_manager::print_language_level_comment(FILE *outfp)
   if (language_level)
     fprintf(outfp, "%%%%LanguageLevel: %u\n", language_level);
 }
-
