@@ -269,8 +269,13 @@ depend_src: depend.temp
 
 depend.temp: FORCE
 	> depend.temp;
+	if test -f "$(srcdir)/$(YTABC)"; then \
+	  ytabc="$(srcdir)/$(YTABC)"; \
+	else \
+	  ytabc="$(YTABC)"; \
+	fi; \
 	test -z "$(CCSRCS)$(YTABC)" \
-	  || $(CCC) $(ALL_CCFLAGS) -MM $(CCSRCS) $(YTABC) >>depend.temp
+	  || $(CCC) $(ALL_CCFLAGS) -MM $(CCSRCS) $$ytabc >>depend.temp
 	test -z "$(CSRCS)" \
 	  || $(CC) $(ALL_CFLAGS) -MM $(CSRCS) >>depend.temp
 	if test -n "$(YTABH)"; then \
