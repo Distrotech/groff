@@ -1,4 +1,4 @@
-.\"                        -*- nroff -*- 
+.\"                        -*- nroff -*-
 .ig /
 groff_tmac.5
 
@@ -24,7 +24,7 @@ FDL in the main directory of the groff source package.
 .\" --------------------------------------------------------------------
 .
 .if n \{\
-.  mso tmac.tty-char
+.  mso tty-char.tty
 .  ftr CR R
 .  ftr CI I
 .  ftr CB B
@@ -111,7 +111,10 @@ this letter was omitted, e.g., the macro package for the man pages
 was called
 .I an
 and its macro file
-.IR tmac.an .
+.I tmac.an
+(note that in recent versions of groff this file is called
+.I an.tmac
+instead).
 .LP
 By a similar reasoning, macro packages that did not start with an
 .'char m
@@ -154,6 +157,8 @@ system is to check the content of the
 directories.
 For example, a file called
 .BI tmac. anything
+or
+.IB anything .tmac
 determines a macro package named
 .IR anything .
 .LP
@@ -179,7 +184,7 @@ If this file isn't found,
 .BI tmac. name
 will be searched.
 .LP
-It is also possible to include the macro file into the document by using 
+It is also possible to include the macro file into the document by using
 the groff requests
 .request .so
 or
@@ -219,7 +224,7 @@ in the preprocessor word as described in section
 .BR CONVENTION .
 .LP
 For example, suppose a macro file is stored as
-.I @MACRODIR@/tmac.macros
+.I @MACRODIR@/macros.tmac
 and is used in some document called
 .IR docu.roff .
 .LP
@@ -236,13 +241,13 @@ At run-time, the formatter call for this is
 To include the macro file directly in the document either
 .RS
 .ft CR
-\&\.mso tmac.macros
+\&\.mso macros.tmac
 .ft P
 .RE
 is used or
 .RS
 .ft CR
-\&\.so @MACRODIR@/tmac.macros
+\&\.so @MACRODIR@/macros.tmac
 .ft P
 .RE
 .LP
@@ -268,8 +273,8 @@ comment characters and a blank) constitutes the
 .BR word .
 That means that the letters of this word are interpreted as
 abbreviations for those preprocessor commands that should be run
-when formatting the document.  Mostly, only the letters corresponding to 
-the options for the preprocessors are recognized, 
+when formatting the document.  Mostly, only the letters corresponding to
+the options for the preprocessors are recognized,
 .'char e ,
 .'char G ,
 .'char g ,
@@ -297,7 +302,7 @@ section.
 .LP
 To use the tmac functionality, call the macro file
 .IB whatever .tmac
-(or 
+(or
 .BI tmac. whatever\c
 ) and put it in some directory of the tmac path, cf. section
 .BR FILES .
@@ -438,4 +443,3 @@ and the formatters in
 .LP
 The Filesystem Hierarchy Standard (FHS) is available at
 .BR http://www.pathname.com/fhs/ .
-

@@ -69,8 +69,8 @@ sub process {
 		&process($1, $level);
 	    }
 	    else {
-	    	$_ = <FILE>;
-	    	if (!/^\./ || /^\.ps/) {
+		$_ = <FILE>;
+		if (!/^\./ || /^\.ps/) {
 		    $pic++;
 		    $soelim++ if $level;
 		}
@@ -86,8 +86,8 @@ sub process {
 	elsif (/^\.P$/) {
 	    $P++;
 	}
-        elsif (/^\.(PH|SA)/) {
-            $mm++;
+	elsif (/^\.(PH|SA)/) {
+	    $mm++;
 	}
 	elsif (/^\.TH/) {
 	    $TH++;
@@ -104,7 +104,7 @@ sub process {
 	elsif (/^\.(Tp|Dp|De|Cx|Cl)/) {
 	    $mdoc_old = 1;
 	}
-        # In the old version of -mdoc `Oo' is a toggle, in the new it's
+	# In the old version of -mdoc `Oo' is a toggle, in the new it's
 	# closed by `Oc'.
 	elsif (/^\.Oo/) {
 	    $Oo++;
@@ -149,7 +149,7 @@ elsif ($P > 0 || $mm > 0) {
     push(@command, "-mm");
 }
 elsif ($mdoc > 0) {
-    push(@command, ($mdoc_old || $Oo > 0) ? "-mdoc.old" : "-mdoc");
+    push(@command, ($mdoc_old || $Oo > 0) ? "-mdoc-old" : "-mdoc");
 }
 
 push(@command, "--") if @ARGV && $ARGV[0] =~ /^-./;

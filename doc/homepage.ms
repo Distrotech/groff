@@ -2,9 +2,9 @@
 .\" with groff.
 .\"
 .\"
-.\" To make it work with other output devices also, we include tmac.arkup
+.\" To make it work with other output devices also, we include arkup.tmac
 .\" directly.
-.mso tmac.arkup
+.mso arkup.tmac
 .\"
 .LP
 .\"

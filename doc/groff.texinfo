@@ -1373,7 +1373,7 @@ device (@samp{ps}).  Note that you can either say @w{@samp{-m me}} or
 @acronym{UNIX}.@footnote{The same is true for the other main macro
 packages that come with @code{groff}: @file{man}, @file{mdoc},
 @file{ms}, @file{mm}, and @file{mandoc}.  This won't work in general;
-for example, to load @file{tmac.trace}, either @samp{-mtrace} or
+for example, to load @file{trace.tmac}, either @samp{-mtrace} or
 @w{@samp{-m trace}} must be used.}
 
 @example
@@ -1862,8 +1862,9 @@ This chapter documents the main macro packages that come with
 @section @file{man}
 @cindex @file{man}
 @cindex manual pages
-@pindex tmac.an
-@pindex tmac.man
+@pindex an.tmac
+@pindex man.tmac
+@pindex man-old.tmac
 
 This is the most popular and probably the most important macro package
 of @code{groff}.  It is easy to use, and a vast majority of manual pages
@@ -1925,7 +1926,8 @@ following page numbers: 1, 2, 2a, 2b, 2c, etc.
 @pindex man.local
 This section describes the available macros for manual pages.  For
 further customization, put additional macros and requests into the file
-@file{man.local} which will be loaded immediately after @file{tmac.an}.
+@file{man.local} which will be loaded immediately after the @file{man}
+package.
 
 @maindex TH
 @Defmac{TH, title section [@var{extra1}] [@var{extra2}] [@var{extra3}]}
@@ -4848,13 +4850,13 @@ the start-up files @file{troffrc} and @file{troffrc-end}.  Without
 not a tty (e.g.@: `ps').
 @end_Deffn
 
-@pindex tmac.tty
+@pindex tty.tmac
 @Deffn{Request, nroff, }
 Make the @samp{n} built-in condition true (and the @samp{t} built-in
 condition false) for @code{if}, @code{ie}, and @code{while} conditional
 requests.  This is the default if @code{gtroff} uses a tty output
 device; the code for switching to nroff mode is in the file
-@file{tmac.tty} which will be loaded by the start-up file
+@file{tty.tmac} which will be loaded by the start-up file
 @code{troffrc}.
 @end_Deffn
 

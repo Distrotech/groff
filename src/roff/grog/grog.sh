@@ -70,7 +70,7 @@ END {
 		printf " -mm"
 	else if (mdoc > 0) {
 		if (mdoc_old > 0 || Oo > 0)
-			printf " -mdoc.old"
+			printf " -mdoc-old"
 		else
 			printf " -mdoc"
 	}
