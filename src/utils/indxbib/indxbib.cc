@@ -219,10 +219,16 @@ int main(int argc, char **argv)
   else {
     temp_index_file = strsave(TEMP_INDEX_TEMPLATE);
   }
+#ifndef HAVE_MKSTEMP
   if (!mktemp(temp_index_file) || !temp_index_file[0])
     fatal("cannot create file name for temporary file");
+#endif
   catch_fatal_signals();
+#ifdef HAVE_MKSTEMP
+  int fd = mkstemp(temp_index_file);
+#else
   int fd = creat(temp_index_file, S_IRUSR|S_IRGRP|S_IROTH);
+#endif
   if (fd < 0)
     fatal("can't create temporary index file: %1", strerror(errno));
   indxfp = fdopen(fd, "w");

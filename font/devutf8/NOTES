@@ -1,7 +1,7 @@
 The following from the original troff manual (by Ossanna and Kernighan) is
 unmapped:
 
-                \(bs                             solid ball
+                \(bs    shaded solid ball (Bell System logo, AT&T logo)
 
 Character 0x002D has not been given a name because its Unicode name
 "HYPHEN-MINUS" is so ambiguous that it's unusable for serious typographic use.
@@ -9,14 +9,14 @@ Character 0x002D has not been given a name because its Unicode name
 The following are mentioned in the original troff manual but not in
 groff_char.7:
 
-                \(sr                             square root
-                \(rn                             overline
-                \(is                             integral sign
+                \(sr    square root
+                \(rn    overline
+                \(is    integral sign
 
 The following, mentioned in the original troff manual, are only approximate:
 
-                \(lk                       middle part of big left curly brace
-                \(rk                       middle part of big right curly brace
+                \(lk    middle part of big left curly brace
+                \(rk    middle part of big right curly brace
 
 \(bv has been mapped to 0x2502, not 0x2759, because it appears to mean
 "bar vertical", not "bold vertical".
@@ -67,9 +67,13 @@ to 0x240D instead.
 instead.
 
 The line
+
 char173	24	0	0x00AD
+
 has been removed, because tmac.tty contains the line
-".if c\[char173] .shc \[char173]"
+
+.if c\[char173] .shc \[char173]
+
 (i.e. if char173 is defined, then tell the troff engine that it shall use
 char173 as soft hyphen - otherwise it will use hy = HYPHEN), and char173 in
 Markus Kuhn's UCS-fonts looks more like a minus sign than like a hyphen.
@@ -80,12 +84,18 @@ HYPHEN, for use when a line break has been established within a word" - which
 is exactly groff's use of 'shc'.
 
 Using unnamed characters:
+
 Assume you want to use a Unicode character not provided in the list, say
 U+20AC. You need to do two things:
-- Add a line "---	24	0	0x20AC" (the second column is
-  computed as 24 * wcwidth(0x20AC)) to the file R.proto, or, when groff
-  is already installed, to the four fonts files in
+
+- Add a line
+
+    ---	24	0	0x20AC
+
+  (the second column is computed as 24 * wcwidth(0x20AC)) to the file
+  R.proto, or, when groff is already installed, to the four fonts files in
   $(prefix)/share/groff/font/devutf8/.
+
 - In your source file, use the notation \N'8364' where 8364 is the decimal
   representation of 0x20AC.
 
