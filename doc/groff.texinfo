@@ -3751,8 +3751,12 @@ form.
 @Defescx {\\n, -, i, }
 @Defescx {\\n, @lparen{}+, id, }
 @Defescx {\\n, @lparen{}-, id, }
+@Defescx {\\n, +@lparen{}, id, }
+@Defescx {\\n, -@lparen{}, id, }
 @Defescx {\\n, @lbrack{}+, ident, @rbrack{}}
 @Defescx {\\n, @lbrack{}-, ident, @rbrack{}}
+@Defescx {\\n, +@lbrack{}, ident, @rbrack{}}
+@Defescx {\\n, -@lbrack{}, ident, @rbrack{}}
 Before interpolating, increment or decrement @var{ident} (one-character
 name @var{i}, two-character name @var{id}) by the auto-increment value
 as specified with the @code{nr} request (or the @code{\R} escape).  If
@@ -5508,10 +5512,12 @@ number register; it is associated with the current environment
 @cindex page number
 @cindex number, page
 @Defreq {pn, page}
+@Defreqx {pn, @t{+}@Var{page}}
+@Defreqx {pn, @t{-}@Var{page}}
 @Defregx {.pn}
-The @code{pn} request changes the page number of the @emph{next}
-page.  The only argument is the page number; the request is ignored
-without a parameter.
+The @code{pn} request changes (increases or decreases) the page number
+of the @emph{next} page.  The only argument is the page number; the
+request is ignored without a parameter.
 
 The read-only number register @code{.pn} contains the number of the next
 page: either the value set by a @code{pn} request, or the number of the
@@ -5546,11 +5552,13 @@ register @code{%}.
 @rqindex pn
 @cindex new page
 @Defreq {bp, [@Var{page}]}
+@Defreqx {bp, @t{+}@Var{page}}
+@Defreqx {bp, @t{-}@Var{page}}
 To stop processing the current page, and move to the next page, invoke
 @code{bp}.  This request causes a break.  It can also take an argument
-of what the next page should be numbered.  The only difference between
-@code{bp} and @code{pn} is that @code{pn} does not cause a break or
-actually eject a page.
+to set (increase, decrease) the page number of the next page.  The
+only difference between @code{bp} and @code{pn} is that @code{pn} does
+not cause a break or actually eject a page.
 
 @Example
 .de newpage                         \" define macro
@@ -5988,7 +5996,6 @@ request:
 @Example
 .char \[phone] \f[ZD]\N'37'
 @endExample
-@endDefesc
 
 @noindent
 @pindex DESC
@@ -5999,16 +6006,18 @@ description file after the @code{charset} command.  It is possible to
 include unnamed characters in the font description file by using a
 name of @samp{---}; the @code{\N} escape sequence is the only way to
 use these.
+@endDefesc
 
 @c XXX should be `glyph', not `character'
 
-@rqindex cflags
 @cindex character properties
 @cindex properties of characters
+@Defreq {cflags, n c1 c2 @dots{}}
 Each character has certain properties associated with it.  These
 properties can be modified with the @code{cflags} request.  The first
 argument is the the sum of the desired flags and the remaining
-arguments are the characters to have those properties.
+arguments are the characters to have those properties.  It is possible
+to omit the spaces between the characters.
 
 @table @code
 @item 1
@@ -6060,6 +6069,7 @@ newline or two spaces; in other words the character is
 this is the same as having a zero space factor in @TeX{} (initially
 characters @samp{"')]*\(dg\(rq} have this property).
 @end table
+@endDefreq
 
 @cindex defining characters
 @cindex characters, defining
@@ -6291,15 +6301,17 @@ disable it.  The read-only number register @code{.kern} is set to@w{
 If the font description file contains pairwise kerning information,
 characters from that font are kerned.  Kerning between two characters
 can be inhibited by placing @code{\&} between them: @samp{V\&A}.
+
+@xref{Font File Format}.
 @endDefreq
 
 @cindex track kerning
 @cindex kerning, track
-Track kerning expands or reduces the space between characters.  This
-can be handy, for example, if you need to squeeze a long word onto a
-single line or spread some text to fill a narrow column.  It must be
-used with great care since it is usually considered bad typography if
-the reader notices the effect.
+@dfn{Track kerning} expands or reduces the space between characters.
+This can be handy, for example, if you need to squeeze a long word
+onto a single line or spread some text to fill a narrow column.  It
+must be used with great care since it is usually considered bad
+typography if the reader notices the effect.
 
 @Defreq {tkf, f s1 n1 s2 n2}
 Enable track kerning for font@w{ }@var{f}.  If the current font is@w{
@@ -6316,8 +6328,8 @@ The default unit is @samp{z} for @var{s1} and @var{s2}, @samp{p} for
 @endDefreq
 
 Sometimes, when typesetting letters of different fonts, more or less
-space at such boundaries are needed.  There are two escapes to help with
-this.
+space at such boundaries are needed.  There are two escapes to help
+with this.
 
 @cindex italic correction
 @cindex correction, italic
@@ -6325,19 +6337,26 @@ this.
 @cindex roman character, correction after italic character
 @cindex italic character, correction before roman character
 @Defesc {\\/, , , }
-The @code{\/} escape increases the width of the preceding character so
-that the spacing between that character and the following character is
-correct if the following character is a roman character.  For example,
-if an italic@w{ }@code{f} is immediately followed by a roman right
+Increase the width of the preceding character so that the spacing
+between that character and the following character is correct if the
+following character is a roman character.  For example, if an
+italic@w{ }@code{f} is immediately followed by a roman right
 parenthesis, then in many fonts the top right portion of the @code{f}
 overlaps the top left of the right parenthesis.  Use this escape
-sequence whenever an italic character is immediately followed by a roman
-character without any intervening space.  This small amount of space is
-also called @dfn{italic correction}.
+sequence whenever an italic character is immediately followed by a
+roman character without any intervening space.  This small amount of
+space is also called @dfn{italic correction}.
 
-@c XXX example
-@c producing @i{f}), which is ugly.  Inserting \/ produces f) and avoids
-@c this problem.
+@iftex
+@example
+@group
+\f[I]f\f[R])
+    @result{} {@it f}@r{)}
+\f[I]f\/\f[R])
+    @result{} @i{f}@r{)}
+@end group
+@end example
+@end iftex
 @endDefesc
 
 @cindex left italic correction
@@ -6345,22 +6364,29 @@ also called @dfn{italic correction}.
 @cindex roman character, correction before italic character
 @cindex italic character, correction after roman character
 @Defesc {\\\,, , , }
-The @code{\,} escape modifies the spacing of the following character so
-that the spacing between that character and the preceding character is
-correct if the preceding character is a roman character.  Use this
-escape sequence whenever a roman character is immediately followed by an
-italic character without any intervening space.  In analogy to above,
-this space could be called @dfn{left italic correction}, but this term
+Modify the spacing of the following character so that the spacing
+between that character and the preceding character is correct if the
+preceding character is a roman character.  Use this escape sequence
+whenever a roman character is immediately followed by an italic
+character without any intervening space.  In analogy to above, this
+space could be called @dfn{left italic correction}, but this term
 isn't used widely.
 
-@c XXX example
-@c For example, inserting \, between the parenthesis and the f changes
-@c (f to (f.
+@iftex
+@example
+@group
+q\f[I]f
+    @result{} @r{q}@i{f}
+q\,\f[I]f
+    @result{} @r{q}@math{@ptexcomma}@i{f}
+@end group
+@end example
+@end iftex
 @endDefesc
 
 @Defesc {\\&, , , }
 This inserts a zero-width character, which is invisible.  Its intended
-use is to stop interaction of a character with its surroundings.
+use is to stop interaction of a character with its surrounding.
 
 @itemize @bullet
 @item
@@ -6420,14 +6446,20 @@ request (@pxref{Character Translations}).
 @cindex vertical spacing
 @cindex spacing, vertical
 @code{gtroff} uses two dimensions with each line of text, type size
-and vertical spacing.  The @dfn{type size} is the height from the text
-@dfn{baseline} to the top of the tallest character (descenders may
-drop below this baseline).  @dfn{Vertical spacing} is the amount of
-space @code{gtroff} allows for a line of text; normally, this is about
-20%@w{ }larger than the current type size.  Ratios smaller than this
-can result in hard-to-read text; larger than this, it spreads the text
-out more vertically (useful for term papers).  By default,
-@code{gtroff} uses 10@w{ }point type on 12@w{ }point spacing.
+and vertical spacing.  The @dfn{type size} is approximately the height
+of the tallest character.@footnote{This is usually the parenthesis.
+Note that in most cases the real dimensions of the glyphs in a font
+are @emph{not} related to its type size!  For example, the standard
+@acronym{PostScript} font families `Times Roman', `Helvetica', and
+`Courier' can't be used together at 10@dmn{pt}; to get acceptable
+output, the size of `Helvetica' has to be reduced by one point, and
+the size of `Courier' must be increased by one point.}  @dfn{Vertical
+spacing} is the amount of space @code{gtroff} allows for a line of
+text; normally, this is about 20%@w{ }larger than the current type
+size.  Ratios smaller than this can result in hard-to-read text;
+larger than this, it spreads the text out more vertically (useful for
+term papers).  By default, @code{gtroff} uses 10@w{ }point type on
+12@w{ }point spacing.
 
 @cindex leading
 The difference between type size and vertical spacing is known, by
@@ -6446,12 +6478,14 @@ typesetters, as @dfn{leading}.
 @cindex type sizes, changing
 
 @Defreq {ps, [@Var{size}]}
+@Defreqx {ps, @t{+}@Var{size}}
+@Defreqx {ps, @t{-}@Var{size}}
 @Defescx {\\s, , size, }
 @Defregx {.s}
-Use the @code{ps} request or the @code{\s} escape to change the type
-size (in points).  Specify @var{size} as either an absolute point
-size, or as a relative change from the current size.  The size@w{ }0,
-or no argument, goes back to the previous size.
+Use the @code{ps} request or the @code{\s} escape to change (increase,
+decrease) the type size (in points).  Specify @var{size} as either an
+absolute point size, or as a relative change from the current size.
+The size@w{ }0, or no argument, goes back to the previous size.
 
 Default unit of @code{ps} is @samp{z}.
 
@@ -6502,9 +6536,15 @@ Some devices may only have certain permissible sizes, in which case
 
 @cindex current type size register
 @cindex current vertical spacing register
-@Defreq {vs, space}
+@Defreq {vs, [@Var{space}]}
+@Defreqx {vs, @t{+}@Var{space}}
+@Defreqx {vs, @t{-}@Var{space}}
 @Defregx {.v}
-Changes the vertical spacing.  The default unit is @samp{p}.
+Change (increase, decrease) the vertical spacing by @var{space}.  The
+default unit is @samp{p}.
+
+If @code{vs} is called without an argument, the vertical spacing is
+reset to the previous value before the last call to @code{vs}.
 
 The read-only number register @code{.v} contains the current vertical
 spacing.
@@ -9412,14 +9452,14 @@ file called @file{DESC} and for each font@w{ }@var{f} a font file
 called@w{ }@file{@var{f}}.
 
 @menu
-* DESC file format::            
-* Font file format::            
+* DESC File Format::            
+* Font File Format::            
 @end menu
 
 @c ---------------------------------------------------------------------
 
-@node DESC file format, Font file format, Font Files, Font Files
-@subsection @file{DESC} file format
+@node DESC File Format, Font File Format, Font Files, Font Files
+@subsection @file{DESC} File Format
 @cindex @file{DESC} file format
 @cindex font description file format
 @cindex format of font description file
@@ -9496,8 +9536,8 @@ in the @file{DESC} file.
 
 @c ---------------------------------------------------------------------
 
-@node Font file format,  , DESC file format, Font Files
-@subsection Font file format
+@node Font File Format,  , DESC File Format, Font Files
+@subsection Font File Format
 @cindex font file format
 @cindex format of font files
 
