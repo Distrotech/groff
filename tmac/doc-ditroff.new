@@ -85,6 +85,7 @@
 .
 .ds doc-digit-string \0
 .nr doc-digit-width \w'\0'u
+.nr doc-fixed-width \w\f[C]0
 .
 .eo
 .
@@ -129,6 +130,7 @@
 .
 .nr gX 0
 .
+.
 .de doc-setup-header
 .  ds doc-header-string \*[doc-document-title]
 .  if !"\*[doc-section]"Null" \{\
@@ -139,13 +141,12 @@
 .  wh -1.25i doc-footer
 .
 .  nr nL \n[nl]
-.  ie (\n[gX] == 1) \{\
+.  ie \n[gX] \{\
 .    ds doc-command-name
 .    bp
 .  \}
-.  el \{\
+.  el \
 '    bp
-.  \}
 .
 .  \" Don't set the page number if this is the first page,
 .  \" in case the user has used -n.
@@ -158,11 +159,6 @@
 .  nr gX 0
 .  em doc-end-macro
 ..
-.
-.
-.ec
-.nr doc-fixed-width \w\f[C]0
-.eo
 .
 .
 .\" NS doc-get-width macro
@@ -213,18 +209,19 @@
 .\" NS   quoted literal define
 .\" NS
 .\" NS width register `.Ql' set in doc-common
+.\" NS
+.\" NS local register:
+.\" NS   doc-reg-Ql
 .
 .de Ql
 .  if !\n[doc-args-processed] \{\
 .    ds doc-macro-name Ql
-.    ds doc-arg1 \$1
-.    ds doc-arg2 \$2
-.    ds doc-arg3 \$3
-.    ds doc-arg4 \$4
-.    ds doc-arg5 \$5
-.    ds doc-arg6 \$6
-.    ds doc-arg7 \$7
-.    ds doc-arg8 \$8
+.
+.    nr doc-reg-Ql 1
+.    while (\n[doc-reg-Ql] <= \n[.$]) \{\
+.      ds doc-arg\n[doc-reg-Ql] "\$[\n[doc-reg-Ql]]
+.      nr doc-reg-Ql +1
+.    \}
 .
 .    nr doc-num-args \n[.$]
 .    doc-parse-arg-vector
@@ -234,9 +231,8 @@
 .  doc-get-arg-width \n[doc-arg-ptr]
 .  nr doc-arg-ptr -1
 .
-.  if (\n[doc-width] > 2) .Li
-.
-.  if (\n[doc-width] <= 2) \{\
+.  ie (\n[doc-width] > 2) .Li
+.  el \{\
 .    \" Db on
 .    if \n[doc-arg-ptr] \{\
 .      ds doc-arg\n[doc-arg-ptr] Li

@@ -36,6 +36,8 @@
 .eo
 .
 .
+.\" Macro Identifiers
+.
 .nr %A 1
 .nr %B 1\" ?
 .nr %D 1\" ?
@@ -141,13 +143,18 @@
 .nr Xo 1
 .nr Xr 10n
 .
+.
 .nr doc-display-indent 6n
 .
+.
 .\" space strings
+.
 .ds doc-soft-space \& \&
 .ds doc-hard-space \&\ \&
 .
+.
 .\" punctuation values
+.
 .ds z. punct-suffix
 .ds z, punct-suffix
 .ds z: punct-suffix
@@ -158,11 +165,13 @@
 .ds z] punct-suffix
 .
 .\" Matching pairs
+.
 .ds z( z)
 .ds z[ z]
 .ds z< z>
 .
 .\" This is disgusting, troff does not parse ``if'' stmt properly
+.
 .ds z0
 .ds z1
 .ds z2
@@ -397,16 +406,27 @@
 .\" NS   subsection
 .\" NS
 .\" NS width register `.Ss' set above
+.\" NS
+.\" NS local variable:
+.\" NS   doc-reg-Ss
 .
 .de Ss
-.  sp
-.  if !\n[cR] .ne 2
-.  ti -.25i
-.  nop \&\*[doc-Sh-font]\$1 \|\$2 \|\$3 \|\$4 \|\$5 \|\$6 \|\$7 \|\$8 \|\$9
-.  nop \&\f[P]\s[0]
-.  ta T .5i
-.  if !\n[cR] .ne 2
-.  br
+.  ie !\n[.$] .tm Usage: .Ss subsection name
+.  el \{\
+.    sp
+.    if !\n[cR] .ne 2
+.    ti -.25i
+.    nop \&\*[doc-Sh-font]\$1\c
+.    nr doc-reg-Ss 2
+.    while (\n[doc-reg-Ss] <= \n[.$]) \{\
+.      nop \& \|\$[\n[doc-reg-Ss]]\c
+.      nr doc-reg-Ss +1
+.    \}
+.    nop \f[P]\s[0]
+.    ta T .5i
+.    if !\n[cR] .ne 2
+.    br
+.  \}
 ..
 .
 .
