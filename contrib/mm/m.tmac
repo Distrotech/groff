@@ -1130,8 +1130,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"
 .\" last-pos points to the position of the footer and bottom 
 .\" block below foot-notes.
-.nr pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u)
-.if \\n[D]>2 .tm pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u) = \\n[pg*last-pos]
+.nr pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u+\\n[pg*extra-footer-size]u)
+.if \\n[D]>2 .tm pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u+\\n[pg*extra-footer-size]u) = \\n[pg*last-pos]
 ..
 .de pg@enable-trap
 .wh \\n[pg*foot-trap]u pg@footer
@@ -1246,7 +1246,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" FOOTER
 .de pg@footer
 .ec
-.if \\n[D]>2 .tm Footer# \\n[%] (\\n[.F]:\\n[c.])
+.if \\n[D]>2 .tm Footer# \\n[%] (\\n[.F]:\\n[c.]) nl=\\n[nl]
 .pg@disable-trap
 .\".debug footer
 .tbl@bottom-hook
@@ -1254,7 +1254,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" move to the exact start of footer.
 'sp |\\n[pg*foot-trap]u+1v
 .\"
-.if \\n[D]>3 .tm FOOTER after .sp
+.if \\n[D]>3 .tm FOOTER after .sp, nl=\\n[nl]
 .\" print footnotes
 .if d ft*div .ft@print
 .\"
@@ -1269,6 +1269,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .de pg@print-footer
 .\" jump to the position just below the foot-notes.
 'sp |\\n[pg*last-pos]u+1v
+.if \\n[D]>3 .tm print-footer nl=\\n[nl]
 .\" check if there are any bottom block
 .if d pg*block-div .pg@block
 .\"
