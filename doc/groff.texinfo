@@ -5894,28 +5894,28 @@ is returned.
 The following lists some built-in registers which are not described
 elsewhere in this manual.  Any register which begins with a @samp{.} is
 read-only.  A complete listing of all built-in registers can be found in
-appendix@tie{}@ref{Register Index}.
+@ref{Register Index}.
 
 @table @code
-@item .F
+@item \n[.F]
 @cindex current input file name register (@code{.F})
 @cindex input file name, current, register (@code{.F})
-@vindex .F
+@vindex \n[.F]
 This string-valued register returns the current input file name.
 
-@item .H
+@item \n[.H]
 @cindex horizontal resolution register (@code{.H})
 @cindex resolution, horizontal, register (@code{.H})
 @vindex .H
 Horizontal resolution in basic units.
 
-@item .V
+@item \n[.V]
 @cindex vertical resolution register (@code{.V})
 @cindex resolution, vertical, register (@code{.V})
 @vindex .V
 Vertical resolution in basic units.
 
-@item seconds
+@item \n[seconds]
 @cindex seconds, current time (@code{seconds})
 @cindex time, current, seconds (@code{seconds})
 @cindex current time, seconds (@code{seconds})
@@ -5924,7 +5924,7 @@ The number of seconds after the minute, normally in the range@tie{}0
 to@tie{}59, but can be up to@tie{}61 to allow for leap seconds.  Initialized
 at start-up of @code{gtroff}.
 
-@item minutes
+@item \n[minutes]
 @cindex minutes, current time (@code{minutes})
 @cindex time, current, minutes (@code{minutes})
 @cindex current time, minutes (@code{minutes})
@@ -5932,7 +5932,7 @@ at start-up of @code{gtroff}.
 The number of minutes after the hour, in the range@tie{}0 to@tie{}59.
 Initialized at start-up of @code{gtroff}.
 
-@item hours
+@item \n[hours]
 @cindex hours, current time (@code{hours})
 @cindex time, current, hours (@code{hours})
 @cindex current time, hours (@code{hours})
@@ -5940,32 +5940,32 @@ Initialized at start-up of @code{gtroff}.
 The number of hours past midnight, in the range@tie{}0 to@tie{}23.
 Initialized at start-up of @code{gtroff}.
 
-@item dw
+@item \n[dw]
 @cindex day of the week register (@code{dw})
 @cindex date, day of the week register (@code{dw})
 @vindex dw
 Day of the week (1-7).
 
-@item dy
+@item \n[dy]
 @cindex day of the month register (@code{dy})
 @cindex date, day of the month register (@code{dy})
 @vindex dy
 Day of the month (1-31).
 
-@item mo
+@item \n[mo]
 @cindex month of the year register (@code{mo})
 @cindex date, month of the year register (@code{mo})
 @vindex mo
 Current month (1-12).
 
-@item year
+@item \n[year]
 @cindex date, year register (@code{year}, @code{yr})
 @cindex year, current, register (@code{year}, @code{yr})
 @vindex year
 The current year.
 
-@item yr
-@vindex yr
+@item \n[yr]
+@vindex \n[yr]
 The current year minus@tie{}1900.  Unfortunately, the documentation of
 @acronym{UNIX} Version@tie{}7's @code{troff} had a year@tie{}2000 bug: It
 incorrectly claimed that @code{yr} contains the last two digits of the
@@ -5993,9 +5993,9 @@ or, to be portable to older @code{troff} versions, as follows:
 This document was formatted in \n(y4.
 @endExample
 
-@item .c
+@item \n[.c]
 @vindex .c
-@itemx c.
+@itemx \n[c.]
 @vindex c.
 @cindex input line number register (@code{.c}, @code{c.})
 @cindex line number, input, register (@code{.c}, @code{c.})
@@ -6003,7 +6003,7 @@ The current @emph{input} line number.  Register @samp{.c} is read-only,
 whereas @samp{c.} (a @code{gtroff} extension) is writable also,
 affecting both @samp{.c} and @samp{c.}.
 
-@item ln
+@item \n[ln]
 @vindex ln
 @cindex output line number register (@code{ln})
 @cindex line number, output, register (@code{ln})
@@ -6012,63 +6012,64 @@ request to activate line numbering.
 
 @xref{Miscellaneous}, for more information about line numbering.
 
-@item .x
+@item \n[.x]
 @vindex .x
 @cindex major version number register (@code{.x})
 @cindex version number, major, register (@code{.x})
 The major version number.  For example, if the version number
 is 1.03 then @code{.x} contains@tie{}@samp{1}.
 
-@item .y
+@item \n[.y]
 @vindex .y
 @cindex minor version number register (@code{.y})
 @cindex version number, minor, register (@code{.y})
 The minor version number.  For example, if the version number
 is 1.03 then @code{.y} contains@tie{}@samp{03}.
 
-@item .Y
+@item \n[.Y]
 @vindex .Y
 @cindex revision number register (@code{.Y})
 The revision number of @code{groff}.
 
-@item $$
+@item \n[$$]
 @vindex $$
 @cindex process ID of @code{gtroff} register (@code{$$})
 @cindex @code{gtroff}, process ID register (@code{$$})
 The process ID of @code{gtroff}.
 
-@item .g
+@item \n[.g]
 @vindex .g
 @cindex @code{gtroff}, identification register (@code{.g})
 @cindex GNU-specific register (@code{.g})
 Always@tie{}1.  Macros should use this to determine whether they are
 running under GNU @code{troff}.
 
-@item .A
+@item \n[.A]
 @vindex .A
 @cindex @acronym{ASCII} approximation output register (@code{.A})
 If the command line option @option{-a} is used to produce an
 @acronym{ASCII} approximation of the output, this is set to@tie{}1, zero
 otherwise.  @xref{Groff Options}.
 
-@item .P
+@item \n[.P]
 @vindex .P
 This register is set to@tie{}1 (and to@tie{}0 otherwise) if the current
 page is actually being printed, i.e., if the @option{-o} option is being
 used to only print selected pages.  @xref{Groff Options}, for more
 information.
 
-@item .T
+@item \n[.T]
 @vindex .T
 If @code{gtroff} is called with the @option{-T} command line option, the
 number register @code{.T} is set to@tie{}1, and zero otherwise.
 @xref{Groff Options}.
 
+@item \*[.T]
 @stindex .T
 @cindex output device name string register (@code{.T})
-Additionally, @code{gtroff} predefines a single read-write string
-register @code{.T} which contains the current output device (for
-example, @samp{latin1} or @samp{ps}).
+A single read-write string register which contains the current output
+device (for example, @samp{latin1} or @samp{ps}).  This is the only
+string register defined by @code{gtroff}.
 @end table
 
 
@@ -11541,7 +11542,7 @@ cases, this is not the expected behaviour.
 @cindex diversion traps
 @cindex traps, diversion
 
-@Defreq {dt, dist macro}
+@Defreq {dt, [@Var{dist} @Var{macro}]}
 @cindex @code{.t} register, and diversions
 @cindex setting diversion trap (@code{dt})
 @cindex diversion trap, setting (@code{dt})
@@ -11549,8 +11550,12 @@ cases, this is not the expected behaviour.
 Set a trap @emph{within} a diversion.
 @var{dist} is the location of the trap
 (identical to the @code{wh} request; default scaling indicator is
-@samp{v}) and @var{macro} is the name of the macro to be invoked.  The
-number register @code{.t} still works within diversions.
+@samp{v}) and @var{macro} is the name of the macro to be invoked.
+If called without arguments, the diversion trap is removed.
+
+Note that there exists only a single diversion trap.
+
+The number register @code{.t} still works within diversions.
 @xref{Diversions}, for more information.
 @endDefreq
 
