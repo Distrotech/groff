@@ -33,7 +33,7 @@ TODO
 
 #include "nonposix.h"
 
-#ifndef _AIX
+#if !defined(_AIX) && !defined(sinix) && !defined(__sinix__)
 #ifdef HAVE_STRNCASECMP
 #ifdef NEED_DECLARATION_STRNCASECMP
 extern "C" {
@@ -42,7 +42,7 @@ extern "C" {
 }
 #endif /* NEED_DECLARATION_STRNCASECMP */
 #endif /* HAVE_STRNCASECMP */
-#endif /* !_AIX */
+#endif /* !_AIX && !sinix && !__sinix__ */
 
 static short int papersize = -1,  // papersize
 		 orientation = -1 , // orientation
