@@ -1282,29 +1282,18 @@
 .\" NS   doc-curr-size, doc-in-synopsis-count, doc-indent-synopsis,
 .\" NS   doc-command-name
 .\" NS
-.\" NS local variables:
-.\" NS   doc-str-Nm
-.\" NS
 .\" NS width register `Nm' set in doc-common
 .
 .de Nm
 .  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Nm
-.
-.      \" handle empty first parameter
-.      ie "\$1"" \
-.        ds doc-str-Nm "\*[doc-command-name]
-.      el \
-.        ds doc-str-Nm "\$1
-.      shift
-.      doc-parse-args "\*[doc-str-Nm]" \$@
-.    \}
+.    ds doc-macro-name Nm
+.    ie \n[.$] \
+.      doc-parse-args \$@
 .    el \{\
 .      ie "\*[doc-command-name]"" \
 .        tm Usage: .Nm Name ... \*[doc-punct-chars] (#\n[.c])
 .      el \
-.        nop \*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
+.        doc-parse-args \*[doc-command-name]
 .  \}\}
 .
 .  if \n[doc-arg-limit] \{\
@@ -1316,10 +1305,8 @@
 .    \}
 .    el \{\
 .      as doc-out-string \*[doc-Nm-font]
-.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
+.      ie !(\n[doc-type\n[doc-arg-ptr]] == 2) \
 .        as doc-out-string \&\*[doc-command-name]\f[P]\s[0]
-.        \*[doc-arg\n[doc-arg-ptr]]
-.      \}
 .      el \{\
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
@@ -1333,7 +1320,7 @@
 .              br
 .            el \{\
 .              if !\n[doc-indent-synopsis] \{\
-.                doc-get-width \$1
+.                doc-get-width "\*[doc-arg\n[doc-arg-ptr]]
 .                nr doc-indent-synopsis ((\n[doc-width]u + 1u) * \n[doc-fixed-width]u)
 .            \}\}
 .            in +\n[doc-indent-synopsis]u
@@ -1342,8 +1329,9 @@
 .        \}\}
 .        if "\*[doc-command-name]"" \
 .          ds doc-command-name "\*[doc-arg\n[doc-arg-ptr]]
-.        doc-print-recursive
-.  \}\}\}
+.      \}
+.      doc-print-recursive
+.  \}\}
 ..
 .
 .
@@ -5803,20 +5791,25 @@
 .\" NS width register `An' set in doc-common
 .
 .de An
+.  if !\n[doc-arg-limit] \{\
+.    ie \n[.$] \{\
+.      ie        "\$1"-nosplit" \
+.        nr doc-in-authors-section 0
+.      el \{ .ie "\$1"-split" \
+.        nr doc-in-authors-section 1
+.      el \{\
+.        ds doc-macro-name An
+.        doc-parse-args \$@
+.    \}\}\}
+.    el \
+.      tm Usage: .An author_name ... \*[doc-punct-chars] (#\n[.c])
+.  \}
+.
 .  if \n[doc-in-authors-section] \{\
 .    ie \n[doc-have-author] \
 .      br
 .    el \
 .      nr doc-have-author 1
-.  \}
-.
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name An
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .An author_name ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
