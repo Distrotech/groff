@@ -542,7 +542,7 @@ again:
 	fgets(line, 254, f);
 	fclose(f);
 	test_file = 0;
-	char *linep = line;
+	char *linep = strchr(line, '\0');
 	// skip final newline, if any
 	if (*(--linep) == '\n')
 	  *linep = '\0';
@@ -888,15 +888,21 @@ int font::load_desc()
 	t.error("papersize command requires an argument");
 	return 0;
       }
-      double unscaled_paperwidth, unscaled_paperlength;
-      if (!scan_papersize(p, &papersize, &unscaled_paperlength,
-			  &unscaled_paperwidth)) {
+      int found_paper = 0;
+      while (p) {
+	double unscaled_paperwidth, unscaled_paperlength;
+	if (scan_papersize(p, &papersize, &unscaled_paperlength,
+			   &unscaled_paperwidth)) {
+	  paperwidth = int(unscaled_paperwidth * res + 0.5);
+	  paperlength = int(unscaled_paperlength * res + 0.5);
+	  found_paper = 1;
+	  break;
+	}
+	p = strtok(0, WS);
+      }
+      if (!found_paper) {
 	t.error("bad paper size");
 	return 0;
-      }
-      else {
-	paperwidth = int(unscaled_paperwidth * res + 0.5);
-	paperlength = int(unscaled_paperlength * res + 0.5);
       }
     }
     else if (strcmp("pass_filenames", p) == 0)

@@ -13955,6 +13955,27 @@ This command indicates that @code{gtroff} should encode special
 characters inside special commands.  Currently, this is only used
 by the @acronym{HTML} output device.  @xref{Postprocessor Access}.
 
+@item papersize @var{string} @dots{}
+@kindex papersize
+Select a paper size.  Valid values for @var{string} are the ISO paper
+types @code{A0}-@code{A7}, @code{B0}-@code{B7}, @code{C0}-@code{C7},
+@code{D0}-@code{D7}, @code{DL}, and the US paper types @code{letter},
+@code{legal}, @code{tabloid}, @code{ledger}, @code{statement},
+@code{executive}, @code{com10}, and @code{monarch}.  Case is not significant
+for @var{string} if it holds predefined paper types.  Alternatively,
+@var{string} can be a file name (e.g.@: @file{/etc/papersize}); if the file
+can be opened, @code{groff} reads the first line and tests for the above
+paper sizes.  Finally, @var{string} can be a custom paper size in the format
+@code{@var{length},@var{width}} (no spaces before and after the comma).
+Both @var{length} and @var{width} must have a unit appended; valid values
+are @samp{i} for inches, @samp{C} for centimeters, @samp{p} for points, and
+@samp{P} for picas.  Example: @code{12c,235p}.  An argument which starts
+with a digit is always treated as a custom paper format.  @code{papersize}
+sets both the vertical and horizontal dimension of the output medium.
+
+More than one argument can be specified; @code{groff} scans from left to
+right and uses the first valid paper specification.
+
 @item pass_filenames
 @kindex pass_filenames
 Tell @code{gtroff} to emit the name of the source file currently

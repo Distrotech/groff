@@ -238,12 +238,13 @@ static int get_papersize (void)
       char *p = linebuf + 9;
       while (*p == ' ' || *p == '\t')
 	p++;
-      if (font::scan_papersize(p, 0, &length, 0)) {
-	fclose(f);
-	return int(length * postscriptRes + 0.5);
+      for (p = strtok(p, " \t"); p; p = strtok(0, " \t")) {
+	if (font::scan_papersize(p, 0, &length, 0)) {
+	  fclose(f);
+	  return int(length * postscriptRes + 0.5);
+	}
       }
-      else
-	fatal("bad argument to `papersize' keyword in devps/DESC");
+      fatal("bad argument to `papersize' keyword in devps/DESC");
     }
   }
   fatal("can't find `papersize' or `paperlength' keyword in devps/DESC");
