@@ -18,7 +18,9 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /* This header file compartmentalize all idiosyncrasies of non-Posix
-   systems, such as MS-DOS, MS-Windows, etc.  */
+   systems, such as MS-DOS, MS-Windows, etc.  It should be loaded after
+   the system headers like stdio.h to protect against warnings and error
+   messages w.r.t. redefining macros. */
 
 #if defined _MSC_VER
 # ifndef _WIN32

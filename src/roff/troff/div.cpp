@@ -22,8 +22,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 // diversions
 
-#include "nonposix.h"
-
 #include "troff.h"
 #include "dictionary.h"
 #include "hvunits.h"
@@ -33,6 +31,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "token.h"
 #include "div.h"
 #include "reg.h"
+
+#include "nonposix.h"
 
 int exit_started = 0;		// the exit process has started
 int done_end_macro = 0;		// the end macro (if any) has finished
