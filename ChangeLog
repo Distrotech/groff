@@ -1,3 +1,23 @@
+2004-09-10  Werner LEMBERG  <wl@gnu.org>
+
+	In tbl, handle \a as an interpreted leader character if in
+	compatibility mode.
+
+	* src/preproc/tbl/table.h (PREFIX, PREFIX_CHAR, LEADER,
+	LEADER_CHAR): New macros.
+	(compatible_flag): New declaration.
+
+	* src/preproc/tbl/main.cpp (table_input): Add LEADER_1, LEADER_2,
+	LEADER_3, and LEADER_4 to `state'.
+	(table_input::get): Handle `\a'.
+
+	* src/preproc/tbl/table.cpp (PREFIX): Removed.
+	(LEADER_REG): New macro.
+	(table::init_output): Define LEADER_REG string register if in
+	compatibility mode.
+
+	* src/preproc/tbl/tbl.man: Document it.
+
 2004-08-18  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/doc.tmac (An): Fix error message.

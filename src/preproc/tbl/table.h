@@ -32,6 +32,14 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "errarg.h"
 #include "error.h"
 
+// PREFIX and PREFIX_CHAR must be the same.
+#define PREFIX "3"
+#define PREFIX_CHAR '3'
+
+// LEADER and LEADER_CHAR must be the same.
+#define LEADER "a"
+#define LEADER_CHAR 'a'
+
 struct inc_number {
   short inc;
   short val;
@@ -153,3 +161,5 @@ public:
 };
 
 void set_troff_location(const char *, int);
+
+extern int compatible_flag;

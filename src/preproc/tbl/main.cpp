@@ -26,11 +26,14 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 extern "C" const char *Version_string;
 
-static int compatible_flag = 0;
+int compatible_flag = 0;
 
 class table_input {
   FILE *fp;
-  enum { START, MIDDLE, REREAD_T, REREAD_TE, REREAD_E, END, ERROR } state;
+  enum { START, MIDDLE,
+	 REREAD_T, REREAD_TE, REREAD_E,
+	 LEADER_1, LEADER_2, LEADER_3, LEADER_4,
+	 END, ERROR } state;
   string unget_stack;
 public:
   table_input(FILE *);
@@ -117,11 +120,15 @@ int table_input::get()
       }
       break;
     case MIDDLE:
-      // handle line continuation
+      // handle line continuation and uninterpreted leader character
       if ((c = getc(fp)) == '\\') {
 	c = getc(fp);
 	if (c == '\n')
 	  c = getc(fp);		// perhaps state ought to be START now
+	else if (c == 'a' && compatible_flag) {
+	  state = LEADER_1;
+	  return '\\';
+	}
 	else {
 	  if (c != EOF)
 	    ungetc(c, fp);
@@ -152,6 +159,18 @@ int table_input::get()
     case REREAD_E:
       state = MIDDLE;
       return 'E';
+    case LEADER_1:
+      state = LEADER_2;
+      return '*';
+    case LEADER_2:
+      state = LEADER_3;
+      return '(';
+    case LEADER_3:
+      state = LEADER_4;
+      return PREFIX_CHAR;
+    case LEADER_4:
+      state = MIDDLE;
+      return LEADER_CHAR;
     case END:
     case ERROR:
       return EOF;

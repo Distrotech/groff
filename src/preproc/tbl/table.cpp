@@ -30,7 +30,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 const int DEFAULT_COLUMN_SEPARATION = 3;
 
 #define DELIMITER_CHAR "\\[tbl]"
-#define PREFIX "3"
 #define SEPARATION_FACTOR_REG PREFIX "sep"
 #define BOTTOM_REG PREFIX "bot"
 #define RESET_MACRO_NAME PREFIX "init"
@@ -63,6 +62,8 @@ const int DEFAULT_COLUMN_SEPARATION = 3;
 
 // this must be one character
 #define COMPATIBLE_REG PREFIX "c"
+
+#define LEADER_REG PREFIX LEADER
 
 #define BLOCK_WIDTH_PREFIX PREFIX "tbw"
 #define BLOCK_DIVERSION_PREFIX PREFIX "tbd"
@@ -1695,6 +1696,8 @@ void table::init_output()
     prints(".nr " LINESIZE_REG " \\n[.s]\n");
   if (!(flags & CENTER))
     prints(".nr " SAVED_CENTER_REG " \\n[.ce]\n");
+  if (compatible_flag)
+    prints(".ds " LEADER_REG " \\a\n");
   prints(".de " RESET_MACRO_NAME "\n"
 	 ".ft \\n[.f]\n"
 	 ".ps \\n[.s]\n"
