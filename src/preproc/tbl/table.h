@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -127,7 +128,8 @@ public:
     BOX = 04,
     ALLBOX = 010,
     DOUBLEBOX = 020,
-    NOKEEP = 040
+    NOKEEP = 040,
+    NOSPACES = 0100
     };
   table(int nc, unsigned flags, int linesize, char decimal_point_char);
   ~table();

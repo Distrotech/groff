@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -292,6 +293,35 @@ char *string::extract() const
       *r++ = p[i];
   q[n] = '\0';
   return q;
+}
+
+void string::remove_spaces()
+{
+  int l = len - 1;
+  while (l >= 0 && ptr[l] == ' ')
+    l--;
+  char *p = ptr;
+  if (l > 0)
+    while (*p == ' ') {
+      p++;
+      l--;
+    }
+  if (len - 1 != l) {
+    if (l >= 0) {
+      len = l + 1;
+      char *tmp = new char[len];
+      memcpy(tmp, p, len);
+      a_delete ptr;
+      ptr = tmp;
+    }
+    else {
+      len = 0;
+      if (ptr) {
+	a_delete ptr;
+	ptr = 0;
+      }
+    }
+  }
 }
 
 void put_string(const string &s, FILE *fp)

@@ -34,7 +34,7 @@ Home of Groff (GNU Troff).
 .HTML-IMAGE-LEFT
 .PSPIC -L gnu.eps 2i 2i
 .ie r ps4html \
-.  nop \v'-0.75i'\h'2.0i'\s[80]\*[GNU] Troff\s0
+.  nop \v'-0.75i'\h'2.0i'\s[100]\*[GNU] Troff\s0
 .el \
 .  nop \v'-0.75i'\h'2.0i'\s[60]\*[GNU] Troff\s0
 .HTML-IMAGE-END
@@ -202,6 +202,36 @@ It is now maintained by
 .MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
 and
 .MTO wl@\:gnu.org "Werner Lemberg" .
+.
+.
+.SH
+NEWS VERSION 1.18.1
+.
+.SH 2
+tbl
+
+.ULS
+.LI
+Added global option `nospaces' to ignore leading and trailing spaces in data
+items.
+.ULE
+.
+.SH 2
+Miscellaneous
+
+.ULS
+.LI
+The `papersize' keyword in the DESC file now accepts multiple arguments.
+It is scanned from left to the right, and the first valid argument is used.
+This makes it possible to provide a fallback paper size.
+
+Example:
+.RS
+.ft C
+papersize /etc/papersize a4
+.ft P
+.RE
+.ULE
 .
 .
 .SH
@@ -850,6 +880,10 @@ troff completely ignores it.
 .HR
 .
 \s-2\fIThis document was produced using
-.URL http://groff.ffii.org/ groff-\n[.x].\n[.y] .\s0\fP
+.URL http://groff.ffii.org/ groff-\n[.x].\n[.y].\n[.Y] .
+.br
+The image at the top has been contributed by Imogen Mulley (born 1991),
+based on a similar picture found on the
+.URL http://www.gnu.org "GNU server" .
 .HR
 .\" EOF

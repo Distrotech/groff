@@ -446,33 +446,38 @@ options *process_options(table_input &in)
     }
     else if (strieq(p, "center") || strieq(p, "centre")) {
       if (arg)
-	error("`center' option does not take a argument");
+	error("`center' option does not take an argument");
       opt->flags |= table::CENTER;
     }
     else if (strieq(p, "expand")) {
       if (arg)
-	error("`expand' option does not take a argument");
+	error("`expand' option does not take an argument");
       opt->flags |= table::EXPAND;
     }
     else if (strieq(p, "box") || strieq(p, "frame")) {
       if (arg)
-	error("`box' option does not take a argument");
+	error("`box' option does not take an argument");
       opt->flags |= table::BOX;
     }
     else if (strieq(p, "doublebox") || strieq(p, "doubleframe")) {
       if (arg)
-	error("`doublebox' option does not take a argument");
+	error("`doublebox' option does not take an argument");
       opt->flags |= table::DOUBLEBOX;
     }
     else if (strieq(p, "allbox")) {
       if (arg)
-	error("`allbox' option does not take a argument");
+	error("`allbox' option does not take an argument");
       opt->flags |= table::ALLBOX;
     }
     else if (strieq(p, "nokeep")) {
       if (arg)
-	error("`nokeep' option does not take a argument");
+	error("`nokeep' option does not take an argument");
       opt->flags |= table::NOKEEP;
+    }
+    else if (strieq(p, "nospaces")) {
+      if (arg)
+	error("`nospaces' option does not take an argument");
+      opt->flags |= table::NOSPACES;
     }
     else if (strieq(p, "decimalpoint")) {
       if (!arg)
@@ -1207,6 +1212,8 @@ table *process_data(table_input &in, format *f, options *opt)
 	    int ln = current_lineno;
 	    if (c == '\n')
 	      --ln;
+	    if ((opt->flags & table::NOSPACES))
+	      input_entry.remove_spaces();
 	    while (col < ncolumns
 		   && line_format[col].type == FORMAT_SPAN) {
 	      tbl->add_entry(current_row, col, "", &line_format[col],
