@@ -43,13 +43,20 @@ extern "C" const char *Version_string;
 
 static int horizontal_tab_flag = 0;
 static int form_feed_flag = 0;
-static int bold_flag = 1;
-static int underline_flag = 1;
+static int bold_flag_option = 1;
+static int bold_flag;
+static int underline_flag_option = 1;
+static int underline_flag;
 static int overstrike_flag = 1;
 static int draw_flag = 1;
-static int italic_flag = 0;
-static int reverse_flag = 0;
+static int italic_flag_option = 0;
+static int italic_flag;
+static int reverse_flag_option = 0;
+static int reverse_flag;
 static int old_drawing_scheme = 0;
+
+static void update_options();
+static void usage(FILE *stream);
 
 static int hline_char = '-';
 static int vline_char = '|';
@@ -66,7 +73,8 @@ enum {
 };
 
 // Mode to use for bold-underlining.
-static unsigned char bold_underline_mode = BOLD_MODE|UNDERLINE_MODE;
+static unsigned char bold_underline_mode_option = BOLD_MODE|UNDERLINE_MODE;
+static unsigned char bold_underline_mode;
 
 #ifndef IS_EBCDIC_HOST
 #define CSI "\033["
@@ -444,6 +452,7 @@ void tty_printer::special(char *arg, const environment *env, char type)
       old_drawing_scheme = 1;
     else
       old_drawing_scheme = 0;
+    update_options();
   }
 }
 
@@ -765,7 +774,23 @@ printer *make_printer()
   return new tty_printer(device);
 }
 
-static void usage(FILE *stream);
+static void update_options()
+{
+  if (old_drawing_scheme) {
+    italic_flag = 0;
+    reverse_flag = 0;
+    bold_underline_mode = bold_underline_mode_option;
+    bold_flag = bold_flag_option;
+    underline_flag = underline_flag_option;
+  }
+  else {
+    italic_flag = italic_flag_option;
+    reverse_flag = reverse_flag_option;
+    bold_underline_mode = BOLD_MODE|UNDERLINE_MODE;
+    bold_flag = 1;
+    underline_flag = 1;
+  }
+}
 
 int main(int argc, char **argv)
 {
@@ -789,11 +814,11 @@ int main(int argc, char **argv)
       break;
     case 'i':
       // Use italic font instead of underlining.
-      italic_flag = 1;
+      italic_flag_option = 1;
       break;
     case 'b':
       // Do not embolden by overstriking.
-      bold_flag = 0;
+      bold_flag_option = 0;
       break;
     case 'c':
       // Use old scheme for emboldening and underline.
@@ -801,7 +826,7 @@ int main(int argc, char **argv)
       break;
     case 'u':
       // Do not underline.
-      underline_flag = 0;
+      underline_flag_option = 0;
       break;
     case 'o':
       // Do not overstrike (other than emboldening and underlining).
@@ -809,15 +834,15 @@ int main(int argc, char **argv)
       break;
     case 'r':
       // Use reverse mode instead of underlining.
-      reverse_flag = 1;
+      reverse_flag_option = 1;
       break;
     case 'B':
       // Do bold-underlining as bold.
-      bold_underline_mode = BOLD_MODE;
+      bold_underline_mode_option = BOLD_MODE;
       break;
     case 'U':
       // Do bold-underlining as underlining.
-      bold_underline_mode = UNDERLINE_MODE;
+      bold_underline_mode_option = UNDERLINE_MODE;
       break;
     case 'h':
       // Use horizontal tabs.
@@ -844,15 +869,7 @@ int main(int argc, char **argv)
     default:
       assert(0);
     }
-  if (old_drawing_scheme) {
-    italic_flag = 0;
-    reverse_flag = 0;
-  }
-  else {
-    bold_underline_mode = BOLD_MODE|UNDERLINE_MODE;
-    bold_flag = 1;
-    underline_flag = 1;
-  }
+  update_options();
   if (optind >= argc)
     do_file("-");
   else {

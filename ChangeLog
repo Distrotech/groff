@@ -1,6 +1,19 @@
+2003-07-17  Werner LEMBERG  <wl@gnu.org>
+
+	Don't ignore grotty's command line options if \X'tty: sgr ...' is
+	used to change the drawing scheme.
+
+	* src/devives/grotty/tty.cpp (bold_flag_option,
+	underline_flag_option, italic_flag_option, reverse_flag_option,
+	bold_underline_mode_option): New global variables.
+	(update_options): New function.
+	(tty_printer::special): Call update_options.
+	(main): Don't set xxx_flag but xxx_flag_option, then call
+	update_options.
+
 2003-07-14  Werner LEMBERG  <wl@gnu.org>
 
-	Make grotty emit proper Unicode box drawing character for -Tutf8.
+	Make grotty emit proper Unicode box drawing characters for -Tutf8.
 
 	* src/devices/grotty/tty.cpp (START_LINE, END_LINE): New enum
 	values.
