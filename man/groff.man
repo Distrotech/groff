@@ -1329,6 +1329,13 @@ If
 .I N
 is zero disable colors, otherwise enable them.
 .
+.REQ .composite from to
+Map glyph name
+.I from
+to glyph name
+.I to
+while constructing a composite glyph name.
+.
 .REQ .continue
 Finish the current iteration of a while loop.
 .
@@ -2543,8 +2550,14 @@ see section
 .BR "Special Characters" .
 .
 .ESC[] "" name
-The named character with arbitrary length name
+The named character (or rather glyph) with arbitrary length name
 .IR name .
+.
+.ESC[] "" "comp1 comp2 .\|.\|."
+A composite glyph with components
+.IR comp1 ,
+.IR comp2 ,
+.I .\|.\|.
 .
 .\" --------- alphabetical escapes ---------
 .
@@ -3403,7 +3416,7 @@ be reproduced, and say which version of groff you are using.
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 .
 .P
 This document is distributed under the terms of the FDL (GNU Free

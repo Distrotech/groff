@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 13 Feb 2003
+Last update : 1 Mar 2003
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -166,12 +166,25 @@ In escape sequences, additionally to the classical
 .BI ( xx
 construction for a two-character name, you can use
 .BI [ xxx ]
-for a name of arbitrary length, for example in
+for a name of arbitrary length.
 .
-.TP \w'\[rs]f[xxx]'u+3n
+.TP
 .BI \[rs][ xxx ]
 Print the special character (glyph) called
 .IR xxx .
+.
+.TP
+.BI \[rs][ "comp1 comp2 .\|.\|." ]
+Print composite glyph consisting of multiple components.
+.
+Example: `\[rs][A\~ho]' is capital letter A with ogonek which finally maps
+to glyph name `u0041_0328'.
+.
+See the
+.I groff info file
+for details how a glyph name for a composite glyph is constructed, and
+.BR groff_char (@MAN7EXT@)
+for list of glyph name components used composite glyph names.
 .
 .TP
 .BI \[rs]f[ xxx ]
@@ -1121,6 +1134,16 @@ request.
 See the
 .B open
 request.
+.
+.TP
+.BI .composite\  glyph1\ glyph2
+Map glyph name
+.I glyph1
+to glyph name
+.I glyph2
+if it is used in
+.BI \[rs][ ... ]
+with more than one component.
 .
 .TP
 .B .continue

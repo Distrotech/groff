@@ -1,8 +1,8 @@
 \input texinfo   @c -*-texinfo-*-
 
 @c
-@c Please convert this manual with `texi2dvi -e groff.texinfo' due to a bug
-@c in texinfo regarding expansion of user-defined macros.
+@c Please convert this manual with `texi2dvi -e groff.texinfo' due to
+@c problems in texinfo regarding expansion of user-defined macros.
 @c
 @c You need texinfo 4.3 or newer to format this document!
 @c
@@ -65,12 +65,12 @@ Software Foundation raise funds for GNU development.''
 @syncodeindex tp cp
 
 
-@c to avoid uppercasing in @deffn while converting to info, we define
-@c our special @Var{}
+@c To avoid uppercasing in @deffn while converting to info, we define
+@c our special @Var{}.
 @c
-@c due to a (not officially documented) `feature' in makeinfo 4.0,
+@c Due to a (not officially documented) `feature' in makeinfo 4.0,
 @c macros are not expanded in @deffn (but the macro definition is
-@c properly removed), so we have to define @Var{} directly in TeX also
+@c properly removed), so we have to define @Var{} directly in TeX also.
 
 @macro Var{arg}
 \arg\
@@ -109,7 +109,7 @@ Software Foundation raise funds for GNU development.''
 @c
 @c   @endDef...
 @c
-@c The above is valid for texinfo 4.0f.
+@c The above is valid for texinfo 4.0f and above.
 
 
 @c a dummy macro to assure the `@def...'
@@ -330,7 +330,7 @@ Software Foundation raise funds for GNU development.''
 @c We need special parentheses and brackets:
 @c
 @c . Real parentheses in @deffn produce an error while compiling with
-@c   TeX
+@c   TeX.
 @c . Real brackets use the wrong font in @deffn, overriding @t{}.
 @c
 @c Since macros aren't expanded in @deffn during -E, the following
@@ -4116,7 +4116,7 @@ Users of macro packages may skip it if not interested in details.
 * Line Control::
 * Page Layout::
 * Page Control::
-* Fonts::
+* Fonts and Symbols::
 * Sizes::
 * Strings::
 * Conditionals and Loops::
@@ -7913,7 +7913,7 @@ Note that this doesn't affect the number register@tie{}@code{%}.
 
 @c =====================================================================
 
-@node Page Control, Fonts, Page Layout, gtroff Reference
+@node Page Control, Fonts and Symbols, Page Layout, gtroff Reference
 @section Page Control
 @cindex page control
 @cindex control, page
@@ -8041,8 +8041,8 @@ registers.
 
 @c =====================================================================
 
-@node Fonts, Sizes, Page Control, gtroff Reference
-@section Fonts
+@node Fonts and Symbols, Sizes, Page Control, gtroff Reference
+@section Fonts and Symbols
 @cindex fonts
 
 @code{gtroff} can switch fonts at any point in the text.
@@ -8064,7 +8064,7 @@ special symbols (Greek, mathematics).
 
 @c ---------------------------------------------------------------------
 
-@node Changing Fonts, Font Families, Fonts, Fonts
+@node Changing Fonts, Font Families, Fonts and Symbols, Fonts and Symbols
 @subsection Changing Fonts
 @cindex fonts
 
@@ -8144,7 +8144,7 @@ the translation is undone.
 
 @c ---------------------------------------------------------------------
 
-@node Font Families, Font Positions, Changing Fonts, Fonts
+@node Font Families, Font Positions, Changing Fonts, Fonts and Symbols
 @subsection Font Families
 @cindex font families
 @cindex families, font
@@ -8295,7 +8295,7 @@ A solution to this problem is to use a dummy font like the following:
 
 @c ---------------------------------------------------------------------
 
-@node Font Positions, Using Symbols, Font Families, Fonts
+@node Font Positions, Using Symbols, Font Families, Fonts and Symbols
 @subsection Font Positions
 @cindex font positions
 @cindex positions, font
@@ -8397,7 +8397,7 @@ this is font 1 again
 
 @c ---------------------------------------------------------------------
 
-@node Using Symbols, Special Fonts, Font Positions, Fonts
+@node Using Symbols, Special Fonts, Font Positions, Fonts and Symbols
 @subsection Using Symbols
 @cindex using symbols
 @cindex symbols, using
@@ -8500,30 +8500,12 @@ positions.  Consequently, it finds @code{BAZ} before @code{FOO} even for
 
 @xref{Font Files}, and @ref{Special Fonts}, for more details.
 
-@DefescList {\\, @lparen{}, nm, }
-@DefescListEnd {\\, @lbrack{}, name, @rbrack}
-Insert a symbol @var{name} (two-character name @var{nm}).  There is no
-special syntax for one-character names -- the natural form
-@samp{\@var{n}} would collide with escapes.@footnote{Note that a
-one-character symbol is not the same as an input character, i.e., the
-character @code{a} is not the same as @code{\[a]}.  By default,
-@code{groff} defines only a single one-character symbol, @code{\[-]};
-it is usually accessed as @code{\-}.  On the other hand, @code{gtroff}
-has the special feature that @code{\[char@var{XXX}]} is the same as the
-input character with character code @var{XXX}.  For example,
-@code{\[char97]} is identical to the letter @code{a} if @acronym{ASCII}
-encoding is active.}
-
-If @var{name} is undefined, a warning of type @samp{char} is generated,
-and the escape is ignored.  @xref{Debugging}, for information about
-warnings.
-
 @cindex list of available glyphs (@cite{groff_char(7)} man page)
 @cindex available glyphs, list (@cite{groff_char(7)} man page)
 @cindex glyphs, available, list (@cite{groff_char(7)} man page)
 The list of available symbols is device dependent; see the
-@cite{groff_char(7)} man page for a complete list for the given output
-device.  For example, say
+@cite{groff_char(7)} man page for a complete list of all glyphs.  For
+example, say
 
 @Example
 man -Tdvi groff_char > groff_char.dvi
@@ -8539,7 +8521,130 @@ must be called directly:
 groff -Tdvi -mec -man groff_char.7 > groff_char.dvi
 @endExample
 
-@c XXX list of common symbols
+@cindex composite glyph names
+@cindex glyph names, composite
+@cindex groff glyph list (GGL)
+@cindex GGL (groff glyph list)
+@cindex adobe glyph list (AGL)
+@cindex AGL (adobe glyph list)
+Glyph names not listed in groff_char(7) are derived algorithmically,
+using a simplified version of the Adobe Glyph List (AGL) algorithm
+described in
+@uref{http://partners.adobe.com/asn/developer/typeforum/unicodegn.html}.
+The (frozen) set of glyph names which can't be derived algorithmically
+is called @dfn{groff glyph list (GGL)}.
+
+@itemize @bullet
+@item
+A glyph for Unicode character U+@var{XXXX}[@var{X}[@var{X}]] which is
+not a composite character will be named
+@code{u@var{XXXX}@r{[}@var{X}@r{[}@var{X}@r{]]}}.  @var{X} must be an
+uppercase hexadecimal digit.  Examples: @code{u1234}, @code{u008E},
+@code{u12DB8}.  The largest Unicode value is 0x10FFFF.  There must be at
+least four @code{X} digits; if necessary, add leading zeroes (after the
+@samp{u}).  No zero padding is allowed for character codes greater than
+0xFFFF.  Surrogates (i.e., Unicode values greater than 0xFFFF
+represented with character codes from the surrogate area U+D800-U+DFFF)
+are not allowed too.
+
+@item
+A glyph representing more than a single input character will be named
+
+@display
+@samp{u} @var{component1} @samp{_} @var{component2} @samp{_} @var{component3} @dots{}
+@end display
+
+@noindent
+Example: @code{u0045_0302_0301}.
+
+For simplicity, all Unicode characters which are composites must be
+decomposed maximally (this is normalization form@tie{}D in the Unicode
+standard); for example, @code{u00CA_0301} is not a valid glyph name
+since U+00CA (@sc{latin capital letter e with circumflex}) can be
+further decomposed into U+0045 (@sc{latin capital letter e}) and U+0302
+(@sc{combining circumflex accent}).  @code{u0045_0302_0301} is thus the
+glyph name for U+1EBE, @sc{latin capital letter e with circumflex and
+acute}.
+
+@item
+groff maintains a table to decompose all algorithmically derived glyph
+names which are composites itself.  For example, @code{u0100} (@sc{latin
+letter a with macron}) will be automatically decomposed into
+@code{u0041_0304}.  Additionally, a glyph name of the GGL is preferred
+to an algorithmically derived glyph name; groff also automatically does
+the mapping.  Example: The glyph @code{u0045_0302} will be mapped to
+@code{^E}.
+
+@item
+glyph names of the GGL can't be used in composite glyph names; for
+example, @code{^E_u0301} is invalid.
+@end itemize
+
+@DefescList {\\, @lparen{}, nm, }
+@DefescItem {\\, @lbrack{}, name, @rbrack}
+@DefescListEnd {\\, @lbrack{}, component1 component2 @dots{}, @rbrack}
+Insert a symbol @var{name} (two-character name @var{nm}) or a composite
+glyph with component glyphs @var{component1}, @var{component2},
+@enddots{} There is no special syntax for one-character names -- the
+natural form @samp{\@var{n}} would collide with escapes.@footnote{Note
+that a one-character symbol is not the same as an input character, i.e.,
+the character @code{a} is not the same as @code{\[a]}.  By default,
+@code{groff} defines only a single one-character symbol, @code{\[-]}; it
+is usually accessed as @code{\-}.  On the other hand, @code{gtroff} has
+the special feature that @code{\[char@var{XXX}]} is the same as the
+input character with character code @var{XXX}.  For example,
+@code{\[char97]} is identical to the letter @code{a} if @acronym{ASCII}
+encoding is active.}
+
+If @var{name} is undefined, a warning of type @samp{char} is generated,
+and the escape is ignored.  @xref{Debugging}, for information about
+warnings.
+
+groff resolves @code{\[...]} with more than a single component as
+follows:
+
+@itemize @bullet
+@item
+Any component which is found in the GGL will be converted to the
+@code{u@var{XXXX}} form.
+
+@item
+Any component @code{u@var{XXXX}} which is found in the list of
+decomposable glyphs will be decomposed.
+
+@item
+The resulting elements are then concatenated with @samp{_} inbetween,
+dropping the leading @samp{u} in all elements but the first.
+@end itemize
+
+No check for the existence of any component (similar to @code{tr}
+request) will be done.
+
+Examples:
+
+@table @code
+@item \[A ho]
+@samp{A} maps to @code{u0041}, @samp{ho} maps to @code{u02DB}, thus the
+final glyph name would be @code{u0041_02DB}.  Note this is not the
+expected result: The ogonek glyph @samp{ho} is a spacing ogonek, but for
+a proper composite a non-spacing ogonek (U+0328) is necessary.  Looking
+into the file @file{composite.tmac} one can find @w{@samp{.composite ho
+u0328}} which changes the mapping of @samp{ho} while a composite glyph
+name is constructed, causing the final glyph name to be
+@code{u0041_0328}.
+
+@item \[^E u0301]
+@itemx \[^E aa]
+@itemx \[E a^ aa]
+@itemx \[E ^ ']
+@samp{^E} maps to @code{u0045_0302}, thus the final glyph name is
+@code{u0045_0302_0301} in all forms (assuming proper calls of the
+@code{composite} request).
+@end table
+
+It is not possible to define glyphs with names like @w{@samp{A ho}}
+within a groff font file.  This is not really a limitation; instead, you
+have to define @code{u0041_0328}.
 @endDefesc
 
 @Defesc {\\C, ', xxx, '}
@@ -8551,6 +8656,18 @@ convenient to use @code{\[@var{xxx}]}, but @code{\C} has the advantage
 that it is compatible with newer versions of @acronym{AT&T}
 @code{troff} and is available in compatibility mode.
 @endDefesc
+
+@Defreq {composite, from to}
+@pindex composite.tmac
+Map glyph name @var{from} to glyph name @var{to} if it is used in
+@code{\[...]} with more than one component.  See above for examples.
+
+This mapping is based on glyph names only; no check for the existence of
+either glyph is done.
+
+A set of default mappings for many accents can be found in the file
+@file{composite.tmac} which is loaded at start-up.
+@endDefreq
 
 @Defesc {\\N, ', n, '}
 @cindex numbered glyph (@code{\N})
@@ -8774,7 +8891,7 @@ The request @code{rfschar} removes glyph definitions defined with
 
 @c ---------------------------------------------------------------------
 
-@node Special Fonts, Artificial Fonts, Using Symbols, Fonts
+@node Special Fonts, Artificial Fonts, Using Symbols, Fonts and Symbols
 @subsection Special Fonts
 @cindex special fonts
 @cindex fonts, special
@@ -8811,7 +8928,7 @@ loaded.
 
 @c ---------------------------------------------------------------------
 
-@node Artificial Fonts, Ligatures and Kerning, Special Fonts, Fonts
+@node Artificial Fonts, Ligatures and Kerning, Special Fonts, Fonts and Symbols
 @subsection Artificial Fonts
 @cindex artificial fonts
 @cindex fonts, artificial
@@ -8982,7 +9099,7 @@ an integer.
 
 @c ---------------------------------------------------------------------
 
-@node Ligatures and Kerning,  , Artificial Fonts, Fonts
+@node Ligatures and Kerning,  , Artificial Fonts, Fonts and Symbols
 @subsection Ligatures and Kerning
 @cindex ligatures and kerning
 @cindex kerning and ligatures
@@ -9213,7 +9330,7 @@ This is a test.
 
 @c =====================================================================
 
-@node Sizes, Strings, Fonts, gtroff Reference
+@node Sizes, Strings, Fonts and Symbols, gtroff Reference
 @section Sizes
 @cindex sizes
 
@@ -13301,7 +13418,7 @@ A free implementation of @code{grap}, written by Ted Faber,
 is available as an extra package from the following address:
 
 @display
-@url{http://www.lunabase.org/~faber/Vault/software/grap/}
+@uref{http://www.lunabase.org/~faber/Vault/software/grap/}
 @end display
 
 
