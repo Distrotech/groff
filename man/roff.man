@@ -1,0 +1,490 @@
+.\"                        -*- nroff -*- 
+.ig
+roff.7
+
+This file is part of groff, the GNU roff type-setting system.
+
+Copyright (C) 2000 Free Software Foundation, Inc.
+written by Bernd Warken <bwarken@mayn.de>
+
+Last update: 28 Apr 2000
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being AUTHOR, with no Front-Cover Texts, and with no
+Back-Cover Texts.
+
+A copy of the Free Documentation License is included as a file called
+fdl.txt in the main directory of the groff source package.
+..
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.de MP
+.	ds @tmp@ \\fB\\$1\\fP\\fR(\\$2)\\fP
+.	shift 2
+\\*[@tmp@]\\$*
+.	rm @tmp@
+..
+.de groffMP
+.	ds @tmp@ \\fB\\$1\\fP\\fR(@MAN\\$2EXT@)\\fP
+.	shift 2
+\\*[@tmp@]\\$*
+.	rm @tmp@
+..
+.de BIR
+.ie \\n[.$]<3 .BI $@
+.el \{\
+.	ds @tmp@ \\fB\\$1\\fP\\fI\\$2\\fP
+.	shift 2
+\\*[@tmp@]\\fR\\$*\\fP
+.	rm @tmp@
+.\}
+..
+.ds dquote \&"
+.ds dquote \&"\" make Emacs happy
+.\" --------------------------------------------------------------------
+.\" Title
+.\" --------------------------------------------------------------------
+.TH ROFF @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+roff \- a survey of the roff typesetting system
+.\" --------------------------------------------------------------------
+.SH DESCRIPTION
+.\" --------------------------------------------------------------------
+.I roff
+is the general name for a set of type-setting programs, known under
+names like
+.IR troff ,
+.IR nroff ,
+.IR groff ,
+etc.
+.LP
+The
+.I roff
+type-setting system consists of a formatting language, macro packages,
+preprocessors, postprocessors for output devices, user front-end
+programs, and conversion tools.
+.LP
+The most common
+.I roff
+system today is the free software implementation
+.I groff
+(from "GNU\ roff").
+The pre-groff implementations are referred to as "classical" (dating
+back as long as 1973).
+.LP
+.I groff
+is backward-compatible to its classical ancestors, but has many
+extensions, and is still evolving.
+As it is available for almost every computer systems it is the de-facto
+.I roff
+standard today.
+.LP
+In spite of its age,
+.I roff
+is in wide use today, e.g., the manual pages on UNIX systems 
+.RI ( man
+.IR pages )
+are written in
+.IR roff .
+Its output for text devices is still unmatched, and its graphical output
+has the same quality as the other free type-setting programs and is
+better than some of the commercial systems.
+.LP
+This document gives only an overview and provides pointers to further
+documentation.
+This document is not maintained and might be out of date.
+For the real documentation refer to the
+.I groff
+info file.
+It contains more detailed, actual and concise information.
+.\" --------------------------------------------------------------------
+.SH "FORMATTING LANGUAGE"
+.\" --------------------------------------------------------------------
+There are three terms that refer to the language of the
+.I roff
+system.  The term
+.I troff language
+is used when the classical aspects of
+.I roff
+are stressed, the term
+.I groff language
+includes the GNU extensions, whereas
+.I roff language
+is the general term.
+.LP
+The main source of documentation for all aspects of the
+.I groff language
+is the groff info file.  The manual page
+.groffMP groff 7
+gives a short description of all predefined language elements.
+.LP
+.I roff
+documents are normal text files decorated by formatting elements.
+It is very easy to write high-quality documents by using one of the macro
+packages.
+These are like high-level programming languages, while the bare
+.I roff
+language compares to a low-level language like C or assembler.
+.LP
+The
+.I roff 
+language is a full programming language providing low-level requests,
+definition of macros, escape sequences, string variables, number or size
+registers, and C-like flow controls.
+In the 1980s, it was even possible to write the common utilities for system
+administration by only using
+.IR troff .
+There were contests on writing the most unreadable program fake by
+exclusively using
+.IR troff .
+Because of security impacts, these dangerous features were removed in
+.IR groff .
+.LP
+Some clarification on the language elements seems to be wanted.
+Requests are basic formatting commands defined by programming languages
+like C, C++, etc., whereas macros are formatting commands that are
+written in the
+.I roff
+language.
+A document writer will not note any difference in usage for requests or
+macros, both are written on a line on their own starting with a dot `.'.
+But the user may define her own macros if desired.
+.LP
+Escape sequences are in-line elements starting with a backslash `\e'.
+They are used to implement various features, including the insertion of
+non-ASCII characters with \fB\e(\fP, the content of strings with
+\fB\e*\fP and register variables with \fB\en\fP, font changes with
+\fB\ef\fP, in-line comments with \fB\e\*[dquote]\fP, the escaping of
+special characters used in the
+.I roff
+language like \fB\e\e\fP, and many other features.
+.\" --------------------------------------------------------------------
+.SH FORMATTERS
+.\" --------------------------------------------------------------------
+Formatters are the front-end programs that analize a groff document and
+translate it into a form that is suitable for a special device.
+The traditional
+.I roff
+had two formatters,
+.B nroff
+for text devices and
+.B troff
+for graphical devices.
+.LP
+These programs still exist in the
+.I groff
+implementation, but usually they are accessed thru a program called
+.BR groff .
+This combined and extended the old functionality into a single program.
+It has many command-line options, most of them herited from
+.BR troff .
+To ease the option jungle, the user-friendly utility
+.B grog
+(from "groff guess") was created.
+It tries to guess from the document which arguments should be used and
+displays a suitable command line.
+Though not being perfect, it is a good starting point.
+.\" --------------------------------------------------------------------
+.SH PREPROCESSORS
+.\" --------------------------------------------------------------------
+There are 4 classical preprocessors that are still available in
+.IR groff :
+.I eqn
+for including mathematical equations,
+.I pic
+for creating diagrams,
+.I tbl
+for rectangular tables, and
+.I soelim
+for including other roff files into a document.
+There were many more preprocessors available in industrial roff
+implementations.
+By the time, some of these will be available in groff as well, e.g., grap
+has been actually developed.
+.LP
+Each of these preprocessors defines a language that is translated into
+roff code when run through the preprocessor program.
+So parts written in these languages may be included within a roff document.
+Such an enhanced document is run thru one or more corresponding
+preprocessors before it is fed into the actual formatter.
+.L
+The preprocessors programs are called
+.BR eqn ,
+.BR pic ,
+.BR tbl ,
+and
+.B soelim
+respectively
+They extract and transform the document parts determined for them.
+.LP
+The preprocessor programs can be used within a UNIX pipeline like
+.LP
+.RS
+.B cat
+.I file 
+.B | tbl | groff ...
+.RE
+.LP
+Alternatively, each one can be activated by a single character option when
+calling
+.BR groff .
+.LP
+The option letters are easy to remember,  classical
+.B troff
+as well as
+.B groff
+use the first character of the preprocessor, i.e.,
+.BR -e ,
+.BR -p ,
+.BR -t ,
+and
+.B -s
+resp.
+.\" --------------------------------------------------------------------
+.SH "MACRO PACKAGES"
+.\" --------------------------------------------------------------------
+Macro packages are collections of macros that are suitable to format a
+special kind of documents in a convenient way.
+This greatly eases the usage of
+.IR roff .
+The macro definitions of a package are kept in a file called
+.I tmac.<name>
+where
+.I <name>
+is the internal
+.I roff
+name for this package.
+All tmac files are stored in a single or few directories at standard
+positions.
+.LP
+A macro package that is used in a document is specified by the command line
+option
+.B -m
+for the formatter like
+.BI "troff\ -m "\ name
+or
+.BIR "troff\ -m" name .
+General details on the naming of macro packages and their placement is
+found in
+.groffMP tmac 5 .
+.LP
+Famous classical macro packages are
+.IR man ,
+.IR mandoc ,
+and
+.I mdoc
+for manual pages and
+.IR me ,
+.IR ms ,
+and
+.I mm
+for books, articles, and letters.
+Besides these collections,
+.I groff
+provides an increasing multitude of new macro packages for various
+applications, for example integration of or conversion into other file
+formats.
+.\" --------------------------------------------------------------------
+.SH "FILE NAME EXTENSIONS"
+.\" --------------------------------------------------------------------
+Manual pages (man-pages) take the section number as a file name
+extension, e.g., the filename for this document is
+.IR roff.7 ,
+i.e., it is kept in section\ 7 of the man-pages.
+.LP
+The classical macro packages take the package name as an extension, e.g.
+.IB file. me
+for a document using the
+.I me
+macro package,
+.IB file. mm
+for
+.IR mm ,
+.IB file. ms
+for
+.IR ms ,
+.IB file. pic
+for
+.I pic
+files,
+etc.
+.LP
+But there is no general naming scheme for roff documents, though
+.IB file. roff
+or
+.IB file. rof
+seems to be a good choice.
+.LP
+File name extensions can be very handy in conjunction with the
+.MP less 1
+pager.
+It provides the possibility to feed all input into a command-line pipe that
+is specified in the shell environment variable
+.B LESSOPEN
+This process is not well documented, so here an example
+.B LESSOPEN='|lesspipe %s'
+where
+.B lesspipe
+is either a system supplied command or a shell script of your own.
+.\" --------------------------------------------------------------------
+.SH EDITING
+.\" --------------------------------------------------------------------
+Most text editors provide support for editing documents using roff.
+Especially useful is the
+.B nroff-mode
+in all flavors of the Emacs editor.
+.\" --------------------------------------------------------------------
+.SH ENVIRONMENT
+.\" --------------------------------------------------------------------
+.TP
+.SM
+.B GROFF_TMAC_PATH
+A colon separated list of directories in which to search for
+macro files, see
+.TP
+.SM
+.B GROFF_TYPESETTER
+Default device.
+.TP
+.SM
+.B GROFF_FONT_PATH
+A colon separated list of directories in which to search for the
+.BI dev name
+directory.
+.B troff
+will search in directories given in the
+.B \-F
+option before these, and in standard directories
+.RB ( .:/usr/local/share/groff/font:/usr/lib/font )
+after these.
+.\" --------------------------------------------------------------------
+.SH FILES
+.\" --------------------------------------------------------------------
+By default,
+.I groff
+installs all of its library files in a directory tree under
+.IR /usr/local/share/groff .
+This location might vary for different systems systems.
+In the following, this directory is referred to as
+.BR GROFF_DIR .
+.LP
+.TP
+.B GROFF_DIR/tmac/troffrc
+Initialization file
+.TP
+.BI GROFF_DIR/tmac/tmac. name
+Macro files
+.TP
+.BI GROFF_DIR/font/dev name /DESC
+Device description file for device
+.IR name .
+.TP
+.BI GROFF_DIR/font/dev name / F
+Font file for font
+.I F
+of device
+.IR name .
+.\" --------------------------------------------------------------------
+.SH BUGS
+.\" --------------------------------------------------------------------
+The groff documentation is in evolution at the moment.
+It is possible that small inconsistencies between different documents exist
+temporarily.
+.\" --------------------------------------------------------------------
+.SH AUTHOR
+.\" --------------------------------------------------------------------
+This document was written by Bernd Warken <bwarken@mayn.de> and is part
+of the GNU roff distribution.
+.LP
+It is distributed under the terms of the GFDL (GNU Free Documentation
+License) version 1.1 or later.
+You should have received a copy of the GFDL on your system, it is also
+available on-line under
+.IR <http://www.gnu.org/copyright/fdl.html> .
+.\" --------------------------------------------------------------------
+.SH "SEE ALSO"
+.\" --------------------------------------------------------------------
+The main source of information is the
+.I groff
+.MP info 1
+file.
+.LP
+The predefined elements of the
+.I groff
+language are also documented in the manual page
+.groffMP groff 7 .
+.LP
+Formatters and their wrappers:
+.groffMP groff 1 ,
+.groffMP grog 1 ,
+.groffMP nroff 1 ,
+and
+.groffMP troff 1 .
+.LP
+Postprocessors for the output devices:
+.groffMP grodvi 1 ,
+.groffMP grohtml 1 ,
+.groffMP grolbp 1 ,
+.groffMP grolj4 1 ,
+.groffMP grops 1 ,
+and
+.groffMP grotty 1 .
+.LP
+Standard preprocessors:
+.groffMP eqn 1 ,
+.groffMP grn 1 ,
+.BR grap (1),
+.groffMP pic 1 ,
+.groffMP refer 1 ,
+.groffMP soelim 1 ,
+and
+.groffMP tbl 1 .
+.LP
+The man pages for macro packages include
+.groffMP groff_tmac 5 ,
+.groffMP groff_man 7 ,
+.groffMP groff_markup 7 ,
+.groffMP groff_mdoc 7 ,
+.groffMP groff_mdoc.samples 7 ,
+.groffMP groff_me 7 ,
+.groffMP groff_mm 7 ,
+.groffMP groff_mmroff 7 ,
+.groffMP groff_ms 7 ,
+and
+.groffMP groff_msafer 7 .
+.LP
+The following utils are available:
+.groffMP addftinfo 1 ,
+.groffMP afmtodif 1 ,
+.groffMP hpftodit 1 ,
+.groffMP indxbib 1 ,
+.groffMP lookbib 1 ,
+.groffMP pfbtops 1 ,
+.groffMP tfmtodit 1 ,
+and
+.groffMP gxditview 1 .
+.LP
+For details on the GNU implementation of the
+.I roff
+system see
+.groffMP groff_char 7 ,
+.groffMP groff_font 7 ,
+.groffMP groff_out 7 ,
+and the file
+.I README
+in the main directory of the groff source distribution.
+These also give details on how to contact or join the
+.I groff
+developer group.
+.LP
+Many classical
+.troff
+documents are still available on-line.
+Especially informative are the original Bell Labs proceedings for the old,
+free UNIX 7 found at
+.I http://cm.bell-labs.com/cm/cs/cstr.html
+and the Collection of Richard S. Stevens at 
+.IR http://www.kohala.com/start/troff/ .

@@ -52,7 +52,8 @@ extern "C" {
 
 const int SOELIM_INDEX = 0;
 const int REFER_INDEX = SOELIM_INDEX + 1;
-const int PIC_INDEX = REFER_INDEX + 1;
+const int GRAP_INDEX = REFER_INDEX + 1;
+const int PIC_INDEX = GRAP_INDEX + 1;
 const int TBL_INDEX = PIC_INDEX + 1;
 const int GRN_INDEX = TBL_INDEX + 1;
 const int EQN_INDEX = GRN_INDEX + 1;
@@ -115,7 +116,7 @@ int main(int argc, char **argv)
     command_prefix = PROG_PREFIX;
   commands[TROFF_INDEX].set_name(command_prefix, "troff");
   while ((opt = getopt(argc, argv,
-		       "abCd:eEf:F:ghiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ"))
+		       "abCd:eEf:F:gGhiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ"))
 	 != EOF) {
     char buf[3];
     buf[0] = '-';
@@ -137,6 +138,9 @@ int main(int argc, char **argv)
       break;
     case 'g':
       commands[GRN_INDEX].set_name(command_prefix, "grn");
+      break;
+    case 'G':
+      commands[GRAP_INDEX].set_name(command_prefix, "grap");
       break;
     case 'e':
       commands[EQN_INDEX].set_name(command_prefix, "eqn");
@@ -164,6 +168,7 @@ int main(int argc, char **argv)
     case 'C':
       commands[SOELIM_INDEX].append_arg(buf);
       commands[PIC_INDEX].append_arg(buf);
+      commands[GRAP_INDEX].append_arg(buf);
       commands[TBL_INDEX].append_arg(buf);
       commands[GRN_INDEX].append_arg(buf);
       commands[EQN_INDEX].append_arg(buf);
@@ -215,6 +220,7 @@ int main(int argc, char **argv)
       break;
     case 'M':
       commands[EQN_INDEX].append_arg(buf, optarg);
+      commands[GRAP_INDEX].append_arg(buf, optarg);
       commands[GRN_INDEX].append_arg(buf, optarg);
       commands[TROFF_INDEX].append_arg(buf, optarg);
       break;
@@ -569,6 +575,7 @@ void help()
 "-p\tpreprocess with pic\n"
 "-e\tpreprocess with eqn\n"
 "-g\tpreprocess with grn\n"
+"-G\tpreprocess with grap\n"
 "-s\tpreprocess with soelim\n"
 "-R\tpreprocess with refer\n"
 "-Tdev\tuse device dev\n"

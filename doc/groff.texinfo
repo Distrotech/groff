@@ -867,7 +867,8 @@ preprocessors to use.
 preprocessors is @code{soelim}.
 
 A free implementation of @code{grap}, a preprocessor for drawing graphs,
-can be obtained as an extra package.
+can be obtained as an extra package; @code{groff} can use @code{grap}
+also.
 
 There are other preprocessors in existence, but, unfortunately, no free
 implementations are available.  Among them are preprocessors for drawing
@@ -938,13 +939,14 @@ don't contain proprietary software, this prefix is omitted since GNU
 @pindex gpic
 @pindex geqn
 @pindex ggrn
+@pindex grap
 @pindex gtbl
 @pindex grefer
 @pindex gsoelim
 @code{groff} normally runs the @code{gtroff} program and a postprocessor
 appropriate for the selected device.  The default device is @samp{ps}.
 It can optionally preprocess with any of @code{gpic}, @code{geqn},
-@code{gtbl}, @code{ggrn}, @code{grefer}, or @code{gsoelim}.
+@code{gtbl}, @code{ggrn}, @code{grap}, @code{grefer}, or @code{gsoelim}.
 
 This section only documents options to the @code{groff} front end.  Many
 of the arguments to @code{groff} are passed on to @code{gtroff},
@@ -958,7 +960,7 @@ grolbp}, and @ref{Invoking gxditview}.
 The command line format for @code{groff} is:
 
 @example
-groff [ -abeghilpstvzCENRSUVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
+groff [ -abeghilpstvzCEGNRSUVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
       [ -T@var{def} ] [ -f@var{fam} ] [ -w@var{name} ] [ -W@var{name} ]
       [ -M@var{dir} ] [ -d@var{cs} ] [ -r@var{cn} ] [ -n@var{num} ]
       [ -o@var{list} ] [ -P@var{arg} ] [ -L@var{arg} ] [ -I@var{dir} ]
@@ -993,6 +995,8 @@ Preprocess with @code{geqn}.
 Preprocess with @code{gtbl}.
 @item -g
 Preprocess with @code{ggrn}.
+@item -G
+Preprocess with @code{grap}.
 @item -p
 Preprocess with @code{gpic}.
 @item -s
@@ -1250,7 +1254,7 @@ preprocessors and/or macro packages are are required for formatting
 them, and prints the @code{groff} command including those options on the
 standard output.  The options generated are one of @option{-e},
 @option{-man}, @option{-me}, @option{-mm}, @option{-ms}, @option{-p},
-@option{-R}, @option{-g}, @option{-s}, and @option{-t}.
+@option{-R}, @option{-g}, @option{-G}, @option{-s}, and @option{-t}.
 
 A filename of @samp{-} is taken to refer to the standard input.  If no
 files are specified the standard input will be read.  Any specified
