@@ -10390,7 +10390,8 @@ be invoked multiple times.  Use macros to define common operations.
 
 @DefreqList {de, name [@Var{end}]}
 @DefreqItem {de1, name [@Var{end}]}
-@DefreqListEnd {dei, name [@Var{end}]}
+@DefreqItem {dei, name [@Var{end}]}
+@DefreqListEnd {dei1, name [@Var{end}]}
 Define a new macro named @var{name}.  @code{gtroff} copies subsequent
 lines (starting with the next one) into an internal buffer until it
 encounters the line @samp{..} (two dots).  The optional second
@@ -10476,6 +10477,9 @@ is equivalent to:
 .de aa bb
 @endExample
 
+The @code{dei1} request is similar to @code{dei} but with compatibility
+mode switched off during execution of the defined macro.
+
 @pindex trace.tmac
 Using @file{trace.tmac}, you can trace calls to @code{de} and @code{de1}.
 
@@ -10485,7 +10489,8 @@ diversions.
 
 @DefreqList {am, name [@Var{end}]}
 @DefreqItem {am1, name [@Var{end}]}
-@DefreqListEnd {ami, name [@Var{end}]}
+@DefreqItem {ami, name [@Var{end}]}
+@DefreqListEnd {ami1, name [@Var{end}]}
 @cindex appending to a macro (@code{am})
 @cindex macro, appending (@code{am})
 Works similarly to @code{de} except it appends onto the macro named
@@ -10508,6 +10513,9 @@ the end.
 The @code{ami} request appends indirectly,
 meaning that @code{gtroff} expands strings whose names
 are @var{name} or @var{end} before performing the append.
+
+The @code{ami1} request is similar to @code{ami} but compatibility mode
+is switched off during execution of the defined macro.
 
 @pindex trace.tmac
 Using @file{trace.tmac}, you can trace calls to @code{am} and @code{am1}.

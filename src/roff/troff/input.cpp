@@ -3823,9 +3823,10 @@ void read_request()
 }
 
 enum define_mode { DEFINE_NORMAL, DEFINE_APPEND, DEFINE_IGNORE };
-enum calling_mode { CALLING_NORMAL, CALLING_INDIRECT, CALLING_DISABLE_COMP };
+enum calling_mode { CALLING_NORMAL, CALLING_INDIRECT };
+enum comp_mode { COMP_IGNORE, COMP_DISABLE };
 
-void do_define_string(define_mode mode, calling_mode calling)
+void do_define_string(define_mode mode, comp_mode comp)
 {
   symbol nm;
   node *n;
@@ -3855,7 +3856,7 @@ void do_define_string(define_mode mode, calling_mode calling)
   macro *mm = rm ? rm->to_macro() : 0;
   if (mode == DEFINE_APPEND && mm)
     mac = *mm;
-  if (calling == CALLING_DISABLE_COMP)
+  if (comp == COMP_DISABLE)
     mac.append(COMPATIBLE_SAVE);
   while (c != '\n' && c != EOF) {
     if (c == 0)
@@ -3868,7 +3869,7 @@ void do_define_string(define_mode mode, calling_mode calling)
     mm = new macro;
     request_dictionary.define(nm, mm);
   }
-  if (calling == CALLING_DISABLE_COMP)
+  if (comp == COMP_DISABLE)
     mac.append(COMPATIBLE_RESTORE);
   *mm = mac;
   tok.next();
@@ -3876,22 +3877,22 @@ void do_define_string(define_mode mode, calling_mode calling)
 
 void define_string()
 {
-  do_define_string(DEFINE_NORMAL, CALLING_NORMAL);
+  do_define_string(DEFINE_NORMAL, COMP_IGNORE);
 }
 
 void define_nocomp_string()
 {
-  do_define_string(DEFINE_NORMAL, CALLING_DISABLE_COMP);
+  do_define_string(DEFINE_NORMAL, COMP_DISABLE);
 }
 
 void append_string()
 {
-  do_define_string(DEFINE_APPEND, CALLING_NORMAL);
+  do_define_string(DEFINE_APPEND, COMP_IGNORE);
 }
 
 void append_nocomp_string()
 {
-  do_define_string(DEFINE_APPEND, CALLING_DISABLE_COMP);
+  do_define_string(DEFINE_APPEND, COMP_DISABLE);
 }
 
 void do_define_character(char_mode mode, const char *font_name)
@@ -4093,7 +4094,7 @@ void handle_initial_title()
 // this should be local to define_macro, but cfront 1.2 doesn't support that
 static symbol dot_symbol(".");
 
-void do_define_macro(define_mode mode, calling_mode calling)
+void do_define_macro(define_mode mode, calling_mode calling, comp_mode comp)
 {
   symbol nm, term;
   if (calling == CALLING_INDIRECT) {
@@ -4142,7 +4143,7 @@ void do_define_macro(define_mode mode, calling_mode calling)
       mac = *mm;
   }
   int bol = 1;
-  if (calling == CALLING_DISABLE_COMP)
+  if (comp == COMP_DISABLE)
     mac.append(COMPATIBLE_SAVE);
   for (;;) {
     while (c == ESCAPE_NEWLINE) {
@@ -4179,7 +4180,7 @@ void do_define_macro(define_mode mode, calling_mode calling)
 	    mm = new macro;
 	    request_dictionary.define(nm, mm);
 	  }
-	  if (calling == CALLING_DISABLE_COMP)
+	  if (comp == COMP_DISABLE)
 	    mac.append(COMPATIBLE_RESTORE);
 	  *mm = mac;
 	}
@@ -4230,38 +4231,48 @@ void do_define_macro(define_mode mode, calling_mode calling)
 
 void define_macro()
 {
-  do_define_macro(DEFINE_NORMAL, CALLING_NORMAL);
+  do_define_macro(DEFINE_NORMAL, CALLING_NORMAL, COMP_IGNORE);
 }
 
 void define_nocomp_macro()
 {
-  do_define_macro(DEFINE_NORMAL, CALLING_DISABLE_COMP);
+  do_define_macro(DEFINE_NORMAL, CALLING_NORMAL, COMP_DISABLE);
 }
 
 void define_indirect_macro()
 {
-  do_define_macro(DEFINE_NORMAL, CALLING_INDIRECT);
+  do_define_macro(DEFINE_NORMAL, CALLING_INDIRECT, COMP_IGNORE);
+}
+
+void define_indirect_nocomp_macro()
+{
+  do_define_macro(DEFINE_NORMAL, CALLING_INDIRECT, COMP_DISABLE);
 }
 
 void append_macro()
 {
-  do_define_macro(DEFINE_APPEND, CALLING_NORMAL);
-}
-
-void append_indirect_macro()
-{
-  do_define_macro(DEFINE_APPEND, CALLING_INDIRECT);
+  do_define_macro(DEFINE_APPEND, CALLING_NORMAL, COMP_IGNORE);
 }
 
 void append_nocomp_macro()
 {
-  do_define_macro(DEFINE_APPEND, CALLING_DISABLE_COMP);
+  do_define_macro(DEFINE_APPEND, CALLING_NORMAL, COMP_DISABLE);
+}
+
+void append_indirect_macro()
+{
+  do_define_macro(DEFINE_APPEND, CALLING_INDIRECT, COMP_IGNORE);
+}
+
+void append_indirect_nocomp_macro()
+{
+  do_define_macro(DEFINE_APPEND, CALLING_INDIRECT, COMP_DISABLE);
 }
 
 void ignore()
 {
   ignoring = 1;
-  do_define_macro(DEFINE_IGNORE, CALLING_NORMAL);
+  do_define_macro(DEFINE_IGNORE, CALLING_NORMAL, COMP_IGNORE);
   ignoring = 0;
 }
 
@@ -7216,6 +7227,7 @@ void init_input_requests()
   init_request("am", append_macro);
   init_request("am1", append_nocomp_macro);
   init_request("ami", append_indirect_macro);
+  init_request("ami1", append_indirect_nocomp_macro);
   init_request("as", append_string);
   init_request("as1", append_nocomp_string);
   init_request("asciify", asciify_macro);
@@ -7235,6 +7247,7 @@ void init_input_requests()
   init_request("de1", define_nocomp_macro);
   init_request("defcolor", define_color);
   init_request("dei", define_indirect_macro);
+  init_request("dei1", define_indirect_nocomp_macro);
   init_request("do", do_request);
   init_request("ds", define_string);
   init_request("ds1", define_nocomp_string);

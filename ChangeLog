@@ -1,3 +1,28 @@
+2003-07-23  Werner LEMBERG  <wl@gnu.org>
+
+	Add requests `dei1' and `ami1' for completeness.
+
+	* src/roff/troff/input.cc (calling_mode): Remove
+	CALLING_DISABLE_COMP.
+	(comp_mode): New enumeration.
+	(do_define_string, define_string, define_nocomp_string,
+	append_string, append_nocomp_string): Updated.
+	(do_define_macro): Add third parameter.
+	(define_macro, define_nocomp_macro, define_indirect_macro,
+	append_macro, append_nocomp_macro, append_indirect_macro): Updated.
+	(define_indirect_nocomp_macro, append_indirect_nocomp_macro): New
+	functions.
+	(ignore): Updated.
+	(init_input_requests): Add `dei1' and `ami1'.
+
+	* tmac/trace.tmac: Handle de1 and am1.
+	(de): Improve tracing message.
+	(am): Add missing `do'.
+	(return): Use de1.
+
+	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo:
+	Document new requests.
+
 2003-07-22  Heinz-Jürgen Oertel  <hj.oertel@surfeu.de>
 
 	Add option -G to .MPIMG to insert a gap between text and the image.
@@ -24,9 +49,6 @@
 	* src/preproc/html/pre-html.cpp (TRANSPARENT): Don't use colour
 	names but RGB values directly.  Otherwise pnmtopng depends on
 	an external file `rgb.txt' which maps colour names to values.
-
-	* tmac/an-old.tmac [cR] (bp): Pass arguments to an-bp.
-	Do a break to properly propagateRedefine `bp' to avoid empty lines.
 
 2003-07-20  Werner LEMBERG  <wl@gnu.org>
 

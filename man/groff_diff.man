@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 15 Jul 2003
+Last update : 23 Jul 2003
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -881,14 +881,6 @@ or string diversion is currently undefined or if it is defined to be a
 request; normally they modify the value of an existing object.
 .
 .TP
-.BI .ami\  xx\ yy
-Append to macro indirectly.
-.
-See the
-.B dei
-request below for more information.
-.
-.TP
 .BI .am1\  xx\ yy
 Similar to
 .BR .am , 
@@ -909,6 +901,41 @@ only affect the macro parts defined by
 .B .am1
 and
 .BR .ds1 .
+.
+.TP
+.BI .ami\  xx\ yy
+Append to macro indirectly.
+.
+See the
+.B dei
+request below for more information.
+.
+.TP
+.BI .ami1\  xx\ yy
+Same as the
+.B ami
+request but compatibility mode is switched off during execution.
+.
+.TP
+.BI .as1\  xx\ yy
+Similar to
+.BR .as , 
+but compatibility mode is switched off during expansion.
+.
+To be more precise, a `compatibility save' token is inserted at the
+beginning of the string, and a `compatibility restore' token at the end.
+.
+As a consequence, the requests
+.BR as ,
+.BR as1 ,
+.BR ds ,
+and
+.B ds1
+can be intermixed freely since the compatibility save/\:restore tokens
+only affect the (sub)strings defined by
+.B as1
+and
+.BR ds1 .
 .
 .TP
 .BI .asciify\  xx
@@ -954,27 +981,6 @@ Note that glyph information (font, font size, etc.) is not preserved;
 use
 .B .unformat
 instead.
-.
-.TP
-.BI .as1\  xx\ yy
-Similar to
-.BR .as , 
-but compatibility mode is switched off during expansion.
-.
-To be more precise, a `compatibility save' token is inserted at the
-beginning of the string, and a `compatibility restore' token at the end.
-.
-As a consequence, the requests
-.BR as ,
-.BR as1 ,
-.BR ds ,
-and
-.B ds1
-can be intermixed freely since the compatibility save/\:restore tokens
-only affect the (sub)strings defined by
-.B as1
-and
-.BR ds1 .
 .
 .TP
 .B .backtrace
@@ -1247,6 +1253,14 @@ and
 is not the same.
 .
 .TP
+.BI .de1\  xx\ yy
+Similar to
+.BR .de , 
+but compatibility mode is switched off during execution.
+.
+On entry, the current compatibility mode is saved and restored at exit.
+.
+.TP
 .BI .dei\  xx\ yy
 Define macro indirectly.
 .
@@ -1276,12 +1290,10 @@ is equivalent to
 .RE
 .
 .TP
-.BI .de1\  xx\ yy
-Similar to
-.BR .de , 
-but compatibility mode is switched off during execution.
-.
-On entry, the current compatibility mode is saved and restored at exit.
+.BI .dei1\  xx\ yy
+Similar to the
+.B dei
+request but compatibility mode is switched off during execution.
 .
 .TP
 .BI .do\  xxx
