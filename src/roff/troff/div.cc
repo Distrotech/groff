@@ -49,7 +49,8 @@ static vunits truncated_space;
 static vunits needed_space;
 
 diversion::diversion(symbol s) 
-: prev(0), nm(s), vertical_position(V0), high_water_mark(V0), marked_place(V0)
+: prev(0), nm(s), vertical_position(V0), high_water_mark(V0),
+  no_space_mode(0), marked_place(V0)
 {
 }
 
@@ -249,6 +250,7 @@ void macro_diversion::transparent_output(node *n)
 void macro_diversion::output(node *nd, int retain_size,
 			     vunits vs, vunits post_vs, hunits width)
 {
+  no_space_mode = 0;
   vertical_size v(vs, post_vs);
   while (nd != 0) {
     nd->set_vertical_size(&v);
@@ -316,7 +318,7 @@ top_level_diversion::top_level_diversion()
   page_length(units_per_inch*11),
   prev_page_offset(units_per_inch), page_offset(units_per_inch),
   page_trap_list(0), have_next_page_number(0),
-  ejecting_page(0), before_first_page(1), no_space_mode(0)
+  ejecting_page(0), before_first_page(1)
 {
 }
 
@@ -722,15 +724,13 @@ void begin_page()
 
 void no_space()
 {
-  if (curdiv == topdiv)
-    topdiv->no_space_mode = 1;
+  curdiv->no_space_mode = 1;
   skip_line();
 }
 
 void restore_spacing()
 {
-  if (curdiv == topdiv)
-    topdiv->no_space_mode = 0;
+  curdiv->no_space_mode = 0;
   skip_line();
 }
 
@@ -755,8 +755,8 @@ void space_request()
     n = curenv->get_vertical_spacing();
   while (!tok.newline() && !tok.eof())
     tok.next();
-  if (!unpostpone_traps())
-    curdiv->space(n);
+  if (!unpostpone_traps() && !curdiv->no_space_mode)
+      curdiv->space(n);
   else
     // The line might have had line spacing that was truncated.
     truncated_space += n;
@@ -767,7 +767,7 @@ void space_request()
 void blank_line()
 {
   curenv->do_break();
-  if (!trap_sprung_flag)
+  if (!trap_sprung_flag && !curdiv->no_space_mode)
     curdiv->space(curenv->get_vertical_spacing());
   else
     truncated_space += curenv->get_vertical_spacing();
@@ -1122,19 +1122,13 @@ public:
 
 int no_space_mode_reg::get_value(units *val)
 {
-  if (curdiv == topdiv)
-    *val = topdiv->no_space_mode;
-  else
-    *val = 0;
+  *val = curdiv->no_space_mode;
   return 1;
 }
 
 const char *no_space_mode_reg::get_string()
 {
-  if (curdiv == topdiv)
-    return topdiv->no_space_mode ? "1" : "0";
-  else
-    return "0";
+  return curdiv->no_space_mode ? "1" : "0";
 }
 
 void init_div_requests()

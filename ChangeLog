@@ -1,3 +1,23 @@
+2001-05-07  Werner LEMBERG  <wl@gnu.org>
+
+	The .ns and .rs requests are now honoured not only in the top-level
+	but in all diversions (similar to UNIX troff).
+
+	This change is based on a patch from Tadziu Hoffmann
+	<hoffmann@usm.uni-muenchen.de>.
+
+	* src/roff/troff/div.h (diversion): Add `no_space_mode' member.
+	(top_level_diversion): Remove `no_space_mode' member.
+	* src/roff/troff/div.cc (diversion::diversion,
+	top_level_diversion::top_level_diversion): Updated.
+	(macro_diversion::output): Reset `no_space_mode'.
+	(no_space, restore_spacing): Use `curdiv' unconditionally.
+	(space_request, blank_line): Check `curdiv->no_space_mode'.
+	(no_space_mode_reg::get_value, no_space_mode_reg::get_string): Use
+	`curdiv' unconditionally.
+	* NEWS, src/roff/troff/troff.man, man/groff.man, doc/groff.texinfo:
+	Updated.
+
 2001-05-06  Werner LEMBERG  <wl@gnu.org>
 
 	Added two new requests `de1' and `am1' which are similar to `de' and
