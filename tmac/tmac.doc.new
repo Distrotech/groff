@@ -4402,34 +4402,48 @@
 .\" NS width register `Vt' set in doc-common
 .
 .de Vt
-.  \" if a function declaration was the last thing given, want vertical space
-.  if \n[doc-have-decl] \{\
-.    doc-paragraph
-.    nr doc-have-decl 0
+.  if !\n[doc-arg-limit] \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name Vt
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .Vt variable_type ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
-.  \" if a subroutine was the last thing given, want vertical space
-.  if \n[doc-have-func] \{\
-.    ie \n[doc-have-var] \
-.      br
-.    el \{\
-.      doc-paragraph
-.      rs
-.  \}\}
+.  nr doc-arg-ptr +1
+.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    if \n[doc-in-synopsis-count] \{\
+.      \" if a function declaration was the last thing given, want vertical space
+.      if \n[doc-have-decl] \{\
+.        doc-paragraph
+.        nr doc-have-decl 0
+.      \}
 .
-.  nr doc-have-var 1
-.  nr doc-curr-font \n[.f]
-.  nr doc-curr-size \n[.s]
+.      \" if a subroutine was the last thing given, want vertical space
+.      if \n[doc-have-func] \{\
+.        ie \n[doc-have-var] \
+.          br
+.        el \{\
+.          doc-paragraph
+.          rs
+.      \}\}
 .
-.  nop \*[doc-Ft-font]\$*
+.      nr doc-have-var 1
+.    \}
 .
-.  ie \n[doc-have-old-func] \
-.    nop \&\*[doc-soft-space]
-.  el \
-.    br
+.    as doc-out-string \*[doc-Ft-font]
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.s]
+.    doc-print-recursive
 .
-.  ft \n[doc-curr-font]
-.  ps \n[doc-curr-size]
+.    if \n[doc-in-synopsis-count] \{\
+.      ie \n[doc-have-old-func] \
+.        as doc-out-string \*[doc-soft-space]
+.      el \
+.        br
+.    \}
+.  \}
 ..
 .
 .
@@ -4449,28 +4463,37 @@
 .\" NS width register `Ft' set in doc-common
 .
 .de Ft
-.  if \n[doc-in-synopsis-count] \{\
-.    if (\n[doc-have-func] : \n[doc-have-decl]) \{\
-.      doc-paragraph
-.      nr doc-have-decl 0
-.      nr doc-have-var 0
+.  if !\n[doc-arg-limit] \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name Ft
+.      doc-parse-args \$@
 .    \}
-.
-.    if \n[doc-have-var] \{\
-.      doc-paragraph
-.      nr doc-have-var 0
-.    \}
-.
-.    nr doc-is-func 1
+.    el \
+.      tm Usage: .Ft function_type ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
-.  nr doc-curr-font \n[.f]
-.  nr doc-curr-size \n[.s]
+.  nr doc-arg-ptr +1
+.    if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    if \n[doc-in-synopsis-count] \{\
+.      if (\n[doc-have-func] : \n[doc-have-decl]) \{\
+.        doc-paragraph
+.        nr doc-have-decl 0
+.        nr doc-have-var 0
+.      \}
 .
-.  nop \*[doc-Ft-font]\$*
+.      if \n[doc-have-var] \{\
+.        doc-paragraph
+.        nr doc-have-var 0
+.      \}
 .
-.  ft \n[doc-curr-font]
-.  ps \n[doc-curr-size]
+.      nr doc-is-func 1
+.    \}
+.
+.    as doc-out-string \*[doc-Ft-font]
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.s]
+.    doc-print-recursive
+.  \}
 ..
 .
 .
