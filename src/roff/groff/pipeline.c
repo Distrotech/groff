@@ -34,10 +34,6 @@ Compile options are:
 #include <unistd.h>
 #endif
 
-#ifndef errno
-extern int errno;
-#endif
-
 extern char *strerror();
 
 #ifdef _POSIX_VERSION

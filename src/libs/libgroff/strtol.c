@@ -20,9 +20,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#ifndef errno
-extern int errno;
-#endif
 
 #ifdef HAVE_LIMITS_H
 #include <limits.h>

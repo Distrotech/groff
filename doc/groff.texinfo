@@ -6028,12 +6028,26 @@ True if the document is being processed in nroff mode.
 @findex troff
 True if the document is being processed in troff mode.
 
-@item '@var{xxx}'@var{yyy}'
+@item "@var{xxx}"@var{yyy}"
 True if the string @var{xxx} is equal to the string @var{yyy}.  Other
-characters can be used in place of the single quotes.
-@c XXX (Which?)
-The strings are ``formatted'' before being compared.
-@c XXX (?)
+characters can be used in place of the double quotes.
+@c XXX which characters?
+The strings are ``formatted'' before being compared; for example,
+
+@example
+.ie "|"\fR|\fP" \
+.  tm true
+.el \
+.  tm false
+@end example
+
+yields ``true''.  The resulting motions, character sizes, and fonts
+have to match, and not the individual motion, size, and font requests.
+@Here, samp{|} and @samp{\fR|\fP} both result in a roman @samp{|}
+character with the same point size and at the same location on the
+page, so the strings are equal.  If @samp{.ft@w{ }I} had been added
+before the @samp{.ie}, then the result would be ``false'' because
+@samp{|} produces an italic @samp{|} rather than a roman one.
 
 @item r@var{xxx}
 True if there is a number register named @var{xxx}.

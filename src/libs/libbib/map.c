@@ -52,10 +52,6 @@ int unmap(p, len)
 
 #include <errno.h>
 
-#ifndef errno
-extern int errno;
-#endif
-
 char *mapread(fd, nbytes)
      int fd;
      int nbytes;

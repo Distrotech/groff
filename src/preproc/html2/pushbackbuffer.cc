@@ -37,10 +37,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <unistd.h>
 #endif
 
-#ifndef errno
-extern int errno;
-#endif
-
 #include "pushbackbuffer.h"
 #include "pre-html.h"
 

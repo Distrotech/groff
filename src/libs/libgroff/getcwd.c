@@ -3,9 +3,6 @@
 #include <sys/param.h>
 #include <string.h>
 #include <errno.h>
-#ifndef errno
-extern int errno;
-#endif
 
 char *getwd();
 

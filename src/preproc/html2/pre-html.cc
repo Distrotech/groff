@@ -39,10 +39,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <unistd.h>
 #endif
 
-#ifndef errno
-extern int errno;
-#endif
-
 #ifdef _POSIX_VERSION
 #include <sys/wait.h>
 #define PID_T pid_t
