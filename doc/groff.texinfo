@@ -70,17 +70,10 @@ Software Foundation raise funds for GNU development.''
 
 @c To avoid uppercasing in @deffn while converting to info, we define
 @c our special @Var{}.
-@c
-@c Due to a (not officially documented) `feature' in makeinfo 4.0,
-@c macros are not expanded in @deffn (but the macro definition is
-@c properly removed), so we have to define @Var{} directly in TeX also.
 
 @macro Var{arg}
-\arg\
+@r{@slanted{\arg\}}
 @end macro
-@tex
-\gdef\Var#1{\var{#1}}
-@end tex
 
 
 @c To assure correct HTML translation, some ugly hacks are necessary.
@@ -118,6 +111,7 @@ Software Foundation raise funds for GNU development.''
 @c a dummy macro to assure the `@def...'
 
 @macro defdummy
+@c
 @end macro
 
 
@@ -126,23 +120,27 @@ Software Foundation raise funds for GNU development.''
 @macro Defreq{name, arg}
 @deffn Request @t{.\name\} \arg\
 @rqindex \name\
+@c
 @end macro
 
 @macro DefreqList{name, arg}
 @deffn Request @t{.\name\} \arg\
 @defdummy
 @rqindex \name\
+@c
 @end macro
 
 @macro DefreqItem{name, arg}
 @deffnx Request @t{.\name\} \arg\
 @defdummy
 @rqindex \name\
+@c
 @end macro
 
 @macro DefreqListEnd{name, arg}
 @deffnx Request @t{.\name\} \arg\
 @rqindex \name\
+@c
 @end macro
 
 @macro endDefreq
@@ -155,23 +153,27 @@ Software Foundation raise funds for GNU development.''
 @macro Defesc{name, delimI, arg, delimII}
 @deffn Escape @t{\name\\delimI\}@Var{\arg\}@t{\delimII\}
 @esindex \name\
+@c
 @end macro
 
 @macro DefescList{name, delimI, arg, delimII}
 @deffn Escape @t{\name\\delimI\}@Var{\arg\}@t{\delimII\}
 @defdummy
 @esindex \name\
+@c
 @end macro
 
 @macro DefescItem{name, delimI, arg, delimII}
 @deffnx Escape @t{\name\\delimI\}@Var{\arg\}@t{\delimII\}
 @defdummy
 @esindex \name\
+@c
 @end macro
 
 @macro DefescListEnd{name, delimI, arg, delimII}
 @deffnx Escape @t{\name\\delimI\}@Var{\arg\}@t{\delimII\}
 @esindex \name\
+@c
 @end macro
 
 @macro endDefesc
@@ -184,23 +186,27 @@ Software Foundation raise funds for GNU development.''
 @macro Defreg{name}
 @deffn Register @t{\\n[\name\]}
 @vindex \name\
+@c
 @end macro
 
 @macro DefregList{name}
 @deffn Register @t{\\n[\name\]}
 @defdummy
 @vindex \name\
+@c
 @end macro
 
 @macro DefregItem{name}
 @deffnx Register @t{\\n[\name\]}
 @defdummy
 @vindex \name\
+@c
 @end macro
 
 @macro DefregListEnd{name}
 @deffnx Register @t{\\n[\name\]}
 @vindex \name\
+@c
 @end macro
 
 @macro endDefreg
@@ -213,23 +219,27 @@ Software Foundation raise funds for GNU development.''
 @macro Defmpreg{name, package}
 @deffn Register @t{\\n[\name\]}
 @vindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefmpregList{name, package}
 @deffn Register @t{\\n[\name\]}
 @defdummy
 @vindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefmpregItem{name, package}
 @deffnx Register @t{\\n[\name\]}
 @defdummy
 @vindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefmpregListEnd{name, package}
 @deffnx Register @t{\\n[\name\]}
 @vindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro endDefmpreg
@@ -242,23 +252,27 @@ Software Foundation raise funds for GNU development.''
 @macro Defmac{name, arg, package}
 @defmac @t{.\name\} \arg\
 @maindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefmacList{name, arg, package}
 @defmac @t{.\name\} \arg\
 @defdummy
 @maindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefmacItem{name, arg, package}
 @defmacx @t{.\name\} \arg\
 @defdummy
 @maindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefmacListEnd{name, arg, package}
 @defmacx @t{.\name\} \arg\
 @maindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro endDefmac
@@ -271,23 +285,27 @@ Software Foundation raise funds for GNU development.''
 @macro Defstr{name, package}
 @deffn String @t{\\*[\name\]}
 @stindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefstrList{name, package}
 @deffn String @t{\\*[\name\]}
 @defdummy
 @stindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefstrItem{name, package}
 @deffnx String @t{\\*[\name\]}
 @defdummy
 @stindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro DefstrListEnd{name, package}
 @deffnx String @t{\\*[\name\]}
 @stindex \name\ @r{[}\package\@r{]}
+@c
 @end macro
 
 @macro endDefstr
@@ -311,22 +329,41 @@ Software Foundation raise funds for GNU development.''
 @c <text>
 
 @tex
-\gdef\angles#1{\angleleft{}\r{#1}\angleright{}}
+\gdef\Langlemacro{\angleleft}
+\gdef\Ranglemacro{\angleright}
 @end tex
 
+@iftex
+@set Langlemacro @Langlemacro
+@set Ranglemacro @Ranglemacro
+@end iftex
+
+@ifnottex
+@set Langlemacro <
+@set Ranglemacro >
+@end ifnottex
+
 @macro angles{text}
-<\text\>
+@value{Langlemacro}@r{\text\}@value{Ranglemacro}
 @end macro
 
 
 @c a <= sign
 
 @tex
-\gdef\LE{\le}
+\gdef\LEmacro{\le}
 @end tex
 
+@iftex
+@set LEmacro @LEmacro
+@end iftex
+
+@ifnottex
+@set LEmacro <=
+@end ifnottex
+
 @macro LE
-<=
+@value{LEmacro}
 @end macro
 
 
@@ -341,17 +378,31 @@ Software Foundation raise funds for GNU development.''
 @c
 @c This is true for texinfo 4.0.
 
-@macro lparen
-(
+@iftex
+@set Lparenmacro @lparen
+@set Rparenmacro @rparen
+@set Lbrackmacro @lbrack
+@set Rbrackmacro @rbrack
+@end iftex
+
+@ifnottex
+@set Lparenmacro (
+@set Rparenmacro )
+@set Lbrackmacro [
+@set Rbrackmacro ]
+@end ifnottex
+
+@macro Lparen{}
+@value{Lparenmacro}
 @end macro
-@macro rparen
-)
+@macro Rparen{}
+@value{Rparenmacro}
 @end macro
-@macro lbrack
-[
+@macro Lbrack{}
+@value{Lbrackmacro}
 @end macro
-@macro rbrack
-]
+@macro Rbrack{}
+@value{Rbrackmacro}
 @end macro
 
 
@@ -2886,8 +2937,8 @@ Default: 0.
 @endDefmpreg
 
 @Defmpreg {HY, ms}
-Defines the hyphenation level.  @code{HY} safely sets the value of the
-low-level @code{.hy} register.  Setting the value of @code{HY} to@tie{}0 is
+Defines the hyphenation level. @code{HY} sets safely the value of the
+low-level @code{.hy} register. Setting the value of @code{HY} to 0 is
 equivalent to using the @code{.nh} request.
 
 Effective: next paragraph.
@@ -3691,6 +3742,8 @@ The @code{DE} macro ends the display.
 These two macros were formerly provided as aliases for
 @code{DS} and @code{DE}, respectively.
 They have been removed, and should no longer be used.
+The original implementations of @code{DS} and @code{DE}
+are retained, and should be used instead.
 X11 documents which actually use @code{Ds} and @code{De} always load a
 specific macro file from the X11 distribution (@file{macros.t}) which
 provides proper definitions for the two macros.
@@ -5847,8 +5900,8 @@ is ignored.  @xref{Debugging}, for information about warnings.
 Numeric registers can be accessed via the @code{\n} escape.
 
 @DefescList {\\n, , i, }
-@DefescItem {\\n, @lparen{}, id, }
-@DefescListEnd {\\n, @lbrack{}, ident, @rbrack}
+@DefescItem {\\n, @Lparen{}, id, }
+@DefescListEnd {\\n, @Lbrack{}, ident, @Rbrack{}}
 @cindex nested assignments
 @cindex assignments, nested
 @cindex indirect assignments
@@ -5901,14 +5954,14 @@ syntax form.
 
 @DefescList {\\n, +, i, }
 @DefescItem {\\n, -, i, }
-@DefescItem {\\n, @lparen{}+, id, }
-@DefescItem {\\n, @lparen{}-, id, }
-@DefescItem {\\n, +@lparen{}, id, }
-@DefescItem {\\n, -@lparen{}, id, }
-@DefescItem {\\n, @lbrack{}+, ident, @rbrack{}}
-@DefescItem {\\n, @lbrack{}-, ident, @rbrack{}}
-@DefescItem {\\n, +@lbrack{}, ident, @rbrack{}}
-@DefescListEnd {\\n, -@lbrack{}, ident, @rbrack{}}
+@DefescItem {\\n, @Lparen{}+, id, }
+@DefescItem {\\n, @Lparen{}-, id, }
+@DefescItem {\\n, +@Lparen{}, id, }
+@DefescItem {\\n, -@Lparen{}, id, }
+@DefescItem {\\n, @Lbrack{}+, ident, @Rbrack{}}
+@DefescItem {\\n, @Lbrack{}-, ident, @Rbrack{}}
+@DefescItem {\\n, +@Lbrack{}, ident, @Rbrack{}}
+@DefescListEnd {\\n, -@Lbrack{}, ident, @Rbrack{}}
 Before interpolating, increment or decrement @var{ident}
 (one-character name@tie{}@var{i}, two-character name @var{id}) by the
 auto-increment value as specified with the @code{nr} request (or the
@@ -6033,8 +6086,8 @@ then apply the @code{af} request to this other register.
 @endDefreq
 
 @DefescList {\\g, , i, }
-@DefescItem {\\g, @lparen{}, id, }
-@DefescListEnd {\\g, @lbrack{}, ident, @rbrack{}}
+@DefescItem {\\g, @Lparen{}, id, }
+@DefescListEnd {\\g, @Lbrack{}, ident, @Rbrack{}}
 @cindex format of register (@code{\g})
 @cindex register, format (@code{\g})
 Return the current format of the specified register @var{ident}
@@ -6776,7 +6829,7 @@ Invoking @code{hpf} causes an error if there is no current hyphenation
 language.
 @endDefreq
 
-@Defreq {hcode, c1 code1 c2 code2 @dots{}}
+@Defreq {hcode, c1 code1 [c2 code2 @dots{}]}
 @cindex hyphenation code (@code{hcode})
 @cindex code, hyphenation (@code{hcode})
 Set the hyphenation code of character @var{c1} to @var{code1}, that of
@@ -8398,8 +8451,8 @@ special symbols (Greek, mathematics).
 
 @DefreqList {ft, [@Var{font}]}
 @DefescItem {\\f, , f, }
-@DefescItem {\\f, @lparen{}, fn, }
-@DefescItem {\\f, @lbrack{}, font, @rbrack}
+@DefescItem {\\f, @Lparen{}, fn, }
+@DefescItem {\\f, @Lbrack{}, font, @Rbrack{}}
 @DefregListEnd {.sty}
 @cindex changing fonts (@code{ft}, @code{\f})
 @cindex fonts, changing (@code{ft}, @code{\f})
@@ -8508,8 +8561,8 @@ different font family on the command line (@pxref{Groff Options}).
 @DefreqList {fam, [@Var{family}]}
 @DefregItem {.fam}
 @DefescItem {\\F, , f, }
-@DefescItem {\\F, @lparen{}, fm, }
-@DefescItem {\\F, @lbrack{}, family, @rbrack}
+@DefescItem {\\F, @Lparen{}, fm, }
+@DefescItem {\\F, @Lbrack{}, family, @Rbrack{}}
 @DefregListEnd {.fn}
 @cindex changing font family (@code{fam}, @code{\F})
 @cindex font family, changing (@code{fam}, @code{\F})
@@ -8699,8 +8752,8 @@ syntax forms to access font positions.
 
 @DefreqList {ft, nnn}
 @DefescItem {\\f, , n, }
-@DefescItem {\\f, @lparen{}, nn, }
-@DefescListEnd {\\f, @lbrack{}, nnn, @rbrack}
+@DefescItem {\\f, @Lparen{}, nn, }
+@DefescListEnd {\\f, @Lbrack{}, nnn, @Rbrack{}}
 @cindex changing font position (@code{\f})
 @cindex font position, changing (@code{\f})
 @cindex @code{sty} request, and font positions
@@ -8918,9 +8971,9 @@ glyph names of the GGL can't be used in composite glyph names; for
 example, @code{^E_u0301} is invalid.
 @end itemize
 
-@DefescList {\\, @lparen{}, nm, }
-@DefescItem {\\, @lbrack{}, name, @rbrack}
-@DefescListEnd {\\, @lbrack{}, component1 component2 @dots{}, @rbrack}
+@DefescList {\\, @Lparen{}, nm, }
+@DefescItem {\\, @Lbrack{}, name, @Rbrack{}}
+@DefescListEnd {\\, @Lbrack{}, component1 component2 @dots{}, @Rbrack{}}
 Insert a symbol @var{name} (two-character name @var{nm}) or a composite
 glyph with component glyphs @var{component1}, @var{component2},
 @enddots{} There is no special syntax for one-character names -- the
@@ -9484,10 +9537,10 @@ ffl).
 @dfn{Pairwise kerning} is another subtle typesetting mechanism that
 modifies the distance between a glyph pair to improve readability.
 In most cases (but not always) the distance is decreased.
-@ifnotinfo
+@iftex
 For example, compare the combination of the letters `V' and `A'.  With
 kerning, `VA' is printed.  Without kerning it appears as `V@w{}A'.
-@end ifnotinfo
+@end iftex
 Typewriter-like fonts and fonts for terminals where all glyphs
 have the same width don't use kerning.
 
@@ -9632,14 +9685,17 @@ an input line.
 @item
 It prevents kerning between two glyphs.
 
-@ifnotinfo
-@Example
+@iftex
+@c can't use @Example...@endExample here
+@example
+@group
 VA
     @result{} @r{VA}
 V\&A
     @result{} @r{V@w{}A}
-@endExample
-@end ifnotinfo
+@end group
+@end example
+@end iftex
 
 @item
 It is needed to map an arbitrary character to nothing in the @code{tr}
@@ -10013,8 +10069,8 @@ even this is a read-write string variable).
 @DefreqList {ds, name [@Var{string}]}
 @DefreqItem {ds1, name [@Var{string}]}
 @DefescItem {\\*, , n, }
-@DefescItem {\\*, @lparen{}, nm, }
-@DefescListEnd {\\*, @lbrack{}, name arg1 arg2 @dots{}, @rbrack{}}
+@DefescItem {\\*, @Lparen{}, nm, }
+@DefescListEnd {\\*, @Lbrack{}, name arg1 arg2 @dots{}, @Rbrack{}}
 @cindex string interpolation (@code{\*})
 @cindex string expansion (@code{\*})
 @cindex interpolation of strings (@code{\*})
@@ -10850,8 +10906,8 @@ Any individual argument can be retrieved with one of the following
 escapes:
 
 @DefescList {\\$, , n, }
-@DefescItem {\\$, @lparen{}, nn, }
-@DefescListEnd {\\$, @lbrack{}, nnn, @rbrack{}}
+@DefescItem {\\$, @Lparen{}, nn, }
+@DefescListEnd {\\$, @Lbrack{}, nnn, @Rbrack{}}
 @cindex copy-in mode, and macro arguments
 @cindex macro, arguments (@code{\$})
 @cindex arguments, macro (@code{\$})
@@ -11150,8 +11206,8 @@ over that glyph.
 @endDefesc
 
 @DefescList {\\k, , p, }
-@DefescItem {\\k, @lparen{}, ps, }
-@DefescListEnd {\\k, @lbrack{}, position, @rbrack}
+@DefescItem {\\k, @Lparen{}, ps, }
+@DefescListEnd {\\k, @Lbrack{}, position, @Rbrack{}}
 @cindex saving horizontal input line position (@code{\k})
 @cindex horizontal input line position, saving (@code{\k})
 @cindex input line position, horizontal, saving (@code{\k})
@@ -12440,8 +12496,8 @@ Note that @code{f} is the default scaling indicator for the
 
 @DefreqList {gcolor, [@Var{color}]}
 @DefescItem {\\m, , c, }
-@DefescItem {\\m, @lparen{}, co, }
-@DefescItem {\\m, @lbrack{}, color, @rbrack}
+@DefescItem {\\m, @Lparen{}, co, }
+@DefescItem {\\m, @Lbrack{}, color, @Rbrack{}}
 @DefregListEnd {.m}
 Set (glyph) drawing color.  The following examples show how to turn the
 next four words red.
@@ -12481,8 +12537,8 @@ the fly:
 
 @DefreqList {fcolor, [@Var{color}]}
 @DefescItem {\\M, , c, }
-@DefescItem {\\M, @lparen{}, co, }
-@DefescItem {\\M, @lbrack{}, color, @rbrack}
+@DefescItem {\\M, @Lparen{}, co, }
+@DefescItem {\\M, @Lbrack{}, color, @Rbrack{}}
 @DefregListEnd {.M}
 Set fill (background) color for filled objects drawn with the
 @code{\D'@dots{}'} commands.
@@ -12838,8 +12894,8 @@ Here a simple macro to write an index entry.
 @endDefreq
 
 @DefescList {\\V, , e, }
-@DefescItem {\\V, @lparen{}, ev, }
-@DefescListEnd {\\V, @lbrack{}, env, @rbrack}
+@DefescItem {\\V, @Lparen{}, ev, }
+@DefescListEnd {\\V, @Lbrack{}, env, @Rbrack{}}
 Interpolate the contents of the specified environment variable
 @var{env} (one-character name@tie{}@var{e}, two-character name @var{ev})
 as returned by the function @code{getenv}.  @code{\V} is interpreted
@@ -12888,8 +12944,8 @@ Additionally, the backslash is represented as @code{\\}.
 @endDefesc
 
 @DefescList {\\Y, , n, }
-@DefescItem {\\Y, @lparen{}, nm, }
-@DefescListEnd {\\Y, @lbrack{}, name, @rbrack}
+@DefescItem {\\Y, @Lparen{}, nm, }
+@DefescListEnd {\\Y, @Lbrack{}, name, @Rbrack{}}
 This is approximately equivalent to @samp{\X'\*[@var{name}]'}
 (one-character name@tie{}@var{n}, two-character name @var{nm}).
 However, the contents of the string or macro @var{name} are not
@@ -14701,7 +14757,7 @@ The argument@tie{}@var{n} must be an integer in the range @math{-32767}
 to 32767.
 
 @table @asis
-@item @math{0 @LE @var{n} @LE 1000}
+@item @math{0 @LE{} @var{n} @LE{} 1000}
 Set the color for filling solid drawing objects to a shade of gray,
 where 0 corresponds to solid white, 1000 (the default) to solid black,
 and values in between to intermediate shades of gray; this is
