@@ -57,9 +57,13 @@ BROKEN_SPOOLER_FLAGS=@BROKEN_SPOOLER_FLAGS@
 # DEVICE is the default device.
 DEVICE=ps
 
-# TTYDEVDIRS is either `font/devascii font/devlatin1 font/devutf8' (for
-# ASCII) or `font/devcp1047' (for EBCDIC).
-TTYDEVDIRS=@TTYDEVDIRS@
+# TTYDEVDIRS is either `font/devascii font/devlatin1' (for
+# ASCII) or `font/devcp1047' (for EBCDIC) plus font/devutf8.
+TTYDEVDIRS=@TTYDEVDIRS@ font/devutf8
+
+# OTHERDEVDIRS is either `font/devlj4 font/devlbp' (for ASCII) or
+# empty (for EBCDIC).
+OTHERDEVDIRS=@OTHERDEVDIRS@
 
 # PSPRINT is the command to use for printing a PostScript file,
 # for example `lpr'.
@@ -291,6 +295,7 @@ MDEFINES= \
   "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
   "DEVICE=$(DEVICE)" \
   "TTYDEVDIRS=$(TTYDEVDIRS)" \
+  "OTHERDEVDIRS=$(OTHERDEVDIRS)" \
   "PSPRINT=$(PSPRINT)" \
   "DVIPRINT=$(DVIPRINT)" \
   "top_srcdir=$(top_srcdir)" \
@@ -389,9 +394,7 @@ DEVDIRS=\
   font/devX75-12 \
   font/devX100 \
   font/devX100-12 \
-  font/devlj4 \
-  font/devhtml \
-  font/devlbp
+  font/devhtml
 ALLTTYDEVDIRS=\
   font/devascii \
   font/devlatin1 \
@@ -407,14 +410,14 @@ OTHERDIRS=\
   contrib/pic2graph \
   contrib/groffer
 ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
-  $(DEVDIRS) $(TTYDEVDIRS) $(OTHERDIRS)
+  $(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS) $(OTHERDIRS)
 EXTRADIRS=\
   font/devps/generate \
   font/devdvi/generate \
   src/xditview \
   doc
 DISTDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
-  $(DEVDIRS) $(ALLTTYDEVDIRS) $(OTHERDIRS) $(EXTRADIRS)
+  $(DEVDIRS) $(OTHERDEVDIRS) $(ALLTTYDEVDIRS) $(OTHERDIRS) $(EXTRADIRS)
 TARGETS=all install install_bin install_data clean distclean mostlyclean \
   realclean extraclean distfiles TAGS depend uninstall_sub
 
@@ -487,7 +490,7 @@ $(CCPROGDIRS): FORCE
 	  -f $(top_srcdir)/Makefile.ccpg \
 	  -f Makefile.dep $(do)
 
-$(DEVDIRS) $(TTYDEVDIRS): FORCE
+$(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; \
 	then srcdir=.; \

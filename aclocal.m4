@@ -441,9 +441,11 @@ groff_cv_ebcdic="yes"
  AC_DEFINE(IS_EBCDIC_HOST, 1,
 	   [Define if the host's encoding is EBCDIC.]),
 groff_cv_ebcdic="no"
- TTYDEVDIRS="font/devascii font/devlatin1 font/devutf8"
+ TTYDEVDIRS="font/devascii font/devlatin1"
+ OTHERDEVDIRS="font/devlj4 font/devlbp"
  AC_MSG_RESULT(no))
-AC_SUBST(TTYDEVDIRS)])dnl
+AC_SUBST(TTYDEVDIRS)
+AC_SUBST(OTHERDEVDIRS)])dnl
 dnl
 dnl
 dnl Check for OS/390 Unix.  We test for EBCDIC also -- the Linux port (with

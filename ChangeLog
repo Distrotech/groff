@@ -1,7 +1,39 @@
+2002-02-24  Werner LEMBERG  <wl@gnu.org>
+
+	* aclocal.m4 (GROFF_EBCDIC): Don't include `font/devutf8' in
+	TTYDEVDIRS.
+	Define new variable OTHERDEVDIRS (containing `font/devlj4
+	font/devlbp' if not EBCDIC).
+	* Makefile.in (TTYDEVDIRS): Always include `font/devutf8'.
+	(OTHERDEVDIRS): New variable.
+	(MDEFINES, DEVDIRS, ALLDIRS, DISTDIRS): Updated.
+	* configure: Regenerated.
+
+	* NEWS, src/devices/grotty/grotty.man: Updated.
+
 2002-02-23  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/input.cc (do_overstrike, do_bracket,
 	get_line_arg): Honour input level.
+
+	Add new symbol `mc' corresponding to U+00B5 MICRO SIGN.
+
+	* font/*/*: Implement it in all font files.
+	* font/devps/generate/textmap, font/devps/generate/symbolchars,
+	* font/devps/symbolmap: Updated.
+	* font/devlj4/generate/text.map: Updated.
+	* font/devdvi/generate/CompileFonts (sizes): Add LaTeX sizes.
+	* font/devdvi/generate/texmi.map: Updated.
+
+	* font/devutf8/R.proto: Remove all `charXXX' entries.
+	* font/devutf8/NOTES: Updated.
+
+	* font/devX*/*: Regenerated with xtotroff, using fonts from XFree86
+	version 4.1.0.
+
+	* tmac/latin1.tmac, tmac/psold.tmac, tmac/tty-char.tmac: Updated.
+
+	* NEWS, man/groff_char.man: Updated.
 
 2002-02-21  Phil Lobbes <phil@perkpartners.com>
 
@@ -597,7 +629,7 @@
 	Remove branches for `f' and `F'; this is handled by
 	libdriver/input.cc.
 	* src/devices/grops/ps.h: Updated.
-	* font/devps/prologue (FL): Redefined
+	* font/devps/prologue (FL): Redefined.
 	({F,C}r,k,g: New color functions (with and without filling).
 
 	* doc/pic.ms, src/preproc/pic/pic.man: Small fixes.
