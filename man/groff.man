@@ -30,6 +30,10 @@ FDL in the main directory of the groff source package.
 .  ftr CB B
 .\}
 .
+.if '\*[.T]'dvi' \{\
+.  ftr CB CW
+.\}
+.
 .\" a comment macro which does nothing
 .de c
 ..
@@ -239,24 +243,6 @@ FDL in the main directory of the groff source package.
 .  shift 1
 .  text \$*.
 .  rm @tmp@
-..
-.
-.c Greek characters
-.de GREEK
-.  ds OLDT@BS \n[.tabs]
-.  br
-.  ie t \{\
-.    ta 7n 10n 30n T 7n 10n
-\&\f(CB\(rs(*\$1\fP\*t\fI\(*\$1\fP\*t\$2\*t\
-\&\f(CB\(rs(*\$3\fP\*t\fI\(*\$3\fP\*t\$4
-.  \}
-.  el \{\
-.    ta 7n 30n T 7n
-\&\f(CB\(rs(*\$1\fP\*t\$2\*t\
-\&\f(CB\(rs(*\$3\fP\*t\$4
-.  \}
-.  ta \*[OLDT@BS]
-.  rm OLDT@BS
 ..
 .
 .c --------- registers ---------
@@ -2163,88 +2149,30 @@ character maps to itself.
 .SS "SPECIAL CHARACTERS"
 .\" --------------------------------------------------------------------
 Common special characters are predefined by escape sequences of the form
-.(esc xy
+.(esc \fP\f(CIxy
 with characters
 .argument x
 and
 .argument y .
 Some of these exist in the usual font while most of them are only
-available in the special font.
+available in the special font.  Below you'll find a selection of the most
+important glyphs; a complete list can be found in
+.BR groff_char (@MAN7EXT@).
+.RS
 .LP
 .PD 0
 .
-.ESc aa Acute accent
-.ESc ap Approximately
-.ESc br Bar
-.
-.TP 14n
-.(esc bs
-Bell sign, former AT&T copyright mark, not implemented in groff.
-.
 .ESc bu Bullet sign
-.ESc bv Bar Vertical
-.ESc ca Cap operator
-.ESc ci Circle
 .ESc co Copyright
 .ESc ct Cent
-.ESc cu Cup operator
-.ESc da Down arrow
-.ESc di Division sign
 .ESc dd Double dagger
 .ESc de Degree
 .ESc dg Dagger
-.ESc dq Double quote
 .ESc em Em-dash
-.ESc eq Equals
-.ESc es Empty set
-.ESc ff Ligature ff
-.ESc fi Ligature fi
-.ESc Fi Ligature ffi
-.ESc fl Ligature fl
-.ESc Fl Ligature ffl
-.ESc fm Printable form of a prime (single quote)
-.ESc ga Grave accent
-.ESc gr Nabla operator
 .ESc hy Hyphen
-.ESc ib Subset or equal symbol from set theory
-.ESc if Infinity
-.ESc ip Superset or equal symbol from set theory
-.ESc is Integral sign
-.ESc lb Left bottom, lower part of large left brace 
-.ESc lc Left ceiling, upper part of large left bracket
-.ESc lf Left floor, lower part of large left bracket
-.ESc lh Left hand
-.ESc lk Left curley, center part of large left brace
-.ESc lt Left top, upper part of large left brace
-.ESc mi Minus sign; same as \(rs\-
-.ESc mo Member of sign in set theory
-.ESc mu Multiplication sign
-.ESc no Logical NOT sign
-.ESc or Logical OR sign
-.ESc pd Partial differential character
-.ESc pl Plus sign
-.ESc pt Proportional sign
-.ESc rb Right bottom, lower part of large right brace
-.ESc rc Right ceiling, upper part of large right bracket
-.ESc rf Right floor, lower part of large right bracket
 .ESc rg Registered sign
-.ESc rh Right Hand
-.ESc rk Right curley, center part of large right brace
-.ESc rn Upper horizontal bar
-.ESc rt Right Top, upper part of large right brace
-.ESc ru Ruler character
-.ESc sb Subset symbol from set theory
 .ESc sc Section sign
-.ESc sl Slash
-.ESc sp Superset symbol from set theory
-.ESc sq Square
-.ESc sr Square root
-.ESc ts Greek character terminal sigma
-.ESc ua Up arrow
 .ESc ul Underline character
-.ESc 12 A half
-.ESc 14 A quarter
-.ESc 34 Three quarters
 .ESc == Identical
 .ESc >= Larger or equal
 .ESc <= Less or equal
@@ -2252,74 +2180,9 @@ Bell sign, former AT&T copyright mark, not implemented in groff.
 .ESc -> Right arrow
 .ESc <- Left arrow
 .ESc +- Plus-minus sign
-.ESc ** Asterisk
-.ESc ~= Approximately equal
-.
 .PD
-.LP
-Greek letters are defined by appending the corresponding roman character
-to the initial sequence
-.esc (*
-being a 2-letter sequence with an asterisk as its first letter.
-For example, Greek
-.argument alpha
-is defined as
-.esc (*a .
-.LP
+.RE
 .
-.GREEK a alpha A Alpha
-.GREEK b beta B Beta
-.GREEK c xi C Xi
-.GREEK d delta D Delta
-.GREEK e epsilon E Epsilon
-.GREEK f phi F Phi
-.GREEK g gamma G Gamma
-.GREEK h theta H Theta
-.GREEK i iota I Iota
-.GREEK k kappa K Kappa
-.GREEK l lambda L Lambda
-.GREEK m mu M Mu
-.GREEK n nu N nu
-.GREEK o omikron O Omikron
-.GREEK p pi P Pi
-.GREEK q psi Q Psi
-.GREEK r rho R Rho
-.GREEK s sigma S Sigma
-.GREEK t tau T Tau
-.GREEK u ypsilon U Ypsilon
-.GREEK w omega W Omega
-.GREEK x chi X Chi
-.GREEK y eta Y eta
-.GREEK z zeta Z Zeta
-.
-.if t \{\
-.  LP
-.  text In the order of the Greek alphabet this looks like
-.  ft CR
-.  ds OLDT@BS \n[.tabs]
-.  ta T 0.6c
-.  LP
-.  ne 2v+1u
-\(*a	\(*b	\(*g	\(*d	\(*e	\(*z	\(*g	\(*y	\
-\(*h	\(*i	\(*k	\(*l	\(*m	\(*n	\(*c	\(*o	\
-\(*p	\(*r	\(*s	\(*t	\(*u	\(*f	\(*x	\(*q	\(*z
-.  br
-a	b	g	d	e	z	g	y	\
-h	i	k	l	m	n	c	o	\
-p	r	s	t	u	f	x	q	z
-.  LP
-.  ne 2v+1u
-\(*A	\(*B	\(*G	\(*D	\(*E	\(*Z	\(*G	\(*Y	\
-\(*H	\(*I	\(*K	\(*L	\(*M	\(*N	\(*C	\(*O	\
-\(*P	\(*R	\(*S	\(*T	\(*U	\(*F	\(*X	\(*Q	\(*Z
-.  br
-A	B	G	D	E	Z	G	Y	\
-H	I	K	L	M	N	C	O	\
-P	R	S	T	U	F	X	Q	Z
-.  ft P
-.  ta \*[OLDT@BS]
-.  rm OLDT@BS
-.\}
 .\" --------------------------------------------------------------------
 .SH REGISTERS
 .\" --------------------------------------------------------------------
@@ -2346,6 +2209,7 @@ to make clear that we speak about registers.
 Please keep in mind that the
 .esc en[]
 decoration is not part of the register name.
+.
 .\" --------------------------------------------------------------------
 .SS "READ-ONLY REGISTERS"
 .\" --------------------------------------------------------------------
@@ -2545,6 +2409,7 @@ Upper right y-coordinate (in PostScript units) of a given PostScript
 image (set by
 .request .psbb ).
 .PD
+.
 .\" --------------------------------------------------------------------
 .SS "WRITABLE REGISTERS"
 .\" --------------------------------------------------------------------
@@ -2580,6 +2445,7 @@ Current year minus 1900.  For Y2K compliance use register
 .register year
 instead.
 .PD
+.
 .\" --------------------------------------------------------------------
 .SH WARNINGS
 .\" --------------------------------------------------------------------
@@ -2684,6 +2550,7 @@ _
 7@128@syntax@15@32768@escape
 .TE
 .LP
+.
 .\" --------------------------------------------------------------------
 .SH COMPATIBILITY
 .\" --------------------------------------------------------------------
@@ -2876,7 +2743,10 @@ written by Bernd Warken <bwarken@mayn.de>.
 It is distributed under the terms of the FDL (GNU Free Documentation
 License) version 1.1 or later.  You should have received a copy of the
 FDL on your system, it is also available on-line under
-.IR <http://www.gnu.org/copyleft/fdl.html> .
+.RS
+.LP
+.IR http://www.gnu.org/copyleft/fdl.html .
+.RE
 .LP
 Formerly, the extensions of the groff language were kept in the manual
 page
@@ -2899,11 +2769,17 @@ pointers see
 The formatter programs are described in
 .BR groff (@MAN1EXT@)
 and
-.BR troff (@MAN1EXT@).
+.BR troff (@MAN1EXT@);
+a complete of all predefined glyph names can be found in
+.BR groff_char (@MAN7EXT@).
 .LP
 The classical
 .I troff
 documentation is available on-line at
+.RS
+.LP
 .I http://cm.bell-labs.com/cm/cs/cstr.html
+.RE
 and
+.RS
 .IR http://www.kohala.com/start/troff/ .

@@ -21,12 +21,15 @@
 #   make -f generate/Makefile
 # in the parent directory of the directory containing this file.
 
+# Note that the following font files have manually added kerning values for
+# `` and '': B, BI, I, R.
+
 srcdir=.
 tfmdir=/usr/local/lib/groff-tfm
 gfdir=/usr/local/lib/groff-gf
 
 TFMTODIT=tfmtodit
-FONTS=R I B BI CW MI S EX H HI HB SA SB
+FONTS=R I B BI CW CWI MI S EX H HI HB SA SB
 SPECIALFLAG=-s
 
 all: $(FONTS)
@@ -56,6 +59,10 @@ BI: $(srcdir)/texi.map
 CW: $(srcdir)/textt.map
 	$(TFMTODIT) $(SPECIALFLAG) \
 	  $(tfmdir)/cmtt10.tfm $(srcdir)/textt.map $@
+
+CWI: $(srcdir)/textt.map
+	$(TFMTODIT) \
+	  $(tfmdir)/cmitt10.tfm $(srcdir)/textt.map $@
 
 MI: $(srcdir)/texmi.map
 	$(TFMTODIT) $(SPECIALFLAG) -k 0177 \
