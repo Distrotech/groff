@@ -60,6 +60,9 @@ PROCESSEDDOCFILES=\
   pic.ps
 
 HTMLDOCFILES=\
+  pic.html
+
+HTMLDOCFILESALL=\
   pic*.html
 
 HTMLDOCIMAGEFILES=\
@@ -88,7 +91,7 @@ CLEANADD=\
   $(PROCESSEDDOCFILES) \
   $(PROCESSEDEXAMPLEFILES) \
   $(HTMLEXAMPLEFILES) \
-  $(HTMLDOCFILES) \
+  $(HTMLDOCFILESALL) \
   groff.aux groff.cp* groff.dvi groff.es* groff.fn* groff.ky* groff.log \
   groff.ma* groff.op* groff.pdf groff.pg* groff.ps groff.rq* groff.st* \
   groff.toc groff.tp groff.vr*
@@ -178,7 +181,7 @@ install_data: groff $(DOCFILES) $(PROCESSEDDOCFILES) $(make_install_html) \
 
 install_html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
 	-test -d $(htmldocdir) || $(mkinstalldirs) $(htmldocdir)
-	for f in $(HTMLDOCFILES); do \
+	for f in $(HTMLDOCFILESALL); do \
 	  rm -f $(htmldocdir)/$$f; \
 	  $(INSTALL_DATA) $$f $(htmldocdir)/$$f; \
 	done
@@ -202,7 +205,7 @@ uninstall_sub:
 	-for f in $(DOCFILES) $(PROCESSEDDOCFILES); do \
 	  rm -f $(docdir)/$$f; \
 	done
-	-for f in $(HTMLDOCFILES); do \
+	-for f in $(HTMLDOCFILESALL); do \
 	  rm -f $(htmldocdir)/$$f; \
 	done
 	-rm -f $(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
