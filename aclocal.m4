@@ -451,8 +451,14 @@ AC_TRY_COMPILE(,
 #if '0' != 240
 make an error "Character set is not EBCDIC"
 #endif],
-groff_cv_ebcdic="yes";AC_MSG_RESULT(yes);AC_DEFINE(IS_EBCDIC_HOST),
-groff_cv_ebcdic="no";AC_MSG_RESULT(no))])dnl
+groff_cv_ebcdic="yes"
+ TTYDEVDIRS="font/devcp1047"
+ AC_MSG_RESULT(yes)
+ AC_DEFINE(IS_EBCDIC_HOST),
+groff_cv_ebcdic="no"
+ TTYDEVDIRS="font/devascii font/devlatin1"
+ AC_MSG_RESULT(no))
+AC_SUBST(TTYDEVDIRS)])dnl
 dnl
 dnl
 dnl Check for OS/390 Unix.  We test for EBCDIC also -- the Linux port (with
@@ -464,7 +470,7 @@ if test "$groff_cv_ebcdic" = "yes"; then
 	AC_MSG_CHECKING([for OS/390 Unix])
 	case `uname` in
 	OS/390)
-		CFLAGS="$CFLAGS -D_ALL_SOURCE -D_X_OPEN_SOURCE_EXTENDED=1"
+		CFLAGS="$CFLAGS -D_ALL_SOURCE"
 		groff_cv_os390="yes"
 		AC_MSG_RESULT(yes) ;;
 	*)

@@ -27,7 +27,6 @@ TODO
 */
 #define _GNU_SOURCE
 
-#include <string.h>      
 #include "driver.h"
 #include "lbp.h"
 #include "charset.h"

@@ -26,7 +26,7 @@ extern "C" {
   const char *if_to_a(int, int);
 }
 
-#include <getopt.h>
+#include <groff-getopt.h>
 
 char *strsave(const char *s);
 int is_prime(unsigned);

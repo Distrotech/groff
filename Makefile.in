@@ -48,6 +48,10 @@ BROKEN_SPOOLER_FLAGS=@BROKEN_SPOOLER_FLAGS@
 # DEVICE is the default device.
 DEVICE=ps
 
+# TTYDEVDIRS is either `font/devascii font/devlatin1' (for ASCII) or
+# `font/devcp1047' (for EBCDIC).
+TTYDEVDIRS=@TTYDEVDIRS@
+
 # PSPRINT is the command to use for printing a PostScript file,
 # for example `lpr'.
 PSPRINT=@PSPRINT@
@@ -160,8 +164,12 @@ man7dir=$(manroot)/man$(man7ext)
 # -DHAVE_CC_LIMITS_H		if you have a C++ <limits.h>
 # -DHAVE_SYS_DIR_H		if you have <sys/dir.h>
 # -DHAVE_STDLIB_H		if you have <stdlib.h>
+# -DHAVE_STRINGS_H		if you have <strings.h>
 # -DHAVE_RENAME			if you have rename()
 # -DHAVE_MKSTEMP		if you have mkstemp()
+# -DHAVE_STRDUP			if you have strdup()
+# -DHAVE_STRSEP			if you have strsep()
+# -DHAVE_STRCASECMP		if you have strcasecmp()
 # -DSTDLIB_H_DECLARES_PUTENV	if your C++ <stdlib.h> declares putenv()
 # -DSTDIO_H_DECLARES_POPEN	if your C++ <stdio.h> declares popen()
 # -DSTDIO_H_DECLARES_PCLOSE	if your C++ <stdio.h> declares pclose()
@@ -174,6 +182,7 @@ man7dir=$(manroot)/man$(man7ext)
 # -DLONG_FOR_TIME_T		if localtime() takes a long * not a time_t *
 # -DHAVE_STRUCT_EXCEPTION	if <math.h> defines struct exception
 # -DRETSIGTYPE=int		if signal handlers return int not void	
+# -DIS_EBCDIC_HOST		if the host's encoding is EBCDIC
 DEFINES=@DEFS@
 
 # Include fmod.o, strtol.o, getcwd.o, strerror.o, putenv.o in LIBOBJS if
@@ -233,6 +242,7 @@ MDEFINES= \
   "PAGE=$(PAGE)" \
   "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
   "DEVICE=$(DEVICE)" \
+  "TTYDEVDIRS=$(TTYDEVDIRS)" \
   "PSPRINT=$(PSPRINT)" \
   "DVIPRINT=$(DVIPRINT)" \
   "top_srcdir=$(top_srcdir)" \
@@ -321,8 +331,7 @@ PROGDIRS=$(CCPROGDIRS) $(CPROGDIRS)
 DEVDIRS=\
   font/devps \
   font/devdvi \
-  font/devascii \
-  font/devlatin1 \
+  $(TTYDEVDIRS) \
   font/devutf8 \
   font/devX75 \
   font/devX75-12 \
