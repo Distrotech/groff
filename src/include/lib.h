@@ -28,7 +28,7 @@ extern "C" {
 
 /* stdio.h on IRIX and OSF/1 include getopt.h */
 
-#if !(defined(__sgi) || (defined(__osf__) && defined(__ALPHA)))
+#if !(defined(__sgi) || (defined(__osf__) && defined(__alpha)))
 #include <groff-getopt.h>
 #endif
 
