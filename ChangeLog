@@ -1,3 +1,148 @@
+2000-06-17  Eli Zaretskii  <eliz@is.elta.co.il>
+
+	* src/utils/tfmtodit/tfmtodit.cc: #include nonposix.h.
+	(tfm::load, gf::load): Open tfm and gf files in binary mode: these
+	are binary files.
+	(main): Support non-Posix systems with several different styles of
+	slash characters in file names.
+
+	* src/utils/pfbtops/pfbtops.c: #include nonposix.h.
+	(main) [SET_BINARY]: Switch stdin into binary mode.
+
+	* src/utils/indxbib/indxbib.cc: #include nonposix.h.
+	(main): Support file names with several possible slash-type
+	characters, as given by DIR_SEPS[] in nonposix.h.
+	(main) [__MSDOS__]: If renaming the temporary index file fails
+	because it has more than one dot in its trunk, replace the dot
+	with an underscore and try again.
+	(do_file): Use FOPEN_RB instead of "r".  Skip every CR before a
+	Newline.
+	[__MSDOS__ || _MSC_VER]: Stop at the first ^Z character.
+
+	* src/utils/hpftodit/hpftodit.cc: #include nonposix.h.
+	(File::File): Open the input file in binary mode.  Strip CR
+	characters from each CR-LF pair.
+	(xbasename): Support file names with several possible slash-type
+	characters, as given by DIR_SEPS[] in nonposix.h.
+
+	* src/include/Makefile.sub (HDRS): Add nonposix.h.
+
+	* src/roff/troff/node.cc [HAVE_UNISTD_H]: Include <unistd.h>.
+	(WIFEXITED, WEXITSTATUS, WTERMSIG, WIFSTOPPED, WSTOPSIG)
+	[!_POSIX_VERSION]: Define for traditional Unix systems.
+	(real_output_file::real_output_file): Remove the MSVC-specific
+	call to popen, use instead POPEN_WT, appropriately defined on
+	nonposix.h.  #include nonposix.h.
+	(real_output_file::~real_output_file): Remove the MSVC-specific
+	call to pclose, a suitable macro is now defined on nonposix.h.
+	Use the portable macros WIFEXITED, WIFSIGNALED, WTERMSIG, WSTOPSIG
+	and WEXITSTATUS instead of assuming traditional Unix
+	interpretation of the status returned by pclose.
+
+	* src/roff/troff/input.cc (pipe_source): Remove the MSVC-specific
+	call to popen, use POPEN_RT instead (appropriately defined on
+	nonposix.h).  #include nonposix.h.
+	(ps_bbox_request): Open the PostScript file in binary mode.
+	Close the file after processing it.
+	(getpid) [_MSC_VER]: Remove; a suitable macro is now defined on
+	nonposix.h.
+
+	* src/roff/groff/pipeline.c (run_pipeline) [__MSDOS__ || _WIN32]:
+	A version of run_pipeline that doesn't use `fork'.
+	(signal_catcher) [__MSDOS__ || _WIN32]: New function.
+	(system_shell_name, system_shell_dash_c)
+	(is_system_shell) [__MSDOS__ || _WIN32]: New functions, to hide
+	the ugliness of testing DOS/Windows file names for equality, and
+	support both stock shells and ports of Unix shells.
+
+	* src/roff/groff/groff.cc: #include nonposix.h.
+	(BSHELL): Definition moved to nonposix.h.
+	(main): Use PATH_SEP[0] instead of literal ':'.  Use BSHELL_DASH_C
+	instead of a literal "-c".
+	(xbasename): Support file names with several possible slash-type
+	characters, as given by DIR_SEPS[] in nonposix.h.
+	(possible_command::print): Use BSHELL_DASH_C and IS_BSHELL instead
+	of literal strings.
+
+	* src/preproc/soelim/soelim.cc: #include nonposix.h.
+	(do_file): Use IS_ABSOLUTE instead of testing for a literal '/'.
+
+	* src/preproc/pic/Makefile.sub (YTABH): Change pic.tab.h to
+	pic_tab.h.
+
+	* src/preproc/pic/lex.cc: Change pic.tab.h to pic_tab.h.
+
+	* src/preproc/eqn/Makefile.sub (YTABH): Rename eqn.tab.h to
+	eqn_tab.h.
+
+	* src/preproc/eqn/lex.cc: #include eqn_tab.h, not eqn.tab.h.
+
+	* src/libs/libgroff/tmpfile.cc (DEFAULT_TMPDIR) [P_tmpdir]: If
+	P_tmpdir is defined, use it instead of the literal "/tmp".
+	(remove_tmp_files, add_tmp_file): New functions.
+	(xtmpfile): Record temporary files and register an atexit function
+	to delete them explicitly, instead of relying on the OS to do
+	that, which doesn't work on non-Unix systems.
+
+	* src/libs/libgroff/searchpath.cc: #include nonposix.h.
+	(search_path::search_path): Use PATH_SEP instead of a literal
+	colon.
+	(search_path::command_line_dir): Ditto.
+	(search_path::open_file): Use IS_ABSOLUTE, PATH_SEP and DIR_SEPS,
+	to support non-Posix systems.
+
+	* src/libc/libbib/search.cc: #include nonposix.h.
+	(search_list::add_file): Open the file in binary mode.
+
+	* src/libs/libbib/linear.cc: #include nonposix.h.
+	(file_buffer::load): Remove \r characters preceding \n from the
+	loaded buffer.
+
+	* src/libs/libbib/index.cc: #include nonposix.h.
+	(make_index_search_item): Open index_filename in O_BINARY mode.
+	(index_search_item_iterator::get_tag): Ditto.  Remove \r
+	characters before \n characters.
+	(index_search_item::check_files): Open files in binary mode.
+	(index_search_item::munge_filename): Support DOS-style file names
+	with backslashes and drive letters, use IS_ABSOLUTE.
+
+	* src/devices/grops/ps.cc: #include nonposix.h.
+	(main) [SET_BINARY]: Switch stdout to binary mode.
+
+	* src/devices/grolj4/lj4.cc: #include nonposix.h.
+	(main) [SET_BINARY]: Switch stdout to binary mode.
+
+	* src/devices/grolbp/lbp.cc: #include nonposix.h
+	(fill_pattern) [SET_BINARY]: Switch stdout to binary mode.
+
+	* src/devices/grodvi/dvi.cc: #include nonposix.h.
+	[_MSC_VER]: Remove inclusion of Windows-specific headers (done by
+	nonposix.h).
+	(main) [SET_BINARY]: Switch stdout to binary mode.
+	[_MSC_VER]: Remove an explicit call to _setmode.
+
+	* src/include/nonposix.h: New file.
+
+	* Makefile.in (ENVSETUP): New variable, to set up case-sensitive
+	operation when building with DJGPP.
+	($(TARGETS), dot, $(LIBDIRS), $(CPROGDIRS), $(CCPROGDIRS))
+	($(DEVDIRS), $(TTYDEVDIRS), $(INCDIRS), $(OTHERDIRS)): Use
+	ENVSETUP.
+
+	* Makefile.comm: mv y.tab.[ch] to y_tab.[ch], to make it work on
+	MS-DOS.
+	(.man.n): Replace `;' with `|', since FONTPATH, MACROPATH,
+	etc. can include a semi-colon on DOS/Windows.
+	(depend.temp): Use depend1.temp instead of depend.temp1, to
+	prevent files from overerwiting each other on 8+3 filesystems.
+
+	* gendef.sh (t): Change definition to work with DOS/Windows.
+
+	doc/groff.texinfo: Apart of some typo corrections, I also changed
+	some index entris, to make them more non-ambiguous, and also put
+	@ignore around some parts that are not yet written, to allow the
+	Info output be readable.
+
 2000-06-10  Gael Queri  <gqueri@mail.dotcom.fr>
 
 	Replaced specific checks for function declarations with a generic

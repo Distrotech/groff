@@ -471,7 +471,7 @@ static char *trim_arg(char *p)
   return p;
 }
 
-// If the font can't be found, then if not_found is NULL it will be set
+// If the font can't be found, then if not_found is non-NULL, it will be set
 // to 1 otherwise a message will be printed.
 
 int font::load(int *not_found)

@@ -31,6 +31,8 @@ TODO
 #include "lbp.h"
 #include "charset.h"
 
+#include "nonposix.h"
+
 #ifdef HAVE_STRNCASECMP
 #ifdef NEED_DECLARATION_STRNCASECMP
 extern "C" {
@@ -57,7 +59,6 @@ public:
 private:
   lbp_font(const char *);
 };
-
 
 class lbp_printer : public printer {
 public:
@@ -176,6 +177,9 @@ lbp_printer::lbp_printer()
   cur_symbol_set(0),
   line_thickness(-1)
 {
+#ifdef SET_BINARY
+ SET_BINARY(fileno(stdout));
+#endif
  lbpinit(stdout);
  lbpputs("\033c\033;\033[2&z\033[7 I\033[?32h\033[?33h\033[11h");
  wp54charset(); // Define the new symbol set

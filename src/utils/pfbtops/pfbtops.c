@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <getopt.h>
 
+#include "nonposix.h"
+
 /* Binary bytes per output line. */
 #define BYTES_PER_LINE (64/2)
 #define HEX_DIGITS "0123456789abcdef"
@@ -52,6 +54,9 @@ int main(argc, argv)
       perror(argv[optind]);
       exit(1);
     }
+#ifdef SET_BINARY
+  SET_BINARY(fileno(stdin));
+#endif
   for (;;)
     {
       int type, c, i;

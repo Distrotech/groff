@@ -35,9 +35,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "font.h"
 #include "device.h"
 #include "pipeline.h"
+#include "nonposix.h"
 #include "defs.h"
 
-#define BSHELL "/bin/sh"
 #define GXDITVIEW "gxditview"
 
 // troff will be passed an argument of -rXREG=1 if the -X option is
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
     case 'F':
       font::command_line_font_dir(optarg);
       if (Fargs.length() > 0) {
-	Fargs += ':';
+	Fargs += PATH_SEP[0];
 	Fargs += optarg;
       }
       else
@@ -297,7 +297,7 @@ int main(int argc, char **argv)
     commands[POST_INDEX].append_arg("-");
   if (lflag && !Xflag && spooler) {
     commands[SPOOL_INDEX].set_name(BSHELL);
-    commands[SPOOL_INDEX].append_arg("-c");
+    commands[SPOOL_INDEX].append_arg(BSHELL_DASH_C);
     Largs += '\0';
     Largs = spooler + Largs;
     commands[SPOOL_INDEX].append_arg(Largs.contents());
@@ -328,7 +328,7 @@ int main(int argc, char **argv)
     e += Fargs;
     char *fontpath = getenv("GROFF_FONT_PATH");
     if (fontpath && *fontpath) {
-      e += ':';
+      e += PATH_SEP[0];
       e += fontpath;
     }
     e += '\0';
@@ -346,7 +346,19 @@ const char *xbasename(const char *s)
 {
   if (!s)
     return 0;
-  const char *p = strrchr(s, '/');
+  // DIR_SEPS[] are possible directory separator characters, see nonposix.h
+  // We want the rightmost separator of all possible ones.
+  // Example: d:/foo\\bar.
+  const char *p = strrchr(s, DIR_SEPS[0]), *p1;
+  const char *sep = &DIR_SEPS[1];
+
+  while (*sep)
+    {
+      p1 = strrchr(s, *sep);
+      if (p1 && (!p || p1 > p))
+	p = p1;
+      sep++;
+    }
   return p ? p + 1 : s;
 }
 
@@ -478,8 +490,8 @@ void possible_command::build_argv()
 void possible_command::print(int is_last, FILE *fp)
 {
   build_argv();
-  if (argv[0] != 0 && strcmp(argv[0], BSHELL) == 0
-      && argv[1] != 0 && strcmp(argv[1], "-c") == 0
+  if (IS_BSHELL(argv[0])
+      && argv[1] != 0 && strcmp(argv[1], BSHELL_DASH_C) == 0
       && argv[2] != 0 && argv[3] == 0)
     fputs(argv[2], fp);
   else {

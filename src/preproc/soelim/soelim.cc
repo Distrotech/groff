@@ -28,6 +28,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "errarg.h"
 #include "error.h"
 #include "stringclass.h"
+#include "nonposix.h"
 
 static int include_list_length;
 static char **include_list;
@@ -157,7 +158,7 @@ int do_file(const char *filename)
     whole_filename = filename;
     whole_filename += '\0';
   }
-  else if (filename[0] == '/') {
+  else if (IS_ABSOLUTE(filename)) {
     whole_filename = filename;
     whole_filename += '\0';
     errno = 0;

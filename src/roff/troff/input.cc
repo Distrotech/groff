@@ -37,6 +37,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 // Needed for getpid().
 #include "posix.h"
 
+#include "nonposix.h"
+
 #ifdef ISATTY_MISSING
 #undef isatty
 #define isatty(n) (1)
@@ -4447,11 +4449,7 @@ void pipe_source()
     }
     buf[buf_used] = '\0';
     errno = 0;
-#ifdef _MSC_VER
-    FILE *fp = popen(buf, "rt");
-#else
-    FILE *fp = popen(buf, "r");
-#endif
+    FILE *fp = popen(buf, POPEN_RT);
     if (fp)
       input_stack::push(new file_iterator(fp, symbol(buf).contents(), 1));
     else
@@ -4636,9 +4634,13 @@ void ps_bbox_request()
     while (!tok.newline() && !tok.eof())
       tok.next();
     errno = 0;
-    FILE *fp = fopen(nm.contents(), "r");
-    if (fp)
+    // PS files might contain non-printable characters, such as ^Z
+    // and CRs not followed by an LF, so open them in binary mode.
+    FILE *fp = fopen(nm.contents(), FOPEN_RB);
+    if (fp) {
       do_ps_file(fp, nm.contents());
+      fclose(fp);
+    }
     else
       error("can't open `%1': %2", nm.contents(), strerror(errno));
     tok.next();
@@ -5846,13 +5848,6 @@ void warn_request()
     warning_mask = WARN_TOTAL;
   skip_line();
 }
-
-#ifdef _MSC_VER
-static int getpid(void)
-{
-  return 1;
-}
-#endif
 
 static void init_registers()
 {

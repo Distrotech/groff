@@ -366,6 +366,11 @@ DISTDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
 TARGETS=all install install_bin install_data clean distclean mostlyclean \
   realclean extraclean distfiles TAGS depend uninstall_sub
 
+# This ENVSETUP gork is required by the DJGPP build on Windows 9X,
+# where Make needs to be case-sensitive to find files like BI and VERSION.
+ENVSETUP=`test -f $(srcdir)/makefile.ccpg*\
+	&& test -f $(srcdir)/Makefile.ccpg* && echo export FNCASE=y`
+
 do=all
 dodirs=$(ALLDIRS) dot
 # Default target for subdir_Makefile
@@ -373,15 +378,17 @@ subdir=src/roff/troff
 
 
 $(TARGETS):
-	@$(MAKE) $(MDEFINES) do=$@ $(dodirs)
+	@$(ENVSETUP); $(MAKE) $(MDEFINES) do=$@ $(dodirs)
 
 dot: FORCE
-	@$(MAKE) $(MDEFINES) srcdir=$(srcdir) VPATH=$(srcdir) \
+	@$(ENVSETUP); \
+	$(MAKE) $(MDEFINES) srcdir=$(srcdir) VPATH=$(srcdir) \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $(top_srcdir)/Makefile.sub $(do)
 
 $(LIBDIRS): FORCE
-	@if test $(srcdir) = .; \
+	@$(ENVSETUP); \
+	if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
@@ -395,7 +402,8 @@ $(LIBDIRS): FORCE
 	  -f Makefile.dep $(do)
 
 $(CPROGDIRS): FORCE
-	@if test $(srcdir) = .; \
+	@$(ENVSETUP); \
+	if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
@@ -409,7 +417,8 @@ $(CPROGDIRS): FORCE
 	  -f Makefile.dep $(do)
 
 $(CCPROGDIRS): FORCE
-	@if test $(srcdir) = .; \
+	@$(ENVSETUP); \
+	if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
@@ -423,7 +432,8 @@ $(CCPROGDIRS): FORCE
 	  -f Makefile.dep $(do)
 
 $(DEVDIRS) $(TTYDEVDIRS): FORCE
-	@if test $(srcdir) = .; \
+	@$(ENVSETUP); \
+	if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
@@ -435,7 +445,8 @@ $(DEVDIRS) $(TTYDEVDIRS): FORCE
 	  -f $(top_srcdir)/Makefile.dev $(do)
 
 $(INCDIRS) $(OTHERDIRS): FORCE
-	@if test $(srcdir) = .; \
+	@$(ENVSETUP); \
+	if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \

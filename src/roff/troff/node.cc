@@ -18,6 +18,10 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include "troff.h"
 #include "symbol.h"
 #include "dictionary.h"
@@ -29,6 +33,19 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "charinfo.h"
 #include "font.h"
 #include "reg.h"
+
+#include "nonposix.h"
+
+#ifdef _POSIX_VERSION
+#include <sys/wait.h>
+#else /* not _POSIX_VERSION */
+/* traditional Unix */
+#define WIFEXITED(s) (((s) & 0377) == 0)
+#define WEXITSTATUS(s) (((s) >> 8) & 0377)
+#define WTERMSIG(s) ((s) & 0177)
+#define WIFSTOPPED(s) (((s) & 0377) == 0177)
+#define WSTOPSIG(s) (((s) >> 8) & 0377)
+#endif /* not _POSIX_VERSION */
 
 #define STORE_WIDTH 1
 
@@ -1195,11 +1212,7 @@ real_output_file::real_output_file()
 {
 #ifndef POPEN_MISSING
   if (pipe_command) {
-#ifdef _MSC_VER
-    if ((fp = _popen(pipe_command, "wt")) != 0) {
-#else
-    if ((fp = popen(pipe_command, "w")) != 0) {
-#endif
+    if ((fp = popen(pipe_command, POPEN_WT)) != 0) {
       piped = 1;
       return;
     }
@@ -1221,19 +1234,16 @@ real_output_file::~real_output_file()
   }
 #ifndef POPEN_MISSING
   if (piped) {
-#ifdef _MSC_VER
-    int result = _pclose(fp);
-#else
     int result = pclose(fp);
-#endif
     fp = 0;
     if (result < 0)
       fatal("pclose failed");
-    if ((result & 0x7f) != 0)
+    if (!WIFEXITED(result))
       error("output process `%1' got fatal signal %2",
-	    pipe_command, result & 0x7f);
+	    pipe_command,
+	    WIFSIGNALED(result) ? WTERMSIG(result) : WSTOPSIG(result));
     else {
-      int exit_status = (result >> 8) & 0xff;
+      int exit_status = WEXITSTATUS(result);
       if (exit_status != 0)
 	error("output process `%1' exited with status %2",
 	      pipe_command, exit_status);

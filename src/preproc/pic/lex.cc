@@ -21,7 +21,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "pic.h"
 #include "ptable.h"
 #include "object.h"
-#include "pic.tab.h"
+#include "pic_tab.h"
 
 declare_ptable(char)
 implement_ptable(char)

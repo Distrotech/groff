@@ -21,6 +21,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "driver.h"
 #include "stringclass.h"
 #include "cset.h"
+#include "nonposix.h"
 
 #include "ps.h"
 #include <time.h>
@@ -1519,6 +1520,9 @@ int main(int argc, char **argv)
       assert(0);
     }
   font::set_unknown_desc_command_handler(handle_unknown_desc_command);
+#ifdef SET_BINARY
+  SET_BINARY(fileno(stdout));
+#endif
   if (optind >= argc)
     do_file("-");
   else {

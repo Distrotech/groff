@@ -27,6 +27,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "lib.h"
 #include "errarg.h"
 #include "error.h"
+#include "nonposix.h"
 
 #include "refid.h"
 #include "search.h"
@@ -53,7 +54,7 @@ void search_list::add_file(const char *filename, int silent)
 {
   search_item *p = make_index_search_item(filename, next_fid);
   if (!p) {
-    int fd = open(filename, O_RDONLY);
+    int fd = open(filename, O_RDONLY | O_BINARY);
     if (fd < 0) {
       if (!silent)
 	error("can't open `%1': %2", filename, strerror(errno));
