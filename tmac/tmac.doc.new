@@ -165,12 +165,6 @@
 .ds doc-out-string
 .
 .
-.\" NS doc-curr-space global string
-.\" NS   current space string
-.
-.ds doc-curr-space
-.
-.
 .\" NS doc-no-space global register (bool)
 .\" NS   whether no space shall be inserted
 .
@@ -182,7 +176,7 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-argXXX, doc-typeXXX, doc-spaceXXX, doc-arg-limit,
-.\" NS   doc-arg-ptr, doc-out-string, doc-curr-space
+.\" NS   doc-arg-ptr, doc-out-string
 .\" NS
 .\" NS local variables:
 .\" NS   doc-str-dpa, doc-reg-dpa, doc-reg-dpa1
@@ -258,16 +252,13 @@
 .      if \n[doc-nesting-level] \
 .        if !\n[doc-func-arg-count] \
 .          if !\n[doc-no-space] \
-.            as doc-out-string "\*[doc-curr-space]
+.            as doc-out-string "\*[doc-space]
 .
 .      \" the following happens e.g. for `.Ns' or `.Oo'
 .      ie "\*[doc-space\n[doc-arg-limit]]"" \
 .        nr doc-no-space 1
 .      el \
 .        nr doc-no-space 0
-.
-.      \" use space after last parameter as the current one
-.      ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
 .
 .      if \n[doc-debug] \{\
 .        nr doc-reg-dpa1 1
@@ -297,7 +288,7 @@
 .    if \n[doc-nesting-level] \
 .      if !\n[doc-func-arg-count] \
 .        if !\n[doc-no-space] \
-.          as doc-out-string "\*[doc-curr-space]
+.          as doc-out-string "\*[doc-space]
 .    nr doc-no-space 0
 .  \}
 ..
@@ -310,7 +301,7 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-argXXX, doc-typeXXX, doc-spaceXXX, doc-arg-limit,
-.\" NS   doc-num-args, doc-arg-ptr, doc-out-string, doc-curr-space
+.\" NS   doc-num-args, doc-arg-ptr, doc-out-string
 .\" NS
 .\" NS local variables:
 .\" NS   doc-str-dpav, doc-reg-dpav, doc-reg-dpav1
@@ -375,14 +366,12 @@
 .    if \n[doc-nesting-level] \
 .      if !\n[doc-func-arg-count] \
 .        if !\n[doc-no-space] \
-.          as doc-out-string "\*[doc-curr-space]
+.          as doc-out-string "\*[doc-space]
 .
 .    ie "\*[doc-space\n[doc-arg-limit]]"" \
 .      nr doc-no-space 1
 .    el \
 .      nr doc-no-space 0
-.
-.    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
 .
 .    nr doc-num-args 0
 .
@@ -417,17 +406,15 @@
 .\" NS   parse space vector (recursive)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-spaceXXX, doc-arg-limit, doc-num-args, doc-curr-space
+.\" NS   doc-spaceXXX, doc-arg-limit, doc-num-args
 .
 .de doc-parse-space-vector
 .  nr doc-arg-limit +1
 .
 .  doc-set-spacing-\n[doc-type\n[doc-arg-limit]]
 .
-.  ie (\n[doc-num-args] == 1) \{\
-.    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
+.  ie (\n[doc-num-args] == 1) \
 .    nr doc-num-args 0
-.  \}
 .  el \{\
 .    nr doc-num-args -1
 .    doc-parse-space-vector
@@ -506,7 +493,7 @@
 .\" NS   print `doc-out-string', enabling hyphenation afterwards
 .\" NS
 .\" NS modifies:
-.\" NS   doc-out-string, doc-curr-space
+.\" NS   doc-out-string
 .
 .de doc-print-out-string
 .  nh
@@ -514,7 +501,6 @@
 .  if !(\n[doc-in-list] : \n[doc-nesting-level]) \
 .    if !\n[doc-no-printing] \{\
 .      nop \&\*[doc-out-string]
-.      ds doc-curr-space
 .      ds doc-out-string
 .    \}
 .
@@ -1738,6 +1724,8 @@
 .\" NS   doc-quote-left, doc-quote-right
 .
 .de doc-enclose-string
+.  doc-set-hard-space
+.
 .  ie \n[doc-arg-limit] \
 .    as doc-out-string \&\*[doc-quote-left]
 .  el \{\
@@ -1773,6 +1761,8 @@
 .
 .      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .  \}\}
+.
+.  doc-set-soft-space
 ..
 .
 .
@@ -2390,8 +2380,7 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-macro-name, doc-arg-limit, doc-num-args, doc-arg-ptr,
-.\" NS   doc-argXXX, doc-spaceXXX, doc-curr-space, doc-space-mode,
-.\" NS   doc-space
+.\" NS   doc-argXXX, doc-spaceXXX, doc-space-mode, doc-space
 .\" NS
 .\" NS width register `Sm' set in doc-common
 .\" NS
@@ -2420,14 +2409,12 @@
 .
 .    ie "\*[doc-arg\n[doc-arg-ptr]]"on" \{\
 .      ds doc-space "\*[doc-saved-space]
-.      ds doc-curr-space "\*[doc-space]
 .      nr doc-space-mode 1
 .    \}
 .    el \{\
 .      ie "\*[doc-arg\n[doc-arg-ptr]]"off" \{\
 .        ds doc-saved-space "\*[doc-space]
 .        ds doc-space
-.        ds doc-curr-space
 .        nr doc-space-mode 0
 .      \}
 .      el \{\
@@ -3306,7 +3293,6 @@
 .  \}
 .
 .  ds doc-out-string-saved "\*[doc-out-string]
-.  ds doc-curr-space-saved "\*[doc-curr-space]
 .  nr doc-curr-font-saved \n[doc-curr-font]
 .  nr doc-curr-size-saved \n[doc-curr-size]
 .  nr doc-in-synopsis-count-saved \n[doc-in-synopsis-count]
@@ -3440,7 +3426,6 @@
 .  \}
 .
 .  ds doc-out-string "\*[doc-out-string-saved]
-.  ds doc-curr-space "\*[doc-curr-space-saved]
 .  nr doc-curr-font \n[doc-curr-font-saved]
 .  nr doc-curr-size \n[doc-curr-size-saved]
 .  nr doc-in-synopsis-count \n[doc-in-synopsis-count-saved]
