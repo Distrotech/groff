@@ -929,6 +929,8 @@ void ps_printer::fill_path()
     out.put_float(1.0-k)
        .put_symbol("FL");
   }
+  else if (fill_color->is_equal(output_color))
+    out.put_symbol("BL");
   else {
     set_color(fill_color, 0);
     out.put_symbol("FC");
