@@ -1026,10 +1026,8 @@ should be used.
 .B grops
 itself doesn't emit bounding box information.
 .
-With the help of the
-.BR eps2eps (1)
-script which is part of GhostScript
-the following commands will produce an encapsulated PS file
+With the help of GhostScript the following commands will produce an
+encapsulated PS file
 .B foo.eps
 from input file
 .BR foo :
@@ -1039,16 +1037,13 @@ from input file
 groff -P-b16 foo > foo.ps
 .br
 .B
-eps2eps foo.ps foo.tmp
-.br
-.B
-grep %%BoundingBox foo.tmp > foo.bbx
+gs -dNOPAUSE -sDEVICE=bbox -- foo.ps 2> foo.bbox
 .br
 .B
 cat foo.ps | sed \-e '/%%Orientation/rfoo.bbx' > foo.eps
 .br
 .B
-rm foo.tmp foo.bbx
+rm foo.bbx
 .br
 .
 .
