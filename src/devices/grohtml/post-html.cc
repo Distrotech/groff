@@ -1905,7 +1905,6 @@ void html_printer::end_font (const char *fontname)
     current_paragraph->done_italic();
   } else if (strcmp(fontname, "CR") == 0) {
     current_paragraph->done_tt();
-    current_paragraph->done_pre();
   }
 }
 

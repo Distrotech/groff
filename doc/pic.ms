@@ -584,7 +584,7 @@ line <- ->
 .PP
 In fact, the \fBarrow\fP command is just shorthand for \fBline ->\fP.  And
 there is a double-head modifier <->, so the figure above could have been made
-with \fCWline <->\fP.
+with \f(CWline <->\fP.
 .PP
 Arrowheads have a \fBwidth\fP attribute, the distance across the rear;
 and a \fBheight\fP attribute, the length of the arrowhead along the shaft.
@@ -599,7 +599,7 @@ value of 0 will produce open arrowheads.
 Line Thickness
 .PP
 It's also possible to change the line thickness of an object (this is
-a GNU extension, DWB \fBpic\fP doesn't support it.).  
+a GNU extension, DWB \fBpic\fP doesn't support it).  
 The default thickness of the lines used to draw objects is controlled by the
 .B linethick
 variable.
@@ -1908,7 +1908,9 @@ for loop:
 \&        }
 \&        move down from last arrow .center;
 \&        [
-\&            if ( $1 == boxht ) then { "\\fBline up left\\fP" } else { sprintf("\\fBarrow up left %g\\fP", $1) };
+\&            if ( $1 == boxht ) \e
+\&            then { "\\fBline up left\\fP" } \e
+\&            else { sprintf("\\fBarrow up left %g\\fP", $1) };
 \&        ]
 \&    ] 
 \&    move right from last [] .e;
@@ -1936,7 +1938,9 @@ define gridarrow
 		}
 		move down from last arrow .center;
 		[
-			if ( $1 == boxht ) then { "\fBline up left\fP" } else { sprintf("\fBarrow up left %g\fP", $1) };
+			if ( $1 == boxht ) \
+			then { "\fBline up left\fP" } \
+			else { sprintf("\fBarrow up left %g\fP", $1) };
 		]
 	] 
 	move right from last [] .e;
@@ -2416,7 +2420,7 @@ The \fBpic\fP language was originally described by Brian Kernighan in
 Bell Labs Computing Science Technical Report #116 (you can obtain a
 PostScript copy of the revised version, [1], by sending a mail message to
 \&\fInetlib@research.att.com\fP with a body of \&`send 116 from
-research/cstr'.).  There have been two revisions, in 1984 and 1991.
+research/cstr').  There have been two revisions, in 1984 and 1991.
 .PP
 The document you are reading effectively subsumes Kernighan's
 description; it was written to fill in lacunae in the exposition and
