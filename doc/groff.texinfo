@@ -791,9 +791,9 @@ the most common (and the ones described in this manual) are @code{-man},
 Although @code{groff} provides most functions needed to format a
 document, some operations would be unwieldy (i.e.@: drawing pictures).
 Therefore, programs called preprocessors were written which understand
-their own language and produce the necessary groff operations.  These
-preprocessors are able to differentiate their own input from the rest of
-the document via markers.
+their own language and produce the necessary @code{groff} operations.
+These preprocessors are able to differentiate their own input from the
+rest of the document via markers.
 
 To use a preprocessor, @sc{Unix} pipes are used to feed the output from
 the preprocessor into @code{groff}.  Any number of preprocessors may be
@@ -856,7 +856,7 @@ distinguish it from its original counterparts provided by the host
 is GNU @code{eqn}.  On operating systems like Linux or the Hurd, which
 don't contain proprietary software, this prefix is omitted since GNU
 @code{troff} is the only used incarnation of @code{troff}.  Exception:
-@code{groff} is never replaced by `roff'.
+@code{groff} is never replaced by `@code{roff}'.
 
 @menu
 * Options::                     
@@ -954,8 +954,8 @@ Do not postprocess the output of @code{gtroff}.  Normally @code{groff}
 will automatically run the appropriate postprocessor.
 @item -P@var{arg}
 Pass @var{arg} to the postprocessor.  Each argument should be passed
-with a separate @samp{-P} option.  Note that groff does not prepend
-@samp{-} to @var{arg} before passing it to the postprocessor.
+with a separate @samp{-P} option.  Note that @code{groff} does not
+prepend @samp{-} to @var{arg} before passing it to the postprocessor.
 @item -l
 Send the output to a printer.  The command used for this is specified by
 the print command in the device description file.
@@ -1009,7 +1009,7 @@ Generate an @sc{ascii} approximation of the typeset output.
 @item -b
 Print a backtrace with each warning or error message.  This backtrace
 should help track down the cause of the error.  The line numbers given
-in the backtrace may not always be correct: @code{troff}'s idea of line
+in the backtrace may not always be correct: @code{gtroff}'s idea of line
 numbers gets confused by @code{as} or @code{am} requests.
 @item -i
 Read the standard input after all the named input files have been
@@ -1039,7 +1039,7 @@ Output only pages in @var{list}, which is a comma-separated list of page
 ranges; @var{n} means print page @var{n}, @samp{@var{m}-@var{n}} means
 print every page between @var{m} and @var{n}, @samp{-@var{n}} means
 print every page up to @var{n}, @samp{@var{n}-} means print every page
-from @var{n}.  @code{troff} will exit after printing the last page in
+from @var{n}.  @code{gtroff} will exit after printing the last page in
 the list.
 @item -r@var{cn}
 @itemx -r@var{name}=@var{n}
@@ -1062,8 +1062,8 @@ option.
 @cindex environment variables
 @cindex variables in environment
 
-There are also several environment variables which can modify groff's
-behavior.
+There are also several environment variables which can modify
+@code{groff}'s behavior.
 
 @table @code
 @item GROFF_COMMAND_PREFIX
@@ -1200,7 +1200,7 @@ macro package.
 
 This section covers some of the basic concepts you will need to
 understand to use a macro package.@footnote{This section is derived from
-@cite{Writing Papers with nroff using -me} by Eric P.@w{ }Allman}
+@cite{Writing Papers with nroff using -me} by Eric P.@w{ }Allman.}
 References are made throughout to more detailed information, if desired.
 
 @code{groff} reads an input file prepared by the user and outputs a
@@ -1279,14 +1279,14 @@ lines---@code{groff} is smart enough to hyphenate words for you as
 needed, but is not smart enough to take hyphens out and join a word back
 together.  Also, words such as ``mother-in-law'' should not be broken
 over a line, since then you will get a space where not wanted, such as
-``mother- in-law''.
+``@w{mother- in}-law''.
 
 @findex ls
 @cindex double spacing
 @cindex spacing
-Groff will double space output text automatically if you use the request
-@w{@samp{.ls 2}}.  You can revert to single spaced mode by typing
-@w{@samp{.ls 1}}.
+@code{groff} will double space output text automatically if you use the
+request @w{@samp{.ls 2}}.  You can revert to single spaced mode by
+typing @w{@samp{.ls 1}}.
 
 A number of requests allow you to change the way the printed copy looks,
 sometimes called the @dfn{layout} of the output page.  Most of these
@@ -1300,10 +1300,11 @@ The @samp{.bp} request starts a new page.
 @findex sp
 @cindex blank lines
 @cindex empty lines
-The request @samp{.sp @var{N}} leaves @var{N} lines of blank space.
-@var{N} can be omitted (meaning skip a single line) or can be of the
-form @var{N}i (for @var{N} inches) or @var{N}c (for @var{N}
-centimeters).  For example, the input:
+@cindex lines, empty
+The request @w{@samp{.sp @var{N}}} leaves @var{N}@w{ }lines of blank
+space.  @var{N}@w{ }can be omitted (meaning skip a single line) or can
+be of the form @var{N}i (for @var{N}@w{ }inches) or @var{N}c (for
+@var{N}@w{ }centimeters).  For example, the input:
 
 @example
 .sp 1.5i
@@ -1317,11 +1318,12 @@ thoughts on the subject'', followed by a single blank line.
 
 @findex ce
 @cindex centering lines
+@cindex lines, centering
 Text lines can be centered by using the @samp{.ce} request.  The line
 after @samp{.ce} is centered (horizontally) on the page.  To center more
-than one line, use @samp{.ce @var{N}} (where @var{N} is the number of
-lines to center), followed by the @var{N} lines.  If you want to center
-many lines but don't want to count them, type:
+than one line, use @w{@samp{.ce @var{N}}} (where @var{N} is the number
+of lines to center), followed by the @var{N}@w{ }lines.  If you want to
+center many lines but don't want to count them, type:
 
 @example
 .ce 1000
@@ -1330,8 +1332,8 @@ lines to center
 @end example
 
 @noindent
-The @samp{.ce 0} request tells @code{groff} to center zero more lines,
-in other words, stop centering.
+The @w{@samp{.ce 0}} request tells @code{groff} to center zero more
+lines, in other words, stop centering.
 
 @findex br
 @cindex line break
@@ -1346,23 +1348,23 @@ action, use @samp{.br}.
 @cindex common features
 @cindex features, common
 
-Groff provides very low level operations for formatting a document.
-There are many common routine operations which are done in all documents.
-These common operations are written into @dfn{macros} and collected into a
-@dfn{macro package}.
+@code{groff} provides very low level operations for formatting a
+document.  There are many common routine operations which are done in
+all documents.  These common operations are written into @dfn{macros}
+and collected into a @dfn{macro package}.
 
-All macro packages provide certain common capabilities which fall
-into the following categories.
+All macro packages provide certain common capabilities which fall into
+the following categories.
 
 @subsection Paragraphs
 @cindex paragraphs
 
-One of the most common and most used capability is starting a
-paragraph.  There are a number of different types of paragraphs,
-any of which can be initiated with macros supplied by the macro
-package.  Normally paragraphs start with a blank line and the first
-line indented, like the text in this manual.  There are also block
-style paragraphs, which omit the indentation:
+One of the most common and most used capability is starting a paragraph.
+There are a number of different types of paragraphs, any of which can be
+initiated with macros supplied by the macro package.  Normally,
+paragraphs start with a blank line and the first line indented, like the
+text in this manual.  There are also block style paragraphs, which omit
+the indentation:
 
 @example
 Some   men  look   at  constitutions   with  sanctimonious
@@ -1370,6 +1372,7 @@ reverence, and deem them like the ark of the covenant, too
 sacred to be touched.
 @end example
 
+@noindent
 And there are also indented paragraphs which begin with a tag or label
 at the margin and the remaining text indented.
 
@@ -1384,27 +1387,28 @@ longlabel
       although they will line up with each other.
 @end example
 
-A variation of this is a bulleted list....
+A variation of this is a bulleted list.
+@c XXX description
 
 @subsection Sections and Chapters
 
-Most macro packages supply some form of section headers.
-The simplest kind is simply the heading on a line by itself in bold
-type.  Others supply automatically numbered section heading or
-different heading styles at different levels.
-Some, more sophisticated, macro packages supply macros for starting
-chapters and appendicies.
+Most macro packages supply some form of section headers.  The simplest
+kind is simply the heading on a line by itself in bold type.  Others
+supply automatically numbered section heading or different heading
+styles at different levels.  Some, more sophisticated, macro packages
+supply macros for starting chapters and appendicies.
 
 @subsection Headers and Footers
 
 Every macro packages gives you some way to manipulate the headers and
-footers (or @dfn{titles} on each page.  Some packages will allow you
-to have different ones on the even and odd pages (for material
-printed in a book form).
+footers (or @dfn{titles}) on each page.  Some packages will allow you to
+have different ones on the even and odd pages (for material printed in a
+book form).
+
 The titles are called three-part titles, that is, there is a
-left-justified part, a centered part, and a right-justified part.
-An automatically generated page number may be put in any of these
-fields with the @samp{%} character.
+left-justified part, a centered part, and a right-justified part.  An
+automatically generated page number may be put in any of these fields
+with the @samp{%} character (@pxref{Page Layout} for more details).
 
 @subsection Page Layout
 
@@ -1414,82 +1418,84 @@ details about the appearance of the printed pages.
 @subsection Displays
 @cindex displays
 
-Displays are sections of text to be set off from the body
-of the paper.  Major quotes, tables, and figures are types of
-displays, as are all the examples used in this document.
+Displays are sections of text to be set off from the body of the paper.
+Major quotes, tables, and figures are types of displays, as are all the
+examples used in this document.
 
 @cindex quotes, major
 @cindex major quotes
-Major quotes are quotes which are several lines long,
-and hence are set in from the rest of the text without
-quote marks around them.
+@dfn{Major quotes} are quotes which are several lines long, and hence
+are set in from the rest of the text without quote marks around them.
 
 @cindex list
-A list is an indented, single spaced, unfilled display.  Lists should
-be used when the material to be printed
-should not be filled and justified like normal text, such
-as columns of figures or the examples used in this paper.
+A @dfn{list} is an indented, single spaced, unfilled display.  Lists
+should be used when the material to be printed should not be filled and
+justified like normal text, such as columns of figures or the examples
+used in this paper.
 
 @cindex keep
-A keep is a display of lines which are kept on a single page if
-possible.  An example of where you would use a
-keep might be a diagram.  Keeps differ from lists in that
-lists may be broken over a page boundary whereas keeps will
-not.
+A @dfn{keep} is a display of lines which are kept on a single page if
+possible.  An example of where you would use a keep might be a diagram.
+Keeps differ from lists in that lists may be broken over a page boundary
+whereas keeps will not.
 
 @cindex keep, floating
 @cindex floating keep
-Floating keeps move relative to the text.  Hence, they
-are good for things which will be referred to by name, such
-as ``See figure 3''.  A floating keep will appear at the bottom of the
-current page if it will fit; otherwise, it will
-appear at the top of the next page.  Meanwhile, the surrounding text
-will `flow' around the keep, thus leaving now blank areas.
+Floating keeps move relative to the text.  Hence, they are good for
+things which will be referred to by name, such as ``See figure@w{ }3''.
+A floating keep will appear at the bottom of the current page if it will
+fit; otherwise, it will appear at the top of the next page.  Meanwhile,
+the surrounding text will `flow' around the keep, thus leaving now blank
+areas.
 
 @subsection Footnotes and annotations
 @cindex footnotes
 @cindex annotations
 
-There are a number of requests to save text for later
-printing.  Footnotes are printed at the bottom of the current
-page.  Delayed text is intended to be a variant form of foot-
-note; the text is printed only when explicitly called for,
-such as at the end of each chapter.
+There are a number of requests to save text for later printing.
+@dfn{Footnotes} are printed at the bottom of the current page.  Delayed
+text is intended to be a variant form of footnote; the text is printed
+only when explicitly called for, such as at the end of each chapter.
 
-Delayed text is very similar to a footnote except that
-it is printed when called for explicitly.  This allows a
-list of references to appear (for example) at the end of
-each chapter, as is the convention in some disciplines.
+@cindex delayed text
+@dfn{Delayed text} is very similar to a footnote except that it is
+printed when called for explicitly.  This allows a list of references to
+appear (for example) at the end of each chapter, as is the convention in
+some disciplines.
 
-Most macro packages which supply this functionality also supply a
-means of automatically numbering either type of annotation.
+Most macro packages which supply this functionality also supply a means
+of automatically numbering either type of annotation.
 
 @subsection Table of Contents
+@cindex table of contents
+@cindex contents, table of
 
-Tables of contents are a type of
-delayed text having a tag (usually the page number) attached
-to each entry after a row of dots.  The table accumulates
-throughought the paper until printed, usually after the paper has
-ended.  Many macro packages will provide the abilitly to have several
-tables of contents (i.e. one standard one, one for tables, &c.)
+@dfn{Tables of contents} are a type of delayed text having a tag
+(usually the page number) attached to each entry after a row of dots.
+The table accumulates throughout the paper until printed, usually after
+the paper has ended.  Many macro packages will provide the ability to
+have several tables of contents (i.e.@: one standard one, one for
+tables, etc).
 
-@subsection Indexes
+@subsection Indices
+@cindex index
 
-While some macro packages will use the term @dfn{index}, none
-actually provide that functionality.  The facilities they call
-indexes are actually more appropriate for tables of contents.
+While some macro packages will use the term @dfn{index}, none actually
+provide that functionality.  The facilities they call indices are
+actually more appropriate for tables of contents.
 
 @subsection Paper formats
+@cindex paper formats
 
 Some macro packages provide stock formats for various kinds of
 documents.  Many of them provide a common format for the title and
-opening pages of a technical paper.  The -mm macros in particular
-provide formats for letters and memorandums.
+opening pages of a technical paper.  The @code{-mm} macros in particular
+provide formats for letters and memoranda.
 
 @subsection Multiple Columns
 
-Some macro packages (except -man) provide the ability to have two or
-more columns on a page.
+Some macro packages (except @code{-man}) provide the ability to have two
+or more columns on a page.
 
 @subsection Font and Size changes
 
@@ -1498,9 +1504,9 @@ macro packages provide macros to make these operations simpler.
 
 @subsection Predefined Strings
 
-Most macro packages provide various predefined strings for a variety
-of uses, examples are sub- and super-scripts, printable dates, quotes
-and various special characters.
+Most macro packages provide various predefined strings for a variety of
+uses, examples are sub- and superscripts, printable dates, quotes and
+various special characters.
 
 @subsection Preprocessor Support
 
@@ -1508,9 +1514,9 @@ All macro packages provide support for the various preprocessors.
 
 @subsection Configuration and Customization
 
-Some macro packages provide means of customizing many of details of
-how the package behaves.  This ranges from setting the default type
-size to changing the appearance of section headers.
+Some macro packages provide means of customizing many of details of how
+the package behaves.  This ranges from setting the default type size to
+changing the appearance of section headers.
 
 
 
@@ -1535,25 +1541,35 @@ This chapter documents the main macro packages that come with
 @section -man
 @cindex @code{-man}
 
+@c XXX documentation
+
 
 @node -mdoc, -ms, -man, Macro Packages
 @section -mdoc
 @cindex @code{-mdoc}
+
+@c XXX documentation
 
 
 @node -ms, -me, -mdoc, Macro Packages
 @section -ms
 @cindex @code{-ms}
 
+@c XXX documentation
+
 
 @node -me, -mm, -ms, Macro Packages
 @section -me
 @cindex @code{-me}
 
+@c XXX documentation
+
 
 @node -mm,  , -me, Macro Packages
 @section -mm
 @cindex @code{-mm}
+
+@c XXX documentation
 
 
 
@@ -1562,9 +1578,9 @@ This chapter documents the main macro packages that come with
 @cindex programming tutorial
 @cindex tutorial for programming
 
-This chapter covers @strong{all} of the facilities of groff.
-If you are intending to use a macro package, you probably do not want
-to read this chapter.
+This chapter covers @strong{all} of the facilities of @code{groff}.  If
+you are intending to use a macro package, you probably do not want to
+read this chapter.
 
 @menu
 * Text::                        
@@ -1605,14 +1621,10 @@ to read this chapter.
 @section Text
 @cindex text
 
-@code{groff} input files contain text with control commands
-interspersed throughout.  But, even without control codes,
-@code{groff} will still do several things with your text:
-filling and adjusting,
-adding additional space after sentences,
-hyphenating
-and
-inserting implicit line breaks.
+@code{groff} input files contain text with control commands interspersed
+throughout.  But, even without control codes, @code{groff} will still do
+several things with your text: filling and adjusting, adding additional
+space after sentences, hyphenating and inserting implicit line breaks.
 
 @menu
 * Filling and Adjusting::       
@@ -1627,61 +1639,54 @@ inserting implicit line breaks.
 @cindex filling and adjusting
 @cindex adjusting and filling
 
-When troff reads in text it collects words from input and fits as many
-of them together on one output line as it can.  This is known as
+When @code{gtroff} reads in text it collects words from input and fits
+as many of them together on one output line as it can.  This is known as
 @dfn{filling}.
 
-Once troff has a @dfn{filled} line it will try to @dfn{adjust} it.
-which means it will widen the spacing between words until
-the text reaches the right margin (in the default adjustment mode).
-Extra spaces between words are preserved, but
-spaces at the end of lines are ignored.
-Spaces at the front of a line will cause a @dfn{break}
-(breaks will be explained in @ref{Implicit Line Breaks})
+Once @code{gtroff} has a @dfn{filled} line it will try to @dfn{adjust}
+it.  which means it will widen the spacing between words until the text
+reaches the right margin (in the default adjustment mode).  Extra spaces
+between words are preserved, but spaces at the end of lines are ignored.
+Spaces at the front of a line will cause a @dfn{break} (breaks will be
+explained in @ref{Implicit Line Breaks})
 
-@c distribute these through the text
-@xref{Manipulating Filling and Adjusting}
+@xref{Manipulating Filling and Adjusting}.
 
 @node Hyphenation, Sentences, Filling and Adjusting, Text
 @subsection Hyphenation
 @cindex hyphenation
 
-Since the odds of finding a set of words, for every output line,
-which will fit nicely on a
-line without inserting excessive amounts of space between words
-is not great,
-troff will hyphenate words so that lines can be justified
-without there being too much space between words.
+Since the odds of finding a set of words, for every output line, which
+will fit nicely on a line without inserting excessive amounts of space
+between words is not great, @code{gtroff} will hyphenate words so that
+lines can be justified without there being too much space between words.
 It uses an internal hyphenation algorithm, to indicate which words can
-be hyphenated and how to do so.
-When a word is hyphenated the first part of the word will be added
-to the current filled line being output (with an attached hyphen),
-and the other portion will be added to the next line to be filled.
+be hyphenated and how to do so.  When a word is hyphenated the first
+part of the word will be added to the current filled line being output
+(with an attached hyphen), and the other portion will be added to the
+next line to be filled.
 
-@c distribute these through the text
-@xref{Manipulating Hyphenation}
+@xref{Manipulating Hyphenation}.
 
 @node Sentences, Tab Stops, Hyphenation, Text
 @subsection Sentences
 @cindex sentences
 
-Although it is often debated,
-some typesetting rules say there should be different amounts of space
-after various puctuation marks.
-For example, a period at the end of a sentence
-should have twice as much space following it
-as would a comma or a period as part of an abbreviation.
+Although it is often debated, some typesetting rules say there should be
+different amounts of space after various puctuation marks.  For example,
+a period at the end of a sentence should have twice as much space
+following it as would a comma or a period as part of an abbreviation.
 
 @cindex sentence spaces
 @cindex spaces between sentences
-Troff does this by flagging certain characters (normally
-@samp{!},  @samp{?} and @samp{.})
-as @dfn{end of sentence} characters.
-When troff encounters one of these characters at the end of a line it
-will append two @dfn{sentence spaces} in the formatted output.
-(thus, one of the conventions mentioned in @ref{Input Conventions}).
+@cindex french-spacing
+@code{gtroff} does this by flagging certain characters (normally
+@samp{!}, @samp{?} and @samp{.}) as @dfn{end of sentence} characters.
+When @code{gtroff} encounters one of these characters at the end of a
+line it will append two @dfn{sentence spaces} in the formatted output.
+(Thus, one of the conventions mentioned in @ref{Input Conventions}).
 
-@c also describe how characters like ) are treated here -jjc
+@c XXX also describe how characters like ) are treated here -jjc
 @c gotta do some research on this -trent
 
 @node Tab Stops, Implicit Line Breaks, Sentences, Text
@@ -1689,36 +1694,33 @@ will append two @dfn{sentence spaces} in the formatted output.
 @cindex tab stops
 @cindex stops, tabulator
 
-Groff translates tabs in the input into movements to the next tab
-stop.  These tab stops are initially located every half inch across
-the page.
-Using this you can make simple tables.  However, this can often be
-deceptive as the appearance (and width) of your text on a terminal and
-the results from groff can vary greatly.
+@code{gtroff} translates @dfn{tabulator stops}, also called @dfn{tabs},
+in the input into movements to the next tab stop.  These tab stops are
+initially located every half inch across the page.  Using this you can
+make simple tables.  However, this can often be deceptive as the
+appearance (and width) of your text on a terminal and the results from
+@code{gtroff} can vary greatly.
 
 Also, a possible sticking point is that lines beginning with tab
 characters will still be filled, again producing unexpected results.
 For example, the following input
 
-@example
-	1	2	3
-		4	5
-@end example
+@multitable {12345678} {12345678} {12345678} {12345678}
+@item
+@tab 1 @tab 2 @tab 3
+@item
+@tab   @tab 4 @tab 5
+@end multitable
 
 @noindent
 will produce
 
-@example
-	1	2	3		4	5
-@end example
+@multitable {12345678} {12345678} {12345678} {12345678} {12345678} {12345678} {12345678}
+@item
+@tab 1 @tab 2 @tab 3 @tab   @tab 4 @tab 5
+@end multitable
 
-@c Tab stops are with respect to the input line.  -jjc
-@c did that last section address that?? -trent
-
-
-
-@c distribute these through the text
-@xref{Tabs and Fields}
+@xref{Tabs and Fields}.
 
 @node Implicit Line Breaks,  , Tab Stops, Text
 @subsection Implicit Line Breaks
@@ -1729,29 +1731,29 @@ will produce
 @cindex break, implicit
 @cindex line break
 
-An important concept in troff is the @dfn{break}.  When a @dfn{break}
-occurs, troff will output the partially filled line (unadjusted),
-and resume collecting and filling text on the next output line.
+An important concept in @code{gtroff} is the @dfn{break}.  When a break
+occurs, @code{gtroff} will output the partially filled line
+(unadjusted), and resume collecting and filling text on the next output
+line.
 
 @cindex blank line
 @cindex empty line
 @cindex line, blank
-There are several ways to cause a break in troff.
-A blank line will not only cause a break, but it will also cause a
-one line vertical space (effectively a blank line) to be output.
+There are several ways to cause a break in @code{gtroff}.  A blank line
+will not only cause a break, but it will also cause a one line vertical
+space (effectively a blank line) to be output.
 
-A line which begins with a space will cause a break and the space
-will be output at the beginning of the next line.
-Note that this space isn't adjusted, even in fill mode.
+A line which begins with a space will cause a break and the space will
+be output at the beginning of the next line.  Note that this space isn't
+adjusted, even in fill mode.
 
-The end of file will also cause a break (otherwise the last line of
-your document may vanish!)
+The end of file will also cause a break (otherwise the last line of your
+document may vanish!)
 
-Certain @dfn{requests} also cause breaks, implicitly or explicity.
-This will be discussed later.
+Certain requests also cause breaks, implicitly or explicity.  This will
+be discussed later.
 
-@c distribute these through the text
-@xref{Manipulating Filling and Adjusting}
+@xref{Manipulating Filling and Adjusting}.
 
 
 @node Input Conventions, Measurements, Text, Programming Tutorial
@@ -1759,22 +1761,22 @@ This will be discussed later.
 @cindex input conventions
 @cindex conventions for input
 
-Since groff does filling automatically, it is traditional in groff not
-to try and type things in as nicely formatted paragraphs.  These are
-some conventions commonly used when typing groff text:
+Since @code{gtroff} does filling automatically, it is traditional in
+@code{groff} not to try and type things in as nicely formatted
+paragraphs.  These are some conventions commonly used when typing
+@code{groff} text:
 
 @itemize @bullet{}
 @item
-Break lines after punctuation, particularily at the ends of
-sentences, and in other logical places.  Keep separate phrases on
-lines by themselves, as entire phrases are often added or deleted
-when editing.
+Break lines after punctuation, particularily at the end of sentences,
+and in other logical places.  Keep separate phrases on lines by
+themselves, as entire phrases are often added or deleted when editing.
 @item
-Try to keep lines less than 40-60 characters,
-to allow space for inserting more text.
+Try to keep lines less than 40-60@w{ }characters, to allow space for
+inserting more text.
 @item
-Do not try to do any formatting in a WYSIWYG manner (i.e. don't
-try and use spaces to get proper indentation).
+Do not try to do any formatting in a WYSIWYG manner (i.e.@: don't try
+and use spaces to get proper indentation).
 @end itemize
 
 
@@ -1785,65 +1787,89 @@ try and use spaces to get proper indentation).
 @cindex units of measurement
 @cindex basic units
 @cindex machine units
-Troff (like any other programs) requires numeric parameters to
-specify various measurements.  Most numeric parameters
-@footnote{those that specify vertical or horizontal motion or a type
-size} may have a measurement unit attached.
-These units are specified as a single
-character which immediately follows the number or expression.
-Each of these units are understood, by troff, to be a multiple of its
+@cindex measurement units
+@code{gtroff} (like any other programs) requires numeric parameters to
+specify various measurements.  Most numeric parameters@footnote{those
+that specify vertical or horizontal motion or a type size} may have a
+@dfn{measurement unit} attached.  These units are specified as a single
+character which immediately follows the number or expression.  Each of
+these units are understood, by @code{gtroff}, to be a multiple of its
 @dfn{basic unit}.  So, whenever a different measurement unit is
-specified troff converts this into its basic units.
-This basic unit, represented by a @samp{u} is a
-device dependent measurement which is quite small, ranging from
-1/75th to 1/72000th of an inch.
+specified @code{gtroff} converts this into its @dfn{basic units}.  This
+basic unit, represented by a @samp{u}, is a device dependent measurement
+which is quite small, ranging from 1/75th to 1/72000th of an inch; all
+other units are converted eventually to basic units.  The values may be
+given as fractional numbers---nevertheless, fractional basic units are
+always rounded to integers.
 
-Some of the measurement units are compleatly independent of any of
-the current settings (e.g. type size) of groff.
+Some of the measurement units are completely independent of any of the
+current settings (e.g.@: type size) of @code{gtroff}.
 
 @table @samp
 @item i
 @cindex inch
+@cindex @code{i} unit
+@cindex unit, @code{i}
 Inches.  An antiquated measurement unit still in use in certain
-backwards countries.
+backwards countries.  One inch is equal to 2.54@dmn{cm}.
 @item c
 @cindex centimeter
-Centimeters.
+@cindex @code{c} unit
+@cindex unit, @code{c}
+Centimeters.  One centimeter is equal to 0.3937@dmn{in}.
 @item p
 @cindex points
+@cindex @code{p} unit
+@cindex unit, @code{p}
 Points.  This is a typesetter's measurement used for measure type size.
-It is 72 points to an inch.
+It is 72@w{ }points to an inch.
 @item P
 @cindex pica
-Pica.  Another typesetting measurement.  6 Picas to an inch.
+@cindex @code{P} unit
+@cindex unit, @code{P}
+Pica.  Another typesetting measurement.  6@w{ }Picas to an inch (and
+12@w{ }points to a pica).
 @item s
-@item z
+@itemx z
+@cindex @code{s} unit
+@cindex unit, @code{s}
+@cindex @code{z} unit
+@cindex unit, @code{z}
+@xref{Fractional Type Sizes}, for a discussion of these units.
 @end table
 
-The other measurements understood by troff are dependent on settings
-currently in effect in troff.  These are very useful for specifying
-measurements which should look proper with any size of text.
+The other measurements understood by @code{gtroff} are dependent on
+settings currently in effect in @code{gtroff}.  These are very useful
+for specifying measurements which should look proper with any size of
+text.
 
 @table @samp
 @item m
-@cindex em
-Ems.  This unit is equal to the current font size in points.
-So called because it is @emph{approximately} the width of the letter
-@samp{m} in the current font.
+@cindex em unit
+@cindex @code{m} unit
+@cindex unit, @code{m}
+Ems.  This unit is equal to the current font size in points.  So called
+because it is @emph{approximately} the width of the letter@w{ }@samp{m}
+in the current font.
 @item n
-@cindex en
+@cindex en unit
+@cindex @code{n} unit
+@cindex unit, @code{n}
 Ens.  This is half of an em.
 @item v
 @cindex vertical space
 @cindex space, vertical
+@cindex @code{v} unit
+@cindex unit, @code{v}
 Vertical space.  This is equivalent to the current line spacing.
 @xref{Sizes}, for more information about this.
 @item M
+@cindex @code{M} unit
+@cindex unit, @code{M}
 100ths of an em.
 @end table
 
-@c distribute these through the text
-@xref{Fractional Type Sizes}
+@xref{Fractional Type Sizes}.
 
 @menu
 * Default Units::               
@@ -1854,10 +1880,10 @@ Vertical space.  This is equivalent to the current line spacing.
 @cindex default units
 @cindex units, default
 
-Many requests take a default unit.  While this can be helpful at
-times, it can cause strange errors in some expressions.
-For example, the line  length  request  expects  em's.
-Here are several attempts to get 3.5 inches and the results:
+Many requests take a default unit.  While this can be helpful at times,
+it can cause strange errors in some expressions.  For example, the line
+length request expects em's.  Here are several attempts to get a line
+length of 3.5@w{ }inches and the results:
 
 @example
 3.5i      @result{}   3.5i
@@ -1867,6 +1893,7 @@ Here are several attempts to get 3.5 inches and the results:
 7i/2u     @result{}   3.5i
 @end example
 
+@noindent
 As you can see, the safest way to specify measurements is to always
 attach a scaling indicator.
 
@@ -1875,7 +1902,7 @@ attach a scaling indicator.
 @section Expressions
 @cindex expressions
 
-Troff has most of operators common to other languages:
+@code{gtroff} has most of operators common to other languages:
 
 @itemize @bullet
 @item
@@ -3549,6 +3576,10 @@ groff will round to the nearest permissible size.
 @cindex fractional type sizes
 @cindex type sizes, fractional
 
+@cindex @code{s} unit
+@cindex unit, @code{s}
+@cindex @code{z} unit
+@cindex unit, @code{z}
 A @dfn{scaled point} is equal to 1/@var{sizescale} points, where
 @var{sizescale} is specified in the @file{DESC} file (1 by default.)
 There is a new scale indicator @samp{z} which has the effect of

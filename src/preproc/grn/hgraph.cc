@@ -16,11 +16,10 @@
 #define len(a, b)	hypot((double)(b.x-a.x), (double)(b.y-a.y))
 
 
-extern int prevval;		/* spacing between dots */
 extern int dotshifter;		/* for the length of dotted curves */
 
 extern int style[];		/* line and character styles */
-extern int thick[];
+extern double thick[];
 extern char *tfont[];
 extern int tsize[];
 extern int stipple_index[];	/* stipple font index for stipples 0 - 16 */
@@ -28,7 +27,7 @@ extern char *stipple;		/* stipple type (cf or ug) */
 
 
 extern double troffscale;	/* imports from main.c */
-extern int linethickness;
+extern double linethickness;
 extern int linmod;
 extern int lastx;
 extern int lasty;
@@ -391,7 +390,7 @@ HGSetBrush(int mode)
   }
   if (linethickness != thick[mode]) {
     linethickness = thick[mode];
-    printf("\\h'-%du'\\D't %du'", linethickness, linethickness);
+    printf("\\h'-%.2lfp'\\D't %.2lfp'", linethickness, linethickness);
     printed = 1;
   }
   if (printed)

@@ -34,7 +34,7 @@
  *                     pointscale  -  Turn on scaling point sizes to match
  *                                    `scale' commands.  (Optional operand
  *                                    `off' to turn it off.)
- *          narrow, medium, thick  -  Set pixel widths of lines.
+ *          narrow, medium, thick  -  Set widths of lines.
  *                           file  -  Set the file name to read the gremlin
  *                                    picture from.  If the file isn't in
  *                                    the current directory, the gremlin
@@ -107,10 +107,9 @@ static char sccsid[] = "@(#) (Berkeley) 8/5/85, 12/28/99";
 
 int res;			/* the printer's resolution goes here */
 
-int prevval;			/* spacing between dots */
 int dotshifter;			/* for the length of dotted curves */
 
-int linethickness;		/* brush styles */
+double linethickness;		/* brush styles */
 int linmod;
 int lastx;			/* point registers for printing elements */
 int lasty;
@@ -128,15 +127,22 @@ char *deffont[] =
 {"R", "I", "B", "S"};
 int defsize[] =
 {10, 16, 24, 36};
-int defthick[STYLES] =
-{1, 1, 5, 1, 1, 3};
+/* #define BASE_THICKNESS 1.0 */
+#define BASE_THICKNESS 0.15
+double defthick[STYLES] =
+{1 * BASE_THICKNESS,
+ 1 * BASE_THICKNESS,
+ 5 * BASE_THICKNESS,
+ 1 * BASE_THICKNESS,
+ 1 * BASE_THICKNESS,
+ 3 * BASE_THICKNESS};
 
 /* int cf_stipple_index[NSTIPPLES + 1] =                                  */
-/* { 0, 1, 3, 12, 14, 16, 19, 21, 23 };                                   */
+/* {0, 1, 3, 12, 14, 16, 19, 21, 23};                                     */
 /* a logarithmic scale looks better than a linear one for the gray shades */
-
+/*                                                                        */
 /* int other_stipple_index[NSTIPPLES + 1] =                               */
-/*{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };           */
+/* {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};            */
 
 int cf_stipple_index[NSTIPPLES + 1] =
 {0, 18, 32, 56, 100, 178, 316, 562, 1000};	/* only 1-8 used */
@@ -163,7 +169,7 @@ double adj2 = 0.0;
 double adj3 = 0.0;
 double adj4 = 0.0;
 
-int thick[STYLES];		/* thicknesses set by defaults, then by */
+double thick[STYLES];		/* thicknesses set by defaults, then by */
 				/* commands                             */
 char *tfont[FONTS];		/* fonts originally set to deffont values, */
 				/* then                                    */
@@ -362,17 +368,14 @@ getres(void)
   res = font::res;
 
   /* Correct the brush thicknesses based on res */
-  if (res >= 256) {
-    defthick[0] = res >> 8;
-    defthick[1] = res >> 8;
-    defthick[2] = res >> 4;
-    defthick[3] = res >> 8;
-    defthick[4] = res >> 8;
-    defthick[5] = res >> 6;
-  }
-
-  /* Set up the spacing between dots in a dotted line, not used */
-  prevval = res >> 4;
+  /* if (res >= 256) {
+      defthick[0] = res >> 8;
+      defthick[1] = res >> 8;
+      defthick[2] = res >> 4;
+      defthick[3] = res >> 8;
+      defthick[4] = res >> 8;
+      defthick[5] = res >> 6;
+      } */
 
   linepiece = res >> 9;
   for (dotshifter = 0; linepiece; dotshifter++)
@@ -823,17 +826,14 @@ interpret(char *line)
     break;
 
   case 't':			/* thick */
-    /* thick[2] = atoi(str2); */
     thick[2] = defthick[0] * atoi(str2);
     break;
 
   case 'm':			/* medium */
-    /* thick[5] = atoi(str2); */
     thick[5] = defthick[0] * atoi(str2);
     break;
 
   case 'n':			/* narrow */
-    /* thick[0] = thick[1] = thick[3] = thick[4] = atoi(str2); */
     thick[0] = thick[1] = thick[3] = thick[4] =
 	defthick[0] * atoi(str2);
     break;
