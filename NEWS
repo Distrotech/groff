@@ -1,6 +1,89 @@
 This file describes recent user-visible changes in groff.  Bug fixes
 are not described.  There are more details in the man pages.
 
+VERSION 1.16
+============
+
+Groff
+-----
+
+Some additions to the font description files have been implemented for
+better support of HTML output:
+
+  The new format of lines in the `charset' subsection of font description
+  files is
+
+     name metrics type code [entity_name] [-- comment]
+
+  Currently, only the font description files in devhtml use the optional
+  entity_name string to define the glyph entities in HTML.  Everything
+  after the entity_name field is ignored; in case this field isn't used,
+  two hyphen characters are now necessary to start a comment.
+
+  Two new requests are available in DESC files (currently used only with
+  grohtml):
+
+    use_charnames_in_special
+      This  command  indicates  that  troff should encode named characters
+      inside special commands.
+
+    pass_filenames
+      requests that troff tells  the  driver  the  source file name being
+      processed.  This is achieved by another tcommand: `F filename'.
+
+Troff
+-----
+
+To solve a problem with the .PSPIC macro which needs the `-U' switch of
+troff to access an external program (psbb), a new request .psbb is now
+available to get the bounding box of a PostScript image file.  The values
+(in PostScript units) are returned in the new read-only number registers
+`llx', `lly', `urx', and `ury'.  Consequently, .PSPIC has been adapted to
+use the new request, and the psbb program has been removed.
+
+A new number predefined writable number register, `year', has been added.
+It contains the current year.
+
+A new read-only register, `.Y', has been added.  It contains the revision
+number of the groff package.
+
+`\fP' now behaves as expected in situations like the following where the
+font `foo' is undefined:
+
+  .B bold text
+  normal text \f[foo]bar\fP normal text
+
+Previously, the text after \fP has appeared as bold.
+
+The macro files `tmac.a4' (for specifying A4 paper format) and `tmac.trace'
+(a debugging aid) are now installed also.
+
+A new resource file, `troffrc-end', is now available.  It is invoked after
+all user-specified macros.  Currently used by the html device to include
+tmac.html; thus no need for users to specify -mhtml anymore.
+
+Grotty
+------
+
+Bruno Haible <haible@clisp.cons.org> contributed support for UTF8 output.
+
+Grohtml
+-------
+
+Added .LINE macro to tmac.arkup.
+
+The obsolete `.LINK' macro has been removed.
+
+.URL, .FTP, and .MAILTO now accept an optional third argument which will
+be immediately appended to the second argument (to be used with punctuation,
+for example).
+
+Pic
+---
+
+Added the `srand' command to set the seed for a new sequence of the
+pseudo-random numbers to be returned by `rand'.
+
 VERSION 1.13, 1.14, 1.15
 ========================
 

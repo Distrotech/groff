@@ -445,4 +445,20 @@ dnl
 AC_DEFUN(GROFF_LIBM,
 [AC_CHECK_LIB(m,sin,LIBM=-lm)
 AC_SUBST(LIBM)
+])dnl
+dnl
+dnl
+dnl We need top_srcdir to be absolute.
+dnl
+AC_DEFUN(GROFF_SRCDIR,
+[ac_srcdir_defaulted=no
+srcdir=`cd $srcdir; pwd`
+])dnl
+dnl
+dnl
+dnl This simplifies Makefile rules.
+dnl
+AC_DEFUN(GROFF_BUILDDIR,
+[top_builddir=`pwd`
+AC_SUBST(top_builddir)
 ])

@@ -1,15 +1,24 @@
-MAN7=groff_ms.n groff_man.n groff_me.n groff_msafer.n \
-      groff_mdoc.n groff_mdoc.samples.n
+MAN7=\
+  groff_ms.n \
+  groff_man.n \
+  groff_me.n \
+  groff_msafer.n \
+  groff_mdoc.n \
+  groff_mdoc.samples.n \
+  groff_markup.n
 
-NORMALFILES=tmac.andoc tmac.pic tmac.ps tmac.psnew tmac.psold tmac.pspic \
-      tmac.psatk tmac.dvi tmac.tty tmac.tty-char tmac.X tmac.Xps tmac.latin1 \
-      tmac.lj4 eqnrc troffrc tmac.safer tmac.html tmac.arkup
+NORMALFILES=\
+  tmac.andoc tmac.pic tmac.ps tmac.psnew tmac.psold tmac.pspic \
+  tmac.psatk tmac.dvi tmac.tty tmac.tty-char tmac.X tmac.Xps tmac.latin1 \
+  tmac.lj4 eqnrc troffrc troffrc-end tmac.safer tmac.html tmac.arkup \
+  tmac.a4 tmac.trace
 SPECIALFILES=tmac.an tmac.s
 STRIPFILES=tmac.e tmac.doc tmac.doc.old
 MDOCFILES=doc-common doc-ditroff doc-nroff doc-syms
 mdocdir=$(tmacdir)/mdoc
-CLEANADD=stamp-strip stamp-wrap tmac.e-s tmac.doc-s tmac.doc.old-s \
-      doc-common-s doc-ditroff-s doc-nroff-s doc-syms-s *-wrap
+CLEANADD=\
+  stamp-strip stamp-wrap tmac.e-s tmac.doc-s tmac.doc.old-s \
+  doc-common-s doc-ditroff-s doc-nroff-s doc-syms-s *-wrap
 tmac_s_prefix=
 tmac_an_prefix=
 tmac_wrap=
@@ -18,7 +27,7 @@ sys_tmac_prefix=
 all: stamp-strip stamp-wrap
 
 install_data: $(NORMALFILES) $(SPECIALFILES) stamp-wrap stamp-strip man.local
-	-test -d $(tmacdir) || mkdir $(tmacdir)
+	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
 	if test -n "$(tmac_wrap)"; then \
 	  for m in ""$(tmac_wrap); do \
 	    $(INSTALL_DATA) $$m-wrap $(tmacdir)/tmac.$$m; \
@@ -36,7 +45,7 @@ install_data: $(NORMALFILES) $(SPECIALFILES) stamp-wrap stamp-strip man.local
 	  rm -f $(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(tmacdir)/$$f; \
 	done
-	-test -d $(mdocdir) || mkdir $(mdocdir)
+	-test -d $(mdocdir) || $(mkinstalldirs) $(mdocdir)
 	for f in $(MDOCFILES); do \
 	  rm -f $(mdocdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(mdocdir)/$$f; \

@@ -2,6 +2,28 @@ This file describes various problems that have been encountered in
 compiling, installing and running groff.  Suggestions for additions or
 other improvements to this file are welcome.
 
+* My document says that the current year is 19100, not 2000.
+
+In groff, as in traditional troff, the yr number register yields the
+year minus 1900.  Unfortunately, there is a longstanding bug in the
+Troff User's Manual <http://cm.bell-labs.com/cm/cs/cstr/54.ps.gz>,
+which incorrectly claims that yr is the last two digits of the year.
+This claim was never true of either Unix troff or of groff.
+
+If your text looks like this:
+
+	.\" Wrong:
+	This document was formatted in 19\n(yr.
+
+you can correct it as follows:
+
+	This document was formatted in \n[year].
+
+or, if you want to be portable to older troff versions, as follows:
+
+	.nr y4 1900+\n(yr
+	This document was formatted in \n(y4.
+
 * I get lots of `numeric overflow' error messages whenever I run
 groff; I compiled groff with AT&T C++ 2.0 with an ANSI C compiler.
 

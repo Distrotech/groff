@@ -22,13 +22,13 @@
 
 
 @ifinfo
-This Info file documents GNU troff version 1.12.
+This Info file documents GNU troff version 1.16.
 
 Published by the Free Software Foundation
 59 Temple Place, Suite 330
 Boston, MA  02111-1307  USA
 
-Copyright (C) 1994, 1999 Free Software Foundation, Inc.
+Copyright (C) 1994-2000 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -69,8 +69,8 @@ instead of in the original English.
 @titlepage
 @title groff
 @subtitle The GNU implementation of @code{groff}
-@subtitle Edition 1.12
-@subtitle October 1999
+@subtitle Edition 1.16
+@subtitle Spring 2000
 @author by Trent A.@w{ }Fisher
 @author and the maintainer of groff
 
@@ -79,11 +79,11 @@ instead of in the original English.
 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 1994, 1999 Free Software Foundation, Inc.
+Copyright @copyright{} 1994-2000 Free Software Foundation, Inc.
 
 @sp 2
-Version 1.13 of @code{groff}, @*
-October 1999
+Version 1.16 of @code{groff}, @*
+Spring 2000
 @sp 2
 Published by the Free Software Foundation @*
 59 Temple Place, Suite 330 @*
@@ -116,7 +116,7 @@ Cover art by Etienne Suvasa.
 @node Top, Copying, (dir), (dir)
 
 @ifinfo
-This Info file documents groff version 1.13, the GNU implementation of
+This Info file documents groff version 1.16, the GNU implementation of
 the troff typesetting system.
 
 This is an in-progress document; contributions, comments, or
@@ -967,7 +967,10 @@ For a 100dpi X11 previewer.
 @item ascii
 For typewriter-like devices.
 @item latin1
-For typewriter-like devices using the ISO Latin-1 character set.
+For typewriter-like devices using the ISO Latin-1 (ISO 8859-1) character set.
+@item utf8
+For typewriter-like devices using the Unicode (ISO 10646) character set with
+UTF-8 encoding.
 @item lj4
 For an HP LaserJet4-compatible (or other PCL5-compatible) printer.
 @item html
@@ -2294,9 +2297,35 @@ Day of the year (1-31).
 @item mo
 @vindex mo
 Current month (1-12).
+@item year
+@vindex year
+The year.
 @item yr
 @vindex yr
-Last two digits of the current year (see you in 7 years :-)
+The year minus 1900.  Unfortunately, the Unix Version 7 troff
+documentation had a year 2000 bug: it incorrectly claimed that
+@samp{\n(yr} was the last two digits of the year.  That claim has never
+been true of either traditional troff or GNU troff.  If you see old
+troff input that looks like this:
+
+@example
+'\" (The following line stopped working after 1999.)
+This document was formatted in 19\n(yr.
+@end example
+
+you can correct it as follows:
+
+@example
+This document was formatted in \n[year].
+@end example
+
+or, if you want to be portable to older troff versions, as follows:
+
+@example
+.nr y4 1900+\n(yr
+This document was formatted in \n(y4.
+@end example
+
 @item .c
 @vindex .c
 @itemx c.
@@ -2313,6 +2342,9 @@ then @code{.x} will contain 1.
 @vindex .y
 The minor version number.  For example, if the version number is 1.03
 then @code{.y} will contain 03.
+@item .Y
+@vindex .Y
+The revision number of groff.
 @item .g
 @vindex .g
 Always 1.
@@ -3920,7 +3952,7 @@ request can make a macro have more than one name.
 This would be called as
 
 @example
-.vl $Id: groff.texinfo,v 1.5 1999/12/09 09:42:29 wlemb Exp $
+.vl $Id$
 @end example
 
 

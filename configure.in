@@ -1,6 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(groff/groff.cc)
+AC_INIT(src/roff/groff/groff.cc)
 dnl checks for programs
+GROFF_SRCDIR
+GROFF_BUILDDIR
 AC_PROG_CC
 AC_PROG_CXX
 GROFF_CXX_CHECK
@@ -38,7 +40,7 @@ saved_libs="$LIBS"
 LIBS="$LIBS -lc $LIBM"
 AC_REPLACE_FUNCS(fmod strtol getcwd strerror putenv)
 LIBS="$saved_libs"
-AC_CHECK_FUNCS(rename mkstemp)
+AC_CHECK_FUNCS(rename mkstemp strcasecmp)
 AC_DECL_SYS_SIGLIST
 dnl checks for compiler characteristics
 GROFF_ARRAY_DELETE

@@ -1,0 +1,78 @@
+LIB=groff
+OBJS=\
+  assert.o \
+  change_lf.o \
+  cmap.o \
+  cset.o \
+  device.o \
+  errarg.o \
+  error.o \
+  fatal.o \
+  filename.o \
+  font.o \
+  fontfile.o \
+  lf.o \
+  lineno.o \
+  macropath.o \
+  nametoindex.o \
+  new.o \
+  prime.o \
+  progname.o \
+  ptable.o \
+  searchpath.o \
+  string.o \
+  strsave.o \
+  tmpfile.o \
+  iftoa.o \
+  itoa.o \
+  matherr.o \
+  version.o \
+  illegal.o \
+  $(LIBOBJS)
+CCSRCS=\
+  $(srcdir)/assert.cc \
+  $(srcdir)/change_lf.cc \
+  $(srcdir)/cmap.cc \
+  $(srcdir)/cset.cc \
+  $(srcdir)/device.cc \
+  $(srcdir)/errarg.cc \
+  $(srcdir)/error.cc \
+  $(srcdir)/fatal.cc \
+  $(srcdir)/filename.cc \
+  $(srcdir)/font.cc \
+  $(srcdir)/fontfile.cc \
+  $(srcdir)/lf.cc \
+  $(srcdir)/lineno.cc \
+  $(srcdir)/macropath.cc \
+  $(srcdir)/nametoindex.cc \
+  $(srcdir)/new.cc \
+  $(srcdir)/prime.cc \
+  $(srcdir)/progname.cc \
+  $(srcdir)/ptable.cc \
+  $(srcdir)/searchpath.cc \
+  $(srcdir)/string.cc \
+  $(srcdir)/strsave.cc \
+  $(srcdir)/tmpfile.cc \
+  version.cc \
+  $(srcdir)/illegal.cc
+CSRCS=\
+  $(srcdir)/fmod.c \
+  $(srcdir)/getcwd.c \
+  $(srcdir)/iftoa.c \
+  $(srcdir)/itoa.c \
+  $(srcdir)/matherr.c \
+  $(srcdir)/strerror.c \
+  $(srcdir)/strtol.c \
+  $(srcdir)/putenv.c
+GENSRCS=\
+  version.cc
+
+version=`cat $(top_srcdir)/VERSION`
+revision=`cat $(top_srcdir)/REVISION`
+
+version.cc: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
+	@echo Making version.cc
+	@echo const char \*version_string = \"$(version)\"\; >$@
+	@echo const char \*revision_string = \"$(revision)\"\; >>$@
+	@echo const char \*Version_string = \"$(version).$(revision)\"\; | \
+	  sed -e 's/\.0\"/\"/' >>$@

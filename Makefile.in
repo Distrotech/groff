@@ -1,4 +1,4 @@
-# Copyright (C) 1989, 1990, 1991, 1992, 1993 Free Software Foundation, Inc.
+# Copyright (C) 1989-2000 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
 # This file is part of groff.
@@ -103,13 +103,13 @@ tmac_wrap=@tmac_wrap@
 # Don't make this empty.
 tmac_prefix=g
 
-# The groff -mm macros will be available as -m($(tmac_m_prefix)m.
+# The groff -mm macros will be available as -m$(tmac_m_prefix)m.
 tmac_m_prefix=\
  `for i in $(tmac_wrap) ""; do case "$$i" in m) echo $(tmac_prefix);; esac; done`
-# The groff -ms macros will be available as -m($(tmac_m_prefix)s.
+# The groff -ms macros will be available as -m$(tmac_s_prefix)s.
 tmac_s_prefix=\
  `for i in $(tmac_wrap) ""; do case "$$i" in s) echo $(tmac_prefix);; esac; done`
-# The groff -man macros will be available as -m($(tmac_m_prefix)an.
+# The groff -man macros will be available as -m$(tmac_an_prefix)an.
 tmac_an_prefix=\
  `for i in $(tmac_wrap) ""; do case "$$i" in an) echo $(tmac_prefix);; esac; done`
 
@@ -178,7 +178,7 @@ man7dir=$(manroot)/man$(man7ext)
 # -DRETSIGTYPE=int		if signal handlers return int not void	
 DEFINES=@DEFS@
 
-# Include fmod.o, strtol.o, getcwd.o, strerror.o, putenv.o  in LIBOBJS if
+# Include fmod.o, strtol.o, getcwd.o, strerror.o, putenv.o in LIBOBJS if
 # your C library is missing the corresponding function.
 LIBOBJS=@LIBOBJS@
 
@@ -212,8 +212,14 @@ ETAGSCCFLAG=-C
 PERLPATH=@PERLPATH@
 # Sed command with which to edit sh scripts.
 SH_SCRIPT_SED_CMD=@SH_SCRIPT_SED_CMD@
-srcdir = @srcdir@
-VPATH = @srcdir@
+
+srcdir=@srcdir@
+top_srcdir=@top_srcdir@
+VPATH=@srcdir@
+top_builddir=@top_builddir@
+
+# the program to create directory hierarchies
+mkinstalldirs=$(top_srcdir)/mkinstalldirs
 
 PURIFY=purify
 PURIFYCCFLAGS=
@@ -223,43 +229,118 @@ PURIFYCCFLAGS=
 # Passing down MAKEOVERRIDES prevents $(MAKE) from containing a second
 # copy of $(MDEFINES) when making individual directories; this could
 # cause the argument list to become too long on some systems.
-MDEFINES="MAKEOVERRIDES=$(MAKEOVERRIDES)" \
-  "PAGE=$(PAGE)" "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
-  "DEVICE=$(DEVICE)" "PSPRINT=$(PSPRINT)" "DVIPRINT=$(DVIPRINT)" \
-  "prefix=$(prefix)" "exec_prefix=$(exec_prefix)" "bindir=$(bindir)" \
-  "g=$(g)" "datadir=$(datadir)" "datasubdir=$(datasubdir)" \
-  "fontdir=$(fontdir)" "fontpath=$(fontpath)" \
-  "tmacdir=$(tmacdir)" "tmacpath=$(tmacpath)" \
-  "indexext=$(indexext)" "indexdir=$(indexdir)" \
-  "indexname=$(indexname)" "common_words_file=$(common_words_file)" \
-  "manroot=$(manroot)" "man1ext=$(man1ext)" "man1dir=$(man1dir)" \
-  "man5ext=$(man5ext)" "man5dir=$(man5dir)" \
-  "man7ext=$(man7ext)" "man7dir=$(man7dir)" \
-  "tmac_wrap=$(tmac_wrap)" "sys_tmac_prefix=$(sys_tmac_prefix)" \
+MDEFINES= \
+  "MAKEOVERRIDES=$(MAKEOVERRIDES)" \
+  "PAGE=$(PAGE)" \
+  "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
+  "DEVICE=$(DEVICE)" \
+  "PSPRINT=$(PSPRINT)" \
+  "DVIPRINT=$(DVIPRINT)" \
+  "top_srcdir=$(top_srcdir)" \
+  "top_builddir=$(top_builddir)" \
+  "prefix=$(prefix)" \
+  "exec_prefix=$(exec_prefix)" \
+  "bindir=$(bindir)" \
+  "g=$(g)" \
+  "datadir=$(datadir)" \
+  "datasubdir=$(datasubdir)" \
+  "fontdir=$(fontdir)" \
+  "fontpath=$(fontpath)" \
+  "tmacdir=$(tmacdir)" \
+  "tmacpath=$(tmacpath)" \
+  "indexext=$(indexext)" \
+  "indexdir=$(indexdir)" \
+  "indexname=$(indexname)" \
+  "common_words_file=$(common_words_file)" \
+  "manroot=$(manroot)" \
+  "man1ext=$(man1ext)" \
+  "man1dir=$(man1dir)" \
+  "man5ext=$(man5ext)" \
+  "man5dir=$(man5dir)" \
+  "man7ext=$(man7ext)" \
+  "man7dir=$(man7dir)" \
+  "mkinstalldirs=$(mkinstalldirs)" \
+  "tmac_wrap=$(tmac_wrap)" \
+  "sys_tmac_prefix=$(sys_tmac_prefix)" \
   "tmac_an_prefix=$(tmac_an_prefix)" \
-  "tmac_s_prefix=$(tmac_s_prefix)" "tmac_m_prefix=$(tmac_m_prefix)" \
-  "CCC=$(CCC)" "CC=$(CC)" "CCDEFINES=$(CCDEFINES)" "CDEFINES=$(CDEFINES)" \
-  "CCFLAGS=$(CCFLAGS)" "CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)" \
-  "YACC=$(YACC)" "YACCFLAGS=$(YACCFLAGS)" "LIBM=$(LIBM)" \
-  "LIBS=$(LIBS)" "LIBOBJS=$(LIBOBJS)" "RANLIB=$(RANLIB)" "AR=$(AR)" \
-  "INSTALL_PROGRAM=$(INSTALL_PROGRAM)" "INSTALL_DATA=$(INSTALL_DATA)" \
-  "ETAGS=$(ETAGS)" "ETAGSFLAGS=$(ETAGSFLAGS)" "ETAGSCCFLAG=$(ETAGSCCFLAG)" \
-  "PERLPATH=$(PERLPATH)" "SH_SCRIPT_SED_CMD=$(SH_SCRIPT_SED_CMD)" \
-  "PURIFY=$(PURIFY)" "PURIFYCCFLAGS=$(PURIFYCCFLAGS)"
+  "tmac_s_prefix=$(tmac_s_prefix)" \
+  "tmac_m_prefix=$(tmac_m_prefix)" \
+  "CCC=$(CCC)" \
+  "CC=$(CC)" \
+  "CCDEFINES=$(CCDEFINES)" \
+  "CDEFINES=$(CDEFINES)" \
+  "CCFLAGS=$(CCFLAGS)" \
+  "CFLAGS=$(CFLAGS)" \
+  "LDFLAGS=$(LDFLAGS)" \
+  "YACC=$(YACC)" \
+  "YACCFLAGS=$(YACCFLAGS)" \
+  "LIBM=$(LIBM)" \
+  "LIBS=$(LIBS)" \
+  "LIBOBJS=$(LIBOBJS)" \
+  "RANLIB=$(RANLIB)" \
+  "AR=$(AR)" \
+  "INSTALL_PROGRAM=$(INSTALL_PROGRAM)" \
+  "INSTALL_DATA=$(INSTALL_DATA)" \
+  "ETAGS=$(ETAGS)" \
+  "ETAGSFLAGS=$(ETAGSFLAGS)" \
+  "ETAGSCCFLAG=$(ETAGSCCFLAG)" \
+  "PERLPATH=$(PERLPATH)" \
+  "SH_SCRIPT_SED_CMD=$(SH_SCRIPT_SED_CMD)" \
+  "PURIFY=$(PURIFY)" \
+  "PURIFYCCFLAGS=$(PURIFYCCFLAGS)"
 
 SHELL=/bin/sh
-INCDIRS=include
-LIBDIRS=libgroff libdriver libbib
-CCPROGDIRS=groff troff tbl pic eqn grops grotty grodvi tfmtodit \
-  grolj4 hpftodit refer lookbib indxbib lkbib soelim addftinfo \
-  grohtml
-CPROGDIRS=pfbtops psbb
+INCDIRS=src/include
+LIBDIRS=\
+  src/libs/libgroff \
+  src/libs/libdriver \
+  src/libs/libbib
+CCPROGDIRS=\
+  src/roff/groff \
+  src/roff/troff \
+  src/preproc/tbl \
+  src/preproc/pic \
+  src/preproc/eqn \
+  src/preproc/refer \
+  src/preproc/soelim \
+  src/devices/grops \
+  src/devices/grotty \
+  src/devices/grodvi \
+  src/devices/grolj4 \
+  src/devices/grohtml \
+  src/utils/tfmtodit \
+  src/utils/hpftodit \
+  src/utils/lookbib \
+  src/utils/indxbib \
+  src/utils/lkbib \
+  src/utils/addftinfo
+CPROGDIRS=src/utils/pfbtops
 PROGDIRS=$(CCPROGDIRS) $(CPROGDIRS)
-DEVDIRS=devps devdvi devascii devlatin1 devX75 devX75-12 devX100 devX100-12 \
-  devlj4 devhtml
-OTHERDIRS=man tmac afmtodit grog nroff mm
+DEVDIRS=\
+  font/devps \
+  font/devdvi \
+  font/devascii \
+  font/devlatin1 \
+  font/devutf8 \
+  font/devX75 \
+  font/devX75-12 \
+  font/devX100 \
+  font/devX100-12 \
+  font/devlj4 \
+  font/devhtml
+OTHERDIRS=\
+  man \
+  tmac \
+  src/utils/afmtodit \
+  src/roff/grog \
+  src/roff/nroff \
+  contrib/mm
 ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(OTHERDIRS)
-EXTRADIRS=devps/generate devdvi/generate xditview doc
+EXTRADIRS=\
+  fonts/devps/generate \
+  fonts/devdvi/generate \
+  src/xditview \
+  doc
 DISTDIRS=$(ALLDIRS) $(EXTRADIRS)
 TARGETS=all install install_bin install_data clean distclean mostlyclean \
   realclean extraclean distfiles TAGS depend uninstall_sub
@@ -275,71 +356,82 @@ $(TARGETS):
 
 dot: FORCE
 	@$(MAKE) $(MDEFINES) srcdir=$(srcdir) VPATH=$(srcdir) \
-		-f $(srcdir)/Makefile.comm -f $(srcdir)/Makefile.sub $(do)
+	  -f $(top_srcdir)/Makefile.comm \
+	  -f $(top_srcdir)/Makefile.sub $(do)
 
 $(LIBDIRS): FORCE
 	@if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	test -d $@ || mkdir $@; \
+	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
-		-f $$srcdir/../Makefile.comm -f $$srcdir/Makefile.sub \
-	        -f $$srcdir/../Makefile.lib -f $$srcdir/Makefile.dep $(do)
+	  -f $(top_srcdir)/Makefile.comm \
+	  -f $$srcdir/Makefile.sub \
+	  -f $(top_srcdir)/Makefile.lib \
+	  -f Makefile.dep $(do)
 
 $(CPROGDIRS): FORCE
 	@if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	test -d $@ || mkdir $@; \
+	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
-		-f $$srcdir/../Makefile.comm -f $$srcdir/Makefile.sub \
-	        -f $$srcdir/../Makefile.cpg -f $$srcdir/Makefile.dep $(do)
+	  -f $(top_srcdir)/Makefile.comm \
+	  -f $$srcdir/Makefile.sub \
+	  -f $(top_srcdir)/Makefile.cpg \
+	  -f Makefile.dep $(do)
 
 $(CCPROGDIRS): FORCE
 	@if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	test -d $@ || mkdir $@; \
+	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
-		-f $$srcdir/../Makefile.comm -f $$srcdir/Makefile.sub \
-	        -f $$srcdir/../Makefile.ccpg -f $$srcdir/Makefile.dep $(do)
+	  -f $(top_srcdir)/Makefile.comm \
+	  -f $$srcdir/Makefile.sub \
+	  -f $(top_srcdir)/Makefile.ccpg \
+	  -f Makefile.dep $(do)
 
 $(DEVDIRS): FORCE
 	@if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	test -d $@ || mkdir $@; \
+	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
-		-f $$srcdir/../Makefile.comm -f $$srcdir/Makefile.sub \
-		-f $$srcdir/../Makefile.dev $(do)
+	  -f $(top_srcdir)/Makefile.comm \
+	  -f $$srcdir/Makefile.sub \
+	  -f $(top_srcdir)/Makefile.dev $(do)
 
 $(INCDIRS) $(OTHERDIRS): FORCE
 	@if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	test -d $@ || mkdir $@; \
+	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
-		-f $$srcdir/../Makefile.comm -f $$srcdir/Makefile.sub \
-	        -f $$srcdir/../Makefile.man $(do)
+	  -f $(top_srcdir)/Makefile.comm \
+	  -f $$srcdir/Makefile.sub \
+	  -f $(top_srcdir)/Makefile.man $(do)
 
-version=`cat $(srcdir)/VERSION`
+version=`cat $(top_srcdir)/VERSION`
+# No additional number for the groff archive if revision is zero
+revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' $(top_srcdir)/REVISION`
 
 .PHONY: dist
 dist:
 	-rm -fr tmp
 	mkdir tmp
 	for d in $(DISTDIRS); do \
-	  mkdir	tmp/$$d; \
+	  $(mkinstalldirs) tmp/$$d; \
 	done
 	srcdir=`cd $(srcdir); pwd`; \
 	cd tmp; \
@@ -354,10 +446,11 @@ dist:
 	done; \
 	rm -f Makefile; \
 	$(LN_S) $$srcdir/Makefile.init Makefile
-	mv tmp groff-$(version)
-	rm -f groff-$(version).tar.gz
-	tar cfh - groff-$(version) | gzip -c >groff-$(version).tar.gz
-	rm -fr groff-$(version)
+	mv tmp groff-$(version)$(revision)
+	rm -f groff-$(version)$(revision).tar.gz
+	tar cfh - groff-$(version)$(revision) | \
+	  gzip -c >groff-$(version)$(revision).tar.gz
+	rm -fr groff-$(version)$(revision)
 
 # $(PROGDIRS): libgroff
 # grops grotty grodvi: libdriver
@@ -374,14 +467,6 @@ Makefile.cfg: Makefile
 	for var in $(MDEFINES); do \
 	  echo "$$var" >>Makefile.cfg; \
 	done
-
-depend: srcdir_must_be_dot
-
-.PHONY: srcdir_must_be_dot
-srcdir_must_be_dot:
-	@test "X$(srcdir)" = "X." \
-	  || (echo This target can only be made in the source directory; \
-	      exit 1)
 
 Makefile: Makefile.in
 	$(SHELL) config.status
