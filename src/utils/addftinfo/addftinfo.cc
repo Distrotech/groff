@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -32,6 +32,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "guess.h"
 
 static void usage();
+static void version();
 static void convert_font(const font_params &, FILE *, FILE *);
 
 typedef int font_params::*param_t;
@@ -65,6 +66,10 @@ static struct {
 int main(int argc, char **argv)
 {
   program_name = argv[0];
+  for (int i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "-v"))
+      version();
+  }
   if (argc < 4)
     usage();
   int resolution;
@@ -120,9 +125,17 @@ int main(int argc, char **argv)
 
 static void usage()
 {
-  fprintf(stderr, "usage: %s [-param value] ... resolution unitwidth font\n",
+  fprintf(stderr, "usage: %s [-v] [-param value] ... "
+		  "resolution unitwidth font\n",
 	  program_name);
   exit(1);
+}
+
+static void version()
+{
+  extern const char *Version_string;
+  printf("GNU addftinfo (groff) version %s\n", Version_string);
+  exit(0);
 }
 
 static int get_line(FILE *fp, string *p)

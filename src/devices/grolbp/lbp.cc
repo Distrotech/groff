@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000 Free Software Foundation, Inc.
      Written by Francisco Andrés Verdú <pandres@dragonet.es> with many ideas
      taken from the other groff drivers.
 
@@ -716,10 +716,9 @@ int main(int argc, char **argv)
 		  case 'l'  : 	orientation = 1;
 		  		break;
 		  case 'v'  :	{
-				extern const char *version_string;
-				fprintf(stderr, "grolbp version %s\n",\
-				version_string);
-				fflush(stderr);
+				extern const char *Version_string;
+				printf("GNU grolbp (groff) version %s\n",\
+				Version_string);
 				exit(0);
 				break;
       				};

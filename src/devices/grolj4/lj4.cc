@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -640,8 +640,7 @@ int main(int argc, char **argv)
     case 'v':
       {
 	extern const char *Version_string;
-	fprintf(stderr, "grolj4 version %s\n", Version_string);
-	fflush(stderr);
+	printf("GNU grolj4 (groff) version %s\n", Version_string);
 	exit(0);
 	break;
       }

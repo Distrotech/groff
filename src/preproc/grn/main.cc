@@ -263,8 +263,8 @@ main(int argc,
       case 'v':
       {
 	extern const char *Version_string;
-	fprintf(stderr, "GNU grn version %s\n", Version_string);
-	fflush(stderr);
+	printf("GNU grn (groff) version %s\n", Version_string);
+	fflush(stdout);
 	exit(0);
 	break;
       }

@@ -412,8 +412,7 @@ int main(int argc, char **argv)
     case 'v':
       {
 	extern const char *Version_string;
-	fprintf(stderr, "grotty version %s\n", Version_string);
-	fflush(stderr);
+	printf("GNU grotty (groff) version %s\n", Version_string);
 	exit(0);
 	break;
       }

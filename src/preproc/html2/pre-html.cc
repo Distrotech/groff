@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 2000 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -724,8 +724,7 @@ int main(int argc, char **argv)
     if (argv[i][0] == '-') {
       if (argv[i][1] == 'v') {
 	extern const char *Version_string;
-	fprintf(stderr, "GNU pre-grohtml version %s\n", Version_string);
-	fflush(stderr);
+	printf("GNU pre-grohtml (groff) version %s\n", Version_string);
 	exit(0);
       }
     } else {

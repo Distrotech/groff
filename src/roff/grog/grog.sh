@@ -17,7 +17,7 @@ do
 	-C)
 		sp=; opts="$opts -C"; shift; break;;
 	-v)
-		echo "GNU grog version @VERSION@"
+		echo "GNU grog (groff) version @VERSION@"
 		exit 0;;
 	-*)
 		opts="$opts $arg"; shift;;

@@ -89,7 +89,7 @@ char *predriver = 0;
 
 possible_command commands[NCOMMANDS];
 
-int run_commands();
+int run_commands(int no_pipe);
 void print_commands();
 void append_arg_to_string(const char *arg, string &str);
 void handle_unknown_desc_command(const char *command, const char *arg,
@@ -106,6 +106,7 @@ int main(int argc, char **argv)
   setbuf(stderr, stderr_buf);
   assert(NCOMMANDS <= MAX_COMMANDS);
   string Pargs, Largs, Fargs;
+  int vflag = 0;
   int Vflag = 0;
   int zflag = 0;
   int iflag = 0;
@@ -166,30 +167,30 @@ int main(int argc, char **argv)
       Vflag++;
       break;
     case 'v':
-    case 'C':
+      vflag = 1;
       {
 	extern const char *Version_string;
-	fprintf(stderr,
-		"GNU groff version %s\n", Version_string);
-	fprintf(stderr,
-		"Copyright (C) 2000 Free Software Foundation, Inc.\n"
-		"GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
-		"You may redistribute copies of groff and its subprograms\n"
-		"under the terms of the GNU General Public License.\n"
-		"For more information about these matters, see the file named COPYING.\n");
-	fprintf(stderr, "\ncalled subprograms:\n\n");
-	fflush(stderr);
-	commands[SOELIM_INDEX].append_arg(buf);
-	commands[REFER_INDEX].append_arg(buf);
-	commands[PIC_INDEX].append_arg(buf);
-	commands[GRAP_INDEX].append_arg(buf);
-	commands[TBL_INDEX].append_arg(buf);
-	commands[GRN_INDEX].append_arg(buf);
-	commands[EQN_INDEX].append_arg(buf);
-	commands[TROFF_INDEX].append_arg(buf);
-	commands[POST_INDEX].append_arg(buf);
-	break;
+	printf("GNU groff version %s\n", Version_string);
+	printf("Copyright (C) 2000 Free Software Foundation, Inc.\n"
+	       "GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
+	       "You may redistribute copies of groff and its subprograms\n"
+	       "under the terms of the GNU General Public License.\n"
+	       "For more information about these matters, see the file named COPYING.\n");
+	printf("\ncalled subprograms:\n\n");
+        fflush(stdout);
       }
+      commands[POST_INDEX].append_arg(buf);
+      // fall through
+    case 'C':
+      commands[SOELIM_INDEX].append_arg(buf);
+      commands[REFER_INDEX].append_arg(buf);
+      commands[PIC_INDEX].append_arg(buf);
+      commands[GRAP_INDEX].append_arg(buf);
+      commands[TBL_INDEX].append_arg(buf);
+      commands[GRN_INDEX].append_arg(buf);
+      commands[EQN_INDEX].append_arg(buf);
+      commands[TROFF_INDEX].append_arg(buf);
+      break;
     case 'N':
       commands[EQN_INDEX].append_arg(buf);
       break;
@@ -389,7 +390,7 @@ int main(int argc, char **argv)
     print_commands();
     exit(0);
   }
-  return run_commands();
+  return run_commands(vflag);
 }
 
 const char *xbasename(const char *s)
@@ -467,14 +468,14 @@ void print_commands()
 
 // Run the commands. Return the code with which to exit.
 
-int run_commands()
+int run_commands(int no_pipe)
 {
   char **v[NCOMMANDS];
   int j = 0;
   for (int i = 0; i < NCOMMANDS; i++)
     if (commands[i].get_name() != 0)
       v[j++] = commands[i].get_argv();
-  return run_pipeline(j, v);
+  return run_pipeline(j, v, no_pipe);
 }
 
 possible_command::possible_command()

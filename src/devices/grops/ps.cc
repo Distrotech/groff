@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -1487,8 +1487,7 @@ int main(int argc, char **argv)
     case 'v':
       {
 	extern const char *Version_string;
-	fprintf(stderr, "grops version %s\n", Version_string);
-	fflush(stderr);
+	printf("GNU grops (groff) version %s\n", Version_string);
 	exit(0);
 	break;
       }

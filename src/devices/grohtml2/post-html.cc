@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1999 Free Software Foundation, Inc.
+/* Copyright (C) 1999, 2000 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cc
  *  but it owes a huge amount of ideas and raw code from
@@ -62,8 +62,7 @@ int main(int argc, char **argv)
     case 'v':
       {
 	extern const char *Version_string;
-	fprintf(stderr, "post-grohtml version %s\n", Version_string);
-	fflush(stderr);
+	printf("GNU post-grohtml (groff) version %s\n", Version_string);
 	exit(0);
 	break;
       }

@@ -38,8 +38,8 @@ int main(argc, argv)
     case 'v':
       {
 	extern char *Version_string;
-	fprintf(stderr, "pfbtops groff version %s\n", Version_string);
-	fflush(stderr);
+	printf("GNU pfbtops (groff) version %s\n", Version_string);
+	exit(0);
 	break;
       }
     case '?':

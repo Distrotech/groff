@@ -1,4 +1,4 @@
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -179,9 +179,10 @@ is_system_shell (const char *shell)
 /* MSDOS doesn't have `fork', so we need to simulate the pipe by
    running the programs in sequence with redirected standard streams.  */
 
-int run_pipeline (ncommands, commands)
+int run_pipeline (ncommands, commands, no_pipe)
      int ncommands;
      char ***commands;
+     int no_pipe;
 {
   int save_stdin = dup(0);
   int save_stdout = dup(1);
@@ -210,7 +211,7 @@ int run_pipeline (ncommands, commands)
 	  if (close(f) < 0)
 	    sys_fatal("close stdin");
 	}
-      if (i < ncommands - 1)
+      if ((i < ncommands - 1) && !no_pipe)
 	{
 	  /* redirect stdout to temp file */
 	  f = open(tmpfiles[outfile], O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, 0666);
@@ -265,9 +266,10 @@ int run_pipeline (ncommands, commands)
 
 #else  /* not __MSDOS__, not _WIN32 */
 
-int run_pipeline(ncommands, commands)
+int run_pipeline(ncommands, commands, no_pipe)
      int ncommands;
      char ***commands;
+     int no_pipe;
 {
   int i;
   int last_input = 0;
@@ -278,7 +280,7 @@ int run_pipeline(ncommands, commands)
   for (i = 0; i < ncommands; i++) {
       int pdes[2];
       PID_T pid;
-      if (i != ncommands - 1) {
+      if ((i != ncommands - 1) && !no_pipe) {
 	if (pipe(pdes) < 0)
 	  sys_fatal("pipe");
       }
@@ -295,7 +297,7 @@ int run_pipeline(ncommands, commands)
 	  if (close(last_input) < 0)
 	    sys_fatal("close");
 	}
-	if (i != ncommands - 1) {
+	if ((i != ncommands - 1) && !no_pipe) {
 	  if (close(1) < 0)
 	    sys_fatal("close");
 	  if (dup(pdes[1]) < 0)
@@ -316,7 +318,7 @@ int run_pipeline(ncommands, commands)
 	if (close(last_input) < 0)
 	  sys_fatal("close");
       }
-      if (i != ncommands - 1) {
+      if ((i != ncommands - 1) && !no_pipe) {
 	if (close(pdes[1]) < 0)
 	  sys_fatal("close");
 	last_input = pdes[0];

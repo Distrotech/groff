@@ -129,7 +129,7 @@ sub process {
 
 sub usage {
     local($exit_status) = $_;
-    print "GNU groff version @VERSION@\n";
+    print "GNU grog (groff) version @VERSION@\n";
     exit $exit_status;
 }
 

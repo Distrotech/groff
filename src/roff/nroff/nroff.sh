@@ -67,7 +67,7 @@ for i
       # since `less' and `more' can use the emboldening info.
       ;;
     -v)
-      echo "GNU nroff version @VERSION@"
+      echo "GNU nroff (groff) version @VERSION@"
       exit 0 ;;
     --)
       shift
