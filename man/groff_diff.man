@@ -1753,6 +1753,29 @@ Empty slots in the page trap list are printed as well, because they
 can affect the priority of subsequently planted traps.
 .
 .TP
+.BI .pvs \ \[+-]n
+Set the post-vertical line space to
+.IR n ;
+default scale indicator is\~\c
+.BR p .
+.
+This value will be added to each line after it has been output.
+.
+With no argument, the post-vertical line space is set to its previous
+value.
+.
+.IP
+The total vertical line spacing consists of four components:
+.B .vs
+and
+.B \[rs]x
+with a negative value which are applied before the line is output, and
+.B .pvs
+and
+.B \[rs]x
+with a positive value which are applied after the line is output.
+.
+.TP
 .BI .rchar\  c1\ c2\|.\|.\|.\&
 Remove the definitions of characters
 .IR c1 ,
@@ -2480,6 +2503,12 @@ The current pointsize in scaled points.
 .TP
 .B \[rs]n[.psr]
 The last-requested pointsize in scaled points.
+.
+.TP
+.B \[rs]n[.pvs]
+The current post-vertical line space as set with the
+.B pvs
+request.
 .
 .TP
 .B \[rs]n[.rj]
