@@ -715,7 +715,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Ad address ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Ad address ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -764,7 +764,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Cd Configuration file declaration (#\n[.c])
+.      tm Usage: .Cd configuration_file_declaration ... (#\n[.c])
 .  \}
 .
 .  br
@@ -800,7 +800,7 @@
 .
 .
 .\" NS Cm user macro
-.\" NS   Interactive command modifier (flag)
+.\" NS   interactive command modifier (flag)
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr
@@ -817,8 +817,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \{\
-.      tmc Usage: .Cm Interactive command modifier ...
-.      tm1 " \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Cm interactive_command_modifier ... (#\n[.c])
 .  \}\}
 .
 .  nr doc-arg-ptr +1
@@ -832,7 +831,7 @@
 .
 .
 .\" NS Dv user macro
-.\" NS   define variable
+.\" NS   defined variable
 .\" NS
 .\" NS   this function uses the `Er' font
 .\" NS
@@ -851,7 +850,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Dv define_variable ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Dv defined_variable ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -913,7 +912,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Er errno_type ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Er errno_type ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -944,7 +943,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Ev enviroment_variable ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Ev enviroment_variable ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1092,7 +1091,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Ic Interactive command ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Ic interactive_command ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1123,7 +1122,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Li argument ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Li argument ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1230,7 +1229,7 @@
 .      doc-parse-args \$@
 .    el \{\
 .      ie "\*[doc-command-name]"" \
-.        tm Usage: .Nm Name ... \*[doc-punct-chars] (#\n[.c])
+.        tm Usage: .Nm name ... (#\n[.c])
 .      el \
 .        doc-parse-args \*[doc-command-name]
 .  \}\}
@@ -1428,7 +1427,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Va variable_name ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Va variable_name ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -3102,8 +3101,10 @@
 .
 .  br
 .
-.  if !\n[doc-display-depth] \
+.  if !\n[doc-display-depth] \{\
 .    tm mdoc warning: Extraneous .Ed (#\n[.c])
+.    nr doc-display-depth 1
+.  \}
 .
 .  if "\*[doc-display-type-stack\n[doc-display-depth]]"literal" \{\
 .    ft \n[doc-curr-font]
@@ -4498,9 +4499,6 @@
 ..
 .
 .
-.linetabs
-.
-.
 .\" NS Ta user macro
 .\" NS   append tab (\t)
 .\" NS
@@ -4512,7 +4510,9 @@
 .de Ta
 .  ie \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
-.    nop \t\c
+.    linetabs 1
+.    nop \*[doc-tab]\c
+.    linetabs 0
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \
 .      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .    el \
@@ -4677,7 +4677,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Ft function_type ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Ft function_type ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -4764,7 +4764,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Fa function_arguments ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Fa function_arguments ... (#\n[.c])
 .  \}
 .
 .  ie \n[doc-func-arg-count] \
@@ -4878,10 +4878,9 @@
 .      ds doc-macro-name Fn
 .      doc-parse-args \$@
 .    \}
-.    el \{\
-.      tmc Usage: .Fn function_name function_arg(s) ... \*[doc-punct-chars]
-.      tm1 " (#\n[.c])
-.  \}\}
+.    el \
+.      tm Usage: .Fn function_name [function_arg] ... (#\n[.c])
+.  \}
 .
 .  if \n[doc-in-synopsis-count] \{\
 .    \" if there is/has been more than one subroutine declaration

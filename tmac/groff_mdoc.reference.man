@@ -365,7 +365,7 @@ arrangement of items in the argument list.  Additionally, it makes
 .Nm \-mdoc
 working faster.
 For example, the function macro
-.Ql \&.Fn
+.Ql .Fn
 expects the first argument to be the name of a function and any remaining
 arguments to be function parameters.
 As
@@ -403,17 +403,17 @@ For example:
 .Bl -tag -xwidth ".Fn fetch char\ *str" -offset indent
 .It Fn fetch char\ *str
 is created by
-.Ql \&.Fn fetch char\e *str
+.Ql .Fn fetch char\e *str
 .It Fn fetch "char *str"
 can also be created by
-.Ql \&.Fn fetch "\\*[q]char *str\\*[q]"
+.Ql .Fn fetch "\\*[q]char *str\\*[q]"
 .El
 .
 .Pp
 If the
 .Ql \e
 before the space resp.\& the double quotes were omitted,
-.Ql \&.Fn
+.Ql .Fn
 would see three arguments, and the result would be:
 .Pp
 .Dl Fn fetch char *str
@@ -464,6 +464,15 @@ Similarly, don't use more than one space character between words in an
 ordinary text line; contrary to other text formatters, they are
 .Em not
 replaced with a single space.
+.Pp
+You can't pass
+.Ql \*[q]
+directly as an argument.
+Use
+.Ql \e*[q]
+(or
+.Ql \e*q )
+instead.
 .Pp
 By default,
 .Xr troff 1
@@ -588,7 +597,7 @@ These macros identify the page and are discussed below in
 .Sx TITLE MACROS .
 .Pp
 The remaining items in the template are section headers
-.Pq Li \&.Sh ;
+.Pq Li .Sh ;
 of which
 .Sx NAME ,
 .Sx SYNOPSIS ,
@@ -607,6 +616,9 @@ about content macros before page layout macros is recommended.
 .
 In the description of all macros below, optional arguments are put into
 brackets.
+An ellipsis
+.Pq Ql Ld
+represents zero or more additional arguments.
 Alternative values for a parameter are separated with
 .Ql | .
 If there are alternative values for a mandatory parameter, braces are used
@@ -622,6 +634,7 @@ Example:
 .Aq foo 
 .Brq bar1 | bar2
 .Op -test1 Op -test2 | -test3
+.Ld
 .Xc
 .El
 .
@@ -664,16 +677,16 @@ A volume name may be arbitrary or one of the following:
 .
 .Pp
 .Bl -column LOCAL -offset indent -compact
-.It Li USD   Ta \*[volume-ds-USD]
-.It Li PS1   Ta \*[volume-ds-PS1]
-.It Li AMD   Ta \*[volume-ds-AMD]
-.It Li SMM   Ta \*[volume-ds-SMM]
-.It Li URM   Ta \*[volume-ds-URM]
-.It Li PRM   Ta \*[volume-ds-PRM]
-.It Li KM    Ta \*[volume-ds-KM]
-.It Li IND   Ta \*[volume-ds-IND]
-.It Li LOCAL Ta \*[volume-ds-LOCAL]
-.It Li CON   Ta \*[volume-ds-CON]
+.It Li USD   Ta "\*[volume-ds-USD]"
+.It Li PS1   Ta "\*[volume-ds-PS1]"
+.It Li AMD   Ta "\*[volume-ds-AMD]"
+.It Li SMM   Ta "\*[volume-ds-SMM]"
+.It Li URM   Ta "\*[volume-ds-URM]"
+.It Li PRM   Ta "\*[volume-ds-PRM]"
+.It Li KM    Ta "\*[volume-ds-KM]"
+.It Li IND   Ta "\*[volume-ds-IND]"
+.It Li LOCAL Ta "\*[volume-ds-LOCAL]"
+.It Li CON   Ta "\*[volume-ds-CON]"
 .El
 .Pp
 .
@@ -726,6 +739,8 @@ look for strings named
 then denotes the keyword to be used with the
 .Ql .Dt
 macro.
+.Pp
+This macro is neither callable nor parsable.
 .
 .It Li .Os Xo
 .Op Aq operating system
@@ -795,6 +810,8 @@ If the
 .Ql .Os
 macro is not present, the bottom left corner of the manual page will be
 ugly.
+.Pp
+This macro is neither callable nor parsable.
 .
 .It Li .Dd Xo
 .Oo
@@ -814,12 +831,11 @@ unbreakable space:
 .Dl .Dd January 25, 2001
 .Pp
 Otherwise, the current date is used, ignoring the parameters.
+.Pp
+This macro is neither callable nor parsable.
 .El
 .
 .
-\#
-\#=====================================================================
-\#
 .Sh INTRODUCTION OF MANUAL AND GENERAL TEXT DOMAINS
 .
 .Ss What's in a name Ns Ld
@@ -841,30 +857,30 @@ sense; that is, discussion of a command in the text of a man page.
 .Pp
 In the first case,
 .Xr troff 1
-macros are themselves a type of command;
-the general syntax for a troff command is:
+macros are themselves a type of command; the general syntax for a troff
+command is:
+.
 .Bd -filled -offset indent
-\&.Va argument1 argument2 ... argument9
+.Li .Xx argument1 argument2 Ld
 .Ed
 .Pp
-The
-.Ql \&.Va
-is a macro command or request, and anything following it is an argument to
+.
+.Ql .Xx
+is a macro command or request, and anything following it are arguments to
 be processed.
-In the second case,
-the description of a
+In the second case, the description of a
 .Ux
-command using the content macros is a
-bit more involved;
-a typical
+command using the content macros is a bit more involved; a typical
 .Sx SYNOPSIS
 command line might be displayed as:
+.
 .Bd -filled -offset indent
 .Nm filter
 .Op Fl flag
-.Ar infile outfile
+.Ao Ar infile Ac Ao Ar outfile Ac
 .Ed
 .Pp
+.
 Here,
 .Nm filter
 is the command name and the
@@ -876,62 +892,63 @@ argument designated as optional by the option brackets.
 In
 .Nm \-mdoc
 terms,
-.Ar infile
+.Ao Ar infile Ac
 and
-.Ar outfile
-are
-called
-.Em arguments .
+.Ao Ar outfile Ac
+are called
+.Em meta arguments ;
+in this example, the user has to replace the meta expressions given in angle
+brackets with real file names.
+Note that in this document meta arguments are used to describe
+.Nm \-mdoc
+commands; in most man pages, meta variables are not specifically written
+with angle brackets.
 The macros which formatted the above example:
+.
 .Bd -literal -offset indent
 \&.Nm filter
-\&.Op \&Fl flag
-\&.Ar infile outfile
+\&.Op Fl flag
+\&.Ao Ar infile Ac Ao Ar outfile Ac
 .Ed
 .Pp
-In the third case, discussion of commands and command syntax
-includes both examples above, but may add more detail.
-The
-arguments
-.Ar infile
+.
+In the third case, discussion of commands and command syntax includes both
+examples above, but may add more detail.
+The arguments
+.Ao Ar infile Ac
 and
-.Ar outfile
+.Ao Ar outfile Ac
 from the example above might be referred to as
 .Em operands
 or
 .Em file arguments .
 Some command line argument lists are quite long:
-.Bl -tag -width make -offset indent
+.Bl -tag -xwidth ".Nm make" -offset indent
 .It Nm make
 .Op Fl eiknqrstv
 .Op Fl D Ar variable
 .Op Fl d Ar flags
 .Op Fl f Ar makefile
-.Bk -words
 .Op Fl I Ar directory
-.Ek
 .Op Fl j Ar max_jobs
 .Op Ar variable=value
-.Bk -words
-.Op Ar target ...
+.Bk
+.Op Ar target Ld
 .Ek
 .El
 .Pp
+.
 Here one might talk about the command
 .Nm make
-and qualify the argument
+and qualify the argument,
 .Ar makefile ,
 as an argument to the flag,
 .Fl f ,
-or discuss the optional
-file
-operand
+or discuss the optional file operand
 .Ar target .
-In the verbal context, such detail can prevent confusion,
-however the
+In the verbal context, such detail can prevent confusion, however the
 .Nm \-mdoc
-package
-does not have a macro for an argument
+package does not have a macro for an argument
 .Em to
 a flag.
 Instead the
@@ -941,6 +958,7 @@ argument macro is used for an operand or file argument like
 as well as an argument to a flag like
 .Ar variable .
 The make command line was produced from:
+.
 .Bd -literal -offset indent
 \&.Nm make
 \&.Op Fl eiknqrstv
@@ -950,308 +968,288 @@ The make command line was produced from:
 \&.Op Fl I Ar directory
 \&.Op Fl j Ar max_jobs
 \&.Op Ar variable=value
-\&.Bk -words
-\&.Op Ar target ...
+\&.Bk
+\&.Op Ar target Ld
 \&.Ek
 .Ed
 .Pp
+.
 The
-.Ql \&.Bk
+.Ql .Bk
 and
-.Ql \&.Ek
+.Ql .Ek
 macros are explained in
 .Sx Keeps .
+.
 .Ss General Syntax
-The manual domain and general text domain macros share a similar
-syntax with a few minor deviations:
-.Ql \&.Ar ,
-.Ql \&.Fl ,
-.Ql \&.Nm ,
+.
+The manual domain and general text domain macros share a similar syntax with
+a few minor deviations; most notably,
+.Ql .Ar ,
+.Ql .Fl ,
+.Ql .Nm ,
 and
-.Ql \&.Pa
-differ only when called without arguments;
-.Ql \&.Fn
+.Ql .Pa
+differ only when called without arguments; and
+.Ql .Fn
 and
-.Ql \&.Xr
-impose an order on their argument lists
-and the
-.Ql \&.Op
-and
-.Ql \&.Fn
-macros
-have nesting limitations.
-All content macros
-are capable of recognizing and properly handling punctuation,
-provided each punctuation character is separated by a leading space.
-If an request is given:
+.Ql .Xr
+impose an order on their argument lists.
+All content macros are capable of recognizing and properly handling
+punctuation, provided each punctuation character is separated by a leading
+space.
+If a request is given:
 .Pp
-.Dl \&.Li sptr, ptr),
+.Dl \&.Ar sptr, ptr),
 .Pp
 The result is:
 .Pp
-.Dl Li sptr, ptr),
+.Dl Ar sptr, ptr),
 .Pp
 The punctuation is not recognized and all is output in the
-literal font.
+font used by
+.Ql .Ar .
 If the punctuation is separated by a leading white space:
 .Pp
-.Dl \&.Li "sptr , ptr ) ,"
+.Dl \&.Ar "sptr , ptr ) ,"
 .Pp
 The result is:
 .Pp
-.Dl Li sptr , ptr ) ,
+.Dl Ar sptr , ptr ) ,
 .Pp
-The punctuation is now recognized and is output in the
-default font distinguishing it from the strings in literal font.
-.Pp
-To remove the special meaning from a punctuation character
-escape it with
+The punctuation is now recognized and output in the default font
+distinguishing it from the argument strings.
+To remove the special meaning from a punctuation character escape it with
 .Ql \e& .
+.Pp
 .Xr Troff
-is limited as a macro language, and has difficulty
-when presented with a string containing
-a member of the mathematical, logical or
-quotation set:
+is limited as a macro language, and has difficulty when presented with a
+string containing a member of the mathematical, logical or quotation set:
+.
 .Bd -literal -offset indent-two
-\&{+,\-,/,*,\&%,<,>,<=,>=,=,==,&,`,',"}
+{+,\-,/,*,%,<,>,<=,>=,=,==,&,`,',"}
 .Ed
 .Pp
+.
 The problem is that
 .Xr troff
-may assume it is supposed to actually perform the operation
-or evaluation suggested by the characters.  To prevent
-the accidental evaluation of these characters,
-escape them with
+may assume it is supposed to actually perform the operation or evaluation
+suggested by the characters.
+To prevent the accidental evaluation of these characters, escape them with
 .Ql \e& .
-Typical syntax is shown in the first content macro displayed
-below,
+Typical syntax is shown in the first content macro displayed below,
 .Ql \&.Ad .
+.
 .Ss Address Macro
-The address macro identifies an address construct
-of the form addr1[,addr2[,addr3]].
+.
+The address macro identifies an address construct.
 .Pp
-.Dl Usage: .Ad address ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Ad f1\ , f2\ , f3\ :" -compact -offset 14n
-.It Li \&.Ad addr1
+.Dl Usage: .Ad Ao address Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Ad\ f1\ ,\ f2\ ,\ f3\ :" -compact -offset 15n
+.It Li ".Ad addr1"
 .Ad addr1
-.It Li \&.Ad addr1\ .
+.It Li ".Ad addr1 ."
 .Ad addr1 .
-.It Li \&.Ad addr1\ , file2
+.It Li ".Ad addr1 , file2"
 .Ad addr1 , file2
-.It Li \&.Ad f1\ , f2\ , f3\ :
+.It Li ".Ad f1 , f2 , f3 :"
 .Ad f1 , f2 , f3 :
-.It Li \&.Ad addr\ )\ )\ ,
+.It Li ".Ad addr ) ) ,"
 .Ad addr ) ) ,
 .El
 .Pp
-It is an error to call
-.Li \&.Ad
-without arguments.
-.Li \&.Ad
-is callable by other macros and is parsed.
+.
 .Ss Argument Macro
+.
 The
-.Li \&.Ar
-argument macro may be used whenever
-a command line argument is referenced.
+.Li .Ar
+argument macro may be used whenever an argument is referenced.
 .Pp
-.Dl Usage: .Ar argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Ar file1 file2" -compact -offset 15n
-.It Li \&.Ar
+.Dl Usage: .Ar Oo Ao argument Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Ar\ file1\ file2" -compact -offset 15n
+.It Li .Ar
 .Ar
-.It Li \&.Ar file1
+.It Li ".Ar file1"
 .Ar file1
-.It Li \&.Ar file1\ .
+.It Li ".Ar file1 ."
 .Ar file1 .
-.It Li \&.Ar file1 file2
+.It Li ".Ar file1 file2"
 .Ar file1 file2
-.It Li \&.Ar f1 f2 f3\ :
+.It Li ".Ar f1 f2 f3 :"
 .Ar f1 f2 f3 :
-.It Li \&.Ar file\ )\ )\ ,
+.It Li ".Ar file ) ) ,"
 .Ar file ) ) ,
 .El
 .Pp
-If
-.Li \&.Ar
-is called without arguments
-.Ql Ar
-is assumed.
+.
+.Ss Configuration Declaration (Section Four Only)
+.
 The
-.Li \&.Ar
-macro is parsed and is callable.
-.Ss Configuration Declaration (section four only)
-The
-.Ql \&.Cd
+.Ql .Cd
 macro is used to demonstrate a
 .Xr config 8
 declaration for a device interface in a section four manual.
-This macro accepts quoted arguments (double quotes only).
 .Pp
-.Bl -tag -xwidth ".Cd device\ le0\ at\ scode?" -offset indent
-.It Cd "device le0 at scode?"
-produced by:
-.Ql ".Cd device le0 at scode?" .
+.Dl Usage: .Cd Ao argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Cd\ Xdevice\ le0\ at\ scode?X" -offset 15n
+.It Li ".Cd \*[q]device le0 at scode?\*[q]"
+\# since .Cd causes a break we use .Nm
+.Nm "device le0 at scode?"
 .El
+.Pp
+.
 .Ss Command Modifier
+.
 The command modifier is identical to the
-.Ql \&.Fl
+.Ql .Fl
 (flag) command with the exception
 the
-.Ql \&.Cm
-macro does not assert a dash
-in front of every argument.
-Traditionally flags are marked by the
-preceding dash, some commands or subsets of commands do not use them.
+.Ql .Cm
+macro does not assert a dash in front of every argument.
+Traditionally flags are marked by the preceding dash, however, some commands
+or subsets of commands do not use them.
 Command modifiers may also be specified in conjunction with interactive
 commands such as editor commands.
 See
 .Sx Flags .
+.
 .Ss Defined Variables
-A variable which is defined in an include file is specified
-by the macro
-.Ql \&.Dv .
+.
+A variable which is defined in an include file is specified by the macro
+.Ql .Dv .
 .Pp
-.Dl Usage: .Dv defined_variable ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li .Dv\ MAXHOSTNAMELEN" -compact -offset 14n
+.Dl Usage: .Dv Ao defined variable Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Dv\ MAXHOSTNAMELEN" -compact -offset 15n
 .It Li ".Dv MAXHOSTNAMELEN"
 .Dv MAXHOSTNAMELEN
 .It Li ".Dv TIOCGPGRP )"
 .Dv TIOCGPGRP )
 .El
 .Pp
-It is an error to call
-.Ql \&.Dv
-without arguments.
-.Ql \&.Dv
-is parsed and is callable.
-.Ss Errno's (Section two only)
+.
+.Ss Errno's (Section Two Only)
+.
 The
-.Ql \&.Er
-errno macro specifies the error return value
-for section two library routines.
-The second example
-below shows
-.Ql \&.Er
+.Ql .Er
+errno macro specifies the error return value for section two library
+routines.
+The second example below shows
+.Ql .Er
 used with the
-.Ql \&.Bq
-general text domain macro, as it would be used in
-a section two manual page.
+.Ql .Bq
+general text domain macro, as it would be used in a section two manual page.
 .Pp
-.Dl Usage: .Er ERRNOTYPE ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Bq \&Er ENOTDIR" -compact -offset 14n
-.It Li \&.Er ENOENT
+.Dl Usage: .Er Ao errno type Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Bq\ Er\ ENOTDIR" -compact -offset 15n
+.It Li ".Er ENOENT"
 .Er ENOENT
-.It Li \&.Er ENOENT\ )\ ;
+.It Li ".Er ENOENT ) ;"
 .Er ENOENT ) ;
-.It Li \&.Bq \&Er ENOTDIR
+.It Li ".Bq Er ENOTDIR"
 .Bq Er ENOTDIR
 .El
 .Pp
-It is an error to call
-.Ql \&.Er
-without arguments.
-The
-.Ql \&.Er
-macro is parsed and is callable.
+.
 .Ss Environment Variables
+.
 The
-.Ql \&.Ev
+.Ql .Ev
 macro specifies an environment variable.
 .Pp
-.Dl Usage: .Ev argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Ev PRINTER\ )\ )\ ," -compact -offset 14n
-.It Li \&.Ev DISPLAY
+.Dl Usage: .Ev Ao argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Ev\ PRINTER\ )\ )\ ," -compact -offset 15n
+.It Li ".Ev DISPLAY"
 .Ev DISPLAY
-.It Li \&.Ev PATH\ .
+.It Li ".Ev PATH ."
 .Ev PATH .
-.It Li \&.Ev PRINTER\ )\ )\ ,
+.It Li ".Ev PRINTER ) ) ,"
 .Ev PRINTER ) ) ,
 .El
 .Pp
-It is an error to call
-.Ql \&.Ev
-without arguments.
-The
-.Ql \&.Ev
-macro is parsed and is callable.
+.
 .Ss Function Argument
+.
 The
-.Ql \&.Fa
-macro is used to refer to function arguments (parameters)
-outside of the
+.Ql .Fa
+macro is used to refer to function arguments (parameters) outside of the
 .Sx SYNOPSIS
-section of the manual or inside
-the
+section of the manual or inside the
 .Sx SYNOPSIS
-section should a parameter list be too
-long for the
-.Ql \&.Fn
-macro and the enclosure macros
-.Ql \&.Fo
+section if the enclosure macros
+.Ql .Fo
 and
-.Ql \&.Fc
-must be used.
-.Ql \&.Fa
+.Ql .Fc
+instead of
+.Ql .Fn
+are used.
+.Ql .Fa
 may also be used to refer to structure members.
 .Pp
-.Dl Usage: .Fa function_argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Fa d_namlen\ )\ )\ ," -compact -offset 14n
-.It Li \&.Fa d_namlen\ )\ )\ ,
+.Dl Usage: .Fa Ao function argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Fa\ d_namlen\ )\ )\ ," -compact -offset 15n
+.It Li ".Fa d_namlen ) ) ,"
 .Fa d_namlen ) ) ,
-.It Li \&.Fa iov_len
+.It Li ".Fa iov_len"
 .Fa iov_len
 .El
 .Pp
-It is an error to call
-.Ql \&.Fa
-without arguments.
-.Ql \&.Fa
-is parsed and is callable.
+.
 .Ss Function Declaration
+.
 The
-.Ql \&.Fd
+.Ql .Fd
 macro is used in the
 .Sx SYNOPSIS
-section with section two or three
-functions.
-The
-.Ql \&.Fd
-macro does not call other macros and is not callable by other
-macros.
+section with section two or three functions.
+It is neither parsable nor callable.
 .Pp
-.Dl Usage: .Fd include_file (or defined variable)
+.Dl Usage: .Fd Ao argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Fd\ X#include\ <sys/types.h>X" -compact -offset 15n
+.It Li ".Fd \*[q]#include <sys/types.h>\*[q]"
+.Fd "#include <sys/types.h>"
+.El
 .Pp
 In the
 .Sx SYNOPSIS
 section a
-.Ql \&.Fd
-request causes a line break if a function has already been presented
-and a break has not occurred.
-This leaves a nice vertical space
-in between the previous function call and the declaration for the
-next function.
+.Ql .Fd
+request causes a line break if a function has already been presented and a
+break has not occurred.
+This leaves a nice vertical space in between the previous function call and
+the declaration for the next function.
+.
 .Ss Flags
+.
 The
-.Ql \&.Fl
+.Ql .Fl
 macro handles command line flags.
-It prepends
-a dash,
+It prepends a dash,
 .Ql \- ,
 to the flag.
-For interactive command flags, which
-are not prepended with a dash, the
-.Ql \&.Cm
+For interactive command flags, which are not prepended with a dash, the
+.Ql .Cm
 (command modifier)
 macro is identical, but without the dash.
 .Pp
-.Dl Usage: .Fl argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Fl\ xyz\ )\ ," -compact -offset 14n
+.Dl Usage: .Fl Ao argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Fl\ xyz\ )\ ," -compact -offset 15n
 .It Li .Fl
 .Fl
 .It Li ".Fl cfv"
 .Fl cfv
 .It Li ".Fl cfv ."
 .Fl cfv .
+.It Li ".Cm cfv ."
+.Cm cfv .
 .It Li ".Fl s v t"
 .Fl s v t
 .It Li ".Fl - ,"
@@ -1263,54 +1261,44 @@ macro is identical, but without the dash.
 .El
 .Pp
 The
-.Ql \&.Fl
-macro without any arguments results
-in a dash representing stdin/stdout.
+.Ql .Fl
+macro without any arguments results in a dash representing stdin/stdout.
 Note that giving
-.Ql \&.Fl
-a single dash, will result in two dashes.
-The
-.Ql \&.Fl
-macro is parsed and is callable.
-.Ss Functions (library routines)
-The .Fn macro is modeled on ANSI C conventions.
-.Bd -literal
-Usage: .Fn [type] function [[type] parameters ... \*[doc-punct-chars]]
-.Ed
-.Bl -tag -xwidth ".Li \&.Fn \\*qint\ align\\*q \\*qconst\ *\ char\ *sptrs\\*q ," -compact
-.It Li "\&.Fn getchar"
+.Ql .Fl
+a single dash will result in two dashes.
+.
+.Ss Functions (Library Routines)
+.
+The 
+.Ql .Fn
+macro is modeled on ANSI C conventions.
+.Pp
+.Dl Usage: .Fn Ao function Ac Oo Ao parameter Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Fn\ Xint\ alignX\ Xchar\ *ptrX\ ," -compact -offset 15n
+.It Li ".Fn getchar"
 .Fn getchar
-.It Li "\&.Fn strlen ) ,"
+.It Li ".Fn strlen ) ,"
 .Fn strlen ) ,
-.It Li \&.Fn "\\*qint align\\*q" "\\*qconst * char *sptrs\\*q" ,
-.Fn "int align" "const * char *sptrs" ,
+.It Li .Fn "\*[q]int align\*[q]" "\*[q]char *ptr\*[q]" ,
+.Fn "int align" "char *ptr" ,
 .El
 .Pp
-It is an error to call
-.Ql \&.Fn
-without any arguments.
-The
-.Ql \&.Fn
-macro
-is parsed and is callable,
-note that any call to another macro signals the end of
-the
-.Ql \&.Fn
-call (it will close-parenthesis at that point).
+Note that any call to another macro signals the end of the
+.Ql .Fn
+call (it will insert a closing parenthesis at that point).
 .Pp
-For functions that have more than eight parameters (and this
-is rare), the
-macros
-.Ql \&.Fo
+For functions with many parameters (which is rare), the macros
+.Ql .Fo
 (function open)
 and
-.Ql \&.Fc
+.Ql .Fc
 (function close)
 may be used with
-.Ql \&.Fa
-(function argument)
-to get around the limitation.
-For example:
+.Ql .Fa
+(function argument).
+.Pp
+Example:
 .Bd -literal -offset indent
 \&.Fo "int res_mkquery"
 \&.Fa "int op"
@@ -1340,116 +1328,87 @@ Produces:
 .Fc
 .Ed
 .Pp
-The
-.Ql \&.Fo
-and
-.Ql \&.Fc
-macros are parsed and are callable.
 In the
 .Sx SYNOPSIS
-section, the function will always begin at
-the beginning of line.
-If there is more than one function
-presented in the
+section, the function will always begin at the beginning of line.
+If there is more than one function presented in the
 .Sx SYNOPSIS
-section and a function type has not been
-given, a line break will occur, leaving a nice vertical space
-between the current function name and the one prior.
-At the moment,
-.Ql \&.Fn
-does not check its word boundaries
-against troff line lengths and may split across a newline
-ungracefully.
-This will be fixed in the near future.
+section and a function type has not been given, a line break will occur,
+leaving a nice vertical space between the current function name and the one
+prior.
+.
 .Ss Function Type
+.
 This macro is intended for the
 .Sx SYNOPSIS
 section.
-It may be used
-anywhere else in the man page without problems, but its main purpose
-is to present the function type in kernel normal form for the
+It may be used anywhere else in the man page without problems, but its main
+purpose is to present the function type in kernel normal form for the
 .Sx SYNOPSIS
-of sections two and three
-(it causes a page break allowing the function name to appear
-on the next line).
+of sections two and three (it causes a page break, allowing the function
+name to appear on the next line).
 .Pp
-.Dl Usage: .Ft type ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Ft struct stat" -offset 14n -compact
-.It Li \&.Ft struct stat
+.Dl Usage: .Ft Ao type Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Ft\ struct\ stat" -compact -offset 15n
+.It Li ".Ft struct stat"
 .Ft struct stat
 .El
-.Pp
-The
-.Ql \&.Ft
-request is not callable by other macros.
+.
 .Ss Interactive Commands
+.
 The
-.Ql \&.Ic
+.Ql .Ic
 macro designates an interactive or internal command.
 .Pp
-.Dl Usage: .Ic argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Ic setenv\ , unsetenv" -compact -offset 14n
-.It Li \&.Ic :wq
+.Dl Usage: .Ic Ao argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Ic\ setenv\ ,\ unsetenv" -compact -offset 15n
+.It Li ".Ic :wq"
 .Ic :wq
-.It Li \&.Ic do while {...}
-.Ic do while {...}
-.It Li \&.Ic setenv\ , unsetenv
+.It Li ".Ic \*[q]do while {...}\*[q]"
+.Ic "do while {...}"
+.It Li ".Ic setenv , unsetenv"
 .Ic setenv , unsetenv
 .El
-.Pp
-It is an error to call
-.Ql \&.Ic
-without arguments.
-The
-.Ql \&.Ic
-macro is parsed and is callable.
+.
 .Ss Literals
+.
 The
-.Ql \&.Li
-literal macro may be used for special characters,
-variable constants, anything which should be displayed as it
-would be typed.
+.Ql .Li
+literal macro may be used for special characters, variable constants, etc.\&
+-- anything which should be displayed as it would be typed.
 .Pp
-.Dl Usage: .Li argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Li cntrl-D\ )\ ,"  -compact -offset 14n
-.It Li \&.Li \een
+.Dl Usage: .Li Ao argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Li\ cntrl-D\ )\ ,"  -compact -offset 15n
+.It Li ".Li \een"
 .Li \en
-.It Li \&.Li M1 M2 M3\ ;
+.It Li ".Li M1 M2 M3 ;"
 .Li M1 M2 M3 ;
-.It Li \&.Li cntrl-D\ )\ ,
+.It Li ".Li cntrl-D ) ,"
 .Li cntrl-D ) ,
-.It Li \&.Li 1024\ ...
-.Li 1024 ...
+.It Li ".Li 1024 Ld"
+.Li 1024 Ld
 .El
-.Pp
+.
+.Ss Names
+.
 The
-.Ql \&.Li
-macro is parsed and is callable.
-.Ss Name Macro
-The
-.Ql \&.Nm
+.Ql .Nm
 macro is used for the document title or subject name.
-It has the peculiarity of remembering the first
-argument it was called with, which should
-always be the subject name of the page.
-When called without
-arguments,
-.Ql \&.Nm
-regurgitates this initial name for the sole purpose
-of making less work for the author.
-If trailing punctuation is required with this feature,
-use
-.Qq
-as a first argument to
-.Ql \&.Nm .
-Note:
-a section two
-or three document function name is addressed with the
-.Ql \&.Nm
+It has the peculiarity of remembering the first argument it was called with,
+which should always be the subject name of the page.
+When called without arguments,
+.Ql .Nm
+regurgitates this initial name for the sole purpose of making less work for
+the author.
+Note: A section two or three document function name is addressed with the
+.Ql .Nm
 in the
 .Sx NAME
 section, and with
-.Ql \&.Fn
+.Ql .Fn
 in the
 .Sx SYNOPSIS
 and remaining sections.
@@ -1458,48 +1417,46 @@ For interactive commands, such as the
 command keyword in
 .Xr csh 1 ,
 the
-.Ql \&.Ic
+.Ql .Ic
 macro should be used.
-While the
-.Ql \&.Ic
+While
+.Ql .Ic
 is nearly identical
 to
-.Ql \&.Nm ,
+.Ql .Nm ,
 it can not recall the first argument it was invoked with.
 .Pp
-.Dl Usage: .Nm argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Nm mdoc.reference" -compact -offset 14n
-.It Li \&.Nm mdoc.reference
+.Dl Usage: .Nm Oo Ao argument Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Nm\ mdoc.reference" -compact -offset 15n
+.It Li ".Nm mdoc.reference"
 .Nm mdoc.reference
-.It Li \&.Nm \e-mdoc
+.It Li ".Nm \e-mdoc"
 .Nm \-mdoc
-.It Li \&.Nm foo\ )\ )\ ,
+.It Li ".Nm foo ) ) ,"
 .Nm foo ) ) ,
-.It Li \&.Nm
-.Nm
-.It Li \&.Nm \&"\&"\ :
-.Nm "" :
+.It Li ".Nm :"
+.Nm :
 .El
-.Pp
-The
-.Ql \&.Nm
-macro is parsed and is callable.
+.
 .Ss Options
+.
 The
-.Ql \&.Op
-macro
-places option brackets around the any remaining arguments on the command
-line, and places any
-trailing punctuation outside the brackets.
+.Ql .Op
+macro places option brackets around the any remaining arguments on the
+command line, and places any trailing punctuation outside the brackets.
 The macros
-.Ql \&.Oc
+.Ql .Oc
 and
-.Ql \&.Oo
-may be used across one or more lines.
+.Ql .Oo
+(which produce an opening resp.\& a closing option bracket) may be used
+across one or more lines or to specify the exact position of the closing
+parenthesis.
 .Pp
-.Dl Usage: .Op options ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Op\ Fl\ c\ Ar\ objfil\ Op\ Ar\ corfil\ ," -compact -offset indent
-.It Li \&.Op
+.Dl Usage: .Op Oo Ao option Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Op\ Fl\ c\ Ar\ objfil\ Op\ Ar\ corfil\ ," -compact -offset 15n
+.It Li .Op
 .Op
 .It Li ".Op Fl k"
 .Op Fl k
@@ -1513,122 +1470,115 @@ may be used across one or more lines.
 .Op Ar objfil Op Ar corfil
 .It Li ".Op Fl c Ar objfil Op Ar corfil ,"
 .Op Fl c Ar objfil Op Ar corfil ,
-.It Li \&.Op word1 word2
+.It Li ".Op word1 word2"
 .Op word1 word2
+.It Li ".Li .Op Oo Ao option Ac Oc Ld"
+.Li .Op Oo Ao options Ac Oc Ld
 .El
 .Pp
-The
-.Ql \&.Oc
+Here a typical example of the
+.Ql .Oc
 and
-.Ql \&.Oo
+.Ql .Oo
 macros:
 .Bd -literal -offset indent
 \&.Oo
-\&.Op \&Fl k \&Ar kilobytes
-\&.Op \&Fl i \&Ar interval
-\&.Op \&Fl c \&Ar count
+\&.Op Fl k Ar kilobytes
+\&.Op Fl i Ar interval
+\&.Op Fl c Ar count
 \&.Oc
 .Ed
 .Pp
-Produce:
+Produces:
+.Bd -filled -offset indent
 .Oo
 .Op Fl k Ar kilobytes
 .Op Fl i Ar interval
 .Op Fl c Ar count
 .Oc
-.Pp
-The macros
-.Ql \&.Op ,
-.Ql \&.Oc
-and
-.Ql \&.Oo
-are parsed and are callable.
+.Ed
+.
 .Ss Pathnames
+.
 The
-.Ql \&.Pa
+.Ql .Pa
 macro formats path or file names.
 .Pp
-.Dl Usage: .Pa pathname \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Pa /tmp/fooXXXXX\ )\ ." -compact -offset 14n
-.It Li \&.Pa /usr/share
+.Dl Usage: .Pa Oo Ao pathname Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Pa\ /tmp/fooXXXXX\ )\ ." -compact -offset 15n
+.It Li .Pa
+.Pa
+.It Li ".Pa /usr/share"
 .Pa /usr/share
-.It Li \&.Pa /tmp/fooXXXXX\ )\ .
+.It Li ".Pa /tmp/fooXXXXX ) ."
 .Pa /tmp/fooXXXXX ) .
 .El
-.Pp
-The
-.Ql \&.Pa
-macro is parsed and is callable.
+.
 .Ss Variables
-Generic variable reference:
+.
+Generic variable reference.
 .Pp
-.Dl Usage: .Va variable ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Va char\ s\ ]\ )\ )\ ," -compact -offset 14n
-.It Li \&.Va count
+.Dl Usage: .Va Ao variable Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Va\ Xchar\ sX\ ]\ )\ )\ ," -compact -offset 15n
+.It Li ".Va count"
 .Va count
-.It Li \&.Va settimer ,
+.It Li ".Va settimer ,"
 .Va settimer ,
-.It Li \&.Va int\ *prt\ )\ :
-.Va int\ *prt ) :
-.It Li \&.Va char\ s\ ]\ )\ )\ ,
-.Va char\ s ] ) ) ,
+.It Li ".Va \*[q]int *prt\*[q] ) :"
+.Va "int *prt" ) :
+.It Li ".Va \*[q]char s\*[q] ] ) ) ,"
+.Va "char s" ] ) ) ,
 .El
-.Pp
-It is an error to call
-.Ql \&.Va
-without any arguments.
-The
-.Ql \&.Va
-macro is parsed and is callable.
+.
 .Ss Manual Page Cross References
+.
 The
-.Ql \&.Xr
-macro expects the first argument to be
-a manual page name, and the second argument, if it exists,
-to be either a section page number or punctuation.
-Any
-remaining arguments are assumed to be punctuation.
+.Ql .Xr
+macro expects the first argument to be a manual page name.
+The optional second argument, if a string (defining the manual section), is
+put into parentheses.
 .Pp
-.Dl Usage: .Xr man_page [1,...,9] \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Xr mdoc 7\ )\ )\ ," -compact -offset 14n
-.It Li \&.Xr mdoc
+.Dl Usage: .Xr Ao man page name Ac Oo Ao section Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Xr\ xinit\ 1x\ ;" -compact -offset 15n
+.It Li ".Xr mdoc"
 .Xr mdoc
-.It Li \&.Xr mdoc\ ,
+.It Li ".Xr mdoc ,"
 .Xr mdoc ,
-.It Li \&.Xr mdoc 7
+.It Li ".Xr mdoc 7"
 .Xr mdoc 7
-.It Li \&.Xr mdoc 7\ )\ )\ ,
-.Xr mdoc 7 ) ) ,
+.It Li ".Xr xinit 1x ;"
+.Xr xinit 1x ;
 .El
-.Pp
-The
-.Ql \&.Xr
-macro is parsed and is callable.
-It is an error to call
-.Ql \&.Xr
-without
-any arguments.
+.
+.
 .Sh GENERAL TEXT DOMAIN
+.
 .Ss AT&T Macro
-.Bd -literal -offset indent -compact
-Usage: .At [v1 .. v7 | 32v | V.1 | V.4] ... \*[doc-punct-chars]
-.Ed
-.Bl -tag -xwidth ".Li \&.At\ v6\ ." -compact -offset 14n
-.It Li ".At"
+.
+.Pp
+.Dl Usage: .At Oo Ao version Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .At\ v6\ ." -compact -offset 15n
+.It Li .At
 .At
 .It Li ".At v6 ."
 .At v6 .
 .El
 .Pp
-The
-.Ql \&.At
-macro is
-.Em not
-parsed and
-.Em not
-callable.
-It accepts at most two arguments.
+The following values for
+.Ao Li version Ac
+are possible:
+.Pp
+.Dl 32v, v1, v2, v3, v4, v5, v6, v7, V, V.1, V.2, V.3, V.4
+.
+\#
+\#=====================================================================
+\#
 .Ss BSD Macro
+.
 .Dl Usage: .Bx [Version/release] ... \*[doc-punct-chars]
 .Bl -tag -xwidth ".Li \&.Bx\ 4.3\ ." -compact -offset 14n
 .It Li ".Bx"
