@@ -834,17 +834,24 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\}
 ..
 .\" external picture
+.\" -L	left adjust
 .de EPIC
-.if \\n[.$]< 2 .@error "EPIC: Not enough arguments"
+.if \\n[.$]<2 .@error "EPIC: Not enough arguments"
+.nr pict*adj 0		\" centered
+.if '\\$1'-L' \{\
+.	shift 1		\" left adjust
+.	nr pict*adj 1
+.\}
+.if \\n[nl]<0 \&
 .nr pict*w \\$1
 .nr pict*h \\$2
 .ds pict*name "External picture
 .if !''$3' .ds pict*name \\$3
-\&
-.br
-.ne \\n[pict*h]u
-.sp \\n[pict*h]u
-.nr pict*ind (u;(\\n[.l]-\\n[.i]-\\n[pict*w])/2)
+.ne \\n[pict*h]u-1v
+.sp \\n[pict*h]u-1v
+.nr pict*ind 0
+.if !\\n[pict*adj] .nr pict*ind (u;(\\n[.l]-\\n[.i]-\\n[pict*w])/2)
+.mk
 .in +\\n[pict*ind]u
 \D'l \\n[pict*w]u 0'\
 \D'l 0 -\\n[pict*h]u'\
@@ -853,6 +860,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 \v'-(u;\\n[pict*h]/2)'\
 \h'(u;(\\n[pict*w]-\w'\\*[pict*name]'/2))'\\*[pict*name]
 .in
+.rt
+.sp 1v
 ..
 .\" ######## module acc #################
 .\"-----------
