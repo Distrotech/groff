@@ -253,17 +253,26 @@ int style::operator!=(const style &s) const
  */
 
 struct char_block {
-  enum { SIZE = 8192 };
-  char          buffer[SIZE];
+  enum { SIZE = 256 };
+  char         *buffer;
   int           used;
   char_block   *next;
 
   char_block();
+  char_block::char_block(int length);
 };
 
 char_block::char_block()
+: buffer(NULL), used(0), next(0)
+{
+}
+
+char_block::char_block(int length)
 : used(0), next(0)
 {
+  buffer = (char *)malloc(max(length, char_block::SIZE));
+  if (buffer == NULL)
+    fatal("out of memory error");
 }
 
 class char_buffer {
@@ -300,17 +309,13 @@ char *char_buffer::add_string (const char *s, unsigned int length)
     return NULL;
 
   if (tail == 0) {
-    tail = new char_block;
+    tail = new char_block(length+1);
     head = tail;
   } else {
     if (tail->used + length+1 > char_block::SIZE) {
-      tail->next = new char_block;
-      tail       = tail->next;
+      tail->next  = new char_block(length+1);
+      tail        = tail->next;
     }
-  }
-  // at this point we have a tail which is ready for the string.
-  if (tail->used + length+1 > char_block::SIZE) {
-    fatal("need to increase char_block::SIZE");
   }
 
   old_used = tail->used;
