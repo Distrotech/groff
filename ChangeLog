@@ -1,3 +1,37 @@
+2001-06-18  Gaius Mulley <gaius@glam.ac.uk>
+
+	Added two new options (-D and -I) to specify image names and a
+	subdirectory to place the images in.
+
+	Change syntax from \\Ox to \\O[x].
+
+	* src/devices/grohtml/post-html.cc (main): Add options.
+	(usage): Updated.
+	* src/preproc/html/pre-html.cc: Include `stdarg.h'.
+	Use `NULL' instead of `0' for null string pointers.
+	(MAX_RETRIES): New macro.
+	(lengthOfintToStr, intToStr, make_message): New functions.
+	(makeFileName): Make function static.
+	Implement -D and -I options.
+	(checkImageDir): New function.
+	(write_end_image, write_start_image): Use new syntax of \O.
+	(createAllPages, removeAllPages): Implement -D and -I options.  Use
+	make_message().
+	(createImage): Use make_message().
+	(addps4html): Add guard for malloc().
+	(usage, scanArguments): Updated.
+	(makeTempFiles): Use mkstemp().
+	(removeTempFiles): Use unlink().
+	(findPrefix): Add guard for malloc().
+	(main): Updated.
+	* src/roff/troff/input.cc (get_delim_file_name): New function to
+	parse \O.
+	(do_suppress): Updated to parse new syntax.
+	* src/devices/grohtml/grohtml.man: Updated.
+	* tmac/www.tmac: Updated to new syntax.
+
+	* NEWS: Updated.
+
 2001-06-15  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/grog/Makefile.sub: Remove NAMEPREFIX.

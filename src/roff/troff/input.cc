@@ -135,6 +135,7 @@ static void interpolate_arg(symbol);
 static request_or_macro *lookup_request(symbol);
 static int get_delim_number(units *, int);
 static int get_delim_number(units *, int, units);
+static symbol get_delim_file_name();
 static int get_line_arg(units *res, int si, charinfo **cp);
 static int read_size(int *);
 static symbol get_delim_name();
@@ -4084,6 +4085,65 @@ static symbol get_delim_name()
   }
 }
 
+static symbol get_delim_file_name()
+{
+  token start;
+  start.next();
+  if (start.eof()) {
+    error("end of input at start of delimited file name");
+    return NULL_SYMBOL;
+  }
+  if (start.newline()) {
+    error("can't delimit file name with a newline");
+    return NULL_SYMBOL;
+  }
+  int start_level = input_stack::get_level();
+  char abuf[ABUF_SIZE];
+  char *buf = abuf;
+  int buf_size = ABUF_SIZE;
+  int i = 0;
+  for (;;) {
+    if (i + 1 > buf_size) {
+      if (buf == abuf) {
+	buf = new char[ABUF_SIZE*2];
+	memcpy(buf, abuf, buf_size);
+	buf_size = ABUF_SIZE*2;
+      }
+      else {
+	char *old_buf = buf;
+	buf = new char[buf_size*2];
+	memcpy(buf, old_buf, buf_size);
+	buf_size *= 2;
+	a_delete old_buf;
+      }
+    }
+    tok.next();
+    if (tok.ch() == ']' && input_stack::get_level() == start_level)
+      break;
+    if ((buf[i] = tok.ch()) == 0) {
+      error("missing delimiter (got %1)", tok.description());
+      if (buf != abuf)
+	a_delete buf;
+      return NULL_SYMBOL;
+    }
+    i++;
+  }
+  buf[i] = '\0';
+  if (buf == abuf) {
+    if (i == 0) {
+      error("empty delimited file name");
+      return NULL_SYMBOL;
+    }
+    else
+      return symbol(buf);
+  }
+  else {
+    symbol s(buf);
+    a_delete buf;
+    return s;
+  }
+}
+
 // Implement \R
 
 static void do_register()
@@ -4324,6 +4384,14 @@ node *do_suppress()
 {
   tok.next();
   int c = tok.ch();
+  if (c != '[') {
+    error("argument(s) of \\O must be enclosed in brackets (got %1)",
+	  char(s));
+    return 0;
+  }
+  tok.next();
+  c = tok.ch();
+  tok.next();
   switch (c) {
   case '0':
     if (begin_level == 1)
@@ -4344,7 +4412,12 @@ node *do_suppress()
     begin_level--;
     break;
   case '5': {
-    symbol filename = get_delim_name();
+    symbol filename = get_delim_file_name();
+    tok.next();
+    if (filename.is_null()) {
+      error("missing filename as second argument to \\O");
+      return 0;
+    }
     if (begin_level == 1)
       return new suppress_node(filename, 'i');
     return 0;

@@ -2879,7 +2879,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "o:i:F:vd?lrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "o:i:I:D:F:vd?lrn", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -2901,6 +2901,12 @@ int main(int argc, char **argv)
       /* handled by pre-html */
       break;
     case 'i':
+      /* handled by pre-html */
+      break;
+    case 'I':
+      /* handled by pre-html */
+      break;
+    case 'D':
       /* handled by pre-html */
       break;
     case 'n':
@@ -2929,6 +2935,6 @@ int main(int argc, char **argv)
 
 static void usage(FILE *stream)
 {
-  fprintf(stream, "usage: %s [-vld?n] [-F dir] [files ...]\n",
+  fprintf(stream, "usage: %s [-vld?n] [-D dir] [-I image_stem] [-F dir] [files ...]\n",
 	  program_name);
 }

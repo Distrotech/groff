@@ -46,6 +46,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #define PID_T int
 #endif /* not _POSIX_VERSION */
 
+#include <stdarg.h>
+
 extern "C" const char *Version_string;
 
 #include "pre-html.h"
@@ -58,6 +60,7 @@ extern "C" const char *Version_string;
 #define IMAGE_BOARDER_PIXELS       0
 #define MAX_WIDTH                  8   // inches
 #define INLINE_LEADER_CHAR      '\\'
+#define MAX_RETRIES             4096   // number of different page directory names to try before giving up
 
 #define TRANSPARENT  "-background \"#FFF\" -transparent \"#FFF\""
 
@@ -81,20 +84,21 @@ static int   stdoutfd       = 1;                // output file descriptor - norm
                                                 // -1 means closed
 static int   copyofstdoutfd =-1;                // a copy of stdout, so we can restore stdout when
                                                 // writing to post-html
-static char *psFileName     = 0;                // name of postscript file
-static char *regionFileName = 0;                // name of file containing all image regions
-static char *imagePageStem  = 0;                // stem of all files containing page images
+static char *psFileName     = NULL;             // name of postscript file
+static char *regionFileName = NULL;             // name of file containing all image regions
+static char *imagePageStem  = NULL;             // stem of all files containing page images
 static char *image_device   = "pnmraw";
 static int   image_res      = DEFAULT_IMAGE_RES;
 static int   vertical_offset= DEFAULT_VERTICAL_OFFSET;
-static char *image_template = 0;                // image template filename
+static char *image_template = NULL;             // image template filename
 static int   troff_arg      = 0;                // troff arg index
-static char *command_prefix = 0;                // optional prefix for some installations.
-static char *troff_command  = 0;
+static char *command_prefix = NULL;             // optional prefix for some installations.
+static char *troff_command  = NULL;
+static char *image_dir      = NULL;             // user specified image directory
 #if defined(DEBUGGING)
 static int   debug          = FALSE;
-static char *troffFileName  = 0;                // output of pre-html output which is sent to troff -Tps
-static char *htmlFileName   = 0;                // output of pre-html output which is sent to troff -Thtml
+static char *troffFileName  = NULL;             // output of pre-html output which is sent to troff -Tps
+static char *htmlFileName   = NULL;             // output of pre-html output which is sent to troff -Thtml
 #endif
 
 
@@ -117,6 +121,196 @@ void sys_fatal (const char *s)
 {
   fprintf(stderr, "%s: %s: %s", program_name, s, strerror(errno));
 }
+
+
+#if 0
+
+/*
+ *  if/when vsnprintf becomes available on all *NIX machines we can use this function,
+ *  until then we must use the more complex function below which performs hand built
+ *  %d, %s and %%.
+ */
+
+/*
+ *  make_message - taken from man printf(3), creates a string via malloc
+ *                 and places the result of the va args into string.
+ *                 Finally the new string is returned.
+ */
+
+char *
+make_message (const char *fmt, ...)
+{
+  /* Guess we need no more than 100 bytes. */
+  int n, size = 100;
+  char *p;
+  char *np;
+  va_list ap;
+  if ((p = (char *)malloc (size)) == NULL)
+    return NULL;
+  while (1) {
+    /* Try to print in the allocated space. */
+    va_start(ap, fmt);
+    n = vsnprintf (p, size, fmt, ap);
+    va_end(ap);
+    /* If that worked, return the string. */
+    if (n > -1 && n < size) {
+      if (size > n+1) {
+	np = strdup(p);
+	if (np == NULL)
+	  sys_fatal("strdup");
+	free(p);
+	return np;
+      }
+      return p;
+    }
+    /* Else try again with more space. */
+    if (n > -1)    /* glibc 2.1 */
+      size = n+1; /* precisely what is needed */
+    else           /* glibc 2.0 */
+      size *= 2;  /* twice the old size */
+    if ((np = (char *)realloc (p, size)) == NULL) {
+      free(p);  /* realloc failed, free old, p. */
+      return NULL;
+    }
+    p = np;  /* use realloc'ed, p */
+  }
+}
+#else
+
+/*
+ *  lengthOfintToStr - returns the length of the proposed string value of i.
+ *                     Hand built log10.
+ */
+
+int
+lengthOfintToStr (int i)
+{
+  int n=0;
+
+  if (i < 0)
+    sys_fatal("expecting positive integer value");
+
+  do {
+    i /= 10;
+    n++;
+  } while (i > 0);
+  return n;
+}
+
+/*
+ *  intToStr - returns a string containing the positive value of i.
+ *             (int i is assumed to be positive).
+ */
+
+char *
+intToStr (int i)
+{
+  int n=lengthOfintToStr(i)+1;
+  char *p = (char *)malloc(n);
+
+  if (p == NULL)
+    sys_fatal("malloc");
+
+  if (i < 0)
+    sys_fatal("expecting positive integer value");
+
+  n--;
+  p[n] = (char)0;
+  do {
+    n--;
+    p[n] = (char)((i % 10) + (int)'0');
+    i /= 10;
+  } while (i > 0);
+  return( p );
+}
+
+/*
+ *  make_message - returns a string built from a format specifier.
+ *                 This function does not use vsnprintf; it only
+ *                 understands primitive %%, %s, and %d specifiers.
+ */
+
+char *
+make_message (const char *fmt, ...)
+{
+  char *p = strdup(fmt);  /* so we can splat a nul anywhere in the string */
+  char *np;
+  char *l;
+  char *s;
+  char *num;
+  int   search=0;
+  va_list ap;
+
+  if (p == NULL)
+    sys_fatal("strdup");
+  
+  va_start(ap, fmt);
+  while (p) {
+    int   lenp=strlen(p);
+    char *f   = strchr(p+search, '%');
+
+    search = f-p;
+    np = p;
+
+    if (f == NULL) {
+      va_end(ap);
+      return p;
+    }
+    switch (*(f+1)) {
+
+    case 'd':
+      l = strdup(f+2);
+      if (l == NULL)
+	sys_fatal("strdup");
+      *f = (char)0;
+      num = intToStr(va_arg(ap, int));
+      np = (char *)malloc(strlen(p)+strlen(num)+strlen(l)+1);
+      if (np == NULL)
+	sys_fatal("malloc");
+      strcpy(np, p);
+      strcat(np, num);
+      strcat(np, l);
+      search += strlen(np)-lenp;
+      free(num);
+      free(l);
+      break;
+    case 's':
+      /* concat */
+      l = f+2;
+      if (l == NULL)
+	sys_fatal("strdup");
+      s = va_arg(ap, char *);
+      *f = (char)0;
+      np = (char *)malloc(strlen(l)+1+strlen(p)+strlen(s));
+      if (np == NULL)
+	sys_fatal("malloc");
+      strcpy(np, p);
+      strcat(np, s);
+      strcat(np, l);
+      search += strlen(s)-2;
+      break;
+    case '%':
+      /* remove one of the two % that we have seen */
+      *f = (char)0;
+      l = f+1;
+      np = (char *)malloc(strlen(l)+1+strlen(p));
+      if (np == NULL)
+	sys_fatal("malloc");
+      strcpy(np, p);
+      strcat(np, l);
+      search++;
+      break;
+    default:
+      sys_fatal("unexpected format specifier");
+      return NULL;
+    }
+    free(p);
+    p = np;
+  }
+  va_end(ap);
+  return NULL;
+}
+#endif
 
 /*
  *  the class and methods for retaining ascii text
@@ -173,7 +367,7 @@ char_buffer::char_buffer()
 
 char_buffer::~char_buffer()
 {
-  while (head != 0) {
+  while (head != NULL) {
     char_block *temp = head;
     head = head->next;
     delete temp;
@@ -189,7 +383,7 @@ int char_buffer::read_file (FILE *fp)
   int n;
 
   while (! feof(fp)) {
-    if (tail == 0) {
+    if (tail == NULL) {
       tail = new char_block;
       head = tail;
     } else {
@@ -243,14 +437,55 @@ static void writeString (char *s)
  *  makeFileName - creates the image filename template.
  */
 
-void makeFileName ()
+static void makeFileName (void)
 {
-  char buffer[8192];
+  char *s;
 
-  sprintf(buffer, "grohtml-%d", (int)getpid());
-  strcat(buffer, "-%d");
-  image_template = (char *)malloc(strlen(buffer)+1);
-  strcpy(image_template, buffer);
+  if ((image_dir != NULL) && (strchr(image_dir, '%') != NULL)) {
+    error("cannot use a `%%' within the image directory name");
+    exit(1);
+  }
+
+  if ((image_template != NULL) && (strchr(image_template, '%') != NULL)) {
+    error("cannot use a `%%' within the image template");
+    exit(1);
+  }
+
+  if (image_dir == NULL) {
+    image_dir = "";
+  } else if ((strlen(image_dir)>0) && (image_dir[strlen(image_dir)-1] != '/')) {
+    image_dir = make_message("%s/", image_dir);
+    if (image_dir == NULL)
+      sys_fatal("make_message");
+  }
+  
+  if (image_template == NULL)
+    s = make_message("%sgrohtml-%d", image_dir, (int)getpid());
+  else {
+    s = make_message("%s%s", image_dir, image_template);
+  }
+  if (s == NULL)
+    sys_fatal("make_message");
+
+  image_template = (char *)malloc(strlen("-%d")+strlen(s)+1);
+  if (image_template == NULL)
+    sys_fatal("malloc");
+  strcpy(image_template, s);
+  strcat(image_template, "-%d");
+  free(s);
+}
+
+/*
+ *  checkImageDir - checks to see whether the image directory is available.
+ */
+
+static void checkImageDir (void)
+{
+  if ((image_dir != NULL) && (strcmp(image_dir, "") != 0))
+    if (! ((mkdir(image_dir, 0700) == 0) || (errno == EEXIST))) {
+      error("cannot create directory `%1'", image_dir);
+      exit(1);
+    }
 }
 
 /*
@@ -263,12 +498,12 @@ static void write_end_image (int is_html)
     /*
      *  emit image name and enable output
      */
-    writeString("\\O2\\O1\\O4\n");
+    writeString("\\O[2]\\O[1]\\O[4]\n");
   } else {
     /*
      *  postscript, therefore emit image boundaries
      */
-    writeString("\\O2\\O4\n");
+    writeString("\\O[2]\\O[4]\n");
   }
 }
 
@@ -283,8 +518,8 @@ static void write_end_image (int is_html)
 static void write_start_image (IMAGE_ALIGNMENT pos, int is_html)
 {
   if (pos == INLINE) {
-    writeString("\\O3\\O5'");
-    writeString(image_template); writeString(".png'");
+    writeString("\\O[3]\\O[5 ");
+    writeString(image_template); writeString(".png]");
   } else {
     writeString(".begin \\{\\\n");
     switch (pos) {
@@ -307,10 +542,10 @@ static void write_start_image (IMAGE_ALIGNMENT pos, int is_html)
     writeString("\\}\n");
   }
   if (is_html) {
-    writeString("\\O0\n");
+    writeString("\\O[0]\n");
   } else {
     // reset min/max registers
-    writeString("\\O0\\O1\n");
+    writeString("\\O[0]\\O[1]\n");
   }
 }
 
@@ -455,7 +690,7 @@ void char_buffer::write_file_troff (void)
   char_block *t=head;
   int         i=0;
 
-  if (t != 0) {
+  if (t != NULL) {
     do {
       /*
        *  remember to check the shortest string last
@@ -475,7 +710,7 @@ void char_buffer::write_file_troff (void)
       } else {
 	write_upto_newline(&t, &i, FALSE);
       }
-    } while (t != 0);
+    } while (t != NULL);
   }
   if (close(stdoutfd) < 0)
     sys_fatal("close");
@@ -522,7 +757,7 @@ imageItem::imageItem (int x1, int y1, int x2, int y2, int page, int res, int max
   resolution = res;
   maxx       = max_width;
   imageName  = name;
-  next       = 0;
+  next       = NULL;
 }
 
 /*
@@ -563,7 +798,7 @@ imageList::imageList ()
 
 imageList::~imageList ()
 {
-  while (head != 0) {
+  while (head != NULL) {
     imageItem *i = head;
     head = head->next;
     delete i;
@@ -574,21 +809,51 @@ imageList::~imageList ()
  *  createAllPages - creates a set of images, one per page.
  */
 
-static void createAllPages (void)
+static int createAllPages (void)
 {
   char buffer[4096];
+  char *s;
+  int retries = MAX_RETRIES;
 
-  sprintf(buffer,
-	  "echo showpage | gs -q -dSAFER -sDEVICE=%s -r%d -sOutputFile=%s%%d %s - > /dev/null 2>&1 \n",
-	  image_device,
-	  image_res,
-	  imagePageStem,
-	  psFileName);
+  imagePageStem = xtmptemplate("-page-");
+  strcpy(buffer, imagePageStem);
+
+  do {
+    if (mktemp(imagePageStem) == NULL) {
+      sys_fatal("mktemp");
+      return -1;
+    }
+    if (mkdir(imagePageStem, 0700) == 0) break;
+    if (errno == EEXIST) {
+      // directory already exists, try another name
+      retries--;
+      if (retries == 0) {
+	// time to give up
+	sys_fatal("mkdir");
+	return -1;
+      }
+    } else {
+      // another error, quit
+      sys_fatal("mkdir");
+      return -1;
+    }      
+    strcpy(imagePageStem, buffer);
+  } while (1);
+
+  s = make_message("echo showpage | gs -q -dSAFER -sDEVICE=%s -r%d -sOutputFile=%s/%%d %s - > /dev/null 2>&1 \n",
+		   image_device,
+		   image_res,
+		   imagePageStem,
+		   psFileName);
+  if (s == NULL)
+    sys_fatal("make_message");
 #if defined(DEBUGGING)
-  fwrite(buffer, sizeof(char), strlen(buffer), stderr);
+  fwrite(s, sizeof(char), strlen(s), stderr);
   fflush(stderr);
 #endif
-  system(buffer);
+  system(s);
+  free(s);
+  return 0;
 }
 
 /*
@@ -598,13 +863,18 @@ static void createAllPages (void)
 static void removeAllPages (void)
 {
 #if !defined(DEBUGGING)
-  char buffer[4096];
+  char *s=NULL;
   int  i=1;
 
   do {
-    sprintf(buffer, "%s%d", imagePageStem, i);
+    if (s)
+      free(s);
+    s = make_message("%s/%d", imagePageStem, i);
+    if (s == NULL)
+      sys_fatal("make_message");
     i++;
-  } while (remove(buffer) == 0);
+  } while (unlink(s) == 0);
+  rmdir(imagePageStem);
 #endif
 }
 
@@ -641,23 +911,26 @@ int max (int x, int y)
 static void createImage (imageItem *i)
 {
   if (i->X1 != -1) {
-    char buffer[4096];
+    char *s;
     int  x1 = max(min(i->X1, i->X2)*image_res/POSTSCRIPTRES-1*IMAGE_BOARDER_PIXELS, 0);
     int  y1 = max((image_res*vertical_offset/72)+min(i->Y1, i->Y2)*image_res/POSTSCRIPTRES-IMAGE_BOARDER_PIXELS, 0);
     int  x2 = max(i->X1, i->X2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
     int  y2 = (image_res*vertical_offset/72)+max(i->Y1, i->Y2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
 
-    sprintf(buffer,
-	    "pnmcut %d %d %d %d < %s%d | pnmtopng %s > %s \n",
-	    x1, y1, x2-x1+1, y2-y1+1,
-	    imagePageStem,
-	    i->pageNo,
-	    TRANSPARENT,
-	    i->imageName);
+    s = make_message("pnmcut %d %d %d %d < %s/%d | pnmtopng %s > %s \n",
+		     x1, y1, x2-x1+1, y2-y1+1,
+		     imagePageStem,
+		     i->pageNo,
+		     TRANSPARENT,
+		     i->imageName);
+    if (s == NULL)
+      sys_fatal("make_message");
+
 #if defined(DEBUGGING)
-    fprintf(stderr, buffer);
+    fprintf(stderr, s);
 #endif
-    system(buffer);
+    system(s);
+    free(s);
 #if defined(DEBUGGING)
   } else {
     fprintf(stderr, "ignoring image as x1 coord is -1\n");
@@ -674,7 +947,7 @@ void imageList::add (int x1, int y1, int x2, int y2, int page, int res, int maxx
 {
   imageItem *i = new imageItem(x1, y1, x2, y2, page, res, maxx, name);
 
-  if (head == 0) {
+  if (head == NULL) {
     head = i;
     tail = i;
   } else {
@@ -697,7 +970,7 @@ void char_buffer::write_file_html (void)
   char_block *t      =head;
   int         i=0;
 
-  if (t != 0) {
+  if (t != NULL) {
     stop();
     do {
       /*
@@ -719,7 +992,7 @@ void char_buffer::write_file_html (void)
       } else {
 	write_upto_newline(&t, &i, TRUE);
       }
-    } while (t != 0);
+    } while (t != NULL);
   }
   if (close(stdoutfd) < 0)
     sys_fatal("close");
@@ -912,6 +1185,9 @@ char **addps4html (int argc, char *argv[])
   char **new_argv = (char **)malloc((argc+2)*sizeof(char *));
   int   i=0;
 
+  if (new_argv == NULL)
+    sys_fatal("malloc");
+
   while (i<argc) {
     new_argv[i] = argv[i];
     i++;
@@ -987,13 +1263,15 @@ static char_buffer inputFile;
 
 void usage(FILE *stream)
 {
-  fprintf(stream, "usage: %s troffname [-P-o vertical_image_offset] [-P-i image_resolution] [troff flags] [files]\n", program_name);
+  fprintf(stream, "usage: %s troffname [-Iimage_name] [-Dimage_directory] [-P-o vertical_image_offset] [-P-i image_resolution] [troff flags] [files]\n", program_name);
   fprintf(stream, "    vertical_image_offset (default %d/72 of an inch)\n", vertical_offset);
   fprintf(stream, "    image_resolution (default %d) pixels per inch\n", image_res);
+  fprintf(stream, "    image_name is the name of the stem for all images (default is grohtml-<pid>)\n");
+  fprintf(stream, "    place all png files into image_directory\n");
 }
 
 /*
- *  scanArguments - scans for -P-i and -P-o arguments.
+ *  scanArguments - scans for -P-i, -P-o, -P-D and -P-I arguments.
  */
 
 int scanArguments (int argc, char **argv)
@@ -1001,7 +1279,11 @@ int scanArguments (int argc, char **argv)
   int i=1;
 
   while (i<argc) {
-    if (strncmp(argv[i], "-i", 2) == 0) {
+    if (strncmp(argv[i], "-D", 2) == 0) {
+      image_dir = (char *)(argv[i]+2);
+    } else if (strncmp(argv[i], "-I", 2) == 0) {
+      image_template = (char *)(argv[i]+2);
+    } else if (strncmp(argv[i], "-i", 2) == 0) {
       image_res = atoi((char *)(argv[i]+2));
     } else if (strncmp(argv[i], "-o", 2) == 0) {
       vertical_offset = atoi((char *)(argv[i]+2));
@@ -1033,7 +1315,7 @@ int scanArguments (int argc, char **argv)
  *  makeTempFiles - name the temporary files
  */
 
-static void makeTempFiles (void)
+static int makeTempFiles (void)
 {
 #if defined(DEBUGGING)
   psFileName     = "/tmp/prehtml-ps";
@@ -1042,10 +1324,21 @@ static void makeTempFiles (void)
   troffFileName  = "/tmp/prehtml-troff";
   htmlFileName   = "/tmp/prehtml-html";
 #else
-  psFileName     = mktemp(xtmptemplate("-ps-"));
-  regionFileName = mktemp(xtmptemplate("-regions-"));
-  imagePageStem  = mktemp(xtmptemplate("-page-"));
+  int fd;
+
+  if ((fd = mkstemp(psFileName = xtmptemplate("-ps-"))) == -1) {
+    sys_fatal("mkstemp");
+    return -1;
+  }
+  close(fd);
+  if ((fd = mkstemp(regionFileName = xtmptemplate("-regions-"))) == -1) {
+    sys_fatal("mkstemp");
+    unlink(psFileName);
+    return -1;
+  }
+  close(fd);
 #endif
+  return 0;
 }
 
 /*
@@ -1055,8 +1348,8 @@ static void makeTempFiles (void)
 static void removeTempFiles (void)
 {
 #if !defined(DEBUGGING)
-  remove(psFileName);
-  remove(regionFileName);
+  unlink(psFileName);
+  unlink(regionFileName);
 #endif
 }
 
@@ -1071,6 +1364,9 @@ static void findPrefix (void)
   if (!command_prefix)
     command_prefix = PROG_PREFIX;
   troff_command = (char *)malloc(strlen("troff")+strlen(command_prefix)+1);
+  if (troff_command == NULL)
+    sys_fatal("malloc");
+
   strcpy(troff_command, command_prefix);
   strcat(troff_command, "troff");
 }
@@ -1084,8 +1380,9 @@ int main(int argc, char **argv)
   int ok=1;
 
   findPrefix();
-  makeFileName();
   i = scanArguments(argc, argv);
+  checkImageDir();
+  makeFileName();
   while (i < argc) {
     if (argv[i][0] != '-') {
       /* found source file */
@@ -1103,13 +1400,16 @@ int main(int argc, char **argv)
   if (! found) {
     do_file("-");
   }
-  makeTempFiles();
+  if (makeTempFiles())
+    return 1;
   ok = inputFile.do_image(argc, argv);
   if (ok == 0) {
-    createAllPages();
-    generateImages(regionFileName);
-    ok = inputFile.do_html(argc, argv);
-    removeAllPages();
+    ok = createAllPages();
+    if (ok == 0) {
+      generateImages(regionFileName);
+      ok = inputFile.do_html(argc, argv);
+      removeAllPages();
+    }
   }
   removeTempFiles();
   return ok;
@@ -1135,6 +1435,6 @@ static int do_file(const char *filename)
 
   if (fp != stdin)
     fclose(fp);
-  current_filename = 0;
+  current_filename = NULL;
   return 1;
 }
