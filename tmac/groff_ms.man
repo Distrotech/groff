@@ -146,7 +146,7 @@ or just after the
 macro.
 .
 .LP
-.ne 9
+.ne 12
 .B Margin settings
 .RS
 .na
@@ -177,7 +177,7 @@ _
 .RE
 .
 .LP
-.ne 7
+.ne 12
 .B Text settings
 .RS
 .TS
@@ -191,12 +191,22 @@ T}	next para.	10p
 VS	T{
 Line spacing (leading)
 T}	next para.	12p
+PSINCR	T{
+Point size increment
+for section headings of
+increasing importance
+T}	next heading	1p
+GROWPS	T{
+Heading level
+beyond which PSINCR
+is ignored
+T}	next heading	0
 _
 .TE
 .RE
 .
 .LP
-.ne 7
+.ne 11
 .B Paragraph settings
 .RS
 .TS
@@ -213,6 +223,14 @@ T}	next para.	0.3v
 QI	T{
 Quoted paragraph indent
 T}	next para.	5n
+PORPHANS	T{
+Number of initial lines
+to be kept together
+T}	next para.	1
+HORPHANS	T{
+Number of initial lines
+to be kept with heading
+T}	next heading	1
 _
 .TE
 .RE
@@ -260,7 +278,7 @@ Use the following macros to create a cover page for your document
 in the order shown.
 .
 .TP
-.B \&.RP [no]
+.B .RP [no]
 Specifies the report format for your document.
 The report format creates a separate cover page.
 With no
@@ -281,12 +299,12 @@ does not repeat any of the title page information
 on page\~1 of the document.
 .
 .TP
-.B \&.P1 
+.B .P1 
 (P-one) Prints the header on page\~1.
 The default is to suppress the header.
 .
 .TP
-.BI "\&.DA [" xxx ]
+.BI ".DA [" xxx ]
 (optional) Print the current date,
 or the arguments to the macro if any,
 on the title page (if specified)
@@ -295,7 +313,7 @@ This is the default for
 .IR nroff .
 .
 .TP
-.BI "\&.ND [" xxx ]
+.BI ".ND [" xxx ]
 (optional) Print the current date,
 or the arguments to the macro if any,
 on the title page (if specified)
@@ -304,7 +322,7 @@ This is the default for
 .IR troff .
 .
 .TP
-.B \&.TL
+.B .TL
 Specifies the document title.
 .I Groff
 collects text following the
@@ -312,19 +330,19 @@ collects text following the
 macro into the title, until reaching the author name or abstract.
 .
 .TP
-.B \&.AU
+.B .AU
 Specifies the author's name.
 You can specify multiple authors by using an
 .B AU
 macro for each author.
 .
 .TP
-.B \&.AI
+.B .AI
 Specifies the author's institution.
 You can specify multiple institutions.
 .
 .TP
-.B \&.AB [no]
+.B .AB [no]
 Begins the abstract.
 The default is to print the word
 .BR ABSTRACT ,
@@ -334,7 +352,7 @@ The option
 suppresses this heading.
 .
 .TP
-.B \&.AE
+.B .AE
 End the abstract.
 .
 .
@@ -367,22 +385,67 @@ and subsequent lines are indented
 (the opposite of
 .BR PP ).
 .
+.PP
+For each of the above paragraph types,
+and also for any list entry introduced by the
+.B IP
+macro
+(described later),
+the document control register
+.BR PORPHANS ,
+sets the
+.I minimum
+number of lines which must be printed,
+after the start of the paragraph,
+and before any page break occurs.
+If there is insufficient space remaining on the current page
+to accommodate this number of lines,
+then a page break is forced
+.I before
+the first line of the paragraph is printed.
+.
+.PP
+Similarly,
+when a section heading
+(see subsection
+.I Headings
+below)
+preceeds any of these paragraph types,
+the
+.B HORPHANS
+document control register specifies the
+.I minimum
+number of lines of the paragraph
+which must be kept on the same page as the heading.
+If insufficient space remains on the current page
+to accommodate the heading and this number of lines of paragraph text,
+then a page break is forced
+.I before
+the heading is printed.
+.
 .
 .SS Headings
 .
 Use headings to create a hierarchical structure
 for your document.
-The
+By default,
+the
 .I ms
 macros print headings in
 .B bold
 using the same font family and point size as the body text.
+For output devices which support scalable fonts,
+this behaviour may be modified,
+by defining the document control registers,
+.B GROWPS
+and
+.BR PSINCR .
 .
 .PP
 The following heading macros are available:
 .
 .TP
-.BI \&.NH \0xx
+.BI .NH\  xx
 Numbered heading.
 The argument
 .I xx
@@ -399,9 +462,154 @@ after
 .I groff
 prints a warning on standard error.
 .
+.IP
+If the
+.B GROWPS
+register is set to a value
+greater than the level of the heading,
+then the point size of the heading will be increased by
+.B PSINCR
+units over the text size specified by the
+.B PS
+register,
+for each level by which the heading level is less than
+the value of
+.BR GROWPS .
+For example,
+the sequence:
+.
+.RS
+.ne 12
+.nf
+.IP
+\&.nr PS 10
+\&.nr GROWPS 3
+\&.nr PSINCR 1.5p
+\&.
+\&.NH 1
+Top Level Heading
+\&.
+\&.NH 2
+Second Level Heading
+\&.
+\&.NH 3
+Third Level Heading
+.fi
+.RE
+.
+.IP
+will cause
+.RI \*(lq 1.\ Top\ Level\ Heading \*(rq
+to be printed in 13pt
+.B bold
+text, followed by
+.RI \*(lq 1.1.\ Second\ Level\ Heading \*(rq
+in 11.5pt
+.B bold
+text, while
+.RI \*(lq 1.1.1.\ Third\ Level\ Heading \*(rq,
+and all more deeply nested heading levels,
+will remain in the 10pt
+.B bold
+text which is specified by the
+.B PS
+register.
+.
+.IP
+Note that the value stored in
+.B PSINCR
+is interpreted in
+.I groff
+basic units;
+the
+.I p
+scaling factor should be employed,
+when assigning a value specified in points.
+.
+.IP
+After invoking
+.BR .NH ,
+the assigned heading number is available in the strings
+.B SN-DOT
+(exactly as it appears in the formatted heading),
+and
+.B SN-NO-DOT
+(with its final period omitted).
+The string
+.B SN
+is also defined,
+as an alias for
+.BR SN-DOT ;
+if preferred,
+the user may redefine it as an alias for
+.BR SN-NO-DOT ,
+'ne 10
+by including the initialisation:
+.
+.RS
+.nf
+.IP
+\&.ds SN-NO-DOT
+\&.als SN SN-NO-DOT
+.fi
+.RE
+.
+.IP
+.I before
+the first use of
+.BR .NH ,
+or simply:
+.
+.RS
+.nf
+.IP
+\&.als SN SN-NO-DOT
+.fi
+.RE
+.
+.IP
+.I after
+the first use of
+.BR .NH .
+.
 .TP
-.B \&.SH
+.BI .SH\ [ xx ]
 Unnumbered subheading.
+The use of the optional
+.I xx
+argument is a GNU extension,
+which adjusts the point size of the unnumbered subheading
+to match that of a numbered heading,
+introduced using
+.BI .NH\  xx
+with the same value of
+.IR xx .
+For example,
+given the same settings for
+.BR PS ,
+.B GROWPS
+and
+.BR PSINCR ,
+as used in the preceeding
+.B .NH
+example,
+the sequence:
+.
+.RS
+.ne
+.nf
+.IP
+\&.SH 2
+An Unnumbered Subheading
+.fi
+.RE
+.
+.IP
+will print
+.RI \*(lq "An Unnumbered Subheading" \*(rq
+in 11.5pt
+.B bold
+text.
 .
 .
 .SS Highlighting
@@ -412,7 +620,7 @@ macros provide a variety of methods to highlight
 or emphasize text:
 .
 .TP
-.B "\&.B [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
+.B ".B [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
 Sets its first argument in
 .BR "bold type" .
 If you specify a second argument,
@@ -444,7 +652,7 @@ prints all text following in bold until
 the next highlighting, paragraph, or heading macro.
 .
 .TP
-.B "\&.R [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
+.B ".R [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
 Sets its first argument in
 roman (or regular) type.
 It operates similarly to the
@@ -452,7 +660,7 @@ It operates similarly to the
 macro otherwise.
 .
 .TP
-.B "\&.I [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
+.B ".I [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
 Sets its first argument in
 .IR "italic type" .
 It operates similarly to the
@@ -460,27 +668,27 @@ It operates similarly to the
 macro otherwise.
 .
 .TP
-.B "\&.CW [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
+.B ".CW [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
 Sets its first argument in a constant width face.
 It operates similarly to the
 .B B
 macro otherwise.
 .
 .TP
-.B "\&.BI [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
+.B ".BI [\fItxt\fP [\fIpost\fP [\fIpre\fP]]]"
 Sets its first argument in bold italic type.
 It operates similarly to the
 .B B
 macro otherwise.
 .
 .TP
-.BI "\&.BX [" txt ]
+.BI ".BX [" txt ]
 Prints its argument and draws a box around it.
 If you want to box a string that contains spaces,
 use a digit-width space (\[rs]0).
 .
 .TP
-.BI "\&.UL [" txt " [" post ]]
+.BI ".UL [" txt " [" post ]]
 Prints its first argument with an underline.
 If you specify a second argument,
 .I groff
@@ -488,7 +696,7 @@ prints it in the previous font after
 the underlined text, with no intervening space.
 .
 .TP
-.B \&.LG
+.B .LG
 Prints all text following in larger type
 (2\~points larger than the current point size) until
 the next font size, highlighting, paragraph, or heading macro.
@@ -496,7 +704,7 @@ You can specify this macro multiple times
 to enlarge the point size as needed.
 .
 .TP
-.B \&.SM
+.B .SM
 Prints all text following in
 smaller type
 (2\~points smaller than the current point size) until
@@ -505,7 +713,7 @@ You can specify this macro multiple times
 to reduce the point size as needed.
 .
 .TP
-.B \&.NL
+.B .NL
 Prints all text following in
 the normal point size
 (that is, the value of the
@@ -697,7 +905,7 @@ Mark text meant for preprocessors by enclosing it
 in pairs of tags as follows:
 .
 .TP
-.BR "\&.TS [H]" " and " \&.TE
+.BR ".TS [H]" " and " .TE
 Denotes a table, to be processed by the
 .I tbl
 preprocessor.
@@ -716,7 +924,7 @@ if the table runs onto another page,
 prints the header on the next page as well.
 .
 .TP
-.BR \&.PS " and " \&.PE
+.BR .PS " and " .PE
 Denotes a graphic, to be processed by the
 .I pic
 preprocessor.
@@ -730,7 +938,7 @@ or by using a graphics program such as
 .IR xfig .
 .
 .TP
-.BR "\&.EQ [\fI\,align\/\fP]" " and " \&.EN
+.BR ".EQ [\fI\,align\/\fP]" " and " .EN
 Denotes an equation, to be processed by the
 .I eqn
 preprocessor.
@@ -745,7 +953,7 @@ to center (the default), left-justify, or indent
 the equation.
 .
 .TP
-.BR \&.[ " and " \&.]
+.BR .[ " and " .]
 Denotes a reference, to be processed by the
 .I refer
 preprocessor.
@@ -864,7 +1072,7 @@ The syntax for these macros is as follows:
 .RS
 .
 .IP
-.B "\&.OH '\fIleft\fP'\fIcenter\fP'\fIright\fP'"
+.B ".OH '\fIleft\fP'\fIcenter\fP'\fIright\fP'"
 .RE
 .
 .IP
@@ -925,15 +1133,15 @@ mode does
 force a page break.
 .
 .TP
-.B \&.1C
+.B .1C
 Single-column mode.
 .
 .TP
-.B \&.2C
+.B .2C
 Two-column mode.
 .
 .TP
-.BI "\&.MC [" width " [" gutter ]]
+.BI ".MC [" width " [" gutter ]]
 Multi-column mode.
 If you specify no arguments, it is equivalent to the
 .B 2C
@@ -1131,7 +1339,7 @@ or
 .I "groff ms"
 should use this number register.
 .br
-.ne 22
+.ne 23
 .
 .
 .SS Strings

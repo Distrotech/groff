@@ -2860,6 +2860,31 @@ Effective: next paragraph.
 Default: 12@dmn{p}.
 @endDefmpreg
 
+@Defmpreg {PSINCR, ms}
+Defines an increment in point size, which will be applied to section
+headings at nesting levels below the value specified in @code{GROWPS}.  The
+value of @code{PSINCR} should be specified in points, with the @dmn{p}
+scaling factor, and may include a fractional component; for example,
+@w{@samp{.nr PSINCR 1.5p}} sets a point size increment of 1.5@dmn{p}.
+
+Effective: next section heading.
+
+Default: 1@dmn{p}.
+@endDefmpreg
+
+@Defmpreg {GROWPS, ms}
+Defines the heading level below which the point size increment set by
+@code{PSINCR} becomes effective.  Section headings at and above the level
+specified by @code{GROWPS} will be printed at the point size set by @code{PS};
+for each level below the value of @code{GROWPS}, the point size will be
+increased in steps equal to the value of @code{PSINCR}.  Setting @code{GROWPS}
+to any value less than@tie{}2 disables the incremental heading size feature.
+
+Effective: next section heading.
+
+Default: 0.
+@endDefmpreg
+
 @unnumberedsubsubsec Paragraph Settings
 
 @Defmpreg {PI, ms}
@@ -2884,6 +2909,31 @@ Defines the indent on both sides of a quoted (@code{.QP}) paragraph.
 Effective: next paragraph.
 
 Default: 5@dmn{n}.
+@endDefmpreg
+
+@Defmpreg {PORPHANS, ms}
+Defines the minimum number of initial lines of any paragraph which should
+be kept together, to avoid orphan lines at the bottom of a page.  If a new
+paragraph is started close to the bottom of a page, and there is insufficient
+space to accommodate @code{PORPHANS} lines before an automatic page break,
+then the page break will be forced, before the start of the paragraph.
+
+Effective: next paragraph.
+
+Default: 1.
+@endDefmpreg
+
+@Defmpreg {HORPHANS, ms}
+Defines the minimum number of lines of the following paragraph which should
+be kept together with any section heading introduced by the @code{NH} or
+@code{SH} macros.  If a section heading is placed close to the bottom of a
+page, and there is insufficient space to accommodate both the heading and
+at least @code{HORPHANS} lines of the following paragraph, before an
+automatic page break, then the page break will be forced before the heading.
+
+Effective: next paragraph.
+
+Default: 1.
 @endDefmpreg
 
 @unnumberedsubsubsec Footnote Settings
@@ -3162,6 +3212,10 @@ free software.
 @end cartouche
 @endExample
 
+The @code{PORPHANS} register (@pxref{ms Document Control Registers})
+operates in conjunction with each of these macros, to inhibit the
+printing of orphan lines at the bottom of any page.
+
 @c ---------------------------------------------------------------------
 
 @node Headings in ms, Highlighting in ms, Paragraphs in ms, ms Body Text
@@ -3186,9 +3240,48 @@ If you specify heading levels out of sequence, such as invoking
 prints a warning on standard error.
 @endDefmac
 
-@Defmac {SH, , ms}
+@DefstrList {SN, ms}
+@DefstrItem {SN-DOT, ms}
+@DefstrListEnd {SN-NO-DOT, ms}
+After invocation of @code{NH}, the assigned section number is made
+available in the strings @code{SN-DOT} (exactly as it appears in the
+printed section heading) and @code{SN-NO-DOT} (with the final period
+omitted).  The string @code{SN} is also defined, as an alias for
+@code{SN-DOT}; if preferred, you may redefine it as an alias for
+@code{SN-NO-DOT}, by including the initialization
+
+@Example
+.ds SN-NO-DOT
+.als SN SN-NO-DOT
+@endExample
+
+@noindent
+@strong{before} your first use of @code{NH}, or simply
+
+@Example
+.als SN SN-NO-DOT
+@endExample
+
+@noindent
+@strong{after} your first use of @code{NH}.
+@endDefstr
+
+@Defmac {SH, [@Var{match-level}], ms}
 Unnumbered subheading.
+
+The optional @code{match-level} argument is a GNU extension.  It is a
+number indicating the level of the heading, in a manner analogous to
+the @code{curr-level} argument to @code{.NH}.  Its purpose is to match
+the point size, at which the heading is printed, to the size of a
+numbered heading at the same level, when the @code{GROWPS}/@code{PSINCR}
+heading size adjustment mechanism is in effect.
+@xref{ms Document Control Registers}.
 @endDefmac
+
+The @code{HORPHANS} register (@pxref{ms Document Control Registers})
+operates in conjunction with the @code{NH} and @code{SH} macros, to
+inhibit the printing of orphaned section headings at the bottom of any
+page.
 
 @c ---------------------------------------------------------------------
 
@@ -3292,6 +3385,10 @@ The @var{width} specifies the indent for the body of each list item;
 its default unit is @samp{n}.
 Once specified, the indent remains the same for all
 list items in the document until specified again.
+
+The @code{PORPHANS} register (@pxref{ms Document Control Registers})
+operates in conjunction with the @code{IP} macro, to inhibit the
+printing of orphaned list markers at the bottom of any page.
 @endDefmac
 
 The following is an example of a bulleted list.
