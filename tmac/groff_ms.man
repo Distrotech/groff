@@ -243,6 +243,10 @@ does not repeat any of the title page information
 (title, author, abstract, etc.\&)
 on page\~1 of the document.
 .TP
+.B \&.P1 
+(P-one) Prints the header on page\~1.
+The default is to suppress the header.
+.TP
 .BI "\&.DA [" xxx ]
 (optional) Print the current date,
 or the arguments to the macro if any,
@@ -304,6 +308,15 @@ The effect is identical to the HTML
 element.
 The next paragraph or heading
 returns margins to normal.
+.PP
+The
+.B XP
+macro produces an exdented paragraph.
+The first line of the paragraph begins at
+the left margin,
+and subsequent lines are indented
+(the opposite of
+.BR PP ).
 .SS Headings
 Use headings to create a hierarchical structure
 for your document.
@@ -616,12 +629,12 @@ and
 macros.
 .PP
 You can specify symbolic footnotes
-by placing the character (such as
+by placing the mark character (such as
 .B \[rs](dg
-for the dagger character),
-followed by the symbol and the text of the footnote
+for the dagger character) in the body text,
+followed by the text of the footnote
 enclosed by
-.B FS
+.B FS\ \[rs](dg
 and
 .B FE
 macros.
@@ -780,7 +793,49 @@ and
 macros.
 Use the
 .B TC
-macro to print the table of contents at the end of the document.
+macro to print the table of contents at the end of the document,
+resetting the page number to\~\c
+.B i
+(Roman numeral\~1).
+.PP
+You can manually create a table of contents
+by specifying a page number as the first argument to
+.BR XS .
+Add subsequent entries using the
+.B XA
+macro.
+For example:
+.RS
+.PP
+.ne 8
+.nf
+\&.XS 1
+Introduction
+\&.XA 2
+A Brief History of the Universe
+\&.XA 729
+Details of Galactic Formation
+\&.\|.\|.
+\&.XE
+.fi
+.RE  
+.LP  
+Use the
+.B PX  
+macro to print a manually-generated table of contents
+without resetting the page number.
+.PP
+If you give the argument
+.B no
+to either
+.B PX
+or   
+.BR TC ,
+.I groff
+suppresses printing the title
+specified by the
+.B \[rs]*[TOC]  
+string.
 .\" -----
 .SH "DIFFERENCES FROM troff ms"
 The
@@ -809,7 +864,11 @@ rather than silently to ignore them.
 .IP \(bu
 Bell Labs localisms are not implemented.
 .IP \(bu
-Berkeley localisms, in particular the cover page macros,
+Berkeley localisms, in particular the
+.B TM
+and
+.B CT
+macros,
 are not implemented.
 .IP \(bu
 .I "Groff ms"
@@ -864,11 +923,12 @@ they are being formatted with Unix
 or
 .I "groff ms"
 should use this number register.
+.br
+.ne 22
 .SS Strings
 You can redefine the following strings to adapt the
 .I "groff ms"
 macros to languages other than English:
-.ne 18
 .TS
 center;
 cb cb
@@ -892,6 +952,10 @@ MONTH11	November
 MONTH12	December
 _
 .TE
+.PP
+The
+.B \[rs]*-
+string produces an em dash \[em] like this.
 .\" -----
 .SS Text Settings
 The
@@ -921,6 +985,20 @@ request) are set from the
 .B HY
 register;
 the default is\~14.
+.PP
+Improved accent marks
+(as originally defined in Berkeley's
+.I ms
+version)
+are available by specifying the
+.B AM
+macro at the beginning of your document.
+You can place an accent over most characters
+by specifying the string defining the accent
+directly after the character.
+For example,
+.B n\[rs]*~ 
+produces an n with a tilde over it.
 .\" -----
 .SH "NAMING CONVENTIONS"
 .LP
@@ -972,7 +1050,9 @@ Names containing only uppercase letters and digits.
 .BR @g@tbl (@MAN1EXT@),
 .BR @g@pic (@MAN1EXT@),
 .BR @g@eqn (@MAN1EXT@),
-.BR @g@refer (@MAN1EXT@)
+.BR @g@refer (@MAN1EXT@),
+.I Groff: The GNU Implementation of troff
+by Trent Fisher and Werner Lemberg.
 .SH AUTHOR
 Original manual page by James Clark
 .IR "et al" ;
