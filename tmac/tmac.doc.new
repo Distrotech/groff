@@ -2229,8 +2229,9 @@
 .      as doc-out-string \&\*[doc-quote-left]
 .
 .      if !\n[doc-in-diversion] \
-.        if \n[doc-space-mode] \
-.          doc-save-and-divert
+.        if !(\n[doc-in-list] & \n[doc-nesting-level]) \
+.          if \n[doc-space-mode] \
+.            doc-save-and-divert
 .  \}\}
 .
 .  if \n[doc-arg-limit] \{\
@@ -5980,8 +5981,9 @@
 .\" NS   emit warning and print empty line
 .
 .de doc-empty-line
-.  if !"\*[doc-macro-name]"Bd" \
-.    tm mdoc warning: Empty input line #\n[.c]!
+.  if !\n[doc-in-diversion] \
+.    if !"\*[doc-macro-name]"Bd" \
+.      tm mdoc warning: Empty input line #\n[.c]!
 .  sp
 ..
 .

@@ -405,13 +405,12 @@
 .
 .  if "\$1"ATT" \{\
 .    ds doc-operating-system AT&T
-.    ie \A\$2 \{\
-.      if d doc-operating-system-ATT-\$2 \
+.    if \A\$2 \{\
+.      ie d doc-operating-system-ATT-\$2 \
 .        as doc-operating-system " \*[doc-operating-system-ATT-\$2]
-.    \}
-.    el \
-.      as doc-operating-system " UNIX
-.  \}
+.      el \
+.        as doc-operating-system " UNIX
+.  \}\}
 .
 .  if "\$1"BSD" \{\
 .    if \A\$2 \{\
@@ -419,8 +418,7 @@
 .        ds doc-operating-system "\*[doc-operating-system-BSD-\$2]
 .      el \
 .        tm mdoc warning: .Os: Unknown BSD version `\$2' (#\n[.c])
-.    \}
-.  \}
+.  \}\}
 .
 .  if "\$1"NetBSD" \{\
 .    ds doc-operating-system NetBSD
@@ -429,8 +427,7 @@
 .        as doc-operating-system \~\*[doc-operating-system-NetBSD-\$2]
 .      el \
 .        tm mdoc warning: .Os: Unknown NetBSD version `\$2' (#\n[.c])
-.    \}
-.  \}
+.  \}\}
 .
 .  if "\$1"FreeBSD" \{\
 .    ds doc-operating-system FreeBSD
@@ -439,8 +436,7 @@
 .        as doc-operating-system \~\*[doc-operating-system-FreeBSD-\$2]
 .      el \
 .        tm mdoc warning: .Os: Unknown FreeBSD version `\$2' (#\n[.c])
-.    \}
-.  \}
+.  \}\}
 .
 .  if "\*[doc-operating-system]"Null" \{\
 .    ds doc-operating-system \$1

@@ -266,11 +266,11 @@ Arguments may follow the macro separated by spaces (again, no tabs).
 It is the dot character at the beginning of the line which causes
 .Tn GNU
 .Xr troff 1
-to interpret the next two characters as a macro name.
+to interpret the next two (or more) characters as a macro name.
 A single starting dot followed by nothing is ignored.
 To place a
 .Ql .\&
-(dot character) at the beginning of a line in some context other than
+(dot character) at the beginning of an input line in some context other than
 a macro invocation, precede the
 .Ql .\&
 (dot) with the
@@ -347,7 +347,7 @@ to as
 and macros which may be called from an argument list are referred to as
 .Em callable
 throughout this document and in the companion quick reference manual
-.Xr mdoc 7 .
+.Xr groff_mdoc 7 .
 This is a technical
 .Em faux pas
 as almost all of the macros in
@@ -358,7 +358,7 @@ has been used.
 .
 .Ss Passing Space Characters in an Argument
 .
-Sometimes it is desirable to give as one argument a string containing one or
+Sometimes it is desirable to give as an argument a string containing one or
 more blank space characters.
 This may be necessary to specify arguments to macros which expect particular
 arrangement of items in the argument list.  Additionally, it makes
@@ -369,7 +369,7 @@ For example, the function macro
 expects the first argument to be the name of a function and any remaining
 arguments to be function parameters.
 As
-.Tn "ANSI C"
+.Tn ANSI\~C
 stipulates the declaration of function parameters in the parenthesized
 parameter list, each parameter is guaranteed to be at minimum a two word
 string.
@@ -388,11 +388,11 @@ interfering with the adjustment of text over the length of a line.
 .Xr Troff
 sees the hard space as if it were any other printable character and cannot
 split the string into blank or newline separated pieces as one would expect.
-The method is useful for strings which are not expected to overlap a line
+This method is useful for strings which are not expected to overlap a line
 boundary.
 An alternative is to use
 .Ql \e~ ,
-a paddable (i.e. stretchable), unbreakable space (this is a
+a paddable (i.e.\& stretchable), unbreakable space (this is a
 .Tn GNU
 .Xr troff 1
 extension).
@@ -446,13 +446,14 @@ are handled by replacing the
 .Ql \e
 with
 .Ql \ee
-(e.g.
+(e.g.\&
 .Ql \een )
 to preserve the backslash.
 .
 .Ss Other Possible Pitfalls
 .
-A warning is emitted when an empty input line is found.
+A warning is emitted when an empty input line is found outside of displays
+(see below).
 Use
 .Ql .sp
 instead.
@@ -514,6 +515,9 @@ handles punctuation characters specially.
 This will be explained in section
 .Sx General Syntax
 below.
+In the same way, you have to protect trailing full stops of abbreviations
+with a trailing zero-width space:
+.Ql e.g.\e& .
 .Pp
 A comment in the source file of a man page can be either started with
 .Ql .\e"
@@ -573,7 +577,7 @@ The first items in the template are the macros
 and
 .Ql .Dt ;
 the document date, the operating system the man page or subject source is
-developed or modified for,and the man page title
+developed or modified for, and the man page title
 .Pq in Em upper case
 along with the section of the manual the page belongs in.
 These macros identify the page and are discussed below in
@@ -623,9 +627,9 @@ Except stated explicitly, all macros are parsed and callable.
 .
 .Sh TITLE MACROS
 .
-The title macros are the first portion of the page structure domain, but are
-presented first and separately for someone who wishes to start writing a man
-page yesterday.
+The title macros are part of the page structure domain but are presented
+first and separately for someone who wishes to start writing a man page
+yesterday.
 Three header macros designate the document title or manual page title, the
 operating system, and the date of authorship.
 These macros are called once at the very beginning of the document and are
@@ -643,7 +647,7 @@ due to troff limitations.
 If omitted,
 .Ql Tn UNTITLED
 is used.
-The section number may be a number in the range 1,\ ...,\ 9 or
+The section number may be a number in the range 1,\~...,\~9 or
 .Ql unass ,
 .Ql draft ,
 or
@@ -678,7 +682,7 @@ for
 Values from the previous table will specify a new volume name.
 If the third parameter is a keyword designating a computer architecture,
 its value is appended to the volume name as specified by the second
-parameter.  By default, the following architectures are defined:
+parameter.  By default, the following architecture keywords are defined:
 .
 .Bd -ragged -offset indent
 alpha, amiga, arc, arm26, arm32, atari, bebox, cobalt, evbsh3, hp300,
@@ -705,46 +709,113 @@ the middle part of the manual page header strings are shown.
 .El
 .Pp
 .
-\#
-\#=====================================================================
-\#
-.It Li \&.Os operating_system release#
-The name of the operating system
-should be the common acronym, e.g.
+Local, OS-specific additions might be found in the file
+.Pa mdoc.local ;
+look for strings named
+.Ql volume-ds-XXX
+(for the former type) and
+.Ql volume-as-XXX
+(for the latter type);
+.Ql XXX
+then denotes the keyword to be used with the
+.Ql .Dt
+macro.
+.
+.It Li .Os Xo
+.Op Aq operating system
+.Op Aq release
+.Xc
+If the first parameter is empty,
+.Ql Tn BSD
+is used as the default operating system.
+This may be overridden in the local configuration file.
+In general, the name of the operating system should be the common acronym,
+e.g.\&
 .Tn BSD
 or
 .Tn ATT .
-The release should be the standard release
-nomenclature for the system specified, e.g. 4.3, 4.3+Tahoe, V.3,
-V.4.
+The release should be the standard release nomenclature for the system
+specified.
+In the following table, the possible second arguments for some predefined
+operating systems are listed.
+Similar to
+.Ql .Dt ,
+local additions might be defined in
+.Pa mdoc.local ;
+look for strings named
+.Ql operating-system-XXX-YYY ,
+where
+.Ql XXX
+is the acronym for the operating system and
+.Ql YYY
+the release ID.
+.
+.Bl -tag -width FreeBSD -offset indent
+.It ATT
+7th, 7, III, 3, V, V.2, V.3, V.4
+.It BSD
+3, 4, 4.1, 4.2, 4.3, 4.3t, 4.3T, 4.3r, 4.3R, 4.4
+.It NetBSD
+0.8, 0.8a, 0.9, 0.9a, 1.0, 1.0a, 1.1, 1.2, 1.2a, 1.2b, 1.2c, 1.2d, 1.2e,
+1.3, 1.3a, 1.4, 1.5
+.It FreeBSD
+1.0, 1.1, 1.1.5, 1.1.5.1, 2.0, 2.0.5, 2.1, 2.1.5, 2.1.6, 2.1.7, 2.2, 2.2.1,
+2.2.2, 2.2.5, 2.2.6, 2.2.7, 2.2.8, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 4.0, 4.1,
+4.2, 5.0
+.El
+.Pp
+.
+For
+.Tn ATT ,
+an unknown second parameter will be replaced with the string
+.Tn UNIX ;
+for the other predefined acronyms it will be ignored and a warning message
+emitted.
 Unrecognized arguments are displayed as given in the page footer.
 For instance, a typical footer might be:
 .Pp
-.Dl \&.Os BSD 4.3
+.Dl .Os BSD 4.3
 .Pp
+giving
+.Ql 4.3\~Berkeley Distribution ,
 or for a locally produced set
 .Pp
-.Dl \&.Os CS Department
+.Dl .Os CS Department
 .Pp
-The Berkeley default,
-.Ql \&.Os
-without an argument, has been defined as
-.Nx 1.4
-in the site specific file
-.Pa /usr/share/tmac/tmac.doc-common .
-Note, if the
-.Ql \&.Os
-macro is not present, the bottom left corner of the page
-will be ugly.
-.It Li \&.Dd month day, year
-The date should be written formally:
+which will produce
+.Ql CS Department .
 .Pp
-.ne 5
-.Dl January 25, 1989
-.sp
-Note that the date must not be placed in quotes!
+If the
+.Ql .Os
+macro is not present, the bottom left corner of the manual page will be
+ugly.
+.
+.It Li .Dd Xo
+.Oo
+.Aq month
+.Aq day ,
+.Aq year
+.Oc
+.Xc
+If
+.Ql Dd
+has no arguments,
+.Ql Epoch
+is used for the date string.
+If it has exactly three arguments, they are concatenated, separated with
+unbreakable space:
+.Pp
+.Dl .Dd January 25, 2001
+.Pp
+Otherwise, the current date is used, ignoring the parameters.
 .El
+.
+.
+\#
+\#=====================================================================
+\#
 .Sh MANUAL DOMAIN
+.
 .Ss What's in a name...
 The manual domain macro names are derived from the day to day
 informal language used to describe commands, subroutines and related
@@ -918,8 +989,8 @@ The result is:
 .Dl Li sptr, ptr),
 .Pp
 The punctuation is not recognized and all is output in the
-literal font. If the punctuation is separated by a leading
-white space:
+literal font.
+If the punctuation is separated by a leading white space:
 .Pp
 .Dl \&.Li "sptr , ptr ) ,"
 .Pp
@@ -1235,7 +1306,8 @@ and
 may be used with
 .Ql \&.Fa
 (function argument)
-to get around the limitation. For example:
+to get around the limitation.
+For example:
 .Bd -literal -offset indent
 \&.Fo "int res_mkquery"
 \&.Fa "int op"
@@ -1551,7 +1623,8 @@ macro is
 .Em not
 parsed and
 .Em not
-callable. It accepts at most two arguments.
+callable.
+It accepts at most two arguments.
 .Ss BSD Macro
 .Dl Usage: .Bx [Version/release] ... \*[doc-punct-chars]
 .Bl -tag -xwidth ".Li \&.Bx\ 4.3\ ." -compact -offset 14n
@@ -1680,7 +1753,8 @@ All handle punctuation properly, as long as it
 is presented one character at a time and separated by spaces.
 The quoting macros examine opening and closing punctuation
 to determine whether it comes before or after the
-enclosing string. This makes some nesting possible.
+enclosing string.
+This makes some nesting possible.
 .Bl -tag -width xxx,xxxx
 .It Li \&.Ec , \&.Eo
 These macros expect the first argument to be the
@@ -1692,7 +1766,8 @@ than
 .Xr nroff .
 If formatted with
 .Xr nroff ,
-a quoted literal is always quoted. If formatted with
+a quoted literal is always quoted.
+If formatted with
 troff, an item is only quoted if the width
 of the item is less than three constant width characters.
 This is to make short strings more visible where the font change
@@ -2605,7 +2680,8 @@ Here is an example of inset labels:
 .Bl -inset -offset indent
 .It Em Tag
 The tagged list (also called a tagged paragraph) is the
-most common type of list used in the Berkeley manuals. Use a
+most common type of list used in the Berkeley manuals.
+Use a
 .Fl width
 attribute as described below.
 .It Em Diag
@@ -2739,7 +2815,8 @@ is a callable macro, the default width for that macro will be used
 as if the macro name had been supplied as the width.
 However,
 if another item in the list is given with a different callable
-macro name, a new and nested list is assumed. This effectively
+macro name, a new and nested list is assumed.
+This effectively
 means that
 .Fl width
 is required for the tag list type.
