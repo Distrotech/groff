@@ -1549,10 +1549,8 @@ int main(int argc, char **argv)
       else {
 	errno = 0;
 	FILE *fp = fopen(argv[i], "r");
-	if (fp == 0) {
-	  current_lineno = -1;
-	  error("can't open `%1': %2", argv[i], strerror(errno));
-	}
+	if (fp == 0)
+	  fatal("can't open `%1': %2", argv[i], strerror(errno));
 	else {
 	  current_lineno = 1;
 	  current_filename = argv[i];
