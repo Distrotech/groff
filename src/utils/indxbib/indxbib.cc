@@ -179,11 +179,9 @@ int main(int argc, char **argv)
       parser = do_whole_file;
       break;
     case 'v':
-      {
-	printf("GNU indxbib (groff) version %s\n", Version_string);
-	exit(0);
-	break;
-      }
+      printf("GNU indxbib (groff) version %s\n", Version_string);
+      exit(0);
+      break;
     case CHAR_MAX + 1: // --help
       usage(stdout);
       exit(0);
@@ -214,14 +212,13 @@ int main(int argc, char **argv)
     basename = optind < argc ? argv[optind] : DEFAULT_INDEX_NAME;
   const char *p = strrchr(basename, DIR_SEPS[0]), *p1;
   const char *sep = &DIR_SEPS[1];
-  while (*sep)
-    {
-      p1 = strrchr(basename, *sep);
-      if (p1 && (!p || p1 > p))
-	p = p1;
-      sep++;
-    }
-  long name_max;
+  while (*sep) {
+    p1 = strrchr(basename, *sep);
+    if (p1 && (!p || p1 > p))
+      p = p1;
+    sep++;
+  }
+  size_t name_max;
   if (p) {
     char *dir = strsave(basename);
     dir[p - basename] = '\0';
@@ -303,23 +300,22 @@ int main(int argc, char **argv)
   strcpy(index_file, basename);
   strcat(index_file, INDEX_SUFFIX);
 #ifdef HAVE_RENAME
-  if (rename(temp_index_file, index_file) < 0)
-    {
+  if (rename(temp_index_file, index_file) < 0) {
 #ifdef __MSDOS__
-      // RENAME could fail on plain MSDOS filesystems because
-      // INDEX_FILE is an invalid filename, e.g. it has multiple dots.
-      char *fname = p ? index_file + (p - basename) : 0;
-      char *dot = 0;
+    // RENAME could fail on plain MSDOS filesystems because
+    // INDEX_FILE is an invalid filename, e.g. it has multiple dots.
+    char *fname = p ? index_file + (p - basename) : 0;
+    char *dot = 0;
 
-      // Replace the dot with an underscore and try again.
-      if (fname
-	  && (dot = strchr(fname, '.')) != 0
-	  && strcmp(dot, INDEX_SUFFIX) != 0)
-	*dot = '_';
-      if (rename(temp_index_file, index_file) < 0)
+    // Replace the dot with an underscore and try again.
+    if (fname
+        && (dot = strchr(fname, '.')) != 0
+        && strcmp(dot, INDEX_SUFFIX) != 0)
+      *dot = '_';
+    if (rename(temp_index_file, index_file) < 0)
 #endif
-	fatal("can't rename temporary index file: %1", strerror(errno));
-    }
+    fatal("can't rename temporary index file: %1", strerror(errno));
+  }
 #else /* not HAVE_RENAME */
   ignore_fatal_signals();
   if (unlink(index_file) < 0) {
