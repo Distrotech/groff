@@ -84,9 +84,17 @@ fdl.txt in the main directory of the groff source package.
 .de ESc
 .	ds @tmp@ \\$1
 .	TP 14n
-.	\"br
 .	BR \\e(\&\\*[@tmp@] \ \ \ \\(\\*[@tmp@]
 .	shift 1
+\\$*.
+.	rm @tmp@
+..
+.\" 2-escapes (special characters) with extra argument
+.de EScx
+.	ds @tmp@ \\$1
+.	TP 14n
+.	BR \\e(\&\\*[@tmp@] \ \ \ \\$2
+.	shift 2
 \\$*.
 .	rm @tmp@
 ..
@@ -110,7 +118,7 @@ fdl.txt in the main directory of the groff source package.
 .\" synopsis for registers
 .de REG
 .	TP 10n
-\&\\fI\\en[\\fP\\fB\\$1\\fP\\fI]\\fP
+\&\\en[\\fB\\$1\\fP]
 .	shift 1
 .if \\n[.$] \&\\$*
 ..
@@ -179,7 +187,7 @@ There are two kinds of commands, possibly with arguments.
 .B Requests
 are written on a line of their own starting with a dot `.', whereas
 .B escape sequences
-are in-line formatting elements starting with a backslash `\e\'.
+are in-line formatting elements starting with a backslash `\e'.
 User-defined formatting commands are called
 .B macros
 and are used exactly like requests.
@@ -226,8 +234,8 @@ T}
 .B Numerical expressions
 are the common combinations of the numerical values defined above with
 the arithmetical operators `+', `-', `*', `/', `%' (mod), the
-comparative operators `==' (same as `='), `>', `<`, `>=', `<=', the
-logical operators `&' (and), `:` (or), `!' (not), and parentheses `(' and
+comparative operators `==' (same as `='), `>', `<', `>=', `<=', the
+logical operators `&' (and), `:' (or), `!' (not), and parentheses `(' and
 `)'.
 .LP
 Moreover,
@@ -299,7 +307,7 @@ tab (@);
 LB LR.
 c\fIch@True if there is a character \fIch\fP available.
 d\fIname@T{
-True if is a string, macro, diversion, or request named
+True if there is a string, macro, diversion, or request named
 .IR \fIname\fP .
 T}
 e@Current page number is even.
@@ -382,14 +390,14 @@ Begin line adjustment for output lines in current adjust mode.
 .REQ .ad c
 Start line adjustment in mode mode
 .I c
-.RI ( c \(eq\f(CWl,r,b,n\fP).
+.RI ( c \(eq\fCl,r,b,n\fP).
 .\"
 .REQ .af register c
 Assign format
 .I c
 to
 .I register
-.RI ( c \(eq\f(CW1,i,I,a,A\fP).
+.RI ( c \(eq\fC1,i,I,a,A\fP).
 .\"
 .REQ .aln alias register
 Create alias name for
@@ -1564,7 +1572,7 @@ Bell sign, former AT&T copyright mark, not implemented in groff.
 .ESc lh Left hand
 .ESc lk ? Left (k)urley
 .ESc lt Left top
-.ESc mi Minus sign; same as \e-
+.ESc mi Minus sign; same as \e\-
 .ESc mo Member of
 .ESc mu Multiplication sign
 .ESc no Logical NOT sign
@@ -1597,10 +1605,10 @@ Bell sign, former AT&T copyright mark, not implemented in groff.
 .ESc >= Larger or equal
 .ESc <= Less or equal
 .ESc != Not equal
-.ESc -> Right arrow
-.ESc <- Left arrow
+.EScx \-> \(-> Right arrow
+.EScx <\- \(<- Left arrow
 .ESc ** Asterisk
-.ESc +- Plus-minus sign
+.EScx +\- \(+- Plus-minus sign
 .ESc ~= Approximately equal
 .PD
 .LP
@@ -1610,7 +1618,7 @@ to the initial sequence
 being a 2-letter sequence with an asterisk as its first letter.
 For example, Greek
 .I alpha
-is defined as \f(CW\e(*a\fP.
+is defined as \fC\e(*a\fP.
 .LP
 .GREEK a alpha A Alpha
 .GREEK b beta B Beta
@@ -1636,7 +1644,7 @@ is defined as \f(CW\e(*a\fP.
 .GREEK x chi X Chi
 .GREEK y eta Y eta
 .GREEK z zeta Z Zeta
-.if t \{\\
+.if t \{\
 .ds OLDT@BS \n[.tabs]
 .	ta T 0.6c
 .	LP
@@ -2108,8 +2116,10 @@ In
 the
 .B .ps
 request ignores scale indicators and so
+.RS
 .LP
 .B .ps\ 10u
+.RE
 .LP
 will set the pointsize to 10 points, whereas in groff native mode the
 pointsize will be set to 10 scaled points.
