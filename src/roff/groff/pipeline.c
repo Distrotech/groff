@@ -213,9 +213,9 @@ int is_system_shell(const char *prog)
 int run_pipeline(int ncommands, char ***commands, int no_pipe)
 {
   int i;
-  int last_input;
-  int save_stdin;
-  int save_stdout;
+  int last_input = 0;	/* pacify some compilers */
+  int save_stdin = 0;
+  int save_stdout = 0;
   int ret = 0;
   char err_str[BUFSIZ];
   PID_T pids[MAX_COMMANDS];

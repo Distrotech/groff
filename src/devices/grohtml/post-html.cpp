@@ -2886,8 +2886,8 @@ void html_printer::lookahead_for_tables (void)
   int         found_col      = FALSE;
   int         seen_text      = FALSE;
   int         ncol           = 0;
-  int         colmin;
-  int         colmax;
+  int         colmin         = 0;		// pacify compiler
+  int         colmax         = 0;		// pacify compiler
   html_table *tbl            = new html_table(&html, -1);
   const char *tab_defs       = NULL;
   char        align          = 'L';

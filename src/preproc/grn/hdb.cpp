@@ -1,4 +1,4 @@
-/* Last non-groff version: hdb.c  1.8 (Berkeley) 84/10/20
+ /* Last non-groff version: hdb.c  1.8 (Berkeley) 84/10/20
  *
  * Copyright -C- 1982 Barry S. Roitblat
  *
@@ -181,7 +181,10 @@ DBRead(register FILE *file)
       (void) getc(file);		/* eat blank */
       txt = (char *) malloc((unsigned) len + 1);
       for (i = 0; i < len; ++i) {	/* read text */
-	txt[i] = getc(file);
+        int c = getc(file);
+        if (c == EOF)
+          break;
+	txt[i] = c;
       }
       txt[len] = '\0';
       (void) DBCreateElt(type, plist, brush, size, txt, &elist);

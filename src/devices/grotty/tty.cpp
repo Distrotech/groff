@@ -121,13 +121,14 @@ tty_font *tty_font::load_tty_font(const char *s)
   const char *num = f->get_internal_name();
   long n;
   if (num != 0 && (n = strtol(num, 0, 0)) != 0)
-    f->mode = int(n & (BOLD_MODE|UNDERLINE_MODE));
+    f->mode = (unsigned char)(n & (BOLD_MODE|UNDERLINE_MODE));
   if (!underline_flag)
     f->mode &= ~UNDERLINE_MODE;
   if (!bold_flag)
     f->mode &= ~BOLD_MODE;
   if ((f->mode & (BOLD_MODE|UNDERLINE_MODE)) == (BOLD_MODE|UNDERLINE_MODE))
-    f->mode = (f->mode & ~(BOLD_MODE|UNDERLINE_MODE)) | bold_underline_mode;
+    f->mode = (unsigned char)((f->mode & ~(BOLD_MODE|UNDERLINE_MODE))
+			      | bold_underline_mode);
   return f;
 }
 
@@ -154,7 +155,7 @@ class glyph {
   static glyph *free_list;
 public:
   glyph *next;
-  short hpos;
+  int hpos;
   unsigned int code;
   unsigned char mode;
   schar back_color_idx;

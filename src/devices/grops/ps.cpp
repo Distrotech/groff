@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -797,7 +797,7 @@ void ps_printer::define_encoding(const char *encoding, int encoding_index)
       p++;
     if (*p != '#' && *p != '\0' && (p = strtok(buf, WS)) != 0) {
       char *q = strtok(0, WS);
-      int n;
+      int n = 0;		// pacify compiler
       if (q == 0 || sscanf(q, "%d", &n) != 1 || n < 0 || n >= 256)
 	fatal_with_file_and_line(path, lineno, "bad second field");
       vec[n] = new char[strlen(p) + 1];

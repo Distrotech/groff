@@ -403,7 +403,7 @@ void font::alloc_ch_index(int idx)
     nindices = 128;
     if (idx >= nindices)
       nindices = idx + 10;
-    ch_index = new short[nindices];
+    ch_index = new int[nindices];
     for (int i = 0; i < nindices; i++)
       ch_index[i] = -1;
   }
@@ -412,9 +412,9 @@ void font::alloc_ch_index(int idx)
     nindices *= 2;
     if (idx >= nindices)
       nindices = idx + 10;
-    short *old_ch_index = ch_index;
-    ch_index = new short[nindices];
-    memcpy(ch_index, old_ch_index, sizeof(short)*old_nindices);
+    int *old_ch_index = ch_index;
+    ch_index = new int[nindices];
+    memcpy(ch_index, old_ch_index, sizeof(int)*old_nindices);
     for (int i = old_nindices; i < nindices; i++)
       ch_index[i] = -1;
     a_delete old_ch_index;
@@ -443,9 +443,9 @@ void font::compact()
       break;
   i++;
   if (i < nindices) {
-    short *old_ch_index = ch_index;
-    ch_index = new short[i];
-    memcpy(ch_index, old_ch_index, i*sizeof(short));
+    int *old_ch_index = ch_index;
+    ch_index = new int[i];
+    memcpy(ch_index, old_ch_index, i*sizeof(int));
     a_delete old_ch_index;
     nindices = i;
   }

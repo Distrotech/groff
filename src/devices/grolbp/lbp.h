@@ -350,7 +350,7 @@ splinerel(double px,double py,int flush)
   static int lx = 0 ,ly = 0;
   static double pend = 0.0;
   static int dy = 0, despx = 0, despy = 0, sigpend = 0;
-  int dxnew ,dynew, sg;
+  int dxnew = 0, dynew = 0, sg;
   char xcoord[4],ycoord[4];
   double npend ;
 

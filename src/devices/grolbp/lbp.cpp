@@ -91,21 +91,6 @@ private:
   int paperwidth;
 };
 
-//   Compatibility section.
-//
-//   Here we define some functions not present in some of the targets
-//   platforms
-#ifndef HAVE_STRSEP
-// Solaris 8 doesn't have the strsep function
-static char *strsep(char **pcadena, const char *delim)
-{
-  char *p;
-  p = strtok(*pcadena, delim);
-  *pcadena = strtok(NULL, delim);
-  return p;
-}
-#endif
-
 lbp_font::lbp_font(const char *nm)
 : font(nm)
 {

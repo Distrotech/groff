@@ -1,3 +1,52 @@
+2004-04-17  Werner LEMBERG  <wl@gnu.org>
+
+	* src/include/font.h (font): Use `int' for ch_index.
+	* src/libs/libgroff/font.cpp (font::alloc_ch_index,
+	font::compact): Updated.
+
+	* src/roff/groff/pipeline.c (run_pipeline) [_WIN32]: Fix compiler
+	warnings.
+
+	* src/roff/troff/div.cpp (begin_page), src/roff/troff/env.cpp
+	(hyphen_word): Fix compiler warnings.
+	* src/roff/troff/input.cpp (get_char_for_escape_name): Return
+	`char'.
+	Update all callers.
+	(get_delim_number, get_line_arg): Change second argument type to
+	`unsigned char'.
+	(macro_header::copy, token::next, do_define_string,
+	do_define_character, substring_request, asciify_macro,
+	unformat_macro, read_size, non_interpreted_node::interpret,
+	while_request, main: Fix compiler warnings.
+	(read_color_draw_node): Initialize `col'.
+
+	* src/preproc/tbl/table.cpp (horizontal_span, table_entry): Make
+	`start_col' and `end_col' of type `int'.
+	(vertical_rule): Make `col' of type `int'.
+
+	* src/preproc/grn/hdb.cpp (DBRead): Protect call to getc with check
+	for EOF.
+
+	* src/preproc/refer/label.y (uppercase_array, lowercase_array):
+	New arrays.
+	(format_serial): Use them to remove dependency on ASCII.
+
+	* src/devices/grops/ps.cpp (ps_printer::define_encoding): Fix
+	compiler warning.
+	* src/devices/grops/psrm.cpp (resource_manager::supply_resource):
+	Ditto.
+
+	* src/devices/grotty/tty.cpp (tty_font::load_tty_font): Fix
+	compiler warnings.
+	(glyph): Change type of `hpos' to `int'.
+
+	* src/devices/lbp/lbp.cpp (strsep): Removed.  Unused.
+	* src/devices/lbp/lbp.h (splinerel): Fix compiler warnings.
+
+	* src/utils/tfmtodit.cpp (gf::load): Fix compiler warnings.
+
+	* src/utils/pfbtops/pfbtops.c (get_text): Fix compiler warning.
+
 2004-04-16  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grolbp/lbp.h, src/preproc/grn/gprint.h,

@@ -412,7 +412,7 @@ int gf::load(const char *file)
   };
   int got_an_adjustment = 0;
   int pending_adjustment = 0;
-  int left_adj, right_adj;
+  int left_adj = 0, right_adj = 0;	// pacify compiler
   const int gf_id_byte = 131;
   errno = 0;
   FILE *fp = fopen(file, FOPEN_RB);

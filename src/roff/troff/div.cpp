@@ -669,7 +669,7 @@ void when_request()
 void begin_page()
 {
   int got_arg = 0;
-  int n;
+  int n = 0;		/* pacify compiler */
   if (has_arg() && get_integer(&n, topdiv->get_page_number()))
     got_arg = 1;
   while (!tok.newline() && !tok.eof())

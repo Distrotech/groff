@@ -52,7 +52,7 @@ static void usage(FILE *stream)
 
 static void get_text(int n)
 {
-  int c, c1;
+  int c = 0, c1;
   int in_string = 0;
   int is_comment = 0;
   int count = 0;

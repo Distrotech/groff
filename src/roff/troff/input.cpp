@@ -141,10 +141,10 @@ static void interpolate_environment_variable(symbol);
 static symbol composite_glyph_name(symbol);
 static void interpolate_arg(symbol);
 static request_or_macro *lookup_request(symbol);
-static int get_delim_number(units *, int);
-static int get_delim_number(units *, int, units);
+static int get_delim_number(units *, unsigned char);
+static int get_delim_number(units *, unsigned char, units);
 static symbol do_get_long_name(int, char);
-static int get_line_arg(units *res, int si, charinfo **cp);
+static int get_line_arg(units *res, unsigned char si, charinfo **cp);
 static int read_size(int *);
 static symbol get_delim_name();
 static void init_registers();
@@ -687,7 +687,7 @@ void shift()
   skip_line();
 }
 
-static int get_char_for_escape_name(int allow_space = 0)
+static char get_char_for_escape_name(int allow_space = 0)
 {
   int c = get_copy(0);
   switch (c) {
@@ -737,7 +737,7 @@ static symbol read_long_escape_name(read_mode mode)
   char *buf = abuf;
   int buf_size = ABUF_SIZE;
   int i = 0;
-  int c;
+  char c;
   int have_char = 0;
   for (;;) {
     c = get_char_for_escape_name(have_char && mode == WITH_ARGS);
@@ -787,7 +787,7 @@ static symbol read_long_escape_name(read_mode mode)
 
 static symbol read_escape_name(read_mode mode)
 {
-  int c = get_char_for_escape_name();
+  char c = get_char_for_escape_name();
   if (c == 0)
     return NULL_SYMBOL;
   if (c == '(')
@@ -802,7 +802,7 @@ static symbol read_escape_name(read_mode mode)
 
 static symbol read_increment_and_escape_name(int *incp)
 {
-  int c = get_char_for_escape_name();
+  char c = get_char_for_escape_name();
   switch (c) {
   case 0:
     *incp = 0;
@@ -1552,7 +1552,7 @@ void token::next()
   }
   units x;
   for (;;) {
-    node *n;
+    node *n = 0;
     int cc = input_stack::get(&n);
     if (cc != escape_char || escape_char == 0) {
     handle_normal_char:
@@ -3116,7 +3116,7 @@ macro_header *macro_header::copy(int n)
       bp = bp->next;
       ptr = bp->s;
     }
-    int c = *ptr++;
+    unsigned char c = *ptr++;
     p->cl.append(c);
     if (c == 0) {
       p->nl.append(nd->copy());
@@ -3833,7 +3833,7 @@ enum comp_mode { COMP_IGNORE, COMP_DISABLE };
 void do_define_string(define_mode mode, comp_mode comp)
 {
   symbol nm;
-  node *n;
+  node *n = 0;		// pacify compiler
   int c;
   nm = get_name(1);
   if (nm.is_null()) {
@@ -3901,7 +3901,7 @@ void append_nocomp_string()
 
 void do_define_character(char_mode mode, const char *font_name)
 {
-  node *n;
+  node *n = 0;		// pacify compiler
   int c;
   tok.skip();
   charinfo *ci = tok.get_char(1);
@@ -4419,7 +4419,7 @@ void substring_request()
 	}
 	macro mac;
 	for (; i <= end; i++) {
-	  node *nd;
+	  node *nd = 0;		// pacify compiler
 	  int c = iter.get(&nd);
 	  while (c == COMPATIBLE_SAVE || c == COMPATIBLE_RESTORE)
 	    c = iter.get(0);
@@ -4487,7 +4487,7 @@ void asciify_macro()
       macro am;
       string_iterator iter(*m);
       for (;;) {
-	node *nd;
+	node *nd = 0;		// pacify compiler
 	int c = iter.get(&nd);
 	if (c == EOF)
 	  break;
@@ -4514,7 +4514,7 @@ void unformat_macro()
       macro am;
       string_iterator iter(*m);
       for (;;) {
-	node *nd;
+	node *nd = 0;		// pacify compiler
 	int c = iter.get(&nd);
 	if (c == EOF)
 	  break;
@@ -4555,7 +4555,7 @@ static void interpolate_number_format(symbol nm)
     input_stack::push(make_temp_iterator(r->get_format()));
 }
 
-static int get_delim_number(units *n, int si, int prev_value)
+static int get_delim_number(units *n, unsigned char si, int prev_value)
 {
   token start;
   start.next();
@@ -4570,7 +4570,7 @@ static int get_delim_number(units *n, int si, int prev_value)
   return 0;
 }
 
-static int get_delim_number(units *n, int si)
+static int get_delim_number(units *n, unsigned char si)
 {
   token start;
   start.next();
@@ -4585,7 +4585,7 @@ static int get_delim_number(units *n, int si)
   return 0;
 }
 
-static int get_line_arg(units *n, int si, charinfo **cp)
+static int get_line_arg(units *n, unsigned char si, charinfo **cp)
 {
   token start;
   start.next();
@@ -4622,7 +4622,7 @@ static int read_size(int *x)
     tok.next();
     c = tok.ch();
   }
-  int val;
+  int val = 0;		// pacify compiler
   int bad = 0;
   if (c == '(') {
     tok.next();
@@ -4921,7 +4921,7 @@ node *non_interpreted_node::copy()
 int non_interpreted_node::interpret(macro *m)
 {
   string_iterator si(mac);
-  node *n;
+  node *n = 0;		// pacify compiler
   for (;;) {
     int c = si.get(&n);
     if (c == EOF)
@@ -5356,7 +5356,7 @@ void while_request()
   int level = 0;
   mac.append(new token_node(tok));
   for (;;) {
-    node *n;
+    node *n = 0;		// pacify compiler
     int c = input_stack::get(&n);
     if (c == EOF)
       break;
@@ -6962,7 +6962,7 @@ int main(int argc, char **argv)
   int fflag = 0;
   int nflag = 0;
   int no_rc = 0;		// don't process troffrc and troffrc-end
-  int next_page_number;
+  int next_page_number = 0;	// pacify compiler
   opterr = 0;
   hresolution = vresolution = 1;
   // restore $PATH if called from groff
@@ -7545,7 +7545,7 @@ static void read_color_draw_node(token &start)
   }
   unsigned char scheme = tok.ch();
   tok.next();
-  color *col;
+  color *col = 0;
   char end = start.ch();
   switch (scheme) {
   case 'c':

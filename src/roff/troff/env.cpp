@@ -3371,7 +3371,7 @@ static void hyphen_word()
 	  pos[npos++] = i;
       }
       else {
-	int c = ci->get_hyphenation_code();
+	unsigned char c = ci->get_hyphenation_code();
 	if (c == 0)
 	  break;
 	buf[i++] = c;

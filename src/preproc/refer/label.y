@@ -407,6 +407,20 @@ const char *spec_ptr;
 const char *spec_end;
 const char *spec_cur;
 
+static char uppercase_array[] = {
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+  'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+  'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+  'Y', 'Z',
+};
+  
+static char lowercase_array[] = {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+  'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+  'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+  'y', 'z',
+};
+
 int yylex()
 {
   while (spec_ptr < spec_end && csspace(*spec_ptr))
@@ -590,7 +604,8 @@ static const char *format_serial(char c, int n)
 	  d = 26;
 	n -= d;
 	n /= 26;
-	*p++ = c + d - 1;	// ASCII dependent
+	*p++ = c == 'a' ? lowercase_array[d - 1] :
+			       uppercase_array[d - 1];
       }
       *p-- = 0;
       // Reverse it.

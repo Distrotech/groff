@@ -128,8 +128,8 @@ void prints(const string &s)
 
 struct horizontal_span {
   horizontal_span *next;
-  short start_col;
-  short end_col;
+  int start_col;
+  int end_col;
   horizontal_span(int, int, horizontal_span *);
 };
 
@@ -145,8 +145,8 @@ friend class table;
 protected:
   int start_row;
   int end_row;
-  short start_col;
-  short end_col;
+  int start_col;
+  int end_col;
   const entry_modifier *mod;
 public:
   void set_location();
@@ -1090,7 +1090,7 @@ struct vertical_rule {
   vertical_rule *next;
   int start_row;
   int end_row;
-  short col;
+  int col;
   char is_double;
   string top_adjust;
   string bot_adjust;
