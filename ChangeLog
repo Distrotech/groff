@@ -1,6 +1,105 @@
+2002-01-24  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/groff_www.man, NEWS: Fix typos.
+
+2002-01-21  Werner LEMBERG  <wl@gnu.org>
+
+	Complete revision of color support:
+
+	  Adapt programs to the new libdriver/input.cc.
+
+	  Color spaces are no longer converted to RGB but transferred as-is
+	  in the troff intermediate output format.
+
+	  Handle default color gracefully.  troff now supports a `default'
+	  color (which can't be changed).
+
+	  grops will now use the proper color space functions if available.
+
+	  Update pic.
+
+	Note that currently grohtml doesn't handle colors properly.  This
+	has to be fixed.
+
+	* src/libgroff/itoa.c (UINT_DIGITS): New macro.
+	(ui_to_a): New function.
+	* src/include/lib.h: Updated.
+
+	* src/include/color.h (color_scheme): Replace `NONE' with `DEFAULT'.
+	(color): Simplified; removed all `double' members and methods.
+	A new array `components' now holds the color parameters.
+	(color::is_default, color::get_components): New methods.
+	(color::operator==, color:operator!=): New.
+	(Red, Green, Blue, Cyan, Magenta, Yellow, Black, Gray): New macros
+	to make access to the `components' array more comprehensible.
+	* src/libgroff/color.cc: Implement new color support.
+	(atoh): Small fixes.
+	(color::read_encoding): Simplified for new troff intermediate color
+	output format.
+	(default_color): New global variable.
+
+	* src/roff/troff/input.cc (default_symbol): New global variable.
+	(lookup_color): Use it.
+	(default_black): Removed.
+	(do_glyph_color, do_fill_color): Simplified.
+	(define_color): Handle default color.
+	Improve warnings.
+	(do_if_request): Handle default color.
+	* src/roff/troff/env.cc (environment::environment): Initialize
+	colors with `default_color'.
+	* src/roff/troff/node.cc (troff_output_file::put): Add method
+	for `unsigned int'.
+	(troff_output_file::hex): Removed.
+	(troff_output_file::fill_color, troff_output_file::glyph_color):
+	Updated to include/color.h and libdriver/input.cc.
+
+	* src/preproc/pic/object.cc (draw_arrow): New parameter to set
+	fill color properly (identically to the outline color).  \D'f...'
+	doesn't work any more.
+	All function calls to it updated.
+
+	* src/devices/grohtml/post-html.cc (html_printer::do_body, main):
+	Updated.
+	* src/devices/grohtml/html-text.cc (html_text::issue_color_begin):
+	Updated.
+
+	* src/devices/grops/ps.cc (ps_output::put_color): New method.
+	(ps_printer::sbuf_color): Make a real member instead of pointer.
+	(ps_printer::fill_color, ps_printer::output_color): Removed.
+	(ps_printer::ps_printer): Updated.
+	(ps_printer::set_char): Ditto.
+	(ps_printer::set_color): Use various color schemes.
+	Use `put_color' method.
+	(ps_printer::flush_sbuf): Don't set color.
+	(ps_printer::fill_path): Take `environment' as parameter.
+	Simplify color handling.
+	(ps_printer::set_line_thickness): Renamed to ...
+	(ps_printer::set_line_thickness_and_color): This (and updated).
+	(ps_printer::set_color): Change second parameter from `complete'
+	to `fill' which better describes what it does.
+	(ps_printer::draw): Call `flush_sbuf' to output graphic commands
+	and text in the right order.
+	Updated.
+	Remove branches for `f' and `F'; this is handled by
+	libdriver/input.cc.
+	* src/devices/grops/ps.h: Updated.
+	* font/devps/prologue (FL): Redefined
+	({F,C}r,k,g: New color functions (with and without filling).
+
+	* doc/pic.ms, src/preproc/pic/pic.man: Small fixes.
+	* man/groff_diff.man, man/groff.man, man/groff_out.man,
+	doc/groff.texinfo, NEWS: Updated.
+
+2002-01-20  Bernd Warken  <bwarken@mayn.de>
+
+	* src/libs/libdriver/input.cc: Completely rewritten.  See comments
+	in this file for what has been changed.
+
 2002-01-19  Werner LEMBERG  <wl@gnu.org>
 
 	* test-groff: Fix GROFF_FONT_PATH.
+	* tmac/andoc.tmac: Add dummy macros for equation support -- eqnrc
+	is read before .TH or .Dd is parsed.
 
 2002-01-18  Gaius Mulley  <gaius@glam.ac.uk>
 

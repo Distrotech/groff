@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -636,10 +636,10 @@ environment::environment(symbol nm)
 #endif /* WIDOW_CONTROL */
   ignore_next_eol(0),
   emitted_node(0),
-  cur_glyph_color(0),
-  prev_glyph_color(0),
-  cur_fill_color(0),
-  prev_fill_color(0),
+  cur_glyph_color(&default_color),
+  prev_glyph_color(&default_color),
+  cur_fill_color(&default_color),
+  prev_fill_color(&default_color),
   name(nm),
   control_char('.'),
   no_break_control_char('\''),

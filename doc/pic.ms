@@ -670,9 +670,9 @@ Alternative spellings are \fBcolour\fP, \fBcolored\fP, \fBcoloured\fP,
 and \fBoutlined\fP.
 .PP
 Currently, color support is not available in \*(tx mode.  Predefined color
-names for \fIgroff\fP(1) are in the file \f(CWcolor.tmac\fP; additional
-colors can be defined with the \f(CW.defcolor\fP request (see the manual
-page of GNU \fItroff\fP(1) for more details).
+names for \fIgroff\fP(1) are in the device macro files, for example
+\f(CWps.tmac\fP; additional colors can be defined with the \f(CW.defcolor\fP
+request (see the manual page of GNU \fItroff\fP(1) for more details).
 .NH 1
 More About Text Placement
 .PP

@@ -354,6 +354,26 @@ ps_output &ps_output::put_symbol(const char *s)
   return *this;
 }
 
+ps_output &ps_output::put_color(unsigned int c)
+{
+  char buf[128];
+  sprintf(buf, "%.3g", double(c) / color::MAX_COLOR_VAL);
+  int len = strlen(buf);
+  if (col > 0 && col + len + need_space > max_line_length) {
+    putc('\n', fp);
+    col = 0;
+    need_space = 0;
+  }
+  if (need_space) {
+    putc(' ', fp);
+    col++;
+  }
+  fputs(buf, fp);
+  col += len;
+  need_space = 1;
+  return *this;
+}
+
 ps_output &ps_output::put_literal_symbol(const char *s)
 {
   int len = strlen(s);
@@ -476,15 +496,13 @@ class ps_printer : public printer {
   int sbuf_space_code;
   int sbuf_kern;
   style sbuf_style;
-  color *sbuf_color;
+  color sbuf_color;		// the current PS color
   style output_style;
   int output_hpos;
   int output_vpos;
   int output_draw_point_size;
   int line_thickness;
   int output_line_thickness;
-  color *fill_color;
-  color *output_color;
   unsigned char output_space_code;
   enum { MAX_DEFINED_STYLES = 50 };
   style defined_styles[MAX_DEFINED_STYLES];
@@ -506,12 +524,12 @@ class ps_printer : public printer {
   void do_file(char *, const environment *);
   void do_invis(char *, const environment *);
   void do_endinvis(char *, const environment *);
-  void set_line_thickness(const environment *);
-  void fill_path();
+  void set_line_thickness_and_color(const environment *);
+  void fill_path(const environment *);
   void encode_fonts();
   void define_encoding(const char *, int);
   void reencode_font(ps_font *);
-  void set_color(color *c, int complete = 1);
+  void set_color(color *c, int fill = 0);
 
 public:
   ps_printer();
@@ -560,11 +578,6 @@ ps_printer::ps_printer()
   if (paper_length == 0)
     paper_length = 11*font::res;
   equalise_spaces = font::res >= 72000;
-  fill_color = new color;
-  fill_color->set_gray(1.0); // black
-  output_color = new color;
-  output_color->set_gray(1.0);
-  sbuf_color = output_color;
 }
 
 int ps_printer::set_encoding_index(ps_font *f)
@@ -599,7 +612,7 @@ void ps_printer::set_char(int i, font *f, const environment *env, int w, const c
     if (sbuf_len < SBUF_SIZE
 	&& sty == sbuf_style
 	&& sbuf_vpos == env->vpos
-	&& sbuf_color->is_equal(env->col)) {
+	&& sbuf_color == *env->col) {
       if (sbuf_end_hpos == env->hpos) {
 	sbuf[sbuf_len++] = code;
 	sbuf_end_hpos += w + sbuf_kern;
@@ -654,7 +667,8 @@ void ps_printer::set_char(int i, font *f, const environment *env, int w, const c
   sbuf_space_width = 0;
   sbuf_space_count = sbuf_space_diff_count = 0;
   sbuf_kern = 0;
-  sbuf_color = env->col;
+  if (sbuf_color != *env->col)
+    set_color(env->col);
 }
 
 static char *make_encoding_name(int encoding_index)
@@ -782,18 +796,41 @@ void ps_printer::set_style(const style &sty)
   defined_styles[ndefined_styles++] = sty;
 }
 
-void ps_printer::set_color(color *col, int complete)
+void ps_printer::set_color(color *col, int fill)
 {
-  output_color = col;
-  if (col) {
-    double r, g, b;
-    col->get_rgb(&r, &g, &b);
-    out.put_float(r)
-       .put_float(g)
-       .put_float(b);
-    if (complete)
-      out.put_symbol("CO");
+  sbuf_color = *col;
+  unsigned int components[4];
+  char s[3];
+  color_scheme cs = col->get_components(components);
+  s[0] = fill ? 'F' : 'C';
+  s[2] = 0;
+  switch (cs) {
+  case DEFAULT:			// black
+    out.put_symbol("0");
+    s[1] = 'g';
+    break;
+  case RGB:
+    out.put_color(Red)
+       .put_color(Green)
+       .put_color(Blue);
+    s[1] = 'r';
+    break;
+  case CMY:
+    col->get_cmyk(&Cyan, &Magenta, &Yellow, &Black);
+    // fall through
+  case CMYK:
+    out.put_color(Cyan)
+       .put_color(Magenta)
+       .put_color(Yellow)
+       .put_color(Black);
+    s[1] = 'k';
+    break;
+  case GRAY:
+    out.put_color(Gray);
+    s[1] = 'g';
+    break;
   }
+  out.put_symbol(s);
 }
 
 void ps_printer::set_space_code(unsigned char c)
@@ -826,8 +863,6 @@ void ps_printer::flush_sbuf()
     set_style(sbuf_style);
     output_style = sbuf_style;
   }
-  if (!output_color->is_equal(sbuf_color))
-    set_color(sbuf_color);
   int extra_space = 0;
   if (output_hpos < 0 || output_vpos < 0)
     motion = ABSOLUTE;
@@ -895,7 +930,7 @@ void ps_printer::flush_sbuf()
   sbuf_len = 0;
 }
 
-void ps_printer::set_line_thickness(const environment *env)
+void ps_printer::set_line_thickness_and_color(const environment *env)
 {
   if (line_thickness < 0) {
     if (output_draw_point_size != env->size) {
@@ -915,32 +950,23 @@ void ps_printer::set_line_thickness(const environment *env)
       output_draw_point_size = -1;
     }
   }
-  if (!env->col->is_equal(output_color))
+  if (sbuf_color != *env->col)
     set_color(env->col);
 }
 
-void ps_printer::fill_path()
+void ps_printer::fill_path(const environment *env)
 {
-  double k;
-  if (fill_color->is_gray()) {
-    // gray shade is a special case
-    fill_color->get_gray(&k);
-    output_color = fill_color;
-    out.put_float(1.0-k)
-       .put_symbol("FL");
-  }
-  else if (fill_color->is_equal(output_color))
-    out.put_symbol("BL");
-  else {
-    set_color(fill_color, 0);
-    out.put_symbol("FC");
-  }
+  if (sbuf_color == *env->fill)
+    out.put_symbol("FL");
+  else
+    set_color(env->fill, 1);
 }
 
 void ps_printer::draw(int code, int *p, int np, const environment *env)
 {
   if (invis_count > 0)
     return;
+  flush_sbuf();
   int fill_flag = 0;
   switch (code) {
   case 'C':
@@ -956,11 +982,10 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
        .put_fix_number(env->vpos)
        .put_fix_number(p[0]/2)
        .put_symbol("DC");
-    if (fill_flag) {
-      fill_path();
-    }
+    if (fill_flag)
+      fill_path(env);
     else {
-      set_line_thickness(env);
+      set_line_thickness_and_color(env);
       out.put_symbol("ST");
     }
     break;
@@ -969,7 +994,7 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
       error("2 arguments required for line");
       break;
     }
-    set_line_thickness(env);
+    set_line_thickness_and_color(env);
     out.put_fix_number(p[0] + env->hpos)
        .put_fix_number(p[1] + env->vpos)
        .put_fix_number(env->hpos)
@@ -989,11 +1014,10 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
        .put_fix_number(env->hpos + p[0]/2)
        .put_fix_number(env->vpos)
        .put_symbol("DE");
-    if (fill_flag) {
-      fill_path();
-    }
+    if (fill_flag)
+      fill_path(env);
     else {
-      set_line_thickness(env);
+      set_line_thickness_and_color(env);
       out.put_symbol("ST");
     }
     break;
@@ -1018,11 +1042,10 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
 	   .put_fix_number(p[i+1])
 	   .put_symbol("RL");
       out.put_symbol("CL");
-      if (fill_flag) {
-	fill_path();
-      }
+      if (fill_flag)
+	fill_path(env);
       else {
-	set_line_thickness(env);
+	set_line_thickness_and_color(env);
 	out.put_symbol("ST");
       }
       break;
@@ -1060,7 +1083,7 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
       out.put_fix_number(p[np - 2] - p[np - 2]/2)
 	 .put_fix_number(p[np - 1] - p[np - 1]/2)
 	 .put_symbol("RL");
-      set_line_thickness(env);
+      set_line_thickness_and_color(env);
       out.put_symbol("ST");
     }
     break;
@@ -1070,7 +1093,7 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
 	error("4 arguments required for arc");
 	break;
       }
-      set_line_thickness(env);
+      set_line_thickness_and_color(env);
       double c[2];
       if (adjust_arc_center(p, c))
 	out.put_fix_number(env->hpos + int(c[0]))
@@ -1098,22 +1121,6 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
       }
       line_thickness = p[0];
     }
-    break;
-  case 'f':
-    if (np != 1 && np != 2) {
-      error("1 argument required for fill");
-      break;
-    }
-    if (p[0] < 0 || p[0] > FILL_MAX) {
-      // This means fill with the current color.
-      fill_color->set_gray(1.0);
-    }
-    else
-      fill_color->set_gray(double(p[0]) / FILL_MAX);
-    break;
-  case 'F':
-    // fill with color env->fill
-    fill_color = env->fill;
     break;
   default:
     error("unrecognised drawing command `%1'", char(code));

@@ -211,7 +211,8 @@ struct arrow_head_type {
 };
 
 void draw_arrow(const position &pos, const distance &dir,
-		const arrow_head_type &aht, const line_type &lt)
+		const arrow_head_type &aht, const line_type &lt,
+		char *outline_color_for_fill)
 {
   double hyp = hypot(dir);
   if (hyp == 0.0) {
@@ -229,8 +230,9 @@ void draw_arrow(const position &pos, const distance &dir,
     v[0] = pos;
     v[1] = pos + base + n;
     v[2] = pos + base - n;
-    // A value > 1 means fill with the current color.
-    out->polygon(v, 3, slt, 2.0);
+    // fill with outline color
+    out->set_color(outline_color_for_fill, outline_color_for_fill);
+    out->polygon(v, 3, slt, 1);
   }
   else {
     position v[2];
@@ -1253,9 +1255,10 @@ void line_object::print()
   out->set_color(0, graphic_object::get_outline_color());
   out->line(strt, v, n, lt);
   if (arrow_at_start)
-    draw_arrow(strt, strt-v[0], aht, lt);
+    draw_arrow(strt, strt-v[0], aht, lt, graphic_object::get_outline_color());
   if (arrow_at_end)
-    draw_arrow(en, v[n-1] - (n > 1 ? v[n - 2] : strt), aht, lt);
+    draw_arrow(en, v[n-1] - (n > 1 ? v[n - 2] : strt), aht, lt,
+	       graphic_object::get_outline_color());
   out->reset_color();
 }
 
@@ -1322,9 +1325,10 @@ void spline_object::print()
   out->set_color(0, graphic_object::get_outline_color());
   out->spline(strt, v, n, lt);
   if (arrow_at_start)
-    draw_arrow(strt, strt-v[0], aht, lt);
+    draw_arrow(strt, strt-v[0], aht, lt, graphic_object::get_outline_color());
   if (arrow_at_end)
-    draw_arrow(en, v[n-1] - (n > 1 ? v[n - 2] : strt), aht, lt);
+    draw_arrow(en, v[n-1] - (n > 1 ? v[n - 2] : strt), aht, lt,
+	       graphic_object::get_outline_color());
   out->reset_color();
 }
 
@@ -1541,13 +1545,13 @@ void arc_object::print()
     position c = cent - strt;
     draw_arrow(strt,
 	       (clockwise ? position(c.y, -c.x) : position(-c.y, c.x)),
-	       aht, lt);
+	       aht, lt, graphic_object::get_outline_color());
   }
   if (arrow_at_end) {
     position e = en - cent;
     draw_arrow(en,
 	       (clockwise ? position(e.y, -e.x) : position(-e.y, e.x)),
-	       aht, lt);
+	       aht, lt, graphic_object::get_outline_color());
   }
   out->reset_color();
 }

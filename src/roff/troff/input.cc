@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1014,34 +1014,17 @@ static node *do_suppress(symbol nm);
 static void do_register();
 
 dictionary color_dictionary(501);
+static symbol default_symbol("default");
 
 static color *lookup_color(symbol nm)
 {
   assert(!nm.is_null());
+  if (nm == default_symbol)
+    return &default_color;
   color *c = (color *)color_dictionary.lookup(nm);
   if (c == 0)
     warning(WARN_COLOR, "`%1' not defined", nm.contents());
   return c;
-}
-
-static color *default_black(color *c)
-{
-  symbol b = symbol("black");
-  if (c == 0) {
-    color *black = (color *)color_dictionary.lookup(b);
-    if (black == 0) {
-      warning(WARN_COLOR, "default color `black' not defined");
-      color *tem = new color;
-      tem->set_cmyk((unsigned int)0, (unsigned int)0,
-		    (unsigned int)0, (unsigned int)0);
-      (void)color_dictionary.lookup(b, tem);
-      return tem;
-    }
-    else
-      return black;
-  }
-  else
-    return c;
 }
 
 static node *do_glyph_color(symbol nm)
@@ -1049,19 +1032,15 @@ static node *do_glyph_color(symbol nm)
   if (nm.is_null())
     return 0;
   if (nm == symbol("P"))
-    curenv->set_glyph_color(default_black(curenv->get_prev_glyph_color()));
+    curenv->set_glyph_color(curenv->get_prev_glyph_color());
   else {
     color *tem = lookup_color(nm);
     if (tem)
       curenv->set_glyph_color(tem);
-    else {
-      tem = new color;
-      tem->set_cmyk((unsigned int)0, (unsigned int)0,
-		    (unsigned int)0, (unsigned int)0);
-      (void)color_dictionary.lookup(nm, tem);
-    }
+    else
+      (void)color_dictionary.lookup(nm, new color);
   }
-  return new glyph_color_node(default_black(curenv->get_glyph_color()));
+  return new glyph_color_node(curenv->get_glyph_color());
 }
 
 static node *do_fill_color(symbol nm)
@@ -1069,35 +1048,31 @@ static node *do_fill_color(symbol nm)
   if (nm.is_null())
     return 0;
   if (nm == symbol("P"))
-    curenv->set_fill_color(default_black(curenv->get_prev_fill_color()));
+    curenv->set_fill_color(curenv->get_prev_fill_color());
   else {
     color *tem = lookup_color(nm);
     if (tem)
       curenv->set_fill_color(tem);
-    else {
-      tem = new color;
-      tem->set_cmyk((unsigned int)0, (unsigned int)0,
-		    (unsigned int)0, (unsigned int)0);
-      (void)color_dictionary.lookup(nm, tem);
-    }
+    else
+      (void)color_dictionary.lookup(nm, new color);
   }
-  return new fill_color_node(default_black(curenv->get_fill_color()));
+  return new fill_color_node(curenv->get_fill_color());
 }
 
-static unsigned int get_color_element(const char *scheme, const char *color)
+static unsigned int get_color_element(const char *scheme, const char *col)
 {
   units val;
   if (!get_number(&val, 'f')) {
-    warning(WARN_COLOR, "%1 in %2 definition set to 0", color, scheme);
+    warning(WARN_COLOR, "%1 in %2 definition set to 0", col, scheme);
     tok.next();
     return 0;
   }
   if (val < 0) {
-    warning(WARN_RANGE, "%1 cannot be negative: set to 0", color);
+    warning(WARN_RANGE, "%1 cannot be negative: set to 0", col);
     return 0;
   }
   if (val > color::MAX_COLOR_VAL+1) {
-    warning(WARN_RANGE, "%1 cannot be greater than 1", color);
+    warning(WARN_RANGE, "%1 cannot be greater than 1", col);
     // we change 0x10000 to 0xffff
     return color::MAX_COLOR_VAL;
   }
@@ -1218,6 +1193,11 @@ static void define_color()
     skip_line();
     return;
   }
+  if (color_name == default_symbol) {
+    warning(WARN_COLOR, "default color can't be redefined");
+    skip_line();
+    return;
+  }
   symbol style = get_long_name(1);
   if (style.is_null()) {
     skip_line();
@@ -1236,8 +1216,8 @@ static void define_color()
     col = read_cmy();
   else {
     warning(WARN_COLOR,
-	    "unknown color space definition `%1', "
-	    "use rgb, cmyk or gray", style.contents());
+	    "unknown color space `%1'; use rgb, cmyk, gray or cmy",
+	    style.contents());
     skip_line();
     return;
   }
@@ -2505,7 +2485,7 @@ void process_input_stack()
 	  else
 	    interpolate_macro(nm);
 	  suppress_next = 1;
-          have_input = 0;
+	  have_input = 0;
 	}
 	else {
 	  if (possibly_handle_first_page_transition())
@@ -2582,7 +2562,7 @@ void process_input_stack()
 	  break;
 	}
 	suppress_next = 1;
-        have_input = 0;
+	have_input = 0;
 	break;
       }
     case token::TOKEN_SPACE:
@@ -4846,7 +4826,8 @@ int do_if_request()
       skip_alternative();
       return 0;
     }
-    result = (color_dictionary.lookup(nm) != 0);
+    result = (nm == default_symbol
+	      || color_dictionary.lookup(nm) != 0);
   }
   else if (c == 'c') {
     tok.next();

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by Gaius Mulley <gaius@glam.ac.uk>
      using adjust_arc_center() from printer.cc, written by James Clark.
@@ -136,14 +136,22 @@ void check_output_arc_limits(int x1, int y1,
   *miny = y1 + yv1 - radius;
   *maxy = y1 + yv1 + radius;
 
-  // now see which min/max can be reduced and increased for the limits of
-  // the arc
-  //
-  //       Q2   |   Q1
-  //       -----+-----
-  //       Q3   |   Q4
-  //
-  if (xv1 >= 0 && yv1 >= 0) {
+  /*  now to see which min/max can be reduced and increased for the limits of
+   *  the arc
+   *
+   *       Q2   |   Q1
+   *       -----+-----
+   *       Q3   |   Q4
+   *
+   *
+   *  NB. (x1+xv1, y1+yv1) is at the origin
+   *
+   *  below we ask a nested question
+   *  (i)  from which quadrant does the first vector start?
+   *  (ii) into which quadrant does the second vector go?
+   *  from the 16 possible answers we determine the limits of the arc
+   */
+  if (xv1 > 0 && yv1 > 0) {
     // first vector in Q3
     if (xv2 >= 0 && yv2 >= 0 ) {
       // second in Q1
@@ -172,7 +180,7 @@ void check_output_arc_limits(int x1, int y1,
       }
     }
   }
-  else if (xv1 >= 0 && yv1 < 0) {
+  else if (xv1 > 0 && yv1 < 0) {
     // first vector in Q2
     if (xv2 >= 0 && yv2 >= 0) {
       // second in Q1
@@ -202,7 +210,7 @@ void check_output_arc_limits(int x1, int y1,
       *minx = MIN(x1, x2);
     }
   }
-  else if (xv1 < 0 && yv1 < 0) {
+  else if (xv1 <= 0 && yv1 <= 0) {
     // first vector in Q1
     if (xv2 >= 0 && yv2 >= 0) {
       // second in Q1
@@ -232,7 +240,7 @@ void check_output_arc_limits(int x1, int y1,
       *maxy = y1;
     }
   }
-  else if (xv1 < 0 && yv1 >= 0) {
+  else if (xv1 <= 0 && yv1 > 0) {
     // first vector in Q4
     if (xv2 >= 0 && yv2 >= 0) {
       // second in Q1

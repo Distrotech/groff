@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cc
  *  but it owes a huge amount of ideas and raw code from
@@ -2687,14 +2687,12 @@ void html_printer::do_body (void)
   if (background == NULL)
     fputs("<body>\n\n", stdout);
   else {
-    double r, g, b;
+    unsigned int r, g, b;
     char buf[6+1];
 
     background->get_rgb(&r, &g, &b);
-    sprintf(buf, "%.2X%.2X%.2X",
-	  (unsigned int)(((double) 0xff)*r),
-	  (unsigned int)(((double) 0xff)*g),
-	  (unsigned int)(((double) 0xff)*b));
+    // we have to scale 0..0xFFFF to 0..0xFF
+    sprintf(buf, "%.2X%.2X%.2X", r/0x101, g/0x101, b/0x101);
 
     fputs("<body bgcolor=\"#", stdout);
     fputs(buf, stdout);
@@ -2842,7 +2840,7 @@ int main(int argc, char **argv)
     case 'b':
       // set background color to white
       default_background = new color;
-      default_background->set_rgb(1.0, 1.0, 1.0);
+      default_background->set_gray(color::MAX_COLOR_VAL);
       break;
     case 'F':
       font::command_line_font_dir(optarg);

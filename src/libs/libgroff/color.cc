@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2001, 2002 Free Software Foundation, Inc.
      Written by Gaius Mulley <gaius@glam.ac.uk>
 
 This file is part of groff.
@@ -40,115 +40,100 @@ static inline unsigned int min(unsigned int a, unsigned int b)
 }
 
 color::color()
-: cyan(0), magenta(0), yellow(0), black(0), scheme(NONE),
-  color_space_num(0), encoding(UNDEFINED), hex_length(0)
+: scheme(DEFAULT)
 {
 }
 
-int color::is_equal(color *c)
+int color::operator==(const color & c) const
 {
-  return (c->cyan == cyan)
-	 && (c->magenta == magenta)
-	 && (c->yellow == yellow)
-	 && (c->black == black);
+  if (scheme != c.scheme)
+    return 0;
+  switch (scheme) {
+  case DEFAULT:
+    break;
+  case RGB:
+    if (Red != c.Red || Green != c.Green || Blue != c.Blue)
+      return 0;
+    break;
+  case CMYK:
+    if (Cyan != c.Cyan || Magenta != c.Magenta
+	|| Yellow != c.Yellow || Black != c.Black)
+      return 0;
+    break;
+  case GRAY:
+    if (Gray != c.Gray)
+      return 0;
+    break;
+  case CMY:
+    if (Cyan != c.Cyan || Magenta != c.Magenta || Yellow != c.Yellow)
+      return 0;
+    break;
+  }
+  return 1;
 }
 
-int color::is_gray(void)
+int color::operator!=(const color & c) const
 {
-  return (scheme == GRAY)
-	 || ((magenta == cyan) && (cyan == yellow));
+  return !(*this == c);
 }
+
+color_scheme color::get_components(unsigned int *c)
+{
+  c[0] = components[0];
+  c[1] = components[1];
+  c[2] = components[2];
+  c[3] = components[3];
+  return scheme;
+}
+
+void color::set_default()
+{
+  scheme = DEFAULT;
+}
+
+// (0, 0, 0) is black
 
 void color::set_rgb(unsigned int r, unsigned int g, unsigned int b)
 {
   scheme = RGB;
-  r = min(MAX_COLOR_VAL, r);
-  g = min(MAX_COLOR_VAL, g);
-  b = min(MAX_COLOR_VAL, b);
-  black = min(MAX_COLOR_VAL - r, min(MAX_COLOR_VAL - g, MAX_COLOR_VAL - b));
-  if (MAX_COLOR_VAL - black == 0) {
-    cyan = MAX_COLOR_VAL;
-    magenta = MAX_COLOR_VAL;
-    yellow = MAX_COLOR_VAL;
-  }
-  else {
-    cyan = (MAX_COLOR_VAL * (MAX_COLOR_VAL - r - black))
-	   / (MAX_COLOR_VAL - black);
-    magenta = (MAX_COLOR_VAL * (MAX_COLOR_VAL - g - black))
-	      / (MAX_COLOR_VAL - black);
-    yellow = (MAX_COLOR_VAL * (MAX_COLOR_VAL - b - black))
-	     / (MAX_COLOR_VAL - black);
-  }
+  Red = min(MAX_COLOR_VAL, r);
+  Green = min(MAX_COLOR_VAL, g);
+  Blue = min(MAX_COLOR_VAL, b);
 }
+
+// (0, 0, 0) is white
 
 void color::set_cmy(unsigned int c, unsigned int m, unsigned int y)
 {
   scheme = CMY;
-  c = min(MAX_COLOR_VAL, c);
-  m = min(MAX_COLOR_VAL, m);
-  y = min(MAX_COLOR_VAL, y);
-  black = min(c, min(m, y));
-  if (MAX_COLOR_VAL - black == 0) {
-    cyan = MAX_COLOR_VAL;
-    magenta = MAX_COLOR_VAL;
-    yellow = MAX_COLOR_VAL;
-  }
-  else {
-    cyan = (MAX_COLOR_VAL * (c - black)) / (MAX_COLOR_VAL - black);
-    magenta = (MAX_COLOR_VAL * (m - black)) / (MAX_COLOR_VAL - black);
-    yellow = (MAX_COLOR_VAL * (y - black)) / (MAX_COLOR_VAL - black);
-  }
+  Cyan = min(MAX_COLOR_VAL, c);
+  Magenta = min(MAX_COLOR_VAL, m);
+  Yellow = min(MAX_COLOR_VAL, y);
 }
+
+// (0, 0, 0, 0) is white
 
 void color::set_cmyk(unsigned int c, unsigned int m,
 		     unsigned int y, unsigned int k)
 {
   scheme = CMYK;
-  cyan = c;
-  magenta = m;
-  yellow = y;
-  black = k;
+  Cyan = min(MAX_COLOR_VAL, c);
+  Magenta = min(MAX_COLOR_VAL, m);
+  Yellow = min(MAX_COLOR_VAL, y);
+  Black = min(MAX_COLOR_VAL, k);
 }
 
-void color::set_gray(unsigned int b)
+// (0) is black
+
+void color::set_gray(unsigned int g)
 {
   scheme = GRAY;
-  cyan = 0;
-  magenta = 0;
-  yellow = 0;
-  black = min(MAX_COLOR_VAL, b);
-}
-
-void color::set_rgb(double r, double g, double b)
-{
-  set_rgb((unsigned int)(r * MAX_COLOR_VAL),
-	  (unsigned int)(g * MAX_COLOR_VAL),
-	  (unsigned int)(b * MAX_COLOR_VAL));
-}
-
-void color::set_cmy(double c, double m, double y)
-{
-  set_cmy((unsigned int)(c * MAX_COLOR_VAL),
-	  (unsigned int)(m * MAX_COLOR_VAL),
-	  (unsigned int)(y * MAX_COLOR_VAL));
-}
-
-void color::set_cmyk(double c, double m, double y, double k)
-{
-  set_cmyk((unsigned int)(c * MAX_COLOR_VAL),
-	   (unsigned int)(m * MAX_COLOR_VAL),
-	   (unsigned int)(y * MAX_COLOR_VAL),
-	   (unsigned int)(k * MAX_COLOR_VAL));
-}
-
-void color::set_gray(double l)
-{
-  set_gray((unsigned int)(l * MAX_COLOR_VAL));
+  Gray = min(MAX_COLOR_VAL, g);
 }
 
 /*
- *  atoh - computes the value of the hex number S in N.  Returns 1 if
- *         successful.
+ *  atoh - computes the value of the hex number S in N.  LENGTH characters
+ *         are read.  Returns 1 if successful.
  */
 
 static int atoh(unsigned int *n, const char *s, unsigned int length)
@@ -156,8 +141,6 @@ static int atoh(unsigned int *n, const char *s, unsigned int length)
   unsigned int i = 0;
   unsigned int val = 0;
   while ((i < length) && csxdigit(s[i])) {
-    if (!s[i])
-      return 0;
     if (csdigit(s[i]))
       val = val*0x10 + (s[i]-'0');
     else if (csupper(s[i]))
@@ -166,191 +149,192 @@ static int atoh(unsigned int *n, const char *s, unsigned int length)
       val = val*0x10 + (s[i]-'a') + 10;
     i++;
   }
+  if (i != length)
+    return 0;
   *n = val;
   return 1;
 }
 
 /*
- *  read_encoding - read the next component of the color encoding from S.
- *                  Returns 1 when finished.
+ *  read_encoding - reads a hexadecimal color string in S, using color
+ *                  scheme CS with N components.  Returns 1 if successful.
  */
 
-int color::read_encoding(const char *s, unsigned int n)
+int color::read_encoding(color_scheme cs, const char *s, unsigned int n)
 {
-  if ((scheme == NONE) && (color_space_num == 0)) {
-    if (*s == '#') {
-      s++;
-      encoding = HEX;
-      if (*s == '#') {
-	hex_length = 4;
-	s++;
-      }
-      else
-	hex_length = 2;
-    }
-    else
-      encoding = REAL;
+  int hex_length = 2;
+  scheme = cs;
+  s++;
+  if (*s == '#') {
+    hex_length = 4;
+    s++;
   }
-  if (encoding == REAL) {
-    d[color_space_num] = atof(s);
-    color_space_num++;
-    return (color_space_num == n);
+  for (unsigned int i = 0; i < n; i++) {
+    if (!atoh(&components[i], s, hex_length))
+      return 0;
+    if (hex_length == 2)
+      components[i] *= 0x101;	// scale up -- 0xff should become 0xffff
+    s += hex_length;
   }
-  else {
-    for (unsigned int i = 0; i < n; i++) {
-      if (!atoh(&c[i], s, hex_length))
-	return 0;
-      if (hex_length == 2)
-	c[i] *= 0x101;	// scale up -- 0xff should become 0xffff
-      s += hex_length;
-    }
-    return 1;
-  }
+  return 1;
 }
-
-/*
- *  read_rgb - read an rgb color description from S.  It returns 1
- *             when the complete color has been read.
- */
 
 int color::read_rgb(const char *s)
 {
-  assert(scheme == NONE);
-  int finished = read_encoding(s, 3);
-  if (finished) {
-    if (encoding == HEX)
-      set_rgb(c[0], c[1], c[2]);
-    else
-      set_rgb(d[0], d[1], d[2]);
-  }
-  return finished;
+  return read_encoding(RGB, s, 3);
 }
-
-/*
- *  read_cmy - read a cmy color description from S.  It returns 1
- *             when the complete color has been read.
- */
 
 int color::read_cmy(const char *s)
 {
-  assert(scheme == NONE);
-  int finished = read_encoding(s, 3);
-  if (finished) {
-    if (encoding == HEX)
-      set_cmy(c[0], c[1], c[2]);
-    else
-      set_cmy(d[0], d[1], d[2]);
-  }
-  return finished;
+  return read_encoding(CMY, s, 3);
 }
-
-/*
- *  read_cmyk - read a cmyk color description from S.  It returns 1
- *              when the complete color has been read.
- */
 
 int color::read_cmyk(const char *s)
 {
-  assert(scheme == NONE);
-  int finished = read_encoding(s, 4);
-  if (finished) {
-    if (encoding == HEX)
-      set_cmyk(c[0], c[1], c[2], c[3]);
-    else
-      set_cmyk(d[0], d[1], d[2], d[3]);
-  }
-  return finished;
+  return read_encoding(CMYK, s, 4);
 }
-
-/*
- *  read_gray - read a gray scale from S.  It returns 1.
- */
 
 int color::read_gray(const char *s)
 {
-  assert(scheme == NONE);
-  int finished = read_encoding(s, 1);
-  if (finished) {
-    if (encoding == HEX)
-      set_gray(c[0]);
-    else
-      set_gray(d[0]);
-  }
-  return finished;
+  return read_encoding(GRAY, s, 1);
 }
 
 void color::get_rgb(unsigned int *r, unsigned int *g, unsigned int *b)
 {
-  assert(scheme != NONE);
-  *r = MAX_COLOR_VAL
-       - min(MAX_COLOR_VAL,
-	     cyan * (MAX_COLOR_VAL - black) / MAX_COLOR_VAL + black);
-  *g = MAX_COLOR_VAL
-       - min(MAX_COLOR_VAL,
-	     magenta * (MAX_COLOR_VAL - black) / MAX_COLOR_VAL + black);
-  *b = MAX_COLOR_VAL
-       - min(MAX_COLOR_VAL,
-	     yellow * (MAX_COLOR_VAL - black) / MAX_COLOR_VAL + black);
+  switch (scheme) {
+  case RGB:
+    *r = Red;
+    *g = Green;
+    *b = Blue;
+    break;
+  case CMY:
+    *r = MAX_COLOR_VAL - Cyan;
+    *g = MAX_COLOR_VAL - Magenta;
+    *b = MAX_COLOR_VAL - Yellow;
+    break;
+  case CMYK:
+    *r = MAX_COLOR_VAL
+	 - min(MAX_COLOR_VAL,
+	       Cyan * (MAX_COLOR_VAL - Black) / MAX_COLOR_VAL + Black);
+    *g = MAX_COLOR_VAL
+	 - min(MAX_COLOR_VAL,
+	       Magenta * (MAX_COLOR_VAL - Black) / MAX_COLOR_VAL + Black);
+    *b = MAX_COLOR_VAL
+	 - min(MAX_COLOR_VAL,
+	       Yellow * (MAX_COLOR_VAL - Black) / MAX_COLOR_VAL + Black);
+    break;
+  case GRAY:
+    *r = *g = *b = Gray;
+    break;
+  default:
+    assert(0);
+    break;
+  }
 }
 
 void color::get_cmy(unsigned int *c, unsigned int *m, unsigned int *y)
 {
-  assert(scheme != NONE);
-  *c = min(MAX_COLOR_VAL,
-	   cyan * (MAX_COLOR_VAL - black) / MAX_COLOR_VAL + black);
-  *m = min(MAX_COLOR_VAL,
-	   magenta * (MAX_COLOR_VAL - black) / MAX_COLOR_VAL + black);
-  *y = min(MAX_COLOR_VAL,
-	   yellow * (MAX_COLOR_VAL - black) / MAX_COLOR_VAL + black);
+  switch (scheme) {
+  case RGB:
+    *c = MAX_COLOR_VAL - Red;
+    *m = MAX_COLOR_VAL - Green;
+    *y = MAX_COLOR_VAL - Blue;
+    break;
+  case CMY:
+    *c = Cyan;
+    *m = Magenta;
+    *y = Yellow;
+    break;
+  case CMYK:
+    *c = min(MAX_COLOR_VAL,
+	     Cyan * (MAX_COLOR_VAL - Black) / MAX_COLOR_VAL + Black);
+    *m = min(MAX_COLOR_VAL,
+	     Magenta * (MAX_COLOR_VAL - Black) / MAX_COLOR_VAL + Black);
+    *y = min(MAX_COLOR_VAL,
+	     Yellow * (MAX_COLOR_VAL - Black) / MAX_COLOR_VAL + Black);
+    break;
+  case GRAY:
+    *c = *m = *y = MAX_COLOR_VAL - Gray;
+    break;
+  default:
+    assert(0);
+    break;
+  }
 }
 
 void color::get_cmyk(unsigned int *c, unsigned int *m,
 		     unsigned int *y, unsigned int *k)
 {
-  assert(scheme != NONE);
-  *c = cyan;
-  *m = magenta;
-  *y = yellow;
-  *k = black;
+  switch (scheme) {
+  case RGB:
+    *k = min(MAX_COLOR_VAL - Red,
+	     min(MAX_COLOR_VAL - Green, MAX_COLOR_VAL - Blue));
+    if (MAX_COLOR_VAL == *k) {
+      *c = MAX_COLOR_VAL;
+      *m = MAX_COLOR_VAL;
+      *y = MAX_COLOR_VAL;
+    }
+    else {
+      *c = (MAX_COLOR_VAL * (MAX_COLOR_VAL - Red - *k))
+	   / (MAX_COLOR_VAL - *k);
+      *m = (MAX_COLOR_VAL * (MAX_COLOR_VAL - Green - *k))
+	   / (MAX_COLOR_VAL - *k);
+      *y = (MAX_COLOR_VAL * (MAX_COLOR_VAL - Blue - *k))
+	   / (MAX_COLOR_VAL - *k);
+    }
+    break;
+  case CMY:
+    *k = min(Cyan, min(Magenta, Yellow));
+    if (MAX_COLOR_VAL == *k) {
+      *c = MAX_COLOR_VAL;
+      *m = MAX_COLOR_VAL;
+      *y = MAX_COLOR_VAL;
+    }
+    else {
+      *c = (MAX_COLOR_VAL * (Cyan - *k)) / (MAX_COLOR_VAL - *k);
+      *m = (MAX_COLOR_VAL * (Magenta - *k)) / (MAX_COLOR_VAL - *k);
+      *y = (MAX_COLOR_VAL * (Yellow - *k)) / (MAX_COLOR_VAL - *k);
+    }
+    break;
+  case CMYK:
+    *c = Cyan;
+    *m = Magenta;
+    *y = Yellow;
+    *k = Black;
+    break;
+  case GRAY:
+    *c = *m = *y = 0;
+    *k = MAX_COLOR_VAL - Gray;
+    break;
+  default:
+    assert(0);
+    break;
+  }
 }
 
-void color::get_gray(unsigned int *l)
+// we use `0.222r + 0.707g + 0.071b' (this is the ITU standard)
+// as an approximation for gray
+
+void color::get_gray(unsigned int *g)
 {
-  assert(scheme != NONE);
-  *l = black;
+  switch (scheme) {
+  case RGB:
+    *g = (222*Red + 707*Green + 71*Blue) / 1000;
+    break;
+  case CMY:
+    *g = MAX_COLOR_VAL - (222*Cyan + 707*Magenta + 71*Yellow) / 1000;
+    break;
+  case CMYK:
+    *g = (MAX_COLOR_VAL - (222*Cyan + 707*Magenta + 71*Yellow) / 1000)
+	 * (MAX_COLOR_VAL - Black);
+    break;
+  case GRAY:
+    *g = Gray;
+    break;
+  default:
+    assert(0);
+    break;
+  }
 }
 
-void color::get_rgb(double *r, double *g, double *b)
-{
-  assert(scheme != NONE);
-  unsigned int ir, ig, ib;
-  get_rgb(&ir, &ig, &ib);
-  *r = (double)ir / MAX_COLOR_VAL;
-  *g = (double)ig / MAX_COLOR_VAL;
-  *b = (double)ib / MAX_COLOR_VAL;
-}
-
-void color::get_cmy(double *c, double *m, double *y)
-{
-  assert(scheme != NONE);
-  unsigned int ic, im, iy;
-  get_cmy(&ic, &im, &iy);
-  *c = (double)ic / MAX_COLOR_VAL;
-  *m = (double)im / MAX_COLOR_VAL;
-  *y = (double)iy / MAX_COLOR_VAL;
-}
-
-void color::get_cmyk(double *c, double *m, double *y, double *k)
-{
-  assert(scheme != NONE);
-  *c = (double)cyan / MAX_COLOR_VAL;
-  *m = (double)magenta / MAX_COLOR_VAL;
-  *y = (double)yellow / MAX_COLOR_VAL;
-  *k = (double)black / MAX_COLOR_VAL;
-}
-
-void color::get_gray(double *l)
-{
-  assert(scheme != NONE);
-  *l = (double)black / MAX_COLOR_VAL;
-}
+color default_color;

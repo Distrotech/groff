@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.cc
  *
@@ -105,15 +105,17 @@ void html_text::issue_tag (char *tagname, char *arg)
 
 void html_text::issue_color_begin (color *c)
 {
-  double r, g, b;
+  unsigned int r, g, b;
   char buf[6+1];
 
   out->put_string("<font color=\"#");
-  c->get_rgb(&r, &g, &b);
-  sprintf(buf, "%.2X%.2X%.2X",
-	  (unsigned int)(((double) 0xff)*r),
-	  (unsigned int)(((double) 0xff)*g),
-	  (unsigned int)(((double) 0xff)*b));
+  if (c->is_default())
+    sprintf(buf, "000000");
+  else {
+    c->get_rgb(&r, &g, &b);
+    // we have to scale 0..0xFFFF to 0..0xFF
+    sprintf(buf, "%.2X%.2X%.2X", r/0x101, g/0x101, b/0x101);
+  }
   out->put_string(buf);
   out->put_string("\">");
 }

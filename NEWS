@@ -13,7 +13,8 @@ o Color support has been added to troff and pic (and to two device drivers,
   drawing color, the escape sequence `\M' specifies the background color for
   closed objects created with \D'...' commands.  Similar to fonts, `\mP' and
   `\MP' switch back to the previous color.  `\m' and `\M' correspond to the
-  new troff output commands `m' and `DF'.
+  new troff output commands `m' and `DF'.  The device-specific default color
+  is called `default' and can't be redefined.
 
   Outputting color can be disabled in troff and groff with the option -c
   (it is always disabled in compatibility mode).
@@ -23,7 +24,8 @@ o Color support has been added to troff and pic (and to two device drivers,
   is defined (with .if and .ie), a new conditional operator `m' is
   available.
 
-  More details can be found in the troff manual page.
+  More details can be found in the groff_diff.7 manual page and in
+  groff.texinfo.
 
 o Two new glyph symbols are available: `eu' is the official Euro symbol;
   `Eu' is a font-specific glyph variant.
@@ -56,7 +58,7 @@ o The new request `itc' is a variant of `.it' for which a line interrupted
   with \c counts as one input line.
 
 o A new escape sequence `\O' is available (mainly for internal use with
-  grohtml).  Please see groff_diff.man and groff.texinfo for more details.
+  grohtml).  Please see groff_diff.7 and groff.texinfo for more details.
 
 o Two macros `AT' (AT&T) and `UC' (Univ. of California) have been added to
   the man macros for compatibility with older BSD releases.
@@ -68,11 +70,14 @@ o The `-xwidth' specifier in the mdoc macro package has been removed.  Its
 o A new macro `Ex' has been added to the mdoc macro package to document an
   exit status.
 
-o `troff.man' has been split.  Differences to UNIX troff are now documented
-  in the new man page `groff_diff.man'.
+o `troff.1' has been split.  Differences to UNIX troff are now documented
+  in the new man page `groff_diff.7'.
 
-o `groff_mwww.man' has been renamed to `groff_www.man'.  The file mwww.tmac
+o `groff_mwww.1' has been renamed to `groff_www.1'.  The file mwww.tmac
    has been removed.
+
+o `groff_ms.7' has been completely rewritten.  It now contains a complete
+  reference to the ms macros.
 
 o The macro `NO-AUTO-RULE' has been added to www.tmac; it suppresses the
   generation of top and bottom rules which grohtml emits by default.

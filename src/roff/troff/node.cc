@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -753,8 +753,8 @@ class troff_output_file : public real_output_file {
   void put(char c);
   void put(unsigned char c);
   void put(int i);
+  void put(unsigned int i);
   void put(const char *s);
-  void put_hex(int i, int length);
   void set_font(tfont *tf);
   void flush_tbuf();
 public:
@@ -813,21 +813,9 @@ inline void troff_output_file::put(int i)
   put_string(i_to_a(i), fp);
 }
 
-inline void troff_output_file::put_hex(int i, int length)
+inline void troff_output_file::put(unsigned int i)
 {
-  char *a = new char[length+1];
-  a[length] = '\0';
-  while (length > 0) {
-    length--;
-    int j = i % 0x10;
-    if (j <= 9)
-      a[length] = '0' + j;
-    else
-      a[length] = 'a' + (j - 10);
-    i /= 0x10;
-  }
-  put_string(a, fp);
-  a_delete a;
+  put_string(ui_to_a(i), fp);
 }
 
 void troff_output_file::start_special(tfont *tf, int no_init_string)
@@ -1148,30 +1136,96 @@ void troff_output_file::set_font(tfont *tf)
 
 void troff_output_file::fill_color(color *col)
 {
-  unsigned int r, g, b;
   if ((current_pagecolor == col) || disable_color_flag)
     return;
-  col->get_rgb(&r, &g, &b);
   flush_tbuf();
-  put("DF ##");
-  put_hex(r, 4);
-  put_hex(g, 4);
-  put_hex(b, 4);
+  put("DF");
+  unsigned int components[4];
+  color_scheme cs;
+  cs = col->get_components(components);
+  switch (cs) {
+  case DEFAULT:
+    put('d');
+    break;
+  case RGB:
+    put("r ");
+    put(Red);
+    put(' ');
+    put(Green);
+    put(' ');
+    put(Blue);
+    break;
+  case CMY:
+    put("c ");
+    put(Cyan);
+    put(' ');
+    put(Magenta);
+    put(' ');
+    put(Yellow);
+    break;
+  case CMYK:
+    put("k ");
+    put(Cyan);
+    put(' ');
+    put(Magenta);
+    put(' ');
+    put(Yellow);
+    put(' ');
+    put(Black);
+    break;
+  case GRAY:
+    put("g ");
+    put(Gray);
+    break;
+  }
   put('\n');
   current_pagecolor = col;
 }
 
 void troff_output_file::glyph_color(color *col)
 {
-  unsigned int r, g, b;
   if ((current_glyphcolor == col) || disable_color_flag)
     return;
-  col->get_rgb(&r, &g, &b);
-  flush_tbuf();  
-  put("m ##");
-  put_hex(r, 4);
-  put_hex(g, 4);
-  put_hex(b, 4);
+  flush_tbuf();
+  put("m");
+  unsigned int components[4];
+  color_scheme cs;
+  cs = col->get_components(components);
+  switch (cs) {
+  case DEFAULT:
+    put('d');
+    break;
+  case RGB:
+    put("r ");
+    put(Red);
+    put(' ');
+    put(Green);
+    put(' ');
+    put(Blue);
+    break;
+  case CMY:
+    put("c ");
+    put(Cyan);
+    put(' ');
+    put(Magenta);
+    put(' ');
+    put(Yellow);
+    break;
+  case CMYK:
+    put("k ");
+    put(Cyan);
+    put(' ');
+    put(Magenta);
+    put(' ');
+    put(Yellow);
+    put(' ');
+    put(Black);
+    break;
+  case GRAY:
+    put("g ");
+    put(Gray);
+    break;
+  }
   put('\n');
   current_glyphcolor = col;
 }

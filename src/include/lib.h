@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001, 2002 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -27,6 +27,7 @@ extern "C" {
   char *strerror(int);
 #endif
   const char *i_to_a(int);
+  const char *ui_to_a(unsigned int);
   const char *if_to_a(int, int);
 }
 

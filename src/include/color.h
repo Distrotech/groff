@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2001, 2002 Free Software Foundation, Inc.
      Written by Gaius Mulley <gaius@glam.ac.uk>
 
 This file is part of groff.
@@ -19,57 +19,54 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 
-enum color_scheme {NONE, CMY, CMYK, RGB, GRAY};
-
-// colors are internally held as CMYK values.
+enum color_scheme {DEFAULT, CMY, CMYK, RGB, GRAY};
 
 class color {
 private:
-  unsigned int cyan;
-  unsigned int magenta;
-  unsigned int yellow;
-  unsigned int black;
-  color_scheme scheme;		// how was the color originally defined?
-  // and now the data structures necessary for the state machine
-  // inside the read routines
-  unsigned int color_space_num;	// how many numbers have been read?
-  enum {REAL, HEX, UNDEFINED} encoding;
-  unsigned int hex_length;
-  unsigned int c[4];
-  double d[4];
+  color_scheme scheme;
+  unsigned int components[4];
 
-  int read_encoding(const char *s, unsigned int n);
+  int read_encoding(color_scheme cs, const char *s, unsigned int n);
 
- public:
+public:
   enum {MAX_COLOR_VAL = 0xffff};
   color();
-  int is_equal(color *c);
-  int is_gray (void);
 
+  int operator==(const color & c) const;
+  int operator!=(const color & c) const;
+
+  int is_default() { return scheme == DEFAULT; }
+
+  void set_default();
   void set_rgb(unsigned int r, unsigned int g, unsigned int b);
   void set_cmy(unsigned int c, unsigned int m, unsigned int y);
   void set_cmyk(unsigned int c, unsigned int m,
 		unsigned int y, unsigned int k);
-  void set_gray(unsigned int l);
-	  
-  void set_rgb(double r, double g, double b);
-  void set_cmy(double c, double m, double y);
-  void set_cmyk(double c, double m, double y, double k);
-  void set_gray(double l);
+  void set_gray(unsigned int g);
 	  
   int read_rgb(const char *s);
   int read_cmy(const char *s);
   int read_cmyk(const char *s);
   int read_gray(const char *s);
 
+  color_scheme get_components(unsigned int *c);
+
   void get_rgb(unsigned int *r, unsigned int *g, unsigned int *b);
   void get_cmy(unsigned int *c, unsigned int *m, unsigned int *y);
   void get_cmyk(unsigned int *c, unsigned int *m,
 		unsigned int *y, unsigned int *k);
-  void get_gray(unsigned int *l);
-
-  void get_rgb(double *r, double *g, double *b);
-  void get_cmy(double *c, double *m, double *y);
-  void get_cmyk(double *c, double *m, double *y, double *k);
-  void get_gray(double *l);
+  void get_gray(unsigned int *g);
 };
+
+#define Cyan components[0]
+#define Magenta components[1]
+#define Yellow components[2]
+#define Black components[3]
+
+#define Red components[0]
+#define Green components[1]
+#define Blue components[2]
+
+#define Gray components[0]
+
+extern color default_color;

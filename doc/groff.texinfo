@@ -9655,17 +9655,20 @@ following values: @code{rgb} (three components), @code{cym} (three
 components), @code{cmyk} (four components), and @code{gray} or
 @code{grey} (one component).
 
+@cindex default color
+@cindex color, default
 Color components can be given either as a hexadecimal string or as
 positive decimal integers in the range 0--65535.  A hexadecimal string
 contains all color components concatenated.  It must start with either
 @code{#} or @code{##}; the former specifies hex values in the range
 0--255 (which are internally multiplied by@w{ }257), the latter in the
 range 0--65535.  Examples: @code{#FFC0CB} (pink), @code{##ffff0000ffff}
-(magenta).
+(magenta).  The default color name @c{default} can't be redefined; its
+value is device-specific (usually black).  It is possible that the
+default color for @code{\m} and @code{\M} is not identical.
 
 @cindex @code{f} unit, and colors
 @cindex unit, @code{f}, and colors
-
 A new scaling indicator @code{f} has been introduced which multiplies
 its value by 65536; this makes it convenient to specify color components
 as fractions in the range 0 to@w{ }1 (1f equals 65536u).  Example:
@@ -9674,7 +9677,7 @@ as fractions in the range 0 to@w{ }1 (1f equals 65536u).  Example:
 .defcolor darkgreen rgb 0.1f 0.5f 0.2f
 @endExample
 
-Note  that  @code{f}  is the default scaling indicator for the
+Note that @code{f} is the default scaling indicator for the
 @code{defcolor} request, thus the above statement is equivalent to
 
 @Example
