@@ -6223,23 +6223,23 @@ close(MAP);
 
 $italic_angle = $opt_a if $opt_a;
 
-# add unencoded characters
+# add unencoded characters and unmapped characters of the form `uniXXXX'
 
 $i = ($#encoding > 256) ? ($#encoding + 1) : 256;
 while ($ch = each %width) {
     if (!$in_encoding{$ch}) {
 	$encoding[$i] = $ch;
 	$i++;
-	if (!$nmap{$ch}) {
+    }
+    if (!$nmap{$ch}) {
+	$u1 = $AGL_to_unicode{$ch};
+	if (!$u1 && ($ch =~ /^uni([0-9A-F]{4})$/)) {
+	    $u1 = "u" . $1;
+	}
+	if ($u1) {
+	    $u2 = $unicode_decomposed{$u1};
+	    $u = $u2 ? $u2 : $u1;
 	    $nmap{$ch} += 1;
-	    $u1 = $AGL_to_unicode{$ch};
-	    if ($u1) {
-		$u2 = $unicode_decomposed{$u1};
-		$u = $u2 ? $u2 : $u1;
-	    }
-	    else {
-		$u = "---";
-	    }
 	    $map{$ch,"0"} = $u;
 	}
     }
