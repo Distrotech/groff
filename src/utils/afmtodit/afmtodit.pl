@@ -6102,7 +6102,7 @@ while (<AFM>) {
 		$c = -1;
 		$wx = 0;
 		$n = "";
-		%ligs = ();
+#		%ligs = ();
 		$lly = 0;
 		$ury = 0;
 		$llx = 0;
@@ -6125,10 +6125,10 @@ while (<AFM>) {
 			$ury = $field[$i + 4];
 			$i += 5;
 		    }
-		    elsif ($field[$i] eq "L") {
-			$ligs{$field[$i + 2]} = $field[$i + 1];
-			$i += 3;
-		    }
+#		    elsif ($field[$i] eq "L") {
+#			$ligs{$field[$i + 2]} = $field[$i + 1];
+#			$i += 3;
+#		    }
 		    else {
 			while ($i <= $#field && $field[$i] ne ";") {
 			    $i++;
@@ -6145,9 +6145,9 @@ while (<AFM>) {
 		$depth{$n} = -$lly;
 		$left_side_bearing{$n} = -$llx;
 		$right_side_bearing{$n} = $urx - $w;
-		while (($lig, $glyph2) = each %ligs) {
-		    $ligatures{$lig} = $n . " " . $glyph2;
-		}
+#		while (($lig, $glyph2) = each %ligs) {
+#		    $ligatures{$lig} = $n . " " . $glyph2;
+#		}
 	    }
 	}
     }
