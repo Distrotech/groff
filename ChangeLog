@@ -1,3 +1,49 @@
+2003-12-26  Jeff Conrad  <jeff_conrad@msn.com>
+
+	hpftodit has been extended to handle TrueType metric files and
+	more glyphs.  See hpftodit.man for more details.
+
+	* src/utils/hpftodit/hpftodit.cpp: Include stdio.h, string.h, 
+	ctype.h, and unicode.h.
+	s/msl/charcode/ everywhere since we now handle Unicode values also.
+	(equal, NO, YES, MSL, SYMSET, UNICODE, UNICODE): New macros.
+	Use it where appropriate.
+	(MULTIPLIER): Replaced with...
+	(multiplier): New global static variable.
+	(scale): Updated.
+	(tag_type): Add more TFM tags.
+	(tag_name): New array.
+	(ENUM_TYPE, FLOAT_TYPE): Removed.
+	(BYTE_TYPE): New value assigned.
+	(ASCII_TYPE, RATIONAL_TYPE): New enumeration values.
+	(text_symbol_sets, special_symbol_sets): Extended to cover more
+	sets.
+	(check_type): Add return value.
+	(check_units): Add parameters to get ppi and upem values.
+	Handle TrueType TFM data.
+	(output_font_name): New function.
+	(output_charset): Add parameter to handle TFM type.
+	Handle TrueType TFMs also.
+	(em_fract): New macro.
+	(dump_tags): Be much more verbose and handle more tags.
+	(dump_ascii, dump_symbol_sets, dump_symbols): New functions.
+	(hp_msl_to_ucode_name, unicode_to_ucode_name, is_uname): New
+	functions.
+	(read_map): Add parameter to handle TFM type.
+	Handle both MSL and Unicode mappings.
+	(main): Add two new command line options `-a' and `-q'.
+	Updated to make use of new functions.
+	(usage): Updated.
+
+	* src/utils/hpftodit/hpuni.cpp: New file.
+
+	* src/utils/hpftodit/Makefile.sub, src/utils/hpftodit/hpftodit.man:
+	Updated.
+
+2003-12-25  Werner LEMBERG  <wl@gnu.org>
+
+	* src/include/nonposix.h (read) [_MSC_VER]: Define.
+
 2003-12-24  Werner LEMBERG  <wl@gnu.org>
 
 	* src/utils/afmtodit/afmtodit.man: Some reformulations as suggested

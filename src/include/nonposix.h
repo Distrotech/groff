@@ -47,6 +47,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #  define setmode(f,m)	_setmode(f,m)
 #  define WAIT(s,p,m)	_cwait(s,p,m)
 #  define creat(p,m)	_creat(p,m)
+#  define read(f,b,s)   _read(f,b,s)
 # endif
 # define SET_BINARY(f)	do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
 # define FOPEN_RB	"rb"
