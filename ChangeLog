@@ -1,3 +1,17 @@
+2003-10-20  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	* src/libs/libgroff/tmpfile.cpp [__MSDOS__, _Win32]
+	(WIN32_TMPDIR_ENVVAR, MSDOS_TMPDIR_ENVVAR): New macros, providing
+	default directory names for temporary files.
+	[__MSDOS__, _Win32] (temp_init::temp_init): Use them.
+
+	* src/roff/groff/pipeline.c [__MSDOS__]: Include stdlib.h.
+	[__MSDOS__] (run_pipeline): Honour environment variables.
+	Don't use `tmpnam' but `tempnam' to work around messy
+	implementation.
+
+	* README.MinGW: New file.
+
 2003-10-16  Werner LEMBERG  <wl@gnu.org>
 
 	* src/preproc/html/pre-html.cpp (write_upto_newline): Don't use

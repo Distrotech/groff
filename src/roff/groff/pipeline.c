@@ -108,6 +108,7 @@ static char *i_to_a P((int));
 #include <fcntl.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "nonposix.h"
 
@@ -309,13 +310,25 @@ run_pipeline(int ncommands, char ***commands, int no_pipe)
   int save_stdin = dup(0);
   int save_stdout = dup(1);
   char *tmpfiles[2];
-  char tem1[L_tmpnam], tem2[L_tmpnam];
   int infile  = 0;
   int outfile = 1;
   int i, f, ret = 0;
 
-  tmpfiles[0] = tmpnam(tem1);
-  tmpfiles[1] = tmpnam(tem2);
+  /* Choose names for a pair of temporary files to implement the pipeline.
+     Microsoft's `tempnam' uses the directory specified by `getenv("TMP")'
+     if it exists; in case it doesn't, try the GROFF alternatives, or
+     `getenv("TEMP")' as last resort -- at least one of these had better
+     be set, since Microsoft's default has a high probability of failure. */
+  char *tmpdir;
+  if ((tmpdir = getenv("GROFF_TMPDIR")) == NULL
+      && (tmpdir = getenv("TMPDIR")) == NULL)
+    tmpdir = getenv("TEMP");
+
+  /* Don't use `tmpnam' here: Microsoft's implementation yields unusable
+     file names if current directory is on network share with read-only
+     root. */
+  tmpfiles[0] = tempnam(tmpdir, NULL);
+  tmpfiles[1] = tempnam(tmpdir, NULL);
 
   for (i = 0; i < ncommands; i++) {
     int exit_status;
