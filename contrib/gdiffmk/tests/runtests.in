@@ -40,39 +40,39 @@ trap 'rm -f ${tmpfile}' 0 1 2 3 15
 
 #	3 file arguments
 ResultFile=test_result1
-${command}  $(srcdir)/file1  $(srcdir)/file2 ${ResultFile} 2>${tmpfile}
+${command}  ${srcdir}/file1  ${srcdir}/file2 ${ResultFile} 2>${tmpfile}
 cat ${tmpfile} >>${ResultFile}
-TestResult $(srcdir)/test_baseline ${ResultFile}
+TestResult ${srcdir}/test_baseline ${ResultFile}
 
 #	OUTPUT to stdout by default
 ResultFile=test_result2
-${command}  $(srcdir)/file1  $(srcdir)/file2  >${ResultFile} 2>&1
-TestResult $(srcdir)/test_baseline ${ResultFile}
+${command}  ${srcdir}/file1  ${srcdir}/file2  >${ResultFile} 2>&1
+TestResult ${srcdir}/test_baseline ${ResultFile}
 
 #	OUTPUT to stdout via  -  argument
 ResultFile=test_result3
-${command}  $(srcdir)/file1  $(srcdir)/file2 - >${ResultFile} 2>&1
-TestResult $(srcdir)/test_baseline ${ResultFile}
+${command}  ${srcdir}/file1  ${srcdir}/file2 - >${ResultFile} 2>&1
+TestResult ${srcdir}/test_baseline ${ResultFile}
 
 #	FILE1 from standard input via  -  argument
 ResultFile=test_result4
-${command}  - $(srcdir)/file2 <$(srcdir)/file1  >${ResultFile} 2>&1
-TestResult $(srcdir)/test_baseline ${ResultFile}
+${command}  - ${srcdir}/file2 <${srcdir}/file1  >${ResultFile} 2>&1
+TestResult ${srcdir}/test_baseline ${ResultFile}
 
 #	FILE2 from standard input via  -  argument
 ResultFile=test_result5
-${command}  $(srcdir)/file1 - <$(srcdir)/file2  >${ResultFile} 2>&1
-TestResult $(srcdir)/test_baseline ${ResultFile}
+${command}  ${srcdir}/file1 - <${srcdir}/file2  >${ResultFile} 2>&1
+TestResult ${srcdir}/test_baseline ${ResultFile}
 
 #	Different values for addmark, changemark, deletemark
 ResultFile=test_result6
-${command}  -aA -cC -dD  $(srcdir)/file1 $(srcdir)/file2  >${ResultFile} 2>&1
-TestResult $(srcdir)/test_baseline6 ${ResultFile}
+${command}  -aA -cC -dD  ${srcdir}/file1 ${srcdir}/file2  >${ResultFile} 2>&1
+TestResult ${srcdir}/test_baseline6 ${ResultFile}
 
 #	Test for accidental file overwrite.
 ResultFile=test_result7
-cp $(srcdir)/file2 tmp_file7
-${command}  -aA -dD -cC  $(srcdir)/file1 tmp_file7  tmp_file7  >${ResultFile} 2>&1
-TestResult $(srcdir)/test_baseline7 ${ResultFile}
+cp ${srcdir}/file2 tmp_file7
+${command}  -aA -dD -cC  ${srcdir}/file1 tmp_file7  tmp_file7  >${ResultFile} 2>&1
+TestResult ${srcdir}/test_baseline7 ${ResultFile}
 
 #	EOF
