@@ -2652,10 +2652,10 @@
 .
 .    ie t \{\
 .      nop \*[doc-Li-font]\c
-'      ta T 9n
+.      ta T 9n
 .    \}
 .    el \
-'      ta T 8n
+.      ta T 8n
 .    nf
 .  \}
 .  el \{ .ie "\$1"-filled" \{\
@@ -2696,13 +2696,11 @@
 .    nr doc-display-indent-stack\n[doc-display-depth] 0
 .
 .  if \n[doc-display-indent-stack\n[doc-display-depth]] \
-'    in +\n[doc-display-indent-stack\n[doc-display-depth]]u
+.    in +\n[doc-display-indent-stack\n[doc-display-depth]]u
 .
 .  if !\n[doc-is-compact] \{\
-.    ie "\*[doc-display-type-stack\n[doc-display-depth]]"ragged" \
-.      sp \n[doc-display-vertical]u
-.    el \
-'      sp \n[doc-display-vertical]u
+.    br
+.    sp \n[doc-display-vertical]u
 .  \}
 .
 .  if !\n[cR] \
@@ -3002,8 +3000,10 @@
 .    if "\*[doc-list-type-stack\n[doc-list-depth]]"column-list" \{\
 .      doc-set-column-tab \n[doc-num-columns]
 '      in -\n[doc-column-indent-width]u
-.      if !\n[doc-compact-list-stack\n[doc-list-depth]] \
+.      if !\n[doc-compact-list-stack\n[doc-list-depth]] \{\
+.        br
 .        sp \n[doc-display-vertical]u
+.      \}
 .
 .      nf
 .      nr doc-num-columns 0
@@ -4015,8 +4015,10 @@
 .\" NS   doc-list-have-indent-stackXXX
 .
 .de doc-set-vertical-and-indent
-.  if !\n[doc-compact-list-stack\n[doc-list-depth]] \
+.  if !\n[doc-compact-list-stack\n[doc-list-depth]] \{\
+.    br
 .    sp \n[doc-display-vertical]u
+.  \}
 .
 .  if \n[doc-list-have-indent-stack\n[doc-list-depth]] \{\
 .    nr doc-list-have-indent-stack\n[doc-list-depth] 0
@@ -4317,7 +4319,7 @@
 .    nr doc-list-indent-stack\n[doc-list-depth] \n[doc-column-indent-width]u
 .  if !\n[.u] \{\
 .    fi
-'    in +\n[doc-column-indent-width]u
+.    in +\n[doc-column-indent-width]u
 .  \}
 .  ti -\n[doc-column-indent-width]u
 .
@@ -4363,7 +4365,7 @@
 .\" NS width register `Dl' set in doc-common
 .
 .de Dl
-'  ta T .5i
+.  ta T .5i
 .  in +\n[doc-display-indent]u
 .
 .  ie \n[doc-arg-limit] \{\
@@ -4398,7 +4400,7 @@
 .\" NS width register `D1' set in doc-common
 .
 .de D1
-'  ta T .5i
+.  ta T .5i
 .  in +\n[doc-display-indent]u
 .
 .  ie \n[doc-arg-limit] \{\
