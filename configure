@@ -531,7 +531,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS XDEVDIRS XPROGDIRS XLIBDIRS LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD GREP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR pnmcut pnmcrop pnmtopng psselect pnmtops gs make_html make_install_html pnmtops_nosetpage LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS XDEVDIRS XPROGDIRS XLIBDIRS appresdir LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD GREP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR pnmcut pnmcrop pnmtopng psselect pnmtops gs make_html make_install_html pnmtops_nosetpage LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1075,6 +1075,7 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-x                use the X Window System
+       --with-appresdir=DIR    X11 application resource files
 
 Some influential environment variables:
   CC          C compiler command
@@ -4773,13 +4774,21 @@ fi
 fi
 
 
-   have_no_x=$no_x
-   if test -z "$have_no_x"; then
-     echo "$as_me:$LINENO: checking for Xaw library" >&5
-echo $ECHO_N "checking for Xaw library... $ECHO_C" >&6
+   groff_no_x=$no_x
+   if test -z "$groff_no_x"; then
+     OLDCFLAGS=$CFLAGS
+     OLDLDFLAGS=$LDFLAGS
+     OLDLIBS=$LIBS
+     CFLAGS="$CFLAGS $X_CFLAGS"
+     LDFLAGS="$LDFLAGS $X_LIBS"
+     LIBS="$LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+
+     LIBS="$LIBS -lXaw"
+     echo "$as_me:$LINENO: checking for Xaw library and header files" >&5
+echo $ECHO_N "checking for Xaw library and header files... $ECHO_C" >&6
      cat >conftest.$ac_ext <<_ACEOF
 
-         /* confdefs.h.  */
+	 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -4829,12 +4838,77 @@ sed 's/^/| /' conftest.$ac_ext >&5
 
 echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
-        have_no_x="yes"
+	groff_no_x="yes"
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
+
+     LIBS="$LIBS -lXmu"
+     echo "$as_me:$LINENO: checking for Xmu library and header files" >&5
+echo $ECHO_N "checking for Xmu library and header files... $ECHO_C" >&6
+     cat >conftest.$ac_ext <<_ACEOF
+
+	 /* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+
+#include <X11/Intrinsic.h>
+#include <X11/Xmu/Converters.h>
+
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+	groff_no_x="yes"
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+
+     CFLAGS=$OLDCFLAGS
+     LDFLAGS=$OLDLDFLAGS
+     LIBS=$OLDLIBS
    fi
-   if test "X$have_no_x" = "Xyes"; then
+
+   if test "x$groff_no_x" = "xyes"; then
      { echo "$as_me:$LINENO: gxditview and xtotroff won't be built" >&5
 echo "$as_me: gxditview and xtotroff won't be built" >&6;}
    else
@@ -4844,6 +4918,102 @@ echo "$as_me: gxditview and xtotroff won't be built" >&6;}
    fi
 
 
+
+
+
+# Check whether --with-appresdir or --without-appresdir was given.
+if test "${with_appresdir+set}" = set; then
+  withval="$with_appresdir"
+
+fi;
+if test -z "$groff_no_x"; then
+     # Create an Imakefile, run `xmkmf', then `make'.
+     rm -f -r conftest.dir
+     if mkdir conftest.dir; then
+       cd conftest.dir
+       # Make sure to not put `make' in the Imakefile rules,
+       # since we grep it out.
+       cat >Imakefile <<'EOF'
+
+xlibdirs:
+	@echo 'groff_x_usrlibdir="${USRLIBDIR}"; groff_x_libdir="${LIBDIR}"'
+EOF
+
+       if (xmkmf) >/dev/null 2>/dev/null && test -f Makefile; then
+	 # GNU make sometimes prints "make[1]: Entering...",
+	 # which would confuse us.
+	 eval `${MAKE-make} xlibdirs 2>/dev/null | grep -v make`
+
+	 # Open Windows `xmkmf' reportedly sets LIBDIR instead of USRLIBDIR.
+	 for groff_extension in a so sl; do
+	   if test ! -f $groff_x_usrlibdir/libX11.$groff_extension &&
+	      test -f $groff_x_libdir/libX11.$groff_extension; then
+	     groff_x_usrlibdir=$groff_x_libdir
+	     break
+	   fi
+	 done
+       fi
+
+       cd ..
+       rm -f -r conftest.dir
+     fi
+
+     # In case the test with `xmkmf' wasn't successful, try a suite of
+     # standard directories.  Check `X11' before `X11Rn' because it is often
+     # a symlink to the current release.
+     groff_x_libdirs='
+       /usr/X11/lib
+       /usr/X11R6/lib
+       /usr/X11R5/lib
+       /usr/X11R4/lib
+
+       /usr/lib/X11
+       /usr/lib/X11R6
+       /usr/lib/X11R5
+       /usr/lib/X11R4
+
+       /usr/local/X11/lib
+       /usr/local/X11R6/lib
+       /usr/local/X11R5/lib
+       /usr/local/X11R4/lib
+
+       /usr/local/lib/X11
+       /usr/local/lib/X11R6
+       /usr/local/lib/X11R5
+       /usr/local/lib/X11R4
+
+       /usr/X386/lib
+       /usr/x386/lib
+       /usr/XFree86/lib/X11
+
+       /usr/lib
+       /usr/local/lib
+       /usr/unsupported/lib
+       /usr/athena/lib
+       /usr/local/x11r5/lib
+       /usr/lpp/Xamples/lib
+
+       /usr/openwin/lib
+       /usr/openwin/share/lib'
+
+     if test -z "$groff_x_usrlibdir"; then
+       # We only test whether libX11 exists.
+       for groff_dir in $groff_x_libdirs; do
+	 for groff_extension in a so sl; do
+	   if test ! -r $groff_dir/libX11.$groff_extension; then
+	     groff_x_usrlibdir=$groff_dir
+	     break 2
+	   fi
+	 done
+       done
+     fi
+
+     if test "x$with_appresdir" = "x"; then
+       appresdir=$groff_x_usrlibdir/X11/app-defaults
+     else
+       appresdir=$with_appresdir
+     fi
+   fi
 
 if test -z "$PSPRINT"; then
      for ac_prog in lpr
@@ -4988,7 +5158,7 @@ echo "${ECHO_T}$PSPRINT" >&6
    echo "$as_me:$LINENO: checking for command to use for printing dvi files" >&5
 echo $ECHO_N "checking for command to use for printing dvi files... $ECHO_C" >&6
    if test -n "$PSPRINT" && test -z "$DVIPRINT"; then
-     if test "X$PSPRINT" = "Xlpr"; then
+     if test "x$PSPRINT" = "xlpr"; then
        DVIPRINT="lpr -d"
      else
        DVIPRINT="$PSPRINT"
@@ -6128,7 +6298,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -6231,7 +6401,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -6334,7 +6504,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -6437,7 +6607,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -6540,7 +6710,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -6643,7 +6813,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -6746,7 +6916,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -6849,7 +7019,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -6952,7 +7122,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -7055,7 +7225,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -7158,7 +7328,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -7261,7 +7431,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 else
   cat >conftest.$ac_ext <<_ACEOF
 
-          /* confdefs.h.  */
+	  /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
@@ -9327,7 +9497,7 @@ echo "${ECHO_T}$BROKEN_SPOOLER_FLAGS" >&6
 echo "$as_me:$LINENO: checking default paper size" >&5
 echo $ECHO_N "checking default paper size... $ECHO_C" >&6
    groff_prefix=$prefix
-   test "x$prefix" = xNONE && groff_prefix=$ac_default_prefix
+   test "x$prefix" = "xNONE" && groff_prefix=$ac_default_prefix
    if test -z "$PAGE"; then
      descfile=
      if test -r $groff_prefix/share/groff/font/devps/DESC; then
@@ -10443,6 +10613,7 @@ s,@X_EXTRA_LIBS@,$X_EXTRA_LIBS,;t t
 s,@XDEVDIRS@,$XDEVDIRS,;t t
 s,@XPROGDIRS@,$XPROGDIRS,;t t
 s,@XLIBDIRS@,$XLIBDIRS,;t t
+s,@appresdir@,$appresdir,;t t
 s,@LPR@,$LPR,;t t
 s,@LP@,$LP,;t t
 s,@LPQ@,$LPQ,;t t
@@ -10975,3 +11146,38 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
+
+if test -z "$groff_no_x"; then
+     if test "x$with_appresdir" = "x"; then
+       { echo "$as_me:$LINENO:
+
+  The application resource file for gxditview will be installed as
+
+    $appresdir/GXditview
+
+  (an existing file will be saved as \`GXditview.old').
+  To install it into a different directory, say, \`/etc/gxditview',
+  add \`--with-appresdir=/etc/gxditview' to the configure script
+  and rerun it.  The environment variable \`APPLRESDIR' must then
+  be set to \`/etc/' (note the trailing slash), omitting the
+  \`gxditview' part which is automatically appended by the X11
+  searching routines for resource files.  More details can be
+  found in the X(7) manual page.
+       " >&5
+echo "$as_me:
+
+  The application resource file for gxditview will be installed as
+
+    $appresdir/GXditview
+
+  (an existing file will be saved as \`GXditview.old').
+  To install it into a different directory, say, \`/etc/gxditview',
+  add \`--with-appresdir=/etc/gxditview' to the configure script
+  and rerun it.  The environment variable \`APPLRESDIR' must then
+  be set to \`/etc/' (note the trailing slash), omitting the
+  \`gxditview' part which is automatically appended by the X11
+  searching routines for resource files.  More details can be
+  found in the X(7) manual page.
+       " >&6;}
+     fi
+   fi

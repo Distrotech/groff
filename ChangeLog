@@ -1,3 +1,33 @@
+2004-06-02  Werner LEMBERG  <wl@gnu.org>
+
+	* aclocal.m4 (GROFF_X11): s/have_no_x/groff_no_x/.
+	Add X11 stuff to CFLAGS, LDFLAGS, and LIBS temporarily.
+	Add test for Xmu library.
+	(GROFF_APPRESDIR_OPTION, GROFF_APPRESDIR_CHECK,
+	GROFF_APPRESDIR_DEFAULT): New macros.
+
+	* configure.ac: Call GROFF_APPRESDIR_OPTION, GROFF_APPRESDIR_CHECK,
+	and GROFF_APPRESDIR_DEFAULT.
+
+	* configure: Regenerated.
+
+	* Makefile.in (appresdir): New variable.
+	(MDEFINES): Add appresdir.
+
+	* src/devices/xditview/Makefile.sub (EXTRA_LDFLAGS): Add -Xmu and
+	-Xt.
+	(install_data, uninstall_sub): New targets to handle GXditview.ad.
+
+	* src/utils/indxbib/Makefiles.ub (install_data): Depend on
+	`$(srcdir)/eign', not `eign'.
+
+	* MANIFEST, INSTALL, NEWS, PROBLEMS: Updated.
+
+	* man/groff_out.man, man/roff.man, src/devices/grops/grops.man,
+	src/devices/xditview/gxditview.man, src/roff/groff/groff.man:
+	Protect (g)xditview with `\%' to avoid hyphenation.
+	Other minor formatting.
+
 2004-06-01  Werner LEMBERG  <wl@gnu.org>
 
 	Integrate gxditview into groff's standard directory hierarchy.
@@ -3799,7 +3829,6 @@ Version 1.18.1 released
 	* man/groff_tmac.man: Fix typos.
 	* man/groff_font.man: Minor reordering.
 	* contrib/eqn2graph/eqn2graph.man (Tp): New macro.
-	* contrib/groffer/groffer.man: Fix typos.
 
 2002-08-18  Gaius Mulley  <gaius@glam.ac.uk>
 
@@ -4860,9 +4889,9 @@ Version 1.18.0 released
 	* tmac/Xps.tmac: Remove some redundant code.
 
 	* tmac/doc-common, tmac/doc-ditroff, tmac/doc-nroff, tmac/doc.tmac,
-	tmac/dvi.tmac, contrib/groffer/groffer.man, man/roff.man,
-	man/groff_out.man, man/groff.man, man/groff_diff.man,
-	src/roff/groff/groff.man: Replace \f[P] with \f[].
+	tmac/dvi.tmac, man/roff.man, man/groff_out.man, man/groff.man,
+	man/groff_diff.man, src/roff/groff/groff.man: Replace \f[P] with
+	\f[].
 
 2002-04-13  Bernd Warken  <bwarken@mayn.de>
 

@@ -1,19 +1,19 @@
 # Autoconf macros for groff.
 # Copyright (C) 1989-1995, 2001, 2002, 2003, 2004
 # Free Software Foundation, Inc.
-# 
+#
 # This file is part of groff.
-# 
+#
 # groff is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
 # Software Foundation; either version 2, or (at your option) any later
 # version.
-# 
+#
 # groff is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License along
 # with groff; see the file COPYING.  If not, write to the Free Software
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -42,7 +42,7 @@ AC_DEFUN([GROFF_PRINT],
    # Figure out DVIPRINT from PSPRINT.
    AC_MSG_CHECKING([for command to use for printing dvi files])
    if test -n "$PSPRINT" && test -z "$DVIPRINT"; then
-     if test "X$PSPRINT" = "Xlpr"; then
+     if test "x$PSPRINT" = "xlpr"; then
        DVIPRINT="lpr -d"
      else
        DVIPRINT="$PSPRINT"
@@ -405,7 +405,7 @@ AC_DEFUN([GROFF_BROKEN_SPOOLER_FLAGS],
 AC_DEFUN([GROFF_PAGE],
   [AC_MSG_CHECKING([default paper size])
    groff_prefix=$prefix
-   test "x$prefix" = xNONE && groff_prefix=$ac_default_prefix
+   test "x$prefix" = "xNONE" && groff_prefix=$ac_default_prefix
    if test -z "$PAGE"; then
      descfile=
      if test -r $groff_prefix/share/groff/font/devps/DESC; then
@@ -560,7 +560,7 @@ AC_DEFUN([GROFF_TMAC],
        *)
 	 grep "Copyright.*Free Software Foundation" $f >/dev/null \
 	      || tmac_wrap="$tmac_wrap $suff" ;;
-       esac 
+       esac
      done
    elif test -n "$sys_tmac_prefix"; then
      files=`echo $sys_tmac_prefix*`
@@ -683,7 +683,7 @@ AC_DEFUN([GROFF_NEED_DECLARATION],
    AC_LANG_PUSH([C++])
    AC_CACHE_VAL([groff_cv_decl_needed_$1],
      [AC_COMPILE_IFELSE([
-          AC_LANG_PROGRAM([[
+	  AC_LANG_PROGRAM([[
 
 #include <stdio.h>
 #ifdef HAVE_STRING_H
@@ -826,7 +826,7 @@ AC_DEFUN([GROFF_TARGET_PATH_SEPARATOR],
    cp ${srcdir}/src/include/nonposix.h conftest.h
    AC_COMPILE_IFELSE([
        AC_LANG_PROGRAM([[
-        
+	
 #include <ctype.h>
 #include "conftest.h"
 
@@ -848,29 +848,191 @@ make an error "Path separator is ';'"
 
 AC_DEFUN([GROFF_X11],
   [AC_REQUIRE([AC_PATH_XTRA])
-   have_no_x=$no_x
-   if test -z "$have_no_x"; then
-     AC_MSG_CHECKING([for Xaw library])
+   groff_no_x=$no_x
+   if test -z "$groff_no_x"; then
+     OLDCFLAGS=$CFLAGS
+     OLDLDFLAGS=$LDFLAGS
+     OLDLIBS=$LIBS
+     CFLAGS="$CFLAGS $X_CFLAGS"
+     LDFLAGS="$LDFLAGS $X_LIBS"
+     LIBS="$LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+
+     LIBS="$LIBS -lXaw"
+     AC_MSG_CHECKING([for Xaw library and header files])
      AC_LINK_IFELSE([
-         AC_LANG_PROGRAM([[
+	 AC_LANG_PROGRAM([[
 
 #include <X11/Intrinsic.h>
 #include <X11/Xaw/Simple.h>
 
-         ]],
-         [])
+	 ]],
+	 [])
        ],
        [AC_MSG_RESULT([yes])],
        [AC_MSG_RESULT([no])
-        have_no_x="yes"])
+	groff_no_x="yes"])
+
+     LIBS="$LIBS -lXmu"
+     AC_MSG_CHECKING([for Xmu library and header files])
+     AC_LINK_IFELSE([
+	 AC_LANG_PROGRAM([[
+
+#include <X11/Intrinsic.h>
+#include <X11/Xmu/Converters.h>
+
+	 ]],
+	 [])
+       ],
+       [AC_MSG_RESULT([yes])],
+       [AC_MSG_RESULT([no])
+	groff_no_x="yes"])
+
+     CFLAGS=$OLDCFLAGS
+     LDFLAGS=$OLDLDFLAGS
+     LIBS=$OLDLIBS
    fi
-   if test "X$have_no_x" = "Xyes"; then
+
+   if test "x$groff_no_x" = "xyes"; then
      AC_MSG_NOTICE([gxditview and xtotroff won't be built])
    else
      XDEVDIRS="font/devX75 font/devX75-12 font/devX100 font/devX100-12"
      XPROGDIRS="src/devices/xditview src/utils/xtotroff"
      XLIBDIRS="src/libs/libxutil"
    fi
+
    AC_SUBST([XDEVDIRS])
    AC_SUBST([XPROGDIRS])
    AC_SUBST([XLIBDIRS])])
+
+# Set up the `--with-appresdir' command line option.
+
+AC_DEFUN([GROFF_APPRESDIR_OPTION],
+  [AC_ARG_WITH([appresdir],
+     dnl Don't quote AS_HELP_STRING!
+     AS_HELP_STRING([--with-appresdir=DIR],
+		    [X11 application resource files]))])
+
+# Get a default value for the application resource directory.
+#
+# We ignore the `XAPPLRES' and `XUSERFILESEARCHPATH' environment variables.
+#
+# The goal is to find the `root' of X11.  Under most systems this is
+# `/usr/X11/lib'.  Application default files are then in
+# `/usr/X11/lib/X11/app-defaults'.
+#
+# Based on autoconf's AC_PATH_X macro.
+
+AC_DEFUN([GROFF_APPRESDIR_DEFAULT],
+  [if test -z "$groff_no_x"; then
+     # Create an Imakefile, run `xmkmf', then `make'.
+     rm -f -r conftest.dir
+     if mkdir conftest.dir; then
+       cd conftest.dir
+       # Make sure to not put `make' in the Imakefile rules,
+       # since we grep it out.
+       cat >Imakefile <<'EOF'
+
+xlibdirs:
+	@echo 'groff_x_usrlibdir="${USRLIBDIR}"; groff_x_libdir="${LIBDIR}"'
+EOF
+
+       if (xmkmf) >/dev/null 2>/dev/null && test -f Makefile; then
+	 # GNU make sometimes prints "make[1]: Entering...",
+	 # which would confuse us.
+	 eval `${MAKE-make} xlibdirs 2>/dev/null | grep -v make`
+
+	 # Open Windows `xmkmf' reportedly sets LIBDIR instead of USRLIBDIR.
+	 for groff_extension in a so sl; do
+	   if test ! -f $groff_x_usrlibdir/libX11.$groff_extension &&
+	      test -f $groff_x_libdir/libX11.$groff_extension; then
+	     groff_x_usrlibdir=$groff_x_libdir
+	     break
+	   fi
+	 done
+       fi
+
+       cd ..
+       rm -f -r conftest.dir
+     fi
+
+     # In case the test with `xmkmf' wasn't successful, try a suite of
+     # standard directories.  Check `X11' before `X11Rn' because it is often
+     # a symlink to the current release.
+     groff_x_libdirs='
+       /usr/X11/lib
+       /usr/X11R6/lib
+       /usr/X11R5/lib
+       /usr/X11R4/lib
+
+       /usr/lib/X11
+       /usr/lib/X11R6
+       /usr/lib/X11R5
+       /usr/lib/X11R4
+
+       /usr/local/X11/lib
+       /usr/local/X11R6/lib
+       /usr/local/X11R5/lib
+       /usr/local/X11R4/lib
+
+       /usr/local/lib/X11
+       /usr/local/lib/X11R6
+       /usr/local/lib/X11R5
+       /usr/local/lib/X11R4
+
+       /usr/X386/lib
+       /usr/x386/lib
+       /usr/XFree86/lib/X11
+
+       /usr/lib
+       /usr/local/lib
+       /usr/unsupported/lib
+       /usr/athena/lib
+       /usr/local/x11r5/lib
+       /usr/lpp/Xamples/lib
+
+       /usr/openwin/lib
+       /usr/openwin/share/lib'
+
+     if test -z "$groff_x_usrlibdir"; then
+       # We only test whether libX11 exists.
+       for groff_dir in $groff_x_libdirs; do
+	 for groff_extension in a so sl; do
+	   if test ! -r $groff_dir/libX11.$groff_extension; then
+	     groff_x_usrlibdir=$groff_dir
+	     break 2
+	   fi
+	 done
+       done
+     fi
+
+     if test "x$with_appresdir" = "x"; then
+       appresdir=$groff_x_usrlibdir/X11/app-defaults
+     else
+       appresdir=$with_appresdir
+     fi
+   fi
+   AC_SUBST([appresdir])])
+
+
+# Emit warning if --with-appresdir hasn't been used.
+
+AC_DEFUN([GROFF_APPRESDIR_CHECK],
+  [if test -z "$groff_no_x"; then
+     if test "x$with_appresdir" = "x"; then
+       AC_MSG_NOTICE([
+
+  The application resource file for gxditview will be installed as
+
+    $appresdir/GXditview
+
+  (an existing file will be saved as `GXditview.old').
+  To install it into a different directory, say, `/etc/gxditview',
+  add `--with-appresdir=/etc/gxditview' to the configure script
+  and rerun it.  The environment variable `APPLRESDIR' must then
+  be set to `/etc/' (note the trailing slash), omitting the
+  `gxditview' part which is automatically appended by the X11
+  searching routines for resource files.  More details can be
+  found in the X(7) manual page.
+       ])
+     fi
+   fi])
