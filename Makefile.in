@@ -20,9 +20,9 @@
 SHELL=@SHELL@
 
 srcdir=@srcdir@
-top_srcdir=@top_srcdir@
+top_srcdir=@abs_top_srcdir@
 VPATH=@srcdir@
-top_builddir=@groff_top_builddir@
+top_builddir=@abs_top_builddir@
 SEP=@PATH_SEPARATOR@
 
 version=`cat $(top_srcdir)/VERSION`
@@ -234,6 +234,7 @@ make_install_html=@make_install_html@
 # -DHAVE_GETCWD			if you have getcwd()
 # -DHAVE_GETTIMEOFDAY		if you have gettimeofday()
 # -DHAVE_ISATTY			if you have isatty()
+# -DHAVE_KILL			if you have kill()
 # -DHAVE_MKSTEMP		if you have mkstemp()
 # -DHAVE_MMAP			if you have mmap()
 # -DHAVE_PUTENV			if you have putenv()
@@ -245,6 +246,7 @@ make_install_html=@make_install_html@
 # -DHAVE_STRERROR		if you have strerror()
 # -DHAVE_STRSEP			if you have strsep()
 # -DHAVE_STRTOL			if you have strtol()
+# -DHAVE_VSNPRINTF		if you have vsnprintf()
 #
 # -DNEED_DECLARATION_GETTIMEOFTODAY
 #				if your C++ <sys/time.h> doesn't declare
@@ -252,15 +254,19 @@ make_install_html=@make_install_html@
 # -DNEED_DECLARATION_HYPOT	if your C++ <math.h> doesn't declare hypot()
 # -DNEED_DECLARATION_PCLOSE	if your C++ <stdio.h> doesn't declare pclose()
 # -DNEED_DECLARATION_POPEN	if your C++ <stdio.h> doesn't declare popen()
-# -DNEED_DECLARATION_PUTENV	if your C++ <stdlib.h> doesn't declare putenv()
+# -DNEED_DECLARATION_PUTENV	if your C++ <stdlib.h> doesn't declare
+#				putenv()
 # -DNEED_DECLARATION_RAND	if your C++ <stdlib.h> doesn't declare rand()
-# -DNEED_DECLARATION_SNPRINTF	if your C++ <stdio.h> doesn't declare snprintf()
+# -DNEED_DECLARATION_SNPRINTF	if your C++ <stdio.h> doesn't declare
+# 				snprintf()
 # -DNEED_DECLARATION_SRAND	if your C++ <stdlib.h> doesn't declare srand()
 # -DNEED_DECLARATION_STRCASECMP if your C++ <string.h> doesn't declare
 #				strcasecmp()
 # -DNEED_DECLARATION_STRNCASECMP
 #				if your C++ <string.h> doesn't declare
 #				strncasecmp()
+# -DNEED_DECLARATION_VSNPRINTF	if your C++ <stdio.h> doesn't declare
+#				vsnprintf()
 #
 # -DRET_TYPE_SRAND_IS_VOID	if srand() returns void not int
 # -DHAVE_SYS_NERR		if you have sysnerr in <errno.h> or <stdio.h>
@@ -281,6 +287,7 @@ DEFINES=@DEFS@
 #    strerror,strncasecmp,strtol}.$(OBJEXT)
 #
 # in LIBOBJS if your C library is missing the corresponding function.
+# vsnprintf is defined in the snprintf.$(OBJEXT) module.
 LIBOBJS=@LIBOBJS@
 
 # `CCC' is the compiler for C++ (.cpp) files.

@@ -820,11 +820,11 @@ void draw_dvi_printer::draw(int code, int *p, int np, const environment *env)
       if (adjust_arc_center(p, c)) {
 	int rad = milliinches(int(sqrt(c[0]*c[0] + c[1]*c[1]) + .5));
 	moveto(env->hpos + int(c[0]), env->vpos + int(c[1]));
-	sprintf(buf, "ar 0 0 %d %d %f %f",
-		rad,
-		rad,
-		atan2(p[1] + p[3] - c[1], p[0] + p[2] - c[0]),
-		atan2(-c[1], -c[0]));
+	double start = atan2(p[1] + p[3] - c[1], p[0] + p[2] - c[0]);
+	double end = atan2(-c[1], -c[0]);
+	if (end - start < 0)
+	  start -= 2 * 3.14159265358;
+	sprintf(buf, "ar 0 0 %d %d %f %f", rad, rad, start, end);
 	do_special(buf);
       }
       else {

@@ -1,3 +1,37 @@
+2003-11-10  Werner LEMBERG  <wl@gnu.org>
+
+	LynxOS 4.0.0 has snprintf (without declaration) but no vsnprintf.
+
+	* configure.ac: Check for vsnprintf.
+	* src/include/lib.h: Handle `NEED_DECLARATION_VSNPRINTF' and
+	`HAVE_VSNPRINTF'.
+	* src/include/config.hin: Regenerated.
+
+2003-11-09  Werner LEMBERG  <wl@gnu.org>
+
+	* aclocal.m4: Updated syntax to autoconf 2.59.
+	(GROFF_HTML_PROGRAMS): Use AC_FOREACH.
+	Don't check for gsos2.
+	(GROFF_SRCDIR, GROFF_BUILDDIR): Removed.  autoconf 2.59 provides
+	working abs_top_srcdir and abs_top_builddir.
+
+	* configure.ac: Updated syntax to autoconf 2.59.
+	Don't call GROFF_SRCDIR and GROFF_BUILDDIR.
+	Replace call to AC_DECL_SYS_SIGLIST with call to AC_CHECK_DECLS.
+	* configure: Regenerated.
+
+	* Makefile.in, doc/Makefile.in: s/@top_srcdir@/@abs_top_srcdir@/,
+	s/@groff_top_builddir@/@abs_top_builddir@/.
+
+	* src/roff/groff/pipeline.c (xstrsignal):
+	s/SYS_SIGLIST_DECLARED/HAVE_DECL_SYS_SIGLIST/.
+
+2003-11-07  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grodvi/dvi.cpp (draw_dvi_printer::draw) ['a']: Always
+	make start angle smaller than end angle to circumvent a bug in tpic
+	handling of some versions of dvipdfm (and dvipdfmx).
+
 2003-10-30  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grops/grops.man: Improve section on creating EPS.
