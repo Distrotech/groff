@@ -1,3 +1,40 @@
+2002-03-22  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo: Document possible conflict between `tr' and
+	`char' requests.
+
+2002-03-21  Werner LEMBERG  <wl@gnu.org>
+
+	Improve handling of hyphenation patterns.  It is now possible to
+	use most of TeX's pattern files unmodified.  To make the process
+	more flexible, a new request `hpfcode' has been added which
+	provides a character code mapping for the `hpf' request.  See
+	comment before hpf_getc() for more details.
+
+	* src/roff/troff/env.cc (insert_hyphenation, hpf_getc): New
+	functions.
+	(read_patterns_file): Additional parameter for exception dictionary.
+	Extended to recognize \pattern, \hyphenation, and \endinput.
+	(do_hyphenation_patterns_file): Updated.
+	* src/roff/troff/env.h (hpf_code_table): New extern.
+
+	* src/roff/troff/input.cc (hpf_code_table): New array.
+	(init_hpf_code_table, hyphenation_patterns_file_code): New
+	functions.
+	(hyphenation_code): Handle translation from `trin' correctly.
+	(main, init_input_requests): Updated.
+	(charinfo::set_translation): Handle hyphenation code also.
+
+	* src/roff/troff/charinfo.h (charinfo::get_translation_input): New
+	inline function.
+
+	* src/roff/troff/env.cc (WORD_MAX): Reduced to 256 since `unsigned
+	char' is used for offsets in hyphenation exceptions.
+
+	* tmac/hyphen.us: Replace with contents of unmodified `hyphen.tex'.
+
+	* NEWS, man/groff_diff.man, man/groff.man: Document it.
+
 2002-03-20  Larry Kollar  <kollar@alltel.net>
 
 	* doc/groff.texinfo: Add documentation for `hpfa' and `trin'

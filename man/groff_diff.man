@@ -1046,6 +1046,7 @@ Any emboldening, constant spacing or track kerning will be applied to
 this object rather than to individual characters in
 .IR string .
 .
+.IP
 A character defined by this request can be used just like a normal
 character provided by the output device.
 .
@@ -1062,10 +1063,12 @@ correctly, if the
 .B hcode
 request is used to give the character a hyphenation code.
 .
+.IP
 There is a special anti-recursion feature: use of character within the
 character's definition will be handled like normal characters not
 defined with
 .BR char .
+.IP
 A character definition can be removed with the
 .B rchar
 request.
@@ -1429,15 +1432,69 @@ is searched for when the
 .BI \-m name
 option is specified.
 .
-It should have the same format as the argument to the \[rs]patterns
-primitive in \*[tx]; the letters appearing in this file are interpreted
-as hyphenation codes.
+It should have the same format as (simple) \*[tx] patterns files.
 .
-A
+More specifically, the following scanning rules are implemented.
+.
+.RS
+.IP \[bu]
+A percent sign starts a comment (up to the end of the line) even if
+preceded by a backslash.
+.
+.IP \[bu]
+No support for `digraphs' like
+.BR \[rs]$ .
+.
+.IP \[bu]
+The only multi-character construction recognized is
+.BI ^^ xx
+.RI ( x
+is 0-9 or a-f); other use of
+.B ^
+causes an error.
+.
+.IP \[bu]
+No macro expansion.
+.
+.IP \[bu]
+.B hpf
+checks for the expression
+.B \[rs]patterns{.\|.\|.}
+(possibly with whitespace before and after the braces).
+.
+Everything between the braces is taken as hyphenation patterns.
+.
+Consequently,
+.B {
+and
+.B }
+are not allowed in patterns.
+.
+.IP \[bu]
+Similarly,
+.B \[rs]hyphenation{.\|.\|.}
+gives a list of hyphenation exceptions.
+.
+.IP \[bu]
+.B \[rs]endinput
+is recognized also.
+.
+.IP \[bu]
+For backwards compatibility, if
+.B \[rs]patterns
+is missing, the whole file is treated as a list of hyphenation patterns
+(only recognizing the
 .BR % \~\c
-character in the patterns file introduces a comment that continues
-to the end of the line.
+character as the start of a comment).
+.RE
 .
+.IP
+Use the
+.B hpfcode
+request to map the encoding used in hyphenation patterns files to
+.BR groff 's
+input encoding.
+.IP
 The set of hyphenation patterns is associated with the current language
 set by the
 .B hla
@@ -1450,12 +1507,38 @@ request is usually invoked by the
 file; a second call replaces the old patterns with the new ones.
 .
 .TP
-.BI hpfa\  file
+.BI .hpfa\  file
 The same as
 .B hpf
 except that the hyphenation patterns from
 .I file
-are appended to the patterns already loaded in current language.
+are appended to the patterns already loaded in the current language.
+.
+.TP
+.BI .hpfcode\  a\ b\ c\ d\ .\|.\|.
+After reading a hyphenation patterns file with the
+.B hpf
+or
+.B hpfa
+request, convert all characters with character code\~\c
+.I a
+in the recently read patterns to character code\~\c
+.IR b ,
+character code\~\c
+.I c
+to\~\c
+.IR d ,
+etc.
+.
+Initially, all character codes map to themselves.
+.
+The arguments of
+.B hpfcode
+must be integers in the range 0 to\~255.
+.
+Note that it is even possible to use character codes which are invalid in
+.B groff
+otherwise.
 .
 .TP
 .BI .hym\  n

@@ -99,6 +99,7 @@ static int backtrace_flag = 0;
 char *pipe_command = 0;
 #endif
 charinfo *charset_table[256];
+unsigned char hpf_code_table[256];
 
 static int warning_mask = DEFAULT_WARNING_MASK;
 static int inhibit_errors = 0;
@@ -5611,6 +5612,12 @@ static void init_charset_table()
   page_character = charset_table['%'];
 }
 
+static void init_hpf_code_table()
+{
+  for (int i = 0; i < 256; i++)
+    hpf_code_table[i] = i;
+}
+
 static void do_translate(int translate_transparent, int translate_input)
 {
   tok.skip();
@@ -5710,8 +5717,38 @@ void hyphenation_code()
       break;
     }
     ci->set_hyphenation_code(c);
+    if (ci->get_translation()
+	&& ci->get_translation()->get_translation_input())
+      ci->get_translation()->set_hyphenation_code(c);
     tok.next();
     tok.skip();
+  }
+  skip_line();
+}
+
+void hyphenation_patterns_file_code()
+{
+  tok.skip();
+  while (!tok.newline() && !tok.eof()) {
+    int n1, n2;
+    if (get_integer(&n1) && (0 <= n1 && n1 <= 255)) {
+      if (!has_arg()) {
+	error("missing output hyphenation code");
+	break;
+      }
+      if (get_integer(&n2) && (0 <= n2 && n2 <= 255)) {
+	hpf_code_table[n1] = n2;
+	tok.skip();
+      }
+      else {
+	error("output hyphenation code must be integer in the range 0..255");
+	break;
+      }
+    }
+    else {
+      error("input hyphenation code must be integer in the range 0..255");
+      break;
+    }
   }
   skip_line();
 }
@@ -6566,6 +6603,7 @@ int main(int argc, char **argv)
     mac_path = &macro_path;
   set_string(".T", device);
   init_charset_table();
+  init_hpf_code_table();
   if (!font::load_desc())
     fatal("sorry, I can't continue");
   units_per_inch = font::res;
@@ -6757,6 +6795,7 @@ void init_input_requests()
   init_request("fchar", define_fallback_character);
   init_request("rchar", remove_character);
   init_request("hcode", hyphenation_code);
+  init_request("hpfcode", hyphenation_patterns_file_code);
   init_request("while", while_request);
   init_request("break", while_break_request);
   init_request("continue", while_continue_request);
@@ -7188,6 +7227,8 @@ void charinfo::set_translation(charinfo *ci, int tt, int ti)
 {
   translation = ci;
   if (ci && ti) {
+    if (hyphenation_code != 0)
+      ci->set_hyphenation_code(hyphenation_code);
     if (asciify_code != 0)
       ci->set_asciify_code(asciify_code);
     else if (ascii_code != 0)

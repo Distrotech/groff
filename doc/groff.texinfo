@@ -7764,16 +7764,35 @@ wrapped up into a single object.  Compatibility mode is turned off and
 the escape character is set to @samp{\} while @var{string} is being
 processed.  Any emboldening, constant spacing or track kerning is
 applied to this object rather than to individual characters in
-@var{string}.  A character defined by this request can be used just
+@var{string}.
+
+A character defined by this request can be used just
 like a normal character provided by the output device.  In particular,
 other characters can be translated to it with the @code{tr} request;
 it can be made the leader character by the @code{lc} request; repeated
 patterns can be drawn with the character using the @code{\l} and
 @code{\L} escape sequences; words containing the character can be
 hyphenated correctly, if the @code{hcode} request is used to give the
-character a hyphenation code.  There is a special anti-recursion
+character a hyphenation code.
+
+There is a special anti-recursion
 feature: Use of character within the character's definition is handled
 like normal characters not defined with @code{char}.
+
+Note that the @code{tr} and @code{trin} requests takes precedence if
+@code{char} accesses the same character.
+
+@Example
+.tr XY
+X
+    @result{} Y
+.char X Z
+X
+    @result{} Y
+.tr XX
+X
+    @result{} Z
+@endExample
 @endDefreq
 
 @cindex removing character definition (@code{rchar})

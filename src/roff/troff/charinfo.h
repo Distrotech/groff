@@ -71,6 +71,7 @@ public:
   void set_ascii_code(unsigned char);
   void set_asciify_code(unsigned char);
   void set_translation_input();
+  int get_translation_input();
   charinfo *get_translation(int = 0);
   void set_translation(charinfo *, int, int);
   void set_flags(unsigned char);
@@ -165,6 +166,11 @@ inline int charinfo::get_index()
 inline void charinfo::set_translation_input()
 {
   translate_input = 1;
+}
+
+inline int charinfo::get_translation_input()
+{
+  return translate_input;
 }
 
 inline int charinfo::get_special_translation(int transparent_throughput)

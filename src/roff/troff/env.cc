@@ -3219,13 +3219,14 @@ class hyphen_trie : private trie {
   void do_match(int i, void *v);
   void do_delete(void *v);
   void insert_pattern(const char *pat, int patlen, int *num);
+  void insert_hyphenation(dictionary ex, const char *pat, int patlen);
+  int hpf_getc(FILE *f);
 public:
   hyphen_trie() {}
   ~hyphen_trie() {}
   void hyphenate(const char *word, int len, int *hyphens);
-  void read_patterns_file(const char *name, int append);
+  void read_patterns_file(const char *name, int append, dictionary ex);
 };
-
 
 struct hyphenation_language {
   symbol name;
@@ -3251,7 +3252,8 @@ static void set_hyphenation_language()
   skip_line();
 }
 
-const int WORD_MAX = 1024;
+const int WORD_MAX = 256;	// we use unsigned char for offsets in
+				// hyphenation exceptions
 
 static void hyphen_word()
 {
@@ -3290,7 +3292,7 @@ static void hyphen_word()
       pos[npos] = 0;
       buf[i] = 0;
       unsigned char *tem = new unsigned char[npos + 1];
-      memcpy(tem, pos, npos+1);
+      memcpy(tem, pos, npos + 1);
       tem = (unsigned char *)current_language->exceptions.lookup(symbol(buf),
 								 tem);
       if (tem)
@@ -3391,6 +3393,33 @@ void hyphen_trie::insert_pattern(const char *pat, int patlen, int *num)
   insert(pat, patlen, op);
 }
 
+void hyphen_trie::insert_hyphenation(dictionary ex, const char *pat,
+				     int patlen)
+{
+  char buf[WORD_MAX + 1];
+  unsigned char pos[WORD_MAX + 2];
+  int i = 0, j = 0;
+  int npos = 0;
+  while (j < patlen) {
+    unsigned char c = pat[j++];
+    if (c == '-') {
+      if (i > 0 && (npos == 0 || pos[npos - 1] != i))
+	pos[npos++] = i;
+    }
+    else
+      buf[i++] = hpf_code_table[c];
+  }
+  if (i > 0) {
+    pos[npos] = 0;
+    buf[i] = 0;
+    unsigned char *tem = new unsigned char[npos + 1];
+    memcpy(tem, pos, npos + 1);
+    tem = (unsigned char *)ex.lookup(symbol(buf), tem);
+    if (tem)
+      a_delete tem;
+  }
+}
+
 void hyphen_trie::hyphenate(const char *word, int len, int *hyphens)
 {
   int j;
@@ -3425,8 +3454,66 @@ void hyphen_trie::do_delete(void *v)
     delete tem;
   }
 }
-  
-void hyphen_trie::read_patterns_file(const char *name, int append)
+
+/* We use very simple rules to parse TeX's hyphenation patterns.
+
+   . `%' starts a comment even if preceded by `\'.
+
+   . No support for digraphs and like `\$'.
+
+   . The only multi-character construction recognized is `^^xx' (`x' is
+     0-9 or a-f), handled by `hpf_getc'; other use of `^' causes an
+     error.
+
+   . No macro expansion.
+
+   . We check for the expression `\patterns{...}' (possibly with
+     whitespace before and after the braces).  Everything between the
+     braces is taken as hyphenation patterns.  Consequently, `{' and `}'
+     are not allowed in patterns.
+
+   . Similarly, `\hyphenation{...}' gives a list of hyphenation
+     exceptions.
+
+   . `\endinput' is recognized also.
+
+   . For backwards compatibility, if `\patterns' is missing, the
+     whole file is treated as a list of hyphenation patterns (only
+     recognizing `%' as the start of a comment.
+
+*/
+
+int hyphen_trie::hpf_getc(FILE *f)
+{
+  int c = getc(f);
+  int cc = 0;
+  if (c != '^')
+    return c;
+  c = getc(f);
+  if (c != '^')
+    goto fail;
+  c = getc(f);
+  if (c >= '0' && c <= '9')
+    cc = (c - '0') * 16;
+  else if (c >= 'a' && c <= 'f')
+    cc = (c - 'a' + 10) * 16;
+  else
+    goto fail;
+  c = getc(f);
+  if (c >= '0' && c <= '9')
+    cc += c - '0';
+  else if (c >= 'a' && c <= 'f')
+    cc += c - 'a' + 10;
+  else
+    goto fail;
+  return cc;
+fail:
+  error("`^' only allowed as `^^xx' in hyphenation patterns file");
+  return c;
+}
+
+void hyphen_trie::read_patterns_file(const char *name, int append,
+				     dictionary ex)
 {
   if (!append)
     clear();
@@ -3439,32 +3526,111 @@ void hyphen_trie::read_patterns_file(const char *name, int append)
     error("can't find hyphenation patterns file `%1'", name);
     return;
   }
-  int c = getc(fp);
+  int c = hpf_getc(fp);
+  int have_patterns = 0;	// we've seen \patterns
+  int final_pattern = 0;	// 1 if we have a trailing closing brace
+  int have_hyphenation = 0;	// we've seen \hyphenation
+  int final_hyphenation = 0;	// 1 if we have a trailing closing brace
+  int have_keyword = 0;		// we've seen either \patterns or \hyphenation
+  int traditional = 0;		// don't handle \patterns
   for (;;) {
     for (;;) {
-      if (c == '%') {
+      if (c == '%') {		// skip comments
 	do {
 	  c = getc(fp);
 	} while (c != EOF && c != '\n');
       }
       if (c == EOF || !csspace(c))
 	break;
-      c = getc(fp);
+      c = hpf_getc(fp);
     }
-    if (c == EOF)
-      break;
+    if (c == EOF) {
+      if (have_keyword || traditional)	// we are done
+	break;
+      else {				// rescan file in `traditional' mode
+	rewind(fp);
+	traditional = 1;
+	c = hpf_getc(fp);
+	continue;
+      }
+    }
     int i = 0;
     num[0] = 0;
-    do {
-      if (csdigit(c))
-	num[i] = c - '0';
-      else {
-	buf[i++] = c;
-	num[i] = 0;
+    if (!(c == '{' || c == '}')) {	// skip braces at line start
+      do {				// scan patterns
+	if (csdigit(c))
+	  num[i] = c - '0';
+	else {
+	  buf[i++] = c;
+	  num[i] = 0;
+	}
+	c = hpf_getc(fp);
+      } while (i < WORD_MAX && c != EOF && !csspace(c)
+	       && c != '%' && c != '{' && c != '}');
+    }
+    if (!traditional) {
+      if (i >= 9 && !strncmp(buf + i - 9, "\\patterns", 9)) {
+	while (csspace(c))
+	  c = hpf_getc(fp);
+	if (c == '{') {
+	  if (have_patterns || have_hyphenation)
+	    error("`{' not allowed inside of \\patterns or \\hyphenation");
+	  else {
+	    have_patterns = 1;
+	    have_keyword = 1;
+	  }
+	  c = hpf_getc(fp);
+	  continue;
+	}
       }
-      c = getc(fp);
-    } while (i < WORD_MAX && c != EOF && !csspace(c) && c != '%');
-    insert_pattern(buf, i, num);
+      else if (i >= 12 && !strncmp(buf + i - 12, "\\hyphenation", 12)) {
+	while (csspace(c))
+	  c = hpf_getc(fp);
+	if (c == '{') {
+	  if (have_patterns || have_hyphenation)
+	    error("`{' not allowed inside of \\patterns or \\hyphenation");
+	  else {
+	    have_hyphenation = 1;
+	    have_keyword = 1;
+	  }
+	  c = hpf_getc(fp);
+	  continue;
+	}
+      }
+      else if (strstr(buf, "\\endinput")) {
+	if (have_patterns || have_hyphenation)
+	  error("found \\endinput inside of %1 group",
+		have_patterns ? "\\patterns" : "\\hyphenation");
+	break;
+      }
+      else if (c == '}') {
+	if (have_patterns) {
+	  have_patterns = 0;
+	  if (i > 0)
+	    final_pattern = 1;
+	}
+	else if (have_hyphenation) {
+	  have_hyphenation = 0;
+	  if (i > 0)
+	    final_hyphenation = 1;
+	}
+	c = hpf_getc(fp);
+      }
+      else if (c == '{')		// skipped if not starting \patterns
+	c = hpf_getc(fp);		// or \hyphenation
+    }
+    if (i > 0) {
+      if (have_patterns || final_pattern || traditional) {
+	for (int j = 0; j < i; j++)
+	  buf[j] = hpf_code_table[buf[j]];
+	insert_pattern(buf, i, num);
+	final_pattern = 0;
+      }
+      else if (have_hyphenation || final_hyphenation) {
+	insert_hyphenation(ex, buf, i);
+	final_hyphenation = 0;
+      }
+    }
   }
   fclose(fp);
   a_delete path;
@@ -3528,7 +3694,9 @@ static void do_hyphenation_patterns_file(int append)
     if (!current_language)
       error("no current hyphenation language");
     else
-      current_language->patterns.read_patterns_file(name.contents(), append);
+      current_language->patterns.read_patterns_file(
+			  name.contents(), append,
+			  current_language->exceptions);
   }
   skip_line();
 }

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -359,3 +359,5 @@ void title();
 extern int break_flag;
 extern symbol default_family;
 extern int translate_space_to_dummy;
+
+extern unsigned char hpf_code_table[];
