@@ -65,6 +65,9 @@ all: $(DOCS)
 .texinfo.dvi:
 	texi2dvi -e $<
 
+groff: groff.texinfo
+	makeinfo groff.texinfo
+
 install:
 
 clean:
