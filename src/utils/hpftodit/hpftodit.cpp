@@ -206,7 +206,7 @@ uint16 text_symbol_sets[] = {
   SYMBOL_SET(7, 'J'),		// Desktop
   SYMBOL_SET(6, 'J'),		// Microsoft Publishing
   SYMBOL_SET(9, 'E'),		// Windows Latin 2, Code Page 1250
-  SYMBOL_SET(2, 'N'),		// Latin 2 (subset of 9M,
+  SYMBOL_SET(2, 'N'),		// Latin 2 (subset of 9E,
 				// so we should never get here)
   SYMBOL_SET(0, 'N'),		// Latin 1 (subset of 19U,
 				// so we should never get here)
@@ -892,12 +892,15 @@ void output_charset(const int tfm_type)
 
 	if (tfm_type == UNICODE) {
 	  if (charcode >= 0xE000 && charcode <= 0xF8FF)
-	    printf("\t\t-- HP PUA U+%04X\n", charcode);
+	    printf("\t\t-- HP PUA U+%04X", charcode);
 	  else
-	    printf("\t\t-- U+%04X\n", charcode);
+	    printf("\t\t-- U+%04X", charcode);
 	}
 	else
-	  printf("\t\t-- HP MSL %4d\n", charcode);
+	  printf("\t\t-- HP MSL %4d", charcode);
+	int symset = char_table[i].symbol_set;
+	  printf(" (%d%c %d)\n",
+		 symset / 32, (symset & 31) + 64, char_table[i].code);
 
 	if (charcode < charcode_name_table_size
 	    && charcode_name_table[charcode])
