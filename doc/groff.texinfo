@@ -1234,7 +1234,7 @@ Use @var{fam} as the default font family.
 
 @item -m@var{name}
 Read in the file @file{tmac.@var{name}}.  Normally this will be searched
-for in the library directory of @code{groff}.  If it isn't found,
+for in the macro directories of @code{groff}.  If it isn't found,
 @file{@var{name}.tmac} will be tried (and searched in the same
 directories).
 
@@ -1298,7 +1298,7 @@ If this is set to @var{X}, then @code{groff} will run
 @item GROFF_TMAC_PATH
 @tindex GROFF_TMAC_PATH, environment variable
 A colon-separated list of directories in which to search for macro
-files.
+files (before the default directories are tried).
 
 @item GROFF_TYPESETTER
 @tindex GROFF_TYPESETTER, environment variable
@@ -1307,7 +1307,8 @@ The default output device.
 @item GROFF_FONT_PATH
 @tindex GROFF_FONT_PATH, environment variable
 A colon-separated list of directories in which to search for the
-@code{dev}@var{name} directory.
+@code{dev}@var{name} directory (before the default directories are
+tried).
 
 @item GROFF_BIN_PATH
 @tindex GROFF_BIN_PATH, environment variable
@@ -4641,7 +4642,7 @@ no-break control character is associated with the current environment
 (@pxref{Environments}).
 @end_Deffn
 
-@findex \
+@findex \\
 @Deffn{Request, eo, }
 Disable the escape mechanism completely.  After executing this request,
 the backslash character @samp{\} no longer starts an escape sequence.

@@ -184,7 +184,7 @@ ZCMI:
 
 ZD:
 	$(AFMTODIT) -s \
-	`$(AFMNAME) $(afmdir)/ZapfDingbats.afm` $(srcdir)/dingbatsmap $@
+	`$(AFMNAME) $(afmdir)/ZapfDingbats.afm` $(srcdir)/dingbats.map $@
 
 SS: $(srcdir)/symbolsl.afm
 	$(AFMTODIT) -s $(IFLAG) $(srcdir)/symbolsl.afm $(srcdir)/lgreekmap $@
@@ -193,7 +193,7 @@ S: symbol.afm
 	$(AFMTODIT) -s symbol.afm symbolmap $@
 
 ZDR: zapfdr.afm
-	$(AFMTODIT) -s zapfdr.afm $(srcdir)/dingbatsrmap $@
+	$(AFMTODIT) -s zapfdr.afm $(srcdir)/dingbats.rmap $@
 
 symbol.afm: $(srcdir)/symbol.sed
 	-rm -f $@
@@ -204,8 +204,8 @@ zapfdr.afm:
 	sed -e '/^FontName /s/ZapfDingbats/ZapfDingbats-Reverse/' \
 	  `$(AFMNAME) $(afmdir)/ZapfDingbats.afm` >$@
 
-ZD: $(srcdir)/dingbatsmap
-ZDR: $(srcdir)/dingbatsrmap
+ZD: $(srcdir)/dingbats.map
+ZDR: $(srcdir)/dingbats.rmap
 $(TEXTFONTS): $(TEXTMAP) $(TEXTENC)
 $(SPECIALFONTS): symbolmap
 $(GREEKFONTS): $(srcdir)/lgreekmap
