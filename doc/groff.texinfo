@@ -2869,6 +2869,30 @@ Effective: next footnote.
 Default: 0.
 @endDefmpreg
 
+@Defmpreg {FPS, ms}
+Defines the footnote point size.
+
+Effective: next footnote.
+
+Default: @math{@code{@\n[PS]} - 2}.
+@endDefmpreg
+
+@Defmpreg {FVS, ms}
+Defines the footnote vertical spacing.
+
+Effective: next footnote.
+
+Default: @math{@code{@\n[FPS]} + 2}.
+@endDefmpreg
+
+@Defmpreg {FPD, ms}
+Defines the footnote paragraph spacing.
+
+Effective: next footnote.
+
+Default: @math{@code{@\n[PD]} / 2}.
+@endDefmpreg
+
 @unnumberedsubsubsec Miscellaneous Number Registers
 
 @Defmpreg {MINGW, ms}
@@ -10489,8 +10513,12 @@ if the name of the macro, diversion or string diversion is currently
 undefined or if it is defined to be a request; normally they modify the
 value of an existing object.
 
-@Defreq {return, }
+@Defreq {return, [@Var{anything}]}
 Exit a macro, immediately returning to the caller.
+
+If called with an argument, exit twice, namely the current macro and the
+macro one level higher.  This is used to define a wrapper macro for
+@code{return} in @file{trace.tmac}.
 @endDefreq
 
 @menu

@@ -2398,6 +2398,8 @@ void exit_request()
 
 void return_macro_request()
 {
+  if (has_arg())
+    input_stack::pop_macro();
   input_stack::pop_macro();
   tok.next();
 }
