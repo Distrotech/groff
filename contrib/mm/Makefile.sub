@@ -15,11 +15,11 @@ install: install_mm
 install_mm: install_mmroff install_m
 	-test -d $(tmacdir)/mm || $(mkinstalldirs) $(tmacdir)/mm
 	-for f in $(FILES); do \
-	  rm -f $(tmacdir)/mm/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/mm/$$f $(tmacdir)/mm/$$f; \
+		rm -f $(tmacdir)/mm/$$f; \
+		$(INSTALL_DATA) $(srcdir)/mm/$$f $(tmacdir)/mm/$$f; \
 	done
 	-for f in $(LOCALE); do \
-	  test -f $(tmacdir)/mm/$$f || touch $(tmacdir)/mm/$$f; \
+		test -f $(tmacdir)/mm/$$f || touch $(tmacdir)/mm/$$f; \
 	done
 
 install_m:
@@ -27,7 +27,7 @@ install_m:
 	-rm -f $(tmacdir)/tmac.$(tmac_m_prefix)m
 	$(INSTALL_DATA) $(srcdir)/tmac.m $(tmacdir)/tmac.$(tmac_m_prefix)m
 	@sed -e "s;^.mso tmac.m;.mso tmac.$(tmac_m_prefix)m;g" \
-	  $(srcdir)/tmac.mse > $(tmacdir)/tmac.$(tmac_m_prefix)mse
+		$(srcdir)/tmac.mse > $(tmacdir)/tmac.$(tmac_m_prefix)mse
 install_mmroff : mmroff
 	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
 	-rm -f $(bindir)/mmroff
@@ -38,10 +38,11 @@ mmroff: mmroff.pl
 	-sed -e 's;/usr/bin/perl;$(PERLPATH);' $(srcdir)/mmroff.pl >$@
 	-chmod +x $@
 
+
 uninstall_sub:
 	-for f in $(FILES); do rm -f $(tmacdir)/mm/$$f; done
 	-for f in $(LOCALE); do \
-	  test -s $(tmacdir)/mm/$$f || rm -f $(tmacdir)/mm/$$f; \
+	test -s $(tmacdir)/mm/$$f || rm -f $(tmacdir)/mm/$$f; \
 	done
 	-rm -f $(tmacdir)/tmac.$(tmac_m_prefix)m
 	-rm -f $(tmacdir)/tmac.$(tmac_m_prefix)mse
