@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -114,10 +114,14 @@ void tex_output::start_picture(double sc, const position &ll,
     a height of 0 rather than the height of the hbox; this
     might be non-zero if text from text attributes lies outside pic's
     idea of the bounding box of the picture. */
-  fputs("\\expandafter\\ifx\\csname graph\\endcsname\\relax \\csname newbox\\endcsname\\graph\\fi\n"
-	"\\expandafter\\ifx\\csname graphtemp\\endcsname\\relax \\csname newdimen\\endcsname\\graphtemp\\fi\n"
-	"\\setbox\\graph=\\vtop{\\vskip 0pt\\hbox{%\n",
-	stdout);
+  printf("\\expandafter\\ifx\\csname %s\\endcsname\\relax\n"
+	 "  \\newbox\\%s\n"
+	 "\\fi\n"
+	 "\\expandafter\\ifx\\graphtemp\\relax\n"
+	 "  \\newdimen\\graphtemp\n"
+	 "\\fi\n"
+	 "\\setbox\\%s=\\vtop{\\vskip 0pt\\hbox{%%\n",
+	 graphname, graphname, graphname);
   pen_size = -2.0;
 }
 
@@ -141,14 +145,15 @@ void tex_output::text(const position &center, text_piece *v, int n, double)
       else if (v[i].adj.v == BELOW_ADJUST)
 	j++;
       if (j == 0) {
-	printf("    \\graphtemp=.5ex\\advance\\graphtemp by %.3fin\n", c.y);
+	printf("    \\graphtemp=.5ex\n"
+	       "    \\advance\\graphtemp by %.3fin\n", c.y);
       }
       else {
-	printf("    \\graphtemp=\\baselineskip"
-	       "\\multiply\\graphtemp by %d"
-	       "\\divide\\graphtemp by 2\n"
-	       "    \\advance\\graphtemp by .5ex"
-	       "\\advance\\graphtemp by %.3fin\n",
+	printf("    \\graphtemp=\\baselineskip\n"
+	       "    \\multiply\\graphtemp by %d\n"
+	       "    \\divide\\graphtemp by 2\n"
+	       "    \\advance\\graphtemp by .5ex\n"
+	       "    \\advance\\graphtemp by %.3fin\n",
 	       j, c.y);
       }
       printf("    \\rlap{\\kern %.3fin\\lower\\graphtemp", c.x);

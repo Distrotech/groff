@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2002, 2003
      Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -467,6 +467,7 @@ int lookup_keyword(const char *str, int len)
     { "else", ELSE },
     { "end", END },
     { "exp", EXP },
+    { "figname", FIGNAME },
     { "fill", FILL },
     { "filled", FILL },
     { "for", FOR },

@@ -108,6 +108,7 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token SPLINE
 %token HEIGHT
 %token RADIUS
+%token FIGNAME
 %token WIDTH
 %token DIAMETER
 %token UP
@@ -266,7 +267,7 @@ works */
 %type <pair> position
 %type <obtype> object_type
 %type <n> optional_ordinal_last ordinal
-%type <str> until
+%type <str> macro_name until
 %type <dv> sprintf_args
 %type <lstr> text print_args print_arg
 
@@ -305,6 +306,14 @@ separator:
 	;
 
 placeless_element:
+	FIGNAME '=' macro_name
+		{
+		  a_delete graphname;
+		  graphname = new char[strlen($3) + 1];
+		  strcpy(graphname, $3);
+		  a_delete $3;
+		}
+	|
 	VARIABLE '=' any_expr
 		{
 		  define_variable($1, $3);
@@ -423,6 +432,11 @@ placeless_element:
 	| reset_variables
 	| RESET
 		{ define_variable("scale", 1.0); }
+	;
+
+macro_name:
+	VARIABLE
+	| LABEL
 	;
 
 reset_variables:

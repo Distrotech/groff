@@ -126,3 +126,4 @@ extern int zero_length_line_flag;
 extern int driver_extension_flag;
 extern int compatible_flag;
 extern int safer_flag;
+extern char *graphname;

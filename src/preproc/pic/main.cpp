@@ -25,6 +25,7 @@ extern int yyparse();
 extern "C" const char *Version_string;
 
 output *out;
+char *graphname;		// the picture box name in TeX mode
 
 int flyback_flag;
 int zero_length_line_flag = 0;
@@ -221,6 +222,8 @@ void do_picture(FILE *fp)
 {
   flyback_flag = 0;
   int c;
+  a_delete graphname;
+  graphname = strsave("graph");		// default picture name in TeX mode
   while ((c = getc(fp)) == ' ')
     ;
   if (c == '<') {

@@ -37,6 +37,8 @@ to and reference for \fIgpic\/\fP(1), the implementation distributed by
 the Free Software Foundation for use with \fIgroff\/\fP(1).
 .AE
 .\"%%TUTORIAL%%
+.
+.
 .NH 1
 Introduction to PIC
 .NH 2
@@ -68,6 +70,8 @@ Where differences between Documenter's Work Bench (1991) \fBpic\fP and GNU
 end of this document.
 .PP
 In this document, the \fIgpic\/\fP(1) extensions will be marked as such.
+.
+.
 .NH 1
 Invoking PIC
 .PP
@@ -98,6 +102,8 @@ pic:pic.ms:<nnn>: giving up on this picture
 .LP
 where \[la]nnn\[ra] is a line number, and \[la]token\[ra] is a token near (usually
 just after) the error location.
+.
+.
 .NH 1
 Basic PIC Concepts
 .PP
@@ -293,6 +299,8 @@ surrounded by an invisible box of a size either specified by width
 and height attributes or by the defaults \fBtextwid\fR and
 \fBtextht\fR.  Both are initially zero (because we don't know the
 default font size).
+.
+.
 .NH 1 
 Sizes and Spacing
 .PP
@@ -412,6 +420,8 @@ box; box wid 1 ht 1; box same; box
 .PE
 .CE "5: The \fBsame\fP keyword"
 
+.
+.
 .NH 1
 Generalized Lines and Splines
 .NH 2
@@ -506,6 +516,8 @@ move up 0.2;
 Note the arrow decorations.  Arrowheads can be applied naturally to
 any path-based object, line or spline.  We'll see how in the next
 section.
+.
+.
 .NH 1
 Decorating Objects
 .NH 2
@@ -683,6 +695,8 @@ request (see the manual page of GNU \fItroff\/\fP(1) for more details).
 .PP
 \fBpic\fP assumes that at the beginning of a picture both glyph and fill
 color are set to the default value.
+.
+.
 .NH 1
 More About Text Placement
 .PP
@@ -723,6 +737,8 @@ so that it is aligned in the direction from the start point
 to the end point of the object.
 Note that this attribute will have no effect for objects whose start and
 end points are coincident.
+.
+.
 .NH 1
 More About Direction Changes
 .PP
@@ -808,6 +824,8 @@ object to be joined to the right.
 The meaning of the command \fBmove to last circle .s\fP should be obvious.
 In order to see how it generalizes, we'll need to go into detail on two
 important topics; locations and object names.
+.
+.
 .NH 1
 Naming Objects
 .PP
@@ -894,6 +912,8 @@ Labels are not constants but variables (you can view colon as a sort
 of assignment).  You can say something like \fBA: A + (1,0);\fP
 and the effect will be to reassign the label \fBA\fR to designate a
 position one inch to the right of its old value. 
+.
+.
 .NH 1
 Describing locations
 .PP
@@ -1200,6 +1220,8 @@ If you say \fBline .\|.\|.\& chop \fIr1\fP chop \fIr2\fP\fR with \fIr1\fP
 and \fIr2\fP both numbers, you can vary the amount of chopping at both
 ends.  You can use this in combination with trigonometric functions
 to write code that will deal with more complex intersections.
+.
+.
 .NH 1
 Object Groups
 .PP
@@ -1337,6 +1359,8 @@ The combination of block variable scoping, assignability of labels and
 the macro facility that we'll describe later on can be used to
 simulate functions with local variables (just wrap the macro body in
 block braces).
+.
+.
 .NH 1
 Style Variables
 .PP
@@ -1395,6 +1419,8 @@ You can give it a list of variable names as arguments (optionally
 separated by commas), in which case it resets only those.
 .PP
 State variables retain their values across pictures until reset.
+.
+.
 .NH 1
 Expressions, Variables, and Assignment
 .PP
@@ -1476,6 +1502,8 @@ version.
 .PP
 The function \fBsprintf()\fP behaves like a C \fIsprintf\/\fP(3)
 function that only takes %, %e, %f, and %g format strings.
+.
+.
 .NH 1
 Macros
 .PP
@@ -1614,6 +1642,8 @@ Macros persist through pictures.  To undefine a macro, say \fBundef\fP
 .DE
 .LP
 would undefine the two macros in the jumper block example.
+.
+.
 .NH 1
 Import/Export Commands
 .PP
@@ -1628,7 +1658,7 @@ The statement
 .DE
 .LP
 inserts the contents of \fIfilename\fR in the \fBpic\fP input stream.
-Any \fB.PS\fP/\fB.PE\fP pair in the file will be ignored.  This, you
+Any \fB.PS\fP/\fB.PE\fP pair in the file will be ignored.  You
 can use this to include pre-generated images.
 .PP
 A variant of this statement replicates the \fBcopy thru\fP feature of
@@ -1728,6 +1758,8 @@ inclusion.  The delimiters shown as {} here may also be two copies of
 any one character not present in the shell command text.  In either
 case, the body may contain balanced {} pairs.  Strings in the body
 may contain balanced or unbalanced braces in any case.
+.
+.
 .NH 1
 Control-flow constructs
 .PP
@@ -1828,6 +1860,8 @@ All the usual relational operators my be used in conditional expressions;
 String comparison is also supported using \fB==\fP and \fB!=\fP.  String
 comparisons may need to be parenthesized to avoid syntactic
 ambiguities.
+.
+.
 .NH 1
 Interface To [gt]roff
 .PP
@@ -1933,6 +1967,8 @@ box "@space 0 {H( omega )} over {1 - H( omega )}@"
 arrow
 .PE
 .CE "1: Equations within pictures"
+.
+.
 .NH 1
 Interface to TeX
 .PP
@@ -1942,7 +1978,9 @@ Interface to TeX
 option.
 In \*[tx] mode, pic will define a vbox called
 .B \egraph
-for each picture.
+for each picture; the name can be changed with the pseudo-variable
+.B figname
+(which is actually a specially parsed command).
 You must yourself print that vbox using, for example, the command
 .RS
 .LP
@@ -1976,6 +2014,27 @@ Lines beginning with a period are not given any special treatment.
 .PP
 The \*[tx] mode of \fIpic\/\fP(1) will \fInot\fP translate \fBtroff\fP
 font and size changes included in text strings!
+.PP
+Here an example how to use \fBfigname\fP.
+.KS
+.DS
+.CW
+\&.PS
+figname = foo;
+\&...
+\&.PE
+
+\&.PS
+figname = bar;
+\&...
+\&.PE
+
+\ecenterline{\ebox\efoo \ehss \ebox\ebar}
+.DE
+.R
+.KE
+.
+.
 .NH 1
 Obsolete Commands
 .PP
@@ -1997,6 +2056,8 @@ Be very careful that you specify an appropriate format string;
 \fBpic\fP does only very limited checking of the string.
 This is deprecated in favour of
 \fBsprintf\fP.
+.
+.
 .NH 1
 Some Larger Examples
 .PP
@@ -2210,6 +2271,8 @@ arrow from Top.D.end to Anchor.ne
 .CE "2: Hypothetical production flow for dual-mode publishing"
 .LP
 .\"%%REFERENCE%%
+.
+.
 .NH 1
 PIC Reference
 .PP
@@ -2328,6 +2391,7 @@ In the following, either `|' or a new line starts an alternative.
   LABEL : [;] <command> [<position>]
   { <command> ... }
   VARIABLE [:] = <any-expr>
+  figname = MACRONAME
   up | down | left | right
   COMMAND-LINE
   command <print-arg> ...
@@ -2377,6 +2441,12 @@ if {
 .PP
 This restriction doesn't hold for the body after the `do' in a `for'
 construction.
+.PP
+At the beginning of each picture, `figname' is reset to the vbox name
+`graph'; this command has only a meaning in \*[tx] mode.  While the grammar
+rules allow digits and the underscore in the value of `figname', \*[tx]
+normally accepts uppercase and lowercase letters only as box names
+(\fBpic\fP doesn't use `\ecsname' to circumvent this limitation).
 .DS
 .CW
 <any-expr> ::=
@@ -2488,7 +2558,7 @@ box.
 .PP
 A text item consists of a string or sprintf-expression, optionally
 followed by positioning information.  Text (or strings specified with
-`sprintf' may contain [gtn]roff font changes, size changes, and local
+`sprintf') may contain [gtn]roff font changes, size changes, and local
 motions, provided those changes are undone before the end of the current
 item.
 .PP
@@ -2550,8 +2620,8 @@ ways to specify positions:
 .DE
 .DS
 .CW
-<xxx-of> ::=
-  xxx                   \fR# followed by `of'\fP
+<\,\f(CIxxx\/\fP-of> ::=
+  \f(CIxxx\fP                   \fR# followed by `of'\fP
 .R
 .DE
 .DS
@@ -2593,7 +2663,7 @@ The \[lq]'th\[rq] form (which allows you to select a previous object with
 an expression, as opposed to a numeric literal) is not documented in DWB's
 \fIpic\/\fR(1).
 .PP
-The \[la]\|\fIxxx\fP-of\|\[ra] rule is special: The lexical parser checks whether
+The \[la]\,\fIxxx\/\fP-of\|\[ra] rule is special: The lexical parser checks whether
 \fIxxx\fP is followed by the token `of' without eliminating it so that
 the grammar parser can still see `of'.  Valid examples of specifying a
 place with corner and label are thus
@@ -2739,6 +2809,8 @@ The arguments (if any) will be substituted for tokens $1, $2 .\|.\|.\& $n
 appearing in the replacement text.  To undefine a macro, say \fBundef\fP
 \fIname\fR, specifying the name to be undefined.
 .\"%%POSTLUDE%%
+.
+.
 .NH 1
 History and Acknowledgements
 .PP
@@ -2775,6 +2847,8 @@ integrate in descriptions of the GNU \fIgpic\/\fP(1) features.
 The GNU \fBgpic\fR implementation was written by James Clark
 \[la]\,\fIjjc@jclark.com\/\fP\[ra].  It is currently maintained by Werner
 Lemberg \[la]\,\fIwl@gnu.org\/\fP\[ra].
+.
+.
 .NH 1
 Bibliography
 .IP 1.

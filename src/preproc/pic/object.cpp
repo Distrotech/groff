@@ -436,10 +436,8 @@ object_spec::~object_spec()
     delete tem;
   }
   delete with;
-  if (shaded)
-    a_delete shaded;
-  if (outlined)
-    a_delete outlined;
+  a_delete shaded;
+  a_delete outlined;
 }
 
 class command_object : public object {

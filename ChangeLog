@@ -1,3 +1,28 @@
+2003-04-19  Werner LEMBERG  <wl@gnu.org>
+
+	Add keyword `figname' to pic, specifying the name of the picture
+	box in TeX mode.  Based on a patch from William J Poser
+	<wjposer@unagi.cis.upenn.edu>.
+
+	* src/preproc/pic/pic.y: New token `FIGNAME'.
+	(macro_name): New rule of type <str>.
+	(placeless_element): Handle `FIGNAME'.
+	* src/preproc/pic/lex.cpp (lookup_keyword): Add `figname'.
+	* src/preproc/pic/main.cpp (graphname): New global variable.
+	(do_picture): Initialize `graphname'.
+	* src/preproc/pic/pic.h: Updated.
+	* src/preproc/pic/tex.cpp (tex_output::start_picture): Use
+	`graphname'.
+	Simplify TeX code.
+	(tex_output::text): Beautify output.
+	* src/preproc/pic/object.cpp (object_spec::~object_spec): Deallocate
+	`shaded' and `outlined' unconditionally.
+	* NEWS, src/preproc/pic/pic.man, doc/pic.ms: Updated.
+	Minor improvements.
+
+	* PROBLEMS, README.CVS: Mention that bison version 1.875b or
+	greater is necessary.
+
 2003-04-17  Hartmut Henkel  <hartmut_henkel@gmx.de>
 
 	Add option -r to soelim to avoid emission of `.lf' lines.
