@@ -1,3 +1,18 @@
+2002-10-26  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/an-old.tmac (SH, SS, TP, IP, HP, TS): Protect .sp with .br
+	so that it survives the implicit new-page trap.
+
+	* src/roff/troff/node.cc: Fix the changes from 2002-10-23.
+	(troff_output_file::set_font): Call flush_tbuf if necessary.
+	(troff_output_file::fill_color, troff_output_file::glyph_color): Call
+	flush_tbuf and do_motion only if necessary.
+	(troff_output_file::start_special,
+	troff_output_file::put_char_width, troff_output_file::put_char,
+	troff_output_file::draw): Updated.
+	(word_space_node::tprint, space_node::tprint, hmotion_node::tprint,
+	vmotion_node::tprint): Undo change 2002-10-23.
+
 2002-10-25  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/www.tmac (DC): Fix case of overlapping images.

@@ -822,12 +822,11 @@ inline void troff_output_file::put(unsigned int i)
 void troff_output_file::start_special(tfont *tf, color *gcol, color *fcol,
 				      int no_init_string)
 {
-  flush_tbuf();
-  do_motion();
-  if (tf != current_tfont)
-    set_font(tf);
+  set_font(tf);
   glyph_color(gcol);
   fill_color(fcol);
+  flush_tbuf();
+  do_motion();
   if (!no_init_string)
     put("x X ");
 }
@@ -984,14 +983,13 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf,
     hpos += w.to_units() + kk;
     return;
   }
-  if (tf != current_tfont) {
-    flush_tbuf();
-    set_font(tf);
-  }
+  set_font(tf);
   char c = ci->get_ascii_code();
   if (c == '\0') {
     glyph_color(gcol);
     fill_color(fcol);
+    flush_tbuf();
+    do_motion();
     check_charinfo(tf, ci);
     if (ci->numbered()) {
       put('N');
@@ -1024,6 +1022,8 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf,
     }
     glyph_color(gcol);
     fill_color(fcol);
+    flush_tbuf();
+    do_motion();
     check_charinfo(tf, ci);
     tbuf[tbuf_len++] = c;
     output_hpos += w.to_units() + kk;
@@ -1056,15 +1056,17 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf,
 void troff_output_file::put_char(charinfo *ci, tfont *tf,
 				 color *gcol, color *fcol)
 {
-  flush_tbuf();
-  if (!is_on())
+  if (!is_on()) {
+    flush_tbuf();
     return;
-  if (tf != current_tfont)
-    set_font(tf);
+  }
+  set_font(tf);
   char c = ci->get_ascii_code();
   if (c == '\0') {
     glyph_color(gcol);
     fill_color(fcol);
+    flush_tbuf();
+    do_motion();
     if (ci->numbered()) {
       put('N');
       put(ci->get_number());
@@ -1095,16 +1097,21 @@ void troff_output_file::put_char(charinfo *ci, tfont *tf,
     else {
       glyph_color(gcol);
       fill_color(fcol);
+      flush_tbuf();
+      do_motion();
       put('c');
       put(c);
     }
   }
 }
 
+// set_font calls `flush_tbuf' if necessary.
+
 void troff_output_file::set_font(tfont *tf)
 {
   if (current_tfont == tf)
     return;
+  flush_tbuf();
   int n = tf->get_input_position();
   symbol nm = tf->get_name();
   if (n >= nfont_positions || font_position[n] != nm) {
@@ -1157,15 +1164,17 @@ void troff_output_file::set_font(tfont *tf)
   current_tfont = tf;
 }
 
+// fill_color calls `flush_tbuf' and `do_motion' if necessary.
+
 void troff_output_file::fill_color(color *col)
 {
-  flush_tbuf();
-  do_motion();
   if (!col || current_fill_color == col)
     return;
   current_fill_color = col;
   if (!color_flag)
     return;
+  flush_tbuf();
+  do_motion();
   put("DF");
   unsigned int components[4];
   color_scheme cs;
@@ -1208,16 +1217,18 @@ void troff_output_file::fill_color(color *col)
   put('\n');
 }
 
+// glyph_color calls `flush_tbuf' and `do_motion' if necessary.
+
 void troff_output_file::glyph_color(color *col)
 {
-  flush_tbuf();
-  // grotty doesn't like a color command if the vertical position is zero.
-  do_motion();
   if (!col || current_glyph_color == col)
     return;
   current_glyph_color = col;
   if (!color_flag)
     return;
+  flush_tbuf();
+  // grotty doesn't like a color command if the vertical position is zero.
+  do_motion();
   put("m");
   unsigned int components[4];
   color_scheme cs;
@@ -1353,6 +1364,8 @@ void troff_output_file::draw(char code, hvpair *point, int npoints,
   int i;
   glyph_color(gcol);
   fill_color(fcol);
+  flush_tbuf();
+  do_motion();
   if (is_on()) {
     int size = fsize.to_scaled_points();
     if (current_size != size) {
@@ -4018,9 +4031,9 @@ int word_space_node::set_unformat_flag()
 
 void word_space_node::tprint(troff_output_file *out)
 {
+  out->fill_color(col);
   out->word_marker();
   out->right(n);
-  out->fill_color(col);
 }
 
 int word_space_node::merge_space(hunits h, hunits sw, hunits ssw)
@@ -4374,20 +4387,20 @@ void node::zero_width_tprint(troff_output_file *out)
 
 void space_node::tprint(troff_output_file *out)
 {
-  out->right(n);
   out->fill_color(col);
+  out->right(n);
 }
 
 void hmotion_node::tprint(troff_output_file *out)
 {
-  out->right(n);
   out->fill_color(col);
+  out->right(n);
 }
 
 void vmotion_node::tprint(troff_output_file *out)
 {
-  out->down(n);
   out->fill_color(col);
+  out->down(n);
 }
 
 void kern_pair_node::tprint(troff_output_file *out)
