@@ -459,8 +459,9 @@ void top_level_diversion::space(vunits n, int forced)
   vunits next_trap_pos;
   trap *next_trap = find_next_trap(&next_trap_pos);
   vunits y = vertical_position + n;
-  curenv->seen_space += n.to_units()
-			/ curenv->get_vertical_spacing().to_units();
+  if (curenv->get_vertical_spacing().to_units())
+    curenv->seen_space += n.to_units()
+			  / curenv->get_vertical_spacing().to_units();
   if (vertical_position_traps_flag && next_trap != 0 && y >= next_trap_pos) {
     vertical_position = next_trap_pos;
     nl_reg_contents = vertical_position.to_units();
