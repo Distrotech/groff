@@ -435,10 +435,19 @@ ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
 EXTRADIRS=\
   font/devps/generate \
   font/devdvi/generate \
+  font/devlj4/generate \
   src/xditview \
   doc
-DISTDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
-  $(DEVDIRS) $(OTHERDEVDIRS) $(ALLTTYDEVDIRS) $(OTHERDIRS) $(EXTRADIRS)
+NOMAKEDIRS=\
+  arch/djgpp \
+  contrib/mm/examples \
+  contrib/mm/mm \
+  contrib/mom/examples \
+  contrib/mom/momdoc \
+  src/libs/snprintf
+DISTDIRS=\
+  $(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(OTHERDEVDIRS) \
+  $(ALLTTYDEVDIRS) $(OTHERDIRS) $(EXTRADIRS) $(NOMAKEDIRS)
 TARGETS=all install install_bin install_data clean distclean mostlyclean \
   realclean extraclean distfiles TAGS depend uninstall_sub
 

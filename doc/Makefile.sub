@@ -83,7 +83,8 @@ htmldocimagedir=$(htmldocdir)/$(imagedir)
 exampleimagedir=$(exampledir)/$(imagedir)
 
 CLEANADD=\
-  grnexmpl.g \
+  `if test $(srcdir) = .; then :; \
+   else echo grnexmpl.g groff groff-*; fi` \
   $(PROCESSEDDOCFILES) \
   $(PROCESSEDEXAMPLEFILES)
 
@@ -122,6 +123,8 @@ webpage.ps: gnu.eps
 
 grnexmpl.ps: grnexmpl.me grnexmpl.g
 
+
+distfiles: groff
 
 install_data: groff $(DOCFILES) $(PROCESSEDDOCFILES) $(HTMLDOCFILES) \
               $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
