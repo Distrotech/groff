@@ -63,8 +63,16 @@
 .if \n[an-html] .nr C 1
 .if r ps4html .nr C 1
 .
+.\" we redefine .ne to avoid page breaks; instead, the page length is
+.\" increased to the necessary amount (this is needed for tables)
 .if n \{\
 .  de ne
+.    ie \\n[.$] \
+.      nr an-ne \\$*
+.    el \
+.      nr an-ne 1v
+.    if (\\n[an-ne] >= \\n[.t]) \
+.      pl +(\\n[an-ne]u - \\n[.t]u + 1v)
 .  .
 .\}
 .

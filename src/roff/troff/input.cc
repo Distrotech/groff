@@ -2264,19 +2264,21 @@ void exit_troff()
   tok.next();
   process_input_stack();
   end_diversions();
-  done_end_macro = 1;
-  topdiv->set_ejecting();
-  static unsigned char buf[2] = { LAST_PAGE_EJECTOR, '\0' };
-  input_stack::push(make_temp_iterator((char *)buf));
-  topdiv->space(topdiv->get_page_length(), 1);
-  tok.next();
-  process_input_stack();
-  seen_last_page_ejector = 1;	// should be set already
-  topdiv->set_ejecting();
-  push_page_ejector();
-  topdiv->space(topdiv->get_page_length(), 1);
-  tok.next();
-  process_input_stack();
+  if (topdiv->get_page_length() > 0) {
+    done_end_macro = 1;
+    topdiv->set_ejecting();
+    static unsigned char buf[2] = { LAST_PAGE_EJECTOR, '\0' };
+    input_stack::push(make_temp_iterator((char *)buf));
+    topdiv->space(topdiv->get_page_length(), 1);
+    tok.next();
+    process_input_stack();
+    seen_last_page_ejector = 1;	// should be set already
+    topdiv->set_ejecting();
+    push_page_ejector();
+    topdiv->space(topdiv->get_page_length(), 1);
+    tok.next();
+    process_input_stack();
+  }
   // This will only happen if a trap-invoked macro starts a diversion,
   // or if vertical position traps have been disabled.
   cleanup_and_exit(0);

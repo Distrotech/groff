@@ -32,7 +32,7 @@ Home of Groff (GNU Troff).
 .
 .HTML-IMAGE-LEFT
 .PSPIC -L gnu.eps 2i 2i
-\v'-0.75i'\h'2.0i'\s[70]\*[GNU] Troff\s0
+\v'-0.75i'\h'2.0i'\s[60]\*[GNU] Troff\s0
 .HTML-IMAGE-END
 .
 .HnS 1

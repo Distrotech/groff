@@ -826,7 +826,7 @@ int resource_manager::do_begin_binary(const char *ptr, int, FILE *fp,
       if (cc != '\n')
 	current_lineno++;
       if (cc != EOF)
-	ungetc(c, fp);
+	ungetc(cc, fp);
     }
     else if (c == '\n')
       current_lineno++;
