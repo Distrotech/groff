@@ -172,6 +172,7 @@
 .\" NS   doc-spaceXXX
 .\" NS   doc-typeXXX
 .\" NS   doc-arg-ptr
+.\" NS   doc-have-space
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-dpa
@@ -414,7 +415,6 @@
 .  nop \)\*[doc-arg\n[doc-arg-ptr]]\c
 .
 .  ie (\n[doc-num-args] == 1) \{\
-.    nop \)
 .    nr doc-arg-ptr 0
 .    nr doc-num-args 0
 .  \}
@@ -459,10 +459,12 @@
 .\" NS modifies:
 .\" NS   doc-arg-limit
 .\" NS   doc-arg-ptr
+.\" NS   doc-have-slot
 .
 .de doc-reset-args
 .  nr doc-arg-limit 0
 .  nr doc-arg-ptr 0
+.  nr doc-have-slot 0
 .
 .  hy
 ..
@@ -773,7 +775,6 @@
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
-.    nop \*[doc-Nm-font]\c
 .
 .    ie \n[doc-in-synopsis-count] \{\
 .      if "\*[doc-macro-name]"Cd" \{\
@@ -789,12 +790,14 @@
 .        nr doc-in-synopsis-count +1
 .      \}
 .
+.      nop \*[doc-Nm-font]\c
 .      doc-print-recursive
 .      in -\n[doc-indent-synopsis]u
 .    \}
-.    el \
+.    el \{\
+.      nop \*[doc-Nm-font]\c
 .      doc-print-recursive
-.  \}
+.  \}\}
 ..
 .
 .
@@ -1395,10 +1398,13 @@
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      nr doc-curr-font \n[.f]
 .      nr doc-curr-size \n[.s]
-.      if !\n[doc-is-reference] \
-.        nop \)\*[doc-Tn-font-shape]\c
 .      nop \)\*[doc-Tn-font-size]\c
-.      doc-print-recursive
+.      ie !\n[doc-is-reference] \{\
+.        nop \)\*[doc-Tn-font-shape]\c
+.        doc-print-recursive
+.      \}
+.      el \
+.        doc-do-references
 .    \}
 .    el \
 .      tm Usage: .Tn trade_name ... \*[doc-punct-chars] (#\n[.c])
@@ -1719,12 +1725,20 @@
 ..
 .
 .
+.\" NS doc-have-slot global register (bool)
+.\" NS   set if `doc-enclose-string' has created a slot for closing
+.\" NS   delimiter
+.
+.nr doc-have-slot 0
+.
+.
 .\" NS doc-enclose-string macro
 .\" NS   enclose string with given args (e.g. [ and ])
 .\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr
 .\" NS   doc-argXXX
+.\" NS   doc-have-slot
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-des
@@ -1786,27 +1800,33 @@
 .        ie (\n[doc-reg-des] == \n[doc-arg-limit]) \
 .          doc-append-arg "\)\*[doc-quote-right]\)" 3
 .        el \{\
-.          \" we have to shift all arguments to the right
-.          nr doc-reg-des +1
-.          nr doc-reg-des1 \n[doc-arg-limit]
-.          nr doc-reg-des2 (\n[doc-arg-limit] + 1)
-.          while (\n[doc-reg-des1] >= \n[doc-reg-des]) \{\
-.            rn doc-arg\n[doc-reg-des1] doc-arg\n[doc-reg-des2]
-.            rnn doc-type\n[doc-reg-des1] doc-type\n[doc-reg-des2]
-.            rn doc-space\n[doc-reg-des1] doc-space\n[doc-reg-des2]
-.            nr doc-reg-des1 -1
-.            nr doc-reg-des2 -1
-.          \}
-.          nr doc-arg-limit +1
+.          \" if a previous call to `doc-enclose-string' has already created
+.          \" a slot, prepend argument
+.          ie \n[doc-have-slot] \
+.            ds doc-arg\n[doc-reg-des] "\*[doc-quote-right]\)\*[doc-arg\n[doc-reg-des]]
+.          el \{\
+.            \" we have to shift all arguments to the right
+.            nr doc-reg-des +1
+.            nr doc-reg-des1 \n[doc-arg-limit]
+.            nr doc-reg-des2 (\n[doc-arg-limit] + 1)
+.            while (\n[doc-reg-des1] >= \n[doc-reg-des]) \{\
+.              rn doc-arg\n[doc-reg-des1] doc-arg\n[doc-reg-des2]
+.              rnn doc-type\n[doc-reg-des1] doc-type\n[doc-reg-des2]
+.              rn doc-space\n[doc-reg-des1] doc-space\n[doc-reg-des2]
+.              nr doc-reg-des1 -1
+.              nr doc-reg-des2 -1
+.            \}
+.            nr doc-arg-limit +1
 .
-.          \" finally, insert closing delimiter into the freed slot and
-.          \" recompute spacing vector
-.          ds doc-arg\n[doc-reg-des] "\)\*[doc-quote-right]\)
-.          nr doc-type\n[doc-reg-des] 3
-.          nr doc-num-args (\n[doc-arg-limit] - \n[doc-reg-des] + 1)
-.          nr doc-arg-limit (\n[doc-reg-des] - 1)
-.          doc-parse-space-vector
-.      \}\}
+.            \" finally, insert closing delimiter into the freed slot and
+.            \" recompute spacing vector
+.            ds doc-arg\n[doc-reg-des] "\)\*[doc-quote-right]\)
+.            nr doc-type\n[doc-reg-des] 3
+.            nr doc-num-args (\n[doc-arg-limit] - \n[doc-reg-des] + 1)
+.            nr doc-arg-limit (\n[doc-reg-des] - 1)
+.            doc-parse-space-vector
+.            nr doc-have-slot 1
+.      \}\}\}
 .
 .      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .  \}\}
@@ -3809,7 +3829,7 @@
 .      nr doc-reg-It 2
 .    \}\}\}\}\}
 .
-.    if \n[doc-reg-It] \{\
+.    ie \n[doc-reg-It] \{\
 .      \" start item box
 .      box doc-item-box\n[doc-list-depth]
 .      ev doc-item-env\n[doc-list-depth]
@@ -3847,7 +3867,10 @@
 .        tm1 "mdoc warning: .It requests in lists of type `\*[doc-str-It]'
 .        tm1 "              don't take arguments (#\n[.c])
 .        doc-\*[doc-str-It]
-.  \}\}\}
+.    \}\}
+.    el \
+.      doc-reset-args
+.  \}
 .  el \{\
 .    \" start item box
 .    box doc-item-box\n[doc-list-depth]
@@ -3887,6 +3910,7 @@
 .\" NS   .It item of list-type hanging tag (as opposed to tagged)
 .\" NS
 .\" NS modifies:
+.\" NS   doc-have-space
 .\" NS   doc-in-list
 .\" NS
 .\" NS local variables:
@@ -4060,6 +4084,7 @@
 .\" NS   .It item of list-type `tag'
 .\" NS
 .\" NS modifies:
+.\" NS   doc-have-space
 .\" NS   doc-in-list
 .\" NS
 .\" NS local variables:
@@ -5326,6 +5351,9 @@
 .\" NS   doc-reference-count
 .
 .de doc-print-reference
+.
+.  nh
+.
 .  if \n[doc-author-count] \{\
 .    unformat doc-author-name1
 .    chop doc-author-name1
@@ -5422,6 +5450,8 @@
 .
 .  if \n[doc-reference-count] \
 .    tm mdoc warning: unresolved reference problem
+.
+.  hy
 ..
 .
 .
@@ -6081,6 +6111,7 @@
 .        ev doc-env-%T
 .        in 0
 .        nf
+.        nop \*[doc-No-font]\c
 .        doc-do-references
 .
 .        \" do it a second time with another font
