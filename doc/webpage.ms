@@ -9,6 +9,10 @@
 .nr VS 12
 .if '\*[.T]'html' .nr LL 10i
 .if r ps4html .nr LL 10i
+.
+.HEAD "<link rel=""stylesheet"" type=""text/css"" href=""groff.css"" />"
+.\" .HEAD "<link rel=""icon"" type=""image/png"" href=""http://www.gnu.org/graphics/gnu-mini.png"" />"
+.
 .mso www.tmac
 .
 .de blm-macro
@@ -26,10 +30,11 @@
 .
 .ds GNU \m[mydarkred]G\m[]\m[mydarkgreen]N\m[]\m[mydarkblue]U\m[]
 .
-.HTL
 .NHR
+.HTL
 .
 Home of Groff (GNU Troff).
+.
 .
 .HTML-IMAGE-LEFT
 .PSPIC -L gnu.eps 2i 2i
@@ -51,7 +56,8 @@ Hosted by
 .HR
 .HnE
 .LK
-
+.
+.LP
 .DC T HE mydarkred
 groff (GNU Troff) software
 is a typesetting package which reads plain text mixed with

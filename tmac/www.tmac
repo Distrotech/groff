@@ -104,6 +104,18 @@ www functionality.  It should work with any macro set.
 .\" --------------------------------------------------------------------
 .
 .\" --------------------------------------------------------------------
+.\" www:paraspace
+.\"
+.\" Space before paragraph. Use \n[PD] if it exists.
+.\"
+.nr www:pd 0.5v
+.de www:paraspace
+.  ie r PD .sp \\n[PD]u
+.  el .sp \\n[www:pd]u
+..
+.
+.\"
+.\" --------------------------------------------------------------------
 .\" www:error (<test>...)
 .\"
 .\" Print error message
@@ -260,7 +272,17 @@ www functionality.  It should work with any macro set.
 .\"
 .de HTML-NS
 .  if \\n[www-html] \
-.    nop \X^html:\\$*^\c
+.    tag "html:\\$*
+..
+.\"
+.\" emit a HTML tag after shutting down a (possibly open) paragraph
+.\"
+.de HTML</p>
+.  if \\n[www-html] \{\
+.    \" the following line makes the vertical mode leave, so to say
+.    nop \&
+.    nop \X^html</p>:\\$*^
+.  \}
 ..
 .\" --------------------------------------------------------------------
 .\" HX n
@@ -403,8 +425,19 @@ www functionality.  It should work with any macro set.
 .\"
 .de HTML-TAG-NS
 .  if \\n[www-html] \
-.    nop \X^html-tag:\\$*^\c
+.    tag html-tag:\\$*
 ..
+.\" --------------------------------------------------------------------
+.\" HTML-TAG-NEXT
+.\"
+.\"   When the troff state changes, emit a tag for grohtml (without a space)
+.\"   This is an internal macro.
+.\"
+.de HTML-TAG-NEXT
+.  if \\n[www-html] \
+.    taga html-tag:\\$*
+..
+.
 .\" --------------------------------------------------------------------
 .\" PIMG  [-R|-L|-C] filename [width] [height]
 .\"
@@ -634,7 +667,7 @@ www functionality.  It should work with any macro set.
 .de HnE
 .  if (\\n[www-heading-no] == -1) \
 .    www-error "HnE found without a corresponding HnS"
-.  br
+.  HTML-TAG ".eo.h"
 ..
 .\" --------------------------------------------------------------------
 .\" LK
@@ -643,7 +676,7 @@ www functionality.  It should work with any macro set.
 .\"   section/numbered headings at this position.
 .\"
 .de LK
-.  HTML-TAG ".links"
+.    HTML-TAG ".links"
 ..
 .\" --------------------------------------------------------------------
 .\" HR
@@ -653,7 +686,7 @@ www functionality.  It should work with any macro set.
 .de HR
 .  ie \\n[www-html] \{\
 .    ti 0
-.    HTML-NS <hr>
+.    HTML "<hr>"
 .  \}
 .  el \
 .    sp
@@ -671,7 +704,8 @@ www functionality.  It should work with any macro set.
 .\" www-end-nowhere - end of input trap called to finish diversion.
 .\"
 .de www-end-nowhere
-.  di
+.  if !\\n[www-html] .di
+.  HTML-TAG ".eo.tl"
 ..
 .\" --------------------------------------------------------------------
 .\" HTL
@@ -686,10 +720,8 @@ www functionality.  It should work with any macro set.
 .\"
 .de HTL
 .  HTML-TAG ".html-tl"
-.  if !\\n[www-html] \{\
-.    di www-nowhere
-.    it 2 www-end-nowhere
-.  \}
+.  if !\\n[www-html] .di www-nowhere
+.  it 2 www-end-nowhere
 ..
 .
 .\" --------------------------------------------------------------------
@@ -725,7 +757,7 @@ www functionality.  It should work with any macro set.
 .de ULS
 .  www-push-level
 .  ie \\n[www-html] \
-.    HTML "<ul>"
+.    HTML</p> "<ul>"
 .  el \{\
 .    if (\\n[www-level] == 1) \
 .      nr www-depth \\n[.i]
@@ -739,7 +771,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de ULE
 .  ie \\n[www-html] \
-.    HTML "</ul>"
+.    HTML</p> "</ul>"
 .  el \{\
 .    nr www-depth -\w'\\*[www-level\\n[www-level]]'u
 .    in \\n[www-depth]u
@@ -755,6 +787,7 @@ www functionality.  It should work with any macro set.
 .  ie \\n[www-html] \
 .    HTML "<li>"
 .  el \{\
+.    www:paraspace
 .    in \\n[www-depth]u
 .    ti -\w'\\*[www-level\\n[www-level]]'u
 .    nop \\*[www-level\\n[www-level]]\c
@@ -888,6 +921,15 @@ www functionality.  It should work with any macro set.
 .\"
 .de JOBNAME
 .  HTML-TAG .job-name \\$1
+..
+.\" --------------------------------------------------------------------
+.\" HEAD
+.\"
+.\"   Adds information to the <head> </head> section of the html
+.\"   document
+.\" --------------------------------------------------------------------
+.de HEAD
+.  HTML-TAG .head "\\$*"
 ..
 .\" --------------------------------------------------------------------
 .\" Final Setup

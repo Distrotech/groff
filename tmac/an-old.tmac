@@ -58,6 +58,8 @@
 .  el   .nr cR 0
 .\}
 .
+.nr need_eo_h 0
+.
 .if !r LL \{\
 .  ie n .nr LL 78n
 .  el   .nr LL 6.5i
@@ -109,6 +111,7 @@
 .  if \\n[an-html] \{\
 .    HTML-TAG-NS ".tl"
 \\$1
+.    HTML-TAG-NS ".eo.tl"
 .  \}
 .
 .  de an-init \" We have to do it like this to get multiple man pages right.
@@ -310,6 +313,7 @@
 .  fi
 .  in \\n[an-margin]u
 .  ti 0
+.  nr need_eo_h 1
 .  HTML-TAG-NS ".NH \\n[an-level]"
 .  it 1 an-trap
 .  nr an-no-space-flag 1
@@ -373,6 +377,8 @@
 ..
 .
 .de1 an-trap
+.  if \\n[need_eo_h]>0 .HTML-TAG-NS ".eo.h"
+.  nr need_eo_h 0
 .  ft R
 .  ps \\n[PS]u
 .  vs \\n[VS]u
@@ -409,7 +415,7 @@
 .    ne (1v + 1u)
 .    HTML-TAG-NS ".col 1"
 \\*[an-div]\\h'|\\n[an-prevailing-indent]u'\c
-.    HTML-TAG-NS ".col 2"
+.    HTML-TAG-NEXT ".col 2"
 .  \}
 ..
 .

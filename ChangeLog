@@ -1,3 +1,44 @@
+2004-10-12  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* doc/groff.css: New file.
+
+	* doc/webpage.ms: Use `groff.css'.
+	Other small fixes.
+
+	* tmac/an-old.tmac (need_eo_h): New number register.
+	(TH): Emit `.eo.tl' tag after title.
+	(SH): Set `need_eo_h'.
+	(an-trap): Handle `need_eo_h'.
+	(an-do-tag): s/HTML-TAG-NS/HTML-TAG-NEXT/.
+
+	* tmac/s.tmac (need_eo_h, need_eo_tl): New number registers.
+	(TL): Always start diversion.
+	Updated.
+	(@AI): Always call `par@reset'.
+	(@AB): Update code for -Thtml.
+	(cov*tl-au-print): Handle -Thtml.
+	(par@reset): Handle `need_eo_tl', `need_eo_h'.
+	(@IP): Simplified.
+	(@IT-html): Removed.
+	(@SH): Set `need_eo_h' for -Thtml.
+	(par@TL): s/HTML-TAG/HTMl-TAG-NS/.
+	Set `need_eo_tl'.
+	(@NH): s/HTML-TAG/HTMl-TAG-NS/.
+	Set `need_eo_h' for -Thtml.
+	(@EQ, @EN): Don't handle -Thtml specially.
+	(par@load-init): Don't handle -Thtml specially.
+
+	* tmac/www.tmac (www:paraspace): New macro.
+	(HTML-NS, HTML-TAG-NS): Use new `tag' request.
+	(HTML</p>, HTML-TAG-NEXT): New macros.
+	(HnE): Emit tag `.eo.h' instead of break.
+	(HR): s/HTML-NS/HTML/.
+	(www-end-nowhere): End diversion only if `www-html' not set.
+	Emit `.eo.tl' tag.
+	(ULS, ULE): s|HTML|HTML</p>|.
+	(LI): Call `www:paraspace'.
+	(HEAD): New macro.
+
 2004-10-11  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/roff/troff/request.h (macro): Make `p' public.
