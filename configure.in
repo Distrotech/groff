@@ -18,16 +18,18 @@ AC_PROG_LN_S
 GROFF_CSH_HACK(SH_SCRIPT_SED_CMD='1s/.*/:/', SH_SCRIPT_SED_CMD='')
 AC_SUBST(SH_SCRIPT_SED_CMD)
 dnl checks for headers
-AC_CHECK_HEADERS(unistd.h dirent.h limits.h sys/dir.h stdlib.h strings.h)
+AC_CHECK_HEADERS(stdlib.h unistd.h dirent.h limits.h sys/dir.h \
+                 string.h strings.h math.h)
 GROFF_ISC_SYSV3
 GROFF_POSIX
-GROFF_PUTENV
-GROFF_POPEN
-GROFF_PCLOSE
 GROFF_SRAND
+GROFF_NEED_DECLARATION(hypot)
+GROFF_NEED_DECLARATION(popen)
+GROFF_NEED_DECLARATION(pclose)
+GROFF_NEED_DECLARATION(putenv)
+GROFF_NEED_DECLARATION(strncasecmp)
 GROFF_SYS_NERR
 GROFF_SYS_ERRLIST
-GROFF_HYPOT
 GROFF_OSFCN_H
 GROFF_LIMITS_H
 dnl checks for typedefs

@@ -6,11 +6,11 @@
 
 #include "gprint.h"
 
-#ifndef MATH_H_DECLARES_HYPOT
+#ifdef NEED_DECLARATION_HYPOT
 extern "C" {
   double hypot(double, double);
 }
-#endif
+#endif /* NEED_DECLARATION_HYPOT */
 
 #define MAXVECT	40
 #define MAXPOINTS	200

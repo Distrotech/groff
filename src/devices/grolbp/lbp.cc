@@ -32,11 +32,13 @@ TODO
 #include "charset.h"
 
 #ifdef HAVE_STRNCASECMP
+#ifdef NEED_DECLARATION_STRNCASECMP
 extern "C" {
   // SunOS's string.h fails to declare this.
   int strncasecmp(const char *, const char *, int);
 }
-#endif
+#endif /* NEED_DECLARATION_STRNCASECMP */
+#endif /* HAVE_STRNCASECMP */
 
 static short int papersize = -1,  // papersize
 		 orientation = -1 , // orientation

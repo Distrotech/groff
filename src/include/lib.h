@@ -36,17 +36,17 @@ int is_prime(unsigned);
 FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1);
 char *xtmptemplate(char *extension=0);
 
-#ifndef STDIO_H_DECLARES_POPEN
+#ifdef NEED_DECLARATION_POPEN
 
 extern "C" { FILE *popen(const char *, const char *); }
 
-#endif /* not STDIO_H_DECLARES_POPEN */
+#endif /* NEED_DECLARATION_POPEN */
 
-#ifndef STDIO_H_DECLARES_PCLOSE
+#ifdef NEED_DECLARATION_PCLOSE
 
 extern "C" { int pclose (FILE *); }
 
-#endif /* not STDIO_H_DECLARES_PCLOSE */
+#endif /* NEED_DECLARATION_PCLOSE */
 
 int interpret_lf_args(const char *p);
 

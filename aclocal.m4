@@ -103,39 +103,6 @@ AC_MSG_RESULT(no))
 AC_LANG_RESTORE])dnl
 dnl
 dnl
-AC_DEFUN(GROFF_PUTENV,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING([declaration of putenv])
-AC_TRY_COMPILE([#include <stdlib.h>
-extern "C" { void putenv(int); }],,
-AC_MSG_RESULT(no),
-AC_MSG_RESULT(yes);AC_DEFINE(STDLIB_H_DECLARES_PUTENV))
-AC_LANG_RESTORE])dnl
-dnl
-dnl
-AC_DEFUN(GROFF_POPEN,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING([declaration of popen])
-AC_TRY_COMPILE([#include <stdio.h>
-extern "C" { void popen(int); }],,
-AC_MSG_RESULT(no),
-AC_MSG_RESULT(yes);AC_DEFINE(STDIO_H_DECLARES_POPEN))
-AC_LANG_RESTORE])dnl
-dnl
-dnl
-AC_DEFUN(GROFF_PCLOSE,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING([declaration of pclose])
-AC_TRY_COMPILE([#include <stdio.h>
-extern "C" { void pclose(int); }],,
-AC_MSG_RESULT(no),
-AC_MSG_RESULT(yes);AC_DEFINE(STDIO_H_DECLARES_PCLOSE))
-AC_LANG_RESTORE])dnl
-dnl
-dnl
 dnl srand() of SunOS 4.1.3 has return type int instead of void
 dnl
 AC_DEFUN(GROFF_SRAND,
@@ -170,17 +137,6 @@ AC_TRY_COMPILE([#include <errno.h>
 [int k; k = (int)sys_errlist[0];],
 AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_ERRLIST),
 AC_MSG_RESULT(no))
-AC_LANG_RESTORE])dnl
-dnl
-dnl
-AC_DEFUN(GROFF_HYPOT,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_MSG_CHECKING([declaration of hypot])
-AC_TRY_COMPILE([#include <math.h>
-extern "C" { double hypot(double,double); }],,
-AC_MSG_RESULT(no),
-AC_MSG_RESULT(yes);AC_DEFINE(MATH_H_DECLARES_HYPOT))
 AC_LANG_RESTORE])dnl
 dnl
 dnl
@@ -516,4 +472,41 @@ else
 	DEFS=`sed -f conftest.defs confdefs.h | tr '\012' ' '`
 fi
 rm -f conftest.defs
-])
+])dnl
+dnl
+dnl
+dnl Check whether we need a declaration for a function.
+dnl
+dnl Stolen from GNU bfd.
+dnl
+AC_DEFUN(GROFF_NEED_DECLARATION,
+[AC_MSG_CHECKING([whether $1 must be declared])
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_CACHE_VAL(groff_cv_decl_needed_$1,
+[AC_TRY_COMPILE([
+#include <stdio.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+#endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_MATH_H
+#include <math.h>
+#endif],
+[char *(*pfn) = (char *(*)) $1],
+groff_cv_decl_needed_$1=no,
+groff_cv_decl_needed_$1=yes)])
+AC_MSG_RESULT($groff_cv_decl_needed_$1)
+if test $groff_cv_decl_needed_$1 = yes; then
+	AC_DEFINE([NEED_DECLARATION_]translit($1, [a-z], [A-Z]))
+fi
+AC_LANG_RESTORE])dnl

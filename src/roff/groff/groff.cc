@@ -44,11 +44,11 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 // specified
 #define XREG ".X"
 
-#ifndef STDLIB_H_DECLARES_PUTENV
+#ifdef NEED_DECLARATION_PUTENV
 extern "C" {
   int putenv(const char *);
 }
-#endif /* not STDLIB_H_DECLARES_PUTENV */
+#endif /* NEED_DECLARATION_PUTENV */
 
 const int SOELIM_INDEX = 0;
 const int REFER_INDEX = SOELIM_INDEX + 1;

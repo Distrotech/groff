@@ -350,7 +350,7 @@ splinerel(double px,double py,int flush)
 {
   static int lx = 0 ,ly = 0;
   static float pend = 0.0;
-  static int dx = 0,dy = 0, despx = 0, despy = 0, sigpend = 0;
+  static int dy = 0, despx = 0, despy = 0, sigpend = 0;
   int dxnew ,dynew, sg;
   char xcoord[4],ycoord[4];
   float npend ;
@@ -389,7 +389,7 @@ splinerel(double px,double py,int flush)
   /*if ((despx != 0) || (despy != 0)) fprintf(stderr,"2
    *%d,%d\n",despx,despy);*/
   if (flush) {
-  	dx = dxnew = dy = despx = despy = 0;
+  	dxnew = dy = despx = despy = 0;
 	return;
   }; /* if (flush) */
   dxnew -= despx;
@@ -400,7 +400,7 @@ splinerel(double px,double py,int flush)
 /*  if ((dxnew != 0) || (dynew != 0)) fprintf(stderr,"3
  *  %d,%d\n",dxnew,dynew);*/
   lx = (int)px; ly = (int)py; 
-  dx = dxnew = dy = despx = despy = 0;
+  dxnew = dy = despx = despy = 0;
   
 }; /* splinerel */
 
