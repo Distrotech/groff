@@ -1,7 +1,7 @@
 .ig
 roff.man
 
-Last update: 02 Jan 2002
+Last update: 06 Jan 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -23,10 +23,6 @@ FDL in the main directory of the groff source package.
 .\" Setup
 .\" --------------------------------------------------------------------
 .
-.if \n[.g] \{\
-.  do mso www.tmac
-.\}
-.
 .mso www.tmac
 .
 .if n \{\
@@ -35,61 +31,55 @@ FDL in the main directory of the groff source package.
 .  ftr CI I
 .  ftr CB B
 .\}
+.
 .if '\*[.T]'dvi' \{\
 .  ftr CB CW
 .\}
 .
-.ds backslash \(rs\"
-.ds dquote ""\"
-.ds comment \*[backslash]\*[dquote]\"
 .
+.\" --------------------------------------------------------------------
 .\" Begin of macro definitions
 .eo
 .
-.de text
+.de Text
 .  nop \)\$*
 ..
 .de ellipsis
-.  text .\|.\|.\&\"
-..
-.de argname
-.  ds @arg1 \$1
-.  shift 1
-.  nop \fI\*[@arg1]\fP\$*
-.  rm @arg1
+.  Text .\|.\|.\&\"
 ..
 .de esc
-.  ds @arg1 \$1
+.  ds @1 \$1\"
 .  shift
-.  nop \fB\*[backslash]\*[@arg1]\fP\$*
-.  rm @arg1
+.  Text \f[B]\[rs]\*[@1]\f[P]\$*
+.  rm @1
 ..
 .de option
-.  ds @arg1 \$1
+.  ds @1 \$1\"
 .  shift 1
-.  nop \fB\*[@arg1]\fP\$*
-.  rm @arg1
+.  Text \f[B]\*[@1]\f[P]\$*
+.  rm @1
 ..
 .de quoted_char
-.  ds @arg1 \$1
+.  ds @1 \$1
 .  shift
 .  nop `\fB\*[@arg1]\fP'\$*
-.  rm @arg1
+.  rm @1
 ..
-.de TP+
-.br
-.ns
-.TP \$1
-..
-.\" --------------------------------------------------------------------
-.\" A shell command line
 .de ShellCommand
 .  br
-.  IR "shell>" "\h'1m'\f(CB\$*\fP\/"
+.  IR "shell#" "\h'1m'\f[CB]\$*\f[P]\/"
 ..
-.\" --------------------------------------------------------------------
-.\" End of macro definitions
+.de TP+
+.  br
+.  ns
+.  TP \$1
+..
+.de Topic
+.  TP 2m
+.  Text \[bu]
+..
 .ec
+.\" End of macro definitions
 .
 .
 .\" --------------------------------------------------------------------
@@ -148,8 +138,8 @@ many software books, system documentation, standards, and corporate
 documents are written in roff.
 .
 The roff output for text devices is still unmatched, and its graphical
-output has the same quality as other free type-setting programs and
-is better than some of the commercial systems.
+output has the same quality as other free type-setting programs and is
+better than some of the commercial systems.
 .
 .P
 This document gives only an overview and provides pointers to further
@@ -259,7 +249,7 @@ The syntax of the formatting language of the
 .BR nroff / troff
 programs was documented in the famous
 .IR "Troff User's Manual [CSTR\~#54]" ,
-first published in 1976, with further revisions up to 1992 by
+first published in 1976, with further revisions up to 1992 by Brian
 Kernighan.
 .
 The system described therein is referred to as the
@@ -279,7 +269,7 @@ postprocessor system.
 This completed the structure of a
 .I "roff system"
 as it is still in use today; see section
-.IR "PARTS OF A ROFF SYSTEM" .
+.IR "USING ROFF" .
 .
 In 1979, these novelties were described in the paper
 .IR "[CSTR\~#97]" .
@@ -288,16 +278,16 @@ systems, including
 .IR groff .
 .
 .P
-A major catastrophy occurred when the free Unix\~7 operating system was
-commercialized.
+A major catastrophy occurred when the freely available Unix\~7
+operating system was commercialized.
 .
 A whole bunch of divergent operating systems emerged, fighting each
-other with incompatibilities, and finally causing many different roff
+other with incompatibilities, finally causing many different roff
 systems.
 .
 All of them used Osanna/Kernighan's free source code and his troff
 papers as their main documentation, but sold them together with
-"their" system \(em with only minor modifications.
+"their" system \[em] with only minor modifications.
 .
 Though most commercial roff systems added incompatible extensions, all
 of them try to achieve compatibility with the original, free troff.
@@ -325,7 +315,7 @@ Though being compatible with the classical troff, many extensions were
 added that greatly simplify roff programming.
 .
 It is the first roff system that is available on almost all operating
-systems \(em and it is free.
+systems \[em] and it is free.
 .
 This makes groff the de-facto roff standard today.
 .
@@ -355,12 +345,11 @@ to use the roff system on the shell command line.
 For example, the GNU roff implementation
 .BR groff (@MAN1EXT@)
 provides command line options to avoid the long command pipes of
-classical troff;
-a program
+classical troff; a program
 .BR grog (@MAN1EXT@)
-tries to guess from the document which arguments should be used
-for a run of groff; people who do not like specifying command line
-options should try the
+tries to guess from the document which arguments should be used for a
+run of groff; people who do not like specifying command line options
+should try the
 .BR groffer (@MAN1EXT@)
 program for graphically displaying groff files and man pages.
 .
@@ -381,6 +370,7 @@ for the next program.
 .P
 .B cat
 .I file
+.B |
 .ellipsis
 .B | preproc |
 .ellipsis
@@ -444,7 +434,7 @@ The classical preprocessors are
 for tables
 .TP
 .B eqn
-for mathematical formul\(ae
+for mathematical formul\[ae]
 .TP
 .B pic
 for drawing diagrams
@@ -466,7 +456,7 @@ include
 .PD 0
 .TP
 .B chem
-for drawing chemical formul\(ae.
+for drawing chemical formul\[ae].
 .TP
 .B grap
 for constructing graphical elements.
@@ -559,15 +549,14 @@ For example, the classical devices mentioned in
 have greatly changed since the classical times.
 .
 The old hardware doesn't exist any longer and the old graphical
-conversions are quite imprecise as compared to their modern
+conversions were quite imprecise when compared to their modern
 counterparts.
 .
 .P
 For example, the Postscript device
 .I post
 in classical troff had a resolution
-of 720, while
-.IR groff 's
+of 720, while groff
 .I ps
 has 72000, a refinement of factor 100.
 .
@@ -671,14 +660,14 @@ elements.
 These are then called
 .IR macros .
 .
-A document writer will not note any difference in usage for requests or
-macros; both are written on a line on their own starting with a dot
+A document writer will not note any difference in usage for requests
+or macros; both are written on a line on their own starting with a dot
 .quoted_char . .
 .
 .P
 .I Escape sequences
 are roff elements starting with a backslash
-.quoted_char \*[backslash] .
+.quoted_char \[rs] .
 They can be inserted anywhere, also in the midst of text in a line.
 .
 They are used to implement various features, including the insertion of
@@ -687,7 +676,7 @@ non-ASCII characters with
 font changes with
 .esc f ,
 in-line comments with
-.esc \(dq ,
+.esc \[dq] ,
 the escaping of special control characters like
 .esc \e ,
 and many other features.
@@ -701,7 +690,7 @@ A string is stored by the
 request.
 .
 The stored string can be retrieved later by the
-.B \*[backslash]*
+.B \[e]*
 escape sequence.
 .
 .P
@@ -711,7 +700,7 @@ store numbers and sizes.
 A register can be set with the request
 .B .nr
 and its value can be retrieved by the escape sequence
-.BR "\*[backslash]n" .
+.BR "\[e]n" .
 .
 .
 .\" --------------------------------------------------------------------
@@ -785,7 +774,7 @@ This mode can be activated by the following methods.
 .
 .P
 When editing a file within Emacs the mode can be changed by typing
-.RB ` "M-x nroff mode" ',
+.RI ` "M-x nroff-mode" ',
 where
 .B M-x
 means to hold down the
@@ -799,6 +788,7 @@ at the same time.
 .P
 But it is also possible to have the mode automatically selected when
 the file is loaded into the editor.
+.
 .Topic
 There is a set of file name extensions, e.g. the man pages that
 trigger the automatic activation of the nroff mode.
@@ -811,6 +801,7 @@ in the first line is switched into nroff mode when loaded.
 But do not use this, it confuses some applications such as the
 .B man
 program.
+.
 .Topic
 The best method is to include the following 3 comment lines at the end
 of the file.
@@ -831,8 +822,9 @@ is to start each sentence on a line of its own without preceding white
 space.
 .
 To additionally use the auto-fill mode in Emacs, it is best to insert
-an empty roff request (a line consisting of a dot `.' only) after each
-sentence.
+an empty roff request (a line consisting of a dot
+.quoted_char .
+only) after each sentence.
 .
 This suits the general roff rule to never use blank lines because they
 can produce unexpected behavior in the vertical spacing; so each line
@@ -846,10 +838,10 @@ The following example shows how optimal roff editing could look.
 .IP
 .nf
 This is a sentence.
-.text .
+.Text .
 This is a longer sentence stretching over
 several lines.
-.text .
+.Text .
 etc.
 .fi
 .
@@ -910,13 +902,13 @@ its standard programs are the papers in the series
 These also contain the two main documents of the early nroff/troff,
 being
 .TP
-.I [CSTR #54]
-The 1992 revision of Osanna/Kernighan's 1976 paper
+.I [CSTR\~#54]
+The 1992\~revision of Osanna/Kernighan's 1976\~paper
 .URL "Nroff/\:Troff User's Manual" \
 http://\:cm.bell-labs.com/\:cm/\:cs/\:54.ps .
 .TP
-.I [CSTR #97]
-Brian Kernighan's 1979 paper
+.I [CSTR\~#97]
+Brian Kernighan's 1979\~paper
 .URL "A Typesetter-independent TROFF" \
 http://\:cm.bell-labs.com/\:cm/\:cs/\:97.ps .
 .
@@ -989,9 +981,9 @@ This document is part of
 the GNU roff distribution.
 .
 It was written by
-.MAILTO bwarken@mayn.de  "Bernd Warken" ;
+.URL "Bernd Warken" mailto:\:bwarken@mayn.de ;
 it is maintained by
-.MAILTO wl@gnu.org "Werner Lemberg" .
+.URL "Werner Lemberg" mailto:\:wl@gnu.org .
 .
 .
 .\" --------------------------------------------------------------------
