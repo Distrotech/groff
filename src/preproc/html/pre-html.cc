@@ -53,7 +53,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 extern "C" const char *Version_string;
 
 #include "pre-html.h"
-#include "pushbackbuffer.h"
+#include "pushback.h"
 #include "html-strings.h"
 
 #define POSTSCRIPTRES          72000   // maybe there is a better way to find this? --fixme--
