@@ -7,7 +7,7 @@
 
    Written by James Clark (jjc@jclark.com)
 
-   Last update: 12 Apr 2002
+   Last update: 15 Dec 2004
 
    This file is part of groff.
 
@@ -83,6 +83,8 @@ public:
   virtual void end_of_line();
   virtual void special(char *arg, const environment *env,
 		       char type = 'p');
+  virtual void devtag(char *arg, const environment *env,
+		      char type = 'p');
 
 protected:
   font_pointer_list *font_list;

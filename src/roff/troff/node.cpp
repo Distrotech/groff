@@ -4081,15 +4081,15 @@ void suppress_node::tprint(troff_output_file *out)
 	switch (last_position) {
 	case 'c':
 	  out->start_special();
-	  put(out, "html-tag:.centered-image");
+	  put(out, "devtag:.centered-image");
 	  break;
 	case 'r':
 	  out->start_special();
-	  put(out, "html-tag:.right-image");
+	  put(out, "devtag:.right-image");
 	  break;
 	case 'l':
 	  out->start_special();
-	  put(out, "html-tag:.left-image");
+	  put(out, "devtag:.left-image");
 	  break;
 	case 'i':
 	  ;
@@ -4098,7 +4098,7 @@ void suppress_node::tprint(troff_output_file *out)
 	}
 	out->end_special();
 	out->start_special();
-	put(out, "html-tag:.auto-image ");
+	put(out, "devtag:.auto-image ");
 	put(out, name);
 	out->end_special();
       }

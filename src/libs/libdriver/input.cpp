@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 04 Apr 2003
+   Last update: 15 Dec 2004
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -1520,6 +1520,9 @@ parse_x_command(void)
       char *str_arg = get_extended_arg(); // includes line skip
       if (npages <= 0)
 	error("`x X' command invalid before first `p' command");
+      else if (str_arg != NULL && (strncmp(str_arg, "devtag:",
+					   strlen("devtag:")) == 0))
+	pr->devtag(str_arg, current_env);
       else
 	pr->special(str_arg, current_env);
       a_delete str_arg;

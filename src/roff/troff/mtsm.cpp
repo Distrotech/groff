@@ -198,27 +198,27 @@ statem::~statem()
 
 void statem::flush(FILE *fp, statem *compare)
 {
-  int_values[MTSM_FI].diff(fp, "html-tag:.fi",
+  int_values[MTSM_FI].diff(fp, "devtag:.fi",
 			   compare->int_values[MTSM_FI]);
-  int_values[MTSM_RJ].diff(fp, "html-tag:.rj",
+  int_values[MTSM_RJ].diff(fp, "devtag:.rj",
 			   compare->int_values[MTSM_RJ]);
-  int_values[MTSM_SP].diff(fp, "html-tag:.sp",
+  int_values[MTSM_SP].diff(fp, "devtag:.sp",
 			   compare->int_values[MTSM_SP]);
-  units_values[MTSM_IN].diff(fp, "html-tag:.in",
+  units_values[MTSM_IN].diff(fp, "devtag:.in",
 			     compare->units_values[MTSM_IN]);
-  units_values[MTSM_LL].diff(fp, "html-tag:.ll",
+  units_values[MTSM_LL].diff(fp, "devtag:.ll",
 			     compare->units_values[MTSM_LL]);
-  units_values[MTSM_PO].diff(fp, "html-tag:.po",
+  units_values[MTSM_PO].diff(fp, "devtag:.po",
 			     compare->units_values[MTSM_PO]);
-  string_values[MTSM_TA].diff(fp, "html-tag:.ta",
+  string_values[MTSM_TA].diff(fp, "devtag:.ta",
 			      compare->string_values[MTSM_TA]);
-  units_values[MTSM_TI].diff(fp, "html-tag:.ti",
+  units_values[MTSM_TI].diff(fp, "devtag:.ti",
 			     compare->units_values[MTSM_TI]);
-  int_values[MTSM_CE].diff(fp, "html-tag:.ce",
+  int_values[MTSM_CE].diff(fp, "devtag:.ce",
 			   compare->int_values[MTSM_CE]);
-  bool_values[MTSM_EOL].diff(fp, "html-tag:.eol",
+  bool_values[MTSM_EOL].diff(fp, "devtag:.eol",
 			     compare->bool_values[MTSM_EOL]);
-  bool_values[MTSM_BR].diff(fp, "html-tag:.br",
+  bool_values[MTSM_BR].diff(fp, "devtag:.br",
 			    compare->bool_values[MTSM_BR]);
   if (debug_state) {
     fprintf(stderr, "compared state %d\n", compare->issue_no);

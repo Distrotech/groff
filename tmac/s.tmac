@@ -178,7 +178,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .vs +3p
 .ll (u;\\n[LL]*5/6)
 .nr cov*n-au 0
-.HTML-TAG-NS ".tl"
+.DEVTAG-TL
 ..
 .de @AU
 .par@reset
@@ -382,7 +382,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .ce 9999
 .if d cov*tl-div \{\
 .    cov*tl-div
-.    HTML-TAG-NS ".eo.tl"
+.    DEVTAG-EO-TL
 .\}
 .nr cov*i 1
 .nr cov*sp 1v
@@ -500,7 +500,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .		nr pg*gutw \\n[LL]-(\\n[pg@ncols]*\\n[pg@colw])/(\\n[pg@ncols]-1)
 .	el .nr pg*gutw 0
 .\}
-.HTML-TAG ".mc \\n[pg@ncols] \\n[pg@colw] \\n[pg*gutw]"
+.DEVTAG ".mc \\n[pg@ncols] \\n[pg@colw] \\n[pg*gutw]"
 .mk pg*col-top
 .ns
 .nr pg*col-num 0
@@ -1137,9 +1137,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\" par@reset
 .de par@reset
 .br
-.if \\n[need_eo_tl]>0 .HTML-TAG ".eo.tl"
+.if \\n[need_eo_tl]>0 .DEVTAG-EO-TL
 .nr need_eo_tl 0
-.if \\n[need_eo_h]>0 .HTML-TAG ".eo.h"
+.if \\n[need_eo_h]>0 .DEVTAG-EO-H
 .nr need_eo_h 0
 .ce 0
 .rj 0
@@ -1226,14 +1226,14 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	chop par*label
 .	ti -\\n[\\n[.ev]:ai]u
 .	ie \\n[dl]+1n<=\\n[\\n[.ev]:ai] \{\
-.		HTML-TAG-NS ".col 1"
+.		DEVTAG-COL 1
 \\*[par*label]\h'|\\n[\\n[.ev]:ai]u'\c
-.		HTML-TAG-NS ".col 2"
+.		DEVTAG-COL 2
 .       \}
 .	el \{\
-.		HTML-TAG-NS ".col 1"
+.		DEVTAG-COL 1
 \\*[par*label]
-.		HTML-TAG-NEXT ".col 2"
+.		DEVTAG-COL-NEXT 2
 .		br
 .	\}
 .	rm par*label
@@ -1403,7 +1403,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .  nr sh*psincr 0
 .  if 0\\$1>0 .nr sh*psincr (\\n[GROWPS]-0\\$1)*\\n[PSINCR]
 .  SH-NO-TAG
-.  HTML-TAG ".SH 1"
+.  DEVTAG-SH 1
 .  if '\*(.T'html' .nr need_eo_h 1
 ..
 .\" TL, AU, and AI are aliased to these in cov*ab-init.
@@ -1414,7 +1414,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .ps +2
 .vs +3p
 .ce 9999
-.HTML-TAG-NS ".tl"
+.DEVTAG-TL
 .nr need_eo_tl 1
 ..
 .de par@AU
@@ -1575,7 +1575,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .if !dSN .als SN SN-DOT
 .nr sh*psincr (\\n[GROWPS]-\\n[nh*hl])*\\n[PSINCR]
 .SH-NO-TAG
-.HTML-TAG-NS ".NH \\$1"
+.DEVTAG-NH "\\$1"
 .  if '\*(.T'html' .nr need_eo_h 1
 \\*[SN-DOT]
 ..

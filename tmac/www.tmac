@@ -45,6 +45,8 @@ www functionality.  It should work with any macro set.
 .nr _C \n(.C
 .cp 0
 .
+.mso devtag.tmac
+.
 .nr www-html 0
 .if '\*[.T]'html' .nr www-html 1
 .
@@ -262,15 +264,21 @@ www functionality.  It should work with any macro set.
 .\"
 .de HTML
 .  if \\n[www-html] \{\
+.    \" was implemented via .nop \&\X^html:\\$*^ but
+.    \" is now implemented using HTML-NS to utilize code factoring.
+.    \"
 .    \" the `\&' makes the vertical mode leave, so to say
-.    nop \&\X^html:\\$*^
+.    \"
+.    nop \&\c
+.    HTML-NS \\$*
+.    nop \&
 .  \}
 ..
 .\"
 .\" an auxiliary macro for HTML (without following space)
 .\"
 .de HTML-NS
-.  tag "html:\\$*
+.  nop \X^html:\\$*^\c
 ..
 .\"
 .\" emit a HTML tag after shutting down a (possibly open) paragraph
@@ -314,10 +322,16 @@ www functionality.  It should work with any macro set.
 .  ds \\$0:adr \\$1\"
 .  www:url_breaks \\$0:adr
 .  ie \\n[www-html] \{\
-.    ie '\\$2'' \
-.       HTML <a href="\\$1">\\$1</a>\\$3
+.    ie '\\$3'' \
+.      ds \\$0:after \&
 .    el \
-.       HTML <a href="\\$1">\\$2</a>\\$3
+.      ds \\$0:after \&\\$3
+.    ie '\\$2'' \
+.       HTML-NS <a href="\\$1">\\$1</a>
+.    el \
+.       HTML-NS <a href="\\$1">\\$2</a>
+.    nop \\*[\\$0:after]
+.    rm \\$0:after
 .  \}
 .  el \{\
 .    if !r ps4html .ad l
@@ -385,12 +399,12 @@ www functionality.  It should work with any macro set.
 .de IMG
 .  ie \\n[www-html] \{\
 .    ie '\\$2'-R' \
-.      HTML-TAG ".right-image"
+.      DEVTAG ".right-image"
 .    el \{\
 .      ie '\\$2'-L' \
-.        HTML-TAG ".left-image"
+.        DEVTAG ".left-image"
 .      el \
-.        HTML-TAG ".centered-image"
+.        DEVTAG ".centered-image"
 .    \}
 .    nr www-width 100
 .    if !'\\$3'' \
@@ -405,35 +419,6 @@ www functionality.  It should work with any macro set.
 .    nop \[la]\f[C]\\$1\f[]\[ra]
 ..
 .\" --------------------------------------------------------------------
-.\" HTML-TAG
-.\"
-.\"   Emit a tag for grohtml.  This is an internal macro.
-.\"
-.de HTML-TAG
-.  if \\n[www-html] \{\
-.    \" the `\&' makes the vertical mode leave, so to say
-.    nop \&\X^html-tag:\\$*^
-.  \}
-..
-.\" --------------------------------------------------------------------
-.\" HTML-TAG-NS
-.\"
-.\"   Emit a tag for grohtml (without a space).  This is an internal macro.
-.\"
-.de HTML-TAG-NS
-.  tag html-tag:\\$*
-..
-.\" --------------------------------------------------------------------
-.\" HTML-TAG-NEXT
-.\"
-.\"   When the troff state changes, emit a tag for grohtml (without a space)
-.\"   This is an internal macro.
-.\"
-.de HTML-TAG-NEXT
-.  taga html-tag:\\$*
-..
-.
-.\" --------------------------------------------------------------------
 .\" PIMG  [-R|-L|-C] filename [width] [height]
 .\"
 .\"   Include a png image.  It will work for -Tps and -Thtml.
@@ -447,12 +432,12 @@ www functionality.  It should work with any macro set.
 .de PIMG
 .  ie \\n[www-html] \{\
 .    ie '\\$1'-R' \
-.      HTML-TAG ".right-image"
+.      DEVTAG ".right-image"
 .    el \{\
 .      ie '\\$1'-L' \
-.        HTML-TAG ".left-image"
+.        DEVTAG ".left-image"
 .      el \
-.        HTML-TAG ".centered-image"
+.        DEVTAG ".centered-image"
 .    \}
 .    nr www-width 0
 .    nr www-height 0
@@ -657,13 +642,13 @@ www functionality.  It should work with any macro set.
 .    nr www-heading-no 1
 .  el \
 .    nr www-heading-no \\$1
-.  HTML-TAG ".NH \\n[www-heading-no]"
+.  DEVTAG-NH \\n[www-heading-no]
 ..
 .
 .de HnE
 .  if (\\n[www-heading-no] == -1) \
 .    www-error "HnE found without a corresponding HnS"
-.  HTML-TAG ".eo.h"
+.  DEVTAG-EO-H
 ..
 .\" --------------------------------------------------------------------
 .\" LK
@@ -672,7 +657,7 @@ www functionality.  It should work with any macro set.
 .\"   section/numbered headings at this position.
 .\"
 .de LK
-.  HTML-TAG-NS ".links"
+.  DEVTAG ".links"
 ..
 .\" --------------------------------------------------------------------
 .\" HR
@@ -689,7 +674,7 @@ www functionality.  It should work with any macro set.
 .\"  emits by default.
 .\"
 .de NHR
-.  HTML-TAG ".no-auto-rule"
+.  DEVTAG ".no-auto-rule"
 ..
 .\"
 .\" www-end-nowhere - end of input trap called to finish diversion.
@@ -697,7 +682,7 @@ www functionality.  It should work with any macro set.
 .de www-end-nowhere
 .  if !\\n[www-html] \
 .    di
-.  HTML-TAG ".eo.tl"
+.  DEVTAG-EO-TL
 ..
 .\" --------------------------------------------------------------------
 .\" HTL
@@ -711,7 +696,7 @@ www functionality.  It should work with any macro set.
 .\"   The macro terminates when a space or break is seen (.sp, .br).
 .\"
 .de HTL
-.  HTML-TAG ".html-tl"
+.  DEVTAG ".html-tl"
 .  if !\\n[www-html] \
 .    di www-nowhere
 .  it 2 www-end-nowhere
@@ -913,7 +898,7 @@ www functionality.  It should work with any macro set.
 .\"   The argument to JOBNAME is the file stem for future output files.
 .\"
 .de JOBNAME
-.  HTML-TAG .job-name \\$1
+.  DEVTAG .job-name \\$1
 ..
 .\" --------------------------------------------------------------------
 .\" HEAD
@@ -922,7 +907,7 @@ www functionality.  It should work with any macro set.
 .\"   document
 .\" --------------------------------------------------------------------
 .de HEAD
-.  HTML-TAG .head "\\$*"
+.  DEVTAG .head "\\$*"
 ..
 .\" --------------------------------------------------------------------
 .\" Final Setup

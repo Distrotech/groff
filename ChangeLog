@@ -1,3 +1,55 @@
+2004-12-15  Werner LEMBERG  <wl@gnu.org>
+
+	Make `test-groff' work again -- previously, wrong paths have been
+	used.  Additionally, it can now be called from anywhere.
+
+	* test-groff.in: Don't test for groff binary.  This is no longer
+	necessary since the proper paths are determined by `configure'.
+	(EXEEXT): Removed.  No longer used.
+	(srcdir, builddir): Use values provided by the configure script.
+	(XENVIRONMENT): Updated.
+
+	* INSTALL: Updated.
+
+2004-12-14  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Make .tag and .taga work for all devices (but only grohtml actually
+	handles them).
+
+	* src/devices/grohtml/post-html.cpp: s/html-tag/devtag/.
+	(text_glob::is_br, page::add_tag, html_printer::troff_tag,
+	html_printer::handle_assertion): Don't use hard-coded string
+	lengths.
+	(html_printer::lookahead_for_table): Reset `tbl' properly if
+	necessary.
+	(html_printer::devtag): New function, handling `devtag'.
+	(html_printer::special): Don't handle `html-tag'.
+
+	* src/include/printer.h, src/libs/libdriver/printer.cpp
+	(printer::devtag): New virtual function.
+
+	* src/libs/libdriver/input.cpp (parse_x_command) <'X'>: Handle
+	`devtag'.
+
+	* src/roff/troff/env.cpp, src/roff/troff/mtsm.cpp,
+	src/roff/troff/node.cpp: s/html-tag/devtag/.
+
+	* src/roff/troff/input.cpp (tag, taga): Always call
+	curenv->add_node.
+
+	* tmac/an-old.tmac, tmac/s.tmac, tmac/troffrc-end: Use DEVTAG*
+	macros instead of HTML-TAG*.
+
+	* tmac/devtag.tmac: New file, defining the DEVTAG-* macros.
+
+	* tmac/www.tmac: Load devtag.tmac.
+	Replace HTML-TAG* macros with DEVTAG* macros.
+	(HTML, HTML-NS): Changed definitions.
+	(URL): Use HTML-NS.
+	(HTML-TAG, HTML-TAG-NS, HTML-TAG-NEXT): Removed.
+
+	* tmac/Makefile.sub (NORMALFILES): Add devtag.tmac.
+
 2004-12-10  Werner LEMBERG  <wl@gnu.org>
 
 	Import Mike's `gdiffmk' package.

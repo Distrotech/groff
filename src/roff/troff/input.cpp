@@ -6075,8 +6075,7 @@ void tag()
     for (; c != '\n' && c != EOF; c = get_copy(0))
       s += (char)c;
     s += '\n';
-    if (is_html)
-      curenv->add_node(new tag_node(s, 0));
+    curenv->add_node(new tag_node(s, 0));
   }
   tok.next();
 }
@@ -6099,8 +6098,7 @@ void taga()
     for (; c != '\n' && c != EOF; c = get_copy(0))
       s += (char)c;
     s += '\n';
-    if (is_html)
-      curenv->add_node(new tag_node(s, 1));
+    curenv->add_node(new tag_node(s, 1));
   }
   tok.next();
 }

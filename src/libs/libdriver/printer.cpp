@@ -2,11 +2,11 @@
 
 // <groff_src_dir>/src/libs/libdriver/printer.cpp
 
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
    Written by James Clark (jjc@jclark.com)
 
-   Last update: 04 Apr 2003
+   Last update: 15 Dec 2004
 
    This file is part of groff.
 
@@ -104,6 +104,10 @@ void printer::end_of_line()
 }
 
 void printer::special(char *, const environment *, char)
+{
+}
+
+void printer::devtag(char *, const environment *, char)
 {
 }
 

@@ -2206,7 +2206,7 @@ node *environment::make_tag(const char *nm, int i)
     if (curdiv == topdiv && topdiv->before_first_page)
       topdiv->begin_page();
     macro *m = new macro;
-    m->append_str("html-tag:");
+    m->append_str("devtag:");
     for (const char *p = nm; *p; p++)
       if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);

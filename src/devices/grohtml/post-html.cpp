@@ -430,7 +430,7 @@ char *char_buffer::add_string (const char *s, unsigned int length)
 
   // and return start of new string
 
-  return( &tail->buffer[old_used] );
+  return &tail->buffer[old_used];
 }
 
 char *char_buffer::add_string (const string &s)
@@ -658,7 +658,7 @@ int text_glob::is_a_tag (void)
 
 int text_glob::is_eol (void)
 {
-  return is_tag && (strcmp(text_string, "html-tag:.eol") == 0);
+  return is_tag && (strcmp(text_string, "devtag:.eol") == 0);
 }
 
 /*
@@ -667,7 +667,7 @@ int text_glob::is_eol (void)
 
 int text_glob::is_eol_ce (void)
 {
-  return is_tag && (strcmp(text_string, "html-tag:eol.ce") == 0);
+  return is_tag && (strcmp(text_string, "devtag:eol.ce") == 0);
 }
 
 /*
@@ -676,7 +676,7 @@ int text_glob::is_eol_ce (void)
 
 int text_glob::is_tl (void)
 {
-  return is_tag && (strcmp(text_string, "html-tag:.tl") == 0);
+  return is_tag && (strcmp(text_string, "devtag:.tl") == 0);
 }
 
 /*
@@ -685,7 +685,7 @@ int text_glob::is_tl (void)
 
 int text_glob::is_eo_tl (void)
 {
-  return is_tag && (strcmp(text_string, "html-tag:.eo.tl") == 0);
+  return is_tag && (strcmp(text_string, "devtag:.eo.tl") == 0);
 }
 
 /*
@@ -694,8 +694,8 @@ int text_glob::is_eo_tl (void)
 
 int text_glob::is_nf (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.fi",
-			    strlen("html-tag:.fi")) == 0) &&
+  return is_tag && (strncmp(text_string, "devtag:.fi",
+			    strlen("devtag:.fi")) == 0) &&
          (get_arg() == 0);
 }
 
@@ -705,8 +705,8 @@ int text_glob::is_nf (void)
 
 int text_glob::is_fi (void)
 {
-  return( is_tag && (strncmp(text_string, "html-tag:.fi",
-			     strlen("html-tag:.fi")) == 0) &&
+  return( is_tag && (strncmp(text_string, "devtag:.fi",
+			     strlen("devtag:.fi")) == 0) &&
 	  (get_arg() == 1) );
 }
 
@@ -716,7 +716,7 @@ int text_glob::is_fi (void)
 
 int text_glob::is_eo_h (void)
 {
-  return is_tag && (strcmp(text_string, "html-tag:.eo.h") == 0);
+  return is_tag && (strcmp(text_string, "devtag:.eo.h") == 0);
 }
 
 /*
@@ -725,8 +725,8 @@ int text_glob::is_eo_h (void)
 
 int text_glob::is_ce (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.ce",
-			    strlen("html-tag:.ce")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:.ce",
+			    strlen("devtag:.ce")) == 0);
 }
 
 /*
@@ -735,8 +735,8 @@ int text_glob::is_ce (void)
 
 int text_glob::is_in (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.in ",
-			    strlen("html-tag:.in ")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:.in ",
+			    strlen("devtag:.in ")) == 0);
 }
 
 /*
@@ -745,8 +745,8 @@ int text_glob::is_in (void)
 
 int text_glob::is_po (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.po ",
-			    strlen("html-tag:.po ")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:.po ",
+			    strlen("devtag:.po ")) == 0);
 }
 
 /*
@@ -755,8 +755,8 @@ int text_glob::is_po (void)
 
 int text_glob::is_ti (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.ti ",
-			    strlen("html-tag:.ti ")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:.ti ",
+			    strlen("devtag:.ti ")) == 0);
 }
 
 /*
@@ -765,7 +765,8 @@ int text_glob::is_ti (void)
 
 int text_glob::is_ll (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.ll ", strlen("html-tag:.ll ")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:.ll ",
+			    strlen("devtag:.ll ")) == 0);
 }
 
 /*
@@ -774,7 +775,8 @@ int text_glob::is_ll (void)
 
 int text_glob::is_col (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.col", strlen("html-tag:.col")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:.col",
+			    strlen("devtag:.col")) == 0);
 }
 
 /*
@@ -783,7 +785,7 @@ int text_glob::is_col (void)
 
 int text_glob::is_tab_ts (void)
 {
-  return is_tag && (strcmp(text_string, "html-tag:.tab-ts") == 0);
+  return is_tag && (strcmp(text_string, "devtag:.tab-ts") == 0);
 }
 
 /*
@@ -792,7 +794,7 @@ int text_glob::is_tab_ts (void)
 
 int text_glob::is_tab_te (void)
 {
-  return is_tag && (strcmp(text_string, "html-tag:.tab-te") == 0);
+  return is_tag && (strcmp(text_string, "devtag:.tab-te") == 0);
 }
 
 /*
@@ -801,7 +803,8 @@ int text_glob::is_tab_te (void)
 
 int text_glob::is_ta (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.ta ", strlen("html-tag:.ta ")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:.ta ",
+			    strlen("devtag:.ta ")) == 0);
 }
 
 /*
@@ -810,7 +813,8 @@ int text_glob::is_ta (void)
 
 int text_glob::is_tab (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:tab ", strlen("html-tag:tab ")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:tab ",
+			    strlen("devtag:tab ")) == 0);
 }
 
 /*
@@ -819,7 +823,8 @@ int text_glob::is_tab (void)
 
 int text_glob::is_tab0 (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:tab0", strlen("html-tag:tab0")) == 0);
+  return is_tag && (strncmp(text_string, "devtag:tab0",
+			    strlen("devtag:tab0")) == 0);
 }
 
 /*
@@ -841,13 +846,14 @@ int text_glob::is_auto_img (void)
 
 int text_glob::is_br (void)
 {
-  return is_a_tag() && ((strcmp ("html-tag:.br", text_string) == 0) ||
-			(strncmp("html-tag:.sp", text_string, 11) == 0));
+  return is_a_tag() && ((strcmp ("devtag:.br", text_string) == 0) ||
+			(strncmp("devtag:.sp", text_string,
+				 strlen("devtag:.sp")) == 0));
 }
 
 int text_glob::get_arg (void)
 {
-  if (strncmp("html-tag:", text_string, strlen("html-tag:")) == 0) {
+  if (strncmp("devtag:", text_string, strlen("devtag:")) == 0) {
     const char *p = text_string;
 
     while ((*p != (char)0) && (!isspace(*p)))
@@ -867,7 +873,7 @@ int text_glob::get_arg (void)
 
 int text_glob::get_tab_args (char *align)
 {
-  if (strncmp("html-tag:", text_string, strlen("html-tag:")) == 0) {
+  if (strncmp("devtag:", text_string, strlen("devtag:")) == 0) {
     const char *p = text_string;
 
     // firstly the alignment C|R|L
@@ -1320,7 +1326,8 @@ void page::add_tag (style *s, const string &str,
   if (str.length() > 0) {
     text_glob *g;
 
-    if (strncmp((str+'\0').contents(), "html-tag:.auto-image", 20) == 0) {
+    if (strncmp((str+'\0').contents(), "devtag:.auto-image",
+		strlen("devtag:.auto-image")) == 0) {
       g = new text_glob();
       g->text_glob_auto_image(s, buffer.add_string(str), str.length(),
 			      min_vertical, min_horizontal, max_vertical, max_horizontal);
@@ -2097,6 +2104,7 @@ public:
   void begin_page       (int);
   void end_page         (int);
   void special          (char *arg, const environment *env, char type);
+  void devtag           (char *arg, const environment *env, char type);
   font *make_font       (const char *);
   void end_of_line      ();
 };
@@ -2240,7 +2248,7 @@ void html_printer::do_center (char *arg)
 }
 
 /*
- *  do_centered_image - set a flag such that the next html-tag is
+ *  do_centered_image - set a flag such that the next devtag is
  *                      placed inside a centered paragraph.
  */
 
@@ -2250,7 +2258,7 @@ void html_printer::do_centered_image (void)
 }
 
 /*
- *  do_right_image - set a flag such that the next html-tag is
+ *  do_right_image - set a flag such that the next devtag is
  *                   placed inside a right aligned paragraph.
  */
 
@@ -2260,7 +2268,7 @@ void html_printer::do_right_image (void)
 }
 
 /*
- *  do_left_image - set a flag such that the next html-tag is
+ *  do_left_image - set a flag such that the next devtag is
  *                  placed inside a left aligned paragraph.
  */
 
@@ -2996,7 +3004,7 @@ void html_printer::do_tab_te (void)
 }
 
 /*
- *  do_tab - handle the "html-tag:tab" tag
+ *  do_tab - handle the "devtag:tab" tag
  */
 
 void html_printer::do_tab (char *s)
@@ -3014,7 +3022,7 @@ void html_printer::do_tab (char *s)
 }
 
 /*
- *  do_tab0 - handle the "html-tag:tab0" tag
+ *  do_tab0 - handle the "devtag:tab0" tag
  */
 
 void html_printer::do_tab0 (void)
@@ -3048,11 +3056,11 @@ void html_printer::do_col (char *s)
 void html_printer::troff_tag (text_glob *g)
 {
   /*
-   *  firstly skip over html-tag:
+   *  firstly skip over devtag:
    */
-  char *t=(char *)g->text_string+9;
+  char *t=(char *)g->text_string+strlen("devtag:");
 
-  if (strncmp(g->text_string, "html</p>:", 9) == 0) {
+  if (strncmp(g->text_string, "html</p>:", strlen("html</p>:")) == 0) {
     do_end_para(g);
   } else if (g->is_eol()) {
     do_eol();
@@ -3141,7 +3149,8 @@ void html_printer::troff_tag (text_glob *g)
 
 int html_printer::is_in_middle (int left, int right)
 {
-  return( abs(abs(left-pageoffset) - abs(pageoffset+linelength-right)) <= CENTER_TOLERANCE );
+  return( abs(abs(left-pageoffset) - abs(pageoffset+linelength-right))
+	  <= CENTER_TOLERANCE );
 }
 
 /*
@@ -3269,7 +3278,7 @@ text_glob *html_printer::insert_tab_ts (text_glob *where)
 
   page_contents->glyphs.move_to(where);
   page_contents->glyphs.move_left();
-  page_contents->insert_tag(string("html-tag:.tab-ts"));  // tab table start
+  page_contents->insert_tag(string("devtag:.tab-ts"));  // tab table start
   page_contents->glyphs.move_right();
   start_of_table = page_contents->glyphs.get_data();
   page_contents->glyphs.move_to(old_pos);
@@ -3289,7 +3298,7 @@ void html_printer::insert_tab_te (void)
   while (page_contents->glyphs.get_data()->is_a_tag())
     page_contents->glyphs.move_left();
 
-  page_contents->insert_tag(string("html-tag:.tab-te"));  // tab table end
+  page_contents->insert_tag(string("devtag:.tab-te"));  // tab table end
   while (g != page_contents->glyphs.get_data())
     page_contents->glyphs.move_right();
   page_contents->dump_page();
@@ -3305,7 +3314,7 @@ void html_printer::insert_tab_0 (text_glob *where)
 
   page_contents->glyphs.move_to(where);
   page_contents->glyphs.move_left();
-  page_contents->insert_tag(string("html-tag:tab0"));  // tab0 start of line
+  page_contents->insert_tag(string("devtag:tab0"));  // tab0 start of line
   page_contents->glyphs.move_right();
   page_contents->glyphs.move_to(old_pos);
 }
@@ -3498,8 +3507,10 @@ void html_printer::lookahead_for_tables (void)
       g = page_contents->glyphs.move_right_get_data();
       handle_state_assertion(g);
       if (page_contents->glyphs.is_equal_to_head()) {
-	if (tbl != NULL)
+	if (tbl != NULL) {
 	  delete tbl;
+	  tbl = NULL;
+	}
 	return;
       }
 
@@ -3664,8 +3675,10 @@ void html_printer::lookahead_for_tables (void)
       page_contents->insert_tag(string("*** LAST ***"));      
     }
   }
-  if (tbl != NULL)
+  if (tbl != NULL) {
     delete tbl;
+    tbl = NULL;
+  }
 
   // and reset the registers
   pageoffset = old_pageoffset;
@@ -3728,7 +3741,7 @@ int html_printer::is_font_courier (font *f)
 
     return( (fontname != 0) && (fontname[0] == 'C') );
   }
-  return( FALSE );
+  return FALSE;
 }
 
 /*
@@ -4698,7 +4711,7 @@ void html_printer::handle_assertion (int minv, int minh, int maxv, int maxh, con
   else if (strcmp(cmd, "assertion:[y") == 0)
     as.addy(cmd, id, make_val(val, minv, id, file, line), file, line);
   else
-    if (strncmp(cmd, "assertion:[", 11) == 0)
+    if (strncmp(cmd, "assertion:[", strlen("assertion:[")) == 0)
       page_contents->add_tag(&sbuf_style, string(s),
 			     line_number, minv, minh, maxv, maxh);
 }
@@ -4725,8 +4738,7 @@ void html_printer::handle_state_assertion (text_glob *g)
 /*
  *  special - handle all x X requests from troff. For post-html they
  *            allow users to pass raw html commands, turn auto linked
- *            headings off/on and also allow troff to emit tags to
- *            indicate when a: .br, .sp etc occurs.
+ *            headings off/on etc.
  */
 
 void html_printer::special(char *s, const environment *env, char type)
@@ -4793,13 +4805,6 @@ void html_printer::special(char *s, const environment *env, char type)
        */
     } else if (strncmp(s, "index:", 6) == 0) {
       cutoff_heading = atoi(&s[6]);
-    } else if (strncmp(s, "html-tag:", 9) == 0) {
-      int r=font::res;   /* resolution of the device */
-
-      page_contents->add_tag(&sbuf_style, string(s),
-			     line_number,
-			     env->vpos-env->size*r/72, env->hpos,
-			     env->vpos               , env->hpos);
     } else if (strncmp(s, "assertion:[", 11) == 0) {
       int r=font::res;   /* resolution of the device */
 
@@ -4808,6 +4813,39 @@ void html_printer::special(char *s, const environment *env, char type)
     }
   }
 }
+
+/*
+ *  devtag - handles device troff tags sent from the `troff'.
+ *           These include the troff state machine tags:
+ *           .br, .sp, .in, .tl, .ll etc
+ *
+ *           (see man 5 grohtml_tags).
+ */
+
+void html_printer::devtag (char *s, const environment *env, char type)
+{
+  if (type != 'p')
+    return;
+
+  if (s != 0) {
+    flush_sbuf();
+    if (env->fontno >= 0) {
+      style sty(get_font_from_index(env->fontno), env->size, env->height,
+		env->slant, env->fontno, *env->col);
+      sbuf_style = sty;
+    }
+
+    if (strncmp(s, "devtag:", strlen("devtag:")) == 0) {
+      int r=font::res;   /* resolution of the device */
+
+      page_contents->add_tag(&sbuf_style, string(s),
+			     line_number,
+			     env->vpos-env->size*r/72, env->hpos,
+			     env->vpos               , env->hpos);
+    }
+  }
+}
+
 
 /*
  *  taken from number.cpp in src/roff/troff, [hunits::hunits(units x)]
