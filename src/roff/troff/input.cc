@@ -4663,19 +4663,23 @@ static node *do_suppress(symbol nm)
   const char *s = nm.contents();
   switch (*s) {
   case '0':
-    if (begin_level == 1)
+    if (begin_level == 0)
+      // suppress generation of glyphs
       return new suppress_node(0, 0);
     break;
   case '1':
-    if (begin_level == 1)
+    if (begin_level == 0)
+      // enable generation of glyphs
       return new suppress_node(1, 0);
     break;
   case '2':
-    if (begin_level == 1)
+    if (begin_level == 0)
       return new suppress_node(1, 1);
     break;
   case '3':
     begin_level++;
+#if 0
+    // say goodbye to all this code ?
     if ((begin_level == 1) && (!is_html)) {
       if (curdiv == topdiv) {
 	if (topdiv->before_first_page) {
@@ -4700,6 +4704,8 @@ static node *do_suppress(symbol nm)
 	}
       }
     }
+      // say goodbye to all this code?
+#endif
     break;
   case '4':
     begin_level--;
@@ -4725,7 +4731,7 @@ static node *do_suppress(symbol nm)
 	return 0;
       }
       image_no++;
-      if (begin_level == 1)
+      if (begin_level == 0)
 	return new suppress_node(symbol(s), position, image_no);
     }
     break;

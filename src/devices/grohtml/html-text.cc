@@ -101,6 +101,8 @@ void html_text::dump_stack_element (tag_definition *p)
   }
   default: fprintf(stderr, "unknown tag");
   }
+  if (p->text_emitted)
+    fprintf(stderr, "[t] ");
 }
 
 /*
@@ -222,11 +224,23 @@ void html_text::start_tag (tag_definition *t)
 
 int html_text::table_is_void (tag_definition *t)
 {
-  if (linelength > 0) {
-    return current_indentation*100/linelength <= 0;
-  } else {
-    return FALSE;
+#if 1
+  return (linelength > 0
+	  && current_indentation*100/linelength <= 0);
+
+#else
+  if (t->next != NULL
+      && linelength > 0
+      && current_indentation*100/linelength <= 0) {
+    t = t->next;
+    while (t != NULL) {
+      if (t->text_emitted)
+	return FALSE;
+      t = t->next;
+    }
   }
+  return TRUE;
+#endif
 }
 
 void html_text::issue_table_begin (char *arg)
@@ -292,6 +306,7 @@ int html_text::is_present (HTML_TAG t)
   return FALSE;
 }
 
+extern void stop();
 
 /*
  *  do_push - places, tag_definition, p, onto the stack
@@ -302,8 +317,10 @@ void html_text::do_push (tag_definition *p)
   HTML_TAG t = p->type;
 
 #if defined(DEBUGGING)
+  if (t == PRE_TAG)
+    stop();
   debugStack = TRUE;
-  fprintf(stderr, "entering do_push (");
+  fprintf(stderr, "\nentering do_push (");
   dump_stack_element(p);
   fprintf(stderr, ")\n");
   dump_stack();
@@ -357,10 +374,6 @@ void html_text::do_push (tag_definition *p)
 
 #if defined(DEBUGGING)
   dump_stack();
-  if (stackptr && (stackptr->type == COLOR_TAG) &&
-      stackptr->next && (stackptr->next->type == TABLE_TAG) &&
-      stackptr->next->next && (stackptr->next->next->type == P_TAG))
-
   fprintf(stderr, "exiting do_push\n");
 #endif
 }
@@ -547,6 +560,7 @@ char *html_text::shutdown (HTML_TAG t)
     tag_definition *temp =NULL;
     int notext           =TRUE;
     
+    dump_stack();
     while ((stackptr != NULL) && (stackptr->type != t)) {
       notext = (notext && (! stackptr->text_emitted));
       if (! notext) {
@@ -765,12 +779,10 @@ char *html_text::done_para (void)
 
 void html_text::do_space (void)
 {
-  if (is_in_pre())
-    do_emittext("", 0);
-  else {
+  if (! is_in_pre()) {
     do_para(done_para());
+    space_emitted = TRUE;
   }
-  space_emitted = TRUE;
 }
 
 /*

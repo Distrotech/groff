@@ -830,7 +830,7 @@ object) as \fB5th ""\fP.
 .PP
 Objects are also numbered backwards by type from the last one.
 You can say \fB2nd last box\fP to get the second-to-last box, or
-\fB3rd last ellipse\fP to get the third-to-last box.
+\fB3rd last ellipse\fP to get the third-to-last ellipse.
 .PP
 In places where \fIn\/\fBth\fR is allowed, \fB`\fIexpr\/\fB'th\fR is
 also allowed.  Note that

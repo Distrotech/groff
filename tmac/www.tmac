@@ -494,9 +494,9 @@
 .  el \{\
 .    ie r ps4html \{\
 .      www-make-unique-name
-.      nop \O[3]\O[5i\\*[www-unique-name].png]\O[1]
-.      nop \\m[\\*[www-dropcolor]]\\s[40]\\$1\\s0
-.      nop \O[2]\O[1]\O[4]
+.      nop \O[5i\\*[www-unique-name].png]\O[1]
+.      nop \\m[\\*[www-dropcolor]]\\s[40]\O[3]\\$1\O[4]\\s0
+.      nop \O[2]\O[1]
 .    \}
 .    el \{\
 .      nr dummy \\w'\\$1'u
@@ -526,18 +526,18 @@
 .\"
 .de HTML-DO-IMAGE
 .  if r ps4html \
-.    nop \O[3]\O[5\\$2\\$1.png]\O[1]
+.    nop \O[5\\$2\\$1.png]\O[1]\O[3]
 .  if \\n[www-html] \
-.    nop \O[3]\O[5\\$2\\$1.png]\O[0]
+.    nop \O[5\\$2\\$1.png]\O[0]\O[3]
 ..
 .\"
 .\" HTML-IMAGE-END - terminates an image for html
 .\"
 .de HTML-IMAGE-END
 .  if r ps4html \
-.    nop \O[2]\O[1]\O[4]
+.    nop \O[4]\O[2]\O[0]
 .  if \\n[www-html] \
-.    nop \O[2]\O[1]\O[4]
+.    nop \O[4]\O[2]\O[1]
 ..
 .
 .nr www-png-no 0
@@ -575,11 +575,11 @@
 .  HTML-DO-IMAGE \\*[www-unique-name] i
 ..
 .
-.
 .if \n[www-html] \{\
 .   nh
 .   nr HY 0
 .\}
+.if r ps4html .nop \O[0]
 .cp \n(_C
 .
 .\" now set

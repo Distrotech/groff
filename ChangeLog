@@ -1,3 +1,73 @@
+2002-05-22  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Change syntax of \O: \O[0] suppresses output, \O[1] enables output
+	if at outer level; at start-up we are at outer level.
+
+	* src/roff/troff/input.cc (do_suppress): Implement it.
+	Simplify \O[3].
+
+	Add option -p to show progress information.
+	pre-grohtml will now render only one page at a time, reducing the
+	size of needed disk resources enormously.
+
+	* src/preproc/html/pre-html.cc (imagePageStem): Replaced with...
+	(imagePageName): New global variable.
+	(psPageName, show_progress, currentPageNo): New global variables.
+	(html_system): Close saved stderr and stdout handles.
+	(write_end_image): Accept a parameter to control \O escape.
+	(write_start_image): Adapted to new \O meaning.
+	(char_buffer::write_upto_newline): Updated.
+	(createAllPages): Replaced with...
+	(createPage): This new function to create a single page for images.
+	It uses `psselect' from the psutils package.
+	(removeAllPages): Removed.
+	(createImage): Updated.
+	Handle progress display.
+	(char_buffer::do_html, char_buffer::do_image) [DEBUGGING]: Removed.
+	(scanArguments): Add option -p.
+	(makeTempFiles): Updated to create temp files for psPageName and
+	imagePageName.
+	(removeTempFiles): Removed.
+	(main): Updated.
+
+	* src/devices/grohtml/post-html.cc (header_desc::write_headings,
+	html_printer::write_header): Append `\0' to `buffer'.
+	(html_printer::do_eol): Depend on `current_paragraph->emitted_text'.
+	(main): Handle -p.
+	* src/devices/grohtml/html-text.cc (html_text::dump_stack_element):
+	Handle `text_emitted'.
+	(html_text::table_is_void): Slightly rewritten.
+	(stop): New external symbol.
+	(html_text::do_push) [DEBUGGING]: Use it and simplify.
+	(html_text::shutdown): Call `dump_stack'.
+	(html_text::do_space): Rewritten.
+	* src/devices/grohtml/grohtml.man: Document -p and the need of
+	`psselect'.
+
+	* tmac/www.tmac (DC, HTML-DO-IMAGE, HTML-IMAGE-END): Updated to
+	new \O syntax.
+	Call \O[0] if `ps4html' is active.
+	* tmac/s.tmac (@EQ, @EN): Handle html better.
+	(@TS, TE): Ditto.
+	* tmac/html.tmac: Don't use black for background colour.
+
+	* src/roff/troff/node.cc: Include `div.h'.
+	(troff_output_file::really_print_line): Don't use `is_on'. 
+	(troff_output_file::word_marker, troff_output_file::flush_tbuf
+	troff_output_file::check_charinfo,
+	troff_output_file::put_char_width, troff_output_file::put_char,
+	troff_output_file::determine_line_limits, troff_output_file::draw,
+	real_output_file::begin_page, glyph_color_node::tprintf,
+	fill_color_node::tprint, hline_node::tprint, vline_node::tprint):
+	Use `is_on'.
+	(troff_output_file::really_on): Call `do_motion'.
+	(suppress_node::tprint): Use `get_page_number' instead of `%'
+	register.
+	Call `reset_output_registers' conditionally on `is_on'.
+
+	* doc/groff.texinfo: Document new syntax of \O.
+	* NEWS, man/groff_diff.man: Updated.
+
 2002-05-22  Werner LEMBERG  <wl@gnu.org>
 
 	* MORE.STUFF: Add info about David Frey's deroff implementation.

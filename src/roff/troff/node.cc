@@ -36,6 +36,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "font.h"
 #include "reg.h"
 #include "input.h"
+#include "div.h"
 #include "geometry.h"
 
 #include "nonposix.h"
@@ -670,7 +671,7 @@ class real_output_file : public output_file {
   int piped;
 #endif
   int printing;        // decision via optional page list
-  int output_on;       // .output 1 or .output 0 requests
+  int output_on;       // \O[0] or \O[1] escape calls
   virtual void really_transparent_char(unsigned char) = 0;
   virtual void really_print_line(hunits x, vunits y, node *n,
 				 vunits before, vunits after, hunits width) = 0;
@@ -866,8 +867,7 @@ void troff_output_file::really_print_line(hunits x, vunits y, node *n,
 {
   moveto(x, y);
   while (n != 0) {
-    if (is_on() || (n->force_tprint()))
-      n->tprint(this);
+    n->tprint(this);
     n = n->next;
   }
   flush_tbuf();
@@ -886,7 +886,8 @@ void troff_output_file::really_print_line(hunits x, vunits y, node *n,
 inline void troff_output_file::word_marker()
 {
   flush_tbuf();
-  put('w');
+  if (is_on())
+    put('w');
 }
 
 inline void troff_output_file::right(hunits n)
@@ -942,6 +943,11 @@ void troff_output_file::do_motion()
 
 void troff_output_file::flush_tbuf()
 {
+  if (!is_on()) {
+    tbuf_len = 0;
+    return;
+  }
+
   if (tbuf_len == 0)
     return;
   if (tbuf_kern == 0)
@@ -962,6 +968,9 @@ void troff_output_file::flush_tbuf()
 
 void troff_output_file::check_charinfo(tfont *tf, charinfo *ci)
 {
+  if (!is_on())
+    return;
+
   int height = tf->get_char_height(ci).to_units();
   int width = tf->get_width(ci).to_units()
 	      + tf->get_italic_correction(ci).to_units();
@@ -973,12 +982,17 @@ void troff_output_file::check_charinfo(tfont *tf, charinfo *ci)
 void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,
 				       hunits k)
 {
+  int kk = k.to_units();
+  if (!is_on()) {
+    flush_tbuf();
+    hpos += w.to_units() + kk;
+    return;
+  }
   if (tf != current_tfont) {
     flush_tbuf();
     set_font(tf);
   }
   char c = ci->get_ascii_code();
-  int kk = k.to_units();
   if (c == '\0') {
     flush_tbuf();
     do_motion();
@@ -1041,6 +1055,9 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,
 void troff_output_file::put_char(charinfo *ci, tfont *tf)
 {
   flush_tbuf();
+  if (!is_on())
+    return;
+
   if (tf != current_tfont)
     set_font(tf);
   char c = ci->get_ascii_code();
@@ -1238,6 +1255,10 @@ void troff_output_file::determine_line_limits(char code, hvpair *point,
 					      int npoints)
 {
   int i, x, y;
+
+  if (!is_on())
+    return;
+
   switch (code) {
   case 'c':
   case 'C':
@@ -1318,32 +1339,33 @@ void troff_output_file::determine_line_limits(char code, hvpair *point,
 void troff_output_file::draw(char code, hvpair *point, int npoints,
 			     font_size fsize)
 {
+  int i;
   flush_tbuf();
   do_motion();
-  int size = fsize.to_scaled_points();
-  if (current_size != size) {
-    put('s');
-    put(size);
-    put('\n');
-    current_size = size;
-    current_tfont = 0;
-  }
-  put('D');
-  put(code);
-  int i;
-  if (code == 'c') {
-    put(' ');
-    put(point[0].h.to_units());
-  }
-  else
-    for (i = 0; i < npoints; i++) {
-      put(' ');
-      put(point[i].h.to_units());
-      put(' ');
-      put(point[i].v.to_units());
+  if (is_on()) {
+    int size = fsize.to_scaled_points();
+    if (current_size != size) {
+      put('s');
+      put(size);
+      put('\n');
+      current_size = size;
+      current_tfont = 0;
     }
-
-  determine_line_limits(code, point, npoints);
+    put('D');
+    put(code);
+    if (code == 'c') {
+      put(' ');
+      put(point[0].h.to_units());
+    }
+    else
+      for (i = 0; i < npoints; i++) {
+	put(' ');
+	put(point[i].h.to_units());
+	put(' ');
+	put(point[i].v.to_units());
+      }
+    determine_line_limits(code, point, npoints);
+  }
 
   for (i = 0; i < npoints; i++)
     output_hpos += point[i].h.to_units();
@@ -1353,12 +1375,15 @@ void troff_output_file::draw(char code, hvpair *point, int npoints,
       output_vpos += point[i].v.to_units();
     vpos = output_vpos;
   }
-  put('\n');
+  if (is_on())
+    put('\n');
 }
 
 void troff_output_file::really_on ()
 {
   flush_tbuf();
+  force_motion = 1;
+  do_motion();
 }
 
 void troff_output_file::really_off ()
@@ -1558,7 +1583,7 @@ int real_output_file::is_printing()
 void real_output_file::begin_page(int pageno, vunits page_length)
 {
   printing = in_output_page_list(pageno);
-  if (printing && output_on)
+  if (printing)
     really_begin_page(pageno, page_length);
 }
 
@@ -1600,9 +1625,8 @@ void real_output_file::really_put_filename(const char *filename)
 void real_output_file::on()
 {
   really_on();
-  if (output_on == 0) {
+  if (output_on == 0)
     output_on = 1;
-  }
 }
 
 void real_output_file::off()
@@ -1613,7 +1637,7 @@ void real_output_file::off()
 
 int real_output_file::is_on()
 {
-  return( output_on );
+  return output_on;
 }
 
 void real_output_file::really_on()
@@ -3659,7 +3683,7 @@ inline int min(int a, int b)
 
 void suppress_node::tprint(troff_output_file *out)
 {
-  int current_page = get_reg_int("%");
+  int current_page = topdiv->get_page_number();
   // firstly check to see whether this suppress node contains
   // an image filename & position.
   if (is_on == 2) {
@@ -3667,6 +3691,7 @@ void suppress_node::tprint(troff_output_file *out)
     last_position = position;
     last_image_filename = strdup(filename.contents());
     last_image_id = image_id;
+    // printf("start of image and page = %d\n", current_page);
   }
   else {
     // now check whether the suppress node requires us to issue limits.
@@ -3705,11 +3730,15 @@ void suppress_node::tprint(troff_output_file *out)
 	if (suppress_start_page > 0 && current_page != suppress_start_page)
 	  error("suppression limit registers span more than one page;\n"
 	        "image description %1 will be wrong", image_no);
+	// if (topdiv->get_page_number() != suppress_start_page)
+	//  fprintf(stderr, "end of image and topdiv page = %d   and  suppress_start_page = %d\n",
+	//	  topdiv->get_page_number(), suppress_start_page);
+
 	// remember that the filename will contain a %d in which the
 	// image_no is placed
 	fprintf(stderr,
 		"grohtml-info:page %d  %d  %d  %d  %d  %d  %s  %d  %d  %s\n",
-		current_page,
+		topdiv->get_page_number(),
 		get_reg_int("opminx"), get_reg_int("opminy"),
 		get_reg_int("opmaxx"), get_reg_int("opmaxy"),
 		// page offset + line length
@@ -3719,12 +3748,13 @@ void suppress_node::tprint(troff_output_file *out)
       }
     }
     else {
-      if (is_on)
+      if (is_on) {
 	out->on();
+	// lastly we reset the output registers
+	reset_output_registers(out->get_vpos());
+      }
       else
 	out->off();
-      // lastly we reset the output registers
-      reset_output_registers(out->get_vpos());
       suppress_start_page = current_page;
     }
   }
@@ -3774,7 +3804,8 @@ hunits glyph_color_node::width()
 
 void glyph_color_node::tprint(troff_output_file *out)
 {
-  out->glyph_color(c);
+  if (out->is_on())
+    out->glyph_color(c);
 }
 
 /* page color_node */
@@ -3811,7 +3842,8 @@ hunits fill_color_node::width()
 
 void fill_color_node::tprint(troff_output_file *out)
 {
-  out->fill_color(c);
+  if (out->is_on())
+    out->fill_color(c);
 }
 
 /* composite_node */
@@ -4222,20 +4254,23 @@ void hline_node::tprint(troff_output_file *out)
     hunits xx = x - w;
     hunits xx2 = xx/2;
     out->right(xx2);
-    n->tprint(out);
+    if (out->is_on())
+      n->tprint(out);
     out->right(xx - xx2);
   }
   else {
     hunits rem = x - w*i;
     if (rem > H0)
       if (n->overlaps_horizontally()) {
-	n->tprint(out);
+	if (out->is_on())
+	  n->tprint(out);
 	out->right(rem - w);
       }
       else
 	out->right(rem);
     while (--i >= 0)
-      n->tprint(out);
+      if (out->is_on())
+	n->tprint(out);
   }
 }
 
@@ -4264,11 +4299,13 @@ void vline_node::tprint(troff_output_file *out)
       if (overlaps) {
 	n->zero_width_tprint(out);
 	out->down(-rem);
-	n->tprint(out);
+	if (out->is_on())
+	  n->tprint(out);
 	out->down(-h);
       }
       else {
-	n->tprint(out);
+	if (out->is_on())
+	  n->tprint(out);
 	out->down(-h - rem);
       }
     }
@@ -4289,7 +4326,8 @@ void vline_node::tprint(troff_output_file *out)
 	n->zero_width_tprint(out);
 	out->down(h);
       }
-      n->tprint(out);
+      if (out->is_on())
+	n->tprint(out);
     }
   }
 }

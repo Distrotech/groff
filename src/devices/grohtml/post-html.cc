@@ -1134,6 +1134,7 @@ void header_desc::write_headings (FILE *f, int force)
 	  string buffer(ANCHOR_TEMPLATE);
 
 	  buffer += as_string(h);
+	  buffer += '\0';
 	  fprintf(f, buffer.contents());
 	} else
 	  fputs(g->text_string, f);
@@ -1594,6 +1595,7 @@ void html_printer::write_header (void)
 	string buffer(ANCHOR_TEMPLATE);
 
 	buffer += as_string(header.no_of_headings);
+	buffer += '\0';
 	html.put_string(buffer.contents());
       } else {
 	html.put_string(header.header_buffer);
@@ -1896,14 +1898,17 @@ void html_printer::do_fill (int on)
 void html_printer::do_eol (void)
 {
   if (! fill_on) {
-    current_paragraph->do_newline();
-    current_paragraph->do_break();
+    if (current_paragraph->emitted_text()) {
+      current_paragraph->do_newline();
+      current_paragraph->do_break();
+    }
   }
   output_hpos = indentation+pageoffset;
   if (end_center > 0) {
-    if (end_center > 1) {
-      current_paragraph->do_break();
-    }
+    if (end_center > 1)
+      if (current_paragraph->emitted_text())
+	current_paragraph->do_break();
+    
     end_center--;
     if (end_center == 0) {
       current_paragraph->done_para();
@@ -2832,7 +2837,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "a:g:o:i:I:D:F:vbdhlrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "a:g:o:i:I:D:F:vbdhlrnp", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -2867,6 +2872,9 @@ int main(int argc, char **argv)
       manufacture_headings = TRUE;
       break;
     case 'o':
+      /* handled by pre-html */
+      break;
+    case 'p':
       /* handled by pre-html */
       break;
     case 'i':

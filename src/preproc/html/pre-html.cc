@@ -96,8 +96,9 @@ static int   stdoutfd         = 1;              // output file descriptor - norm
 static int   copyofstdoutfd   =-1;              // a copy of stdout, so we can restore stdout when
                                                 // writing to post-html
 static char *psFileName       = NULL;           // name of postscript file
+static char *psPageName       = NULL;           // name of file containing postscript current page
 static char *regionFileName   = NULL;           // name of file containing all image regions
-static char *imagePageStem    = NULL;           // stem of all files containing page images
+static char *imagePageName    = NULL;           // name of bitmap image containing current page
 static char *image_device     = "pnmraw";
 static int   image_res        = DEFAULT_IMAGE_RES;
 static int   vertical_offset  = 0;
@@ -109,6 +110,8 @@ static char *gsPaper          = NULL;           // the paper size that gs must u
 static int   textAlphaBits    = MAX_ALPHA_BITS;
 static int   graphicAlphaBits = MAX_ALPHA_BITS;
 static char *antiAlias        = NULL;           // antialias arguments we pass to gs.
+static int   show_progress    = FALSE;          // should we display page numbers as they are processed?
+static int   currentPageNo    = -1;             // current image page number
 #if defined(DEBUGGING)
 static int   debug          = FALSE;
 static char *troffFileName  = NULL;             // output of pre-html output which is sent to troff -Tps
@@ -227,6 +230,8 @@ void html_system(const char *s, int redirect_stdout)
     fprintf(stderr, "Calling `%s' failed\n", s);
   else if (status)
     fprintf(stderr, "Calling `%s' returned status %d\n", s, status);
+  close(save_stderr);
+  close(save_stdout);
 }
 
 /*
@@ -467,7 +472,7 @@ static void checkImageDir (void)
  *  write_end_image - ends the image. It writes out the image extents if we are using -Tps.
  */
 
-static void write_end_image (void)
+static void write_end_image (int is_html)
 {
   /*
    *  if we are producing html then these
@@ -477,7 +482,11 @@ static void write_end_image (void)
    *    in which case these generate image
    *    boundaries
    */
-  writeString("\\O[2]\\O[1]\\O[4]");
+  writeString("\\O[4]\\O[2]");
+  if (is_html)
+    writeString("\\O[1]");
+  else
+    writeString("\\O[0]");
 }
 
 /*
@@ -490,7 +499,7 @@ static void write_end_image (void)
 
 static void write_start_image (IMAGE_ALIGNMENT pos, int is_html)
 {
-  writeString("\\O[3]\\O[5");
+  writeString("\\O[5");
   switch (pos) {
 
   case INLINE:
@@ -509,10 +518,10 @@ static void write_start_image (IMAGE_ALIGNMENT pos, int is_html)
   }
   writeString(image_template); writeString(".png]");
   if (is_html)
-    writeString("\\O[0]");
+    writeString("\\O[0]\\O[3]");
   else
     // reset min/max registers
-    writeString("\\O[1]");
+    writeString("\\O[1]\\O[3]");
 }
 
 /*
@@ -538,7 +547,7 @@ void char_buffer::write_upto_newline (char_block **t, int *i, int is_html)
       if (can_see(t, &j, HTML_IMAGE_INLINE_BEGIN))
 	write_start_image(INLINE, is_html);
       else if (can_see(t, &j, HTML_IMAGE_INLINE_END))
-	write_end_image();
+	write_end_image(is_html);
       else {
 	if (j < (*t)->used) {
 	  *i = j;
@@ -748,33 +757,54 @@ imageList::~imageList ()
 }
 
 /*
- *  createAllPages - creates a set of images, one per page.
+ *  createPage - creates one image of, page pageno, from the postscript file.
  */
 
-static int createAllPages (void)
+static int createPage (int pageno)
 {
-  char buffer[4096];
   char *s;
 
-  imagePageStem = xtmptemplate(PAGE_TEMPLATE_LONG, PAGE_TEMPLATE_SHORT);
-  strcpy(buffer, imagePageStem);
+  if (currentPageNo == pageno)
+    return 0;
 
-  if (mksdir(imagePageStem) < 0) {
-    sys_fatal("mksdir");
-    return -1;
+  if (currentPageNo >= 1) {
+    unlink(imagePageName);
+    unlink(psPageName);
   }
 
+  if (show_progress) {
+    fprintf(stderr, "[%d] ", pageno);
+    fflush(stderr);
+  }
+
+#if defined(DEBUGGING)
+  if (debug)
+    fprintf(stderr, "creating page %d\n", pageno);
+#endif
+
+  s = make_message("psselect -q -p%d %s %s\n",
+		   pageno, psFileName, psPageName);
+
+  if (s == NULL)
+    sys_fatal("make_message");
+#if defined(DEBUGGING)
+  if (debug) {
+    fwrite(s, sizeof(char), strlen(s), stderr);
+    fflush(stderr);
+  }
+#endif
+  html_system(s, 1);
+  
   s = make_message("echo showpage | "
-		   "%s%s %s -q -dSAFER -sDEVICE=%s -r%d %s"
-		   "-sOutputFile=%s/%%d %s -",
-		   GS_NAME,
+		   "gs%s %s -q -dBATCH -dSAFER -sDEVICE=%s -r%d %s"
+		   "-sOutputFile=%s %s -\n",
 		   EXE_EXT,
 		   gsPaper,
 		   image_device,
 		   image_res,
 		   antiAlias,
-		   imagePageStem,
-		   psFileName);
+		   imagePageName,
+		   psPageName);
   if (s == NULL)
     sys_fatal("make_message");
 #if defined(DEBUGGING)
@@ -785,27 +815,8 @@ static int createAllPages (void)
 #endif
   html_system(s, 1);
   a_delete s;
+  currentPageNo = pageno;
   return 0;
-}
-
-/*
- *  removeAllPages - removes all page images.
- */
-
-static void removeAllPages (void)
-{
-  char *s=NULL;
-  int  i=1;
-
-  do {
-    if (s)
-      a_delete s;
-    s = make_message("%s/%d", imagePageStem, i);
-    if (s == NULL)
-      sys_fatal("make_message");
-    i++;
-  } while (unlink(s) == 0);
-  rmdir(imagePageStem);
 }
 
 /*
@@ -846,25 +857,29 @@ static void createImage (imageItem *i)
     int  y1 = max((image_res*vertical_offset/72)+min(i->Y1, i->Y2)*image_res/postscriptRes-IMAGE_BOARDER_PIXELS, 0);
     int  x2 = max(i->X1, i->X2)*image_res/postscriptRes+1*IMAGE_BOARDER_PIXELS;
     int  y2 = (image_res*vertical_offset/72)+(max(i->Y1, i->Y2)*image_res/postscriptRes)+1+IMAGE_BOARDER_PIXELS;
-    s = make_message("pnmcut%s %d %d %d %d < %s/%d | pnmcrop -quiet | pnmtopng%s %s > %s \n",
-		     EXE_EXT,
-		     x1, y1, x2-x1+1, y2-y1+1,
-		     imagePageStem,
-		     i->pageNo,
-		     EXE_EXT,
-		     TRANSPARENT,
-		     i->imageName);
-    if (s == NULL)
-      sys_fatal("make_message");
+    if (createPage(i->pageNo) == 0) {
+      s = make_message("pnmcut%s %d %d %d %d < %s | pnmcrop -quiet | pnmtopng%s %s > %s \n",
+		       EXE_EXT,
+		       x1, y1, x2-x1+1, y2-y1+1,
+		       imagePageName,
+		       EXE_EXT,
+		       TRANSPARENT,
+		       i->imageName);
+      if (s == NULL)
+	sys_fatal("make_message");
 
 #if defined(DEBUGGING)
-    if (debug) {
-      fprintf(stderr, s);
+      if (debug) {
+	fprintf(stderr, s);
+	fflush(stderr);
+      }
+#endif
+      html_system(s, 0);
+      a_delete s;
+    } else {
+      fprintf(stderr, "failed to generate image of page %d\n", i->pageNo);
       fflush(stderr);
     }
-#endif
-    html_system(s, 0);
-    a_delete s;
 #if defined(DEBUGGING)
   } else {
     if (debug) {
@@ -957,6 +972,10 @@ static void generateImages (char *regionFileName)
        */
       fputc(f->getPB(), stderr);
     }
+  }
+  if (show_progress) {
+    fprintf(stderr, "done\n");
+    fflush(stderr);
   }
 }
 
@@ -1114,15 +1133,6 @@ int char_buffer::do_html(int argc, char *argv[])
   argv = addRegDef(argc, argv, s.contents());
   argc++;
 
-#if defined(DEBUGGING)
-  if (debug) {
-    dump_args(argc, argv);
-    writeString("\n<<< html ************** \n");
-    write_file_html();
-    return 0;
-  }
-#else
-
   if (pipe(pdes) < 0)
     sys_fatal("pipe");
 
@@ -1162,7 +1172,6 @@ int char_buffer::do_html(int argc, char *argv[])
     write_file_html();
     waitForChild(pid);
   }
-#endif
   return 0;
 }
 
@@ -1187,11 +1196,6 @@ int char_buffer::do_image(int argc, char *argv[])
   s += '\0';
   argv = addRegDef(argc, argv, s.contents());
   argc++;
-
-#if defined(DEBUGGING)
-  if (debug)
-    dump_args(argc, argv);
-#endif
 
   if (pipe(pdes) < 0)
     sys_fatal("pipe");
@@ -1269,7 +1273,7 @@ int scanArguments (int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "+a:g:o:i:I:D:F:vbdhlrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "+a:g:o:i:I:D:F:vbdhlrnp", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -1307,6 +1311,9 @@ int scanArguments (int argc, char **argv)
     case 'o':
       vertical_offset = atoi(optarg);
       gsPaper = "";  // do not specify the paper size now
+      break;
+    case 'p':
+      show_progress = TRUE;
       break;
     case 'd':
 #if defined(DEBUGGING)
@@ -1350,13 +1357,34 @@ static int makeTempFiles (void)
 #if defined(DEBUGGING)
   psFileName     = "/tmp/prehtml-ps";
   regionFileName = "/tmp/prehtml-region";
-  imagePageStem  = "/tmp/prehtml-page";
+  imagePageName  = "/tmp/prehtml-page";
+  psPageName     = "/tmp/prehtml-psn";
   troffFileName  = "/tmp/prehtml-troff";
   htmlFileName   = "/tmp/prehtml-html";
 #else
-
   FILE *f;
 
+  /* psPageName contains a single page of postscript */
+  f = xtmpfile(&psPageName,
+	       PS_TEMPLATE_LONG, PS_TEMPLATE_SHORT,
+	       FALSE);
+  if (f == NULL) {
+    sys_fatal("xtmpfile");
+    return -1;
+  }
+  fclose(f);
+
+  /* imagePageName contains a bitmap image of the single postscript page */
+  f = xtmpfile(&imagePageName,
+	       PAGE_TEMPLATE_LONG, PAGE_TEMPLATE_SHORT,
+	       FALSE);
+  if (f == NULL) {
+    sys_fatal("xtmpfile");
+    return -1;
+  }
+  fclose(f);
+
+  /* psFileName contains a postscript file of the complete document */
   f = xtmpfile(&psFileName,
 	       PS_TEMPLATE_LONG, PS_TEMPLATE_SHORT,
 	       FALSE);
@@ -1365,6 +1393,8 @@ static int makeTempFiles (void)
     return -1;
   }
   fclose(f);
+
+  /* regionFileName contains a list of the images and their boxed coordinates */
   f = xtmpfile(&regionFileName,
 	       REGION_TEMPLATE_LONG, REGION_TEMPLATE_SHORT,
 	       FALSE);
@@ -1376,20 +1406,6 @@ static int makeTempFiles (void)
 
 #endif
   return 0;
-}
-
-/*
- *  removeTempFiles - remove the temporary files
- */
-
-static void removeTempFiles (void)
-{
-#if defined(DEBUGGING)
-  if (debug)
-    return;
-#endif
-  unlink(psFileName);
-  unlink(regionFileName);
 }
 
 int main(int argc, char **argv)
@@ -1426,14 +1442,9 @@ int main(int argc, char **argv)
     return 1;
   ok = inputFile.do_image(argc, argv);
   if (ok == 0) {
-    ok = createAllPages();
-    if (ok == 0) {
-      generateImages(regionFileName);
-      ok = inputFile.do_html(argc, argv);
-      removeAllPages();
-    }
+    generateImages(regionFileName);
+    ok = inputFile.do_html(argc, argv);
   }
-  removeTempFiles();
   return ok;
 }
 
