@@ -6116,7 +6116,7 @@ int token::add_to_node_list(node **pp)
     n = new transparent_dummy_node;
     break;
   case TOKEN_ZERO_WIDTH_BREAK:
-    n = new space_node(H0, 0);
+    n = new space_node(H0, curenv->get_fill_color());
     n->freeze_space();
     n->is_escape_colon();
     break;
@@ -6219,7 +6219,7 @@ void token::process()
     break;
   case TOKEN_ZERO_WIDTH_BREAK:
     {
-      node *tmp = new space_node(H0, 0);
+      node *tmp = new space_node(H0, curenv->get_fill_color());
       tmp->freeze_space();
       tmp->is_escape_colon();
       curenv->add_node(tmp);

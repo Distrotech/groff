@@ -2572,8 +2572,9 @@ int italic_corrected_node::character_type()
 class break_char_node : public node {
   node *ch;
   char break_code;
+  color *col;
 public:
-  break_char_node(node *, int, node * = 0);
+  break_char_node(node *, int, color *, node * = 0);
   ~break_char_node();
   node *copy();
   hunits width();
@@ -2597,8 +2598,8 @@ public:
   int force_tprint();
 };
 
-break_char_node::break_char_node(node *n, int c, node *x)
-: node(x), ch(n), break_code(c)
+break_char_node::break_char_node(node *n, int bc, color *c, node *x)
+: node(x), ch(n), break_code(bc), col(c)
 {
 }
 
@@ -2609,7 +2610,7 @@ break_char_node::~break_char_node()
 
 node *break_char_node::copy()
 {
-  return new break_char_node(ch->copy(), break_code);
+  return new break_char_node(ch->copy(), break_code, col);
 }
 
 hunits break_char_node::width()
@@ -2641,13 +2642,13 @@ node *break_char_node::add_self(node *n, hyphen_list **p)
 {
   assert((*p)->hyphenation_code == 0);
   if ((*p)->breakable && (break_code & 1)) {
-    n = new space_node(H0, 0, n);
+    n = new space_node(H0, col, n);
     n->freeze_space();
   }
   next = n;
   n = this;
   if ((*p)->breakable && (break_code & 2)) {
-    n = new space_node(H0, 0, n);
+    n = new space_node(H0, col, n);
     n->freeze_space();
   }
   hyphen_list *pp = *p;
@@ -2926,14 +2927,11 @@ inline void space_node::operator delete(void *p)
 space_node::space_node(hunits nn, color *c, node *p)
 : node(p), n(nn), set(0), was_escape_colon(0), col(c)
 {
-  // zero color pointer allowed only for zero width
-  assert(c != 0 || nn == H0);
 }
 
 space_node::space_node(hunits nn, int s, int flag, color *c, node *p)
 : node(p), n(nn), set(s), was_escape_colon(flag), col(c)
 {
-  assert(c != 0 || nn == H0);
 }
 
 #if 0
@@ -4018,8 +4016,7 @@ int word_space_node::set_unformat_flag()
 
 void word_space_node::tprint(troff_output_file *out)
 {
-  if (col)
-    out->fill_color(col);
+  out->fill_color(col);
   out->word_marker();
   out->right(n);
 }
@@ -4375,8 +4372,7 @@ void node::zero_width_tprint(troff_output_file *out)
 
 void space_node::tprint(troff_output_file *out)
 {
-  if (col)
-    out->fill_color(col);
+  out->fill_color(col);
   out->right(n);
 }
 
@@ -4642,7 +4638,7 @@ node *node::add_char(charinfo *ci, environment *env,
   if (break_code) {
     node *next1 = res->next;
     res->next = 0;
-    res = new break_char_node(res, break_code, next1);
+    res = new break_char_node(res, break_code, env->get_fill_color(), next1);
   }
   return res;
 }
@@ -5171,6 +5167,7 @@ int dbreak_node::force_tprint()
 int break_char_node::same(node *nd)
 {
   return break_code == ((break_char_node *)nd)->break_code
+	 && col == ((break_char_node *)nd)->col
 	 && same_node(ch, ((break_char_node *)nd)->ch);
 }
 

@@ -2288,7 +2288,7 @@ void environment::do_break(int spread)
     wrap_up_tab();
   if (line) {
     // this is so that hyphenation works
-    line = new space_node(H0, 0, line);
+    line = new space_node(H0, get_fill_color(), line);
     space_total++;
     possibly_break_line(0, spread);
   }
@@ -2973,13 +2973,13 @@ void environment::wrap_up_field()
 void environment::add_padding()
 {
   if (current_tab) {
-    tab_contents = new space_node(H0, 0, tab_contents);
+    tab_contents = new space_node(H0, get_fill_color(), tab_contents);
     tab_field_spaces++;
   }
   else {
     if (line == 0)
       start_line();
-    line = new space_node(H0, 0, line);
+    line = new space_node(H0, get_fill_color(), line);
     field_spaces++;
   }
 }
