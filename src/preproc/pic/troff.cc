@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -478,7 +478,7 @@ void troff_output::line_thickness(double p)
 void troff_output::set_fill(double f)
 {
   if (driver_extension_flag && f != last_fill) {
-    printf("\\D'f %du'\\h'%du'\n.sp -1\n", int(f*FILL_MAX), -int(f*FILL_MAX));
+    printf("\\D'f %du'\n.sp -1\n", int(f*FILL_MAX));
     last_fill = f;
   }
   if (last_filled) {

@@ -10554,6 +10554,12 @@ correspond to intermediate shades of gray.  This applies only to solid
 circles, solid ellipses, and solid polygons.  By default, a level of
 1000 is used.
 
+@cindex @w{@code{\D'f @dots{}'}} and horizontal resolution
+Don't use this command!  It has the serious drawback that it will be
+always rounded to the next integer multiple of the horizontal resolution
+(the value of the @code{hor} keyword in the @file{DESC} file).  Use
+@code{\M} with a gray value instead (@pxref{Colors}).
+
 @item \D'p @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{}'
 @cindex drawing a polygon (@w{@code{\D'p @dots{}'}})
 @cindex polygon, drawing (@w{@code{\D'p @dots{}'}})
@@ -14162,15 +14168,23 @@ order of the lines is not important.
 @table @code
 @item res @var{n}
 @kindex res
+@cindex device resolution
+@cindex resolution, device
 There are @var{n}@tie{}machine units per inch.
 
 @item hor @var{n}
 @kindex hor
-The horizontal resolution is @var{n}@tie{}machine units.
+@cindex horizontal resolution
+@cindex resolution, horizontal
+The horizontal resolution is @var{n}@tie{}machine units.  All horizontal
+quantities are rounded to be multiples of this value.
 
 @item vert @var{n}
 @kindex vert
-The vertical resolution is @var{n}@tie{}machine units.
+@cindex vertical resolution
+@cindex resolution, vertical
+The vertical resolution is @var{n}@tie{}machine units.  All vertical
+quantities are rounded to be multiples of this value.
 
 @item sizescale @var{n}
 @kindex sizescale
