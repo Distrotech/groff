@@ -1201,14 +1201,14 @@ void page::add_line (style *s,
 }
 
 /*
- *  to_unicode - returns a unicode translation of char, ch.
+ *  to_unicode - returns a unicode translation of int, ch.
  */
 
-static char *to_unicode (unsigned char ch)
+static char *to_unicode (unsigned int ch)
 {
-  static char buf[20];
+  static char buf[30];
 
-  sprintf(buf, "&#%u;", (unsigned int)ch);
+  sprintf(buf, "&#%u;", ch);
   return buf;
 }
 
@@ -1480,9 +1480,9 @@ class html_printer : public printer {
   void  set_line_thickness            (const environment *);
   void  terminate_current_font        (void);
   void  flush_font                    (void);
-  void  add_to_sbuf                   (unsigned char code, const string &s);
+  void  add_to_sbuf                   (int index, const string &s);
   void  write_title                   (int in_head);
-  int   sbuf_continuation             (unsigned char code, const char *name, const environment *env, int w);
+  int   sbuf_continuation             (int index, const char *name, const environment *env, int w);
   void  flush_page                    (void);
   void  troff_tag                     (text_glob *g);
   void  flush_globs                   (void);
@@ -1527,7 +1527,7 @@ class html_printer : public printer {
   void  outstanding_eol               (int n);
   int   is_bold                       (font *f);
   font *make_bold                     (font *f);
-  int   overstrike                    (unsigned char code, const char *name, const environment *env, int w);
+  int   overstrike                    (int index, const char *name, const environment *env, int w);
   void  do_body                       (void);
   int   next_horiz_pos                (int nf);
   void  lookahead_for_tables          (void);
@@ -3248,26 +3248,33 @@ html_printer::html_printer()
  *  add_to_sbuf - adds character code or name to the sbuf.
  */
 
-void html_printer::add_to_sbuf (unsigned char code, const string &s)
+void html_printer::add_to_sbuf (int index, const string &s)
 {
+  if (sbuf_style.f == NULL)
+    return;
+
   char *html_glyph = NULL;
+  unsigned int code = sbuf_style.f->get_code(index);
 
   if (s.empty()) {
-    html_glyph = get_html_translation(sbuf_style.f, string(code));
+    if (sbuf_style.f->contains(index))
+      html_glyph = (char *)sbuf_style.f->get_special_device_encoding(index);
+    else
+      html_glyph = NULL;
+    
     if ((html_glyph == NULL) && (code >= UNICODE_DESC_START))
       html_glyph = to_unicode(code);
   } else 
-    if (sbuf_style.f != NULL)
-      html_glyph = get_html_translation(sbuf_style.f, s);
+    html_glyph = get_html_translation(sbuf_style.f, s);
 
   last_sbuf_length = sbuf.length();
   if (html_glyph == NULL)
-    sbuf += code;
+    sbuf += ((char)code);
   else
     sbuf += html_glyph;
 }
 
-int html_printer::sbuf_continuation (unsigned char code, const char *name,
+int html_printer::sbuf_continuation (int index, const char *name,
 				     const environment *env, int w)
 {
   /*
@@ -3277,7 +3284,7 @@ int html_printer::sbuf_continuation (unsigned char code, const char *name,
       || ((sbuf_prev_hpos < sbuf_end_hpos)
 	  && (env->hpos < sbuf_end_hpos)
 	  && ((sbuf_end_hpos-env->hpos < env->hpos-sbuf_prev_hpos)))) {
-    add_to_sbuf(code, name);
+    add_to_sbuf(index, name);
     sbuf_prev_hpos = sbuf_end_hpos;
     sbuf_end_hpos += w + sbuf_kern;
     return TRUE;
@@ -3289,7 +3296,7 @@ int html_printer::sbuf_continuation (unsigned char code, const char *name,
        */
 
       if (env->hpos-sbuf_end_hpos < space_width) {
-	add_to_sbuf(code, name);
+	add_to_sbuf(index, name);
 	sbuf_prev_hpos = sbuf_end_hpos;
 	sbuf_end_hpos = env->hpos + w;
 	return TRUE;
@@ -3330,7 +3337,7 @@ char *get_html_translation (font *f, const string &name)
  *               is flushed.
  */
 
-int html_printer::overstrike(unsigned char code, const char *name, const environment *env, int w)
+int html_printer::overstrike(int index, const char *name, const environment *env, int w)
 {
   if ((env->hpos < sbuf_end_hpos)
       || ((sbuf_kern != 0) && (sbuf_end_hpos - sbuf_kern < env->hpos))) {
@@ -3340,7 +3347,7 @@ int html_printer::overstrike(unsigned char code, const char *name, const environ
     if (overstrike_detected) {
       /* already detected, remove previous glyph and use this glyph */
       sbuf.set_length(last_sbuf_length);
-      add_to_sbuf(code, name);
+      add_to_sbuf(index, name);
       sbuf_end_hpos = env->hpos + w;
       return TRUE;
     } else {
@@ -3349,7 +3356,7 @@ int html_printer::overstrike(unsigned char code, const char *name, const environ
       if (! is_bold(sbuf_style.f))
 	flush_sbuf();
       overstrike_detected = TRUE;
-      add_to_sbuf(code, name);
+      add_to_sbuf(index, name);
       sbuf_end_hpos = env->hpos + w;
       return TRUE;
     }
@@ -3364,8 +3371,6 @@ int html_printer::overstrike(unsigned char code, const char *name, const environ
 
 void html_printer::set_char(int i, font *f, const environment *env, int w, const char *name)
 {
-  unsigned char code = f->get_code(i);
-
   style sty(f, env->size, env->height, env->slant, env->fontno, *env->col);
   if (sty.slant != 0) {
     if (sty.slant > 80 || sty.slant < -80) {
@@ -3374,11 +3379,11 @@ void html_printer::set_char(int i, font *f, const environment *env, int w, const
     }
   }
   if (((! sbuf.empty()) && (sty == sbuf_style) && (sbuf_vpos == env->vpos))
-      && (sbuf_continuation(code, name, env, w) || overstrike(code, name, env, w)))
+      && (sbuf_continuation(i, name, env, w) || overstrike(i, name, env, w)))
     return;
   
   flush_sbuf();
-  add_to_sbuf(code, name);
+  add_to_sbuf(i, name);
   sbuf_end_hpos = env->hpos + w;
   sbuf_start_hpos = env->hpos;
   sbuf_prev_hpos = env->hpos;
