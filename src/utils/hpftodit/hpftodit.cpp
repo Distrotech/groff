@@ -990,6 +990,13 @@ void dump_tags(File &f)
 	case serif_style_tag:
 	  printf(" Serif Style (%u)", tag_info(t).value);
 	  break;
+	case posture_tag:
+	  printf(" Posture (%s)", tag_info(t).value == 0
+				  ? "Upright"
+				  : tag_info(t).value == 1
+				    ? "Italic"
+				    : "Alternate Italic");
+	  break;
 	case max_width_tag:
 	  printf(" Maximum Width (%u DU: %.2f em)", tag_info(t).value,
 		 em_fract(tag_info(t).value));
@@ -1072,7 +1079,8 @@ void dump_tags(File &f)
 	case left_extent_tag:
 	  printf(" Left Extent array");
 	  break;
-	// both signed and unsigned do exist!
+	// The type of this tag has changed from SHORT to SIGNED SHORT
+	// in TFM version 1.3.0.
 	case ascent_tag:
 	  printf(" Character Ascent array");
 	  break;
