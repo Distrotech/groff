@@ -3580,7 +3580,7 @@ string-valued register.
 
 @findex ds
 Groff has string variables, which are entirely for user convenience
-(i.e. there are no builtin strings) They are defined via the
+(i.e. there are no builtin strings).  They are defined via the
 @code{ds} request.
 
 @example
@@ -3588,7 +3588,7 @@ Groff has string variables, which are entirely for user convenience
 @end example
 
 @findex \*
-The are interpolated, or expanded in-place, via the @code{\*} escape:
+They are interpolated, or expanded in-place, via the @code{\*} escape:
 
 @example
 The \*(UX Operating System
@@ -3649,6 +3649,16 @@ resulting string will be stored @emph{without} the newlines.
 of text are on these \
 next several lines
 @end example
+
+@findex substring
+@cindex substrings
+@code{.substring xx n1 [n2]}
+Replace the string in register@w{ }xx with the substring defined by the
+indices n1 and@w{ }n2.  The first character in the string has index one.
+If n2 is omitted, it is taken to be equal to the string's length.  If
+the index value n1 or n2 is negative or zero, it will be counted from
+the end of the string, going backwards: The last character has index@w{
+}0, the character before the last character has index@w{ }-1, etc.
 
 @findex rn
 @code{rn}

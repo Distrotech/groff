@@ -1100,7 +1100,7 @@ command looks for a
 .B %%BoundingBox
 comment to extract the bounding box values.
 After a successful call, the coordinates (in PostScript units) of the lower
-left and upper right edge can be found in the registers
+left and upper right corner can be found in the registers
 .BR \en[llx] ,
 .BR \en[lly] ,
 .BR \en[urx] ,
@@ -1236,6 +1236,25 @@ The styles command in the
 .SM DESC
 file controls which font positions
 (if any) are initially associated with styles rather than fonts.
+.TP
+.BI .substring\  xx\ n1\  [ n2 ]
+Replace the string in register
+.I xx
+with the substring defined by the indices
+.I n1
+and
+.IR n2 .
+The first character in the string has index one.
+If
+.I n2
+is omitted, it is taken to be equal to the string's length.  If the
+index value
+.I n1
+or
+.I n2
+is negative or zero, it will be counted from the end of the string,
+going backwards: The last character has index 0, the character before
+the last character has index -1, etc.
 .TP
 .BI .tkf\  f\ s1\ n1\ s2\ n2
 Enable track kerning for font
