@@ -872,18 +872,18 @@ static int get_copy(node **nd, int defining)
       }
     case 'g':
       {
-        (void)input_stack::get(NULL);
-        symbol s = read_escape_name();
+	(void)input_stack::get(NULL);
+	symbol s = read_escape_name();
 	if (!s.is_null())
 	  interpolate_number_format(s);
-        break;
+	break;
       }
     case 't':
       (void)input_stack::get(NULL);
       return '\t';
     case 'V':
       {
-        (void)input_stack::get(NULL);
+	(void)input_stack::get(NULL);
 	symbol s = read_escape_name();
 	if (!s.is_null())
 	  interpolate_environment_variable(s);
@@ -1576,7 +1576,10 @@ void token::next()
 	    curenv->set_font(s);
 	  else
 	    curenv->set_font(atoi(s.contents()));
-	  break;
+	  if (compatible_flag)
+	    break;
+	  type = TOKEN_TRANSPARENT_ESCAPE;
+	  return;
 	}
       case 'g':
 	{
@@ -1594,7 +1597,10 @@ void token::next()
       case 'H':
 	if (get_delim_number(&x, 'z', curenv->get_requested_point_size()))
 	  curenv->set_char_height(x);
-	break;
+	if (compatible_flag)
+	  break;
+	type = TOKEN_TRANSPARENT_ESCAPE;
+	return;
       case 'k':
 	nm = read_escape_name();
 	if (nm.is_null())
@@ -1649,15 +1655,24 @@ void token::next()
 	return;
       case 'R':
 	do_register();
-	break;
+	if (compatible_flag)
+	  break;
+	type = TOKEN_TRANSPARENT_ESCAPE;
+	return;
       case 's':
 	if (read_size(&x))
 	  curenv->set_size(x);
-	break;
+	if (compatible_flag)
+	  break;
+	type = TOKEN_TRANSPARENT_ESCAPE;
+	return;
       case 'S':
 	if (get_delim_number(&x, 0))
 	  curenv->set_char_slant(x);
-	break;
+	if (compatible_flag)
+	  break;
+	type = TOKEN_TRANSPARENT_ESCAPE;
+	return;
       case 't':
 	type = TOKEN_NODE;
 	nd = new non_interpreted_char_node('\t');
@@ -1673,7 +1688,7 @@ void token::next()
 	nd = new vmotion_node(x);
 	return;
       case 'V':
-        {
+	{
 	  symbol nm = read_escape_name();
 	  if (!nm.is_null())
 	    interpolate_environment_variable(nm);
@@ -1712,9 +1727,9 @@ void token::next()
       case 'z':
 	{
 	  next();
-          if (type == TOKEN_NODE)
-            nd = new zero_width_node(nd);
-          else {
+	  if (type == TOKEN_NODE)
+	  nd = new zero_width_node(nd);
+	  else {
   	    charinfo *ci = get_char(1);
 	    if (ci == 0)
 	      break;
@@ -1723,7 +1738,7 @@ void token::next()
 	      break;
 	    nd = new zero_width_node(gn);
 	    type = TOKEN_NODE;
-          }
+	  }
 	  return;
 	}
       case 'Z':
@@ -1877,6 +1892,8 @@ const char *token::description()
     return "`\\!'";
   case TOKEN_TRANSPARENT_DUMMY:
     return "`\\)'";
+  case TOKEN_TRANSPARENT_ESCAPE:
+    return "a transparent escape (`\\f', `\\H', `\\R', `\\s', `\\S')";
   case TOKEN_EOF:
     return "end of input";
   default:
@@ -2284,6 +2301,9 @@ void process_input_stack()
 	}
 	break;
       }
+    case token::TOKEN_TRANSPARENT_ESCAPE:
+      bol = 0;
+      break;
     case token::TOKEN_NEWLINE:
       {
 	if (bol && !curenv->get_prev_line_interrupted())
@@ -2388,9 +2408,9 @@ void process_input_stack()
 	  way to do it.  Doing an output_pending_lines() whenever a
 	  TOKEN_END_TRAP is detected doesn't work: for example,
 
-          .wh -1i x
-          .de x
-          'bp
+	  .wh -1i x
+	  .de x
+	  'bp
 	  ..
 	  .wh -.5i y
 	  .de y
@@ -2401,8 +2421,8 @@ void process_input_stack()
 	  .sp |\n(.pu-1i-.5v
 	  a\%very\%very\%long\%word
 
-          will print all but the first lines from the word immediately
-          after the footer, rather than on the next page. */
+	  will print all but the first lines from the word immediately
+	  after the footer, rather than on the next page. */
 
 	if (trap_bol_stack.is_empty())
 	  curenv->output_pending_lines();
@@ -4662,7 +4682,7 @@ void else_request()
 
 /*
  *  begin - if this is the outermost html_begin request then execute the
- *               rest of the line, else skip line
+ *          rest of the line, else skip line
  */
 
 void begin()
@@ -4998,7 +5018,7 @@ void do_ps_file(FILE *fp, const char* filename)
       else {
 	error("the arguments to the %%%%BoundingBox comment in `%1' are bad",
 	      filename);
-        return;
+	return;
       }
     }
   }
@@ -5551,6 +5571,7 @@ int token::add_to_node_list(node **pp)
     *pp = (*pp)->add_char(get_charinfo_by_number(val), curenv, &w, &s);
     break;
   case TOKEN_RIGHT_BRACE:
+  case TOKEN_TRANSPARENT_ESCAPE:
     break;
   case TOKEN_SPACE:
     n = new hmotion_node(curenv->get_space_width());
@@ -5631,7 +5652,7 @@ void token::process()
     curenv->add_char(get_charinfo_by_number(val));
     break;
   case TOKEN_REQUEST:
-    // handled in process_input_stack
+    // handled in process_input_stack()
     break;
   case TOKEN_RIGHT_BRACE:
     break;
@@ -5654,6 +5675,9 @@ void token::process()
     break;
   case TOKEN_TRANSPARENT_DUMMY:
     curenv->add_node(new transparent_dummy_node);
+    break;
+  case TOKEN_TRANSPARENT_ESCAPE:
+    // handled in process_input_stack()
     break;
   default:
     assert(0);

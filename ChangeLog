@@ -1,3 +1,22 @@
+2001-08-28  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/token.h (token_type): Add TOKEN_TRANSPARENT_ESCAPE.
+	* src/roff/troff/input.cc (token::next): Return
+	TOKEN_TRANSPARENT_ESCAPE for \f, \H, \R, \s, and \S if not in
+	compatibility mode.
+	(token::description): Updated.
+	(process_input_stack): Reset `bol' for TOKEN_TRANSPARENT_ESCAPE.
+	(token::add_to_node_list, token::process): Ignore
+	TOKEN_TRANSPARENT_ESCAPE.
+
+2001-08-27  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/an-old.tmac: Fix `S' string.
+
+2001-08-26  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/troff.man: Don't use .ne for TTY devices.
+
 2001-08-25  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/pic.ms: Replace `\\' with `\e' (and fixing some single
