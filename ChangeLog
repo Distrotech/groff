@@ -1,3 +1,26 @@
+2004-10-10  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* src/roff/troff/node.cpp: New extern `debug_state'.
+	Include `stringclass.h' and `mtsm.h'.
+	Implement new classes and class members from `node.h'.
+	(real_output_file): Make `fp' public.
+	(troff_output_file): New variables `cur_div_level' and `tag_list'.
+	Update constructors.
+	(troff_output_file::really_print_line): Check whether we should push
+	the current troff state and use the state at the start of the
+	invocation of this diversion.
+	(troff_output_file::add_to_tag_list): New member function.
+	(node::add_char): Handle `glyph_comp_np'.
+
+	* src/roff/troff/node.h: Include `mtsm.h'.
+	(node): New variables `state', `push_state', `div_nest_level',
+	`is_special'.  Update constructors, all descendants.
+	Pass additional argument to `add_char' member function.
+	New virtual member functions `is_tag', `debug_node',
+	`debug_node_list'.  Update all descendants.
+	(tag_node): New class for handling tags.
+	(output_file): Add variable `state'.
+
 2004-10-09  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/roff/troff/mtsm.cpp, src/roff/troff/mtsm.h: New files,
@@ -92,9 +115,6 @@
 	(do_if_request): Handle `suppress_push'.
 	(tag, taga): New functions.
 	(init_input_requests): Add `tag' and `taga' requests.
-
-	(node): New virtual member function `is_tag'.  Update all
-	descendants.
 
 2004-10-05  Gaius Mulley  <gaius@glam.ac.uk>
 
