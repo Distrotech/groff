@@ -1,8 +1,8 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by Gaius Mulley <gaius@glam.ac.uk>
-     using adjust_arc_center() from printer.cc, written by James Clark.
+     using adjust_arc_center() from printer.cpp, written by James Clark.
 
 This file is part of groff.
 

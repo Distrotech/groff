@@ -1,8 +1,8 @@
 // -*- C++ -*-
 
-/* <groff_src_dir>/src/libs/libgroff/color.cc
+/* <groff_src_dir>/src/libs/libgroff/color.cpp
 
-Last update: 15 Feb 2003
+Last update: 13 Apr 2003
 
 Copyright (C) 2001, 2002, 2003 Free Software Foundation, Inc.
     Written by Gaius Mulley <gaius@glam.ac.uk>

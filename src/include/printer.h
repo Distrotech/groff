@@ -33,7 +33,7 @@
    postprocessor only needs to implement a derived class of `printer' and
    a suitable function `make_printer' for the device-dependent tasks.
    Then the methods of class `printer' are called automatically by
-   `do_file()' in `input.cc'.
+   `do_file()' in `input.cpp'.
 */
 
 #include "color.h"

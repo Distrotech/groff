@@ -1,9 +1,9 @@
 // -*- C++ -*-
 /* Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
  *
- *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.cc
+ *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.cpp
  *
- *  html-text.cc
+ *  html-text.cpp
  *
  *  provide a troff like state machine interface which
  *  generates html text.

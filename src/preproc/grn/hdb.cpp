@@ -17,14 +17,14 @@
 #define MAXSTRING 128
 #define MAXSTRING_S "127"
 
-/* imports from main.cc */
+/* imports from main.cpp */
 
 extern int linenum;		/* current line number in input file */
 extern char gremlinfile[];	/* name of file currently reading */
 extern int SUNFILE;		/* TRUE if SUN gremlin file */
 extern void savebounds(float x, float y);
 
-/* imports from hpoint.cc */
+/* imports from hpoint.cpp */
 
 extern POINT *PTInit();
 extern POINT *PTMakePoint(float x, float y, POINT ** pplist);

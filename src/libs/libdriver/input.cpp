@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// <groff_src_dir>/src/libs/libdriver/input.cc
+// <groff_src_dir>/src/libs/libdriver/input.cpp
 
 /* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
    Free Software Foundation, Inc.
@@ -337,7 +337,7 @@ public:
  **********************************************************************/
 
 // exported as extern by error.h (called from driver.h)
-// needed for error messages (see ../libgroff/error.cc)
+// needed for error messages (see ../libgroff/error.cpp)
 const char *current_filename = 0; // printable name of the current file
 				  // printable name of current source file
 const char *current_source_filename = 0;
@@ -351,7 +351,7 @@ printer *pr;
 // Note:
 //
 //   We rely on an implementation of the `new' operator which aborts
-//   gracefully if it can't allocate memory (e.g. from libgroff/new.cc).
+//   gracefully if it can't allocate memory (e.g. from libgroff/new.cpp).
 
 
 /**********************************************************************

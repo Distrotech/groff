@@ -5020,7 +5020,7 @@ void output_request()
   tok.next();
 }
 
-extern int image_no;		// from node.cc
+extern int image_no;		// from node.cpp
 
 static node *do_suppress(symbol nm)
 {
@@ -5526,7 +5526,7 @@ int parse_bounding_box(char *p, bounding_box *bb)
   return 0;
 }
 
-// This version is taken from psrm.cc
+// This version is taken from psrm.cpp
 
 #define PS_LINE_MAX 255
 cset white_space("\n\r \t");

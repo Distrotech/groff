@@ -69,7 +69,7 @@ extern "C" {
 
 #ifndef HAVE_MKSTEMP
 /* since mkstemp() is defined as a real C++ function if taken from
-   groff's mkstemp.cc we need a declaration */
+   groff's mkstemp.cpp we need a declaration */
 int mkstemp(char *tmpl);
 #endif /* HAVE_MKSTEMP */
 

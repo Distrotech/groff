@@ -1,13 +1,13 @@
 // -*- C++ -*-
 /* Copyright (C) 2000, 2001, 2003 Free Software Foundation, Inc.
  *
- *  Gaius Mulley (gaius@glam.ac.uk) wrote output.cc
+ *  Gaius Mulley (gaius@glam.ac.uk) wrote output.cpp
  *  but it owes a huge amount of ideas and raw code from
- *  James Clark (jjc@jclark.com) grops/ps.cc.
+ *  James Clark (jjc@jclark.com) grops/ps.cpp.
  *
- *  output.cc
+ *  output.cpp
  *
- *  provide the simple low level output routines needed by html.cc
+ *  provide the simple low level output routines needed by html.cpp
  */
 
 /*

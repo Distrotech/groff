@@ -571,12 +571,12 @@ fi
 AC_LANG_POP(C++)])dnl
 dnl
 dnl
-dnl If mkstemp() isn't available, use our own mkstemp.cc file.
+dnl If mkstemp() isn't available, use our own mkstemp.cpp file.
 dnl
 AC_DEFUN(GROFF_MKSTEMP,
 [AC_MSG_CHECKING([for mkstemp])
 AC_LANG_PUSH(C++)
-AC_LIBSOURCE(mkstemp.cc)
+AC_LIBSOURCE(mkstemp.cpp)
 AC_TRY_LINK([#include <stdlib.h>
 #include <unistd.h>
 int (*f) (char *);],

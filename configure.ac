@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT
 AC_CONFIG_HEADERS(src/include/config.h:src/include/config.hin)
-AC_CONFIG_SRCDIR([src/roff/groff/groff.cc])
+AC_CONFIG_SRCDIR([src/roff/groff/groff.cpp])
 dnl checks for programs
 GROFF_SRCDIR
 GROFF_BUILDDIR

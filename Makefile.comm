@@ -23,10 +23,10 @@ SHELL=/bin/sh
 INCLUDES=-I. -I$(srcdir) \
   -I$(top_builddir)/src/include -I$(top_srcdir)/src/include
 ALL_CCFLAGS=$(INCLUDES) $(CCDEFINES) $(CCFLAGS) $(CPPFLAGS)
-COMPILE.cc=$(CCC) $(ALL_CCFLAGS) -c
+COMPILE.cpp=$(CCC) $(ALL_CCFLAGS) -c
 ALL_CFLAGS=$(INCLUDES) $(CDEFINES) $(CFLAGS) $(CPPFLAGS)
 COMPILE.c=$(CC) $(ALL_CFLAGS) -c
-LINK.cc=$(CCC) $(CCFLAGS) $(LDFLAGS)
+LINK.cpp=$(CCC) $(CCFLAGS) $(LDFLAGS)
 LINK.c=$(CC) $(CFLAGS) $(LDFLAGS)
 LIBGROFF=$(top_builddir)/src/libs/libgroff/libgroff.$(LIBEXT)
 LIBBIB=$(top_builddir)/src/libs/libbib/libbib.$(LIBEXT)
@@ -96,21 +96,21 @@ extraclean: distclean
 	-rm -f \#* *~ =* core junk grot old temp tmp tem
 
 .SUFFIXES:
-.SUFFIXES: .o .obj .cc .c .y .man .n
+.SUFFIXES: .o .obj .cpp .c .y .man .n
 
-.cc.o:
-	$(COMPILE.cc) $<
+.cpp.o:
+	$(COMPILE.cpp) $<
 
 .c.o:
 	$(COMPILE.c) $<
 
-.cc.obj:
-	$(COMPILE.cc) $<
+.cpp.obj:
+	$(COMPILE.cpp) $<
 
 .c.obj:
 	$(COMPILE.c) $<
 
-.y.cc:
+.y.cpp:
 	if test -n "$(YTABH)"; then \
 	  $(YACC) $(YACCFLAGS) -d $<; \
 	else \
@@ -122,7 +122,7 @@ extraclean: distclean
 	if test -n "$(YTABH)"; then mv y_tab.h $(YTABH); fi
 
 # The next rule is needed for make of Solaris 2.5.1 to override its
-# built-in .y.o rule (which takes precedence over the .y.cc rule above).
+# built-in .y.o rule (which takes precedence over the .y.cpp rule above).
 .y.o:
 	if test -n "$(YTABH)"; then \
 	  $(YACC) $(YACCFLAGS) -d $<; \
@@ -133,7 +133,7 @@ extraclean: distclean
 	-test -f y.tab.c && mv y.tab.c y_tab.c
 	mv y_tab.c $(YTABC)
 	if test -n "$(YTABH)"; then mv y_tab.h $(YTABH); fi
-	$(COMPILE.cc) $(YTABC)
+	$(COMPILE.cpp) $(YTABC)
 
 .man.n:
 	@echo Making $@ from $<

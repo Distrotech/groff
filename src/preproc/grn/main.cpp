@@ -1,4 +1,4 @@
-/* Last non-groff version: main.cc 1.23  (Berkeley)  85/08/05
+/* Last non-groff version: main.c 1.23  (Berkeley)  85/08/05
  *
  * Adapted to GNU troff by Daniel Senderowicz 99/12/29.
  *
