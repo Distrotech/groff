@@ -331,7 +331,6 @@ PROGDIRS=$(CCPROGDIRS) $(CPROGDIRS)
 DEVDIRS=\
   font/devps \
   font/devdvi \
-  $(TTYDEVDIRS) \
   font/devX75 \
   font/devX75-12 \
   font/devX100 \
@@ -339,6 +338,11 @@ DEVDIRS=\
   font/devlj4 \
   font/devhtml \
   font/devlbp
+ALLTTYDEVDIRS=\
+  font/devascii \
+  font/devlatin1 \
+  font/devutf8 \
+  font/devcp1047
 OTHERDIRS=\
   man \
   tmac \
@@ -346,13 +350,15 @@ OTHERDIRS=\
   src/roff/grog \
   src/roff/nroff \
   contrib/mm
-ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(OTHERDIRS)
+ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
+  $(DEVDIRS) $(TTYDEVDIRS) $(OTHERDIRS)
 EXTRADIRS=\
-  fonts/devps/generate \
-  fonts/devdvi/generate \
+  font/devps/generate \
+  font/devdvi/generate \
   src/xditview \
   doc
-DISTDIRS=$(ALLDIRS) $(EXTRADIRS)
+DISTDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
+  $(DEVDIRS) $(ALLTTYDEVDIRS) $(OTHERDIRS) $(EXTRADIRS)
 TARGETS=all install install_bin install_data clean distclean mostlyclean \
   realclean extraclean distfiles TAGS depend uninstall_sub
 
@@ -412,7 +418,7 @@ $(CCPROGDIRS): FORCE
 	  -f $(top_srcdir)/Makefile.ccpg \
 	  -f Makefile.dep $(do)
 
-$(DEVDIRS): FORCE
+$(DEVDIRS) $(TTYDEVDIRS): FORCE
 	@if test $(srcdir) = .; \
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
@@ -443,6 +449,7 @@ revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' $(top_srcdir)/REVISION`
 .PHONY: dist
 dist:
 	-rm -fr tmp
+	rm -f groff-$(version)$(revision).tar.gz
 	mkdir tmp
 	for d in $(DISTDIRS); do \
 	  $(mkinstalldirs) tmp/$$d; \
@@ -461,7 +468,6 @@ dist:
 	rm -f Makefile; \
 	$(LN_S) $$srcdir/Makefile.init Makefile
 	mv tmp groff-$(version)$(revision)
-	rm -f groff-$(version)$(revision).tar.gz
 	tar cfh - groff-$(version)$(revision) | \
 	  gzip -c >groff-$(version)$(revision).tar.gz
 	rm -fr groff-$(version)$(revision)

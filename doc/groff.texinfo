@@ -3547,6 +3547,9 @@ the @code{fi} request.
 Activate fill mode (which is the default).  This request implicitly
 enables adjusting; it will also cause a break in the text currently
 being filled.  The number register @code{.u} is set to@w{ }1.
+
+The fill mode status is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @cindex no-fill mode
@@ -3556,10 +3559,12 @@ Activate no-fill mode.  Input lines are output as-is, retaining line
 breaks.  The current line length will be ignored.  This command
 implicitly disables adjusting; it also causes a break.  The number
 register @code{.u} will be set to@w{ }0.
+
+The fill mode status is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @Deffn{Request, ad, [@var{mode}]}
-
 Set adjusting mode.
 
 Activation and deactivation of adjusting will be implicitly done with
@@ -3606,12 +3611,18 @@ text
 @vindex .j
 The current adjustment mode is available in the number register
 @code{.j}; it can be stored and subsequently used to set adjustment.
+
+The adjustment mode status is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @Deffn{Request, na, }
 Disable adjusting.  This request won't change the current adjustment
 mode: A call to @code{ad} afterwards will use the previous adjustment
 setting.
+
+The adjustment mode status is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @Deffn{Escape, \\p, }
@@ -3669,6 +3680,9 @@ sentence should always be followed with either a newline or two spaces.
 The number registers @code{.ss} and @code{.sss} are the values of the
 parameters set by the first and second arguments of the @code{ss}
 request.
+
+The space and sentence space values are associated with the current
+environment (@pxref{Environments}).
 @end_Deffn
 
 @cindex centering lines
@@ -3747,11 +3761,17 @@ two characters of a word.
 @vindex .hy
 The current hyphenation restrictions can be found in the number register
 @samp{.hy}.
+
+The hyphenation mode is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @Deffn{Request, nh, }
-Disable hyphenation.  Note that the hyphenation mode of the last call to
-@code{hy} is not remembered.
+Disable hyphenation (i.e., set the hyphenation mode to zero).  Note that
+the hyphenation mode of the last call to @code{hy} is not remembered.
+
+The hyphenation mode is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @vindex .hlc
@@ -3766,9 +3786,9 @@ Disable hyphenation.  Note that the hyphenation mode of the last call to
 Set the maximum number of consecutive hyphenated lines to @var{nnn}.  If
 this number is negative, there is no maximum.  The default is@w{ }-1 if
 @var{nnn} is omitted.  This value is associated with the current
-environment.  Only lines output from a given environment count towards
-the maximum associated with that environment.  Hyphens resulting from
-@code{\%} are counted; explicit hyphens are not.
+environment (@pxref{Environments}).  Only lines output from a given
+environment count towards the maximum associated with that environment.
+Hyphens resulting from @code{\%} are counted; explicit hyphens are not.
 
 The current setting of @code{hlm} is available in the @code{.hlm}
 register.  Also the number of immediately preceding consecutive
@@ -3790,7 +3810,9 @@ is zero can be used to separate the arguments of @code{hw} (see the
 documentation for the @code{hcode} request below for more information).
 In addition, this request can be used more than once.
 
-It will cause an error if there is no current hyphenation language.
+Hyphenation exceptions specified with the @code{hw} request are
+associated with the current hyphenation language; it will cause an error
+if there is no current hyphenation language.
 
 In old versions of @code{troff} there was a limited amount of space to
 store such information; fortunately, with @code{gtroff}, this is no
@@ -3816,6 +3838,9 @@ Change the hyphenation character to @var{char}.  This character will
 then work the same as the @code{\%} escape, and, thus, no longer appear
 in the output.  Without an argument, @code{hc} will reset the
 hyphenation character to be @code{\%} only.
+
+The hyphenation character is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @cindex hyphenation patterns
@@ -3866,8 +3891,12 @@ Set the (right) hyphenation margin to @var{length}.  If the current
 adjustment mode is not@w{ }@samp{b}, the line will not be hyphenated if
 it is shorter than @var{length}.  Without argument, the hyphenation
 margin will be reset to its default value, which is@w{ }0.  The default
-scaling indicator for this request is@w{ }m.  The hyphenation margin is
-associated with the current environment.
+scaling indicator for this request is@w{ }@code{m}.  The hyphenation
+margin is associated with the current environment
+(@pxref{Environments}).
+
+A negative argument will reset the hyphenation margin to zero, emitting
+a warning of type @samp{range}.
 
 @vindex .hym
 The current hyphenation margin is available in the @code{.hym} register.
@@ -3876,14 +3905,16 @@ The current hyphenation margin is available in the @code{.hym} register.
 @cindex hyphenation space
 @findex ad
 @Deffn{Request, hys, [@var{hyphenation_space}]}
-
 Set the hyphenation space to @var{hyphenation_space}.  If the current
 adjustment mode is@w{ }@samp{b}, don't hyphenate the line if the line
 can be justified by adding no more than @var{hyphenation_space} extra
 space to each word space.  Without argument, the hyphenation space is
 set to its default value, which is@w{ }0.  The default scaling indicator
-for this request is@w{ }m.  The hyphenation space is associated with the
-current environment.
+for this request is@w{ }@code{m}.  The hyphenation space is associated
+with the current environment (@pxref{Environments}).
+
+A negative argument will reset the hyphenation space to zero, emitting a
+warning of type @samp{range}.
 
 @vindex .hys
 The current hyphenation space is available in the @code{.hys} register.
@@ -3916,8 +3947,8 @@ Hyphenation exceptions specified with the @code{hw} request and
 hyphenation patterns specified with the @code{hpf} request are both
 associated with the current hyphenation language.  The @code{hla}
 request is usually invoked by the @file{troffrc} or the
-@file{troffrc-end} files; by default, @file{troffrc} sets the default
-language to @samp{us}.
+@file{troffrc-end} files; @file{troffrc} sets the default language to
+@samp{us}.
 
 @vindex .hla
 The current hyphenation language is available in the read-only register
@@ -3935,14 +3966,16 @@ Space downwards @var{distance}.  With no argument it will advance 1@w{
 }line.  A negative argument will cause @code{gtroff} to move up the page
 the specified distance.  If the argument is preceded by a @samp{|}
 @code{gtroff} will move that distance from the top of the page.  This
-request causes a line break.
+request causes a line break.  The default scaling indicator is@w{
+}@code{v}.
 @end_Deffn
 
 @cindex double-spacing
 @Deffn{Request, ls, [@var{nnn}]}
 Output @var{nnn}-1 blank lines after each line of text.  With no
 argument @code{gtroff} will go back to single spacing.  For example,
-@w{@samp{.ls 2}} causes double-spaced output.
+@w{@samp{.ls 2}} causes double-spaced output.  The line spacing is
+associated with the current environment (@pxref{Environments}).
 
 @vindex .L
 The number register @code{.L} contains the current line spacing setting.
@@ -3952,10 +3985,13 @@ The number register @code{.L} contains the current line spacing setting.
 Sometimes, extra vertical spacing is only needed occasionally, e.g.@: to
 allow space for a tall construct (like an equation).  The @code{\x}
 escape will do this.  The escape is given a numerical argument, usually
-enclosed in quotes (like @samp{\x'3p'}).  If this number is positive
-extra vertical space will be inserted below the current line.  A
-negative number will add space above.  If this escape is used multiple
-times on the same line, the maximum of the values is used.
+enclosed in quotes (like @samp{\x'3p'}); the default scaling indicator
+is@w{ }@code{v}.  If this number is positive extra vertical space will
+be inserted below the current line.  A negative number will add space
+above.  If this escape is used multiple times on the same line, the
+maximum of the values is used.
+
+@xref{Escapes}, for details on parameter delimiting characters.
 
 @vindex .a
 The @code{.a} number register contains the most recent (nonnegative)
@@ -4121,6 +4157,10 @@ The first line right-justifies the second `foo' relative to the tab
 stop.  The second line right-justifies `foobar'.  The third line finally
 right-justifies only `foo' because of the additional tab character which
 marks the end of the string belonging to the last defined tab stop.
+
+@item
+Tab stops are associated with the current environment
+(@pxref{Environments}).
 @end itemize
 
 @vindex .tabs
@@ -4129,10 +4169,14 @@ current tab settings suitable for use as an argument to the @code{ta}
 request.
 @end_Deffn
 
+@cindex tab repitition character
+@cindex character, tab repitition
 @Deffn{Request, tc, [@var{fill-char}]}
 Normally @code{gtroff} will fill the space to the next tab stop with
 space characters.  This can be changed with the @code{tc} request.  With
-no argument @code{gtroff} will revert to using spaces.
+no argument @code{gtroff} will revert to using spaces.  The value of
+this @dfn{tab repitition} character is associated with the current
+environment (@pxref{Environments}).
 @end_Deffn
 
 @menu
@@ -4162,10 +4206,14 @@ This escape is a non-interpreted leader character.  In copy mode
 character.
 @end_Deffn
 
+@cindex leader repitition character
+@cindex character, leader repitition
 @Deffn{Request, lc, [@var{fill-char}]}
 The character that will be repeated can be declared with the @code{lc}
 request.  Without an argument, leaders will act the same as tabs (i.e.,
-using space characters for filling).
+using space characters for filling). The value of this @dfn{leader
+repitition} character is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @cindex table of contents
@@ -4213,7 +4261,10 @@ distributed among them.
 @Deffn{Request, fc, [@var{delim-char} [@var{padding-char}]]}
 Define a delimiting and a padding character for fields.  If the latter
 is missing, the padding character defaults to a space character.  If
-there is no argument at all, the field mechanism is disabled.
+there is no argument at all, the field mechanism is disabled.  Note that
+contrary to e.g.@: the tab repitition character, delimiting and padding
+characters are not associated to the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 Example:
@@ -4253,12 +4304,16 @@ respectively.
 
 @Deffn{Request, cc, [@var{c}]}
 Set the control character to @var{c}.  With no argument the normal
-control character @samp{.} is restored.
+control character @samp{.} is restored.  The value of the control
+character is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @Deffn{Request, c2, [@var{c}]}
 Set the no-break control character to @var{c}.  With no argument the
-normal control character @samp{'} is restored.
+normal control character @samp{'} is restored.  The value of the
+no-break control character is associated with the current environment
+(@pxref{Environments}).
 @end_Deffn
 
 @findex \
@@ -4322,8 +4377,12 @@ characters defined with the @code{char} request, and numbered characters
 
 @item
 @findex \e
+The @code{\e} escape can be translated also.
+
+@item
 @findex \%
-The @code{\e} and @code{\%} escapes can be translated also.
+Characters can be mapped onto the @code{\%} escape (but @code{\%} can't
+be mapped onto another character).
 
 @item
 @cindex backspace character
@@ -4370,7 +4429,7 @@ foo bar
 As shown in the example, the space character can't be the first
 character pair as an argument of @code{tr}.  It is also not possible to
 map the space character to any other character; requests like
-@w{@samp{.tr aa x}} will be ignored.
+@w{@samp{.tr aa x}} will undo @w{@samp{.tr aa \&}} instead.
 
 If justification is active, lines will be justified inspite of the
 `empty' space character (but there is no minimal distance, i.e.@: the
@@ -4382,6 +4441,8 @@ moment immediately before the character is appended to an output
 character list, either by direct output, in a macro, diversion, or
 string), it is no longer affected by @code{tr}.
 @end itemize
+
+@c XXX xref
 @end_Deffn
 
 @findex \!
@@ -6399,19 +6460,19 @@ following is the information kept in an environment.
 
 @itemize @bullet
 @item
-type size
+font parameters (size, family, style, character height and slant, space
+and sentence space size)
 
 @item
-font (family and style)
+page parameters (line length, title length, vertical spacing,
+line spacing, indentation, line numbering, hyphenation data)
 
 @item
-page parameters
+fill and adjust mode
 
 @item
-fill/adjust mode
-
-@item
-tab stops
+tab stops, tab and leader characters, escape character, no-break and
+hyphen indicators, margin character data
 
 @item
 partially collected lines
