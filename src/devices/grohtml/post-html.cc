@@ -57,6 +57,7 @@ extern "C" const char *Version_string;
                                                      /* either encoded by their glyph names or if */
                                                      /* there is no name then we use &#nnn;       */
 typedef enum {CENTERED, LEFT, RIGHT, INLINE} TAG_ALIGNMENT;
+typedef enum {col_tag, tab_tag, tab0_tag, none} colType;
 
 #undef DEBUG_TABLES
 
@@ -1553,6 +1554,8 @@ class html_printer : public printer {
   void calc_po_in                     (text_glob *g, int nf);
   void remove_tabs                    (void);
   void remove_courier_tabs            (void);
+  void update_min_max                 (colType type_of_col, int *minimum, int *maximum, text_glob *g);
+  void add_table_end                  (char *debug_string);
   // ADD HERE
 
 public:
@@ -2233,6 +2236,7 @@ void html_printer::do_tab_ts (text_glob *g)
     current_paragraph->done_para();
 
     html.simple_comment("TABS");
+
     t->set_linelength(max_linelength);
     t->add_indent(pageoffset);
     t->emit_table_header(need_space);
@@ -2657,6 +2661,43 @@ void html_printer::insert_tab0_foreach_tab (void)
 }
 
 /*
+ *  update_min_max - updates the extent of a column, given the left and right
+ *                   extents of a glyph, g.
+ */
+
+void html_printer::update_min_max (colType type_of_col, int *minimum, int *maximum, text_glob *g)
+{
+  switch (type_of_col) {
+    
+  case tab_tag:
+    break;
+  case tab0_tag:
+    *minimum = g->minh;
+    break;
+  case col_tag:
+    *minimum = g->minh;
+    *maximum = g->maxh;
+    break;
+  default:
+    break;
+  }
+}
+
+/*
+ *  add_table_end - moves left one glyph, adds a table end tag and adds a
+ *                  debugging string.
+ */
+
+void html_printer::add_table_end (char *debug_string)
+{
+  page_contents->glyphs.move_left();
+  insert_tab_te();
+#if defined(DEBUG_TABLES)
+  page_contents->insert_tag(string(debug_string));
+#endif
+}
+
+/*
  *  lookahead_for_tables - checks for .col tags and inserts table start/end tags
  */
 
@@ -2666,7 +2707,7 @@ void html_printer::lookahead_for_tables (void)
   text_glob  *start_of_line  = NULL;
   text_glob  *start_of_table = NULL;
   text_glob  *last           = NULL;
-  enum {col_tag, tab_tag, tab0_tag, none} type_of_col = none;
+  colType     type_of_col    = none;
   int         left           = 0;
   int         found_col      = FALSE;
   int         seen_text      = FALSE;
@@ -2677,6 +2718,7 @@ void html_printer::lookahead_for_tables (void)
   const char *tab_defs       = NULL;
   char        align          = 'L';
   int         nf             = FALSE;
+  int         old_pageoffset = pageoffset;
 
   remove_courier_tabs();
   page_contents->dump_page();
@@ -2741,22 +2783,8 @@ void html_printer::lookahead_for_tables (void)
 	ncol = 1;
 	colmin = 0;
 	colmax = table->get_tab_pos(2) + pageoffset + indentation;
-      } else if (! g->is_a_tag()) {
-	switch (type_of_col) {
-
-	case tab_tag:
-	  break;
-	case tab0_tag:
-	  colmin = g->minh;
-	  break;
-	case col_tag:
-	  colmin = g->minh;
-	  colmax = g->maxh;
-	  break;
-	default:
-	  break;
-	}
-      }
+      } else if (! g->is_a_tag())
+	update_min_max(type_of_col, &colmin, &colmax, g);
 
       if ((! g->is_a_tag()) || g->is_tab())
 	seen_text = TRUE;
@@ -2767,21 +2795,17 @@ void html_printer::lookahead_for_tables (void)
 	start_of_line = NULL;
 	seen_text = FALSE;
       } else if (g->is_ce() && (start_of_table != NULL)) {
-	page_contents->glyphs.move_left();
-	insert_tab_te();
+	add_table_end("*** CE ***");
 	start_of_table->remember_table(table);
-	page_contents->insert_tag(string("*** CE ***"));
 	start_of_table = NULL;
 	last = NULL;
       } else if (g->is_ta()) {
 	tab_defs = g->text_string;
 	if (!table->tab_stops->compatible(tab_defs)) {
 	  if (start_of_table != NULL) {
-	    page_contents->glyphs.move_left();
-	    insert_tab_te();
+	    add_table_end("*** TABS ***");
 	    start_of_table->remember_table(table);
 	    table = new html_table(&html, -1);
-	    page_contents->insert_tag(string("*** TABS ***"));
 	    start_of_table = NULL;
 	    type_of_col = none;
 	    last = NULL;
@@ -2793,14 +2817,11 @@ void html_printer::lookahead_for_tables (void)
       if (((! g->is_a_tag()) || g->is_tab()) && (start_of_table != NULL)) {
 	// we are in a table and have a glyph
 	if ((ncol == 0) || (! table->add_column(ncol, colmin, colmax, align))) {
-	  page_contents->glyphs.move_left();
-	  insert_tab_te();
-#if defined(DEBUG_TABLES)
 	  if (ncol == 0)
-	    page_contents->insert_tag(string("*** NCOL == 0 ***"));
+	    add_table_end("*** NCOL == 0 ***");
 	  else
-	    page_contents->insert_tag(string("*** CROSSED COLS ***"));
-#endif
+	    add_table_end("*** CROSSED COLS ***");
+
 	  start_of_table->remember_table(table);
 	  table = new html_table(&html, -1);
 	  start_of_table = NULL;
@@ -2814,7 +2835,13 @@ void html_printer::lookahead_for_tables (void)
        */
       g = page_contents->glyphs.move_right_get_data();
 
-      if (g != NULL && (g->is_br_ni() || (nf && g->is_eol()))) {
+      if (g == NULL) {
+	if (found_col) {
+	  page_contents->glyphs.start_from_head();
+	  last = g;
+	  found_col = FALSE;
+	}
+      } else if (g->is_br_ni() || (nf && g->is_eol())) {
 	do {
 	  g = page_contents->glyphs.move_right_get_data();
 	  nf = calc_nf(g, nf);
@@ -2849,8 +2876,7 @@ void html_printer::lookahead_for_tables (void)
     delete table;
 
   // and reset the registers
-  pageoffset = 0;
-  pageoffset = 0;
+  pageoffset = old_pageoffset;
   indentation = 0;
   prev_indent = 0;
   end_tempindent = 0;
@@ -2869,6 +2895,11 @@ void html_printer::flush_page (void)
   
   // move onto a new page
   delete page_contents;
+#if defined(DEBUG_TABLES)
+  fprintf(stderr, "\n\n*** flushed page ***\n\n");
+
+  html.simple_comment("new page called");
+#endif
   page_contents = new page;
 }
 
@@ -3527,9 +3558,26 @@ void html_printer::do_body (void)
 
 html_printer::~html_printer()
 {
+#ifdef LONG_FOR_TIME_T
+  long t;
+#else
+  time_t t;
+#endif
+
   current_paragraph->flush_text();
   html.end_line();
   html.set_file(stdout);
+  html.begin_comment("Creator     : ")
+    .put_string("groff ")
+    .put_string("version ")
+    .put_string(Version_string)
+    .end_comment();
+
+  t = time(0);
+  html.begin_comment("CreationDate: ")
+    .put_string(ctime(&t), strlen(ctime(&t))-1)
+    .end_comment();
+
   /*
    *  'HTML: The definitive guide', O'Reilly, p47. advises against specifying
    *         the dtd, so for the moment I'll leave this commented out.
@@ -3549,24 +3597,6 @@ html_printer::~html_printer()
   write_title(FALSE);
   header.write_headings(stdout, FALSE);
   write_rule();
-  {
-    html.begin_comment("Creator     : ")
-       .put_string("groff ")
-       .put_string("version ")
-       .put_string(Version_string)
-       .end_comment();
-  }
-  {
-#ifdef LONG_FOR_TIME_T
-    long
-#else
-    time_t
-#endif
-    t = time(0);
-    html.begin_comment("CreationDate: ")
-      .put_string(ctime(&t), strlen(ctime(&t))-1)
-      .end_comment();
-  }
 #if defined(DEBUGGING)
   html.begin_comment("Total number of pages: ").put_string(i_to_a(no_of_printed_pages)).end_comment();
 #endif
