@@ -115,6 +115,8 @@ int suppress_output_flag = 0;
 int is_html = 0;
 int begin_level = 0;		// number of nested .begin requests
 
+int have_input = 0;		// whether \f, \H, \R, \s, or \S has
+				// been proceseed in token::next()
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
 
@@ -1085,6 +1087,7 @@ static unsigned int get_color_element(const char *scheme, const char *color)
   }
   if (val > color::MAX_COLOR_VAL+1) {
     warning(WARN_RANGE, "%1 cannot be greater than 1", color);
+    // we change 0x10000 to 0xffff
     return color::MAX_COLOR_VAL;
   }
   return (unsigned int)val;
@@ -1801,10 +1804,9 @@ void token::next()
 	    curenv->set_font(s);
 	  else
 	    curenv->set_font(atoi(s.contents()));
-	  if (compatible_flag)
-	    break;
-	  type = TOKEN_OPAQUE_ESCAPE;
-	  return;
+	  if (!compatible_flag)
+	    have_input = 1;
+	  break;
 	}
       case 'g':
 	{
@@ -1822,10 +1824,9 @@ void token::next()
       case 'H':
 	if (get_delim_number(&x, 'z', curenv->get_requested_point_size()))
 	  curenv->set_char_height(x);
-	if (compatible_flag)
-	  break;
-	type = TOKEN_OPAQUE_ESCAPE;
-	return;
+	if (!compatible_flag)
+	  have_input = 1;
+	break;
       case 'k':
 	nm = read_escape_name();
 	if (nm.is_null())
@@ -1892,24 +1893,21 @@ void token::next()
 	return;
       case 'R':
 	do_register();
-	if (compatible_flag)
-	  break;
-	type = TOKEN_OPAQUE_ESCAPE;
-	return;
+	if (!compatible_flag)
+	  have_input = 1;
+	break;
       case 's':
 	if (read_size(&x))
 	  curenv->set_size(x);
-	if (compatible_flag)
-	  break;
-	type = TOKEN_OPAQUE_ESCAPE;
-	return;
+	if (!compatible_flag)
+	  have_input = 1;
+	break;
       case 'S':
 	if (get_delim_number(&x, 0))
 	  curenv->set_char_slant(x);
-	if (compatible_flag)
-	  break;
-	type = TOKEN_OPAQUE_ESCAPE;
-	return;
+	if (!compatible_flag)
+	  have_input = 1;
+	break;
       case 't':
 	type = TOKEN_NODE;
 	nd = new non_interpreted_char_node('\t');
@@ -2113,8 +2111,6 @@ const char *token::description()
     return "a node";
   case TOKEN_NUMBERED_CHAR:
     return "`\\N'";
-  case TOKEN_OPAQUE_ESCAPE:
-    return "a transparent escape (`\\f', `\\H', `\\R', `\\s', `\\S')";
   case TOKEN_RIGHT_BRACE:
     return "`\\}'";
   case TOKEN_SPACE:
@@ -2484,9 +2480,9 @@ void process_input_stack()
     case token::TOKEN_CHAR:
       {
 	unsigned char ch = tok.c;
-	if (bol &&
-	    (ch == curenv->control_char
-	     || ch == curenv->no_break_control_char)) {
+	if (bol && !have_input
+	    && (ch == curenv->control_char
+		|| ch == curenv->no_break_control_char)) {
 	  break_flag = ch == curenv->control_char;
 	  // skip tabs as well as spaces here
 	  do {
@@ -2498,6 +2494,7 @@ void process_input_stack()
 	  else
 	    interpolate_macro(nm);
 	  suppress_next = 1;
+          have_input = 0;
 	}
 	else {
 	  if (possibly_handle_first_page_transition())
@@ -2538,16 +2535,15 @@ void process_input_stack()
 	}
 	break;
       }
-    case token::TOKEN_OPAQUE_ESCAPE:
-      bol = 0;
-      break;
     case token::TOKEN_NEWLINE:
       {
-	if (bol && !curenv->get_prev_line_interrupted())
+	if (bol && !have_input
+	    && !curenv->get_prev_line_interrupted())
 	  trapping_blank_line();
 	else {
 	  curenv->newline();
 	  bol = 1;
+	  have_input = 0;
 	}
 	break;
       }
@@ -2575,6 +2571,7 @@ void process_input_stack()
 	  break;
 	}
 	suppress_next = 1;
+        have_input = 0;
 	break;
       }
     case token::TOKEN_SPACE:
@@ -2632,6 +2629,7 @@ void process_input_stack()
       {
 	trap_bol_stack.push(bol);
 	bol = 1;
+	have_input = 0;
 	break;
       }
     case token::TOKEN_END_TRAP:
@@ -5827,7 +5825,6 @@ int token::add_to_node_list(node **pp)
     *pp = (*pp)->add_char(get_charinfo_by_number(val), curenv, &w, &s);
     break;
   case TOKEN_RIGHT_BRACE:
-  case TOKEN_OPAQUE_ESCAPE:
     break;
   case TOKEN_SPACE:
     n = new hmotion_node(curenv->get_space_width());
@@ -5906,9 +5903,6 @@ void token::process()
     break;
   case TOKEN_NUMBERED_CHAR:
     curenv->add_char(get_charinfo_by_number(val));
-    break;
-  case TOKEN_OPAQUE_ESCAPE:
-    // handled in process_input_stack()
     break;
   case TOKEN_REQUEST:
     // handled in process_input_stack()
