@@ -362,6 +362,10 @@ int main(int argc, char **argv)
       f += binpath;
     else
       f += BINPATH;
+    if (path && *path) {
+      f += PATH_SEP[0];
+      f += path;
+    }
     f += '\0';
     if (putenv(strsave(f.contents())))
       fatal("putenv failed");

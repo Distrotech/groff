@@ -11,9 +11,11 @@ troff installed also.  Additionally, all macro files have been renamed
 using the latter scheme to avoid 8+3 name clashes.
 
 The new environment variable GROFF_BIN_PATH will be checked for programs
-groff is calling (preprocessors, troff, and output devices).  If not set,
-it defaults to the directory where the groff binary is located.  Previously,
-it was PATH.  This is also true for the nroff script.
+groff is calling (preprocessors, troff, and output devices) before PATH.  If
+not set, it defaults to the directory where the groff binary is located.
+Previously, it was PATH only.  The nroff script will only use GROFF_BIN_PATH
+to find the groff binary but passes both the GROFF_BIN_PATH and PATH
+environment variable to groff.
 
 Troff
 -----
