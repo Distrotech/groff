@@ -58,7 +58,7 @@ struct font_widths_cache {
   int point_size;
   int *width;
 
-  font_widths_cache(int, int, font_widths_cache *);
+  font_widths_cache(int, int, font_widths_cache * = 0);
   ~font_widths_cache();
 };
 
@@ -222,7 +222,7 @@ int font::is_special()
 }
 
 font_widths_cache::font_widths_cache(int ps, int ch_size,
-				     font_widths_cache *p = 0)
+				     font_widths_cache *p)
 : next(p), point_size(ps)
 {
   width = new int[ch_size];
