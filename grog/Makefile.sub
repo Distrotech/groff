@@ -8,9 +8,10 @@ grog: grog.pl grog.sh
 	  rm -f $@; \
 	  sed -e 's;/usr/bin/perl;$(PERLPATH);' $(srcdir)/grog.pl >$@; \
 	else \
-	  cp $(srcdir)/grog.sh grog; \
+	  rm -f $@; \
+	  sed "$(SH_SCRIPT_SED_CMD)" $(srcdir)/grog.sh >$@; \
 	fi
-	chmod +x grog;
+	chmod +x $@
 
 install_data: grog
 	-test -d $(bindir) || mkdir $(bindir)

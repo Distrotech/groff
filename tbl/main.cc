@@ -326,12 +326,13 @@ struct options {
   int linesize;
   char delim[2];
   char tab_char;
+  char decimal_point_char;
 
   options();
 };
 
 options::options()
-: flags(0), tab_char('\t'), linesize(0)
+: flags(0), tab_char('\t'), decimal_point_char('.'), linesize(0)
 {
   delim[0] = delim[1] = '\0';
 }
@@ -469,6 +470,16 @@ options *process_options(table_input &in)
       if (arg)
 	error("`nokeep' option does not take a argument");
       opt->flags |= table::NOKEEP;
+    }
+    else if (strieq(p, "decimalpoint")) {
+      if (!arg)
+	error("`decimalpoint' option requires argument in parentheses");
+      else {
+	if (arg[0] == '\0' || arg[1] != '\0')
+	  error("argument to `decimalpoint' option must be a single character");
+	else
+	  opt->decimal_point_char = arg[0];
+      }
     }
     else {
       error("unrecognised global option `%1'", p);
@@ -1119,7 +1130,8 @@ table *process_data(table_input &in, format *f, options *opt)
   int format_index = 0;
   int give_up = 0;
   enum { DATA_INPUT_LINE, TROFF_INPUT_LINE, SINGLE_HLINE, DOUBLE_HLINE } type;
-  table *tbl = new table(ncolumns, opt->flags, opt->linesize);
+  table *tbl = new table(ncolumns, opt->flags, opt->linesize,
+			 opt->decimal_point_char);
   if (opt->delim[0] != '\0')
     tbl->set_delim(opt->delim[0], opt->delim[1]);
   for (;;) {

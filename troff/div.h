@@ -92,7 +92,7 @@ class top_level_diversion : public diversion {
   int next_page_number;
   int ejecting_page;		// Is the current page being ejected?
 public:
-  int first_page_begun;
+  int before_first_page;
   int no_space_mode;
   top_level_diversion();
   void output(node *nd, int retain_size, vunits vs, int ls, hunits width);

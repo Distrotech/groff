@@ -25,7 +25,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include "box.h"
 extern int non_empty_flag;
 char *strsave(const char *);
-#define YYDEBUG 1
 int yylex();
 void yyerror(const char *);
 %}

@@ -18,3 +18,9 @@ distfiles: $(YTABC)
 TAGS: TAGS_src
 TAGS_src: $(CCSRCS) $(CSRCS) $(GRAM) $(HDRS)
 Makefile: $(MAKEFILEPARTS)
+
+pure: $(PROG).pure
+
+$(PROG).pure: $(OBJS) $(XLIBS)
+	$(PURIFY) $(PURIFYCCFLAGS) \
+	  $(LINK.cc) -o $@ $(OBJS) $(XLIBS) $(CCLIBS) $(LIBS) $(MLIB)

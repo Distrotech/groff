@@ -92,6 +92,7 @@ static symbol read_escape_name();
 static void interpolate_string(symbol);
 static void interpolate_macro(symbol);
 static void interpolate_number_format(symbol);
+static void interpolate_environment_variable(symbol);
 
 static void interpolate_arg(symbol);
 static request_or_macro *lookup_request(symbol);
@@ -784,6 +785,14 @@ static int get_copy(node **nd, int defining)
     case 't':
       (void)input_stack::get(NULL);
       return '\t';
+    case 'V':
+      {
+        (void)input_stack::get(NULL);
+	symbol s = read_escape_name();
+	if (!s.is_null())
+	  interpolate_environment_variable(s);
+	break;
+      }
     case '\n':
       (void)input_stack::get(NULL);
       if (defining)
@@ -1488,6 +1497,13 @@ void token::next()
 	type = TOKEN_NODE;
 	nd = new vmotion_node(x);
 	return;
+      case 'V':
+        {
+	  symbol nm = read_escape_name();
+	  if (!nm.is_null())
+	    interpolate_environment_variable(nm);
+	  break;
+	}
       case 'w':
 	do_width();
 	break;
@@ -1869,7 +1885,7 @@ void do_request()
 
 inline int possibly_handle_first_page_transition()
 {
-  if (!topdiv->first_page_begun && curdiv == topdiv && !curenv->is_dummy()) {
+  if (topdiv->before_first_page && curdiv == topdiv && !curenv->is_dummy()) {
     handle_first_page_transition();
     return 1;
   }
@@ -2487,6 +2503,8 @@ string_iterator::string_iterator()
   ptr = eptr = 0;
   newline_flag = 0;
   how_invoked = 0;
+  lineno = 1;
+  count = 0;
 }
 
 int string_iterator::fill(node **np)
@@ -3381,6 +3399,13 @@ void asciify_macro()
     }
   }
   skip_line();
+}
+
+static void interpolate_environment_variable(symbol nm)
+{
+  const char *s = getenv(nm.contents());
+  if (s && *s)
+    input_stack::push(make_temp_iterator(s));
 }
 
 void interpolate_number_reg(symbol nm, int inc)
@@ -4802,7 +4827,7 @@ void system_request()
 
 void copy_file()
 {
-  if (curdiv == topdiv && !topdiv->first_page_begun) {
+  if (curdiv == topdiv && topdiv->before_first_page) {
     handle_initial_request(COPY_FILE_REQUEST);
     return;
   }
@@ -4820,7 +4845,7 @@ void copy_file()
 
 void vjustify()
 {
-  if (curdiv == topdiv && !topdiv->first_page_begun) {
+  if (curdiv == topdiv && topdiv->before_first_page) {
     handle_initial_request(VJUSTIFY_REQUEST);
     return;
   }
@@ -4834,7 +4859,7 @@ void vjustify()
 
 void transparent_file()
 {
-  if (curdiv == topdiv && !topdiv->first_page_begun) {
+  if (curdiv == topdiv && topdiv->before_first_page) {
     handle_initial_request(TRANSPARENT_FILE_REQUEST);
     return;
   }

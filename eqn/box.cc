@@ -321,7 +321,7 @@ void box::top_level()
 	 "\\s'\\\\n[" SAVED_INLINE_PREV_SIZE_REG "]u'"
 	 "\\s'\\\\n[" SAVED_INLINE_SIZE_REG "]u'"
 	 "\n");
-  printf(".as " LINE_STRING " \\E*[" SAVE_FONT_STRING "]");
+  printf(".as " LINE_STRING " \\&\\E*[" SAVE_FONT_STRING "]");
   printf("\\f[%s]", get_gfont());
   printf("\\s'\\En[" SAVED_SIZE_REG "]u'");
   current_roman_font = get_grfont();

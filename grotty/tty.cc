@@ -219,7 +219,7 @@ void tty_printer::add_char(unsigned char c, int h, int v, unsigned char mode)
   // in order of occurrence.
 
   for (glyph **pp = lines + (vpos - 1); *pp; pp = &(*pp)->next)
-    if ((*pp)->hpos < hpos
+    if (int((*pp)->hpos) < hpos
 	|| ((*pp)->hpos == hpos && (*pp)->draw_mode() >= g->draw_mode()))
       break;
 
@@ -273,6 +273,7 @@ void tty_printer::end_page(int page_length)
   for (int last_line = nlines; last_line > 0; last_line--)
     if (lines[last_line - 1])
       break;
+#if 0
   if (last_line > lines_per_page) {
     error("characters past last line discarded");
     do {
@@ -284,6 +285,7 @@ void tty_printer::end_page(int page_length)
       }
     } while (last_line > lines_per_page);
   }
+#endif
   for (int i = 0; i < last_line; i++) {
     glyph *p = lines[i];
     lines[i] = 0;
@@ -311,7 +313,7 @@ void tty_printer::end_page(int page_length)
 	if (!overstrike_flag)
 	  continue;
       }
-      if (hpos > p->hpos) {
+      if (hpos > int(p->hpos)) {
 	putchar('\b');
 	hpos--;
       }
@@ -319,13 +321,13 @@ void tty_printer::end_page(int page_length)
 	if (horizontal_tab_flag) {
 	  for (;;) {
 	    int next_tab_pos = ((hpos + TAB_WIDTH) / TAB_WIDTH) * TAB_WIDTH;
-	    if (next_tab_pos > p->hpos)
+	    if (next_tab_pos > int(p->hpos))
 	      break;
 	    putchar('\t');
 	    hpos = next_tab_pos;
 	  }
 	}
-	for (; hpos < p->hpos; hpos++)
+	for (; hpos < int(p->hpos); hpos++)
 	  putchar(' ');
       }
       assert(hpos == p->hpos);

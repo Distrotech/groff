@@ -144,7 +144,8 @@ int charExists (fi, c)
 {
 	XCharStruct *p;
 
-	if (c < fi->min_char_or_byte2 || c > fi->max_char_or_byte2)
+	if (fi->per_char == NULL ||
+	    c < fi->min_char_or_byte2 || c > fi->max_char_or_byte2)
 		return 0;
 	p = fi->per_char + (c - fi->min_char_or_byte2);
 	return (p->lbearing != 0 || p->rbearing != 0 || p->width != 0

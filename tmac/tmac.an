@@ -26,15 +26,14 @@
 .\" If you need to add things to TH, use `.am TH'.
 .\"
 .if !\n(.g .ab These man macros work only with groff.
-.if \n(.C \{\
-.	tm Warning: turning off compatibility mode
-.	cp 0
-.\}
+.nr _C \n(.C
+.cp 0
 .if !rD .nr D 0
 .if !rC .nr C 0
 .if rP .pn 0\nP
 .\" .TH title section extra1 extra2 extra3
 .de TH
+.cp 0
 .de an-init \" We have to do it like this to get multiple man pages right.
 .ds an-title "\\$1
 .ds an-section "\\$2
@@ -58,6 +57,9 @@
 .nr an-no-space-flag 0
 .nr an-break-flag 0
 .nr an-div? 0
+.wh 0 an-header
+.wh -1i an-footer
+.wh -.5i an-p-footer
 .if \\n[nl]>0 \{\
 .	ie \\nC .bp \\n%+1
 .	el .bp 1
@@ -70,7 +72,6 @@
 .ie \\n[.$] .nr PD (v;\\$1)
 .el .nr PD .4v>?\n[.V]
 ..
-.wh 0 an-header
 .de an-header
 .an-init
 .ev 1
@@ -80,11 +81,9 @@
 .ev
 .ns
 ..
-.wh -1i an-footer
 .de an-footer
 'bp
 ..
-.wh -.5i an-p-footer
 .af an-page-letter a
 .de an-p-footer
 .ev 1
@@ -324,3 +323,4 @@
 .hy 14
 .\" Load local modifications.
 .mso man.local
+.cp \n(_C

@@ -484,7 +484,7 @@ static int parse_term(units *v, int scale_indicator, int parenthesised)
 	return 0;
       }
       *v *= 10;
-      if (*v > INT_MAX - (c - '0')) {
+      if (*v > INT_MAX - (int(c) - '0')) {
 	error("numeric overflow");
 	return 0;
       }

@@ -1,3 +1,165 @@
+Mon Apr 19 09:55:57 1993  James Clark  (jjc at jclark)
+
+	* Version 1.08 released.
+
+	* Makefile.in (dist): Insert || true after ln -s commands that
+	might fail.
+
+	* mm: Update to mm 1.16.
+
+	* acgroff.m4 (GROFF_CSH_HACK): New macro.
+	* configure.in: Call GROFF_CSH_HACK.  Substitute for
+	SH_SCRIPT_SED_CMD.
+	* Makefile.in (SH_SCRIPT_SED_CMD): New variable.  Include in
+	MDEFINES.
+	* nroff/Makefile.sub (nroff): New target.
+	(install_data): Install nroff.
+	* eqn/Makefile.sub (neqn): Sed with SH_SCRIPT_SED_CMD.
+	* grog/Makefile.sub (grog): Sed grog.sh with SH_SCRIPT_SED_CMD.
+
+Sat Apr 17 08:24:28 1993  James Clark  (jjc at jclark)
+
+	* eqn/Makefile.sub (neqn): Add chmod +x.
+
+	* grog/Makefile.sub (grog): Remove spurious semi-colon.
+
+Fri Apr 16 22:41:57 1993  James Clark  (jjc at jclark)
+
+	* troff/input.cc (string_iterator::string_iterator()): Initialize
+	lineno and count.
+
+Tue Apr 13 10:22:28 1993  James Clark  (jjc at jclark)
+
+	* troff/div.cc (macro_diversion::space,
+	top_level_diversion::space): Don't set high_water_mark.
+	(macro_diversion::output, top_level_diversion::output): Don't
+	include post line space in high water mark.
+
+Wed Apr  7 12:48:18 1993  James Clark  (jjc at jclark)
+
+	* eqn/eqn.y: Don't define YYDEBUG.
+	* pic/pic.y: Likewise.
+
+Mon Apr  5 10:15:15 1993  James Clark  (jjc at jclark)
+
+	* tmac/tmac.e ([3): Add space after comma following editors.
+	Change double spaces to single spaces.
+	([4): Change double spaces to single spaces.
+
+	* grops/ps.h (USE_PS_ADOBE_2_0): New flag for broken_flags.
+	* grops/ps.cc (ps_printer::~ps_printer): If the USE_PS_ADOBE_2_0
+	bit is set in broken_flags, use 2.0 rather than 3.0 as the version
+	after %!PS-Adobe- (for Newsprint).
+
+	* troff/div.cc (top_level_diversion::begin_page): When
+	before_first_page is 1, set page_number to 1.
+
+Sun Apr  4 14:28:53 1993  James Clark  (jjc at jclark)
+
+	* eqn/box.cc (box::top_level): Protect equation with \&.
+
+Sat Apr  3 23:27:25 1993  James Clark  (jjc at jclark)
+
+	* groff/groff.cc (possible_command::set_name): Delete old name.
+
+	* groff/groff.cc (possible_command::~possible_command): Use
+	a_delete.
+
+	* troff/node.cc (troff_output_file::begun_page): New member.
+	(troff_output_file::troff_output_file): Initialize it.
+	(troff_output_file::really_begin_page): Only output V command if a
+	page has been begun.
+
+	* pic/pic.y (placeless_element): Delete argument to PRINT after
+	use.
+
+Fri Apr  2 11:31:02 1993  James Clark  (jjc at jclark)
+
+	* Make wrapman work.
+	* troff/div.h (class top_level_diversion): Replace
+	first_page_begun by before_first_page (with opposite sense).
+	* Change first_page_begun to before_first_page inverting sense.
+	* troff/div.cc (class nl_reg): New class.
+	(init_div_requests): Use class nl_reg for \n(nl.
+	(top_level_diversion::begin_page): Don't call
+	output_file::begin_page if before_first_page is 2;
+	reset before_first_page afterwards.  If have_next_page_number is
+	false, then always increment page_number.
+	* tmac/tmac.an: Set traps within TH rather than at the top-level.
+	Restore compatibility mode after loading, and then disable
+	compatibility mode in TH.
+
+Thu Apr  1 11:09:34 1993  James Clark  (jjc at jclark)
+
+	* grotty/tty.cc (tty_printer::end_page): Don't discard characters
+	past last line.
+	* troff/node.h (output_file::trailer): Declare.
+	* troff/div.cc (cleanup_and_exit): Call output_file::trailer().
+	* troff/node.cc (output_file::trailer): New function.
+	(troff_output_file::~troff_output_file): Move most code into...
+	(troff_output_file::trailer): New function.
+	(class troff_output_file): Delete page_length member. Declare
+	trailer().
+	(troff_output_file::really_begin_page): Use current page length
+	for final V command.
+
+	* tbl/main.cc (struct options): New decimal_point_char member.
+	(options::options): Initialize this.
+	(process_options): Implement decimalpoint option.
+	(process_data): Pass decimal_point_char option to table::table.
+	* tbl/table.h (class table): New decimal_point_char member.
+	(table::table): Add additional argument.
+	* tbl/table.cc (find_dot): Rename to find_decimal_point. Add
+	second argument specifying decimal point character.  Use this
+	instead of '.'.
+	(table::table): Initialize decimal_point_char.
+	(table::add_entry): Change call to find_dot.
+
+	* troff/input.cc (get_copy, token::next): Implement \V.
+	(interpolate_environment_variable): New function.
+
+Tue Mar 30 14:41:39 1993  James Clark  (jjc at jclark)
+
+	* pic/lex.cc (lookup_keyword): Rename MIN to K_MIN, MAX to K_MAX.
+	* pic/pic.y: Likewise.
+
+	* grotty/tty.cc (tty_printer::add_char, tty_printer::end_page):
+	Add casts to int.
+	* refer/ref.cc (reference::insert_field, reference::delete_field):
+	Likewise.
+	* troff/number.cc (parse_term): Likewise.
+
+	* acgroff.m4 (GROFF_PROG_YACC): New macro.
+	* configure.in: Use GROFF_PROG_YACC.
+
+	* acgroff.m4 (GROFF_PROG_CCC): Don't add -O automatically for gcc
+	and g++.
+	* Makefile.in (OPTIMIZE): New define.
+	(DEBUG): Empty by default.
+	(CCFLAGS, CFLAGS): Include $(OPTIMIZE).
+
+	* acgroff.m4 (GROFF_SYS_SIGLIST): Don't quote program.
+	(GROFF_ARRAY_DELETE): Likewise.
+	(GROFF_CC_COMPILE_CHECK): Quote use of $2 and $3.
+
+	* troff/env.cc (trie::~trie): Make virtual to shut up g++.
+
+	* devps/psstrip.sed: Use different delimiter on last line (so that
+	it works with BSD 4.4 sed.)
+
+Mon Mar 29 17:07:14 1993  James Clark  (jjc at jclark)
+
+	* devps/psstrip.sed: Delete comments.
+
+	* acgroff.m4 (AC_GETOPT): Don't test whether <unistd.h> declares
+	optind, opterr, optarg.
+	* lib.h: When UNISTD_H_DECLARES_GETOPT is defined, declare optind,
+	opterr, optarg.
+
+Sun Mar 28 17:44:25 1993  James Clark  (jjc at jclark)
+
+	* Makefile.in (check): Dummy target.
+
 Wed Mar  3 04:53:38 1993  James Clark  (jjc at jclark)
 
 	* Version 1.07 released.

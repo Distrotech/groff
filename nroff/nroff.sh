@@ -2,6 +2,7 @@
 # Emulate nroff with groff.
 
 prog="$0"
+# Default device.
 T=-Tascii
 opts=
 

@@ -692,8 +692,8 @@ class troff_output_file : public real_output_file {
   char tbuf[TBUF_SIZE];
   int tbuf_len;
   int tbuf_kern;
+  int begun_page;
   void do_motion();
-  vunits page_length;
   void put(char c);
   void put(unsigned char c);
   void put(int i);
@@ -703,6 +703,7 @@ class troff_output_file : public real_output_file {
 public:
   troff_output_file();
   ~troff_output_file();
+  void trailer(vunits page_length);
   void put_char(charinfo *ci, tfont *tf);
   void put_char_width(charinfo *ci, tfont *tf, hunits w, hunits k);
   void right(hunits);
@@ -1064,15 +1065,18 @@ void troff_output_file::draw(char code, hvpair *point, int npoints,
   put('\n');
 }
 
-void troff_output_file::really_begin_page(int pageno, vunits pl)
+void troff_output_file::really_begin_page(int pageno, vunits page_length)
 {
   flush_tbuf();
-  if (page_length > V0) {
-    put('V');
-    put(page_length.to_units());
-    put('\n');
+  if (begun_page) {
+    if (page_length > V0) {
+      put('V');
+      put(page_length.to_units());
+      put('\n');
+    }
   }
-  page_length = pl;
+  else
+    begun_page = 1;
   current_tfont = 0;
   current_font_number = -1;
   current_size = 0;
@@ -1120,6 +1124,11 @@ void troff_output_file::really_transparent_char(unsigned char c)
 
 troff_output_file::~troff_output_file()
 {
+  a_delete font_position;
+}
+
+void troff_output_file::trailer(vunits page_length)
+{
   flush_tbuf();
   if (page_length > V0) {
     put("x trailer\n");
@@ -1128,11 +1137,11 @@ troff_output_file::~troff_output_file()
     put('\n');
   }
   put("x stop\n");
-  a_delete font_position;
 }
 
 troff_output_file::troff_output_file()
-: current_height(0), current_slant(0), tbuf_len(0), nfont_positions(10)
+: current_height(0), current_slant(0), tbuf_len(0), nfont_positions(10),
+  begun_page(0)
 {
   font_position = new symbol[nfont_positions];
   put("x T ");
@@ -1157,6 +1166,10 @@ output_file::output_file()
 }
 
 output_file::~output_file()
+{
+}
+
+void output_file::trailer(vunits)
 {
 }
 

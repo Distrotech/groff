@@ -1790,7 +1790,7 @@ void environment::final_break()
 
 void environment::do_break()
 {
-  if (curdiv == topdiv && !topdiv->first_page_begun) {
+  if (curdiv == topdiv && topdiv->before_first_page) {
     topdiv->begin_page();
     return;
   }
@@ -1849,7 +1849,7 @@ void break_request()
 
 void title()
 {
-  if (curdiv == topdiv && !topdiv->first_page_begun) {
+  if (curdiv == topdiv && topdiv->before_first_page) {
     handle_initial_title();
     return;
   }
@@ -2715,7 +2715,7 @@ class trie {
   void delete_trie_node(trie_node *);
 public:
   trie() : tp(0) {}
-  ~trie();
+  virtual ~trie();		// virtual to shut up g++
   void insert(const char *, int, void *);
   // find calls do_match for each match it finds
   void find(const char *pat, int patlen);

@@ -1,5 +1,5 @@
 .\"	Version:
-.ds RE 1.11
+.ds RE 1.16
 .ig
 
 Copyright (C) 1991, 1992, 1993 Free Software Foundation, Inc.
@@ -216,6 +216,12 @@ Index		array!index
 .\" section-figure if Sectf > 0
 .nr Sectf 0
 .if \n[N]=5 .nr Sectf 1
+.\"
+.\" argument to .nm in .VERBON.
+.ds Verbnm "1
+.\" indent for VERBON
+.nr Verbin 5n
+.\"
 .nr .mgm 1
 .\"
 .\"---------------------------------------------
@@ -379,6 +385,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"-------------
 .\" .PGFORM linelength [ pagelength [ pageoffset ] ]
 .de PGFORM
+.\" Break here to avoid problems with new linesetting of the previous line.
+.\" Hope this doesn't break anything else :-)
+.br
 .if !''\\$1' .nr @ll \\$1
 .if !''\\$2' .nr @pl \\$2
 .if !''\\$3' .nr @po \\$3
@@ -437,6 +446,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	ie \w@\\$1@=0 .ds misc*a C
 .	el .ds misc*a \\$1
 .\}
+.\"
 .\" set point size
 .if !'\\*[misc*a]'C' \{\
 .	ie '\\*[misc*a]'P' .nr @ps \\n[misc*S-ps]
@@ -445,6 +455,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .		el .nr @ps \\*[misc*a]
 .	\}
 .\}
+.\"
 .\" set vertical spacing
 .if !'\\*[misc*b]'C' \{\
 .	ie '\\*[misc*b]'P' .nr @vs \\n[misc*S-vs]
@@ -490,11 +501,21 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .rm misc*rd misc*rd2
 ..
 .\"------------
-.\" VERBON [escape on/off [pointsize [font]]]
+.\" VERBON [flag [pointsize [font]]]
+.\"	flag
+.\"	bit	function
+.\"	0	escape on
+.\"	1	add an empty line before verbose text
+.\"	2	add an empty line after verbose text
+.\"	4	numbered lines (controlled by the string Verbnm)
+.\"	8	indent text by the numbervariable Verbin.
 .de VERBON
+.nr misc*verb 0\\$1
+.if (0\\n[misc*verb]%4)/2 .SP \\n[Lsp]u
 .br
 .misc@ev-keep misc*verb-ev
 .nf
+.if (0\\n[misc*verb]%16)/8 .nm \\*[Verbnm]
 .ie !'\\$3'' .ft \\$3
 .el .ft CR
 .ss 12
@@ -503,11 +524,17 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	ps \\$2
 .	vs \\$2
 .\}
-.nr @verbose-flag 1		\" tell pageheader to set ec/eo
-.if !0\\$1 .eo
+.if (0\\n[misc*verb]%32)/16 .in +\\n[Verbin]u
+.if !(0\\n[misc*verb]%2) \{\
+.	eo
+.	nr @verbose-flag 1		\" tell pageheader to set ec/eo
+.\}
 ..
 .de VERBOFF
 .ec
+.if (0\\n[misc*verb]%8)/4 .SP \\n[Lsp]u
+.if (0\\n[misc*verb]%16)/8 .nm
+.if (0\\n[misc*verb]%32)/16 .in
 .ev
 .nr @verbose-flag 0
 ..
@@ -638,11 +665,20 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .hd@split hd*new-ps \\n[hd*level] HP \\*[HP]\"	get point size
 .ie (\\*[hd*new-ps]=0):(\w@\\*[hd*new-ps]@=0) \{\
 .	if \\n[hd*htype] \{\
-.		if '\\*[hd*font]'3' .S -1
-.		if '\\*[hd*font]'B' .S -1
+.		if '\\*[hd*font]'3' \{\
+.			ps -1
+.			vs -1
+.		\}
+.		if '\\*[hd*font]'B' \{\
+.			ps -1
+.			vs -1
+.		\}
 .	\}
 .\}
-.el .S \\*[hd*new-ps]
+.el \{\
+.	ps \\*[hd*new-ps]
+.	vs \\*[hd*new-ps]+2
+.\}
 .\"
 .\"---------- user macro HY ------------- 
 .\"	user macro to reset indents
@@ -660,7 +696,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\}
 .el \\$2\\$3\\*[hd*suf-space]\&\c
 .ft 1
-.S P P
+.\" restore pointsize and vertical size.
+.ps \\n[@ps]
+.vs \\n[@vs]
 .\"
 .\" table of contents
 .if (\\n[hd*level]<=\\n[Cl])&\w@\\$2@ \{\
@@ -848,6 +886,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" FOOTER
 .de pg@footer
 .ec
+.if \\n[D]>2 .tm Footer# \\n[%] (\\n[.F]:\\n[c.])
 .pg@disable-trap
 .\".debug footer
 .tbl@bottom-hook
@@ -977,13 +1016,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"-------------------------
 .\" print out all pending text
 .de pg@end-of-text
-.\" non-empty environment
-.misc@ev-keep ne
-.init@reset
-\c
-.ds@print-float 3
-.ev
-.if d ref*div .RP
+.if \\n[D]>2 .tm ---------- End of text processing ----------------
+.ds@eot-print
+.ref@eot-print
 ..
 .\"-------------------------
 .\" set top and bottom margins 
@@ -1073,7 +1108,11 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .br
 .bp
 .nr pg*i 0 1
-.while \\n+[pg*i]<=(0\\$1) .bp
+.\" force new page by writing something invisible.
+.while \\n+[pg*i]<=(0\\$1) \{\
+\&
+.	bp
+.\}
 ..
 .\"-------------------------------
 .\" MULB width1 space1 width2 space2 width3 space3 ...
@@ -1089,7 +1128,11 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	shift 2
 .\}
 .nr pg*mul-max-col \\n[pg*i]
+.ds pg*mul-fam \\n[.fam]
+.nr pg*mul-font \\n[.f]
 .ev pg*mul-ev
+.fam \\*[pg*mul-fam]
+.ft \\n[pg*mul-font]
 .fi
 .hy 14
 .di pg*mul-div
@@ -1354,7 +1397,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr ds*rindent 0
 .if \\n[.$]>2 .nr ds*rindent \\$3
 .\"
-.\"
+.\"---------------
 .nr ds*old-ll \\n[.l]
 .misc@push ds-ll \\n[.l]
 .misc@push ds-form \\n[ds*format]
@@ -1448,6 +1491,19 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	if (\\n[ds*fnr]>\\n[ds*o-fnr])&(\\n[ds*height]<\\n[.t]) \{\
 .		ds@print-float 1
 .	\}
+.\}
+..
+.\"-------------
+.\" called by end-of-text
+.de ds@eot-print
+.if \\n[ds*o-fnr]<=\\n[ds*fnr] \{\
+.	if \\n[D]>2 .tm Print remaining displays.
+.\" still some floats left, make non-empty environment
+.	misc@ev-keep ne
+.	init@reset
+\c
+.	ds@print-float 3
+.	ev
 .\}
 ..
 .\"---------------
@@ -1839,8 +1895,10 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" Table of contents with friends (module lix)
 .de TC
 .br
-.\" print any pending displays
-.pg@end-of-text
+.\" print any pending displays and references
+.ds@print-float 3
+.if \\n[ref*flag] .RP 0 1
+.\"
 .if \w@\\$1@>0 .nr toc*slevel \\$1
 .if \w@\\$2@>0 .nr toc*spacing (u;\\$2*\\n[Lsp])
 .if \w@\\$3@>0 .nr toc*tlevel \\$3
@@ -1872,7 +1930,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	br
 .	SP 3
 .\}
-.toc*list
+.if d toc*list .toc*list
 .\" print LIST OF XXX
 .if d lix*dsfg .lix@print-ds fg "\\*[Lf]"
 .if d lix*dstb .lix@print-ds tb "\\*[Lt]"
@@ -2062,13 +2120,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .de lix@dsln
 .nr lix*i \\n[lix*wth\\$1]-\w@\\$4@
 .ne 2v
-.ll -4m
-.ti 0
-\h'\\n[lix*i]u'\\$4\\$3
-.sp -1
-.ll
-.ti \\n[.l]u-\w@\\$2@u
-\\$2
+.nr lix*sep \\n[.l]-\\n[lix*i]-\w'\\$4\\$3\\$2'-1m-1n-\\n[.i]
+\h'\\n[lix*i]u'\\$4\\$3\h'1n'\l'\\n[lix*sep]u.'\h'1m'\\$2
+.SP \\n[toc*spacing]u
 ..
 .\"########################### module fnt ############################
 .\" some font macros.
@@ -2127,9 +2181,13 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr box*ll \\n[.l]
 .nr box*ind \\n[.i]
 .nr box*hyp \\n[.hy]
-.in +1n
-.ll -1n
+.nr box*wid \\n[.l]-\\n[.i]
+.\"
+.\" jump to new environment.
+.ev box*ev
 .di box*div
+.in 1n
+.ll (u;\\n[box*wid]-1n)
 .hy \\n[.hy]
 ..
 .de B2
@@ -2138,17 +2196,16 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .di
 .nr box*height \\n[dn]
 .ne \\n[dn]u+1v
-.ev box*ev
 .ll \\n[box*ll]u
-.in 0
+.in \\n[box*ind]u
 .nr box*y-pos \\n[.d]u
 .nf
 .box*div
 .fi
 \v'-1v+.25m'\
-\D'l \\n[.l]u 0'\
+\D'l \\n[box*wid]u 0'\
 \D'l 0 -\\n[box*height]u'\
-\D'l -\\n[.l]u 0'\
+\D'l -\\n[box*wid]u 0'\
 \D'l 0 \\n[box*height]u'
 .br
 .sp -1
@@ -2162,10 +2219,13 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"########################### module ref ############################
 .nr ref*nr 0 1
 .nr ref*nr-width 5n
+.nr ref*flag 0		\" for end-of-text
 .ds Rf \v'-.4m'\s-3[\\n+[ref*nr]]\s0\v'.4m'
+.\"
 .\" start reference
 .de RS
 .if !''\\$1' .ds \\$1 \\n[ref*nr]
+.nr ref*flag 1
 .ev ref*ev
 .da ref*div
 .init@reset
@@ -2181,11 +2241,35 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .di
 .ev
 ..
+.\"-----------
 .de RP
 .if !d ref*div .@error "RP: No references!"
+.nr ref*flag 0
 .nr ref*i 0\\$2
 .if \\n[ref*i]<2 .SK
 .SP 2
+.ref@print-refs
+.if 0\\$1<1 .nr ref*nr 0 1
+.if ((\\n[ref*i]=0):(\\n[ref*i]=2)) .SK
+..
+.\"-----------
+.\" called by end-of-text!
+.de ref@eot-print
+.if \\n[ref*flag] \{\
+.	if \\n[D]>2 .tm Print references, called by eot
+.	nr ref*flag 0
+.	br
+.	misc@ev-keep ne
+.	init@reset
+\c
+'	bp
+.	ev
+.	ref@print-refs
+.\}
+..
+.\"-----------
+.\" prints the references
+.de ref@print-refs
 .toc@save 1 "" "\\*[Rp]" \\n[%]
 .ev ref*ev
 .ce
@@ -2195,10 +2279,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nf
 .ref*div
 .in
-.if 0\\$1<1 .nr ref*nr 0 1
 .rm ref*div
 .ev
-.if ((\\n[ref*i]=0):(\\n[ref*i]=2)) .SK
 ..
 .\"########################### module app ############################
 .\" 

@@ -79,6 +79,7 @@ class table {
   int ncolumns;
   int linesize;
   char delim[2];
+  char decimal_point_char;
   vertical_rule *vrule_list;
   stuff *stuff_list;
   horizontal_span *span_list;
@@ -127,7 +128,7 @@ public:
     DOUBLEBOX = 020,
     NOKEEP = 040
     };
-  table(int nc, unsigned flags, int linesize);
+  table(int nc, unsigned flags, int linesize, char decimal_point_char);
   ~table();
 
   void add_text_line(int r, const string &, const char *, int);

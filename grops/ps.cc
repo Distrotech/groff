@@ -1099,7 +1099,9 @@ ps_printer::~ps_printer()
   out.simple_comment("EOF");
   if (fseek(tempfp, 0L, 0) < 0)
     fatal("fseek on temporary file failed");
-  fputs("%!PS-Adobe-3.0\n", stdout);
+  fputs("%!PS-Adobe-", stdout);
+  fputs((broken_flags & USE_PS_ADOBE_2_0) ? "2.0" : "3.0", stdout);
+  putchar('\n');
   out.set_file(stdout);
   {
     extern const char *version_string;

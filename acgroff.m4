@@ -20,7 +20,8 @@ dnl
 define(GROFF_EXIT,[rm -f conftest* core; exit 1])dnl
 define(GROFF_PREFIX,[AC_PROVIDE([$0])AC_PREFIX(grops)AC_PREFIX(gcc)])dnl
 define(GROFF_PROG_CCC,
-[AC_PROVIDE([$0])cc_compile='$CCC conftest.cc -o conftest $CCLIBS $LIBS >/dev/null 2>&1'
+[AC_PROVIDE([$0])AC_REQUIRE([AC_PROG_CC])dnl
+cc_compile='$CCC conftest.cc -o conftest $CCLIBS $LIBS >/dev/null 2>&1'
 AC_SUBST(CCLIBS)
 if test -z "$CCC"; then
 # See whether the C compiler is also a C++ compiler.
@@ -84,15 +85,13 @@ I was unable to compile and link a simple C++ program that used a function
 declared in <stdio.h>.
 If you're using gcc/g++, you should install libg++.
 EOF
-GROFF_EXIT])
-if test "$CCC" = gcc; then CCC="gcc -O"; fi
-if test "$CCC" = "g++"; then CCC="g++ -O"; fi])dnl
+GROFF_EXIT])])dnl
 define(GROFF_CC_COMPILE_CHECK,
 [AC_PROVIDE([$0])AC_REQUIRE([GROFF_PROG_CCC])echo checking for $1
 cat <<EOF >conftest.cc
-$2
+[$2]
 extern "C" { void exit(int); }
-int main() { exit(0); } void t() { $3 }
+int main() { exit(0); } void t() { [$3] }
 EOF
 dnl Don't try to run the program, which would prevent cross-configuring.
 if eval $cc_compile; then
@@ -203,7 +202,7 @@ AC_DEFINE(HAVE_MMAP))])dnl
 dnl;
 define(GROFF_SYS_SIGLIST,
 [AC_COMPILE_CHECK([sys_siglist],,changequote(,)dnl
-[extern char *sys_siglist[]; sys_siglist[0] = 0;],changequote([,])dnl
+extern char *sys_siglist[]; sys_siglist[0] = 0;,changequote([,])dnl
 AC_DEFINE(HAVE_SYS_SIGLIST))])dnl
 dnl
 define(GROFF_STRUCT_EXCEPTION,
@@ -272,8 +271,8 @@ dnl
 define(GROFF_ARRAY_DELETE,
 [GROFF_CC_COMPILE_CHECK(new array delete syntax,,
 changequote(,)dnl
-[char *p = new char[5]; delete [] p;]
-changequote([,]),,AC_DEFINE(ARRAY_DELETE_NEEDS_SIZE))])dnl
+char *p = new char[5]; delete [] p;changequote([,]),
+,AC_DEFINE(ARRAY_DELETE_NEEDS_SIZE))])dnl
 dnl
 define(GROFF_BROKEN_SPOOLER_FLAGS,
 [test -n "${BROKEN_SPOOLER_FLAGS}" || BROKEN_SPOOLER_FLAGS=7
@@ -321,7 +320,7 @@ AC_DEFINE(STDLIB_H_DECLARES_GETOPT))
 GROFF_CC_COMPILE_CHECK([declaration of getopt in unistd.h],
 [#include <sys/types.h>
 #include <unistd.h>],
-[int opt = getopt(0, 0, 0); optarg = "foo"; optind = 1;],
+[int opt = getopt(0, 0, 0);],
 AC_DEFINE(UNISTD_H_DECLARES_GETOPT))
 ])dnl
 define(GROFF_PUTENV,
@@ -354,4 +353,28 @@ define(GROFF_TIME_T,
 AC_DEFINE(LONG_FOR_TIME_T))])dnl
 define(GROFF_UNISTD_H,
 [GROFF_CC_COMPILE_CHECK(['C++ <unistd.h>'],[#include <unistd.h>],
+dnl Bison generated parsers have problems with C++ compilers other than g++.
+dnl So byacc is preferred over bison.
 [read(0, 0, 0);],AC_DEFINE(HAVE_CC_UNISTD_H))])dnl
+define(GROFF_PROG_YACC,
+[AC_PROGRAM_CHECK(YACC, byacc, byacc, )
+AC_PROGRAM_CHECK(YACC, bison, bison -y, yacc)
+])dnl
+dnl GROFF_CSH_HACK(if hack present, if not present)
+define(GROFF_CSH_HACK,
+[echo 'checking for csh # hack'
+cat <<EOF >conftest.sh
+#!/bin/sh
+true || exit 0
+export PATH || exit 0
+exit 1
+EOF
+chmod +x conftest.sh
+if echo ./conftest.sh | (csh >/dev/null 2>&1) >/dev/null 2>&1
+then
+	:; $1
+else
+	:; $2
+fi
+rm -f conftest.sh
+])dnl

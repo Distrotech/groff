@@ -376,17 +376,19 @@ possible_command::possible_command()
 
 possible_command::~possible_command()
 {
-  delete name;
-  delete argv;
+  a_delete name;
+  a_delete argv;
 }
 
 void possible_command::set_name(const char *s)
 {
+  a_delete name;
   name = strsave(s);
 }
 
 void possible_command::set_name(const char *s1, const char *s2)
 {
+  a_delete name;
   name = new char[strlen(s1) + strlen(s2) + 1];
   strcpy(name, s1);
   strcat(name, s2);

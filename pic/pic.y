@@ -41,10 +41,6 @@ extern "C" {
 /* Maximum number of characters produced by printf("%g") */
 #define GDIGITS 14
 
-#ifndef __BORLANDC__
-#define YYDEBUG 1
-#endif /* __BORLANDC__ */
-
 int yylex();
 void yyerror(const char *);
 
@@ -168,8 +164,8 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token LOG
 %token EXP
 %token SQRT
-%token MAX
-%token MIN
+%token K_MAX
+%token K_MIN
 %token INT
 %token RAND
 %token COPY
@@ -226,7 +222,7 @@ parses properly. */
 %left CHOP DASHED DOTTED UP DOWN FILL
 %left LABEL
 
-%left VARIABLE NUMBER '(' SIN COS ATAN2 LOG EXP SQRT MAX MIN INT RAND LAST 
+%left VARIABLE NUMBER '(' SIN COS ATAN2 LOG EXP SQRT K_MAX K_MIN INT RAND LAST 
 %left ORDINAL HERE '`'
 
 /* these need to be lower than '-' */
@@ -341,6 +337,7 @@ placeless_element:
 	| PRINT print_args
 		{
 		  fprintf(stderr, "%s\n", $2.str);
+		  a_delete $2.str;
 	          fflush(stderr);
 		}
 	| SH
@@ -1478,9 +1475,9 @@ expr:
 		    YYABORT;
 		  }
 		}
-	| MAX '(' any_expr ',' any_expr ')'
+	| K_MAX '(' any_expr ',' any_expr ')'
 		{ $$ = $3 > $5 ? $3 : $5; }
-	| MIN '(' any_expr ',' any_expr ')'
+	| K_MIN '(' any_expr ',' any_expr ')'
 		{ $$ = $3 < $5 ? $3 : $5; }
 	| INT '(' any_expr ')'
 		{ $$ = floor($3); }

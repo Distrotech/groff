@@ -124,7 +124,7 @@
 
 # -------------------------------------------------------------------------
 # X Window System Build Parameters
-# $XConsortium: Project.tmpl,v 1.138 91/09/10 09:02:12 rws Exp $
+# $XConsortium: Project.tmpl,v 1.138.1.1 92/11/11 09:49:19 rws Exp $
 
 # -------------------------------------------------------------------------
 # X Window System make variables; this need to be coordinated with rules
@@ -199,9 +199,10 @@
     FONTSERVERSRC = $(FONTSRC)/server
      EXTENSIONSRC = $(TOP)/extensions
          XILIBSRC = $(EXTENSIONSRC)/lib/xinput
+        PEXLIBSRC = $(EXTENSIONSRC)/lib/PEXlib
       PHIGSLIBSRC = $(EXTENSIONSRC)/lib/PEX
 
-# $XConsortium: sunLib.tmpl,v 1.14.1.1 92/03/17 14:58:46 rws Exp $
+# $XConsortium: sunLib.tmpl,v 1.14.1.2 92/11/11 09:55:02 rws Exp $
 
 SHLIBLDFLAGS = -assert pure-text
 PICFLAGS = -pic
@@ -228,6 +229,9 @@ PICFLAGS = -pic
         DEPXILIB =
            XILIB = -lXi
 
+        DEPPEXLIB =
+           PEXLIB = -lPEX5
+
         SOXLIBREV = 4.10
           SOXTREV = 4.10
          SOXAWREV = 5.0
@@ -235,6 +239,7 @@ PICFLAGS = -pic
          SOXMUREV = 4.10
         SOXEXTREV = 4.10
       SOXINPUTREV = 4.10
+         SOPEXREV = 1.0
 
       DEPXAUTHLIB = $(USRLIBDIR)/libXau.a
          XAUTHLIB =  -lXau
@@ -253,6 +258,7 @@ PICFLAGS = -pic
         LINTXTOOL = $(LINTLIBDIR)/llib-lXt.ln
           LINTXAW = $(LINTLIBDIR)/llib-lXaw.ln
            LINTXI = $(LINTLIBDIR)/llib-lXi.ln
+          LINTPEX = $(LINTLIBDIR)/llib-lPEX5.ln
         LINTPHIGS = $(LINTLIBDIR)/llib-lphigs.ln
 
           DEPLIBS = $(DEPXAWLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)

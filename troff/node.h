@@ -457,6 +457,7 @@ class output_file {
 public:
   output_file();
   virtual ~output_file();
+  virtual void trailer(vunits page_length);
   virtual void flush() = 0;
   virtual void transparent_char(unsigned char) = 0;
   virtual void print_line(hunits x, vunits y, node *n,

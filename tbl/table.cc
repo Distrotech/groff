@@ -94,7 +94,8 @@ string row_top_reg(int r);
 void set_inline_modifier(const entry_modifier *);
 void restore_inline_modifier(const entry_modifier *m);
 void set_modifier(const entry_modifier *);
-int find_dot(const char *s, const char *delim);
+int find_decimal_point(const char *s, char decimal_point_char,
+		       const char *delim);
 
 string an_empty_string;
 int location_force_filename = 0;
@@ -1196,8 +1197,8 @@ void vertical_rule::print()
   }
 }
 
-table::table(int nc, unsigned f, int ls)
-: ncolumns(nc), flags(f), linesize(ls),
+table::table(int nc, unsigned f, int ls, char dpc)
+: ncolumns(nc), flags(f), linesize(ls), decimal_point_char(dpc),
   nrows(0), allocated_rows(0), entry(0), entry_list(0),
   left_separation(0), right_separation(0), stuff_list(0), vline(0),
   vrule_list(0), row_is_all_lines(0), span_list(0)
@@ -1397,7 +1398,8 @@ void table::do_vspan(int r, int c)
   }
 }
 
-int find_dot(const char *s, const char *delim)
+int find_decimal_point(const char *s, char decimal_point_char,
+		       const char *delim)
 {
   if (s == 0 || *s == '\0')
     return -1;
@@ -1422,7 +1424,7 @@ int find_dot(const char *s, const char *delim)
     }
     else if (*p == delim[0])
       in_delim = 1;
-    else if (p[0] == '.' && csdigit(p[1]))
+    else if (p[0] == decimal_point_char && csdigit(p[1]))
       possible_pos = p - s;
   if (possible_pos >= 0)
     return possible_pos;
@@ -1534,7 +1536,7 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
 	  e = new left_block_entry(s, f);
 	}
 	else {
-	  int pos = find_dot(s, delim);
+	  int pos = find_decimal_point(s, decimal_point_char, delim);
 	  if (pos < 0)
 	    e = new center_text_entry(s, f);
 	  else

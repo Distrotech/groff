@@ -297,8 +297,6 @@ EOF
 rm -f conftest* core; exit 1
 fi
 rm -f conftest*
-if test "$CCC" = gcc; then CCC="gcc -O"; fi
-if test "$CCC" = "g++"; then CCC="g++ -O"; fi
 if test -z "$PSPRINT"
 then
 	for p in lpr
@@ -398,12 +396,12 @@ done
 IFS="$saveifs"
 
 if test -z "$YACC"; then
-  echo checking for bison
+  echo checking for byacc
   saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/bison; then
-      YACC="bison -y"
+    if test -f $dir/byacc; then
+      YACC="byacc"
       break
     fi
   done
@@ -412,12 +410,12 @@ fi
 test -z "$YACC" && YACC=""
 
 if test -z "$YACC"; then
-  echo checking for byacc
+  echo checking for bison
   saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/byacc; then
-      YACC="byacc"
+    if test -f $dir/bison; then
+      YACC="bison -y"
       break
     fi
   done
@@ -491,6 +489,23 @@ do
 		ETAGSCCFLAG="-$flag"
 	rm -f conftest.c
 done
+
+echo 'checking for csh # hack'
+cat <<EOF >conftest.sh
+#!/bin/sh
+true || exit 0
+export PATH || exit 0
+exit 1
+EOF
+chmod +x conftest.sh
+if echo ./conftest.sh | (csh >/dev/null 2>&1) >/dev/null 2>&1
+then
+	:; SH_SCRIPT_SED_CMD='1s/.*/:/'
+else
+	:; SH_SCRIPT_SED_CMD=''
+fi
+rm -f conftest.sh
+
 
 echo checking for unistd.h
 echo checking how to run the C preprocessor
@@ -566,7 +581,7 @@ cat <<EOF >conftest.cc
 #include <sys/types.h>
 #include <unistd.h>
 extern "C" { void exit(int); }
-int main() { exit(0); } void t() { int opt = getopt(0, 0, 0); optarg = "foo"; optind = 1; }
+int main() { exit(0); } void t() { int opt = getopt(0, 0, 0); }
 EOF
 if eval $cc_compile; then
   DEFS="$DEFS -DUNISTD_H_DECLARES_GETOPT=1"
@@ -634,6 +649,16 @@ t() { char *p = mmap(0, 0, PROT_READ, MAP_PRIVATE, 0, 0); munmap(p, 0); }
 EOF
 if eval $compile; then
   DEFS="$DEFS -DHAVE_MMAP=1"
+fi
+rm -f conftest*
+
+echo checking for pid_t in sys/types.h
+echo '#include <sys/types.h>' > conftest.c
+eval "$CPP $DEFS conftest.c > conftest.out 2>&1"
+if egrep "pid_t" conftest.out >/dev/null 2>&1; then
+  :
+else 
+  DEFS="$DEFS -Dpid_t=int"
 fi
 rm -f conftest*
 
@@ -771,7 +796,7 @@ echo checking for sys_siglist
 cat > conftest.c <<EOF
 
 main() { exit(0); } 
-t() { [extern char *sys_siglist[]; sys_siglist[0] = 0;] }
+t() { extern char *sys_siglist[]; sys_siglist[0] = 0; }
 EOF
 if eval $compile; then
   DEFS="$DEFS -DHAVE_SYS_SIGLIST=1"
@@ -853,8 +878,7 @@ echo checking for new array delete syntax
 cat <<EOF >conftest.cc
 
 extern "C" { void exit(int); }
-int main() { exit(0); } void t() { char *p = new char[5]; delete [] p;
- }
+int main() { exit(0); } void t() { char *p = new char[5]; delete [] p; }
 EOF
 if eval $cc_compile; then
   :
@@ -980,6 +1004,7 @@ INSTALL_PROGRAM='$INSTALL_PROGRAM'
 INSTALL_DATA='$INSTALL_DATA'
 LN_S='$LN_S'
 ETAGSCCFLAG='$ETAGSCCFLAG'
+SH_SCRIPT_SED_CMD='$SH_SCRIPT_SED_CMD'
 CPP='$CPP'
 LIBOBJS='$LIBOBJS'
 BROKEN_SPOOLER_FLAGS='$BROKEN_SPOOLER_FLAGS'
@@ -1023,6 +1048,7 @@ s%@INSTALL_PROGRAM@%$INSTALL_PROGRAM%g
 s%@INSTALL_DATA@%$INSTALL_DATA%g
 s%@LN_S@%$LN_S%g
 s%@ETAGSCCFLAG@%$ETAGSCCFLAG%g
+s%@SH_SCRIPT_SED_CMD@%$SH_SCRIPT_SED_CMD%g
 s%@CPP@%$CPP%g
 s%@LIBOBJS@%$LIBOBJS%g
 s%@BROKEN_SPOOLER_FLAGS@%$BROKEN_SPOOLER_FLAGS%g

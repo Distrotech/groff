@@ -199,7 +199,7 @@ void reference::insert_field(unsigned char c, string &s)
   string *old_field = field;
   field = new string[nfields + 1];
   int pos = 0;
-  for (int i = 0; i < c; i++)
+  for (int i = 0; i < int(c); i++)
     if (field_index[i] != NULL_FIELD_INDEX)
       pos++;
   for (i = 0; i < pos; i++)
@@ -222,7 +222,7 @@ void reference::delete_field(unsigned char c)
     return;
   string *old_field = field;
   field = new string[nfields - 1];
-  for (int i = 0; i < field_index[c]; i++)
+  for (int i = 0; i < int(field_index[c]); i++)
     field[i].move(old_field[i]);
   for (i = field_index[c]; i < nfields - 1; i++)
     field[i].move(old_field[i + 1]);

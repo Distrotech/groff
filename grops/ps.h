@@ -117,5 +117,6 @@ extern unsigned broken_flags;
 enum {
   NO_SETUP_SECTION = 01,
   STRIP_PERCENT_BANG = 02,
-  STRIP_STRUCTURE_COMMENTS = 04
-  };
+  STRIP_STRUCTURE_COMMENTS = 04,
+  USE_PS_ADOBE_2_0 = 010
+};

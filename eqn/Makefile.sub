@@ -16,7 +16,8 @@ all: neqn
 
 neqn: neqn.sh
 	-rm -f neqn
-	sed -e 's/@g@/$(g)/g' $(srcdir)/neqn.sh >neqn
+	sed -e 's/@g@/$(g)/g' -e "$(SH_SCRIPT_SED_CMD)" $(srcdir)/neqn.sh >neqn
+	chmod +x neqn
 
 install_data: neqn
 	-rm -f $(bindir)/$(NAMEPREFIX)neqn

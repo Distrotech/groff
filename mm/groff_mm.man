@@ -171,14 +171,46 @@ See \fBINITR\fP.
 .B TAB
 reset tabs to every 5n. Normally used to reset any previous tabpositions.
 .TP
-.B VERBON [1/0 [pointsize [font]]]
+.B VERBON [flag [pointsize [font]]]
 Begin verbatim output using courier font.
 Usually for printing programs.
 All character has equal width.
-Escape-character (\e) is normally turned off, but can be enabled by
-setting the first argument to 1. Th pointsize can also be changed with
+The pointsize can be changed with
 the second argument. By specifying the font-argument
 it is possible to use another font instead of courier.
+\fIflag\fP control several special features.
+It contains the sum of all wanted features.
+.in +.5i
+.ti -.5i
+Value
+.sp -1
+Description
+.ti -.5i
+1
+.sp -1
+Enable the escape-character (\e). This is normally turned off during
+verbose output.
+.ti -.5i
+2
+.sp -1
+Add en empty line before the verbose text.
+.ti -.5i
+4
+.sp -1
+Add en empty line after the verbose text.
+.ti -.5i
+8
+.sp -1
+Print the verbose text with numbered lines. This adds four digitsized
+spaces in the beginning of each line. Finer control is available with
+the string-variable \fBVerbnm\fP. It contains all arguments to the
+\fBtroff\fP-command \fB.nm\fP, normally '1'.
+.ti -.5i
+16
+.sp -1
+Indent the verbose text with five 'n':s. This is controlled by the
+number-variable \fBVerbin\fP (in units).
+.in
 .TP
 .B VERBOFF
 End verbatim output.

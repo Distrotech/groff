@@ -35,11 +35,15 @@ extern "C" {
 #else /* not UNISTD_H_DECLARES_GETOPT */
 extern "C" {
   int getopt(int, char **, const char *);
+}
+#endif /* not UNISTD_H_DECLARES_GETOPT */
+
+extern "C" {
   extern char *optarg;
   extern int optind;
   extern int opterr;
 }
-#endif /* not UNISTD_H_DECLARES_GETOPT */
+
 #endif /* not STDLIB_H_DECLARES_GETOPT */
 
 char *strsave(const char *s);

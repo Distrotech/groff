@@ -40,6 +40,9 @@ PAGE=@PAGE@
 # stripped out of included files; this is needed for spoolers that
 # don't understand the %%{Begin,End}Document comments. I suspect this
 # includes early versions of TranScript.
+# Add 8 if the first line of the PostScript output should be %!PS-Adobe-2.0
+# rather than %!PS-Adobe-3.0; this is needed when using Sun's Newsprint
+# with a printer that requires page reversal.
 BROKEN_SPOOLER_FLAGS=@BROKEN_SPOOLER_FLAGS@
 
 # DEVICE is the default device.
@@ -172,9 +175,10 @@ CCDEFINES=$(DEFINES)
 # CDEFINES are definitions for C compilations.
 CDEFINES=$(DEFINES)
 
-DEBUG=-g
-CCFLAGS=$(DEBUG)
-CFLAGS=$(DEBUG)
+DEBUG=
+OPTIMIZE=-O
+CCFLAGS=$(DEBUG) $(OPTIMIZE)
+CFLAGS=$(DEBUG) $(OPTIMIZE)
 YACC=@YACC@
 YACCFLAGS=-v
 
@@ -192,9 +196,15 @@ ETAGSFLAGS=
 ETAGSCCFLAG=@ETAGSCCFLAG@
 # Full path to perl.
 PERLPATH=@PERLPATH@
-
+# Sed command with which to edit sh scripts.
+SH_SCRIPT_SED_CMD=@SH_SCRIPT_SED_CMD@
 srcdir = @srcdir@
 VPATH = @srcdir@
+
+PURIFY=purify
+GCCVERSION=2.3.3
+GCCPREFIX=/usr/local/lib/gcc-lib/sparc-sun-sunos4.1/$(GCCVERSION)/
+PURIFYCCFLAGS=-g++=yes -collector=$(GCCPREFIX)ld
 
 MDEFINES="PAGE=$(PAGE)" "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
   "DEVICE=$(DEVICE)" "PSPRINT=$(PSPRINT)" "DVIPRINT=$(DVIPRINT)" \
@@ -215,7 +225,8 @@ MDEFINES="PAGE=$(PAGE)" "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
   "RANLIB=$(RANLIB)" "AR=$(AR)" \
   "INSTALL_PROGRAM=$(INSTALL_PROGRAM)" "INSTALL_DATA=$(INSTALL_DATA)" \
   "ETAGS=$(ETAGS)" "ETAGSFLAGS=$(ETAGSFLAGS)" "ETAGSCCFLAG=$(ETAGSCCFLAG)" \
-  "PERLPATH=$(PERLPATH)" 
+  "PERLPATH=$(PERLPATH)" "SH_SCRIPT_SED_CMD=$(SH_SCRIPT_SED_CMD)" \
+  "PURIFY=$(PURIFY)" "PURIFYCCFLAGS=$(PURIFYCCFLAGS)"
 
 SHELL=/bin/sh
 INCDIRS=include
@@ -317,9 +328,9 @@ dist:
 	srcdir=`cd $(srcdir); pwd`; \
 	cd tmp; \
 	$(LN_S) ../Makefile .; \
-	$(LN_S) $$srcdir/* . 2>/dev/null; \
+	$(LN_S) $$srcdir/* . 2>/dev/null || true; \
 	for d in $(DISTDIRS); do \
-	  (cd $$d; $(LN_S) $$srcdir/$$d/* . 2>/dev/null); \
+	  (cd $$d; $(LN_S) $$srcdir/$$d/* . 2>/dev/null || true); \
 	done; \
 	$(MAKE) srcdir=$$srcdir VPATH=$$srcdir extraclean; \
 	for d in $(EXTRADIRS); do \
@@ -366,6 +377,10 @@ uninstall_dirs:
 # Use rmdir here so that the directories are only removed if they're empty
 	-rmdir $(man1dir) $(man5dir) $(man7dir) $(manroot) \
 	  $(tmacdir) $(fontdir) $(bindir) $(datasubdir) $(datadir)
+
+
+.PHONY: check
+check:
 
 FORCE:
 
