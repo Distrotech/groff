@@ -8,6 +8,11 @@ To support platforms with 8+3 filenames, `-mFOO' will now search first for
 tmac.FOO and then for FOO.tmac.  Additionally, some macro files have been
 renamed using the latter scheme to avoid 8+3 name clashes.
 
+The new environment variable GROFF_BIN_PATH will be checked for programs
+groff is calling (preprocessors, troff, and output devices).  If not set,
+it defaults to the directory where the groff binary is located.  Previously,
+it was PATH.  This is also true for the nroff script.
+
 Troff
 -----
 
@@ -55,6 +60,9 @@ For security reasons the following changes have been done:
     .open, .opena, .pso, .sy, and .pi are completely disabled in
     safer mode (which is the default); to use these requests the `-U'
     command line flag must be used.
+
+groff will now install its data files into /usr/local/share/groff/<version>
+by default, following the GNU standard.
 
 VERSION 1.16.1
 ==============

@@ -45,13 +45,3 @@ majorminor.cc: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
 	@echo const char \*minor_version = \
 	\"`sed -e 's/^[^.]*\.\([0-9]*\).*$$/\1/' $(top_srcdir)/VERSION`\"\; >>$@
 	@echo const char \*revision = \"`cat $(top_srcdir)/REVISION`\"\; >>$@
-
-install_data: hyphen.us
-	-test -d $(datadir) || $(mkinstalldirs) $(datadir)
-	-test -d $(datasubdir) || $(mkinstalldirs) $(datasubdir)
-	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
-	-rm -f $(tmacdir)/hyphen.us
-	$(INSTALL_DATA) $(srcdir)/hyphen.us $(tmacdir)/hyphen.us
-
-uninstall_sub:
-	-rm -f $(tmacdir)/hyphen.us

@@ -26,7 +26,7 @@ MEMACROS=../tmac/tmac.e
 SOELIM=../src/preproc/soelim/soelim
 
 version=`cat ../VERSION`
-# No additional number for the groff archive if revision is zero
+# No additional number if revision is zero
 revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' ../REVISION`
 
 all: $(DOCS)
