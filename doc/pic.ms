@@ -1258,7 +1258,7 @@ very important for putting together large, multi-part diagrams.
 Blocks are also a variable-scoping mechanism, like a \fIgroff\/\fP(1)
 environment.  All variable assignments done inside a block are undone
 at the end of it.  To get at values within a block, write a name of
-the block followed by a dot, followed by the variable or label you
+the block followed by a dot, followed by the label you
 want.  For example, we could refer the the center of the box in the
 above composite as \fBlast [] .Caption\fP or \fBA.Caption\fP.
 .PP
@@ -1276,6 +1276,44 @@ You can also use interior labels in either part of a \fBwith\fR
 modifier.  This means that the example composite could be placed
 relative to its caption box by a command containing \fBwith A.Caption
 at\fP.
+.PP
+Note that both width and height of the block composite object are always
+positive:
+.KS
+.PS
+[
+	[
+		box wid -0.5 ht 0.5
+		box wid 0.75 ht 0.75
+	]
+	move down 0.3 from last [].s 0.1
+	"\fBbox wid -0.5 ht 0.5; box wid 0.75 ht 0.75\fP"
+]
+move from last [].e 2
+[
+	[
+		[ box wid -0.5 ht 0.5 ]
+		box wid 0.75 ht 0.75
+	]
+	move down 0.3 from last [].s 0.1
+	"\fB[box wid -0.5 ht 0.5]; box wid 0.75 ht 0.75\fP"
+]
+.PE
+.CE "3: Composite block objects always have positive width and height
+.PP
+Variables in a block can't be directly accessed from outside; they must
+be converted into a position:
+.KS
+.DS
+.CW
+A: [
+     xy = 5;
+     Xy: (xy,0);
+   ]
+print A.Xy.x
+.R
+.DE
+.KE
 .PP
 Blocks may be nested.  This means you can use block attachment points
 to build up complex diagrams hierarchically, from the inside out.
