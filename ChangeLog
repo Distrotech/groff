@@ -1,3 +1,44 @@
+2005-02-28  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cpp (string_iterator::fill): Protect against
+	null pointer.
+
+	* tmac/papersize.tmac: Convert `paper' string contents to lowercase.
+
+	* configure: Regenerated.
+
+	* NEWS: Updated.
+
+2005-02-28  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	Integrate `pdfmark' into normal groff build system;
+	install macro `pdfmark' packages, build and install `pdfroff',
+	and PDF format documentation.
+
+	* Makefile.comm: Add PDFDOCDIR.
+
+	* Makefile.in: (MDEFINES) ALT_AWK_PROGS, ALT_GHOSTSCRIPT_PROGS,
+	pdfdocdir, make_pdfdoc, make_install_pdfdoc: New variables.
+	(unstall_dirs): Add pdfdocdir.
+
+	* aclocal.m4: (GROFF_APPRESDIR_OPTION): use AC_HELP_STRING instead
+	of AS_HELP_STRING.
+	(GROFF_GHOSTSCRIPT_PREFS): New function; support `--with-alt-gs'
+	option, set ALT_GHOSTSCRIPT_PROGS.
+	(GROFF_GHOSTSCRIPT_PATH): Support `--with-gs' option, force use of
+	GROFF_GHOSTSCRIPT_PREFS, set GHOSTSCRIPT.
+	(GROFF_HTML_PROGRAMS): Force use of GROFF_GHOSTSCRIPT_PATH; tidy up.
+	(GROFF_AWK_PREFS): New function; support `--with-alt-awk' option,
+	set ALT_AWK_PROGS.
+	(GROFF_AWK_PATH): New function; support `--with-awk' option, force
+	use of GROFF_AWK_PREFS.
+	(GROFF_PDFDOC_PROGRAMS): New function; force use of GROFF_AWK_PATH
+	and GROFF_GHOSTSCRIPT_PATH, set make_pdfdoc and make_install_pdfdoc.
+
+	* configure.ac: Add AC_PREREQ(2.56), GROFF_PDFDOC_PROGRAMS.
+	Remove GROFF_GHOSTSCRIPT_PATH, (forced by GROFF_PDFDOC_PROGRAMS, and
+	also by modified GROFF_HTML_PROGRAMS).
+
 2005-02-27  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/devices/grohtml/html-text.cpp (html_text::do_pre): Preserve

@@ -540,7 +540,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS XDEVDIRS XPROGDIRS XLIBDIRS appresdir LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD GREP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR pnmcut pnmcrop pnmtopng psselect pnmtops gs make_html make_install_html pnmtops_nosetpage GHOSTSCRIPT ac_pt_GHOSTSCRIPT LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS XDEVDIRS XPROGDIRS XLIBDIRS appresdir LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD GREP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR ALT_GHOSTSCRIPT_PROGS GHOSTSCRIPT ac_ct_GHOSTSCRIPT pnmcut pnmcrop pnmtopng psselect pnmtops make_html make_install_html ALT_AWK_PROGS AWK ac_ct_AWK make_pdfdoc make_install_pdfdoc pnmtops_nosetpage LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1088,6 +1088,10 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-x                use the X Window System
        --with-appresdir=DIR    X11 application resource files
+  --with-alt-gs=LIST      alternative names for ghostscript executable
+  --with-gs=PROG          actual [/path/]name of ghostscript executable
+  --with-alt-awk=LIST     alternative names for awk executable
+  --with-awk=PROG         actual [/path/]name of awk executable
 
 Some influential environment variables:
   CC          C compiler command
@@ -1522,6 +1526,7 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
 
 
 
@@ -9912,7 +9917,124 @@ rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
    echo "$as_me:$LINENO: result: $GROFF_PATH_SEPARATOR" >&5
 echo "${ECHO_T}$GROFF_PATH_SEPARATOR" >&6
 
-make_html=html
+
+# Check whether --with-alt-gs or --without-alt-gs was given.
+if test "${with_alt_gs+set}" = set; then
+  withval="$with_alt_gs"
+  ALT_GHOSTSCRIPT_PROGS="$withval"
+else
+  ALT_GHOSTSCRIPT_PROGS="gs gswin32c gsos2"
+fi;
+
+
+
+# Check whether --with-gs or --without-gs was given.
+if test "${with_gs+set}" = set; then
+  withval="$with_gs"
+  GHOSTSCRIPT=$withval
+else
+  if test -n "$ac_tool_prefix"; then
+  for ac_prog in $ALT_GHOSTSCRIPT_PROGS
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_GHOSTSCRIPT+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$GHOSTSCRIPT"; then
+  ac_cv_prog_GHOSTSCRIPT="$GHOSTSCRIPT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_GHOSTSCRIPT="$ac_tool_prefix$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+GHOSTSCRIPT=$ac_cv_prog_GHOSTSCRIPT
+if test -n "$GHOSTSCRIPT"; then
+  echo "$as_me:$LINENO: result: $GHOSTSCRIPT" >&5
+echo "${ECHO_T}$GHOSTSCRIPT" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+    test -n "$GHOSTSCRIPT" && break
+  done
+fi
+if test -z "$GHOSTSCRIPT"; then
+  ac_ct_GHOSTSCRIPT=$GHOSTSCRIPT
+  for ac_prog in $ALT_GHOSTSCRIPT_PROGS
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_ac_ct_GHOSTSCRIPT+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$ac_ct_GHOSTSCRIPT"; then
+  ac_cv_prog_ac_ct_GHOSTSCRIPT="$ac_ct_GHOSTSCRIPT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_GHOSTSCRIPT="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+ac_ct_GHOSTSCRIPT=$ac_cv_prog_ac_ct_GHOSTSCRIPT
+if test -n "$ac_ct_GHOSTSCRIPT"; then
+  echo "$as_me:$LINENO: result: $ac_ct_GHOSTSCRIPT" >&5
+echo "${ECHO_T}$ac_ct_GHOSTSCRIPT" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$ac_ct_GHOSTSCRIPT" && break
+done
+
+  if test "x$ac_ct_GHOSTSCRIPT" = x; then
+    GHOSTSCRIPT="missing"
+  else
+    if test "$build" != "$host"; then
+      { echo "$as_me:$LINENO: WARNING: In the future, Autoconf will not detect cross-tools
+whose name does not start with the host triplet.  If you think this
+configuration is useful to you, please write to autoconf@gnu.org." >&5
+echo "$as_me: WARNING: In the future, Autoconf will not detect cross-tools
+whose name does not start with the host triplet.  If you think this
+configuration is useful to you, please write to autoconf@gnu.org." >&2;}
+    fi
+    GHOSTSCRIPT=$ac_ct_GHOSTSCRIPT
+  fi
+fi
+
+fi;
+   test "$GHOSTSCRIPT" = "no" && GHOSTSCRIPT=missing
+
+   make_html=html
    make_install_html=install_html
 
    missing=
@@ -9953,7 +10075,7 @@ echo "${ECHO_T}no" >&6
 fi
 
       if test $pnmcut = missing; then
-	missing="$missing pnmcut"
+	missing="$missing \`pnmcut'"
       fi;# Extract the first word of "pnmcrop", so it can be a program name with args.
 set dummy pnmcrop; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -9991,7 +10113,7 @@ echo "${ECHO_T}no" >&6
 fi
 
       if test $pnmcrop = missing; then
-	missing="$missing pnmcrop"
+	missing="$missing \`pnmcrop'"
       fi;# Extract the first word of "pnmtopng", so it can be a program name with args.
 set dummy pnmtopng; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -10029,7 +10151,7 @@ echo "${ECHO_T}no" >&6
 fi
 
       if test $pnmtopng = missing; then
-	missing="$missing pnmtopng"
+	missing="$missing \`pnmtopng'"
       fi;# Extract the first word of "psselect", so it can be a program name with args.
 set dummy psselect; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -10067,7 +10189,7 @@ echo "${ECHO_T}no" >&6
 fi
 
       if test $psselect = missing; then
-	missing="$missing psselect"
+	missing="$missing \`psselect'"
       fi;# Extract the first word of "pnmtops", so it can be a program name with args.
 set dummy pnmtops; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -10105,16 +10227,79 @@ echo "${ECHO_T}no" >&6
 fi
 
       if test $pnmtops = missing; then
-	missing="$missing pnmtops"
-      fi;# Extract the first word of "gs", so it can be a program name with args.
-set dummy gs; ac_word=$2
+	missing="$missing \`pnmtops'"
+      fi;
+
+   test "$GHOSTSCRIPT" = "missing" && missing="$missing \`gs'"
+
+   if test -n "$missing"; then
+     plural=`set $missing; test $# -gt 1 && echo s`
+     missing=`set $missing
+       missing=""
+       while test $# -gt 0
+	 do
+	   case $# in
+	     1) missing="$missing$1" ;;
+	     2) missing="$missing$1 and " ;;
+	     *) missing="$missing$1, " ;;
+	   esac
+	   shift
+	 done
+	 echo $missing`
+
+     make_html=
+     make_install_html=
+
+     { echo "$as_me:$LINENO: WARNING: missing program$plural:
+
+  The program$plural
+     $missing
+  cannot be found in the PATH.
+  Consequently, groff's HTML backend (grohtml) will not work properly;
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation in HTML format.
+     " >&5
+echo "$as_me: WARNING: missing program$plural:
+
+  The program$plural
+     $missing
+  cannot be found in the PATH.
+  Consequently, groff's HTML backend (grohtml) will not work properly;
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation in HTML format.
+     " >&2;}
+   fi
+
+
+
+
+# Check whether --with-alt-awk or --without-alt-awk was given.
+if test "${with_alt_awk+set}" = set; then
+  withval="$with_alt_awk"
+  ALT_AWK_PROGS="$withval"
+else
+  ALT_AWK_PROGS="gawk mawk nawk awk"
+fi;
+
+
+
+# Check whether --with-awk or --without-awk was given.
+if test "${with_awk+set}" = set; then
+  withval="$with_awk"
+  AWK=$withval
+else
+  if test -n "$ac_tool_prefix"; then
+  for ac_prog in $ALT_AWK_PROGS
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_gs+set}" = set; then
+if test "${ac_cv_prog_AWK+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test -n "$gs"; then
-  ac_cv_prog_gs="$gs" # Let the user override the test.
+  if test -n "$AWK"; then
+  ac_cv_prog_AWK="$AWK" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -10123,71 +10308,117 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_gs="found"
+    ac_cv_prog_AWK="$ac_tool_prefix$ac_prog"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
 done
 done
 
-  test -z "$ac_cv_prog_gs" && ac_cv_prog_gs="missing"
 fi
 fi
-gs=$ac_cv_prog_gs
-if test -n "$gs"; then
-  echo "$as_me:$LINENO: result: $gs" >&5
-echo "${ECHO_T}$gs" >&6
+AWK=$ac_cv_prog_AWK
+if test -n "$AWK"; then
+  echo "$as_me:$LINENO: result: $AWK" >&5
+echo "${ECHO_T}$AWK" >&6
 else
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
-      if test $gs = missing; then
-	missing="$missing gs"
-      fi;
+    test -n "$AWK" && break
+  done
+fi
+if test -z "$AWK"; then
+  ac_ct_AWK=$AWK
+  for ac_prog in $ALT_AWK_PROGS
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_ac_ct_AWK+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$ac_ct_AWK"; then
+  ac_cv_prog_ac_ct_AWK="$ac_ct_AWK" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_AWK="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
 
+fi
+fi
+ac_ct_AWK=$ac_cv_prog_ac_ct_AWK
+if test -n "$ac_ct_AWK"; then
+  echo "$as_me:$LINENO: result: $ac_ct_AWK" >&5
+echo "${ECHO_T}$ac_ct_AWK" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$ac_ct_AWK" && break
+done
+
+  if test "x$ac_ct_AWK" = x; then
+    AWK="missing"
+  else
+    if test "$build" != "$host"; then
+      { echo "$as_me:$LINENO: WARNING: In the future, Autoconf will not detect cross-tools
+whose name does not start with the host triplet.  If you think this
+configuration is useful to you, please write to autoconf@gnu.org." >&5
+echo "$as_me: WARNING: In the future, Autoconf will not detect cross-tools
+whose name does not start with the host triplet.  If you think this
+configuration is useful to you, please write to autoconf@gnu.org." >&2;}
+    fi
+    AWK=$ac_ct_AWK
+  fi
+fi
+
+fi;
+   test "$AWK" = "no" && AWK=missing
+
+
+
+   make_pdfdoc=pdfdoc
+   make_install_pdfdoc=install_pdfdoc
+
+   missing=""
+   test "$AWK" = missing && missing="\`awk'"
+   test "$GHOSTSCRIPT" = missing && missing="$missing \`gs'"
    if test -n "$missing"; then
-     cnt=0
-     for i in $missing
-     do
-       cnt=`expr $cnt + 1`
-       eval "prog$cnt=$i"
-     done
-     plural="s"
-     case $cnt in
-     1)
-       plural=""
-       progs="\`$prog1'" ;;
-     2)
-       progs="\`$prog1' and \`$prog2'" ;;
-     3)
-       progs="\`$prog1', \`$prog2', and \`$prog3'" ;;
-     4)
-       progs="\`$prog1', \`$prog2', \`$prog3', and \`$prog4'" ;;
-     5)
-       progs="\`$prog1', \`$prog2', \`$prog3', \`$prog4', and \`$prog5'" ;;
-     6)
-       progs="\`$prog1', \`$prog2', \`$prog3', \`$prog4', \`$prog5', and \`$prog6'" ;;
-     esac
+     plural=`set $missing; test $# -eq 2 && echo s`
+     test x$plural = xs \
+       && missing=`set $missing; echo "$1 and $2"` \
+       || missing=`echo $missing`
 
-     make_html=
-     make_install_html=
+     make_pdfdoc=
+     make_install_pdfdoc=
 
-     { echo "$as_me:$LINENO: WARNING:
+     { echo "$as_me:$LINENO: WARNING: missing program$plural:
 
-  The program$plural
-    $progs
-  can't be found in the path, thus the HTML backend of groff (grohtml)
-  won't work properly.  Consequently, no documentation in HTML format
-  is built and installed.
+  The program$plural $missing cannot be found in the PATH.
+  Consequently, groff's PDF formatter (pdfroff) will not work properly;
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation in PDF format.
      " >&5
-echo "$as_me: WARNING:
+echo "$as_me: WARNING: missing program$plural:
 
-  The program$plural
-    $progs
-  can't be found in the path, thus the HTML backend of groff (grohtml)
-  won't work properly.  Consequently, no documentation in HTML format
-  is built and installed.
+  The program$plural $missing cannot be found in the PATH.
+  Consequently, groff's PDF formatter (pdfroff) will not work properly;
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation in PDF format.
      " >&2;}
    fi
 
@@ -10204,106 +10435,6 @@ echo "${ECHO_T}yes" >&6
 echo "${ECHO_T}no" >&6
      pnmtops_nosetpage="pnmtops"
    fi
-
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}gs gsos2", so it can be a program name with args.
-set dummy ${ac_tool_prefix}gs gsos2; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_GHOSTSCRIPT+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  case $GHOSTSCRIPT in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_GHOSTSCRIPT="$GHOSTSCRIPT" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_GHOSTSCRIPT="$as_dir/$ac_word$ac_exec_ext"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-  ;;
-esac
-fi
-GHOSTSCRIPT=$ac_cv_path_GHOSTSCRIPT
-
-if test -n "$GHOSTSCRIPT"; then
-  echo "$as_me:$LINENO: result: $GHOSTSCRIPT" >&5
-echo "${ECHO_T}$GHOSTSCRIPT" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-fi
-if test -z "$ac_cv_path_GHOSTSCRIPT"; then
-  ac_pt_GHOSTSCRIPT=$GHOSTSCRIPT
-  # Extract the first word of "gs gsos2", so it can be a program name with args.
-set dummy gs gsos2; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_ac_pt_GHOSTSCRIPT+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  case $ac_pt_GHOSTSCRIPT in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_ac_pt_GHOSTSCRIPT="$ac_pt_GHOSTSCRIPT" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_ac_pt_GHOSTSCRIPT="$as_dir/$ac_word$ac_exec_ext"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-  ;;
-esac
-fi
-ac_pt_GHOSTSCRIPT=$ac_cv_path_ac_pt_GHOSTSCRIPT
-
-if test -n "$ac_pt_GHOSTSCRIPT"; then
-  echo "$as_me:$LINENO: result: $ac_pt_GHOSTSCRIPT" >&5
-echo "${ECHO_T}$ac_pt_GHOSTSCRIPT" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-  if test "x$ac_pt_GHOSTSCRIPT" = x; then
-    GHOSTSCRIPT="missing"
-  else
-    if test "$build" != "$host"; then
-      { echo "$as_me:$LINENO: WARNING: In the future, Autoconf will not detect cross-tools
-whose name does not start with the host triplet.  If you think this
-configuration is useful to you, please write to autoconf@gnu.org." >&5
-echo "$as_me: WARNING: In the future, Autoconf will not detect cross-tools
-whose name does not start with the host triplet.  If you think this
-configuration is useful to you, please write to autoconf@gnu.org." >&2;}
-    fi
-    GHOSTSCRIPT=$ac_pt_GHOSTSCRIPT
-  fi
-else
-  GHOSTSCRIPT="$ac_cv_path_GHOSTSCRIPT"
-fi
-
 
 
           ac_config_files="$ac_config_files stamp-h"
@@ -10964,17 +11095,22 @@ s,@g@,$g,;t t
 s,@sys_tmac_prefix@,$sys_tmac_prefix,;t t
 s,@tmac_wrap@,$tmac_wrap,;t t
 s,@GROFF_PATH_SEPARATOR@,$GROFF_PATH_SEPARATOR,;t t
+s,@ALT_GHOSTSCRIPT_PROGS@,$ALT_GHOSTSCRIPT_PROGS,;t t
+s,@GHOSTSCRIPT@,$GHOSTSCRIPT,;t t
+s,@ac_ct_GHOSTSCRIPT@,$ac_ct_GHOSTSCRIPT,;t t
 s,@pnmcut@,$pnmcut,;t t
 s,@pnmcrop@,$pnmcrop,;t t
 s,@pnmtopng@,$pnmtopng,;t t
 s,@psselect@,$psselect,;t t
 s,@pnmtops@,$pnmtops,;t t
-s,@gs@,$gs,;t t
 s,@make_html@,$make_html,;t t
 s,@make_install_html@,$make_install_html,;t t
+s,@ALT_AWK_PROGS@,$ALT_AWK_PROGS,;t t
+s,@AWK@,$AWK,;t t
+s,@ac_ct_AWK@,$ac_ct_AWK,;t t
+s,@make_pdfdoc@,$make_pdfdoc,;t t
+s,@make_install_pdfdoc@,$make_install_pdfdoc,;t t
 s,@pnmtops_nosetpage@,$pnmtops_nosetpage,;t t
-s,@GHOSTSCRIPT@,$GHOSTSCRIPT,;t t
-s,@ac_pt_GHOSTSCRIPT@,$ac_pt_GHOSTSCRIPT,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
 

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -3398,12 +3398,13 @@ int string_iterator::fill(node **np)
     p = bp->s;
   }
   if (*p == '\0') {
-    if (np)
+    if (np) {
       *np = nd->copy();
-    if (is_diversion())
-      (*np)->div_nest_level = input_stack::get_div_level();
-    else
-      (*np)->div_nest_level = 0;
+      if (is_diversion())
+	(*np)->div_nest_level = input_stack::get_div_level();
+      else
+	(*np)->div_nest_level = 0;
+    }
     nd = nd->next;
     eptr = ptr = p + 1;
     count--;

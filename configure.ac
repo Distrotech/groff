@@ -1,5 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT
+AC_PREREQ(2.59)
 
 AC_CONFIG_HEADERS([src/include/config.h:src/include/config.hin])
 AC_CONFIG_SRCDIR([src/roff/groff/groff.cpp])
@@ -91,8 +92,8 @@ GROFF_G
 GROFF_TMAC
 GROFF_TARGET_PATH_SEPARATOR
 GROFF_HTML_PROGRAMS
+GROFF_PDFDOC_PROGRAMS
 GROFF_PNMTOPS_NOSETPAGE
-GROFF_GHOSTSCRIPT_PATH
 
 AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
 AC_CONFIG_FILES([Makefile doc/Makefile src/utils/xtotroff/Makefile])

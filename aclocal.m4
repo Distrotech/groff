@@ -60,56 +60,84 @@ AC_DEFUN([GROFF_PROG_YACC],
 # The following programs are needed for grohtml.
 
 AC_DEFUN([GROFF_HTML_PROGRAMS],
-  [make_html=html
+  [AC_REQUIRE([GROFF_GHOSTSCRIPT_PATH])
+   make_html=html
    make_install_html=install_html
 
    missing=
    AC_FOREACH([groff_prog],
-     [pnmcut pnmcrop pnmtopng psselect pnmtops gs],
+     [pnmcut pnmcrop pnmtopng psselect pnmtops],
      [AC_CHECK_PROG(groff_prog, groff_prog, [found], [missing])
       if test $[]groff_prog = missing; then
-	missing="$missing groff_prog"
+	missing="$missing \`groff_prog'"
       fi;])
 
+   test "$GHOSTSCRIPT" = "missing" && missing="$missing \`gs'"
+
    if test -n "$missing"; then
-     cnt=0
-     for i in $missing
-     do
-       cnt=`expr $cnt + 1`
-       eval "prog$cnt=$i"
-     done
-     plural="s"
-     case $cnt in
-     1)
-       plural=""
-       progs="\`$prog1'" ;;
-     2)
-       progs="\`$prog1' and \`$prog2'" ;;
-     3)
-       progs="\`$prog1', \`$prog2', and \`$prog3'" ;;
-     4)
-       progs="\`$prog1', \`$prog2', \`$prog3', and \`$prog4'" ;;
-     5)
-       progs="\`$prog1', \`$prog2', \`$prog3', \`$prog4', and \`$prog5'" ;;
-     6)
-       progs="\`$prog1', \`$prog2', \`$prog3', \`$prog4', \`$prog5', and \`$prog6'" ;;
-     esac
+     plural=`set $missing; test $[#] -gt 1 && echo s`
+     missing=`set $missing
+       missing=""
+       while test $[#] -gt 0
+	 do
+	   case $[#] in
+	     1) missing="$missing$[1]" ;;
+	     2) missing="$missing$[1] and " ;;
+	     *) missing="$missing$[1], " ;;
+	   esac
+	   shift
+	 done
+	 echo $missing`
 
      make_html=
      make_install_html=
 
-     AC_MSG_WARN([
+     AC_MSG_WARN([missing program$plural:
 
   The program$plural
-    $progs
-  can't be found in the path, thus the HTML backend of groff (grohtml)
-  won't work properly.  Consequently, no documentation in HTML format
-  is built and installed.
+     $missing
+  cannot be found in the PATH.
+  Consequently, groff's HTML backend (grohtml) will not work properly;
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation in HTML format.
      ])
    fi
 
    AC_SUBST([make_html])
    AC_SUBST([make_install_html])])
+
+# To produce PDF docs, we need both awk and ghostscript.
+
+AC_DEFUN([GROFF_PDFDOC_PROGRAMS],
+  [AC_REQUIRE([GROFF_AWK_PATH])
+   AC_REQUIRE([GROFF_GHOSTSCRIPT_PATH])
+
+   make_pdfdoc=pdfdoc
+   make_install_pdfdoc=install_pdfdoc
+
+   missing=""
+   test "$AWK" = missing && missing="\`awk'"
+   test "$GHOSTSCRIPT" = missing && missing="$missing \`gs'"
+   if test -n "$missing"; then
+     plural=`set $missing; test $[#] -eq 2 && echo s`
+     test x$plural = xs \
+       && missing=`set $missing; echo "$[1] and $[2]"` \
+       || missing=`echo $missing`
+
+     make_pdfdoc=
+     make_install_pdfdoc=
+
+     AC_MSG_WARN([missing program$plural:
+
+  The program$plural $missing cannot be found in the PATH.
+  Consequently, groff's PDF formatter (pdfroff) will not work properly;
+  therefore, it will neither be possible to prepare, nor to install,
+  documentation in PDF format.
+     ])
+   fi
+
+   AC_SUBST([make_pdfdoc])
+   AC_SUBST([make_install_pdfdoc])])
 
 # Check whether pnmtops can handle the -nosetpage option.
 
@@ -124,11 +152,49 @@ AC_DEFUN([GROFF_PNMTOPS_NOSETPAGE],
    fi
    AC_SUBST([pnmtops_nosetpage])])
 
-# Check location of `gs'.
+# Check location of `gs'; allow `--with-gs=PROG' option to override.
 
 AC_DEFUN([GROFF_GHOSTSCRIPT_PATH],
-  [AC_PATH_TOOL(GHOSTSCRIPT, gs gsos2, missing)
-   AC_SUBST(GHOSTSCRIPT)])
+  [AC_REQUIRE([GROFF_GHOSTSCRIPT_PREFS])
+   AC_ARG_WITH([gs],
+     [AS_HELP_STRING([--with-gs=PROG],
+       [actual [/path/]name of ghostscript executable])],
+     [GHOSTSCRIPT=$withval],
+     [AC_CHECK_TOOLS(GHOSTSCRIPT, [$ALT_GHOSTSCRIPT_PROGS], [missing])])
+   test "$GHOSTSCRIPT" = "no" && GHOSTSCRIPT=missing])
+
+# Preferences for choice of `gs' program...
+# (allow --with-alt-gs="LIST" to override).
+
+AC_DEFUN([GROFF_GHOSTSCRIPT_PREFS],
+  [AC_ARG_WITH([alt-gs],
+    [AS_HELP_STRING([--with-alt-gs=LIST],
+      [alternative names for ghostscript executable])],
+    [ALT_GHOSTSCRIPT_PROGS="$withval"],
+    [ALT_GHOSTSCRIPT_PROGS="gs gswin32c gsos2"])
+   AC_SUBST([ALT_GHOSTSCRIPT_PROGS])])
+
+# Check location of `awk'; allow `--with-awk=PROG' option to override.
+
+AC_DEFUN([GROFF_AWK_PATH],
+  [AC_REQUIRE([GROFF_AWK_PREFS])
+   AC_ARG_WITH([awk],
+     [AS_HELP_STRING([--with-awk=PROG],
+       [actual [/path/]name of awk executable])],
+     [AWK=$withval],
+     [AC_CHECK_TOOLS(AWK, [$ALT_AWK_PROGS], [missing])])
+   test "$AWK" = "no" && AWK=missing])
+
+# Preferences for choice of `awk' program; allow --with-alt-awk="LIST"
+# to override.
+
+AC_DEFUN([GROFF_AWK_PREFS],
+  [AC_ARG_WITH([alt-awk],
+    [AS_HELP_STRING([--with-alt-awk=LIST],
+      [alternative names for awk executable])],
+    [ALT_AWK_PROGS="$withval"],
+    [ALT_AWK_PROGS="gawk mawk nawk awk"])
+   AC_SUBST([ALT_AWK_PROGS])])
 
 # GROFF_CSH_HACK(if hack present, if not present)
 

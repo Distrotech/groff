@@ -44,8 +44,16 @@ revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' $(top_srcdir)/REVISION`
 PAGE=@PAGE@
 
 # The name of the ghostscript program. Normally, gs, on GNU/Linux
-# but it might be different on cygwin systems.
+# but it might be different on MS-DOS/MS-WIN32 systems.
 GHOSTSCRIPT=@GHOSTSCRIPT@
+
+# `ALT_GHOSTSCRIPT_PROGS' specifies a list alternative names,
+# which can be tried if `GHOSTSCRIPT' cannot be found at run time.
+ALT_GHOSTSCRIPT_PROGS=@ALT_GHOSTSCRIPT_PROGS@
+
+# Similarly, `ALT_AWK_PROGS' specifies a list of alternative names,
+# which can be tried at run time, to identify the awk program.
+ALT_AWK_PROGS=@ALT_AWK_PROGS@
 
 # Normally the Postscript driver, grops, produces output that conforms
 # to version 3.0 of the Adobe Document Structuring Conventions.
@@ -134,6 +142,9 @@ exampledir=$(docdir)/examples
 
 # `htmldocdir' says where to install documentation in HTML format.
 htmldocdir=$(docdir)/html
+
+# `pdfdocdir' says where to install documentation in PDF format.
+pdfdocdir=$(docdir)/pdf
 
 # `fontdir' says where to install dev*/*.
 fontdir=$(datasubdir)/font
@@ -233,6 +244,11 @@ man7dir=$(manroot)/man$(man7ext)
 # grohtml are available -- only then we can build the HTML documentation.
 make_html=@make_html@
 make_install_html=@make_install_html@
+
+# The configure script also checks whether all necessary utility programs
+# for pdfroff are available -- only then we can build PDF documentation.
+make_pdfdoc=@make_pdfdoc@
+make_install_pdfdoc=@make_install_pdfdoc@
 
 # DEFINES should include the following:
 # -DHAVE_MMAP			if you have mmap() and <sys/mman.h>
@@ -378,6 +394,8 @@ PURIFYCCFLAGS=
 # copy of $(MDEFINES) when making individual directories; this could
 # cause the argument list to become too long on some systems.
 MDEFINES= \
+  "ALT_AWK_PROGS=$(ALT_AWK_PROGS)" \
+  "ALT_GHOSTSCRIPT_PROGS=$(ALT_GHOSTSCRIPT_PROGS)" \
   "AR=$(AR)" \
   "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
   "CC=$(CC)" \
@@ -440,6 +458,7 @@ MDEFINES= \
   "fontpath=$(fontpath)" \
   "g=$(g)" \
   "htmldocdir=$(htmldocdir)" \
+  "pdfdocdir=$(pdfdocdir)" \
   "indexdir=$(indexdir)" \
   "indexext=$(indexext)" \
   "indexname=$(indexname)" \
@@ -451,6 +470,8 @@ MDEFINES= \
   "localtmacdir=$(localtmacdir)" \
   "make_html=$(make_html)" \
   "make_install_html=$(make_install_html)" \
+  "make_pdfdoc=$(make_pdfdoc)" \
+  "make_install_pdfdoc=$(make_install_pdfdoc)" \
   "man1dir=$(man1dir)" \
   "man1ext=$(man1ext)" \
   "man5dir=$(man5dir)" \
@@ -713,7 +734,7 @@ uninstall_dirs:
 	  $(tmacdir) $(systemtmacdir) $(localtmacdir) \
 	  $(fontdir) $(localfontdir) $(bindir) \
 	  $(datasubdir) $(dataprogramdir) $(datadir) $(infodir) \
-	  $(exampledir) $(htmldocdir) $(docdir) \
+	  $(exampledir) $(htmldocdir) $(pdfdocdir) $(docdir) \
 	  $(libprogramdir) $(libdir)
 
 .PHONY: check docheck
