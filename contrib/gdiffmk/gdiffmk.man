@@ -43,6 +43,7 @@ gdiffmk \- mark differences between groff/nroff/troff files
 .OP \-a \%addmark
 .OP \-c \%changemark
 .OP \-d \%deletemark
+.OP \-x \%diffcmd
 .OP \-\-
 .OP \-\-help
 .OP \-\-version
@@ -51,6 +52,8 @@ gdiffmk \- mark differences between groff/nroff/troff files
 [
 .I \%output
 ]
+.br
+.ad \na
 .
 .
 .SH DESCRIPTION
@@ -125,6 +128,22 @@ Default:
 .BR * .
 .
 .TP
+.BI \-x diffcmd
+Use the
+.I diffcmd
+command to perform the comparison of
+.I file1
+and
+.I file2 .
+In particular,
+.I diffcmd
+should accept the
+.BI \-D name
+option.
+Default:
+.BR diff (1).
+.
+.TP
 .B \-\-
 All the following arguments are treated as file names,
 even if they begin with
@@ -150,13 +169,16 @@ on the output of all the preprocessors instead of the input source.
 .LP
 .B gdiffmk
 relies on the
-.B \-D
+.BI \-D name
 option of GNU
 .BR diff (1)
 to make a merged `#ifdef' output format.
 It hasn't been tested whether other versions of
 .BR diff (1)
 do support this option.
+See also the
+.BI \-x diffcmd
+option.
 .
 .LP
 Report bugs to bug-groff@gnu.org.

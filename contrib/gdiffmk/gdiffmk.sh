@@ -23,16 +23,6 @@
 
 cmd=$( basename $0 )
 
-diff -Dx /dev/null /dev/null >/dev/null 2>&1  ||
-	{
-		echo >&2 "${cmd}:  "				\
-			"The \`diff' program does not accept "	\
-			"the required -DNAME option."
-		echo >&2 "${cmd}:  "				\
-			"Use GNU diff instead."
-		exit 126
-	}
-
 function Usage {
 	if test "$#" -gt 0
 	then
@@ -51,12 +41,14 @@ groff \`.mc' requests added to indicate how it is different from FILE1.
   OUTPUT  Copy of FILE2 with \`.mc' commands added.
           \`-' means standard output (the default).
 
-options:
+OPTIONS:
   -a addmark     Mark for added groff source lines.    Default: +.
   -c changemark  Mark for changed groff source lines.  Default: |.
   -d deletemark  Mark for deleted groff source lines.  Default: *.
-  --version      Print version information on standard output and exit.
-  --help         Print this message on standard error.
+  -x diffcmd     Use a different diff(1) command;
+  	          one that accepts the \`-Dname' option, such as GNU diff.
+  --version      Print version information on the standard output and exit.
+  --help         Print this message on the standard error.
 "
 	exit 255
 }
@@ -150,19 +142,24 @@ function RequiresArgument {
 }
 
 badoption=
-for option
+diffcmd=diff
+for OPTION
 do
-	case "${option}" in
+	case "${OPTION}" in
 	-a*)
-		addmark=$( RequiresArgument "${option}" $2 )		&&
+		addmark=$( RequiresArgument "${OPTION}" $2 )		&&
 			shift
 		;;
 	-c*)
-		changemark=$( RequiresArgument "${option}" $2 )		&&
+		changemark=$( RequiresArgument "${OPTION}" $2 )		&&
 			shift
 		;;
 	-d*)
-		deletemark=$( RequiresArgument "${option}" $2 )		&&
+		deletemark=$( RequiresArgument "${OPTION}" $2 )		&&
+			shift
+		;;
+	-x* )
+		diffcmd=$( RequiresArgument "${OPTION}" $2 )		&&
 			shift
 		;;
 	--version)
@@ -189,6 +186,11 @@ do
 	esac
 	shift
 done
+
+${diffcmd} -Dx /dev/null /dev/null >/dev/null 2>&1  ||
+	Usage "The \`${diffcmd}' program does not accept"	\
+		"the required \`-Dname' option.
+Use GNU diff instead.  See the \`-x diffcmd' option."
 
 if test -n "${badoption}"
 then
@@ -246,7 +248,11 @@ diff -D"${label}" -- ${FILE1} ${FILE2}  |
 		    p
 		    d
 		  }
-		  /^#endif \/\* not '"${label}"'/ s/.*/.mc '"${deletemark}"'/p
+		  /^#endif \/\* not '"${label}"'/ {
+		   s/.*/.mc '"${deletemark}"'/p
+		   a\
+.mc
+		  }
 		  d
 		}
 		p
