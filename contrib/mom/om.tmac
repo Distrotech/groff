@@ -23,7 +23,7 @@
 .\"
 .\"
 .\"
-\# Version 1.2-e
+\# Version 1.2-f
 \# -------------
 \#
 \# Antoine de St-Exupéry asserted that elegance in engineering is
@@ -229,11 +229,9 @@
 \#   Requires unit of measure.
 \#
 .MAC T_MARGIN END
-.    br
 .    nr #T_MARGIN (\\$1)
-.    nr #T_MARGIN_SET 1
+.    nr #TOP 1
 .    if !\\n[#DOCS] \{\
-.       PRINT \&
 .       sp |\\n[#T_MARGIN]u-1v
 .    \}
 .    wh 0i DO_T_MARGIN
@@ -301,7 +299,7 @@
 \#
 .MAC DO_T_MARGIN END
 .    ev T_MARGIN
-.    nr #T_MARGIN_SET 1
+.    nr #TOP 1
 .    sp |\\n[#T_MARGIN]u-1v
 .    ev
 .    sp -\\n[#T_MARGIN_LEAD_ADJ]u
@@ -555,40 +553,19 @@
 \#   Does not require unit of measure.  LS automatically turns off AUTOLEAD.
 \#
 .MAC LS END
-.    br
+.    nr #OLD_LEAD \\n(.v
 .    if \\n[#PRINT_STYLE]=1 \{ .return \}
 .    if \\n[#IGNORE]        \{ .return \}
-.    if \\n(nl=0 \{ .nr #TOP_LEAD 1 \}
 .    if \\n[#AUTO_LEAD] \{\
 .       rr #AUTO_LEAD
 .       rr #AUTOLEAD_FACTOR
 .    \}
-.    nr #OLD_LEAD \\n(.v
 .    vs \\$1
-.    nr #TOP_BASELINE_ADJ \\n(.v-\\n[#OLD_LEAD]
-.    if !\\n[#DOCS] \{\
-.       if \\n[#TOP_ALD]=1 \{\
-.          sp -\\n[#TOP_BASELINE_ADJ]u
-.          rr #TOP_ALD
-.       \}
-\# The following clause ensures that the first .LS call after a top
-\# margin has been set (.T_MARGIN or .PAGE) doesn't change the
-\# vertical position on the page
-.       if \\n[#T_MARGIN_SET]=1 \{\
-.          ie (\\n(nl >= \\n[#T_MARGIN]) \{\
-.             if \\n(.n=0 \{\
-'                sp -\\n[#TOP_BASELINE_ADJ]u
-.                rr #T_MARGIN_SET
-.             \}
-.          \}
-.          el \{\
-.             if !\\n[#TOP_LEAD]=0&\\n[#TOP_ALD]=0 \{ .nr #TOP_LEAD 1 \}
-.             vs 1u
-.             sp |\\n[#T_MARGIN]u
-.             wh \\n(nlu+1v RESET_LEAD
-.             rr #T_MARGIN_SET
-.          \}
-.       \}
+.    if \\n[#TOP] \{\
+.       nr #TOP_BASELINE_ADJ \\n(.v-\\n[#OLD_LEAD]
+.       sp -\\n[#TOP_BASELINE_ADJ]u
+.       rr #TOP
+.       rr #TOP_BASELINE_ADJ
 .    \}
 .END
 \#
@@ -627,30 +604,11 @@
 .    el \{\
 .       vs \\n[#PT_SIZE]u+\\n[#AUTOLEAD_VALUE]u
 .    \}
-.    nr #TOP_BASELINE_ADJ \\n(.v-\\n[#OLD_LEAD]
-.    if !\\n[#DOCS] \{\
-.       if \\n[#TOP_ALD]=1 \{\
-.          sp -\\n[#TOP_BASELINE_ADJ]u
-.          rr #TOP_ALD
-.       \}
-\# The following clause ensures that the first .LS call after a top
-\# margin has been set (.T_MARGIN or .PAGE) doesn't change the
-\# vertical position on the page
-.       if \\n[#T_MARGIN_SET]=1 \{\
-.          ie (\\n(nl >= \\n[#T_MARGIN]) \{\
-.             if \\n(.n=0 \{\
-'                sp -\\n[#TOP_BASELINE_ADJ]u
-.                rr #T_MARGIN_SET
-.             \}
-.          \}
-.          el \{\
-.             if !\\n[#TOP_LEAD]=0&\\n[#TOP_ALD]=0 \{ .nr #TOP_LEAD 1 \}
-.             vs 1u
-.             sp |\\n[#T_MARGIN]u
-.             wh \\n(nlu+1v RESET_LEAD
-.             rr #T_MARGIN_SET
-.          \}
-.       \}
+.    if \\n[#TOP] \{\
+.       nr #TOP_BASELINE_ADJ \\n(.v-\\n[#OLD_LEAD]
+.       sp -\\n[#TOP_BASELINE_ADJ]u
+.       rr #TOP
+.       rr #TOP_BASELINE_ADJ
 .    \}
 .END
 \#
@@ -1014,36 +972,21 @@
 \#   Requires a unit of measure.
 \#
 .MAC ALD END
-.    if \\n(nl=0 \{ .nr #TOP_ALD 1 \}
-.    if \\n(nl=\\n[#T_MARGIN] \{ .nr #TOP_LEAD 1 \}
-.    if !r#DOCS \{\
-.       if \\n[#TOP_LEAD]=1 \{\
-.          rr #TOP_ALD
-.          rr #TOP_LEAD
-.          RESET_LEAD
-.          RLD 1v
-.       \}
-.    \}
+.    if \\n(nl=0 \{ .nr #TOP 1 \}
 .    if '\\$0'ALD' \{\
 .       nr #ALD (\\$1)
-.       ie \\n(nl=\\n[#T_MARGIN] \{\
-.          ie !r#DOCS \{\
-.             PRINT \&
-.             sp \\n[#ALD]u-1v
-.          \}
-.          el \{ .sp \\n[#ALD]u \}
-.       \}
-.       el \{ .sp \\n[#ALD]u \}
+.       sp \\n[#ALD]u
+.    \}
+.    if '\\$0'ADD_SPACE' \{\
+.       nr #ALD (\\$1)
+.       rs
+.       sp \\n[#ALD]u
 .    \}
 .    if '\\$0'SPACE' \{\
-.       ie \\n(nl=\\n[#T_MARGIN] \{\
-.          ie !r#DOCS \{\
-.             PRINT \&
-.             sp \\$1-1v
-.          \}
-.          el \{ .sp \\n[#ALD]u \}
-.       \}
-.       el \{ .sp \\$1u \}
+.       sp \\$1u
+.    \}
+.    if '\\$0'SP' \{\
+.       sp \\$1u
 .    \}
 .END
 \#
@@ -1329,6 +1272,12 @@
 .    sp -1v
 .    TRAP
 .END
+\#
+\# An inline escape to accomplish the same thing.  Actually
+\# preferable, since it works with filled and non-filled copy and
+\# doesn't require the user to remember to use (or not use) the \c.
+\#
+.ds B \h'|0'\c
 \#
 \# =====================================================================
 \#
@@ -1644,7 +1593,12 @@
 .    nr #TAB_OFFSET (\\$2)
 .    nr #TAB_LENGTH (\\$3)
 .    MAC TAB\\n[#TAB_NUMBER] DONE \"Define TAB macro
-.        br
+.        if !\\\\n[#TB+]=1 \{ .br \}
+.        if \\\\n[#TB+]=1 \{\
+.           EL
+.           vpt 0
+.           rr #TB+
+.        \}
 .        in 0
 .        nr #TAB_ACTIVE 1
 .        nr #CURRENT_TAB \\n[#TAB_NUMBER]
@@ -1709,6 +1663,11 @@
 .    TAB\\n[#NEXT_TAB]
 .END
 \#
+\# An inline escape to accomplish the same thing.  Actually
+\# preferable, since it works with filled and non-filled copy and
+\# doesn't require the user to remember to use (or not use) the \c.
+\#
+.ds TB+ "\c\\R'#TB+ 1'\\R'#TN 1'\\R'#NEXT_TAB \\n[#CURRENT_TAB]+1'\\*[TAB\\n[#NEXT_TAB]]\c
 \#
 \# TAB QUIT
 \# --------
@@ -2414,7 +2373,7 @@
 .MAC PAD END
 .    if \\n(.u=1 \{ .nr #FILL_MODE 1 \}
 .    nf
-.    if !d$PAD_MARKER \{ .ds $PAD_MARKER # \}
+.    if !d$PAD_MARKER .ds $PAD_MARKER #
 .    char \\*[$PAD_MARKER] \R'#PAD_COUNT \En[#PAD_COUNT]+1'
 .    ds $FAMILY_FOR_PAD \\n[.fam]
 .    fp \\n[.fp] \\*[$FONT]
@@ -2456,6 +2415,11 @@
 .    rm $PAD_STRING
 .    rm PAD_STRING
 .    rchar #
+.    if '\\$2'NOBREAK' \{\
+.       TRAP OFF
+.       EOL
+.       TRAP
+.    \}
 .END
 \#
 \#
@@ -2692,6 +2656,7 @@
 \c
 .    EL
 .    if \\n(.u=1 \{\
+.       nr #FILL_WAS_ON 1
 .       ds $CURRENT_QUAD \\*[$QUAD_VALUE]
 .       nf
 .    \}
@@ -2699,15 +2664,19 @@
 .       nr #RESTORE_L_LENGTH \\n(.l
 .       if \\n[#INDENT_BOTH_ACTIVE] \{ .ll \\n(.lu-\\n[#BL_INDENT]u \}
 .       if \\n[#INDENT_LEFT_ACTIVE] \{ .ll \\n(.lu-\\n[#L_INDENT]u \}
-.       PRINT \El'\En(.lu'
+.       PRINT \El'\En(.lu'\c
 .       ll \\n[#RESTORE_L_LENGTH]u
 .       rr #RESTORE_L_LENGTH
 .    \}
 .    el \{\
-.       PRINT \El'\En(.lu'
+.       PRINT \El'\En(.lu'\c
 .    \}
-.    QUAD \\*[$CURRENT_QUAD]
-.    rm $CURRENT_QUAD
+.    if r#FILL_WAS_ON \{\
+.       fi
+.       rr #FILL_WAS_ON
+.       QUAD \\*[$CURRENT_QUAD]
+.       rm $CURRENT_QUAD
+.    \}
 .    EL
 .END
 \#
@@ -2735,8 +2704,8 @@
 .MAC WS END
 .    ds $WS_CONSTANT 12
 .    ds $WS_VAR \\$1
-.    ie '\\$1'DEFAULT' \{ .ds $WS_VAR +0 \}
-.    el                \{ .ds $WS (\\*[$WS_CONSTANT]\\*[$WS_VAR]) \}
+.    ie '\\$1'DEFAULT' .ds $WS_VAR +0
+.    el                .ds $WS (\\*[$WS_CONSTANT]\\*[$WS_VAR])
 .    ie \\n[.sss]=12   \{ .ss \\*[$WS] 12 \}
 .    el \{\
 .       ss \\*[$WS] (\\*[$WS]\\*[$SS_VAR])
@@ -3339,6 +3308,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# +++TYPESETTING ALIASES+++
 \#
+.ALIAS    ADD_SPACE       ALD
 .ALIAS    CENTRE          CENTER
 .ALIAS    COLOUR          COLOR
 .ALIAS    COMMENT         SILENT
@@ -3355,6 +3325,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS    LIG             LIGATURES
 .ALIAS    NEWCOLOUR       NEWCOLOR
 .ALIAS    PADMARKER       PAD_MARKER
+.ALIAS    SP              ALD
 .ALIAS    SPACE           ALD
 .ALIAS    TABSET          TAB_SET
 .ALIAS    TB              TAB
@@ -3491,6 +3462,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          UNDERLINE_QUOTES
 .          nr #IGNORE_COLUMNS 1
 .          char \(em --
+.          tr `'
 .       \}
 .       if '\\$1'TYPESET' \{\
 .          nr #PRINT_STYLE 2
@@ -3697,13 +3669,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                   ie !'\\*[$CHAPTER_TITLE]'' \{\
 .                      ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                   \}
-.                   el \{ .ds $HDRFTR_CENTER \\*[$CHAPTER_STRING] \}
+.                   el \{ .ds $HDRFTR_CENTER \\*[$CHAPTER_STRING]\}
 .                \}
 .                el \{\
 .                   ie !'\\*[$CHAPTER_TITLE]'' \{\
 .                      ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                   \}
-.                   el \{ .ds $HDRFTR_CENTER \\*[$CHAPTER_STRING] \\*[$CHAPTER] \}
+.                   el \{ .ds $HDRFTR_CENTER \\*[$CHAPTER_STRING] \\*[$CHAPTER]\}
 .                \}
 .             \}
 .             el \{\
@@ -4628,25 +4600,25 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# String defaults for both PRINTSTYLEs
 .    ie \\n[#DOC_TYPE]=1 \{\
 .       ie '\\*[$DOC_TITLE]'' \{\
-.          if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT \\*[$AUTHOR_1] \}
+.          if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT \\*[$AUTHOR_1]\}
 .          rr #USER_DEF_HDRFTR_LEFT
-.          if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$TITLE] \}
+.          if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$TITLE]\}
 .          rr #USER_DEF_HDRFTR_RIGHT
 .       \}
 .       el \{\
 .          if \\n[#COPY_STYLE]=1 \{ .DRAFT_WITH_PAGENUMBER \}
-.          if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT \\*[$AUTHOR_1] \}
+.          if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT \\*[$AUTHOR_1]\}
 .          rr #USER_DEF_HDRFTR_LEFT
-.          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{ .ds $HDRFTR_CENTER \\*[$TITLE] \}
+.          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{ .ds $HDRFTR_CENTER \\*[$TITLE]\}
 .          rr #USER_DEF_HDRFTR_CENTER
-.          if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$DOC_TITLE] \}
+.          if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$DOC_TITLE]\}
 .          rr #USER_DEF_HDRFTR_RIGHT
 .       \}
 .    \}
 .    el \{\
-.       if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT \\*[$AUTHOR_1] \}
+.       if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT \\*[$AUTHOR_1]\}
 .       rr #USER_DEF_HDRFTR_LEFT
-.       if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$TITLE] \}
+.       if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$TITLE]\}
 .       rr #USER_DEF_HDRFTR_RIGHT
 .    \}
 .    if !d$ATTRIBUTE_STRING           \{ .ATTRIBUTE_STRING "by"            \}
@@ -5244,8 +5216,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC COVERTITLE END
-.    ie '\\$0'DOC_COVERTITLE' \{ .ds $DOC_COVER_TITLE \\$1 \}
-.    el \{ .ds $COVER_TITLE \\$1 \}
+.    ie '\\$0'DOC_COVERTITLE' \{ .ds $DOC_COVER_TITLE \\$1\}
+.    el \{ .ds $COVER_TITLE \\$1\}
 .END
 \#
 \#
@@ -7737,7 +7709,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   event that the user enters .TITLE in caps/lc), I've used
 \#   quad left, quad centre, and quad right to arrange the three bits
 \#   of the header, rather than .tl.  This allows the use of the CAPS macro.
-\#   The downside is that I have to add \\v'-(\\n[#LEAD]u*#) in order
+\#   The downside is that I have to add \\v'-(\\n[#LEAD]u*<n>) in order
 \#   for -Tlatin1 output to align the header/footer strings on the baseline.
 \#   The console output still isn't brilliant, but at least it's
 \#   comprehensible.
@@ -9153,9 +9125,20 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if \\n[#PP_SPACE] \{\
 .             if \\n[#PRINT_STYLE]=2 \{\
 .                ie \\n[#END_QUOTE] \{\
+.                   ALD \\n[#DOC_LEAD]u
 .                   rr #END_QUOTE
+.                   nr #NO_SPACE 1
+.                   nr #BASELINE_MARK \\n(nl
 .                \}
-.                el \{ .ALD \\n[#DOC_LEAD]u \}
+.                el \{\
+.                   if \\n[#NO_SPACE]=1 \{\
+.                      rr #NO_SPACE
+.                   \}
+.                   if !\\n(nl=\\n[#BASELINE_MARK] \{\
+.                      ALD \\n[#DOC_LEAD]u
+.                      rr #BASELINE_MARK
+.                   \}
+.                \}
 .             \}
 .          \}
 .          ie \\n[#INDENT_ACTIVE] \{ .ti \\n[#INDENT]u+\\n[#PP_INDENT]u \}
@@ -11418,7 +11401,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       el \{ .nr #PAGINATE 0 \}
 .    \}
 .    if \\n[#FOOTERS_ON]=1 \{\
-.       if !'\\*[$HDRFTR_CENTER_OLD]'' \{ .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD] \}
+.       if !'\\*[$HDRFTR_CENTER_OLD]'' \{ .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD]\}
 .    \}
 .    NEWPAGE
 .    if \\n[#FOOTERS_ON]=1 \{\
@@ -11786,7 +11769,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 .    \}
 .    if \\n[#FOOTERS_ON]=1 \{\
-.       if !'\\*[$HDRFTR_CENTER_OLD]'' \{ .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD] \}
+.       if !'\\*[$HDRFTR_CENTER_OLD]'' \{ .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD]\}
 .       ie \\n[#PAGINATE_TOC]=1 \{ .PAGINATE \}
 .       el \{ .PAGINATION OFF \}
 .    \}
@@ -13207,6 +13190,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .ALIAS   DOC_COVERTITLE        COVERTITLE
 .ALIAS   DO_DOC_COVER          DO_COVER
 .ALIAS   PRINT_FOOTNOTE_RULE   FOOTNOTE_RULE
+\#
+\# Miscellaneous aliases
+.ALIAS  SECTION       LINEBREAK
+.ALIAS  SECTION_CHAR  LINEBREAK_CHAR
 \#
 \# Miscellaneous macros to take care of backward compatibility
 \# -----------------------------------------------------------

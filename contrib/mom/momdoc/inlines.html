@@ -89,6 +89,8 @@ that take
 		<li><a href="#INLINE_KERNING_MOM">Pairwise kerning</a>
 		<li><a href="#INLINE_HORIZONTAL_MOM">Horizontal movement</a>
 		<li><a href="#INLINE_VERTICAL_MOM">Vertical movement</a>
+		<li><a href="#B">Terminate a line without advancing on the page</a>
+		<li><a href="#TB+">Call the next sequential tab without advancing on the page</a>
 		<li><a href="#INLINE_RULE_MOM">Full measure rules</a>
 	</ul>
 	<li><a name="INLINES_GROFF"><strong>Groff inline escapes</strong></a>
@@ -389,6 +391,70 @@ Both <strong>\*[ALD]</strong> and <strong>\*[RLD]</strong> work in
 points, hence you mustn't use a unit of measure.
 <p>
 
+<!---INLINE_B_MOM--->
+
+<hr width="66%" align="left">
+<a name="B"><h3><u>Terminate a line without advancing on the page</u></h3></a>
+
+<p>
+Sometimes, you want <strong>mom</strong> to break a line but not
+advance on the page.  See
+<a href="typesetting.html#EL_EXAMPLE">here</a>
+for an example of when you might want to do this.
+<p>
+In versions of <strong>mom</strong> prior to 1.2-f, this was
+accomplished through the use of
+<a href="typesetting.html#EL">EL</a>.
+As of 1.2-f, you can, if you prefer, accomplish the same thing
+by using the inline escape, <strong>\*[B]</strong>.  Simply
+attach the escape to the end of any line.  Using the example
+given in the document entry for <strong>EL</strong>, you'd use
+<strong>\*[B}</strong> like this:
+
+<p>
+<pre>
+	.LEFT
+	.LS 12.5
+	A line of text.\*[B]
+	.ALD 24p
+	The next line of text.
+</pre>
+
+<strong>\*[B]</strong> works reliably regardless of the current
+<a href="definitions.html#TERMS_FILLED">fill mode</a>.
+<p>
+
+<!---INLINE_TB+_MOM--->
+
+<hr width="66%" align="left">
+<a name="TB+"><h3><u>Call the next sequential tab without advancing on the page</u></h3></a>
+
+<p>
+Sometimes, you want <strong>mom</strong> to move to the next tab in
+sequence (e.g. from TAB 1 to TAB 2, or TAB 8 to TAB 9) without
+<strong>mom</strong> advancing on the page.  (See the example in
+<a href="typesetting.html#NOTE_TN">here</a>
+if you're not clear how <strong>mom</strong> manages tabs and
+linebreaks.)
+<p>
+In versions of <strong>mom</strong> prior to 1.2-f, this was
+accomplished through the use of
+<a href="typesetting.html#TN">TN</a>.
+As of 1.2-f, you can, if you prefer, accomplish the same thing
+by using the inline escape, <strong>\*[TB+]</strong>.  Simply
+attach the escape to the end of any line in a tab, like this:
+
+<p>
+<pre>
+	.TAB 1
+	Some text\*[TB+]    \" This line is in tab 1
+	Some more text      \" This line is in tab 2, on the same baseline as tab 1
+</pre>
+
+<strong>\*[TB+]</strong> works reliably regardless of the current
+<a href="definitions.html#TERMS_FILLED">fill mode</a>.
+<p>
+
 <!---INLINE_RULE_MOM--->
 
 <hr width="66%" align="left">
@@ -418,7 +484,8 @@ or
 <a href="typesetting.html#JUSTIFY">JUSTIFY</a>),
 it requires a
 <a href="typesetting.html#BR">.BR</a>
-on the line immediately before it; in
+on the line immediately before it; otherwise, the rule will be drawn
+on the same baseline occupied by any type preceding it.  In
 <a href="definitions.html#TERMS_NOFILL">nofill modes</a>
 (i.e
 <a href="typesetting.html#LRC">LEFT</a>,
@@ -665,14 +732,15 @@ a number of other line-drawing escapes, but frankly, using them for
 typographically precise drawing is a bit like hammering in a nail
 with a screwdriver -- doable, but not recommended.
 <p>
-Groff comes with a number of &quot;preprocessors&quot; designed to ease
-creating rules, boxes, splines, and so on (tbl, pic, and friends), but
-I tend not to use them.  A firm believer in the &quot;right tool for
-the job,&quot; I prefer a vector drawing program (in my case, tgif)
-when I need to combine type with graphic elements (say, a complex
-ruled form).  Inserting the results into a document is easy enough
-with <strong>.PSPIC</strong> (consult the <strong>groff_tmac</strong>
-man page for information on this indispensable and easy-to-use macro).
+Groff comes with a number of &quot;preprocessors&quot; designed
+to ease creating rules, boxes, splines, and so on (tbl, pic,
+and friends), but I tend not to use them.  A firm believer
+in the &quot;right tool for the job,&quot; I prefer a vector
+drawing program when I need to combine type with graphic elements
+(say, a complex ruled form).  Inserting the results into a
+document is easy enough with <strong>.PSPIC</strong> (consult
+the <strong>groff_tmac</strong> man page for information on this
+indispensable and easy-to-use macro).
 <p>
 
 <!---INLINE_CHARACTERS_GROFF--->

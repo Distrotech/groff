@@ -903,6 +903,19 @@ then later reset it to 12 with
 The size of type can also be changed inline.  See
 <a href="inlines.html#INLINE_SIZE_MOM">Inline Escapes, changing point size</a>.
 <p>
+<strong>NOTE:</strong> It is unfortunate that the <kbd>pic</kbd>
+pre-processor uses <strong>PS</strong>, and thus
+<strong>mom</strong>'s macro for setting point sizes can't use it.
+However, if you aren't using <kbd>pic</kbd>, you might want to
+alias <strong>PT_SIZE</strong> as <strong>PS</strong>, since
+there'd be no conflict.
+<p>
+<pre>
+	.ALIAS PS PT_SIZE
+</pre>
+
+would allow you to set point sizes with <kbd>.PS</kbd>.
+<p>
 
 <!---LS--->
 
@@ -1304,10 +1317,18 @@ escape.  See
 <a href="#EL_NOTES">NOTES</a>,
 below.
 <br>
-Furthermore, in nofill modes, EL does not work after the PAD macro.
+*If you find remembering whether to put in the <kbd>\c</kbd>
+bothersome, you may prefer to use the
+<a href="definitions.html#TERMS_INLINES">inline escape</a>
+alternative to 
+<kbd>.EL</kbd>,
+<a href="inlines.html#B">\*[B]</a>,
+which works consistently regardless of the fill mode.
+<br>
+*EL does not work after the PAD macro.
 See
-<a href="#EL_EXCEPTION">Exception</a>
-for a workaround</em>.
+<a href="goodies.html#PAD">PAD</a>
+for the way around this</em>.
 <p>
 The mnemonic "EL" is borrowed from old Compugraphic typesetting
 systems, where it stood for "End Line."  Conceptually,
@@ -1323,7 +1344,9 @@ taken.)
 
 <p>
 <strong>EL</strong>'s function is simple: it breaks a line without
-advancing on the page.  As an example of where you might use it,
+advancing on the page.
+<a name="EL_EXAMPLE">As</a>
+an example of where you might use it,
 imagine that you're working from marked-up copy.  The markup
 indicates 24 points of space between two given lines, but the
 prevailing line spacing is 12.5 points.  You may find it more
@@ -1403,31 +1426,7 @@ If <strong>EL</strong> is used after most macros or groff
 <a href="definitions.html#TERMS_PRIMITIVES">primitives</a>
 (see the exception, below), you don't have to worry about this,
 regardless of the fill mode.  Just type <kbd>.EL</kbd>
-<p>
-<a name="EL_EXCEPTION"></a>
-<strong>Exception: EL</strong> does not work after the
-<a href="goodies.html#PAD">PAD</a>
-macro when you're in a nofill mode.  If you require
-<strong>EL</strong> functionality after <strong>PAD</strong> while
-in a nofill mode, you have to perform its function
-&quot;manually&quot;, e.g.
-<p>
-<pre>
-	.CENTER    \" CENTER is a nofill mode
-	.PAD "#\*[ST1]A line of text\*[ST1X]#"
-	\#
-	.TRAP OFF  \" -+
-	.SP -1v    \"  |--> this is a "manual" EL
-	.TRAP      \" -+
-	\#
-	.ST 1 L
-	.TAB 1
-	.ALD 2p
-	\*[RULE]
-	.RLD 2p
-	.TQ
-</pre>
-<p>
+<br>
 
 <!---SP--->
 
@@ -3371,10 +3370,20 @@ not 6 picas plus the 2 pica indent.
 Macro: <strong>TN</strong>
 <br>
 <em>*In tabs that aren't given the QUAD argument when they're set up
-with TAB_SET or ST, you must terminate the line preceding TN with
-the \c inline escape.  See the
+with
+<a href="#TAB_SET">TAB_SET</a>
+or
+<a href="#ST">ST</a>, you must terminate the line preceding
+<kbd>TN</kbd> with the \c inline escape.  See the
 <a href="#TN_NOTE">ADDITIONAL NOTE</a>,
-below.</em>
+<br>
+*If you find remembering whether to put in the <kbd>\c</kbd>
+bothersome, you may prefer to use the
+<a href="definitions.html#TERMS_INLINES">inline escape</a>
+alternative to 
+<kbd>.TN</kbd>,
+<a href="inlines.html#TB+">\*[TB+]</a>,
+which works consistently regardless of the fill mode.</em>
 
 <p>
 <strong>TN</strong> moves over to the next tab in numeric

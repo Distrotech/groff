@@ -167,8 +167,6 @@ PAD              Insert padding spaces at marked places
 PADMARKER        Sets character to use instead of # in PAD
 PRINT            Simply prints args passed to it; keeps my code
                  indented nicely
-RESET_LEAD       Trap invoked macro which resets the lead to the
-                 value passed to LS when LS is called at Top Of Page
 RW               Reduce white -- tighten overall line kern
                  (character spacing)
 SILENT           Don't print lines till SILENT OFF
@@ -305,22 +303,18 @@ p                       Output line horiz position at end of
                         of LIST
 #STORED_T_INDENT        Current temporary indent at first invocation
                         of LIST
-t                       "mark" register set in T_MARGIN; recalled
-                        in LS and AUTOLEAD if #T_MARGIN_SET is 1
 #T_INDENT               Value of temporary indent
 #T_MARGIN               Top margin
-#T_MARGIN_SET           Did we set the top margin with T_MARGIN?
-                        (toggle)
 #TAB_ACTIVE             Are we in a tab? (toggle)
 #TAB_NUMBER             Tab number
 #TAB_OFFSET             Tab indent
-#TOP_ALD                Was ALD called at Top Of Page before text input?
-                        (toggle)
+#TOP                    Set to 1 in T_MARGIN, DO_T_MARGIN and ALD; tells
+                        the first LS or AUTOLEAD on a page to maintain
+                        the baseline position prior to the LS call
 #TOP_BASELINE_ADJ       Amount by which to adjust the baseline position
-                        of the first line on the page if an LS request
-                        is greater than the current lead
-#TOP_LEAD               Was LS called at Top Of Page before text input?
-                        (toggle)
+                        of the first line on the page if an LS or AUTOLEAD
+                        request differs from the lead current at the end of
+                        the previous page
 #TOTAL_LISTS            Total number of lists in a nest
 #USER_SET_L_LENGTH      Did user invoke LL? (toggle)
 #USER_SET_TITLE_ITEM    Did user invoke TOC_TITLE_ENTRY?
@@ -506,6 +500,8 @@ PRINTSTYLE  Print style (TYPEWRITE or TYPESET)
 
 Document tags
 -------------
+ADD_SPACE       Special macro to add space to the top of a pages after
+                page 1; must be preceded by NEWPAGE
 BLOCKQUOTE      Block-indented, quoted text
 COL_BREAK       Breaks and spreads line before invocation; moves to
                 next column on page or 1st col of next page.  An alias
@@ -889,6 +885,10 @@ TOC_ENTRIES   TOC entries
                            AUTHOR_&lt;#&gt; in AUTHOR
 #AUTHORS                   Equals final value of AUTHOR_NUM;
                            used for authors in doc header
+#BASELINE_MARK             In PP, the vertical position on the page
+                           (when paragraph spacing is on) after a
+                           quote or blockquote has been output and
+                           the post-quote space has been added.
 #BMARG                     Position of unvarying bottom margin
                            during doc processing; required for
                            collecting footnotes inside diversions
@@ -1151,7 +1151,7 @@ dc                         "mark" register for document columns
 #HEAD_NUM                  Head number
 #HEAD_SPACE                2 line spaces before heads?
                            (toggle; 1=yes, 0=no)
-#HEAD_UNDERLINE            Underline section titles? (toggle)
+#HORIZ_MARK                Horizontal 
 #HOW_MANY                  Number of blank pages to output
 #IGNORE                    Should we ignore this macro? Set to 1 in
                            TYPEWRITE.
@@ -1187,6 +1187,8 @@ dc                         "mark" register for document columns
                            subtract 1 line of footnote lead from
                            FN_OVERFLOW in a PREV_FN_DEFERRED
                            situation.
+#NO_SPACE                  When para spacing is active, instructs
+                           PP not to add space after a quote or blockquote.
 #NO_TRAP_RESET             Should we reset page traps? (toggle)
 #NUM_AUTHORS               # of authors mod 2 to test if odd or even
                            # of authors
