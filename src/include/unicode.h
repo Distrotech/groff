@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002
+/* Copyright (C) 2002, 2003
    Free Software Foundation, Inc.
      Written by Werner Lemberg <wl@gnu.org>
 
@@ -19,8 +19,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-extern const char *glyph_name_to_unicode(const char *);
-extern const char *unicode_to_glyph_name(const char *);
-extern const char *decompose_unicode(const char *);
+const char *glyph_name_to_unicode(const char *);
+const char *unicode_to_glyph_name(const char *);
+const char *decompose_unicode(const char *);
 
-extern const char *check_unicode_name(const char *);
+const char *check_unicode_name(const char *);
