@@ -663,13 +663,9 @@
 .\" NS   doc-arg-ptr
 .\" NS   doc-curr-font
 .\" NS   doc-curr-size
-.\" NS   doc-in-synopsis-count
-.\" NS   doc-indent-synopsis
 .\" NS   doc-macro-name
 .\" NS
 .\" NS width register `Cd' set in doc-common
-.\"
-.\" needs work - not very translatable
 .
 .de Cd
 .  if !\n[doc-arg-limit] \{\
@@ -681,8 +677,6 @@
 .      tm Usage: .Cd configuration_file_declaration ... (#\n[.c])
 .  \}
 .
-.  br
-.
 .  if !\n[doc-arg-limit] \
 .    return
 .
@@ -690,29 +684,14 @@
 .  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.ps]
+.    nop \*[doc-Nm-font]\c
 .
-.    ie \n[doc-in-synopsis-count] \{\
-.      if "\*[doc-macro-name]"Cd" \{\
-.        rs
-.        ie (\n[doc-in-synopsis-count] > 1) \
-.          br
-.        el \{\
-.          if !\n[doc-indent-synopsis] \
-.            nr doc-indent-synopsis \n[doc-display-indent]u
-.        \}
-.        in +\n[doc-indent-synopsis]u
-.        ti -\n[doc-indent-synopsis]u
-.        nr doc-in-synopsis-count +1
-.      \}
-.
-.      nop \*[doc-Nm-font]\c
-.      doc-print-recursive
-.      in -\n[doc-indent-synopsis]u
-.    \}
-.    el \{\
-.      nop \*[doc-Nm-font]\c
-.      doc-print-recursive
-.  \}\}
+.    if \n[doc-in-synopsis-count] \
+.      br
+.    doc-print-recursive
+.    if \n[doc-in-synopsis-count] \
+.      br
+.  \}
 .  el \{\
 .    tm Usage: .Cd configuration_file_declaration ... (#\n[.c])
 .    doc-reset-args
@@ -928,7 +907,7 @@
 .\" NS   doc-curr-font
 .\" NS   doc-curr-size
 .\" NS   doc-in-synopsis-count
-.\" NS   doc-indent-synopsis,
+.\" NS   doc-indent-synopsis
 .\" NS   doc-macro-name
 .\" NS
 .\" NS width register `Nm' set in doc-common
