@@ -1,3 +1,20 @@
+2004-09-26  Werner LEMBERG  <wl@gnu.org>
+
+	Fix \$@ and \$* to handle any number of arguments.
+
+	* src/roff/troff/input.h (BEGIN_QUOTE, END_QUOTE): New special
+	characters.
+
+	* src/roff/troff/input.cpp (input_iterator::internal_level):
+	Removed.
+	(input_stack): New member functions `increase_level' and
+	`decrease_level'.
+	(input_stack::get_level): Don't use `internal_level'.
+	(get_copy, token::next): Handle BEGIN_QUOTE and END_QUOTE.
+	(end_quote_iterator): Completely removed.
+	(interpolate_arg): Build string for \$@ and \$* which is then
+	pushed onto the input stack.
+
 2004-09-23  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
 	* tmac/groff_ms.man, doc/groff.texinfo: Document changes from

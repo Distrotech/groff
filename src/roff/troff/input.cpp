@@ -214,7 +214,6 @@ private:
   virtual int next_file(FILE *, const char *) { return 0; }
   virtual void shift(int) {}
   virtual int is_boundary() {return 0; }
-  virtual int internal_level() { return 0; }
   virtual int is_file() { return 0; }
   virtual int is_macro() { return 0; }
   virtual void save_compatible_flag(int) {}
@@ -416,6 +415,8 @@ public:
   static int is_return_boundary();
   static void remove_boundary();
   static int get_level();
+  static void increase_level();
+  static void decrease_level();
   static void clear();
   static void pop_macro();
   static void save_compatible_flag(int);
@@ -436,7 +437,17 @@ int input_stack::limit = DEFAULT_INPUT_STACK_LIMIT;
 
 inline int input_stack::get_level()
 {
-  return level + top->internal_level();
+  return level;
+}
+
+inline void input_stack::increase_level()
+{
+  level++;
+}
+
+inline void input_stack::decrease_level()
+{
+  level--;
 }
 
 inline int input_stack::get(node **np)
@@ -848,6 +859,14 @@ static int get_copy(node **nd, int defining)
     }
     if (c == POP_GROFFCOMP_MODE) {
       compatible_flag = input_stack::get_compatible_flag();
+      continue;
+    }
+    if (c == BEGIN_QUOTE) {
+      input_stack::increase_level();
+      continue;
+    }
+    if (c == END_QUOTE) {
+      input_stack::decrease_level();
       continue;
     }
     if (c == ESCAPE_NEWLINE) {
@@ -1583,6 +1602,12 @@ void token::next()
 	continue;
       case POP_GROFFCOMP_MODE:
 	compatible_flag = input_stack::get_compatible_flag();
+	continue;
+      case BEGIN_QUOTE:
+	input_stack::increase_level();
+	continue;
+      case END_QUOTE:
+	input_stack::decrease_level();
 	continue;
       case EOF:
 	type = TOKEN_EOF;
@@ -4029,26 +4054,6 @@ static void interpolate_string_with_args(symbol s)
   }
 }
 
-/* This class is used for the implementation of \$@.  It is used for
-each of the closing double quotes.  It artificially increases the
-input level by 2, so that the closing double quote will appear to have
-the same input level as the opening quote. */
-
-class end_quote_iterator : public input_iterator {
-  unsigned char buf[1];
-public:
-  end_quote_iterator();
-  ~end_quote_iterator() { }
-  int internal_level() { return 2; }
-};
-
-end_quote_iterator::end_quote_iterator()
-{
-  buf[0] = '"';
-  ptr = buf;
-  eptr = buf + 1;
-}
-
 static void interpolate_arg(symbol nm)
 {
   const char *s = nm.contents();
@@ -4057,17 +4062,39 @@ static void interpolate_arg(symbol nm)
   else if (s[1] == 0 && csdigit(s[0]))
     input_stack::push(input_stack::get_arg(s[0] - '0'));
   else if (s[0] == '*' && s[1] == '\0') {
-    for (int i = input_stack::nargs(); i > 0; i--) {
-      input_stack::push(input_stack::get_arg(i));
-      if (i != 1)
-	input_stack::push(make_temp_iterator(" "));
+    int limit = input_stack::nargs();
+    string args;
+    for (int i = 1; i <= limit; i++) {
+      input_iterator *p = input_stack::get_arg(i);
+      int c;
+      while ((c = p->get(0)) != EOF)
+	args += c;
+      if (i != limit)
+	args += ' ';
+    }
+    if (limit > 0) {
+      args += '\0';
+      input_stack::push(make_temp_iterator(args.contents()));
     }
   }
   else if (s[0] == '@' && s[1] == '\0') {
-    for (int i = input_stack::nargs(); i > 0; i--) {
-      input_stack::push(new end_quote_iterator);
-      input_stack::push(input_stack::get_arg(i));
-      input_stack::push(make_temp_iterator(i == 1 ? "\"" : " \""));
+    int limit = input_stack::nargs();
+    string args;
+    for (int i = 1; i <= limit; i++) {
+      args += '"';
+      args += BEGIN_QUOTE;
+      input_iterator *p = input_stack::get_arg(i);
+      int c;
+      while ((c = p->get(0)) != EOF)
+	args += c;
+      args += END_QUOTE;
+      args += '"';
+      if (i != limit)
+	args += ' ';
+    }
+    if (limit > 0) {
+      args += '\0';
+      input_stack::push(make_temp_iterator(args.contents()));
     }
   }
   else {

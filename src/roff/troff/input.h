@@ -57,6 +57,8 @@ const int ESCAPE_COLON = 0210;
 const int PUSH_GROFF_MODE = 0211;
 const int PUSH_COMP_MODE = 0212;
 const int POP_GROFFCOMP_MODE = 0213;
+const int BEGIN_QUOTE = 0214;
+const int END_QUOTE = 0215;
 
 #else /* IS_EBCDIC_HOST */
 
@@ -94,6 +96,8 @@ const int ESCAPE_COLON = 070;
 const int PUSH_GROFF_MODE = 071;
 const int PUSH_COMP_MODE = 072;
 const int POP_GROFFCOMP_MODE = 073;
+const int BEGIN_QUOTE = 074;
+const int END_QUOTE = 075;
 
 #endif /* IS_EBCDIC_HOST */
 
