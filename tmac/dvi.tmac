@@ -7,14 +7,21 @@
 .ftr CO CWI
 .ftr CI CWI
 .ftr TT CW
-.ftr HR H
-.\" This uses the dvi-char_1 string in font CW, dvi-char_0 otherwise.
-.char _ \R'dvi-char_ \\n[.f]==\f[CW]\\n[.f]\f[P]'\\*[dvi-char_\\n[dvi-char_]]
+.ftr H HR
+.special TR TI
+.fspecial TI CWI
+.fspecial TBI CWI
+.fspecial HI CWI
+.fspecial HBI CWI
+.\" This uses the dvi-char_1 string in font CW pr CWI, dvi-char_0 otherwise.
+.char _ \
+\R'dvi-char_ ((\\n[.f] == \f[CW]\\n[.f]\f[P]) : \
+              (\\n[.f] == \f[CWI]\\n[.f]\f[P]))'\\*[dvi-char_\\n[dvi-char_]]
 .char \[ul] \R'dvi-char_ \w'M'==\w'i''\\*[dvi-char_\\n[dvi-char_]]
 .\" Normally use a rule.
 .\" This is designed so that \(ul, \(rn and \(br form corners.
 .ds dvi-char_0 \Z'\v'.23m'\D'R .54m .04m''\h'.5m'
-.\" In font CW use a real _ character.
+.\" In font CW and CWI use a real _ character.
 .ds dvi-char_1 _
 .if !c\[radicalex] .char \[radicalex] \D'R .5m -.04m'\v'.04m'
 .if !c\[br] .char \[br] \Z'\v'.25m'\D'R .04m -1m''

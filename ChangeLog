@@ -6,14 +6,36 @@
 	* tmac/dvi.tmac: Formatting.
 
 	Add font `HBI' for the dvi output.
+	Add support for font families `T' and `H'.
 
 	* font/devdvi/HBI: New file.
+	* font/devdvi/B: Renamed to ...
+	* font/devdvi/TB: This.
+	* font/devdvi/BI: Renamed to ...
+	* font/devdvi/TBI: This.
+	* font/devdvi/I: Renamed to ...
+	* font/devdvi/TI: This.
+	* font/devdvi/R: Renamed to ...
+	* font/devdvi/TR: This.
+	* font/devdvi/H: Renamed to ...
+	* font/devdvi/HR: This.
 	* font/devdvi/Makefile.sub (DEVFILES): Updated.
 	* font/devdvi/generate/Makefile (HBI): New rule.
 	(FONTS): Updated.
+	(R, I, B, BI, H): Renamed to ...
+	(TR, TI, TB, TBI, HR): This, respectively.
 	(srcdir): Fixed.
-	* NEWS: Updated.
-	* font/devdvi/DESC.in: Don't mount CWI.
+	* NEWS, src/devices/grodvi/grodvi.man: Updated.
+	* font/devdvi/DESC.in: Don't mount R, I, B, BI, and CWI.
+	Add `styles' and `family' keywords.
+	* tmac/dvi.tmac: Alias `H' to `HR'.
+	Add some fspecial requests for italic fonts.
+	Add TR and TI as special.
+	Add support for `_' with font CWI.
+
+	* src/roff/troff/number.cc (parse_expr): Add missing `break' for
+	operator `:'.  Until now, the expression `0:1' would return 2
+	instead of 1.
 
 2002-02-25  Werner LEMBERG  <wl@gnu.org>
 

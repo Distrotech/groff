@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -320,6 +321,7 @@ static int parse_expr(units *v, int scale_indicator,
       break;
     case ':':
       *v = *v > 0 || v2 > 0;
+      break;
     case '+':
       if (v2 < 0) {
 	if (*v < INT_MIN - v2)

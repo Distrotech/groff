@@ -29,28 +29,28 @@ tfmdir=/usr/local/lib/groff-tfm
 gfdir=/usr/local/lib/groff-gf
 
 TFMTODIT=tfmtodit
-FONTS=R I B BI CW CWI MI S EX H HI HB HBI SA SB
+FONTS=TR TI TB TBI CW CWI MI S EX HR HI HB HBI SA SB
 SPECIALFLAG=-s
 
 all: $(FONTS)
 
-# R is special because it contains \(pl \(eq
+# TR is special because it contains \(pl \(eq
 
-R: $(srcdir)/texr.map
+TR: $(srcdir)/texr.map
 	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/cmr10.300gf \
 	  $(tfmdir)/cmr10.tfm $(srcdir)/texr.map $@
 
-# I is special because it contains \(Po
+# TI is special because it contains \(Po
 
-I: $(srcdir)/texi.map
+TI: $(srcdir)/texi.map
 	$(TFMTODIT) $(SPECIALFLAG) -g $(gfdir)/cmti10.300gf \
 	  $(tfmdir)/cmti10.tfm $(srcdir)/texi.map $@
 
-B: $(srcdir)/texb.map
+TB: $(srcdir)/texb.map
 	$(TFMTODIT) -g $(gfdir)/cmbx10.300gf \
 	  $(tfmdir)/cmbx10.tfm $(srcdir)/texb.map $@
 
-BI: $(srcdir)/texi.map
+TBI: $(srcdir)/texi.map
 	$(TFMTODIT) -g $(gfdir)/cmbxti10.300gf \
 	  $(tfmdir)/cmbxti10.tfm $(srcdir)/texi.map $@
 
@@ -76,7 +76,7 @@ EX: $(srcdir)/texex.map
 	$(TFMTODIT) $(SPECIALFLAG) \
 	  $(tfmdir)/cmex10.tfm $(srcdir)/texex.map $@
 
-H: $(srcdir)/texb.map
+HR: $(srcdir)/texb.map
 	$(TFMTODIT) -g $(gfdir)/cmss10.300gf \
 	  $(tfmdir)/cmss10.tfm $(srcdir)/texb.map $@
 
