@@ -1322,13 +1322,16 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\}
 .el \!.par*box-draw \\$1 \\$2
 ..
-.de @SH
+.de SH-NO-TAG
 .par@finish
 .\" Keep together the heading and the first two lines of the next paragraph.
 .ne 3v+\\n[\\n[.ev]:PD]u+\\n(.Vu
 .sp 1
 .ft B
-.HTML-TAG ".SH 1"
+..
+.de @SH
+.  SH-NO-TAG
+.  HTML-TAG ".SH 1"
 ..
 .\" TL, AU, and AI are aliased to these in cov*ab-init.
 .de par@TL
@@ -1451,7 +1454,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .nr nh*hl 0
 .\" numbered heading
 .de @NH
-.HTML-TAG ".NH \\$1"
 .ie '\\$1'S' \{\
 .	shift
 .	nr nh*hl 0
@@ -1492,7 +1494,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	nr nh*i +1
 .	as SN \\n[H\\n[nh*i]].
 .\}
-.SH
+.SH-NO-TAG
+.HTML-TAG ".NH \\$1"
 \\*[SN]
 ..
 .\" ****************************

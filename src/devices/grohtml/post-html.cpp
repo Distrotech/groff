@@ -78,6 +78,11 @@ static int simple_anchors = FALSE;                   /* default to anchors with 
 static int manufacture_headings = FALSE;             /* default is to use the Hn html headings,  */
                                                      /* rather than manufacture our own.         */
 static color *default_background = NULL;             /* has user requested initial bg color?     */
+static string job_name;                              /* if set then the output is split into     */
+                                                     /* multiple files with `job_name'-%d.html   */
+static int multiple_files = FALSE;                   /* must we the output be divided into       */
+                                                     /* multiple html files, one for each        */
+                                                     /* heading?                                 */
 
 
 /*
@@ -128,6 +133,9 @@ static int is_digit (char ch)
 struct file {
   FILE    *fp;
   file    *next;
+  int      new_output_file;
+  int      require_links;
+  string   output_file_name;
 
   file     (FILE *f);
 };
@@ -137,21 +145,28 @@ struct file {
  */
 
 file::file (FILE *f)
-  : fp(f), next(0)
+  : fp(f), next(0), new_output_file(FALSE),
+    require_links(FALSE), output_file_name("")
 {
 }
 
 class files {
 public:
-            files         ();
-  FILE     *get_file      (void);
-  void      start_of_list (void);
-  void      move_next     (void);
-  void      add_new_file  (FILE *f);
+              files              ();
+  FILE       *get_file           (void);
+  void        start_of_list      (void);
+  void        move_next          (void);
+  void        add_new_file       (FILE *f);
+  void        set_file_name      (string name);
+  void        set_links_required (void);
+  int         are_links_required (void);
+  int         is_new_output_file (void);
+  string      file_name          (void);
+  string      next_file_name     (void);
 private:
-  file     *head;
-  file     *tail;
-  file     *ptr;
+  file       *head;
+  file       *tail;
+  file       *ptr;
 };
 
 /*
@@ -169,11 +184,10 @@ files::files ()
 
 FILE *files::get_file (void)
 {
-  if (ptr) {
-    return( ptr->fp );
-  } else {
-    return( 0 );
-  }
+  if (ptr)
+    return ptr->fp;
+  else
+    return 0;
 }
 
 /*
@@ -209,6 +223,76 @@ void files::add_new_file (FILE *f)
     tail       = tail->next;
   }
   ptr = tail;
+}
+
+/*
+ *  set_file_name - sets the final file name to contain the html
+ *                  data to name.
+ */
+
+void files::set_file_name (string name)
+{
+  if (ptr != NULL) {
+    ptr->output_file_name = name;
+    ptr->new_output_file = TRUE;
+  }
+}
+
+/*
+ *  set_links_required - issue links when processing this component
+ *                       of the file.
+ */
+
+void files::set_links_required (void)
+{
+  if (ptr != NULL)
+    ptr->require_links = TRUE;
+}
+
+/*
+ *  are_links_required - returns TRUE if this section of the file
+ *                       requires that links should be issued.
+ */
+
+int files::are_links_required (void)
+{
+  if (ptr != NULL)
+    return ptr->require_links;
+  return FALSE;
+}
+
+/*
+ *  is_new_output_file - returns TRUE if this component of the file
+ *                       is the start of a new output file.
+ */
+
+int files::is_new_output_file (void)
+{
+  if (ptr != NULL)
+    return ptr->new_output_file;
+  return FALSE;
+}
+
+/*
+ *  file_name - returns the name of the file.
+ */
+
+string files::file_name (void)
+{
+  if (ptr != NULL)
+    return ptr->output_file_name;
+  return string("");
+}
+
+/*
+ *  next_file_name - returns the name of the next file.
+ */
+
+string files::next_file_name (void)
+{
+  if (ptr != NULL && ptr->next != NULL)
+    return ptr->next->output_file_name;
+  return string("");
 }
 
 /*
@@ -1380,18 +1464,21 @@ public:
                             header_desc ();
                            ~header_desc ();
 
-  int                       no_of_headings;      // how many headings have we found?
-  char_buffer               headings;            // all the headings used in the document
-  list                      headers;             // list of headers built from .NH and .SH
-  int                       header_level;        // current header level
-  int                       written_header;      // have we written the header yet?
-  string                    header_buffer;       // current header text
+  int                       no_of_level_one_headings; // how many .SH or .NH 1 have we found?
+  int                       no_of_headings;           // how many headings have we found?
+  char_buffer               headings;                 // all the headings used in the document
+  list                      headers;                  // list of headers built from .NH and .SH
+  list                      header_filename;          // in which file is this header?
+  int                       header_level;             // current header level
+  int                       written_header;           // have we written the header yet?
+  string                    header_buffer;            // current header text
 
   void                      write_headings (FILE *f, int force);
 };
 
 header_desc::header_desc ()
-  :   no_of_headings(0), header_level(2), written_header(0)
+  :   no_of_level_one_headings(0), no_of_headings(0),
+      header_level(2), written_header(0)
 {
 }
 
@@ -1412,9 +1499,15 @@ void header_desc::write_headings (FILE *f, int force)
       int h=1;
 
       headers.start_from_head();
+      header_filename.start_from_head();
       do {
 	g = headers.get_data();
-	fputs("<a href=\"#", f);
+	fputs("<a href=\"", f);
+	if (multiple_files && (! header_filename.is_empty())) {
+	  text_glob *fn = header_filename.get_data();
+	  fputs(fn->text_string, f);
+	}
+	fputs("#", f);
 	if (simple_anchors) {
 	  string buffer(ANCHOR_TEMPLATE);
 
@@ -1428,6 +1521,8 @@ void header_desc::write_headings (FILE *f, int force)
 	fputs(g->text_string, f);
         fputs("</a><br>\n", f);
 	headers.move_right();
+	if (multiple_files && (! header_filename.is_empty()))
+	  header_filename.move_right();
       } while (! headers.is_equal_to_head());
       fputs("\n", f);
     }
@@ -1533,6 +1628,8 @@ class html_printer : public printer {
   void  do_auto_image                 (text_glob *g, const char *filename);
   void  do_links                      (void);
   void  do_flush                      (void);
+  void  do_job_name                   (char *name);
+  void  insert_split_file             (void);
   int   is_in_middle                  (int left, int right);
   void  do_sup_or_sub                 (text_glob *g);
   int   start_subscript               (text_glob *g);
@@ -1563,6 +1660,10 @@ class html_printer : public printer {
   void remove_courier_tabs            (void);
   void update_min_max                 (colType type_of_col, int *minimum, int *maximum, text_glob *g);
   void add_table_end                  (const char *);
+  void do_file_components             (void);
+  void write_navigation               (const string &top, const string &prev,
+				       const string &next, const string &current);
+  void emit_link                      (const string &to, const char *name);
   // ADD HERE
 
 public:
@@ -1937,6 +2038,22 @@ void html_printer::write_header (void)
       html.put_string(">").nl();
     }
 
+    /* and now we save the file name in which this header will occur */
+
+    style st;   // fake style to enable us to use the list data structure
+
+    text_glob *h=new text_glob();
+    h->text_glob_html(&st,
+		      header.headings.add_string(file_list.file_name()),
+		      file_list.file_name().length(),
+		      header.no_of_headings, header.header_level,
+		      header.no_of_headings, header.header_level);
+
+    header.header_filename.add(h,
+			       header.no_of_headings,
+			       header.no_of_headings, header.no_of_headings,
+			       header.no_of_headings, header.no_of_headings);
+
     current_paragraph->do_para(&html, "", indentation, pageoffset, linelength);
   }
 }
@@ -1955,6 +2072,10 @@ void html_printer::determine_header_level (int level)
     }
   }
   header.header_level = level+1;
+  if (header.header_level == 2) {
+    header.no_of_level_one_headings++;
+    insert_split_file();
+  }
 }
 
 /*
@@ -1985,7 +2106,7 @@ void html_printer::do_heading (char *arg)
 	}
       } else if (! (g->is_a_line() || g->is_a_tag())) {
 	/*
-	 *  we ignore tags commands when constructing a heading
+	 *  we ignore tag commands when constructing a heading
 	 */
 	if (l != 0)
 	  header.header_buffer += " ";
@@ -2208,7 +2329,45 @@ void html_printer::do_links (void)
   current_paragraph->done_para();
   auto_links = FALSE;   /* from now on only emit under user request */
   file_list.add_new_file(xtmpfile());
+  file_list.set_links_required();
   html.set_file(file_list.get_file());
+}
+
+/*
+ *  insert_split_file - 
+ */
+
+void html_printer::insert_split_file (void)
+{
+  if (multiple_files) {
+    current_paragraph->done_para();       // flush paragraph
+    html.end_line();                      // flush line
+    html.set_file(file_list.get_file());  // flush current file
+    file_list.add_new_file(xtmpfile());
+    string split_file = job_name;
+
+    split_file += string("-");
+    split_file += as_string(header.no_of_level_one_headings);
+    split_file += string(".html");
+    split_file += '\0';
+
+    file_list.set_file_name(split_file);
+    html.set_file(file_list.get_file());
+  }
+}
+
+/*
+ *  do_job_name - assigns the job_name to name.
+ */
+
+void html_printer::do_job_name (char *name)
+{
+  if (! multiple_files) {
+    multiple_files = TRUE;
+    while (name != NULL && (*name != (char)0) && (*name == ' '))
+      name++;
+    job_name = name;
+  }
 }
 
 /*
@@ -2389,6 +2548,9 @@ void html_printer::troff_tag (text_glob *g)
     do_pointsize(a);
   } else if (strcmp(t, ".links") == 0) {
     do_links();
+  } else if (strncmp(t, ".job-name", 9) == 0) {
+    char *a = (char *)t+9;
+    do_job_name(a);
   } else if (strcmp(t, ".no-auto-rule") == 0) {
     auto_rule = FALSE;
   } else if (strcmp(t, ".tab-ts") == 0) {
@@ -3606,6 +3768,106 @@ void html_printer::do_body (void)
   }
 }
 
+/*
+ *  emit_link - generates: <a href="to">name</a>
+ */
+
+void html_printer::emit_link (const string &to, const char *name)
+{
+  fputs("<a href=\"", stdout);
+  fputs(to.contents(), stdout);
+  fputs("\">", stdout);
+  fputs(name, stdout);
+  fputs("</a>", stdout);
+}
+
+/*
+ *  write_navigation - writes out the links which navigate between
+ *                     file fragments.
+ */
+
+void html_printer::write_navigation (const string &top, const string &prev,
+				     const string &next, const string &current)
+{
+  int need_bar = FALSE;
+
+  if (multiple_files) {
+    write_rule();
+    fputs("[ ", stdout);
+    if (prev != "" && prev != top) {
+      emit_link(prev, "prev");
+      need_bar = TRUE;
+    }
+    if (next != "" && next != top) {
+      if (need_bar)
+	fputs(" | ", stdout);
+      emit_link(next, "next");
+      need_bar = TRUE;
+    }
+    if (top != "<standard input>" && top != "" && top != current) {
+      if (need_bar)
+	fputs(" | ", stdout);
+      emit_link(top, "top");
+      fputs(" ]\n", stdout);
+    }
+    write_rule();
+  }
+}
+
+/*
+ *  do_file_components - scan the file list copying each temporary file in turn.
+ *                       This is used twofold:
+ *
+ *                       firstly to emit section heading links, between file fragments if required
+ *                       and secondly to generate jobname file fragments if required.
+ */
+
+void html_printer::do_file_components (void)
+{
+  int fragment_no = 1;
+  string top;
+  string prev;
+  string next;
+  string current;
+
+  file_list.start_of_list();
+  top = string(job_name);
+  top += string(".html");
+  top += '\0';
+  next = file_list.next_file_name();
+  next += '\0';
+  current = next;
+  while (file_list.get_file() != 0) {
+    if (fseek(file_list.get_file(), 0L, 0) < 0)
+      fatal("fseek on temporary file failed");
+    html.copy_file(file_list.get_file());
+    fclose(file_list.get_file());
+    
+    file_list.move_next();
+    if (file_list.is_new_output_file()) {
+      if (fragment_no > 1)
+	write_navigation(top, prev, next, current);
+      prev = current;
+      current = next;
+      next = file_list.next_file_name();
+      next += '\0';
+      fclose(stdout);
+      string split_file = file_list.file_name();
+      split_file += '\0';
+      stdout = fopen(split_file.contents(), "w");
+      html.set_file(stdout);
+      fragment_no++;
+      write_navigation(top, prev, next, current);
+    }
+    if (file_list.are_links_required())
+      header.write_headings(stdout, TRUE);
+  }
+  if (fragment_no > 1)
+    write_navigation(top, prev, next, current);
+  else
+    write_rule();
+}
+
 html_printer::~html_printer()
 {
 #ifdef LONG_FOR_TIME_T
@@ -3650,22 +3912,16 @@ html_printer::~html_printer()
 #endif
   html.end_line();
   html.end_line();
-  /*
-   *  now run through the file list copying each temporary file in turn and emitting the links.
-   */
-  file_list.start_of_list();
-  while (file_list.get_file() != 0) {
-    if (fseek(file_list.get_file(), 0L, 0) < 0)
-      fatal("fseek on temporary file failed");
-    html.copy_file(file_list.get_file());
-    fclose(file_list.get_file());
-    file_list.move_next();
-    if (file_list.get_file() != 0)
-      header.write_headings(stdout, TRUE);
+
+  if (multiple_files) {
+    fputs("</body>\n", stdout);
+    fputs("</html>\n", stdout);
+    do_file_components();
+  } else {
+    do_file_components();
+    fputs("</body>\n", stdout);
+    fputs("</html>\n", stdout);
   }
-  write_rule();
-  fputs("</body>\n", stdout);
-  fputs("</html>\n", stdout);
 }
 
 /*
@@ -3733,7 +3989,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "a:g:o:i:I:D:F:vbdhlrnp", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "a:g:o:i:I:j:D:F:vbdhlrnp", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -3753,6 +4009,10 @@ int main(int argc, char **argv)
       break;
     case 'F':
       font::command_line_font_dir(optarg);
+      break;
+    case 'j':
+      multiple_files = TRUE;
+      job_name = optarg;
       break;
     case 'l':
       auto_links = FALSE;

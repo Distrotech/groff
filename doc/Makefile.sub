@@ -60,7 +60,7 @@ PROCESSEDDOCFILES=\
   pic.ps
 
 HTMLDOCFILES=\
-  pic.html
+  pic*.html
 
 HTMLDOCIMAGEFILES=\
   pic*
@@ -132,6 +132,11 @@ gnu.eps: gnu.xpm
           $(pnmtops_nosetpage) -noturn -rle >$@
 gnu.png: gnu.xpm
 	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | pnmtopng >$@
+
+pic.html: pic.ms
+	$(GROFF) -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
+                 -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
+                 -Thtml -ms >$@
 
 webpage.html: webpage.ms gnu.png
 webpage.ps: gnu.eps

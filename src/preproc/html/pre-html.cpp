@@ -1332,7 +1332,7 @@ int scanArguments (int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "+a:g:o:i:I:D:F:vbdhlrnp", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "+a:g:o:i:I:j:D:F:vbdhlrnp", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -1366,6 +1366,9 @@ int scanArguments (int argc, char **argv)
       break;
     case 'F':
       font_path.command_line_dir(optarg);
+      break;
+    case 'j':
+      // handled by post-grohtml (set job name for multiple file output)
       break;
     case 'o':
       vertical_offset = atoi(optarg);

@@ -1,3 +1,65 @@
+2003-07-06  Werner LEMBERG  <wl@gnu.org>
+
+	Make grotty work on platforms which have unsigned char as the
+	default for char.  Based on a patch by Thomas Klausner
+	<wiz@netbsd.org>.
+
+	* src/devices/grotty/tty.cpp (schar): New typedef.
+	Updated calls to declare_ptable and implement_ptable.
+	(glyph): Use schar for back_color_idx and fore_color_idx.
+	(tty_printer): Use schar for curr_fore_idx and curr_back_idx.
+	(tty_printer::tty_color, tty_printer::tty_printer,
+	tty_printer::color_to_idx, tty_printer::put_color): Updated.
+
+2003-07-06  Ruslan Ermilov  <ru@FreeBSD.org>
+
+	* src/roff/nroff/nroff.sh: Add option -d for completeness.
+	* src/roff/nroff/nroff.man: Updated.
+
+2003-07-05  Werner LEMBERG  <wl@gnu.org>
+
+	* NEWS, tmac/groff_www.man: Updated.
+	* doc/Makefile.sub: Updated.
+
+2003-07-05  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Implement support for multiple HTML output files.
+
+	* src/preproc/html/pre-html.cpp (scanArguments): Dummy handling for
+	-j command line option.
+
+	* src/devices/grohtml/post-html.cpp (job_name, multiple_files): New
+	global variables.
+	(file): New fields `new_output_file', `require_links',
+	`output_file_name'.
+	(file::file): Updated.
+	(files::set_file_name, files::set_links_required,
+	files::are_links_required, files::is_new_output_file,
+	files::file_name, files::next_file_name): New functions.
+	(header_desc): New fields `no_of_level_one_headings',
+	`header_filename'.
+	(header_desc::header_desc): Updated.
+	(header_desc::write_headings): Handle multiple files.
+	(html_printer::write_header): Save file name in which header occurs.
+	(html_printer::determine_header_level): Possibly split files on
+	level one headings.
+	(html_printer::do_links, html_printer::troff_tag): Updated.
+	(html_printer::insert_split_file, html_printer::do_job_name,
+	html_printer::emit_link, html_printer::write_navigation,
+	html_printer::do_file_components): New functions.
+	(html_printer::~html_printer): Handle multiple files.
+	(main): Handle command line option `-j'.
+
+	* src/devices/grohtml/grohtml.man: Updated.
+
+	* doc/Makefile.sub (pic.html), doc/Makefile.in (pic.html): New rule
+	which splits file.
+
+	* tmac/www.tmac (JOBNAME): New macro.
+	* tmac/s.tmac (SH-NO-TAG): New macro.
+	(@SH): Call SH-NO-TAG.
+	(@NH): Updated.
+
 2003-07-05  Ruslan Ermilov  <ru@FreeBSD.org>
 
 	* tmac/groff_mdoc.man: Improve documentation of punctuation
