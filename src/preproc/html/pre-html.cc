@@ -190,9 +190,7 @@ make_message (const char *fmt, ...)
     /* If that worked, return the string. */
     if (n > -1 && n < size) {
       if (size > n+1) {
-	np = strdup(p);
-	if (np == NULL)
-	  sys_fatal("strdup");
+	np = strsave(p);
 	free(p);
 	return np;
       }
@@ -268,7 +266,7 @@ intToStr (int i)
 char *
 make_message (const char *fmt, ...)
 {
-  char *p = strdup(fmt);  /* so we can splat a nul anywhere in the string */
+  char *p = strsave(fmt);  /* so we can splat a nul anywhere in the string */
   char *np;
   char *l;
   char *s;
@@ -276,9 +274,6 @@ make_message (const char *fmt, ...)
   int   search=0;
   va_list ap;
 
-  if (p == NULL)
-    sys_fatal("strdup");
-  
   va_start(ap, fmt);
   while (p) {
     int   lenp=strlen(p);
@@ -294,9 +289,7 @@ make_message (const char *fmt, ...)
     switch (*(f+1)) {
 
     case 'd':
-      l = strdup(f+2);
-      if (l == NULL)
-	sys_fatal("strdup");
+      l = strsave(f+2);
       *f = (char)0;
       num = intToStr(va_arg(ap, int));
       np = (char *)malloc(strlen(p)+strlen(num)+strlen(l)+1);
@@ -307,13 +300,11 @@ make_message (const char *fmt, ...)
       strcat(np, l);
       search += strlen(np)-lenp;
       free(num);
-      free(l);
+      a_delete l;
       break;
     case 's':
       /* concat */
       l = f+2;
-      if (l == NULL)
-	sys_fatal("strdup");
       s = va_arg(ap, char *);
       *f = (char)0;
       np = (char *)malloc(strlen(l)+1+strlen(p)+strlen(s));
@@ -339,7 +330,7 @@ make_message (const char *fmt, ...)
       sys_fatal("unexpected format specifier");
       return NULL;
     }
-    free(p);
+    a_delete p;
     p = np;
   }
   va_end(ap);
@@ -507,7 +498,7 @@ static void makeFileName (void)
     sys_fatal("malloc");
   strcpy(image_template, s);
   strcat(image_template, "-%d");
-  free(s);
+  a_delete s;
 }
 
 /*
@@ -890,7 +881,7 @@ static int createAllPages (void)
   fflush(stderr);
 #endif
   html_system(s, 1);
-  free(s);
+  a_delete s;
   return 0;
 }
 
@@ -906,7 +897,7 @@ static void removeAllPages (void)
 
   do {
     if (s)
-      free(s);
+      a_delete s;
     s = make_message("%s/%d", imagePageStem, i);
     if (s == NULL)
       sys_fatal("make_message");
@@ -970,7 +961,7 @@ static void createImage (imageItem *i)
     fprintf(stderr, s);
 #endif
     html_system(s, 0);
-    free(s);
+    a_delete s;
 #if defined(DEBUGGING)
   } else {
     fprintf(stderr, "ignoring image as x1 coord is -1\n");

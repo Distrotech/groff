@@ -98,19 +98,6 @@ static char *strsep(char **pcadena, const char *delim)
 };
 #endif
 
-#ifndef HAVE_STRDUP
-// Ditto with OS/390 and strdup
-static char *strdup(const char *s)
-{
-  char *result;
-
-  result = (char *)malloc(strlen(s)+1);
-  if (result != NULL) strcpy(result,s);
-  return result;
-  
-}; // strdup
-
-#endif
 lbp_font::lbp_font(const char *nm)
 : font(nm)
 {
@@ -580,20 +567,20 @@ static int set_papersize(const char *papersize)
      	  *p1, 
 	  *papsize;
 	  
-      p = papsize = strdup(&papersize[4]);
+      p = papsize = strsave(&papersize[4]);
       if (papsize == NULL) return -1;
       p1 = strsep(&p,"x");
       if (p == NULL) 
       {  // let's test for an uppercase x
         p = papsize ;
         p1 = strsep(&p,"X");
-        if (p == NULL) { free(papsize); return -1;};
+        if (p == NULL) { a_delete papsize; return -1;};
       }; // if (p1 == NULL)
       paperlength = atoi(p1);
-      if (paperlength == 0) { free(papsize);  return -1;};
+      if (paperlength == 0) { a_delete papsize;  return -1;};
       paperwidth = atoi(p);
-      if (paperwidth == 0) { free(papsize); return -1;};
-      free(papsize);
+      if (paperwidth == 0) { a_delete papsize; return -1;};
+      a_delete papsize;
       return 82;
     }; // if (strcnasecmp("cust",papersize,4) == 0)
       
@@ -692,7 +679,7 @@ static void usage(FILE *stream)
 
 int main(int argc, char **argv)
 {
-   if (program_name == NULL) program_name = strdup(argv[0]);
+   if (program_name == NULL) program_name = strsave(argv[0]);
    
 	font::set_unknown_desc_command_handler(handle_unknown_desc_command);
 	// command line parsing
