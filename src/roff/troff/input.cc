@@ -172,6 +172,7 @@ const int VJUSTIFY_REQUEST = 0203;
 const int ESCAPE_E = 0204;
 const int LAST_PAGE_EJECTOR = 0205;
 const int ESCAPE_RIGHT_PARENTHESIS = 0206;
+const int ESCAPE_TILDE = 0207;
 
 #else /* IS_EBCDIC_HOST */
 
@@ -204,6 +205,7 @@ const int VJUSTIFY_REQUEST = 063;
 const int ESCAPE_E = 064;
 const int LAST_PAGE_EJECTOR = 065;
 const int ESCAPE_RIGHT_PARENTHESIS = 066;
+const int ESCAPE_TILDE = 067;
 
 #endif /* IS_EBCDIC_HOST */
 
@@ -909,6 +911,9 @@ static int get_copy(node **nd, int defining)
     case ' ':
       (void)input_stack::get(NULL);
       return ESCAPE_SPACE;
+    case '~':
+      (void)input_stack::get(NULL);
+      return ESCAPE_TILDE;
     case '|':
       (void)input_stack::get(NULL);
       return ESCAPE_BAR;
@@ -1315,6 +1320,11 @@ void token::next()
 	type = TOKEN_NODE;
 	nd = new space_char_hmotion_node(curenv->get_space_width());
 	return;
+      case ESCAPE_TILDE:
+      ESCAPE_TILDE:
+	type = TOKEN_STRETCHABLE_SPACE;
+	nd = new unbreakable_space_node(curenv->get_space_width());
+	return;
       case ESCAPE_e:
       ESCAPE_e:
 	type = TOKEN_ESCAPE;
@@ -1469,9 +1479,7 @@ void token::next()
       case '?':
 	goto ESCAPE_QUESTION;
       case '~':
-	nd = new unbreakable_space_node(curenv->get_space_width());
-	type = TOKEN_NODE;
-	return;
+	goto ESCAPE_TILDE;
       case '"':
 	while ((cc = input_stack::get(NULL)) != '\n' && cc != EOF)
 	  ;
@@ -1786,6 +1794,7 @@ int token::delimiter(int err)
     }
   case TOKEN_NODE:
   case TOKEN_SPACE:
+  case TOKEN_STRETCHABLE_SPACE:
   case TOKEN_TAB:
   case TOKEN_NEWLINE:
     if (err)
@@ -1834,6 +1843,8 @@ const char *token::description()
     return "`\\}'";
   case TOKEN_SPACE:
     return "a space";
+  case TOKEN_STRETCHABLE_SPACE:
+    return "`\\~'";
   case TOKEN_SPECIAL:
     return "a special character";
   case TOKEN_SPREAD:
@@ -2059,6 +2070,8 @@ static int transparent_translate(int cc)
     switch (ci->get_special_translation(1)) {
     case charinfo::TRANSLATE_SPACE:
       return ' ';
+    case charinfo::TRANSLATE_STRETCHABLE_SPACE:
+      return ESCAPE_TILDE;
     case charinfo::TRANSLATE_DUMMY:
       return ESCAPE_AMPERSAND;
     case charinfo::TRANSLATE_HYPHEN_INDICATOR:
@@ -2281,6 +2294,7 @@ void process_input_stack()
     case token::TOKEN_EOF:
       return;
     case token::TOKEN_NODE:
+    case token::TOKEN_STRETCHABLE_SPACE:
       {
 	if (possibly_handle_first_page_transition())
 	  ;
@@ -2292,6 +2306,7 @@ void process_input_stack()
 	  curenv->add_node(tok.nd);
 	  tok.nd = 0;
 	  bol = 0;
+	  curenv->possibly_break_line();
 	}
 	break;
       }
@@ -4798,6 +4813,9 @@ const char *asciify(int c)
   case ESCAPE_SPACE:
     buf[1] = ' ';
     break;
+  case ESCAPE_TILDE:
+    buf[1] = '~';
+    break;
   default:
     if (illegal_input_char(c))
       buf[0] = '\0';
@@ -5036,8 +5054,7 @@ static void init_charset_table()
   page_character = charset_table['%'];
 }
 
-static
-void do_translate(int translate_transparent)
+static void do_translate(int translate_transparent)
 {
   tok.skip();
   while (!tok.newline() && !tok.eof()) {
@@ -5061,6 +5078,9 @@ void do_translate(int translate_transparent)
     }
     if (tok.space())
       ci1->set_special_translation(charinfo::TRANSLATE_SPACE,
+				   translate_transparent);
+    else if (tok.stretchable_space())
+      ci1->set_special_translation(charinfo::TRANSLATE_STRETCHABLE_SPACE,
 				   translate_transparent);
     else if (tok.dummy())
       ci1->set_special_translation(charinfo::TRANSLATE_DUMMY,
@@ -5182,17 +5202,18 @@ void check_missing_character()
 int token::add_to_node_list(node **pp)
 {
   hunits w;
+  int s;
   node *n = 0;
   switch (type) {
   case TOKEN_CHAR:
-    *pp = (*pp)->add_char(charset_table[c], curenv, &w);
+    *pp = (*pp)->add_char(charset_table[c], curenv, &w, &s);
     break;
   case TOKEN_DUMMY:
     n = new dummy_node;
     break;
   case TOKEN_ESCAPE:
     if (escape_char != 0)
-      *pp = (*pp)->add_char(charset_table[escape_char], curenv, &w);
+      *pp = (*pp)->add_char(charset_table[escape_char], curenv, &w, &s);
     break;
   case TOKEN_HYPHEN_INDICATOR:
     *pp = (*pp)->add_discretionary_hyphen();
@@ -5206,11 +5227,12 @@ int token::add_to_node_list(node **pp)
     set_number_reg(nm, curenv->get_input_line_position().to_units());
     break;
   case TOKEN_NODE:
+  case TOKEN_STRETCHABLE_SPACE:
     n = nd;
     nd = 0;
     break;
   case TOKEN_NUMBERED_CHAR:
-    *pp = (*pp)->add_char(get_charinfo_by_number(val), curenv, &w);
+    *pp = (*pp)->add_char(get_charinfo_by_number(val), curenv, &w, &s);
     break;
   case TOKEN_RIGHT_BRACE:
     break;
@@ -5218,7 +5240,7 @@ int token::add_to_node_list(node **pp)
     n = new hmotion_node(curenv->get_space_width());
     break;
   case TOKEN_SPECIAL:
-    *pp = (*pp)->add_char(get_charinfo(nm), curenv, &w);
+    *pp = (*pp)->add_char(get_charinfo(nm), curenv, &w, &s);
     break;
   default:
     return 0;
@@ -5280,6 +5302,7 @@ void token::process()
     curenv->newline();
     break;
   case TOKEN_NODE:
+  case TOKEN_STRETCHABLE_SPACE:
     curenv->add_node(nd);
     nd = 0;
     break;

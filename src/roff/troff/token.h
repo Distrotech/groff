@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -50,6 +50,7 @@ class token {
     TOKEN_REQUEST,
     TOKEN_RIGHT_BRACE,
     TOKEN_SPACE,		// ` ' -- ordinary space
+    TOKEN_STRETCHABLE_SPACE,	// \~
     TOKEN_SPECIAL,		// a special character -- \' \` \- \(xx
     TOKEN_SPREAD,		// \p -- break and spread output line 
     TOKEN_TAB,			// tab
@@ -66,7 +67,8 @@ public:
   void skip();
   int eof();
   int nspaces();		// 1 if space, 2 if double space, 0 otherwise
-  int space();			// is it a space or double space?
+  int space();			// is the current token a space?
+  int stretchable_space();	// is the current token a stretchable space?
   int white_space();		// is the current token space or tab?
   int special();                // is the current token a special character?
   int newline();		// is the current token a newline?
@@ -123,6 +125,11 @@ inline int token::newline()
 inline int token::space()
 { 
   return type == TOKEN_SPACE;
+}
+
+inline int token::stretchable_space()
+{
+  return type == TOKEN_STRETCHABLE_SPACE;
 }
 
 inline int token::special()

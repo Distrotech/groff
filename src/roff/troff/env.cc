@@ -260,6 +260,7 @@ void leader_character()
 
 void environment::add_char(charinfo *ci)
 {
+  int s;
   if (interrupted)
     ;
   // don't allow fields in dummy environments
@@ -275,7 +276,7 @@ void environment::add_char(charinfo *ci)
     if (tab_contents == 0)
       tab_contents = new line_start_node;
     if (ci != hyphen_indicator_char)
-      tab_contents = tab_contents->add_char(ci, this, &tab_width);
+      tab_contents = tab_contents->add_char(ci, this, &tab_width, &s);
     else
       tab_contents = tab_contents->add_discretionary_hyphen();
   }
@@ -283,7 +284,7 @@ void environment::add_char(charinfo *ci)
     if (line == 0)
       start_line();
     if (ci != hyphen_indicator_char)
-      line = line->add_char(ci, this, &width_total);
+      line = line->add_char(ci, this, &width_total, &space_total);
     else
       line = line->add_discretionary_hyphen();
   }

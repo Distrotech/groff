@@ -4,50 +4,52 @@ are not described.  There are more details in the man pages.
 Groff
 -----
 
-`-mFOO' will now search first for `FOO.tmac' and then for `tmac.FOO'.  The
-old behaviour has been changed to overcome problems with platforms which
-have an 8+3 file name limit, and platforms which have other versions of
-troff installed also.  Additionally, all macro files have been renamed
-using the latter scheme to avoid 8+3 name clashes.
+o `-mFOO' will now search first for `FOO.tmac' and then for `tmac.FOO'.  The
+  old behaviour has been changed to overcome problems with platforms which
+  have an 8+3 file name limit, and platforms which have other versions of
+  troff installed also. Additionally, all macro files have been renamed
+  using the latter scheme to avoid 8+3 name clashes.
 
-The new environment variable GROFF_BIN_PATH will be checked for programs
-groff is calling (preprocessors, troff, and output devices) before PATH.  If
-not set, it defaults to the directory where the groff binary is located.
-Previously, it was PATH only.  The nroff script will only use GROFF_BIN_PATH
-to find the groff binary but passes both the GROFF_BIN_PATH and PATH
-environment variable to groff.
+o The new environment variable GROFF_BIN_PATH will be checked for programs
+  groff is calling (preprocessors, troff, and output devices) before PATH. 
+  If not set, it defaults to the directory where the groff binary is
+  located.  Previously, it was PATH only.  The nroff script will only use
+  GROFF_BIN_PATH to find the groff binary but passes both the GROFF_BIN_PATH
+  and PATH environment variable to groff.
 
 Troff
 -----
 
-A new request `nop' (no operation) has been added which is similar to
-`if 1'.  For example,
+o A new request `nop' (no operation) has been added which is similar to
+  `if 1'.  For example,
 
-.if t \{\
-Hallo!
-.\}
+    .if t \{\
+    Hallo!
+    .\}
 
-can now be written as
+  can now be written as
 
-.if t \{\
-.  nop Hallo!
-.\}
+    .if t \{\
+    .  nop Hallo!
+    .\}
 
-Two new requests `tm1' and `tmc' have been added to improve writing messages
-to the terminal.  `tm1' is similar to `tm' but allows leading whitespace.
-`tmc' is similar to `tm1' but doesn't emit a final newline.
+o Two new requests `tm1' and `tmc' have been added to improve writing
+  messages to the terminal.  `tm1' is similar to `tm' but allows leading
+  whitespace.  `tmc' is similar to `tm1' but doesn't emit a final newline.
 
-A new request `dei' (define indirect) has been added.  The first and second
-parameter of `dei' are taken from string registers instead directly; this
-very special request is needed to make `trace.tmac' independent from the
-escape character (which might even be disabled).
+o A new request `dei' (define indirect) has been added.  The first and
+  second parameter of `dei' are taken from string registers rather than
+  directly; this very special request is needed to make `trace.tmac'
+  independent from the escape character (which might even be disabled).
 
-It is now possible to save and restore the escape character with two new
-requests `ecs' and `ecr'.
+o It is now possible to save and restore the escape character with two new
+  requests `ecs' and `ecr'.
 
-The new escape sequence \B'...' is an analogon to `\A': If the string within
-the delimiters is a valid numeric expression, return character `1', and `0'
-otherwise.
+o The new escape sequence \B'...' is an analogon to `\A': If the string
+  within the delimiters is a valid numeric expression, return character `1',
+  and `0' otherwise.
+
+o The `tr' request can now map characters onto `\~'.
 
 Nroff
 -----
@@ -57,10 +59,10 @@ Option -v shows the version number.
 Grog
 ----
 
-The grog script will now work in non-compatibility mode also (which is the
-default).  As usual, use the `-C' option to activate compatibility mode.
+o The grog script will now work in non-compatibility mode also (which is the
+  default).  As usual, use the `-C' option to activate compatibility mode.
 
-Option -v shows the version number.
+o Option -v shows the version number.
 
 Grops
 -----
@@ -71,7 +73,7 @@ added to select a different prologue file.
 Miscellaneous
 -------------
 
-For security reasons the following changes have been done:
+o For security reasons the following changes have been done:
 
   . The tmac.safer file has been replaced with a built-in solution; .open,
     .opena, .pso, .sy, and .pi are completely disabled in safer mode (which
@@ -93,15 +95,16 @@ For security reasons the following changes have been done:
     Use the `-F' command line option or the GROFF_FONT_PATH environment
     variable if you really need the current directory.
 
-groff will now install its data files into /usr/local/share/groff/<version>
-by default, following the GNU standard.  Additionally, a local tmac
-directory (by default /usr/local/share/groff/site-tmac) will be scanned
-before the standard tmac directory.  Wrapper files for system-specific macro
-packages (if necessary) are put into /usr/local/lib/groff/site-tmac; this
-directory will be searched before the local tmac directory.
+o groff will now install its data files into
+  /usr/local/share/groff/<version> by default, following the GNU standard. 
+  Additionally, a local tmac directory (by default
+  /usr/local/share/groff/site-tmac) will be scanned before the standard tmac
+  directory.  Wrapper files for system-specific macro packages (if
+  necessary) are put into /usr/local/lib/groff/site-tmac; this directory
+  will be searched before the local tmac directory.
 
-All programs now have option `-v' to show the version number; they will exit
-immediately afterwards, following the GNU standards.
+o All programs now have option `-v' to show the version number; they will
+  exit immediately afterwards, following the GNU standards.
 
 VERSION 1.16.1
 ==============

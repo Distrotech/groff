@@ -1,3 +1,34 @@
+2000-12-02  Werner LEMBERG  <wl@gnu.org>
+
+	Fixing a bug which prevented hyphenation in words followed
+	immediately by a TOKEN_NODE (e.g. `\ ', `\~', etc.).
+
+	* src/roff/troff/input.cc (process_input_stack <token::TOKEN_NODE>):
+	Adding possibly_break_line().
+	* src/roff/troff/env.h (environment): Make possibly_break_line()
+	public.
+
+	Make `\~' usable in .tr request.
+
+	* src/roff/troff/token.h (token_type): Add TOKEN_STRETCHABLE_SPACE.
+	(token): Add stretchable_space().
+	* src/roff/troff/input.cc (token::next, token::delimiter,
+	token::description, process_input_stack, do_translate,
+	add_to_node_list, token::process): Use it.
+	* src/roff/troff/node.h (node): Add fourth parameter to add_char()
+	for adjusting the space.
+	* src/roff/troff/node.cc (node::add_char): Implement it.  Add code
+	for stretchable space.
+	* src/roff/troff/input.cc (token::add_to_node_list): Use it.
+	(make_node): Add code for stretchable space.
+	* src/roff/troff/env.cc (environment::add_char): Use it.
+	* src/roff/troff/input.cc: Add ESCAPE_TILDE special character.
+	(get_copy, token::next, transparent_translate, asciify): Use it.
+
+	* NEWS, src/roff/troff/troff.man, src/roff/troff/TODO,
+	doc/groff.texinfo: Updated.
+	* man/groff.man: Small reorderings.
+
 2000-11-23  Werner LEMBERG  <wl@gnu.org>
 
 	* NEWS: Fixes.

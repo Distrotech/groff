@@ -189,7 +189,6 @@ class environment {
 #ifdef WIDOW_CONTROL
   void mark_last_line();
 #endif /* WIDOW_CONTROL */
-  void possibly_break_line(int forced = 0);
   breakpoint *choose_breakpoint();
   void hyphenate_line();
   void start_field();
@@ -268,6 +267,7 @@ public:
   void set_input_line_position(hunits);	// used by \n(hp
   void interrupt();
   void spread() { spread_flag = 1; }
+  void possibly_break_line(int forced = 0);
   void do_break();			// .br
   void final_break();
   void add_html_tag (const char *name);

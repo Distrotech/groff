@@ -3877,6 +3877,8 @@ node *make_node(charinfo *ci, environment *env)
   switch (ci->get_special_translation()) {
   case charinfo::TRANSLATE_SPACE:
     return new space_char_hmotion_node(env->get_space_width());
+  case charinfo::TRANSLATE_STRETCHABLE_SPACE:
+    return new unbreakable_space_node(env->get_space_width());
   case charinfo::TRANSLATE_DUMMY:
     return new dummy_node;
   case charinfo::TRANSLATE_HYPHEN_INDICATOR:
@@ -3910,13 +3912,19 @@ int character_exists(charinfo *ci, environment *env)
   return 0;
 }
 
-node *node::add_char(charinfo *ci, environment *env, hunits *widthp)
+node *node::add_char(charinfo *ci, environment *env,
+		     hunits *widthp, int *spacep)
 {
   node *res;
   switch (ci->get_special_translation()) {
   case charinfo::TRANSLATE_SPACE:
     res = new space_char_hmotion_node(env->get_space_width(), this);
     *widthp += res->width();
+    return res;
+  case charinfo::TRANSLATE_STRETCHABLE_SPACE:
+    res = new unbreakable_space_node(env->get_space_width(), this);
+    *widthp += res->width();
+    *spacep += res->nspaces();
     return res;
   case charinfo::TRANSLATE_DUMMY:
     return new dummy_node(this);

@@ -34,9 +34,17 @@ the original English.
 .\" so use \(ts instead of ".
 .tr \(ts"
 .TH @G@TROFF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
+.
 .SH NAME
+.
+.
 @g@troff \- format documents
+.
+.
 .SH SYNOPSIS
+.
+.
 .nr a \n(.j
 .ad l
 .nr i \n(.i
@@ -65,15 +73,23 @@ the original English.
 .PP
 It is possible to have whitespace between a command line option and its
 parameter.
+.
+.
 .SH DESCRIPTION
+.
+.
 This manual page describes the GNU version of
 .BR troff ,
 which is part of the groff document formatting system.
-It is highly compatible with Unix troff.
+It is highly compatible with UNIX troff.
 Usually it should be invoked using the groff command, which will
 also run preprocessors and postprocessors in the appropriate
 order and with the appropriate options.
+.
+.
 .SH OPTIONS
+.
+.
 .TP \w'\-dname=s'u+2n
 .B \-a
 Generate an
@@ -236,9 +252,15 @@ Search directory (or directory path)
 .I dir
 for macro files.
 This is scanned before all other macro directories.
+.
+.
 .SH USAGE
-Only the features not in Unix troff are described here.
+.
+.
+Only the features not in UNIX troff are described here.
+.
 .SS Long names
+.
 The names of number registers, fonts, strings/macros/diversions,
 special characters can be of any length. In escape sequences, where
 you can use 
@@ -262,7 +284,9 @@ Interpolate string
 .BI \en[ xxx ]
 Interpolate number register
 .IR xxx .
+.
 .SS Fractional pointsizes
+.
 A
 .I
 scaled point
@@ -345,7 +369,9 @@ Be sure not to confuse the
 and
 .B z
 scale indicators.
+.
 .SS Numeric expressions
+.
 .LP
 Spaces are permitted in a number expression within parentheses.
 .LP
@@ -374,7 +400,9 @@ If
 .I c
 is missing, ignore scaling indicators in the evaluation of
 .IR e .
+.
 .SS New escape sequences
+.
 .TP
 .BI \eA' anything '
 This expands to
@@ -528,7 +556,7 @@ to have been defined as a macro and thus contain newlines
 (it is not permitted for the argument to
 .B \eX
 to contain newlines).
-The inclusion of newlines requires an extension to the Unix troff output
+The inclusion of newlines requires an extension to the UNIX troff output
 format, and will confuse drivers that do not know about this
 extension.
 .TP
@@ -559,7 +587,7 @@ In a macro, this gives the
 or
 .IR nnn -th
 argument.
-Macros can have a unlimited number of arguments.
+Macros can have an unlimited number of arguments.
 .TP
 .BI \e? anything \e?
 When used in a diversion, this will transparently embed
@@ -659,7 +687,9 @@ This is like
 except that
 .B \e"
 does not ignore the terminating newline.
+.
 .SS New requests
+.
 .TP
 .BI .aln\  xx\ yy
 Create an alias
@@ -1422,7 +1452,7 @@ transparently throughput into a diversion with
 .BR \e! .
 For example,
 .RS
-.LP
+.IP
 .nf
 .ft B
 \&.tr ab
@@ -1521,14 +1551,16 @@ is read in copy mode;
 a leading
 .B \(ts
 will be stripped.
+.
 .SS Extended requests
+.
 .TP
 .BI .cf\  filename
 When used in a diversion, this will embed in the diversion an object which,
 when reread, will cause the contents of
 .I filename
 to be transparently copied through to the output.
-In Unix troff, the
+In UNIX troff, the
 contents of
 .I filename
 is immediately copied through to the output regardless of whether
@@ -1574,11 +1606,11 @@ if the end of a sentence occurs at the end of a line in fill mode, then
 both an inter-word space and a sentence space will be added;
 if two spaces follow the end of a sentence in the middle of a line,
 then the second space will be a sentence space.
-Note that the behaviour of Unix troff will be exactly
+Note that the behaviour of UNIX troff will be exactly
 that exhibited by GNU troff if a second argument is never given to the
 .B ss
 request.
-In GNU troff, as in Unix troff, you should always
+In GNU troff, as in UNIX troff, you should always
 follow a sentence with either a newline or two spaces.
 .TP
 .BI .ta\  n1\ n2\|.\|.\|.nn \ T\  r1\ r2\|.\|.\|.\|rn
@@ -1603,7 +1635,9 @@ For example,
 .LP
 will set tabs every half an inch.
 .RE
+.
 .SS New number registers
+.
 The following read-only registers are available:
 .TP
 .B \en[.C]
@@ -1840,7 +1874,9 @@ Note that the traditional
 number register
 .B \en(yr
 is the current year minus 1900.
+.
 .SS Miscellaneous
+.
 .B @g@troff
 predefines a single (read/write) string-based register,
 .BR \e*(.T ,
@@ -1857,7 +1893,7 @@ which is defined to be\ 1 if
 is called with the
 .B -T
 command line option, and zero otherwise.  This behaviour is different to
-Unix troff.
+UNIX troff.
 .LP
 Fonts not listed in the
 .SM DESC
@@ -1947,7 +1983,14 @@ the condition will also be true if
 has been defined by the
 .B char
 request.
+.LP
+The
+.B tr
+request can now map characters onto
+.BR \e~ .
+.
 .SS Warnings
+.
 The warnings that can be given by
 .B troff
 are divided into the following categories.
@@ -2073,10 +2116,12 @@ that are useful with traditional macro packages.
 .TP
 .B w
 All warnings.
+.
 .SS Incompatibilities
+.
 .LP
 Long names cause some incompatibilities.
-Unix troff will interpret
+UNIX troff will interpret
 .IP
 .B
 \&.dsabcd
@@ -2087,7 +2132,7 @@ with contents
 .BR cd .
 Normally, GNU troff will interpret this as a call of a macro named
 .BR dsabcd .
-Also Unix troff will interpret
+Also UNIX troff will interpret
 .B \e*[
 or
 .B \en[
@@ -2112,14 +2157,14 @@ GNU troff
 does not allow the use of the escape sequences
 .BR \\e\e|\e^\e&\e}\e{\e (space) \e'\e`\e-\e_\e!\e%\ec
 in names of strings, macros, diversions, number registers,
-fonts or environments; Unix troff does.
+fonts or environments; UNIX troff does.
 The
 .B \eA
 escape sequence may be helpful in avoiding use of these
 escape sequences in names.
 .LP
 Fractional pointsizes cause one noteworthy incompatibility.
-In Unix troff the
+In UNIX troff the
 .B ps 
 request ignores scale indicators and so
 .IP
@@ -2173,7 +2218,7 @@ is turned into one output
 and the resulting output
 .BR \e s
 are not interpreted as escape characters when they are reread.
-Unix troff would interpret them as escape characters
+UNIX troff would interpret them as escape characters
 when they were reread and would end up printing one
 .BR \e .
 The correct way to obtain a printable
@@ -2182,7 +2227,7 @@ is to use the
 .B \ee
 escape sequence: this will always print a single instance of the
 current escape character, regardless of whether or not it is used in a
-diversion; it will also work in both GNU troff and Unix troff.
+diversion; it will also work in both GNU troff and UNIX troff.
 If you wish for some reason to store in a diversion an escape
 sequence that will be interpreted when the diversion is reread,
 you can either use the traditional
@@ -2190,7 +2235,11 @@ you can either use the traditional
 transparent output facility, or, if this is unsuitable, the new
 .B \e?
 escape sequence.
+.
+.
 .SH ENVIRONMENT
+.
+.
 .TP
 .SM
 .B GROFF_TMAC_PATH
@@ -2222,7 +2271,11 @@ will scan directories given in the
 option before these, and in standard directories
 .RB ( @FONTPATH@ )
 after these.
+.
+.
 .SH FILES
+.
+.
 .Tp \w'@FONTDIR@/devname/DESC'u+3n
 .B @MACRODIR@/troffrc
 Initialization file (called before any other macro package).
@@ -2259,7 +2312,11 @@ command line option or the
 .B GROFF_MACRO_PATH
 environment variable to add these directories to the search path if
 necessary.
+.
+.
 .SH "SEE ALSO"
+.
+.
 .BR groff (@MAN1EXT@),
 .BR @g@tbl (@MAN1EXT@),
 .BR @g@pic (@MAN1EXT@),

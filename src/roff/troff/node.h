@@ -52,7 +52,7 @@ struct node {
   node *last;
   node();
   node(node *n);
-  node *add_char(charinfo *c, environment *, hunits *widthp);
+  node *add_char(charinfo *c, environment *, hunits *widthp, int *spacep);
 
   virtual ~node();
   virtual node *copy() = 0;
