@@ -2013,12 +2013,29 @@ expressions, unless the entire expression is surrounded by parentheses.
 @findex ]
 @findex ?
 Like any other language, @code{gtroff} has rules for properly formed
-@dfn{identifiers}.  In @code{gtroff} an identifier can be made up of
-almost any printable character.  The only exception are characters which
-are interpreted by @code{gtroff} (backslash, square brackets, @dots{}).
-So, for example, any of the following is valid.
+@dfn{identifiers}.  In @code{gtroff}, an identifier can be made up of
+almost any printable character.  The exception are the following
+characters:
 
-@c XXX which characters exactly?
+@itemize @bullet
+@item
+Whitespace characters (space, tabs, and newlines).
+@item
+Backspace (@code{0x08}) and character code @code{0x01}.
+@cindex illegal input characters
+@cindex input characters, illegal
+@cindex characters, illegal input
+@item
+The following input characters are illegal and will be ignored, causing
+a warning message: @code{0x00}, @code{0x0B}, @code{0x0D}-@code{0x1F},
+@code{0x80}-@code{0x9F}.
+@end itemize
+
+ @samp{\} (backslash), 
+, and the character codes @code{0x00}@footnote{The null
+character is an invalid character which causes a warning message and
+will be ignored.} and @code{0x01}.  So, for example, any of the
+following is valid.
 
 @example
 br
@@ -2027,6 +2044,12 @@ PP
 end-list
 @@_
 @end example
+
+Note that identifiers longer than two characters and containing a
+closing bracket (@samp{]}) can't be accessed with escape sequences which
+expect an identifier as a parameter.
+
+@c XXX xref
 
 @deffn Escape \A ident
 You can test whether an identifier @var{ident} is valid in @code{gtroff}
