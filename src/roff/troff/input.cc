@@ -128,6 +128,8 @@ struct input_iterator;
 input_iterator *make_temp_iterator(const char *);
 const char *input_char_description(int);
 
+#ifndef IS_EBCDIC_HOST
+
 const int ESCAPE_QUESTION = 015;
 const int BEGIN_TRAP = 016;
 const int END_TRAP = 017;
@@ -157,6 +159,41 @@ const int VJUSTIFY_REQUEST = 0203;
 const int ESCAPE_E = 0204;
 const int LAST_PAGE_EJECTOR = 0205;
 const int ESCAPE_RIGHT_PARENTHESIS = 0206;
+
+#else /* IS_EBCDIC_HOST */
+
+const int ESCAPE_QUESTION = 010;
+const int BEGIN_TRAP = 011;
+const int END_TRAP = 013;
+const int PAGE_EJECTOR = 015;
+const int ESCAPE_NEWLINE = 016;
+const int ESCAPE_AMPERSAND = 017;
+const int ESCAPE_UNDERSCORE = 020;
+const int ESCAPE_BAR = 021;
+const int ESCAPE_CIRCUMFLEX = 022;
+const int ESCAPE_LEFT_BRACE = 023;
+const int ESCAPE_RIGHT_BRACE = 024;
+const int ESCAPE_LEFT_QUOTE = 027;
+const int ESCAPE_RIGHT_QUOTE = 030;
+const int ESCAPE_HYPHEN = 031;
+const int ESCAPE_BANG = 032;
+const int ESCAPE_c = 033;
+const int ESCAPE_e = 034;
+const int ESCAPE_PERCENT = 035;
+const int ESCAPE_SPACE = 036;
+
+const int TITLE_REQUEST = 060;
+const int COPY_FILE_REQUEST = 061;
+const int TRANSPARENT_FILE_REQUEST = 062;
+#ifdef COLUMN
+const int VJUSTIFY_REQUEST = 063;
+#endif /* COLUMN */
+const int ESCAPE_E = 064;
+const int LAST_PAGE_EJECTOR = 065;
+const int ESCAPE_RIGHT_PARENTHESIS = 066;
+
+#endif /* IS_EBCDIC_HOST */
+
 
 void set_escape_char()
 {
@@ -3026,7 +3063,7 @@ void read_request()
     }
   }
   if (reading_from_terminal) {
-    fputc(had_prompt ? ':' : '\007', stderr);
+    fputc(had_prompt ? ':' : '\a', stderr);
     fflush(stderr);
   }
   input_stack::push(mi);

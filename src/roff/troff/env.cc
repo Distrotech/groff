@@ -195,7 +195,7 @@ int font_size::nranges = 0;
 
 extern "C" {
 
-static int compare_ranges(const void *p1, const void *p2)
+int compare_ranges(const void *p1, const void *p2)
 {
   return ((size_range *)p1)->min - ((size_range *)p2)->min;
 }
