@@ -3633,7 +3633,10 @@ html_printer::~html_printer()
 
   fputs("<html>\n", stdout);
   fputs("<head>\n", stdout);
-  fputs("<meta name=\"generator\" content=\"groff -Thtml, see www.gnu.org\">\n", stdout);
+  fputs("<meta name=\"generator\" "
+	      "content=\"groff -Thtml, see www.gnu.org\">\n", stdout);
+  fputs("<meta http-equiv=\"Content-Type\" "
+	      "content=\"text/html; charset=US-ASCII\">\n", stdout);
   fputs("<meta name=\"Content-Style\" content=\"text/css\">\n", stdout);
   write_title(TRUE);
   fputs("</head>\n", stdout);
