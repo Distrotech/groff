@@ -173,7 +173,8 @@ void environment::mark_last_line()
 {
   if (!widow_control || !pending_lines)
     return;
-  for (pending_output_line *p = pending_lines; p->next; p = p->next)
+  pending_output_line *p;
+  for (p = pending_lines; p->next; p = p->next)
     ;
   if (!p->no_fill)
     p->last_line = 1;

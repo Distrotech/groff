@@ -7336,6 +7336,7 @@ void init_input_requests()
   number_reg_dictionary.define(".g", new constant_reg("1"));
   number_reg_dictionary.define(".H", new constant_int_reg(&hresolution));
   number_reg_dictionary.define(".R", new constant_reg("10000"));
+  number_reg_dictionary.define(".U", new constant_int_reg(&safer_flag));
   number_reg_dictionary.define(".V", new constant_int_reg(&vresolution));
   number_reg_dictionary.define(".warn", new constant_int_reg(&warning_mask));
   extern const char *major_version;
