@@ -47,6 +47,12 @@ sub process {
 		$soelim++ if $level;
 	    }
 	}
+	elsif (/^\.GS/) {
+	    $_ = <FILE>;
+	    if (!/^\./) {
+		$grn++;
+		$soelim++ if $level;
+	}
 	elsif (/^\.PS([ 0-9.<].*)?$/) {
 	    if (/^\.PS\s*<\s*(\S+)/) {
 		$pic++;
@@ -108,11 +114,12 @@ sub process {
     close(FILE);
 }
 
-if ($pic || $tbl || $eqn || $refer) {
+if ($pic || $tbl || $eqn || $grn || $refer) {
     $s = "-";
     $s .= "s" if $soelim;
     $s .= "R" if $refer;
     $s .= "p" if $pic;
+    $s .= "h" if $grn;
     $s .= "t" if $tbl;
     $s .= "e" if $eqn;
     push(@command, $s);

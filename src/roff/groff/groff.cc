@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -54,7 +54,8 @@ const int SOELIM_INDEX = 0;
 const int REFER_INDEX = SOELIM_INDEX + 1;
 const int PIC_INDEX = REFER_INDEX + 1;
 const int TBL_INDEX = PIC_INDEX + 1;
-const int EQN_INDEX = TBL_INDEX + 1;
+const int GRN_INDEX = TBL_INDEX + 1;
+const int EQN_INDEX = GRN_INDEX + 1;
 const int TROFF_INDEX = EQN_INDEX + 1;
 const int POST_INDEX = TROFF_INDEX + 1;
 const int SPOOL_INDEX = POST_INDEX + 1;
@@ -114,7 +115,7 @@ int main(int argc, char **argv)
     command_prefix = PROG_PREFIX;
   commands[TROFF_INDEX].set_name(command_prefix, "troff");
   while ((opt = getopt(argc, argv,
-		       "abCd:eEf:F:hiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ"))
+		       "abCd:eEf:F:ghiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ"))
 	 != EOF) {
     char buf[3];
     buf[0] = '-';
@@ -133,6 +134,9 @@ int main(int argc, char **argv)
       break;
     case 'p':
       commands[PIC_INDEX].set_name(command_prefix, "pic");
+      break;
+    case 'g':
+      commands[GRN_INDEX].set_name(command_prefix, "grn");
       break;
     case 'e':
       commands[EQN_INDEX].set_name(command_prefix, "eqn");
@@ -161,6 +165,7 @@ int main(int argc, char **argv)
       commands[SOELIM_INDEX].append_arg(buf);
       commands[PIC_INDEX].append_arg(buf);
       commands[TBL_INDEX].append_arg(buf);
+      commands[GRN_INDEX].append_arg(buf);
       commands[EQN_INDEX].append_arg(buf);
       commands[TROFF_INDEX].append_arg(buf);
       break;
@@ -210,6 +215,7 @@ int main(int argc, char **argv)
       break;
     case 'M':
       commands[EQN_INDEX].append_arg(buf, optarg);
+      commands[GRN_INDEX].append_arg(buf, optarg);
       commands[TROFF_INDEX].append_arg(buf, optarg);
       break;
     case 'P':
@@ -296,6 +302,7 @@ int main(int argc, char **argv)
   }
   commands[TROFF_INDEX].append_arg("-T", device);
   commands[EQN_INDEX].append_arg("-T", device);
+  commands[GRN_INDEX].append_arg("-T", device);
 
   int first_index;
   for (first_index = 0; first_index < TROFF_INDEX; first_index++)
@@ -547,9 +554,9 @@ char **possible_command::get_argv()
 void synopsis()
 {
   fprintf(stderr,
-"usage: %s [-abehilpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam] [-wname]\n"
-"       [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg] [-Larg]\n"
-"       [files...]\n",
+"usage: %s [-abeghilpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
+"       [-wname] [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
+"       [-Larg] [files...]\n",
 	  program_name);
 }
 
@@ -561,6 +568,7 @@ void help()
 "-t\tpreprocess with tbl\n"
 "-p\tpreprocess with pic\n"
 "-e\tpreprocess with eqn\n"
+"-g\tpreprocess with grn\n"
 "-s\tpreprocess with soelim\n"
 "-R\tpreprocess with refer\n"
 "-Tdev\tuse device dev\n"
