@@ -67,19 +67,27 @@ static void get_text(int n)
     else if (c == '\\' && in_string) {
       count++;
       putchar(c);
+      if (n-- == 0)
+	break;
       c = getchar();
       /* don't split octal character representations */
       if (c >= '0' && c <= '7') {
 	count++;
 	putchar(c);
+	if (n-- == 0)
+	  break;
 	c = getchar();
 	if (c >= '0' && c <= '7') {
 	  count++;
 	  putchar(c);
+	  if (n-- == 0)
+	    break;
 	  c = getchar();
 	  if (c >= '0' && c <= '7') {
 	    count++;
 	    putchar(c);
+	    if (n-- == 0)
+	      break;
 	    c = getchar();
 	  }
 	}
@@ -88,9 +96,13 @@ static void get_text(int n)
     if (c == EOF)
       error("end of file in text packet");
     else if (c == '\r') {
+      if (n-- == 0)
+	break;
       c1 = getchar();
-      if (c1 != '\n')
+      if (c1 != '\n') {
 	ungetc(c1, stdin);
+	n++;
+      }
       c = '\n';
     }
     if (c == '\n') {
@@ -112,6 +124,8 @@ static void get_text(int n)
 	/* split at the next whitespace character */
 	while (c != ' ' && c != '\t' && c != '\f') {
 	  putchar(c);
+	  if (n-- == 0)
+	    break;  
 	  c = getchar();
 	}
 	count = 0;
