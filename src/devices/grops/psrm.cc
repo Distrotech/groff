@@ -24,6 +24,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "ps.h"
 
+#ifdef NEED_DECLARATION_PUTENV
+extern "C" {
+  int putenv(const char *);
+}
+#endif /* NEED_DECLARATION_PUTENV */
+
 #define GROPS_PROLOGUE "prologue"
 
 static void print_ps_string(const string &s, FILE *outfp);
@@ -259,8 +265,14 @@ void resource_manager::output_prolog(ps_output &out)
   FILE *outfp = out.get_file();
   out.end_line();
   char *path;
-  if (!getenv("GROPS_PROLOGUE"))
-    setenv("GROPS_PROLOGUE", GROPS_PROLOGUE, 0);
+  if (!getenv("GROPS_PROLOGUE")) {
+    string e = "GROPS_PROLOGUE";
+    e += '=';
+    e += GROPS_PROLOGUE;
+    e += '\0';
+    if (putenv(strsave(e.contents())))
+      fatal("putenv failed");
+  }
   char *prologue = getenv("GROPS_PROLOGUE");
   FILE *fp = font::open_file(prologue, &path);
   if (!fp)

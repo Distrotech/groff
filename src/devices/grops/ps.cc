@@ -26,6 +26,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "ps.h"
 #include <time.h>
 
+#ifdef NEED_DECLARATION_PUTENV
+extern "C" {
+  int putenv(const char *);
+}
+#endif /* NEED_DECLARATION_PUTENV */
+
 static int landscape_flag = 0;
 static int manual_feed_flag = 0;
 static int ncopies = 1;
@@ -1472,6 +1478,7 @@ static void usage();
 int main(int argc, char **argv)
 {
   program_name = argv[0];
+  string env;
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
@@ -1503,7 +1510,12 @@ int main(int argc, char **argv)
       font::command_line_font_dir(optarg);
       break;
     case 'P':
-      setenv("GROPS_PROLOGUE", optarg, 1);
+      env = "GROPS_PROLOGUE";
+      env += '=';
+      env += optarg;
+      env += '\0';
+      if (putenv(strsave(env.contents())))
+	fatal("putenv failed");
       break;
     case 'w':
       if (sscanf(optarg, "%d", &linewidth) != 1 || linewidth < 0) {
