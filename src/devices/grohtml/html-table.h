@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-table.h
  *
@@ -92,14 +92,15 @@ public:
   void  add_indent        (int indent);
   void  finish_row        (void);
   int   get_effective_linelength (void);
+  void  set_space         (int space);
 
   tabs          *tab_stops;    /* tab stop positions */
+  simple_output *out;
 private:
   cols          *columns;      /* column entries */
-  simple_output *out;
   int            linelength;
   cols          *last_col;     /* last column started */
-  int            start_space;  /* encapsulate with <p> </p> */
+  int            start_space;  /* have we seen a `.sp' tag? */
 
   void  remove_cols (cols *c);
 };

@@ -10,7 +10,7 @@ Installed position: groff's main macro directory.
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright (C) 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 written by Gaius Mulley <gaius@glam.ac.uk>, with additions by
 Werner Lemberg <wl@gnu.org> and Bernd Warken <bwarken@mayn.de>.
 
@@ -524,6 +524,32 @@ www functionality.  It should work with any macro set.
 .  wh \\n[www-left-ll-trap]u
 .  nr www-left-ll-trap 0
 ..
+.
+.\" www-handle-percent arg N1 N2 S1
+.\"                    arg - input string (number or number%)
+.\"                    output parameters:
+.\"                    N1 - name of number register 1=absolute 0=percentage
+.\"                    N2 - number register name for absolute value
+.\"                    S1 - string register name for percentage value
+.
+.de www-handle-percent 
+.  ds www-percent \\$1\"
+.  substring www-percent -1 -1
+.
+.  ie '\\*[www-percent]'%' \{\
+.    ds www-abs \\$1\"
+.    substring www-abs 0 -2
+.    nr \\$2 0
+.    nr \\$3 \\*[www-abs]
+.    ds \\$4 \\$1\"
+.  \}
+.  el \{\
+.    nr \\$2 1
+.    nr \\$3 \\$1
+.    ds \\$4 none\"
+.  \}
+..
+.
 .\" --------------------------------------------------------------------
 .\" MPIMG [-R|-L] [-G gap] filename [width [height]]
 .\"
@@ -531,6 +557,10 @@ www functionality.  It should work with any macro set.
 .\"   -Tps and -Thtml.  The default value for WIDTH is 1i; default value
 .\"   for HEIGHT is WIDTH; the default alignment is left (-L).
 .\"   -G is used to insert a gap between the text and the image.
+.\"   The height and width can also be given as a percentage.
+.\"   The PostScript device converts the percentage width into an
+.\"   absolute value by using \\n[.l], and the height by using \\n[.p].
+.\"   
 .\"
 .\" Note: This macro can only be used with the `-U' option of groff,
 .\"       activating unsafe mode, if not used with -Thtml; the PNG image
@@ -561,24 +591,74 @@ www functionality.  It should work with any macro set.
 .    \}
 .    break
 .  \}
+.
 .  nr www-width 1i
-.  if !'\\$2'' \
-.    nr www-width \\$2
-.  nr www-height \\n[www-width]
-.  if !'\\$3'' \
-.    nr www-height \\$3
-.  nr www-width (\\n[www-width] * 100 / 240)
-.  nr www-height (\\n[www-height] * 100 / 240)
+.  nr www-height 1i
+.  ds www-size-specs "width=\\n[www-width] height=\\n[www-height]\"
+.  ie !'\\$2'' \{\
+.    nr www-is-absolute 0
+.    nr www-absolute 0
+.    ds www-percentage none\"
+.    www-handle-percent \\$2 www-is-absolute www-absolute www-percentage
+.    ie !\\n[www-is-absolute] \{\
+.      \" percentage of linelength requested
+.      nr www-width (\\n[www-absolute] * \\n[.l] / 100)
+.      if \\n[www-html] \
+.        nr www-width (\\n[www-width] * 100 / 240)
+.      ds www-size-specs "width=\\*[www-percentage]\"
+.    \}
+.    el \{\
+.      nr www-width \\n[www-absolute]
+.      if \\n[www-html] \
+.        nr www-width (\\n[www-width] * 100 / 240)
+.      ds www-size-specs "width=\\n[www-width]\"
+.    \}
+.
+.    nr www-height \\n[www-width]
+.    ie !'\\$3'' \{\
+.      nr www-is-absolute 0
+.      nr www-absolute 0
+.      ds www-percentage none\"
+.      www-handle-percent \\$3 www-is-absolute www-absolute www-percentage
+.      ie !\\n[www-is-absolute] \{\
+.        \" percentage of pagelength requested
+.        nr www-height (\\n[www-absolute] * \\n[.p] / 100)
+.        if \\n[www-html] \
+.           nr www-height (\\n[www-height] * 100 / 240)
+.        ds www-size-specs "\\*[www-size-specs] height=\\*[www-percentage]\"
+.      \}
+.      el \{\
+.        nr www-height \\n[www-absolute]
+.        if \\n[www-html] \
+.           nr www-height (\\n[www-height] * 100 / 240)
+.        ds www-size-specs "\\*[www-size-specs] height=\\*[www-height]\"
+.      \}
+.    \}
+.  \}
+.  el \{\
+.    \" height not specified; use width value
+.    ie !\\n[www-is-absolute] \{\
+.       \" percentage value
+.       ds www-size-specs "\\*[www-size-specs] height=\\*[www-percentage]\"
+.       nr www-height \\n[www-width]
+.    \}
+.    el \{\
+.       ds www-size-specs "\\*[www-size-specs] height=\\*[www-width]\"
+.       nr www-height \\n[www-width]
+.    \}
+.  \}
 .
 .  ie \\n[www-html] \{\
 .    ie !\\n[www-image-just] \
 .      HTML <img src="\\$1" alt="Image \\$1" hspace=\\n[www-htmlimage-gap] \
-             align=right width=\\n[www-width] height=\\n[www-height]>
+             align=right \\*[www-size-specs]>
 .    el \
 .      HTML <img src="\\$1" alt="Image \\$1" hspace=\\n[www-htmlimage-gap] \
-             align=left width=\\n[www-width] height=\\n[www-height]>
+             align=left \\*[www-size-specs]>
 .  \}
 .  el \{\
+.    tm www-width is \\n[www-width]
+.    tm www-height is \\n[www-height]
 .    if !r ps4html \{\
 .      www-make-unique-name
 .      sy pngtopnm \\$1 | pnmcrop -white | @PNMTOPS_NOSETPAGE@ -noturn > \\*[www-unique-name].eps
@@ -589,7 +669,7 @@ www functionality.  It should work with any macro set.
 .          wh \\n[www-left-ll-trap]u
 .        if (\\n[www-left-po-trap] > 0) \
 .          wh \\n[www-left-po-trap]u
-.        PSPIC -R \\*[www-unique-name].eps \\$2 \\$3
+.        PSPIC -R \\*[www-unique-name].eps \\n[www-width]u \\n[www-height]u
 .        sp -\\n[ps-desht]u
 .        nr www-right-indent \\n[ps-deswid]u
 .        \" we want to have some space between text and image,
@@ -608,7 +688,7 @@ www functionality.  It should work with any macro set.
 .        \" we must now disable a possible right image trap
 .        if (\\n[www-right-ll-trap] > 0) \
 .          wh \\n[www-right-ll-trap]u
-.        PSPIC -L \\*[www-unique-name].eps \\$2 \\$3
+.        PSPIC -L \\*[www-unique-name].eps \\n[www-width]u \\n[www-height]u
 .        sp -\\n[ps-desht]u
 .        nr www-left-indent \\n[ps-deswid]u
 .        \" increase offset by gap
@@ -790,7 +870,8 @@ www functionality.  It should work with any macro set.
 .    ds www-dropcolor \\$3
 .  ie '\*(.T'html' \{\
 .    www-make-unique-name
-.    MPIMG -L \\*[www-unique-name].png "(\\n[.v] * 2u)"
+.    nr www-drop-width (100u * \\n[.v]u * 3u / \\n[.l]u)
+.    MPIMG -L \\*[www-unique-name].png "\\n[www-drop-width]%"
 .  \}
 .  el \{\
 .    ie r ps4html \{\
@@ -801,9 +882,9 @@ www functionality.  It should work with any macro set.
 .      \" glyphs overlap.
 .      bp
 .      ev www-DC
-.      vs 80p
+.      vs 320p
 .      nop \O[5i\\*[www-unique-name].png]\O[1]
-.      nop \m[\\*[www-dropcolor]]\s[40]\O[3]\\$1\O[4]
+.      nop \m[\\*[www-dropcolor]]\s[160]\O[3]\\$1\O[4]
 .      nop \O[2]\O[0]
 .      br
 .      ev

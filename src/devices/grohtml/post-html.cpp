@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cpp
  *  but it owes a huge amount of ideas and raw code from
@@ -1993,6 +1994,8 @@ class html_printer : public printer {
   int                  next_center;
   int                  seen_space;
   int                  seen_break;
+  int                  current_column;
+  int                  row_space;
   assert_state         as;
 
   void  flush_sbuf                    ();
@@ -2019,6 +2022,7 @@ class html_printer : public printer {
   void  start_font                    (const char *name);
   void  end_font                      (const char *name);
   int   is_font_courier               (font *f);
+  int   is_line_start                 (int nf);
   int   is_courier_until_eol          (void);
   void  start_size                    (int from, int to);
   void  do_font                       (text_glob *g);
@@ -2090,7 +2094,7 @@ class html_printer : public printer {
   void do_end_para                    (text_glob *g);
   int  round_width                    (int x);
   void handle_tag_within_title        (text_glob *g);
-  
+  void writeHeadMetaStyle             (void);
   // ADD HERE
 
 public:
@@ -2199,18 +2203,20 @@ void html_printer::emit_raw (text_glob *g)
     determine_space(g);
     current_paragraph->do_emittext(g->text_string, g->text_length);
   } else {
+    int space = current_paragraph->retrieve_para_space() || seen_space;
+
     current_paragraph->done_para();
     shutdown_table();
     switch (next_tag) {
 
     case CENTERED:
-      current_paragraph->do_para("align=center");
+      current_paragraph->do_para("align=center", space);
       break;
     case LEFT:
-      current_paragraph->do_para(&html, "align=left", get_troff_indent(), pageoffset, linelength);
+      current_paragraph->do_para(&html, "align=left", get_troff_indent(), pageoffset, linelength, space);
       break;
     case RIGHT:
-      current_paragraph->do_para(&html, "align=right", get_troff_indent(), pageoffset, linelength);
+      current_paragraph->do_para(&html, "align=right", get_troff_indent(), pageoffset, linelength, space);
       break;
     default:
       fatal("unknown enumeration");
@@ -2409,6 +2415,8 @@ void html_printer::do_title (void)
 void html_printer::write_header (void)
 {
   if (! header.header_buffer.empty()) {
+    int space = current_paragraph->retrieve_para_space() || seen_space;
+
     if (header.header_level > 7) {
       header.header_level = 7;
     }
@@ -2492,7 +2500,7 @@ void html_printer::write_header (void)
 			       header.no_of_headings, header.no_of_headings,
 			       header.no_of_headings, header.no_of_headings);
 
-    current_paragraph->do_para(&html, "", get_troff_indent(), pageoffset, linelength);
+    current_paragraph->do_para(&html, "", get_troff_indent(), pageoffset, linelength, space);
   }
 }
 
@@ -2688,7 +2696,8 @@ void html_printer::do_indent (int in, int pageoff, int linelen)
 {
   if ((device_indent != -1) &&
       (pageoffset+device_indent != in+pageoff)) {
-    
+
+    int space = current_paragraph->retrieve_para_space() || seen_space;    
     current_paragraph->done_para();
       
     device_indent = in;
@@ -2697,7 +2706,7 @@ void html_printer::do_indent (int in, int pageoff, int linelen)
       linelength  = linelen;
 
     current_paragraph->do_para(&html, "", device_indent,
-			       pageoffset, max_linelength);
+			       pageoffset, max_linelength, space);
   }
 }
 
@@ -2765,7 +2774,7 @@ void html_printer::do_fill (char *arg)
 
   if (fill_on != on) {
     if (on)
-      current_paragraph->do_para("");
+      current_paragraph->do_para("", seen_space);
     fill_on = on;
   }
 }
@@ -2796,9 +2805,10 @@ void html_printer::do_check_center(void)
     seen_center = FALSE;
     if (next_center > 0) {
       if (end_center == 0) {
+	int space = current_paragraph->retrieve_para_space() || seen_space;
 	current_paragraph->done_para();
 	supress_sub_sup = TRUE;
-	current_paragraph->do_para("align=center");
+	current_paragraph->do_para("align=center", space);
       } else
 	if (strcmp("align=center",
 		   current_paragraph->get_alignment()) != 0) {
@@ -2806,9 +2816,10 @@ void html_printer::do_check_center(void)
 	   *  different alignment, so shutdown paragraph and open
 	   *  a new one.
 	   */
+	  int space = current_paragraph->retrieve_para_space() || seen_space;
 	  current_paragraph->done_para();
 	  supress_sub_sup = TRUE;
-	  current_paragraph->do_para("align=center");
+	  current_paragraph->do_para("align=center", space);
 	} else
 	  /*
 	   *  same alignment, if we have emitted text then issue a break.
@@ -2820,6 +2831,7 @@ void html_printer::do_check_center(void)
        *  next_center == 0
        */
       if (end_center > 0) {
+	seen_space = seen_space || current_paragraph->retrieve_para_space();
 	current_paragraph->done_para();
 	supress_sub_sup = TRUE;
       }
@@ -2956,6 +2968,11 @@ void html_printer::do_space (char *arg)
 
   seen_space = atoi(arg);
   as.check_sp(seen_space);
+#if 0
+  if (n>0 && table)
+    table->set_space(TRUE);
+#endif
+
   while (n>0) {
     current_paragraph->do_space();
     n--;
@@ -2972,6 +2989,7 @@ void html_printer::do_tab_ts (text_glob *g)
   html_table *t = g->get_table();
 
   if (t != NULL) {
+    current_column = 0;
     current_paragraph->done_pre();
     current_paragraph->done_para();
     current_paragraph->remove_para_space();
@@ -2982,7 +3000,13 @@ void html_printer::do_tab_ts (text_glob *g)
 
     t->set_linelength(max_linelength);
     t->add_indent(pageoffset);
+#if 0
+    t->emit_table_header(seen_space);
+#else
     t->emit_table_header(FALSE);
+    row_space = current_paragraph->retrieve_para_space() || seen_space;
+    seen_space = FALSE;
+#endif
   }
 
   table = t;
@@ -2996,6 +3020,7 @@ void html_printer::do_tab_te (void)
 {
   if (table) {
     current_paragraph->done_para();
+    current_paragraph->remove_para_space();
     table->emit_finish_table();
   }
 
@@ -3043,8 +3068,13 @@ void html_printer::do_tab0 (void)
 void html_printer::do_col (char *s)
 {
   if (table) {
+    if (atoi(s) < current_column)
+      row_space = seen_space;
+
+    current_column = atoi(s);
     current_paragraph->done_para();
-    table->emit_col(atoi(s));
+    table->emit_col(current_column);
+    current_paragraph->do_para("", row_space);
   }
 }
 
@@ -3165,9 +3195,6 @@ void html_printer::flush_globs (void)
     page_contents->glyphs.start_from_head();
     do {
       g = page_contents->glyphs.get_data();
-      if (strcmp(g->text_string, "Here") == 0)
-	stop();
-
 #if 0
       fprintf(stderr, "[%s:%d:%d:%d:%d]",
 	      g->text_string, g->minv, g->minh, g->maxv, g->maxh) ;
@@ -3731,6 +3758,37 @@ void html_printer::determine_space (text_glob *g)
 }
 
 /*
+ *  is_line_start - returns TRUE if we are at the start of a line.
+ */
+
+int html_printer::is_line_start (int nf)
+{
+  int line_start  = FALSE;
+  int result      = TRUE;
+  text_glob *orig = page_contents->glyphs.get_data();
+  text_glob *g;
+
+  if (! page_contents->glyphs.is_equal_to_head()) {
+    do {
+      page_contents->glyphs.move_left();
+      g = page_contents->glyphs.get_data();
+      result = !g->is_a_tag();
+      if (g->is_fi())
+	nf = FALSE;
+      else if (g->is_nf())
+	nf = TRUE;
+      line_start = g->is_col() || g->is_br() || (nf && g->is_eol());
+    } while ((!line_start) && (result));
+    /*
+     *  now restore our previous position.
+     */
+    while (page_contents->glyphs.get_data() != orig)
+      page_contents->glyphs.move_right();
+  }
+  return result;
+}
+
+/*
  *  is_font_courier - returns TRUE if the font, f, is courier.
  */
 
@@ -3790,24 +3848,28 @@ void html_printer::start_font (const char *fontname)
     current_paragraph->do_bold();
     current_paragraph->do_italic();
   } else if (strcmp(fontname, "CR") == 0) {
-    if ((! fill_on) && (is_courier_until_eol())) {
+    if ((! fill_on) && (is_courier_until_eol()) &&
+	is_line_start(fill_on)) {
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
   } else if (strcmp(fontname, "CI") == 0) {
-    if ((! fill_on) && (is_courier_until_eol())) {
+    if ((! fill_on) && (is_courier_until_eol()) &&
+	is_line_start(fill_on)) {
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
     current_paragraph->do_italic();
   } else if (strcmp(fontname, "CB") == 0) {
-    if ((! fill_on) && (is_courier_until_eol())) {
+    if ((! fill_on) && (is_courier_until_eol()) &&
+	is_line_start(fill_on)) {
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
     current_paragraph->do_bold();
   } else if (strcmp(fontname, "CBI") == 0) {
-    if ((! fill_on) && (is_courier_until_eol())) {
+    if ((! fill_on) && (is_courier_until_eol()) &&
+	is_line_start(fill_on)) {
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
@@ -3968,6 +4030,7 @@ void html_printer::do_end_para (text_glob *g)
 {
   do_font(g);
   current_paragraph->done_para();
+  current_paragraph->remove_para_space();
   html.put_string(g->text_string+9);
   output_vpos     = g->minv;
   output_hpos     = g->maxh;
@@ -4125,7 +4188,9 @@ html_printer::html_printer()
   seen_center(FALSE),
   next_center(0),
   seen_space(0),
-  seen_break(0)
+  seen_break(0),
+  current_column(0),
+  row_space(FALSE)
 {
   file_list.add_new_file(xtmpfile());
   html.set_file(file_list.get_file());
@@ -4435,7 +4500,7 @@ void html_printer::begin_page(int n)
   output_vpos_max        = -1;
   current_paragraph      = new html_text(&html);
   do_indent(get_troff_indent(), pageoffset, linelength);
-  current_paragraph->do_para("");
+  current_paragraph->do_para("", FALSE);
 }
 
 void html_printer::end_page(int)
@@ -4557,6 +4622,7 @@ void html_printer::do_file_components (void)
       fflush(stdout);
       freopen(split_file.contents(), "w", stdout);
       fragment_no++;
+      writeHeadMetaStyle();
       write_navigation(top, prev, next, current);
     }
     if (file_list.are_links_required())
@@ -4566,6 +4632,31 @@ void html_printer::do_file_components (void)
     write_navigation(top, prev, next, current);
   else
     write_rule();
+}
+
+/*
+ *  writeHeadMetaStyle - emits the <head> <meta> and <style> tags and
+ *                       related information.
+ */
+
+void html_printer::writeHeadMetaStyle (void)
+{
+  fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n", stdout);
+  fputs("\"http://www.w3.org/TR/html4/loose.dtd\">\n", stdout);
+
+  fputs("<html>\n", stdout);
+  fputs("<head>\n", stdout);
+  fputs("<meta name=\"generator\" "
+	      "content=\"groff -Thtml, see www.gnu.org\">\n", stdout);
+  fputs("<meta http-equiv=\"Content-Type\" "
+	      "content=\"text/html; charset=US-ASCII\">\n", stdout);
+  fputs("<meta name=\"Content-Style\" content=\"text/css\">\n", stdout);
+
+  fputs("<style type=\"text/css\">\n", stdout);
+  fputs("       p     { margin-top: 0; margin-bottom: 0; }\n", stdout);
+  fputs("       pre   { margin-top: 0; margin-bottom: 0; }\n", stdout);
+  fputs("       table { margin-top: 0; margin-bottom: 0; }\n", stdout);
+  fputs("</style>\n", stdout);
 }
 
 html_printer::~html_printer()
@@ -4590,16 +4681,8 @@ html_printer::~html_printer()
     .put_string(ctime(&t), strlen(ctime(&t))-1)
     .end_comment();
 
-  fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n", stdout);
-  fputs("\"http://www.w3.org/TR/html4/loose.dtd\">\n", stdout);
+  writeHeadMetaStyle();
 
-  fputs("<html>\n", stdout);
-  fputs("<head>\n", stdout);
-  fputs("<meta name=\"generator\" "
-	      "content=\"groff -Thtml, see www.gnu.org\">\n", stdout);
-  fputs("<meta http-equiv=\"Content-Type\" "
-	      "content=\"text/html; charset=US-ASCII\">\n", stdout);
-  fputs("<meta name=\"Content-Style\" content=\"text/css\">\n", stdout);
   write_title(TRUE);
   head_info += '\0';
   fputs(head_info.contents(), stdout);

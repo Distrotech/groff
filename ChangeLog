@@ -1,3 +1,64 @@
+2004-02-15  Gaius Mulley  <gaius@glam.ac.uk>
+
+	These patches modify the indentation implementation to use `<p
+	style=margin-left: n%>'.  Many thanks to Peter and Larry for
+	suggesting this solution.  Grohtml only uses tables for `.IP' and
+	related tags when the first operand has a short width.
+
+	Similarly, they modify all vertical space code.  By default, grohtml
+	sets up a style sheet which uses no vertical space between `table',
+	`pre', and `p' tags.  It forces spaces when it needs them using
+	`style="margin-top: 1em"'.
+
+	* src/devices/grohtml/html-table.cpp: Include `html-text.h'.
+	(html_table::emit_table_header, html_table::emit_new_row):
+	Rewritten.
+	(html_table::set_space): New function.
+	(html_indent::html_indent): Don't set `is_used'.
+	(html_indent::begin): Rewritten.
+	(html_indent::end): Remove code in function.
+
+	* src/devices/grohtml/html-table.h: Updated.
+	(html_table): Make `out' public.
+
+	* src/devices/grohtml/html-text.cpp (html_text::html_text):
+	Initialize `start_space' with FALSE.
+	(html_text::end_tag) <P_TAG, PRE_TAG>: Updated.
+	(html_text::issue_tag): Add argument to handle space style.
+	(html_text::start_tag) <P_TAG, PRE_TAG>: Updated.
+	(html_text::flush_text): Don't set `start_space'.
+	(html_text::push_para): Don't set `p->really_issued'.
+	(html_text::do_emittext): Updated.
+	(html_text::do_para): Add paremeter to handle space.
+	Update all callers.
+	(html_text::retrieve_para_space): New function.
+
+	* src/devices/grohtml/html-text.h (STYLE_VERTICAL_SPACE): New macro.
+	(tag_definition): Remove `really_issued'.
+	(html_text): Updated.
+
+	* src/devices/grohtml/post-html.cpp (html_printer): Add variables
+	`current_column' and `row_space'.
+	Update constructor.
+	(html_printer::emit_raw, html_printer::write_header,
+	html_printer::do_indent, html_printer::do_check_center,
+	html_printer::do_tab_ts): Handle vertical space.
+	(html_printer:do_tab_te, html_printer::do_end_para): Call
+	`remove_para_space'.
+	(html_printer::do_col): Rewritten.
+	(html_printer::flush_globs): Remove debugging code.
+	(html_printer::is_line_start): New function.
+	(html_printer::start_font): Use `is_line_start'.
+	(html_printer::writeHeadMetaStyle): New function.
+	(html_printer::do_file_components, html_printer::~html_printer):
+	Call `writeHeadMetaStyle'.
+
+	* tmac/www.tmac (www-handle-percent): New macro.
+	(MPIMG): Handle percent values for width and height parameters.
+	(DC): Updated.
+
+	* tmac/groff_www.man: Updated.
+
 2004-02-14  Werner LEMBERG  <wl@gnu.org>
 
 	* src/utils/afmtodit/afmtodit.pl: Remove an incorrect `my' from

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-table.cpp
  *
@@ -32,6 +32,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "html-table.h"
 #include "ctype.h"
 #include "html.h"
+#include "html-text.h"
 
 #if !defined(TRUE)
 #   define TRUE  (1==1)
@@ -238,7 +239,7 @@ void tabs::dump_tabs (void)
  */
 
 html_table::html_table (simple_output *op, int linelen)
-  : columns(NULL), out(op), linelength(linelen), last_col(NULL), start_space(FALSE)
+  : out(op), columns(NULL), linelength(linelen), last_col(NULL), start_space(FALSE)
 {
   tab_stops = new tabs();
 }
@@ -335,19 +336,18 @@ void html_table::emit_table_header (int space)
     out->nl();
     out->nl();
 
-#if 0
-    if (space)
-      out->put_string("<p>");
-#endif
-
-    start_space = space;
     out->put_string("<table width=\"100%\"")
       .put_string(" border=0 rules=\"none\" frame=\"void\"\n")
-      .put_string("       cellspacing=\"0\" cellpadding=\"0\"")
-      .put_string(start_space ? " style=\"margin-top: 8px; margin-bottom: 8px\"" : "")
-      .put_string(">")
+      .put_string("       cellspacing=\"0\" cellpadding=\"0\"");
+    out->put_string(">")
       .nl();
-    out->put_string("<tr valign=\"top\" align=\"left\">").nl();
+    out->put_string("<tr valign=\"top\" align=\"left\"");
+    if (space) {
+      out->put_string(" style=\"margin-top: ");
+      out->put_string(STYLE_VERTICAL_SPACE);
+      out->put_string("\"");
+    }
+    out->put_string(">").nl();
   }
 }
 
@@ -362,6 +362,16 @@ int html_table::get_right (cols *c)
   if (c->next != NULL)
     return c->left;
   return linelength;
+}
+
+/*
+ *  set_space - assigns start_space. Used to determine the
+ *              vertical alignment when generating the next table row.
+ */
+
+void html_table::set_space (int space)
+{
+  start_space = space;
 }
 
 /*
@@ -478,7 +488,15 @@ void html_table::finish_row (void)
 void html_table::emit_new_row (void)
 {
   finish_row();
-  out->put_string("<tr valign=\"top\" align=\"left\">").nl();
+
+  out->put_string("<tr valign=\"top\" align=\"left\"");
+  if (start_space) {
+    out->put_string(" style=\"margin-top: ");
+    out->put_string(STYLE_VERTICAL_SPACE);
+    out->put_string("\"");
+  }
+  out->put_string(">").nl();
+  start_space = FALSE;
   last_col = NULL;
 }
 
@@ -486,10 +504,6 @@ void html_table::emit_finish_table (void)
 {
   finish_row();
   out->put_string("</table>");
-#if 0
-  if (start_space)
-    out->put_string("</p>");
-#endif
 }
 
 /*
@@ -718,7 +732,6 @@ html_indent::html_indent (simple_output *op, int ind, int pageoffset, int linele
   in = ind;
   pg = pageoffset;
   ll = linelength;
-  is_used = FALSE;
 }
 
 html_indent::~html_indent (void)
@@ -729,18 +742,33 @@ html_indent::~html_indent (void)
 
 void html_indent::begin (int space)
 {
-  if (! is_used) {
-    table->emit_table_header(space);
-    table->emit_col(1);
-    is_used = TRUE;
+  if (in + pg == 0) {
+    if (space) {
+      table->out->put_string(" style=\"margin-top: ");
+      table->out->put_string(STYLE_VERTICAL_SPACE);
+      table->out->put_string("\"");
+    }
+  }
+  else {
+    //
+    // we use exactly the same mechanism for calculating
+    // indentation as html_table::emit_col
+    //
+    table->out->put_string(" style=\"margin-left:")
+      .put_number(((in + pg) * 100 + ll/2) / ll -
+		  (ll/2)/ll)
+      .put_string("%;");
+
+    if (space) {
+      table->out->put_string(" margin-top: ");
+      table->out->put_string(STYLE_VERTICAL_SPACE);
+    }
+    table->out->put_string("\"");
   }
 }
 
 void html_indent::end (void)
 {
-  if (is_used)
-    table->emit_finish_table();
-  is_used = FALSE;
 }
 
 /*
