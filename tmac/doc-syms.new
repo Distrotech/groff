@@ -510,9 +510,44 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS 
 .\" NS local variable:
-.\" NS   doc-str-St, doc-str-St1, doc-reg-St
+.\" NS   doc-str-St, doc-str-St1, doc-reg-St, doc-str-St-XXX
 .\" NS
 .\" NS width register `St' defined in doc-common
+.
+.ds doc-str-St--p1003.1     \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1
+.as doc-str-St--p1003.1     " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1-88  \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1-1988
+.as doc-str-St--p1003.1-88  " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1-90  \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1-1990
+.as doc-str-St--p1003.1-90  " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1b    \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1b
+.as doc-str-St--p1003.1b    " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1b-93 \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1b-1993
+.as doc-str-St--p1003.1b-93 " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1g    \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1g
+.as doc-str-St--p1003.1g    " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.2     \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.2
+.as doc-str-St--p1003.2     " (\*[Lq]\*[Px]\*[doc-str-St].2\*[Rq])
+.ds doc-str-St--p1003.2-92  \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.2-1992
+.as doc-str-St--p1003.2-92  " (\*[Lq]\*[Px]\*[doc-str-St].2\*[Rq])
+.ds doc-str-St--iso9945-1   \*[doc-Tn-font-size]ISO/IEC\*[doc-str-St] 9945-1:1996
+.as doc-str-St--iso9945-1   " (\*[Lq]\*[Px]\*[doc-str-St].1\*[Rq])
+.ds doc-str-St--ansiC       \*[doc-Tn-font-size]ISO\*[doc-str-St] 9899:1990
+.as doc-str-St--ansiC       " (\*[Lq]\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]\*[Rq])
+.ds doc-str-St--ansiC-89    \*[doc-Tn-font-size]ANSI \*[doc-str-St]X\~3.159-1989
+.as doc-str-St--ansiC-89    " (\*[Lq]\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]\*[Rq])
+.ds doc-str-St--iso9899     \*[doc-Tn-font-size]ISO\*[doc-str-St] 9899-1990
+.as doc-str-St--iso9899     " (\*[Lq]\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]\*[Rq])
+.ds doc-str-St--ieee754     \*[doc-Tn-font-size]IEEE\*[doc-str-St]Std 754-1985
+.ds doc-str-St--iso8802-3   \*[doc-Tn-font-size]ISO\*[doc-str-St] 8802-3:1989
+.ds doc-str-St--xpg3        NX/Open Portability Guide Issue\~3
+.as doc-str-St--xpg3        " (\*[Lq]\*[doc-Tn-font-size]NXPG\*[doc-str-St]\^3\*[Rq])
+.ds doc-str-St--xpg4        NX/Open Portability Guide Issue\~4
+.as doc-str-St--xpg4        " (\*[Lq]\*[doc-Tn-font-size]NXPG\*[doc-str-St]\^4\*[Rq])
+.ds doc-str-St--xpg4.2      NX/Open Portability Guide Issue\~4.2
+.as doc-str-St--xpg4.2      " (\*[Lq]\*[doc-Tn-font-size]NXPG\*[doc-str-St]\^4.2\*[Rq])
+.ds doc-str-St--susv2       Version\~2 of the Single
+.as doc-str-St--susv2       " \*[doc-Tn-font-size]UNIX\*[doc-str-St] Specification
 .
 .de St
 .  if !\n[doc-arg-limit] \{\
@@ -530,97 +565,16 @@
 .    nr doc-curr-size \n[.s]
 .    ds doc-str-St \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .
-.    ie        "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]1003.1
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
+.    ds doc-str-St1
+.    ie \A\*[doc-arg\n[doc-arg-ptr]] \{\
+.      ie d doc-str-St-\*[doc-arg\n[doc-arg-ptr]] \
+.        ds doc-str-St1 \*[doc-str-St-\*[doc-arg\n[doc-arg-ptr]]]
+.      el \
+.        doc-St-usage
 .    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-88" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]1003.1-1988
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-90" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]1003.1-1990
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1b" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]1003.1b
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1b-93" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]1003.1b-1993
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1g" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]1003.1g
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]1003.2
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2-92" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]1003.2-1992
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-iso9945-1" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]ISO/IEC
-.      as doc-str-St1 " \*[doc-str-St]9945-1:1996
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]\*[Px].1\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ansiC" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]ISO
-.      as doc-str-St1 " \*[doc-str-St]9899:1990
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ansiC-89" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]ANSI
-.      as doc-str-St1 " \*[doc-str-St]X\~3.159-1989
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-iso9899" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]ISO
-.      as doc-str-St1 " \*[doc-str-St]9899-1990
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ieee754" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
-.      as doc-str-St1 " \*[doc-str-St]754-1985
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-iso8802-3" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]
-.      as doc-str-St1 ISO\~\*[doc-str-St]8802-3:1989
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg3" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
-.      as doc-str-St1 " Issue\~3\*[doc-str-St]
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]NXPG3\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg4" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
-.      as doc-str-St1 " Issue\~4\*[doc-str-St]
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]NXPG4\*[doc-str-St]\*[Rq])
-.    \}
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg4.2" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
-.      as doc-str-St1 " Issue\~4.2\*[doc-str-St]
-.      as doc-str-St1 " (\*[Lq]\*[doc-Tn-font-size]NXPG4.2\*[doc-str-St]\*[Rq])
-.    \}
-.    el .ie "\*[doc-arg\n[doc-arg-ptr]]"-susv2" \{\
-.      ds doc-str-St1 \*[doc-Tn-font-size]Version\~2 of the
-.      as doc-str-St1 " Single UNIX Specification\*[doc-str-St]
-.    \}
-.    el \{\
-.      ds doc-str-St1
+.    el \
 .      doc-St-usage
-.    \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
+.    \}
 .
 .    \" replacing argument with result
 .    ds doc-arg\n[doc-arg-ptr] "\*[doc-str-St1]
@@ -646,9 +600,27 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS 
 .\" NS local variable:
-.\" NS   doc-str-Lb, doc-reg-Lb
+.\" NS   doc-str-Lb, doc-reg-Lb, doc-str-Lb-XXX
 .\" NS
 .\" NS width register `Lb' defined in doc-common
+.
+.ds doc-str-Lb-libarm32    ARM32 Architecture Library (libarm32, \-larm32)
+.ds doc-str-Lb-libi386     i386 Architecture Library (libi386, \-li386)
+.ds doc-str-Lb-libc        Standard C\~Library (libc, \-lc)
+.ds doc-str-Lb-libcompat   Compatibility Library (libcompat, \-lcompat)
+.ds doc-str-Lb-libcrypt    Crypt Library (libcrypt, \-lcrypt)
+.ds doc-str-Lb-libcurses   Curses Library (libcurses, \-lcurses)
+.ds doc-str-Lb-libedit     Command Line Editor Library (libedit, \-ledit)
+.ds doc-str-Lb-libipsec    IPsec Policy Control Library (libipsec, \-lipsec)
+.ds doc-str-Lb-libkvm      Kernel Data Access Library (libkvm, \-lkvm)
+.ds doc-str-Lb-libm        Math Library (libm, \-lm)
+.ds doc-str-Lb-libmenu     Curses Menu Library (libmenu, \-lmenu)
+.ds doc-str-Lb-libossaudio OSS Audio Emulation Library (libossaudio, \-lossaudio)
+.ds doc-str-Lb-libposix    \*[Px] Compatibility Library (libposix, \-lposix)
+.ds doc-str-Lb-libresolv   DNS Resolver Library (libresolv, \-lresolv)
+.ds doc-str-Lb-libtermcap  Termcap Access Library (libtermcap, \-ltermcap)
+.ds doc-str-Lb-libutil     System Utilities Library (libutil, \-lutil)
+.ds doc-str-Lb-libz        Compression Library (libz, \-lz)
 .
 .de Lb
 .  if !\n[doc-arg-limit] \{\
@@ -662,45 +634,13 @@
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    ie        "\*[doc-arg\n[doc-arg-ptr]]"libarm32" \
-.      ds doc-str-Lb ARM32 Architecture Library (libarm32, \-larm32)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libi386" \
-.      ds doc-str-Lb i386 Architecture Library (libi386, \-li386)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libc" \
-.      ds doc-str-Lb Standard C\~Library (libc, \-lc)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libcompat" \
-.      ds doc-str-Lb Compatibility Library (libcompat, \-lcompat)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libcrypt" \
-.      ds doc-str-Lb Crypt Library (libcrypt, \-lcrypt)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libcurses" \
-.      ds doc-str-Lb Curses Library (libcurses, \-lcurses)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libedit" \
-.      ds doc-str-Lb Command Line Editor Library (libedit, \-ledit)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libipsec" \
-,      ds doc-str-Lb IPsec Policy Control Library (libipsec, \-lipsec)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libkvm" \
-.      ds doc-str-Lb Kernel Data Access Library (libkvm, \-lkvm)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libm" \
-.      ds doc-str-Lb Math Library (libm, \-lm)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libmenu" \
-.      ds doc-str-Lb Curses Menu Library (libmenu, \-lmenu)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libossaudio" \
-.      ds doc-str-Lb OSS Audio Emulation Library (libossaudio, \-lossaudio)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libposix" \
-.      \*[Px] Compatibility Library (libposix, \-lposix)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libresolv" \
-.      ds doc-str-Lb DNS Resolver Library (libresolv, \-lresolv)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libtermcap" \
-.      ds doc-str-Lb Termcap Access Library (libtermcap, \-ltermcap)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libutil" \
-.      ds doc-str-Lb System Utilities Library (libutil, \-lutil)
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"libz" \
-.      ds doc-str-Lb Compression Library (libz, \-lz)
+.    ie d doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]] \
+.      ds doc-str-Lb \*[doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]]]
 .    el \{\
 .      tmc "mdoc warning: .Lb: no description for library
 .      tm1 " `\*[doc-arg\n[doc-arg-ptr]]' available
 .      ds doc-str-Lb library \*[Lq]\*[doc-arg\n[doc-arg-ptr]]\*[Rq]
-.    \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
+.    \}
 .
 .    \" replacing argument with result
 .    ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Lb]

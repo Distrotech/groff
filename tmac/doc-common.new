@@ -201,6 +201,9 @@
 .\" NS modifies:
 .\" NS   doc-document-title, doc-volume, doc-section
 .\" NS
+.\" NS local variables:
+.\" NS   doc-volume-ds-XXX, doc-volume-as-XXX
+.\" NS
 .\" NS width register `Dt' set above
 .
 .ds doc-volume-ds-USD   User's Supplementary Documents
@@ -264,46 +267,49 @@
 .\" NS
 .\" NS width register `Os' set above
 .\" NS
+.\" NS local variables:
+.\" NS   doc-operating-system-XXX-XXX
+.\" NS
 .\" NS modifies:
 .\" NS   doc-operating-system
 .
-.ds doc-operating-system-as-ATT-7th 7th\~Edition
-.ds doc-operating-system-as-ATT-7   7th\~Edition
-.ds doc-operating-system-as-ATT-III System\~III
-.ds doc-operating-system-as-ATT-3   System\~III
-.ds doc-operating-system-as-ATT-V   System\~V
-.ds doc-operating-system-as-ATT-V.2 System\~V Release\~2
-.ds doc-operating-system-as-ATT-V.3 System\~V Release\~3
-.ds doc-operating-system-as-ATT-V.4 System\~V Release\~4
+.ds doc-operating-system-ATT-7th 7th\~Edition
+.ds doc-operating-system-ATT-7   7th\~Edition
+.ds doc-operating-system-ATT-III System\~III
+.ds doc-operating-system-ATT-3   System\~III
+.ds doc-operating-system-ATT-V   System\~V
+.ds doc-operating-system-ATT-V.2 System\~V Release\~2
+.ds doc-operating-system-ATT-V.3 System\~V Release\~3
+.ds doc-operating-system-ATT-V.4 System\~V Release\~4
 .
-.ds doc-operating-system-ds-BSD-3    3rd\~Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4    4th\~Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4.1  4.1\~Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4.2  4.2\~Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4.3  4.3\~Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4.3T 4.3-Tahoe Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4.3R 4.3-Reno Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4.3t 4.3-Tahoe Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4.3r 4.3-Reno Berkeley Distribution
-.ds doc-operating-system-ds-BSD-4.4  4.4BSD
+.ds doc-operating-system-BSD-3    3rd\~Berkeley Distribution
+.ds doc-operating-system-BSD-4    4th\~Berkeley Distribution
+.ds doc-operating-system-BSD-4.1  4.1\~Berkeley Distribution
+.ds doc-operating-system-BSD-4.2  4.2\~Berkeley Distribution
+.ds doc-operating-system-BSD-4.3  4.3\~Berkeley Distribution
+.ds doc-operating-system-BSD-4.3T 4.3-Tahoe Berkeley Distribution
+.ds doc-operating-system-BSD-4.3R 4.3-Reno Berkeley Distribution
+.ds doc-operating-system-BSD-4.3t 4.3-Tahoe Berkeley Distribution
+.ds doc-operating-system-BSD-4.3r 4.3-Reno Berkeley Distribution
+.ds doc-operating-system-BSD-4.4  4.4BSD
 .
-.ds doc-operating-system-as-NetBSD-0.8  0.8
-.ds doc-operating-system-as-NetBSD-0.8a 0.8A
-.ds doc-operating-system-as-NetBSD-0.9  0.9
-.ds doc-operating-system-as-NetBSD-0.9a 0.9A
-.ds doc-operating-system-as-NetBSD-1.0  1.0
-.ds doc-operating-system-as-NetBSD-1.0a 1.0A
-.ds doc-operating-system-as-NetBSD-1.1  1.1
-.ds doc-operating-system-as-NetBSD-1.2  1.2
-.ds doc-operating-system-as-NetBSD-1.2a 1.2A
-.ds doc-operating-system-as-NetBSD-1.2b 1.2B
-.ds doc-operating-system-as-NetBSD-1.2c 1.2C
-.ds doc-operating-system-as-NetBSD-1.2d 1.2D
-.ds doc-operating-system-as-NetBSD-1.2e 1.2E
-.ds doc-operating-system-as-NetBSD-1.3  1.3
-.ds doc-operating-system-as-NetBSD-1.3a 1.3A
-.ds doc-operating-system-as-NetBSD-1.4  1.4
-.ds doc-operating-system-as-NetBSD-1.5  1.5
+.ds doc-operating-system-NetBSD-0.8  0.8
+.ds doc-operating-system-NetBSD-0.8a 0.8A
+.ds doc-operating-system-NetBSD-0.9  0.9
+.ds doc-operating-system-NetBSD-0.9a 0.9A
+.ds doc-operating-system-NetBSD-1.0  1.0
+.ds doc-operating-system-NetBSD-1.0a 1.0A
+.ds doc-operating-system-NetBSD-1.1  1.1
+.ds doc-operating-system-NetBSD-1.2  1.2
+.ds doc-operating-system-NetBSD-1.2a 1.2A
+.ds doc-operating-system-NetBSD-1.2b 1.2B
+.ds doc-operating-system-NetBSD-1.2c 1.2C
+.ds doc-operating-system-NetBSD-1.2d 1.2D
+.ds doc-operating-system-NetBSD-1.2e 1.2E
+.ds doc-operating-system-NetBSD-1.3  1.3
+.ds doc-operating-system-NetBSD-1.3a 1.3A
+.ds doc-operating-system-NetBSD-1.4  1.4
+.ds doc-operating-system-NetBSD-1.5  1.5
 .
 .de Os
 .  ds doc-operating-system Null
@@ -314,8 +320,8 @@
 .  if "\$1"ATT" \{\
 .    ds doc-operating-system AT&T
 .    ie \A\$2 \{\
-.      if d doc-operating-system-as-ATT-\$2 \
-.        as doc-operating-system " \*[doc-operating-system-as-ATT-\$2]
+.      if d doc-operating-system-ATT-\$2 \
+.        as doc-operating-system " \*[doc-operating-system-ATT-\$2]
 .    \}
 .    el \
 .      as doc-operating-system " UNIX
@@ -323,8 +329,8 @@
 .
 .  if "\$1"BSD" \{\
 .    if \A\$2 \{\
-.      ie d doc-operating-system-ds-BSD-\$2 \
-.        ds doc-operating-system \*[doc-operating-system-ds-BSD-\$2]
+.      ie d doc-operating-system-BSD-\$2 \
+.        ds doc-operating-system \*[doc-operating-system-BSD-\$2]
 .      el \
 .        tm mdoc warning: .Os: Unknown BSD version `\$2' (#\n[.c])
 .    \}
@@ -333,8 +339,8 @@
 .  if "\$1"NetBSD" \{\
 .    ds doc-operating-system NetBSD
 .    if \A\$2 \{\
-.      ie d doc-operating-system-as-NetBSD-\$2 \
-.        as doc-operating-system \~\*[doc-operating-system-as-NetBSD-\$2]
+.      ie d doc-operating-system-NetBSD-\$2 \
+.        as doc-operating-system \~\*[doc-operating-system-NetBSD-\$2]
 .      el \
 .        tm mdoc warning: .Os: Unknown NetBSD version `\$2' (#\n[.c])
 .    \}
@@ -357,23 +363,26 @@
 .\" NS Dd user macro (not parsed, not callable)
 .\" NS   set document date
 .\" NS
+.\" NS local variables:
+.\" NS   doc-date-XXX
+.\" NS
 .\" NS modifies:
 .\" NS   doc-date-string
 .\" NS
 .\" NS width register `Dd' set above
 .
-.ds doc-date-string-ds-1  January
-.ds doc-date-string-ds-2  February
-.ds doc-date-string-ds-3  March
-.ds doc-date-string-ds-4  April
-.ds doc-date-string-ds-5  May
-.ds doc-date-string-ds-6  June
-.ds doc-date-string-ds-7  July
-.ds doc-date-string-ds-8  August
-.ds doc-date-string-ds-9  September
-.ds doc-date-string-ds-10 October
-.ds doc-date-string-ds-11 November
-.ds doc-date-string-ds-12 December
+.ds doc-date-1  January
+.ds doc-date-2  February
+.ds doc-date-3  March
+.ds doc-date-4  April
+.ds doc-date-5  May
+.ds doc-date-6  June
+.ds doc-date-7  July
+.ds doc-date-8  August
+.ds doc-date-9  September
+.ds doc-date-10 October
+.ds doc-date-11 November
+.ds doc-date-12 December
 .
 .de Dd
 .  \" XXX: why do we need gX?
@@ -384,7 +393,7 @@
 .    ie (\n[.$] == 3) \
 .      ds doc-date-string \$1\~\$2 \$3
 .    el \{\
-.      ds doc-date-string \*[doc-date-string-ds-\n[mo]]
+.      ds doc-date-string \*[doc-date-\n[mo]]
 .      as doc-date-string \~\n[dy], \n[year]
 .    \}
 .  \}
@@ -536,151 +545,141 @@
 ..
 .
 .
+.\" NS Rd macro (not parsed, not callable)
+.\" NS   print global register dump to stderr
+.\" NS
+.\" NS local variables:
+.\" NS   doc-reg-Rd
+.
 .de Rd
-.  tm MDOC REGISTER DUMP
-.  tm Db==\n[Db] register DEBUG MODE
+.  tm MDOC GLOBAL REGISTER DUMP
+.  tm doc-debug == \n[doc-debug]
+.  tm doc-macro-name == `\*[doc-macro-name]'
+.  tm doc-arg-limit == \n[doc-arg-limit]
+.  tm doc-num-args == \n[doc-num-args]
+.  tm doc-arg-ptr == \n[doc-arg-ptr]
 .
-.  tm L[0-9] registers - stack of list types
-.  tm L0==\n[L0]
-.  tm L1==\n[L1]
-.  tm L2==\n[L2]
-.  tm L3==\n[L3]
-.  tm L4==\n[L4]
-.  tm L5==\n[L5]
-.  tm L6==\n[L6]
-.  tm L7==\n[L7]
-.  tm L8==\n[L8]
-.  tm L9==\n[L9]
+.  nr doc-reg-Rd 1
+.  while (\n[doc-reg-Rd] <= \n[doc-arg-limit]) \{\
+.    tm doc-arg\n[doc-reg-Rd] == `\*[doc-arg\n[doc-reg-Rd]]'
+.    tm doc-type\n[doc-reg-Rd] == \n[doc-type\n[doc-reg-Rd]]
+.    tm doc-space\n[doc-reg-Rd] == `\*[doc-space\n[doc-reg-Rd]]'
+.    nr doc-reg-Rd +1
+.  \}
 .
-.  tm O[0-9] registers - stack of indent
-.  tm O0==\n[O0]
-.  tm O1==\n[O1]
-.  tm O2==\n[O2]
-.  tm O3==\n[O3]
-.  tm O4==\n[O4]
-.  tm O5==\n[O5]
-.  tm O6==\n[O6]
-.  tm O7==\n[O7]
-.  tm O8==\n[O8]
-.  tm O9==\n[O9]
+.  tm doc-out-string == `\*[doc-out-string]'
+.  tm doc-curr-space == `\*[doc-curr-space]'
+.  tm doc-saved-out-string == `\*[doc-saved-out-string]'
+.  tm doc-in-diversion == \n[doc-in-diversion]
+.  tm doc-curr-font == \n[doc-curr-font]
+.  tm doc-curr-size == \n[doc-curr-size]
+.  tm doc-in-synopsis-count == \n[doc-in-synopsis-count]
+.  tm doc-indent-synopsis == \n[doc-indent-synopsis]
+.  tm doc-have-decl == \n[doc-have-decl]
+.  tm doc-have-var == \n[doc-have-var]
+.  tm doc-command-name == `\*[doc-command-name]'
+.  tm doc-quote-left == `\*[doc-quote-left]'
+.  tm doc-quote-right == `\*[doc-quote-right]'
+.  tm doc-nesting-level == \n[doc-nesting-level]
+.  tm doc-saved-list-type == `\*[doc-saved-list-type]'
+.  tm doc-space == `\*[doc-space]'
+.  tm doc-space-mode == \n[doc-space-mode]
+.  tm doc-curr-font-for-Ef == \n[doc-curr-font-for-Ef]
+.  tm doc-curr-size-for-Ef == \n[doc-curr-size-for-Ef]
+.  tm doc-keep-type == `\*[doc-keep-type]'
+.  tm doc-display-depth == \n[doc-display-depth]
+.  tm doc-is-compact == \n[doc-is-compact]
 .
-.  tm doc-arg-limit==\n[doc-arg-limit] register
-.  tm1 "  arguments processed so far (doc-parse-args/doc-parse-arg-vector)
-.  tm aJ==\n[aJ] register
-.  tm1 "  for doc-skip-punct-backwards
-.  tm aN==\n[aN] register
-.  tm doc-arg-ptr==\n[doc-arg-ptr] register
-.  tm1 "  argument pointer (doc-parse-args)
-.  tm doc-arg-type==\*[doc-arg-type] string
-.  tm1 "  argument type
-.  tm bK==\n[bK] register - Book Name flag
-.  tm cF==\n[cF] register save current font
-.  tm cI==\n[cI] register - column indent width
-.  tm cZ==\n[cZ] register save current font size
-.  tm dK==\n[dK] register - Date flag
+.  nr doc-reg-Rd 0
+.  while (\n[doc-reg-Rd] <= \n[doc-display-depth]) \{\
+.    tm doc-display-type-stack\n[doc-reg-Rd] == `\*[doc-display-type-stack\n[doc-reg-Rd]]'
+.    tm doc-display-indent-stack\n[doc-reg-Rd] == \n[doc-display-indent-stack\n[doc-reg-Rd]]
+.    nr doc-reg-Rd +1
+.  \}
 .
-.  tm d[0-9] registers - display-type stack
-.  tm d0==\n[d0]
-.  tm d1==\n[d1]
-.  tm d2==\n[d2]
-.  tm d3==\n[d3]
-.  tm d4==\n[d4]
-.  tm d5==\n[d5]
-.  tm d6==\n[d6]
-.  tm d7==\n[d7]
-.  tm d8==\n[d8]
-.  tm d9==\n[d9]
+.  tm doc-list-depth == \n[doc-list-depth]
 .
-.  tm doc-diversion-level==\n[doc-diversion-level] register
-.  tm1 "  diversion count
-.  tm doc-declaration-count==\n[doc-declaration-count] register
-.  tm1 "  subroutine test (in synopsis only)
-.  tm doc-num-args==\n[doc-num-args] register
-.  tm1 "  number of arguments (must set to \n[.$] prior to use)
-.  tm fY==\n[fY] register - dick with old style function declarations (fortran)
-.  tm doc-function-count==\n[doc-function-count] register
-.  tm1 "  also subroutine count (in synopsis only)
+.  nr doc-reg-Rd 1
+.  while (\n[doc-reg-Rd] <= \n[doc-list-depth]) \{\
+.    tm doc-list-type-stack\n[doc-reg-Rd] == `\*[doc-list-type-stack\n[doc-reg-Rd]]'
+.    tm doc-list-indent-stack\n[doc-reg-Rd] == \n[doc-list-indent-stack\n[doc-reg-Rd]]
+.    tm doc-compact-list-stack\n[doc-reg-Rd] == \n[doc-compact-list-stack\n[doc-reg-Rd]]
+.    tm doc-tag-width-stack\n[doc-reg-Rd] == `\*[doc-tag-width-stack\n[doc-reg-Rd]]'
+.    tm doc-list-offset-stack\n[doc-reg-Rd] == \n[doc-list-offset-stack\n[doc-reg-Rd]]
+.    nr doc-reg-Rd +1
+.  \}
 .
-.  tm iI==\n[iI] local register (indent for inline debug mode)
-.  tm iN==\n[iN] register DEBUG MODE (inline if 1, to stderr if 0)
-.  tm doc-indent-synopsis==\n[doc-indent-synopsis] register
-.  tm1 "  indent second command line in a synopsis
-.  tm jK==\n[jK] register - [reference] Journal Name flag
-.  tm jM==\n[jM] local register
-.  tm jN==\n[jN] local register
-.  tm lC==\n[lC] register - list type stack counter
-.  tm lK==\n[lK] register count of lines read from input file
-.  tm nK==\n[nK] register - [reference] issue number flag
-.  tm nU==\n[nU] register count
-.  tm oK==\n[oK] register - [reference] optional information flag
-.  tm doc-nesting-level==\n[doc-nesting-level] register
-.  tm1 "  (extension possible)
+.  tm doc-have-indent == \n[doc-have-indent]
+.  tm doc-have-tag-width == \n[doc-have-tag-width]
+.  tm doc-no-printing == \n[doc-no-printing]
+.  tm doc-saved-Pa-font == `\*[doc-saved-Pa-font]'
+.  tm doc-curr-type == \n[doc-curr-type]
+.  tm doc-curr-arg == `\*[doc-curr-arg]'
+.  tm doc-enum-list-count == \n[doc-enum-list-count]
+.  tm doc-have-diag-list == \n[doc-have-diag-list]
+.  tm doc-diag-list-input-line-count == \n[doc-diag-list-input-line-count]
+.  tm doc-saved-list-immediate == \n[doc-saved-list-immediate]
+.  tm doc-list-immediate == \n[doc-list-immediate]
+.  tm doc-num-columns == \n[doc-num-columns]
+.  tm doc-next-list-depth == \n[doc-next-list-depth]
+.  tm doc-column-indent-width == \n[doc-column-indent-width]
+.  tm doc-is-func == \n[doc-is-func]
+.  tm doc-have-old-func == \n[doc-have-old-func]
+.  tm doc-func-arg-count == \n[doc-func-arg-count]
+.  tm doc-func-arg == `\*[doc-func-arg]'
+.  tm doc-num-func-args == \n[doc-num-func-args]
+.  tm doc-func-args-processed == \n[doc-func-args-processed]
+.  tm doc-have-func == \n[doc-have-func]
+.  tm doc-is-reference == \n[doc-is-reference]
+.  tm doc-reference-count == \n[doc-reference-count]
+.  tm doc-reference-string-name == `\*[doc-reference-string-name]'
+.  tm doc-authors-processed == \n[doc-authors-processed]
+.  tm doc-author-count == \n[doc-author-count]
 .
-.  tm o[0-9] register offset stack (nested tags)
-.  tm o0==\n[o0]
-.  tm o1==\n[o1]
-.  tm o2==\n[o2]
-.  tm o3==\n[o3]
-.  tm o4==\n[o4]
-.  tm o5==\n[o5]
-.  tm o6==\n[o6]
-.  tm o7==\n[o7]
-.  tm o8==\n[o8]
-.  tm o9==\n[o9]
+.  nr doc-reg-Rd 0
+.  while (\n[doc-reg-Rd] <= \n[doc-author-count]) \{\
+.    tm doc-author-name\n[doc-reg-Rd] == `\*[doc-author-name\n[doc-reg-Rd]]'
+.    nr doc-reg-Rd +1
+.  \}
 .
-.  tm doc-nesting-level==\n[doc-nesting-level] register
-.  tm1 "  open ended line flag
-.  tm pK==\n[pK] register - [reference] page number flag
-.  tm qK==\n[qK] register - Corporate or Foreign Author flag
-.  tm rK==\n[rK] register - [reference] report flag
-.  tm rS==\n[rS] register - Reference Start flag
-.  tm doc-space-mode==\n[doc-space-mode] register
-.  tm1 "  default is one (space mode on)
-.  tm tK==\n[tK] register - reference title flag
-.  tm tP==\n[tP] register tag flag (for diversions)
-.  tm tX==\n[tX] register (initial class)
-.  tm tY==\n[tY] register (next possible lC value)
+.  tm doc-book-count == \n[doc-book-count]
+.  tm doc-book-name == `\*[doc-book-name]'
+.  tm doc-date-count == \n[doc-date-count]
+.  tm doc-date == `\*[doc-date]'
+.  tm doc-publisher-count == \n[doc-publisher-count]
+.  tm doc-publisher-name == `\*[doc-publisher-name]'
+.  tm doc-journal-count == \n[doc-journal-count]
+.  tm doc-journal-name == `\*[doc-journal-name]'
+.  tm doc-issue-count == \n[doc-issue-count]
+.  tm doc-issue-name == `\*[doc-issue-name]'
+.  tm doc-optional-count == \n[doc-optional-count]
+.  tm doc-optional-string == `\*[doc-optional-string]'
+.  tm doc-page-number-count == \n[doc-page-number-count]
+.  tm doc-page-number-string == `\*[doc-page-number-string]'
+.  tm doc-corporate-count == \n[doc-corporate-count]
+.  tm doc-corporate-name == `\*[doc-corporate-name]'
+.  tm doc-report-count == \n[doc-report-count]
+.  tm doc-report-name == `\*[doc-report-name]'
+.  tm doc-reference-title-count == \n[doc-reference-title-count]
+.  tm doc-reference-title-name == `\*[doc-reference-title-name]'
+.  tm doc-volume-count == \n[doc-volume-count]
+.  tm doc-volume-name == `\*[doc-volume-name]'
+.  tm doc-have-author == \n[doc-have-author]
 .
-.  tm t[0-9] register tag string stack (nested tags)
-.  tm t0==\n[t0]
-.  tm t1==\n[t1]
-.  tm t2==\n[t2]
-.  tm t3==\n[t3]
-.  tm t4==\n[t4]
-.  tm t5==\n[t5]
-.  tm t6==\n[t6]
-.  tm t7==\n[t7]
-.  tm t8==\n[t8]
-.  tm t9==\n[t9]
+.  tm doc-document-title == `\*[doc-document-title]'
+.  tm doc-volume == `\*[doc-volume]'
+.  tm doc-section == `\*[doc-section]'
+.  tm doc-operating-system == `\*[doc-operating-system]'
+.  tm doc-date-string == `\*[doc-date-string]'
+.  tm doc-header-space == \n[doc-header-space]
+.  tm doc-footer-space == \n[doc-footer-space]
+.  tm doc-display-vertical == \n[doc-display-vertical]
+.  tm doc-header-string == `\*[doc-header-string]'
+.  tm doc-in-see-also-section == \n[doc-in-see-also-section]
+.  tm doc-in-files-section == \n[doc-in-files-section]
+.  tm doc-in-authors-section == \n[doc-in-authors-section]
 .
-.  tm uK==\n[uK] register - reference author(s) counter
-.  tm vK==\n[vK] register - reference volume flag
-.
-.  tm v[0-9] register vertical tag break stack
-.  tm v0==\n[v0]
-.  tm v1==\n[v1]
-.  tm v2==\n[v2]
-.  tm v3==\n[v3]
-.  tm v4==\n[v4]
-.  tm v5==\n[v5]
-.  tm v6==\n[v6]
-.  tm v7==\n[v7]
-.  tm v8==\n[v8]
-.  tm v9==\n[v9]
-.
-.  tm w[0-9] register tag stack (nested tags)
-.  tm w0==\n[w0]
-.  tm w1==\n[w1]
-.  tm w2==\n[w2]
-.  tm w3==\n[w3]
-.  tm w4==\n[w4]
-.  tm w5==\n[w5]
-.  tm w6==\n[w6]
-.  tm w7==\n[w7]
-.  tm w8==\n[w8]
-.  tm w9==\n[w9]
-.
-.  tm END OF REGISTER DUMP
+.  tm END OF GLOBAL REGISTER DUMP
 ..
 .
 .\" EOF
