@@ -5670,7 +5670,7 @@ int main(int argc, char **argv)
   int fflag = 0;
   int nflag = 0;
   int safer_flag = 1;		// safer by default
-  int no_rc = 0;		// don't process troffrc
+  int no_rc = 0;		// don't process troffrc and troffrc-end
   int next_page_number;
   opterr = 0;
   hresolution = vresolution = 1;

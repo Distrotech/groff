@@ -604,6 +604,9 @@ General Public License instead of this License.
 
 
 
+@c =====================================================================
+@c =====================================================================
+
 @node Introduction, Invoking groff, Copying, Top
 @chapter Introduction
 @cindex introduction
@@ -623,6 +626,8 @@ entrenched in the @acronym{UNIX} community.
 * Credits::                     
 @end menu
 
+
+@c =====================================================================
 
 @node What Is groff?, History, Introduction, Introduction
 @section What Is @code{groff}?
@@ -672,6 +677,8 @@ impossible to accomplish complex actions.''  --Doug Gwyn (22/Jun/91 in
 @code{comp.unix.wizards})
 @end quotation
 
+
+@c =====================================================================
 
 @node History, groff Capabilities, What Is groff?, Introduction
 @section History
@@ -789,6 +796,8 @@ an orphan for a few years).  As a result, new features and programs like
 output device to produce @acronym{HTML} output, have been added.
 
 
+@c =====================================================================
+
 @node groff Capabilities, Macro Package Intro, History, Introduction
 @section @code{groff} Capabilities
 @cindex @code{groff} capabilities
@@ -859,6 +868,8 @@ Output and error messages
 @end itemize
 
 
+@c =====================================================================
+
 @node Macro Package Intro, Preprocessor Intro, groff Capabilities, Introduction
 @section Macro Packages
 @cindex macro packages
@@ -872,6 +883,8 @@ package}.  There are a number of macro packages available; the most
 common (and the ones described in this manual) are @file{man},
 @file{mdoc}, @file{me}, @file{ms}, and @file{mm}.
 
+
+@c =====================================================================
 
 @node Preprocessor Intro, Output device intro, Macro Package Intro, Introduction
 @section Preprocessors
@@ -907,6 +920,8 @@ mathematical pictures (@code{ideal}) and chemical structures
 (@code{chem}).
 
 
+@c =====================================================================
+
 @node Output device intro, Credits, Preprocessor Intro, Introduction
 @section Output Devices
 @cindex postprocessors
@@ -921,6 +936,8 @@ HP LaserJet@w{ }4 and Canon LBP printers (which use @acronym{CAPSL}),
 and @acronym{HTML}.
 
 
+@c =====================================================================
+
 @node Credits,  , Output device intro, Introduction
 @section Credits
 @cindex credits
@@ -934,6 +951,9 @@ The section on the @file{man} macro package is partly based on Susan@w{
 GNU/Linux system.
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node Invoking groff, Tutorial for Macro Users, Introduction, Top
 @chapter Invoking @code{groff}
@@ -960,6 +980,8 @@ don't contain proprietary software, this prefix is omitted since GNU
 * Invocation Examples::         
 @end menu
 
+
+@c =====================================================================
 
 @node Groff Options, Environment, Invoking groff, Invoking groff
 @section Options
@@ -1232,6 +1254,8 @@ This option is as described in @ref{gsoelim}.  It implies the
 @end table
 
 
+@c =====================================================================
+
 @node Environment, Invocation Examples, Groff Options, Invoking groff
 @section Environment
 @cindex environment variables
@@ -1276,6 +1300,8 @@ directory.  Otherwise temporary files will be created in @code{/tmp}.
 The @code{grops} and @code{grefer} commands can create temporary files.
 @end table
 
+
+@c =====================================================================
 
 @node Invocation Examples,  , Environment, Invoking groff
 @section Invocation Examples
@@ -1328,6 +1354,13 @@ groff -man -rD1 -z file
 Check @var{file} with the @file{man} macro package, forcing double-sided
 printing -- don't produce any output.
 
+@c ---------------------------------------------------------------------
+
+@menu
+* grog::                        
+@end menu
+
+@node grog,  , Invocation Examples, Invocation Examples
 @subsection @code{grog}
 
 @code{grog} reads files and guesses which of the @code{groff}
@@ -1363,6 +1396,9 @@ something meaningful (i.e.@: either a file or a pager program like
 
 
 
+@c =====================================================================
+@c =====================================================================
+
 @node Tutorial for Macro Users, Macro Packages, Invoking groff, Top
 @chapter Tutorial for Macro Users
 @cindex tutorial for macro users
@@ -1380,6 +1416,8 @@ macro package.
 * Common Features::             
 @end menu
 
+
+@c =====================================================================
 
 @node Basics, Common Features, Tutorial for Macro Users, Tutorial for Macro Users
 @section Basics
@@ -1529,6 +1567,8 @@ line.  To start a new line without performing any other action, use
 @code{br}.
 
 
+@c =====================================================================
+
 @node Common Features,  , Basics, Tutorial for Macro Users
 @section Common Features
 @cindex common features
@@ -1542,6 +1582,26 @@ and collected into a @dfn{macro package}.
 All macro packages provide certain common capabilities which fall into
 the following categories.
 
+@c ---------------------------------------------------------------------
+
+@menu
+* Paragraphs::                  
+* Sections and Chapters::       
+* Headers and Footers::         
+* Page Layout Adjustment::      
+* Displays::                    
+* Footnotes and Annotations::   
+* Table of Contents::           
+* Indices::                     
+* Paper Formats::               
+* Multiple Columns::            
+* Font and Size Changes::       
+* Predefined Strings::          
+* Preprocessor Support::        
+* Configuration and Customization::  
+@end menu
+
+@node Paragraphs, Sections and Chapters, Common Features, Common Features
 @subsection Paragraphs
 @cindex paragraphs
 
@@ -1574,8 +1634,12 @@ longlabel
 @end example
 
 A variation of this is a bulleted list.
+
 @c XXX description
 
+@c ---------------------------------------------------------------------
+
+@node Sections and Chapters, Headers and Footers, Paragraphs, Common Features
 @subsection Sections and Chapters
 
 Most macro packages supply some form of section headers.  The simplest
@@ -1584,6 +1648,9 @@ supply automatically numbered section heading or different heading
 styles at different levels.  Some, more sophisticated, macro packages
 supply macros for starting chapters and appendices.
 
+@c ---------------------------------------------------------------------
+
+@node Headers and Footers, Page Layout Adjustment, Sections and Chapters, Common Features
 @subsection Headers and Footers
 
 Every macro package gives some way to manipulate the headers and
@@ -1596,11 +1663,17 @@ left-justified part, a centered part, and a right-justified part.  An
 automatically generated page number may be put in any of these fields
 with the @samp{%} character (@pxref{Page Layout} for more details).
 
+@c ---------------------------------------------------------------------
+
+@node Page Layout Adjustment, Displays, Headers and Footers, Common Features
 @subsection Page Layout
 
-Most macro packages let thte user specify top and bottom margins and
+Most macro packages let the user specify top and bottom margins and
 other details about the appearance of the printed pages.
 
+@c ---------------------------------------------------------------------
+
+@node Displays, Footnotes and Annotations, Page Layout Adjustment, Common Features
 @subsection Displays
 @cindex displays
 
@@ -1634,7 +1707,10 @@ fit; otherwise, it will appear at the top of the next page.  Meanwhile,
 the surrounding text will `flow' around the keep, thus leaving now blank
 areas.
 
-@subsection Footnotes and annotations
+@c ---------------------------------------------------------------------
+
+@node Footnotes and Annotations, Table of Contents, Displays, Common Features
+@subsection Footnotes and Annotations
 @cindex footnotes
 @cindex annotations
 
@@ -1651,6 +1727,9 @@ some disciplines.
 Most macro packages which supply this functionality also supply a means
 of automatically numbering either type of annotation.
 
+@c ---------------------------------------------------------------------
+
+@node Table of Contents, Indices, Footnotes and Annotations, Common Features
 @subsection Table of Contents
 @cindex table of contents
 @cindex contents, table of
@@ -1662,6 +1741,9 @@ the paper has ended.  Many macro packages will provide the ability to
 have several tables of contents (i.e.@: one standard one, one for
 tables, etc).
 
+@c ---------------------------------------------------------------------
+
+@node Indices, Paper Formats, Table of Contents, Common Features
 @subsection Indices
 @cindex index
 
@@ -1669,7 +1751,10 @@ While some macro packages will use the term @dfn{index}, none actually
 provide that functionality.  The facilities they call indices are
 actually more appropriate for tables of contents.
 
-@subsection Paper formats
+@c ---------------------------------------------------------------------
+
+@node Paper Formats, Multiple Columns, Indices, Common Features
+@subsection Paper Formats
 @cindex paper formats
 
 Some macro packages provide stock formats for various kinds of
@@ -1677,26 +1762,41 @@ documents.  Many of them provide a common format for the title and
 opening pages of a technical paper.  The @file{mm} macros in particular
 provide formats for letters and memoranda.
 
+@c ---------------------------------------------------------------------
+
+@node Multiple Columns, Font and Size Changes, Paper Formats, Common Features
 @subsection Multiple Columns
 
 Some macro packages (except @file{man}) provide the ability to have two
 or more columns on a page.
 
-@subsection Font and Size changes
+@c ---------------------------------------------------------------------
+
+@node Font and Size Changes, Predefined Strings, Multiple Columns, Common Features
+@subsection Font and Size Changes
 
 The built-in font and size functions are not always intuitive, so all
 macro packages provide macros to make these operations simpler.
 
+@c ---------------------------------------------------------------------
+
+@node Predefined Strings, Preprocessor Support, Font and Size Changes, Common Features
 @subsection Predefined Strings
 
 Most macro packages provide various predefined strings for a variety of
 uses; examples are sub- and superscripts, printable dates, quotes and
 various special characters.
 
+@c ---------------------------------------------------------------------
+
+@node Preprocessor Support, Configuration and Customization, Predefined Strings, Common Features
 @subsection Preprocessor Support
 
 All macro packages provide support for the various preprocessors.
 
+@c ---------------------------------------------------------------------
+
+@node Configuration and Customization,  , Preprocessor Support, Common Features
 @subsection Configuration and Customization
 
 Some macro packages provide means of customizing many of details of how
@@ -1704,6 +1804,9 @@ the package behaves.  This ranges from setting the default type size to
 changing the appearance of section headers.
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node Macro Packages, Programming Tutorial, Tutorial for Macro Users, Top
 @chapter Macro Packages
@@ -1722,6 +1825,8 @@ This chapter documents the main macro packages that come with
 @end menu
 
 
+@c =====================================================================
+
 @node man, mdoc, Macro Packages, Macro Packages
 @section @file{man}
 @cindex @file{man}
@@ -1739,6 +1844,8 @@ are based on it.
 * Man font macros::             
 * Miscellaneous man stuff::     
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node Man options, Man usage, man, man
 @subsection Options
@@ -1772,6 +1879,8 @@ After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
 @var{nnn}c, etc.  For example, the option @option{-rX2} will produce the
 following page numbers: 1, 2, 2a, 2b, 2c, etc.
 @end table
+
+@c ---------------------------------------------------------------------
 
 @node Man usage, Man font macros, Man options, man
 @subsection Usage
@@ -1914,6 +2023,8 @@ macro): @code{SH}, @code{SS}, @code{TP}, @code{LP} (@code{PP},
 The macros @code{RS} and @code{RE} also cause a break but no insertion
 of vertical space.
 
+@c ---------------------------------------------------------------------
+
 @node Man font macros, Miscellaneous man stuff, Man usage, man
 @subsection Macros to set fonts
 
@@ -1996,6 +2107,8 @@ Causes @var{text} to appear in italic.  If no text is present on the
 line where the macro is called, then the text of the next line appears
 in italic.
 @end_Defmac
+
+@c ---------------------------------------------------------------------
 
 @node Miscellaneous man stuff,  , Man font macros, man
 @subsection Miscellaneous
@@ -2080,12 +2193,16 @@ Modern implementations of the @code{man} program read this first line
 and automatically call the right preprocessor(s).
 
 
+@c =====================================================================
+
 @node mdoc, ms, man, Macro Packages
 @section @file{mdoc}
 @cindex @file{mdoc}
 
 @c XXX documentation
 
+
+@c =====================================================================
 
 @node ms, me, mdoc, Macro Packages
 @section @file{ms}
@@ -2094,12 +2211,16 @@ and automatically call the right preprocessor(s).
 @c XXX documentation
 
 
+@c =====================================================================
+
 @node me, mm, ms, Macro Packages
 @section @file{me}
 @cindex @file{me}
 
 @c XXX documentation
 
+
+@c =====================================================================
 
 @node mm,  , me, Macro Packages
 @section @file{mm}
@@ -2108,6 +2229,9 @@ and automatically call the right preprocessor(s).
 @c XXX documentation
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node Programming Tutorial, Preprocessors, Macro Packages, Top
 @chapter Programming Tutorial
@@ -2154,6 +2278,8 @@ Users of macro packages may skip it if not interested in details.
 @end menu
 
 
+@c =====================================================================
+
 @node Text, Input Conventions, Programming Tutorial, Programming Tutorial
 @section Text
 @cindex text
@@ -2171,6 +2297,8 @@ implicit line breaks.
 * Tab Stops::                   
 * Implicit Line Breaks::        
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node Filling and Adjusting, Hyphenation, Text, Text
 @subsection Filling and Adjusting
@@ -2196,6 +2324,8 @@ explained in @ref{Implicit Line Breaks})
 
 @xref{Manipulating Filling and Adjusting}.
 
+@c ---------------------------------------------------------------------
+
 @node Hyphenation, Sentences, Filling and Adjusting, Text
 @subsection Hyphenation
 @cindex hyphenation
@@ -2212,6 +2342,8 @@ hyphen), and the other portion will be added to the next line to be
 filled.
 
 @xref{Manipulating Hyphenation}.
+
+@c ---------------------------------------------------------------------
 
 @node Sentences, Tab Stops, Hyphenation, Text
 @subsection Sentences
@@ -2253,6 +2385,7 @@ See the @code{cflags} request in @ref{Using Symbols}, for more details.
 To prevent the insertion of extra space after an end of sentence
 character (at the end of a line), append @code{\&}.
 
+@c ---------------------------------------------------------------------
 
 @node Tab Stops, Implicit Line Breaks, Sentences, Text
 @subsection Tab Stops
@@ -2291,6 +2424,8 @@ will produce
 
 @xref{Tabs and Fields}.
 
+@c ---------------------------------------------------------------------
+
 @node Implicit Line Breaks,  , Tab Stops, Text
 @subsection Implicit Line Breaks
 @cindex implicit line breaks
@@ -2324,6 +2459,8 @@ Certain requests also cause breaks, implicitly or explicitly.  This will
 be discussed in @ref{Manipulating Filling and Adjusting}.
 
 
+@c =====================================================================
+
 @node Input Conventions, Measurements, Text, Programming Tutorial
 @section Input Conventions
 @cindex input conventions
@@ -2349,6 +2486,8 @@ Do not try to do any formatting in a @acronym{WYSIWYG} manner (i.e.,
 don't try and use spaces to get proper indentation).
 @end itemize
 
+
+@c =====================================================================
 
 @node Measurements, Expressions, Input Conventions, Programming Tutorial
 @section Measurements
@@ -2451,6 +2590,8 @@ Vertical space.  This is equivalent to the current line spacing.
 * Default Units::               
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Default Units,  , Measurements, Measurements
 @subsection Default Units
 @cindex default units
@@ -2480,6 +2621,8 @@ As a conclusion, the safest way to specify measurements is to always
 attach a scaling indicator.  If you want to multiply or divide by a
 certain scalar value, use @samp{u} as the unit for that value.
 
+
+@c =====================================================================
 
 @node Expressions, Identifiers, Measurements, Programming Tutorial
 @section Expressions
@@ -2594,6 +2737,8 @@ expressions, unless the entire expression is surrounded by parentheses.
 
 @xref{Request Arguments}, and @ref{Conditionals and Loops}.
 
+
+@c =====================================================================
 
 @node Identifiers, Embedded Commands, Expressions, Programming Tutorial
 @section Identifiers
@@ -2711,6 +2856,8 @@ silently ignored or expanded to nothing.
 @xref{Interpolating Registers}, and @ref{Strings}.
 
 
+@c =====================================================================
+
 @node Embedded Commands, Registers, Identifiers, Programming Tutorial
 @section Embedded Commands
 @cindex embedded commands
@@ -2735,17 +2882,23 @@ print a symbol, etc.
 * Escapes::                     
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Requests, Macros, Embedded Commands, Embedded Commands
 @subsection Requests
 @cindex requests
 
 @cindex control character
 @cindex character, control
+@cindex no-break control character
+@cindex character, no-break control
+@cindex control character, no-break
 @findex '
 @findex .
 A request line begins with a control character, which is either a single
-quote (@samp{'}) or a period (@samp{.}).  These can be changed; see
-@ref{Character Translations}, for details.  After this there may be
+quote (@samp{'}, the @dfn{no-break control character}) or a period
+(@samp{.}, the normal @dfn{control character}).  These can be changed;
+see @ref{Character Translations}, for details.  After this there may be
 optional tabs or spaces followed by an identifier which is the name of
 the request.  This may be followed by any number of space-separated
 arguments.
@@ -2759,8 +2912,8 @@ precede it with @code{\&}.  This represents a zero width space, which
 means it will not affect the output.
 
 In most cases the period is used as a control character.  Several
-requests will cause a break; using the single quote control character
-will prevent this.
+requests will cause a break implicitly; using the single quote control
+character will prevent this.
 
 @menu
 * Request Arguments::           
@@ -2799,6 +2952,8 @@ insert a stretchable, non-breaking space.}
 Note, however, that the @code{ds} request works differently.
 @xref{Strings}, for more details.
 
+@c ---------------------------------------------------------------------
+
 @node Macros, Escapes, Requests, Embedded Commands
 @subsection Macros
 @cindex macros
@@ -2808,6 +2963,8 @@ which can be invoked by name.  They are called in the same manner as
 requests -- arguments also may be passed in the same manner.
 
 @xref{Writing Macros}, and @ref{Request Arguments}.
+
+@c ---------------------------------------------------------------------
 
 @node Escapes,  , Macros, Embedded Commands
 @subsection Escapes
@@ -3093,6 +3250,9 @@ For large blocks of text, the @code{ig} request may be useful.
 
 @xref{Strings}.
 
+
+@c =====================================================================
+
 @node Registers, Manipulating Filling and Adjusting, Embedded Commands, Programming Tutorial
 @section Registers
 @cindex registers
@@ -3110,6 +3270,8 @@ details of formatting parameters.
 * Assigning Formats::           
 * Built-in Registers::          
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node Setting Registers, Interpolating Registers, Registers, Registers
 @subsection Setting Registers
@@ -3200,6 +3362,8 @@ generated, and the request will be ignored.  @xref{Debugging}, for
 information about warnings.
 @end_Deffn
 
+@c ---------------------------------------------------------------------
+
 @node Interpolating Registers, Auto-increment, Setting Registers, Registers
 @subsection Interpolating Registers
 @cindex interpolating registers
@@ -3220,6 +3384,8 @@ input line.
     @result{} 10
 @end example
 @end_Deffn
+
+@c ---------------------------------------------------------------------
 
 @node Auto-increment, Assigning Formats, Interpolating Registers, Registers
 @subsection Auto-increment
@@ -3277,6 +3443,8 @@ the following can be used.
 .nr a \na 10
 @end example
 
+@c ---------------------------------------------------------------------
+
 @node Assigning Formats, Built-in Registers, Auto-increment, Registers
 @subsection Assigning Formats
 @cindex assigning formats
@@ -3296,7 +3464,8 @@ formats are available:
 
 @table @code
 @item 1
-Decimal numbers.  This is the default format: 1, 2, 3,@w{ }@dots{}
+Decimal arabic numbers.  This is the default format: 1, 2, 3,@w{
+}@dots{}
 
 @item 0@dots{}0
 Decimal numbers with as many digits as specified.  So, @samp{00} would
@@ -3359,6 +3528,8 @@ example, @samp{\ga} after the previous example would produce the string
 @samp{000}.  If the register hasn't been defined yet, nothing is
 returned.
 @end_Deffn
+
+@c ---------------------------------------------------------------------
 
 @node Built-in Registers,  , Assigning Formats, Registers
 @subsection Built-in Registers
@@ -3487,9 +3658,10 @@ otherwise.  @xref{Groff Options}.
 
 @item .P
 @vindex .P
-This register indicates whether the current page is actually being
-printed, i.e., whether the @option{-o} option is being used to only
-print selected pages.  @xref{Groff Options}, for more information.
+This register is set to@w{ }1 (and to@w{ }0 otherwise) if the current
+page is actually being printed, i.e., if the @option{-o} option is being
+used to only print selected pages.  @xref{Groff Options}, for more
+information.
 
 @item .T
 @vindex .T
@@ -3503,6 +3675,8 @@ register @code{.T} which contains the current output device (for
 example, @samp{latin1} or @samp{ps}).
 @end table
 
+
+@c =====================================================================
 
 @node Manipulating Filling and Adjusting, Manipulating Hyphenation, Registers, Programming Tutorial
 @section Manipulating Filling and Adjusting
@@ -3534,15 +3708,24 @@ other requests will also cause breaks, but implicitly.  These are
 @Deffn{Request, br, }
 Break the current line, i.e., the input collected so far will be emitted
 without adjustment.
+
+If the no-break control character is used, no break will happen:
+
+@example
+a
+'br
+b
+    @result{} a b
+@end example
 @end_Deffn
 
-@vindex .u
 Initially, @code{gtroff} will fill and adjust text to both margins.
 Filling can be disabled via the @code{nf} request and re-enabled with
 the @code{fi} request.
 
 @cindex fill mode
 @cindex mode, fill
+@vindex .u
 @Deffn{Request, fi, }
 Activate fill mode (which is the default).  This request implicitly
 enables adjusting; it will also cause a break in the text currently
@@ -3683,6 +3866,9 @@ request.
 
 The space and sentence space values are associated with the current
 environment (@pxref{Environments}).
+
+This request is ignored in nroff mode; it is also ignored if there is no
+parameter.
 @end_Deffn
 
 @cindex centering lines
@@ -3695,6 +3881,13 @@ text it affects.  This request causes a break.
 With no arguments, @code{ce} will center the next line of text.
 @var{nnn} is a number indicating the number of lines to be centered.  If
 the argument is zero or negative, centering is disabled.
+
+@findex ll
+@findex in
+@findex ti
+The basic length for centering text is the line length (as set with the
+@code{ll} request) minus the indentation (as set with the @code{in}
+request).  Temporary indentation is ignored.
 
 A common idiom is to turn on centering for a large number of lines, and
 to turn off centering after text to be centered.  This is useful for any
@@ -3726,6 +3919,9 @@ of lines to be right-justified as set by the @code{rj} request.  This
 request causes a line break.
 @end_Deffn
 
+
+@c =====================================================================
+
 @node Manipulating Hyphenation, Manipulating Spacing, Manipulating Filling and Adjusting, Programming Tutorial
 @section Manipulating Hyphenation
 @cindex manipulating hyphenation
@@ -3735,14 +3931,13 @@ As discussed in @ref{Hyphenation}, @code{gtroff} will hyphenate words.
 There are a number of ways to influence how hyphenation is done.
 
 @Deffn{Request, hy, [@var{mode}]}
-
 Enable hyphenation.  The request has an optional numeric argument,
 @var{mode}, to restrict hyphenation if necessary:
 
 @table @code
 @item 1
 The default argument if @var{mode} is omitted.  Hyphenate without
-restrictions.
+restrictions.  This is also the start-up value of @code{gtroff}.
 
 @item 2
 Do not hyphenate the last word on a page or column.
@@ -3784,8 +3979,8 @@ The hyphenation mode is associated with the current environment
 @cindex hyphenated lines, consecutive
 @Deffn{Request, hlm, [@var{nnn}]}
 Set the maximum number of consecutive hyphenated lines to @var{nnn}.  If
-this number is negative, there is no maximum.  The default is@w{ }-1 if
-@var{nnn} is omitted.  This value is associated with the current
+this number is negative, there is no maximum.  The default value is@w{
+}-1 if @var{nnn} is omitted.  This value is associated with the current
 environment (@pxref{Environments}).  Only lines output from a given
 environment count towards the maximum associated with that environment.
 Hyphens resulting from @code{\%} are counted; explicit hyphens are not.
@@ -3814,6 +4009,8 @@ Hyphenation exceptions specified with the @code{hw} request are
 associated with the current hyphenation language; it will cause an error
 if there is no current hyphenation language.
 
+This request is ignored if there is no parameter.
+
 In old versions of @code{troff} there was a limited amount of space to
 store such information; fortunately, with @code{gtroff}, this is no
 longer a restriction.
@@ -3837,7 +4034,7 @@ document, use the @code{hw} request.
 Change the hyphenation character to @var{char}.  This character will
 then work the same as the @code{\%} escape, and, thus, no longer appear
 in the output.  Without an argument, @code{hc} will reset the
-hyphenation character to be @code{\%} only.
+hyphenation character to be @code{\%} (the default) only.
 
 The hyphenation character is associated with the current environment
 (@pxref{Environments}).
@@ -3881,6 +4078,8 @@ character (not a special character) other than a digit or a space.
 Initially each lower-case letter (@samp{a}-@samp{z}) has a hyphenation
 code, which is itself, and each upper-case letter (@samp{A}-@samp{Z})
 has a hyphenation code which is the lower-case version of itself.
+
+This request will be ignored if it has no parameter.
 @end_Deffn
 
 @cindex hyphenation margin
@@ -3928,13 +4127,14 @@ The current hyphenation space is available in the @code{.hys} register.
 @Deffn{Request, shc, [@var{char}]}
 Set the soft hyphen character to @var{char}.  If the argument is
 omitted, the soft hyphen character will be set to the default character
-@code{\(hy}.  The soft hyphen character is the character which will be
-inserted when a word is hyphenated at a line break.  If the soft hyphen
-character does not exist in the font of the character immediately
-preceding a potential break point, then the line will not be broken at
-that point.  Neither definitions (specified with the @code{char}
-request) nor translations (specified with the @code{tr} request) are
-considered when finding the soft hyphen character.
+@code{\(hy} (this is the start-up value of @code{gtroff} also).  The
+soft hyphen character is the character which will be inserted when a
+word is hyphenated at a line break.  If the soft hyphen character does
+not exist in the font of the character immediately preceding a potential
+break point, then the line will not be broken at that point.  Neither
+definitions (specified with the @code{char} request) nor translations
+(specified with the @code{tr} request) are considered when finding the
+soft hyphen character.
 @end_Deffn
 
 @findex hpf
@@ -3951,10 +4151,18 @@ request is usually invoked by the @file{troffrc} or the
 @samp{us}.
 
 @vindex .hla
-The current hyphenation language is available in the read-only register
-@samp{.hla}.
+The current hyphenation language is available as a string in the
+read-only number register @samp{.hla}.
+
+@example
+.ds curr_language \n[.hla]
+\*[curr_language]
+    @result{} us
+@end example
 @end_Deffn
 
+
+@c =====================================================================
 
 @node Manipulating Spacing, Tabs and Fields, Manipulating Hyphenation, Programming Tutorial
 @section Manipulating Spacing
@@ -3972,10 +4180,18 @@ request causes a line break.  The default scaling indicator is@w{
 
 @cindex double-spacing
 @Deffn{Request, ls, [@var{nnn}]}
-Output @var{nnn}-1 blank lines after each line of text.  With no
-argument @code{gtroff} will go back to single spacing.  For example,
-@w{@samp{.ls 2}} causes double-spaced output.  The line spacing is
-associated with the current environment (@pxref{Environments}).
+Output @w{@var{nnn}-1} blank lines after each line of text.  With no
+argument @code{gtroff} will use the previous value before the last
+@code{ls} call.
+
+@example
+.ls 2    \" This causes double-spaced output
+.ls 3    \" This causes triple-spaced output
+.ls      \" Again double spaced
+@end example
+
+The line spacing is associated with the current environment
+(@pxref{Environments}).
 
 @vindex .L
 The number register @code{.L} contains the current line spacing setting.
@@ -4017,13 +4233,23 @@ when actual text is output or the @code{rs} request is encountered.
 
 This request is useful for macros which want to avoid that subsequent
 macros inadvertently insert some vertical space before the text starts
-(for example, to set up the first paragraph after a section header).
+(for example, to set up the first paragraph after a section header).  It
+is associated with the current diversion level.
+
+@c XXX xref
+
 @end_Deffn
 
 @Deffn{Request, rs, }
-Disable no-space mode.
+Disable no-space mode.  This request is associated with the current
+diversion level.
+
+@c XXX xref
+
 @end_Deffn
 
+
+@c =====================================================================
 
 @node Tabs and Fields, Character Translations, Manipulating Spacing, Programming Tutorial
 @section Tabs and Fields
@@ -4161,28 +4387,44 @@ marks the end of the string belonging to the last defined tab stop.
 @item
 Tab stops are associated with the current environment
 (@pxref{Environments}).
+
+@item
+Calling @code{ta} without an argument will unset all tab stops.
+
+@item
+The start-up value of @code{gtroff} is @w{@samp{T 0.5i}}.  Even in nroff
+mode this value is used (contrary to @acronym{UNIX} @code{nroff} which
+has tab stops preset every 0.8@dmn{i}).
 @end itemize
 
 @vindex .tabs
 The number register @code{.tabs} contains a string representation of the
 current tab settings suitable for use as an argument to the @code{ta}
 request.
+
+@example
+.ds tab-string \n[.tabs]
+\*[tab-string]
+    @result{} T120u
+@end example
 @end_Deffn
 
 @cindex tab repitition character
 @cindex character, tab repitition
 @Deffn{Request, tc, [@var{fill-char}]}
 Normally @code{gtroff} will fill the space to the next tab stop with
-space characters.  This can be changed with the @code{tc} request.  With
-no argument @code{gtroff} will revert to using spaces.  The value of
-this @dfn{tab repitition} character is associated with the current
-environment (@pxref{Environments}).
+space.  This can be changed with the @code{tc} request.  With no
+argument @code{gtroff} will revert to using space, which is the default.
+The value of this @dfn{tab repitition} character is associated with the
+current environment (@pxref{Environments}).
 @end_Deffn
 
 @menu
 * Leaders::                     
 * Fields::                      
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node Leaders, Fields, Tabs and Fields, Tabs and Fields
 @subsection Leaders
@@ -4197,8 +4439,8 @@ this @code{gtroff} provides an alternate tab mechanism, called
 @cindex leader character
 A leader character (character code@w{ }1) behaves similarly to a tab
 character: It moves to the next tab stop.  The only difference is that
-for this movement, the fill character defaults to a period and not to a
-space.
+for this movement, the fill character defaults to a period character and
+not to space.
 
 @Deffn{Escape, \\a, }
 This escape is a non-interpreted leader character.  In copy mode
@@ -4211,9 +4453,9 @@ character.
 @Deffn{Request, lc, [@var{fill-char}]}
 The character that will be repeated can be declared with the @code{lc}
 request.  Without an argument, leaders will act the same as tabs (i.e.,
-using space characters for filling). The value of this @dfn{leader
-repitition} character is associated with the current environment
-(@pxref{Environments}).
+using space for filling).  @code{gtroff}'s start-up value is @samp{.}.
+The value of this @dfn{leader repitition} character is associated with
+the current environment (@pxref{Environments}).
 @end_Deffn
 
 @cindex table of contents
@@ -4236,6 +4478,8 @@ This produces
 @example
 1.1  Foo..........................................  12
 @end example
+
+@c ---------------------------------------------------------------------
 
 @node Fields,  , Leaders, Tabs and Fields
 @subsection Fields
@@ -4261,11 +4505,10 @@ distributed among them.
 @Deffn{Request, fc, [@var{delim-char} [@var{padding-char}]]}
 Define a delimiting and a padding character for fields.  If the latter
 is missing, the padding character defaults to a space character.  If
-there is no argument at all, the field mechanism is disabled.  Note that
-contrary to e.g.@: the tab repitition character, delimiting and padding
-characters are not associated to the current environment
-(@pxref{Environments}).
-@end_Deffn
+there is no argument at all, the field mechanism is disabled (which is
+the default).  Note that contrary to e.g.@: the tab repitition
+character, delimiting and padding characters are not associated to the
+current environment (@pxref{Environments}).
 
 Example:
 
@@ -4284,7 +4527,10 @@ and here the result:
 foo         bar          smurf
 foo            bar       smurf
 @end example
+@end_Deffn
 
+
+@c =====================================================================
 
 @node Character Translations, Troff and Nroff Mode, Tabs and Fields, Programming Tutorial
 @section Character Translations
@@ -4303,7 +4549,7 @@ The control character (@samp{.}) and the no-break control character
 respectively.
 
 @Deffn{Request, cc, [@var{c}]}
-Set the control character to @var{c}.  With no argument the normal
+Set the control character to @var{c}.  With no argument the default
 control character @samp{.} is restored.  The value of the control
 character is associated with the current environment
 (@pxref{Environments}).
@@ -4311,7 +4557,7 @@ character is associated with the current environment
 
 @Deffn{Request, c2, [@var{c}]}
 Set the no-break control character to @var{c}.  With no argument the
-normal control character @samp{'} is restored.  The value of the
+default control character @samp{'} is restored.  The value of the
 no-break control character is associated with the current environment
 (@pxref{Environments}).
 @end_Deffn
@@ -4325,15 +4571,15 @@ the backslash character @samp{\} no longer starts an escape sequence.
 @cindex escape character
 @cindex character, escape
 @Deffn{Request, ec, [@var{c}]}
-Set the escape character to @var{c}.  With no argument the normal escape
-character @samp{\} is restored.  It can be also used to re-enable the
-escape mechanism after an @code{eo} request.
+Set the escape character to @var{c}.  With no argument the default
+escape character @samp{\} is restored.  It can be also used to re-enable
+the escape mechanism after an @code{eo} request.
 
 Note that changing the escape character globally will likely break macro
 packages since @code{gtroff} has no mechanism (like @TeX{}) to `intern'
 macros, i.e., to convert a macro definition into an internal form which
-is independent of its printed representation.  If a macro is called, it
-will be executed literally.
+is independent of its representation.  If a macro is called, it will be
+executed literally.
 @end_Deffn
 
 @Deffn{Escape, \\e, }
@@ -4427,9 +4673,9 @@ foo bar
 
 @noindent
 As shown in the example, the space character can't be the first
-character pair as an argument of @code{tr}.  It is also not possible to
-map the space character to any other character; requests like
-@w{@samp{.tr aa x}} will undo @w{@samp{.tr aa \&}} instead.
+character pair as an argument of @code{tr}.  Additionally, it is not
+possible to map the space character to any other character; requests
+like @w{@samp{.tr aa x}} will undo @w{@samp{.tr aa \&}} instead.
 
 If justification is active, lines will be justified inspite of the
 `empty' space character (but there is no minimal distance, i.e.@: the
@@ -4440,9 +4686,13 @@ After an output character has been constructed (this happens at the
 moment immediately before the character is appended to an output
 character list, either by direct output, in a macro, diversion, or
 string), it is no longer affected by @code{tr}.
-@end itemize
 
 @c XXX xref
+
+@item
+Without an argument, the @code{tr} request is ignored.
+@end itemize
+
 @end_Deffn
 
 @findex \!
@@ -4467,6 +4717,8 @@ print @samp{a}.
 @end_Deffn
 
 
+@c =====================================================================
+
 @node Troff and Nroff Mode, Line Layout, Character Translations, Programming Tutorial
 @section Troff and Nroff Mode
 @cindex troff mode
@@ -4474,8 +4726,43 @@ print @samp{a}.
 @cindex nroff mode
 @cindex mode, nroff
 
-@c XXX .troff, .nroff
+Originally, @code{nroff} and @code{troff} were two separate programs,
+the former for tty output, the latter for everything else.  With GNU
+@code{troff}, both programs are merged into one executable.
 
+Usually, a macro package can be used with both @code{nroff} and
+@code{troff}.  Nevertheless, it is sometimes necessary to make a
+distinction between the two programs (resp.@: modes), and @code{gtroff}
+provides two built-in conditions @samp{n} and @samp{t} for the
+@code{if}, @code{ie}, and @code{while} requests to decide whether
+@code{gtroff} shall behave like @code{nroff} or like @code{troff}.
+
+@pindex troffrc
+@pindex troffrc-end
+@Deffn{Request, troff, }
+Make the @samp{t} built-in condition true (and the @samp{n} built-in
+condition false) for @code{if}, @code{ie}, and @code{while} conditional
+requests.  This is the default if @code{gtroff} (@emph{not}
+@code{groff}) is started with the @option{-R} switch to avoid loading of
+the start-up files @file{troffrc} and @file{troffrc-end}.  Without
+@option{-R}, @code{gtroff} stays in troff mode if the output device is
+not a tty (e.g.@: `ps').
+@end_Deffn
+
+@pindex tmac.tty
+@Deffn{Request, nroff, }
+Make the @samp{n} built-in condition true (and the @samp{t} built-in
+condition false) for @code{if}, @code{ie}, and @code{while} conditional
+requests.  This is the default if @code{gtroff} uses a tty output
+device; the code for switching to nroff mode is in the file
+@file{tmac.tty} which will be loaded by the start-up file
+@code{troffrc}.
+@end_Deffn
+
+@xref{Conditionals and Loops}, for more details on built-in conditions.
+
+
+@c =====================================================================
 
 @node Line Layout, Page Layout, Troff and Nroff Mode, Programming Tutorial
 @section Line Layout
@@ -4509,26 +4796,14 @@ These dimensions are:
 @cindex margin, left
 @cindex page offset
 @cindex offset, page
-@vindex .o
 @dfn{Page offset} -- This is the leftmost position of text on the final
 output, defining the @dfn{left margin}.
 
 @item in
 @cindex indentation
 @cindex line indentation
-@findex in
-@vindex .i
 @dfn{Indentation} -- This is the distance from the left margin where
-text will be printed.  This can be adjusted with the @code{in} request,
-and the current setting can be found in the built-in number register.
-@code{.i}.  This request causes a break.
-
-@findex ti
-@vindex .in
-There is also the request @code{ti} which will cause one output line to
-be indented, after which the indentation returns to@w{ }0.  This request
-causes a break.  The number register @code{.in} is the indent that
-applies to the current output line.
+text will be printed.
 
 @item ll
 @cindex line length
@@ -4536,11 +4811,7 @@ applies to the current output line.
 @vindex .l
 @vindex .ll
 @dfn{Line length} -- This is the distance from the left margin to right
-margin.  This can be adjusted with the @code{ll} request, and the
-current setting can be found in the built-in number register @code{.l}
-Note, as the figure implies, line length is not affected by the current
-indentation.  The number register @code{.ll} is the line length that
-applies to the current output line.
+margin.
 @end ftable
 
 @example
@@ -4558,11 +4829,13 @@ Replace me with a better (and more) example!
 @cindex nroff mode
 @cindex mode, nroff
 @Deffn{Request, po, [@var{offset}]}
-
-Set horizontal page offset to @var{offset}.  Note that this request does
-not cause a break, so changing the page offset in the middle of text
-being filled may not yield the expected result.  The initial value is
-1@dmn{i} if in troff mode, and 0 if in nroff mode (@pxref{Troff and
+@Deffnx{Request, po, +offset}
+@Deffnx{Request, po, -offset}
+Set horizontal page offset to @var{offset} (resp.@: increment or
+decrement the current value by @var{offset}).  Note that this request
+does not cause a break, so changing the page offset in the middle of
+text being filled may not yield the expected result.  The initial value
+is 1@dmn{i} if in troff mode, and 0 if in nroff mode (@pxref{Troff and
 Nroff Mode}); the default scaling indicator is@w{ }@code{m} (and not@w{
 }@code{v} as incorrectly documented in the original @acronym{UNIX} troff
 manual).
@@ -4572,15 +4845,13 @@ The current page offset can be found in the built-in number register
 @samp{.o}.
 
 If @code{po} is called without an argument, the page offset is reset to
-its previous value:
+the previous value before the last call to @code{po}.
 
 @example
-\n[.o]
-    @result{} 0
 .po 3i
 \n[.o]
     @result{} 720
-.po 2i
+.po -1i
 \n[.o]
     @result{} 480
 .po
@@ -4588,6 +4859,70 @@ its previous value:
     @result{} 720
 @end example
 @end_Deffn
+
+@Deffn{Request, in, [@var{indent}]}
+@Deffnx{Request, in, +indent}
+@Deffnx{Request, in, -indent}
+Set indentation to @var{indent}.  This request causes a break.
+Initially, there is no indentation.
+
+If @code{in} is called without an argument, the indentation is reset to
+the previous value before the last call to @code{in}.  The default
+scaling indicator is@w{ }@code{m}.
+
+The indentation is associated with the current environment.
+
+If a negative indentation value is specified (which is not allowed),
+@code{gtroff} emits a warning of type @samp{range} and sets the
+indentation to zero.
+
+The effect of @code{in} is delayed until a partially collected line (if
+it exists) is output.
+
+@vindex .i
+The current indentation can be found in the built-in number register
+@samp{.i}.
+@end_Deffn
+
+@Deffn{Request, ti, offset}
+@Deffnx{Request, ti, +offset}
+@Deffnx{Request, ti, -offset}
+Temporarily indent the next output line only by @var{offset}.  If an
+increment or decrement value is specified, adjust the temporary
+indentation relative to the value set by the @code{in} request.
+
+This request causes a break; its value is associated with the current
+environment.  The default scaling indicator is@w{ }@code{m}.  A call of
+@code{ti} without arguments is ignored.
+
+If the total indentation value is negative (which is not allowed),
+@code{gtroff} emits a warning of type @samp{range} and sets the
+temporary indentation to zero.  `Total indentation' is either
+@var{offset} if specified as an absolute value, or the temporary plus
+normal indentation, if @var{offset} is given as a relative value.
+
+The effect of @code{ti} is delayed until a partially collected line (if
+it exists) is output.
+
+@vindex .in
+The number register @code{.in} is the indent that applies to the current
+output line.
+@end_Deffn
+
+@Deffn{Request, ll, [@var{length}]}
+
+Set the line length to @var{length}.
+
+The current line length can be found in the built-in number register
+@code{.l}.
+
+Note, as the figure implies, line length is not affected by the current
+indentation.  The number register @code{.ll} is the line length that
+applies to the current output line.
+
+@end_Deffn
+
+@c =====================================================================
 
 @node Page Layout, Page Control, Line Layout, Programming Tutorial
 @section Page Layout
@@ -4656,6 +4991,8 @@ mechanism is disabled.
 @xref{Traps}.
 
 
+@c =====================================================================
+
 @node Page Control, Fonts, Page Layout, Programming Tutorial
 @section Page Control
 @cindex page control
@@ -4708,6 +5045,8 @@ output via the @code{os} request.  The default argument is@w{ }1@dmn{v}
 and the default unit is @code{v}.
 
 
+@c =====================================================================
+
 @node Fonts, Sizes, Page Control, Programming Tutorial
 @section Fonts
 @cindex fonts
@@ -4736,6 +5075,8 @@ used via an escape.
 * Artificial Fonts::            
 * Ligatures and Kerning::       
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node Changing Fonts, Font Families, Fonts, Fonts
 @subsection Changing Fonts
@@ -4830,6 +5171,8 @@ named @var{F} is referred to in a @code{\f} escape sequence, or in the
 be used.  If @var{G} is missing, or equal to @var{F} then font@w{
 }@var{F} will not be translated.
 
+@c ---------------------------------------------------------------------
+
 @node Font Families, Font Positions, Changing Fonts, Fonts
 @subsection Font Families
 @cindex font families
@@ -4866,6 +5209,8 @@ baked beans,
 .ft R
 and spam.
 @end example
+
+@c ---------------------------------------------------------------------
 
 @node Font Positions, Using Symbols, Font Families, Fonts
 @subsection Font Positions
@@ -4936,6 +5281,8 @@ font which is used to refer to the font in @code{gtroff} after it has
 been mounted.  If there is no third argument then the internal name will
 be used as the external name.  This feature make it possible to use
 fonts with long names in compatibility mode.
+
+@c ---------------------------------------------------------------------
 
 @node Using Symbols, Artificial Fonts, Font Positions, Fonts
 @subsection Using Symbols
@@ -5089,6 +5436,8 @@ of a @code{char} request.
 
 @xref{Special Characters}.
 
+@c ---------------------------------------------------------------------
+
 @node Artificial Fonts, Ligatures and Kerning, Using Symbols, Fonts
 @subsection Artificial Fonts
 @cindex artificial fonts
@@ -5128,6 +5477,8 @@ character twice, slightly offset.  The first argument specifies the font
 to embolden, and the second is the number of basic units, minus one, by
 which the two characters will be offset.  If the second argument is
 missing, emboldening will be turned off.
+
+@c ---------------------------------------------------------------------
 
 @node Ligatures and Kerning,  , Artificial Fonts, Fonts
 @subsection Ligatures and Kerning
@@ -5190,6 +5541,8 @@ less than or equal to @var{s2} the increase in width is a linear
 function of the point size.
 
 
+@c =====================================================================
+
 @node Sizes, Strings, Fonts, Programming Tutorial
 @section Sizes
 @cindex sizes
@@ -5217,6 +5570,8 @@ typesetters, as @dfn{leading}.
 * Changing Type Sizes::         
 * Fractional Type Sizes::       
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node Changing Type Sizes, Fractional Type Sizes, Sizes, Sizes
 @subsection Changing Type Sizes
@@ -5285,6 +5640,8 @@ Some devices may only have certain permissible sizes, in which case
 @example
 ... .sz macro example?? ...
 @end example
+
+@c ---------------------------------------------------------------------
 
 @node Fractional Type Sizes,  , Changing Type Sizes, Sizes
 @subsection Fractional Type Sizes
@@ -5364,6 +5721,8 @@ Increases resp.@: decreases the point size by @var{n} scaled points;
 
 @xref{Font Files}.
 
+
+@c =====================================================================
 
 @node Strings, Conditionals and Loops, Sizes, Programming Tutorial
 @section Strings
@@ -5503,6 +5862,8 @@ register@w{ }@var{xx} (which is not necessarily defined before).
 @xref{Identifiers}, and @ref{Comments}.
 
 
+@c =====================================================================
+
 @node Conditionals and Loops, Writing Macros, Strings, Programming Tutorial
 @section Conditionals and Loops
 @cindex conditionals and loops
@@ -5551,6 +5912,8 @@ been defined by the @code{char} request.
 * if-else::                     
 * while::                       
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node if-else, while, Conditionals and Loops, Conditionals and Loops
 @subsection if-else
@@ -5612,6 +5975,8 @@ escapes (note the position of the opening and closing braces).
 
 @xref{Expressions}.
 
+@c ---------------------------------------------------------------------
+
 @node while,  , if-else, Conditionals and Loops
 @subsection while
 @cindex while
@@ -5653,6 +6018,8 @@ loop, immediately restarting the next iteration.
 
 @xref{Expressions}.
 
+
+@c =====================================================================
 
 @node Writing Macros, Page Motions, Conditionals and Loops, Programming Tutorial
 @section Writing Macros
@@ -5703,6 +6070,8 @@ Macros can be aliased with the @code{als} request.
 * Parameters::                  
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Copy-in Mode, Parameters, Writing Macros, Writing Macros
 @subsection Copy-in Mode
 @cindex copy-in mode
@@ -5738,6 +6107,8 @@ being printed:
 ..
 .y
 @end example
+
+@c ---------------------------------------------------------------------
 
 @node Parameters,  , Copy-in Mode, Writing Macros
 @subsection Parameters
@@ -5797,6 +6168,8 @@ This would be called as
 
 @xref{Request Arguments}.
 
+
+@c =====================================================================
 
 @node Page Motions, Drawing Requests, Writing Macros, Programming Tutorial
 @section Page Motions
@@ -5964,6 +6337,8 @@ over that character.
 
 @c XXX documentation
 
+
+@c =====================================================================
 
 @node Drawing Requests, Traps, Page Motions, Programming Tutorial
 @section Drawing Requests
@@ -6142,6 +6517,9 @@ used to build large brackets and braces.
 
 @xref{Drawing Functions}.
 
+
+@c =====================================================================
+
 @node Traps, Diversions, Drawing Requests, Programming Tutorial
 @section Traps
 @cindex traps
@@ -6157,6 +6535,8 @@ lines or at the end of input.
 * Input Line Traps::            
 * End-of-input Traps::          
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node Page Location Traps, Diversion Traps, Traps, Traps
 @subsection Page Location Traps
@@ -6235,6 +6615,8 @@ needed in the last @code{ne} request that caused a trap to be sprung.
 Useful in conjunction with the @code{.trunc} register.  @xref{Page
 Control}, for more information.
 
+@c ---------------------------------------------------------------------
+
 @node Diversion Traps, Input Line Traps, Page Location Traps, Traps
 @subsection Diversion Traps
 @cindex diversion traps
@@ -6247,6 +6629,8 @@ request.  Like @code{wh} the first argument is the location of the trap
 and the second argument is the name of the macro to be invoked.  The
 number register @code{.t} will still work within diversions.
 @xref{Diversions}, for more information.
+
+@c ---------------------------------------------------------------------
 
 @node Input Line Traps, End-of-input Traps, Diversion Traps, Traps
 @subsection Input Line Traps
@@ -6279,6 +6663,8 @@ next @var{n}@w{ }lines in a bold font.
 ..
 @end example
 
+@c ---------------------------------------------------------------------
+
 @node End-of-input Traps,  , Input Line Traps, Traps
 @subsection End-of-input Traps
 @cindex end-of-input traps
@@ -6307,6 +6693,8 @@ Date:\t\t\a
 .em approval
 @end example
 
+
+@c =====================================================================
 
 @node Diversions, Environments, Traps, Programming Tutorial
 @section Diversions
@@ -6445,6 +6833,8 @@ will set register @code{n} to@w{ }1.
 @xref{Copy-in Mode}.
 
 
+@c =====================================================================
+
 @node Environments, I/O, Diversions, Programming Tutorial
 @section Environments
 @cindex environments
@@ -6524,6 +6914,8 @@ Here another example:
 To copy an environment into the current one, use the @code{evc} request,
 which takes the name of the environment to copy from as an argument.
 
+
+@c =====================================================================
 
 @node I/O, Postprocessor Access, Environments, Programming Tutorial
 @section I/O
@@ -6701,6 +7093,8 @@ environment variable, as returned by @code{getenv()}.  The argument to
 copy-in mode.
 
 
+@c =====================================================================
+
 @node Postprocessor Access, Miscellaneous, I/O, Programming Tutorial
 @section Postprocessor Access
 @cindex postprocessor access
@@ -6727,6 +7121,8 @@ that do not know about this extension.
 
 @xref{Output Devices}.
 
+
+@c =====================================================================
 
 @node Miscellaneous, Debugging, Postprocessor Access, Programming Tutorial
 @section Miscellaneous
@@ -6801,6 +7197,8 @@ intelligible to the user.
 ... example of soelim'ed doc ...
 @end example
 
+
+@c =====================================================================
 
 @node Debugging, Implementation Differences, Miscellaneous, Programming Tutorial
 @section Debugging
@@ -6909,6 +7307,13 @@ argument is not given, all warnings will be enabled.  The number
 register @code{.warn} contains the current warning level.
 @end itemize
 
+@c ---------------------------------------------------------------------
+
+@menu
+* Warnings::                    
+@end menu
+
+@node Warnings,  , Debugging, Debugging
 @subsection Warnings
 @cindex warnings
 
@@ -7027,6 +7432,8 @@ macro packages.
 All warnings.
 @end table
 
+
+@c =====================================================================
 
 @node Implementation Differences, Summary, Debugging, Programming Tutorial
 @section Implementation Differences
@@ -7157,6 +7564,8 @@ is unsuitable, the new @code{\?} escape sequence.
 @xref{Diversions}, for more information.
 
 
+@c =====================================================================
+
 @node Summary,  , Implementation Differences, Programming Tutorial
 @section Summary
 @cindex summary
@@ -7164,6 +7573,9 @@ is unsuitable, the new @code{\?} escape sequence.
 @c XXX documentation
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node Preprocessors, Output Devices, Programming Tutorial, Top
 @chapter Preprocessors
@@ -7183,6 +7595,8 @@ which are freely available.
 @end menu
 
 
+@c =====================================================================
+
 @node geqn, gtbl, Preprocessors, Preprocessors
 @section @code{geqn}
 @cindex @code{eqn}
@@ -7194,6 +7608,8 @@ which are freely available.
 * Invoking geqn::               
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking geqn,  , geqn, geqn
 @subsection Invoking @code{geqn}
 @cindex invoking @code{geqn}
@@ -7201,6 +7617,8 @@ which are freely available.
 
 @c XXX
 
+
+@c =====================================================================
 
 @node gtbl, gpic, geqn, Preprocessors
 @section @code{gtbl}
@@ -7213,6 +7631,8 @@ which are freely available.
 * Invoking gtbl::               
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking gtbl,  , gtbl, gtbl
 @subsection Invoking @code{gtbl}
 @cindex invoking @code{gtbl}
@@ -7220,6 +7640,8 @@ which are freely available.
 
 @c XXX
 
+
+@c =====================================================================
 
 @node gpic, ggrn, gtbl, Preprocessors
 @section @code{gpic}
@@ -7232,6 +7654,8 @@ which are freely available.
 * Invoking gpic::               
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking gpic,  , gpic, gpic
 @subsection Invoking @code{gpic}
 @cindex invoking @code{gpic}
@@ -7239,6 +7663,8 @@ which are freely available.
 
 @c XXX
 
+
+@c =====================================================================
 
 @node ggrn, grap, gpic, Preprocessors
 @section @code{ggrn}
@@ -7251,6 +7677,8 @@ which are freely available.
 * Invoking ggrn::               
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking ggrn,  , ggrn, ggrn
 @subsection Invoking @code{ggrn}
 @cindex invoking @code{ggrn}
@@ -7258,6 +7686,8 @@ which are freely available.
 
 @c XXX
 
+
+@c =====================================================================
 
 @node grap, grefer, ggrn, Preprocessors
 @section @code{grap}
@@ -7271,6 +7701,8 @@ is available as an extra package from the following address:
 @end display
 
 
+@c =====================================================================
+
 @node grefer, gsoelim, grap, Preprocessors
 @section @code{grefer}
 @cindex @code{refer}
@@ -7282,6 +7714,8 @@ is available as an extra package from the following address:
 * Invoking grefer::             
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking grefer,  , grefer, grefer
 @subsection Invoking @code{grefer}
 @cindex invoking @code{grefer}
@@ -7289,6 +7723,8 @@ is available as an extra package from the following address:
 
 @c XXX
 
+
+@c =====================================================================
 
 @node gsoelim,  , grefer, Preprocessors
 @section @code{gsoelim}
@@ -7301,6 +7737,8 @@ is available as an extra package from the following address:
 * Invoking gsoelim::            
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking gsoelim,  , gsoelim, gsoelim
 @subsection Invoking @code{gsoelim}
 @cindex invoking @code{gsoelim}
@@ -7309,6 +7747,9 @@ is available as an extra package from the following address:
 @c XXX
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node Output Devices, File formats, Preprocessors, Top
 @chapter Output Devices
@@ -7329,6 +7770,8 @@ is available as an extra package from the following address:
 @end menu
 
 
+@c =====================================================================
+
 @node Special Characters, grotty, Output Devices, Output Devices
 @section Special Characters
 @cindex special characters
@@ -7338,6 +7781,8 @@ is available as an extra package from the following address:
 
 @xref{Font Files}.
 
+
+@c =====================================================================
 
 @node grotty, grops, Special Characters, Output Devices
 @section @code{grotty}
@@ -7349,6 +7794,8 @@ is available as an extra package from the following address:
 * Invoking grotty::             
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking grotty,  , grotty, grotty
 @subsection Invoking @code{grotty}
 @cindex invoking @code{grotty}
@@ -7356,6 +7803,8 @@ is available as an extra package from the following address:
 
 @c XXX
 
+
+@c =====================================================================
 
 @node grops, grodvi, grotty, Output Devices
 @section @code{grops}
@@ -7368,12 +7817,16 @@ is available as an extra package from the following address:
 * Embedding PostScript::        
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking grops, Embedding PostScript, grops, grops
 @subsection Invoking @code{grops}
 @cindex invoking @code{grops}
 @cindex @code{grops}, invoking
 
 @c XXX
+
+@c ---------------------------------------------------------------------
 
 @node Embedding PostScript,  , Invoking grops, grops
 @subsection Embedding @sc{PostScript}
@@ -7382,6 +7835,8 @@ is available as an extra package from the following address:
 
 @c XXX
 
+
+@c =====================================================================
 
 @node grodvi, grolj4, grops, Output Devices
 @section @code{grodvi}
@@ -7393,6 +7848,8 @@ is available as an extra package from the following address:
 * Invoking grodvi::             
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking grodvi,  , grodvi, grodvi
 @subsection Invoking @code{grodvi}
 @cindex invoking @code{grodvi}
@@ -7400,6 +7857,8 @@ is available as an extra package from the following address:
 
 @c XXX
 
+
+@c =====================================================================
 
 @node grolj4, grolbp, grodvi, Output Devices
 @section @code{grolj4}
@@ -7411,6 +7870,8 @@ is available as an extra package from the following address:
 * Invoking grolj4::             
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking grolj4,  , grolj4, grolj4
 @subsection Invoking @code{grolj4}
 @cindex invoking @code{grolj4}
@@ -7418,6 +7879,8 @@ is available as an extra package from the following address:
 
 @c XXX
 
+
+@c =====================================================================
 
 @node grolbp, grohtml, grolj4, Output Devices
 @section @code{grolbp}
@@ -7429,6 +7892,8 @@ is available as an extra package from the following address:
 * Invoking grolbp::             
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking grolbp,  , grolbp, grolbp
 @subsection Invoking @code{grolbp}
 @cindex invoking @code{grolbp}
@@ -7436,6 +7901,8 @@ is available as an extra package from the following address:
 
 @c XXX
 
+
+@c =====================================================================
 
 @node grohtml, gxditview, grolbp, Output Devices
 @section @code{grohtml}
@@ -7447,6 +7914,8 @@ is available as an extra package from the following address:
 * Invoking grohtml::            
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking grohtml,  , grohtml, grohtml
 @subsection Invoking @code{grohtml}
 @cindex invoking @code{grohtml}
@@ -7454,6 +7923,8 @@ is available as an extra package from the following address:
 
 @c XXX
 
+
+@c =====================================================================
 
 @node gxditview,  , grohtml, Output Devices
 @section @code{gxditview}
@@ -7465,6 +7936,8 @@ is available as an extra package from the following address:
 * Invoking gxditview::          
 @end menu
 
+@c ---------------------------------------------------------------------
+
 @node Invoking gxditview,  , gxditview, gxditview
 @subsection Invoking @code{gxditview}
 @cindex invoking @code{gxditview}
@@ -7474,6 +7947,9 @@ is available as an extra package from the following address:
 @c X11's xditview
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node File formats, Installation, Output Devices, Top
 @chapter File formats
@@ -7487,6 +7963,8 @@ is available as an extra package from the following address:
 * Font Files::                  
 @end menu
 
+
+@c =====================================================================
 
 @node gtroff Output, Font Files, File formats, File formats
 @section @code{gtroff} Output
@@ -7503,6 +7981,8 @@ output format used by GNU @code{troff} is very similar to that used by
 * Drawing Functions::           
 * Line Continuation::           
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node Output Format, Device Control, gtroff Output, gtroff Output
 @subsection Output Format
@@ -7595,6 +8075,8 @@ Device control.
 @c XXX
 @end table
 
+@c ---------------------------------------------------------------------
+
 @node Device Control, Drawing Functions, Output Format, gtroff Output
 @subsection Device Control
 @cindex device control
@@ -7644,6 +8126,8 @@ will produce
 @example
 ... sample output here ...
 @end example
+
+@c ---------------------------------------------------------------------
 
 @node Drawing Functions, Line Continuation, Device Control, gtroff Output
 @subsection Drawing Functions
@@ -7736,6 +8220,8 @@ D@var{c} @var{x1} @var{y1} @var{x2} @var{y2} @dots{} @var{xn} @var{yn}
 the current position should be increased horizontally by the sum of all
 x@w{ }values and vertically by the sum of all y@w{ }values.
 
+@c ---------------------------------------------------------------------
+
 @node Line Continuation,  , Drawing Functions, gtroff Output
 @subsection Line Continuation
 @cindex line continuation in output commands
@@ -7754,6 +8240,8 @@ treated as part of the argument to the @w{@samp{x X}} command, the
 @w{@samp{x X}} command.
 
 
+@c =====================================================================
+
 @node Font Files,  , gtroff Output, File formats
 @section Font Files
 @cindex font files
@@ -7771,6 +8259,8 @@ called@w{ }@file{F}.
 * DESC file format::            
 * Font file format::            
 @end menu
+
+@c ---------------------------------------------------------------------
 
 @node DESC file format, Font file format, Font Files, Font Files
 @subsection @file{DESC} file format
@@ -7848,6 +8338,8 @@ in the @file{DESC} file.
 
 @c XXX add other commands resp. xrefs to output devices
 @c XXX add obsolete commands
+
+@c ---------------------------------------------------------------------
 
 @node Font file format,  , DESC file format, Font Files
 @subsection Font file format
@@ -8015,6 +8507,9 @@ Most entries in kernpairs section will have a negative value for@w{
 
 
 
+@c =====================================================================
+@c =====================================================================
+
 @node Installation, Request and Escape Index, File formats, Top
 @chapter Installation
 @cindex installation
@@ -8022,6 +8517,9 @@ Most entries in kernpairs section will have a negative value for@w{
 @c XXX
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node Request and Escape Index, Operator Index, Installation, Top
 @chapter Request and Escape Index
@@ -8034,6 +8532,9 @@ character (normally either @samp{.} or @samp{'}).
 
 
 
+@c =====================================================================
+@c =====================================================================
+
 @node Operator Index, Register Index, Request and Escape Index, Top
 @chapter Operator Index
 
@@ -8041,12 +8542,18 @@ character (normally either @samp{.} or @samp{'}).
 
 
 
+@c =====================================================================
+@c =====================================================================
+
 @node Register Index, Macro and String Index, Operator Index, Top
 @chapter Register Index
 
 @printindex vr
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node Macro and String Index, Glyph Name Index, Register Index, Top
 @chapter Macro and String Index
@@ -8059,6 +8566,9 @@ leading control character (normally either @samp{.} or @samp{'}).
 
 
 
+@c =====================================================================
+@c =====================================================================
+
 @node Glyph Name Index, Font File Keyword Index, Macro and String Index, Top
 @chapter Glyph Name Index
 
@@ -8070,6 +8580,9 @@ accessed as @samp{\[xxx]}.
 
 
 
+@c =====================================================================
+@c =====================================================================
+
 @node Font File Keyword Index, Program and File Index, Glyph Name Index, Top
 @chapter Font File Keyword Index
 
@@ -8077,12 +8590,18 @@ accessed as @samp{\[xxx]}.
 
 
 
+@c =====================================================================
+@c =====================================================================
+
 @node Program and File Index, Concept Index, Font File Keyword Index, Top
 @chapter Program  and File Index
 
 @printindex pg
 
 
+
+@c =====================================================================
+@c =====================================================================
 
 @node Concept Index,  , Program and File Index, Top
 @chapter Concept Index
