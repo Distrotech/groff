@@ -961,6 +961,7 @@ class html_printer : public printer {
   char                *inside_font_style;
   int                  page_number;
   title_desc           title;
+  title_desc           indent;  // use title class to remember $1 of .ip
   header_desc          header;
   int                  header_indent;
   int                  supress_sub_sup;
@@ -1022,6 +1023,7 @@ class html_printer : public printer {
   void  do_pageoffset                 (char *arg);
   void  do_indentation                (char *arg);
   void  do_tempindent                 (char *arg);
+  void  do_indentedparagraph          (void);
   void  do_verticalspacing            (char *arg);
   void  do_pointsize                  (char *arg);
   void  do_centered_image             (void);
@@ -1120,8 +1122,8 @@ void html_printer::emit_raw (text_glob *g)
 #if defined(INDENTATION)
     if (in_table) {
       stop();
-      current_paragraph->do_indent(0, pageoffset, linelength);
-      current_paragraph->do_indent(indentation, pageoffset, linelength);
+      current_paragraph->do_indent(NULL, 0, pageoffset, linelength);
+      current_paragraph->do_indent(indent.text, indentation, pageoffset, linelength);
     }
 #endif
   }
@@ -1432,7 +1434,7 @@ void html_printer::do_linelength (char *arg)
 #if defined(INDENTATION)
   if (fill_on) {
     linelength = atoi(arg);
-    current_paragraph->do_indent(indentation, pageoffset, linelength);
+    current_paragraph->do_indent(indent.text, indentation, pageoffset, linelength);
   }
 #endif
 }
@@ -1446,7 +1448,7 @@ void html_printer::do_pageoffset (char *arg)
 #if defined(INDENTATION)
   pageoffset = atoi(arg);
   if (fill_on) {
-    current_paragraph->do_indent(indentation, pageoffset, linelength);
+    current_paragraph->do_indent(indent.text, indentation, pageoffset, linelength);
   }
 #endif
 }
@@ -1460,7 +1462,7 @@ void html_printer::do_indentation (char *arg)
 #if defined(INDENTATION)
   if (fill_on) {
     indentation = atoi(arg);
-    current_paragraph->do_indent(indentation, pageoffset, linelength);
+    current_paragraph->do_indent(indent.text, indentation, pageoffset, linelength);
   }
 #endif
 }
@@ -1476,8 +1478,64 @@ void html_printer::do_tempindent (char *arg)
     end_tempindent = 1;
     prev_indent    = indentation;
     indentation    = atoi(arg);
-    current_paragraph->do_indent(indentation, pageoffset, linelength);
+    current_paragraph->do_indent(indent.text, indentation, pageoffset, linelength);
   }
+#endif
+}
+
+/*
+ *  do_indentedparagraph - handle the .ip tag, this buffers the next line
+ *                         and passes this to text-text as the left hand
+ *                         column table entry.
+ */
+
+void html_printer::do_indentedparagraph (void)
+{
+#if defined(INDENTATION)
+  text_glob    *t;
+  int           removed_from_head;
+  char          buf[MAX_STRING_LENGTH];
+  int           found_indent_start  = FALSE;
+
+  indent.has_been_found = FALSE;
+  indent.text[0]        = (char)0;
+
+  if (! page_contents->glyphs.is_empty()) {
+    page_contents->glyphs.sub_move_right();       /* move onto next word */
+    do {
+      t = page_contents->glyphs.get_data();
+      removed_from_head = FALSE;
+      if (t->is_raw_command) {
+	/* skip raw commands
+	 */
+	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
+      } else if (t->is_a_tag() && (strncmp(t->text_string, "html-tag:.br", 12) == 0)) {
+	/* end of indented para found, but move back so that we read this tag and process it
+	 */
+	page_contents->glyphs.move_left();           /* move backwards to last word */
+	indent.has_been_found = TRUE;
+	return;
+      } else if (t->is_a_tag()) {
+	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
+      } else if (found_indent_start) {
+	strcat(indent.text, " ");
+	str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE);
+	strcat(indent.text, buf);
+	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
+	removed_from_head = ((!page_contents->glyphs.is_empty()) &&
+			     (page_contents->glyphs.is_equal_to_head()));
+      } else {
+	str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE);
+	strcpy((char *)indent.text, buf);
+	found_indent_start    = TRUE;
+	indent.has_been_found = TRUE;
+	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
+	removed_from_head = ((!page_contents->glyphs.is_empty()) &&
+			     (page_contents->glyphs.is_equal_to_head()));
+      }
+    } while ((! page_contents->glyphs.is_equal_to_head()) || (removed_from_head));
+  }
+  // page_contents->glyphs.move_left();           /* move backwards to last word */
 #endif
 }
 
@@ -1582,7 +1640,7 @@ void html_printer::do_break (void)
     end_tempindent--;
     if (end_tempindent == 0) {
       indentation = prev_indent;
-      current_paragraph->do_indent(indentation, pageoffset, linelength);
+      current_paragraph->do_indent(indent.text, indentation, pageoffset, linelength);
     }
   }
 #endif
@@ -1646,6 +1704,8 @@ void html_printer::troff_tag (text_glob *g)
   } else if (strncmp(t, ".vs", 3) == 0) {
     char *a = (char *)t+3;
     do_verticalspacing(a);
+  } else if (strncmp(t, ".ip", 3) == 0) {
+    do_indentedparagraph();
   } else if (strcmp(t, ".links") == 0) {
     do_links();
   }
@@ -2585,7 +2645,7 @@ void html_printer::begin_page(int n)
   output_vpos_max        = -1;
   current_paragraph      = new html_text(&html);
 #if defined(INDENTATION)
-  current_paragraph->do_indent(indentation, pageoffset, linelength);
+  current_paragraph->do_indent(indent.text, indentation, pageoffset, linelength);
 #endif
   current_paragraph->do_para("");
 }

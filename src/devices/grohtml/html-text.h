@@ -66,7 +66,7 @@ public:
   void   do_space       (void);
   void   do_break       (void);
   void   do_newline     (void);
-  void   do_table       (void);
+  void   do_table       (char *arg);
   void   done_bold      (void);
   void   done_italic    (void);
   char  *done_para      (void);
@@ -76,7 +76,7 @@ public:
   void   done_pre       (void);
   void   done_small     (void);
   void   done_big       (void);
-  void   do_indent      (int indent, int pageoff, int linelen);
+  void   do_indent      (char *arg, int indent, int pageoff, int linelen);
   int    emitted_text   (void);
   int    emit_space     (void);
   int    is_in_pre      (void);

@@ -142,7 +142,13 @@ void html_text::issue_table_begin (tag_definition *t)
     if (width > 0) {
       out->put_string("<table width=\"100%\" rules=\"none\" frame=\"none\"\n       cols=\"2\" cellspacing=\"0\" cellpadding=\"0\">").nl();
       out->put_string("<tr valign=\"top\" align=\"left\">").nl();
-      out->put_string("<td width=\"").put_number(width).put_string("%\"></td>");
+      if ((t->arg1 == 0) || (strcmp(t->arg1, "") == 0))
+	out->put_string("<td width=\"").put_number(width).put_string("%\"></td>");
+      else {
+	out->put_string("<td width=\"").put_number(width).put_string("%\">").nl();
+	out->put_string(t->arg1).put_string("</td>");
+	t->arg1[0] = (char)0;
+      }
       out->put_string("<td width=\"").put_number(100-width).put_string("%\">").nl();
     }
   }
@@ -257,7 +263,7 @@ void html_text::push_para (HTML_TAG t, char *arg)
  *              then we start a html table to implement the indentation.
  */
 
-void html_text::do_indent (int indent, int pageoff, int linelen)
+void html_text::do_indent (char *arg, int indent, int pageoff, int linelen)
 {
   if ((current_indentation != -1) &&
       (pageoffset+current_indentation != indent+pageoff)) {
@@ -265,14 +271,14 @@ void html_text::do_indent (int indent, int pageoff, int linelen)
        *  actual indentation of text has changed, we need to put
        *  a table tag onto the stack.
        */
-    do_table();
+    do_table(arg);
   }
   current_indentation = indent;
   pageoffset          = pageoff;
   linelength          = linelen;
 }
 
-void html_text::do_table (void)
+void html_text::do_table (char *arg)
 {
   int in_pre = is_in_pre();
   // char *para_type = done_para();
@@ -283,7 +289,7 @@ void html_text::do_table (void)
     do_pre();
   }
   // do_para(para_type);
-  push_para(TABLE_TAG, "");
+  push_para(TABLE_TAG, arg);
 }
 
 /*
