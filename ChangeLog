@@ -1,3 +1,32 @@
+2003-10-16  Werner LEMBERG  <wl@gnu.org>
+
+	* src/preproc/html/pre-html.cpp (write_upto_newline): Don't use
+	`(*t)->next' without testing validity of `*t'.
+	(usage): Make it more readable.
+
+2003-10-16  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	Make html device run under both MS-DOS and Win32.
+
+	* src/preproc/html/pre-html.cpp (MAY_FORK_CHILD_PROCESS,
+	MAY_SPAWN_ASYNCHRONOUS_CHILD): New macros to control whether
+	spawn or fork+exec has to be used, and whether parent must sleep
+	until the child process terminates.  Used in
+	`char_buffer::run_output_filter'.
+	(copyofstdoutfd): Removed.
+	(char_buffer): Replace `write_file_html' and `write_file_troff'
+	member functions with `emit_troff_output' and `run_output_filter'.
+	The latter 
+	(DEVICE_FORMAT, HTML_OUTPUT_FILTER, IMAGE_OUTPUT_FILTER): New
+	macros.
+	(replaceFd): Replaced with...
+	(set_redirection): New auxiliary function.
+	(waitForChild): Replaced with...
+	(save_and_redirect): New auxiliary function for.
+
+	(char_buffer::do_html, char_buffer::do_image): Simplified, using new
+	functions.
+
 2003-10-14  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
 	* aclocal.m4 (GROFF_SYS_NERR): Check stdlib.h also.
