@@ -1,3 +1,46 @@
+2002-11-05  Werner LEMBERG  <wl@gnu.org>
+
+	* font/devascii/R.proto, font/devcp1047/R.proto,
+	font/devlatin1/R.proto: Remove entry for `.i'.
+	* font/devdvi/generate/textt.map: Add entry for `ad'.
+	* font/devdvi/generate/texr.map, font/devdvi/generate/texb.map,
+	font/devdvi/generate/texi.map: Add dummy glyph name `slash@for@l'.
+	We need this for getting kerning values to compose `/l' and `/L'.
+	* font/devdvi: Regenerated font definition files for CM fonts.
+	* font/devhtml/R.proto: Add entries for "'C", "'c", `IJ', and `ij'.
+	* font/devutf8/R.proto: Ditto.
+	Remove double entry for `ti'.
+
+	* src/roff/troff/glyphuni.cc (glyph_to_unicode_list): Fix entries
+	for (groff) ligatures, `la', and `ra'.
+	Add "'C", "'c", `IJ', and `ij'.
+	Remove double entry for `ti'.
+	* src/roff/troff/uniglyph.cc (unicode_to_glyph_list): Remove all
+	double entries.
+	Add "'C", "'c", `IJ', and `ij'.
+	Fix entries for (groff) ligatures, `la', and `ra'.
+
+	* tmac/ps.tmac (ps-achar): New macro.
+	Define "'c" and "'C".
+	* tmac/tty.tmac: Add entry for `.i'.
+	* tmac/X.tmac (X-achar): New macro.
+	Define "'c", "'C", and `:Y'.
+	Add entries for `IJ' and `ij'.
+	* tmac/Xps.tmac (Xps-achar): New macro.
+	Define "'c" and "'C".
+	Add entries for `IJ' and `ij'.
+	* tmac/lbp.tmac (lbp-achar): New macro.
+	Add fallback characters for all groff ligatures and many other
+	glyphs.
+	* tmac/dvi.tmac: Fix definitions of `_' and `ul'.
+	Add entries for `/l' and `/L'.
+	Define "'c" and "'C".
+	Add entries for `IJ' and `ij'.
+
+2002-11-02  Larry Kollar  <kollar@alltel.net>
+
+	* PROBLEMS: Document how to solve Mac OS X compilation problems.
+
 2002-11-02  Werner LEMBERG  <wl@gnu.org>
 
 	Adding support for composite glyphs: \[xxx yyy ...] and the

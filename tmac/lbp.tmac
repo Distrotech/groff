@@ -2,6 +2,7 @@
 .\"
 .nr _C \n(.C
 .cp 0
+.
 .ftr CW CR
 .ftr C CR
 .ftr CO CI
@@ -14,6 +15,56 @@
 .ftr Hx HNBI
 .ftr EBI EI
 .ftr CBI CI
+.
+.fchar \[fi] fi
+.fchar \[fl] fl
+.fchar \[ff] ff
+.fchar \[Fi] ffi
+.fchar \[Fl] ffl
+.fchar \[OE] OE
+.fchar \[oe] oe
+.fchar \[IJ] IJ
+.fchar \[ij] ij
+.fchar \[.i] i
+.
+.de lbp-achar
+.  \" Note that character definitions are always interpreted with
+.  \" compatibility mode off.
+.  fchar \\$1 \
+\\$3\
+\k[acc]\
+\h'(u;-\w'\\$2'-\w'\\$3'/2+\\\\n[skw]+(\w'x'*0)-\\\\n[skw])'\
+\v'(u;\w'x'*0+\\\\n[rst]+(\w'\\$3'*0)-\\\\n[rst])'\
+\\$2\
+\v'(u;\w'x'*0-\\\\n[rst]+(\w'\\$3'*0)+\\\\n[rst])'\
+\h'|\\\\n[acc]u'
+.  hcode \\$1\\$4
+..
+.
+.lbp-achar \['A] \'    A     a
+.lbp-achar \['C] \'    C     c
+.lbp-achar \['c] \'    c     c
+.lbp-achar \['I] \'    I     i
+.lbp-achar \['O] \'    O     o
+.lbp-achar \['U] \'    U     u
+.lbp-achar \['Y] \'    Y     y
+.lbp-achar \['y] \'    y     y
+.lbp-achar \[:E] \[ad] E     e
+.lbp-achar \[:I] \[ad] I     i
+.lbp-achar \[:Y] \[ad] Y     y
+.lbp-achar \[^A] ^     A     a
+.lbp-achar \[^E] ^     E     e
+.lbp-achar \[^I] ^     I     i
+.lbp-achar \[^O] ^     O     o
+.lbp-achar \[^U] ^     U     u
+.lbp-achar \[`A] \`    A     a
+.lbp-achar \[`E] \`    E     e
+.lbp-achar \[`I] \`    I     i
+.lbp-achar \[`O] \`    O     o
+.lbp-achar \[`U] \`    U     u
+.lbp-achar \[~O] ~     O     o
+.lbp-achar \[~o] ~     o     o
+.
 .cp \n(_C
 .
 .do mso latin1.tmac

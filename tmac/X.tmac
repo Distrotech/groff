@@ -43,8 +43,30 @@
 .fchar \[rh] \[rA]
 .fchar \[bq] ,
 .fchar \[aq] '
+.fchar \[IJ] IJ
+.fchar \[ij] ij
+.
+.de X-achar
+.  \" Note that character definitions are always interpreted with
+.  \" compatibility mode off.
+.  fchar \\$1 \
+\\$3\
+\k[acc]\
+\h'(u;-\w'\\$2'-\w'\\$3'/2+\\\\n[skw]+(\w'x'*0)-\\\\n[skw])'\
+\v'(u;\w'x'*0+\\\\n[rst]+(\w'\\$3'*0)-\\\\n[rst])'\
+\\$2\
+\v'(u;\w'x'*0-\\\\n[rst]+(\w'\\$3'*0)+\\\\n[rst])'\
+\h'|\\\\n[acc]u'
+.  hcode \\$1\\$4
+..
+.
+.X-achar \['C] \'    C c
+.X-achar \['c] \'    c c
+.X-achar \[:Y] \[ad] Y y
+.
 .if '\*[.T]'X100' \
 .  char \[radicalex] \h'-\w'\[sr]'u'\[radicalex]\h'\w'\[sr]'u'
+.
 .if !\n[_C] \
 .  mso pspic.tmac
 .cp \n[_C]

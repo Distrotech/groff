@@ -4,6 +4,42 @@ described.  There are more details in the man and info pages.
 VERSION 1.18.2
 ==============
 
+Troff
+-----
+
+o Composite glyphs are now supported.  To do this, a subset of the Adobe
+  Glyph List (AGL) Algorithm as described in 
+
+    http://partners.adobe.com/asn/developer/typeforum/unicodegn.html
+
+  is used to construct glyph names based on Unicode character codes.  The
+  existing groff glyph names are frozen; no glyph names which can't be
+  constructed algorithmically will be added in the future.
+
+  The \[...] escape sequence has been extended to specify multiple glyph
+  components.  Example:
+
+    \[A ho]
+
+  this accesses a glyph with the name `u0041_0328'.
+
+  Some groff glyphs which are useful as composites map to `wrong' Unicode
+  code points.  For example, `ho' maps to U+02DB which is a spacing
+  ogonek, whereas a non-spacing ogonek U+0328 is needed for composite
+  glyphs.  The new request
+
+    .composite from to
+
+  will change the mapping while a composite glyph name is constructed.
+  To make \[A ho] yield the expected result,
+
+    .composite ho u0328
+
+  is needed.
+
+  Please refer to the info pages of groff and to the groff_char man page
+  for more details.
+
 Grotty
 ------
 

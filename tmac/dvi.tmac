@@ -17,18 +17,31 @@
 .fspecial HI CWI
 .fspecial HBI CWI
 .
-.\" This uses the dvi-char_1 string in font CW or CWI, dvi-char_0 otherwise.
-.fchar _ \
-\R'dvi-char_ ((\\n[.f] == \f[CW]\\n[.f]\f[]) : \
-              (\\n[.f] == \f[CWI]\\n[.f]\f[]))'\\*[dvi-char_\\n[dvi-char_]]
-.fchar \[ul] \R'dvi-char_ \w'M'==\w'i''\\*[dvi-char_\\n[dvi-char_]]
+.\" This uses the dvi-char-_-1 string in fixed-width fonts, dvi-char-_-0
+.\" otherwise.
+.fchar _ \R'dvi-char (\w'M' == \w'i')'\\*[dvi-char-_-\\n[dvi-char]]
 .\" Normally use a rule.
 .\" This is designed so that \(ul, \(rn and \(br form corners.
-.ds dvi-char_0 \Z'\v'.23m'\D'R .54m .04m''\h'.5m'
-.\" In font CW and CWI use a real _ character.
-.ds dvi-char_1 _
+.ds dvi-char-_-0 \Z'\v'.08m'\D'R .54m .04m''\h'.5m'
+.\" In fixed-width fonts (CW and CWI) use a real _ character.
+.ds dvi-char-_-1 _
+.
+.fchar \[/l] \
+\R'dvi-char ((\w'M' == \w'i') + \
+             (\\n[.f] == \f[CWI]\\n[.f]\f[]))'\\*[dvi-char-/l-\\n[dvi-char]]
+.ds dvi-char-/l-0 \[slash@for@l]l
+.ds dvi-char-/l-1 \Z'\v'0.22v'\h'-0.02m'\''l
+.ds dvi-char-/l-2 \Z'\v'0.22v'\h'-0.13m'\''l
+.
+.fchar \[/L] \
+\R'dvi-char ((\w'M' == \w'i') + \
+             (\\n[.f] == \f[CWI]\\n[.f]\f[]))'\\*[dvi-char-/L-\\n[dvi-char]]
+.ds dvi-char-/L-0 \h'\w'L'u-\w'\[slash@for@l]L'u'\[slash@for@l]L
+.ds dvi-char-/L-1 \Z'\v'0.22v'\h'-0.14m'\''L
+.ds dvi-char-/L-2 \Z'\v'0.22v'\h'-0.21m'\''L
 .
 .fchar \[radicalex] \D'R .5m -.04m'\v'.04m'
+.fchar \[ul] \Z'\v'.23m'\D'R .54m .04m''\h'.5m'
 .fchar \[br] \Z'\v'.25m'\D'R .04m -1m''
 .fchar \[ru] \Z'\v'-.02m'\D'R .54m .04m''\h'.5m'
 .fchar \[rn] \Z'\v'-.77m'\D'R .54m .04m''\h'.5m'
@@ -92,6 +105,9 @@ D\v'-.33m'\s0\v'.33m'
 .fchar \[Ye] \o'-Y'
 .fchar \[Cs] \o'\[mu]o'
 .
+.fchar \[IJ] IJ
+.fchar \[ij] ij
+.
 .de dvi-achar
 .  \" Note that character definitions are always interpreted with
 .  \" compatibility mode off.
@@ -112,6 +128,7 @@ D\v'-.33m'\s0\v'.33m'
 .dvi-achar \[~A] ~     A     a
 .dvi-achar \[:A] \[ad] A     a
 .dvi-achar \[oA] \[ao] A     a
+.dvi-achar \['C] \'    C     c
 .dvi-achar \[`E] \`    E     e
 .dvi-achar \['E] \'    E     e
 .dvi-achar \[^E] ^     E     e
@@ -138,6 +155,7 @@ D\v'-.33m'\s0\v'.33m'
 .dvi-achar \[~a] ~     a     a
 .dvi-achar \[:a] \[ad] a     a
 .dvi-achar \[oa] \[ao] a     a
+.dvi-achar \['c] \'    c     c
 .dvi-achar \[`e] \`    e     e
 .dvi-achar \['e] \'    e     e
 .dvi-achar \[^e] ^     e     e
