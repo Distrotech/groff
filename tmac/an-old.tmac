@@ -1,6 +1,6 @@
 .\" an-old.tmac
 .\"
-.\" Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
+.\" Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
 .\"   Free Software Foundation, Inc.
 .\"      Written by James Clark (jjc@jclark.com)
 .\"
@@ -456,14 +456,15 @@
 .
 .de1 RI
 .  if \\n[.$] \{\
-.    ds an-result \&\\$1
+.    ds an-result \&\f[R]\\$1
 .    shift
 .    while (\\n[.$] >= 2) \{\
 .      as an-result \,\f[I]\\$1\f[R]\/\\$2\\*[an-empty]
 .      shift 2
 .    \}
-.    if \\n[.$] .as an-result \,\f[I]\\$1\f[R]
+.    if \\n[.$] .as an-result \,\f[I]\\$1
 \\*[an-result]
+.    ft R
 .  \}
 ..
 .
@@ -477,6 +478,7 @@
 .    \}
 .    if \\n[.$] .as an-result \/\\$1
 \\*[an-result]
+.    ft R
 .  \}
 ..
 .
