@@ -44,6 +44,12 @@ extern "C" {
 #include <getopt.h>
 #endif
 
+#ifdef HAVE_SETLOCALE
+#include <locale.h>
+#else
+#define setlocale(category, locale) do {} while(0)
+#endif
+
 char *strsave(const char *s);
 int is_prime(unsigned);
 

@@ -506,6 +506,7 @@ static char *fix_program_name(char *arg, char *dflt)
 
 int main(int argc, char **argv)
 {
+  setlocale(LC_NUMERIC, "C");
 #if defined(__MSDOS__) || defined(__EMX__)
   argv[0] = fix_program_name(argv[0], "pic");
 #endif /* __MSDOS__ || __EMX__ */

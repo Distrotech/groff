@@ -1779,6 +1779,7 @@ static void usage(FILE *stream);
 
 int main(int argc, char **argv)
 {
+  setlocale(LC_NUMERIC, "C");
   program_name = argv[0];
   string env;
   static char stderr_buf[BUFSIZ];

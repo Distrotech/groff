@@ -243,6 +243,7 @@ int
 main(int argc,
      char **argv)
 {
+  setlocale(LC_NUMERIC, "C");
   program_name = argv[0];
   register FILE *fp;
   register int k;
