@@ -464,13 +464,35 @@ This is similar to
 except
 .I variable
 must already be defined,
-and the value of
+and
+.I expr
+will be assigned to
 .I variable
-will be changed only in the innermost block in which it is defined.
+without creating a variable local to the current block.
 (By contrast,
 .B =
 defines the variable in the current block if it is not already defined there,
-and then changes the value in the current block.)
+and then changes the value in the current block only.)
+For example, the following:
+.RS
+.IP
+.ft B
+.nf
+\&.PS
+x = 3
+y = 3
+[
+  x := 5
+  y = 5
+]
+print x " " y
+\&.PE
+.ft
+.fi
+.RE
+.IP
+prints
+.BR 5\ 3 .
 .
 .LP
 Arguments of the form

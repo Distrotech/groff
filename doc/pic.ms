@@ -1301,20 +1301,6 @@ move from last [].e 2
 .PE
 .CE "3: Composite block objects always have positive width and height
 .PP
-Variables in a block can't be directly accessed from outside; they must
-be converted into a position:
-.KS
-.DS
-.CW
-A: [
-     xy = 5;
-     Xy: (xy,0);
-   ]
-print A.Xy.x
-.R
-.DE
-.KE
-.PP
 Blocks may be nested.  This means you can use block attachment points
 to build up complex diagrams hierarchically, from the inside out.
 Note that \fBlast\fP and the other sequential naming mechanisms
@@ -1415,16 +1401,32 @@ Anywhere a number is expected, the language will also accept a
 variable.  Variables may be the built-in style variable described in
 the last section, or new variables created by assignment.
 .PP
-DWB \fBpic\fP supports only the ordinary assignment via \fB=\fP, defines
-the variable in the current block if it is not already defined there, and
-then changes the value in the current block.
+DWB \fBpic\fP supports only the ordinary assignment via \fB=\fP, which
+defines the variable (on the left side of the equal sign) in the current
+block if it is not already defined there, and then changes the value (on
+the right side) in the current block.  The variable is not visible outside
+of the block.  This is similar to the C\~programming language where a
+variable within a block shadows a variable with the same name outside of
+the block.
+.PP
 GNU \fBgpic\fP supports an alternate form of assignment using \fB:=\fP.
-The
-.I variable
-(right side) must already be defined,
-and the value of
-.I variable
-will be changed only in the innermost block in which it is defined.
+The variable must already be defined, and the value will be assigned to
+that variable without creating a variable local to the current block.
+For example, this
+.KS
+.DS
+.CW
+x=5
+y=5
+[
+  x:=3
+  y=3
+]
+print x " " y
+.DE
+.KE
+.LP
+prints \fB3 5\fP.
 .PP
 You can use the height, width, radius, and x and y coordinates of any
 object or corner in expressions.  If \fBA\fP is an object label or name,
