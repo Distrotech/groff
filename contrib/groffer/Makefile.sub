@@ -1,0 +1,19 @@
+MAN1=groffer.n
+CLEANADD=groffer
+
+all: groffer
+
+groffer: groffer.sh
+	rm -f $@; \
+	sed -e "s|@g@|$(g)|g" \
+	    -e "s|@VERSION@|$(version)$(revision)|" \
+	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/groffer.sh >$@; \
+	chmod +x $@
+
+install_data: groffer
+	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
+	-rm -f $(bindir)/groffer
+	$(INSTALL_SCRIPT) groffer $(bindir)/groffer
+
+uninstall_sub:
+	-rm -f $(bindir)/groffer
