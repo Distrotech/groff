@@ -21,12 +21,14 @@ groff_bin_dirs=\
   $(top_builddir)/src/roff/groff \
   $(top_builddir)/src/roff/troff \
   $(top_builddir)/src/devices/grops
-groff_bin_path=`echo $(groff_bin_dirs) | sed -e 's| \+|:|g'`
+groff_bin_path=`echo $(groff_bin_dirs) | sed -e 's|  *|:|g'`
 
 FFLAG=-F$(top_builddir)/font
 TFLAG=-M$(top_builddir)/tmac -M$(srcdir)
 
-GROFF=GROFF_BIN_PATH=$(groff_bin_path); \
+GROFF=GROFF_COMMAND_PREFIX=''; \
+      export GROFF_COMMAND_PREFIX; \
+      GROFF_BIN_PATH=$(groff_bin_path); \
       export GROFF_BIN_PATH; \
       $(top_builddir)/src/roff/groff/groff $(FFLAG) $(TFLAG)
 
