@@ -47,7 +47,9 @@ with a
 .B \-Tlatin1
 or
 .B \-Tutf8
-option.
+option on ASCII based systems, and with
+.B \-Tcp1047
+on EBCDIC based hosts.
 If no files are given,
 .B grotty
 will read the standard input.
@@ -124,9 +126,10 @@ for font and device description files;
 .I name
 is the name of the device, usually
 .BR ascii ,
-.B latin1
+.BR latin1 ,
+.BR utf8 ,
 or
-.BR utf8 .
+.BR cp1047 .
 .TP
 .B \-h
 Use horizontal tabs in the output.
@@ -209,6 +212,18 @@ of
 .B utf8
 device.
 .TP
+.B @FONTDIR@/devcp1047/DESC
+Device description file for
+.B cp1047
+device.
+.TP
+.BI @FONTDIR@/devcp1047/ F
+Font description file for font
+.I F
+of
+.B cp1047
+device.
+.TP
 .B @MACRODIR@/tmac.tty
 Macros for use with
 .BR grotty .
@@ -216,6 +231,10 @@ Macros for use with
 .B @MACRODIR@/tmac.tty-char
 Additional klugey character definitions for use with
 .BR grotty .
+.LP
+Note that on EBCDIC hosts, only files for the
+.B cp1047
+device will be installed.
 .SH BUGS
 .LP
 .B grotty

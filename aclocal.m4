@@ -456,7 +456,7 @@ groff_cv_ebcdic="yes"
  AC_MSG_RESULT(yes)
  AC_DEFINE(IS_EBCDIC_HOST),
 groff_cv_ebcdic="no"
- TTYDEVDIRS="font/devascii font/devlatin1"
+ TTYDEVDIRS="font/devascii font/devlatin1 font/devutf8"
  AC_MSG_RESULT(no))
 AC_SUBST(TTYDEVDIRS)])dnl
 dnl
