@@ -269,6 +269,18 @@ Macro Packages
 .LI
 The string `Am' (producing an ampersand) has been added to mdoc for
 compatibility with NetBSD.
+
+.LI
+`.IX' is now deprecated for mom; you should use `.IQ' (Indent Quit)
+instead.
+
+.LI
+In mom, new inlines `FWD', `BCK', `UP', and `DOWN' deal with horizontal
+and vertical movements; please refer to contrib/mom/NEWS for more
+details.
+
+.LI
+New macro ENDNOTES_HDRFTR_CENTER for mom to better control headers.
 .ULE
 .
 .SH 2
@@ -567,7 +579,7 @@ Macro Packages
 
 .ULS
 .LI
-.MTO df191@\:ncf.ca "Peter Schaffter" .
+.MTO df191@\:ncf.ca "Peter Schaffter"
 has contributed a new major macro package called `mom', mainly for
 non-scientific writers, which takes care of many typographic issues.
 It comes with a complete reference (in HTML format) and some examples.
