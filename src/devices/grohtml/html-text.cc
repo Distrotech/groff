@@ -374,11 +374,8 @@ void html_text::push_para (color *c)
 
 void html_text::do_italic (void)
 {
-  done_bold();
-  done_tt();
-  if (! is_present(I_TAG)) {
+  if (! is_present(I_TAG))
     push_para(I_TAG);
-  }
 }
 
 /*
@@ -387,11 +384,8 @@ void html_text::do_italic (void)
 
 void html_text::do_bold (void)
 {
-  done_italic();
-  done_tt();
-  if (! is_present(B_TAG)) {
+  if (! is_present(B_TAG))
     push_para(B_TAG);
-  }
 }
 
 /*
@@ -400,11 +394,8 @@ void html_text::do_bold (void)
 
 void html_text::do_tt (void)
 {
-  done_bold();
-  done_italic();
-  if ((! is_present(TT_TAG)) && (! is_present(PRE_TAG))) {
+  if ((! is_present(TT_TAG)) && (! is_present(PRE_TAG)))
     push_para(TT_TAG);
-  }
 }
 
 /*
@@ -413,8 +404,6 @@ void html_text::do_tt (void)
 
 void html_text::do_pre (void)
 {
-  done_bold();
-  done_italic();
   done_tt();
   if (is_present(P_TAG)) {
     html_indent *i = remove_indent(P_TAG);

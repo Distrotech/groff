@@ -2908,6 +2908,16 @@ void html_printer::end_font (const char *fontname)
     current_paragraph->done_italic();
   } else if (strcmp(fontname, "CR") == 0) {
     current_paragraph->done_tt();
+  } else if (strcmp(fontname, "CI") == 0) {
+    current_paragraph->done_italic();
+    current_paragraph->done_tt();
+  } else if (strcmp(fontname, "CB") == 0) {
+    current_paragraph->done_bold();
+    current_paragraph->done_tt();
+  } else if (strcmp(fontname, "CBI") == 0) {
+    current_paragraph->done_bold();
+    current_paragraph->done_italic();
+    current_paragraph->done_tt();
   }
 }
 
@@ -2933,6 +2943,25 @@ void html_printer::start_font (const char *fontname)
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
+  } else if (strcmp(fontname, "CI") == 0) {
+    if ((! fill_on) && (is_courier_until_eol())) {
+      current_paragraph->do_pre();
+    }
+    current_paragraph->do_tt();
+    current_paragraph->do_italic();
+  } else if (strcmp(fontname, "CB") == 0) {
+    if ((! fill_on) && (is_courier_until_eol())) {
+      current_paragraph->do_pre();
+    }
+    current_paragraph->do_tt();
+    current_paragraph->do_bold();
+  } else if (strcmp(fontname, "CBI") == 0) {
+    if ((! fill_on) && (is_courier_until_eol())) {
+      current_paragraph->do_pre();
+    }
+    current_paragraph->do_tt();
+    current_paragraph->do_italic();
+    current_paragraph->do_bold();
   }
 }
 
