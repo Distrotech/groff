@@ -1,3 +1,28 @@
+2002-02-03  Werner LEMBERG  <wl@gnu.org>
+
+	Added three new requests `ds1', `as1', and `ami'.  The former two
+	are equivalent to `ds' and `as' with the difference that
+	compatibility mode is saved on entry, switched off during string
+	expansion, and restored on exit.  The latter is the pendant to `dei'
+	for `am'.
+
+	(do_define_string): Use `define_mode' and `calling mode'.
+	Insert COMPATIBLE_SAVE and COMPATIBLE_RESTORE at the beginning and
+	end of string, respectively.
+	(define_string, append_string): Use `calling_mode'.
+	(define_nocomp_string, append_nocomp_string,
+	define_string_indirect): New functions.
+	(init_input_requests): Updated.
+	* NEWS, man/groff_diff.man, man/groff.man: Document it.
+
+	* src/preproc/eqn/box.cc (box::top_level, box::extra_space): Use
+	`as1' for assigning LINE_STRING (this is `10' usually).  Sun's
+	mm macro package accesses this string register directly.
+	* src/preproc/eqn/main.cc (inline_equation): Use `as1'.
+
+	* tmac/trace.tmac: Trace calls to `am' also.  Make it work in
+	compatibility mode.
+
 2002-02-02  Larry Kollar  <kollar@alltel.net>
 
 	* doc/groff.texinfo, tmac/groff_ms.man: More fixes.

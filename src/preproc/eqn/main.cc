@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -197,14 +197,14 @@ static int inline_equation(FILE *fp, string &linebuf, string &str)
     }
     str += '\0';
     if (html && (suppress_html == 0)) {
-      printf(".as %s ", LINE_STRING);
+      printf(".as1 %s ", LINE_STRING);
       graphic_start(1);
       printf("\n");
     }
     init_lex(str.contents(), current_filename, start_lineno);
     yyparse();
     if (html && (suppress_html == 0)) {
-      printf(".as %s ", LINE_STRING);
+      printf(".as1 %s ", LINE_STRING);
       graphic_end();
       printf("\n");
     }

@@ -3505,7 +3505,10 @@ void read_request()
   tok.next();
 }
 
-void do_define_string(int append)
+enum define_mode { DEFINE_NORMAL, DEFINE_APPEND, DEFINE_IGNORE };
+enum calling_mode { CALLING_NORMAL, CALLING_INDIRECT, CALLING_DISABLE_COMP };
+
+void do_define_string(define_mode mode, calling_mode calling)
 {
   symbol nm;
   node *n;
@@ -3533,8 +3536,10 @@ void do_define_string(int append)
   macro mac;
   request_or_macro *rm = (request_or_macro *)request_dictionary.lookup(nm);
   macro *mm = rm ? rm->to_macro() : 0;
-  if (append && mm)
+  if (mode == DEFINE_APPEND && mm)
     mac = *mm;
+  if (calling == CALLING_DISABLE_COMP)
+    mac.append(COMPATIBLE_SAVE);
   while (c != '\n' && c != EOF) {
     if (c == 0)
       mac.append(n);
@@ -3546,18 +3551,30 @@ void do_define_string(int append)
     mm = new macro;
     request_dictionary.define(nm, mm);
   }
+  if (calling == CALLING_DISABLE_COMP)
+    mac.append(COMPATIBLE_RESTORE);
   *mm = mac;
   tok.next();
 }
 
 void define_string()
 {
-  do_define_string(0);
+  do_define_string(DEFINE_NORMAL, CALLING_NORMAL);
+}
+
+void define_nocomp_string()
+{
+  do_define_string(DEFINE_NORMAL, CALLING_DISABLE_COMP);
 }
 
 void append_string()
 {
-  do_define_string(1);
+  do_define_string(DEFINE_APPEND, CALLING_NORMAL);
+}
+
+void append_nocomp_string()
+{
+  do_define_string(DEFINE_APPEND, CALLING_DISABLE_COMP);
 }
 
 void do_define_character(int fallback)
@@ -3734,9 +3751,6 @@ void handle_initial_title()
 // this should be local to define_macro, but cfront 1.2 doesn't support that
 static symbol dot_symbol(".");
 
-enum define_mode { DEFINE_NORMAL, DEFINE_APPEND, DEFINE_IGNORE };
-enum calling_mode { CALLING_NORMAL, CALLING_INDIRECT, CALLING_DISABLE_COMP };
-
 void do_define_macro(define_mode mode, calling_mode calling)
 {
   symbol nm, term;
@@ -3890,6 +3904,11 @@ void define_indirect_macro()
 void append_macro()
 {
   do_define_macro(DEFINE_APPEND, CALLING_NORMAL);
+}
+
+void append_indirect_macro()
+{
+  do_define_macro(DEFINE_APPEND, CALLING_INDIRECT);
 }
 
 void append_nocomp_macro()
@@ -6661,10 +6680,13 @@ void init_input_requests()
 {
   init_request("ds", define_string);
   init_request("as", append_string);
+  init_request("ds1", define_nocomp_string);
+  init_request("as1", append_nocomp_string);
   init_request("de", define_macro);
   init_request("dei", define_indirect_macro);
   init_request("de1", define_nocomp_macro);
   init_request("am", append_macro);
+  init_request("ami", append_indirect_macro);
   init_request("am1", append_nocomp_macro);
   init_request("ig", ignore);
   init_request("rm", remove_macro);

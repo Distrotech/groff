@@ -57,6 +57,15 @@ o The new request `fchar' can be used to provide fallback characters.  Its
 o The new request `itc' is a variant of `.it' for which a line interrupted
   with \c counts as one input line.
 
+o Two new requests `ds1' and `as1' which are similar to `ds' and `as' but
+  with compatibility mode disabled during expansion of strings defined by
+  them.
+
+o A new request `ami' (append macro indirect) has been added.  The first and
+  second parameter of `ami' are taken from string registers rather than
+  directly; this very special request is needed to make `trace.tmac'
+  independent from the escape character (which might even be disabled).
+
 o A new escape sequence `\O' is available (mainly for internal use with
   grohtml).  Please see groff_diff.7 and groff.texinfo for more details.
 
@@ -69,6 +78,9 @@ o The `-xwidth' specifier in the mdoc macro package has been removed.  Its
 
 o A new macro `Ex' has been added to the mdoc macro package to document an
   exit status.
+
+o The trace.tmac package now traces calls to `am' also.  Additionally, it
+  works in compatibility mode.
 
 o `troff.1' has been split.  Differences to UNIX troff are now documented
   in the new man page `groff_diff.7'.

@@ -1161,6 +1161,21 @@ until
 .request .end
 is called.
 .
+.REQ .ami macro
+Append to a macro whose name is contained in the string register
+.I macro
+until
+.request ..
+is called.
+.
+.REQ .ami macro end
+Append to a macro indirectly.
+.I macro
+and
+.I end
+are string registers whose contents are interpolated for the macro name
+and the end macro, respectively.
+.
 .REQ .am1 macro
 Same as
 .request .am
@@ -1180,6 +1195,11 @@ to
 .REQ .asciify diversion
 Unformat ASCII characters, spaces, and some escape sequences in
 .IR diversion .
+.
+.REQ .as1 stringvar anything
+Same as
+.request .as
+but with compatibility mode switched off during string expansion.
 .
 .REQ .backtrace
 Print a backtrace of the input on stderr.
@@ -1407,6 +1427,11 @@ Set
 .I stringvar
 to
 .IR anything .
+.
+.REQ .ds1 stringvar anything
+Same as
+.request .ds
+but with compatibility mode switched off during string expansion.
 .
 .REQ .dt N trap
 Set diversion trap to position
