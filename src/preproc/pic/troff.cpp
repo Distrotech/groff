@@ -197,7 +197,11 @@ void simple_output::ellipse(const position &cent, const distance &dim,
   case line_type::invisible:
     break;
   case line_type::dotted:
+    dotted_ellipse(cent, dim, lt);
+    break;
   case line_type::dashed:
+    dashed_ellipse(cent, dim, lt);
+    break;
   case line_type::solid:
     simple_ellipse(0, cent, dim);
     break;

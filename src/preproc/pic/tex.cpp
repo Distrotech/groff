@@ -324,12 +324,25 @@ void tex_output::ellipse(const position &cent, const distance &dim,
     printf("    \\special{sh %.3f}%%\n", fill);
   }
   position c = transform(cent);
-  printf("    \\special{%s %d %d %d %d 0 6.28319}%%\n",
-	 (lt.type == line_type::invisible ? "ia" : "ar"),
-	 milliinches(c.x),
-	 milliinches(c.y),
-	 milliinches(dim.x/(2.0*scale)),
-	 milliinches(dim.y/(2.0*scale)));
+  switch (lt.type) {
+  case line_type::solid:
+  case line_type::invisible:
+    printf("    \\special{%s %d %d %d %d 0 6.28319}%%\n",
+	   (lt.type == line_type::invisible ? "ia" : "ar"),
+	   milliinches(c.x),
+	   milliinches(c.y),
+	   milliinches(dim.x/(2.0*scale)),
+	   milliinches(dim.y/(2.0*scale)));
+    break;
+  case line_type::dashed:
+    dashed_ellipse(cent, dim / scale, lt);
+    break;
+  case line_type::dotted:
+    dotted_ellipse(cent, dim / scale, lt);
+    break;
+  default:
+    assert(0);
+  }
 }
 
 void tex_output::command(const char *s, const char *, int)
