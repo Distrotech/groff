@@ -1063,7 +1063,7 @@ class html_printer : public printer {
   void  save_paragraph                (void);
   void  restore_paragraph             (void);
   void  html_newline                  (void);
-  void  convert_to_image              (char *name);
+  void  convert_to_image              (char *troff_src, char *image_name);
   void  write_title                   (int in_head);
   void  find_title                    (void);
   int   is_bold                       (text_glob *g);
@@ -1075,7 +1075,6 @@ class html_printer : public printer {
   int   is_a_header                   (text_glob *g);
   int   processed_header              (text_glob *g);
   void  make_new_image_name           (void);
-  void  create_temp_name              (char *name, char *extension);
   void  calculate_region_margins      (region_glob *r);
   void  remove_redundant_regions      (void);
   void  remove_duplicate_regions      (void);
@@ -2408,54 +2407,32 @@ int html_printer::is_less (graphic_glob *g, text_glob *t)
   return( (g->minv < t->minv) || ((g->minv == t->minv) && (g->minh < t->minh)) );
 }
 
-/*
- *  create_tmp_file - opens a filename in /tmp carefully checking for failure
- *                    otherwise security could be circumvented.
- */
-
-static FILE *create_tmp_file (char *filename)
-{
-  FILE *f;
-  int   fd;
-
-  errno = 0;
-  /* This file is in /tmp, so open carefully */
-  fd = open(filename, O_WRONLY | O_CREAT | O_EXCL, 0600);
-  if (fd < 0) {
-    fatal("can't create `%1'", filename);
-  }
-  f  = fdopen(fd, "w");
-  if (f == 0) {
-    fatal("can't create `%1'", filename);
-  }
-  return( f );
-}
-
-void html_printer::convert_to_image (char *name)
+void html_printer::convert_to_image (char *troff_src, char *image_name)
 {
   char buffer[1024];
+  char *ps_src = mktemp(xtmptemplate("-ps-"));
 
-  sprintf(buffer, "grops %s > %s.ps\n", name, name);
+  sprintf(buffer, "grops %s > %s\n", troff_src, ps_src);
   if (debug_on) {
-    fprintf(stderr, "%s", buffer);
+    fprintf(stderr, buffer);
   }
   system(buffer);
 
   if (image_type == gif) {
     sprintf(buffer,
-	    "echo showpage | gs -q -dSAFER -sDEVICE=ppmraw -r%d -g%dx%d -sOutputFile=- %s.ps - | ppmquant 256  2> /dev/null | ppmtogif  2> /dev/null > %s.gif \n",
+	    "echo showpage | gs -q -dSAFER -sDEVICE=ppmraw -r%d -g%dx%d -sOutputFile=- %s - | ppmquant 256  2> /dev/null | ppmtogif  2> /dev/null > %s.gif \n",
 	    image_res,
 	    (end_region_hpos-start_region_hpos)*image_res/font::res+IMAGE_BOARDER_PIXELS,
 	    (end_region_vpos-start_region_vpos)*image_res/font::res+IMAGE_BOARDER_PIXELS,
-	    name, image_name);
+	    ps_src, image_name);
   } else {
     sprintf(buffer,
-	    "echo showpage | gs -q -dSAFER -sDEVICE=%s -r%d -g%dx%d -sOutputFile=- %s.ps - 2> /dev/null > %s.png \n",
+	    "echo showpage | gs -q -dSAFER -sDEVICE=%s -r%d -g%dx%d -sOutputFile=- %s - 2> /dev/null > %s.png \n",
 	    image_device,
 	    image_res,
 	    (end_region_hpos-start_region_hpos)*image_res/font::res+IMAGE_BOARDER_PIXELS,
 	    (end_region_vpos-start_region_vpos)*image_res/font::res+IMAGE_BOARDER_PIXELS,
-	    name, image_name);
+	    ps_src, image_name);
 #if 0
     sprintf(buffer,
 	    "echo showpage | gs -q -dSAFER -sDEVICE=ppmraw -r%d -g%dx%d -sOutputFile=- %s.ps - > %s.pnm ; pnmtopng -transparent white %s.pnm > %s.png \n",
@@ -2470,12 +2447,8 @@ void html_printer::convert_to_image (char *name)
     fprintf(stderr, "%s", buffer);
   }
   system(buffer);
-  sprintf(buffer, "/bin/rm -f %s %s.ps\n", name, name);
-  if (debug_on) {
-    fprintf(stderr, "%s", buffer);
-  } else {
-    system(buffer);
-  }
+  unlink(ps_src);
+  unlink(troff_src);
 }
 
 void html_printer::prologue (void)
@@ -2485,18 +2458,12 @@ void html_printer::prologue (void)
   troff.put_string(" 1 1\nx init\np1\n");
 }
 
-void html_printer::create_temp_name (char *name, char *extension)
-{
-  make_new_image_name();
-  sprintf(name, "/tmp/grohtml-%d-%ld.%s", image_number, (long)getpid(), extension);
-}
-
 void html_printer::display_globs (int is_to_html)
 {
   text_glob    *t=0;
   graphic_glob *g=0;
   FILE         *f=0;
-  char          name[MAX_TEMP_NAME];
+  char         *troff_src;
   int           something=FALSE;
   int           is_center=FALSE;
 
@@ -2504,8 +2471,8 @@ void html_printer::display_globs (int is_to_html)
 
   if (! is_to_html) {
     is_center = html_position_region();
-    create_temp_name(name, "troff");
-    f = create_tmp_file(name);
+    make_new_image_name();
+    f = xtmpfile(&troff_src, "-troff-", FALSE);
     troff.set_file(f);
     prologue();
     output_style.f = 0;
@@ -2576,7 +2543,7 @@ void html_printer::display_globs (int is_to_html)
   if ((! is_to_html) && (f != 0)) {
     fclose(troff.get_file());
     if (something) {
-      convert_to_image(name);
+      convert_to_image(troff_src, image_name);
 
       if (is_center) {
 	end_paragraph();
@@ -2602,7 +2569,6 @@ void html_printer::display_globs (int is_to_html)
       output_style.f   = 0;
       end_paragraph();
     }
-    // unlink(name);  // remove troff file
   }
 }
 
