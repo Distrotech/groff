@@ -3059,7 +3059,7 @@
 .    nr doc-is-compact 0
 .  \}
 .  el \{\
-.    tm1 "Usage: .Bd [-literal | -filled | -ragged | -centered | -unfilled]
+.    tm1 "Usage: .Bd {-literal | -filled | -ragged | -centered | -unfilled}
 .    tm1 "           [-offset [string]] [-compact] (#\n[.c])
 .  \}
 ..
@@ -3326,11 +3326,12 @@
 .\" NS doc-Bl-usage macro
 .
 .de doc-Bl-usage
-.  tm1 "Usage: .Bl [-hang | -ohang | -tag | -diag | -inset]
-.  tm1 "             [-width [string]] [-offset [string]] [-compact]
-.  tm1 "       .Bl [-column] [-offset [string]] [string1] [string2] ...
-.  tm1 "       .Bl [-item | -enum [-nested] | -bullet | -hyphen | -dash]
-.  tm1 "             [-offset [string]] [-compact] (#\n[.c])
+.  tm1 "Usage: .Bl {-hang | -ohang | -tag | -diag | -inset}
+.  tm1 "             [-width <string>] [-xwidth <command>]
+.  tm1 "             [-offset <string>] [-compact]
+.  tm1 "       .Bl -column [-offset <string>] <string1> <string2> ...
+.  tm1 "       .Bl {-item | -enum [-nested] | -bullet | -hyphen | -dash}
+.  tm1 "             [-offset <string>] [-compact] (#\n[.c])
 ..
 .
 .
@@ -3372,6 +3373,7 @@
 .
 .    ie        "\*[doc-arg\n[doc-arg-ptr]]"-compact" \
 .      nr doc-compact-list-stack\n[doc-list-depth] 1
+.
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-nested" \{\
 .      ie (\n[doc-list-depth] > 1) \{\
 .        nr doc-reg-dBla1 (\n[doc-list-depth] - 1)
@@ -3383,6 +3385,7 @@
 .      el \
 .        tm mdoc warning: `-nested' allowed with nested .Bl requests only (#\n[.c])
 .    \}
+.
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-width" \{\
 .      nr doc-arg-ptr +1
 .      \" XXX: this code should be modified to handle nested lists
@@ -3431,6 +3434,7 @@
 .        el \
 .          nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
 .    \}\}
+.
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xwidth" \{\
 .      nr doc-arg-ptr +1
 .      \" XXX: this code should be modified to handle nested lists
@@ -3459,6 +3463,7 @@
 .      \}
 .      nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
 .    \}
+.
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-offset" \{\
 .      nr doc-arg-ptr +1
 .
