@@ -14,8 +14,10 @@ if (grep(/^-x$/, @ARGV)) {
 	@ARGV = grep(!/^-x$/, @ARGV);
 }
 
-my $check_macro = "groff -rRef=1 -z @ARGV";
-my $run_macro = "groff  @ARGV";
+# mmroff should always have -mm, but not twice
+@ARGV = grep(!/^-mm$/, @ARGV);
+my $check_macro = "groff -rRef=1 -z -mm @ARGV";
+my $run_macro = "groff -mm @ARGV";
 
 my (%cur, $rfilename, $max_height, $imacro, $max_width, @out, @indi);
 open(MACRO, "$check_macro 2>&1 |") || die "run $check_macro:$!";
