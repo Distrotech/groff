@@ -9222,15 +9222,15 @@ requests.
 @cindex substring (@code{substring})
 Replace the string named @var{str} with the substring
 defined by the indices @var{n1} and@w{ }@var{n2}.  The first character
-in the string has index one.  If @var{n2} is omitted, it is taken to
+in the string has index@w{ }0.  If @var{n2} is omitted, it is taken to
 be equal to the string's length.  If the index value @var{n1} or
-@var{n2} is negative or zero, it is counted from the end of the
-string, going backwards: The last character has index@w{ }0, the
-character before the last character has index@w{ }@minus{}1, etc.
+@var{n2} is negative, it is counted from the end of the
+string, going backwards: The last character has index@w{ }@minus{}1, the
+character before the last character has index@w{ }@minus{}2, etc.
 
 @Example
 .ds xxx abcdefgh
-.substring xxx 2 -3
+.substring xxx 1 -4
 \*[xxx]
     @result{} bcde
 @endExample
@@ -9295,7 +9295,7 @@ type @samp{mac} and ignores the request.
 
 @Defreq {chop, xx}
 Remove (chop) the last character from the macro, string, or diversion
-named @var{xx}. This is useful for removing the newline from the end
+named @var{xx}.  This is useful for removing the newline from the end
 of diversions that are to be interpolated as strings.  This command
 can be used repeatedly; see @ref{Gtroff Internals}, for details on
 nodes inserted additionally by @code{gtroff}.
@@ -11925,6 +11925,11 @@ the @code{unformat} request.
 
 Macros only contain elements in the token list (and the node list is
 empty); diversions and strings can contain elements in both lists.
+
+Note that the @code{chop} request simply reduces the number of elements in a
+macro, string, or diversion by one.  Exceptions are @dfn{compatibility save}
+and @dfn{compatibility ignore} input tokens which are ignored.  The
+@code{substring} request also ignores those input tokens.
 
 Some requests like @code{tr} or @code{cflags} work on glyph
 identifiers only; this means that the associated glyph can be changed

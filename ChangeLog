@@ -1,3 +1,50 @@
+2002-06-04  Werner LEMBERG  <wl@gnu.org>
+
+	Changing the substring request to make it fit better with other
+	string manipulation functions in other programming languages:
+	Index 0 is now the first character in the string, and index -1
+	indicates the last character.  Since this request didn't work
+	properly anyway in the last release, it doesn't harm too much to
+	change the syntax.
+
+	* src/roff/troff/input.cc (substring_macro): Use loops to get
+	the real string length (ignoring COMPATIBLE_SAVE and
+	COMPATIBLE_RESTORE) and offsets.
+	Implement change described above.
+
+	* man/groff_char.man, tmac/doc-common (doc-header), tmac/doc.tmac
+	(doc-do-Bd-args, doc-do-Bl-args: Changed accordingly.
+
+	* NEWS, doc/groff.texinfo, man/groff_diff.man: Updated.
+
+2002-06-03  Werner LEMBERG  <wl@gnu.org>
+
+	Make .chop work with .de1 and friends.  COMPATIBLE_SAVE and
+	COMPATIBLE_RESTORE are completely ignored.
+
+	* src/roff/troff/input.cc (char_list::set, char_list::get): New
+	functions.
+	(macro): `length' field renamed to `len'.
+	Added new field `empty_macro' (1 if macro is empty), to be used
+	instead of checking `len'.
+	Updated all callers.
+	(macro::empty): Updated.
+	(macro::length, macro::set, macro::get): New functions.
+	(macro::append): Ignore COMPATIBLE_SAVE and COMPATIBLE_RESTORE.
+	Set `empty_macro'.
+	(chop_macro): Check and remove trailing COMPATIBLE_SAVE/
+	COMPATIBLE_RESTORE pairs.
+	(asciify): Ignore COMPATIBLE_SAVE and COMPATIBLE_RESTORE.
+	* src/roff/troff/request.h: Updated.
+
+	* doc/groff.texinfo: Document .chop's behaviour better.
+
+2002-06-02  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/pic.ms: Fix documentation for the addition of positions.
+
+	* tmac/doc.tmac, tmac/an-old.tmac: Need groff version 1.18.
+
 2002-06-29  Werner LEMBERG  <wl@gnu.org>
 
 	Implementation of string arguments of the form \*[foo arg1 arg2 ...]

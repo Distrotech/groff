@@ -57,8 +57,8 @@
 .cp 0
 .
 .
-.if (\n[.x]\n[.y] < 117) \
-.  ab You need GNU troff version 1.17 or higher to run this version of mdoc!
+.if (\n[.x]\n[.y] < 118) \
+.  ab You need GNU troff version 1.18 or higher to run this version of mdoc!
 .
 .
 .\" Load start-up files
@@ -2767,7 +2767,7 @@
 .        \" character yields identical numerical results (ignoring the
 .        \" scaling indicator)
 .        ds doc-str-ddBa "\$2
-.        substring doc-str-ddBa 1 -1
+.        substring doc-str-ddBa 0 -2
 .        if \B(\*[doc-str-ddBa]) \{\
 .          nr doc-reg-ddBa3 (;(\$2))
 .          nr doc-reg-ddBa4 (\*[doc-str-ddBa])
@@ -3082,10 +3082,10 @@
 .    ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
 .
 .    ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
-.    substring doc-str-dBla 1 1
+.    substring doc-str-dBla 0 0
 .    ie .\*[doc-str-dBla] \{\
 .      ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
-.      substring doc-str-dBla 2
+.      substring doc-str-dBla 1
 .      doc-first-parameter \*[doc-str-dBla]
 .      doc-get-width "\*[doc-str-dfp]
 .      doc-get-arg-type "\*[doc-str-dfp]
@@ -3129,7 +3129,7 @@
 .        \" character yields identical numerical results (ignoring the
 .        \" scaling indicator)
 .        ds doc-str-dBla1 "\*[doc-str-dBla]
-.        substring doc-str-dBla1 1 -1
+.        substring doc-str-dBla1 0 -2
 .        if \B(\*[doc-str-dBla1]) \{\
 .          nr doc-reg-dBla3 (;(\*[doc-str-dBla]))
 .          nr doc-reg-dBla4 (\*[doc-str-dBla1])
@@ -3171,7 +3171,7 @@
 .        warn (\n[.warn] - (\n[.warn] / 32 % 2 * 32))
 .
 .        ds doc-str-dBla1 "\*[doc-str-dBla]
-.        substring doc-str-dBla1 1 -1
+.        substring doc-str-dBla1 0 -2
 .        if \B(\*[doc-str-dBla1]) \{\
 .          nr doc-reg-dBla3 (;(\*[doc-str-dBla]))
 .          nr doc-reg-dBla4 (\*[doc-str-dBla1])
@@ -3208,10 +3208,10 @@
 .    ie "\*[doc-list-type-stack\n[doc-list-depth]]"column-list" \{\
 .      nr doc-num-columns +1
 .      ds doc-str-dBla \*[doc-arg\n[doc-arg-ptr]]
-.      substring doc-str-dBla 1 1
+.      substring doc-str-dBla 0 0
 .      ie .\*[doc-str-dBla] \{\
 .        ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
-.        substring doc-str-dBla 2
+.        substring doc-str-dBla 1
 .        doc-first-parameter \*[doc-str-dBla]
 .        doc-get-width "\*[doc-str-dfp]
 .        doc-get-arg-type "\*[doc-str-dfp]

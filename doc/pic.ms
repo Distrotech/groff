@@ -110,11 +110,11 @@ flow of data in \fBpic\fP processing:
 .PS
 ellipse "document";
 arrow;
-box "\fIgpic\/\fP(1)"
+box width 0.6 "\fIgpic\/\fP(1)"
 arrow;
-box width 1.2 "\fIgtbl\/\fP(1) or \fIgeqn\/\fP(1)" "(optional)" dashed;
+box width 1.1 "\fIgtbl\/\fP(1) or \fIgeqn\/\fP(1)" "(optional)" dashed;
 arrow;
-box "\fIgtroff\/\fP(1)";
+box width 0.6 "\fIgtroff\/\fP(1)";
 arrow;
 ellipse "PostScript"
 .PE
@@ -129,11 +129,11 @@ This was produced from the following \fBpic\fP program:
 \&.PS
 ellipse "document";
 arrow;
-box "\efIpic\efP(1)"
+box width 0.6 "\efIpic\e/\efP(1)"
 arrow;
-box width 1.2 "\efIgtbl\e/\efP(1) or \efIgeqn\e/\efP(1)" "(optional)" dashed;
+box width 1.1 "\efIgtbl\e/\efP(1) or \efIgeqn\e/\efP(1)" "(optional)" dashed;
 arrow;
-box "\efIgtroff\e/\efP(1)";
+box width 0.6 "\efIgtroff\e/\efP(1)";
 arrow;
 ellipse "PostScript"
 \&.PE
@@ -1016,7 +1016,9 @@ combine them to specify new positions.
 .NH 3
 Vector Sums and Displacements
 .PP
-Any two positions may be added or subtracted to yield a new position.
+Positions may be added or subtracted to yield a new position (to be
+more precise, you can only add a position and an expression pair; the
+latter must be on the right side of the addition or subtraction sign).
 The result is the conventional vector sum or difference of coordinates.
 For example, \fBlast box .ne + (0.1, 0)\fP is a valid position.  This 
 example illustrates a common use, to define a position slightly offset
@@ -1652,6 +1654,7 @@ behavior is therefore equivalent to \fBuntil .PE\fP).
 .PP
 Accordingly, the command
 .RS
+.KS
 .IP
 .ft CW
 .nf
@@ -1665,10 +1668,12 @@ box
 \&.PE
 .R
 .fi
+.KE
 .RE
 .LP
 is equivalent to
 .RS
+.KS
 .IP
 .ft CW
 .nf
@@ -1680,6 +1685,7 @@ box
 \&.PE
 .R
 .fi
+.KE
 .RE
 .NH 2
 Debug Messages
@@ -1846,7 +1852,8 @@ gets decorated with two numeric arguments which are the X and
 Y\~dimensions of the picture in inches.  The post-processor can use
 these to reserve space for the picture and center it.
 .PP
-The \fBmgs\fP macros, for example, include the following definitions:
+The GNU incarnation of the \fBms\fP macro package, for example, includes
+the following definitions:
 .KS
 .DS
 .ps -1

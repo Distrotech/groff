@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 29 June 2002
+Last update : 05 July 2002
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -47,7 +47,11 @@ FDL in the main directory of the groff source package.
 .
 .\" --------------------------------------------------------------------
 .\" start of macro definitions
+.
 .eo
+.
+.de c
+..
 .
 .de TQ
 .  br
@@ -68,12 +72,12 @@ FDL in the main directory of the groff source package.
 .  Text \[oq]\f[B]\*[@arg1]\f[]\[cq]\$*
 .  rm @arg1
 ..
-.\" A shell command line
+.c A shell command line
 .de ShellCommand
 .  br
 .  IR "shell#" "\h'1m'\f[CB]\$*\f[]\/"
 ..
-.\" reference of a request or macro
+.c reference of a request or macro
 .de request
 .  ds @arg1 \$1
 .  shift 1
@@ -83,7 +87,7 @@ FDL in the main directory of the groff source package.
 ..
 .als option request
 .
-.\" representation of an escape sequence
+.c representation of an escape sequence
 .de esc
 .  ds @arg1 \$1
 .  shift
@@ -2038,7 +2042,7 @@ with the substring defined by the indices
 .I n1
 and
 .IR n2 .
-The first character in the string has index one.
+The first character in the string has index\~0.
 .
 If
 .I n2
@@ -2048,11 +2052,11 @@ If the index value
 .I n1
 or
 .I n2
-is negative or zero, it will be counted from the end of the string,
+is negative, it will be counted from the end of the string,
 going backwards:
 .
-The last character has index\~0, the character before the last
-character has index\~-1, etc.
+The last character has index\~-1, the character before the last
+character has index\~-2, etc.
 .
 .TP
 .BI .tkf\  f\ s1\ n1\ s2\ n2

@@ -2788,6 +2788,8 @@ public:
   char_list();
   ~char_list();
   void append(unsigned char);
+  void set(unsigned char, int);
+  unsigned char get(int);
   int length();
 private:
   unsigned char *ptr;
@@ -2832,6 +2834,44 @@ void char_list::append(unsigned char c)
   }
   *ptr++ = c;
   len++;
+}
+
+void char_list::set(unsigned char c, int offset)
+{
+  assert(len > offset);
+  // optimization for access at the end
+  int boundary = len - len % char_block::SIZE;
+  if (offset >= boundary) {
+    *(tail->s + offset - boundary) = c;
+    return;
+  }
+  char_block *tem = head;
+  int l = 0;
+  for (;;) {
+    l += char_block::SIZE;
+    if (l > offset) {
+      *(tem->s + offset % char_block::SIZE) = c;
+      return;
+    }
+    tem = tem->next;
+  }
+}
+
+unsigned char char_list::get(int offset)
+{
+  assert(len > offset);
+  // optimization for access at the end
+  int boundary = len - len % char_block::SIZE;
+  if (offset >= boundary)
+    return *(tail->s + offset - boundary);
+  char_block *tem = head;
+  int l = 0;
+  for (;;) {
+    l += char_block::SIZE;
+    if (l > offset)
+      return *(tem->s + offset % char_block::SIZE);
+    tem = tem->next;
+  }
 }
 
 class node_list {
@@ -2906,12 +2946,14 @@ macro::macro()
     filename = 0;
     lineno = 0;
   }
-  length = 0;
+  len = 0;
+  empty_macro = 1;
   p = 0;
 }
 
 macro::macro(const macro &m)
-: p(m.p), filename(m.filename), lineno(m.lineno), length(m.length)
+: p(m.p), filename(m.filename), lineno(m.lineno), len(m.len),
+  empty_macro(m.empty_macro)
 {
   if (p != 0)
     p->count++;
@@ -2927,7 +2969,8 @@ macro &macro::operator=(const macro &m)
   p = m.p;
   filename = m.filename;
   lineno = m.lineno;
-  length = m.length;
+  len = m.len;
+  empty_macro = m.empty_macro;
   return *this;
 }
 
@@ -2936,14 +2979,34 @@ void macro::append(unsigned char c)
   assert(c != 0);
   if (p == 0)
     p = new macro_header;
-  if (p->cl.length() != length) {
-    macro_header *tem = p->copy(length);
+  if (p->cl.length() != len) {
+    macro_header *tem = p->copy(len);
     if (--(p->count) <= 0)
       delete p;
     p = tem;
   }
   p->cl.append(c);
-  ++length;
+  ++len;
+  if (c != COMPATIBLE_SAVE && c != COMPATIBLE_RESTORE)
+    empty_macro = 0;
+}
+
+void macro::set(unsigned char c, int offset)
+{
+  assert(p != 0);
+  assert(c != 0);
+  p->cl.set(c, offset);
+}
+
+unsigned char macro::get(int offset)
+{
+  assert(p != 0);
+  return p->cl.get(offset);
+}
+
+int macro::length()
+{
+  return len;
 }
 
 void macro::append_str(const char *s)
@@ -2963,15 +3026,16 @@ void macro::append(node *n)
   assert(n != 0);
   if (p == 0)
     p = new macro_header;
-  if (p->cl.length() != length) {
-    macro_header *tem = p->copy(length);
+  if (p->cl.length() != len) {
+    macro_header *tem = p->copy(len);
     if (--(p->count) <= 0)
       delete p;
     p = tem;
   }
   p->cl.append(0);
   p->nl.append(n);
-  ++length;
+  ++len;
+  empty_macro = 0;
 }
 
 void macro::append_unsigned(unsigned int i)
@@ -2993,7 +3057,7 @@ void macro::append_int(int i)
 
 void macro::print_size()
 {
-  errprint("%1", length);
+  errprint("%1", len);
 }
 
 // make a copy of the first n bytes
@@ -3064,7 +3128,7 @@ string_iterator::string_iterator(const macro &m, const char *p, symbol s)
 : mac(m), how_invoked(p),
   newline_flag(0), suppress_newline_flag(0), lineno(1), nm(s)
 {
-  count = mac.length;
+  count = mac.len;
   if (count != 0) {
     bp = mac.p->cl.head;
     nd = mac.p->nl.head;
@@ -3136,8 +3200,6 @@ int string_iterator::peek()
   if (count <= 0)
     return EOF;
   const unsigned char *p = eptr;
-  if (count <= 0)
-    return EOF;
   if (p >= bp->s + char_block::SIZE) {
     p = bp->next->s;
   }
@@ -3265,7 +3327,7 @@ input_iterator *make_temp_iterator(const char *s)
   }
 }
 
-// this is used when macros are interpolated using the .macro_name notation
+// this is used when macros with arguments are interpolated
 
 struct arg_list {
   macro mac;
@@ -3337,11 +3399,11 @@ void macro_iterator::shift(int n)
 
 int operator==(const macro &m1, const macro &m2)
 {
-  if (m1.length != m2.length)
+  if (m1.len != m2.len)
     return 0;
   string_iterator iter1(m1);
   string_iterator iter2(m2);
-  int n = m1.length;
+  int n = m1.len;
   while (--n >= 0) {
     node *nd1 = 0;
     int c1 = iter1.get(&nd1);
@@ -3516,7 +3578,7 @@ macro *macro::to_macro()
 
 int macro::empty()
 {
-  return length == 0;
+  return empty_macro == 1;
 }
 
 macro_iterator::macro_iterator(symbol s, macro &m, const char *how_invoked)
@@ -4103,41 +4165,70 @@ void chop_macro()
     macro *m = p->to_macro();
     if (!m)
       error("cannot chop request");
-    else if (m->length == 0)
+    else if (m->empty())
       error("cannot chop empty macro");
-    else
-      m->length -= 1;
+    else {
+      int have_restore = 0;
+      // we have to check for additional save/restore pairs which could be
+      // there due to empty am1 requests.
+      for (;;) {
+	if (m->get(m->len - 1) != COMPATIBLE_RESTORE)
+          break;
+	have_restore = 1;
+	m->len -= 1;
+	if (m->get(m->len - 1) != COMPATIBLE_SAVE)
+          break;
+	have_restore = 0;
+	m->len -= 1;
+	if (m->len == 0)
+	  break;
+      }
+      if (m->len == 0)
+	error("cannot chop empty macro");
+      else {
+	if (have_restore)
+	  m->set(COMPATIBLE_RESTORE, m->len - 1);
+	else
+	  m->len -= 1;
+      }
+    }
   }
   skip_line();
 }
 
 void substring_macro()
 {
-  int start;
+  int start;				// 0, 1, ..., n-1  or  -1, -2, ...
   symbol s = get_name(1);
   if (!s.is_null() && get_integer(&start)) {
     request_or_macro *p = lookup_request(s);
     macro *m = p->to_macro();
     if (!m)
-      error("cannot substring request");
+      error("cannot apply `substring' on a request");
     else {
-      if (start <= 0)
-	start += m->length - 1;
-      else
-	start--;
-      int end = 0;
+      int end = -1;
       if (!has_arg() || get_integer(&end)) {
-	if (end <= 0)
-	  end += m->length - 1;
-	else
-	  end--;
+	int real_length = 0;			// 1, 2, ..., n
+	string_iterator iter1(*m);
+	for (int l = 0; l < m->len; l++) {
+	  int c = iter1.get(0);
+	  if (c == COMPATIBLE_SAVE || c == COMPATIBLE_RESTORE)
+	    continue;
+	  if (c == EOF)
+	    break;
+	  real_length++;
+	}
+	if (start < 0)
+	  start += real_length;
+	if (end < 0)
+	  end += real_length;
 	if (start > end) {
 	  int tem = start;
 	  start = end;
 	  end = tem;
 	}
-	if (start >= m->length || end < 0) {
-	  m->length = 0;
+	if (start >= real_length || end < 0) {
+	  m->len = 0;
 	  if (m->p) {
 	    if (--(m->p->count) <= 0)
 	      delete m->p;
@@ -4148,29 +4239,32 @@ void substring_macro()
 	}
 	if (start < 0)
 	  start = 0;
-	if (end >= m->length)
-	  end = m->length - 1;
-	if (start == 0)
-	  m->length = end + 1;
-	else {
-	  string_iterator iter(*m);
-	  int i;
-	  for (i = 0; i < start; i++)
-	    if (iter.get(0) == EOF)
-	      break;
-	  macro mac;
-	  for (; i <= end; i++) {
-	    node *nd;
-	    int c = iter.get(&nd);
-	    if (c == EOF)
-	      break;
-	    if (c == 0)
-	      mac.append(nd);
-	    else
-	      mac.append((unsigned char)c);
-	  }
-	  *m = mac;
+	if (end >= real_length)
+	  end = real_length - 1;
+	// now extract the substring
+	string_iterator iter(*m);
+	int i;
+	for (i = 0; i < start; i++) {
+	  int c = iter.get(0);
+	  while (c == COMPATIBLE_SAVE || c == COMPATIBLE_RESTORE)
+	    c = iter.get(0);
+	  if (c == EOF)
+	    break;
 	}
+	macro mac;
+	for (; i <= end; i++) {
+	  node *nd;
+	  int c = iter.get(&nd);
+	  while (c == COMPATIBLE_SAVE || c == COMPATIBLE_RESTORE)
+	    c = iter.get(0);
+	  if (c == EOF)
+	    break;
+	  if (c == 0)
+	    mac.append(nd);
+	  else
+	    mac.append((unsigned char)c);
+	}
+	*m = mac;
       }
     }
   }
@@ -5519,6 +5613,10 @@ const char *asciify(int c)
     break;
   case ESCAPE_COLON:
     buf[1] = ':';
+    break;
+  case COMPATIBLE_SAVE:
+  case COMPATIBLE_RESTORE:
+    buf[0] = '\0';
     break;
   default:
     if (invalid_input_char(c))
