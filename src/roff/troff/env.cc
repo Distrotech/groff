@@ -3477,9 +3477,8 @@ void hyphen_trie::do_delete(void *v)
 
    . No support for digraphs and like `\$'.
 
-   . The only multi-character construction recognized is `^^xx' (`x' is
-     0-9 or a-f), handled by `hpf_getc'; other use of `^' causes an
-     error.
+   . `^^xx' (`x' is 0-9 or a-f), and `^^x' (character code of `x' in the
+     range 0-127) are recognized; other use of `^' causes an error.
 
    . No macro expansion.
 
@@ -3502,6 +3501,7 @@ void hyphen_trie::do_delete(void *v)
 int hyphen_trie::hpf_getc(FILE *f)
 {
   int c = getc(f);
+  int c1;
   int cc = 0;
   if (c != '^')
     return c;
@@ -3509,22 +3509,31 @@ int hyphen_trie::hpf_getc(FILE *f)
   if (c != '^')
     goto fail;
   c = getc(f);
-  if (c >= '0' && c <= '9')
-    cc = (c - '0') * 16;
-  else if (c >= 'a' && c <= 'f')
-    cc = (c - 'a' + 10) * 16;
-  else
-    goto fail;
-  c = getc(f);
-  if (c >= '0' && c <= '9')
-    cc += c - '0';
-  else if (c >= 'a' && c <= 'f')
-    cc += c - 'a' + 10;
-  else
-    goto fail;
+  c1 = getc(f);
+  if (((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))
+      && ((c1 >= '0' && c1 <= '9') || (c1 >= 'a' && c1 <= 'f'))) {
+    if (c >= '0' && c <= '9')
+      c -= '0';
+    else
+      c = c - 'a' + 10;
+    if (c1 >= '0' && c1 <= '9')
+      c1 -= '0';
+    else
+      c1 = c1 - 'a' + 10;
+    cc = c * 16 + c1;
+  }
+  else {
+    ungetc(c1, f);
+    if (c >= 0 && c <= 63)
+      cc = c + 64;
+    else if (c >= 64 && c <= 127)
+      cc = c - 64;
+    else
+      goto fail;
+  }
   return cc;
 fail:
-  error("`^' only allowed as `^^xx' in hyphenation patterns file");
+  error("invalid ^, ^^x, or ^^xx character in hyphenation patterns file");
   return c;
 }
 
