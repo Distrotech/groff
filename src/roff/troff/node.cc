@@ -2198,7 +2198,7 @@ public:
   ~italic_corrected_node();
   node *copy();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *m);
+  void asciify(macro *);
   hunits width();
   node *last_char_node();
   void vertical_extent(vunits *, vunits *);
@@ -2345,7 +2345,7 @@ public:
   void tprint(troff_output_file *);
   void zero_width_tprint(troff_output_file *);
   void ascii_print(ascii_output_file *);
-  void asciify(macro *m);
+  void asciify(macro *);
   hyphenation_type get_hyphenation_type();
   int overlaps_vertically();
   int overlaps_horizontally();

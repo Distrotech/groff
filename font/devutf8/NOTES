@@ -58,23 +58,6 @@ map it to 0x0394.
 "devps" maps CR to carriagereturn, which is equivalent to 0x21B5. We map it
 to 0x240D instead.
 
-The line
-
-shc	24	0	0x00AD
-
-has been removed, because tty.tmac contains the line
-
-.if c\[shc] .shc \[shc]
-
-(i.e. if `shc' is defined, then tell the troff engine that it shall use
-`shc' as soft hyphen - otherwise it will use `hy' = HYPHEN), and `shc' in
-Markus Kuhn's UCS-fonts looks more like a minus sign than like a hyphen.
-Once Markus Kuhn's fonts are fixed, this line should be added again, because
-ISO-8859-x describes the soft hyphen character as "a graphic character that
-is imaged by a graphic symbol identical with, or similar to, that representing
-HYPHEN, for use when a line break has been established within a word" - which
-is exactly groff's use of `shc'.
-
 Using unnamed characters:
 
 Assume you want to use a Unicode character not provided in the list, say
