@@ -3964,6 +3964,11 @@ static int read_size(int *x)
     }
   }
   else if (csdigit(c)) {
+    if (!inc && c == '0') {
+      // special case -- \s0 means to revert to previous size.
+      *x = 0;
+      return 1;
+    }
     val = c - '0';
     if (!inc && c != '0' && c < '4') {
       tok.next();
