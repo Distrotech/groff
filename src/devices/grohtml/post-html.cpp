@@ -3628,11 +3628,9 @@ html_printer::~html_printer()
     .put_string(ctime(&t), strlen(ctime(&t))-1)
     .end_comment();
 
-  /*
-   *  'HTML: The definitive guide', O'Reilly, p47. advises against specifying
-   *         the dtd.
-   */
-  // fputs("<!doctype html public \"-//IETF//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n", stdout);
+  fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n", stdout);
+  fputs("\"http://www.w3.org/TR/html4/loose.dtd\">\n", stdout);
+
   fputs("<html>\n", stdout);
   fputs("<head>\n", stdout);
   fputs("<meta name=\"generator\" content=\"groff -Thtml, see www.gnu.org\">\n", stdout);

@@ -12,9 +12,15 @@
 .\"
 .\"	$Id$	
 .\"
-.\" Set a proper TeX
-.ie t .ds tx T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X
-.el .ds tx TeX
+.\" Set a proper TeX and LaTeX
+.ie t \{\
+.  ds tx T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X\"
+.  ds lx L\h'-0.36m'\v'-0.22v'\s-2A\s0\h'-0.15m'\v'0.22v'\*(tx\"
+.\}
+.el \{\
+.  ds tx TeX\"
+.  ds lx LaTeX\"
+.\}
 .\"
 .de CE\"	Centered caption for figure.  Assumes previous .KS
 .ce 1
@@ -1988,8 +1994,9 @@ You must yourself print that vbox using, for example, the command
 \ecenterline{\ebox\egraph}
 .RE
 .LP
-Actually, since the vbox has a height of zero this will produce
-slightly more vertical space above the picture than below it;
+Actually, since the vbox has a height of zero (it is defined with \evtop)
+this will produce slightly more vertical space above the picture than
+below it;
 .RS
 .LP
 .CW
@@ -1997,6 +2004,23 @@ slightly more vertical space above the picture than below it;
 .RE
 .LP
 would avoid this.
+.PP
+To make the vbox having a positive height and a depth of zero (as used
+e.g.\& by \*(lx's \f(CW\%graphics.sty\fP), define the following macro in
+your document:
+.KS
+.DS
+.CW
+\edef\egpicbox#1{%
+  \eexpandafter\esetbox\ecsname #1\eendcsname
+   \evbox{\eexpandafter\eunvbox\ecsname #1\eendcsname\ekern 0pt}
+.R
+.DE
+.KE
+.LP
+Now you can simply say
+.B \egpicbox{graph}
+instead of \ebox\egraph.
 .PP
 You must use a \*[tx] driver that supports the
 .B tpic
