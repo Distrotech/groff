@@ -32,6 +32,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "error.h"
 #include "stringclass.h"
 #include "posix.h"
+#include "defs.h"
 
 #include <errno.h>
 #include <sys/types.h>
@@ -85,6 +86,8 @@ static int   image_res      = DEFAULT_IMAGE_RES;
 static int   vertical_offset= DEFAULT_VERTICAL_OFFSET;
 static char *image_template = 0;                // image template filename
 static int   troff_arg      = 0;                // troff arg index
+static char *command_prefix = 0;                // optional prefix for some installations.
+static char *troff_command  = 0;
 #if defined(DEBUGGING)
 static int   debug          = FALSE;
 static char *troffFileName  = 0;                // output of pre-html output which is sent to troff -Tps
@@ -837,7 +840,7 @@ static void alterDeviceTo (int argc, char *argv[], int toImage)
       }
       i++;
     }
-    argv[troff_arg] = "troff";  /* use troff */
+    argv[troff_arg] = troff_command;  /* use troff */
   }
 }
 
@@ -1046,6 +1049,22 @@ static void makeTempFiles (void)
 #endif
 }
 
+/*
+ *  findPrefix - finds the optional prefix to the groff utilities.
+ *               It also builds the 'troff' executable name.
+ */
+
+static void findPrefix (void)
+{
+  command_prefix = getenv("GROFF_COMMAND_PREFIX");
+  if (!command_prefix)
+    command_prefix = PROG_PREFIX;
+  troff_command = (char *)malloc(strlen("troff")+strlen(command_prefix)+1);
+  strcpy(troff_command, command_prefix);
+  strcat(troff_command, "troff");
+}
+
+
 int main(int argc, char **argv)
 {
   program_name = argv[0];
@@ -1053,6 +1072,7 @@ int main(int argc, char **argv)
   int found=0;
   int ok=1;
 
+  findPrefix();
   makeFileName();
   i = scanArguments(argc, argv);
   while (i < argc) {

@@ -332,9 +332,12 @@ int main(int argc, char **argv)
 	 device, program_name);
   printf(".if '\\*(.T'html' "
 	 ".if !'%s'ps' "
-	 ".tm1 \"warning: %s should have been given a `-Tps' option\n"
-	 ".tm1 \"         (it is advisable to invoke groff via: groff -Thtml -e)\n",
+	 ".tm warning: %s should have been given a `-Tps' option\n",
 	 device, program_name);
+  printf(".if '\\*(.T'html' "
+	 ".if !'%s'ps' "
+	 ".tm warning: (it is advisable to invoke groff via: groff -Thtml -e)\n",
+	 device);
   if (load_startup_file) {
     char *path;
     FILE *fp = config_macro_path.open_file(STARTUP_FILE, &path);

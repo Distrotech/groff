@@ -2965,6 +2965,7 @@ void init_env_requests()
   init_int_env_reg(".b", get_bold);
   init_hunits_env_reg(".i", get_indent);
   init_hunits_env_reg(".in", get_saved_indent);
+  init_int_env_reg(".int", get_prev_line_interrupted);
   init_int_env_reg(".j", get_adjust_mode);
   init_hunits_env_reg(".k", get_text_length);
   init_hunits_env_reg(".l", get_line_length);
