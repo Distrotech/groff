@@ -3077,7 +3077,6 @@
 .  doc-set-vertical-and-indent
 .  br
 .
-.  \" .ds doc-out-string
 .  doc-reset-args
 '  fi
 ..
@@ -3181,7 +3180,6 @@
 .
 .  nr doc-nesting-level -1
 .  nr doc-list-immediate 0
-.  \" .nr doc-in-diversion 1
 .  ds doc-out-string
 .  doc-reset-args
 '  fi
@@ -3455,9 +3453,6 @@
 .\" NS   append tab (\t)
 .\" NS
 .\" NS width register `.Ta' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Ta
 .
 .de Ta
 .  ie \n[doc-args-processed] \{\
@@ -3481,9 +3476,6 @@
 .\" NS   display (one line) literal
 .\" NS
 .\" NS width register `.Dl' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Dl
 .
 .de Dl
 '  ta T .5i
@@ -3509,9 +3501,6 @@
 .\" NS   display (one line)
 .\" NS
 .\" NS width register `.D1' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-D1
 .
 .de D1
 '  ta T .5i
@@ -3558,23 +3547,23 @@
 .
 .  \" if a subroutine was the last thing given, want vertical space
 .  if \n[doc-function-count] \{\
-.    ie !\n[doc-variable-type] \{\
+.    ie !\n[doc-variable-type] \
+.      br
+.    el \{\
 .      doc-paragraph
 .      rs
-.    \}
-.    el \
-.      br
-.  \}
+.  \}\}
 .
-.  nr doc-variable-type +1
+.  nr doc-variable-type 1
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
+.
 .  nop \*[doc-Ft-font]\$*
 .
-.  ie !\n[doc-have-old-function] \
-.    br
-.  el \
+.  ie \n[doc-have-old-function] \
 .    nop \&\*[doc-soft-space]
+.  el \
+.    br
 .
 .  ft \n[doc-curr-font]
 .  fs \n[doc-curr-size]
@@ -3594,13 +3583,7 @@
 .
 .de Ft
 .  if \n[doc-in-synopsis-section] \{\
-.    if \n[doc-function-count] \{\
-.      doc-paragraph
-.      nr doc-declaration-count 0
-.      nr doc-variable-type 0
-.    \}
-.
-.    if \n[doc-declaration-count] \{\
+.    if (\n[doc-function-count] : \n[doc-declaration-count]) \{\
 .      doc-paragraph
 .      nr doc-declaration-count 0
 .      nr doc-variable-type 0
@@ -3616,11 +3599,11 @@
 .
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
+.
 .  nop \*[doc-Ft-font]\$*
 .
 .  ft \n[doc-curr-font]
 .  ps \n[doc-curr-size]
-.  \" .br
 ..
 .
 .
@@ -3630,7 +3613,7 @@
 .
 .
 .\" NS Ot user macro
-.\" NS   old function type (fortran - no newline)
+.\" NS   old function type (fortran -- no newline)
 .\" NS
 .\" NS width register `.Ot' set in doc-common
 .
@@ -3638,13 +3621,7 @@
 .  nr doc-have-old-function 1
 .
 .  if \n[doc-in-synopsis-section] \{\
-.    if \n[doc-function-count] \{\
-.      doc-paragraph
-.      nr doc-declaration-count 0
-.      nr doc-variable-type 0
-.    \}
-.
-.    if \n[doc-declaration-count] \{\
+.    if (\n[doc-function-count] : \n[doc-declaration-count]) \{\
 .      doc-paragraph
 .      nr doc-declaration-count 0
 .      nr doc-variable-type 0
@@ -3668,26 +3645,16 @@
 .\" NS   function arguments
 .\" NS
 .\" NS width register `.Fa' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Fa
 .
 .de Fa
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Fa Function Arguments ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Fa
-.
-.      nr doc-reg-Fa 1
-.      while (\n[doc-reg-Fa] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Fa] "\$[\n[doc-reg-Fa]]
-.        nr doc-reg-Fa +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .Fa function_arguments ... \*[doc-punct-chars] (#\n[.c])
+.  \}
 .
 .  ie \n[doc-func-arg-count] \
 .    doc-do-function
@@ -3714,14 +3681,12 @@
 .de doc-do-function
 .  ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    \" .if \n[doc-in-synopsis-section] \{\
 .    ds doc-function-arg
 .    nr doc-num-function-args 0
 .    nr doc-function-args-processed 0
 .    doc-insert-hard-space \*[doc-arg\n[doc-arg-ptr]]
 .    if (\n[doc-num-function-args] > 1) \
 .      rn doc-function-arg doc-arg\n[doc-arg-ptr]
-.    \" .\}
 .
 .    if (\n[doc-func-arg-count] > 1) \{\
 .      as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\|,
@@ -3751,43 +3716,32 @@
 .\" NS   functions
 .\" NS
 .\" NS width register `.Fn' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Fn
 .
 .de Fn
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
-.      tmc Usage: .Fn function_name function_arg(s) ... \*[doc-punct-chars]
-.      tm1 " (#\n[.c])
+.    ie \n[.$] \{\
+.      ds doc-macro-name Fn
+.      doc-parse-args \$@
 .    \}
 .    el \{\
-.      ds doc-macro-name Fn
-.
-.      nr doc-reg-Fn 1
-.      while (\n[doc-reg-Fn] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Fn] "\$[\n[doc-reg-Fn]]
-.        nr doc-reg-Fn +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      tmc Usage: .Fn function_name function_arg(s) ... \*[doc-punct-chars]
+.      tm1 " (#\n[.c])
 .  \}\}
 .
 .  if \n[doc-in-synopsis-section] \{\
 .    \" if there is/has been more than one subroutine declaration
-.    ie !\n[doc-is-func-type] \{\
-.      if \n[doc-function-count] \{\
-.        doc-paragraph
-.        nr doc-variable-type 0
-.        nr doc-declaration-count 0
-.    \}\}
-.    el \{\
+.    ie \n[doc-is-func-type] \{\
 .      br
 .      nr doc-variable-type 0
 .      nr doc-declaration-count 0
 .      nr doc-is-func-type 0
 .    \}
+.    el \{\
+.      if \n[doc-function-count] \{\
+.        doc-paragraph
+.        nr doc-variable-type 0
+.        nr doc-declaration-count 0
+.    \}\}
 .
 .    if \n[doc-declaration-count] \{\
 .      doc-paragraph
@@ -3886,6 +3840,7 @@
 .    \}
 .    el \
 .      as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.
 .    doc-print-and-reset
 .  \}
 ..
@@ -3938,43 +3893,33 @@
 .\" NS   function open
 .\" NS
 .\" NS width register `.Fo' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Fo
 .
 .de Fo
 .  hy 0
 .
-.  if (\n[doc-args-processed] == 0) \{\
-.    ie (\n[.$] == 0) \
-.      tm Usage: .Fo function_name (#\n[.c])
-.    el \{\
+.  if !\n[doc-args-processed] \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Fo
-.
-.      nr doc-reg-Fo 1
-.      while (\n[doc-reg-Fo] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Fo] "\$[\n[doc-reg-Fo]]
-.        nr doc-reg-Fo +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .Fo function_name (#\n[.c])
+.  \}
 .
 .  if \n[doc-in-synopsis-section] \{\
 .    \" if there is/has been more than one subroutine declaration
-.    ie !\n[doc-is-func-type] \{\
-.      if \n[doc-function-count] \{\
-.        doc-paragraph
-.        nr doc-variable-type 0
-.        nr doc-declaration-count 0
-.    \}\}
-.    el \{\
+.    ie \n[doc-is-func-type] \{\
 .      br
 .      nr doc-variable-type 0
 .      nr doc-declaration-count 0
 .      nr doc-is-func-type 0
 .    \}
+.    el \{\
+.      if \n[doc-function-count] \{\
+.        doc-paragraph
+.        nr doc-variable-type 0
+.        nr doc-declaration-count 0
+.    \}\}
 .
 .    if \n[doc-declaration-count] \{\
 .      doc-paragraph
@@ -4020,23 +3965,12 @@
 .\" NS   function close
 .\" NS
 .\" NS width register `.Fc' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Fc
 .
 .de Fc
 .  if !\n[doc-args-processed] \{\
 .    if \n[.$] \{\
 .      ds doc-macro-name Fc
-.
-.      nr doc-reg-Fc 1
-.      while (\n[doc-reg-Fc] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Fc] "\$[\n[doc-reg-Fc]]
-.        nr doc-reg-Fc +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      doc-parse-args \$@
 .  \}\}
 .
 .  nr doc-func-arg-count 0
@@ -4064,11 +3998,6 @@
 .\" NS   set hard space inbetween function arguments
 .
 .de doc-insert-hard-space
-.  \" .tm1 "doc-insert-hard-space:
-.  \" .tm1 "  doc-num-function-args==\n[doc-num-function-args]
-.  \" .tm1 "  doc-function-args-processed==\n[doc-function-args-processed]
-.  \" .tm1 "  args==\$@
-.
 .  if !\n[doc-num-function-args] \{\
 .    nr doc-num-function-args \n[.$]
 .    nr doc-function-args-processed 0
@@ -4137,8 +4066,30 @@
 .  nr doc-date-count 0
 .  nr doc-page-number-count 0
 .  nr doc-book-count 0
+.
 .  ds doc-reference-string-name
-.  rm doc-journal-name doc-issue-name doc-optional-string doc-report-name doc-corporate-name doc-reference-title-name doc-volume-name doc-date-count doc-page-number-string doc-book-name
+.  ds doc-journal-name
+.  ds doc-issue-name
+.  ds doc-optional-string
+.  ds doc-report-name
+.  ds doc-corporate-name
+.  ds doc-reference-title-name
+.  ds doc-volume-name
+.  ds doc-date-count
+.  ds doc-page-number-string
+.  ds doc-book-name
+..
+.
+.
+.\" NS doc-finish-reference macro
+.\" NS   auxiliary macro for doc-print-reference
+.
+.de doc-finish-reference
+.  nr doc-reference-count -1
+.  ie \n[doc-reference-count] \
+.    nop \&,
+.  el \
+.    nop \&.
 ..
 .
 .
@@ -4155,98 +4106,63 @@
 .  \}
 .
 .  if \n[doc-reference-title-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \{\
-.      ie ((\n[doc-journal-count] == 1) : (\n[doc-book-count] == 1)) \
-.        nop \&\*[q]\*[doc-reference-title-name]\*[q].
-.      el \
-.        nop \*[doc-Em-font]\*[doc-reference-title-name]\*[doc-No-font].
+.    ie ((\n[doc-journal-count] == 1) : (\n[doc-book-count] == 1)) \{\
+.      nop \&\*[q]\*[doc-reference-title-name]\*[q]\c
+.      doc-finish-reference
 .    \}
 .    el \{\
-.      ie ((\n[doc-journal-count] == 1) : (\n[doc-book-count] == 1)) \
-.        nop \&\*[q]\*[doc-reference-title-name]\*[q],
-.      el \
-.        nop \*[doc-Em-font]\*[doc-reference-title-name]\*[doc-No-font],
+.      nop \*[doc-Em-font]\*[doc-reference-title-name]\*[doc-No-font]\c
+.      doc-finish-reference
 .  \}\}
 .
 .  if \n[doc-book-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \*[doc-Em-font]\*[doc-book-name]\*[doc-No-font].
-.    el \
-.      nop \*[doc-Em-font]\*[doc-book-name]\*[doc-No-font],
+.    nop \*[doc-Em-font]\*[doc-book-name]\*[doc-No-font]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-publisher-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \*[doc-Em-font]\*[doc-publisher-name]\*[doc-No-font].
-.    el \
-.      nop \*[doc-Em-font]\*[doc-publisher-name]\*[doc-No-font],
+.    nop \*[doc-Em-font]\*[doc-publisher-name]\*[doc-No-font]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-journal-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \*[doc-Em-font]\*[doc-journal-name]\*[doc-No-font].
-.    el \
-.      nop \*[doc-Em-font]\*[doc-journal-name]\*[doc-No-font],
+.    nop \*[doc-Em-font]\*[doc-journal-name]\*[doc-No-font]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-report-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \&\*[doc-report-name].
-.    el \
-.      nop \&\*[doc-report-name],
+.    nop \&\*[doc-report-name]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-issue-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \&\*[doc-issue-name].
-.    el \
-.      nop \&\*[doc-issue-name],
+.    nop \&\*[doc-issue-name]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-volume-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \&\*[doc-volume-name].
-.    el \
-.      nop \&\*[doc-volume-name],
+.    nop \&\*[doc-volume-name]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-page-number-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \&\*[doc-page-number-string].
-.    el \
-.      nop \&\*[doc-page-number-string],
+.    nop \&\*[doc-page-number-string]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-corporate-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \&\*[doc-corporate-name].
-.    el \
-.      nop \&\*[doc-corporate-name],
+.    nop \&\*[doc-corporate-name]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-date-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \&\*[doc-date].
-.    el \
-.      nop \&\*[doc-date],
+.    nop \&\*[doc-date]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-optional-count] \{\
-.    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \
-.      nop \&\*[doc-optional-string].
-.    el \
-.      nop \&\*[doc-optional-string],
+.    nop \&\*[doc-optional-string]\c
+.    doc-finish-reference
 .  \}
 .
 .  if \n[doc-reference-count] \
@@ -4275,16 +4191,17 @@
 .
 .de %A
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%A Author_name (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      nr doc-author-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-author-name\n[doc-author-count]
 .
 .      ds doc-macro-name %A
 .      doc-parse-args \$@
-.  \}\}
+.    \}
+.    el \
+.      tm Usage: .%A author_name (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4299,15 +4216,10 @@
 .\" NS   [reference] Book Name
 .\" NS
 .\" NS width register `.%B' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-%B
 .
 .de %B
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%B Book Name (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      if \n[doc-is-reference] \{\
 .        nr doc-book-count +1
 .        nr doc-reference-count +1
@@ -4315,16 +4227,11 @@
 .      \}
 .
 .      ds doc-macro-name %B
-.
-.      nr doc-reg-%B 1
-.      while (\n[doc-reg-%B] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%B] "\$[\n[doc-reg-%B]]
-.        nr doc-reg-%B +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%B book_name (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4345,30 +4252,20 @@
 .\" NS   [reference] date
 .\" NS
 .\" NS width register `.%D' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-%D
 .
 .de %D
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%D Date (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      nr doc-date-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-date
 .
 .      ds doc-macro-name %D
-.
-.      nr doc-reg-%D 1
-.      while (\n[doc-reg-%D] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%D] "\$[\n[doc-reg-%D]]
-.        nr doc-reg-%D +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%D date (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4383,30 +4280,20 @@
 .\" NS   [reference] issuer/publisher name
 .\" NS
 .\" NS width register `.%I' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-%I
 .
 .de %I
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%I Issuer/Publisher Name (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      nr doc-publisher-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-publisher-name
 .
 .      ds doc-macro-name %I
-.
-.      nr doc-reg-%I 1
-.      while (\n[doc-reg-%I] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%I] "\$[\n[doc-reg-%I]]
-.        nr doc-reg-%I +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%I issuer/publisher_name (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4421,29 +4308,20 @@
 .\" NS   [reference] Journal Name
 .\" NS
 .\" NS width register `.%J' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-%J
 .
 .de %J
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%J Journal Name (#\n[.c])
-.    el \{\
-.      ds doc-macro-name %J
+.    ie \n[.$] \{\
 .      nr doc-journal-count +1
-.      ds doc-reference-string-name doc-journal-name
 .      nr doc-reference-count +1
+.      ds doc-reference-string-name doc-journal-name
 .
-.      nr doc-reg-%J 1
-.      while (\n[doc-reg-%J] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%J] "\$[\n[doc-reg-%J]]
-.        nr doc-reg-%J +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      ds doc-macro-name %J
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%J journal_name (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4461,16 +4339,17 @@
 .
 .de %N
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%N issue number (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      nr doc-issue-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-issue-name
 .
 .      ds doc-macro-name %N
 .      doc-parse-args \$@
-.  \}\}
+.    \}
+.    el \
+.      tm Usage: .%N issue_number (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4485,30 +4364,20 @@
 .\" NS   [reference] optional information
 .\" NS
 .\" NS width register `.%O' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-%O
 .
 .de %O
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%O optional information ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      nr doc-optional-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-optional-string
 .
 .      ds doc-macro-name %O
-.
-.      nr doc-reg-%O 1
-.      while (\n[doc-reg-%O] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%O] "\$[\n[doc-reg-%O]]
-.        nr doc-reg-%O +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%O optional_information ... \*[doc-punct-chars] (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4526,24 +4395,17 @@
 .
 .de %P
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%P page numbers ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      nr doc-page-number-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-page-number-string
 .
 .      ds doc-macro-name %P
-.
-.      nr doc-reg-%P 1
-.      while (\n[doc-reg-%P] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%P] "\$[\n[doc-reg-%P]]
-.        nr doc-reg-%P +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%P page_numbers ... \*[doc-punct-chars] (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4558,30 +4420,20 @@
 .\" NS   corporate or foreign author
 .\" NS
 .\" NS width register `.%Q' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-%Q
 .
 .de %Q
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%Q Corporate or Foreign Author (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      nr doc-corporate-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-corporate-name
 .
 .      ds doc-macro-name %Q
-.
-.      nr doc-reg-%Q 1
-.      while (\n[doc-reg-%Q] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%Q] "\$[\n[doc-reg-%Q]]
-.        nr doc-reg-%Q +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%Q corporate_or_foreign_author (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4596,30 +4448,20 @@
 .\" NS   [reference] report name
 .\" NS
 .\" NS width register `.%R' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-%R
 .
 .de %R
-.  if (\n[doc-args-processed] == 0) \{\
-.    ie (\n[.$] == 0) \
-.      tm Usage: .%R reference report (#\n[.c])
-.    el \{\
+.  if !\n[doc-args-processed] \{\
+.    ie \n[.$] \{\
 .      nr doc-report-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-report-name
 .
 .      ds doc-macro-name %R
-.
-.      nr doc-reg-%R 1
-.      while (\n[doc-reg-%R] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%R] "\$[\n[doc-reg-%R]]
-.        nr doc-reg-%R +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%R reference_report (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4634,15 +4476,10 @@
 .\" NS   reference title
 .\" NS
 .\" NS width register `.%T' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-%T
 .
 .de %T
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%T reference title (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      if \n[doc-is-reference] \{\
 .        nr doc-reference-title-count +1
 .        nr doc-reference-count +1
@@ -4650,28 +4487,22 @@
 .      \}
 .
 .      ds doc-macro-name %T
-.
-.      nr doc-reg-%T 1
-.      while (\n[doc-reg-%T] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-%T] "\$[\n[doc-reg-%T]]
-.        nr doc-reg-%T +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.  \}\}
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .%T reference_title (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
-.    ie !\n[doc-is-reference] \{\
+.    ie \n[doc-is-reference] \
+.      doc-do-references
+.    el \{\
 .      as doc-out-string \*[doc-Em-font]
 .      doc-print-recursive
-.    \}
-.    el \
-.      doc-do-references
-.  \}
+.  \}\}
 ..
 .
 .
@@ -4682,15 +4513,16 @@
 .
 .de %V
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .%V Volume , ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name %V
 .      nr doc-volume-count +1
 .      nr doc-reference-count +1
 .      ds doc-reference-string-name doc-volume-name
 .      doc-parse-args \$@
-.  \}\}
+.    \}
+.    el \
+.      tm Usage: .%V volume , ... \*[doc-punct-chars] (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4722,16 +4554,9 @@
 .  \}\}
 .  el \{\
 .    nr doc-reg-ddr \n[doc-arg-ptr]
-.    ie "\*[doc-str-ddr]"string" \
-.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
-.    el \
-.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
-.    \" .el \{\
-.    \" .  as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.    \" .  as doc-out-string "\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
+.    as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .
 .    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
-.      \" .as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .      as \*[doc-reference-string-name] \&\*[doc-out-string]
 .      ds doc-out-string
 .      ds doc-reference-string-name
@@ -4796,12 +4621,13 @@
 .  \}
 .
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .An author_name ... \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name An
 .      doc-parse-args \$@
-.  \}\}
+.    \}
+.    el \
+.      tm Usage: .An author_name ... \*[doc-punct-chars] (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -4818,7 +4644,7 @@
 .\" NS width register `.Sf' set in doc-common
 .
 .de Sf
-.  tm mdoc error: .Sf defunct, use .Pf or .Ns
+.  tm mdoc error: .Sf defunct, use .Pf or .Ns (#\n[.c])
 ..
 .
 .
@@ -4838,7 +4664,7 @@
 .
 .de Rv
 .
-.\" XXX
+.\" XXX: what does this function without `-std'?
 .
 .  ie !\n[.$] \
 .    tm Usage: .Rv [-std] (#\n[.c])
@@ -4873,6 +4699,7 @@
 .\" NS   mailto (for conversion to HTML)
 .
 .de Mt
+.  \" XXX: error handling missing
 .  Pa \$@
 ..
 .
@@ -4917,7 +4744,7 @@
 .
 .de em
 .  tm mdoc error: end-macro (.em) respecification is not allowed. (#\n[.c])
-.  ab Should this have been .Em ...?
+.  ab Should this have been `.Em ...'?
 ..
 .
 .
