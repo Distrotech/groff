@@ -25,8 +25,8 @@
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.8';
-_LAST_UPDATE='12 May 2004';
+_PROGRAM_VERSION='0.9.9';
+_LAST_UPDATE='29 May 2004';
 
 
 ########################################################################
@@ -112,6 +112,7 @@ if test _"${_groffer_run}"_ = __; then
 
   # do the shell determination
   _shell="$(_get_opt_shell "$@")";
+
   if test _"${_shell}"_ = __; then
     _shell='ash';
   fi;
@@ -122,18 +123,8 @@ if test _"${_groffer_run}"_ = __; then
     exit;
   fi;
 
-  # clean-up of shell determination
+  _groffer_run='second';
   unset _shell;
-  unset _GROFFER_SH;
-  unset _groffer_run;
-  _get_opt_shell()
-  {
-    return 0;
-  }
-  _test_on_shell()
-  {
-    return 0;
-  }
 
 fi; # end of first run
 
@@ -142,6 +133,7 @@ then
   echo "$_groffer_run should be 'second' here." >&2
   exit 1
 fi;
+
 unset _groffer_run
 
 
