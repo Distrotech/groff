@@ -3070,7 +3070,7 @@ usage()
   echo2;
   version;
   cat >&2 <<EOF
-Copyright (C) 2001 Free Software Foundation, Inc.
+Copyright (C) 2001, 2002, 2003 Free Software Foundation, Inc.
 This is free software licensed under the GNU General Public License.
 
 EOF

@@ -3397,7 +3397,7 @@ int node::nbreaks()
 breakpoint *space_node::get_breakpoints(hunits width, int ns,
 					breakpoint *rest, int is_inner)
 {
-  if (next->discardable())
+  if (next && next->discardable())
     return rest;
   breakpoint *bp = new breakpoint;
   bp->next = rest;
@@ -3418,7 +3418,7 @@ breakpoint *space_node::get_breakpoints(hunits width, int ns,
 
 int space_node::nbreaks()
 {
-  if (next->discardable())
+  if (next && next->discardable())
     return 0;
   else
     return 1;
