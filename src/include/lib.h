@@ -30,7 +30,6 @@ extern "C" {
   const char *i_to_a(int);
   const char *ui_to_a(unsigned int);
   const char *if_to_a(int, int);
-  double groff_hypot(double, double);
 }
 
 /* stdio.h on IRIX, OSF/1, emx, UWIN, and MinGW include getopt.h */
@@ -55,6 +54,7 @@ extern "C" {
 
 char *strsave(const char *s);
 int is_prime(unsigned);
+double groff_hypot(double, double);
 
 #include <stdio.h>
 #include <string.h>
