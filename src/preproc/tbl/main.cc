@@ -234,9 +234,10 @@ void process_input_file(FILE *fp)
 	{
 	  table_input input(fp);
 	  process_table(input);
+	  if (input.ended())
+	    printf(".if '\\*(.T'html' \\X(table-end(\n");
 	  set_troff_location(current_filename, current_lineno);
 	  if (input.ended()) {
-	    printf(".if '\\*(.T'html' \\X(table-end(\n");
 	    fputs(".TE", stdout);
 	    while ((c = getc(fp)) != '\n') {
 	      if (c == EOF) {

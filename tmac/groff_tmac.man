@@ -1,40 +1,80 @@
 .\"                        -*- nroff -*- 
-.ig
-groff_tmac.man
+.ig /
+groff_tmac.5
 
-This is part of groff, the GNU roff type-setting system.
+This file is part of groff, the GNU roff type-setting system.
 
 Copyright (C) 2000 Free Software Foundation, Inc.
 written by Bernd Warken <bwarken@mayn.de>
 
+Last update: 17 May 2000
+
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
 any later version published by the Free Software Foundation; with the
-Invariant Sections being "LICENSE TEXT", "AUTHOR", and this unprinted
-preface you are reading now, with no Front-Cover Texts, and with no
-Back-Cover Texts.
+Invariant Sections being this .ig-section and AUTHOR, with no
+Front-Cover Texts, and with no Back-Cover Texts.
 
 A copy of the Free Documentation License is included as a file called
-fdl.txt in the main directory of the groff source package.
-..
+FDL in the main directory of the groff source package.
+./
 .
 .\" --------------------------------------------------------------------
 .\" Setup
 .\" --------------------------------------------------------------------
 .
+.if n \{\
+.  mso tmac.tty-char
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.\}
+.
+.\" text lines in macro definitions or bracketed sections \{...\}
+.de text
+.  if 1 \&\\$*\&
+..
+.
 .de BIR
 .  ie (\\n[.$] < 3) \
 .    BI $@
 .  el \{\
-.    ds @tmp@ \\fB\\$1\\fP\\fI\\$2\\fP
+.    ds @tmp@ \fB\\$1\fP\fI\\$2\fP
 .    shift 2
-\\*[@tmp@]\\fR\\$*\\fP
+.    text \\*[@tmp@]\fR\\$*\fP
 .    rm @tmp@
 .  \}
 ..
 .
-.ds dquote \&"
-.ds dquote \&"\" make Emacs happy
+.de 'char
+.  ds @tmp@ `\f(CB\\$1\fP'
+.  shift
+.  text \\*[@tmp@]\\$*
+.  rm @tmp@
+..
+.
+.de option
+.  ds @tmp@ \f(CB\\$1\fP
+.  shift 1
+.  text \\*[@tmp@]\\$*
+.  rm @tmp@
+..
+.
+.als shellcommand option
+.
+.de argument
+.  ds @tmp@ \f(CI\\$1\fP
+.  shift 1
+.  text \\*[@tmp@]\\$*
+.  rm @tmp@
+..
+.
+.de request
+.  ds @tmp@ \f(CB\\$1\fP
+.  shift 1
+.  text \\*[@tmp@]\\$*
+.  rm @tmp@
+..
 .
 .\" --------------------------------------------------------------------
 .\" Title
@@ -63,20 +103,21 @@ directories.
 .\" --------------------------------------------------------------------
 .SH NAMING
 .\" --------------------------------------------------------------------
-In classical
-.I roff
-systems, there was a funny naming scheme.  If the name of a macro
-package started with `m' this letter was omitted, e.g., the macro package
-for the man pages
+In classical roff systems, there was a funny naming scheme.
+If the name of a macro package started with
+.'char m
+this letter was omitted, e.g., the macro package for the man pages
 .I man
 was called
 .I an
 and its macro file
 .IR tmac.an .
 .LP
-By a similar reasoning, macro packages that did not start with an `m'
-were often referred to by adding an `m', e.g., the package corresponding
-to
+By a similar reasoning, macro packages that did not start with an
+.'char m
+were often referred to by adding an
+.'char m ,
+ e.g., the package corresponding to
 .I tmac.doc
 was called
 .I mdoc
@@ -89,8 +130,10 @@ because the command-line for activating it reads
 Actual versions of
 .BR groff (@MAN1EXT@)
 provide both naming schemes for the inflicted macro packages, with and
-without the leading `m'.  So in
-.I groff
+without the leading
+.'char m .
+So in
+.IR groff ,
 the
 .I man
 macro package may be specified as
@@ -112,23 +155,22 @@ directories.
 For example, a file called
 .BI tmac. anything
 determines a macro package named
-.I anything
-or
-.IR manything .
+.IR anything .
 .LP
 In
 .IR groff ,
 most macro packages are described in man pages called
 .BR groff_<name> (@MAN7EXT@),
 with a leading
-.I m
+.'char m
 for the classical packages.
 .\" --------------------------------------------------------------------
 .SH INCLUSION
 .\" --------------------------------------------------------------------
 There are several ways to use a macro package in documents.  At
 run-time, the groff option
-.BI \-m name
+.option \-m \ \c
+.argument name
 makes the definitions in the macro file
 .BI tmac. name
 available as described in the section
@@ -136,31 +178,32 @@ available as described in the section
 .LP
 It is also possible to include the macro file into the document by using 
 the groff requests
-.B .so
+.request .so
 or
-.BR .mso .
+.request .mso .
 For
-.B .so
-the full filename of the macro file must be specified including the
-directory where it is kept.  If the macro file is stored in one of the
-tmac directories it is more convenient to use
-.BR .mso
+.request .so
+the full filename of the macro file must be specified \(em including the
+directory where it is kept.
+If the macro file is stored in one of the tmac directories it is more
+convenient to use
+.request .mso
 instead because it additionally searches the tmac path for the filename.
 .LP
 Note that in order to resolve the
-.B .so
+.request .so
 and
-.B .mso
+.request .mso
 requests the roff preprocessor
-.B soelim
+.shellcommand soelim
 must be called.  This can be done either directly by a pipeline on the
 command line or by using the
-.B \-s
+.option \-s
 option of
-.BR groff .
+.shellcommand groff .
 .LP
 You can also supply the letter
-.B s
+.'char s
 in the preprocessor word as described in section
 .BR CONVENTION .
 .LP
@@ -172,39 +215,33 @@ and is used in some document called
 At run-time, the formatter call for this is
 .RS
 .LP
-.B groff
-.BI \-m macros
-.I docu.roff
+.ft CR
+.shellcommand "groff\ \-m"
+.argument macros
+.argument docu.roff
+.ft P
 .RE
 .LP
 To include the macro file directly in the document either
 .RS
-.LP
-.nf
-\&\.\e\*[dquote] s
+.ft CR
 \&\.mso tmac.macros
-... text
-.fi
+.ft P
 .RE
-.LP
-or
+is used or
 .RS
-.LP
-.nf
-\&\.\e\*[dquote] s
+.ft CR
 \&\.so /usr/share/groff/tmac/tmac.macros
-... text
-.fi
+.ft P
 .RE
-.LP
-is used.
 .LP
 In both cases, the formatter is called with
+.ft CR
 .RS
-.LP
-.B groff\ \-s
-.I docu.roff
+groff\ \-s docu.roff
 .RE
+.ft P
+.
 .\" --------------------------------------------------------------------
 .SH CONVENTION
 .\" --------------------------------------------------------------------
@@ -220,31 +257,29 @@ comment characters and a blank) constitutes the
 .BR word .
 That means that the letters of this word are interpreted as
 abbreviations for those preprocessor commands that should be run
-when formatting the document.  Mostly, only the 4 letters
-.BR e ,
-.BR p ,
-.BR s ,
-and
-.BR t
-are recognized which stand for the classical preprocessors
-.BR eqn ,
-.BR pic ,
-.BR tbl ,
-and
-.B soelim
-resp., see
-.BR roff (@MAN7EXT@).
+when formatting the document.  Mostly, only the letters corresponding to 
+the options for the preprocessors are recognized, 
+.'char e ,
+.'char G ,
+.'char g ,
+.'char p ,
+.'char R ,
+.'char s , and
+.'char t
+(see
+.BR roff (@MAN7EXT@)).
 .LP
-Besides being a good reminder for the user, some formatters are even
-able to automatically start the preprocessors specified in the
-preprocessor word, but do not bet on this.
+Besides being a good reminder for the user, some formatters (like the
+.BR man (1)
+program) are even able to automatically start the preprocessors
+specified in the preprocessor word, but do not bet on this.
 .\" --------------------------------------------------------------------
 .SH "WRITING A MACRO FILE"
 .\" --------------------------------------------------------------------
 Writing a groff macro file is easy.  Design a set of macros, strings,
 registers, etc.  Store them in a single file.  Documents that use the
 macros include this macro file with the
-.B .so
+.request .so
 request as described in the
 .B INCLUSION
 section.
@@ -254,9 +289,9 @@ To use the tmac functionality, call the macro file
 and put it in some directory of the tmac path, cf. section
 .BR FILES .
 Then documents can include it with the
-.B .mso
+.request .mso
 request or the
-.B groff -m
+.shellcommand "groff\ \-m"
 option as described in the
 .B INCLUSION
 section.
@@ -269,26 +304,26 @@ source directory.
 Some general guidelines might be helpful in writing macros.
 .IP \(bu 2m
 Double all functional backslashes,
-.RB ` \e '
+.'char \e
 ->
-.RB ` \e\e '.
+.'char \e\e .
 .IP \(bu 2m
 All printable backslashes must be written as
-.RB ` \ee '.
+.'char \ee .
 .IP \(bu 2m
 Escape all dots,
-.RB ` . '
+.'char .
 ->
-.RB ` \e. '.
+.'char \e. .
 .IP \(bu 2m
 Make ample use of the non-printable character
-.RB ` \e& '
+.'char \e&
 in text parts, esp. before
-.RB ` \e '
+.'char \e
 and at the beginning of a line, but not before a delayed command.
 .IP \(bu 2m
 Use the character
-.RB ` @ '
+.'char @
 in temporary variable names.
 .IP \(bu 2m
 Test your macros for text and graphical devices, e.g.,
@@ -300,9 +335,7 @@ and
 .\" --------------------------------------------------------------------
 All macro names that want to use the tmac mechanism must be named
 according to the form
-.RS
 .BIR tmac. name .
-.RE
 .LP
 The macro files are kept in the
 .B tmac
@@ -341,15 +374,21 @@ temporarily.
 .\" --------------------------------------------------------------------
 .SH AUTHOR
 .\" --------------------------------------------------------------------
-This document is copyrighted by the Free Software Foundation, was
-written by Bernd Warken <bwarken@mayn.de> and may be distributed under
-the GNU Free Document License (FDL).
+This document is part of groff, the GNU roff distribution.  It was
+written by Bernd Warken <bwarken@mayn.de>.
+.LP
+It is distributed under the terms of the FDL (GNU Free Documentation
+License) version 1.1 or later.  You should have received a copy of the
+FDL on your system, it is also available on-line under
+.RS
+.LP
+.IR <http://www.gnu.org/copyleft/fdl.html> .
+.RE
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
 The authoritative source of information for all details of the groff
-system is the
-.I groff
+system is the groff
 .BR info (1)
 file.
 .LP
@@ -377,6 +416,5 @@ and the formatters in
 .BR troff (@MAN1EXT@).
 .LP
 The Filesystem Hierarchy Standard (FHS) is available at
-.B http://www.pathname.com/fhs/
-and the Free Document License at
-.BR http://www.gnu.org/copyleft/ .
+.BR http://www.pathname.com/fhs/ .
+

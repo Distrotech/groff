@@ -30,253 +30,261 @@ FDL in the main directory of the groff source package.
 .  ftr CB B
 .\}
 .
-.\" text lines in macro definitions or bracketed sections \{...\}
+.\" a comment macro which does nothing
+.de c
+..
+.
+.\" a tab string
+.ds t "\t
+.
+.eo
+.
+.c text lines in macro definitions or bracketed sections \{...\}
 .de text
-.  if 1 \&\\$*\&
+.  if 1 \&\$*\&
 ..
 .
 .de option
-.  ds @tmp@ \f(CB\\$1\fP
+.  ds @tmp@ \f(CB\$1\fP
 .  shift 1
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .als shellcommand option
 .
-.\" --------- characters ---------
-.
-.\" print a single quote when documenting code, not in C-fonts
-.ds q \(fm
+.c --------- characters ---------
 .
 .de character
-.  ds @tmp@ \f(CB\\$1\fP
+.  ds @tmp@ \f(CB\$1\fP
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de 'char
-.  ds @tmp@ `\f(CB\\$1\fP'
+.  ds @tmp@ \(oq\f(CB\$1\fP\(cq
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de ''char
-.  ds @tmp@ \(dq\f(CB\\$1\fP\(dq
+.  ds @tmp@ \(lq\f(CB\$1\fP\(rq
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
-.\" --------- requests ---------
+.c --------- requests ---------
 .
-.\" request synopsis
+.c request synopsis
 .de REQ
-.  ds @tmp@ \&\\$1
+.  ds @tmp@ \&\$1
 .  shift 1
-.  IP "\f(CB\&\\*[@tmp@] \fP\f(CI\&\\$*\fP" 10n
+.  IP "\f(CB\&\*[@tmp@] \fP\f(CI\&\$*\fP" 10n
 .  rm @tmp@
 ..
 .
 .de request
-.  ds @tmp@ \f(CB\\$1\fP
+.  ds @tmp@ \f(CB\$1\fP
 .  shift 1
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
-.\" --------- macro or function arguments ---------
+.c --------- macro or function arguments ---------
 .
 .de argument
-.  ds @tmp@ \f(CI\\$1\fP
+.  ds @tmp@ \f(CI\$1\fP
 .  shift 1
-.  while (\\n[.$] >= 2) \{\
-.    as @tmp@ \/\f(CR\\$1\fP\f(CI\,\\$2\fP
+.  while (\n[.$] >= 2) \{\
+.    as @tmp@ \/\f(CR\$1\fP\f(CI\,\$2\fP
 .    shift 2
 .  \}
-.  if \\n[.$] .as @tmp@ \/\f(CR\\$1\fP
-.  text \\*[@tmp@]
+.  if \n[.$] .as @tmp@ \/\f(CR\$1\fP
+.  text \*[@tmp@]
 .  rm @tmp@
 ..
 .
-.\" argument followed by a numerical expression
+.c argument followed by a numerical expression
 .de argterm
-.  ds @tmp@ \f(CI\\$1\fP\|\f(CR\\$2\fP
+.  ds @tmp@ \f(CI\$1\fP\|\f(CR\$2\fP
 .  shift 2
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
-.\" --------- numerical elements ---------
+.c --------- numerical elements ---------
 .
 .de number
-.  ds @tmp@ \f(CR\\$1\fP
+.  ds @tmp@ \f(CR\$1\fP
 .  shift 1
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de prefixednumber
-.  ds @tmp@ \&\\$1\ \f(CR\\$2\fP
+.  ds @tmp@ \&\$1\ \f(CR\$2\fP
 .  shift 2
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .als scaleindicator request
 .
 .de scalednumber
-.  ds @tmp@ \f(CR\\$1\fP\f(CB\\$2\fP
+.  ds @tmp@ \f(CR\$1\fP\f(CB\$2\fP
 .  shift 2
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de operator
-.  ds @tmp@ `\f(CB\\$1\fP'
+.  ds @tmp@ \(oq\f(CB\$1\fP\(cq
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
-.\" --------- escape sequences ---------
+.c --------- escape sequences ---------
 .
 .de esc[arg]
-.  ds @tmp@ \f(CB\(rs\\$1[\fP\f(CI\\$2\fP\f(CB]\fP
+.  ds @tmp@ \f(CB\(rs\$1[\fP\f(CI\$2\fP\f(CB]\fP
 .  shift 2
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de esc(arg
-.  ds @tmp@ \f(CB\(rs\\$1(\fP\f(CI\\$2\fP
+.  ds @tmp@ \f(CB\(rs\$1(\fP\f(CI\$2\fP
 .  shift 2
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de escarg
-.  ds @tmp@ \f(CB\(rs\\$1\fP\f(CI\\$2\fP
+.  ds @tmp@ \f(CB\(rs\$1\fP\f(CI\$2\fP
 .  shift 2
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de esc[]
-.  ds @tmp@ \f(CB\(rs[\fP\f(CI\\$1\fP\f(CB]\fP
+.  ds @tmp@ \f(CB\(rs[\fP\f(CI\$1\fP\f(CB]\fP
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de esc(
-.  ds @tmp@ \f(CB\(rs(\fP\f(CI\\$1\fP
+.  ds @tmp@ \f(CB\(rs(\fP\f(CI\$1\fP
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de esc
-.  ds @tmp@ \f(CB\(rs\\$1\fP
+.  ds @tmp@ \f(CB\(rs\$1\fP
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de (esc
-.  ds @tmp@ \f(CB\(rs(\\$1\fP
+.  ds @tmp@ \f(CB\(rs(\$1\fP
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
 .de [esc]
-.  ds @tmp@ \f(CB\(rs[\\$1]\fP
+.  ds @tmp@ \f(CB\(rs[\$1]\fP
 .  shift
-.  text \\*[@tmp@]\\$*
+.  text \*[@tmp@]\$*
 .  rm @tmp@
 ..
 .
-.\" escape sequence synopsis
+.c escape sequence synopsis
 .de ESC
-.  ds @tmp@ \&\\$1
+.  ds @tmp@ \&\$1
 .  shift 1
-.  IP "\f(CB\e\&\\*[@tmp@]\fP\f(CI\&\\$*\fP"
+.  IP "\f(CB\(rs\&\*[@tmp@]\fP\f(CI\&\$*\fP"
 .  rm @tmp@
 ..
 .
-.\" synopsis for escape sequences with a long name
+.c synopsis for escape sequences with a long name
 .de ESC[]
-.  ds @arg1@ \&\\$1
-.  ds @arg2@ \&\\$2
+.  ds @arg1@ \&\$1
+.  ds @arg2@ \&\$2
 .  shift 2
-.  IP "\f(CB\e\&\\*[@arg1@][\fP\f(CI\&\\*[@arg2@]\fP\f(CB]\&\\$*\fP"
+.  IP "\f(CB\(rs\&\*[@arg1@][\fP\f(CI\&\*[@arg2@]\fP\f(CB]\&\$*\fP"
 .  rm @arg1@
 .  rm @arg2@
 ..
 .
-.\" synopsis escape sequence with quoted argument
+.c synopsis escape sequence with quoted argument
 .  de ESCq
-.  ds @tmp@ \&\\$1
+.  ds @tmp@ \&\$1
 .  shift 1
-.  IP "\f(CB\e\&\\*[@tmp@]\(cq\fP\f(CI\h'-0.2m'\\$*\/\fP\f(CB\(cq\fP"
+.  IP "\f(CB\(rs\&\*[@tmp@]\(cq\fP\f(CI\h'-0.2m'\$*\/\fP\f(CB\(cq\fP"
 .  rm @tmp@
 ..
 .
-.\" synopsis for 2-escapes (special characters)
+.c synopsis for 2-escapes (special characters)
 .de ESc
-.  ds @tmp@ \\$1
+.  ds @tmp@ \$1
 .  TP 14n
-.  text \f(CB\e(\&\\*[@tmp@]\ \ \ \fP\fR\\(\\*[@tmp@]\fP
+.  text \f(CB\(rs(\&\*[@tmp@]\ \ \ \fP\fR\(\*[@tmp@]\fP
 .  shift 1
-.  text \\$*.
+.  text \$*.
 .  rm @tmp@
 ..
 .
-.\" Greek characters
+.c Greek characters
 .de GREEK
-.  ds OLDT@BS \\n[.tabs]
+.  ds OLDT@BS \n[.tabs]
 .  br
 .  ie t \{\
 .    ta 7n 10n 30n T 7n 10n
-\&\f(CB\e(*\\$1\fP\t\fI\\(*\\$1\fP\t\\$2\t\
-\&\f(CB\e(*\\$3\fP\t\fI\\(*\\$3\fP\t\\$4
+\&\f(CB\(rs(*\$1\fP\*t\fI\(*\$1\fP\*t\$2\*t\
+\&\f(CB\(rs(*\$3\fP\*t\fI\(*\$3\fP\*t\$4
 .  \}
 .  el \{\
 .    ta 7n 30n T 7n
-\&\f(CB\e(*\\$1\fP\t\\$2\t\
-\&\f(CB\e(*\\$3\fP\t\\$4
+\&\f(CB\(rs(*\$1\fP\*t\$2\*t\
+\&\f(CB\(rs(*\$3\fP\*t\$4
 .  \}
-.  ta \\*[OLDT@BS]
+.  ta \*[OLDT@BS]
 .  rm OLDT@BS
 ..
 .
-.\" --------- registers ---------
+.c --------- registers ---------
 .
-.\" synopsis for registers
+.c synopsis for registers
 .de REG
 .  TP 10n
-.  text \&\f(CR\en[\fP\f(CB\\$1\fP\f(CR]\fP
+.  text \&\f(CR\(rsn[\fP\f(CB\$1\fP\f(CR]\fP
 .  shift 1
-.if \\n[.$] \&\\$*
+.if \n[.$] \&\$*
 ..
 .
 .als register request
 .
-.\" --------- warnings ---------
+.c --------- warnings ---------
 .
 .als warning request
 .
-.\" description of warnings
+.c description of warnings
 .de Warning
 .  ne (2v + 1)
 .  TP 12n
-.  text \f(CB\\$1\fP
-.  text \f(CI\\$2\fP
+.  text \f(CB\$1\fP
+.  text \f(CI\$2\fP
 .  br
 ..
+.
+.ec
 .
 .\" --------------------------------------------------------------------
 .\" Title
@@ -621,13 +629,12 @@ By default, numerical values do not have a scale indicator, i.e., they are
 normal numbers.
 .LP
 The roff language defines the following scale indicators.
-.RS
 .LP
 .na
 .nh
 .TS
-tab (@);
-LfCB L.
+center, tab(@);
+LfCB Lw(4i).
 c@Centimeter
 i@Inch
 P@Pica\ \(eq\ 1/6\ inch
@@ -644,7 +651,6 @@ scaled point\ \(eq\ 1/\f(CIsizescale\fR of a point (defined in
 font \fIDESC\fP file)
 T}
 .TE
-.RE
 .LP
 .ad
 .hy
@@ -680,13 +686,12 @@ and
 Moreover,
 .I groff
 added the following operators for numerical expressions:
-.RS
 .LP
 .na
 .nh
 .TS
-tab (@);
-LfCB L.
+center, tab(@);
+LfCB Lw(4i).
 e1\f(CB>?\fPe2@The maximum of \f(CIe1\fP and \f(CIe2\fP.
 e1\f(CB<?\fPe2@The minimum of \f(CIe1\fP and \f(CIe2\fP.
 \f(CB(\fPc\f(CB;\fPe\f(CB)@T{
@@ -694,7 +699,6 @@ Evaluate \f(CIe\fP using \f(CIc\fP as the default scaling
 indicator.
 T}
 .TE
-.RE
 .LP
 .ad
 .hy
@@ -711,19 +715,18 @@ and the
 .request .while
 requests.
 The following table characterizes the different types of conditions.
-.RS
 .LP
 .na
 .nh
 .TS
-tab (@);
-LfCB L.
+center, tab(@);
+LfCB Lw(4i).
 \f(CIN\fP@T{
 A numerical expression \f(CIN\fP yields true if its value
 is\ \f(CR>0\fP.
 T}
 !\f(CIN\fP@T{
-True if the value of \f(CIN\fP is\ \f(CR<=0\fP.
+True if the value of \f(CIN\fP is\ \f(CR\(<=0\fP.
 T}
 \&'\f(CIs1\fP'\f(CIs2\fP'@T{
 True if string\ \f(CIs1\fP is identical to string\ \f(CIs2\fP.
@@ -746,7 +749,6 @@ True if there is a register named \f(CIreg\fP.
 T}
 t@Formatter is \fBtroff\fR.
 .TE
-.RE
 .LP
 .ad
 .hy
@@ -773,13 +775,12 @@ Refer to the groff info file for all details.
 In the following request specifications, most argument names were chosen
 to be descriptive.
 Only the following denotations need clarification.
-.RS
 .LP
 .na
 .nh
 .TS
-tab (@);
-LfCI L.
+center, tab(@);
+LfCI Lw(4i).
 c@denotes a single character.
 font@T{
 a font either specified as a font name or a font number.
@@ -798,7 +799,6 @@ T}
 has three meanings depending on its sign, described below.
 T}
 .TE
-.RE
 .LP
 .ad
 .hy
@@ -1606,7 +1606,7 @@ Temporary indent next line (default scaling indicator\ \c
 Enable track kerning for
 .argument font .
 .
-.REQ .tl \f(CB\*q\fPleft\f(CB\*q\fPcenter\f(CB\*q\fPright\f(CB\*q\fP
+.REQ .tl \f(CB\(cq\fPleft\f(CB\(cq\fPcenter\f(CB\(cq\fPright\f(CB\(cq\fP
 Three-part title.
 .
 .REQ .trf filename
@@ -1705,6 +1705,7 @@ CfCB | CfCB | CfCB.
 preprocessor@start macro@ end macro
 =
 eqn@.PS@.PE
+grap@.G1@.G2
 grn@.GS@.GE
 pic@.PS@.PE
 refer@.R1@.R2
@@ -1731,7 +1732,7 @@ a variable name) by a pair of brackets
 .esc[] name
 and constant arguments (number expressions and characters) by apostrophes
 (ASCII 0x27) like
-.IR \*qconstant\*q .
+.IR \(cqconstant\(cq .
 .LP
 There are abbreviations for short names.
 Two character escape names can be specified by an opening parenthesis like
@@ -1815,7 +1816,7 @@ Macro argument with number
 .argument nexp ,
 where
 .argument nexp
-is a numerical expression evaluating to an integer >=1.
+is a numerical expression evaluating to an integer \(>=1.
 .
 .ESC $*
 In a macro, the concatenation of all the arguments separated by spaces.
@@ -1832,7 +1833,7 @@ escape character in copy mode.
 For a printable backslash, use
 .esc e .
 .
-.ESC \*q
+.ESC \(cq
 The acute accent \(aa; same as
 .esc( aa .
 Unescaped: apostrophe, right quotation mark, single quote (ASCII 0x27).
@@ -2565,8 +2566,8 @@ customizing a document.
 .REG nl Vertical position of last printed text base-line.
 .REG slimit
 If greater than 0, the maximum number of objects on the input stack.
-If <=0 there is no limit, i.e., recursion can continue until virtual memory
-is exhausted.
+If \(<=0 there is no limit, i.e., recursion can continue until virtual
+memory is exhausted.
 .REG systat
 The return value of the
 .I system()
@@ -2668,7 +2669,7 @@ All warnings.
 .PD
 .LP
 .TS
-tab (@), box, expand;
+tab(@), box, expand;
 c c c | c  c  c | c  c  c
 R RI CB | R RI CB | R RI CB.
 Bit@Code@Warning@Bit@Code@Warning@Bit@Code@Warning

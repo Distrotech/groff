@@ -688,13 +688,13 @@ impossible to accomplish complex actions.''  --Doug Gwyn (22/Jun/91 in
 @cindex @code{rf}
 @code{troff} can trace its origins back to a formatting program called
 @code{runoff}, written by J.@w{ }E.@w{ }Saltzer, which ran on MIT's CTSS
-system.  This name came from the common phrase of the time ``I'll run
-off a document.''  Bob Morris ported it to the 635 architecture and
-called the program @code{roff} (an abbreviation of @code{runoff}).  It
-has then been rewritten as @code{rf} for the PDP-7 (before having
-@acronym{UNIX}), and at the same time (1969), Doug McIllroy rewrote an
-extended and simplified version of @code{roff} in the @acronym{BCPL}
-programming language.
+operating system in the mid-sixties.  This name came from the common
+phrase of the time ``I'll run off a document.''  Bob Morris ported it to
+the 635 architecture and called the program @code{roff} (an abbreviation
+of @code{runoff}).  It has then been rewritten as @code{rf} for the
+PDP-7 (before having @acronym{UNIX}), and at the same time (1969), Doug
+McIllroy rewrote an extended and simplified version of @code{roff} in
+the @acronym{BCPL} programming language.
 
 @cindex @code{roff}
 The first version of @acronym{UNIX} was developed on a PDP-7 which was
@@ -1856,8 +1856,8 @@ The command line format for using the @file{man} macros with
 @c XXX document @TMAC_AN_PREFIX@
 
 @example
-groff -m man [ -rC1 ] [ -rD1 ] [ -rP @var{nnn} ] [ -rX @var{nnn} ]
-      [ @var{files}@dots{} ] 
+groff -m man [ -rC1 ] [ -rD1 ] [ -rP@var{nnn} ] [ -rS@var{xx} ]
+      [ -rX@var{nnn} ] [ @var{files}@dots{} ] 
 @end example
 
 It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
@@ -1871,10 +1871,14 @@ pages continuously, rather than starting each at@w{ }1.
 Double-sided printing.  Footers for even and odd pages are formatted
 differently.
 
-@item -rP @var{nnn}
+@item -rP@var{nnn}
 Enumeration of pages will start with @var{nnn} rather than with@w{ }1.
 
-@item -rX @var{nnn}
+@item -rS@var{xx}
+Use @var{xx} (which can be 10, 11, or@w{ }12@dmn{pt}) as the base
+document font size instead of the default value of@w{ }10@dmn{pt}.
+
+@item -rX@var{nnn}
 After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
 @var{nnn}c, etc.  For example, the option @option{-rX2} will produce the
 following page numbers: 1, 2, 2a, 2b, 2c, etc.
@@ -1919,16 +1923,16 @@ beginning of the file.
 Sets up an unnumbered section heading sticking out to the left.  Prints
 out all the text following @code{SH} up to the end of the line (resp.@:
 the text in the next line if there is no argument to @code{SH}) in bold
-face, at a default size of 9@w{ }point.  Additionally, the left margin
-for the following text is reset to its default value.
+face, one size larger than the base document size.  Additionally, the
+left margin for the following text is reset to its default value.
 @end_Defmac
 
 @maindex SS
 @Defmac{SS, [@var{heading}]}
 Sets up an unnumbered section heading.  Prints out all the text
 following @code{SS} up to the end of the line (resp.@: the text in the
-next line if there is no argument to @code{SS}) in bold face, at a
-default size of 10@w{ }point.  Additionally, the left margin for the
+next line if there is no argument to @code{SS}) in bold face, at the sam
+size as the base document size.  Additionally, the left margin for the
 following text is reset to its default value.
 @end_Defmac
 
@@ -4973,15 +4977,16 @@ Note that this only specifies the size of the page, not the top and
 bottom margins.  Those are not set by groff directly.  @xref{Traps}, for
 further information on how to do this.
 
-@c XXX negative .pl values
-
+Negative @code{pl} values are possible also, but not very useful: No
+trap is sprung, and each line is output on a single page (thus
+suppressing all vertical spacing).
 @end_Deffn
 
 @cindex headers
 @cindex footers
 @cindex titles
 @code{gtroff} provides several operations which help in setting up top
-and bottom titles (or headers and footers)
+and bottom titles (or headers and footers).
 
 @cindex title line
 @cindex three-part title
