@@ -3965,11 +3965,6 @@ static int read_size(int *x)
     }
   }
   else if (csdigit(c)) {
-    if (!inc && c == '0') {
-      // special case -- \s0 means to revert to previous size.
-      *x = 0;
-      return 1;
-    }
     val = c - '0';
     if (!inc && c != '0' && c < '4') {
       tok.next();
@@ -4001,6 +3996,11 @@ static int read_size(int *x)
   if (!bad) {
     switch (inc) {
     case 0:
+      if (val == 0) {
+	// special case -- \s[0] and \s0 means to revert to previous size
+	*x = 0;
+	return 1;
+      }
       *x = val;
       break;
     case 1:

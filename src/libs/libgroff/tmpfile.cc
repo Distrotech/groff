@@ -103,14 +103,13 @@ static void remove_tmp_files()
 {
   struct xtmpfile_list *p = xtmpfiles_to_delete;
 
-  while (p)
-    {
-      if (unlink(p->fname) < 0)
-	error("cannot unlink `%1': %2", p->fname, strerror(errno));
-      struct xtmpfile_list *old = p;
-      p = p->next;
-      free(old);
-    }
+  while (p) {
+    if (unlink(p->fname) < 0)
+      error("cannot unlink `%1': %2", p->fname, strerror(errno));
+    struct xtmpfile_list *old = p;
+    p = p->next;
+    free(old);
+  }
 }
 
 static void add_tmp_file(const char *name)
@@ -121,11 +120,10 @@ static void add_tmp_file(const char *name)
   struct xtmpfile_list *p
     = (struct xtmpfile_list *)malloc(sizeof(struct xtmpfile_list)
 				     + strlen (name));
-  if (p == NULL)
-    {
-      error("cannot unlink `%1': %2", name, strerror(errno));
-      return;
-    }
+  if (p == NULL) {
+    error("cannot unlink `%1': %2", name, strerror(errno));
+    return;
+  }
   p->next = xtmpfiles_to_delete;
   strcpy(p->fname, name);
   xtmpfiles_to_delete = p;
