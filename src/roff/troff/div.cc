@@ -410,7 +410,7 @@ void top_level_diversion::output(node *nd, int retain_size,
 void top_level_diversion::transparent_output(unsigned char c)
 {
   if (before_first_page && begin_page())
-    // This can only happen with the transparent() request.
+    // This can only happen with the .output request.
     fatal("sorry, I didn't manage to begin the first page in time: use an explicit .br request");
   const char *s = asciify(c);
   while (*s)

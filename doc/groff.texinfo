@@ -373,7 +373,7 @@ Software Foundation raise funds for GNU development.''
 
 @dircategory Miscellaneous
 @direntry
-* Groff: (groff)The GNU troff document formatting system.
+* Groff: (groff).               The GNU troff document formatting system.
 @end direntry
 
 
@@ -10887,6 +10887,24 @@ before it is sent to the device driver.
 The @code{\?} escape used in the top-level diversion produces no output
 at all; its argument is simply ignored.
 @endDefesc
+
+@cindex @code{\!}, and @code{output}
+@cindex @code{output} request, and @code{\!}
+@Defreq {output, string}
+Emit @var{string} directly to the @code{gtroff} intermediate output
+(subject to copy-mode interpretation);  this is similar to @code{\!} used
+at the top level.  An initial double quote in @var{string} is stripped off
+to allow initial blanks.
+
+This request can't be used before the first page has started -- if you get
+an error, simply insert @code{.br} before the @code{output} request.
+
+Without argument, @code{output} is ignored.
+
+Use with caution!  It is normally only needed for mark-up used by a
+postprocessor which does something with the output before sending it to
+the output device, filtering out @code{string} again.
+@endDefreq
 
 @Defreq {asciify, div}
 @cindex unformatting diversions (@code{asciify})

@@ -86,7 +86,6 @@ void copy_file();
 #ifdef COLUMN
 void vjustify();
 #endif /* COLUMN */
-void transparent();
 void transparent_file();
 void process_input_stack();
 
@@ -4652,6 +4651,25 @@ node *do_special()
   return new special_node(mac);
 }
 
+void output_request()
+{
+  if (!tok.newline() && !tok.eof()) {
+    int c;
+    for (;;) {
+      c = get_copy(0);
+      if (c == '"') {
+	c = get_copy(0);
+	break;
+      }
+      if (c != ' ' && c != '\t')
+	break;
+    }
+    for (; c != '\n' && c != EOF; c = get_copy(0))
+      topdiv->transparent_output(c);
+    topdiv->transparent_output('\n');
+  }
+}
+
 extern int image_no;		// from node.cc
 
 static node *do_suppress(symbol nm)
@@ -6849,121 +6867,122 @@ void get_output_registers(int *minx, int *miny, int *maxx, int *maxy)
 
 void init_input_requests()
 {
-  init_request("ds", define_string);
-  init_request("as", append_string);
-  init_request("ds1", define_nocomp_string);
-  init_request("as1", append_nocomp_string);
-  init_request("de", define_macro);
-  init_request("dei", define_indirect_macro);
-  init_request("de1", define_nocomp_macro);
-  init_request("am", append_macro);
-  init_request("ami", append_indirect_macro);
-  init_request("am1", append_nocomp_macro);
-  init_request("ig", ignore);
-  init_request("rm", remove_macro);
-  init_request("rn", rename_macro);
-  init_request("nop", nop_request);
-  init_request("if", if_request);
-  init_request("ie", if_else_request);
-  init_request("el", else_request);
-  init_request("so", source);
-  init_request("nx", next_file);
-  init_request("pm", print_macros);
-  init_request("eo", escape_off);
-  init_request("ec", set_escape_char);
-  init_request("ecs", save_escape_char);
-  init_request("ecr", restore_escape_char);
-  init_request("pc", set_page_character);
-  init_request("tm", terminal);
-  init_request("tm1", terminal1);
-  init_request("tmc", terminal_continue);
-  init_request("ex", exit_request);
-  init_request("return", return_macro_request);
-  init_request("em", end_macro);
-  init_request("blm", blank_line_macro);
-  init_request("tr", translate);
-  init_request("trnt", translate_no_transparent);
-  init_request("trin", translate_input);
   init_request("ab", abort_request);
-  init_request("pi", pipe_output);
-  init_request("cf", copy_file);
-  init_request("sy", system_request);
-  init_request("lf", line_file);
-  init_request("cflags", char_flags);
-  init_request("shift", shift);
-  init_request("rd", read_request);
-  init_request("cp", compatible);
-  init_request("char", define_character);
-  init_request("fchar", define_fallback_character);
-  init_request("rchar", remove_character);
-  init_request("hcode", hyphenation_code);
-  init_request("hpfcode", hyphenation_patterns_file_code);
-  init_request("while", while_request);
-  init_request("break", while_break_request);
-  init_request("continue", while_continue_request);
   init_request("als", alias_macro);
-  init_request("backtrace", backtrace_request);
-  init_request("chop", chop_macro);
-  init_request("substring", substring_macro);
-  init_request("length", length_macro);
+  init_request("am", append_macro);
+  init_request("am1", append_nocomp_macro);
+  init_request("ami", append_indirect_macro);
+  init_request("as", append_string);
+  init_request("as1", append_nocomp_string);
   init_request("asciify", asciify_macro);
-  init_request("unformat", unformat_macro);
-  init_request("warn", warn_request);
-  init_request("open", open_request);
-  init_request("opena", opena_request);
+  init_request("backtrace", backtrace_request);
+  init_request("blm", blank_line_macro);
+  init_request("break", while_break_request);
+  init_request("cf", copy_file);
+  init_request("cflags", char_flags);
+  init_request("char", define_character);
+  init_request("chop", chop_macro);
   init_request("close", close_request);
-  init_request("write", write_request);
-  init_request("writec", write_request_continue);
-  init_request("writem", write_macro_request);
-  init_request("trf", transparent_file);
+  init_request("continue", while_continue_request);
+  init_request("cp", compatible);
+  init_request("de", define_macro);
+  init_request("de1", define_nocomp_macro);
+  init_request("defcolor", define_color);
+  init_request("dei", define_indirect_macro);
+  init_request("do", do_request);
+  init_request("ds", define_string);
+  init_request("ds1", define_nocomp_string);
+  init_request("ec", set_escape_char);
+  init_request("ecr", restore_escape_char);
+  init_request("ecs", save_escape_char);
+  init_request("el", else_request);
+  init_request("em", end_macro);
+  init_request("eo", escape_off);
+  init_request("ex", exit_request);
+  init_request("fchar", define_fallback_character);
 #ifdef WIDOW_CONTROL
   init_request("fpl", flush_pending_lines);
 #endif /* WIDOW_CONTROL */
+  init_request("hcode", hyphenation_code);
+  init_request("hpfcode", hyphenation_patterns_file_code);
+  init_request("ie", if_else_request);
+  init_request("if", if_request);
+  init_request("ig", ignore);
+  init_request("length", length_macro);
+  init_request("lf", line_file);
+  init_request("mso", macro_source);
+  init_request("nop", nop_request);
+  init_request("nx", next_file);
+  init_request("open", open_request);
+  init_request("opena", opena_request);
+  init_request("output", output_request);
+  init_request("pc", set_page_character);
+  init_request("pi", pipe_output);
+  init_request("pm", print_macros);
+  init_request("psbb", ps_bbox_request);
+#ifndef POPEN_MISSING
+  init_request("pso", pipe_source);
+#endif /* not POPEN_MISSING */
+  init_request("rchar", remove_character);
+  init_request("rd", read_request);
+  init_request("return", return_macro_request);
+  init_request("rm", remove_macro);
+  init_request("rn", rename_macro);
+  init_request("shift", shift);
+  init_request("so", source);
+  init_request("spreadwarn", spreadwarn_request);
+  init_request("substring", substring_macro);
+  init_request("sy", system_request);
+  init_request("tm", terminal);
+  init_request("tm1", terminal1);
+  init_request("tmc", terminal_continue);
+  init_request("tr", translate);
+  init_request("trf", transparent_file);
+  init_request("trin", translate_input);
+  init_request("trnt", translate_no_transparent);
+  init_request("unformat", unformat_macro);
+  init_request("warn", warn_request);
+  init_request("while", while_request);
+  init_request("write", write_request);
+  init_request("writec", write_request_continue);
+  init_request("writem", write_macro_request);
   init_request("nroff", nroff_request);
   init_request("troff", troff_request);
 #ifdef COLUMN
   init_request("vj", vjustify);
 #endif /* COLUMN */
-  init_request("mso", macro_source);
-  init_request("do", do_request);
-#ifndef POPEN_MISSING
-  init_request("pso", pipe_source);
-#endif /* not POPEN_MISSING */
-  init_request("psbb", ps_bbox_request);
-  init_request("defcolor", define_color);
   init_request("warnscale", warnscale_request);
-  init_request("spreadwarn", spreadwarn_request);
-  number_reg_dictionary.define("systat", new variable_reg(&system_status));
-  number_reg_dictionary.define("slimit",
-			       new variable_reg(&input_stack::limit));
   number_reg_dictionary.define(".$", new nargs_reg);
-  number_reg_dictionary.define(".c", new lineno_reg);
-  number_reg_dictionary.define("c.", new writable_lineno_reg);
-  number_reg_dictionary.define(".F", new filename_reg);
   number_reg_dictionary.define(".C", new constant_int_reg(&compatible_flag));
+  number_reg_dictionary.define(".F", new filename_reg);
   number_reg_dictionary.define(".H", new constant_int_reg(&hresolution));
-  number_reg_dictionary.define(".V", new constant_int_reg(&vresolution));
   number_reg_dictionary.define(".R", new constant_reg("10000"));
+  number_reg_dictionary.define(".V", new constant_int_reg(&vresolution));
+  extern const char *revision;
+  number_reg_dictionary.define(".Y", new constant_reg(revision));
+  number_reg_dictionary.define(".c", new lineno_reg);
+  number_reg_dictionary.define(".g", new constant_reg("1"));
+  number_reg_dictionary.define(".warn", new constant_int_reg(&warning_mask));
   extern const char *major_version;
   number_reg_dictionary.define(".x", new constant_reg(major_version));
   extern const char *minor_version;
   number_reg_dictionary.define(".y", new constant_reg(minor_version));
-  extern const char *revision;
-  number_reg_dictionary.define(".Y", new constant_reg(revision));
-  number_reg_dictionary.define(".g", new constant_reg("1"));
-  number_reg_dictionary.define(".warn", new constant_int_reg(&warning_mask));
+  number_reg_dictionary.define("c.", new writable_lineno_reg);
   number_reg_dictionary.define("llx", new variable_reg(&llx_reg_contents));
   number_reg_dictionary.define("lly", new variable_reg(&lly_reg_contents));
-  number_reg_dictionary.define("urx", new variable_reg(&urx_reg_contents));
-  number_reg_dictionary.define("ury", new variable_reg(&ury_reg_contents));
-  number_reg_dictionary.define("opminx",
-			       new variable_reg(&output_reg_minx_contents));
-  number_reg_dictionary.define("opminy",
-			       new variable_reg(&output_reg_miny_contents));
   number_reg_dictionary.define("opmaxx",
 			       new variable_reg(&output_reg_maxx_contents));
   number_reg_dictionary.define("opmaxy",
 			       new variable_reg(&output_reg_maxy_contents));
+  number_reg_dictionary.define("opminx",
+			       new variable_reg(&output_reg_minx_contents));
+  number_reg_dictionary.define("opminy",
+			       new variable_reg(&output_reg_miny_contents));
+  number_reg_dictionary.define("slimit",
+			       new variable_reg(&input_stack::limit));
+  number_reg_dictionary.define("systat", new variable_reg(&system_status));
+  number_reg_dictionary.define("urx", new variable_reg(&urx_reg_contents));
+  number_reg_dictionary.define("ury", new variable_reg(&ury_reg_contents));
 }
 
 object_dictionary request_dictionary(501);
