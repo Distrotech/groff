@@ -1,3 +1,25 @@
+2002-01-30  Bernd Warken  <bwarken@mayn.de>
+
+	* src/libs/libdriver/input.cc [USE_ENV_STACK]: New macro to comment
+	out the unused `{' and `}' commands.  Undefined by default.
+	(IntArray): Make `data' private.
+	(IntArray::operator[], IntArray::get_data, IntArray::len): Use these
+	new methods instead.
+	(skip_line_D, skip_to_end_of_line): New functions.
+	(get_D_fixed_args): Use `skip_line_D'.
+	Changed to handle dummy odd arguments by ...
+	(get_D_fixed_args_odd_dummy): This new function.
+	(get_D_variable_args): Split some code into ...
+	(get_possibly_integer_args): This new function.
+	(send_draw): Use more `const'.
+	(delete_current_env): New function.
+	(position_to_end_of_args): Use `size_t'.
+	Updated.
+	(send_draw): Updated.
+	(parse_D_command): Handle `c', `C', and `t' better.
+	Updated.
+	(do_file): Updated.
+
 2002-01-29  Werner LEMBERG  <wl@gnu.org>
 
 	* NEWS: Revised.

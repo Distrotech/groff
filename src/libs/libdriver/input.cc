@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 14 Jan 2002
+   Last update: 29 Jan 2002
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -55,7 +55,7 @@
 
    The main aim for this rewrite is to provide a first step towards
    making groff fully compatible with classical troff without pain.
-   
+
    Bugs fixed
    - Unknown subcommands of `D' and `x' are now ignored like in the
      classical case, but a warning is issued.  This was also
@@ -97,7 +97,7 @@
      old behavior for testing purposes.
    - For the `D' commands that only set the environment, the calling of
      pr->send_draw() was removed because this doesn't make sense for
-     the `DF' commands, and the (changed) environment is sent with the
+     the `DF' commands; the (changed) environment is sent with the
      next command anyway.
    - Error handling was clearly separated into warnings and fatal.
    - The error behavior on additional arguments for `D' and `x'
@@ -105,13 +105,21 @@
      ignored (former groff) to issue a warning and ignore (now), see
      skip_line_x().  No fatal was chosen because both string and
      integer arguments can occur.
+   - The gtroff program issues a trailing dummy integer argument for
+     some drawing commands with an odd number of arguments to make the
+     number of arguments even, e.g. the DC and Dt commands; this is
+     honored now.
    - All D commands with a variable number of args expect an even
      number of trailing integer arguments, so fatal on error was
      implemented.
+   - Disable environment stack and the commands `{' and `}' by making
+     them conditional on macro USE_ENV_STACK; actually, this is
+     undefined by default.  There isn't any known application for these
+     features.
 
    Cosmetics
    - Nested `switch' commands are avoided by using more functions.
-     Dangerous fall-thrus avoided.
+     Dangerous 'fall-through's avoided.
    - Commands and functions are sorted alphabetically (where possible).
    - Dynamic arrays/buffers are now implemented as container classes.
    - Some functions had an ugly return structure; this has been
@@ -151,6 +159,8 @@
        `Error' (`::' calls).
      - Can the global `device' be made independent of libgroff?
   - Implement the B-spline drawing `D~' for all graphical devices.
+  - Make `environment' a class with a delete method to get rid of
+    delete_current_env().
   - The class definitions of this document could go into a new file.
   - Once things will have been settled the comments in this document
     could be strongly reduced.
@@ -211,7 +221,7 @@
   So doing an exorcism on the strange, incompatible displacements might
   not harm any existing documents, but will make the usage of the
   graphical escape sequences and commands natural.
-  
+
   That's why the rewrite of this file returned to the reasonable,
   classical specification with its clear end-of-drawing rule that is
   suitable for all cases.  But a macro STUPID_DRAWING_POSITIONING is
@@ -223,6 +233,10 @@
 // to the strange alternate sum of args displacement
 #define STUPID_DRAWING_POSITIONING
 #endif
+
+// Decide whether the commands `{' and `}' for different environments
+// should be used.
+#undef USE_ENV_STACK
 
 #include "driver.h"
 #include "device.h"
@@ -242,27 +256,38 @@ typedef int IntArg;
 // color components of groff_out color commands, must be >= 32 bits
 typedef unsigned int ColorArg;
 
+#ifdef USE_ENV_STACK
 class EnvStack {
   environment **data;
   size_t num_allocated;
   size_t num_stored;
-public:  
+public:
   EnvStack(void);
   ~EnvStack(void);
   environment *pop(void);
   void push(environment *e);
 };
+#endif // USE_ENV_STACK
 
 // Array for IntArg values.
 class IntArray {
   size_t num_allocated;
-public:
-  IntArg *data;
   size_t num_stored;
+  IntArg *data;
+public:
   IntArray(void);
   IntArray(const int);
   ~IntArray(void);
+  const IntArg operator[](const size_t i) const
+  {
+    if (i >= num_stored || i < 0)
+      fatal("index out of range");
+    return (const IntArg) data[i];
+  }
   void append(IntArg);
+  const IntArg * const
+    get_data(void) const { return (const IntArg * const) data; }
+  const size_t len(void) const { return num_stored; }
 };
 
 // Characters read from the input queue.
@@ -295,7 +320,7 @@ public:
 };
 
 /**********************************************************************
-                          external variables 
+                          external variables
  **********************************************************************/
 
 // exported as extern by error.h (called from driver.h)
@@ -343,32 +368,44 @@ envp_size = sizeof(environment *);
  **********************************************************************/
 
 // utility functions
-ColorArg color_from_Df_command(IntArg);	// transform old color into new
+ColorArg color_from_Df_command(IntArg);
+				// transform old color into new
+void delete_current_env(void);	// delete global var current_env
 void fatal_command(char);	// abort for illegal command
 inline Char get_char(void);	// read next character from input stream
 ColorArg get_color_arg(void);	// read in argument for new color cmds
-IntArray *get_D_fixed_args(const int, const bool = false);
-				// read in fixed no. of int args
+IntArray *get_D_fixed_args(const size_t);
+				// read in fixed number of int args
+IntArray *get_D_fixed_args_odd_dummy(const size_t);
+				// get fixed number of int args plus ignore
 IntArray *get_D_variable_args(void); // variable, even no. of int args
 char *get_extended_arg(void);	// argument for `x X' (several lines)
 IntArg get_integer_arg(void);	// read in next integer argument
+IntArray *get_possibly_integer_args();
+				// 0 or more integer arguments
 char *get_string_arg(void);	// read in next string arg, ended by WS
 inline bool is_space_or_tab(const Char); // test on space/tab char
 Char next_arg_begin(void);	// skip white space on current line
 Char next_command(void);	// go to next command, evt. diff. line
 inline bool odd(const int);	// test if integer is odd
-void position_to_end_of_args(const IntArray *); // after drawing
+void position_to_end_of_args(const IntArray * const);
+				// after drawing
 void remember_filename(const char *); // set global current_filename
-void send_draw(const Char, const IntArray *); // call pr->draw
+void send_draw(const Char, const IntArray * const);
+				// call pr->draw
 void skip_line(void);		// unconditionally skip to next line
 bool skip_line_checked(void);	// skip line, false if args are left
 void skip_line_fatal(void);	// skip line, fatal if args are left
 void skip_line_warn(void);	// skip line, warn if args are left
-void skip_line_x();		// skip line in x and D commands
-inline void unget_char(const Char); // restore character onto input
+void skip_line_D(void);		// skip line in D commands
+void skip_line_x(void);		// skip line in x commands
+void skip_to_end_of_line(void);	// skip to the end of the current line
+inline void unget_char(const Char);
+				// restore character onto input
 
 // parser subcommands
-void parse_color_command(color *); // color sub(sub)commands m and DF
+void parse_color_command(color *);
+				// color sub(sub)commands m and DF
 void parse_D_command(void);	// graphical subcommands
 bool parse_x_command(void);	// device controller subcommands
 
@@ -376,7 +413,9 @@ bool parse_x_command(void);	// device controller subcommands
                          class methods
  **********************************************************************/
 
-EnvStack::EnvStack(void) {
+#ifdef USE_ENV_STACK
+EnvStack::EnvStack(void)
+{
   num_allocated = 4;
   // allocate pointer to array of num_allocated pointers to environment
   data = (environment **) malloc(envp_size * num_allocated);
@@ -385,7 +424,8 @@ EnvStack::EnvStack(void) {
   num_stored = 0;
 }
 
-EnvStack::~EnvStack(void) {
+EnvStack::~EnvStack(void)
+{
   for (size_t i = 0; i < num_stored; i++)
     delete data[i];
   free(data);
@@ -395,7 +435,8 @@ EnvStack::~EnvStack(void) {
 //
 // the calling function must take care of properly deleting the result
 environment *
-EnvStack::pop(void) {
+EnvStack::pop(void)
+{
   num_stored--;
   environment *result = data[num_stored];
   data[num_stored] = 0;
@@ -404,7 +445,8 @@ EnvStack::pop(void) {
 
 // copy argument and push this onto the stack
 void
-EnvStack::push(environment *e) {
+EnvStack::push(environment *e)
+{
   environment *e_copy = new environment;
   if (num_stored >= num_allocated) {
     environment **old_data = data;
@@ -429,14 +471,17 @@ EnvStack::push(environment *e) {
   data[num_stored] = e_copy;
   num_stored++;
 }
+#endif // USE_ENV_STACK
 
-IntArray::IntArray(void) {
+IntArray::IntArray(void)
+{
   num_allocated = 4;
   data = new IntArg[num_allocated];
   num_stored = 0;
 }
-  
-IntArray::IntArray(const int n) {
+
+IntArray::IntArray(const int n)
+{
   if (n <= 0)
     fatal("number of integers to be allocated must be > 0");
   num_allocated = n;
@@ -444,12 +489,14 @@ IntArray::IntArray(const int n) {
   num_stored = 0;
 }
 
-IntArray::~IntArray(void) {
+IntArray::~IntArray(void)
+{
   a_delete data;
 }
-  
+
 void
-IntArray::append(IntArg x) {
+IntArray::append(IntArg x)
+{
   if (num_stored >= num_allocated) {
     IntArg *old_data = data;
     num_allocated *= 2;
@@ -462,18 +509,21 @@ IntArray::append(IntArg x) {
   num_stored++;
 }
 
-StringBuf::StringBuf(void) {
+StringBuf::StringBuf(void)
+{
   num_stored = 0;
   num_allocated = 128;
   data = new Char[num_allocated];
 }
-  
-StringBuf::~StringBuf(void) {
+
+StringBuf::~StringBuf(void)
+{
   a_delete data;
 }
-  
+
 void
-StringBuf::append(const Char c) {
+StringBuf::append(const Char c)
+{
   if (num_stored >= num_allocated) {
     Char *old_data = data;
     num_allocated *= 2;
@@ -487,7 +537,8 @@ StringBuf::append(const Char c) {
 }
 
 char *
-StringBuf::make_string(void) {
+StringBuf::make_string(void)
+{
   char *result = new char[num_stored + 1];
   for (size_t i = 0; i < num_stored; i++)
     result[i] = (char) data[i];
@@ -496,12 +547,13 @@ StringBuf::make_string(void) {
 }
 
 void
-StringBuf::reset(void) {
+StringBuf::reset(void)
+{
   num_stored = 0;
 }
 
 /**********************************************************************
-                        utility functions 
+                        utility functions
  **********************************************************************/
 
 //////////////////////////////////////////////////////////////////////
@@ -526,6 +578,19 @@ color_from_Df_command(IntArg Df_gray)
   if (Df_gray >= 1000)
     return 0;
   return ColorArg((1000-Df_gray) * COLORARG_MAX / 1000); // scaling
+}
+
+//////////////////////////////////////////////////////////////////////
+/* delete_current_env():
+   Delete global variable current_env and its pointer members.
+
+   This should be a class method of environment.
+*/
+void delete_current_env(void)
+{
+  delete current_env->col;
+  delete current_env->fill;
+  delete current_env;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -557,7 +622,8 @@ get_char(void)
    Return: The retrieved color argument.
 */
 ColorArg
-get_color_arg(void) {
+get_color_arg(void)
+{
   IntArg x = get_integer_arg();
   if (x < 0 || x > (IntArg)COLORARG_MAX) {
     error("color component argument out of range");
@@ -568,13 +634,13 @@ get_color_arg(void) {
 
 //////////////////////////////////////////////////////////////////////
 /* get_D_fixed_args():
-   Get a fixed number of integer args for D commands.
+   Get a fixed number of integer arguments for D commands.
 
    Fatal if wrong number of arguments.
    Too many arguments on the line raise a warning.
    A line skip is done.
 
-   number: In-parameter, the number of args to be retrieved.
+   number: In-parameter, the number of arguments to be retrieved.
    ignore: In-parameter, ignore next argument -- GNU troff always emits
            pairs of parameters for `D' extensions added by groff.
            Default is `false'.
@@ -582,22 +648,53 @@ get_color_arg(void) {
    Return: New IntArray containing the arguments.
 */
 IntArray *
-get_D_fixed_args(const int number, const bool ignore) {
+get_D_fixed_args(const size_t number)
+{
   if (number <= 0)
     fatal("requested number of arguments must be > 0");
   IntArray *args = new IntArray(number);
-  for (int i = 0; i < number; i++)
+  for (size_t i = 0; i < number; i++)
     args->append(get_integer_arg());
-  if (ignore)
-    (void) get_integer_arg();
-  skip_line_x();
+  skip_line_D();
+  return args;
+}
+
+//////////////////////////////////////////////////////////////////////
+/* get_D_fixed_args_odd_dummy():
+   Get a fixed number of integer arguments for D commands and optionally
+   ignore a dummy integer argument if the requested number is odd.
+
+   The gtroff program adds a dummy argument to some commands to get
+   an even number of arguments.
+   Error if the number of arguments differs from the scheme above.
+   A line skip is done.
+
+   number: In-parameter, the number of arguments to be retrieved.
+
+   Return: New IntArray containing the arguments.
+*/
+IntArray *
+get_D_fixed_args_odd_dummy(const size_t number)
+{
+  if (number <= 0)
+    fatal("requested number of arguments must be > 0");
+  IntArray *args = new IntArray(number);
+  for (size_t i = 0; i < number; i++)
+    args->append(get_integer_arg());
+  if (odd(number)) {
+    IntArray *a = get_possibly_integer_args();
+    if (a->len() > 1)
+      error("too many arguments");
+    delete a;
+  }
+  skip_line_D();
   return args;
 }
 
 //////////////////////////////////////////////////////////////////////
 /* get_D_variable_args():
-   Get a variable even number of integer args for D commands.
-   
+   Get a variable even number of integer arguments for D commands.
+
    Get as many integer arguments as possible from the rest of the
    current line.
    - The arguments are separated by an arbitrary sequence of space or
@@ -611,66 +708,13 @@ get_D_fixed_args(const int number, const bool ignore) {
 IntArray *
 get_D_variable_args()
 {
-  bool done = false;
-  StringBuf buf = StringBuf();
-  Char c = get_char();
-  IntArray *args = new IntArray();
-  while (!done) {
-    buf.reset();
-    while (is_space_or_tab(c))
-      c = get_char();
-    if (c == '-') {
-      Char c1 = get_char();
-      if (isdigit((int) c1)) {
-	buf.append(c);
-	c = c1;
-      }
-      else
-	unget_char(c1);
-    }
-    while (isdigit((int) c)) {
-      buf.append(c);
-      c = get_char();
-    }
-    if (!buf.is_empty()) {
-      char *s = buf.make_string();
-      errno = 0;
-      long int x = strtol(s, 0, 10);
-      if (errno
-	  || x > INTARG_MAX || x < -INTARG_MAX) {
-	error("invalid integer argument, set to 0");
-	x = 0;
-      }
-      args->append((IntArg) x);
-      delete s;
-    }
-    // Here, c is not a digit.
-    // Terminate on comment, end of line, or end of file, while
-    // space or tab indicate continuation; otherwise error.
-    switch((int) c) {
-    case '#':
-      skip_line();
-      done = true;
-      break;
-    case '\n':
-      current_lineno++;
-      done = true;
-      break;
-    case EOF:
-      done = true;
-      break;
-    case ' ':
-    case '\t':
-      break;
-    default:
-      error("integer argument expected");
-      break;
-    }
-  }
-  if (args->num_stored <= 0)
+  IntArray *args = get_possibly_integer_args();
+  size_t n = args->len();
+  if (n <= 0)
     error("no arguments found");
-  if (odd(args->num_stored))
+  if (odd(n))
     error("even number of arguments expected");
+  skip_line_D();
   return args;
 }
 
@@ -701,7 +745,7 @@ get_extended_arg(void)
 	unget_char(c);		// first character of next line
 	break;
       }
-    }  
+    }
     buf.append(c);
     c = get_char();
   }
@@ -746,6 +790,82 @@ get_integer_arg(void)
   }
   delete s;
   return (IntArg) number;
+}
+
+//////////////////////////////////////////////////////////////////////
+/* get_possibly_integer_args():
+   Parse the rest of the input line as a list of integer arguments.
+
+   Get as many integer arguments as possible from the rest of the
+   current line, even none.
+   - The arguments are separated by an arbitrary sequence of space or
+     tab characters.
+   - A comment, a newline, or EOF indicates the end of processing.
+   - Error on non-digit characters different from these.
+   - No line skip is performed.
+
+   Return: New IntArray of the retrieved arguments.
+*/
+IntArray *
+get_possibly_integer_args()
+{
+  bool done = false;
+  StringBuf buf = StringBuf();
+  Char c = get_char();
+  IntArray *args = new IntArray();
+  while (!done) {
+    buf.reset();
+    while (is_space_or_tab(c))
+      c = get_char();
+    if (c == '-') {
+      Char c1 = get_char();
+      if (isdigit((int) c1)) {
+	buf.append(c);
+	c = c1;
+      }
+      else
+	unget_char(c1);
+    }
+    while (isdigit((int) c)) {
+      buf.append(c);
+      c = get_char();
+    }
+    if (!buf.is_empty()) {
+      char *s = buf.make_string();
+      errno = 0;
+      long int x = strtol(s, 0, 10);
+      if (errno
+	  || x > INTARG_MAX || x < -INTARG_MAX) {
+	error("invalid integer argument, set to 0");
+	x = 0;
+      }
+      args->append((IntArg) x);
+      delete s;
+    }
+    // Here, c is not a digit.
+    // Terminate on comment, end of line, or end of file, while
+    // space or tab indicate continuation; otherwise error.
+    switch((int) c) {
+    case '#':
+      skip_to_end_of_line();
+      done = true;
+      break;
+    case '\n':
+      done = true;
+      unget_char(c);
+      break;
+    case EOF:
+      done = true;
+      break;
+    case ' ':
+    case '\t':
+      break;
+    default:
+      error("integer argument expected");
+      break;
+    }
+  }
+  return args;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -872,14 +992,14 @@ odd(const int n)
    args: In-parameter, the arguments of a former drawing command.
 */
 void
-position_to_end_of_args(const IntArray *args)
+position_to_end_of_args(const IntArray * const args)
 {
-  int i;
-  int nr = args->num_stored;
-  for (i = 0; i < nr; i += 2)
-    current_env->hpos += args->data[i];
-  for (i = 1; i < nr; i += 2)
-    current_env->vpos += args->data[i];
+  size_t i;
+  const size_t n = args->len();
+  for (i = 0; i < n; i += 2)
+    current_env->hpos += (*args)[i];
+  for (i = 1; i < n; i += 2)
+    current_env->vpos += (*args)[i];
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -916,9 +1036,10 @@ remember_filename(const char *filename)
    args: Array of integer arguments of actual D subcommand.
 */
 void
-send_draw(const Char subcmd, const IntArray *args) {
-  pr->draw((int) subcmd, args->data, args->num_stored,
-	   current_env);
+send_draw(const Char subcmd, const IntArray * const args)
+{
+  int n = (int) args->len();
+  pr->draw((int) subcmd, (IntArg *) args->get_data(), n, current_env);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -946,13 +1067,13 @@ skip_line(void)
 
 //////////////////////////////////////////////////////////////////////
 /* skip_line_checked ():
-   Check that the rest of the line has no args left, then skip line.
+   Check that the rest of the line has no arguments left, then skip line.
 
    Spaces, tabs, and a comment are allowed before newline or EOF.
    All other characters raise an error.
 */
 bool
-skip_line_checked()
+skip_line_checked(void)
 {
   bool ok = true;
   Char c = get_char();
@@ -977,13 +1098,13 @@ skip_line_checked()
 
 //////////////////////////////////////////////////////////////////////
 /* skip_line_fatal ():
-   Fatal error if args left, otherwise skip line.
-   
+   Fatal error if arguments left, otherwise skip line.
+
    Spaces, tabs, and a comment are allowed before newline or EOF.
    All other characters trigger the error.
 */
 void
-skip_line_fatal()
+skip_line_fatal(void)
 {
   bool ok = skip_line_checked();
   if (!ok) {
@@ -995,13 +1116,13 @@ skip_line_fatal()
 
 //////////////////////////////////////////////////////////////////////
 /* skip_line_warn ():
-   Skip line, but warn if args are left on actual line.
-   
+   Skip line, but warn if arguments are left on actual line.
+
    Spaces, tabs, and a comment are allowed before newline or EOF.
    All other characters raise a warning
 */
 void
-skip_line_warn()
+skip_line_warn(void)
 {
   bool ok = skip_line_checked();
   if (!ok) {
@@ -1012,20 +1133,60 @@ skip_line_warn()
 }
 
 //////////////////////////////////////////////////////////////////////
-/* skip_line_x ():
-   Skip line in `x' or `D' commands.
-   
+/* skip_line_D ():
+   Skip line in `D' commands.
+
    Decide whether in case of an additional argument a fatal error is
    raised (the documented classical behavior), only a warning is
    issued, or the line is just skipped (former groff behavior).
    Actually decided for the warning.
 */
 void
-skip_line_x()
+skip_line_D(void)
 {
   skip_line_warn();
   // or: skip_line_fatal();
   // or: skip_line();
+}
+
+//////////////////////////////////////////////////////////////////////
+/* skip_line_x ():
+   Skip line in `x' commands.
+
+   Decide whether in case of an additional argument a fatal error is
+   raised (the documented classical behavior), only a warning is
+   issued, or the line is just skipped (former groff behavior).
+   Actually decided for the warning.
+*/
+void
+skip_line_x(void)
+{
+  skip_line_warn();
+  // or: skip_line_fatal();
+  // or: skip_line();
+}
+
+//////////////////////////////////////////////////////////////////////
+/* skip_to_end_of_line():
+   Go to the end of the current line.
+
+   Skip the rest of the current line, excluding the newline character.
+   The global variable current_lineno is not changed.
+   No errors are raised.
+*/
+void
+skip_to_end_of_line(void)
+{
+  Char c = get_char();
+  while (1) {
+    if (c == '\n') {
+      unget_char(c);
+      return;
+    }
+    if (c == EOF)
+      return;
+    c = get_char();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1116,7 +1277,8 @@ parse_D_command()
   switch((int) subcmd) {
   case '~':			// D~: draw B-spline
     // actually, this isn't available for some postprocessors
-  default:			// unknown options are passed to the device
+    // fall through
+  default:			// unknown options are passed to device
     {
       IntArray *args = get_D_variable_args();
       send_draw(subcmd, args);
@@ -1133,12 +1295,20 @@ parse_D_command()
       break;
     }
   case 'c':			// Dc: draw circle line
-  case 'C':			// DC: draw solid circle
     {
-      IntArray *args = get_D_fixed_args(1, subcmd == 'C' ? true : false);
+      IntArray *args = get_D_fixed_args(1);
       send_draw(subcmd, args);
       // move to right end
-      current_env->hpos += args->data[0];
+      current_env->hpos += (*args)[0];
+      delete args;
+      break;
+    }
+  case 'C':			// DC: draw solid circle
+    {
+      IntArray *args = get_D_fixed_args_odd_dummy(1);
+      send_draw(subcmd, args);
+      // move to right end
+      current_env->hpos += (*args)[0];
       delete args;
       break;
     }
@@ -1148,7 +1318,7 @@ parse_D_command()
       IntArray *args = get_D_fixed_args(2);
       send_draw(subcmd, args);
       // move to right end
-      current_env->hpos += args->data[0];
+      current_env->hpos += (*args)[0];
       delete args;
       break;
     }
@@ -1156,7 +1326,7 @@ parse_D_command()
     {
       // convert arg and treat it like DFg
       ColorArg gray = color_from_Df_command(get_integer_arg());
-      // skip the unused `vertical' component -- \D'...' always emits pairs
+      // skip unused `vertical' component (\D'...' always emits pairs)
       (void) get_integer_arg();
       current_env->fill->set_gray(gray);
       // no positioning
@@ -1168,7 +1338,7 @@ parse_D_command()
     // no positioning (setting-only command)
     skip_line_x();
     break;
-  case 'l':			// DFl: draw line
+  case 'l':			// Dl: draw line
     {
       IntArray *args = get_D_fixed_args(2);
       send_draw(subcmd, args);
@@ -1190,7 +1360,7 @@ parse_D_command()
     }
   case 't':			// Dt: set line thickness
     {
-      IntArray *args = get_D_fixed_args(1, true);
+      IntArray *args = get_D_fixed_args_odd_dummy(1);
       send_draw(subcmd, args);
 #   ifdef STUPID_DRAWING_POSITIONING
       // final args positioning
@@ -1206,14 +1376,14 @@ parse_D_command()
 //////////////////////////////////////////////////////////////////////
 /* parse_x_command():
    Parse subcommands of the device control command x.
-   
+
    This is the part of the do_file() parser that scans the device
    controlling commands.
    - Error on duplicate prologue commands.
    - Error on wrong or lacking arguments.
    - Warning on too many arguments.
    - Line is always skipped.
-   
+
    Globals:
    - current_env: is set by many subcommands.
    - npages: page counting variable
@@ -1322,8 +1492,11 @@ void
 do_file(const char *filename)
 {
   Char command;
-  EnvStack env_stack = EnvStack();
   bool stopped = false;		// terminating condition
+
+#ifdef USE_ENV_STACK
+  EnvStack env_stack = EnvStack();
+#endif // USE_ENV_STACK
 
   // setup of global variables
   npages = 0;
@@ -1343,11 +1516,8 @@ do_file(const char *filename)
   }
   remember_filename(filename);
 
-  if (current_env != 0) {
-    delete current_env->col;
-    delete current_env->fill;
-    delete current_env;
-  }
+  if (current_env != 0)
+    delete_current_env();
   current_env = new environment;
   current_env->col = new color;
   current_env->fill = new color;
@@ -1384,7 +1554,7 @@ do_file(const char *filename)
 	fatal("all files must use the same device");
       delete tmp_dev;
     }
-    skip_line_x();		// ignore further args
+    skip_line_x();		// ignore further arguments
     current_env->size = 10 * font::sizescale;
 
     // 2nd command `x res'
@@ -1404,7 +1574,7 @@ do_file(const char *filename)
     int_arg = get_integer_arg();
     if (int_arg != font::vert)
       fatal("minimum vertical motion does not match");
-    skip_line_x();		// ignore further args
+    skip_line_x();		// ignore further arguments
 
     // 3rd command `x init'
     command = next_command();
@@ -1429,15 +1599,15 @@ do_file(const char *filename)
     case '#':			// #: comment, ignore up to end of line
       skip_line();
       break;
+#ifdef USE_ENV_STACK
     case '{':			// {: start a new environment (a copy)
       env_stack.push(current_env);
       break;
     case '}':			// }: pop previous env from stack
-      delete current_env->fill;
-      delete current_env->col;
-      delete current_env;
+      delete_current_env();
       current_env = env_stack.pop();
       break;
+#endif // USE_ENV_STACK
     case '0':			// ddc: obsolete jump and print command
     case '1':
     case '2':
@@ -1516,7 +1686,7 @@ do_file(const char *filename)
     case 'm':			// m: glyph color
       parse_color_command(current_env->col);
       break;
-    case 'n':			// n: print end of line, ignore 2 args
+    case 'n':			// n: print end of line, ignore 2 arguments
       if (npages <= 0)
 	fatal_command(command);
       pr->end_of_line();
@@ -1596,7 +1766,5 @@ do_file(const char *filename)
   // If `stopped' is not `true' here then there wasn't any `x stop'.
   if (!stopped)
     warning("no final `x stop' command");
-  delete current_env->col;
-  delete current_env->fill;
-  delete current_env;
+  delete_current_env();
 }
