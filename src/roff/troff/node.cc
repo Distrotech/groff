@@ -3288,6 +3288,13 @@ hyphenation_type overstrike_node::get_hyphenation_type()
   return HYPHEN_MIDDLE;
 }
 
+hyphenation_type space_node::get_hyphenation_type()
+{
+  if (was_escape_colon)
+    return HYPHEN_MIDDLE;
+  return HYPHEN_BOUNDARY;
+}
+
 hyphenation_type unbreakable_space_node::get_hyphenation_type()
 {
   return HYPHEN_MIDDLE;

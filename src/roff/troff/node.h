@@ -177,6 +177,7 @@ public:
   void asciify(macro *);
   const char *type();
   int force_tprint();
+  hyphenation_type get_hyphenation_type();
 };
 
 struct width_list {
