@@ -1,4 +1,5 @@
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
+   Free Software Foundation, Inc.
      Written by Eli Zaretskii (eliz@is.elta.co.il)
 
 This file is part of groff.
@@ -100,6 +101,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /* The executable extension.  */
 # define EXE_EXT	".exe"
+
+/* Possible executable extensions.  */
+# define PATH_EXT	".com;.exe;.bat;.cmd"
 
 /* The system null device.  */
 # define NULL_DEV	"NUL"
@@ -208,6 +212,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #endif
 #ifndef EXE_EXT
 # define EXE_EXT	""
+#endif
+#ifndef PATH_EXT
+# define PATH_EXT	""
 #endif
 #ifndef NULL_DEV
 # define NULL_DEV	"/dev/null"

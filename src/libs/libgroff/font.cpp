@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -999,7 +999,7 @@ int font::load_desc()
 	t.error("image_generator command requires an argument");
 	return 0;
       }
-      image_generator = strdup(p);
+      image_generator = strsave(p);
     }
     else if (strcmp("charset", p) == 0)
       break;

@@ -1,3 +1,38 @@
+2005-04-01  Kees Zeelenberg  <kzlg@users.sourceforge.net>
+            Werner LEMBERG  <wl@gnu.org>
+
+	Add binary relocation support for Windows platforms.
+
+	* src/include/Makefile.sub (defs.h): Add `INSTALLPATH'.
+
+	* src/include/relocate.h, src/libs/libgroff/relocate.cpp: New files.
+
+	* src/libs/libgroff/searchpath.cpp: Handle `relocate'.
+	(search_path::search_path, search_path::open_file_cautious): Use
+	`relocate'.
+
+	* src/libs/libgroff/Makefile.sub (OBJS, CCSRCS),
+	src/include/Makefile.sub (HDRS): Updated.
+
+2005-04-01  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grohtml/post-html.cpp: Don't use strdup/free but
+	strsave/a_delete.
+
+	* src/libs/libgroff/font.cpp: Replace strdup with strsave.
+
+	* src/libs/libgroff/maxfilename.cpp: Don't include limits.h since
+	lib.h already does it.
+
+	* src/libs/libgroff/maxpathname.cpp: New file, defining
+	path_name_max.
+
+	* src/include/lib.h: Add prototype for path_name_max.
+
+	* src/libs/libgroff/Makefile.sub (OBJS, CCSRCS): Updated.
+
+	* src/include/nonposix.h (PATH_EXT): New macro.
+
 2005-03-28  Werner LEMBERG  <wl@gnu.org>
 
 	Add support for double- and zero-width characters in grotty.

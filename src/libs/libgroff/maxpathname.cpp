@@ -1,6 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1992, 2001, 2003, 2005 Free Software Foundation, Inc.
-     Written by James Clark (jjc@jclark.com)
+/* Copyright (C) 2005 Free Software Foundation, Inc.
+     Written by Werner Lemberg (wl@gnu.org)
 
 This file is part of groff.
 
@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/* file_name_max(dir) does the same as pathconf(dir, _PC_NAME_MAX) */
+/* path_name_max(dir) does the same as pathconf(dir, _PC_PATH_MAX) */
 
 #include "lib.h"
 
@@ -30,36 +30,36 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #ifdef _POSIX_VERSION
 
-size_t file_name_max(const char *fname)
+size_t path_name_max()
 {
-  return pathconf(fname, _PC_NAME_MAX);
+  return pathconf("/", _PC_PATH_MAX) < 1 ? 1024 : pathconf("/",_PC_PATH_MAX);
 }
 
 #else /* not _POSIX_VERSION */
 
 #ifdef HAVE_DIRENT_H
-#include <dirent.h>
+# include <dirent.h>
 #else /* not HAVE_DIRENT_H */
-#ifdef HAVE_SYS_DIR_H
-#include <sys/dir.h>
-#endif /* HAVE_SYS_DIR_H */
+# ifdef HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif /* HAVE_SYS_DIR_H */
 #endif /* not HAVE_DIRENT_H */
 
-#ifndef NAME_MAX
-#ifdef MAXNAMLEN
-#define NAME_MAX MAXNAMLEN
-#else /* !MAXNAMLEN */
-#ifdef MAXNAMELEN
-#define NAME_MAX MAXNAMELEN
-#else /* !MAXNAMELEN */
-#define NAME_MAX 14
-#endif /* !MAXNAMELEN */
-#endif /* !MAXNAMLEN */
-#endif /* !NAME_MAX */
+#ifndef PATH_MAX
+# ifdef MAXPATHLEN
+#  define PATH_MAX MAXPATHLEN
+# else /* !MAXPATHLEN */
+#  ifdef MAX_PATH
+#   define PATH_MAX MAX_PATH
+#  else /* !MAX_PATH */
+#   define PATH_MAX 255
+#  endif /* !MAX_PATH */
+# endif /* !MAXPATHLEN */
+#endif /* !PATH_MAX */
 
-size_t file_name_max(const char *)
+size_t path_name_max()
 {
-  return NAME_MAX;
+  return PATH_MAX;
 }
 
 #endif /* not _POSIX_VERSION */

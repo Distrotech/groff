@@ -101,6 +101,7 @@ extern "C" { int pclose (FILE *); }
 #endif /* NEED_DECLARATION_PCLOSE */
 
 size_t file_name_max(const char *fname);
+size_t path_name_max();
 
 int interpret_lf_args(const char *p);
 
