@@ -96,3 +96,6 @@ const int PUSH_COMP_MODE = 072;
 const int POP_GROFFCOMP_MODE = 073;
 
 #endif /* IS_EBCDIC_HOST */
+
+extern void do_glyph_color(symbol);
+extern void do_fill_color(symbol);

@@ -1128,6 +1128,26 @@ void environment_copy()
   skip_line();
 }
 
+void fill_color_change()
+{
+  symbol s = get_name();
+  if (s.is_null())
+    curenv->set_fill_color(curenv->get_prev_fill_color());
+  else
+    do_fill_color(s);
+  skip_line();
+}
+
+void glyph_color_change()
+{
+  symbol s = get_name();
+  if (s.is_null())
+    curenv->set_glyph_color(curenv->get_prev_glyph_color());
+  else
+    do_glyph_color(s);
+  skip_line();
+}
+
 static symbol P_symbol("P");
 
 void font_change()
@@ -3206,7 +3226,9 @@ void init_env_requests()
   init_request("fam", family_change);
   init_request("fc", field_characters);
   init_request("fi", fill);
+  init_request("fcolor", fill_color_change);
   init_request("ft", font_change);
+  init_request("gcolor", glyph_color_change);
   init_request("hc", hyphen_char);
   init_request("hlm", hyphen_line_max_request);
   init_request("hy", hyphenate_request);

@@ -12318,18 +12318,27 @@ Note that @code{f} is the default scaling indicator for the
 @endExample
 @endDefreq
 
-@DefescList {\\m, , c, }
+@DefreqList {gcolor, [@Var{color}]}
+@DefescItem {\\m, , c, }
 @DefescItem {\\m, @lparen{}, co, }
 @DefescItem {\\m, @lbrack{}, color, @rbrack}
 @DefregListEnd {.m}
-Set drawing color.  The following example shows how to turn the next four
-words red.
+Set (glyph) drawing color.  The following examples show how to turn the
+next four words red.
+
+@Example
+.gcolor red
+these are in red
+.gcolor
+and these words are in black.
+@endExample
 
 @Example
 \m[red]these are in red\m[] and these words are in black.
 @endExample
 
-The escape @code{\m[]} returns to the previous color.
+The escape @code{\m[]} returns to the previous color, as does a call to
+@code{gcolor} without an argument.
 
 @cindex drawing color name register (@code{.m})
 @cindex name, drawing color, register (@code{.m})
@@ -12350,11 +12359,12 @@ the fly:
 @endExample
 @endDefesc
 
-@DefescList {\\M, , c, }
+@DefreqList {fcolor, [@Var{color}]}
+@DefescItem {\\M, , c, }
 @DefescItem {\\M, @lparen{}, co, }
 @DefescItem {\\M, @lbrack{}, color, @rbrack}
 @DefregListEnd {.M}
-Set background color for filled objects drawn with the
+Set fill (background) color for filled objects drawn with the
 @code{\D'@dots{}'} commands.
 
 A red ellipse can be created with the following code:
@@ -12363,13 +12373,17 @@ A red ellipse can be created with the following code:
 \M[red]\h'0.5i'\D'E 2i 1i'\M[]
 @endExample
 
-The escape @code{\M[]} returns to the previous fill color.
+The escape @code{\M[]} returns to the previous fill color, as does a call to
+@code{fcolor} without an argument.
 
 @cindex background color name register (@code{.M})
 @cindex name, background color, register (@code{.M})
 @cindex color name, background, register (@code{.M})
-The name of the current background color is available in the read-only,
-string-valued number register @samp{.M}.
+@cindex fill color name register (@code{.M})
+@cindex name, fill color, register (@code{.M})
+@cindex color name, fill, register (@code{.M})
+The name of the current fill (background) color is available in the
+read-only, string-valued number register @samp{.M}.
 
 The fill color is associated with the current environment
 (@pxref{Environments}).
