@@ -547,7 +547,8 @@
 .  nr doc-arg-ptr +1
 .  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    if (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
-.      tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
+.      tmc mdoc warning: Using a macro as first argument
+.      tm1 " cancels effect of .\$0 (#\n[.c])
 .
 .      \" the right action here would be to reset the argument counters
 .      \" and bail out -- unfortunately, a small number of manual pages
@@ -1939,7 +1940,7 @@
 .      doc-print-and-reset
 .  \}
 .
-.  \" shall we finish .It request?
+.  \" shall we finish .It macro?
 .  if !"\*[doc-macro-name]"It" \
 .    if \n[doc-in-list] \
 .      if !\n[doc-nesting-level] \
@@ -2025,7 +2026,7 @@
 .
 .de Ap
 .  ie !\n[doc-arg-limit] \
-.    tm Usage: `Ap' cannot be first request on a line (no `.Ap') (#\n[.c])
+.    tm Usage: `Ap' cannot be first macro on a line (no `.Ap') (#\n[.c])
 .  el \{\
 .    nop \)'\)\c
 .    nr doc-arg-ptr +1
@@ -2378,7 +2379,7 @@
 .
 .
 .\" NS doc-fontmode-font-stackXXX global register
-.\" NS   stack of saved current font values from `Bf' request
+.\" NS   stack of saved current font values from `Bf' macro
 .\" NS
 .\" NS limit:
 .\" NS   doc-fontmode-depth
@@ -2387,7 +2388,7 @@
 .
 .
 .\" NS doc-fontmode-size-stackXXX global register
-.\" NS   stack of saved current size values from `Bf' request
+.\" NS   stack of saved current size values from `Bf' macro
 .\" NS
 .\" NS limit:
 .\" NS   doc-fontmode-depth
@@ -2429,7 +2430,7 @@
 .    el \{ .ie "\$1"-symbolic" \
 .      nop \*[doc-Sy-font]\c
 .    el \{\
-.      tmc mdoc warning: Unknown keyword `\$1' in .Bf request
+.      tmc mdoc warning: Unknown keyword `\$1' in .Bf macro
 .      tm1 " (#\n[.c])
 .  \}\}\}\}\}\}\}
 .  el \
@@ -2497,7 +2498,7 @@
 .    doc-set-hard-space
 .  \}
 .  el \{\
-.    tm mdoc warning: Unknown keyword `\$1' in .Bk request (#\n[.c])
+.    tm mdoc warning: Unknown keyword `\$1' in .Bk macro (#\n[.c])
 .    nr doc-keep-type 3
 .  \}\}\}
 .
@@ -2678,7 +2679,7 @@
 .  \}
 .  el \{\
 .    tm1 "mdoc warning: Unknown keyword `\$1' (or missing display type)
-.    tm1 "              in .Bd request (#\n[.c])
+.    tm1 "              in .Bd macro (#\n[.c])
 .    nr doc-reg-Bd 0
 .  \}\}\}\}\}
 .
@@ -2806,7 +2807,7 @@
 .      tm mdoc warning: .Bd `-file' keyword requires argument (#\n[.c])
 .  \}
 .  el \
-.      tm mdoc warning: Unknown keyword `\$1' in .Bd request (#\n[.c])
+.      tm mdoc warning: Unknown keyword `\$1' in .Bd macro (#\n[.c])
 .  \}\}
 .
 .  if (\n[doc-reg-ddBa] < \n[.$]) \{\
@@ -2963,7 +2964,7 @@
 .  \}
 .  el \{\
 .    tm1 "mdoc warning: Unknown list type `\$1' (or missing list type)
-.    tm1 "              in .Bl request
+.    tm1 "              in .Bl macro
 .    tm
 .    nr doc-arg-ptr 0
 .  \}\}\}\}\}\}\}\}\}\}\}
@@ -3073,7 +3074,7 @@
 .      nr doc-list-indent-stack\n[doc-list-depth] +\n[doc-reg-dBla1]n
 .    \}
 .    el \
-.      tm mdoc warning: `-nested' allowed with nested .Bl requests only (#\n[.c])
+.      tm mdoc warning: `-nested' allowed with nested .Bl macros only (#\n[.c])
 .  \}
 .
 .  el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-width" \{\
@@ -3245,7 +3246,7 @@
 .    \}
 .    el \{\
 .      tmc mdoc warning: Unknown keyword `\*[doc-arg\n[doc-arg-ptr]]'
-.      tm1 " in .Bl request (#\n[.c])
+.      tm1 " in .Bl macro (#\n[.c])
 .  \}\}
 .
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \
@@ -3669,7 +3670,7 @@
 .
 .  ie (\n[doc-reg-It] == 1) \{\
 .    if \n[.$] \{\
-.      tm1 "mdoc warning: .It requests in lists of type `\*[doc-str-It]'
+.      tm1 "mdoc warning: .It macros in lists of type `\*[doc-str-It]'
 .      tm1 "              don't take arguments (#\n[.c])
 .  \}\}
 .  el \{\
@@ -3696,13 +3697,13 @@
 .          doc-print-recursive
 .    \}\}\}
 .    el \{\
-.      tm1 "mdoc warning: .It requests in lists of type `\*[doc-str-It]'
+.      tm1 "mdoc warning: .It macros in lists of type `\*[doc-str-It]'
 .      tm1 "              require arguments (#\n[.c])
 .    \}
 .  \}
 .
 .  \" the previous call of `.doc-print-recursive' can contain calls to
-.  \" opening requests like `.Ao'; we then defer the call of `doc-xxx-list'
+.  \" opening macros like `.Ao'; we then defer the call of `doc-xxx-list'
 .  if !\n[doc-nesting-level] \
 .    doc-\*[doc-str-It]
 ..
@@ -5037,7 +5038,7 @@
 .
 .
 .\" Very crude references: Stash all reference info into boxes, print out
-.\" reference on .Re request and clean up.  Ordering very limited, no fancy
+.\" reference on .Re macro and clean up.  Ordering very limited, no fancy
 .\" citations, but can do articles, journals, and books -- need to add
 .\" several missing options (like city etc).  Should be able to grab a refer
 .\" entry, massage it a wee bit (prefix a `.' to the %[A-Z]) and not worry

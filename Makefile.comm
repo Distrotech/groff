@@ -112,6 +112,28 @@ extraclean:
 	  fi; \
 	fi
 
+# The next rule is needed for make of Solaris 2.5.1 to override its
+# built-in .y.o rule (which takes precedence over the .y.cc rule above).
+.y.o:
+	if test -n "$(YTABH)"; then \
+	  $(YACC) $(YACCFLAGS) -d $<; \
+	else \
+	  $(YACC) $(YACCFLAGS) $<; \
+	fi
+	-test -f y.tab.h && mv y.tab.h y_tab.h
+	-test -f y.tab.c && mv y.tab.c y_tab.c
+	mv y_tab.c $(YTABC)
+# Avoid ending up with two versions of $(YTABH).
+	if test -n "$(YTABH)"; then \
+	  if test -f $(srcdir)/$(YTABH); then \
+	    rm -f $(YTABH); \
+	    mv y_tab.h $(srcdir)/$(YTABH); \
+	  else \
+	    mv y_tab.h $(YTABH); \
+	  fi; \
+	fi
+	$(COMPILE.cc) -o $@ $(YTABC)
+
 version=`cat $(top_srcdir)/VERSION`
 # No additional number for the groff archive if revision is zero
 revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' $(top_srcdir)/REVISION`
