@@ -1,3 +1,18 @@
+2000-06-17  Eli Zaretskii  <eliz@is.elta.co.il>
+
+	* html.cc [!_POSIX_VERSION]: Include limits.h and dirent.h or
+	sys/dir.h.  Define NAME_MAX using MAXNAMLEN.  Include nonposix.h.
+	(file_name_max): New function.
+	(html_printer::make_new_image_name): If the filesystem doesn't
+	support file names longer than 14 characters, use a shorter
+	image_name string.
+	(html_printer::convert_to_image): Enlarge the size of buffer[] to
+	accomodate 2 temp file names plus some slack.  Don't put \n at the
+	end of commands passed to system().  Redirect stderr to the null
+	device programmatically, not via the shell.  Use NULL_DEV, not
+	literal "/dev/null".  Print diagnostics if any calls to system()
+	failed.
+
 2000-05-31  Keith Thompson  <kst@SDSC.EDU>
 
 	* html.cc: Added declaration of mktemp() as needed for SunOS 4.1.3.
@@ -10,8 +25,8 @@
 2000-04-28  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* html.cc (calculate_margin): Calculate the left and right margin
-	irrespective of the boolean `margin_on'.  Fixes a divide by zero
-	bug and a column bug as reported by Steve Blinkhorn <steve@prd.co.uk>.
+	irrespective of the boolean `margin_on'.  Fixes a divide by zero bug
+	and a column bug as reported by Steve Blinkhorn <steve@prd.co.uk>.
 	Improved the behaviour of the -m (margin on) option.
 
 	* html.cc (make_html_indent): More checking.

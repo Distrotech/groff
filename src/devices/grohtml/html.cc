@@ -43,6 +43,36 @@ extern "C" {
 #include <stdio.h>
 #include <fcntl.h>
 
+#ifndef _POSIX_VERSION
+
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
+#ifdef HAVE_DIRENT_H
+#include <dirent.h>
+#else /* not HAVE_DIRENT_H */
+#ifdef HAVE_SYS_DIR_H
+#include <sys/dir.h>
+#endif /* HAVE_SYS_DIR_H */
+#endif /* not HAVE_DIRENT_H */
+
+#ifndef NAME_MAX
+#ifdef MAXNAMLEN
+#define NAME_MAX MAXNAMLEN
+#else /* !MAXNAMLEN */
+#ifdef MAXNAMELEN
+#define NAME_MAX MAXNAMELEN
+#else /* !MAXNAMELEN */
+#define NAME_MAX 14
+#endif /* !MAXNAMELEN */
+#endif /* !MAXNAMLEN */
+#endif /* !NAME_MAX */
+
+#endif /* not _POSIX_VERSION */
+
+#include "nonposix.h"
+
 #include "ordered_list.h"
 
 #if !defined(TRUE)
@@ -1534,6 +1564,24 @@ void html_printer::set_char(int i, font *f, const environment *env, int w, const
 }
 
 /*
+ *  file_name_max - return the maximum file-name length permitted
+ *                  by the underlying filesystem.
+ *
+ *  (Code shamelessly stolen from indxbib/dirnamemax.c.)
+ */
+
+static size_t
+file_name_max (const char *fname)
+{
+#ifdef _POSIX_VERSION
+  return pathconf (fname, _PC_NAME_MAX);
+#else
+  return NAME_MAX;
+#endif
+}
+
+
+/*
  *  make_new_image_name - creates a new file name ready for a image file.
  */
 
@@ -1544,10 +1592,31 @@ void html_printer::make_new_image_name (void)
   if ((current_filename == 0) ||
       (strcmp(current_filename, "<standard input>") == 0) ||
       (strcmp(current_filename, "-") == 0) ||
-      (strchr(current_filename, '/') != 0)) {
-    sprintf(image_name, "grohtml-%d-%ld", image_number, (long)getpid());
-  } else {
+      (strcspn(current_filename, DIR_SEPS) < strlen(current_filename))) {
+    if (file_name_max(".") > 14)
+      sprintf(image_name, "groff-html-%d-%ld", image_number, (long)getpid());
+    else
+      // The "-gh" part might be truncated on MS-DOS, but there's enough
+      // space for the PID and up to 99 image numbers.  That's why "-gh"
+      // comes last.
+      sprintf(image_name, "%d-%ld-gh", image_number, (long)getpid());
+  } else if (file_name_max(".") > 14) {
     sprintf(image_name, "%s-%d-%ld", current_filename, image_number, (long)getpid());
+  } else { // see the commentary above
+    sprintf(image_name, "%d-%ld-%s",
+	    image_number, (long)getpid(), current_filename);
+    // Make sure image_name does not have a dot in its trunk, since
+    // convert_to_image will append .gif or .png to it, and DOS doesn't
+    // allow more than a single dot in a file name.
+    int i = strlen(image_name);
+    for ( ; i > 0; i--) {
+      if (strchr(DIR_SEPS, image_name[i - 1]))
+	break;
+      if (image_name[i - 1] == '.') {
+	image_name[i - 1] = '\0';
+	break;
+      }
+    }
   }
 }
 
@@ -2399,26 +2468,33 @@ int html_printer::is_less (graphic_glob *g, text_glob *t)
 
 void html_printer::convert_to_image (char *troff_src, char *image_name)
 {
-  char buffer[1024];
+  char buffer[MAX_STRING_LENGTH*2 + 200];
   char *ps_src = mktemp(xtmptemplate("-ps-"));
 
-  sprintf(buffer, "grops %s > %s\n", troff_src, ps_src);
+  sprintf(buffer, "grops%s %s > %s", EXE_EXT, troff_src, ps_src);
   if (debug_on) {
-    fprintf(stderr, buffer);
+    fprintf(stderr, "%s\n", buffer);
   }
-  system(buffer);
+  int status = system(buffer);
+  if (status == -1) {
+    fprintf(stderr, "\"%s\" failed (no grops on PATH?)\n", buffer);
+    return;
+  }
+  else if (status) {
+    fprintf(stderr, "\"%s\" returned status %d\n", buffer, status);
+  }
 
   if (image_type == gif) {
     sprintf(buffer,
-	    "echo showpage | gs -q -dSAFER -sDEVICE=ppmraw -r%d -g%dx%d -sOutputFile=- %s - | ppmquant 256  2> /dev/null | ppmtogif  2> /dev/null > %s.gif \n",
-	    image_res,
+	    "echo showpage | gs%s -q -dSAFER -sDEVICE=ppmraw -r%d -g%dx%d -sOutputFile=- %s - | ppmquant%s 256 | ppmtogif%s > %s.gif",
+	    EXE_EXT, image_res,
 	    (end_region_hpos-start_region_hpos)*image_res/font::res+IMAGE_BOARDER_PIXELS,
 	    (end_region_vpos-start_region_vpos)*image_res/font::res+IMAGE_BOARDER_PIXELS,
-	    ps_src, image_name);
+	    ps_src, EXE_EXT, EXE_EXT, image_name);
   } else {
     sprintf(buffer,
-	    "echo showpage | gs -q -dSAFER -sDEVICE=%s -r%d -g%dx%d -sOutputFile=- %s - 2> /dev/null > %s.png \n",
-	    image_device,
+	    "echo showpage | gs%s -q -dSAFER -sDEVICE=%s -r%d -g%dx%d -sOutputFile=- %s - > %s.png",
+	    EXE_EXT, image_device,
 	    image_res,
 	    (end_region_hpos-start_region_hpos)*image_res/font::res+IMAGE_BOARDER_PIXELS,
 	    (end_region_vpos-start_region_vpos)*image_res/font::res+IMAGE_BOARDER_PIXELS,
@@ -2434,9 +2510,29 @@ void html_printer::convert_to_image (char *troff_src, char *image_name)
 #endif
   }
   if (debug_on) {
-    fprintf(stderr, "%s", buffer);
+    fprintf(stderr, "%s\n", buffer);
   }
-  system(buffer);
+  // Redirect standard error to the null device.  This is more
+  // portable than using "2> /dev/null" inside the commands above,
+  // since it doesn't require a Unixy shell.
+  int save_stderr = dup(2);
+  if (save_stderr > 2) {
+    int fdnull = open(NULL_DEV, O_WRONLY|O_BINARY, 0666);
+    if (fdnull > 2)
+      dup2(fdnull, 2);
+    if (fdnull >= 0)
+      close(fdnull);
+  }
+  status = system(buffer);
+  dup2(save_stderr, 2);
+  if (status == -1) {
+    fprintf(stderr,
+	    "Conversion to image failed (no gs/ppmquant/ppmtogif on PATH?)\n");
+  }
+  else if (status) {
+    fprintf(stderr,
+	    "Conversion to image returned status %d\n", status);
+  }
   unlink(ps_src);
   unlink(troff_src);
 }
