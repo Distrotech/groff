@@ -2910,6 +2910,7 @@ Examples include paragraphs, sections, and other groups.
 * Headings in ms::
 * Highlighting in ms::
 * Lists in ms::
+* Indents in ms::
 * Tabstops in ms::
 * ms Displays and Keeps::
 * ms Insertions::
@@ -3096,7 +3097,7 @@ Prints all text following in the normal point size
 
 @c ---------------------------------------------------------------------
 
-@node Lists in ms, Tabstops in ms, Highlighting in ms, ms Body Text
+@node Lists in ms, Indents in ms, Highlighting in ms, ms Body Text
 @subsubsection Lists
 @cindex @file{ms}, list macros
 
@@ -3248,14 +3249,9 @@ Gotta pay for those lawyers and guns!
 
 @sp 1
 To set nested lists, use the @code{RS} and @code{RE} macros.
+@xref{Indents in ms}, for more information.
 @cindex @file{ms}, nested lists
 @cindex Nested lists (ms)
-
-@DefmacList {RS, , ms}
-@DefmacListEnd {RE, , ms}
-These macros begin and end a section indented to line
-up with the body of an @code{IP} macro.
-@endDefmac
 
 For example:
 
@@ -3292,7 +3288,29 @@ o Guns
 
 @c ---------------------------------------------------------------------
 
-@node Tabstops in ms, ms Displays and Keeps, Lists in ms, ms Body Text
+@node Indents in ms, Tabstops in ms, Lists in ms, ms Body Text
+@subsubsection Indents
+
+In many situations,
+you may need to indent a section of text
+while still wrapping and filling.
+@xref{Lists in ms},
+for an example of nested lists.
+
+@DefmacList {RS, , ms}
+@DefmacListEnd {RE, , ms}
+These macros begin and end an indented section.
+The @code{PI} register controls the amount of indent,
+allowing the indented text to line up under hanging
+and indented paragraphs.
+@endDefmac
+
+@xref{ms Displays and Keeps},
+for macros to indent and turn off filling.
+
+@c ---------------------------------------------------------------------
+
+@node Tabstops in ms, ms Displays and Keeps, Indents in ms, ms Body Text
 @subsubsection Tab Stops
 
 Use the @code{ta} request to define tab stops as needed.

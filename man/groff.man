@@ -2,7 +2,7 @@
 .ig
 groff.man
 
-Last update: 6 Jan 2002
+Last update: 15 Mar 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -84,7 +84,7 @@ FDL in the main directory of the groff source package.
 .    shift
 .  \}
 .  \*[@m] \*[@s]\f[R]
-.  ft P			\" to make \c happy
+.  ft P                 \" to make \c happy
 .  rm @m
 .  rm @s
 .  rm @a
@@ -491,7 +491,7 @@ backslash
 .
 .P
 The user can define her own formatting commands using the
-.request .de
+.request de
 request.
 .
 These commands are called
@@ -516,7 +516,7 @@ variables as well.
 variables store character sequences.
 .
 They are set with the
-.request .ds
+.request ds
 request and retrieved by the
 .esc *
 escape sequences.
@@ -527,7 +527,7 @@ variables can store numerical values, numbers with a scale unit, and
 occasionally string-like objects.
 .
 They are set with the
-.request .nr
+.request nr
 request and retrieved by the
 .esc n
 escape sequences.
@@ -538,7 +538,7 @@ allow the user to temporarily store global formatting parameters like
 line length, font size, etc.\& for later reuse.
 .
 This is done by the
-.request .ev
+.request ev
 request.
 .
 .P
@@ -546,7 +546,7 @@ request.
 are identified either by a name or by an internal number.
 .
 The current font is chosen by the
-.request .ft
+.request ft
 request or by the
 .esc f
 escape sequences.
@@ -606,11 +606,11 @@ task in certain conditions.
 .character .
 A dot is only special at the beginning of a line or after the
 condition in the requests
-.request .if ,
-.request .ie ,
-.request .el ,
+.request if ,
+.request ie ,
+.request el ,
 and
-.request .while .
+.request while .
 There it is the control character that introduces a request (or macro).
 .
 The special behavior can be delayed by using the
@@ -618,7 +618,7 @@ The special behavior can be delayed by using the
 escape.
 .
 By using the 
-.request .cc
+.request cc
 request, the control character can be set to a different character,
 making the dot
 .squoted_char .
@@ -640,7 +640,7 @@ That means that it introduces a request like the dot, but with the
 additional property that this request doesn't cause a linebreak.
 .
 By using the 
-.request .c2
+.request c2
 request, the non-break control character can be set to a different
 character.
 .
@@ -660,9 +660,9 @@ escape sequence.
 .character \[dq]
 The double quote is used to enclose arguments in requests and macros.
 In the
-.request .ds
+.request ds
 and
-.request .as
+.request as
 requests, a leading double quote in the argument will be stripped off,
 making everything else afterwards the string to be defined (enabling
 leading whitespace).
@@ -931,10 +931,10 @@ For details see the groff info file.
 .
 .B Conditions
 occur in tests raised by the
-.request .if ,
-.request .ie ,
+.request if ,
+.request ie ,
 and the
-.request .while
+.request while
 requests.
 .
 The following table characterizes the different types of conditions.
@@ -1151,8 +1151,8 @@ Create alias name for request, string, macro, or diversion
 Append to
 .I macro
 until
-.request ..
-is called.
+.B ..\&
+is encountered.
 .
 .REQ .am macro end
 Append to
@@ -1165,8 +1165,8 @@ is called.
 Append to a macro whose name is contained in the string register
 .I macro
 until
-.request ..
-is called.
+.B ..\&
+is encountered.
 .
 .REQ .ami macro end
 Append to a macro indirectly.
@@ -1352,8 +1352,8 @@ Divert and append to
 Define or redefine
 .I macro
 until
-.request ..
-is called.
+.B ..\&
+is encountered.
 .
 .REQ .de macro end
 Define or redefine
@@ -1399,8 +1399,8 @@ can't be redefined.
 Define or redefine a macro whose name is contained in the string register
 .I macro
 until
-.request ..
-is called.
+.B ..\&
+is encountered.
 .
 .REQ .dei macro end
 Define or redefine a macro indirectly.
@@ -1456,7 +1456,7 @@ Save current escape character.
 .
 .REQ .el anything
 Else part for if-else (\c
-.request .ie )
+.request ie )
 request.
 .
 .REQ .em macro
@@ -1544,6 +1544,7 @@ will be special.
 Return to previous font.
 Same as
 .request \[rs]fP .
+.
 .REQ .ft font
 Change to font name or number
 .IR font ;
@@ -1623,8 +1624,8 @@ otherwise do nothing.
 .
 .REQ .ig
 Ignore text until
-.request ..
-is called.
+.B ..\&
+is encountered.
 .
 .REQ .ig end
 Ignore text until
@@ -1812,7 +1813,7 @@ but append to it.
 .
 .REQ .os
 Output vertical distance that was saved by the
-.request .sv
+.request sv
 request.
 .
 .REQ .pc
@@ -1875,7 +1876,7 @@ Get the bounding box of a PostScript image
 .
 .REQ .pso command
 This behaves like the
-.request .so
+.request so
 request except that input comes from the standard output of
 .IR command .
 .
@@ -2005,7 +2006,7 @@ of vertical space.
 Save the vertical distance
 .I N
 for later output with
-.request .os
+.request os
 request.
 .
 .REQ .sy command-line
@@ -2092,9 +2093,17 @@ etc.\& on output.
 Transparently output the contents of file
 .IR filename .
 .
+.REQ .trin abcd.\|.\|.\&
+This is the same as the
+.request tr
+request except that the
+.B asciify
+request will use the character code (if any) before the character
+translation.
+.
 .REQ .trnt abcd.\|.\|.\&
 This is the same as the
-.request .tr
+.request tr
 request except that the translations do not apply to text that is
 transparently throughput into a diversion with
 .esc ! .
@@ -2151,6 +2160,12 @@ as input.
 .REQ .write stream anything
 Write
 .I anything
+to the stream named
+.IR stream .
+.
+.REQ .writem stream xx
+Write contents of macro or string
+.I xx
 to the stream named
 .IR stream .
 .
@@ -2237,7 +2252,7 @@ construct are used for special characters predefined by the roff system.
 Escapes sequences with names of more than two characters
 .esc[] "" name
 denote user defined named characters (see the
-.request .char
+.request char
 request).
 .
 .
@@ -2283,7 +2298,7 @@ The string stored in the string variable with arbitrary length name
 The name by which the current macro was invoked.
 .
 The
-.request .als
+.request als
 request can make a macro have more than one name.
 .
 .ESC $ x
@@ -2485,6 +2500,7 @@ Return format of register with name
 .I reg
 suitable for
 .request .af .
+.
 Alternative forms
 .escarg g( xy
 and
@@ -2554,7 +2570,7 @@ Typeset the character with code
 in the current font, no special fonts are searched.
 .
 Useful for adding characters to a font using the
-.request .char
+.request char
 request.
 .
 .ESCq o abc.\|.\|.\&
@@ -2604,7 +2620,7 @@ Note the alternative forms
 .Text ,
 .escarg s \[+-]x .
 Same as
-.request .ps
+.request ps
 request.
 .
 .ESCq S N
@@ -2767,7 +2783,7 @@ Plus-minus sign
 .\" --------------------------------------------------------------------
 .
 Strings are defined by the
-.request .ds
+.request ds
 request and can be retrieved by the
 .esc *
 escape sequence.
@@ -2799,7 +2815,7 @@ above), but some can also hold a string value.
 .P
 Each register is given a name.
 Arbitrary registers can be defined and set with the request
-.request .nr
+.request nr
 .IR register .
 .
 .P
@@ -2862,7 +2878,7 @@ It is positive if the character extends below the baseline.
 .
 .REG .ce
 The number of lines remaining to be centered, as set by the
-.request .ce
+.request ce
 request.
 .
 .REG .cht
@@ -2915,22 +2931,22 @@ The number of immediately preceding consecutive hyphenated lines.
 .REG .hlm
 The maximum allowed number of consecutive hyphenated lines, as set by
 the
-.request .hlm
+.request hlm
 request.
 .
 .REG .hy
 The current hyphenation flags (as set by the
-.request .hy
+.request hy
 request).
 .
 .REG .hym
 The current hyphenation margin (as set by the
-.request .hym
+.request hym
 request).
 .
 .REG .hys
 The current hyphenation space (as set by the
-.request .hys
+.request hys
 request).
 .
 .REG .i
@@ -2951,12 +2967,12 @@ Current line length.
 .
 .REG .lg
 The current ligature mode (as set by the
-.request .lg
+.request lg
 request).
 .
 .REG .linetabs
 The current line-tabs mode (as set by the
-.request .linetabs
+.request linetabs
 request).
 .
 .REG .ll
@@ -2964,7 +2980,7 @@ The line length that applies to the current output line.
 .
 .REG .lt
 The title length (as set by the
-.request .lt
+.request lt
 request).
 .
 .REG .n
@@ -2972,7 +2988,7 @@ Length of text portion on previous output line.
 .
 .REG .ne
 The amount of space that was needed in the last
-.request .ne
+.request ne
 request that caused a trap to be sprung.
 .
 Useful in conjunction with
@@ -2989,7 +3005,7 @@ Current page length.
 .
 .REG .pn
 The number of the next page: either the value set by a
-.request .pn
+.request pn
 request, or the number of the current page plus\ 1.
 .
 .REG .ps
@@ -3020,13 +3036,13 @@ is used.
 .REG .tabs
 A string representation of the current tab settings suitable for use
 as an argument to the
-.request .ta
+.request ta
 request.
 .
 .REG .trunc
 The amount of vertical space truncated by the most recently sprung
 vertical position trap, or, if the trap was sprung by a
-.request .ne
+.request ne
 request, minus the amount of vertical motion produced by
 .request .ne .
 .
@@ -3040,12 +3056,12 @@ register.
 .
 .REG .ss
 The value of the parameters set by the first argument of the
-.request .ss
+.request ss
 request.
 .
 .REG .sss
 The value of the parameters set by the second argument of the
-.request .ss
+.request ss
 request.
 .
 .REG .u
@@ -3173,7 +3189,7 @@ Height of string above base line (generated by width function
 The return value of the
 .I system()
 function executed by the last
-.request .sy
+.request sy
 request.
 .
 .REG urx

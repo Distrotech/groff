@@ -1,3 +1,32 @@
+2002-03-15  Werner LEMBERG  <wl@gnu.org>
+
+	* man/groff.man: Add writem request.
+
+	Add request `trin' (translate input) to make `.asciify' work
+	correctly.  This is necessary since `charXXX' entity names are no
+	longer hardcoded in font definition files.
+
+	* src/roff/troff/charinfo.h (charinfo): Add `asciify_code' and
+	`translate_input' members.
+	(charinfo::set_asciify_code, charinfo::get_asciify_code,
+	charinfo::set_translation_input): New methods.
+	(charinfo::set_translation): Add third argument.
+	* src/roff/troff/input.cc (charinfo:set_translation): Set
+	`asciify_code'.
+	(do_translate): Add second argument.
+	(translate_input): New function.
+	(init_input_requests): Updated.
+	* src/roff/troff/node.cc (glyph_node::asciify,
+	composite_node::asciify): Use `get_asciify_code'.
+
+	* tmac/cp1047.tmac, tmac/latin1.tmac: Use `trin'.
+
+	* NEWS, man/groff.man, man/groff_diff.man: Updated.
+
+2002-03-14  Larry Kollar  <kollar@alltel.net>
+
+	* doc/groff.texinfo: Improve documentation of .RS and .RE.
+
 2002-03-14  Werner LEMBERG  <wl@gnu.org>
 
 	Add a new request `sizes' similar to the `sizes' command in DESC

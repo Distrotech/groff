@@ -5598,7 +5598,7 @@ static void init_charset_table()
   page_character = charset_table['%'];
 }
 
-static void do_translate(int translate_transparent)
+static void do_translate(int translate_transparent, int translate_input)
 {
   tok.skip();
   while (!tok.newline() && !tok.eof()) {
@@ -5637,9 +5637,9 @@ static void do_translate(int translate_transparent)
       if (ci2 == 0)
 	break;
       if (ci1 == ci2)
-	ci1->set_translation(0, translate_transparent);
+	ci1->set_translation(0, translate_transparent, translate_input);
       else
-	ci1->set_translation(ci2, translate_transparent);
+	ci1->set_translation(ci2, translate_transparent, translate_input);
     }
     tok.next();
   }
@@ -5648,12 +5648,17 @@ static void do_translate(int translate_transparent)
 
 void translate()
 {
-  do_translate(1);
+  do_translate(1, 0);
 }
 
 void translate_no_transparent()
 {
-  do_translate(0);
+  do_translate(0, 0);
+}
+
+void translate_input()
+{
+  do_translate(1, 1);
 }
 
 void char_flags()
@@ -6725,6 +6730,7 @@ void init_input_requests()
   init_request("blm", blank_line_macro);
   init_request("tr", translate);
   init_request("trnt", translate_no_transparent);
+  init_request("trin", translate_input);
   init_request("ab", abort_request);
   init_request("pi", pipe_output);
   init_request("cf", copy_file);
@@ -7152,8 +7158,9 @@ int charinfo::next_index = 0;
 
 charinfo::charinfo(symbol s)
 : translation(0), mac(0), special_translation(TRANSLATE_NONE),
-  hyphenation_code(0), flags(0), ascii_code(0), not_found(0),
-  transparent_translate(1), fallback(0), nm(s)
+  hyphenation_code(0), flags(0), ascii_code(0), asciify_code(0),
+  not_found(0), transparent_translate(1), translate_input(0),
+  fallback(0), nm(s)
 {
   index = next_index++;
 }
@@ -7163,9 +7170,16 @@ void charinfo::set_hyphenation_code(unsigned char c)
   hyphenation_code = c;
 }
 
-void charinfo::set_translation(charinfo *ci, int tt)
+void charinfo::set_translation(charinfo *ci, int tt, int ti)
 {
   translation = ci;
+  if (ci && ti) {
+    if (asciify_code != 0)
+      ci->set_asciify_code(asciify_code);
+    else if (ascii_code != 0)
+      ci->set_asciify_code(ascii_code);
+    ci->set_translation_input();
+  }
   special_translation = TRANSLATE_NONE;
   transparent_translate = tt;
 }
@@ -7180,6 +7194,11 @@ void charinfo::set_special_translation(int c, int tt)
 void charinfo::set_ascii_code(unsigned char c)
 {
   ascii_code = c;
+}
+
+void charinfo::set_asciify_code(unsigned char c)
+{
+  asciify_code = c;
 }
 
 macro *charinfo::set_macro(macro *m, int f)

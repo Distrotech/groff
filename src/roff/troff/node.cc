@@ -3171,7 +3171,9 @@ void node::asciify(macro *m)
 
 void glyph_node::asciify(macro *m)
 {
-  unsigned char c = ci->get_ascii_code();
+  unsigned char c = ci->get_asciify_code();
+  if (c == 0)
+    c = ci->get_ascii_code();
   if (c != 0) {
     m->append(c);
     delete this;
@@ -3893,7 +3895,9 @@ hyphenation_type composite_node::get_hyphenation_type()
 
 void composite_node::asciify(macro *m)
 {
-  unsigned char c = ci->get_ascii_code();
+  unsigned char c = ci->get_asciify_code();
+  if (c == 0)
+    c = ci->get_ascii_code();
   if (c != 0) {
     m->append(c);
     delete this;

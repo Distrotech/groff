@@ -87,6 +87,22 @@ o The new request `sizes' is similar to the `sizes' command in DESC files.
   It expects the same syntax; the data must be on a single line, and the
   final `0' can be omitted.
 
+o `trin' (translate input) is a new request which is similar to `tr' with
+  the exception that the `asciify' request will use the character code (if
+  any) before the character translation.  Example:
+
+    .trin ax
+    .di xxx
+    a
+    .br
+    .di
+    .xxx
+    .trin aa
+    .asciify xxx
+    .xxx
+
+  The result is `x a'.  Using `tr', the result would be `x x'.
+
 o A new escape sequence `\O' is available (mainly for internal use with
   grohtml).  Please see groff_diff.7 and groff.texinfo for more details.
 

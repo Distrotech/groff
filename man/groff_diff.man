@@ -1928,7 +1928,44 @@ request, the file cannot contain characters such as
 that are not legal troff input characters.
 .
 .TP
-.B .trnt abcd
+.BI .trin\  abcd
+This is the same as the
+.B tr
+request except that the
+.B asciify
+request will use the character code (if any) before the character
+translation.
+.
+Example:
+.
+.RS
+.IP
+.nf
+.ft CB
+.Text .trin ax
+.Text .di xxx
+.Text a
+.Text .br
+.Text .di
+.Text .xxx
+.Text .trin aa
+.Text .asciify xxx
+.Text .xxx
+.fi
+.ft
+.RE
+.
+.IP
+The result is
+.BR x\ a .
+.
+Using
+.BR tr ,
+the result would be
+.BR x\ x .
+.
+.TP
+.BI .trnt\  abcd
 This is the same as the
 .B tr
 request except that the translations do not apply to text that is
