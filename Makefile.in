@@ -98,7 +98,6 @@ datasubdir=$(dataprogramdir)/$(version)$(revision)
 fontdir=$(datasubdir)/font
 
 # fontpath says where to look for dev*/*.
-# $HOME will be always prepended.
 fontpath=$(fontdir):/usr/lib/font
 
 # tmacdir says where to install macros.
@@ -111,8 +110,10 @@ systemtmacdir=$(libprogramdir)/site-tmac
 localtmacdir=$(dataprogramdir)/site-tmac
 
 # tmacpath says where to look for macro files.
-# The current directory will always be prepended except for searching and
-# scanning troffrc and troffrc-end which prepend the home directory instead.
+# The current directory will be prepended in unsafe mode only; the home
+# directory will be always added.
+# `troffrc' and `troffrc-end' (and `eqnrc' are searched neither in the
+# current nor in the home directory.
 tmacpath=$(systemtmacdir):$(localtmacdir):$(tmacdir)
 
 # sys_tmac_prefix is prefix (if any) for system macro packages

@@ -31,7 +31,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 const char *const FONT_ENV_VAR = "GROFF_FONT_PATH";
 
-static search_path font_path(FONT_ENV_VAR, FONTPATH, 1, 0);
+static search_path font_path(FONT_ENV_VAR, FONTPATH, 0, 0);
 
 int font::res = 0;
 int font::hor = 1;

@@ -25,5 +25,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #define MACROPATH_ENVVAR "GROFF_TMAC_PATH"
 
-search_path macro_path(MACROPATH_ENVVAR, MACROPATH, 0, 1);
+search_path macro_path(MACROPATH_ENVVAR, MACROPATH, 1, 1);
 search_path safer_macro_path(MACROPATH_ENVVAR, MACROPATH, 1, 0);
+search_path config_macro_path(MACROPATH_ENVVAR, MACROPATH, 0, 0);

@@ -149,10 +149,11 @@ If it isn't found, try
 instead.
 It will be first searched for in directories given with the
 .B \-M
-command line option, then in the current directory, then in directories given
+command line option, then in directories given
 in the
 .B GROFF_MACRO_PATH
-environment variable, then in @LOCALMACRODIR@, @SYSTEMMACRODIR@, and
+environment variable, then in the current directory (only if in unsafe
+mode), the home directory, @SYSTEMMACRODIR@, @LOCALMACRODIR@, and
 @MACRODIR@.
 .TP
 .B \-U
@@ -165,7 +166,7 @@ This will enable the following requests:
 and
 .BR .pi .
 For security reasons, these potentially dangerous requests are disabled
-otherwise.
+otherwise.  It will also add the current directory to the macro search path.
 .TP
 .B \-R
 Don't load
@@ -2199,7 +2200,8 @@ macro files.
 will scan directories given in
 the
 .B \-M
-option before these, and in standard directories (home directory,
+option before these, and in standard directories (current directory if in
+unsafe mode, home directory,
 .BR @LOCALMACRODIR@ ,
 .BR @SYSTEMMACRODIR@ ,
 .BR @MACRODIR@ )
@@ -2218,8 +2220,7 @@ directory.
 will scan directories given in the
 .B \-F
 option before these, and in standard directories
-(home directory,
-.BR @FONTPATH@ )
+.RB ( @FONTPATH@ )
 after these.
 .SH FILES
 .Tp \w'@FONTDIR@/devname/DESC'u+3n
@@ -2244,12 +2245,12 @@ Font file for font
 of device
 .IR name .
 .LP
-While searching for and scanning the initialization files
+Note that
 .B troffrc
 and
 .BR troffrc-end ,
-a special search path is used for security reasons: The current directory
-is replaced with the home directory in the search path.
+are neither searched in the current nor in the home directory for security
+reasons.
 .SH "SEE ALSO"
 .BR groff (@MAN1EXT@),
 .BR @g@tbl (@MAN1EXT@),

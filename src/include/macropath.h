@@ -20,3 +20,4 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 extern search_path macro_path;
 extern search_path safer_macro_path;
+extern search_path config_macro_path;

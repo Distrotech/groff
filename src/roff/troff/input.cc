@@ -113,7 +113,7 @@ int is_html2 = 0;
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
 
-search_path *mac_path = &macro_path;
+search_path *mac_path = &safer_macro_path;
 
 static int get_copy(node**, int = 0);
 static void copy_mode_error(const char *,
@@ -5670,8 +5670,8 @@ static void process_macro_file(const char *mac)
 static void process_startup_file(char *filename)
 {
   char *path;
-  // restrict path for security reasons
-  mac_path = &safer_macro_path;
+  search_path *orig_mac_path = mac_path;
+  mac_path = &config_macro_path;
   FILE *fp = mac_path->open_file(filename, &path);
   if (fp) {
     input_stack::push(new file_iterator(fp, symbol(path).contents()));
@@ -5679,7 +5679,7 @@ static void process_startup_file(char *filename)
     tok.next();
     process_input_stack();
   }
-  mac_path = &macro_path;
+  mac_path = orig_mac_path;
 }
 
 void macro_source()
@@ -5952,6 +5952,8 @@ int main(int argc, char **argv)
     default:
       assert(0);
     }
+  if (!safer_flag)
+    mac_path = &macro_path;
   set_string(".T", device);
   init_charset_table();
   if (!font::load_desc())

@@ -1,3 +1,32 @@
+2000-11-22  Werner LEMBERG  <wl@gnu.org>
+
+	Use safer path (except for config files) if -U isn't specified.  Add
+	a special macro path (without home and current directory) for config
+	files.  Add home directory to unsafe path for consistency.  Don't
+	include the home directory in the font path.
+
+	* src/lib/libgroff/macropath.cc: Add `config_macro_path', change
+	`macro_path'.
+	* src/include/macropath.h: Add `config_macrp_path'.
+	* src/lib/libgroff/fontfile.cc: Fix font path.
+	* src/roff/troff/input.cc (process_startup_file): Use
+	`config_macro_path'.
+	(main): Select unsafe path if -U is given.
+
+	* src/preproc/eqn/main.cc (main): Fixing search path for
+	configuration file.
+	* src/preproc/eqn/eqn.man: Updated.
+
+	* src/roff/troff/troff.man, man/roff.man, tmac/groff_tmac.man:
+	Updated.
+
+	* src/preproc/grn/grn.man, src/devices/grodvi/grodvi.man,
+	src/devices/grohtml/grohtml.man, src/devices/grolbp/grplbp.man,
+	src/devices/grolj4/grolj4.man, src/devices/grops/grops.man,
+	src/devices/grotty/grotty.man: Updated.
+
+	* Makefile.in: Fix comments.
+
 2000-11-17  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/safer.tmac: Empty file added (again) for compatibility
@@ -124,7 +153,7 @@
 	* src/preproc/eqn/main.cc (main): Use `safer_macro_path'.
 
 	* NEWS, man/roff.man, src/roff/troff/troff.man,
-	src/rof/groff/groff.man, tmac/groff_tmac.man, arch/djgpp/README:
+	src/roff/groff/groff.man, tmac/groff_tmac.man, arch/djgpp/README:
 	Updated.
 
 2000-11-12  Werner LEMBERG  <wl@gnu.org>

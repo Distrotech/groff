@@ -257,7 +257,7 @@ int main(int argc, char **argv)
       load_startup_file = 0;
       break;
     case 'M':
-      safer_macro_path.command_line_dir(optarg);
+      macro_path.command_line_dir(optarg);
       break;
     case 'v':
       {
@@ -329,7 +329,7 @@ int main(int argc, char **argv)
 	 device, program_name);
   if (load_startup_file) {
     char *path;
-    FILE *fp = macro_path.open_file(STARTUP_FILE, &path);
+    FILE *fp = config_macro_path.open_file(STARTUP_FILE, &path);
     if (fp) {
       do_file(fp, path);
       fclose(fp);
