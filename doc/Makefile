@@ -93,8 +93,8 @@ all: $(DOCS)
 groff: groff.texinfo
 	makeinfo groff.texinfo
 
-gnubw.eps: gnubw-master-image
-	pngtopnm gnubw-master-image | pnmscale 0.1 | pnmtops -noturn > gnubw.eps
+gnubw.eps: gnupng
+	pngtopnm gnupng | pnmscale 0.1 | pnmtops -noturn > gnubw.eps
 
 homepage.html: gnubw.eps
 
