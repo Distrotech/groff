@@ -85,6 +85,7 @@ public:
   ~tab_stops();
   void operator=(const tab_stops &);
   tab_type distance_to_next_tab(hunits pos, hunits *distance);
+  tab_type distance_to_next_tab(hunits curpos, hunits *distance, hunits *leftpos);
   void clear();
   void add_tab(hunits pos, tab_type type, int repeated);
   const char *to_string();
@@ -190,6 +191,7 @@ class environment {
   color *prev_fill_color;
 
   tab_type distance_to_next_tab(hunits *);
+  tab_type distance_to_next_tab(hunits *distance, hunits *leftpos);
   void start_line();
   void output_line(node *, hunits);
   void output(node *nd, int retain_size, vunits vs, vunits post_vs,
@@ -287,10 +289,11 @@ public:
   void possibly_break_line(int start_here = 0, int forced = 0);
   void do_break(int spread = 0);	// .br
   void final_break();
-  void add_html_tag_eol();
-  void add_html_tag(const char *);
-  void add_html_tag(const char *, int);
-  void add_html_tag_tabs();
+  void add_html_tag(int, const char *);
+  void add_html_tag(int, const char *, int);
+  void add_html_tag_tabs(int);
+  node *make_html_tag(const char *name, int i);
+  node *make_html_tag(const char *);
   void newline();
   void handle_tab(int is_leader = 0); // do a tab or leader
   void add_node(node *);

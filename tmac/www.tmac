@@ -41,6 +41,13 @@
 .  \}
 ..
 .\"
+.\" an auxiliary macro for HTML (without following space)
+.\"
+.de HTML-NS
+.  if \\n[www-html] \
+.    nop \X^html:\\$*^\c
+..
+.\"
 .\" HX n
 .\"
 .\"   Automatic heading level cut off.
@@ -161,6 +168,15 @@
 .  \}
 ..
 .\"
+.\" HTML-TAG-NS
+.\"
+.\"   Emit a tag for grohtml (without a space).  This is an internal macro.
+.\"
+.de HTML-TAG-NS
+.  if \\n[www-html] \
+.    nop \X^html-tag:\\$*^\c
+..
+.\"
 .\" PIMG  [-R|-L|-C] filename [width] [height]
 .\"
 .\"   Include a png image.  It will work for -Tps and -Thtml.
@@ -204,7 +220,10 @@
 .    if !r ps4html \{\
 .      www-make-unique-name
 .      sy pngtopnm \\$2 | pnmcrop -white | pnmtops -noturn > \\*[www-unique-name].eps
-.      PSPIC \\$1 \\*[www-unique-name].eps \\$3 \\$4
+.      ie '\\$1'-C' \
+.        PSPIC \\*[www-unique-name].eps \\$3 \\$4
+.      el \
+.        PSPIC \\$1 \\*[www-unique-name].eps \\$3 \\$4
 .    \}
 .  \}
 ..
@@ -369,7 +388,7 @@
 .de HR
 .  ie \\n[www-html] \{\
 .    ti 0
-.    HTML <hr>
+.    HTML-NS <hr>
 .  \}
 .  el \
 .    sp
@@ -582,5 +601,4 @@
 .if r ps4html .nop \O[0]
 .cp \n(_C
 .
-.\" now set
 .\" EOF

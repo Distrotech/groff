@@ -3,7 +3,8 @@
 
 s.tmac
 
-Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+  Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -1154,19 +1155,35 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	par*pop-tag-env
 .	di
 .	chop par*label
-.	ie '\*(.T'html' \{\
-.		if \\n[dl]+1n<=\\n[\\n[.ev]:ai] .HTML-TAG ".ip"
-.		ti 0
-\&\\$1
+.	ti -\\n[\\n[.ev]:ai]u
+.	ie \\n[dl]+1n<=\\n[\\n[.ev]:ai] \\*[par*label]\h'|\\n[\\n[.ev]:ai]u'\c
+.	el \{\
+\\*[par*label]
 .		br
 .	\}
+.	rm par*label
+.\}
+..
+.de @IP-html
+.if \\n[.$]>1 .nr \\n[.ev]:ai (n;\\$2)
+.par*start \\n[\\n[.ev]:ai] 0
+.if !'\\$1'' \{\
+.	\" Divert the label so as to freeze any spaces.
+.	di par*label
+.	par*push-tag-env
+\&\\$1
+.	par*pop-tag-env
+.	di
+.	chop par*label
+.	ti -\\n[\\n[.ev]:ai]u
+.	ie \\n[dl]+1n<=\\n[\\n[.ev]:ai] \{\
+.		HTML-TAG-NS ".col 1"
+\\$1\h'|\\n[\\n[.ev]:ai]u'\c
+.		HTML-TAG-NS ".col 2"
+.       \}
 .	el \{\
-.		ti -\\n[\\n[.ev]:ai]u
-.		ie \\n[dl]+1n<=\\n[\\n[.ev]:ai] \\*[par*label]\h'|\\n[\\n[.ev]:ai]u'\c
-.		el \{\
-\\*[par*label]
-.			br
-.		\}
+\\$1
+.		br
 .	\}
 .	rm par*label
 .\}
@@ -1960,4 +1977,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .   \}
 ..
 .par@load-init
+.if '\*(.T'html' \{\
+.  rm @IP
+.  als @IP @IP-html
+.\}
 .\" Make sure that no blank lines creep in at the end of this file.

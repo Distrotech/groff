@@ -28,6 +28,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "cset.h"
 #include "html.h"
 #include "html-text.h"
+#include "html-table.h"
 
 #include <time.h>
 
@@ -55,9 +56,10 @@ extern "C" const char *Version_string;
 #define UNICODE_DESC_START           0x80            /* all character entities above this are     */
                                                      /* either encoded by their glyph names or if */
                                                      /* there is no name then we use &#nnn;       */
-#define INDENTATION                                  /* #undef INDENTATION to remove .in handling */
-
 typedef enum {CENTERED, LEFT, RIGHT, INLINE} TAG_ALIGNMENT;
+
+#undef DEBUG_TABLES
+
 
 /*
  *  prototypes
@@ -85,20 +87,18 @@ void stop () {}
 
 static int min (int a, int b)
 {
-  if (a < b) {
-    return( a );
-  } else {
-    return( b );
-  }
+  if (a < b)
+    return a;
+  else
+    return b;
 }
 
 static int max (int a, int b)
 {
-  if (a > b) {
-    return( a );
-  } else {
-    return( b );
-  }
+  if (a > b)
+    return a;
+  else
+    return b;
 }
 
 /*
@@ -107,7 +107,7 @@ static int max (int a, int b)
 
 static int is_intersection (int a1, int a2, int b1, int b2)
 {
-  // again easier to prove NOT outside limits
+  // easier to prove NOT outside limits
   return( ! ((a1 > b2) || (a2 < b1)) );
 }
 
@@ -366,7 +366,25 @@ public:
   int  is_eol              (void);
   int  is_auto_img         (void);
   int  is_br               (void);
+  int  is_br_ni            (void);
+  int  is_in               (void);
+  int  is_po               (void);
+  int  is_ti               (void);
+  int  is_ce               (void);
   int  is_eol_ce           (void);
+  int  is_col              (void);
+  int  is_tab              (void);
+  int  is_tab0             (void);
+  int  is_ta               (void);
+  int  is_tab_ts           (void);
+  int  is_tab_te           (void);
+  int  is_nf               (void);
+  int  is_fi               (void);
+  int  get_arg             (void);
+  int  get_tab_args        (char *align);
+
+  void        remember_table (html_table *t);
+  html_table *get_table      (void);
 
   style           text_style;
   const char     *text_string;
@@ -377,6 +395,7 @@ public:
   int             is_special;           // text has come via 'x X html:'
   int             is_line;              // is the command a <line>?
   int             thickness;            // the thickness of a line
+  html_table     *tab;                  // table description
 
 private:
   text_glob           (style *s, char *str, int length,
@@ -396,18 +415,20 @@ text_glob::text_glob (style *s, char *str, int length,
   : text_style(*s), text_string(str), text_length(length),
     minv(min_vertical), minh(min_horizontal), maxv(max_vertical), maxh(max_horizontal),
     is_tag(is_troff_command), is_img_auto(is_auto_image), is_special(is_special_command),
-    is_line(is_a_line), thickness(line_thickness)
+    is_line(is_a_line), thickness(line_thickness), tab(NULL)
 {
 }
 
 text_glob::text_glob ()
   : text_string(0), text_length(0), minv(-1), minh(-1), maxv(-1), maxh(-1),
-    is_tag(FALSE), is_special(FALSE), is_line(FALSE), thickness(0)
+    is_tag(FALSE), is_special(FALSE), is_line(FALSE), thickness(0), tab(NULL)
 {
 }
 
 text_glob::~text_glob ()
 {
+  if (tab != NULL)
+    delete tab;
 }
 
 /*
@@ -539,6 +560,115 @@ int text_glob::is_eol_ce (void)
   return( is_tag && (strcmp(text_string, "html-tag:eol.ce") == 0) );
 }
 
+
+/*
+ *  is_nf - returns TRUE if glob contains the tag .nf
+ */
+
+int text_glob::is_nf (void)
+{
+  return( is_tag && (strcmp(text_string, "html-tag:.nf") == 0) );
+}
+
+/*
+ *  is_fi - returns TRUE if glob contains the tag .fi
+ */
+
+int text_glob::is_fi (void)
+{
+  return( is_tag && (strcmp(text_string, "html-tag:.fi") == 0) );
+}
+
+/*
+ *  is_ce - returns TRUE if glob contains the tag .ce
+ */
+
+int text_glob::is_ce (void)
+{
+  return( is_tag && (strcmp(text_string, "html-tag:.ce") == 0) );
+}
+
+/*
+ *  is_in - returns TRUE if glob contains the tag .in
+ */
+
+int text_glob::is_in (void)
+{
+  return( is_tag && (strncmp(text_string, "html-tag:.in ", strlen("html-tag:.in ")) == 0) );
+}
+
+/*
+ *  is_po - returns TRUE if glob contains the tag .po
+ */
+
+int text_glob::is_po (void)
+{
+  return( is_tag && (strncmp(text_string, "html-tag:.po ", strlen("html-tag:.po ")) == 0) );
+}
+
+/*
+ *  is_ti - returns TRUE if glob contains the tag .ti
+ */
+
+int text_glob::is_ti (void)
+{
+  return( is_tag && (strncmp(text_string, "html-tag:.ti ", strlen("html-tag:.ti ")) == 0) );
+}
+
+/*
+ *  is_col - returns TRUE if glob contains the tag .col
+ */
+
+int text_glob::is_col (void)
+{
+  return( is_tag && (strncmp(text_string, "html-tag:.col", strlen("html-tag:.col")) == 0) );
+}
+
+/*
+ *  is_tab_ts - returns TRUE if glob contains the tag .tab_ts
+ */
+
+int text_glob::is_tab_ts (void)
+{
+  return( is_tag && (strcmp(text_string, "html-tag:.tab-ts") == 0) );
+}
+
+/*
+ *  is_tab_te - returns TRUE if glob contains the tag .tab_te
+ */
+
+int text_glob::is_tab_te (void)
+{
+  return( is_tag && (strcmp(text_string, "html-tag:.tab-te") == 0) );
+}
+
+/*
+ *  is_ta - returns TRUE if glob contains the tag .ta
+ */
+
+int text_glob::is_ta (void)
+{
+  return( is_tag && (strncmp(text_string, "html-tag:.ta ", strlen("html-tag:.ta ")) == 0) );
+}
+
+/*
+ *  is_tab - returns TRUE if glob contains the tag tab
+ */
+
+int text_glob::is_tab (void)
+{
+  return( is_tag && (strncmp(text_string, "html-tag:tab ", strlen("html-tag:tab ")) == 0) );
+}
+
+/*
+ *  is_tab0 - returns TRUE if glob contains the tag tab0
+ */
+
+int text_glob::is_tab0 (void)
+{
+  return( is_tag && (strncmp(text_string, "html-tag:tab0", strlen("html-tag:tab0")) == 0) );
+}
+
 /*
  *  is_auto_img - returns TRUE if the glob contains an automatically
  *                generated image.
@@ -551,7 +681,9 @@ int text_glob::is_auto_img (void)
 
 /*
  *  is_br - returns TRUE if the glob is a tag containing a .br
- *          or an implied .br
+ *          or an implied .br. Note that we do not include .nf or .fi
+ *          as grohtml will place a .br after these commands if they
+ *          should break the line.
  */
 
 int text_glob::is_br (void)
@@ -559,7 +691,80 @@ int text_glob::is_br (void)
   return( is_a_tag() && ((strcmp ("html-tag:.br", text_string) == 0) ||
 			 (strncmp("html-tag:.sp", text_string, 11) == 0) ||
 			 (strcmp ("html-tag:.ce", text_string) == 0) ||
-			 (strcmp ("html-tag:.nf", text_string) == 0)) );
+			 (strncmp ("html-tag:.in", text_string, 11) == 0)) );
+}
+
+/*
+ *  is_br_ni - returns TRUE if the glob is a tag containing a .br
+ *             or an implied .br, but not an .in
+ */
+
+int text_glob::is_br_ni (void)
+{
+  return( is_a_tag() && ((strcmp ("html-tag:.br", text_string) == 0) ||
+			 (strncmp("html-tag:.sp", text_string, 11) == 0) ||
+			 (strcmp ("html-tag:.ce", text_string) == 0)) );
+}
+
+int text_glob::get_arg (void)
+{
+  if (strncmp("html-tag:", text_string, strlen("html-tag:")) == 0) {
+    const char *p = text_string;
+
+    while ((*p != (char)0) && (!isspace(*p)))
+      p++;
+    while ((*p != (char)0) && (isspace(*p)))
+      p++;
+    if (*p == (char)0)
+      return -1;
+    return atoi(p);
+  }
+  return -1;
+}
+
+/*
+ *  get_tab_args - returns the tab position and alignment of the tab tag
+ */
+
+int text_glob::get_tab_args (char *align)
+{
+  if (strncmp("html-tag:", text_string, strlen("html-tag:")) == 0) {
+    const char *p = text_string;
+
+    // firstly the alignment C|R|L
+    while ((*p != (char)0) && (!isspace(*p)))
+      p++;
+    while ((*p != (char)0) && (isspace(*p)))
+      p++;
+    *align = *p;
+    // now the int value
+    while ((*p != (char)0) && (!isspace(*p)))
+      p++;
+    while ((*p != (char)0) && (isspace(*p)))
+      p++;
+    if (*p == (char)0)
+      return -1;
+    return atoi(p);
+  }
+  return -1;
+}
+
+/*
+ *  remember_table - saves table, t, in the text_glob.
+ */
+
+void text_glob::remember_table (html_table *t)
+{
+  tab = t;
+}
+
+/*
+ *  get_table - returns the stored table description.
+ */
+
+html_table *text_glob::get_table (void)
+{
+  return tab;
 }
 
 /*
@@ -618,6 +823,8 @@ public:
   int                   is_equal_to_head    (void);
   void                  start_from_head     (void);
   void                  start_from_tail     (void);
+  void                  insert              (text_glob *in);
+  void                  move_to             (text_glob *in);
   text_glob            *move_right_get_data (void);
   text_glob            *move_left_get_data  (void);
   text_glob            *get_data            (void);
@@ -685,6 +892,7 @@ void list::add (text_glob *in, int line_number, int min_vertical, int min_horizo
   if (head == 0) {
     head     = t;
     tail     = t;
+    ptr      = t;
     t->left  = t;
     t->right = t;
   } else {
@@ -835,7 +1043,7 @@ text_glob* list::move_right_get_data (void)
 
 /*
  *  move_left_get_data - returns the datum referenced via ptr and moves
- *                        ptr right.
+ *                       ptr right.
  */
 
 text_glob* list::move_left_get_data (void)
@@ -846,6 +1054,39 @@ text_glob* list::move_left_get_data (void)
   } else {
     return( ptr->datum );
   }
+}
+
+/*
+ *  insert - inserts data after the current position.
+ */
+
+void list::insert (text_glob *in)
+{
+  if (is_empty())
+    fatal("list must not be empty if we are inserting data");
+  else {
+    if (ptr == 0)
+      ptr = head;
+    
+    element_list *t = new element_list(in, ptr->lineno, ptr->minv, ptr->minh, ptr->maxv, ptr->maxh);
+    if (ptr == tail)
+      tail = t;
+    t->right = ptr->right;
+    ptr->right = t;
+    t->left = ptr;
+  }
+}
+
+/*
+ *  move_to - moves the current position to the point where data, in, exists.
+ *            This is an expensive method and should be used sparingly.
+ */
+
+void list::move_to (text_glob *in)
+{
+  ptr = head;
+  while (ptr != tail && ptr->datum != in)
+    ptr = ptr->right;
 }
 
 /*
@@ -871,6 +1112,7 @@ public:
 					       int line_number,
 					       int x1, int y1, int x2, int y2,
 					       int thickness);
+  void                        insert_tag      (const string &str);
   void                        dump_page       (void);   // debugging method
 
   // and the data
@@ -881,6 +1123,21 @@ public:
 
 page::page()
 {
+}
+
+/*
+ *  insert_tag - inserts a tag after the current position.
+ */
+
+void page::insert_tag (const string &str)
+{
+  if (str.length() > 0) {
+    text_glob *g=new text_glob();
+    text_glob *f=glyphs.get_data();
+    g->text_glob_tag(&f->text_style, buffer.add_string(str), str.length(),
+		     f->minv, f->minh, f->maxv, f->maxh);
+    glyphs.insert(g);
+  }
 }
 
 /*
@@ -1020,16 +1277,29 @@ void page::add_and_encode (style *s, const string &str,
 
 void page::dump_page(void)
 {
+#if defined(DEBUG_TABLES)
+  text_glob *old_pos = glyphs.get_data();
   text_glob *g;
 
+  printf("\n<!--\n");
   printf("\n\ndebugging start\n");
   glyphs.start_from_head();
   do {
     g = glyphs.get_data();
+    if (g->is_tab_ts()) {
+      printf("\n\n");
+      if (g->get_table() != NULL)
+	g->get_table()->dump_table();
+    }
     printf("%s ", g->text_string);
+    if (g->is_tab_te())
+      printf("\n\n");
     glyphs.move_right();
   } while (! glyphs.is_equal_to_head());
+  glyphs.move_to(old_pos);
   printf("\ndebugging end\n\n");
+  printf("\n-->\n");
+#endif
 }
 
 /*
@@ -1177,17 +1447,19 @@ class html_printer : public printer {
   char                *inside_font_style;
   int                  page_number;
   title_desc           title;
-  title_desc           indent;  // use title class to remember $1 of .ip
   header_desc          header;
   int                  header_indent;
   int                  supress_sub_sup;
   int                  cutoff_heading;
   page                *page_contents;
   html_text           *current_paragraph;
+  html_indent         *indent;
+  html_table          *table;
   int                  end_center;
   int                  end_tempindent;
   TAG_ALIGNMENT        next_tag;
   int                  fill_on;
+  int                  max_linelength;
   int                  linelength;
   int                  pageoffset;
   int                  indentation;
@@ -1227,6 +1499,7 @@ class html_printer : public printer {
   void  do_center                     (char *arg);
   void  do_break                      (void);
   void  do_eol                        (void);
+  void  do_eol_ce                     (void);
   void  do_title                      (void);
   void  do_fill                       (int on);
   void  do_heading                    (char *arg);
@@ -1256,6 +1529,23 @@ class html_printer : public printer {
   font *make_bold                     (font *f);
   int   overstrike                    (unsigned char code, const char *name, const environment *env, int w);
   void  do_body                       (void);
+  int   next_horiz_pos                (int nf);
+  void  lookahead_for_tables          (void);
+  void  insert_tab_te                 (void);
+  text_glob *insert_tab_ts            (text_glob *where);
+  void insert_tab0_foreach_tab        (void);
+  void insert_tab_0                   (text_glob *where);
+  void do_indent                      (int in, int pageoff, int linelen);
+  void shutdown_table                 (void);
+  void do_tab_ts                      (text_glob *g);
+  void do_tab_te                      (void);
+  void do_col                         (char *s);
+  void do_tab                         (char *s);
+  void do_tab0                        (void);
+  int  calc_nf                        (text_glob *g, int nf);
+  void calc_po_in                     (text_glob *g, int nf);
+  void remove_tabs                    (void);
+  void remove_courier_tabs            (void);
   // ADD HERE
 
 public:
@@ -1342,8 +1632,6 @@ void html_printer::emit_raw (text_glob *g)
     determine_space(g);
     current_paragraph->do_emittext(g->text_string, g->text_length);
   } else {
-    int in_table=current_paragraph->is_in_table();
-
     current_paragraph->done_para();
     switch (next_tag) {
 
@@ -1351,10 +1639,10 @@ void html_printer::emit_raw (text_glob *g)
       current_paragraph->do_para("align=center");
       break;
     case LEFT:
-      current_paragraph->do_para("align=left");
+      current_paragraph->do_para(&html, "align=left", indentation, pageoffset, linelength);
       break;
     case RIGHT:
-      current_paragraph->do_para("align=right");
+      current_paragraph->do_para(&html, "align=right", indentation, pageoffset, linelength);
       break;
     default:
       fatal("unknown enumeration");
@@ -1363,13 +1651,14 @@ void html_printer::emit_raw (text_glob *g)
     current_paragraph->done_para();
     next_tag        = INLINE;
     supress_sub_sup = TRUE;
-#if defined(INDENTATION)
-    if (in_table) {
-      current_paragraph->do_indent(NULL, 0, pageoffset, linelength);
-      current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
-      indent.text.clear();
+    if (indentation > 0) {
+      /*
+       *  restore indentation
+       */
+      int newin = indentation;
+      indentation = 0;
+      do_indent(newin, pageoffset, linelength);
     }
-#endif
   }
 }
 
@@ -1380,16 +1669,16 @@ void html_printer::emit_raw (text_glob *g)
 void html_printer::do_center (char *arg)
 {
   int n = atoi(arg);
-
   current_paragraph->do_break();
-  current_paragraph->done_para();
-  supress_sub_sup = TRUE;
-    
+
   if (n > 0) {
+    current_paragraph->done_para();
+    supress_sub_sup = TRUE;
     current_paragraph->do_para("align=center");
     end_center += n;
   } else {
     end_center = 0;
+    current_paragraph->remove_para_align();
   }
 }
 
@@ -1569,7 +1858,6 @@ void html_printer::write_header (void)
 
     // firstly we must terminate any font and type faces
     current_paragraph->done_para();
-    current_paragraph->done_table();
     supress_sub_sup = TRUE;
 
     if (cutoff_heading+2 > header.header_level) {
@@ -1631,7 +1919,7 @@ void html_printer::write_header (void)
       html.put_string(">").nl();
     }
 
-    current_paragraph->do_para("");
+    current_paragraph->do_para(&html, "", indentation, pageoffset, linelength);
   }
 }
 
@@ -1715,22 +2003,20 @@ int html_printer::is_courier_until_eol (void)
     page_contents->glyphs.move_right();
     do {
       g = page_contents->glyphs.get_data();
-      if (! is_font_courier(g->text_style.f)) {
+      if (! g->is_a_tag() && (! is_font_courier(g->text_style.f)))
 	result = FALSE;
-      }
       page_contents->glyphs.move_right();
-    } while ((result) &&
+    } while (result &&
 	     (! page_contents->glyphs.is_equal_to_head()) &&
-	     (! g->is_eol()));
+	     (! g->is_fi()) && (! g->is_eol()));
     
     /*
      *  now restore our previous position.
      */
-    while (page_contents->glyphs.get_data() != orig) {
+    while (page_contents->glyphs.get_data() != orig)
       page_contents->glyphs.move_left();
-    }
   }
-  return( result );
+  return result;
 }
 
 /*
@@ -1739,13 +2025,11 @@ int html_printer::is_courier_until_eol (void)
 
 void html_printer::do_linelength (char *arg)
 {
-#if defined(INDENTATION)
-  if (fill_on) {
-    linelength = atoi(arg);
-    current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
-    indent.text.clear();
-  }
-#endif
+  if (max_linelength == -1)
+    max_linelength = atoi(arg);
+
+  if (fill_on)
+    do_indent(indentation, pageoffset, atoi(arg));
 }
 
 /*
@@ -1754,13 +2038,8 @@ void html_printer::do_linelength (char *arg)
 
 void html_printer::do_pageoffset (char *arg)
 {
-#if defined(INDENTATION)
-  pageoffset = atoi(arg);
-  if (fill_on) {
-    current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
-    indent.text.clear();
-  }
-#endif
+  if (fill_on)
+    do_indent(indentation, atoi(arg), linelength);
 }
 
 /*
@@ -1769,13 +2048,8 @@ void html_printer::do_pageoffset (char *arg)
 
 void html_printer::do_indentation (char *arg)
 {
-#if defined(INDENTATION)
-  if (fill_on) {
-    indentation = atoi(arg);
-    current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
-    indent.text.clear();
-  }
-#endif
+  if (fill_on)
+    do_indent(atoi(arg), pageoffset, linelength);
 }
 
 /*
@@ -1784,78 +2058,47 @@ void html_printer::do_indentation (char *arg)
 
 void html_printer::do_tempindent (char *arg)
 {
-#if defined(INDENTATION)
   if (fill_on) {
     end_tempindent = 1;
     prev_indent    = indentation;
-    indentation    = atoi(arg);
-    current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
-    indent.text.clear();
+    do_indent(atoi(arg), pageoffset, linelength);
   }
-#endif
 }
 
 /*
- *  do_indentedparagraph - handle the .ip tag, this buffers the next line
- *                         and passes this to text-text as the left hand
- *                         column table entry.
+ *  shutdown_table - shuts down the current table.
  */
 
-void html_printer::do_indentedparagraph (void)
+void html_printer::shutdown_table (void)
 {
-#if defined(INDENTATION)
-  text_glob    *t;
-  int           removed_from_head;
-  int           found_indent_start  = FALSE;
-
-  indent.has_been_found = FALSE;
-  indent.text.clear();
-
-  if (! page_contents->glyphs.is_empty()) {
-    page_contents->glyphs.sub_move_right();       /* move onto next word */
-    do {
-      t = page_contents->glyphs.get_data();
-      removed_from_head = FALSE;
-      if (t->is_auto_img()) {
-	string img = generate_img_src((char *)(t->text_string + 20));
-
-	if (! img.empty()) {
-	  if (found_indent_start)
-	    indent.text += " ";
-
-	  found_indent_start = TRUE;
-	  indent.text += img;
-	}
-	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
-      } else if (t->is_a_tag() && (strncmp(t->text_string, "html-tag:.br", 12) == 0)) {
-	/* end of indented para found, but move back so that we read this tag and process it
-	 */
-	page_contents->glyphs.move_left();           /* move backwards to last word */
-	indent.has_been_found = TRUE;
-	return;
-      } else if (t->is_a_tag()) {
-	if (strncmp(t->text_string, "html-tag:.ti", 12) == 0) {
-	  char *a = (char *)t->text_string+12;
-	  do_tempindent(a);
-	}
-	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
-      } else if (found_indent_start) {
-	indent.text += " " + string(t->text_string, t->text_length);
-	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
-	removed_from_head = ((!page_contents->glyphs.is_empty()) &&
-			     (page_contents->glyphs.is_equal_to_head()));
-      } else {
-	indent.text += string(t->text_string, t->text_length);
-	found_indent_start    = TRUE;
-	indent.has_been_found = TRUE;
-	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
-	removed_from_head = ((!page_contents->glyphs.is_empty()) &&
-			     (page_contents->glyphs.is_equal_to_head()));
-      }
-    } while ((! page_contents->glyphs.is_equal_to_head()) || (removed_from_head));
+  if (table != NULL) {
+    current_paragraph->done_para();
+    table->emit_finish_table();
+    // dont delete this table as it will be deleted when we destroy the text_glob
+    table = NULL;
   }
-  // page_contents->glyphs.move_left();           /* move backwards to last word */
-#endif
+}
+
+/*
+ *  do_indent - remember the indent parameters and if
+ *              indent is > pageoff and indent has changed
+ *              then we start a html table to implement the indentation.
+ */
+
+void html_printer::do_indent (int in, int pageoff, int linelen)
+{
+  if ((indentation != -1) &&
+      (pageoffset+indentation != in+pageoff)) {
+    
+    current_paragraph->done_para();
+      
+    indentation = in;
+    pageoffset  = pageoff;
+    if (linelen <= max_linelength)
+      linelength  = linelen;
+
+    current_paragraph->do_para(&html, "", indentation, pageoffset, max_linelength);
+  }
 }
 
 /*
@@ -1887,13 +2130,12 @@ void html_printer::do_fill (int on)
   supress_sub_sup = TRUE;
 
   if (fill_on != on) {
-    if (on) {
-      current_paragraph->done_pre();
-    } else {
+    if (on)
+      current_paragraph->do_para("");
+    else
       current_paragraph->do_pre();
-    }
+    fill_on = on;
   }
-  fill_on = on;
 }
 
 /*
@@ -1903,12 +2145,20 @@ void html_printer::do_fill (int on)
 void html_printer::do_eol (void)
 {
   if (! fill_on) {
-    if (current_paragraph->emitted_text()) {
+    if (current_paragraph->ever_emitted_text()) {
       current_paragraph->do_newline();
       current_paragraph->do_break();
     }
   }
   output_hpos = indentation+pageoffset;
+}
+
+/*
+ *  do_eol_ce - handle end of line specifically for a .ce
+ */
+
+void html_printer::do_eol_ce (void)
+{
   if (end_center > 0) {
     if (end_center > 1)
       if (current_paragraph->emitted_text())
@@ -1929,7 +2179,6 @@ void html_printer::do_eol (void)
 void html_printer::do_flush (void)
 {
   current_paragraph->done_para();
-  current_paragraph->done_table();
 }
 
 /*
@@ -1939,7 +2188,6 @@ void html_printer::do_flush (void)
 void html_printer::do_links (void)
 {
   current_paragraph->done_para();
-  current_paragraph->done_table();
   auto_links = FALSE;   /* from now on only emit under user request */
   file_list.add_new_file(xtmpfile());
   html.set_file(file_list.get_file());
@@ -1953,18 +2201,105 @@ void html_printer::do_links (void)
 void html_printer::do_break (void)
 {
   current_paragraph->do_break();
-#if defined(INDENTATION)
   if (end_tempindent > 0) {
     end_tempindent--;
-    if (end_tempindent == 0) {
-      indentation = prev_indent;
-      current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
-      indent.text.clear();
-    }
+    if (end_tempindent == 0)
+      do_indent(prev_indent, pageoffset, linelength);
   }
-#endif
   output_hpos = indentation+pageoffset;
   supress_sub_sup = TRUE;
+}
+
+/*
+ *  do_tab_ts - start a table, which will have already been defined.
+ */
+
+void html_printer::do_tab_ts (text_glob *g)
+{
+  html_table *t = g->get_table();
+
+  if (t != NULL) {
+    int need_space = ((! current_paragraph->ever_emitted_text()) &&
+		      current_paragraph->starts_with_space());
+
+    current_paragraph->done_pre();
+    current_paragraph->done_para();
+
+    html.simple_comment("TABS");
+    t->set_linelength(max_linelength);
+    t->add_indent(pageoffset);
+    t->emit_table_header(need_space);
+  }
+
+  table = t;
+}
+
+/*
+ *  do_tab_te - finish a table.
+ */
+
+void html_printer::do_tab_te (void)
+{
+  if (table) {
+    current_paragraph->done_para();
+    table->emit_finish_table();
+  }
+
+  table = NULL;
+
+  if (indentation > 0) {
+    /*
+     *  restore indentation
+     */
+    int newin = indentation;
+    indentation = 0;
+    do_indent(newin, pageoffset, linelength);
+  }
+}
+
+/*
+ *  do_tab - handle the "html-tag:tab" tag
+ */
+
+void html_printer::do_tab (char *s)
+{
+  if (table) {
+    while (isspace(*s))
+      s++;
+    s++;
+    int col = table->find_column(atoi(s) + pageoffset + indentation);
+    if (col > 0) {
+      current_paragraph->done_para();
+      table->emit_col(col);
+    }
+  }
+}
+
+/*
+ *  do_tab0 - handle the "html-tag:tab0" tag
+ */
+
+void html_printer::do_tab0 (void)
+{
+  if (table) {
+    int col = table->find_column(pageoffset+indentation);
+    if (col > 0) {
+      current_paragraph->done_para();
+      table->emit_col(col);
+    }
+  }
+}
+
+/*
+ *  do_col - start column, s.
+ */
+
+void html_printer::do_col (char *s)
+{
+  if (table) {
+    current_paragraph->done_para();
+    table->emit_col(atoi(s));
+  }
 }
 
 /*
@@ -1981,9 +2316,12 @@ void html_printer::troff_tag (text_glob *g)
   if (g->is_eol()) {
     do_eol();
   } else if (g->is_eol_ce()) {
-    do_eol();
+    do_eol_ce();
   } else if (strncmp(t, ".sp", 3) == 0) {
-    current_paragraph->do_space();
+    if (g->get_arg() > 0)
+      current_paragraph->do_space();
+    else
+      current_paragraph->do_break();
     supress_sub_sup = TRUE;
   } else if (strncmp(t, ".br", 3) == 0) {
     do_break();
@@ -2030,12 +2368,22 @@ void html_printer::troff_tag (text_glob *g)
   } else if (strncmp(t, ".vs", 3) == 0) {
     char *a = (char *)t+3;
     do_verticalspacing(a);
-  } else if (strncmp(t, ".ip", 3) == 0) {
-    do_indentedparagraph();
   } else if (strcmp(t, ".links") == 0) {
     do_links();
   } else if (strcmp(t, ".no-auto-rule") == 0) {
     auto_rule = FALSE;
+  } else if (strcmp(t, ".tab-ts") == 0) {
+    do_tab_ts(g);
+  } else if (strcmp(t, ".tab-te") == 0) {
+    do_tab_te();
+  } else if (strncmp(t, ".col ", 5) == 0) {
+    char *a = (char *)t+4;
+    do_col(a);
+  } else if (strncmp(t, "tab ", 4) == 0) {
+    char *a = (char *)t+3;
+    do_tab(a);
+  } else if (strncmp(t, "tab0", 4) == 0) {
+    do_tab0();
   }
 }
 
@@ -2061,9 +2409,8 @@ void html_printer::flush_globs (void)
     do {
       g = page_contents->glyphs.get_data();
 
-      if (strcmp(g->text_string, "XXXXXXX") == 0) {
+      if (strcmp(g->text_string, "XXXXXXX") == 0)
 	stop();
-      }
 
       if (g->is_a_tag()) {
 	troff_tag(g);
@@ -2082,14 +2429,425 @@ void html_printer::flush_globs (void)
   }
 }
 
+/*
+ *  calc_nf - calculates the _no_ format flag, given the
+ *            text glob, g.
+ */
+
+int html_printer::calc_nf (text_glob *g, int nf)
+{
+  if (g->is_fi())
+    return FALSE;
+  if (g->is_nf())
+    return TRUE;
+  return nf;
+}
+
+/*
+ *  calc_po_in - calculates the, in, po, registers
+ */
+
+void html_printer::calc_po_in (text_glob *g, int nf)
+{
+  if (g->is_in())
+    indentation = g->get_arg();
+  else if (g->is_po())
+    pageoffset = g->get_arg();
+  else if (g->is_ti()) {
+    prev_indent = indentation;
+    indentation = g->get_arg();
+    end_tempindent = 1;
+  } else if (g->is_br() && ((end_tempindent > 0) || (nf && g->is_eol()))) {
+    end_tempindent = 0;
+    indentation = prev_indent;
+  }
+}
+
+/*
+ *  next_horiz_pos - returns the next horiz position.
+ *                   -1 is returned if it doesn't exist.
+ */
+
+int html_printer::next_horiz_pos (int nf)
+{
+  int next     = -1;
+  text_glob *g = page_contents->glyphs.get_data();
+
+  if (g->is_br() || (nf && g->is_eol()))
+    if (! page_contents->glyphs.is_empty()) {
+      page_contents->glyphs.move_right();
+      next = g->minh;
+      page_contents->glyphs.move_left();
+    }
+  return next;
+}
+
+/*
+ *  insert_tab_ts - inserts a tab-ts before, where.
+ */
+
+text_glob *html_printer::insert_tab_ts (text_glob *where)
+{
+  text_glob *start_of_table;
+  text_glob *old_pos = page_contents->glyphs.get_data();
+
+  page_contents->glyphs.move_to(where);
+  page_contents->glyphs.move_left();
+  page_contents->insert_tag(string("html-tag:.tab-ts"));  // tab table start
+  page_contents->glyphs.move_right();
+  start_of_table = page_contents->glyphs.get_data();
+  page_contents->glyphs.move_to(old_pos);
+  return start_of_table;
+}
+
+/*
+ *  insert_tab_te - inserts a tab-te before the current position
+ *                  (it skips backwards over .sp/.br)
+ */
+
+void html_printer::insert_tab_te (void)
+{
+  text_glob *g = page_contents->glyphs.get_data();
+  page_contents->dump_page();
+
+  while (page_contents->glyphs.get_data()->is_a_tag())
+    page_contents->glyphs.move_left();
+
+  page_contents->insert_tag(string("html-tag:.tab-te"));  // tab table end
+  while (g != page_contents->glyphs.get_data())
+    page_contents->glyphs.move_right();
+  page_contents->dump_page();
+}
+
+/*
+ *  insert_tab_0 - inserts a tab0 before, where.
+ */
+
+void html_printer::insert_tab_0 (text_glob *where)
+{
+  text_glob *old_pos = page_contents->glyphs.get_data();
+
+  page_contents->glyphs.move_to(where);
+  page_contents->glyphs.move_left();
+  page_contents->insert_tag(string("html-tag:tab0"));  // tab0 start of line
+  page_contents->glyphs.move_right();
+  page_contents->glyphs.move_to(old_pos);
+}
+
+/*
+ *  remove_tabs - removes the tabs tags on this line.
+ */
+
+void html_printer::remove_tabs (void)
+{
+  text_glob *orig = page_contents->glyphs.get_data();
+  text_glob *g;
+
+  if (! page_contents->glyphs.is_equal_to_tail()) {
+    do {
+      g = page_contents->glyphs.get_data();
+      if (g->is_tab()) {
+	page_contents->glyphs.sub_move_right();
+	if (g == orig)
+	  orig = page_contents->glyphs.get_data();
+      }	else
+	page_contents->glyphs.move_right();
+    } while ((! page_contents->glyphs.is_equal_to_head()) &&
+	     (! g->is_eol()));
+    
+    /*
+     *  now restore our previous position.
+     */
+    while (page_contents->glyphs.get_data() != orig)
+      page_contents->glyphs.move_left();
+  }
+}
+
+void html_printer::remove_courier_tabs (void)
+{
+  text_glob  *g;
+  int line_start = TRUE;
+  int nf         = FALSE;
+
+  if (! page_contents->glyphs.is_empty()) {
+    page_contents->glyphs.start_from_head();
+    line_start = TRUE;
+    do {
+      g = page_contents->glyphs.get_data();
+      
+      nf = calc_nf(g, nf);
+
+      if (line_start) {
+	if (line_start && nf && is_courier_until_eol()) {
+	  remove_tabs();
+	  g = page_contents->glyphs.get_data();
+	}
+      }
+
+      line_start = g->is_br() || g->is_nf() || g->is_fi() || (nf && g->is_eol());
+      page_contents->glyphs.move_right();
+    } while (! page_contents->glyphs.is_equal_to_head());
+  }
+}
+
+void html_printer::insert_tab0_foreach_tab (void)
+{
+  text_glob  *start_of_line  = NULL;
+  text_glob  *g              = NULL;
+  int seen_tab               = FALSE;
+  int seen_col               = FALSE;
+  int nf                     = FALSE;
+
+  if (! page_contents->glyphs.is_empty()) {
+    page_contents->glyphs.start_from_head();
+    start_of_line = page_contents->glyphs.get_data();
+    do {
+      g = page_contents->glyphs.get_data();
+      
+      nf = calc_nf(g, nf);
+
+      if (g->is_tab())
+	seen_tab = TRUE;
+      
+      if (g->is_col())
+	seen_col = TRUE;
+
+      if (g->is_br() || (nf && g->is_eol())) {
+	do {
+	  page_contents->glyphs.move_right();
+	  g = page_contents->glyphs.get_data();
+	  nf = calc_nf(g, nf);
+	  if (page_contents->glyphs.is_equal_to_head()) {
+	    if (seen_tab && !seen_col)
+	      insert_tab_0(start_of_line);
+	    return;
+	  }
+	} while (g->is_br() || (nf && g->is_eol()) || g->is_ta());
+	// printf("\nstart_of_line is: %s\n", g->text_string);
+	if (seen_tab && !seen_col) {
+	  insert_tab_0(start_of_line);
+	  page_contents->glyphs.move_to(g);
+	}
+
+	seen_tab = FALSE;
+	seen_col = FALSE;
+	start_of_line = g;
+      }
+      page_contents->glyphs.move_right();
+    } while (! page_contents->glyphs.is_equal_to_head());
+    if (seen_tab && !seen_col)
+      insert_tab_0(start_of_line);
+
+  }
+}
+
+/*
+ *  lookahead_for_tables - checks for .col tags and inserts table start/end tags
+ */
+
+void html_printer::lookahead_for_tables (void)
+{
+  text_glob  *g;
+  text_glob  *start_of_line  = NULL;
+  text_glob  *start_of_table = NULL;
+  text_glob  *last           = NULL;
+  enum {col_tag, tab_tag, tab0_tag, none} type_of_col = none;
+  int         left           = 0;
+  int         found_col      = FALSE;
+  int         seen_text      = FALSE;
+  int         ncol           = 0;
+  int         colmin;
+  int         colmax;
+  html_table *table          = new html_table(&html, -1);
+  const char *tab_defs       = NULL;
+  char        align          = 'L';
+  int         nf             = FALSE;
+
+  remove_courier_tabs();
+  page_contents->dump_page();
+  insert_tab0_foreach_tab();
+  page_contents->dump_page();
+  if (! page_contents->glyphs.is_empty()) {
+    page_contents->glyphs.start_from_head();
+    g = page_contents->glyphs.get_data();
+    do {
+#if 0
+      if (strcmp(g->text_string, "XXXXXXX") == 0)
+	stop();
+#endif
+
+      nf = calc_nf(g, nf);
+      calc_po_in(g, nf);
+      if (g->is_col()) {
+	if (type_of_col == tab_tag && start_of_table != NULL) {
+	  page_contents->glyphs.move_left();
+	  insert_tab_te();
+	  start_of_table->remember_table(table);
+	  table = new html_table(&html, -1);
+	  page_contents->insert_tag(string("*** TAB -> COL ***"));
+	  if (tab_defs != NULL)
+	    table->tab_stops->init(tab_defs);
+	  start_of_table = NULL;
+	  last = NULL;
+	}
+	type_of_col = col_tag;
+	found_col = TRUE;
+	ncol = g->get_arg();
+	align = 'L';
+	colmin = 0;
+	colmax = 0;
+      } else if (g->is_tab()) {
+	type_of_col = tab_tag;
+	colmin = g->get_tab_args(&align);
+	align = 'L'; // for now as 'C' and 'R' are broken
+	ncol = table->find_tab_column(colmin);
+	colmin += pageoffset + indentation;
+	colmax = table->get_tab_pos(ncol+1);
+	if (colmax > 0)
+	  colmax += pageoffset + indentation;
+      } else if (g->is_tab0()) {
+	if (type_of_col == col_tag && start_of_table != NULL) {
+	  page_contents->glyphs.move_left();
+	  insert_tab_te();
+	  start_of_table->remember_table(table);
+	  table = new html_table(&html, -1);
+	  page_contents->insert_tag(string("*** COL -> TAB ***"));
+	  start_of_table = NULL;
+	  last = NULL;
+	}
+	if (tab_defs != NULL)
+	  table->tab_stops->init(tab_defs);
+
+	type_of_col = tab0_tag;
+	ncol = 1;
+	colmin = 0;
+	colmax = table->get_tab_pos(2) + pageoffset + indentation;
+      } else if (! g->is_a_tag()) {
+	switch (type_of_col) {
+
+	case tab_tag:
+	  break;
+	case tab0_tag:
+	  colmin = g->minh;
+	  break;
+	case col_tag:
+	  colmin = g->minh;
+	  colmax = g->maxh;
+	  break;
+	default:
+	  break;
+	}
+      }
+
+      if ((! g->is_a_tag()) || g->is_tab())
+	seen_text = TRUE;
+
+      if ((g->is_col() || g->is_tab() || g->is_tab0())
+	  && (start_of_line != NULL) && (start_of_table == NULL)) {
+	start_of_table = insert_tab_ts(start_of_line);
+	start_of_line = NULL;
+	seen_text = FALSE;
+      } else if (g->is_ce() && (start_of_table != NULL)) {
+	page_contents->glyphs.move_left();
+	insert_tab_te();
+	start_of_table->remember_table(table);
+	page_contents->insert_tag(string("*** CE ***"));
+	start_of_table = NULL;
+	last = NULL;
+      } else if (g->is_ta()) {
+	tab_defs = g->text_string;
+	if (!table->tab_stops->compatible(tab_defs)) {
+	  if (start_of_table != NULL) {
+	    page_contents->glyphs.move_left();
+	    insert_tab_te();
+	    start_of_table->remember_table(table);
+	    table = new html_table(&html, -1);
+	    page_contents->insert_tag(string("*** TABS ***"));
+	    start_of_table = NULL;
+	    type_of_col = none;
+	    last = NULL;
+	  }
+	  table->tab_stops->init(tab_defs);
+	}
+      }
+
+      if (((! g->is_a_tag()) || g->is_tab()) && (start_of_table != NULL)) {
+	// we are in a table and have a glyph
+	if ((ncol == 0) || (! table->add_column(ncol, colmin, colmax, align))) {
+	  page_contents->glyphs.move_left();
+	  insert_tab_te();
+#if defined(DEBUG_TABLES)
+	  if (ncol == 0)
+	    page_contents->insert_tag(string("*** NCOL == 0 ***"));
+	  else
+	    page_contents->insert_tag(string("*** CROSSED COLS ***"));
+#endif
+	  start_of_table->remember_table(table);
+	  table = new html_table(&html, -1);
+	  start_of_table = NULL;
+	  type_of_col = none;
+	  last = NULL;
+	}
+      }
+      
+      /*
+       *  move onto next glob, check whether we are starting a new line
+       */
+      page_contents->glyphs.move_right();
+      g = page_contents->glyphs.get_data();
+
+#if defined(DEBUG_TABLES)
+      if (g->is_in() && (!seen_text))      
+	html.simple_comment("IGNORE .in");
+      else
+#endif
+	if (g->is_br_ni() || (nf && g->is_eol())) {
+	do {
+	  page_contents->glyphs.move_right();
+	  g = page_contents->glyphs.get_data();
+	  nf = calc_nf(g, nf);
+	} while (g->is_br_ni() || (nf && g->is_eol()));
+	start_of_line = g;
+	seen_text = FALSE;
+	ncol = 0;
+	left = next_horiz_pos(nf);
+	if (found_col)
+	  last = g;
+	found_col = FALSE;
+      }
+    } while (! page_contents->glyphs.is_equal_to_head());
+    if (start_of_table != NULL) {
+      if (last != NULL)
+	while (last != page_contents->glyphs.get_data())
+	  page_contents->glyphs.move_left();
+
+      insert_tab_te();
+      start_of_table->remember_table(table);
+      table = NULL;
+      page_contents->insert_tag(string("*** LAST ***"));      
+    }
+  }
+  if (table != NULL)
+    delete table;
+
+  // and reset the registers
+  pageoffset = 0;
+  pageoffset = 0;
+  indentation = 0;
+  prev_indent = 0;
+  end_tempindent = 0;
+}
+
 void html_printer::flush_page (void)
 {
   supress_sub_sup = TRUE;
   flush_sbuf();
-  // page_contents->dump_page();
+  page_contents->dump_page();
+  lookahead_for_tables();
+  page_contents->dump_page();
+
   flush_globs();
   current_paragraph->done_para();
-  current_paragraph->done_table();
   
   // move onto a new page
   delete page_contents;
@@ -2443,10 +3201,13 @@ html_printer::html_printer()
   header_indent(-1),
   supress_sub_sup(TRUE),
   cutoff_heading(100),
+  indent(NULL),
+  table(NULL),
   end_center(0),
   end_tempindent(0),
   next_tag(INLINE),
   fill_on(TRUE),
+  max_linelength(-1),
   linelength(0),
   pageoffset(0),
   indentation(0),
@@ -2489,7 +3250,7 @@ html_printer::html_printer()
 
 void html_printer::add_to_sbuf (unsigned char code, const string &s)
 {
-  char *html_glyph;
+  char *html_glyph = NULL;
 
   if (s.empty()) {
     html_glyph = get_html_translation(sbuf_style.f, string(code));
@@ -2678,10 +3439,7 @@ void html_printer::begin_page(int n)
   output_vpos            = -1;
   output_vpos_max        = -1;
   current_paragraph      = new html_text(&html);
-#if defined(INDENTATION)
-  current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
-  indent.text.clear();
-#endif
+  do_indent(indentation, pageoffset, linelength);
   current_paragraph->do_para("");
 }
 

@@ -31,6 +31,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "reg.h"
 #include "charinfo.h"
 #include "macropath.h"
+#include "input.h"
 #include <math.h>
 
 symbol default_family("T");
@@ -299,7 +300,8 @@ node *environment::make_char_node(charinfo *ci)
 
 void environment::add_node(node *n)
 {
-  assert(n != 0);
+  if (n == 0)
+    return;
   if (current_tab || current_field)
     n->freeze_space();
   if (interrupted) {
@@ -1161,7 +1163,7 @@ void point_size()
     if (n <= 0)
       n = 1;
     curenv->set_size(n);
-    curenv->add_html_tag(".ps", n);
+    curenv->add_html_tag(1, ".ps", n);
   }
   else
     curenv->set_size(0);
@@ -1229,7 +1231,8 @@ void fill()
   if (break_flag)
     curenv->do_break();
   curenv->fill = 1;
-  curenv->add_html_tag(".fi");
+  curenv->add_html_tag(1, ".fi");
+  curenv->add_html_tag(0, ".br");
   tok.next();
 }
 
@@ -1240,8 +1243,9 @@ void no_fill()
   if (break_flag)
     curenv->do_break();
   curenv->fill = 0;
-  curenv->add_html_tag(".nf");
-  curenv->add_html_tag(".po", topdiv->get_page_offset().to_units());
+  curenv->add_html_tag(1, ".nf");
+  curenv->add_html_tag(0, ".br");
+  curenv->add_html_tag(0, ".po", topdiv->get_page_offset().to_units());
   tok.next();
 }
 
@@ -1258,7 +1262,7 @@ void center()
     curenv->do_break();
   curenv->right_justify_lines = 0;
   curenv->center_lines = n;
-  curenv->add_html_tag(".ce", n);
+  curenv->add_html_tag(1, ".ce", n);
   tok.next();
 }
 
@@ -1275,7 +1279,7 @@ void right_justify()
     curenv->do_break();
   curenv->center_lines = 0;
   curenv->right_justify_lines = n;
-  curenv->add_html_tag(".rj", n);
+  curenv->add_html_tag(1, ".rj", n);
   tok.next();
 }
 
@@ -1292,7 +1296,7 @@ void line_length()
     temp = curenv->prev_line_length;
   curenv->prev_line_length = curenv->line_length;
   curenv->line_length = temp;
-  curenv->add_html_tag(".ll", temp.to_units());
+  curenv->add_html_tag(1, ".ll", temp.to_units());
   skip_line();
 }
 
@@ -1379,7 +1383,7 @@ void indent()
   curenv->have_temporary_indent = 0;
   curenv->prev_indent = curenv->indent;
   curenv->indent = temp;
-  curenv->add_html_tag(".in", temp.to_units());
+  curenv->add_html_tag(1, ".in", temp.to_units());
   tok.next();
 }
 
@@ -1400,7 +1404,7 @@ void temporary_indent()
   if (!err) {
     curenv->temporary_indent = temp;
     curenv->have_temporary_indent = 1;
-    curenv->add_html_tag(".ti", temp.to_units());
+    curenv->add_html_tag(1, ".ti", temp.to_units());
   }
   tok.next();
 }
@@ -1654,8 +1658,12 @@ void environment::newline()
     hunits x = target_text_length - width_total;
     if (x > H0)
       saved_indent += x/2;
-    add_html_tag("eol.ce");
     to_be_output = line;
+    if (is_html) {
+      node *n = make_html_tag("eol.ce");
+      n->next = to_be_output;
+      to_be_output = n;
+    }
     to_be_output_width = width_total;
     line = 0;
   }
@@ -1677,6 +1685,14 @@ void environment::newline()
   }
   input_line_start = line == 0 ? H0 : width_total;
   if (to_be_output) {
+    if (is_html && !fill) {
+      if (curdiv == topdiv) {
+	node *n = make_html_tag("eol");
+
+	n->next = to_be_output;
+	to_be_output = n;
+      }
+    }
     output_line(to_be_output, to_be_output_width);
     hyphen_line_count = 0;
   }
@@ -2119,29 +2135,15 @@ void environment::final_break()
 }
 
 /*
- *  add_html_tag_eol - add an end of line tag if appropriate.
- */
-
-void environment::add_html_tag_eol()
-{
-  if (is_html) {
-    if (ignore_next_eol > 0)
-      ignore_next_eol--;
-    else
-      if (!fill && emitted_node) {
-	add_html_tag("eol");
-	emitted_node = 0;
-      }
-  }
-}
-
-/*
  *  add_html_tag - emits a special html-tag: to help post-grohtml understand
  *                 the key troff commands
  */
 
-void environment::add_html_tag(const char *name)
+void environment::add_html_tag(int force, const char *name)
 {
+  if (!force && (curdiv != topdiv))
+    return;
+
   if (is_html) {
     /*
      * need to emit tag for post-grohtml
@@ -2154,7 +2156,7 @@ void environment::add_html_tag(const char *name)
     for (const char *p = name; *p; p++)
       if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);
-    add_node(new special_node(*m));
+    curdiv->output(new special_node(*m), 1, 0, 0, 0);
     if (strcmp(name, ".nf") == 0)
       curenv->ignore_next_eol = 1;
   }
@@ -2166,8 +2168,11 @@ void environment::add_html_tag(const char *name)
  *                 of i.
  */
 
-void environment::add_html_tag(const char *name, int i)
+void environment::add_html_tag(int force, const char *name, int i)
 {
+  if (!force && (curdiv != topdiv))
+    return;
+
   if (is_html) {
     /*
      * need to emit tag for post-grohtml
@@ -2182,9 +2187,8 @@ void environment::add_html_tag(const char *name, int i)
 	m->append(*p);
     m->append(' ');
     m->append_int(i);
-    // output_pending_lines();
-    output(new special_node(*m), !fill, 0, 0, 0);
-    // output_pending_lines();
+    node *n = new special_node(*m);
+    curdiv->output(n, 1, 0, 0, 0);
   }
 }
 
@@ -2192,8 +2196,11 @@ void environment::add_html_tag(const char *name, int i)
  *  add_html_tag_tabs - emits the tab settings for post-grohtml
  */
 
-void environment::add_html_tag_tabs()
+void environment::add_html_tag_tabs(int force)
 {
+  if (!force && (curdiv != topdiv))
+    return;
+
   if (is_html) {
     /*
      * need to emit tag for post-grohtml
@@ -2211,24 +2218,62 @@ void environment::add_html_tag_tabs()
       switch (t) {
       case TAB_LEFT:
 	m->append_str(" L ");
-	m->append_int(d.to_units());
+	m->append_int(l.to_units());
 	break;
       case TAB_CENTER:
 	m->append_str(" C ");
-	m->append_int(d.to_units());
+	m->append_int(l.to_units());
 	break;
       case TAB_RIGHT:
 	m->append_str(" R ");
-	m->append_int(d.to_units());
+	m->append_int(l.to_units());
 	break;
       case TAB_NONE:
 	break;
       }
     } while ((t != TAB_NONE) && (l < get_line_length()));
-    output_pending_lines();
-    output(new special_node(*m), !fill, 0, 0, 0);
-    output_pending_lines();
+    curdiv->output(new special_node(*m), 1, 0, 0, 0);
   }
+}
+
+node *environment::make_html_tag(const char *name, int i)
+{
+  if (is_html) {
+    /*
+     * need to emit tag for post-grohtml
+     * but we check to see whether we can emit specials
+     */
+    if (curdiv == topdiv && topdiv->before_first_page)
+      topdiv->begin_page();
+    macro *m = new macro;
+    m->append_str("html-tag:");
+    for (const char *p = name; *p; p++)
+      if (!invalid_input_char((unsigned char)*p))
+	m->append(*p);
+    m->append(' ');
+    m->append_int(i);
+    return new special_node(*m);
+  }
+  return 0;
+}
+
+node *environment::make_html_tag(const char *name)
+{
+  if (is_html) {
+    /*
+     * need to emit tag for post-grohtml
+     * but we check to see whether we can emit specials
+     */
+    if (curdiv == topdiv && topdiv->before_first_page)
+      topdiv->begin_page();
+    macro *m = new macro;
+    m->append_str("html-tag:");
+    for (const char *p = name; *p; p++)
+      if (!invalid_input_char((unsigned char)*p))
+	m->append(*p);
+    return new special_node(*m);
+  }
+  return 0;
 }
 
 void environment::do_break(int spread)
@@ -2287,7 +2332,7 @@ void do_break_request(int spread)
     tok.next();
   if (break_flag) {
     curenv->do_break(spread);
-    curenv->add_html_tag(".br");
+    curenv->add_html_tag(0, ".br");
   }
   tok.next();
 }
@@ -2491,12 +2536,21 @@ tab_stops::~tab_stops()
 
 tab_type tab_stops::distance_to_next_tab(hunits curpos, hunits *distance)
 {
+  hunits nextpos;
+
+  return distance_to_next_tab(curpos, distance, &nextpos);
+}
+
+tab_type tab_stops::distance_to_next_tab(hunits curpos, hunits *distance,
+					 hunits *nextpos)
+{
   hunits lastpos = 0;
   tab *tem;
   for (tem = initial_list; tem && tem->pos <= curpos; tem = tem->next)
     lastpos = tem->pos;
   if (tem) {
     *distance = tem->pos - curpos;
+    *nextpos  = tem->pos;
     return tem->type;
   }
   if (repeated_list == 0)
@@ -2507,6 +2561,7 @@ tab_type tab_stops::distance_to_next_tab(hunits curpos, hunits *distance)
       lastpos = tem->pos;
     if (tem) {
       *distance = tem->pos + base - curpos;
+      *nextpos  = tem->pos + base;
       return tem->type;
     }
     assert(lastpos > 0);
@@ -2681,7 +2736,7 @@ void set_tabs()
     }
   }
   curenv->tabs = tabs;
-  curenv->add_html_tag_tabs();
+  curenv->add_html_tag_tabs(1);
   skip_line();
 }
 
@@ -2711,6 +2766,14 @@ tab_type environment::distance_to_next_tab(hunits *distance)
   return line_tabs
     ? curenv->tabs.distance_to_next_tab(get_text_length(), distance)
     : curenv->tabs.distance_to_next_tab(get_input_line_position(), distance);
+}
+
+tab_type environment::distance_to_next_tab(hunits *distance, hunits *leftpos)
+{
+  return line_tabs
+    ? curenv->tabs.distance_to_next_tab(get_text_length(), distance, leftpos)
+    : curenv->tabs.distance_to_next_tab(get_input_line_position(), distance,
+					leftpos);
 }
 
 void field_characters()
@@ -2800,31 +2863,34 @@ node *environment::make_tab_node(hunits d, node *next)
 void environment::handle_tab(int is_leader)
 {
   hunits d;
+  hunits abs;
   if (current_tab)
     wrap_up_tab();
   charinfo *ci = is_leader ? leader_char : tab_char;
   delete leader_node;
   leader_node = ci ? make_char_node(ci) : 0;
-  tab_type t = distance_to_next_tab(&d);
+  tab_type t = distance_to_next_tab(&d, &abs);
   switch (t) {
   case TAB_NONE:
     return;
   case TAB_LEFT:
-    add_html_tag("tab left");
     add_node(make_tab_node(d));
+    add_node(make_html_tag("tab L", abs.to_units()));
     return;
   case TAB_RIGHT:
+    add_node(make_html_tag("tab R", abs.to_units()));
+    break;
   case TAB_CENTER:
-    add_html_tag("tab center");
-    tab_width = 0;
-    tab_distance = d;
-    tab_contents = 0;
-    current_tab = t;
-    tab_field_spaces = 0;
-    return;
+    add_node(make_html_tag("tab C", abs.to_units()));
+    break;
   default:
     assert(0);
   }
+  tab_width = 0;
+  tab_distance = d;
+  tab_contents = 0;
+  current_tab = t;
+  tab_field_spaces = 0;
 }
 
 void environment::start_field()

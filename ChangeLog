@@ -1,3 +1,127 @@
+2002-07-19  Werner LEMBERG  <wl@gnu.org>
+
+	* font/devhtml/R.proto: Updated to HTML 4, adding many glyphs.
+	* font/devutf8/R.proto: Adding some missing glyphs.
+	* font/devutf8/NOTES: Updated.
+
+	* tmac/dvi.tmac: Add more composite glyphs.
+	* tmac/html.tmac: Updated.
+
+	* man/groff_char.man: Add `sum' and `product' entities.
+
+	* NEWS: Updated.
+
+2002-07-18  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Improved table, tab, and indenting support.
+
+	* src/roff/troff/input.cc (file_iterator::suppress_newline_flag,
+	string_iterator::suppress_newline_flag): Removed.  Updated all
+	function which have used it.
+
+	* src/roff/troff/env.cc: Include `input.h'.
+	(environment::add_node): Accept 0 as parameter.
+	(environment::add_html_tag): Add `force' parameter.
+	Updated all callers.
+	(environment::add_html_tag_tabs): Ditto.
+	For the moment, support left-aligned tabs only.
+	(environment::make_html_tag): New function.
+	(fill, no_fill): Set .br html tag additionally.
+	(environment::newline): Emit `eol.ce' or `eol' tag for html.
+	(environment::add_html_tag_eol): Removed.
+	(tab_stops::distance_to_next_tab): Add variant for handling 
+	nextpos'.
+	(environment::distance_to_next_tab): Ditto.
+	Updated all callers.
+	(environment::handle_tab): Handle tabs for html.
+	
+	* src/roff/troff/env.h: Updated.
+
+	* src/roff/troff/div.cc: Updated all callers of
+	`environment::add_html_tag'.
+
+	* src/devices/grohtml/html-table.cc,
+	src/devices/grohtml/html-table.h: New files.
+
+	* src/devices/grohtml/html-text.cc (html_text): New members
+	`blank_para' and `start_space'.
+	(html_text::issue_tag): Don't emit TABLE_TAG.
+	Handle indentation for PRE_TAG and P_TAG.
+	(html_text::end_tag): Updated.
+	(html_text::table_is_void, html_text::issue_table_begin,
+	html_text::issue_table_end): Removed.
+	(html_text::do_push): Simplified.
+	[DEBUGGING]: Small fix.
+	(html_text::push_para): Add new parameter for indentation; updated
+	all callers.
+	Handle PRE_TAG.
+	(html_text::do_indent, html_text::do_table, html_text::done_table,
+	html_text::is_in_table): Removed.
+	(html_text::do_pre): Handle P_TAG also.
+	(html_text::shutdown): Handle p->indent.
+	(html_text::check_emit_text): Simplified.
+	(html_text::do_emittext): Reset `blank_para'.
+	(html_text::do_para): Add new parameter for indentation; updated
+	all callers.
+	(html_text::remove_indent): New function.
+	(html_text::do_space): Handle verbatim text properly.
+	(html_text::ever_emitted_text, html_text::starts_with_space,
+	html_text::remove_para_align): New functions.
+	(html_text::dump_stack_element, html_text::dump_stack): Updated.
+
+	* src/devices/grohtml/html_text.h (HTML_TAG): Remove TABLE_TAG.
+	Updated.
+
+	* src/devices/grohtml/post-html.cc: Include html-table.h.
+	(INDENTATION): Removed.
+	(text_glob): Added many `is_<foo>' functions.
+	Added table description `tab'.
+	Added `get_arg',`get_tab_args', `remember_table', and `get_table'
+	member functions.
+	(list): Add `insert' and `move_to' member functions.
+	(page): Add `insert_tag' member function.
+	(page::dump_page) [DEBUG_TABLES]: Improved.
+	(html_printer): Add `table' and `max_linelength' elements.
+	Add many `do_<foo>', `insert_<foo>', `next_horiz_pos',
+	`lookahead_for_tables', `shutdown_table', `calc_nf', `calc_po_in',
+	`remove_tabs', `remove_courier_tabs'.
+	(html_printer::emit_raw): Handle indentation.
+	(html_printer::do_center, html_printer::write_header): Updated.
+	(html_printer::is_courier_until_eol): Check for tag.
+	(html_printer::do_linelength): Handle max_linelength.
+	(html_printer::do_page_offset, html_printer::do_indentation): Handle
+	fill_on.
+	(html_printer::do_tempindent): Updated.
+	(html_printer::do_indentedparagraph): Removed.
+	(html_printer::do_indent): Simplified.
+	(html_printer::do_eol): Use `ever_emitted_text'.
+	(html_printer::do_flush, html_printer::do_links): Don't call
+	done_table.
+	(html_printer::do_break): Handle end_tempindent.
+	(html_printer::troff_tag): Get argument.
+	Don't handle `.ip'.
+	Handle `.tab-ts', `.tab-te', `.col', `tab', and `tab0' tags.
+	(html_printer::flush_page): Call `lookahead_for_tables'.
+	Don't call `done_table'.
+	(html_printer::add_to_sbuf): Always call do_indent.
+
+	* src/devices/grohtml/Makefile.sub: Updated.
+
+	* tmac/an-old.tmac (TP): Don't handle html device specially.
+	(an-do-tag-html): New function which will be used instead of
+	`an-do-tag' if html device is used.
+
+	* tmac/html.tmac: Call .po to pass default page offset to grohtml.
+
+	* tmac/s.tmac (@IP): Don't handle html device specially.
+	(@IP-html): New function which will be used instead of `@IP' if
+	html device is used.
+
+	* tmac/www.tmac (HTML-NS, HTML-TAG-NS): New auxiliary macros -- this
+	is a hack which will eventually vanish again.
+	(PIMG): Handle `-C' option correctly if not html.
+	(HR): Use HTML-NS.
+
 2002-07-17  Werner LEMBERG  <wl@gnu.org>
 
 	* src/utils/afmtodit/afmtodit.pl: Don't use `-P-' for invoking perl.

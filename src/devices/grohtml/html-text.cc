@@ -44,7 +44,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 html_text::html_text (simple_output *op) :
   stackptr(NULL), lastptr(NULL), out(op), space_emitted(TRUE),
-  current_indentation(-1), pageoffset(-1), linelength(-1)
+  current_indentation(-1), pageoffset(-1), linelength(-1),
+  blank_para(TRUE), start_space(FALSE)
 {
 }
 
@@ -77,17 +78,24 @@ void html_text::dump_stack_element (tag_definition *p)
   fprintf(stderr, " | ");
   switch (p->type) {
 
-  case P_TAG:      fprintf(stderr, "<P %s>", (char *)p->arg1); break;
+  case P_TAG:      if (p->indent == NULL) {
+                      fprintf(stderr, "<P %s>", (char *)p->arg1); break;
+                   } else {
+                      fprintf(stderr, "<P %s [TABLE]>", (char *)p->arg1); break;
+		   }
   case I_TAG:      fprintf(stderr, "<I>"); break;
   case B_TAG:      fprintf(stderr, "<B>"); break;
   case SUB_TAG:    fprintf(stderr, "<SUB>"); break;
   case SUP_TAG:    fprintf(stderr, "<SUP>"); break;
   case TT_TAG:     fprintf(stderr, "<TT>"); break;
-  case PRE_TAG:    fprintf(stderr, "<PRE>"); break;
+  case PRE_TAG:    if (p->indent == NULL) {
+                      fprintf(stderr, "<PRE>"); break;
+                   } else {
+                      fprintf(stderr, "<PRE [TABLE]>"); break;
+		   }
   case SMALL_TAG:  fprintf(stderr, "<SMALL>"); break;
   case BIG_TAG:    fprintf(stderr, "<BIG>"); break;
   case BREAK_TAG:  fprintf(stderr, "<BREAK>"); break;
-  case TABLE_TAG:  fprintf(stderr, "<TABLE>"); break;
   case COLOR_TAG:  {
     if (p->col.is_default())
       fprintf(stderr, "<COLOR (default)>");
@@ -118,8 +126,9 @@ void html_text::dump_stack (void)
       dump_stack_element(p);
       p = p->next;
     }
-    fflush(stderr);
   }
+  fprintf(stderr, "\n");
+  fflush(stderr);
 }
 #else
 void html_text::dump_stack (void) {}
@@ -136,19 +145,20 @@ void html_text::end_tag (tag_definition *t)
 
   case I_TAG:      out->put_string("</i>"); break;
   case B_TAG:      out->put_string("</b>"); break;
-  case P_TAG:      out->put_string("</p>").nl().enable_newlines(FALSE); break;
+  case P_TAG:      out->put_string("</p>");
+                   if (t->indent != NULL) {
+		     delete t->indent;
+		     t->indent = NULL;
+		   }
+		   out->nl(); out->enable_newlines(FALSE);
+                   blank_para = TRUE; break;
   case SUB_TAG:    out->put_string("</sub>"); break;
   case SUP_TAG:    out->put_string("</sup>"); break;
   case TT_TAG:     out->put_string("</tt>"); break;
-  case PRE_TAG:    out->put_string("</pre>");
-                   if (! is_present(TABLE_TAG)) {
-		     out->nl();
-		     out->enable_newlines(TRUE);
-		   }
-		   break;
+  case PRE_TAG:    out->put_string("</pre>"); out->nl(); out->enable_newlines(TRUE);
+                   blank_para = TRUE; break;
   case SMALL_TAG:  out->put_string("</small>"); break;
   case BIG_TAG:    out->put_string("</big>"); break;
-  case TABLE_TAG:  issue_table_end(); break;
   case COLOR_TAG:  out->put_string("</font>"); break;
 
   default:
@@ -204,69 +214,38 @@ void html_text::start_tag (tag_definition *t)
 
   case I_TAG:      issue_tag("<i", (char *)t->arg1); break;
   case B_TAG:      issue_tag("<b", (char *)t->arg1); break;
-  case P_TAG:      issue_tag("\n<p", (char *)t->arg1);
+  case P_TAG:      if (t->indent == NULL) {
+                     out->nl();
+                     issue_tag("\n<p", (char *)t->arg1);
+                   } else {
+		     out->nl();
+		     out->simple_comment("INDENTATION");
+		     t->indent->begin(start_space);
+		     start_space = FALSE;
+                     issue_tag("<p", (char *)t->arg1);
+		   }
+
                    out->enable_newlines(TRUE); break;
   case SUB_TAG:    issue_tag("<sub", (char *)t->arg1); break;
   case SUP_TAG:    issue_tag("<sup", (char *)t->arg1); break;
   case TT_TAG:     issue_tag("<tt", (char *)t->arg1); break;
-  case PRE_TAG:    out->nl(); issue_tag("<pre", (char *)t->arg1);
+  case PRE_TAG:    if (t->indent != NULL) {
+                     out->nl();
+		     out->simple_comment("INDENTATION");
+		     t->indent->begin(start_space);
+		     start_space = FALSE;
+                   }
+                   out->enable_newlines(TRUE);
+                   out->nl(); issue_tag("<pre", (char *)t->arg1);
                    out->enable_newlines(FALSE); break;
   case SMALL_TAG:  issue_tag("<small", (char *)t->arg1); break;
   case BIG_TAG:    issue_tag("<big", (char *)t->arg1); break;
-  case TABLE_TAG:  issue_table_begin((char *)t->arg1); break;
   case BREAK_TAG:  break;
   case COLOR_TAG:  issue_color_begin(&t->col); break;
 
   default:
     error("unrecognised tag");
   }
-}
-
-int html_text::table_is_void (tag_definition *t)
-{
-#if 1
-  return (linelength > 0
-	  && current_indentation*100/linelength <= 0);
-
-#else
-  if (t->next != NULL
-      && linelength > 0
-      && current_indentation*100/linelength <= 0) {
-    t = t->next;
-    while (t != NULL) {
-      if (t->text_emitted)
-	return FALSE;
-      t = t->next;
-    }
-  }
-  return TRUE;
-#endif
-}
-
-void html_text::issue_table_begin (char *arg)
-{
-  if (linelength > 0) {
-    int width=current_indentation*100/linelength;
-
-    if (width > 0) {
-      out->put_string("<table width=\"100%\" border=0 rules=\"none\" frame=\"void\"\n       cols=\"2\" cellspacing=\"0\" cellpadding=\"0\">").nl();
-      out->put_string("<tr valign=\"top\" align=\"left\">").nl();
-      if ((arg == 0) || (strcmp(arg, "") == 0))
-	out->put_string("<td width=\"").put_number(width).put_string("%\"></td>");
-      else {
-	out->put_string("<td width=\"").put_number(width).put_string("%\">").nl();
-	out->put_string(arg).put_string("</td>");
-	arg[0] = (char)0;
-      }
-      out->put_string("<td width=\"").put_number(100-width).put_string("%\">").nl();
-    }
-  }
-}
-
-void html_text::issue_table_end (void)
-{
-  out->put_string("</td></table>").nl();
-  out->enable_newlines(TRUE);
 }
 
 /*
@@ -324,47 +303,21 @@ void html_text::do_push (tag_definition *p)
   dump_stack_element(p);
   fprintf(stderr, ")\n");
   dump_stack();
+  fprintf(stderr, ")\n");
+  fflush(stderr);
 #endif
 
   /*
-   *  if t is a P_TAG or TABLE_TAG or PRE_TAG make sure it goes on the end of the stack.
-   *  But we insist that a TABLE_TAG is always after a PRE_TAG
-   *  and that a P_TAG is always after a TABLE_TAG
+   *  if t is a P_TAG or PRE_TAG make sure it goes on the end of the stack.
    */
 
-  if (((t == P_TAG) || (t == PRE_TAG) || (t == TABLE_TAG)) &&
-      (lastptr != NULL)) {
-    if (((lastptr->type == TABLE_TAG) && (t == PRE_TAG)) ||
-	((lastptr->type == P_TAG) && (t == TABLE_TAG))) {
-      /*
-       *  insert p before the lastptr
-       */
-      if (stackptr == lastptr) {
-	/*
-	 *  only one element of the stack
-	 */
-	p->next       = stackptr;
-	stackptr      = p;	
-      } else {
-	/*
-	 *  more than one element is on the stack
-	 */
-	tag_definition *q = stackptr;
-
-	while (q->next != lastptr)
-	  q = q->next;
-	
-	q->next       = p;
-	p->next       = lastptr;
-      }
-    } else {
-      /*
-       *  store, p, at the end
-       */
-      lastptr->next = p;
-      lastptr       = p;
-      p->next       = NULL;
-    }
+  if (((t == P_TAG) || (t == PRE_TAG)) && (lastptr != NULL)) {
+    /*
+     *  store, p, at the end
+     */
+    lastptr->next = p;
+    lastptr       = p;
+    p->next       = NULL;
   } else {
     p->next       = stackptr;
     if (stackptr == NULL)
@@ -382,20 +335,24 @@ void html_text::do_push (tag_definition *p)
  *  push_para - adds a new entry onto the html paragraph stack.
  */
 
-void html_text::push_para (HTML_TAG t, void *arg)
+void html_text::push_para (HTML_TAG t, void *arg, html_indent *in)
 {
   tag_definition *p=(tag_definition *)malloc(sizeof(tag_definition));
 
   p->type         = t;
   p->arg1         = arg;
   p->text_emitted = FALSE;
+  p->indent       = in;
+
+  if (t == PRE_TAG && is_present(PRE_TAG))
+    fatal("cannot have multiple PRE_TAGs");
 
   do_push(p);
 }
 
 void html_text::push_para (HTML_TAG t)
 {
-  push_para(t, (void *)"");
+  push_para(t, (void *)"", NULL);
 }
 
 void html_text::push_para (color *c)
@@ -406,53 +363,9 @@ void html_text::push_para (color *c)
   p->arg1         = NULL;
   p->col          = *c;
   p->text_emitted = FALSE;
+  p->indent       = NULL;
 
   do_push(p);
-}
-
-/*
- *  do_indent - remember the indent parameters and if
- *              indent is > pageoff and indent has changed
- *              then we start a html table to implement the indentation.
- */
-
-void html_text::do_indent (const char *arg, int indent, int pageoff, int linelen)
-{
-  if ((current_indentation != -1) &&
-      (pageoffset+current_indentation != indent+pageoff)) {
-      /*
-       *  actual indentation of text has changed, we need to put
-       *  a table tag onto the stack.
-       */
-    do_table(arg);
-  }
-  current_indentation = indent;
-  pageoffset          = pageoff;
-  linelength          = linelen;
-}
-
-void html_text::do_table (const char *arg)
-{
-  int in_pre = is_in_pre();
-  // char *para_type = done_para();
-  done_pre();
-  shutdown(TABLE_TAG);   // shutdown a previous table, if present
-  remove_break();
-  if (in_pre) {
-    do_pre();
-  }
-  // do_para(para_type);
-  push_para(TABLE_TAG, (void *)arg);
-}
-
-/*
- *  done_table - terminates a possibly existing table.
- */
-
-void html_text::done_table (void)
-{
-  shutdown(TABLE_TAG);
-  space_emitted = TRUE;
 }
 
 /*
@@ -503,10 +416,14 @@ void html_text::do_pre (void)
   done_bold();
   done_italic();
   done_tt();
-  (void)done_para();
-  if (! is_present(PRE_TAG)) {
-    push_para(PRE_TAG);
-  }
+  if (is_present(P_TAG)) {
+    html_indent *i = remove_indent(P_TAG);
+    (void)done_para();
+    if (! is_present(PRE_TAG))
+      push_para(PRE_TAG, NULL, i);
+  } else if (! is_present(PRE_TAG))
+    push_para(PRE_TAG, NULL, NULL);
+  dump_stack();
 }
 
 /*
@@ -517,15 +434,6 @@ void html_text::do_pre (void)
 int html_text::is_in_pre (void)
 {
   return is_present(PRE_TAG);
-}
-
-/*
- *  is_in_table - returns TRUE if we are currently within a table.
- */
-
-int html_text::is_in_table (void)
-{
-  return is_present(TABLE_TAG);
 }
 
 /*
@@ -596,6 +504,8 @@ char *html_text::shutdown (HTML_TAG t)
       stackptr = stackptr->next;
       if (stackptr == NULL)
 	lastptr = NULL;
+      if (p->indent != NULL)
+	delete p->indent;
       free(p);
     }
 
@@ -606,7 +516,7 @@ char *html_text::shutdown (HTML_TAG t)
       if (temp->type == COLOR_TAG)
 	push_para(&temp->col);
       else
-	push_para(temp->type, temp->arg1);
+	push_para(temp->type, temp->arg1, temp->indent);
       p    = temp;
       temp = temp->next;
       free(p);
@@ -695,28 +605,9 @@ void html_text::done_big (void)
 void html_text::check_emit_text (tag_definition *t)
 {
   if ((t != NULL) && (! t->text_emitted)) {
-    /*
-     *  we peep and see whether there is a <p> before the <table>
-     * in which case we skip the <p>
-     */
-    if (t->type == TABLE_TAG) {
-      if (table_is_void(t)) {
-	tag_definition *n = t->next;
-	remove_def(t);
-	check_emit_text(n);
-      } else {
-	/*
-	 *  a table which will be emitted, is there a <p> succeeding it?
-	 */
-	check_emit_text(t->next);
-	t->text_emitted = TRUE;
-	start_tag(t);
-      }
-    } else {
-      check_emit_text(t->next);
-      t->text_emitted = TRUE;
-      start_tag(t);
-    }
+    check_emit_text(t->next);
+    t->text_emitted = TRUE;
+    start_tag(t);
   }
 }
 
@@ -744,23 +635,45 @@ void html_text::do_emittext (const char *s, int length)
   }
   out->put_string(s, length);
   space_emitted = FALSE;
+  blank_para = FALSE;
 }
 
 /*
  *  do_para - starts a new paragraph
  */
 
-void html_text::do_para (const char *arg)
+void html_text::do_para (const char *arg, html_indent *in)
 {
-  done_pre();
   if (! is_present(P_TAG)) {
-    remove_sub_sup();
-    if ((arg != 0) && (strcmp(arg, "") != 0)) {
-      remove_tag(TABLE_TAG);
+    if (is_present(PRE_TAG)) {
+      html_indent *i = remove_indent(PRE_TAG);
+      done_pre();    
+      if (i == in || in == NULL)
+	in = i;
+      else
+	delete i;
     }
-    push_para(P_TAG, (void *)arg);
+    remove_sub_sup();
+    push_para(P_TAG, (void *)arg, in);
     space_emitted = TRUE;
   }
+}
+
+void html_text::do_para (const char *arg)
+{
+  do_para(arg, NULL);
+}
+
+void html_text::do_para (simple_output *op, const char *arg1,
+			 int indentation, int pageoffset, int linelength)
+{
+  html_indent *indent;
+
+  if (indentation == 0)
+    indent = NULL;
+  else
+    indent = new html_indent(op, indentation, pageoffset, linelength);
+  do_para(arg1, indent);
 }
 
 /*
@@ -774,14 +687,44 @@ char *html_text::done_para (void)
 }
 
 /*
+ *  remove_indent - returns the indent associated with, tag.
+ *                  The indent associated with tag is set to NULL.
+ */
+
+html_indent *html_text::remove_indent (HTML_TAG tag)
+{
+  tag_definition *p=stackptr;
+
+  while (p != NULL) {
+    if (tag == p->type) {
+      html_indent *i = p->indent;
+      p->indent = NULL;
+      return i;
+    }
+    p = p->next;
+  }
+  return NULL;
+}
+
+/*
  *  do_space - issues an end of paragraph
  */
 
 void html_text::do_space (void)
 {
-  if (! is_in_pre()) {
-    do_para(done_para());
+  if (is_in_pre()) {
+    if (blank_para)
+      start_space = TRUE;
+    else {
+      do_emittext("", 0);
+      out->nl();
+    }
+  } else {
+    html_indent *i = remove_indent(P_TAG);
+
+    do_para(done_para(), i);
     space_emitted = TRUE;
+    start_space = TRUE;
   }
 }
 
@@ -820,6 +763,24 @@ void html_text::do_newline (void)
 int html_text::emitted_text (void)
 {
   return !space_emitted;
+}
+
+/*
+ *  ever_emitted_text - returns TRUE if we have ever emitted text in this paragraph.
+ */
+
+int html_text::ever_emitted_text (void)
+{
+  return !blank_para;
+}
+
+/*
+ *  starts_with_space - returns TRUE if we have start this paragraph with a .sp
+ */
+
+int html_text::starts_with_space (void)
+{
+  return start_space;
 }
 
 /*
@@ -943,6 +904,29 @@ int html_text::remove_break (void)
       q = q->next;
   }
   return FALSE;
+}
+
+/*
+ *  remove_para_align - removes a paragraph which has a text
+ *                      argument. If the paragraph has no text
+ *                      argument then it is left alone.
+ */
+
+void html_text::remove_para_align (void)
+{
+  if (is_present(P_TAG)) {
+    tag_definition *p=stackptr;
+
+    while (p != NULL) {
+      if (p->type == P_TAG && p->arg1 != NULL) {
+	html_indent *i = remove_indent(P_TAG);
+	done_para();
+	do_para("", i);
+	return;
+      }
+      p = p->next;
+    }
+  }
 }
 
 /*

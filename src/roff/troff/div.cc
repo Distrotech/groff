@@ -641,7 +641,7 @@ void page_offset()
     n = topdiv->prev_page_offset;
   topdiv->prev_page_offset = topdiv->page_offset;
   topdiv->page_offset = n;
-  curenv->add_html_tag(".po", n.to_units());
+  curenv->add_html_tag(0, ".po", n.to_units());
   skip_line();
 }
 
@@ -760,7 +760,7 @@ void space_request()
   else
     // The line might have had line spacing that was truncated.
     truncated_space += n;
-  curenv->add_html_tag(".sp", n.to_units());
+  curenv->add_html_tag(1, ".sp", n.to_units());
   tok.next();
 }
 
@@ -769,7 +769,7 @@ void blank_line()
   curenv->do_break();
   if (!trap_sprung_flag && !curdiv->no_space_mode) {
     curdiv->space(curenv->get_vertical_spacing());
-    curenv->add_html_tag(".sp", 1);
+    curenv->add_html_tag(1, ".sp", 1);
   } else
     truncated_space += curenv->get_vertical_spacing();
 }
@@ -833,7 +833,7 @@ void flush_output()
     curenv->do_break();
   if (the_output)
     the_output->flush();
-  curenv->add_html_tag(".fl");
+  curenv->add_html_tag(1, ".fl");
   tok.next();
 }
 

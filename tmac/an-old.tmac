@@ -92,7 +92,7 @@
 .\" .TH title section extra1 extra2 extra3
 .de1 TH
 .  if \\n[an-html] \{\
-.     HTML-TAG ".tl"
+.    HTML-TAG ".tl"
 \\$1
 .  \}
 .
@@ -327,12 +327,9 @@
 .  sp \\n[PD]u
 .  if \\n[.$] .nr an-prevailing-indent (n;\\$1)
 .  it 1 an-trap
+.  in 0
+.  ll -\\n[an-margin]u
 .  if !\\n[an-div?] .di an-div
-.  ie \\n[an-html] .in \\n[an-margin]u
-.  el \{\
-.    in 0
-.    ll -\\n[an-margin]u
-.  \}
 .  nr an-div? 1
 ..
 .
@@ -369,6 +366,27 @@
 .    chop an-div
 .    ne (1v + 1u)
 \\*[an-div]\\h'|\\n[an-prevailing-indent]u'\c
+.  \}
+..
+.
+.de an-do-tag-html
+.  nr an-div? 0
+.  br
+.  ll
+.  di
+.  ie ((\\n[dl] + \\n[an-tag-sep]) > \\n[an-prevailing-indent]) \{\
+.    in \\n[an-margin]u
+.    an-div
+.    br
+.    in (\\n[an-margin]u + \\n[an-prevailing-indent]u + \\n[an-tag-sep]u)
+.  \}
+.  el \{\
+.    in (\\n[an-margin]u + \\n[an-prevailing-indent]u + \\n[an-tag-sep]u)
+.    ti \\n[an-margin]u
+.    chop an-div
+.    HTML-TAG-NS ".col 1"
+\\*[an-div]\\h'|\\n[an-prevailing-indent]u'\\h'\\n[an-tag-sep]u'\c
+.    HTML-TAG-NS ".col 2"
 .  \}
 ..
 .
@@ -552,7 +570,11 @@
 .ds lq \(lq
 .ds rq \(rq
 .
-.if !\n[an-html] .hy 14
+.ie \n[an-html] \{\
+.   rm an-do-tag
+.   als an-do-tag an-do-tag-html
+.\}
+.el .hy 14
 .
 .\" Load local modifications.
 .mso man.local
