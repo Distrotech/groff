@@ -2607,8 +2607,14 @@ void table::do_row(int r)
 	if (e) {
 	  if (e->end_row == r && e->start_row == i) {
 	    simple_entry *simple = e->to_simple_entry();
-	    if (simple)
+	    if (simple) {
+	      if (e->end_row != e->start_row) {
+		prints('\n');
+		simple->position_vertically();
+		prints("\\&");
+	      }
 	      simple->simple_print(0);
+	    }
 	  }
 	  c = e->end_col;
 	}
