@@ -5329,7 +5329,8 @@ If @code{in} is called without an argument, the indentation is reset to
 the previous value before the last call to @code{in}.  The default
 scaling indicator is@w{ }@code{m}.
 
-The indentation is associated with the current environment.
+The indentation is associated with the current environment
+(@pxref{Environments}).
 
 If a negative indentation value is specified (which is not allowed),
 @code{gtroff} emits a warning of type @samp{range} and sets the
@@ -5351,8 +5352,8 @@ increment or decrement value is specified, adjust the temporary
 indentation relative to the value set by the @code{in} request.
 
 This request causes a break; its value is associated with the current
-environment.  The default scaling indicator is@w{ }@code{m}.  A call
-of @code{ti} without an argument is ignored.
+environment (@pxref{Environments}).  The default scaling indicator
+is@w{ }@code{m}.  A call of @code{ti} without an argument is ignored.
 
 If the total indentation value is negative (which is not allowed),
 @code{gtroff} emits a warning of type @samp{range} and sets the
@@ -5387,7 +5388,8 @@ the previous value before the last call to @code{ll}.  If a negative
 line length is specified (which is not allowed), @code{gtroff} emits a
 warning of type @samp{range} and sets the line length to zero.
 
-The line length is associated with the current environment.
+The line length is associated with the current environment
+(@pxref{Environments}).
 
 @cindex line length register (@code{.l})
 The current line length (as set by @code{ll}) can be found in the
@@ -5574,6 +5576,8 @@ cause a break or actually eject a page.
 @endDefreq
 
 @cindex orphan lines, preventing with @code{ne}
+@cindex conditional page break (@code{ne})
+@cindex page break, conditional (@code{ne})
 @Defreq {ne, [@Var{space}]}
 It is often necessary to force a certain amount of space before a new
 page occurs.  This is most useful to make sure that there is not a
@@ -5591,6 +5595,9 @@ do the following before each paragraph:
 .ne 2
 text text text
 @endExample
+
+@code{ne} will then automatically cause a page break if there is space
+for one line only.
 @endDefreq
 
 @cindex @code{ne} request, comparison with @code{sv}
@@ -6169,8 +6176,9 @@ underline font is activated.  Within the span of a @code{ul} request,
 it is possible to change fonts, but after the last line affected by
 @code{ul} the saved font is restored.
 
-This command is associated with the current environment.  The
-underline font can be changed with the @code{uf} request.
+This command is associated with the current environment
+(@pxref{Environments}).  The underline font can be changed with the
+@code{uf} request.
 
 @c XXX @xref should be changed to grotty
 
