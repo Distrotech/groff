@@ -79,12 +79,15 @@ For security reasons the following changes have been done:
     must be used.
 
   . Files specified with the .mso request or given with the `-m' command
-    line option, hyphenation patterns loaded with `.hpf', and the start-up
-    files troff-rc and troffrc-end (resp. eqnrc for eqn) are no longer
+    line option, and hyphenation patterns loaded with `.hpf' are no longer
     searched in the current directory by default (besides the usual tmac
-    path).  Instead, the home directory is used.  To add the current
+    path). Instead, the home directory is used. To add the current
     directory, either use the `-U' or `-M' command line option or set the
     GROFF_TMAC_PATH environment variable to an appropriate value.
+
+  . troffrc, troffrc-end, and eqnrc are neither searched in the current nor
+    in the home directory (even if -U is given).  Use -M or GROFF_TMAC_PATH
+    to change that.
 
   . Similarly, the current directory is no longer part of the font path.
     Use the `-F' command line option or the GROFF_FONT_PATH environment

@@ -5882,6 +5882,8 @@ int main(int argc, char **argv)
       break;
     case 'M':
       macro_path.command_line_dir(optarg);
+      safer_macro_path.command_line_dir(optarg);
+      config_macro_path.command_line_dir(optarg);
       break;
     case 'F':
       font::command_line_font_dir(optarg);
