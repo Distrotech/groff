@@ -9,6 +9,20 @@
 	* src/libs/libgroff/tmpname.cc: Use HAVE_CC_STDINT_H.
 
 
+	Fix handling of &nbsp; in grohtml.  To do this, troff emits `N'
+	with a negative value, representing the width of the unbreakable
+	space (only for -Thtml).  grohtml then converts this back to
+	&nbsp; and uses the value of N as its width.
+
+	* src/roff/troff/node.cc (space_char_hmotion_node::tprint,
+	unbreakable_space_node::tprint): Emit `N-<width>'.
+	* src/include/printer.h (printer::set_numbered_char): Make it
+	virtual.
+	Make members `font_table' and `nfonts' protected instead of private.
+	* src/devices/grohtml/post-html.cc
+	(html_printer::set_numbered_char): New member function.
+
+
 	* src/libs/libgroff/maxfilename.cc:
 	s/HAVE_LIMITS_H/HAVE_CC_LIMITS_H/.
 

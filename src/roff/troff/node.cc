@@ -4414,9 +4414,12 @@ void space_char_hmotion_node::tprint(troff_output_file *out)
 {
   out->fill_color(col);
   if (is_html) {
+    // we emit the space width as a negative glyph index
     out->flush_tbuf();
     out->do_motion();
-    out->put("N160\n");		// this is &nbsp;
+    out->put('N');
+    out->put(-n.to_units());
+    out->put('\n');
   }
   out->right(n);
 }
@@ -5280,9 +5283,12 @@ void unbreakable_space_node::tprint(troff_output_file *out)
 {
   out->fill_color(col);
   if (is_html) {
+    // we emit the space width as a negative glyph index
     out->flush_tbuf();
     out->do_motion();
-    out->put("N160\n");		// this is &nbsp;
+    out->put('N');
+    out->put(-n.to_units());
+    out->put('\n');
   }
   out->right(n);
 }

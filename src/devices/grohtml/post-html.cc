@@ -1566,15 +1566,16 @@ class html_printer : public printer {
   // ADD HERE
 
 public:
-  html_printer         ();
-  ~html_printer        ();
-  void set_char        (int i, font *f, const environment *env, int w, const char *name);
-  void draw            (int code, int *p, int np, const environment *env);
-  void begin_page      (int);
-  void end_page        (int);
-  void special         (char *arg, const environment *env, char type);
-  font *make_font      (const char *);
-  void end_of_line     ();
+  html_printer          ();
+  ~html_printer         ();
+  void set_char         (int i, font *f, const environment *env, int w, const char *name);
+  void set_numbered_char(int num, const environment *env, int *widthp);
+  void draw             (int code, int *p, int np, const environment *env);
+  void begin_page       (int);
+  void end_page         (int);
+  void special          (char *arg, const environment *env, char type);
+  font *make_font       (const char *);
+  void end_of_line      ();
 };
 
 printer *make_printer()
@@ -3477,6 +3478,47 @@ void html_printer::set_char(int i, font *f, const environment *env, int w, const
   sbuf_vpos = env->vpos;
   sbuf_style = sty;
   sbuf_kern = 0;
+}
+
+/*
+ *  set_numbered_char - handle numbered characters.
+ *                      Negative values are interpreted as unbreakable spaces;
+ *                      the value (taken positive) gives the width.
+ */
+
+void html_printer::set_numbered_char(int num, const environment *env,
+				     int *widthp)
+{
+  int nbsp_width = 0;
+  if (num < 0) {
+    nbsp_width = -num;
+    num = 160;		// &nbsp;
+  }
+  int i = font::number_to_index(num);
+  int fn = env->fontno;
+  if (fn < 0 || fn >= nfonts) {
+    error("bad font position `%1'", fn);
+    return;
+  }
+  font *f = font_table[fn];
+  if (f == 0) {
+    error("no font mounted at `%1'", fn);
+    return;
+  }
+  if (!f->contains(i)) {
+    error("font `%1' does not contain numbered character %2",
+	  f->get_name(),
+	  num);
+    return;
+  }
+  int w;
+  if (nbsp_width)
+    w = nbsp_width;
+  else
+    w = f->get_width(i, env->size);
+  if (widthp)
+    *widthp = w;
+  set_char(i, f, env, w, 0);
 }
 
 /*
