@@ -1,3 +1,28 @@
+2001-03-09  Werner LEMBERG  <wl@gnu.org>
+
+	Added the `return' request to end a macro immediately.  It simply
+	pops iterators from the input stack until a macro iterator is found.
+
+	* src/roff/troff/input.cc (input_iterator::is_macro,
+	macro_iterator::is_macro): New member.
+	(input_return_boundary): New class to signal an immediate return
+	to while_request().
+	(input_stack::add_return_boundary, input_stack::is_return_boundary):
+	New functions.
+	(input_stack::clear): Use it.
+	(input_stack::pop_macro): New function.
+	(while_request): Use `is_return_boundary()'.
+	(return_macro_request): New function.
+	(init_input_requests): Use it.
+
+	* src/roff/troff/TODO: Updated.
+	* NEWS, src/roff/troff/troff.man, man/groff.man: Document it.
+
+2001-03-08  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc (input_iterator::is_boundary): Minor
+	cleanup.
+
 2001-03-07  Werner LEMBERG  <wl@gnu.org>
 
 	Make `\B' more rigid.

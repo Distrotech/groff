@@ -203,9 +203,10 @@ private:
     { return 0; }
   virtual int next_file(FILE *, const char *) { return 0; }
   virtual void shift(int) {}
-  virtual int is_boundary();
+  virtual int is_boundary() { return 0; }
   virtual int internal_level() { return 0; }
   virtual int is_file() { return 0; }
+  virtual int is_macro() { return 0; }
 };
 
 input_iterator::input_iterator()
@@ -227,11 +228,6 @@ int input_iterator::peek()
   return EOF;
 }
 
-int input_iterator::is_boundary()
-{
-  return 0;
-}
-
 inline int input_iterator::get(node **p)
 {
   return ptr < eptr ? *ptr++ : fill(p);
@@ -240,6 +236,11 @@ inline int input_iterator::get(node **p)
 class input_boundary : public input_iterator {
 public:
   int is_boundary() { return 1; }
+};
+
+class input_return_boundary : public input_iterator {
+public:
+  int is_boundary() { return 2; }
 };
 
 class file_iterator : public input_iterator {
@@ -400,9 +401,12 @@ public:
   static void end_file();
   static void shift(int n);
   static void add_boundary();
+  static void add_return_boundary();
+  static int is_return_boundary();
   static void remove_boundary();
   static int get_level();
   static void clear();
+  static void pop_macro();
 
   static int limit;
 private:
@@ -473,6 +477,16 @@ int input_stack::finish_peek()
 void input_stack::add_boundary()
 {
   push(new input_boundary);
+}
+
+void input_stack::add_return_boundary()
+{
+  push(new input_return_boundary);
+}
+
+int input_stack::is_return_boundary()
+{
+  return top->is_boundary() == 2;
 }
 
 void input_stack::remove_boundary()
@@ -590,7 +604,27 @@ void input_stack::clear()
   }
   // Keep while_request happy.
   for (; nboundaries > 0; --nboundaries)
-    add_boundary();
+    add_return_boundary();
+}
+
+void input_stack::pop_macro()
+{
+  int nboundaries = 0;
+  int is_macro = 0;
+  do {
+    if (top->next == &nil_iterator)
+      break;
+    if (top->is_boundary())
+      nboundaries++;
+    is_macro = top->is_macro();
+    input_iterator *tem = top;
+    top = top->next;
+    level--;
+    delete tem;
+  } while (!is_macro);
+  // Keep while_request happy.
+  for (; nboundaries > 0; --nboundaries)
+    add_return_boundary();
 }
 
 void backtrace_request()
@@ -1988,6 +2022,12 @@ void exit_request()
     exit_troff();
 }
 
+void return_macro_request()
+{
+  input_stack::pop_macro();
+  tok.next();
+}
+
 void end_macro()
 {
   end_macro_name = get_name();
@@ -2903,6 +2943,7 @@ public:
   int nargs() { return argc; }
   void add_arg(const macro &m);
   void shift(int n);
+  int is_macro() { return 1; }
 };
 
 input_iterator *macro_iterator::get_arg(int i)
@@ -4589,7 +4630,7 @@ void while_request()
 	break;
       }
       process_input_stack();
-      if (while_break_flag) {
+      if (while_break_flag || input_stack::is_return_boundary()) {
 	while_break_flag = 0;
 	break;
       }
@@ -6301,6 +6342,7 @@ void init_input_requests()
   init_request("tm1", terminal1);
   init_request("tmc", terminal_continue);
   init_request("ex", exit_request);
+  init_request("return", return_macro_request);
   init_request("em", end_macro);
   init_request("blm", blank_line_macro);
   init_request("tr", translate);
