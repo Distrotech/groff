@@ -4,8 +4,8 @@
 .\"------------
 .de cov@print-title
 .if !d cov*title .@error title (.TL) not defined!
-.MOVE 2.4c
-.S +4
+.MOVE 2.8c
+.S +2
 .ad c
 .fi
 .B
@@ -14,20 +14,20 @@
 .S
 .R
 .ad b
-.PGFORM
 ..
 .\"------------
 .de cov@print-authors
 .SP 0.5
 .I
+.S +1
 .nr cov*i 0 1
 .while \\n+[cov*i]<=\\n[cov*au] \{\
 .ce
 \\*[cov*au!\\n[cov*i]!1]
 .br
 .\}
+.S
 .R
-.PGFORM
 ..
 .\"------------
 .de cov@print-firm
@@ -65,7 +65,7 @@
 .	if d cov*abstract \{\
 .		if !\n[cov*abs-arg] .cov@print-abstract
 .	\}
-.	SP 3
+.	SP 2
 .	nr hd*cur-bline \n[nl]
 .	ds cov*mt-printed
 .	pg@enable-top-trap
