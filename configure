@@ -4917,23 +4917,30 @@ echo "${ECHO_T}$BROKEN_SPOOLER_FLAGS" >&6
 
 echo "$as_me:4918: checking default paper size" >&5
 echo $ECHO_N "checking default paper size... $ECHO_C" >&6
+groff_prefix=$prefix
+test "x$prefix" = xNONE && groff_prefix=$ac_default_prefix
 if test -z "$PAGE"; then
 	descfile=
-	if test -r $prefix/share/groff/font/devps/DESC; then
-		descfile=$prefix/share/groff/font/devps/DESC
-	elif test -r $prefix/lib/groff/font/devps/DESC; then
-		descfile=$prefix/lib/groff/font/devps/DESC
+	if test -r $groff_prefix/share/groff/font/devps/DESC; then
+		descfile=$groff_prefix/share/groff/font/devps/DESC
+	elif test -r $groff_prefix/lib/groff/font/devps/DESC; then
+		descfile=$groff_prefix/lib/groff/font/devps/DESC
 	else
-		for f in $prefix/share/groff/*/font/devps/DESC; do
+		for f in $groff_prefix/share/groff/*/font/devps/DESC; do
 			if test -r $f; then
 				descfile=$f
 				break
 			fi
 		done
 	fi
-	if test -n "$descfile" \
-	  && grep "^paperlength 841890" $descfile >/dev/null 2>&1; then
-		PAGE=A4
+	if test -n "$descfile"; then
+		if grep '^paperlength[	 ]\+841890' $descfile
+		  >/dev/null 2>&1; then
+			PAGE=A4
+		elif grep '^papersize[	 ]\+[aA]4' $descfile \
+		  >/dev/null 2>&1; then
+			PAGE=A4
+		fi
 	fi
 fi
 if test -z "$PAGE"; then
@@ -4961,22 +4968,22 @@ cat >>confdefs.h <<\EOF
 EOF
 
 fi
-echo "$as_me:4964: result: $PAGE" >&5
+echo "$as_me:4971: result: $PAGE" >&5
 echo "${ECHO_T}$PAGE" >&6
 
-echo "$as_me:4967: checking for existing troff installation" >&5
+echo "$as_me:4974: checking for existing troff installation" >&5
 echo $ECHO_N "checking for existing troff installation... $ECHO_C" >&6
 if test "x`(echo .tm '|n(.g' | tr '|' '\\\\' | troff -z -i 2>&1) 2>/dev/null`" = x0; then
-	echo "$as_me:4970: result: yes" >&5
+	echo "$as_me:4977: result: yes" >&5
 echo "${ECHO_T}yes" >&6
 	g=g
 else
-	echo "$as_me:4974: result: no" >&5
+	echo "$as_me:4981: result: no" >&5
 echo "${ECHO_T}no" >&6
 	g=
 fi
 
-echo "$as_me:4979: checking for prefix of system macro packages" >&5
+echo "$as_me:4986: checking for prefix of system macro packages" >&5
 echo $ECHO_N "checking for prefix of system macro packages... $ECHO_C" >&6
 sys_tmac_prefix=
 sys_tmac_file_prefix=
@@ -4993,11 +5000,11 @@ for d in /usr/share/lib/tmac /usr/lib/tmac; do
 		done
 	done
 done
-echo "$as_me:4996: result: $sys_tmac_prefix" >&5
+echo "$as_me:5003: result: $sys_tmac_prefix" >&5
 echo "${ECHO_T}$sys_tmac_prefix" >&6
 
 tmac_wrap=
-echo "$as_me:5000: checking which system macro packages should be made available" >&5
+echo "$as_me:5007: checking which system macro packages should be made available" >&5
 echo $ECHO_N "checking which system macro packages should be made available... $ECHO_C" >&6
 if test "x$sys_tmac_file_prefix" = "xtmac."; then
 	for f in $sys_tmac_prefix*; do
@@ -5033,7 +5040,7 @@ elif test -n "$sys_tmac_prefix"; then
 	done
 	rm -f conftest.sol
 fi
-echo "$as_me:5036: result: $tmac_wrap" >&5
+echo "$as_me:5043: result: $tmac_wrap" >&5
 echo "${ECHO_T}$tmac_wrap" >&6
 
 ac_config_files="$ac_config_files stamp-h"
@@ -5119,7 +5126,7 @@ DEFS=-DHAVE_CONFIG_H
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:5122: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:5129: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -5292,7 +5299,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:5295: error: ambiguous option: $1
+    { { echo "$as_me:5302: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -5311,7 +5318,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:5314: error: unrecognized option: $1
+  -*) { { echo "$as_me:5321: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -5351,7 +5358,7 @@ do
   "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
   "src/xditview/Imakefile" ) CONFIG_FILES="$CONFIG_FILES src/xditview/Imakefile" ;;
   "src/include/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS src/include/config.h:src/include/config.hin" ;;
-  *) { { echo "$as_me:5354: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:5361: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -5582,7 +5589,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:5585: creating $ac_file" >&5
+    { echo "$as_me:5592: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -5600,7 +5607,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5603: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5610: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5613,7 +5620,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5616: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5623: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -5678,7 +5685,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:5681: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:5688: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -5689,7 +5696,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5692: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5699: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5702,7 +5709,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5705: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5712: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -5819,7 +5826,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:5822: $ac_file is unchanged" >&5
+      { echo "$as_me:5829: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -5886,7 +5893,7 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
-{ echo "$as_me:5889:
+{ echo "$as_me:5896:
 
   Configuration completed.
 

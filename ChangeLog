@@ -1,3 +1,32 @@
+2002-06-04  Werner LEMBERG  <wl@gnu.org>
+
+	* aclocal.m4 (GROFF_PAGE): Don't use `prefix' directly since it
+	is not initialized at the time we need it in case `--prefix' hasn't
+	been set.  Check for `ac_default_prefix' also.
+	Test for `papersize' keyword also and generalize allowed whitespace.
+	* configure: Regenerated.
+
+	* font/devps/Makefile.sub (DESC): Use `papersize' instead of
+	`paperlength'.
+
+	* src/libs/libgroff/Makefile.sub (version, revision): Replaced
+	with...
+	(src_version, src_revision): New variables to avoid overwriting
+	from parent make process.
+	(version.cc): Updated.
+	* contrib/mom/Makefile.sub (groff_bin_dirs): Fix typo (forgotten
+	`src' element).
+
+	* src/preproc/html/pre-html.cc: Include paper.h and font.h.
+	(linebuf, linebufsize): New global variables.
+	(sys_fatal): Use `fatal' to abort properly.
+	(get_line): New function.
+	(get_resolution): Use it.
+	Improve error messages.
+	(get_papersize): Check `papersize' also.
+	Use `get_line'.
+	Improve error messages.
+
 2002-06-03  Werner LEMBERG  <wl@gnu.org>
 
 	* Makefile.comm (CLEANNOTSRCDIRADD): New target for files which

@@ -33,6 +33,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "posix.h"
 #include "defs.h"
 #include "searchpath.h"
+#include "paper.h"
+#include "font.h"
 
 #include <errno.h>
 #include <sys/types.h>
@@ -118,6 +120,9 @@ static char *troffFileName  = NULL;             // output of pre-html output whi
 static char *htmlFileName   = NULL;             // output of pre-html output which is sent to troff -Thtml
 #endif
 
+static char *linebuf = NULL;                    // for scanning devps/DESC
+static int linebufsize = 0;
+
 const char *const FONT_ENV_VAR = "GROFF_FONT_PATH";
 static search_path font_path(FONT_ENV_VAR, FONTPATH, 0, 0);
 
@@ -140,7 +145,51 @@ static int do_file(const char *filename);
 
 void sys_fatal (const char *s)
 {
-  fprintf(stderr, "%s: %s: %s", program_name, s, strerror(errno));
+  fatal("%1: %2", s, strerror(errno));
+}
+
+/*
+ *  get_line - copies a line (w/o newline) from a file to the global line buffer
+ */
+
+int get_line (FILE *f)
+{
+  if (f == 0)
+    return 0;
+  if (linebuf == 0) {
+    linebuf = new char[128];
+    linebufsize = 128;
+  }
+  int i = 0;
+  // skip leading whitespace
+  for (;;) {
+    int c = getc(f);
+    if (c == EOF)
+      return 0;
+    if (c != ' ' && c != '\t') {
+      ungetc(c, f);
+      break;
+    }
+  }
+  for (;;) {
+    int c = getc(f);
+    if (c == EOF)
+      break;
+    if (i + 1 >= linebufsize) {
+      char *old_linebuf = linebuf;
+      linebuf = new char[linebufsize * 2];
+      memcpy(linebuf, old_linebuf, linebufsize);
+      a_delete old_linebuf;
+      linebufsize *= 2;
+    }
+    linebuf[i++] = c;
+    if (c == '\n') {
+      i--;
+      break;
+    }
+  }
+  linebuf[i] = '\0';
+  return 1;
 }
 
 /*
@@ -152,20 +201,18 @@ static unsigned int get_resolution (void)
   char *pathp;
   FILE *f;
   unsigned int res;
-  int n;
-  int c;
   f = font_path.open_file("devps/DESC", &pathp);
-  if (f == 0) sys_fatal("fopen");
-  while (1) {
-    n = fscanf(f, " res %u", &res);
-    if (n < 0) sys_fatal("EOF");
+  if (f == 0)
+    fatal("can't open devps/DESC");
+  while (get_line(f)) {
+    int n = sscanf(linebuf, "res %u", &res);
     if (n >= 1) {
       fclose(f);
       return res;
     }
-    while (( c = getc(f) ) != '\n')
-      if (c == EOF) sys_fatal("EOF");
   }
+  fatal("can't find `res' keyword in devps/DESC");
+  return 0;
 }
 
 /*
@@ -177,20 +224,30 @@ static int get_papersize (void)
   char *pathp;
   FILE *f;
   int res;
-  int n;
-  int c;
   f = font_path.open_file("devps/DESC", &pathp);
-  if (f == 0) sys_fatal("fopen");
-  while (1) {
-    n = fscanf(f, " paperlength %d", &res);
-    if (n < 0) sys_fatal("EOF");
+  if (f == 0)
+    fatal("can't open devps/DESC");
+  while (get_line(f)) {
+    int n = sscanf(linebuf, "paperlength %d", &res);
     if (n >= 1) {
       fclose(f);
       return res;
     }
-    while (( c = getc(f) ) != '\n')
-      if (c == EOF) sys_fatal("EOF");
+    if (!strncmp(linebuf, "papersize", 9)) {
+      double length;
+      char *p = linebuf + 9;
+      while (*p == ' ' || *p == '\t')
+	p++;
+      if (font::scan_papersize(p, 0, &length, 0)) {
+	fclose(f);
+	return int(length * postscriptRes + 0.5);
+      }
+      else
+	fatal("bad argument to `papersize' keyword in devps/DESC");
+    }
   }
+  fatal("can't find `papersize' or `paperlength' keyword in devps/DESC");
+  return 0;
 }
 
 /*

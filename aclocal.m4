@@ -1,5 +1,5 @@
 dnl Autoconf macros for groff.
-dnl Copyright (C) 1989-1995, 2001 Free Software Foundation, Inc.
+dnl Copyright (C) 1989-1995, 2001, 2002 Free Software Foundation, Inc.
 dnl 
 dnl This file is part of groff.
 dnl 
@@ -239,23 +239,32 @@ dnl
 dnl
 AC_DEFUN(GROFF_PAGE,
 [AC_MSG_CHECKING([default paper size])
+groff_prefix=$prefix
+test "x$prefix" = xNONE && groff_prefix=$ac_default_prefix
 if test -z "$PAGE"; then
 	descfile=
-	if test -r $prefix/share/groff/font/devps/DESC; then
-		descfile=$prefix/share/groff/font/devps/DESC
-	elif test -r $prefix/lib/groff/font/devps/DESC; then
-		descfile=$prefix/lib/groff/font/devps/DESC
+	if test -r $groff_prefix/share/groff/font/devps/DESC; then
+		descfile=$groff_prefix/share/groff/font/devps/DESC
+	elif test -r $groff_prefix/lib/groff/font/devps/DESC; then
+		descfile=$groff_prefix/lib/groff/font/devps/DESC
 	else
-		for f in $prefix/share/groff/*/font/devps/DESC; do
+		for f in $groff_prefix/share/groff/*/font/devps/DESC; do
 			if test -r $f; then
 				descfile=$f
 				break
 			fi
 		done
 	fi
-	if test -n "$descfile" \
-	  && grep "^paperlength 841890" $descfile >/dev/null 2>&1; then
-		PAGE=A4
+	if test -n "$descfile"; then
+changequote(,)dnl
+		if grep '^paperlength[	 ]\+841890' $descfile
+		  >/dev/null 2>&1; then
+			PAGE=A4
+		elif grep '^papersize[	 ]\+[aA]4' $descfile \
+		  >/dev/null 2>&1; then
+			PAGE=A4
+		fi
+changequote([,])dnl
 	fi
 fi
 if test -z "$PAGE"; then
