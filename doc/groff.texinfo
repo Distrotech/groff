@@ -3049,7 +3049,19 @@ must be taken to get the desired result:
 
 @noindent
 The surrounding parentheses prevent the interpretation of the minus sign
-as a decrementing operator.
+as a decrementing operator.  An alternative is to start the assignment
+with a @samp{0}:
+
+@example
+.nr a 7
+.nr b -3
+.nr a \nb
+\na
+    @result{} 4
+.nr a 0\nb
+\na
+    @result{} -3
+@end example
 @end_Deffn
 
 @Deffn{Request, rr, ident}
@@ -3804,7 +3816,7 @@ This escape is a non-interpreted tab character.  In copy mode
 (@pxref{Copy-in Mode}), @code{\t} is the same as a real tab character.
 @end_Deffn
 
-@Deffn{Request, ta, n1 n2 @dots{} nn @t{T} r1 r2 @dots{} rn}
+@Deffn{Request, ta, [@var{n1} @var{n2} @dots{} @var{nn} @t{T} @var{r1} @var{r2} @dots{} @var{rn}]}
 Change tab stop positions.  This request takes a series of tab
 specifiers as arguments (optionally divided into two groups with the
 letter @samp{T}) which indicate where each tab stop is to be (overriding
@@ -3846,10 +3858,10 @@ and then at @var{nn}+@var{rn}+@var{r1}, @var{nn}+@var{rn}+@var{r2},
 Example: @samp{4c +6c T 3c 5c 2c} is equivalent to @samp{4c 10c 13c 18c
 20c 23c 28c 30c @dots{}}.
 
-The material in each tab column may be justified to the right or left or
-centered in the column.  This is specified by appending an @samp{R},
-@samp{L}, or @samp{C} to the tab specifier.  The default justification
-is @samp{L}.  Example:
+The material in each tab column (i.e., the column between two tab stops)
+may be justified to the right or left or centered in the column.  This
+is specified by appending @samp{R}, @samp{L}, or @samp{C} to the tab
+specifier.  The default justification is @samp{L}.  Example:
 
 @example
 .ta 1i 2iC 2iR
@@ -3863,27 +3875,23 @@ The default unit of the @code{ta} request is @samp{m}.
 
 @item
 A tab stop is converted into a non-breakable horizontal movement which
-can't be neither stretched nor squeezed.  For example,
+can be neither stretched nor squeezed.  For example,
 
 @example
-.de foo
-a\tb\tc
-..
+.ds foo a\tb\tc
 .ta T 5i
-.foo
+\*[foo]
 @end example
 
 @noindent
-creates a single line which is a bit longer than 10@w{ }inches (a macro
+creates a single line which is a bit longer than 10@w{ }inches (a string
 is used to show exactly where the tab characters are).  Now consider the
 following:
 
 @example
-.de bar
-a\tb b\tc
-..
+.ds bar a\tb b\tc
 .ta T 5i
-.bar
+\*[bar]
 @end example
 
 @noindent
@@ -3892,8 +3900,39 @@ horizontal movements, then splits the line after the second @samp{b}
 (assuming a sufficiently short line length).  Usually, this isn't what
 the user wants.
 
-@c XXX superfluous tab stops
+@item
+Superfluous tabs (i.e., tab characters which do not correspond to a tab
+stop) are ignored except the first one which delimits the characters
+belonging to the last tab stop for right-justifying resp.@: centering.
+Consider the following example
 
+@example
+.ds Z   foo\tbar\tfoo
+.ds ZZ  foo\tbar\tfoobar
+.ds ZZZ foo\tbar\tfoo\tbar
+.ta 2i 4iR
+\*[Z]
+.br
+\*[ZZ]
+.br
+\*[ZZZ]
+.br
+@end example
+
+@noindent
+which produces the following output:
+
+@example
+foo                 bar              foo
+foo                 bar           foobar
+foo                 bar              foobar
+@end example
+
+@noindent
+The first line right-justifies the second `foo' relative to the tab
+stop.  The second line right-justifies `foobar'.  The third line finally
+right-justifies only `foo' because of the additional tab character which
+marks the end of the string belonging to the last defined tab stop.
 @end itemize
 
 @vindex .tabs
@@ -3902,28 +3941,44 @@ current tab settings suitable for use as an argument to the @code{ta}
 request.
 @end_Deffn
 
-@findex tc
+@Deffn{Request, tc, [@var{fill-char}]}
 Normally @code{gtroff} will fill the space to the next tab stop with
-spaces.  This can be change with the @code{tc} request.  With no
-argument @code{gtroff} will revert to using spaces.
+space characters.  This can be changed with the @code{tc} request.  With
+no argument @code{gtroff} will revert to using spaces.
+@end_Deffn
 
+@menu
+* Leaders::                     
+* Fields::                      
+@end menu
+
+@node Leaders, Fields, Tabs and Fields, Tabs and Fields
 @subsection Leaders
 @cindex leaders
 
-@findex lc
 Sometimes it may may be desirable to use the @code{tc} request to fill a
-particular tab stop with a given character, but also normal tab stops on
-the rest of the line.  For this @code{gtroff} provides an alternate tab
-mechanism, called @dfn{leaders} which will do just that.  They are used
-exclusively to produce a repeated run of characters to the next tab
-stop.
+particular tab stop with a given character (for example dots in a table
+of contents), but also normal tab stops on the rest of the line.  For
+this @code{gtroff} provides an alternate tab mechanism, called
+@dfn{leaders} which will do just that.
 
+@cindex leader character
+A leader character (character code@w{ }1) behaves similarly to a tab
+character: It moves to the next tab stop.  The only difference is that
+for this movement, the fill character defaults to a period and not to a
+space.
+
+@Deffn{Escape, \\a, }
+This escape is a non-interpreted leader character.  In copy mode
+(@pxref{Copy-in Mode}), @code{\a} is the same as a real leader
+character.
+@end_Deffn
+
+@Deffn{Request, lc, [@var{fill-char}]}
 The character that will be repeated can be declared with the @code{lc}
-request.  Without an argument, the leaders will act the same as tabs.
-
-@findex \a
-Leader are invoked by using the @code{\a} escape while specifying the
-@code{ta} request.
+request.  Without an argument, leaders will act the same as tabs (i.e.,
+using space characters for filling).
+@end_Deffn
 
 @cindex table of contents
 @cindex contents, table of
@@ -3933,20 +3988,64 @@ the remaining space being filled with a line of dots, and then the page
 number slightly separated from the dots.
 
 @example
+.ds entry 1.1\tFoo\a\t12
 .lc .
-.ta .5iR 5i +.25i
-1.1\tFoo\a\t12
+.ta 1i 5i +.25i
+\*[entry]
 @end example
 
+@noindent
+This produces
+
+@example
+1.1  Foo..........................................  12
+@end example
+
+@node Fields,  , Leaders, Tabs and Fields
 @subsection Fields
 @cindex fields
 
-@findex fc
-Fields are a more general way of laying out tabular data.
+@cindex field delimiting character
+@cindex delimiting character for fields
+@cindex character, field delimiting
+@cindex field padding character
+@cindex padding character for fields
+@cindex character, field padding
+@dfn{Fields} are a more general way of laying out tabular data.  A field
+is defined as the data between a pair of @dfn{delimiting characters}.
+It contains substrings which are separated by @dfn{padding characters}.
+The width of a field is the distance on the @emph{input} line from the
+position where the field starts to the next tab stop.  A padding
+character inserts stretchable space similar to @TeX{}'s @code{\hss}
+command (thus it can even be negative) to make the sum of all substring
+lengths plus the stretchable space equal to the field width.  If more
+than one padding character is inserted, the available space is evenly
+distributed among them.
 
-@code{fc}
+@Deffn{Request, fc, [@var{delim-char} [@var{padding-char}]]}
+Define a delimiting and a padding character for fields.  If the latter
+is missing, the padding character defaults to a space character.  If
+there is no argument at all, the field mechanism is disabled.
+@end_Deffn
 
-@c XXX add explanation
+Example:
+
+@example
+.fc # ^
+.ta T 3i
+#foo^bar^smurf#
+.br
+#foo^^bar^smurf#
+@end example
+
+@noindent
+and here the result:
+
+@example
+foo         bar          smurf
+foo            bar       smurf
+@end example
+
 
 @node Character Translations, Line Layout, Tabs and Fields, Programming Tutorial
 @section Character Translations

@@ -68,7 +68,25 @@ directory and include that directory with a -I option.
 
 * The configure script fails on OS/390 Unix.
 
-You must apply fix pack PTF UQ42006 which fixes a C++ compiler bug.
+There is a bug in the Language Environment (LE) whereby the test
+program for static destructors fails.  You will see the message
+'configure: error: a working C++ compiler is required'
+
+Applying PTF UQ42006 is supposed to fix this, but the test program is
+still returning the wrong value (1).  To work around this problem, you
+can comment out the following in the configure script (near line 956).
+This will effectively bypass the test (static constructors and
+destructors do actually work properly):
+
+#if { (eval echo configure:957: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
+#then
+  echo "$ac_t""yes" 1>&6
+#else
+#  echo "configure: failed program was:" >&5
+#  cat conftest.$ac_ext >&5
+#  rm -fr conftest*
+#  echo "$ac_t""no" 1>&6;{ echo "configure: error: a working C++ compiler is required" 1>&2; exit 1; }
+#fi
 
 ----------------------------------------------------------------------
 
