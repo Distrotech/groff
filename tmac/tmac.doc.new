@@ -263,9 +263,11 @@
 .    el \{\
 .      shift
 .      doc-parse-args \$@
-.  \}\}
+.    \}
 .
-.  nh
+.    \" disable hyphenation only if we have arguments
+.    nh
+.  \}
 ..
 .
 .
@@ -1735,7 +1737,7 @@
 .  if \n[doc-in-synopsis-count] \
 .    doc-set-hard-space
 .
-.  \" the final `\)' prevents hypenation in case the next character is `\%'
+.  \" the final `\)' prevents hyphenation in case the next character is `\%'
 .  ie \n[doc-arg-limit] \
 .    nop \)\*[doc-quote-left]\)\c
 .  el \{\
@@ -2499,8 +2501,8 @@
 .      nr doc-arg-limit \n[doc-arg-ptr]
 .      if \n[doc-num-args] \
 .        doc-parse-space-vector
-.      \" finish line only if it isn't empty
-.      if \n[.k] \
+.      \" finish line only if it is interrupted
+.      if \n[.int] \
 .        nop \)
 .    \}\}
 .    el \{\
@@ -3925,6 +3927,12 @@
 .\" NS   .It item of list-type [empty tag]
 .
 .de doc-item-list
+.  \" finish item box
+.  br
+.  ev
+.  box
+.  unformat doc-item-box\n[doc-list-depth]
+.
 .  doc-set-vertical-and-indent 0
 .  br
 .
@@ -4038,6 +4046,7 @@
 .\" NS   doc-in-list
 .\" NS
 .\" NS local variables:
+.\" NS   doc-box-dtl
 .\" NS   doc-reg-dtl
 .
 .de doc-tag-list
@@ -4046,6 +4055,17 @@
 .  ev
 .  box
 .  unformat doc-item-box\n[doc-list-depth]
+.
+.  \" we use a box without `.nf' to compute the tag width (via `dl' register)
+.  box doc-box-dtl
+.  ev doc-env-dtl
+.  fi
+.  ad 0
+.  in 0
+.  doc-item-box\n[doc-list-depth]
+.  br
+.  ev
+.  box
 .
 .  if !\n[doc-have-tag-width] \
 .    doc-get-tag-width
@@ -4452,11 +4472,11 @@
 .de Ta
 .  ie \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
-.    nop "\t\c"
+.    nop \t\c
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \
 .      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .    el \
-.      doc-print-and-reset
+.      doc-reset-args
 .  \}
 .  el \{\
 .    tm1 "Usage: Ta must follow column entry: e.g. (#\n[.c])
@@ -5106,6 +5126,7 @@
 .    nop \|\*[rp]\)\c
 .  el \
 .    nop \|\*[rp]\)\c
+.
 .  ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
 .    \*[doc-arg\n[doc-arg-ptr]]
