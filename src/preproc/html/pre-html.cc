@@ -63,7 +63,6 @@ extern "C" const char *Version_string;
 #define DEFAULT_IMAGE_RES        100   // number of pixels per inch resolution
 #define IMAGE_BOARDER_PIXELS       0
 #define INLINE_LEADER_CHAR      '\\'
-#define LETTER_LENGTH         792000   // taken from devps/Makefile.sub
 
 #define TRANSPARENT  "-background white -transparent white"
 #define MIN_ALPHA_BITS             0
@@ -209,52 +208,6 @@ static unsigned int get_resolution (void)
   }
   fatal("can't find `res' keyword in devps/DESC");
   return 0;
-}
-
-/*
- *  get_papersize - returns an integer determining the paper length from devps/DESC
- */
-
-static int get_papersize (void)
-{
-  char *pathp;
-  FILE *f;
-  int res;
-  f = font_path.open_file("devps/DESC", &pathp);
-  if (f == 0)
-    fatal("can't open devps/DESC");
-  while (get_line(f)) {
-    int n = sscanf(linebuf, "paperlength %d", &res);
-    if (n >= 1) {
-      fclose(f);
-      return res;
-    }
-    if (!strncmp(linebuf, "papersize", 9)) {
-      double length;
-      char *p = linebuf + 9;
-      while (*p == ' ' || *p == '\t')
-	p++;
-      for (p = strtok(p, " \t"); p; p = strtok(0, " \t")) {
-	if (font::scan_papersize(p, 0, &length, 0)) {
-	  fclose(f);
-	  return int(length * postscriptRes + 0.5);
-	}
-      }
-      fatal("bad argument to `papersize' keyword in devps/DESC");
-    }
-  }
-  fatal("can't find `papersize' or `paperlength' keyword in devps/DESC");
-  return 0;
-}
-
-/*
- *  determine_vertical_offset - works out the default vertical offset from
- *                              the page length
- */
-
-static void determine_vertical_offset (void)
-{
-  vertical_offset = ((LETTER_LENGTH-get_papersize())*72)/postscriptRes;
 }
 
 /*
@@ -858,8 +811,8 @@ int imageList::createPage (int pageno)
   
   s = make_message("echo showpage | "
 		   "gs%s -q -dBATCH -dSAFER "
+		   "-dDEVICEHEIGHTPOINTS=792 "
 		   "-dDEVICEWIDTHPOINTS=%d -dFIXEDMEDIA=true "
-                   "-sPAPERSIZE=letter "
 		   "-sDEVICE=%s -r%d %s "
 		   "-sOutputFile=%s %s -\n",
 		   EXE_EXT,
@@ -1294,6 +1247,10 @@ int char_buffer::do_image(int argc, char *argv[])
   argv = addRegDef(argc, argv, s.contents());
   argc++;
 
+  // override local settings and produce a page size letter postscript file
+  argv = addRegDef(argc, argv, "-P-pletter");
+  argc++;
+
   if (pipe(pdes) < 0)
     sys_fatal("pipe");
 
@@ -1512,7 +1469,6 @@ int main(int argc, char **argv)
   int ok=1;
 
   postscriptRes = get_resolution();
-  determine_vertical_offset();
   i = scanArguments(argc, argv);
   setupAntiAlias();
   checkImageDir();
