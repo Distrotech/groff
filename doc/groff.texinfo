@@ -102,6 +102,23 @@
 @end macro
 
 
+@c definition of registers specific to macro packages
+
+@macro Defmpreg{name, package}
+@vindex \name\ @r{[}\package\@r{]}
+@deffn Register @t{\\n[\name\]}
+@end macro
+
+@macro Defmpregx{name, package}
+@vindex \name\ @r{[}\package\@r{]}
+@deffnx Register @t{\\n[\name\]}
+@end macro
+
+@macro endDefmpreg
+@end deffn
+@end macro
+
+
 @c definition of macros
 
 @macro Defmac{name, arg, package}
@@ -1075,7 +1092,6 @@ and Eric Allman's papers on the @file{me} macro package.
 The section on the @file{man} macro package is partly based on Susan@w{
 }G.@: Kleinmann's @file{groff_man} manual page written for the Debian
 GNU/Linux system.
-
 
 
 
@@ -2367,7 +2383,7 @@ become common usage to make the first line of the man page look like
 this:
 
 @Example
-.\" @var{word}
+'\" @var{word}
 @endExample
 
 @pindex geqn@r{, invocation in manual pages}
@@ -2397,7 +2413,1250 @@ and automatically call the right preprocessor(s).
 @section @file{ms}
 @cindex @file{ms}
 
-@c XXX documentation
+The @file{-ms}
+macros are suitable for reports, letters, books,
+user manuals, and so forth.
+The package provides macros for cover pages, section headings,
+paragraphs, lists, footnotes, pagination,
+and a table of contents.
+
+@menu
+* ms Intro::
+* General ms Structure::
+* ms Document Control Registers::
+* ms Cover Page Macros::
+* ms Body Text::
+* ms Page Layout::
+* Differences from AT&T ms::
+@end menu
+
+@c ---------------------------------------------------------------------
+
+@node ms Intro, General ms Structure, ms, ms
+@subsection Introduction to @file{ms}
+
+The original @file{-ms} macros were included with
+@acronym{AT&T} @code{troff} as well as the
+@file{man} macros.
+While the @file{man} package is intended for brief documents
+that can be read on-line as well as printed, the @file{ms}
+macros are suitable for longer documents that are meant to be
+printed rather than read on-line.
+
+The @file{ms} macro package included with @code{groff}
+is a complete, bottom-up re-implementation.
+Several macros (specific to @acronym{AT&T}
+or Berkeley) are not included, while several new commands are.
+@xref{Differences from AT&T ms}, for more information.
+
+@c ---------------------------------------------------------------------
+
+@node General ms Structure, ms Document Control Registers, ms Intro, ms
+@subsection General structure of an @file{ms} document
+@cindex @file{ms}, general structure
+
+The @file{ms} macro package expects a certain amount of structure,
+but not as much as packages such as @file{man} or @file{mdoc}.
+
+The simplest documents can begin with a paragraph macro
+(such as @code{LP} or @code{PP}),
+and consist of text separated by paragraph macros
+or even blank lines.
+Longer documents have a structure as follows:
+
+@table @strong
+@item Document type
+If you invoke the @code{RP}
+(report) macro on the first line of the document,
+@code{groff} prints the cover page information on its own page;
+otherwise it prints the information on the
+first page with your document text immediately following.
+Other document formats found in @acronym{AT&T} @code{troff}
+are specific to @acronym{AT&T} or Berkeley, and are not supported in
+@code{groff}.
+
+@item Format and layout
+By setting number registers,
+you can change your document's type (font and size),
+margins, spacing, headers and footers, and footnotes.
+@xref{ms Document Control Registers}, for more details.
+
+@item Cover page
+A cover page consists of a title, the author's name and institution,
+an abstract, and the date.
+@footnote{Actually, only the title is required.}
+@xref{ms Cover Page Macros}, for more details.
+
+@item Body
+Following the cover page is your document.
+You can use the @file{ms}
+macros to write reports, letters, books, and so forth.
+The package is designed for structured documents,
+consisting of paragraphs interspersed with headings
+and augmented by lists, footnotes, tables, and other
+common constructs.
+@xref{ms Body Text}, for more details.
+
+@item Table of contents
+Longer documents usually include a table of contents,
+which you can invoke by placing the
+@code{TC}
+macro at the end of your document.
+The @file{ms}
+macros have minimal indexing facilities, consisting of the
+@code{IX} macro, which prints an entry on standard error.
+Printing the table of contents at the end is necessary since
+@code{groff} is a single-pass text formatter,
+thus it cannot determine the page number of each section
+until that section has actually been set and printed.
+Since @file{ms} output is intended for hardcopy,
+you can manually relocate the pages containing
+the table of contents between the cover page and the
+body text after printing.
+@end table
+
+@c ---------------------------------------------------------------------
+
+@node ms Document Control Registers, ms Cover Page Macros, General ms Structure, ms
+@subsection Document control registers
+@cindex @file{ms}, document control registers
+
+The following is a list of document control number registers.
+For the sake of consistency,
+set registers related to margins at the beginning of your document,
+or just after the @code{RP} macro.
+You can set other registers later in your document,
+but you should keep them together at the beginning
+to make them easy to find and edit as necessary.
+
+@unnumberedsubsubsec Margin Settings
+
+@Defmpreg{PO, ms}
+Defines the page offset (i.e.@: the left margin).
+There is no explicit right margin setting; the combination of
+the @code{PO} and @code{LL} registers implicitly define the
+right margin width.
+
+Effective: next page.
+
+Default value: 1@dmn{i}.
+@endDefmpreg
+
+@Defmpreg{LL, ms}
+Defines the line length (i.e.@: the width of the body text).
+
+Effective: next paragraph.
+
+Default: 6@dmn{i}.
+@endDefmpreg
+
+@Defmpreg{LT, ms}
+Defines the title length (i.e.@: the header and footer width).
+This is usually the same as @code{LL}, but not necessarily.
+
+Effective: next paragraph.
+
+Default: 6@dmn{i}.
+@endDefmpreg
+
+@Defmpreg{HM, ms}
+Defines the header margin height at the top of the page.
+
+Effective: next page.
+
+Default: 1@dmn{i}.
+@endDefmpreg
+
+@Defmpreg{FM, ms}
+Defines the footer margin height at the bottom of the page.
+
+Effective: next page.
+
+Default: 1@dmn{i}.
+@endDefmpreg
+
+@unnumberedsubsubsec Text Settings
+
+@Defmpreg{PS, ms}
+Defines the point size of the body text.
+
+Effective: next paragraph.
+
+Default: 10@dmn{p}.
+@endDefmpreg
+
+@Defmpreg{VS, ms}
+Defines the space between lines (line height plus leading).
+
+Effective: next paragraph.
+
+Default: 12@dmn{p}.
+@endDefmpreg
+
+@unnumberedsubsubsec Paragraph Settings
+
+@Defmpreg{PI, ms}
+Defines the initial indent of a @code{.PP} paragraph.
+
+Effective: next paragraph.
+
+Default: 5@dmn{n}.
+@endDefmpreg
+
+@Defmpreg{PD, ms}
+Defines the space between paragraphs.
+
+Effective: next paragraph.
+
+Default: 0.3@dmn{v}.
+@endDefmpreg
+
+@Defmpreg{QI, ms}
+Defines the indent on both sides of a quoted (@code{.QP}) paragraph.
+
+Effective: next paragraph.
+
+Default: 5@dmn{n}.
+@endDefmpreg
+
+@unnumberedsubsubsec Footnote Settings
+
+@Defmpreg{FL, ms}
+Defines the length of a footnote.
+
+Effective: next footnote.
+
+Default: @math{@code{\n[LL]} * 5 / 6}.
+@endDefmpreg
+
+@Defmpreg{FI, ms}
+Defines the footnote indent.
+
+Effective: next footnote.
+
+Default: 2@dmn{n}.
+@endDefmpreg
+
+@Defmpreg{FF, ms}
+The footnote format:
+@table @code
+@item 0
+Prints the footnote number as a superscript; indents the footnote (default).
+
+@item 1
+Prints the number followed by a period (like 1.)
+and indents the footnote.
+
+@item 2
+Like 1, without an indent.
+
+@item 3
+Like 1, but prints the footnote number as a hanging paragraph.
+@end table
+
+Effective: next footnote.
+
+Default: 0.
+@endDefmpreg
+
+@unnumberedsubsubsec Miscellaneous Number Registers
+
+@Defmpreg{MINGW, ms}
+Defines the minimum width between columns in a multi-column document.
+
+Effective: next page.
+
+Default: 2@dmn{n}.
+@endDefmpreg
+
+@c ---------------------------------------------------------------------
+
+@node ms Cover Page Macros, ms Body Text, ms Document Control Registers, ms
+@subsection Cover page macros
+@cindex @file{ms}, cover page macros
+@cindex Cover page macros, @file{ms}
+
+Use the following macros to create a cover page for your document
+in the order shown.
+
+@Defmac{RP, [@code{no}], ms}
+Specifies the report format for your document.
+The report format creates a separate cover page.
+The default action (no @code{.RP}
+macro) is to print a subset of the
+cover page on page 1 of your document.
+
+If you use the word @code{no} as an optional argument,
+@code{groff} prints a title page but
+does not repeat any of the title page information
+(title, author, abstract, etc.)
+on page 1 of the document.
+@endDefmac
+
+@Defmac{DA, [@dots{}], ms}
+(optional) Print the current date, or the arguments to the macro if any,
+on the title page (if specified) and in the footers.
+This is the default for @code{nroff}.
+@endDefmac
+
+@Defmac{ND, [@dots{}], ms}
+(optional) Print the current date, or the arguments to the macro if any,
+on the title page (if specified) but not in the footers.
+This is the default for @code{troff}.
+@endDefmac
+
+@Defmac{TL, , ms}
+Specifies the document title.
+@code{groff} collects text following the @code{.TL}
+macro into the title, until reaching the author name or abstract.
+@endDefmac
+
+@Defmac{AU, , ms}
+Specifies the author's name, which appears on the
+line (or lines) immediately following.
+You can specify multiple authors as follows:
+
+@Example
+.AU
+John Doe
+.AI
+University of West Bumblefuzz
+.AU
+Martha Buck
+.AI
+Monolithic Corporation
+
+...
+@endExample
+@endDefmac
+
+@Defmac{AI, , ms}
+Specifies the author's institution.
+You can specify multiple institutions in the same way
+that you specify multiple authors.
+@endDefmac
+
+@Defmac{AB, [@code{no}], ms}
+Begins the abstract.
+The default is to print the word @acronym{ABSTRACT},
+centered and in italics, above the text of the abstract.
+The word @code{no} as an optional argument suppresses this heading.
+@endDefmac
+
+@Defmac{AE, , ms}
+End the abstract.
+@endDefmac
+
+The following is example mark-up for a title page.
+@cindex Title page, example markup
+@cindex Example markup, title page
+
+@Example
+@cartouche
+.RP
+.TL
+The Inevitability of Code Bloat
+in Commercial and Free Software
+.AU
+J. Random Luser
+.AI
+University of West Bumblefuzz
+.AB
+This report examines the long-term growth
+of the code bases in two large, popular software
+packages; the free Emacs and the commercial
+Microsoft Word.
+While differences appear in the type or order
+of features added, due to the different
+methodologies used, the results are the same
+in the end.
+.PP
+The free software approach is shown to be
+superior in that while free software can
+become as bloated as commercial offerings,
+free software tends to have fewer serious
+bugs and the added features are in line with
+user demand.
+.AE
+
+... the rest of the paper follows ...
+@end cartouche
+@endExample
+
+@c ---------------------------------------------------------------------
+
+@node ms Body Text, Paragraphs in ms, ms Cover Page Macros, ms
+@subsection Body text
+@cindex @file{ms}, body text
+
+This section describes macros used to mark up the body of your document.
+Examples include paragraphs, sections, and other groups.
+
+@menu
+* Paragraphs in ms::
+* Headings in ms::
+* Highlighting in ms::
+* Lists in ms::
+* ms Displays and Keeps::
+* ms Insertions::
+* ms Footnotes::
+@end menu
+
+@c ---------------------------------------------------------------------
+
+@node Paragraphs in ms, Headings in ms, ms Body Text, ms Body Text
+@subsubsection Paragraphs
+@cindex @file{ms}, paragraph macros
+
+The following paragraph types are available.
+
+@Defmac{PP, , ms}
+Sets a paragraph with an initial indent.
+@endDefmac
+
+@Defmac{LP, , ms}
+Sets a paragraph with no initial indent.
+@endDefmac
+
+@Defmac{QP, , ms}
+Sets a paragraph that is indented at both left and right margins.
+The effect is identical to the @acronym{HTML} @code{<BLOCKQUOTE>} element.
+The next paragraph or heading returns margins to normal.
+@endDefmac
+
+The following markup uses all three paragraph macros.
+
+@Example
+@cartouche
+.NH 2
+Cases used in the study
+.LP
+The following software and versions were
+considered for this report.
+.PP
+For commercial software, we chose
+.B "Microsoft Word for Windows" ,
+starting with version 1.0 through the
+current version (Word 2000).
+.PP
+For free software, we chose
+.B Emacs ,
+from its first appearance as a standalone
+editor through the current version (v20).
+.QP
+Franklin's Law applied to software:
+software expands to outgrow both
+RAM and disk space over time.
+@end cartouche
+@endExample
+
+@c ---------------------------------------------------------------------
+
+@node Headings in ms, Highlighting in ms, Paragraphs in ms, ms Body Text
+@subsubsection Headings
+@cindex @file{ms}, heading macros
+
+Use headings to create a hierarchical structure for your document.
+The @file{ms} macros print headings in @strong{bold},
+using the same font family and point size as the body text.
+
+The following describes the heading macros:
+
+@Defmac{NH, @Var{curr-level}, ms}
+@Defmacx{NH, @t{S} @Var{level0} @dots{}, ms}
+Numbered heading.
+The argument is either a numeric argument to indicate the
+level of the heading, or the letter @code{S} followed by numeric arguments
+to set the heading level explicitly.
+
+If you specify heading levels out of sequence, such as invoking
+@samp{.NH 3} after @samp{.NH 1}, @code{groff}
+prints a warning on standard error.
+@endDefmac
+
+@Defmac{SH, , ms}
+Unnumbered subheading.
+@endDefmac
+
+@c ---------------------------------------------------------------------
+
+@node Highlighting in ms, Lists in ms, Headings in ms, ms Body Text
+@subsubsection Highlighting
+@cindex @file{ms}, highlighting macros
+
+The @file{ms} macros provide a variety of methods to highlight
+or emphasize text:
+
+@Defmac{B, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+Sets its first argument in @strong{bold type}.
+If you specify a second argument, @code{groff} prints it in the
+previous font after the bold text, with no intervening space
+(this allows you to set punctuation after the highlighted text
+without highlighting the punctuation).
+Similarly, it prints the third argument (if any) in the previous
+font @strong{before} the first argument.
+For example,
+
+@Example
+.B foo ) (
+@endExample
+
+prints (@strong{foo}).
+
+If you give this macro no arguments, @code{groff}
+prints all text following in bold until
+the next highlighting, paragraph, or heading macro.
+@endDefmac
+
+@Defmac{R, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+Sets its first argument in roman (or regular) type.
+It operates similarly to the @code{B} macro otherwise.
+@endDefmac
+
+@Defmac{I, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+Sets its first argument in @emph{italic type}.
+It operates similarly to the @code{B} macro otherwise.
+@endDefmac
+
+@Defmac{CW, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+Sets its first argument in a @code{constant width face}.
+It operates similarly to the @code{B} macro otherwise.
+@endDefmac
+
+@Defmac{BI, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+Sets its first argument in bold italic type.
+It operates similarly to the @code{B} macro otherwise.
+@endDefmac
+
+@Defmac{BX, [@Var{txt}], ms}
+Prints its argument and draws a box around it.
+If you want to box a string that contains spaces,
+use a digit-width space (@code{\0}).
+@endDefmac
+
+@Defmac{UL, [@Var{txt} [@Var{post}]], ms}
+Prints its first argument with an underline.
+If you specify a second argument, @code{groff}
+prints it in the previous font after
+the underlined text, with no intervening space.
+@endDefmac
+
+@Defmac{LG, , ms}
+Prints all text following in larger type
+(two points larger than the current point size) until
+the next font size, highlighting, paragraph, or heading macro.
+You can specify this macro multiple times
+to enlarge the point size as needed.
+@endDefmac
+
+@Defmac{SM, , ms}
+Prints all text following in smaller type
+(two points smaller than the current point size) until
+the next type size, highlighting, paragraph, or heading macro.
+You can specify this macro multiple times
+to reduce the point size as needed.
+@endDefmac
+
+@Defmac{NL, , ms}
+Prints all text following in the normal point size
+(that is, the value of the @code{PS} register).
+@endDefmac
+
+@c ---------------------------------------------------------------------
+
+@node Lists in ms, ms Displays and Keeps, Highlighting in ms, ms Body Text
+@subsubsection Lists
+@cindex @file{ms}, list macros
+
+The @code{.IP} macro handles duties for all lists.
+
+@Defmac{IP, [@Var{marker} [@Var{width}]], ms}
+The @var{marker} is usually a bullet character (@code{\[bu]})
+for unordered lists, a number (or auto-incrementing number
+register) for numbered lists, or a word or phrase for indented
+(glossary-style) lists.
+
+The @var{width} specifies the indent for the body of each list item;
+its default unit is @samp{n}.
+Once specified, the indent remains the same for all
+list items in the document until specified again.
+@endDefmac
+
+The following is an example of a bulleted list.
+@cindex Example markup, bulleted list (ms)
+@cindex Bulleted list, example markup (ms)
+
+@Example
+A bulleted list:
+.IP \[bu] 2
+lawyers
+.IP \[bu]
+guns
+.IP \[bu]
+money
+@endExample
+
+Produces:
+
+@Example
+A bulleted list:
+
+o lawyers
+
+o guns
+
+o money
+@endExample
+
+@sp 1
+
+The following is an example of a numbered list.
+@cindex Example markup, numbered list (ms)
+@cindex Numbered list, example markup (ms)
+
+@Example
+.nr step 1 1
+A numbered list:
+.IP \\n[step] 3
+lawyers
+.IP \\n+[step]
+guns
+.IP \\n+[step]
+money
+@endExample
+
+Produces:
+
+@Example
+A numbered list:
+
+1. lawyers
+
+2. guns
+
+3. money
+@endExample
+
+Note the use of the auto-incrementing number
+register in this example.
+
+@sp 1
+The following is an example of a glossary-style list.
+@cindex Example markup, glossary-style list (ms)
+@cindex Glossary-style list, example markup (ms)
+
+@Example
+A glossary-style list:
+.IP lawyers 0.4i
+Two or more attorneys.
+.IP guns
+Firearms, preferably
+large-caliber.
+.IP money
+Gotta pay for those
+lawyers and guns!
+@endExample
+
+Produces:
+
+@Example
+A glossary-style list:
+
+lawyers
+      Two or more attorneys.
+
+guns  Firearms, preferably large-caliber.
+
+money
+      Gotta pay for those lawyers and guns!
+@endExample
+
+In the last example, the @code{IP} macro places the definition
+on the same line as the term if it has enough space; otherwise,
+it breaks to the next line and starts the definition below the
+term.
+This may or may not be the effect you want, especially if some
+of the definitions break and some do not.
+The following examples show two possible ways to force a break.
+
+The first workaround uses the @code{.br}
+request to force a break after printing the term or label.
+
+@Example
+@cartouche
+A glossary-style list:
+.IP lawyers 0.4i
+Two or more attorneys.
+.IP guns
+.br
+Firearms, preferably large-caliber.
+.IP money
+Gotta pay for those lawyers and guns!
+@end cartouche
+@endExample
+
+@sp 1
+The second workaround uses the @code{\p} escape to force the break.
+Note the space following the escape; this is important.
+If you omit the space, @code{groff} prints the first word on
+the same line as the term or label (if it fits) @strong{then}
+breaks the line.
+
+@Example
+@cartouche
+A glossary-style list:
+.IP lawyers 0.4i
+Two or more attorneys.
+.IP guns
+\p Firearms, preferably large-caliber.
+.IP money
+Gotta pay for those lawyers and guns!
+@end cartouche
+@endExample
+
+@sp 1
+To set nested lists, use the @code{RS} and @code{RE} macros.
+@cindex @file{ms}, nested lists
+@cindex Nested lists (ms)
+
+@Defmac{RS, , ms}
+@Defmacx{RE, , ms}
+These macros begin and end a section indented to line
+up with the body of an @code{IP} macro.
+@endDefmac
+
+For example:
+
+@Example
+@cartouche
+.IP \[bu] 2
+Lawyers:
+.RS
+.IP \[bu]
+Dewey,
+.IP \[bu]
+Cheatham,
+.IP \[bu]
+and Howe.
+.RE
+.IP \[bu]
+Guns
+@end cartouche
+@endExample
+
+Produces:
+
+@Example
+o Lawyers:
+
+  o  Dewey,
+
+  o  Cheatham,
+
+  o  and Howe.
+
+o Guns
+@endExample
+
+@c ---------------------------------------------------------------------
+
+@node ms Displays and Keeps, ms Insertions, Lists in ms, ms Body Text
+@subsubsection Displays and keeps
+@cindex @file{ms}, displays
+@cindex @file{ms}, keeps
+@cindex Keeps (ms)
+@cindex Displays (ms)
+
+Use displays to show text-based examples or figures
+(such as code listings).
+
+Displays turn off filling, so lines of code are displayed
+as-is without inserting @code{br} requests in between each line.
+Displays can be @dfn{kept} on a single page, or allowed
+to break across pages.
+
+@Defmac{DS, @t{L}, ms}
+@Defmacx{LD, , ms}
+@Defmacx{DE, , ms}
+Left-justified display.
+The @samp{.DS L} call generates a page break, if necessary,
+to keep the entire display on one page.
+The @code{LD} macro allows the display to break across pages.
+The @code{DE} macro ends the display.
+@endDefmac
+
+@Defmac{DS, @t{I}, ms}
+@Defmacx{ID, , ms}
+@Defmacx{DE, , ms}
+Indents the display as defined by the @code{DI} register.
+The @samp{.DS I} call generates a page break, if necessary,
+to keep the entire display on one page.
+The @code{ID} macro allows the display to break across pages.
+The @code{DE} macro ends the display.
+@endDefmac
+
+@Defmac{DS, @t{B}, ms}
+@Defmacx{BD, , ms}
+@Defmacx{DE, , ms}
+Sets a block-centered display: the entire display is left-justified,
+but indented so that the longest line in the display is centered
+on the page.
+The @samp{.DS B} call generates a page break, if necessary,
+to keep the entire display on one page.
+The @code{BD} macro allows the display to break across pages.
+The @code{DE} macro ends the display.
+@endDefmac
+
+@Defmac{DS, @t{C}, ms}
+@Defmacx{CD, , ms}
+@Defmacx{DE, , ms}
+Sets a centered display: each line in the display is centered.
+The @samp{.DS C} call generates a page break, if necessary,
+to keep the entire display on one page.
+The @code{CD} macro allows the display to break across pages.
+The @code{DE} macro ends the display.
+@endDefmac
+
+@Defmac{DS, @t{R}, ms}
+@Defmacx{RD, , ms}
+@Defmacx{DE, , ms}
+Right-justifies each line in the display.
+The @samp{.DS R} call generates a page break, if necessary,
+to keep the entire display on one page.
+The @code{RD} macro allows the display to break across pages.
+The @code{DE} macro ends the display.
+@endDefmac
+
+@sp 1
+On occasion, you may want to @dfn{keep} other text together on a page.
+For example, you may want to keep two paragraphs together, or
+a paragraph that refers to a table (or list, or other item)
+immediately following.
+The @file{ms} macros provide the @code{KS} and @code{KE}
+macros for this purpose.
+
+@Defmac{KS, , ms}
+@Defmacx{KE, , ms}
+The @code{KS} macro begins a block of text to be kept on a
+single page, and the @code{KE} macro ends the block.
+@endDefmac
+
+@Defmac{KF, , ms}
+@Defmacx{KE, , ms}
+Specifies a @dfn{floating keep};
+if the keep cannot fit on the current page, @code{groff}
+holds the contents of the keep and allows text following
+the keep (in the source file) to fill in the remainder of
+the current page.
+When the page breaks, whether by an explicit @code{bp}
+request or by reaching the end of the page, @code{groff}
+prints the floating keep at the top of the new page.
+This is useful for printing large graphics or tables
+that do not need to appear exactly where specified.
+@endDefmac
+
+You can also use the @code{ne} request to force a page break if
+there is not enough vertical space remaining on the page.
+
+@sp 1
+Use the following macros to draw a box around a section of
+text (such as a display).
+
+@Defmac{B1, , ms}
+@Defmacx{B2, , ms}
+Marks the beginning and ending of text that is to have a
+box drawn around it.
+The @code{B1} macro begins the box; the @code{B2} macro ends it.
+Text in the box is automatically placed in a diversion (keep).
+@endDefmac
+
+@c ---------------------------------------------------------------------
+
+@node ms Insertions, Example multi-page table, ms Displays and Keeps, ms Body Text
+@subsubsection Tables, figures, equations, and references
+@cindex @file{ms}, tables
+@cindex @file{ms}, figures
+@cindex @file{ms}, equations
+@cindex @file{ms}, references
+@cindex Tables (ms)
+@cindex Figures (ms)
+@cindex Equations (ms)
+@cindex References (ms)
+
+The @file{ms} macros support the standard
+@code{groff} preprocessors:
+@code{tbl}, @code{pic}, @code{eqn}, and @code{refer}.
+@pindex tbl
+@pindex pic
+@pindex eqn
+@pindex refer
+You mark text meant for preprocessors by enclosing it
+in pairs of tags as follows.
+
+@Defmac{TS, [@code{H}], ms}
+@Defmacx{TE, , ms}
+Denotes a table, to be processed by the @code{tbl} preprocessor.
+The optional argument @code{H} to @code{TS} instructs @code{groff}
+to create a running header with the information
+up to the @code{TH} macro.
+@code{groff} prints the header at the beginning of the
+table; if the table runs onto another page, @code{groff}
+prints the header on the next page as well.
+@endDefmac
+
+@Defmac{PS, , ms}
+@Defmacx{PE, , ms}
+Denotes a graphic, to be processed by the @code{pic} preprocessor.
+You can create a @code{pic} file by hand, using the @acronym{AT&T}
+@code{pic} manual available on the Web as a reference, or by using
+a graphics program such as @code{xfig}.
+@endDefmac
+
+@Defmac{EQ, [@Var{align}], ms}
+@Defmacx{EN, , ms}
+Denotes an equation, to be processed by the @code{eqn} preprocessor.
+The optional @var{align} argument can be @code{C}, @code{L}, or
+@code{I} to center (the default), left-justify, or indent the equation.
+@endDefmac
+
+@Defmac{[, , ms}
+@Defmacx{], , ms}
+Denotes a reference, to be processed by the @code{refer} preprocessor.
+The @acronym{GNU} @cite{refer(1)} manpage provides a comprehensive
+reference to the preprocessor and the format of the bibliographic
+database.
+@endDefmac
+
+@menu
+* Example multi-page table::
+@end menu
+
+@c ---------------------------------------------------------------------
+
+@node Example multi-page table, ms Footnotes, ms Insertions, ms Insertions
+@subsubsection An example multi-page table
+@cindex Example markup, multi-page table (ms)
+@cindex Multi-page table, example markup (ms)
+
+The following is an example of how to set up a
+table that may print across two or more pages.
+
+@Example
+@cartouche
+.TS H
+allbox expand;
+cb | cb .
+Text      ...of heading...
+_
+.TH
+.T&
+l | l .
+... the rest of the table follows...
+.CW
+.TE
+@end cartouche
+@endExample
+
+@c ---------------------------------------------------------------------
+
+@node ms Footnotes, ms Page Layout, Example multi-page table, ms Body Text
+@subsubsection Footnotes
+@cindex @file{ms}, footnotes
+@cindex Footnotes (ms)
+
+The @file{ms} macro package has a flexible footnote system.
+You can specify either numbered footnotes or symbolic footnotes
+(that is, using a marker such as a dagger symbol).
+
+@Defstr{*, ms}
+Specifies the location of a numbered footnote marker in the text.
+@endDefesc
+
+@Defmac{FS, , ms}
+@Defmacx{FE, , ms}
+Specifies the text of the footnote.
+The default action is to create a numbered footnote;
+you can create a symbolic footnote by placing the character
+(such as @code{\[dg]} for the dagger character) at the proper location,
+followed by the symbol and the text of the footnote
+enclosed by @code{FS} and @code{FE} macros.
+@endDefmac
+
+You can control how @code{groff}
+prints footnote numbers by changing the value of the
+@code{FF} register.  @xref{ms Document Control Registers}.
+
+@c ---------------------------------------------------------------------
+
+@node ms Page Layout, ms Headers and Footers, ms Footnotes, ms
+@subsection Page layout
+@cindex @file{ms}, page layout
+@cindex Page layout (ms)
+
+The default output from the @file{ms}
+macros provides a minimalist page layout:
+it prints a single column, with the page number centered at the top
+of each page.
+It prints no footers.
+
+You can change the layout by setting
+the proper number registers and strings.
+
+@menu
+* ms Headers and Footers::
+* ms Margins::
+* ms Multiple Columns::
+* ms TOC::
+@end menu
+
+@c ---------------------------------------------------------------------
+
+@node ms Headers and Footers, ms Margins, ms Page Layout, ms Page Layout
+@subsubsection Headers and footers
+@cindex @file{ms}, headers
+@cindex @file{ms}, footers
+@cindex Headers (ms)
+@cindex Footers (ms)
+
+For documents that do not distinguish between odd and even pages,
+set the following strings:
+
+@Defstr{LH, ms}
+@Defstrx{CH, ms}
+@Defstrx{RH, ms}
+Sets the left, center, and right headers.
+@endDefstr
+
+@Defstr{LF, ms}
+@Defstrx{CF, ms}
+@Defstrx{RF, ms}
+Sets the left, center, and right footers.
+@endDefstr
+
+@sp 1
+For documents that need different information printed in the
+even and odd pages, use the following macros:
+
+@Defmac{OH, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
+@Defmacx{EH, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
+@Defmacx{OF, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
+@Defmacx{EF, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
+The @code{OH} and @code{EH} macros define headers for the odd and even pages;
+the @code{OF} and @code{EF} macros define footers for the odd and even pages.
+This is more flexible than defining the individual strings.
+
+You can replace the quote (@code{'}) marks with any character not
+appearing in the header or footer text.
+@endDefmac
+
+@c ---------------------------------------------------------------------
+
+@node ms Margins, ms Multiple Columns, ms Headers and Footers, ms Page Layout
+@subsubsection Margins
+@cindex @file{ms}, margins
+
+You control margins using a set of number registers.
+@xref{ms Document Control Registers}, for details.
+
+@c ---------------------------------------------------------------------
+
+@node ms Multiple Columns, ms TOC, ms Margins, ms Page Layout
+@subsubsection Multiple columns
+@cindex @file{ms}, multiple columns
+@cindex Multiple columns (ms)
+
+The @file{ms} macros can set text in as many columns as will
+reasonably fit on the page.
+The following macros are available;
+all of them force a page break if a multi-column mode is already set.
+However, if the current mode is single-column, starting a multi-column
+mode does @strong{not} force a page break.
+
+@Defmac{1C, , ms}
+Single-column mode.
+@endDefmac
+
+@Defmac{2C, , ms}
+Two-column mode.
+@endDefmac
+
+@Defmac{MC, [@Var{width} [@Var{gutter}]], ms}
+Multi-column mode.
+If you specify no arguments, it is equivalent to the
+@code{.2C} macro.
+Otherwise, @var{width} is the width of each column and
+@var{gutter} is the space between columns.
+The @code{MINGW} number register controls the default gutter width.
+@endDefmac
+
+@c ---------------------------------------------------------------------
+
+@node ms TOC, Differences from AT&T ms, ms Multiple Columns, ms Page Layout
+@subsubsection Creating a table of contents
+@cindex @file{ms}, creating table of contents
+@cindex Table of contents, creating (ms)
+
+The facilities in the @file{ms} macro package for creating
+a table of contents are semi-automated at best.
+Assuming that you want the table of contents to consist of
+the document's headings, you need to repeat those headings
+wrapped in @code{XS} and @code{XE} macros.
+
+@Defmac{XS, , ms}
+@Defmacx{XE, , ms}
+These macros bracket a table of contents entry.
+The macros are very simple; they cannot indent a heading based on its level.
+The easiest way to work around this is to add tabs
+to the table of contents string.
+The following is an example:
+
+@Example
+@cartouche
+.NH 1
+Introduction
+.XS
+Introduction
+.XE
+.LP
+...
+.CW
+.NH 2
+Methodology
+.XS
+	Methodology
+.XE
+.LP
+...
+@end cartouche
+@endExample
+@endDefmac
+
+@Defmac{TC, , ms}
+Prints the table of contents at the specified point.
+You should usually place this macro at the end of the
+file, since @code{groff} is a single-pass formatter and
+can only print what has been collected up to the point
+that the @code{TC} macro appears.
+@endDefmac
+
+The @cite{Groff and Friends HOWTO}
+includes a @code{sed} script that automatically inserts
+@code{XS} and @code{XE} macro entries after each heading in a document.
+
+Altering the @code{NH} macro to automatically build the table
+of contents is perhaps initially more difficult, but would save
+a great deal of time in the long run if you use @file{ms} regularly.
+
+@c ---------------------------------------------------------------------
+
+@node Differences from AT&T ms, Missing ms Macros, ms TOC, ms
+@subsection Differences from @acronym{AT&T} @file{ms}
+@cindex @file{ms}, differences from @acronym{AT&T}
+@cindex @acronym{AT&T}, @code{ms} differences
+
+This section lists the (minor) differences between the
+@code{groff -ms} macros and @acronym{AT&T}
+@code{troff -ms} macros.
+
+@menu
+* Missing ms Macros::
+* Additional ms Macros::
+@end menu
+
+@c ---------------------------------------------------------------------
+
+@node Missing ms Macros, Additional ms Macros, Differences from AT&T ms, Differences from AT&T ms
+@subsubsection @code{troff} macros not appearing in @code{groff}
+
+Macros missing from @code{groff -ms}
+are cover page macros specific to Bell Labs.
+The macros known to be missing are:
+
+@table @code
+@item .TM
+Technical memorandum; a cover sheet style
+
+@item .IM
+Internal memorandum; a cover sheet style
+
+@item .MR
+Memo for record; a cover sheet style
+
+@item .MF
+Memo for file; a cover sheet style
+
+@item .EG
+Engineer's notes; a cover sheet style
+
+@item .TR
+Computing Science Tech Report; a cover sheet style
+
+@item .OK
+Other keywords
+
+@item .CS
+Cover sheet information
+
+@item .MH
+A cover sheet macro
+@end table
+
+@c ---------------------------------------------------------------------
+
+@node Additional ms Macros, , Missing ms Macros, Differences from AT&T ms
+@subsubsection @code{groff} macros not appearing in AT&T @code{troff}
+
+The @code{groff -ms} macros have a few minor extensions
+compared to the @acronym{AT&T} @code{troff -ms} macros.
+
+@Defmac{AM, , ms}
+Improved accent marks.
+@endDefmac
+
+@Defmac{DS, @t{I}, ms}
+Indented display.
+The default behavior of @acronym{AT&T} @code{troff -ms}
+was to indent; the @code{groff} default prints displays
+flush left with the body text.
+@endDefmac
+
+@Defmac{CW, , ms}
+Print text in @code{constant width} (Courier) font.
+@endDefmac
+
+@Defmac{IX, , ms}
+Indexing term (printed on standard error).
+You can write a script to capture and process an index
+generated in this manner.
+@endDefmac
+
+@sp 1
+The following additional number registers
+appear in @code{groff -ms}:
+
+@Defmpreg{MINGW, ms}
+Specifies a minimum space
+between columns (for multi-column output); this takes the
+place of the @code{GW} register that was documented but apparently
+not implemented in @acronym{AT&T} @code{troff}.
+@endDefmpreg
+
+@sp 1
+Several new string registers are available as well.
+You can change these to handle (for example) the local language.
+
+@Defstr{REFERENCES, ms}
+Contains the string printed at the beginning of the
+references (bibliography) page.
+@endDefstr
+
+@Defstr{ABSTRACT, ms}
+Contains the string printed at the beginning of the abstract.
+@endDefstr
+
+@Defstr{TOC, ms}
+Contains the string printed at the beginning of the table of contents.
+@endDefstr
 
 
 @c =====================================================================
@@ -2416,6 +3675,9 @@ and automatically call the right preprocessor(s).
 @cindex @file{mm}
 
 @c XXX documentation
+@c XXX this is a placeholder until we get stuff knocked into shape
+See the @code{mm} manpage (type @command{man 7 groff_mm} at
+the command line).
 
 
 
@@ -8125,7 +9387,8 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 @group
 .\" Center text both horizontally & vertically
 .
-.\" Enclose macro definitions in .eo and .ec to avoid the doubling of \
+.\" Enclose macro definitions in .eo and .ec
+.\" to avoid the doubling of the backslash
 .eo
 .\" macro .(c starts centering mode
 .de (c
