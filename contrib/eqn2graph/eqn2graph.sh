@@ -9,12 +9,13 @@
 # Take an eqn equation on stdin, emit cropped bitmap on stdout.
 # The pic markup should *not* be wrapped in .EQ/.EN, this script will do that.
 # A -U option on the command line enables gpic/groff "unsafe" mode.
-# All other options are passed to convert (or whichever back end is selected 
-# by the format option).  The default format is PNG.
+# A -format FOO option changes the image output format to any format
+# supported by convert(1).  All other options are passed to convert(1).
+# The default format is PNG.
 #
 # This is separate from pic2graph because pic processing has some weird
 # clipping effect on the output, mangling equations that are very wide 
-# or deep.  Besides, this rool can supply its own delimiters.
+# or deep.  Besides, this tool can supply its own delimiters.
 #
 
 # Requires the groff suite and the ImageMagick tools.  Both are open source.
@@ -40,11 +41,21 @@ format="png"
 while [ "$1" ]
 do
     case $1 in
-	-unsafe) groff_opts="-U";;
-	-format) format=$2; shift;;
-        *) convert_opts="$convert_opts $1" ;;
+    -unsafe)
+	groff_opts="-U";;
+    -format)
+	format=$2
+	shift;;
+    -v | --version)
+	echo "GNU eqn2graph (groff) version @VERSION@"
+	exit 0;;
+    --help)
+	echo "usage: eqn2graph [ option ...] < in > out"
+	exit 0;;
+    *)
+	convert_opts="$convert_opts $1";;
     esac
-    shift;
+    shift
 done
 
 # Here goes:

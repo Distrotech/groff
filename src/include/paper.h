@@ -31,7 +31,7 @@ public:
   papersize_init();
 } _papersize_init;
 
-// A0-A7, B0-B7, C0-C7, D0-D7, 6 American paper sizes */
-#define NUM_PAPERSIZES 4 * 8 + 6
+// A0-A7, B0-B7, C0-C7, D0-D7, 8 American paper sizes, 1 special size */
+#define NUM_PAPERSIZES 4*8 + 8 + 1
 
 extern paper papersizes[];

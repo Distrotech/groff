@@ -76,4 +76,9 @@ papersize_init::papersize_init()
   add_american_paper("ledger", 35, 11, 17);
   add_american_paper("statement", 36, 8.5, 5.5);
   add_american_paper("executive", 37, 10, 7.5);
+  // the next three entries are for grolj4
+  add_american_paper("com10", 38, 9.5, 4.125);
+  add_american_paper("monarch", 39, 7.5, 3.875);
+  // this is an ISO format, but it easier to use add_american_paper
+  add_american_paper("dl", 40, 220/25.4, 110/25.4);
 }

@@ -4196,7 +4196,7 @@ void chop_macro()
   skip_line();
 }
 
-void substring_macro()
+void substring_request()
 {
   int start;				// 0, 1, ..., n-1  or  -1, -2, ...
   symbol s = get_name(1);
@@ -4228,6 +4228,8 @@ void substring_macro()
 	  end = tem;
 	}
 	if (start >= real_length || end < 0) {
+	  warning(WARN_RANGE,
+		  "start and end index of substring out of range");
 	  m->len = 0;
 	  if (m->p) {
 	    if (--(m->p->count) <= 0)
@@ -4237,10 +4239,16 @@ void substring_macro()
 	  skip_line();
 	  return;
 	}
-	if (start < 0)
+	if (start < 0) {
+	  warning(WARN_RANGE,
+		  "start index of substring out of range, set to 0");
 	  start = 0;
-	if (end >= real_length)
+	}
+	if (end >= real_length) {
+	  warning(WARN_RANGE,
+		  "end index of substring out of range, set to string length");
 	  end = real_length - 1;
+	}
 	// now extract the substring
 	string_iterator iter(*m);
 	int i;
@@ -4271,7 +4279,7 @@ void substring_macro()
   skip_line();
 }
 
-void length_macro()
+void length_request()
 {
   symbol ret;
   ret = get_name(1);
@@ -4301,12 +4309,12 @@ void length_macro()
     ++len;
     c = get_copy(&n);
   }
-  tok.next();
   reg *r = (reg*)number_reg_dictionary.lookup(ret);
   if (r)
     r->set_value(len);
   else
     set_number_reg(ret, len);
+  tok.next();
 }
 
 void asciify_macro()
@@ -7122,7 +7130,7 @@ void init_input_requests()
   init_request("ie", if_else_request);
   init_request("if", if_request);
   init_request("ig", ignore);
-  init_request("length", length_macro);
+  init_request("length", length_request);
   init_request("lf", line_file);
   init_request("mso", macro_source);
   init_request("nop", nop_request);
@@ -7145,7 +7153,7 @@ void init_input_requests()
   init_request("shift", shift);
   init_request("so", source);
   init_request("spreadwarn", spreadwarn_request);
-  init_request("substring", substring_macro);
+  init_request("substring", substring_request);
   init_request("sy", system_request);
   init_request("tm", terminal);
   init_request("tm1", terminal1);

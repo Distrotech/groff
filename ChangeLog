@@ -1,3 +1,85 @@
+2002-07-14  Eric S. Raymond  <esr@thyrsus.com>
+
+	* contrib/pic2graph/pic2graph.*: Use convert(1).
+	* contrib/eqn2graph/eqn2graph.*: Minor fixes.
+
+2002-07-14  Bernd Warken  <bwarken@mayn.de>
+
+	* tmac/groff_trace.man: New file.
+	* tmac/Makefile.sub: Updated.
+	* NEWS: Updated.
+
+2002-07-13  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/groff/groff.man: Add some cross references.
+
+2002-07-12  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc (substring_request): Add warnings for
+	string indices out of range.
+
+2002-07-11  Werner LEMBERG  <wl@gnu.org>
+
+	* font/devdvi/generate/ec.map: Fix typo (`(l' -> `/l').
+	* font/devdvi/*EC: Regenerated.
+
+2002-07-10  Bernd Warken  <bwarken@mayn.de>
+
+	* man/groff_char.man: Updated and extended.
+
+2002-07-10  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc (length_macro): Renamed to...
+	(length_request): This.
+	Move call of `tok.next()' to the very end, otherwise the register
+	value hasn't been updated yet.
+	(init_input_requests): Updated.
+
+2002-07-09  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc (substring_macro): Renamed to...
+	(substring_request): This.
+	(init_input_requests): Updated.
+	* src/roff/troff/request.h: Updated.
+
+2002-07-08  Robert D. Goulding <goulding@Princeton.EDU>
+
+	* src/roff/grog/grog.sh: Fix typo.
+
+2002-07-08  Werner LEMBERG  <wl@gnu.org>
+
+	* win32-diffs: Updated.
+
+	Handle `papersize' keyword properly in DESC.
+
+	* src/libs/libgroff/font.cc (font::scan_papersize): Fix argument
+	type.
+	Updated all callers.
+	* src/libs/libgroff/paper.cc: Add four more paper formats used by
+	grolj4.
+	* src/include/paper.h: Updated.
+
+	* src/devices/grolbp/lbp.cc: Remove unnecessary semicolons.
+	Other minor C syntax fixes.
+	(papersize, paperlength, paperwidth): Renamed to `user_*'.
+	(lbp_printer): Add `papersize', `paperlength', and `paperwidth'
+	members.
+	(lbp_printer::lbp_printer): Pass three arguments.
+	Set paper dimensions properly.
+	(make_printer, main): Updated.
+	(handle_unknown_desc_command): Fix error messages.
+	(main): Handle papersize keyword in DESC properly.
+
+	* src/devices/grolj4/lj4.cc (paper_size): Renamed to
+	`user_paper_size'.
+	(lbp_printer::lbp_printer): Pass an argument.
+	Set paper_size properly.
+	(handle_unknown_desc_command): Removed.
+	(make_printer, main): Updated.
+	* src/devices/grolj4/grolj4.man: Minor documentation fix.
+
+	* man/groff_font.man, NEWS: Updated.
+
 2002-07-07  Werner LEMBERG  <wl@gnu.org>
 
 	Integrated eqn2graph, contributed by Eric S. Raymond.

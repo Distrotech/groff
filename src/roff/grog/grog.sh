@@ -41,7 +41,7 @@ egrep -h "^\.(\[|\])|((P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|.* Oo|Oc|.* O
 /^\.TS/ { tbl++; if (so > 0) soelim++ }
 /^\.PS([ 0-9.<].*)?$/ { pic++; if (so > 0) soelim++ }
 /^\.EQ/ { eqn++; if (so > 0) soelim++ }
-/^\.R1)/ { refer++; if (so > 0) soelim++ }
+/^\.R1/ { refer++; if (so > 0) soelim++ }
 /^\.\[/ {refer_start++; if (so > 0) soelim++ }
 /^\.\]/ {refer_end++; if (so > 0) soelim++ }
 /^\.GS/ { grn++; if (so > 0) soelim++ }

@@ -1,21 +1,5 @@
-.ig
-Copyright (C) 2001, 2002 Free Software Foundation, Inc.
-
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
-
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided that the
-entire resulting derived work is distributed under the terms of a
-permission notice identical to this one.
-
-Permission is granted to copy and distribute translations of this
-manual into another language, under the above conditions for modified
-versions, except that this permission notice may be included in
-translations approved by the Free Software Foundation instead of in
-the original English.
-..
+.\" $Id$
+.\" This documentation is released to the public domain.
 .TH PIC2GRAPH @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
 .IX pic2graph
 .SH NAME
@@ -23,26 +7,16 @@ pic2graph \- convert a PIC diagram into a cropped image
 .
 .
 .SH SYNOPSIS
-.nr a \n(.j
-.ad l
-.nr i \n(.i
-.in +\w'\fBpic2graph 'u
-.ti \niu
 .B pic2graph
-.de OP
-.ie \\n(.$-1 .RI "[\ \fB\%\\$1\fP\ " "\\$2" "\ ]"
-.el .RB "[\ " "\\$1" "\ ]"
-..
-.ds b \fR|\fP
-.
-.OP \-unsafe
-.OP \-resolution "M \*b MxN"
-.OP \-format \
-"ddif \*b fiasco \*b fits \*b plainpnm \*b png \*b rast \*b rle \
-\*b sgi \*b sir \*b tiff \*b tiffcmyk \*b xwd"
-.OP \-eqn delim
-.
-.ad \na
+[
+.B \-unsafe
+]
+[
+.BI \-format\  fmt
+]
+[
+.BI \-eqn\  delim
+]
 .
 .
 .SH DESCRIPTION
@@ -70,15 +44,23 @@ distribution.
 Your input PIC code should \fInot\fR be wrapped with the .PS and .PE macros
 that normally guard it within 
 .BR groff (@MAN1EXT@) 
-macros.  The output image will be a black-on-white graphic clipped to the
+macros.
+.P
+The output image will be a black-on-white graphic clipped to the
 smallest possible bounding box that contains all the black pixels.
+By specifying command-line options to be passed to 
+.BR convert (1)
+you can give it a border, set the background transparent, set the
+image's pixel density, or perform other useful transformations.
 .P
 This program uses 
 .BR @g@pic (@MAN1EXT@),
 .BR @g@eqn (@MAN1EXT@),
 .BR groff (@MAN1EXT@),
 .BR gs (1),
-and the PNM graphics tools.
+and the ImageMagick
+.BR convert (1)
+program.
 These programs must be installed on your system and accessible on your
 $PATH for \fBpic2graph\fR to work.
 .
@@ -94,17 +76,11 @@ in the `unsafe' mode enabling the PIC macro
 .B sh
 to execute arbitrary commands.  The default is to forbid this.
 .TP
-.BI \-resolution\  MxN
-Specify the pixels-per-inch resolution of the image as
-.I MxN
-(two numerals for horizontal and vertical dot pitch separated by an `x';
-a single numeral is interpreted as a constant dot pitch for both axes).
-Increasing this will increase the image's pixel size, and make fonts
-render better.
-.TP
 .BI \-format\  fmt
 Specify an output format; the default is PNG (Portable Network Graphics).
-Any format for which there is a PNM converter is supported.
+Any format that
+.BR convert (1)
+can emit is supported.
 .TP
 .BI \-eqn\  delim
 Change the fencepost characters that delimit 
@@ -119,18 +95,24 @@ accepted as a directive to disable
 processing.
 .PP
 Command-line switches and arguments not listed above are passed to
-the format converter selected by the format option (which is
-.BR pnmtopng (1)
-by default).
+.BR convert (1).
+.
+.
+.SH FILES
+.TP \w'\fB@MACRODIR@/eqnrc'u+2n
+.B @MACRODIR@/eqnrc
+The 
+.BR @g@eqn (@MAN1EXT@)
+initialization file.
 .
 .
 .SH "SEE ALSO"
+.BR eqn2graph (@MAN1EXT@),
 .BR @g@pic (@MAN1EXT@),
 .BR @g@eqn (@MAN1EXT@),
 .BR groff (@MAN1EXT@),
 .BR gs (1),
-.BR pnmcrop (1),
-.BR pnmtopng (5)
+.BR convert (1).
 .
 .
 .SH AUTHOR

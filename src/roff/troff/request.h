@@ -69,7 +69,7 @@ public:
   int empty();
   friend class string_iterator;
   friend void chop_macro();
-  friend void substring_macro();
+  friend void substring_request();
   friend int operator==(const macro &, const macro &);
 };
 

@@ -54,7 +54,7 @@ public:
   const char *get_name();
   const char *get_internal_name();
 
-  static int scan_papersize(const char *, const char *, double *, double *);
+  static int scan_papersize(const char *, const char **, double *, double *);
 
   static font *load_font(const char *, int *not_found = 0);
   static void command_line_font_dir(const char *path);

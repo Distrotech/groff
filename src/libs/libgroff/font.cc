@@ -503,7 +503,7 @@ static char *trim_arg(char *p)
 }
 
 int font::scan_papersize(const char *p,
-			 const char *size, double *length, double *width)
+			 const char **size, double *length, double *width)
 {
   double l, w;
   char lu[2], wu[2];
@@ -520,7 +520,7 @@ again:
       if (width)
 	*width = w;
       if (size)
-	size = "custom";
+	*size = "custom";
       return 1;
     }
   }
@@ -533,7 +533,7 @@ again:
 	if (width)
 	  *width = papersizes[i].width;
 	if (size)
-	  size = papersizes[i].name;
+	  *size = papersizes[i].name;
 	return 1;
       }
     if (test_file) {
@@ -889,7 +889,7 @@ int font::load_desc()
 	return 0;
       }
       double unscaled_paperwidth, unscaled_paperlength;
-      if (!scan_papersize(p, papersize, &unscaled_paperlength,
+      if (!scan_papersize(p, &papersize, &unscaled_paperlength,
 			  &unscaled_paperwidth)) {
 	t.error("bad paper size");
 	return 0;
