@@ -1,0 +1,69 @@
+PROG=gxditview$(EXEEXT)
+MAN1=gxditview.n
+MLIB=$(LIBM)
+XLIBS=$(LIBXUTIL)
+EXTRA_CFLAGS=$(X_CFLAGS)
+EXTRA_LDFLAGS=$(X_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS) -lXaw
+OBJS=\
+  device.$(OBJEXT) \
+  draw.$(OBJEXT) \
+  Dvi.$(OBJEXT) \
+  font.$(OBJEXT) \
+  lex.$(OBJEXT) \
+  page.$(OBJEXT) \
+  parse.$(OBJEXT) \
+  xditview.$(OBJEXT)
+CSRCS=\
+  $(srcdir)/device.c \
+  $(srcdir)/draw.c \
+  $(srcdir)/Dvi.c \
+  $(srcdir)/font.c \
+  $(srcdir)/lex.c \
+  $(srcdir)/page.c \
+  $(srcdir)/parse.c \
+  $(srcdir)/xditview.c
+HDRS=\
+  $(srcdir)/device.h \
+  $(srcdir)/Dvi.h \
+  $(srcdir)/DviP.h \
+  $(srcdir)/Menu.h
+GENHDRS=GXditview-ad.h
+
+all depend: $(GENHDRS)
+
+GXditview-ad.h: $(srcdir)/GXditview.ad
+	@echo Making $@
+	@-rm -f $@
+	$(SHELL) $(srcdir)/ad2c $(srcdir)/GXditview.ad >GXditview-ad.h
+
+devdir=$(top_builddir)/font
+xtotroff=$(top_builddir)/src/utils/xtotroff/xtotroff
+DPIS=75 100
+
+fonts: $(xtotroff) $(srcdir)/DESC.in $(srcdir)/FontMap
+	fonts=`sed -e 's/[	 ].*//' $(srcdir)/FontMap`; \
+	for dpi in $(DPIS); do \
+	  echo Making devX$$dpi; \
+	  test -d $(devdir)/devX$$dpi || \
+	    $(mkinstalldirs) $(devdir)/devX$$dpi; \
+	  rm -f $(devdir)/devX$$dpi/DESC; \
+	  sed -e "s/res 75/res $$dpi/" $(srcdir)/DESC.in \
+	    >$(devdir)/devX$$dpi/DESC; \
+	  (cd $(devdir)/devX$$dpi; \
+	  rm -f Makefile.sub; \
+	  echo DEV=X$$dpi >Makefile.sub; \
+	  echo DEVFILES=DESC $$fonts >>Makefile.sub; \
+	  $(xtotroff) -g -r $$dpi -s 10 $(srcdir)/FontMap); \
+	  echo Making devX$$dpi-12; \
+	  test -d $(devdir)/devX$$dpi-12 || \
+	    $(mkinstalldirs) $(devdir)/devX$$dpi-12; \
+	  rm -f $(devdir)/devX$$dpi-12/DESC; \
+	  sed -e "s/res 75/res $$dpi/" \
+	      -e 's/unitwidth 10/unitwidth 12/' $(srcdir)/DESC.in \
+	    >$(devdir)/devX$$dpi-12/DESC; \
+	  (cd $(devdir)/devX$$dpi-12; \
+	  rm -f Makefile.sub; \
+	  echo DEV=X$$dpi-12 >Makefile.sub; \
+	  echo DEVFILES=DESC $$fonts >>Makefile.sub; \
+	  $(xtotroff) -g -r $$dpi -s 12 $(srcdir)/FontMap); \
+	done
