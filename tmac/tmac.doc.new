@@ -1253,17 +1253,35 @@
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
 .      \" last argument
-.      nop \*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]\c
-.      doc-print-and-reset
-.    \}
+.      ie "\*[doc-command-name]"" \{\
+.        tm Usage: .Nm name ... (#\n[.c])
+.        doc-reset-args
+.      \}
+.      el \{\
+.        nop \*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]\c
+.        doc-print-and-reset
+.    \}\}
 .    el \{\
 .      nr doc-curr-font \n[.f]
 .      nr doc-curr-size \n[.ps]
 .
 .      rs
 .
-.      ie !(\n[doc-type\n[doc-arg-ptr]] == 2) \
-.        nop \*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]\c
+.      ie !(\n[doc-type\n[doc-arg-ptr]] == 2) \{\
+.        ie "\*[doc-command-name]"" \
+.          tm Usage: .Nm name ... (#\n[.c])
+.        el \{\
+.          \" replace previous argument (Nm) with default value
+.          nr doc-arg-ptr -1
+.          ds doc-arg\n[doc-arg-ptr] "\*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
+.          nr doc-type\n[doc-arg-ptr] 2
+.          ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.          \" recompute space vector for remaining arguments
+.          nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.          nr doc-arg-limit \n[doc-arg-ptr]
+.          doc-parse-space-vector
+.      \}\}
 .      el \{\
 .        \" handle `.Nm ...' in SYNOPSIS
 .        if \n[doc-in-synopsis-count] \{\
@@ -3570,7 +3588,6 @@
 .  nr doc-have-func-saved \n[doc-have-func]
 .  nr doc-is-reference-saved \n[doc-is-reference]
 .  nr doc-reference-count-saved \n[doc-reference-count]
-.  nr doc-authors-processed-saved \n[doc-authors-processed]
 .  nr doc-author-count-saved \n[doc-author-count]
 .
 .  nr doc-reg-dsgv 0
@@ -3704,7 +3721,6 @@
 .  nr doc-have-func \n[doc-have-func-saved]
 .  nr doc-is-reference \n[doc-is-reference-saved]
 .  nr doc-reference-count \n[doc-reference-count-saved]
-.  nr doc-authors-processed \n[doc-authors-processed-saved]
 .  nr doc-author-count \n[doc-author-count-saved]
 .
 .  nr doc-reg-drgv 0
@@ -4052,7 +4068,10 @@
 .de doc-enum-list
 .  nr doc-in-list 1
 .  nr doc-enum-list-count-stack\n[doc-list-depth] +1
-.  nop \*[doc-tag-prefix-stack\n[doc-list-depth]]\c
+.  ll \n[doc-list-indent-stack\n[doc-list-depth]]u
+\# XXX
+\#.  rj
+\#.  nop \*[doc-tag-prefix-stack\n[doc-list-depth]]\c
 .  nop \n[doc-enum-list-count-stack\n[doc-list-depth]].\&
 .  doc-do-list
 ..
@@ -5401,7 +5420,6 @@
 .\" NS   reference print
 .\" NS
 .\" NS modifies:
-.\" NS   doc-authors-processed
 .\" NS   doc-reference-count
 .
 .de doc-print-reference
@@ -5409,12 +5427,7 @@
 .  nh
 .
 .  if \n[doc-author-count] \{\
-.    unformat doc-author-name1
-.    chop doc-author-name1
-.    nop \)\*[doc-author-name1],
-.    nr doc-authors-processed 1
-.    if (\n[doc-author-count] > 1) \
-.      doc-print-reference-authors
+.    doc-print-reference-authors
 .    nr doc-reference-count -\n[doc-author-count]
 .  \}
 .
@@ -5509,28 +5522,33 @@
 ..
 .
 .
-.\" NS doc-authors-processed global register
-.\" NS   author references processed so far
-.
-.nr doc-authors-processed 0
-.
-.
 .\" NS doc-print-reference-authors macro
 .\" NS   print out reference authors
 .\" NS
-.\" NS modifies:
-.\" NS   doc-authors-processed
+.\" NS local variables:
+.\" NS   doc-reg-dpra
+.\" NS   doc-str-dpra
+.
+.ds doc-str-dpra "and
 .
 .de doc-print-reference-authors
-.  nr doc-authors-processed +1
-.  unformat doc-author-name\n[doc-authors-processed]
-.  chop doc-author-name\n[doc-authors-processed]
-.  ie (\n[doc-author-count] == \n[doc-authors-processed]) \
-.    nop \)and \*[doc-author-name\n[doc-authors-processed]],
-.  el \{\
-.    nop \)\*[doc-author-name\n[doc-authors-processed]],
-.    doc-print-reference-authors
+.  nr doc-reg-dpra 1
+.
+.  while (\n[doc-reg-dpra] < \n[doc-author-count]) \{\
+.    unformat doc-author-name\n[doc-reg-dpra]
+.    chop doc-author-name\n[doc-reg-dpra]
+.    ie (\n[doc-author-count] > 2) \
+.      nop \)\*[doc-author-name\n[doc-reg-dpra]],
+.    el \
+.      nop \)\*[doc-author-name\n[doc-reg-dpra]]
+.    nr doc-reg-dpra +1
 .  \}
+.
+.  unformat doc-author-name\n[doc-reg-dpra]
+.  chop doc-author-name\n[doc-reg-dpra]
+.  if (\n[doc-author-count] > 1) \
+.    nop \)\*[doc-str-dpra]
+.  nop \)\*[doc-author-name\n[doc-reg-dpra]],
 ..
 .
 .
