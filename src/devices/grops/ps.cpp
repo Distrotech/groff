@@ -336,8 +336,7 @@ ps_output &ps_output::put_float(double d)
   if (buf[last] == '.')
     last--;
   buf[++last] = '\0';
-  int len = last + 1;
-  if (col > 0 && col + len + need_space > max_line_length) {
+  if (col > 0 && col + last + need_space > max_line_length) {
     putc('\n', fp);
     col = 0;
     need_space = 0;
@@ -347,7 +346,7 @@ ps_output &ps_output::put_float(double d)
     col++;
   }
   fputs(buf, fp);
-  col += len;
+  col += last;
   need_space = 1;
   return *this;
 }
