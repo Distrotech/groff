@@ -56,7 +56,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 /* Establish some definitions to facilitate discrimination between
    differing runtime environments. */
 
-#undef __tmpfile
 #undef MAY_FORK_CHILD_PROCESS
 #undef MAY_SPAWN_ASYNCHRONOUS_CHILD
 
@@ -79,10 +78,22 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #  define MAY_SPAWN_ASYNCHRONOUS_CHILD 0
 # endif /* not defined __CYGWIN__, _UWIN, or __MINGW32__ */
 
-/* MS-DOS and Win32 will probably not have `/tmp' on all disk drives,
-   but we can normally expect to be able to use `c:/temp' for temporary
-   files. */
-# define __tmpfile "c:/temp/"
+# if defined(DEBUGGING) && !defined(DEBUG_FILE)
+/* When we are building a DEBUGGING version we need to tell pre-grohtml
+   where to put intermediate files (the DEBUGGING version will preserve
+   these on exit).
+
+   On a UNIX host, we might simply use `/tmp', but MS-DOS and Win32 will
+   probably not have this on all disk drives, so default to using
+   `c:/temp' instead.  (Note that user may choose to override this by
+   supplying a definition such as
+
+     -DDEBUG_FILE="d:/path/to/debug/files/"
+
+   in the CPPFLAGS to `make'.  If overriding in this manner, the trailing
+   `/' MUST be included in the definition.) */
+#  define DEBUG_FILE "c:/temp/"
+# endif
 
 #else /* not __MSDOS__ or _WIN32 */
 
@@ -91,9 +102,17 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # define MAY_FORK_CHILD_PROCESS 1
 # define MAY_SPAWN_ASYNCHRONOUS_CHILD 1
 
-/* We can also usually rely on being able to use `/tmp' for temporary
-   file storage. */
-# define __tmpfile "/tmp/"
+# if defined(DEBUGGING) && !defined(DEBUG_FILE)
+/* For a DEBUGGING version, on the UNIX host, we can also usually rely
+   on being able to use `/tmp' for temporary file storage.  (Note that,
+   as in the __MSDOS__ or _WIN32 case above, the user may override this
+   by defining
+
+     -DDEBUG_FILE="/path/to/debug/files/"
+
+   in the CPPFLAGS, again noting that the trailing `/' is REQUIRED.) */
+#  define DEBUG_FILE "/tmp/"
+# endif
 #endif /* not __MSDOS__ or _WIN32 */
 
 extern "C" const char *Version_string;
@@ -1566,12 +1585,12 @@ static int scanArguments(int argc, char **argv)
 static int makeTempFiles(void)
 {
 #if defined(DEBUGGING)
-  psFileName = __tmpfile"prehtml-ps";
-  regionFileName = __tmpfile"prehtml-region";
-  imagePageName = __tmpfile"prehtml-page";
-  psPageName = __tmpfile"prehtml-psn";
-  troffFileName = __tmpfile"prehtml-troff";
-  htmlFileName = __tmpfile"prehtml-html";
+  psFileName = DEBUG_FILE"prehtml-ps";
+  regionFileName = DEBUG_FILE"prehtml-region";
+  imagePageName = DEBUG_FILE"prehtml-page";
+  psPageName = DEBUG_FILE"prehtml-psn";
+  troffFileName = DEBUG_FILE"prehtml-troff";
+  htmlFileName = DEBUG_FILE"prehtml-html";
 #else /* not DEBUGGING */
   FILE *f;
 
@@ -1631,7 +1650,7 @@ int main(int argc, char **argv)
   fprintf(stderr, "%s: invoked with %d arguments ...\n", argv[0], argc);
   for (i = 0; i < argc; i++)
     fprintf(stderr, "%2d: %s\n", i, argv[i]);
-  if ((dump = fopen(__tmpfile"pre-html-data", "wb")) != NULL) {
+  if ((dump = fopen(DEBUG_FILE"pre-html-data", "wb")) != NULL) {
     while((i = fgetc(stdin)) >= 0)
       fputc(i, dump);
     fclose(dump);
