@@ -2,7 +2,7 @@
 .ig
 groff.man
 
-Last update: 25 June 2002
+Last update: 29 June 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -83,7 +83,7 @@ FDL in the main directory of the groff source package.
 .    as @s \f[\*[@f2]]\*[@a]\f[]\"
 .    shift
 .  \}
-.  \*[@m] \*[@s]\f[R]
+.  \*[@m] "\*[@s]\f[R]"
 .  ft P                 \" to make \c happy
 .  rm @m
 .  rm @s
@@ -521,6 +521,8 @@ request and retrieved by the
 .esc *
 escape sequences.
 .
+Strings can have variables.
+.
 .P
 .B Register
 variables can store numerical values, numbers with a scale unit, and
@@ -564,7 +566,7 @@ The
 .I italic
 font is called
 .B I
-is everywhere available, but on text devices, it is displayed as an
+and is available everywhere, but on text devices it is displayed as an
 underlined Roman font.
 .
 For the graphical output devices, there exist constant-width pendants
@@ -658,7 +660,9 @@ escape sequence.
 .
 .TP
 .character \[dq]
-The double quote is used to enclose arguments in requests and macros.
+The double quote is used to enclose arguments in requests, macros, and
+strings.
+.
 In the
 .request ds
 and
@@ -711,8 +715,8 @@ Otherwise, it is non-special.
 \f[CI]space\f[]
 Space characters are only functional characters.
 .
-They separate the arguments in requests or macros, and the words in
-text lines.
+They separate the arguments in requests, macros, and strings, and the words
+in text lines.
 .
 They are subject to groff's horizontal spacing calculations.
 .
@@ -2351,9 +2355,14 @@ The string stored in the string variable with 1-character name
 The string stored in the string variable with 2-character name
 .IR st .
 .
-.ESC[] * stringvar
+.ESC[] * "stringvar arg1 arg2 .\|.\|."
 The string stored in the string variable with arbitrary length name
-.IR stringvar .
+.IR stringvar ,
+taking
+.IR arg1 ,
+.IR arg2 ,
+.I .\|.\|.\&
+as arguments.
 .
 .\" --------- macro arguments ---------
 .
@@ -2365,29 +2374,30 @@ The
 request can make a macro have more than one name.
 .
 .ESC $ x
-Macro argument with 1-place number
+Macro or string argument with 1-place number
 .IR x ,
 where
 .I x
 is a digit between 1 and 9.
 .
 .ESC $( xy
-Macro argument with 2-digit number
+Macro or string argument with 2-digit number
 .IR xy .
 .
 .ESC[] $ nexp
-Macro argument with number
+Macro or string argument with number
 .IR nexp ,
 where
 .I nexp
 is a numerical expression evaluating to an integer \[>=]1.
 .
 .ESC $*
-In a macro, the concatenation of all the arguments separated by spaces.
+In a macro or string, the concatenation of all the arguments separated
+by spaces.
 .
 .ESC $@
-In a macro, the concatenation of all the arguments with each surrounded
-by double quotes, and separated by spaces.
+In a macro or string, the concatenation of all the arguments with each
+surrounded by double quotes, and separated by spaces.
 .
 .\" --------- escaped characters ---------
 .
@@ -2881,9 +2891,9 @@ escape sequence.
 .P
 Strings share their name space with macros.
 .
-So strings and macros without arguments are roughly equivalent, though
-calling a string like a macro and vice-versa is not stably implemented
-so far.
+So strings and macros without arguments are roughly equivalent; it is
+possible to call a string like a macro and vice-versa, but this often
+leads to unpredictable results.
 .
 The following strings are predefined in groff.
 .
@@ -2942,7 +2952,7 @@ results from request calls.
 .PD 0
 .
 .REG .$
-Number of arguments in the current macro.
+Number of arguments in the current macro or string.
 .
 .REG .a
 Post-line extra line-space most recently utilized using

@@ -121,6 +121,8 @@ int have_input = 0;		// whether \f, \H, \R, \s, or \S has
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
 
+int have_string_arg = 0;	// whether we have \*[foo bar...]
+
 double spread_limit = -3.0 - 1.0;	// negative means deactivated
 
 double warn_scale;
@@ -134,9 +136,11 @@ static void copy_mode_error(const char *,
 			    const errarg & = empty_errarg,
 			    const errarg & = empty_errarg);
 
-static symbol read_escape_name(int no_empty = 1);
-static symbol read_long_escape_name(int no_empty = 1);
+enum read_mode { ALLOW_EMPTY, WITH_ARGS, NO_ARGS };
+static symbol read_escape_name(read_mode mode = NO_ARGS);
+static symbol read_long_escape_name(read_mode mode = NO_ARGS);
 static void interpolate_string(symbol);
+static void interpolate_string_with_args(symbol);
 static void interpolate_macro(symbol);
 static void interpolate_number_format(symbol);
 static void interpolate_environment_variable(symbol);
@@ -690,7 +694,7 @@ void shift()
   skip_line();
 }
 
-static int get_char_for_escape_name()
+static int get_char_for_escape_name(int allow_space = 0)
 {
   int c = get_copy(0);
   switch (c) {
@@ -704,7 +708,11 @@ static int get_char_for_escape_name()
   case '\n':
     if (c == '\n')
       input_stack::push(make_temp_iterator("\n"));
+    // fall through
   case ' ':
+    if (c == ' ' && allow_space)
+      break;
+    // fall through
   case '\t':
   case '\001':
   case '\b':
@@ -729,20 +737,25 @@ static symbol read_two_char_escape_name()
   return symbol(buf);
 }
 
-static symbol read_long_escape_name(int no_empty)
+static symbol read_long_escape_name(read_mode mode)
 {
   int start_level = input_stack::get_level();
   char abuf[ABUF_SIZE];
   char *buf = abuf;
   int buf_size = ABUF_SIZE;
   int i = 0;
+  int c;
+  int have_char = 0;
   for (;;) {
-    int c = get_char_for_escape_name();
+    c = get_char_for_escape_name(have_char && mode == WITH_ARGS);
     if (c == 0) {
       if (buf != abuf)
 	a_delete buf;
       return NULL_SYMBOL;
     }
+    have_char = 1;
+    if (mode == WITH_ARGS && c == ' ')
+      break;
     if (i + 2 > buf_size) {
       if (buf == abuf) {
 	buf = new char[ABUF_SIZE*2];
@@ -762,9 +775,11 @@ static symbol read_long_escape_name(int no_empty)
     buf[i++] = c;
   }
   buf[i] = 0;
+  if (c == ' ')
+    have_string_arg = 1;
   if (buf == abuf) {
     if (i == 0) {
-      if (no_empty)
+      if (mode != ALLOW_EMPTY)
         copy_mode_error("empty escape name");
       return EMPTY_SYMBOL;
     }
@@ -777,7 +792,7 @@ static symbol read_long_escape_name(int no_empty)
   }
 }
 
-static symbol read_escape_name(int no_empty)
+static symbol read_escape_name(read_mode mode)
 {
   int c = get_char_for_escape_name();
   if (c == 0)
@@ -785,7 +800,7 @@ static symbol read_escape_name(int no_empty)
   if (c == '(')
     return read_two_char_escape_name();
   if (c == '[' && !compatible_flag)
-    return read_long_escape_name(no_empty);
+    return read_long_escape_name(mode);
   char buf[2];
   buf[0] = c;
   buf[1] = '\0';
@@ -861,9 +876,15 @@ static int get_copy(node **nd, int defining)
     case '*':
       {
 	(void)input_stack::get(0);
-	symbol s = read_escape_name();
-	if (!(s.is_null() || s.is_empty()))
-	  interpolate_string(s);
+	symbol s = read_escape_name(WITH_ARGS);
+	if (!(s.is_null() || s.is_empty())) {
+	  if (have_string_arg) {
+	    have_string_arg = 0;
+	    interpolate_string_with_args(s);
+	  }
+	  else
+	    interpolate_string(s);
+	}
 	break;
       }
     case 'a':
@@ -1759,9 +1780,15 @@ void token::next()
 	}
       case '*':
 	{
-	  symbol nm = read_escape_name();
-	  if (!(nm.is_null() || nm.is_empty()))
-	    interpolate_string(nm);
+	  symbol nm = read_escape_name(WITH_ARGS);
+	  if (!(nm.is_null() || nm.is_empty())) {
+	    if (have_string_arg) {
+	      have_string_arg = 0;
+	      interpolate_string_with_args(nm);
+	    }
+	    else
+	      interpolate_string(nm);
+	  }
 	  break;
 	}
       case 'a':
@@ -1804,7 +1831,7 @@ void token::next()
 	goto handle_escape_char;
       case 'f':
 	{
-	  symbol s = read_escape_name(0);
+	  symbol s = read_escape_name(ALLOW_EMPTY);
 	  if (s.is_null())
 	    break;
 	  const char *p;
@@ -1821,7 +1848,7 @@ void token::next()
 	}
       case 'F':
 	{
-	  symbol s = read_escape_name(0);
+	  symbol s = read_escape_name(ALLOW_EMPTY);
 	  if (s.is_null())
 	    break;
 	  curenv->set_family(s);
@@ -1879,13 +1906,13 @@ void token::next()
 	  return;
 	}
       case 'm':
-	nd = do_glyph_color(read_escape_name(0));
+	nd = do_glyph_color(read_escape_name(ALLOW_EMPTY));
 	if (!nd)
 	  break;
 	type = TOKEN_NODE;
 	return;
       case 'M':
-	nd = do_fill_color(read_escape_name(0));
+	nd = do_fill_color(read_escape_name(ALLOW_EMPTY));
 	if (!nd)
 	  break;
 	type = TOKEN_NODE;
@@ -3382,7 +3409,7 @@ static void decode_args(macro_iterator *mi)
   if (!tok.newline() && !tok.eof()) {
     node *n;
     int c = get_copy(&n);
-    for (;;)  {
+    for (;;) {
       while (c == ' ')
 	c = get_copy(&n);
       if (c == '\n' || c == EOF)
@@ -3421,6 +3448,56 @@ static void decode_args(macro_iterator *mi)
       }
       mi->add_arg(arg);
     }
+  }
+}
+
+static void decode_string_args(macro_iterator *mi)
+{
+  node *n;
+  int c = get_copy(&n);
+  for (;;) {
+    while (c == ' ')
+      c = get_copy(&n);
+    if (c == '\n' || c == EOF) {
+      error("missing `]'");
+      break;
+    }
+    if (c == ']')
+      break;
+    macro arg;
+    int quote_input_level = 0;
+    int done_tab_warning = 0;
+    if (c == '\"') {
+      quote_input_level = input_stack::get_level();
+      c = get_copy(&n);
+    }
+    while (c != EOF && c != '\n'
+	   && !(c == ']' && quote_input_level == 0)
+	   && !(c == ' ' && quote_input_level == 0)) {
+      if (quote_input_level > 0 && c == '\"'
+	  && input_stack::get_level() == quote_input_level) {
+	c = get_copy(&n);
+	if (c == '"') {
+	  arg.append(c);
+	  c = get_copy(&n);
+	}
+	else
+	  break;
+      }
+      else {
+	if (c == 0)
+	  arg.append(n);
+	else {
+	  if (c == '\t' && quote_input_level == 0 && !done_tab_warning) {
+	    warning(WARN_TAB, "tab character in unquoted string argument");
+	    done_tab_warning = 1;
+	  }
+	  arg.append(c);
+	}
+	c = get_copy(&n);
+      }
+    }
+    mi->add_arg(arg);
   }
 }
 
@@ -3696,10 +3773,23 @@ static void interpolate_string(symbol nm)
   request_or_macro *p = lookup_request(nm);
   macro *m = p->to_macro();
   if (!m)
-    error("you can only invoke a string using \\*");
+    error("you can only invoke a string or macro using \\*");
   else {
     string_iterator *si = new string_iterator(*m, "string", nm);
     input_stack::push(si);
+  }
+}
+
+static void interpolate_string_with_args(symbol s)
+{
+  request_or_macro *p = lookup_request(s);
+  macro *m = p->to_macro();
+  if (!m)
+    error("you can only invoke a string or macro using \\*");
+  else {
+    macro_iterator *mi = new macro_iterator(s, *m);
+    decode_string_args(mi);
+    input_stack::push(mi);
   }
 }
 

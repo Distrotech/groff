@@ -1,3 +1,21 @@
+2002-06-29  Werner LEMBERG  <wl@gnu.org>
+
+	Implementation of string arguments of the form \*[foo arg1 arg2 ...]
+
+	* src/roff/troff/input.cc (have_string_arg): New global variable.
+	(read_mode): New enumeration.
+	(read_escape_name): Use it.  Update all calls.
+	(read_long_escape_name): Use it.  Update all calls.
+	Set have_string_arg if appropriate.
+	(get_char_for_escape_name): Add parameter for handling space
+	character.
+	(interpolate_string_with_args, decode_string_args): New functions.
+	(get_copy, token::next): Call it if necessary.
+	(interpolate_string): Fix error message.
+
+	* NEWS, doc/groff.texinfo, man/groff.man, man/groff_diff.man:
+	Document it.
+
 2002-06-24  Bernd Warken  <bwarken@mayn.de>
 
 	* man/groff_tmac.man: Updated and extended.

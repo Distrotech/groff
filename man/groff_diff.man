@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 25 June 2002
+Last update : 29 June 2002
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -192,9 +192,14 @@ is a new syntax equal to
 i.e., to return to the previous font.
 .
 .TP
-.BI \[rs]*[ xxx ]
+.BI \[rs]*[ "xxx arg1 arg2 .\|.\|." ]
 Interpolate string
-.IR xxx .
+.IR xxx ,
+taking
+.IR arg1 ,
+.IR arg2 ,
+.I .\|.\|.\&
+as arguments.
 .
 .TP
 .BI \[rs]n[ xxx ]
@@ -673,24 +678,25 @@ request can make a macro have more than one name.
 .
 .TP
 .B \[rs]$*
-In a macro, the concatenation of all the arguments separated by spaces.
+In a macro or string, the concatenation of all the arguments separated
+by spaces.
 .
 .TP
 .B \[rs]$@
-In a macro, the concatenation of all the arguments with each
+In a macro or string, the concatenation of all the arguments with each
 surrounded by double quotes, and separated by spaces.
 .
 .TP
 .BI \[rs]$( nn
 .TQ
 .BI \[rs]$[ nnn ]
-In a macro, this gives the
+In a macro or string, this gives the
 .IR nn -th
 or
 .IR nnn -th
 argument.
 .
-Macros can have an unlimited number of arguments.
+Macros and strings can have an unlimited number of arguments.
 .
 .TP
 .BI \[rs]? anything \[rs]?
@@ -2883,8 +2889,8 @@ The same is true for
 and
 .BR \[rs]Z .
 .
-When decoding a macro argument that is delimited by double quotes, a
-character that appears at a different input level to the starting
+When decoding a macro or string argument that is delimited by double
+quotes, a character that appears at a different input level to the starting
 delimiter character will not be recognised as the closing delimiter
 character.
 .
@@ -2986,7 +2992,7 @@ Only the differences are documented here.
 The argument to the
 .B s
 command is in scaled points (units of
-.IR points/ n ,
+.RI points/ n ,
 where
 .I n
 is the argument to the

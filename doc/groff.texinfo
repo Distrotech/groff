@@ -772,6 +772,8 @@ The section on the @file{man} macro package is partly based on Susan@w{
 }G.@: Kleinmann's @file{groff_man} manual page written for the Debian
 GNU/Linux system.
 
+Larry Kollar contributed the section in the @file{ms} macro package.
+
 
 
 @c =====================================================================
@@ -5370,7 +5372,7 @@ is returned.
 The following lists some built-in registers which are not described
 elsewhere in this manual.  Any register which begins with a @samp{.} is
 read-only.  A complete listing of all built-in registers can be found in
-@ref{Register Index}.
+appendix@w{ }@ref{Register Index}.
 
 @table @code
 @item .F
@@ -8998,21 +9000,28 @@ even this is a read-write string variable).
 @DefreqItem {ds1, name [@Var{string}]}
 @DefescItem {\\*, , n, }
 @DefescItem {\\*, @lparen{}, nm, }
-@DefescListEnd {\\*, @lbrack{}, name, @rbrack{}}
+@DefescListEnd {\\*, @lbrack{}, name arg1 arg2 @dots{}, @rbrack{}}
 @cindex string interpolation (@code{\*})
 @cindex string expansion (@code{\*})
 @cindex interpolation of strings (@code{\*})
 @cindex expansion of strings (@code{\*})
+@cindex string arguments
+@cindex arguments, of strings
 Define and access a string variable @var{name} (one-character name@w{
 }@var{n}, two-character name @var{nm}).  If @var{name} already exists,
-@code{ds} overwrites the previous definition.
+@code{ds} overwrites the previous definition.  Only the syntax form
+using brackets can take arguments which are handled identically to
+macro arguments; the single exception is that a closing bracket as an
+argument must be enclosed in double quotes.  @xref{Request Arguments},
+and @ref{Parameters}.
 
 Example:
 
 @Example
-.ds UX \s-1UNIX\s0\u\s-3tm\s0\d
+.ds foo a \\$1 test
 .
-The \*(UX Operating System
+This is \*[foo nice].
+    @result{} This is a nice test.
 @endExample
 
 The @code{\*} escape @dfn{interpolates} (expands in-place) a
@@ -9117,8 +9126,7 @@ This is
     @result{} This is a funny test.
 @endExample
 
-Diversions and boxes can be also called with string syntax.  It is not
-possible to pass arguments to a macro if called with @code{\*}.
+Diversions and boxes can be also called with string syntax.
 
 Another consequence is that you can copy one-line diversions or boxes
 to a string.
@@ -9751,9 +9759,9 @@ Exit a macro, immediately returning to the caller.
 @cindex @code{\*}, when reading text for a macro
 @cindex @code{\\}, when reading text for a macro
 @cindex \@key{RET}, when reading text for a macro
-When @code{gtroff} reads in the text for a macro or diversion, it copies
-the text (including request lines, but excluding escapes) into an
-internal buffer.  Escapes are converted into an internal form,
+When @code{gtroff} reads in the text for a macro, string, or diversion,
+it copies the text (including request lines, but excluding escapes) into
+an internal buffer.  Escapes are converted into an internal form,
 except for @code{\n}, @code{\$}, @code{\*}, @code{\\} and
 @code{\@key{RET}} which are evaluated and inserted into the text where
 the escape was located.  This is known as @dfn{copy-in} mode or
@@ -9782,11 +9790,13 @@ The following example prints the numbers 20 and@w{ }10:
 @subsection Parameters
 @cindex parameters
 
-The arguments to a macro can be examined using a variety of escapes.
+The arguments to a macro or string can be examined using a variety of
+escapes.
 
 @Defreg {.$}
 @cindex number of arguments register (@code{.$})
-The number of arguments in a macro.  This is a read-only number register.
+The number of arguments passed to a macro or string.  This is a read-only
+number register.
 @endDefreg
 
 Any individual argument can be retrieved with one of the following
@@ -9802,9 +9812,9 @@ Retrieve the @var{n}@dmn{th}, @var{nn}@dmn{th} or @var{nnn}@dmn{th}
 argument.  As usual, the first form only accepts a single number
 (larger than zero), the second a two-digit number (larger or equal
 to@w{ }10), and the third any positive integer value (larger
-than zero).  Macros can have an unlimited number of arguments.  Note
-that due to copy-in mode, use two backslashes on these in actual use to
-prevent interpolation until the macro is actually invoked.
+than zero).  Macros and strings can have an unlimited number of arguments.
+Note that due to copy-in mode, use two backslashes on these in actual use
+to prevent interpolation until the macro is actually invoked.
 @endDefesc
 
 @Defreq {shift, [@Var{n}]}
@@ -9902,7 +9912,8 @@ Here a primitive solution for a two-column macro.
 @endExample
 @Example
 .de 2c-trap
-.  ie \\n[right-side] \@{\.    nr right-side 0
+.  ie \\n[right-side] \@{\
+.    nr right-side 0
 .    po -(\\n[column-length]u + \\n[column-gap]u)
 .    \" remove trap
 .    wh -\\n[bottom-margin]u
