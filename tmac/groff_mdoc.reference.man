@@ -324,7 +324,7 @@ to specify an optional flag with an argument:
 .Bl -tag -xwidth ".Op Fl s Ar bytes" -offset indent
 .It Op Fl s Ar bytes
 is produced by
-.Ql Li ".Op Fl s Ar bytes"
+.Ql ".Op Fl s Ar bytes"
 .El
 .
 .Pp
@@ -335,7 +335,7 @@ string with the escape sequence
 .Bl -tag -xwidth ".Op \&Fl s \&Ar bytes" -offset indent
 .It Op \&Fl s \&Ar bytes
 is produced by
-.Ql Li ".Op \e&Fl s \e&Ar bytes"
+.Ql ".Op \e&Fl s \e&Ar bytes"
 .El
 .
 .Pp
@@ -406,10 +406,10 @@ For example:
 .Bl -tag -xwidth ".Fn fetch char\ *str" -offset indent
 .It Fn fetch char\ *str
 is created by
-.Ql .Fn fetch char\e *str
+.Ql ".Fn fetch char\e *str"
 .It Fn fetch "char *str"
 can also be created by
-.Ql .Fn fetch "\\*[q]char *str\\*[q]"
+.Ql ".Fn fetch \*[q]char *str\*[q]"
 .El
 .
 .Pp
@@ -628,7 +628,7 @@ about content macros before page layout macros is recommended.
 In the description of all macros below, optional arguments are put into
 brackets.
 An ellipsis
-.Pf ( Ql Ld )
+.Pf ( Sq Ld )
 represents zero or more additional arguments.
 Alternative values for a parameter are separated with
 .Ql | .
@@ -688,7 +688,7 @@ The document title is the subject of the man page and must be in
 .Tn CAPITALS
 due to troff limitations.
 If omitted,
-.Ql Tn UNTITLED
+.Sq Tn UNTITLED
 is used.
 The section number may be a number in the range
 .No 1,\~ Ns Ld Ns ,\~9
@@ -776,7 +776,7 @@ This macro is neither callable nor parsable.
 .Op Aq release
 .Xc
 If the first parameter is empty,
-.Ql Tn BSD
+.Sq Tn BSD
 is used as the default operating system.
 This may be overridden in the local configuration file.
 In general, the name of the operating system should be the common acronym,
@@ -835,7 +835,7 @@ or for a locally produced set
 .Dl .Os CS Department
 .Pp
 which will produce
-.Ql CS Department .
+.Ql CS\~Department .
 .Pp
 If the
 .Ql .Os
@@ -1070,7 +1070,7 @@ suggested by the characters.
 To prevent the accidental evaluation of these characters, escape them with
 .Ql \e& .
 Typical syntax is shown in the first content macro displayed below,
-.Ql \&.Ad .
+.Ql .Ad .
 .
 .
 .Sh "MANUAL DOMAIN"
@@ -1873,7 +1873,7 @@ are possible:
 .Pp
 .Ao version Ac
 will be prepended to the string
-.Ql Bx .
+.Sq Bx .
 The following values for
 .Ao release Ac
 are possible:
@@ -2459,7 +2459,7 @@ The default width is 8n.
 .Bl -tag -xwidth ".Li .Sh\ DESCRIPTION"
 .It Li ".Sh NAME"
 The
-.Ql Li ".Sh NAME"
+.Ql ".Sh NAME"
 macro is mandatory.
 If not specified, headers, footers and page layout defaults will not be set
 and things will be rather unpleasant.
@@ -2475,6 +2475,11 @@ which separates the subject name from the third item, which is the
 description.
 The description should be the most terse and lucid possible, as the space
 available is small.
+.Pp
+.Ql .Nd
+first prints
+.Ql - ,
+then all its arguments.
 .
 .It Li ".Sh SYNOPSIS"
 The
@@ -3501,15 +3506,16 @@ Suppress insertion of vertical space before the list and between list items.
 .El
 .
 .
-\#
-\#=====================================================================
-\#
 .Sh "MISCELLANEOUS MACROS"
 .
 Here a list of the remaining macros which don't fit well into one of the
 above sections.
 We couldn't find real examples for the following macros:
-.Ql .Vt
+.Ql .Me ,
+.Ql .Or ,
+.Ql .Ot ,
+and
+.Ql .Vt .
 They are documented here for completeness \- if you know how to use them
 properly please send a mail to
 .Mt bug-groff@gnu.org
@@ -3563,8 +3569,54 @@ is produced by
 It is neither callable nor parsable.
 .
 .It Li .Ld
-This macro is similar to TeX's \eldots command; it prints
-.Ql Ld .
+This macro is similar to TeX's
+.Ql \eldots
+command; it prints
+.Sq Ld .
+.
+.It Li .Lk
+To be written.
+.
+.It Li .Me
+Exact usage unknown.
+The documentation in the
+.Nm \-mdoc
+source file describes it as a macro for
+.Dq "menu entries" .
+.Pp
+Its default width is 6n.
+.
+.It Li .Mt
+To be written.
+.
+.It Li .Or
+This macro does nothing (probably a bug in the old
+.Nm \-mdoc
+implementation) \- it should output a
+.Dq pipe symbol (OR)
+according to the documentation in the
+.Nm \-mdoc
+source.
+We don't have an example for its intended use.
+Note that a pipe symbol can always be produced by using
+.Ql | ;
+if you don't use
+.Tn GNU
+.Xr troff
+requests directly, it will never interfere with the absolute position
+operator of troff.
+Alternatively, the string
+.Ql \e*[ba]
+is available.
+.Pp
+As a consequence, this macro is obsolete.
+.
+.It Li .Ot
+Exact usage unknown.
+The documentation in the
+.Nm \-mdoc
+source file describes it as
+.Dq old function type (fortran) .
 .
 .It Li .Ud
 prints
@@ -3577,7 +3629,7 @@ It is neither callable nor parsable and takes no arguments.
 .
 .It Li .Vt
 Exact usage unknown.
-The spare documentation in the
+The documentation in the
 .Nm \-mdoc
 source file describes it as
 .Dq "variable type (for forcing old style variable declarations)" .
@@ -3586,50 +3638,63 @@ source file describes it as
 .
 .Sh "PREDEFINED STRINGS"
 .
-The following strings are predefined as may be used by
-preceding with the troff string interpreting sequence
-.Ql \&\e*(xx
-where
-.Em xx
-is the name of the defined string or as
-.Ql \&\e*x
-where
-.Em x
-is the name of the string.
-The interpreting sequence may be used any where in the text.
+The following strings are predefined:
 .Pp
-.Bl -column "String " "Nroff " "Troff " -offset indent
-.It Sy "String	Nroff	Troff"
-.It Li "<=" Ta \&<\&= Ta \*(<=
-.It Li ">=" Ta \&>\&= Ta \*(>=
-.It Li "Rq" Ta "''" Ta \*(Rq
-.It Li "Lq" Ta "``" Ta \*(Lq
-.It Li "ua" Ta ^ Ta \*(ua
-.It Li "aa" Ta ' Ta \*(aa
-.It Li "ga" Ta \` Ta \*(ga
-.\" .It Li "sL" Ta ` Ta \*(sL
-.\" .It Li "sR" Ta ' Ta \*(sR
-.It Li "q" Ta \&" Ta \*q
-.It Li "Pi" Ta pi Ta \*(Pi
-.It Li "Ne" Ta != Ta \*(Ne
-.It Li "Le" Ta <= Ta \*(Le
-.It Li "Ge" Ta >= Ta \*(Ge
-.It Li "Lt" Ta < Ta \*(Gt
-.It Li "Gt" Ta > Ta \*(Lt
-.It Li "Pm" Ta +\- Ta \*(Pm
-.It Li "If" Ta infinity Ta \*(If
-.It Li "Na" Ta \fINaN\fP Ta \*(Na
-.It Li "Ba" Ta \fR\&|\fP Ta \*(Ba
+.Bl -column String infinity "Troff " "straight double quote" -offset indent
+.It Sy String Ta Sy Nroff Ta Sy Troff Ta Sy Meaning
+.It Li <=     Ta <=       Ta \*[<=]   Ta "less equal"
+.It Li >=     Ta >=       Ta \*[>=]   Ta "greater equal"
+.It Li Rq     Ta ''       Ta \*[Rq]   Ta "right double quote"
+.It Li Lq     Ta ``       Ta \*[Lq]   Ta "left double quote"
+.It Li ua     Ta ^        Ta \*[ua]   Ta "upwards arrow"
+.It Li aa     Ta \'       Ta \*[aa]   Ta "acute accent"
+.It Li ga     Ta \`       Ta \*[ga]   Ta "grave accent"
+.It Li q      Ta \&"      Ta \*[q]    Ta "straight double quote"
+.It Li Pi     Ta pi       Ta \*[Pi]   Ta "greek pi"
+.It Li Ne     Ta !=       Ta \*[Ne]   Ta "not equal"
+.It Li Le     Ta <=       Ta \*[Le]   Ta "less equal"
+.It Li Ge     Ta >=       Ta \*[Ge]   Ta "greater equal"
+.It Li Lt     Ta <        Ta \*[Lt]   Ta "less than"
+.It Li Gt     Ta >        Ta \*[Lt]   Ta "greater than"
+.It Li Pm     Ta +\-      Ta \*[Pm]   Ta "plus minus"
+.It Li If     Ta infinity Ta \*[If]   Ta "infinity"
+.It Li Na     Ta \*[Na]   Ta \*[Na]   Ta "not a number"
+.It Li Ba     Ta \*[Ba]   Ta \*[Ba]   Ta "vertical bar"
 .El
 .Pp
-.Sy Note :
-The string named
-.Ql q
-should be written as
-.Ql \e*q
-since it is only one char.
+The names of the columns
+.Sy Nroff
+and
+.Sy Troff
+are a bit misleading;
+.Sy Nroff
+shows the
+.Tn ASCII
+representation, while
+.Sy Troff
+gives the best glyph form available.
+For example, a Unicode enabled
+.Tn TTY Ns - Ns
+device will have proper glyph representations for all strings, whereas the
+enhancement for a Latin1
+.Tn TTY Ns - Ns
+device is only the plus-minus sign.
+.Pp
+String names which consist of two characters can be written as
+.Ql \e*(xx ;
+string names which consist of one character can be written as
+.Ql \e*x .
+A generic syntax for a string name of any length is
+.Ql \e*[xxx]
+(this is a
+.Tn GNU
+.Xr troff 1
+extension).
 .
 .
+\#
+\#=====================================================================
+\#
 .Sh DIAGNOSTICS
 .
 The debugging facilities for
