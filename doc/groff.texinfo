@@ -1503,7 +1503,8 @@ spaces one line, but
 spaces four lines.  The number@tie{}4 is an argument to the @code{sp}
 request which says to space four lines instead of one.  Arguments are
 separated from the request and from each other by spaces (@emph{no}
-tabs).  More details on this can be found in @ref{Request Arguments}.
+tabs).  More details on this can be found in @ref{Request and Macro
+Arguments}.
 
 The primary function of @code{gtroff} is to collect words from input
 lines, fill output lines with those words, justify the right-hand margin
@@ -4404,7 +4405,7 @@ or@tie{}0 if @var{anything} is empty or not a valid numeric expression.
 Due to the way arguments are parsed, spaces are not allowed in
 expressions, unless the entire expression is surrounded by parentheses.
 
-@xref{Request Arguments}, and @ref{Conditionals and Loops}.
+@xref{Request and Macro Arguments}, and @ref{Conditionals and Loops}.
 
 
 @c =====================================================================
@@ -4664,23 +4665,27 @@ requests cause a break implicitly; using the single quote control
 character prevents this.
 
 @menu
-* Request Arguments::
+* Request and Macro Arguments::
 @end menu
 
-@node Request Arguments,  , Requests, Requests
-@subsubsection Request Arguments
+@node Request and Macro Arguments,  , Requests, Requests
+@subsubsection Request and Macro Arguments
 @cindex request arguments
-@cindex arguments to requests
+@cindex macro arguments
+@cindex arguments to requests and macros
 
-Arguments to requests (and macros) are processed much like the shell:
+Arguments to requests and macros are processed much like the shell:
 The line is split into arguments according to
 spaces.@footnote{Plan@tie{}9's @code{troff} implementation also allows
 tabs for argument separation -- @code{gtroff} intentionally doesn't
-support this.}  An argument which is intended to contain spaces can
-either be enclosed in double quotes, or have the spaces @dfn{escaped}
-with backslashes.
+support this.}
 
-Here are a few examples:
+@cindex spaces, in a macro argument
+An argument to a macro which is intended to contain spaces can either be
+enclosed in double quotes, or have the spaces @dfn{escaped} with
+backslashes.  This is @emph{not} true for requests.
+
+Here are a few examples for a hypothetical macro @code{uh}:
 
 @Example
 .uh The Mouse Problem
@@ -4771,9 +4776,9 @@ Double quotes in the @code{ds} request are handled differently.
 
 @code{gtroff} has a @dfn{macro} facility for defining a series of lines
 which can be invoked by name.  They are called in the same manner as
-requests -- arguments also may be passed in the same manner.
+requests -- arguments also may be passed basically in the same manner.
 
-@xref{Writing Macros}, and @ref{Request Arguments}.
+@xref{Writing Macros}, and @ref{Request and Macro Arguments}.
 
 @c ---------------------------------------------------------------------
 
@@ -9215,8 +9220,8 @@ name@tie{}@var{n}, two-character name @var{nm}).  If @var{name} already
 exists, @code{ds} overwrites the previous definition.  Only the syntax form
 using brackets can take arguments which are handled identically to
 macro arguments; the single exception is that a closing bracket as an
-argument must be enclosed in double quotes.  @xref{Request Arguments},
-and @ref{Parameters}.
+argument must be enclosed in double quotes.  @xref{Request and Macro
+Arguments}, and @ref{Parameters}.
 
 Example:
 
@@ -10036,7 +10041,7 @@ escape concatenates all the arguments separated by spaces.  A
 similar escape is @code{\$@@}, which concatenates all the
 arguments with each surrounded by double quotes, and separated by
 spaces.  If not in compatibility mode, the input level of double quotes
-is preserved (see @ref{Request Arguments}).
+is preserved (see @ref{Request and Macro Arguments}).
 @endDefesc
 
 @Defesc {\\$0, , , }
@@ -10059,7 +10064,7 @@ The @code{als} request can make a macro have more than one name.
 @endExample
 @endDefesc
 
-@xref{Request Arguments}.
+@xref{Request and Macro Arguments}.
 
 
 @c =====================================================================
