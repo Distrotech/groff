@@ -3,9 +3,9 @@
 .\" There is no hope that this will ever look right under nroff.
 .\"
 .\" Comments beginning with %% are cut lines so portions of this
- \" document can be automatically extracted.  %%TUTORIAL%% begins the
+.\" document can be automatically extracted.  %%TUTORIAL%% begins the
 .\" tutorial part; %%REFERENCE%% the reference part.  %%POSTLUDE%% the
- \" bibliography and end matter after the reference part.  
+.\" bibliography and end matter after the reference part.  
 .\"
 .\" This document was written for free use and redistribution by
 .\" Eric S. Raymond <esr@thyrsus.com> in August 1995.
@@ -28,13 +28,13 @@ Making Pictures With GNU PIC
 .AU
 Eric S. Raymond
 .AI
-<esr@snark.thyrsus.com>
+\[la]\fIesr@snark.thyrsus.com\fP\[ra]
 .AB
 The \fBpic\fP language is a \fBtroff\fP extension that makes it easy
 to create and alter box-and-arrow diagrams of the kind frequently used
 in technical papers and textbooks.  This paper is both an introduction
-to and reference for \fIgpic\fP(1), the implementation distributed by
-the Free Software Foundation for use with \fIgroff\fP(1).
+to and reference for \fIgpic\/\fP(1), the implementation distributed by
+the Free Software Foundation for use with \fIgroff\/\fP(1).
 .AE
 .\"%%TUTORIAL%%
 .NH 1
@@ -50,33 +50,33 @@ layouts, and other kinds of illustration involving repetitive uses of
 simple geometric forms and splines.  Because these descriptions are
 procedural and object-based, they are both compact and easy to modify.
 .PP
-The \fIgpic\fP(1) implementation of \fBpic\fP is distributed by the
-Free Software Foundation for use with their \fIgroff\fP(1)
+The \fIgpic\/\fP(1) implementation of \fBpic\fP is distributed by the
+Free Software Foundation for use with their \fIgroff\/\fP(1)
 implementation of \fBtroff\fP.  Because both implementations are
 widely available in source form for free, they are good bets for
 writing very portable documentation.
 .NH 2
 PIC Versions
 .PP
-The original 1984 pre-\fIditroff\fP(1) version of \fBpic\fP is long
+The original 1984 pre-\fIditroff\/\fP(1) version of \fBpic\fP is long
 obsolete.  The rewritten 1991 version is still available as part of
 the Documenter's Work Bench module of System V.
 .PP
 Where differences between Documenter's Work Bench (1991) \fBpic\fP and GNU
 \fBpic\fP need to be described, original \fBpic\fP is referred to as
-"DWB pic".  Details on the history of the program are given at the end
-of this document.
+\[lq]DWB pic\[rq].  Details on the history of the program are given at the
+end of this document.
 .PP
-In this document, the \fIgpic\fP(1) extensions will be marked as such.
+In this document, the \fIgpic\/\fP(1) extensions will be marked as such.
 .NH 1
 Invoking PIC
 .PP
 Every \fBpic\fP description is a little program, which gets compiled
-by \fIpic\fP(1) into \fIgtroff\fP(1) macros.  Programs that process or
-display \fIgtroff\fP(1) output need not know or care that parts of the
+by \fIpic\/\fP(1) into \fIgtroff\/\fP(1) macros.  Programs that process or
+display \fIgtroff\/\fP(1) output need not know or care that parts of the
 image began life as \fBpic\fP descriptions.
 .PP
-The \fIpic\fP(1) program tries to translate anything between \fB.PS\fP
+The \fIpic\/\fP(1) program tries to translate anything between \fB.PS\fP
 and \fB.PE\fP markers, and passes through everything else.  The normal
 definitions of \fB.PS\fP and \fB.PE\fP in the \fIms\fP macro package
 and elsewhere have also the side-effect of centering the \fBpic\fP output
@@ -84,8 +84,8 @@ on the page.
 .NH 2
 PIC Error Messages
 .PP
-If you make a \fBpic\fP syntax error, \fIgpic\fP(1) will issue an
-error message in the standard \fIgcc\fP(1)-like syntax.  A typical
+If you make a \fBpic\fP syntax error, \fIgpic\/\fP(1) will issue an
+error message in the standard \fIgcc\/\fP(1)-like syntax.  A typical
 error message looks like this,
 .KS
 .DS
@@ -96,7 +96,7 @@ pic:pic.ms:<nnn>: giving up on this picture
 .R
 .KE
 .LP
-where <nnn> is a line number, and <token> is a token near (usually
+where \[la]nnn\[ra] is a line number, and \[la]token\[ra] is a token near (usually
 just after) the error location.
 .NH 1
 Basic PIC Concepts
@@ -110,11 +110,11 @@ flow of data in \fBpic\fP processing:
 .PS
 ellipse "document";
 arrow;
-box "\fIgpic\fP(1)"
+box "\fIgpic\/\fP(1)"
 arrow;
-box width 1.2 "\fIgtbl\fP(1) or \fIgeqn\fP(1)" "(optional)" dashed;
+box width 1.2 "\fIgtbl\/\fP(1) or \fIgeqn\/\fP(1)" "(optional)" dashed;
 arrow;
-box "\fIgtroff\fP(1)";
+box "\fIgtroff\/\fP(1)";
 arrow;
 ellipse "PostScript"
 .PE
@@ -123,15 +123,17 @@ ellipse "PostScript"
 This was produced from the following \fBpic\fP program:
 .KS
 .DS
+.ps -1
+.vs -1
 .CW
 \&.PS
 ellipse "document";
 arrow;
 box "\efIpic\efP(1)"
 arrow;
-box width 1.2 "\efIgtbl\efP(1) or \efIgeqn\efP(1)" "(optional)" dashed;
+box width 1.2 "\efIgtbl\e/\efP(1) or \efIgeqn\e/\efP(1)" "(optional)" dashed;
 arrow;
-box "\efIgtroff\efP(1)";
+box "\efIgtroff\e/\efP(1)";
 arrow;
 ellipse "PostScript"
 \&.PE
@@ -150,8 +152,9 @@ this facility in detail in the next section).
 We also get to see \fBpic\fP's simple syntax.  Statements are ended by
 newlines or semicolons.  String quotes are required around all text
 arguments, whether or not they contain spaces.  In general, the order
-of command arguments and modifiers like "width 1.2" or "dashed" doesn't
-matter, except that the order of text arguments is significant.
+of command arguments and modifiers like \[lq]width 1.2\[rq] or
+\[lq]dashed\[rq] doesn't matter, except that the order of text arguments
+is significant.
 .PP
 Here are all but one of the basic \fBpic\fP objects at their default sizes:
 .KS
@@ -175,7 +178,7 @@ to collect objects into \fIblock composites\fP which allows you to
 treat the whole group as a single object (resembling a box) for many
 purposes.  We'll describe both of these later on.
 .PP
-The box, ellipse, circle, and block composite objects are \fIclosed\fR;
+The box, ellipse, circle, and block composite objects are \fIclosed\/\fR;
 lines, arrows, arcs and splines are \fIopen\fP.  This distinction
 will often be important in explaining command modifiers.
 .PP
@@ -262,7 +265,8 @@ arc cw; move; "arc";
 .PE
 .CE "6: Result of \fBarc cw; move; \"arc\"\fP"
 .PP
-All we've done differently here is specify "cw" for a clockwise arc.
+All we've done differently here is specify \[lq]cw\[rq] for a clockwise arc
+(\[lq]ccw\[rq] specifies counter-clockwise direction).
 Observe how it changes the default direction to down, rather than up.
 .PP
 Another good way to see this via with the following program:
@@ -281,7 +285,7 @@ line; arc; arc cw; line;
 .PE
 .CE "7: Result of \fBline; arc; arc cw; line\fP"
 .LP
-Notice that we did not have to specify "up" for the second arc to be
+Notice that we did not have to specify \[lq]up\[rq] for the second arc to be
 joined to the end of the first.
 .PP
 Finally, observe that a string, alone, is treated as text to be
@@ -295,16 +299,14 @@ Sizes and Spacing
 Sizes are specified in inches.  If you don't like inches, it's
 possible to set a global style variable \fBscale\fP that changes the
 unit.  Setting \fBscale = 2.54\fP will effectively change the internal
-unit to centimeters (all other size variable valuess will be scaled
+unit to centimeters (all other size variable values will be scaled
 correspondingly).
 .NH 2
 Default Sizes of Objects
 .PP
 Here are the default sizes for \fBpic\fP objects:
-.RS
-.KS
-.TS
-tab(@), linesize(2);
+.TS H
+center, tab(@), linesize(2);
 lb | lb
 l | l.
 .sp 2p
@@ -312,6 +314,7 @@ Object@Default Size
 .sp 2p
 _
 .sp 2p
+.TH
 box@0.75" wide by 0.5" high
 circle@0.5" diameter
 ellipse@0.75" wide by 0.5" high
@@ -321,8 +324,6 @@ arrow@0.5" long
 .sp 5p
 _
 .TE
-.KE
-.RE
 .PP
 The simplest way to think about these defaults is that they make the
 other basic objects fit snugly into a default-sized box.
@@ -331,19 +332,19 @@ Objects Do Not Stretch!
 .PP
 Text is rendered in the current font with normal troff line spacing.
 Boxes, circles, and ellipses do \fInot\fP automatically resize to fit
-enclosed text.  Thus, if you say \fBbox "text far too long"\fP
-you'll get this:
+enclosed text.  Thus, if you say \fBbox "this text far too long for a
+default box"\fP you'll get this:
 .KS
 .PS
 box "this text is far too long for a default box"
 .PE
 .CE "1: Boxes do not automatically resize"
-.PP
+.LP
 which is probably not the effect you want.
 .NH 2
 Resizing Boxes
 .PP
-To change the box size, you can specify a box width with the "width"
+To change the box size, you can specify a box width with the \[lq]width\[rq]
 modifier:
 .KS
 .PS
@@ -351,15 +352,15 @@ box width 3 "this text is far too long for a default box"
 .PE
 .CE "2: Result of \fBbox width 3 \"text far too long\"\fP"
 .PP
-This modifier takes a dimension in inches.  There is also a "height"
+This modifier takes a dimension in inches.  There is also a \[lq]height\[rq]
 modifier that will change a box's height.  The \fBwidth\fP keyword may
 be abbreviated to \fBwid\fP; the \fBheight\fP keyword to \fBht\fP.
 .NH 2
 Resizing Other Object Types
 .PP
-To change the size of a circle, give it a \fBrad\fP or \fBdiam\fP
-modifier; this changes the radius or diameter of the circle, according
-to the numeric argument that follows.
+To change the size of a circle, give it a \fBrad[ius]\fP or
+\fBdiam[eter]\fP modifier; this changes the radius or diameter of the
+circle, according to the numeric argument that follows.
 .KS
 .PS
 {circle rad 0.1; move down 0.2 from last circle .s; "0.1"};
@@ -373,7 +374,7 @@ it how many inches to move in the current direction.
 Ellipses are sized to fit in the rectangular box defined by their
 axes, and can be resized with \fBwidth\fP and \fBheight\fP like boxes.
 .PP
-You can also change the radius of curvature of an arc with \fBrad\fP
+You can also change the radius of curvature of an arc with \fBrad[ius]\fP
 (which specifies the radius of the circle of which the arc is a segment).
 Larger values yield flatter arcs.
 .KS
@@ -425,19 +426,23 @@ of the drawing area as being gridded with standard-sized boxes.
 # Draw a demonstration up left arrow with grid box overlay
 define gridarrow
 {
+	move right 0.1
 	[
 		{arrow up left $1;}
 		box wid 0.5 ht 0.5 dotted with .nw at last arrow .end;
-		for i = 2 to ($1 / 0.5) do
-		{
+		for i = 2 to ($1 / 0.5) do {
 			box wid 0.5 ht 0.5 dotted with .sw at last box .se;
 		}
 		move down from last arrow .center;
 		[
-			if ( $1 == boxht ) then { "\fBline up left\fP" } else { sprintf("\fBarrow up left %g\fP", $1) };
+			if ( $1 == boxht ) then {
+				"\fBline up left\fP"
+			} else {
+				sprintf("\fBarrow up left %g\fP", $1)
+			}
 		]
 	] 
-	move right from last [] .e;
+	move right 0.1 from last [] .e;
 }
 gridarrow(0.5);
 gridarrow(1);
@@ -449,9 +454,10 @@ undef gridarrow
 .NH 2
 Multi-Segment Line Objects
 .PP
-A "line" or "arrow" object may actually be a path consisting of any number of
-segments of varying lengths and directions.  To describe a path,
-connect several line or arrow commands with the keyword \fBthen\fP.
+A \[lq]line\[rq] or \[lq]arrow\[rq] object may actually be a path
+consisting of any number of segments of varying lengths and directions.
+To describe a path, connect several line or arrow commands with the
+keyword \fBthen\fP.
 .KS
 .PS
 define zigzag { $1 right 1 then down .5 left 1 then right 1 }
@@ -484,7 +490,7 @@ undef zigzag;
 .CE "3: \fBspline right 1 then down .5 left 1 then right 1\fP"
 .PP
 You can describe many natural-looking but irregular curves this
-way. For example: 
+way.  For example: 
 .KS
 .PS
 [spline right then up then left then down ->;]
@@ -496,18 +502,18 @@ move up 0.2;
 [spline left then up right then down right ->;]
 .PE
 .CE "4: Two more spline examples"
-.PP
+.LP
 Note the arrow decorations.  Arrowheads can be applied naturally to
 any path-based object, line or spline.  We'll see how in the next
 section.
 .NH 1
-Decorating Objects.
+Decorating Objects
 .NH 2
 Dashed Objects
 .PP
 We've already seen that the modifier \fBdashed\fP can change the line
 style of an object from solid to dashed.  GNU \fBgpic\fP permits you to
-dot or dash ellipses, circles, and arcs (and splines in \*(tx mode
+dot or dash ellipses, circles, and arcs (and splines in \*[tx] mode
 only); some versions of DWB may only permit dashing of lines and
 boxes.  It's possible to change the dash interval by specifying a
 number after the modifier.
@@ -529,7 +535,7 @@ box dashed 0.2 "0.2";
 Dotted Objects
 .PP
 Another available qualifier is \fBdotted\fP.  GNU \fBgpic\fP permits
-you to dot or dash ellipses, circles, and arcs (and splines in \*(tx
+you to dot or dash ellipses, circles, and arcs (and splines in \*[tx]
 mode only); some versions of DWB may only permit dashing of lines and
 boxes.  It too can be suffixed with a number to specify the interval
 between dots:
@@ -550,18 +556,18 @@ box dotted 0.2 "0.2";
 Rounding Box Corners
 .PP
 It is also possible, in GNU \fBgpic\fP only, to modify a box so it has
-rounded corners
+rounded corners:
 .KS
 .PS
 box rad 0.05 "rad 0.05";
 move;
 box rad 0.1 "rad 0.1";
 move;
-box rad 0.15 "rad=0.15"; 
+box rad 0.15 "rad 0.15"; 
 move;
-box rad 0.2 "rad=0.2"; 
+box rad 0.2 "rad 0.2"; 
 move;
-box rad 0.25 "rad=0.25"; 
+box rad 0.25 "rad 0.25"; 
 .PE
 .CE "3: \fBbox rad\fP with increasing radius values"
 .PP
@@ -581,7 +587,7 @@ line <- ->
 .PP
 In fact, the \fBarrow\fP command is just shorthand for \fBline ->\fP.  And
 there is a double-head modifier <->, so the figure above could have been made
-with \f(CWline <->\fP.
+with \fBline <->\fP.
 .PP
 Arrowheads have a \fBwidth\fP attribute, the distance across the rear;
 and a \fBheight\fP attribute, the length of the arrowhead along the shaft.
@@ -602,8 +608,8 @@ The default thickness of the lines used to draw objects is controlled by the
 variable.
 This gives the thickness of lines in points.
 A negative value means use the default thickness:
-in \*(tx output mode, this means use a thickness of 8 milliinches;
-in \*(tx output mode with the
+in \*[tx] output mode, this means use a thickness of 8 milliinches;
+in \*[tx] output mode with the
 .B -c
 option, this means use the line thickness specified by
 .B .ps
@@ -621,10 +627,10 @@ line.
 .NH 2
 Invisible Objects
 .PP
-The modifier \fBinvis\fP makes an object entirely invisible.  This
+The modifier \fBinvis[ible]\fP makes an object entirely invisible.  This
 used to be useful for positioning text in an invisible object that is
 properly joined to neighboring ones.  Newer DWB versions and GNU
-\fBpic\fP treat standalone text in exactly this way.
+\fBpic\fP treat stand-alone text in exactly this way.
 .NH 2
 Filled Objects
 .PP
@@ -669,10 +675,10 @@ circle shaded ""green"" outline ""black"";\fR"
 Alternative spellings are \fBcolour\fP, \fBcolored\fP, \fBcoloured\fP,
 and \fBoutlined\fP.
 .PP
-Currently, color support is not available in \*(tx mode.  Predefined color
-names for \fIgroff\fP(1) are in the device macro files, for example
-\f(CWps.tmac\fP; additional colors can be defined with the \f(CW.defcolor\fP
-request (see the manual page of GNU \fItroff\fP(1) for more details).
+Currently, color support is not available in \*[tx] mode.  Predefined color
+names for \fIgroff\/\fP(1) are in the device macro files, for example
+\f(CWps.tmac\fP; additional colors can be defined with the \fB.defcolor\fP
+request (see the manual page of GNU \fItroff\/\fP(1) for more details).
 .NH 1
 More About Text Placement
 .PP
@@ -696,10 +702,10 @@ move;
 .PE
 .CE "1: Text attributes"
 .PP
-What actually happens is that n text strings are centered in a box
+What actually happens is that \fIn\fP text strings are centered in a box
 that is \fBtextwid\fP wide by \fBtextht\fP high.  Both these variables
 are initially zero (that is \fBpic\fR's way of not making assumptions
-about \fI[tg]roff\fP(1)'s default point size).
+about \fI[tg]roff\/\fP(1)'s default point size).
 .PP
 In GNU \fBgpic\fR, objects can have an
 .B aligned
@@ -789,6 +795,7 @@ ellipse
 .R
 .DE
 .KE
+.LP
 Why is this?  Because the exit point for the current direction is
 already set when you draw the object.  The second arrow in Figure
 \*[SN]2 dropped downwards from the circle's attachment point for an
@@ -810,22 +817,23 @@ Naming Objects By Order Of Drawing
 The simplest (and generally the most useful) way to name an object is
 with a \fBlast\fP clause.  It needs to be followed by an object type
 name; \fBbox\fP, \fBcircle\fP, \fBellipse\fP, \fBline\fP, \fBarrow\fP,
-\fBspline\fP or \fB[]\fP (the last type refers to a \fIcomposite
+\fBspline\fP, \fB""\fP, or \fB[]\fP (the last type refers to a \fIcomposite
 object\fP which we'll discuss later).  So, for example, the \fBlast
 circle\fP clause in the program attached to Figure \*[SN]3 refers to the
 last circle drawn.
 .PP
 More generally, objects of a given type are implicitly numbered
-(starting from 1).  You can refer to (say) the third ellipse in the
+(starting from\~1).  You can refer to (say) the third ellipse in the
 current picture with \fB3rd ellipse\fP, or to the first box as \fB1st
-box\fP, or to the fifth line as \fB5th line\fP.
+box\fP, or to the fifth text string (which isn't an attribute to another
+object) as \fB5th ""\fP.
 .PP
 Objects are also numbered backwards by type from the last one.
 You can say \fB2nd last box\fP to get the second-to-last box, or
 \fB3rd last ellipse\fP to get the third-to-last box.
 .PP
-In places where \fIn\fBth\fR is allowed, \fB`\fIexpr\fB'th\fR is also allowed.
-Note that
+In places where \fIn\/\fBth\fR is allowed, \fB`\fIexpr\/\fB'th\fR is
+also allowed.  Note that
 .B 'th
 is a single token: no space is allowed between the
 .B '
@@ -833,13 +841,13 @@ and the \fBth\fP.
 For example,
 .IP
 .KS
-.R
 .DS
+.CW
 for i = 1 to 4 do {
    line from `i'th box.nw to `i+1'th box.se
 }
-.R
 .DE
+.R
 .KE
 .NH 2
 Naming Objects With Labels
@@ -856,7 +864,7 @@ A: box "first" "object"
 move;
 B: ellipse "second" "object"
 move;
-arrow left at A;
+arrow right at A .r;
 \&.PE
 .R
 .DE
@@ -870,7 +878,7 @@ A: box "first" "object"
 move;
 B: ellipse "second" "object"
 move;
-arrow left at A .l;
+arrow right at A .r;
 .PE
 .CE "1: Example of label use"
 The \fBat\fP statement in the fourth line uses the label \fBA\fP (the
@@ -901,7 +909,7 @@ and Y increases upwards).  An absolute location may always be written in the
 conventional form as two comma-separated numbers surrounded by
 parentheses (and this is recommended for clarity).  In contexts where
 it creates no ambiguity, the pair of X and Y coordinates suffices
-without punctuation.
+without parentheses.
 .PP
 It is a good idea to avoid absolute coordinates, however.  They tend
 to make picture descriptions difficult to understand and modify.
@@ -911,7 +919,7 @@ relative to \fBpic\fP objects and previous locations.
 .NH 2
 Locations Relative to Objects
 .PP
-The symbol \fBhere\fP always refers to the position of the last object
+The symbol \fBHere\fP always refers to the position of the last object
 drawn or the destination of the last \fBmove\fP.
 .PP
 Alone and unqualified, a \fBlast circle\fP or any other way of
@@ -963,10 +971,13 @@ explanation of Figure 7.3's program is now complete.
 \&\fB.s\fP, \fB.e\fP, and \fB.w\fP respectively; they can even be
 abbreviated to \fB.t\fP, \fB.b\fP, \fB.l\fP and \fB.r\fP).
 .PP
-The names \fBcenter\fP, \fBtop\fP, \fBbottom\fP, \fBleft\fP and
-\fBright\fP can also be used (without the leading dot) in a prefix
-form marked by \fBof\fP; thus, \fBcenter of last circle\fP and
-\fBtop of 2nd last ellipse\fP are both valid object references.
+The names \fBcenter\fP, \fBtop\fP, \fBbottom\fP, \fBleft\fP, \fBright\fP,
+\fBnorth\fP, \fBsouth\fP, \fBeast\fP, and \fBwest\fP can also be used
+(without the leading dot) in a prefix form marked by \fBof\fP; thus,
+\fBcenter of last circle\fP and \fBtop of 2nd last ellipse\fP are both
+valid object references.  Finally, the names \fBleft\fP and \fBright\fP
+can be prefixed with \fBupper\fP and \fBlower\fP which both have the
+obvious meaning.
 .PP
 Arc objects also have compass point; they are the compass points of
 the implied circle.
@@ -974,26 +985,25 @@ the implied circle.
 Locations Relative to Open Objects
 .PP
 Every open object (line, arrow, arc, or spline) has three named
-points: \fB.start\fP, \fB.center\fP, and \fB.end\fP.  They can
-also be used without leading dots in the \fBof\fP prefix form.
+points: \fB.start\fP, \fB.center\fP (or \fB.c\fP), and \fB.end\fP.  They
+can also be used without leading dots in the \fBof\fP prefix form.
 The center of an arc is the center of its circle, but the center of
 a line, path, or spline is halfway between its endpoints.
 .KS
 .PS
 define critical {
 	[ ME: $1;
-		dot(ME.c);     ".center" rjust at ME.center + (-0.1, 0.1)
-		dot(ME.start); ".start"  rjust at ME.start  + (-0.1, 0.1)
-		dot(ME.end);   ".end"    rjust at ME.end    + (-0.1, 0.1)
+		dot(ME.c);     "\fB.center\fP" rjust at ME.center + (-0.1, 0.1)
+		dot(ME.start); "\fB.start\fP"  rjust at ME.start  + (-0.1, 0.1)
+		dot(ME.end);   "\fB.end\fP"    rjust at ME.end    + (-0.1, 0.1)
 	]
-	move down 0.2 from last [] .s;
 }
 critical(line up right 1);
-move right from last [] .e;
+move right 1 from last [] .e;
 critical(arc rad 0.5 cw);
-move right from last [] .e;
+move down 0.5 from 2nd last [] .s;
 critical(line right 1 then down .5 left 1 then right 1);
-move right from last [] .e;
+move right 1 from last [] .e;
 critical(spline right 1 then up right then left then left 1);
 .PE
 .CE "2: Special points on open objects"
@@ -1016,12 +1026,12 @@ Interpolation Between Positions
 .PP
 A position may be interpolated between any two positions.  The syntax
 is `\fIfraction\fP \fBof the way between\fP \fIposition1\fP \fBand\fP
-\fIposition2\fP.'  For example, you can say \fB1/3 of the way between
+\fIposition2\fP'.  For example, you can say \fB1/3 of the way between
 here and last ellipse .ne\fP.  The fraction may be in
 numerator/denominator form or may be an ordinary number (values are
 \fInot\fP restricted to [0,1]).  As an alternative to this verbose
-syntax, you can say `\fIfraction\fP  \fB<\fP\fIposition1\fP \fB,\fP
-\fIposition2\fP\fB>\fP.'; thus, the example could also be written
+syntax, you can say `\fIfraction\fP  \fB<\,\fP\fIposition1\fP \fB,\fP
+\fIposition2\/\fP\fB>\fP'; thus, the example could also be written as
 \fB1/3 <here, last ellipse>\fP.
 .KS
 .PS
@@ -1031,10 +1041,11 @@ dot(P); move right 0.1; "P";
 .PE
 .CE "3: \fBP: 1/3 of the way between last arrow .start and last arrow .end\fP"
 .PP
-This facility can be used, for example, to double connections.
+This facility can be used, for example, to draw double connections.
 .KS
 .PS
-A: box "yin"; move; B: box "yang";
+A: box "yin"; move;
+B: box "yang";
 arrow right at 1/4 <A.e,A.ne>;
 arrow left  at 1/4 <B.w,B.sw>;
 .PE
@@ -1059,7 +1070,7 @@ Note the use of the short form for interpolating points.
 Projections of Points
 .PP
 Given two positions \fIp\fP and \fIq\fP, the position
-\fB(\fP\fIp\fP\fB,\fP \fIq\fP\fB)\fP has the X coordinate of \fIp\fP
+\fB(\,\fP\fIp\fP\fB,\fP \fIq\fP\fB)\fP has the X coordinate of \fIp\fP
 and the Y coordinate of \fIq\fP.  This can be helpful in placing an
 object at one of the corners of the virtual box defined by two other
 objects.
@@ -1110,36 +1121,46 @@ yields:
 box "from"
 move 0.75;
 ellipse "to"
-arc cw from 1/3 of the way between last box .n and last box .ne to last ellipse .n;
+arc cw from 1/3 of the way \
+    between last box .n and last box .ne to last ellipse .n;
 .PE
 .CE "6: A tricky connection specified with English-like syntax"
 .PP
 The \fBwith\fP modifier allows you to identify a named attachment
-point of an object with another point.  This is very useful for connecting
-objects in a natural way.  For an example, consider these two programs:
+point of an object (or a position within the object) with another point.
+This is very useful for connecting objects in a natural way.  For an
+example, consider these two programs:
 .KS
 .PS
 [
-	box wid 0.5 ht 0.5; box wid 0.75 ht 0.75;
-	move down from last box .s 0.1;
+	[
+		box wid 0.5 ht 0.5;
+		box wid 0.75 ht 0.75;
+	]
+	move down 0.3 from last [] .s 0.1;
 	"\fBbox wid 0.5 ht 0.5; box wid 0.75 ht 0.75\fP"
 ]
-move from last [].e 2
+move from last [].e 1.5
 [
-	box wid 0.5 ht 0.5; box wid 0.75 ht 0.75 with .sw at last box .se;
-	move down from last box .s 0.1;
-	"\fBbox wid 0.5 ht 0.5; box wid 0.75 ht 0.75 with .sw at last box .se;\fP"
+	[
+		box wid 0.5 ht 0.5;
+		box wid 0.75 ht 0.75 with .sw at last box .se;
+	]
+	move down 0.3 from last [] .s 0.1;
+	box invisible "\fBbox wid 0.5 ht 0.5;\fP" \
+	  "\fBbox wid 0.75 ht 0.75 with .sw at last box .se;\fP"
 ]
 .PE
 .CE "7: Using the \fBwith\fP modifier for attachments"
 .NH 2
-The chop modifier
+The `chop' Modifier
 .PP
 When drawing lines between circles that don't intersect them at a
 compass point, it is useful to be able to shorten a line by the radius 
 of the circle at either or both ends.  Consider the following program:
 .KS
 .DS
+.CW
 \&.PS
 circle "x"
 circle "y" at 1st circle - (0.4, 0.6) 
@@ -1149,6 +1170,7 @@ arrow from 2nd circle to 3rd circle chop
 arrow from 3rd circle to 1st circle chop 
 \&.PE
 .DE
+.R
 .KE
 .LP
 It yields the following:
@@ -1164,11 +1186,11 @@ arrow from 3rd circle to 1st circle chop
 .CE "8: The \fBchop\fR modifier"
 .LP
 Notice that the \fBchop\fR attribute moves arrowheads rather than
-stepping on them. By default, the \fBchop\fR modifier shortens both
+stepping on them.  By default, the \fBchop\fR modifier shortens both
 ends of the line by \fBcirclerad\fR.  By suffixing it with a number
 you can change the amount of chopping.
 .PP
-If you say \fBline ... chop \fIr1\fP chop \fIr2\fP\fR with \fIr1\fP
+If you say \fBline .\|.\|.\& chop \fIr1\fP chop \fIr2\fP\fR with \fIr1\fP
 and \fIr2\fP both numbers, you can vary the amount of chopping at both
 ends.  You can use this in combination with trigonometric functions
 to write code that will deal with more complex intersections.
@@ -1233,7 +1255,7 @@ are a class.  You could write \fBlast [] .s\fP as an equivalent
 reference, usable anywhere a location is needed.  This construction is
 very important for putting together large, multi-part diagrams.
 .PP 
-Blocks are also a variable-scoping mechanism, like a \fIgroff\fP(1)
+Blocks are also a variable-scoping mechanism, like a \fIgroff\/\fP(1)
 environment.  All variable assignments done inside a block are undone
 at the end of it.  To get at values within a block, write a name of
 the block followed by a dot, followed by the variable or label you
@@ -1279,7 +1301,7 @@ the arrow in the last line will be attached to object \fBP\fP, not
 object \fBQ\fP.
 .PP
 In DWB \fBpic\fP, only references one level deep into enclosed blocks
-were permitted. GNU \fBgpic\fP removes this restriction.
+were permitted.  GNU \fBgpic\fP removes this restriction.
 .PP
 The combination of block variable scoping, assignability of labels and
 the macro facility that we'll describe later on can be used to
@@ -1293,7 +1315,7 @@ change its overall behavior.  We've mentioned several of them in
 previous sections.  They're all described here.  For each variable,
 the default is given.
 .TS H
-tab(@), linesize(2);
+center, tab(@), linesize(2);
 lb | lb | lb
 l | n | l.
 .sp 2p
@@ -1303,7 +1325,7 @@ _
 .sp 2p
 .TH
 boxht@0.5@Default height of a box
-boxwid@0.75@Default height of a box
+boxwid@0.75@Default width of a box
 lineht@0.5@Default length of vertical line
 linewid@0.75@Default length of horizontal line
 linethick@-1@Default line thickness
@@ -1339,8 +1361,8 @@ size-related state variables so that their values remain equivalent in
 the new units.
 .PP
 The command \fBreset\fP resets all style variables to their defaults.
-You can give it a comma-separated list of variable names as arguments,
-in which case it resets only those.
+You can give it a list of variable names as arguments (optionally
+separated by commas), in which case it resets only those.
 .PP
 State variables retain their values across pictures until reset.
 .NH 1
@@ -1355,10 +1377,11 @@ Anywhere a number is expected, the language will also accept a
 variable.  Variables may be the built-in style variable described in
 the last section, or new variables created by assignment.
 .PP
-DWB \fBpic\fP supports only the ordinary assignment via =, defines the
-variable in the current block if it is not already defined there, and
+DWB \fBpic\fP supports only the ordinary assignment via \fB=\fP, defines
+the variable in the current block if it is not already defined there, and
 then changes the value in the current block.
-GNU \fBgpic\fP supports an alternate form of assignment using :=. The
+GNU \fBgpic\fP supports an alternate form of assignment using \fB:=\fP.
+The
 .I variable
 (right side) must already be defined,
 and the value of
@@ -1366,7 +1389,7 @@ and the value of
 will be changed only in the innermost block in which it is defined.
 .PP
 You can use the height, width, radius, and x and y coordinates of any
-object or corner in expressions If \fBA\fP is an object label or name,
+object or corner in expressions.  If \fBA\fP is an object label or name,
 all the following are valid:
 .KS
 .DS
@@ -1379,13 +1402,15 @@ A.ht                 # and its height
 .R
 .DE
 .KE
+.LP
 Note the second expression, showing how to extract a corner coordinate.
 .PP
-Basic arithmetic resembling those of C operators are available; +, *,
--, /, and %.  So is ^ for exponentiation.  Grouping is permitted in
-the usual way using parentheses.  GNU \fBgpic\fP allows logical
-operators to appear in expressions; ! (logical negation, not
-factorial), &&, ||, ==, !=, >=, <=, <, >.
+Basic arithmetic resembling those of C operators are available; \fB+\fP,
+\fB*\fP, \fB-\fP, \fB/\fP, and \fB%\fP.  So is \fB^\fP for exponentiation.
+Grouping is permitted in the usual way using parentheses.  GNU \fBgpic\fP
+allows logical operators to appear in expressions; \fB!\&\fP (logical
+negation, not factorial), \fB&&\fP, \fB|\||\fP, \fB==\fP, \fB!=\fP,
+\fB>=\fP, \fB<=\fP, \fB<\fP, \fB>\fP.
 .PP
 Various built-in functions are supported: \fBsin(\fIx\fB)\fR,
 \fBcos(\fIx\fB)\fR, \fBlog(\fIx\fB)\fR, \fBexp(\fIx\fB)\fR,
@@ -1393,7 +1418,7 @@ Various built-in functions are supported: \fBsin(\fIx\fB)\fR,
 \fBatan2(\fIx\fB,\fIy\fB)\fR, \fBmin(\fIx\fB,\fIy\fB)\fR,
 \fBint(\fIx\fB)\fR, \fBrand()\fP, and \fBsrand()\fP.
 Both \fBexp\fP and \fBlog\fP are
-base 10; \fBint\fP does integer truncation; \fBrand()\fP returns a
+base\~10; \fBint\fP does integer truncation; \fBrand()\fP returns a
 random number in [0-1), and \fBsrand()\fP sets the seed for 
 a new sequence of pseudo-random numbers to be returned by \fBrand()\fP
 (\fBsrand()\fP is a GNU extension).
@@ -1403,8 +1428,8 @@ GNU \fBgpic\fP also documents a one-argument form or rand,
 \fIx\fP, but this is deprecated and may be removed in a future
 version.
 .PP
-The function \fBsprintf()\fP behaves like a C \fIsprintf\fP(3) that
-only takes %, %e, %f, and %g format strings.
+The function \fBsprintf()\fP behaves like a C \fIsprintf\/\fP(3)
+function that only takes %, %e, %f, and %g format strings.
 .NH 1
 Macros
 .PP
@@ -1423,22 +1448,25 @@ This defines \fIname\fR as a macro to be replaced by the replacement
 text (not including the braces).  The macro may be called as 
 .DS
 .CW
-\fIname\fB(\fIarg1, arg2, ... argn\fB)\fR
+\fIname\fB(\fIarg1, arg2, \|.\|.\|.\& argn\fB)\fR
 .R
 .DE
 .LP
-The arguments (if any) will be substituted for tokens $1, $2 ... $n
+The arguments (if any) will be substituted for tokens \fB$1\fP, \fB$2\fP
+\&.\|.\|.\& \fB$n\fP
 appearing in the replacement text.
 .PP
-As an example of macro use, consider the following:
+As an example of macro use, consider this:
 .KS
 .DS
 .CW
+.ps -1
+.vs -1
 \&.PS
 # Plot a single jumper in a box, $1 is the on-off state.
 define jumper { [
     shrinkfactor = 0.8;
-    Outer: box invis wid 0.5 ht 1;
+    Outer: box invis wid 0.45 ht 1;
 
     # Count on end ] to reset these
     boxwid = Outer.wid * shrinkfactor / 2;
@@ -1472,16 +1500,19 @@ jumperblock(1,1,0,0,1,0);
 move;
 jumperblock(1,0,1,0,1,1);
 \&.PE
+.ps
+.vs
 .R
 .DE
 .KE
+.LP
 It yields the following:
 .KS
 .PS
-# Plot a single jumper in a $1 by $2 box, $3 is the on-off state
+# Plot a single jumper in a box, $1 is the on-off state.
 define jumper { [
     shrinkfactor = 0.8;
-    Outer: box invis wid 0.5 ht 1;
+    Outer: box invis wid 0.45 ht 1;
 
     # Count on end ] to reset these
     boxwid = Outer.wid * shrinkfactor / 2;
@@ -1512,7 +1543,7 @@ define jumperblock {
 
 # Sample macro invocations
 jumperblock(1,1,0,0,1,0);
-move;
+move 0.25;
 jumperblock(1,0,1,0,1,1);
 .PE
 .CE "1: Sample use of a macro"
@@ -1521,9 +1552,10 @@ This macro example illustrates how you can combine [], brace grouping,
 and variable assignment to write true functions.
 .PP
 One detail the example above does not illustrate is the fact that
-macro argument parsing is not token-oriented.  If you call \fBjumper(
-1 )\fP, the value of $1 will be \fB" 1 "\fP. You could even call
-\fBjumper(big  string)\fP to give $1 the value \fB"big  string"\fP.
+macro argument parsing is not token-oriented.  If you call
+\fBjumper(\ 1\ )\fP, the value of $1 will be \fB"\ 1\ "\fP.  You could
+even call \fBjumper(big\ string)\fP to give $1 the value
+\fB"big\ string"\fP.
 .PP
 If you want to pass in a coordinate pair, you can avoid getting
 tripped up by the comma by wrapping the pair in parentheses.
@@ -1548,32 +1580,33 @@ The statement
 .DS
 \f(CWcopy\fP \fIfilename\fR
 .DE
+.LP
 inserts the contents of \fIfilename\fR in the \fBpic\fP input stream.
-Any .PS/.PE pair in the file will be ignored.  This, you can use this
-to include pre-generated images.
+Any \fB.PS\fP/\fB.PE\fP pair in the file will be ignored.  This, you
+can use this to include pre-generated images.
 .PP
 A variant of this statement replicates the \fBcopy thru\fP feature of
-\fIgrap\fP(1).  If you say
+\fIgrap\fP(1).  The call
 .DS
 \f(CWcopy\fP \fIfilename\fR \f(CWthru\fP \fImacro\fP
 .DE
 .LP
-calls the \fImacro\fP (which may be either a name or replacement text)
+calls \fImacro\fP (which may be either a name or replacement text)
 on the arguments obtained by breaking each line of the file into
-blank-separated fields.  The macro may have up to 9 arguments.  The
+blank-separated fields.  The macro may have up to 9\~arguments.  The
 replacement text may be delimited by braces or by a pair of instances
 of any character not appearing in the rest of the text.
 .PP
 If you write
 .DS
-\f(CWcopy thru\fP \fImacro\fP
+\f(CWcopy\fP \f(CWthru\fP \fImacro\fP
 .DE
 .LP
 omitting the filename, lines to be parsed are taken from the input
-source up to the next .PE.
+source up to the next \fB.PE\fP.
 .PP
-In either of the \fBcopy\fP commands, GNU \fBgpic\fP permits a
-trailing `\fBuntil\fP \fIword\fP' clause to be added which terminates
+In either of the last two \fBcopy\fP commands, GNU \fBgpic\fP permits a
+trailing `\fBuntil\fP \fIword\/\fP' clause to be added which terminates
 the copy when the first word matches the argument (the default
 behavior is therefore equivalent to \fBuntil .PE\fP).
 .PP
@@ -1611,10 +1644,9 @@ box
 .NH 2
 Debug Messages
 .PP
-The command \fBprint\fR accepts any number of comma-separated
-arguments, concatenates their output forms, and writes the result to
-standard error.  Each argument must be an expression, a position, or
-a text string.
+The command \fBprint\fR accepts any number of arguments, concatenates
+their output forms, and writes the result to standard error.  Each
+argument must be an expression, a position, or a text string.
 .NH 2
 Escape to Post-Processor
 .PP
@@ -1624,23 +1656,23 @@ If you write
 .DE
 .LP
 \fBpic\fP concatenates the arguments and pass them through as a line
-to troff or \*(tx.  Each
+to troff or \*[tx].  Each
 .I arg
 must be an expression, a position, or text.
 This has a similar effect to a line beginning with
 .B .
 or
-\fB\e\fR,
+\fB\e\fR\|,
 but allows the values of variables to be passed through.
 .NH 2
 Executing Shell Commands
 .PP
 The command 
 .DS
-\f(CWsh { \fIanything...\fP }\fP
+\f(CWsh\fP \f(CW{\fP \fIanything.\|.\|.\fP \f(CW}\fP
 .DE
 .LP
-macroexpands the text in braces, then executes it as a shell command.
+macro-expands the text in braces, then executes it as a shell command.
 This could be used to generate images or data tables for later
 inclusion.  The delimiters shown as {} here may also be two copies of
 any one character not present in the shell command text.  In either
@@ -1678,12 +1710,12 @@ for i = 0 to 2 * pi by 0.1 do {
 .LP
 The syntax of the \fBfor\fP statement is:
 .DS
-\fBfor\fR \fIvariable\fR \fB=\fR \fIexpr1\fR \fBto\fR \fIexpr2\fR \
-[\fBby\fR [\fB*\fR]\fIexpr3\fR] \fBdo\fR \fIX\fR \fIbody\fR \fIX\fR
+\fBfor\fR \fIvariable\fR \fB=\fR \fIexpr1\/\fR \fBto\fR \fIexpr2\/\fR \
+[\fBby\fR [\fB*\fR]\fIexpr3\/\fR] \fBdo\fR \fIX\fR \fIbody\fR \fIX\fR
 .DE
 The semantics are as follows:  Set
 .I variable
-to \fIexpr\fR1 .
+to \fIexpr1\fR.
 While the value of
 .I variable
 is less than or equal to
@@ -1698,10 +1730,10 @@ if
 .B by
 is not given, increment
 .I variable
-by 1.
+by\~1.
 If
 .I expr3
-is prefixed by
+is prefixed by\~\c
 .B *
 then
 .I variable
@@ -1709,12 +1741,13 @@ will instead be multiplied by
 \fIexpr3\fR.
 .I X
 can be any character not occurring in
-\fIbody\fR; or the two Xs may be paired braces (as in the \fBsh\fR command).
+\fIbody\fR; or the two \fIX\/\fPs may be paired braces (as in the
+\fBsh\fR command).
 .PP
 The syntax of the \fBif\fP statement is as follows:
 .DS
 \fBif\fR \fIexpr\fR \fBthen\fR \fIX\fR \fIif-true\fR \fIX\fR \
-[\fBelse\fR \fIY\fR \fIif-false\fR \fIY\fR]
+[\fBelse\fR \fIY\fR \fIif-false\fR \fIY\/\fR]
 .DE
 Its semantics are as follows: Evaluate
 \fIexpr\fR;
@@ -1729,48 +1762,55 @@ can be any character not occurring in
 can be any character not occurring in
 \fIif-false\fR.
 .PP
-Eithe or both of the X or Y pairs may instead be balanced pairs of
-braces ({ and }) as in the \fBsh\fR command.  In either case, the
+Eithe or both of the
+.I X
+or
+.I Y
+pairs may instead be balanced pairs of
+braces ({ and\~}) as in the \fBsh\fR command.  In either case, the
 \fIif-true\fR may contain balanced pairs of braces.  None of these
 delimiters will be seen inside strings.
 .PP
 All the usual relational operators my be used in conditional expressions;
-! (logical negation, not factorial), &&, ||, ==, !=, >=, <=, <, >.
+\fB!\&\fP (logical negation, not factorial), \fB&&\fP, \fB|\||\fP, \fB==\fP,
+\fB!=\fP, \fB>=\fP, \fB<=\fP, \fB<\fP, \fB>\fP.
 .PP
-String comparison is also supported using == and !=.  String
+String comparison is also supported using \fB==\fP and \fB!=\fP.  String
 comparisons may need to be parenthesized to avoid syntactic
 ambiguities.
 .NH 1
 Interface To [gt]roff
 .PP
 The output of \fBpic\fP is \fB[gt]roff\fP drawing commands.  The GNU
-\fIgpic\fP(1) command warns that it relies on drawing extensions
-present in \fIgroff\fP(1) that are not present in \fItroff\fP(1).
+\fIgpic\/\fP(1) command warns that it relies on drawing extensions
+present in \fIgroff\/\fP(1) that are not present in \fItroff\/\fP(1).
 .NH 2
 Scaling Arguments
 .PP
-The DWB \fIpic\fP(1) program will accept one or two arguments to
+The DWB \fIpic\/\fP(1) program will accept one or two arguments to
 \&\fB.PS\fP, which is interpreted as a width and height in inches to
-which the results of \fIpic\fP(1) should be scaled (width and height
+which the results of \fIpic\/\fP(1) should be scaled (width and height
 scale independently).  If there is only one argument, it is
 interpreted as a width to scale the picture to, and height will be
 scaled by the same proportion.
 .PP
 GNU \fBgpic\fP is less general; it will accept a single width to scale
 to, or a zero width and a maximum height to scale to.  With
-two nonzero arguments, it will scale to the maximum height.
+two non-zero arguments, it will scale to the maximum height.
 .NH 2
 How Scaling is Handled
 .PP
-When \fBpic\fP processes a picture description on input, it passes .PS
-and .PE through to the postprocessor. The .PS gets decorated with two
-numeric arguments which are the X and Y dimensions of the picture in
-inches.  The post-processor can use these to reserve space for the
-picture and center it.
+When \fBpic\fP processes a picture description on input, it passes
+\fB.PS\fP and \fB.PE\fP through to the postprocessor.  The \fB.PS\fP
+gets decorated with two numeric arguments which are the X and
+Y\~dimensions of the picture in inches.  The post-processor can use
+these to reserve space for the picture and center it.
 .PP
 The \fBmgs\fP macros, for example, include the following definitions:
 .KS
 .DS
+.ps -1
+.vs -1
 .CW
 \&.de PS
 \&.br
@@ -1787,23 +1827,25 @@ The \fBmgs\fP macros, for example, include the following definitions:
 \&..
 .R
 .DE
+.ps
+.vs
 .KE
 .LP
-Equivalent definition will be supplied by GNU \fIpic\fP(1) if you use
-the -mpic option; this should make it usable with macro pages other
-than \fIms\fR(1).
+Equivalent definition will be supplied by GNU \fIpic\/\fP(1) if you use
+the \-mpic option; this should make it usable with macro pages other
+than \fIms\/\fR(1).
 .PP
-If .PF is used instead of .PE, the \fBtroff\fP position is restored to
-what it was at the picture start (Kernighan notes that the F stands
-for "flyback").
+If \fB.PF\fP is used instead of \fB.PE\fP, the \fBtroff\fP position is
+restored to what it was at the picture start (Kernighan notes that
+the\~F stands for \[lq]flyback\[rq]).
 .PP
 The invocation
 .DS
-\&\fB.PS <\fP\fIfile\fP
+\&\fB.PS <\,\fP\fIfile\fP
 .DE
 .LP
-causes the contents of \fIfile\fP to replace the .PS line.  This
-feature is deprecated; use \fBcopy file\fR instead).
+causes the contents of \fIfile\fP to replace the \fB.PS\fP line.  This
+feature is deprecated; use `\fBcopy\fP \fIfile\fR' instead).
 .PP
 By default, input lines that begin with a period are passed to the
 postprocessor, embedded at the corresponding point in the output.
@@ -1817,10 +1859,10 @@ The state of \fB[gt]roff\fP's fill mode is preserved across pictures.
 .PP
 The Kernighan paper notes that there is a subtle problem with
 complicated equations inside \fBpic\fR pictures; they come out wrong if
-\fIeqn\fP(1)  has to leave extra vertical space for the equation.
+\fIeqn\/\fP(1) has to leave extra vertical space for the equation.
 If your equation involves more than subscripts and superscripts, you
 must add to the beginning of each equation the extra information
-\f(CWspace 0\fP.  He gives the following example:
+\fBspace\~0\fP.  He gives the following example:
 .KS
 .DS
 .CW
@@ -1844,16 +1886,16 @@ arrow
 Interface to TeX
 .PP
 .PP
-\*(tx mode is enabled by the
+\*[tx] mode is enabled by the
 .B \-t
 option.
-In \*(tx mode, pic will define a vbox called
+In \*[tx] mode, pic will define a vbox called
 .B \egraph
 for each picture.
 You must yourself print that vbox using, for example, the command
 .RS
 .LP
-.B
+.CW
 \ecenterline{\ebox\egraph}
 .RE
 .LP
@@ -1861,15 +1903,15 @@ Actually, since the vbox has a height of zero this will produce
 slightly more vertical space above the picture than below it;
 .RS
 .LP
-.B
+.CW
 \ecenterline{\eraise 1em\ebox\egraph}
 .RE
 .LP
 would avoid this.
 .PP
-You must use a \*(tx driver that supports the
+You must use a \*[tx] driver that supports the
 .B tpic
-specials, version 2.
+specials, version\~2.
 .PP
 Lines beginning with
 .B \e
@@ -1877,16 +1919,16 @@ are passed through transparently; a
 .B %
 is added to the end of the line to avoid unwanted spaces.
 You can safely use this feature to change fonts or to
-change the value of \fI\ebaselineskip\fR.
+change the value of \fB\ebaselineskip\fR.
 Anything else may well produce undesirable results; use at your own risk.
 Lines beginning with a period are not given any special treatment.
 .PP
-The \*(tx mode of \fIpic\fP(1) will \fInot\fP translate \fBtroff\fP
+The \*[tx] mode of \fIpic\/\fP(1) will \fInot\fP translate \fBtroff\fP
 font and size changes included in text strings!
 .NH 1
 Obsolete Commands
 .PP
-GNU \fIgpic\fP(1)  has a command
+GNU \fIgpic\/\fP(1)  has a command
 .DS
 \fBplot\fR \fIexpr\fR [\fB"\fItext\fB"\fR]
 .DE
@@ -1897,7 +1939,7 @@ with an argument of
 \fIexpr\fP.
 If
 .I text
-is omitted a format string of "%g" is used.
+is omitted a format string of \fB"%g"\fP is used.
 Attributes can be specified in the same way as for a normal text
 object.
 Be very careful that you specify an appropriate format string;
@@ -1908,16 +1950,18 @@ This is deprecated in favour of
 Some Larger Examples
 .PP
 Here are a few larger examples, with complete source code.
-.PP
 One of our earlier examples is generated in an instructive way using a
 for loop:
 .KS
 .DS
+.ps -1
+.vs -1
 .CW
 \&.PS
 # Draw a demonstration up left arrow with grid box overlay
 define gridarrow
 {
+    move right 0.1
     [
         {arrow up left $1;}
         box wid 0.5 ht 0.5 dotted with .nw at last arrow .end;
@@ -1932,7 +1976,7 @@ define gridarrow
             else { sprintf("\efBarrow up left %g\efP", $1) };
         ]
     ] 
-    move right from last [] .e;
+    move right 0.1 from last [] .e;
 }
 gridarrow(0.5);
 gridarrow(1);
@@ -1942,12 +1986,15 @@ undef gridarrow
 \&.PE
 .R
 .DE
+.ps
+.vs
 .KE
 .KS
 .PS
 # Draw a demonstration up left arrow with grid box overlay
 define gridarrow
 {
+	move right 0.1
 	[
 		{arrow up left $1;}
 		box wid 0.5 ht 0.5 dotted with .nw at last arrow .end;
@@ -1962,7 +2009,7 @@ define gridarrow
 			else { sprintf("\fBarrow up left %g\fP", $1) };
 		]
 	] 
-	move right from last [] .e;
+	move right 0.1 from last [] .e;
 }
 gridarrow(0.5);
 gridarrow(1);
@@ -1976,6 +2023,8 @@ Here's an example concocted to demonstrate layout of a large,
 multiple-part pattern:
 .KS
 .DS
+.ps -1
+.vs -1
 .CW
 \&.PS
 define filter {box ht 0.25 rad 0.125}
@@ -2041,6 +2090,8 @@ arrow from Top.D.end to Anchor.ne
 \&.PE
 .R
 .DE
+.ps
+.vs
 .KE
 .KS
 .PS
@@ -2111,7 +2162,7 @@ arrow from Top.D.end to Anchor.ne
 .NH 1
 PIC Reference
 .PP
-This is an annotated grammar of PIC.
+This is an annotated grammar of \fBpic\fP.
 .NH 2
 Lexical Items
 .PP
@@ -2119,42 +2170,68 @@ In general, \fBpic\fP is a free-format, token-oriented language that
 ignores whitespace outside strings.  But certain lines and contructs
 are specially interpreted at the lexical level:
 .PP
-A comment begins with # and continues to \en (comments may also follow
-text in a line).  A line beginning with a period or backslash may be
-interpreted as text to be passed through to the post-processor,
-depending on command-line options.  An end-of-line backslash is
-interpreted as a request to continue the line; the backslash and
-following newline are ignored.
-.LP
+A comment begins with \fB#\fP and continues to \fB\en\fP (comments may
+also follow text in a line).  A line beginning with a period or
+backslash may be interpreted as text to be passed through to the
+post-processor, depending on command-line options.  An end-of-line
+backslash is interpreted as a request to continue the line; the
+backslash and following newline are ignored.
+.PP
+.RS
 Here are the grammar terminals:
-.IP <number> 
-A decimal numeric constant.  May contain a decimal point or be
-expressed in scientific notation in the style of \fIprintf\fP(3)'s %e
-escape. (All variables are represented internally in floating-point.)
-.IP <string>
-Any ASCII characters surrounded by a pair of double quotes.  May
-contain a double quote if preceded by a backslash.
-.IP <variable>
-A lower-case alphabetic character, followed by any number of
-alphanumerics.  (Values of variables are preserved across pictures.)
-.IP <label>
-An upper-case alphabetic character, followed by any number of
-alphanumerics.
+.IP \s[-1]INT\s[0]
+A positive integer.
+.IP \s[-1]NUMBER\s[0]
+A floating point numeric constant.  May contain a decimal point or be
+expressed in scientific notation in the style of \fIprintf\/\fP(3)'s %e
+escape.  A trailing `i' or `I' (indicating the unit `inch') is ignored.
+.IP \s[-1]TEXT\s[0]
+A string enclosed in double quotes.  A double quote within \s[-1]TEXT\s[0]
+must be preceded by a backslash.  Instead of \s[-1]TEXT\s[0] you can use
+.DS
+.CW
+sprintf ( TEXT [, <expr> ...] )
+.R
+.DE
+.IP
+except after the `until' and `last' keywords, and after all ordinal
+keywords (`th' and friends).
+.IP \s[-1]VARIABLE\s[0]
+A string starting with a character from the set [a-z], optionally
+followed by one or more characters of the set [a-zA-Z0-9_].
+(Values of variables are preserved across pictures.)
+.IP \s[-1]LABEL\s[0]
+A string starting with a character from the set [A-Z], optionally
+followed by one or more characters of the set [a-zA-Z0-9_].
+.IP \s[-1]COMMAND-LINE\s[0]
+A line starting with a command character (`.' in groff mode, `\e' in
+\*[tx] mode).
+.IP \s[-1]BALANCED-TEXT\s[0]
+A string either enclosed by `{' and `}' or with \fIX\fP and \fIX\fP,
+where \fIX\fP doesn't occur in the string.
+.IP \s[-1]BALANCED-BODY\s[0]
+Delimiters as in \s[-1]BALANCED-TEXT\s[0]; the body will be interpreted as
+`\fB\[la]command\[ra].\|.\|.\fP'.
+.IP \s[-1]FILENAME\s[0]
+The name of a file.  This has the same semantics as \s[-1]TEXT\s[0].
+.IP \s[-1]MACRONAME\s[0]
+Either \s[-1]VARIABLE\s[0] or \s[-1]LABEL\s[0].
+.RE
 .NH 2
 Semi-Formal Grammar
 .PP
-Tokens not enclosed in <> are literals, except:
+Tokens not enclosed in \[la]\|\[ra] are literals, except:
 .IP 1.
-\en is a newline
+\fB\en\fP is a newline.
 .IP 2.
-three dots is a suffix meaning \&`replace with 0 or more repetitions
-of the preceding element.
+Three dots is a suffix meaning `replace with 0 or more repetitions
+of the preceding element(s).
 .IP 3.
-enclosure in square brackets has its usual meaning of `this clause is
+An enclosure in square brackets has its usual meaning of `this clause is
 optional'.
 .IP 4.
 Square-bracket-enclosed portions within tokens are optional.  Thus,
-\fBh[eigh]t\fR matches either `height' or `ht'.
+`h\^[eigh]\^t' matches either `height' or `ht'.
 .LP
 If one of these special tokens has to be referred to literally, it is
 surrounded with single quotes.
@@ -2163,183 +2240,350 @@ The top-level \fBpic\fP object is a picture.
 .DS
 .CW
 <picture> ::=
-  .PS [width [height]]\en
+  .PS [NUMBER [NUMBER]]\en
   <statement> ...
   .PE \en
 .R
 .DE
-.LP
-The \fIwidth\fP and \fIheight\fP arguments, if present, cause
-\fBpic\fR to attempt to scale the picture to the given dimensions in
-inches.  In no case, however, will the X and Y dimensions of the
-picture exceed the values of the style variables \fBmaxpswid\fP,
-\fBmaxpsheight\fP (which default to the normal 8.5 by 11 page size)\fP.
-.LP
-If the ending .PS is replaced by .PF, the page vertical position is
-restored to its value at the time .PS was encountered.  Another
-alternate form of invocation is \f(CW.PS <\fIfilename\fR, which
-replaces the .PS line with a file to be interpreted by \fBpic\fR (but
+.PP
+The arguments, if present, represent the width and height of the picture,
+causing \fBpic\fR to attempt to scale it to the given dimensions in
+inches.  In no case, however, will the X and Y\~dimensions of the
+picture exceed the values of the style variables \fBmaxpswid\fP and
+\fBmaxpsheight\fP (which default to the normal 8.5\^i by 11\^i page size).
+.PP
+If the ending `.PE' is replaced by `.PF', the page vertical position is
+restored to its value at the time `.PS' was encountered.  Another
+alternate form of invocation is `.PS\ <\s[-1]FILENAME\s[0]', which
+replaces the `.PS' line with a file to be interpreted by \fBpic\fR (but
 this feature is deprecated).
-.LP
-The .PS, .PE, and .PF macros to perform centering and scaling are
+.PP
+The `.PS', `.PE', and `.PF' macros to perform centering and scaling are
 normally supplied by the post-processor.
+.PP
+In the following, either `|' or a new line starts an alternative.
 .DS
 .CW
-
 <statement> ::=
   <command> ;
   <command> \en
-
-<command> ::=
-  <primitive> <modifier>...
-  <label> : <command>
-  <label> : <position>
-  <variable> = <expr>
-  <direction>
-  { <command> ... }
-  '[' <command> ... ']'
-  for <var> = <expr> to <expr> [by <expr>] do { <command> ... }
-  if <expr> then { <command> ... } [else { <command> ... }]
-  copy <filename> [until <word>]
-  copy <filename> thru <macroname> [until <word>] 
-  sh <balanced-text>
-  print <print-item>
-  reset [ <variable> ... ]
 .R
 .DE
-.LP
-The current position and direction are saved on entry to a { } and
-restored on exit from it.
-.LP
-Drawn objects within [ ] are treated as a single composite object with
-a rectangular shape (that of the bounding box of all the elements).
-Variable and label assignments within a block are local to the block.
-Current direction of motion is restored to the value at start of block
-upon exit.  Position is \fInot\fR restored (unlike { }) instead, the
-current position becomes the exit position for the current direction
-on the block's bounding box.
+.DS
+.CW
+<command> ::=
+  <primitive> [<attribute>]
+  LABEL : [;] <command>
+  LABEL : [;] <command> [<position>]
+  { <command> ... }
+  VARIABLE [:] = <any-expr>
+  up | down | left | right
+  COMMAND-LINE
+  command <print-arg> ...
+  print <print-arg> ...
+  sh BALANCED-TEXT
+  copy FILENAME
+  copy [FILENAME] thru MACRONAME [until TEXT]
+  copy [FILENAME] thru BALANCED-BODY [until TEXT]
+  for VARIABLE = <expr> to <expr> [by [*] <expr>] do BALANCED-BODY
+  if <any-expr> then BALANCED-BODY [else BALANCED-BODY]
+  reset [VARIABLE [[,] VARIABLE ...]]
+.R
+.DE
+.DS
+.CW
+<print-arg> ::=
+  TEXT
+  <expr>
+  <position>
+.R
+.DE
+.PP
+The current position and direction are saved on entry to a `{\ .\|.\|.\ }'
+construction and restored on exit from it.
+.PP
+Note that in `if' constructions, newlines can only occur in
+\s[-1]BALANCED-BODY\s[0].  This means that
+.DS
+.CW
+if
+{ ... }
+else
+{ ... }
+.R
+.DE
+.PP
+will fail.  You have to use the braces on the same line as the keywords:
+.DS
+.CW
+if {
+\&...
+} else {
+\&...
+}
+.R
+.DE
+.PP
+This restriction doesn't hold for the body after the `do' in a `for'
+construction.
+.DS
+.CW
+<any-expr> ::=
+  <expr>
+  <text-expr>
+  <any-expr> <logical-op> <any-expr>
+  ! <any-expr>
+.R
+.DE
+.DS
+.CW
+<logical-op> ::=
+  == | != | && | '||'
+.R
+.DE
+.DS
+.CW
+<text-expr> ::=
+  TEXT == TEXT
+  TEXT != TEXT
+.R
+.DE
+.PP
+Logical operators are handled specially by \fBpic\fP since they can
+deal with text strings also.  \fBpic\fP uses \%\fIstrcmp\/\fP(3) to test
+for equality of strings; an empty string is considered as `false' for
+`&&' and `|\||'.
 .DS
 .CW
 <primitive> ::=
-  box                   \fR# Closed object -- rectangle\fP
-  circle                \fR# Closed object -- circle\fP
-  ellipse               \fR# Closed object -- ellipse\fP
-  arc                   \fR# Open object -- quarter-circle\fP
-  line                  \fR# Open object -- line\fP
-  arrow                 \fR# Open object -- line with arrowhead\fP
-  spline                \fR# Open object -- spline curve\fP
+  box                   \fR# closed object \[em] rectangle\fP
+  circle                \fR# closed object \[em] circle\fP
+  ellipse               \fR# closed object \[em] ellipse\fP
+  arc                   \fR# open object \[em] quarter-circle\fP
+  line                  \fR# open object \[em] line\fP
+  arrow                 \fR# open object \[em] line with arrowhead\fP
+  spline                \fR# open object \[em] spline curve\fP
   move
-  <text> <text> ...     \fR# Text within invisible box\fP
-
-<attribute> ::=
-  h[eigh]t <expr>       \fR# Set height of closed figure \fP
-  wid[th] <expr>        \fR# Set width of closed figure \fP
-  rad[ius] <expr>       \fR# Set radius of circle/arc \fP
-  diam[eter] <expr>     \fR# Set diameter of circle/arc \fP
-  up [ <expr> ]         \fR# Move up \fP
-  down [ <expr> ]       \fR# Move down \fP
-  left [ <expr> ]       \fR# Move left \fP
-  right [ <expr> ]      \fR# Move right \fP
-  from <position>       \fR# Set from position of open figure\fP
-  to <position>         \fR# Set to position of open figure\fP
-  at <position>         \fR# Set center of open figure\fP
-  with <corner>         \fR# Fix corner at specified location\fP
-  by <expr> <expr>      \fR# Set object's attachment point\fP
-  then                  \fR# Sequential segment composition\fP
-  dotted [ <expr> ]     \fR# Set dotted line style\fP
-  dashed [ <expr> ]     \fR# Set dashed line style\fP
-  chop [ <expr> ]       \fR# Chop end(s) of segment\fP
-  ->                    \fR# Decorate with "to" arrow\fP
-  <-                    \fR# Decorate with "from" arrow\fP
-  <->                   \fR# Decorate with both arrows\fP
-  invis[ible]           \fR# Make primitive invisible\fP
-  solid                 \fR# Make closed figure solid\fP
-  fill <expr>           \fR# Set fill density for figure\fP
-  colo[u]r[ed] <word>   \fR# Set fill and outline color for figure\fP
-  outline[d] <word>     \fR# Set outline color for figure\fP
-  shaded <word>         \fR# Set fill color for figure\fP
-  thick[ness] <expr>    \fR# Set thickness for figure\fP
-  same                  \fR# Copy size of previous object\fP
-  <text> <text> ...     \fR# Text within object\fP
-  <expr>                \fR# Motion in the current direction\fR
+  TEXT TEXT ...         \fR# text within invisible box\fP
+  plot <expr> TEXT      \fR# formatted text\fP
+  '[' <command> ... ']'
 .R
 .DE
-.LP
+.PP
+Drawn objects within `[\ .\|.\|.\ ]' are treated as a single composite
+object with a rectangular shape (that of the bounding box of all the
+elements).  Variable and label assignments within a block are local to
+the block.  Current direction of motion is restored to the value at start
+of block upon exit.  Position is \fInot\fR restored (unlike `{\ }');
+instead, the current position becomes the exit position for the current
+direction on the block's bounding box.
+.DS
+.CW
+<attribute> ::=
+  h[eigh]t <expr>       \fR# set height of closed figure \fP
+  wid[th] <expr>        \fR# set width of closed figure \fP
+  rad[ius] <expr>       \fR# set radius of circle/arc \fP
+  diam[eter] <expr>     \fR# set diameter of circle/arc \fP
+  up [<expr>]           \fR# move up \fP
+  down [<expr>]         \fR# move down \fP
+  left [<expr>]         \fR# move left \fP
+  right [<expr>]        \fR# move right \fP
+  from <position>       \fR# set from position of open figure\fP
+  to <position>         \fR# set to position of open figure\fP
+  at <position>         \fR# set center of open figure\fP
+  with <path>           \fR# fix corner/named point at specified location\fP
+  with <position>       \fR# fix position of object at specified location\fP
+  by <expr-pair>        \fR# set object's attachment point\fP
+  then                  \fR# sequential segment composition\fP
+  dotted [<expr>]       \fR# set dotted line style\fP
+  dashed [<expr>]       \fR# set dashed line style\fP
+  thick[ness] <expr>    \fR# set thickness of lines\fP
+  chop [<expr>]         \fR# chop end(s) of segment\fP
+  '->' | '<-' | '<->'   \fR# decorate with arrows\fP
+  invis[ible]           \fR# make primitive invisible\fP
+  solid                 \fR# make closed figure solid\fP
+  fill[ed] [<expr>]     \fR# set fill density for figure\fP
+  colo[u]r[ed] TEXT     \fR# set fill and outline color for figure\fP
+  outline[d] TEXT       \fR# set outline color for figure\fP
+  shaded TEXT           \fR# set fill color for figure\fP
+  same                  \fR# copy size of previous object\fP
+  cw | ccw              \fR# set orientation of curves\fP
+  ljust | rjust         \fR# adjust text horizontally\fP
+  above | below         \fR# adjust text vertically\fP
+  aligned               \fR# align parallel to object\fP
+  TEXT TEXT ...         \fR# text within object\fP
+  <expr>                \fR# motion in the current direction\fR
+.R
+.DE
+.PP
 Missing attributes are supplied from defaults; inappropriate ones are
 silently ignored.  For lines, splines, and arcs, height and width
 refer to arrowhead size.
 .PP
-The \f(CWat\fP primitive sets the center of the current object.  The
-\f(CWwith\fP attribute fixes the specified feature of the given object
-to a specified location.
+The `at' primitive sets the center of the current object.  The
+`with' attribute fixes the specified feature of the given object
+to a specified location.  (Note that `with' is incorrectly described
+in the Kernighan paper.)
 .PP
-The \f(CWby\fR primitive is not documented in the tutorial portion of
+The `by' primitive is not documented in the tutorial portion of
 the Kernighan paper, and should probably be considered unreliable.
 .PP
-The primitive \fBarrow\fR is a synonym for \fBline ->\fR.
-.DS
-.CW
-<text> ::=
-  <string> [ <placement> ... ]
-  sprintf("format", <expr> ...) [ <placement> ... ]
-
-<placement> ::=
-  center | ljust | rjust | above | below
-.R
-.DE
-.LP
+The primitive `arrow' is a synonym for `line\ ->'.
+.PP
 Text is normally an attribute of some object, in which case successive
 strings are vertically stacked and centered on the object's center by
 default.  Standalone text is treated as though placed in an invisible
 box.
 .PP
 A text item consists of a string or sprintf-expression, optionally
-followed by positioning information.  Text or format strings may
-contain {gtn}roff font changes, size changes, and local motions,
-provided those changes are undone before the end of the current item.
+followed by positioning information.  Text (or strings specified with
+`sprintf' may contain [gtn]roff font changes, size changes, and local
+motions, provided those changes are undone before the end of the current
+item.
 .PP
-A position is an (x, y) coordinate pair.  There are lots of different
+A position is an (x,y) coordinate pair.  There are lots of different
 ways to specify positions:
 .DS
 .CW
 <position> ::=
-  <expr> , <expr>
-  <place> {+-} <expr> , <expr> 
-  <place> {+-} ( <expr> , <expr> )
-  ( <position> , <position> )
-  <expr> [of the way] between <position> and <position> 
-  <expr> '<' <position> , <position> '>'
-  ( <position> )
-
-<place> ::=
-  <label> [ <dot-corner> ]
-  <corner> of <label>
-  [0|1|2|3|4|5|6|7|8|9]th [last] <primitive> <dot-corner>
-  <expr>'th [last]<primitive> <dot-corner>
-  <corner> of [0|1|2|3|4|5|6|7|8|9]th [last] <primitive>
-  <corner> of <expr>'th [last] <primitive>
-  Here
-
-<dot-corner> ::=
-  .n | .e | .w | .s | .ne | .nw | .se | .sw | .c | .start | .end
-
-<corner> ::=
-  top | bot | left | right | start | end
+  <position-not-place>
+  <place>
 .R
 .DE
-.LP
-As Kernighan notes, "since barbarisms like \fB1th\fP and \fB3th\fP are
-barbaric, synonyms like \fB1st\fP and \fB3rd\fP are accepted as well".
+.DS
+.CW
+<position-not-place> ::=
+  <expr-pair>
+  <position> + <expr-pair>
+  <position> - <expr-pair>
+  ( <position> , <position> )
+  <expr> [of the way] between <position> and <position>
+  <expr> '<' <position> , <position> '>'
+.R
+.DE
+.DS
+.CW
+<expr-pair> ::=
+  <expr> , <expr>
+  ( expr-pair )
+.R
+.DE
+.DS
+.CW
+<place> ::=
+  <label>
+  <label> <corner>
+  <corner> [of] <label>
+  Here
+.R
+.DE
+.DS
+.CW
+<label> ::=
+  LABEL [. LABEL ...]
+  <nth-primitive>
+.R
+.DE
+.DS
+.CW
+<corner> ::=
+  .n | .e | .w | .s
+  .ne | .se | .nw | .sw
+  .c[enter] | .start | .end
+  .t[op] | .b[ot[tom]] | .l[eft] | .r[ight]
+  left | right | <top-of> | <bottom-of>
+  <north-of> | <south-of> | <east-of> | <west-of>
+  <center-of> | <start-of> | <end-of>
+  upper left | lower left | upper right | lower right
+.R
+.DE
+.DS
+.CW
+<xxx-of> ::=
+  xxx                   \fR# followed by `of'\fP
+.R
+.DE
+.DS
+.CW
+<nth-primitive> ::=
+  <ordinal> <object-type>
+  [<ordinal>] last <object-type>
+.R
+.DE
+.DS
+.CW
+<ordinal> ::=
+  INT th
+  INT st | INT nd | INT rd
+  ` <any-expr> 'th
+.R
+.DE
+.DS
+.CW
+<object-type> ::=
+  box
+  circle
+  ellipse
+  arc
+  line
+  arrow
+  spline
+  '[]'
+  TEXT
+.R
+.DE
+.PP
+As Kernighan notes, \[lq]since barbarisms like \fB1th\fP and \fB3th\fP are
+barbaric, synonyms like \fB1st\fP and \fB3rd\fP are accepted as well.\[rq]
 Objects of a given type are numbered from 1 upwards in order of
 declaration; the \fBlast\fP modifier counts backwards.
 .PP
-The "'th" form (which allows you to select a previous object with an
-expression, as opposed to a numeric literal) is not documented in DWB
-\fBpic\fR(1).
+The \[lq]'th\[rq] form (which allows you to select a previous object with
+an expression, as opposed to a numeric literal) is not documented in DWB's
+\fIpic\/\fR(1).
+.PP
+The \[la]\|\fIxxx\fP-of\|\[ra] rule is special: The lexical parser checks whether
+\fIxxx\fP is followed by the token `of' without eliminating it so that
+the grammar parser can still see `of'.  Valid examples of specifying a
+place with corner and label are thus
+.DS
+.CW
+A .n
+\&.n of A
+\&.n A
+north of A
+.R
+.DE
+.LP
+while
+.DS
+.CW
+north A
+A north
+.R
+.DE
+both cause a syntax error.  (DWB \fBpic\fP also allows the weird form
+`A\ north\ of'.)
+.PP
+Here the special rules for the `with' keyword using a path:
+.DS
+.CW
+<path> ::=
+  <relative-path>
+  ( <relative-path> , <relative-path> )
+.R
+.DE
+.DS
+.CW
+<relative-path> ::=
+  <corner>
+  . LABEL [. LABEL ...] [<corner>]
+.R
+.DE
 .PP
 The following style variables control output:
 .TS H
-tab(@), linesize(2);
+center tab(@), linesize(2);
 lb | lb | lb
 l | n | l.
 .sp 2p
@@ -2372,42 +2616,51 @@ fillval@0.5@Default fill value
 _
 .TE
 Any of these can be set by assignment, or reset using the \fBreset\fP
-statement.  Style variables assigned within [] blocks are restored to
+statement.  Style variables assigned within `[\ ]' blocks are restored to
 their beginning-of-block value on exit; top-level assignments persist
 across pictures.  Dimensions are divided by \fBscale\fR on output.
 .PP
 All \fBpic\fP expressions are evaluated in floating point; units
-default to inches.  Expressions have the following simple grammar,
-with semantics very similar to C expressions:
+are always inches (a trailing `i' or `I' is ignored).  Expressions have
+the following simple grammar, with semantics very similar to
+C\~expressions:
 .DS
 .CW
 <expr> ::=
+  VARIABLE
+  NUMBER
+  <place> <place-attribute>
   <expr> <op> <expr>
-  ! <expr>
-  ( <expr> )
   - <expr>
-  <variable>
-  <number>
-  <place> .x
-  <place> .y
-  <place> .ht
-  <place> .wid
-  <place> .rad
-  sin(<expr>)
-  cos(<expr>)
-  atan2(<expr>, <expr>)
-  log(<expr>)
-  exp(<expr>)
-  sqrt(<expr>)
-  min(<expr>, <expr>...)
-  max(<expr>, <expr>...)
-  int(<expr>)
-  rand()
-
-<op> :=
-  + | - | * | / | % | ^ |
-  != | == | '<' | '>' | >= | <= |
-  '||' | &&
+  ( <any-expr> )
+  ! <expr>
+  <func1> ( <any-expr> )
+  <func2> ( <any-expr> , <any-expr> )
+  rand ( )
+.R
+.DE
+.DS
+.CW
+<place-attribute>
+ .x | .y | .h[eigh]t | .wid[th] | .rad
+.R
+.DE
+.DS
+.CW
+<op> ::=
+  + | - | * | / | % | ^ | '<' | '>' | '<=' | '>='
+.R
+.DE
+.DS
+.CW
+<func1> ::=
+  sin | cos | log | exp | sqrt | int | rand | srand
+.R
+.DE
+.DS
+.CW
+<func2> ::=
+  atan2 | max | min
 .R
 .DE
 .LP
@@ -2419,7 +2672,7 @@ of the grammar (they behave as pre-processor macros to the language).
 These may be used to define pseudo-functions.
 .DS
 .CW
-\fBdefine\fP \fIname\fP \fB{\fP \fIreplacement text \fB}\fP
+\fBdefine\fP \fIname\fP \fB{\fP \fIreplacement-text\fP \fB}\fP
 .R
 .DE
 .LP
@@ -2427,49 +2680,58 @@ This defines \fIname\fR as a macro to be replaced by the replacement
 text (not including the braces).  The macro may be called as 
 .DS
 .CW
-\fIname\fB(\fIarg1, arg2, ... argn\fB)\fR
+\fIname\/\fB(\,\fIarg1, arg2, .\|.\|., argn\fB\/)\fR
 .R
 .DE
 .LP
-The arguments (if any) will be substituted for tokens $1, $2 ... $n
-appearing in the replacement text. To undefine a macro, say \fBundef\fP
+The arguments (if any) will be substituted for tokens $1, $2 .\|.\|.\& $n
+appearing in the replacement text.  To undefine a macro, say \fBundef\fP
 \fIname\fR, specifying the name to be undefined.
 .\"%%POSTLUDE%%
 .NH 1
 History and Acknowledgements
 .PP
 Original \fBpic\fP was written to go with Joseph Ossanna's original
-\fItroff\fP(1) by Brian Kernighan, and later re-written by Kernighan
+\fItroff\/\fP(1) by Brian Kernighan, and later re-written by Kernighan
 with substantial enhancements (apparently as part of the evolution of
-\fItroff\fP(1) into \fIditroff\fP(1) to generate
+\fItroff\/\fP(1) into \fIditroff\/\fP(1) to generate
 device-independent output).
 .PP
 The language had been inspired by some earlier graphics languages
 including \fBideal\fP and \fBgrap\fP.  Kernighan credits Chris van Wyk
 (the designer of \fBideal\fP) with many of the ideas that went into
 \fBpic\fP.
+.PP
+.\" the original definitions of EQ and EN cause insertion of vertical
+.\" space which is not appropriate here
+.de EQ
+..
+.de EN
+..
 .EQ
 delim $$
 .EN
-.PP
 The \fBpic\fP language was originally described by Brian Kernighan in
 Bell Labs Computing Science Technical Report #116 (you can obtain a
 PostScript copy of the revised version, [1], by sending a mail message to
-\fInetlib@research.att.com\fP with a body of \&`send 116 from
+\fInetlib@research.att.com\fP with a body of `send 116 from
 research/cstr').  There have been two revisions, in 1984 and 1991.
 .PP
 The document you are reading effectively subsumes Kernighan's
-description; it was written to fill in lacunae in the exposition and
-integrate in descriptions of the GNU \fIgpic\fP(1) features.
+description; it was written to fill in lacun\[ae] in the exposition and
+integrate in descriptions of the GNU \fIgpic\/\fP(1) features.
 .PP
-The GNU \fBgpic\fR implementation was written and is maintained by
-James Clark \fI<jjc@jclark.com>\fP.
+The GNU \fBgpic\fR implementation was written by James Clark
+\[la]\,\fIjjc@jclark.com\/\fP\[ra].  It is currently maintained by Werner
+Lemberg \[la]\,\fIwl@gnu.org\/\fP\[ra].
 .NH 1
 Bibliography
 .IP 1.
-Kernighan, B. W. \fBPIC -- A Graphics Language for Typesetting
-(Revised User Manual)\fP Bell Labs Computing Science Technical Report
+Kernighan, B. W.  \fBPIC \[em] A Graphics Language for Typesetting
+(Revised User Manual)\fP.  Bell Labs Computing Science Technical Report
 #116, December 1991.
 .IP 2.
-Van Wyk, C.J. \fBA high-level language for specifying pictures\fP \fIACM
-Transactions On Graphics\fP 1,2 (1982) 163-182.
+Van Wyk, C. J.  \fBA high-level language for specifying pictures\fP.
+\fIACM Transactions On Graphics\fP 1,2 (1982) 163-182.
+.
+.\" end of pic.ms

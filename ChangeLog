@@ -1,3 +1,20 @@
+2002-05-16  Werner LEMBERG  <wl@gnu.org>
+
+	Pic's `with' attribute now accepts positions.
+
+	* src/preproc/pic/pic.y: Make `.', BOX, CIRCLE, ELLIPSE, ARC, LINE,
+	ARROW, SPLINE, and `[' left-associative tokens to fix shift/reduce
+	conflicts.
+	(object_spec): Add rule for `WITH' and `position'.
+	(relative_path): Give `corner' the precedence of `CHOP'.
+	* src/preproc/pic/object.h (path): New members `pos' and
+	`is_position'.
+	* src/preproc/pic/object.cc: Updated initializers of `path'.
+	(path::follow): Handle `is_position'.
+
+	* doc/pic.ms: Completely updated grammar description.
+	Many typographical improvements.
+
 2002-05-15  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/env.cc(hyphen_trie::hpf_getc): Accept ^^x (char

@@ -1782,18 +1782,28 @@ string_list::~string_list()
   a_delete str;
 }
   
-/* A path is used to hold the argument to the with attribute. For example,
-`.nw' or `.A.s' or `.A'. The major operation on a path is to take a 
-place and follow the path through the place to place within the place.
-Note that `.A.B.C.sw' will work. */
+/* A path is used to hold the argument to the `with' attribute.  For
+   example, `.nw' or `.A.s' or `.A'.  The major operation on a path is to
+   take a place and follow the path through the place to place within the
+   place.  Note that `.A.B.C.sw' will work.
+
+   For compatibility with DWB pic, `with' accepts positions also (this
+   is incorrectly documented in CSTR 116). */
 
 path::path(corner c)
-: crn(c), label_list(0), ypath(0)
+: crn(c), label_list(0), ypath(0), is_position(0)
 {
 }
 
+path::path(position p)
+: crn(0), label_list(0), ypath(0), is_position(1)
+{
+  pos.x = p.x;
+  pos.y = p.y;
+}
+
 path::path(char *l, corner c)
-: crn(c), ypath(0)
+: crn(c), ypath(0), is_position(0)
 {
   label_list = new string_list(l);
 }
@@ -1831,6 +1841,12 @@ void path::set_ypath(path *p)
 
 int path::follow(const place &pl, place *result) const
 {
+  if (is_position) {
+    result->x = pos.x;
+    result->y = pos.y;
+    result->obj = 0;
+    return 1;
+  }
   const place *p = &pl;
   for (string_list *lb = label_list; lb; lb = lb->next)
     if (p->obj == 0 || (p = p->obj->find_label(lb->str)) == 0) {
@@ -1840,9 +1856,9 @@ int path::follow(const place &pl, place *result) const
   if (crn == 0 || p->obj == 0)
     *result = *p;
   else {
-    position pos = ((p->obj)->*(crn))();
-    result->x = pos.x;
-    result->y = pos.y;
+    position ps = ((p->obj)->*(crn))();
+    result->x = ps.x;
+    result->y = ps.y;
     result->obj = 0;
   }
   if (ypath) {

@@ -224,6 +224,8 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token DEFINE
 %token UNDEF
 
+%left '.'
+
 /* this ensures that plot 17 "%g" parses as (plot 17 "%g") */
 %left PLOT
 %left TEXT SPRINTF
@@ -243,6 +245,8 @@ parses properly. */
 
 %left VARIABLE NUMBER '(' SIN COS ATAN2 LOG EXP SQRT K_MAX K_MIN INT RAND SRAND LAST 
 %left ORDINAL HERE '`'
+
+%left BOX CIRCLE ELLIPSE ARC LINE ARROW SPLINE '['
 
 /* these need to be lower than '-' */
 %left HEIGHT RADIUS WIDTH DIAMETER FROM TO AT THICKNESS
@@ -478,7 +482,7 @@ print_args:
 	;
 
 print_arg:
-  	expr               %prec ','
+  	expr							%prec ','
 		{
 		  $$.str = new char[GDIGITS + 1];
 		  sprintf($$.str, "%g", $1);
@@ -487,7 +491,7 @@ print_arg:
 		}
 	| text
 		{ $$ = $1; }
-	| position          %prec ','
+	| position						%prec ','
 		{
 		  $$.str = new char[GDIGITS + 2 + GDIGITS + 1];
 		  sprintf($$.str, "%g, %g", $1.x, $1.y);
@@ -674,7 +678,7 @@ object_spec:
 		  lookup_variable("linewid", & $$->segment_width);
 		  $$->dir = current_direction;
 		}
-	| text   %prec TEXT
+	| text							%prec TEXT
 		{
 		  $$ = new object_spec(TEXT_OBJECT);
 		  $$->text = new text_item($1.str, $1.filename, $1.lineno);
@@ -742,7 +746,7 @@ object_spec:
 		  $$->radius = $3/2.0;
 		  $$->flags |= HAS_RADIUS;
 		}
-	| object_spec expr %prec HEIGHT
+	| object_spec expr					%prec HEIGHT
 		{
 		  $$ = $1;
 		  $$->flags |= HAS_SEGMENT;
@@ -856,6 +860,15 @@ object_spec:
 		  $$ = $1;
 		  $$->flags |= HAS_WITH;
 		  $$->with = $3;
+		}
+	| object_spec WITH position				%prec ','
+		{
+		  $$ = $1;
+		  $$->flags |= HAS_WITH;
+		  position pos;
+		  pos.x = $3.x;
+		  pos.y = $3.y;
+		  $$->with = new path(pos);
 		}
 	| object_spec BY expr_pair
 		{
@@ -1006,7 +1019,7 @@ object_spec:
 		  $$ = $1;
 		  $$->flags &= ~IS_CLOCKWISE;
 		}
-	| object_spec text   %prec TEXT
+	| object_spec text					%prec TEXT
 		{
 		  $$ = $1;
 		  text_item **p;
@@ -1165,7 +1178,8 @@ expr_pair:
 	;
 
 place:
-	label  %prec CHOP /* line at A left == line (at A) left */
+	/* line at A left == line (at A) left */
+	label							%prec CHOP
 		{ $$ = $1; }
 	| label corner
 		{
@@ -1296,11 +1310,11 @@ label_path:
 	;
 
 relative_path:
-	corner
+	corner							%prec CHOP
 		{ $$ = new path($1); }
 	/* give this a lower precedence than LEFT and RIGHT so that
 	   [A: box] with .A left == [A: box] with (.A left) */
-  	| label_path %prec TEXT
+  	| label_path						%prec TEXT
 		{ $$ = $1; }
 	| label_path corner
 		{
@@ -1491,7 +1505,7 @@ expr:
 		    YYABORT;
 		  }
 		}
-	| '-' expr    %prec '!'
+	| '-' expr						%prec '!'
 		{ $$ = -$2; }
 	| '(' any_expr ')'
 		{ $$ = $2; }

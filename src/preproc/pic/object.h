@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -76,11 +76,14 @@ struct place {
 struct string_list;
 
 class path {
+  position pos;
   corner crn;
   string_list *label_list;
   path *ypath;
+  int is_position;
 public:
   path(corner = 0);
+  path(position);
   path(char *, corner = 0);
   ~path();
   void append(corner);
