@@ -1,13 +1,127 @@
+2002-06-23  Bernd Warken  <bwarken@mayn.de>
+	________________________________________________________________
+	* release of groffer 0.8
+
+	* Makefile.sub: add copyright section
+
+	* groffer.man:
+	- Document the new options.
+	- Revise the documentation of the modes.
+	- Document the configuration files in new section `FILES'.
+	- Redesign section `EXAMPLES'.
+	- Remove documentation for `-W'.
+	
+	* groffer.sh: new debugging features
+	- Disabled by default; enabled by environment variables.
+	- Add landmark() to catch typos with quotes.
+	- Add a function call stack for suitable functions; implemented
+	  as within the argument checker func_check().
+	- This implies the need to provide `return' with some clean-up
+	  facility; implemented as `eval "$_return_..."'.
+	- Add option `--debug' to enable debugging at run-time.
+	- Actually, the groffer script uses only shell builtins found
+	  in `ash' (a subset of POSIX) and POSIX `sed' as the only
+	  external shell utility.
+		
+	* groffer.sh: customization of viewers
+	- In `groff' mode, the groffer viewing facilities are disabled.
+	- The postprocessor option `-P' costumizes the viewer only in
+	  some situations in the `groff' mode, so a new infrastructure
+	  for viewer customization is necessary.
+	- Allow to specify arguments to the viewer programs specified
+	  in `--*-viewer()'.
+	- Implement some of the essential X Toolkit resource options in
+	  groffer, but with use a leading double minus.
+	  -> `--bd': set border color.
+	  -> `--bg', `--background': set background color.
+	  -> `--bw': set border width.
+	  -> `--display': set X display.
+	  -> `--geometry': set size and position of viewer window.
+	  -> `--fg', `--foreground': set foreground color.
+	  -> `--ft', `--font': set font.
+	  -> `--resolution': set X resolution in dpi.
+	  -> `--title': set viewer window title.
+	  -> `--xrm': set X resource.
+	- Remove misnamed option `--xrdb'.
+	
+	* groffer.sh: new mode structure
+	- New Postcript mode `ps' (`--ps'):
+	  -> default viewers: gv,ghostview,gs_x11,gs;
+	  -> `--ps-viewer' sets the Postscript viewer.
+	- New mode `www' (`--www') for displaying in a web browser:
+	  -> default browsers: mozilla,netscape,opera,amaya,arena;
+	  -> `--www-viewer' sets the web browser.
+	- New dvi mode (`--dvi'); default viewer `xdvi':
+	  -> default viewers: xdvi,dvilx;
+	  -> `--dvi-viewer' sets the dvi viewer.
+	- New mode `auto':
+	  -> active if no other mode is given or by new option `--auto';
+	  -> selects from a sequence of modes that are tested until one
+	    of them succeeds.
+	  -> the default mode sequence is actually `ps', `x', `tty'.
+	  -> `--default-modes' sets this mode sequence as a comma
+	     separated string of program names, optionally each one
+	     with arguments).
+	- New mode `groff':
+	  -> process input like groff, ignore viewing options.
+	  -> activated by new option `--groff'.
+	  -> automatically active with one of `-V', `-X', `-Z'.
+	- Revise `tty' mode:
+	  -> allow several text devices.
+	  -> 
+	- Reorganize the mode management:
+	  -> new mode setting option `--mode'.
+	  -> logically separate source, groff, and display modes.
+	  -> intermediate output mode is now part of mode groff; remove
+	     any special features around `-Z'.
+	- Update usage() to reflect the new option structure.
+
+	* groffer.sh: add configuration files
+	- `/etc/groff/groffer.conf' system-wide configuration.
+	- `${HOME}/.groff/groffer.conf' user configuration.
+	- The configuration file are shell scripts for now; later
+	  implementations can identify this from the `#! /bin/sh' line.
+	
+	* groffer.sh: new data structure `list':
+	- Implement a `list' data structure as a string consisting of
+	  single-quoted elements, separated by a space character;
+	  embedded single-quotes are escaped.
+
+	* groffer.sh: new option parser based on `list':
+	- Write new option parser based on `list', compatible to both
+	  POSIX getopts() and GNU getopt().
+	- Long options are now available on GNU and non-GNU systems.
+	- Get rid of POSIX getopts() and GNU getopt().
+	- the `-W--longopt' construct is now obsolete; remove it.
+	- add test/function for `unset'.
+	- Option strings are now implemented as `list's in order to
+	  allow unusual characters in options.
+	- Parse $MANOPT first; translate essential arguments into
+	  groffer options.
+	
+	* groffer.man:
+	- determine prompt length for `.Shell_cmd'* dynamically.
+	- naming scheme for static strings and registers changed to
+	  `namespace:macro.variable'.
+
+	
+2002-06-16  Werner Lemberg  <wl@gnu.org>
+
+	* groffer.sh:
+	Implement man option `--ascii' by `-mtty-char'.
+           
+
 2002-05-31  Werner LEMBERG  <wl@gnu.org>
 
-	* groffer.man (@.Shell_cmd_width): Increase to 4m (we use `sh#' as
-	the prompt).
+        * groffer.man (@.Shell_cmd_width):
+	Increase to 4m (we use `sh#' as the prompt).
+
 
 2002-05-31  Bernd Warken  <bwarken@mayn.de>
 	________________________________________________________________
 	* release of groffer 0.7
 
-	* groffer.sh: remove incompatibility with the `ash' shell:
+	* groffer.sh: remove incompatibilities with the `ash' shell:
 	- do not use `!command':
           -> use `else'
 	  -> write `_not_' equivalents for some functions
@@ -24,11 +138,12 @@
 	- trouble with exporting external `$GROFF_*' variables:
 	  -> hope that they were exported in the calling shell.
 	- not smart about additional blanks:
-	  -> remove unnecessary withe space.
+	  -> remove unnecessary white space.
 
 	* groffer.sh: improve run-time speed:
 	- `ash' more than doubles the speed of `bash'.
 	- speed-up `man_setup()'.
+
 
 2002-05-30  Werner Lemberg  <wl@gnu.org>
 
