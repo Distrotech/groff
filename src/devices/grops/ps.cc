@@ -1302,9 +1302,13 @@ void ps_printer::media_set()
        .comment_arg("*PageSize")
        .comment_arg(media_name())
        .end_comment();
-    fprintf(out.get_file(),
-	    "<< /PageSize [ %d %d ] /ImagingBBox null >> setpagedevice\n",
-	    media_width(), media_height());
+    int w = media_width();
+    int h = media_height();
+    if (w > 0 && h > 0)
+      // warning to user is done elsewhere
+      fprintf(out.get_file(),
+	      "<< /PageSize [ %d %d ] /ImagingBBox null >> setpagedevice\n",
+	      w, h);
     out.simple_comment("EndFeature");
   }
 }
@@ -1394,19 +1398,27 @@ ps_printer::~ps_printer()
   out.begin_comment("PageOrder:")
      .comment_arg("Ascend")
      .end_comment();
-
   if (!(broken_flags & NO_PAPERSIZE)) {
+    int w = media_width();
+    int h = media_height();
+    if (w > 0 && h > 0)
       fprintf(out.get_file(),
 	      "%%%%DocumentMedia: %s %d %d %d %s %s\n",
 	      media_name(),			// tag name of media
-	      media_width(),			// media width
-	      media_height(),			// media height
+	      w,				// media width
+	      h,				// media height
 	      0,				// weight in g/m2
 	      "()",				// paper color, e.g. white
 	      "()"				// preprinted form type
-      );
+	     );
+    else {
+      if (h <= 0)
+	// see ps_printer::ps_printer
+	warning("bad paper height, defaulting to 11i");
+      if (w <= 0)
+	warning("bad paper width");
+    }
   }
-
   out.begin_comment("Orientation:")
      .comment_arg(landscape_flag ? "Landscape" : "Portrait")
      .end_comment(); 
@@ -1415,21 +1427,18 @@ ps_printer::~ps_printer()
     fprintf(out.get_file(), "%%%%Requirements: numcopies(%d)\n", ncopies);
   }
   out.simple_comment("EndComments");
-
   if (!(broken_flags & NO_PAPERSIZE)) {
     /* gv works fine without this one, but it really should be there. */
     out.simple_comment("BeginDefaults");
     fprintf(out.get_file(), "%%%%PageMedia: %s\n", media_name());
     out.simple_comment("EndDefaults");
   }
-
   out.simple_comment("BeginProlog");
   rm.output_prolog(out);
   if (!(broken_flags & NO_SETUP_SECTION)) {
     out.simple_comment("EndProlog");
     out.simple_comment("BeginSetup");
   }
-
 #if 1
   /*
    * Define paper (i.e., media) size for entire document here.
@@ -1437,7 +1446,6 @@ ps_printer::~ps_printer()
    */
   media_set();
 #endif
-
   rm.document_setup(out);
   out.put_symbol(dict_name)
      .put_symbol("begin");
