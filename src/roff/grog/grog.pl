@@ -174,7 +174,7 @@ sub help {
     exit 0;
 }
 
-refer = $refer || ($refer_open && $refer_close);
+$refer ||= $refer_open && $refer_close;
 
 if ($pic || $tbl || $eqn || $grn || $grap || $refer) {
     $s = "-";
