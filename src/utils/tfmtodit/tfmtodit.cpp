@@ -650,7 +650,7 @@ lig_chars table. `ch' gives the full-name of the character, `name'
 gives the groff name of the character, `i' gives its index in
 the encoding, which is filled in later  (-1 if it does not appear). */
 
-struct {
+struct S {
   const char *ch;
   int i;
 } lig_chars[] = {
@@ -670,7 +670,7 @@ enum { CH_f, CH_i, CH_l, CH_ff, CH_fi, CH_fl, CH_ffi, CH_ffl };
 
 // Each possible ligature appears in this table.
 
-struct S {
+struct S2 {
   unsigned char c1, c2, res;
   const char *ch;
 } lig_table[] = {

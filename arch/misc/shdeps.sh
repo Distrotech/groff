@@ -24,7 +24,7 @@
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 cat << ETX
-#!/bin/sed -f
+# shdeps.sed: Script generated automatically by \`make' -- do not modify!
 
 /^$/N
 /@GROFF_BIN_PATH_SETUP@/c\\
