@@ -2818,6 +2818,7 @@ node *bracket_node::copy()
   bracket_node *on = new bracket_node;
   node *last = 0;
   node *tem;
+  list->last = 0;
   for (tem = list; tem; tem = tem->next) {
     if (tem->next)
       tem->next->last = tem;

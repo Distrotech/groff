@@ -49,6 +49,7 @@ extern "C" {
 }
 #endif /* NEED_DECLARATION_PUTENV */
 
+// The number of commands must be in sync with MAX_COMMANDS in pipeline.h
 const int SOELIM_INDEX = 0;
 const int REFER_INDEX = SOELIM_INDEX + 1;
 const int GRAP_INDEX = REFER_INDEX + 1;
