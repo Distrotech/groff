@@ -1630,6 +1630,25 @@
 ..
 .
 .
+.\" NS Brq user macro
+.\" NS   enclose string in braces
+.\" NS
+.\" NS modifies:
+.\" NS   doc-macro-name, doc-quote-left, doc-quote-right
+.\" NS
+.\" NS width register `Brq' set in doc-common
+.
+.de Brq
+.  if !\n[doc-arg-limit] \
+.    ds doc-macro-name Brq
+.
+.  ds doc-quote-left {
+.  ds doc-quote-right }
+.
+.  doc-enclose-string \$@
+..
+.
+.
 .\" NS Dq user macro
 .\" NS   enclose string in double quotes
 .\" NS
@@ -1844,7 +1863,7 @@
 .  if !\n[doc-arg-limit] \
 .    ds doc-macro-name Bo
 .
-.  ds doc-quote-left [
+.  ds doc-quote-left "\*[doc-left-bracket]
 .
 .  doc-enclose-open \$@
 ..
@@ -1862,7 +1881,43 @@
 .  if !\n[doc-arg-limit] \
 .    ds doc-macro-name Bc
 .
-.  ds doc-quote-right ]
+.  ds doc-quote-right "\*[doc-right-bracket]
+.
+.  doc-enclose-close \$@
+..
+.
+.
+.\" NS Bro user macro
+.\" NS   brace open
+.\" NS
+.\" NS modifies:
+.\" NS   doc-macro-name, doc-quote-left
+.\" NS
+.\" NS width register `Bro' set in doc-common
+.
+.de Bro
+.  if !\n[doc-arg-limit] \
+.    ds doc-macro-name Bo
+.
+.  ds doc-quote-left {
+.
+.  doc-enclose-open \$@
+..
+.
+.
+.\" NS Brc user macro
+.\" NS   brace close
+.\" NS
+.\" NS modifies:
+.\" NS   doc-macro-name, doc-quote-right
+.\" NS
+.\" NS width register `Brc' set in doc-common
+.
+.de Brc
+.  if !\n[doc-arg-limit] \
+.    ds doc-macro-name Bc
+.
+.  ds doc-quote-right }
 .
 .  doc-enclose-close \$@
 ..
@@ -1990,7 +2045,7 @@
 .  if !\n[doc-arg-limit] \
 .    ds doc-macro-name Po
 .
-.  ds doc-quote-left (
+.  ds doc-quote-left "\*[doc-left-parenthesis]
 .
 .  doc-enclose-open \$@
 ..
@@ -2008,7 +2063,7 @@
 .  if !\n[doc-arg-limit] \
 .    ds doc-macro-name Pc
 .
-.  ds doc-quote-right )
+.  ds doc-quote-right "\*[doc-right-parenthesis]
 .
 .  doc-enclose-close \$@
 ..
@@ -3809,7 +3864,7 @@
 .de doc-enum-list
 .  nr doc-nesting-level +1
 .  nr doc-enum-list-count +1
-.  ds doc-out-string "\n[doc-enum-list-count].
+.  ds doc-out-string \n[doc-enum-list-count].
 .  doc-do-list
 ..
 .
@@ -3959,7 +4014,6 @@
 .de doc-set-vertical-and-indent
 .  ie \n[doc-have-indent] \{\
 .    nr doc-have-indent 0
-.    nr doc-have-tag-width 0
 .    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .      sp \n[doc-display-vertical]u
 .    in +\n[doc-list-offset-stack\n[doc-list-depth]]u
@@ -4048,6 +4102,8 @@
 .  doc-decrement-list-stack
 .  nr doc-list-depth -1
 .  doc-increment-list-stack
+.
+.  nr doc-have-tag-width 0
 ..
 .
 .
@@ -5900,6 +5956,14 @@
 .  tm mdoc error: end-macro (.em) respecification is not allowed. (#\n[.c])
 .  ab Should this have been `.Em ...'?
 ..
+.
+.
+.de doc-empty-line
+.  tm mdoc warning: Empty input line #\n[.c]!
+.  sp
+..
+.
+.blm doc-empty-line
 .
 .
 .ec

@@ -65,6 +65,9 @@
 .nr Bl 1
 .nr Bo 12n
 .nr Bq 12n
+.nr Brc 3
+.nr Bro 12n
+.nr Brq 12n
 .nr Bsx 6n\" ?
 .nr Bt 8n\" ?
 .nr Bx 12n
@@ -206,19 +209,51 @@
 .\" NS
 .\" NS width register `Dt' set above
 .
-.ds doc-volume-ds-USD   User's Supplementary Documents
-.ds doc-volume-ds-PS1   Programmers's Supplementary Documents
-.ds doc-volume-ds-AMD   Ancestral Manual Documents
+.ds doc-volume-ds-USD   System User's Supplementary Documents
+.ds doc-volume-ds-PS1   System Programmers's Supplementary Documents
+.ds doc-volume-ds-AMD   System Ancestral Manual Documents
 .ds doc-volume-ds-SMM   System Manager's Manual
-.ds doc-volume-ds-URM   Reference Manual
-.ds doc-volume-ds-PRM   Programmers's Manual
-.ds doc-volume-ds-KM    Kernel Manual
-.ds doc-volume-ds-IND   Manual Master Index
-.ds doc-volume-ds-LOCAL Local Manual
+.ds doc-volume-ds-URM   System Reference Manual
+.ds doc-volume-ds-PRM   System Programmers's Manual
+.ds doc-volume-ds-KM    System Kernel Manual
+.ds doc-volume-ds-IND   System Manual Master Index
+.ds doc-volume-ds-LOCAL System Local Manual
 .
-.ds doc-volume-as-tahoe " (Tahoe Architecture)
-.ds doc-volume-as-vax   " (VAX Architecture)
-.ds doc-volume-as-hp300 " (HP300 Architecture)
+.ds doc-volume-as-alpha    (Alpha Architecture)
+.ds doc-volume-as-amiga    (Amiga Architecture)
+.ds doc-volume-as-arc      (Arc Architecture)
+.ds doc-volume-as-arm26    (ARM26 Architecture)
+.ds doc-volume-as-arm32    (ARM32 Architecture)
+.ds doc-volume-as-atari    (Atari Architecture)
+.ds doc-volume-as-bebox    (BEbox Architecture)
+.ds doc-volume-as-cobalt   (Cobalt Architecture)
+.ds doc-volume-as-evbsh3   (Evbsh3 Architecture)
+.ds doc-volume-as-hp300    (HP300 Architecture)
+.ds doc-volume-as-hpcmips  (HPcmips Architecture)
+.ds doc-volume-as-i386     (i386 Architecture)
+.ds doc-volume-as-luna68k  (luna68k Architecture)
+.ds doc-volume-as-m68k     (m68k Architecture)
+.ds doc-volume-as-mac68k   (mac68k Architecture)
+.ds doc-volume-as-macppc   (macppc Architecture)
+.ds doc-volume-as-mips     (MIPS Architecture)
+.ds doc-volume-as-mmeye    (mmeye Architecture)
+.ds doc-volume-as-mvme68k  (mvme68k Architecture)
+.ds doc-volume-as-news68k  (news68k Architecture)
+.ds doc-volume-as-newsmips (newsmips Architecture)
+.ds doc-volume-as-next68k  (next68k Architecture)
+.ds doc-volume-as-ofppc    (ofppc Architecture)
+.ds doc-volume-as-pc532    (pc532 Architecture)
+.ds doc-volume-as-pmax     (pmax Architecture)
+.ds doc-volume-as-powerpc  (powerpc Architecture)
+.ds doc-volume-as-prep     (prep Architecture)
+.ds doc-volume-as-sgimips  (sgimips Architecture)
+.ds doc-volume-as-sh3      (sh3 Architecture)
+.ds doc-volume-as-sparc    (SPARC Architecture)
+.ds doc-volume-as-sparc64  (sparc64 Architecture)
+.ds doc-volume-as-sun3     (sun3 Architecture)
+.ds doc-volume-as-tahoe    (Tahoe Architecture)
+.ds doc-volume-as-vax      (VAX Architecture)
+.ds doc-volume-as-x68k     (x68k Architecture)
 .
 .de Dt
 .  if !"\$1"" \
@@ -226,33 +261,33 @@
 .
 .  if !"\$2"" \{\
 .    ds doc-section \$2
-.    \" .if "\$3"" \{\
-.    if (\$2 >= 1) .if (\$2 <= 8) \{\
-.      ds doc-volume System Reference Manual
-.      if (\$2 > 1) .if (\$2 < 6) \
-.          ds doc-volume System Programmer's Manual
-.      if "\$2"8" \
-.        ds doc-volume System Manager's Manual
-.    \}
-.
-.    if "\$2"unass" .ds doc-volume DRAFT
-.    if "\$2"draft" .ds doc-volume DRAFT
-.    if "\$2"paper" .ds doc-volume UNTITLED
-.    \" .\}
-.  \}
+.    ie        ((\$2 >= 1) & (\$2 <= 9)) \{\
+.      ds doc-volume "\*[doc-volume-ds-URM]
+.      ie        ((\$2 > 1) & (\$2 < 6)) \
+.        ds doc-volume "\*[doc-volume-ds-PRM]
+.      el \{ .ie (\$2 == 8) \
+.        ds doc-volume "\*[doc-volume-ds-SMM]
+.      el \{ .if (\$2 == 9) \
+.        ds doc-volume "\*[doc-volume-ds-KM]
+.    \}\}\}
+.    el \{ .ie "\$2"unass" .ds doc-volume DRAFT
+.    el \{ .ie "\$2"draft" .ds doc-volume DRAFT
+.    el \{ .ie "\$2"paper" .ds doc-volume UNTITLED
+.    el \
+.      tm mdoc warning: .Dt: unknown section `\$2' (#\n[.c])
+.  \}\}\}\}
 .
 .  if \A\$3 \{\
 .    if d doc-volume-ds-\$3 \
 .      ds doc-volume "\*[doc-volume-ds-\$3]
 .
 .    if d doc-volume-as-\$3 \
-.      as doc-volume "\*[doc-volume-as-\$3]
+.      as doc-volume " \*[doc-volume-as-\$3]
 .  \}
 .
 .  if !"\$3"" \
 .    if "\*[doc-volume]"LOCAL" \
 .      ds doc-volume \$3
-.\}
 ..
 .
 .
