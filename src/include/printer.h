@@ -54,17 +54,17 @@ public:
   virtual void end_page(int page_length) = 0;
   virtual font *make_font(const char *nm);
   virtual void end_of_line();
-  virtual void special(char *arg, const environment *env);
+  virtual void special(char *arg, const environment *env, char type = 'p');
   static int adjust_arc_center(const int *, double *);
 protected:
   font_pointer_list *font_list;
 
   // information about named characters
-  int   is_char_named;
-  int   is_named_set;
-  char  named_command;
+  int is_char_named;
+  int is_named_set;
+  char named_command;
   const char *named_char_s;
-  int   named_char_n;
+  int named_char_n;
 
 private:
   font **font_table;

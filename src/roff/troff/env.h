@@ -137,6 +137,7 @@ class environment {
   hunits target_text_length;
   int pre_underline_fontno;
   int underline_lines;
+  int underline_spaces;
   symbol input_trap;
   int input_trap_count;
   node *line;			// in reverse order
@@ -308,7 +309,7 @@ public:
   friend void line_length();
   friend void indent();
   friend void temporary_indent();
-  friend void underline();
+  friend void do_underline(int);
   friend void input_trap();
   friend void set_tabs();
   friend void margin_character();

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -54,7 +54,7 @@ inline int get_char()
  *                      filename eventually.
  */
 
-void remember_filename (const char *filename)
+void remember_filename(const char *filename)
 {
   if (current_filename != 0) {
     free((char *)current_filename);
@@ -62,7 +62,7 @@ void remember_filename (const char *filename)
   if (strcmp(filename, "-") == 0) {
     filename = "<standard input>";
   }
-  current_filename = (const char *)malloc(strlen(filename)+1);
+  current_filename = (const char *)malloc(strlen(filename) + 1);
   if (current_filename == 0) {
     fatal("can't malloc space for filename");
   }
@@ -371,6 +371,10 @@ void do_file(const char *filename)
 	  pr->special(get_string(1), &env);
 	  suppress_skip = 1;
 	  break;
+	case 'u':
+	  // .cu
+	  pr->special(get_string(), &env, 'u');
+	  break;
 	default:
 	  error("unrecognised x command `%1'", s);
 	}
@@ -498,4 +502,3 @@ void skip_line()
       break;
     }
 }
-

@@ -750,8 +750,8 @@ public:
   void right(hunits);
   void down(vunits);
   void moveto(hunits, vunits);
-  void start_special(tfont *tf);
-  void start_special();
+  void start_special(tfont *tf, int no_init_string = 0);
+  void start_special(int no_init_string = 0);
   void special_char(unsigned char c);
   void end_special();
   void word_marker();
@@ -794,7 +794,7 @@ inline void troff_output_file::put(int i)
   put_string(i_to_a(i), fp);
 }
 
-void troff_output_file::start_special(tfont *tf)
+void troff_output_file::start_special(tfont *tf, int no_init_string)
 {
   flush_tbuf();
 
@@ -807,14 +807,16 @@ void troff_output_file::start_special(tfont *tf)
       set_font(tf);
   }
   do_motion();
-  put("x X ");
+  if (!no_init_string)
+    put("x X ");
 }
 
-void troff_output_file::start_special()
+void troff_output_file::start_special(int no_init_string)
 {
   flush_tbuf();
   do_motion();
-  put("x X ");
+  if (!no_init_string)
+    put("x X ");
 }
 
 void troff_output_file::special_char(unsigned char c)
@@ -3305,8 +3307,8 @@ int node::interpret(macro *)
   return 0;
 }
 
-special_node::special_node(const macro &m)
-: mac(m)
+special_node::special_node(const macro &m, int n)
+: mac(m), no_init_string(n)
 {
   font_size fs = curenv->get_font_size();
   int char_height = curenv->get_char_height();
@@ -3318,20 +3320,26 @@ special_node::special_node(const macro &m)
     tf = tf->get_plain();
 }
 
-special_node::special_node(const macro &m, tfont *t)
-: mac(m), tf(t)
+special_node::special_node(const macro &m, tfont *t, int n)
+: mac(m), tf(t), no_init_string(n)
 {
 }
 
 int special_node::same(node *n)
 {
-  return ((mac == ((special_node *)n)->mac) &&
-	  (tf  == ((special_node *)n)->tf));
+  return ((mac == ((special_node *)n)->mac)
+	  && (tf == ((special_node *)n)->tf)
+	  && (no_init_string == ((special_node *)n)->no_init_string));
 }
 
 const char *special_node::type()
 {
   return "special_node";
+}
+
+int special_node::ends_sentence()
+{
+  return 2;
 }
 
 int special_node::force_tprint()
@@ -3341,12 +3349,12 @@ int special_node::force_tprint()
 
 node *special_node::copy()
 {
-  return new special_node(mac, tf);
+  return new special_node(mac, tf, no_init_string);
 }
 
 void special_node::tprint_start(troff_output_file *out)
 {
-  out->start_special(get_tfont());
+  out->start_special(get_tfont(), no_init_string);
 }
 
 void special_node::tprint_char(troff_output_file *out, unsigned char c)

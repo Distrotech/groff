@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1999 Free Software Foundation, Inc.
+/* Copyright (C) 1999, 2001 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote grohtml
  *  but it owes a huge amount of ideas and raw code from
@@ -1201,7 +1201,7 @@ public:
   void draw(int code, int *p, int np, const environment *env);
   void begin_page(int);
   void end_page(int);
-  void special(char *arg, const environment *env);
+  void special(char *arg, const environment *env, char type);
   font *make_font(const char *);
   void end_of_line();
 };
@@ -6473,8 +6473,10 @@ int is_graphic_end (char *s)
  *            also allow tbl, eqn & pic say what commands they have generated.
  */
 
-void html_printer::special(char *s, const environment *env)
+void html_printer::special(char *s, const environment *env, char type)
 {
+  if (type == 'p')
+    return;
   if (s != 0) {
     if (is_graphic_start(s)) {
       graphic_level++;

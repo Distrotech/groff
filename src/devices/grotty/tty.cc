@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -39,10 +39,11 @@ static int overstrike_flag = 1;
 static int draw_flag = 1;
 
 enum {
-  UNDERLINE_MODE = 01,
-  BOLD_MODE = 02,
-  VDRAW_MODE = 04,
-  HDRAW_MODE = 010
+  UNDERLINE_MODE = 0x01,
+  BOLD_MODE = 0x02,
+  VDRAW_MODE = 0x04,
+  HDRAW_MODE = 0x08,
+  CU_MODE = 0x10
 };
 
 // Mode to use for bold-underlining.
@@ -109,6 +110,7 @@ public:
   void *operator new(size_t);
   void operator delete(void *);
   inline int draw_mode() { return mode & (VDRAW_MODE|HDRAW_MODE); }
+  inline int order() { return mode & (VDRAW_MODE|HDRAW_MODE|CU_MODE); }
 };
 
 glyph *glyph::free_list = 0;
@@ -148,6 +150,7 @@ public:
   ~tty_printer();
   void set_char(int, font *, const environment *, int, const char *name);
   void draw(int code, int *p, int np, const environment *env);
+  void special(char *arg, const environment *env, char type);
   void put_char(unsigned int);
   void begin_page(int) { }
   void end_page(int page_length);
@@ -219,18 +222,23 @@ void tty_printer::add_char(unsigned int c, int h, int v, unsigned char mode)
   g->mode = mode;
 
   // The list will be reversed later.  After reversal, it must be in
-  // increasing order of hpos, with HDRAW characters before VDRAW
-  // characters before normal characters at each hpos, and otherwise
-  // in order of occurrence.
+  // increasing order of hpos, with CU specials before HDRAW characters
+  // before VDRAW characters before normal characters at each hpos, and
+  // otherwise in order of occurrence.
 
   glyph **pp;
   for (pp = lines + (vpos - 1); *pp; pp = &(*pp)->next)
     if ((*pp)->hpos < hpos
-	|| ((*pp)->hpos == hpos && (*pp)->draw_mode() >= g->draw_mode()))
+	|| ((*pp)->hpos == hpos && (*pp)->order() >= g->order()))
       break;
-
   g->next = *pp;
   *pp = g;
+}
+
+void tty_printer::special(char *arg, const environment *env, char type)
+{
+  if (type == 'u')
+    add_char(*arg - '0', env->hpos, env->vpos, CU_MODE);
 }
 
 void tty_printer::draw(int code, int *p, int np, const environment *env)
@@ -293,10 +301,13 @@ void tty_printer::put_char(unsigned int wc)
       while (count > 0);
     *++p = '\0';
     fputs(buf, stdout);
-  } else {
+  }
+  else {
     putchar(wc);
   }
 }
+
+int cu_flag = 0;
 
 void tty_printer::end_page(int page_length)
 {
@@ -334,6 +345,10 @@ void tty_printer::end_page(int page_length)
     glyph *nextp;
     for (p = g; p; delete p, p = nextp) {
       nextp = p->next;
+      if (p->mode & CU_MODE) {
+	cu_flag = p->code;
+	continue;
+      }
       if (nextp && p->hpos == nextp->hpos) {
 	if (p->draw_mode() == HDRAW_MODE &&
 	    nextp->draw_mode() == VDRAW_MODE) {
@@ -359,12 +374,21 @@ void tty_printer::end_page(int page_length)
 	    int next_tab_pos = ((hpos + TAB_WIDTH) / TAB_WIDTH) * TAB_WIDTH;
 	    if (next_tab_pos > p->hpos)
 	      break;
+	    if (cu_flag) {
+	      putchar('_');
+	      putchar('\b');
+	    }
 	    putchar('\t');
 	    hpos = next_tab_pos;
 	  }
 	}
-	for (; hpos < p->hpos; hpos++)
+	for (; hpos < p->hpos; hpos++) {
+	  if (cu_flag) {
+	    putchar('_');
+	    putchar('\b');
+	  }
 	  putchar(' ');
+	}
       }
       assert(hpos == p->hpos);
       if (p->mode & UNDERLINE_MODE) {

@@ -97,7 +97,7 @@ void printer::end_of_line()
 {
 }
 
-void printer::special(char *, const environment *)
+void printer::special(char *, const environment *, char)
 {
 }
 

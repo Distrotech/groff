@@ -431,6 +431,8 @@ void environment::space(hunits space_width, hunits sentence_space_width)
   spread_flag = 0;
 }
 
+node *do_underline_special(int);
+
 void environment::set_font(symbol nm)
 {
   if (interrupted)
@@ -453,6 +455,12 @@ void environment::set_font(symbol nm)
     if (family->make_definite(n) < 0)
       return;
     fontno = n;
+  }
+  if (underline_spaces && fontno != prev_fontno) {
+    if (fontno == get_underline_fontno())
+      add_node(do_underline_special(1));
+    if (prev_fontno == get_underline_fontno())
+      add_node(do_underline_special(0));
   }
 }
 
@@ -554,6 +562,7 @@ environment::environment(symbol nm)
   temporary_indent(0),
   have_temporary_indent(0),
   underline_lines(0),
+  underline_spaces(0),
   input_trap_count(0),
   line(0),
   prev_text_length(0),
@@ -638,6 +647,7 @@ environment::environment(const environment *e)
   temporary_indent(0),
   have_temporary_indent(0),
   underline_lines(0),
+  underline_spaces(0),
   input_trap_count(0),
   line(0),
   prev_text_length(e->prev_text_length),
@@ -711,6 +721,7 @@ void environment::copy(const environment *e)
   have_temporary_indent = 0;
   temporary_indent = 0;
   underline_lines = 0;
+  underline_spaces = 0;
   input_trap_count = 0;
   prev_text_length = e->prev_text_length;
   width_total = 0;
@@ -1299,7 +1310,15 @@ void temporary_indent()
   tok.next();
 }
 
-void underline()
+node *do_underline_special(int underline_spaces)
+{
+  macro m;
+  m.append_str("x u ");
+  m.append(underline_spaces + '0');
+  return new special_node(m, 1);
+}
+
+void do_underline(int underline_spaces)
 {
   int n;
   if (!has_arg() || !get_integer(&n))
@@ -1308,6 +1327,10 @@ void underline()
     if (curenv->underline_lines > 0) {
       curenv->prev_fontno = curenv->fontno;
       curenv->fontno = curenv->pre_underline_fontno;
+      if (underline_spaces) {
+	curenv->underline_spaces = 0;
+	curenv->add_node(do_underline_special(0));
+      }
     }
     curenv->underline_lines = 0;
   }
@@ -1315,8 +1338,22 @@ void underline()
     curenv->underline_lines = n;
     curenv->pre_underline_fontno = curenv->fontno;
     curenv->fontno = get_underline_fontno();
+    if (underline_spaces) {
+      curenv->underline_spaces = 1;
+      curenv->add_node(do_underline_special(1));
+    }
   }
   skip_line();
+}
+
+void continuous_underline()
+{
+  do_underline(1);
+}
+
+void underline()
+{
+  do_underline(0);
 }
 
 void control_char()
@@ -1489,6 +1526,10 @@ void environment::newline()
     if (--underline_lines == 0) {
       prev_fontno = fontno;
       fontno = pre_underline_fontno;
+      if (underline_spaces) {
+        underline_spaces = 0;
+        add_node(do_underline_special(0));
+      }
     }
   }
   if (current_field)
@@ -2966,7 +3007,7 @@ void init_env_requests()
   init_request("in", indent);
   init_request("ti", temporary_indent);
   init_request("ul", underline);
-  init_request("cu", underline);
+  init_request("cu", continuous_underline);
   init_request("cc", control_char);
   init_request("c2", no_break_control_char);
   init_request("br", break_request);

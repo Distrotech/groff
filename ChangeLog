@@ -1,3 +1,51 @@
+2001-04-06  Werner Lemberg  <wl@gnu.org>
+
+	Implement continuous underlining for nroff mode.  To do that, a new
+	request in the ditroff language has been added: `x u N' (N is 0
+	or 1).
+
+	\X and \Y are now transparent to end-of-sentence recognition.
+
+	* src/include/printer.h (printer): Add `type' parameter to `special'
+	method.
+	* src/libs/libdriver/printer.cc (printer::special): Updated.
+	* src/libs/libdriver/input.cc (do_file): Handle `x u N'.
+
+	* src/devices/dvi/dvi.cc (dvi_printer::special): Handle only
+	specials of type `p'.
+	* src/devices/grohtml/post-html.cc (html_printer::special): Ditto.
+	* src/devices/grohtml-old/html.cc (html_printer::special): Ditto.
+	* src/devices/grops/ps.cc (ps_printer::special): Ditto.
+	* src/devices/grotty/tty.cc: Add new enum CU_MODE.
+	(glyph::order): New method.
+	(tty_printer::add_char): Use it.
+	(tty_printer::special): New method.
+	(tty_printer::end_page): Implement it.
+
+	* src/roff/troff/node.h (special_node): Add `no_init_string' member.
+	* src/roff/troff/node.cc (special_node::special_node): Add parameter
+	to set `no_init_string'.
+	(special_node::tprint_start): Use it.
+	(special_node::same, special_node::copy): Updated.
+	(special_node::ends_sentence): New method.
+	(troff_output_file::start_special): Add parameter to include
+	inititialization of special conditionally.
+
+	* src/roff/troff/env.h (environment): New member `underline_spaces'.
+	* src/roff/troff/env.cc (do_underline_special): New function.
+	(environment::set_font): Use it.
+	(do_underline): Use it.  This was `underline()'.
+	(underline): Call `do_underline()'.
+	(continuous_underline): New function which calls `do_underline()'.
+	(environment::newline): Use `do_underline_special()'.
+	(init_env_requests): Updated.
+
+	* NEWS, man/troff_out.man: Updated.
+
+2001-04-06  Bruno Haible  <haible@clisp.cons.org>
+
+	* font/devutf8/R.proto: Fix code of 'shc'.
+
 2001-04-06  Ruslan Ermilov  <ru@freebsd.org>
 
 	Many fixes.  Diag lists can now be nested also; additionally,

@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -513,7 +514,7 @@ public:
   void draw(int code, int *p, int np, const environment *env);
   void begin_page(int);
   void end_page(int);
-  void special(char *arg, const environment *env);
+  void special(char *arg, const environment *env, char type);
   font *make_font(const char *);
   void end_of_line();
 };
@@ -1210,8 +1211,10 @@ ps_printer::~ps_printer()
   fclose(tempfp);
 }
 
-void ps_printer::special(char *arg, const environment *env)
+void ps_printer::special(char *arg, const environment *env, char type)
 {
+  if (type != 'p')
+    return;
   typedef void (ps_printer::*SPECIAL_PROCP)(char *, const environment *);
   static struct {
     const char *name;

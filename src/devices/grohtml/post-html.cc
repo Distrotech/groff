@@ -1048,7 +1048,7 @@ public:
   void draw        (int code, int *p, int np, const environment *env);
   void begin_page  (int);
   void end_page    (int);
-  void special     (char *arg, const environment *env);
+  void special     (char *arg, const environment *env, char type);
   font *make_font  (const char *);
   void end_of_line ();
 };
@@ -2729,8 +2729,10 @@ html_printer::~html_printer()
  *            also allow troff to emit tags to indicate when a: .br, .sp etc occurs.
  */
 
-void html_printer::special(char *s, const environment *env)
+void html_printer::special(char *s, const environment *env, char type)
 {
+  if (type != 'p')
+    return;
   if (s != 0) {
     flush_sbuf();
     if (env->fontno >= 0) {

@@ -458,17 +458,19 @@ public:
 class special_node : public node {
   macro mac;
   tfont *tf;
+  int no_init_string;
   void tprint_start(troff_output_file *);
   void tprint_char(troff_output_file *, unsigned char);
   void tprint_end(troff_output_file *);
 public:
-  special_node(const macro &);
-  special_node(const macro &, tfont *t);
+  special_node(const macro &, int = 0);
+  special_node(const macro &, tfont *, int = 0);
   node *copy();
   void tprint(troff_output_file *);
   int same(node *);
   const char *type();
   int force_tprint();
+  int ends_sentence();
   tfont *get_tfont();
 };
 

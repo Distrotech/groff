@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -168,7 +169,7 @@ public:
   void begin_page(int);
   void end_page(int);
   void set_char(int, font *, const environment *, int w, const char *name);
-  void special(char *arg, const environment *env);
+  void special(char *arg, const environment *env, char type);
   void end_of_line();
   void draw(int code, int *p, int np, const environment *env);
 };
@@ -492,8 +493,10 @@ void dvi_printer::do_special(const char *s)
     out1(*s++);
 }
 
-void dvi_printer::special(char *arg, const environment *env)
+void dvi_printer::special(char *arg, const environment *env, char type)
 {
+  if (type != 'p')
+    return;
   moveto(env->hpos, env->vpos);
   do_special(arg);
 }
