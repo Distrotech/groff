@@ -1,3 +1,21 @@
+2002-10-23  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/node.cc (troff_output_file::fill_color,
+	troff_output_file::glyph_color): Set current color before testing
+	color_flag.
+	(troff_output_file::put_char_width, troff_output_file::put_char,
+	troff_output_file::draw): Don't call flush_tbuf and/or do_motion
+	before glyph_color.
+	(troff_output_file::file_color, troff_output_file::glyph_color):
+	Call do_motion.
+	(word_space_node::tprint, space_node::tprint, hmotion_node::tprint,
+	vmotion_node::tprint): Move first, then call fill_color.
+
+2002-10-20  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo, man/groff_tmac.man: Document that it is not
+	possible to use multiple main macro packages.
+
 2002-10-19  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grops/ps.cc (cmyk_flag): New global variable.

@@ -990,8 +990,6 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf,
   }
   char c = ci->get_ascii_code();
   if (c == '\0') {
-    flush_tbuf();
-    do_motion();
     glyph_color(gcol);
     fill_color(fcol);
     check_charinfo(tf, ci);
@@ -1024,8 +1022,6 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf,
       hpos = output_hpos;
       return;
     }
-    flush_tbuf();
-    do_motion();
     glyph_color(gcol);
     fill_color(fcol);
     check_charinfo(tf, ci);
@@ -1067,7 +1063,6 @@ void troff_output_file::put_char(charinfo *ci, tfont *tf,
     set_font(tf);
   char c = ci->get_ascii_code();
   if (c == '\0') {
-    do_motion();
     glyph_color(gcol);
     fill_color(fcol);
     if (ci->numbered()) {
@@ -1098,7 +1093,6 @@ void troff_output_file::put_char(charinfo *ci, tfont *tf,
       output_hpos = hpos;
     }
     else {
-      do_motion();
       glyph_color(gcol);
       fill_color(fcol);
       put('c');
@@ -1165,9 +1159,13 @@ void troff_output_file::set_font(tfont *tf)
 
 void troff_output_file::fill_color(color *col)
 {
-  if (!col || current_fill_color == col || !color_flag)
-    return;
   flush_tbuf();
+  do_motion();
+  if (!col || current_fill_color == col)
+    return;
+  current_fill_color = col;
+  if (!color_flag)
+    return;
   put("DF");
   unsigned int components[4];
   color_scheme cs;
@@ -1208,14 +1206,18 @@ void troff_output_file::fill_color(color *col)
     break;
   }
   put('\n');
-  current_fill_color = col;
 }
 
 void troff_output_file::glyph_color(color *col)
 {
-  if (!col || current_glyph_color == col || !color_flag)
-    return;
   flush_tbuf();
+  // grotty doesn't like a color command if the vertical position is zero.
+  do_motion();
+  if (!col || current_glyph_color == col)
+    return;
+  current_glyph_color = col;
+  if (!color_flag)
+    return;
   put("m");
   unsigned int components[4];
   color_scheme cs;
@@ -1256,7 +1258,6 @@ void troff_output_file::glyph_color(color *col)
     break;
   }
   put('\n');
-  current_glyph_color = col;
 }
 
 // determine_line_limits - works out the smallest box which will contain
@@ -1350,8 +1351,6 @@ void troff_output_file::draw(char code, hvpair *point, int npoints,
 			     font_size fsize, color *gcol, color *fcol)
 {
   int i;
-  flush_tbuf();
-  do_motion();
   glyph_color(gcol);
   fill_color(fcol);
   if (is_on()) {
@@ -4019,9 +4018,9 @@ int word_space_node::set_unformat_flag()
 
 void word_space_node::tprint(troff_output_file *out)
 {
-  out->fill_color(col);
   out->word_marker();
   out->right(n);
+  out->fill_color(col);
 }
 
 int word_space_node::merge_space(hunits h, hunits sw, hunits ssw)
@@ -4375,20 +4374,20 @@ void node::zero_width_tprint(troff_output_file *out)
 
 void space_node::tprint(troff_output_file *out)
 {
-  out->fill_color(col);
   out->right(n);
+  out->fill_color(col);
 }
 
 void hmotion_node::tprint(troff_output_file *out)
 {
-  out->fill_color(col);
   out->right(n);
+  out->fill_color(col);
 }
 
 void vmotion_node::tprint(troff_output_file *out)
 {
-  out->fill_color(col);
   out->down(n);
+  out->fill_color(col);
 }
 
 void kern_pair_node::tprint(troff_output_file *out)

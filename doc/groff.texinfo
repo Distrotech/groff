@@ -1909,6 +1909,20 @@ to changing the appearance of section headers.
 This chapter documents the main macro packages that come with
 @code{groff}.
 
+Different main macro packages can't be used at the same time; for example
+
+@Example
+groff -m man foo.man -m ms bar.doc
+@endExample
+
+@noindent
+doesn't work.  Note that option arguments are processed before non-option
+arguments; the above (failing) sample is thus reordered to
+
+@Example
+groff -m man -m ms foo.man bar.doc
+@endExample
+
 @menu
 * man::
 * mdoc::
