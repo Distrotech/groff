@@ -50,11 +50,14 @@
 .
 .
 .\" Load start-up files
-.ie t .mso mdoc/doc-ditroff.new
-.el   .mso mdoc/doc-nroff.new
+.ie t \
+.  mso mdoc/doc-ditroff.new
+.el \
+.  mso mdoc/doc-nroff.new
 .
 .mso mdoc/doc-common.new
 .mso mdoc/doc-syms.new
+.
 .
 .eo
 .
@@ -184,104 +187,114 @@
 .\" NS   doc-str-dpa, doc-reg-dpa, doc-reg-dpa1
 .
 .de doc-parse-args
-.  nr doc-arg-limit +1
+.  ie \n[.$] \{\
+.    nr doc-arg-limit +1
 .
-.  \" handle `|' specially
-.  ie "\$1"|" \
-.    ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.  el \
-.    ds doc-arg\n[doc-arg-limit] "\$1
+.    \" handle `|' specially
+.    ie "\$1"|" \
+.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
+.    el \
+.      ds doc-arg\n[doc-arg-limit] "\$1
 .
-.  \" get argument type and set spacing
-.  doc-get-arg-type* \n[doc-arg-limit]
-.  nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
-.  doc-set-spacing-\n[doc-arg-type]
+.    \" get argument type and set spacing
+.    doc-get-arg-type* \n[doc-arg-limit]
+.    nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
+.    doc-set-spacing-\n[doc-arg-type]
 .
-.  if \n[doc-debug] \{\
-.    ie (\n[doc-arg-type] == 1) \
-.      ds doc-str-dpa macro
-.    el \{\
-.      ie (\n[doc-arg-type] == 2) \
-.        ds doc-str-dpa string
+.    if \n[doc-debug] \{\
+.      ie (\n[doc-arg-type] == 1) \
+.        ds doc-str-dpa macro
 .      el \{\
-.        ie (\n[doc-arg-type] == 3) \
-.          ds doc-str-dpa closing punctuation or suffix
-.        el \
-.          ds doc-str-dpa opening punctuation or prefix
+.        ie (\n[doc-arg-type] == 2) \
+.          ds doc-str-dpa string
+.        el \{\
+.          ie (\n[doc-arg-type] == 3) \
+.            ds doc-str-dpa closing punctuation or suffix
+.          el \
+.            ds doc-str-dpa opening punctuation or prefix
+.      \}\}
+.
+.      ie \n[doc-inline-debug] \{\
+.        br
+.        nr doc-reg-dpa \n[.i]u
+.        in -\n[doc-reg-dpa]u
+.
+.        if (\n[doc-arg-limit] == 1) \{\
+.          nop \f[B]DEBUG(doc-parse-args) MACRO:\f[P] `.\*[doc-macro-name]'
+.          nop \& \f[B]Line #:\f[P] \n[.c]
+.        \}
+.        nop \t\f[B]Argc:\f[P] \n[doc-arg-limit]
+.        nop \ \f[B]Argv:\f[P] `\*[doc-arg\n[doc-arg-limit]]'
+.        nop \ \f[B]Length:\f[P] \n[doc-width]
+.        nop \t\f[B]Space:\f[P] `\*[doc-space\n[doc-arg-limit]]'
+.        nop \ \f[B]Type:\f[P] \*[doc-str-dpa]
+.      \}
+.      el \{\
+.        if (\n[doc-arg-limit] == 1) \{\
+.          tmc "DEBUG (doc-parse-args)
+.          tm1 " MACRO: `.\*[doc-macro-name]'  Line #: \n[.c]
+.        \}
+.        tmc "  Argc: \n[doc-arg-limit]
+.        tmc "  Argv: `\*[doc-arg\n[doc-arg-limit]]'
+.        tm1 "  Length: \n[doc-width]
+.        tmc "  Space: `\*[doc-space\n[doc-arg-limit]]'
+.        tm1 "  Type: \*[doc-str-dpa]
 .    \}\}
 .
-.    ie \n[doc-inline-debug] \{\
-.      br
-.      nr doc-reg-dpa \n[.i]u
-.      in -\n[doc-reg-dpa]u
+.    \" check whether we have processed the last parameter
+.    ie (\n[.$] == 1) \{\
+.      nr doc-arg-ptr 0
 .
-.      if (\n[doc-arg-limit] == 1) \{\
-.        nop \f[B]DEBUG(doc-parse-args) MACRO:\f[P] `.\*[doc-macro-name]'
-.        nop \& \f[B]Line #:\f[P] \n[.c]
-.      \}
-.      nop \t\f[B]Argc:\f[P] \n[doc-arg-limit]
-.      nop \ \f[B]Argv:\f[P] `\*[doc-arg\n[doc-arg-limit]]'
-.      nop \ \f[B]Length:\f[P] \n[doc-width]
-.      nop \t\f[B]Space:\f[P] `\*[doc-space\n[doc-arg-limit]]'
-.      nop \ \f[B]Type:\f[P] \*[doc-str-dpa]
-.    \}
+.      \" Usually, an mdoc macro will call `doc-print-out-string' to print
+.      \" `doc-out-string'.  This causes the insertion of a space since
+.      \" `.nop' is used.  But if we are in an enclosure, no printing occurs
+.      \" until we have left the outermost enclosure (i.e.,
+.      \" `doc-nesting-level' is zero again), so spaces must be explicitly
+.      \" inserted if `doc-no-space' isn't set.
+.      if \n[doc-nesting-level] \
+.        if !\n[doc-func-arg-count] \
+.          if !\n[doc-no-space] \
+.            as doc-out-string "\*[doc-curr-space]
+.
+.      \" the following happens e.g. for `.Ns' or `.Oo'
+.      ie "\*[doc-space\n[doc-arg-limit]]"" \
+.        nr doc-no-space 1
+.      el \
+.        nr doc-no-space 0
+.
+.      \" use space after last parameter as the current one
+.      ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
+.
+.      if \n[doc-debug] \{\
+.        nr doc-reg-dpa1 1
+.
+.        ie \n[doc-inline-debug] \{\
+.          nop MACRO REQUEST: \t.\*[doc-macro-name]
+.          while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
+.            nop "\*[doc-arg\n[doc-reg-dpa1]]"
+.            nr doc-reg-dpa1 +1
+.          \}
+.          br
+.          in \n[doc-reg-dpa]u
+.        \}
+.        el \{\
+.          tmc "  MACRO REQUEST: .\*[doc-macro-name]
+.          while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
+.            tmc " "\*[doc-arg\n[doc-reg-dpa1]]"
+.            nr doc-reg-dpa1 +1
+.          \}
+.          tm
+.    \}\}\}
 .    el \{\
-.      if (\n[doc-arg-limit] == 1) \{\
-.        tmc "DEBUG (doc-parse-args)
-.        tm1 " MACRO: `.\*[doc-macro-name]'  Line #: \n[.c]
-.      \}
-.      tmc "  Argc: \n[doc-arg-limit]
-.      tmc "  Argv: `\*[doc-arg\n[doc-arg-limit]]'
-.      tm1 "  Length: \n[doc-width]
-.      tmc "  Space: `\*[doc-space\n[doc-arg-limit]]'
-.      tm1 "  Type: \*[doc-str-dpa]
+.      shift
+.      doc-parse-args \$@
 .  \}\}
-.
-.  \" check whether we have processed the last parameter
-.  ie (\n[.$] == 1) \{\
-.    nr doc-arg-ptr 0
-.
-.    \" Usually, an mdoc macro will call `doc-print-out-string' to print
-.    \" `doc-out-string'.  This causes the insertion of a space since
-.    \" `.nop' is used.  But if we are in an enclosure, no printing occurs
-.    \" until we have left the outermost enclosure (i.e.,
-.    \" `doc-nesting-level' is zero again), so spaces must be explicitly
-.    \" inserted -- if `doc-no-space' isn't set.  The latter is active for
-.    \" a closing/closing or opening/opening request.
+.  el \{\
 .    if \n[doc-nesting-level] \
 .      if !\n[doc-func-arg-count] \
 .        if !\n[doc-no-space] \
 .          as doc-out-string "\*[doc-curr-space]
-.
 .    nr doc-no-space 0
-.    nr doc-is-opening 0
-.
-.    \" use space after last parameter as the current one
-.    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
-.
-.    if \n[doc-debug] \{\
-.      nr doc-reg-dpa1 1
-.
-.      ie \n[doc-inline-debug] \{\
-.        nop MACRO REQUEST: \t.\*[doc-macro-name]
-.        while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
-.          nop "\*[doc-arg\n[doc-reg-dpa1]]"
-.          nr doc-reg-dpa1 +1
-.        \}
-.        br
-.        in \n[doc-reg-dpa]u
-.      \}
-.      el \{\
-.        tmc "  MACRO REQUEST: .\*[doc-macro-name]
-.        while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
-.          tmc " "\*[doc-arg\n[doc-reg-dpa1]]"
-.          nr doc-reg-dpa1 +1
-.        \}
-.        tm
-.  \}\}\}
-.  el \{\
-.    shift
-.    doc-parse-args \$@
 .  \}
 ..
 .
@@ -357,8 +370,10 @@
 .        if !\n[doc-no-space] \
 .          as doc-out-string "\*[doc-curr-space]
 .
-.    nr doc-no-space 0
-.    nr doc-is-opening 0
+.    ie "\*[doc-space\n[doc-arg-limit]]"" \
+.      nr doc-no-space 1
+.    el \
+.      nr doc-no-space 0
 .
 .    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
 .
@@ -532,11 +547,10 @@
 .  as doc-out-string \*[doc-Fl-font]
 .
 .  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Fl
-.      doc-parse-args \$@
-.    \}
-.    el \{\
+.    ds doc-macro-name Fl
+.    doc-parse-args \$@
+.
+.    if !\n[.$] \{\
 .      \" no arguments
 .      as doc-out-string \|\-\|\f[P]\s[0]
 .      doc-print-out-string
@@ -697,11 +711,10 @@
 .  as doc-out-string \*[doc-Ar-font]
 .
 .  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Ar
-.      doc-parse-args \$@
-.    \}
-.    el \{\
+.    ds doc-macro-name Ar
+.    doc-parse-args \$@
+.
+.    if !\n[.$] \{\
 .      \" no argument
 .      as doc-out-string \&file\ ...\f[P]\s[0]
 .      doc-print-out-string
@@ -1283,11 +1296,10 @@
 .
 .de Pa
 .  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Pa
-.      doc-parse-args \$@
-.    \}
-.    el \{\
+.    ds doc-macro-name Pa
+.    doc-parse-args \$@
+.
+.    if !\n[.$] \{\
 .      \" default value
 .      nop \*[doc-Pa-font]~\f[P]\s[0]
 .  \}\}
@@ -1706,12 +1718,6 @@
 ..
 .
 .
-.\" NS doc-is-opening global register (bool)
-.\" NS   whether current request emits an opening character
-.
-.nr doc-is-opening 0
-.
-.
 .\" NS doc-enclose-string macro
 .\" NS   enclose string with given args (e.g. [ and ])
 .\" NS
@@ -1728,16 +1734,12 @@
 .  ie \n[doc-arg-limit] \
 .    as doc-out-string \&\*[doc-quote-left]
 .  el \{\
-.    ie \n[.$] \{\
-.      \" was the last request on the previous line an opening request?
-.      if \n[doc-is-opening] \
-.        nr doc-no-space 1
-.      doc-parse-args \$@
-.      as doc-out-string \&\*[doc-quote-left]
-.    \}
-.    el \{\
+.    doc-parse-args \$@
+.    as doc-out-string \&\*[doc-quote-left]
+.
+.    if !\n[.$] \{\
 .      \" no argument
-.      as doc-out-string \&\*[doc-quote-left]\*[doc-quote-right]
+.      as doc-out-string \*[doc-quote-right]
 .      doc-print-out-string
 .  \}\}
 .
@@ -2169,34 +2171,20 @@
 .\" NS   doc-arg-ptr, doc-out-string, doc-nesting-level
 .
 .de doc-enclose-open
-.  nr doc-nesting-level +1
-.
 .  ie \n[doc-arg-limit] \
 .    as doc-out-string \&\*[doc-quote-left]
 .  el \{\
-.    ie \n[.$] \{\
-.      \" was the last request on the previous line an opening request?
-.      if \n[doc-is-opening] \
-.        nr doc-no-space 1
-.      doc-parse-args \$@
-.      as doc-out-string \&\*[doc-quote-left]
-.    \}
-.    el \{\
-.      as doc-out-string \&\*[doc-quote-left]
-.      nr doc-is-opening 1
-.  \}\}
+.    doc-parse-args \$@
+.    as doc-out-string \&\*[doc-quote-left]
+.
+.    if !\n[.$] \
+.      nr doc-no-space 1
+.  \}
+.
+.  \" increase nesting level *after* parsing of arguments
+.  nr doc-nesting-level +1
 .
 .  if \n[doc-arg-limit] \{\
-.    \" the following code makes things like
-.    \"
-.    \"   .Op Ar foo Ns Xo
-.    \"   .Op Ar bar Xc
-.    \"
-.    \" work as expected -- the .Op macro possibly appends an argument
-.    \" which we must ignore here
-.    if ((\n[doc-arg-limit] - \n[doc-have-append]) == \n[doc-arg-ptr]) \
-.      nr doc-is-opening 1
-.
 .    ie (\n[doc-arg-limit] == \n[doc-arg-ptr]) \{\
 .      \" last argument
 .      doc-reset-args
@@ -2227,11 +2215,10 @@
 .  as doc-out-string \&\*[doc-quote-right]
 .
 .  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      nr doc-no-space 1
-.      doc-parse-args \$@
-.    \}
-.    el \
+.    nr doc-no-space 1
+.    doc-parse-args \$@
+.
+.    if !\n[.$] \
 .      doc-print-out-string
 .  \}
 .
@@ -2244,10 +2231,7 @@
 .        doc-print-and-reset
 .    \}
 .    el \{\
-\#.      nr doc-str-dec (\n[doc-arg-ptr] + 1)
-\#.      if (\n[doc-type\n[doc-str-dec]] == 2) \
-\#.        as doc-out-string "\*[doc-space\n[doc-arg-limit]]
-.        as doc-out-string "\*[doc-space\n[doc-arg-ptr]]
+.      as doc-out-string "\*[doc-space\n[doc-arg-ptr]]
 .      No
 .  \}\}
 .
@@ -2313,13 +2297,21 @@
 .
 .de Ns
 .  if !\n[doc-arg-limit] \{\
-.    ds doc-macro-name Ns
-.    ie \n[.$] \
+.    ie \n[.$] \{\
+.      ds doc-macro-name Ns
 .      doc-parse-args \$@
+.    \}
 .    el \
 .      tm Usage: .Ns must be called with arguments (#\n[.c])
 .  \}
 .
+.  if (\n[doc-arg-limit] == (\n[doc-arg-ptr] + \n[doc-have-append])) \
+.    if !\n[doc-nesting-level] \{\
+.      ie \n[doc-have-append] \
+.        as doc-arg\n[doc-arg-limit] \c
+.      el \
+.        as doc-out-string \c
+.    \}
 .  No
 ..
 .
@@ -2383,6 +2375,12 @@
 .nr doc-space-mode 1
 .
 .
+.\" NS doc-saved-space global string
+.\" NS   saved value of `doc-space'
+.
+.ds doc-saved-space "\*[doc-space]
+.
+.
 .\" NS Sm user macro
 .\" NS   space mode (`.Sm'/`.Sm on'/`.Sm off')
 .\" NS
@@ -2419,11 +2417,13 @@
 .      ds doc-arg\n[doc-arg-ptr]
 .
 .    ie "\*[doc-arg\n[doc-arg-ptr]]"on" \{\
-.      ds doc-space "\*[doc-soft-space]
+.      ds doc-space "\*[doc-saved-space]
+.      ds doc-curr-space "\*[doc-space]
 .      nr doc-space-mode 1
 .    \}
 .    el \{\
 .      ie "\*[doc-arg\n[doc-arg-ptr]]"off" \{\
+.        ds doc-saved-space "\*[doc-space]
 .        ds doc-space
 .        ds doc-curr-space
 .        nr doc-space-mode 0
@@ -3326,10 +3326,10 @@
 .  ds doc-quote-right-saved "\*[doc-quote-right]
 .  nr doc-nesting-level-saved \n[doc-nesting-level]
 .  nr doc-no-space-saved \n[doc-no-space]
-.  nr doc-is-opening-saved \n[doc-is-opening]
 .  nr doc-have-append-saved \n[doc-have-append]
 .  nr doc-in-list-saved \n[doc-in-list]
 .  ds doc-space-saved "\*[doc-space]
+.  ds doc-saved-space-saved "\*[doc-saved-space]
 .  nr doc-space-mode-saved \n[doc-space-mode]
 .  nr doc-curr-font-for-Ef-saved \n[doc-curr-font-for-Ef]
 .  nr doc-curr-size-for-Ef-saved \n[doc-curr-size-for-Ef]
@@ -3460,10 +3460,10 @@
 .  ds doc-quote-right "\*[doc-quote-right-saved]
 .  nr doc-nesting-level \n[doc-nesting-level-saved]
 .  nr doc-no-space \n[doc-no-space-saved]
-.  nr doc-is-opening \n[doc-is-opening-saved]
 .  nr doc-have-append \n[doc-have-append-saved]
 .  nr doc-in-list \n[doc-in-list-saved]
 .  ds doc-space "\*[doc-space-saved]
+.  ds doc-saved-space "\*[doc-saved-space-saved]
 .  nr doc-space-mode \n[doc-space-mode-saved]
 .  nr doc-curr-font-for-Ef \n[doc-curr-font-for-Ef-saved]
 .  nr doc-curr-size-for-Ef \n[doc-curr-size-for-Ef-saved]
@@ -4398,7 +4398,7 @@
 .
 .  \" if a subroutine was the last thing given, want vertical space
 .  if \n[doc-have-func] \{\
-.    ie !\n[doc-have-var] \
+.    ie \n[doc-have-var] \
 .      br
 .    el \{\
 .      doc-paragraph
