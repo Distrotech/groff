@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2004
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -938,6 +939,12 @@ int rcompare(const void *p1, const void *p2)
 void output_references()
 {
   assert(accumulate);
+  if (!hash_table_size) {
+    error("nothing to reference (probably `bibliography' before `sort')");
+    accumulate = 0;
+    nreferences = 0;
+    return;
+  }
   if (nreferences > 0) {
     int j = 0;
     int i;

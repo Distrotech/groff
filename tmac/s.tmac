@@ -505,7 +505,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .nr PN \\n%
 .nr pg*col-num 0
 .nr pg@fn-bottom-margin 0
-.nr pg*saved-po \\n[PO]
 .po \\n[PO]u
 .ev h
 .par@reset
@@ -542,12 +541,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ..
 .de pg*end-col
 'sp |\\n[pg*col-top]u
-.po (u;\\n[pg*saved-po]+(\\n[pg@colw]+\\n[pg*gutw]*\\n[pg*col-num]))
+.po (u;\\n[PO]+(\\n[pg@colw]+\\n[pg*gutw]*\\n[pg*col-num]))
 .\"po +(u;\\n[pg@colw]+\\n[pg*gutw])
 .pg*start-col
 ..
 .de pg*end-page
-.po \\n[pg*saved-po]u
+.po \\n[PO]u
 .\" Make sure we don't exit if there are still floats or footnotes left-over.
 .ie \\n[kp@head]<\\n[kp@tail]:\\n[fn@have-overflow] \{\
 .	\" Switching environments ensures that we don't get an unnecessary
