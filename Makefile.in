@@ -80,13 +80,16 @@ g=@g@
 # Used in definitions of exec_prefix, datasubdir, fontpath, manroot.
 # This must already exist when you do make install.
 prefix=@prefix@
-
 exec_prefix=@exec_prefix@
 
 # bindir says where to install executables.
-bindir=$(exec_prefix)/bin
+bindir=@bindir@
 
-# datasubdir says where to install data files
+# libdir says where to install platform-dependent data
+libdir=@libdir@
+libprogramdir=$(libdir)/groff
+
+# datasubdir says where to install platform-independent data files
 datadir=@datadir@
 dataprogramdir=$(datadir)/groff
 datasubdir=$(dataprogramdir)/$(version)$(revision)
@@ -100,11 +103,14 @@ fontpath=.:$(fontdir):/usr/lib/font
 # tmacdir says where to install macros.
 tmacdir=$(datasubdir)/tmac
 
+# systemtmacdir says where to install platform-dependent macros
+systemtmacdir=$(libprogramdir)/site-tmac
+
 # localtmacdir says where local files will be installed
 localtmacdir=$(dataprogramdir)/site-tmac
 
 # tmacpath says where to look for macro files.
-tmacpath=.:$(localtmacdir):$(tmacdir)
+tmacpath=.:$(systemtmacdir):$(localtmacdir):$(tmacdir)
 
 # sys_tmac_prefix is prefix (if any) for system macro packages
 sys_tmac_prefix=@sys_tmac_prefix@
@@ -123,6 +129,12 @@ tmac_prefix=g
 # The groff -mm macros will be available as -m$(tmac_m_prefix)m.
 tmac_m_prefix=\
  `for i in $(tmac_wrap) ""; do case "$$i" in m) echo $(tmac_prefix);; esac; done`
+# The groff -ms macros will be available as -m$(tmac_s_prefix)s.
+tmac_s_prefix=\
+ `for i in $(tmac_wrap) ""; do case "$$i" in s) echo $(tmac_prefix);; esac; done`
+# The groff -man macros will be available as -m$(tmac_an_prefix)an.
+tmac_an_prefix=\
+ `for i in $(tmac_wrap) ""; do case "$$i" in an) echo $(tmac_prefix);; esac; done`
 
 # Extension to be used for refer index files.  Index files are not
 # sharable between different architectures, so you might want to use
@@ -259,10 +271,13 @@ MDEFINES= \
   "datadir=$(datadir)" \
   "dataprogramdir=$(dataprogramdir)" \
   "datasubdir=$(datasubdir)" \
+  "libdir=$(libdir)" \
+  "libprogramdir=$(libprogramdir)" \
   "bindir=$(bindir)" \
   "fontdir=$(fontdir)" \
   "fontpath=$(fontpath)" \
   "tmacdir=$(tmacdir)" \
+  "systemtmacdir=$(systemtmacdir)" \
   "localtmacdir=$(localtmacdir)" \
   "tmacpath=$(tmacpath)" \
   "indexext=$(indexext)" \
@@ -279,6 +294,8 @@ MDEFINES= \
   "mkinstalldirs=$(mkinstalldirs)" \
   "tmac_wrap=$(tmac_wrap)" \
   "sys_tmac_prefix=$(sys_tmac_prefix)" \
+  "tmac_an_prefix=$(tmac_an_prefix)" \
+  "tmac_s_prefix=$(tmac_s_prefix)" \
   "tmac_m_prefix=$(tmac_m_prefix)" \
   "CCC=$(CCC)" \
   "CC=$(CC)" \
@@ -519,8 +536,9 @@ uninstall: uninstall_sub uninstall_dirs
 uninstall_dirs:
 # Use rmdir here so that the directories are only removed if they're empty
 	-rmdir $(man1dir) $(man5dir) $(man7dir) $(manroot) \
-	  $(tmacdir) $(localtmacdir) $(fontdir) $(bindir) \
-	  $(datasubdir) $(dataprogramdir) $(datadir)
+	  $(tmacdir) $(systemtmacdir) $(localtmacdir) $(fontdir) $(bindir) \
+	  $(datasubdir) $(dataprogramdir) $(datadir) \
+	  $(libprogramdir) $(libdir)
 
 
 .PHONY: check

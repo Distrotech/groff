@@ -1,3 +1,26 @@
+2000-11-08  Werner LEMBERG  <wl@gnu.org>
+
+	Add system tmac directory (/usr/local/lib/groff/site-tmac).
+
+	* Makefile.in: Add $(libdir), $(libprogramdir), and $(systemtmacdir).
+	(uninstall_dirs): Add $(libdir), $(libprogramdir), and
+	$(systemtmacdir).
+	Use @libdir@.
+	* Makefile.comm (.man.n): Add @SYSTEMMACRODIR@.
+	* tmac/Makefile.sub (install_data): Create
+	$(systemtmacdir) and $(localtmacdir).
+	(uninstall_sub): Use $(systemtmacdir) for wrapper macros.
+	* man/roff.man, src/roff/troff/troff.man, src/roff/groff/groff.man,
+	NEWS, doc/groff.texinfo: Updated and minor fixes.
+
+	* Makefile.comm, Makefile.in: Added tmac_{s,an}_prefix stuff again.
+	* tmac/Makefile.sub: Added `wrap' stuff again, but installing into
+	$(systemtmacdir) since the wrapper files are platform-dependent.
+
+2000-11-01  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo: Fix typo.
+
 2000-10-26  Werner LEMBERG  <wl@gnu.org>
 
 	Convert macros `tmac.XXX' to `XXX.tmac'.  Special cases:

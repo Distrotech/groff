@@ -9,9 +9,8 @@ MAN7=\
   groff_markup.n
 
 NORMALFILES=\
-  mandoc.tmac andoc.tmac an-old.tmac man.tmac an.tmac \
+  mandoc.tmac andoc.tmac an-old.tmac \
   me.tmac \
-  ms.tmac s.tmac \
   mdoc.tmac \
   pic.tmac \
   a4.tmac \
@@ -25,21 +24,43 @@ NORMALFILES=\
   eqnrc \
   troffrc troffrc-end \
   hyphen.us
+SPECIALFILES=an.tmac man.tmac s.tmac ms.tmac
 STRIPFILES=e.tmac doc.tmac doc-old.tmac
 MDOCFILES=doc-common doc-ditroff doc-nroff doc-syms
 mdocdir=$(tmacdir)/mdoc
 CLEANADD=\
+  stamp-wrap stamp-sed *-wrap man.tmac-sed ms.tmac-sed \
   stamp-strip e.tmac-s doc.tmac-s doc-old.tmac-s \
   doc-common-s doc-ditroff-s doc-nroff-s doc-syms-s
+tmac_s_prefix=
+tmac_an_prefix=
+tmac_wrap=
+sys_tmac_prefix=
 
-all: stamp-strip
+all: stamp-strip stamp-wrap stamp-sed
 
-install_data: $(NORMALFILES) man.local stamp-strip
+install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
+              stamp-strip stamp-wrap stamp-sed
 	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
+	-test -d $(systemtmacdir) || $(mkinstalldirs) $(systemtmacdir)
+	-test -d $(localtmacdir) || $(mkinstalldirs) $(localtmacdir)
+	if test -n "$(tmac_wrap)"; then \
+	  for m in ""$(tmac_wrap); do \
+	    $(INSTALL_DATA) $$m-wrap $(systemtmacdir)/$$m.tmac; \
+	  done; \
+	fi
 	for f in $(NORMALFILES); do \
 	  rm -f $(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(tmacdir)/$$f; \
 	done
+	-rm -f $(tmacdir)/$(tmac_s_prefix)s.tmac
+	$(INSTALL_DATA) $(srcdir)/s.tmac $(tmacdir)/$(tmac_s_prefix)s.tmac
+	-rm -f $(tmacdir)/ms.tmac
+	$(INSTALL_DATA) ms.tmac-sed $(tmacdir)/ms.tmac
+	-rm -f $(tmacdir)/$(tmac_an_prefix)an.tmac
+	$(INSTALL_DATA) $(srcdir)/an.tmac $(tmacdir)/$(tmac_an_prefix)an.tmac
+	-rm -f $(tmacdir)/man.tmac
+	$(INSTALL_DATA) man.tmac-sed $(tmacdir)/man.tmac
 	for f in $(STRIPFILES); do \
 	  rm -f $(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(tmacdir)/$$f; \
@@ -59,10 +80,40 @@ stamp-strip: $(STRIPFILES) $(MDOCFILES)
 	done
 	touch $@
 
+stamp-wrap:
+	if test -n "$(tmac_wrap)"; then \
+	  for m in ""$(tmac_wrap); do \
+	    rm -f $$m-wrap; \
+	    if test "$$m" = an; then \
+	      echo .do mso andoc.tmac >>$$m-wrap; \
+	    fi; \
+	    echo .cp 1 >>$$m-wrap; \
+	    echo .so $(sys_tmac_prefix)$$m >>$$m-wrap; \
+	  done; \
+	fi
+	touch $@
+
+stamp-sed: man.tmac ms.tmac
+	for f in man.tmac ms.tmac; do \
+	  rm -f $$f-sed; \
+	  sed -e "s;@TMAC_AN_PREFIX@;$(tmac_an_prefix);g" \
+	  -e "s;@TMAC_S_PREFIX@;$(tmac_s_prefix);g" \
+	  $(srcdir)/$$f > $$f-sed; \
+	done
+	touch $@
+
 uninstall_sub:
+	-if test -n "$(tmac_wrap)"; then \
+	  for m in ""$(tmac_wrap); do \
+	    rm -f $(systemtmacdir)/$$m.tmac; \
+	  done; \
+	fi
 	-for f in $(NORMALFILES) $(STRIPFILES); do \
 	  rm -f $(tmacdir)/$$f; \
 	done
+	-rm -f $(tmacdir)/$(tmac_s_prefix)s.tmac
+	-rm -f $(tmacdir)/$(tmac_an_prefix)an.tmac
+	-rm -f $(tmacdir)/man.tmac $(tmacdir)/ms.tmac
 	-if cmp -s $(localtmacdir)/man.local $(srcdir)/man.local; then \
 	  rm -f $(localtmacdir)/man.local; \
 	fi
