@@ -70,7 +70,7 @@ symbol HYPHEN_SYMBOL("hy");
 // Character used when a hyphen is inserted at a line break.
 static charinfo *soft_hyphen_char;
 
-enum constant_space_type { 
+enum constant_space_type {
   CONSTANT_SPACE_NONE,
   CONSTANT_SPACE_RELATIVE,
   CONSTANT_SPACE_ABSOLUTE
@@ -130,7 +130,6 @@ class font_info {
   void flush();
 public:
   special_font_list *sf;
-  
   font_info(symbol nm, int n, symbol enm, font *f);
   int contains(charinfo *);
   void set_bold(hunits);
@@ -345,7 +344,7 @@ void font_info::conditional_unbold(int fontno)
       return;
     }
 }
-				 
+
 void font_info::set_constant_space(constant_space_type type, units x)
 {
   if (type != is_constant_spaced
@@ -411,7 +410,7 @@ hunits font_info::get_half_narrow_space_width(font_size fs)
 
 /* tfont */
 
-tfont_spec::tfont_spec(symbol nm, int n, font *f, 
+tfont_spec::tfont_spec(symbol nm, int n, font *f,
 		       font_size s, int h, int sl)
 : name(nm), input_position(n), fm(f), size(s),
   is_bold(0), is_constant_spaced(0), ligature_mode(1), kern_mode(1),
@@ -423,18 +422,18 @@ tfont_spec::tfont_spec(symbol nm, int n, font *f,
 
 int tfont_spec::operator==(const tfont_spec &spec)
 {
-  if (fm == spec.fm 
+  if (fm == spec.fm
       && size == spec.size
       && input_position == spec.input_position
       && name == spec.name
       && height == spec.height
       && slant == spec.slant
-      && (is_bold 
+      && (is_bold
 	  ? (spec.is_bold && bold_offset == spec.bold_offset)
 	  : !spec.is_bold)
       && track_kern == spec.track_kern
       && (is_constant_spaced
-	  ? (spec.is_constant_spaced 
+	  ? (spec.is_constant_spaced
 	     && constant_space_width == spec.constant_space_width)
 	  : !spec.is_constant_spaced)
       && ligature_mode == spec.ligature_mode
@@ -716,7 +715,7 @@ void ascii_output_file::outs(const char *s)
 }
 
 struct hvpair;
-      
+
 class troff_output_file : public real_output_file {
   units hpos;
   units vpos;
@@ -926,7 +925,7 @@ void troff_output_file::flush_tbuf()
     put(tbuf_kern);
     put(' ');
   }
-  
+
   check_output_limits(output_hpos, output_vpos);
 
   for (int i = 0; i < tbuf_len; i++)
@@ -1240,7 +1239,7 @@ void troff_output_file::really_copy_file(hunits x, vunits y, const char *filenam
   for (int i = 0; i < nfont_positions; i++)
     font_position[i] = NULL_SYMBOL;
 }
-  
+
 void troff_output_file::really_transparent_char(unsigned char c)
 {
   put(c);
@@ -1296,7 +1295,6 @@ output_file::~output_file()
 void output_file::trailer(vunits)
 {
 }
-
 
 void output_file::put_filename(const char *filename)
 {
@@ -1731,7 +1729,6 @@ hyphen_list *glyph_node::get_hyphen_list(hyphen_list *tail)
   return new hyphen_list(ci->get_hyphenation_code(), tail);
 }
 
-
 tfont *node::get_tfont()
 {
   return 0;
@@ -1823,7 +1820,7 @@ void glyph_node::ascii_print(ascii_output_file *ascii)
     ascii->outs(ci->nm.contents());
 }
 
-ligature_node::ligature_node(charinfo *c, tfont *t, 
+ligature_node::ligature_node(charinfo *c, tfont *t,
 			     node *gn1, node *gn2, node *x)
 : glyph_node(c, t, x), n1(gn1), n2(gn2)
 {
@@ -1877,7 +1874,7 @@ kern_pair_node::kern_pair_node(hunits n, node *first, node *second, node *x)
 {
 }
 
-dbreak_node::dbreak_node(node *n, node *p, node *x) 
+dbreak_node::dbreak_node(node *n, node *p, node *x)
 : node(x), none(n), pre(p), post(0)
 {
 }
@@ -1923,7 +1920,6 @@ node *kern_pair_node::merge_glyph_node(glyph_node *gn)
   return this;
 }
 
-
 hunits kern_pair_node::italic_correction()
 {
   return n2->italic_correction();
@@ -1944,7 +1940,7 @@ void kern_pair_node::vertical_extent(vunits *min, vunits *max)
   if (max2 > *max)
     *max = max2;
 }
-  
+
 node *kern_pair_node::add_discretionary_hyphen()
 {
   tfont *tf = n2->get_tfont();
@@ -1964,7 +1960,6 @@ node *kern_pair_node::add_discretionary_hyphen()
   }
   return this;
 }
-
 
 kern_pair_node::~kern_pair_node()
 {
@@ -2025,7 +2020,6 @@ hyphen_list *node::get_hyphen_list(hyphen_list *tail)
   return tail;
 }
 
-
 hyphen_list *kern_pair_node::get_hyphen_list(hyphen_list *tail)
 {
   return n1->get_hyphen_list(n2->get_hyphen_list(tail));
@@ -2081,7 +2075,6 @@ node *dbreak_node::add_discretionary_hyphen()
   return this;
 }
 
-
 node *node::add_discretionary_hyphen()
 {
   tfont *tf = get_tfont();
@@ -2102,7 +2095,6 @@ node *node::add_discretionary_hyphen()
   return this;
 }
 
-
 node *node::merge_self(node *)
 {
   return 0;
@@ -2122,7 +2114,6 @@ node *kern_pair_node::add_self(node *n, hyphen_list **p)
   delete this;
   return n;
 }
-
 
 hunits node::width()
 {
@@ -2451,17 +2442,17 @@ tfont *break_char_node::get_tfont()
 }
 
 node *extra_size_node::copy()
-{ 
-  return new extra_size_node(n); 
+{
+  return new extra_size_node(n);
 }
 
 node *vertical_size_node::copy()
-{ 
-  return new vertical_size_node(n); 
+{
+  return new vertical_size_node(n);
 }
 
 node *hmotion_node::copy()
-{ 
+{
   return new hmotion_node(n, was_tab);
 }
 
@@ -2471,17 +2462,17 @@ node *space_char_hmotion_node::copy()
 }
 
 node *vmotion_node::copy()
-{ 
+{
   return new vmotion_node(n);
 }
-  
+
 node *dummy_node::copy()
-{ 
+{
   return new dummy_node;
 }
 
 node *transparent_dummy_node::copy()
-{ 
+{
   return new transparent_dummy_node;
 }
 
@@ -2501,7 +2492,6 @@ hunits hline_node::width()
   return x < H0 ? H0 : x;
 }
 
-
 vline_node::~vline_node()
 {
   if (n)
@@ -2517,7 +2507,6 @@ hunits vline_node::width()
 {
   return n == 0 ? H0 : n->width();
 }
-
 
 zero_width_node::zero_width_node(node *nd) : n(nd)
 {
@@ -2629,7 +2618,6 @@ node *bracket_node::copy()
   return on;
 }
 
-
 void bracket_node::bracket(node *n)
 {
   if (n == 0)
@@ -2683,11 +2671,13 @@ inline void space_node::operator delete(void *p)
 }
 #endif
 
-space_node::space_node(hunits nn, node *p) : node(p), n(nn), set(0)
+space_node::space_node(hunits nn, node *p)
+: node(p), n(nn), set(0), was_escape_colon(0)
 {
 }
 
-space_node::space_node(hunits nn, int s, node *p) : node(p), n(nn), set(s)
+space_node::space_node(hunits nn, int s, int flag, node *p)
+: node(p), n(nn), set(s), was_escape_colon(flag)
 {
 }
 
@@ -2699,7 +2689,7 @@ space_node::~space_node()
 
 node *space_node::copy()
 {
-  return new space_node(n, set);
+  return new space_node(n, set, was_escape_colon);
 }
 
 int space_node::force_tprint()
@@ -2752,6 +2742,15 @@ void node::freeze_space()
 void space_node::freeze_space()
 {
   set = 1;
+}
+
+void node::is_escape_colon()
+{
+}
+
+void space_node::is_escape_colon()
+{
+  was_escape_colon = 1;
 }
 
 diverted_space_node::diverted_space_node(vunits d, node *p)
@@ -2810,12 +2809,10 @@ int node_list_ends_sentence(node *n)
   return 2;
 }
 
-    
 int dbreak_node::ends_sentence()
 {
   return node_list_ends_sentence(none);
 }
-
 
 int node::overlaps_horizontally()
 {
@@ -2836,7 +2833,6 @@ int space_node::discardable()
 {
   return set ? 0 : 1;
 }
-
 
 vunits node::vertical_width()
 {
@@ -2877,7 +2873,6 @@ hunits node::skew()
 {
   return H0;
 }
-
 
 /* vertical_extent methods */
 
@@ -2935,7 +2930,6 @@ void vline_node::vertical_extent(vunits *min, vunits *max)
 
 /* ascii_print methods */
 
-
 static void ascii_print_reverse_node_list(ascii_output_file *ascii, node *n)
 {
   if (n == 0)
@@ -2954,7 +2948,6 @@ void kern_pair_node::ascii_print(ascii_output_file *ascii)
   n1->ascii_print(ascii);
   n2->ascii_print(ascii);
 }
-
 
 void node::ascii_print(ascii_output_file *)
 {
@@ -2984,7 +2977,7 @@ void node::asciify(macro *m, int)
 {
   m->append(this);
 }
-      
+
 void glyph_node::asciify(macro *m, int unformat_only)
 {
   if (unformat_only)
@@ -3033,9 +3026,13 @@ void ligature_node::asciify(macro *m, int unformat_only)
 
 void break_char_node::asciify(macro *m, int unformat_only)
 {
-  ch->asciify(m, unformat_only);
-  ch = 0;
-  delete this;
+  if (unformat_only)
+    m->append(this);
+  else {
+    ch->asciify(m, 0);
+    ch = 0;
+    delete this;
+  }
 }
 
 void italic_corrected_node::asciify(macro *m, int unformat_only)
@@ -3073,6 +3070,16 @@ void space_char_hmotion_node::asciify(macro *m, int)
 {
   m->append(ESCAPE_SPACE);
   delete this;
+}
+
+void space_node::asciify(macro *m, int)
+{
+  if (was_escape_colon) {
+    m->append(ESCAPE_COLON);
+    delete this;
+  }
+  else
+    m->append(this);
 }
 
 void word_space_node::asciify(macro *m, int)
@@ -3143,8 +3150,8 @@ static breakpoint *node_list_get_breakpoints(node *p, hunits *widthp,
 					     int ns, breakpoint *rest)
 {
   if (p != 0) {
-    rest = p->get_breakpoints(*widthp, 
-			      ns, 
+    rest = p->get_breakpoints(*widthp,
+			      ns,
 			      node_list_get_breakpoints(p->next, widthp, ns,
 							rest),
 			      1);
@@ -3152,7 +3159,6 @@ static breakpoint *node_list_get_breakpoints(node *p, hunits *widthp,
   }
   return rest;
 }
-
 
 breakpoint *dbreak_node::get_breakpoints(hunits width, int ns,
 					 breakpoint *rest, int is_inner)
@@ -3244,13 +3250,11 @@ void dbreak_node::split(int where, node **prep, node **postp)
     delete this;
   }
 }
-  
 
 hyphenation_type node::get_hyphenation_type()
 {
   return HYPHEN_BOUNDARY;
 }
-
 
 hyphenation_type dbreak_node::get_hyphenation_type()
 {
@@ -3268,6 +3272,26 @@ hyphenation_type dummy_node::get_hyphenation_type()
 }
 
 hyphenation_type transparent_dummy_node::get_hyphenation_type()
+{
+  return HYPHEN_MIDDLE;
+}
+
+hyphenation_type hmotion_node::get_hyphenation_type()
+{
+  return HYPHEN_MIDDLE;
+}
+
+hyphenation_type space_char_hmotion_node::get_hyphenation_type()
+{
+  return HYPHEN_MIDDLE;
+}
+
+hyphenation_type overstrike_node::get_hyphenation_type()
+{
+  return HYPHEN_MIDDLE;
+}
+
+hyphenation_type unbreakable_space_node::get_hyphenation_type()
 {
   return HYPHEN_MIDDLE;
 }
@@ -3508,7 +3532,7 @@ void suppress_node::tprint(troff_output_file *out)
 	out->on();
       else
 	out->off();
-      // lastly we reset the output registers 
+      // lastly we reset the output registers
       reset_output_registers(out->get_vpos());
       suppress_start_page = current_page;
     }
@@ -3678,7 +3702,7 @@ word_space_node::word_space_node(hunits d, int n, node *x)
 }
 
 word_space_node::word_space_node(hunits d, int s, int n, node *x)
-: space_node(d, s, x), num_spaces(n)
+: space_node(d, s, 0, x), num_spaces(n)
 {
 }
 
@@ -3807,7 +3831,7 @@ void draw_node::tprint(troff_output_file *out)
 {
   out->draw(code, point, npoints, sz);
 }
-  
+
 /* tprint methods */
 
 void glyph_node::tprint(troff_output_file *out)
@@ -4154,7 +4178,7 @@ node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
 #endif
 	) {
       for (fn = 0; fn < font_table_size; fn++)
-	if (font_table[fn] 
+	if (font_table[fn]
 	    && font_table[fn]->is_special()
 	    && font_table[fn]->contains(s)) {
 	      found = 1;
@@ -4289,7 +4313,6 @@ node *node::add_char(charinfo *ci, environment *env,
   }
   return res;
 }
-
 
 #ifdef __GNUG__
 inline
@@ -4640,7 +4663,7 @@ int left_italic_corrected_node::character_type()
 {
   return n ? n->character_type() : 0;
 }
- 
+
 int overstrike_node::same(node *nd)
 {
   return same_node_list(list, ((overstrike_node *)nd)->list);
@@ -4704,7 +4727,7 @@ int glyph_node::force_tprint()
 
 int ligature_node::same(node *nd)
 {
-  return (same_node(n1, ((ligature_node *)nd)->n1) 
+  return (same_node(n1, ((ligature_node *)nd)->n1)
 	  && same_node(n2, ((ligature_node *)nd)->n2)
 	  && glyph_node::same(nd));
 }
@@ -5051,7 +5074,7 @@ font_family *lookup_family(symbol nm)
     (void)family_dictionary.lookup(nm, f);
   }
   return f;
-} 
+}
 
 void font_family::invalidate_fontno(int n)
 {
@@ -5123,7 +5146,7 @@ int get_underline_fontno()
 {
   return underline_fontno;
 }
-    
+
 static void read_special_fonts(special_font_list **sp)
 {
   special_font_list *s = *sp;
@@ -5150,11 +5173,10 @@ void font_special_request()
 {
   int n = get_fontno();
   if (n >= 0)
-    read_special_fonts(&font_table[n]->sf); 
+    read_special_fonts(&font_table[n]->sf);
   skip_line();
 }
 
-  
 void special_request()
 {
   read_special_fonts(&global_special_fonts);
@@ -5281,7 +5303,7 @@ track_kerning_function::track_kerning_function() : non_zero(0)
 {
 }
 
-track_kerning_function::track_kerning_function(int min_s, hunits min_a, 
+track_kerning_function::track_kerning_function(int min_s, hunits min_a,
 					       int max_s, hunits max_a)
 : non_zero(1), min_size(min_s), min_amount(min_a), max_size(max_s),
   max_amount(max_a)
@@ -5362,7 +5384,7 @@ void constant_space()
       if (!has_arg() || !get_number(&y, 'z'))
 	font_table[n]->set_constant_space(CONSTANT_SPACE_RELATIVE, x);
       else
-	font_table[n]->set_constant_space(CONSTANT_SPACE_ABSOLUTE, 
+	font_table[n]->set_constant_space(CONSTANT_SPACE_ABSOLUTE,
 					  scale(y*x,
 						units_per_inch,
 						36*72*sizescale));

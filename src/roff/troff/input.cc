@@ -237,7 +237,6 @@ inline int input_iterator::get(node **p)
   return ptr < eptr ? *ptr++ : fill(p);
 }
 
-
 class input_boundary : public input_iterator {
 public:
   int is_boundary() { return 1; }
@@ -384,7 +383,7 @@ int file_iterator::set_location(const char *f, int ln)
   return 1;
 }
 
-input_iterator nil_iterator;  
+input_iterator nil_iterator;
 
 class input_stack {
 public:
@@ -851,10 +850,13 @@ static int get_copy(node **nd, int defining)
     case '~':
       (void)input_stack::get(NULL);
       return ESCAPE_TILDE;
+    case ':':
+      (void)input_stack::get(NULL);
+      return ESCAPE_COLON;
     case '|':
       (void)input_stack::get(NULL);
       return ESCAPE_BAR;
-    case '^': 
+    case '^':
       (void)input_stack::get(NULL);
       return ESCAPE_CIRCUMFLEX;
     case '{':
@@ -1089,7 +1091,7 @@ static node *do_zero_width()
     n = tem;
   }
   return new zero_width_node(n);
-}  
+}
 
 #else
 
@@ -1273,7 +1275,13 @@ void token::next()
       case ESCAPE_TILDE:
       ESCAPE_TILDE:
 	type = TOKEN_STRETCHABLE_SPACE;
-	nd = new unbreakable_space_node(curenv->get_space_width());
+	return;
+      case ESCAPE_COLON:
+      ESCAPE_COLON:
+	type = TOKEN_NODE;
+	nd = new space_node(H0);
+	nd->freeze_space();
+	nd->is_escape_colon();
 	return;
       case ESCAPE_e:
       ESCAPE_e:
@@ -1429,6 +1437,8 @@ void token::next()
 	goto ESCAPE_QUESTION;
       case '~':
 	goto ESCAPE_TILDE;
+      case ':':
+	goto ESCAPE_COLON;
       case '"':
 	while ((cc = input_stack::get(NULL)) != '\n' && cc != EOF)
 	  ;
@@ -1774,8 +1784,6 @@ const char *token::description()
     return buf;
   case TOKEN_DUMMY:
     return "`\\&'";
-  case TOKEN_TRANSPARENT_DUMMY:
-    return "`\\)'";
   case TOKEN_ESCAPE:
     return "`\\e'";
   case TOKEN_HYPHEN_INDICATOR:
@@ -1800,16 +1808,18 @@ const char *token::description()
     return "`\\}'";
   case TOKEN_SPACE:
     return "a space";
-  case TOKEN_STRETCHABLE_SPACE:
-    return "`\\~'";
   case TOKEN_SPECIAL:
     return "a special character";
   case TOKEN_SPREAD:
     return "`\\p'";
+  case TOKEN_STRETCHABLE_SPACE:
+    return "`\\~'";
   case TOKEN_TAB:
     return "a tab character";
   case TOKEN_TRANSPARENT:
     return "`\\!'";
+  case TOKEN_TRANSPARENT_DUMMY:
+    return "`\\)'";
   case TOKEN_EOF:
     return "end of input";
   default:
@@ -1889,7 +1899,7 @@ symbol get_name(int required)
       return NULL_SYMBOL;
     }
   }
-  else 
+  else
     return get_long_name(required);
 }
 
@@ -2089,7 +2099,6 @@ void int_stack::push(int n)
   top = p;
 }
 
-
 int int_stack::pop()
 {
   assert(top != 0);
@@ -2132,7 +2141,7 @@ void process_input_stack()
     case token::TOKEN_CHAR:
       {
 	unsigned char ch = tok.c;
-	if (bol && 
+	if (bol &&
 	    (ch == curenv->control_char
 	     || ch == curenv->no_break_control_char)) {
 	  break_flag = ch == curenv->control_char;
@@ -2250,7 +2259,6 @@ void process_input_stack()
     case token::TOKEN_EOF:
       return;
     case token::TOKEN_NODE:
-    case token::TOKEN_STRETCHABLE_SPACE:
       {
 	if (possibly_handle_first_page_transition())
 	  ;
@@ -2262,7 +2270,7 @@ void process_input_stack()
 	  curenv->add_node(tok.nd);
 	  tok.nd = 0;
 	  bol = 0;
-	  curenv->possibly_break_line();
+	  curenv->possibly_break_line(1);
 	}
 	break;
       }
@@ -2462,7 +2470,6 @@ node *node_list::extract()
   return temp;
 }
 
-
 node_list::~node_list()
 {
   delete_node_list(head);
@@ -2477,10 +2484,9 @@ public:
   macro_header *copy(int);
 };
 
-
-macro::~macro() 
-{ 
-  if (p != 0 && --(p->count) <= 0) 
+macro::~macro()
+{
+  if (p != 0 && --(p->count) <= 0)
     delete p;
 }
 
@@ -2494,9 +2500,9 @@ macro::macro()
   p = 0;
 }
 
-macro::macro(const macro &m) 
+macro::macro(const macro &m)
 : p(m.p), filename(m.filename), lineno(m.lineno), length(m.length)
-{ 
+{
   if (p != 0)
     p->count++;
 }
@@ -2506,9 +2512,9 @@ macro &macro::operator=(const macro &m)
   // don't assign object
   if (m.p != 0)
     m.p->count++;
-  if (p != 0 && --(p->count) <= 0) 
-    delete p; 
-  p = m.p; 
+  if (p != 0 && --(p->count) <= 0)
+    delete p;
+  p = m.p;
   filename = m.filename;
   lineno = m.lineno;
   length = m.length;
@@ -2640,7 +2646,7 @@ public:
   void backtrace();
 };
 
-string_iterator::string_iterator(const macro &m, const char *p, symbol s) 
+string_iterator::string_iterator(const macro &m, const char *p, symbol s)
 : mac(m), how_invoked(p), newline_flag(0), lineno(1), nm(s)
 {
   count = mac.length;
@@ -2816,7 +2822,6 @@ small_temp_iterator::~small_temp_iterator()
 {
 }
 
-
 #ifdef __GNUG__
 inline
 #endif
@@ -2873,7 +2878,7 @@ public:
 };
 
 input_iterator *macro_iterator::get_arg(int i)
-{ 
+{
   if (i == 0)
     return make_temp_iterator(nm.contents());
   if (i > 0 && i <= argc) {
@@ -3249,7 +3254,6 @@ void define_character()
   tok.next();
 }
 
-
 static void remove_character()
 {
   tok.skip();
@@ -3266,7 +3270,7 @@ static void remove_character()
   }
   skip_line();
 }
-    
+
 static void interpolate_string(symbol nm)
 {
   request_or_macro *p = lookup_request(nm);
@@ -3443,7 +3447,7 @@ void do_define_macro(define_mode mode, int indirect)
       }
       if (s[i] == 0
 	  && ((i == 2 && compatible_flag)
-	      || (d = get_copy(&n)) == ' ' 
+	      || (d = get_copy(&n)) == ' '
 	      || d == '\n')) {	// we found it
 		if (d == '\n')
 		  tok.make_newline();
@@ -3848,7 +3852,7 @@ static int read_size(int *x)
   else {
     token start(tok);
     tok.next();
-    if (!(inc 
+    if (!(inc
 	  ? get_number(&val, 'z')
 	  : get_number(&val, 'z', curenv->get_requested_point_size())))
       return 0;
@@ -3941,7 +3945,6 @@ static symbol get_delim_name()
     return s;
   }
 }
-
 
 // Implement \R
 
@@ -4112,17 +4115,16 @@ static node *do_non_interpreted()
   return new non_interpreted_node(mac);
 }
 
-static void encode_char (macro *mac, char c)
+static void encode_char(macro *mac, char c)
 {
   if (c == '\0') {
     if ((font::use_charnames_in_special) && tok.special()) {
-      charinfo *ci=tok.get_char(1);
-      const char *s=ci->get_symbol()->contents();
-
+      charinfo *ci = tok.get_char(1);
+      const char *s = ci->get_symbol()->contents();
       if (s[0] != (char)0) {
 	mac->append('\\');
 	mac->append('(');
-	int i=0;
+	int i = 0;
 	while (s[i] != (char)0) {
 	  mac->append(s[i]);
 	  i++;
@@ -4130,10 +4132,12 @@ static void encode_char (macro *mac, char c)
 	mac->append('\\');
 	mac->append(')');
       }
-    } else {
+    }
+    else {
       error("%1 is illegal within \\X", tok.description());
     }
-  } else {
+  }
+  else {
     if ((font::use_charnames_in_special) && (c == '\\')) {
       /*
        * add escape escape sequence
@@ -4335,7 +4339,7 @@ int do_if_request()
       skip_alternative();
       return 0;
     }
-    result = (c == 'd' 
+    result = (c == 'd'
 	      ? request_dictionary.lookup(nm) != 0
 	      : number_reg_dictionary.lookup(nm) != 0);
   }
@@ -4462,7 +4466,7 @@ void html_end()
  *
  *               . either as a special in the form of an image tag for -Thtml
  *               . or as an image region definition for all other devices
- *               
+ *
  */
 
 void html_image()
@@ -4645,7 +4649,6 @@ void pipe_source()
 #endif /* not POPEN_MISSING */
   }
 }
-
 
 // .psbb
 
@@ -4897,6 +4900,9 @@ const char *asciify(int c)
   case ESCAPE_TILDE:
     buf[1] = '~';
     break;
+  case ESCAPE_COLON:
+    buf[1] = ':';
+    break;
   default:
     if (illegal_input_char(c))
       buf[0] = '\0';
@@ -4906,7 +4912,6 @@ const char *asciify(int c)
   }
   return buf;
 }
-  
 
 const char *input_char_description(int c)
 {
@@ -5292,9 +5297,6 @@ int token::add_to_node_list(node **pp)
   case TOKEN_DUMMY:
     n = new dummy_node;
     break;
-  case TOKEN_TRANSPARENT_DUMMY:
-    n = new transparent_dummy_node;
-    break;
   case TOKEN_ESCAPE:
     if (escape_char != 0)
       *pp = (*pp)->add_char(charset_table[escape_char], curenv, &w, &s);
@@ -5311,7 +5313,6 @@ int token::add_to_node_list(node **pp)
     set_number_reg(nm, curenv->get_input_line_position().to_units());
     break;
   case TOKEN_NODE:
-  case TOKEN_STRETCHABLE_SPACE:
     n = nd;
     nd = 0;
     break;
@@ -5325,6 +5326,12 @@ int token::add_to_node_list(node **pp)
     break;
   case TOKEN_SPECIAL:
     *pp = (*pp)->add_char(get_charinfo(nm), curenv, &w, &s);
+    break;
+  case TOKEN_STRETCHABLE_SPACE:
+    n = new unbreakable_space_node(curenv->get_space_width());
+    break;
+  case TOKEN_TRANSPARENT_DUMMY:
+    n = new transparent_dummy_node;
     break;
   default:
     return 0;
@@ -5350,13 +5357,10 @@ void token::process()
   case TOKEN_DUMMY:
     curenv->add_node(new dummy_node);
     break;
-  case TOKEN_TRANSPARENT_DUMMY:
-    curenv->add_node(new transparent_dummy_node);
-    break;
-  case TOKEN_EOF:
+  case TOKEN_EMPTY:
     assert(0);
     break;
-  case TOKEN_EMPTY:
+  case TOKEN_EOF:
     assert(0);
     break;
   case TOKEN_ESCAPE:
@@ -5389,7 +5393,6 @@ void token::process()
     curenv->newline();
     break;
   case TOKEN_NODE:
-  case TOKEN_STRETCHABLE_SPACE:
     curenv->add_node(nd);
     nd = 0;
     break;
@@ -5410,10 +5413,16 @@ void token::process()
   case TOKEN_SPREAD:
     curenv->spread();
     break;
+  case TOKEN_STRETCHABLE_SPACE:
+    curenv->add_node(new unbreakable_space_node(curenv->get_space_width()));
+    break;
   case TOKEN_TAB:
     curenv->handle_tab(0);
     break;
   case TOKEN_TRANSPARENT:
+    break;
+  case TOKEN_TRANSPARENT_DUMMY:
+    curenv->add_node(new transparent_dummy_node);
     break;
   default:
     assert(0);
@@ -5443,7 +5452,6 @@ const char *lineno_reg::get_string()
     line = 0;
   return i_to_a(line);
 }
-
 
 class writable_lineno_reg : public general_reg {
 public:
@@ -5485,7 +5493,6 @@ const char *filename_reg::get_string()
   else
     return 0;
 }
-
 
 class constant_reg : public reg {
   const char *s;
@@ -5532,7 +5539,7 @@ void abort_request()
   fputc('\n', stderr);
   cleanup_and_exit(1);
 }
-      
+
 char *read_string()
 {
   int len = 256;
@@ -5896,7 +5903,6 @@ static void set_string(const char *name, const char *value)
   request_dictionary.define(name, m);
 }
 
-
 static void do_string_assignment(const char *s)
 {
   const char *p = strchr(s, '=');
@@ -6198,7 +6204,7 @@ void check_output_limits(int x, int y)
 void reset_output_registers(int miny)
 {
   // fprintf(stderr, "reset_output_registers\n");
-  output_low_mark_miny =  miny;  
+  output_low_mark_miny =  miny;
   output_reg_minx_contents = -1;
   output_reg_miny_contents = -1;
   output_reg_maxx_contents = -1;
@@ -6340,7 +6346,6 @@ static request_or_macro *lookup_request(symbol nm)
   }
   return p;
 }
-
 
 node *charinfo_to_node_list(charinfo *ci, const environment *envp)
 {
@@ -6558,8 +6563,8 @@ static void copy_mode_error(const char *format,
 
 enum error_type { WARNING, ERROR, FATAL };
 
-static void do_error(error_type type, 
-		     const char *format, 
+static void do_error(error_type type,
+		     const char *format,
 		     const errarg &arg1,
 		     const errarg &arg2,
 		     const errarg &arg3)
@@ -6607,7 +6612,7 @@ int warning(warning_type t,
     return 0;
 }
 
-void error(const char *format, 
+void error(const char *format,
 	   const errarg &arg1,
 	   const errarg &arg2,
 	   const errarg &arg3)
@@ -6615,7 +6620,7 @@ void error(const char *format,
   do_error(ERROR, format, arg1, arg2, arg3);
 }
 
-void fatal(const char *format, 
+void fatal(const char *format,
 	   const errarg &arg1,
 	   const errarg &arg2,
 	   const errarg &arg3)

@@ -194,7 +194,7 @@ class environment {
   void mark_last_line();
 #endif /* WIDOW_CONTROL */
   breakpoint *choose_breakpoint();
-  void hyphenate_line();
+  void hyphenate_line(int start_here = 0);
   void start_field();
   void wrap_up_field();
   void add_padding();
@@ -272,7 +272,7 @@ public:
   void set_input_line_position(hunits);	// used by \n(hp
   void interrupt();
   void spread() { spread_flag = 1; }
-  void possibly_break_line(int forced = 0);
+  void possibly_break_line(int start_here = 0, int forced = 0);
   void do_break();			// .br
   void final_break();
   void add_html_tag_eol(void);

@@ -1,11 +1,51 @@
+2001-02-04  Werner LEMBERG  <wl@gnu.org>
+
+	A new escape sequence `\:', inserting a zero-width break point.
+
+	* src/roff/troff/input.h: Adding `ESCAPE_COLON'.
+	* src/roff/troff/input.cc (get_copy, token::next, asciify):
+	Implement it.
+	* src/roff/troff/node.h (node): Add `is_escape_colon()' virtual
+	method.
+	(space_node): Add `was_escape_colon' member.  Add `is_escape_colon()'
+	and `asciify()' methods.
+	* src/roff/troff/node.cc (space_node::space_node): Updated.
+	(space_node::asciify): Handle `was_escape_colon'.
+	* NEWS, src/roff/troff/troff.man, man/groff.man: Document it.
+
+	Handle `\~' similar to other comparable requests.
+
+	* src/roff/troff/input.cc (process_input_stack): Remove now obsolete
+	label.
+	(token::next): Move creation of an unbreakable_space_node to...
+	(token::add_to_node_list): Here.
+
+	Fix a bug which sometimes prevented hyphenation of words connected
+	with `\~' or `\ ' (and other escape sequences handled as
+	TOKEN_NODE).  This also fixes a hyphenation problem with boxes
+	(after a call to the `unformat' request).
+
+	* src/roff/troff/env.h (environment::possibly_break_line,
+	environment::hyphenate_line): Introducing `start_here' parameter.
+	* src/roff/troff/env.cc (environment::space_newline,
+	environment::space): Use it.
+	(environment::possibly_break_line, environment::hyphenate_line):
+	Implement it.
+	* src/roff/troff/input.cc (process_input_stack): Use it.
+	* src/roff/troff/node.h (unbreakable_space_node, hmotion_node,
+	space_char_hmotion_node, overstrike_node): Add
+	`get_hyphenation_type()' method.
+	* src/roff/troff/node.cc (break_char_node::asciify): Don't asciify
+	if `unformat_only' is active.
+
 2001-01-30  Werner LEMBERG  <wl@gnu.org>
 
-	Implemented new read-only number register `.linetabs' which returns
-	1 if in line-tabs mode, 0 otherwise.
+	Implemented new read-only number register `.linetabs' which
+	returns 1 if in line-tabs mode, 0 otherwise.
 
-	* env.h (environment): Add get_line_tabs() member.
-	* env.cc (get_line_tabs): New function.
-	* init_env_requests: Use it.
+	* src/roff/troff/env.h (environment): Add get_line_tabs() member.
+	* src/roff/troff/env.cc (get_line_tabs): New function.
+	(init_env_requests): Use it.
 	* NEWS, src/roff/troff/troff.man, man/groff.man: Document it.
 
 	* VERSION, REVISION: Changing to 1.17.0.

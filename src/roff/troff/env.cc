@@ -390,7 +390,7 @@ void environment::space_newline()
     return;
   }
   add_node(new word_space_node(x, num_spaces));
-  possibly_break_line(spread_flag);
+  possibly_break_line(0, spread_flag);
   spread_flag = 0;
 }
 
@@ -418,7 +418,7 @@ void environment::space()
     return;
   }
   add_node(new word_space_node(x, 1));
-  possibly_break_line(spread_flag);
+  possibly_break_line(0, spread_flag);
   spread_flag = 0;
 }
 
@@ -1745,18 +1745,21 @@ breakpoint *environment::choose_breakpoint()
   return 0;
 }
 
-void environment::hyphenate_line()
+void environment::hyphenate_line(int start_here)
 {
   if (line == 0)
     return;
   hyphenation_type prev_type = line->get_hyphenation_type();
   node **startp;
-  for (startp = &line->next; *startp != 0; startp = &(*startp)->next) {
-    hyphenation_type this_type = (*startp)->get_hyphenation_type();
-    if (prev_type == HYPHEN_BOUNDARY && this_type == HYPHEN_MIDDLE)
-      break;
-    prev_type = this_type;
-  }
+  if (start_here)
+    startp = &line;
+  else
+    for (startp = &line->next; *startp != 0; startp = &(*startp)->next) {
+      hyphenation_type this_type = (*startp)->get_hyphenation_type();
+      if (prev_type == HYPHEN_BOUNDARY && this_type == HYPHEN_MIDDLE)
+	break;
+      prev_type = this_type;
+    }
   if (*startp == 0)
     return;
   node *tem = *startp;
@@ -1831,7 +1834,7 @@ static void distribute_space(node *n, int nspaces, hunits desired_space,
   assert(desired_space.is_zero() && nspaces == 0);
 }
 
-void environment::possibly_break_line(int forced)
+void environment::possibly_break_line(int start_here, int forced)
 {
   if (!fill || current_tab || current_field || dummy)
     return;
@@ -1840,7 +1843,7 @@ void environment::possibly_break_line(int forced)
 	     // When a macro follows a paragraph in fill mode, the
 	     // current line should not be empty.
 	     || (width_total - line->width()) > target_text_length)) {
-    hyphenate_line();
+    hyphenate_line(start_here);
     breakpoint *bp = choose_breakpoint();
     if (bp == 0)
       // we'll find one eventually

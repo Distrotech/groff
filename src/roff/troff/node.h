@@ -80,6 +80,7 @@ struct node {
   virtual int discardable();
   virtual void spread_space(int *, hunits *);
   virtual void freeze_space();
+  virtual void is_escape_colon();
   virtual breakpoint *get_breakpoints(hunits width, int nspaces,
 				      breakpoint *rest = 0,
 				      int is_inner = 0);
@@ -149,7 +150,8 @@ private:
 protected:
   hunits n;
   char set;
-  space_node(hunits, int, node * = 0);
+  char was_escape_colon;
+  space_node(hunits, int, int, node * = 0);
 public:
   space_node(hunits d, node *p = 0);
 #if 0
@@ -162,6 +164,7 @@ public:
   int discardable();
   int merge_space(hunits);
   void freeze_space();
+  void is_escape_colon();
   void spread_space(int*, hunits*);
   void tprint(troff_output_file *);
   breakpoint *get_breakpoints(hunits width, int nspaces, breakpoint *rest = 0,
@@ -170,6 +173,7 @@ public:
   void split(int, node **, node **);
   void ascii_print(ascii_output_file *);
   int same(node *);
+  void asciify(macro *, int);
   const char *type();
   int force_tprint();
 };
@@ -203,6 +207,7 @@ public:
   int nbreaks();
   void split(int, node **, node **);
   int merge_space(hunits);
+  hyphenation_type get_hyphenation_type();
 };
 
 class diverted_space_node : public node {
@@ -267,6 +272,7 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  hyphenation_type get_hyphenation_type();
 };
 
 class space_char_hmotion_node : public hmotion_node {
@@ -278,6 +284,7 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  hyphenation_type get_hyphenation_type();
 };
 
 class vmotion_node : public node {
@@ -402,6 +409,7 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  hyphenation_type get_hyphenation_type();
 };
 
 class bracket_node : public node {

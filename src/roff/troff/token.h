@@ -34,7 +34,6 @@ class token {
     TOKEN_BEGIN_TRAP,
     TOKEN_CHAR,			// a normal printing character
     TOKEN_DUMMY,		// \&
-    TOKEN_TRANSPARENT_DUMMY,	// \)
     TOKEN_EMPTY,		// this is the initial value
     TOKEN_END_TRAP,
     TOKEN_ESCAPE,		// \e
@@ -51,11 +50,12 @@ class token {
     TOKEN_REQUEST,
     TOKEN_RIGHT_BRACE,
     TOKEN_SPACE,		// ` ' -- ordinary space
-    TOKEN_STRETCHABLE_SPACE,	// \~
     TOKEN_SPECIAL,		// a special character -- \' \` \- \(xx
     TOKEN_SPREAD,		// \p -- break and spread output line 
+    TOKEN_STRETCHABLE_SPACE,	// \~
     TOKEN_TAB,			// tab
     TOKEN_TRANSPARENT,		// \!
+    TOKEN_TRANSPARENT_DUMMY,	// \)
     TOKEN_EOF			// end of file
     } type;
 public:
