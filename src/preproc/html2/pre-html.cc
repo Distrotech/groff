@@ -267,7 +267,7 @@ void char_buffer::write_file_troff (void)
   char_block *t=head;
   int r;
 
-  writeString(".nr html2enable 1\n");
+  writeString(".nr html2enable 0\n");
   writeString(".nr htmlflip 0\n");
   if (t != 0) {
     do {
@@ -383,14 +383,17 @@ static void createImage (imageItem *i)
 	    image_device,
 	    image_res,
 	    psFileName,
-	    i->X1*image_res/POSTSCRIPTRES,
+	    i->X1*image_res/POSTSCRIPTRES-IMAGE_BOARDER_PIXELS,
 	    i->Y1*image_res/POSTSCRIPTRES-IMAGE_BOARDER_PIXELS,
-	    (i->X2-i->X1)*image_res/POSTSCRIPTRES+IMAGE_BOARDER_PIXELS,
-	    (i->Y2-i->Y1)*image_res/POSTSCRIPTRES+IMAGE_BOARDER_PIXELS,
+	    (i->X2-i->X1)*image_res/POSTSCRIPTRES+2*IMAGE_BOARDER_PIXELS,
+	    (i->Y2-i->Y1)*image_res/POSTSCRIPTRES+2*IMAGE_BOARDER_PIXELS,
 	    TRANSPARENT,
 	    i->imageName);
-    fprintf(stderr, buffer);
+    // fprintf(stderr, buffer);
     system(buffer);
+  } else {
+    fprintf(stderr, "ignoring image as x1 coord is -1\n");
+    fflush(stderr);
   }
 }
 

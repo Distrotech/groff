@@ -110,8 +110,8 @@ void do_file(FILE *fp, const char *filename)
       }
       restore_compatibility();
       printf(".lf %d\n", current_lineno);
-      graphic_end();
       put_string(linebuf, stdout);
+      graphic_end();
     }
     else if (start_delim != '\0' && linebuf.search(start_delim) >= 0
 	     && inline_equation(fp, linebuf, str))

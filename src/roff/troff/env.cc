@@ -1946,8 +1946,9 @@ void environment::add_html_tag (const char *name)
       if (!illegal_input_char((unsigned char)*p))
 	m->append(*p);
     output_pending_lines();
-    output_line(new special_node(*m), 0);
-  }  
+    output(new special_node(*m), !fill, 0, 0, 0);
+    output_pending_lines();
+  }
 }
 
 void environment::do_break()

@@ -752,6 +752,7 @@ public:
   void really_on();
   void really_off();
   void draw(char, hvpair *, int, font_size);
+  void determine_line_limits (char code, hvpair *point, int npoints);
   int get_hpos() { return hpos; }
   int get_vpos() { return vpos; }
 };
@@ -896,6 +897,9 @@ void troff_output_file::flush_tbuf()
     put(tbuf_kern);
     put(' ');
   }
+  
+  check_output_limits(output_hpos, output_vpos);
+
   for (int i = 0; i < tbuf_len; i++)
     put(tbuf[i]);
   put('\n');
@@ -1061,6 +1065,42 @@ void troff_output_file::set_font(tfont *tf)
   current_tfont = tf;
 }
 
+/*
+ *  determine_line_limits - works out the smallest box which will contain
+ *                          the entity, code, built from the point array.
+ */
+
+void troff_output_file::determine_line_limits (char code, hvpair *point, int npoints)
+{
+  int i, x, y;
+
+  switch (code) {
+
+  case 'c':
+  case 'C':
+    /* only the h field is used when defining a circle */
+    check_output_limits(output_hpos, output_vpos-point[0].h.to_units()/2);
+    check_output_limits(output_hpos+point[0].h.to_units(), output_vpos+point[0].h.to_units()/2);
+    break;
+  case 'E':
+  case 'e':
+    check_output_limits(output_hpos, output_vpos-point[1].v.to_units()/2);
+    check_output_limits(output_hpos+point[0].h.to_units(), output_vpos+point[1].v.to_units()/2);
+    break;
+  default:
+    /*
+     *  remember this doesn't work for arc..
+     */
+    x=output_hpos;
+    y=output_vpos;
+    for (i=0; i<npoints; i++) {
+      x += point[i].h.to_units();
+      y += point[i].v.to_units();
+      check_output_limits(x, y);
+    }
+  }
+}
+
 void troff_output_file::draw(char code, hvpair *point, int npoints,
 			     font_size fsize)
 {
@@ -1088,6 +1128,9 @@ void troff_output_file::draw(char code, hvpair *point, int npoints,
       put(' ');
       put(point[i].v.to_units());
     }
+
+  determine_line_limits(code, point, npoints);
+
   for (i = 0; i < npoints; i++)
     output_hpos += point[i].h.to_units();
   hpos = output_hpos;
@@ -1324,14 +1367,6 @@ void real_output_file::print_line(hunits x, vunits y, node *n,
 {
   if (printing && output_on)
     really_print_line(x, y, n, before, after, width);
-
-  if (before.to_units() < after.to_units()) {
-    check_output_limits(x.to_units()                 , y.to_units()+before.to_units());
-    check_output_limits(x.to_units()+width.to_units(), y.to_units()+after.to_units()+n->size());
-  } else {
-    check_output_limits(x.to_units()                 , y.to_units()+after.to_units());
-    check_output_limits(x.to_units()+width.to_units(), y.to_units()+before.to_units()+n->size());
-  }
   delete_node_list(n);
 }
 
