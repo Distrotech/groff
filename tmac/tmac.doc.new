@@ -613,8 +613,6 @@
 .\" NS doc-print-recursive macro
 .\" NS   general name recursion routine (print remaining arguments)
 .\" NS
-.\" NS   hyphenation is disabled
-.\" NS
 .\" NS modifies:
 .\" NS   doc-arg-ptr
 .\" NS
@@ -2225,7 +2223,7 @@
 .
 .
 .\" NS doc-nesting-level global register
-.\" NS   used by `doc-enclose-open' and `doc-enclose-close', `.Fo', and `.Fc'
+.\" NS   used by `doc-enclose-open' and `doc-enclose-close'
 .
 .nr doc-nesting-level 0
 .
@@ -2244,12 +2242,9 @@
 .\" NS   doc-nesting-level
 .
 .de doc-enclose-open
-.  ie \n[doc-arg-limit] \
-.    nop \)\*[doc-quote-left]\)\c
-.  el \{\
+.  if !\n[doc-arg-limit] \
 .    doc-parse-args \$@
-.    nop \)\*[doc-quote-left]\)\c
-.  \}
+.  nop \)\*[doc-quote-left]\)\c
 .
 .  \" start enclosure box
 .  box doc-enclosure-box\n[doc-nesting-level]
@@ -2287,7 +2282,10 @@
 .  chop doc-enclosure-box\n[doc-nesting-level]
 .  unformat doc-enclosure-box\n[doc-nesting-level]
 .
-.  nop \*[doc-enclosure-box\n[doc-nesting-level]]\)\*[doc-quote-right]\)\c
+.  nh
+.  nop \*[doc-enclosure-box\n[doc-nesting-level]]\c
+.  nop \)\*[doc-quote-right]\)\c
+.  hy
 .
 .  if !\n[doc-arg-limit] \{\
 .    doc-parse-args \$@
@@ -3277,7 +3275,7 @@
 ..
 .
 .
-.\" NS doc-have-tag-width global macro
+.\" NS doc-have-tag-width global register (bool)
 .\" NS   set if a tag width has been explicitly given
 .
 .nr doc-have-tag-width 0
@@ -3468,6 +3466,8 @@
 .  ds doc-space-saved "\*[doc-space]
 .  ds doc-saved-space-saved "\*[doc-saved-space]
 .  nr doc-space-mode-saved \n[doc-space-mode]
+.  nr doc-have-space-saved \n[doc-have-space]
+.  nr doc-have-slot-saved \n[doc-have-slot]
 .  nr doc-curr-font-for-Ef-saved \n[doc-curr-font-for-Ef]
 .  nr doc-curr-size-for-Ef-saved \n[doc-curr-size-for-Ef]
 .  nr doc-keep-type-saved \n[doc-keep-type]
@@ -3597,6 +3597,8 @@
 .  ds doc-space "\*[doc-space-saved]
 .  ds doc-saved-space "\*[doc-saved-space-saved]
 .  nr doc-space-mode \n[doc-space-mode-saved]
+.  nr doc-have-space \n[doc-have-space-saved]
+.  nr doc-have-slot \n[doc-have-slot-saved]
 .  nr doc-curr-font-for-Ef \n[doc-curr-font-for-Ef-saved]
 .  nr doc-curr-size-for-Ef \n[doc-curr-size-for-Ef-saved]
 .  nr doc-keep-type \n[doc-keep-type-saved]
@@ -3898,6 +3900,8 @@
 .
 .  doc-set-vertical-and-indent 0
 .  br
+.
+.  nh
 .  doc-item-box\n[doc-list-depth]
 .
 .  nr doc-in-list 0
@@ -3915,6 +3919,7 @@
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-dhl
+.\" NS   doc-reg-dhl1
 .
 .de doc-hang-list
 .  \" finish item box
@@ -3927,11 +3932,14 @@
 .  nr doc-reg-dhl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-dhl]u
 .
+.  nh
 .  ie (\n[dl]u >= \n[doc-list-indent-stack\n[doc-list-depth]]u) \
 .    doc-item-box\n[doc-list-depth]
 .  el \{\
 .    chop doc-item-box\n[doc-list-depth]
-.    nop \*[doc-item-box\n[doc-list-depth]]\h'|\n[doc-reg-dhl]u'\c
+.    nr doc-reg-dhl1 \n[.k]u
+.    nop \*[doc-item-box\n[doc-list-depth]]\c
+.    nop \h'|(\n[doc-reg-dhl1]u - \n[.k]u + \n[doc-reg-dhl]u)'\c
 .    nr doc-have-space 1
 .  \}
 .
@@ -3955,6 +3963,7 @@
 .  unformat doc-item-box\n[doc-list-depth]
 .
 .  doc-set-vertical-and-indent 0
+.  nh
 .  doc-item-box\n[doc-list-depth]
 .  br
 .
@@ -3968,11 +3977,10 @@
 .\" NS   .It item of list-type [empty tag]
 .
 .de doc-item-list
-.  \" finish item box
+.  \" finish (dummy) item box
 .  br
 .  ev
 .  box
-.  unformat doc-item-box\n[doc-list-depth]
 .
 .  doc-set-vertical-and-indent 0
 .  br
@@ -4090,6 +4098,7 @@
 .\" NS local variables:
 .\" NS   doc-box-dtl
 .\" NS   doc-reg-dtl
+.\" NS   doc-reg-dtl1
 .
 .de doc-tag-list
 .  \" finish item box
@@ -4115,13 +4124,16 @@
 .  nr doc-reg-dtl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-dtl]u
 .
+.  nh
 .  ie (\n[dl]u > \n[doc-list-indent-stack\n[doc-list-depth]]u) \{\
 .    doc-item-box\n[doc-list-depth]
 .    br
 .  \}
 .  el \{\
 .    chop doc-item-box\n[doc-list-depth]
-.    nop \*[doc-item-box\n[doc-list-depth]]\h'|\n[doc-reg-dtl]u'\c
+.    nr doc-reg-dtl1 \n[.k]u
+.    nop \*[doc-item-box\n[doc-list-depth]]\c
+.    nop \h'|(\n[doc-reg-dtl1]u - \n[.k]u + \n[doc-reg-dtl]u)'\c
 .    nr doc-have-space 1
 .  \}
 .
@@ -5045,6 +5057,16 @@
 ..
 .
 .
+.\" NS doc-saved-nesting-level global register
+.
+.nr doc-saved-nesting-level 0
+.
+.
+.\" NS doc-in-func-enclosure global register (bool)
+.
+.nr doc-in-func-enclosure 0
+.
+.
 .\" NS Fo user macro
 .\" NS   function open
 .\" NS
@@ -5056,76 +5078,88 @@
 .\" NS   doc-have-decl
 .\" NS   doc-have-func
 .\" NS   doc-have-var
+.\" NS   doc-in-func-enclosure
 .\" NS   doc-in-synopsis-count
 .\" NS   doc-indent-synopsis
 .\" NS   doc-is-func
-.\" NS   doc-nesting-level
 .\" NS   doc-macro-name
+.\" NS   doc-saved-nesting-level
 .\" NS
 .\" NS width register `Fo' set in doc-common
 .
 .de Fo
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Fo
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Fo function_name (#\n[.c])
-.  \}
+.  ie (\n[doc-in-func-enclosure]) \
+.    tm mdoc error: .Fo/.Fc can't be nested (#\n[.c])
+.  el \{\
+.    nr doc-saved-nesting-level \n[doc-nesting-level]
+.    nr doc-in-func-enclosure 1
 .
-.  if \n[doc-in-synopsis-count] \{\
-.    \" if there is/has been more than one subroutine declaration
-.    ie \n[doc-is-func] \{\
-.      br
-.      nr doc-have-var 0
-.      nr doc-have-decl 0
-.      nr doc-is-func 0
+.    if !\n[doc-arg-limit] \{\
+.      ie \n[.$] \{\
+.        ds doc-macro-name Fo
+.        doc-parse-args \$@
+.      \}
+.      el \
+.        tm Usage: .Fo function_name (#\n[.c])
 .    \}
-.    el \{\
-.      if \n[doc-have-func] \{\
-.        doc-paragraph
+.
+.    if \n[doc-in-synopsis-count] \{\
+.      \" if there is/has been more than one subroutine declaration
+.      ie \n[doc-is-func] \{\
+.        br
 .        nr doc-have-var 0
 .        nr doc-have-decl 0
-.    \}\}
+.        nr doc-is-func 0
+.      \}
+.      el \{\
+.        if \n[doc-have-func] \{\
+.          doc-paragraph
+.          nr doc-have-var 0
+.          nr doc-have-decl 0
+.      \}\}
 .
-.    if \n[doc-have-decl] \{\
-.      doc-paragraph
-.      nr doc-have-var 0
+.      if \n[doc-have-decl] \{\
+.        doc-paragraph
+.        nr doc-have-var 0
+.      \}
+.
+.      if \n[doc-have-var] \{\
+.        doc-paragraph
+.        nr doc-have-decl 0
+.      \}
+.
+.      nr doc-have-func 1
+.      nr doc-is-func 0
+.      rs
+.
+.      ie (\n[doc-in-synopsis-count] > 1) \
+.        br
+.      el \{\
+.        if !\n[doc-indent-synopsis] \
+.          nr doc-indent-synopsis (8u * \n[doc-fixed-width]u)
+.      \}
+.
+.      in +\n[doc-indent-synopsis]u
+.      ti -\n[doc-indent-synopsis]u
+.      nr doc-in-synopsis-count +1
 .    \}
 .
-.    if \n[doc-have-var] \{\
-.      doc-paragraph
-.      nr doc-have-decl 0
-.    \}
+.    \" start function box
+.    box doc-func-box
+.    ev doc-func-env
+.    in 0
+.    nf
 .
-.    nr doc-have-func 1
-.    nr doc-is-func 0
-.    rs
+.    nr doc-arg-ptr +1
+.    if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.      nr doc-func-arg-count 1
+.      nr doc-curr-font \n[.f]
+.      nr doc-curr-size \n[.s]
 .
-.    ie (\n[doc-in-synopsis-count] > 1) \
-.      br
-.    el \{\
-.      if !\n[doc-indent-synopsis] \
-.        nr doc-indent-synopsis (8u * \n[doc-fixed-width]u)
-.    \}
-.
-.    in +\n[doc-indent-synopsis]u
-.    ti -\n[doc-indent-synopsis]u
-.    nr doc-in-synopsis-count +1
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-nesting-level +1
-.    nr doc-func-arg-count 1
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
-.
-.    nop \*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]\c
-.    nop \f[P]\s[0]\*[lp]\)\c
-.    doc-reset-args
-.  \}
+.      nop \*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]\c
+.      nop \f[P]\s[0]\*[lp]\)\c
+.      doc-reset-args
+.  \}\}
 ..
 .
 .
@@ -5135,35 +5169,43 @@
 .\" NS modifies:
 .\" NS   doc-arg-ptr
 .\" NS   doc-func-arg-count
-.\" NS   doc-nesting-level
+.\" NS   doc-in-func-enclosure
+.\" NS   doc-saved-nesting-level
 .\" NS   doc-macro-name
 .\" NS
 .\" NS width register `Fc' set in doc-common
 .
 .de Fc
-.  if !\n[doc-arg-limit] \{\
-.    if \n[.$] \{\
-.      ds doc-macro-name Fc
-.      doc-parse-args \$@
-.  \}\}
+.  ie !\n[doc-in-func-enclosure] \
+.    tm mdoc warning: Extraneous .Fc (#\n[.c])
+.  el \{\
+.    if !(\n[doc-saved-nesting-level] == \n[doc-nesting-level]) \
+.      tm mdoc warning: Unbalanced enclosure commands within .Fo/.Fc
 .
-.  nr doc-func-arg-count 0
-.  nr doc-nesting-level -1
+.    if !\n[doc-arg-limit] \{\
+.      if \n[.$] \{\
+.        ds doc-macro-name Fc
+.        doc-parse-args \$@
+.    \}\}
 .
-.  ie \n[doc-in-synopsis-count] \
-.    nop \|\*[rp]\)\c
-.  el \
-.    nop \|\*[rp]\)\c
+.    nr doc-func-arg-count 0
+.    nr doc-in-func-enclosure 0
 .
-.  ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
-.    \*[doc-arg\n[doc-arg-ptr]]
+.    nop \|\*[rp]\)
+.
+.    \" finish function box
+.    br
+.    ev
+.    box
+.    unformat doc-func-box
+.
+.    nh
+.    doc-func-box
+.    doc-reset-args
+.
+.    if \n[doc-in-synopsis-count] \
+.      in -\n[doc-indent-synopsis]u
 .  \}
-.  el \
-.    doc-print-and-reset
-.
-.  if \n[doc-in-synopsis-count] \
-.    in -\n[doc-indent-synopsis]u
 ..
 .
 .
