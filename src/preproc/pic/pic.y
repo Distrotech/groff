@@ -1109,8 +1109,16 @@ sprintf_args:
 		    else {
 		      double *oldv = $$.v;
 		      $$.maxv *= 2;
+#if 0
 		      $$.v = new double[$$.maxv];
 		      memcpy($$.v, oldv, $$.nv*sizeof(double));
+#else
+		      // workaround for bug in Compaq C++ V6.5-033
+		      // for Compaq Tru64 UNIX V5.1A (Rev. 1885)
+		      double *foo = new double[$$.maxv];
+		      memcpy(foo, oldv, $$nv*sizeof(double));
+		      $$.v = foo;
+#endif
 		      a_delete oldv;
 		    }
 		  }
