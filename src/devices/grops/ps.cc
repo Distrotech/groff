@@ -49,6 +49,9 @@ static double user_paper_length = 0;
 static int bflag = 0;
 unsigned broken_flags = 0;
 
+// Non-zero means we need the CMYK extension for PostScript Level 1
+static int cmyk_flag = 0;
+
 #define DEFAULT_LINEWIDTH 40	/* in ems/1000 */
 #define MAX_LINE_LENGTH 72
 #define FILL_MAX 1000
@@ -830,6 +833,7 @@ void ps_printer::set_color(color *col, int fill)
        .put_color(Yellow)
        .put_color(Black);
     s[1] = 'k';
+    cmyk_flag = 1;
     break;
   case GRAY:
     out.put_color(Gray);
@@ -1181,13 +1185,15 @@ ps_printer::~ps_printer()
   fputs((broken_flags & USE_PS_ADOBE_2_0) ? "2.0" : "3.0", stdout);
   putchar('\n');
   out.set_file(stdout);
-  {
-    out.begin_comment("Creator:")
-       .comment_arg("groff")
-       .comment_arg("version")
-       .comment_arg(Version_string)
+  if (cmyk_flag)
+    out.begin_comment("Extensions:")
+       .comment_arg("CMYK")
        .end_comment();
-  }
+  out.begin_comment("Creator:")
+     .comment_arg("groff")
+     .comment_arg("version")
+     .comment_arg(Version_string)
+     .end_comment();
   {
     fputs("%%CreationDate: ", out.get_file());
 #ifdef LONG_FOR_TIME_T
