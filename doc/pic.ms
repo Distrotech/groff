@@ -127,15 +127,15 @@ This was produced from the following \fBpic\fP program:
 .DS
 .CW
 \&.PS
-\&ellipse "document";
-\&arrow;
-\&box "\\fIpic\\fP(1)"
-\&arrow;
-\&box width 1.2 "\\fIgtbl\\fP(1) or \\fIgeqn\\fP(1)" "(optional)" dashed;
-\&arrow;
-\&box "\\fIgtroff\\fP(1)";
-\&arrow;
-\&ellipse "PostScript"
+ellipse "document";
+arrow;
+box "\efIpic\efP(1)"
+arrow;
+box width 1.2 "\efIgtbl\efP(1) or \efIgeqn\efP(1)" "(optional)" dashed;
+arrow;
+box "\efIgtroff\efP(1)";
+arrow;
+ellipse "PostScript"
 \&.PE
 .DE
 .R
@@ -187,17 +187,17 @@ which introduces some more basic concepts:
 .DS
 .CW
 \&.PS
-\&box "box";
-\&move;
-\&line "line" "";
-\&move;
-\&arrow "arrow" "";
-\&move;
-\&circle "circle";
-\&move;
-\&ellipse "ellipse";
-\&move;
-\&arc; down; move; "arc"
+box "box";
+move;
+line "line" "";
+move;
+arrow "arrow" "";
+move;
+circle "circle";
+move;
+ellipse "ellipse";
+move;
+arc; down; move; "arc"
 \&.PE
 .DE
 .ft R
@@ -401,7 +401,7 @@ of its type.  As an example, the program
 .DS
 .CW
 \&.PS
-\&box; box wid 1 ht 1; box same; box
+box; box wid 1 ht 1; box same; box
 \&.PE
 .R
 .DE
@@ -1001,7 +1001,7 @@ is `\fIfraction\fP \fBof the way between\fP \fIposition1\fP \fBand\fP
 \fIposition2\fP.'  For example, you can say \fB1/3 of the way between
 here and last ellipse .ne\fP.  The fraction may be in
 numerator/denominator form or may be an ordinary number (values are
-\&\fInot\fP restricted to [0,1]).  As an alternative to this verbose
+\fInot\fP restricted to [0,1]).  As an alternative to this verbose
 syntax, you can say `\fIfraction\fP  \fB<\fP\fIposition1\fP \fB,\fP
 \fIposition2\fP\fB>\fP.'; thus, the example could also be written
 \fB1/3 <here, last ellipse>\fP.
@@ -1079,7 +1079,7 @@ mechanism for connecting objects.  For example, the following program
 box "from"
 move 0.75;
 ellipse "to"
-arc cw from 1/3 of the way \\
+arc cw from 1/3 of the way \e
     between last box .n and last box .ne to last ellipse .n;
 \&.PE
 .R
@@ -1176,15 +1176,15 @@ Here is an example.  The program fragment
 .KS
 .DS
 .CW
-\&A: [
-\&    circle;
-\&    line up 1 at last circle .n;
-\&    line down 1 at last circle .s;
-\&    line right 1 at last circle .e;
-\&    line left 1 at last circle .w;
-\&    box dashed with .nw at last circle .se + (0.2, -0.2); 
-\&    Caption: center of last box;
-\&]
+A: [
+    circle;
+    line up 1 at last circle .n;
+    line down 1 at last circle .s;
+    line right 1 at last circle .e;
+    line left 1 at last circle .w;
+    box dashed with .nw at last circle .se + (0.2, -0.2); 
+    Caption: center of last box;
+]
 .R
 .DE
 .KE
@@ -1416,43 +1416,43 @@ As an example of macro use, consider the following:
 .DS
 .CW
 \&.PS
-\&# Plot a single jumper in a $1 by $2 box, $3 is the on-off state
-\&define jumper { [
-\&    shrinkfactor = 0.8;
-\&    Outer: box invis wid 0.5 ht 1;
-\&
-\&    # Count on end ] to reset these
-\&    boxwid = Outer.wid * shrinkfactor / 2;
-\&    boxht  = Outer.ht  * shrinkfactor / 2;
-\&
-\&    box fill (!$1) with .s at center of Outer;
-\&    box fill ($1)  with .n at center of Outer;
-\&] }
-\&
-\&# Plot a block of six jumpers
-\&define jumperblock {
-\&    jumper($1);
-\&    jumper($2);
-\&    jumper($3);
-\&    jumper($4);
-\&    jumper($5);
-\&    jumper($6);
-\&
-\&    jwidth  = last [].Outer.wid;
-\&    jheight = last [].Outer.ht;
-\&
-\&    box with .nw at 6th last [].nw wid 6*jwidth ht jheight;
-\&
-\&    # Use {} to avoid changing position from last box draw.
-\&    # This is necessary so move in any direction will work as expected
-\&    {"Jumpers in state $1$2$2$3$4$5$6" at last box .s + (0, -0.2);}
-\&}
-\&
-\&# Sample macro invocations
-\&jumperblock(1,1,0,0,1,0);
-\&move;
-\&jumperblock(1,0,1,0,1,1);
-.PE
+# Plot a single jumper in a $1 by $2 box, $3 is the on-off state
+define jumper { [
+    shrinkfactor = 0.8;
+    Outer: box invis wid 0.5 ht 1;
+
+    # Count on end ] to reset these
+    boxwid = Outer.wid * shrinkfactor / 2;
+    boxht  = Outer.ht  * shrinkfactor / 2;
+
+    box fill (!$1) with .s at center of Outer;
+    box fill ($1)  with .n at center of Outer;
+] }
+
+# Plot a block of six jumpers
+define jumperblock {
+    jumper($1);
+    jumper($2);
+    jumper($3);
+    jumper($4);
+    jumper($5);
+    jumper($6);
+
+    jwidth  = last [].Outer.wid;
+    jheight = last [].Outer.ht;
+
+    box with .nw at 6th last [].nw wid 6*jwidth ht jheight;
+
+    # Use {} to avoid changing position from last box draw.
+    # This is necessary so move in any direction will work as expected
+    {"Jumpers in state $1$2$2$3$4$5$6" at last box .s + (0, -0.2);}
+}
+
+# Sample macro invocations
+jumperblock(1,1,0,0,1,0);
+move;
+jumperblock(1,0,1,0,1,1);
+\&.PE
 .R
 .DE
 .KE
@@ -1755,16 +1755,16 @@ The \fBmgs\fP macros, for example, include the following definitions:
 .CW
 \&.de PS
 \&.br
-\&.sp \\n[DD]u
-\&.ie \\n[.$]<2 .@error bad arguments to PS (not preprocessed with pic?)
-\&.el \{\
-\&.	ds@need (u;\\$1)+1v
-\&.	in +(u;\\n[.l]-\\n[.i]-\\$2/2>?0)
-\&.\}
+\&.sp \e\en[DD]u
+\&.ie \e\en[.$]<2 .@error bad arguments to PS (not preprocessed with pic?)
+\&.el \e{\e
+\&.	ds@need (u;\e\e$1)+1v
+\&.	in +(u;\e\en[.l]-\e\en[.i]-\e\e$2/2>?0)
+\&.\e}
 \&..
 \&.de PE
 \&.par@reset
-\&.sp \\n[DD]u+.5m
+\&.sp \e\en[DD]u+.5m
 \&..
 .R
 .DE
@@ -1774,7 +1774,7 @@ Equivalent definition will be supplied by GNU \fIpic\fP(1) if you use
 the -mpic option; this should make it usable with macro pages other
 than \fIms\fR(1).
 .PP
-if .PF is used instead of .PE, the \fBtroff\fP position is restored to
+If .PF is used instead of .PE, the \fBtroff\fP position is restored to
 what it was at the picture start (Kernighan notes that the F stands
 for "flyback").
 .PP
@@ -1896,30 +1896,30 @@ for loop:
 .DS
 .CW
 \&.PS
-\&# Draw a demonstration up left arrow with grid box overlay
-\&define gridarrow
-\&{
-\&    [
-\&        {arrow up left $1;}
-\&        box wid 0.5 ht 0.5 dotted with .nw at last arrow .end;
-\&        for i = 2 to ($1 / 0.5) do
-\&        {
-\&            box wid 0.5 ht 0.5 dotted with .sw at last box .se;
-\&        }
-\&        move down from last arrow .center;
-\&        [
-\&            if ( $1 == boxht ) \e
-\&            then { "\\fBline up left\\fP" } \e
-\&            else { sprintf("\\fBarrow up left %g\\fP", $1) };
-\&        ]
-\&    ] 
-\&    move right from last [] .e;
-\&}
-\&gridarrow(0.5);
-\&gridarrow(1);
-\&gridarrow(1.5);
-\&gridarrow(2);
-\&undef gridarrow
+# Draw a demonstration up left arrow with grid box overlay
+define gridarrow
+{
+    [
+        {arrow up left $1;}
+        box wid 0.5 ht 0.5 dotted with .nw at last arrow .end;
+        for i = 2 to ($1 / 0.5) do
+        {
+            box wid 0.5 ht 0.5 dotted with .sw at last box .se;
+        }
+        move down from last arrow .center;
+        [
+            if ( $1 == boxht ) \e
+            then { "\efBline up left\efP" } \e
+            else { sprintf("\efBarrow up left %g\efP", $1) };
+        ]
+    ] 
+    move right from last [] .e;
+}
+gridarrow(0.5);
+gridarrow(1);
+gridarrow(1.5);
+gridarrow(2);
+undef gridarrow
 \&.PE
 .R
 .DE
@@ -1959,66 +1959,66 @@ multiple-part pattern:
 .DS
 .CW
 \&.PS
-\&define filter {box ht 0.25 rad 0.125}
-\&lineht = 0.25;
-\&Top: [
-\&    right;
-\&    box "\\fBms\\fR" "sources";
-\&    move;
-\&    box "\\fBHTML\\fR" "sources";
-\&    move;
-\&    box "\\fBlinuxdoc-sgml\\fP" "sources" wid 1.5;
-\&    move;
-\&    box "\\fBTexinfo\\fP" "sources";
-\&
-\&    line down from 1st box .s lineht;
-\&    A: line down;
-\&    line down from 2nd box .s; filter "\\fBhtml2ms\\fP";
-\&    B: line down;
-\&    line down from 3rd box .s; filter "\\fBformat\\fP";
-\&    C: line down;
-\&    line down from 4th box .s; filter "\\fBtexi2roff\\fP";
-\&    D: line down;
-\&]
-\&move down 1 from last [] .s;
-\&Anchor: box wid 1 ht 0.75 "\\fBms\\fR" "intermediate" "form";
-\&arrow from Top.A.end to Anchor.nw;
-\&arrow from Top.B.end to 1/3 of the way between Anchor.nw and Anchor.ne;
-\&arrow from Top.C.end to 2/3 of the way between Anchor.nw and Anchor.ne;
-\&arrow from Top.D.end to Anchor.ne
-\&{
-\&    # PostScript column
-\&    move to Anchor .sw;
-\&    line down left then down ->;
-\&    filter "\\fBpic\\fP";
-\&    arrow;
-\&    filter "\\fBeqn\\fP";
-\&    arrow;
-\&    filter "\\fBtbl\\fP";
-\&    arrow;
-\&    filter "\\fBgroff\\fP";
-\&    arrow;
-\&    box "PostScript";
-\&
-\&    # HTML column
-\&    move to Anchor .se;
-\&    line down right then down ->;
-\&    A: filter dotted "\\fBpic2img\\fP";
-\&    arrow;
-\&    B: filter dotted "\\fBeqn2html\\fP";
-\&    arrow;
-\&    C: filter dotted "\\fBtbl2html\\fP";
-\&    arrow;
-\&    filter "\\fBms2html\\fP";
-\&    arrow;
-\&    box "HTML";
-\&
-\&    # Nonexistence caption
-\&    box dashed wid 1 at B + (2, 0) "These tools" "don't yet exist";
-\&    line chop 0 chop 0.1 dashed from last box .nw to A.e ->;
-\&    line chop 0 chop 0.1 dashed from last box .w  to B.e ->;
-\&    line chop 0 chop 0.1 dashed from last box .sw to C.e ->;
-\&}
+define filter {box ht 0.25 rad 0.125}
+lineht = 0.25;
+Top: [
+    right;
+    box "\efBms\efR" "sources";
+    move;
+    box "\efBHTML\efR" "sources";
+    move;
+    box "\efBlinuxdoc-sgml\efP" "sources" wid 1.5;
+    move;
+    box "\efBTexinfo\efP" "sources";
+
+    line down from 1st box .s lineht;
+    A: line down;
+    line down from 2nd box .s; filter "\efBhtml2ms\efP";
+    B: line down;
+    line down from 3rd box .s; filter "\efBformat\efP";
+    C: line down;
+    line down from 4th box .s; filter "\efBtexi2roff\efP";
+    D: line down;
+]
+move down 1 from last [] .s;
+Anchor: box wid 1 ht 0.75 "\efBms\efR" "intermediate" "form";
+arrow from Top.A.end to Anchor.nw;
+arrow from Top.B.end to 1/3 of the way between Anchor.nw and Anchor.ne;
+arrow from Top.C.end to 2/3 of the way between Anchor.nw and Anchor.ne;
+arrow from Top.D.end to Anchor.ne
+{
+    # PostScript column
+    move to Anchor .sw;
+    line down left then down ->;
+    filter "\efBpic\efP";
+    arrow;
+    filter "\efBeqn\efP";
+    arrow;
+    filter "\efBtbl\efP";
+    arrow;
+    filter "\efBgroff\efP";
+    arrow;
+    box "PostScript";
+
+    # HTML column
+    move to Anchor .se;
+    line down right then down ->;
+    A: filter dotted "\efBpic2img\efP";
+    arrow;
+    B: filter dotted "\efBeqn2html\efP";
+    arrow;
+    C: filter dotted "\efBtbl2html\efP";
+    arrow;
+    filter "\efBms2html\efP";
+    arrow;
+    box "HTML";
+
+    # Nonexistence caption
+    box dashed wid 1 at B + (2, 0) "These tools" "don't yet exist";
+    line chop 0 chop 0.1 dashed from last box .nw to A.e ->;
+    line chop 0 chop 0.1 dashed from last box .w  to B.e ->;
+    line chop 0 chop 0.1 dashed from last box .sw to C.e ->;
+}
 \&.PE
 .R
 .DE
@@ -2403,9 +2403,9 @@ appearing in the replacement text. To undefine a macro, say \fBundef\fP
 History and Acknowledgements
 .PP
 Original \fBpic\fP was written to go with Joseph Ossanna's original
-\&\fItroff\fP(1) by Brian Kernighan, and later re-written by Kernighan
+\fItroff\fP(1) by Brian Kernighan, and later re-written by Kernighan
 with substantial enhancements (apparently as part of the evolution of
-\&\fItroff\fP(1) into \&\fIditroff\fP(1) to generate
+\fItroff\fP(1) into \fIditroff\fP(1) to generate
 device-independent output).
 .PP
 The language had been inspired by some earlier graphics languages
@@ -2419,7 +2419,7 @@ delim $$
 The \fBpic\fP language was originally described by Brian Kernighan in
 Bell Labs Computing Science Technical Report #116 (you can obtain a
 PostScript copy of the revised version, [1], by sending a mail message to
-\&\fInetlib@research.att.com\fP with a body of \&`send 116 from
+\fInetlib@research.att.com\fP with a body of \&`send 116 from
 research/cstr').  There have been two revisions, in 1984 and 1991.
 .PP
 The document you are reading effectively subsumes Kernighan's

@@ -69,3 +69,14 @@ GROFF_TMAC
 AC_CONFIG_FILES(stamp-h, [echo timestamp > stamp-h])
 AC_CONFIG_FILES([Makefile src/xditview/Imakefile])
 AC_OUTPUT
+dnl
+AC_MSG_NOTICE([
+
+  Configuration completed.
+
+  You can now say `make' to compile the groff package and `make install'
+  to install it afterwards.
+
+  If you want to compile xditview, change the directory to `src/xditview'
+  and follow the instructions given in the file `INSTALL'.
+])
