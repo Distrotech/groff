@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994, 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000, 2001, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -121,7 +121,7 @@ struct entry {
 struct char_info {
   uint16 msl;
   uint16 width;
-  uint16 ascent;
+  int16 ascent;
   int16 descent;
   int16 left_extent;
   uint16 right_extent;
@@ -485,6 +485,8 @@ void read_char_table(File &f)
   f.seek(tag_info(ascent_tag).value);
   for (i = 0; i < nchars; i++) {
     char_table[i].ascent = f.get_uint16();
+    if (char_table[i].ascent < 0)
+      char_table[i].ascent = 0;
   }
 
   require_tag(descent_tag);
@@ -694,7 +696,7 @@ void output_charset()
 	  printf(",%d", depth);
 	// This is fairly arbitrary.  Fortunately it doesn't much matter.
 	unsigned type = 0;
-	if (char_table[i].ascent > (tag_info(lower_ascent_tag).value*9)/10)
+	if (char_table[i].ascent > (int16(tag_info(lower_ascent_tag).value)*9)/10)
 	  type |= 2;
 	if (char_table[i].descent < (int16(tag_info(lower_descent_tag).value)*9)/10)
 	  type |= 1;

@@ -792,6 +792,7 @@ struct element_list {
 		 int min_vertical, int min_horizontal,
 		 int max_vertical, int max_horizontal);
   element_list  ();
+  ~element_list ();
 };
 
 element_list::element_list ()
@@ -810,6 +811,12 @@ element_list::element_list (text_glob *in,
   : right(0), left(0), datum(in), lineno(line_number),
     minv(min_vertical), minh(min_horizontal), maxv(max_vertical), maxh(max_horizontal)
 {
+}
+
+element_list::~element_list ()
+{
+  if (datum != NULL)
+    delete datum;
 }
 
 class list {
@@ -845,7 +852,7 @@ private:
  */
 
 list::list ()
-  : head(0), tail(0), ptr(0)
+  : head(NULL), tail(NULL), ptr(NULL)
 {
 }
 
@@ -859,11 +866,11 @@ list::~list()
 
   do {
     temp = head;
-    if (temp != 0) {
+    if (temp != NULL) {
       head = head->right;
       delete temp;
     }
-  } while ((head != 0) && (head != tail));
+  } while ((head != NULL) && (head != tail));
 }
 
 /*

@@ -1,3 +1,43 @@
+2003-02-24  Werner LEMBERG  <wl@gnu.org>
+
+	Contrary to the PCL5 Developer's Guide, the ascenders in TFM files
+	can be negative also.
+
+	* src/utils/hpftodit/hpftodit.cc (char_info): `ascent' must be
+	`int16'.
+	(read_char_table): Avoid negative ascenders.
+	(output_charset): Add cast.
+	* font/devlj4/*: Regenerated.
+
+	Replace unnamed glyphs for DVI fonts with `uXXXX' glyph names where
+	possible.
+
+	* font/devdvi/generate/{tc,texttt,ec,texmi,texsy,textex}.map: Do it.
+	* font/devdvi/generate/textex.map: Map glyph 23 to `u21C6' instead
+	of `<>'.
+	* font/devdvi/*: Regenerated.
+
+	Map `la' and `ra' to U+27E8 and U+27E9.  These two characters have
+	normal width, while the previously used characters (U+2329 and
+	U+232A) are classified as wide due to canonical equivalence with the
+	CJK punctuation characters U+3008 and U+3009.
+
+	* font/devutf8/R.proto: Updated.
+	* src/roff/troff/uniglyph.cc, src/roff/troff/glyphuni.cc: Ditto.
+
+	* man/groff_char.man: Simplify handling of table traps by
+	introducing `start block' and `end block' macros.
+	(Ns, Ne, 2s, 2e, Ds, De): New macros.
+	(DL): Make it work with Unix troff also.
+	Fix code values of `la' and `ra'.
+
+	* tmac/dvi.tmac: Define `<>' for CW and CWI.
+
+2003-02-23  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* src/devices/grohtml/post-html.cc (element_list::~element_list):
+	New destructor, fixing a major memory leak.
+
 2003-02-22  Werner LEMBERG  <wl@gnu.org>
 
 	* font/devhtml/R.proto, font/devutf8/R.proto: Flip `*f' and `+f'

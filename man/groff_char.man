@@ -17,7 +17,7 @@ groff_char(7)
 This file is part of groff (GNU roff).
 
 File position: <groff_src_top>/man/groff_char.man
-Last update: 20 Feb 2003
+Last update: 24 Feb 2003
 
 Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 written by Werner Lemberg <wl@gnu.org>
@@ -70,8 +70,10 @@ FDL in the main directory of the groff source package.
 .  if '\*[dev]'X' .ds aq \'
 .  ig
 ..
+.
 .\" --------------------------------------------------------------------
 .\" .Ac accented-char accent char (groff)
+.
 .if !\n(.g .ig
 .de Ac
 .  if !c\\$1 \{\
@@ -98,41 +100,92 @@ FDL in the main directory of the groff source package.
 .nr Sp 2n
 .
 .\" --------------------------------------------------------------------
-.de C0
-.  C \\$1 "" \\$1 "\\$2" "\\$3"
-..
-.
-.\" --------------------------------------------------------------------
-.de C1
-.  C \e\\$1 "" \\\\\\$1 "\\$2" "\\$3"
-..
-.
-.\" --------------------------------------------------------------------
 .\" .C2/.CN (groff)
+.
 .if !\n(.g .ig
 .de CN
 .  C \e[\\$1] "" \[\\$1] \\$2 "\\$3" "\\$4"
 ..
-.if \n(.g .als C2 CN
+.
+.\" .Ns (groff) start .CN block
+.
+.if !\n(.g .ig
+.de Ns
+.  CN "\\$1" "\\$2" "\\$3" "\\$4"
+.  if !\n[cR] \
+.    wh (\\n[nl]u + \\n[.t]u - \\n[.V]u) Fo
+..
+.
+.\" .Ne (groff) end .CN block
+.
+.if !\n(.g .ig
+.de Ne
+.  ch Fo
+.  CN "\\$1" "\\$2" "\\$3" "\\$4"
+..
+.
+.if \n(.g \{\
+.  als C2 CN
+.  als 2s Ns
+.  als 2e Ne
+.\}
 .
 .\" --------------------------------------------------------------------
 .\" .C2 (non-groff)
+.
 .if \n(.g .ig
 .de C2
 .  C \e(\\$1 "" \\(\\$1 \\$2 "\\$3" "\\$4"
 ..
 .
+.\" .2s (non-groff) start .C2 block
+.
+.if \n(.g .ig
+.de 2s
+.  C2 "\\$1" "\\$2" "\\$3" "\\$4"
+.  if !\n(cR \
+.    wh \\n(nlu+\\n(.tu-\\n(.Vu Fo
+..
+.
+.\" .2e (non-groff) end .C2 block
+.
+.if \n(.g .ig
+.de 2e
+.  ch Fo
+.  C2 "\\$1" "\\$2" "\\$3" "\\$4"
+..
+.
 .\" --------------------------------------------------------------------
 .\" .CD (groff)
+.
 .if !\n(.g .ig
 .de CD
 .  C \[char\\$1] \\$1 \[char\\$1] \\$2 "\\$3" "\\$4" 1
 ..
 .
+.\" .Ds (groff) start .CD block
+.
+.if !\n(.g .ig
+.de Ds
+.  CD "\\$1" "\\$2" "\\$3" "\\$4"
+.  if !\n[cR] \
+.    wh (\\n[nl]u + \\n[.t]u - \\n[.V]u) Fo
+..
+.
+.\" .De (groff) end .CD block
+.
+.if !\n(.g .ig
+.de De
+.  ch Fo
+.  CD "\\$1" "\\$2" "\\$3" "\\$4"
+..
+.
 .\" --------------------------------------------------------------------
+.
 .do if !r ECFONTS .do fspecial CR R
 .
 .\" .CT
+.
 .de CT
 .  nr c1 \w'\\$1'
 .  if \\n(c1 \
@@ -151,19 +204,22 @@ FDL in the main directory of the groff source package.
 .    nr c5 +\\n(Spu
 ..
 .
+.\" .CL
+.
 .de CL
-.  nop \\$1\c
-.  nop \h'(\\n[c1]u - \\n[.k]u)'\\$2\c
-.  nop \h'(\\n[c2]u - \\n[.k]u)'\\$3\c
-.  nop \h'(\\n[c3]u - \\n[.k]u)'\\$4\c
-.  nop \h'(\\n[c4]u - \\n[.k]u)'\\$5\c
-.  nop \h'(\\n[c5]u - \\n[.k]u)'\\$6
+\\$1\c
+\h'\\n(c1u-\\n(.ku'\\$2\c
+\h'\\n(c2u-\\n(.ku'\\$3\c
+\h'\\n(c3u-\\n(.ku'\\$4\c
+\h'\\n(c4u-\\n(.ku'\\$5\c
+\h'\\n(c5u-\\n(.ku'\\$6
 .  br
 ..
 .
 .\" --------------------------------------------------------------------
 .\" input-name decimal-code output-name ps-name unicode description is-char
 .\" .C (groff)
+.
 .if !\n(.g .ig
 .de C
 .  nr CH 1
@@ -180,9 +236,10 @@ FDL in the main directory of the groff source package.
 .    nop \&\\$1
 .    br
 .    di
+.    chop CH
 .    in
 .    ft
-.    ds CH \\*[CH]\
+.    ds CH \\*[CH]
 .    tr ``''
 .  \}
 .  di CC
@@ -226,6 +283,7 @@ FDL in the main directory of the groff source package.
 .
 .\" --------------------------------------------------------------------
 .\" .C (non-groff)
+.
 .if \n(.g .ig
 .de C
 .  ft B
@@ -277,14 +335,18 @@ FDL in the main directory of the groff source package.
 ..
 .
 .\" --------------------------------------------------------------------
+.
 .de Fo
-'bp
-.He
+'  bp
+.  He
 ..
+.
 .de Pa
-.P
-.ne 3
+.  P
+.  ne 3
 ..
+.
+.
 .
 .\" --------------------------------------------------------------------
 .\" .SH DESCRIPTION
@@ -489,17 +551,16 @@ usable as a diacritic; a larger glyph can be obtained with `\f(CW\e(ha\fP'.
 .P
 .CT "\fIOutput" "\fIInput" "\fIInput" "bracketright" "decomposed"
 .de He
-.P
-.ne 4
-.ft I
-.CL "Output" "Input" "Input" "PostScript" "Unicode"    "Notes"
-.CL ""       "name"  "code"  "name"       "decomposed" ""
-.ft
-.P
+.  P
+.  ne 4
+.  ft I
+.  CL "Output" "Input" "Input" "PostScript" "Unicode"    "Notes"
+.  CL ""       "name"  "code"  "name"       "decomposed" ""
+.  ft
+.  P
 ..
 .He
-.CD 33 exclam u0021
-.if !\n[cR] .wh \n(nlu+\n(.tu-\n(.Vu Fo
+.Ds 33 exclam u0021
 .CD 34 quotedbl u0022
 .CD 35 numbersign u0023
 .CD 36 dollar u0024
@@ -530,8 +591,7 @@ usable as a diacritic; a larger glyph can be obtained with `\f(CW\e(ha\fP'.
 .CD 123 braceleft u007B
 .CD 124 bar u007C
 .CD 125 braceright u007D
-.ch Fo
-.CD 126 tilde u007E "tilde accent"
+.De 126 tilde u007E "tilde accent"
 .
 .
 .\" --------------------------------------------------------------------
@@ -579,8 +639,7 @@ see next section.
 .P
 .CT "\fIOutput" "\fIInput" "\fIInput" "guillemotright" "decomposed"
 .He
-.CD 161 exclamdown u00A1 "inv. exclam. mark"
-.if !\n[cR] .wh \n(nlu+\n(.tu-\n(.Vu Fo
+.Ds 161 exclamdown u00A1 "inverted exclamation mark"
 .CD 162 cent u00A2
 .CD 163 sterling u00A3
 .CD 164 currency u00A4
@@ -673,8 +732,7 @@ see next section.
 .CD 252 udieresis u0075_0308
 .CD 253 yacute u0079_0301
 .CD 254 thorn u00FE
-.ch Fo
-.CD 255 ydieresis u0079_0308
+.De 255 ydieresis u0079_0308
 .
 .
 .\" --------------------------------------------------------------------
@@ -740,26 +798,25 @@ documentation, CSTR\ 54.
 .P
 .CT "\fIOutput" "\f(CW\e[-D]" "" "Ocircumflex" "u0066_0066_006C"
 .de He
-.P
-.ne 4
-.ft I
-.CL "Output" "Input" "" "PostScript" "Unicode"    "Notes"
-.CL ""       "name"  "" "name"       "decomposed" ""
-.ft
-.P
+.  P
+.  ne 4
+.  ft I
+.  CL "Output" "Input" "" "PostScript" "Unicode"    "Notes"
+.  CL ""       "name"  "" "name"       "decomposed" ""
+.  ft
+.  P
 ..
 .He
-.C2 -D Eth u00D0 "uppercase eth"
-.if !\n[cR] .wh \n(nlu+\n(.tu-\n(.Vu Fo
+.2s -D Eth u00D0 "uppercase eth"
 .C2 Sd eth u00F0 "lowercase eth"
 .C2 TP Thorn u00DE "uppercase thorn"
 .C2 Tp thorn u00FE "lowercase thorn"
-.C2 ss germandbls u00DF "German sharp s"
+.2e ss germandbls u00DF "German sharp s"
 .
 .Pa
 .I Ligatures and Other Latin Glyphs
 .P
-.C2 ff ff u0066_0066 "ff ligature +"
+.2s ff ff u0066_0066 "ff ligature +"
 .C2 fi fi u0066_0069 "fi ligature +"
 .C2 fl fl u0066_006C "fl ligature +"
 .C2 Fi ffi u0066_0066_0069 "ffi ligature +"
@@ -775,12 +832,12 @@ documentation, CSTR\ 54.
 .C2 IJ IJ u0132 "(Dutch)"
 .C2 ij ij u0133 "(Dutch)"
 .C2 .i dotlessi u0131 "(Turkish)"
-.C2 .j dotlessj --- "j without a dot"
+.2e .j dotlessj --- "j without a dot"
 .
 .Pa
 .I Accented Characters
 .P
-.C2 'A Aacute u0041_0301
+.2s 'A Aacute u0041_0301
 .C2 'C Cacute u0043_0301
 .C2 'E Eacute u0045_0301
 .C2 'I Iacute u0049_0301
@@ -839,8 +896,7 @@ documentation, CSTR\ 54.
 .C2 ,C Ccedilla u0043_0327
 .C2 ,c ccedilla u0063_0327
 .C2 oA Aring u0041_030A
-.ch Fo
-.C2 oa aring u0061_030A
+.2e oa aring u0061_030A
 .
 .Pa
 .I Accents
@@ -857,8 +913,7 @@ the values given in parentheses are the original (spacing) ones.
 .\" we don't use the third column
 .CT "\fIOutput" "\f(CW\e[-D]" "" "quotesinglebase" "uCCCC (uCCCC)"
 .He
-.C2 a" hungarumlaut "u030B (u02DD)" "(Hungarian)"
-.if !\n[cR] .wh \n(nlu+\n(.tu-\n(.Vu Fo
+.2s a" hungarumlaut "u030B (u02DD)" "(Hungarian)"
 .C2 a- macron "u0304 (u00AF)"
 .C2 a. dotaccent "u0307 (u02D9)"
 .C2 a^ circumflex "u0302 (u005E)"
@@ -872,12 +927,12 @@ the values given in parentheses are the original (spacing) ones.
 .C2 a~ tilde "u0303 (u007E)"
 .C2 ho ogonek "u0328 (u02DB)" "hook"
 .C2 ha asciicircum u005E "(spacing)"
-.C2 ti asciitilde u007E "(spacing)"
+.2e ti asciitilde u007E "(spacing)"
 .
 .Pa
 .I Quotes
 .P
-.C2 Bq quotedblbase u201E "low double comma quote"
+.2s Bq quotedblbase u201E "low double comma quote"
 .C2 bq quotesinglbase u201A "low single comma quote"
 .C2 lq quotedblleft u201C
 .C2 rq quotedblright u201D
@@ -888,17 +943,16 @@ the values given in parentheses are the original (spacing) ones.
 .C2 Fo guillemotleft u00AB
 .C2 Fc guillemotright u00BB
 .C2 fo guilsinglleft u2039
-.C2 fc guilsinglright u203A
+.2e fc guilsinglright u203A
 .
 .Pa
 .I Punctuation
 .P
-.C2 r! exclamdown u00A1
+.2s r! exclamdown u00A1
 .C2 r? questiondown u00BF
 .C2 em emdash u2014 "+"
 .C2 en endash u2013
-.ch Fo
-.C2 hy hyphen u2010 "+"
+.2e hy hyphen u2010 "+"
 .
 .Pa
 .I Brackets
@@ -970,13 +1024,12 @@ devices (provided those glyphs exist).
 .P
 .CT "\fIOutput" "\f(CW\e[bracketrightex]" "" "bracketrightex" "decomposed"
 .He
-.C2 lB bracketleft u005B
-.if !\n[cR] .wh \n(nlu+\n(.tu-\n(.Vu Fo
+.2s lB bracketleft u005B
 .C2 rB bracketright u005D
 .C2 lC braceleft u007B
 .C2 rC braceright u007D
-.C2 la angleleft u3008 "left angle bracket"
-.C2 ra angleright u3009 "right angle bracket"
+.C2 la angleleft u27E8 "left angle bracket"
+.C2 ra angleright u27E9 "right angle bracket"
 .
 .C2 bv braceex u23AA "vertical extension *** +"
 .CN braceex braceex u23AA
@@ -1008,12 +1061,12 @@ devices (provided those glyphs exist).
 .CN parenleftex parenleftex u239C
 .CN parenrighttp parenrighttp u239E
 .CN parenrightbt parenrightbt u23A0
-.CN parenrightex parenrightex u239F
+.Ne parenrightex parenrightex u239F
 .
 .Pa
 .I Arrows
 .P
-.C2 <- arrowleft u2190 "+"
+.2s <- arrowleft u2190 "+"
 .C2 -> arrowright u2192 "+"
 .C2 <> arrowboth u2194 "(horizontal)"
 .C2 da arrowdown u2193 "+"
@@ -1025,8 +1078,7 @@ devices (provided those glyphs exist).
 .C2 dA arrowdbldown u21D3
 .C2 uA arrowdblup u21D1
 .C2 vA uni21D5 u21D5 "vertical double-headed double arrow"
-.ch Fo
-.C2 an arrowhorizex u23AF "horizontal arrow extension"
+.2e an arrowhorizex u23AF "horizontal arrow extension"
 .
 .Pa
 .I Lines
@@ -1047,20 +1099,19 @@ square root sign.
 .P
 .CT "\fIOutput" "\f(CW\e[integral]" "" "propersuperset" "decomposed"
 .He
-.C2 ba bar u007C
-.if !\n[cR] .wh \n(nlu+\n(.tu-\n(.Vu Fo
+.2s ba bar u007C
 .C2 br SF110000 u2502 "box rule +"
 .C2 ul underscore u005F "+"
 .C2 rn overline u203E "use `\f(CW\e[radicalex]\fP' for continuation of square root +"
 .C2 ru --- --- "baseline rule +"
 .C2 bb brokenbar u00A6
 .C2 sl slash u002F "+"
-.C2 rs backslash u005C "reverse solidus"
+.2e rs backslash u005C "reverse solidus"
 .
 .Pa
 .I Text markers
 .P
-.C2 ci circle u25CB "+"
+.2s ci circle u25CB "+"
 .C2 bu bullet u2022 "+"
 .C2 dd daggerdbl u2021 "double dagger sign +"
 .C2 dg dagger u2020 "+"
@@ -1073,43 +1124,43 @@ square root sign.
 .C2 at at u0040
 .C2 sh numbersign u0023
 .C2 CR carriagereturn u21B5
-.C2 OK a19 u2713 "check mark, tick"
+.2e OK a19 u2713 "check mark, tick"
 .
 .Pa
 .I Legalize
 .P
-.C2 co copyright u00A9 "+"
+.2s co copyright u00A9 "+"
 .C2 rg registered u00AE "+"
 .C2 tm trademark u2122
-.C2 bs --- --- "AT&T Bell Labs logo (not used in groff) +"
+.2e bs --- --- "AT&T Bell Labs logo (not used in groff) +"
 .
 .Pa
 .I Currency symbols
 .P
-.C2 Do dollar u0024
+.2s Do dollar u0024
 .C2 ct cent u00A2 "+"
 .C2 eu --- u20AC "official Euro symbol"
 .C2 Eu Euro u20AC "font-specific Euro glyph variant"
 .C2 Ye yen u00A5
 .C2 Po sterling u00A3 "British currency sign"
 .C2 Cs currency u00A4 "Scandinavian currency sign"
-.C2 Fn florin u0192 "Dutch currency sign"
+.2e Fn florin u0192 "Dutch currency sign"
 .
 .Pa
 .I Units
 .P
-.C2 de degree u00B0 "+"
+.2s de degree u00B0 "+"
 .C2 %0 perthousand u2030 "per thousand, per mille sign"
 .C2 fm minute u2032 "footmark, prime +"
 .C2 sd second u2033
 .C2 mc mu u00B5 "micro sign"
 .C2 Of ordfeminine u00AA
-.C2 Om ordmasculine u00BA
+.2e Om ordmasculine u00BA
 .
 .Pa
 .I Logical Symbols
 .P
-.C2 AN logicaland u2227
+.2s AN logicaland u2227
 .C2 OR logicalor u2228
 .C2 no logicalnot u00AC "+"
 .CN tno logicalnot u00AC "text variant of `no'"
@@ -1119,12 +1170,12 @@ square root sign.
 .C2 3d therefore u2234
 .C2 tf therefore u2234
 .
-.C2 or bar u007C "bitwise OR operator (as used in C) +"
+.2e or bar u007C "bitwise OR operator (as used in C) +"
 .
 .Pa
 .I Mathematical Symbols
 .P
-.C2 12 onehalf u00BD "+"
+.2s 12 onehalf u00BD "+"
 .C2 14 onequarter u00BC "+"
 .C2 34 threequarters u00BE "+"
 .C2 18 oneeighth u215B
@@ -1202,7 +1253,7 @@ square root sign.
 .C2 wp weierstrass u2118 "Weierstrass p"
 .C2 pd partialdiff u2202 "partial differentiation sign +"
 .C2 -h uni210F u210F "Planck constant over two pi"
-.C2 hbar uni210F u210F
+.2e hbar uni210F u210F
 .
 .Pa
 .I Greek characters
@@ -1233,7 +1284,7 @@ font is the stroked version.
 In groff, symbol `\f(CW\e[*f]\fP' always denotes the stroked version of
 phi, and `\f(CW\e[+f]\fP' the curly variant.
 .P
-.C2 *A Alpha u0391 "+"
+.2s *A Alpha u0391 "+"
 .C2 *B Beta u0392 "+"
 .C2 *G Gamma u0393 "+"
 .C2 *D Delta u0394 "+"
@@ -1285,18 +1336,17 @@ phi, and `\f(CW\e[+f]\fP' the curly variant.
 .C2 +h theta1 u03D1 "variant theta"
 .C2 +f phi1 u03C6 "variant phi (curly shape)"
 .C2 +p omega1 u03D6 "variant pi, looking like omega"
-.C2 +e uni03F5 u03F5 "variant epsilon"
+.2e +e uni03F5 u03F5 "variant epsilon"
 .
 .Pa
 .I Card symbols
 .P
-.C2 CL club u2663 "black club suit"
+.2s CL club u2663 "black club suit"
 .C2 SP spade u2660 "black spade suit"
 .C2 HE heart u2665 "black heart suit"
 .C2 u2662 uni2662 u2662 "white heart suit"
 .C2 DI diamond u2666 "black diamond suit"
-.ch Fo
-.C2 u2661 uni2661 u2661 "white diamond suit"
+.2e u2661 uni2661 u2661 "white diamond suit"
 .
 .
 .\" --------------------------------------------------------------------
