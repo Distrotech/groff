@@ -22,6 +22,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "troff.h"
 #include "hvunits.h"
+#include "stringclass.h"
+#include "mtsm.h"
 #include "env.h"
 #include "token.h"
 #include "div.h"

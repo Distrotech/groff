@@ -22,6 +22,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "troff.h"
 #include "dictionary.h"
 #include "hvunits.h"
+#include "stringclass.h"
+#include "mtsm.h"
 #include "env.h"
 #include "request.h"
 #include "node.h"
@@ -622,10 +624,6 @@ environment::environment(symbol nm)
   prev_requested_size(sizescale*10),
   char_height(0),
   char_slant(0),
-  seen_space(0),
-  seen_eol(0),
-  suppress_next_eol(0),
-  seen_break(0),
   space_size(12),
   sentence_space_size(12),
   adjust_mode(ADJUST_BOTH),
@@ -653,7 +651,6 @@ environment::environment(symbol nm)
   width_total(0),
   space_total(0),
   input_line_start(0),
-  tabs(units_per_inch/2, TAB_LEFT),
   line_tabs(0),
   current_tab(TAB_NONE),
   leader_node(0),
@@ -684,6 +681,11 @@ environment::environment(symbol nm)
   prev_glyph_color(&default_color),
   fill_color(&default_color),
   prev_fill_color(&default_color),
+  seen_space(0),
+  seen_eol(0),
+  suppress_next_eol(0),
+  seen_break(0),
+  tabs(units_per_inch/2, TAB_LEFT),
   name(nm),
   control_char('.'),
   no_break_control_char('\''),
@@ -714,10 +716,6 @@ environment::environment(const environment *e)
   fontno(e->fontno),
   prev_family(e->prev_family),
   family(e->family),
-  seen_space(e->seen_space),
-  seen_eol(e->seen_eol),
-  suppress_next_eol(e->suppress_next_eol),
-  seen_break(e->seen_break),
   space_size(e->space_size),
   sentence_space_size(e->sentence_space_size),
   adjust_mode(e->adjust_mode),
@@ -745,7 +743,6 @@ environment::environment(const environment *e)
   width_total(0),
   space_total(0),
   input_line_start(0),
-  tabs(e->tabs),
   line_tabs(e->line_tabs),
   current_tab(TAB_NONE),
   leader_node(0),
@@ -776,6 +773,11 @@ environment::environment(const environment *e)
   prev_glyph_color(e->prev_glyph_color),
   fill_color(e->fill_color),
   prev_fill_color(e->prev_fill_color),
+  seen_space(e->seen_space),
+  seen_eol(e->seen_eol),
+  suppress_next_eol(e->suppress_next_eol),
+  seen_break(e->seen_break),
+  tabs(e->tabs),
   name(e->name),		// so that eg `.if "\n[.ev]"0"' works
   control_char(e->control_char),
   no_break_control_char(e->no_break_control_char),
@@ -2194,7 +2196,7 @@ void environment::final_break()
     do_break();
 }
 
-node *environment::make_tag(const char *name, int i)
+node *environment::make_tag(const char *nm, int i)
 {
   if (is_html) {
     /*
@@ -2205,7 +2207,7 @@ node *environment::make_tag(const char *name, int i)
       topdiv->begin_page();
     macro *m = new macro;
     m->append_str("html-tag:");
-    for (const char *p = name; *p; p++)
+    for (const char *p = nm; *p; p++)
       if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);
     m->append(' ');
@@ -2264,7 +2266,8 @@ statem *environment::construct_state(int only_eol)
     return NULL;
 }
 
-void environment::construct_format_state(node *n, int was_centered, int fill)
+void environment::construct_format_state(node *n, int was_centered,
+					 int filling)
 {
   if (is_html) {
     // find first glyph node which has a state.
@@ -2282,12 +2285,12 @@ void environment::construct_format_state(node *n, int was_centered, int fill)
       n->state->add_tag(MTSM_CE, center_lines+1);
     else
       n->state->add_tag_if_unknown(MTSM_CE, 0);
-    n->state->add_tag_if_unknown(MTSM_FI, fill);
+    n->state->add_tag_if_unknown(MTSM_FI, filling);
     n = n->next;
     while (n != 0) {
       if (n->state != 0) {
 	n->state->sub_tag_ce();
-	n->state->add_tag_if_unknown(MTSM_FI, fill);
+	n->state->add_tag_if_unknown(MTSM_FI, filling);
       }
       n = n->next;
     }

@@ -1,3 +1,42 @@
+2004-10-13  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grohtml/html-text.cpp (html_text_get_alignment),
+	src/devices/grohtml/post-html.cpp (make_val,
+	html_printer::handle_state_assertion): Fix compiler warnings.
+
+	* src/roff/troff/div.cpp: Include `stringclass.h' and `mtsm.h'.
+	(diversion::diversion): Fix order of initializers.
+
+	* src/roff/troff/div.h: Don't include `mtsm.h'.
+
+	* src/roff/troff/env.cpp: Include `stringclass.h' and `mtsm.h'.
+	(environment::environment): Fix order of initializers.
+	(environment::make_tag, environment::construct_format_state): Fix
+	compiler warnings.
+
+	* src/roff/troff/input.cpp: Include `stringclass.h' and `mtsm.h'.
+	(input_iterator::input_iterator, macro::macro): Fix order of
+	initializers.
+
+	* src/roff/troff/mtsm.cpp: Include only necessary header files.
+	(state_set::add, state_set::val): Fix compiler warnings.
+
+	* src/roff/troff/mtsm.h: Don't include `stringclass.h'.
+	(bool_value_state, int_value_state, units_value_state,
+	string_value_state): Remove comma after last element which causes
+	an error with g++ 3.3.3.
+
+	* src/roff/troff/node.cpp: Include `stringclass.h'.
+	(hline_node::hline_node, vline_node::vline_node,
+	space_char_hmotion_node, left_italic_corrected_node): Fix compiler
+	warnings.
+	(zero_width_node::zero_width_node): Fix order of initializers.
+
+	* src/roff/troff/node.h: Don't include `mtsm.h'.
+	(hmotion_node): Fix compiler warnings.
+
+	* src/roff/troff/number.cpp: Include `stringclass.h' and `mtsm.h'.
+
 2004-10-12  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* doc/groff.css: New file.

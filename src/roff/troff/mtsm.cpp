@@ -23,26 +23,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 extern int debug_state;
 
 #include "troff.h"
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#include "dictionary.h"
 #include "hvunits.h"
-#include "env.h"
-#include "request.h"
-#include "node.h"
-#include "token.h"
-#include "charinfo.h"
-#include "font.h"
-#include "reg.h"
-#include "input.h"
-#include "div.h"
-#include "geometry.h"
+#include "stringclass.h"
 #include "mtsm.h"
-
-#include "nonposix.h"
+#include "env.h"
 
 static int no_of_statems = 0;	// debugging aid
 
@@ -637,12 +621,12 @@ int state_set::is_in(string_value_state s)
   return (stringset & (1 << (int)s) != 0);
 }
 
-void state_set::add(units_value_state i, int n)
+void state_set::add(units_value_state, int n)
 {
   unitsset += n;
 }
 
-units state_set::val(units_value_state i)
+units state_set::val(units_value_state)
 {
   return unitsset;
 }

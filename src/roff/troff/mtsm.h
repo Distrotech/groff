@@ -26,8 +26,6 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-#include "stringclass.h"
-
 struct int_value {
   int value;
   int is_known;
@@ -68,25 +66,25 @@ struct string_value {
 enum bool_value_state {
   MTSM_EOL,
   MTSM_BR,
-  LAST_BOOL,
+  LAST_BOOL
 };
 enum int_value_state {
   MTSM_FI,
   MTSM_RJ,
   MTSM_CE,
   MTSM_SP,
-  LAST_INT,
+  LAST_INT
 };
 enum units_value_state {
   MTSM_IN,
   MTSM_LL,
   MTSM_PO,
   MTSM_TI,
-  LAST_UNITS,
+  LAST_UNITS
 };
 enum string_value_state {
   MTSM_TA,
-  LAST_STRING,
+  LAST_STRING
 };
 
 struct statem {

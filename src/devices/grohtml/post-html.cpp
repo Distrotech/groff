@@ -4637,9 +4637,9 @@ char *make_val (char *s, int v, char *id, char *f, char *l)
       t++;
     if (atoi(t) != v) {
       if (f == NULL)
-	f = "stdin";
+	f = (char *)"stdin";
       if (l == NULL)
-	l = "<none>";
+	l = (char *)"<none>";
       fprintf(stderr, "%s:%s: grohtml assertion failed at id%s expecting %d and was given %s\n",
 	      f, l, id, v, s);
     }
@@ -4687,7 +4687,7 @@ void html_printer::handle_state_assertion (text_glob *g)
     char *n   = (char *)&g->text_string[11];
     char *cmd = get_str(n, &n);
     char *val = get_str(n, &n);
-    char *id  = get_str(n, &n);  // unused
+    (void)get_str(n, &n);	// unused
     char *file= get_str(n, &n);
     char *line= get_str(n, &n);
 

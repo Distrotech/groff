@@ -29,17 +29,18 @@ extern int debug_state;
 
 #include "dictionary.h"
 #include "hvunits.h"
+#include "stringclass.h"
+#include "mtsm.h"
 #include "env.h"
 #include "request.h"
 #include "node.h"
 #include "token.h"
+#include "div.h"
+#include "reg.h"
 #include "charinfo.h"
 #include "font.h"
-#include "reg.h"
 #include "input.h"
-#include "div.h"
 #include "geometry.h"
-#include "mtsm.h"
 
 #include "nonposix.h"
 
@@ -2916,13 +2917,13 @@ hline_node::~hline_node()
     delete n;
 }
 
-hline_node::hline_node(hunits i, node *c, node *next)
-: node(next), x(i), n(c)
+hline_node::hline_node(hunits i, node *c, node *nxt)
+: node(nxt), x(i), n(c)
 {
 }
 
-hline_node::hline_node(hunits i, node *c, statem *s, int pop, node *next)
-: node(next, s, pop), x(i), n(c)
+hline_node::hline_node(hunits i, node *c, statem *s, int pop, node *nxt)
+: node(nxt, s, pop), x(i), n(c)
 {
 }
 
@@ -2936,13 +2937,13 @@ hunits hline_node::width()
   return x < H0 ? H0 : x;
 }
 
-vline_node::vline_node(vunits i, node *c, node *next)
-: node(next), x(i), n(c)
+vline_node::vline_node(vunits i, node *c, node *nxt)
+: node(nxt), x(i), n(c)
 {
 }
 
-vline_node::vline_node(vunits i, node *c, statem *s, int pop, node *next)
-: node(next, s, pop), x(i), n(c)
+vline_node::vline_node(vunits i, node *c, statem *s, int pop, node *nxt)
+: node(nxt, s, pop), x(i), n(c)
 {
 }
 
@@ -2963,7 +2964,7 @@ hunits vline_node::width()
 }
 
 zero_width_node::zero_width_node(node *nd, statem *s, int pop)
-: n(nd), node(0, s, pop)
+: node(0, s, pop), n(nd)
 {
 }
 
@@ -3559,14 +3560,14 @@ void hmotion_node::asciify(macro *m)
 
 space_char_hmotion_node::space_char_hmotion_node(hunits i, color *c,
 						 statem *s, int pop,
-						 node *next)
-: hmotion_node(i, c, s, pop, next)
+						 node *nxt)
+: hmotion_node(i, c, s, pop, nxt)
 {
 }
 
 space_char_hmotion_node::space_char_hmotion_node(hunits i, color *c,
- 						 node *next)
-: hmotion_node(i, c, 0, 0, next)
+ 						 node *nxt)
+: hmotion_node(i, c, 0, 0, nxt)
 {
 }
 
@@ -5327,14 +5328,14 @@ int italic_corrected_node::is_tag()
   return 0;
 }
 
-left_italic_corrected_node::left_italic_corrected_node(node *x)
-: node(x), n(0)
+left_italic_corrected_node::left_italic_corrected_node(node *xx)
+: node(xx), n(0)
 {
 }
 
 left_italic_corrected_node::left_italic_corrected_node(statem *s, int pop,
-						       node *x)
-: node(x, s, pop), n(0)
+						       node *xx)
+: node(xx, s, pop), n(0)
 {
 }
 

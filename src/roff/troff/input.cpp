@@ -24,17 +24,19 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "troff.h"
 #include "dictionary.h"
 #include "hvunits.h"
+#include "stringclass.h"
+#include "mtsm.h"
 #include "env.h"
 #include "request.h"
 #include "node.h"
-#include "reg.h"
 #include "token.h"
 #include "div.h"
+#include "reg.h"
 #include "charinfo.h"
-#include "font.h"
 #include "macropath.h"
-#include "defs.h"
 #include "input.h"
+#include "defs.h"
+#include "font.h"
 #include "unicode.h"
 
 // Needed for getpid() and isatty()
@@ -226,12 +228,12 @@ private:
 };
 
 input_iterator::input_iterator()
-: ptr(0), eptr(0), is_diversion(0)
+: is_diversion(0), ptr(0), eptr(0)
 {
 }
 
 input_iterator::input_iterator(int is_div)
-: ptr(0), eptr(0), is_diversion(is_div)
+: is_diversion(is_div), ptr(0), eptr(0)
 {
 }
 
@@ -3158,8 +3160,8 @@ macro::macro()
 }
 
 macro::macro(const macro &m)
-: p(m.p), filename(m.filename), lineno(m.lineno), len(m.len),
-  empty_macro(m.empty_macro), is_a_diversion(m.is_a_diversion)
+: filename(m.filename), lineno(m.lineno), len(m.len),
+  empty_macro(m.empty_macro), is_a_diversion(m.is_a_diversion), p(m.p)
 {
   if (p != 0)
     p->count++;

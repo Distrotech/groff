@@ -975,7 +975,7 @@ char *html_text::get_alignment (void)
       p = p->next;
     }
   }
-  return "";
+  return (char *)"";
 }
 
 /*

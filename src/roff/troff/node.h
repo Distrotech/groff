@@ -19,8 +19,6 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-#include "mtsm.h"
-
 struct hyphen_list {
   unsigned char hyphen;
   unsigned char breakable;
@@ -317,11 +315,11 @@ protected:
 public:
   hmotion_node(hunits i, color *c, node *nxt = 0)
     : node(nxt), n(i), was_tab(0), unformat(0), col(c) {}
-  hmotion_node(hunits i, color *c, statem *s, int divlevel, node *next = 0)
-    : node(next, s, divlevel), n(i), was_tab(0), unformat(0), col(c) {}
+  hmotion_node(hunits i, color *c, statem *s, int divlevel, node *nxt = 0)
+    : node(nxt, s, divlevel), n(i), was_tab(0), unformat(0), col(c) {}
   hmotion_node(hunits i, int flag1, int flag2, color *c, statem *s,
-	       int divlevel, node *next = 0)
-    : node(next, s, divlevel), n(i), was_tab(flag1), unformat(flag2),
+	       int divlevel, node *nxt = 0)
+    : node(nxt, s, divlevel), n(i), was_tab(flag1), unformat(flag2),
       col(c) {}
   hmotion_node(hunits i, int flag1, int flag2, color *c, node *nxt = 0)
     : node(nxt), n(i), was_tab(flag1), unformat(flag2), col(c) {}

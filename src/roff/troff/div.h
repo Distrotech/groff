@@ -21,8 +21,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 void end_diversions();
 
-#include "mtsm.h"
-
 class diversion {
   friend void do_divert(int append, int boxing);
   friend void end_diversions();
@@ -48,7 +46,6 @@ public:
   state_set modified_tag;
   vunits marked_place;
   diversion(symbol s = NULL_SYMBOL);
-
   virtual ~diversion();
   virtual void output(node *nd, int retain_size, vunits vs, vunits post_vs,
 		      hunits width) = 0;

@@ -25,6 +25,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "troff.h"
 #include "dictionary.h"
 #include "hvunits.h"
+#include "stringclass.h"
+#include "mtsm.h"
 #include "env.h"
 #include "request.h"
 #include "node.h"
@@ -51,9 +53,9 @@ static vunits needed_space;
 
 diversion::diversion(symbol s) 
 : prev(0), nm(s), vertical_position(V0), high_water_mark(V0),
-  no_space_mode(0), needs_push(0), marked_place(V0),
-  any_chars_added(0), saved_seen_break(0), saved_seen_space(0),
-  saved_seen_eol(0), saved_suppress_next_eol(0)
+  any_chars_added(0), no_space_mode(0), needs_push(0), saved_seen_break(0),
+  saved_seen_space(0), saved_seen_eol(0), saved_suppress_next_eol(0),
+  marked_place(V0)
 {
 }
 
