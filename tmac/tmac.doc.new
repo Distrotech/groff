@@ -192,84 +192,84 @@
 .  if !\n[doc-arg-limit] \
 .    doc-set-spacing-1
 .
-.  if \n[.$] \{\
-.    nr doc-arg-limit +1
+.  nr doc-have-space 0
 .
-.    \" handle `|' specially
-.    ie "\$1"|" \
-.      ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
-.    el \
-.      ds doc-arg\n[doc-arg-limit] "\$1
+.  if !\n[.$] \
+.    return
 .
-.    \" get argument type and set spacing
-.    doc-get-arg-type* \n[doc-arg-limit]
-.    nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
-.    doc-set-spacing-\n[doc-arg-type]
+.  nr doc-arg-limit +1
+.
+.  \" handle `|' specially
+.  ie "\$1"|" \
+.    ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
+.  el \
+.    ds doc-arg\n[doc-arg-limit] "\$1
+.
+.  \" get argument type and set spacing
+.  doc-get-arg-type* \n[doc-arg-limit]
+.  nr doc-type\n[doc-arg-limit] \n[doc-arg-type]
+.  doc-set-spacing-\n[doc-arg-type]
+.
+.  if \n[doc-debug] \{\
+.    ds doc-str-dpa \*[doc-debug-\n[doc-arg-type]]
+.
+.    ie \n[doc-inline-debug] \{\
+.      br
+.      nr doc-reg-dpa \n[.i]u
+.      in -\n[doc-reg-dpa]u
+.
+.      if (\n[doc-arg-limit] == 1) \{\
+.        nop \f[B]DEBUG(doc-parse-args) MACRO:\f[P] `.\*[doc-macro-name]'
+.        nop \) \f[B]Line #:\f[P] \n[.c]
+.      \}
+.      nop \t\f[B]Argc:\f[P] \n[doc-arg-limit]
+.      nop \ \f[B]Argv:\f[P] `\*[doc-arg\n[doc-arg-limit]]'
+.      nop \ \f[B]Length:\f[P] \n[doc-width]
+.      nop \t\f[B]Space:\f[P] `\*[doc-space\n[doc-arg-limit]]'
+.      nop \ \f[B]Type:\f[P] \*[doc-str-dpa]
+.    \}
+.    el \{\
+.      if (\n[doc-arg-limit] == 1) \{\
+.        tmc "DEBUG (doc-parse-args)
+.        tm1 " MACRO: `.\*[doc-macro-name]'  Line #: \n[.c]
+.      \}
+.      tmc "  Argc: \n[doc-arg-limit]
+.      tmc "  Argv: `\*[doc-arg\n[doc-arg-limit]]'
+.      tm1 "  Length: \n[doc-width]
+.      tmc "  Space: `\*[doc-space\n[doc-arg-limit]]'
+.      tm1 "  Type: \*[doc-str-dpa]
+.  \}\}
+.
+.  \" check whether we have processed the last parameter
+.  ie (\n[.$] == 1) \{\
+.    nr doc-arg-ptr 0
 .
 .    if \n[doc-debug] \{\
-.      ds doc-str-dpa \*[doc-debug-\n[doc-arg-type]]
+.      nr doc-reg-dpa1 1
 .
 .      ie \n[doc-inline-debug] \{\
-.        br
-.        nr doc-reg-dpa \n[.i]u
-.        in -\n[doc-reg-dpa]u
-.
-.        if (\n[doc-arg-limit] == 1) \{\
-.          nop \f[B]DEBUG(doc-parse-args) MACRO:\f[P] `.\*[doc-macro-name]'
-.          nop \) \f[B]Line #:\f[P] \n[.c]
+.        nop MACRO REQUEST: \t.\*[doc-macro-name]
+.        while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
+.          nop "\*[doc-arg\n[doc-reg-dpa1]]"
+.          nr doc-reg-dpa1 +1
 .        \}
-.        nop \t\f[B]Argc:\f[P] \n[doc-arg-limit]
-.        nop \ \f[B]Argv:\f[P] `\*[doc-arg\n[doc-arg-limit]]'
-.        nop \ \f[B]Length:\f[P] \n[doc-width]
-.        nop \t\f[B]Space:\f[P] `\*[doc-space\n[doc-arg-limit]]'
-.        nop \ \f[B]Type:\f[P] \*[doc-str-dpa]
+.        br
+.        in \n[doc-reg-dpa]u
 .      \}
 .      el \{\
-.        if (\n[doc-arg-limit] == 1) \{\
-.          tmc "DEBUG (doc-parse-args)
-.          tm1 " MACRO: `.\*[doc-macro-name]'  Line #: \n[.c]
+.        tmc "  MACRO REQUEST: .\*[doc-macro-name]
+.        while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
+.          tmc " "\*[doc-arg\n[doc-reg-dpa1]]"
+.          nr doc-reg-dpa1 +1
 .        \}
-.        tmc "  Argc: \n[doc-arg-limit]
-.        tmc "  Argv: `\*[doc-arg\n[doc-arg-limit]]'
-.        tm1 "  Length: \n[doc-width]
-.        tmc "  Space: `\*[doc-space\n[doc-arg-limit]]'
-.        tm1 "  Type: \*[doc-str-dpa]
-.    \}\}
-.
-.    \" check whether we have processed the last parameter
-.    ie (\n[.$] == 1) \{\
-.      nr doc-arg-ptr 0
-.
-.      if \n[doc-debug] \{\
-.        nr doc-reg-dpa1 1
-.
-.        ie \n[doc-inline-debug] \{\
-.          nop MACRO REQUEST: \t.\*[doc-macro-name]
-.          while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
-.            nop "\*[doc-arg\n[doc-reg-dpa1]]"
-.            nr doc-reg-dpa1 +1
-.          \}
-.          br
-.          in \n[doc-reg-dpa]u
-.        \}
-.        el \{\
-.          tmc "  MACRO REQUEST: .\*[doc-macro-name]
-.          while (\n[doc-reg-dpa1] <= \n[doc-arg-limit]) \{\
-.            tmc " "\*[doc-arg\n[doc-reg-dpa1]]"
-.            nr doc-reg-dpa1 +1
-.          \}
-.          tm
-.    \}\}\}
-.    el \{\
-.      shift
-.      doc-parse-args \$@
-.    \}
-.
-.    \" disable hyphenation only if we have arguments
-.    nh
+.        tm
+.  \}\}\}
+.  el \{\
+.    shift
+.    doc-parse-args \$@
 .  \}
 .
-.  nr doc-have-space 0
+.  nh
 ..
 .
 .
@@ -503,25 +503,27 @@
 .      nop \|\-\|\f[P]\s[0]
 .  \}\}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
-.      \" last argument
+.  if !\n[doc-arg-limit] \
+.    return
+.
+.  nr doc-arg-ptr +1
+.  ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
+.    \" last argument
+.    nop \|\-\f[P]\s[0]\c
+.    doc-print-and-reset
+.  \}
+.  el \{\
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
 .      nop \|\-\f[P]\s[0]\c
-.      doc-print-and-reset
+.      \*[doc-arg\n[doc-arg-ptr]]
 .    \}
 .    el \{\
-.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
-.        nop \|\-\f[P]\s[0]\c
-.        \*[doc-arg\n[doc-arg-ptr]]
-.      \}
-.      el \{\
-.        if (\n[doc-type\n[doc-arg-ptr]] == 3) \
-.          nop \|\-\|\c
+.      if (\n[doc-type\n[doc-arg-ptr]] == 3) \
+.        nop \|\-\|\c
 .
-.        nr doc-reg-Fl 1
-.        doc-flag-recursion
-.  \}\}\}
+.      nr doc-reg-Fl 1
+.      doc-flag-recursion
+.  \}\}
 ..
 .
 .
@@ -679,31 +681,33 @@
 .      tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
 .  \}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      if (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
-.        tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.        \" the right action here would be to reset the argument counters
-.        \" and bail out -- unfortunately, a small number of manual pages
-.        \" (less than 2% for FreeBSD which has been used for testing)
-.        \" relied on the old behaviour (silently ignore this error),
-.        \" so it is commented out
-.
-.\"      doc-reset-args
-.      \}
-.\"    el \{\
-.        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.ps]
-.        nop \*[doc-\$0-font]\c
-.        doc-print-recursive
-.\"    \}
-.    \}
-.    el \{\
+.  nr doc-arg-ptr +1
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    if (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
 .      tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
-.      doc-reset-args
-.  \}\}
+.
+.      \" the right action here would be to reset the argument counters
+.      \" and bail out -- unfortunately, a small number of manual pages
+.      \" (less than 2% for FreeBSD which has been used for testing)
+.      \" relied on the old behaviour (silently ignore this error),
+.      \" so it is commented out
+.
+.\"    doc-reset-args
+.    \}
+.\"  el \{\
+.      nr doc-curr-font \n[.f]
+.      nr doc-curr-size \n[.ps]
+.      nop \*[doc-\$0-font]\c
+.      doc-print-recursive
+.\"  \}
+.  \}
+.  el \{\
+.    tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
+.    doc-reset-args
+.  \}
 ..
 .
 .
@@ -737,28 +741,30 @@
 .      nop \)\*[doc-str-Ar-default]\&\f[P]\s[0]
 .  \}\}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    doc-print-prefixes
-.    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
-.      nop \)\*[doc-str-Ar-default]\&\f[P]\s[0]\c
-.      doc-print-and-reset
-.    \}
-.    el \{\
-.      if !(\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.        \" replace previous argument (Ar) with default value
-.        nr doc-arg-ptr -1
-.        ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Ar-default]
-.        nr doc-type\n[doc-arg-ptr] 2
-.        ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.        \" recompute space vector for remaining arguments
-.        nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
-.        nr doc-arg-limit \n[doc-arg-ptr]
-.        doc-parse-space-vector
-.      \}
-.      doc-print-recursive
-.  \}\}
+.  nr doc-arg-ptr +1
+.  doc-print-prefixes
+.  ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
+.    nop \)\*[doc-str-Ar-default]\&\f[P]\s[0]\c
+.    doc-print-and-reset
+.  \}
+.  el \{\
+.    if !(\n[doc-type\n[doc-arg-ptr]] == 2) \{\
+.      \" replace previous argument (Ar) with default value
+.      nr doc-arg-ptr -1
+.      ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Ar-default]
+.      nr doc-type\n[doc-arg-ptr] 2
+.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.      \" recompute space vector for remaining arguments
+.      nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.      nr doc-arg-limit \n[doc-arg-ptr]
+.      doc-parse-space-vector
+.    \}
+.    doc-print-recursive
+.  \}
 ..
 .
 .
@@ -812,38 +818,40 @@
 .
 .  br
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.      ie \n[doc-in-synopsis-count] \{\
-.        if "\*[doc-macro-name]"Cd" \{\
-.          rs
-.          ie (\n[doc-in-synopsis-count] > 1) \
-.            br
-.          el \{\
-.            if !\n[doc-indent-synopsis] \
-.              nr doc-indent-synopsis \n[doc-display-indent]u
-.          \}
-.          in +\n[doc-indent-synopsis]u
-.          ti -\n[doc-indent-synopsis]u
-.          nr doc-in-synopsis-count +1
+.  nr doc-arg-ptr +1
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.
+.    ie \n[doc-in-synopsis-count] \{\
+.      if "\*[doc-macro-name]"Cd" \{\
+.        rs
+.        ie (\n[doc-in-synopsis-count] > 1) \
+.          br
+.        el \{\
+.          if !\n[doc-indent-synopsis] \
+.            nr doc-indent-synopsis \n[doc-display-indent]u
 .        \}
-.
-.        nop \*[doc-Nm-font]\c
-.        doc-print-recursive
-.        in -\n[doc-indent-synopsis]u
+.        in +\n[doc-indent-synopsis]u
+.        ti -\n[doc-indent-synopsis]u
+.        nr doc-in-synopsis-count +1
 .      \}
-.      el \{\
-.        nop \*[doc-Nm-font]\c
-.        doc-print-recursive
-.    \}\}
+.
+.      nop \*[doc-Nm-font]\c
+.      doc-print-recursive
+.      in -\n[doc-indent-synopsis]u
+.    \}
 .    el \{\
-.      tm Usage: .Cd configuration_file_declaration ... (#\n[.c])
-.      doc-reset-args
+.      nop \*[doc-Nm-font]\c
+.      doc-print-recursive
 .  \}\}
+.  el \{\
+.    tm Usage: .Cd configuration_file_declaration ... (#\n[.c])
+.    doc-reset-args
+.  \}
 ..
 .
 .
@@ -1072,64 +1080,66 @@
 .        doc-parse-args \*[doc-command-name]
 .  \}\}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    doc-print-prefixes
-.    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
-.      \" last argument
-.      ie "\*[doc-command-name]"" \{\
+.  if !\n[doc-arg-limit] \
+.    return
+.
+.  nr doc-arg-ptr +1
+.  doc-print-prefixes
+.  ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
+.    \" last argument
+.    ie "\*[doc-command-name]"" \{\
+.      tm Usage: .Nm name ... (#\n[.c])
+.      doc-reset-args
+.    \}
+.    el \{\
+.      nop \*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]\c
+.      doc-print-and-reset
+.  \}\}
+.  el \{\
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.
+.    rs
+.
+.    ie !(\n[doc-type\n[doc-arg-ptr]] == 2) \{\
+.      ie "\*[doc-command-name]"" \
 .        tm Usage: .Nm name ... (#\n[.c])
-.        doc-reset-args
-.      \}
 .      el \{\
-.        nop \*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]\c
-.        doc-print-and-reset
+.        \" replace previous argument (Nm) with default value
+.        nr doc-arg-ptr -1
+.        ds doc-arg\n[doc-arg-ptr] "\*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
+.        nr doc-type\n[doc-arg-ptr] 2
+.        ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.        \" recompute space vector for remaining arguments
+.        nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.        nr doc-arg-limit \n[doc-arg-ptr]
+.        doc-parse-space-vector
 .    \}\}
 .    el \{\
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
+.      \" handle `.Nm ...' in SYNOPSIS
+.      if \n[doc-in-synopsis-count] \{\
+.        if "\*[doc-macro-name]"Nm" \{\
+.          in -\n[doc-indent-synopsis]u
+.          ie (\n[doc-in-synopsis-count] > 1) \
+.            br
+.          el \{\
+.            if !\n[doc-indent-synopsis] \{\
+.              doc-get-width "\*[doc-arg\n[doc-arg-ptr]]"
+.              nr doc-indent-synopsis ((\n[doc-width]u + 1u) * \n[doc-fixed-width]u)
+.          \}\}
 .
-.      rs
-.
-.      ie !(\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.        ie "\*[doc-command-name]"" \
-.          tm Usage: .Nm name ... (#\n[.c])
-.        el \{\
-.          \" replace previous argument (Nm) with default value
-.          nr doc-arg-ptr -1
-.          ds doc-arg\n[doc-arg-ptr] "\*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
-.          nr doc-type\n[doc-arg-ptr] 2
-.          ds doc-space\n[doc-arg-ptr] "\*[doc-space]
-.
-.          \" recompute space vector for remaining arguments
-.          nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
-.          nr doc-arg-limit \n[doc-arg-ptr]
-.          doc-parse-space-vector
+.          in +\n[doc-indent-synopsis]u
+.          ti -\n[doc-indent-synopsis]u
+.          nr doc-in-synopsis-count +1
 .      \}\}
-.      el \{\
-.        \" handle `.Nm ...' in SYNOPSIS
-.        if \n[doc-in-synopsis-count] \{\
-.          if "\*[doc-macro-name]"Nm" \{\
-.            in -\n[doc-indent-synopsis]u
-.            ie (\n[doc-in-synopsis-count] > 1) \
-.              br
-.            el \{\
-.              if !\n[doc-indent-synopsis] \{\
-.                doc-get-width "\*[doc-arg\n[doc-arg-ptr]]"
-.                nr doc-indent-synopsis ((\n[doc-width]u + 1u) * \n[doc-fixed-width]u)
-.            \}\}
+.      if "\*[doc-command-name]"" \
+.        ds doc-command-name "\*[doc-arg\n[doc-arg-ptr]]
 .
-.            in +\n[doc-indent-synopsis]u
-.            ti -\n[doc-indent-synopsis]u
-.            nr doc-in-synopsis-count +1
-.        \}\}
-.        if "\*[doc-command-name]"" \
-.          ds doc-command-name "\*[doc-arg\n[doc-arg-ptr]]
-.
-.        nop \*[doc-Nm-font]\c
-.      \}
-.      doc-print-recursive
-.  \}\}
+.      nop \*[doc-Nm-font]\c
+.    \}
+.    doc-print-recursive
+.  \}
 ..
 .
 .
@@ -1154,31 +1164,33 @@
 .      nop \*[doc-Pa-font]~\f[P]\s[0]
 .  \}\}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    doc-print-prefixes
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      nop \*[doc-Pa-font]\c
-.      if !(\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.        \" replace previous argument (Pa) with default value
-.        nr doc-arg-ptr -1
-.        ds doc-arg\n[doc-arg-ptr] ~
-.        nr doc-type\n[doc-arg-ptr] 2
-.        ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.        \" recompute space vector for remaining arguments
-.        nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
-.        nr doc-arg-limit \n[doc-arg-ptr]
-.        doc-parse-space-vector
-.      \}
-.      doc-print-recursive
+.  nr doc-arg-ptr +1
+.  doc-print-prefixes
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.    nop \*[doc-Pa-font]\c
+.    if !(\n[doc-type\n[doc-arg-ptr]] == 2) \{\
+.      \" replace previous argument (Pa) with default value
+.      nr doc-arg-ptr -1
+.      ds doc-arg\n[doc-arg-ptr] ~
+.      nr doc-type\n[doc-arg-ptr] 2
+.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.      \" recompute space vector for remaining arguments
+.      nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.      nr doc-arg-limit \n[doc-arg-ptr]
+.      doc-parse-space-vector
 .    \}
-.    el \{\
-.      nop \*[doc-Pa-font]~\f[P]\s[0]\c
-.      doc-print-and-reset
-.  \}\}
+.    doc-print-recursive
+.  \}
+.  el \{\
+.    nop \*[doc-Pa-font]~\f[P]\s[0]\c
+.    doc-print-and-reset
+.  \}
 ..
 .
 .
@@ -1221,23 +1233,25 @@
 .      tm Usage: .Tn trade_name ... (#\n[.c])
 .  \}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      nop \)\*[doc-Tn-font-size]\c
-.      ie !\n[doc-is-reference] \{\
-.        nop \)\*[doc-Tn-font-shape]\c
-.        doc-print-recursive
-.      \}
-.      el \
-.        doc-do-references
+.  if !\n[doc-arg-limit] \
+.    return
+.
+.  nr doc-arg-ptr +1
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.    nop \)\*[doc-Tn-font-size]\c
+.    ie !\n[doc-is-reference] \{\
+.      nop \)\*[doc-Tn-font-shape]\c
+.      doc-print-recursive
 .    \}
-.    el \{\
-.      tm Usage: .Tn trade_name ... (#\n[.c])
-.      doc-reset-args
-.  \}\}
+.    el \
+.      doc-do-references
+.  \}
+.  el \{\
+.    tm Usage: .Tn trade_name ... (#\n[.c])
+.    doc-reset-args
+.  \}
 ..
 .
 .
@@ -1490,17 +1504,18 @@
 .      ds doc-quote-right "\$2
 .  \}\}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ds doc-quote-left "\*[doc-arg\n[doc-arg-ptr]]
-.    nr doc-arg-ptr +1
-.    ds doc-quote-right "\*[doc-arg\n[doc-arg-ptr]]
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \
-.      doc-do-\n[doc-type\n[doc-arg-ptr]]
-.    el \
-.      doc-print-and-reset
-.  \}
+.  if !\n[doc-arg-limit] \
+.    return
+.
+.  nr doc-arg-ptr +1
+.  ds doc-quote-left "\*[doc-arg\n[doc-arg-ptr]]
+.  nr doc-arg-ptr +1
+.  ds doc-quote-right "\*[doc-arg\n[doc-arg-ptr]]
+.  nr doc-arg-ptr +1
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \
+.    doc-do-\n[doc-type\n[doc-arg-ptr]]
+.  el \
+.    doc-print-and-reset
 ..
 .
 .
@@ -1539,74 +1554,76 @@
 .      nop \)\*[doc-quote-left]\*[doc-quote-right]
 .  \}\}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    doc-print-prefixes
-.    \" the final `\)' prevents hyphenation in case the next character is `\%'
-.    nop \)\*[doc-quote-left]\)\c
-.    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
-.      \" last argument
-.      nop \)\*[doc-quote-right]\)\c
-.      doc-print-and-reset
+.  if !\n[doc-arg-limit] \
+.    return
+.
+.  nr doc-arg-ptr +1
+.  doc-print-prefixes
+.  \" the final `\)' prevents hyphenation in case the next character is `\%'
+.  nop \)\*[doc-quote-left]\)\c
+.  ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
+.    \" last argument
+.    nop \)\*[doc-quote-right]\)\c
+.    doc-print-and-reset
+.  \}
+.  el \{\
+.    \" test whether last arguments are of type closing punctuation
+.    \" resp. suffix
+.    ie (\n[doc-type\n[doc-arg-limit]] == 3) \{\
+.      nr doc-reg-des (\n[doc-arg-limit] - 1)
+.      while (\n[doc-type\n[doc-reg-des]] == 3) \
+.        nr doc-reg-des -1
+.
+.      \" prepend closing delimiter
+.      nr doc-reg-des +1
+.      ds doc-arg\n[doc-reg-des] "\*[doc-quote-right]\)\*[doc-arg\n[doc-reg-des]]
 .    \}
 .    el \{\
-.      \" test whether last arguments are of type closing punctuation
-.      \" resp. suffix
-.      ie (\n[doc-type\n[doc-arg-limit]] == 3) \{\
-.        nr doc-reg-des (\n[doc-arg-limit] - 1)
-.        while (\n[doc-type\n[doc-reg-des]] == 3) \
-.          nr doc-reg-des -1
-.
-.        \" prepend closing delimiter
-.        nr doc-reg-des +1
-.        ds doc-arg\n[doc-reg-des] "\*[doc-quote-right]\)\*[doc-arg\n[doc-reg-des]]
+.      \" test whether last arguments are macros which continue the line
+.      \" logically
+.      nr doc-reg-des \n[doc-arg-limit]
+.      while (\n[doc-reg-des] >= \n[doc-arg-ptr]) \{\
+.        if !\A\*[doc-arg\n[doc-reg-des]] \
+.          break
+.        if !d doc-after-\*[doc-arg\n[doc-reg-des]] \
+.          break
+.        nr doc-reg-des -1
 .      \}
+.
+.      \" if there are no trailing macros to be skipped, append argument
+.      ie (\n[doc-reg-des] == \n[doc-arg-limit]) \
+.        doc-append-arg "\)\*[doc-quote-right]\)" 3
 .      el \{\
-.        \" test whether last arguments are macros which continue the line
-.        \" logically
-.        nr doc-reg-des \n[doc-arg-limit]
-.        while (\n[doc-reg-des] >= \n[doc-arg-ptr]) \{\
-.          if !\A\*[doc-arg\n[doc-reg-des]] \
-.            break
-.          if !d doc-after-\*[doc-arg\n[doc-reg-des]] \
-.            break
-.          nr doc-reg-des -1
-.        \}
-.
-.        \" if there are no trailing macros to be skipped, append argument
-.        ie (\n[doc-reg-des] == \n[doc-arg-limit]) \
-.          doc-append-arg "\)\*[doc-quote-right]\)" 3
+.        \" if a previous call to `doc-enclose-string' has already created
+.        \" a slot, prepend argument
+.        ie \n[doc-have-slot] \
+.          ds doc-arg\n[doc-reg-des] "\*[doc-quote-right]\)\*[doc-arg\n[doc-reg-des]]
 .        el \{\
-.          \" if a previous call to `doc-enclose-string' has already created
-.          \" a slot, prepend argument
-.          ie \n[doc-have-slot] \
-.            ds doc-arg\n[doc-reg-des] "\*[doc-quote-right]\)\*[doc-arg\n[doc-reg-des]]
-.          el \{\
-.            \" we have to shift all arguments to the right
-.            nr doc-reg-des +1
-.            nr doc-reg-des1 \n[doc-arg-limit]
-.            nr doc-reg-des2 (\n[doc-arg-limit] + 1)
-.            while (\n[doc-reg-des1] >= \n[doc-reg-des]) \{\
-.              rn doc-arg\n[doc-reg-des1] doc-arg\n[doc-reg-des2]
-.              rnn doc-type\n[doc-reg-des1] doc-type\n[doc-reg-des2]
-.              rn doc-space\n[doc-reg-des1] doc-space\n[doc-reg-des2]
-.              nr doc-reg-des1 -1
-.              nr doc-reg-des2 -1
-.            \}
-.            nr doc-arg-limit +1
+.          \" we have to shift all arguments to the right
+.          nr doc-reg-des +1
+.          nr doc-reg-des1 \n[doc-arg-limit]
+.          nr doc-reg-des2 (\n[doc-arg-limit] + 1)
+.          while (\n[doc-reg-des1] >= \n[doc-reg-des]) \{\
+.            rn doc-arg\n[doc-reg-des1] doc-arg\n[doc-reg-des2]
+.            rnn doc-type\n[doc-reg-des1] doc-type\n[doc-reg-des2]
+.            rn doc-space\n[doc-reg-des1] doc-space\n[doc-reg-des2]
+.            nr doc-reg-des1 -1
+.            nr doc-reg-des2 -1
+.          \}
+.          nr doc-arg-limit +1
 .
-.            \" finally, insert closing delimiter into the freed slot and
-.            \" recompute spacing vector
-.            ds doc-arg\n[doc-reg-des] "\)\*[doc-quote-right]\)
-.            nr doc-type\n[doc-reg-des] 3
-.            nr doc-num-args (\n[doc-arg-limit] - \n[doc-reg-des] + 1)
-.            nr doc-arg-limit (\n[doc-reg-des] - 1)
-.            doc-parse-space-vector
-.            nr doc-have-slot 1
-.      \}\}\}
+.          \" finally, insert closing delimiter into the freed slot and
+.          \" recompute spacing vector
+.          ds doc-arg\n[doc-reg-des] "\)\*[doc-quote-right]\)
+.          nr doc-type\n[doc-reg-des] 3
+.          nr doc-num-args (\n[doc-arg-limit] - \n[doc-reg-des] + 1)
+.          nr doc-arg-limit (\n[doc-reg-des] - 1)
+.          doc-parse-space-vector
+.          nr doc-have-slot 1
+.    \}\}\}
 .
-.      doc-do-\n[doc-type\n[doc-arg-ptr]]
-.  \}\}
+.    doc-do-\n[doc-type\n[doc-arg-ptr]]
+.  \}
 .
 .  if \n[doc-in-synopsis-count] \
 .    doc-set-soft-space
@@ -2288,68 +2305,70 @@
 .        nr doc-space-mode 1
 .  \}\}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.    \" avoid a warning message in case `Sm' is the last parameter
-.    if !d doc-arg\n[doc-arg-ptr] \
-.      ds doc-arg\n[doc-arg-ptr]
+.  nr doc-arg-ptr +1
 .
-.    ie "\*[doc-arg\n[doc-arg-ptr]]"on" \{\
-.      ds doc-space "\*[doc-saved-space]
-.      nr doc-space-mode 1
+.  \" avoid a warning message in case `Sm' is the last parameter
+.  if !d doc-arg\n[doc-arg-ptr] \
+.    ds doc-arg\n[doc-arg-ptr]
+.
+.  ie "\*[doc-arg\n[doc-arg-ptr]]"on" \{\
+.    ds doc-space "\*[doc-saved-space]
+.    nr doc-space-mode 1
+.  \}
+.  el \{\
+.    ie "\*[doc-arg\n[doc-arg-ptr]]"off" \{\
+.      ds doc-saved-space "\*[doc-space]
+.      ds doc-space
+.      nr doc-space-mode 0
 .    \}
 .    el \{\
-.      ie "\*[doc-arg\n[doc-arg-ptr]]"off" \{\
-.        ds doc-saved-space "\*[doc-space]
-.        ds doc-space
+.      \" no argument for Sm
+.      nr doc-arg-ptr -1
+.      ie \n[doc-space-mode] \
 .        nr doc-space-mode 0
-.      \}
-.      el \{\
-.        \" no argument for Sm
-.        nr doc-arg-ptr -1
-.        ie \n[doc-space-mode] \
-.          nr doc-space-mode 0
-.        el \
-.          nr doc-space-mode 1
-.    \}\}
-.
-.    ie \n[doc-space-mode] \{\
-.      \" recompute space vector for remaining arguments
-.      nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
-.      nr doc-arg-limit \n[doc-arg-ptr]
-.      if \n[doc-num-args] \
-.        doc-parse-space-vector
-.
-.      \" finish line only if it is interrupted and `doc-have-space'
-.      \" isn't set
-.      if \n[doc-reg-Sm] \
-.        if \n[.int] \
-.          nop \)
-.    \}
-.    el \{\
-.      \" reset remaining space vector elements
-.      nr doc-reg-Sm (\n[doc-arg-ptr] + 1)
-.      while (\n[doc-reg-Sm] <= \n[doc-arg-limit]) \{\
-.        ds doc-space\n[doc-reg-Sm]
-.        nr doc-reg-Sm +1
-.        \" the body of a `while' request must end with the fitting `\}'!
-.      \}
-.    \}
-.
-.    \" do we have parameters to print?
-.    ie (\n[doc-arg-limit] <= \n[doc-arg-ptr]) \{\
-.      \" ignore `.Sm on' and `.Sm off' without additional parameters
-.      ie (\n[doc-arg-ptr] > 1) \
-.        doc-print-and-reset
 .      el \
-.        doc-reset-args
-.    \}
-.    el \{\
-.      \" skip `Sm' argument
-.      nr doc-arg-ptr +1
-.      doc-print-recursive
+.        nr doc-space-mode 1
 .  \}\}
+.
+.  ie \n[doc-space-mode] \{\
+.    \" recompute space vector for remaining arguments
+.    nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.    nr doc-arg-limit \n[doc-arg-ptr]
+.    if \n[doc-num-args] \
+.      doc-parse-space-vector
+.
+.    \" finish line only if it is interrupted and `doc-have-space'
+.    \" isn't set
+.    if \n[doc-reg-Sm] \
+.      if \n[.int] \
+.        nop \)
+.  \}
+.  el \{\
+.    \" reset remaining space vector elements
+.    nr doc-reg-Sm (\n[doc-arg-ptr] + 1)
+.    while (\n[doc-reg-Sm] <= \n[doc-arg-limit]) \{\
+.      ds doc-space\n[doc-reg-Sm]
+.      nr doc-reg-Sm +1
+.      \" the body of a `while' request must end with the fitting `\}'!
+.    \}
+.  \}
+.
+.  \" do we have parameters to print?
+.  ie (\n[doc-arg-limit] <= \n[doc-arg-ptr]) \{\
+.    \" ignore `.Sm on' and `.Sm off' without additional parameters
+.    ie (\n[doc-arg-ptr] > 1) \
+.      doc-print-and-reset
+.    el \
+.      doc-reset-args
+.  \}
+.  el \{\
+.    \" skip `Sm' argument
+.    nr doc-arg-ptr +1
+.    doc-print-recursive
+.  \}
 ..
 .
 .
@@ -2504,25 +2523,19 @@
 .\" NS doc-do-2 macro
 .\" NS   call .doc-print-recursive if string
 .
-.de doc-do-2
-.  doc-print-recursive
-..
+.als doc-do-2 doc-print-recursive
 .
 .
 .\" NS doc-do-3 macro
 .\" NS   call .doc-print-recursive if punctuation suffix
 .
-.de doc-do-3
-.  doc-print-recursive
-..
+.als doc-do-3 doc-print-recursive
 .
 .
 .\" NS doc-do-4 macro
 .\" NS   call .doc-print-recursive if punctuation prefix
 .
-.de doc-do-4
-.  doc-print-recursive
-..
+.als doc-do-4 doc-print-recursive
 .
 .
 .\" NS doc-fontmode-depth global register
@@ -2602,9 +2615,7 @@
 .de Ef
 .  ds doc-macro-name Ef
 .
-.  ie !\n[doc-fontmode-depth] \
-.    tm mdoc warning: Extraneous .Ef (#\n[.c])
-.  el \{\
+.  ie \n[doc-fontmode-depth] \{\
 .    \" restore saved font and size
 .    nop \)\f[\n[doc-fontmode-font-stack\n[doc-fontmode-depth]]]\c
 .    nop \)\s[\n[doc-fontmode-size-stack\n[doc-fontmode-depth]]u]\c
@@ -2613,6 +2624,8 @@
 .    nr doc-fontmode-size-stack\n[doc-fontmode-depth] 0
 .    nr doc-fontmode-depth -1
 .  \}
+.  el \
+.    tm mdoc warning: Extraneous .Ef (#\n[.c])
 ..
 .
 .
@@ -2763,90 +2776,90 @@
 .de Bd
 .  ds doc-macro-name Bd
 .
-.  ie \n[.$] \{\
-.    nr doc-is-compact 0
-.    ds doc-display-file
-.    nr doc-reg-Bd 1
-.    nr doc-display-depth +1
-.
-.    \" save current adjustment and fill modes
-.    nr doc-display-ad-stack\n[doc-display-depth] \n[.j]
-.    nr doc-display-fi-stack\n[doc-display-depth] \n[.u]
-.
-.    ie        "\$1"-literal" \{\
-.      ds doc-display-type-stack\n[doc-display-depth] literal
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      ie t \{\
-.        nop \*[doc-Li-font]\c
-'        ta T 9n
-.      \}
-.      el \
-'        ta T 8n
-.      nf
-.    \}
-.    el \{ .ie "\$1"-filled" \{\
-.      ds doc-display-type-stack\n[doc-display-depth] filled
-.      ad b
-.      fi
-.    \}
-.    el \{ .ie "\$1"-ragged" \{\
-.      ds doc-display-type-stack\n[doc-display-depth] ragged
-.      na
-.      fi
-.    \}
-.    el \{ .ie "\$1"-centered" \{\
-.      ds doc-display-type-stack\n[doc-display-depth] centered
-.      ad c
-.      fi
-.    \}
-.    el \{ .ie "\$1"-unfilled" \{\
-.      ds doc-display-type-stack\n[doc-display-depth] unfilled
-.      nf
-.    \}
-.    el \{\
-.      tm1 "mdoc warning: Unknown keyword `\$1' (or missing display type)
-.      tm1 "              in .Bd request (#\n[.c])
-.      nr doc-reg-Bd 0
-.    \}\}\}\}\}
-.
-.    \" have we seen an argument?
-.    if \n[doc-reg-Bd] \{\
-.      shift
-.      \" check other arguments
-.      if \n[.$] \
-.        doc-do-Bd-args \$@
-.    \}
-.
-.    \" avoid warning about non-existent register
-.    if !r doc-display-indent-stack\n[doc-display-depth] \
-.      nr doc-display-indent-stack\n[doc-display-depth] 0
-.
-.    if \n[doc-display-indent-stack\n[doc-display-depth]] \
-'      in +\n[doc-display-indent-stack\n[doc-display-depth]]u
-.
-.    if !\n[doc-is-compact] \{\
-.      if !\n[doc-in-synopsis-count] \{\
-.        ie "\*[doc-display-type-stack\n[doc-display-depth]]"ragged" \
-.          sp \n[doc-display-vertical]u
-.        el \
-'          sp \n[doc-display-vertical]u
-.    \}\}
-.
-.    if !\n[cR] \
-.      ne 2v
-.
-.    if !"\*[doc-display-file]"" \
-.      so \*[doc-display-file]
-.
-.    nr doc-is-compact 0
-.    ds doc-display-file
-.  \}
-.  el \{\
+.  if !\n[.$] \{\
 .    tm1 "Usage: .Bd {-literal | -filled | -ragged | -centered | -unfilled}
 .    tm1 "           [-offset [string]] [-compact] [-file name] (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-is-compact 0
+.  ds doc-display-file
+.  nr doc-reg-Bd 1
+.  nr doc-display-depth +1
+.
+.  \" save current adjustment and fill modes
+.  nr doc-display-ad-stack\n[doc-display-depth] \n[.j]
+.  nr doc-display-fi-stack\n[doc-display-depth] \n[.u]
+.
+.  ie        "\$1"-literal" \{\
+.    ds doc-display-type-stack\n[doc-display-depth] literal
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.
+.    ie t \{\
+.      nop \*[doc-Li-font]\c
+'      ta T 9n
+.    \}
+.    el \
+'      ta T 8n
+.    nf
+.  \}
+.  el \{ .ie "\$1"-filled" \{\
+.    ds doc-display-type-stack\n[doc-display-depth] filled
+.    ad b
+.    fi
+.  \}
+.  el \{ .ie "\$1"-ragged" \{\
+.    ds doc-display-type-stack\n[doc-display-depth] ragged
+.    na
+.    fi
+.  \}
+.  el \{ .ie "\$1"-centered" \{\
+.    ds doc-display-type-stack\n[doc-display-depth] centered
+.    ad c
+.    fi
+.  \}
+.  el \{ .ie "\$1"-unfilled" \{\
+.    ds doc-display-type-stack\n[doc-display-depth] unfilled
+.    nf
+.  \}
+.  el \{\
+.    tm1 "mdoc warning: Unknown keyword `\$1' (or missing display type)
+.    tm1 "              in .Bd request (#\n[.c])
+.    nr doc-reg-Bd 0
+.  \}\}\}\}\}
+.
+.  \" have we seen an argument?
+.  if \n[doc-reg-Bd] \{\
+.    shift
+.    \" check other arguments
+.    if \n[.$] \
+.      doc-do-Bd-args \$@
+.  \}
+.
+.  \" avoid warning about non-existent register
+.  if !r doc-display-indent-stack\n[doc-display-depth] \
+.    nr doc-display-indent-stack\n[doc-display-depth] 0
+.
+.  if \n[doc-display-indent-stack\n[doc-display-depth]] \
+'    in +\n[doc-display-indent-stack\n[doc-display-depth]]u
+.
+.  if !\n[doc-is-compact] \{\
+.    if !\n[doc-in-synopsis-count] \{\
+.      ie "\*[doc-display-type-stack\n[doc-display-depth]]"ragged" \
+.        sp \n[doc-display-vertical]u
+.      el \
+'        sp \n[doc-display-vertical]u
+.  \}\}
+.
+.  if !\n[cR] \
+.    ne 2v
+.
+.  if !"\*[doc-display-file]"" \
+.    so \*[doc-display-file]
+.
+.  nr doc-is-compact 0
+.  ds doc-display-file
 ..
 .
 .
@@ -3037,103 +3050,107 @@
 .\" NS   doc-reg-Bl
 .
 .de Bl
-.  ie \n[.$] \{\
-.    ds doc-macro-name Bl
-.    nr doc-list-depth +1
-.    nr doc-arg-ptr 1
-.
-.    ie        "\$1"-hang" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] hang-list
-.      nr doc-list-indent-stack\n[doc-list-depth] 6n
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-tag" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] tag-list
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-item" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] item-list
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-enum" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] enum-list
-.      nr doc-list-indent-stack\n[doc-list-depth] 3n
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-bullet" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] bullet-list
-.      nr doc-list-indent-stack\n[doc-list-depth] 2n
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-dash" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] dash-list
-.      nr doc-list-indent-stack\n[doc-list-depth] 2n
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-hyphen" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] dash-list
-.      nr doc-list-indent-stack\n[doc-list-depth] 2n
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-inset" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] inset-list
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-diag" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] diag-list
-.      nr doc-have-diag-list 1
-.    \}
-.    el \{ .ie "\$1"-ohang" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] ohang-list
-.      nr doc-have-indent 1
-.    \}
-.    el \{ .ie "\$1"-column" \{\
-.      ds doc-list-type-stack\n[doc-list-depth] column-list
-.      linetabs 1
-.    \}
-.    el \{\
-.      tm1 "mdoc warning: Unknown list type `\$1' (or missing list type)
-.      tm1 "              in .Bl request
-.      tm
-.      nr doc-arg-ptr 0
-.    \}\}\}\}\}\}\}\}\}\}\}
-.
-.    \" we have seen a list type
-.    ie \n[doc-arg-ptr] \{\
-.      shift
-.
-.      \" fill argument vector
-.      nr doc-reg-Bl 1
-.      while (\n[doc-reg-Bl] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Bl] "\$[\n[doc-reg-Bl]]
-.        nr doc-reg-Bl +1
-.      \}
-.
-.      doc-increment-list-stack
-.
-.      if \n[.$] \{\
-.        nr doc-arg-limit \n[.$]
-.        nr doc-arg-ptr 0
-.        doc-do-Bl-args
-.
-.        \" initialize column list
-.        if "\*[doc-list-type-stack\n[doc-list-depth]]"column-list" \{\
-.          doc-set-column-tab \n[doc-num-columns]
-.          nr doc-list-indent-stack\n[doc-list-depth] 0
-'          in -\n[doc-column-indent-width]u
-.          if !\n[doc-compact-list-stack\n[doc-list-depth]] \
-.            sp \n[doc-display-vertical]u
-.
-.          nf
-.          nr doc-num-columns 0
-.    \}\}\}
-.    el \
-.      doc-Bl-usage
-.
-.    doc-reset-args
-.  \}
-.  el \
+.  if !\n[.$] \{\
 .    doc-Bl-usage
+.    return
+.  \}
+.
+.  ds doc-macro-name Bl
+.  nr doc-list-depth +1
+.  nr doc-arg-ptr 1
+.
+.  ie        "\$1"-hang" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] hang-list
+.    nr doc-list-indent-stack\n[doc-list-depth] 6n
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-tag" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] tag-list
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-item" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] item-list
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-enum" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] enum-list
+.    nr doc-list-indent-stack\n[doc-list-depth] 3n
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-bullet" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] bullet-list
+.    nr doc-list-indent-stack\n[doc-list-depth] 2n
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-dash" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] dash-list
+.    nr doc-list-indent-stack\n[doc-list-depth] 2n
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-hyphen" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] dash-list
+.    nr doc-list-indent-stack\n[doc-list-depth] 2n
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-inset" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] inset-list
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-diag" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] diag-list
+.    nr doc-have-diag-list 1
+.  \}
+.  el \{ .ie "\$1"-ohang" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] ohang-list
+.    nr doc-have-indent 1
+.  \}
+.  el \{ .ie "\$1"-column" \{\
+.    ds doc-list-type-stack\n[doc-list-depth] column-list
+.    linetabs 1
+.  \}
+.  el \{\
+.    tm1 "mdoc warning: Unknown list type `\$1' (or missing list type)
+.    tm1 "              in .Bl request
+.    tm
+.    nr doc-arg-ptr 0
+.  \}\}\}\}\}\}\}\}\}\}\}
+.
+.  \" we have seen a list type
+.  if !\n[doc-arg-ptr] \{\
+.    doc-Bl-usage
+.    doc-reset-args
+.    return
+.  \}
+.
+.  shift
+.
+.  \" fill argument vector
+.  nr doc-reg-Bl 1
+.  while (\n[doc-reg-Bl] <= \n[.$]) \{\
+.    ds doc-arg\n[doc-reg-Bl] "\$[\n[doc-reg-Bl]]
+.    nr doc-reg-Bl +1
+.  \}
+.
+.  doc-increment-list-stack
+.
+.  if \n[.$] \{\
+.    nr doc-arg-limit \n[.$]
+.    nr doc-arg-ptr 0
+.    doc-do-Bl-args
+.
+.    \" initialize column list
+.    if "\*[doc-list-type-stack\n[doc-list-depth]]"column-list" \{\
+.      doc-set-column-tab \n[doc-num-columns]
+.      nr doc-list-indent-stack\n[doc-list-depth] 0
+'      in -\n[doc-column-indent-width]u
+.      if !\n[doc-compact-list-stack\n[doc-list-depth]] \
+.        sp \n[doc-display-vertical]u
+.
+.      nf
+.      nr doc-num-columns 0
+.  \}\}
+.
+.  doc-reset-args
 ..
 .
 .
@@ -3175,45 +3192,116 @@
 .
 .de doc-do-Bl-args
 .  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    \" avoid a warning message in case e.g. `-offset' has no parameter
-.    nr doc-reg-dBla (\n[doc-arg-ptr] + 1)
-.    if !d doc-arg\n[doc-reg-dBla]
-.      ds doc-arg\n[doc-reg-dBla]
 .
-.    nr doc-reg-dBla 1
+.  if (\n[doc-arg-limit] < \n[doc-arg-ptr]) \
+.    return
 .
-.    ie        "\*[doc-arg\n[doc-arg-ptr]]"-compact" \
-.      nr doc-compact-list-stack\n[doc-list-depth] 1
+.  \" avoid a warning message in case e.g. `-offset' has no parameter
+.  nr doc-reg-dBla (\n[doc-arg-ptr] + 1)
+.  if !d doc-arg\n[doc-reg-dBla]
+.    ds doc-arg\n[doc-reg-dBla]
 .
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-nested" \{\
-.      ie (\n[doc-list-depth] > 1) \{\
-.        nr doc-reg-dBla1 (\n[doc-list-depth] - 1)
-.        ds doc-tag-prefix-stack\n[doc-list-depth] "\*[doc-tag-prefix-stack\n[doc-reg-dBla1]]
-.        as doc-tag-prefix-stack\n[doc-list-depth] \n[doc-enum-list-count-stack\n[doc-reg-dBla1]].
-.        length doc-reg-dBla1 "\*[doc-tag-prefix-stack\n[doc-list-depth]]
-.        nr doc-list-indent-stack\n[doc-list-depth] +\n[doc-reg-dBla1]n
+.  nr doc-reg-dBla 1
+.
+.  ie        "\*[doc-arg\n[doc-arg-ptr]]"-compact" \
+.    nr doc-compact-list-stack\n[doc-list-depth] 1
+.
+.  el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-nested" \{\
+.    ie (\n[doc-list-depth] > 1) \{\
+.      nr doc-reg-dBla1 (\n[doc-list-depth] - 1)
+.      ds doc-tag-prefix-stack\n[doc-list-depth] "\*[doc-tag-prefix-stack\n[doc-reg-dBla1]]
+.      as doc-tag-prefix-stack\n[doc-list-depth] \n[doc-enum-list-count-stack\n[doc-reg-dBla1]].
+.      length doc-reg-dBla1 "\*[doc-tag-prefix-stack\n[doc-list-depth]]
+.      nr doc-list-indent-stack\n[doc-list-depth] +\n[doc-reg-dBla1]n
+.    \}
+.    el \
+.      tm mdoc warning: `-nested' allowed with nested .Bl requests only (#\n[.c])
+.  \}
+.
+.  el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-width" \{\
+.    nr doc-arg-ptr +1
+.    ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
+.    ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
+.
+.    \" test whether argument is a valid numeric expression
+.    nr doc-reg-dBla1 0
+.    if \B(\*[doc-str-dBla]) \{\
+.      \" disable warnings related to scaling indicators (32)
+.      nr doc-reg-dBla2 \n[.warn]
+.      warn (\n[.warn] - (\n[.warn] / 32 % 2 * 32))
+.
+.      \" values without a scaling indicator are taken as strings;
+.      \" we test whether the parameter string with and without the last
+.      \" character yields identical numerical results (ignoring the
+.      \" scaling indicator)
+.      ds doc-str-dBla1 "\*[doc-str-dBla]
+.      substring doc-str-dBla1 1 -1
+.      if \B(\*[doc-str-dBla1]) \{\
+.        nr doc-reg-dBla3 (;(\*[doc-str-dBla]))
+.        nr doc-reg-dBla4 (\*[doc-str-dBla1])
+.        if (\n[doc-reg-dBla3] == \n[doc-reg-dBla4]) \
+.          nr doc-reg-dBla1 1
 .      \}
-.      el \
-.        tm mdoc warning: `-nested' allowed with nested .Bl requests only (#\n[.c])
+.
+.      \" enable all warnings again
+.      warn \n[doc-reg-dBla2]
 .    \}
 .
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-width" \{\
-.      nr doc-arg-ptr +1
-.      ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
-.      ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
+.    ie \n[doc-reg-dBla1] \
+.      nr doc-list-indent-stack\n[doc-list-depth] (\*[doc-str-dBla])
+.    el \{\
+.      doc-get-arg-width \n[doc-arg-ptr]
+.      ie (\n[doc-width] == 2) \{\
+.        \" if the width parameter is a macro, use the macro's
+.        \" width as specified in doc-common
+.        doc-get-arg-type \*[doc-str-dBla]
+.        ie (\n[doc-arg-type] == 1) \
+.          nr doc-list-indent-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
+.        el \
+.          nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.      \}
+.      el \
+.        nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.  \}\}
 .
-.      \" test whether argument is a valid numeric expression
+.  el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xwidth" \{\
+.    nr doc-arg-ptr +1
+.    ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
+.
+.    ds doc-str-dBla \*[doc-arg\n[doc-arg-ptr]]
+.    substring doc-str-dBla 1 2
+.    if .\*[doc-str-dBla] \{\
+.      \" execute string in a box to get the width of the diversion
+.      ds doc-str-dBla \*[doc-arg\n[doc-arg-ptr]]
+.      doc-save-global-vars
+.      doc-reset-args
+.      box doc-box-dBla
+.      ev doc-env-dBla
+.      evc 0
+.      in 0
+.      nf
+.      nop \*[doc-str-dBla]
+.      br
+.      ev
+.      box
+.      doc-restore-global-vars
+.      doc-get-width \h'\n[dl]u'
+.    \}
+.    nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.  \}
+.
+.  el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-offset" \{\
+.    nr doc-arg-ptr +1
+.
+.    ie "\*[doc-arg\n[doc-arg-ptr]]"indent" \
+.      nr doc-list-offset-stack\n[doc-list-depth] \n[doc-display-indent]u
+.    el \{\
+.      ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
 .      nr doc-reg-dBla1 0
 .      if \B(\*[doc-str-dBla]) \{\
-.        \" disable warnings related to scaling indicators (32)
 .        nr doc-reg-dBla2 \n[.warn]
 .        warn (\n[.warn] - (\n[.warn] / 32 % 2 * 32))
 .
-.        \" values without a scaling indicator are taken as strings;
-.        \" we test whether the parameter string with and without the last
-.        \" character yields identical numerical results (ignoring the
-.        \" scaling indicator)
 .        ds doc-str-dBla1 "\*[doc-str-dBla]
 .        substring doc-str-dBla1 1 -1
 .        if \B(\*[doc-str-dBla1]) \{\
@@ -3223,112 +3311,43 @@
 .            nr doc-reg-dBla1 1
 .        \}
 .
-.        \" enable all warnings again
 .        warn \n[doc-reg-dBla2]
 .      \}
 .
 .      ie \n[doc-reg-dBla1] \
-.        nr doc-list-indent-stack\n[doc-list-depth] (\*[doc-str-dBla])
+.        nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
 .      el \{\
 .        doc-get-arg-width \n[doc-arg-ptr]
-.        ie (\n[doc-width] == 2) \{\
-.          \" if the width parameter is a macro, use the macro's
+.        ie (\n[doc-width] <= 3) \{\
+.          \" if the offset parameter is a macro, use the macro's
 .          \" width as specified in doc-common
 .          doc-get-arg-type \*[doc-str-dBla]
 .          ie (\n[doc-arg-type] == 1) \
-.            nr doc-list-indent-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
-.          el \
-.            nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
-.        \}
-.        el \
-.          nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
-.    \}\}
-.
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xwidth" \{\
-.      nr doc-arg-ptr +1
-.      ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
-.
-.      ds doc-str-dBla \*[doc-arg\n[doc-arg-ptr]]
-.      substring doc-str-dBla 1 2
-.      if .\*[doc-str-dBla] \{\
-.        \" execute string in a box to get the width of the diversion
-.        ds doc-str-dBla \*[doc-arg\n[doc-arg-ptr]]
-.        doc-save-global-vars
-.        doc-reset-args
-.        box doc-box-dBla
-.        ev doc-env-dBla
-.        evc 0
-.        in 0
-.        nf
-.        nop \*[doc-str-dBla]
-.        br
-.        ev
-.        box
-.        doc-restore-global-vars
-.        doc-get-width \h'\n[dl]u'
-.      \}
-.      nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
-.    \}
-.
-.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-offset" \{\
-.      nr doc-arg-ptr +1
-.
-.      ie "\*[doc-arg\n[doc-arg-ptr]]"indent" \
-.        nr doc-list-offset-stack\n[doc-list-depth] \n[doc-display-indent]u
-.      el \{\
-.        ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
-.        nr doc-reg-dBla1 0
-.        if \B(\*[doc-str-dBla]) \{\
-.          nr doc-reg-dBla2 \n[.warn]
-.          warn (\n[.warn] - (\n[.warn] / 32 % 2 * 32))
-.
-.          ds doc-str-dBla1 "\*[doc-str-dBla]
-.          substring doc-str-dBla1 1 -1
-.          if \B(\*[doc-str-dBla1]) \{\
-.            nr doc-reg-dBla3 (;(\*[doc-str-dBla]))
-.            nr doc-reg-dBla4 (\*[doc-str-dBla1])
-.            if (\n[doc-reg-dBla3] == \n[doc-reg-dBla4]) \
-.              nr doc-reg-dBla1 1
-.          \}
-.
-.          warn \n[doc-reg-dBla2]
-.        \}
-.
-.        ie \n[doc-reg-dBla1] \
-.          nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
-.        el \{\
-.          doc-get-arg-width \n[doc-arg-ptr]
-.          ie (\n[doc-width] <= 3) \{\
-.            \" if the offset parameter is a macro, use the macro's
-.            \" width as specified in doc-common
-.            doc-get-arg-type \*[doc-str-dBla]
-.            ie (\n[doc-arg-type] == 1) \
-.              nr doc-list-offset-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
-.            el \
-.              nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
-.          \}
+.            nr doc-list-offset-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
 .          el \
 .            nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
-.    \}\}\}
-.    el \
-.      nr doc-reg-dBla 0
-.    \}\}\}\}
+.        \}
+.        el \
+.          nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width]u * \n[doc-fixed-width]u)
+.  \}\}\}
+.  el \
+.    nr doc-reg-dBla 0
+.  \}\}\}\}
 .
-.    \" not a known keyword, so it specifies the width of the next column
-.    \" (if it is a column list)
-.    if !\n[doc-reg-dBla] \{\
-.      ie "\*[doc-list-type-stack\n[doc-list-depth]]"column-list" \{\
-.        nr doc-num-columns +1
-.        ds doc-arg\n[doc-num-columns] "\*[doc-arg\n[doc-arg-ptr]]
-.      \}
-.      el \{\
-.        tmc mdoc warning: Unknown keyword `\*[doc-arg\n[doc-arg-ptr]]'
-.        tm1 " in .Bl request (#\n[.c])
-.    \}\}
+.  \" not a known keyword, so it specifies the width of the next column
+.  \" (if it is a column list)
+.  if !\n[doc-reg-dBla] \{\
+.    ie "\*[doc-list-type-stack\n[doc-list-depth]]"column-list" \{\
+.      nr doc-num-columns +1
+.      ds doc-arg\n[doc-num-columns] "\*[doc-arg\n[doc-arg-ptr]]
+.    \}
+.    el \{\
+.      tmc mdoc warning: Unknown keyword `\*[doc-arg\n[doc-arg-ptr]]'
+.      tm1 " in .Bl request (#\n[.c])
+.  \}\}
 .
-.    if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \
-.      doc-do-Bl-args
-.  \}
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \
+.    doc-do-Bl-args
 ..
 .
 .
@@ -3624,30 +3643,31 @@
 .\" NS width register `El' set in doc-common
 .
 .de El
-.  ie \n[.$] \
+.  if \n[.$] \{\
 .    tm Usage: .El (does not take arguments) (#\n[.c])
-.  el \{\
-.    ds doc-macro-name El
-.    ds doc-str-El \*[doc-list-type-stack\n[doc-list-depth]]
-.
-.    ie        "\*[doc-str-El]"diag-list" \{\
-.      nr doc-have-diag-list 0
-.      doc-end-list 0
-.    \}
-.    el \{ .ie "\*[doc-str-El]"column-list" \
-.      doc-end-column-list
-.    el \{ .ie "\*[doc-str-El]"item-list" \
-.      doc-end-list 0
-.    el \{ .ie "\*[doc-str-El]"ohang-list" \
-.      doc-end-list 0
-.    el \{ .ie "\*[doc-str-El]"inset-list" \
-.      doc-end-list 0
-.    el \
-.      doc-end-list 1
-.    \}\}\}\}
-.
-.    br
+.    return
 .  \}
+.
+.  ds doc-macro-name El
+.  ds doc-str-El \*[doc-list-type-stack\n[doc-list-depth]]
+.
+.  ie        "\*[doc-str-El]"diag-list" \{\
+.    nr doc-have-diag-list 0
+.    doc-end-list 0
+.  \}
+.  el \{ .ie "\*[doc-str-El]"column-list" \
+.    doc-end-column-list
+.  el \{ .ie "\*[doc-str-El]"item-list" \
+.    doc-end-list 0
+.  el \{ .ie "\*[doc-str-El]"ohang-list" \
+.    doc-end-list 0
+.  el \{ .ie "\*[doc-str-El]"inset-list" \
+.    doc-end-list 0
+.  el \
+.    doc-end-list 1
+.  \}\}\}\}
+.
+.  br
 ..
 .
 .
@@ -4259,33 +4279,34 @@
 .      doc-Xr-usage
 .  \}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    doc-print-prefixes
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      \" first argument must be a string
-.      ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.ps]
-.        ds doc-arg\n[doc-arg-ptr] \*[doc-Xr-font]\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.        if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.          nr doc-reg-Xr (\n[doc-arg-ptr] + 1)
-.          \" modify second argument if it is a string and
-.          \" remove space inbetween
-.          if (\n[doc-type\n[doc-reg-Xr]] == 2) \{\
-.            ds doc-arg\n[doc-reg-Xr] \*[lp]\*[doc-arg\n[doc-reg-Xr]]\*[rp]
-.            ds doc-space\n[doc-arg-ptr]
-.          \}
+.  nr doc-arg-ptr +1
+.  doc-print-prefixes
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    \" first argument must be a string
+.    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
+.      nr doc-curr-font \n[.f]
+.      nr doc-curr-size \n[.ps]
+.      ds doc-arg\n[doc-arg-ptr] \*[doc-Xr-font]\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
+.
+.      if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.        nr doc-reg-Xr (\n[doc-arg-ptr] + 1)
+.        \" modify second argument if it is a string and
+.        \" remove space inbetween
+.        if (\n[doc-type\n[doc-reg-Xr]] == 2) \{\
+.          ds doc-arg\n[doc-reg-Xr] \*[lp]\*[doc-arg\n[doc-reg-Xr]]\*[rp]
+.          ds doc-space\n[doc-arg-ptr]
 .        \}
-.        doc-print-recursive
 .      \}
-.      el \
-.        doc-Xr-usage
+.      doc-print-recursive
 .    \}
 .    el \
 .      doc-Xr-usage
 .  \}
+.  el \
+.    doc-Xr-usage
 ..
 .
 .
@@ -4383,24 +4404,25 @@
 .    doc-parse-arg-vector
 .  nr doc-arg-ptr +1
 .
-.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    if "\*[doc-arg\n[doc-arg-ptr]]"Ta" \{\
-.      nr doc-reg-dcl (\n[doc-arg-ptr] - 1)
-.      ds doc-space\n[doc-reg-dcl]
-.    \}
-.
-.    if !\n[doc-list-indent-stack\n[doc-list-depth]] \
-.      nr doc-list-indent-stack\n[doc-list-depth] \n[doc-column-indent-width]u
-.    if !\n[.u] \{\
-.      fi
-'      in +\n[doc-column-indent-width]u
-.    \}
-.    ti -\n[doc-column-indent-width]u
-.
-.    doc-do-\n[doc-type\n[doc-arg-ptr]]
-.  \}
-.  el \
+.  if (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
 .    tm Usage: .It column_string [Ta [column_string ...] ] (#\n[.c])
+.    return
+.  \}
+.
+.  if "\*[doc-arg\n[doc-arg-ptr]]"Ta" \{\
+.    nr doc-reg-dcl (\n[doc-arg-ptr] - 1)
+.    ds doc-space\n[doc-reg-dcl]
+.  \}
+.
+.  if !\n[doc-list-indent-stack\n[doc-list-depth]] \
+.    nr doc-list-indent-stack\n[doc-list-depth] \n[doc-column-indent-width]u
+.  if !\n[.u] \{\
+.    fi
+'    in +\n[doc-column-indent-width]u
+.  \}
+.  ti -\n[doc-column-indent-width]u
+.
+.  doc-do-\n[doc-type\n[doc-arg-ptr]]
 ..
 .
 .
@@ -4531,45 +4553,47 @@
 .      tm Usage: .Vt variable_type ... (#\n[.c])
 .  \}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      if \n[doc-in-synopsis-count] \{\
-.        \" if a function declaration was the last thing given,
-.        \" want vertical space
-.        if \n[doc-have-decl] \{\
-.          doc-paragraph
-.          nr doc-have-decl 0
-.        \}
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.        \" if a subroutine was the last thing given, want vertical space
-.        if \n[doc-have-func] \{\
-.          ie \n[doc-have-var] \
-.            br
-.          el \{\
-.            doc-paragraph
-.            rs
-.        \}\}
+.  nr doc-arg-ptr +1
+.  if (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
+.    tm Usage: .Vt variable_type ... (#\n[.c])
+.    doc-reset-args
+.    return
+.  \}
 .
-.        nr doc-have-var 1
-.      \}
-.
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      nop \*[doc-Ft-font]\c
-.      doc-print-recursive
-.
-.      if \n[doc-in-synopsis-count] \{\
-.        ie \n[doc-have-old-func] \
-.          nop \*[doc-soft-space]\c
-.        el \
-.          br
-.      \}
+.  if \n[doc-in-synopsis-count] \{\
+.    \" if a function declaration was the last thing given,
+.    \" want vertical space
+.    if \n[doc-have-decl] \{\
+.      doc-paragraph
+.      nr doc-have-decl 0
 .    \}
-.    el \{\
-.      tm Usage: .Vt variable_type ... (#\n[.c])
-.      doc-reset-args
-.  \}\}
+.
+.    \" if a subroutine was the last thing given, want vertical space
+.    if \n[doc-have-func] \{\
+.      ie \n[doc-have-var] \
+.        br
+.      el \{\
+.        doc-paragraph
+.        rs
+.    \}\}
+.
+.    nr doc-have-var 1
+.  \}
+.
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.  nop \*[doc-Ft-font]\c
+.  doc-print-recursive
+.
+.  if \n[doc-in-synopsis-count] \{\
+.    ie \n[doc-have-old-func] \
+.      nop \*[doc-soft-space]\c
+.    el \
+.      br
+.  \}
 ..
 .
 .
@@ -4602,33 +4626,35 @@
 .      tm Usage: .Ft function_type ... (#\n[.c])
 .  \}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      if \n[doc-in-synopsis-count] \{\
-.        if (\n[doc-have-func] : \n[doc-have-decl]) \{\
-.          doc-paragraph
-.          nr doc-have-decl 0
-.          nr doc-have-var 0
-.        \}
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.        if \n[doc-have-var] \{\
-.          doc-paragraph
-.          nr doc-have-var 0
-.        \}
+.  nr doc-arg-ptr +1
+.  if (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
+.    tm Usage: .Ft function_type ... (#\n[.c])
+.    doc-reset-args
+.    return
+.  \}
 .
-.        nr doc-is-func 1
-.      \}
-.
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      nop \*[doc-Ft-font]\c
-.      doc-print-recursive
+.  if \n[doc-in-synopsis-count] \{\
+.    if (\n[doc-have-func] : \n[doc-have-decl]) \{\
+.      doc-paragraph
+.      nr doc-have-decl 0
+.      nr doc-have-var 0
 .    \}
-.    el \{
-.      tm Usage: .Ft function_type ... (#\n[.c])
-.      doc-reset-args
-.  \}\}
+.
+.    if \n[doc-have-var] \{\
+.      doc-paragraph
+.      nr doc-have-var 0
+.    \}
+.
+.    nr doc-is-func 1
+.  \}
+.
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.  nop \*[doc-Ft-font]\c
+.  doc-print-recursive
 ..
 .
 .
@@ -4747,32 +4773,33 @@
 .\" NS   doc-num-func-args
 .
 .de doc-do-func
-.  ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
-.
-.    ds doc-func-arg
-.    nr doc-num-func-args 0
-.    nr doc-func-args-processed 0
-.
-.    doc-build-func-string \*[doc-arg\n[doc-arg-ptr]]
-.    if (\n[doc-num-func-args] > 1) \
-.      ds doc-arg\n[doc-arg-ptr] "\*[doc-func-arg]
-.
-.    if (\n[doc-func-arg-count] > 1) \{\
-.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\|,\)\c
-.      nop \)\*[doc-space\n[doc-arg-ptr]]\*[doc-Fa-font]\c
-.      nop \)\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]\c
-.    \}
-.
-.    if (\n[doc-func-arg-count] == 1) \{\
-.      nop \|\*[doc-Fa-font]\*[doc-arg\n[doc-arg-ptr]]\c
-.      nop \f[P]\s[0]\c
-.    \}
-.    nr doc-func-arg-count +1
-.    doc-do-func
-.  \}
-.  el \
+.  if (\n[doc-arg-limit] <= \n[doc-arg-ptr]) \{\
 .    doc-reset-args
+.    return
+.  \}
+.
+.  nr doc-arg-ptr +1
+.
+.  ds doc-func-arg
+.  nr doc-num-func-args 0
+.  nr doc-func-args-processed 0
+.
+.  doc-build-func-string \*[doc-arg\n[doc-arg-ptr]]
+.  if (\n[doc-num-func-args] > 1) \
+.    ds doc-arg\n[doc-arg-ptr] "\*[doc-func-arg]
+.
+.  if (\n[doc-func-arg-count] > 1) \{\
+.    nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\|,\)\c
+.    nop \)\*[doc-space\n[doc-arg-ptr]]\*[doc-Fa-font]\c
+.    nop \)\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]\c
+.  \}
+.
+.  if (\n[doc-func-arg-count] == 1) \{\
+.    nop \|\*[doc-Fa-font]\*[doc-arg\n[doc-arg-ptr]]\c
+.    nop \f[P]\s[0]\c
+.  \}
+.  nr doc-func-arg-count +1
+.  doc-do-func
 ..
 .
 .
@@ -4850,43 +4877,45 @@
 .    nr doc-in-synopsis-count +1
 .  \}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    doc-print-prefixes
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      nop \*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]\c
-.      nop \f[P]\s[0]\*[lp]\)\c
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.      nr doc-arg-ptr +1
-.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.        if (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.          nop \*[doc-Fa-font]\c
-.          doc-do-func-args
-.          nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
-.      \}\}
+.  nr doc-arg-ptr +1
+.  doc-print-prefixes
+.  if (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
+.    tm Usage: .Fn function_name [function_arg] ... (#\n[.c])
+.    doc-reset-args
+.    return
+.  \}
 .
-.      nop \)\*[rp]\)\c
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.  nop \*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]\c
+.  nop \f[P]\s[0]\*[lp]\)\c
 .
-.      ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.        \" output the space (if needed)
-.        nr doc-arg-ptr -1
-.        nop \)\*[doc-space\n[doc-arg-ptr]]\c
-.        nr doc-arg-ptr +1
-.
-.        doc-print-recursive
-.      \}
-.      el \
-.        doc-print-and-reset
-.
-.      if \n[doc-in-synopsis-count] \
-.        in -\n[doc-indent-synopsis]u
-.    \}
-.    el \{\
-.      tm Usage: .Fn function_name [function_arg] ... (#\n[.c])
-.      doc-reset-args
+.  nr doc-arg-ptr +1
+.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    if (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
+.      nop \*[doc-Fa-font]\c
+.      doc-do-func-args
+.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
 .  \}\}
+.
+.  nop \)\*[rp]\)\c
+.
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    \" output the space (if needed)
+.    nr doc-arg-ptr -1
+.    nop \)\*[doc-space\n[doc-arg-ptr]]\c
+.    nr doc-arg-ptr +1
+.
+.    doc-print-recursive
+.  \}
+.  el \
+.    doc-print-and-reset
+.
+.  if \n[doc-in-synopsis-count] \
+.    in -\n[doc-indent-synopsis]u
 ..
 .
 .
@@ -4958,78 +4987,80 @@
 .\" NS width register `Fo' set in doc-common
 .
 .de Fo
-.  ie (\n[doc-in-func-enclosure]) \
+.  if (\n[doc-in-func-enclosure]) \{\
 .    tm mdoc error: .Fo/.Fc can't be nested (#\n[.c])
-.  el \{\
-.    nr doc-saved-nesting-level \n[doc-nesting-level]
-.    nr doc-in-func-enclosure 1
+.    return
+.  \}
 .
-.    if !\n[doc-arg-limit] \{\
-.      ie \n[.$] \{\
-.        ds doc-macro-name Fo
-.        doc-parse-args \$@
-.      \}
-.      el \
-.        tm Usage: .Fo function_name (#\n[.c])
+.  nr doc-saved-nesting-level \n[doc-nesting-level]
+.  nr doc-in-func-enclosure 1
+.
+.  if !\n[doc-arg-limit] \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name Fo
+.      doc-parse-args \$@
 .    \}
+.    el \
+.      tm Usage: .Fo function_name (#\n[.c])
+.  \}
 .
-.    if \n[doc-in-synopsis-count] \{\
-.      \" if there is/has been more than one subroutine declaration
-.      ie \n[doc-is-func] \{\
-.        br
-.        nr doc-have-var 0
-.        nr doc-have-decl 0
-.        nr doc-is-func 0
-.      \}
-.      el \{\
-.        if \n[doc-have-func] \{\
-.          doc-paragraph
-.          nr doc-have-var 0
-.          nr doc-have-decl 0
-.      \}\}
-.
-.      if \n[doc-have-decl] \{\
-.        doc-paragraph
-.        nr doc-have-var 0
-.      \}
-.
-.      if \n[doc-have-var] \{\
-.        doc-paragraph
-.        nr doc-have-decl 0
-.      \}
-.
-.      nr doc-have-func 1
+.  if \n[doc-in-synopsis-count] \{\
+.    \" if there is/has been more than one subroutine declaration
+.    ie \n[doc-is-func] \{\
+.      br
+.      nr doc-have-var 0
+.      nr doc-have-decl 0
 .      nr doc-is-func 0
-.      rs
+.    \}
+.    el \{\
+.      if \n[doc-have-func] \{\
+.        doc-paragraph
+.        nr doc-have-var 0
+.        nr doc-have-decl 0
+.    \}\}
 .
-.      ie (\n[doc-in-synopsis-count] > 1) \
-.        br
-.      el \{\
-.        if !\n[doc-indent-synopsis] \
-.          nr doc-indent-synopsis (8u * \n[doc-fixed-width]u)
-.      \}
-.
-.      nr doc-in-synopsis-count +1
+.    if \n[doc-have-decl] \{\
+.      doc-paragraph
+.      nr doc-have-var 0
 .    \}
 .
-.    \" start function box
-.    box doc-func-box
-.    ev doc-func-env
-.    evc 0
-.    in 0
-.    nf
+.    if \n[doc-have-var] \{\
+.      doc-paragraph
+.      nr doc-have-decl 0
+.    \}
 .
-.    nr doc-arg-ptr +1
-.    doc-print-prefixes
-.    if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      nr doc-func-arg-count 1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
+.    nr doc-have-func 1
+.    nr doc-is-func 0
+.    rs
 .
-.      nop \*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]\c
-.      nop \f[P]\s[0]\*[lp]\)\c
-.      doc-reset-args
-.  \}\}
+.    ie (\n[doc-in-synopsis-count] > 1) \
+.      br
+.    el \{\
+.      if !\n[doc-indent-synopsis] \
+.        nr doc-indent-synopsis (8u * \n[doc-fixed-width]u)
+.    \}
+.
+.    nr doc-in-synopsis-count +1
+.  \}
+.
+.  \" start function box
+.  box doc-func-box
+.  ev doc-func-env
+.  evc 0
+.  in 0
+.  nf
+.
+.  nr doc-arg-ptr +1
+.  doc-print-prefixes
+.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    nr doc-func-arg-count 1
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.
+.    nop \*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]\c
+.    nop \f[P]\s[0]\*[lp]\)\c
+.    doc-reset-args
+.  \}
 ..
 .
 .
@@ -5046,50 +5077,51 @@
 .\" NS width register `Fc' set in doc-common
 .
 .de Fc
-.  ie !\n[doc-in-func-enclosure] \
+.  if !\n[doc-in-func-enclosure] \{\
 .    tm mdoc warning: Extraneous .Fc (#\n[.c])
-.  el \{\
-.    if \n[.$] \{\
-.      ds doc-macro-name Fc
-.      \" the first (dummy) argument is used to get the correct spacing
-.      doc-parse-args \) \$@
-.    \}
-.
-.    if !(\n[doc-saved-nesting-level] == \n[doc-nesting-level]) \
-.      tm mdoc warning: Unbalanced enclosure commands within .Fo/.Fc
-.
-.    nr doc-func-arg-count 0
-.    nr doc-in-func-enclosure 0
-.
-.    nop \|\*[rp]\)
-.
-.    \" finish function box
-.    br
-.    ev
-.    box
-.    chop doc-func-box
-.    unformat doc-func-box
-.
-.    if \n[doc-in-synopsis-count] \{\
-.      in +\n[doc-indent-synopsis]u
-.      ti -\n[doc-indent-synopsis]u
-.    \}
-.
-.    nh
-.    nop \*[doc-func-box]\c
-.
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      doc-print-recursive
-.    \}
-.    el \
-.      doc-print-and-reset
-.
-.    if \n[doc-in-synopsis-count] \
-.      in -\n[doc-indent-synopsis]u
+.    return
 .  \}
+.
+.  if \n[.$] \{\
+.    ds doc-macro-name Fc
+.    \" the first (dummy) argument is used to get the correct spacing
+.    doc-parse-args \) \$@
+.  \}
+.
+.  if !(\n[doc-saved-nesting-level] == \n[doc-nesting-level]) \
+.    tm mdoc warning: Unbalanced enclosure commands within .Fo/.Fc
+.
+.  nr doc-func-arg-count 0
+.  nr doc-in-func-enclosure 0
+.
+.  nop \|\*[rp]\)
+.
+.  \" finish function box
+.  br
+.  ev
+.  box
+.  chop doc-func-box
+.  unformat doc-func-box
+.
+.  if \n[doc-in-synopsis-count] \{\
+.    in +\n[doc-indent-synopsis]u
+.    ti -\n[doc-indent-synopsis]u
+.  \}
+.
+.  nh
+.  nop \*[doc-func-box]\c
+.
+.  nr doc-arg-ptr +1
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.    doc-print-recursive
+.  \}
+.  el \
+.    doc-print-and-reset
+.
+.  if \n[doc-in-synopsis-count] \
+.    in -\n[doc-indent-synopsis]u
 ..
 .
 .
@@ -5422,32 +5454,28 @@
 .\" NS width register `%A' set in doc-common
 .
 .de %A
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%A author_name ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-author-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %A
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" save to reference box
-.      box doc-author-name\n[doc-author-count]
-.      ev doc-env-%A
-.      evc 0
-.      in 0
-.      nf
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%A author_name ... (#\n[.c])
+.    return
 .  \}
 .
+.  nr doc-author-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %A
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" save to reference box
+.  box doc-author-name\n[doc-author-count]
+.  ev doc-env-%A
+.  evc 0
+.  in 0
+.  nf
+.  doc-do-references
 ..
 .
 .
@@ -5480,38 +5508,36 @@
 .\" NS width register `%B' set in doc-common
 .
 .de %B
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%B book_name ... (#\n[.c])
+.    return
+.  \}
+.
+.  if \n[doc-is-reference] \{\
+.    nr doc-book-count +1
+.    nr doc-reference-count +1
+.  \}
+.
+.  ds doc-macro-name %B
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  ie \n[doc-is-reference] \{\
+.    \" append to reference box
+.    boxa doc-book-name
+.    ev doc-env-%B
+.    evc 0
+.    in 0
+.    nf
+.    nop \*[doc-Em-font]\c
+.    doc-do-references
+.  \}
 .  el \{\
-.    ie \n[.$] \{\
-.      if \n[doc-is-reference] \{\
-.        nr doc-book-count +1
-.        nr doc-reference-count +1
-.      \}
-.
-.      ds doc-macro-name %B
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      ie \n[doc-is-reference] \{\
-.        \" append to reference box
-.        boxa doc-book-name
-.        ev doc-env-%B
-.        evc 0
-.        in 0
-.        nf
-.        nop \*[doc-Em-font]\c
-.        doc-do-references
-.      \}
-.      el \{\
-.        nop \*[doc-Em-font]\c
-.        doc-print-recursive
-.    \}\}
-.    el \
-.      tm Usage: .%B book_name ... (#\n[.c])
+.    nop \*[doc-Em-font]\c
+.    doc-print-recursive
 .  \}
 ..
 .
@@ -5545,31 +5571,28 @@
 .\" NS width register `%D' set in doc-common
 .
 .de %D
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%D date ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-date-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %D
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-date
-.      ev doc-env-%D
-.      evc 0
-.      in 0
-.      nf
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%D date ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-date-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %D
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-date
+.  ev doc-env-%D
+.  evc 0
+.  in 0
+.  nf
+.  doc-do-references
 ..
 .
 .
@@ -5602,32 +5625,29 @@
 .\" NS width register `%I' set in doc-common
 .
 .de %I
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%I issuer/publisher_name ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-publisher-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %I
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-publisher-name
-.      ev doc-env-%I
-.      evc 0
-.      in 0
-.      nf
-.      nop \*[doc-Em-font]\c
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%I issuer/publisher_name ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-publisher-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %I
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-publisher-name
+.  ev doc-env-%I
+.  evc 0
+.  in 0
+.  nf
+.  nop \*[doc-Em-font]\c
+.  doc-do-references
 ..
 .
 .
@@ -5660,32 +5680,29 @@
 .\" NS width register `%J' set in doc-common
 .
 .de %J
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%J journal_name ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-journal-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %J
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-journal-name
-.      ev doc-env-%J
-.      evc 0
-.      in 0
-.      nf
-.      nop \*[doc-Em-font]\c
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%J journal_name ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-journal-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %J
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-journal-name
+.  ev doc-env-%J
+.  evc 0
+.  in 0
+.  nf
+.  nop \*[doc-Em-font]\c
+.  doc-do-references
 ..
 .
 .
@@ -5718,31 +5735,28 @@
 .\" NS width register `%N' set in doc-common
 .
 .de %N
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%N issue_number ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-issue-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %N
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-issue-name
-.      ev doc-env-%N
-.      evc 0
-.      in 0
-.      nf
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%N issue_number ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-issue-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %N
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-issue-name
+.  ev doc-env-%N
+.  evc 0
+.  in 0
+.  nf
+.  doc-do-references
 ..
 .
 .
@@ -5775,31 +5789,28 @@
 .\" NS width register `%O' set in doc-common
 .
 .de %O
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%O optional_information ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-optional-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %O
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-optional-string
-.      ev doc-env-%O
-.      evc 0
-.      in 0
-.      nf
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%O optional_information ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-optional-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %O
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-optional-string
+.  ev doc-env-%O
+.  evc 0
+.  in 0
+.  nf
+.  doc-do-references
 ..
 .
 .
@@ -5832,31 +5843,28 @@
 .\" NS width register `%P' set in doc-common
 .
 .de %P
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%P page_number ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-page-number-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %P
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-page-number-string
-.      ev doc-env-%P
-.      evc 0
-.      in 0
-.      nf
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%P page_number ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-page-number-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %P
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-page-number-string
+.  ev doc-env-%P
+.  evc 0
+.  in 0
+.  nf
+.  doc-do-references
 ..
 .
 .
@@ -5889,31 +5897,28 @@
 .\" NS width register `%Q' set in doc-common
 .
 .de %Q
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%Q corporate_or_foreign_author ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-corporate-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %Q
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-corporate-name
-.      ev doc-env-%Q
-.      evc 0
-.      in 0
-.      nf
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%Q corporate_or_foreign_author ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-corporate-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %Q
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-corporate-name
+.  ev doc-env-%Q
+.  evc 0
+.  in 0
+.  nf
+.  doc-do-references
 ..
 .
 .
@@ -5946,31 +5951,28 @@
 .\" NS width register `%R' set in doc-common
 .
 .de %R
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%R reference_report ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-report-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %R
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-report-name
-.      ev doc-env-%R
-.      evc 0
-.      in 0
-.      nf
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%R reference_report ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-report-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %R
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-report-name
+.  ev doc-env-%R
+.  evc 0
+.  in 0
+.  nf
+.  doc-do-references
 ..
 .
 .
@@ -6010,52 +6012,50 @@
 .\" NS width register `%T' set in doc-common
 .
 .de %T
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%T reference_title ... (#\n[.c])
+.    return
+.  \}
+.
+.  if \n[doc-is-reference] \{\
+.    nr doc-reference-title-count +1
+.    nr doc-reference-count +1
+.  \}
+.
+.  ds doc-macro-name %T
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.  ie \n[doc-is-reference] \{\
+.    \" append to reference box
+.    boxa doc-reference-title-name-for-book
+.    ev doc-env-%T
+.    evc 0
+.    in 0
+.    nf
+.    nop \*[doc-No-font]\c
+.    doc-do-references
+.
+.    \" do it a second time with another font
+.    ds doc-macro-name %T
+.    doc-parse-args \$@
+.
+.    nr doc-arg-ptr +1
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.    boxa doc-reference-title-name
+.    ev doc-env-%T
+.    evc 0
+.    in 0
+.    nf
+.    nop \*[doc-Em-font]\c
+.    doc-do-references
+.  \}
 .  el \{\
-.    ie \n[.$] \{\
-.      if \n[doc-is-reference] \{\
-.        nr doc-reference-title-count +1
-.        nr doc-reference-count +1
-.      \}
-.
-.      ds doc-macro-name %T
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      ie \n[doc-is-reference] \{\
-.        \" append to reference box
-.        boxa doc-reference-title-name-for-book
-.        ev doc-env-%T
-.        evc 0
-.        in 0
-.        nf
-.        nop \*[doc-No-font]\c
-.        doc-do-references
-.
-.        \" do it a second time with another font
-.        ds doc-macro-name %T
-.        doc-parse-args \$@
-.
-.        nr doc-arg-ptr +1
-.        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.ps]
-.        boxa doc-reference-title-name
-.        ev doc-env-%T
-.        evc 0
-.        in 0
-.        nf
-.        nop \*[doc-Em-font]\c
-.        doc-do-references
-.      \}
-.      el \{\
-.        nop \*[doc-Em-font]\c
-.        doc-print-recursive
-.    \}\}
-.    el \
-.      tm Usage: .%T reference_title ... (#\n[.c])
+.    nop \*[doc-Em-font]\c
+.    doc-print-recursive
 .  \}
 ..
 .
@@ -6089,31 +6089,28 @@
 .\" NS width register `%V' set in doc-common
 .
 .de %V
-.  ie \n[doc-arg-limit] \
+.  if (\n[doc-arg-limit] : (\n[.$] == 0)) \{\
 .    tm Usage: .%V volume ... (#\n[.c])
-.  el \{\
-.    ie \n[.$] \{\
-.      nr doc-volume-count +1
-.      nr doc-reference-count +1
-.
-.      ds doc-macro-name %V
-.      doc-parse-args \$@
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.
-.      \" append to reference box
-.      boxa doc-volume-name
-.      ev doc-env-%V
-.      evc 0
-.      in 0
-.      nf
-.      doc-do-references
-.    \}
-.    el \
-.      tm Usage: .%V volume ... (#\n[.c])
+.    return
 .  \}
+.
+.  nr doc-volume-count +1
+.  nr doc-reference-count +1
+.
+.  ds doc-macro-name %V
+.  doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  nr doc-curr-font \n[.f]
+.  nr doc-curr-size \n[.ps]
+.
+.  \" append to reference box
+.  boxa doc-volume-name
+.  ev doc-env-%V
+.  evc 0
+.  in 0
+.  nf
+.  doc-do-references
 ..
 .
 .
@@ -6268,32 +6265,34 @@
 .
 .\" XXX: what does this function without `-std'?
 .
-.  ie !\n[.$] \
+.  if !\n[.$] \{\
 .    tm Usage: .Rv [-std] (#\n[.c])
-.  el \{\
-.    \" .ds doc-macro-name Rv
-.    \" .nr doc-arg-ptr 0
-.    \" .nr lR +1
-.    \" .ds doc-arg1 \$2
-.    \" .ds doc-arg2 \$3
-.    \" .ds doc-arg3 \$4
-.    \" .ds doc-arg4 \$5
-.    \" .ds doc-arg5 \$6
-.    \" .ds doc-arg6 \$7
-.    \" .ds doc-arg7 \$8
-.    \" .ds doc-arg8 \$9
-.    \" .
-.    \" .nr doc-num-args (\n[.$] - 1)
+.    return
+.  \}
 .
-.    if "\$1"-std" \{\
-.      nr doc-reg-Rv \*[doc-section]
-.      if ((\n[doc-reg-Rv] < 2) : (\n[doc-reg-Rv] > 3)) \
-.        tm Usage: .Rv -std in sections 2 and 3 only (#\n[.c])
-.      br
-.      nop \)\*[doc-str-Rv-prefix]
-.      Fn \$2
-.      nop \)\*[doc-str-Rv-suffix]
-.  \}\}
+.  \" .ds doc-macro-name Rv
+.  \" .nr doc-arg-ptr 0
+.  \" .nr lR +1
+.  \" .ds doc-arg1 \$2
+.  \" .ds doc-arg2 \$3
+.  \" .ds doc-arg3 \$4
+.  \" .ds doc-arg4 \$5
+.  \" .ds doc-arg5 \$6
+.  \" .ds doc-arg6 \$7
+.  \" .ds doc-arg7 \$8
+.  \" .ds doc-arg8 \$9
+.  \" .
+.  \" .nr doc-num-args (\n[.$] - 1)
+.
+.  if "\$1"-std" \{\
+.    nr doc-reg-Rv \*[doc-section]
+.    if ((\n[doc-reg-Rv] < 2) : (\n[doc-reg-Rv] > 3)) \
+.      tm Usage: .Rv -std in sections 2 and 3 only (#\n[.c])
+.    br
+.    nop \)\*[doc-str-Rv-prefix]
+.    Fn \$2
+.    nop \)\*[doc-str-Rv-suffix]
+.  \}
 ..
 .
 .

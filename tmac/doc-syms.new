@@ -614,32 +614,34 @@
 .      doc-St-usage
 .  \}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      ds doc-str-St \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.      ds doc-str-St1
-.      ie \A\*[doc-arg\n[doc-arg-ptr]] \{\
-.        ie d doc-str-St-\*[doc-arg\n[doc-arg-ptr]] \
-.          ds doc-str-St1 "\*[doc-str-St-\*[doc-arg\n[doc-arg-ptr]]]
-.        el \
-.          doc-St-usage
-.      \}
+.  nr doc-arg-ptr +1
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.    ds doc-str-St \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]
+.
+.    ds doc-str-St1
+.    ie \A\*[doc-arg\n[doc-arg-ptr]] \{\
+.      ie d doc-str-St-\*[doc-arg\n[doc-arg-ptr]] \
+.        ds doc-str-St1 "\*[doc-str-St-\*[doc-arg\n[doc-arg-ptr]]]
 .      el \
 .        doc-St-usage
-.
-.      \" replacing argument with result
-.      ds doc-arg\n[doc-arg-ptr] "\*[doc-str-St1]
-.
-.      doc-print-recursive
 .    \}
-.    el \{\
+.    el \
 .      doc-St-usage
-.      doc-reset-args
-.  \}\}
+.
+.    \" replacing argument with result
+.    ds doc-arg\n[doc-arg-ptr] "\*[doc-str-St1]
+.
+.    doc-print-recursive
+.  \}
+.  el \{\
+.    doc-St-usage
+.    doc-reset-args
+.  \}
 ..
 .
 .
@@ -698,26 +700,28 @@
 .      tm Usage: .Lb library_name ... (#\n[.c])
 .  \}
 .
-.  if \n[doc-arg-limit] \{\
-.    nr doc-arg-ptr +1
-.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      ie d doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]] \
-.        ds doc-str-Lb "\*[doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]]]
-.      el \{\
-.        tmc "mdoc warning: .Lb: no description for library
-.        tm1 " `\*[doc-arg\n[doc-arg-ptr]]' available (#\n[.c])
-.        ds doc-str-Lb library \*[Lq]\*[doc-arg\n[doc-arg-ptr]]\*[Rq]
-.      \}
+.  if !\n[doc-arg-limit] \
+.    return
 .
-.      \" replacing argument with result
-.      ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Lb]
-.
-.      doc-print-recursive
-.    \}
+.  nr doc-arg-ptr +1
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    ie d doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]] \
+.      ds doc-str-Lb "\*[doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]]]
 .    el \{\
-.      tm Usage: .Lb library_name ... (#\n[.c])
-.      doc-reset-args
-.  \}\}
+.      tmc "mdoc warning: .Lb: no description for library
+.      tm1 " `\*[doc-arg\n[doc-arg-ptr]]' available (#\n[.c])
+.      ds doc-str-Lb library \*[Lq]\*[doc-arg\n[doc-arg-ptr]]\*[Rq]
+.    \}
+.
+.    \" replacing argument with result
+.    ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Lb]
+.
+.    doc-print-recursive
+.  \}
+.  el \{\
+.    tm Usage: .Lb library_name ... (#\n[.c])
+.    doc-reset-args
+.  \}
 ..
 .
 .

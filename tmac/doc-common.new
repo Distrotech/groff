@@ -736,82 +736,83 @@
 .      doc-reset-args
 .  \}\}
 .  el \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Sh
-.      doc-parse-args \$@
-.
-.      nr doc-in-synopsis-count 0
-.      nr doc-indent-synopsis 0
-.
-.      if t \
-'        ad
-.
-.      \" this resolves e.g. `.Sh "SEE ALSO"'
-.      doc-first-parameter \$*
-.
-.      ie "\*[doc-str-dfp]"\*[doc-section-name]" \{\
-.        doc-setup-header
-'        in 0
-.      \}
-.      el \{\
-.        nr doc-in-see-also-section 0
-.        nr doc-in-files-section 0
-.        nr doc-in-authors-section 0
-.
-.        ie        "\*[doc-str-dfp]"\*[doc-section-synopsis]" \{\
-.          if t \
-.            na
-.          nr doc-in-synopsis-count 1
-.        \}
-.        el \{ .ie "\*[doc-str-dfp]"\*[doc-section-description]" \{\
-.          nr doc-is-func 0
-.          nr doc-func-count 0
-.          nr doc-func-args-processed 0
-.          nr doc-num-func-args 0
-.        \}
-.        el \{ .ie "\*[doc-str-dfp]"\*[doc-section-see-also]" \{\
-.          if t \
-.            na
-.          nr doc-in-see-also-section 1
-.        \}
-.        el \{ .ie "\*[doc-str-dfp]"\*[doc-section-files]" \
-.          nr doc-in-files-section 1
-.        el .if    "\*[doc-str-dfp]"\*[doc-section-authors]" \
-.          nr doc-in-authors-section 1
-.        \}\}\}
-.
-.        in 0
-.        nr doc-have-author 0
-.      \}
-.
-.      doc-setup-page-layout
-'      sp
-.      ns
-.      ta T .5i
-.      if !\n[cR] \
-.        ne 3
-'      fi
-.
-.      if t \{\
-.        nr doc-reg-Sh \n[.ss]
-.        nr doc-reg-Sh1 \n[.sss]
-.        ss (\n[.ss] * 5 / 3) (\n[.sss] * 5 / 3)
-.      \}
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      nop \*[doc-Sh-font]\c
-.      doc-print-recursive
-.
-.      if t \
-.        ss \n[doc-reg-Sh] \n[doc-reg-Sh1]
-.
-.      in +\n[doc-subheader-indent]u
-.      ns
-.    \}
-.    el \
+.    if !\n[.$] \{\
 .      tm Usage: .Sh section_name ... (#\n[.c])
+.      return
+.    \}
+.
+.    ds doc-macro-name Sh
+.    doc-parse-args \$@
+.
+.    nr doc-in-synopsis-count 0
+.    nr doc-indent-synopsis 0
+.
+.    if t \
+'      ad
+.
+.    \" this resolves e.g. `.Sh "SEE ALSO"'
+.    doc-first-parameter \$*
+.
+.    ie "\*[doc-str-dfp]"\*[doc-section-name]" \{\
+.      doc-setup-header
+'      in 0
+.    \}
+.    el \{\
+.      nr doc-in-see-also-section 0
+.      nr doc-in-files-section 0
+.      nr doc-in-authors-section 0
+.
+.      ie        "\*[doc-str-dfp]"\*[doc-section-synopsis]" \{\
+.        if t \
+.          na
+.        nr doc-in-synopsis-count 1
+.      \}
+.      el \{ .ie "\*[doc-str-dfp]"\*[doc-section-description]" \{\
+.        nr doc-is-func 0
+.        nr doc-func-count 0
+.        nr doc-func-args-processed 0
+.        nr doc-num-func-args 0
+.      \}
+.      el \{ .ie "\*[doc-str-dfp]"\*[doc-section-see-also]" \{\
+.        if t \
+.          na
+.        nr doc-in-see-also-section 1
+.      \}
+.      el \{ .ie "\*[doc-str-dfp]"\*[doc-section-files]" \
+.        nr doc-in-files-section 1
+.      el .if    "\*[doc-str-dfp]"\*[doc-section-authors]" \
+.        nr doc-in-authors-section 1
+.      \}\}\}
+.
+.      in 0
+.      nr doc-have-author 0
+.    \}
+.
+.    doc-setup-page-layout
+'    sp
+.    ns
+.    ta T .5i
+.    if !\n[cR] \
+.      ne 3
+'    fi
+.
+.    if t \{\
+.      nr doc-reg-Sh \n[.ss]
+.      nr doc-reg-Sh1 \n[.sss]
+.      ss (\n[.ss] * 5 / 3) (\n[.sss] * 5 / 3)
+.    \}
+.
+.    nr doc-arg-ptr +1
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.    nop \*[doc-Sh-font]\c
+.    doc-print-recursive
+.
+.    if t \
+.      ss \n[doc-reg-Sh] \n[doc-reg-Sh1]
+.
+.    in +\n[doc-subheader-indent]u
+.    ns
 .  \}
 ..
 .
@@ -846,34 +847,35 @@
 .      doc-reset-args
 .  \}\}
 .  el \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Ss
-.      doc-parse-args \$@
-.
-.      sp
-.      if !\n[cR] \
-.        ne 3
-.      ti -.25i
-.
-.      nr doc-reg-Ss \n[.ss]
-.      nr doc-reg-Ss1 \n[.sss]
-.      ss (\n[.ss] * 5 / 4) (\n[.sss] * 5 / 4)
-.
-.      nr doc-arg-ptr +1
-.      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.ps]
-.      nop \*[doc-Sh-font]\c
-.      doc-print-recursive
-.
-.      ss \n[doc-reg-Ss] \n[doc-reg-Ss1]
-.
-.      ta T .5i
-.      if !\n[cR] \
-.        ne 2
-.      br
-.    \}
-.    el \
+.    if !\n[.$] \{\
 .      tm Usage: .Ss subsection_name ... (#\n[.c])
+.      return
+.    \}
+.
+.    ds doc-macro-name Ss
+.    doc-parse-args \$@
+.
+.    sp
+.    if !\n[cR] \
+.      ne 3
+.    ti -.25i
+.
+.    nr doc-reg-Ss \n[.ss]
+.    nr doc-reg-Ss1 \n[.sss]
+.    ss (\n[.ss] * 5 / 4) (\n[.sss] * 5 / 4)
+.
+.    nr doc-arg-ptr +1
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.    nop \*[doc-Sh-font]\c
+.    doc-print-recursive
+.
+.    ss \n[doc-reg-Ss] \n[doc-reg-Ss1]
+.
+.    ta T .5i
+.    if !\n[cR] \
+.      ne 2
+.    br
 .  \}
 ..
 .
