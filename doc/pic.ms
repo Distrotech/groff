@@ -2238,8 +2238,6 @@ The \f(CWat\fP primitive sets the center of the current object.  The
 \f(CWwith\fP attribute fixes the specified feature of the given object
 to a specified location.
 .PP
-The \f(CWsolid\fR primitive is not yet supported in GNU \fBgpic\fR.
-.PP
 The \f(CWby\fR primitive is not documented in the tutorial portion of
 the Kernighan paper, and should probably be considered unreliable.
 .PP

@@ -492,6 +492,7 @@ int lookup_keyword(const char *str, int len)
     { "same", SAME },
     { "sh", SH },
     { "sin", SIN },
+    { "solid", SOLID },
     { "spline", SPLINE },
     { "sprintf", SPRINTF },
     { "sqrt", SQRT },

@@ -136,6 +136,7 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token WITH
 %token BY
 %token THEN
+%token SOLID
 %token DOTTED
 %token DASHED
 %token CHOP
@@ -229,7 +230,7 @@ box "foo" above ljust == box ("foo" above ljust)
 /* Give attributes that take an optional expression a higher
 precedence than left and right, so that eg `line chop left'
 parses properly. */
-%left CHOP DASHED DOTTED UP DOWN FILL
+%left CHOP SOLID DASHED DOTTED UP DOWN FILL
 %left LABEL
 
 %left VARIABLE NUMBER '(' SIN COS ATAN2 LOG EXP SQRT K_MAX K_MIN INT RAND SRAND LAST 
@@ -846,6 +847,10 @@ object_spec:
 		    $$->segment_pos.x = $$->segment_pos.y = 0.0;
 		    $$->segment_is_absolute = 0;
 		  }
+		}
+	| object_spec SOLID
+		{
+		  $$ = $1;	// nothing
 		}
 	| object_spec DOTTED
 		{
