@@ -5735,6 +5735,9 @@ only centers text without filling.
 Justify to both margins.  This is the default used by @code{gtroff}.
 @end table
 
+Finally, @var{mode} can be the numeric argument returned by the @code{.j}
+register.
+
 With no argument, @code{gtroff} adjusts lines in the same way it did
 before adjusting was deactivated (with a call to @code{na}, for
 example).
@@ -5742,13 +5745,15 @@ example).
 @Example
 text
 .ad r
+.nr ad \n[.j]
 text
 .ad c
 text
 .na
 text
-.ad  \" back to centering
+.ad         \" back to centering
 text
+.ad \n[ad]  \" back to right justifying
 @endExample
 
 @cindex adjustment mode register (@code{.j})
