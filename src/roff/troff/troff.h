@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -42,7 +43,7 @@ extern units units_per_inch;
 
 extern int ascii_output_flag;
 extern int suppress_output_flag;
-extern int is_html2;
+extern int is_html;
 
 extern int tcommand_flag;
 extern int vresolution;

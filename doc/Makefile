@@ -54,13 +54,13 @@ all: $(DOCS)
 	GROFF_TMAC_PATH=../tmac; \
 	export GROFF_TMAC_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
-	| $(GROFF) -Tascii $(FFLAG) -U -ms -markup >$@
+	| $(GROFF) -Tascii $(FFLAG) -U -ms -mwww >$@
 
 .ms.ps:
 	GROFF_TMAC_PATH=../tmac; \
 	export GROFF_TMAC_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
-	| $(GROFF) -Tps $(FFLAG) -U -ms -markup >$@
+	| $(GROFF) -Tps $(FFLAG) -U -ms -mwww >$@
 
 .texinfo.dvi:
 	texi2dvi -e $<

@@ -753,6 +753,7 @@ void space_request()
   else
     // The line might have had line spacing that was truncated.
     truncated_space += n;
+  curenv->add_html_tag(".sp", n.to_units());
   tok.next();
 }
 
@@ -819,6 +820,7 @@ void flush_output()
     curenv->do_break();
   if (the_output)
     the_output->flush();
+  curenv->add_html_tag(".fl");
   tok.next();
 }
 

@@ -110,7 +110,8 @@ static symbol blank_line_macro_name;
 int compatible_flag = 0;
 int ascii_output_flag = 0;
 int suppress_output_flag = 0;
-int is_html2 = 0;
+int is_html = 0;
+int html_level = 0;		// number of nested .html-begin requests
 
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
@@ -310,8 +311,10 @@ int file_iterator::next_file(FILE *f, const char *s)
 
 int file_iterator::fill(node **)
 {
-  if (newline_flag)
+  if (newline_flag) {
+    curenv->add_html_tag_eol();
     lineno++;
+  }
   newline_flag = 0;
   unsigned char *p = buf;
   ptr = p;
@@ -912,6 +915,7 @@ public:
   int interpret(macro *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 int non_interpreted_char_node::same(node *nd)
@@ -922,6 +926,11 @@ int non_interpreted_char_node::same(node *nd)
 const char *non_interpreted_char_node::type()
 {
   return "non_interpreted_char_node";
+}
+
+int non_interpreted_char_node::force_tprint()
+{
+  return 0;
 }
 
 non_interpreted_char_node::non_interpreted_char_node(unsigned char n) : c(n)
@@ -943,6 +952,7 @@ int non_interpreted_char_node::interpret(macro *mac)
 static void do_width();
 static node *do_non_interpreted();
 static node *do_special();
+static node *do_suppress();
 static void do_register();
 
 static node *do_overstrike()
@@ -1129,6 +1139,7 @@ public:
   token_node *get_token_node();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 token_node::token_node(const token &t) : tk(t)
@@ -1153,6 +1164,11 @@ int token_node::same(node *nd)
 const char *token_node::type()
 {
   return "token_node";
+}
+
+int token_node::force_tprint()
+{
+  return 0;
 }
 
 token::token() : nd(0), type(TOKEN_EMPTY)
@@ -1550,6 +1566,12 @@ void token::next()
 	return;
       case 'o':
 	nd = do_overstrike();
+	type = TOKEN_NODE;
+	return;
+      case 'O':
+	nd = do_suppress();
+	if (!nd)
+	  break;
 	type = TOKEN_NODE;
 	return;
       case 'p':
@@ -2051,7 +2073,6 @@ int_stack::~int_stack()
     top = top->next;
     delete temp;
   }
-  
 }
 
 int int_stack::is_empty()
@@ -2508,6 +2529,18 @@ void macro::append(unsigned char c)
   ++length;
 }
 
+void macro::append_str(const char *s)
+{
+  int i = 0;
+
+  if (s) {
+    while (s[i] != (char)0) {
+      append(s[i]);
+      i++;
+    }
+  }
+}
+
 void macro::append(node *n)
 {
   assert(n != 0);
@@ -2522,6 +2555,23 @@ void macro::append(node *n)
   p->cl.append(0);
   p->nl.append(n);
   ++length;
+}
+
+void macro::append_unsigned(unsigned int i)
+{
+  unsigned int j = i / 10;
+  if (j != 0)
+    append_unsigned(j);
+  append(((unsigned char)(((int)'0') + i % 10)));
+}
+
+void macro::append_int(int i)
+{
+  if (i < 0) {
+    append('-');
+    i = -i;
+  }
+  append_unsigned((unsigned int)i);
 }
 
 void macro::print_size()
@@ -3991,6 +4041,7 @@ public:
   node *copy();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 non_interpreted_node::non_interpreted_node(const macro &m) : mac(m)
@@ -4005,6 +4056,11 @@ int non_interpreted_node::same(node *nd)
 const char *non_interpreted_node::type()
 {
   return "non_interpreted_node";
+}
+
+int non_interpreted_node::force_tprint()
+{
+  return 0;
 }
 
 node *non_interpreted_node::copy()
@@ -4109,6 +4165,22 @@ node *do_special()
     encode_char(&mac, c);
   }
   return new special_node(mac);
+}
+
+node *do_suppress()
+{
+  tok.next();
+  int c = tok.ch();
+
+  if (c == '0')
+    return new suppress_node(0, 0);
+  else if (c == '1')
+    return new suppress_node(1, 0);
+  else if (c == '2')
+    return new suppress_node(1, 1);
+  else
+    error("invalid argument to \\O");
+  return 0;
 }
 
 void special_node::tprint(troff_output_file *out)
@@ -4340,6 +4412,67 @@ void else_request()
     else
       begin_alternative();
   }
+}
+
+/*
+ *  html_begin - if this is the outermost html_begin request then execute the
+ *               rest of the line, else skip line
+ */
+
+void html_begin()
+{
+  html_level++;
+  if (html_level == 1)
+    begin_alternative();
+  else
+    skip_alternative();
+}
+
+/*
+ *  html_end - if this is the outermost html_end request then execute the
+ *  rest of the line, else skip line
+ */
+
+void html_end()
+{
+  html_level--;
+  if (html_level == 0)
+    begin_alternative();
+  else
+    skip_alternative();
+  if (html_level < 0)
+    html_level = 0;
+}
+
+/*
+ *  html_image - implements the directive `.html_image {l|r|c|i} filename'
+ *               which places the filename into a node which is later
+ *               written out
+ *
+ *               . either as a special in the form of an image tag for -Thtml
+ *               . or as an image region definition for all other devices
+ *               
+ */
+
+void html_image()
+{
+  if (has_arg()) {
+    char position = tok.ch();
+    if (!(position == 'l'
+	  || position == 'r'
+	  || position == 'c'
+	  || position == 'i')) {
+      error("l, r, c, or i expected (got %1)", tok.description());
+      position = 'c';
+    }
+    else {
+      tok.next();
+      symbol filename = get_long_name(1);
+      if (!filename.is_null())
+        curenv->add_node(new suppress_node(filename, position));
+    }
+  }
+  skip_line();
 }
 
 static int while_depth = 0;
@@ -5832,7 +5965,7 @@ int main(int argc, char **argv)
     case 'T':
       device = optarg;
       tflag = 1;
-      is_html2 = (strcmp(device, "html2") == 0);
+      is_html = (strcmp(device, "html") == 0);
       break;
     case 'C':
       compatible_flag = 1;
@@ -5946,7 +6079,7 @@ int main(int argc, char **argv)
   init_column_requests();
 #endif /* COLUMN */
   init_node_requests();
-  init_output_requests();
+  init_html_requests();
   number_reg_dictionary.define(".T", new constant_reg(tflag ? "1" : "0"));
   init_registers();
   init_reg_requests();
@@ -6020,69 +6153,51 @@ static void init_registers()
 }
 
 /*
- *  .output request and associated registers
+ *  registers associated with \O
  */
 
 static int output_reg_minx_contents = -1;
 static int output_reg_miny_contents = -1;
 static int output_reg_maxx_contents = -1;
 static int output_reg_maxy_contents = -1;
+static int output_low_mark_miny = -1;		// internal only (limits miny)
 
-void check_output_limits (int x, int y)
+void check_output_limits(int x, int y)
 {
-  if ((output_reg_minx_contents == -1) || (x < output_reg_minx_contents)) {
+  if ((output_reg_minx_contents == -1) || (x < output_reg_minx_contents))
     output_reg_minx_contents = x;
-  }
-  if (x > output_reg_maxx_contents) {
+  if (x > output_reg_maxx_contents)
     output_reg_maxx_contents = x;
-  }
-  if ((output_reg_miny_contents == -1) || (y < output_reg_miny_contents)) {
+  if (((output_reg_miny_contents == -1) || (y < output_reg_miny_contents))
+      && (y >= output_low_mark_miny))
     output_reg_miny_contents = y;
-  }
-  if (y > output_reg_maxy_contents) {
+  if (y > output_reg_maxy_contents)
     output_reg_maxy_contents = y;
-  }
-  // fprintf(stderr, "x = %d     y=%d     miny=%d     maxy=%d\n", x, y, output_reg_miny_contents, output_reg_maxy_contents);
 }
 
-void reset_output_registers()
+void reset_output_registers(int miny)
 {
   // fprintf(stderr, "reset_output_registers\n");
+  output_low_mark_miny =  miny;  
   output_reg_minx_contents = -1;
   output_reg_miny_contents = -1;
   output_reg_maxx_contents = -1;
   output_reg_maxy_contents = -1;
 }
 
-void output_request()
+void get_output_registers(int *minx, int *miny, int *maxx, int *maxy)
 {
-  if (has_arg()) {
-    int n;
-  
-    if (! get_integer(&n)) {
-      error("missing integer argument for output request");
-      n = 1;
-    }
-
-    if (break_flag)
-      curenv->do_break();
-
-    if (!the_output)
-      init_output();
-    if (n == 0) {
-      the_output->off();
-    } else {
-      the_output->on();
-    }
-  } else {
-    error("missing argument for output request");
-  }
-  skip_line();
+  *minx = output_reg_minx_contents;
+  *miny = output_reg_miny_contents;
+  *maxx = output_reg_maxx_contents;
+  *maxy = output_reg_maxy_contents;
 }
 
-void init_output_requests()
+void init_html_requests()
 {
-  init_request("output", output_request);
+  init_request("html-begin", html_begin);
+  init_request("html-end", html_end);
+  init_request("html-image", html_image);
 }
 
 void init_input_requests()

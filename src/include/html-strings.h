@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000 Free Software Foundation, Inc.
+/* Copyright (C) 2001 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -19,19 +19,12 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /*
- *  defines functions implemented within pre-html.c
+ *  defines the image tags issued by the pre-processors (tbl, pic, eqn)
+ *  and later detected by pre-html.cc
  */
 
-#if !defined(PREHTMLH)
-#  define PREHTMLH
-#  if defined(PREHTMLC)
-#     define EXTERN
-#  else
-#     define EXTERN extern
-#  endif
-
-
-extern void sys_fatal (const char *s);
-
-#undef EXTERN
-#endif
+#define HTML_IMAGE_INLINE     ".HTML-IMAGE-INLINE"
+#define HTML_IMAGE_CENTERED   ".HTML-IMAGE"
+#define HTML_IMAGE_RIGHT      ".HTML-IMAGE-RIGHT"
+#define HTML_IMAGE_LEFT       ".HTML-IMAGE-LEFT"
+#define HTML_IMAGE_END        ".HTML-IMAGE-END"

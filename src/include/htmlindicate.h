@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
      Written by Gaius Mulley <gaius@glam.ac.uk>
 
 This file is part of groff.
@@ -24,35 +24,41 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 /*
  *  graphic_start - emit a html graphic start indicator, but only
  *                  if one has not already been issued.
+ *
+ *                  The boolean, is_inline, should be:
+ *
+ *                  FALSE if this is called via EQ, TS, PS, and
+ *                  TRUE if issued via delim $$  $ x over y $ etc.
  */
 
-extern void graphic_start (void);
+extern void graphic_start (int is_inline);
 
 
 /*
  *  graphic_end - emit a html graphic end indicator, but only
  *                if a corresponding matching graphic-start has
  *                been issued.
+ *
  */
 
 extern void graphic_end (void);
 
 
 /*
- *  html_begin_suppress - if the 'htmlflip' variable is set to 1 then
- *                        all text following this line will be suppressed by troff
- *                        and if the -Thtml2 device is specified a generic IMAGE tag
- *                        is emitted which is later filled in by the pre-html preprocessor.
+ *  html_begin_suppress - suppresses output for the html device
+ *                        and resets the min/max registers for -Tps
+ *
+ *                        The boolean, is_inline, should be:
+ *
+ *                        FALSE if this is called via EQ, TS, PS, and
+ *                        TRUE if issued via delim $$  $ x over y $ etc.
  */
 
-extern void html_begin_suppress (void);
+extern void html_begin_suppress (int is_inline);
+
 
 /*
- *  html_end_suppress - if the 'htmlflip' variable has been set then
- *                      enable generation of text after this line of troff.
- *                      If 'htmlflip' and -Thtml2 is set then issue the
- *                      upper x,y and lower x,y coordinates to stderr via
- *                      a troff '.tm' command.
+ *  html_end_suppress - end the suppression of output.
  */
 
 extern void html_end_suppress (void);

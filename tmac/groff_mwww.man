@@ -1,4 +1,4 @@
-.TH GROFF_MARKUP @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
+.TH GROFF_MWWW @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
 .\" Copyright (C) 2000 Free Software Foundation, Inc.
 .\"      Written by Gaius Mulley (gaius@glam.ac.uk)
 .\"
@@ -18,23 +18,26 @@
 .\" with groff; see the file COPYING.  If not, write to the Free Software
 .\" Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.\" user level guide to using the -markup macroset
+.\" user level guide to using the -mwww macroset
 .\"
-.do mso arkup.tmac
-.LINE
+.do mso www.tmac
+.\" we need the .LINKS here as we use it in the middle as an example
+.\" once the user requests .LINKS then the automatic generation of links
+.\" at the top of the document is suppresed.
+.LINKS
 .SH NAME
-groff_markup \- groff macros for authoring web pages
+groff_mwww \- groff macros for authoring web pages
 .LINE
 .SH SYNOPSIS
-.B "groff \-markup"
+.B "groff \-mwww"
 [ options ]
 file ...
 .SH DESCRIPTION
-This manual page describes the GNU \-markup macros, which is part of the
+This manual page describes the GNU \-mwww macros, which is part of the
 groff document formatting system.
 The manual page is very a basic guide, and the html device driver
 .RB ( grohtml )
-is still very alpha.
+has been completely rewritten but still remains as in an alpha state.
 It has been included into the distribution so that a lot of people have a
 chance to test it.
 Note that this macro file will be automatically called (via the
@@ -106,6 +109,8 @@ An \fCHTMLINDEX\fP of 2 will mean that a heading
 .sp
 will not be included in the links either as it is said to have a heading
 level of three.
+Another method for switching automatic headings is via the command line
+switch \fC-P-l\fP.
 .TP
 .B BODYCOLOR
 takes five parameters: foreground, background, active hypertext link,
@@ -152,18 +157,15 @@ and
 This is achieved by the following macros:
 .sp
 .nf
-\s-2\fC\&.MAILTO wl@gnu.org "Werner Lemberg"\fP
-.sp
-\fC\&.MAILTO Ted.Harding@nessie.mcc.ac.uk \\
-.br
-"Ted Harding" .\s+2\fP
+\s-2\fC\&.MAILTO wl@gnu.org "Werner Lemberg"
+\&.MAILTO Ted.Harding@nessie.mcc.ac.uk "Ted Harding" .\s+2\fP
 .fi
 .sp
 Note that all the urls actually are treated as consuming no textual space
 in groff.
 This could be considered as a bug since it causes some problems.
-To circumvent this, \fCarkup.tmac\fP inserts a zero-width character which
-expands to a harmless space (only if in HTML mode)
+To circumvent this, \fCwww.tmac\fP inserts a zero-width character which
+expands to a harmless space (only if run with -Thtml).
 .TP
 .B FTP
 indicates that data can be obtained via ftp.
@@ -176,9 +178,10 @@ As an example, here the location of the
 ftp://ftp.ffii.org/pub/groff/devel/groff-current.tar.gz .
 The macro example above was specified by:
 .sp
+.nf
 \s-2\fC\&.FTP "current groff development distribution" \\
-.br
 ftp://ftp.ffii.org/pub/groff/devel/groff-current.tar.gz .\fP\s+2
+.fi
 .sp
 .TP
 .B IMAGE
@@ -214,95 +217,48 @@ a local reference.
 This link was achieved via placing a TAG in the URL description above;
 the source looks like this:
 .sp
+.nf
 \s-2\fC\&.TP
-.br
 \&.B URL
-.br
 generates
-.br
 \&.TAG URL
-.br
 a URL using either two or three
-.br
 arguments.
-.br
-$1 is the name of the link, $2 is the actual URL
-.br
-\fP\s+2etc.
+$1 is the name of the link, $2 is the actual URL.\fP\s+2
+.fi
 .sp
-.\".TP
-.\".B CDFTP
-.\"takes four arguments.
-.\"Basically it is the FTP macro with optional local reference.
-.\"It was designed to allow the same groff source to be built on two different
-.\"machines and access the ftp data differently.
-.\"For example, on a web server you might wish for the web page to reference
-.\"a web site.
-.\"However, if you were producing a CDROM of your information you might wish
-.\"for the ftp data to be also stored on your CDROM and referenced as a file.
-.\"An example to get the current groff development distribution
-.\".CDFTP merlin "click here." \
-.\"ftp://ftp.ffii.org/pub/groff/devel/groff-current.tar.gz \
-.\"../../groff.tar.gz
-.\"The source for this CDFTP invocation is
-.\".sp
-.\"\fC\s-2\&.CDFTP merlin "click here." \
-.\"ftp://ftp.ffii.org/pub/groff/devel/groff-current.tar.gz \
-.\"../../groff.tar.gz\fP\s+2
-.\".sp
-.\"which means if the html is generated on machine \fCmerlin\fP
-.\"then generate a URL to \fC../../groff.tar.gz\fP.
-.\"Otherwise construct an FTP URL to
-.\"\fCftp://ftp.ffii.org/pub/groff/devel/groff-current.tar.gz\fP.
 .TP
 .B LINE
 generates a full width horizontal rule.
 Example:
 .sp
+.nf
 \fC\s-2\&.LINE\fP\s+2
+.fi
 .sp
+.TP
+.B LINKS
+.TAG LINK
+requests that grohtml place the automatically generated links at this position.
+For example:
+.LINKS
 .SH
 SECTION HEADING LINKS
 .LP
 By default
 .B grohtml
 generates links to all section headings and places these at the top of the
-html document.
-.B Grohtml
-has to guess what a section heading looks like \(em remember that all
-.B grohtml
-actually sees is a device independent language telling it where to place
-text, draw lines, change font sizes and faces etc.
-It believes a section heading to be a line of bold text which starts at the
-left most margin.
-Consequently it may misinterpret.
-Users can turn off all heading and title guessing by giving invoking groff
-with \fCgroff -P-g\fP.
+html document. (See
+.URL LINKS #LINK
+for details of how to switch this off or alter the position.
 .SH
 LIMITATIONS OF GROHTML
 .LP
-Although basic text can be translated in a straightforward fashion there are
-some areas where
-.B grohtml
-has to try and guess text relationship.
-In particular, whenever
-.B grohtml
-encounters text tables and indented paragraphs or two column mode it will
-try and utilize the html table construct to preserve columns.
-.B Grohtml
-also attempts to work out which lines should be automatically formatted by
-the browser.
-Ultimately in trying to make reasonable guesses most of the time it will
-make mistakes.
-Hopefully these mistakes will happen less and less as we get bug reports
-and patches :-).
-.PP
-Tbl, pic, eqn's are also generated using images which may be
-considered a limitation.
+Tbl information is currently rendered as a png image.
 .SH FILES
-@MACRODIR@/markup.tmac (a wrapper for arkup.tmac)
+@MACRODIR@/mwww.tmac (a wrapper for www.tmac)
 .br
-@MACRODIR@/arkup.tmac
+@MACRODIR@/www.tmac
 .SH "SEE ALSO"
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@)
@@ -310,7 +266,7 @@ considered a limitation.
 .LP
 .SH AUTHOR
 .B Grohtml
-is written by
+was written by
 .MAILTO gaius@glam.ac.uk "Gaius Mulley"
 .LINE
 .SH BUGS
@@ -318,4 +274,3 @@ Report bugs to the
 .MAILTO bug-groff@gnu.org "Groff Bug Mailing List" .
 Include a complete, self-contained example that will allow the bug to be
 reproduced, and say which version of groff you are using.
-.LINE

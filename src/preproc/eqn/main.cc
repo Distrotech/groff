@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -79,8 +80,8 @@ void do_file(FILE *fp, const char *filename)
 	     && linebuf[1] == 'E'
 	     && linebuf[2] == 'Q'
 	     && (linebuf[3] == ' ' || linebuf[3] == '\n' || compatible_flag)) {
+      graphic_start(0);
       put_string(linebuf, stdout);
-      graphic_start();
       int start_lineno = current_lineno + 1;
       str.clear();
       for (;;) {
@@ -167,7 +168,7 @@ static int inline_equation(FILE *fp, string &linebuf, string &str)
       ptr = &linebuf[0];
     }
     str += '\0';
-    graphic_start();
+    graphic_start(1);
     init_lex(str.contents(), current_filename, start_lineno);
     yyparse();
     start = delim_search(ptr, start_delim);
@@ -325,7 +326,14 @@ int main(int argc, char **argv)
   init_table(device);
   init_char_table();
   printf(".if !'\\*(.T'%s' "
+	 ".if !'\\*(.T'html' "   /* the html device uses `-Tps' to render
+                                    equations as images */
 	 ".tm warning: %s should have been given a `-T\\*(.T' option\n",
+	 device, program_name);
+  printf(".if '\\*(.T'html' "
+	 ".if !'%s'ps' "
+	 ".tm1 \"warning: %s should have been given a `-Tps' option\n"
+	 ".tm1 \"         (it is advisable to invoke groff via: groff -Thtml -e)\n",
 	 device, program_name);
   if (load_startup_file) {
     char *path;

@@ -1081,7 +1081,7 @@ accessible via @code{groff}.  This option prevents the loading of the
 Make programs run by @code{groff} print out their version number.
 
 @item -V
-Print the pipeline on stdout instead of executing it.
+Print the pipeline on @code{stdout} instead of executing it.
 
 @item -z
 Suppress output from @code{gtroff}.  Only error messages will be
@@ -1352,7 +1352,7 @@ groff file
 @noindent
 This command processes @file{file} without a macro package or a
 preprocessor.  The output device is the default, @samp{ps}, and the
-output is sent to stdout.
+output is sent to @code{stdout}.
 
 @example
 groff -t -mandoc -Tascii file | less
@@ -2174,7 +2174,7 @@ in italic.
 @cindex @file{man}, default indentation
 @cindex default indentation, @file{man}
 The default indentation is 7.2@dmn{n} for all output devices except for
-@code{grohtml} which uses 1.2@dmn{i} instead.
+@code{grohtml} which ignores indentation.
 
 @maindex DT
 @maindex TH
@@ -2329,6 +2329,7 @@ Users of macro packages may skip it if not interested in details.
 * Traps::                       
 * Diversions::                  
 * Environments::                
+* Suppressing output::
 * I/O::                         
 * Postprocessor Access::        
 * Miscellaneous::               
@@ -7063,7 +7064,7 @@ hacks; for example, the following will set register @code{n} to@w{ }1.
 
 @c =====================================================================
 
-@node Environments, I/O, Diversions, Programming Tutorial
+@node Environments, Suppressing output, Diversions, Programming Tutorial
 @section Environments
 @cindex environments
 
@@ -7150,7 +7151,46 @@ which takes the name of the environment to copy from as an argument.
 
 @c =====================================================================
 
-@node I/O, Postprocessor Access, Environments, Programming Tutorial
+@node Suppressing output, I/O, Environments, Programming Tutorial
+@section Suppressing output
+@cindex suppressing output
+
+@findex \O
+@code{gtroff} allows the programmer to disable resp.@: enable output
+through the use of the @code{\O} escape:
+
+@table @samp
+@item \O0
+Disable any ditroff glyphs from being emitted to the device driver.
+
+@item \O1
+Enable output of glyphs.
+@end table
+
+The previous commands also reset the four registers @samp{opminx},
+@samp{opminy}, @samp{opmaxx}, and @samp{opmaxy} to -1.  @xref{Register
+Index}.  These four registers mark the top left and bottom right hand
+corners of a box which encompasses all written glyphs.
+
+The following two parameter of @code{\O} are @code{grohtml} device
+specific.
+
+@table @samp
+@item \O2
+Disable any ditroff glyphs from being emitted to the device driver.  Also
+write out to @code{stderr} the page number and four registers encompassing
+the glyphs previously written since the last call to @code{\O}.
+
+@item \O3
+Enable output of glyphs (the default).  Also write out to @code{stderr}
+the page number and four registers encompassing the glyphs previously
+written since the last call to @code{\O}.
+@end table
+
+
+@c =====================================================================
+
+@node I/O, Postprocessor Access, Suppressing output, Programming Tutorial
 @section I/O
 @cindex i/o
 @cindex input and output requests
@@ -7501,16 +7541,16 @@ The @code{pm} request will dump out the entire symbol table.
 @cindex dumping number registers
 @cindex number registers, dumping
 The @code{pnr} request will print the names and contents of all
-currently defined number registers on stderr.
+currently defined number registers on @code{stderr}.
 
 @item
 @findex ptr
 @cindex dumping traps
 @cindex traps, dumping
 The @code{ptr} request will print the names and positions of all traps
-(not including input line traps and diversion traps) on stderr.  Empty
-slots in the page trap list are printed as well, because they can affect
-the priority of subsequently planted traps.
+(not including input line traps and diversion traps) on @code{stderr}.
+Empty slots in the page trap list are printed as well, because they can
+affect the priority of subsequently planted traps.
 
 @item
 @findex fl

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -190,6 +190,14 @@ void printer::set_numbered_char(int num, const environment *env, int *widthp)
   if (widthp)
     *widthp = w;
   set_char(i, f, env, w, 0);
+}
+
+font *printer::get_font_from_index(int fontno)
+{
+  if ((fontno >= 0) && (fontno < nfonts))
+    return(font_table[fontno]);
+  else
+    return(0);
 }
 
 // This utility function adjusts the specified center of the

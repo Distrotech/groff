@@ -1,3 +1,126 @@
+2000-01-15  Gaius Mulley  <gaius@glam.ac.uk>
+
+	First cut of the new html device driver.  Changes to pre-html and
+	the new grohtml are too numerous to be documented here.
+
+	Stuff related to `html' has been renamed to `html-old' and `html2'
+	stuff has been renamed to `html' (including directories).  The new
+	html device driver is therefore invoked as `-Thtml'.
+
+	Added new `\O' escape to suppress output (needed by html driver).
+
+	Added functions and code to pass info about input-level commands
+	(`.in', `.fl', etc.) to html driver.
+
+	Three new functions (.html-begin, .html-end, and .html-image) for
+	better html handling: `html-begin' will execute the remaining line
+	if at the outermost nesting level, increasing an internal counter.
+	`html-end' does the same but decreases the internal counter.
+	`html_image' puts its arguments into a special node (suppress_node)
+	to define an image region.
+
+	The `output' request has been removed.
+
+	* tmac/html-tags.tmac: Removed.
+	* tmac/arkup.tmac: Updated and renamed to ...
+	* tmac/www.tmac: New file.
+	* tmac/markup.tmac Updated and renamed to ...
+	* tmac/mwww.tmac: New file.
+	* tmac/Makefile.sub: Updated.
+	* tmac/an-old.tmac: Updated.
+	* tmac/eqnrc: Updated.
+	* tmac/groff_man.man
+	* tmac/groff_markup.man: Updated and renamed to ...
+	* tmac/groff_mwww.man: New file.
+	* tmac/groff_tmac.man: Updated.
+	* tmac/html-old.tmac: Updated and Renamed from html.tmac.
+	* tmac/html.tmac: Updated and renamed from html2.tmac.
+	* tmac/pspic.tmac: Updated html support.
+	* tmac/s.tmac: Added html output support.
+	* tmac/troffrc, tmac/troffrc-end: Updated.
+
+	* Makefile.in, doc/Makefile: Updated.
+	* doc/groff.texinfo: Added info about new `\O' escape.
+	* doc/homepage.ms: Use `MAILTO' macro.
+
+	* font/devhtml/DESC.proto: Add `C' font.
+	* font/devhtml/Makefile.sub: Updated.
+	* font/devhtml/R.proto: Minor fixes.
+	* font/devhtml-old/Makefile.sub: Updated.
+
+	* src/devices/grohtml-old/Makefile.sub: Updated.
+
+	* src/libs/libdriver/printer.cc (printer::get_font_from_index): New
+	method.
+	* src/libs/libgroff/htmlindicate.cc (html_begin_suppress,
+	graphic_start): Add `inline' parameter.  Update.
+	(html_end_suppress, graphic_end): Update.
+
+	* src/include/html-strings.h: New file.
+	* src/include/htmlindicate.h: Comments updated.
+	* src/include/printer.h: Updated.
+
+	* src/preproc/eqn/main.cc (do_file, main): Updated.
+	* src/preproc/pic/troff.cc (troff_output::start_picture,
+	troff_output::finish_picture): Updated.
+	* src/preproc/tbl/main.cc (process_input_file): Updated.
+
+	* src/roff/groff/groff.cc (main): Updated.
+	Pass device arguments to predrivers also.
+	Use `ps' device for `eqn' preprocessor if `-Thtml' is given.
+	* src/roff/troff/env.h (environment): Updated.
+	New elements `need_eol' and `ignore_next_eol' (for html output).
+	* src/roff/troff/env.cc (environment::environment): Add initializers
+	for `need_eol' and `ignore_next_eol'.
+	(environment::add_html_tag_eol, environment::add_html_tag_tabs): New
+	functions.
+	(point_size, fill, no_fill, center, right_justify, line_length,
+	indent, temporary_indent, break_request, handle_tab): Use
+	`add_html_tag()'.
+	(set_tabs): Use `add_html_tag_tabs()'.
+	(environment::add_html_tag): Updated.
+	(environment::do_break): Updated.
+	* src/roff/troff/div.cc (space_request, flush_output): Use
+	`environment::add_html_tag()'.
+	* src/roff/troff/input.cc: Updated.
+	New variable `html_level' to indicate nested `html-begin' requests.
+	(file_iterator::fill): Use `environment::add_html_tag_eol()'.
+	(non_interpreted_char_node, token_node, non_interpreted_node): Add
+	`force_tprint()' method.
+	(token::next): Handle `\O'.
+	(do_suppress): Implement it.
+	(html_begin, html_end, html_image): New functions.
+	(init_output_requests): Renamed to ...
+	(init_html_requests): this.
+	(main): Use it.
+	(macro::append_str, macro::append_unsigned, macro::append_int): New
+	methods.
+	New variable `output_low_mark_miny' to limit minimal value of y.
+	(reset_output_registers): Use it.
+	(output_request): Removed.
+	(get_output_registers): New function.
+	* src/roff/troff/node.h (node): Make `force_tprint()' virtual.
+	(*_node): Added `force_tprint()' if necessary.
+	(special_node): New elements `tf' and `get_tfont()'.
+	(suppress_node): New class.
+	* src/roff/troff/node.cc:
+	New global variables `image_no' and `suppress_start_page'.
+	(real_output_file): New method `is_on()'.
+	(troff_output_file): New method `start_special(tfont)'.
+	(troff_output_file::really_print_line): Use `tprint' conditionally.
+	(real_output_file::print_line): Updated.
+	(real_output_file::on): Updated.
+	(*_node): Added `force_tprint()'.
+	(special_node::special_node): Initializer updated.
+	(special_node::same, special_node::copy, special_node::tprint_start):
+	Updated.
+	(get_reg_int, get_reg_str): New functions.
+	(suppress_node::*): New methods.
+	New global variables last_position, last_image_filename;
+	(min): New inline function.
+	* src/roff/troff/reg.h, src/roff/troff/request.h,
+	src/roff/troff/troff.h: Updated.
+
 2001-01-13  Werner LEMBERG  <wl@gnu.org>
 
 	* NEWS, src/roff/troff/troff.man, doc/groff.texinfo: Fix

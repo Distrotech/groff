@@ -577,6 +577,8 @@ environment::environment(symbol nm)
 #ifdef WIDOW_CONTROL
   widow_control(0),
 #endif /* WIDOW_CONTROL */
+  need_eol(0),
+  ignore_next_eol(0),
   name(nm),
   control_char('.'),
   no_break_control_char('\''),
@@ -658,6 +660,8 @@ environment::environment(const environment *e)
 #ifdef WIDOW_CONTROL
   widow_control(e->widow_control),
 #endif /* WIDOW_CONTROL */
+  need_eol(0),
+  ignore_next_eol(0),
   name(e->name),		// so that eg `.if "\n[.ev]"0"' works
   control_char(e->control_char),
   no_break_control_char(e->no_break_control_char),
@@ -1079,6 +1083,7 @@ void point_size()
     if (n <= 0)
       n = 1;
     curenv->set_size(n);
+    curenv->add_html_tag(".ps", n);
   }
   else
     curenv->set_size(0);
@@ -1105,6 +1110,7 @@ void fill()
   if (break_flag)
     curenv->do_break();
   curenv->fill = 1;
+  curenv->add_html_tag(".fi");
   tok.next();
 }
 
@@ -1112,9 +1118,14 @@ void no_fill()
 {
   while (!tok.newline() && !tok.eof())
     tok.next();
-  if (break_flag)
+  if (break_flag) {
     curenv->do_break();
+    curenv->add_html_tag(".br");
+  }
   curenv->fill = 0;
+  curenv->add_html_tag(".nf");
+  curenv->ignore_next_eol = 1;
+  curenv->add_html_tag(".po", topdiv->get_page_offset().to_units());
   tok.next();
 }
 
@@ -1131,6 +1142,7 @@ void center()
     curenv->do_break();
   curenv->right_justify_lines = 0;
   curenv->center_lines = n;
+  curenv->add_html_tag(".ce", n);
   tok.next();
 }
 
@@ -1147,6 +1159,7 @@ void right_justify()
     curenv->do_break();
   curenv->center_lines = 0;
   curenv->right_justify_lines = n;
+  curenv->add_html_tag(".rj", n);
   tok.next();
 }
 
@@ -1163,6 +1176,7 @@ void line_length()
     temp = curenv->prev_line_length;
   curenv->prev_line_length = curenv->line_length;
   curenv->line_length = temp;
+  curenv->add_html_tag(".ll", temp.to_units());
   skip_line();
 }
 
@@ -1249,6 +1263,7 @@ void indent()
   curenv->have_temporary_indent = 0;
   curenv->prev_indent = curenv->indent;
   curenv->indent = temp;
+  curenv->add_html_tag(".in", temp.to_units());
   tok.next();
 }
 
@@ -1269,6 +1284,7 @@ void temporary_indent()
   if (!err) {
     curenv->temporary_indent = temp;
     curenv->have_temporary_indent = 1;
+    curenv->add_html_tag(".ti", temp.to_units());
   }
   tok.next();
 }
@@ -1940,15 +1956,121 @@ void environment::final_break()
     do_break();
 }
 
-void environment::add_html_tag (const char *name)
-{
-  if (is_html2) {
-    // need to emit tag for post-grohtml
-    macro *m = new macro;
+/*
+ *  add_html_tag_eol - add an end of line tag if appropriate.
+ */
 
+void environment::add_html_tag_eol(void)
+{
+  if (is_html) {
+    if (ignore_next_eol > 0)
+      ignore_next_eol--;
+    else if (need_eol > 0) {
+      need_eol--;
+      add_html_tag("eol");
+    }
+    else if (!fill) {
+      add_html_tag("eol");
+    }
+  }
+}
+
+/*
+ *  add_html_tag - emits a special html-tag: to help post-grohtml understand
+ *                 the key troff commands
+ */
+
+void environment::add_html_tag(const char *name)
+{
+  if (is_html) {
+    /*
+     * need to emit tag for post-grohtml
+     * but we check to see whether we can emit specials
+     */
+    if (curdiv == topdiv && topdiv->before_first_page)
+      topdiv->begin_page();
+    macro *m = new macro;
+    m->append_str("html-tag:");
     for (const char *p = name; *p; p++)
       if (!illegal_input_char((unsigned char)*p))
 	m->append(*p);
+    add_node(new special_node(*m));
+  }
+}
+
+/*
+ *  add_html_tag - emits a special html-tag: to help post-grohtml understand
+ *                 the key troff commands, it appends a string representation
+ *                 of i.
+ */
+
+void environment::add_html_tag(const char *name, int i)
+{
+  if (is_html) {
+    if (strcmp(name, ".ce") == 0) {
+      if (i == 0)
+	need_eol = 0;
+      else {
+	need_eol = i;
+	ignore_next_eol = 1;  // since the .ce creates an eol
+      }
+    }
+    /*
+     * need to emit tag for post-grohtml
+     * but we check to see whether we can emit specials
+     */
+    if (curdiv == topdiv && topdiv->before_first_page)
+      topdiv->begin_page();
+    macro *m = new macro;
+    m->append_str("html-tag:");
+    for (const char *p = name; *p; p++)
+      if (!illegal_input_char((unsigned char)*p))
+	m->append(*p);
+    m->append(' ');
+    m->append_int(i);
+    // output_pending_lines();
+    output(new special_node(*m), !fill, 0, 0, 0);
+    // output_pending_lines();
+  }
+}
+
+/*
+ *  add_html_tag_tabs - emits the tab settings for post-grohtml
+ */
+
+void environment::add_html_tag_tabs(void)
+{
+  if (is_html) {
+    /*
+     * need to emit tag for post-grohtml
+     * but we check to see whether we can emit specials
+     */
+    if (curdiv == topdiv && topdiv->before_first_page)
+      topdiv->begin_page();
+    macro *m = new macro;
+    hunits d, l;
+    enum tab_type t;
+    m->append_str("html-tag:.ta ");  
+    do {
+      t = curenv->tabs.distance_to_next_tab(l, &d);
+      l += d;
+      switch (t) {
+      case TAB_LEFT:
+	m->append_str(" L ");
+	m->append_int(d.to_units());
+	break;
+      case TAB_CENTER:
+	m->append_str(" C ");
+	m->append_int(d.to_units());
+	break;
+      case TAB_RIGHT:
+	m->append_str(" R ");
+	m->append_int(d.to_units());
+	break;
+      case TAB_NONE:
+	break;
+      }
+    } while ((t != TAB_NONE) && (l<get_line_length())) ;
     output_pending_lines();
     output(new special_node(*m), !fill, 0, 0, 0);
     output_pending_lines();
@@ -1958,7 +2080,6 @@ void environment::add_html_tag (const char *name)
 void environment::do_break()
 {
   if (curdiv == topdiv && topdiv->before_first_page) {
-    add_html_tag("html-tag:eol");
     topdiv->begin_page();
     return;
   }
@@ -1989,7 +2110,6 @@ void environment::do_break()
 	break;
       }
     }
-    add_html_tag("html-tag:eol");
     node *tem = line;
     line = 0;
     output_line(tem, width_total);
@@ -2011,8 +2131,10 @@ void break_request()
 {
   while (!tok.newline() && !tok.eof())
     tok.next();
-  if (break_flag)
+  if (break_flag) {
     curenv->do_break();
+    curenv->add_html_tag(".br");
+  }
   tok.next();
 }
 
@@ -2383,6 +2505,7 @@ void set_tabs()
     }
   }
   curenv->tabs = tabs;
+  curenv->add_html_tag_tabs();
   skip_line();
 }
 
@@ -2494,10 +2617,12 @@ void environment::handle_tab(int is_leader)
   case TAB_NONE:
     return;
   case TAB_LEFT:
+    add_html_tag("tab left");
     add_node(make_tab_node(d));
     return;
   case TAB_RIGHT:
   case TAB_CENTER:
+    add_html_tag("tab center");
     tab_width = 0;
     tab_distance = d;
     tab_contents = 0;

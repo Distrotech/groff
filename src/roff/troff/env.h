@@ -179,6 +179,8 @@ class environment {
 #ifdef WIDOW_CONTROL
   int widow_control;
 #endif /* WIDOW_CONTROL */
+  int need_eol;
+  int ignore_next_eol;
 
   tab_type distance_to_next_tab(hunits *);
   void start_line();
@@ -271,7 +273,10 @@ public:
   void possibly_break_line(int forced = 0);
   void do_break();			// .br
   void final_break();
-  void add_html_tag (const char *name);
+  void add_html_tag_eol(void);
+  void add_html_tag(const char *);
+  void add_html_tag(const char *, int);
+  void add_html_tag_tabs(void);
   void newline();
   void handle_tab(int is_leader = 0); // do a tab or leader
   void add_node(node *);

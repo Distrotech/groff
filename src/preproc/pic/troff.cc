@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -268,12 +269,12 @@ void troff_output::start_picture(double sc,
   scale = compute_scale(sc, ll, ur);
   height = (ur.y - ll.y)/scale;
   double width = (ur.x - ll.x)/scale;
+  graphic_start(0);
   printf(".PS %.3fi %.3fi", height, width);
   if (args)
     printf(" %s\n", args);
   else
     putchar('\n');
-  graphic_start();
   printf(".\\\" %g %g %g %g\n", ll.x, ll.y, ur.x, ur.y);
   printf(".\\\" %.3fi %.3fi %.3fi %.3fi\n", 0.0, height, width, 0.0);
   printf(".nr " FILL_REG " \\n(.u\n.nf\n");
@@ -292,10 +293,10 @@ void troff_output::finish_picture()
   printf(".if \\n(" FILL_REG " .fi\n");
   printf(".br\n");
   printf(".nr " EQN_NO_EXTRA_SPACE_REG " 0\n");
-  graphic_end();
   // this is a little gross
   set_location(current_filename, current_lineno);
   fputs(flyback_flag ? ".PF\n" : ".PE\n", stdout);
+  graphic_end();
 }
 
 void troff_output::command(const char *s,

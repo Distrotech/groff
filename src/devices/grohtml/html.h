@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -17,6 +17,11 @@ for more details.
 You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
+
+#if !defined(HTML_H)
+#  define HTML_H
+#  undef DEBUGGING
+// #define DEBUGGING
 
 class simple_output {
 public:
@@ -40,7 +45,11 @@ public:
   simple_output &end_line();
   simple_output &put_raw_char(char);
   simple_output &special(const char *);
-  simple_output &put_html_char (char);
+  simple_output &enable_newlines(int);
+  simple_output &check_newline(int n);
+  simple_output &write_newline(void);
+  simple_output &space_or_newline (void);
+  simple_output &check_space (int n);
   FILE *get_file();
 private:
   FILE *fp;
@@ -48,6 +57,7 @@ private:
   int col;
   int need_space;
   int fixed_point;
+  int newlines;                 // can we issue newlines automatically?
 };
 
 inline FILE *simple_output::get_file()
@@ -55,3 +65,4 @@ inline FILE *simple_output::get_file()
   return fp;
 }
 
+#endif

@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -55,6 +56,9 @@ public:
   macro &operator=(const macro &);
   void append(unsigned char);
   void append(node *);
+  void append_unsigned(unsigned int i);
+  void append_int(int i);
+  void append_str(const char *);
   void invoke(symbol);
   macro *to_macro();
   void print_size();
@@ -66,7 +70,7 @@ public:
 };
 
 extern void init_input_requests();
-extern void init_output_requests();
+extern void init_html_requests();
 extern void init_div_requests();
 extern void init_node_requests();
 extern void init_reg_requests();

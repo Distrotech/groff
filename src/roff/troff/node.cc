@@ -55,6 +55,14 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #endif /* not _POSIX_VERSION */
 
+/*
+ *  how many boundaries of images have been written? Useful for
+ *  debugging grohtml
+ */
+
+static int image_no=0;
+static int suppress_start_page=0;
+
 #define STORE_WIDTH 1
 
 symbol HYPHEN_SYMBOL("hy");
@@ -322,7 +330,7 @@ void font_info::set_conditional_bold(int fontno, hunits offset)
 }
 
 conditional_bold::conditional_bold(int f, hunits h, conditional_bold *x)
-     : next(x), fontno(f), offset(h)
+: next(x), fontno(f), offset(h)
 {
 }
 
@@ -405,9 +413,9 @@ hunits font_info::get_half_narrow_space_width(font_size fs)
 
 tfont_spec::tfont_spec(symbol nm, int n, font *f, 
 		       font_size s, int h, int sl)
-     : name(nm), input_position(n), fm(f), size(s),
-     is_bold(0), is_constant_spaced(0), ligature_mode(1), kern_mode(1),
-     height(h), slant(sl)
+: name(nm), input_position(n), fm(f), size(s),
+  is_bold(0), is_constant_spaced(0), ligature_mode(1), kern_mode(1),
+  height(h), slant(sl)
 {
   if (height == size.to_scaled_points())
     height = 0;
@@ -671,6 +679,7 @@ public:
   void put_filename(const char *filename);
   void on();
   void off();
+  int is_on();
   int is_printing();
   void copy_file(hunits x, vunits y, const char *filename);
 };
@@ -742,6 +751,7 @@ public:
   void right(hunits);
   void down(vunits);
   void moveto(hunits, vunits);
+  void start_special(tfont *tf);
   void start_special();
   void special_char(unsigned char c);
   void end_special();
@@ -785,6 +795,22 @@ inline void troff_output_file::put(int i)
   put_string(i_to_a(i), fp);
 }
 
+void troff_output_file::start_special(tfont *tf)
+{
+  flush_tbuf();
+
+  /*
+   *  although this is extremely unlikely to have an effect on other devices
+   *  this way is safer. Currently this is only needed for html.
+   */
+  if (is_html && tf) {
+    if (tf != current_tfont)
+      set_font(tf);
+  }
+  do_motion();
+  put("x X ");
+}
+
 void troff_output_file::start_special()
 {
   flush_tbuf();
@@ -815,7 +841,8 @@ void troff_output_file::really_print_line(hunits x, vunits y, node *n,
 {
   moveto(x, y);
   while (n != 0) {
-    n->tprint(this);
+    if (is_on() || (n->force_tprint()))
+      n->tprint(this);
     n = n->next;
   }
   flush_tbuf();
@@ -1367,7 +1394,7 @@ void real_output_file::transparent_char(unsigned char c)
 void real_output_file::print_line(hunits x, vunits y, node *n,
 			     vunits before, vunits after, hunits width)
 {
-  if (printing && output_on)
+  if (printing)
     really_print_line(x, y, n, before, after, width);
   delete_node_list(n);
 }
@@ -1392,16 +1419,17 @@ void real_output_file::on()
   if (output_on == 0) {
     output_on = 1;
   }
-  /*
-   *  lastly we reset the output registers 
-   */
-  reset_output_registers();
 }
 
 void real_output_file::off()
 {
   really_off();
   output_on = 0;
+}
+
+int real_output_file::is_on()
+{
+  return( output_on );
 }
 
 void real_output_file::really_on()
@@ -1527,6 +1555,7 @@ public:
   int character_type();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 glyph_node *glyph_node::free_list = 0;
@@ -1549,6 +1578,7 @@ public:
   void asciify(macro *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class kern_pair_node : public node {
@@ -1574,6 +1604,7 @@ public:
   void asciify(macro *);
   int same(node *);
   const char *type();
+  int force_tprint();
   void vertical_extent(vunits *, vunits *);
 };
 
@@ -1602,6 +1633,7 @@ public:
   void asciify(macro *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 void *glyph_node::operator new(size_t n)
@@ -1793,14 +1825,14 @@ void glyph_node::ascii_print(ascii_output_file *ascii)
 
 ligature_node::ligature_node(charinfo *c, tfont *t, 
 			     node *gn1, node *gn2, node *x)
-     : glyph_node(c, t, x), n1(gn1), n2(gn2)
+: glyph_node(c, t, x), n1(gn1), n2(gn2)
 {
 }
 
 #ifdef STORE_WIDTH
 ligature_node::ligature_node(charinfo *c, tfont *t, hunits w,
 			       node *gn1, node *gn2, node *x)
-     : glyph_node(c, t, w, x), n1(gn1), n2(gn2)
+: glyph_node(c, t, w, x), n1(gn1), n2(gn2)
 {
 }
 #endif
@@ -1841,12 +1873,12 @@ node *ligature_node::add_self(node *n, hyphen_list **p)
 }
 
 kern_pair_node::kern_pair_node(hunits n, node *first, node *second, node *x)
-     : node(x), amount(n), n1(first), n2(second)
+: node(x), amount(n), n1(first), n2(second)
 {
 }
 
 dbreak_node::dbreak_node(node *n, node *p, node *x) 
-     : node(x), none(n), pre(p), post(0)
+: node(x), none(n), pre(p), post(0)
 {
 }
 
@@ -2005,6 +2037,7 @@ public:
   node *copy();
   int same(node *);
   const char *type();
+  int force_tprint();
   hyphenation_type get_hyphenation_type();
 };
 
@@ -2025,6 +2058,11 @@ int hyphen_inhibitor_node::same(node *)
 const char *hyphen_inhibitor_node::type()
 {
   return "hyphen_inhibitor_node";
+}
+
+int hyphen_inhibitor_node::force_tprint()
+{
+  return 0;
 }
 
 hyphenation_type hyphen_inhibitor_node::get_hyphenation_type()
@@ -2092,6 +2130,11 @@ hunits node::width()
 }
 
 node *node::last_char_node()
+{
+  return 0;
+}
+
+int node::force_tprint()
 {
   return 0;
 }
@@ -2172,6 +2215,7 @@ public:
   hunits skew();
   node *add_self(node *, hyphen_list **);
   const char *type();
+  int force_tprint();
 };
 
 node *node::add_italic_correction(hunits *width)
@@ -2309,6 +2353,7 @@ public:
   tfont *get_tfont();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 break_char_node::break_char_node(node *n, int c, node *x)
@@ -2655,6 +2700,11 @@ space_node::~space_node()
 node *space_node::copy()
 {
   return new space_node(n, set);
+}
+
+int space_node::force_tprint()
+{
+  return 0;
 }
 
 int space_node::nspaces()
@@ -3216,11 +3266,25 @@ int node::interpret(macro *)
 special_node::special_node(const macro &m)
 : mac(m)
 {
+  font_size fs = curenv->get_font_size();
+  int char_height = curenv->get_char_height();
+  int char_slant = curenv->get_char_slant();
+  int fontno = curenv->get_font();
+  tf = font_table[fontno]->get_tfont(fs, char_height, char_slant,
+				     fontno);
+  if (curenv->is_composite())
+    tf = tf->get_plain();
+}
+
+special_node::special_node(const macro &m, tfont *t)
+: mac(m), tf(t)
+{
 }
 
 int special_node::same(node *n)
 {
-  return mac == ((special_node *)n)->mac;
+  return ((mac == ((special_node *)n)->mac) &&
+	  (tf  == ((special_node *)n)->tf));
 }
 
 const char *special_node::type()
@@ -3228,14 +3292,19 @@ const char *special_node::type()
   return "special_node";
 }
 
+int special_node::force_tprint()
+{
+  return 0;
+}
+
 node *special_node::copy()
 {
-  return new special_node(mac);
+  return new special_node(mac, tf);
 }
 
 void special_node::tprint_start(troff_output_file *out)
 {
-  out->start_special();
+  out->start_special(get_tfont());
 }
 
 void special_node::tprint_char(troff_output_file *out, unsigned char c)
@@ -3246,6 +3315,200 @@ void special_node::tprint_char(troff_output_file *out, unsigned char c)
 void special_node::tprint_end(troff_output_file *out)
 {
   out->end_special();
+}
+
+tfont *special_node::get_tfont()
+{
+  return tf;
+}
+
+/* suppress_node */
+
+suppress_node::suppress_node(int on_or_off, int issue_limits)
+: is_on(on_or_off), emit_limits(issue_limits), filename(0), position(0)
+{
+}
+
+suppress_node::suppress_node(symbol f, char p)
+: is_on(2), emit_limits(0), filename(f), position(p)
+{
+}
+
+suppress_node::suppress_node(int issue_limits, int on_or_off, symbol f, char p)
+: is_on(on_or_off), emit_limits(issue_limits), filename(f), position(p)
+{
+}
+
+int suppress_node::same(node *n)
+{
+  return ((is_on == ((suppress_node *)n)->is_on)
+	  && (emit_limits == ((suppress_node *)n)->emit_limits)
+	  && (filename == ((suppress_node *)n)->filename)
+	  && (position == ((suppress_node *)n)->position));
+;
+}
+
+const char *suppress_node::type()
+{
+  return "suppress_node";
+}
+
+node *suppress_node::copy()
+{
+  return new suppress_node(emit_limits, is_on, filename, position);
+}
+
+int get_reg_int (const char *p)
+{
+  reg *r = (reg *)number_reg_dictionary.lookup(p);
+  units prev_value;
+  if (r && (r->get_value(&prev_value)))
+    return( (int)prev_value );
+  else
+    warning(WARN_REG, "number register `%1' not defined", p);
+  return( 0 );
+}
+
+const char *get_reg_str (const char *p)
+{
+  reg *r = (reg *)number_reg_dictionary.lookup(p);
+  if (r)
+    return r->get_string();
+  else
+    warning(WARN_REG, "register `%1' not defined", p);
+  return( 0 );
+}
+
+void suppress_node::put(troff_output_file *out, const char *s)
+{
+  int i=0;
+
+  while (s[i] != (char)0) {
+    out->special_char(s[i]);
+    i++;
+  }
+}
+
+/*
+ *  We prefer to remember the last position, rather than have a .html-start
+ *  followed by html-end-center, html-end-left as it is more natural to
+ *  express an image by:
+ *
+ *    .html-image-left
+ *
+ *    .html-image-end
+ *
+ *  similar to other troff commands, although this method is slightly more
+ *  messy to implement.
+ */
+
+static char last_position = 0;
+static const char *last_image_filename = 0;
+
+inline int min(int a, int b)
+{
+  return a < b ? a : b;
+}
+
+/*
+ *  tprint - if (is_on == 2)
+ *               remember current position (l, r, c, i) and filename
+ *           else
+ *               if (emit_limits)
+ *                   if (html)
+ *                      emit image tag
+ *                   else
+ *                      emit postscript bounds for image
+ *               else
+ *                  if (suppress boolean differs from current state)
+ *                      alter state
+ *                  reset registers
+ *                  record current page
+ *                  set low water mark.
+ */
+
+void suppress_node::tprint(troff_output_file *out)
+{
+  int current_page = get_reg_int("%");
+  // firstly check to see whether this suppress node contains
+  // an image filename & position.
+  if (is_on == 2) {
+    // remember position and filename
+    last_position = position;
+    last_image_filename = filename.contents();
+  }
+  else {
+    // now check whether the suppress node requires us to issue limits.
+    if (emit_limits) {
+      char name[8192];
+      image_no++;
+      // remember that the filename will contain a %d in which the
+      // image_no is placed
+      sprintf(name, last_image_filename, image_no);
+      if (is_html) {
+	switch (last_position) {
+	case 'c':
+	  out->start_special();
+	  put(out, "html-tag:.centered-image");
+	  break;
+	case 'r':
+	  out->start_special();
+	  put(out, "html-tag:.right-image");
+	  break;
+	case 'l':
+	  out->start_special();
+	  put(out, "html-tag:.left-image");
+	  break;
+	case 'i':
+	  ;
+	default:
+	  ;
+	}
+	out->end_special();
+	out->start_special();
+	put(out, "html-tag:.auto-image ");
+	put(out, name);
+	out->end_special();
+      }
+      else {
+	// postscript (or other device)
+	if (current_page != suppress_start_page)
+	  error("suppression limit registers span more than one page;\n"
+	        "image description %1 will be wrong", image_no);
+	// remember that the filename will contain a %d in which the
+	// image_no is placed */
+	fprintf(stderr,
+		"grohtml-info:page %d  %d  %d  %d  %d  %d  %s  %d  %d  %s\n",
+		current_page,
+		get_reg_int("opminx"), get_reg_int("opminy"),
+		get_reg_int("opmaxx"), min(get_reg_int("opmaxy"),
+		out->get_vpos()),
+		// page offset + line length
+		get_reg_int(".o") + get_reg_int(".l"),
+		name, hresolution, vresolution, get_reg_str(".F"));
+	fflush(stderr);
+      }
+    }
+    else {
+      if (is_on)
+	out->on();
+      else
+	out->off();
+      // lastly we reset the output registers 
+      reset_output_registers(out->get_vpos());
+      suppress_start_page = current_page;
+    }
+  }
+}
+
+int suppress_node::force_tprint()
+{
+  return is_on;
+}
+
+hunits suppress_node::width()
+{
+  return H0;
 }
 
 /* composite_node */
@@ -3269,6 +3532,7 @@ public:
   tfont *get_tfont();
   int same(node *);
   const char *type();
+  int force_tprint();
   void vertical_extent(vunits *, vunits *);
   vunits vertical_width();
 };
@@ -3433,6 +3697,11 @@ node *unbreakable_space_node::copy()
   return new unbreakable_space_node(n, set, num_spaces);
 }
 
+int unbreakable_space_node::force_tprint()
+{
+  return 0;
+}
+
 breakpoint *unbreakable_space_node::get_breakpoints(hunits, int,
 						    breakpoint *rest, int)
 {
@@ -3459,7 +3728,7 @@ hvpair::hvpair()
 }
 
 draw_node::draw_node(char c, hvpair *p, int np, font_size s)
-     : npoints(np), sz(s), code(c)
+: npoints(np), sz(s), code(c)
 {
   point = new hvpair[npoints];
   for (int i = 0; i < npoints; i++)
@@ -3480,6 +3749,11 @@ int draw_node::same(node *n)
 const char *draw_node::type()
 {
   return "draw_node";
+}
+
+int draw_node::force_tprint()
+{
+  return 0;
 }
 
 draw_node::~draw_node()
@@ -4035,6 +4309,11 @@ const char *extra_size_node::type()
   return "extra_size_node";
 }
 
+int extra_size_node::force_tprint()
+{
+  return 0;
+}
+
 int vertical_size_node::same(node *nd)
 {
   return n == ((vertical_size_node *)nd)->n;
@@ -4043,6 +4322,11 @@ int vertical_size_node::same(node *nd)
 const char *vertical_size_node::type()
 {
   return "vertical_size_node";
+}
+
+int vertical_size_node::force_tprint()
+{
+  return 0;
 }
 
 int hmotion_node::same(node *nd)
@@ -4055,6 +4339,11 @@ const char *hmotion_node::type()
   return "hmotion_node";
 }
 
+int hmotion_node::force_tprint()
+{
+  return 0;
+}
+
 int space_char_hmotion_node::same(node *nd)
 {
   return n == ((space_char_hmotion_node *)nd)->n;
@@ -4063,6 +4352,11 @@ int space_char_hmotion_node::same(node *nd)
 const char *space_char_hmotion_node::type()
 {
   return "space_char_hmotion_node";
+}
+
+int space_char_hmotion_node::force_tprint()
+{
+  return 0;
 }
 
 int vmotion_node::same(node *nd)
@@ -4075,6 +4369,11 @@ const char *vmotion_node::type()
   return "vmotion_node";
 }
 
+int vmotion_node::force_tprint()
+{
+  return 0;
+}
+
 int hline_node::same(node *nd)
 {
   return x == ((hline_node *)nd)->x && same_node(n, ((hline_node *)nd)->n);
@@ -4083,6 +4382,11 @@ int hline_node::same(node *nd)
 const char *hline_node::type()
 {
   return "hline_node";
+}
+
+int hline_node::force_tprint()
+{
+  return 0;
 }
 
 int vline_node::same(node *nd)
@@ -4095,6 +4399,11 @@ const char *vline_node::type()
   return "vline_node";
 }
 
+int vline_node::force_tprint()
+{
+  return 0;
+}
+
 int dummy_node::same(node * /*nd*/)
 {
   return 1;
@@ -4105,6 +4414,11 @@ const char *dummy_node::type()
   return "dummy_node";
 }
 
+int dummy_node::force_tprint()
+{
+  return 0;
+}
+
 int transparent_dummy_node::same(node * /*nd*/)
 {
   return 1;
@@ -4113,6 +4427,11 @@ int transparent_dummy_node::same(node * /*nd*/)
 const char *transparent_dummy_node::type()
 {
   return "transparent_dummy_node";
+}
+
+int transparent_dummy_node::force_tprint()
+{
+  return 0;
 }
 
 int transparent_dummy_node::ends_sentence()
@@ -4130,6 +4449,11 @@ const char *zero_width_node::type()
   return "zero_width_node";
 }
 
+int zero_width_node::force_tprint()
+{
+  return 0;
+}
+
 int italic_corrected_node::same(node *nd)
 {
   return (x == ((italic_corrected_node *)nd)->x
@@ -4141,6 +4465,10 @@ const char *italic_corrected_node::type()
   return "italic_corrected_node";
 }
 
+int italic_corrected_node::force_tprint()
+{
+  return 0;
+}
 
 left_italic_corrected_node::left_italic_corrected_node(node *x)
 : node(x), n(0)
@@ -4194,6 +4522,11 @@ void left_italic_corrected_node::tprint(troff_output_file *out)
 const char *left_italic_corrected_node::type()
 {
   return "left_italic_corrected_node";
+}
+
+int left_italic_corrected_node::force_tprint()
+{
+  return 0;
 }
 
 int left_italic_corrected_node::same(node *nd)
@@ -4300,6 +4633,11 @@ const char *overstrike_node::type()
   return "overstrike_node";
 }
 
+int overstrike_node::force_tprint()
+{
+  return 0;
+}
+
 int bracket_node::same(node *nd)
 {
   return same_node_list(list, ((bracket_node *)nd)->list);
@@ -4308,6 +4646,11 @@ int bracket_node::same(node *nd)
 const char *bracket_node::type()
 {
   return "bracket_node";
+}
+
+int bracket_node::force_tprint()
+{
+  return 0;
 }
 
 int composite_node::same(node *nd)
@@ -4321,6 +4664,11 @@ const char *composite_node::type()
   return "composite_node";
 }
 
+int composite_node::force_tprint()
+{
+  return 0;
+}
+
 int glyph_node::same(node *nd)
 {
   return ci == ((glyph_node *)nd)->ci && tf == ((glyph_node *)nd)->tf;
@@ -4329,6 +4677,11 @@ int glyph_node::same(node *nd)
 const char *glyph_node::type()
 {
   return "glyph_node";
+}
+
+int glyph_node::force_tprint()
+{
+  return 0;
 }
 
 int ligature_node::same(node *nd)
@@ -4343,6 +4696,11 @@ const char *ligature_node::type()
   return "ligature_node";
 }
 
+int ligature_node::force_tprint()
+{
+  return 0;
+}
+
 int kern_pair_node::same(node *nd)
 {
   return (amount == ((kern_pair_node *)nd)->amount
@@ -4353,6 +4711,11 @@ int kern_pair_node::same(node *nd)
 const char *kern_pair_node::type()
 {
   return "kern_pair_node";
+}
+
+int kern_pair_node::force_tprint()
+{
+  return 0;
 }
 
 int dbreak_node::same(node *nd)
@@ -4367,6 +4730,11 @@ const char *dbreak_node::type()
   return "dbreak_node";
 }
 
+int dbreak_node::force_tprint()
+{
+  return 0;
+}
+
 int break_char_node::same(node *nd)
 {
   return (break_code == ((break_char_node *)nd)->break_code
@@ -4378,6 +4746,11 @@ const char *break_char_node::type()
   return "break_char_node";
 }
 
+int break_char_node::force_tprint()
+{
+  return 0;
+}
+
 int line_start_node::same(node * /*nd*/)
 {
   return 1;
@@ -4386,6 +4759,11 @@ int line_start_node::same(node * /*nd*/)
 const char *line_start_node::type()
 {
   return "line_start_node";
+}
+
+int line_start_node::force_tprint()
+{
+  return 0;
 }
 
 int space_node::same(node *nd)
@@ -4409,6 +4787,11 @@ const char *word_space_node::type()
   return "word_space_node";
 }
 
+int word_space_node::force_tprint()
+{
+  return 0;
+}
+
 int unbreakable_space_node::same(node *nd)
 {
   return (n == ((unbreakable_space_node *)nd)->n
@@ -4430,6 +4813,11 @@ const char *diverted_space_node::type()
   return "diverted_space_node";
 }
 
+int diverted_space_node::force_tprint()
+{
+  return 0;
+}
+
 int diverted_copy_file_node::same(node *nd)
 {
   return filename == ((diverted_copy_file_node *)nd)->filename;
@@ -4438,6 +4826,11 @@ int diverted_copy_file_node::same(node *nd)
 const char *diverted_copy_file_node::type()
 {
   return "diverted_copy_file_node";
+}
+
+int diverted_copy_file_node::force_tprint()
+{
+  return 0;
 }
 
 // Grow the font_table so that its size is > n.
@@ -4872,9 +5265,8 @@ track_kerning_function::track_kerning_function() : non_zero(0)
 
 track_kerning_function::track_kerning_function(int min_s, hunits min_a, 
 					       int max_s, hunits max_a)
-     : non_zero(1), 
-     min_size(min_s), min_amount(min_a),
-     max_size(max_s), max_amount(max_a)
+: non_zero(1), min_size(min_s), min_amount(min_a), max_size(max_s),
+  max_amount(max_a)
 {
 }
 

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -208,7 +208,7 @@ int main(int argc, char **argv)
       safer_flag = 0;
       break;
     case 'T':
-      if (strcmp(optarg, "html2") == 0) {
+      if (strcmp(optarg, "html") == 0) {
 	// force soelim to aid the html preprocessor
 	commands[SOELIM_INDEX].set_name(command_prefix, "soelim");
       }
@@ -275,6 +275,13 @@ int main(int argc, char **argv)
 
   if (predriver) {
     commands[TROFF_INDEX].insert_arg(commands[TROFF_INDEX].get_name());
+    const char *p = Pargs.contents();
+    const char *end = p + Pargs.length();
+    while (p < end) {
+      // pass the device arguments to the predrivers as well
+      commands[TROFF_INDEX].insert_arg(p);
+      p = strchr(p, '\0') + 1;
+    }
     commands[TROFF_INDEX].set_name(predriver);
   }
 
@@ -332,7 +339,12 @@ int main(int argc, char **argv)
     commands[SPOOL_INDEX].set_name(0);
   }
   commands[TROFF_INDEX].append_arg("-T", device);
-  commands[EQN_INDEX].append_arg("-T", device);
+  // html renders equations as images via ps
+  if (strcmp(device, "html") == 0)
+    commands[EQN_INDEX].append_arg("-Tps");
+  else
+    commands[EQN_INDEX].append_arg("-T", device);
+
   commands[GRN_INDEX].append_arg("-T", device);
 
   int first_index;

@@ -57,6 +57,7 @@ struct node {
 
   virtual ~node();
   virtual node *copy() = 0;
+  virtual int force_tprint () = 0;
   virtual hunits width();
   virtual hunits subscript_correction();
   virtual hunits italic_correction();
@@ -133,6 +134,7 @@ public:
   line_start_node() {}
   node *copy() { return new line_start_node; }
   int same(node *);
+  int force_tprint();
   const char *type();
   void asciify(macro *);
 };
@@ -169,6 +171,7 @@ public:
   void ascii_print(ascii_output_file *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class word_space_node : public space_node {
@@ -183,6 +186,7 @@ public:
   void asciify(macro *);
   const char *type();
   int merge_space(hunits);
+  int force_tprint();
 };
 
 class unbreakable_space_node : public word_space_node {
@@ -193,6 +197,7 @@ public:
   int same(node *);
   void asciify(macro *);
   const char *type();
+  int force_tprint();
   breakpoint *get_breakpoints(hunits width, int nspaces, breakpoint *rest = 0,
 			      int is_inner = 0);
   int nbreaks();
@@ -208,6 +213,7 @@ public:
   int reread(int *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class diverted_copy_file_node : public node {
@@ -219,6 +225,7 @@ public:
   int reread(int *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class extra_size_node : public node {
@@ -229,17 +236,19 @@ public:
   node *copy();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class vertical_size_node : public node {
   vunits n;
- public:
+public:
   vertical_size_node(vunits i) : n(i) {}
   void set_vertical_size(vertical_size *);
   void asciify(macro *);
   node *copy();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class hmotion_node : public node {
@@ -253,6 +262,7 @@ public:
   void ascii_print(ascii_output_file *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class space_char_hmotion_node : public hmotion_node {
@@ -263,23 +273,25 @@ public:
   void asciify(macro *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class vmotion_node : public node {
   vunits n;
- public:
+public:
   vmotion_node(vunits i) : n(i) {}
   void tprint(troff_output_file *);
   node *copy();
   vunits vertical_width();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class hline_node : public node {
   hunits x;
   node *n;
- public:
+public:
   hline_node(hunits i, node *c, node *next = 0) : node(next), x(i), n(c) {}
   ~hline_node();
   node *copy();
@@ -287,12 +299,13 @@ class hline_node : public node {
   void tprint(troff_output_file *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class vline_node : public node {
   vunits x;
   node *n;
- public:
+public:
   vline_node(vunits  i, node *c, node *next= 0) : node(next), x(i), n(c) {}
   ~vline_node();
   node *copy();
@@ -302,15 +315,17 @@ class vline_node : public node {
   void vertical_extent(vunits *, vunits *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 
 class dummy_node : public node {
- public:
+public:
   dummy_node(node *nd = 0) : node(nd) {}
   node *copy();
   int same(node *);
   const char *type();
+  int force_tprint();
   hyphenation_type get_hyphenation_type();
 };
 
@@ -320,19 +335,21 @@ public:
   node *copy();
   int same(node *);
   const char *type();
+  int force_tprint();
   int ends_sentence();
   hyphenation_type get_hyphenation_type();
 };
 
 class zero_width_node : public node {
   node *n;
- public:
+public:
   zero_width_node(node *gn);
   ~zero_width_node();
   node *copy();
   void tprint(troff_output_file *);
   int same(node *);
   const char *type();
+  int force_tprint();
   void append(node *);
   int character_type();
   void vertical_extent(vunits *min, vunits *max);
@@ -350,6 +367,7 @@ public:
   node *copy();
   int same(node *);
   const char *type();
+  int force_tprint();
   hunits width();
   node *last_char_node();
   void vertical_extent(vunits *, vunits *);
@@ -379,6 +397,7 @@ public:
   hunits width();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class bracket_node : public node {
@@ -393,19 +412,43 @@ public:
   hunits width();
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class special_node : public node {
   macro mac;
+  tfont *tf;
   void tprint_start(troff_output_file *);
   void tprint_char(troff_output_file *, unsigned char);
   void tprint_end(troff_output_file *);
 public:
   special_node(const macro &);
+  special_node(const macro &, tfont *t);
   node *copy();
   void tprint(troff_output_file *);
   int same(node *);
   const char *type();
+  int force_tprint();
+  tfont *get_tfont();
+};
+
+class suppress_node : public node {
+  int     is_on;
+  int     emit_limits;  // must we issue the extent of the area written out?
+  symbol  filename;
+  char    position;
+public:
+  suppress_node(int, int);
+  suppress_node(symbol f, char p);
+  suppress_node(int, int, symbol f, char p);
+  node *copy();
+  void tprint(troff_output_file *);
+  hunits width();
+  int same(node *);
+  const char *type();
+  int force_tprint();
+private:
+  void put(troff_output_file *out, const char *s);
 };
 
 struct hvpair {
@@ -429,6 +472,7 @@ public:
   void tprint(troff_output_file *);
   int same(node *);
   const char *type();
+  int force_tprint();
 };
 
 class charinfo;

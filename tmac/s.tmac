@@ -144,6 +144,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	als FE @FE
 .\}
 .wh 0 pg@top
+.CHECK-FOOTER-AND-KEEP
 ..
 .wh 0 cov*first-page-init
 .\" This handles the case where FS occurs before TL or LP.
@@ -165,13 +166,14 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .rn @AB AB
 .rn @AU AU
 .rn @AI AI
-.di cov*tl-div
+.if !'\*(.T'html' .di cov*tl-div
 .par@reset
 .ft B
 .ps +2
 .vs +3p
 .ll (u;\\n[LL]*5/6)
 .nr cov*n-au 0
+.HTML-TAG ".tl"
 ..
 .de @AU
 .par@reset
@@ -186,7 +188,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .ps \\n[PS]
 ..
 .de @AI
-.par@reset
+.if !'\*(.T'html' .par@reset
 .if !'\\n(.z'' \{\
 .	br
 .	di
@@ -249,7 +251,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	di
 .\}
 .cov*ab-init
-.di cov*ab-div
+.if !'\*(.T'html' .di cov*ab-div
 .par@ab-indent
 .par@reset
 .if !'\\$1'no' \{\
@@ -261,9 +263,20 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\}
 .ns
 .@PP
+.if '\*(.T'html' \{\
+.       cov*tl-au-print
+.       als cov*tl-au-print @nop
+.	par@reset-env
+.	par@reset
+.	cov*print
+.\}
 ..
 .de AE
-.ie '\\n(.z'cov*ab-div' \{\
+.ie '\*(.T'html' \{\
+.	als AE cov*err-not-again
+.\}
+.el \{\
+.  ie '\\n(.z'cov*ab-div' \{\
 .	als AE cov*err-not-again
 .	br
 .	di
@@ -271,8 +284,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	par@reset-env
 .	par@reset
 .	cov*print
+.  \}
+.  el .@error AE without AB
 .\}
-.el .@error AE without AB
 ..
 .de @div-end!cov*ab-div
 .AE
@@ -289,6 +303,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .		bp 1
 .		als FS @FS
 .		als FE @FE
+.               CHECK-FOOTER-AND-KEEP
 .	\}
 .	br
 .\}
@@ -299,7 +314,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .cov*tl-au-print
 .sp 3
 .if d cov*ab-div \{\
-.	nf
+.  if !'\*(.T'html'  .	nf
 .	cov*ab-div
 .\}
 .sp 3
@@ -321,6 +336,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\}
 .als FS @FS
 .als FE @FE
+.CHECK-FOOTER-AND-KEEP
 .\" If anything was printed below where the footer line is normally printed,
 .\" then that's an overflow.
 .if -\\n[FM]/2+1v+\\n[cov*page-length]<\\n[nl] .@error cover sheet overflow
@@ -345,7 +361,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .rs
 .sp 3
 .ce 9999
-.cov*tl-div
+.if d cov*tl-div .cov*tl-div
 .nr cov*i 1
 .nr cov*sp 1v
 .while \\n[cov*i]<=\\n[cov*n-au] \{\
@@ -461,6 +477,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .		nr pg*gutw \\n[LL]-(\\n[pg@ncols]*\\n[pg@colw])/(\\n[pg@ncols]-1)
 .	el .nr pg*gutw 0
 .\}
+.HTML-TAG ".mc \\n[pg@ncols] \\n[pg@colw] \\n[pg*gutw]"
 .mk pg*col-top
 .ns
 .nr pg*col-num 0
@@ -985,6 +1002,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .if !rHY .nr HY 14
 .hy \\n[HY]
 .TA
+.CHECK-FOOTER-AND-KEEP
 ..
 .de par*vs
 .\" If it's too big to be in points, treat it as units.
@@ -1206,6 +1224,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\" start boxed text
 .de B1
 .br
+.HTML-IMAGE
 .di par*box-div
 .nr \\n[.ev]:li +1n
 .nr \\n[.ev]:ri +1n
@@ -1242,6 +1261,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	par*box-draw \\n[.i]u \\n[.l]u-(\\n[.H]u==1n*1n)
 .\}
 .el .@error B2 without B1
+.HTML-IMAGE-END
 ..
 .de par*box-mark-top
 .ie '\\n[.z]'' \{\
@@ -1280,6 +1300,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .ne 3v+\\n[\\n[.ev]:PD]u+\\n(.Vu
 .sp 1
 .ft B
+.HTML-TAG ".SH 1"
 ..
 .\" TL, AU, and AI are aliased to these in cov*ab-init.
 .de par@TL
@@ -1289,6 +1310,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .ps +2
 .vs +3p
 .ce 9999
+.HTML-TAG ".tl"
 ..
 .de par@AU
 .par@finish
@@ -1401,6 +1423,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .nr nh*hl 0
 .\" numbered heading
 .de @NH
+.HTML-TAG ".NH \\$1"
 .ie '\\$1'S' \{\
 .	shift
 .	nr nh*hl 0
@@ -1867,6 +1890,37 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .ds oe \(oe\"			oe ligature
 .ds ? \(r?\"			upside down ?
 .ds ! \(r!\"			upside down !
+..
+.de CHECK-FOOTER-AND-KEEP
+.\" it might be better to als FS -> B1 and FE -> B2
+.\" however this produced wierd results, so I've moved back to a more reliable
+.\" but less interesting solution --fixme--
+.   if '\*(.T'html' \{\
+.       rm KF
+.       als KF KS
+.       rm FS
+.       de FS
+.           br
+.           HTML-IMAGE
+\\..
+.       rm FE
+.       de FE
+.           br
+.           HTML-IMAGE-END
+\\..
+.   \}
+.   if r ps4html \{\
+.       rm FS
+.       de FS
+.           br
+.           HTML-IMAGE
+\\..
+.       rm FE
+.       de FE
+.           br
+.           HTML-IMAGE-END
+\\..
+.   \}
 ..
 .par@load-init
 .\" Make sure that no blank lines creep in at the end of this file.

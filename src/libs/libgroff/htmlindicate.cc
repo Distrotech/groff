@@ -1,4 +1,4 @@
-/* Copyright (C) 2000 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk)
 
 This file is part of groff.
@@ -23,83 +23,72 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "nonposix.h"
 #include "stringclass.h"
+#include "html-strings.h"
 
 /*
  *  this file contains a very simple set of routines shared by
  *  tbl, pic, eqn which help the html device driver to make
  *  sensible formatting choices. Currently it simply indicates
- *  when a region of gyphs should be rendered as an image rather
- *  than html. In the future it should be expanded so to enable:
- *
- *    tbl    to inform grohtml about table widths.
- *    troff  to inform grohtml about tab positions and whether
- *           we are entering two/three column mode.
+ *  to pre-html when an image is about to be created this is then
+ *  passes to pre-html.
+ *  Pre-html runs troff twice once with -Thtml and once with -Tps.
+ *  troff -Thtml device driver emits a <src='image'.png> tag
+ *  and the postscript device driver works out the min/max limits
+ *  of the graphic region. These region limits are read by pre-html
+ *  and an image is generated via troff -Tps -> gs -> png
  */
-
 
 static int is_in_graphic_start = 0;
 
 /*
- *  html_begin_suppress - if the 'htmlflip' variable is set to 1 then
- *                        all text following this line will be suppressed by troff
- *                        and if the -Thtml2 device is specified a generic IMAGE tag
- *                        is emitted which is later filled in by the pre-html preprocessor.
+ *  html_begin_suppress - 
  */
 
-void html_begin_suppress (void)
+void html_begin_suppress (int is_inline)
 {
-  /*
-   *  the pre-html processor looks for <pre-html-image> and replaces it
-   *  with a sensible name
-   */
-  put_string(".if r html2enable .if '\\*(.T'html2' .IMAGE <pre-html-image>\n", stdout);
-#if 1
-  // debugging information
-  put_string(".if r html2enable .if !r htmlflip .tm \"htmlflip was not set?\"\n", stdout);
-#endif
-  put_string(".if r html2enable .if r htmlflip .output 1-\\n[htmlflip]\n", stdout);
+  if (is_inline) {
+    put_string(HTML_IMAGE_INLINE, stdout);
+  } else {
+    put_string(HTML_IMAGE_CENTERED, stdout);
+  }
+  put_string("\n", stdout);
 }
 
 /*
- *  html_end_suppress - if the 'htmlflip' variable is 1 then
- *                      enable generation of text after this line of troff.
- *                      If 'htmlflip' and -Thtml2 is set then issue the
- *                      upper x,y and lower x,y coordinates to stderr via
- *                      a troff '.tm' command.
+ *  html_end_suppress - 
  */
 
 void html_end_suppress (void)
 {
-  put_string(".if r html2enable .if r htmlflip .if !'\\*(.T'html2' .tm grohtml-info:page \\n% \\n[opminx] \\n[opminy] \\n[opmaxx] \\n[opmaxy] \\n[.H] \\n[.V] \\n[.F]\n",
-	       stdout);
-  put_string(".if r html2enable .if r htmlflip .output \\n[htmlflip]\n", stdout);
+  put_string(HTML_IMAGE_END, stdout);
+  put_string("\n", stdout);
 }
 
 /*
- *  graphic_start - emit a html graphic start indicator, but only
- *                  if one has not already been issued.
+ *  graphic_start - The boolean, is_inline, should be:
+ *
+ *                  FALSE if this is called via EQ, TS, PS, and
+ *                  TRUE if issued via delim $$  $ x over y $ etc.
  */
 
-void graphic_start (void)
+void graphic_start (int is_inline)
 {
   if (! is_in_graphic_start) {
-    put_string(".if '\\*(.T'html' \\X(graphic-start(\\c\n", stdout);
-    html_begin_suppress();
+    put_string(".if '\\*(.T'html-old' \\X(graphic-start(\\c\n", stdout);
+    html_begin_suppress(is_inline);
     is_in_graphic_start = 1;
   }
 }
 
 /*
- *  graphic_end - emit a html graphic end indicator, but only
- *                if a corresponding matching graphic-start has
- *                been issued.
+ *  graphic_end - tell troff that the image region is ending.
  */
 
 void graphic_end (void)
 {
   if (is_in_graphic_start) {
-    put_string(".if '\\*(.T'html' \\X(graphic-end(\\c\n", stdout);
     html_end_suppress();
+    put_string(".if '\\*(.T'html-old' \\X(graphic-end(\\c\n", stdout);
     is_in_graphic_start = 0;
   }
 }

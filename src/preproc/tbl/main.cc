@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -218,6 +219,8 @@ void process_input_file(FILE *fp)
       break;
     case HAD_TS:
       if (c == ' ' || c == '\n' || compatible_flag) {
+	printf(".if '\\*(.T'html' \\X(table-start(\n");
+	html_begin_suppress(0);
 	putchar('.');
 	putchar('T');
 	putchar('S');
@@ -230,25 +233,25 @@ void process_input_file(FILE *fp)
 	  c = getc(fp);
 	}
 	putchar('\n');
-	printf(".if '\\*(.T'html' \\X(table-start(\n");
-	html_begin_suppress();
 	current_lineno++;
 	{
 	  table_input input(fp);
 	  process_table(input);
 	  set_troff_location(current_filename, current_lineno);
 	  if (input.ended()) {
-	    printf(".if '\\*(.T'html' \\X(table-end(\n");
-	    html_end_suppress();
 	    fputs(".TE", stdout);
 	    while ((c = getc(fp)) != '\n') {
 	      if (c == EOF) {
+		printf(".if '\\*(.T'html' \\X(table-end(\n");
+		html_end_suppress();
 		putchar('\n');
 		return;
 	      }
 	      putchar(c);
 	    }
 	    putchar('\n');
+	    printf(".if '\\*(.T'html' \\X(table-end(\n");
+	    html_end_suppress();
 	    current_lineno++;
 	  }
 	}

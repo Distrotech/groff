@@ -5,18 +5,25 @@
 .\" the picture would go.
 .de PSPIC
 .nr ps-offset-mode 0
-.if '\\$1'-L' \{\
+.ie '\\$1'-L' \{\
 .	nr ps-offset-mode 1
 .	shift
+.       HTML-DO-IMAGE \\$1 l
 .\}
-.if '\\$1'-R' \{\
-.	nr ps-offset-mode 2
-.	shift
-.\}
-.if '\\$1'-I' \{\
-.	nr ps-offset-mode 3
-.	nr ps-offset (m;\\$2)
-.	shift 2
+.el \{\
+.       ie '\\$1'-R' \{\
+.              nr ps-offset-mode 2
+.              shift
+.              HTML-DO-IMAGE \\$1 r
+.       \}
+.       el \{\
+.              if '\\$1'-I' \{\
+.                     nr ps-offset-mode 3
+.                     nr ps-offset (m;\\$2)
+.                     shift 2
+.              \}
+.              HTML-DO-IMAGE \\$1 i
+.       \}
 .\}
 .br
 .psbb \\$1
@@ -49,4 +56,5 @@
 .	br
 .	sp \\n[ps-desht]u
 .\}
+.HTML-IMAGE-END
 ..
