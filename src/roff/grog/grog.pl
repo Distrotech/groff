@@ -81,8 +81,16 @@ sub process {
 		}
 	    }
 	}
-	elsif (/^\.R1$sp/ || /^\.\[$sp/) {
+	elsif (/^\.R1$sp/) {
 	    $refer++;
+	    $soelim++ if $level;
+	}
+	elsif (/^\.\[/) {
+	    $refer_open++;
+	    $soelim++ if $level;
+	}
+	elsif (/^\.\]/) {
+	    $refer_close++;
 	    $soelim++ if $level;
 	}
 	elsif (/^\.[PLI]P$sp/) {
@@ -165,6 +173,8 @@ sub help {
     print "usage: grog [ option ...] [files...]\n";
     exit 0;
 }
+
+refer = $refer || ($refer_open && $refer_close);
 
 if ($pic || $tbl || $eqn || $grn || $grap || $refer) {
     $s = "-";
