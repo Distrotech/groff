@@ -1,4 +1,3 @@
-// -*- C++ -*-
 /* Copyright (C) 2000 Free Software Foundation, Inc.
      Written by Eli Zaretskii (eliz@is.elta.co.il)
 
@@ -136,4 +135,3 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #ifndef NULL_DEV
 # define NULL_DEV      "/dev/null"
 #endif
-
