@@ -247,6 +247,31 @@ drivers) to set the default line width.
 .ULE
 .
 .SH 2
+grn
+
+.ULS
+.LI
+Support for b-spline and Bezier curves has been added.
+.ULE
+.
+.SH 2
+groffer
+
+.ULS
+.LI
+New option \-\-shell to select the shell under wich groffer shall run.
+.ULE
+.
+.SH 2
+Macro Packages
+
+.ULS
+.LI
+The string `Am' (producing an ampersand) has been added to mdoc for
+compatibility with NetBSD.
+.ULE
+.
+.SH 2
 Miscellaneous
 
 .ULS
@@ -261,6 +286,20 @@ Example:
 papersize /etc/papersize a4
 .ft P
 .RE
+
+.LI
+A local font directory has been prepended to the default font path; it
+defaults to /usr/local/share/groff/site-font.  Similar to the normal
+font searching process, files must be placed into a dev\fIXXX\fP
+subdirectory, e.g.
+
+.RS
+.ft C
+/usr/local/share/groff/site-font/devps/FOO
+.ft P
+.RE
+
+for a PostScript font definition file FOO.
 .ULE
 .
 .
