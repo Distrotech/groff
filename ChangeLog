@@ -1,3 +1,26 @@
+2002-10-29  Werner LEMBERG  <wl@gnu.org>
+
+	Fix computation of .trunc register.  Additionally, its value (and
+	the value of the .ne register) is now always set before entering the
+	trap.
+
+	* src/roff/troff/div.cc (diversion::need): Set `truncated_space' and
+	`needed_space' before calling `space'.
+	(top_level_diversion::space): Remove special code for 'sp before the
+	first page.
+	Call `begin_page' with the discarded space as a parameter.
+	(top_level_diversion::begin_page): Add optional parameter to set
+	`truncated_space'.
+	* src/roff/troff/div.h: Updated.
+
+	* doc/groff.texinfo: Improve documentation of .sp, \n[.trunc], and
+	\n[.ne].
+
+	* tmac/an-old.tmac (SH, SS, TP, IP, HP, TS): Undo change 2002-10-26.
+	(LP): Remove superfluous call to `br'.
+	* tmac/doc-common (doc-paragraph): Undo change 2002-10-26.
+	* tmac/doc.tmac (Bd, Bl, doc-set-vertical-and-indent): Ditto.
+
 2002-10-26  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/doc-ditroff: Remove useless switch/variable -rC.
@@ -9,10 +32,9 @@
 	* tmac/doc-common (doc-header): Call `ns'.
 	(doc-paragraph): Protect .sp with .br so that it survives traps
 	possibly set by the user.
-	* tmac/doc.tmac (Bp, Bl, doc-set-vertical-and-indent): Ditto.
+	* tmac/doc.tmac (Bd, Bl, doc-set-vertical-and-indent): Ditto.
 
-	* tmac/doc*:Replace ' with . for consistency in all mdoc-related
-	files if no effect.
+	* tmac/doc*: Replace ' with . for consistency if no effect.
 
 2002-10-26  Werner LEMBERG  <wl@gnu.org>
 

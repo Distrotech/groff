@@ -6252,6 +6252,50 @@ Space downwards @var{distance}.  With no argument it advances 1@w{
 the specified distance.  If the argument is preceded by a @samp{|}
 then @code{gtroff} moves that distance from the top of the page.  This
 request causes a line break.  The default scaling indicator is @samp{v}.
+
+If a vertical trap is sprung during execution of @code{sp}, the amount of
+vertical space after the trap is discarded.  For example, this
+
+@Example
+.de xxx
+..
+.
+.wh 0 xxx
+.
+.pl 5v
+foo
+.sp 2
+bar
+.sp 50
+baz
+@endExample
+
+@noindent
+results in
+
+@Example
+foo
+
+
+bar
+
+baz
+@endExample
+
+@cindex @code{sp} request, and traps
+@cindex discarded space in traps
+@cindex space, discarded, in traps
+@cindex traps, and discarded space
+The amount of discarded space is available in the number register
+@code{.trunc}.
+
+To protect @code{sp} against vertical traps, use the @code{vpt} request:
+
+@Example
+.vpt 0
+.sp -3
+.vpt 1
+@endExample
 @endDefreq
 
 @DefreqList {ls, [@Var{nnn}]}
@@ -10569,6 +10613,8 @@ vertical position traps.  The parameter that controls whether vertical
 position traps are enabled is global.  Initially vertical position traps
 are enabled.  The current setting of this is available in the
 @code{.vpt} read-only number register.
+
+Note that a page can't be ejected if @code{vpt} is set to zero.
 @endDefreq
 
 @Defreq {wh, dist [@Var{macro}]}
@@ -10684,6 +10730,9 @@ The read-only number register @code{.ne} contains the amount of space
 that was needed in the last @code{ne} request that caused a trap to be
 sprung.  Useful in conjunction with the @code{.trunc} register.
 @xref{Page Control}, for more information.
+
+Since the @code{.ne} register is only set by traps and it doesn't make
+much sense to use it outside of trap macros.
 @endDefreg
 
 @Defreg {.trunc}
@@ -10696,6 +10745,9 @@ produced by the @code{ne} request.  In other words, at the point a trap
 is sprung, it represents the difference of what the vertical position
 would have been but for the trap, and what the vertical position
 actually is.
+
+Since the @code{.trunc} register is only set by traps and it doesn't make
+much sense to use it outside of trap macros.
 @endDefreg
 
 @c ---------------------------------------------------------------------

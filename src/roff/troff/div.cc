@@ -153,9 +153,9 @@ void diversion::need(vunits n)
 {
   vunits d = distance_to_next_trap();
   if (d < n) {
-    space(d, 1);
     truncated_space = -d;
     needed_space = n;
+    space(d, 1);
   }
 }
 
@@ -438,12 +438,8 @@ void top_level_diversion::space(vunits n, int forced)
       no_space_mode = 0;
   }
   if (before_first_page) {
-    if (begin_page()) {
-      // This happens if there's a top of page trap, and the first-page
-      // transition is caused by `'sp'.
-      truncated_space = n > V0 ? n : V0;
-      return;
-    }
+    begin_page(n);
+    return;
   }
   vunits next_trap_pos;
   trap *next_trap = find_next_trap(&next_trap_pos);
@@ -459,7 +455,7 @@ void top_level_diversion::space(vunits n, int forced)
     nl_reg_contents = vertical_position.to_units();
   }
   else if (vertical_position_traps_flag && y >= page_length && n >= V0)
-    begin_page();
+    begin_page(y - page_length);
   else {
     vertical_position = y;
     nl_reg_contents = vertical_position.to_units();
@@ -550,9 +546,9 @@ void cleanup_and_exit(int exit_code)
   exit(exit_code);
 }
 
-// returns non-zero if it sprung a top of page trap
-
-int top_level_diversion::begin_page()
+// Returns non-zero if it sprung a top-of-page trap.
+// The optional parameter is for the .trunc register.
+int top_level_diversion::begin_page(vunits n)
 {
   if (exit_started) {
     if (page_count == last_page_count
@@ -589,7 +585,7 @@ int top_level_diversion::begin_page()
   before_first_page = 0;
   nl_reg_contents = vertical_position.to_units();
   if (vertical_position_traps_flag && next_trap != 0 && next_trap_pos == V0) {
-    truncated_space = V0;
+    truncated_space = n;
     spring_trap(next_trap->nm);
     return 1;
   }
@@ -770,7 +766,8 @@ void blank_line()
   if (!trap_sprung_flag && !curdiv->no_space_mode) {
     curdiv->space(curenv->get_vertical_spacing());
     curenv->add_html_tag(1, ".sp", 1);
-  } else
+  }
+  else
     truncated_space += curenv->get_vertical_spacing();
 }
 
