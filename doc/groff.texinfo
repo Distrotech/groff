@@ -5964,6 +5964,30 @@ special fonts.  Fonts mounted with the @code{fonts} keyword in the
 special fonts locally (i.e.@: for a particular font), use the
 @code{fspecial} request.
 
+In summary, @code{gtroff} tries the following to find a given symbol:
+
+@itemize @bullet
+@item
+If the symbol has been defined with the @code{char} request, use it.
+This hides a symbol with the same name in the current font.
+
+@item
+Check the current font.
+
+@item
+Check all fonts given with the @code{fspecial} request, in the order
+of appearance in @code{fspecial} calls.
+
+@item
+Check all fonts given with the @code{special} request, in the order
+of appearance in @code{special} calls (inclusively the special fonts
+defined in the @file{DESC} file, which come first).
+
+@item
+As a last resort, consult all fonts loaded up to now (in the order they
+have been called the first time) for special fonts and check them.
+@end itemize
+
 @xref{Font Files}, and @ref{Special Fonts}, for more details.
 
 @Defesc {\\, @lparen{}, nm, }
