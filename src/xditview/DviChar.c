@@ -636,7 +636,7 @@ static DviCharNameMap Adobe_Symbol_map = {
 {	"bracerightex", "braceleftex", "braceex", "bv",	/* 239 */},
 {	0,						/* 240 */},
 {	"ra",						/* 241 */},
-{	"is",						/* 242 */},
+{	"is", "integral",				/* 242 */},
 {	0,						/* 243 */},
 {	0,						/* 244 */},
 {	0,						/* 245 */},
