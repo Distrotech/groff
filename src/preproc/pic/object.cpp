@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005
      Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -202,7 +202,7 @@ double operator*(const position &a, const position &b)
 
 double hypot(const position &a)
 {
-  return hypot(a.x, a.y);
+  return groff_hypot(a.x, a.y);
 }
 
 struct arrow_head_type {

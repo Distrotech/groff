@@ -1,3 +1,21 @@
+2005-03-16  Werner LEMBERG  <wl@gnu.org>
+
+	Add workaround for broken hypot() on Interix.
+
+	* src/libs/libgroff/hypot.c: New wrapper file for `hypot'.
+
+	* src/libs/libgroff/Makefile.sub (OBJS): Add `hypot.o'.
+	(CSRCS): Add `hypot.c'.
+
+	* src/include/lib.h: Declare `groff_hypot'.
+
+	* src/preproc/grn/hgraph.cpp: Don't declare `hypot'.
+	Use `groff_hypot'.
+
+	* src/preproc/pic/pic.h: Don't declare `hypot'.
+
+	* src/preproc/pic/object.cpp (hypot): Use `groff_hypot'.
+
 2005-03-15  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/devices/grohtml/post-html.cpp

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2003, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -24,12 +24,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <math.h>
 #include <stdlib.h>
 #include <errno.h>
-
-#ifdef NEED_DECLARATION_HYPOT
-extern "C" {
-  double hypot(double, double);
-}
-#endif /* NEED_DECLARATION_HYPOT */
 
 #ifdef NEED_DECLARATION_RAND
 #undef rand
