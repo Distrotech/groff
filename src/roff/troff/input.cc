@@ -4616,7 +4616,7 @@ static node *do_suppress(symbol nm)
     break;
   case '3':
     begin_level++;
-    if ((begin_level == 1) && (! is_html)) {
+    if ((begin_level == 1) && (!is_html)) {
       if (curdiv == topdiv) {
 	if (topdiv->before_first_page) {
 	  if (!break_flag) {

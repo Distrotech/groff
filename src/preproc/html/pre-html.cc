@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -67,6 +67,8 @@ extern "C" const char *Version_string;
 #define LETTER_OFFSET             50   // 50/72 of an inch
 
 #define TRANSPARENT  "-background white -transparent white"
+#define MIN_ALPHA_BITS             0
+#define MAX_ALPHA_BITS             4
 
 #define PAGE_TEMPLATE_SHORT "pg"
 #define PAGE_TEMPLATE_LONG "-page-"
@@ -89,21 +91,24 @@ extern "C" const char *Version_string;
 
 typedef enum {CENTERED, LEFT, RIGHT, INLINE} IMAGE_ALIGNMENT;
 
-static int   postscriptRes  =-1;                // postscript resolution, dots per inch
-static int   stdoutfd       = 1;                // output file descriptor - normally 1 but might move
+static int   postscriptRes    =-1;              // postscript resolution, dots per inch
+static int   stdoutfd         = 1;              // output file descriptor - normally 1 but might move
                                                 // -1 means closed
-static int   copyofstdoutfd =-1;                // a copy of stdout, so we can restore stdout when
+static int   copyofstdoutfd   =-1;              // a copy of stdout, so we can restore stdout when
                                                 // writing to post-html
-static char *psFileName     = NULL;             // name of postscript file
-static char *regionFileName = NULL;             // name of file containing all image regions
-static char *imagePageStem  = NULL;             // stem of all files containing page images
-static char *image_device   = "pnmraw";
-static int   image_res      = DEFAULT_IMAGE_RES;
-static int   vertical_offset= 0;
-static char *image_template = NULL;             // image template filename
-static int   troff_arg      = 0;                // troff arg index
-static char *image_dir      = NULL;             // user specified image directory
-static char *gsPaper        = NULL;             // the paper size that gs must use
+static char *psFileName       = NULL;           // name of postscript file
+static char *regionFileName   = NULL;           // name of file containing all image regions
+static char *imagePageStem    = NULL;           // stem of all files containing page images
+static char *image_device     = "pnmraw";
+static int   image_res        = DEFAULT_IMAGE_RES;
+static int   vertical_offset  = 0;
+static char *image_template   = NULL;           // image template filename
+static int   troff_arg        = 0;              // troff arg index
+static char *image_dir        = NULL;           // user specified image directory
+static char *gsPaper          = NULL;           // the paper size that gs must use
+static int   textAlphaBits    = MAX_ALPHA_BITS;
+static int   graphicAlphaBits = MAX_ALPHA_BITS;
+static char *antiAlias        = NULL;           // antialias arguments we pass to gs.
 #if defined(DEBUGGING)
 static int   debug          = FALSE;
 static char *troffFileName  = NULL;             // output of pre-html output which is sent to troff -Tps
@@ -428,6 +433,23 @@ static void makeFileName (void)
   strcpy(image_template, s);
   strcat(image_template, "-%d");
   a_delete s;
+}
+
+/*
+ *  setupAntiAlias - sets up the antialias string, used when we call gs.
+ */
+
+static void setupAntiAlias (void)
+{
+  if (textAlphaBits == 0 && graphicAlphaBits == 0)
+    antiAlias = make_message(" ");
+  else if (textAlphaBits == 0)
+    antiAlias = make_message("-dGraphicsAlphaBits=%d ", graphicAlphaBits);
+  else if (graphicAlphaBits == 0)
+    antiAlias = make_message("-dTextAlphaBits=%d ", textAlphaBits);
+  else
+    antiAlias = make_message("-dTextAlphaBits=%d -dGraphicsAlphaBits=%d ",
+			     textAlphaBits, graphicAlphaBits);
 }
 
 /*
@@ -770,13 +792,13 @@ static int createAllPages (void)
   }
 
   s = make_message("echo showpage | "
-		   "gs%s %s -q -dSAFER -sDEVICE=%s -r%d "
-		   "-dTextAlphaBits=4 -dGraphicsAlphaBits=4 "
+		   "gs%s %s -q -dSAFER -sDEVICE=%s -r%d %s"
 		   "-sOutputFile=%s/%%d %s -",
 		   EXE_EXT,
 		   gsPaper,
 		   image_device,
 		   image_res,
+		   antiAlias,
 		   imagePageStem,
 		   psFileName);
   if (s == NULL)
@@ -1250,12 +1272,26 @@ int scanArguments (int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "+o:i:I:D:F:vbdhlrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "+a:g:o:i:I:D:F:vbdhlrn", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
       printf("GNU pre-grohtml (groff) version %s\n", Version_string);
       exit(0);
+    case 'a':
+      textAlphaBits = min(max(MIN_ALPHA_BITS, atoi(optarg)), MAX_ALPHA_BITS);
+      if (textAlphaBits == 3) {
+	error("cannot use 3 bits of antialiasing information");
+	exit(1);
+      }
+      break;
+    case 'g':
+      graphicAlphaBits = min(max(MIN_ALPHA_BITS, atoi(optarg)), MAX_ALPHA_BITS);
+      if (graphicAlphaBits == 3) {
+	error("cannot use 3 bits of antialiasing information");
+	exit(1);
+      }
+      break;
     case 'b':
       // handled by post-grohtml (set background color to white)
       break;
@@ -1367,6 +1403,7 @@ int main(int argc, char **argv)
   postscriptRes = get_resolution();
   determine_vertical_offset();
   i = scanArguments(argc, argv);
+  setupAntiAlias();
   checkImageDir();
   makeFileName();
   while (i < argc) {

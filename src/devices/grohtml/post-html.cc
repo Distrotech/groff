@@ -2830,12 +2830,18 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "o:i:I:D:F:vbdhlrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "a:g:o:i:I:D:F:vbdhlrn", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
       printf("GNU post-grohtml (groff) version %s\n", Version_string);
       exit(0);
+      break;
+    case 'a':
+      /* text antialiasing bits - handled by pre-html */
+      break;
+    case 'g':
+      /* graphic antialiasing bits - handled by pre-html */
       break;
     case 'b':
       // set background color to white
