@@ -3519,25 +3519,25 @@ void do_define_macro(define_mode mode, int indirect)
 	  && ((i == 2 && compatible_flag)
 	      || (d = get_copy(&n)) == ' '
 	      || d == '\n')) {	// we found it
-		if (d == '\n')
-		  tok.make_newline();
-		else
-		  tok.make_space();
-		if (mode == DEFINE_APPEND || mode == DEFINE_NORMAL) {
-		  if (!mm) {
-		    mm = new macro;
-		    request_dictionary.define(nm, mm);
-		  }
-		  *mm = mac;
-		}
-		if (term != dot_symbol) {
-		  ignoring = 0;
-		  interpolate_macro(term);
-		}
-		else
-		  skip_line();
-		return;
-	      }
+	if (d == '\n')
+	  tok.make_newline();
+	else
+	  tok.make_space();
+	if (mode == DEFINE_APPEND || mode == DEFINE_NORMAL) {
+	  if (!mm) {
+	    mm = new macro;
+	    request_dictionary.define(nm, mm);
+	  }
+	  *mm = mac;
+	}
+	if (term != dot_symbol) {
+	  ignoring = 0;
+	  interpolate_macro(term);
+	}
+	else
+	  skip_line();
+	return;
+      }
       if (mode == DEFINE_APPEND || mode == DEFINE_NORMAL) {
 	mac.append(c);
 	for (int j = 0; j < i; j++)
