@@ -123,3 +123,7 @@ enum {
   USE_PS_ADOBE_2_0 = 010,
   NO_PAPERSIZE = 020
 };
+
+#include "searchpath.h"
+
+extern search_path include_search_path;

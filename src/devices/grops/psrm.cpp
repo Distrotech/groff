@@ -360,7 +360,7 @@ void resource_manager::supply_resource(resource *r, int rank, FILE *outfp,
     }
     else {
       errno = 0;
-      fp = fopen(r->filename, "r");
+      fp = include_search_path.open_file_cautious(r->filename);
       if (!fp) {
 	error("can't open `%1': %2", r->filename, strerror(errno));
 	a_delete r->filename;

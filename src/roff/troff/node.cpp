@@ -1456,13 +1456,14 @@ void troff_output_file::really_begin_page(int pageno, vunits page_length)
   put('\n');
 }
 
-void troff_output_file::really_copy_file(hunits x, vunits y, const char *filename)
+void troff_output_file::really_copy_file(hunits x, vunits y,
+					 const char *filename)
 {
   moveto(x, y);
   flush_tbuf();
   do_motion();
   errno = 0;
-  FILE *ifp = fopen(filename, "r");
+  FILE *ifp = include_search_path.open_file_cautious(filename);
   if (ifp == 0)
     error("can't open `%1': %2", filename, strerror(errno));
   else {

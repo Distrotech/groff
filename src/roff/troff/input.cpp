@@ -122,6 +122,9 @@ char warn_scaling_indicator;
 
 search_path *mac_path = &safer_macro_path;
 
+// Defaults to the current directory.
+search_path include_search_path(0, 0, 0, 1);
+
 static int get_copy(node**, int = 0);
 static void copy_mode_error(const char *,
 			    const errarg & = empty_errarg,
@@ -666,7 +669,7 @@ void next_file()
     input_stack::end_file();
   else {
     errno = 0;
-    FILE *fp = fopen(nm.contents(), "r");
+    FILE *fp = include_search_path.open_file_cautious(nm.contents());
     if (!fp)
       error("can't open `%1': %2", nm.contents(), strerror(errno));
     else
@@ -5437,7 +5440,7 @@ void source()
     while (!tok.newline() && !tok.eof())
       tok.next();
     errno = 0;
-    FILE *fp = fopen(nm.contents(), "r");
+    FILE *fp = include_search_path.open_file_cautious(nm.contents());
     if (fp)
       input_stack::push(new file_iterator(fp, nm.contents()));
     else
@@ -5676,7 +5679,8 @@ void ps_bbox_request()
     errno = 0;
     // PS files might contain non-printable characters, such as ^Z
     // and CRs not followed by an LF, so open them in binary mode.
-    FILE *fp = fopen(nm.contents(), FOPEN_RB);
+    FILE *fp = include_search_path.open_file_cautious(nm.contents(),
+						      0, FOPEN_RB);
     if (fp) {
       do_ps_file(fp, nm.contents());
       fclose(fp);
@@ -6643,7 +6647,7 @@ void transparent_file()
     curenv->do_break();
   if (!filename.is_null()) {
     errno = 0;
-    FILE *fp = fopen(filename.contents(), "r");
+    FILE *fp = include_search_path.open_file_cautious(filename.contents());
     if (!fp)
       error("can't open `%1': %2", filename.contents(), strerror(errno));
     else {
@@ -6837,7 +6841,7 @@ static void process_input_file(const char *name)
   }
   else {
     errno = 0;
-    fp = fopen(name, "r");
+    fp = include_search_path.open_file_cautious(name);
     if (!fp)
       fatal("can't open `%1': %2", name, strerror(errno));
   }
@@ -6933,7 +6937,7 @@ void usage(FILE *stream, const char *prog)
 {
   fprintf(stream,
 "usage: %s -abcivzCERU -wname -Wname -dcs -ffam -mname -nnum -olist\n"
-"       -rcn -Tname -Fdir -Mdir [files...]\n",
+"       -rcn -Tname -Fdir -Idir -Mdir [files...]\n",
 	  prog);
 }
 
@@ -6970,7 +6974,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { 0, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "abcivw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU",
+  while ((c = getopt_long(argc, argv, "abciI:vw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU",
 			  long_options, 0))
 	 != EOF)
     switch(c) {
@@ -6980,6 +6984,11 @@ int main(int argc, char **argv)
 	exit(0);
 	break;
       }
+    case 'I':
+      // Search path for .psbb files
+      // and most other non-system input files.
+      include_search_path.command_line_dir(optarg);
+      break;
     case 'T':
       device = optarg;
       tflag = 1;

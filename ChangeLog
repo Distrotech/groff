@@ -1,3 +1,52 @@
+2003-10-12  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/groff/groff.cpp (help), src/devices/grops/ps.cpp (usage),
+	src/roff/troff/input.cc (usage): Updated.
+
+	* NEWS, doc/groff.texinfo: Updated.
+
+2003-10-12  Peter Miller  <millerp@canb.auug.org.au>
+
+	* src/libs/libgroff/searchpath.cpp
+	(search_path::open_file_cautious): New function which also handles
+	`-' as stdin and stdout depending on the access mode.
+	* src/include/searchpath.h (search_path): Updated.
+
+	* src/devices/grops/ps.cpp (main): Handle new `-I' switch.
+	* src/devices/grops/ps.h: Include `searchpath.h'.
+	* src/devices/grops/psrm.cpp (resource_manager::supply_resource):
+	Open resource file with `include_search_path.open_file_cautious'.
+	* src/devices/grops/grops.man: Document new `-I' switch.
+
+	* src/devices/grodvi/dvi.cpp (main), src/devices/grolbp/lbp.cpp
+	(main), src/devices/grolj4/lj4.cpp (main),
+	src/devices/grotty/tty.cpp (main): Ignore new `-I' switch.
+
+	* src/preproc/soelim/soelim.cpp (include_list_length, include_list):
+	Replaced with...
+	(include_search_path): New global variable.
+	(include_path_append): Removed.
+	(main): Use `include_search_path.command_line_dir' to handle `-I'.
+	(do_file): Simplify, using new
+	`include_search_path.open_file_cautious'.
+
+	* src/roff/groff/groff.cpp (print_commands): Accept file handle as
+	parameter.
+	(main): Pass arguments to `-I' to both troff and devices.
+	Improve handling of `-V'.
+	* src/roff/groff/groff.man: Document changes to -I and -V.
+
+	* src/roff/troff/input.cpp (include_search_path): New global
+	variable.
+	(next_file, source, ps_bbox_request, transparent_file,
+	process_input_file): Use new
+	`include_search_path.open_file_cautious'.
+	(main) Handle `-I' switch.
+	* src/roff/troff/node.cpp (troff_output_file::really_copy_file):
+	Use new `include_search_path.open_file_cautious'.
+	* src/roff/troff/node.h: New extern symbol `include_search_path'.
+	* src/roff/troff/troff.man: Document new `-I' switch.
+
 2003-09-15  Ruslan Ermilov  <ru@FreeBSD.org>
 
 	Support multiple calls of .Lb in LIBRARY section.

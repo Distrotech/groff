@@ -663,11 +663,14 @@ int main(int argc, char **argv)
   int c = 0;
   int option_index = 0;
   while (c >= 0) {
-    c = getopt_long (argc, argv, "F:p:lvo:c:hw:",
+    c = getopt_long (argc, argv, "c:F:hI:lo:p:vw:",
 		     long_options, &option_index);
     switch (c) {
     case 'F':
       font::command_line_font_dir(optarg);
+      break;
+    case 'I':
+      // ignore include path arguments
       break;
     case 'p':
       {

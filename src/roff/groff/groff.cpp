@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -93,7 +93,7 @@ char *predriver = 0;
 possible_command commands[NCOMMANDS];
 
 int run_commands(int no_pipe);
-void print_commands();
+void print_commands(FILE *);
 void append_arg_to_string(const char *arg, string &str);
 void handle_unknown_desc_command(const char *command, const char *arg,
 				 const char *filename, int lineno);
@@ -140,6 +140,12 @@ int main(int argc, char **argv)
     case 'I':
       commands[SOELIM_INDEX].set_name(command_prefix, "soelim");
       commands[SOELIM_INDEX].append_arg(buf, optarg);
+      // .psbb may need to search for files
+      commands[TROFF_INDEX].append_arg(buf, optarg);
+      // \X'ps:import' may need to search for files
+      Pargs += buf;
+      Pargs += optarg;
+      Pargs += '\0';
       break;
     case 't':
       commands[TBL_INDEX].set_name(command_prefix, "tbl");
@@ -405,10 +411,10 @@ int main(int argc, char **argv)
     if (putenv(strsave(f.contents())))
       fatal("putenv failed");
   }
-  if (Vflag) {
-    print_commands();
+  if (Vflag)
+    print_commands(Vflag == 1 ? stdout : stderr);
+  if (Vflag == 1)
     exit(0);
-  }
   return run_commands(vflag);
 }
 
@@ -474,7 +480,7 @@ void handle_unknown_desc_command(const char *command, const char *arg,
   }
 }
 
-void print_commands()
+void print_commands(FILE *fp)
 {
   int last;
   for (last = SPOOL_INDEX; last >= 0; last--)
@@ -482,7 +488,7 @@ void print_commands()
       break;
   for (int i = 0; i <= last; i++)
     if (commands[i].get_name() != 0)
-      commands[i].print(i == last, stdout);
+      commands[i].print(i == last, fp);
 }
 
 // Run the commands. Return the code with which to exit.
@@ -724,7 +730,7 @@ void help()
 "-N\tdon't allow newlines within eqn delimiters\n"
 "-S\tenable safer mode (the default)\n"
 "-U\tenable unsafe mode\n"
-"-Idir\tsearch dir for soelim.  Implies -s\n"
+"-Idir\tsearch dir for soelim, troff, and grops.  Implies -s\n"
 "\n",
 	stdout);
   exit(0);

@@ -914,7 +914,8 @@ accessible via @code{groff}.  This option prevents the loading of the
 Make programs run by @code{groff} print out their version number.
 
 @item -V
-Print the pipeline on @code{stdout} instead of executing it.
+Print the pipeline on @code{stdout} instead of executing it.  If specified
+more than once, print the pipeline on @code{stderr} and execute it.
 
 @item -z
 Suppress output from @code{gtroff}.  Only error messages are printed.
@@ -1153,8 +1154,26 @@ Search directory @file{@var{dir}} for macro files before the standard
 directories (@pxref{Macro Directories}).
 
 @item -I@var{dir}
-This option is as described in @ref{gsoelim}.  It implies the
-@option{-s} option.
+This option may be used to specify a directory to search for files.
+It is passed to the following programs:
+
+@itemize
+@item
+@code{gsoelim} (see @ref{gsoelim} for more details);
+it also implies @code{groff}'s @option{-s} option.
+
+@item
+@code{gtroff}; it is used to search files named in the @code{psbb} and
+@code{so} requests.
+
+@item
+@code{grops}; it is used to search files named in the
+@w{@code{\X'ps: import}} and @w{@code{\X'ps: file}} escapes.
+@end itemize
+
+The current directory is always searched first. This option may be specified
+more than once; the directories will be searched in the order specified. No
+directory search is performed for files specified using an absolute path.
 @end table
 
 
@@ -12264,6 +12283,9 @@ bar
 
 @noindent
 yields @samp{This is foobar}.
+
+The search path for @var{file} can be controlled with the @option{-I} command
+line option.
 @endDefreq
 
 @Defreq {pso, command}
@@ -12796,6 +12818,9 @@ and extracts the bounding box values into the number registers
 If an error occurs (for example, @code{psbb} cannot find
 the @code{%%BoundingBox} comment),
 it sets the four number registers to zero.
+
+The search path for @var{filename} can be controlled with the @option{-I}
+command line option.
 @endDefreq
 
 

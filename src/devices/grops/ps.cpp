@@ -42,6 +42,9 @@ extern "C" {
 
 extern "C" const char *Version_string;
 
+// search path defaults to the current directory
+search_path include_search_path(0, 0, 0, 1);
+
 static int landscape_flag = 0;
 static int manual_feed_flag = 0;
 static int ncopies = 1;
@@ -1790,7 +1793,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "b:c:F:glmp:P:vw:", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "b:c:F:gI:lmp:P:vw:", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'b':
@@ -1809,6 +1812,9 @@ int main(int argc, char **argv)
       break;
     case 'g':
       guess_flag = 1;
+      break;
+    case 'I':
+      include_search_path.command_line_dir(optarg);
       break;
     case 'l':
       landscape_flag = 1;
@@ -1864,6 +1870,7 @@ int main(int argc, char **argv)
 static void usage(FILE *stream)
 {
   fprintf(stream,
-    "usage: %s [-glmv] [-b n] [-c n] [-w n] [-P prologue] [-F dir] [files ...]\n",
+"usage: %s [-glmv] [-b n] [-c n] [-w n] [-I dir] [-P prologue]\n"
+"       [-F dir] [files ...]\n",
     program_name);
 }

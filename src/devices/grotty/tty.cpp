@@ -805,7 +805,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "bBcdfF:hioruUv", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "bBcdfF:hiI:oruUv", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -815,6 +815,9 @@ int main(int argc, char **argv)
     case 'i':
       // Use italic font instead of underlining.
       italic_flag_option = 1;
+      break;
+    case 'I':
+      // ignore include search path
       break;
     case 'b':
       // Do not embolden by overstriking.

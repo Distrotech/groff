@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -23,6 +23,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include <stdlib.h>
 #include <assert.h>
+#include <errno.h>
 
 #include "searchpath.h"
 #include "nonposix.h"
@@ -128,5 +129,64 @@ FILE *search_path::open_file(const char *name, char **pathp)
       break;
     p = end + 1;
   }
+  return 0;
+}
+
+FILE *search_path::open_file_cautious(const char *name, char **pathp,
+				      const char *mode)
+{
+  if (!mode)
+    mode = "r";
+  bool reading = (strchr(mode, 'r') != 0);
+  if (name == 0 || strcmp(name, "-") == 0) {
+    if (pathp)
+      *pathp = strsave(reading ? "stdin" : "stdout");
+    return (reading ? stdin : stdout);
+  }
+  if (!reading || IS_ABSOLUTE(name) || *dirs == '\0') {
+    FILE *fp = fopen(name, mode);
+    if (fp) {
+      if (pathp)
+	*pathp = strsave(name);
+      return fp;
+    }
+    else
+      return 0;
+  }
+  unsigned namelen = strlen(name);
+  char *p = dirs;
+  for (;;) {
+    char *end = strchr(p, PATH_SEP[0]);
+    if (!end)
+      end = strchr(p, '\0');
+    int need_slash = end > p && strchr(DIR_SEPS, end[-1]) == 0;
+    char *path = new char[(end - p) + need_slash + namelen + 1];
+    memcpy(path, p, end - p);
+    if (need_slash)
+      path[end - p] = '/';
+    strcpy(path + (end - p) + need_slash, name);
+#if 0
+    fprintf(stderr, "trying `%s'\n", path);
+#endif
+    FILE *fp = fopen(path, mode);
+    if (fp) {
+      if (pathp)
+	*pathp = path;
+      else
+	a_delete path;
+      return fp;
+    }
+    int err = errno;
+    a_delete path;
+    if (err != ENOENT)
+    {
+      errno = err;
+      return 0;
+    }
+    if (*end == '\0')
+      break;
+    p = end + 1;
+  }
+  errno = ENOENT;
   return 0;
 }

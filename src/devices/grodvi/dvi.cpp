@@ -915,7 +915,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "dF:lp:vw:", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "dF:I:lp:vw:", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'd':
@@ -926,6 +926,9 @@ int main(int argc, char **argv)
       break;
     case 'F':
       font::command_line_font_dir(optarg);
+      break;
+    case 'I':
+      // ignore include search path
       break;
     case 'p':
       if (!font::scan_papersize(optarg, 0,
