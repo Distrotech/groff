@@ -211,8 +211,20 @@ DBGetType(register char *s)
   case 'A':
     return (ARC);
   case 'C':
-    if (s[1] == 'U')
-      return (CURVE);
+    if (s[1] == 'U') {
+      if (s[5] == '\n')
+	return (CURVE);
+      switch (s[7]) {
+      case 'S': 
+	return(BSPLINE);
+      case 'E':
+	fprintf(stderr,
+		"Warning: Bezier Curves will be printed as B-Splines\n");
+	return(BSPLINE);
+      default:
+	return(CURVE);
+      }
+    }
     switch (s[4]) {
     case 'L':
       return (CENTLEFT);
