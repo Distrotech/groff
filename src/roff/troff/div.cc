@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -88,12 +89,17 @@ top_level_diversion *topdiv;
 
 diversion *curdiv;
 
-void do_divert(int append)
+void do_divert(int append, int boxing)
 {
   tok.skip();
   symbol nm = get_name();
   if (nm.is_null()) {
     if (curdiv->prev) {
+      if (boxing) {
+	curenv->line = curdiv->saved_line;
+	curenv->width_total = curdiv->saved_width_total;
+	curenv->space_total = curdiv->saved_space_total;
+      }
       diversion *temp = curdiv;
       curdiv = curdiv->prev;
       delete temp;
@@ -105,20 +111,37 @@ void do_divert(int append)
     macro_diversion *md = new macro_diversion(nm, append);
     md->prev = curdiv;
     curdiv = md;
+    if (boxing) {
+      curdiv->saved_line = curenv->line;
+      curdiv->saved_width_total = curenv->width_total;
+      curdiv->saved_space_total = curenv->space_total;
+      curenv->line = 0;
+      curenv->start_line();
+    }
   }
   skip_line();
 }
 
 void divert()
 {
-  do_divert(0);
+  do_divert(0, 0);
 }
 
 void divert_append()
 {
-  do_divert(1);
+  do_divert(1, 0);
 }
   
+void box()
+{
+  do_divert(0, 1);
+}
+
+void box_append()
+{
+  do_divert(1, 1);
+}
+
 void diversion::need(vunits n)
 {
   vunits d = distance_to_next_trap();
@@ -1093,6 +1116,8 @@ void init_div_requests()
   init_request("sp", space_request);
   init_request("di", divert);
   init_request("da", divert_append);
+  init_request("box", box);
+  init_request("boxa", box_append);
   init_request("bp", begin_page);
   init_request("ne", need_space);
   init_request("pn", page_number);

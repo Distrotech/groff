@@ -1,5 +1,5 @@
 .ig \"-*- nroff -*-
-Copyright (C) 1989-2000 Free Software Foundation, Inc.
+Copyright (C) 1989-2000, 2001 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -16,23 +16,29 @@ versions, except that this permission notice may be included in
 translations approved by the Free Software Foundation instead of in
 the original English.
 ..
+.
 .\" define a string tx for the TeX logo
 .ie t .ds tx T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X
 .el .ds tx TeX
+.
 .de TQ
 .br
 .ns
 .TP \\$1
 ..
+.
 .\" Like TP, but if specified indent is more than half
 .\" the current line-length - indent, use the default indent.
 .de Tp
 .ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
 .el .TP "\\$1"
 ..
+.
 .\" The BSD man macros can't handle " in arguments to font change macros,
 .\" so use \(ts instead of ".
 .tr \(ts"
+.
+.
 .TH @G@TROFF @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
 .
 .
@@ -745,7 +751,6 @@ For example, this
 .ne 7v+\n(.Vu
 .ft B
 .nf
-.ss 24
 \&.tr @.
 \&.di x
 \&@nr\e n\e 1
@@ -754,7 +759,6 @@ For example, this
 \&.tr @@
 \&.asciify x
 \&.x
-.ss 12
 .fi
 .RE
 .IP
@@ -771,6 +775,18 @@ Set the blank line macro to
 If there is a blank line macro,
 it will be invoked when a blank line is encountered instead of the usual
 troff behaviour.
+.TP
+.BI .box\  xx
+.TQ
+.BI .boxa\  xx
+These requests are similar to the
+.B di
+and
+.B da
+requests with the exception that a partially filled line will not become
+part of the diversion (i.e., the diversion always starts with a new line)
+but restored after ending the diversion, discarding the partially filled
+line which possibly comes from the diversion.
 .TP
 .B .break
 Break out of a while loop.
@@ -1551,6 +1567,18 @@ is read in copy mode;
 a leading
 .B \(ts
 will be stripped.
+.TP
+.BI .writem\  stream\ xxx
+Write the contents of the macro or string
+.I xxx
+to the stream named
+.IR stream .
+.I stream
+must previously have been the subject of an
+.B open
+request.
+.I xxx
+is read in copy mode.
 .
 .SS Extended requests
 .

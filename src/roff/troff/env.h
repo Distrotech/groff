@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -321,6 +322,8 @@ public:
 #ifdef WIDOW_CONTROL
   friend void widow_control_request();
 #endif /* WIDOW_CONTROL */
+
+  friend void do_divert(int append, int boxing);
 };
 	
 extern environment *curenv;

@@ -1,3 +1,25 @@
+2001-01-08  Werner LEMBERG  <wl@gnu.org>
+
+	Introducing the `box' and `boxa' requests which are similar to
+	`di' resp. `da' but omitting a partially filled line (which is
+	restored after ending the diversion).
+
+	* src/roff/troff/div.h (diversion): Add elements to save partially
+	filled line.
+	* src/roff/troff/div.cc (do_divert): Add parameter `boxing' to save
+	partially filled line.
+	(divert, divert_append): Updated.
+	(box, box_append): New functions.
+	(init_div_requests): Use them.
+	* src/roff/troff/env.h (environment): do_divert() is now a friend.
+	* NEWS, src/roff/troff/troff.man, man/groff.man: Document it.
+
+	* doc/groff.texinfo: Fix documentation of `lf' request.
+
+2000-12-25  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/troff.man, NEWS: Document `writem' request.
+
 2000-12-21  Werner LEMBERG  <wl@gnu.org>
 
 	Ignore `.ss' request if in compatibility mode.

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -19,9 +19,12 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 class diversion {
-  friend void do_divert(int append);
+  friend void do_divert(int append, int boxing);
   friend void end_diversions();
   diversion *prev;
+  node *saved_line;
+  hunits saved_width_total;
+  int saved_space_total;
 protected:
   symbol nm;
   vunits vertical_position;
