@@ -2777,26 +2777,25 @@
 .\" NS width register `Bk' set in doc-common
 .
 .de Bk
-.  ds doc-keep-type
-.
 .  ds doc-macro-name Bk
 .
-.  ie \n[.$] \{\
-.    if !"\*[doc-keep-type]"" \
-.      tm .Bk: nesting keeps not implemented yet. (#\n[.c])
-.    ie "\$1"-lines" \
-.      tm .Bk -lines: Not implemented yet. (#\n[.c])
-.    el \{\
-.      ie "\$1"-words" \
-.        doc-set-hard-space
-.      el \
-.        tm mdoc warning: Unknown keyword `\$1' in .Bk request (#\n[.c])
-.    \}
+.  if !"\*[doc-keep-type]"" \
+.    tm .Bk: nesting keeps not implemented yet. (#\n[.c])
 .
-.    ds doc-keep-type \$1
+.  ds doc-keep-type \$1
+.
+.  ie        "\$1"-lines" \
+.    tm .Bk -lines: Not implemented yet. (#\n[.c])
+.  el \{ .ie "\$1"-words" \
+.    doc-set-hard-space
+.  el \{ .ie "\$1"" \{\
+.    \" default
+.    ds doc-keep-type -words
+.    doc-set-hard-space
 .  \}
 .  el \
-.    tm Usage: .Bk [-lines | -words] (#\n[.c])
+.    tm mdoc warning: Unknown keyword `\$1' in .Bk request (#\n[.c])
+.  \}\}
 ..
 .
 .
@@ -2812,13 +2811,18 @@
 .  ds doc-macro-name Ek
 .
 .  ie \n[.$] \
-.    tm Usage .Ek (does not take arguments) (#\n[.c])
+.    tm Usage: .Ek (does not take arguments) (#\n[.c])
 .  el \{\
-.    ie "\*[doc-keep-type]"-words" \
+.    if "\*[doc-keep-type]"" \
+.      tm mdoc warning: .Ek found without .Bk before (#\n[.c])
+.
+.    ie        "\*[doc-keep-type]"-words" \
 .      doc-set-soft-space
-.    el \
+.    el \{ .if "\*[doc-keep-type]"-lines" \
 .      tm .Bk -lines: Not implemented yet. (#\n[.c])
-.  \}
+.  \}\}
+.
+.  ds doc-keep-type
 ..
 .
 .
@@ -3200,7 +3204,8 @@
 .\" NS   doc-tag-width-stackXXX, doc-list-offset-stackXXX
 .\" NS
 .\" NS local variables:
-.\" NS   doc-str-dBla, doc-reg-dBla
+.\" NS   doc-str-dBla, doc-str-dBla1, doc-reg-dBla, doc-reg-dBla1,
+.\" NS   doc-reg-dBla2, doc-reg-dBla3, doc-reg-dBla4
 .
 .de doc-do-Bl-args
 .  nr doc-arg-ptr +1
@@ -3218,8 +3223,31 @@
 .      ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
 .
 .      \" test whether argument is a valid numeric expression
-.      ie \B\*[doc-str-dBla] \
-.        nr doc-list-indent-stack\n[doc-list-depth] \*[doc-str-dBla]
+.      nr doc-reg-dBla1 0
+.      if \B(\*[doc-str-dBla]) \{\
+.        \" disable warnings related to scaling indicators (32)
+.        nr doc-reg-dBla2 \n[.warn]
+.        warn (\n[.warn] - (\n[.warn] / 32 % 2 * 32))
+.
+.        \" values without a scaling indicator are taken as strings;
+.        \" we test whether the parameter string with and without the last
+.        \" character yields identical numerical results (ignoring the
+.        \" scaling indicator)
+.        ds doc-str-dBla1 "\*[doc-str-dBla]
+.        substring doc-str-dBla1 1 -1
+.        if \B(\*[doc-str-dBla1]) \{\
+.          nr doc-reg-dBla3 (;(\*[doc-str-dBla]))
+.          nr doc-reg-dBla4 (\*[doc-str-dBla1])
+.          if (\n[doc-reg-dBla3] == \n[doc-reg-dBla4]) \
+.            nr doc-reg-dBla1 1
+.        \}
+.
+.        \" enable all warnings again
+.        warn \n[doc-reg-dBla2]
+.      \}
+.
+.      ie \n[doc-reg-dBla1] \
+.        nr doc-list-indent-stack\n[doc-list-depth] (\*[doc-str-dBla])
 .      el \{\
 .        doc-get-arg-width \n[doc-arg-ptr]
 .        ie (\n[doc-width] == 2) \{\

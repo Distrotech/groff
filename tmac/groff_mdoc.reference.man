@@ -126,7 +126,7 @@ as follows:
 .  Bl -tag -width 2n -compact
 .    It "Macro Usage"
 .    It "Passing Space Characters in an Argument"
-.    It "Trailing Blank Space Characters (a Warning)"
+.    It "Trailing Blank Space Characters"
 .    It "Escaping Special Characters"
 .    It "Other Possible Pitfalls"
 .  El
@@ -142,13 +142,13 @@ as follows:
 .  Tn "CONVENTIONS"
 .
 .  It
-.  Tn "INTRODUCTION OF TITLE MACROS"
+.  Tn "TITLE MACROS"
 .
 .  It
 .  Tn "INTRODUCTION OF MANUAL AND GENERAL TEXT DOMAINS"
 .
 .  Bl -tag -width 2n -compact
-.    It "What's in a Name..."
+.    It "What's in a Name" Ns Ld
 .    It "General Syntax"
 .  El
 .
@@ -199,7 +199,7 @@ as follows:
 .
 .    It "Extended Arguments"
 .    It "No\-Op or Normal Text Macro"
-.    It "No Space Macro"
+.    It "No\-Space Macro"
 .    It "Section Cross References"
 .    It "Symbolic Macro"
 .    It "References and Citations"
@@ -258,7 +258,7 @@ As in
 a macro is called by placing a
 .Ql .\&
 (dot character) at the beginning of a line followed by the two-character
-name for the macro.
+(or three-character) name for the macro.
 There can be space characters between the dot and the macro name (but
 .Em no
 tabs).
@@ -325,8 +325,8 @@ is produced by
 .El
 .
 .Pp
-To prevent a two character string from being interpreted as a macro name,
-precede the string with the escape sequence
+To prevent a string from being interpreted as a macro name, precede the
+string with the escape sequence
 .Ql \e& :
 .
 .Bl -tag -xwidth ".Op \&Fl s \&Ar bytes" -offset indent
@@ -346,7 +346,7 @@ to as
 .Em parsed
 and macros which may be called from an argument list are referred to as
 .Em callable
-throughout this document and in the companion quick reference manual
+throughout this document and in the companion quick-reference manual
 .Xr groff_mdoc 7 .
 This is a technical
 .Em faux pas
@@ -406,15 +406,15 @@ is created by
 .Ql \&.Fn fetch char\e *str
 .It Fn fetch "char *str"
 can also be created by
-.Ql \&.Fn fetch "\\*[q]*char *str\\*[q]"
+.Ql \&.Fn fetch "\\*[q]char *str\\*[q]"
 .El
 .
 .Pp
 If the
 .Ql \e
-or double quotes were omitted,
+before the space resp.\& the double quotes were omitted,
 .Ql \&.Fn
-would see three arguments and the result would be:
+would see three arguments, and the result would be:
 .Pp
 .Dl Fn fetch char *str
 .Pp
@@ -429,7 +429,7 @@ section.
 can be confused by blank space characters at the end of a line.
 It is a wise preventive measure to globally remove all blank spaces
 from
-.Ao blank-space Ac Ao end-of-line Ac
+.Ao blank-space Ac Ns Ao end-of-line Ac
 character sequences.
 Should the need arise to force a blank character at the end of a line, it
 may be forced with an unpaddable space and the
@@ -461,7 +461,7 @@ instead.
 Leading spaces will cause a break and are output directly.
 Avoid this behaviour if possible.
 Similarly, don't use more than one space character between words in an
-ordinary text line; contrary to most other text formatters, they are
+ordinary text line; contrary to other text formatters, they are
 .Em not
 replaced with a single space.
 .Pp
@@ -528,7 +528,7 @@ after some input, or
 anywhere (the latter is a
 .Tn GNU
 .Xr troff 1
-extension).
+extension); the rest of such a line is ignored.
 .
 .
 .Sh THE ANATOMY OF A MAN PAGE
@@ -537,31 +537,35 @@ The body of a man page is easily constructed from a basic template:
 .
 .Bd -literal -offset indent
 \&.\e" /usr/share/misc/mdoc.template:
-\&.\e" The following six lines are required.
+\&.\e" The following requests are required for all man pages.
 \&.
 \&.Dd Month day, year
 \&.Os OPERATING_SYSTEM [version/release]
 \&.Dt DOCUMENT_TITLE [section number] [volume]
 \&.Sh NAME
+\&.Nm name
+\&.Nd one line description of name
 \&.Sh SYNOPSIS
 \&.Sh DESCRIPTION
 \&.
 \&.\e" The following requests should be uncommented and
-\&.\e" used where appropriate.  This next request is
-\&.\e" for sections 2 and 3 function return values only.
+\&.\e" used where appropriate.
+\&.\e" .Sh IMPLEMENTATION NOTES
+\&.\e" This next request is for sections 2, 3 and 9 function
+\&.\e" return values only.
 \&.\e" .Sh RETURN VALUES
 \&.
-\&.\e" This next request is for sections 1, 6, 7 & 8 only
+\&.\e" This next request is for sections 1, 6, 7, 8 & 9 only
 \&.\e" .Sh ENVIRONMENT
 \&.\e" .Sh FILES
 \&.\e" .Sh EXAMPLES
 \&.
-\&.\e" This next request is for sections 1, 6, 7 & 8 only
+\&.\e" This next request is for sections 1, 6, 7, 8 & 9 only
 \&.\e"     (command return values (to shell) and
 \&.\e"	  fprintf/stderr type diagnostics)
 \&.\e" .Sh DIAGNOSTICS
 \&.
-\&.\e" The next request is for sections 2 and 3 error
+\&.\e" The next request is for sections 2, 3 & 9 error
 \&.\e" and signal handling only.
 \&.\e" .Sh ERRORS
 \&.\e" .Sh SEE ALSO
@@ -647,7 +651,9 @@ due to troff limitations.
 If omitted,
 .Ql Tn UNTITLED
 is used.
-The section number may be a number in the range 1,\~...,\~9 or
+The section number may be a number in the range
+.No 1,\~ Ns Ld Ns ,\~9
+or
 .Ql unass ,
 .Ql draft ,
 or
@@ -750,7 +756,7 @@ is the acronym for the operating system and
 .Ql YYY
 the release ID.
 .
-.Bl -tag -width FreeBSD -offset indent
+.Bl -tag -xwidth ".No FreeBSD" -offset indent
 .It ATT
 7th, 7, III, 3, V, V.2, V.3, V.4
 .It BSD
@@ -814,15 +820,14 @@ Otherwise, the current date is used, ignoring the parameters.
 \#
 \#=====================================================================
 \#
-.Sh MANUAL DOMAIN
+.Sh INTRODUCTION OF MANUAL AND GENERAL TEXT DOMAINS
 .
-.Ss What's in a name...
-The manual domain macro names are derived from the day to day
-informal language used to describe commands, subroutines and related
-files.
-Slightly
-different variations of this language are used to describe
-the three different aspects of writing a man page.
+.Ss What's in a name Ns Ld
+.
+The manual domain macro names are derived from the day to day informal
+language used to describe commands, subroutines and related files.
+Slightly different variations of this language are used to describe the
+three different aspects of writing a man page.
 First, there is the description of
 .Nm \-mdoc
 macro request usage.
@@ -831,10 +836,8 @@ Second is the description of a
 command
 .Em with
 .Nm \-mdoc
-macros and third,
-the
-description of a command to a user in the verbal sense;
-that is, discussion of a command in the text of a man page.
+macros, and third, the description of a command to a user in the verbal
+sense; that is, discussion of a command in the text of a man page.
 .Pp
 In the first case,
 .Xr troff 1
@@ -1782,7 +1785,7 @@ becomes
 .It Li \&.Ns
 The
 .Ql \&.Ns
-(no space) macro, which
+(no\-space) macro, which
 .Em is
 callable,
 performs the analogous suffix function.
@@ -1849,7 +1852,7 @@ a hack for words in a macro command line which should
 .Em not
 be formatted and follows the conventional syntax
 for content macros.
-.Ss No Space Macro
+.Ss No\-Space Macro
 The
 .Ql \&.Ns
 macro eliminates unwanted spaces in between macro requests.
@@ -2069,7 +2072,7 @@ macro is not alone on the
 argument list, spacing will be unpredictable.
 The
 .Ql \&.Ns
-(no space macro)
+(no\-space macro)
 must not occur as the first or last macro on a line
 in this situation.
 Out of 900 manual pages (about 1500 actual pages)
