@@ -133,9 +133,8 @@
 .
 .de doc-setup-header
 .  ds doc-header-string \*[doc-document-title]
-.  if !"\*[doc-section]"Null" \{\
+.  if !"\*[doc-section]"Null" \
 .    as doc-header-string \|(\|\*[doc-section]\|)
-.  \}
 .
 .  wh 0 doc-header
 .  wh -1.25i doc-footer
@@ -150,11 +149,9 @@
 .
 .  \" Don't set the page number if this is the first page,
 .  \" in case the user has used -n.
-.  if \n[nL] \{\
-.    if !\n[C] \{\
+.  if \n[nL] \
+.    if !\n[C] \
 .      nr % 1
-.    \}
-.  \}
 .
 .  nr gX 0
 .  em doc-end-macro
@@ -171,14 +168,16 @@
 .de doc-get-width
 .  nr doc-width \w\f[C]\$1
 .  ie (\n[doc-width] >= \n[doc-fixed-width]) \{\
-.    ie (\n[doc-width] % \n[doc-fixed-width]) \{\
+.    ie (\n[doc-width] % \n[doc-fixed-width]) \
 .      nr doc-width ((\n[doc-width] / \n[doc-fixed-width]) + 1)
-.    \}
-.    el .nr doc-width (\n[doc-width] / \n[doc-fixed-width])
+.    el \
+.      nr doc-width (\n[doc-width] / \n[doc-fixed-width])
 .  \}
 .  el \{
-.    ie \n[doc-width] .nr doc-width 1
-.    el .nr doc-width 0
+.    ie \n[doc-width] \
+.      nr doc-width 1
+.    el \
+.      nr doc-width 0
 .  \}
 ..
 .
@@ -193,14 +192,16 @@
 .de doc-get-arg-width
 .  nr doc-width \w\f[C]\*[doc-arg\$1]
 .  ie (\n[doc-width] >= \n[doc-fixed-width]) \{\
-.    ie (\n[doc-width] % \n[doc-fixed-width]) \{\
+.    ie (\n[doc-width] % \n[doc-fixed-width]) \
 .      nr doc-width ((\n[doc-width] / \n[doc-fixed-width]) + 1)
-.    \}
-.    el .nr doc-width (\n[doc-width] / \n[doc-fixed-width])
+.    el \
+.      nr doc-width (\n[doc-width] / \n[doc-fixed-width])
 .  \}
 .  el \{
-.    ie \n[doc-width] .nr doc-width 1
-.    el .nr doc-width 0
+.    ie \n[doc-width] \
+.      nr doc-width 1
+.    el \
+.      nr doc-width 0
 .  \}
 ..
 .
@@ -210,7 +211,7 @@
 .\" NS
 .\" NS width register `.Ql' set in doc-common
 .\" NS
-.\" NS local register:
+.\" NS local variable:
 .\" NS   doc-reg-Ql
 .
 .de Ql
@@ -231,7 +232,8 @@
 .  doc-get-arg-width \n[doc-arg-ptr]
 .  nr doc-arg-ptr -1
 .
-.  ie (\n[doc-width] > 2) .Li
+.  ie (\n[doc-width] > 2) \
+.    Li
 .  el \{\
 .    \" Db on
 .    if \n[doc-arg-ptr] \{\
@@ -273,6 +275,9 @@
 .\" NS   section headers
 .\" NS
 .\" NS width register `.Sh' set in doc-common
+.\" NS
+.\" NS local variable:
+.\" NS   doc-reg-Sh
 .
 .de Sh
 .  nr doc-in-synopsis-section 0
@@ -297,11 +302,11 @@
 .    \}
 .
 .    if "\$1"DESCRIPTION" \{\
-.      nr fY 0
-.      nr fZ 0
-.      nr fB 0
-.      nr Fb 0
-.      ds Fb
+.      nr doc-is-func-type 0
+.      nr doc-function-count 0
+.      nr doc-function-args-processed 0
+.      nr doc-num-function-args 0
+.      ds doc-function-arg
 .    \}
 .
 .    if "\$1"SEE" \{\
@@ -314,18 +319,28 @@
 .    if "\$1"AUTHORS" .nr doc-in-authors-section 1
 .
 .    in 0
-.    nr aN 0
+.    nr doc-have-author 0
 .  \}
 .
 .  doc-setup-page-layout
 '  sp
 .  ns
-.  ta .5i 1i 1.5i 2i 2.5i 3i 3.5i 4i 4.5i 5i 5.5i 6i 6.5i
-.  if !\n[cR] .ne 3
+.  ta T .5i
+.  if !\n[cR] \
+.    ne 3
 '  fi
 .
-.  nop \&\*[doc-Sh-font]\$1 \|\$2 \|\$3 \|\$4 \|\$5 \|\$6 \|\$7 \|\$8 \|\$9
-.  nop \&\f[P]\s[0]\&
+.  ie !\n[.$] \
+.    tm Usage: .Sh section name
+.  el \{\
+.    nop \&\*[doc-Sh-font]\$1\c
+.    nr doc-reg-Sh 2
+.    while (\n[doc-reg-Sh] <= \n[.$]) \{\
+.      nop \& \|\$[\n[doc-reg-Sh]]\c
+.      nr doc-reg-Sh +1
+.    \}
+.    nop \f[P]\s[0]
+.  \}
 .
 .  in (\n[.i]u + \n[doc-subheader-indent]u)
 .  ns

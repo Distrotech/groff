@@ -197,14 +197,18 @@
 .  ds doc-volume LOCAL
 .  ds doc-section Null
 .
-.  if !"\$1"" .ds doc-document-title \$1
+.  if !"\$1"" \
+.    ds doc-document-title \$1
 .  if !"\$2"" \{\
 .    ds doc-section \$2
 .    \" .if "\$3"" \{\
 .    if (\$2 >= 1) .if (\$2 <= 8) \{\
 .      ds doc-volume System Reference Manual
-.      if (\$2 > 1) .if (\$2 < 6) .ds doc-volume System Programmer's Manual
-.      if "\$2"8" .ds doc-volume System Manager's Manual
+.      if (\$2 > 1) \
+.        if (\$2 < 6) \
+.          ds doc-volume System Programmer's Manual
+.      if "\$2"8" \
+.        ds doc-volume System Manager's Manual
 .    \}
 .
 .    if "\$2"unass" .ds doc-volume DRAFT
@@ -246,13 +250,11 @@
 .de Os
 .  ds doc-operating-system Null
 .
-.  if "\$1"" \{\
+.  if "\$1"" \
 .    ds doc-operating-system BSD Experimental
-.  \}
 .
-.  if "\$2"" \{\
+.  if "\$2"" \
 .    ds doc-str-Os Non-Null
-.  \}
 .
 .  if "\$1"ATT" \{\
 .    ds doc-operating-system AT&T
@@ -281,8 +283,10 @@
 .    if "\$2"4.4"  .ds doc-operating-system BSD Experimental
 .  \}
 .
-.  if "\*[doc-operating-system]"Null" .ds doc-operating-system \0\$1
-.  if "\*[doc-str-Os]"Non-Null" .as doc-operating-system \0\$2
+.  if "\*[doc-operating-system]"Null" \
+.    ds doc-operating-system \0\$1
+.  if "\*[doc-str-Os]"Non-Null" \
+.    as doc-operating-system \0\$2
 ..
 .
 .
@@ -293,12 +297,12 @@
 .
 .de Dd
 .  \" XXX why do we need gX?
-.  if !ddoc-date-string .nr gX 1
+.  if !ddoc-date-string \
+.    nr gX 1
 .
 .  ie \n[.$] \{\
-.    ie (\n[.$] == 3) \{\
+.    ie (\n[.$] == 3) \
 .      ds doc-date-string \$1 \$2 \$3
-.    \}
 .    el \{\
 .      if "\n[mo]"1" .ds doc-date-string January
 .      if "\n[mo]"2" .ds doc-date-string February
@@ -316,16 +320,16 @@
 .      as doc-date-string \&\ \n[dy], \n[year]
 .    \}
 .  \}
-.  el \{\
+.  el \
 .    ds doc-date-string Epoch
-.  \}
 ..
 .
 .
 .de doc-header
 .  ev doc-caption-environment
 .  doc-setup-page-layout
-.  if !\n[cR] 'sp \n[doc-header-space]u
+.  if !\n[cR] \
+'    sp \n[doc-header-space]u
 .  tl @\*[doc-caption-font]\*[doc-header-string]\f[P]@\*[doc-caption-font2]\*[doc-volume]\f[P]@\*[doc-caption-font]\*[doc-header-string]\f[P]@
 '  sp \n[doc-header-space]u
 .  ev
@@ -333,7 +337,8 @@
 .
 .
 .de doc-footer
-.  ie \n[cR] 'br
+.  ie \n[cR] \
+'    br
 .  el \{\
 .    ev doc-caption-enviroment
 .    doc-setup-page-layout
@@ -353,7 +358,7 @@
 '    sp
 .    tl @\*[doc-caption-font]\*[doc-operating-system]\f[P]@\*[doc-caption-font2]\*[doc-date-string]\f[P]@%@
 .    pl \n[nl]u
-.\}
+.  \}
 ..
 .
 .
@@ -364,7 +369,8 @@
 .
 .de Pp
 .  sp \n[doc-paragraph-space]u
-.  if !\n[cR] .ne 2
+.  if !\n[cR] \
+.    ne 2
 .  ns
 ..
 .
@@ -402,7 +408,7 @@
 ..
 .
 .
-.\" NS Ss user register
+.\" NS Ss user macro
 .\" NS   subsection
 .\" NS
 .\" NS width register `.Ss' set above
@@ -411,10 +417,12 @@
 .\" NS   doc-reg-Ss
 .
 .de Ss
-.  ie !\n[.$] .tm Usage: .Ss subsection name
+.  ie !\n[.$] \
+.    tm Usage: .Ss subsection name
 .  el \{\
 .    sp
-.    if !\n[cR] .ne 2
+.    if !\n[cR] \
+.      ne 2
 .    ti -.25i
 .    nop \&\*[doc-Sh-font]\$1\c
 .    nr doc-reg-Ss 2
@@ -424,7 +432,8 @@
 .    \}
 .    nop \f[P]\s[0]
 .    ta T .5i
-.    if !\n[cR] .ne 2
+.    if !\n[cR] \
+.      ne 2
 .    br
 .  \}
 ..

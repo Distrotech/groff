@@ -39,7 +39,8 @@
 .\" many groff features, updating and extending documentation.
 .
 .
-.if !\n(.g .ab This version of mdoc can be run with groff only!
+.if !\n(.g \
+.  ab This version of mdoc can be run with groff only!
 .
 .
 .cp 0
@@ -48,8 +49,8 @@
 .
 .
 .\" Load start-up files
-.if t .mso mdoc/doc-ditroff.new
-.if n .mso mdoc/doc-nroff.new
+.ie t .mso mdoc/doc-ditroff.new
+.el   .mso mdoc/doc-nroff.new
 .
 .mso mdoc/doc-common.new
 .mso mdoc/doc-syms.new
@@ -152,21 +153,16 @@
 .  nr doc-args-processed +1
 .
 .  ie "\$1"|" \{\
-.    if "\*[doc-macro-name]"Op" \{\
+.    if "\*[doc-macro-name]"Op" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
-.    if "\*[doc-macro-name]"Ar" \{\
+.    if "\*[doc-macro-name]"Ar" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
-.    if "\*[doc-macro-name]"Fl" \{\
+.    if "\*[doc-macro-name]"Fl" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
-.    if "\*[doc-macro-name]"Cm" \{\
+.    if "\*[doc-macro-name]"Cm" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
-.    if "\*[doc-macro-name]"It" \{\
+.    if "\*[doc-macro-name]"It" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
 .  \}
 .  el .ds doc-arg\n[doc-args-processed] "\$1
 .
@@ -175,18 +171,14 @@
 .  doc-set-spacing-for-\*[doc-arg-type]
 .
 .  if \n[doc-debug] \{\
-.    if "\*[doc-arg-type]"macro" \{\
+.    if "\*[doc-arg-type]"macro" \
 .      ds doc-str-dpa macro
-.    \}
-.    if "\*[doc-arg-type]"string" \{\
+.    if "\*[doc-arg-type]"string" \
 .      ds doc-str-dpa string
-.    \}
-.    if "\*[doc-arg-type]"punct-suffix" \{\
+.    if "\*[doc-arg-type]"punct-suffix" \
 .      ds doc-str-dpa closing punctuation or suffix
-.    \}
-.    if "\*[doc-arg-type]"punct-prefix" \{\
+.    if "\*[doc-arg-type]"punct-prefix" \
 .      ds doc-str-dpa opening punctuation or prefix
-.    \}
 .
 .    ie \n[doc-inline-debug] \{\
 .      br
@@ -219,18 +211,19 @@
 .  ie (\n[.$] == 1) \{\
 .    nr doc-arg-ptr 0
 .    ie (\n[doc-diversion-level] == 1) \{\
-.      if (\n[doc-nesting-level] > 1) .as doc-out-string \*[doc-curr-space]
+.      if (\n[doc-nesting-level] > 1) \
+.        as doc-out-string \*[doc-curr-space]
 .    \}
 .    el \{\
-.      if \n[doc-nesting-level] \{\
-.        if !\n[doc-func-arg-count] .as doc-out-string \*[doc-curr-space]
-.      \}
+.      if \n[doc-nesting-level] \
+.        if !\n[doc-func-arg-count] \
+.          as doc-out-string \*[doc-curr-space]
 .    \}
 .
-.    ie ddoc-space\n[doc-args-processed] \{\
+.    ie ddoc-space\n[doc-args-processed] \
 .      ds doc-curr-space \*[doc-space\n[doc-args-processed]]
-.    \}
-.    el .ds doc-curr-space
+.    el \
+.      ds doc-curr-space
 .
 .    if \n[doc-debug] \{\
 .      nr doc-reg-dpa1 1
@@ -275,21 +268,16 @@
 .  nr doc-args-processed +1
 .
 .  if "\*[doc-arg\n[doc-args-processed]]"|" \{\
-.    if "\*[doc-macro-name]"Op" \{\
+.    if "\*[doc-macro-name]"Op" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
-.    if "\*[doc-macro-name]"Ar" \{\
+.    if "\*[doc-macro-name]"Ar" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
-.    if "\*[doc-macro-name]"Fl" \{\
+.    if "\*[doc-macro-name]"Fl" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
-.    if "\*[doc-macro-name]"Cm" \{\
+.    if "\*[doc-macro-name]"Cm" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
-.    if "\*[doc-macro-name]"It" \{\
+.    if "\*[doc-macro-name]"It" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    \}
 .  \}
 .
 .  doc-get-arg-type* \n[doc-args-processed]
@@ -297,18 +285,14 @@
 .  doc-set-spacing-for-\*[doc-arg-type]
 .
 .  if \n[doc-debug] \{\
-.    if "\*[doc-arg-type]"macro" \{\
+.    if "\*[doc-arg-type]"macro" \
 .      ds doc-str-dpav macro
-.    \}
-.    if "\*[doc-arg-type]"string" \{\
+.    if "\*[doc-arg-type]"string" \
 .      ds doc-str-dpav string
-.    \}
-.    if "\*[doc-arg-type]"punct-suffix" \{\
+.    if "\*[doc-arg-type]"punct-suffix" \
 .      ds doc-str-dpav closing punctuation or suffix
-.    \}
-.    if "\*[doc-arg-type]"punct-prefix" \{\
+.    if "\*[doc-arg-type]"punct-prefix" \
 .      ds doc-str-dpav opening punctuation or prefix
-.    \}
 .
 .    ie \n[doc-inline-debug] \{\
 .      br
@@ -342,18 +326,19 @@
 .  ie (\n[doc-num-args] == 1) \{\
 .    nr doc-arg-ptr 0
 .    ie (\n[doc-diversion-level] == 1) \{\
-.      if (\n[doc-nesting-level] > 1) .as doc-out-string \*[doc-curr-space]
+.      if (\n[doc-nesting-level] > 1) \
+.        as doc-out-string \*[doc-curr-space]
 .    \}
 .    el \{\
-.      if \n[doc-nesting-level] \{\
-.        if !\n[doc-func-arg-count] .as doc-out-string \*[doc-curr-space]
-.      \}
+.      if \n[doc-nesting-level] \
+.        if !\n[doc-func-arg-count] \
+.          as doc-out-string \*[doc-curr-space]
 .    \}
 .
-.    ie ddoc-space\n[doc-args-processed] \{\
+.    ie ddoc-space\n[doc-args-processed] \
 .      ds doc-curr-space \*[doc-space\n[doc-args-processed]]
-.    \}
-.    el .ds doc-curr-space
+.    el \
+.      ds doc-curr-space
 .
 .    nr doc-num-args 0
 .
@@ -447,9 +432,8 @@
 .      ds doc-curr-space
 .      ds doc-out-string
 .    \}
-.    if !\n[doc-nesting-level] \{\
+.    if !\n[doc-nesting-level] \
 .      doc-end-diversion-and-print
-.    \}
 .  \}
 .  el \{\
 .    ie !\n[doc-nesting-level] \{\
@@ -458,9 +442,9 @@
 .      ds doc-out-string
 .    \}
 .    el \{\
-.      if \n[doc-space-mode] .if !\n[doc-list-immediate] \{\
-.        doc-save-and-divert
-.      \}
+.      if \n[doc-space-mode] \
+.        if !\n[doc-list-immediate] \
+.          doc-save-and-divert
 .    \}
 .  \}
 .
@@ -512,7 +496,8 @@
 .    ds doc-str-dedap \&\*[doc-diversion]\c
 .    ds doc-out-string \*[doc-saved-out-string]\*[doc-str-dedap]\*[doc-out-string]
 .  \}
-.  el .ds doc-out-string \*[doc-saved-out-string]\*[doc-out-string]
+.  el \
+.    ds doc-out-string \*[doc-saved-out-string]\*[doc-out-string]
 .
 .  nop \&\*[doc-out-string]
 .
@@ -566,9 +551,8 @@
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
 .
-.        if "\*[doc-type\n[doc-arg-ptr]]"punct-suffix" \{\
+.        if "\*[doc-type\n[doc-arg-ptr]]"punct-suffix" \
 .          as doc-out-string \|\-\|
-.        \}
 .        doc-flag-recursion
 .      \}
 .    \}
@@ -596,14 +580,16 @@
 .    ie "\*[doc-str-dfr]"string" \{\
 .      ie !"\*[doc-arg\n[doc-arg-ptr]]"\*[Ba]" \{\
 .        ie !"\*[doc-arg\n[doc-arg-ptr]]"\f[R]|\f[P]" \{\
-.          ie "\*[doc-arg\n[doc-arg-ptr]]"-" \{\
+.          ie "\*[doc-arg\n[doc-arg-ptr]]"-" \
 .            as doc-out-string \|\-\^\-\|
-.          \}
-.          el .as doc-out-string \|\-\*[doc-arg\n[doc-arg-ptr]]
+.          el \
+.            as doc-out-string \|\-\*[doc-arg\n[doc-arg-ptr]]
 .        \}
-.        el .as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
+.        el \
+.          as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .      \}
-.      el .as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
+.      el \
+.        as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .    \}
 .    el \{\
 .      as doc-out-string \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
@@ -611,19 +597,21 @@
 .    \}
 .
 .    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
-.      if "\*[doc-str-dfr]"punct-prefix" .as doc-out-string \|\-
+.      if "\*[doc-str-dfr]"punct-prefix" \
+.        as doc-out-string \|\-
 .      as doc-out-string \&\f[P]\s[0]
 .      doc-print-and-reset
 .    \}
 .    el \{\
 .      nr doc-arg-ptr +1
 .      ie "\*[doc-type\n[doc-arg-ptr]]"punct-suffix" \{\
-.        ie "\*[doc-type\n[doc-reg-dfr]]"punct-prefix" \{\
+.        ie "\*[doc-type\n[doc-reg-dfr]]"punct-prefix" \
 .          as doc-out-string \|\-
-.        \}
-.        el .as doc-out-string \*[doc-space\n[doc-reg-dfr]]
+.        el \
+.          as doc-out-string \*[doc-space\n[doc-reg-dfr]]
 .      \}
-.      el .as doc-out-string \*[doc-space\n[doc-reg-dfr]]
+.      el \
+.        as doc-out-string \*[doc-space\n[doc-reg-dfr]]
 .
 .      shift
 .      doc-flag-recursion \$@
@@ -650,9 +638,8 @@
 .  el \{\
 .    nr doc-reg-dpr \n[doc-arg-ptr]
 .
-.    ie "\*[doc-str-dpr]"string" \{\
+.    ie "\*[doc-str-dpr]"string" \
 .      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
-.    \}
 .    el \{\
 .      as doc-out-string \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .      as doc-out-string "\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
@@ -703,9 +690,8 @@
 .      el \{\
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
-.        if "\*[doc-type\n[doc-arg-ptr]]"punct-suffix" \{\
+.        if "\*[doc-type\n[doc-arg-ptr]]"punct-suffix" \
 .          as doc-out-string \&file\ ...
-.        \}
 .        doc-print-recursive
 .      \}
 .    \}
@@ -720,9 +706,8 @@
 .
 .de Ad
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Ad address ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Ad
 .      doc-parse-args \$@
@@ -751,7 +736,8 @@
 .
 .de Cd
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .Cd Configuration file declaration (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .Cd Configuration file declaration (#\n[.c])
 .    el \{\
 .      ds doc-macro-name Cd
 .
@@ -777,11 +763,11 @@
 .    ie \n[doc-in-synopsis-section] \{\
 .      if "\*[doc-macro-name]"Cd" \{\
 .        rs
-.        ie (\n[doc-in-synopsis-section] > 1) .br
+.        ie (\n[doc-in-synopsis-section] > 1) \
+.          br
 .        el \{\
-.          if !\n[doc-indent-synopsis] \{\
+.          if !\n[doc-indent-synopsis] \
 .            nr doc-indent-synopsis \n[doc-display-indent]u
-.          \}
 .        \}
 .        in +\n[doc-indent-synopsis]u
 .        ti -\n[doc-indent-synopsis]u
@@ -791,7 +777,8 @@
 .      doc-print-recursive
 .      in -\n[doc-indent-synopsis]u
 .    \}
-.    el .doc-print-recursive
+.    el \
+.      doc-print-recursive
 .  \}
 ..
 .
@@ -841,9 +828,8 @@
 .
 .de Dv
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Dv define_variable ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Dv
 .      doc-parse-args \$@
@@ -870,9 +856,8 @@
 .
 .de Em
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Em text ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Em
 .
@@ -904,9 +889,8 @@
 .
 .de Er
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Er ERRNOTYPE ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Er
 .      doc-parse-args \$@
@@ -930,9 +914,8 @@
 .
 .de Ev
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Ev ENVIRONMENT_VARIABLE ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Ev
 .      doc-parse-args \$@
@@ -975,7 +958,8 @@
 .        doc-paragraph
 .        rs
 .      \}
-.      el .br
+.      el \
+.        br
 .    \}
 .    nr doc-declaration-count +1
 .  \}
@@ -996,9 +980,8 @@
 .
 .de Fr
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Fr Function_return_value... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Fr
 .      doc-parse-args \$@
@@ -1022,9 +1005,8 @@
 .
 .de Ic
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Ic Interactive command ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Ic
 .      doc-parse-args \$@
@@ -1051,9 +1033,8 @@
 .
 .de Li
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage .Li argument ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Li
 .
@@ -1085,7 +1066,8 @@
 .
 .de Or
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .Or ... \*[doc-punct-chars] (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .Or ... \*[doc-punct-chars] (#\n[.c])
 .    el \{\
 .      ds doc-macro-name Or
 .      doc-parse-args \$@
@@ -1109,9 +1091,8 @@
 .
 .de Ms
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Ms Math symbol ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Ms
 .      doc-parse-args \$@
@@ -1145,10 +1126,10 @@
 .de Nm
 .  if !\n[doc-args-processed] \{\
 .    ie !\n[.$] \{\
-.      ie "\*[doc-command-name]"" \{\
+.      ie "\*[doc-command-name]"" \
 .        tm Usage: .Nm Name(s) ... \*[doc-punct-chars] (#\n[.c])
-.      \}
-.      el \&\*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
+.      el \
+.        nop \&\*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
 .    \}
 .    el \{\
 .      ds doc-macro-name Nm
@@ -1183,7 +1164,8 @@
 .          if "\*[doc-macro-name]"Nm" \{\
 .            rs
 .            in -\n[doc-indent-synopsis]u
-.            ie (\n[doc-in-synopsis-section] > 1) .br
+.            ie (\n[doc-in-synopsis-section] > 1) \
+.              br
 .            el \{\
 .              if !\n[doc-indent-synopsis] \{\
 .                doc-get-width \$1
@@ -1195,9 +1177,8 @@
 .            nr doc-in-synopsis-section +1
 .          \}
 .        \}
-.        if "\*[doc-command-name]"" \{\
+.        if "\*[doc-command-name]"" \
 .          ds doc-command-name "\*[doc-arg\n[doc-arg-ptr]]
-.        \}
 .        doc-print-recursive
 .      \}
 .    \}
@@ -1212,7 +1193,8 @@
 .
 .de Pa
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \&\*[doc-Pa-font]~\f[P]\s[0]
+.    ie !\n[.$] \
+.      nop \&\*[doc-Pa-font]~\f[P]\s[0]
 .    el \{\
 .      ds doc-macro-name Pa
 .      doc-parse-args \$@
@@ -1239,9 +1221,8 @@
 .
 .de Sy
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Sy symbolic_text ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Sy
 .
@@ -1273,9 +1254,8 @@
 .
 .de Tn
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Tn Trade_name(s) ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Tn
 .      doc-parse-args \$@
@@ -1295,13 +1275,12 @@
 .\" NS doc-reference-trademark macro
 .\" NS   .Tn for inside of references
 .\" NS
-.\" NS reference code checks for `Tn'!
+.\" NS code for references checks for `Tn'!
 .
 .de doc-reference-trademark
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Tn Trade_name(s) ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Tn
 .      doc-parse-args \$@
@@ -1325,9 +1304,8 @@
 .
 .de Va
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Va variable_name(s) ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Va
 .      doc-parse-args \$@
@@ -1353,7 +1331,8 @@
 .  as doc-out-string \*[doc-No-font]
 .
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .No must be called with arguments (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .No must be called with arguments (#\n[.c])
 .    el \{\
 .      ds doc-macro-name No
 .      doc-parse-args \$@
@@ -1362,9 +1341,8 @@
 .
 .  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .      \*[doc-arg\n[doc-arg-ptr]]
-.    \}
 .    el \{\
 .      nr doc-curr-font \n[.f]
 .      nr doc-curr-size \n[.s]
@@ -1380,9 +1358,8 @@
 .\" NS width register `.Op' set in doc-common
 .
 .de Op
-.  if !\n[doc-args-processed] \{\
+.  if !\n[doc-args-processed] \
 .    ds doc-macro-name Op
-.  \}
 .
 .  ds doc-quote-left "\*[doc-left-bracket]
 .  ds doc-quote-right "\*[doc-right-bracket]
@@ -1397,7 +1374,8 @@
 .\" NS width register `.Aq' set in doc-common
 .
 .de Aq
-.  if !\n[doc-args-processed] .ds doc-macro-name Aq
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Aq
 .
 .  ds doc-quote-left <
 .  ds doc-quote-right >
@@ -1412,7 +1390,8 @@
 .\" NS width register `.Bq' set in doc-common
 .
 .de Bq
-.  if !\n[doc-args-processed] .ds doc-macro-name Bq
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Bq
 .
 .  ds doc-quote-left "\*[doc-left-bracket]
 .  ds doc-quote-right "\*[doc-right-bracket]
@@ -1427,7 +1406,8 @@
 .\" NS width register `.Dq' set in doc-common
 .
 .de Dq
-.  if !\n[doc-args-processed] .ds doc-macro-name Dq
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Dq
 .
 .  ds doc-quote-left "\*[Lq]
 .  ds doc-quote-right "\*[Rq]
@@ -1442,7 +1422,8 @@
 .\" NS width register `.Eq' set in doc-common
 .
 .de Eq
-.  if !\n[doc-args-processed] .ds doc-macro-name Eq
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Eq
 .
 .  ds doc-quote-left "\$1
 .  ds doc-quote-right "\$2
@@ -1458,7 +1439,8 @@
 .\" NS width register `.Pq' set in doc-common
 .
 .de Pq
-.  if !\n[doc-args-processed] .ds doc-macro-name Pq
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Pq
 .
 .  ds doc-quote-left "\*[doc-left-parenthesis]
 .  ds doc-quote-right "\*[doc-right-parenthesis]
@@ -1480,7 +1462,8 @@
 .\" NS width register `.Qq' set in doc-common
 .
 .de Qq
-.  if !\n[doc-args-processed] .ds doc-macro-name Qq
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Qq
 .
 .  ds doc-quote-left "\*[q]
 .  ds doc-quote-right "\*[q]
@@ -1495,7 +1478,8 @@
 .\" NS width register `.Sq' set in doc-common
 .
 .de Sq
-.  if !\n[doc-args-processed] .ds doc-macro-name Sq
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Sq
 .
 .  ds doc-quote-left "\*[doc-left-singlequote]
 .  ds doc-quote-right "\*[doc-right-singlequote]
@@ -1536,9 +1520,8 @@
 .      as doc-out-string \&\*[doc-quote-left]
 .    \}
 .  \}
-.  el \{\
+.  el \
 .    as doc-out-string \&\*[doc-quote-left]
-.  \}
 .
 .  if \n[doc-args-processed] \{\
 .    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
@@ -1553,11 +1536,11 @@
 .        ds doc-arg\n[doc-temp-args-processed] \&\*[doc-quote-right]\*[doc-arg\n[doc-temp-args-processed]]
 .        nr doc-temp-args-processed 0
 .      \}
-.      el .doc-append-arg "\*[doc-quote-right]" punct-suffix
+.      el \
+.        doc-append-arg "\*[doc-quote-right]" punct-suffix
 .      nr doc-arg-ptr +1
-.      if "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.      if "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .        \*[doc-arg\n[doc-arg-ptr]]
-.      \}
 .      if d doc-type\n[doc-arg-ptr] \{\
 .        if !"\*[doc-type\n[doc-arg-ptr]]"macro" \{\
 .          nr doc-arg-ptr -1
@@ -1587,7 +1570,8 @@
 .\" NS width register `.Ao' set in doc-common
 .
 .de Ao
-.  if !\n[doc-args-processed] .ds doc-macro-name Ao
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Ao
 .
 .  ds doc-quote-left <
 .
@@ -1601,7 +1585,8 @@
 .\" NS width register `.Ac' set in doc-common
 .
 .de Ac
-.  if !\n[doc-args-processed] .ds doc-macro-name Ac
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Ac
 .
 .  ds doc-quote-right >
 .
@@ -1615,7 +1600,8 @@
 .\" NS width register `.Bo' set in doc-common
 .
 .de Bo
-.  if !\n[doc-args-processed] .ds doc-macro-name Bo
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Bo
 .
 .  ds doc-quote-left [
 .
@@ -1629,7 +1615,8 @@
 .\" NS width register `.Bc' set in doc-common
 .
 .de Bc
-.  if !\n[doc-args-processed] .ds doc-macro-name Bc
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Bc
 .
 .  ds doc-quote-right ]
 .
@@ -1643,7 +1630,8 @@
 .\" NS width register `.Do' set in doc-common
 .
 .de Do
-.  if !\n[doc-args-processed] .ds doc-macro-name Do
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Do
 .
 .  ds doc-quote-left "\*[Lq]
 .
@@ -1657,7 +1645,8 @@
 .\" NS width register `.Dc' set in doc-common
 .
 .de Dc
-.  if !\n[doc-args-processed] .ds doc-macro-name Dc
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Dc
 .
 .  ds doc-quote-right "\*[Rq]
 .
@@ -1671,7 +1660,8 @@
 .\" NS width register `.Eo' set in doc-common
 .
 .de Eo
-.  if !\n[doc-args-processed] .ds doc-macro-name Eo
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Eo
 .
 .  ds doc-quote-left "\$1
 .
@@ -1686,7 +1676,8 @@
 .\" NS width register `.Ec' set in doc-common
 .
 .de Ec
-.  if !\n[doc-args-processed] .ds doc-macro-name Ec
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Ec
 .
 .  ds doc-quote-right "\$1
 .
@@ -1701,7 +1692,8 @@
 .\" NS width register `.Oo' set in doc-common
 .
 .de Oo
-.  if !\n[doc-args-processed] .ds doc-macro-name Oo
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Oo
 .
 .  ds doc-quote-left [
 .
@@ -1715,7 +1707,8 @@
 .\" NS width register `.Oc' set in doc-common
 .
 .de Oc
-.  if !\n[doc-args-processed] .ds doc-macro-name Oc
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Oc
 .
 .  ds doc-quote-right ]
 .
@@ -1729,7 +1722,8 @@
 .\" NS width register `.Po' set in doc-common
 .
 .de Po
-.  if !\n[doc-args-processed] .ds doc-macro-name Po
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Po
 .
 .  ds doc-quote-left (
 .
@@ -1743,7 +1737,8 @@
 .\" NS width register `.Pc' set in doc-common
 .
 .de Pc
-.  if !\n[doc-args-processed] .ds doc-macro-name Pc
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Pc
 .
 .  ds doc-quote-right )
 .
@@ -1757,7 +1752,8 @@
 .\" NS width register `.Qo' set in doc-common
 .
 .de Qo
-.  if !\n[doc-args-processed] .ds doc-macro-name Qo
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Qo
 .
 .  ds doc-quote-left "\*[q]
 .
@@ -1771,7 +1767,8 @@
 .\" NS width register `.Qc' set in doc-common
 .
 .de Qc
-.  if !\n[doc-args-processed] .ds doc-macro-name Qc
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Qc
 .
 .  ds doc-quote-right "\*[q]
 .
@@ -1785,7 +1782,8 @@
 .\" NS width register `.So' set in doc-common
 .
 .de So
-.  if !\n[doc-args-processed] .ds doc-macro-name So
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name So
 .
 .  ds doc-quote-left "\*[doc-left-singlequote]
 .
@@ -1799,7 +1797,8 @@
 .\" NS width register `.Sc' set in doc-common
 .
 .de Sc
-.  if !\n[doc-args-processed] .ds doc-macro-name Sc
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Sc
 .
 .  ds doc-quote-right "\*[doc-right-singlequote]
 .
@@ -1813,7 +1812,8 @@
 .\" NS width register `.Xo' set in doc-common
 .
 .de Xo
-.  if !\n[doc-args-processed] .ds doc-macro-name Xo
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Xo
 .  \" .nr doc-in-macro 1
 .
 .  ds doc-quote-left
@@ -1829,7 +1829,8 @@
 .
 .de Xc
 .  \" .nr doc-in-macro 0
-.  if !\n[doc-args-processed] .ds doc-macro-name Xc
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Xc
 .
 .  ds doc-quote-right
 .
@@ -1864,27 +1865,27 @@
 .    el \{\
 .      as doc-out-string \&\*[doc-quote-left]
 .
-.      if !\n[doc-diversion-level] .if \n[doc-space-mode] \{\
-.        nr doc-diversion-level +1
-.        ds doc-saved-out-string \&\*[doc-out-string]
-.        ds doc-out-string
-.        nr doc-diversion-input-line-count \n[.c]
-.        ev doc-divert-environment
-.        fi
-.        di doc-diversion
+.      if !\n[doc-diversion-level] \{\
+.        if \n[doc-space-mode] \{\
+.          nr doc-diversion-level +1
+.          ds doc-saved-out-string \&\*[doc-out-string]
+.          ds doc-out-string
+.          nr doc-diversion-input-line-count \n[.c]
+.          ev doc-divert-environment
+.          fi
+.          di doc-diversion
+.        \}
 .      \}
 .    \}
 .  \}
-.  el \{\
+.  el \
 .    as doc-out-string \&\*[doc-quote-left]
-.  \}
 .
 .  ie \n[doc-args-processed] \{\
 .    if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .      nr doc-arg-ptr +1
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .        \*[doc-arg\n[doc-arg-ptr]]
-.      \}
 .      el \{\
 .        nr doc-arg-ptr -1
 .        No
@@ -1902,7 +1903,8 @@
 .    \}
 .  \}
 .  el \{\
-.    if (\n[doc-nesting-level] > 1) .as doc-out-string \*[doc-space]
+.    if (\n[doc-nesting-level] > 1) \
+.      as doc-out-string \*[doc-space]
 .  \}
 ..
 .
@@ -1929,9 +1931,8 @@
 .  as doc-out-string \&\*[doc-quote-right]
 .
 .  if !\n[doc-args-processed] \{\
-.    ie \n[.$] \{\
+.    ie \n[.$] \
 .      doc-parse-args \$@
-.    \}
 .    el \{\
 .      doc-print-out-string
 .      if !"\*[doc-saved-list-type]"" \{\
@@ -1944,14 +1945,15 @@
 .
 .  if (\n[doc-args-processed] > 0) \{\
 .    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
-.      ie !\n[doc-nesting-level] .doc-print-and-reset
-.      el .doc-reset-args
+.      ie !\n[doc-nesting-level] \
+.        doc-print-and-reset
+.      el \
+.        doc-reset-args
 .    \}
 .    el \{\
 .      nr doc-str-dec (\n[doc-arg-ptr] + 1)
-.      if "\*[doc-type\n[doc-str-dec]]"string" \{\
+.      if "\*[doc-type\n[doc-str-dec]]"string" \
 .        as doc-out-string \*[doc-space\n[doc-args-processed]]
-.      \}
 .
 .      \" .tm CURRENT
 .      \" .tm1 "  doc-arg-ptr==\*[doc-arg\n[doc-arg-ptr]]
@@ -1961,9 +1963,8 @@
 .
 .      if \n[doc-list-immediate] \{\
 .        \" .tm UNSETTING doc-saved-list-immediate==\n[doc-saved-list-immediate]!
-.        if \n[doc-saved-list-immediate] \{\
+.        if \n[doc-saved-list-immediate] \
 .          nr doc-saved-list-immediate 0
-.        \}
 .        \" .tm NOW doc-saved-list-immediate==\n[doc-saved-list-immediate]!
 .      \}
 .      No
@@ -1978,7 +1979,8 @@
 .\" NS width register `.Pf' set in doc-common
 .
 .de Pf
-.  if !\n[doc-args-processed] .ds doc-macro-name Pf
+.  if !\n[doc-args-processed] \
+.    ds doc-macro-name Pf
 .
 .  ds doc-quote-left "\$1
 .
@@ -1997,18 +1999,21 @@
 .      tm mdoc warning: .Pf: missing arguments (#\n[.c])
 .      doc-print-out-string
 .    \}
-.    el .doc-parse-args \$@
+.    el \
+.      doc-parse-args \$@
 .  \}
 .  el \{\
 .    ie ((\n[doc-args-processed] - \n[doc-arg-ptr]) > 1) \{\
 .      nr doc-arg-ptr +1
 .      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .    \}
-.    el .tm mdoc warning: .Pf: trailing prefix (#\n[.c])
+.    el \
+.      tm mdoc warning: .Pf: trailing prefix (#\n[.c])
 .  \}
 .
 .  if \n[doc-args-processed] \{\
-.    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) .doc-print-and-reset
+.    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \
+.      doc-print-and-reset
 .    el \{\
 .      nr doc-arg-ptr +1
 .      doc-do-\*[doc-type\n[doc-arg-ptr]]
@@ -2026,8 +2031,10 @@
 .de Ns
 .  if !\n[doc-args-processed] \{\
 .    ds doc-macro-name Ns
-.    ie \n[.$] .doc-parse-args \$@
-.    el .tm Usage: .Ns must be called with arguments (#\n[.c])
+.    ie \n[.$] \
+.      doc-parse-args \$@
+.    el \
+.      tm Usage: .Ns must be called with arguments (#\n[.c])
 .  \}
 .
 .  No
@@ -2040,9 +2047,8 @@
 .\" NS width register `.Ap' set in doc-common
 .
 .de Ap
-.  if !\n[doc-args-processed] \{\
+.  if !\n[doc-args-processed] \
 .    tm Usage: `Ap' cannot be first request on a line (no `.Ap') (#\n[.c])
-.  \}
 .
 .  as doc-out-string \&'
 .  No
@@ -2091,7 +2097,8 @@
 .
 .de Sm
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .Sm [off | on] (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .Sm [off | on] (#\n[.c])
 .    el \{\
 .      ds doc-macro-name Sm
 .      doc-parse-args \$@
@@ -2114,10 +2121,10 @@
 .      nr doc-space-mode 0
 .    \}
 .
-.    ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.    ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \
 .      No
-.    \}
-.    el .doc-reset-args
+.    el \
+.      doc-reset-args
 .  \}
 ..
 .
@@ -2137,32 +2144,32 @@
 .
 .de doc-get-arg-type
 .  ds doc-arg-type
-.  ie ((\n[doc-width] > 2) : (\A'\$1' == 0)) \{\
+.  ie ((\n[doc-width] > 2) : (\A'\$1' == 0)) \
 .    ds doc-arg-type string
-.  \}
 .  el \{\
 .    if (\n[doc-width] == 1) \{\
 .      ie dz\$1 \{\
-.        ie "\*[z\$1]"punct-suffix" \{\
+.        ie "\*[z\$1]"punct-suffix" \
 .          ds doc-arg-type punct-suffix
-.        \}
 .        el \{
-.          ie "\*[z\$1]"punct-prefix" \{\
+.          ie "\*[z\$1]"punct-prefix" \
 .            ds doc-arg-type punct-prefix
-.          \}
-.          el .ds doc-arg-type string
+.          el \
+.            ds doc-arg-type string
 .        \}
 .      \}
-.      el .ds doc-arg-type string
+.      el \
+.        ds doc-arg-type string
 .    \}
 .    if (\n[doc-width] == 2) \{\
 .      ie r\$1 \{\
-.        ie \n[\$1] \{\
+.        ie \n[\$1] \
 .          ds doc-arg-type macro
-.        \}
-.        el .ds doc-arg-type string
+.        el \
+.          ds doc-arg-type string
 .      \}
-.      el .ds doc-arg-type string
+.      el \
+.        ds doc-arg-type string
 .    \}
 .  \}
 ..
@@ -2179,32 +2186,31 @@
 .  ds doc-arg-type
 .  doc-get-arg-width \$1
 .
-.  ie ((\n[doc-width] > 2) : (\A'\*[doc-arg\$1]' == 0)) \{\
+.  ie ((\n[doc-width] > 2) : (\A'\*[doc-arg\$1]' == 0)) \
 .    ds doc-arg-type string
-.  \}
 .  el \{\
 .    if (\n[doc-width] == 1) \{\
 .      ie dz\*[doc-arg\$1] \{\
-.        ie "\*[z\*[doc-arg\$1]]"punct-suffix" \{\
+.        ie "\*[z\*[doc-arg\$1]]"punct-suffix" \
 .          ds doc-arg-type punct-suffix
-.        \}
 .        el \{\
-.          ie "\*[z\*[doc-arg\$1]]"punct-prefix" \{\
+.          ie "\*[z\*[doc-arg\$1]]"punct-prefix" \
 .            ds doc-arg-type punct-prefix
-.          \}
-.          el .ds doc-arg-type string
+.          el \
+.            ds doc-arg-type string
 .        \}
 .      \}
 .      el .ds doc-arg-type string
 .    \}
 .    if (\n[doc-width] == 2) \{\
 .      ie r\*[doc-arg\$1] \{\
-.        ie \n[\*[doc-arg\$1]] \{\
+.        ie \n[\*[doc-arg\$1]] \
 .          ds doc-arg-type macro
-.        \}
-.        el .ds doc-arg-type string
+.        el \
+.          ds doc-arg-type string
 .      \}
-.      el .ds doc-arg-type string
+.      el \
+.        ds doc-arg-type string
 .    \}
 .  \}
 ..
@@ -2366,16 +2372,15 @@
 .    nr doc-curr-font-for-Ef \n[.f]
 .    nr doc-curr-size-for-Ef \n[.s]
 .
-.    if "\$1"Em" \&\*[doc-Em-font]\c
-.    if "\$1"Li" \&\*[doc-Li-font]\c
-.    if "\$1"Sy" \&\*[doc-Sy-font]\c
+.    if "\$1"Em"        \&\*[doc-Em-font]\c
+.    if "\$1"Li"        \&\*[doc-Li-font]\c
+.    if "\$1"Sy"        \&\*[doc-Sy-font]\c
 .    if "\$1"-emphasis" \&\*[doc-Em-font]\c
-.    if "\$1"-literal" \&\*[doc-Li-font]\c
+.    if "\$1"-literal"  \&\*[doc-Li-font]\c
 .    if "\$1"-symbolic" \&\*[doc-Sy-font]\c
 .  \}
-.  el \{\
+.  el \
 .    tm Usage .Bf [Em | -emphasis | Li | -literal | Sy | -symbolic] (#\n[.c])
-.  \}
 ..
 .
 .
@@ -2387,8 +2392,10 @@
 .de Ef
 .  ds doc-macro-name Ef
 .
-.  ie \n[.$] .tm Usage .Ef (does not take arguments) (#\n[.c])
-.  el \&\f[\n[doc-curr-font-for-Ef]]\s[\n[doc-curr-size-for-Ef]]
+.  ie \n[.$] \
+.    tm Usage .Ef (does not take arguments) (#\n[.c])
+.  el \
+.    nop \&\f[\n[doc-curr-font-for-Ef]]\s[\n[doc-curr-size-for-Ef]]
 ..
 .
 .
@@ -2402,15 +2409,15 @@
 .
 .  ds doc-macro-name Bk
 .
-.  ie !\n[.$] \{\
+.  ie !\n[.$] \
 .    tm Usage: .Bk [-lines | -words] (#\n[.c])
-.  \}
 .  el \{\
-.    if !"\*[doc-keep-type]"" \{\
+.    if !"\*[doc-keep-type]"" \
 .      tm .Bk: nesting keeps not implemented yet. (#\n[.c])
-.    \}
-.    if "\$1"-lines" .tm .Bk -lines: Not implemented yet. (#\n[.c])
-.    if "\$1"-words" .doc-set-hard-space
+.    if "\$1"-lines" \
+.      tm .Bk -lines: Not implemented yet. (#\n[.c])
+.    if "\$1"-words" \
+.      doc-set-hard-space
 .
 .    ds doc-keep-type \$1
 .  \}
@@ -2425,12 +2432,13 @@
 .de Ek
 .  ds doc-macro-name Ek
 .
-.  ie \n[.$] .tm Usage .Ek (does not take arguments) (#\n[.c])
+.  ie \n[.$] \
+.    tm Usage .Ek (does not take arguments) (#\n[.c])
 .  el \{\
-.    if "\*[doc-keep-type]"-lines" \{\
+.    if "\*[doc-keep-type]"-lines" \
 .      tm .Bk -lines: Not implemented yet. (#\n[.c])
-.    \}
-.    if "\*[doc-keep-type]"-words" .doc-set-soft-space
+.    if "\*[doc-keep-type]"-words" \
+.      doc-set-soft-space
 .  \}
 ..
 .
@@ -2459,9 +2467,8 @@
 .
 .\" XXX how do avoid `if !r'?
 .
-.    if !r doc-indent-stack\n[doc-display-depth] \{\
+.    if !r doc-indent-stack\n[doc-display-depth] \
 .      nr doc-indent-stack\n[doc-display-depth] 0
-.    \}
 .
 .    if "\$1"-literal" \{\
 .      nr doc-reg-Bd +1
@@ -2473,9 +2480,8 @@
 .        nop \&\*[doc-Li-font]
 '        ta T 9n
 .      \}
-.      el \{\
+.      el \
 '        ta T 8n
-.      \}
 .      nf
 .    \}
 .
@@ -2503,20 +2509,20 @@
 .      doc-do-Bv-args \$@
 .    \}
 .
-.    if \n[doc-indent-stack\n[doc-display-depth]] \{\
+.    if \n[doc-indent-stack\n[doc-display-depth]] \
 '      in (\n[.i]u + \n[doc-indent-stack\n[doc-display-depth]]u)
-.    \}
 .
 .    if !\n[doc-is-compact] \{\
 .      if !\n[doc-in-synopsis-section] \{\
-.        ie "\*[doc-display-type-stack\n[doc-display-depth]]"ragged" \{\
+.        ie "\*[doc-display-type-stack\n[doc-display-depth]]"ragged" \
 .          sp \n[doc-display-vertical]u
-.        \}
-.        el 'sp \n[doc-display-vertical]u
+.        el \
+'          sp \n[doc-display-vertical]u
 .      \}
 .    \}
 .
-.    if !\n[cR] .ne 2v
+.    if !\n[cR] \
+.      ne 2v
 .
 .    nr doc-is-compact 0
 .\}
@@ -2567,26 +2573,24 @@
 .      nr doc-reg-ddBa +1
 .      doc-get-width "\*[doc-str-ddBa]"
 .      ie (\n[doc-width] > 2) \{\
-.        ie ((\*[doc-str-ddBa] > 9n) & (\*[doc-str-ddBa] < 100n)) \{\
+.        ie ((\*[doc-str-ddBa] > 9n) & (\*[doc-str-ddBa] < 100n)) \
 .          nr doc-indent-stack\n[doc-display-depth] \*[doc-str-ddBa]
-.        \}
-.        el \{\
+.        el \
 .          nr doc-indent-stack\n[doc-display-depth] (\n[doc-width] * \n[doc-fixed-width])
-.        \}
 .      \}
 .      el \{\
-.        if (\n[doc-width] == 2) .doc-get-arg-type \*[doc-str-ddBa]
-.        ie "\*[doc-arg-type]"macro" \{\
+.        if (\n[doc-width] == 2) \
+.          doc-get-arg-type \*[doc-str-ddBa]
+.        ie "\*[doc-arg-type]"macro" \
 .          nr doc-indent-stack\n[doc-display-depth] \n[\*[doc-str-ddBa]]
-.        \}
-.        el .nr doc-indent-stack\n[doc-display-depth] \*[doc-str-ddBa]
+.        el \
+.          nr doc-indent-stack\n[doc-display-depth] \*[doc-str-ddBa]
 .      \}
 .    \}
 .  \}
 .
-.  if "\$1"-compact" \{\
+.  if "\$1"-compact" \
 .    nr doc-is-compact 1
-.  \}
 .
 .\" XXX check number of arguments
 .
@@ -2613,7 +2617,8 @@
 .
 .  br
 .
-.  if !\n[doc-display-depth] .tm mdoc: Extraneous .Ed
+.  if !\n[doc-display-depth] \
+.    tm mdoc: Extraneous .Ed
 .
 .  if "\*[doc-display-type-stack\n[doc-display-depth]]"literal" \{\
 .    ft \n[doc-curr-font]
@@ -2627,7 +2632,8 @@
 .  nr doc-display-depth -1
 .
 .  fi
-.  if t .ad
+.  if t \
+.    ad
 ..
 .
 .
@@ -2743,9 +2749,8 @@
 .          doc-set-column-tab\n[doc-column-depth]
 .          nr doc-list-indent-stack\n[doc-list-depth] 0
 '          in -\n[doc-column-indent-width]u
-.          if !\n[doc-compact-list-stack\n[doc-list-depth]] \{\
+.          if !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .            sp \n[doc-display-vertical]u
-.          \}
 .
 .          nf
 .          nr doc-column-depth 0
@@ -2799,20 +2804,17 @@
 .      doc-get-arg-width \n[doc-arg-ptr]
 .      ie (\n[doc-width] > 2) \{\
 .        nr doc-list-indent-stack\n[doc-list-depth] (\n[doc-width] * \n[doc-fixed-width])
-.        if (\n[doc-width] == 3) \{\
-.          if \A'\*[doc-str-dBla]' .if r doc-width-\*[doc-str-dBla] \{\
-.            nr doc-list-indent-stack\n[doc-list-depth] \*[doc-str-dBla]
-.          \}
-.        \}
+.        if (\n[doc-width] == 3) \
+.          if \A'\*[doc-str-dBla]' \
+.            if r doc-width-\*[doc-str-dBla] \
+.              nr doc-list-indent-stack\n[doc-list-depth] \*[doc-str-dBla]
 .      \}
 .      el \{\
 .        doc-get-arg-type \*[doc-str-dBla]
-.        ie "\*[doc-arg-type]"macro" \{\
+.        ie "\*[doc-arg-type]"macro" \
 .          nr doc-list-indent-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
-.        \}
-.        el \{\
+.        el \
 .          nr doc-list-indent-stack\n[doc-list-depth] \*[doc-str-dBla]u
-.        \}
 .      \}
 .    \}
 .
@@ -2820,24 +2822,23 @@
 .      nr doc-reg-dBla 1
 .      nr doc-arg-ptr +1
 .
-.      ie "\*[doc-arg\n[doc-arg-ptr]]"indent" \{\
+.      ie "\*[doc-arg\n[doc-arg-ptr]]"indent" \
 .        nr doc-list-offset-stack\n[doc-list-depth] \n[doc-display-indent]u
-.      \}
 .      el \{\
 .        ds doc-str-dBla \*[doc-arg\n[doc-arg-ptr]]
 .
 .        doc-get-arg-width \n[doc-arg-ptr]
 .        ie (\n[doc-width] > 2) \{\
 .          nr doc-list-offset-stack\n[doc-list-depth] (\n[doc-width] * \n[doc-fixed-width])
-.          if \A'\*[doc-str-dBla]' .if r doc-width-\*[doc-str-dBla] \{\
-.            nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
-.          \}
+.          if \A'\*[doc-str-dBla]' \
+.            if r doc-width-\*[doc-str-dBla] \
+.              nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
 .        \}
 .        el \{\
-.          ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.          ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .            nr doc-list-offset-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
-.          \}
-.          el .nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
+.          el \
+.            nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
 .        \}
 .      \}
 .    \}
@@ -2848,7 +2849,8 @@
 .        ds doc-arg\n[doc-column-depth] \*[doc-arg\n[doc-arg-ptr]]
 .      \}
 .    \}
-.    if (\n[doc-num-args] > \n[doc-arg-ptr]) .doc-do-Bl-args
+.    if (\n[doc-num-args] > \n[doc-arg-ptr]) \
+.      doc-do-Bl-args
 .  \}
 ..
 .
@@ -2862,9 +2864,8 @@
 .\" NS   doc-str-El, doc-reg-El
 .
 .de El
-.  ie \n[.$] \{\
+.  ie \n[.$] \
 .    tm Usage: .El (#\n[.c])
-.  \}
 .  el \{\
 .    ds doc-macro-name El
 .    nr doc-reg-El 0
@@ -2875,9 +2876,8 @@
 .      doc-do-end-column-list
 .    \}
 .
-.    if "\*[doc-str-El]"enum-list" \{\
+.    if "\*[doc-str-El]"enum-list" \
 .      nr doc-enum-list-count 0
-.    \}
 .
 .    if \n[doc-have-diag-list] \{\
 .      nr doc-reg-El 1
@@ -2911,7 +2911,8 @@
 .      nr doc-reg-El 1
 .    \}
 .
-.    if !\n[doc-reg-El] .doc-end-list
+.    if !\n[doc-reg-El] \
+.      doc-end-list
 .
 .    br
 .  \}
@@ -2944,7 +2945,8 @@
 .  \" .tmc Here is
 .  \" .tm1 " doc-list-stack[\n[doc-list-depth]]==\*[doc-str-It]
 .
-.  if !\n[cR] .ne 3v
+.  if !\n[cR] \
+.    ne 3v
 .
 .  ie \n[.$] \{\
 .    ds doc-macro-name It
@@ -2998,12 +3000,12 @@
 .
 .      if \n[doc-in-files-section] \{\
 .        ds doc-save-Pa-font \*[doc-Pa-font]
-.        if n .ds doc-Pa-font \*[doc-No-font]
+.        if n \
+.          ds doc-Pa-font \*[doc-No-font]
 .      \}
 .
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .        \*[doc-arg\n[doc-arg-ptr]]
-.      \}
 .      el \{\
 .        nr doc-arg-ptr -1
 .        No
@@ -3011,13 +3013,14 @@
 .
 .      \" tm in It here is doc-out-string==\*[doc-out-string]
 .      \" tm It mid arg(doc-arg[1])==\*[doc-arg1]; doc-nesting-level==\n[doc-nesting-level]; doc-diversion-level==\n[doc-diversion-level]; doc-saved-list-immediate==\n[doc-saved-list-immediate]; doc-args-processed==\n[doc-args-processed]
-.      ie \n[doc-saved-list-immediate] \{\
+.      ie \n[doc-saved-list-immediate] \
 .        ds doc-saved-list-type "\*[doc-str-It]
-.      \}
-.      el .doc-\*[doc-str-It]
+.      el \
+.        doc-\*[doc-str-It]
 .    \}
 .  \}
-.  el .doc-\*[doc-str-It]
+.  el \
+.    doc-\*[doc-str-It]
 ..
 .
 .
@@ -3048,10 +3051,10 @@
 .  nr doc-reg-dhl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-dhl]u
 .
-.  ie (\w\*[doc-out-string]u >= \n[doc-list-indent-stack\n[doc-list-depth]]u) \{\
+.  ie (\w\*[doc-out-string]u >= \n[doc-list-indent-stack\n[doc-list-depth]]u) \
 .    nop \&\*[doc-out-string]
-.  \}
-.  el \&\*[doc-out-string]\h'|\n[doc-reg-dhl]u'\c
+.  el \
+.    nop \&\*[doc-out-string]\h'|\n[doc-reg-dhl]u'\c
 .
 .  nr doc-nesting-level -1
 .  ds doc-out-string
@@ -3138,10 +3141,10 @@
 .  nr doc-reg-ddl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-ddl]u
 .
-.  ie (\w\*[doc-out-string]u >= \n[doc-list-indent-stack\n[doc-list-depth]]u) \{\
+.  ie (\w\*[doc-out-string]u >= \n[doc-list-indent-stack\n[doc-list-depth]]u) \
 .    nop \&\*[doc-out-string]
-.  \}
-.  el \&\*[doc-out-string]\h'|\n[doc-reg-ddl]u'\c
+.  el \
+.    nop \&\*[doc-out-string]\h'|\n[doc-reg-ddl]u'\c
 .
 .  nr doc-nesting-level -1
 .  \" .nr doc-diversion-level +1
@@ -3163,10 +3166,13 @@
 .  nr doc-curr-size \n[.s]
 .
 .  ie \n[doc-have-diag-list] \{\
-.    ie ((\n[.c] - \n[doc-diag-list-input-line-count]) > 1) .doc-paragraph
-.    el .br
+.    ie ((\n[.c] - \n[doc-diag-list-input-line-count]) > 1) \
+.      doc-paragraph
+.    el \
+.      br
 .  \}
-.  el .br
+.  el \
+.    br
 .  nr doc-diag-list-input-line-count \n[.c]
 .
 .  nop \&\*[doc-Sy-font]\*[doc-out-string]\c
@@ -3186,7 +3192,8 @@
 .
 .de doc-tag-list
 .  \" tm in doc-tag-list here is doc-out-string==\*[doc-out-string]
-.  if !\n[have-tag-width] .doc-get-tag-width
+.  if !\n[have-tag-width] \
+.    doc-get-tag-width
 .  doc-set-vertical-and-indent-and-offset
 .  nr doc-reg-dtl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-dtl]u
@@ -3195,11 +3202,12 @@
 .    nop \&\*[doc-out-string]
 .    br
 .  \}
-.  el \&\*[doc-out-string]\h'|\n[doc-reg-dtl]u'\c
+.  el \
+.    nop \&\*[doc-out-string]\h'|\n[doc-reg-dtl]u'\c
 .
-.  if \n[doc-in-files-section] \{\
-.    if n .ds doc-Pa-font \*[doc-save-Pa-font]
-.  \}
+.  if \n[doc-in-files-section] \
+.    if n \
+.      ds doc-Pa-font \*[doc-save-Pa-font]
 .
 .  nr doc-nesting-level -1
 .  nr doc-list-immediate 0
@@ -3226,9 +3234,8 @@
 .      ds doc-tag-width-stack\n[lN] No
 .      nr doc-list-indent-stack\n[lN] \n[No]
 .    \}
-.    if !"\*[doc-tag-width-stack\n[doc-list-depth]]"\*[doc-tag-width-stack\n[lN]]" \{\
+.    if !"\*[doc-tag-width-stack\n[doc-list-depth]]"\*[doc-tag-width-stack\n[lN]]" \
 .      nr doc-have-indent 1
-.    \}
 .  \}
 ..
 .
@@ -3240,18 +3247,17 @@
 .  ie \n[doc-have-indent] \{\
 .    nr doc-have-indent 0
 .    nr have-tag-width 0
-.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \{\
+.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .      sp \n[doc-display-vertical]u
-.    \}
 .    in (\n[.i]u + \n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-list-offset-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  \}
 .  el \{\
-.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \{\
+.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .      sp \n[doc-display-vertical]u
-.    \}
 .  \}
 .
-.  if !\n[cR] .ne 2v
+.  if !\n[cR] \
+.    ne 2v
 ..
 .
 .
@@ -3262,18 +3268,17 @@
 .  ie \n[doc-have-indent] \{\
 .    nr doc-have-indent 0
 .    nr have-tag-width 0
-.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \{\
+.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .      sp \n[doc-display-vertical]u
-.    \}
 .    in (\n[.i]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
 .  \}
 .  el \{\
-.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \{\
+.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .      sp \n[doc-display-vertical]u
-.    \}
 .  \}
 .
-.  if !\n[cR] .ne 2v
+.  if !\n[cR] \
+.    ne 2v
 ..
 .
 .
@@ -3312,13 +3317,12 @@
 '    in (\n[.i]u - \n[doc-list-indent-stack\n[doc-list-depth]]u - \n[doc-list-offset-stack\n[doc-list-depth]]u - \n[doc-digit-width]u)
 .    rr doc-list-offset-stack\n[doc-list-depth]
 .  \}
-.  el \{\
+.  el \
 '    in (\n[.i]u - \n[doc-list-indent-stack\n[doc-list-depth]]u - \n[doc-digit-width]u)
-.  \}
 .
-.  if (\n[doc-list-depth] <= 0) \{\
+.  if (\n[doc-list-depth] <= 0) \
 .    tm mdoc warning: extraneous .El call (#\n[.c])
-.  \}
+.
 .  doc-decrement-list-stack
 .  nr doc-list-depth -1
 .  doc-increment-list-stack
@@ -3364,9 +3368,8 @@
 .
 .de Xr
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Xr
 .      doc-parse-args \$@
@@ -3375,13 +3378,11 @@
 .
 .  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
-.      ie !"\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.      ie !"\*[doc-type\n[doc-arg-ptr]]"string" \
 .        doc-do-xref-\*[doc-type\n[doc-arg-ptr]]
-.      \}
 .      el \{\
 .        as doc-out-string \&\*[doc-Xr-font]
 .        as doc-out-string \*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
@@ -3392,9 +3393,8 @@
 .            nr doc-arg-ptr +1
 .          \}
 .
-.          if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
+.          if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \
 .            doc-do-\*[doc-type\n[doc-arg-ptr]]
-.          \}
 .        \}
 .      \}
 .      doc-print-and-reset
@@ -3410,9 +3410,8 @@
 .
 .de Sx
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Sx Section Header \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Sx
 .      doc-parse-args \$@
@@ -3496,9 +3495,8 @@
 .\" NS   doc-reg-dcl
 .
 .de doc-column-list
-.  if !\n[doc-list-indent-stack\n[doc-list-depth]] \{\
+.  if !\n[doc-list-indent-stack\n[doc-list-depth]] \
 .    nr doc-list-indent-stack\n[doc-list-depth] \n[doc-column-indent-width]u
-.  \}
 .  if !\n[.u] \{\
 .    fi
 '    in (\n[.i]u + \n[doc-column-indent-width]u)
@@ -3515,7 +3513,8 @@
 .    \}
 .    doc-do-\*[doc-type\n[doc-arg-ptr]]
 .  \}
-.  el .tm Usage: .It column_string [Ta [column_string ...] ] (#\n[.c])
+.  el \
+.    tm Usage: .It column_string [Ta [column_string ...] ] (#\n[.c])
 ..
 .
 .
@@ -3566,9 +3565,8 @@
 .  in (\n[.i]u + \n[doc-display-indent]u)
 .
 .  ie !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Dl argument ... (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Dl
 .
@@ -3583,9 +3581,8 @@
 .      Li
 .    \}
 .  \}
-.  el \{\
+.  el \
 .    tm Usage: .Dl not callable by other macros (#\n[.c])
-.  \}
 .
 .  in (\n[.i]u - \n[doc-display-indent]u)
 ..
@@ -3604,9 +3601,8 @@
 .  in (\n[.i]u + \n[doc-display-indent]u)
 .
 .  ie !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .D1 argument ... (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name D1
 .
@@ -3619,13 +3615,14 @@
 .      nr doc-num-args \n[.$]
 .      doc-parse-arg-vector
 .      nr doc-arg-ptr +1
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" .\*[doc-arg\n[doc-arg-ptr]]
-.      el .No
+.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
+.        \*[doc-arg\n[doc-arg-ptr]]
+.      el \
+.        No
 .    \}
 .  \}
-.  el \{\
+.  el \
 .    tm Usage: .D1 not callable by other macros (#\n[.c])
-.  \}
 .
 .  in (\n[.i]u - \n[doc-display-indent]u)
 ..
@@ -3659,7 +3656,8 @@
 .      doc-paragraph
 .      rs
 .    \}
-.    el .br
+.    el \
+.      br
 .  \}
 .
 .  nr doc-variable-type +1
@@ -3667,8 +3665,10 @@
 .  nr doc-curr-size \n[.s]
 .  nop \&\*[doc-Ft-font]\$*
 .
-.  ie !\n[doc-have-old-function] .br
-.  el \*[doc-soft-space]
+.  ie !\n[doc-have-old-function] \
+.    br
+.  el \
+.    nop \*[doc-soft-space]
 .
 .  ft \n[doc-curr-font]
 .  fs \n[doc-curr-size]
@@ -3752,7 +3752,8 @@
 .    nr doc-is-func-type 1
 .  \}
 .
-.  if \n[.$] .as doc-out-string \&\*[doc-Ft-font]\$*
+.  if \n[.$] \
+.    as doc-out-string \&\*[doc-Ft-font]\$*
 .  as doc-out-string \&\ \f[P]
 ..
 .
@@ -3767,9 +3768,8 @@
 .
 .de Fa
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .Fa Function Arguments ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name Fa
 .
@@ -3784,9 +3784,8 @@
 .    \}
 .  \}
 .
-.  ie \n[doc-func-arg-count] \{\
+.  ie \n[doc-func-arg-count] \
 .    doc-do-function
-.  \}
 .  el \{\
 .    if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .      as doc-out-string \*[doc-Fa-font]
@@ -3795,9 +3794,9 @@
 .      nr doc-curr-size \n[.s]
 .      doc-print-recursive
 .
-.      if \n[doc-in-synopsis-section] \{\
-.        if \n[doc-function-count] .br
-.      \}
+.      if \n[doc-in-synopsis-section] \
+.        if \n[doc-function-count] \
+.          br
 .    \}
 .  \}
 ..
@@ -3816,7 +3815,8 @@
 .    nr doc-num-function-args 0
 .    nr doc-function-args-processed 0
 .    doc-insert-hard-space \*[doc-arg\n[doc-arg-ptr]]
-.    if (\n[doc-num-function-args] > 1) .rn doc-function-arg doc-arg\n[doc-arg-ptr]
+.    if (\n[doc-num-function-args] > 1) \
+.      rn doc-function-arg doc-arg\n[doc-arg-ptr]
 .    \" .\}
 .
 .    if (\n[doc-func-arg-count] > 1) \{\
@@ -3835,9 +3835,8 @@
 .    nr doc-func-arg-count +1
 .    doc-do-function
 .  \}
-.  el \{\
+.  el \
 .    doc-reset-args
-.  \}
 ..
 .
 .
@@ -3905,11 +3904,11 @@
 .    nr doc-is-func-type 0
 .    rs
 .
-.    ie (\n[doc-in-synopsis-section] > 1) .br
+.    ie (\n[doc-in-synopsis-section] > 1) \
+.      br
 .    el \{\
-.      if !\n[doc-indent-synopsis] \{\
+.      if !\n[doc-indent-synopsis] \
 .        nr doc-indent-synopsis (8u * \n[doc-fixed-width]u)
-.      \}
 .    \}
 .
 .    in +\n[doc-indent-synopsis]u
@@ -3934,9 +3933,8 @@
 .      doc-print-and-reset
 .    \}
 .
-.    if \n[doc-in-synopsis-section] \{\
+.    if \n[doc-in-synopsis-section] \
 .      in -\n[doc-indent-synopsis]u
-.    \}
 .  \}
 ..
 .
@@ -3961,9 +3959,8 @@
 .    nr doc-num-function-args 0
 .    nr doc-function-args-processed 0
 .    doc-insert-hard-space \*[doc-arg\n[doc-arg-ptr]]
-.    if (\n[doc-num-function-args] > 1) \{\
+.    if (\n[doc-num-function-args] > 1) \
 .      rn doc-function-arg doc-arg\n[doc-arg-ptr]
-.    \}
 .  \}
 .
 .  as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
@@ -3990,8 +3987,10 @@
 .  as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .  as doc-out-string \*[doc-arg\n[doc-arg-ptr]]
 .
-.  ie (\n[doc-args-processed] > \n[doc-arg-ptr]) .No
-.  el .doc-print-and-reset
+.  ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \
+.    No
+.  el \
+.    doc-print-and-reset
 ..
 .
 .
@@ -4006,7 +4005,8 @@
 .    nr doc-arg-ptr +1
 .    No
 .  \}
-.  el .doc-print-and-reset
+.  el \
+.    doc-print-and-reset
 ..
 .
 .
@@ -4022,7 +4022,8 @@
 .  hy 0
 .
 .  if (\n[doc-args-processed] == 0) \{\
-.    ie (\n[.$] == 0) .tm Usage: .Fo function_name (#\n[.c])
+.    ie (\n[.$] == 0) \
+.      tm Usage: .Fo function_name (#\n[.c])
 .    el \{\
 .      ds doc-macro-name Fo
 .
@@ -4067,11 +4068,11 @@
 .    nr doc-is-func-type 0
 .    rs
 .
-.    ie (\n[doc-in-synopsis-section] > 1) .br
+.    ie (\n[doc-in-synopsis-section] > 1) \
+.      br
 .    el \{\
-.      if !\n[doc-indent-synopsis] \{\
+.      if !\n[doc-indent-synopsis] \
 .        nr doc-indent-synopsis (8u * \n[doc-fixed-width]u)
-.      \}
 .    \}
 .
 .    in +\n[doc-indent-synopsis]u
@@ -4125,9 +4126,11 @@
 .    nr doc-arg-ptr +1
 .    \*[doc-arg\n[doc-arg-ptr]]
 .  \}
-.  el .doc-print-and-reset
+.  el \
+.    doc-print-and-reset
 .
-.  if \n[doc-in-synopsis-section] .in -\n[doc-indent-synopsis]u
+.  if \n[doc-in-synopsis-section] \
+.    in -\n[doc-indent-synopsis]u
 .
 .  hy
 ..
@@ -4177,7 +4180,8 @@
 .de Rs
 .  nr doc-is-reference 1
 .  doc-reset-reference
-.  if \n[doc-in-see-also-section] .doc-paragraph
+.  if \n[doc-in-see-also-section] \
+.    doc-paragraph
 .  nr doc-reference-count 0
 ..
 .
@@ -4221,91 +4225,101 @@
 .  if \n[doc-author-count] \{\
 .    nop \&\*[doc-author-name1],
 .    nr doc-authors-processed 1
-.    if (\n[doc-author-count] > 1) \{\
+.    if (\n[doc-author-count] > 1) \
 .      doc-print-reference-authors
-.    \}
 .    nr doc-reference-count -\n[doc-author-count]
 .  \}
 .
 .  if \n[doc-reference-title-count] \{\
 .    nr doc-reference-count -1
 .    ie !\n[doc-reference-count] \{\
-.      ie ((\n[doc-journal-count] == 1) : (\n[doc-book-count] == 1)) \{\
+.      ie ((\n[doc-journal-count] == 1) : (\n[doc-book-count] == 1)) \
 .        nop \&\*[q]\*[doc-reference-title-name]\*[q].
-.      \}
-.      el \{\
+.      el \
 .        nop \&\*[doc-Em-font]\*[doc-reference-title-name]\*[doc-No-font].
-.      \}
 .    \}
 .    el \{\
-.      ie ((\n[doc-journal-count] == 1) : (\n[doc-book-count] == 1)) \{\
+.      ie ((\n[doc-journal-count] == 1) : (\n[doc-book-count] == 1)) \
 .        nop \&\*[q]\*[doc-reference-title-name]\*[q],
-.      \}
-.      el \{\
+.      el \
 .        nop \&\*[doc-Em-font]\*[doc-reference-title-name]\*[doc-No-font],
-.      \}
 .    \}
 .  \}
 .
 .  if \n[doc-book-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \{\
+.    ie !\n[doc-reference-count] \
 .      nop \&\*[doc-Em-font]\*[doc-book-name]\*[doc-No-font].
-.    \}
-.    el \&\*[doc-Em-font]\*[doc-book-name]\*[doc-No-font],
+.    el \
+.      nop \&\*[doc-Em-font]\*[doc-book-name]\*[doc-No-font],
 .  \}
 .
 .  if \n[doc-journal-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \{\
+.    ie !\n[doc-reference-count] \
 .      nop \&\*[doc-Em-font]\*[doc-journal-name]\*[doc-No-font].
-.    \}
-.    el \&\*[doc-Em-font]\*[doc-journal-name]\*[doc-No-font],
+.    el \
+.      nop \&\*[doc-Em-font]\*[doc-journal-name]\*[doc-No-font],
 .  \}
 .
 .  if \n[doc-report-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \&\*[doc-report-name].
-.    el \&\*[doc-report-name],
+.    ie !\n[doc-reference-count] \
+.      nop \&\*[doc-report-name].
+.    el \
+.      nop \&\*[doc-report-name],
 .  \}
 .
 .  if \n[doc-issue-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \&\*[doc-issue-name].
-.    el \&\*[doc-issue-name],
+.    ie !\n[doc-reference-count] \
+.      nop \&\*[doc-issue-name].
+.    el \
+.      nop \&\*[doc-issue-name],
 .  \}
 .
 .  if \n[doc-volume-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \&\*[doc-volume-name].
-.    el \&\*[doc-volume-name],
+.    ie !\n[doc-reference-count] \
+.      nop \&\*[doc-volume-name].
+.    el \
+.      nop \&\*[doc-volume-name],
 .  \}
 .
 .  if \n[doc-page-number-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \&\*[doc-page-number-string].
-.    el \&\*[doc-page-number-string],
+.    ie !\n[doc-reference-count] \
+.      nop \&\*[doc-page-number-string].
+.    el \
+.      nop \&\*[doc-page-number-string],
 .  \}
 .
 .  if \n[doc-corporate-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \&\*[doc-corporate-name].
-.    el \&\*[doc-corporate-name],
+.    ie !\n[doc-reference-count] \
+.      nop \&\*[doc-corporate-name].
+.    el \
+.      nop \&\*[doc-corporate-name],
 .  \}
 .
 .  if \n[doc-date-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \&\*[doc-date].
-.    el \&\*[doc-date],
+.    ie !\n[doc-reference-count] \
+.      nop \&\*[doc-date].
+.    el \
+.      nop \&\*[doc-date],
 .  \}
 .
 .  if \n[doc-optional-count] \{\
 .    nr doc-reference-count -1
-.    ie !\n[doc-reference-count] \&\*[doc-optional-string].
-.    el \&\*[doc-optional-string],
+.    ie !\n[doc-reference-count] \
+.      nop \&\*[doc-optional-string].
+.    el \
+.      nop \&\*[doc-optional-string],
 .  \}
 .
-.  if \n[doc-reference-count] .tm mdoc warning: unresolved reference problem
+.  if \n[doc-reference-count] \
+.    tm mdoc warning: unresolved reference problem
 ..
 .
 .
@@ -4314,9 +4328,8 @@
 .
 .de doc-print-reference-authors
 .  nr doc-authors-processed +1
-.  ie (\n[doc-author-count] == \n[doc-authors-processed]) \{\
+.  ie (\n[doc-author-count] == \n[doc-authors-processed]) \
 .    nop \&and \*[doc-author-name\n[doc-authors-processed]],
-.  \}
 .  el \{\
 .    nop \&\*[doc-author-name\n[doc-authors-processed]],
 .    doc-print-reference-authors
@@ -4331,7 +4344,8 @@
 .
 .de %A
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%A Author_name (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%A Author_name (#\n[.c])
 .    el \{\
 .      nr doc-author-count +1
 .      nr doc-reference-count +1
@@ -4361,7 +4375,8 @@
 .
 .de %B
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%B Book Name (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%B Book Name (#\n[.c])
 .    el \{\
 .      if \n[doc-is-reference] \{\
 .        nr doc-book-count +1
@@ -4391,7 +4406,8 @@
 .      as doc-out-string \&\*[doc-Em-font]
 .      doc-print-recursive
 .    \}
-.    el .doc-do-references
+.    el \
+.      doc-do-references
 .  \}
 ..
 .
@@ -4406,7 +4422,8 @@
 .
 .de %D
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%D Date (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%D Date (#\n[.c])
 .    el \{\
 .      nr doc-date-count +1
 .      nr doc-reference-count +1
@@ -4444,7 +4461,8 @@
 .
 .de %J
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%J Journal Name (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%J Journal Name (#\n[.c])
 .    el \{\
 .      ds doc-macro-name %J
 .      nr doc-journal-count +1
@@ -4478,7 +4496,8 @@
 .
 .de %N
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%N issue number (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%N issue number (#\n[.c])
 .    el \{\
 .      nr doc-issue-count +1
 .      nr doc-reference-count +1
@@ -4508,9 +4527,8 @@
 .
 .de %O
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .%O optional information ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      nr doc-optional-count +1
 .      nr doc-reference-count +1
@@ -4545,7 +4563,8 @@
 .
 .de %P
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%P page numbers ... \*[doc-punct-chars] (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%P page numbers ... \*[doc-punct-chars] (#\n[.c])
 .    el \{\
 .      nr doc-page-number-count +1
 .      nr doc-reference-count +1
@@ -4583,7 +4602,8 @@
 .
 .de %Q
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%Q Corporate or Foreign Author (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%Q Corporate or Foreign Author (#\n[.c])
 .    el \{\
 .      nr doc-corporate-count +1
 .      nr doc-reference-count +1
@@ -4621,7 +4641,8 @@
 .
 .de %R
 .  if (\n[doc-args-processed] == 0) \{\
-.    ie (\n[.$] == 0) .tm Usage: .%R reference report (#\n[.c])
+.    ie (\n[.$] == 0) \
+.      tm Usage: .%R reference report (#\n[.c])
 .    el \{\
 .      nr doc-report-count +1
 .      nr doc-reference-count +1
@@ -4659,7 +4680,8 @@
 .
 .de %T
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%T reference title (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%T reference title (#\n[.c])
 .    el \{\
 .      if \n[doc-is-reference] \{\
 .        nr doc-reference-title-count +1
@@ -4688,7 +4710,8 @@
 .      as doc-out-string \&\*[doc-Em-font]
 .      doc-print-recursive
 .    \}
-.    el .doc-do-references
+.    el \
+.      doc-do-references
 .  \}
 ..
 .
@@ -4700,7 +4723,8 @@
 .
 .de %V
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] .tm Usage: .%V Volume , ... \*[doc-punct-chars] (#\n[.c])
+.    ie !\n[.$] \
+.      tm Usage: .%V Volume , ... \*[doc-punct-chars] (#\n[.c])
 .    el \{\
 .      ds doc-macro-name %V
 .      nr doc-volume-count +1
@@ -4731,9 +4755,8 @@
 .
 .  ie "\*[doc-str-ddr]"macro" \{\
 .    \" .as doc-out-string \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.    ie "\*[doc-arg\n[doc-arg-ptr]]"Tn" \{\
+.    ie "\*[doc-arg\n[doc-arg-ptr]]"Tn" \
 .      doc-reference-trademark
-.    \}
 .    el \{\
 .      doc-append-arg doc-do-references macro
 .      \*[doc-arg\n[doc-arg-ptr]]
@@ -4741,10 +4764,10 @@
 .  \}
 .  el \{\
 .    nr doc-reg-ddr \n[doc-arg-ptr]
-.    ie "\*[doc-str-ddr]"string" \{\
+.    ie "\*[doc-str-ddr]"string" \
 .      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
-.    \}
-.    el .as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
+.    el \
+.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .    \" .el \{\
 .    \" .  as doc-out-string \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .    \" .  as doc-out-string \*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
@@ -4784,7 +4807,8 @@
 .    br
 .    ta T 9n
 .  \}
-.  el .ta T 8n
+.  el \
+.    ta T 8n
 .
 .  nf
 .  so \$1
@@ -4808,18 +4832,15 @@
 .
 .de An
 .  if \n[doc-in-authors-section] \{\
-.    ie \n[doc-have-author] \{\
+.    ie \n[doc-have-author] \
 .      br
-.    \}
-.    el \{\
+.    el \
 .      nr doc-have-author 1
-.    \}
 .  \}
 .
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \{\
+.    ie !\n[.$] \
 .      tm Usage: .An author_name ... \*[doc-punct-chars] (#\n[.c])
-.    \}
 .    el \{\
 .      ds doc-macro-name An
 .      doc-parse-args \$@
@@ -4863,9 +4884,8 @@
 .
 .\" XXX
 .
-.  ie !\n[.$] \{\
+.  ie !\n[.$] \
 .    tm Usage: .Rv [-std] (#\n[.c])
-.  \}
 .  el \{\
 .    \" .ds doc-macro-name Rv
 .    \" .nr doc-arg-ptr 0
@@ -4883,9 +4903,8 @@
 .
 .    if "\$1"-std" \{\
 .      doc-reg-Rv \*[doc-section]
-.      if ((\n[doc-reg-Rv] < 2) : (\n[doc-reg-Rv] > 3)) \{\
+.      if ((\n[doc-reg-Rv] < 2) : (\n[doc-reg-Rv] > 3)) \
 .        tm Usage: .Rv -std in sections 2 and 3 only
-.      \}
 .      br
 .      nop \&The
 .      Fn \$2
