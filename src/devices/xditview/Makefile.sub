@@ -3,7 +3,7 @@ MAN1=gxditview.n
 MLIB=$(LIBM)
 XLIBS=$(LIBXUTIL)
 EXTRA_CFLAGS=$(X_CFLAGS)
-EXTRA_LDFLAGS=$(X_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS) -lXt -lXaw -Xmu
+EXTRA_LDFLAGS=$(X_LIBS) $(X_PRE_LIBS) -lXaw -lXmu -lXt -lX11 $(X_EXTRA_LIBS)
 OBJS=\
   device.$(OBJEXT) \
   draw.$(OBJEXT) \
@@ -45,7 +45,7 @@ install_data: $(srcdir)/GXditview.ad
 	if test -f $(appresdir)/GXditview; then \
 	  mv $(appresdir)/GXditview $(appresdir)/GXditview.old; \
 	fi
-	$(INSTALL_DATA) GXditview.ad $(appresdir)/GXditview
+	$(INSTALL_DATA) $(srcdir)/GXditview.ad $(appresdir)/GXditview
 
 uninstall_sub:
 	-rm -f $(appresdir)/GXditview
