@@ -1578,7 +1578,7 @@ void token::next()
 	    curenv->set_font(atoi(s.contents()));
 	  if (compatible_flag)
 	    break;
-	  type = TOKEN_TRANSPARENT_ESCAPE;
+	  type = TOKEN_OPAQUE_ESCAPE;
 	  return;
 	}
       case 'g':
@@ -1599,7 +1599,7 @@ void token::next()
 	  curenv->set_char_height(x);
 	if (compatible_flag)
 	  break;
-	type = TOKEN_TRANSPARENT_ESCAPE;
+	type = TOKEN_OPAQUE_ESCAPE;
 	return;
       case 'k':
 	nm = read_escape_name();
@@ -1657,21 +1657,21 @@ void token::next()
 	do_register();
 	if (compatible_flag)
 	  break;
-	type = TOKEN_TRANSPARENT_ESCAPE;
+	type = TOKEN_OPAQUE_ESCAPE;
 	return;
       case 's':
 	if (read_size(&x))
 	  curenv->set_size(x);
 	if (compatible_flag)
 	  break;
-	type = TOKEN_TRANSPARENT_ESCAPE;
+	type = TOKEN_OPAQUE_ESCAPE;
 	return;
       case 'S':
 	if (get_delim_number(&x, 0))
 	  curenv->set_char_slant(x);
 	if (compatible_flag)
 	  break;
-	type = TOKEN_TRANSPARENT_ESCAPE;
+	type = TOKEN_OPAQUE_ESCAPE;
 	return;
       case 't':
 	type = TOKEN_NODE;
@@ -1876,6 +1876,8 @@ const char *token::description()
     return "a node";
   case TOKEN_NUMBERED_CHAR:
     return "`\\N'";
+  case TOKEN_OPAQUE_ESCAPE:
+    return "a transparent escape (`\\f', `\\H', `\\R', `\\s', `\\S')";
   case TOKEN_RIGHT_BRACE:
     return "`\\}'";
   case TOKEN_SPACE:
@@ -1892,8 +1894,6 @@ const char *token::description()
     return "`\\!'";
   case TOKEN_TRANSPARENT_DUMMY:
     return "`\\)'";
-  case TOKEN_TRANSPARENT_ESCAPE:
-    return "a transparent escape (`\\f', `\\H', `\\R', `\\s', `\\S')";
   case TOKEN_EOF:
     return "end of input";
   default:
@@ -2301,7 +2301,7 @@ void process_input_stack()
 	}
 	break;
       }
-    case token::TOKEN_TRANSPARENT_ESCAPE:
+    case token::TOKEN_OPAQUE_ESCAPE:
       bol = 0;
       break;
     case token::TOKEN_NEWLINE:
@@ -5571,7 +5571,7 @@ int token::add_to_node_list(node **pp)
     *pp = (*pp)->add_char(get_charinfo_by_number(val), curenv, &w, &s);
     break;
   case TOKEN_RIGHT_BRACE:
-  case TOKEN_TRANSPARENT_ESCAPE:
+  case TOKEN_OPAQUE_ESCAPE:
     break;
   case TOKEN_SPACE:
     n = new hmotion_node(curenv->get_space_width());
@@ -5651,6 +5651,9 @@ void token::process()
   case TOKEN_NUMBERED_CHAR:
     curenv->add_char(get_charinfo_by_number(val));
     break;
+  case TOKEN_OPAQUE_ESCAPE:
+    // handled in process_input_stack()
+    break;
   case TOKEN_REQUEST:
     // handled in process_input_stack()
     break;
@@ -5675,9 +5678,6 @@ void token::process()
     break;
   case TOKEN_TRANSPARENT_DUMMY:
     curenv->add_node(new transparent_dummy_node);
-    break;
-  case TOKEN_TRANSPARENT_ESCAPE:
-    // handled in process_input_stack()
     break;
   default:
     assert(0);

@@ -47,6 +47,7 @@ class token {
     TOKEN_NEWLINE,		// newline
     TOKEN_NODE,
     TOKEN_NUMBERED_CHAR,
+    TOKEN_OPAQUE_ESCAPE,	// \f, \H, \R, \s, \S
     TOKEN_PAGE_EJECTOR,
     TOKEN_REQUEST,
     TOKEN_RIGHT_BRACE,
@@ -57,9 +58,8 @@ class token {
     TOKEN_TAB,			// tab
     TOKEN_TRANSPARENT,		// \!
     TOKEN_TRANSPARENT_DUMMY,	// \)
-    TOKEN_TRANSPARENT_ESCAPE,	// \f, \H, \R, \s, \S
     TOKEN_EOF			// end of file
-    } type;
+  } type;
 public:
   token();
   ~token();
