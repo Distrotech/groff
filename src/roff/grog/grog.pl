@@ -6,10 +6,13 @@
 $prog = $0;
 $prog =~ s@.*/@@;
 
+$sp = "[\\s\\n]";
+
 push(@command, "groff");
 
 while ($ARGV[0] =~ /^-./) {
     $arg = shift(@ARGV);
+    $sp = "" if $arg eq "-C";
     last if $arg eq "--";
     push(@command, $arg);
 }
@@ -33,28 +36,28 @@ sub process {
 	return;
     }
     while (<FILE>) {
-	if (/^\.TS/) {
+	if (/^\.TS$sp/) {
 	    $_ = <FILE>;
 	    if (!/^\./) {
 		$tbl++;
 		$soelim++ if $level;
 	    }
 	}
-	elsif (/^\.EQ/) {
+	elsif (/^\.EQ$sp/) {
 	    $_ = <FILE>;
 	    if (!/^\./ || /^\.[0-9]/) {
 		$eqn++;
 		$soelim++ if $level;
 	    }
 	}
-	elsif (/^\.GS/) {
+	elsif (/^\.GS$sp/) {
 	    $_ = <FILE>;
 	    if (!/^\./) {
 		$grn++;
 		$soelim++ if $level;
 	    }
 	}
-	elsif (/^\.G1/) {
+	elsif (/^\.G1$sp/) {
 	    $_ = <FILE>;
 	    if (!/^\./) {
 		$grap++;
@@ -62,7 +65,7 @@ sub process {
 		$soelim++ if $level;
 	    }
 	}
-	elsif (/^\.PS([ 0-9.<].*)?$/) {
+	elsif (/^\.PS$sp([ 0-9.<].*)?$/) {
 	    if (/^\.PS\s*<\s*(\S+)/) {
 		$pic++;
 		$soelim++ if $level;
@@ -76,43 +79,43 @@ sub process {
 		}
 	    }
 	}
-	elsif (/^\.R1/ || /^\.\[/) {
+	elsif (/^\.R1$sp/ || /^\.\[$sp/) {
 	    $refer++;
 	    $soelim++ if $level;
 	}
-	elsif (/^\.[PLI]P/) {
+	elsif (/^\.[PLI]P$sp/) {
 	    $PP++;
 	}
 	elsif (/^\.P$/) {
 	    $P++;
 	}
-	elsif (/^\.(PH|SA)/) {
+	elsif (/^\.(PH|SA)$sp/) {
 	    $mm++;
 	}
-	elsif (/^\.TH/) {
+	elsif (/^\.TH$sp/) {
 	    $TH++;
 	}
-	elsif (/^\.SH/) {
+	elsif (/^\.SH$sp/) {
 	    $SH++;
 	}
-	elsif (/^\.([pnil]p|sh)/) {
+	elsif (/^\.([pnil]p|sh)$sp/) {
 	    $me++;
 	}
-	elsif (/^\.Dd/) {
+	elsif (/^\.Dd$sp/) {
 	    $mdoc++;
 	}
-	elsif (/^\.(Tp|Dp|De|Cx|Cl)/) {
+	elsif (/^\.(Tp|Dp|De|Cx|Cl)$sp/) {
 	    $mdoc_old = 1;
 	}
 	# In the old version of -mdoc `Oo' is a toggle, in the new it's
 	# closed by `Oc'.
-	elsif (/^\.Oo/) {
+	elsif (/^\.Oo$sp/) {
 	    $Oo++;
 	}
-	elsif (/^\.Oc/) {
+	elsif (/^\.Oc$sp/) {
 	    $Oo--;
 	}
-	if (/^\.so/) {
+	if (/^\.so$sp/) {
 	    chop;
 	    s/^.so *//;
 	    s/\\\".*//;

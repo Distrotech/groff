@@ -5,6 +5,7 @@
 soelim=@g@soelim
 
 opts=
+sp="([	 ]|$)"
 
 for arg
 do
@@ -13,6 +14,8 @@ do
 		shift; break;;
 	-)
 		break;;
+	-C)
+		sp=; opts="$opts -C"; shift;;
 	-*)
 		opts="$opts $arg"; shift;;
 	*)
@@ -20,12 +23,12 @@ do
 	esac
 done
 
-egrep -h '^\.(P|[LI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|Oc|TS|EQ|TH|SH|so|\[|R1|GS|G1|PH|SA)' $* \
+egrep -h "^\.(P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|Oc|TS|EQ|TH|SH|so|\[|R1|GS|G1|PH|SA)$sp" $* \
 | sed -e '/^\.so/s/^.*$/.SO_START\
 &\
 .SO_END/' \
 | $soelim \
-| egrep '^\.(P|[LI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|Oc|TS|EQ|TH|SH|\[|R1|GS|G1|PH|SA|SO_START|SO_END)' \
+| egrep '^\.(P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|Oc|TS|EQ|TH|SH|\[|R1|GS|G1|PH|SA|SO_START|SO_END)' \
 | awk '
 /^\.SO_START$/ { so = 1 }
 /^\.SO_END$/ { so = 0 }
