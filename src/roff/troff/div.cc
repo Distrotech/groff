@@ -1166,7 +1166,7 @@ void init_div_requests()
   number_reg_dictionary.define(".z", new diversion_name_reg);
   number_reg_dictionary.define(".o", new page_offset_reg);
   number_reg_dictionary.define(".p", new page_length_reg);
-  number_reg_dictionary.define(".q", new no_space_mode_reg);
+  number_reg_dictionary.define(".ns", new no_space_mode_reg);
   number_reg_dictionary.define(".d", new vertical_position_reg);
   number_reg_dictionary.define(".h", new high_water_mark_reg);
   number_reg_dictionary.define(".t", new distance_to_next_trap_reg);
