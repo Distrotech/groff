@@ -71,14 +71,6 @@
 .eo
 .
 .
-.\" NS Db macro
-.\" NS   defunct
-.
-.de Db
-.  tm mdoc error: .Db defunct (#\n[.c])
-..
-.
-.
 .\" NS doc-macro-name global string
 .\" NS   name of calling request (set in each user-requestable macro)
 .
@@ -873,21 +865,6 @@
 .
 .als Li doc-generic-macro
 .ds doc-Li-usage argument
-.
-.
-.\" NS Or user macro
-.\" NS   pipe symbol (OR)
-.\" NS
-.\" NS   this function uses the `Ic' font
-.\" NS
-.\" NS width register `Or' set in doc-common
-.\"
-.\" XXX: What is this function good for?  It sets a font but does not print
-.\"      a pipe symbol.  And it isn't documented.
-.
-.als Or doc-generic-macro
-.ds doc-Or-usage
-.als doc-Or-font doc-Ic-font
 .
 .
 .\" NS Ms user macro
@@ -3388,7 +3365,6 @@
 .  nr doc-reg-drgv 0
 .  while (\n[doc-reg-drgv] <= \n[doc-display-depth]) \{\
 .    ds doc-display-type-stack\n[doc-reg-drgv] "\*[doc-display-type-stack\n[doc-reg-drgv]-saved]
-.    nr doc-display-have-indent-stack\n[doc-reg-drgv] \n[doc-display-have-indent-stack\n[doc-reg-drgv]-saved]
 .    nr doc-display-indent-stack\n[doc-reg-drgv] \n[doc-display-indent-stack\n[doc-reg-drgv]-saved]
 .    nr doc-display-ad-stack\n[doc-reg-drgv] \n[doc-display-ad-stack\n[doc-reg-drgv]-saved]
 .    nr doc-display-fi-stack\n[doc-reg-drgv] \n[doc-display-fi-stack\n[doc-reg-drgv]-saved]
@@ -3409,6 +3385,7 @@
 .  nr doc-reg-drgv 1
 .  while (\n[doc-reg-drgv] <= \n[doc-list-depth]) \{\
 .    ds doc-list-type-stack\n[doc-reg-drgv] "\*[doc-list-type-stack\n[doc-reg-drgv]-saved]
+.    nr doc-list-have-indent-stack\n[doc-reg-drgv] \n[doc-list-have-indent-stack\n[doc-reg-drgv]-saved]
 .    nr doc-list-indent-stack\n[doc-reg-drgv] \n[doc-list-indent-stack\n[doc-reg-drgv]-saved]
 .    nr doc-compact-list-stack\n[doc-reg-drgv] \n[doc-compact-list-stack\n[doc-reg-drgv]-saved]
 .    ds doc-tag-prefix-stack\n[doc-reg-drgv] "\*[doc-tag-prefix-stack\n[doc-reg-drgv]-saved]
@@ -4354,14 +4331,6 @@
 .  \}
 .
 .  in -\n[doc-display-indent]u
-..
-.
-.
-.\" NS Ex user macro
-.\" NS   defunct
-.
-.de Ex
-.  tm mdoc error: .Ex defunct, use .D1: \$@ (#\n[.c])
 ..
 .
 .
@@ -6066,16 +6035,6 @@
 ..
 .
 .
-.\" NS Sf user macro
-.\" NS   defunct
-.\" NS
-.\" NS width register `Sf' set in doc-common
-.
-.de Sf
-.  tm mdoc error: .Sf defunct, use .Pf or .Ns (#\n[.c])
-..
-.
-.
 .\" NS Rv user macro
 .\" NS   return values
 .\" NS
@@ -6170,6 +6129,34 @@
 .  el \
 .    \*[doc-str-Lk]
 ..
+.
+.
+.\" NS doc-defunct-macro macro
+.\" NS   this is the skeleton for defunct macros
+.\" NS
+.
+.de doc-defunct-macro
+.  tmc mdoc error: .\$0 defunct
+.  if d doc-\$0-usage \
+.    tmc , \*[doc-\$0-usage]
+.  tm1 " (#\n[.c])
+..
+.
+.
+.\" obsolete macros
+.
+.als Db doc-defunct-macro
+.
+.als Ds doc-defunct-macro
+.
+.als Ex doc-defunct-macro
+.ds doc-Ex-usage use .D1
+.
+.als Or doc-defunct-macro
+.ds doc-Or-usage use `|'
+.
+.als Sf doc-defunct-macro
+.ds doc-Sf-usage use .Pf or .Ns
 .
 .
 .rn em e@

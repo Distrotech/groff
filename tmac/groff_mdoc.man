@@ -46,7 +46,7 @@
 .\" for an already extremely slow package.
 .\"
 .
-.Dd January 1, 2001
+.Dd April 10, 2001
 .Os
 .Dt GROFF_MDOC 7
 .
@@ -171,6 +171,7 @@ as follows:
 .    It "Options"
 .    It "Pathnames"
 .    It "Standards"
+.    It "Variable Types"
 .    It "Variables"
 .    It "Manual Page Cross References"
 .  El
@@ -1888,6 +1889,24 @@ Miscellaneous
 .St -iso8802-3
 .El
 .
+.Ss "Variable Types"
+.
+The
+.Ql .Vt
+macro may be used whenever a type is referenced.
+In the
+.Sx SYNOPSIS
+section, it causes a line break (useful for old style variable declarations).
+.Pp
+.Dl Usage: .Vt Ao type Ac ...
+.Pp
+.Bl -tag -xwidth ".Li .Vt\ extern\ char\ *optarg\ ;" -compact -offset 15n
+.It Li ".Vt extern char *optarg ;"
+.Vt extern char *optarg ;
+.It Li ".Vt FILE *"
+.Vt FILE *
+.El
+.
 .Ss Variables
 .
 Generic variable reference.
@@ -3341,8 +3360,10 @@ The message says all.
 .
 produces
 .
-.Pp
-.Sy "You can't use Sy here" . "\ " No "The message says all" .
+.Bl -diag
+.It You can't use Sy here.
+The message says all.
+.El
 .Pp
 .
 .It Fl hang
@@ -3631,11 +3652,9 @@ Suppress insertion of vertical space before the list and between list items.
 Here a list of the remaining macros which do not fit well into one of the
 above sections.
 We couldn't find real examples for the following macros:
-.Ql .Me ,
-.Ql .Or ,
-.Ql .Ot ,
+.Ql .Me
 and
-.Ql .Vt .
+.Ql .Ot .
 They are documented here for completeness \- if you know how to use them
 properly please send a mail to
 .Mt bug-groff@gnu.org
@@ -3688,28 +3707,6 @@ Its default width is 6n.
 .It Li .Mt
 To be written.
 .
-.It Li .Or
-This macro does nothing (probably a bug in the old
-.Nm \-mdoc
-implementation) \- it should output a
-.Dq pipe symbol (OR)
-according to the documentation in the
-.Nm \-mdoc
-source.
-We do not have an example for its intended use.
-Note that a pipe symbol can always be produced by using
-.Ql | ;
-if you do not use
-.Tn GNU
-.Xr troff
-requests directly, it will never interfere with the absolute position
-operator of troff.
-Alternatively, the string
-.Ql \e*[ba]
-is available.
-.Pp
-As a consequence, this macro is obsolete.
-.
 .It Li .Ot
 Exact usage unknown.
 The documentation in the
@@ -3738,13 +3735,6 @@ prints
 .Ed
 .Pp
 It is neither callable nor parsed and takes no arguments.
-.
-.It Li .Vt
-Exact usage unknown.
-The documentation in the
-.Nm \-mdoc
-source file describes it as
-.Dq "variable type (for forcing old style variable declarations)" .
 .El
 .
 .
