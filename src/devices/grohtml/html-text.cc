@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.cc
  *
@@ -707,6 +707,7 @@ void html_text::do_space (void)
     else {
       do_emittext("", 0);
       out->nl();
+      space_emitted = TRUE;
     }
   } else {
     html_indent *i = remove_indent(P_TAG);

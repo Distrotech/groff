@@ -388,8 +388,12 @@ void html_table::emit_col (int n)
 
     // move across to column n
     while (b != c) {
-      width = ((get_right(b) - b->left)*100 + get_effective_linelength()/2)
-	      / get_effective_linelength();
+      // we compute the difference after converting positions
+      // to avoid rounding errors
+      width = (get_right(b)*100 + get_effective_linelength()/2)
+		/ get_effective_linelength()
+	      - (b->left*100 + get_effective_linelength()/2)
+		  /get_effective_linelength();
       if (width)
 	out->put_string("<td width=\"")
 	    .put_number(width)
@@ -403,8 +407,10 @@ void html_table::emit_col (int n)
 	    .nl();
       b = b->next;
     }
-    width = ((get_right(b) - b->left)*100 + get_effective_linelength()/2)
-	    / get_effective_linelength();
+    width = (get_right(b)*100 + get_effective_linelength()/2)
+	      / get_effective_linelength()
+	    - (b->left*100 + get_effective_linelength()/2)
+		/get_effective_linelength();
     switch (b->alignment) {
     case 'C':
       out->put_string("<td width=\"")
@@ -622,8 +628,12 @@ int html_table::is_gap (cols *c)
   if (c == NULL || c->right <= 0 || c->next == NULL)
     return 0;
   else
-    return ((c->next->left - c->right)*100 + get_effective_linelength()/2)
-	   / get_effective_linelength();
+    // we compute the difference after converting positions
+    // to avoid rounding errors
+    return (c->next->left*100 + get_effective_linelength()/2)
+	     / get_effective_linelength()
+	   - (c->right*100 + get_effective_linelength()/2)
+	       / get_effective_linelength();
 }
 
 /*
