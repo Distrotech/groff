@@ -2052,9 +2052,9 @@ and enclosure macros: Test the value of a variable.
 .Bd -literal -offset indent
 \&.It Xo
 \&.Ic .ifndef
-\&.Oo \e&! Oc Ns Ar variable
-\&.Op Ar operator variable Ld
-\&.Xc
+\&.Oo \e&! Oc Ns Ar variable Oo
+\&.Ar operator variable Ld
+\&.Oc Xc
 .Ed
 .Pp
 .
@@ -2064,85 +2064,81 @@ produces
 .Bl -tag -width flag -compact
 .It Xo
 .Ic .ifndef
-.Oo \&! Oc Ns Ar variable
-.Op Ar operator variable Ld
-.Xc
+.Oo \&! Oc Ns Ar variable Oo
+.Ar operator variable Ld
+.Oc Xc
 .El
 .Ed
 .Pp
 .
 .
-\#
-\#=====================================================================
-\#
 .Sh PAGE STRUCTURE DOMAIN
 .
 .Ss Section Headers
 .
 The first three
-.Ql \&.Sh
-section header macros
-list below are required in every
-man page.
-The remaining section headers
-are recommended at the discretion of the author
-writing the manual page.
+.Ql .Sh
+section header macros listed below are required in every man page.
+The remaining section headers are recommended at the discretion of the
+author writing the manual page.
 The
-.Ql \&.Sh
-macro can take up to nine arguments.
-It is parsed and but is not callable.
-.Bl -tag -width ".Sh SYNOPSIS"
-.It \&.Sh NAME
+.Ql .Sh
+macro is parsed but not generally callable.
+It can be used as an argument in a call to
+.Ql .Sh
+only; it then reactivates the default font for
+.Ql .Sh .
+.
+.Bl -tag -xwidth ".Li .Sh\ DESCRIPTION"
+.It Li ".Sh NAME"
 The
-.Ql \&.Sh NAME
+.Ql Li ".Sh NAME"
 macro is mandatory.
-If not specified,
-the headers, footers and page layout defaults
-will not be set and things will be rather unpleasant.
+If not specified, headers, footers and page layout defaults will not be set
+and things will be rather unpleasant.
 The
 .Sx NAME
 section consists of at least three items.
 The first is the
-.Ql \&.Nm
+.Ql .Nm
 name macro naming the subject of the man page.
-The second is the Name Description macro,
-.Ql \&.Nd ,
-which separates the subject
-name from the third item, which is the description.
-The
-description should be the most terse and lucid possible,
-as the space available is small.
-.It \&.Sh SYNOPSIS
+The second is the name description macro,
+.Ql .Nd ,
+which separates the subject name from the third item, which is the
+description.
+The description should be the most terse and lucid possible, as the space
+available is small.
+.
+.It Li ".Sh SYNOPSIS"
 The
 .Sx SYNOPSIS
-section describes the typical usage of the
-subject of a man page.
-The macros required
-are either
-.Ql ".Nm" ,
-.Ql ".Cd" ,
-.Ql ".Fn" ,
+section describes the typical usage of the subject of a man page.
+The macros required are either
+.Ql .Nm ,
+.Ql .Cd ,
+or
+.Ql .Fn
 (and possibly
-.Ql ".Fo" ,
-.Ql ".Fc" ,
-.Ql ".Fd" ,
-.Ql ".Ft"
-macros).
-The function name
+.Ql .Fo ,
+.Ql .Fc ,
+.Ql .Fd ,
+and
+.Ql .Ft ) .
+The function name macro
+.Ql .Fn
+is required for manual page sections\~2 and\~3; the command and general name
 macro
-.Ql ".Fn"
-is required
-for manual page sections 2 and 3, the command and general
-name macro
-.Ql \&.Nm
-is required for sections 1, 5, 6, 7, 8.
-Section 4 manuals require a
-.Ql ".Nm" , ".Fd"
+.Ql .Nm
+is required for sections 1, 5, 6, 7, and\~8.
+Section\~4 manuals require a
+.Ql .Nm ,
+.Ql .Fd
 or a
-.Ql ".Cd"
+.Ql .Cd
 configuration device usage macro.
-Several other macros may be necessary to produce
-the synopsis line as shown below:
+Several other macros may be necessary to produce the synopsis line as shown
+below:
+.
 .Pp
 .Bd -filled -offset indent
 .Nm cat
@@ -2151,148 +2147,130 @@ the synopsis line as shown below:
 .Ar
 .Ed
 .Pp
+.
 The following macros were used:
 .Pp
-.Dl \&.Nm cat
-.Dl \&.Op \&Fl benstuv
-.Dl \&.Op \&Fl
-.Dl \&.Ar
-.Pp
-.Sy Note :
-The macros
-.Ql \&.Op ,
-.Ql \&.Fl ,
-and
-.Ql \&.Ar
-recognize the pipe bar character
-.Ql \*(Ba ,
-so a command line such as:
-.Pp
-.Dl ".Op Fl a | Fl b"
-.Pp
-will not go orbital.
-.Xr Troff
-normally interprets a \*(Ba as a special operator.
-See
-.Sx PREDEFINED STRINGS
-for a usable \*(Ba
-character in other situations.
-.It \&.Sh DESCRIPTION
+.Dl ".Nm cat"
+.Dl ".Op Fl benstuv"
+.Dl ".Op Fl"
+.Dl .Ar
+.
+.It Li ".Sh DESCRIPTION"
 In most cases the first text in the
 .Sx DESCRIPTION
-section
-is a brief paragraph on the command, function or file,
-followed by a lexical list of options and respective
-explanations.
+section is a brief paragraph on the command, function or file, followed by a
+lexical list of options and respective explanations.
 To create such a list, the
-.Ql \&.Bl
-begin-list,
-.Ql \&.It
-list-item and
-.Ql \&.El
-end-list
+.Ql .Bl
+(begin list),
+.Ql .It
+(list item) and
+.Ql .El
+(end list)
 macros are used (see
 .Sx Lists and Columns
 below).
 .El
 .Pp
+.
 The following
-.Ql \&.Sh
-section headers are part of the
-preferred manual page layout and must be used appropriately
-to maintain consistency.
-They are listed in the order
-in which they would be used.
-.Bl -tag -width SYNOPSIS
-.It \&.Sh ENVIRONMENT
+.Ql .Sh
+section headers are part of the preferred manual page layout and must be
+used appropriately to maintain consistency.
+They are listed in the order in which they would be used.
+.
+.Bl -tag -xwidth ".Li .Sh\ ENVIRONMENT"
+.It Li ".Sh ENVIRONMENT"
 The
 .Sx ENVIRONMENT
-section should reveal any related
-environment
-variables and clues to their behavior and/or usage.
-.It \&.Sh EXAMPLES
+section should reveal any related environment variables and clues to their
+behavior and/or usage.
+.It Li ".Sh EXAMPLES"
 There are several ways to create examples.
-See
-the
+See the
 .Sx EXAMPLES
-section below
-for details.
-.It \&.Sh FILES
-Files which are used or created by the man page subject
-should be listed via the
-.Ql \&.Pa
+section below for details.
+.It Li ".Sh FILES"
+Files which are used or created by the man page subject should be listed via
+the
+.Ql .Pa
 macro in the
 .Sx FILES
 section.
-.It \&.Sh SEE ALSO
-References to other material on the man page topic and
-cross references to other relevant man pages should
-be placed in the
+.It Li ".Sh SEE ALSO"
+References to other material on the man page topic and cross references to
+other relevant man pages should be placed in the
 .Sx SEE ALSO
 section.
-Cross references
-are specified using the
-.Ql \&.Xr
+Cross references are specified using the
+.Ql .Xr
 macro.
-At this time
+Currently
 .Xr refer 1
 style references are not accommodated.
 .Pp
 It is recommended that the cross references are sorted on the section
 number, and then alphabetically on the names within a section.
-.It \&.Sh STANDARDS
-If the command, library function or file adheres to a
-specific implementation such as
+.It Li ".Sh STANDARDS"
+If the command, library function or file adheres to a specific
+implementation such as
 .St -p1003.2
 or
 .St -ansiC
 this should be noted here.
-If the
-command does not adhere to any standard, its history
-should be noted in the
+If the command does not adhere to any standard, its history should be noted
+in the
 .Sx HISTORY
 section.
-.It \&.Sh HISTORY
-Any command which does not adhere to any specific standards
-should be outlined historically in this section.
-.It \&.Sh AUTHORS
-Credits, if need be, should be placed here.
-.It \&.Sh DIAGNOSTICS
-Diagnostics from a command should be placed in this section.
-.It \&.Sh ERRORS
-Specific error handling, especially from library functions
-(man page sections 2 and 3) should go here.
+.It Li ".Sh HISTORY"
+Any command which does not adhere to any specific standards should be
+outlined historically in this section.
+.It Li ".Sh AUTHORS"
+Credits should be placed here.
+.It Li ".Sh DIAGNOSTICS"
+Diagnostic messages from a command should be placed in this section.
+.It Li ".Sh ERRORS"
+Specific error handling, especially from library functions (man page
+sections\~2 and\~3) should go here.
 The
-.Ql \&.Er
-macro is used to specify an errno.
-.It \&.Sh BUGS
-Blatant problems with the topic go here...
+.Ql .Er
+macro is used to specify an error (errno).
+.It Li ".Sh BUGS"
+Blatant problems with the topic go here.
 .El
 .Pp
-User specified
-.Ql \&.Sh
-sections may be added,
-for example, this section was set with:
-.Bd -literal -offset 14n
+.
+User-specified
+.Ql .Sh
+sections may be added; for example, this section was set with:
+.Bd -literal -offset 15n
 \&.Sh PAGE LAYOUT MACROS
 .Ed
-.Ss Paragraphs and Line Spacing.
-.Bl -tag -width 6n
-.It \&.Pp
-The \&.Pp paragraph command may
-be used to specify a line space where necessary.
+.
+.Ss Paragraphs and Line Spacing
+.
+.Bl -tag -xwidth ".Li .Pp"
+.It Li .Pp
+The 
+.Ql .Pp
+paragraph command may be used to specify a line space where necessary.
 The macro is not necessary after a
-.Ql \&.Sh
+.Ql .Sh
 or
-.Ql \&.Ss
+.Ql .Ss
 macro or before
 a
-.Ql \&.Bl
+.Ql .Bl
 macro.
-(The
-.Ql \&.Bl
-macro asserts a vertical distance unless the -compact flag is given).
+(which asserts a vertical distance unless the
+.Fl compact
+flag is given).
+.Pp
+The macro is neither callable nor parsed and doesn't take arguments.
 .El
+.
+.\" XXX
+.
 .\" This worked with version one, need to redo for version three
 .\" .Pp
 .\" .Ds I
@@ -2411,52 +2389,46 @@ macro asserts a vertical distance unless the -compact flag is given).
 .\" .Cw
 .\" .De
 .\" .Pp
+.
 .Ss Keeps
+.
 The only keep that is implemented at this time is for words.
 The macros are
-.Ql \&.Bk
-(begin-keep)
+.Ql .Bk
+(begin keep)
 and
-.Ql \&.Ek
-(end-keep).
+.Ql .Ek
+(end keep).
 The only option that
-.Ql \&.Bl
-accepts is
+.Ql .Bl
+accepts currently is
 .Fl words
-and is useful for preventing line breaks in the middle of options.
+(this is also the default if no option is given) which is useful for
+preventing line breaks in the middle of options.
 In the example for the make command line arguments (see
 .Sx What's in a name ) ,
 the keep prevented
 .Xr nroff
-from placing up the
-flag and the argument
-on separate lines.
-(Actually, the option macro used to prevent this from occurring,
-but was dropped when the decision (religious) was made to force
-right justified margins in
-.Xr troff
-as options in general look atrocious when spread across a sparse
-line.
-More work needs to be done with the keep macros, a
-.Fl line
-option needs to be added.)
-.Ss Examples and Displays
-There are six types of displays, a quickie one line indented display
-.Ql \&.D1 ,
-a quickie one line literal display
-.Ql \&.Dl ,
-and block literal, block filled, block unfilled, and block ragged which use
-the
-.Ql \&.Bd
-begin-display
-and
-.Ql \&.Ed
-end-display macros.
+from placing up the flag and the argument on separate lines.
 .Pp
-.Bl -tag -width \&.Dlxx
-.It Li \&.D1
-(D-one) Display one line of indented text.
-This macro is parsed, but it is not callable.
+Both macros are neither callable nor parsed.
+.Pp
+More work needs to be done with the keep macros; specifically, a
+.Fl line
+option should be added.
+.
+\#
+\#=====================================================================
+\#
+.Ss Examples and Displays
+.
+There are six types of displays.
+.Pp
+.Bl -tag -xwidth ".Li .D1"
+.It Li .D1
+(This is D-one.)
+Display one line of indented text.
+This macro is parsed but not callable.
 .Pp
 .Dl Fl ldghfstru
 .Pp
@@ -2948,7 +2920,7 @@ In general, any time huge portions
 of text do not appear where expected in the output, or small strings
 such as list tags disappear, chances are there is a misunderstanding
 about an argument type in the argument list.
-Your mother never intended for you to remember this evil stuff - so here
+Your mother never intended for you to remember this evil stuff -- so here
 is a way to find out whether or not your arguments are valid: The
 .Ql \&.Db
 (debug)

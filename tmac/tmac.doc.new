@@ -3809,7 +3809,7 @@
 .  if !\n[cR] \
 .    ne 3v
 .
-.  ie \n[.$] \{\
+.  if \n[.$] \{\
 .    ds doc-macro-name It
 .
 .    \" fill argument vector
@@ -3821,34 +3821,39 @@
 .
 .    nr doc-num-args \n[.$]
 .    nr doc-arg-ptr 0
-.    nr doc-reg-It 1
+.  \}
 .
-.    ie        "\*[doc-str-It]"diag-list" \{\
-.      doc-diag-list
-.      nr doc-reg-It 0
-.    \}
-.    el \{ .ie "\*[doc-str-It]"column-list" \{\
-.      doc-column-list
-.      nr doc-reg-It 0
-.    \}
-.    el \{ .ie "\*[doc-str-It]"tag-list" \
-.      nr doc-reg-It 2
-.    el \{ .ie "\*[doc-str-It]"hang-list" \
-.      nr doc-reg-It 2
-.    el \{ .ie "\*[doc-str-It]"ohang-list" \
-.      nr doc-reg-It 2
-.    el \{ .if "\*[doc-str-It]"inset-list" \
-.      nr doc-reg-It 2
-.    \}\}\}\}\}
+.  nr doc-reg-It 1
+.  ie        "\*[doc-str-It]"diag-list" \
+.    nr doc-reg-It 0
+.  el \{ .ie "\*[doc-str-It]"column-list" \
+.    nr doc-reg-It 0
+.  el \{ .ie "\*[doc-str-It]"tag-list" \
+.    nr doc-reg-It 2
+.  el \{ .ie "\*[doc-str-It]"hang-list" \
+.    nr doc-reg-It 2
+.  el \{ .ie "\*[doc-str-It]"ohang-list" \
+.    nr doc-reg-It 2
+.  el \{ .if "\*[doc-str-It]"inset-list" \
+.    nr doc-reg-It 2
+.  \}\}\}\}\}
 .
-.    ie \n[doc-reg-It] \{\
-.      \" start item box
-.      box doc-item-box\n[doc-list-depth]
-.      ev doc-item-env\n[doc-list-depth]
-.      in 0
-.      nf
+.  if \n[doc-reg-It] \{\
+.    \" start item box
+.    box doc-item-box\n[doc-list-depth]
+.    ev doc-item-env\n[doc-list-depth]
+.    in 0
+.    nf
+.  \}
 .
-.      ie (\n[doc-reg-It] == 2) \{\
+.  ie (\n[doc-reg-It] == 1) \{\
+.    if \n[.$] \{\
+.      tm1 "mdoc warning: .It requests in lists of type `\*[doc-str-It]'
+.      tm1 "              don't take arguments (#\n[.c])
+.  \}\}
+.  el \{\
+.    ie \n[.$] \{\
+.      if (\n[doc-reg-It] == 2) \{\
 .        \" handle list types with arguments
 .        doc-parse-arg-vector
 .
@@ -3868,30 +3873,17 @@
 .        el \{\
 .          nr doc-arg-ptr 0
 .          No
-.        \}
-.
-.        \" the previous call of `.No' can contain calls to opening requests
-.        \" like `.Ao'; we then defer the call of `doc-xxx-list'
-.        if !\n[doc-nesting-level] \
-.          doc-\*[doc-str-It]
-.      \}
-.      el \{\
-.        tm1 "mdoc warning: .It requests in lists of type `\*[doc-str-It]'
-.        tm1 "              don't take arguments (#\n[.c])
-.        doc-\*[doc-str-It]
-.    \}\}
-.    el \
-.      doc-reset-args
+.    \}\}\}
+.    el \{\
+.      tm1 "mdoc warning: .It requests in lists of type `\*[doc-str-It]'
+.      tm1 "              require arguments (#\n[.c])
+.    \}
 .  \}
-.  el \{\
-.    \" start item box
-.    box doc-item-box\n[doc-list-depth]
-.    ev doc-item-env\n[doc-list-depth]
-.    in 0
-.    nf
 .
+.  \" the previous call of `.No' can contain calls to opening requests
+.  \" like `.Ao'; we then defer the call of `doc-xxx-list'
+.  if !\n[doc-nesting-level] \
 .    doc-\*[doc-str-It]
-.  \}
 ..
 .
 .
@@ -4094,7 +4086,8 @@
 .  nr doc-diag-list-input-line-count \n[.c]
 .
 .  nop \*[doc-Sy-font]\c
-.  doc-remaining-args
+.  if \n[doc-num-args] \
+.    doc-remaining-args
 .  nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\*[doc-digit-string]\c
 .
 .  doc-reset-args
@@ -4508,7 +4501,8 @@
 .\" NS   doc-reg-dcl
 .
 .de doc-column-list
-.  doc-parse-arg-vector
+.  if \n[doc-num-args] \
+.    doc-parse-arg-vector
 .  nr doc-arg-ptr +1
 .
 .  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
