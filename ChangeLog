@@ -1,3 +1,24 @@
+2002-04-20  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc (pipe_output): Multiple calls to `pi'
+	will now form a chain, e.g.
+
+	  .pi foo
+	  .pi bar
+
+	is now the same as
+
+	  .pi foo | bar
+
+	This is for compatibility with plan 9's troff.
+
+	* tmac/tty.tmac: Set default tab values to 0.8i to be compatible
+	with UNIX troff.
+	* NEWS: Updated.
+
+	* doc/groff.texinfo: Add documentation of remaining requests and
+	registers.
+
 2002-04-19  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/groff.texinfo: Add documentation of remaining escapes.

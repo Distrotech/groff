@@ -4108,7 +4108,6 @@ Users of macro packages may skip it if not interested in details.
 * Gtroff Internals::
 * Debugging::
 * Implementation Differences::
-* Summary::
 @end menu
 
 
@@ -4490,8 +4489,6 @@ certain scalar value, use @samp{u} as the unit for that value.
 
 @code{gtroff} has most arithmetic operators common to other languages:
 
-@c XXX more details; examples
-
 @itemize @bullet
 @item
 @cindex arithmetic operators
@@ -4551,10 +4548,18 @@ below for the use of unary operators in motion requests.
 @cindex operators, extremum
 @opindex >?
 @opindex <?
-Extrema: @samp{>?} (maximum), @samp{<?} (minimum).  For example,
-@samp{5>?3} yields@w{ }@samp{5}.
+Extrema: @samp{>?} (maximum), @samp{<?} (minimum).
 
-@c XXX add examples
+Example:
+
+@Example
+.nr x 5
+.nr y 3
+.nr z (\n[x] >? \n[y])
+@endExample
+
+@noindent
+The register@w{ }@code{z} now contains@w{ }5.
 
 @item
 @cindex scaling operator
@@ -4593,15 +4598,28 @@ For vertical movements, it specifies the distance from the top of the
 page; for horizontal movements, it gives the distance from the beginning
 of the @emph{input} line.
 
-@c XXX xref
+@cindex @code{bp} request, using @code{+} and@w{ }@code{-}
+@cindex @code{in} request, using @code{+} and@w{ }@code{-}
+@cindex @code{ll} request, using @code{+} and@w{ }@code{-}
+@cindex @code{lt} request, using @code{+} and@w{ }@code{-}
+@cindex @code{nm} request, using @code{+} and@w{ }@code{-}
+@cindex @code{nr} request, using @code{+} and@w{ }@code{-}
+@cindex @code{pl} request, using @code{+} and@w{ }@code{-}
+@cindex @code{pn} request, using @code{+} and@w{ }@code{-}
+@cindex @code{po} request, using @code{+} and@w{ }@code{-}
+@cindex @code{ps} request, using @code{+} and@w{ }@code{-}
+@cindex @code{rt} request, using @code{+} and@w{ }@code{-}
+@cindex @code{ti} request, using @code{+} and@w{ }@code{-}
+@cindex @code{\H} escape, using @code{+} and@w{ }@code{-}
+@cindex @code{\R} escape, using @code{+} and@w{ }@code{-}
+@cindex @code{\s} escape, using @code{+} and@w{ }@code{-}
 @samp{+} and @samp{-} are also treated differently by the following
 requests and escapes: @code{bp}, @code{in}, @code{ll}, @code{lt},
 @code{nm}, @code{nr}, @code{pl}, @code{pn}, @code{po}, @code{ps},
 @code{rt}, @code{ti}, @code{\H}, @code{\R}, and @code{\s}.
 Here, leading plus and minus signs indicate increments and decrements.
 
-@c XXX add more xref
-@xref{Setting Registers}.
+@xref{Setting Registers}, for some examples.
 
 @cindex numeric expression, valid
 @cindex valid numeric expression
@@ -4686,8 +4704,6 @@ expect an identifier as a parameter.  For example, @samp{\[foo]]}
 accesses the glyph @samp{foo}, followed by @samp{]}, whereas
 @samp{\C'foo]'} really asks for glyph @samp{foo]}.
 
-@c XXX xref
-
 @Defesc {\\A, ', ident, '}
 Test whether an identifier @var{ident} is valid in @code{gtroff}.  It
 expands to the character@w{ }1 or@w{ }0 according to whether its
@@ -4703,8 +4719,6 @@ looking up user input in some sort of associative table.
 @endDefesc
 
 @xref{Escapes}, for details on parameter delimiting characters.
-
-@c XXX add xrefs above
 
 Identifiers in @code{gtroff} can be any length, but, in some contexts,
 @code{gtroff} needs to be told where identifiers end and text begins
@@ -4731,7 +4745,7 @@ in brackets.
 Unlike many other programming languages, undefined identifiers are
 silently ignored or expanded to nothing.
 When @code{gtroff} finds an undefined identifier, it emits a
-warning then:
+warning, doing the following:
 
 @itemize @bullet
 @item
@@ -4743,9 +4757,29 @@ If the identifier is a number register, @code{gtroff}
 defines it with a value of@w{ }0.
 @end itemize
 
-@xref{Warnings}.
+@xref{Warnings}., @ref{Interpolating Registers}, and @ref{Strings}.
 
-@c XXX info about common identifier pool for strings and macros.
+Note that macros, strings, and diversions share the same name space.
+
+@Example
+.de xxx
+.  nop foo
+..
+.
+.di xxx
+bar
+.br
+.di
+.
+.xxx
+    @result{} bar
+@endExample
+
+@noindent
+As can be seen in the previous example, @code{gtroff} reuses the
+identifier @samp{xxx}, changing it from a macro to a diversion.
+No warning is emitted!  The contents of the first macro definition is
+lost.
 
 @xref{Interpolating Registers}, and @ref{Strings}.
 
@@ -4764,9 +4798,8 @@ implicit line breaking.  In order to gain further functionality,
 The first is a @dfn{request} which takes up an entire line, and does
 some large-scale operation (e.g.@: break lines, start new pages).
 
-The other is an @dfn{escape} which can be embedded anywhere in the text,
-or even as an argument to a request.
-@c XXX (Not always?)
+The other is an @dfn{escape} which can be usually embedded anywhere
+in the text; most requests can accept it even as an argument.
 Escapes generally do more minor operations like sub- and superscripts,
 print a symbol, etc.
 
@@ -4859,9 +4892,12 @@ character prevents this.
 @cindex arguments to requests
 
 Arguments to requests (and macros) are processed much like the shell:
-The line is split into arguments according to spaces.  An argument
-which is intended to contain spaces can either be enclosed in double
-quotes, or have the spaces @dfn{escaped} with backslashes.
+The line is split into arguments according to
+spaces.@footnote{Plan@w{ }9's @code{troff} implementation also allows
+tabs for argument separation -- @code{gtroff} intentionally doesn't
+support this.}  An argument which is intended to contain spaces can
+either be enclosed in double quotes, or have the spaces @dfn{escaped}
+with backslashes.
 
 Here are a few examples:
 
@@ -5339,8 +5375,9 @@ processed it.
 For example, the following two lines are equivalent:
 
 @Example
-.nr a 1
-\R'a 1'
+.nr a (((17 + (3 * 4))) % 4)
+\R'a (((17 + (3 * 4))) % 4)'
+    @result{} 1
 @endExample
 
 Both @code{nr} and @code{\R} have two additional special forms to
@@ -5627,6 +5664,12 @@ read-only.  A complete listing of all built-in registers can be found in
 @ref{Register Index}.
 
 @table @code
+@item .F
+@cindex current input file name register (@code{.F})
+@cindex input file name, current, register (@code{.F})
+@vindex .F
+This string-valued register returns the current input file name.
+
 @item .H
 @cindex horizontal resolution register (@code{.H})
 @cindex resolution, horizontal, register (@code{.H})
@@ -5973,9 +6016,7 @@ environment (@pxref{Environments}).
 
 Contrary to traditional Unix @code{troff}, this request is @emph{not}
 ignored if a tty output device is used; the given values are then
-rounded down to a multiple of@w{ }12.
-
-@c XXX xref implementation differences
+rounded down to a multiple of@w{ }12 (@pxref{Implementation Differences}).
 
 The request is ignored if there is no parameter.
 @endDefreq
@@ -6402,9 +6443,6 @@ spacing setting.
 @xref{Changing Type Sizes}, for the requests @code{vs} and @code{pvs}
 as alternatives to @code{ls}.
 
-@c XXX document \n[nl]
-@c XXX document \n[nl] == -1 if vertical position is zero
-
 @DefescList {\\x, ', spacing, '}
 @DefregListEnd {.a}
 Sometimes, extra vertical spacing is only needed occasionally, e.g.@:
@@ -6422,12 +6460,33 @@ the values is used.
 The @code{.a} read-only number register contains the most recent
 (nonnegative) extra vertical line space.
 
-@c XXX
-@ignore
+Using @code{\x} can be necessary in combination with the @code{\b}
+escape, as the following example shows.
+
 @Example
-... example of inline equation ...
+This is a test with the \[rs]b escape.
+.br
+This is a test with the \[rs]b escape.
+.br
+This is a test with \b'xyz'\x'-1m'\x'1m'.
+.br
+This is a test with the \[rs]b escape.
+.br
+This is a test with the \[rs]b escape.
 @endExample
-@end ignore
+
+@noindent
+produces
+
+@Example
+This is a test with the \b escape.
+This is a test with the \b escape.
+                    x
+This is a test with y.
+                    z
+This is a test with the \b escape.
+This is a test with the \b escape.
+@endExample
 @endDefesc
 
 @cindex @code{sp} request, and no-space mode
@@ -6436,26 +6495,20 @@ The @code{.a} read-only number register contains the most recent
 @cindex blank lines, disabling
 @cindex lines, blank, disabling
 @DefreqList {ns, }
+@DefreqItem {rs, }
 @DefregListEnd {.ns}
 Enable @dfn{no-space mode}.  In this mode, spacing (either via
 @code{sp} or via blank lines) is disabled.  The @code{bp} request to
 advance to the next page is also disabled, except if it is accompanied
 by a page number (see @ref{Page Control}, for more information).  This
 mode ends when actual text is output or the @code{rs} request is
-encountered.  The read-only number register @code{.ns} is set to@w{ }1.
+encountered which ends no-space mode.  The read-only number register
+@code{.ns} is set to@w{ }1 as long as no-space mode is active.
 
 This request is useful for macros that conditionally
 insert vertical space before the text starts
 (for example, a paragraph macro could insert some space
 except when it is the first paragraph after a section header).
-
-@c XXX xref
-@endDefreq
-
-@Defreq {rs, }
-Disable no-space mode.
-
-@c XXX xref
 @endDefreq
 
 
@@ -6605,11 +6658,9 @@ Calling @code{ta} without an argument removes all tab stops.
 
 @item
 @cindex tab stops, for tty output devices
-The start-up value of @code{gtroff} is @w{@samp{T 0.5i}}.  This value
-is used even for tty output devices (contrary to @acronym{UNIX}
-@code{nroff} which has tab stops preset every 0.8@dmn{i}).
-
-@c XXX xref implementation differences
+The start-up value of @code{gtroff} is @w{@samp{T 0.5i}} in troff mode
+and @w{@samp{T 0.8i}} in nroff mode (the latter is done with an
+explicit call to the @code{ta} request in the file @file{tty.tmac}.
 @end itemize
 
 @cindex tab settings register (@code{.tabs})
@@ -6622,6 +6673,11 @@ argument to the @code{ta} request.
 \*[tab-string]
     @result{} T120u
 @endExample
+
+@cindex @code{.S} register, Plan@w{ }9 alias for @code{.tabs}
+@cindex @code{.tabs} register, Plan@w{ }9 alias (@code{.S})
+The @code{troff} version of the Plan@w{ }9 operating system uses
+register @code{.S} for the same purpose.
 @endDefreq
 
 @cindex tab repetition character (@code{tc})
@@ -7649,7 +7705,8 @@ for one line only.
 @endDefreq
 
 @cindex @code{ne} request, comparison with @code{sv}
-@Defreq {sv, [@Var{space}]}
+@DefreqList {sv, [@Var{space}]}
+@DefreqListEnd {os, }
 @code{sv} is similar to the @code{ne} request; it reserves the
 specified amount of vertical space.  If the desired amount of space
 exists before the next trap (or the bottom page boundary if no trap is
@@ -7657,8 +7714,61 @@ set), the space is output immediately (ignoring a partially filled line
 which stays untouched).  If there is not enough space, it is stored for
 later output via the @code{os} request.  The default value is@w{ }1@dmn{v}
 if no argument is given; the default unit is @samp{v}.
+
+@cindex @code{sv} request, and no-space mode
+@cindex @code{os} request, and no-space mode
+Both @code{sv} and @code{os} ignore no-space mode.  While the @code{sv}
+request allows negative values for @var{space}, @code{os} will ignore
+them.
 @endDefreq
 
+@Defreg {nl}
+This register contains the current vertical position.  If the vertical
+position is zero and the top of page transition hasn't happened yet,
+@code{nl} is set to negative value.  @code{gtroff} itself does this at
+the very beginning of a document before anything has been printed, but
+the main usage is to plant a header trap on a page if this page has
+already started.
+
+Consider the following:
+
+@Example
+.de xxx
+.  sp
+.  tl ''Header''
+.  sp
+..
+.
+First page.
+.bp
+.wh 0 xxx
+.nr nl (-1)
+Second page.
+@endExample
+
+@noindent
+Result:
+
+@Example
+First page.
+
+...
+
+                             Header
+
+Second page.
+
+...
+@endExample
+
+@noindent
+Without resetting @code{nl} to a negative value, the just planted trap
+would be active beginning with the @emph{next} page, not the current
+one.
+
+@xref{Diversions}, for a comparison with the @code{.h} and @code{.d}
+registers.
+@endDefreg
 
 @c =====================================================================
 
@@ -10324,9 +10434,24 @@ the default behaviour of @code{ditroff}).
 @dfn{Pile} a sequence of characters vertically, and center it vertically
 on the current line.  Use it to build large brackets and braces.
 
+Here an example how to create a large opening brace:
+
 @Example
-\b'\(lt\(bv\(lk\(bv\(lb'
+\b'\[lt]\[bv]\[lk]\[bv]\[lb]'
 @endExample
+
+@cindex @code{\b} escape, limitations
+@cindex limitations of @code{\b} escape
+The first character is on the top, the last character in the argument is
+at the bottom.  Note that @code{gtroff} separates the characters
+vertically by 1@dmn{m}, and the whole object is centered 0.5@dmn{m}
+above the current baseline; the largest character width is used as the
+width for the whole object.  This rather unflexible positioning
+algorithm doesn't work with @option{-Tdvi} since the bracket pieces vary
+in height for this device.  Instead, use the @code{eqn} preprocessor.
+
+@xref{Manipulating Spacing}, how to adjust the vertical spacing with
+the @code{\x} escape.
 @endDefesc
 
 
@@ -11313,6 +11438,22 @@ specified by @var{pipe}.  This request must occur before
 @code{pi} causes an error if used in safer mode (which is the default).
 Use @code{groff}'s or @code{troff}'s @option{-U} option to activate unsafe
 mode.
+
+Multiple calls to @code{pi} are allowed, acting as a chain.  For example,
+
+@Example
+.pi foo
+.pi bar
+...
+@endExample
+
+is the same as @w{@samp{.pi foo | bar}}.
+
+@cindex @code{groff}, and @code{pi} request
+@cindex @code{pi} request, and @code{groff}
+Note that the intermediate output format of @code{gtroff} is piped to
+the specified commands.  Consequently, calling @code{groff} without the
+@option{-Z} option normally causes a fatal error.
 @endDefreq
 
 @DefreqList {sy, cmds}
@@ -12021,7 +12162,7 @@ All warnings.
 
 @c =====================================================================
 
-@node Implementation Differences, Summary, Debugging, gtroff Reference
+@node Implementation Differences,  , Debugging, gtroff Reference
 @section Implementation Differences
 @cindex implementation differences
 @cindex differences in implementation
@@ -12211,15 +12352,6 @@ use the traditional @code{\!} transparent output facility, or, if this
 is unsuitable, the new @code{\?} escape sequence.
 
 @xref{Diversions}, for more information.
-
-
-@c =====================================================================
-
-@node Summary,  , Implementation Differences, gtroff Reference
-@section Summary
-@cindex summary
-
-@c XXX documentation
 
 
 

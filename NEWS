@@ -132,11 +132,24 @@ o The request `pvs' isn't new, but hasn't been documented before.  It
   The read-only register `.pvs' holds the current amount of the
   post-vertical line space.
 
+o For compatibility with plan 9's troff, multiple `pi' requests are
+  supported:
+
+    .pi foo
+    .pi bar
+
+  is now equivalent to
+
+    .pi foo | bar
+
 o A new escape sequence `\O' is available (mainly for internal use with
   grohtml).  Please see groff_diff.7 and groff.texinfo for more details.
 
 o The escapes `\%', `\&', `\)', and `\:' no longer cause an error in \X;
   they are ignored now.
+
+o The default tab distance in nroff mode is now 0.8i to be compatible
+  with UNIX troff.
 
 o Using the latin-1 input character 0xAD (soft hyphen) for the `shc'
   request was a bad idea.  Instead, it is now translated to `\%', and

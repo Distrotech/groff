@@ -6137,8 +6137,20 @@ void pipe_output()
       skip_line();
     }
     else {
-      if ((pipe_command = read_string()) == 0)
+      char *pc;
+      if ((pc = read_string()) == 0)
 	error("can't pipe to empty command");
+      if (pipe_command) {
+	char *s = new char[strlen(pipe_command) + strlen(pc) + 1 + 1];
+	strcpy(s, pipe_command);
+	strcat(s, "|");
+	strcat(s, pc);
+	a_delete pipe_command;
+	a_delete pc;
+	pipe_command = s;
+      }
+      else
+        pipe_command = pc;
     }
 #endif /* not POPEN_MISSING */
   }
