@@ -33,6 +33,8 @@ static size_t include_list_length;
 static const char **include_list;
 
 int compatible_flag = 0;
+int raw_flag = 0;
+int tex_flag = 0;
 
 extern int interpret_lf_args(const char *);
 extern "C" const char *Version_string;
@@ -60,7 +62,7 @@ include_path_append(const char *path)
 
 void usage(FILE *stream)
 {
-  fprintf(stream, "usage: %s [ -vC ] [ -I file ] [ files ]\n", program_name);
+  fprintf(stream, "usage: %s [ -Crtv ] [ -I file ] [ files ]\n", program_name);
 }
 
 int main(int argc, char **argv)
@@ -73,7 +75,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((opt = getopt_long(argc, argv, "CI:v", long_options, NULL)) != EOF)
+  while ((opt = getopt_long(argc, argv, "CI:rtv", long_options, NULL)) != EOF)
     switch (opt) {
     case 'v':
       {
@@ -86,6 +88,12 @@ int main(int argc, char **argv)
       break;
     case 'I':
       include_path_append(optarg);
+      break;
+    case 'r':
+      raw_flag = 1;
+      break;
+    case 't':
+      tex_flag = 1;
       break;
     case CHAR_MAX + 1: // --help
       usage(stdout);
@@ -111,7 +119,12 @@ int main(int argc, char **argv)
 
 void set_location()
 {
-  printf(".lf %d %s\n", current_lineno, current_filename);
+  if(!raw_flag) {
+    if(!tex_flag)
+      printf(".lf %d %s\n", current_lineno, current_filename);
+    else
+      printf("%% file %s, line %d\n", current_filename, current_lineno);
+  }
 }
 
 void do_so(const char *line)
