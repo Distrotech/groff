@@ -4678,6 +4678,7 @@ void output_request()
       topdiv->transparent_output(c);
     topdiv->transparent_output('\n');
   }
+  tok.next();
 }
 
 extern int image_no;		// from node.cc

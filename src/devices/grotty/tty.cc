@@ -192,6 +192,7 @@ public:
   void draw(int code, int *p, int np, const environment *env);
   void special(char *arg, const environment *env, char type);
   void change_color(const environment *env);
+  void change_fill_color(const environment *env);
   void put_char(unsigned int);
   void put_color(unsigned char, int);
   void begin_page(int) { }
@@ -355,11 +356,49 @@ void tty_printer::add_char(unsigned int c,
 
 void tty_printer::special(char *arg, const environment *env, char type)
 {
-  if (type == 'u')
+  if (type == 'u') {
     add_char(*arg - '0', env->hpos, env->vpos, env->col, env->fill, CU_MODE);
+    return;
+  }
+  if (type != 'p')
+    return;
+  char *p;
+  for (p = arg; *p == ' ' || *p == '\n'; p++)
+    ;
+  char *tag = p;
+  for (; *p != '\0' && *p != ':' && *p != ' ' && *p != '\n'; p++)
+    ;
+  if (*p == '\0' || strncmp(tag, "tty", p - tag) != 0) {
+    error("X command without `tty:' tag ignored");
+    return;
+  }
+  p++;
+  for (; *p == ' ' || *p == '\n'; p++)
+    ;
+  char *command = p;
+  for (; *p != '\0' && *p != ' ' && *p != '\n'; p++)
+    ;
+  if (*command == '\0') {
+    error("empty X command ignored");
+    return;
+  }
+  if (strncmp(command, "sgr", p - command) == 0) {
+    for (; *p == ' ' || *p == '\n'; p++)
+      ;
+    int n;
+    if (*p != '\0' && sscanf(p, "%d", &n) == 1 && n == 0)
+      old_drawing_scheme = 1;
+    else
+      old_drawing_scheme = 0;
+  }
 }
 
 void tty_printer::change_color(const environment *env)
+{
+  add_char(0, env->hpos, env->vpos, env->col, env->fill, COLOR_CHANGE);
+}
+
+void tty_printer::change_fill_color(const environment *env)
 {
   add_char(0, env->hpos, env->vpos, env->col, env->fill, COLOR_CHANGE);
 }

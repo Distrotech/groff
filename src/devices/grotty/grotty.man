@@ -98,9 +98,9 @@ by the sequence
 .SM BACKSPACE
 .IR c '.
 At the same time, color output is disabled.
-The same effect can be achieved by setting the
+The same effect can be achieved by setting either the
 .B GROFF_NO_SGR
-environment variable.
+environment variable or using the `sgr' X command (see below).
 .LP
 For SGR support, it is necessary to use the
 .B \-R
@@ -276,6 +276,19 @@ isn't used.
 .TP
 .B \-v
 Print the version number.
+.
+.
+.SH USAGE
+.B grotty
+understands a single X command produced using the
+.B \[rs]X
+escape sequence.
+.TP
+.BI \[rs]X'tty:\ sgr\  n '
+If
+.I n
+is non-zero or missing, enable SGR output (this is the default), otherwise
+use the old drawing scheme for bold and underline.
 .
 .
 .SH ENVIRONMENT

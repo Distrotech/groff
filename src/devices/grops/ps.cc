@@ -1316,7 +1316,7 @@ void ps_printer::special(char *arg, const environment *env, char type)
   for (; *p != '\0' && *p != ' ' && *p != '\n'; p++)
     ;
   if (*command == '\0') {
-    error("X command without `ps:' tag ignored");
+    error("empty X command ignored");
     return;
   }
   for (unsigned int i = 0; i < sizeof(proc_table)/sizeof(proc_table[0]); i++)
