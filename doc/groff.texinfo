@@ -7595,6 +7595,9 @@ cause a break or actually eject a page.
 @cindex diversion, top-level, and @code{bp}
 @code{bp} has no effect if not called within the top-level diversion
 (@pxref{Diversions}).
+
+The number register @code{.pe} is set to@tie{}1 while @code{bp} is
+active.  @xref{Page Location Traps}.
 @endDefreq
 
 @Defreq {ne, [@Var{space}]}
@@ -10793,7 +10796,7 @@ that was needed in the last @code{ne} request that caused a trap to be
 sprung.  Useful in conjunction with the @code{.trunc} register.
 @xref{Page Control}, for more information.
 
-Since the @code{.ne} register is only set by traps and it doesn't make
+Since the @code{.ne} register is only set by traps it doesn't make
 much sense to use it outside of trap macros.
 @endDefreg
 
@@ -10810,6 +10813,35 @@ actually is.
 
 Since the @code{.trunc} register is only set by traps and it doesn't make
 much sense to use it outside of trap macros.
+@endDefreg
+
+@Defreg {.pe}
+@cindex @code{bp} request, and traps (@code{.pe})
+@cindex traps, sprung by @code{bp} request (@code{.pe})
+@cindex page ejecting register (@code{.pe})
+A read-only register which is set to@tie{}1 while a page is ejected with
+the @code{bp} request (or by the end of input).
+
+Outside of traps this register is always zero.  In the following example,
+only the second call to@tie{}@code{x} is caused by @code{bp}.
+
+@Example
+.de x
+\&.pe=\\n[.pe]       
+.br
+..
+.wh 1v x
+.wh 4v x
+A line.
+.br
+Another line.
+.br
+    @result{} A line.
+              .pe=0
+              Another line.
+
+              .pe=1
+@endExample
 @endDefreg
 
 @c ---------------------------------------------------------------------
@@ -11320,10 +11352,20 @@ The number of consecutive hyphenated lines (set to zero).
 @end itemize
 @endDefreq
 
-@DefregList {.cht}
+@DefregList {.w}
+@DefregItem {.cht}
 @DefregItem {.cdp}
 @DefregListEnd {.csk}
-@cindex environment, last glyph
+@cindex environment, dimensions of last glyph (@code{.w}, @code{.cht}, @code{.cdp}, @code{.csk})
+@cindex width, of last glyph (@code{.w})
+@cindex height, of last glyph (@code{.cht})
+@cindex depth, of last glyph (@code{.cdp})
+@cindex skew, of last glyph (@code{.csk})
+@cindex last glyph, dimensions (@code{.w}, @code{.cht}, @code{.cdp}, @code{.csk})
+@cindex glyph, last, dimensions (@code{.w}, @code{.cht}, @code{.cdp}, @code{.csk})
+The @code{\n[.w]} register contains the
+width of the last glyph added to the current environment.
+
 The @code{\n[.cht]} register contains the
 height of the last glyph added to the current environment.
 
@@ -11335,6 +11377,15 @@ The @code{\n[.csk]} register contains the
 @dfn{skew} (how far to the right of the glyph's center
 that @code{gtroff} should place an accent)
 of the last glyph added to the current environment.
+@endDefreg
+
+@Defreg {.n}
+@cindex environment, previous line length (@code{.n})
+@cindex line length, previous (@code{.n})
+@cindex length of previous line (@code{.n})
+@cindex previous line length (@code{.n})
+The @code{\n[.n]} register contains the
+length of the previous output line in the current environment.
 @endDefreg
 
 

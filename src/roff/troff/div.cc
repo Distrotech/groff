@@ -1136,47 +1136,47 @@ const char *no_space_mode_reg::get_string()
 
 void init_div_requests()
 {
-  init_request("wh", when_request);
-  init_request("ch", change_trap);
-  init_request("pl", page_length);
-  init_request("po", page_offset);
-  init_request("rs", restore_spacing);
-  init_request("ns", no_space);
-  init_request("sp", space_request);
-  init_request("di", divert);
-  init_request("da", divert_append);
   init_request("box", box);
   init_request("boxa", box_append);
   init_request("bp", begin_page);
-  init_request("ne", need_space);
-  init_request("pn", page_number);
+  init_request("ch", change_trap);
+  init_request("da", divert_append);
+  init_request("di", divert);
   init_request("dt", diversion_trap);
-  init_request("rt", return_request);
-  init_request("mk", mark);
-  init_request("sv", save_vertical_space);
-  init_request("os", output_saved_vertical_space);
   init_request("fl", flush_output);
-  init_request("vpt", vertical_position_traps);
+  init_request("mk", mark);
+  init_request("ne", need_space);
+  init_request("ns", no_space);
+  init_request("os", output_saved_vertical_space);
+  init_request("pl", page_length);
+  init_request("pn", page_number);
+  init_request("po", page_offset);
   init_request("ptr", print_traps);
+  init_request("rs", restore_spacing);
+  init_request("rt", return_request);
+  init_request("sp", space_request);
+  init_request("sv", save_vertical_space);
+  init_request("vpt", vertical_position_traps);
+  init_request("wh", when_request);
   number_reg_dictionary.define(".a",
 		       new constant_int_reg(&last_post_line_extra_space));
-  number_reg_dictionary.define(".z", new diversion_name_reg);
-  number_reg_dictionary.define(".o", new page_offset_reg);
-  number_reg_dictionary.define(".p", new page_length_reg);
-  number_reg_dictionary.define(".ns", new no_space_mode_reg);
   number_reg_dictionary.define(".d", new vertical_position_reg);
   number_reg_dictionary.define(".h", new high_water_mark_reg);
+  number_reg_dictionary.define(".ne",
+			       new constant_vunits_reg(&needed_space));
+  number_reg_dictionary.define(".ns", new no_space_mode_reg);
+  number_reg_dictionary.define(".o", new page_offset_reg);
+  number_reg_dictionary.define(".p", new page_length_reg);
+  number_reg_dictionary.define(".pe", new page_ejecting_reg);
+  number_reg_dictionary.define(".pn", new next_page_number_reg);
   number_reg_dictionary.define(".t", new distance_to_next_trap_reg);
+  number_reg_dictionary.define(".trunc",
+			       new constant_vunits_reg(&truncated_space));
+  number_reg_dictionary.define(".vpt", 
+		       new constant_int_reg(&vertical_position_traps_flag));
+  number_reg_dictionary.define(".z", new diversion_name_reg);
   number_reg_dictionary.define("dl", new variable_reg(&dl_reg_contents));
   number_reg_dictionary.define("dn", new variable_reg(&dn_reg_contents));
   number_reg_dictionary.define("nl", new nl_reg);
-  number_reg_dictionary.define(".vpt", 
-		       new constant_int_reg(&vertical_position_traps_flag));
   number_reg_dictionary.define("%", new page_number_reg);
-  number_reg_dictionary.define(".pn", new next_page_number_reg);
-  number_reg_dictionary.define(".trunc",
-			       new constant_vunits_reg(&truncated_space));
-  number_reg_dictionary.define(".ne",
-			       new constant_vunits_reg(&needed_space));
-  number_reg_dictionary.define(".pe", new page_ejecting_reg);
 }
