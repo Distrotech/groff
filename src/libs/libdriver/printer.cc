@@ -28,8 +28,6 @@
 
 #include "driver.h"
 
-printer *pr = 0;
-
 font_pointer_list::font_pointer_list(font *f, font_pointer_list *fp)
 : p(f), next(fp)
 {

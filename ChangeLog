@@ -1,3 +1,38 @@
+2003-03-11  Werner LEMBERG  <wl@gnu.org>
+
+	Make variable `pr' local to libdriver/input.cc.  Based on a patch
+	by Bernd Warken <bwarken@mayn.de>.
+
+	* src/include/driver.h (pr): Removed.
+
+	* src/libs/libdriver/input.cc (pr): New global variable.
+	(do_file): Deallocate `pr'.
+	* src/libs/libdriver/printer.cc (pr): Removed.
+
+	* src/devices/grodvi/dvi.cc (main), src/devices/grohtml/post-html.cc
+	(main), src/devices/grolbp/lbp.cc (main), src/devices/grolj4/lj4.cc
+	(main), src/devices/grops/ps.cc (main), src/devices/grotty/tty.cc
+	(main): Don't delete `pr'.
+
+2003-03-10  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/a4.tmac, tmac/composite.tmac: Use `.do'.
+	* tmac/papersize.tmac: New file.
+	* tmac/troffrc: Include `papersize.tmac'.
+	* tmac/Makefile.sub (NORMALFILES): Add `papersize.tmac'.
+	* tmac/an-old.tmac: Set LT to LL by default.
+
+	* NEWS, MANIFEST, tmac/groff_man.man, man/groff_tmac.man,
+	doc/groff.texinfo: Updated.
+
+	* src/libs/libgroff/paper.cc (add_iso_paper): Fix very embarassing
+	bug which caused all odd iso papers to have wrong dimensions.
+
+	* src/devices/grops/ps.cc (user_paper_width): New global variable.
+	(main) <'p'>: Set `user_paper_width' also.
+	(ps_printer::media_width, ps_printer::media_height): Use values
+	given with option `-p'.
+
 2003-03-09  Werner LEMBERG  <wl@gnu.org>
 
 	* src/include/nonposix.h: Provide default for SET_BINARY.

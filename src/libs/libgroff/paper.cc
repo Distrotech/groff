@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002
+/* Copyright (C) 2002, 2003
    Free Software Foundation, Inc.
      Written by Werner Lemberg (wl@gnu.org)
 
@@ -42,9 +42,9 @@ static void add_iso_paper(char series, int offset,
     papersizes[offset + i].width = (double)width / 25.4;
     // after division by two, values must be rounded down to the next
     // integer (as specified by ISO)
-    int tmp = width;
-    width = length;
-    length = tmp / 2;
+    int tmp = length;
+    length = width;
+    width = tmp / 2;
   }
 }
 

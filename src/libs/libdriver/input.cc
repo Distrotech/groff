@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 14 Feb 2003
+   Last update: 11 Mar 2003
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -354,8 +354,7 @@ int current_lineno = 0;		  // current line number of printout
 // exported as extern by device.h;
 const char *device = 0;		  // cancel former init with literal
 
-// from driver.h; pr is kept between several runs of do_file()
-// extern printer *pr;
+printer *pr;
 
 // Note:
 //
@@ -1831,6 +1830,7 @@ do_file(const char *filename)
   // end of file reached
   if (npages > 0)
     pr->end_page(current_env->vpos);
+  delete pr;
   fclose(current_file);
   // If `stopped' is not `true' here then there wasn't any `x stop'.
   if (!stopped)

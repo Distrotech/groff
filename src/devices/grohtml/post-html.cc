@@ -3759,7 +3759,6 @@ int main(int argc, char **argv)
     for (int i = optind; i < argc; i++)
       do_file(argv[i]);
   }
-  delete pr;
   return 0;
 }
 

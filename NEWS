@@ -16,10 +16,6 @@ o Input encoding files for latin-9 (a.k.a. latin-0 and ISO 8859-15) and
   the groff package supports latin-9 only for -Tps, -Tdvi, and -Tutf8,
   and latin-2 only for -Tdvi and -Tutf8.
 
-o Non-slanted PostScript metrics have been changed again; they no longer
-  contain negative left italic correction values.  This assures correct
-  spacing with eqn.
-
 o Composite glyphs are now supported.  To do this, a subset of the Adobe
   Glyph List (AGL) Algorithm as described in 
 
@@ -48,7 +44,8 @@ o Composite glyphs are now supported.  To do this, a subset of the Adobe
 
     .composite ho u0328
 
-  is needed.
+  is needed.  [The new file `composite.tmac' loaded at start-up already
+  contains proper calls to `.composite'.]
 
   Please refer to the info pages of groff and to the groff_char man page
   for more details.
@@ -92,9 +89,9 @@ o The new glyph symbol `tno' is a textual variant of `no'.
 
 o The new glyph symbol `+e' represents U+03F5, GREEK LUNATE EPSILON SYMBOL.
   (Well, it is not really new since it has been previously supported by
-  grolj4.)  The mapping for the dvi symbol font has been changed accordingly
-  so that Greek small letter epsilon, `*e', has the same glyph shape as with
-  other devices.
+  grolj4.)  The mapping for both the dvi and lj4 symbol font has been
+  changed accordingly so that Greek small letter epsilon, `*e', has the
+  same glyph shape as with other devices.
 
 Grops
 -----
@@ -106,14 +103,18 @@ o It is now possible to access all glyphs in a Type 1 font, not only 256
   (provided the font file created by afmtodit has proper entries).  grops
   constructs additional encoding vectors on the fly if necessary.
 
-o Now emits paper size via %%DocumentMedia and PageSize mechanisms, so
-  that it is no longer required to tell `gv' or `ps2pdf' about the paper
-  size.  The `broken' flag 16 omits this feature (the used PostScript
-  command `setpagedevice' is a LanguageLevel 2 extension).  Patch by Egil
-  Kvaleberg <egil@kvaleberg.no>.
+o The paper size is now emitted via the %%DocumentMedia and PageSize
+  mechanisms so that it is no longer required to tell `gv' or `ps2pdf'
+  about the paper size.  The `broken' flag value 16 omits this feature
+  (the used PostScript command `setpagedevice' is a LanguageLevel 2
+  extension).  Patch by Egil Kvaleberg <egil@kvaleberg.no>.
+
+o Non-slanted PostScript metrics have been changed again; they no longer
+  contain negative left italic correction values.  This assures correct
+  spacing with eqn.
 
 Grodvi
------
+------
 
 o The font cmtex10 has been added as the special font `SC' to the DVI fonts.
   It is used as a font-specific special font for CW and CWI.
@@ -133,7 +134,7 @@ o The environment variable `REFER' to override the name of the default
 Afmtodit
 --------
 
-o Unencoded glyphs in an AFM file are output also (since grops can emit
+o Unencoded glyphs in an AFM file are output also (since grops can now emit
   multiple encoding vectors for a single font).
 
 o New option `-m' to prevent negative left italic correction values.
@@ -160,6 +161,26 @@ o Larry Kollar <kollar@alltel.net> and others made the man macros more
 
   . The string `HF' now holds the typeface to print headings and
     subheadings.
+
+  . Similar to the ms macros, the LT register now defaults to LL if not
+    explicitly specified on the command line.
+
+o troff's start-up file `troffrc' now includes `papersize.tmac' to set
+  the paper size with the command line option `-dpaper=<size>'.
+
+  Possible values for `<size>' are the same as the predefined `papersize'
+  values in the DESC file (only lowercase; see the groff_font man page)
+  except a7-d7.  An appended `l' (ell) character denotes landscape
+  orientation.  Examples: `a4', `c3l', `letterl'.
+
+  Most output drivers need additional command line switches `-p' and
+  `-l' to override the default paper length and orientation as set in
+  the driver specific DESC file.
+
+  For example, use the following for PS output on A4 paper in landscape
+  orientation:
+
+    groff -Tps -dpaper=a4l -P-pa4 -P-l -ms foo.ms > foo.ps
 
 
 VERSION 1.18.1

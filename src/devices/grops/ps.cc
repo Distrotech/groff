@@ -50,6 +50,7 @@ static int linewidth = -1;
 // length using the imageable area.
 static int guess_flag = 0;
 static double user_paper_length = 0;
+static double user_paper_width = 0;
 
 // Non-zero if -b was specified on the command line.
 static int bflag = 0;
@@ -1258,12 +1259,14 @@ int ps_printer::media_width()
    *  Postscript definition specifies that media
    *  matching should be done within a tolerance of 5 units.
    */
-  return int(font::paperwidth*72.0/font::res + 0.5);
+  return int(user_paper_width ? user_paper_width*72.0 + 0.5
+			      : font::paperwidth*72.0/font::res + 0.5);
 }
 
 int ps_printer::media_height()
 {
-  return int(paper_length*72.0/font::res + 0.5);
+  return int(user_paper_length ? user_paper_length*72.0 + 0.5
+			       : paper_length*72.0/font::res + 0.5);
 }
 
 void ps_printer::media_set()
@@ -1805,7 +1808,8 @@ int main(int argc, char **argv)
       manual_feed_flag = 1;
       break;
     case 'p':
-      if (!font::scan_papersize(optarg, 0, &user_paper_length, 0))
+      if (!font::scan_papersize(optarg, 0,
+				&user_paper_length, &user_paper_width))
 	error("invalid custom paper size `%1' ignored", optarg);
       break;
     case 'P':
@@ -1845,7 +1849,6 @@ int main(int argc, char **argv)
     for (int i = optind; i < argc; i++)
       do_file(argv[i]);
   }
-  delete pr;
   return 0;
 }
 

@@ -735,6 +735,5 @@ int main(int argc, char **argv)
   while (optind < argc)
     do_file(argv[optind++]);
   lbpputs("\033c\033<");
-  delete pr;
   return 0;
 }

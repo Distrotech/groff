@@ -15,11 +15,11 @@ groff_tmac.5
 
 File position: <groff-source>/man/groff_tmac.man
 
-Last update: 20 Oct 2002
+Last update: 13 Mar 2003
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 written by Bernd Warken <bwarken@mayn.de> and Werner Lemberg
 <wl@gnu.org>
 
@@ -409,6 +409,48 @@ macro package or to plain groff.
 .
 .
 .TP
+.B papersize
+This macro file is already loaded at start-up by
+.B @g@troff
+so it isn't necessary to call it explicitly.
+.
+It provides an interface to set the paper size on the command line with
+the option \f[B]\%\-dpaper=\f[]\f[I]size\f[].
+.
+Possible values for
+.I size
+are the same as the predefined
+.B papersize
+values in the DESC file (only lowercase; see
+.BR groff_font (@MAN5EXT@)
+for more) except
+.BR a7 - d7 .
+.
+An appended
+.B l
+(ell) character denotes landscape orientation.
+.
+Examples:
+.BR a4 ,
+.BR c3l ,
+.BR letterl .
+.
+.IP
+Most output drivers need additional command line switches
+.B \-p
+and
+.B \-l
+to override the default paper length and orientation as set in the driver
+specific DESC file.
+.
+For example, use the following for PS output on A4 paper in landscape
+orientation:
+.
+.IP
+.Shell_cmd "groff \-Tps \-dpaper=a4l \-P\-pa4 \-P\-l \-ms foo.ms > foo.ps"
+.
+.
+.TP
 .B tty-char
 Overrides the definition of standard troff characters and some groff
 characters for tty devices.
@@ -640,7 +682,7 @@ is used or
 .P
 In both cases, the formatter is called with
 .IP
-.Shell_cmd "troff\~\-s\~" docu.roff
+.Shell_cmd "groff\~\-s\~" docu.roff
 .
 .
 .P
@@ -811,12 +853,16 @@ say.
 .
 .P
 When calling this macro by
+.
 .P
 .Example
 .  Text .print_args arg1 arg2
 ./Example
+.
 .P
 the following text is printed to the terminal:
+.
+.P
 .Example
 .  Text \f[CI]print_args\f[] was called with the following 2 arguments:
 arg1 arg2
@@ -1012,7 +1058,7 @@ All macro names must be named
 to fully use the tmac mechanism.
 .
 .BI tmac. name
-as with	classical packages is possible as well, but deprecated.
+as with classical packages is possible as well, but deprecated.
 .
 .
 .P
@@ -1075,7 +1121,7 @@ See the previous section for a detailed description.
 .SH AUTHOR
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 .
 .P
 This document is distributed under the terms of the FDL (GNU Free

@@ -805,6 +805,7 @@ Similarly, we say @samp{gpic}, @samp{geqn}, etc.
 * Environment::
 * Macro Directories::
 * Font Directories::
+* Paper Size::
 * Invocation Examples::
 @end menu
 
@@ -1292,7 +1293,7 @@ directories during the installation process.
 
 @c =====================================================================
 
-@node Font Directories, Invocation Examples, Macro Directories, Invoking groff
+@node Font Directories, Paper Size, Macro Directories, Invoking groff
 @section Font Directories
 @cindex font directories
 @cindex directories for fonts
@@ -1350,7 +1351,49 @@ directories during the installation process.
 
 @c =====================================================================
 
-@node Invocation Examples,  , Font Directories, Invoking groff
+@node Paper Size, Invocation Examples, Font Directories, Invoking groff
+@section Paper Size
+@cindex paper size
+@cindex size, paper
+@cindex landscape page orientation
+@cindex orientation, landscape
+@cindex page orientation, landscape
+
+In groff, the page size for @code{gtroff} and for output devices are
+handled separately.  @xref{Page Layout}, for vertical manipulation of
+the page size.  @xref{Line Layout}, for horizontal changes.
+
+A default paper size can be set in the device's @file{DESC} file.  Most
+output devices also have a command line option @option{-p} to override
+the default paper size and option @option{-l} to use landscape
+orientation.  @xref{DESC File Format}, for a description of the
+@code{papersize} keyword which takes the same argument as @option{-p}.
+
+@pindex papersize.tmac
+@pindex troffrc
+A convenient shorthand to set a particular paper size for @code{gtroff}
+is command line option @option{-dpaper=@var{size}}.  This defines string
+@code{paper} which is processed in file @file{papersize.tmac} (loaded in
+the start-up file @file{troffrc} by default).  Possible values for
+@var{size} are the same as the predefined values for the
+@code{papersize} keyword (but only in lowercase) except
+@code{a7}-@code{d7}.  An appended @samp{l} (ell) character denotes
+landscape orientation.
+
+For example, use the following for PS output on A4 paper in landscape
+orientation:
+
+@Example
+groff -Tps -dpaper=a4l -P-pa4 -P-l -ms foo.ms > foo.ps
+@endExample
+
+Note that it is up to the particular macro package to respect default
+page dimensions set in this way (most do).
+
+
+@c =====================================================================
+
+@node Invocation Examples,  , Paper Size, Invoking groff
 @section Invocation Examples
 @cindex invocation examples
 @cindex examples of invocation
@@ -2010,8 +2053,7 @@ line) and 6.5@tie{}inch otherwise.
 
 @item -rLT=@var{length}
 Set title length to @var{length}.  If not specified, the title length
-defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
-line) and 6.5@tie{}inch otherwise.
+defaults to the line length.
 
 @item -rP@var{nnn}
 Page numbering starts with @var{nnn} rather than with@tie{}1.
