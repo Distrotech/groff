@@ -268,6 +268,8 @@
 .    \" disable hyphenation only if we have arguments
 .    nh
 .  \}
+.
+.  nr doc-have-space 0
 ..
 .
 .
@@ -2435,6 +2437,12 @@
 .ds doc-saved-space "\*[doc-space]
 .
 .
+.\" NS doc-have-space global register (bool)
+.\" NS   set if last command was horizontal space
+.
+.nr doc-have-space 0
+.
+.
 .\" NS Sm user macro
 .\" NS   space mode (`.Sm'/`.Sm on'/`.Sm off')
 .\" NS
@@ -2451,12 +2459,17 @@
 .\" NS   doc-space-mode
 .\" NS   doc-spaceXXX
 .\" NS
-.\" NS width register `Sm' set in doc-common
-.\" NS
 .\" NS local variables:
 .\" NS   doc-reg-Sm
+.\" NS
+.\" NS width register `Sm' set in doc-common
 .
 .de Sm
+.  ie \n[doc-have-space] \
+.    nr doc-reg-Sm 0
+.  el \
+.    nr doc-reg-Sm 1
+.
 .  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \{\
 .      ds doc-macro-name Sm
@@ -2501,10 +2514,13 @@
 .      nr doc-arg-limit \n[doc-arg-ptr]
 .      if \n[doc-num-args] \
 .        doc-parse-space-vector
-.      \" finish line only if it is interrupted
-.      if \n[.int] \
-.        nop \)
-.    \}\}
+.
+.      \" finish line only if it is interrupted and `doc-have-space'
+.      \" isn't set
+.      if \n[doc-reg-Sm] \
+.        if \n[.int] \
+.          nop \)
+.    \}
 .    el \{\
 .      \" reset remaining space vector elements
 .      nr doc-reg-Sm (\n[doc-arg-ptr] + 1)
@@ -3892,6 +3908,7 @@
 .  el \{\
 .    chop doc-item-box\n[doc-list-depth]
 .    nop \*[doc-item-box\n[doc-list-depth]]\h'|\n[doc-reg-dhl]u'\c
+.    nr doc-have-space 1
 .  \}
 .
 .  nr doc-in-list 0
@@ -4080,6 +4097,7 @@
 .  el \{\
 .    chop doc-item-box\n[doc-list-depth]
 .    nop \*[doc-item-box\n[doc-list-depth]]\h'|\n[doc-reg-dtl]u'\c
+.    nr doc-have-space 1
 .  \}
 .
 .  if \n[doc-in-files-section] \
