@@ -1,12 +1,20 @@
 .\" www.tmac
 .\"
 .\" A simple set of macros to provide HTML documents with basic
-.\" www functionality.  It will work with any macro set.
+.\" www functionality.  It should work with any macro set.
 .\"
 .nr _C \n(.C
 .cp 0
 .nr www-html 0
 .if '\*(.T'html' .nr www-html 1
+.if r ps4html \{\
+.   \"  remove the title command when we are generating images for html
+.   \"  (stops a title accidentally appearing inside an image)
+.   tl ````
+.   rm tl
+.   de tl
+..
+.\}
 .\"
 .\"
 .\"
@@ -151,6 +159,13 @@
 .    HTML <hr>
 ..
 .\"
+.\"  NO-AUTO-RULE - suppresses the generation of the top and bottom rules
+.\"                 which grohtml emits by default.
+.\"
+.de NO-AUTO-RULE
+.   HTML-TAG ".no-auto-rule"
+..
+.\"
 .\" supplimentary macros used by other macro sets
 .\"
 .\" here are some tags specially for -Tps or -Thtml when invoked by pre-html
@@ -160,16 +175,8 @@
 .\"                 read back by pre-html
 .\"
 .de HTML-DO-IMAGE
-.  if r ps4html .begin \{\
-.         image \\$2 \\$1.png
-.         bp
-.         tl ''''
-\O[0]\O[1]
-.  \}
-.  if \\n[www-html] .begin \{\
-.         image \\$2 \\$1.png
-\O[0]
-.  \}
+.  if r ps4html \O[3]\O[5\\$2\\$1.png]\O[0]\O[1]
+.  if \\n[www-html] \O[3]\O[5\\$2\\$1.png]\O[0]
 ..
 .\"
 .\" HTML-IMAGE-END - terminates an image for html

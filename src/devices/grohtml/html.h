@@ -53,6 +53,7 @@ public:
   simple_output(FILE *, int max_line_length);
   simple_output &put_string(const char *, int);
   simple_output &put_string(const char *s);
+  simple_output &put_string(const string &s);
   simple_output &put_troffps_char (const char *s);
   simple_output &put_translated_string(const char *s);
   simple_output &put_number(int);

@@ -283,6 +283,12 @@ simple_output &simple_output::put_string(const char *s)
   return *this;
 }
 
+simple_output &simple_output::put_string(const string &s)
+{
+  last_word.add_word(s.contents(), s.length());
+  return *this;
+}
+
 simple_output &simple_output::put_number(int n)
 {
   char buf[1 + INT_DIGITS + 1];

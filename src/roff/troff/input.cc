@@ -138,7 +138,6 @@ static void interpolate_arg(symbol);
 static request_or_macro *lookup_request(symbol);
 static int get_delim_number(units *, int);
 static int get_delim_number(units *, int, units);
-static symbol get_delim_file_name();
 static int get_line_arg(units *res, int si, charinfo **cp);
 static int read_size(int *);
 static symbol get_delim_name();
@@ -1011,7 +1010,7 @@ int non_interpreted_char_node::interpret(macro *mac)
 static void do_width();
 static node *do_non_interpreted();
 static node *do_special();
-static node *do_suppress();
+static node *do_suppress(symbol nm);
 static void do_register();
 
 dictionary color_dictionary(501);
@@ -1879,7 +1878,7 @@ void token::next()
 	type = TOKEN_NODE;
 	return;
       case 'O':
-	nd = do_suppress();
+	nd = do_suppress(read_escape_name());
 	if (!nd)
 	  break;
 	type = TOKEN_NODE;
@@ -4357,70 +4356,6 @@ static symbol get_delim_name()
   }
 }
 
-static symbol get_delim_file_name()
-{
-  token start;
-  start.next();
-  if (start.eof()) {
-    error("end of input at start of delimited file name");
-    return NULL_SYMBOL;
-  }
-  if (start.newline()) {
-    error("can't delimit file name with a newline");
-    return NULL_SYMBOL;
-  }
-  int start_level = input_stack::get_level();
-  char abuf[ABUF_SIZE];
-  char *buf = abuf;
-  int buf_size = ABUF_SIZE;
-  int i = 0;
-  // move over initial spaces
-  while (tok.ch() == 0)
-    tok.next();
-  if ((buf[i] = start.ch()) != 0)
-    i++;
-  for (;;) {
-    if (i + 1 > buf_size) {
-      if (buf == abuf) {
-	buf = new char[ABUF_SIZE*2];
-	memcpy(buf, abuf, buf_size);
-	buf_size = ABUF_SIZE*2;
-      }
-      else {
-	char *old_buf = buf;
-	buf = new char[buf_size*2];
-	memcpy(buf, old_buf, buf_size);
-	buf_size *= 2;
-	a_delete old_buf;
-      }
-    }
-    if ((buf[i] = tok.ch()) == 0) {
-      error("missing delimiter (got %1)", tok.description());
-      if (buf != abuf)
-	a_delete buf;
-      return NULL_SYMBOL;
-    }
-    i++;
-    tok.next();
-    if (tok.ch() == ']' && input_stack::get_level() == start_level)
-      break;
-  }
-  buf[i] = '\0';
-  if (buf == abuf) {
-    if (i == 0) {
-      error("empty delimited file name");
-      return NULL_SYMBOL;
-    }
-    else
-      return symbol(buf);
-  }
-  else {
-    symbol s(buf);
-    a_delete buf;
-    return s;
-  }
-}
-
 // Implement \R
 
 static void do_register()
@@ -4657,19 +4592,14 @@ node *do_special()
   return new special_node(mac);
 }
 
-node *do_suppress()
+static node *do_suppress(symbol nm)
 {
-  tok.next();
-  int c = tok.ch();
-  if (c != '[') {
-    error("argument(s) of \\O must be enclosed in brackets (got %1)",
-	  char(c));
+  if (nm.is_null()) {
+    error("expecting an argument to escape \\O");
     return 0;
   }
-  tok.next();
-  c = tok.ch();
-  tok.next();
-  switch (c) {
+  const char *s = nm.contents();
+  switch (*s) {
   case '0':
     if (begin_level == 1)
       return new suppress_node(0, 0);
@@ -4684,23 +4614,60 @@ node *do_suppress()
     break;
   case '3':
     begin_level++;
+    if ((begin_level == 1) && (! is_html)) {
+      if (curdiv == topdiv) {
+	if (topdiv->before_first_page) {
+	  if (!break_flag) {
+	    if (!topdiv->no_space_mode)
+	      topdiv->begin_page();
+	  }
+	  else if (topdiv->no_space_mode)
+	    topdiv->begin_page();
+	  else {
+	    push_page_ejector();
+	    topdiv->begin_page();
+	    topdiv->set_ejecting();
+	  }
+	}
+	else {
+	  push_page_ejector();
+	  if (break_flag)
+	    curenv->do_break();
+	  if (!topdiv->no_space_mode)
+	    topdiv->set_ejecting();
+	}
+      }
+    }
     break;
   case '4':
     begin_level--;
     break;
   case '5':
     {
-      symbol filename = get_delim_file_name();
-      if (filename.is_null()) {
-	error("missing filename as second argument to \\O");
+      s++;			// move over '5'
+      char position = *s;
+      if (*s == (char)0) {
+	error("missing position and filename in \\O");
+	return 0;
+      }
+      if (!(position == 'l'
+	    || position == 'r'
+	    || position == 'c'
+	    || position == 'i')) {
+	error("l, r, c, or i position expected (got %1 in \\O)", position);
+	return 0;
+      }
+      s++;			// onto image name
+      if (s == (char *)0) {
+	error("missing image name for \\O");
 	return 0;
       }
       if (begin_level == 1)
-	return new suppress_node(filename, 'i');
+	return new suppress_node(symbol(s), position);
     }
     break;
   default:
-    error("`%1' is an invalid argument to \\O", char(c));
+    error("`%1' is an invalid argument to \\O", *s);
   }
   return 0;
 }
@@ -4943,65 +4910,6 @@ void else_request()
     else
       begin_alternative();
   }
-}
-
-/*
- *  begin - if this is the outermost html_begin request then execute the
- *          rest of the line, else skip line
- */
-
-void begin()
-{
-  begin_level++;
-  if (begin_level == 1)
-    begin_alternative();
-  else
-    skip_alternative();
-}
-
-/*
- *  end - if this is the outermost html_end request then execute the
- *        rest of the line, else skip line
- */
-
-void end()
-{
-  begin_level--;
-  if (begin_level == 0)
-    begin_alternative();
-  else
-    skip_alternative();
-  if (begin_level < 0)
-    begin_level = 0;
-}
-
-/*
- *  image - implements the directive `.image {l|r|c|i} filename'
- *          which places the filename into a node which is later
- *          written out
- *
- *          . either as a special in the form of an image tag for -Thtml
- *          . or as an image region definition for all other devices
- *
- */
-
-void image()
-{
-  if (has_arg()) {
-    char position = tok.ch();
-    if (!(position == 'l'
-	  || position == 'r'
-	  || position == 'c'
-	  || position == 'i')) {
-      error("l, r, c, or i expected (got %1)", tok.description());
-      position = 'c';
-    }
-    tok.next();
-    symbol filename = get_long_name(1);
-    if (!filename.is_null())
-      curenv->add_node(new suppress_node(filename, position));
-  }
-  skip_line();
 }
 
 static int while_depth = 0;
@@ -6636,7 +6544,6 @@ int main(int argc, char **argv)
   init_column_requests();
 #endif /* COLUMN */
   init_node_requests();
-  init_markup_requests();
   number_reg_dictionary.define(".T", new constant_reg(tflag ? "1" : "0"));
   init_registers();
   init_reg_requests();
@@ -6745,13 +6652,6 @@ void get_output_registers(int *minx, int *miny, int *maxx, int *maxy)
   *miny = output_reg_miny_contents;
   *maxx = output_reg_maxx_contents;
   *maxy = output_reg_maxy_contents;
-}
-
-void init_markup_requests()
-{
-  init_request("begin", begin);
-  init_request("end", end);
-  init_request("image", image);
 }
 
 void init_input_requests()

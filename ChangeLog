@@ -1,3 +1,104 @@
+2001-12-05  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc (get_delim_file_name): Removed since no
+	longer used.
+	* src/devices/grohtml/post-html.cc (html_printer::html_printer): Fix
+	order of initializers.
+	* NEWS: Updated.
+
+2001-12-05  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* doc/groff.texinfo: Fix documentation of \O.
+
+	* src/devices/grohtml/html-text.cc (html_text::do_indent,
+	html_text::do_table, html_text::do_emittext, html_text::do_para):
+	Use `const' for first argument.
+	(html_text::do_table): Use cast.
+	* src/devices/grohtml/html-text.h: Updated.
+	* src/devices/grohtml/output.cc (simple_output::put_string): Add
+	method for `const string &s'.
+	* src/devices/grohtml/html.h: Updated.
+	* src/devices/grohtml/post-html.cc (MAX_STRING_LENGTH): Removed.
+	(ANCHOR_TEMPLATE): Modified.
+	(manufacture_headings): New global variable to handle `-h' option.
+	(is_subsection): Removed.
+	(char_buffer::add_string): Add `const' to first argument.
+	Protect against invalid string argument.
+	Add method for `const string &s'.
+	(text_glob): Completely redesigned.
+	(page): Use `const' for strings and remove string length variable.
+	(page::add_html): Removed.
+	(page::add_end_encode): New member function.
+	(to_unicode): Moved upwards.
+	(title_desc, header_desc): Updated.
+	(header_desc::write_headings): Updated to new ANCHOR_TEMPLATE
+	definition.
+	(html_printer::is_bold, html_printer::make_bold): New member
+	functions.
+	(html_printer::end_of_line): Updated.
+	(generate_img_src, html_printer::do_auto_image,
+	html_printer::do_title, html_printer::write_header,
+	html_printer::determine_header_level, html_printer::do_heading,
+	html_printer::do_linelength, html_printer::do_pageoffset,
+	html_printer::do_indentation, html_printer::do_tempindent,
+	html_printer::do_indentedparagraph, html_printer::do_break,
+	html_printer::flush_sbuf, get_html_translation,
+	html_printer::begin_page, html_printer::special): Rewritten to get
+	rid of static string length limit.
+	(html_printer::troff_tag): Added `.no-auto-rule'.
+	(html_printer::flush_globs): Small fix.
+	(html_printer::determine_space): Don't compute `space_width'.
+	(html_printer::translate_to_html): Renamed to ...
+	(html_printer::emit_html): This (with updates).
+	(html_printer::write_header): Implement `-h' option.
+	(html_printer::draw): Remove commented-out code.  Handle `F'
+	command.
+	(html_printer::add_char_to_sbuf): Removed.
+	(html_printer::add_to_sbuf): Rewritten.
+	(html_printer::sbuf_continuation): Fixed.
+	(html_printer::seen_backwards_escape, reverse,
+	html_printer::remove_last_char_from_sbuf): Removed.
+	(char_translate_to_html, str_translate_to_html): Removed.
+	(html_printer::overstrike): New function member.
+	(html_printer::set_char): Use it.
+	(html_printer::do_body): New function member.
+	(html_printer::~html_printer): Use it.
+	(main): Handle `-h' option.
+	(usage): Updated.
+	* src/devices/grohtml/grohtml.man: Document -h switch.
+
+	* src/preproc/html/pre-html.cc: Include searchpath.h
+	Replace `POSTSCRIPTRES' macro with `postscriptRes' variable.
+	(get_resolution): New function.
+	(checkImageDir): Use `0777' permissions in mkdir()
+	(write_start_image): Rewritten to use `\O[5...]'.
+	(createImage, generateImages): Updated.
+	(main): Handle `F' and `h' options.
+	Use `get_resolution'.
+
+	* src/roff/troff/input.cc (begin, end, image): Removed.
+	(do_suppress): Take parameter.
+	Handle modified syntax of `\O'.
+	(token::next): Updated.
+	(init_markup_requests): Removed.
+	(main): Updated.
+
+	* src/roff/troff/div.h: Add declaration for begin_page().
+
+	* tmac/color-html.tmac: Removed.  Contents moved to...
+	* tmac/html.tmac: Here.  Set background color.
+	* tmac/color.tmac: Removed.  Contents moved to...
+	* tmac/ps.tmac: Here.
+	* tmac/www.tmac: Remove the title command when generating images
+	for html.
+	(NO_AUTO_RULE): New macro.
+	(HTML_DO_IMAGE): Use revised `\O' escapes.
+	* tmac/Makefile.sub, tmac/groff_www.man, tmac/troffrc: Updated.
+
+2001-12-02  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/groff_mdoc.man: Fix typo.
+
 2001-12-01  Colin Watson  <cjwatson@debian.org>
 
 	* man/roff.man: Fix typo.

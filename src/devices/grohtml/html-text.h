@@ -53,7 +53,7 @@ public:
          html_text      (simple_output *op);
         ~html_text      (void);
   void   flush_text     (void);
-  void   do_emittext    (char *s, int length);
+  void   do_emittext    (const char *s, int length);
   void   do_italic      (void);
   void   do_bold        (void);
   void   do_roman       (void);
@@ -61,13 +61,13 @@ public:
   void   do_pre         (void);
   void   do_small       (void);
   void   do_big         (void);
-  void   do_para        (char *arg1);
+  void   do_para        (const char *arg1);
   void   do_sup         (void);
   void   do_sub         (void);
   void   do_space       (void);
   void   do_break       (void);
   void   do_newline     (void);
-  void   do_table       (char *arg);
+  void   do_table       (const char *arg);
   void   done_bold      (void);
   void   done_italic    (void);
   char  *done_para      (void);
@@ -77,7 +77,7 @@ public:
   void   done_pre       (void);
   void   done_small     (void);
   void   done_big       (void);
-  void   do_indent      (char *arg, int indent, int pageoff, int linelen);
+  void   do_indent      (const char *arg, int indent, int pageoff, int linelen);
   void   do_color       (color *c);
   void   done_color     (void);
   int    emitted_text   (void);

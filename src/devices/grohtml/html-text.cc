@@ -289,7 +289,7 @@ void html_text::push_para (HTML_TAG t)
  *              then we start a html table to implement the indentation.
  */
 
-void html_text::do_indent (char *arg, int indent, int pageoff, int linelen)
+void html_text::do_indent (const char *arg, int indent, int pageoff, int linelen)
 {
   if ((current_indentation != -1) &&
       (pageoffset+current_indentation != indent+pageoff)) {
@@ -304,7 +304,7 @@ void html_text::do_indent (char *arg, int indent, int pageoff, int linelen)
   linelength          = linelen;
 }
 
-void html_text::do_table (char *arg)
+void html_text::do_table (const char *arg)
 {
   int in_pre = is_in_pre();
   // char *para_type = done_para();
@@ -315,7 +315,7 @@ void html_text::do_table (char *arg)
     do_pre();
   }
   // do_para(para_type);
-  push_para(TABLE_TAG, arg);
+  push_para(TABLE_TAG, (void *)arg);
 }
 
 /*
@@ -604,7 +604,7 @@ void html_text::check_emit_text (tag_definition *t)
  *  do_emittext - tells the class that text was written during the current tag.
  */
 
-void html_text::do_emittext (char *s, int length)
+void html_text::do_emittext (const char *s, int length)
 {
   if ((! is_present(P_TAG)) && (! is_present(PRE_TAG)))
     do_para("");
@@ -630,7 +630,7 @@ void html_text::do_emittext (char *s, int length)
  *  do_para- starts a new paragraph
  */
 
-void html_text::do_para (char *arg)
+void html_text::do_para (const char *arg)
 {
   done_pre();
   if (! is_present(P_TAG)) {
@@ -701,7 +701,7 @@ void html_text::do_newline (void)
 
 int html_text::emitted_text (void)
 {
-  return( ! space_emitted);
+  return !space_emitted;
 }
 
 /*

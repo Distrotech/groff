@@ -32,6 +32,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "stringclass.h"
 #include "posix.h"
 #include "defs.h"
+#include "searchpath.h"
 
 #include <errno.h>
 #include <sys/types.h>
@@ -56,7 +57,6 @@ extern "C" const char *Version_string;
 #include "pushback.h"
 #include "html-strings.h"
 
-#define POSTSCRIPTRES          72000   // maybe there is a better way to find this? --fixme--
 #define DEFAULT_IMAGE_RES         80   // 80 pixels per inch resolution
 #ifdef PAGEA4
 #  define DEFAULT_VERTICAL_OFFSET  0   // DEFAULT_VERTICAL_OFFSET/72 of an inch
@@ -91,6 +91,7 @@ extern "C" const char *Version_string;
 
 typedef enum {CENTERED, LEFT, RIGHT, INLINE} IMAGE_ALIGNMENT;
 
+static int   postscriptRes  =-1;                // postscript resolution, dots per inch
 static int   stdoutfd       = 1;                // output file descriptor - normally 1 but might move
                                                 // -1 means closed
 static int   copyofstdoutfd =-1;                // a copy of stdout, so we can restore stdout when
@@ -109,6 +110,10 @@ static int   debug          = FALSE;
 static char *troffFileName  = NULL;             // output of pre-html output which is sent to troff -Tps
 static char *htmlFileName   = NULL;             // output of pre-html output which is sent to troff -Thtml
 #endif
+
+const char *const FONT_ENV_VAR = "GROFF_FONT_PATH";
+static search_path font_path(FONT_ENV_VAR, FONTPATH, 0, 0);
+
 
 /*
  *  Images are generated via postscript, gs and the pnm utilities.
@@ -132,8 +137,34 @@ void sys_fatal (const char *s)
 }
 
 /*
+ *  get_resolution - returns the postscript resolution from devps/DESC
+ */
+
+static int get_resolution (void)
+{
+  char *pathp;
+  FILE *f;
+  unsigned long int res;
+  int n;
+  int c;
+  f = font_path.open_file("devps/DESC", &pathp);
+  if (f == 0) sys_fatal("fopen");
+  while (1) {
+    n = fscanf(f, " res %lu", &res);
+    if (n < 0) sys_fatal("EOF");
+    if (n >= 1) {
+      fclose(f);
+      return res;
+    }
+    while (( c = getc(f) ) != '\n')
+      if (c == EOF) sys_fatal("EOF");
+  }
+}
+
+/*
  *  html_system - a wrapper for system()
  */
+
 void html_system(const char *s, int redirect_stdout)
 {
   // Redirect standard error to the null device.  This is more
@@ -371,7 +402,7 @@ static void makeFileName (void)
 static void checkImageDir (void)
 {
   if ((image_dir != NULL) && (strcmp(image_dir, "") != 0))
-    if (! ((mkdir(image_dir, 0700) == 0) || (errno == EEXIST))) {
+    if (! ((mkdir(image_dir, 0777) == 0) || (errno == EEXIST))) {
       error("cannot create directory `%1'", image_dir);
       exit(1);
     }
@@ -383,17 +414,16 @@ static void checkImageDir (void)
 
 static void write_end_image (int is_html)
 {
-  if (is_html) {
+  if (is_html)
     /*
      *  emit image name and enable output
      */
     writeString("\\O[2]\\O[1]\\O[4]\n");
-  } else {
+  else
     /*
      *  postscript, therefore emit image boundaries
      */
     writeString("\\O[2]\\O[4]\n");
-  }
 }
 
 /*
@@ -406,36 +436,29 @@ static void write_end_image (int is_html)
 
 static void write_start_image (IMAGE_ALIGNMENT pos, int is_html)
 {
-  if (pos == INLINE) {
-    writeString("\\O[3]\\O[5 ");
-    writeString(image_template); writeString(".png]");
-  } else {
-    writeString(".begin \\{\\\n");
-    switch (pos) {
+  writeString("\\O[3]\\O[5");
+  switch (pos) {
 
-    case LEFT:
-      writeString(".    image l ");
-      break;
-    case RIGHT:
-      writeString(".    image r ");
-      break;
-    case CENTERED:
-    default:
-      writeString(".    image c ");
-    }
-    writeString(image_template); writeString(".png\n");
-    if (! is_html) {
-      writeString(".bp\n");
-      writeString(".tl ''''\n");
-    }
-    writeString("\\}\n");
+  case INLINE:
+    writeString("i");
+    break;
+  case LEFT:
+    writeString("l");
+    break;
+  case RIGHT:
+    writeString("r");
+    break;
+  case CENTERED:
+  default:
+    writeString("c");
+    break;
   }
-  if (is_html) {
+  writeString(image_template); writeString(".png]");
+  if (is_html)
     writeString("\\O[0]\n");
-  } else {
+  else
     // reset min/max registers
     writeString("\\O[0]\\O[1]\n");
-  }
 }
 
 /*
@@ -786,10 +809,10 @@ static void createImage (imageItem *i)
 {
   if (i->X1 != -1) {
     char *s;
-    int  x1 = max(min(i->X1, i->X2)*image_res/POSTSCRIPTRES-1*IMAGE_BOARDER_PIXELS, 0);
-    int  y1 = max((image_res*vertical_offset/72)+min(i->Y1, i->Y2)*image_res/POSTSCRIPTRES-IMAGE_BOARDER_PIXELS, 0);
-    int  x2 = max(i->X1, i->X2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
-    int  y2 = (image_res*vertical_offset/72)+(max(i->Y1, i->Y2)*image_res/POSTSCRIPTRES)+1+IMAGE_BOARDER_PIXELS;
+    int  x1 = max(min(i->X1, i->X2)*image_res/postscriptRes-1*IMAGE_BOARDER_PIXELS, 0);
+    int  y1 = max((image_res*vertical_offset/72)+min(i->Y1, i->Y2)*image_res/postscriptRes-IMAGE_BOARDER_PIXELS, 0);
+    int  x2 = max(i->X1, i->X2)*image_res/postscriptRes+1*IMAGE_BOARDER_PIXELS;
+    int  y2 = (image_res*vertical_offset/72)+(max(i->Y1, i->Y2)*image_res/postscriptRes)+1+IMAGE_BOARDER_PIXELS;
 
     s = make_message("pnmcut%s %d %d %d %d < %s/%d | pnmcrop | pnmtopng%s %s > %s \n",
 		     EXE_EXT,
@@ -899,7 +922,7 @@ static void generateImages (char *regionFileName)
       int y2     = f->readInt();
       int maxx   = max(f->readInt(), MAX_WIDTH*image_res);
       char *name = f->readString();
-      int res    = POSTSCRIPTRES;  // --fixme--    prefer (f->readInt()) providing that troff can discover the value
+      int res    = postscriptRes;
       listOfImages.add(x1, y1, x2, y2, page, res, maxx, name);
       while ((f->putPB(f->getPB()) != '\n') &&
 	     (f->putPB(f->getPB()) != eof)) {
@@ -1185,7 +1208,7 @@ int scanArguments (int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "+o:i:I:D:F:vdlrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "+o:i:I:D:F:vdhlrn", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -1200,6 +1223,9 @@ int scanArguments (int argc, char **argv)
     case 'i':
       image_res = atoi(optarg);
       break;
+    case 'F':
+      font_path.command_line_dir(optarg);
+      break;
     case 'o':
       vertical_offset = atoi(optarg);
       break;
@@ -1207,6 +1233,9 @@ int scanArguments (int argc, char **argv)
 #if defined(DEBUGGING)
       debug = TRUE;
 #endif
+      break;
+    case 'h':
+      // handled by post-grohtml
       break;
     case CHAR_MAX + 1: // --help
       usage(stdout);
@@ -1288,6 +1317,7 @@ int main(int argc, char **argv)
   int ok=1;
 
   i = scanArguments(argc, argv);
+  postscriptRes = get_resolution();
   checkImageDir();
   makeFileName();
   while (i < argc) {
