@@ -188,7 +188,8 @@ ZD:
 	`$(AFMNAME) $(afmdir)/ZapfDingbats.afm` $(srcdir)/dingbats.map $@
 
 SS: $(srcdir)/symbolsl.afm
-	$(AFMTODIT) -s $(IFLAG) $(srcdir)/symbolsl.afm $(srcdir)/lgreekmap $@
+	$(AFMTODIT) -s -x $(IFLAG) \
+	$(srcdir)/symbolsl.afm $(srcdir)/lgreekmap $@
 
 S: symbol.afm
 	$(AFMTODIT) -s $(RFLAG) symbol.afm symbolmap $@

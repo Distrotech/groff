@@ -6046,7 +6046,7 @@ $prog =~ s@.*/@@;
 $groff_sys_fontdir = "@FONTDIR@";
 
 do 'getopts.pl';
-do Getopts('a:d:e:i:mnsv');
+do Getopts('a:d:e:i:mnsvx');
 
 if ($opt_v) {
     print "GNU afmtodit (groff) version @VERSION@\n";
@@ -6054,7 +6054,7 @@ if ($opt_v) {
 }
 
 if ($#ARGV != 2) {
-    die "usage: $prog [-mnsv] [-a angle] [-d DESC] [-e encoding]\n" .
+    die "usage: $prog [-mnsvx] [-a angle] [-d DESC] [-e encoding]\n" .
 	"       [-i n] afmfile mapfile font\n";
 }
 
@@ -6225,22 +6225,24 @@ $italic_angle = $opt_a if $opt_a;
 
 # add unencoded characters and unmapped characters of the form `uniXXXX'
 
-$i = ($#encoding > 256) ? ($#encoding + 1) : 256;
-while ($ch = each %width) {
-    if (!$in_encoding{$ch}) {
-	$encoding[$i] = $ch;
-	$i++;
-    }
-    if (!$nmap{$ch}) {
-	$u1 = $AGL_to_unicode{$ch};
-	if (!$u1 && ($ch =~ /^uni([0-9A-F]{4})$/)) {
-	    $u1 = "u" . $1;
+if (!$opt_x) {
+    $i = ($#encoding > 256) ? ($#encoding + 1) : 256;
+    while ($ch = each %width) {
+	if (!$in_encoding{$ch}) {
+	    $encoding[$i] = $ch;
+	    $i++;
 	}
-	if ($u1) {
-	    $u2 = $unicode_decomposed{$u1};
-	    $u = $u2 ? $u2 : $u1;
-	    $nmap{$ch} += 1;
-	    $map{$ch,"0"} = $u;
+	if (!$nmap{$ch}) {
+	    $u1 = $AGL_to_unicode{$ch};
+	    if (!$u1 && ($ch =~ /^uni([0-9A-F]{4})$/)) {
+		$u1 = "u" . $1;
+	    }
+	    if ($u1) {
+		$u2 = $unicode_decomposed{$u1};
+		$u = $u2 ? $u2 : $u1;
+		$nmap{$ch} += 1;
+		$map{$ch,"0"} = $u;
+	    }
 	}
     }
 }

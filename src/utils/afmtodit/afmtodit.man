@@ -21,13 +21,13 @@ the original English.
 .\" Like TP, but if specified indent is more than half
 .\" the current line-length - indent, use the default indent.
 .de Tp
-.ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
-.el .TP "\\$1"
+.  ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
+.  el .TP "\\$1"
 ..
 .
 .de OP
-.ie \\n(.$-1 .RI "[\ \fB\\$1\fP\ " "\\$2" "\ ]"
-.el .RB "[\ " "\\$1" "\ ]"
+.  ie \\n(.$-1 .RI "[\ \fB\\$1\fP\ " "\\$2" "\ ]"
+.  el .RB "[\ " "\\$1" "\ ]"
 ..
 .
 .
@@ -45,7 +45,7 @@ afmtodit \- create font files for use with groff \-Tps
 .in +\w'\fBafmtodit 'u
 .ti \niu
 .B afmtodit
-.OP \-mnsv
+.OP \-mnsvx
 .OP \-a n
 .OP \-d desc_file
 .OP \-e enc_file
@@ -110,7 +110,7 @@ If a PostScript character is not named as
 are four uppercase hexadecimal digits), and is not mentioned in
 .IR map_file ,
 and a generic groff glyph name can't be deduced using the
-Adobe Glyph List (built into
+Adobe Glyph List (AGL, built into
 .BR  afmtodit ),
 then
 .B afmtodit
@@ -294,6 +294,10 @@ command to the font file.
 .TP
 .B \-v
 Print version.
+.
+.TP
+.B \-x
+Don't use the built-in Adobe Glyph List.
 .
 .
 .SH FILES
