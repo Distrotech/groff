@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 11 Mar 2003
+   Last update: 04 Apr 2003
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -33,18 +33,14 @@
    This file implements the parser for the intermediate groff output,
    see groff_out(5), and does the printout for the given device.
 
-   All parsed information is processed within the function do_file() by
-   using the global object `pr' of class `printer'.  So a device
-   postprocessor just needs to fill in the methods for the class
-   `printer' without having to worry about the syntax of the
-   intermediate output format.  Consequently, the programming of groff
-   postprocessors is similar to the development of device-drivers.
+   All parsed information is processed within the function do_file().
+   A device postprocessor just needs to fill in the methods for the class
+   `printer' (or rather a derived class) without having to worry about
+   the syntax of the intermediate output format.  Consequently, the
+   programming of groff postprocessors is similar to the development of
+   device drivers.
 
    The prototyping for this file is done in driver.h (and error.h).
-
-   Postprocessor programs must deallocate the global variables `pr' and
-   `device' with `delete', `current_filename' and
-   `current_source_filename' with `free((char *))'.
 */
 
 /* Changes of the 2001 rewrite of this file.
@@ -148,10 +144,6 @@
      devices to the postprocessor device (seems to be reasonably
      easy).
    - The external, global pointer variables are not optimally handled.
-     - `pr' isn't used outside besides initialization and deletion.
-       So it could be replaced by a static local variable.  For
-       example, a wrapper class `Postprocessor' for class `printer' with
-       internal make_printer() and automatic clean-up would make sense.
      - The global variables `current_filename',
        `current_source_filename', and `current_lineno' are only used for
        error reporting.  So implement a static class `Error'
@@ -284,11 +276,11 @@ public:
   {
     if (i >= num_stored)
       fatal("index out of range");
-    return (const IntArg) data[i];
+    return (IntArg) data[i];
   }
   void append(IntArg);
   const IntArg * const
-    get_data(void) const { return (const IntArg * const) data; }
+    get_data(void) const { return (IntArg *) data; }
   const size_t len(void) const { return num_stored; }
 };
 

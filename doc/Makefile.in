@@ -34,6 +34,10 @@ VPATH=@srcdir@
 top_builddir=@groff_top_builddir@
 pnmtops=@pnmtops_nosetpage@
 
+# These may be overridden if cross-compiling.
+TROFFBIN=$(top_builddir)/src/roff/troff/troff
+GROFFBIN=$(top_builddir)/src/roff/groff/groff
+GROFF_BIN_PATH=`echo $(groff_bin_dirs) | sed -e 's|  *|:|g'`
 
 # Since info files are distributed within the groff package, no
 # autoconf test for the makeinfo binary is done.
@@ -59,7 +63,6 @@ groff_bin_dirs=\
   $(top_builddir)/src/devices/grolj4 \
   $(top_builddir)/src/devices/grolbp \
   $(top_builddir)/src/devices/grohtml
-groff_bin_path=`echo $(groff_bin_dirs) | sed -e 's|  *|:|g'`
 
 version=`cat $(top_srcdir)/VERSION`
 # No additional number if revision is zero.
@@ -68,13 +71,13 @@ revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' $(top_srcdir)/REVISION`
 FFLAG=-F$(top_builddir)/font -F$(top_srcdir)/font
 TFLAG=-M$(top_builddir)/tmac -M$(top_srcdir)/tmac
 
-TROFF=$(top_builddir)/src/roff/troff/troff $(TFLAG) $(FFLAG) -ww
+TROFF=$(TROFFBIN) $(TFLAG) $(FFLAG) -ww
 GROFF=GROFF_COMMAND_PREFIX=''; \
       export GROFF_COMMAND_PREFIX; \
-      GROFF_BIN_PATH=$(groff_bin_path); \
+      GROFF_BIN_PATH=$(GROFF_BIN_PATH); \
       export GROFF_BIN_PATH; \
       sed -e "s;@VERSION@;$(version)$(revision);" $< \
-      | $(top_builddir)/src/roff/groff/groff $(TFLAG) $(FFLAG) -Upet -ww
+      | $(GROFFBIN) $(TFLAG) $(FFLAG) -Upet -ww
 
 imagedir=img
 

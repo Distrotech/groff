@@ -246,10 +246,18 @@ install_dev:
 	    $(INSTALL_DATA) $(srcdir)/$$f $(fontsubdir)/$$f; \
 	  fi; \
 	done
+	-for f in $(DEVSCRIPTS); do \
+	  rm -f $(fontsubdir)/$$f; \
+	  if test -f $$f; then \
+	    $(INSTALL_SCRIPT) $$f $(fontsubdir)/$$f; \
+	  else \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$f $(fontsubdir)/$$f; \
+	  fi; \
+	done
 
 .PHONY: uninstall_dev
 uninstall_dev:
-	-for f in $(DEVFILES); do rm -f $(fontsubdir)/$$f; done
+	-for f in $(DEVFILES) $(DEVSCRIPTS); do rm -f $(fontsubdir)/$$f; done
 	-if test -d $(fontsubdir)/generate; then \
 	  rmdir $(fontsubdir)/generate; \
 	fi
