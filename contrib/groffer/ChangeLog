@@ -1,3 +1,31 @@
+2004-06-02  Bernd Warken
+	________________________________________________________________
+	* release of groffer 0.9.10
+
+	* groffer.sh:
+	- Remove automatic call of `ash' due to inconsistencies of
+	different ash versions.
+	- In the first run, add recognition of `--shell' lines in the
+	groffer configuration files.  To configure an external shell in
+	a configuration file, a line starting with `--shell' is
+	necessary.
+	- list_from_cmdline(): Simplify the arguments.
+	- As $POSIXLY_CORRECT is internally set to `y' by some GNU
+	`/bin/sh' shells the following 2 fixes are necessary:
+	-- `sed': Empty patterns are not allowed with $POSIXLY_CORRECT
+	set; so move the address information before the `s' command to the
+	pattern after the command, and write `.*' to the address field.
+	-- list_from_cmdline(): Remove the strange $POSIXLY_CORRECT style
+	to finish the option processing after the first non-option
+	argument; use the flexible GNU mixing of options and file names
+	instead.
+
+	* groffer.man:
+	- Remove any hints on `ash'.
+	- Add minus line behavior of `--shell' for configuration and add a
+	corresponding example.
+	- Update the information on $POSIXLY_CORRECT.
+		
 2004-06-02  Werner Lemberg  <wl@gnu.org>
 
 	* groff.man: Protect (g)xditview with \% to avoid hyphenation.

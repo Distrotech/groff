@@ -48,22 +48,25 @@ Shell Compatibility
 
 This shell script is compatible to the both the GNU and the POSIX
 shell and utilities.  Care was taken to restrict the programming
-technics used here in order to achieve POSIX compatibility as far
-back as POSIX P1003.2 Draft 11.2 of September 1991.
+technics used here in order to achieve POSIX compatibility as far back
+as POSIX P1003.2 Draft 11.2 of September 1991.
 
-The only non-builtin used here is POSIX `sed'.  This script was
-tested under `bash', `ash', and `ksh'.  The speed under `ash' is
-more than double when compared to the larger shells.
+The only non-builtin used here is POSIX `sed'.  This script was tested
+under `bash', `ash', and `ksh'.  The speed under `ash' is more than
+double when compared to the larger shells.  The new version of `ash'
+taken from `dash' produces strange errors, so the automatic call of
+`ash' was removed.
 
 This script provides its own option parser.  It is compatible to the
-usual GNU style command line (option clusters, long options, mixing
-of options and non-option file names), except that it is not
-possible to abbreviate long option names.
+usual GNU style command line (option clusters, long options, mixing of
+options and non-option file names), except that it is not possible to
+abbreviate long option names.
 
-The mixing of options and file names can be prohibited by setting
-the environment variable `$POSIXLY_CORRECT' to a non-empty value.
-This enables the rather wicked POSIX behavior to terminate option
-parsing when the first non-option command line argument is found.
+The flexible mixing of options and file names in GNU style is always
+possible, even if the environment variable `$POSIXLY_CORRECT' is set
+to a non-empty value.  This disables the rather wicked POSIX behavior
+to terminate option parsing when the first non-option command line
+argument is found.
 
 
 Survey of Functions defined in groffer.sh
@@ -75,10 +78,9 @@ the arguments are meant to be; the argument names are irrelevant.
 <>+     one or more such arguments
 <>      exactly 1
 
-A function that starts with an underscore `_' is an internal
-function for some function.  The internal functions are defined just
-after their corresponding function; they are not mentioned in the
-following.
+A function that starts with an underscore `_' is an internal function
+for some function.  The internal functions are defined just after
+their corresponding function; they are not mentioned in the following.
 
 abort (text>*)
 base_name (path)
@@ -110,7 +112,7 @@ is_yes (<string>)
 leave ()
 landmark (<text>)
 list_append (<list> <element>...)
-list_from_cmdline (<s_n> <s_a> <l_n> <l_n> [<cmdline_arg>...])
+list_from_cmdline (<pre_name_of_opt_lists> [<cmdline_arg>...])
 list_from_split (<string> <separator>)
 list_get (<list>)
 list_has (<list> <element>)

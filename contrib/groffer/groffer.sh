@@ -25,17 +25,20 @@
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.9';
-_LAST_UPDATE='29 May 2004';
+_PROGRAM_VERSION='0.9.10';
+_LAST_UPDATE='1 June 2004';
 
 
 ########################################################################
-# Determine the shell under which to run this script;
-# if `ash' is available restart the script using `ash';
-# otherwise just go on.
+# Determine the shell under which to run this script from the command
+# line arguments or $GROFF_OPT; if none is specified, just go on with
+# the starting shell.
 
 if test _"${_groffer_run}"_ = __; then
   # only reached during the first run of the script
+
+  export _groffer_run;		# counter for the runs of groffer
+  _groffer_run='first';
 
   export _PROGRAM_NAME;
   export _PROGRAM_VERSION;
@@ -44,9 +47,9 @@ if test _"${_groffer_run}"_ = __; then
   export GROFFER_OPT;		# option environment for groffer
   export _GROFFER_SH;		# file name of this shell script
   export _OUTPUT_FILE_NAME;	# output generated, see main_set_res..()
-  export _groffer_run;		# counter for the runs of groffer
 
-  _groffer_run='first';
+  export _CONFFILES;		# configuration files
+  _CONFFILES="/etc/groff/groffer.conf ${HOME}/.groff/groffer.conf";
 
   case "$0" in
   *${_PROGRAM_NAME}*)
@@ -110,12 +113,26 @@ if test _"${_groffer_run}"_ = __; then
     test _"$($1 -c 's=ok; echo -n "$s"' 2>/dev/null)"_ = _ok_;
   }
 
-  # do the shell determination
+  # do the shell determination from command line and $GROFFER_OPT
   _shell="$(_get_opt_shell "$@")";
 
   if test _"${_shell}"_ = __; then
-    _shell='ash';
+    # none found, so look at the `--shell' lines in configuration files
+    export f;
+    for f in ${_CONFFILES}; do
+      if test -f $f; then
+        _all="$(cat $f | sed -n -e '/^--shell[= ] *\([^ ]*\)$/s//\1/p')"
+        for s in ${_all}; do
+          _shell=$s;
+        done;
+      fi;
+    done;
+    unset f;
+    unset s;
+    unset _all;
   fi;
+
+  # restart the script with the last found $_shell, if it is a shell
   if _test_on_shell "${_shell}"; then
     _groffer_run='second';
     # do not quote $_shell to allow arguments
@@ -232,9 +249,6 @@ return_yes="func_pop; return ${_YES}";
 return_no="func_pop; return ${_NO}";
 return_error="func_pop; return ${_ERROR}";
 
-
-export _CONFFILES;
-_CONFFILES="/etc/groff/groffer.conf ${HOME}/.groff/groffer.conf";
 
 export _DEFAULT_MODES;
 _DEFAULT_MODES='x,ps,tty';
@@ -985,9 +999,10 @@ unset _clobber;
 ########################################################################
 # Test of function `sed'.
 #
+
 if test _"$(echo xTesTx \
            | sed -e 's/^.\([Tt]e*x*sTT*\).*$/\1/' \
-           | sed -e '\|T|s||t|g')"_ != _test_;
+           | sed -e '\|T|s|T|t|g')"_ != _test_;
 then
   error 'Test of "sed" command failed.';
 fi;
@@ -1075,7 +1090,7 @@ base_name()
   case "$f" in
     */)
       # delete all final slashes
-      f="$(echo -n "$f" | sed -e '\|//*$|s|||')";
+      f="$(echo -n "$f" | sed -e '\|.*|s|//*$||')";
       ;;
   esac;
   case "$f" in
@@ -1084,7 +1099,7 @@ base_name()
       ;;
     */*)
       # delete everything before and including the last slash `/'.
-      echo -n "$f" | sed -e '\|^.*//*\([^/]*\)$|s||\1|';
+      echo -n "$f" | sed -e '\|.*|s|^.*//*\([^/]*\)$|\1|';
       ;;
     *)
       echo -n "$f";
@@ -1194,11 +1209,11 @@ dirname_chop()
   local _res;
   local _sep;
   # replace all multiple slashes by a single slash `/'.
-  _res="$(echo -n "$1" | sed -e '\|///*|s||/|g')";
+  _res="$(echo -n "$1" | sed -e '\|.*|s|///*|/|g')";
   case "${_res}" in
     ?*/)
       # remove trailing slash '/';
-      echo -n "${_res}" | sed -e '\|/$|s|||';
+      echo -n "${_res}" | sed -e '\|.*|s|/$||';
       ;;
     *) echo -n "${_res}"; ;;
   esac;
@@ -1746,7 +1761,7 @@ list_append()
 
 
 ########################################################################
-# list_from_cmdline (<s_n> <s_a> <l_n> <l_a> [<cmdline_arg>...])
+# list_from_cmdline (<pre_name_of_opt_lists> [<cmdline_arg>...])
 #
 # Transform command line arguments into a normalized form.
 #
@@ -1754,32 +1769,25 @@ list_append()
 # output each as a single-quoted argument of its own.  Options and
 # file parameters are separated by a '--' argument.
 #
-# Arguments: >=4
-#   <s_n>: space-separated list of short options without an arg.
-#   <s_a>: space-separated list of short options that have an arg.
-#   <l_n>: space-separated list of long options without an arg.
-#   <l_a>: space-separated list of long options that have an arg.
+# Arguments: >=1
+#   <pre_name>: common part of a set of 4 environment variable names:
+#     $<pre_name>_SHORT_NA:  list of short options without an arg.
+#     $<pre_name>_SHORT_ARG: list of short options that have an arg.
+#     $<pre_name>_LONG_NA:   list of long options without an arg.
+#     $<pre_name>_LONG_ARG:  list of long options that have an arg.
 #   <cmdline_arg>...: the arguments from a command line, such as "$@",
 #                     the content of a variable, or direct arguments.
-#
-# Globals: $POSIXLY_CORRECT (only kept for compatibility).
 #
 # Output: ['-[-]opt' ['optarg']]... '--' ['filename']...
 #
 # Example:
-#     list_normalize 'a b' 'c' '' 'long' -a f1 -bcarg --long=larg f2
-#   will result in printing:
+#   list_from_cmdline PRE 'a b' 'c' '' 'long' -a f1 -bcarg --long=larg f2
+# If $PRE_SHORT_NA, $PRE_SHORT_ARG, $PRE_LONG_NA, and $PRE_LONG_ARG are
+# none-empty option lists, this will result in printing:
 #     '-a' '-b' '-c' 'arg' '--long' 'larg' '--' 'f1' 'f2'
-#   If $POSIXLY_CORRECT is not empty, the result will be:
-#     '-a' '--' 'f1' '-bcarg' '--long=larg' 'f2'
 #
-#   Rationale:
-#     In POSIX, the first non-option ends the option processing.
-#     In GNU mode, used by default, non-option arguments are sorted
-#     behind the options.
-#
-#   Use this function only in the following way:
-#     eval set -- "$(args_norm '...' '...' '...' '...' "$@")";
+#   Use this function in the following way:
+#     eval set -- "$(args_norm PRE_NAME "$@")";
 #     while test "$1" != '--'; do
 #       case "$1" in
 #       ...
@@ -1791,19 +1799,31 @@ list_append()
 #
 list_from_cmdline()
 {
-  func_check list_from_cmdline '>=' 4 "$@";
+  func_check list_from_cmdline '>=' 1 "$@";
   local _fparams;
   local _fn;
-  local _result;
-  local _long_a;
-  local _long_n;
   local _short_a;
   local _short_n;
-  _short_n="$(list_get "$1")"; # short options, no argument
-  _short_a="$(list_get "$2")"; # short options with argument
-  _long_n="$(list_get "$3")";	 # long options, no argument
-  _long_a="$(list_get "$4")";	 # long options with argument
-  shift 4;
+  local _long_a;
+  local _long_n;
+  local _result;
+  _short_n="$(obj_data "$1"_SHORT_NA)";  # short options, no argument
+  _short_a="$(obj_data "$1"_SHORT_ARG)"; # short options, with argument
+  _long_n="$(obj_data "$1"_LONG_NA)";    # long options, no argument
+  _long_a="$(obj_data "$1"_LONG_ARG)";   # long options, with argument
+  if obj _short_n is_empty; then
+    error 'list_from_cmdline(): no $'"$1"'_SHORT_NA options.';
+  fi;
+  if obj _short_a is_empty; then
+    error 'list_from_cmdline(): no $'"$1"'_SHORT_ARG options.';
+  fi;
+  if obj _long_n is_empty; then
+    error 'list_from_cmdline(): no $'"$1"'_LONG_NA options.';
+  fi;
+  if obj _long_a is_empty; then
+    error 'list_from_cmdline(): no $'"$1"'_LONG_ARG options.';
+  fi;
+  shift;
   _fn='list_from_cmdline():';	 # for error messages
   if is_equal "$#" 0; then
     echo -n "'--'";
@@ -1879,13 +1899,12 @@ list_from_cmdline()
         ;;
       *)
 	# Here, $_arg is not an option, so a file parameter.
-        # When $POSIXLY_CORRECT is set this ends option parsing;
-        # otherwise, the argument is stored as a file parameter and
-        # option processing is continued.
         list_append _fparams "${_arg}";
-	if obj POSIXLY_CORRECT is_not_empty; then
-          break;
-        fi;
+
+        # Ignore the strange option handling of $POSIXLY_CORRECT to
+        # end option parsing after the first file name argument.  To
+        # reuse it, do a `break' here if $POSIXLY_CORRECT is
+        # non-empty.
         ;;
     esac;
   done;
@@ -1922,7 +1941,7 @@ list_from_split()
   # replace split character of string by the list separator ` ' (space).
   case "$2" in
     /)				# cannot use normal `sed' separator
-      echo -n "${_s}" | sed -e '\|'"$2"'|s|| |g';
+      echo -n "${_s}" | sed -e '\|.*|s|'"$2"'| |g';
       ;;
     ?)				# use normal `sed' separator
       echo -n "${_s}" | sed -e 's/'"$2"'/ /g';
@@ -1960,8 +1979,8 @@ list_get()
   eval _list='"${'$1'}"';
   # remove leading and final space characters
   _list="$(echo -n "${_list}" | \
-           sed -e '/^['"${_SPACE}${_TAB}"']*/s///' | \
-           sed -e '/['"${_SPACE}${_TAB}"']*$/s///')";
+           sed -e 's/^['"${_SPACE}${_TAB}"']*//' | \
+           sed -e 's/['"${_SPACE}${_TAB}"']*$//')";
   case "${_list}" in
   '')
     eval "${return_ok}";
@@ -2475,7 +2494,7 @@ manpath_set_from_path()
     eval set -- "$(path_split "${PATH}")";
     for d in "$@"; do
       # delete the final `/bin' part
-      _base="$(echo -n "$d" | sed -e '\|//*bin/*$|s|||')";
+      _base="$(echo -n "$d" | sed -e '\|.*|s|//*bin/*$||')";
       for e in /share/man /man; do
         _mandir="${_base}$e";
         if test -d "${_mandir}" && test -r "${_mandir}"; then
@@ -3242,7 +3261,7 @@ main_init()
       echo '_groffer_opt=""' >>${_TMP_CAT};
       # collect the lines starting with a minus
       cat "$f" | sed -e \
-        '/^[	 ]*\(-.*\)$/s//_groffer_opt="${_groffer_opt} \1"'/ \
+        's/^[	 ]*\(-.*\)$/_groffer_opt="${_groffer_opt} \1"'/ \
         >>${_TMP_CAT};
       # prepend the collected information to $GROFFER_OPT
       echo 'GROFFER_OPT="${_groffer_opt} ${GROFFER_OPT}"' >>${_TMP_CAT};
@@ -3281,10 +3300,7 @@ main_parse_MANOPT()
     eval "${return_ok}";
   fi;
   # add arguments in $MANOPT by mapping them to groffer options
-  eval set -- "$(list_from_cmdline \
-    _OPTS_MANOPT_SHORT_NA _OPTS_MANOPT_SHORT_ARG \
-    _OPTS_MANOPT_LONG_NA _OPTS_MANOPT_LONG_ARG \
-    "${MANOPT}")";
+  eval set -- "$(list_from_cmdline _OPTS_MANOPT "${MANOPT}")";
   until test "$#" -le 0 || is_equal "$1" '--'; do
     _opt="$1";
     shift;
@@ -3416,10 +3432,7 @@ main_parse_args()
 
   eval set -- "${GROFFER_OPT}" '"$@"';
 
-  eval set -- "$(list_from_cmdline \
-   _OPTS_CMDLINE_SHORT_NA _OPTS_CMDLINE_SHORT_ARG \
-   _OPTS_CMDLINE_LONG_NA _OPTS_CMDLINE_LONG_ARG \
-   "$@")";
+  eval set -- "$(list_from_cmdline _OPTS_CMDLINE "$@")";
 
 # By the call of `eval', unnecessary quoting was removed.  So the
 # positional shell parameters ($1, $2, ...) are now guaranteed to
@@ -3683,6 +3696,7 @@ main_parse_args()
         shift;
         ;;
       --shell)
+        # already done during the first run; so ignore the argument
         shift;
         ;;
       --systems)		# man pages for different OS's, arg
@@ -4128,7 +4142,7 @@ main_set_resources()
       continue;
       ;;
     ,*)
-      n="$(echo -n "$1" | sed -e '/^,,*/s///')";
+      n="$(echo -n "$1" | sed -e 's/^,,*//')";
       ;;
     esac
     if obj n is_empty; then
