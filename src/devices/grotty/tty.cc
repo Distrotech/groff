@@ -530,13 +530,15 @@ void tty_printer::put_color(char color_index, int back)
     back = !back;
     color_index = back ? curr_back_idx : curr_fore_idx;
   }
-  putstring(CSI);
-  if (back)
-    putchar('4');
-  else
-    putchar('3');
-  putchar(color_index + '0');
-  putchar('m');
+  if (color_index != DEFAULT_COLOR_IDX) {
+    putstring(CSI);
+    if (back)
+      putchar('4');
+    else
+      putchar('3');
+    putchar(color_index + '0');
+    putchar('m');
+  }
 }
 
 void tty_printer::end_page(int page_length)

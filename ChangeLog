@@ -1,3 +1,16 @@
+2003-02-17  Werner LEMBERG  <wl@gnu.org>
+
+	Another round trying to really fix problems with `have_input'.
+
+	* src/roff/troff/input.cc (input_stack::get): Handle `have_input'.
+	(token::next) <'\n'>, <\'\n'>: Don't handle `have_input'.
+
+	* src/devices/grotty/tty.cc (tty_printer::put_color): Fix color
+	handling if both foreground and background colors are default.
+
+	* doc/groff.texinfo (Debugging): Document .lf differences to
+	AT&T troff.
+
 2003-02-16  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grotty/tty.cc (tty_printer::make_rgb_string): Avoid
@@ -123,7 +136,7 @@
 	* src/roff/troff/input.cc (do_name_test, do_expr_test,
 	do_zero_width): Push `\n' if closing delimiter is missing.
 
-	(token::next) <ESCAPE_NEWLINE>, <'\n'>, <'\ '>: Reset `have_input'.
+	(token::next) <ESCAPE_NEWLINE>, <'\n'>, <\'\n'>: Reset `have_input'.
 	<'F'>: Make \F non-transparent at the beginning of line.
 	(process_input_stack) <token::TOKEN_CHAR, token::TOKEN_NEWLINE,
 	token::TOKEN_REQUEST, token::TOKEN_BEGIN_TRAP>: Don't handle

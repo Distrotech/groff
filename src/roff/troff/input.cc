@@ -107,8 +107,9 @@ int suppress_output_flag = 0;
 int is_html = 0;
 int begin_level = 0;		// number of nested .begin requests
 
-int have_input = 0;		// whether \f, \H, \R, \s, or \S has
-				// been processed in token::next()
+int have_input = 0;		// whether \f, \F, \D'F...', \H, \m, \M,
+				// \R, \s, or \S has been processed in
+				// token::next()
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
 
@@ -437,7 +438,10 @@ inline int input_stack::get_level()
 
 inline int input_stack::get(node **np)
 {
-  return (top->ptr < top->eptr) ? *top->ptr++ : finish_get(np);
+  int res = (top->ptr < top->eptr) ? *top->ptr++ : finish_get(np);
+  if (res == '\n')
+    have_input = 0;
+  return res;
 }
 
 int input_stack::finish_get(node **np)
@@ -1680,7 +1684,6 @@ void token::next()
 	return;
       case '\n':
 	type = TOKEN_NEWLINE;
-	have_input = 0;
 	return;
       case '\001':
 	type = TOKEN_LEADER;
@@ -2045,7 +2048,6 @@ void token::next()
       case '}':
 	goto ESCAPE_RIGHT_BRACE;
       case '\n':
-	have_input = 0;
 	break;
       case '[':
 	if (!compatible_flag) {
