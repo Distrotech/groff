@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -82,7 +82,7 @@ enum warning_type {
   // change WARN_TOTAL if you add more warning types
 };
 
-const int WARN_TOTAL = 02777777;
+const int WARN_TOTAL = 03777777;
 
 int warning(warning_type, const char *,
 	    const errarg & = empty_errarg,
