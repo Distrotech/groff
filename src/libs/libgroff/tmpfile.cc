@@ -51,7 +51,7 @@ extern "C" {
  *  only the *template* is returned.
  */
 
-char *xtmptemplate(char *postfix=0)
+char *xtmptemplate(char *postfix)
 {
   const char *dir = getenv(GROFF_TMPDIR_ENVVAR);
   int postlen = 0;
@@ -84,7 +84,7 @@ char *xtmptemplate(char *postfix=0)
 
 #ifndef _MSC_VER
 
-FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1)
+FILE *xtmpfile(char **namep, char *postfix, int do_unlink)
 {
   char *templ = xtmptemplate(postfix);
 
@@ -118,7 +118,7 @@ FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1)
 #else
 
 // If you're not running Unix, the following will do:
-FILE *xtmpfile(char **namep, char *postfix=0, int do_unlink=1)
+FILE *xtmpfile(char **namep, char *postfix, int do_unlink)
 {
   FILE *fp = tmpfile();
   if (!fp)
