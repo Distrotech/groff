@@ -292,20 +292,15 @@ static float convertToFloat (int a, int b)
 
 float pushBackBuffer::readNumber (void)
 {
-  int  integer;
-  int  fraction;
+  int i;
   char ch;
-  float f;
 
-  integer = readInt();
-  if (putPB(getPB()) == '.') {
-    ch = getPB();
-    fraction = readInt();
-    f = convertToFloat(integer, fraction);
-    return( f );
-  } else {
-    return( (float)integer );
+  i = readInt();
+  if ((ch = getPB()) == '.') {
+    return convertToFloat(i, readInt());
   }
+  putPB(ch);
+  return (float)i;
 }
 
 /*
