@@ -469,6 +469,7 @@ revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' $(top_srcdir)/REVISION`
 dist:
 	-rm -fr tmp
 	rm -f groff-$(version)$(revision).tar.gz
+	rm -f src/xditview/Imakefile;
 	mkdir tmp
 	for d in $(DISTDIRS); do \
 	  $(mkinstalldirs) tmp/$$d; \
@@ -486,7 +487,6 @@ dist:
 	done; \
 	rm -f Makefile; \
 	$(LN_S) $$srcdir/Makefile.init Makefile
-	rm -f src/xditview/Imakefile;
 	mv tmp groff-$(version)$(revision)
 	tar cfh - groff-$(version)$(revision) | \
 	  gzip -c >groff-$(version)$(revision).tar.gz
