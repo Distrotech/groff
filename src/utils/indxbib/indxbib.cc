@@ -37,13 +37,13 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "nonposix.h"
 
+extern "C" const char *Version_string;
+
+#ifndef HAVE_MKSTEMP_PROTO
 extern "C" {
-  const char *Version_string;
-  // Solaris 2.5.1 has these functions,
-  // but its stdlib.h fails to declare them.
-  char *mktemp(char *);
-  int mkstemp(char *);
+  extern int mkstemp(char *);
 }
+#endif
 
 #define DEFAULT_HASH_TABLE_SIZE 997
 #define TEMP_INDEX_TEMPLATE "indxbibXXXXXX"

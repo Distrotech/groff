@@ -66,7 +66,7 @@ int main(argc, argv)
 	exit(0);
 	break;
       }
-    case CHAR_MAX + 1: // --help
+    case CHAR_MAX + 1: /* --help */
       usage(stdout);
       exit(0);
       break;

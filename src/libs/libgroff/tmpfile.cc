@@ -29,12 +29,11 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "error.h"
 #include "nonposix.h"
 
+#ifndef HAVE_MKSTEMP_PROTO
 extern "C" {
-  // Solaris 2.5.1 has these functions,
-  // but its stdlib.h fails to declare them.
-  char *mktemp(char *);
-  int mkstemp(char *);
+  extern int mkstemp (char *);
 }
+#endif
 
 // If this is set, create temporary files there
 #define GROFF_TMPDIR_ENVVAR "GROFF_TMPDIR"

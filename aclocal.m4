@@ -514,3 +514,15 @@ if test $groff_cv_decl_needed_$1 = yes; then
 	AC_DEFINE([NEED_DECLARATION_]translit($1, [a-z], [A-Z]))
 fi
 AC_LANG_RESTORE])dnl
+dnl
+dnl
+dnl Check for mkstemp() and its function prototype.
+dnl
+AC_DEFUN(GROFF_MKSTEMP,
+[AC_CHECK_FUNC(mkstemp,
+[AC_DEFINE(HAVE_MKSTEMP)
+AC_MSG_CHECKING([for mkstemp prototype in <stdlib.h>])
+AC_EGREP_CPP(mkstemp,
+[#include <stdlib.h>],
+AC_MSG_RESULT(yes);AC_DEFINE(HAVE_MKSTEMP_PROTO),
+AC_MSG_RESULT(no))])])
