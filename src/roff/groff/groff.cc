@@ -344,6 +344,28 @@ int main(int argc, char **argv)
     if (putenv(strsave(e.contents())))
       fatal("putenv failed");
   }
+  {
+    // we save the original path in GROFF_PATH__ and put it into the
+    // environment -- troff will pick it up later.
+    char *path = getenv("PATH");
+    string e = "GROFF_PATH__";
+    e += '=';
+    if (path && *path)
+      e += path;
+    e += '\0';
+    if (putenv(strsave(e.contents())))
+      fatal("putenv failed");
+    char *binpath = getenv("GROFF_BIN_PATH");
+    string f = "PATH";
+    f += '=';
+    if (binpath && *binpath)
+      f += binpath;
+    else
+      f += BINPATH;
+    f += '\0';
+    if (putenv(strsave(f.contents())))
+      fatal("putenv failed");
+  }
   if (Vflag) {
     print_commands();
     exit(0);

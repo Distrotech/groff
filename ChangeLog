@@ -1,3 +1,23 @@
+2000-10-22  Werner LEMBERG  <wl@gnu.org>
+
+	Implement $GROFF_BIN_PATH environment variable (which defaults to
+	$bindir) used for child programs of groff and similar wrappers.
+
+	* gendefs.sh: Improve documentation.
+	* Makefile.comm (,man.n), src/include/Makefile.sub (defs.h),
+	src/preproc/eqn/Makefile.sub (neqn),
+	src/roff/nroff/Makefile.sub (nroff): Add $(bindir).
+	* src/preproc/eqn/neqn.sh, src/roff/nroff/nroff.sh: Implement
+	$GROFF_BIN_PATH.
+	* src/roff/groff/groff.cc (main): Implement $GROFF_BIN_PATH and
+	$GROFF_PATH__ (the latter for communication with troff).
+	* src/roff/troff/input.cc (main): Use $GROFF_PATH__ for $PATH if
+	set.
+	* src/roff/nroff/nroff.man, src/roff/groff/groff.man,
+	doc/groff.texinfo: Document it.
+
+        * doc/groff.texinfo: Improve documentation of troff's -a option.
+
 2000-10-17  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/roff/troff/node.cc: Fixed calculation of opminx and fixed

@@ -1189,7 +1189,15 @@ Unsafe mode.  Reverts to the old unsafe behaviour.
 @vindex .A
 Generate an @acronym{ASCII} approximation of the typeset output.  The
 read-only register @code{.A} is then set to@w{ }1.  @xref{Built-in
-Registers}.
+Registers}.  A typical example is
+
+@example
+groff -a -man -Tdvi troff.man | less
+@end example
+
+which shows how lines are broken for the DVI device.  Note that this
+option is rather useless today since graphic output devices are
+available virtually everywhere.
 
 @item -b
 Print a backtrace with each warning or error message.  This backtrace
@@ -1285,6 +1293,8 @@ If this is set to @var{X}, then @code{groff} will run
 @code{soelim}.  It does not apply to @code{grops}, @code{grodvi},
 @code{grotty}, @code{grohtml}, @code{grolj4}, and @code{gxditview}.
 
+@c XXX document default values
+
 @item GROFF_TMAC_PATH
 @tindex GROFF_TMAC_PATH, environment variable
 A colon-separated list of directories in which to search for macro
@@ -1299,8 +1309,8 @@ The default output device.
 A colon-separated list of directories in which to search for the
 @code{dev}@var{name} directory.
 
-@item PATH
-@tindex PATH, environment variable
+@item GROFF_BIN_PATH
+@tindex GROFF_BIN_PATH, environment variable
 The search path for commands executed by @code{groff}.
 
 @item GROFF_TMPDIR

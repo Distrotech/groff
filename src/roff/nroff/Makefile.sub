@@ -6,7 +6,8 @@ all: nroff
 
 nroff: nroff.sh
 	rm -f $@
-	sed -e $(SH_SCRIPT_SED_CMD) $(srcdir)/nroff.sh >$@
+	sed -e 's|@BINDIR@|$(bindir)|g' \
+	-e $(SH_SCRIPT_SED_CMD) $(srcdir)/nroff.sh >$@
 	chmod +x $@
 
 install_data: nroff

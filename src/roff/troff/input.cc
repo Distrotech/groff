@@ -29,6 +29,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "token.h"
 #include "div.h"
 #include "charinfo.h"
+#include "stringclass.h"
 #include "font.h"
 #include "searchpath.h"
 #include "macropath.h"
@@ -38,6 +39,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "posix.h"
 
 #include "nonposix.h"
+
+#ifdef NEED_DECLARATION_PUTENV
+extern "C" {
+  int putenv(const char *);
+}
+#endif /* NEED_DECLARATION_PUTENV */
 
 #ifdef ISATTY_MISSING
 #undef isatty
@@ -5830,6 +5837,17 @@ int main(int argc, char **argv)
   int next_page_number;
   opterr = 0;
   hresolution = vresolution = 1;
+  // restore $PATH if called from groff
+  char* groff_path = getenv("GROFF_PATH__");
+  if (groff_path) {
+    string e = "PATH";
+    e += '=';
+    if (*groff_path)
+      e += groff_path;
+    e += '\0';
+    if (putenv(strsave(e.contents())))
+      fatal("putenv failed");
+  }
   while ((c = getopt(argc, argv, "abivw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU"))
 	 != EOF)
     switch(c) {
