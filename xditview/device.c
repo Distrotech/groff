@@ -12,6 +12,10 @@
 #define FONTPATH "/usr/local/lib/groff/font:/usr/local/lib/font:/usr/lib/font"
 #endif
 
+#ifndef isascii
+#define isascii(c) (1)
+#endif
+
 extern void exit();
 extern char *strtok(), *strchr();
 extern char *getenv();
@@ -307,7 +311,7 @@ char *canonicalize_name(s)
 	int n;
 
 	for (p = s + 4; *p; p++)
-	    if (!isascii(*p) || !isdigit(*p))
+	    if (!isascii(*p) || !isdigit((unsigned char)*p))
 		return s;
 	n = atoi(s + 4);
 	if (n >= 0 && n <= 0xff) {

@@ -11,6 +11,20 @@
 .\}
 ..
 .de PSPIC
+.nr ps-offset-mode 0
+.if '\\$1'-L' \{\
+.	nr ps-offset-mode 1
+.	shift
+.\}
+.if '\\$1'-R' \{\
+.	nr ps-offset-mode 2
+.	shift
+.\}
+.if '\\$1'-I' \{\
+.	nr ps-offset-mode 3
+.	nr ps-offset (m;\\$2)
+.	shift 2
+.\}
 .br
 .sy echo .ps-bb `psbb \\$1` >/tmp/psbb\\n[$$]
 .so /tmp/psbb\\n[$$]
@@ -25,7 +39,9 @@
 .	el .nr ps-desht \\n[ps-deswid]*1000+(\\n[ps-wid]/2)/\\n[ps-wid]\
 *\\n[ps-ht]+500/1000
 .	ne \\n[ps-desht]u+1v
-.	nr ps-offset \\n[.l]-\\n[.i]-\\n[ps-deswid]/2
+.       if \\n[ps-offset-mode]=0 .nr ps-offset \\n[.l]-\\n[.i]-\\n[ps-deswid]/2
+.       if \\n[ps-offset-mode]=1 .nr ps-offset 0
+.       if \\n[ps-offset-mode]=2 .nr ps-offset \\n[.l]-\\n[.i]-\\n[ps-deswid]
 .	ie \\n[.$]>=3 .ds ps-desht \\n[ps-desht]
 .	el .ds ps-desht \" empty
 \h'\\n[ps-offset]u'\

@@ -1,3 +1,4 @@
+.\" -*- nroff -*-
 .ig
 Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
@@ -44,6 +45,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .de @nop
 ..
 .de @init
+.nr PO \\n(.o
 .\" a non-empty environment
 .ev ne
 \c
@@ -394,7 +396,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .nr pg@fn-colw 0
 .nr HM 1i
 .nr FM 1i
-.nr PO 1i
 .ds LF
 .ds CF
 .ds RF
@@ -984,6 +985,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .aln \\n[.ev]:PD PD
 .ad \\n[par*adj]
 .par@reset-env
+.par@reset
 ..
 .\" happens when the first page begins
 .de par@init
@@ -997,6 +999,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .par*vs \\n[VS]
 .if !rPD .nr PD .3v>?\n(.V
 .if !rDD .nr DD .5v>?\n(.V
+.if !rHY .nr HY 14
 .if !dFAM .ds FAM \\n[.fam]
 .nr par*adj \\n[.j]
 .par*env-init
@@ -1057,9 +1060,13 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .par*vs \\n[\\n[.ev]:VS]
 .ls 1
 .TA
-.hy 14
+.hy \\n[HY]
 ..
-.als @RT par@reset
+.de @RT
+.nr \\n[.ev]:pli 0
+.nr \\n[.ev]:pri 0
+.par@reset
+..
 .\" This can be redefined by the user.
 .de TA
 .ta T 5n
@@ -1101,12 +1108,10 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .if !'\\$1'' \{\
 .	\" Divert the label so as to freeze any spaces.
 .	di par*label
-.	in 0
-.	nf
+.	par*push-tag-env
 \&\\$1
+.	par*pop-tag-env
 .	di
-.	in
-.	fi
 .	chop par*label
 .	ti -\\n[\\n[.ev]:ai]u
 .	ie \\n[dl]+1n<=\\n[\\n[.ev]:ai] \\*[par*label]\h'|\\n[\\n[.ev]:ai]u'\c
@@ -1116,6 +1121,26 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .	\}
 .	rm par*label
 .\}
+..
+.\" We don't want margin characters to be attached when we divert
+.\" the tag.  Since there's no way to save and restore the current
+.\" margin character, we have to switch to a new environment, taking
+.\" what we need of the old environment with us.
+.de par*push-tag-env
+.nr par*saved-font \\n[.f]
+.nr par*saved-size \\n[.s]z
+.nr par*saved-ss \\n[.ss]
+.ds par*saved-fam \\n[.fam]
+.ev par
+.nf
+.TA
+.ft \\n[par*saved-font]
+.ps \\n[par*saved-size]u
+.ss \\n[par*saved-ss]
+.fam \\*[par*saved-fam]
+..
+.de par*pop-tag-env
+.ev
 ..
 .de @RS
 .br
@@ -1162,7 +1187,13 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .di par*box-div
 .nr \\n[.ev]:li +1n
 .nr \\n[.ev]:ri +1n
-.par@reset
+.nr par*box-in \\n[.in]
+.\" remember what 1n is, just in case the point size changes
+.nr par*box-n 1n
+.in +1n
+.ll -1n
+.lt -1n
+.ti \\n[par*box-in]u+1n
 ..
 .de @div-end!par*box-div
 .B2
@@ -1173,21 +1204,28 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .de B2
 .ie '\\n(.z'par*box-div' \{\
 .	br
+.	if \n[.V]>.25m .sp
 .	di
+.	if \n[.V]>.25m .sp
 .	ds@need \\n[dn]
 .	par*box-mark-top
 .	ev nf
 .	par*box-div
 .	ev
-.	nr \\n[.ev]:ri -1n
-.	nr \\n[.ev]:li -1n
-.	par@finish
-.	par*box-draw \\n[.i]u \\n[.l]u
+.	nr \\n[.ev]:ri -\\n[par*box-n]
+.	nr \\n[.ev]:li -\\n[par*box-n]
+.	in -\\n[par*box-n]u
+.	ll +\\n[par*box-n]u
+.	lt +\\n[par*box-n]u
+.	par*box-draw \\n[.i]u \\n[.l]u-(\\n[.H]u==1n*1n)
 .\}
 .el .@error B2 without B1
 ..
 .de par*box-mark-top
-.ie '\\n[.z]'' .mk par*box-top
+.ie '\\n[.z]'' \{\
+.	rs
+.	mk par*box-top
+.\}
 .el \!.par*box-mark-top
 ..
 .de par*box-draw
@@ -1195,6 +1233,8 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .	nr par*box-in \\n[.i]
 .	nr par*box-ll \\n[.l]
 .	nr par*box-vpt \\n[.vpt]
+.	nr par*box-ad \\n[.j]
+.	ad l
 .	vpt 0
 .	in \\$1
 .	ll \\$2
@@ -1208,6 +1248,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 .	in \\n[par*box-in]u
 .	ll \\n[par*box-ll]u
 .	vpt \\n[par*box-vpt]
+.	ad \\n[par*box-ad]
 .\}
 .el \!.par*box-draw \\$1 \\$2
 ..

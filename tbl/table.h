@@ -60,7 +60,7 @@ enum format_type {
   FORMAT_DOUBLE_HLINE
 };
 
-struct entry_format : entry_modifier {
+struct entry_format : public entry_modifier {
   format_type type;
 
   entry_format(format_type);
@@ -84,6 +84,7 @@ class table {
   stuff *stuff_list;
   horizontal_span *span_list;
   table_entry *entry_list;
+  table_entry **entry_list_tailp;
   table_entry ***entry;
   char **vline;
   char *row_is_all_lines;

@@ -884,7 +884,7 @@ int main(int argc, char **argv)
       do_file(argv[i]);
   }
   delete pr;
-  exit(0);
+  return 0;
 }
 
 static void usage()

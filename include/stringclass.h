@@ -22,6 +22,19 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <stdio.h>
 #include <assert.h>
 
+// Ensure that the first declaration of functions that are later
+// declared as inline declares them as inline.
+
+class string;
+
+inline string operator+(const string &, const string &);
+inline string operator+(const string &, const char *);
+inline string operator+(const char *, const string &);
+inline string operator+(const string &, char);
+inline string operator+(char, const string &);
+inline int operator==(const string &, const string &);
+inline int operator!=(const string &, const string &);
+
 class string {
 public:
   string();
@@ -57,14 +70,14 @@ public:
   void clear();
   void move(string &);
 
-  friend inline string operator+(const string &, const string &);
-  friend inline string operator+(const string &, const char *);
-  friend inline string operator+(const char *, const string &);
-  friend inline string operator+(const string &, char);
-  friend inline string operator+(char, const string &);
-
-  friend inline int operator==(const string &, const string &);
-  friend inline int operator!=(const string &, const string &);
+  friend string operator+(const string &, const string &);
+  friend string operator+(const string &, const char *);
+  friend string operator+(const char *, const string &);
+  friend string operator+(const string &, char);
+  friend string operator+(char, const string &);
+	 
+  friend int operator==(const string &, const string &);
+  friend int operator!=(const string &, const string &);
   friend int operator<=(const string &, const string &);
   friend int operator<(const string &, const string &);
   friend int operator>=(const string &, const string &);

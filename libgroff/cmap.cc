@@ -24,9 +24,10 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 cmap cmlower(CMAP_BUILTIN);
 cmap cmupper(CMAP_BUILTIN);
 
+#ifdef isascii
 #define ISASCII(c) isascii(c)
-#if 0
-#define ISASCII(c) 1 /* use this is you have an ANSI ctype.h */
+#else
+#define ISASCII(c) (1)
 #endif
 
 cmap::cmap()

@@ -419,6 +419,8 @@ void common_output::dot_line(const position &start, const position &end,
 {
   distance dist = end - start;
   double length = hypot(dist);
+  if (length == 0.0)
+    return;
   double pos = 0.0;
   for (;;) {
     if (*offsetp == 0.0)

@@ -258,7 +258,7 @@ int main(int argc, char **argv)
 	    if (n < 0)
 	      n = 0;
 	    opt = ptr;
-	    sprintf(strchr(buf, '\0'), "+%d", n);
+	    sprintf(strchr(buf, '\0'), "+%ld", n);
 	  }
 	  strcat(buf, "D.y");
 	  if (*opt == ',')
@@ -273,7 +273,7 @@ int main(int argc, char **argv)
 	    }
 	    if (n < 0)
 	      n = 0;
-	    sprintf(strchr(buf, '\0'), "-%d", n);
+	    sprintf(strchr(buf, '\0'), "-%ld", n);
 	    opt = ptr;
 	    if (*opt != '\0')
 	      error("argument to `l' option not of form `m,n'");
@@ -374,7 +374,7 @@ int main(int argc, char **argv)
     output_references();
   if (fflush(stdout) < 0)
     fatal("output error");
-  exit(0);
+  return 0;
 }
 
 static void usage()
@@ -422,8 +422,8 @@ static void do_file(const char *filename)
       error("can't open `%1': %2", filename, strerror(errno));
       return;
     }
-    current_filename = filename;
   }
+  current_filename = filename;
   fprintf(outfp, ".lf 1 %s\n", filename);
   string line;
   current_lineno = 0;

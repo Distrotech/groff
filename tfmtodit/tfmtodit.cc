@@ -652,14 +652,14 @@ struct {
   const char *ch;
   int i;
 } lig_chars[] = {
-  "f", -1,
-  "i", -1,
-  "l", -1,
-  "ff", -1,
-  "fi", -1,
-  "fl", -1,
-  "Fi", -1,
-  "Fl", -1,
+  { "f", -1 },
+  { "i", -1 },
+  { "l", -1 },
+  { "ff", -1 },
+  { "fi", -1 },
+  { "fl", -1 },
+  { "Fi", -1 },
+  { "Fl", -1 },
 };
 
 // Indices into lig_chars[].
@@ -672,11 +672,11 @@ struct {
   unsigned char c1, c2, res;
   const char *ch;
 } lig_table[] = {
-  CH_f, CH_f, CH_ff, "ff",
-  CH_f, CH_i, CH_fi, "fi",
-  CH_f, CH_l, CH_fl, "fl",
-  CH_ff, CH_i, CH_ffi, "ffi",
-  CH_ff, CH_l, CH_ffl, "ffl",
+  { CH_f, CH_f, CH_ff, "ff" },
+  { CH_f, CH_i, CH_fi, "fi" },
+  { CH_f, CH_l, CH_fl, "fl" },
+  { CH_ff, CH_i, CH_ffi, "ffi" },
+  { CH_ff, CH_l, CH_ffl, "ffl" },
   };
 
 static void usage();
@@ -758,7 +758,7 @@ int main(int argc, char **argv)
       printf("spacewidth %d\n", n*MULTIPLIER);
   }
   if (t.get_param(1, &n) && n != 0)
-    printf("slant %f\n", atan2(n/double(1<<20), 1.0)*180.0/M_PI);
+    printf("slant %f\n", atan2(n/double(1<<20), 1.0)*180.0/PI);
   int xheight;
   if (!t.get_param(5, &xheight))
     xheight = 0;

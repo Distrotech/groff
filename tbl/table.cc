@@ -1016,7 +1016,7 @@ stuff::~stuff()
 {
 }
 
-struct text_stuff : stuff {
+struct text_stuff : public stuff {
   string contents;
   const char *filename;
   int lineno;
@@ -1046,7 +1046,7 @@ void text_stuff::print(table *)
   location_force_filename = 1;	// it might have been a .lf command
 }
 
-struct single_hline_stuff : stuff {
+struct single_hline_stuff : public stuff {
   single_hline_stuff(int r);
   void print(table *);
   int is_single_line();
@@ -1200,6 +1200,7 @@ void vertical_rule::print()
 table::table(int nc, unsigned f, int ls, char dpc)
 : ncolumns(nc), flags(f), linesize(ls), decimal_point_char(dpc),
   nrows(0), allocated_rows(0), entry(0), entry_list(0),
+  entry_list_tailp(&entry_list),
   left_separation(0), right_separation(0), stuff_list(0), vline(0),
   vrule_list(0), row_is_all_lines(0), span_list(0)
 {
@@ -1590,9 +1591,8 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       e->input_filename = fn;
       e->start_row = e->end_row = r;
       e->start_col = e->end_col = c;
-      for (table_entry **p = &entry_list; *p; p = &(*p)->next)
-	;
-      *p = e;
+      *entry_list_tailp = e;
+      entry_list_tailp = &e->next;
       entry[r][c] = e;
     }
   }

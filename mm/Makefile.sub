@@ -20,7 +20,10 @@ install_m:
 	-test -d $(tmacdir) || mkdir $(tmacdir)
 	-rm -f $(tmacdir)/tmac.$(tmac_m)
 	$(INSTALL_DATA) $(srcdir)/tmac.m $(tmacdir)/tmac.$(tmac_m)
-	$(INSTALL_DATA)  $(srcdir)/tmac.m $(tmacdir)/tmac.$(tmac_m)se
+	@sed -e "s;^.mso tmac.m;.mso $(tmac_m);g" $(srcdir)/tmac.mse \
+		> $(tmacdir)/tmac.$(tmac_m)se
+
+
 
 uninstall_sub:
 	-for f in $(FILES); do rm -f $(tmacdir)/mm/$$f; done

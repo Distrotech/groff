@@ -69,7 +69,7 @@ g=g
 # groff -ms -M/usr/lib/tmac.
 tmac_s=$(g)s
 
-# Similarily, the groff mm macros will be available as -m$(tmac_m).
+# Similarly, the groff mm macros will be available as -m$(tmac_m).
 tmac_m=$(g)m
 
 # Common prefix for installation directories.
@@ -99,7 +99,7 @@ tmacdir=$(datasubdir)/tmac
 tmacpath=.:$(tmacdir):/usr/lib/tmac
 
 # Extension to be used for refer index files.  Index files are not
-# shareable between different architectures, so you might want to use
+# sharable between different architectures, so you might want to use
 # different suffixes for different architectures.  Choose an extension
 # that doesn't conflict with refer or any other indexing program.
 indexext=.i
@@ -143,7 +143,7 @@ man7dir=$(manroot)/man$(man7ext)
 #				produced for a process that was terminated
 #				by a signal
 # -DHAVE_UNISTD_H		if you have <unistd.h>
-# -DHAVE_CC_UNISTD_H		if you have a C++ <unistd.h>
+# -DHAVE_CC_OSFCN_H		if you have a C++ <osfcn.h>
 # -DHAVE_DIRENT_H		if you have <dirent.h>
 # -DHAVE_LIMITS_H		if you have <limits.h>
 # -DHAVE_CC_LIMITS_H		if you have a C++ <limits.h>
@@ -156,6 +156,7 @@ man7dir=$(manroot)/man$(man7ext)
 # -DSTDLIB_H_DECLARES_GETOPT	if your C++ <stdlib.h> declares getopt()
 # -DUNISTD_H_DECLARES_GETOPT	if your C++ <unistd.h> declares getopt()
 # -DSTDLIB_H_DECLARES_PUTENV	if your C++ <stdlib.h> declares putenv()
+# -DSTDIO_H_DECLARES_POPEN	if your C++ <stdio.h> declares popen()
 # -DTRADITIONAL_CPP		if your C++ compiler uses a traditional
 #				(Reiser) preprocessor.
 # -DLONG_FOR_TIME_T		if localtime() takes a long * not a time_t *
@@ -202,11 +203,15 @@ srcdir = @srcdir@
 VPATH = @srcdir@
 
 PURIFY=purify
-GCCVERSION=2.3.3
-GCCPREFIX=/usr/local/lib/gcc-lib/sparc-sun-sunos4.1/$(GCCVERSION)/
-PURIFYCCFLAGS=-g++=yes -collector=$(GCCPREFIX)ld
+PURIFYCCFLAGS=
+#PURIFYCCFLAGS=-g++=yes \
+#  -collector=`dirname \`$(CCC) -print-libgcc-file-name\``/ld
 
-MDEFINES="PAGE=$(PAGE)" "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
+# Passing down MAKEOVERRIDES prevents $(MAKE) from containing a second
+# copy of $(MDEFINES) when making individual directories; this could
+# cause the argument list to become too long on some systems.
+MDEFINES="MAKEOVERRIDES=$(MAKEOVERRIDES)" \
+  "PAGE=$(PAGE)" "BROKEN_SPOOLER_FLAGS=$(BROKEN_SPOOLER_FLAGS)" \
   "DEVICE=$(DEVICE)" "PSPRINT=$(PSPRINT)" "DVIPRINT=$(DVIPRINT)" \
   "prefix=$(prefix)" "exec_prefix=$(exec_prefix)" "bindir=$(bindir)" \
   "g=$(g)" "datadir=$(datadir)" "datasubdir=$(datasubdir)" \
@@ -261,7 +266,6 @@ $(LIBDIRS): FORCE
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	echo Making $(do) in $@; \
 	test -d $@ || mkdir $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
@@ -273,7 +277,6 @@ $(CPROGDIRS): FORCE
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	echo Making $(do) in $@; \
 	test -d $@ || mkdir $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
@@ -285,7 +288,6 @@ $(CCPROGDIRS): FORCE
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	echo Making $(do) in $@; \
 	test -d $@ || mkdir $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
@@ -297,7 +299,6 @@ $(DEVDIRS): FORCE
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	echo Making $(do) in $@; \
 	test -d $@ || mkdir $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
@@ -309,7 +310,6 @@ $(INCDIRS) $(OTHERDIRS): FORCE
 	then srcdir=.; \
 	else srcdir=`cd $(srcdir); pwd`/$@; \
 	fi; \
-	echo Making $(do) in $@; \
 	test -d $@ || mkdir $@; \
 	cd $@; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
@@ -339,7 +339,7 @@ dist:
 	rm -f Makefile; \
 	$(LN_S) $$srcdir/Makefile.init Makefile
 	mv tmp groff-$(version)
-	tar cfh - groff-$(version) | gzip -c >groff-$(version).tar.z
+	tar cfh - groff-$(version) | gzip -c >groff-$(version).tar.gz
 	rm -fr groff-$(version)
 
 # $(PROGDIRS): libgroff

@@ -344,9 +344,9 @@ int delim_box::compute_metrics(int style)
     define_extensible_string(left, uid, LEFT_DELIM);
     printf(".rn " DELIM_STRING " " LEFT_DELIM_STRING_FORMAT "\n",
 	   uid);
+    if (r)
+      printf(".nr " MARK_REG " +\\n[" DELIM_WIDTH_REG "]\n");
   }
-  if (r)
-    printf(".nr " MARK_REG " +\\n[" DELIM_WIDTH_REG "]\n");
   if (right) {
     define_extensible_string(right, uid, RIGHT_DELIM);
     printf(".rn " DELIM_STRING " " RIGHT_DELIM_STRING_FORMAT "\n",

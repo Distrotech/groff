@@ -22,10 +22,10 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#ifdef HAVE_CC_UNISTD_H
-#include <unistd.h>
-#else
+#ifdef HAVE_CC_OSFCN_H
 #include <osfcn.h>
+#else
+#include <unistd.h>
 #endif
 
 #ifndef S_IRUSR

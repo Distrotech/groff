@@ -43,7 +43,7 @@ static void usage()
   exit(1);
 }
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   program_name = argv[0];
   static char stderr_buf[BUFSIZ];

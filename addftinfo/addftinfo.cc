@@ -34,20 +34,20 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 static void usage();
 static void convert_font(const font_params &, FILE *, FILE *);
 
-typedef font_params::*param_t;
+typedef int font_params::*param_t;
 
 static struct {
   const char *name;
   param_t par;
 } param_table[] = {
-  "x-height", &font_params::x_height,
-  "fig-height", &font_params::fig_height,
-  "asc-height", &font_params::asc_height,
-  "body-height", &font_params::body_height,
-  "cap-height", &font_params::cap_height,
-  "comma-depth", &font_params::comma_depth,
-  "desc-depth", &font_params::desc_depth,
-  "body-depth", &font_params::body_depth,
+  { "x-height", &font_params::x_height },
+  { "fig-height", &font_params::fig_height },
+  { "asc-height", &font_params::asc_height },
+  { "body-height", &font_params::body_height },
+  { "cap-height", &font_params::cap_height },
+  { "comma-depth", &font_params::comma_depth },
+  { "desc-depth", &font_params::desc_depth },
+  { "body-depth", &font_params::body_depth },
 };
 
 // These are all in thousandths of an em.
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
   if (infp == 0)
     fatal("can't open `%1': %2", font, strerror(errno));
   convert_font(param, infp, stdout);
-  exit(0);
+  return 0;
 }
 
 static void usage()

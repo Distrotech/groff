@@ -68,6 +68,9 @@ static unsigned int hash_string(const char *p)
   return hc;
 }
 
+// Tell compiler that a variable is intentionally unused.
+inline void unused(void *) { }
+
 symbol::symbol(const char *p, int how)
 {
   if (p == 0 || *p == 0) {
@@ -108,6 +111,7 @@ symbol::symbol(const char *p, int how)
 	 pp >= old_table;
 	 --pp) {
 	   symbol temp(*pp, 1); /* insert it into the new table */
+	   unused(&temp);
 	 }
     a_delete old_table;
     for (pp = table + hc % table_size;

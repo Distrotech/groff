@@ -35,6 +35,8 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 int exit_started = 0;		// the exit process has started
 int done_end_macro = 0;		// the end macro (if any) has finished
 int seen_last_page_ejector = 0;	// seen the LAST_PAGE_EJECTOR cookie
+int last_page_number = 0;	// if > 0, the number of the last page
+				// specified with -o
 static int began_page_in_end_macro = 0;	// a new page was begun during the end macro
 
 static int last_post_line_extra_space = 0; // needed for \n(.a
@@ -512,7 +514,7 @@ void end_diversions()
   }
 }
 
-NO_RETURN void cleanup_and_exit(int exit_code)
+void cleanup_and_exit(int exit_code)
 {
   if (the_output) {
     the_output->trailer(topdiv->get_page_length());
@@ -533,6 +535,8 @@ int top_level_diversion::begin_page()
     if (!done_end_macro)
       began_page_in_end_macro = 1;
   }
+  if (last_page_number > 0 && page_number == last_page_number)
+    cleanup_and_exit(0);
   if (!the_output)
     init_output();
   ++page_count;
@@ -603,7 +607,10 @@ diversion::~diversion()
 void page_offset()
 {
   hunits n;
-  if (!has_arg() || !get_hunits(&n, 'v', topdiv->page_offset))
+  // The troff manual says that the default scaling indicator is v,
+  // but it is in fact m: v wouldn't make sense for a horizontally
+  // oriented request.
+  if (!has_arg() || !get_hunits(&n, 'm', topdiv->page_offset))
     n = topdiv->prev_page_offset;
   topdiv->prev_page_offset = topdiv->page_offset;
   topdiv->page_offset = n;

@@ -1,10 +1,9 @@
 1. Get a C++ compiler.  The C++ source files use a suffix of `.cc', so
 your C++ compiler must be able to handle this.  If you don't already
-have a C++ compiler, I suggest gcc 2.3.1 or later (gcc version 2
-includes GNU C++ as well as GNU C). If you are using gcc or g++ as
-your C++ compiler, you will also need to install the corresponding
-version of libg++, unless your system header files provide C++
-support.
+have a C++ compiler, I suggest gcc 2.5.8 or later (gcc version 2
+includes GNU C++ as well as GNU C).  From gcc 2.5, it is no longer
+necessary to install libg++: the C++ header files needed by groff are
+created by the gcc installation process.
 
 2. In the directory that this file is in, type `./configure'.  If
 you're using `csh' on an old version of System V, you might need to
@@ -88,6 +87,10 @@ DEFS		Configuration options, in the form `-Dfoo -Dbar ...'
 LIBS		Libraries to link with, in the form `-lfoo -lbar ...'
 CCLIBS		Libraries to link C++ programs with, in the same form.
 
+If you have a library that provides a faster malloc than your system's
+usual malloc, it is good idea to include it in LIBS.  For example,
+using the malloc that comes with GNU Emacs version 18 can give a
+worthwhile (and sometimes spectacular) performance improvement.
 
 If you need to do unusual things to compile the package, we encourage
 you to figure out how `configure' could check whether to do them, and

@@ -71,7 +71,7 @@ int main(int argc, char **argv)
       nbad += !do_file(argv[i]);
   if (ferror(stdout) || fflush(stdout) < 0)
     fatal("output error");
-  exit(nbad != 0);
+  return nbad != 0;
 }
 
 void set_location()

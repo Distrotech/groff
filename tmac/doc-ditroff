@@ -34,6 +34,8 @@
 .\" tmac.mdoc-ditroff
 .\"     %beginstrip%
 .\"
+.\" -rC1 numbers pages continuously; initialize to avoid warnings
+.if \n(.g .if !rC .nr C 0
 .ds aD \fI\s10
 .ds aR \f(CO\s10
 .ds cM \f(CB\s10
@@ -133,17 +135,21 @@
 .\}
 .wh 0 hM
 .wh -1.25i fM
-.\" .tm Here is gX == \\n(gX
+.nr nL \\n(nl
 .ie \\n(gX==1 \{\
 .	rm n1
-.	if \\n(.g .br
-.	if !\\n(.g .bp
+.	bp
 .\}
 .el \{\
-.	if \\n(.g .br
-.	if !\\n(.g 'bp
+'	bp
 .\}
-.nr % 1
+.\" Don't set the page number if this is the first page,
+.\" in case the user has used -n.
+.if \\n(nL>0 \{\
+.	if !\\nC \{\
+.		nr % 1
+.	\}
+.\}
 .nr gX 0
 .em lM
 ..

@@ -23,6 +23,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include "cset.h"
 
 #include "ps.h"
+#include <time.h>
 
 static int landscape_flag = 0;
 static int ncopies = 1;
@@ -36,6 +37,7 @@ static int bflag = 0;
 unsigned broken_flags = 0;
 
 #define DEFAULT_LINEWIDTH 40	/* in ems/1000 */
+#define MAX_LINE_LENGTH 72
 #define FILL_MAX 1000
 
 const char *const dict_name = "grops";
@@ -44,17 +46,26 @@ const int DEFS_DICT_SPARE = 50;
 
 double degrees(double r)
 {
-  return r*180.0/M_PI;
+  return r*180.0/PI;
 }
 
 double radians(double d)
 {
-  return d*M_PI/180.0;
+  return d*PI/180.0;
 }
 
 inline double transform_fill(int fill)
 {
   return 1 - fill/double(FILL_MAX);
+}
+
+// This is used for testing whether a character should be output in the
+// PostScript file using \nnn, so we really want the character to be
+// less than 0200.
+
+inline int is_ascii(char c)
+{
+  return (unsigned char)c < 0200;
 }
 
 ps_output::ps_output(FILE *f, int n)
@@ -174,7 +185,7 @@ ps_output &ps_output::put_string(const char *s, int n)
   int len = 0;
   for (int i = 0; i < n; i++) {
     char c = s[i];
-    if (isascii(c) && isprint(c)) {
+    if (is_ascii(c) && csprint(c)) {
       if (c == '(' || c == ')' || c == '\\')
 	len += 2;
       else
@@ -218,7 +229,7 @@ ps_output &ps_output::put_string(const char *s, int n)
     col++;
     for (i = 0; i < n; i++) {
       char c = s[i];
-      if (isascii(c) && isprint(c)) {
+      if (is_ascii(c) && csprint(c)) {
 	if (c == '(' || c == ')' || c == '\\')
 	  len = 2;
 	else
@@ -503,7 +514,7 @@ ps_printer::ps_printer()
   sbuf_len(0),
   output_hpos(-1),
   output_vpos(-1),
-  out(0, 79),
+  out(0, MAX_LINE_LENGTH),
   ndefined_styles(0),
   next_encoding_index(0),
   line_thickness(-1),
@@ -624,16 +635,6 @@ void ps_printer::set_char(int i, font *f, const environment *env, int w)
   sbuf_kern = 0;
 }
 
-int is_small_h(int n)
-{
-  return n < (font::res*2)/72 && n > -(font::res*10)/72;
-}
-
-int is_small_v(int n)
-{
-  return n < (font::res*4)/72 && n > -(font::res*4)/72;
-}
-
 static char *make_encoding_name(int encoding_index)
 {
   static char buf[3 + INT_DIGITS + 1];
@@ -656,7 +657,7 @@ void ps_printer::define_encoding(const char *encoding, int encoding_index)
   char buf[256];
   while (fgets(buf, 512, fp) != 0) {
     char *p = buf;
-    while (isascii(*p) && isspace(*p))
+    while (csspace(*p))
       p++;
     if (*p != '#' && *p != '\0' && (p = strtok(buf, WS)) != 0) {
       char *q = strtok(0, WS);
@@ -783,9 +784,7 @@ void ps_printer::flush_sbuf()
     output_style = sbuf_style;
   }
   int extra_space = 0;
-  if (output_hpos < 0 || output_vpos < 0
-      || !is_small_h(output_hpos - sbuf_start_hpos)
-      || !is_small_v(output_vpos - sbuf_vpos))
+  if (output_hpos < 0 || output_vpos < 0)
     motion = ABSOLUTE;
   else {
     if (output_hpos != sbuf_start_hpos)
@@ -1111,6 +1110,16 @@ ps_printer::~ps_printer()
        .comment_arg(version_string)
        .end_comment();
   }
+  {
+    fputs("%%CreationDate: ", out.get_file());
+#ifdef LONG_FOR_TIME_T
+    long
+#else
+    time_t
+#endif
+    t = time(0);
+    fputs(ctime(&t), out.get_file());
+  }
   for (font_pointer_list *f = font_list; f; f = f->next) {
     ps_font *psf = (ps_font *)(f->p);
     rm.need_font(psf->get_internal_name());
@@ -1185,13 +1194,13 @@ void ps_printer::special(char *arg, const environment *env)
     const char *name;
     SPECIAL_PROCP proc;
   } proc_table[] = {
-    "exec", &ps_printer::do_exec,
-    "def", &ps_printer::do_def,
-    "mdef", &ps_printer::do_mdef,
-    "import", &ps_printer::do_import,
-    "file", &ps_printer::do_file,
-    "invis", &ps_printer::do_invis,
-    "endinvis", &ps_printer::do_endinvis,
+    { "exec", &ps_printer::do_exec },
+    { "def", &ps_printer::do_def },
+    { "mdef", &ps_printer::do_mdef },
+    { "import", &ps_printer::do_import },
+    { "file", &ps_printer::do_file },
+    { "invis", &ps_printer::do_invis },
+    { "endinvis", &ps_printer::do_endinvis },
   };
   for (char *p = arg; *p == ' ' || *p == '\n'; p++)
     ;
@@ -1496,7 +1505,7 @@ int main(int argc, char **argv)
       do_file(argv[i]);
   }
   delete pr;
-  exit(0);
+  return 0;
 }
 
 static void usage()

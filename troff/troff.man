@@ -150,6 +150,8 @@ means print every page up to
 .IB n \-
 means print every page from
 .IR n .
+.B Troff
+will exit after printing the last page in the list.
 .TP
 .BI \-r cn
 .TQ
@@ -274,7 +276,7 @@ nor
 and so
 .B troff
 disallows this.
-Similarily it would make no sense to use a scaling indicator
+Similarly it would make no sense to use a scaling indicator
 other than
 .B z
 or
@@ -702,12 +704,18 @@ have this property);
 2
 lines can be broken before the character
 (initially no characters have this property);
+a line will not be broken at a character with this property
+unless the characters on each side both have non-zero
+hyphenation codes.
 .TP
 4
 lines can be broken after the character
 (initially characters
 .B \-\e(hy\e(em
 have this property);
+a line will not be broken at a character with this property
+unless the characters on each side both have non-zero
+hyphenation codes.
 .TP
 8
 the character overlaps horizontally
@@ -853,7 +861,7 @@ will be special, that is, they will searched for characters not in
 the current font.
 Any fonts specified in the
 .B special
-request will be searched before fonts specified in the
+request will be searched after fonts specified in the
 .B fspecial
 request.
 .TP
@@ -1050,6 +1058,12 @@ exists, append to it instead of truncating it.
 Print the names and contents of all currently defined number registers
 on stderr.
 .TP
+.BI .pso \ command
+This is behaves like the
+.B so
+request except that input comes from the standard output of
+.IR command .
+.TP
 .B .ptr
 Print the names and positions of all traps (not including input line
 traps and diversion traps) on stderr.  Empty slots in the page trap
@@ -1071,7 +1085,7 @@ Right justify the next
 .I n
 input lines.
 Without an argument right justify the next input line.
-The number of lines to be right justifed is available in the
+The number of lines to be right justified is available in the
 .B \en[.rj]
 register.
 This implicitly does
@@ -1790,7 +1804,9 @@ So, in most cases, at most one warning will be given for
 use of a particular name.
 .TP
 .BR tab \t2048
-Use of a tab character where a number was expected.
+Inappropriate use of a tab character.
+Either use of a tab character where a number was expected,
+or use of tab character in an unquoted macro argument.
 .TP
 .BR right-brace \t4096
 Use of
@@ -1821,6 +1837,13 @@ This warning will never occur in compatibility mode.
 .BR font \t131072
 Non-existent fonts.
 This is enabled by default.
+.TP
+.BR ig \t262144
+Illegal escapes in text ignored with the
+.B ig
+request.
+These are conditions that are errors when they do not occur
+in ignored text.
 .LP
 There are also names that can be used to refer to groups of warnings:
 .TP

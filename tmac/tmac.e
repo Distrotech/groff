@@ -476,7 +476,9 @@
 ..
 .de hl			\" *** draw horizontal line
 .br
-\l'\\n(.lu-\\n(.iu'
+.ie \n(.g .do nr _I \\n[.in]
+.el .nr _I \\n(.i
+\l'\\n(.lu-\\n(_Iu'
 .sp
 ..
 .\"		*** PARAGRAPHING ***
@@ -653,7 +655,7 @@
 .		ti +\\n(sou
 .	@F \\n(sf
 .	sz \\n(sp
-.	if \\$3>0 \
+.	if 0\\$3 \
 .		$\\$3
 .	if \w"\\$2">0 \\$2.
 .	if \w"\\$1">0 \\$1\f1\ \ \&
@@ -695,7 +697,6 @@
 .if \n@>4 .tm >> (z, .z=\n(.z
 .@D 4 \\$1 \\$2
 .@(
-.nr ?T 0
 ..
 .de )z			\" *** end floating keep
 .if \n@>4 .tm >> )z, .z=\n(.z
@@ -755,7 +756,6 @@
 .br
 .rm \\$1
 .ev
-.nr ?T 0
 ..
 .de (t			\" XXX temp ref to (z
 .(z \\$1 \\$2

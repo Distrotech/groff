@@ -50,8 +50,6 @@ extern "C" {
 }
 #endif /* not STDLIB_H_DECLARES_PUTENV */
 
-const char *strsignal(int);
-
 const int SOELIM_INDEX = 0;
 const int REFER_INDEX = SOELIM_INDEX + 1;
 const int PIC_INDEX = REFER_INDEX + 1;
@@ -309,7 +307,7 @@ int main(int argc, char **argv)
     print_commands();
     exit(0);
   }
-  exit(run_commands());
+  return run_commands();
 }
 
 const char *basename(const char *s)

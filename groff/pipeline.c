@@ -94,9 +94,10 @@ extern char *strerror();
 
 #define error c_error
 extern void error P((char *, char *, char *, char *));
+extern void c_fatal P((char *, char *, char *, char *));
 
 static void sys_fatal P((char *));
-static char *strsignal P((int));
+static char *xstrsignal P((int));
 static char *itoa P((int));
 
 int run_pipeline(ncommands, commands)
@@ -191,7 +192,7 @@ int run_pipeline(ncommands, commands)
 	  {
 	    error("%1: %2%3",
 		  commands[i][0],
-		  strsignal(sig),
+		  xstrsignal(sig),
 		  WCOREDUMP(status) ? " (core dumped)" : "");
 	    ret |= 2;
 	  }
@@ -226,7 +227,7 @@ static char *itoa(n)
   return buf;
 }
 
-static char *strsignal(n)
+static char *xstrsignal(n)
      int n;
 {
   static char buf[sizeof("Signal ") + 1 + sizeof(int)*3];

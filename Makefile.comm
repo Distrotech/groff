@@ -94,7 +94,15 @@ extraclean:
 	  $(YACC) $(YACCFLAGS) $<; \
 	fi
 	mv y.tab.c $@
-	test -z "$(YTABH)" || mv y.tab.h $(YTABH)
+# Avoid ending up with two versions of $(YTABH).
+	if test -n "$(YTABH)"; then \
+	  if test -f $(srcdir)/$(YTABH); then \
+	    rm -f $(YTABH); \
+	    mv y.tab.h $(srcdir)/$(YTABH); \
+	  else \
+	    mv y.tab.h $(YTABH); \
+	  fi; \
+	fi
 
 .man.n:
 	@echo Making $@ from $<

@@ -145,7 +145,7 @@ inline int charinfo::get_index()
 inline int charinfo::get_special_translation(int transparent_throughput)
 {
   return (transparent_throughput && !transparent_translate
-	  ? TRANSLATE_NONE
+	  ? int(TRANSLATE_NONE)
 	  : special_translation);
 }
 

@@ -41,10 +41,10 @@ sqrt_box::sqrt_box(box *pp) : pointer_box(pp)
 }
 
 #define SQRT_CHAR "\\(sr"
-#define RADICAL_EXTENSION_CHAR "\\(rn"
+#define RADICAL_EXTENSION_CHAR "\\[radicalex]"
 
 #define SQRT_CHAIN "\\[sr\\\\n[" INDEX_REG "]]"
-#define BAR_CHAIN "\\[rn\\\\n[" INDEX_REG "]]"
+#define BAR_CHAIN "\\[radicalex\\\\n[" INDEX_REG "]]"
 
 int sqrt_box::compute_metrics(int style)
 {

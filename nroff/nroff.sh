@@ -29,6 +29,10 @@ do
 	-T*)
 		# ignore other devices
 		;;
+	-u*)
+		# Solaris 2.2 `man' uses -u0; ignore it,
+		# since `less' and `more' can use the emboldening info.
+		;;
 	--)
 		shift
 		break

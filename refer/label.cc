@@ -2,7 +2,7 @@
 static char yysccsid[] = "@(#)yaccpar	1.8 (Berkeley) 01/20/90";
 #endif
 #define YYBYACC 1
-#line 22 "label.y"
+#line 22 "/u/jjc/groff/refer/label.y"
 
 #include "refer.h"
 #include "refid.h"
@@ -103,23 +103,23 @@ public:
   }
 };
 
-typedef void map_t(const char *, const char *, string &);
+typedef void map_func(const char *, const char *, string &);
 
 class map_expr : public unary_expr {
-  map_t *func;
+  map_func *func;
 public:
-  map_expr(expression *e, map_t *f) : unary_expr(e), func(f) { }
+  map_expr(expression *e, map_func *f) : unary_expr(e), func(f) { }
   void evaluate(int, const reference &, string &, substring_position &);
 };
   
-typedef const char *extractor_t(const char *, const char *, const char **);
+typedef const char *extractor_func(const char *, const char *, const char **);
 
 class extractor_expr : public unary_expr {
   int part;
-  extractor_t *func;
+  extractor_func *func;
 public:
   enum { BEFORE = +1, MATCH = 0, AFTER = -1 };
-  extractor_expr(expression *e, extractor_t *f, int pt)
+  extractor_expr(expression *e, extractor_func *f, int pt)
     : unary_expr(e), func(f), part(pt) { }
   void evaluate(int, const reference &, string &, substring_position &);
 };
@@ -200,7 +200,7 @@ static expression *parse_result;
 
 string literals;
 
-#line 221 "label.y"
+#line 221 "/u/jjc/groff/refer/label.y"
 typedef union {
   int num;
   expression *expr;
@@ -438,7 +438,7 @@ YYSTYPE yylval;
 short yyss[YYSTACKSIZE];
 YYSTYPE yyvs[YYSTACKSIZE];
 #define yystacksize YYSTACKSIZE
-#line 397 "label.y"
+#line 397 "/u/jjc/groff/refer/label.y"
 
 /* bison defines const to be empty unless __STDC__ is defined, which it
 isn't under cfront */
@@ -1357,74 +1357,74 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 250 "label.y"
+#line 250 "/u/jjc/groff/refer/label.y"
 { parse_result = (yyvsp[0].expr ? new analyzed_expr(yyvsp[0].expr) : 0); }
 break;
 case 2:
-#line 255 "label.y"
+#line 255 "/u/jjc/groff/refer/label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 3:
-#line 257 "label.y"
+#line 257 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new conditional_expr(yyvsp[-4].expr, yyvsp[-2].expr, yyvsp[0].expr); }
 break;
 case 4:
-#line 262 "label.y"
+#line 262 "/u/jjc/groff/refer/label.y"
 { yyval.expr = 0; }
 break;
 case 5:
-#line 264 "label.y"
+#line 264 "/u/jjc/groff/refer/label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 6:
-#line 269 "label.y"
+#line 269 "/u/jjc/groff/refer/label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 7:
-#line 271 "label.y"
+#line 271 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new alternative_expr(yyvsp[-2].expr, yyvsp[0].expr); }
 break;
 case 8:
-#line 273 "label.y"
+#line 273 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new conditional_expr(yyvsp[-2].expr, yyvsp[0].expr, 0); }
 break;
 case 9:
-#line 278 "label.y"
+#line 278 "/u/jjc/groff/refer/label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 10:
-#line 280 "label.y"
+#line 280 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new list_expr(yyvsp[-1].expr, yyvsp[0].expr); }
 break;
 case 11:
-#line 285 "label.y"
+#line 285 "/u/jjc/groff/refer/label.y"
 { yyval.expr = yyvsp[0].expr; }
 break;
 case 12:
-#line 287 "label.y"
+#line 287 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new substitute_expr(yyvsp[-2].expr, yyvsp[0].expr); }
 break;
 case 13:
-#line 292 "label.y"
+#line 292 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new at_expr; }
 break;
 case 14:
-#line 294 "label.y"
+#line 294 "/u/jjc/groff/refer/label.y"
 {
 		  yyval.expr = new literal_expr(literals.contents() + yyvsp[0].str.start,
 					yyvsp[0].str.len);
 		}
 break;
 case 15:
-#line 299 "label.y"
+#line 299 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new field_expr(yyvsp[0].num, 0); }
 break;
 case 16:
-#line 301 "label.y"
+#line 301 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new field_expr(yyvsp[-1].num, yyvsp[0].num - 1); }
 break;
 case 17:
-#line 303 "label.y"
+#line 303 "/u/jjc/groff/refer/label.y"
 {
 		  switch (yyvsp[0].num) {
 		  case 'I':
@@ -1441,13 +1441,13 @@ case 17:
 		}
 break;
 case 18:
-#line 319 "label.y"
+#line 319 "/u/jjc/groff/refer/label.y"
 {
 		  yyval.expr = new format_expr('0', yyvsp[0].dig.ndigits, yyvsp[0].dig.val);
 		}
 break;
 case 19:
-#line 323 "label.y"
+#line 323 "/u/jjc/groff/refer/label.y"
 {
 		  switch (yyvsp[-1].num) {
 		  case 'l':
@@ -1479,59 +1479,59 @@ case 19:
 		}
 break;
 case 20:
-#line 354 "label.y"
+#line 354 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new truncate_expr(yyvsp[-2].expr, yyvsp[0].num); }
 break;
 case 21:
-#line 356 "label.y"
+#line 356 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new truncate_expr(yyvsp[-2].expr, -yyvsp[0].num); }
 break;
 case 22:
-#line 358 "label.y"
+#line 358 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new star_expr(yyvsp[-1].expr); }
 break;
 case 23:
-#line 360 "label.y"
+#line 360 "/u/jjc/groff/refer/label.y"
 { yyval.expr = yyvsp[-1].expr; }
 break;
 case 24:
-#line 362 "label.y"
+#line 362 "/u/jjc/groff/refer/label.y"
 { yyval.expr = new separator_expr(yyvsp[-1].expr); }
 break;
 case 25:
-#line 367 "label.y"
+#line 367 "/u/jjc/groff/refer/label.y"
 { yyval.num = -1; }
 break;
 case 26:
-#line 369 "label.y"
+#line 369 "/u/jjc/groff/refer/label.y"
 { yyval.num = yyvsp[0].num; }
 break;
 case 27:
-#line 374 "label.y"
+#line 374 "/u/jjc/groff/refer/label.y"
 { yyval.num = yyvsp[0].num; }
 break;
 case 28:
-#line 376 "label.y"
+#line 376 "/u/jjc/groff/refer/label.y"
 { yyval.num = yyvsp[-1].num*10 + yyvsp[0].num; }
 break;
 case 29:
-#line 381 "label.y"
+#line 381 "/u/jjc/groff/refer/label.y"
 { yyval.dig.ndigits = 1; yyval.dig.val = yyvsp[0].num; }
 break;
 case 30:
-#line 383 "label.y"
+#line 383 "/u/jjc/groff/refer/label.y"
 { yyval.dig.ndigits = yyvsp[-1].dig.ndigits + 1; yyval.dig.val = yyvsp[-1].dig.val*10 + yyvsp[0].num; }
 break;
 case 31:
-#line 389 "label.y"
+#line 389 "/u/jjc/groff/refer/label.y"
 { yyval.num = 0; }
 break;
 case 32:
-#line 391 "label.y"
+#line 391 "/u/jjc/groff/refer/label.y"
 { yyval.num = 1; }
 break;
 case 33:
-#line 393 "label.y"
+#line 393 "/u/jjc/groff/refer/label.y"
 { yyval.num = -1; }
 break;
 #line 1538 "y.tab.c"

@@ -37,21 +37,23 @@ void *operator new(size_t size)
     size++;
 #ifdef COOKIE_BUG
   char *p = (char *)malloc(unsigned(size + 8));
-  if (p != 0) {
-    ((unsigned *)p)[1] = 0;
-    return p + 8;
-  }
 #else /* not COOKIE_BUG */
   char *p = (char *)malloc(unsigned(size));
-  if (p != 0)
-    return p;
 #endif /* not COOKIE_BUG */
-  if (program_name) {
-    ewrite(program_name);
-    ewrite(": ");
+  if (p == 0) {
+    if (program_name) {
+      ewrite(program_name);
+      ewrite(": ");
+    }
+    ewrite("out of memory\n");
+    _exit(-1);
   }
-  ewrite("out of memory\n");
-  _exit(-1);
+#ifdef COOKIE_BUG
+  ((unsigned *)p)[1] = 0;
+  return p + 8;
+#else /* not COOKIE_BUG */
+  return p;
+#endif /* not COOKIE_BUG */
 }
 
 #ifdef COOKIE_BUG

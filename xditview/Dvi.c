@@ -470,7 +470,7 @@ FindPage (dw)
 		while (dw->dvi.current_page != dw->dvi.requested_page) {
 			dw->dvi.current_page = ParseInput (dw);
 			/*
-			 * at EOF, seek back to the begining of this page.
+			 * at EOF, seek back to the beginning of this page.
 			 */
 			if (!dw->dvi.readingTmp && feof (dw->dvi.file)) {
 				file_position = SearchPagePosition (dw,

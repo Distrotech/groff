@@ -470,13 +470,13 @@ public:
 #endif /* COLUMN */
 };
 
+#ifndef POPEN_MISSING
 extern char *pipe_command;
+#endif
 
 extern output_file *the_output;
 extern void init_output();
 int in_output_page_list(int n);
-
-static void invalidate_fontno(int);
 
 class font_family {
   int *map;
@@ -487,7 +487,7 @@ public:
   font_family(symbol);
   ~font_family();
   make_definite(int);
-  friend void invalidate_fontno(int);
+  static void invalidate_fontno(int);
 };
 
 font_family *lookup_family(symbol);

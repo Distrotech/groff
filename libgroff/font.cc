@@ -207,7 +207,7 @@ inline int font::scale(int w, int sz)
 int font::get_skew(int c, int point_size, int sl)
 {
   int h = get_height(c, point_size);
-  return int(h*tan((slant+sl)*M_PI/180.0) + .5);
+  return int(h*tan((slant+sl)*PI/180.0) + .5);
 }
 
 int font::contains(int c)
@@ -700,16 +700,16 @@ static struct {
   const char *command;
   int *ptr;
 } table[] = {
-  "res", &font::res,
-  "hor", &font::hor,
-  "vert", &font::vert,
-  "unitwidth", &font::unitwidth,
-  "paperwidth", &font::paperwidth,
-  "paperlength", &font::paperlength,
-  "spare1", &font::biggestfont,
-  "biggestfont", &font::biggestfont,
-  "spare2", &font::spare2,
-  "sizescale", &font::sizescale
+  { "res", &font::res },
+  { "hor", &font::hor },
+  { "vert", &font::vert },
+  { "unitwidth", &font::unitwidth },
+  { "paperwidth", &font::paperwidth },
+  { "paperlength", &font::paperlength },
+  { "spare1", &font::biggestfont },
+  { "biggestfont", &font::biggestfont },
+  { "spare2", &font::spare2 },
+  { "sizescale", &font::sizescale }
   };
 
 
@@ -870,7 +870,7 @@ int font::load_desc()
     return 0;
   }
   if (font_name_table == 0) {
-    t.error("missing `fonts' commmand");
+    t.error("missing `fonts' command");
     return 0;
   }
   if (sizes == 0) {

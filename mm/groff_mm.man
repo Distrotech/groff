@@ -32,6 +32,9 @@ english text to the preferred language. Use \fBm@TMAC_M@se\fP as an example.
 .LP
 Groff mm has several extensions:
 .TP
+.B "1C [1]"
+Begin one column processing. An \fB1\fP as argmunet disabled the page-break.
+.TP
 .B "APP name text"
 Begin an appendix with name \fIname\fP. Automatic naming occurs if
 \fIname\fP is "". The appendixes starts with \fBA\fP if auto is used.
@@ -116,14 +119,14 @@ Initialize the refencemacros. References will be written to
 \fIfilename.tmp\fP and \fIfilename.qrf\fP. Requires two passes with groff.
 The first looks for references and the second includes them.
 \fBINITR\fP can be used several times, but it is only the first
-occurence of \fBINITR\fP that is active.
+occurrence of \fBINITR\fP that is active.
 See also \fBSETR\fP, \fBGETPN\fP and \fBGETHN\fP.
 .TP
 .B "MC column-size [column-separation] "
 Begin multiple columns. Return to normal with 1C.
 .TP
 .B "MT [arg [addressee]]"
-Memorandom type.
+Memorandum type.
 The \fIarg\fP is part of a filename in \fI@TMAC_MDIR@/*.MT\fP.
 Memorandum type 0 thru 5 are supported, including \fI"string"\fP.
 \fIAddresse\fP just sets a variable, used in the AT&T macros.
@@ -149,12 +152,15 @@ Begin the next column. This is the only way to switch column.
 .B "MULE"
 End the multi-column mode and print the columns.
 .TP
-.B "PGFORM [linelength [pagelength [pageoffset]]]"
+.B "PGFORM [linelength [pagelength [pageoffset [1]]]]"
 Sets linelength, pagelength and/or pageoffset.
 This macro can be used for special formatting, like letterheads
 and other.
 \fBPGFORM\fP can be used without arguments 
 to reset everything after a \fBMOVE\fP.
+A line-break is done unless the fourth argument is given. 
+This can be used to avoid the pagenumber on the first page while setting
+new width and length.
 .TP
 .B PGNH
 No header is printed on the next page. Used to get rid off
@@ -188,7 +194,7 @@ Description
 .ti -.5i
 1
 .sp -1
-Enable the escape-character (\e). This is normally turned off during
+Disable the escape-character (\e). This is normally turned on during
 verbose output.
 .ti -.5i
 2
@@ -268,6 +274,26 @@ Strings containing \fIJanuary\fI to \fIDecember\fP.
 .B Qrf
 String containing "See chapter \e\e*[Qrfh], page \e\en[Qrfp].".
 .TP
+.B Pgps
+Controls whether header and footer pointsize should follow the current
+setting or just change when the header and footer is defined.
+.in +.5i
+.ti -.5i
+Value
+.sp -1
+Description
+.ti -.5i
+0
+.sp -1
+Pointsize will only change to the current setting when \fB.PH\fP, \fB.PF\fP,
+\&\fB.OH\fP, \fP.EH\fP, \fB.OF\fP or \fB.OE\fP is executed.
+.ti -.5i
+1
+.sp -1
+Pointsize will change after every \fB.S\fP. This is the default.
+.ti -.5i
+.in
+.TP
 .B Sectf
 Flag controlling "section-figures". A non-zero value enables this.
 Se also register N.
@@ -286,9 +312,6 @@ possible to localize the macros with companyname and so on.
 .sp 3
 .LP
 The following standard macros are implemented:
-.TP
-.B 1C
-Begin one column processing
 .TP
 .B 2C
 Begin two column processing
@@ -389,8 +412,8 @@ Footnotes in displays is now possible.
 .B "H level [heading-text [heading-suffix]]"
 Numbered heading.
 .TP
-.B "HC [hypenation-character]"
-Set hypenation character.
+.B "HC [hyphenation-character]"
+Set hyphenation character.
 .TP
 .B "HM [arg1 [arg2 [... [arg7]]]]"
 Heading mark style. 
@@ -435,7 +458,7 @@ List item
 Marked list start
 .TP
 .B "MT [arg [addressee]]"
-Memorandom type. See above note about MT.
+Memorandum type. See above note about MT.
 .TP
 .B "ND new-date"
 New date.
@@ -529,7 +552,7 @@ Table end.
 Table header.
 .TP
 .B TL
-Begin title of memorandom.
+Begin title of memorandum.
 .TP
 .B TM [num1 [num2 [...]]]
 Technical memorandumnumbers used in \fB.MT\fP. Unlimited number
@@ -537,6 +560,8 @@ of arguments may be given.
 .TP
 .B TP
 Top of page user-defined macro.
+Note that header and footer is printed in a separate environment.
+Linelength is preserved though.
 .TP
 .B "TS [H]"
 Table start
@@ -614,7 +639,7 @@ space before and after display if == 1 [0:1]
 Eject page
 .TP
 .B Eq=0
-Eqation lable adjust 0=left, 1=right
+Equation lable adjust 0=left, 1=right
 .TP
 .B Fs=1
 Footnote spacing

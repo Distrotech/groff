@@ -23,9 +23,6 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 extern const char *program_name;
 
-#ifdef __GNUG__
-volatile
-#endif
 void assertion_failed(int lineno, const char *filename)
 {
   if (program_name != 0)

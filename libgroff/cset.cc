@@ -33,9 +33,10 @@ cset csprint(CSET_BUILTIN);
 cset csgraph(CSET_BUILTIN);
 cset cscntrl(CSET_BUILTIN);
 
+#ifdef isascii
 #define ISASCII(c) isascii(c)
-#if 0
-#define ISASCII(c) 1 /* use this is you have an ANSI ctype.h */
+#else
+#define ISASCII(c) (1)
 #endif
 
 void cset::clear()

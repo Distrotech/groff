@@ -48,8 +48,7 @@ GROFF_EXIT
 fi
 echo checking that C++ compiler can compile very simple C++ program
 GROFF_CC_TEST_PROGRAM([
-extern "C" { void exit(int); }
-int main() { exit(0); }
+int main() { return 0; }
 ],,
 cat <<EOM
 $CCC was unable successfully to compile a very simple C++ program
@@ -60,7 +59,6 @@ GROFF_EXIT
 echo checking that C++ static constructors and destructors are called
 GROFF_CC_TEST_PROGRAM([
 extern "C" {
-  void exit(int);
   void _exit(int);
 }
 int i;
@@ -70,7 +68,7 @@ struct A {
   ~A() { if (i == 1) _exit(0); }
 };
 A a;
-main() { exit(1); }
+int main() { return 1; }
 ],,
 cat <<EOM
 $CCC is not installed correctly: static constructors and destructors do not work
@@ -83,15 +81,15 @@ GROFF_CC_COMPILE_CHECK([C++ header files],[#include <stdio.h>],
 Your header files do not appear to support C++.
 I was unable to compile and link a simple C++ program that used a function
 declared in <stdio.h>.
-If you're using gcc/g++, you should install libg++.
+If you're using a version of gcc/g++ earlier than 2.5,
+you should install libg++.
 EOF
 GROFF_EXIT])])dnl
 define(GROFF_CC_COMPILE_CHECK,
 [AC_PROVIDE([$0])AC_REQUIRE([GROFF_PROG_CCC])echo checking for $1
 cat <<EOF >conftest.cc
 [$2]
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { [$3] }
+int main() { return 0; } void t() { [$3] }
 EOF
 dnl Don't try to run the program, which would prevent cross-configuring.
 if eval $cc_compile; then
@@ -223,7 +221,7 @@ int main()
   int *p = new int;
   delete p;
   testit = 0;
-  exit(1);
+  return 1;
 }
 
 static unsigned dummy[3];
@@ -264,7 +262,7 @@ GROFF_CC_TEST_PROGRAM([#include <stdlib.h>
 int main()
 {
   int z = 0;
-  exit(INT_MIN < z);
+  return INT_MIN < z;
 }
 ],AC_DEFINE(CFRONT_ANSI_BUG),,)])dnl
 dnl
@@ -314,19 +312,30 @@ fi
 AC_SUBST(DVIPRINT)])dnl
 define(GROFF_GETOPT,
 [GROFF_CC_COMPILE_CHECK([declaration of getopt in stdlib.h],
-[#include <stdlib.h>],
-[int opt = getopt(0, 0, 0); optarg = "foo"; optind = 1;],
+[#include <stdlib.h>
+extern "C" { void getopt(int); }],,,
 AC_DEFINE(STDLIB_H_DECLARES_GETOPT))
 GROFF_CC_COMPILE_CHECK([declaration of getopt in unistd.h],
 [#include <sys/types.h>
-#include <unistd.h>],
-[int opt = getopt(0, 0, 0);],
+#include <unistd.h>
+extern "C" { void getopt(int); }],,,
 AC_DEFINE(UNISTD_H_DECLARES_GETOPT))
 ])dnl
 define(GROFF_PUTENV,
-[GROFF_CC_COMPILE_CHECK([declaration of putenv],[#include <stdlib.h>],
-[putenv((char *)0);],
+[GROFF_CC_COMPILE_CHECK([declaration of putenv],
+[#include <stdlib.h>
+extern "C" { void putenv(int); }],,,
 AC_DEFINE(STDLIB_H_DECLARES_PUTENV))])dnl
+define(GROFF_POPEN,
+[GROFF_CC_COMPILE_CHECK([declaration of popen],
+[#include <stdio.h>
+extern "C" { void popen(int); }],,,
+AC_DEFINE(STDIO_H_DECLARES_POPEN))])dnl
+define(GROFF_PCLOSE,
+[GROFF_CC_COMPILE_CHECK([declaration of pclose],
+[#include <stdio.h>
+extern "C" { void pclose(int); }],,,
+AC_DEFINE(STDIO_H_DECLARES_PCLOSE))])dnl
 define(GROFF_ETAGSCCFLAG,
 [echo checking for etags C++ option
 for flag in p C
@@ -351,11 +360,11 @@ define(GROFF_TIME_T,
 [GROFF_CC_COMPILE_CHECK([time_t],[#include <time.h>],
 [time_t t = time(0); struct tm *p = localtime(&t);],,
 AC_DEFINE(LONG_FOR_TIME_T))])dnl
-define(GROFF_UNISTD_H,
-[GROFF_CC_COMPILE_CHECK(['C++ <unistd.h>'],[#include <unistd.h>],
+define(GROFF_OSFCN_H,
+[GROFF_CC_COMPILE_CHECK(['C++ <osfcn.h>'],[#include <osfcn.h>],
+[read(0, 0, 0); open(0, 0);],AC_DEFINE(HAVE_CC_OSFCN_H))])dnl
 dnl Bison generated parsers have problems with C++ compilers other than g++.
 dnl So byacc is preferred over bison.
-[read(0, 0, 0);],AC_DEFINE(HAVE_CC_UNISTD_H))])dnl
 define(GROFF_PROG_YACC,
 [AC_PROGRAM_CHECK(YACC, byacc, byacc, )
 AC_PROGRAM_CHECK(YACC, bison, bison -y, yacc)
@@ -378,3 +387,17 @@ else
 fi
 rm -f conftest.sh
 ])dnl
+define(GROFF_POSIX,
+[GROFF_CC_COMPILE_CHECK(whether -D_POSIX_SOURCE is necessary,
+[#include <stdio.h>],
+[(void)fileno(stdin);],,
+AC_DEFINE(_POSIX_SOURCE))])dnl
+dnl From udodo!hans@relay.NL.net (Hans Zuidam)
+define(GROFF_ISC_SYSV3,
+[echo 'checking for ISC 3.x or 4.x'
+changequote(,)dnl
+if grep '[34]\.' /usr/options/cb.name >/dev/null 2>&1
+changequote([,])dnl
+then
+	AC_DEFINE(_SYSV3)
+fi])dnl

@@ -163,8 +163,8 @@ while (<MAP>) {
 	    warn "Both $mapped{$field[1]} and $field[0] map to $field[1]";
 	}
 	elsif ($field[1] eq "space") {
-	    # the PostScript character `space' is automatically mapped
-	    # to the groff character `space'; this is for grops
+	    # the PostScript character "space" is automatically mapped
+	    # to the groff character "space"; this is for grops
 	    warn "you are not allowed to map to the groff character `space'";
 	}
 	elsif ($field[0] eq "space") {

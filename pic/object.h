@@ -110,7 +110,7 @@ struct graphics_state {
   direction dir;
 };
 
-struct saved_state : graphics_state {
+struct saved_state : public graphics_state {
   saved_state *prev;
   PTABLE(place) *tbl;
 };

@@ -136,10 +136,14 @@ public:
   file_closer(int &fd) : fdp(&fd) { }
   ~file_closer() { close(*fdp); }
 };
-  
+ 
+// Tell the compiler that a variable is intentionally unused.
+inline void unused(void *) { }
+
 int index_search_item::load(int fd)
 {
   file_closer fd_closer(fd);	// close fd on return
+  unused(&fd_closer);
   struct stat sb;
   if (fstat(fd, &sb) < 0) {
     error("can't fstat `%1': %2", name, strerror(errno));
@@ -385,7 +389,7 @@ int index_search_item_iterator::get_tag(int tagno,
 	error("can't stat `%1': %2", filename, strerror(errno));
 	err = 1;
       }
-      else if ((sb.st_mode & S_IFMT) != S_IFREG) {
+      else if (!S_ISREG(sb.st_mode)) {
 	error("`%1' is not a regular file", filename);
 	err = 1;
       }

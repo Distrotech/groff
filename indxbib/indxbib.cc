@@ -286,7 +286,7 @@ int main(int argc, char **argv)
     fatal("can't unlink temporary index file: %1", strerror(errno));
 #endif /* not HAVE_RENAME */
   temp_index_file = 0;
-  exit(failed);
+  return failed;
 }
 
 static void usage()
@@ -700,8 +700,9 @@ static void write_hash_table()
   if (sizeof(table_entry) == sizeof(int))
     fwrite_or_die(hash_table, sizeof(int), hash_table_size, indxfp);
   else {
-    assert(0);
     // write it out word by word
+    for (int i = 0; i < hash_table_size; i++)
+      fwrite_or_die(&hash_table[i].count, sizeof(int), 1, indxfp);
   }
   fwrite_or_die(filenames.contents(), 1, filenames.length(), indxfp);
   if (fseek(indxfp, 0, 0) < 0)

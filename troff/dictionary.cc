@@ -112,7 +112,7 @@ void *dictionary::remove(symbol s)
       if (table[i].v == 0)
 	break;
       r = int(table[i].s.hash() % size);
-    } while ((i <= r && r < j) || (j < i && i <= r));
+    } while ((i <= r && r < j) || (r < j && j < i) || (j < i && i <= r));
     table[j] = table[i];
   }
   if (p != 0)

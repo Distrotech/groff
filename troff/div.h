@@ -131,6 +131,7 @@ extern diversion *curdiv;
 
 extern int exit_started;
 extern int done_end_macro;
+extern int last_page_number;
 extern int seen_last_page_ejector;
 
 void spring_trap(symbol);	// implemented by input.c

@@ -20,6 +20,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #include "driver.h"
 #include "device.h"
+#include "cset.h"
 
 const char *current_filename;
 int current_lineno;
@@ -168,7 +169,7 @@ void do_file(const char *filename)
     case '9':
       {
 	int c = get_char();
-	if (!isascii(c) || !isdigit(c))
+	if (!csdigit(c))
 	  fatal("digit expected");
 	env.hpos += (command - '0')*10 + (c - '0');
       }
@@ -370,7 +371,7 @@ int get_integer()
     neg = 1;
     c = get_char();
   }
-  if (!isascii(c) || !isdigit(c))
+  if (!csdigit(c))
     fatal("integer expected");
   int total = 0;
   do {
@@ -380,7 +381,7 @@ int get_integer()
     else
       total += c - '0';
     c = get_char();
-  }  while (isascii(c) && isdigit(c));
+  }  while (csdigit(c));
   if (c != EOF)
     ungetc(c, current_file);
   return total;
@@ -396,7 +397,7 @@ int possibly_get_integer(int *res)
     neg = 1;
     c = get_char();
   }
-  if (!isascii(c) || !isdigit(c)) {
+  if (!csdigit(c)) {
     if (c != EOF)
       ungetc(c, current_file);
     return 0;
@@ -409,7 +410,7 @@ int possibly_get_integer(int *res)
     else
       total += c - '0';
     c = get_char();
-  }  while (isascii(c) && isdigit(c));
+  }  while (csdigit(c));
   if (c != EOF)
     ungetc(c, current_file);
   *res = total;

@@ -76,6 +76,7 @@ TM
 .de cov@print-date
 .MOVE 4.8c 13.3c
 .S 8
+.nf
 \\$1:
 .br
 .S
@@ -83,6 +84,7 @@ TM
 .in 0.8c
 .B "\\*[cov*new-date]"
 .br
+.fi
 .PGFORM
 ..
 .\"------------

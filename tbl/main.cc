@@ -652,7 +652,7 @@ format::~format()
   a_delete entry;
 }
 
-struct input_entry_format : entry_format {
+struct input_entry_format : public entry_format {
   input_entry_format *next;
   string width;
   int separation;
@@ -1492,6 +1492,6 @@ int main(int argc, char **argv)
   }
   if (ferror(stdout) || fflush(stdout) < 0)
     fatal("output error");
-  exit(0);
+  return 0;
 }
 

@@ -19,12 +19,14 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 extern "C" {
+#ifndef strerror
   char *strerror(int);
+#endif
 #ifndef __BORLANDC__
   const char *itoa(int);
   const char *iftoa(int, int);
 #endif /* __BORLANDC__ */
-};
+}
 
 #ifdef STDLIB_H_DECLARES_GETOPT
 #include <stdlib.h>
@@ -52,6 +54,18 @@ int is_prime(unsigned);
 #include <stdio.h>
 
 FILE *xtmpfile();
+
+#ifndef STDIO_H_DECLARES_POPEN
+
+extern "C" { FILE *popen(const char *, const char *); }
+
+#endif /* not STDIO_H_DECLARES_POPEN */
+
+#ifndef STDIO_H_DECLARES_PCLOSE
+
+extern "C" { int pclose (FILE *); }
+
+#endif /* not STDIO_H_DECLARES_PCLOSE */
 
 int interpret_lf_args(const char *p);
 
@@ -90,6 +104,12 @@ inline int illegal_input_char(int c)
 (not including the -). */
 
 #define INT_DIGITS 10
+
+#ifdef PI
+#undef PI
+#endif
+
+const double PI = 3.14159265358979323846;
 
 /* ad_delete deletes an array of objects with destructors;
 a_delete deletes an array of objects without destructors */

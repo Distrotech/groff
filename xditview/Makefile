@@ -416,13 +416,16 @@ xditview.o: /local/include/X11/Xatom.h /local/include/X11/Xlib.h
 xditview.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 xditview.o: /usr/include/sys/sysmacros.h /local/include/X11/X.h
 xditview.o: /local/include/X11/Xfuncproto.h /local/include/X11/Xosdefs.h
-xditview.o: /usr/include/stddef.h /local/include/X11/Intrinsic.h
+xditview.o: /usr/include/stddef.h /local/include/X11/Xos.h
+xditview.o: /usr/include/string.h /usr/include/fcntl.h
+xditview.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
+xditview.o: /usr/include/unistd.h /usr/include/sys/time.h
+xditview.o: /usr/include/sys/time.h /local/include/X11/Intrinsic.h
 xditview.o: /local/include/X11/Xutil.h /local/include/X11/Xresource.h
-xditview.o: /usr/include/string.h /local/include/X11/Core.h
-xditview.o: /local/include/X11/Composite.h /local/include/X11/Constraint.h
-xditview.o: /local/include/X11/Object.h /local/include/X11/RectObj.h
-xditview.o: /local/include/X11/StringDefs.h /local/include/X11/Shell.h
-xditview.o: /local/include/X11/Xaw/Paned.h
+xditview.o: /local/include/X11/Core.h /local/include/X11/Composite.h
+xditview.o: /local/include/X11/Constraint.h /local/include/X11/Object.h
+xditview.o: /local/include/X11/RectObj.h /local/include/X11/StringDefs.h
+xditview.o: /local/include/X11/Shell.h /local/include/X11/Xaw/Paned.h
 xditview.o: /local/include/X11/Xmu/Converters.h
 xditview.o: /local/include/X11/Xaw/Viewport.h /local/include/X11/Xaw/Form.h
 xditview.o: /local/include/X11/Xaw/Reports.h /local/include/X11/Xaw/Box.h

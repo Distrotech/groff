@@ -133,6 +133,7 @@ cat >getopt.c <<'EOF'
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #ifdef SWITCHAR
 #include <dos.h>
@@ -145,6 +146,12 @@ char *optarg;
 
 #ifndef OPTION_CHAR
 #define OPTION_CHAR '-'
+#endif
+
+#ifdef isascii
+#define ISASCII(c) isascii(c)
+#else
+#define ISASCII(c) (1)
 #endif
 
 int getopt(argc, argv, opts)
@@ -226,9 +233,9 @@ char *opts;
 			return(EOF);
 		}
 	}
-	optopt = c = argv[optind][sp];
+	optopt = c = (unsigned char)argv[optind][sp];
 #ifdef CASE_INSENSITIVE_OPTIONS
-	if (isascii(c) && isupper(c))
+	if (ISASCII(c) && isupper(c))
 		optopt = c = tolower(c);
 #endif
 	if (c == ':' || (cp = strchr(opts, c)) == NULL) {

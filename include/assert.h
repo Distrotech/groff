@@ -20,9 +20,7 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 #ifndef ASSERT_H
 #define ASSERT_H
-#ifdef __GNUG__
-volatile
-#endif
+
 void assertion_failed(int, const char *);
 
 inline void do_assert(int expr, int line, const char *file)

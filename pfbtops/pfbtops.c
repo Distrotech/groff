@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 /* Binary bytes per output line. */
-#define BYTES_PER_LINE (79/2)
-#define HEX_DIGITS "0123456789ABCDEF"
+#define BYTES_PER_LINE (64/2)
+#define HEX_DIGITS "0123456789abcdef"
 
 static char *program_name;
 

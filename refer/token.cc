@@ -155,7 +155,7 @@ static void store_token(const char *tok, token_type typ,
 			const char *sk = 0, const char *oc = 0)
 {
   unsigned n = hash_string(tok, strlen(tok)) % TOKEN_TABLE_SIZE;
-  while (n >= 0) {
+  for (;;) {
     if (token_table[n].tok == 0) {
       if (++ntokens == TOKEN_TABLE_SIZE)
 	assert(0);
@@ -164,8 +164,10 @@ static void store_token(const char *tok, token_type typ,
     }
     if (strcmp(tok, token_table[n].tok) == 0)
       break;
-    if (--n < 0)
+    if (n == 0)
       n = TOKEN_TABLE_SIZE - 1;
+    else
+      --n;
   }
   token_table[n].ti.set(typ, sk, oc);
 }
@@ -176,14 +178,16 @@ token_info default_token_info;
 const token_info *lookup_token(const char *start, const char *end)
 {
   unsigned n = hash_string(start, end - start) % TOKEN_TABLE_SIZE;
-  while (n >= 0) {
+  for (;;) {
     if (token_table[n].tok == 0)
       break;
     if (strlen(token_table[n].tok) == end - start
 	&& memcmp(token_table[n].tok, start, end - start) == 0)
       return &(token_table[n].ti);
-    if (--n < 0)
+    if (n == 0)
       n = TOKEN_TABLE_SIZE - 1;
+    else
+      --n;
   }
   return &default_token_info;
 }

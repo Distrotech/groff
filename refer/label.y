@@ -119,23 +119,23 @@ public:
   }
 };
 
-typedef void map_t(const char *, const char *, string &);
+typedef void map_func(const char *, const char *, string &);
 
 class map_expr : public unary_expr {
-  map_t *func;
+  map_func *func;
 public:
-  map_expr(expression *e, map_t *f) : unary_expr(e), func(f) { }
+  map_expr(expression *e, map_func *f) : unary_expr(e), func(f) { }
   void evaluate(int, const reference &, string &, substring_position &);
 };
   
-typedef const char *extractor_t(const char *, const char *, const char **);
+typedef const char *extractor_func(const char *, const char *, const char **);
 
 class extractor_expr : public unary_expr {
   int part;
-  extractor_t *func;
+  extractor_func *func;
 public:
   enum { BEFORE = +1, MATCH = 0, AFTER = -1 };
-  extractor_expr(expression *e, extractor_t *f, int pt)
+  extractor_expr(expression *e, extractor_func *f, int pt)
     : unary_expr(e), func(f), part(pt) { }
   void evaluate(int, const reference &, string &, substring_position &);
 };

@@ -335,7 +335,7 @@ There are also some special fonts called
 .B SS
 and
 .BR S .
-Zapf Dingbats is avilable as
+Zapf Dingbats is available as
 .BR ZD
 and a reversed version of ZapfDingbats (with symbols pointing in the opposite
 direction) is available as
@@ -381,7 +381,15 @@ will draw a horizontal line one inch long.
 may make changes to the graphics state,
 but any changes will persist only to the
 end of the page.
-Any definitions will also persist only until the end of the page.
+A dictionary containing the definitions specified by the
+.B def
+and
+.B mdef
+will be on top of the dictionary stack.
+If your code adds definitions to this dictionary,
+you should allocate space for them using
+.BI \eX'ps\ mdef \ n '\fR.
+Any definitions will persist only until the end of the page.
 If you use the
 .B \eY
 escape sequence with an argument that names a macro,
@@ -446,7 +454,7 @@ definitions.
 needs to know how many definitions
 .I code
 contains
-so that it can create an apppropriately sized PostScript dictionary
+so that it can create an appropriately sized PostScript dictionary
 to contain them.
 .TP
 .BI \eX'ps:\ import\  file\ llx\ lly\ urx\ ury\ width\ \fR[\fP\ height\ \fR]\fP '
@@ -511,7 +519,8 @@ is run by the groff command) include a
 macro which allows a picture to be easily imported.
 This has the format
 .IP
-.BI .PSPIC\  file\  \fR[ width\  \fR[ height \fR]]
+\&\fB.PSPIC\fP \fI\|file\fP [ \fB\-L\fP | \fB-R\fP | \fB\-I\fP \fIn\fP ]\  
+[ \fIwidth\fP [ \fIheight\fP ]]
 .LP
 .I file
 is the name of the file containing the illustration;
@@ -533,6 +542,17 @@ wide
 and
 .I height
 high.
+By default, the graphic will be horizontally centered.
+The
+.BI \-L
+and
+.BI \-R
+cause the graphic to be left-aligned and right-aligned
+respectively.
+The
+.B \-I
+option causes the graphic to be indented by
+.IR n .
 .RE
 .TP
 .B \eX'ps:\ invis'
@@ -751,7 +771,7 @@ should be used.
 .SH FILES
 .Tp \w'\fB@FONTDIR@/devps/download'u+2n
 .B @FONTDIR@/devps/DESC
-Device desciption file.
+Device description file.
 .TP
 .BI @FONTDIR@/devps/ F
 Font description file for font

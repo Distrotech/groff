@@ -606,6 +606,6 @@ int main(int argc, char **argv)
   delete out;
   if (ferror(stdout) || fflush(stdout) < 0)
     fatal("output error");
-  exit(0);
+  return 0;
 }
 

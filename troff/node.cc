@@ -134,6 +134,7 @@ protected:
   int slant;
 public:
   tfont_spec(symbol nm, int pos, font *, font_size, int, int);
+  tfont_spec(const tfont_spec &spec) { *this = spec; }
   tfont_spec plain();
   int operator==(const tfont_spec &);
   friend tfont *font_info::get_tfont(font_size fs, int, int, int);
@@ -172,8 +173,6 @@ inline int env_definite_font(environment *env)
 {
   return env->get_family()->make_definite(env->get_font());
 }
-
-static void invalidate_fontno(int n);
 
 /* font_info functions */
 
@@ -622,7 +621,9 @@ tfont::tfont(tfont_spec &spec) : tfont_spec(spec)
 /* output_file */
 
 class real_output_file : public output_file {
+#ifndef POPEN_MISSING
   int piped;
+#endif
   int printing;
   virtual void really_transparent_char(unsigned char) = 0;
   virtual void really_print_line(hunits x, vunits y, node *n,
@@ -1176,6 +1177,7 @@ void output_file::trailer(vunits)
 real_output_file::real_output_file()
 : printing(0)
 {
+#ifndef POPEN_MISSING
   if (pipe_command) {
     if ((fp = popen(pipe_command, "w")) != 0) {
       piped = 1;
@@ -1184,6 +1186,7 @@ real_output_file::real_output_file()
     error("pipe open failed: %1", strerror(errno));
   }
   piped = 0;
+#endif /* not POPEN_MISSING */
   fp = stdout;
 }
 
@@ -1196,6 +1199,7 @@ real_output_file::~real_output_file()
     fp = 0;
     fatal("error writing output file");
   }
+#ifndef POPEN_MISSING
   if (piped) {
     int result = pclose(fp);
     fp = 0;
@@ -1211,7 +1215,9 @@ real_output_file::~real_output_file()
 	      pipe_command, exit_status);
     }
   }
-  else if (fclose(fp) < 0) {
+  else
+#endif /* not POPEN MISSING */
+  if (fclose(fp) < 0) {
     fp = 0;
     fatal("error closing output file");
   }
@@ -4306,7 +4312,7 @@ static int mount_font_no_translate(int n, symbol name, symbol external_name)
   else if (font_table[n] != 0)
     delete font_table[n];
   font_table[n] = new font_info(name, n, external_name, fm);
-  invalidate_fontno(n);
+  font_family::invalidate_fontno(n);
   return 1;
 }
 
@@ -4334,7 +4340,7 @@ void mount_style(int n, symbol name)
   else if (font_table[n] != 0)
     delete font_table[n];
   font_table[n] = new font_info(get_font_translation(name), n, NULL_SYMBOL, 0);
-  invalidate_fontno(n);
+  font_family::invalidate_fontno(n);
 }
 
 /* global functions */
@@ -4442,7 +4448,7 @@ font_family *lookup_family(symbol nm)
   return f;
 } 
 
-static void invalidate_fontno(int n)
+void font_family::invalidate_fontno(int n)
 {
   assert(n >= 0 && n < font_table_size);
   dictionary_iterator iter(family_dictionary);

@@ -132,7 +132,7 @@ const char *bmpattern::search(const char *buf, const char *end) const
     for (;;) {
       if (j == 0)
 	return s;
-      if (map[uchar(*--s)] != pattern[--j])
+      if (map[uchar(*--s)] != uchar(pattern[--j]))
 	break;
     }
     k++;
@@ -301,13 +301,13 @@ int file_buffer::load(int fd, const char *filename)
   struct stat sb;
   if (fstat(fd, &sb) < 0)
     error("can't fstat `%1': %2", filename, strerror(errno));
-  else if ((sb.st_mode & S_IFMT) != S_IFREG)
+  else if (!S_ISREG(sb.st_mode))
     error("`%1' is not a regular file", filename);
   else {
     // We need one character extra at the beginning for an additional newline
     // used as a sentinel.  We get 4 instead so that the read buffer will be
     // word-aligned.  This seems to make the read slightly faster.  We also
-    // need one character at the end also for an addional newline used as a
+    // need one character at the end also for an additional newline used as a
     // sentinel.
     int size = int(sb.st_size);
     buffer = new char[size + 4 + 1];

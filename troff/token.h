@@ -23,9 +23,6 @@ struct charinfo;
 struct node;
 struct vunits;
 
-// See ARM p251.
-static void process_input_stack();
-
 class token {
   symbol nm;
   node *nd;

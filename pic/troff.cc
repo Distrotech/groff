@@ -408,6 +408,7 @@ static const char *choose_delimiter(const char *text)
 void troff_output::text(const position &center, text_piece *v, int n,
 			double ang)
 {
+  line_thickness(BAD_THICKNESS); // the text might use lines (eg in equations)
   int rotate_flag = 0;
   if (driver_extension_flag && ang != 0.0) {
     rotate_flag = 1;

@@ -17,11 +17,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# Usage: configure [--srcdir=DIR] [--host=HOST] [--gas] [--nfp] [--no-create]
-#        [--prefix=PREFIX] [--exec-prefix=PREFIX] [--with-PACKAGE] [TARGET]
-# Ignores all args except --srcdir, --prefix, --exec-prefix, --no-create, and
-# --with-PACKAGE unless this script has special code to handle it.
-
+# Usage: configure [--srcdir=DIR] [--host=HOST] [--gas] [--nfp]
+#        [--prefix=PREFIX] [--exec-prefix=PREFIX] [--with-PACKAGE[=VALUE]]
+# Ignores all args except --srcdir, --prefix, --exec-prefix, and
+# --with-PACKAGE[=VALUE] unless this script has special code to handle it.
 
 for arg
 do
@@ -35,7 +34,7 @@ do
   elif test x$next_srcdir = xyes; then srcdir=$arg; next_srcdir=
   else
     case $arg in
-     # For backward compatibility, also recognize exact --exec_prefix.
+     # For backward compatibility, recognize -exec-prefix and --exec_prefix.
      -exec-prefix=* | --exec_prefix=* | --exec-prefix=* | --exec-prefi=* | --exec-pref=* | --exec-pre=* | --exec-pr=* | --exec-p=* | --exec-=* | --exec=* | --exe=* | --ex=* | --e=*)
 	exec_prefix=`echo $arg | sed 's/[-a-z_]*=//'` ;;
      -exec-prefix | --exec_prefix | --exec-prefix | --exec-prefi | --exec-pref | --exec-pre | --exec-pr | --exec-p | --exec- | --exec | --exe | --ex | --e)
@@ -49,9 +48,6 @@ do
 
      -nfp | --nfp | --nf) ;;
 
-     -no-create | --no-create | --no-creat | --no-crea | --no-cre | --no-cr | --no-c | --no- | --no)
-        no_create=1 ;;
-
      -prefix=* | --prefix=* | --prefi=* | --pref=* | --pre=* | --pr=* | --p=*)
 	prefix=`echo $arg | sed 's/[-a-z_]*=//'` ;;
      -prefix | --prefix | --prefi | --pref | --pre | --pr | --p)
@@ -63,22 +59,39 @@ do
 	next_srcdir=yes ;;
 
      -with-* | --with-*)
-       package=`echo $arg|sed 's/-*with-//'`
-       # Delete all the valid chars; see if any are left.
-       if test -n "`echo $package|sed 's/[-a-zA-Z0-9_]*//g'`"; then
+       package=`echo $arg|sed -e 's/-*with-//' -e 's/=.*//'`
+       # Reject names that aren't valid shell variable names.
+       if test -n "`echo $package| sed 's/[-a-zA-Z0-9_]//g'`"; then
          echo "configure: $package: invalid package name" >&2; exit 1
        fi
-       eval "with_`echo $package|sed s/-/_/g`=1" ;;
+       package=`echo $package| sed 's/-/_/g'`
+       case "$arg" in
+         *=*) val="`echo $arg|sed 's/[^=]*=//'`" ;;
+         *) val=1 ;;
+       esac
+       eval "with_$package='$val'" ;;
+
+     -v | -verbose | --verbose | --verbos | --verbo | --verb | --ver | --ve | --v)
+       verbose=yes ;;
 
      *) ;;
     esac
   fi
 done
 
-trap 'rm -f conftest* core; exit 1' 1 3 15
+trap 'rm -fr conftest* confdefs* core; exit 1' 1 3 15
+trap 'rm -f confdefs*' 0
 
-rm -f conftest*
-compile='${CC-cc} $DEFS conftest.c -o conftest $LIBS >/dev/null 2>&1'
+# NLS nuisances.
+# These must not be set unconditionally because not all systems understand
+# e.g. LANG=C (notably SCO).
+if test "${LC_ALL+set}" = 'set' ; then LC_ALL=C; export LC_ALL; fi
+if test "${LANG+set}"   = 'set' ; then LANG=C;   export LANG;   fi
+
+rm -f conftest* confdefs.h
+# AIX cpp loses on an empty file, so make sure it contains at least a newline.
+echo > confdefs.h
+compile='${CC-cc} $CFLAGS conftest.c -o conftest $LIBS >/dev/null 2>&1'
 
 # A filename unique to this package, relative to the directory that
 # configure is in, which we can look for to find out if srcdir is correct.
@@ -111,10 +124,14 @@ case $srcdir in
   *) srcdir=`cd $srcdir; pwd` ;; # Make relative path absolute.
 esac
 
+
+# Save the original args to write them into config.status later.
+configure_args="$*"
+
 if test -z "$prefix"
 then
   echo checking for grops to derive installation directory prefix
-  saveifs="$IFS"; IFS="$IFS:"
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="$IFS:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
     if test $dir != . && test -f $dir/grops; then
@@ -124,11 +141,12 @@ then
     fi
   done
   IFS="$saveifs"
+  echo "	chose installation directory prefix ${prefix}"
 fi
 if test -z "$prefix"
 then
   echo checking for gcc to derive installation directory prefix
-  saveifs="$IFS"; IFS="$IFS:"
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="$IFS:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
     if test $dir != . && test -f $dir/gcc; then
@@ -138,14 +156,17 @@ then
     fi
   done
   IFS="$saveifs"
+  echo "	chose installation directory prefix ${prefix}"
 fi
 
 if test -z "$CC"; then
-  echo checking for gcc
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `gcc', so it can be a program name with args.
+  set dummy gcc; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/gcc; then
+    if test -f $dir/$word; then
       CC="gcc"
       break
     fi
@@ -153,6 +174,7 @@ if test -z "$CC"; then
   IFS="$saveifs"
 fi
 test -z "$CC" && CC="cc"
+test -n "$CC" && test -n "$verbose" && echo "	setting CC to $CC"
 
 # Find out if we are using GNU C, under whatever name.
 cat > conftest.c <<EOF
@@ -182,46 +204,55 @@ if egrep yes conftest.out >/dev/null 2>&1; then
 fi
 fi
 if test -z "$CCC"; then
-  echo checking for g++
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `g++', so it can be a program name with args.
+  set dummy g++; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/g++; then
+    if test -f $dir/$word; then
       CCC="g++"
       break
     fi
   done
   IFS="$saveifs"
 fi
-test -z "$CCC" && CCC=""
+
+test -n "$CCC" && test -n "$verbose" && echo "	setting CCC to $CCC"
 
 if test -z "$CCC"; then
-  echo checking for CC
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `CC', so it can be a program name with args.
+  set dummy CC; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/CC; then
+    if test -f $dir/$word; then
       CCC="CC"
       break
     fi
   done
   IFS="$saveifs"
 fi
-test -z "$CCC" && CCC=""
+
+test -n "$CCC" && test -n "$verbose" && echo "	setting CCC to $CCC"
 
 if test -z "$CCC"; then
-  echo checking for cc++
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `cc++', so it can be a program name with args.
+  set dummy cc++; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/cc++; then
+    if test -f $dir/$word; then
       CCC="cc++"
       break
     fi
   done
   IFS="$saveifs"
 fi
-test -z "$CCC" && CCC=""
+
+test -n "$CCC" && test -n "$verbose" && echo "	setting CCC to $CCC"
 
 if test -z "$CCC"; then
 cat <<EOM
@@ -233,8 +264,7 @@ fi
 echo checking that C++ compiler can compile very simple C++ program
 cat <<EOF > conftest.cc
 
-extern "C" { void exit(int); }
-int main() { exit(0); }
+int main() { return 0; }
 
 EOF
 rm -f conftest
@@ -254,7 +284,6 @@ echo checking that C++ static constructors and destructors are called
 cat <<EOF > conftest.cc
 
 extern "C" {
-  void exit(int);
   void _exit(int);
 }
 int i;
@@ -264,7 +293,7 @@ struct A {
   ~A() { if (i == 1) _exit(0); }
 };
 A a;
-main() { exit(1); }
+int main() { return 1; }
 
 EOF
 rm -f conftest
@@ -282,8 +311,7 @@ rm -f conftest*
 echo checking for C++ header files
 cat <<EOF >conftest.cc
 #include <stdio.h>
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { fopen(0, 0); }
+int main() { return 0; } void t() { fopen(0, 0); }
 EOF
 if eval $cc_compile; then
   :
@@ -292,7 +320,8 @@ else
 Your header files do not appear to support C++.
 I was unable to compile and link a simple C++ program that used a function
 declared in <stdio.h>.
-If you're using gcc/g++, you should install libg++.
+If you're using a version of gcc/g++ earlier than 2.5,
+you should install libg++.
 EOF
 rm -f conftest* core; exit 1
 fi
@@ -302,18 +331,21 @@ then
 	for p in lpr
 do
 if test -z "$LPR"; then
-  echo checking for $p
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `$p', so it can be a program name with args.
+  set dummy $p; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/$p; then
+    if test -f $dir/$word; then
       LPR="$p"
       break
     fi
   done
   IFS="$saveifs"
 fi
-test -z "$LPR" && LPR=""
+
+test -n "$LPR" && test -n "$verbose" && echo "	setting LPR to $LPR"
 
 test -n "$LPR" && break
 done
@@ -321,18 +353,21 @@ done
 	for p in lp
 do
 if test -z "$LP"; then
-  echo checking for $p
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `$p', so it can be a program name with args.
+  set dummy $p; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/$p; then
+    if test -f $dir/$word; then
       LP="$p"
       break
     fi
   done
   IFS="$saveifs"
 fi
-test -z "$LP" && LP=""
+
+test -n "$LP" && test -n "$verbose" && echo "	setting LP to $LP"
 
 test -n "$LP" && break
 done
@@ -345,18 +380,21 @@ done
 		for p in lpq
 do
 if test -z "$LPQ"; then
-  echo checking for $p
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `$p', so it can be a program name with args.
+  set dummy $p; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/$p; then
+    if test -f $dir/$word; then
       LPQ="$p"
       break
     fi
   done
   IFS="$saveifs"
 fi
-test -z "$LPQ" && LPQ=""
+
+test -n "$LPQ" && test -n "$verbose" && echo "	setting LPQ to $LPQ"
 
 test -n "$LPQ" && break
 done
@@ -396,25 +434,30 @@ done
 IFS="$saveifs"
 
 if test -z "$YACC"; then
-  echo checking for byacc
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `byacc', so it can be a program name with args.
+  set dummy byacc; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/byacc; then
+    if test -f $dir/$word; then
       YACC="byacc"
       break
     fi
   done
   IFS="$saveifs"
 fi
-test -z "$YACC" && YACC=""
+
+test -n "$YACC" && test -n "$verbose" && echo "	setting YACC to $YACC"
 
 if test -z "$YACC"; then
-  echo checking for bison
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `bison', so it can be a program name with args.
+  set dummy bison; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/bison; then
+    if test -f $dir/$word; then
       YACC="bison -y"
       break
     fi
@@ -422,34 +465,47 @@ if test -z "$YACC"; then
   IFS="$saveifs"
 fi
 test -z "$YACC" && YACC="yacc"
+test -n "$YACC" && test -n "$verbose" && echo "	setting YACC to $YACC"
 
 
 if test -z "$RANLIB"; then
-  echo checking for ranlib
-  saveifs="$IFS"; IFS="${IFS}:"
+  # Extract the first word of `ranlib', so it can be a program name with args.
+  set dummy ranlib; word=$2
+  echo checking for $word
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
-    if test -f $dir/ranlib; then
+    if test -f $dir/$word; then
       RANLIB="ranlib"
       break
     fi
   done
   IFS="$saveifs"
 fi
-test -z "$RANLIB" && RANLIB="@:"
+test -z "$RANLIB" && RANLIB=":"
+test -n "$RANLIB" && test -n "$verbose" && echo "	setting RANLIB to $RANLIB"
 
 # Make sure to not get the incompatible SysV /etc/install and
 # /usr/sbin/install, which might be in PATH before a BSD-like install,
 # or the SunOS /usr/etc/install directory, or the AIX /bin/install,
-# or the AFS install, which mishandles nonexistent args.  (Sigh.)
-if test -z "$INSTALL"; then
+# or the AFS install, which mishandles nonexistent args, or
+# /usr/ucb/install on SVR4, which tries to use the nonexistent group
+# `staff'.  On most BSDish systems install is in /usr/bin, not /usr/ucb
+# anyway.  Sigh.
+if test "z${INSTALL}" = "z" ; then
   echo checking for install
-  saveifs="$IFS"; IFS="${IFS}:"
+  IFS="${IFS= 	}"; saveifs="$IFS"; IFS="${IFS}:"
   for dir in $PATH; do
     test -z "$dir" && dir=.
     case $dir in
-    /etc|/usr/sbin|/usr/etc|/usr/afsws/bin) ;;
+    /etc|/usr/sbin|/usr/etc|/usr/afsws/bin|/usr/ucb) ;;
     *)
+      if test -f $dir/installbsd; then
+	INSTALL="$dir/installbsd -c" # OSF1
+	INSTALL_PROGRAM='$(INSTALL)'
+	INSTALL_DATA='$(INSTALL) -m 644'
+	break
+      fi
       if test -f $dir/install; then
 	if grep dspmsg $dir/install >/dev/null 2>&1; then
 	  : # AIX
@@ -466,8 +522,11 @@ if test -z "$INSTALL"; then
   IFS="$saveifs"
 fi
 INSTALL=${INSTALL-cp}
+test -n "$verbose" && echo "	setting INSTALL to $INSTALL"
 INSTALL_PROGRAM=${INSTALL_PROGRAM-'$(INSTALL)'}
+test -n "$verbose" && echo "	setting INSTALL_PROGRAM to $INSTALL_PROGRAM"
 INSTALL_DATA=${INSTALL_DATA-'$(INSTALL)'}
+test -n "$verbose" && echo "	setting INSTALL_DATA to $INSTALL_DATA"
 
 echo checking for ln -s
 rm -f conftestdata
@@ -507,186 +566,372 @@ fi
 rm -f conftest.sh
 
 
-echo checking for unistd.h
+for hdr in unistd.h dirent.h limits.h sys/dir.h stdlib.h
+do
+trhdr=HAVE_`echo $hdr | tr '[a-z]./' '[A-Z]__'`
+echo checking for ${hdr}
 echo checking how to run the C preprocessor
 if test -z "$CPP"; then
-  CPP='${CC-cc} -E'
+  # This must be in double quotes, not single quotes, because CPP may get
+  # substituted into the Makefile and ``${CC-cc}'' will simply confuse
+  # make.  It must be expanded now.
+  CPP="${CC-cc} -E"
   cat > conftest.c <<EOF
+#include "confdefs.h"
 #include <stdio.h>
+Syntax Error
 EOF
-err=`eval "$CPP $DEFS conftest.c 2>&1 >/dev/null"`
+err=`eval "($CPP conftest.c >/dev/null) 2>&1"`
 if test -z "$err"; then
   :
 else
+  rm -rf conftest*
   CPP=/lib/cpp
 fi
 rm -f conftest*
 fi
+test ".${verbose}" != "." && echo "	setting CPP to $CPP"
 
 cat > conftest.c <<EOF
-#include <unistd.h>
-EOF
-err=`eval "$CPP $DEFS conftest.c 2>&1 >/dev/null"`
-if test -z "$err"; then
-  DEFS="$DEFS -DHAVE_UNISTD_H=1"
-fi
-rm -f conftest*
-
-for hdr in dirent.h limits.h sys/dir.h stdlib.h
-do
-trhdr=HAVE_`echo $hdr | tr '[a-z]./' '[A-Z]__'`
-echo checking for ${hdr}
-cat > conftest.c <<EOF
+#include "confdefs.h"
 #include <${hdr}>
 EOF
-err=`eval "$CPP $DEFS conftest.c 2>&1 >/dev/null"`
+err=`eval "($CPP conftest.c >/dev/null) 2>&1"`
 if test -z "$err"; then
-  DEFS="$DEFS -D${trhdr}=1"
+  rm -rf conftest*
+  
+{
+test -n "$verbose" && \
+echo "	defining ${trhdr}"
+echo "#define" ${trhdr} 1 >> confdefs.h
+DEFS="$DEFS -D${trhdr}=1"
+}
+
+
 fi
 rm -f conftest*
 done
 
+echo 'checking for ISC 3.x or 4.x'
+if grep '[34]\.' /usr/options/cb.name >/dev/null 2>&1
+then
+	
+{
+test -n "$verbose" && \
+echo "	defining _SYSV3"
+echo "#define" _SYSV3 1 >> confdefs.h
+DEFS="$DEFS -D_SYSV3=1"
+}
+
+fi
+echo checking for whether -D_POSIX_SOURCE is necessary
+cat <<EOF >conftest.cc
+#include <stdio.h>
+int main() { return 0; } void t() { (void)fileno(stdin); }
+EOF
+if eval $cc_compile; then
+  :
+else
+  
+{
+test -n "$verbose" && \
+echo "	defining _POSIX_SOURCE"
+echo "#define" _POSIX_SOURCE 1 >> confdefs.h
+DEFS="$DEFS -D_POSIX_SOURCE=1"
+}
+
+fi
+rm -f conftest*
 echo checking for 'C++ <limits.h>'
 cat <<EOF >conftest.cc
 #include <limits.h>
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { int x = INT_MIN; int y = INT_MAX; int z = UCHAR_MAX; }
+int main() { return 0; } void t() { int x = INT_MIN; int y = INT_MAX; int z = UCHAR_MAX; }
 EOF
 if eval $cc_compile; then
-  DEFS="$DEFS -DHAVE_CC_LIMITS_H=1"
+  
+{
+test -n "$verbose" && \
+echo "	defining HAVE_CC_LIMITS_H"
+echo "#define" HAVE_CC_LIMITS_H 1 >> confdefs.h
+DEFS="$DEFS -DHAVE_CC_LIMITS_H=1"
+}
+
 fi
 rm -f conftest*
-echo checking for 'C++ <unistd.h>'
+echo checking for 'C++ <osfcn.h>'
 cat <<EOF >conftest.cc
-#include <unistd.h>
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { read(0, 0, 0); }
+#include <osfcn.h>
+int main() { return 0; } void t() { read(0, 0, 0); open(0, 0); }
 EOF
 if eval $cc_compile; then
-  DEFS="$DEFS -DHAVE_CC_UNISTD_H=1"
+  
+{
+test -n "$verbose" && \
+echo "	defining HAVE_CC_OSFCN_H"
+echo "#define" HAVE_CC_OSFCN_H 1 >> confdefs.h
+DEFS="$DEFS -DHAVE_CC_OSFCN_H=1"
+}
+
 fi
 rm -f conftest*
 echo checking for declaration of getopt in stdlib.h
 cat <<EOF >conftest.cc
 #include <stdlib.h>
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { int opt = getopt(0, 0, 0); optarg = "foo"; optind = 1; }
+extern "C" { void getopt(int); }
+int main() { return 0; } void t() {  }
 EOF
 if eval $cc_compile; then
-  DEFS="$DEFS -DSTDLIB_H_DECLARES_GETOPT=1"
+  :
+else
+  
+{
+test -n "$verbose" && \
+echo "	defining STDLIB_H_DECLARES_GETOPT"
+echo "#define" STDLIB_H_DECLARES_GETOPT 1 >> confdefs.h
+DEFS="$DEFS -DSTDLIB_H_DECLARES_GETOPT=1"
+}
+
 fi
 rm -f conftest*
 echo checking for declaration of getopt in unistd.h
 cat <<EOF >conftest.cc
 #include <sys/types.h>
 #include <unistd.h>
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { int opt = getopt(0, 0, 0); }
+extern "C" { void getopt(int); }
+int main() { return 0; } void t() {  }
 EOF
 if eval $cc_compile; then
-  DEFS="$DEFS -DUNISTD_H_DECLARES_GETOPT=1"
+  :
+else
+  
+{
+test -n "$verbose" && \
+echo "	defining UNISTD_H_DECLARES_GETOPT"
+echo "#define" UNISTD_H_DECLARES_GETOPT 1 >> confdefs.h
+DEFS="$DEFS -DUNISTD_H_DECLARES_GETOPT=1"
+}
+
 fi
 rm -f conftest*
 
 echo checking for declaration of putenv
 cat <<EOF >conftest.cc
 #include <stdlib.h>
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { putenv((char *)0); }
+extern "C" { void putenv(int); }
+int main() { return 0; } void t() {  }
 EOF
 if eval $cc_compile; then
-  DEFS="$DEFS -DSTDLIB_H_DECLARES_PUTENV=1"
+  :
+else
+  
+{
+test -n "$verbose" && \
+echo "	defining STDLIB_H_DECLARES_PUTENV"
+echo "#define" STDLIB_H_DECLARES_PUTENV 1 >> confdefs.h
+DEFS="$DEFS -DSTDLIB_H_DECLARES_PUTENV=1"
+}
+
+fi
+rm -f conftest*
+echo checking for declaration of popen
+cat <<EOF >conftest.cc
+#include <stdio.h>
+extern "C" { void popen(int); }
+int main() { return 0; } void t() {  }
+EOF
+if eval $cc_compile; then
+  :
+else
+  
+{
+test -n "$verbose" && \
+echo "	defining STDIO_H_DECLARES_POPEN"
+echo "#define" STDIO_H_DECLARES_POPEN 1 >> confdefs.h
+DEFS="$DEFS -DSTDIO_H_DECLARES_POPEN=1"
+}
+
+fi
+rm -f conftest*
+echo checking for declaration of pclose
+cat <<EOF >conftest.cc
+#include <stdio.h>
+extern "C" { void pclose(int); }
+int main() { return 0; } void t() {  }
+EOF
+if eval $cc_compile; then
+  :
+else
+  
+{
+test -n "$verbose" && \
+echo "	defining STDIO_H_DECLARES_PCLOSE"
+echo "#define" STDIO_H_DECLARES_PCLOSE 1 >> confdefs.h
+DEFS="$DEFS -DSTDIO_H_DECLARES_PCLOSE=1"
+}
+
 fi
 rm -f conftest*
 echo checking for time_t
 cat <<EOF >conftest.cc
 #include <time.h>
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { time_t t = time(0); struct tm *p = localtime(&t); }
+int main() { return 0; } void t() { time_t t = time(0); struct tm *p = localtime(&t); }
 EOF
 if eval $cc_compile; then
   :
 else
-  DEFS="$DEFS -DLONG_FOR_TIME_T=1"
+  
+{
+test -n "$verbose" && \
+echo "	defining LONG_FOR_TIME_T"
+echo "#define" LONG_FOR_TIME_T 1 >> confdefs.h
+DEFS="$DEFS -DLONG_FOR_TIME_T=1"
+}
+
 fi
 rm -f conftest*
 echo checking for return type of signal handlers
 cat > conftest.c <<EOF
+#include "confdefs.h"
 #include <sys/types.h>
 #include <signal.h>
 #ifdef signal
 #undef signal
 #endif
 extern void (*signal ()) ();
-main() { exit(0); } 
-t() { int i; }
+int main() { exit(0); }
+int t() { int i; }
 EOF
 if eval $compile; then
-  DEFS="$DEFS -DRETSIGTYPE=void"
+  rm -rf conftest*
+  
+{
+test -n "$verbose" && \
+echo "	defining" RETSIGTYPE to be void
+echo "#define" RETSIGTYPE void >> confdefs.h
+DEFS="$DEFS -DRETSIGTYPE=void"
+}
+
+
 else
-  DEFS="$DEFS -DRETSIGTYPE=int"
+  rm -rf conftest*
+  
+{
+test -n "$verbose" && \
+echo "	defining" RETSIGTYPE to be int
+echo "#define" RETSIGTYPE int >> confdefs.h
+DEFS="$DEFS -DRETSIGTYPE=int"
+}
+
 fi
 rm -f conftest*
 
 
 echo checking for struct exception
 cat > conftest.c <<EOF
+#include "confdefs.h"
 #include <math.h>
-main() { exit(0); } 
-t() { struct exception e; }
+int main() { exit(0); }
+int t() { struct exception e; }
 EOF
 if eval $compile; then
-  DEFS="$DEFS -DHAVE_STRUCT_EXCEPTION=1"
+  rm -rf conftest*
+  
+{
+test -n "$verbose" && \
+echo "	defining HAVE_STRUCT_EXCEPTION"
+echo "#define" HAVE_STRUCT_EXCEPTION 1 >> confdefs.h
+DEFS="$DEFS -DHAVE_STRUCT_EXCEPTION=1"
+}
+
+
 fi
 rm -f conftest*
 
 echo checking for mmap
 cat > conftest.c <<EOF
+#include "confdefs.h"
 #include <sys/types.h>
 #include <sys/mman.h>
-main() { exit(0); } 
-t() { char *p = mmap(0, 0, PROT_READ, MAP_PRIVATE, 0, 0); munmap(p, 0); }
+int main() { exit(0); }
+int t() { char *p = mmap(0, 0, PROT_READ, MAP_PRIVATE, 0, 0); munmap(p, 0); }
 EOF
 if eval $compile; then
-  DEFS="$DEFS -DHAVE_MMAP=1"
+  rm -rf conftest*
+  
+{
+test -n "$verbose" && \
+echo "	defining HAVE_MMAP"
+echo "#define" HAVE_MMAP 1 >> confdefs.h
+DEFS="$DEFS -DHAVE_MMAP=1"
+}
+
+
 fi
 rm -f conftest*
 
 echo checking for pid_t in sys/types.h
-echo '#include <sys/types.h>' > conftest.c
-eval "$CPP $DEFS conftest.c > conftest.out 2>&1"
+echo '#include "confdefs.h"
+#include <sys/types.h>' > conftest.c
+eval "$CPP conftest.c > conftest.out 2>&1"
 if egrep "pid_t" conftest.out >/dev/null 2>&1; then
   :
-else 
-  DEFS="$DEFS -Dpid_t=int"
+else
+  rm -rf conftest*
+  
+{
+test -n "$verbose" && \
+echo "	defining" pid_t to be int
+echo "#define" pid_t int >> confdefs.h
+DEFS="$DEFS -Dpid_t=int"
+}
+
 fi
 rm -f conftest*
 
 echo checking for vfork.h
 cat > conftest.c <<EOF
+#include "confdefs.h"
 #include <vfork.h>
 EOF
-err=`eval "$CPP $DEFS conftest.c 2>&1 >/dev/null"`
+err=`eval "($CPP conftest.c >/dev/null) 2>&1"`
 if test -z "$err"; then
-  DEFS="$DEFS -DHAVE_VFORK_H=1"
+  rm -rf conftest*
+  
+{
+test -n "$verbose" && \
+echo "	defining HAVE_VFORK_H"
+echo "#define" HAVE_VFORK_H 1 >> confdefs.h
+DEFS="$DEFS -DHAVE_VFORK_H=1"
+}
+
+
 fi
 rm -f conftest*
 
 echo checking for working vfork
+
 cat > conftest.c <<EOF
+#include "confdefs.h"
 /* Thanks to Paul Eggert for this test.  */
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #ifdef HAVE_VFORK_H
 #include <vfork.h>
 #endif
+static int signalled;
+static RETSIGTYPE catch (s) int s; { signalled = 1; }
 main() {
-  pid_t parent = getpid();
-  pid_t child = vfork();
+  pid_t parent = getpid ();
+  pid_t child;
+
+  signal (SIGINT, catch);
+
+  child = vfork ();
 
   if (child == 0) {
     /* On sparc systems, changes by the child to local and incoming
@@ -711,6 +956,12 @@ main() {
 	|| p != p5 || p != p6 || p != p7)
       _exit(1);
 
+    /* On some systems (e.g. SunOS 5.2), if the parent is catching
+       a signal, the child ignores the signal before execing,
+       and the parent later receives that signal, the parent dumps core.
+       Test for this by ignoring SIGINT in the child.  */
+    signal (SIGINT, SIG_IGN);
+
     /* On some systems (e.g. IRIX 3.3),
        vfork doesn't separate parent from child file descriptors.
        If the child closes a descriptor before it execs or exits,
@@ -733,6 +984,10 @@ main() {
 	 /* Did the vfork/compiler bug occur?  */
 	 || parent != getpid()
 
+	 /* Did the signal handling bug occur?  */
+	 || kill(parent, SIGINT) != 0
+	 || signalled != 1
+
 	 /* Did the file descriptor bug occur?  */
 	 || fstat(fileno(stdout), &st) != 0
 	 );
@@ -743,9 +998,16 @@ eval $compile
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   :
 else
-  DEFS="$DEFS -Dvfork=fork"
+  
+{
+test -n "$verbose" && \
+echo "	defining" vfork to be fork
+echo "#define" vfork fork >> confdefs.h
+DEFS="$DEFS -Dvfork=fork"
+}
+
 fi
-rm -f conftest*
+rm -fr conftest*
 
 saved_libs="$LIBS"
 LIBS="$LIBS -lm"
@@ -753,16 +1015,27 @@ for func in fmod strtol getcwd strerror putenv
 do
 echo checking for ${func}
 cat > conftest.c <<EOF
-
-main() { exit(0); } 
-t() { 
+#include "confdefs.h"
+#include <ctype.h>
+int main() { exit(0); }
+int t() { 
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_${func}) || defined (__stub___${func})
+choke me
+#else
 /* Override any gcc2 internal prototype to avoid an error.  */
-extern char ${func}(); ${func}(); }
+extern char ${func}(); ${func}();
+#endif
+ }
 EOF
 if eval $compile; then
   :
 else
+  rm -rf conftest*
   LIBOBJS="$LIBOBJS ${func}.o"
+test -n "$verbose" && echo "	using ${func}.o instead"
 fi
 rm -f conftest*
 
@@ -774,10 +1047,14 @@ do
 trfunc=HAVE_`echo $func | tr '[a-z]' '[A-Z]'`
 echo checking for ${func}
 cat > conftest.c <<EOF
-#include <stdio.h>
-main() { exit(0); } 
-t() { 
-#ifdef __stub_${func}
+#include "confdefs.h"
+#include <ctype.h>
+int main() { exit(0); }
+int t() { 
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_${func}) || defined (__stub___${func})
 choke me
 #else
 /* Override any gcc2 internal prototype to avoid an error.  */
@@ -786,20 +1063,37 @@ extern char ${func}(); ${func}();
  }
 EOF
 if eval $compile; then
-  DEFS="$DEFS -D${trfunc}=1"
+  rm -rf conftest*
+  {
+test -n "$verbose" && \
+echo "	defining ${trfunc}"
+echo "#define" ${trfunc} 1 >> confdefs.h
+DEFS="$DEFS -D${trfunc}=1"
+}
+
+
 fi
 rm -f conftest*
-#endif
 done
 
 echo checking for sys_siglist
 cat > conftest.c <<EOF
+#include "confdefs.h"
 
-main() { exit(0); } 
-t() { extern char *sys_siglist[]; sys_siglist[0] = 0; }
+int main() { exit(0); }
+int t() { extern char *sys_siglist[]; sys_siglist[0] = 0; }
 EOF
 if eval $compile; then
-  DEFS="$DEFS -DHAVE_SYS_SIGLIST=1"
+  rm -rf conftest*
+  
+{
+test -n "$verbose" && \
+echo "	defining HAVE_SYS_SIGLIST"
+echo "#define" HAVE_SYS_SIGLIST 1 >> confdefs.h
+DEFS="$DEFS -DHAVE_SYS_SIGLIST=1"
+}
+
+
 fi
 rm -f conftest*
 
@@ -817,7 +1111,7 @@ int main()
   int *p = new int;
   delete p;
   testit = 0;
-  exit(1);
+  return 1;
 }
 
 static unsigned dummy[3];
@@ -846,7 +1140,14 @@ EOF
 rm -f conftest
 eval $cc_compile
 if test -s conftest && (./conftest) 2>/dev/null; then
-  DEFS="$DEFS -DCOOKIE_BUG=1"
+  
+{
+test -n "$verbose" && \
+echo "	defining COOKIE_BUG"
+echo "#define" COOKIE_BUG 1 >> confdefs.h
+DEFS="$DEFS -DCOOKIE_BUG=1"
+}
+
 fi
 rm -f conftest*
 echo checking for cfront ANSI C INT_MIN bug
@@ -864,40 +1165,60 @@ cat <<EOF > conftest.cc
 int main()
 {
   int z = 0;
-  exit(INT_MIN < z);
+  return INT_MIN < z;
 }
 
 EOF
 rm -f conftest
 eval $cc_compile
 if test -s conftest && (./conftest) 2>/dev/null; then
-  DEFS="$DEFS -DCFRONT_ANSI_BUG=1"
+  
+{
+test -n "$verbose" && \
+echo "	defining CFRONT_ANSI_BUG"
+echo "#define" CFRONT_ANSI_BUG 1 >> confdefs.h
+DEFS="$DEFS -DCFRONT_ANSI_BUG=1"
+}
+
 fi
 rm -f conftest*
 echo checking for new array delete syntax
 cat <<EOF >conftest.cc
 
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { char *p = new char[5]; delete [] p; }
+int main() { return 0; } void t() { char *p = new char[5]; delete [] p; }
 EOF
 if eval $cc_compile; then
   :
 else
-  DEFS="$DEFS -DARRAY_DELETE_NEEDS_SIZE=1"
+  
+{
+test -n "$verbose" && \
+echo "	defining ARRAY_DELETE_NEEDS_SIZE"
+echo "#define" ARRAY_DELETE_NEEDS_SIZE 1 >> confdefs.h
+DEFS="$DEFS -DARRAY_DELETE_NEEDS_SIZE=1"
+}
+
 fi
 rm -f conftest*
 echo checking for traditional preprocessor
 cat <<EOF >conftest.cc
 #define name2(a,b) a/**/b
-extern "C" { void exit(int); }
-int main() { exit(0); } void t() { int name2(foo,bar); }
+int main() { return 0; } void t() { int name2(foo,bar); }
 EOF
 if eval $cc_compile; then
-  DEFS="$DEFS -DTRADITIONAL_CPP=1"
+  
+{
+test -n "$verbose" && \
+echo "	defining TRADITIONAL_CPP"
+echo "#define" TRADITIONAL_CPP 1 >> confdefs.h
+DEFS="$DEFS -DTRADITIONAL_CPP=1"
+}
+
 fi
 rm -f conftest*
 echo checking for w_coredump
 cat > conftest.c <<EOF
+#include "confdefs.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -915,9 +1236,17 @@ main()
 EOF
 eval $compile
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
-  DEFS="$DEFS -DWCOREFLAG=0200"
+  
+{
+test -n "$verbose" && \
+echo "	defining" WCOREFLAG to be 0200
+echo "#define" WCOREFLAG 0200 >> confdefs.h
+DEFS="$DEFS -DWCOREFLAG=0200"
+}
+
+
 fi
-rm -f conftest*
+rm -fr conftest*
 test -n "${BROKEN_SPOOLER_FLAGS}" || BROKEN_SPOOLER_FLAGS=7
 echo using default value of ${BROKEN_SPOOLER_FLAGS} for grops -b option
 
@@ -956,15 +1285,23 @@ fi
 test -n "$PAGE" || PAGE=letter
 echo guessing $PAGE size paper
 
+# Set default prefixes.
 if test -n "$prefix"; then
   test -z "$exec_prefix" && exec_prefix='${prefix}'
   prsub="s%^prefix\\([ 	]*\\)=\\([ 	]*\\).*$%prefix\\1=\\2$prefix%"
 fi
 if test -n "$exec_prefix"; then
   prsub="$prsub
-s%^exec_prefix\\([ 	]*\\)=\\([ 	]*\\).*$%\
-exec_prefix\\1=\\2$exec_prefix%"
+s%^exec_prefix\\([ 	]*\\)=\\([ 	]*\\).*$%exec_prefix\\1=\\2$exec_prefix%"
 fi
+# Quote sed substitution magic chars in DEFS.
+cat >conftest.def <<EOF
+$DEFS
+EOF
+escape_ampersand_and_backslash='s%[&\\]%\\&%g'
+DEFS=`sed "$escape_ampersand_and_backslash" <conftest.def`
+rm -f conftest.def
+# Substitute for predefined variables.
 
 trap 'rm -f config.status; exit 1' 1 3 15
 echo creating config.status
@@ -974,15 +1311,16 @@ cat > config.status <<EOF
 # Generated automatically by configure.
 # Run this file to recreate the current configuration.
 # This directory was configured as follows,
-# on host `(hostname || uname -n) 2>/dev/null`:
+# on host `(hostname || uname -n) 2>/dev/null | sed 1q`:
 #
-# $0 $*
+# $0 $configure_args
 
 for arg
 do
   case "\$arg" in
     -recheck | --recheck | --rechec | --reche | --rech | --rec | --re | --r)
-    exec /bin/sh $0 $* ;;
+    echo running \${CONFIG_SHELL-/bin/sh} $0 $configure_args
+    exec \${CONFIG_SHELL-/bin/sh} $0 $configure_args ;;
     *) echo "Usage: config.status --recheck" 2>&1; exit 1 ;;
   esac
 done
@@ -1015,11 +1353,14 @@ DEFS='$DEFS'
 prefix='$prefix'
 exec_prefix='$exec_prefix'
 prsub='$prsub'
+extrasub='$extrasub'
 EOF
 cat >> config.status <<\EOF
 
 top_srcdir=$srcdir
-for file in .. Makefile; do if [ "x$file" != "x.." ]; then
+
+CONFIG_FILES=${CONFIG_FILES-"Makefile"}
+for file in .. ${CONFIG_FILES}; do if test "x$file" != x..; then
   srcdir=$top_srcdir
   # Remove last slash and all that follows it.  Not all systems have dirname.
   dir=`echo $file|sed 's%/[^/][^/]*$%%'`
@@ -1032,6 +1373,7 @@ for file in .. Makefile; do if [ "x$file" != "x.." ]; then
   echo "# Generated automatically from `echo $file|sed 's|.*/||'`.in by configure." > $file
   sed -e "
 $prsub
+$extrasub
 s%@CC@%$CC%g
 s%@CCLIBS@%$CCLIBS%g
 s%@CCC@%$CCC%g
@@ -1059,7 +1401,9 @@ s%@DEFS@%$DEFS%
 " $top_srcdir/${file}.in >> $file
 fi; done
 
+
+exit 0
 EOF
 chmod +x config.status
-test -n "$no_create" || ./config.status
+${CONFIG_SHELL-/bin/sh} config.status
 
