@@ -724,6 +724,32 @@ int read_one_of(const char **ptr, const char **s, int n)
   return -1;
 }
 
+void skip_possible_newline(const char *ptr, FILE *fp, FILE *outfp)
+{
+  int c = getc(fp);
+  if (c == '\r') {
+    current_lineno++;
+    if (outfp)
+      putc(c, outfp);
+    int cc = getc(fp);
+    if (cc != '\n') {
+      if (cc != EOF)
+	ungetc(cc, fp);
+    }
+    else {
+      if (outfp)
+	putc(cc, outfp);
+    }
+  }
+  else if (c == '\n') {
+    current_lineno++;
+    if (outfp)
+      putc(c, outfp);
+  }
+  else if (c != EOF)
+    ungetc(c, fp);
+}
+
 int resource_manager::do_begin_data(const char *ptr, int, FILE *fp,
 				    FILE *outfp)
 {
@@ -790,6 +816,7 @@ int resource_manager::do_begin_data(const char *ptr, int, FILE *fp,
       }
     } while ((unit == Bytes ? bytecount : linecount) < numberof);
   }
+  skip_possible_newline();
   char buf[PS_LINE_MAX + 2];
   if (!ps_get_line(buf, fp)) {
     error("missing %%%%EndData line");
@@ -831,6 +858,7 @@ int resource_manager::do_begin_binary(const char *ptr, int, FILE *fp,
     else if (c == '\n')
       current_lineno++;
   }
+  skip_possible_newline();
   char buf[PS_LINE_MAX + 2];
   if (!ps_get_line(buf, fp)) {
     error("missing %%%%EndBinary line");

@@ -1562,10 +1562,7 @@ void token::next()
 	return;
       case ESCAPE_COLON:
       ESCAPE_COLON:
-	type = TOKEN_NODE;
-	nd = new space_node(H0);
-	nd->freeze_space();
-	nd->is_escape_colon();
+	type = TOKEN_ZERO_WIDTH_BREAK;
 	return;
       case ESCAPE_e:
       ESCAPE_e:
@@ -2126,6 +2123,8 @@ const char *token::description()
     return "`\\!'";
   case TOKEN_TRANSPARENT_DUMMY:
     return "`\\)'";
+  case TOKEN_ZERO_WIDTH_BREAK:
+    return "`\\:'";
   case TOKEN_EOF:
     return "end of input";
   default:
@@ -4577,9 +4576,11 @@ static void encode_char(macro *mac, char c)
 	mac->append(')');
       }
     }
-    else {
+    else if (!(tok.hyphen_indicator()
+	       || tok.dummy()
+	       || tok.transparent_dummy()
+	       || tok.zero_width_break()))
       error("%1 is invalid within \\X", tok.description());
-    }
   }
   else {
     if ((font::use_charnames_in_special) && (c == '\\')) {
@@ -5850,6 +5851,11 @@ int token::add_to_node_list(node **pp)
   case TOKEN_TRANSPARENT_DUMMY:
     n = new transparent_dummy_node;
     break;
+  case TOKEN_ZERO_WIDTH_BREAK:
+    n = new space_node(H0);
+    n->freeze_space();
+    n->is_escape_colon();
+    break;
   default:
     return 0;
   }
@@ -5941,6 +5947,14 @@ void token::process()
   case TOKEN_TRANSPARENT_DUMMY:
     curenv->add_node(new transparent_dummy_node);
     break;
+  case TOKEN_ZERO_WIDTH_BREAK:
+    {
+      node *tmp = new space_node(H0);
+      tmp->freeze_space();
+      tmp->is_escape_colon();
+      curenv->add_node(tmp);
+      break;
+    }
   default:
     assert(0);
   }

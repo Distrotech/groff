@@ -57,6 +57,7 @@ class token {
     TOKEN_TAB,			// tab
     TOKEN_TRANSPARENT,		// \!
     TOKEN_TRANSPARENT_DUMMY,	// \)
+    TOKEN_ZERO_WIDTH_BREAK,	// \:
     TOKEN_EOF			// end of file
   } type;
 public:
@@ -85,6 +86,7 @@ public:
   int right_brace();
   int page_ejector();
   int hyphen_indicator();
+  int zero_width_break();
   int operator==(const token &); // need this for delimiters, and for conditions
   int operator!=(const token &); // ditto
   unsigned char ch();
@@ -214,6 +216,11 @@ inline int token::backspace()
 inline int token::hyphen_indicator()
 {
   return type == TOKEN_HYPHEN_INDICATOR;
+}
+
+inline int token::zero_width_break()
+{
+  return type == TOKEN_ZERO_WIDTH_BREAK;
 }
 
 int has_arg();
