@@ -361,8 +361,10 @@ int main(int argc, char **argv)
   int tfm_type = check_type();
   if (debug_flag)
     dump_tags(f);
-  else if (!read_map(argv[optind + 1], tfm_type))
+  if (!debug_flag && !read_map(argv[optind + 1], tfm_type))
     exit(1);
+  else if (debug_flag && argc - optind > 1)
+    read_map(argv[optind + 1], tfm_type);
   current_filename = NULL;
   current_lineno = -1;		// no line numbers
   if (!debug_flag && !equal(argv[optind + 2], "-"))
@@ -394,10 +396,8 @@ int main(int argc, char **argv)
     output_pclstyle();
   }
   read_symbol_sets(f);
-  if (debug_flag) {
-    printf("Symbols:\n");
+  if (debug_flag)
     dump_symbols(tfm_type);
-  }
   else {
     output_ligatures();
     read_and_output_kernpairs(f);
@@ -410,8 +410,9 @@ static
 void usage(FILE *stream)
 {
   fprintf(stream,
-	  "usage: %s [-s] [-a] [-q] [-i n] tfm_file map_file output_font\n",
-	  program_name);
+	  "usage: %s [-s] [-a] [-q] [-i n] tfm_file map_file output_font\n"
+	  "       %s -d tfm_file [map_file]\n",
+	  program_name, program_name);
 }
 
 static
@@ -847,81 +848,90 @@ void output_charset(const int tfm_type)
       else
 	printf(unicode_to_ucode_name(charcode));
 
-	printf("\t%d,%d",
-	       scale(char_table[i].width), scale(char_table[i].ascent));
+      printf("\t%d,%d",
+	     scale(char_table[i].width), scale(char_table[i].ascent));
 
-	int depth = scale(-char_table[i].descent);
-	if (depth < 0)
-	  depth = 0;
-	int italic_correction = 0;
-	int left_italic_correction = 0;
-	int subscript_correction = 0;
+      int depth = scale(-char_table[i].descent);
+      if (depth < 0)
+	depth = 0;
+      int italic_correction = 0;
+      int left_italic_correction = 0;
+      int subscript_correction = 0;
 
-	if (italic_flag) {
-	  italic_correction = scale(char_table[i].right_extent 
-				    - char_table[i].width
-				    + italic_sep);
-	  if (italic_correction < 0)
-	    italic_correction = 0;
-	  subscript_correction = int((tag_info(x_height_tag).value
-				      * slant * .8) + .5);
-	  if (subscript_correction > italic_correction)
-	    subscript_correction = italic_correction;
-	  left_italic_correction = scale(italic_sep
-					 - char_table[i].left_extent);
-	}
-
-	if (subscript_correction != 0)
-	  printf(",%d,%d,%d,%d",
-		 depth, italic_correction, left_italic_correction,
-		 subscript_correction);
-	else if (left_italic_correction != 0)
-	  printf(",%d,%d,%d", depth, italic_correction, left_italic_correction);
-	else if (italic_correction != 0)
-	  printf(",%d,%d", depth, italic_correction);
-	else if (depth != 0)
-	  printf(",%d", depth);
-	// This is fairly arbitrary.  Fortunately it doesn't much matter.
-	unsigned type = 0;
-	if (char_table[i].ascent > int16(tag_info(lower_ascent_tag).value)*9/10)
-	  type |= 2;
-	if (char_table[i].descent < int16(tag_info(lower_descent_tag).value)*9/10)
-	  type |= 1;
-	printf("\t%d\t%d", type,
-	       char_table[i].symbol_set*256 + char_table[i].code);
-
-	if (tfm_type == UNICODE) {
-	  if (charcode >= 0xE000 && charcode <= 0xF8FF)
-	    printf("\t\t-- HP PUA U+%04X", charcode);
-	  else
-	    printf("\t\t-- U+%04X", charcode);
-	}
-	else
-	  printf("\t\t-- HP MSL %4d", charcode);
-	int symset = char_table[i].symbol_set;
-	  printf(" (%d%c %d)\n",
-		 symset / 32, (symset & 31) + 64, char_table[i].code);
-
-	if (charcode < charcode_name_table_size
-	    && charcode_name_table[charcode])
-	  for (name_list *p = charcode_name_table[charcode]->next;
-	       p; p = p->next)
-	    printf("%s\t\"\n", p->name);
+      if (italic_flag) {
+	italic_correction = scale(char_table[i].right_extent 
+				  - char_table[i].width
+				  + italic_sep);
+	if (italic_correction < 0)
+	  italic_correction = 0;
+	subscript_correction = int((tag_info(x_height_tag).value
+				    * slant * .8) + .5);
+	if (subscript_correction > italic_correction)
+	  subscript_correction = italic_correction;
+	left_italic_correction = scale(italic_sep
+				       - char_table[i].left_extent);
       }
-      // warnings about characters in mapfile not found in TFM
-      else if (charcode < charcode_name_table_size
-	  && charcode_name_table[charcode]) {
-	  char *name = charcode_name_table[charcode]->name;
-	// don't warn about Unicode or unnamed glyphs
-	//  that aren't in the the TFM file
-	if (tfm_type == UNICODE && !quiet_flag && !equal(name, UNNAMED)
-	    && !is_uname(name))
-	  fprintf(stderr,
-	    "%s: warning: symbol U+%04X (%s) not in any of the searched symbol sets\n",
-		  program_name, charcode, name);
-	else if (!quiet_flag && !equal(name, UNNAMED) && !is_uname(name))
-	  warning("MSL %1 (%2) not in any of the searched symbol sets",
-		  charcode, name);
+
+      if (subscript_correction != 0)
+	printf(",%d,%d,%d,%d",
+	       depth, italic_correction, left_italic_correction,
+	       subscript_correction);
+      else if (left_italic_correction != 0)
+	printf(",%d,%d,%d", depth, italic_correction, left_italic_correction);
+      else if (italic_correction != 0)
+	printf(",%d,%d", depth, italic_correction);
+      else if (depth != 0)
+	printf(",%d", depth);
+      // This is fairly arbitrary.  Fortunately it doesn't much matter.
+      unsigned type = 0;
+      if (char_table[i].ascent > int16(tag_info(lower_ascent_tag).value)*9/10)
+	type |= 2;
+      if (char_table[i].descent < int16(tag_info(lower_descent_tag).value)*9/10)
+	type |= 1;
+      printf("\t%d\t%d", type,
+	     char_table[i].symbol_set*256 + char_table[i].code);
+
+      if (tfm_type == UNICODE) {
+	if (charcode >= 0xE000 && charcode <= 0xF8FF)
+	  printf("\t\t-- HP PUA U+%04X", charcode);
+	else
+	  printf("\t\t-- U+%04X", charcode);
+      }
+      else
+	printf("\t\t-- MSL %4d", charcode);
+      int symset = char_table[i].symbol_set;
+      printf(" (%2d%c %3d)\n",
+	     symset / 32, (symset & 31) + 64, char_table[i].code);
+
+      if (charcode < charcode_name_table_size
+	  && charcode_name_table[charcode])
+	for (name_list *p = charcode_name_table[charcode]->next;
+	     p; p = p->next)
+	  printf("%s\t\"\n", p->name);
+    }
+    // warnings about characters in mapfile not found in TFM
+    else if (charcode < charcode_name_table_size
+	     && charcode_name_table[charcode]) {
+      char *name = charcode_name_table[charcode]->name;
+      // don't warn about Unicode or unnamed glyphs
+      //  that aren't in the the TFM file
+      if (tfm_type == UNICODE && !quiet_flag && !equal(name, UNNAMED)
+	  && !is_uname(name)) {
+	fprintf(stderr, "%s: warning: symbol U+%04X (%s",
+		program_name, charcode, name);
+	for (name_list *p = charcode_name_table[charcode]->next;
+	     p; p = p->next)
+	  fprintf(stderr, ", %s", p->name);
+	fprintf(stderr, ") not in any searched symbol set\n");
+      }
+      else if (!quiet_flag && !equal(name, UNNAMED) && !is_uname(name)) {
+	fprintf(stderr, "%s:warning: symbol MSL %d (%s",
+		program_name, charcode, name);
+	for (name_list *p = charcode_name_table[charcode]->next;
+	     p; p = p->next)
+	  fprintf(stderr, ", %s", p->name);
+	fprintf(stderr, ") not in any searched symbol set\n");
+      }
     }
   }
 }
@@ -1185,22 +1195,31 @@ void dump_symbol_sets(File &f)
 static 
 void dump_symbols(int tfm_type)
 {
+  printf("Symbols:\n"
+	 "\n"
+	 " glyph id#     symbol set  name(s)\n"
+	 "----------------------------------\n");
   for (uint32 i = 0; i < nchars; i++) {
     uint16 charcode = char_table[i].charcode;
     if (charcode < charcode_name_table_size
 	&& charcode_name_table[charcode]) {
       if (char_table[i].symbol_set != NO_SYMBOL_SET) {
-	printf(tfm_type == UNICODE ? "%4d (%04x) %d (%d%c)\t%s\n"
-				   : "%4d (%4d) %d (%d%c)\t%s\n" ,
-	       i, charcode, char_table[i].symbol_set,
+	printf(tfm_type == UNICODE ? "%4d (U+%04X)   (%2d%c %3d)  %s"
+				   : "%4d (MSL %4d) (%2d%c %3d)  %s",
+	       i, charcode,
 	       char_table[i].symbol_set / 32,
 	       (char_table[i].symbol_set % 32) + 64,
+	       char_table[i].code,
 	       charcode_name_table[charcode]->name);
+	for (name_list *p = charcode_name_table[charcode]->next;
+	      p; p = p->next)
+	  printf(", %s", p->name);
+	putchar('\n');
       }
     }
     else
       printf(tfm_type == UNICODE ? "%4d (U+%04X)\n"
-				 : "%4d (HP MSL %4d)\n",
+				 : "%4d (MSL %4d)\n",
 	     i, charcode);
   }
 }
@@ -1348,8 +1367,6 @@ int read_map(const char *file, const int tfm_type)
       fclose(fp);
       return 0;
     }
-    else if (is_uname(ptr))
-      ptr = unicode_to_ucode_name(strtol(ptr + 1, &nonum, 16));
 
     if (size_t(n) >= charcode_name_table_size) {
       size_t old_size = charcode_name_table_size;
