@@ -253,7 +253,7 @@ int style::operator!=(const style &s) const
  */
 
 struct char_block {
-  enum { SIZE = 256 };
+  enum { SIZE = 8192 };
   char          buffer[SIZE];
   int           used;
   char_block   *next;
