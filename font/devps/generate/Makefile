@@ -21,6 +21,10 @@
 #   make -f generate/Makefile
 # in the parent directory of this directory.
 
+# The following line is required for DOS/Windows systems, since
+# this Makefile needs a Unixy shell to run.
+SHELL = /bin/sh
+
 # Directory containing AFM files.  Must not be current directory.
 # Either long names (eg Times-Roman.afm) or short names (eg timesr.afm)
 # may be used. See the afmname script.
@@ -217,7 +221,7 @@ realclean: clean
 	-rm -f $(FONTS)
 
 extraclean: realclean
-	-rm -f core *~ \#*
+	-rm -f core *~ "#*"
 
 .PHONY: all clean realclean extraclean
 
