@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -454,7 +455,6 @@ text_entry::~text_entry()
   a_delete contents;
 }
 
-
 repeated_char_entry::repeated_char_entry(char *s, const entry_modifier *m)
 : text_entry(s, m)
 {
@@ -735,8 +735,6 @@ void left_block_entry::print()
   prints(".in\n");
 }
 
-
-
 right_block_entry::right_block_entry(char *s, const entry_modifier *m)
 : block_entry(s, m)
 {
@@ -803,7 +801,6 @@ void line_entry::note_double_vrule_on_left(int is_corner)
 {
   double_vrule_on_left = is_corner ? 1 : 2;
 }
-
 
 single_line_entry::single_line_entry(const entry_modifier *m)
 : line_entry(m)
@@ -996,7 +993,6 @@ void restore_inline_modifier(const entry_modifier *m)
     prints("\\v'.5v'");
 }
 
-
 struct stuff {
   stuff *next;
   int row;			// occurs before row `row'
@@ -1026,7 +1022,6 @@ struct text_stuff : public stuff {
   ~text_stuff();
   void print(table *);
 };
-
 
 text_stuff::text_stuff(const string &s, int r, const char *fn, int ln)
 : stuff(r), contents(s), filename(fn), lineno(ln)
@@ -1688,7 +1683,6 @@ void table::determine_row_type()
   }
 }
 
-
 void table::init_output()
 {
   prints(".nr " COMPATIBLE_REG " \\n(.C\n"
@@ -1854,7 +1848,6 @@ string span_alphabetic_width_reg(int start_col, int end_col)
   return string(name);
 }
 
-
 string column_separation_reg(int col)
 {
   static char name[sizeof(COLUMN_SEPARATION_PREFIX)+INT_DIGITS];
@@ -1914,11 +1907,10 @@ void compute_span_width(int start_col, int end_col)
 	  span_left_numeric_width_reg(start_col, end_col),
 	  span_right_numeric_width_reg(start_col, end_col),
 	  span_alphabetic_width_reg(start_col, end_col));
-	 
 }
 
 // Increase the widths of columns so that the width of any spanning entry
-// is no greater than the sum of the widths of the columns that it spans.
+// is not greater than the sum of the widths of the columns that it spans.
 // Ensure that the widths of columns remain equal.
 
 void table::divide_span(int start_col, int end_col)
@@ -1953,7 +1945,6 @@ void table::divide_span(int start_col, int end_col)
   }
   prints(".\\}\n");
 }
-
 
 void table::sum_columns(int start_col, int end_col)
 {
@@ -2007,7 +1998,6 @@ void table::build_span_list()
     unsorted = tem;
   }
 }
-
 
 void table::compute_separation_factor()
 {
@@ -2474,7 +2464,6 @@ void table::define_bottom_macro()
 	 "..\n"
 	 ".ec\n");
 }
-
 
 // is the vertical line before column c in row r horizontally spanned?
 

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -908,7 +908,7 @@ format *process_format(table_input &in, options *opt,
 	}
 	if (list->vertical_spacing.val > MAX_VERTICAL_SPACING
 	    || list->vertical_spacing.val < -MAX_VERTICAL_SPACING) {
-	  error("unreasonable point size");
+	  error("unreasonable vertical spacing");
 	  list->vertical_spacing.val = 0;
 	  list->vertical_spacing.inc = 0;
 	}
