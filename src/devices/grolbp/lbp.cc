@@ -66,8 +66,8 @@ private:
   void vdmstart();
   void vdmflush(); // the name vdmend was already used in lbp.h
   void setfillmode(int mode);
-  void lbp_printer::polygon( int hpos,int vpos,int np,int *p);
-  char *lbp_printer::font_name(const lbp_font *f, const int siz);
+  void polygon( int hpos,int vpos,int np,int *p);
+  char *font_name(const lbp_font *f, const int siz);
 
   int fill_pattern;
   int fill_mode;
@@ -422,8 +422,8 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
 			if (vdminited()) vdmlinewidth(line_thickness);
 			// fprintf(stderr,"\nthickness: %d == %d, size %d\n",
 			//         p[0],line_thickness,env->size );
-			break;
 		} // else
+		break;
 
    	case 'l':  // Line
 	     if (np != 2) {
@@ -490,7 +490,7 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
 		// We must compensate for that, exchanging the starting and
 		// ending points
 		vdmvarc(env->hpos + p[0],env->vpos+p[1],\
-				int(sqrt( (p[0]*p[0])+(p[1]*p[1]))),\
+				int(sqrt( double((p[0]*p[0])+(p[1]*p[1])))),\
 				p[2],p[3],\
 				(-p[0]),(-p[1]),1,2);	
 		break;
