@@ -305,7 +305,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS groff_top_builddir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD CPP EGREP LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap pnmcut pnmcrop pnmtopng gs psselect pnmtops make_html make_install_html pnmtops_nosetpage LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS groff_top_builddir CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD CPP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap pnmcut pnmcrop pnmtopng gs psselect pnmtops make_html make_install_html pnmtops_nosetpage LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -4498,13 +4498,14 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-echo "$as_me:$LINENO: checking for sys_nerr in <errno.h> or <stdio.h>" >&5
-echo $ECHO_N "checking for sys_nerr in <errno.h> or <stdio.h>... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking for sys_nerr in <errno.h>, <stdio.h>, or <stdlib.h>" >&5
+echo $ECHO_N "checking for sys_nerr in <errno.h>, <stdio.h>, or <stdlib.h>... $ECHO_C" >&6
 cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
 #include "confdefs.h"
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 int
 main ()
 {
@@ -4991,6 +4992,54 @@ echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 rm -f conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: checking for main in -lc" >&5
+echo $ECHO_N "checking for main in -lc... $ECHO_C" >&6
+if test "${ac_cv_lib_c_main+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lc  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+#include "confdefs.h"
+
+
+int
+main ()
+{
+main ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_c_main=yes
+else
+  echo "$as_me: failed program was:" >&5
+cat conftest.$ac_ext >&5
+ac_cv_lib_c_main=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_c_main" >&5
+echo "${ECHO_T}$ac_cv_lib_c_main" >&6
+if test $ac_cv_lib_c_main = yes; then
+  LIBC=-lc
+fi
+
+
 echo "$as_me:$LINENO: checking for sin in -lm" >&5
 echo $ECHO_N "checking for sin in -lm... $ECHO_C" >&6
 if test "${ac_cv_lib_m_sin+set}" = set; then
@@ -5402,7 +5451,7 @@ fi
 rm -f conftest.mmap
 
 saved_libs="$LIBS"
-LIBS="$LIBS -lc $LIBM"
+LIBS="$LIBS $LIBC $LIBM"
 
 
 
@@ -5490,7 +5539,8 @@ LIBS="$saved_libs"
 
 
 
-for ac_func in gettimeofday isatty rename setlocale strsep
+
+for ac_func in gettimeofday isatty kill rename setlocale strsep
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $ac_func" >&5
@@ -5672,8 +5722,8 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-echo "$as_me:$LINENO: checking whether ANSI array delete syntax supported" >&5
-echo $ECHO_N "checking whether ANSI array delete syntax supported... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking whether ANSI array delete syntax is supported" >&5
+echo $ECHO_N "checking whether ANSI array delete syntax is supported... $ECHO_C" >&6
 cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
 #include "confdefs.h"
@@ -6869,6 +6919,7 @@ s,@LN_S@,$LN_S,;t t
 s,@SH_SCRIPT_SED_CMD@,$SH_SCRIPT_SED_CMD,;t t
 s,@CPP@,$CPP,;t t
 s,@EGREP@,$EGREP,;t t
+s,@LIBC@,$LIBC,;t t
 s,@LIBM@,$LIBM,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@BROKEN_SPOOLER_FLAGS@,$BROKEN_SPOOLER_FLAGS,;t t

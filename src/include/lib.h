@@ -31,14 +31,15 @@ extern "C" {
   const char *if_to_a(int, int);
 }
 
-/* stdio.h on IRIX, OSF/1, emx, and UWIN include getopt.h */
+/* stdio.h on IRIX, OSF/1, emx, UWIN, and MinGW include getopt.h */
 /* unistd.h on CYGWIN includes getopt.h */
 
 #if !(defined(__sgi) \
       || (defined(__osf__) && defined(__alpha)) \
       || defined(_UWIN) \
       || defined(__EMX__) \
-      || defined(__CYGWIN__))
+      || defined(__CYGWIN__) \
+      || defined(__MINGW32__))
 #include <groff-getopt.h>
 #else
 #include <getopt.h>

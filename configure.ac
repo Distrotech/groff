@@ -51,15 +51,16 @@ GROFF_TIME_T
 AC_TYPE_SIGNAL
 GROFF_STRUCT_EXCEPTION
 dnl checks for libraries
+GROFF_LIBC
 GROFF_LIBM
 dnl checks for functions
 AC_FUNC_MMAP
 saved_libs="$LIBS"
-LIBS="$LIBS -lc $LIBM"
+LIBS="$LIBS $LIBC $LIBM"
 AC_REPLACE_FUNCS(fmod getcwd putenv snprintf strcasecmp \
                  strerror strncasecmp strtol)
 LIBS="$saved_libs"
-AC_CHECK_FUNCS(gettimeofday isatty rename setlocale strsep)
+AC_CHECK_FUNCS(gettimeofday isatty kill rename setlocale strsep)
 GROFF_MKSTEMP
 AC_DECL_SYS_SIGLIST
 dnl checks for compiler characteristics

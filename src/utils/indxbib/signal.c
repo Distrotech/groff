@@ -1,4 +1,4 @@
-/* Copyright (C) 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1992, 2001, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -41,7 +41,13 @@ static RETSIGTYPE handle_fatal_signal(signum)
 {
   signal(signum, SIG_DFL);
   cleanup();
+#ifdef HAVE_KILL
   kill(getpid(), signum);
+#else
+  /* MS-DOS and Win32 don't have kill(); the best compromise is
+     probably to use exit() instead. */
+  exit(signum);
+#endif
 }
 
 void catch_fatal_signals()

@@ -1,5 +1,5 @@
 dnl Autoconf macros for groff.
-dnl Copyright (C) 1989-1995, 2001, 2002 Free Software Foundation, Inc.
+dnl Copyright (C) 1989-1995, 2001, 2002, 2003 Free Software Foundation, Inc.
 dnl 
 dnl This file is part of groff.
 dnl 
@@ -201,12 +201,13 @@ dnl
 dnl
 AC_DEFUN(GROFF_SYS_NERR,
 [AC_LANG_PUSH(C++)
-AC_MSG_CHECKING([for sys_nerr in <errno.h> or <stdio.h>])
+AC_MSG_CHECKING([for sys_nerr in <errno.h>, <stdio.h>, or <stdlib.h>])
 AC_TRY_COMPILE([#include <errno.h>
-#include <stdio.h>],
+#include <stdio.h>
+#include <stdlib.h>],
 [int k; k = sys_nerr;],
 AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_NERR, 1,
-			     [Define if you have sysnerr in <errno.h> or
+			     [Define if you have sys_nerr in <errno.h> or
 			      <stdio.h>.]),
 AC_MSG_RESULT(no))
 AC_LANG_POP(C++)])dnl
@@ -280,7 +281,7 @@ dnl
 dnl
 AC_DEFUN(GROFF_ARRAY_DELETE,
 [AC_LANG_PUSH(C++)
-AC_MSG_CHECKING([whether ANSI array delete syntax supported])
+AC_MSG_CHECKING([whether ANSI array delete syntax is supported])
 AC_TRY_COMPILE(, [char *p = new char[5]; delete [] p;],
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no);AC_DEFINE(ARRAY_DELETE_NEEDS_SIZE, 1,
@@ -512,11 +513,19 @@ AC_DEFUN(GROFF_INSTALL_INFO,
 dnl
 dnl
 dnl At least one UNIX system, Apple Macintosh Rhapsody 5.5,
-dnl does not have -lm.
+dnl does not have -lm ...
 dnl
 AC_DEFUN(GROFF_LIBM,
 [AC_CHECK_LIB(m,sin,LIBM=-lm)
 AC_SUBST(LIBM)])dnl
+dnl
+dnl
+dnl ... while the MinGW implementation of GCC for Microsoft Win32
+dnl does not seem to have -lc.
+dnl
+AC_DEFUN(GROFF_LIBC,
+[AC_CHECK_LIB(c,main,LIBC=-lc)
+AC_SUBST(LIBC)])dnl
 dnl
 dnl
 dnl We need top_srcdir to be absolute.
@@ -533,7 +542,7 @@ AC_DEFUN(GROFF_BUILDDIR,
 AC_SUBST(groff_top_builddir)])dnl
 dnl
 dnl
-dnl Check for EBCDIC - stolen from the OS390 Unix LYNX port
+dnl Check for EBCDIC -- stolen from the OS390 Unix LYNX port
 dnl
 AC_DEFUN(GROFF_EBCDIC,
 [AC_MSG_CHECKING([whether character set is EBCDIC])

@@ -36,11 +36,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 # endif
-# ifdef _MSC_VER
+# if defined(_MSC_VER) || defined(__MINGW32__)
 #  define POPEN_RT     "rt"
 #  define POPEN_WT     "wt"
 #  define popen(c,m)   _popen(c,m)
 #  define pclose(p)    _pclose(p)
+#  define pipe(pfd)    _pipe((pfd),0,_O_BINARY|_O_NOINHERIT)
 #  define getpid()     (1)
 #  define mkdir(p,m)   _mkdir(p)
 #  define setmode(f,m) _setmode(f,m)
@@ -84,6 +85,15 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /* The system null device.  */
 # define NULL_DEV      "NUL"
+
+/* The default place to create temporary files.  */
+# ifndef P_tmpdir
+#  ifdef _P_tmpdir
+#   define P_tmpdir _P_tmpdir
+#  else
+#   define P_tmpdir "c:/temp"
+#  endif
+# endif
 
 /* Prototypes.  */
 # ifdef __cplusplus

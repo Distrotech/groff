@@ -321,7 +321,7 @@ run_pipeline(int ncommands, char ***commands, int no_pipe)
     int exit_status;
     RETSIGTYPE (*prev_handler)(int);
 
-    if (i) {
+    if (i && !no_pipe) {
       /* redirect stdin from temp file */
       f = open(tmpfiles[infile], O_RDONLY|O_BINARY, 0666);
       if (f < 0)
