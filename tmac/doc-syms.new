@@ -49,26 +49,21 @@
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
 .  ds doc-str-Ux \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.  as doc-out-string \*[doc-Tn-font-size]UNIX\*[doc-str-Ux]
 .
 .  if !\n[doc-arg-limit] \
 .    if \n[.$] \
 .      doc-parse-args \$@
 .
-.  ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
-.    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
-.      \*[doc-arg\n[doc-arg-ptr]]
-.    el \
-.      doc-print-recursive
-.  \}
-.  el \
-.    doc-print-and-reset
+.  ds doc-arg\n[doc-arg-ptr] \*[doc-Tn-font-size]UNIX\*[doc-str-Ux]
+.  ds doc-type\n[doc-arg-ptr] string
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  doc-print-recursive
 ..
 .
 .
 .\" NS Bx user macro
-.\" NS   print BSD UNIX (fix smaller nroff version)
+.\" NS   print BSD (fix smaller nroff version)
 .\" NS
 .\" NS modifies:
 .\" NS   doc-curr-font, doc-curr-size, doc-arg-ptr, doc-out-string
@@ -84,54 +79,54 @@
 .  ds doc-str-Bx \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .
 .  if !\n[doc-arg-limit] \{\
-.    ie !\n[.$] \{\
-.      nop \*[doc-Tn-font-size]BSD\*[doc-str-Bx]
-.      nop \*[doc-Tn-font-size]UNIX\*[doc-str-Bx]
-.    \}
-.    el \
+.    ie \n[.$] \
 .      doc-parse-args \$@
+.    el \
+.      nop \*[doc-Tn-font-size]BSD\*[doc-str-Bx]
 .  \}
 .
 .  if "\$1"-alpha" \{\
 .    nop \&currently in alpha test.
 .    doc-clean-vectors
 .  \}
-.
 .  if "\$1"-beta" \{\
 .    nop \&currently in beta test.
 .    doc-clean-vectors
 .  \}
-.
 .  if "\$1"-devel" \{\
 .    nop \&currently under development.
 .    doc-clean-vectors
 .  \}
 .
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
 .      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]\*[doc-Tn-font-size]
 .      as doc-out-string BSD\*[doc-str-Bx]
+.
 .      ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .        nr doc-reg-Bx (\n[doc-arg-ptr] + 1)
 .        ie "\*[doc-type\n[doc-reg-Bx]]"string" \{\
-.          if "\*[doc-arg\n[doc-reg-Bx]]"Reno" \{\
-.            nr doc-arg-ptr +1
+.          nr doc-arg-ptr +1
+.          ie        "\*[doc-arg\n[doc-reg-Bx]]"Reno" \
 .            as doc-out-string \-Reno
-.          \}
-.          if "\*[doc-arg\n[doc-reg-Bx]]"reno" \{\
-.            nr doc-arg-ptr +1
+.          el \{ .ie "\*[doc-arg\n[doc-reg-Bx]]"reno" \
 .            as doc-out-string \-Reno
-.          \}
-.
-.          if "\*[doc-arg\n[doc-reg-Bx]]"Tahoe" \{\
-.            nr doc-arg-ptr +1
+.          el \{ .ie "\*[doc-arg\n[doc-reg-Bx]]"Tahoe" \
 .            as doc-out-string \-Tahoe
-.          \}
-.          if "\*[doc-arg\n[doc-reg-Bx]]"tahoe" \{\
-.            nr doc-arg-ptr +1
+.          el \{ .ie "\*[doc-arg\n[doc-reg-Bx]]"tahoe" \
 .            as doc-out-string \-Tahoe
-.          \}
+.          el \{ .ie "\*[doc-arg\n[doc-reg-Bx]]"Lite" \
+.            as doc-out-string \-Lite
+.          el \{ .ie "\*[doc-arg\n[doc-reg-Bx]]"lite" \
+.            as doc-out-string \-Lite
+.          el \{ .ie "\*[doc-arg\n[doc-reg-Bx]]"Lite2" \
+.            as doc-out-string \-Lite2
+.          el \{ .ie "\*[doc-arg\n[doc-reg-Bx]]"lite2" \
+.            as doc-out-string \-Lite2
+.          el \
+.            nr doc-arg-ptr -1
+.          \}\}\}\}\}\}\}
 .
 .          ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .            nr doc-arg-ptr +1
@@ -150,7 +145,6 @@
 .    \}
 .    el \{\
 .      as doc-out-string \*[doc-Tn-font-size]BSD\*[doc-str-Bx]
-.      as doc-out-string " U\*[doc-Tn-font-size]NIX\*[doc-str-Bx]
 .      doc-print-recursive
 .    \}
 .  \}
@@ -242,35 +236,36 @@
 .
 .  ie !\n[.$] \
 .    ds doc-str-Fx1
-.  el .ie "\$1"1.0"     \c
-.  el .ie "\$1"1.1"     \c
-.  el .ie "\$1"1.1.5"   \c
-.  el .ie "\$1"1.1.5.1" \c
-.  el .ie "\$1"2.0"     \c
-.  el .ie "\$1"2.0.5"   \c
-.  el .ie "\$1"2.1"     \c
-.  el .ie "\$1"2.1.5"   \c
-.  el .ie "\$1"2.1.6"   \c
-.  el .ie "\$1"2.1.7"   \c
-.  el .ie "\$1"2.2"     \c
-.  el .ie "\$1"2.2.1"   \c
-.  el .ie "\$1"2.2.2"   \c
-.  el .ie "\$1"2.2.5"   \c
-.  el .ie "\$1"2.2.6"   \c
-.  el .ie "\$1"2.2.7"   \c
-.  el .ie "\$1"2.2.8"   \c
-.  el .ie "\$1"3.0"     \c
-.  el .ie "\$1"3.1"     \c
-.  el .ie "\$1"3.2"     \c
-.  el .ie "\$1"3.3"     \c
-.  el .ie "\$1"3.4"     \c
-.  el .ie "\$1"3.5"     \c
-.  el .ie "\$1"4.0"     \c
-.  el .ie "\$1"4.1"     \c
-.  el .ie "\$1"4.2"     \c
-.  el .ie "\$1"5.0"     \c
+.  el \{ .ie "\$1"1.0"     \c
+.  el \{ .ie "\$1"1.1"     \c
+.  el \{ .ie "\$1"1.1.5"   \c
+.  el \{ .ie "\$1"1.1.5.1" \c
+.  el \{ .ie "\$1"2.0"     \c
+.  el \{ .ie "\$1"2.0.5"   \c
+.  el \{ .ie "\$1"2.1"     \c
+.  el \{ .ie "\$1"2.1.5"   \c
+.  el \{ .ie "\$1"2.1.6"   \c
+.  el \{ .ie "\$1"2.1.7"   \c
+.  el \{ .ie "\$1"2.2"     \c
+.  el \{ .ie "\$1"2.2.1"   \c
+.  el \{ .ie "\$1"2.2.2"   \c
+.  el \{ .ie "\$1"2.2.5"   \c
+.  el \{ .ie "\$1"2.2.6"   \c
+.  el \{ .ie "\$1"2.2.7"   \c
+.  el \{ .ie "\$1"2.2.8"   \c
+.  el \{ .ie "\$1"3.0"     \c
+.  el \{ .ie "\$1"3.1"     \c
+.  el \{ .ie "\$1"3.2"     \c
+.  el \{ .ie "\$1"3.3"     \c
+.  el \{ .ie "\$1"3.4"     \c
+.  el \{ .ie "\$1"3.5"     \c
+.  el \{ .ie "\$1"4.0"     \c
+.  el \{ .ie "\$1"4.1"     \c
+.  el \{ .ie "\$1"4.2"     \c
+.  el \{ .ie "\$1"5.0"     \c
 .  el \
 .    tm Unknown FreeBSD version ``\$1'' (#\n[.c])
+.  \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
 .
 .  nop \*[doc-Tn-font-size]FreeBSD\*[doc-str-Fx1]\*[doc-str-Fx]\$1\$2
 ..
@@ -296,11 +291,12 @@
 .
 .  ie !\n[.$] \
 .    ds doc-str-Nx1
-.  el .ie "\$1"0.8a" .ds doc-str-Nx2 0.8A
-.  el .ie "\$1"0.9a" .ds doc-str-Nx2 0.9A
-.  el .ie "\$1"1.0a" .ds doc-str-Nx2 1.0A
-.  el .ie "\$1"1.2a" .ds doc-str-Nx2 1.2A
-.  el .if "\$1"1.2b" .ds doc-str-Nx2 1.2B
+.  el \{ .ie "\$1"0.8a" .ds doc-str-Nx2 0.8A
+.  el \{ .ie "\$1"0.9a" .ds doc-str-Nx2 0.9A
+.  el \{ .ie "\$1"1.0a" .ds doc-str-Nx2 1.0A
+.  el \{ .ie "\$1"1.2a" .ds doc-str-Nx2 1.2A
+.  el    .if "\$1"1.2b" .ds doc-str-Nx2 1.2B
+.  \}\}\}\}
 .
 .  nop \*[doc-Tn-font-size]NetBSD\*[doc-str-Nx1]\*[doc-str-Nx2]\*[doc-str-Nx]\$2
 ..
@@ -354,11 +350,10 @@
 .\" NS   standards (posix, ansi - formal standard names)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-argXXX, doc-num-args, doc-curr-font,
-.\" NS   doc-curr-size, doc-out-string, doc-arg-ptr
+.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS 
 .\" NS local variable:
-.\" NS   doc-str-St, doc-reg-St
+.\" NS   doc-str-St, doc-str-St1, doc-reg-St
 .\" NS
 .\" NS width register `St' defined in doc-common
 .
@@ -366,126 +361,123 @@
 .  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \{\
 .      ds doc-macro-name St
-.
-.      nr doc-reg-St 1
-.      while (\n[doc-reg-St] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-St] "\$[\n[doc-reg-St]]
-.        nr doc-reg-St +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      doc-parse-args \$@
 .    \}
-.    el \{\
-.      tm1 "Usage: .St [-p1003.1 | -p1003.1-88 | -p1003.1-90 | -p1003.1b |
-.      tm1 "            -p1003.1b-93 | -p1003.1g | -p1003.2 | -p1003.2-92 |
-.      tm1 "            -iso9945-1 | -ansiC | -ansiC-89 | -isoC | -iso8802-3 |
-.      tm1 "            -iso9899 | -ieee754 | -xpg3 | -xpg4 | -xpg4.2 |
-.      tm1 "            -susv2] \*[doc-punct-chars] ... (#\n[.c])
-.    \}
+.    el \
+.      doc-St-usage
 .  \}
 .
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    ds doc-str-St \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.    nr doc-arg-ptr +1
 .
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]1003.1
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.    ie        "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]1003.1
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-88" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]1003.1-1988
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-88" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]1003.1-1988
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-90" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]1003.1-1990
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-90" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]1003.1-1990
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1b" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]1003.1b
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1b" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]1003.1b
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1b-93" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]1003.1b-1993
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1b-93" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]1003.1b-1993
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1g" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]1003.1g
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1g" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]1003.1g
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]1003.2
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]1003.2
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2-92" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]1003.2-1992
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2-92" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]1003.2-1992
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px].2\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-iso9945-1" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]ISO/IEC
-.      as doc-out-string " \*[doc-str-St]9945-1:1996
-.      as doc-out-string " (``\*[doc-Tn-font-size]\*[Px].1\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-iso9945-1" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]ISO/IEC
+.      as doc-str-St1 " \*[doc-str-St]9945-1:1996
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]\*[Px].1\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-ansiC" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]ISO
-.      as doc-out-string " \*[doc-str-St]9899:1990
-.      as doc-out-string " (``\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ansiC" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]ISO
+.      as doc-str-St1 " \*[doc-str-St]9899:1990
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-ansiC-89" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]ANSI
-.      as doc-out-string " \*[doc-str-St]X\~3.159-1989
-.      as doc-out-string " (``\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ansiC-89" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]ANSI
+.      as doc-str-St1 " \*[doc-str-St]X\~3.159-1989
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-iso9899" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]ISO
-.      as doc-out-string " \*[doc-str-St]9899-1990
-.      as doc-out-string " (``\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-iso9899" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]ISO
+.      as doc-str-St1 " \*[doc-str-St]9899-1990
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-ieee754" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]IEEE Std
-.      as doc-out-string " \*[doc-str-St]754-1985
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-ieee754" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]IEEE Std
+.      as doc-str-St1 " \*[doc-str-St]754-1985
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-iso8802-3" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]
-.      as doc-out-string ISO\~\*[doc-str-St]8802-3:1989
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-iso8802-3" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]
+.      as doc-str-St1 ISO\~\*[doc-str-St]8802-3:1989
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-xpg3" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]NX/Open Portability Guide
-.      as doc-out-string " Issue\~3\*[doc-str-St]
-.      as doc-out-string " (``\*[doc-Tn-font-size]NXPG3\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg3" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
+.      as doc-str-St1 " Issue\~3\*[doc-str-St]
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]NXPG3\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-xpg4" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]NX/Open Portability Guide
-.      as doc-out-string " Issue\~4\*[doc-str-St]
-.      as doc-out-string " (``\*[doc-Tn-font-size]NXPG4\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg4" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
+.      as doc-str-St1 " Issue\~4\*[doc-str-St]
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]NXPG4\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-xpg4.2" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]NX/Open Portability Guide
-.      as doc-out-string " Issue\~4.2\*[doc-str-St]
-.      as doc-out-string " (``\*[doc-Tn-font-size]NXPG4.2\*[doc-str-St]'')
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xpg4.2" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]NX/Open Portability Guide
+.      as doc-str-St1 " Issue\~4.2\*[doc-str-St]
+.      as doc-str-St1 " (``\*[doc-Tn-font-size]NXPG4.2\*[doc-str-St]'')
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"-susv2" \{\
-.      ds doc-out-string \*[doc-Tn-font-size]Version\~2 of the
-.      as doc-out-string " Single UNIX Specification\*[doc-str-St]
+.    el .ie "\*[doc-arg\n[doc-arg-ptr]]"-susv2" \{\
+.      ds doc-str-St1 \*[doc-Tn-font-size]Version\~2 of the
+.      as doc-str-St1 " Single UNIX Specification\*[doc-str-St]
 .    \}
+.    el \{\
+.      ds doc-str-St1
+.      doc-St-usage
+.    \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
 .
-.    ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.      nr doc-arg-ptr +1
-.      doc-print-recursive
-.    \}
-.    el \
-.      doc-print-and-reset
+.    ds doc-arg\n[doc-arg-ptr] "\*[doc-str-St1]
+.
+.    doc-print-recursive
 .  \}
+..
+.
+.
+.de doc-St-usage
+.  tm1 "Usage: .St [-p1003.1 | -p1003.1-88 | -p1003.1-90 | -p1003.1b |
+.  tm1 "            -p1003.1b-93 | -p1003.1g | -p1003.2 | -p1003.2-92 |
+.  tm1 "            -iso9945-1 | -ansiC | -ansiC-89 | -isoC | -iso8802-3 |
+.  tm1 "            -iso9899 | -ieee754 | -xpg3 | -xpg4 | -xpg4.2 |
+.  tm1 "            -susv2] \*[doc-punct-chars] ... (#\n[.c])
 ..
 .
 .\" EOF
