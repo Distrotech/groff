@@ -245,20 +245,20 @@ int tty_printer::tty_color(unsigned int r,
 tty_printer::tty_printer(const char *device) : cached_v(0)
 {
   is_utf8 = !strcmp(device, "utf8");
-  char *dummy;
+  char dummy;
   // black, white
-  (void)tty_color(0, 0, 0, dummy, 0);
+  (void)tty_color(0, 0, 0, &dummy, 0);
   (void)tty_color(color::MAX_COLOR_VAL,
 		  color::MAX_COLOR_VAL,
-		  color::MAX_COLOR_VAL, dummy, 7);
+		  color::MAX_COLOR_VAL, &dummy, 7);
   // red, green, blue
-  (void)tty_color(color::MAX_COLOR_VAL, 0, 0, dummy, 1);
-  (void)tty_color(0, color::MAX_COLOR_VAL, 0, dummy, 2);
-  (void)tty_color(0, 0, color::MAX_COLOR_VAL, dummy, 4);
+  (void)tty_color(color::MAX_COLOR_VAL, 0, 0, &dummy, 1);
+  (void)tty_color(0, color::MAX_COLOR_VAL, 0, &dummy, 2);
+  (void)tty_color(0, 0, color::MAX_COLOR_VAL, &dummy, 4);
   // yellow, magenta, cyan
-  (void)tty_color(color::MAX_COLOR_VAL, color::MAX_COLOR_VAL, 0, dummy, 3);
-  (void)tty_color(color::MAX_COLOR_VAL, 0, color::MAX_COLOR_VAL, dummy, 5);
-  (void)tty_color(0, color::MAX_COLOR_VAL, color::MAX_COLOR_VAL, dummy, 6);
+  (void)tty_color(color::MAX_COLOR_VAL, color::MAX_COLOR_VAL, 0, &dummy, 3);
+  (void)tty_color(color::MAX_COLOR_VAL, 0, color::MAX_COLOR_VAL, &dummy, 5);
+  (void)tty_color(0, color::MAX_COLOR_VAL, color::MAX_COLOR_VAL, &dummy, 6);
   nlines = 66;
   lines = new glyph *[nlines];
   for (int i = 0; i < nlines; i++)
