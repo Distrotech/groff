@@ -59,10 +59,15 @@
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] \*[doc-Tn-font-size]UNIX\*[doc-str-Ux]
 .  nr doc-type\n[doc-arg-ptr] 2
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-reg-Ux (\n[doc-arg-ptr] + 1)
-.    if !(\n[doc-type\n[doc-reg-Ux]] == 3) \
-.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  \" recompute space vector for remaining arguments
+.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.  nr doc-arg-limit \n[doc-arg-ptr]
+.  nr doc-reg-Ux \n[doc-arg-ptr]
+.  if \n[doc-num-args] \{\
+.    doc-parse-arg-vector
+.    nr doc-arg-ptr \n[doc-reg-Ux]
 .  \}
 .
 .  doc-print-recursive
@@ -138,10 +143,15 @@
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Bx1]
 .  nr doc-type\n[doc-arg-ptr] 2
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-reg-Bx (\n[doc-arg-ptr] + 1)
-.    if !(\n[doc-type\n[doc-reg-Bx]] == 3) \
-.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  \" recompute space vector for remaining arguments
+.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.  nr doc-arg-limit \n[doc-arg-ptr]
+.  nr doc-reg-Bx \n[doc-arg-ptr]
+.  if \n[doc-num-args] \{\
+.    doc-parse-arg-vector
+.    nr doc-arg-ptr \n[doc-reg-Bx]
 .  \}
 .
 .  doc-print-recursive
@@ -229,10 +239,15 @@
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-At1]
 .  nr doc-type\n[doc-arg-ptr] 2
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-reg-At (\n[doc-arg-ptr] + 1)
-.    if !(\n[doc-type\n[doc-reg-At]] == 3) \
-.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  \" recompute space vector for remaining arguments
+.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.  nr doc-arg-limit \n[doc-arg-ptr]
+.  nr doc-reg-At \n[doc-arg-ptr]
+.  if \n[doc-num-args] \{\
+.    doc-parse-arg-vector
+.    nr doc-arg-ptr \n[doc-reg-At]
 .  \}
 .
 .  doc-print-recursive
@@ -287,10 +302,15 @@
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Fx1]
 .  nr doc-type\n[doc-arg-ptr] 2
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-reg-Fx (\n[doc-arg-ptr] + 1)
-.    if !(\n[doc-type\n[doc-reg-Fx]] == 3) \
-.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  \" recompute space vector for remaining arguments
+.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.  nr doc-arg-limit \n[doc-arg-ptr]
+.  nr doc-reg-Fx \n[doc-arg-ptr]
+.  if \n[doc-num-args] \{\
+.    doc-parse-arg-vector
+.    nr doc-arg-ptr \n[doc-reg-Fx]
 .  \}
 .
 .  doc-print-recursive
@@ -346,10 +366,15 @@
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Nx1]
 .  nr doc-type\n[doc-arg-ptr] 2
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-reg-Nx (\n[doc-arg-ptr] + 1)
-.    if !(\n[doc-type\n[doc-reg-Nx]] == 3) \
-.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  \" recompute space vector for remaining arguments
+.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.  nr doc-arg-limit \n[doc-arg-ptr]
+.  nr doc-reg-Nx \n[doc-arg-ptr]
+.  if \n[doc-num-args] \{\
+.    doc-parse-arg-vector
+.    nr doc-arg-ptr \n[doc-reg-Nx]
 .  \}
 .
 .  doc-print-recursive
@@ -392,10 +417,15 @@
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Ox1]
 .  nr doc-type\n[doc-arg-ptr] 2
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-reg-Ox (\n[doc-arg-ptr] + 1)
-.    if !(\n[doc-type\n[doc-reg-Ox]] == 3) \
-.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  \" recompute space vector for remaining arguments
+.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.  nr doc-arg-limit \n[doc-arg-ptr]
+.  nr doc-reg-Ox \n[doc-arg-ptr]
+.  if \n[doc-num-args] \{\
+.    doc-parse-arg-vector
+.    nr doc-arg-ptr \n[doc-reg-Ox]
 .  \}
 .
 .  doc-print-recursive
@@ -438,10 +468,15 @@
 .  \" replace current argument with result
 .  ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Bsx1]
 .  nr doc-type\n[doc-arg-ptr] 2
-.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
-.    nr doc-reg-Bsx (\n[doc-arg-ptr] + 1)
-.    if !(\n[doc-type\n[doc-reg-Bsx]] == 3) \
-.      ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  \" recompute space vector for remaining arguments
+.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.  nr doc-arg-limit \n[doc-arg-ptr]
+.  nr doc-reg-Bsx \n[doc-arg-ptr]
+.  if \n[doc-num-args] \{\
+.    doc-parse-arg-vector
+.    nr doc-arg-ptr \n[doc-reg-Bsx]
 .  \}
 .
 .  doc-print-recursive
