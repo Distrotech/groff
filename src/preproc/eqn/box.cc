@@ -259,7 +259,7 @@ void set_script_size()
   if (script_size_reduction >= 0)
     printf(".ps \\n[.s]-%d>?%d\n", script_size_reduction, minimum_size);
   else
-    printf(".ps (u;\\n[.s]*7+5/10>?%d)*1z\n", minimum_size);
+    printf(".ps (u;\\n[.ps]*7+5/10>?%d)\n", minimum_size);
 }
 
 int box::next_uid = 0;
@@ -281,7 +281,7 @@ void box::top_level()
   printf(".ft\n");
   printf(".nr " SAVED_PREV_FONT_REG " \\n[.f]\n");
   printf(".ft %s\n", get_gfont());
-  printf(".nr " SAVED_SIZE_REG " \\n[.s]z\n");
+  printf(".nr " SAVED_SIZE_REG " \\n[.ps]\n");
   if (gsize > 0) {
     char buf[INT_DIGITS + 1];
     sprintf(buf, "%d", gsize);
@@ -311,9 +311,9 @@ void box::top_level()
 	 "\\R'" SAVED_INLINE_FONT_REG " \\\\n[.f]'"
 	 "\\fP"
 	 "\\R'" SAVED_INLINE_PREV_FONT_REG " \\\\n[.f]'"
-	 "\\R'" SAVED_INLINE_SIZE_REG " \\\\n[.s]z'"
+	 "\\R'" SAVED_INLINE_SIZE_REG " \\\\n[.ps]'"
 	 "\\s0"
-	 "\\R'" SAVED_INLINE_PREV_SIZE_REG " \\\\n[.s]z'"
+	 "\\R'" SAVED_INLINE_PREV_SIZE_REG " \\\\n[.ps]'"
 	 "\n"
 	 ".ds " RESTORE_FONT_STRING " "
 	 "\\f[\\\\n[" SAVED_INLINE_PREV_FONT_REG "]]"
