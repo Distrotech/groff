@@ -51,9 +51,10 @@ class token {
     TOKEN_REQUEST,
     TOKEN_RIGHT_BRACE,
     TOKEN_SPACE,		// ` ' -- ordinary space
-    TOKEN_SPECIAL,		// a special character -- \' \` \- \(xx
+    TOKEN_SPECIAL,		// a special character -- \' \` \- \(xx \[xxx]
     TOKEN_SPREAD,		// \p -- break and spread output line 
     TOKEN_STRETCHABLE_SPACE,	// \~
+    TOKEN_UNSTRETCHABLE_SPACE,	// `\ '
     TOKEN_TAB,			// tab
     TOKEN_TRANSPARENT,		// \!
     TOKEN_TRANSPARENT_DUMMY,	// \)
@@ -72,6 +73,7 @@ public:
   int nspaces();		// 1 if space, 2 if double space, 0 otherwise
   int space();			// is the current token a space?
   int stretchable_space();	// is the current token a stretchable space?
+  int unstretchable_space();	// is the current token an unstretchable space?
   int white_space();		// is the current token space or tab?
   int special();		// is the current token a special character?
   int newline();		// is the current token a newline?
@@ -138,6 +140,11 @@ inline int token::space()
 inline int token::stretchable_space()
 {
   return type == TOKEN_STRETCHABLE_SPACE;
+}
+
+inline int token::unstretchable_space()
+{
+  return type == TOKEN_UNSTRETCHABLE_SPACE;
 }
 
 inline int token::special()

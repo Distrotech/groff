@@ -1,3 +1,18 @@
+2002-06-20  Werner LEMBERG  <wl@gnu.org>
+
+	Make \X accept both `\ ' and `\~', converting them to single space
+	characters.
+
+	* src/roff/troff/token.h (token): Add TOKEN_UNSTRETCHABLE_SPACE.
+	(token::unstretchable_space): New inline function.
+	* src/roff/troff/input.cc (token::next, token::delimiter,
+	token::description, token::add_to_node_list, token::process): Handle
+	TOKEN_UNSTRETCHABLE_NODE.
+	(encode_char): Handle tok.stretchable_space and
+	tok.unstretchable_space.
+
+	* NEWS, doc/groff.texinfo: Document it..
+
 2002-06-19  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grops/ps.cc (ps_printer::special): Fix error message.

@@ -1569,8 +1569,7 @@ void token::next()
 	return;
       case ESCAPE_SPACE:
       ESCAPE_SPACE:
-	type = TOKEN_NODE;
-	nd = new space_char_hmotion_node(curenv->get_space_width());
+	type = TOKEN_UNSTRETCHABLE_SPACE;
 	return;
       case ESCAPE_TILDE:
       ESCAPE_TILDE:
@@ -2097,6 +2096,7 @@ int token::delimiter(int err)
   case TOKEN_NODE:
   case TOKEN_SPACE:
   case TOKEN_STRETCHABLE_SPACE:
+  case TOKEN_UNSTRETCHABLE_SPACE:
   case TOKEN_TAB:
   case TOKEN_NEWLINE:
     if (err)
@@ -2151,6 +2151,8 @@ const char *token::description()
     return "`\\p'";
   case TOKEN_STRETCHABLE_SPACE:
     return "`\\~'";
+  case TOKEN_UNSTRETCHABLE_SPACE:
+    return "`\\ '";
   case TOKEN_TAB:
     return "a tab character";
   case TOKEN_TRANSPARENT:
@@ -4610,6 +4612,9 @@ static void encode_char(macro *mac, char c)
 	mac->append(')');
       }
     }
+    else if (tok.stretchable_space()
+	     || tok.unstretchable_space())
+      mac->append(' ');
     else if (!(tok.hyphen_indicator()
 	       || tok.dummy()
 	       || tok.transparent_dummy()
@@ -5949,6 +5954,9 @@ int token::add_to_node_list(node **pp)
   case TOKEN_STRETCHABLE_SPACE:
     n = new unbreakable_space_node(curenv->get_space_width());
     break;
+  case TOKEN_UNSTRETCHABLE_SPACE:
+    n = new space_char_hmotion_node(curenv->get_space_width());
+    break;
   case TOKEN_TRANSPARENT_DUMMY:
     n = new transparent_dummy_node;
     break;
@@ -6039,6 +6047,9 @@ void token::process()
     break;
   case TOKEN_STRETCHABLE_SPACE:
     curenv->add_node(new unbreakable_space_node(curenv->get_space_width()));
+    break;
+  case TOKEN_UNSTRETCHABLE_SPACE:
+    curenv->add_node(new space_char_hmotion_node(curenv->get_space_width()));
     break;
   case TOKEN_TAB:
     curenv->handle_tab(0);
