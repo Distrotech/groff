@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -922,22 +922,20 @@ void ps_printer::set_line_thickness(const environment *env)
 
 void ps_printer::fill_path()
 {
-  double c, m, y, k;
-  fill_color->get_cmyk(&c, &m, &y, &k);
+  double k;
+
   if (fill_color->is_gray()) {
-    if (k == 1.0)
-      out.put_symbol("BL");	
-    else
-      out.put_float(1.0-k)
-	 .put_symbol("FL");
+    // gray shade is a special case
+    fill_color->get_gray(&k);
+    output_color = fill_color;
+     
+    out.put_float(1.0-k)
+       .put_symbol("FL");
   }
+  else if (fill_color->is_equal(output_color))
   else {
-    if (output_color->is_equal(fill_color))
-      out.put_symbol("fill");
-    else {
-      set_color(fill_color, 0);
-      out.put_symbol("FC");
-    }
+    set_color(fill_color, 0);
+    out.put_symbol("FC");
   }
 }
 
@@ -1117,16 +1115,14 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
     break;
   case 'F':
     // fill with color env->fill
-    *fill_color = *env->fill;
+    fill_color = env->fill;
     break;
   default:
     error("unrecognised drawing command `%1'", char(code));
     break;
   }
-
   output_hpos = output_vpos = -1;
 }
-
 
 void ps_printer::begin_page(int n)
 {
