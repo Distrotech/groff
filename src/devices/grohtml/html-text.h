@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.cc
  *
@@ -39,6 +39,7 @@ typedef struct tag_definition {
   HTML_TAG        type;
   void           *arg1;
   int             text_emitted;
+  color           col;
   tag_definition *next;
 } tag_definition ;
 
@@ -102,6 +103,8 @@ private:
   void   start_tag         (tag_definition *t);
   void   push_para         (HTML_TAG t, void *arg);
   void   push_para         (HTML_TAG t);
+  void   push_para         (color *c);
+  void   do_push           (tag_definition *p);
   char  *shutdown          (HTML_TAG t);
   void   check_emit_text   (tag_definition *t);
   int    remove_break      (void);
@@ -111,4 +114,6 @@ private:
   void   issue_table_end   (void);
   int    table_is_void     (tag_definition *t);
   void   remove_def        (tag_definition *t);
+  void   dump_stack_element(tag_definition *p);
+  void   dump_stack        (void);
 };

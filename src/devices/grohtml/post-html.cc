@@ -220,9 +220,9 @@ struct style {
   int          font_no;
   int          height;
   int          slant;
-  color       *col;
+  color        col;
                style       ();
-               style       (font *, int, int, int, int, color *);
+               style       (font *, int, int, int, int, color);
   int          operator == (const style &) const;
   int          operator != (const style &) const;
 };
@@ -232,7 +232,7 @@ style::style()
 {
 }
 
-style::style(font *p, int sz, int h, int sl, int no, color *c)
+style::style(font *p, int sz, int h, int sl, int no, color c)
   : f(p), point_size(sz), font_no(no), height(h), slant(sl), col(c)
 {
 }
@@ -1208,10 +1208,7 @@ class html_printer : public printer {
   void  flush_font                    (void);
   void  add_to_sbuf                   (unsigned char code, const string &s);
   void  write_title                   (int in_head);
-  void  determine_diacritical_mark    (const char *name, const environment *env);
   int   sbuf_continuation             (unsigned char code, const char *name, const environment *env, int w);
-  char *remove_last_char_from_sbuf    ();
-  int   seen_backwards_escape         (char *s, int l);
   void  flush_page                    (void);
   void  troff_tag                     (text_glob *g);
   void  flush_globs                   (void);
@@ -1257,7 +1254,6 @@ class html_printer : public printer {
   font *make_bold                     (font *f);
   int   overstrike                    (unsigned char code, const char *name, const environment *env, int w);
   void  do_body                       (void);
-
   // ADD HERE
 
 public:
@@ -2227,9 +2223,7 @@ void html_printer::do_font (text_glob *g)
   if (output_style.col != g->text_style.col) {
     current_paragraph->done_color();
     output_style.col = g->text_style.col;
-    if (output_style.col != 0) {
-      current_paragraph->do_color(output_style.col);
-    }
+    current_paragraph->do_color(&output_style.col);
   }
 }
 
@@ -2412,7 +2406,10 @@ void html_printer::draw(int code, int *p, int np, const environment *env)
     break;
   case 'F':
     // fill with color env->fill
-    background = env->fill;
+    if (background != NULL)
+      delete background;
+    background = new color;
+    *background = *env->fill;
     break;
 
   default:
@@ -2593,7 +2590,7 @@ void html_printer::set_char(int i, font *f, const environment *env, int w, const
 {
   unsigned char code = f->get_code(i);
 
-  style sty(f, env->size, env->height, env->slant, env->fontno, env->col);
+  style sty(f, env->size, env->height, env->slant, env->fontno, *env->col);
   if (sty.slant != 0) {
     if (sty.slant > 80 || sty.slant < -80) {
       error("silly slant `%1' degrees", sty.slant);
@@ -2779,7 +2776,7 @@ void html_printer::special(char *s, const environment *env, char type)
     flush_sbuf();
     if (env->fontno >= 0) {
       style sty(get_font_from_index(env->fontno), env->size, env->height,
-		env->slant, env->fontno, env->col);
+		env->slant, env->fontno, *env->col);
       sbuf_style = sty;
     }
 

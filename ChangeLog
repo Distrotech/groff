@@ -1,3 +1,24 @@
+2002-01-29  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Fixes to make color changes of 2002-01-21 work with grohtml.
+
+	* src/devices/grohtml/post-html.cc (style): Updated.
+	(html_printer): Remove unused methods.
+	(html_printer::do_font, html_printer::draw, html_printer::set_char,
+	html_printer::special): Updated.
+	* src/devices/grohtml/html-text.cc (debugStack, turnDebug,
+	html_text::dump_stack_element, html_text::dump_stack) [DEBUGGING]:
+	Added some debugging code.
+	(html_text::start_tag): Updated.
+	(html_text::do_push): New method.
+	(html_text::push_para): Call it.
+	Add method for handling color.
+	(html_text::do_color): Updated.
+	(html_text::shutdown): Handle color.
+	* src/devices/grohtml/html-text.h (tag_definition): New member
+	`col'.
+	Updated.
+
 2002-01-28  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/ps.tmac, tmac/html.tmac: Fix compatibility mode issues.

@@ -40,6 +40,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "html-text.h"
 
+#undef DEBUGGING
 
 html_text::html_text (simple_output *op) :
   stackptr(NULL), lastptr(NULL), out(op), space_emitted(TRUE),
@@ -51,6 +52,78 @@ html_text::~html_text ()
 {
   flush_text();
 }
+
+
+#if defined(DEBUGGING)
+static int debugStack = FALSE;
+
+
+/*
+ *  turnDebug - flip the debugStack boolean and return new value.
+ */
+
+static int turnDebug (void)
+{
+  debugStack = 1-debugStack;
+  return debugStack;
+}
+
+/*
+ *  dump_stack_element - display an element of the html stack, p.
+ */
+
+void html_text::dump_stack_element (tag_definition *p)
+{
+  fprintf(stderr, " | ");
+  switch (p->type) {
+
+  case P_TAG:      fprintf(stderr, "<P %s>", (char *)p->arg1); break;
+  case I_TAG:      fprintf(stderr, "<I>"); break;
+  case B_TAG:      fprintf(stderr, "<B>"); break;
+  case SUB_TAG:    fprintf(stderr, "<SUB>"); break;
+  case SUP_TAG:    fprintf(stderr, "<SUP>"); break;
+  case TT_TAG:     fprintf(stderr, "<TT>"); break;
+  case PRE_TAG:    fprintf(stderr, "<PRE>"); break;
+  case SMALL_TAG:  fprintf(stderr, "<SMALL>"); break;
+  case BIG_TAG:    fprintf(stderr, "<BIG>"); break;
+  case BREAK_TAG:  fprintf(stderr, "<BREAK>"); break;
+  case TABLE_TAG:  fprintf(stderr, "<TABLE>"); break;
+  case COLOR_TAG:  {
+    if (p->col.is_default())
+      fprintf(stderr, "<COLOR (default)>");
+    else {
+      unsigned int r, g, b;
+      
+      p->col.get_rgb(&r, &g, &b);
+      fprintf(stderr, "<COLOR %x %x %x>", r/0x101, g/0x101, b/0x101);
+    }
+    break;
+  }
+  default: fprintf(stderr, "unknown tag");
+  }
+}
+
+/*
+ *  dump_stack - debugging function only.
+ */
+
+void html_text::dump_stack (void)
+{
+  if (debugStack) {
+    tag_definition *p = stackptr;
+
+    while (p != NULL) {
+      dump_stack_element(p);
+      p = p->next;
+    }
+    fprintf(stderr, "\n");
+    fflush(stderr);
+  }
+}
+#else
+void html_text::dump_stack (void) {}
+#endif
+
 
 /*
  *  end_tag - shuts down the tag.
@@ -141,7 +214,7 @@ void html_text::start_tag (tag_definition *t)
   case BIG_TAG:    issue_tag("<big", (char *)t->arg1); break;
   case TABLE_TAG:  issue_table_begin((char *)t->arg1); break;
   case BREAK_TAG:  break;
-  case COLOR_TAG:  issue_color_begin((color *)t->arg1); break;
+  case COLOR_TAG:  issue_color_begin(&t->col); break;
 
   default:
     error("unrecognised tag");
@@ -221,17 +294,18 @@ int html_text::is_present (HTML_TAG t)
   return( FALSE );
 }
 
+
 /*
- *  push_para - adds a new entry onto the html paragraph stack.
+ *  do_push - places, tag_definition, p, onto the stack
  */
 
-void html_text::push_para (HTML_TAG t, void *arg)
+void html_text::do_push (tag_definition *p)
 {
-  tag_definition *p=(tag_definition *)malloc(sizeof(tag_definition));
+  HTML_TAG t = p->type;
 
-  p->type         = t;
-  p->arg1         = arg;
-  p->text_emitted = FALSE;
+#if defined(DEBUGGING)
+  dump_stack();
+#endif
 
   /*
    *  if t is a P_TAG or TABLE_TAG or PRE_TAG make sure it goes on the end of the stack.
@@ -278,11 +352,41 @@ void html_text::push_para (HTML_TAG t, void *arg)
       lastptr = p;
     stackptr      = p;
   }
+#if defined(DEBUGGING)
+  dump_stack();
+#endif
+}
+
+/*
+ *  push_para - adds a new entry onto the html paragraph stack.
+ */
+
+void html_text::push_para (HTML_TAG t, void *arg)
+{
+  tag_definition *p=(tag_definition *)malloc(sizeof(tag_definition));
+
+  p->type         = t;
+  p->arg1         = arg;
+  p->text_emitted = FALSE;
+
+  do_push(p);
 }
 
 void html_text::push_para (HTML_TAG t)
 {
   push_para(t, (void *)"");
+}
+
+void html_text::push_para (color *c)
+{
+  tag_definition *p=(tag_definition *)malloc(sizeof(tag_definition));
+
+  p->type         = COLOR_TAG;
+  p->arg1         = NULL;
+  p->col          = *c;
+  p->text_emitted = FALSE;
+
+  do_push(p);
 }
 
 /*
@@ -409,10 +513,8 @@ int html_text::is_in_table (void)
 
 void html_text::do_color (color *c)
 {
-  if (c != 0) {
-    shutdown(COLOR_TAG);   // shutdown a previous color tag, if present
-    push_para(COLOR_TAG, (void *)c);
-  }
+  shutdown(COLOR_TAG);   // shutdown a previous color tag, if present
+  push_para(c);
 }
 
 /*
@@ -479,7 +581,10 @@ char *html_text::shutdown (HTML_TAG t)
      *  and restore unaffected tags
      */
     while (temp != NULL) {
-      push_para(temp->type, temp->arg1);
+      if (temp->type == COLOR_TAG)
+	push_para(&temp->col);
+      else
+	push_para(temp->type, temp->arg1);
       p    = temp;
       temp = temp->next;
       free(p);
@@ -629,7 +734,7 @@ void html_text::do_emittext (const char *s, int length)
 }
 
 /*
- *  do_para- starts a new paragraph
+ *  do_para - starts a new paragraph
  */
 
 void html_text::do_para (const char *arg)
