@@ -3669,7 +3669,17 @@ source file describes it as
 .Dq old function type (fortran) .
 .
 .It Li .Sm
-To be written.
+Activate (toggle) space mode.
+.Pp
+.Dl Usage: .Sm Oo on | off Oc Ld
+.Pp
+If space mode is off, no spaces between macro arguments are inserted.
+If called without a parameter (or if the next parameter is neither
+.Ql on
+nor
+.Ql off ,
+.Ql .Sm
+toggles space mode.
 .
 .It Li .Ud
 prints
@@ -3826,18 +3836,36 @@ for macro files.
 .
 .Sh FILES
 .
-.Bl -tag -width /usr/share/misc/mdoc.template -compact
-.It Pa /usr/share/tmac/tmac.doc
-manual macro package
-.It Pa /usr/share/misc/mdoc.template
-template for writing a man page
+.Bl -tag -width mdoc/doc-ditroff -compact
+.It Pa doc.tmac
+The main manual macro package.
+.It Pa mdoc.tmac
+A wrapper file to call
+.Pa doc.tmac .
+.It Pa mdoc/doc-common
+Common strings, definitions, stuff related typographic output.
+.It Pa mdoc/doc-nroff
+Definitions used for a
+.Tn TTY
+output device.
+.It Pa mdoc/doc-ditroff
+Definitions used for all other devices.
+.It Pa mdoc.local
+Local additions and customizations.
+.It Pa andoc.tmac
+This file checks whether the
+.Nm \-mdoc
+or the
+.Nm \-man
+package should be used.
 .El
 .
 .
 .Sh "SEE ALSO"
 .
-.Xr mdoc 7 ,
 .Xr man 1 ,
+.Xr groff_man 7 ,
+.Xr groff 1 ,
 .Xr troff 1
 .
 .

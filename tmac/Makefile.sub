@@ -5,7 +5,7 @@ MAN7=\
   groff_man.n \
   groff_me.n \
   groff_mdoc.n \
-  groff_mdoc.samples.n \
+  groff_mdoc.reference.n \
   groff_mwww.n
 
 NORMALFILES=\
@@ -40,7 +40,7 @@ sys_tmac_prefix=
 
 all: stamp-strip stamp-wrap stamp-sed
 
-install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
+install_data: $(NORMALFILES) $(SPECIALFILES) man.local mdoc.local \
               stamp-strip stamp-wrap stamp-sed
 	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
 	-test -d $(systemtmacdir) || $(mkinstalldirs) $(systemtmacdir)
@@ -73,6 +73,8 @@ install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
 	done
 	-test -f $(localtmacdir)/man.local || \
 	  $(INSTALL_DATA) $(srcdir)/man.local $(localtmacdir)/man.local
+	-test -f $(localtmacdir)/mdoc.local || \
+	  $(INSTALL_DATA) $(srcdir)/mdoc.local $(localtmacdir)/mdoc.local
 
 stamp-strip: $(STRIPFILES) $(MDOCFILES)
 	for f in $(STRIPFILES) $(MDOCFILES); do \
@@ -117,6 +119,9 @@ uninstall_sub:
 	-rm -f $(tmacdir)/man.tmac $(tmacdir)/ms.tmac
 	-if cmp -s $(localtmacdir)/man.local $(srcdir)/man.local; then \
 	  rm -f $(localtmacdir)/man.local; \
+	fi
+	-if cmp -s $(localtmacdir)/mdoc.local $(srcdir)/mdoc.local; then \
+	  rm -f $(localtmacdir)/mdoc.local; \
 	fi
 	-for f in $(MDOCFILES); do rm -f $(mdocdir)/$$f; done
 	-rmdir $(mdocdir)

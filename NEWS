@@ -20,6 +20,31 @@ o The new environment variable GROFF_BIN_PATH will be checked for programs
 Troff
 -----
 
+o The mdoc package has been completely rewritten, using the full power of
+  GNU troff to remove limitations of Unix troff (which is no longer
+  supported).  Most important changes are:
+
+  . No argument limit.
+  . Almost all macros are parsable and callable (if it makes sense).
+  . `.Lb': prints library names
+  . `.Nm <punctuation>' now works as expected; `.Nm "" <punctuation>' has
+    been withdrawn.
+  . Updated `.St' command
+  . `.Fx': prints FreeBSD
+  . `.Ox': prints OpenBSD
+  . `.Bsx': prints BSD/OS
+  . `.Brq', `.Bro', `.Brc': brace enclosure macros
+  . `.Bd -centered': center lines
+  . `.Bl -xwidth <string>': interpret <string> and use the resulting width
+  . `.Ld': prints `...'
+  . support for double-sided printing (-rD=1 command line switch)
+
+  groff_mdoc.samples.man has been replaced with groff_mdoc.reference.man
+  which completely documents the mdoc package.
+
+  Great care has been taken to assure backwards compatibility.  If you
+  encounter any abnormal results, please report them to bug-groff@gnu.org.
+
 o A new command line option for the `man' macros (similar to the `mdoc'
   package has been implemented: `-rcR=1' (now the default in nroff mode) will
   produce one single, very long page instead of multiple pages.  `-rcR=0'
