@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -100,6 +100,10 @@ extern "C" {
   int strcasecmp(const char *, const char *);
 }
 #endif /* NEED_DECLARATION_STRCASECMP */
+#else /* not HAVE_STRCASECMP */
+extern "C" {
+  int strcasecmp(const char *, const char *);
+}
 #endif /* HAVE_STRCASECMP */
 
 #if !defined(_AIX) && !defined(sinix) && !defined(__sinix__)
@@ -110,16 +114,12 @@ extern "C" {
   int strncasecmp(const char *, const char *, int);
 }
 #endif /* NEED_DECLARATION_STRNCASECMP */
+#else /* not HAVE_STRNCASECMP */
+extern "C" {
+  int strncasecmp(const char *, const char *, size_t);
+}
 #endif /* HAVE_STRNCASECMP */
 #endif /* !_AIX && !sinix && !__sinix__ */
-
-#ifndef HAVE_STRCASECMP
-#define strcasecmp(a,b) strcmp((a),(b))
-#endif
-
-#ifndef HAVE_STRNCASECMP
-#define strncasecmp(a,b,c) strncmp((a),(b),(c))
-#endif
 
 #ifdef HAVE_CC_LIMITS_H
 #include <limits.h>

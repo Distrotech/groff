@@ -52,9 +52,10 @@ dnl checks for functions
 AC_FUNC_MMAP
 saved_libs="$LIBS"
 LIBS="$LIBS -lc $LIBM"
-AC_REPLACE_FUNCS(fmod getcwd putenv snprintf strerror strtol)
+AC_REPLACE_FUNCS(fmod getcwd putenv snprintf strcasecmp \
+                 strerror strncasecmp strtol)
 LIBS="$saved_libs"
-AC_CHECK_FUNCS(gettimeofday isatty rename strcasecmp strncasecmp strsep)
+AC_CHECK_FUNCS(gettimeofday isatty rename strsep)
 GROFF_MKSTEMP
 AC_DECL_SYS_SIGLIST
 dnl checks for compiler characteristics
