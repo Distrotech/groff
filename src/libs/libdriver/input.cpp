@@ -2,13 +2,13 @@
 
 // <groff_src_dir>/src/libs/libdriver/input.cpp
 
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 15 Dec 2004
+   Last update: 21 Jan 2005
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -608,6 +608,7 @@ void delete_current_env(void)
   delete current_env->col;
   delete current_env->fill;
   delete current_env;
+  current_env = 0;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1520,8 +1521,8 @@ parse_x_command(void)
       char *str_arg = get_extended_arg(); // includes line skip
       if (npages <= 0)
 	error("`x X' command invalid before first `p' command");
-      else if (str_arg != NULL && (strncmp(str_arg, "devtag:",
-					   strlen("devtag:")) == 0))
+      else if (str_arg && (strncmp(str_arg, "devtag:",
+				   strlen("devtag:")) == 0))
 	pr->devtag(str_arg, current_env);
       else
 	pr->special(str_arg, current_env);
@@ -1826,6 +1827,7 @@ do_file(const char *filename)
   if (npages > 0)
     pr->end_page(current_env->vpos);
   delete pr;
+  pr = 0;
   fclose(current_file);
   // If `stopped' is not `true' here then there wasn't any `x stop'.
   if (!stopped)
