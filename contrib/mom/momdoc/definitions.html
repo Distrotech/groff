@@ -369,7 +369,7 @@ line after the comment character.
 <dd>Instructions to groff that appear on a line by themselves,
 which means that &quot;control lines&quot; are either
 <strong>*macros</strong> or <strong>*groff primitives</strong>.
-Control lines always begin with a period.
+Control lines begin with a period or, occasionally, an apostrophe.
 
 <dt><a name="TERMS_FILLED"><em>Filled lines/fill mode</em></a>
 <dd>Automatic <strong>*justification</strong> or
@@ -394,22 +394,23 @@ which must appear on a line by themselves).  Inline escapes are always
 introduced by the backslash character.  For example,
 <p>
 <pre>
-	A line of text with the word T\*[BU2]oronto in it
+	A line of text with the word T\*[BU 2]oronto in it
 </pre>
 
-contains the inline escape \*[BU2] (which means &quot;move the letter o 2
-<strong>*kern units</strong> closer to the letter T&quot;).
+contains the inline escape \*[BU 2] (which means &quot;move the letter
+'o' 2 <strong>*kern units</strong> closer to the letter 'T'&quot;).
 <p>
-<strong>mom</strong>'s inline escapes always take the form
-<strong>\*[</strong><i>ESCAPE</i><strong>]</strong>, where
-<i>ESCAPE</i> is composed of capital letters, sometimes with digits.
-<strong>groff</strong> escapes begin with the backslash
-character but typically have no star and are in lower case.  For
-example, the <strong>mom</strong> escape to move forward 6
-points on a line is
+<strong>Mom</strong>'s inline escapes always take the form
+<strong>\*[</strong><i>ESCAPE</i><strong>]</strong>, where <i>ESCAPE</i>
+is composed of capital letters, sometimes followed immediately
+by a digit, sometimes followed by a space and a <strong>*numeric
+argument</strong>. <strong>Groff</strong>'s escapes begin with the
+backslash character but typically have no star and are in lower case.
+For example, the <strong>mom</strong> escapes to move forward 6 points
+on a line are either
 <p>
 <pre>
-	\*[FP6]
+	\*[FP6]&nbsp;&nbsp;or&nbsp;&nbsp;\*[FWD 6p]
 </pre>
 
 while the <strong>groff</strong> escape for the same thing is
@@ -606,9 +607,9 @@ footers.
 
 <dt><a name="TERMS_LINEBREAK"><em>Linebreak/author linebreak</em></a>
 <dd>A horizontal gap in <strong>*running text</strong>, frequently
-set off by typographic symbols such as asterisks or a daggers.
-Used to indicate a shift in the content of a document (e.g. a scene
-change in a short story).
+set off by typographic symbols such as asterisks or daggers.  Used to
+indicate a shift in the content of a document (e.g. a scene change in a
+short story).
 
 <dt><a name="TERMS_PARAHEAD"><em>Paragraph head</em></a>
 <dd>A title joined to the body of a paragraph; hierarchically one

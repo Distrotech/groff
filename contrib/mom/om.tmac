@@ -23,8 +23,8 @@
 .\"
 .
 .
-\# Version 1.1.3c
-\# --------------
+\# Version 1.1.4
+\# -------------
 \#
 .if (\n[.x]\n[.y] < 118) \
 .  ab You need GNU troff version 1.18 or higher to run this version of mom!
@@ -93,7 +93,7 @@
 .    if \\n[#DOC_TYPE]=4 \{\
 .       br
 .       if !'\\n(.z'' \{ .di \}
-.       IX CLEAR
+.       IQ CLEAR
 .       TQ
 .       TAB_SET 1 \\n[#DOC_L_LENGTH]u/2u \\n[#DOC_L_LENGTH]u/2u LEFT
 .       ALD \\n[#DOC_LEAD]u*2u
@@ -470,42 +470,38 @@
 .END
 \#
 \#
-\# INLINE KERNING
-\# --------------
-\# Inline kerning provides a simple method for users to adjust the
-\# amount of space between any two letters.  It's predicated on a
-\# unit of measure "U", which is 1/36 of the current point size as
-\# returned by \n[.ps].  E.g., if the current point size is 18,
-\# \n[.ps] returns 18000u, therefore U=500u.  Since U remains
-\# proportional relative to the current point size, the amount
-\# of kerning between two letters as expressed in Us remains
-\# visually similar regardless of changes in point size.
+\# INLINE KERNING AND HORIZONTAL MOVEMENT
+\# --------------------------------------
+\# *Kerning
+\#  Inline kerning provides a simple method for users to adjust the
+\#  amount of space between any two letters.  It's predicated on a
+\#  unit of measure "U", which is 1/36 of the current point size as
+\#  returned by \n[.ps].  E.g., if the current point size is 18,
+\#  \n[.ps] returns 18000u, therefore U=500u.  Since U remains
+\#  proportional relative to the current point size, the amount
+\#  of kerning between two letters as expressed in Us remains
+\#  visually similar regardless of changes in point size.
 \#
-\# N.B.--the amount of inline kerning supplied by \*[BU#] or
-\# \*[FU#] is added to or subtracted from any kerning that already
-\# takes place between two characters when automatic kerning is
-\# turned on.
+\#  N.B.--the amount of inline kerning supplied by \*[BU#] or
+\#  \*[FU#] is added to or subtracted from any kerning that already
+\#  takes place between two characters when automatic kerning is
+\#  turned on.
 \#
-\# In groff v. 1.17.2, it is not possible to pass arguments to macros that
-\# are executed with inline escapes, nor thence to evaluate conditional
-\# expressions.  Consequently, each pseudo-escape \[BU#] must be defined
-\# separately with ".char".  I'd have prefered something like this
+\#  In groff v. 1.17.2, it was not possible to pass arguments to macros that
+\#  were executed with inline escapes, nor thence to evaluate conditional
+\#  expressions.  Consequently, each pseudo-escape \[BU#] had to be defined
+\#  separately with ".char".
 \#
-\#     .de BU
-\#     \c
-\#     \\h'-(\\n[#PT_SIZE]u/\\n[#KERN_UNIT]u*\\$1u)'\c
-\#     ..
-\#
-\# with the BU escape looking like "\*[BU #]", but that's
-\# just not possible.  Bottom line?  The user can only BU or FU
-\# up to 36 Us, and there are too many lines of code for
-\# such a simple function.
-\#
-\# BP and FP do the same thing as BU and FU, except that the
-\# unit is points, and it only goes up to FP12/BP12 (1 pica)
+\#  As of v. 1.18, one can pass arguments to inline strings/macros,
+\#  hence it is now possible to do \*[BU #] where #, inline, is the desired
+\#  number of kern units.  The original .char definitions have been left in
+\#  for backward compatibility with documents created prior to mom-1.1.3c.
 \#
 \#
 .nr #KERN_UNIT 36
+.ds BU   \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*\\$1u)'
+.ds FU   \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*\\$1u)'
+\#
 .ds BU1  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*1u)'
 .ds BU2  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*2u)'
 .ds BU3  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*3u)'
@@ -543,6 +539,58 @@
 .ds BU35 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*35u)'
 .ds BU36 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*36u)'
 \#
+\#
+.ds FU1  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*1u)'
+.ds FU2  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*2u)'
+.ds FU3  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*3u)'
+.ds FU4  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*4u)'
+.ds FU5  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*5u)'
+.ds FU6  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*6u)'
+.ds FU7  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*7u)'
+.ds FU8  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*8u)'
+.ds FU9  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*9u)'
+.ds FU10 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*10u)'
+.ds FU11 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*11u)'
+.ds FU12 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*12u)'
+.ds FU13 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*13u)'
+.ds FU14 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*14u)'
+.ds FU15 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*15u)'
+.ds FU16 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*16u)'
+.ds FU17 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*17u)'
+.ds FU18 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*18u)'
+.ds FU19 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*19u)'
+.ds FU20 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*20u)'
+.ds FU21 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*21u)'
+.ds FU22 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*22u)'
+.ds FU23 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*23u)'
+.ds FU24 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*24u)'
+.ds FU25 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*25u)'
+.ds FU26 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*26u)'
+.ds FU27 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*27u)'
+.ds FU28 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*28u)'
+.ds FU29 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*29u)'
+.ds FU30 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*30u)'
+.ds FU31 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*31u)'
+.ds FU32 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*32u)'
+.ds FU33 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*33u)'
+.ds FU34 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*34u)'
+.ds FU35 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*35u)'
+.ds FU36 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*36u)'
+\#
+\#
+\# *Horizontal movements
+\#  BP1...12.75 and FP1...12.75 move backwards or forwards inline by the
+\#  specified number of points.
+\#  Left in for backward compatibility with mom-1.1.3c, the preferred
+\#  methods for inline horizontal movements are now \*[BCK #<unit>] and
+\#  \*[FWD #<unit>].
+\#
+.ds BCK  \h'-\\$1\\$2'
+.ds FWD  \h'\\$1\\$2'
+\#
+.ds BP.25    \h'-.25'
+.ds BP.5     \h'-.5'
+.ds BP.75    \h'-.75'
 .ds BP1      \h'-1p'
 .ds BP1.25   \h'-1.25p'
 .ds BP1.5    \h'-1.5p'
@@ -592,43 +640,9 @@
 .ds BP12.5   \h'-12.5p'
 .ds BP12.75  \h'-12.75p'
 \#
-.ds FU1  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*1u)'
-.ds FU2  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*2u)'
-.ds FU3  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*3u)'
-.ds FU4  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*4u)'
-.ds FU5  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*5u)'
-.ds FU6  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*6u)'
-.ds FU7  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*7u)'
-.ds FU8  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*8u)'
-.ds FU9  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*9u)'
-.ds FU10 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*10u)'
-.ds FU11 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*11u)'
-.ds FU12 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*12u)'
-.ds FU13 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*13u)'
-.ds FU14 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*14u)'
-.ds FU15 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*15u)'
-.ds FU16 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*16u)'
-.ds FU17 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*17u)'
-.ds FU18 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*18u)'
-.ds FU19 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*19u)'
-.ds FU20 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*20u)'
-.ds FU21 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*21u)'
-.ds FU22 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*22u)'
-.ds FU23 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*23u)'
-.ds FU24 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*24u)'
-.ds FU25 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*25u)'
-.ds FU26 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*26u)'
-.ds FU27 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*27u)'
-.ds FU28 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*28u)'
-.ds FU29 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*29u)'
-.ds FU30 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*30u)'
-.ds FU31 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*31u)'
-.ds FU32 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*32u)'
-.ds FU33 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*33u)'
-.ds FU34 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*34u)'
-.ds FU35 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*35u)'
-.ds FU36 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*36u)'
-\#
+.ds FP.25    \h'.25'
+.ds FP.5     \h'.5'
+.ds FP.75    \h'.75'
 .ds FP1      \h'1p'
 .ds FP1.25   \h'1.25p'
 .ds FP1.5    \h'1.5p'
@@ -837,7 +851,7 @@
 \# ADVANCE LEAD
 \# ------------
 \# *Argument:
-\#   <user supplied lead (ipPc) to advance below current baseline>
+\#   <user supplied lead to advance below current baseline>
 \# *Function:
 \#   Creates or modifies register #ALD.  Adds user supplied lead
 \#   below current baseline.
@@ -853,12 +867,12 @@
 \# REVERSE LEAD
 \# ------------
 \# *Argument:
-\#   <user supplied lead (ipPc) to reverse above current baseline>
+\#   <user supplied lead to reverse above current baseline>
 \# *Function:
 \#   Creates or modifies register #RLD.  Reverses user supplied
 \#   lead above current baseline.
 \# *Notes:
-\#   Requires unit of measure ipPcm.
+\#   Requires unit of measure ipPcmv.
 \#
 .MAC RLD END
 .    nr #RLD (\\$1)
@@ -867,9 +881,13 @@
 \#
 \# ALD/RLD STRINGS
 \# ---------------
-\# *Notes:
-\#   If user needs to ALD/RLD more than 12 points, \v'<distance>' must be used
-\#   instead
+\# The strings \*[ALD.25]...\*[ALD12.75] and their corresponding \*[RLD]
+\# forms have been left in for backward compatibility with documents
+\# created using mom-1.1.3c or earlier.  The prefered methods of advancing
+\# and reversing on the page inline are \*[UP #<unit>] and \*[DOWN #<unit>].
+\#
+.ds DOWN      \v'\\$1\\$2'
+.ds UP        \v'-\\$1\\$2'
 \#
 .ds ALD.25    \v'.25p'
 .ds ALD.5     \v'.5p'
@@ -1007,7 +1025,7 @@
 \# *Function:
 \#   Turns smartquotes on or off.
 \# *Notes:
-\#   The " character is read outside the macro when mymacs is
+\#   The " character is read outside the macro when mom is
 \#   processed.  The strings for open/close ($QUOTE#) are then
 \#   defined in the macro.  \N'34' is the ASCII code for ".  If
 \#   incompatibilities arise, find the code for " that applies
@@ -2363,18 +2381,18 @@
 \# ...some text...
 \# .IL 2P
 \# ...some text...
-\# .IX
+\# .IQ
 \# ...some text...
 \# .IL
 \# ...some text...
 \#
 \# The first .IL 2P indents text 2P from the left margin.  The second
 \# .IL 2P indents text by an additional 2P, i.e. 4P from the left margin.
-\# .IX turns the indent off.  The last .IL (which has no argument)
+\# .IQ turns the indent off.  The last .IL (which has no argument)
 \# takes its value from the total of all arguments passed to .IL (in
 \# this case, 2P and 2P), therefore it indents 2P+2P from the left
 \# margin, i.e. 4P.  If you wanted the last .IL to indent just 2P,
-\# you'd either have to reset the .IL prior to .IX (.IL -2P), or pass
+\# you'd either have to reset the .IL prior to .IQ (.IL -2P), or pass
 \# the last .IL the argument 2P.
 \#
 \# To reverse the sense of an indent added to an indent, you may use
@@ -2390,11 +2408,11 @@
 \# again when needed. IL and IR automatically turn IB off; it, too,
 \# has to be reinvoked with needed.
 \#
-\# All indents can be turned off at once with IX.  The ILX, IRX, IBX,
-\# and IX macros simply turn the indents off; the values stored in
+\# All indents can be turned off at once with IQ.  The ILX, IRX, IBX,
+\# and IQ macros simply turn the indents off; the values stored in
 \# the respective indent macros (IL, IR, IB) remain in effect.  If
 \# the user wishes to clear the values, the I<LRB>X macros should be
-\# invoked with the single argument CLEAR.  IX CLEAR clears out
+\# invoked with the single argument CLEAR.  IQ CLEAR clears out
 \# the values stored for all indent styles.
 \#
 \# Indents *must* be turned off before settting string tabs
@@ -2597,6 +2615,14 @@
 \#
 \#
 .MAC IX END
+.    if '\\$0'IX' \{\
+.       if !\\n[#IX_WARN] \{\
+.          tm1 "[mom]: Use of .IX is now deprecated.  Use .IQ instead.
+.          tm1 "      .IX will continue to behave as before, but to
+.          tm1 "       avoid this message, please update your document.
+.          nr #IX_WARN 1
+.       \}
+.    \}
 .    br
 .    in 0
 .    rr #INDENT_LEFT_ACTIVE
@@ -2893,6 +2919,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS    HYPHENATION     HY
 .ALIAS    HYSET           HY_SET
 .ALIAS    LIG             LIGATURES
+.ALIAS    IBQ             IBX
+.ALIAS    ILQ             ILX
+.ALIAS    IQ              IX
+.ALIAS    IRQ             IRX
 .ALIAS    PADMARKER       PAD_MARKER
 .ALIAS    TABSET          TAB_SET
 .ALIAS    TB              TAB
@@ -4949,7 +4979,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC FINIS END
 .    if \\n[#TAB_ACTIVE] \{ .TQ \}
-.    if \\n[#INDENT_ACTIVE] \{ .IX CLEAR \}
+.    if \\n[#INDENT_ACTIVE] \{ .IQ CLEAR \}
 .    FOOTERS OFF
 .    PAGINATION OFF
 .    nr #EM_ADJUST (1m/8)
@@ -8974,7 +9004,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #PAGINATION_STATE \\n[#PAGINATE]
 .       PAGINATION OFF
 .    \}
-.    IX CLEAR
+.    IQ CLEAR
 .    TQ
 .    LL \\n[#DOC_L_LENGTH]u
 .    QUAD $DOC_QUAD

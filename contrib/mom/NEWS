@@ -1,10 +1,40 @@
+Release 1.1.4
+-------------
+
+***SIGNIFICANT CHANGE***
+.IX is now deprecated, although it will continue to work as before.
+The new form is .IQ (Indent Quit).  Groff will emit a message advising
+users to update their docs.
+
+***NEW***
+Four new inlines to deal with horizontal and vertical movements:
+
+    o \*[FWD n]
+    o \*[BCK n]
+    o \*[UP n]
+    o \*[DOWN n]
+
+All four require a unit of measure after n.  These inlines are similar
+to the older \*[FPn], \*[BPn], \*[ALDn] and \*[RLDn], however they're
+not restricted to points, and any value can be entered for n (the older
+forms -- which still work -- were restricted to 1 - 36).
+
+***CHANGED***
+Inline kerning can now be accomplished with \*[BU n] and \*[FU n], where
+n, after the space, is the desired number of kern units.  The older
+forms \*[BUn] and \*[FUn] still work, up to 36 units.
+
+------------------------------------------------------------------------
+
 Release 1.1.3c
 --------------
 
 ***NEW***
 A new macro -- ENDNOTES_HDRFTR_CENTER -- added so that mom's default
 behaviour of not printing the header center string when DOCTYPE is
-CHAPTER can be disabled (i.e. she will print the center string).
+CHAPTER can be disabled (i.e. she will print the center string).  The
+macro is user-called with ENDNOTES_HEADER_CENTER or
+ENDNOTES_FOOTER_CENTER.
 
 ***FIXES***
 PAD now works as advertised when fill mode is on.

@@ -53,7 +53,13 @@
 	<ul>
 		<li><a href="#INTRO_TABS">Introduction to tabs</a>
 		<li><a href="#TYPESETTING_TABS">Typesetting tabs</a>
+		<ul>
+		    <li><a href="#TYPESETTING_TABS_TUT">Quickie tutorial</a>
+		</ul>
 		<li><a href="#STRING_TABS">String tabs</a>
+		<ul>
+		    <li><a href="#STRING_TABS_TUT">Quickie tutorial</a>
+		</ul>
 		<li><a href="#INDEX_TABS">List of macros</a>
 	</ul>
 	<li><strong>MULTI-COLUMNS</strong>
@@ -68,7 +74,7 @@
 	</ul>
 	<li><strong>GOODIES</strong>
 	<ul>
-		<li><a href="goodies.html#INTRO_GOODIES">Introduction to goodies</a>
+		<li><a href="goodies.html#GOODIES">Introduction to goodies</a>
 		<li><a href="goodies.html#INDEX_GOODIES">List of macros</a>
 	</ul>
 	<li><strong>INLINE ESCAPES</strong>
@@ -127,8 +133,8 @@ and are content with her defaults.
 <p>
 The
 <a href="#PAPER">PAPER</a>
-macro provides a shortcut for setting the page to the correct
-dimensions for letter, legal, and A4 printer sheets.  The
+macro provides a shortcut for setting the page to the correct dimensions
+for a number of well-known, established paper sizes.  The
 <a href="#PAGE">PAGE</a>
 macro provides a convenient way of setting the page dimensions and
 some or all of the page margins with a single macro.
@@ -344,7 +350,7 @@ length from the overall page dimensions and the left margin.
 Obviously, it can't make the calculation if it doesn't know the page
 width and the left margin.
 <p>
-<strong>NOTE:</strong> R_MARGIN behaves in a special way
+<strong>NOTE: R_MARGIN</strong> behaves in a special way
 when you're using the
 <a href="docprocessing.html#DOCPROCESSING">document processing macros</a>.
 See
@@ -1505,8 +1511,8 @@ separate sections.
 <p>
 <strong>HY</strong> by itself (i.e. with no argument) simply turns
 automatic hyphenation on.  Any argument other than <strong>LINES,
-MARGIN, SPACE</strong> or <strong>DEFAULT</strong>, <strong>HY</strong>
-turns automatic hyphenation off.  For example, as explained in
+MARGIN, SPACE</strong> or <strong>DEFAULT</strong>, turns automatic
+hyphenation off.  For example, as explained in
 <a href="intro.html#MACRO_ARGS">How to read macro arguments</a>,
 you could turn <strong>HY</strong> off by entering
 <p>
@@ -1771,7 +1777,7 @@ Macro: <strong>BR_AT_LINE_KERN</strong> <var>toggle</var>
 
 <p>
 By default, <strong>mom</strong> does not break
-<a href="definitions.html#TERMS_INPUTLINE>input lines</a>
+<a href="definitions.html#TERMS_INPUTLINE">input lines</a>
 when you invoke <strong>RW</strong> or <strong>EW</strong>.
 If you'd like <strong>mom</strong> to break input lines prior
 to <strong>RW</strong> or <strong>EW</strong>, invoke
@@ -1804,7 +1810,7 @@ off.
 <p>
 Kerning of individual character pairs can be controlled with the
 <a href="definitions.html#TERMS_INLINES">inline escapes</a>
-<strong>\*[BU#]</strong> and <strong>\*[FU#]</strong>.  See
+<strong>\*[BU #]</strong> and <strong>\*[FU #]</strong>.  See
 <a href="inlines.html#INLINE_KERNING_MOM">Inline Escapes, kerning</a>.
 <br>
 
@@ -3245,7 +3251,7 @@ In addition, there are four macros to control exiting from
 indents:
 <br>
 <ul>
-	<li><strong>IX</strong>&nbsp;&nbsp;= exit all active indents
+	<li><strong>IQ</strong>&nbsp;&nbsp;= quit all active indents
 	<li><strong>ILX</strong>&nbsp;= exit indent style left
 	<li><strong>IRX</strong>&nbsp;= exit indent style right
 	<li><strong>IBX</strong>&nbsp;= exit indent style both
@@ -3272,7 +3278,7 @@ indent).
 When you want to exit the above indent, use either
 <p>
 <pre>
-	.IX
+	.IQ
 	 or
 	.ILX
 </pre>
@@ -3297,7 +3303,7 @@ Consider the following:
 	A first block of text...
 	...
 	...
-	.IX       \"Turn indent off
+	.IQ       \"Turn indent off
 	A second block of text...
 	...
 	...
@@ -3309,7 +3315,7 @@ Consider the following:
 
 The first block of text is right indented by 2 picas (i.e. the line
 length is shortened by 2 picas to 18 picas).  The second block of
-text, after <strong>IX</strong>, is, as you'd expect, set to the full
+text, after <strong>IQ</strong>, is, as you'd expect, set to the full
 measure.  The third block of text -- the one to pay attention to --
 is not right indented by 2 picas, but rather by 4 picas.
 <strong>Mom</strong> adds the value of arguments to <strong>IL,
@@ -3342,7 +3348,7 @@ Giving the optional argument <kbd>CLEAR</kbd> to any of the
 &quot;indent quit&quot; macros resets them to zero.
 <br>
 <ul>
-	<li><strong>IX CLEAR</strong>&nbsp;&nbsp;= quit and clear all indents
+	<li><strong>IQ CLEAR</strong>&nbsp;&nbsp;= quit and clear all indents
 	<li><strong>ILX CLEAR</strong>&nbsp;= quit and clear indent style left
 	<li><strong>IRX CLEAR</strong>&nbsp;= quit and clear indent style right
 	<li><strong>IBX CLEAR</strong>&nbsp;= quit and clear indent style both
@@ -3361,7 +3367,7 @@ picas and control each separately, as in the following example.
 </pre>
 
 If, at <kbd>.IRX</kbd>, you wanted the text afterward to have no
-indents (either left or right), you would enter <kbd>.IX</kbd>,
+indents (either left or right), you would enter <kbd>.IQ</kbd>,
 which exits all indent styles at once.
 <p>
 <strong>A word of advice:</strong> Indents are best used only when
@@ -3388,10 +3394,10 @@ for information and advice on using idents with the
 	<ul>
 		<li><a href="#NUM_LISTS">A recipe for numbered lists</a>
 	</ul>
-	<li><a href="#IX">IX</a>&nbsp;&nbsp;(Exit indents, all)
-	<li><a href="#IX">ILX</a>&nbsp;(Exit indent style left)
-	<li><a href="#IX">IRX</a>&nbsp;(Exit indent style right)
-	<li><a href="#IX">IBX</a>&nbsp;(Exit indent style both)
+	<li><a href="#IQ">IQ</a>&nbsp;&nbsp;(Quit indents, all)
+	<li><a href="#IQ">ILX</a>&nbsp;(Exit indent style left)
+	<li><a href="#IQ">IRX</a>&nbsp;(Exit indent style right)
+	<li><a href="#IQ">IBX</a>&nbsp;(Exit indent style both)
 </ul>
 
 <!---IL--->
@@ -3414,7 +3420,7 @@ measure.  Subsequent invocations with a measure add to the previous
 measure.  A minus sign may be prepended to the argument to subtract
 from the current measure.  The
 <a href="inlines.html#INLINE_STRINGWIDTH_GROFF">\w</a>
-<a href="definitions.html#TERMS_INLINES">inline esacpe</a>
+<a href="definitions.html#TERMS_INLINES">inline escape</a>
 may be used to specify a text-dependent measure, in which case
 no unit of measure is required.  For example,
 <p>
@@ -3689,16 +3695,30 @@ are NOT additive.  Each time you pass a measure to
 <!---IX--->
 
 <hr width="66%" align="left">
-<a name="IX"><h3><u>Quitting indents</u></h3></a>
+<a name="IQ"><h3><u>Quitting indents</u></h3></a>
 <br>
-Macro: <strong>IX</strong>&nbsp;&nbsp;<var>[ CLEAR ]</var> (quit any/all indents)
+Macro: <strong>IQ</strong>&nbsp;&nbsp;<var>[ CLEAR ]&nbsp;&nbsp;</var>(quit any/all indents -- see <strong>*IMPORTANT NOTE</strong>)
 <br>
-Macro: <strong>ILX</strong>&nbsp;<var>[ CLEAR ]</var> (quit <strong>IL</strong>)
+Macro: <strong>ILX</strong>&nbsp;<var>[ CLEAR ]&nbsp;&nbsp;</var>(exit <strong>I</strong>ndent <strong>L</strong>eft)
 <br>
-Macro: <strong>IRX</strong>&nbsp;<var>[ CLEAR ]</var> (quit <strong>IR</strong>)
+Macro: <strong>IRX</strong>&nbsp;<var>[ CLEAR ]&nbsp;&nbsp;</var>(exit <strong>I</strong>ndent <strong>R</strong>ight)
 <br>
-Macro: <strong>IBX</strong>&nbsp;<var>[ CLEAR ]</var> (quit <strong>IB</strong>)
+Macro: <strong>IBX</strong>&nbsp;<var>[ CLEAR ]&nbsp;&nbsp;</var>(exit <strong>I</strong>ndent <strong>B</strong>oth)
 
+<p>
+<strong>*IMPORTANT NOTE:</strong>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<em>Formerly, the macro for quitting all indents was</em>
+<strong>.IX</strong><em>.  This usage is now deprecated, in favour
+of</em> <strong>.IQ</strong><em>.</em> <strong>.IX</strong> <em>will
+continue to behave as before, but</em> <strong>mom</strong> <em>will
+issue a warning to stderr indicating that you should update your
+documents.
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;As a consequence of this change,</em>
+<strong>ILX, IRX</strong> <em>and</em> <strong>IBX</strong> <em>may
+now also be invoked as</em> <strong>ILQ, IRQ</strong> <em>and</em>
+<strong>IBQ</strong><em>.  Both forms are acceptable.</em>
 <p>
 Without an argument, the macros to quit indents merely restore your
 original left margin and line length.  The measures stored in the
@@ -3711,7 +3731,7 @@ but also clear any values associated with a  particular indent style.
 The next time you need an indent of the same style, you have to supply
 a measure again.
 <p>
-<strong>IX CLEAR</strong>, as you'd suspect, quits and clears
+<strong>IQ CLEAR</strong>, as you'd suspect, quits and clears
 the values for all indent styles at once.
 
 <p>

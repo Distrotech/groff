@@ -183,26 +183,45 @@ of handling inline size requests (<kbd>\sN, \s±N, \s(NN, \s±(NN,
 Pairwise kerning means moving specific letter pairs closer
 together or further apart (see
 <a href="definitions.html#TERMS_KERN">Typesetting terms, kerning</a>
-for more details).  <strong>Mom</strong> permits inline pairwise
+for more details).
+<p>
+<strong>Mom</strong> permits inline pairwise
 kerning through the use of the inline escapes
 <p>
 <table valign="baseline" summary="inlinekerning">
-<tr><td width="15"><td><strong>\*[BU1]...\*[BU36]</strong><td>
-Move back 1...36
-<a href="definitions.html#TERMS_KERNUNITS">kern units</a>
-<tr><td><td><strong>\*[FU1]...\*[FU36]</strong><td>
-Move forward 1...36
-<a href="definitions.html#TERMS_KERNUNITS">kern units</a></td></tr>
+<tr><td width="15"><td><strong>\*[BU #]<td></strong>Closes the space between letters (<strong>B</strong>ack <strong>U</strong>nits).
+<tr><td><td><strong>\*[FU #]</strong><td>Opens the space between letters (<strong>F</strong>orward <strong>U</strong>nits).
 </table>
+<br>
+"<strong>#</strong>" is the number of <a
+href="definitions.html#TERMS_KERNUNIT">kern units</a>
+by which to close or open the space between letters.  Decimal fractions
+are allowed.
 <p>
 For example,
 <p>
 <pre>
-	THE HUMAN COST OF COMMODIFYING FRESH W\*[BU4]ATER
+	THE HUMAN COST OF COMMODIF\*[FU 1]YING FRESH W\*[BU 4]A\*[BU 5]TER
 </pre>
 
-moves the letter A in &quot;WATER&quot; four kern units closer
-to the letter W.
+moves the letter Y in &quot;COMMODIFYING&quot; 1 kern unit away from
+the letter F, and the letter A in &quot;WATER&quot; 4 kern units closer
+to the letter W.  Additionally, the letter T in "WATER" is moved 5 kern
+units closer to the letter A.
+<p>
+For backward compatibility, the forms
+<p>
+<table valign="baseline" summary="inlinekerningold">
+<tr><td width="15"><td><strong>\*[BU1]...\*[BU36]</strong><td>
+Move back 1...36
+<a href="definitions.html#TERMS_KERNUNIT">kern units</a>
+<tr><td><td><strong>\*[FU1]...\*[FU36]</strong><td>
+Move forward 1...36
+<a href="definitions.html#TERMS_KERNUNIT">kern units</a>
+</table>
+<br>
+also exist (i.e. with no space before the number of kern units desired,
+up to a limit of 36).
 <p>
 <strong>NOTE:</strong> Using <strong>BU</strong> or <strong>FU</strong>
 between characters pairs that are already automatically kerned
@@ -216,35 +235,49 @@ disables the automatic kerning and uses the value you give to
 <a name="INLINE_HORIZONTAL_MOM"><h3><u>Horizontal inline movement</u></h3></a>
 
 <p>
-If you need to move backward or forward on a line by a just few
-points, use
+Sometimes, you may need to insert a specified amount amount of white
+space into an
+<a href="definitions.html#TERMS_OUTPUTLINE">output line</a>,
+or -- occasionally  -- back up to a
+previous position on an
+<a href="definitions.html#TERMS_INPUTLINE">output</a>
+line in order to create special typographic effects.
 <p>
-<table valign="baseline" summary="inlinehorizontal">
-<tr><td width="15"><td><strong>\*[BP1]...\*[BP12]</strong><td>
-Move back 1...12 points
-<tr><td><td><strong>\*[FP1]...\*[FP12]</strong><td>
-Move forward 1...12 points</td></tr>
+<strong>Mom</strong>'s inline escapes for these horizontal movements are
+<p>
+<table align="left" valign="baseline" summary="inlinehorizontal">
+<a name="FWD"></a>
+<tr><td width="15"><td width="20%"><strong>\*[FWD #&lt;unit&gt;]
+<td>Move forward inline the specified number of
+<a href="definitions.html#TERMS_UNITOFMEASURE">units of measure</a>;
+decimal fractions are allowed.
+<a name="BCK"></a>
+<tr><td><td><strong>\*[BCK #&lt;unit&gt;]
+<td>Move backward inline the specified number of
+<a href="definitions.html#TERMS_UNITOFMEASURE">units of measure</a>;
+decimal fractions are allowed.
 </table>
 <p>
 For example,
 <p>
 <pre>
-	1.\*[FP12]The Free Trade Play-Offs: WalMart 100, Mexico 0
+	1.\*[FWD 12p]The Free Trade Play-Offs: WalMart 100, Mexico 0
 </pre>
-
 puts 12 points of space between &quot;1.&quot; and
 &quot;The&quot;.
 <p>
-Both <strong>\*[FP]</strong> and <strong>\*[BP]</strong> accept
-quarter points as well.  Hence it's possible to do, for example,
-<strong>\*[FP.5]</strong> or <strong>\*[BP1.25]</strong> or
-<strong>\*[ALD3.75]</strong>.
+<strong>NOTE:</strong> For backward compatibility, the forms
 <p>
-<strong>NOTE:</strong> If you need to move forward or backward by
-more than 12.75 points, or wish to use a
-<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
-other than points, use the groff inline
-<a href="#INLINE_HORIZONTAL_GROFF">\h</a>.
+<table valign="baseline" summary="inlinehorizontalold">
+<tr><td width="15"><td><strong>\*[BP.25]...\*[BP12.75]</strong><td>Move back .25...12.75 points
+<tr><td><td><strong>\*[FP.25]...\*[FP12.75]</strong><td>Move forward .25...12.75 points</td></tr>
+</table>
+<br>
+also exist (i.e. with no space before the digit and points being
+the unit of measure, hence no unit of measure required).  Both
+accept quarter points, so it's possible to do, for example,
+<strong>\*[FP.5]</strong> or <strong>\*[BP1.25]</strong> up to a limit
+of 12.75 points.
 <br>
 
 <!---INLINE_VERTICAL_MOM--->
@@ -253,35 +286,42 @@ other than points, use the groff inline
 <a name="INLINE_VERTICAL_MOM"><h3><u>Vertical inline movement</u></h3></a>
 
 <p>
-If you need to move up or down in a line by a just few
-points, use
+If you need to move portions of type up or down on a line,
+<strong>mom</strong> provides the following inline escapes:
 <p>
 <table valign="baseline" summary="inlinevertical">
-<tr><td width="15"><td><strong>\*[ALD1]...\*[ALD12]</strong><td>
-Advance lead 1...12 points (move downward)
-<tr><td><td><strong>\*[RLD1]...\*[RLD12]</strong><td>
-Reverse lead 1...12 points (move upward)</td></tr>
+<a name="UP"></a>
+<tr><td width="15"><td><strong>\*[UP #&lt;unit&gt;]</strong>
+<td>Move up inline the specified number of
+<a href="definitions.html#TERMS_UNITOFMEASURE">units of measure</a>
+<a name="DOWN"></a>
+<tr><td><td><strong>\*[DOWN #&lt;unit&gt;]</strong>
+<td>Move down inline the specified number of
+<a href="definitions.html#TERMS_UNITOFMEASURE">units of measure</a>
 </table>
-<p>
+<br>
 For example,
 <p>
 <pre>
-	Tel: 905\*[RLD1]-\*[ALD1]4072
+	Tel: 905\*[UP 1p]-\*[DOWN 1p]4072
 </pre>
 
 moves the hyphen in the telephone number up by 1 point, then
 moves back down by the same amount.
 <p>
-Both <strong>\*[ALD]</strong> and <strong>\*[RLD]</strong> accept
-quarter points as well.  Hence it's possible to do, for example,
-<strong>\*[RLD3.25]</strong> or <strong>\*[ALD1.5]</strong> or
-<strong>\*[ALD4.75]</strong>.
+<strong>NOTE:</strong> For backward compatibility, the following are
+also available:
 <p>
-<strong>NOTE:</strong> If you need to move up or down by
-more than 12.75 points, or wish to use a
-<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
-other than points, use the groff inline
-<a href="#INLINE_VERTICAL_GROFF">\v</a>.
+<table valign="baseline" summary="inlinevertical">
+<tr><td width="15"><td><strong>\*[ALD.25]...\*[ALD12.75]</strong><td>
+Advance lead .25...12.75 points (move downward)
+<tr><td><td><strong>\*[RLD.25]...\*[RLD12.75]</strong><td>
+Reverse lead .5...12.75 points (move upward)</td></tr>
+</table>
+<p>
+<p>
+Both <strong>\*[ALD]</strong> and <strong>\*[RLD]</strong> work in
+points, hence you musn't use a unit of measure.
 <br>
 
 <!---INLINE_RULE_MOM--->
@@ -354,7 +394,7 @@ in a line that is otherwise in Times Roman.
 
 <p>
 Whenever you need to move forward or backward on a line, use the inline
-<strong>\h'distance'</strong>.  In order to avoid unpleasant surprises,
+<strong>\h'&lt;distance&gt;'</strong>.  In order to avoid unpleasant surprises,
 always append a
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
 to &quot;distance&quot;.
@@ -366,12 +406,16 @@ to &quot;distance&quot;.
 moves you 1.25 inches to the right (forwards) of the horizontal
 position on the current
 <a href="definitions.html#TERMS_OUTPUTLINE">output line</a>.
+<strong>\h'&lt;distance&gt;'</strong> is exactly equivalent to
+<a href="#FWD"><strong>\*[FWD #&lt;unit&gt;]</strong></a>.
 <p>
 <pre>
 	\h'-1.25i'
 </pre>
 
 moves you 1.25 inches to the left (backwards).
+<strong>\h'-&lt;distance&gt;'</strong> is exactly equivalent to
+<a href="#BCK"><strong>\*[BCK #&lt;unit&gt;]</strong></a>.
 <br>
 
 <!---INLINE_VERTICAL_GROFF--->
@@ -382,7 +426,7 @@ moves you 1.25 inches to the left (backwards).
 <p>
 If you need to raise or lower type on a line (say, for sub- or
 superscripts, or any other special effect), use
-<strong>\v'distance'</strong>.  In order to avoid unpleasant
+<strong>\v'&lt;distance&gt;'</strong>.  In order to avoid unpleasant
 surprises, always append a
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
 to &quot;distance&quot;.
@@ -395,12 +439,16 @@ moves you (approx.) 2/3 of an
 <a href="definitions.html#TERMS_EM">em</a>
 downward on the current
 <a href="definitions.html#TERMS_OUTPUTLINE">output line</a>.
+<strong>\v'&lt;distance&gt;'</strong> is exactly equivalent to
+<a href="#DOWN"><strong>\*[DOWN #&lt;unit&gt;]</strong></a>.
 <p>
 <pre>
 	\v'-.6m'
 </pre>
 
 moves you (approx.) 2/3 of an em upward.
+<strong>\v'&lt;-distance&gt;'</strong> is exactly equivalent to <a
+href="#UP"><strong>\*[UP #&lt;unit&gt;]</strong></a>.
 <p>
 <strong>IMPORTANT:</strong> The vertical motion of <strong>\v</strong>
 affects ONLY type on the current
