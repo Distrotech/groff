@@ -29,8 +29,8 @@ export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.8';
-_LAST_UPDATE='25 June 2002';
+_PROGRAM_VERSION='0.9.0';
+_LAST_UPDATE='27 June 2002';
 
 export _DEBUG;
 _DEBUG='no';			# disable debugging information
@@ -298,7 +298,7 @@ export _CONFFILES;
 _CONFFILES="/etc/groff/groffer.conf ${HOME}/.groff/groffer.conf";
 
 export _DEFAULT_MODES;
-_DEFAULT_MODES='X,ps,tty';
+_DEFAULT_MODES='ps,x,tty';
 export _DEFAULT_RESOLUTION;
 _DEFAULT_RESOLUTION='100';
 
@@ -312,6 +312,7 @@ export _VIEWER_PS;		# viewer program for ps mode
 export _VIEWER_WWW_X;		# viewer program for www mode in X
 export _VIEWER_WWW_TTY;		# viewer program for www mode in tty
 _VIEWER_DVI='xdvi,dvilx';
+_VIEWER_PDF='xpdf,acroread';
 _VIEWER_PS='gv,ghostview,gs_x11,gs';
 _VIEWER_WWW='mozilla,netscape,opera,amaya,arena';
 _VIEWER_X='gxditview,xditview';
@@ -374,13 +375,13 @@ _OPTS_GROFFER_SHORT_ARG="'T'";
 
 _OPTS_GROFFER_LONG_NA="'all' 'apropos' 'ascii' 'auto' 'default' 'dvi' \
 'groff' 'help' 'intermediate-output' 'local-file' 'location' 'man' \
-'no-location' 'no-man' 'ps' 'rv' 'source' 'tty' 'tty-device' \
+'no-location' 'no-man' 'pdf' 'ps' 'rv' 'source' 'tty' 'tty-device' \
 'version' 'whatis' 'where' 'www' 'x'";
 
 _OPTS_GROFFER_LONG_ARG="'background' 'bd' 'bg' 'bw' 'default-modes' \
 'device' 'display' 'dvi-viewer' 'extension' 'fg' 'fn' 'font' \
-'foreground' 'geometry' \
-'locale' 'manpath' 'mode' 'pager' 'ps-viewer' 'resolution' 'sections' \
+'foreground' 'geometry' 'locale' 'manpath' 'mode' 'pager' \
+'pdf-viewer' 'ps-viewer' 'resolution' 'sections' \
 'systems' 'title' 'troff-device' 'www-viewer' 'xrm' 'x-viewer'";
 
 ##### options inhereted from groff
@@ -498,6 +499,7 @@ export _OPT_TITLE;		# title for gxditview window
 export _OPT_TTY_DEVICE;		# set device for tty mode.
 export _OPT_V;			# groff option -V.
 export _OPT_VIEWER_DVI;		# viewer program for dvi mode
+export _OPT_VIEWER_PDF;		# viewer program for pdf mode
 export _OPT_VIEWER_PS;		# viewer program for ps mode
 export _OPT_VIEWER_WWW;		# viewer program for www mode
 export _OPT_VIEWER_X;		# viewer program for x mode
@@ -640,6 +642,7 @@ reset()
   _OPT_TTY_DEVICE='';
   _OPT_V='no';
   _OPT_VIEWER_DVI='';
+  _OPT_VIEWER_PDF='';
   _OPT_VIEWER_PS='';
   _OPT_VIEWER_WWW='';
   _OPT_VIEWER_X='';
@@ -1049,10 +1052,19 @@ fi;
 ########################################################################
 # Test for compression.
 #
-if test "$(echo test | gzip -c -d -f -)" = "test"; then
-  _HAS_COMPRESSION="yes";
+if test "$(echo 'test' | gzip -c -d -f - 2>/dev/null)" = 'test'; then
+  _HAS_COMPRESSION='yes';
+  if echo 'test' | bzip2 -c 2>/dev/null | bzip2 -t 2>/dev/null \
+     && test "$(echo 'test' | bzip2 -c 2>/dev/null \
+                            | bzip2 -d -c 2>/dev/null)" \
+             = 'test'; then
+    _HAS_BZIP='yes';
+  else
+    _HAS_BZIP='no';
+  fi;
 else
-  _HAS_COMPRESSION="no";
+  _HAS_COMPRESSION='no';
+  _HAS_BZIP='no';
 fi;
 
 
@@ -1097,23 +1109,38 @@ base_name()
 ########################################################################
 # catz (<file>)
 #
-# If compression is available decompress standard input and write it to
-# standard output; otherwise copy standard input to standard output.
+# Decompress if possible or just print <file> to standard output.
+#
+# gzip, bzip2, and .Z decompression is supported.
+#
+# Arguments: 1, a file name.
+# Output: the content of <file>, possibly decompressed.
 #
 if test "${_HAS_COMPRESSION}" = 'yes'; then
   catz()
   {
     func_check catz = 1 "$@";
-    cat "$1" | gzip -c -d -f 2>/dev/null;
+    case "$1" in
+      '')
+        error 'catz(): empty file name';
+        ;;
+      '-')
+        error 'catz(): for standard input use save_stdin()';
+        ;;
+    esac;
+    if is_yes "${_HAS_BZIP}"; then
+      if bzip2 -t "$1" 2>/dev/null; then
+        bzip2 -c -d "$1" 2>/dev/null;
+        eval "${return_ok}";
+      fi;
+    fi;
+    gzip -c -d -f "$1" 2>/dev/null;
     eval "${return_ok}";
   }
 else
   catz()
   {
     func_check catz = 1 "$@";
-    if test "$#" -ne 1; then
-      error "catz() needs exactly 1 argument.";
-    fi;
     cat "$1";
     eval "${return_ok}";
   }
@@ -2703,14 +2730,27 @@ register_title()
 ########################################################################
 # save_stdin ()
 #
-# Store standard input to temporary file.
+# Store standard input to temporary file (with decompression).
 #
-save_stdin()
-{
-  func_check save_stdin = 0 "$@";
-  cat | catz - >"${_TMP_STDIN}"; # using `cat' first is safer
-  eval "${return_ok}";
-}
+if test "${_HAS_COMPRESSION}" = 'yes'; then
+  save_stdin()
+  {
+    local _f;
+    func_check save_stdin = 0 "$@";
+    _f="$(tmp_create)";
+    cat >"${_f}";
+    catz "${_f}" >"${_TMP_STDIN}";
+    rm -f "${_f}";
+    eval "${return_ok}";
+  }
+else
+  save_stdin()
+  {
+    func_check save_stdin = 0 "$@";
+    cat >"${_TMP_STDIN}";
+    eval "${return_ok}";
+  }
+fi;
 
 
 ########################################################################
@@ -3241,15 +3281,21 @@ All input is decompressed on-the-fly (by gzip).
 -h --help        print this usage message.
 -Q --source      output as roff source.
 -T --device=name pass to groff using output device "name".
--X               force X mode like in groff; display with "gxditview".
 -v --version     print version information.
--Z --intermediate-output
-                 generate intermediate output without post-processing. 
 
-All other short options are interpreted as "groff" parameters and
-transferred unmodified.  The most important long options are
+All other short options are interpreted as "groff" formatting
+parameters and are transferred unmodified.  The following groff
+options imply groff mode (groffer viewing disabled):
 
---default-modes=mode1,mode2,...
+-X               display with "gxditview" using groff -X.
+-V               display the groff execution pipe instead of formatting.
+-Z --ditroff --intermediate-output
+                 generate groff intermediate output without 
+                 post-processing and viewing like groff -Z.
+
+The most important long options are
+
+--auto-modes=mode1,mode2,...
                  set sequence of automatically tried modes.
 --bg             set background color (not for all modes).
 --default        reset effects of option processing so far.
@@ -3260,15 +3306,18 @@ transferred unmodified.  The most important long options are
 --extension=ext  restrict man pages to section suffix.
 --fg             set foreground color (not for all modes).
 --geometry=geom  set the window size and position when displaying in X.
+--groff          process like groff, disable viewing features.
 --local-file     same as --no-man.
 --locale=lang    preset the language for man pages.
 --location       print file locations additionally to standard error.
 --man            check file parameters first whether they are man pages.
---mode=auto|dvi|groff|ps|source|tty|www
+--mode=auto|dvi|groff|pdf|ps|source|tty|www|x
                  choose display mode.
 --no-location    disable former call to "--location".
 --no-man         disable man-page facility.
 --pager=program  preset the paging program for tty mode.
+--pdf            display in a PDF viewer.
+--pdf-viewer     choose the viewer program for pdf mode.
 --ps             display in a Postscript viewer.
 --ps-viewer      choose the viewer program for ps mode.
 --systems=os1,os2,...
@@ -3427,7 +3476,7 @@ main_init()
 
   # determine temporary directory
   for d in "${GROFF_TMPDIR}" "${TMPDIR}" "${TMP}" "${TEMP}" \
-           "${TEMPDIR}" "${HOME}"/tmp /tmp "${HOME}" .;
+           "${TEMPDIR}" "${HOME}"'/tmp' '/tmp' "${HOME}" '.';
   do
     if test "$d" != ""; then
       if test -d "$d" && test -r "$d" && test -w "$d"; then
@@ -3665,7 +3714,7 @@ main_parse_args()
         _OPT_APROPOS="yes";
         ;;
       --auto)			# the default automatic mode
-        _mode='auto';
+        _mode='';
         ;;
       --bd)			# border color for viewers, arg;
         _OPT_BD="$1";
@@ -3744,14 +3793,17 @@ main_parse_args()
         _arg="$1";
         shift;
         case "${_arg}" in
-          auto|"")		# the default automatic mode
-	    _mode='auto';
+          auto|'')		# the default automatic mode
+	    _mode='';
             ;;
           groff)		# pass input to plain groff
             _mode='groff';
             ;;
           dvi)			# display with xdvi viewer
             _mode='dvi';
+            ;;
+          pdf)			# display with PDF viewer
+            _mode='pdf';
             ;;
           ps)			# display with Postscript viewer
             _mode='ps';
@@ -3781,6 +3833,13 @@ main_parse_args()
         ;;
       --pager)			# set paging program for tty mode, arg
         _OPT_PAGER="$1";
+        shift;
+        ;;
+      --pdf)
+        _OPT_MODE='pdf';
+        ;;
+      --pdf-viewer)		# viewer program for ps mode; arg
+        _OPT_VIEWER_PDF="$1";
         shift;
         ;;
       --ps)
@@ -3946,13 +4005,17 @@ main_set_mode()
   fi;
 
   case "${_OPT_MODE}" in
-    auto|'')			# automatic mode
+    '')				# automatic mode
       case "${_OPT_DEVICE}" in
         X*)
           if is_empty "${DISPLAY}"; then
             error "no X display found for device ${_OPT_DEVICE}";
           fi;
           _DISPLAY_MODE='x';
+          eval "${return_ok}";
+          ;;
+        ascii|cp1047|latin1|utf8)
+          _DISPLAY_MODE='tty';
           eval "${return_ok}";
           ;;
       esac;
@@ -4015,6 +4078,20 @@ main_set_mode()
         fi;
         _DISPLAY_PROG="${_viewer}";
         _DISPLAY_MODE="dvi";
+        eval "${return_ok}";
+        ;;
+      pdf)
+        if is_not_empty "${_OPT_VIEWER_PDF}"; then
+          _viewers="${_OPT_VIEWER_PDF}";
+        else
+          _viewers="${_VIEWER_PDF}";
+        fi;
+        _viewer="$(_get_first_prog "${_viewers}")";
+        if test "$?" -ne 0; then
+          continue;
+        fi;
+        _DISPLAY_PROG="${_viewer}";
+        _DISPLAY_MODE="pdf";
         eval "${return_ok}";
         ;;
       ps)
@@ -4185,6 +4262,9 @@ main_set_resources()
       ghostview|gv|gxditview|xditview|xdvi)
         _rl="$(list_append "$_rl" '-bg' "${_OPT_BG}")";
         ;;
+      xpdf)
+        _rl="$(list_append "$_rl" '-papercolor' "${_OPT_BG}")";
+        ;;
     esac;
   fi;
   if is_not_empty "${_OPT_BW}"; then
@@ -4210,7 +4290,7 @@ main_set_resources()
   fi;
   if is_not_empty "${_OPT_GEOMETRY}"; then
     case "${_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
+      ghostview|gv|gxditview|xditview|xdvi|xpdf)
         _rl="$(list_append "$_rl" '-geometry' "${_OPT_GEOMETRY}")";
         ;;
     esac;
@@ -4221,11 +4301,31 @@ main_set_resources()
         _rl="$(list_append "$_rl" \
                '-resolution' "${_DEFAULT_RESOLUTION}")";
         ;;
+      xpdf)
+        case "${_DEFAULT_RESOLUTION}" in
+          75)
+            _rl="$(list_append "$_rl" '-z' '2')";
+            ;;
+          100)
+            _rl="$(list_append "$_rl" '-z' '3')";
+            ;;
+        esac;
+        ;;
     esac;
   else
     case "${_prog}" in
       ghostview|gv|gxditview|xditview|xdvi)
         _rl="$(list_append "$_rl" '-resolution' "${_OPT_RESOLUTION}")";
+        ;;
+      xpdf)
+        case "${_OPT_RESOLUTION}" in
+          75)
+            _rl="$(list_append "$_rl" '-z' '2')";
+            ;;
+          100)
+            _rl="$(list_append "$_rl" '-z' '3')";
+            ;;
+        esac;
         ;;
     esac;
   fi;
@@ -4238,7 +4338,7 @@ main_set_resources()
   fi;
   if is_not_empty "${_OPT_XRM}"; then
     case "${_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
+      ghostview|gv|gxditview|xditview|xdvi|xpdf)
         eval set -- "{$_OPT_XRM}";
         for i in "$@"; do
           _rl="$(list_append "$_rl" '-xrm' "$i")";
@@ -4348,7 +4448,7 @@ main_display()
 
     dvi)
       case "${_OPT_DEVICE}" in
-        dvi) do_nothing; ;;
+        ''|dvi) do_nothing; ;;
         *)
           warning \
             "wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
@@ -4356,6 +4456,41 @@ main_display()
       esac;
       _groggy="$(tmp_cat | grog -Tdvi)";
       _do_display;
+      ;;
+    pdf)
+      case "${_OPT_DEVICE}" in
+        ''|ps)
+          do_nothing;
+          ;;
+        *)
+          warning \
+            "wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
+          ;;
+      esac;
+      _groggy="$(tmp_cat | grog -Tps)";
+      trap "" EXIT 2>/dev/null || true;
+      # start a new shell program to get another process ID.
+      sh -c '
+        set -e;
+        _PROCESS_ID="$$";
+        _psfile="${_TMP_DIR}/${_PROGRAM_NAME}${_PROCESS_ID}";
+        _modefile="${_TMP_DIR}/${_PROGRAM_NAME}${_PROCESS_ID}.pdf";
+        rm -f "${_psfile}";
+        rm -f "${_modefile}";
+        cat "${_TMP_CAT}" | \
+        eval "${_groggy}" "${_ADDOPTS_GROFF}" > "${_psfile}";
+        gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite \
+           -sOutputFile="${_modefile}" -c save pop -f "${_psfile}";
+        rm -f "${_psfile}";
+        rm -f "${_TMP_CAT}";
+        (
+          clean_up()
+          {
+            rm -f "${_modefile}";
+          }
+          trap clean_up EXIT 2>/dev/null || true;
+          eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "${_modefile}";
+        ) &'
       ;;
     ps)
       case "${_OPT_DEVICE}" in

@@ -14,8 +14,8 @@ groffer.1 - man page for groffer (section 1).
 
 File position: <groff_source_top>/contrib/groffer/groffer.man
 
-Version     : groffer 0.8
-Last update : 25 June 2002
+Version     : groffer 0.9.0
+Last update : 28 June 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -647,15 +647,17 @@ display mode automatically.
 .P
 .Opt_[alt] - Q -- source
 .Opt_[alt] - T -- device device
+.Opt_[alt] -- auto-modes mode1,mode2,\*[Ellipsis]
 .Opt_[alt] -- debug
 .Opt_[alt] -- default
-.Opt_[alt] -- default-modes mode1,mode2,\*[Ellipsis]
 .Opt_[alt] -- dvi
 .Opt_[alt] -- dvi-viewer prog
 .Opt_[alt] -- groff
 .Opt_[alt] -- location
 .Opt_[alt] -- mode display_mode
 .Opt_[alt] -- pager program
+.Opt_[alt] -- pdf
+.Opt_[alt] -- pdf-viewer prog
 .Opt_[alt] -- ps
 .Opt_[alt] -- ps-viewer prog
 .Opt_[alt] -- tty
@@ -1117,7 +1119,7 @@ this produces the groff calling pipe without formatting the input.
 .
 This an advanced option from
 .BR groff (@MAN1EXT@) ,
-useful for debugging.
+only useful for debugging.
 .
 .
 .Opt_def - X
@@ -1156,6 +1158,11 @@ In searching man pages, retrieve all suitable ones instead of only one.
 .Opt_def -- apropos
 Instead of displaying, start the `apropos' command for searching
 within man page descriptions; only kept for compatibility with `man'.
+.
+.
+.Opt_def -- auto-modes mode1,mode2,\*[Ellipsis]
+Set the sequence of modes for default mode to the comma separated list
+given in the argument.
 .
 .
 .Opt_def -- background color
@@ -1206,11 +1213,6 @@ to the default values.
 .
 This is useful to wipe out all effects of former options and restart
 option processing using only the rest of the command line.
-.
-.
-.Opt_def -- default-modes mode1,mode2,\*[Ellipsis]
-Set the sequence of modes for default mode to the comma separated list
-given in the argument.
 .
 .
 .Opt_def -- device
@@ -1364,7 +1366,7 @@ The following mode values are recognized:
 .
 .
 .TP
-.B default
+.B auto
 Display in the default manner; this actually means to try the modes
 .IR ps ,
 .IR x ,
@@ -1379,17 +1381,20 @@ with
 .
 .TP
 .B dvi
-Display formatted input in a dvi viewer program,
-.BR xdvi (1)
-by default; equivalent to
+Display formatted input in a dvi viewer program; equivalent to
 .Opt_long dvi .
 .
 .
 .TP
+.B pdf
+Display formatted input in a PDF (Portable Document Format) viewer
+program; equivalent to
+.Opt_long pdf .
+.
+.
+.TP
 .B ps
-Display formatted input in a Postscript viewer program,
-.BR ghostview (1)
-by default; equivalent to
+Display formatted input in a Postscript viewer program; equivalent to
 .Opt_long ps .
 .
 .
@@ -1401,28 +1406,15 @@ Display formatted input in a text terminal; equivalent to
 .
 .TP
 .B www
-Display formatted input in a internet browser program,
-.BR mozilla (1)
-by default; equivalent to
+Display formatted input in a internet browser program; equivalent to
 .Opt_long www .
 .
 .
 .TP
 .B x
 Display formatted input in a native roff viewer such as
-.BR gxditview (@MAN1EXT@),
-which is distributed together with groff, or with
-.BR xditview (1),
-which is distributed as a standard X tool.
-.
-The only devices that are compatible with this mode are
-.IR X75 ,
-.IR X100 ,
-.IR X75-12 ,
-.IR X100-12 ,
-and
-.I ps
-(the default device).
+.BR gxditview (@MAN1EXT@); equivalent to
+.Opt_long x .
 .
 .
 .P
@@ -1470,6 +1462,40 @@ Do not check for man\~pages.
 .Opt_def -- pager
 Set the pager program in tty mode; default is
 .IR less .
+.
+.
+.Opt_def -- pdf
+Choose pdf mode (Portable Document Format).
+.
+By default, the input is formatted by groff using the Postscript
+device, then it is transformed into the PDF file format using
+.BR gs (1)
+(this is quite slow), and finally displayed either with the
+.BR xpdf (1)
+or the
+.BR acroread (1)
+program; this can be configured with option
+.Opt_long viewer-pdf .
+.
+PDF has a big advantage because the text is displayed graphically and
+is searchable nevertheless; but as thtransformation into pdf takes a
+considerable amount of time, the pdf mode is not suitable as a default
+device for the auto mode.
+.
+The only device that is compatible to this mode is
+.IR ps ,
+which is also the default when no device is specified.
+.
+.
+.Opt_def -- pdf-viewer prog
+Set the viewer program for
+.I pdf
+mode.
+.
+This can be a file name or a program to be searched in
+.Env_var $PATH .
+.
+In each case, arguments can be provided additionally.
 .
 .
 .Opt_def -- ps
@@ -1609,11 +1635,25 @@ mode (view in X roff viewer).
 .
 By default, the formatted input is displayed with the
 .BR gxditview (@MAN1EXT@)
-program; this can be configured with option
+program, being distributed together with groff, or with
+.BR xditview (1),
+which is distributed as a standard X tool.
+.
+This can be configured with option
 .Opt_long x-viewer .
 .
+The only devices (option
+.Opt_short T )
+that are compatible with this mode are
+.IR X75 ,
+.IR X100 ,
+.IR X75-12 ,
+.IR X100-12 ,
+and
+.I ps
+(the default device).
 .
-
+.
 .Opt_def -- x-viewer prog
 Set the viewer program for
 .I x
@@ -1676,6 +1716,11 @@ mode),
 .Topic
 in a Postscript viewer
 .RI ( ps
+mode),
+.
+.Topic
+in a PDF viewer
+.RI ( pdf
 mode),
 .
 .Topic
@@ -1743,6 +1788,7 @@ specified, groffer assumes that no X is running.
 .P
 A certain graphical display mode can be selected by one of the options
 .Opt_long dvi ,
+.Opt_long pdf ,
 .Opt_long ps ,
 .Opt_short X ,
 and
@@ -1769,6 +1815,22 @@ These include
 .Opt_long title ,
 .Opt_long xrm ,
 etc.
+.
+.
+.P
+The
+.I pdf
+mode has a major advantage \[em] it is the only graphical diplay mode
+that allows to search for text within the viewer; this can be a really
+important feature.
+.
+Unfortunately, it takes a long time to transform the input into the
+PDF format, so it was not chosen as the major mode.
+.
+You can change this by the options
+.Opt_long pdf
+and
+.Opt_long auto-modes .
 .
 .
 .\" --------------------------------------------------------------------
@@ -2150,12 +2212,15 @@ For further details on man\~page searching, see
 The program has a decompression facility.
 .
 If standard input or a file that was retrieved from the command line
-parameters is compressed with a format that is supported by
+parameters is compressed with a format that is supported by either
 .BR gzip (1)
+or
+.BR bzip2 (1)
 it is decompressed on-the-fly.
 .
 This includes the GNU
-.B .gz
+.BR .gz ,
+.BR .bz2 ,
 and the traditional
 .B .Z
 compression.
@@ -2620,14 +2685,17 @@ contain white space and a large set of special characters.
 Details on the options and environment variables available in groff;
 all of them can be used with groffer.
 .
+.
 .TP
 .BR grog (@MAN1EXT@)
 Internally, groffer tries to guess the groff command line options from
 the input using this program.
 .
+.
 .TP
 .BR groff_out (@MAN5EXT@)
 Documentation on the groff intermediate output (ditroff output).
+.
 .
 .TP
 .BR xdvi (1)
@@ -2637,15 +2705,33 @@ Viewers for groffer's
 .I dvi
 mode.
 .
+.
 .TP
 .BR gv (1)
 .TP+
 .BR ghostview (1)
-.TP+
-.BR gs (1)
 Viewers for groffer's
 .I ps
 mode.
+.
+.
+.TP+
+.BR gs (1)
+Transformer from
+.I ps
+to
+.IR pdf ;
+and a
+.I ps
+viewer.
+.
+.
+.TP
+.BR xpdf (1)
+Viewers for
+.I pdf
+files.
+.
 .
 .TP
 .BR gxditview (@MAN1EXT@)
@@ -2655,15 +2741,19 @@ Viewers for groffer's
 .I x
 mode.
 .
+.
 .TP
 .BR gzip (1)
-Decompression of .gz or .Z files.
+.TP+
+.BR bzip2 (1)
+The decompression programs supported by groffer.
+.
 .
 .TP
 .BR man (1)
 The standard program to diplay man\~pages.
 .
-This is only useful if it is the man\~page for
+The information there is only useful if it is the man\~page for
 .IR "GNU\~man" .
 Then it documents the options and environment variables that are
 supported by groffer.
