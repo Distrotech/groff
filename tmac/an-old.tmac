@@ -136,7 +136,10 @@
 .  vs \\n[VS]u
 .  ll \\n[LL]u
 .
-.  nr IN 7.2n
+.\" We must select an integer indentation value for nroff;
+.\" see comment in an-do-tag.
+.  ie t .nr IN 7.2n
+.  el   .nr IN 7n
 .  PD
 .  nr SN 3n \" the indentation of sub-sub-headings relative to sub-headings
 .  nr an-level 1
@@ -357,10 +360,13 @@
 .    in \\n[an-margin]u
 .    ne (2v + 1u)
 .    an-div
-.    br
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .  \}
 .  el \{\
+.    \" In nroff mode, if the indentation value is not an integer multiple
+.    \" of the character cell, it is possible that the following combination
+.    \" of .in and .ti yields a different result as the .in request in
+.    \" the .ie part above.
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .    ti -\\n[an-prevailing-indent]u
 .    chop an-div
@@ -377,7 +383,6 @@
 .  ie ((\\n[dl] + \\n[an-tag-sep]) > \\n[an-prevailing-indent]) \{\
 .    in \\n[an-margin]u
 .    an-div
-.    br
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u + \\n[an-tag-sep]u)
 .  \}
 .  el \{\
@@ -508,7 +513,6 @@
 ..
 .
 .de1 RS
-.  br
 .  nr an-saved-margin\\n[an-level] \\n[an-margin]
 .  nr an-saved-prevailing-indent\\n[an-level] \\n[an-prevailing-indent]
 .  ie \\n[.$] .nr an-margin +(n;\\$1)
@@ -519,7 +523,6 @@
 ..
 .
 .de1 RE
-.  br
 .  ie \\n[.$] .nr an-level ((;\\$1) <? \\n[an-level])
 .  el         .nr an-level -1
 .  nr an-level (1 >? \\n[an-level])

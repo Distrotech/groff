@@ -1,7 +1,7 @@
 .ig
 groff.man
 
-Last update: 14 July 2002
+Last update: 09 Dec 2002
 
 Copyright (C) 1989, 2002 Free Software Foundation, Inc.
 Rewritten in 2002 by Bernd Warken <bwarken@mayn.de>
@@ -504,28 +504,79 @@ Preprocess with
 .OptDef T "" dev
 Set output device to
 .IR dev .
-The possible values in
-.I groff
+Contrary to
+.BR @g@troff ,
+.B groff
+calls a postprocessor to convert
+.BR @g@troff 's
+intermediate output to its final format.
+Real devices in
+.B groff
 are
-.BR ascii ,
-.BR cp1047 ,
-.BR dvi ,
-.BR html ,
-.BR latin1 ,
-.BR lbp ,
-.BR lj4 ,
-.BR ps ,
-.BR utf8 ,
-.BR X75 ,
-and
-.BR X100 .
 .
-Additionally,
-.B X75-12
+.RS
+.RS
+.IP dvi
+TeX DVI format (postprocessor is
+.BR grodvi ).
+.IP html
+HTML output (preprocessors are
+.B @g@soelim
 and
-.B X100-12
-are available for documents which use 12\|pt as the base document size.
+.BR \%pre-grohtml ,
+postprocessor is
+.BR \%post-grohtml ).
+.IP lbp
+Canon CAPSL printers (\%LBP-4 and \%LBP-8 series laser printers;
+postprocessor is
+.BR grolbp ).
+.IP lj4
+HP LaserJet4 compatible (or other PCL5 compatible) printers (postprocessor
+is
+.BR grolj4 ).
+.IP ps
+PostScript output (postprocessor is
+.BR grops ).
+.RE
+.RE
 .
+.IP
+For the following TTY output devices (postprocessor is always
+.BR grotty ),
+.ShortOpt T
+selects the output encoding:
+.RS
+.RS
+.IP ascii
+7bit ASCII.
+.IP cp1047
+Latin-1 character set for EBCDIC hosts.
+.IP latin1
+ISO 8859-1.
+.IP utf8
+Unicode character set in UTF-8 encoding.
+.RE
+.RE
+.
+.IP
+The following arguments select
+.B gxditview
+as the `postprocessor' (it is rather a viewing program):
+.
+.RS
+.RS
+.IP X75
+75dpi resolution, 10pt document base font.
+.IP X75-12
+75dpi resolution, 12pt document base font.
+.IP X100
+100dpi resolution, 10pt document base font.
+.IP X100-12
+100dpi resolution, 12pt document base font.
+.RE
+.RE
+.
+.IP
 The default device is
 .BR @DEVICE@ .
 .

@@ -752,7 +752,7 @@ void space_request()
   while (!tok.newline() && !tok.eof())
     tok.next();
   if (!unpostpone_traps() && !curdiv->no_space_mode)
-      curdiv->space(n);
+    curdiv->space(n);
   else
     // The line might have had line spacing that was truncated.
     truncated_space += n;
