@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2003, 2004 Free Software Foundation, Inc.
      Written by Jeff Conrad (jeff_conrad@msn.com)
 
 This file is part of groff.
@@ -33,7 +33,7 @@ implement_ptable(hp_msl_to_unicode)
 
 PTABLE(hp_msl_to_unicode) hp_msl_to_unicode_table;
 
-struct {
+struct S {
   const char *key;
   const char *value;
 } hp_msl_to_unicode_list[] = {
