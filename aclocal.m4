@@ -94,38 +94,35 @@ dnl
 dnl
 AC_DEFUN(GROFF_POSIX,
 [AC_MSG_CHECKING([whether -D_POSIX_SOURCE is necessary])
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG_PUSH(C++)
 AC_TRY_COMPILE([#include <stdio.h>
 extern "C" { void fileno(int); }],,
 AC_MSG_RESULT(yes);AC_DEFINE(_POSIX_SOURCE),
 AC_MSG_RESULT(no))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 dnl srand() of SunOS 4.1.3 has return type int instead of void
 dnl
 AC_DEFUN(GROFF_SRAND,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+[AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([for return type of srand])
 AC_TRY_COMPILE([#include <stdlib.h>
 extern "C" { void srand(unsigned int); }],,
 AC_MSG_RESULT(void);AC_DEFINE(RET_TYPE_SRAND_IS_VOID),
 AC_MSG_RESULT(int))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_SYS_NERR,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+[AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([for sys_nerr in <errno.h> or <stdio.h>])
 AC_TRY_COMPILE([#include <errno.h>
 #include <stdio.h>],
 [int k; k = sys_nerr;],
 AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_NERR),
 AC_MSG_RESULT(no))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_SYS_ERRLIST,
@@ -138,36 +135,33 @@ AC_MSG_RESULT(no))])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_OSFCN_H,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+[AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([C++ <osfcn.h>])
 AC_TRY_COMPILE([#include <osfcn.h>],
 [read(0, 0, 0); open(0, 0);],
 AC_MSG_RESULT(yes);AC_DEFINE(HAVE_CC_OSFCN_H),
 AC_MSG_RESULT(no))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_LIMITS_H,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+[AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([C++ <limits.h>])
 AC_TRY_COMPILE([#include <limits.h>],
 [int x = INT_MIN; int y = INT_MAX; int z = UCHAR_MAX;],
 AC_MSG_RESULT(yes);AC_DEFINE(HAVE_CC_LIMITS_H),
 AC_MSG_RESULT(no))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_TIME_T,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+[AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([for declaration of time_t])
 AC_TRY_COMPILE([#include <time.h>],
 [time_t t = time(0); struct tm *p = localtime(&t);],
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no);AC_DEFINE(LONG_FOR_TIME_T))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_STRUCT_EXCEPTION,
@@ -179,26 +173,24 @@ AC_MSG_RESULT(no))])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_ARRAY_DELETE,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+[AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([whether ANSI array delete syntax supported])
 AC_TRY_COMPILE(,
 changequote(,)dnl
 char *p = new char[5]; delete [] p;changequote([,]),
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no);AC_DEFINE(ARRAY_DELETE_NEEDS_SIZE))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 dnl
 AC_DEFUN(GROFF_TRADITIONAL_CPP,
-[AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+[AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([traditional preprocessor])
 AC_TRY_COMPILE([#define name2(a,b) a/**/b],[int name2(foo,bar);],
 AC_MSG_RESULT(yes);AC_DEFINE(TRADITIONAL_CPP),
 AC_MSG_RESULT(no))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_WCOREFLAG,
@@ -274,8 +266,7 @@ dnl
 dnl
 AC_DEFUN(GROFF_CXX_CHECK,
 [AC_REQUIRE([AC_PROG_CXX])
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG_PUSH(C++)
 if test "$cross_compiling" = no; then
 	AC_MSG_CHECKING([that C++ compiler can compile simple program])
 fi
@@ -307,7 +298,7 @@ AC_TRY_LINK([#include <stdio.h>],
 [fopen(0, 0);],
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no);AC_MSG_ERROR([header files do not support C++ (if you are using a version of gcc/g++ earlier than 2.5, you should install libg++)]))
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_TMAC,
@@ -454,8 +445,7 @@ dnl Stolen from GNU bfd.
 dnl
 AC_DEFUN(GROFF_NEED_DECLARATION,
 [AC_MSG_CHECKING([whether $1 must be declared])
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG_PUSH(C++)
 AC_CACHE_VAL(groff_cv_decl_needed_$1,
 [AC_TRY_COMPILE([
 #include <stdio.h>
@@ -481,7 +471,7 @@ AC_MSG_RESULT($groff_cv_decl_needed_$1)
 if test $groff_cv_decl_needed_$1 = yes; then
 	AC_DEFINE([NEED_DECLARATION_]translit($1, [a-z], [A-Z]))
 fi
-AC_LANG_RESTORE])dnl
+AC_LANG_POP(C++)])dnl
 dnl
 dnl
 dnl Check for mkstemp() and its function prototype.
