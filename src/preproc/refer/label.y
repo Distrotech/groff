@@ -1089,10 +1089,10 @@ int same_author_last_name(const reference &r1, const reference &r2, int n)
 {
   const char *ae1;
   const char *as1 = r1.get_sort_field(0, n, 0, &ae1);
-  assert(as1 != 0);
   const char *ae2;
   const char *as2 = r2.get_sort_field(0, n, 0, &ae2);
-  assert(as2 != 0);
+  if (!as1 && !as2) return 1;	// they are the same
+  if (!as1 || !as2) return 0;
   return ae1 - as1 == ae2 - as2 && memcmp(as1, as2, ae1 - as1) == 0;
 }
 
@@ -1100,10 +1100,10 @@ int same_author_name(const reference &r1, const reference &r2, int n)
 {
   const char *ae1;
   const char *as1 = r1.get_sort_field(0, n, -1, &ae1);
-  assert(as1 != 0);
   const char *ae2;
   const char *as2 = r2.get_sort_field(0, n, -1, &ae2);
-  assert(as2 != 0);
+  if (!as1 && !as2) return 1;	// they are the same
+  if (!as1 || !as2) return 0;
   return ae1 - as1 == ae2 - as2 && memcmp(as1, as2, ae1 - as1) == 0;
 }
 

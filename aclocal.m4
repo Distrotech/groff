@@ -1,5 +1,6 @@
 # Autoconf macros for groff.
-# Copyright (C) 1989-1995, 2001, 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 1989-1995, 2001, 2002, 2003, 2004
+# Free Software Foundation, Inc.
 # 
 # This file is part of groff.
 # 
@@ -281,28 +282,6 @@ int z = UCHAR_MAX;
      [AC_MSG_RESULT([yes])
       AC_DEFINE([HAVE_CC_LIMITS_H], [1],
 	[Define if you have a C++ <limits.h>.])],
-     [AC_MSG_RESULT([no])])
-   AC_LANG_POP([C++])])
-
-AC_DEFUN([GROFF_STDINT_H],
-  [AC_LANG_PUSH([C++])
-   AC_MSG_CHECKING([C++ <stdint.h>])
-   AC_COMPILE_IFELSE([
-       AC_LANG_PROGRAM([[
-
-#include <stdint.h>
-
-       ]],
-       [[
-
-uint32_t x;
-int32_t y;
-
-       ]])
-     ],
-     [AC_MSG_RESULT([yes])
-      AC_DEFINE([HAVE_CC_STDINT_H], [1],
-	[Define if you have a C++ <stdint.h>.])],
      [AC_MSG_RESULT([no])])
    AC_LANG_POP([C++])])
 
@@ -775,7 +754,7 @@ f = mkstemp;
 
 AC_DEFUN([GROFF_INTTYPES_H],
   [AC_LANG_PUSH([C++])
-   AC_MSG_CHECKING([for inttypes.h])
+   AC_MSG_CHECKING([C++ <inttypes.h>])
    AC_COMPILE_IFELSE([
        AC_LANG_PROGRAM([[
 
@@ -789,7 +768,9 @@ uintmax_t i = (uintmax_t)-1;
 
        ]])
      ],
-     [groff_cv_header_inttypes_h=yes],
+     [groff_cv_header_inttypes_h=yes
+      AC_DEFINE([HAVE_CC_INTTYPES_H], [1],
+	[Define if you have a C++ <inttypes.h>.])],
      [groff_cv_header_inttypes_h=no])
    AC_MSG_RESULT([$groff_cv_header_inttypes_h])
    AC_LANG_POP([C++])])

@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2001, 2003, 2004 Free Software Foundation, Inc.
      Written by Werner Lemberg (wl@gnu.org)
 
 This file is part of groff.
@@ -48,8 +48,8 @@ extern "C" {
 #endif
 #endif
 
-#if HAVE_CC_STDINT_H
-# include <stdint.h>
+#if HAVE_CC_INTTYPES_H
+# include <inttypes.h>
 #endif
 
 /* Use the widest available unsigned type if uint64_t is not
