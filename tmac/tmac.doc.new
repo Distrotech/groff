@@ -3271,7 +3271,7 @@
 .  tm1 "Usage: .Bl [-hang | -ohang | -tag | -diag | -inset]
 .  tm1 "             [-width [string]] [-offset [string]] [-compact]
 .  tm1 "       .Bl [-column] [-offset [string]] [string1] [string2] ...
-.  tm1 "       .Bl [-item | -enum | -bullet | -hyphen | -dash]
+.  tm1 "       .Bl [-item | -enum [-nested] | -bullet | -hyphen | -dash]
 .  tm1 "             [-offset [string]] [-compact] (#\n[.c])
 ..
 .
@@ -3293,6 +3293,7 @@
 .\" NS   doc-list-indent-stackXXX
 .\" NS   doc-list-offset-stackXXX
 .\" NS   doc-num-columns
+.\" NS   doc-tag-prefix-stackXXX
 .\" NS   doc-tag-width-stackXXX
 .\" NS
 .\" NS local variables:
@@ -3313,6 +3314,17 @@
 .
 .    ie        "\*[doc-arg\n[doc-arg-ptr]]"-compact" \
 .      nr doc-compact-list-stack\n[doc-list-depth] 1
+.    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-nested" \{\
+.      ie (\n[doc-list-depth] > 1) \{\
+.        nr doc-reg-dBla1 (\n[doc-list-depth] - 1)
+.        ds doc-tag-prefix-stack\n[doc-list-depth] "\*[doc-tag-prefix-stack\n[doc-reg-dBla1]]
+.        as doc-tag-prefix-stack\n[doc-list-depth] \n[doc-enum-list-count-stack\n[doc-reg-dBla1]].
+.        length doc-reg-dBla1 "\*[doc-tag-prefix-stack\n[doc-list-depth]]
+.        nr doc-list-indent-stack\n[doc-list-depth] +\n[doc-reg-dBla1]n
+.      \}
+.      el \
+.        tm mdoc warning: `-nested' allowed with nested .Bl requests only (#\n[.c])
+.    \}
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-width" \{\
 .      nr doc-arg-ptr +1
 .      \" XXX: this code should be modified to handle nested lists
@@ -3412,7 +3424,7 @@
 .    \}\}\}
 .    el \
 .      nr doc-reg-dBla 0
-.    \}\}\}
+.    \}\}\}\}
 .
 .    \" not a known keyword, so it specifies the width of the next column
 .    \" (if it is a column list)
@@ -3489,8 +3501,10 @@
 .    ds doc-list-type-stack\n[doc-reg-dsgv]-saved "\*[doc-list-type-stack\n[doc-reg-dsgv]]
 .    nr doc-list-indent-stack\n[doc-reg-dsgv]-saved \n[doc-list-indent-stack\n[doc-reg-dsgv]]
 .    nr doc-compact-list-stack\n[doc-reg-dsgv]-saved \n[doc-compact-list-stack\n[doc-reg-dsgv]]
+.    ds doc-tag-prefix-stack\n[doc-reg-dsgv]-saved "\*[doc-tag-prefix-stack\n[doc-reg-dsgv]]
 .    ds doc-tag-width-stack\n[doc-reg-dsgv]-saved "\*[doc-tag-width-stack\n[doc-reg-dsgv]]
 .    nr doc-list-offset-stack\n[doc-reg-dsgv]-saved \n[doc-list-offset-stack\n[doc-reg-dsgv]]
+.    nr doc-enum-list-count-stack\n[doc-reg-dsgv]-saved \n[doc-enum-list-count-stack\n[doc-reg-dsgv]]
 .    nr doc-reg-dsgv +1
 .  \}
 .
@@ -3499,7 +3513,6 @@
 .  ds doc-saved-Pa-font-saved "\*[doc-saved-Pa-font]
 .  nr doc-curr-type-saved \n[doc-curr-type]
 .  ds doc-curr-arg-saved "\*[doc-curr-arg]
-.  nr doc-enum-list-count-saved \n[doc-enum-list-count]
 .  nr doc-have-diag-list-saved \n[doc-have-diag-list]
 .  nr doc-diag-list-input-line-count-saved \n[doc-diag-list-input-line-count]
 .  nr doc-num-columns-saved \n[doc-num-columns]
@@ -3620,8 +3633,10 @@
 .    ds doc-list-type-stack\n[doc-reg-drgv] "\*[doc-list-type-stack\n[doc-reg-drgv]-saved]
 .    nr doc-list-indent-stack\n[doc-reg-drgv] \n[doc-list-indent-stack\n[doc-reg-drgv]-saved]
 .    nr doc-compact-list-stack\n[doc-reg-drgv] \n[doc-compact-list-stack\n[doc-reg-drgv]-saved]
+.    ds doc-tag-prefix-stack\n[doc-reg-dsgv] "\*[doc-tag-prefix-stack\n[doc-reg-dsgv]-saved]
 .    ds doc-tag-width-stack\n[doc-reg-drgv] "\*[doc-tag-width-stack\n[doc-reg-drgv]-saved]
 .    nr doc-list-offset-stack\n[doc-reg-drgv] \n[doc-list-offset-stack\n[doc-reg-drgv]-saved]
+.    nr doc-enum-list-count-stack\n[doc-reg-dsgv] \n[doc-enum-list-count-stack\n[doc-reg-dsgv]-saved]
 .    nr doc-reg-drgv +1
 .  \}
 .
@@ -3630,7 +3645,6 @@
 .  ds doc-saved-Pa-font "\*[doc-saved-Pa-font-saved]
 .  nr doc-curr-type \n[doc-curr-type-saved]
 .  ds doc-curr-arg "\*[doc-curr-arg-saved]
-.  nr doc-enum-list-count \n[doc-enum-list-count-saved]
 .  nr doc-have-diag-list \n[doc-have-diag-list-saved]
 .  nr doc-diag-list-input-line-count \n[doc-diag-list-input-line-count-saved]
 .  nr doc-num-columns \n[doc-num-columns-saved]
@@ -3698,7 +3712,6 @@
 .\" NS   end list
 .\" NS
 .\" NS modifies:
-.\" NS   doc-enum-list-count
 .\" NS   doc-have-diag-list
 .\" NS   doc-list-depth
 .\" NS   doc-macro-name
@@ -3715,11 +3728,7 @@
 .    ds doc-macro-name El
 .    ds doc-str-El \*[doc-list-type-stack\n[doc-list-depth]]
 .
-.    ie        "\*[doc-str-El]"enum-list" \{\
-.      nr doc-enum-list-count 0
-.      doc-end-list 1
-.    \}
-.    el \{ .ie "\*[doc-str-El]"diag-list" \{\
+.    ie        "\*[doc-str-El]"diag-list" \{\
 .      nr doc-have-diag-list 0
 .      doc-end-list 0
 .    \}
@@ -3733,7 +3742,7 @@
 .      doc-end-list 0
 .    el \
 .      doc-end-list 1
-.    \}\}\}\}\}
+.    \}\}\}\}
 .
 .    br
 .  \}
@@ -3991,23 +4000,27 @@
 ..
 .
 .
-.\" NS doc-enum-list-count global register
-.\" NS   contains current enum count value
+.\" NS doc-enum-list-count-stackXXX global register
+.\" NS   stack of current enum count values
+.\" NS
+.\" NS limit:
+.\" NS   doc-list-depth
 .
-.nr doc-enum-list-count 0
+.nr doc-enum-list-count-stack1 0
 .
 .
 .\" NS doc-enum-list macro
 .\" NS   enumerated list
 .\" NS
 .\" NS modifies:
-.\" NS   doc-enum-list-count
+.\" NS   doc-enum-list-count-stackXXX
 .\" NS   doc-in-list
 .
 .de doc-enum-list
 .  nr doc-in-list 1
-.  nr doc-enum-list-count +1
-.  nop \n[doc-enum-list-count].
+.  nr doc-enum-list-count-stack\n[doc-list-depth] +1
+.  nop \*[doc-tag-prefix-stack\n[doc-list-depth]]\c
+.  nop \n[doc-enum-list-count-stack\n[doc-list-depth]].
 .  doc-do-list
 ..
 .
@@ -4223,6 +4236,15 @@
 .nr doc-compact-list-stack1 0
 .
 .
+.\" NS doc-tag-prefix-stackXXX global string
+.\" NS   stack of tag prefixes (currently used for -nested -enum lists)
+.\" NS
+.\" NS limit:
+.\" NS   doc-list-depth
+.
+.ds doc-tag-prefix-stack1
+.
+.
 .\" NS doc-tag-width-stackXXX global string
 .\" NS   stack of strings indicating how to set up current element of
 .\" NS   doc-list-indent-stackXXX -- if set to TagwidtH, user has set it
@@ -4286,15 +4308,19 @@
 .\" NS   doc-list-offset-stackXXX
 .\" NS   doc-list-type-stackXXX
 .\" NS   doc-next-list-depth
+.\" NS   doc-tag-prefix-stackXXX
 .\" NS   doc-tag-width-stackXXX
+.\" NS   doc-enum-list-count-stackXXX
 .
 .de doc-increment-list-stack
 .  nr doc-next-list-depth (\n[doc-list-depth] + 1)
 .  nr doc-list-indent-stack\n[doc-next-list-depth] 0
 .  nr doc-list-offset-stack\n[doc-next-list-depth] 0
+.  ds doc-tag-prefix-stack\n[doc-next-list-depth]
 .  ds doc-tag-width-stack\n[doc-next-list-depth] \*[doc-tag-width-stack\n[doc-list-depth]]
 .  ds doc-list-type-stack\n[doc-next-list-depth]
 .  nr doc-compact-list-stack\n[doc-next-list-depth] 0
+.  nr doc-enum-list-count-stack\n[doc-next-list-depth] 0
 ..
 .
 .
@@ -4307,14 +4333,18 @@
 .\" NS   doc-list-offset-stackXXX
 .\" NS   doc-list-type-stackXXX
 .\" NS   doc-next-list-depth
+.\" NS   doc-tag-prefix-stackXXX
 .\" NS   doc-tag-width-stackXXX
+.\" NS   doc-enum-list-count-stackXXX
 .
 .de doc-decrement-list-stack
 .  ds doc-list-type-stack\n[doc-next-list-depth]
 .  nr doc-list-indent-stack\n[doc-next-list-depth] 0
 .  nr doc-list-offset-stack\n[doc-next-list-depth] 0
+.  ds doc-tag-prefix-stack\n[doc-next-list-depth]
 .  ds doc-tag-width-stack\n[doc-next-list-depth]
 .  nr doc-compact-list-stack\n[doc-next-list-depth] 0
+.  nr doc-enum-list-count-stack\n[doc-next-list-depth] 0
 .  nr doc-next-list-depth -1
 ..
 .
