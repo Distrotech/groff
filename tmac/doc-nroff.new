@@ -75,7 +75,7 @@
 .ds doc-right-bracket \f[R]\|]\f[P]
 .
 .\" miscellaneous
-.ds doc-punct-chars {.\ ,\ ;\ :\ (\ )\ [\ ]}
+.ds doc-punct-chars {. , : ; ( ) [ ]}
 .nr doc-subheader-indent .5i
 .nr doc-paragraph-space 1v
 .
@@ -226,7 +226,7 @@
 ..
 .
 .
-.\" NS Ql macro
+.\" NS Ql user macro
 .\" NS   quoted literal define
 .\" NS
 .\" NS modifies:
@@ -235,8 +235,12 @@
 .\" NS width register `Ql' set in doc-common
 .
 .de Ql
-.  if !\n[doc-arg-limit] \
-.    ds doc-macro-name Ql
+.  if !\n[doc-arg-limit] \{\
+.    ie \n[.$] \
+.      ds doc-macro-name Ql
+.    el \
+.      tm Usage: .Ql argument ... \*[doc-punct-chars] (#\n[.c])
+.  \}
 .
 .  ds doc-quote-left "\*[doc-left-singlequote]
 .  ds doc-quote-right "\*[doc-right-singlequote]
@@ -263,7 +267,7 @@
 .nr doc-in-authors-section 0
 .
 .
-.\" NS Sh macro
+.\" NS Sh user macro (not parsed, not callable)
 .\" NS   section headers
 .\" NS
 .\" NS modifies:
@@ -307,6 +311,7 @@
 .      nr doc-in-authors-section 1
 .
 .    in 0
+.    nr doc-have-author 0
 .  \}
 .
 .  doc-setup-page-layout

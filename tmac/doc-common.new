@@ -175,7 +175,7 @@
 .nr doc-punct] 3
 .
 .
-.\" Header assembly macros
+.\" header assembly macros
 .
 .\" NS doc-document-title global string
 .\" NS   the title of the manual page
@@ -195,13 +195,27 @@
 .ds doc-section Null
 .
 .
-.\" NS Dt user macro
+.\" NS Dt user macro (not parsed, not callable)
 .\" NS   document title
 .\" NS
 .\" NS modifies:
 .\" NS   doc-document-title, doc-volume, doc-section
 .\" NS
 .\" NS width register `Dt' set above
+.
+.ds doc-volume-ds-USD   User's Supplementary Documents
+.ds doc-volume-ds-PS1   Programmers's Supplementary Documents
+.ds doc-volume-ds-AMD   Ancestral Manual Documents
+.ds doc-volume-ds-SMM   System Manager's Manual
+.ds doc-volume-ds-URM   Reference Manual
+.ds doc-volume-ds-PRM   Programmers's Manual
+.ds doc-volume-ds-KM    Kernel Manual
+.ds doc-volume-ds-IND   Manual Master Index
+.ds doc-volume-ds-LOCAL Local Manual
+.
+.ds doc-volume-as-tahoe " (Tahoe Architecture)
+.ds doc-volume-as-vax   " (VAX Architecture)
+.ds doc-volume-as-hp300 " (HP300 Architecture)
 .
 .de Dt
 .  if !"\$1"" \
@@ -212,8 +226,7 @@
 .    \" .if "\$3"" \{\
 .    if (\$2 >= 1) .if (\$2 <= 8) \{\
 .      ds doc-volume System Reference Manual
-.      if (\$2 > 1) \
-.        if (\$2 < 6) \
+.      if (\$2 > 1) .if (\$2 < 6) \
 .          ds doc-volume System Programmer's Manual
 .      if "\$2"8" \
 .        ds doc-volume System Manager's Manual
@@ -225,21 +238,15 @@
 .    \" .\}
 .  \}
 .
-.  if !"\$3"" \{\
-.    if "\$3"USD"   .ds doc-volume User's Supplementary Documents
-.    if "\$3"PS1"   .ds doc-volume Programmers's Supplementary Documents
-.    if "\$3"AMD"   .ds doc-volume Ancestral Manual Documents
-.    if "\$3"SMM"   .ds doc-volume System Manager's Manual
-.    if "\$3"URM"   .ds doc-volume Reference Manual
-.    if "\$3"PRM"   .ds doc-volume Programmers's Manual
-.    if "\$3"KM"    .ds doc-volume Kernel Manual
-.    if "\$3"IND"   .ds doc-volume Manual Master Index
-.    if "\$3"LOCAL" .ds doc-volume Local Manual
+.  if \A\$3 \{\
+.    if d doc-volume-ds-\$3 \
+.      ds doc-volume "\*[doc-volume-ds-\$3]
 .
-.    if "\$3"tahoe" .as doc-volume " (Tahoe Architecture)
-.    if "\$3"vax"   .as doc-volume " (VAX Architecture)
-.    if "\$3"hp300" .as doc-volume " (HP300 Architecture)
+.    if d doc-volume-as-\$3 \
+.      as doc-volume "\*[doc-volume-as-\$3]
+.  \}
 .
+.  if !"\$3"" \
 .    if "\*[doc-volume]"LOCAL" \
 .      ds doc-volume \$3
 .\}
@@ -249,78 +256,95 @@
 .\" NS doc-operating-system global string
 .\" NS   the exact version of the operating system
 .
-.ds doc-operating-system Null
+.ds doc-operating-system
 .
 .
-.\" NS Os user macro
-.\" NS   operating system (behaviour changes after first call)
+.\" NS Os user macro (not parsed, not callable)
+.\" NS   operating system
 .\" NS
 .\" NS width register `Os' set above
 .\" NS
 .\" NS modifies:
 .\" NS   doc-operating-system
-.\" NS
-.\" NS local variable:
-.\" NS   doc-str-Os
+.
+.ds doc-operating-system-as-ATT-7th 7th\~Edition
+.ds doc-operating-system-as-ATT-7   7th\~Edition
+.ds doc-operating-system-as-ATT-III System\~III
+.ds doc-operating-system-as-ATT-3   System\~III
+.ds doc-operating-system-as-ATT-V   System\~V
+.ds doc-operating-system-as-ATT-V.2 System\~V Release\~2
+.ds doc-operating-system-as-ATT-V.3 System\~V Release\~3
+.ds doc-operating-system-as-ATT-V.4 System\~V Release\~4
+.
+.ds doc-operating-system-ds-BSD-3    3rd\~Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4    4th\~Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4.1  4.1\~Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4.2  4.2\~Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4.3  4.3\~Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4.3T 4.3-Tahoe Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4.3R 4.3-Reno Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4.3t 4.3-Tahoe Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4.3r 4.3-Reno Berkeley Distribution
+.ds doc-operating-system-ds-BSD-4.4  4.4BSD
+.
+.ds doc-operating-system-as-NetBSD-0.8  0.8
+.ds doc-operating-system-as-NetBSD-0.8a 0.8A
+.ds doc-operating-system-as-NetBSD-0.9  0.9
+.ds doc-operating-system-as-NetBSD-0.9a 0.9A
+.ds doc-operating-system-as-NetBSD-1.0  1.0
+.ds doc-operating-system-as-NetBSD-1.0a 1.0A
+.ds doc-operating-system-as-NetBSD-1.1  1.1
+.ds doc-operating-system-as-NetBSD-1.2  1.2
+.ds doc-operating-system-as-NetBSD-1.2a 1.2A
+.ds doc-operating-system-as-NetBSD-1.2b 1.2B
+.ds doc-operating-system-as-NetBSD-1.2c 1.2C
+.ds doc-operating-system-as-NetBSD-1.2d 1.2D
+.ds doc-operating-system-as-NetBSD-1.2e 1.2E
+.ds doc-operating-system-as-NetBSD-1.3  1.3
+.ds doc-operating-system-as-NetBSD-1.3a 1.3A
+.ds doc-operating-system-as-NetBSD-1.4  1.4
+.ds doc-operating-system-as-NetBSD-1.5  1.5
 .
 .de Os
-.  if "\$1"" \
-.    ds doc-operating-system BSD Experimental
+.  ds doc-operating-system Null
 .
-.  if "\$2"" \
-.    ds doc-str-Os Non-Null
+.  if "\$1"" \
+.    ds doc-operating-system BSD
 .
 .  if "\$1"ATT" \{\
 .    ds doc-operating-system AT&T
-.    if "\$2""    .as doc-operating-system " UNIX
-.    if "\$2"7th" .as doc-operating-system " 7th\~Edition
-.    if "\$2"7"   .as doc-operating-system " 7th\~Edition
-.    if "\$2"III" .as doc-operating-system " System\~III
-.    if "\$2"3"   .as doc-operating-system " System\~III
-.    if "\$2"V"   .as doc-operating-system " System\~V
-.    if "\$2"V.2" .as doc-operating-system " System\~V Release\~2
-.    if "\$2"V.3" .as doc-operating-system " System\~V Release\~3
-.    if "\$2"V.4" .as doc-operating-system " System\~V Release\~4
+.    ie \A\$2 \{\
+.      if d doc-operating-system-as-ATT-\$2 \
+.        as doc-operating-system " \*[doc-operating-system-as-ATT-\$2]
+.    \}
+.    el \
+.      as doc-operating-system " UNIX
 .  \}
 .
 .  if "\$1"BSD" \{\
-.    if "\$2"3"    .ds doc-operating-system 3rd\~Berkeley Distribution
-.    if "\$2"4"    .ds doc-operating-system 4th\~Berkeley Distribution
-.    if "\$2"4.1"  .ds doc-operating-system 4.1\~Berkeley Distribution
-.    if "\$2"4.2"  .ds doc-operating-system 4.2\~Berkeley Distribution
-.    if "\$2"4.3"  .ds doc-operating-system 4.3\~Berkeley Distribution
-.    if "\$2"4.3T" .ds doc-operating-system 4.3-Tahoe Berkeley Distribution
-.    if "\$2"4.3R" .ds doc-operating-system 4.3-Reno Berkeley Distribution
-.    if "\$2"4.3t" .ds doc-operating-system 4.3-Tahoe Berkeley Distribution
-.    if "\$2"4.3r" .ds doc-operating-system 4.3-Reno Berkeley Distribution
-.    if "\$2"4.4"  .ds doc-operating-system 4.4BSD
+.    if \A\$2 \{\
+.      ie d doc-operating-system-ds-BSD-\$2 \
+.        ds doc-operating-system \*[doc-operating-system-ds-BSD-\$2]
+.      el \
+.        tm mdoc warning: .Os: Unknown BSD version `\$2' (#\n[.c])
+.    \}
 .  \}
 .
 .  if "\$1"NetBSD" \{\
 .    ds doc-operating-system NetBSD
-.    if "\$2"0.8"  .as doc-operating-system \~0.8
-.    if "\$2"0.8a" .as doc-operating-system \~0.8A
-.    if "\$2"0.9"  .as doc-operating-system \~0.9
-.    if "\$2"0.9a" .as doc-operating-system \~0.9A
-.    if "\$2"1.0"  .as doc-operating-system \~1.0
-.    if "\$2"1.0a" .as doc-operating-system \~1.0A
-.    if "\$2"1.1"  .as doc-operating-system \~1.1
-.    if "\$2"1.2"  .as doc-operating-system \~1.2
-.    if "\$2"1.2a" .as doc-operating-system \~1.2A
-.    if "\$2"1.2b" .as doc-operating-system \~1.2B
-.    if "\$2"1.2c" .as doc-operating-system \~1.2C
-.    if "\$2"1.2d" .as doc-operating-system \~1.2D
-.    if "\$2"1.2e" .as doc-operating-system \~1.2E
-.    if "\$2"1.3"  .as doc-operating-system \~1.3
-.    if "\$2"1.3a" .as doc-operating-system \~1.3A
-.    if "\$2"1.4"  .as doc-operating-system \~1.4
-.    if "\$2"1.5"  .as doc-operating-system \~1.5
+.    if \A\$2 \{\
+.      ie d doc-operating-system-as-NetBSD-\$2 \
+.        as doc-operating-system \~\*[doc-operating-system-as-NetBSD-\$2]
+.      el \
+.        tm mdoc warning: .Os: Unknown NetBSD version `\$2' (#\n[.c])
+.    \}
 .  \}
 .
-.  if "\*[doc-operating-system]"Null" \
-.    ds doc-operating-system " \$1
-.  if "\*[doc-str-Os]"Non-Null" \
-.    as doc-operating-system " \$2
+.  if "\*[doc-operating-system]"Null" \{\
+.    ds doc-operating-system \$1
+.    if !"\$2"" \
+.      as doc-operating-system " \$2
+.  \}
 ..
 .
 .
@@ -330,13 +354,26 @@
 .ds doc-date-string
 .
 .
-.\" NS Dd user macro
+.\" NS Dd user macro (not parsed, not callable)
 .\" NS   set document date
 .\" NS
 .\" NS modifies:
 .\" NS   doc-date-string
 .\" NS
 .\" NS width register `Dd' set above
+.
+.ds doc-date-string-ds-1  January
+.ds doc-date-string-ds-2  February
+.ds doc-date-string-ds-3  March
+.ds doc-date-string-ds-4  April
+.ds doc-date-string-ds-5  May
+.ds doc-date-string-ds-6  June
+.ds doc-date-string-ds-7  July
+.ds doc-date-string-ds-8  August
+.ds doc-date-string-ds-9  September
+.ds doc-date-string-ds-10 October
+.ds doc-date-string-ds-11 November
+.ds doc-date-string-ds-12 December
 .
 .de Dd
 .  \" XXX: why do we need gX?
@@ -345,21 +382,9 @@
 .
 .  ie \n[.$] \{\
 .    ie (\n[.$] == 3) \
-.      ds doc-date-string \$1 \$2 \$3
+.      ds doc-date-string \$1\~\$2 \$3
 .    el \{\
-.      if "\n[mo]"1"  .ds doc-date-string January
-.      if "\n[mo]"2"  .ds doc-date-string February
-.      if "\n[mo]"3"  .ds doc-date-string March
-.      if "\n[mo]"4"  .ds doc-date-string April
-.      if "\n[mo]"5"  .ds doc-date-string May
-.      if "\n[mo]"6"  .ds doc-date-string June
-.      if "\n[mo]"7"  .ds doc-date-string July
-.      if "\n[mo]"8"  .ds doc-date-string August
-.      if "\n[mo]"9"  .ds doc-date-string September
-.      if "\n[mo]"10" .ds doc-date-string October
-.      if "\n[mo]"11" .ds doc-date-string November
-.      if "\n[mo]"12" .ds doc-date-string December
-.
+.      ds doc-date-string \*[doc-date-string-ds-\n[mo]]
 .      as doc-date-string \~\n[dy], \n[year]
 .    \}
 .  \}
@@ -403,7 +428,7 @@
 .\" NS   finish output
 .
 .de doc-end-macro
-.  \" We may still have a partial line in the enviroment.  If this is the
+.  \" We may still have a partial line in the environment.  If this is the
 .  \" case, and we happen to be on the last line of the page, the `.fl'
 .  \" request will cause the page to be ejected and troff will immediately
 .  \" exit.  If we are in nroff mode, this would be unfortunate, since we
@@ -421,12 +446,13 @@
 .  if \n[cR] \{\
 '    sp
 .    tl @\*[doc-caption-font]\*[doc-operating-system]\f[P]@\*[doc-caption-font2]\*[doc-date-string]\f[P]@%@
+.    \" suppress empty lines after the footer
 .    pl \n[nl]u
 .  \}
 ..
 .
 .
-.\" NS Pp user macro
+.\" NS Pp user macro (not parsed, not callable)
 .\" NS   new paragraph
 .\" NS
 .\" NS width register `Pp' set above
@@ -439,7 +465,7 @@
 ..
 .
 .
-.\" NS Lp user macro
+.\" NS Lp user macro (not parsed, not callable)
 .\" NS   same as .Pp
 .\" NS
 .\" NS width register `Lp' set above
@@ -448,26 +474,26 @@
 .
 .
 .de LP
-.  tm Not a \-mdoc command: .LP
+.  tm Not a \-mdoc command: .LP (#\n[.c])
 ..
 .
 .
 .de PP
-.  tm Not a \-mdoc command: .PP
+.  tm Not a \-mdoc command: .PP (#\n[.c])
 ..
 .
 .
 .de pp
-.  tm Not a \-mdoc command: .pp
+.  tm Not a \-mdoc command: .pp (#\n[.c])
 ..
 .
 .
 .de SH
-.  tm Not a \-mdoc command: .SH
+.  tm Not a \-mdoc command: .SH (#\n[.c])
 ..
 .
 .
-.\" NS Nd user macro
+.\" NS Nd user macro (not parsed, not callable)
 .\" NS   print name description
 .\" NS
 .\" NS width register `Nd' set above
@@ -477,7 +503,7 @@
 ..
 .
 .
-.\" NS Ss user macro
+.\" NS Ss user macro (not parsed, not callable)
 .\" NS   subsection
 .\" NS
 .\" NS width register `Ss' set above

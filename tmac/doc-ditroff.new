@@ -83,7 +83,8 @@
 .
 .tr *\[**]
 .
-.ds doc-punct-chars \f[R]{.\ ,\ :\ ;\ (\ )\ [\ ]}
+.\" miscellaneous
+.ds doc-punct-chars {. , : ; ( ) [ ]}
 .nr doc-subheader-indent (\w\f[C],u * 5u)
 .nr doc-paragraph-space .5v
 .
@@ -139,8 +140,8 @@
 .ds ua \[ua]
 .ds aa \[aa]
 .ds ga \[ga]
-.ds doc-right-singlequote \&'
 .ds doc-left-singlequote \&`
+.ds doc-right-singlequote \&'
 .\" q is `official'
 .ds q \[dq]
 .
@@ -244,7 +245,7 @@
 ..
 .
 .
-.\" NS Ql macro
+.\" NS Ql user macro
 .\" NS   quoted literal define
 .\" NS
 .\" NS modifies:
@@ -252,7 +253,7 @@
 .\" NS   doc-quote-right, doc-quote-left, doc-arg-limit
 .\" NS
 .\" NS local variables:
-.\" NS   doc-reg-Ql, doc-reg-Ql1
+.\" NS   doc-reg-Ql, doc-reg-Ql1, doc-reg-Ql2
 .\" NS
 .\" NS width register `Ql' set in doc-common
 .
@@ -269,7 +270,13 @@
 .  nr doc-reg-Ql (\n[doc-arg-ptr] + 1)
 .  doc-get-arg-width \n[doc-reg-Ql]
 .
-.  ie (\n[doc-width] > 3) \
+.  \" don't use quotes if we have more than two arguments
+.  if (\n[doc-arg-limit] > \n[doc-reg-Ql]) \
+.    nr doc-width 3
+.
+.  \" make a difference in quotation style between for strings longer
+.  \" than two characters
+.  ie (\n[doc-width] > 2) \
 .    Li
 .  el \{\
 .    ie \n[doc-arg-ptr] \{\
@@ -320,7 +327,7 @@
 .nr doc-in-authors-section 0
 .
 .
-.\" NS Sh macro
+.\" NS Sh user macro (not parsed, not callable)
 .\" NS   section headers
 .\" NS
 .\" NS modifies:
