@@ -1,4 +1,26 @@
+2004-02-21  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	* src/libs/libgroff/quotearg.c: New file, providing proper argument
+	quoting for MSVC's spawn* and exec* functions.
+	* src/libs/libgroff/spawnvp.c: New file, providing a wrapper around
+	spawnvp with proper quoting for MSVC.
+
+	* src/libs/libgroff/assert.cpp (program_name),
+	src/libs/libgroff/new.cpp (program_name): Declare as `extern "C"'.
+	* src/libs/libgroff/Makefile.sub (OBJS, CSRCS): Updated.
+
+	* src/roff/troff/input.cpp (program_name): Declare as `extern "C"'.
+
+	* src/include/error.h (program_name): Declare as `extern "C"'.
+	* src/include/nonposix.h [__MSDOS__ ...]: Handle spawnvp.
+
 2004-02-21  Jeff Conrad  <jeff_conrad@msn.com>
+
+	* src/preproc/html/pre-html.cpp [__CYGWIN__ ...]: Declare
+	spawnvp_wrapper.
+	[MAY_SPAWN_ASYNCHRONOUS_CHILD]: Declare i and j.
+
+2004-02-20  Jeff Conrad  <jeff_conrad@msn.com>
 
 	* src/roff/groff/pipeline.c (cmd) [__MSDOS__ || ...]: New global
 	variable.

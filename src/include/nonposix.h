@@ -60,6 +60,16 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #  define creat(p,m)	_creat(p,m)
 #  define read(f,b,s)	_read(f,b,s)
 #  define isatty(f)	_isatty(f)
+
+/* Workaround for broken argument parsing
+   in child process invoked through MSVC `spawnvp()' function. */
+#  ifndef SPAWNVP_C
+#   undef  spawnvp
+#   define spawnvp	spawnvp_wrapper
+#   undef  _spawnvp
+#   define _spawnvp	spawnvp
+#  endif
+
 # endif
 # define SET_BINARY(f)	do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
 # define FOPEN_RB	"rb"
@@ -116,6 +126,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
     const char * system_shell_name(void);
     const char * system_shell_dash_c(void);
     int		 is_system_shell(const char *);
+    int		 spawnvp_wrapper(int, char *, char **);
 # ifdef __cplusplus
   }
 # endif

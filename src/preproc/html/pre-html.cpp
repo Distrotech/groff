@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -60,22 +60,35 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #undef MAY_SPAWN_ASYNCHRONOUS_CHILD
 
 #if defined(__MSDOS__) || defined(_WIN32)
-/* Most MS-DOS and Win32 environments will be missing the `fork' capability
-   (some like Cygwin have it, but it is best avoided). */
+
+// Most MS-DOS and Win32 environments will be missing the `fork' capability
+// (some like Cygwin have it, but it is best avoided).
+
 # define MAY_FORK_CHILD_PROCESS 0
 
-/* On these systems, we use `spawn...', instead of `fork' ... `exec...'. */
+// On these systems, we use `spawn...', instead of `fork' ... `exec...'.
 # include <process.h>	// for `spawn...'
 # include <fcntl.h>	// for attributes of pipes
 
-# if defined(__CYGWIN__) || defined(_UWIN) || defined(__MINGW32__)
-/* These Win32 implementations allow parent and `spawn...'ed child to
-   multitask asynchronously. */
+# if defined(__CYGWIN__) || defined(_UWIN) \
+     || defined(__MINGW32__) || defined(_WIN32)
+
+// These Win32 implementations allow parent and `spawn...'ed child to
+// multitask asynchronously.
+
+#  ifdef __cplusplus
+extern "C" spawnvp_wrapper(int, char *, char **);
+#  endif
+
 #  define MAY_SPAWN_ASYNCHRONOUS_CHILD 1
+
 # else
-/* Others may adopt MS-DOS behaviour where parent must sleep,
-   from `spawn...' until child terminates. */
+
+// Others may adopt MS-DOS behaviour where parent must sleep,
+// from `spawn...' until child terminates. */
+
 #  define MAY_SPAWN_ASYNCHRONOUS_CHILD 0
+
 # endif /* not defined __CYGWIN__, _UWIN, or __MINGW32__ */
 
 # if defined(DEBUGGING) && !defined(DEBUG_FILE)
@@ -97,8 +110,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #else /* not __MSDOS__ or _WIN32 */
 
-/* For non-Microsoft environments assume UNIX conventions,
-   so `fork' is required and child processes are asynchronous */
+// For non-Microsoft environments assume UNIX conventions,
+// so `fork' is required and child processes are asynchronous.
 # define MAY_FORK_CHILD_PROCESS 1
 # define MAY_SPAWN_ASYNCHRONOUS_CHILD 1
 
@@ -113,6 +126,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
    in the CPPFLAGS, again noting that the trailing `/' is REQUIRED.) */
 #  define DEBUG_FILE "/tmp/"
 # endif
+
 #endif /* not __MSDOS__ or _WIN32 */
 
 extern "C" const char *Version_string;
@@ -1262,6 +1276,7 @@ int char_buffer::run_output_filter(int filter, int argc, char **argv)
     sys_fatal("pipe");
 
 #if MAY_FORK_CHILD_PROCESS
+
   // This is the UNIX process model.  To invoke our post-processor,
   // we must `fork' the current process.
 
@@ -1330,6 +1345,8 @@ int char_buffer::run_output_filter(int filter, int argc, char **argv)
   }
 
 #elif MAY_SPAWN_ASYNCHRONOUS_CHILD
+
+  int i, j;
 
   // This should be ok for most Win32 systems and is preferred to `fork'
   // for starting child processes under Cygwin.

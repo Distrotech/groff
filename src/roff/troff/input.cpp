@@ -62,6 +62,7 @@ extern "C" {
 // initial size of buffer for reading names; expanded as necessary
 #define ABUF_SIZE 16
 
+extern "C" const char *program_name;
 extern "C" const char *Version_string;
 
 #ifdef COLUMN
@@ -79,7 +80,6 @@ void vjustify();
 void transparent_file();
 void process_input_stack();
 
-const char *program_name = 0;
 token tok;
 int break_flag = 0;
 int color_flag = 1;		// colors are on by default
