@@ -37,14 +37,20 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "nonposix.h"
 
 #ifdef _POSIX_VERSION
+
 #include <sys/wait.h>
+
 #else /* not _POSIX_VERSION */
+
 /* traditional Unix */
+
 #define WIFEXITED(s) (((s) & 0377) == 0)
 #define WEXITSTATUS(s) (((s) >> 8) & 0377)
 #define WTERMSIG(s) ((s) & 0177)
 #define WIFSTOPPED(s) (((s) & 0377) == 0177)
 #define WSTOPSIG(s) (((s) >> 8) & 0377)
+#define WIFSIGNALED(s) (((s) & 0377) != 0 && (((s) & 0377) != 0177))
+
 #endif /* not _POSIX_VERSION */
 
 #define STORE_WIDTH 1

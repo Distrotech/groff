@@ -851,9 +851,6 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
-#ifdef	_MSC_VER
-  _setmode(_fileno(stdout), _O_BINARY);
-#endif
   while ((c = getopt(argc, argv, "F:vw:d")) != EOF)
     switch(c) {
     case 'v':
@@ -882,6 +879,9 @@ int main(int argc, char **argv)
     default:
       assert(0);
     }
+#ifdef SET_BINARY
+  SET_BINARY(fileno(stdout));
+#endif
   if (optind >= argc)
     do_file("-");
   else {
