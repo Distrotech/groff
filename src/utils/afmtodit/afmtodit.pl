@@ -6089,11 +6089,12 @@ open(AFM, $afm) || die "$prog: can't open \`$ARGV[0]': $!\n";
 while (<AFM>) {
     chop;
     my @field = split(' ');
+    next if $#field < 0;
     if ($field[0] eq "FontName") {
-	my $psname = $field[1];
+	$psname = $field[1];
     }
     elsif($field[0] eq "ItalicAngle") {
-	my $italic_angle = -$field[1];
+	$italic_angle = -$field[1];
     }
     elsif ($field[0] eq "KPX") {
 	if ($#field == 3) {
@@ -6114,6 +6115,7 @@ while (<AFM>) {
     elsif ($field[0] eq "StartCharMetrics") {
 	while (<AFM>) {
 	    @field = split(' ');
+	    next if $#field < 0;
 	    last if ($field[0] eq "EndCharMetrics");
 	    if ($field[0] eq "C") {
 		my $w;
@@ -6182,6 +6184,7 @@ while (<DESC>) {
     next if /^#/;
     chop;
     my @field = split(' ');
+    next if $#field < 0;
     last if $field[0] eq "charset";
     if ($field[0] eq "res") {
 	$resolution = $field[1];
@@ -6205,6 +6208,7 @@ if ($opt_e) {
 	next if /^#/;
 	chop;
 	my @field = split(' ');
+	next if $#field < 0;
 	if ($#field == 1) {
 	    if ($field[1] >= 0 && defined $width{$field[0]}) {
 		$encoding[$field[1]] = $field[0];
@@ -6225,6 +6229,7 @@ while (<MAP>) {
     next if /^#/;
     chop;
     my @field = split(' ');
+    next if $#field < 0;
     if ($#field == 1) {
 	if ($field[1] eq "space") {
 	    # The PostScript character "space" is automatically mapped
