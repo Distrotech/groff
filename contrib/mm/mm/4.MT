@@ -31,10 +31,11 @@
 ..
 .\"------------
 .de cov@print-firm
-.if !d cov*firm .@error firm (.AF) not defined!
-.SP 0.5
-.ce
+.if d cov*firm \{\
+.	SP 0.5
+.	ce
 \\*[cov*firm]
+.\}
 ..
 .\"------------
 .de cov@print-abstract
