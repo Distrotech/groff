@@ -116,7 +116,7 @@ int is_html = 0;
 int begin_level = 0;		// number of nested .begin requests
 
 int have_input = 0;		// whether \f, \H, \R, \s, or \S has
-				// been proceseed in token::next()
+				// been processed in token::next()
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
 
@@ -2571,6 +2571,9 @@ void process_input_stack()
 	  ;
 	else if (bol && !curenv->get_prev_line_interrupted()) {
 	  int nspaces = 0;
+	  // save space_width now so that it isn't changed by \f or \s
+	  // which we wouldn't notice here
+	  hunits space_width = curenv->get_space_width();
 	  do {
 	    nspaces += tok.nspaces();
 	    tok.next();
@@ -2580,8 +2583,7 @@ void process_input_stack()
 	  else {
 	    push_token(tok);
 	    curenv->do_break();
-	    curenv->add_node(new hmotion_node(curenv->get_space_width()
-					      * nspaces));
+	    curenv->add_node(new hmotion_node(space_width * nspaces));
 	    bol = 0;
 	  }
 	}
