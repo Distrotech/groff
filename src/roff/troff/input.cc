@@ -1109,6 +1109,7 @@ static color *read_rgb()
   else {
     input_stack::push(make_temp_iterator(" "));
     input_stack::push(make_temp_iterator(s));
+    tok.next();
     unsigned int r = get_color_element("rgb color", "red component");
     unsigned int g = get_color_element("rgb color", "green component");
     unsigned int b = get_color_element("rgb color", "blue component");
@@ -1136,6 +1137,7 @@ static color *read_cmy()
   else {
     input_stack::push(make_temp_iterator(" "));
     input_stack::push(make_temp_iterator(s));
+    tok.next();
     unsigned int c = get_color_element("cmy color", "cyan component");
     unsigned int m = get_color_element("cmy color", "magenta component");
     unsigned int y = get_color_element("cmy color", "yellow component");
@@ -1163,6 +1165,7 @@ static color *read_cmyk()
   else {
     input_stack::push(make_temp_iterator(" "));
     input_stack::push(make_temp_iterator(s));
+    tok.next();
     unsigned int c = get_color_element("cmyk color", "cyan component");
     unsigned int m = get_color_element("cmyk color", "magenta component");
     unsigned int y = get_color_element("cmyk color", "yellow component");
@@ -1189,8 +1192,9 @@ static color *read_gray()
     }
   }
   else {
-    input_stack::push(make_temp_iterator(" "));
+    input_stack::push(make_temp_iterator("\n"));
     input_stack::push(make_temp_iterator(s));
+    tok.next();
     unsigned int g = get_color_element("gray", "gray value");
     col->set_gray(g);
   }
