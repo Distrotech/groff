@@ -38,13 +38,13 @@
 .\" the same name must exist.  Its value must not be zero.
 .
 .nr %A 1
-.nr %B 1\" ?
-.nr %D 1\" ?
+.nr %B 1
+.nr %D 1
 .nr %J 1
 .nr %N 1
 .nr %O 1
-.nr %P 1\" ?
-.nr %Q 1\" ?
+.nr %P 1
+.nr %Q 1
 .nr %R 1
 .nr %T 1
 .nr %V 1
@@ -55,7 +55,7 @@
 .nr Ap 2
 .nr Aq 12n
 .nr Ar 12n
-.nr At 8n\" ?
+.nr At 1
 .nr Bc 3
 .nr Bf 8n\" ?
 .nr Bk 8n\" ?
@@ -65,9 +65,9 @@
 .nr Brc 3
 .nr Bro 12n
 .nr Brq 12n
-.nr Bsx 6n\" ?
+.nr Bsx 1
 .nr Bt 8n\" ?
-.nr Bx 12n
+.nr Bx 1
 .nr Cd 12n
 .nr Cm 10n
 .nr D1 8n\" ?
@@ -97,7 +97,7 @@
 .nr Fo 16n
 .nr Fr 12n\" ?
 .nr Ft 8n\" ?
-.nr Fx 12n\" ?
+.nr Fx 1
 .nr Ic 10n
 .nr In 12n\" ?
 .nr It 8n\" ?
@@ -113,13 +113,13 @@
 .nr Nm 10n
 .nr No 12n
 .nr Ns 2
-.nr Nx 12n\" ?
+.nr Nx 1
 .nr Oc 3
 .nr Oo 10n
 .nr Op 14n
 .nr Or 6n\" ?
 .nr Os 6n\" ?
-.nr Ox 12n\" ?
+.nr Ox 1
 .nr Pa 32n
 .nr Pc 3
 .nr Pf 12n
@@ -144,7 +144,7 @@
 .nr Ta 2
 .nr Tn 10n
 .nr Ud 8n\" ?
-.nr Ux 10n
+.nr Ux 1
 .nr Va 12n
 .nr Vt 8n\" ?
 .nr Xc 3
@@ -560,7 +560,14 @@
 .    ev doc-caption-enviroment
 .    doc-setup-page-layout
 '    sp \n[doc-footer-space]u
-.    tl \*[doc-caption-font]\*[doc-operating-system]\f[P]\*[doc-caption-font2]\*[doc-date-string]\f[P]%
+.    ie \n[D] \{\
+.      ie o \
+.        tl %\*[doc-caption-font2]\*[doc-date-string]\f[P]\*[doc-caption-font]\*[doc-operating-system]\f[P]
+.      el \
+.        tl \*[doc-caption-font]\*[doc-operating-system]\f[P]\*[doc-caption-font2]\*[doc-date-string]\f[P]%
+.    \}
+.    el \
+.      tl \*[doc-caption-font]\*[doc-operating-system]\f[P]\*[doc-caption-font2]\*[doc-date-string]\f[P]%
 '    bp
 .    ev
 .  \}
