@@ -61,9 +61,11 @@ or concept you're not familiar with.
 	<li><a href="#TERMS_PS">Point Size</a>
 	<li><a href="#TERMS_QUAD">Quad</a>
 	<li><a href="#TERMS_RAG">Rag</a>
+	<li><a href="#TERMS_SHAPE">Shape</a>
 	<li><a href="#TERMS_SOLID">Solid/set solid</a>
 	<li><a href="#TERMS_TRACKKERNING">Track kerning/Line kerning</a>
 	<li><a href="#TERMS_UNBREAKABLESPACE">Unbreakable space</a>
+	<li><a href="#TERMS_WEIGHT">Weight</a>
 	<li><a href="#TERMS_WORDSPACE">Word space</a>
 	<li><a href="#TERMS_XHEIGHT">x-height</a>
 </ul>
@@ -128,7 +130,7 @@ point text reverts to the left margin.
 letter M at a given
 <a href="#TERMS_PS">point size</a>
 in a given
-<a name="#TERMS_FONT">font</a>.
+<a href="#TERMS_FONT">font</a>.
 Since most Ms are designed square, an em is usually (but sometimes
 erroneously) considered to be the same size as the current point
 size (i.e. if the point size of the type is 12, one em equals 12
@@ -169,10 +171,16 @@ In groff, fixed width space is entered with
 where &lt;space&gt; means "hit the spacebar on your keyboard."
 
 <dt><a name="TERMS_FONT"><em>Font</em></a>
-<dd>The specific style of type within a
+<dd>The specific
+<a href="#TERMS_WEIGHT">weight</a>
+and
+<a href="#TERMS_SHAPE">shape</a>
+of type within a
 <a href="#TERMS_FAMILY">family</a>,
-e.g. roman, italic.  Groff understands four fonts within any given
-family: roman, italic, bold, and bold italic.
+e.g. light, medium, bold (which are weights), and roman, italic,
+condensed (which are shapes).  By default, groff knows of four fonts
+within its default set of families: R (medium roman), I (medium
+italic), B (bold roman) and BI (bold italic).
 
 <dt><a name="TERMS_FORCE"><em>Force justify
 </em></a>
@@ -290,6 +298,29 @@ type that is
 <a href="#TERMS_QUAD">quadded</a>
 left.
 
+<dt><a name="TERMS_SHAPE"><em>Shape</em></a>
+<dd>The degree of slant and/or the width of characters.
+(Technically speaking, this is not a proper typesetting term;
+however, it may help clarify some concepts presented in these
+documents.)
+<p>
+Some typical shapes are:
+<ul>
+	<li>&quot;Roman&quot;, which has no slant, and has letterforms of
+		average width
+	<li>&quot;Italic&quot;, which is slanted, and has letterforms
+		of average width
+	<li>&quot;Condensed&quot;, which has no slant, but has
+		letterforms narrower than the average represented by Roman
+	<li>&quot;Condensed Italic&quot;, which is slanted, with letterforms narrower
+		than average
+</ul>
+The term
+<a href="#TERMS_FONT">font</a>,
+as it is used in these documents, refers to a combination of
+<a href="#TERMS_WEIGHT">weight</a>
+and shape.
+
 <dt><a name="TERMS_SOLID"><em>Solid/set solid</em></a>
 <dd>When no
 <a href="#TERMS_LEADING">lead</a>
@@ -310,7 +341,7 @@ The correct term is letter spacing, but track kerning and line kerning
 <a href="#TERMS_WORDSPACE">word space</a>,
 however words separated by an unbreakable space will always be kept
 together on the same line.  Expands and contracts like word space.
-Useful for proper names, which one should, whenever possibly, avoid
+Useful for proper names, which one should, whenever possible, avoid
 splitting onto two lines.  In groff, unbreakable space is entered
 with
 <p>
@@ -319,6 +350,15 @@ with
 </pre>
 
 (backslash followed by a tilde).
+
+<dt><a name="TERMS_WEIGHT"><em>Weight</em></a>
+<dd>The thickness of the strokes of letterforms.  Medium and Book
+have average thicknesses and are the weights used for most of the
+text in books, magazines, newspapers, etc.  Light has strokes
+slightly thinner than Medium or Book, but is still acceptable for
+most text.  Semibold, Bold, Heavy and Black all have strokes of
+increasing thickness, making them suitable for heads, subheads,
+headlines and the like.
 
 <dt><a name="TERMS_WORDSPACE"><em>Word space</em></a>
 <dd>The amount of whitespace between words.  When text is
@@ -533,7 +573,7 @@ Because string arguments must be enclosed by double-quotes, you can't
 use double-quotes as part of the string argument.  If you need
 double-quotes to be part of a string argument, use the
 <a href="#TERMS_INLINES">inline escapes</a>
-\(lq</strong> and <strong>\(rq</strong> (leftquote and rightquote
+<strong>\(lq</strong> and <strong>\(rq</strong> (leftquote and rightquote
 respectively) in place of the double-quote character (").
 
 <dt><a name="TERMS_UNITOFMEASURE"><em>Unit of measure</em></a>
@@ -569,7 +609,8 @@ that set the size or measure of something MUST be given a unit of
 measure.  <strong>mom</strong>'s macros do not have default units
 of measure.  There are a couple of exceptions, the most notable of
 which are <strong>PT_SIZE</strong> and <strong>LS</strong>.  Both use
-<strong>*points</strong> as the default unit of measure, which means
+<a href="#TERMS_PICASPOINTS">*points</a>
+as the default unit of measure, which means
 you don't have to append &quot;p&quot; to their argument.
 <p>
 You can enter decimal values for any unit of measure.  Different units

@@ -1,3 +1,61 @@
+*Aug 8 2004
+
+o Version changed from the 1.1.x series to 1.2.  All of the
+  features I originally wanted mom to have originally have been
+  implemented, and appear to be stable.
+
+o Major overhaul to the setting of page traps and the handling of
+  footnotes, both "normal" footnotes and footnotes that occur
+  inside QUOTE, BLOCKQUOTE and EPIGRAPH.
+
+o Addtion of font "styles" to om.tmac, plus changes to the FAMILY
+  and FT macros to manage them.  New section in the doc appendices
+  on adding fonts and managing the new font styles.
+
+o Mom now uses a "fallback font" whenever there's an illegal call
+  to FAMILY.
+
+o RW and EW now affect only the font in effect.  A change of family
+  or font disables them.
+
+o BR_AT_LINE_KERN now properly does a .brp (spread and break) when
+  used in justified text.
+
+o NEWPAGE, which used to be an alias for .bp, has been moved into
+  its own macro, in order to make it more responsive to some unusal
+  situations.
+
+o Some changes to elvis_syn.new, including that the file extensions
+  recognized by elvis now include both .mom and .tmac.  This makes
+  om.tmac much easier to read.
+
+*Jul 6 2004
+
+o FT and FAM(ILY) reworked to take advantage of if S, if F and
+  \n[.sty] additions to groff (1.19.2).  Warnings are emitted if a
+  style hasn't been registered, or if a font style doesn't exist in
+  the current family.  Invalid .FAM(ILY) calls now use a "fallback"
+  font" (although no warning is issued); fallback is user-settable
+
+o New macro, FALLBACK_FONT.  Not only controls the fallback font
+  for invalid family calls, but also controls whether mom aborts on
+  invalid .FT calls after issuing a warning.
+
+o RW/EW now affect only the current font (or font style)
+
+o BR_AT_LINE_KERN now (properly) does a break-and-spread when text
+  is justified.
+
+o Fairly extensive list of .sty's added to om.tmac.  Hopefully,
+  this will make life easier for users wishing to add new fonts
+  and/or entire new families to their groff site-font/devps
+  directory.
+
+*Jun 6 2004
+
+o Altered kerning slightly for footnote markers in text.  Daggers
+  and double-daggers were getting a bit jammed 
+
 *Fri Jun 4 2004
 
 o Makefile.sub (HTMLDOCFILES, EXAMPLEFILES, PROCESSEDEXAMPLEFILES): Updated.

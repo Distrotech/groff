@@ -55,20 +55,21 @@ DO_T_MARGIN  Margin at top of page; trap-invoked
 
 Style
 -----
-COLOR      Change color of text to predefined value
-CONDENSE   Set percentage of pseudo-condense (alias of
-           CONDENSE_OR_EXTEND)
-EXTEND     Set percentage of pseudo-extend (alias of
-           CONDENSE_OR_EXTEND)
-FAMILY     Family
-FT         Font
-LL         Line length
-LS         Leading (.vs)
-NEWCOLOR   Define a text color
-PT_SIZE    Point size
-SETBOLDER  Set degree of emboldening (pseudo-bold) in units
-SETSLANT   Set degree of pseudo-italic
-XCOLOR     Initialize a color from rgb.txt
+COLOR          Change color of text to predefined value
+CONDENSE       Set percentage of pseudo-condense (alias of
+               CONDENSE_OR_EXTEND)
+EXTEND         Set percentage of pseudo-extend (alias of
+               CONDENSE_OR_EXTEND)
+FAMILY         Family
+FT             Font
+FALLBACK_FONT  Font to use whenever FAMILY or FT errors occur
+LL             Line length
+LS             Leading (.vs)
+NEWCOLOR       Define a text color
+PT_SIZE        Point size
+SETBOLDER      Set degree of emboldening (pseudo-bold) in units
+SETSLANT       Set degree of pseudo-italic
+XCOLOR         Initialize a color from rgb.txt
 
 Autolead
 --------
@@ -183,6 +184,7 @@ TYPESIZE    Diverts SIZESPECS routine so it doesn't print
 
 +++NUMBER REGISTERS+++
 
+#ABORT_FT_ERRORS        Abort on FT errors? (toggle)
 #ALD                    ALD value
 #ARGS_TO_LIST           Tells LIST whether LIST was invoked with a legal
                         arg; controls LIST OFF processing
@@ -231,6 +233,8 @@ c                       column mark
 #INDENT_STYLE_RIGHT     Indicates IR when #INDENT_ACTIVE=1 (toggle)
 #INDENT_STYLE_TEMP      Indicates IT when #INDENT_ACTIVE=1 (toggle)
 #IX_WARN                Toggles to 1 the first time IX is user-invoked
+#JUSTIFY                In EW/RW, when BR_AT_LINE_KERN, whether to
+                        break or break-spread preceding line (toggle)
 #KERN                   Kern on? (toggle)
 #LAST_TAB               Last tab number set in multi-columns
 #LEAD                   Leading (alias)
@@ -331,10 +335,11 @@ $FONT                Font
 $PAD_MARKER          Character to mark off padding in PAD
 $PAD_STRING          Arg passed to PAD
 $QUAD_VALUE          Quad value (left, right, centre, justify)
-$QUOTE0              ``
-$QUOTE1              ''
+$QUOTE0              Open quotation marks
+$QUOTE1              Close quotation marks
 $RESTORE_QUAD_VALUE  Quad value for use in restoring L, R, C, J
                      (after tabs)
+$SAVED_STYLE         Current style, if there is one (used in FAMILY)
 $SEPARATOR&lt;n&gt;        Separator for depth &lt;n&gt; in lists
 $SS_VAR              Holds + or - sentence space value
 $ST&lt;#&gt;_FILL          Always QUAD if QUAD passed to ST &lt;#&gt;
@@ -789,6 +794,10 @@ DO_COVER             Formats and outputs covers
 DO_DOC_COVER         Formats and outputs doc covers
 D0_QUOTE             Outputs quotes with space adjustments before
                      and after
+DIVER_FN_1_PRE  -+     
+DIVER_FN_2_PRE   |   Manage footnotes called inside diversions
+                 |   QUOTE, BLOCKQUOTE and EPIGRAPH
+DIVER_FN_2_POST -+
 DIVERT_FN_LEFTOVER   Diverts excess fn stored in FN_OVERFLOW into
                      FOOTNOTE
 DIVERT_FN_OVERFLOW   Diverts excess fn stored in FN_OVERFLOW when
@@ -818,6 +827,12 @@ TRAPS                Sets hdrftr traps; optionally adjusts #DOC_LEAD
                      to fill page to #B_MARGIN
 TYPEWRITER           Sets family (C), font (R) and point size (12)
                      for PRINTSTYLE TYPEWRITE
+VFP_CHECK            Trap-sprung macro 1 legal baseline higher than
+                     where FOOTER will be sprung; checks whether
+                     there is, in fact, just enough room for
+                     another line of running text to be added to
+                     the page without jamming footnotes too close
+                     to running text.
 
 +++DIVERSIONS+++
 
@@ -836,6 +851,10 @@ TOC_ENTRIES   TOC entries
 
 +++NUMBER REGISTERS+++
 
+#1ST_FN_VP_ADJ             An adjustment factor that ensures VFP
+                           doesn't fall below what should be the
+                           correct last printed line of running
+                           text
 #ADJ_DOC_LEAD              Adjust DOC_LEAD? (toggle)
 #ADJ_TOC_LEAD              Adjust TOC_LEAD? (toggle)
 #ARG_NUM                   Keeps track of number of args passed to a
@@ -891,9 +910,9 @@ TOC_ENTRIES   TOC entries
 #DATE_FIRST                Was .DATE invoked as first letter
                            header after .START? (toggle)
 dc                         "mark" register for document columns
-#DEFER_FN_IN_DIVER         Register that tells FOOTNOTE whether to
-                           "move" or "defer" a fn collected inside
-                           a diversion
+#DIVER_FN                  Register that tells FOOTNOTE whether to
+                           "move" or "defer" a footnote collected
+                           inside a diversion
 #DEFER_PAGINATION          Tells COLLATE to restore pagination (from
                            RESTORE_PAGINATION
 #DEPTH_1                   Doc header depth with lead adjustment
@@ -901,6 +920,15 @@ dc                         "mark" register for document columns
 #DEPTH_2                   Doc header depth without lead adjustment
                            (#DOCHEADER_LINES * #DOC_LEAD)
 #DEPTH_TO_B_MARGIN         Page length minus #B_MARGIN
+#DIVERSIONS_HY_MARGIN      A reasonable value for .hym applied to
+                           QUOTE, BLOCKQUOTE and EPIGRAPH to
+                           avoid excessive hyphenation if these are
+                           set quad left
+#DIVERTED                  Set to 1 in DIVERT_FN_OVERFLOW; reset
+                           subsequently in FOOTNOTES when called by
+                           PROCESS_FN_LEFTOVER to 2 or 3 for use by
+                           FOOTER to decide whether to in/decrease
+                           #FN_DEPTH when outputting footnotes
 #DOCHEADER_ADVANCE         Distance from top-of-page to baseline of
                            docheader
 #DOCHEADER_COLOR           Colored docheader? (toggle)
@@ -1006,6 +1034,8 @@ dc                         "mark" register for document columns
 #FN_COUNT                  Which fn marker to print; also to
                            tell mom to reserve space for and print
                            the rule above footnotes
+#FN_COUNT_AT_FOOTER        The FN_COUNT after FOOTNOTES has been
+                           output in FOOTER
 #FN_COUNT_FOR_COLS         Holds a separate footnote count for columns
                            (so they don't reset to 0 1 until page break)
 #FN_DEFER                  Defer footnote to next page/column? (toggle)
@@ -1016,6 +1046,10 @@ dc                         "mark" register for document columns
 #FN_DEPTH                  Depth of footnote diversion(s)
 #FN_FOR_EPI                Signals to epigraph that a footnote is being
                            processed
+#FN_GAP                    When there are footnotes on a page, the
+                           difference between where FOOTER will be
+                           sprung and the next legal baseline.
+                           Used in VFP_CHECK.
 #FN_LEAD                   Lead in footnotes after FN_AUTOLEAD is
                            applied
 #FN_L_INDENT               Left indent of INDENT LEFT in footnotes
@@ -1027,12 +1061,16 @@ dc                         "mark" register for document columns
                            (and fns) when numbers instead of
                            star/dagger is being used for footnootes
                            numbers
+#FN_OVERFLOW_TRAP_POS      The register that sets the position of
+                           trap FN_OVERFLOW_TRAP.
 #FN_R_INDENT               Right indent of INDENT RIGHT in footnotes
 #FN_RULE_ADJ               # of points to raise footnote separator from
                            its baseline
 #FN_RULE_LENGTH            Length of footnote separator rule
 #FN_RULE                   Print fn rule? (toggle)
 #FN_WAS_DEFERED            Tells HEADER about a deferred footnote
+#FOOTER_DIFF               In TRAPS, the difference between the
+                           original #B_MARGIN and #VISUAL_B_MARGIN
 #FOOTER_GAP                Amount of space between end of text and
                            page #
 #FOOTER_MARGIN             Amount of space between page # and bottom
@@ -1043,7 +1081,21 @@ dc                         "mark" register for document columns
 #FOOTERS_WERE_ON           Were footers on? - used in FINIS and BLANKPAGE
                            (toggle)
 #FOOTNOTE_COLOR            Colored footnotes? (toggle)
+#FROM_DIVERT_FN            Signals to FOOTNOTE, when run from
+                           within DIVERT_FN_LEFTOVER, to set #SPACE_REMAINING
+                           to the total area allowable for running text
+#FROM_FOOTER               In col to col footnote processing, tells
+                           FOOTNOTE that FOOTNOTES was output from
+                           FOOTER.
+#FROM_HEADER               In col to col footnote processing, tells
+                           FOOTNOTE that FOOTNOTES was output from
+                           HEADER.
 #FULLSPACE_QUOTES          Should we fullspace quotes? (toggle)
+#GET_DEPTH                 Signals to FOOTNOTE that it should
+                           measure the depth of current footnotes
+                           plus the most recently added one, except
+                           where the footnote is to be deferred to
+                           the next page or column
 #GUTTER                    Width of gutter between columns
 #HDRFTR_CENTER_CAPS        CENTER part of header/footer in caps?
                            (toggle; default=off)
@@ -1100,14 +1152,18 @@ dc                         "mark" register for document columns
 #MISC_NUM                  Number of MISC lines
 #MISCS                     =#MISC_NUM in DO_COVER
 #n%_AT_PAGENUM_SET         Page # from n% when PAGENUMBER invoked
+#NEEDS_SPACE               Instruct FOOTNOTE, when called by
+                           PROCESS_FN_IN_DIVER, that if the footnote
+                           had to be deferred, the VFP must be
+                           raised by 1v (set in DIVER_FN_2_PRE)
 #NEXT_AUTHOR               Supplies correct digit to AUTHOR_&lt;#&gt;
                            when printing authors in doc header
 #NEXT_MISC                 Incrementing counter for misc lines in
                            DO_COVER
-#NO_EXTRA_SPACE            In FOOTNOTE, moves FOOTER trap down by
-                           1 line (needed for special cases of
-                           deferred footnotes that have been collected
-                           inside a diversion
+#NO_BACK_UP                Instructs FN_OVERFLOW_TRAP not to
+                           subtract 1 line of footnote lead from
+                           FN_OVERFLOW in a PREV_FN_DEFERRED
+                           situation.
 #NO_TRAP_RESET             Should we reset page traps? (toggle)
 #NUM_AUTHORS               # of authors mod 2 to test if odd or even
                            # of authors
@@ -1120,6 +1176,14 @@ dc                         "mark" register for document columns
                            #TOTAL_FIELDS
 #OK_PROCESS_LEAD           Initial processing of TOC and endnote
                            leading is deferred until OK_PROCESS_LEAD=1
+#ORIGINAL_B_MARGIN         The value for #B_MARGIN as set by the
+                           macro B_MARGIN
+#ORIGINAL_DOC_LEAD         The lead for PRINT_STYLE 1 as set in
+                           PRINTSTYLE; required so that PRINT_STYLE 1
+                           footnotes have an unadjusted lead of
+                           12 points
+#OVERFLOW                  Signals to FOOTNOTE that some of the
+                           footnote text won't fit on the page
 #PAGE_NUM_ADJ              What to add to n% to get #PAGENUMBER
 #PAGENUMBER                The page number
 #PAGENUM_STYLE_SET         Did we set pagenumber style? (toggle)
@@ -1197,12 +1261,42 @@ dc                         "mark" register for document columns
                            processing $FIRST_DOC_TITLE
 #RIGHT_CAP_HEIGHT          Cap height of right string in
                            headers/footers
+#RULED                     Tells FOOTNOTE if a rule (or space has been
+                           put above the first footnote on the page
+#SAVED_DIVER_FN_COUNT      In the case of a footnote inside a
+                           diversion that should be treated as a
+                           "normal" footnote, FOOTNOTE needs to
+                           distinguish between a "normal" deferred
+                           footnote (always the 1st footnote on the
+                           page) and one that only looks as if
+                           it should be deferred, when, in fact,
+                           it's an overflow; this register lets
+                           FOOTNOTE know whether the diversion
+                           footnote is, in fact, the first on the
+                           page.
 #SAVED_FN_COUNT            #FN_COUNT+1 prior to +#FN_COUNT; used
                            in FOOTNOTES while gathering fns inside
                            diversions
 #SAVED_FN_COUNT_FOR_COLS   #FN_COUNT_FOR_COLS+1 prior to
                            +#FN_COUNT_FOR_COLS; used in FOOTNOTES
                            while gathering fns inside diversions
+#SAVED_FN_DEPTH_1          Footnote depth prior to adding footnote
+                           diversion depth to FN_DEPTH; used when
+                           footnote text will overflow
+#SAVED_FN_DEPTH_2          Footnote depth after to adding footnote
+                           diversion depth to FN_DEPTH; used when
+                           footnote text will overflow
+#SAVED_LEAD                In FOOTER and DO_FOOTER, stores the
+                           lead in effect prior to outputting
+                           FOOTNOTES or performing either
+                           PROCESS_FN_LEFTOVER or
+                           PROCESS_FN_IN_DIVERSION; both the
+                           diversion FOOTNOTES and the two macros
+                           have, for PRINT_STYLE 2, an AUTOLEAD
+                           call, which requires that an LS be
+                           performed with the #SAVED_LEAD in
+                           order to remove register #AUTO_LEAD or
+                           #AUTO_LEAD_FACTOR.
 #SH_LEAD_ADJUST            #DOC_LEAD/8 (TYPESET) or /2 (TYPEWRITE)
                            (used for subhead spacing)
 #SH_NUM                    Subhead number
@@ -1216,6 +1310,11 @@ dc                         "mark" register for document columns
                            for a while
 #SPACE_REMAINING           Space remaining to footer trap; used to
                            decide whether or not to defer a footnote
+#SR_ADJ_FACTOR             An adjustment factor that compensates
+                           for the fact that #SPACE_REMAINING
+                           sometimes reports a fractionally larger
+                           space than is actually available for
+                           footnote text.
 #START                     If 1, signals completion of START
 #START_FOR_FOOTERS         Toggle set in START; signals to
                            PRINT_HDRFTR that START has been invoked,
@@ -1271,6 +1370,15 @@ dc                         "mark" register for document columns
 #VARIABLE_FOOTER_POS       Wandering trap position for processing
                            footnotes and footers; pos depends on
                            footnotes
+#VISUAL_B_MARGIN           Set in TRAPS, what \n(nl would report
+                           on the last line of running text before
+                           FOOTER is sprung.
+#VFP_DIFF                  #FN_DEPTH minus #SAVED_FN_DEPTH; the
+                           number of footnote lines that will fit
+                           on the page when there will be over, and
+                           therefore the amount by which to raise
+                           the VFP for footnotes with overflow after
+                           the 1st footnote.
 y                          Vertical position stored with mk in hdrftrs.
  
 +++STRINGS+++

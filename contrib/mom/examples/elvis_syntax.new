@@ -16,7 +16,7 @@
 
 #Mom
 language mom
-extension .mom
+extension .mom .tmac
 
 startword .
 color startword normal
@@ -27,12 +27,23 @@ color inword normal
 other initialpunct
 mostly normal
 
-color args like fixed
-color chars like emphasized
-color decimals normal
-color ellipsis normal
-color escapes like keyword
-color misc green
+backslash none
+
+color args         like fixed
+color braces       like char
+color brackets     like underlined
+color chars        like emphasized
+color decimals     normal
+color ellipsis     normal
+color escapes      like keyword
+color math         like cursor
+color misc         like string
+color operators    like string
+color parens       like comment
+color reg_string   like math
+color tmac_escapes like keyword
+color single_slash like char
+
 font args DA DE EN ES FR IT NL NO PT SV
 font args DEFAULT CHAPTER NAMED LETTER
 font args TYPESET TYPEWRITE
@@ -48,25 +59,45 @@ font args SINGLESPACE
 font args FACTOR
 font args DASH BULLET ALPHA DIGIT USER
 font args RGB CYM CMYK GRAY GREY
-prefix       \/ \/. \/? \/! \/, \/; \/:
-font escapes \/ \/. \/? \/! \/, \/; \/:
-prefix       \, \,. \,? \,! \,, \,; \,:
-font escapes \, \,. \,? \,! \,, \,; \,:
-prefix       \\ \~ \0 \: \| \^ \& \% \!
-font escapes \\ \~ \0 \: \| \^ \& \% \!
-prefix       \b \c \C \d \D \e \f \f( \h \l \L \p \r \s \s+ \s- \S \u \v \w
-font escapes \b \c \C \d \D \e \f \f( \h \l \L \p \r \s \s+ \s- \S \u \v \w
-prefix       \(bu \(co \(ct \(de \(dg \(di \(em \(en \(mu \(pl \(rg \(sc \(sq \(lq \(rq
-font chars \(bu \(co \(ct \(de \(dg \(di \(em \(en \(mu \(pl \(rg \(sc \(sq \(lq \(rq
-prefix     \(14 \(12 \(34 \(+-
-font chars \(14 \(12 \(34 \(+-
-prefix     \fR \fB \fI \fP \f0 \f1 \f2 \f3
-font chars \fR \fB \fI \fP \f0 \f1 \f2 \f3
-prefix     ...
-font ellipsis ...
-prefix .0 .1 .2 .3 .4 .5 .6 .7 .8 .9
-font decimals . .0 .1 .2 .3 .4 .5 .6 .7 .8 .9
+
+prefix            { \{ \{\
+font braces       { \{ \{\
+prefix            [ ]
+font brackets     [ ]
+prefix            \(bu \(co \(ct \(de \(dg \(di \(em \(en \(mu \(pl \(rg \(sc \(sq \(lq \(rq
+font chars        \(bu \(co \(ct \(de \(dg \(di \(em \(en \(mu \(pl \(rg \(sc \(sq \(lq \(rq
+prefix            \(14 \(12 \(34 \(+-
+font chars        \(14 \(12 \(34 \(+-
+prefix            \fR \fB \fI \fP \f0 \f1 \f2 \f3
+font chars        \fR \fB \fI \fP \f0 \f1 \f2 \f3
+prefix            .0 .1 .2 .3 .4 .5 .6 .7 .8 .9
+font decimals     . .0 .1 .2 .3 .4 .5 .6 .7 .8 .9
+prefix            \/ \/. \/? \/! \/, \/; \/:
+font escapes      \/ \/. \/? \/! \/, \/; \/:
+prefix            \, \,. \,? \,! \,, \,; \,:
+font escapes      \, \,. \,? \,! \,, \,; \,:
+prefix            \~ \0 \: \| \^ \& \% \!
+font escapes      \~ \0 \: \| \^ \& \% \!
+prefix            \b \c \C \d \D \e \f \f( \h \l \L \p \r \s \s+ \s- \S \u \v \w
+font escapes      \b \c \C \d \D \e \f \f( \h \l \L \p \r \s \s+ \s- \S \u \v \w
+prefix            ...
+font ellipsis     ...
+prefix            + - * / = == < > <= >= <? >? %
+font math         + - * / = == < > <= >= <? >? %
+prefix            |
+font misc         |
+prefix            ! : &
+font operators    ! : &
+prefix            ( )
+font parens       ( )
+prefix            # * $
+font reg_string   # * $
+prefix            \n \*
+font single_slash \n \*
+prefix            \\n \\* \\$
+font tmac_escapes \\n \\* \\$
+
 character \]
-string '
-comment \#
-comment \"
+string    '
+comment   \#
+comment   \"

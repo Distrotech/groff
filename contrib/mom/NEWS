@@ -1,3 +1,40 @@
+Release 1.2
+-----------
+
+As of 1.2, the recommended version of groff to use with mom has
+been bumped up from groff, 1.18 to groff, 1.19.2.  Although mom will
+continue to work with groff, 1.18, her handling of .FAM(ILY) and .FT
+is now slightly different, therefore users of groff 1.18 may have to
+update documents created with mom so that every .FAM(ILY) request is
+followed by a .FT request before any text is input, otherwise mom
+will set the text after .FAM(ILY) in Courier (until she encounters a
+.FT request).  People running groff, >= 1.19.2 don't have to worry
+about this, but I recommend that, regardless of which version you're
+running, you have a look at the document entries for FAMILY and FT
+in order to see how mom will be handling .FAMILY and .FT from now
+on.
+
+When used with groff >=1.19.2, mom now emits warnings if a style
+hasn't been registered, or if a font style doesn't exist in the
+current family.  Invalid .FAM(ILY) calls now use a "fallback" font"
+(although no warning is issued).  The fallback is user-settable.
+
+Mom's macro file, om.tmac, now sets up a fairly extensive list of
+font "styles," thus expanding the range of arguments that can be
+passed to .FT (formerly, just R, I, B and BI, unless users had
+already rolled their own solution to the problem of extensive type
+families containing fonts like condensed, demibold, black, light, etc).
+Users are advised to read the documentation sections on FAM(ILY),
+FT and FALLBACK_FONT, as well as the new appendix section, "Adding
+PostScript fonts to groff", for information on using mom's style
+extensions (and how to disable them, should they conflict with a
+user's present groff site-font/devps setup).
+
+A new macro, FALLBACK_FONT, has been added.  It controls not only
+the fallback font for invalid .FAMILY calls, but also whether mom
+aborts on invalid .FT calls after issuing a warning, or continues
+processing using the fallback.
+
 Release 1.1.9
 -------------
 

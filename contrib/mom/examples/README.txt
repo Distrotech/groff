@@ -1,6 +1,11 @@
 The files in this directory show mom in action.
 
-I haven't included their PostScript output because I want to
+If you have downloaded and untarrred a version of mom from her
+homepage, you'll see that none of the example files come with
+corresponding PostScript (.ps) files, as they do with pre-compiled
+versions of groff, or groff built from source.
+
+I haven't included the PostScript output because I want to
 keep the mom archive as lean as possible.  To view the PostScript
 output, process the files with groff and either
 
@@ -9,20 +14,20 @@ output, process the files with groff and either
 
     b) to your printer.
 
-Using the file typeset_doc.mom as an example, you would
+Using the file sample_docs.mom as an example, you would
 accomplish a) like this:
 
-    groff -mom -Tps typeset_doc.mom > typeset_doc.ps
-    gv typeset_doc.ps
+    groff -mom -Tps sample_docs.mom > sample_docs.ps
+    gv sample_docs.ps
 
-How you would accomplish b) depends on your printer setup, but a
-fairly standard way to do it would be
+Accomplishing b) depends on your printer setup, but a fairly
+standard way to do it would be
 
-    groff -mom -Tps typeset_doc.mom | lpr
+    groff -mom -Tps sample_docs.mom | lpr
 
                   or
 
-    groff -mom -Tps -l typeset_doc.mom
+    groff -mom -Tps -l sample_docs.mom
 
 Note: I don't recommend previewing with gxditview because it doesn't
 render some of mom's effects properly.
@@ -43,9 +48,9 @@ Because the file also demonstrates a "cutaround" using a small
 picture (of everybody's favourite mascot, Tux), the PostScript file,
 penguin.ps has been included in the directory.
 
-***typeset_doc.mom***
+***sample_docs.mom***
 
-The file, typeset_doc.mom, shows examples of three of the document
+The file, sample_docs.mom, shows examples of three of the document
 styles available with the mom's document processing macros, as well
 as demonstrating the use of COLLATE.
 
@@ -55,11 +60,17 @@ default behaviour when typesetting a document.
 The last sample, set in 2 columns, shows off mom's flexibility
 when it comes to designing documents.
 
-***typewrite_doc.mom***
+If you'd like to see how mom handles exactly the same file when the
+PRINTSTYLE is TYPEWRITE (i.e. typewritten, double-spaced), simply
+change
 
-Using the first two samples from typeset.mom, typewrite_doc.mom
-shows what "typewritten, double-spaced" documents (PRINTSTYLE
-TYPEWRITE) look like.
+    .PRINTSTYLE TYPESET
+
+to
+
+    .PRINTSTYLE TYPEWRITE
+
+near the top of the file. 
 
 ***letter.mom***
 

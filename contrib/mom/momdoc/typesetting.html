@@ -110,8 +110,8 @@ the same thing.
 <strong>Mom</strong>'s typesetting macros can be used as a standalone
 package, independent of the
 <a href="docprocessing.html#DOCPROCESSING">document processing macros</a>.
-With them, you can typeset on-the-fly.  Document covers, your best
-friend's résumé, a poster for a lost dog -- none of these requires
+With them, you can typeset on-the-fly.  Book covers, your best
+friend's résumé, a poster for a lost dog --none of these requires
 structured document processing (page headers, paragraphs, heads,
 footnotes, etc).  What they do demand is precise control over every
 element on the page.  The typesetting macros give you that control.
@@ -581,6 +581,7 @@ for an explanation.
 <ul>
 	<li><a href="#FAMILY">FAMILY</a> (type family)
 	<li><a href="#FONT">FONT</a> (font)
+	<li><a href="#FALLBACK_FONT">FALLBACK_FONT</a> (for invalid fonts)
 	<li><a href="#PS">PT_SIZE</a> (point size of type)
 	<li><a href="#LEADING">LS</a> (line spacing/leading)
 	<li><a href="#AUTOLEAD">AUTOLEAD</a> (automatic line spacing)
@@ -597,7 +598,8 @@ Macro: <strong>FAMILY</strong> <var>&lt;family&gt;</var>
 Alias: <strong>FAM</strong>
 
 <p>
-<strong>FAMILY</strong> takes one argument: the name of the type family
+<strong>FAMILY</strong> takes one argument: the name of the
+<a href="definitions.html#TERMS_FAMILY">family</a>
 you want.  Groff comes with a number of PostScript families, each
 identified by a 1-, 2- or 3-letter mnemonic.  The standard families
 are:
@@ -605,29 +607,80 @@ are:
 <tr><td width="15"><td><strong>A</strong><td>Avant Garde
 <tr><td><td><strong>BM</strong> <td>Bookman
 <tr><td><td><strong>H</strong><td>Helvetica
+<tr><td><td><strong>HN</strong><td>Helvetica Narrow
 <tr><td><td><strong>N</strong><td>New Century Schoolbook
 <tr><td><td><strong>P</strong><td>Palatino
 <tr><td><td><strong>T</strong><td>Times Roman</td></tr>
+<tr><td><td><strong>ZCM</strong><td>Zapf Chancery</td></tr>
 </table>
 <p>
 The argument you pass to <strong>FAMILY</strong> is the identifier at
-left above.  For example, if you want Helvetica, enter
+left, above.  For example, if you want Helvetica, enter
 <p>
 <pre>
 	.FAMILY H
 </pre>
 
-<strong>NOTE:</strong> The <a href="#FONT">font macro</a>
-(<strong>FT</strong>) lets you to specify both the type family
+<strong>NOTE:</strong> The
+<a href="#FONT">font macro</a>
+(<strong>FT</strong>) lets you specify both the type family
 and the desired font with a single macro.  While this saves a few
 keystrokes, I recommend using <strong>FAMILY</strong> for family,
 and <strong>FT</strong> for font, except where doing so is genuinely
-inconvenient.
+inconvenient. <strong>ZCM</strong>, for example, only exists in one
+style: Italic (<strong>I</strong>).  Therefore, <kbd>.FT ZCMI</kbd>
+makes more sense than setting the family to &quot;ZCM&quot;, then
+setting the font to &quot;I&quot;.
+<p>
+<a name="FAM_ADD_NOTE"></a>
+<strong>ADDITIONAL NOTE:</strong> As of <strong>mom, version
+1.1.9-a</strong>, if you are running a version of groff lower
+than 1.19.2, you <em>MUST</em> follow all <strong>FAMILY</strong>
+requests with a <strong>FT</strong> request, otherwise
+<strong>mom</strong> will set all type up to the next
+<strong>FT</strong> request in the
+<a href="#FALLBACK_FONT">fallback font</a>.
+<p>
+If you are running a version of groff greater than or equal
+to 1.19.2, when you invoke the <strong>FAMILY</strong> macro,
+<strong>mom</strong> &quot;remembers&quot; the font style (Roman,
+Italic, etc) currently in use (if the font style exists in the new
+family) and will continue to use the same font style in the new
+family.  For example:
+<p>
+<pre>
+	.FAMILY BM   \" Bookman family
+	.FT     I    \" Medium Italic
+	&lt;some text&gt;  \" Bookman Medium Italic
+	.FAMILY H    \" Helvetica family
+	&lt;more text&gt;  \" Helvetica Medium Italic
+</pre>
+
+However, if the font style does not exist in the new family,
+<strong>mom</strong> will set all subsequent type in the
+<a href="#FALLBACK_FONT">fallback font</a>
+(by default, Courier Medium Roman) until she encounters a
+<a href="#FONT">.FT</a>
+request that's valid for the family.  For example, assuming
+you don't have the font &quot;Medium Condensed Roman&quot;
+(<strong>mom</strong> extension &quot;<strong>CD</strong>&quot;)
+in the Helvetica family:
+<p>
+<pre>
+	.FAMILY UN    \" Univers family
+	.FT     CD    \" Medium Condensed
+	&lt;some text&gt;   \" Univers Medium Condensed
+	.FAMILY H     \" Helvetica family
+	&lt;more text&gt;   \" Courier Medium Roman!
+</pre>
+
+In the above example, you must follow <kbd>.FAMILY H</kbd> with a
+<strong>FT</strong> request that's valid for Helvetica.
 <p>
 <strong>Experts:</strong>
 <br>
 If you add other PostScript families to groff's /font/devps directory,
-be sure to follow the groff standard for naming families and fonts.
+I recommend following the groff standard for naming families and fonts.
 For example, if you add the Garamond family, name the font files
 <p>
 <pre>
@@ -642,45 +695,171 @@ GARAMOND then becomes a legal family name you can pass to
 G, or GD.)  R, I, B, and BI after GARAMOND are the roman, italic,
 bold and bold-italic fonts respectively.
 <p>
+Please see the Appendices,
+<a href="appendices.html#FONTS">Adding PostScript fonts to groff</a>,
+for information on adding fonts and families to groff, as well as
+to see a list of the extensions <strong>mom</strong> provides to
+groff's basic <strong>R, I, B, BI</strong> styles.
+<p>
 
 <!---FT--->
 
 <hr width="66%" align="left">
 <a name="FONT"><h3><u>Font</u></h3></a>
 <br>
-Macro: <strong>FT</strong> <var>R | I | B | BI</var>
+Macro: <strong>FT</strong> <var>R | I | B | BI | &lt;any other valid font style&gt;</var>
 
 <p>
-<strong>FT</strong> takes one of four possible arguments specifying the
-desired font:
+By default, groff permits <strong>FT</strong> to take one of four
+possible arguments specifying the desired font:
 <table valign="baseline" summary="font">
-<tr><td width="15"><td><strong>R</strong><td> = <td>roman
-<tr><td><td><strong>I</strong><td> = <td>italic
-<tr><td><td><strong>B</strong><td> = <td>bold
-<tr><td><td><strong>BI</strong><td> = <td>bold-italic</td></tr>
+<tr><td width="15"><td><strong>R</strong><td> = <td>(Medium) Roman
+<tr><td><td><strong>I</strong><td> = <td>(Medium) Italic
+<tr><td><td><strong>B</strong><td> = <td>Bold (Roman)
+<tr><td><td><strong>BI</strong><td> = <td>Bold Italic</td></tr>
 </table>
 <p>
-For example, if your family is Helvetica, entering
+For example, if your
+<a href="definitions.html#TERMS_FAMILY">family</a>
+is Helvetica, entering
 <p>
 <pre>
 	.FT B
 </pre>
 
-will give you the Helvetica bold font.  If your family were
-Palatino, you'd get the Palatino bold font.
+will give you the Helvetica bold
+<a href="definitions.html#TERMS_FONT">font</a>.
+If your family were Palatino, you'd get the Palatino bold font.
 <p>
-You can specify both family and font in the <strong>FT</strong> macro.
-As an example,
+(As of <strong>mom, version 1.1.9-a,</strong> the range of arguments
+that can be passed to <strong>FT</strong> has been considerably
+extended, allowing access to a greater variety of font
+<a href="definitions.html#TERMS_WEIGHT">weights</a>
+and
+<a href="definitions.html#TERMS_SHAPE">shapes</a>.
+Please see the
+<a href="#FONT_NOTE">NOTE</a>,
+below.)
+<p>
+How <strong>mom</strong> reacts to an invalid argument to
+<strong>FT</strong> depends on which version of groff you're using.
+If your groff version is greater than or equal to 1.19.2,
+<strong>mom</strong> will issue a warning and, depending on how
+you've set up the
+<a href="#FALLBACK_FONT">fallback font</a>,
+either continue processing using the fallback font, or abort
+(allowing you to correct the problem).  If your groff version is less
+than 1.19.2, <strong>mom</strong> will silently continue processing,
+using either the fallback font or the font that was in effect prior
+to the invalid <strong>FT</strong> call.
+<p>
+<strong>FT</strong> will also accept, as an argument, a full
+family+font name.  For example,
 <p>
 <pre>
 	.FT HB
 </pre>
 
-sets the font to Helvetica bold.  I strongly recommend keeping
-family and font separate.
+will set subsequent type in Helvetica Bold.  However, I strongly
+recommend keeping family and font separate except where doing so is
+genuinely inconvenient.
 <p>
-Fonts can also be changed inline.  See
+For inline control of fonts, see
 <a href="inlines.html#INLINE_FONTS_MOM">Inline Escapes, font control</a>.
+<p>
+<a name="FONT_NOTE"></a>
+<strong>NOTE: Mom, versions 1.1.9-a</strong> and higher,
+considerably extends the range of arguments you can pass to
+<strong>FT</strong>, making it more convenient to add and access
+fonts of differing
+<a href="definitions.html#TERMS_WEIGHT">weights</a>
+and
+<a href="definitions.html#TERMS_SHAPE">shapes</a>
+within the same family.  Have a look at the Appendices,
+<a href="appendices.html#STYLE_EXTENSIONS">Adding PostScript fonts to groff</a>,
+for a list of the weight/style arguments <strong>mom</strong>
+allows.
+<p>
+Be aware, though, that you must have the fonts, correctly
+installed and named, in order to use the arguments.  (See
+<a href="appendices.html#HOWTO">How to create a PostScript font for use with groff</a>
+for how to add fonts to groff.)  Please also read the
+<a href="#FAM_ADD_NOTE">ADDITIONAL NOTE</a>
+found in the description of the <strong>FAMILY</strong> macro.
+<p>
+
+<!---FALLBACK_FONT--->
+
+<hr width="66%" align="left">
+<a name="FALLBACK_FONT"><h3><u>Fallback font</u></h3></a>
+<br>
+Macro: <strong>FALLBACK_FONT</strong> <var>&lt;fallback font&gt; [ ABORT | WARN ] | ABORT | WARN</var>
+
+<p>
+In the event that you pass an invalid argument to
+<a href="#FONT">.FAMILY</a>
+(i.e. a non-existent family), <strong>mom</strong>, by default, uses
+the fallback font, Courier Medium Roman (CR), in order to continue
+processing your file.
+<p>
+If you'd prefer another fallback font, pass
+<strong>FALLBACK_FONT</strong> the <strong>full family+font name
+of the font you'd like</strong>.  For example, if you'd rather the
+fallback font were Times Roman Medium Roman,
+
+<pre>
+	.FALLBACK_FONT TR
+</pre>
+<p>
+would do the trick.
+<p>
+Additionally, if your version of groff accepts accepts &quot;if
+F&quot; and &quot;if S&quot; (see
+<a href="#FAM_ADD_NOTE">above</a>),
+<strong>mom</strong> issues a warning whenever a
+<strong>font style</strong> set with
+<a href="#FONT">.FT</a>
+does not exist, either because you haven't registered the style
+(see
+<a href="appendices.html#REGISTER_STYLE">here</a>
+for instructions on registering styles), or because the font style
+does not exist in the current family set with
+<a href="#FAMILY">.FAMILY</a>.
+By default, <strong>mom</strong> then aborts, which allows you to
+correct the problem.
+<p>
+If you'd prefer that <strong>mom</strong> not abort on non-existent
+fonts, but rather continue processing using a fallback font,
+you can pass <strong>FALLBACK_FONT</strong> the argument
+<strong>WARN</strong>, either by itself, or in conjunction with your
+chosen fallback font.
+<p>
+<strong>Some examples of invoking FALLBACK_FONT:</strong>
+<br>
+<ul>
+	<li><kbd>.FALLBACK_FONT WARN</kbd>
+		<br>
+		<strong>mom</strong> will issue a warning whenever you try
+		to access a non-existent font but will continue processing
+		your file with the default fallback font, Courier Medium Roman.
+	<li><kbd>.FALLBACK_FONT TR WARN</kbd>
+		<br>
+		<strong>mom</strong> will issue a warning whenever you try
+		to access a non-existent font but will continue processing
+		your file with a fallback font of Times Roman Medium Roman;
+		additionally, &quot;TR&quot; will be the fallback font whenever
+		you try to access a <strong>family</strong> that does not exist.
+	<li><kbd>.FALLBACK_FONT TR ABORT</kbd>
+		<br>
+		<strong>mom</strong> will abort whenever you try to access a
+		non-existent font, and will use the fallback font
+		&quot;TR&quot; whenever you try to access a <strong>family</strong>
+		that does not exist.
+</ul>
+<p>
+If, for some reason, you want to revert to ABORT, just enter
+<kbd>.FALLBACK_FONT ABORT</kbd> and <strong>mom</strong> will once
+again abort on font errors.
 <p>
 
 <!---PT_SIZE--->
@@ -885,17 +1064,22 @@ left margin, at the right margin, at both margins, or at neither margin
 (centred).
 <p>
 These macros also determine whether or not
-<a href="definitions.html#TERMS_INPUTLINE">input lines</a> are joined and
-<a href="definitions.html#TERMS_FILLED">filled</a> during output.
+<a href="definitions.html#TERMS_INPUTLINE">input lines</a>
+are joined and
+<a href="definitions.html#TERMS_FILLED">filled</a>
+during output.
 <p>
 Additionally, macros that deal with how to break
-<a href="definitions.html#TERMS_OUTPUTLINE">output lines</a> are covered in this
-section, as is the
-<a href="definitions.html#TERMS_INLINES">inline escape</a> for joining output lines.
+<a href="definitions.html#TERMS_OUTPUTLINE">output lines</a>
+are covered in this section, as is the
+<a href="definitions.html#TERMS_INLINES">inline escape</a>
+for joining input lines.
 <p>
 You may encounter some words here that are unfamiliar.  Refer to
-<a href="definitions.html#TERMS_TYPESETTING">Typesetting terms</a> and
-<a href="definitions.html#TERMS_GROFF">Groff terms</a> for an explanation.
+<a href="definitions.html#TERMS_TYPESETTING">Typesetting terms</a>
+and
+<a href="definitions.html#TERMS_GROFF">Groff terms</a>
+for an explanation.
 
 <a name="INDEX_JUST"><h3><u>Justification, quad, fill, and break macro list</u></h3></a>
 <p>
@@ -1720,20 +1904,30 @@ highly recommend previewing your work to assess the effect of
 
 <p>
 <p>
-<strong>IMPORTANT:</strong> <strong>RW</strong> affects all
+<strong>IMPORTANT:</strong> In versions prior to 1.1.9-a,
+<strong>RW</strong> affected all
 <a href="definitions.html#TERMS_FONT">fonts</a>
 in the
 <a href="definitions.html#TERMS_FAMILY">family</a>
-current at the time it's invoked.  It must be reset to zero to
-cancel its effect (<code>.RW 0</code>) on those fonts, or reinvoked
-(possibly with a different value) if you change family.
+current at the time it was invoked.  As of 1.1.9-a, this behaviour
+has been changed.  <strong>RW</strong> affects only the font
+current at the time it's invoked, and remains in effect for that
+font every time the font is called, hence must be reset to zero to
+cancel its effect (<code>.RW 0</code>) on that font.
 <p>
 <strong>NOTE:</strong> By default, <strong>RW</strong> does not deposit a 
 <a href="#BR">break</a>
-(<strong>BR</strong>) when it's invoked.  If you want
+(<strong>BR</strong>) when it's invoked if you're in one of the
+<a href="definitions.html#TERMS_FILL">fill</a>
+modes (i.e.
+<a href="#QUAD">QUAD</a>
+<strong>L, R, C, J</strong> or
+<a href="#JUSTIFY">JUSTIFY</a>).
+If you want
 <strong>RW</strong> to break at the ends of the previous
-<a href="definitions.html#TERMS_INPUTLINE">input lines</a>,
-you can tell <strong>mom</strong> that's what you want by invoking the
+<a href="definitions.html#TERMS_INPUTLINE">input lines</a>
+while you're in a fill mode, tell <strong>mom</strong>
+that's what you want by invoking the
 <a href="#BR_AT_LINE_KERN">BR_AT_LINE_KERN</a>
 toggle macro.
 <p>
@@ -1766,14 +1960,31 @@ small decimal values when loosening lines.  For example,
 may be just enough to open up a line without the change in letter
 spacing being obvious.  I highly recommend previewing your work to
 assess the effect of <strong>EW</strong>.
-
+<p>
+<strong>IMPORTANT:</strong> In versions prior to 1.1.9-a,
+<strong>EW</strong> affected all
+<a href="definitions.html#TERMS_FONT">fonts</a>
+in the
+<a href="definitions.html#TERMS_FAMILY">family</a>
+current at the time it was invoked.  As of 1.1.9-a, this behaviour
+has been changed.  <strong>EW</strong> affects only the font
+current at the time it's invoked, and remains in effect for that
+font every time the font is called, hence must be reset to zero to
+cancel its effect (<code>.EW 0</code>) on that font.
 <p>
 <strong>NOTE:</strong> By default, <strong>EW</strong> does not deposit a 
 <a href="#BR">break</a>
-(<strong>BR</strong>) when it's invoked.  If you want
+(<strong>BR</strong>) when it's invoked if you're in one of the
+<a href="definitions.html#TERMS_FILL">fill</a>
+modes (i.e.
+<a href="#QUAD">QUAD</a>
+<strong>L, R, C, J</strong> or
+<a href="#JUSTIFY">JUSTIFY</a>).
+If you want
 <strong>EW</strong> to break at the ends of the previous
-<a href="definitions.html#TERMS_INPUTLINE">input lines</a>,
-you can tell <strong>mom</strong> that's what you want by invoking the
+<a href="definitions.html#TERMS_INPUTLINE">input lines</a>
+while you're in a fill mode, tell <strong>mom</strong>
+that's what you want by invoking the
 <a href="#BR_AT_LINE_KERN">BR_AT_LINE_KERN</a>
 toggle macro.
 <p>
@@ -1787,21 +1998,33 @@ Macro: <strong>BR_AT_LINE_KERN</strong> <var>toggle</var>
 <br>
 
 <p>
-By default, <strong>mom</strong> does not break
+By default, in
+<a href="definitions.html#TERMS_FILLED">fill</a>
+modes (i.e.
+<a href="#QUAD">QUAD</a>
+<strong>L, R, C, J</strong> or
+<a href="#JUSTIFY">JUSTIFY</a>)
+<strong>mom</strong> does not break
 <a href="definitions.html#TERMS_INPUTLINE">input lines</a>
 when you invoke <strong>RW</strong> or <strong>EW</strong>.
-If you'd like <strong>mom</strong> to break input lines prior
-to <strong>RW</strong> or <strong>EW</strong>, invoke
-<strong>BR_AT_INPUT_LINE</strong> without any argument.  To
-disable the breaks, invoke <strong>BR_AT_INPUT_LINE</strong>
-with any argument (<strong>OFF, QUIT, Q, X</strong>...), like
-this
+If you'd like her to break input lines prior to <strong>RW</strong>
+or <strong>EW</strong>, invoke <strong>BR_AT_INPUT_LINE</strong>
+without any argument.  To disable the breaks, invoke
+<strong>BR_AT_INPUT_LINE</strong> with any argument (<strong>OFF,
+QUIT, Q, X</strong>...), like this
 <p>
 <pre>
 	.BR_AT_LINE_KERN OFF
 	    or
 	.BR_AT_LINE_KERN X
 </pre>
+
+In <strong>QUAD L, R</strong> or <strong>C</strong>,
+<strong>mom</strong> simply breaks the line.  In <strong>QUAD J</strong>
+(or <strong>JUSTIFY</strong>, which is the same thing), she breaks
+and
+<a href="definitions.html#TERMS_FORCE">force justifies</a>
+the line prior to <strong>EW</strong> or <strong>RW</strong>.
 <br>
 
 <!---KERN--->

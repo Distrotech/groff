@@ -23,26 +23,18 @@
 .\"
 .\"
 .\"
-\# Version 1.1.9
-\# -------------
-\#
-.if (\n[.x]\n[.y] < 118) \
-.  ab You need GNU troff version 1.18 or higher to run this version of mom.
-.if !\n[.g]=1 \
-.  ab The mom macros require that you be running GNU troff.
-\#
-\# ====================================================================
+\# Version 1.2
+\# -----------
 \#
 \# Antoine de St-Exupéry asserted that elegance in engineering is
 \# achieved not when there is nothing left to add, but when there is
 \# nothing left to take away.
 \#
-\# By those standards, mom is a Rube Goldberg contraption.  She was created
-\# over the years while groff, and my understanding of it, changed and
-\# evolved.  The routines for handling docheaders and epigraphs, in
-\# particular, are pretty Baroque.  Since I added the SHIM macro, much
-\# of what they contain could probably be removed.  However, I'm a
-\# firm believer in "if it ain't broke, don't fix it."
+\# By those standards, mom is a Rube Goldberg contraption.  She was
+\# created over the years while groff, and my understanding of it,
+\# changed and evolved.  However, I'm a firm believer in "if it
+\# ain't broke, don't fix it," so I'm leaving any major clean-up
+\# of redundancies and whatnot for a rainy day.
 \#
 \# Inasmuch as possible, macros that turn a feature on or off follow
 \# a similar style.  Invoking the macro without an argument turns
@@ -52,6 +44,46 @@
 \#
 \# "<anything>" in the description of arguments that can be passed
 \# to a macro means that any argument turns the feature off.
+\#
+\# ====================================================================
+\#
+\# Check which version of groff is being run
+.if (\n[.x]\n[.y] < 118) \
+.  ab You need GNU troff version 1.18 or higher to run this version of mom.
+\# Check that GNU troff is being run
+.if !\n[.g]=1 \
+.  ab The mom macros require that you be running GNU troff.
+\# Add supplementary styles
+.sty \n[.fp] L       \"  Light Roman
+.sty \n[.fp] LI      \"  Light Italic
+.sty \n[.fp] LCD     \"  Light Condensed Roman
+.sty \n[.fp] LCDI    \"  Light Condensed Italic
+.sty \n[.fp] LEX     \"  Light Extended Roman
+.sty \n[.fp] LEXI    \"  Light Extended Italic
+.sty \n[.fp] CD      \"  Medium/Book Condensed Roman
+.sty \n[.fp] CDI     \"  Medium/Book Condensed Italic
+.sty \n[.fp] EX      \"  Medium/Book Extended Roman
+.sty \n[.fp] EXI     \"  Medium/Book Extended Italic
+.sty \n[.fp] DB      \"  DemiBold Roman
+.sty \n[.fp] DBI     \"  DemiBold Italic
+.sty \n[.fp] BCD     \"  Bold Condensed Roman
+.sty \n[.fp] BCDI    \"  Bold Condensed Italic
+.sty \n[.fp] BEX     \"  Bold Extended Roman
+.sty \n[.fp] BEXI    \"  Bold Extended Italic
+.sty \n[.fp] HV      \"  Heavy Roman
+.sty \n[.fp] HVI     \"  Heavy Italic
+.sty \n[.fp] HVCD    \"  Heavy Condensed Roman
+.sty \n[.fp] HVCDI   \"  Heavy Condensed Italic
+.sty \n[.fp] HVEX    \"  Heavy Extended Roman
+.sty \n[.fp] HVEXI   \"  Heavy Extended Italic
+.sty \n[.fp] BL      \"  Black Roman
+.sty \n[.fp] BLI     \"  Black Italic
+.sty \n[.fp] BLCD    \"  Black Condensed Roman
+.sty \n[.fp] BLCDI   \"  Black Condensed Italic
+.sty \n[.fp] BLEX    \"  Black Extended Roman
+.sty \n[.fp] BLEXI   \"  Black Extended Italic
+.sty \n[.fp] UBL     \"  Ultra-Black Roman
+.sty \n[.fp] UBLI    \"  Ultra-Black Italic
 \#
 \# ====================================================================
 \#
@@ -113,8 +145,7 @@
 \# 
 \#     warning: number register whatever not defined.
 \# 
-\# groff also warns about strings similarly tested for, and
-\# complains a lot about the use of right-braces.
+\# Groff also warns about strings similarly tested for
 \# 
 \# The warn level, above, is high in order to shut off those
 \# warnings.  If you're futzing in this file and need more verbose
@@ -222,6 +253,7 @@
 .MAC B_MARGIN END
 .    br
 .    nr #B_MARGIN (\\$1)
+.    nr #ORIGINAL_B_MARGIN \\n[#B_MARGIN]
 .    nr #B_MARGIN_SET 1
 .    wh -\\n[#B_MARGIN]u DO_B_MARGIN
 .END
@@ -264,9 +296,9 @@
 \# *Argument:
 \#   <none>
 \# *Function:
-\#   Plants the top margin (set in .PAGE) at the top of each page.
+\#   Plants the top margin at the top of each page.
 \# *Notes:
-\#   The trap is set in .PAGE
+\#   The trap is set in .T_MARGIN or .PAGE
 \#
 .MAC DO_T_MARGIN END
 .    ev 1
@@ -281,9 +313,9 @@
 \# *Argument:
 \#   <none>
 \# *Function:
-\#   Plants the bottom margin (set in .PAGE) at the bottom of each page.
+\#   Plants the bottom margin at the bottom of each page.
 \# *Notes:
-\#   The trap is set in .PAGE.
+\#   The trap is set in .B_MARGIN or .PAGE.
 \#
 .MAC DO_B_MARGIN END
 .    nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
@@ -304,8 +336,20 @@
 \#   breaks to a new page.
 \#
 .MAC NEWPAGE END
+.    br
 .    ie \\n[#B_MARGIN_SET]=1 \{\
-.       DO_B_MARGIN
+.       ie !\\n[#DOCS]=1 \{ .DO_B_MARGIN \}
+.       el \{\
+.          if \\n[#COLUMNS]=1 \{ .nr #COL_NUM \\n[#NUM_COLS] \}
+.          ie !\\n[#FN_DEPTH] \{\
+.             ch FN_OVERFLOW_TRAP
+.             DO_B_MARGIN
+.             wh -(\\n[#FN_OVERFLOW_TRAP_POS]u) FN_OVERFLOW_TRAP
+.          \}
+.          el \{\
+.             DO_B_MARGIN
+.          \}
+.       \}
 .    \}
 .    el \{\
 .       nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
@@ -342,6 +386,46 @@
 .END
 \#
 \#
+\# +++FAMILY AND FONT+++
+\#
+\# FALLBACK FONT
+\# -------------
+\# *Argument:
+\#   <fallback font> [ ABORT | WARN ] | ABORT | WARN
+\# *Function:
+\#   Sets register #ABORT_FT_ERRORS to 1, or defines a fallback font
+\#   called "dummy" at font position 0.
+\# *Notes:
+\#   Calls to non-existent families cause mom to continue processing
+\#   files using the fallback font until a valid family is entered.
+\#
+\#   Calls to non-existent fonts generate warnings.  If ABORT is passed
+\#   to FALLBACK_FONT, mom stops processing files after the warning.
+\#   Otherwise, she continues to process files using the fallback font
+\#   after the warning is issued.  The default fallback font is CR; the
+\#   default for font warnings is to abort.
+\#
+.MAC FALLBACK_FONT END
+.    if \\n[#NUM_ARGS]=1 \{\
+.       if '\\$1'ABORT' \{ .nr #ABORT_FT_ERRORS 1 \}
+.       if '\\$1'WARN' \{\
+.          if r#ABORT_FT_ERRORS \{ .nr #ABORT_FT_ERRORS 0 \}
+.       \}
+.       if !'\\$1'ABORT' \{\
+.          if !'\\$1'WARN' \{\
+.             fp 0 dummy \\$1
+.          \}
+.       \}
+.    \}
+.    if \\n[#NUM_ARGS]=2 \{\
+.       fp 0 dummy \\$1
+.       if '\\$2'ABORT' \{ .nr #ABORT_FT_ERRORS 1 \}
+.       if '\\$2'WARN'  \{ .nr #ABORT_FT_ERRORS 0 \}
+.    \}
+.END
+\#
+.FALLBACK_FONT CR ABORT
+\#
 \# FAMILY
 \# ------
 \# *Argument:
@@ -353,15 +437,25 @@
 .MAC FAMILY END
 .    if \\n[#PRINT_STYLE]=1 \{ .return \}
 .    if \\n[#IGNORE]        \{ .return \}
+.    if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
+.       ds $SAVED_STYLE \\n[.sty]
+.    \}
 .    ds $FAMILY \\$1
+.    ft 0
 .    fam \\*[$FAMILY]
+.    if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
+.       ft \\*[$SAVED_STYLE]
+.       if !F\\n[.fn] \{\
+.          ft 0
+.       \}
+.    \}
 .END
 \#
 \#
 \# FONT
 \# ----
 \# *Argument:
-\#   R | I | B | BI
+\#   R | I | B | BI | <other style extension>
 \# *Function:
 \#  Stores user supplied font in $FONT and sets .ft to $FONT.
 \#
@@ -382,7 +476,29 @@
 .       return
 .    \}
 .    ds $FONT \\$1
+.    ft 0
 .    ft \\*[$FONT]
+.    if if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
+.       if '\\n[.sty]'' \{\
+.          if !F\\n[.fn] \{\
+.             if !S\\*[$FONT] \{\
+.                tm1 "[mom]: Font style "\\*[$FONT]" at line \\n(.c has not been registered.
+.                ie \\n[#ABORT_FT_ERRORS]=0 \{\
+.                   tm1 "       Continuing to process using fallback font.
+.                \}
+.                el .ab Aborting.
+.             \}
+.             if \\n[.f]=0 \{\
+.                tm1 "[mom]: Either font style "\\*[$FONT]" at line \\n(.c does not exist in family "\\n[.fam]",
+.                tm1 "       or family "\\n[.fam]" has not been installed in font/devps.
+.                ie \\n[#ABORT_FT_ERRORS]=0 \{\
+.                   tm1 "       Continuing to process using fallback font.
+.                \}
+.                el .ab Aborting.
+.             \}
+.          \}
+.       \}
+.    \}
 .END
 \#
 \#
@@ -430,10 +546,10 @@
 \# *Argument:
 \#   <leading between lines of text>
 \# *Function:
-\#   Turns off #AUTO_LEAD if it's on.
+\#   Turns off #AUTOLEAD if it's on.
 \#   Sets .vs to user supplied value.
 \# *Notes:
-\#   Does not require unit of measure.  LEAD automatically turns off AUTOLEAD.
+\#   Does not require unit of measure.  LS automatically turns off AUTOLEAD.
 \#
 .MAC LS END
 .    if \\n[#PRINT_STYLE]=1 \{ .return \}
@@ -716,20 +832,20 @@
 \#   subsequent output lines.
 \#
 .MAC RW END
-.    if \\n[#BR_AT_LINE_KERN] \{ .br \}
-.    tkf 1 1 -\\$1 1 -\\$1
-.    tkf 2 1 -\\$1 1 -\\$1
-.    tkf 3 1 -\\$1 1 -\\$1
-.    tkf 4 1 -\\$1 1 -\\$1
+.    if \\n[#BR_AT_LINE_KERN] \{\
+.       ie \\n[#JUSTIFY]=1 \{ .brp \}
+.       el \{ .br \}
+.    \}
+.    tkf \\n(.f 1 -\\$1 1 -\\$1
 .END
 \#
 \#
 .MAC EW END
-.    if \\n[#BR_AT_LINE_KERN] \{ .br \}
-.    tkf 1 1 \\$1 1 \\$1
-.    tkf 2 1 \\$1 1 \\$1
-.    tkf 3 1 \\$1 1 \\$1
-.    tkf 4 1 \\$1 1 \\$1
+.    if \\n[#BR_AT_LINE_KERN] \{\
+.       ie \\n[#JUSTIFY]=1 \{ .brp \}
+.       el \{ .br \}
+.    \}
+.    tkf \\n(.f 1 \\$1 1 \\$1
 .END
 \#
 \#
@@ -764,10 +880,10 @@
 \#   to default, or permits the setting of various hyphenation
 \#   parameters.
 \# *Notes:
-\#   HY ON defaults to .hy 14, i.e. no hyphens after the
-\#   first two or before the last two characters of a word, and
-\#   no hyphenation of the last line prior to a trap (e.g.,
-\#   at the bottom of a page).
+\#   HY, by itself, defaults to .hy 14, i.e. no hyphens after the
+\#   first two or before the last two characters of a word, and no
+\#   hyphenation of the last line prior to a trap (e.g., at the
+\#   bottom of a page).
 \#
 \#   HY DEFAULT resets the hyphenation style to .hy 14 (see
 \#   above) if that behaviour is desired after changes have been
@@ -1019,7 +1135,7 @@
 \#   processed.  The strings for open/close ($QUOTE<n>) are then
 \#   defined in the macro.
 \#
-\#   (Note to myself: ascii code for " is \N'34'.)
+\#   (Note to myself: code for " is \N'34'.)
 \#
 .char " \\*[$QUOTE\\n[#OPEN_CLOSE]]\R'#OPEN_CLOSE (1-\\n[#OPEN_CLOSE])'
 \#
@@ -1178,15 +1294,42 @@
 .    \}
 '    ce 0
 '    fi
-.    if '\\*[$QUAD_VALUE]'L'       \{ .ad l \}
-.    if '\\*[$QUAD_VALUE]'LEFT'    \{ .ad l \}
-.    if '\\*[$QUAD_VALUE]'R'       \{ .ad r \}
-.    if '\\*[$QUAD_VALUE]'RIGHT'   \{ .ad r \}
-.    if '\\*[$QUAD_VALUE]'C'       \{ .ad c \}
-.    if '\\*[$QUAD_VALUE]'CENTER'  \{ .ad c \}
-.    if '\\*[$QUAD_VALUE]'CENTRE'  \{ .ad c \}
-.    if '\\*[$QUAD_VALUE]'J'       \{ .ad b \}
-.    if '\\*[$QUAD_VALUE]'JUSTIFY' \{ .ad b \}
+.    if '\\*[$QUAD_VALUE]'L'       \{\
+.       nr #JUSTIFY 0
+.       ad l
+.    \}
+.    if '\\*[$QUAD_VALUE]'LEFT'    \{\
+.       nr #JUSTIFY 0
+.       ad l
+.    \}
+.    if '\\*[$QUAD_VALUE]'R'       \{\
+.       nr #JUSTIFY 0
+.       ad r
+.    \}
+.    if '\\*[$QUAD_VALUE]'RIGHT'   \{\
+.       nr #JUSTIFY 0
+.       ad r
+.    \}
+.    if '\\*[$QUAD_VALUE]'C'       \{\
+.       nr #JUSTIFY 0
+.       ad c
+.    \}
+.    if '\\*[$QUAD_VALUE]'CENTER'  \{\
+.       nr #JUSTIFY 0
+.       ad c
+.    \}
+.    if '\\*[$QUAD_VALUE]'CENTRE'  \{\
+.       nr #JUSTIFY 0
+.       ad c
+.    \}
+.    if '\\*[$QUAD_VALUE]'J'       \{\
+.       nr #JUSTIFY 1
+.       ad b
+.    \}
+.    if '\\*[$QUAD_VALUE]'JUSTIFY' \{\
+.       nr #JUSTIFY 1
+.       ad b
+.    \}
 .    nr #PSEUDO_FILL 0
 .END
 \#
@@ -1538,7 +1681,7 @@
 .ie \\n(.u=1 \{\
 \c
 \\*[\\$1]\c
-.   \}
+.\}
 .el \{ \\*[\\$1] \}
 .END
 \#
@@ -3218,10 +3361,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          TYPEWRITER
 .          color 0
 .          ie '\\$2'SINGLESPACE' \{\
-.              nr #SINGLE_SPACE 1
-.              vs 12
+.             nr #SINGLE_SPACE 1
+.             vs 12
+.             nr #ORIGINAL_DOC_LEAD \\n(.v
 .          \}
-.          el \{ .vs 24 \}
+.          el \{\
+.             vs 24
+.             nr #ORIGINAL_DOC_LEAD \\n(.v
+.          \}
 .          QUAD    L
 .          HY      OFF
 .          SMARTQUOTES OFF
@@ -3273,8 +3420,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# Macros to control behaviour of PRINTSTYLE TYPEWRITE
 \#
-\# First, a little utility macro I may actually get around to
-\# implementing throughout the whole file
+\# First, a little utility macro.
 \#
 .MAC TYPEWRITER END
 .    fam C
@@ -3881,9 +4027,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# The control macros for family, font, size, quad and color are here
 \# grouped together.  Each (e.g. _FAMILY or _FONT) tests for a calling
 \# alias before performing the action(s) appropriate to the calling
-\# macro.  Defaults for all these guys are set in DEFAULTS, and listed
-\# in the "Control Macros" section pertinent to the macro whose style
-\# is to be changed.
+\# macro.  Defaults for all these guys are set in DEFAULTS, and
+\# listed in the "Control Macros" section of the documentation
+\# pertinent to the macro whose style is to be changed.
 \#
 .MAC _FAMILY END
 .    if '\\$0'AUTHOR_FAMILY'                  .ds $AUTHOR_FAM \\$1
@@ -4286,8 +4432,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if !r#HDRFTR_RULE       \{ .HDRFTR_RULE        \}
 .    if !r#PAGE_NUM_SET      \{ .PAGENUMBER 1       \}
-.    ie \\n[#ADJ_DOC_LEAD]=1 \{ . \}
-.    el \{ .DOC_LEAD_ADJUST \}
 \# Read in number registers and strings for type parameters
 .    nr #DOC_L_MARGIN \\n[#L_MARGIN]
 .    nr #DOC_L_LENGTH \\n[#L_LENGTH]
@@ -4295,6 +4439,16 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ds $DOC_FAM      \\*[$FAMILY]
 .    nr #DOC_PT_SIZE  \\n[#PT_SIZE]
 .    nr #DOC_LEAD     \\n[#LEAD]
+\# #SAVED_DOC_LEAD is set in COLLATE
+.    if r#SAVED_DOC_LEAD \{\
+.       if !\\n[#DOC_LEAD]=\\n[#SAVED_DOC_LEAD] \{ .nr #RERUN_TRAPS 1 \}
+.    \}
+.    ie \\n[#ADJ_DOC_LEAD]=1 \{ . \}
+.    el \{\
+.       if !\\n[#DOC_LEAD_ADJUST_OFF] \{\
+.          DOC_LEAD_ADJUST
+.       \}
+.    \}
 .    ds $DOC_QUAD     \\*[$QUAD_VALUE]
 .    ds $PP_FT        \\*[$FONT]
 \# Counters
@@ -4653,11 +4807,29 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ie \\n[#ADJ_DOC_LEAD]=1 \{ .DOC_LEAD_ADJUST \}
 .       el \{ . \}
 .    \}
-.    if !\\n[#COLLATE] \{\
+\# This diversion is to get a value for #FN_AUTOLEAD
+.    di NULL
+.       ev NULL
+.       if \\n[#PRINT_STYLE]=1 \{\
+.          ps 12
+.          ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#ORIGINAL_DOC_LEAD]u \}
+.          el \{ .vs \\n[#ORIGINAL_DOC_LEAD]u/2u \}
+.       \}
+.       if \\n[#PRINT_STYLE]=2 \{\
+.          PT_SIZE  \\n[#DOC_PT_SIZE]u\\*[$FN_SIZE_CHANGE]
+.          AUTOLEAD \\n[#FN_AUTOLEAD]
+.       \}
+.       nr #FN_LEAD \\n[#LEAD]
+.       if \\n[#PRINT_STYLE]=2 \{ .LS \\n[#DOC_LEAD]u \}
+.       ev
+.    di
+.    ie !\\n[#COLLATE] \{\
 .       TRAPS
+.       rr #DOC_LEAD_ADJUST_OFF
 \# Endnote and toc leading
 .       nr #OK_PROCESS_LEAD 1
 .       nr #RESTORE_DOC_LEAD \\n(.v
+.       nr #RESTORE_B_MARGIN \\n[#B_MARGIN]
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          ie \\n[#SINGLE_SPACE] \{\
 .             ENDNOTE_LEAD 12 ADJUST
@@ -4676,6 +4848,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          rm $ADJUST_TOC_LEAD
 .       \}
 .       DOC_LEAD \\n[#RESTORE_DOC_LEAD]u
+.       nr #B_MARGIN \\n[#RESTORE_B_MARGIN]
+.    \}
+.    el \{\
+.       if \\n[#COLLATE] \{\
+.          if !\\n[#PRINT_STYLE]=1 \{\
+.             if \\n[#RERUN_TRAPS] \{ .TRAPS \}
+.          \}
+.       \}
 .    \}
 .    if \\n[#PRINT_STYLE]=1 \{ .nr #IGNORE 1 \}
 .END
@@ -5227,7 +5407,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             el .UNDERSCORE "\\*[$DOC_TYPE]
 .          \}
 .       \}
-.       sp |\\n[#PAGE_LENGTH]u-\\n[#B_MARGIN]u
+.       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
 .       ie \\n[#PRINT_STYLE]=1 \{\
 .          TYPEWRITER
 .          ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#DOC_LEAD]u \}
@@ -5246,7 +5426,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          el \{ .PRINT \\*[$COPYRIGHT] \}
 .       \}
-.       sp |\\n[#PAGE_LENGTH]u-\\n[#B_MARGIN]u
+.       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
 .       if \\n[#DOC_COVER_MISC]=1 \{\
 .          QUAD \\*[$DOC_COVER_MISC_QUAD]
 .          nr #MISCS \\n[#MISC_NUM]
@@ -5429,18 +5609,18 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             el .UNDERSCORE "\\*[$DOC_TYPE]
 .          \}
 .       \}
-.       sp |\\n[#PAGE_LENGTH]u-\\n[#B_MARGIN]u
-.          ie \\n[#PRINT_STYLE]=1 \{\
-.             TYPEWRITER
-.             ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#DOC_LEAD]u \}
-.             el \{ .vs \\n[#DOC_LEAD]u/2u \}
-.          \}
-.          el \{\
-.             FAMILY  \\*[$COVER_COPYRIGHT_FAM]
-.             FT      \\*[$COVER_COPYRIGHT_FT]
-.             AUTOLEAD 2
-.             PT_SIZE \\*[$COVER_COPYRIGHT_PT_SIZE]
-.          \}
+.       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
+.       ie \\n[#PRINT_STYLE]=1 \{\
+.          TYPEWRITER
+.          ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#DOC_LEAD]u \}
+.          el \{ .vs \\n[#DOC_LEAD]u/2u \}
+.       \}
+.       el \{\
+.          FAMILY  \\*[$COVER_COPYRIGHT_FAM]
+.          FT      \\*[$COVER_COPYRIGHT_FT]
+.          AUTOLEAD 2
+.          PT_SIZE \\*[$COVER_COPYRIGHT_PT_SIZE]
+.       \}
 .       if \\n[#COVER_COPYRIGHT]=1 \{\
 .          QUAD \\*[$COVER_COPYRIGHT_QUAD]
 .          ie \\n[#COVER_COPYRIGHT_COLOR]=1 \{\
@@ -5448,7 +5628,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          el \{ .PRINT \\*[$COPYRIGHT] \}
 .       \}
-.       sp |\\n[#PAGE_LENGTH]u-\\n[#B_MARGIN]u
+.       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
 .       if \\n[#COVER_MISC]=1 \{\
 .          QUAD \\*[$COVER_MISC_QUAD]
 .          nr #MISCS \\n[#MISC_NUM]
@@ -5517,22 +5697,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    DEFAULTS
-\# This diversion is to get a value for #FN_AUTOLEAD
-.    di NULL
-.       ev NULL
-.       if \\n[#PRINT_STYLE]=1 \{\
-.          ps 12
-.          ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#DOC_LEAD]u \}
-.          el \{ .vs \\n[#DOC_LEAD]u/2u \}
-.       \}
-.       if \\n[#PRINT_STYLE]=2 \{\
-.          PT_SIZE  \\n[#DOC_PT_SIZE]u\\*[$FN_SIZE_CHANGE]
-.          AUTOLEAD \\n[#FN_AUTOLEAD]
-.       \}
-.       nr #FN_LEAD \\n[#LEAD]
-.       if \\n[#PRINT_STYLE]=2 \{ .LS \\n[#DOC_LEAD]u \}
-.       ev
-.    di
 \# Covers and doc covers
 .    if \\n[#DOC_COVERS]=1 \{\
 .       if \\n[#DOC_COVER]=1 \{\
@@ -5733,7 +5897,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                   el \{ .ALD \\n[#DOC_LEAD]u \}
 .                \}
 .             \}
-.             if \\n[#ADJ_DOC_LEAD]=1 \{ .SHIM \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             DEFAULT_DOCHEADER
@@ -5745,7 +5908,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             nr #DOCHEADER_DEPTH \\n(dn-\\n[#DOCHEADER_LEAD] \"Storing the depth (height) of the diversion
 .                                                             \"in #DOCHEADER_DEPTH
 .             rm DOCHEADER_DIVERSION                          \" Removing the diversion macro
-.             if \\n[#ADJ_DOC_LEAD]=1 \{ .SHIM \}
 .          \}
 .          ev
 .       \}
@@ -5787,7 +5949,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .             \}
 .             if \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
-.             if \\n[#ADJ_DOC_LEAD]=1 \{ .SHIM \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             CHAPTER_DOCHEADER
@@ -5799,7 +5960,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             nr #DOCHEADER_DEPTH \\n(dn-\\n[#DOCHEADER_LEAD] \" Storing the depth (height) of the diversion
 .                                                             \" in #DOCHEADER_DEPTH
 .             rm DOCHEADER_DIVERSION                          \" Removing the diversion macro
-.             if \\n[#ADJ_DOC_LEAD]=1 \{ .SHIM \}
 .          \}
 .          ev
 .       \}
@@ -5865,7 +6025,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             el \{ .ALD \\n[#DOC_LEAD]u \}
 .             UNDERSCORE2 "\\*[$DOC_TYPE]
 .             if \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
-.             if \\n[#ADJ_DOC_LEAD]=1 \{ .SHIM \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             NAMED_DOCHEADER
@@ -5877,7 +6036,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             nr #DOCHEADER_DEPTH \\n(dn-\\n[#DOCHEADER_LEAD] \"Storing the depth (height) of the diversion
 .                                                             \"in #DOCHEADER_DEPTH
 .             rm DOCHEADER_DIVERSION                          \" Removing the diversion macro
-.             if \\n[#ADJ_DOC_LEAD]=1 \{ .SHIM \}
 .          \}
 .          ev
 .       \}
@@ -5898,6 +6056,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       \}
 .    \}
+.    LS \\n[#DOC_LEAD]u
+.    if \\n[#ADJ_DOC_LEAD]=1 \{ .SHIM \}
 .    QUAD \\*[$DOC_QUAD]
 .    CLEANUP_DEFAULTS
 .    nr #START_FOR_FOOTERS 1
@@ -6143,8 +6303,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   on #B_MARGIN.
 \#
 .MAC DOC_LEAD_ADJUST END
-.    ie '\\$1'' \{ .nr #ADJ_DOC_LEAD 1 \}
-.    el \{ .nr #ADJ_DOC_LEAD 0 \}
+.    ie '\\$1'' \{\
+.       nr #ADJ_DOC_LEAD 1
+.    \}
+.    el \{\
+.       nr #ADJ_DOC_LEAD 0
+.       nr #DOC_LEAD_ADJUST_OFF 1
+.    \}
 .END
 \#
 \#
@@ -6393,6 +6558,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          nr #EPI_LEAD_DIFF \\n[#DOC_LEAD]-\\n[#EPI_LEAD]
 .       \}
 .       di EPI_TEXT
+.       nr #DIVERSIONS_HY_MARGIN (p;\\n[.ps]u*2.75)/1000
+.       HY_SET 1 \\n[#DIVERSIONS_HY_MARGIN]u (\\n[#PT_SIZE]u/1000u/8u)p
+.       hy 14
 .       nr #EPI_ACTIVE 1
 .    \}
 .    el \{\
@@ -6445,7 +6613,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .             AUTOLEAD \\n[#EPI_AUTOLEAD]
 .             QUAD     \\*[$EPI_QUAD]
-.             HY
+.             nr #DIVERSIONS_HY_MARGIN (p;\\n[.ps]u*2.75)/1000
+.             HY_SET 1 \\n[#DIVERSIONS_HY_MARGIN]u (\\n[#PT_SIZE]u/1000u/8u)p
+.             hy 14
 .             nr #EPI_LEAD \\n[#LEAD]
 .             nr #EPI_LEAD_DIFF \\n[#DOC_LEAD]-\\n[#EPI_LEAD]
 .             di EPI_TEXT
@@ -6476,6 +6646,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    br
 .    di
 .    rr #IN_DIVER
+.    if \\n[#RESET_FN_COUNTERS]=2 \{\
+.       if !\\n[#FN_COUNT]=1 \{\
+.          if ((\\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS])+\\n[#DIVER_DEPTH])>(\\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS]) \{\
+.             DIVER_FN_2_POST
+.             rr #RESET_FN_COUNTERS
+.          \}
+.       \}
+.    \}
 .    nr #SAVED_FN_NUMBER \\n[#FN_NUMBER]
 .    nr #DONE_ONCE 0 1
 .    REMOVE_INDENT
@@ -6516,6 +6694,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                ALD \\n[#EPI_LEAD_DIFF]u+(\\n[#EPI_WHITESPACE]u/2u)-\\n[#DOC_LEAD]u
 .             \}
 .          \}
+.          if \\n[#DIVER_FN]=2 \{ .rr #DIVER_FN \}
 .       \}
 .       el \{\
 .          nr #EPI_LINES_TO_TRAP 0 1
@@ -6557,13 +6736,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          SHIM
 .          if \\n[#EPI_WHITESPACE]<\\n[#DOC_LEAD] \{\
 .             ALD \\n[#EPI_WHITESPACE]u/2u
 .          \}
 .          if \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
 .             ALD (\\n[#EPI_WHITESPACE]u/2u)-\\n[#DOC_LEAD]u
 .          \}
+.          SHIM
 .       \}
 .    \}
 .    el \{\
@@ -6593,7 +6772,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       el \{\
 .          nr #EPI_LINES_TO_END \\n[#EPI_LINES]-\\n[#EPI_LINES_TO_TRAP]
-.          if \\n[#LOOP] \{. nr #EPI_LINES_TO_END +1 \}
+.          if \\n[#LOOP] \{ .nr #EPI_LINES_TO_END +1 \}
 .          rr #LOOP
 .          nr #EPI_WHITESPACE (\\n[#EPI_LINES_TO_END]*\\n[#DOC_LEAD])-(\\n[#EPI_LINES_TO_END]*\\n[#EPI_LEAD])
 .          while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
@@ -6890,7 +7069,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   <none> | <anything>
 \# *Function:
 \#   If invoked via the alias HDRFTR_RULE_INTERNAL in HDRFTR, prints a rule
-\#   under the header/footer.  Otherwise, turns HDRFTR_RULE on or off.
+\#   under the header/over the footer.  Otherwise, turns HDRFTR_RULE
+\#    on or off.
 \#
 .MAC HDRFTR_RULE END   \"To print rule under header/over footer.
 .    ie '\\$0'HDRFTR_RULE_INTERNAL' \{\
@@ -7298,7 +7478,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#HDRFTR_RULE] \{\
 .       HDRFTR_RULE_INTERNAL
 .    \}
-.br
+.    br
 .END
 \#
 \#
@@ -7456,7 +7636,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   comprehensible.
 \#
 .MAC HEADER END
-.    PROCESS_FN_LEFTOVER
+.    rr #FROM_FOOTER
+.    nr #FROM_HEADER 1
+.    nr #LAST_FN_COUNT_FOR_COLS \\n[#FN_COUNT_FOR_COLS]
+.    if \\n[#FN_DEPTH] \{ .PROCESS_FN_LEFTOVER \}
+.    rr #RULED
 .    if \\n[#RESET_FN_NUMBER] \{ .nr #FN_NUMBER 0 1 \}
 .    po \\n[#DOC_L_MARGIN]u
 .    if \\n[#RECTO_VERSO] \{\
@@ -7567,6 +7751,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    el \{ .ns \}
 .    ns
 .    if \\n[#COLUMNS] \{\
+.       nr #FN_COUNT_FOR_COLS 0 1
 .       nr #L_MARGIN \\n[#DOC_L_MARGIN]
 .       if \\n[#RECTO_VERSO] \{ .COLUMNS \\n[#NUM_COLS] \\n[#GUTTER]u \}
 .       nr #COL_NUM 0 1
@@ -7596,17 +7781,15 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       el \{ .nr #FN_NUMBER \\n[#FN_NUMBER] 1 \}
 .       rm FN_IN_DIVER
 .    \}
-.    if \\n[#RESET_FN_COUNTERS]=2 \{\
-.       rr #RESET_FN_COUNTERS
-.       PROCESS_FN_IN_DIVER
-.       nr #FN_COUNT 0 1
-.       nr #FN_COUNT_FOR_COLS 0 1
-.       rm FN_IN_DIVER
-.    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       if \\n[#SLANT_ON] \{\
 .          if \\n[#UNDERLINE_SLANT] \{ .UNDERLINE \}
 .       \}
+.    \}
+.    rr #FROM_HEADER
+.    rr #DEFER_SPACE_ADDED
+.    if !\\n[#FN_DEPTH] \{\
+.       if r#DIVERTED \{ .rr #DIVERTED \}
 .    \}
 .END
 \#
@@ -7681,57 +7864,85 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC FOOTER END
 .    ev PAGE_BOTTOM
-\# Removed this next bit; can't figure out why I needed it.
-\#.    if \\n[#START]=1 \{\
-\#.       bp
-\#.       ev
-\#.       rr #START
-\#.       return
-\#.    \}
+.    nr #SAVED_LEAD \\n(.v
+\# I can't figure out why I thought I needed this next bit, but I'm
+\# leaving it in, commented out, in case I (re)discover what it was
+\# there for.
+\#
+\#.if \\n[#START]=1 \{\
+\#.bp
+\#.ev
+\#.rr #START
+\#.return
+\#.\}
+\#
 .    nr #L_MARGIN_DIFF \\n[#L_MARGIN]-\\n[#DOC_L_MARGIN]
 .    if !\\n[#FN_DEFER] \{\
 .       nr #DIVER_DEPTH 0
-.       if \\n[#FN_COUNT] \{\
-.          sp |\\n[#PAGE_LENGTH]u-(\\n[#B_MARGIN]u+\\n[#FN_DEPTH]u)
+.       if \\n[#FN_DEPTH] \{\
+\# #DIVERTED=2 doesn't seem to have a use anymore, but I'm leaving
+\# this in, commented out, in case I discover why I thought I needed
+\# it.
+\#
+\#.if \\n[#DIVERTED]=2 \{ .nr #FN_DEPTH -\\n[#VFP_DIFF] \}
+\#
+.          if \\n[#DIVERTED]=3 \{ .nr #FN_DEPTH +\\n[#VFP_DIFF] \}
+.          sp |\\n[#PAGE_LENGTH]u-(\\n[#B_MARGIN]u+\\n[#FN_DEPTH]u-\\n[#DOC_LEAD]u)
 .          po \\n[#DOC_L_MARGIN]u
 .          if \\n[#COLUMNS] \{\
 .             po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u
 .             nr #L_MARGIN \\n(.o
+.             nr #FROM_FOOTER 1
 .          \}
 .          nf
 .          FOOTNOTES
 .          rm FOOTNOTES
+.          if \\n[#PRINT_STYLE]=1 \{ .vs \\n[#SAVED_LEAD]u \}
+.          if \\n[#PRINT_STYLE]=2 \{ .LS \\n[#SAVED_LEAD]u \}
 .          if '\\n(.z'FN_OVERFLOW' \{\
 .              di
 .              nr #FN_OVERFLOW_DEPTH \\n[#DIVER_DEPTH]
 .          \}
+.          nr #FN_COUNT_AT_FOOTER \\n[#FN_COUNT]
 .          nr #FN_COUNT 0
-.          if \\n[#COL_NEXT] \{ .nr #COL_NUM \\n-[#COL_NUM] \}
+.          if \\n[#COL_NEXT] \{\
+.             ie !\\n[#COL_NUM]=\\n[#NUM_COLS] \{ .nr #COL_NUM \\n-[#COL_NUM] \}
+.             el \{ .nr #COL_NUM \\n[#NUM_COLS] 1 \}
+.          \}
 .       \}
+.       rr #DIVERTED
 .    \}
-.    ie \\n[#COLUMNS] \{\
+.    ie \\n[#COLUMNS]=1 \{\
 .       ie \\n[#COL_NUM]=\\n[#NUM_COLS] \{ .DO_FOOTER \}
 .       el \{\
 .          ie \\n[#ENDNOTES] \{ .sp |\\n(ecu-\\n[#EN_LEAD]u \}
 .          el \{ .sp |\\n(dcu \}
 .          po \\n[#COL_\\n+[#COL_NUM]_L_MARGIN]u
 .          nr #L_MARGIN \\n(.o
-.          PROCESS_FN_LEFTOVER
+\# #DIVERTED=2 doesn't seem to have a use anymore, but I'm leaving
+\# this in, commented out, in case I discover why I thought I needed
+\# it.
+\#
+\# Reverse the sense of #DIVERTED=2 (from above) if moving col to col
+\#.if \\n[#DIVERTED]=2 \{ .nr #FN_DEPTH +\\n[#VFP_DIFF] \}
+\#
+.          if \\n[#FN_DEPTH] \{ .PROCESS_FN_LEFTOVER \}
+.          LS \\n[#SAVED_LEAD]u
+.          if \\n[#PREV_FN_DEFERRED] \{\
+.             nr #PREV_FN_DEFERRED 2
+.          \}
+.          rr #RULED
 .          if !\\n[#EPIGRAPH] \{ .rr #COL_NEXT \}
 .          if !\\n[#QUOTE]    \{ .rr #COL_NEXT \}
 .          if \\n[#RESET_FN_COUNTERS]=1 \{\
 .             rr #RESET_FN_COUNTERS
 .             PROCESS_FN_IN_DIVER
+.             LS \\n[#SAVED_LEAD]u
 .             nr #FN_COUNT \\n[#FN_COUNT] 1
 .             nr #FN_COUNT_FOR_COLS \\n[#FN_COUNT_FOR_COLS] 1
 .             rm FN_IN_DIVER
 .          \}
-.          if \\n[#RESET_FN_COUNTERS]=2 \{\
-.             rr #RESET_FN_COUNTERS
-.             nr #FN_COUNT_FOR_COLS \\n[#FN_COUNT_FOR_COLS] 1
-.             PROCESS_FN_IN_DIVER
-.             rm FN_IN_DIVER
-.          \}
+.          rr #DEFER_SPACE_ADDED
 .          if \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .          if \\n[#QUOTE] \{\
 .             ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
@@ -7763,6 +7974,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ev
 .       \}
 .       ns
+.       rr #DIVERTED
 .    \}
 .    el \{ .DO_FOOTER \}
 .END
@@ -7777,11 +7989,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Resets CAPS and UNDERLINE if they were on.
 \#
 .MAC DO_FOOTER END
+\# Have to change position of FN_OVERFLOW_TRAP or it screws up the
+\# placement of page numbers (or footers).  It's reset to its original
+\# position at the end of the macro.
+.    ch FN_OVERFLOW_TRAP 20i
 .    ie (\\n[#FOOTER_MARGIN]+\\n(.v)>\\n[#B_MARGIN] \{\
 .       nr #SKIP_FOOTER 1
 .    \}
 .    el \{\
-.       vs 12
 .       sp |\\n[#PAGE_LENGTH]u-\\n[#FOOTER_MARGIN]u-1v
 .       mk y
 .    \}
@@ -7795,6 +8010,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       TYPEWRITER
 .    \}
+.    LS \\n[#SAVED_LEAD]u
 .    nr #HDRFTR_PT_SIZE \\n[#PT_SIZE]
 .    if \\n[#CAPS_ON] \{\
 .       nr #CAPS_WAS_ON 1
@@ -7824,6 +8040,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       rr #UNDERLINE_WAS_ON
 .    \}
 .    ev
+.    ch FN_OVERFLOW_TRAP -(\\n[#FN_OVERFLOW_TRAP_POS]u)
+.    rr #SAVED_LEAD
 .    bp
 .    ev
 .END
@@ -9063,7 +9281,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             EOL
 .          \}
 .          QUAD \\*[$BQUOTE_QUAD]
-.          HY
+.          nr #DIVERSIONS_HY_MARGIN (p;\\n[.ps]u*2.75)/1000
+.          HY_SET 1 \\n[#DIVERSIONS_HY_MARGIN]u (\\n[#PT_SIZE]u/1000u/8u)p
+.          hy 14
 .       \}
 .       nr #Q_TOP \\n(nl
 .       if \\n[#INDENT_FIRST_PARAS] \{\
@@ -9097,8 +9317,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   line.  (This is to ensure the page remains bottom aligned).
 \#
 .MAC DO_QUOTE END
+.    br
 .    di
 .    rr #IN_DIVER
+.    if \\n[#RESET_FN_COUNTERS]=2 \{\
+.       if !\\n[#FN_COUNT]=1 \{\
+.          if ((\\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS])+\\n[#DIVER_DEPTH])>(\\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS]) \{\
+.             DIVER_FN_2_POST
+.             rr #RESET_FN_COUNTERS
+.          \}
+.       \}
+.    \}
 .    nr #SAVED_FN_NUMBER \\n[#FN_NUMBER]
 .    nr #DONE_ONCE 0 1
 .    REMOVE_INDENT
@@ -9146,6 +9375,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                   \}
 .                \}
 .             \}
+.             if \\n[#DIVER_FN]=2 \{ .rr #DIVER_FN \}
 .          \}
 .          el \{\
 .             rr #Q_FITS
@@ -9441,6 +9671,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #HYPHEN_ADJ \\n[#CAP_HEIGHT]/12
 .    ds $HYPHEN \v'-\En[#HYPHEN_ADJ]u'-\v'\En[#HYPHEN_ADJ]u'
 .    PRINT \m[\\*[$PAGENUM_COLOR]]\\*[$HYPHEN]\|\\n[#PAGENUMBER]\|\\*[$HYPHEN]
+.br
 .END
 \#
 \#
@@ -9536,6 +9767,14 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# ====================================================================
 \#
 \# +++FOOTNOTES+++
+\#
+\# Mom's footnote handling is baroque, to say the least.  There are
+\# redundancies in a number of the macros involved, as well as some
+\# registers that probably don't get used anymore.  The baggage is
+\# left in in case some new footnote oddity/challenge gets thrown
+\# my way.
+\#
+\# The macros are heavily commented.
 \#
 \# FOOTNOTE AUTOLEAD
 \# -----------------
@@ -9682,129 +9921,79 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC FOOTNOTE END
 .    ie '\\$1'' \{\
-.         if \\n[#IN_DIVER]=1 \{\
-.             nr #PAGE_POS \\n(nl+\\n(.d
-.             nr #FOOTER_POS \\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS]
-.             nr #BMARG \\n[#PAGE_LENGTH]-\\n[#B_MARGIN]
-.             nr #SPACE_TO_FOOTER \\n[#FOOTER_POS]-\\n[#PAGE_POS]
-\# Enough room for 1 line of footnote
-.             nr #RESERVED_SPACE \\n[#FN_LEAD]*2+\\n[#DOC_LEAD]
-\# A) Are we on the line where FOOTER will be sprung?  If so, defer footnote.
-.             if \\n[#PAGE_POS]+\\n[#SPACE_TO_FOOTER]=\\n[#FOOTER_POS] \{\
-.                nr #DEFER_FN_IN_DIVER 1
-\# When a footnote in a diversion is the first footnote on the
-\# page, the above condition is always true.  This test takes care
-\# of that.  If it's a genuine deferred footnote in a diversion,
-\# we set #DEFER_FN_IN_DIVER to 1.  Otherwise, we set it to 3.
-.                if \\n[#RESERVED_SPACE]<\\n[#SPACE_TO_FOOTER] \{\
-.                   ie \\n[#SPACE_TO_FOOTER]-\\n[#RESERVED_SPACE]>\\n[#DOC_LEAD] \{\
-.                      nr #DEFER_FN_IN_DIVER 3 \" treat like a normal footnote
-.                   \}
-.                   el \{\
-.                      nr #DEFER_FN_IN_DIVER 1 \" defer this footnote; cond 1
-.                   \}
-.                \}
-\# Sometimes, A) returns true even though we're below FOOTER.  I
-\# can't track down why, and the behaviour occurs sporadically.  I
-\# call it the "wonky factor."  This *seems* to take care of it, but
-\# I might have to adjust FN_LEAD, below, to DOC_LEAD, or some other
-\# "wonky" value.
-.                if \\n[#SPACE_TO_FOOTER]<\\n[#FN_LEAD] \{\
-.                   nr #PAGE_POS \\n[#PAGE_POS]+\\n[#SPACE_TO_FOOTER]
-.                   nr #SPACE_TO_FOOTER \\n[#FOOTER_POS]-\\n[#PAGE_POS]
-.                   if \\n[#PAGE_POS]+\\n[#SPACE_TO_FOOTER]=\\n[#FOOTER_POS] \{\
-.                      nr #DEFER_FN_IN_DIVER 2 \" move this footnote; cond 2
-.                   \}
-.                \}
-.             \}
-.             if \\n[#PAGE_POS]>=\\n[#FOOTER_POS] \{ .nr #DEFER_FN_IN_DIVER 2 \}
-.             if r#DEFER_FN_IN_DIVER \{\
-.                \\n+[#DONE_ONCE]
-\# Condition 1:
+\# Begin processing footnotes that occur inside QUOTE, BLOCKQUOTE
+\# or EPIGRAPH.
+.       if \\n[#IN_DIVER]=1 \{\
+.          nr #PAGE_POS \\n(nl+\\n(.d+\\n[#DOC_LEAD]
+.          nr #FOOTER_POS \\n[#PAGE_LENGTH]+(\\n[#VARIABLE_FOOTER_POS]-1)
+.          nr #SPACE_TO_FOOTER \\n[#FOOTER_POS]-\\n[#PAGE_POS]
+\# Are we on a "defer" line?  If so, defer the text of the footnote.
+.          ie \\n[#SPACE_TO_FOOTER]=\\n[#DOC_LEAD]:\\n[#SPACE_TO_FOOTER]=0 \{\
+.             nr #DIVER_FN 2 \" treat like a normal deferred footnote
+.          \}
+.          el \{\
+.             nr #DIVER_FN 2 \" treat like a normal footnote
+.          \}
+.          if \\n[#PAGE_POS]>\\n[#FOOTER_POS] \{\
+.             nr #DIVER_FN 1 \" move this footnote
+.          \}
+\# Test for situation where, because a final line of QUOTE,
+\# BLOCKQUOTE or EPIGRAPH isn't yet adjusted at this point, the last
+\# word on the line may *seem* to belong to the final line of the
+\# page, but will, in fact, become the first word of the subsequent
+\# page.  In such circumstances, we want the the footnote to be
+\# treated as a "moved" diversion footnote.
+.          if \\n(.k>\\n(.l \{ .nr #DIVER_FN 1 \}
+.          if r#DIVER_FN \{\
+.             if !\\n[#DIVER_FN]=2 \{ .\\n+[#DONE_ONCE] \}
 \# A footnote inside a diversion will become the 1st footnote on the
 \# following page/column.
-.                if \\n[#DEFER_FN_IN_DIVER]=2 \{\
-.                   nr #RESET_FN_COUNTERS 1
-.                   nr #COUNTERS_RESET 1
-.                   if \\n[#FN_MARKER_STYLE]=1 \{\
-.                      if \\n[#DONE_ONCE]=1 \{\
-.                         if \\n[#FN_COUNT]>0 \{ .nr #FN_COUNT 0 1 \}
-.                         if \\n[#COLUMNS]=1 \{\
-.                            if \\n[#COL_NUM]=\\n[#NUM_COLS] \{\
-.                               nr #FN_COUNT_FOR_COLS 0 1
-.                            \}
-.                         \}
-.                      \}
-.                   \}
-.                   if \\n[#FN_MARKER_STYLE]=2 \{\
-.                      if \\n[#DONE_ONCE]=1 \{\
-.                         if \\n[#RESET_FN_NUMBER]=1 \{\
-.                            ie \\n[#COLUMNS]=1 \{\
-.                               if \\n[#COL_NUM]=\\n[#NUM_COLS] \{ .nr #FN_NUMBER 0 1 \}
-.                            \}
-.                            el \{\
-.                               nr #FN_NUMBER 0 1
-.                            \}
-.                         \}
-.                      \}
-.                   \}
-.                \}
-\# Condition 2:
-\# A footnote inside a diversion that has to be deferred to next
-\# page/column
-.                if \\n[#DEFER_FN_IN_DIVER]=1 \{\
-.                   nr #RESET_FN_COUNTERS 2
-.                   nr #COUNTERS_RESET 1
-.                   if \\n[#FN_MARKER_STYLE]=1 \{\
-.                      if \\n[#DONE_ONCE]=1 \{\
-.                         if \\n[#FN_COUNT]=0 \{\
-.                            nr #ADD_DEFER_SPACE 1
-.                            nr #DONT_RULE_ME 1
-.                            nr #NO_EXTRA_SPACE 1
-.                         \}
-.                         if \\n[#FN_COUNT]>0 \{\
-.                            nr #FN_COUNT 0 1
-.                            nr #NO_EXTRA_SPACE 1
-.                         \}
-.                         if \\n[#COLUMNS]=1 \{\
-.                            if !\\n[#COL_NUM]=\\n[#NUM_COLS] \{ .rr #ADD_DEFER_SPACE \}
-.                         \}
-.                      \}
-.                   \}
-.                   if \\n[#FN_MARKER_STYLE]=2 \{\
-.                      if \\n[#DONE_ONCE]=1 \{\
-.                         if \\n[#FN_COUNT]=0 \{\
-.                            nr #ADD_DEFER_SPACE 1
-.                            nr #DONT_RULE_ME 1
-.                            nr #NO_EXTRA_SPACE 1
-.                         \}
-.                         if \\n[#FN_COUNT]>0 \{\
-.                            nr #FN_COUNT 0 1
-.                            nr #NO_EXTRA_SPACE 1
-.                         \}
-.                         if \\n[#RESET_FN_NUMBER]=1 \{\
-.                            ie \\n[#COLUMNS]=1 \{\
-.                               if \\n[#FN_NUMBER]=0 \{\
-.                                  if \\n[#COL_NUM]=\\n[#NUM_COLS] \{ .nr #FN_NUMBER 0 1 \}
-.                               \}
-.                            \}
-.                            el \{\
-.                               if \\n[#FN_NUMBER]=0 \{ .nr #FN_NUMBER 0 1 \}
-.                            \}
-.                         \}
-.                      \}
-.                   \}
-.                \}
-\# Condition 3:
-\# Treat like a normal footnote.
-.                if \\n[#DEFER_FN_IN_DIVER]=3 \{\
-\#.                   \\n-[#DONE_ONCE]
-.                \}
-.             \}
+.             if \\n[#DIVER_FN]=1 \{ .DIVER_FN_1_PRE \}
+\# A footnote inside a diversion that should be treated like a
+\# normal footnote (including defers.)
+.             if \\n[#DIVER_FN]=2 \{ .DIVER_FN_2_PRE \}
+.          \}
 .          nr #SAVED_FN_COUNT \\n[#FN_COUNT]+1
 .          nr #SAVED_FN_COUNT_FOR_COLS \\n[#FN_COUNT_FOR_COLS]+1
 .       \}
-\# End processing footnotes that occur inside diversions.
+\# End processing footnotes that occur inside QUOTE, BLOCKQUOTE or
+\# EPIGRAPH.
+\#
+\# Test for situation where, because a final line of running text
+\# isn't yet adjusted at this point, the last word on the line may
+\# *seem* to belong to the final line of the page, but will, in
+\# fact, become the first word of the subsequent page.  In such
+\# circumstances, we want the the footnote marker in running text to
+\# be the correct one for the 1st footnote on a page.
+.       if \\n(.k>\\n(.l \{\
+.          if (\\n(nl+\\n[#DOC_LEAD])>(\\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS]) \{\
+.             ie \\n[#COLUMNS]=1 \{\
+.                if \\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.                   if \\n[#FN_MARKER_STYLE]=1 \{\
+.                      nr #FN_COUNT_FOR_COLS 0 1
+.                   \}
+.                   if \\n[#FN_MARKER_STYLE]=2 \{\
+.                      if \\n[#RESET_FN_NUMBER] \{\
+.                         nr #FN_NUMBER 0 1
+.                         nr #NOT_YET_ADJUSTED 1
+.                      \}
+.                   \}
+.                \}
+.             \}
+.             el \{\
+.                if \\n[#FN_MARKER_STYLE]=1 \{\
+.                   nr #FN_COUNT 0 1
+.                \}
+.                if \\n[#FN_MARKER_STYLE]=2 \{\
+.                   if \\n[#RESET_FN_NUMBER] \{\
+.                      nr #FN_NUMBER 0 1
+.                      nr #NOT_YET_ADJUSTED 1
+.                   \}
+.                \}
+.             \}
+.          \}
+.       \}
+\# Housekeeping
 .       if \\n[#FN_MARKERS] \{\
 .          if \\n[#CONDENSE] \{ \*[CONDX]\c \}
 .          if \\n[#EXTEND]   \{ \*[EXTX]\c  \}
@@ -9814,36 +10003,43 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .                UNDERLINE OFF
 .             \}
 .          \}
-\# Add footnote markers to running text
+\# Add footnote markers to running text...
 .          if !\\n[#NO_FN_MARKER] \{\
-\# If .em TERMINATE has not been called
+\# ...but not if TERMINATE has not been called
 .             if !r#TERMINATE \{\
+\# Marker style star/dagger/double-dagger
 .                if \\n[#FN_MARKER_STYLE]=1 \{\
+\# Columnar docs either move col to col, or last col to next page.
+\# They require their own special FN_COUNT because regular FN_COUNT
+\# is used to figure out things like whether or not to put a rule
+\# above footnotes (in addition to keeping track of the footnote
+\# count in non-columnar docs).
 .                   ie \\n[#COLUMNS]=1 \{\
-.                      if \\n[#FN_COUNT_FOR_COLS]=0 \{ .PRINT \*[BU3]* \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=1 \{ .PRINT \*[BU3]\(dg \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=2 \{ .PRINT \*[BU3]\(dd \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=3 \{ .PRINT \*[BU3]** \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=4 \{ .PRINT \*[BU3]\(dg\(dg \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=5 \{ .PRINT \*[BU3]\(dd\(dd \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=6 \{ .PRINT \*[BU3]*** \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=7 \{ .PRINT \*[BU3]\(dg\(dg\(dg \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=8 \{ .PRINT \*[BU3]\(dd\(dd\(dd \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=9 \{ .PRINT \*[BU3]**** \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=0 \{ .PRINT \*[BU2]*            \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=1 \{ .PRINT \*[BU1]\(dg         \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=2 \{ .PRINT \(dd                \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=3 \{ .PRINT \*[BU2]**           \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=4 \{ .PRINT \*[BU1]\(dg\(dg     \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=5 \{ .PRINT \(dd\(dd            \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=6 \{ .PRINT \*[BU2]***          \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=7 \{ .PRINT \*[BU1]\(dg\(dg\(dg \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=8 \{ .PRINT \(dd\(dd\(dd        \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=9 \{ .PRINT \*[BU2]****         \}
 .                   \}
 .                   el \{\
-.                      if \\n[#FN_COUNT]=0 \{ .PRINT \*[BU3]* \}
-.                      if \\n[#FN_COUNT]=1 \{ .PRINT \*[BU3]\(dg \}
-.                      if \\n[#FN_COUNT]=2 \{ .PRINT \*[BU3]\(dd \}
-.                      if \\n[#FN_COUNT]=3 \{ .PRINT \*[BU3]** \}
-.                      if \\n[#FN_COUNT]=4 \{ .PRINT \*[BU3]\(dg\(dg \}
-.                      if \\n[#FN_COUNT]=5 \{ .PRINT \*[BU3]\(dd\(dd \}
-.                      if \\n[#FN_COUNT]=6 \{ .PRINT \*[BU3]*** \}
-.                      if \\n[#FN_COUNT]=7 \{ .PRINT \*[BU3]\(dg\(dg\(dg \}
-.                      if \\n[#FN_COUNT]=8 \{ .PRINT \*[BU3]\(dd\(dd\(dd \}
-.                      if \\n[#FN_COUNT]=9 \{ .PRINT \*[BU3]**** \}
+.                      if \\n[#FN_COUNT]=0 \{ .PRINT \*[BU2]*            \}
+.                      if \\n[#FN_COUNT]=1 \{ .PRINT \*[BU1]\(dg         \}
+.                      if \\n[#FN_COUNT]=2 \{ .PRINT \(dd                \}
+.                      if \\n[#FN_COUNT]=3 \{ .PRINT \*[BU2]**           \}
+.                      if \\n[#FN_COUNT]=4 \{ .PRINT \*[BU1]\(dg\(dg     \}
+.                      if \\n[#FN_COUNT]=5 \{ .PRINT \(dd\(dd            \}
+.                      if \\n[#FN_COUNT]=6 \{ .PRINT \*[BU2]***          \}
+.                      if \\n[#FN_COUNT]=7 \{ .PRINT \*[BU1]\(dg\(dg\(dg \}
+.                      if \\n[#FN_COUNT]=8 \{ .PRINT \(dd\(dd\(dd        \}
+.                      if \\n[#FN_COUNT]=9 \{ .PRINT \*[BU2]****         \}
 .                   \}
 .                \}
+\# Marker style superscript numbers
 .                if \\n[#FN_MARKER_STYLE]=2 \{\
 .                   if \\n[#PRINT_STYLE]=1 \{ .PRINT "\s-2\v'-\\n[#DOC_LEAD]u/5u'\\n+[#FN_NUMBER]\v'+\\n[#DOC_LEAD]u/5u'\s+2" \}
 .                   if \\n[#PRINT_STYLE]=2 \{ .PRINT "\*[SUP]\\n+[#FN_NUMBER]\*[SUPX]" \}
@@ -9851,11 +10047,27 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             \}
 .          \}
 .       \}
-.       nr #SPACE_REMAINING \\n[#PAGE_LENGTH]-\\n[#B_MARGIN]-(\\n(nl+1v)
+\# More housekeeping
+\#
+\# #SPACE_REMAINING is the space left between where we are
+\# on the page and the bottom margin.  It's used to determine whether
+\# or not the footnote will overflow, and how many lines of
+\# footnotes will fit on the page if some have to overflow.
+.       ie \\n[#DIVER_FN]=2 \{\
+.          nr #SPACE_REMAINING (\\n[#PAGE_LENGTH]-\\n[#B_MARGIN])-(\\n[#PAGE_POS])
+.       \}
+.       el \{\
+.          nr #SPACE_REMAINING (\\n[#PAGE_LENGTH]-\\n[#B_MARGIN])-\\n(nl
+.       \}
+.       if \\n[#FROM_DIVERT_FN]=1 \{\
+.          nr #SPACE_REMAINING \\n[#PAGE_LENGTH]-\\n[#B_MARGIN]
+.          rr #FROM_DIVERT_FN
+.       \}
 .       nr #PP_STYLE_PREV \\n[#PP_STYLE]
 .       nr #PP_STYLE 2
 .       if \\n[#INDENT_FIRST_PARAS] \{ .nr #INDENT_FIRSTS 1 \}
 .       INDENT_FIRST_PARAS
+\# Prepare FOOTNOTE to receive footnote text.
 .       ev FOOTNOTES
 .       ll \\n[#DOC_L_LENGTH]u
 .       ta \\n(.lu
@@ -9878,12 +10090,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       QUAD     \\*[$FN_QUAD]
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          TYPEWRITER
-.          ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u \}
-.          el \{ .vs \\n[#DOC_LEAD]u/2u \}
+.          ie \\n[#SINGLE_SPACE] \{ .vs \\n[#ORIGINAL_DOC_LEAD]u \}
+.          el \{ .vs \\n[#ORIGINAL_DOC_LEAD]u/2u \}
 .          QUAD LEFT
 .          HY OFF
 .       \}
 .       nr #FN_LEAD \\n[#LEAD]
+\# Begin diversion FOOTNOTES or FN_IN_DIVER
 .       ie r#COUNTERS_RESET \{\
 .          ie \\n[#DONE_ONCE]=1 \{\
 .             di FN_IN_DIVER
@@ -9903,57 +10116,91 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             TRAP
 .          \}
 .       if \\n[#EPIGRAPH] \{ .nr #FN_FOR_EPI 1 \}
+\# When a deferred footnote is also the 1st footnote on the page,
+\# and when the page it's output on also has footnotes, some
+\# whitespace is needed between the deferred footnote and the
+\# first footnote belonging to the output page so that there's
+\# no confusion when two stars (or two number 1s) appear in
+\# footnotes...
 .       if \\n[#FN_DEFER_SPACE] \{\
-\# Only do this if .em TERMINATE has not been called
+\# ...but only add the extra space if TERMINATE has not been called
 .          if !r#TERMINATE \{\
-.             if \\n[#FN_MARKER_STYLE]=1 \{ .ALD 1v \}
-.             if \\n[#RESET_FN_NUMBER] \{ .ALD 1v \}
+\# ...and not if defer space has already been added
+.             if !\\n[#DEFER_SPACE_ADDED] \{\
+\# ...and not if the footnote count the last time we checked for
+\# a defer situation inside a diversion is greater than 1.
+.                if !\\n[#SAVED_DIVER_FN_COUNT]>1 \{\
+.                   if \\n[#FN_MARKER_STYLE]=1 \{ .ALD 1v \}
+.                   if \\n[#RESET_FN_NUMBER] \{ .ALD 1v \}
+.                   nr #DEFER_SPACE_ADDED 1
+.                \}
+.             \}
 .          \}
 .          rr #FN_DEFER_SPACE
+.          rr #SAVED_DIVER_FN_COUNT
 .       \}
-\# If #DONT_RULE_ME hasn't been set to 1, perform the subsequent clause
-.       if !\\n[#DONT_RULE_ME]=1 \{\
-.          if \\n+[#FN_COUNT]=1 \{\
+.       if \\n[#DIVERTED]=3 \{\
+.          if \\n[#FN_COUNT]>0 \{\
+\!.RLD 1v
+.          \}
+.       \}
+\# Add footnote rule (or, if no rule, some whitespace).
+\# N.B.- this line increments #FN_COUNT each and every time FOOTNOTE
+\# is run.
+.       if \\n+[#FN_COUNT]=1 \{\
+\# If a footnote is called in a diversion, and the footnote has to
+\# be moved, don't put in the rule now (it's taken care of when
+\# FN_IN_DIVER is output into FOOTNOTE in PROCESS_FN_IN_DIVER).
+.          if !\\n[#DONT_RULE_ME]=1 \{\
 .             if !\\n[#FN_DEPTH] \{\
 .                if \\n[#PRINT_STYLE]=1 \{ .ALD \\n[#DOC_LEAD]u \}
-.                ie \\n[#FN_RULE] \{ .PRINT_FOOTNOTE_RULE \}
+.                ie \\n[#FN_RULE]=1 \{ .PRINT_FOOTNOTE_RULE \}
 .                el \{ .ALD 1v \}
+.                nr #RULED 1
 .             \}
 .          \}
 .       \}
 .       rr #DONT_RULE_ME
+\# Add footnote markers to footnote text...
 .       if \\n[#FN_MARKERS] \{\
 .          if !\\n[#NO_FN_MARKER] \{\
-\# If .em TERMINATE has not been called
+\# ...but not if TERMINATE has been called.
 .             if !r#TERMINATE \{\
 .                if \\n[#FN_MARKER_STYLE]=1 \{\
 .                   ie \\n[#COLUMNS]=1 \{\
 .                      \\n+[#FN_COUNT_FOR_COLS]
-.                      if \\n[#FN_COUNT_FOR_COLS]=1  \{ .PRINT *\c \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=2  \{ .PRINT \(dg\c \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=3  \{ .PRINT \(dd\c \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=4  \{ .PRINT **\c \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=5  \{ .PRINT \(dg\(dg\c \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=6  \{ .PRINT \(dd\(dd\c \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=7  \{ .PRINT ***\c \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=1  \{ .PRINT *\c            \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=2  \{ .PRINT \(dg\c         \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=3  \{ .PRINT \(dd\c         \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=4  \{ .PRINT **\c           \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=5  \{ .PRINT \(dg\(dg\c     \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=6  \{ .PRINT \(dd\(dd\c     \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=7  \{ .PRINT ***\c          \}
 .                      if \\n[#FN_COUNT_FOR_COLS]=8  \{ .PRINT \(dg\(dg\(dg\c \}
 .                      if \\n[#FN_COUNT_FOR_COLS]=9  \{ .PRINT \(dd\(dd\(dd\c \}
-.                      if \\n[#FN_COUNT_FOR_COLS]=10 \{ .PRINT ****\c \}
+.                      if \\n[#FN_COUNT_FOR_COLS]=10 \{ .PRINT ****\c         \}
 .                   \}
 .                   el \{\
-.                      if \\n[#FN_COUNT]=1  \{ .PRINT *\c \}
-.                      if \\n[#FN_COUNT]=2  \{ .PRINT \(dg\c \}
-.                      if \\n[#FN_COUNT]=3  \{ .PRINT \(dd\c \}
-.                      if \\n[#FN_COUNT]=4  \{ .PRINT **\c \}
-.                      if \\n[#FN_COUNT]=5  \{ .PRINT \(dg\(dg\c \}
-.                      if \\n[#FN_COUNT]=6  \{ .PRINT \(dd\(dd\c \}
-.                      if \\n[#FN_COUNT]=7  \{ .PRINT ***\c \}
+.                      if \\n[#FN_COUNT]=1  \{ .PRINT *\c            \}
+.                      if \\n[#FN_COUNT]=2  \{ .PRINT \(dg\c         \}
+.                      if \\n[#FN_COUNT]=3  \{ .PRINT \(dd\c         \}
+.                      if \\n[#FN_COUNT]=4  \{ .PRINT **\c           \}
+.                      if \\n[#FN_COUNT]=5  \{ .PRINT \(dg\(dg\c     \}
+.                      if \\n[#FN_COUNT]=6  \{ .PRINT \(dd\(dd\c     \}
+.                      if \\n[#FN_COUNT]=7  \{ .PRINT ***\c          \}
 .                      if \\n[#FN_COUNT]=8  \{ .PRINT \(dg\(dg\(dg\c \}
 .                      if \\n[#FN_COUNT]=9  \{ .PRINT \(dd\(dd\(dd\c \}
-.                      if \\n[#FN_COUNT]=10 \{ .PRINT ****\c \}
+.                      if \\n[#FN_COUNT]=10 \{ .PRINT ****\c         \}
 .                   \}
 .                \}
 .                if \\n[#FN_MARKER_STYLE]=2 \{\
+.                   if \\n[#COLUMNS]=1 \{\
+.                      \\n+[#FN_COUNT_FOR_COLS]
+.                   \}
+.                   if \\n[#NOT_YET_ADJUSTED]=1 \{\
+.                      nr #FN_NUMBER 1 1
+.                      rr #NOT_YET_ADJUSTED
+.                   \}
 .                   if \\n[#PRINT_STYLE]=1 \{ .PRINT "(\\n[#FN_NUMBER])\c" \}
 .                   if \\n[#PRINT_STYLE]=2 \{ .PRINT "\*[SUP]\\n[#FN_NUMBER]\*[SUPX]\*[FU 2]\c" \}
 .                \}
@@ -9962,6 +10209,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 .    \}
 .    el \{\
+\# If INDENT arg passed to footnotes, calculate the indent...
 .       ie '\\$1'INDENT' \{\
 .          ev FOOTNOTES
 .          if '\\$2'L'     \{ .in (\\$3)  \}
@@ -9981,11 +10229,26 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             in \\n[#FN_BL_INDENT]u
 .          \}
 .          ev
+\# ...then re-run FOOTNOTE without an argument.
 .          FOOTNOTE
 .       \}
 .       el \{\
 .          br
+\# Add "defer space" if the previously diverted footnote was the
+\# 1st footnote proper to its page (i.e. it looks like a deferred
+\# footnote but its really an overflow).
+.          if \\n[#DIVERTED] \{\
+.             if \\n[#PREV_FN_DEFERRED]=1 \{\
+.                if \\n[#FN_MARKER_STYLE]=1 \{ .ALD \\n[#FN_LEAD]u \}
+.                if \\n[#RESET_FN_NUMBER] \{ .ALD \\n[#FN_LEAD]u \}
+.                nr #PREV_FN_DEFERRED 2
+.             \}
+.          \}
+\# Terminate FOOTNOTES or FN_IN_DIVER diversion
 .          di
+.          HY_SET 1 \\n[#DIVERSIONS_HY_MARGIN]u (\\n[#PT_SIZE]u/1000u/8u)p
+.          hy 14
+\# More housekeeping
 \# Turn off indent possibly set by FOOTNOTE INDENT
 .          in 0
 .          if \\n[#PRINT_STYLE]=1 \{\
@@ -10000,119 +10263,487 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          nr #PP_STYLE \\n[#PP_STYLE_PREV]
 .          if !\\n[#INDENT_FIRSTS] \{ .INDENT_FIRST_PARAS OFF \}
 .          rr #INDENT_FIRSTS
+\# Calculate footnote depth, but not if #COUNTERS_RESET (created in
+\# DIVER_FN_1_PRE) to instruct FOOTNOTES to skip this step for now
+\# (it's taken care of when FN_IN_DIVER is output into FOOTNOTES in
+\# PROCESS_FN_IN_DIVER).
 .          ie r#COUNTERS_RESET \{\
 .             rr #COUNTERS_RESET
 .          \}
 .          el \{\
-.             nr #FN_DEPTH +\\n[#DIVER_DEPTH]
-.             if \\n[#FN_DEFER] \{\
-.                nr #FN_DEFER_SPACE 1
-.                rr #FN_DEFER
-.             \}
-.             if \\n[#FN_DEPTH]>\\n[#SPACE_REMAINING] \{\
-.                ie \\n[#SPACE_REMAINING]<(\\n[#LEAD]*2) \{ .nr #FN_DEFER 1 \}
-.                el \{\
-.                   nr #FN_LINES 0 1
-.                   while (\\n+[#FN_LINES]*\\n[#FN_LEAD])<\\n[#SPACE_REMAINING] \{\
-.                      nr #FN_DEPTH (\\n[#FN_LINES]*\\n[#FN_LEAD])
+.             nr #GET_DEPTH 1
+\# If the footnote is the 1st on the page and it falls too close
+\# to the bottom margin, defer the footnote text to the next page...
+.             if (\\n[#SPACE_REMAINING]-1)<=(\\n[#DOC_LEAD]) \{\
+\# ...but not if PROCESS_FN_LEFTOVER has set #PREV_FN_DEFERRED to 1
+.                if !\\n[#PREV_FN_DEFERRED]=1 \{\
+.                   nr #FN_DEFER 1
+.                   nr #FN_DEPTH +\\n[#DIVER_DEPTH]
+.                   rr #GET_DEPTH
+\# This is required so that the defer space clause can distinguish
+\# a real #FN_COUNT=1 from one generated if footnotes is run inside
+\# QUOTE, BLOCKQUOTE or EPIGRAPH
+.                   if \\n[#DIVER_FN]=2 \{\
+.                      nr #SAVED_DIVER_FN_COUNT \\n[#FN_COUNT]
+.                      rr #DIVER_FN
 .                   \}
 .                \}
 .             \}
-.             nr #VARIABLE_FOOTER_POS -\\n[#DIVER_DEPTH]
-.             if \\n[#FN_COUNT]=1 \{ .nr #VARIABLE_FOOTER_POS -1v \}
-.             if r#NO_EXTRA_SPACE \{\
-.                nr #VARIABLE_FOOTER_POS +1v
-.                rr #NO_EXTRA_SPACE
+\# Calculate the footnote depth.
+.             if \\n[#GET_DEPTH]=1 \{\
+\# Save the previous footnote depth (for use when there will be
+\# some overflowed footnote text).
+.                nr #SAVED_FN_DEPTH_1 \\n[#FN_DEPTH]
+\# Add the depth of the current footnote to any already existent
+\# footnotes.
+.                nr #FN_DEPTH +\\n[#DIVER_DEPTH]
+\# Save the new depth
+.                nr #SAVED_FN_DEPTH_2 \\n[#FN_DEPTH]
+\# Signal that defer space should be added when PROCESS_FN_LEFTOVER
+\# processes deferred footnotes.
+.                if \\n[#FN_DEFER] \{\
+.                   if \\n[#FN_COUNT]=2 \{\
+.                      ie \\n[#COLUMNS] \{\
+.                         if !\\n[#FROM_FOOTER] \{\
+.                            if \\n[#FN_DEFER]=1 \{ .nr #FN_DEFER_SPACE 1 \}
+.                            if \\n[#FN_COUNT_FOR_COLS]>=1 \{ .rr #FN_DEFER_SPACE \}
+.                            if \\n[#FROM_HEADER] \{ .nr #FN_DEFER_SPACE 1 \}
+.                         \}
+.                      \}
+.                      el \{\
+.                         nr #FN_DEFER_SPACE 1
+.                      \}
+.                   \}
+.                   rr #FN_DEFER
+.                \}
+\# If the depth of the whole footnote won't fit in the space
+\# between where we are on the page and the bottom margin, calculate
+\# how much of it will fit.
+.                if \\n[#FN_DEPTH]>\\n[#SPACE_REMAINING] \{\
+.                   nr #FN_LINES 0 1
+.                   while (\\n+[#FN_LINES]*\\n[#FN_LEAD])<(\\n[#SPACE_REMAINING] \{\
+.                      nr #FN_DEPTH (\\n[#FN_LINES]*\\n[#FN_LEAD])
+.                   \}
+.                   nr #VFP_DIFF \\n[#FN_DEPTH]-\\n[#SAVED_FN_DEPTH_1]
+.                   nr #OVERFLOW 1
+\# Very occasionally, #VFP_DIFF, on a 1st footnote that isn't to
+\# be deferred, comes up with a depth equal to exactly 1 line
+\# of footnotes, i.e. enough room to print the rule and nothing
+\# else.  The following tests for such a condition, and rather than
+\# attempting to treat the footnote as an overflow, it tells mom to
+\# treat it as a special kind of deferred footnote (#FN_DEFER 2).
+.                   if \\n[#SAVED_FN_DEPTH_1]=0 \{\
+.                      if \\n[#FN_DEPTH]=\\n[#FN_LEAD] \{\
+.                         nr #FN_DEFER 2
+.                         nr #FN_DEPTH \\n[#SAVED_FN_DEPTH_2]
+.                         rr #OVERFLOW
+.                      \}
+.                   \}
+.                \}
+\# Calculate VFP based on whether the footnote overflows, or is to
+\# be treated normally.
+.                ie \\n[#OVERFLOW]=1 \{\
+.                   ie \\n[#FN_COUNT]=1 \{\
+.                      ie \\n[#RULED]=1 \{\
+.                         ie \\n[#COLUMNS]=1 \{\
+.                            ie \\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.                               ie \\n[#FROM_FOOTER] \{\
+.                                  ie \\n[#FN_COUNT_FOR_COLS]>1 \{\
+.                                     nr #FN_DEPTH -\\n[#FN_DEPTH]
+.                                     if \\n[#DIVERTED]=1 \{ .nr #DIVERTED 3 \}
+.                                     if !\\n[#PREV_FN_DEFERRED]=1 \{\
+.                                        nr #FN_DEPTH -\\n[#VFP_DIFF]
+.                                     \}
+.                                  \}
+.                                  el \{\
+.                                     nr #VARIABLE_FOOTER_POS -\\n[#FN_DEPTH]
+.                                     if \\n[#DIVERTED]=1 \{ .nr #DIVERTED 3 \}
+.                                  \}
+.                               \}
+.                               el \{\
+.                                  nr #VARIABLE_FOOTER_POS -(\\n[#FN_DEPTH])
+.                               \}
+.                            \}
+.                            el \{\
+.                               nr #VARIABLE_FOOTER_POS -(\\n[#FN_DEPTH])
+.                            \}
+.                         \}
+.                         el \{ .nr #VARIABLE_FOOTER_POS -(\\n[#FN_DEPTH]) \}
+.                      \}
+.                      el \{\
+.                         nr #VARIABLE_FOOTER_POS -\\n[#VFP_DIFF]
+.                         if \\n[#DIVERTED]=1 \{ .nr #DIVERTED 3 \}
+.                         if !\\n[#PREV_FN_DEFERRED]=1 \{\
+.                            ie \\n[#COLUMNS]=1 \{\
+.                               if !\\n[#FROM_FOOTER] \{\
+.
+.                               \}
+.                            \}
+.                            el \{\
+.                               nr #FN_DEPTH -\\n[#VFP_DIFF]
+.                            \}
+.                         \}
+.                         if \\n[#DIVERTED]=3 \{\
+.                            if !\\n[#PREV_FN_DEFERRED] \{\
+.                               if !\\n[#FROM_FOOTER] \{\
+.                                  if \\n[#FN_COUNT]=1 \{\
+.                                     if !\\n[#VFP_DIFF] \{\
+.                                        if \\n[#FN_MARKER_STYLE]=1 \{\
+.                                           da FOOTNOTES
+\!.ALD \\n[#FN_LEAD]u
+.                                           di
+.                                        \}
+.                                        if \\n[#RESET_FN_NUMBER] \{\
+.                                           da FOOTNOTES
+\!.ALD \\n[#FN_LEAD]u
+.                                           di
+.                                        \}
+.                                     \}
+.                                  \}
+.                               \}
+.                            \}
+.                         \}
+.                      \}
+.                   \}
+.                   el \{\
+.                      nr #VARIABLE_FOOTER_POS -\\n[#VFP_DIFF]
+.                      nr #FN_DEPTH \\n[#SAVED_FN_DEPTH_1]+\\n[#VFP_DIFF]
+.                   \}
+.                   rr #OVERFLOW
+.                   rr #RULED
+.                \}
+.                el \{\
+.                   nr #VARIABLE_FOOTER_POS -\\n[#DIVER_DEPTH]
+.                   if \\n[#PREV_FN_DEFERRED]=1 \{\
+.                      if \\n[#DIVERTED] \{\
+.                         if !\\n[#FN_DEPTH]=\\n[#SAVED_FN_DEPTH_1] \{\
+.                            nr #FN_DEPTH +\\n[#FN_LEAD]
+.                            nr #VARIABLE_FOOTER_POS -\\n[#FN_LEAD] 
+.                            rr #PREV_FN_DEFERRED
+.                         \}
+.                      \}
+.                   \}
+.                   if \\n[#FN_COUNT]>1 \{\
+.                      nr #NO_BACK_UP 1
+\# DIVERTED=2 doesn't seem to serve a purpose anymore, but I'm
+\# leaving it in, commented out, in case I discover why it was there in
+\# the first place.  The rr #DIVERTED line seems to solve whatever
+\# problem DIVERTED=2 was designed to correct.
+\#
+\#.if \\n[#DIVERTED]=1 \{ .nr #DIVERTED 2 \}
+\#
+.                      rr #DIVERTED
+.                      rr #RULED
+.                   \}
+.                \}
 .             \}
-.       \}
-.       ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
-.       if (\\n(nl+1v)>(\\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS]) \{\
-.          ch FOOTER \\n(nlu+1v
-.       \}
-.       if \\n[#FN_DEFER] \{\
-.          nr #VARIABLE_FOOTER_POS 0-\\n[#B_MARGIN]u
+.          \}
 .          ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
+\# See VFP_CHECK for an explanation of the next lines.
+\# The trap has to be removed, prior to setting it, each time
+\# FOOTNOTE is run.
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             ch VFP_CHECK
+.             wh \\n[#VARIABLE_FOOTER_POS]u-\\n[#DOC_LEAD]u VFP_CHECK
+.          \}
+\# If we have a footnote whose text has to be deferred to the next
+\# page, reset the FOOTER trap to its original location.
+.          if \\n[#FN_DEFER] \{\
+.             nr #VARIABLE_FOOTER_POS 0-\\n[#B_MARGIN]u
+.             ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
+.          \}
+.       \}
+.       nr #NO_FN_MARKER 0
+.    \}
+.END
+\#
+\# Utility macros to manage footnotes that occur inside diversions
+\# ---------------------------------------------------------------
+\#
+\# There are some redundancies here; they're left in in case
+\# unforeseen footnote situations crop up in the future that might
+\# require manipulation of them.
+\#
+\# 1. Pre-footnote processing for footnotes in diversions
+\#
+\# a) A footnote inside a diversion will be moved entirely (marker
+\# in running text and text of footnote) to the next page/column.
+\# 
+.MAC DIVER_FN_1_PRE END
+.    nr #RESET_FN_COUNTERS 1
+.    nr #COUNTERS_RESET 1
+.    if \\n[#DONE_ONCE]=1 \{\
+.       if \\n[#FN_DEFER] \{\
+.          if \\n[#SAVED_DIVER_FN_COUNT]=1 \{\
+.             ie \\n[#COLUMNS]=1 \{\
+.                if \\n[#COL_NUM]=\\n[#NUM_COLS] \{ .nr #FN_DEFER_SPACE 1 \}
+.             \}
+.             el \{\
+.                nr #FN_DEFER_SPACE 1
+.             \}
+.          \}
+.       \}
+.       if \\n[#FN_MARKER_STYLE]=1 \{\
+.          if \\n[#FN_COUNT]>0 \{ .nr #FN_COUNT 0 1 \}
+.          if \\n[#COLUMNS]=1 \{\
+.             if \\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.                nr #FN_COUNT_FOR_COLS 0 1
+.             \}
+.          \}
+.       \}
+.       if \\n[#FN_MARKER_STYLE]=2 \{\
+.          if \\n[#RESET_FN_NUMBER]=1 \{\
+.             ie \\n[#COLUMNS]=1 \{\
+.                if \\n[#COL_NUM]=\\n[#NUM_COLS] \{ .nr #FN_NUMBER 0 1 \}
+.             \}
+.             el \{\
+.                nr #FN_NUMBER 0 1
+.             \}
+.          \}
 .       \}
 .    \}
-.    nr #NO_FN_MARKER 0
+.END
+\#
+\# b) Treat as a normal footnote, including defers.
+\#
+.MAC DIVER_FN_2_PRE END
+.    nr #RESET_FN_COUNTERS 2
+.END
+\#
+\# 2. Post-footnote processing for footnotes in diversions
+\#
+\# Even when a footnote inside a diversion is treated as
+\# "normal," some manipulation of registers is required.
+\#
+.MAC DIVER_FN_2_POST END
+.    if \\n[#DONE_ONCE]=1 \{\
+.       if \\n[#FN_MARKER_STYLE]=1 \{\
+.          if \\n[#FN_COUNT]=0 \{\
+.             nr #DONT_RULE_ME 1
+.          \}
+.          if \\n[#FN_COUNT]>0 \{\
+.             nr #FN_COUNT 0 1
+.          \}
+.          if \\n[#COLUMNS]=1 \{\
+.             if \\n[#COL_NUM]=\\n[#NUM_COLS] \{ .nr #FN_COUNT_FOR_COLS 0 1 \}
+.             if !\\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.             \}
+.          \}
+.       \}
+.       if \\n[#FN_MARKER_STYLE]=2 \{\
+.          if \\n[#FN_COUNT]=0 \{\
+.             nr #DONT_RULE_ME 1
+.          \}
+.          if \\n[#FN_COUNT]>0 \{\
+.             nr #FN_COUNT 0 1
+.          \}
+.          if \\n[#RESET_FN_NUMBER]=1 \{\
+.             ie \\n[#COLUMNS]=1 \{\
+.                if \\n[#COL_NUM]=\\n[#NUM_COLS] \{ .nr #FN_NUMBER 0 1 \}
+.             \}
+.             el \{\
+.                nr #FN_NUMBER 0 1
+.             \}
+.          \}
+.       \}
+.    \}
+.END
+\#
+\# The main macros that handle footnote processing.
+\# -----------------------------------------------
+\#
+\# Sometimes, #VARIABLE_FOOTER_POS sets FOOTER at a location so
+\# close to the next legal baseline that, visually, one has the
+\# impression another line of running text would fit on the page.
+\# VFP_CHECK is always set to the line just above the one where
+\# FOOTER will be sprung, and checks for this condition.  If it
+\# exists, FOOTER is set one line lower on the page, thus squeezing
+\# in an extra line of running text.  This is a judgment call on
+\# my part, but seems to work well.  If there are problems (e.g.
+\# footnotes really do look jammed), the user should probably adjust
+\# FOOTNOTE_AUTOLEAD and/or FOOTNOTE_RULE_ADJ.
+\# 
+.MAC VFP_CHECK END
+\# The trap also has to be removed each time VFP_CHECK is run
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       ch VFP_CHECK
+.       SIZESPECS
+.       ie !\\n[#IN_DIVER] \{ .nr #PAGE_POS \\n(nl \}
+.       el \{ .nr #PAGE_POS \\n(nl+\\n(.d+(\\n[#DOC_LEAD]) \}
+.       nr #FOOTER_POS \\n[#PAGE_LENGTH]+(\\n[#VARIABLE_FOOTER_POS])
+.       nr #SPACE_TO_FOOTER \\n[#FOOTER_POS]-\\n[#PAGE_POS]
+.       nr #FN_GAP \\n[#SPACE_TO_FOOTER]%\\n[#DOC_LEAD]
+.       if !\\n[#FN_GAP]<0 \{\
+.          if \\n[#FN_GAP]<\\n[#DOC_LEAD] \{\
+.             ie (\\n[#PAGE_POS]+(\\n[#FN_DEPTH]+\\n[#FN_GAP]))>(\\n[#VISUAL_B_MARGIN]) \{\
+.                nr #VARIABLE_FOOTER_POS 0+\\n[#VARIABLE_FOOTER_POS]
+.             \}
+.             el \{\
+.                ie \\n[#DOC_LEAD]-\\n[#FN_GAP]<\\n[#DESCENDER] \{\
+.                   nr #VARIABLE_FOOTER_POS +\\n[#DOC_LEAD]
+.                   ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
+.                \}
+.                el \{\
+.                   nr #VARIABLE_FOOTER_POS 0+\\n[#VARIABLE_FOOTER_POS]
+.                \}
+.             \}
+.          \}
+.       \}
 .    \}
 .END
 \#
 \# FN_OVERFLOW_TRAP starts off "underneath" FOOTER, but is revealed as
-\# #VARIABLE_FOOTER_POSITION changes the position of FOOTER owing to the
-\# presence footnotes.  FN_OVERFLOW_TRAP simply starts diversion FN_OVERFLOW
-\# to "catch" the overflow.  The diversion is ended in FOOTER, after
-\# outputting FOOTNOTES (the diversion that holds footnotes).
+\# #VARIABLE_FOOTER_POSITION changes the position of FOOTER.
+\# FN_OVERFLOW_TRAP simply starts diversion FN_OVERFLOW
+\# to "catch" the overflow.  The diversion is ended in FOOTER,
+\# immediately after FOOTER outputs the diversion, FOOTNOTES,
+\# before PROCESS_FN_LEFTOVER is run (either in HEADER, or in
+\# FOOTER if moving col to col).
 \#
 .MAC FN_OVERFLOW_TRAP END 
 .    if \\n[#FN_COUNT] \{\
 .       di FN_OVERFLOW
-.     \}
+.       ie !\\n[#NO_BACK_UP]=1 \{\
+.          if \\n[#PREV_FN_DEFERRED] \{\
+.             ie \\n[#COLUMNS]=1 \{\
+.                if \\n[#FROM_FOOTER] \{\
+.                   if \\n[#PREV_FN_DEFERRED] \{\
+.                      if !\\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+\# The following line used to serve some purpose, but as things
+\# stand now, it screws things up.  I'm leaving it in, commented out,
+\# in case I \# discover why I thought it was needed.
+\#
+\#\!.RLD \\n[#FN_LEAD]u
+\#
+.                      rr #PREV_FN_DEFERRED
+.                      \}
+.                   \}
+.                \}
+.                if !\\n[#FROM_FOOTER] \{\
+.                   if !\\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.                      if !\\n[#LAST_FN_COUNT_FOR_COLS]>1 \{\
+\!.RLD \\n[#FN_LEAD]u
+.                      \}
+.                   \}
+.                \}
+.             \}
+.             el \{\
+\!.RLD \\n[#FN_LEAD]u
+.             \}
+.          \}
+.       \}
+.       el \{\
+.          rr #NO_BACK_UP
+.          rr #PREV_FN_DEFERRED
+.       \}
+.    \}
+\# When #FROM_DIVERT_FN is 1, it signals to FOOTNOTE, when run from
+\# within DIVERT_FN_LEFTOVER, to set #SPACE_REMAINING to the total
+\# area allowable for running text.
+.    nr #FROM_DIVERT_FN 1
 .END
 \#
-\# DIVERT_FN_OVERFLOW is started in PROCESS_FN_LEFTOVER, which is called
-\# at the top of HEADER, and in FOOTER if we're moving from one column
-\# to the next.
-\#
-.MAC DIVERT_FN_LEFTOVER END
-.    nr #NO_FN_MARKER 1
-.    nr #OVERFLOW 1
-.    FOOTNOTE
-.    nf
-.    FN_OVERFLOW
-.    FOOTNOTE OFF
-.    rr #FN_OVERFLOW_DEPTH
-.END
-\#
-\# PROCESS_FN_LEFTOVER is called at the top of HEADER, and in FOOTER if
-\# we're moving from one column to the next.  It checks for whether we
-\# have a "deferred footnote" situation, and resets counters and number
-\# registers accordingly.  Lastly, if we have some footnote overflow, it
-\# calls DIVERT_FN_OVERFLOW.
+\# PROCESS_FN_LEFTOVER is called at the top of HEADER, and in
+\# FOOTER if we're moving from one column to the next (i.e. after
+\# outputting FOOTNOTES).  It checks for whether we have a "deferred
+\# footnote" situation, and resets counters and number registers
+\# accordingly.  Lastly, if we have some footnote overflow, it calls
+\# DIVERT_FN_OVERFLOW.
 \#
 .MAC PROCESS_FN_LEFTOVER END
+.    if \\n[#PREV_FN_DEFERRED]=2 \{\
+\# #FN_COUNT_FOR_COLS_AT_FOOTER used to have a purpose.  I'm
+\# leaving it in, commented out, as a safeguard against
+\# (re)discovering why it was needed.
+\#
+\#.if \\n[#FN_COUNT_FOR_COLS_AT_FOOTER]=0 \{ .rr #PREV_FN_DEFERRED \}
+\#
+.       if \\n[#FN_COUNT_AT_FOOTER]>1 \{ .rr #PREV_FN_DEFERRED \}
+.    \}
 .    if !\\n[#FN_DEFER] \{\
 .       nr #FN_COUNT 0 1
 .       nr #FN_DEPTH 0
 .       nr #VARIABLE_FOOTER_POS 0-\\n[#B_MARGIN]
 .    \}
-.    if \\n[#FN_DEFER] \{\
-.       nr #VARIABLE_FOOTER_POS -(\\n[#FN_DEPTH]+\\n[#DOC_LEAD])
+.    if r#FN_DEFER \{\
+.       if \\n[#FN_DEFER]=1 \{\
+.          nr #VARIABLE_FOOTER_POS -\\n[#FN_DEPTH]
+.       \}
+.       if \\n[#FN_DEFER]=2 \{\
+.          nr #FN_DEPTH 0
+.          nr #VARIABLE_FOOTER_POS 0-\\n[#B_MARGIN]
+.       \}
 .    \}
 .    nr #SPACE_REMAINING 0
 .    ch FOOTER -\\n[#B_MARGIN]u
 .    if \\n[#FN_DEFER] \{\
 .       nr #NO_FN_MARKER 1
-.       da FOOTNOTES
-.       di
 .       FOOTNOTE
 .       nf
 .       FOOTNOTE OFF
+.       ie \\n[#COLUMNS]=1 \{\
+.          if \\n[#COL_NUM]=\\n[#NUM_COLS] \{\
+.             if !\\n[#FROM_FOOTER] \{\
+.                if \\n[#FN_COUNT_FOR_COLS]=1 \{ .nr #PREV_FN_DEFERRED 1 \}
+.             \}
+.          \}
+.       \}
+.       el \{ .nr #PREV_FN_DEFERRED 1 \}
 .    \}
 .    if !\\n[#FN_DEFER] \{\
 .       if \\n[#FN_OVERFLOW_DEPTH] \{\
-.           DIVERT_FN_LEFTOVER
+.          DIVERT_FN_LEFTOVER
 .       \}
 .    \}
-.    nr #FN_COUNT 0 1
+.    ie \\n[#COLUMNS]=1 \{\
+.       if \\n[#COL_NUM]>1 \{\
+.          if \\n[#COL_NUM]=\\n[#NUM_COLS] \{ .nr #FN_COUNT 0 1 \}
+.       \}
+.    \}
+.    el \{ .nr #FN_COUNT 0 1 \}
+.    if \\n[#DIVER_FN]=2 \{ .rr #DIVER_FN \}
 .END
 \#
-\# This is a special macro to deal with footnotes that are set inside
-\# diversions (QUOTE, BLOCKQUOTE and EPIGRAPH).  It's called in HEADER and
-\# in FOOTER if we're moving from column to column, and comes after
-\# PROCESS_FOOTNOTE_LEFTOVER in those two macros.
+\# DIVERT_FN_LEFTOVER is called in PROCESS_FN_LEFTOVER (at
+\# the top of HEADER, and in FOOTER if we're moving from one column
+\# to the next).
+\#
+.MAC DIVERT_FN_LEFTOVER END
+.    nr #NO_FN_MARKER 1
+.    nr #DIVERTED 1
+.    FOOTNOTE
+.    nf
+.    FN_OVERFLOW
+.    FOOTNOTE OFF
+.    if \\n[#PREV_FN_DEFERRED] \{\
+.       nr #FN_DEPTH -\\n[#FN_LEAD]
+.       nr #VARIABLE_FOOTER_POS +\\n[#FN_LEAD]  
+.       ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
+.       if \\n[#PREV_FN_DEFERRED]=2 \{\
+.          nr #PREV_FN_DEFERRED 1
+.          rr #DIVERTED
+.       \}
+.    \}
+.    rr #FN_OVERFLOW_DEPTH
+.END
+\#
+\# This is a special macro to deal with footnotes that are set
+\# inside diversions (QUOTE, BLOCKQUOTE and EPIGRAPH).  It's called
+\# in HEADER (and in FOOTER, if we're moving from column to column),
+\# and comes after PROCESS_FOOTNOTE_LEFTOVER in those two macros.
 \#
 .MAC PROCESS_FN_IN_DIVER END
 .    nr #SPACE_REMAINING 0
 .    ch FOOTER -\\n[#B_MARGIN]u
 .    nr #NO_FN_MARKER 1
-.    rr #RESET_FN_COUNTERS
+.    if !\\n[#RESET_FN_COUNTERS]=2 \{\
+.       rr #RESET_FN_COUNTERS
+.    \}
 .    FOOTNOTE
 .    nf
 .    FN_IN_DIVER
 .    FOOTNOTE OFF
-.    if \\n[#ADD_DEFER_SPACE] \{ .nr #FN_DEFER_SPACE 1 \}
-.    rr #ADD_DEFER_SPACE
+.    rr #DIVER_FN
 .END
 \#
 \# ====================================================================
@@ -11500,7 +12131,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .      rr #STORED_R_INDENT
 .      rr #STORED_L_INDENT
 .   \}
-.\" Clean up after exiting last depth of list
+\# Clean up after exiting last depth of list
 .   nr #REMOVE 0 1
 .   while \\n+[#REMOVE]<=\\n[#TOTAL_LISTS] \{\
 .      rr #LIST_INDENT\\n[#REMOVE]
@@ -11610,6 +12241,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# End title collection for TOC
 .    LL \\n[#DOC_L_LENGTH]u
 .    QUAD $DOC_QUAD
+.    nr #SAVED_DOC_LEAD \\n[#DOC_LEAD]
 .    LS \\n[#DOC_LEAD]u
 \*[SLANTX]
 \*[CONDX]
@@ -11693,6 +12325,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       ch DO_B_MARGIN
 .       ch HEADER
 .       ch FOOTER
+.       ch FN_OVERFLOW_TRAP
 \# Plant header trap
 .       wh 0 HEADER
 .    \}
@@ -11700,15 +12333,29 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    ie \\n[#ADJ_DOC_LEAD]=1 \{\
 .       nr #LINES_PER_PAGE 0 1
 .       nr #DOC_LEAD_ADJ 0 1
-.       nr #DEPTH_TO_B_MARGIN \\n[#PAGE_LENGTH]-\\n[#B_MARGIN]-1v
+.       nr #DEPTH_TO_B_MARGIN \\n[#PAGE_LENGTH]-\\n[#ORIGINAL_B_MARGIN]-1v
+\# Get the number of unadjusted lines that fit on the page; always a
+\# bit short of the bottom margin
 .       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n+[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
 .
 .       \}
 .       nr #LINES_PER_PAGE -1
+\# Add machine units, 1 at a time, increasing the leading until the 
+\# new leading fills the page properly
 .       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]+\\n+[#DOC_LEAD_ADJ]*\\n[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
 .
 .       \}
 .       DOC_LEAD \\n[#DOC_LEAD]u+\\n[#DOC_LEAD_ADJ]u
+\# The "visual" bottom margin is what \n(nl would report on the
+\# last line before the FOOTER trap is sprung
+.       nr #VISUAL_B_MARGIN \\n[#T_MARGIN]+(\\n[#LINES_PER_PAGE]*\\n[#DOC_LEAD])
+\# Get the difference between #B_MARGIN and #VISUAL_B_MARGIN
+.       nr #FOOTER_DIFF (\\n[#PAGE_LENGTH]-\\n[#B_MARGIN])-\\n[#VISUAL_B_MARGIN]
+\# Set #B_MARGIN to 1 machine unit lower on the page than #VISUAL_B_MARGIN
+.       nr #B_MARGIN \\n[#B_MARGIN]+(\\n[#FOOTER_DIFF]-1)
+\# Set the FN_OVERFLOW_TRAP position
+.       nr #FN_OVERFLOW_TRAP_POS \\n[#B_MARGIN]u-\\n[#FN_LEAD]
+.       if \\n[#PRINT_STYLE]=1 .nr #FN_OVERFLOW_TRAP_POS \\n[#ORIGINAL_B_MARGIN]u
 .    \}
 \# ...or calculate new B_MARGIN based on # of lines (at #DOC_LEAD) that fit
 \# on the page.
@@ -11718,7 +12365,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n+[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
 .
 .       \}
-.       nr #B_MARGIN \\n[#PAGE_LENGTH]-(\\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n[#LINES_PER_PAGE]))
+.       nr #VISUAL_B_MARGIN \\n[#T_MARGIN]+(\\n[#LINES_PER_PAGE]*\\n[#DOC_LEAD]-1v)
+.       nr #FOOTER_DIFF (\\n[#PAGE_LENGTH]-\\n[#B_MARGIN])-\\n[#VISUAL_B_MARGIN]
+.       nr #B_MARGIN \\n[#B_MARGIN]+(\\n[#FOOTER_DIFF]-1)
+.       nr #FN_OVERFLOW_TRAP_POS \\n[#B_MARGIN]u-\\n[#FN_LEAD]
 .    \}
 \# Set footer and footnote overflow traps
 .    if !\\n[#NO_TRAP_RESET] \{\
@@ -11726,8 +12376,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #SPACE_REMAINING 0
 .       nr #FN_DEPTH 0
 .       nr #VARIABLE_FOOTER_POS 0-\\n[#B_MARGIN]u
-.       wh 12i FOOTER
-.       wh -\\n[#B_MARGIN]u FN_OVERFLOW_TRAP
+.       wh 20i FOOTER
+.       wh -(\\n[#FN_OVERFLOW_TRAP_POS]u) FN_OVERFLOW_TRAP
 .       ch FOOTER -\\n[#B_MARGIN]u
 .    \}
 .END
@@ -11809,14 +12459,24 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# output.
 \#
 .MAC TERMINATE END
-.    if \\n[#FN_DEFER] \{\
+.    ie \\n[#FN_DEPTH] \{\
+.       ie \\n[#FN_DEFER] \{\
+.          br
+.          nr #TERMINATE 1
+.          FOOTNOTE
+.          nf
+.          FOOTNOTE OFF
+.       \}
+.       el \{\
+.          br
+.          ch FN_OVERFLOW_TRAP
+.          DO_B_MARGIN
+.       \}
+.    \}
+.    el \{\
 .       br
-.       nr #TERMINATE 1
-.       da FOOTNOTES
-.       di
-.       FOOTNOTE
-.       nf
-.       FOOTNOTE OFF
+.       ch FN_OVERFLOW_TRAP
+.       DO_B_MARGIN
 .    \}
 .END
 \#

@@ -345,7 +345,7 @@ need to get <strong>mom</strong>'s document leading back on track.
 <p>
 For example, say you want to insert a picture into a document with
 the special groff macro, <strong>PSPIC</strong> (see the
-<strong>grops</strong> man page for usage).
+<strong>groff_tmac</strong> man page for usage).
 <p>
 Pictures aren't usually conveniently sized in multiples of document
 leading, which means that when you insert the picture, you disrupt
@@ -643,10 +643,11 @@ winner again.
 
 The reference macros give <strong>mom</strong> the information
 she needs to generate
-<a href="definitions.html#TERMS_DOCHEADER">docheaders</a>
+<a href="definitions.html#TERMS_DOCHEADER">docheaders</a>,
+<a href="definitions.html#TERMS_HEADER">page headers</a>,
 and
-<a href="definitions.html#TERMS_HEADER">page headers</a>.  They
-must go at the top of any file that uses <strong>mom</strong>'s
+<a href="cover.html#COVER_TOP">covers</a>.
+They must go at the top of any file that uses <strong>mom</strong>'s
 document processing macros.
 <p>
 <a name="INDEX_REFERENCE">
@@ -767,7 +768,7 @@ and the title is most likely in caps, I recommend caps/lower case.
 <a name="AUTHOR"></a>
 Macro: <strong>AUTHOR</strong> <var>&quot;&lt;author string&gt;&quot; [ &quot;&lt;author2 string&gt;&quot; &quot;&lt;author3 string&gt;&quot; ... ]</var>
 <br>
-<em>*Multiple arguments must be enclosed in double-quotes</em>
+<em>*Multiple arguments must all be enclosed in double-quotes</em>
 
 <p>
 Each author string can hold as many names as you like, e.g.
@@ -839,6 +840,8 @@ page-headers.
 <p>
 <a name="CHAPTER_TITLE"></a>
 Macro: <strong>CHAPTER_TITLE</strong> <var>&quot;&lt;chapter title&gt;&quot;</var>
+<br>
+<em>*Argument must be enclosed in double-quotes</em>
 
 <p>
 If, either in addition to or instead of &quot;Chapter #&quot; appearing
@@ -861,7 +864,8 @@ top of the chapter, like this:
 </pre>
 
 In such a case, by default, only the chapter's title will appear in the
-page headers, not &quot;Chapter #&quot;.
+<a href="definitions.html#TERMS_HEADER">page headers</a>,
+not &quot;Chapter #&quot;.
 <p>
 If you omit <strong>CHAPTER</strong> when setting up your reference
 macros, only the title will appear, both at the top of page one and in
@@ -1018,6 +1022,8 @@ either or both.
 <p>
 <a name="COPYRIGHT"></a>
 Macro: <strong>COPYRIGHT</strong> <var>&quot;&lt;copyright info&gt;&quot;</var>
+<br>
+<em>*Argument must be enclosed in double-quotes</em>
 
 <p>
 The argument passed to <strong>COPYRIGHT</strong> is only used on
@@ -1037,6 +1043,8 @@ you.
 <p>
 <a name="MISC"></a>
 Macro: <strong>MISC</strong> <var>&quot;&lt;argument 1&gt;&quot; [&quot;&lt;argument 2&gt;&quot; &quot;&lt;argument 3&gt;&quot; ...]</var>
+<br>
+<em>*Multliple arguments must all be enclosed in double-quotes</em>
 
 <p>
 The argument(s) passed to <strong>MISC</strong> are only used on
@@ -1068,6 +1076,8 @@ and the information would appear on the essay's cover page.
 Macro: <strong>COVERTITLE</strong> <var>&quot;&lt;user defined cover page title&gt;&quot;</var>
 <br>
 Macro: <strong>DOC_COVERTITLE</strong> <var>&quot;&lt;user defined document cover page title&gt;&quot;</var>
+<br>
+<em>*Argument must be enclosed in double-quotes</em>
 
 <p>
 The argument passed to <strong>COVERTITLE</strong> or
@@ -1777,7 +1787,7 @@ like the way <strong>mom</strong> does things) and use
 <strong>DOCHEADER OFF</strong> with its optional distance argument
 to ensure that the body of your document starts where you want.
 You can even insert a PostScript file (with <strong>.PSPIC</strong>;
-see the <strong>grops</strong> man page for usage).
+see the <strong>groff_tmac</strong> man page for usage).
 <p>
 <a name="DOCHEADER_CONTROL"><h3><u>How to change the look of docheaders: docheader control macros</u></h3></a>
 
