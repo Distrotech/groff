@@ -1,3 +1,20 @@
+2005-03-28  Werner LEMBERG  <wl@gnu.org>
+
+	Add support for double- and zero-width characters in grotty.
+
+	* src/devices/grotty/tty.cpp (glyph): Add width. 
+	(tty_printer::make_underline, tty_printer::make_bold,
+	tty_printer::add_character): Add parameter to pass character width.
+	Update all callers.
+	(tty_printer::end_page): Increase hpos by actual character width.
+
+	* font/devutf8/R.proto: Specify zero width for non-spacing
+	characters.
+
+	* tmac/unicode.tmac: Remove definitions for non-spacing entities.
+
+	* Makefile.comm (extraclean): Remove more junk files.
+
 2005-03-25  Werner LEMBERG  <wl@gnu.org>
 
 	* configure.ac: Undo change from 2005-03-24.
