@@ -35,7 +35,7 @@
 .
 .if !\n(.g .ab These man macros work only with groff.
 .
-.nr _C \n[.C]
+.nr _C \n(.C
 .cp 0
 .
 .if !r D .nr D 0
@@ -53,7 +53,7 @@
 .\}
 .
 .nr an-html 0
-.if '\*(.T'html' .nr an-html 1
+.if '\*[.T]'html' .nr an-html 1
 .if \n[an-html] .nr C 1
 .if r ps4html .nr C 1
 .
@@ -63,11 +63,12 @@
 .
 .\" .TH title section extra1 extra2 extra3
 .de TH
+.  cp 0
+.
 .  if \\n[an-html] \{\
 .     HTML-TAG ".tl"
 \\$1
 .  \}
-.  cp 0
 .
 .  de an-init \" We have to do it like this to get multiple man pages right.
 .    ds an-title "\\$1
@@ -465,8 +466,8 @@
 .el        .ds R (Reg.)
 .ie c\[tm] .ds Tm \[tm]
 .el        .ds Tm (TM)
-.ds lq \(lq
-.ds rq \(rq
+.ds lq \[lq]
+.ds rq \[rq]
 .
 .if !\n[an-html] .hy 14
 .
