@@ -23,8 +23,8 @@
 .\"
 .\"
 .\"
-\# Version 1.2
-\# -----------
+\# Version 1.2-a
+\# -------------
 \#
 \# Antoine de St-Exupéry asserted that elegance in engineering is
 \# achieved not when there is nothing left to add, but when there is
@@ -687,8 +687,8 @@
 \#  preferred methods for inline horizontal movements are now
 \#  \*[BCK <n><unit>] and \*[FWD <n><unit>].
 \#
-.ds BCK  \h'-\\$1\\$2'
-.ds FWD  \h'\\$1\\$2'
+.ds BCK  \h'-\\$1'
+.ds FWD  \h'\\$1'
 \#
 .ds BP.25    \h'-.25'
 .ds BP.5     \h'-.5'
@@ -986,11 +986,11 @@
 \# The strings \*[ALD.25]...\*[ALD12.75] and their corresponding
 \# \*[RLD] forms have been left in for backward compatibility with
 \# documents created using mom-1.1.3c or earlier.  The prefered
-\# methods of advancing and reversing on the page inline are \*[UP <n><unit>]
-\# and \*[DOWN <n><unit>].
+\# methods of advancing and reversing on the page inline are
+\# \*[UP <n><unit>] and \*[DOWN <n><unit>].
 \#
-.ds DOWN      \v'\\$1\\$2'
-.ds UP        \v'-\\$1\\$2'
+.ds DOWN      \v'\\$1'
+.ds UP        \v'-\\$1'
 \#
 .ds ALD.25    \v'.25p'
 .ds ALD.5     \v'.5p'
@@ -2335,32 +2335,33 @@
 .    if !d$PAD_MARKER \{ .ds $PAD_MARKER # \}
 .    char \\*[$PAD_MARKER] \R'#PAD_COUNT \En[#PAD_COUNT]+1'
 .    ds $FAMILY_FOR_PAD \\n[.fam]
-.    nr #FONT_FOR_PAD   \\n(.f
+.    fp \\n[.fp] \\*[$FONT]
+.    ds $FONT_FOR_PAD   \\*[$FONT]
 .    nr #SIZE_FOR_PAD   \\n[.ps]
 .    ds $PAD_STRING \\$1
 .    as $PAD_STRING \Ekp
 .    di PAD_STRING
 .    fam \\*[$FAMILY_FOR_PAD]
-\\f\\n[#FONT_FOR_PAD]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
+\\f[\\*[$FONT_FOR_PAD]]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
 .    br
 .    di
 .    char \\*[$PAD_MARKER] \R'#SPACE_TO_END \En(.l-\Enp'\R'#PAD_SPACE \En[#SPACE_TO_END]/\En[#PAD_COUNT]'
 .    di PAD_STRING
 .    fam \\*[$FAMILY_FOR_PAD]
-\\f\\n[#FONT_FOR_PAD]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
+\\f]\\*[$FONT_FOR_PAD]]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
 .    br
 .    di
 .    char \\*[$PAD_MARKER] \h'\En[#PAD_SPACE]u'
 .    ie \\n[#SILENT] \{\
 .       SILENT
 .       fam \\*[$FAMILY_FOR_PAD]
-\\f\\n[#FONT_FOR_PAD]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
+\\f[\\*[$FONT_FOR_PAD]]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
 .       br
 .       SILENT OFF
 .    \}
 .    el \{\
 .       fam \\*[$FAMILY_FOR_PAD]
-\\f\\n[#FONT_FOR_PAD]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
+\\f[\\*[$FONT_FOR_PAD]]\\s[\\n[#SIZE_FOR_PAD]u]\\*[$PAD_STRING]
 .       br
 .    \}
 .    if \\n[#FILL_MODE]=1 \{\
@@ -2517,14 +2518,14 @@
 .    if '\\$3'EXT'       \{ .EXTEND \\$4 \}
 .    if !r#DC_GUT        \{ .nr #DC_GUT (3p) \}
 .    ds $RESTORE_FAM     \\n[.fam]
-.    nr #RESTORE_FT      \\n(.f
+.    ds $RESTORE_FT      \\*[$FONT]
 .    nr #RESTORE_PT_SIZE \\n[#PT_SIZE]
 .    nr #RESTORE_INDENT  \\n(.i
 .    SIZESPECS
 .    nr #DC_HEIGHT \\n[#DC_LINES]*\\n[#LEAD]+\\n[#CAP_HEIGHT]
 .    ie !d$DC_FAM \{ .FAM \\n[.fam] \}
 .    el \{ .FAM \\*[$DC_FAM] \}
-.    ie !d$DC_FT \{ .FT \\n(.f \}
+.    ie !d$DC_FT \{ .FT \\*[$FONT] \}
 .    el \{ .FT \\*[$DC_FT] \}
 .    while \\n[#GET_DC_HEIGHT]<\\n[#DC_HEIGHT] \{\
 .       ps \\n[#PT_SIZE]u+100u
@@ -2556,7 +2557,7 @@
 .    if '\\$3'EXT'  \{ \E*[EXTX]\c \}
 .    rt \\nxu
 .    FAM \\*[$RESTORE_FAM]
-.    FT  \\n[#RESTORE_FT]
+.    FT  \\*[$RESTORE_FT]
 .    ps \\n[#RESTORE_PT_SIZE]u
 .    CONDENSE \\*[$RESTORE_COND]
 .    EXTEND   \\*[$RESTORE_EXT]
@@ -2567,7 +2568,7 @@
 .    rm $RESTORE_COND
 .    rm $RESTORE_EXT
 .    rm $RESTORE_FAM
-.    rr #RESTORE_FT
+.    rm $RESTORE_FT
 .    rr #RESTORE_PT_SIZE
 .    rr #RESTORE_INDENT
 .    rr #DC_HEIGHT

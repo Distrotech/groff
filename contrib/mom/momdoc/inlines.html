@@ -362,8 +362,15 @@ For example,
 moves the hyphen in the telephone number up by 1 point, then
 moves back down by the same amount.
 <p>
-<strong>NOTE:</strong> For backward compatibility, the following are
-also available:
+<strong>NOTE: \*[UP]</strong> and <strong>\*[DOWN]</strong> do not
+work with the inline escape,
+<a href="#INLINE_RULE_MOM">\*[RULE]</a>.
+See
+<a href="#RULE_EXCEPTION">here</a>
+for details.
+<p>
+<strong>ADDITIONAL NOTE:</strong> For backward compatibility, the
+following are also available:
 <p>
 <table valign="baseline" cellpadding="10" summary="inlinevertical">
 <tr>
@@ -435,7 +442,27 @@ macro and
 (See the
 <a href="goodies.html#PAD_EXAMPLE">example</a>
 provided with <strong>PAD</strong>.)
+<a name="RULE_EXCEPTION"></a>
 <p>
+Please also note that the inline escapes
+<a href="#UP">\*[UP]</a>
+and
+<a href="#DOWN">\*[DOWN]</a>
+cannot be used in conjunction with <strong>\*[RULE]</strong>.  This
+doesn't work:
+<p>
+<pre>
+	\*[DOWN 2p]\*[RULE]\*[UP 2p]
+</pre>
+
+This does:
+<p>
+<pre>
+	.ALD 2p
+	\*[RULE]
+	.RLD 2p
+</pre>
+
 See groff's
 <a href="#INLINE_LINEDRAWING_GROFF">Horizontal line drawing function</a>
 for more information on drawing horizontal rules.
@@ -653,12 +680,12 @@ Here follows a short list of commonly-used special characters available
 via inline escapes.  If you're not sure of the meaning of some of
 these characters, consult the
 <a href="definitions.html#TERMS">Definitions of Terms</a>.
-For a more complete list, consult the section <em>Special
-Character Names</em> at the end of the <em>Tutorial Examples</em>
-in <strong>cstr54</strong>, available
-<a href="http://www.kohala.com/start/troff/">here</a>,
-the groff <strong>info</strong> documentation, or better yet, <kbd>man
-groff_char</kbd>.
+<p>
+For a complete list of special characters and glyphs (i.e. just
+about anything you'd ever want to appear on the printed page,
+including mathematical symbols, accented characters, unusual
+ligatures and letters unique to various European languages), consult
+<kbd>man groff_char</kbd>.
 <p>
 <pre>
     CHARACTER                   ESCAPE SEQUENCE

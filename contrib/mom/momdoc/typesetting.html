@@ -1272,8 +1272,9 @@ You can use either, or mix 'n' match with impunity.
 Macro: <strong>EL</strong>
 <br>
 <em>*In nofill modes (LEFT, RIGHT, CENTER), you must terminate the
-line preceding EL with the \c inline escape. See the
-<a href="#EL_NOTE">NOTE</a>,
+line preceding EL with the \c inline escape.  Furthermore, in
+nofill modes, EL does not work after the PAD macro.  See the
+<a href="#EL_NOTES">NOTES</a>,
 below.</em>
 
 <p>
@@ -1326,7 +1327,8 @@ you don't have to recalculate the extra space.
 from Compugraphic), which is covered in the section
 <a href="#ALDRLD">Vertical movement</a>.
 <p>
-<a name="EL_NOTE"><strong>NOTE:</strong></a>
+<a name="EL_NOTES"><strong>NOTES:</strong></a>
+<p>
 In versions of mom prior to 1.1.9, <strong>EL</strong> did not
 always work as advertised on the last
 <a name="TERMS_OUTPUTLINE">output line</a>
@@ -1364,10 +1366,31 @@ or
 <a href="#JUSTIFY">JUSTIFY</a>),
 the <strong>\c</strong> must not be used.
 <p>
-If <strong>EL</strong> is used after a macro or a groff
-<a href="definitions.html#TERMS_PRIMITIVES">primitive</a>,
-you don't have to worry about this, regardless of the fill mode.
-Just type <kbd>.EL</kbd>
+If <strong>EL</strong> is used after most macros or groff
+<a href="definitions.html#TERMS_PRIMITIVES">primitives</a>
+(see the exception, below), you don't have to worry about this,
+regardless of the fill mode.  Just type <kbd>.EL</kbd>
+<p>
+<strong>Exception: EL</strong> does not work after the
+<a href="goodies.html#PAD">PAD</a>
+macro when you're in a nofill mode.  If you require
+<strong>EL</strong> functionality after <strong>PAD</strong> while
+in a nofill mode, you have to perform its function
+&quot;manually&quot;, e.g.
+<p>
+<pre>
+	.CENTER      \" CENTER is a nofill mode
+	.PAD "#\*[ST1]A line of text\*[ST1X]#"
+	.TRAP OFF  -+
+	.SP -1v     | - a "manual" EL
+	.TRAP      -+
+	.ST 1 L
+	.TAB 1
+	.ALD 2p
+	\*[RULE]
+	.RLD 2p
+	.TQ
+</pre>
 <p>
 
 <!---SP--->
@@ -3065,7 +3088,19 @@ before setting up tabs with <strong>TAB_SET</strong>, or
 	<a name="INLINE_ST"><h3><u>Mark positions of string tabs</u></h3></a>
 <br>
 Inlines: <strong>\*[ST&lt;number&gt;]...\*[ST&lt;number&gt;X]</strong>
-
+<br>
+<em>*<a href="definitions.html#TERMS_QUAD">Quad</a>
+direction must be LEFT or JUSTIFY (see
+<a href="#QUAD">QUAD</a>
+and
+<a href="#JUSTIFY">JUSTIFY</a>)
+or the
+<a name="definitions.html#TERMS_NOFILL">no-fill mode</a>
+set to
+<a href="#LRC">LEFT</a>.
+Please see
+<a href="#IMPORTANT">IMPORTANT</a>,
+below.</em>
 <p>
 String tabs need to be marked off with
 <a href="definitions.html#TERMS_INLINES">inline escapes</a>
@@ -3105,12 +3140,65 @@ printing, use the
 <a href="#SILENT">SILENT</a>
 macro.
 <p>
-<strong>IMPORTANT:</strong> Do not try to set up string tabs on
-a line that is broken with
+<a name="IMPORTANT"><strong>IMPORTANT:</strong></a>
+Owing to the way groff processes
+<a href="definitions.html#TERMS_INPUTLINE">input lines</a>
+and turns them into
+<a href="definitions.html#TERMS_OUTPUTLINE">output lines</a>,
+it is not possible for <strong>mom</strong> to &quot;guess&quot; the
+correct starting position of string tabs marked off in lines that
+are centered or set flush right.
+<p>
+Equally, she cannot guess the starting position if a line is fully
+justified and broken with
 <a href="#SPREAD">SPREAD</a>.
-<strong>Mom</strong> calculates string tab positions and lengths
-as she reads the input line, not after the line has undergone
-manipulations to the word spacing.
+<p>
+In other words, in order to use string tabs,
+<a href="#LRC">LEFT</a>
+must be active, or, if
+<a href="#QUAD">QUAD LEFT</a>
+or
+<a href="#JUSTIFY">JUSTIFY</a>
+are active, the line on which the string tabs are marked must be
+broken &quot;manually&quot; with
+<a href="#BR">BR</a>
+(but not
+<a href="#SPREAD">SPREAD</a>).
+<p>
+To circumvent this behaviour, I recommend using the
+<a href="goodies.html#PAD">PAD</a>
+to set up string tabs in centered or flush right lines.  Say, for
+example, you want to use a string tab to underscore the text of a
+centered line with a thick rule.  Rather than this,
+<p>
+<pre>
+	.CENTER
+	\*[ST1]A line of text\*[ST1X]\c
+	.EL
+	.ST 1
+	.TAB 1
+	.PT_SIZE 24
+	.ALD 3p
+	\*[RULE]
+	.RLD 3p
+	.TQ
+</pre>
+
+you should do:
+<p>
+<pre>
+	.QUAD CENTER
+	.PAD "#\*[ST1]A line of text\*[ST1X]#"
+	.EL
+	.ST 1
+	.TAB 1
+	.PT_SIZE 24
+	.ALD 3p
+	\*[RULE] \" Note that you can't use \*[UP ] or \*[DOWN] with \*[RULE]
+	.RLD 3p
+	.TQ
+</pre>
+
 <p>
 
 <!---ST--->
