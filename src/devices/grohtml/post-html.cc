@@ -2945,6 +2945,6 @@ int main(int argc, char **argv)
 
 static void usage(FILE *stream)
 {
-  fprintf(stream, "usage: %s [-vld?n] [-D dir] [-I image_stem] [-F dir] [files ...]\n",
+  fprintf(stream, "usage: %s [-vln] [-D dir] [-I image_stem] [-F dir] [files ...]\n",
 	  program_name);
 }

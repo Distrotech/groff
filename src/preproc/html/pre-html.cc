@@ -1185,7 +1185,7 @@ int scanArguments (int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "+o:i:I:D:F:vd?lrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "+o:i:I:D:F:vdlrn", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':

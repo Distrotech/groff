@@ -81,8 +81,6 @@ and \fB.PE\fP markers, and passes through everything else.  The normal
 definitions of \fB.PS\fP and \fB.PE\fP in the \fIms\fP macro package
 and elsewhere have also the side-effect of centering the \fBpic\fP output
 on the page.
-.PP
-Other details of the \fI[gt]roff\fP(1) interface
 .NH 2
 PIC Error Messages
 .PP

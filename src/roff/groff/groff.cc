@@ -283,14 +283,14 @@ int main(int argc, char **argv)
     fatal("invalid device `%1'", device);
   if (!postdriver)
     fatal("no `postpro' command in DESC file for device `%1'", device);
-
   if (predriver && !zflag) {
     commands[TROFF_INDEX].insert_arg(commands[TROFF_INDEX].get_name());
     commands[TROFF_INDEX].set_name(predriver);
     // pass the device arguments to the predrivers as well
     commands[TROFF_INDEX].insert_args(Pargs);
+    if (vflag)
+      commands[TROFF_INDEX].insert_arg("-v");
   }
-
   const char *real_driver = 0;
   if (Xflag) {
     real_driver = postdriver;
@@ -549,7 +549,7 @@ void possible_command::insert_arg(const char *s)
 
 void possible_command::insert_args(string s)
 {
-  const char *p =  s.contents();
+  const char *p = s.contents();
   const char *end = p + s.length();
   int l = 0;
   if (p >= end)
