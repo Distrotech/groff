@@ -1,3 +1,17 @@
+2002-10-13  Ruslan Ermilov  <ru@FreeBSD.org>
+
+	Add the new -r option to grotty.  It is similar to the -i option
+	except it tells grotty(1) to use the "reverse video" attribute to
+	render italic fonts.
+
+	* src/devices/grotty/tty.cc (reverse_flag): New global variable.
+	(SGR_REVERSE, SGR_NO_REVERSE): New macros.
+	(tty_printer::make_underline, tty_printer::put_color,
+	tty_printer::end_page): Use it.
+	(main): Add -r switch.
+	(usage): Updated.
+	* src/devices/grotty/grotty.man: Document it.
+
 2002-10-11  Ruslan Ermilov  <ru@FreeBSD.org>
 
 	* src/roff/troff/env.cc (hyphen_trie::read_patterns_file): Add
