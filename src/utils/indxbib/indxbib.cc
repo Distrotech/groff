@@ -115,7 +115,6 @@ static char *get_cwd();
 
 extern "C" {
   void cleanup();
-  long dir_name_max(const char *);
   void catch_fatal_signals();
   void ignore_fatal_signals();
 }
@@ -226,11 +225,11 @@ int main(int argc, char **argv)
   if (p) {
     char *dir = strsave(basename);
     dir[p - basename] = '\0';
-    name_max = dir_name_max(dir);
+    name_max = file_name_max(dir);
     a_delete dir;
   }
   else
-    name_max = dir_name_max(".");
+    name_max = file_name_max(".");
   const char *filename = p ? p + 1 : basename;
   if (name_max >= 0 &&
       long(strlen(filename) + sizeof(INDEX_SUFFIX) - 1) > name_max)

@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -47,7 +48,11 @@ extern "C" {
 # define DEFAULT_TMPDIR "/tmp"
 #endif
 // Use this as the prefix for temporary filenames.
-#define TMPFILE_PREFIX  "groff"
+#ifdef __MSDOS__
+#define TMPFILE_PREFIX ""
+#else
+#define TMPFILE_PREFIX "groff"
+#endif
 
 /*
  *  Generate a temporary name template with a postfix
@@ -131,8 +136,6 @@ static void add_tmp_file(const char *name)
 
 // Open a temporary file and with fatal error on failure.
 
-#ifndef _MSC_VER
-
 FILE *xtmpfile(char **namep, char *postfix, int do_unlink)
 {
   char *templ = xtmptemplate(postfix);
@@ -156,28 +159,9 @@ FILE *xtmpfile(char **namep, char *postfix, int do_unlink)
 #endif /* not HAVE_MKSTEMP */
   if (do_unlink)
     add_tmp_file(templ);
-  if ((namep != 0) && ((*namep) != 0)) {
+  if ((namep != 0) && ((*namep) != 0))
     *namep = templ;
-  } else {
+  else
     a_delete templ;
-  }
   return fp;
 }
-
-#else
-
-// FIXME: does MSVC have mktemp or mkstemp?  If so, it should now
-//        use the version above, as it no longer removes an open file.
-//        The version below will NOT work with grohtml, since grohtml
-//        wants to know the name of the file opened by xtmpfile!!
-
-// If you're not running Unix, the following will do:
-FILE *xtmpfile(char **namep, char *postfix, int do_unlink)
-{
-  FILE *fp = tmpfile();
-  if (!fp)
-    fatal("couldn't create temporary file");
-  return fp;
-}
-
-#endif /* _MSC_VER */

@@ -48,6 +48,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include <stdarg.h>
 
+#include "nonposix.h"
+
 extern "C" const char *Version_string;
 
 #include "pre-html.h"
@@ -63,6 +65,16 @@ extern "C" const char *Version_string;
 #define MAX_RETRIES             4096   // number of different page directory names to try before giving up
 
 #define TRANSPARENT  "-background \"#FFF\" -transparent \"#FFF\""
+
+#ifdef __MSDOS__
+#define PAGE_TEMPLATE "pg"
+#define PS_TEMPLATE "ps"
+#define REGION_TEMPLATE "rg"
+#else
+#define PAGE_TEMPLATE "-page-"
+#define PS_TEMPLATE "-ps-"
+#define REGION_TEMPLATE "-regions-"
+#endif
 
 #if 0
 #   define  DEBUGGING
@@ -114,7 +126,8 @@ static char *htmlFileName   = NULL;             // output of pre-html output whi
 static int do_file(const char *filename);
 
 /*
- *  sys_fatal - writes a fatal error message. Taken from src/roff/groff/pipeline.c
+ *  sys_fatal - writes a fatal error message.
+ *  Taken from src/roff/groff/pipeline.c.
  */
 
 void sys_fatal (const char *s)
@@ -122,6 +135,32 @@ void sys_fatal (const char *s)
   fprintf(stderr, "%s: %s: %s", program_name, s, strerror(errno));
 }
 
+/*
+ *  html_system - a wrapper for system()
+ */
+void html_system(const char *s, int redirect_stdout)
+{
+  // Redirect standard error to the null device.  This is more
+  // portable than using "2> /dev/null", since it doesn't require a
+  // Unixy shell.
+  int save_stderr = dup(2);
+  int save_stdout = dup(1);
+  int fdnull = open(NULL_DEV, O_WRONLY|O_BINARY, 0666);
+  if (save_stderr > 2 && fdnull > 2)
+    dup2(fdnull, 2);
+  if (redirect_stdout && save_stdout > 1 && fdnull > 1)
+    dup2(fdnull, 1);
+  if (fdnull >= 0)
+    close(fdnull);
+  int status = system(s);
+  dup2(save_stderr, 2);
+  if (redirect_stdout)
+    dup2(save_stdout, 1);
+  if (status == -1)
+    fprintf(stderr, "Calling `%s' failed\n", s);
+  else if (status)
+    fprintf(stderr, "Calling `%s' returned status %d\n", s, status);
+}
 
 #if 0
 
@@ -815,7 +854,7 @@ static int createAllPages (void)
   char *s;
   int retries = MAX_RETRIES;
 
-  imagePageStem = xtmptemplate("-page-");
+  imagePageStem = xtmptemplate(PAGE_TEMPLATE);
   strcpy(buffer, imagePageStem);
 
   do {
@@ -840,7 +879,10 @@ static int createAllPages (void)
     strcpy(imagePageStem, buffer);
   } while (1);
 
-  s = make_message("echo showpage | gs -q -dSAFER -sDEVICE=%s -r%d -sOutputFile=%s/%%d %s - > /dev/null 2>&1 \n",
+  s = make_message("echo showpage | "
+		   "gs%s -q -dSAFER -sDEVICE=%s -r%d "
+		   "-sOutputFile=%s/%%d %s -",
+		   EXE_EXT,
 		   image_device,
 		   image_res,
 		   imagePageStem,
@@ -851,7 +893,7 @@ static int createAllPages (void)
   fwrite(s, sizeof(char), strlen(s), stderr);
   fflush(stderr);
 #endif
-  system(s);
+  html_system(s, 1);
   free(s);
   return 0;
 }
@@ -917,10 +959,12 @@ static void createImage (imageItem *i)
     int  x2 = max(i->X1, i->X2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
     int  y2 = (image_res*vertical_offset/72)+max(i->Y1, i->Y2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
 
-    s = make_message("pnmcut %d %d %d %d < %s/%d | pnmtopng %s > %s \n",
+    s = make_message("pnmcut%s %d %d %d %d < %s/%d | pnmtopng%s %s > %s \n",
+		     EXE_EXT,
 		     x1, y1, x2-x1+1, y2-y1+1,
 		     imagePageStem,
 		     i->pageNo,
+		     EXE_EXT,
 		     TRANSPARENT,
 		     i->imageName);
     if (s == NULL)
@@ -929,7 +973,7 @@ static void createImage (imageItem *i)
 #if defined(DEBUGGING)
     fprintf(stderr, s);
 #endif
-    system(s);
+    html_system(s, 0);
     free(s);
 #if defined(DEBUGGING)
   } else {
@@ -1326,12 +1370,12 @@ static int makeTempFiles (void)
 #else
   int fd;
 
-  if ((fd = mkstemp(psFileName = xtmptemplate("-ps-"))) == -1) {
+  if ((fd = mkstemp(psFileName = xtmptemplate(PS_TEMPLATE))) == -1) {
     sys_fatal("mkstemp");
     return -1;
   }
   close(fd);
-  if ((fd = mkstemp(regionFileName = xtmptemplate("-regions-"))) == -1) {
+  if ((fd = mkstemp(regionFileName = xtmptemplate(REGION_TEMPLATE))) == -1) {
     sys_fatal("mkstemp");
     unlink(psFileName);
     return -1;

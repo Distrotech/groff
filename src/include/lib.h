@@ -43,8 +43,8 @@ int is_prime(unsigned);
 #include <strings.h>
 #endif
 
-FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1);
-char *xtmptemplate(char *extension=0);
+FILE *xtmpfile(char **namep = 0, char *postfix = 0, int do_unlink = 1);
+char *xtmptemplate(char *extension = 0);
 
 #ifdef NEED_DECLARATION_POPEN
 
@@ -57,6 +57,8 @@ extern "C" { FILE *popen(const char *, const char *); }
 extern "C" { int pclose (FILE *); }
 
 #endif /* NEED_DECLARATION_PCLOSE */
+
+size_t file_name_max(const char *fname);
 
 int interpret_lf_args(const char *p);
 
