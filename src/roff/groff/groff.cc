@@ -125,7 +125,7 @@ int main(int argc, char **argv)
     { NULL, 0, 0, 0 }
   };
   while ((opt = getopt_long(argc, argv,
-			    "abCd:eEf:F:gGhiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
+			    "abcCd:eEf:F:gGhiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
 			    long_options, NULL))
 	 != EOF) {
     char buf[3];
@@ -206,6 +206,9 @@ int main(int argc, char **argv)
       break;
     case 'E':
     case 'b':
+      commands[TROFF_INDEX].append_arg(buf);
+      break;
+    case 'c':
       commands[TROFF_INDEX].append_arg(buf);
       break;
     case 'S':
@@ -674,7 +677,7 @@ char **possible_command::get_argv()
 void synopsis(FILE *stream)
 {
   fprintf(stream,
-"usage: %s [-abeghilpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
+"usage: %s [-abceghilpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
 "       [-wname] [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
 "       [-Larg] [-Idir] [files...]\n",
 	  program_name);
@@ -712,6 +715,7 @@ void help()
 "-E\tinhibit all errors\n"
 "-b\tprint backtraces with errors or warnings\n"
 "-l\tspool the output\n"
+"-c\tdisable color output\n"
 "-C\tenable compatibility mode\n"
 "-V\tprint commands on stdout instead of running them\n"
 "-Parg\tpass arg to the postprocessor\n"

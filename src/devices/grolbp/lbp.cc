@@ -517,6 +517,9 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
 		  else fill_pattern = -21;
 		}; // if (p[0] >= 0 && p[0] <= 1000)
 		break;
+	case 'F':
+		// not implemented yet
+		break;
      	default:
 	     error("unrecognised drawing command `%1'", char(code));
 	     break;

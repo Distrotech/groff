@@ -75,6 +75,7 @@ void html_text::end_tag (tag_definition *t)
   case SMALL_TAG:  out->put_string("</small>"); break;
   case BIG_TAG:    out->put_string("</big>"); break;
   case TABLE_TAG:  issue_table_end(); break;
+  case COLOR_TAG:  out->put_string("</font>"); break;
 
   default:
     error("unrecognised tag");
@@ -99,6 +100,25 @@ void html_text::issue_tag (char *tagname, char *arg)
 }
 
 /*
+ *  issue_color_begin - writes out an html color tag.
+ */
+
+void html_text::issue_color_begin (color *c)
+{
+  double r, g, b;
+  char buf[6+1];
+
+  out->put_string("<font color=\"#");
+  c->get_rgb(&r, &g, &b);
+  sprintf(buf, "%.2X%.2X%.2X",
+	  (unsigned int)(((double) 0xff)*r),
+	  (unsigned int)(((double) 0xff)*g),
+	  (unsigned int)(((double) 0xff)*b));
+  out->put_string(buf);
+  out->put_string("\">");
+}
+
+/*
  *  start_tag - starts a tag.
  */
 
@@ -106,19 +126,20 @@ void html_text::start_tag (tag_definition *t)
 {
   switch (t->type) {
 
-  case I_TAG:      issue_tag("<i", t->arg1); break;
-  case B_TAG:      issue_tag("<b", t->arg1); break;
-  case P_TAG:      issue_tag("\n<p", t->arg1);
+  case I_TAG:      issue_tag("<i", (char *)t->arg1); break;
+  case B_TAG:      issue_tag("<b", (char *)t->arg1); break;
+  case P_TAG:      issue_tag("\n<p", (char *)t->arg1);
                    out->enable_newlines(TRUE); break;
-  case SUB_TAG:    issue_tag("<sub", t->arg1); break;
-  case SUP_TAG:    issue_tag("<sup", t->arg1); break;
-  case TT_TAG:     issue_tag("<tt", t->arg1); break;
-  case PRE_TAG:    out->nl(); issue_tag("<pre", t->arg1);
+  case SUB_TAG:    issue_tag("<sub", (char *)t->arg1); break;
+  case SUP_TAG:    issue_tag("<sup", (char *)t->arg1); break;
+  case TT_TAG:     issue_tag("<tt", (char *)t->arg1); break;
+  case PRE_TAG:    out->nl(); issue_tag("<pre", (char *)t->arg1);
                    out->enable_newlines(FALSE); break;
-  case SMALL_TAG:  issue_tag("<small", t->arg1); break;
-  case BIG_TAG:    issue_tag("<big", t->arg1); break;
-  case TABLE_TAG:  issue_table_begin(t); break;
+  case SMALL_TAG:  issue_tag("<small", (char *)t->arg1); break;
+  case BIG_TAG:    issue_tag("<big", (char *)t->arg1); break;
+  case TABLE_TAG:  issue_table_begin((char *)t->arg1); break;
   case BREAK_TAG:  break;
+  case COLOR_TAG:  issue_color_begin((color *)t->arg1); break;
 
   default:
     error("unrecognised tag");
@@ -134,7 +155,7 @@ int html_text::table_is_void (tag_definition *t)
   }
 }
 
-void html_text::issue_table_begin (tag_definition *t)
+void html_text::issue_table_begin (char *arg)
 {
   if (linelength > 0) {
     int width=current_indentation*100/linelength;
@@ -142,12 +163,12 @@ void html_text::issue_table_begin (tag_definition *t)
     if (width > 0) {
       out->put_string("<table width=\"100%\" border=0 rules=\"none\" frame=\"void\"\n       cols=\"2\" cellspacing=\"0\" cellpadding=\"0\">").nl();
       out->put_string("<tr valign=\"top\" align=\"left\">").nl();
-      if ((t->arg1 == 0) || (strcmp(t->arg1, "") == 0))
+      if ((arg == 0) || (strcmp(arg, "") == 0))
 	out->put_string("<td width=\"").put_number(width).put_string("%\"></td>");
       else {
 	out->put_string("<td width=\"").put_number(width).put_string("%\">").nl();
-	out->put_string(t->arg1).put_string("</td>");
-	t->arg1[0] = (char)0;
+	out->put_string(arg).put_string("</td>");
+	arg[0] = (char)0;
       }
       out->put_string("<td width=\"").put_number(100-width).put_string("%\">").nl();
     }
@@ -202,7 +223,7 @@ int html_text::is_present (HTML_TAG t)
  *  push_para - adds a new entry onto the html paragraph stack.
  */
 
-void html_text::push_para (HTML_TAG t, char *arg)
+void html_text::push_para (HTML_TAG t, void *arg)
 {
   tag_definition *p=(tag_definition *)malloc(sizeof(tag_definition));
 
@@ -255,6 +276,11 @@ void html_text::push_para (HTML_TAG t, char *arg)
       lastptr = p;
     stackptr      = p;
   }
+}
+
+void html_text::push_para (HTML_TAG t)
+{
+  push_para(t, (void *)"");
 }
 
 /*
@@ -311,7 +337,7 @@ void html_text::do_italic (void)
   done_bold();
   done_tt();
   if (! is_present(I_TAG)) {
-    push_para(I_TAG, "");
+    push_para(I_TAG);
   }
 }
 
@@ -324,7 +350,7 @@ void html_text::do_bold (void)
   done_italic();
   done_tt();
   if (! is_present(B_TAG)) {
-    push_para(B_TAG, "");
+    push_para(B_TAG);
   }
 }
 
@@ -337,7 +363,7 @@ void html_text::do_tt (void)
   done_bold();
   done_italic();
   if ((! is_present(TT_TAG)) && (! is_present(PRE_TAG))) {
-    push_para(TT_TAG, "");
+    push_para(TT_TAG);
   }
 }
 
@@ -352,7 +378,7 @@ void html_text::do_pre (void)
   done_tt();
   (void)done_para();
   if (! is_present(PRE_TAG)) {
-    push_para(PRE_TAG, "");
+    push_para(PRE_TAG);
   }
 }
 
@@ -373,6 +399,27 @@ int html_text::is_in_pre (void)
 int html_text::is_in_table (void)
 {
   return( is_present(TABLE_TAG) );
+}
+
+/*
+ *  do_color - initiates a new color tag.
+ */
+
+void html_text::do_color (color *c)
+{
+  if (c != 0) {
+    shutdown(COLOR_TAG);   // shutdown a previous color tag, if present
+    push_para(COLOR_TAG, (void *)c);
+  }
+}
+
+/*
+ *  done_color - shutdown an outstanding color tag, if it exists.
+ */
+
+void html_text::done_color (void)
+{
+  shutdown(COLOR_TAG);
 }
 
 /*
@@ -417,7 +464,7 @@ char *html_text::shutdown (HTML_TAG t)
 	end_tag(stackptr);
       }
       if (t == P_TAG) {
-	arg = stackptr->arg1;
+	arg = (char *)stackptr->arg1;
       }
       p        = stackptr;
       stackptr = stackptr->next;
@@ -534,7 +581,7 @@ void html_text::check_emit_text (tag_definition *t)
 	 */
 	if ((t->next != NULL) &&
 	    (t->next->type == P_TAG) &&
-	    ((t->next->arg1 == 0) || strcmp(t->next->arg1, "") == 0)) {
+	    ((t->next->arg1 == 0) || strcmp((char *)t->next->arg1, "") == 0)) {
 	  /*
 	   *  yes skip the <p>
 	   */
@@ -591,7 +638,7 @@ void html_text::do_para (char *arg)
     if ((arg != 0) && (strcmp(arg, "") != 0)) {
       remove_tag(TABLE_TAG);
     }
-    push_para(P_TAG, arg);
+    push_para(P_TAG, (void *)arg);
     space_emitted = TRUE;
   }
 }
@@ -629,7 +676,7 @@ void html_text::do_break (void)
   if (! is_present(PRE_TAG)) {
     if (emitted_text()) {
       if (! is_present(BREAK_TAG)) {
-	push_para(BREAK_TAG, "");
+	push_para(BREAK_TAG);
       }
     }
   }
@@ -792,7 +839,7 @@ void html_text::do_small (void)
   if (is_present(BIG_TAG)) {
     done_big();
   } else {
-    push_para(SMALL_TAG, "");
+    push_para(SMALL_TAG);
   }
 }
 
@@ -805,7 +852,7 @@ void html_text::do_big (void)
   if (is_present(SMALL_TAG)) {
     done_small();
   } else {
-    push_para(BIG_TAG, "");
+    push_para(BIG_TAG);
   }
 }
 
@@ -815,7 +862,7 @@ void html_text::do_big (void)
 
 void html_text::do_sup (void)
 {
-  push_para(SUP_TAG, "");
+  push_para(SUP_TAG);
 }
 
 /*
@@ -824,6 +871,6 @@ void html_text::do_sup (void)
 
 void html_text::do_sub (void)
 {
-  push_para(SUB_TAG, "");
+  push_para(SUB_TAG);
 }
 

@@ -281,9 +281,9 @@ protected:
   unsigned char unformat;
 public:
   hmotion_node(hunits i, node *next = 0)
-  : node(next), n(i), was_tab(0), unformat(0) {}
+    : node(next), n(i), was_tab(0), unformat(0) {}
   hmotion_node(hunits i, int flag1, int flag2, node *next = 0)
-  : node(next), n(i), was_tab(flag1), unformat(flag2) {}
+    : node(next), n(i), was_tab(flag1), unformat(flag2) {}
   node *copy();
   int reread(int *);
   int set_unformat_flag();
@@ -491,6 +491,30 @@ public:
   int force_tprint();
 private:
   void put(troff_output_file *out, const char *s);
+};
+
+class glyph_color_node : public node {
+  color *c;
+public:
+  glyph_color_node(color *col);
+  node *copy();
+  void tprint(troff_output_file *);
+  hunits width();
+  int same(node *);
+  const char *type();
+  int force_tprint();
+};
+
+class fill_color_node : public node {
+  color *c;
+public:
+  fill_color_node(color *col);
+  node *copy();
+  void tprint(troff_output_file *);
+  hunits width();
+  int same(node *);
+  const char *type();
+  int force_tprint();
 };
 
 struct hvpair {

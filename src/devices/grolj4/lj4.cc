@@ -502,6 +502,9 @@ void lj4_printer::draw(int code, int *p, int np, const environment *env)
       printf("FT10,%d", p[0]/10);
     hpgl_end();
     break;
+  case 'F':
+    // not implemented yet
+    break;
   case 't':
     {
       if (np == 0) {

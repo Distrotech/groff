@@ -302,7 +302,7 @@ int font::get_space_width(int point_size)
 }
 
 font_kern_list::font_kern_list(int c1, int c2, int n, font_kern_list *p)
-     : i1(c1), i2(c2), amount(n), next(p)
+: i1(c1), i2(c2), amount(n), next(p)
 {
 }
 

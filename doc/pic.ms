@@ -355,8 +355,7 @@ box width 3 "this text is far too long for a default box"
 .PP
 This modifier takes a dimension in inches.  There is also a "height"
 modifier that will change a box's height.  The \fBwidth\fP keyword may
-be abbreviated to \fBewid\fP; the \fBheight\fP keyword to
-\fBheight\fP.
+be abbreviated to \fBwid\fP; the \fBheight\fP keyword to \fBht\fP.
 .NH 2
 Resizing Other Object Types
 .PP
@@ -377,7 +376,7 @@ Ellipses are sized to fit in the rectangular box defined by their
 axes, and can be resized with \fBwidth\fP and \fBheight\fP like boxes.
 .PP
 You can also change the radius of curvature of an arc with \fBrad\fP
-(which specifies the radius of the circle of which the arc is a segnmment).
+(which specifies the radius of the circle of which the arc is a segment).
 Larger values yield flatter arcs.
 .KS
 .PS
@@ -566,7 +565,7 @@ box rad 0.2 "rad=0.2";
 move;
 box rad 0.25 "rad=0.25"; 
 .PE
-.CE "3: \fBbox rad\fP with increasing radius values;"
+.CE "3: \fBbox rad\fP with increasing radius values"
 .PP
 Radius values higher than half the minimum box dimension are silently
 truncated to that value.
@@ -642,7 +641,7 @@ values are darker; GNU \fBfillval\fP uses 0 for white and 1 for black.
 .PS
 circle fill; move; circle fill 0.4; move; circle fill 0.2;  
 .PE
-.CE "5: \fBcircle fill; move; circle fill 0.4; move; circle fill 0.9;\fB"
+.CE "5: \fBcircle fill; move; circle fill 0.4; move; circle fill 0.9;\fR"
 .PP
 GNU \fBgpic\fP makes some additional guarantees.  A fill value greater
 than 1 can also be used: this means fill with the shade of gray that
@@ -652,16 +651,37 @@ The invisible attribute does not affect the filling of objects.  Any
 text associated with a filled object will be added after the object
 has been filled, so that the text will not be obscured by the filling.
 .PP
-The closed-object modifier \fBsolid\fR is equivalent to \fBfill\fR 
-with the darkest fill value (DWB \fBpic\fR had this capability but
+The closed-object modifier \fBsolid\fP is equivalent to \fBfill\fP
+with the darkest fill value (DWB \fBpic\fP had this capability but
 mentioned it only in a reference section).  
+.NH 2
+Colored Objects
+.PP
+As a GNU extension, three additional modifiers are available to specify
+colored objects.  \fBoutline\fP sets the color of the outline, \fBshaded\fP
+the fill color, and \fBcolor\fP sets both.  All three keywords expect a
+suffix specifying the color.  Example:
+.KS
+.PS
+box color "yellow"; arrow color "cyan"; circle shaded "green" outline "black";
+.PE
+.CE "6: \fBbox color ""yellow""; arrow color ""cyan""; \
+circle shaded ""green"" outline ""black"";\fR"
+.PP
+Alternative spellings are \fBcolour\fP, \fBcolored\fP, \fBcoloured\fP,
+and \fBoutlined\fP.
+.PP
+Currently, color support is not available in \*(tx mode.  Predefined color
+names for \fIgroff\fP(1) are in the file \f(CWcolor.tmac\fP; additional
+colors can be defined with the \f(CW.defcolor\fP request (see the manual
+page of GNU \fItroff\fP(1) for more details).
 .NH 1
 More About Text Placement
 .PP
 By default, text is centered at the geometric center of the object it is
-associated with.  The modifier \fBljust\fR causes the left end to be
+associated with.  The modifier \fBljust\fP causes the left end to be
 at the specified point (which means that the text lies to the right of
-the specified place!), The modifier \fBrjust\fP puts the right end at
+the specified place!), the modifier \fBrjust\fP puts the right end at
 the place.  The modifiers \fBabove\fP and \fBbelow\fP center the text
 one half line space in the given direction.
 .PP
@@ -746,14 +766,14 @@ in the obvious way:
 .PS
 box; arrow; circle; down; arrow; ellipse
 .PE
-.CE "3: \fBbox; arrow; circle; down; arrow; ellipse\fP
+.CE "3: \fBbox; arrow; circle; down; arrow; ellipse\fP"
 .LP
 You might have expected that program to yield this:
 .KS
 .PS
 box; arrow; circle; move to last circle .s; down; arrow; ellipse
 .PE
-.CE "4: More intuitive?
+.CE "4: More intuitive?"
 .LP
 But, in fact, to get Figure \*[SN]3 you have to do this:
 .KS
@@ -956,7 +976,7 @@ the implied circle.
 Locations Relative to Open Objects
 .PP
 Every open object (line, arrow, arc, or spline) has three named
-points; \fB.start\fP, \fB.center\fP, and \fB.end\fP.  They can
+points: \fB.start\fP, \fB.center\fP, and \fB.end\fP.  They can
 also be used without leading dots in the \fBof\fP prefix form.
 The center of an arc is the center of its circle, but the center of
 a line, path, or spline is halfway between its endpoints.
@@ -2231,6 +2251,9 @@ on the block's bounding box.
                  invis                 \fR# Make primitive invisible\fP
                  solid                 \fR# Make closed figure solid\fP
                  fill <expr>           \fR# Set fill density for figure\fP
+                 colo[u]r[ed] <word>   \fR# Set fill and outline color for figure\fP
+                 outline[d] <word>     \fR# Set outline color for figure\fP
+                 shaded <word>         \fR# Set fill color for figure\fP
                  same                  \fR# Copy size of previous object\fP
                  <text> <text> ...     \fR# Text within object\fP
                  <expr>                \fR# Motion in the current direction\fR

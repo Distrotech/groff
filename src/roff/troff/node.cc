@@ -36,6 +36,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "font.h"
 #include "reg.h"
 #include "input.h"
+#include "geometry.h"
 
 #include "nonposix.h"
 
@@ -728,6 +729,8 @@ class troff_output_file : public real_output_file {
   int current_slant;
   int current_height;
   tfont *current_tfont;
+  color *current_pagecolor;
+  color *current_glyphcolor;
   int current_font_number;
   symbol *font_position;
   int nfont_positions;
@@ -741,6 +744,7 @@ class troff_output_file : public real_output_file {
   void put(unsigned char c);
   void put(int i);
   void put(const char *s);
+  void put_hex(int i, int length);
   void set_font(tfont *tf);
   void flush_tbuf();
 public:
@@ -767,6 +771,8 @@ public:
   void draw(char, hvpair *, int, font_size);
   void determine_line_limits (char code, hvpair *point, int npoints);
   void check_charinfo(tfont *tf, charinfo *ci);
+  void glyph_color(color *c);
+  void fill_color(color *c);
   int get_hpos() { return hpos; }
   int get_vpos() { return vpos; }
 };
@@ -795,6 +801,23 @@ inline void troff_output_file::put(const char *s)
 inline void troff_output_file::put(int i)
 {
   put_string(i_to_a(i), fp);
+}
+
+inline void troff_output_file::put_hex(int i, int length)
+{
+  char *a = new char[length+1];
+  a[length] = '\0';
+  while (length > 0) {
+    length--;
+    int j = i % 0x10;
+    if (j <= 9)
+      a[length] = '0' + j;
+    else
+      a[length] = 'a' + (j - 10);
+    i /= 0x10;
+  }
+  put_string(a, fp);
+  a_delete a;
 }
 
 void troff_output_file::start_special(tfont *tf, int no_init_string)
@@ -931,7 +954,7 @@ void troff_output_file::flush_tbuf()
     put(' ');
   }
   check_output_limits(hpos, vpos);
-  check_output_limits(hpos, vpos + current_size + current_height);
+  check_output_limits(hpos, vpos - current_size);
 
   for (int i = 0; i < tbuf_len; i++)
     put(tbuf[i]);
@@ -941,15 +964,11 @@ void troff_output_file::flush_tbuf()
 
 void troff_output_file::check_charinfo(tfont *tf, charinfo *ci)
 {
-  int size = tf->get_size().to_scaled_points();
   int height = tf->get_char_height(ci).to_units();
   int width = tf->get_width(ci).to_units()
 	      + tf->get_italic_correction(ci).to_units();
-  int depth = tf->get_char_depth(ci).to_units();
-  check_output_limits(output_hpos,
-		      output_vpos - height);
-  check_output_limits(output_hpos + width,
-		      output_vpos + size + depth);
+  check_output_limits(output_hpos, output_vpos - height);
+  check_output_limits(output_hpos + width, output_vpos);
 }
 
 void troff_output_file::put_char_width(charinfo *ci, tfont *tf, hunits w,
@@ -1116,6 +1135,36 @@ void troff_output_file::set_font(tfont *tf)
   current_tfont = tf;
 }
 
+void troff_output_file::fill_color(color *col)
+{
+  unsigned int r, g, b;
+  if ((current_pagecolor == col) || disable_color_flag)
+    return;
+  col->get_rgb(&r, &g, &b);
+  flush_tbuf();
+  put("DF ##");
+  put_hex(r, 4);
+  put_hex(g, 4);
+  put_hex(b, 4);
+  put('\n');
+  current_pagecolor = col;
+}
+
+void troff_output_file::glyph_color(color *col)
+{
+  unsigned int r, g, b;
+  if ((current_glyphcolor == col) || disable_color_flag)
+    return;
+  col->get_rgb(&r, &g, &b);
+  flush_tbuf();  
+  put("m ##");
+  put_hex(r, 4);
+  put_hex(g, 4);
+  put_hex(b, 4);
+  put('\n');
+  current_glyphcolor = col;
+}
+
 // determine_line_limits - works out the smallest box which will contain
 //			   the entity, code, built from the point array.
 void troff_output_file::determine_line_limits(char code, hvpair *point,
@@ -1158,8 +1207,37 @@ void troff_output_file::determine_line_limits(char code, hvpair *point,
       check_output_limits(x, y);
     }
     break;
+  case 'a':
+    double c[2];
+    int p[4];
+    int minx, miny, maxx, maxy;
+    x = output_hpos;
+    y = output_vpos;
+    p[0] = point[0].h.to_units();
+    p[1] = point[0].v.to_units();
+    p[2] = point[1].h.to_units();
+    p[3] = point[1].v.to_units();
+    if (adjust_arc_center(p, c)) {
+      check_output_arc_limits(x, y,
+			      p[0], p[1], p[2], p[3],
+			      c[0], c[1],
+			      &minx, &maxx, &miny, &maxy);
+      check_output_limits(minx, miny);
+      check_output_limits(maxx, maxy);
+      break;
+    }
+    // fall through
+  case 'l':
+    x = output_hpos;
+    y = output_vpos;
+    check_output_limits(x, y);
+    for (i = 0; i < npoints; i++) {
+      x += point[i].h.to_units();
+      y += point[i].v.to_units();
+      check_output_limits(x, y);
+    }
+    break;
   default:
-    // remember this doesn't work for arc.. yet
     x = output_hpos;
     y = output_vpos;
     for (i = 0; i < npoints; i++) {
@@ -3590,6 +3668,80 @@ hunits suppress_node::width()
   return H0;
 }
 
+/* glyph color_node */
+
+glyph_color_node::glyph_color_node(color *col)
+: c(col)
+{
+}
+
+int glyph_color_node::same(node *n)
+{
+  return (c == ((glyph_color_node *)n)->c);
+}
+
+const char *glyph_color_node::type()
+{
+  return "glyph_color_node";
+}
+
+int glyph_color_node::force_tprint()
+{
+  return 0;
+}
+
+node *glyph_color_node::copy()
+{
+  return new glyph_color_node(c);
+}
+
+hunits glyph_color_node::width()
+{
+  return H0;
+}
+
+void glyph_color_node::tprint(troff_output_file *out)
+{
+  out->glyph_color(c);
+}
+
+/* page color_node */
+
+fill_color_node::fill_color_node(color *col)
+: c(col)
+{
+}
+
+int fill_color_node::same(node *n)
+{
+  return (c == ((fill_color_node *)n)->c);
+}
+
+const char *fill_color_node::type()
+{
+  return "fill_color_node";
+}
+
+int fill_color_node::force_tprint()
+{
+  return 0;
+}
+
+node *fill_color_node::copy()
+{
+  return new fill_color_node(c);
+}
+
+hunits fill_color_node::width()
+{
+  return H0;
+}
+
+void fill_color_node::tprint(troff_output_file *out)
+{
+  out->fill_color(c);
+}
+
 /* composite_node */
 
 class composite_node : public charinfo_node {
@@ -5346,7 +5498,7 @@ int symbol_fontno(symbol s)
 
 int is_good_fontno(int n)
 {
-  return n >= 0 && n < font_table_size && font_table[n] != NULL;
+  return n >= 0 && n < font_table_size && font_table[n] != 0;
 }
 
 int get_bold_fontno(int n)

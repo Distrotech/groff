@@ -532,6 +532,42 @@ void environment::set_char_slant(int n)
   char_slant = n;
 }
 
+color *environment::get_prev_glyph_color()
+{
+  return prev_glyph_color;
+}
+
+color *environment::get_glyph_color()
+{
+  return cur_glyph_color;
+}
+
+color *environment::get_prev_fill_color()
+{
+  return prev_fill_color;
+}
+
+color *environment::get_fill_color()
+{
+  return cur_fill_color;
+}
+
+void environment::set_glyph_color(color *c)
+{
+  if (interrupted)
+    return;
+  curenv->prev_glyph_color = curenv->prev_glyph_color;
+  curenv->cur_glyph_color = c;
+}
+
+void environment::set_fill_color(color *c)
+{
+  if (interrupted)
+    return;
+  curenv->prev_fill_color = curenv->prev_fill_color;
+  curenv->cur_fill_color = c;
+}
+
 environment::environment(symbol nm)
 : dummy(0),
   prev_line_length((units_per_inch*13)/2),
@@ -600,6 +636,10 @@ environment::environment(symbol nm)
   need_eol(0),
   ignore_next_eol(0),
   emitted_node(0),
+  cur_glyph_color(0),
+  prev_glyph_color(0),
+  cur_fill_color(0),
+  prev_fill_color(0),
   name(nm),
   control_char('.'),
   no_break_control_char('\''),
@@ -685,6 +725,10 @@ environment::environment(const environment *e)
 #endif /* WIDOW_CONTROL */
   need_eol(0),
   ignore_next_eol(0),
+  cur_glyph_color(e->cur_glyph_color),
+  prev_glyph_color(e->prev_glyph_color),
+  cur_fill_color(e->cur_fill_color),
+  prev_fill_color(e->prev_fill_color),
   name(e->name),		// so that eg `.if "\n[.ev]"0"' works
   control_char(e->control_char),
   no_break_control_char(e->no_break_control_char),
@@ -765,6 +809,10 @@ void environment::copy(const environment *e)
   hyphenation_space = e->hyphenation_space;
   hyphenation_margin = e->hyphenation_margin;
   composite = 0;
+  cur_glyph_color= e->cur_glyph_color;
+  prev_glyph_color = e->prev_glyph_color;
+  cur_fill_color = e->cur_fill_color;
+  prev_fill_color = e->prev_fill_color;
 }
 
 environment::~environment()
@@ -2371,7 +2419,7 @@ tab::tab(hunits x, tab_type t) : next(0), pos(x), type(t)
 }
 
 tab_stops::tab_stops(hunits distance, tab_type type) 
-     : initial_list(0)
+: initial_list(0)
 {
   repeated_list = new tab(distance, type);
 }
@@ -2476,7 +2524,7 @@ tab_stops::tab_stops() : initial_list(0), repeated_list(0)
 }
 
 tab_stops::tab_stops(const tab_stops &ts) 
-     : initial_list(0), repeated_list(0)
+: initial_list(0), repeated_list(0)
 {
   tab **p = &initial_list;
   tab *t = ts.initial_list;

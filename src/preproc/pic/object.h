@@ -150,6 +150,8 @@ const unsigned long HAS_THICKNESS = 01000000;
 const unsigned long IS_FILLED = 02000000;
 const unsigned long IS_DEFAULT_FILLED = 04000000;
 const unsigned long IS_ALIGNED = 010000000;
+const unsigned long IS_SHADED = 020000000;
+const unsigned long IS_OUTLINED = 040000000;
 
 struct segment {
   int is_absolute;
@@ -183,6 +185,8 @@ struct object_spec {
   double end_chop;
   double thickness;
   double fill;
+  char *shaded;
+  char *outlined;
   direction dir;
   segment *segment_list;
   position segment_pos;

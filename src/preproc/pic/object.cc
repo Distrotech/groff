@@ -53,14 +53,6 @@ void output::set_args(const char *s)
     args = strsave(s);
 }
 
-void output::command(const char *, const char *, int)
-{
-}
-
-void output::set_location(const char *, int)
-{
-}
-
 int output::supports_filled_polygons()
 {
   return 0;
@@ -549,6 +541,8 @@ class graphic_object : public object {
   int aligned;
 protected:
   line_type lt;
+  char *outline_color;
+  char *color_fill;
 public:
   graphic_object();
   ~graphic_object();
@@ -559,10 +553,14 @@ public:
   void set_dashed(double);
   void set_thickness(double);
   void set_invisible();
+  void set_outline_color(char *);
+  char *get_outline_color();
   virtual void set_fill(double);
+  virtual void set_fill_color(char *);
 };
 
-graphic_object::graphic_object() : ntext(0), text(0), aligned(0)
+graphic_object::graphic_object()
+: ntext(0), text(0), aligned(0), outline_color(0), color_fill(0)
 {
 }
 
@@ -585,6 +583,21 @@ void graphic_object::set_thickness(double th)
 
 void graphic_object::set_fill(double)
 {
+}
+
+void graphic_object::set_fill_color(char *c)
+{
+  color_fill = c;
+}
+
+void graphic_object::set_outline_color(char *c)
+{
+  outline_color = c;
+}
+
+char *graphic_object::get_outline_color()
+{
+  return outline_color;
 }
 
 void graphic_object::set_invisible()
@@ -622,8 +635,11 @@ void graphic_object::print_text()
     if (d.x != 0.0 || d.y != 0.0)
       angle = atan2(d.y, d.x);
   }
-  if (text != 0)
+  if (text != 0) {
+    out->set_color(color_fill, get_outline_color());
     out->text(center(), text, ntext, angle);
+    out->reset_color();
+  }
 }
 
 graphic_object::~graphic_object()
@@ -676,12 +692,14 @@ public:
   closed_object(const position &);
   object_type type() = 0;
   void set_fill(double);
+  void set_fill_color(char *fill);
 protected:
   double fill;			// < 0 if not filled
+  char *color_fill;		// = 0 if not colored
 };
 
 closed_object::closed_object(const position &pos)
-: rectangle_object(pos), fill(-1.0)
+: rectangle_object(pos), fill(-1.0), color_fill(0)
 {
 }
 
@@ -691,6 +709,10 @@ void closed_object::set_fill(double f)
   fill = f;
 }
 
+void closed_object::set_fill_color(char *fill)
+{
+  color_fill = fill;
+}
 
 class box_object : public closed_object {
   double xrad;
@@ -738,8 +760,9 @@ position box_object::south_west()
 
 void box_object::print()
 {
-  if (lt.type == line_type::invisible && fill < 0.0)
+  if (lt.type == line_type::invisible && fill < 0.0 && color_fill == 0)
     return;
+  out->set_color(color_fill, graphic_object::get_outline_color());
   if (xrad == 0.0) {
     distance dim2 = dim/2.0;
     position vec[4];
@@ -753,6 +776,7 @@ void box_object::print()
     distance abs_dim(fabs(dim.x), fabs(dim.y));
     out->rounded_box(cent, abs_dim, fabs(xrad), lt, fill);
   }
+  out->reset_color();
 }
 
 graphic_object *object_spec::make_box(position *curpos, direction *dirp)
@@ -990,9 +1014,11 @@ ellipse_object::ellipse_object(const position &d)
 
 void ellipse_object::print()
 {
-  if (lt.type == line_type::invisible && fill < 0.0)
+  if (lt.type == line_type::invisible && fill < 0.0 && color_fill == 0)
     return;
+  out->set_color(color_fill, graphic_object::get_outline_color());
   out->ellipse(cent, dim, lt, fill);
+  out->reset_color();
 }
 
 graphic_object *object_spec::make_ellipse(position *curpos, direction *dirp)
@@ -1037,9 +1063,11 @@ circle_object::circle_object(double diam)
 
 void circle_object::print()
 {
-  if (lt.type == line_type::invisible && fill < 0.0)
+  if (lt.type == line_type::invisible && fill < 0.0 && color_fill == 0)
     return;
+  out->set_color(color_fill, graphic_object::get_outline_color());
   out->circle(cent, dim.x/2.0, lt, fill);
+  out->reset_color();
 }
 
 graphic_object *object_spec::make_circle(position *curpos, direction *dirp)
@@ -1222,11 +1250,13 @@ void line_object::print()
 {
   if (lt.type == line_type::invisible)
     return;
+  out->set_color(0, graphic_object::get_outline_color());
   out->line(strt, v, n, lt);
   if (arrow_at_start)
     draw_arrow(strt, strt-v[0], aht, lt);
   if (arrow_at_end)
     draw_arrow(en, v[n-1] - (n > 1 ? v[n - 2] : strt), aht, lt);
+  out->reset_color();
 }
 
 void line_object::update_bounding_box(bounding_box *p)
@@ -1289,11 +1319,13 @@ void spline_object::print()
 {
   if (lt.type == line_type::invisible)
     return;
+  out->set_color(0, graphic_object::get_outline_color());
   out->spline(strt, v, n, lt);
   if (arrow_at_start)
     draw_arrow(strt, strt-v[0], aht, lt);
   if (arrow_at_end)
     draw_arrow(en, v[n-1] - (n > 1 ? v[n - 2] : strt), aht, lt);
+  out->reset_color();
 }
 
 line_object::~line_object()
@@ -1500,6 +1532,7 @@ void arc_object::print()
 {
   if (lt.type == line_type::invisible)
     return;
+  out->set_color(0, graphic_object::get_outline_color());
   if (clockwise)
     out->arc(en, cent, strt, lt);
   else
@@ -1516,6 +1549,7 @@ void arc_object::print()
 	       (clockwise ? position(e.y, -e.x) : position(-e.y, e.x)),
 	       aht, lt);
   }
+  out->reset_color();
 }
 
 inline double max(double a, double b)
@@ -1708,13 +1742,19 @@ object *object_spec::make_object(position *curpos, direction *dirp)
     else
       lookup_variable("linethick", &th);
     obj->set_thickness(th);
+    if (flags & IS_OUTLINED)
+      obj->set_outline_color(outlined);
     if (flags & (IS_DEFAULT_FILLED|IS_FILLED)) {
-      if (flags & IS_DEFAULT_FILLED)
-	lookup_variable("fillval", &fill);
-      if (fill < 0.0)
-	error("bad fill value %1", fill);
-      else
-	obj->set_fill(fill);
+      if (flags & IS_SHADED)
+	obj->set_fill_color(shaded);
+      else {
+	if (flags & IS_DEFAULT_FILLED)
+	  lookup_variable("fillval", &fill);
+	if (fill < 0.0)
+	  error("bad fill value %1", fill);
+	else
+	  obj->set_fill(fill);
+      }
     }
   }
   return obj;

@@ -36,17 +36,22 @@ grohtml \- html driver for groff
 .ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\\$2" "\ ]"
 .el .RB "[\ " "\\$1" "\ ]"
 ..
-.OP \-v?lrn
+.OP \-vlrn
 .OP \-D dir
 .OP \-F dir
 .OP \-i resolution
-.OP \-I image stem
-.OP \-o image vertical offset
+.OP \-I image-stem
+.OP \-o image-vertical-offset
 .RI "[\ " files\|.\|.\|. "\ ]"
 .br
 .ad \na
 .SH DESCRIPTION
+The
 .B grohtml
+front end (which consists of a preprocessor,
+.BR pre-grohtml ,
+and a device driver,
+.BR post-grohtml )
 translates the output of GNU
 .B troff
 to html.
@@ -76,12 +81,6 @@ using
 option.
 .SH OPTIONS
 .TP
-.B \-v
-Displays the version.
-.TP
-.B \-?
-Emits a usage synopsis.
-.TP
 .B -l
 Turns off the production of automatic section links at the top of the document.
 .TP
@@ -91,7 +90,7 @@ Turns off the automatic header and footer line (html rule).
 .B -n
 Generate simple heading anchors whenever a section/number heading is found.
 Without the option the anchor value is the textual heading.
-This can cause problems when a heading contains a `?' on some brousers
+This can cause problems when a heading contains a `?' on some browsers
 (netscape).
 This flag is automatically turned on if a heading contains an image.
 .TP
@@ -115,6 +114,9 @@ If omitted grohtml uses
 .RI ( XXX
 is the process ID).
 .TP
+.BI \-o vertical-offset
+Specify the vertical offset of images in points.
+.TP
 .BI \-D dir
 Inform
 .B grohtml
@@ -123,9 +125,7 @@ to place all image files into directory
 .TP
 .B \-v
 Print the version number.
-.TP
-.B \-?
-Display usage.
+.
 .SH USAGE
 There are styles called
 .BR R ,
@@ -137,7 +137,7 @@ mounted at font positions 1 to 4.
 .SH DEPENDENCIES
 .B grohtml
 is dependent upon the png utilities
-.RB ( \&\%pnmcut ,\  \%pnmtopng )
+.RB ( \&\%pnmcut ,\  \%pnmcrop ,\  \%pnmtopng )
 and GhostScript
 .RB ( gs ).
 .B \%pnmtopng

@@ -234,7 +234,7 @@ static int start_number()
 
 enum { OP_LEQ = 'L', OP_GEQ = 'G', OP_MAX = 'X', OP_MIN = 'N' };
 
-#define SCALE_INDICATOR_CHARS "icPmnpuvMsz"
+#define SCALE_INDICATOR_CHARS "icfPmnpuvMsz"
 
 static int parse_term(units *v, int scale_indicator,
 		      int parenthesised, int rigid);
@@ -589,6 +589,9 @@ static int parse_term(units *v, int scale_indicator,
   case 'u':
     if (divisor != 1)
       *v /= divisor;
+    break;
+  case 'f':
+    *v = scale(*v, 65536, divisor);
     break;
   case 'p':
     *v = scale(*v, units_per_inch, divisor*72);

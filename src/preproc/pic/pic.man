@@ -622,14 +622,7 @@ this will produce the arguments formatted according to
 .IR format ,
 which should be a string as described in
 .BR printf (3)
-appropriate for the number of arguments supplied,
-using only the
-.BR e ,
-.BR f ,
-.B g
-or
-.B %
-format characters.
+appropriate for the number of arguments supplied.
 .LP
 The thickness of the lines used to draw objects is controlled by the
 .B linethick
@@ -683,6 +676,30 @@ The invisible attribute does not affect the filling of objects.
 Any text associated with a filled object will be added after the
 object has been filled, so that the text will not be obscured
 by the filling.
+.LP
+Three additional modifiers are available to specify colored objects:
+.B outline
+sets the color of the outline,
+.B shaded
+the fill color, and
+.B color
+sets both.
+All three keywords expect a suffix specifying the color, for example
+.RS
+.LP
+.B circle shaded """green""" outline """black"""
+.RE
+.LP
+Currently, color support isn't available in \*(tx mode.
+Predefined color names for
+.B groff
+are in the file
+.BR color.tmac ;
+additional colors can be defined with the
+.B .defcolor
+request (see the manual page of
+.BR @g@troff (@MAN1EXT@)
+for more details).
 .LP
 Arrow heads will be drawn as solid triangles if the variable
 .B arrowhead
@@ -872,8 +889,8 @@ Input characters that are illegal for
 .B groff
 (ie those with
 .SM ASCII
-code 0 or between 013 and 037 octal or between 0200 and 0237 octal)
-are rejected even in \*(tx mode.
+code 0, or 013 octal, or between 015 and 037 octal, or between 0200 and 0237
+octal) are rejected even in \*(tx mode.
 .LP
 The interpretation of
 .B fillval

@@ -30,6 +30,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "error.h"
 #include "font.h"
 #include "printer.h"
+#include "geometry.h"
 
 void do_file(const char *);
 extern printer *pr;

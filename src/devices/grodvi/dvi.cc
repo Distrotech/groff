@@ -801,6 +801,9 @@ void draw_dvi_printer::draw(int code, int *p, int np, const environment *env)
 	fill = FILL_MAX;
       break;
     }
+  case 'F':
+    // not implemented yet
+    break;
   case 'R':
     {
       if (np != 2) {

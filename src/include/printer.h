@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+#include "color.h"
+
 struct environment {
   int fontno;
   int size;
@@ -25,6 +27,8 @@ struct environment {
   int vpos;
   int height;
   int slant;
+  color *col;
+  color *fill;
 };
 
 struct font;
@@ -55,7 +59,6 @@ public:
   virtual font *make_font(const char *nm);
   virtual void end_of_line();
   virtual void special(char *arg, const environment *env, char type = 'p');
-  static int adjust_arc_center(const int *, double *);
 protected:
   font_pointer_list *font_list;
 

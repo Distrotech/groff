@@ -21,6 +21,13 @@ the original English.
 .\" This man page must be preprocessed with eqn.
 .ie \n(.g .ds ic \/
 .el .ds ic \^
+.
+.de TQ
+.br
+.ns
+.TP \\$1
+..
+.
 .TH GROFF_OUT @MAN5EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
 groff_out \- groff intermediate output format
@@ -85,6 +92,32 @@ When a character is to be printed, that character will always be
 in the current font.
 Unlike device-independent troff, it is not necessary
 for drivers to search special fonts to find a character.
+.LP
+For color support, a new command has been added:
+.TP
+\fBm \fIr g b\fR
+.TQ
+\fBm #\fIrrggbb\fR
+.TQ
+\fBm ##\fIrrrrggggbbbb\fR
+Set the red, green, and blue components of the current drawing color to
+.IR r ,
+.IR g ,
+and
+.I b
+(to be specified as fractions in the range 0 to 1), or
+.IR rr ,
+.IR gg ,
+and
+.I bb
+(to be specified as hexadecimal values in the range 0 to 0xff), or
+.IR rrrr ,
+.IR gggg ,
+and
+.I bbbb
+(to be specified as hexadecimal values in the range 0 to 0xffff).
+.B troff
+emits only the latest form.
 .LP
 The
 .B x
@@ -216,6 +249,17 @@ command of the form
 .LP
 the current position should be increased by
 $( sum from i=1 to n x sub i , sum from i=1 to n y sub i )$.
+.LP
+Another extension is
+.TP
+\fBDF \fIr g b\fR\*(ic\en
+.TQ
+\fBDF #\fIrrggbb\fR\*(ic\en
+.TQ
+\fBDF ##\fIrrrrggggbbbb\fR\*(ic\en
+Set the RGB components of the filling color similar to the
+.B m
+command above.
 .LP
 There is a continuation convention which permits the argument to the
 .B x\ X

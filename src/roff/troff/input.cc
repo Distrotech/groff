@@ -92,6 +92,7 @@ void transparent_file();
 const char *program_name = 0;
 token tok;
 int break_flag = 0;
+int disable_color_flag = 0;
 static int backtrace_flag = 0;
 #ifndef POPEN_MISSING
 char *pipe_command = 0;
@@ -185,7 +186,7 @@ void restore_escape_char()
 class input_iterator {
 public:
   input_iterator();
-  virtual ~input_iterator();
+  virtual ~input_iterator() {}
   int get(node **);
   friend class input_stack;
 protected:
@@ -197,15 +198,13 @@ private:
   virtual int peek();
   virtual int has_args() { return 0; }
   virtual int nargs() { return 0; }
-  virtual input_iterator *get_arg(int) { return NULL; }
-  virtual int get_location(int, const char **,  int *)
-    { return 0; }
+  virtual input_iterator *get_arg(int) { return 0; }
+  virtual int get_location(int, const char **, int *) { return 0; }
   virtual void backtrace() {}
-  virtual int set_location(const char *, int)
-    { return 0; }
+  virtual int set_location(const char *, int) { return 0; }
   virtual int next_file(FILE *, const char *) { return 0; }
   virtual void shift(int) {}
-  virtual int is_boundary() { return 0; }
+  virtual int is_boundary() {return 0; }
   virtual int internal_level() { return 0; }
   virtual int is_file() { return 0; }
   virtual int is_macro() { return 0; }
@@ -215,10 +214,6 @@ private:
 
 input_iterator::input_iterator()
 : ptr(0), eptr(0)
-{
-}
-
-input_iterator::~input_iterator()
 {
 }
 
@@ -517,7 +512,7 @@ void input_stack::push(input_iterator *in)
 input_iterator *input_stack::get_arg(int i)
 {
   input_iterator *p;
-  for (p = top; p != NULL; p = p->next)
+  for (p = top; p != 0; p = p->next)
     if (p->has_args())
       return p->get_arg(i);
   return 0;
@@ -679,7 +674,7 @@ void shift()
 
 static int get_char_for_escape_name()
 {
-  int c = get_copy(NULL);
+  int c = get_copy(0);
   switch (c) {
   case EOF:
     copy_mode_error("end of input in escape name");
@@ -826,19 +821,19 @@ static int get_copy(node **nd, int defining)
     case 0:
       return escape_char;
     case '"':
-      (void)input_stack::get(NULL);
-      while ((c = input_stack::get(NULL)) != '\n' && c != EOF)
+      (void)input_stack::get(0);
+      while ((c = input_stack::get(0)) != '\n' && c != EOF)
 	;
       return c;
     case '#':			// Like \" but newline is ignored.
-      (void)input_stack::get(NULL);
-      while ((c = input_stack::get(NULL)) != '\n')
+      (void)input_stack::get(0);
+      while ((c = input_stack::get(0)) != '\n')
 	if (c == EOF)
 	  return EOF;
       break;
     case '$':
       {
-	(void)input_stack::get(NULL);
+	(void)input_stack::get(0);
 	symbol s = read_escape_name();
 	if (!s.is_null())
 	  interpolate_arg(s);
@@ -846,24 +841,24 @@ static int get_copy(node **nd, int defining)
       }
     case '*':
       {
-	(void)input_stack::get(NULL);
+	(void)input_stack::get(0);
 	symbol s = read_escape_name();
 	if (!s.is_null())
 	  interpolate_string(s);
 	break;
       }
     case 'a':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return '\001';
     case 'e':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_e;
     case 'E':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_E;
     case 'n':
       {
-	(void)input_stack::get(NULL);
+	(void)input_stack::get(0);
 	int inc;
 	symbol s = read_increment_and_escape_name(&inc);
 	if (!s.is_null())
@@ -872,85 +867,85 @@ static int get_copy(node **nd, int defining)
       }
     case 'g':
       {
-	(void)input_stack::get(NULL);
+	(void)input_stack::get(0);
 	symbol s = read_escape_name();
 	if (!s.is_null())
 	  interpolate_number_format(s);
 	break;
       }
     case 't':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return '\t';
     case 'V':
       {
-	(void)input_stack::get(NULL);
+	(void)input_stack::get(0);
 	symbol s = read_escape_name();
 	if (!s.is_null())
 	  interpolate_environment_variable(s);
 	break;
       }
     case '\n':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       if (defining)
 	return ESCAPE_NEWLINE;
       break;
     case ' ':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_SPACE;
     case '~':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_TILDE;
     case ':':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_COLON;
     case '|':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_BAR;
     case '^':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_CIRCUMFLEX;
     case '{':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_LEFT_BRACE;
     case '}':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_RIGHT_BRACE;
     case '`':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_LEFT_QUOTE;
     case '\'':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_RIGHT_QUOTE;
     case '-':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_HYPHEN;
     case '_':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_UNDERSCORE;
     case 'c':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_c;
     case '!':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_BANG;
     case '?':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_QUESTION;
     case '&':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_AMPERSAND;
     case ')':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_RIGHT_PARENTHESIS;
     case '.':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return c;			
     case '%':
-      (void)input_stack::get(NULL);
+      (void)input_stack::get(0);
       return ESCAPE_PERCENT;
     default:
       if (c == escape_char) {
-	(void)input_stack::get(NULL);
+	(void)input_stack::get(0);
 	return c;
       }
       else
@@ -1006,6 +1001,226 @@ static node *do_non_interpreted();
 static node *do_special();
 static node *do_suppress();
 static void do_register();
+
+dictionary color_dictionary(501);
+
+static color *lookup_color(symbol nm)
+{
+  assert(!nm.is_null());
+  color *c = (color *)color_dictionary.lookup(nm);
+  if (c == 0)
+    warning(WARN_COLOR, "`%1' not defined", nm.contents());
+  return c;
+}
+
+static color *default_black(color *c)
+{
+  if (c == 0)
+    return lookup_color(symbol("black"));
+  else
+    return c;
+}
+
+static node *do_glyph_color(symbol nm)
+{
+  if (nm.is_null())
+    return 0;
+  if (nm == symbol("P"))
+    curenv->set_glyph_color(default_black(curenv->get_prev_glyph_color()));
+  else {
+    color *tem = lookup_color(nm);
+    if (tem)
+      curenv->set_glyph_color(tem);
+    else {
+      tem = new color;
+      tem->set_cmyk((unsigned int)0, (unsigned int)0,
+		    (unsigned int)0, (unsigned int)0);
+      (void)color_dictionary.lookup(nm, tem);
+    }
+  }
+  return new glyph_color_node(default_black(curenv->get_glyph_color()));
+}
+
+static node *do_fill_color(symbol nm)
+{
+  if (nm.is_null())
+    return 0;
+  if (nm == symbol("P"))
+    curenv->set_fill_color(default_black(curenv->get_prev_fill_color()));
+  else {
+    color *tem = lookup_color(nm);
+    if (tem)
+      curenv->set_fill_color(tem);
+    else {
+      tem = new color;
+      tem->set_cmyk((unsigned int)0, (unsigned int)0,
+		    (unsigned int)0, (unsigned int)0);
+      (void)color_dictionary.lookup(nm, tem);
+    }
+  }
+  return new fill_color_node(default_black(curenv->get_fill_color()));
+}
+
+static unsigned int get_color_element(const char *scheme, const char *color)
+{
+  units val;
+  if (!get_number(&val, 'f')) {
+    warning(WARN_COLOR, "%1 in %2 definition set to 0", color, scheme);
+    tok.next();
+    return 0;
+  }
+  if (val < 0) {
+    warning(WARN_RANGE, "%1 cannot be negative: set to 0", color);
+    return 0;
+  }
+  if (val > 65536) {
+    warning(WARN_RANGE, "%1 cannot be greater than 1", color);
+    return 65535;	// this is 0xffff
+  }
+  return (unsigned int)val;
+}
+
+static color *read_rgb()
+{
+  symbol component = get_long_name(0);
+  if (component.is_null()) {
+    warning(WARN_COLOR, "missing rgb color values");
+    return 0;
+  }
+  const char *s = component.contents();
+  color *col = new color;
+  if (*s == '#') {
+    if (!col->read_rgb(s)) {
+      warning(WARN_COLOR, "expecting rgb color definition not `%1'", s);
+      delete col;
+      return 0;
+    }
+  }
+  else {
+    input_stack::push(make_temp_iterator(" "));
+    input_stack::push(make_temp_iterator(s));
+    unsigned int r = get_color_element("rgb color", "red component");
+    unsigned int g = get_color_element("rgb color", "green component");
+    unsigned int b = get_color_element("rgb color", "blue component");
+    col->set_rgb(r, g, b);
+  }
+  return col;
+}
+
+static color *read_cmy()
+{
+  symbol component = get_long_name(0);
+  if (component.is_null()) {
+    warning(WARN_COLOR, "missing cmy color values");
+    return 0;
+  }
+  const char *s = component.contents();
+  color *col = new color;
+  if (*s == '#') {
+    if (!col->read_cmy(s)) {
+      warning(WARN_COLOR, "expecting cmy color definition not `%1'", s);
+      delete col;
+      return 0;
+    }
+  }
+  else {
+    input_stack::push(make_temp_iterator(" "));
+    input_stack::push(make_temp_iterator(s));
+    unsigned int c = get_color_element("cmy color", "cyan component");
+    unsigned int m = get_color_element("cmy color", "magenta component");
+    unsigned int y = get_color_element("cmy color", "yellow component");
+    col->set_cmy(c, m, y);
+  }
+  return col;
+}
+
+static color *read_cmyk()
+{
+  symbol component = get_long_name(0);
+  if (component.is_null()) {
+    warning(WARN_COLOR, "missing cmyk color values");
+    return 0;
+  }
+  const char *s = component.contents();
+  color *col = new color;
+  if (*s == '#') {
+    if (!col->read_cmyk(s)) {
+      warning(WARN_COLOR, "`expecting a cmyk color definition not `%1'", s);
+      delete col;
+      return 0;
+    }
+  }
+  else {
+    input_stack::push(make_temp_iterator(" "));
+    input_stack::push(make_temp_iterator(s));
+    unsigned int c = get_color_element("cmyk color", "cyan component");
+    unsigned int m = get_color_element("cmyk color", "magenta component");
+    unsigned int y = get_color_element("cmyk color", "yellow component");
+    unsigned int k = get_color_element("cmyk color", "black component");
+    col->set_cmyk(c, m, y, k);
+  }
+  return col;
+}
+
+static color *read_gray()
+{
+  symbol component = get_long_name(0);
+  if (component.is_null()) {
+    warning(WARN_COLOR, "missing gray values");
+    return 0;
+  }
+  const char *s = component.contents();
+  color *col = new color;
+  if (*s == '#') {
+    if (!col->read_gray(s)) {
+      warning(WARN_COLOR, "`expecting a gray definition not `%1'", s);
+      delete col;
+      return 0;
+    }
+  }
+  else {
+    input_stack::push(make_temp_iterator(" "));
+    input_stack::push(make_temp_iterator(s));
+    unsigned int g = get_color_element("gray", "gray value");
+    col->set_gray(g);
+  }
+  return col;
+}
+
+static void define_color()
+{
+  symbol color_name = get_long_name(1);
+  if (color_name.is_null()) {
+    skip_line();
+    return;
+  }
+  symbol style = get_long_name(1);
+  if (style.is_null()) {
+    skip_line();
+    return;
+  }
+  color *col;
+  if (strcmp(style.contents(), "rgb") == 0)
+    col = read_rgb();
+  else if (strcmp(style.contents(), "cmyk") == 0)
+    col = read_cmyk();
+  else if (strcmp(style.contents(), "gray") == 0)
+    col = read_gray();
+  else if (strcmp(style.contents(), "grey") == 0)
+    col = read_gray();
+  else if (strcmp(style.contents(), "cmy") == 0)
+    col = read_cmy();
+  else {
+    warning(WARN_COLOR,
+	    "unknown color space definition `%1', "
+	    "use rgb, cmyk or gray", style.contents());
+    skip_line();
+    return;
+  }
+  if (col)
+    (void)color_dictionary.lookup(color_name, col);
+  skip_line();
+}
 
 static node *do_overstrike()
 {
@@ -1447,7 +1662,7 @@ void token::next()
     }
     else {
     handle_escape_char:
-      cc = input_stack::get(NULL);
+      cc = input_stack::get(0);
       switch(cc) {
       case '(':
 	nm = read_two_char_escape_name();
@@ -1497,7 +1712,7 @@ void token::next()
       case ':':
 	goto ESCAPE_COLON;
       case '"':
-	while ((cc = input_stack::get(NULL)) != '\n' && cc != EOF)
+	while ((cc = input_stack::get(0)) != '\n' && cc != EOF)
 	  ;
 	if (cc == '\n')
 	  type = TOKEN_NEWLINE;
@@ -1505,7 +1720,7 @@ void token::next()
 	  type = TOKEN_EOF;
 	return;
       case '#':			// Like \" but newline is ignored.
-	while ((cc = input_stack::get(NULL)) != '\n')
+	while ((cc = input_stack::get(0)) != '\n')
 	  if (cc == EOF) {
 	    type = TOKEN_EOF;
 	    return;
@@ -1623,6 +1838,18 @@ void token::next()
 	    nd = new vline_node(x, n);
 	  return;
 	}
+      case 'm':
+	nd = do_glyph_color(read_escape_name());
+	if (!nd)
+	  break;
+	type = TOKEN_NODE;
+	return;
+      case 'M':
+	nd = do_fill_color(read_escape_name());
+	if (!nd)
+	  break;
+	type = TOKEN_NODE;
+	return;
       case 'n':
 	{
 	  int inc;
@@ -3229,16 +3456,16 @@ void read_request()
   int reading_from_terminal = isatty(fileno(stdin));
   int had_prompt = 0;
   if (!tok.newline() && !tok.eof()) {
-    int c = get_copy(NULL);
+    int c = get_copy(0);
     while (c == ' ')
-      c = get_copy(NULL);
+      c = get_copy(0);
     while (c != EOF && c != '\n' && c != ' ') {
       if (!illegal_input_char(c)) {
 	if (reading_from_terminal)
 	  fputc(c, stderr);
 	had_prompt = 1;
       }
-      c = get_copy(NULL);
+      c = get_copy(0);
     }
     if (c == ' ') {
       tok.make_space();
@@ -4122,6 +4349,11 @@ static symbol get_delim_file_name()
   char *buf = abuf;
   int buf_size = ABUF_SIZE;
   int i = 0;
+  // move over initial spaces
+  while (tok.ch() == 0)
+    tok.next();
+  if ((buf[i] = start.ch()) != 0)
+    i++;
   for (;;) {
     if (i + 1 > buf_size) {
       if (buf == abuf) {
@@ -4137,9 +4369,6 @@ static symbol get_delim_file_name()
 	a_delete old_buf;
       }
     }
-    tok.next();
-    if (tok.ch() == ']' && input_stack::get_level() == start_level)
-      break;
     if ((buf[i] = tok.ch()) == 0) {
       error("missing delimiter (got %1)", tok.description());
       if (buf != abuf)
@@ -4147,6 +4376,9 @@ static symbol get_delim_file_name()
       return NULL_SYMBOL;
     }
     i++;
+    tok.next();
+    if (tok.ch() == ']' && input_stack::get_level() == start_level)
+      break;
   }
   buf[i] = '\0';
   if (buf == abuf) {
@@ -4431,18 +4663,17 @@ node *do_suppress()
   case '4':
     begin_level--;
     break;
-  case '5': {
-    symbol filename = get_delim_file_name();
-    tok.next();
-    if (filename.is_null()) {
-      error("missing filename as second argument to \\O");
-      return 0;
+  case '5':
+    {
+      symbol filename = get_delim_file_name();
+      if (filename.is_null()) {
+	error("missing filename as second argument to \\O");
+	return 0;
+      }
+      if (begin_level == 1)
+	return new suppress_node(filename, 'i');
     }
-    if (begin_level == 1)
-      return new suppress_node(filename, 'i');
-    return 0;
     break;
-  }
   default:
     error("`%1' is an invalid argument to \\O", char(c));
   }
@@ -4454,7 +4685,7 @@ void special_node::tprint(troff_output_file *out)
   tprint_start(out);
   string_iterator iter(mac);
   for (;;) {
-    int c = iter.get(NULL);
+    int c = iter.get(0);
     if (c == EOF)
       break;
     for (const char *s = ::asciify(c); *s; s++)
@@ -4504,7 +4735,7 @@ static void skip_alternative()
     level++;
   int c;
   for (;;) {
-    c = input_stack::get(NULL);
+    c = input_stack::get(0);
     if (c == EOF)
       break;
     if (c == ESCAPE_LEFT_BRACE)
@@ -4512,7 +4743,7 @@ static void skip_alternative()
     else if (c == ESCAPE_RIGHT_BRACE)
       --level;
     else if (c == escape_char && escape_char > 0)
-      switch(input_stack::get(NULL)) {
+      switch(input_stack::get(0)) {
       case '{':
 	++level;
 	break;
@@ -4520,7 +4751,7 @@ static void skip_alternative()
 	--level;
 	break;
       case '"':
-	while ((c = input_stack::get(NULL)) != '\n' && c != EOF)
+	while ((c = input_stack::get(0)) != '\n' && c != EOF)
 	  ;
       }
     /*
@@ -4593,6 +4824,15 @@ int do_if_request()
     result = (c == 'd'
 	      ? request_dictionary.lookup(nm) != 0
 	      : number_reg_dictionary.lookup(nm) != 0);
+  }
+  else if (c == 'm') {
+    tok.next();
+    symbol nm = get_long_name(1);
+    if (nm.is_null()) {
+      skip_alternative();
+      return 0;
+    }
+    result = (color_dictionary.lookup(nm) != 0);
   }
   else if (c == 'c') {
     tok.next();
@@ -4786,7 +5026,7 @@ void while_request()
       input_stack::push(new string_iterator(mac, "while loop"));
       tok.next();
       if (!do_if_request()) {
-	while (input_stack::get(NULL) != EOF)
+	while (input_stack::get(0) != EOF)
 	  ;
 	break;
       }
@@ -4810,7 +5050,7 @@ void while_break_request()
   }
   else {
     while_break_flag = 1;
-    while (input_stack::get(NULL) != EOF)
+    while (input_stack::get(0) != EOF)
       ;
     tok.next();
   }
@@ -4823,7 +5063,7 @@ void while_continue_request()
     skip_line();
   }
   else {
-    while (input_stack::get(NULL) != EOF)
+    while (input_stack::get(0) != EOF)
       ;
     tok.next();
   }
@@ -4866,12 +5106,12 @@ void pipe_source()
       error("missing command");
     else {
       int c;
-      while ((c = get_copy(NULL)) == ' ' || c == '\t')
+      while ((c = get_copy(0)) == ' ' || c == '\t')
 	;
       int buf_size = 24;
       char *buf = new char[buf_size];
       int buf_used = 0;
-      for (; c != '\n' && c != EOF; c = get_copy(NULL)) {
+      for (; c != '\n' && c != EOF; c = get_copy(0)) {
 	const char *s = asciify(c);
 	int slen = strlen(s);
 	if (buf_used + slen + 1> buf_size) {
@@ -5011,7 +5251,8 @@ void do_ps_file(FILE *fp, const char* filename)
       if (res == 1) {
 	assign_registers(bb.llx, bb.lly, bb.urx, bb.ury);
 	return;
-      } else if (res == 2) {
+      }
+      else if (res == 2) {
 	bb_at_end = 1;
 	break;
       }
@@ -5207,15 +5448,15 @@ void do_terminal(int newline, int string_like)
   if (!tok.newline() && !tok.eof()) {
     int c;
     for (;;) {
-      c = get_copy(NULL);
+      c = get_copy(0);
       if (string_like && c == '"') {
-	c = get_copy(NULL);
+	c = get_copy(0);
 	break;
       }
       if (c != ' ' && c != '\t')
 	break;
     }
-    for (; c != '\n' && c != EOF; c = get_copy(NULL))
+    for (; c != '\n' && c != EOF; c = get_copy(0))
       fputs(asciify(c), stderr);
   }
   if (newline)
@@ -5312,11 +5553,11 @@ void write_request()
     return;
   }
   int c;
-  while ((c = get_copy(NULL)) == ' ')
+  while ((c = get_copy(0)) == ' ')
     ;
   if (c == '"')
-    c = get_copy(NULL);
-  for (; c != '\n' && c != EOF; c = get_copy(NULL))
+    c = get_copy(0);
+  for (; c != '\n' && c != EOF; c = get_copy(0))
     fputs(asciify(c), fp);
   fputc('\n', fp);
   fflush(fp);
@@ -5788,7 +6029,7 @@ void abort_request()
   if (c == EOF || c == '\n')
     fputs("User Abort.", stderr);
   else {
-    for (; c != '\n' && c != EOF; c = get_copy(NULL))
+    for (; c != '\n' && c != EOF; c = get_copy(0))
       fputs(asciify(c), stderr);
   }
   fputc('\n', stderr);
@@ -6122,7 +6363,7 @@ static int evaluate_expression(const char *expr, units *res)
   input_stack::push(make_temp_iterator(expr));
   tok.next();
   int success = get_number(res, 'u');
-  while (input_stack::get(NULL) != EOF)
+  while (input_stack::get(0) != EOF)
     ;
   return success;
 }
@@ -6201,7 +6442,7 @@ static void add_string(const char *s, string_list **p)
 void usage(FILE *stream, const char *prog)
 {
   fprintf(stream,
-"usage: %s -abivzCERU -wname -Wname -dcs -ffam -mname -nnum -olist\n"
+"usage: %s -abcivzCERU -wname -Wname -dcs -ffam -mname -nnum -olist\n"
 "       -rcn -Tname -Fdir -Mdir [files...]\n",
 	  prog);
 }
@@ -6237,10 +6478,10 @@ int main(int argc, char **argv)
   static const struct option long_options[] = {
     { "help", no_argument, 0, CHAR_MAX + 1 },
     { "version", no_argument, 0, 'v' },
-    { NULL, 0, 0, 0 }
+    { 0, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "abivw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU",
-			  long_options, NULL))
+  while ((c = getopt_long(argc, argv, "abcivw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU",
+			  long_options, 0))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -6256,6 +6497,9 @@ int main(int argc, char **argv)
       break;
     case 'C':
       compatible_flag = 1;
+      // fall through
+    case 'c':
+      disable_color_flag = 1;
       break;
     case 'M':
       macro_path.command_line_dir(optarg);
@@ -6565,6 +6809,7 @@ void init_input_requests()
   init_request("pso", pipe_source);
 #endif /* not POPEN_MISSING */
   init_request("psbb", ps_bbox_request);
+  init_request("defcolor", define_color);
   number_reg_dictionary.define("systat", new variable_reg(&system_status));
   number_reg_dictionary.define("slimit",
 			       new variable_reg(&input_stack::limit));
@@ -6782,6 +7027,7 @@ static struct {
   { "mac", WARN_MAC },
   { "reg", WARN_REG },
   { "ig", WARN_IG },
+  { "color", WARN_COLOR },
   { "all", WARN_TOTAL & ~(WARN_DI | WARN_MAC | WARN_REG) },
   { "w", WARN_TOTAL },
   { "default", DEFAULT_WARNING_MASK },

@@ -2466,6 +2466,7 @@ Users of macro packages may skip it if not interested in details.
 * Diversions::
 * Environments::
 * Suppressing output::
+* Colors::
 * I/O::
 * Postprocessor Access::
 * Miscellaneous::
@@ -2765,6 +2766,12 @@ Pica.  Another typesetting measurement.  6@w{ }Picas to an inch (and
 @cindex @code{z} unit
 @cindex unit, @code{z}
 @xref{Fractional Type Sizes}, for a discussion of these units.
+
+@item f
+@cindex @code{f} unit
+@cindex unit, @code{f}
+Fractions. Value is 65536.
+@xref{Colors}, for usage.
 @end table
 
 The other measurements understood by @code{gtroff} depend on
@@ -7012,6 +7019,9 @@ True if there is a number register named @var{xxx}.
 @item d @var{xxx}
 True if there is a string, macro, diversion, or request named @var{xxx}.
 
+@item m @var{xxx}
+True if there is a color named @var{xxx}.
+
 @item c @var{ch}
 True if there is a character @var{ch} available; @var{ch} is either an
 @acronym{ASCII} character or a special character (@code{\(@var{ch}} or
@@ -8272,7 +8282,7 @@ Copies the environment @var{env} into the current environment.
 
 @c =====================================================================
 
-@node Suppressing output, I/O, Environments, gtroff Reference
+@node Suppressing output, Colors, Environments, gtroff Reference
 @section Suppressing output
 
 @cindex suppressing output (@code{\O})
@@ -8282,10 +8292,13 @@ Disables or enables output depending on the value of @var{num}:
 
 @table @samp
 @item \O0
-Disable any ditroff glyphs from being emitted to the device driver.
+Disable any ditroff glyphs from being emitted to the device driver,
+provided that the escape occurs at the outer level (see @code{\O3} and
+@code{\O4}).
 
 @item \O1
-Enable output of glyphs.
+Enable output of glyphs, provided that the escape occurs at the outer
+level.
 @end table
 
 @vindex opminx
@@ -8297,25 +8310,97 @@ Enable output of glyphs.
 @xref{Register Index}.  These four registers mark the top left and
 bottom right hand corners of a box which encompasses all written glyphs.
 
-The following two forms of @code{\O} are specific to @code{grohtml}.
-
 @table @samp
 @item \O2
-Disable any ditroff glyphs from being emitted to the device driver.  Also
-write out to @code{stderr} the page number and four registers encompassing
-the glyphs previously written since the last call to @code{\O}.
+Provided that the escape occurs at the outer level, enable output of
+glyphs and also write out to @code{stderr} the page number and four
+registers encompassing the glyphs previously written since the last call
+to @code{\O}.
 
 @item \O3
-Enable output of glyphs (the default).  Also write out to @code{stderr}
-the page number and four registers encompassing the glyphs previously
-written since the last call to @code{\O}.
+Begin a nesting level.
+
+@item \O4
+End a nesting level.
+
+@item \O[5 filename]
+This escape is @code{grohtml} specific.  Provided that this escape
+occurs at the outer nesting level write the filename to @code{stderr}. 
+This filename will be associated with the production of the next inline
+image.
 @end table
 @endDefesc
 
 
 @c =====================================================================
 
-@node I/O, Postprocessor Access, Suppressing output, gtroff Reference
+@node Colors, I/O, Suppressing output, gtroff Reference
+@section Colors
+
+@Defreq {defcolor, ident scheme color_components}
+Define color with name @var{ident}.  @var{scheme} can be one of  the
+following values: @code{rgb} (three components), @code{cym} (three
+components), @code{cmyk} (four components), and @code{gray} or
+@code{grey} (one component).
+
+Color components can be given either as a hexadecimal string or as
+positive decimal integers in the range 0--65535.  A hexadecimal string
+contains all color components concatenated.  It must start with either
+@code{#} or @code{##}; the former specifies hex values in the range
+0--255 (which are internally multiplied by@w{ }257), the latter in the
+range 0--65535.  Examples: @code{#FFC0CB} (pink), @code{##ffff0000ffff}
+(magenta).
+
+@cindex @code{f} unit, and colors
+@cindex unit, @code{f}, and colors
+
+A new scaling indicator @code{f} has been introduced which multiplies
+its value by 65536; this makes it convenient to specify color components
+as fractions in the range 0 to@w{ }1 (1f equals 65536u).  Example:
+
+@Example
+.defcolor darkgreen rgb 0.1f 0.5f 0.2f
+@endExample
+
+Note  that  @code{f}  is the default scaling indicator for the
+@code{defcolor} request, thus the above statement is equivalent to
+
+@Example
+.defcolor darkgreen rgb 0.1 0.5 0.2
+@endExample
+@endDefreq
+
+@Defesc {\\m, , c, }
+@Defescx {\\m, @lparen{}, co, }
+@Defescx {\\m, @lbrack{}, color, @rbrack}
+Set drawing color.  The following example shows how to turn the next four
+words red.
+
+@Example
+\m[red]these are in red\mP and these words are in black.
+@endExample
+
+The escape @code{\mP} returns to the previous color.
+@endDefesc
+
+@Defesc {\\M, , c, }
+@Defescx {\\M, @lparen{}, co, }
+@Defescx {\\M, @lbrack{}, color, @rbrack}
+Set background color for filled objects drawn with the
+@code{\D'@dots{}'} commands.
+
+A red ellipse can be created with the following code:
+
+@Example
+\M[red]\h'0.5i'\D'E 2i 1i'\Mp
+@endExample
+
+The escape @code{\MP} returns to the previous fill color.
+@endDefesc
+
+@c =====================================================================
+
+@node I/O, Postprocessor Access, Colors, gtroff Reference
 @section I/O
 @cindex i/o
 @cindex input and output requests

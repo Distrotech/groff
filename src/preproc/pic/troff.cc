@@ -37,6 +37,9 @@ class simple_output : public common_output {
   virtual void simple_polygon(int, const position *, int) = 0;
   virtual void line_thickness(double) = 0;
   virtual void set_fill(double) = 0;
+  virtual void set_color(char *, char *) = 0;
+  virtual void reset_color() = 0;
+  virtual char *get_last_filled() = 0;
   void dot(const position &, const line_type &) = 0;
 public:
   void start_picture(double sc, const position &ll, const position &ur) = 0;
@@ -140,11 +143,10 @@ void simple_output::spline(const position &start, const position *v, int n,
 void simple_output::polygon(const position *v, int n,
 			    const line_type &lt, double fill)
 {
-  if (driver_extension_flag) {
-    if (fill >= 0.0) {
+  if (driver_extension_flag && ((fill >= 0.0) || (get_last_filled() != 0))) {
+    if (get_last_filled() == 0)
       set_fill(fill);
-      simple_polygon(1, v, n);
-    }
+    simple_polygon(1, v, n);
   }
   if (lt.type == line_type::solid && driver_extension_flag) {
     line_thickness(lt.thickness);
@@ -159,8 +161,9 @@ void simple_output::polygon(const position *v, int n,
 void simple_output::circle(const position &cent, double rad,
 			   const line_type &lt, double fill)
 {
-  if (driver_extension_flag && fill >= 0.0) {
-    set_fill(fill);
+  if (driver_extension_flag && ((fill >= 0.0) || (get_last_filled() != 0))) {
+    if (get_last_filled() == 0)
+      set_fill(fill);
     simple_circle(1, cent, rad);
   }
   line_thickness(lt.thickness);
@@ -184,8 +187,9 @@ void simple_output::circle(const position &cent, double rad,
 void simple_output::ellipse(const position &cent, const distance &dim,
 			    const line_type &lt, double fill)
 {
-  if (driver_extension_flag && fill >= 0.0) {
-    set_fill(fill);
+  if (driver_extension_flag && ((fill >= 0.0) || (get_last_filled() != 0))) {
+    if (get_last_filled() == 0)
+      set_fill(fill);
     simple_ellipse(1, cent, dim);
   }
   if (lt.type != line_type::invisible)
@@ -212,6 +216,8 @@ class troff_output : public simple_output {
   double scale;
   double last_line_thickness;
   double last_fill;
+  char *last_filled;		// color
+  char *last_outlined;		// color
 public:
   troff_output();
   ~troff_output();
@@ -229,6 +235,10 @@ public:
   void simple_polygon(int, const position *, int);
   void line_thickness(double p);
   void set_fill(double);
+  void set_color(char *, char *);
+  void reset_color();
+  char *get_last_filled();
+  char *get_outline_color();
   position transform(const position &);
 };
 
@@ -238,7 +248,8 @@ output *make_troff_output()
 }
 
 troff_output::troff_output()
-: last_filename(0), last_line_thickness(BAD_THICKNESS), last_fill(-1.0)
+: last_filename(0), last_line_thickness(BAD_THICKNESS),
+  last_fill(-1.0), last_filled(0), last_outlined(0)
 {
 }
 
@@ -288,6 +299,7 @@ void troff_output::finish_picture()
 {
   line_thickness(BAD_THICKNESS);
   last_fill = -1.0;		// force it to be reset for each picture
+  reset_color();
   if (!flyback_flag)
     printf(".sp %.3fi+1\n", height);
   printf(".if \\n(" FILL_REG " .fi\n");
@@ -472,6 +484,54 @@ void troff_output::set_fill(double f)
     printf("\\D'f %du'\\h'%du'\n.sp -1\n", int(f*FILL_MAX), -int(f*FILL_MAX));
     last_fill = f;
   }
+  if (last_filled) {
+    free(last_filled);
+    last_filled = 0;
+    printf("\\MP\n.sp -1\n");
+  }
+}
+
+void troff_output::set_color(char *color_fill, char *color_outlined)
+{
+  if (driver_extension_flag) {
+    if (last_filled || last_outlined) {
+      reset_color();
+    }
+    if (color_fill) {
+      printf("\\M[%s]\n.sp -1\n", color_fill);
+      last_filled = strdup(color_fill);
+    }
+    if (color_outlined) {
+      printf("\\m[%s]\n.sp -1\n", color_outlined);
+      last_outlined = strdup(color_outlined);
+    }
+  }
+}
+
+void troff_output::reset_color()
+{
+  if (driver_extension_flag) {
+    if (last_filled) {
+      printf("\\MP\n.sp -1\n");
+      free(last_filled);
+      last_filled = 0;
+    }
+    if (last_outlined) {
+      printf("\\mP\n.sp -1\n");
+      free(last_outlined);
+      last_outlined = 0;
+    }
+  }
+}
+
+char *troff_output::get_last_filled()
+{
+  return last_filled;
+}
+
+char *troff_output::get_outline_color()
+{
+  return last_outlined;
 }
 
 const double DOT_AXIS = .044;

@@ -32,11 +32,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
  */
 
 typedef enum {I_TAG, B_TAG, P_TAG, SUB_TAG, SUP_TAG, TT_TAG,
-	      PRE_TAG, SMALL_TAG, BIG_TAG, BREAK_TAG, TABLE_TAG} HTML_TAG;
+	      PRE_TAG, SMALL_TAG, BIG_TAG, BREAK_TAG, TABLE_TAG,
+	      COLOR_TAG} HTML_TAG;
 
 typedef struct tag_definition {
   HTML_TAG        type;
-  char           *arg1;
+  void           *arg1;
   int             text_emitted;
   tag_definition *next;
 } tag_definition ;
@@ -77,6 +78,8 @@ public:
   void   done_small     (void);
   void   done_big       (void);
   void   do_indent      (char *arg, int indent, int pageoff, int linelen);
+  void   do_color       (color *c);
+  void   done_color     (void);
   int    emitted_text   (void);
   void   emit_space     (void);
   int    is_in_pre      (void);
@@ -97,12 +100,14 @@ private:
   int    is_present        (HTML_TAG t);
   void   end_tag           (tag_definition *t);
   void   start_tag         (tag_definition *t);
-  void   push_para         (HTML_TAG t, char *arg);
+  void   push_para         (HTML_TAG t, void *arg);
+  void   push_para         (HTML_TAG t);
   char  *shutdown          (HTML_TAG t);
   void   check_emit_text   (tag_definition *t);
   int    remove_break      (void);
   void   issue_tag         (char *tagname, char *arg);
-  void   issue_table_begin (tag_definition *t);
+  void   issue_color_begin (color *c);
+  void   issue_table_begin (char *arg);
   void   issue_table_end   (void);
   int    table_is_void     (tag_definition *t);
   void   remove_def        (tag_definition *t);

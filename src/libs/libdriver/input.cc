@@ -91,6 +91,10 @@ void do_file(const char *filename)
   env.fontno = -1;
   env.height = 0;
   env.slant = 0;
+  env.col = new color;
+  env.col->set_gray(1.0);
+  env.fill = new color;
+  env.fill->set_gray(1.0);
   environment_list *env_list = 0;
   current_lineno = 1;
   int command;
@@ -207,6 +211,11 @@ void do_file(const char *filename)
 	pr->set_ascii_char(c, &env);
       }
       break;
+    case 'm':
+      // glyph color
+      env.col = new color;
+      env.col->read_rgb(get_string());
+      break;
     case 'n':
       if (npages == 0)
 	fatal("`n' command illegal before first `p' command");
@@ -289,32 +298,40 @@ void do_file(const char *filename)
 	int c;
 	while ((c = get_char()) == ' ')
 	  ;
-	int n;
+	int n = 0;
 	int *p = 0;
 	int szp = 0;
-	int np;
-	for (np = 0; possibly_get_integer(&n); np++) {
-	  if (np >= szp) {
-	    if (szp == 0) {
-	      szp = 16;
-	      p = new int[szp];
+	int np = 0;
+
+	if (c == 'F') {
+	  // fill color
+	  env.fill = new color;
+	  env.fill->read_rgb(get_string());
+	}
+	else {
+	  for (np = 0; possibly_get_integer(&n); np++) {
+	    if (np >= szp) {
+	      if (szp == 0) {
+		szp = 16;
+		p = new int[szp];
+	      }
+	      else {
+		int *oldp = p;
+		p = new int[szp*2];
+		memcpy(p, oldp, szp*sizeof(int));
+		szp *= 2;
+		a_delete oldp;
+	      }
 	    }
-	    else {
-	      int *oldp = p;
-	      p = new int[szp*2];
-	      memcpy(p, oldp, szp*sizeof(int));
-	      szp *= 2;
-	      a_delete oldp;
-	    }
+	    p[np] = n;
 	  }
-	  p[np] = n;
 	}
 	pr->draw(c, p, np, &env);
 	if (c == 'e') {
 	  if (np > 0)
 	    env.hpos += p[0];
 	}
-	else if (c == 'f' || c == 't')
+	else if (c == 'f' || c == 'F' || c == 't')
 	  ;
 	else { 
 	  int i;

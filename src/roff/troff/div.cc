@@ -467,7 +467,7 @@ void top_level_diversion::space(vunits n, int forced)
 }
 
 trap::trap(symbol s, vunits n, trap *p)
-     : next(p), position(n), nm(s)
+: next(p), position(n), nm(s)
 {
 }
 

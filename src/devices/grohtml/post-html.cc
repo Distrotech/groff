@@ -64,7 +64,7 @@ typedef enum {CENTERED, LEFT, RIGHT, INLINE} TAG_ALIGNMENT;
  *  prototypes
  */
 
-void str_translate_to_html (font *f, char *buf, int buflen, char *str, int len, int and_single);
+void str_translate_to_html (font *f, char *buf, int buflen, char *str, int len, int and_single, int is_special);
 char *get_html_translation (font *f, const char *name);
 
 
@@ -230,8 +230,9 @@ struct style {
   int          font_no;
   int          height;
   int          slant;
+  color       *col;
                style       ();
-               style       (font *, int, int, int, int);
+               style       (font *, int, int, int, int, color *);
   int          operator == (const style &) const;
   int          operator != (const style &) const;
 };
@@ -241,15 +242,15 @@ style::style()
 {
 }
 
-style::style(font *p, int sz, int h, int sl, int no)
-  : f(p), point_size(sz), font_no(no), height(h), slant(sl)
+style::style(font *p, int sz, int h, int sl, int no, color *c)
+  : f(p), point_size(sz), font_no(no), height(h), slant(sl), col(c)
 {
 }
 
 int style::operator==(const style &s) const
 {
   return (f == s.f && point_size == s.point_size
-	  && height == s.height && slant == s.slant);
+	  && height == s.height && slant == s.slant && col == s.col);
 }
 
 int style::operator!=(const style &s) const
@@ -1074,15 +1075,15 @@ class html_printer : public printer {
   // ADD HERE
 
 public:
-  html_printer     ();
-  ~html_printer    ();
-  void set_char    (int i, font *f, const environment *env, int w, const char *name);
-  void draw        (int code, int *p, int np, const environment *env);
-  void begin_page  (int);
-  void end_page    (int);
-  void special     (char *arg, const environment *env, char type);
-  font *make_font  (const char *);
-  void end_of_line ();
+  html_printer         ();
+  ~html_printer        ();
+  void set_char        (int i, font *f, const environment *env, int w, const char *name);
+  void draw            (int code, int *p, int np, const environment *env);
+  void begin_page      (int);
+  void end_page        (int);
+  void special         (char *arg, const environment *env, char type);
+  font *make_font      (const char *);
+  void end_of_line     ();
 };
 
 printer *make_printer()
@@ -1325,13 +1326,13 @@ void html_printer::do_title (void)
 	  return;
 	} else if (found_title_start) {
 	    strcat(title.text, " ");
-	    str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE);
+	    str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE, FALSE);
 	    strcat(title.text, buf);
 	    page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
 	    removed_from_head = ((!page_contents->glyphs.is_empty()) &&
 				 (page_contents->glyphs.is_equal_to_head()));
 	} else {
-	  str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE);
+	  str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE, FALSE);
 	  strcpy((char *)title.text, buf);
 	  found_title_start    = TRUE;
 	  title.has_been_found = TRUE;
@@ -1450,7 +1451,7 @@ void html_printer::do_heading (char *arg)
 	  strcat(header.header_buffer, " ");
 	}
 	l = g;
-	str_translate_to_html(g->text_style.f, buf, MAX_STRING_LENGTH, g->text_string, g->text_length, TRUE);
+	str_translate_to_html(g->text_style.f, buf, MAX_STRING_LENGTH, g->text_string, g->text_length, TRUE, FALSE);
 	strcat(header.header_buffer, (char *)buf);
       }
       page_contents->glyphs.move_right();
@@ -1604,13 +1605,13 @@ void html_printer::do_indentedparagraph (void)
 	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
       } else if (found_indent_start) {
 	strcat(indent.text, " ");
-	str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE);
+	str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE, FALSE);
 	strcat(indent.text, buf);
 	page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
 	removed_from_head = ((!page_contents->glyphs.is_empty()) &&
 			     (page_contents->glyphs.is_equal_to_head()));
       } else {
-	str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE);
+	str_translate_to_html(t->text_style.f, buf, MAX_STRING_LENGTH, t->text_string, t->text_length, TRUE, FALSE);
 	strcpy((char *)indent.text, buf);
 	found_indent_start    = TRUE;
 	indent.has_been_found = TRUE;
@@ -1988,6 +1989,13 @@ void html_printer::do_font (text_glob *g)
       output_style.point_size = g->text_style.point_size;
     }
   }
+  if (output_style.col != g->text_style.col) {
+    current_paragraph->done_color();
+    output_style.col = g->text_style.col;
+    if (output_style.col != 0) {
+      current_paragraph->do_color(output_style.col);
+    }
+  }
 }
 
 /*
@@ -2082,7 +2090,7 @@ void html_printer::translate_to_html (text_glob *g)
   do_font(g);
   determine_space(g);
   str_translate_to_html(g->text_style.f, buf, MAX_STRING_LENGTH,
-			g->text_string, g->text_length, TRUE);
+			g->text_string, g->text_length, TRUE, FALSE);
   current_paragraph->do_emittext(buf, strlen(buf));
   output_vpos     = g->minv;
   output_hpos     = g->maxh;
@@ -2264,6 +2272,9 @@ void html_printer::draw(int code, int *p, int np, const environment *env)
 #endif
       break;
     }
+  case 'F':
+    // fill with color env->fill
+    break;
 
   default:
     error("unrecognised drawing command `%1'", char(code));
@@ -2582,9 +2593,10 @@ int char_translate_to_html (font *f, char *buf, int buflen, unsigned char ch, in
  *                          there is not enough space in buf.
  *                          It looks up the html character encoding of single characters
  *                          if, and_single, is TRUE. Characters such as < > & etc.
+ *                          If is_special then we will decode special characters from an escape sequence.
  */
 
-void str_translate_to_html (font *f, char *buf, int buflen, char *str, int len, int and_single)
+void str_translate_to_html (font *f, char *buf, int buflen, char *str, int len, int and_single, int is_special)
 {
   char       *translation;
   int         e;
@@ -2600,44 +2612,38 @@ void str_translate_to_html (font *f, char *buf, int buflen, char *str, int len, 
   }
 #endif
   while (str[i] != (char)0) {
-    if ((str[i]=='\\') && (i+1<len)) {
-      i++; // skip the leading backslash
-      if (str[i] == '(') {
-	// start of escape
-	i++;
-	e = 0;
-	while ((str[i] != (char)0) &&
-	       (! ((str[i] == '\\') && (i+1<len) && (str[i+1] == ')')))) {
-	  if (str[i] == '\\') {
-	    i++;
-	  }
-	  escaped_char[e] = str[i];
-	  e++;
+    if ((str[i]=='\\') && (i+1<len) && (str[i+1] == '(') && is_special) {
+      // start of escape
+      i += 2; // move over \(
+      e = 0;
+      while ((str[i] != (char)0) &&
+	     (! ((str[i] == '\\') && (i+1<len) && (str[i+1] == ')')))) {
+	if (str[i] == '\\') {
 	  i++;
 	}
-	if ((str[i] == '\\') && (i+1<len) && (str[i+1] == ')')) {
-	  i += 2;
-	}
-	escaped_char[e] = (char)0;
-	if (e > 0) {
-	  translation = get_html_translation(f, escaped_char);
-	  if (translation) {
-	    l = strlen(translation);
-	    t = max(0, min(l, buflen-b));
-	    strncpy(&buf[b], translation, t);
-	    b += t;
-	  } else {
-	    int index=f->name_to_index(escaped_char);
+	escaped_char[e] = str[i];
+	e++;
+	i++;
+      }
+      if ((str[i] == '\\') && (i+1<len) && (str[i+1] == ')')) {
+	i += 2;
+      }
+      escaped_char[e] = (char)0;
+      if (e > 0) {
+	translation = get_html_translation(f, escaped_char);
+	if (translation) {
+	  l = strlen(translation);
+	  t = max(0, min(l, buflen-b));
+	  strncpy(&buf[b], translation, t);
+	  b += t;
+	} else {
+	  int index=f->name_to_index(escaped_char);
 	  
-	    if (f->contains(index) && (index != 0)) {
-	      buf[b] = f->get_code(index);
-	      b++;
-	    }
+	  if (f->contains(index) && (index != 0)) {
+	    buf[b] = f->get_code(index);
+	    b++;
 	  }
 	}
-      } else {
-	b = char_translate_to_html(f, buf, buflen, str[i], b, and_single);
-	i++;
       }
     } else {
       b = char_translate_to_html(f, buf, buflen, str[i], b, and_single);
@@ -2661,7 +2667,7 @@ void html_printer::set_char(int i, font *f, const environment *env, int w, const
     stop();
   }
 #endif
-  style sty(f, env->size, env->height, env->slant, env->fontno);
+  style sty(f, env->size, env->height, env->slant, env->fontno, env->col);
   if (sty.slant != 0) {
     if (sty.slant > 80 || sty.slant < -80) {
       error("silly slant `%1' degrees", sty.slant);
@@ -2827,7 +2833,8 @@ void html_printer::special(char *s, const environment *env, char type)
   if (s != 0) {
     flush_sbuf();
     if (env->fontno >= 0) {
-      style sty(get_font_from_index(env->fontno), env->size, env->height, env->slant, env->fontno);
+      style sty(get_font_from_index(env->fontno), env->size, env->height,
+		env->slant, env->fontno, env->col);
       sbuf_style = sty;
     }
 
@@ -2842,7 +2849,7 @@ void html_printer::special(char *s, const environment *env, char type)
 	f = font::load_font("TR", &found);
       }
       str_translate_to_html(f, buf, MAX_STRING_LENGTH,
-			    &s[5], strlen(s)-5, FALSE);
+			    &s[5], strlen(s)-5, FALSE, TRUE);
 
       /*
        *  need to pass rest of string through to html output during flush
@@ -2881,15 +2888,13 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "o:i:I:D:F:vd?lrn", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "o:i:I:D:F:vdlrn", long_options, NULL))
 	 != EOF)
     switch(c) {
     case 'v':
-      {
-	printf("GNU post-grohtml (groff) version %s\n", Version_string);
-	exit(0);
-	break;
-      }
+      printf("GNU post-grohtml (groff) version %s\n", Version_string);
+      exit(0);
+      break;
     case 'F':
       font::command_line_font_dir(optarg);
       break;

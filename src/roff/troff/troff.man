@@ -65,7 +65,7 @@ the original English.
 .ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\\$2" "\ ]"
 .el .RB "[\ " "\\$1" "\ ]"
 ..
-.OP \-abivzCERU
+.OP \-abcivzCERU
 .OP \-w name
 .OP \-W name
 .OP \-d cs
@@ -117,6 +117,9 @@ gets confused by
 or 
 .B am
 requests.
+.TP
+.B \-c
+Disable color output (always disabled in compatibility mode).
 .TP
 .B \-i
 Read the standard input after all the named input files have been
@@ -278,9 +281,9 @@ Only the features not in UNIX troff are described here.
 .
 .SS Long names
 .
-The names of number registers, fonts, strings/macros/diversions,
-special characters can be of any length. In escape sequences, where
-you can use 
+The names of number registers, fonts, strings/\:macros/\:diversions,
+special characters, and colors can be of any length.
+In escape sequences, where you can use 
 .BI ( xx
 for a two character name, you can use
 .BI [ xxx ]
@@ -394,6 +397,12 @@ Spaces are permitted in a number expression within parentheses.
 .LP
 .B M
 indicates a scale of 100ths of an em.
+.B f
+indicates a scale of 65536 units, providing fractions for color definitions
+with
+.B defcolor
+request.
+For example, 0.5f = 32768u.
 .TP
 .IB e1 >? e2
 The maximum of
@@ -481,6 +490,26 @@ ensures that these definitions will work even if
 gets interpreted in copy-mode
 (for example, by being used in a macro argument).
 .RE
+.TP
+.BI \em x
+.TQ
+.BI \em( xx
+.TQ
+.BI \em[ xxx ]
+Set drawing color.
+.B \emP
+switches back to the previous color.
+.TP
+.BI \eM x
+.TQ
+.BI \eM( xx
+.TQ
+.BI \eM[ xxx ]
+Set background color for filled objects drawn with the
+.BI \eD' ... '
+commands.
+.B \eMP
+switches back to the previous color.
 .TP
 .BI \eN' n '
 Typeset the character with code
@@ -964,6 +993,52 @@ is non-zero or missing, enable compatibility mode, otherwise
 disable it.
 In compatibility mode, long names are not recognised, and the
 incompatibilities caused by long names do not arise.
+.TP
+.BI .defcolor\  xxx\ scheme\ color_components
+Define color.
+.I scheme
+can be one of the following values:
+.B rgb
+(three components),
+.B cym
+(three components),
+.B cmyk
+(four components), and
+.B gray
+or
+.B grey
+(one component).
+Color components can be given either as a hexadecimal string or as positive
+decimal integers in the range 0-65535.
+A hexadecimal string contains all color components concatenated.
+It must start with either
+.B #
+or
+.BR ## ;
+the former specifies hex values in the range 0-255 (which are internally
+multiplied by\~257), the latter in the range 0-65535.
+Examples: #FFC0CB (pink), ##ffff0000ffff (magenta).
+A new scaling indicator
+.B f
+has been introduced which multiplies its value by 65536; this makes it
+convenient to specify color components as fractions in the range 0 to\~1.
+Example:
+.RS
+.IP
+.B
+\&.defcolor darkgreen rgb 0.1f 0.5f 0.2f
+.RE
+.IP
+Note that
+.B f
+is the default scaling indicator for the
+.B defcolor
+request, thus the above statement is equivalent to
+.RS
+.IP
+.B
+\&.defcolor darkgreen rgb 0.1 0.5 0.2
+.RE
 .TP
 .BI .dei\  xx\ yy
 Define macro indirectly.
@@ -2125,6 +2200,10 @@ True if there is a number register named
 True if there is a string, macro, diversion, or request named
 .IR xxx .
 .TP
+.BI .if\ m xxx
+True if there is a color named
+.IR xxx .
+.TP
 .BI .if\ c ch
 True if there is a character
 .IR ch
@@ -2260,6 +2339,9 @@ Illegal escapes in text ignored with the
 request.
 These are conditions that are errors when they do not occur
 in ignored text.
+.TP
+.BR color \t524288
+Color related warnings.
 .LP
 There are also names that can be used to refer to groups of warnings:
 .TP

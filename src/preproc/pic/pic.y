@@ -210,6 +210,9 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token PLOT
 %token THICKNESS
 %token FILL
+%token COLORED
+%token OUTLINED
+%token SHADED
 %token ALIGNED
 %token SPRINTF
 %token COMMAND
@@ -231,7 +234,7 @@ box "foo" above ljust == box ("foo" above ljust)
 /* Give attributes that take an optional expression a higher
 precedence than left and right, so that eg `line chop left'
 parses properly. */
-%left CHOP SOLID DASHED DOTTED UP DOWN FILL
+%left CHOP SOLID DASHED DOTTED UP DOWN FILL COLORED OUTLINED
 %left LABEL
 
 %left VARIABLE NUMBER '(' SIN COS ATAN2 LOG EXP SQRT K_MAX K_MIN INT RAND SRAND LAST 
@@ -350,7 +353,7 @@ placeless_element:
 		{
 		  fprintf(stderr, "%s\n", $2.str);
 		  a_delete $2.str;
-	          fflush(stderr);
+		  fflush(stderr);
 		}
 	| SH
 		{ delim_flag = 1; }
@@ -888,6 +891,29 @@ object_spec:
 		  $$->flags |= IS_FILLED;
 		  $$->fill = $3;
 		}
+	| object_spec SHADED text
+		{
+		  $$ = $1;
+		  $$->flags |= (IS_SHADED | IS_FILLED);
+		  $$->shaded = new char[strlen($3.str)+1];
+		  strcpy($$->shaded, $3.str);
+		}
+	| object_spec COLORED text
+		{
+		  $$ = $1;
+		  $$->flags |= (IS_SHADED | IS_OUTLINED | IS_FILLED);
+		  $$->shaded = new char[strlen($3.str)+1];
+		  strcpy($$->shaded, $3.str);
+		  $$->outlined = new char[strlen($3.str)+1];
+		  strcpy($$->outlined, $3.str);
+		}
+	| object_spec OUTLINED text
+		{
+		  $$ = $1;
+		  $$->flags |= IS_OUTLINED;
+		  $$->outlined = new char[strlen($3.str)+1];
+		  strcpy($$->outlined, $3.str);
+		}
 	| object_spec CHOP
   		{
 		  $$ = $1;
@@ -1176,7 +1202,7 @@ ordinal:
 	;
 
 optional_ordinal_last:
-        LAST
+	LAST
 		{ $$ = 1; }
   	| ordinal LAST
 		{ $$ = $1; }
@@ -1777,7 +1803,7 @@ char *do_sprintf(const char *form, const double *v, int nv)
 	one_format += *form++;
 	one_format += '\0';
 	snprintf(sprintf_buf, sizeof(sprintf_buf),
-                 "%s", one_format.contents());
+		 "%s", one_format.contents());
       }
       else {
 	if (i >= nv) {
@@ -1789,7 +1815,7 @@ char *do_sprintf(const char *form, const double *v, int nv)
 	one_format += *form++;
 	one_format += '\0';
 	snprintf(sprintf_buf, sizeof(sprintf_buf),
-                 one_format.contents(), v[i++]);
+		 one_format.contents(), v[i++]);
       }
       one_format.clear();
       result += sprintf_buf;

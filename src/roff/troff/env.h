@@ -184,6 +184,10 @@ class environment {
   int need_eol;
   int ignore_next_eol;
   int emitted_node;    // have we emitted a node since the last html eol tag?
+  color *cur_glyph_color;
+  color *prev_glyph_color;
+  color *cur_fill_color;
+  color *prev_fill_color;
 
   tab_type distance_to_next_tab(hunits *);
   void start_line();
@@ -261,6 +265,12 @@ public:
   int get_center_lines();
   int get_right_justify_lines();
   int get_prev_line_interrupted() { return prev_line_interrupted; }
+  color *get_fill_color();
+  color *get_glyph_color();
+  color *get_prev_glyph_color();
+  color *get_prev_fill_color();
+  void set_glyph_color(color *c);
+  void set_fill_color(color *c);
   node *make_char_node(charinfo *);
   node *extract_output_line();
   void width_registers();

@@ -1,13 +1,29 @@
 This file describes recent user-visible changes in groff.  Bug fixes are not
 described.  There are more details in the man pages.
 
-VERSION 1.17.3
-==============
-
-This is mainly a bug-fixing release.
+VERSION 1.18
+============
 
 Troff
 -----
+
+o Color support has been added to troff and pic (and to two device drivers,
+  grops and grohtml -- other preprocessors and drivers will follow).  A new
+  function `defcolor' defines colors; the escape sequence `\m' sets the
+  drawing color, the escape sequence `\M' specifies the background color for
+  clsed objects created with \D'...' commands.  Similar to fonts, `\mP' and
+  `\MP' switch back to the previous color.  `\m' and `\M' correspond to the
+  new troff output commands `m' and `DF'.
+
+  Outputting color can be disabled in troff and groff with the option -c
+  (it is always disabled in compatibility mode).
+
+  For defining color components as fractions between 0 and 1, a new scaling
+  indicator `f' has been defined: 1f = 65536u.  For testing whether a color
+  is defined (with .if and .ie), a new conditional operator `m' is
+  available.
+
+  More details can be found in the troff manual page.
 
 o Two macros `AT' (AT&T) and `UC' (Univ. of California) have been added to
   the man macros for compatibility with older BSD releases.
@@ -19,12 +35,39 @@ o The `-xwidth' specifier in the mdoc macro package has been removed.  Its
 o A new macro `Ex' has been added to the mdoc macro package to document an
   exit status.
 
+groff
+-----
+
+o The new command line `-c' disables color output (which is always disabled
+  in compatibility mode).
+
+pic
+---
+
+o New keywords `color' (or `colour', `colored', `coloured'), `outline' (or
+  `outlined'), and `shaded' are available.  `outline' sets the color of the
+  outline, `shaded' the fill color, and `color' sets both.  Example:
+
+    circle shaded "green" outline "black" ;
+
+  Color support for TeX output is not implemented yet.
+
 Pic2graph
 ---------
 
 o A new script contributed by Eric S. Raymond <esr@thyrsus.com>.  It
   converts a PIC diagram into a cropped image.  Since it uses gs and the PNM
   library, virtually all graphics formats are available for output.
+
+grops
+-----
+
+o Color support has been added.
+
+grohtml
+-------
+
+o Color support for glyphs has been added (no fill color support yet).
 
 VERSION 1.17.2
 ==============
@@ -88,7 +131,7 @@ o `-mFOO' now searches first for `FOO.tmac' and then for `tmac.FOO'.  The
 
 o The new environment variable GROFF_BIN_PATH is checked for programs groff
   is calling (preprocessors, troff, and output devices) before PATH.  If not
-  set, it defaults to the directory where the groff binary is located. 
+  set, it defaults to the directory where the groff binary is located.
   Previously, it was PATH only.  The nroff script only uses GROFF_BIN_PATH
   to find the groff binary but passes both the GROFF_BIN_PATH and PATH
   environment variable to groff.

@@ -1,3 +1,200 @@
+2001-10-04  Werner LEMBERG  <wl@gnu.org>
+
+	Implementing color support in troff, pic, grops, and grohtml.  These
+	changes are based on a major patch provided by Gaius Mulley
+	<gaius@glam.ac.uk>.
+
+	New request: `defcolor', supporting rgb, cmy, cmyk, and gray
+	definitions with both hex values and fractions.
+
+	New escapes: \m and \M for drawing and background color,
+	respectively.  This corresponds to the troff output commands `m'
+	and `DF'.
+
+	groff and troff accept command line switch `-c' to disable color
+	output (which is automatically disabled in compatibility mode).
+
+	New scaling indicator `f' for fractions (1f = 65536u).
+
+	New conditional operator `m' to test for defined colors with `if'
+	and `ie'.
+
+	New keywords `color' (or `colour', `colored', `coloured'), `outline'
+	(or `outlined'), and `shaded' added to pic.
+
+	* src/include/color.h: New file.
+	* src/include/driver.h: Include it.
+	* src/include/printer.h: Include color.h.
+	(environment): New members `col' and `fill'.
+	(printer): Remove `adjust_arc_center' member function.
+	* src/include/Makefile.sub: Updated.
+
+	* src/libs/libdriver/input.cc (do_file): Initialize `env.col' and
+	`env.fill'.
+	Handle `m' and `DF' troff commands.
+	* src/libs/libgroff/color.cc: New file.
+	* src/libs/libgroff/Makefile.sub: Updated.
+
+	* src/preproc/html/pre-html.cc (IMAGE_BORDER_PIXELS): Set to 2.
+	(stop): Removed.
+	(createImage): Fix computation of `y2'.
+	Use `pnmcrop' also.
+	(buffer::write_file_html): Remove calls to `stop'.
+
+	* src/preproc/pic/common.h (common_output): New abstract function
+	members `set_color', `reset_color', `get_last_filled', and
+	`get_outline_color'.
+	* src/preproc/pic/object.h: Add `IS_SHADED' and `IS_OUTLINED'.
+	(object_spec): Add members `shaded' and `outlined'.
+	* src/preproc/pic/output.h (output): `command' is now abstract.
+	New function members `set_color', `reset_color', `get_last_filled',
+	and `get_outline_color'.
+	* src/preproc/pic/lex.cc (lookup_keyword): Recognize `colo[u]r[ed]',
+	`outline[d]', and `shaded'.
+	* src/preproc/pic/object.cc (output::command): Removed.
+	(output::set_location):	Moved to output.h.
+	(graphic_object): Add protected members `outline_color' and
+	`color_fill'.
+	Add member functions `set_outline_color', `get_outline_color', and
+	`set_fill_color'.
+	(closed_object): Add member function `set_fill_color'.
+	Add member `color_fill'.
+	(graphic_object::print_text): Use `out->set_color' and
+	`out->reset_color'.
+	(box_object::print, ellipse_object::print, circle_object::print,
+	line_object::print, spline_object::print, arc_object::print): Ditto.
+	(object_spec::make_object): Implement `IS_OUTLINED' and `IS_SHADED'.
+	* src/preproc/pic/pic.y: Add tokens `COLORED', `OUTLINED', and
+	`SHADED', making them `%left'.
+	Add rules `object_spec [SHADED|COLORED|OUTLINED] text'.
+	* src/preproc/pic/tex.cc (tex_output): New dummy function members
+	`set_color', `reset_color', `get_last_filled', and
+	`get_outline_color'.
+	* src/preproc/pic/troff.cc (simple_output): New abstract function
+	members `set_color', `reset_color', and `get_last_filled'.
+	(simple_output::polygon, simple_output::circle,
+	simple_output::ellipse): Use `get_last_filled'.
+	(troff_output): New members `last_filled' and `last_outlined'.
+	New function members `set_color', `reset_color', `get_last_filled',
+	and `get_outline_color'.
+	(troff_output::finish_picture): Use `reset_color'.
+	(troff_output::set_fill): Test `last_filled'.
+	* src/preproc/pic/pic.man: Updated.
+
+	* src/roff/groff/groff.cc (main): Implement `-c' option.
+	(synopsis, help): Updated.
+	src/roff/groff/groff.man: Updated.
+
+	* src/roff/troff/troff.h: Include color.h.
+	(warning_type): Add WARN_COLOR.
+	* src/roff/troff/env.h (environment): New members
+	`{cur,prev}_{glyph,fill}_color'.
+	New member functions `get_{prev_,}{glyph,fill}_color'.
+	* src/roff/troff/env.cc: Initialize and implement them.
+	* src/roff/troff/input.cc: New global variable `disable_color_flag'.
+	Replace `NULL' with `0' everywhere for consistency.
+	(lookup_color, default_black, do_glyph_color, do_fill_color,
+	get_color_element, read_rgb, read_cmy, read_cmyk, read_gray,
+	define_color): New functions.
+	(token::next): Implement \M and \m escapes.
+	(do_if_request): Implement `m' operator.
+	(usage): Updated.
+	(main): Implement `-c' option.
+	(init_markup_requests): Add `defcolor' request.
+	(warning_table): Add `color' warning.
+	* src/roff/troff/node.h (glyph_color_node, fill_color_node): New
+	classes.
+	* src/roff/troff/node.cc (troff_output_file): New members
+	`current_{page,glyph}color'.  New member functions `put_hex',
+	`glyph_color', and `fill_color'.
+	(glyph_color_node::*, fill_color_node::*): Implement it.
+	* src/roff/troff/number.cc (SCALE_INDICATOR_CHARS): Add `f'.
+	(parse_term): Add support for `f'.
+	* src/roff/troff/troff.man: Updated.
+
+	* src/devices/grodvi/dvi.cc (draw_dvi_printer::draw): Add dummy
+	entry for `F'.
+	* src/devices/grolbp/lbp.cc (lbp_printer::draw): Ditto.
+	* src/devices/grolj4/lj4.cc (lj4_printer::draw): Ditto.
+
+	* src/devices/grohtml/html-text.h (HTML_TAG): Add COLOR_TAG.
+	(tag_definition): Use `void *' for arg1.
+	(html_text): New member functions `do_color' and `done_color'.
+	Use `void *' for second parameter of `push_para' member function.
+	New `push_para' member function with a single parameter.
+	Use `char *' for parameter of `issue_table_begin' member funtion.
+	New `issue_color_begin' member function.
+	* src/devices/grohtml/html-text.cc (html_text::end_tag): Handle
+	COLOR_TAG.
+	(html_text::issue_color_begin): New function.
+	(html_text::issue_table_begin): Use `char *' for parameter.
+	(html_text::start_tag, html_text::shutdown,
+	html_text::check_emit_text): Updated.
+	(html_text::push_para): Use `void *' for second parameter.
+	Add same function with only one parameter.
+	(html_text::do_*): Updated.
+	(html_text::do_color, html_text::done_color): New functions.
+	* src/devices/grohtml/post-html.cc (style): New member `col'.
+	Mew member `style' with 6 parameters.
+	(style::style, style::operator==): Updated.
+	(html_printer::do_font): Use it.
+	(html_printer::draw): Add dummy entry for `F'.
+	(html_printer::set_char): Updated.
+	* src/devices/grohtml/grohtml.man: Updated.
+
+	* src/devices/grops/ps.cc (ps_output::put_float): Use `%g' to have
+	trailing zeroes removed.
+	(ps_printer): New members `sbuf_color', `fill_color', and
+	`output_color'.
+	Removed member `fill'.
+	New member function `set_color'.
+	(ps_printer::ps_printer, ps_printer::set_char): Updated.
+	(ps_printer::flush_sbuf, ps_printer::set_line_thickness,
+	ps_printer::fill_path, ps_printer::draw): Use `set_color'.
+
+	* tmac/color-html.tmac, tmac/color.tmac: New files.
+	* tmac/troffrc: Include them.
+	* tmac/www.tmac (URL, FTP, MAILTO): Use blue color.
+	* tmac/Makefile.sub: Updated.
+
+	* NEWS, doc/groff.texinfo, doc/pic.ms, man/groff_out.man,
+	man/groff.man: Updated.
+	* font/devps/prologue.ps: Define FC and CO functions.
+
+2001-10-04  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Fix incorrect cropping of images and incorrect handling of special
+	characters.  Fix handling of file names in \O.
+
+	* src/include/geometry.h: New file.
+	* src/libs/libgroff/geometry.cc: New file.
+	* src/libs/libdriver/printer.cc (printer::adjust_arc_center): Moved
+	to `geometry.cc'.
+	* src/roff/troff/input.cc (get_delim_file_name): Fixed problem with
+	initial spaces.
+	(do_suppress): Updated.
+	* src/roff/troff/node.cc: Include geometry.h.
+	(troff_output_file::flush_tbuf): Fixed parameters to
+	`check_output_limits'.
+	(troff_output_file::check_charinfo): Ditto.
+	(troff_output_file::determine_line_limits): Add support for `Da'
+	and `Dl' commands.
+
+	* src/devices/grohtml/post-html.cc (str_translate_to_html):
+	Add new parameter `is_special' to decode special characters from
+	escape sequences.
+	(html_printer::do_title, html_printer::do_heading,
+	html_printer::do_indentedparagraph,
+	html_printer::translate_to_html, html_printer::special): Updated.
+
+2001-10-03  Werner LEMBERG  <wl@gnu.org>
+
+	* Makefile.sub (DISTCLEANFILES): Add stamp-h.
+	Fix entry for config.h.
+	* test-groff (GROFF_BIN_PATH): Add $builddir/roff/groff.
+	* tmac/troffrc: Translate nonbreakable space character to `\~'.
+	* src/preproc/eqn/eqn.man: Document -d command line option.
+
 2001-09-27  Werner LEMBERG  <wl@gnu.org>
 
 	* man/groff.man: Use

@@ -63,7 +63,7 @@ extern "C" const char *Version_string;
 #else
 #  define DEFAULT_VERTICAL_OFFSET 50   // DEFAULT_VERTICAL_OFFSET/72 of an inch
 #endif
-#define IMAGE_BOARDER_PIXELS       0
+#define IMAGE_BOARDER_PIXELS       2
 #define MAX_WIDTH                  8   // inches
 #define INLINE_LEADER_CHAR      '\\'
 
@@ -88,8 +88,6 @@ extern "C" const char *Version_string;
 #if !defined(FALSE)
 #   define FALSE (1==0)
 #endif
-
-void stop() {}
 
 typedef enum {CENTERED, LEFT, RIGHT, INLINE} IMAGE_ALIGNMENT;
 
@@ -791,9 +789,9 @@ static void createImage (imageItem *i)
     int  x1 = max(min(i->X1, i->X2)*image_res/POSTSCRIPTRES-1*IMAGE_BOARDER_PIXELS, 0);
     int  y1 = max((image_res*vertical_offset/72)+min(i->Y1, i->Y2)*image_res/POSTSCRIPTRES-IMAGE_BOARDER_PIXELS, 0);
     int  x2 = max(i->X1, i->X2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
-    int  y2 = (image_res*vertical_offset/72)+max(i->Y1, i->Y2)*image_res/POSTSCRIPTRES+1*IMAGE_BOARDER_PIXELS;
+    int  y2 = (image_res*vertical_offset/72)+(max(i->Y1, i->Y2)*image_res/POSTSCRIPTRES)+1+IMAGE_BOARDER_PIXELS;
 
-    s = make_message("pnmcut%s %d %d %d %d < %s/%d | pnmtopng%s %s > %s \n",
+    s = make_message("pnmcut%s %d %d %d %d < %s/%d | pnmcrop | pnmtopng%s %s > %s \n",
 		     EXE_EXT,
 		     x1, y1, x2-x1+1, y2-y1+1,
 		     imagePageStem,
@@ -849,7 +847,6 @@ void char_buffer::write_file_html (void)
   int         i=0;
 
   if (t != NULL) {
-    stop();
     do {
       /*
        *  remember to check the shortest string last
@@ -864,7 +861,6 @@ void char_buffer::write_file_html (void)
 	write_start_image(RIGHT, TRUE);
 	skip_to_newline(&t, &i);
       } else if (can_see(&t, &i, HTML_IMAGE_CENTERED)) {
-	stop();
 	write_start_image(CENTERED, TRUE);
 	skip_to_newline(&t, &i);
       } else {

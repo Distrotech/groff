@@ -319,7 +319,7 @@ ps_output &ps_output::put_fix_number(int i)
 ps_output &ps_output::put_float(double d)
 {
   char buf[128];
-  sprintf(buf, "%.4f", d);
+  sprintf(buf, "%.3g", d);
   int len = strlen(buf);
   if (col > 0 && col + len + need_space > max_line_length) {
     putc('\n', fp);
@@ -476,13 +476,15 @@ class ps_printer : public printer {
   int sbuf_space_code;
   int sbuf_kern;
   style sbuf_style;
+  color *sbuf_color;
   style output_style;
   int output_hpos;
   int output_vpos;
   int output_draw_point_size;
   int line_thickness;
   int output_line_thickness;
-  int fill;
+  color *fill_color;
+  color *output_color;
   unsigned char output_space_code;
   enum { MAX_DEFINED_STYLES = 50 };
   style defined_styles[MAX_DEFINED_STYLES];
@@ -509,6 +511,8 @@ class ps_printer : public printer {
   void encode_fonts();
   void define_encoding(const char *, int);
   void reencode_font(ps_font *);
+  void set_color(color *c, int complete = 1);
+
 public:
   ps_printer();
   ~ps_printer();
@@ -528,7 +532,6 @@ ps_printer::ps_printer()
   output_hpos(-1),
   output_vpos(-1),
   line_thickness(-1),
-  fill(FILL_MAX + 1),
   ndefined_styles(0),
   next_encoding_index(0),
   ndefs(0),
@@ -557,6 +560,11 @@ ps_printer::ps_printer()
   if (paper_length == 0)
     paper_length = 11*font::res;
   equalise_spaces = font::res >= 72000;
+  fill_color = new color;
+  fill_color->set_gray(1.0); // black
+  output_color = new color;
+  output_color->set_gray(1.0);
+  sbuf_color = output_color;
 }
 
 int ps_printer::set_encoding_index(ps_font *f)
@@ -590,7 +598,8 @@ void ps_printer::set_char(int i, font *f, const environment *env, int w, const c
   if (sbuf_len > 0) {
     if (sbuf_len < SBUF_SIZE
 	&& sty == sbuf_style
-	&& sbuf_vpos == env->vpos) {
+	&& sbuf_vpos == env->vpos
+	&& sbuf_color->is_equal(env->col)) {
       if (sbuf_end_hpos == env->hpos) {
 	sbuf[sbuf_len++] = code;
 	sbuf_end_hpos += w + sbuf_kern;
@@ -645,6 +654,7 @@ void ps_printer::set_char(int i, font *f, const environment *env, int w, const c
   sbuf_space_width = 0;
   sbuf_space_count = sbuf_space_diff_count = 0;
   sbuf_kern = 0;
+  sbuf_color = env->col;
 }
 
 static char *make_encoding_name(int encoding_index)
@@ -693,7 +703,8 @@ void ps_printer::define_encoding(const char *encoding, int encoding_index)
       a_delete vec[i];
     }
   }
-  out.put_delimiter(']').put_symbol("def");
+  out.put_delimiter(']')
+     .put_symbol("def");
 }
 
 void ps_printer::reencode_font(ps_font *f)
@@ -759,18 +770,37 @@ void ps_printer::set_style(const style &sty)
     int h = sty.height == 0 ? sty.point_size : sty.height;
     h *= font::res/(72*font::sizescale);
     int c = int(h*tan(radians(sty.slant)) + .5);
-    out.put_fix_number(c).put_fix_number(h).put_literal_symbol(psname)
+    out.put_fix_number(c)
+       .put_fix_number(h)
+       .put_literal_symbol(psname)
        .put_symbol("MF");
   }
   else {
-    out.put_literal_symbol(psname).put_symbol("SF");
+    out.put_literal_symbol(psname)
+       .put_symbol("SF");
   }
   defined_styles[ndefined_styles++] = sty;
 }
 
+void ps_printer::set_color(color *col, int complete)
+{
+  output_color = col;
+  if (col) {
+    double r, g, b;
+    col->get_rgb(&r, &g, &b);
+    out.put_float(r)
+       .put_float(g)
+       .put_float(b);
+    if (complete)
+      out.put_symbol("CO");
+  }
+}
+
 void ps_printer::set_space_code(unsigned char c)
 {
-  out.put_literal_symbol("SC").put_number(c).put_symbol("def");
+  out.put_literal_symbol("SC")
+     .put_number(c)
+     .put_symbol("def");
 }
 
 void ps_printer::end_of_line()
@@ -796,6 +826,8 @@ void ps_printer::flush_sbuf()
     set_style(sbuf_style);
     output_style = sbuf_style;
   }
+  if (!output_color->is_equal(sbuf_color))
+    set_color(sbuf_color);
   int extra_space = 0;
   if (output_hpos < 0 || output_vpos < 0)
     motion = ABSOLUTE;
@@ -870,26 +902,43 @@ void ps_printer::set_line_thickness(const environment *env)
     if (output_draw_point_size != env->size) {
       // we ought to check for overflow here
       int lw = ((font::res/(72*font::sizescale))*linewidth*env->size)/1000;
-      out.put_fix_number(lw).put_symbol("LW");
+      out.put_fix_number(lw)
+	 .put_symbol("LW");
       output_draw_point_size = env->size;
       output_line_thickness = -1;
     }
   }
   else {
     if (output_line_thickness != line_thickness) {
-      out.put_fix_number(line_thickness).put_symbol("LW");
+      out.put_fix_number(line_thickness)
+	 .put_symbol("LW");
       output_line_thickness = line_thickness;
       output_draw_point_size = -1;
     }
   }
+  if (!env->col->is_equal(output_color))
+    set_color(env->col);
 }
 
 void ps_printer::fill_path()
 {
-  if (fill > FILL_MAX)
-    out.put_symbol("BL");
-  else
-    out.put_float(transform_fill(fill)).put_symbol("FL");
+  double c, m, y, k;
+  fill_color->get_cmyk(&c, &m, &y, &k);
+  if (fill_color->is_gray()) {
+    if (k == 1.0)
+      out.put_symbol("BL");	
+    else
+      out.put_float(1.0-k)
+	 .put_symbol("FL");
+  }
+  else {
+    if (output_color->is_equal(fill_color))
+      out.put_symbol("fill");
+    else {
+      set_color(fill_color, 0);
+      out.put_symbol("FC");
+    }
+  }
 }
 
 void ps_printer::draw(int code, int *p, int np, const environment *env)
@@ -1043,33 +1092,33 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
     }
     break;
   case 't':
-    {
-      if (np == 0) {
-	line_thickness = -1;
-      }
-      else {
-	// troff gratuitously adds an extra 0
-	if (np != 1 && np != 2) {
-	  error("0 or 1 argument required for thickness");
-	  break;
-	}
-	line_thickness = p[0];
-      }
-      break;
-    }
-  case 'f':
-    {
+    if (np == 0)
+      line_thickness = -1;
+    else {
+      // troff gratuitously adds an extra 0
       if (np != 1 && np != 2) {
-	error("1 argument required for fill");
+	error("0 or 1 argument required for thickness");
 	break;
       }
-      fill = p[0];
-      if (fill < 0 || fill > FILL_MAX) {
-	// This means fill with the current color.
-	fill = FILL_MAX + 1;
-      }
+      line_thickness = p[0];
+    }
+    break;
+  case 'f':
+    if (np != 1 && np != 2) {
+      error("1 argument required for fill");
       break;
-    }      
+    }
+    if (p[0] < 0 || p[0] > FILL_MAX) {
+      // This means fill with the current color.
+      fill_color->set_gray(1.0);
+    }
+    else
+      fill_color->set_gray(double(p[0]) / FILL_MAX);
+    break;
+  case 'F':
+    // fill with color env->fill
+    *fill_color = *env->fill;
+    break;
   default:
     error("unrecognised drawing command `%1'", char(code));
     break;
@@ -1081,17 +1130,19 @@ void ps_printer::draw(int code, int *p, int np, const environment *env)
 
 void ps_printer::begin_page(int n)
 {
-  out.begin_comment("Page:").comment_arg(i_to_a(n));
-  out.comment_arg(i_to_a(++pages_output)).end_comment();
+  out.begin_comment("Page:")
+     .comment_arg(i_to_a(n));
+  out.comment_arg(i_to_a(++pages_output))
+     .end_comment();
   output_style.f = 0;
   output_space_code = 32;
   output_draw_point_size = -1;
   output_line_thickness = -1;
   output_hpos = output_vpos = -1;
   ndefined_styles = 0;
-  out.simple_comment("BeginPageSetup");
-  out.put_symbol("BP");
-  out.simple_comment("EndPageSetup");
+  out.simple_comment("BeginPageSetup")
+     .put_symbol("BP")
+     .simple_comment("EndPageSetup");
 }
 
 void ps_printer::end_page(int)
@@ -1111,9 +1162,9 @@ font *ps_printer::make_font(const char *nm)
 
 ps_printer::~ps_printer()
 {
-  out.simple_comment("Trailer");
-  out.put_symbol("end");
-  out.simple_comment("EOF");
+  out.simple_comment("Trailer")
+     .put_symbol("end")
+     .simple_comment("EOF");
   if (fseek(tempfp, 0L, 0) < 0)
     fatal("fseek on temporary file failed");
   fputs("%!PS-Adobe-", stdout);
@@ -1142,8 +1193,12 @@ ps_printer::~ps_printer()
     rm.need_font(psf->get_internal_name());
   }
   rm.print_header_comments(out);
-  out.begin_comment("Pages:").comment_arg(i_to_a(pages_output)).end_comment();
-  out.begin_comment("PageOrder:").comment_arg("Ascend").end_comment();
+  out.begin_comment("Pages:")
+     .comment_arg(i_to_a(pages_output))
+     .end_comment();
+  out.begin_comment("PageOrder:")
+     .comment_arg("Ascend")
+     .end_comment();
 #if 0
   fprintf(out.get_file(), "%%%%DocumentMedia: () %g %g 0 () ()\n",
 	  font::paperwidth*72.0/font::res,
@@ -1164,7 +1219,8 @@ ps_printer::~ps_printer()
     out.simple_comment("BeginSetup");
   }
   rm.document_setup(out);
-  out.put_symbol(dict_name).put_symbol("begin");
+  out.put_symbol(dict_name)
+     .put_symbol("begin");
   if (ndefs > 0)
     ndefs += DEFS_DICT_SPARE;
   out.put_literal_symbol(defs_dict_name)
@@ -1184,8 +1240,12 @@ ps_printer::~ps_printer()
   out.special(defs.contents());
   out.put_symbol("end");
   if (ncopies != 1)
-    out.put_literal_symbol("#copies").put_number(ncopies).put_symbol("def");
-  out.put_literal_symbol("RES").put_number(res).put_symbol("def");
+    out.put_literal_symbol("#copies")
+       .put_number(ncopies)
+       .put_symbol("def");
+  out.put_literal_symbol("RES")
+     .put_number(res)
+     .put_symbol("def");
   out.put_literal_symbol("PL");
   if (guess_flag)
     out.put_symbol("PLG");
@@ -1495,11 +1555,9 @@ int main(int argc, char **argv)
 	 != EOF)
     switch(c) {
     case 'v':
-      {
-	printf("GNU grops (groff) version %s\n", Version_string);
-	exit(0);
-	break;
-      }
+      printf("GNU grops (groff) version %s\n", Version_string);
+      exit(0);
+      break;
     case 'c':
       if (sscanf(optarg, "%d", &ncopies) != 1 || ncopies <= 0) {
 	error("bad number of copies `%s'", optarg);

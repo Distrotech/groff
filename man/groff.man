@@ -636,12 +636,13 @@ Em\ \(eq\ \fRthe font size in points (width of letter `\f(CRm\fR')
 T}
 M@100th \fRof an \f(CREm
 n@En\ \(eq\ Em/2
-u@\fRBasic unit for actual output device
-v@\fRVertical line space in basic units
+u@Basic unit for actual output device
+v@Vertical line space in basic units
 z@T{
 scaled point\ \(eq\ 1/\f(CIsizescale\fR of a point (defined in
 font \fIDESC\fP file)
 T}
+f@Scale by 65536.
 .TE
 .LP
 .ev
@@ -731,6 +732,9 @@ called \f(CIname\fP.
 T}
 e@Current page number is even.
 o@Current page number is odd.
+m\f(CIname@T{
+True if there is a color called \f(CIname\fP.
+T}
 n@Formatter is \fBnroff\fP.
 r\f(CIreg@T{
 True if there is a register named \f(CIreg\fP.
@@ -1048,6 +1052,26 @@ but with compatibility mode switched off during macro expansion.
 Same as
 .request .de
 but with compatibility mode switched off during macro expansion.
+.
+.REQ .defcolor color scheme component
+Define or redefine a color with name
+.argument color .
+.argument scheme
+can be
+.BR rgb ,
+.BR cym ,
+.BR cymk ,
+.BR gray ,
+or
+.BR grey .
+.argument component
+can be single components specified as fractions in the range 0 to 1
+(default scale indicator\ \c
+.scaleindicator f ),
+as a string of two-digit hexadecimal color components with a leading
+.BR # ,
+or as a string of four-digit hexadecimal components with two leading
+.BR # .
 .
 .REQ .dei macro
 Define or redefine a macro whose name is contained in the string register
@@ -2120,6 +2144,22 @@ Horizontal line drawing function (optionally using character
 .ESCq L Nc
 Vertical line drawing function (optionally using character
 .argument c ).
+.
+.ESC[] m color
+Change to color
+.argument color .
+Alternative forms
+.esc(arg m co
+and
+.escarg m c .
+.
+.ESC[] M color
+Change filling color for closed drawn objects to color
+.argument color .
+Alternative forms
+.esc(arg M co
+and
+.escarg M c .
 .
 .ESC n r
 The numerical value stored in the register variable with the 1-character
