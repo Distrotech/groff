@@ -30,7 +30,7 @@ export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
 _PROGRAM_VERSION='0.8';
-_LAST_UPDATE='23 June 2002';
+_LAST_UPDATE='25 June 2002';
 
 export _DEBUG;
 _DEBUG='no';			# disable debugging information
@@ -3940,8 +3940,8 @@ main_set_mode()
     eval "${return_ok}";
   fi;
 
-  if is_equal "${_DISPLAY_MODE}" 'source'; then
-    _DISPLAY_MODE="${_OPT_MODE}";
+  if is_equal "${_OPT_MODE}" 'source'; then
+    _DISPLAY_MODE='source';
     eval "${return_ok}";
   fi;
 
