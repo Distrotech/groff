@@ -8892,14 +8892,14 @@ Lines can be broken after the character (initially the character
 @cindex @code{ru} glyph, and @code{cflags}
 @cindex @code{radicalex} glyph, and @code{cflags}
 @cindex @code{sqrtex} glyph, and @code{cflags}
-The character overlaps horizontally (initially the symbols
-@samp{\[ul]}, @samp{\[rn]}, @samp{\[ru]}, @samp{\[radicalex}, and
-@samp{\[sqrtex]} have this property).
+The character overlaps horizontally if used as a horizontal line building
+element.  Initially the symbols @samp{\[ul]}, @samp{\[rn]}, @samp{\[ru]},
+@samp{\[radicalex]}, and @samp{\[sqrtex]} have this property.
 
 @item 16
 @cindex @code{br} glyph, and @code{cflags}
-The character overlaps vertically (initially symbol @samp{\[br]} has
-this property).
+The character overlaps vertically if used as vertical line building element.
+Initially symbol @samp{\[br]} has this property.
 
 @item 32
 @cindex transparent characters
@@ -9616,8 +9616,12 @@ reset to the previous value before the last call to @code{vs}.
 
 @cindex @code{.V} register, and @code{vs}
 @code{gtroff} creates a warning of type @samp{range} if @var{space} is
-negative; the vertical spacing is then set to the vertical
-resolution (as given in the @code{.V} register).
+negative; the vertical spacing is then set to smallest positive value,
+the vertical resolution (as given in the @code{.V} register).
+
+Note that @w{@samp{.vs 0}} isn't saved in a diversion since it doesn't
+result in a vertical motion.  You explicitly have to repeat this command
+before inserting the diversion.
 
 The read-only number register @code{.v} contains the current vertical
 spacing; it is associated with the current environment
@@ -11487,7 +11491,7 @@ is sprung, it represents the difference of what the vertical position
 would have been but for the trap, and what the vertical position
 actually is.
 
-Since the @code{.trunc} register is only set by traps and it doesn't make
+Since the @code{.trunc} register is only set by traps it doesn't make
 much sense to use it outside of trap macros.
 @endDefreg
 
@@ -11513,10 +11517,10 @@ A line.
 Another line.
 .br
     @result{} A line.
-              .pe=0
-              Another line.
+       .pe=0
+       Another line.
 
-              .pe=1
+       .pe=1
 @endExample
 @endDefreg
 
