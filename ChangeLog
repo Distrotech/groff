@@ -1,3 +1,92 @@
+2004-10-09  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/trace.tmac: Fix handling of `am' and `am1' calls.
+
+2004-10-06  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* src/roff/troff/column.cpp (vjustify_node::copy): Updated.
+
+	* src/roff/troff/div.h: Include `mtsm.h'.
+	(diversion): New variables `any_chars_added', `needs_push',
+	`saved_seen_break', `saved_seen_space', `saved_seen_eol',
+	`saved_suppress_next_eol', `modified_tag'.
+	New virtual member function `is_diversion'.  Update all descendants.
+
+	* src/roff/troff/div.cpp (diversion::diversion,
+	macro_diversion::macro_diversion): Updated.
+	(do_divert): Handle `seen_break', `seen_space', `seen_eol',
+	`suppress_next_eol'.
+	(top_level_diversion::space): Handle `curenv->seen_space'.
+	(page_offset): Update tag handling.
+	(space_request, blank_line, flush_output): Don't call `add_html_tag'.
+
+	* src/roff/troff/env.h (environment): Make `tabs' public.
+	Remove `ignore_next_eol', `emitted_node'.
+	Update `output_line', `output'.
+	New variables `seen_space', `seen_eol', `suppress_next_eol',
+	`seen_break'.
+	New member functions `construct_state', `make_tag',
+	`construct_format_state, `construct_new_line_state,
+	`dump_troff_state'.
+	Remove `add_html_tag', `make_html_tag'.
+
+	* src/roff/troff/env.cpp: New externs `suppress_push',
+	`get_diversion_state', `global_diverted_space'.
+	(pending_output_line): New variable `was_centered'.
+	Update constructor and all callers.
+	(pending_output_line::output): Call `curenv->construct_format_state'.
+	(environment::environment, environment::copy): Updated.
+	(environment::output): Handle `was_centered'.
+	(environment::add_char): Handle construct and diversion state.
+	(environment::add_node): Handle construct state.
+	(environment::newline): Handle `was_centered'.
+	(environment::output_line): Updated.
+	(environment::possibly_break_line): Updated.
+	Update tag handling.
+	(environment::add_html_tag): Replaced with...
+	(environment::make_tag): New function.
+	(environment::add_html_tag_tabs, environment::make_html_tag): Removed.
+	(environment::dump_troff_state): New debugging function.
+	(environment::construct_state, environment::construct_format_state,
+	environment::construct_new_line_state): New functions.
+	(environment::do_break): Updated.
+	Handle `global_diverted_space'.
+	(environment::handle_tag): Update tag handling.
+	(point_size, fill, do_break_request): Don't call `add_html_tag'.
+	(no_fill): Don't call `add_html_tag'.
+	Set `suppress_next_eol'.
+	(center, right_justify, line_length, indent, temporary_indent,
+	set_tabs):
+	Update tag handling.
+
+	* src/roff/troff/input.cpp: Don't include `stringclass.h'.
+	(input_iterator): New variables `is_diversion', `diversion_state'.
+	Update constructors.
+	(input_stack): New member functions `get_div_level',
+	`get_diversion_state', `check_end_diversion'.
+	New variables `div_level', `diversion_state'.  Initialize them.
+	(suppress_push, global_diverted_space): New global variables.
+	(input_stack::finish_get, input_stack::finish_peek,
+	input_stack::remove_boundary, input_stack::end_file,
+	input_stack::clear, input_stack::pop_macro): Call
+	`check_end_diversion'.
+	(input_stack::push): Handle `div_level' and `diversion_state'.
+	(get_diversion_state): New function.
+	(diverted_space_node::reread): Handle `global_diverted_space'.
+	(macro::macro): Update constructors.
+	(macro::is_diversion): New function.
+	(macro::operator=): Set `is_a_diversion'.
+	(string_iterator): New member function `is_diversion'.
+	(string_iterator::string_iterator): Update constructors.
+	(string_iterator::fill): Set `div_nest_level'.
+	(macro_iterator): New member function `is_diversion'.
+	(do_if_request): Handle `suppress_push'.
+	(tag, taga): New functions.
+	(init_input_requests): Add `tag' and `taga' requests.
+
+	(node): New virtual member function `is_tag'.  Update all
+	descendants.
+
 2004-10-05  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/include/font.h (font): New member function
