@@ -31,7 +31,7 @@ revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' ../REVISION`
 
 all: $(DOCS)
 
-.SUFFIXES: .tr .me .ms .ps .dit .html .ascii
+.SUFFIXES: .tr .me .ms .ps .dit .html .ascii .texinfo .dvi
 
 .dit.ps:
 	$(GROPS) $< >$@
@@ -62,13 +62,16 @@ all: $(DOCS)
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -Tps $(FFLAG) -U -ms -markup >$@
 
+.texinfo.dvi:
+	texi2dvi -e $<
+
 install:
 
 clean:
 	-rm -f *.ps *.html *.ascii *.png *.gif *.dit core
-	-rm -f *.aux *.cp *.cps *.cv *.cn *.dvi *.fn *.fns *.ky *.kys \
-               *.log *.op *.pg *.pgs *.ps *.toc *.tp *.tps *.tr *.vr *.vrs \
-               texput.log
+	-rm -f *.aux *.dvi *.log *.toc texput.log
+	-rm -f *.cp *.cps *.cv *.cn *.fn *.fns *.gl *.gls *.ky *.kys \
+               *.ma *.mas *.op *.ops *.pg *.pgs *.tp *.tps *.tr *.vr *.vrs
 
 distclean: clean
 

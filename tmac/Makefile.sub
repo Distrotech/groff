@@ -8,25 +8,27 @@ MAN7=\
   groff_markup.n
 
 NORMALFILES=\
-  tmac.andoc tmac.pic tmac.ps tmac.psnew tmac.psold tmac.pspic \
+  tmac.mandoc tmac.andoc tmac.pic tmac.ps tmac.psnew tmac.psold tmac.pspic \
   tmac.psatk tmac.dvi tmac.tty tmac.tty-char tmac.X tmac.Xps tmac.latin1 \
-  tmac.lj4 eqnrc troffrc troffrc-end tmac.safer tmac.html tmac.arkup \
-  tmac.a4 tmac.trace
-SPECIALFILES=tmac.an tmac.s
+  tmac.lj4 eqnrc troffrc troffrc-end tmac.safer tmac.html tmac.markup \
+  tmac.arkup tmac.a4 tmac.trace tmac.me tmac.mdoc
+SPECIALFILES=tmac.an tmac.s tmac.man tmac.ms
 STRIPFILES=tmac.e tmac.doc tmac.doc.old
 MDOCFILES=doc-common doc-ditroff doc-nroff doc-syms
 mdocdir=$(tmacdir)/mdoc
 CLEANADD=\
-  stamp-strip stamp-wrap tmac.e-s tmac.doc-s tmac.doc.old-s \
-  doc-common-s doc-ditroff-s doc-nroff-s doc-syms-s *-wrap
+  stamp-strip stamp-wrap stamp-sed tmac.e-s tmac.doc-s tmac.doc.old-s \
+  doc-common-s doc-ditroff-s doc-nroff-s doc-syms-s *-wrap \
+  tmac.man-sed tmac.ms-sed
 tmac_s_prefix=
 tmac_an_prefix=
 tmac_wrap=
 sys_tmac_prefix=
 
-all: stamp-strip stamp-wrap
+all: stamp-strip stamp-wrap stamp-sed
 
-install_data: $(NORMALFILES) $(SPECIALFILES) stamp-wrap stamp-strip man.local
+install_data: $(NORMALFILES) $(SPECIALFILES) \
+              stamp-wrap stamp-strip stamp-sed man.local
 	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
 	if test -n "$(tmac_wrap)"; then \
 	  for m in ""$(tmac_wrap); do \
@@ -39,8 +41,12 @@ install_data: $(NORMALFILES) $(SPECIALFILES) stamp-wrap stamp-strip man.local
 	done
 	-rm -f $(tmacdir)/tmac.$(tmac_s_prefix)s
 	$(INSTALL_DATA) $(srcdir)/tmac.s $(tmacdir)/tmac.$(tmac_s_prefix)s
+	-rm -f $(tmacdir)/tmac.ms
+	$(INSTALL_DATA) tmac.ms-sed $(tmacdir)/tmac.ms
 	-rm -f $(tmacdir)/tmac.$(tmac_an_prefix)an
 	$(INSTALL_DATA) $(srcdir)/tmac.an $(tmacdir)/tmac.$(tmac_an_prefix)an
+	-rm -f $(tmacdir)/tmac.man
+	$(INSTALL_DATA) tmac.man-sed $(tmacdir)/tmac.man
 	for f in $(STRIPFILES); do \
 	  rm -f $(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $$f-s $(tmacdir)/$$f; \
@@ -71,6 +77,15 @@ stamp-wrap:
 	fi
 	touch $@
 
+stamp-sed: tmac.man tmac.ms
+	for f in tmac.man tmac.ms; do \
+	  rm -f $$f-sed; \
+	  sed -e "s;@TMAC_AN_PREFIX@;$(tmac_an_prefix);g" \
+	  -e "s;@TMAC_S_PREFIX@;$(tmac_s_prefix);g" \
+	  $(srcdir)/$$f > $$f-sed; \
+	done
+	touch $@
+
 uninstall_sub:
 	-if test -n "$(tmac_wrap)"; then \
 	  for m in ""$(tmac_wrap); do \
@@ -80,6 +95,7 @@ uninstall_sub:
 	-for f in $(NORMALFILES) $(STRIPFILES); do rm -f $(tmacdir)/$$f; done
 	-rm -f $(tmacdir)/tmac.$(tmac_s_prefix)s
 	-rm -f $(tmacdir)/tmac.$(tmac_an_prefix)an
+	-rm -f $(tmacdir)/tmac.man $(tmacdir)/tmac.ms
 	-if cmp -s $(tmacdir)/man.local $(srcdir)/man.local; then \
 	  rm -f $(tmacdir)/man.local; \
 	fi

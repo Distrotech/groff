@@ -24,11 +24,13 @@
 @c   tindex: environment variables
 @c   maindex: macros and strings
 @c   glindex: glyph names
+@c   opindex: operators
 @c
 @c tindex and cindex are merged.
 
 @defcodeindex ma
 @defcodeindex gl
+@defcodeindex op
 @syncodeindex tp cp
 
 
@@ -36,16 +38,32 @@
 @deffn \category\ @t{\name\} \arg\
 @end macro
 
+@macro end_Deffn
+@end deffn
+@end macro
+
 @macro Deffnx{category, name, arg}
 @deffnx \category\ @t{\name\} \arg\
+@end macro
+
+@macro end_Deffnx
+@end deffnx
 @end macro
 
 @macro Defmac{name, arg}
 @defmac @t{\name\} \arg\
 @end macro
 
+@macro end_Defmac
+@end defmac
+@end macro
+
 @macro Defmacx{name, arg}
 @defmacx @t{\name\} \arg\
+@end macro
+
+@macro end_Defmacx
+@end defmacx
 @end macro
 
 
@@ -178,7 +196,8 @@ contributions are welcome.  Send them to bug-groff@@gnu.org.
 * Output Devices::              
 * File formats::                
 * Installation::                
-* Request and Operator Index::  
+* Request and Escape Index::    
+* Operator Index::              
 * Register Index::              
 * Macro and String Index::      
 * Glyph Name Index::            
@@ -736,8 +755,8 @@ X@w{ }windows.  GNU @code{troff} also eliminated the need for a separate
 @code{nroff} program with a postprocessor which would produce
 @acronym{ASCII} output.
 @item
-A version of the @option{-me} macros and an implementation of the
-@option{-man} macros.
+A version of the @file{me} macros and an implementation of the
+@file{man} macros.
 @end itemize
 
 Also, a front-end was included which could construct the, sometimes
@@ -745,8 +764,8 @@ painfully long, pipelines required for all the post- and preprocessors.
 
 Development of GNU @code{troff} progressed rapidly, and saw the
 additions of a replacement for @code{refer}, an implementation of the
-@option{-ms} and @option{-mm} macros, and a program to deduce how to
-format a document (@code{grog}).
+@file{ms} and @file{mm} macros, and a program to deduce how to format a
+document (@code{grog}).
 
 It was declared a stable (i.e.@: non-beta) package with the release of
 version@w{ }1.04 around November@w{ }1991.
@@ -819,8 +838,8 @@ difficult to use by itself.  However, @code{groff} provides a
 }starting paragraphs, printing headers and footers, etc.)@: should be
 done.  These macros can be collected together into a @dfn{macro
 package}.  There are a number of macro packages available; the most
-common (and the ones described in this manual) are @option{-man},
-@option{-mdoc}, @option{-me}, @option{-ms}, and @option{-mm}.
+common (and the ones described in this manual) are @file{man},
+@file{mdoc}, @file{me}, @file{ms}, and @file{mm}.
 
 
 @node Preprocessor Intro, Output device intro, Macro Package Intro, Introduction
@@ -875,11 +894,11 @@ HP LaserJet@w{ }4 and Canon LBP printers, and @acronym{HTML}.
 
 Large portions of this manual were taken from existing documents, most
 notably, the manual pages for the @code{groff} package by James Clark,
-and Eric Allman's papers on the @option{-me} macro package.
+and Eric Allman's papers on the @file{me} macro package.
 
-The section on the @option{-man} macro package is partly based on
-Susan@w{ }G.@: Kleinmann's @file{groff_man} manual page written for the
-Debian GNU/Linux system.
+The section on the @file{man} macro package is partly based on Susan@w{
+}G.@: Kleinmann's @file{groff_man} manual page written for the Debian
+GNU/Linux system.
 
 
 
@@ -957,7 +976,8 @@ gtroff [ -abivzCERU ] [ -w@var{name} ] [ -W@var{name} ] [ -d@var{cs} ]
 @end example
 
 Options without an argument can be grouped behind a single @option{-}.
-A filename of @samp{-} denotes the standard input.
+A filename of @samp{-} denotes the standard input.  It is possible to
+have whitespace between an option and its parameter.
 
 @pindex grog
 The @code{grog} command can be used to guess the correct @code{groff}
@@ -1178,28 +1198,33 @@ groff -t -mandoc -Tascii file | less
 
 @noindent
 This is basically what a call to the @code{man} program does.  The
-manual page @var{file} is processed with the @option{-mandoc} macros
-(which in turn either calls the @option{-man} or the @option{-mdoc}
-macro package), using the @code{tbl} preprocessor and the
-@acronym{ASCII} output device.  Finally, the result is displayed with
-the @code{less} pager.
+manual page @var{file} is processed with the @file{mandoc} macros (which
+in turn either calls the @file{man} or the @file{mdoc} macro package),
+using the @code{tbl} preprocessor and the @acronym{ASCII} output device.
+Finally, the result is displayed with the @code{less} pager.
 
 @example
-groff -X -me file
+groff -X -m me file
 @end example
 
 @noindent
-Preview @var{file} with @code{gxditview}, using the @option{-me} macro
+Preview @var{file} with @code{gxditview}, using the @file{me} macro
 package.  Since no @option{-T} option is specified, use the default
-device (@samp{ps}).
+device (@samp{ps}).  Note that you can either say @w{@samp{-m me}} or
+@w{@samp{-me}}; the latter is an anachronism from the early days of
+@acronym{UNIX}.@footnote{The same is true for the other main macro
+packages that come with @code{groff}: @file{man}, @file{mdoc},
+@file{ms}, @file{mm}, and @file{mandoc}.  This won't work in general;
+for example, to load @file{tmac.safer}, either @samp{-msafer} or
+@w{@samp{-m safer}} must be used.}
 
 @example
 groff -man -rD1 -z file
 @end example
 
 @noindent
-Check @var{file} with the @option{-man} macro package, forcing
-double-sided printing---don't produce any output.
+Check @var{file} with the @file{man} macro package, forcing double-sided
+printing---don't produce any output.
 
 @subsection @code{grog}
 
@@ -1547,13 +1572,13 @@ actually more appropriate for tables of contents.
 
 Some macro packages provide stock formats for various kinds of
 documents.  Many of them provide a common format for the title and
-opening pages of a technical paper.  The @option{-mm} macros in
-particular provide formats for letters and memoranda.
+opening pages of a technical paper.  The @file{mm} macros in particular
+provide formats for letters and memoranda.
 
 @subsection Multiple Columns
 
-Some macro packages (except @option{-man}) provide the ability to have
-two or more columns on a page.
+Some macro packages (except @file{man}) provide the ability to have two
+or more columns on a page.
 
 @subsection Font and Size changes
 
@@ -1587,18 +1612,20 @@ This chapter documents the main macro packages that come with
 @code{groff}.
 
 @menu
-* -man::                        
-* -mdoc::                       
-* -ms::                         
-* -me::                         
-* -mm::                         
+* man::                         
+* mdoc::                        
+* ms::                          
+* me::                          
+* mm::                          
 @end menu
 
 
-@node -man, -mdoc, Macro Packages, Macro Packages
-@section -man
-@cindex @option{-man}
+@node man, mdoc, Macro Packages, Macro Packages
+@section @file{man}
+@cindex @file{man}
+@cindex manual pages
 @pindex tmac.an
+@pindex tmac.man
 
 This is the most popular and probably the most important macro package
 of @code{groff}.  It is easy to use, and a vast majority of manual pages
@@ -1611,18 +1638,20 @@ are based on it.
 * Miscellaneous man stuff::     
 @end menu
 
-@node Man options, Man usage, -man, -man
+@node Man options, Man usage, man, man
 @subsection Options
 
-The command line format for using the @option{-man} macros with
+The command line format for using the @file{man} macros with
 @code{groff} is:
 
 @c XXX document @TMAC_AN_PREFIX@
 
 @example
-groff -man [ -rC1 ] [ -rD1 ] [ -rP @var{nnn} ] [ -rX @var{nnn} ]
+groff -m man [ -rC1 ] [ -rD1 ] [ -rP @var{nnn} ] [ -rX @var{nnn} ]
       [ @var{files}@dots{} ] 
 @end example
+
+It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
 
 @table @code
 @item -rC1
@@ -1639,7 +1668,7 @@ After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
 following page numbers: 1, 2, 2a, 2b, 2c, etc.
 @end table
 
-@node Man usage, Man font macros, Man options, -man
+@node Man usage, Man font macros, Man options, man
 @subsection Usage
 
 @pindex man.local
@@ -1669,7 +1698,7 @@ again (except if the @option{-rC1} option is given on the command
 line)---this feature is intended only for formatting multiple man pages;
 a single man page should contain exactly one @code{TH} macro at the
 beginning of the file.
-@end defmac
+@end_Defmac
 
 @maindex SH
 @Defmac{SH, [@var{heading}]}
@@ -1678,7 +1707,7 @@ out all the text following @code{SH} up to the end of the line (resp.@:
 the text in the next line if there is no argument to @code{SH}) in bold
 face, at a default size of 9@w{ }point.  Additionally, the left margin
 for the following text is reset to its default value.
-@end defmac
+@end_Defmac
 
 @maindex SS
 @Defmac{SS, [@var{heading}]}
@@ -1687,7 +1716,7 @@ following @code{SS} up to the end of the line (resp.@: the text in the
 next line if there is no argument to @code{SS}) in bold face, at a
 default size of 10@w{ }point.  Additionally, the left margin for the
 following text is reset to its default value.
-@end defmac
+@end_Defmac
 
 @maindex TP
 @Defmac{TP, [@var{nnn}]}
@@ -1706,7 +1735,7 @@ the paragraph begins on the line following the label, entirely indented.
 Note that neither font shape nor font size of the label is set to a
 default value; on the other hand, the rest of the text will have default
 font settings.
-@end defmac
+@end_Defmac
 
 @maindex LP
 @maindex PP
@@ -1719,7 +1748,7 @@ current position, followed by a vertical space downwards by the amount
 specified by the @code{PD} macro.  The font size and shape are reset to
 the default value (10@dmn{pt} resp.@: Roman).  Finally, the current left
 margin is restored.
-@end defmac
+@end_Defmac
 
 @maindex IP
 @Defmac{IP, [@var{designator}] [@var{nnn}]}
@@ -1737,7 +1766,7 @@ For example, to start a paragraph with bullets as the designator and
 @example
 .IP \(bu 4
 @end example
-@end defmac
+@end_Defmac
 
 @maindex HP
 @Defmac{HP, [@var{nnn}]}
@@ -1745,14 +1774,14 @@ Sets up a paragraph with hanging left indentation.  The indentation is
 set to @var{nnn} if that argument is supplied (default unit is
 @samp{n}), otherwise the default indentation value is used.  Font size
 and face are reset to its default values.
-@end defmac
+@end_Defmac
 
 @maindex RS
 @Defmac{RS, [@var{nnn}]}
 This macro moves the left margin to the right by the value @var{nnn} if
 specified (default unit is @samp{n}); otherwise the default indentation
 value is used.  Calls to the @code{RS} macro can be nested.
-@end defmac
+@end_Defmac
 
 @maindex RE
 @Defmac{RE, [@var{nnn}]}
@@ -1760,7 +1789,7 @@ This macro moves the left margin back to level @var{nnn}; if no argument
 is given, it moves one level back.  The first level (i.e., no call to
 @code{RS} yet) has number@w{ }1, and each call to @code{RS} increases
 the level by@w{ }1.
-@end defmac
+@end_Defmac
 
 @maindex SH
 @maindex SS
@@ -1780,7 +1809,7 @@ macro): @code{SH}, @code{SS}, @code{TP}, @code{LP} (@code{PP},
 The macros @code{RS} and @code{RE} also cause a break but no insertion
 of vertical space.
 
-@node Man font macros, Miscellaneous man stuff, Man usage, -man
+@node Man font macros, Miscellaneous man stuff, Man usage, man
 @subsection Macros to set fonts
 
 The standard font is Roman; the default text size is 10@w{ }point.
@@ -1789,13 +1818,13 @@ The standard font is Roman; the default text size is 10@w{ }point.
 @Defmac{SM, [@var{text}]}
 Causes the text on the same line or the text on the next line to appear
 in a font that is one point size smaller than the default font.
-@end defmac
+@end_Defmac
 
 @maindex SB
 @Defmac{SB, [@var{text}]}
 Causes the text on the same line or the text on the next line to appear
 in boldface font, one point size smaller than the default font.
-@end defmac
+@end_Defmac
 
 @maindex BI
 @Defmac{BI, text}
@@ -1809,37 +1838,37 @@ italic.  The text must be on the same line as the macro call.  Thus
 @noindent
 would cause `this' and `that' to appear in bold face, while `word and'
 appears in italics.
-@end defmac
+@end_Defmac
 
 @maindex IB
 @Defmac{IB, text}
 Causes text to appear alternately in italic and bold face.  The text
 must be on the same line as the macro call.
-@end defmac
+@end_Defmac
 
 @maindex RI
 @Defmac{RI, text}
 Causes text on the same line to appear alternately in roman and italic.
 The text must be on the same line as the macro call.
-@end defmac
+@end_Defmac
 
 @maindex IR
 @Defmac{IR, text}
 Causes text on the same line to appear alternately in italic and roman.
 The text must be on the same line as the macro call.
-@end defmac
+@end_Defmac
 
 @maindex BR
 @Defmac{BR, text}
 Causes text on the same line to appear alternately in bold face and
 roman.  The text must be on the same line as the macro call.
-@end defmac
+@end_Defmac
 
 @maindex RB
 @Defmac{RB, text}
 Causes text on the same line to appear alternately in roman and bold
 face.  The text must be on the same line as the macro call.
-@end defmac
+@end_Defmac
 
 @maindex R
 @Defmac{R, [@var{text}]}
@@ -1847,28 +1876,28 @@ Causes @var{text} to appear in roman font.  If no text is present on the
 line where the macro is called, then the text of the next line appears
 in roman.  This is the default font to which text is returned at the end
 of processing of the other macros.
-@end defmac
+@end_Defmac
 
 @maindex B
 @Defmac{B, [@var{text}]}
 Causes @var{text} to appear in bold face.  If no text is present on the
 line where the macro is called, then the text of the next line appears
 in bold face.
-@end defmac
+@end_Defmac
 
 @maindex I
 @Defmac{I, [@var{text}]}
 Causes @var{text} to appear in italic.  If no text is present on the
 line where the macro is called, then the text of the next line appears
 in italic.
-@end defmac
+@end_Defmac
 
-@node Miscellaneous man stuff,  , Man font macros, -man
+@node Miscellaneous man stuff,  , Man font macros, man
 @subsection Miscellaneous
 
 @pindex grohtml
-@cindex @option{-man}, default indentation
-@cindex default indentation, @option{-man}
+@cindex @file{man}, default indentation
+@cindex default indentation, @file{man}
 The default indentation is 7.2@dmn{n} for all output devices except for
 @code{grohtml} which uses 1.2@dmn{i} instead.
 
@@ -1878,7 +1907,7 @@ The default indentation is 7.2@dmn{n} for all output devices except for
 Sets tabs every 0.5@w{ }inches.  Since this macro is always called
 during a @code{TH} request, it makes sense to call it only if the tab
 positions have been changed.
-@end defmac
+@end_Defmac
 
 @maindex PD
 @Defmac{PD, [@var{nnn}]}
@@ -1886,7 +1915,7 @@ Adjusts the empty space before a new paragraph (resp.@: section).  The
 optional argument gives the amount of space (default units are
 @samp{v}); without parameter, the value is reset to its default value
 (1@w{ }line for tty devices, 0.4@dmn{v}@w{ }otherwise).
-@end defmac
+@end_Defmac
 
 @maindex SH
 @maindex SS
@@ -1904,17 +1933,17 @@ The following strings are defined:
 @maindex \*S
 @Defmac{\\*S}
 Switch back to the default font size.
-@end defmac
+@end_Defmac
 
 @maindex \*R
 @Defmac{\\*R}
 The `registered' sign.
-@end defmac
+@end_Defmac
 
 @maindex \*(Tm
 @Defmac{\\*(Tm}
 The `trademark' sign.
-@end defmac
+@end_Defmac
 
 @maindex \*(lq
 @maindex \*(rq
@@ -1924,7 +1953,7 @@ The `trademark' sign.
 @Defmacx{\\*(rq}
 Left and right quote.
 This is equal to @code{\(lq} and @code{\(rq}, respectively.
-@end defmac
+@end_Defmac
 
 @cindex preprocessor, calling convention
 @cindex calling convention of preprocessors
@@ -1946,30 +1975,30 @@ Modern implementations of the @code{man} program read this first line
 and automatically call the right preprocessor(s).
 
 
-@node -mdoc, -ms, -man, Macro Packages
-@section -mdoc
-@cindex @option{-mdoc}
+@node mdoc, ms, man, Macro Packages
+@section @file{mdoc}
+@cindex @file{mdoc}
 
 @c XXX documentation
 
 
-@node -ms, -me, -mdoc, Macro Packages
-@section -ms
-@cindex @option{-ms}
+@node ms, me, mdoc, Macro Packages
+@section @file{ms}
+@cindex @file{ms}
 
 @c XXX documentation
 
 
-@node -me, -mm, -ms, Macro Packages
-@section -me
-@cindex @option{-me}
+@node me, mm, ms, Macro Packages
+@section @file{me}
+@cindex @file{me}
 
 @c XXX documentation
 
 
-@node -mm,  , -me, Macro Packages
-@section -mm
-@cindex @option{-mm}
+@node mm,  , me, Macro Packages
+@section @file{mm}
+@cindex @file{mm}
 
 @c XXX documentation
 
@@ -2070,7 +2099,7 @@ will fit nicely on a line without inserting excessive amounts of space
 between words is not great, @code{gtroff} will hyphenate words so that
 lines can be justified without there being too much space between words.
 It uses an internal hyphenation algorithm (a simplified version of the
-algorithm used within @TeX{}), to indicate which words can be hyphenated
+algorithm used within @TeX{}) to indicate which words can be hyphenated
 and how to do so.  When a word is hyphenated the first part of the word
 will be added to the current filled line being output (with an attached
 hyphen), and the other portion will be added to the next line to be
@@ -2097,10 +2126,27 @@ a comma or a period as part of an abbreviation.
 @samp{!}, @samp{?} and @samp{.}) as @dfn{end of sentence} characters.
 When @code{gtroff} encounters one of these characters at the end of a
 line it will append two @dfn{sentence spaces} in the formatted output.
-(Thus, one of the conventions mentioned in @ref{Input Conventions}).
+(Thus, one of the conventions mentioned in @ref{Input Conventions}.)
 
-@c XXX also describe how characters like ) are treated here -jjc
-@c gotta do some research on this -trent
+@cindex transparent characters
+@cindex character, transparent
+@glindex dg
+@glindex rq
+@cindex "
+@cindex '
+@cindex )
+@cindex ]
+@cindex *
+In addition, the following characters resp.@: glyphs are treated
+transparently while handling end of sentence characters: @samp{"},
+@samp{'}, @samp{)}, @samp{]}, @samp{*}, @code{dg}, and @code{rq}.
+
+See the @code{cflags} request in @ref{Using Symbols}, for more details.
+
+@findex \&
+To prevent the insertion of extra space after an end of sentence
+character (at the end of a line), append @code{\&}.
+
 
 @node Tab Stops, Implicit Line Breaks, Sentences, Text
 @subsection Tab Stops
@@ -2166,10 +2212,7 @@ The end of file will also cause a break---otherwise the last line of the
 document may vanish!
 
 Certain requests also cause breaks, implicitly or explicitly.  This will
-be discussed later.
-
-@xref{Manipulating Filling and Adjusting}.
-@c XXX list all requests which cause a break
+be discussed in @ref{Manipulating Filling and Adjusting}.
 
 
 @node Input Conventions, Measurements, Text, Programming Tutorial
@@ -2191,7 +2234,7 @@ themselves, as entire phrases are often added or deleted when editing.
 Try to keep lines less than 40-60@w{ }characters, to allow space for
 inserting more text.
 @item
-Do not try to do any formatting in a @acronym{WYSIWYG} manner (i.e.@:
+Do not try to do any formatting in a @acronym{WYSIWYG} manner (i.e.,
 don't try and use spaces to get proper indentation).
 @end itemize
 
@@ -2334,11 +2377,11 @@ certain scalar value, use @samp{u} as the unit for that value.
 @item
 @cindex arithmetic operators
 @cindex operators, arithmetic
-@findex +
-@findex -
-@findex /
-@findex *
-@findex %
+@opindex +
+@opindex -
+@opindex /
+@opindex *
+@opindex %
 Arithmetic: @samp{+} (addition), @samp{-} (subtraction), @samp{/}
 (division), @samp{*} (multiplication), @samp{%} (modulo).
 
@@ -2348,27 +2391,27 @@ signed integer.
 @item
 @cindex comparison operators
 @cindex operators, comparison
-@findex <
-@findex >
-@findex >=
-@findex <=
-@findex =
-@findex ==
+@opindex <
+@opindex >
+@opindex >=
+@opindex <=
+@opindex =
+@opindex ==
 Comparison: @samp{<} (less than), @samp{>} (greater than), @samp{<=}
 (less than or equal), @samp{>=} (greater than or equal), @samp{=}
 (equal), @samp{==} (the same as @samp{=}).
 @item
 @cindex logical operators
 @cindex operators, logical
-@findex &
-@findex :
+@opindex &
+@opindex :
 Logical: @samp{&} (logical and), @samp{:} (logical or).
 @item
 @cindex unary operators
 @cindex operators, unary
-@findex -
-@findex +
-@findex !
+@opindex -
+@opindex +
+@opindex !
 @findex if
 @findex while
 Unary operators: @samp{-} (negating, i.e.@: changing the sign), @samp{+}
@@ -2378,8 +2421,8 @@ below for the use of unary operators in motion requests.
 @item
 @cindex extremum operators
 @cindex operators, extremum
-@findex >?
-@findex <?
+@opindex >?
+@opindex <?
 Extrema: @samp{>?} (maximum), @samp{<?} (minimum).  For example,
 @samp{5>?3} yields@w{ }@samp{5}.
 @c XXX add examples
@@ -2394,17 +2437,17 @@ indicators in the evaluation of @var{e}.
 @cindex parentheses
 @cindex order of evaluation in expressions
 @cindex expression, order of evaluation
-@findex (
-@findex )
+@opindex (
+@opindex )
 Parentheses may be used as in any other language.  However, in
 @code{gtroff} they are necessary to ensure order of evaluation.
 @code{gtroff} has no operator precedence; expressions are evaluated left
 to right.  This means that @samp{3+5*4} is evaluated as if it were
 parenthesized like @samp{(3+5)*4}, not as @samp{3+(5*4)}, as expected.
 
-@findex +
-@findex -
-@findex |
+@opindex +
+@opindex -
+@opindex |
 @cindex motion operators
 @cindex operators, motion
 For many requests which cause a motion on the page, the unary operators
@@ -2412,7 +2455,7 @@ work differently.  The @samp{+} and @samp{-} operators then indicate a
 motion relative to the current position (down or up, respectively), and
 the @samp{|} operator indicates an absolute position on the page or
 input line.
-@c XXX (????)
+@c XXX xref
 @samp{+} and @samp{-} are also treated differently by the following
 requests and escapes: @code{bp}, @code{in}, @code{ll}, @code{lt},
 @code{nm}, @code{nr}, @code{pl}, @code{pn}, @code{po}, @code{ps},
@@ -2496,7 +2539,7 @@ sort of associative table.
 \A'end-list'
     @result{} 1
 @end example
-@end deffn
+@end_Deffn
 
 @xref{Escapes}, for details on parameter delimiting characters.
 
@@ -2764,19 +2807,19 @@ Finally, the escapes @code{\D}, @code{\h}, @code{\H}, @code{\l},
 @item
 The digits @code{0}-@code{9}.
 @cindex operators
-@findex +
-@findex -
-@findex /
-@findex *
-@findex %
-@findex <
-@findex >
-@findex =
-@findex &
-@findex :
-@findex (
-@findex )
-@findex .
+@opindex +
+@opindex -
+@opindex /
+@opindex *
+@opindex %
+@opindex <
+@opindex >
+@opindex =
+@opindex &
+@opindex :
+@opindex (
+@opindex )
+@opindex .
 @item
 The (single character) operators @samp{+-/*%<>=&:().}.
 @item
@@ -2872,8 +2915,8 @@ ignored completely.
 Another commenting scheme seen sometimes is three consecutive single
 quotes (@code{'''}) at the beginning of a line.  This works, but
 @code{gtroff} will give a warning about an undefined macro (namely
-@code{''}, which is harmless, but irritating.
-@end deffn
+@code{''}), which is harmless, but irritating.
+@end_Deffn
 
 @Deffn{Escape, \\#}
 Now to avoid all this @code{gtroff} has a new comment mechanism using
@@ -2895,7 +2938,7 @@ Test Test
 
 @noindent
 as expected.
-@end deffn
+@end_Deffn
 
 @findex ig
 For large blocks of text, the @code{ig} request may be useful.
@@ -2934,7 +2977,7 @@ Registers are defined resp.@: set via the @code{nr} request or the
 @Deffnx{Escape, \\R, ident value}
 Set number register @var{ident} to @var{value}.  If @var{ident} doesn't
 exist, it will be created.
-@end deffn
+@end_Deffn
 
 For example, the following two lines are equivalent:
 
@@ -2976,15 +3019,15 @@ must be taken to get the desired result:
 @noindent
 The surrounding parentheses prevent the interpretation of the minus sign
 as a decrementing operator.
-@end deffn
+@end_Deffn
 
 @Deffn{Request, rr, ident}
 Remove number register @var{ident}.
-@end deffn
+@end_Deffn
 
 @Deffn{Request, rnn, ident1 ident2}
 Rename number register @var{ident1} to @var{ident2}.
-@end deffn
+@end_Deffn
 
 @Deffn{Request, aln, ident1 ident2}
 This request creates an alias @var{ident1} for a number register
@@ -2992,7 +3035,7 @@ This request creates an alias @var{ident1} for a number register
 If @var{ident1} is undefined, a warning of type @samp{reg} will be
 generated, and the request will be ignored.  @xref{Debugging}, for
 information about warnings.
-@end deffn
+@end_Deffn
 
 @node Interpolating Registers, Auto-increment, Setting Registers, Registers
 @subsection Interpolating Registers
@@ -3013,7 +3056,7 @@ input line.
 \n(as
     @result{} 10
 @end example
-@end deffn
+@end_Deffn
 
 @node Auto-increment, Assigning Formats, Interpolating Registers, Registers
 @subsection Auto-increment
@@ -3028,7 +3071,7 @@ argument to the @code{nr} request or @code{\N} escape.
 @Deffnx{Escape, \\N, ident value incr}
 Set number register @var{ident} to @var{value}; the increment for
 auto-incrementing is set to @var{incr}.
-@end deffn
+@end_Deffn
 
 To activate auto-incrementing, the escape @code{\n} has a special syntax
 form.
@@ -3039,7 +3082,7 @@ Before interpolating, increment resp.@: decrement @var{ident} by the
 auto-increment value as specified with the @code{nr} request (or the
 @code{\N} escape).  If no auto-increment value has been specified, both
 syntax forms are identical to @code{\n}.
-@end deffn
+@end_Deffn
 
 For example,
 
@@ -3119,14 +3162,14 @@ The following example will produce @samp{10, X, j, 010}:
 .af a 001
 \na
 @end example
-@end deffn
+@end_Deffn
 
 @Deffn{Escape, \\g, ident}
 Return the current format of the specified register @var{ident}.  For
 example, @samp{\ga} after the previous example would produce the string
 @samp{001}.  If the register hasn't been defined yet, nothing is
 returned.
-@end deffn
+@end_Deffn
 
 @node Built-in Registers,  , Assigning Formats, Registers
 @subsection Built-in Registers
@@ -3276,25 +3319,30 @@ other requests will also cause breaks, but implicitly.  These are
 @Deffn{Request, br, }
 Break the current line, i.e., the input collected so far will be emitted
 without adjustment.
-@end deffn
+@end_Deffn
 
-@findex nf
-@findex fi
 @vindex .u
 Initially, @code{gtroff} will fill and adjust text to both margins.
 Filling can be disabled via the @code{nf} request and re-enabled with
-the @code{fi} request.  These implicitly disable and re-enable
-adjusting.  Both of these will cause a break in the text currently being
-filled.  The number register @code{.u} is equal to@w{ }1 in fill mode
-and@w{ }0 in no-fill mode.
+the @code{fi} request.
 
-@findex ad
-@findex na
-Adjusting can be disabled with the @code{ad} request and re-enabled with
-the @code{na} request.  The @code{ad} request takes a single argument to
-indicate how to adjust text.
+@Deffn{Request, fi, }
+Activate fill mode (which is the default).  This request implicitly
+enables adjusting; it will also cause a break in the text currently
+being filled.  The number register @code{.u} is set to@w{ }1.
+@end_Deffn
 
-@table @samp
+@Deffn{Request, nf, }
+Activate no-fill mode.  Input lines are output as-is, retaining line
+breaks.  The current line length will be ignored.  This command
+implicitly disables adjusting; it also causes a break.  The number
+register @code{.u} will be set to@w{ }0.
+@end_Deffn
+
+@Deffn{Request, ad, [@var{mode}]}
+Enable adjusting.  @var{mode} can have one of the following values:
+
+@table @code
 @item l
 @cindex ragged-right
 Adjust text to the left margin.  This produces what is traditionally
@@ -3311,8 +3359,8 @@ Center filled text.
 Justify to both margins.  This is default of @code{gtroff}.
 @end table
 
-With no argument to @code{ad}, @code{gtroff} will adjust lines the same
-way it was the last time it was filling.  For example:
+With no argument, @code{gtroff} will adjust lines the same way before
+adjusting has been deactivated (with a call to @code{na}, for example).
 
 @example
 text
@@ -3328,7 +3376,14 @@ text
 
 @vindex .j
 The current adjustment mode is available in the number register
-@code{.j}.
+@code{.j}; it can be stored and subsequently used to set adjustment.
+@end_Deffn
+
+@Deffn{Request, na, }
+Disable adjusting.  This request won't change the current adjustment
+mode: A call to @code{ad} afterwards will use the previous adjustment
+setting.
+@end_Deffn
 
 @findex \p
 The escape @code{\p} will cause a break and the remaining text to be
@@ -3893,7 +3948,7 @@ and bottom titles (or headers and footers)
 @cindex title line
 @cindex three-part title
 @findex tl
-@findex %
+@vindex %
 The @code{tl} request will print a @dfn{title line}, which consists of
 three parts: a left justified portion, a centered portion and a right
 justified portion.  The argument to @code{tl} is specified as
@@ -4301,7 +4356,12 @@ the character overlaps vertically (initially character @samp{\(br} has
 this property)
 @item 32
 @cindex transparent characters
-@cindex characters, transparent
+@cindex character, transparent
+@cindex '
+@cindex "
+@cindex ]
+@cindex )
+@cindex *
 @glindex dg
 @glindex rq
 an end of sentence character followed by any number of characters with
@@ -5259,7 +5319,7 @@ Here a small useful example:
 @end example
 
 @noindent
-@findex |
+@opindex |
 Note that this works by outputting a box rule (a vertical line), then
 the text given as an argument and then another box rule.  Then the line
 drawing escapes both draw from the current location to the beginning of
@@ -7172,7 +7232,7 @@ Most entries in kernpairs section will have a negative value for@w{
 
 
 
-@node Installation, Request and Operator Index, File formats, Top
+@node Installation, Request and Escape Index, File formats, Top
 @chapter Installation
 @cindex installation
 
@@ -7180,14 +7240,25 @@ Most entries in kernpairs section will have a negative value for@w{
 
 
 
-@node Request and Operator Index, Register Index, Installation, Top
-@chapter Request and Operator Index
+@node Request and Escape Index, Operator Index, Installation, Top
+@chapter Request and Escape Index
+
+In this index, escapes are listed with a leading backslash (@samp{\}) to
+distinguish them from requests which appear without the leading control
+character (normally either @samp{.} or @samp{'}).
 
 @printindex fn
 
 
 
-@node Register Index, Macro and String Index, Request and Operator Index, Top
+@node Operator Index, Register Index, Request and Escape Index, Top
+@chapter Operator Index
+
+@printindex op
+
+
+
+@node Register Index, Macro and String Index, Operator Index, Top
 @chapter Register Index
 
 @printindex vr
