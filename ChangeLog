@@ -1,3 +1,12 @@
+2001-02-08  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/node.h (unbreakable_space_node, hmotion_node,
+	space_char_hmotion_node, overstrike_node): Add `get_hyphen_list()'
+	and `add_self()' methods to avoid hyphenation.  For example, the
+	hyphen list for `foo\0\0bar' was `foobar', causing insertion of a
+	soft hyphen after `foo'.  Now the hyphen list is correctly
+	`foo<ignore><ignore>bar'.
+
 2001-02-05  Yoshiteru Kageyama  <yt-kage@cb3.so-net.ne.jp>
 
 	* tmac/groff_tmac.man: Fix `BIR' macro.

@@ -3230,7 +3230,7 @@ void hyphen_trie::insert_pattern(const char *pat, int patlen, int *num)
 void hyphen_trie::hyphenate(const char *word, int len, int *hyphens)
 {
   int j;
-  for (j = 0; j < len+1; j++)
+  for (j = 0; j < len + 1; j++)
     hyphens[j] = 0;
   for (j = 0; j < len - 1; j++) {
     h = hyphens + j;

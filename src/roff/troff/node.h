@@ -207,6 +207,8 @@ public:
   int nbreaks();
   void split(int, node **, node **);
   int merge_space(hunits);
+  node *add_self(node *, hyphen_list **);
+  hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
   hyphenation_type get_hyphenation_type();
 };
 
@@ -272,6 +274,8 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  node *add_self(node *, hyphen_list **);
+  hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
   hyphenation_type get_hyphenation_type();
 };
 
@@ -284,6 +288,8 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  node *add_self(node *, hyphen_list **);
+  hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
   hyphenation_type get_hyphenation_type();
 };
 
@@ -409,6 +415,8 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  node *add_self(node *, hyphen_list **);
+  hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
   hyphenation_type get_hyphenation_type();
 };
 

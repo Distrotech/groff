@@ -3656,7 +3656,6 @@ void composite_node::ascii_print(ascii_output_file *ascii)
 hyphen_list *composite_node::get_hyphen_list(hyphen_list *tail)
 {
   return new hyphen_list(ci->get_hyphenation_code(), tail);
-
 }
 
 node *composite_node::add_self(node *nn, hyphen_list **p)
@@ -4385,6 +4384,20 @@ int hmotion_node::force_tprint()
   return 0;
 }
 
+node *hmotion_node::add_self(node *n, hyphen_list **p)
+{
+  next = n;
+  hyphen_list *pp = *p;
+  *p = (*p)->next;
+  delete pp;
+  return this;
+}
+
+hyphen_list *hmotion_node::get_hyphen_list(hyphen_list *tail)
+{
+  return new hyphen_list(0, tail);
+}
+
 int space_char_hmotion_node::same(node *nd)
 {
   return n == ((space_char_hmotion_node *)nd)->n;
@@ -4398,6 +4411,20 @@ const char *space_char_hmotion_node::type()
 int space_char_hmotion_node::force_tprint()
 {
   return 0;
+}
+
+node *space_char_hmotion_node::add_self(node *n, hyphen_list **p)
+{
+  next = n;
+  hyphen_list *pp = *p;
+  *p = (*p)->next;
+  delete pp;
+  return this;
+}
+
+hyphen_list *space_char_hmotion_node::get_hyphen_list(hyphen_list *tail)
+{
+  return new hyphen_list(0, tail);
 }
 
 int vmotion_node::same(node *nd)
@@ -4679,6 +4706,20 @@ int overstrike_node::force_tprint()
   return 0;
 }
 
+node *overstrike_node::add_self(node *n, hyphen_list **p)
+{
+  next = n;
+  hyphen_list *pp = *p;
+  *p = (*p)->next;
+  delete pp;
+  return this;
+}
+
+hyphen_list *overstrike_node::get_hyphen_list(hyphen_list *tail)
+{
+  return new hyphen_list(0, tail);
+}
+
 int bracket_node::same(node *nd)
 {
   return same_node_list(list, ((bracket_node *)nd)->list);
@@ -4842,6 +4883,20 @@ int unbreakable_space_node::same(node *nd)
 const char *unbreakable_space_node::type()
 {
   return "unbreakable_space_node";
+}
+
+node *unbreakable_space_node::add_self(node *n, hyphen_list **p)
+{
+  next = n;
+  hyphen_list *pp = *p;
+  *p = (*p)->next;
+  delete pp;
+  return this;
+}
+
+hyphen_list *unbreakable_space_node::get_hyphen_list(hyphen_list *tail)
+{
+  return new hyphen_list(0, tail);
 }
 
 int diverted_space_node::same(node *nd)
