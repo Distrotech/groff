@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 5 Feb 2002
+   Last update: 10 Apr 2002
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -1342,11 +1342,20 @@ parse_D_command()
     }
   case 'f':			// Df: set fill gray; obsoleted by DFg
     {
-      // convert arg and treat it like DFg
-      ColorArg gray = color_from_Df_command(get_integer_arg());
+      IntArg arg = get_integer_arg();
+      if ((arg >= 0) && (arg <= 1000)) {
+	// convert arg and treat it like DFg
+	ColorArg gray = color_from_Df_command(arg);
+        current_env->fill->set_gray(gray);
+      }
+      else {
+	// set fill color to the same value as the current outline color
+	delete current_env->fill;
+	current_env->fill = new color(current_env->col);
+      }
+      pr->change_color(current_env);
       // skip unused `vertical' component (\D'...' always emits pairs)
       (void) get_integer_arg();
-      current_env->fill->set_gray(gray);
       // no positioning
       skip_line_x();
       break;

@@ -1,6 +1,11 @@
 // -*- C++ -*-
-/* Copyright (C) 2001, 2002 Free Software Foundation, Inc.
-     Written by Gaius Mulley <gaius@glam.ac.uk>
+
+/* <groff_src_dir>/src/libs/libgroff/color.cc
+
+Last update: 10 Apr 2002
+
+Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+    Written by Gaius Mulley <gaius@glam.ac.uk>
 
 This file is part of groff.
 
@@ -31,7 +36,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "errarg.h"
 #include "error.h"
 
-static inline unsigned int min(unsigned int a, unsigned int b)
+static inline unsigned int
+min(const unsigned int a, const unsigned int b)
 {
   if (a < b)
     return a;
@@ -39,9 +45,13 @@ static inline unsigned int min(unsigned int a, unsigned int b)
     return b;
 }
 
-color::color()
-: scheme(DEFAULT)
+color::color(const color * const c)
 {
+  scheme = c->scheme;
+  components[0] = c->components[0];
+  components[1] = c->components[1];
+  components[2] = c->components[2];
+  components[3] = c->components[3];
 }
 
 int color::operator==(const color & c) const
@@ -77,8 +87,12 @@ int color::operator!=(const color & c) const
   return !(*this == c);
 }
 
-color_scheme color::get_components(unsigned int *c)
+color_scheme color::get_components(unsigned int *c) const
 {
+#if 0
+  if (sizeof (c) < sizeof (unsigned int) * 4)
+    fatal("argument is not big enough to store 4 color components");
+#endif
   c[0] = components[0];
   c[1] = components[1];
   c[2] = components[2];
@@ -93,7 +107,8 @@ void color::set_default()
 
 // (0, 0, 0) is black
 
-void color::set_rgb(unsigned int r, unsigned int g, unsigned int b)
+void color::set_rgb(const unsigned int r, const unsigned int g,
+		    const unsigned int b)
 {
   scheme = RGB;
   Red = min(MAX_COLOR_VAL, r);
@@ -103,7 +118,8 @@ void color::set_rgb(unsigned int r, unsigned int g, unsigned int b)
 
 // (0, 0, 0) is white
 
-void color::set_cmy(unsigned int c, unsigned int m, unsigned int y)
+void color::set_cmy(const unsigned int c, const unsigned int m,
+		    const unsigned int y)
 {
   scheme = CMY;
   Cyan = min(MAX_COLOR_VAL, c);
@@ -113,8 +129,8 @@ void color::set_cmy(unsigned int c, unsigned int m, unsigned int y)
 
 // (0, 0, 0, 0) is white
 
-void color::set_cmyk(unsigned int c, unsigned int m,
-		     unsigned int y, unsigned int k)
+void color::set_cmyk(const unsigned int c, const unsigned int m,
+		     const unsigned int y, const unsigned int k)
 {
   scheme = CMYK;
   Cyan = min(MAX_COLOR_VAL, c);
@@ -125,20 +141,21 @@ void color::set_cmyk(unsigned int c, unsigned int m,
 
 // (0) is black
 
-void color::set_gray(unsigned int g)
+void color::set_gray(const unsigned int g)
 {
   scheme = GRAY;
   Gray = min(MAX_COLOR_VAL, g);
 }
 
 /*
- *  atoh - computes the value of the hex number S in N.  LENGTH characters
- *         are read.  Returns 1 if successful.
+ *  atoh - computes the decimal value of a hexadecimal number string.
+ *         `length' characters of `s' are read.  Returns 1 if successful.
  */
 
-static int atoh(unsigned int *n, const char *s, unsigned int length)
+static int atoh(unsigned int *result,
+		const char * const s, const size_t length)
 {
-  unsigned int i = 0;
+  size_t i = 0;
   unsigned int val = 0;
   while ((i < length) && csxdigit(s[i])) {
     if (csdigit(s[i]))
@@ -151,55 +168,60 @@ static int atoh(unsigned int *n, const char *s, unsigned int length)
   }
   if (i != length)
     return 0;
-  *n = val;
+  *result = val;
   return 1;
 }
 
 /*
- *  read_encoding - reads a hexadecimal color string in S, using color
- *                  scheme CS with N components.  Returns 1 if successful.
+ *  read_encoding - set color from a hexadecimal color string.
+ *
+ *  Use color scheme `cs' to parse `n' color components from string `s'.
+ *  Returns 1 if successful.
  */
 
-int color::read_encoding(color_scheme cs, const char *s, unsigned int n)
+int color::read_encoding(const color_scheme cs, const char * const s,
+			 const size_t n)
 {
-  int hex_length = 2;
+  size_t hex_length = 2;
   scheme = cs;
-  s++;
-  if (*s == '#') {
+  char *p = (char *) s;
+  p++;
+  if (*p == '#') {
     hex_length = 4;
-    s++;
+    p++;
   }
-  for (unsigned int i = 0; i < n; i++) {
-    if (!atoh(&components[i], s, hex_length))
+  for (size_t i = 0; i < n; i++) {
+    if (!atoh(&(components[i]), p, hex_length))
       return 0;
     if (hex_length == 2)
       components[i] *= 0x101;	// scale up -- 0xff should become 0xffff
-    s += hex_length;
+    p += hex_length;
   }
   return 1;
 }
 
-int color::read_rgb(const char *s)
+int color::read_rgb(const char * const s)
 {
   return read_encoding(RGB, s, 3);
 }
 
-int color::read_cmy(const char *s)
+int color::read_cmy(const char * const s)
 {
   return read_encoding(CMY, s, 3);
 }
 
-int color::read_cmyk(const char *s)
+int color::read_cmyk(const char * const s)
 {
   return read_encoding(CMYK, s, 4);
 }
 
-int color::read_gray(const char *s)
+int color::read_gray(const char * const s)
 {
   return read_encoding(GRAY, s, 1);
 }
 
-void color::get_rgb(unsigned int *r, unsigned int *g, unsigned int *b)
+void
+color::get_rgb(unsigned int *r, unsigned int *g, unsigned int *b) const
 {
   switch (scheme) {
   case RGB:
@@ -232,7 +254,8 @@ void color::get_rgb(unsigned int *r, unsigned int *g, unsigned int *b)
   }
 }
 
-void color::get_cmy(unsigned int *c, unsigned int *m, unsigned int *y)
+void
+color::get_cmy(unsigned int *c, unsigned int *m, unsigned int *y) const
 {
   switch (scheme) {
   case RGB:
@@ -263,7 +286,7 @@ void color::get_cmy(unsigned int *c, unsigned int *m, unsigned int *y)
 }
 
 void color::get_cmyk(unsigned int *c, unsigned int *m,
-		     unsigned int *y, unsigned int *k)
+		     unsigned int *y, unsigned int *k) const
 {
   switch (scheme) {
   case RGB:
@@ -315,7 +338,7 @@ void color::get_cmyk(unsigned int *c, unsigned int *m,
 // we use `0.222r + 0.707g + 0.071b' (this is the ITU standard)
 // as an approximation for gray
 
-void color::get_gray(unsigned int *g)
+void color::get_gray(unsigned int *g) const
 {
   switch (scheme) {
   case RGB:

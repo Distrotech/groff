@@ -512,7 +512,7 @@ static void write_start_image (IMAGE_ALIGNMENT pos, int is_html)
     writeString("\\O[0]");
   else
     // reset min/max registers
-    writeString("\\O[0]\\O[1]");
+    writeString("\\O[1]");
 }
 
 /*

@@ -982,7 +982,6 @@ void page::add_and_encode (style *s, const string &str,
       // start of escape
       i += 2; // move over \(
       int a = i;
-      string troff_charname;
       while ((i+1<str.length()) && (str.substring(i, 2) != string("\\)"))) {
 	i++;
       }
@@ -992,7 +991,8 @@ void page::add_and_encode (style *s, const string &str,
       else
 	n = -1;
       if (n > 0) {
-	html_glyph = get_html_translation(s->f, str.substring(a, n-a));
+	string troff_charname = str.substring(a, n-a);
+	html_glyph = get_html_translation(s->f, troff_charname);
 	if (html_glyph)
 	  html_string += html_glyph;
 	else {

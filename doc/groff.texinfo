@@ -4035,6 +4035,7 @@ Several new string registers are available as well.
 You can change these to handle (for example) the local language.
 @xref{ms Strings and Special Characters}, for details.
 
+
 @c =====================================================================
 
 @node me, mm, ms, Macro Packages
@@ -5329,6 +5330,10 @@ doesn't exist, @code{gtroff} creates it.
 
 The argument to @code{\R} usually has to be enclosed in quotes.
 @xref{Escapes}, for details on parameter delimiting characters.
+
+The @code{\R} escape doesn't produce an input token in @code{gtroff};
+with other words, it vanishes completely after @code{gtroff} has
+processed it.
 @endDefreq
 
 For example, the following two lines are equivalent:
@@ -5723,6 +5728,12 @@ The minor version number.  For example, if the version number is@w{
 @vindex .Y
 @cindex revision number register (@code{.Y})
 The revision number of @code{groff}.
+
+@item $$
+@vindex $$
+@cindex process ID of @code{gtroff} register (@code{$$})
+@cindex @code{gtroff}, process ID register (@code{$$})
+The process ID of @code{gtroff}.
 
 @item .g
 @vindex .g
@@ -7067,6 +7078,7 @@ output device; the code for switching to nroff mode is in the file
 @xref{Conditionals and Loops}, for more details on built-in
 conditions.
 
+
 @c =====================================================================
 
 @node Line Layout, Page Layout, Troff and Nroff Mode, gtroff Reference
@@ -7524,6 +7536,15 @@ spam
 and sausage.
 
 eggs, bacon, \fBspam\fP and sausage.
+@endExample
+
+Note that @code{\f} doesn't produce an inpt token in @code{gtroff}.
+As a consequence, it can be used in requests like @code{mc} (which
+expects a single character as an argument) to change the font on
+the fly:
+
+@Example
+.mc \f[I]x\f[P]
 @endExample
 
 @xref{Font Positions}, for an alternative syntax.
@@ -8403,6 +8424,7 @@ This is a test.
 @endExample
 @endDefesc
 
+
 @c =====================================================================
 
 @node Sizes, Strings, Fonts, gtroff Reference
@@ -8503,6 +8525,15 @@ two digits.
 Increase or decrease the point size by @var{nn}@w{ }points.  @var{nn}
 must be exactly two digits.
 @end table
+
+Note that @code{\s} doesn't produce an input token in @code{gtroff}.
+As a consequence, it can be used in requests like @code{mc} (which
+expects a single character as an argument) to change the font on
+the fly:
+
+@Example
+.mc \s[20]x\s[0]
+@endExample
 
 @xref{Fractional Type Sizes}, for yet another syntactical form of
 using the @code{\s} escape.
@@ -8810,8 +8841,8 @@ characters.
 
 The @code{ds1} request turns off compatibility mode
 while interpreting a string.  To be more precise, a @dfn{compatibility
-save} token is inserted at the beginning of  the string, and a
-@dfn{compatibility restore} token at the end.
+save} input token is inserted at the beginning of  the string, and a
+@dfn{compatibility restore} input token at the end.
 
 @Example
 .nr xxx 12345
@@ -8933,9 +8964,9 @@ to the string stored as @var{name} instead of redefining it.  If
 
 The @code{as1} request is similar to @code{as}, but compatibility mode
 is switched off while the appended string is interpreted.  To be more
-precise, a @dfn{compatibility save} token is inserted at the beginning
-of the appended string, and a @dfn{compatibility restore} token at the
-end.
+precise, a @dfn{compatibility save} input token is inserted at the
+beginning of the appended string, and a @dfn{compatibility restore}
+input token at the end.
 @endDefreq
 
 Rudimentary string manipulation routines are given with the next two
@@ -9403,8 +9434,9 @@ existing macro like this:
 
 The @code{am1} request turns off compatibility mode
 while executing the appended macro piece.  To be more precise, a
-@dfn{compatibility save} token is inserted at the beginning of the
-appended code, and a @dfn{compatibility restore} token at the end.
+@dfn{compatibility save} input token is inserted at the beginning of
+the appended code, and a @dfn{compatibility restore} input token at
+the end.
 
 The @code{ami} request appends indirectly,
 meaning that @code{gtroff} expands strings whose names
@@ -10540,6 +10572,7 @@ The vertical size of lines is not preserved; glyph information (font,
 font size, space width, etc.)@: is retained.
 @endDefreq
 
+
 @c =====================================================================
 
 @node Environments, Suppressing output, Diversions, gtroff Reference
@@ -10682,6 +10715,7 @@ that @code{gtroff} shold place an accent)
 of the last character added to the current environment.
 @endDefreg
 
+
 @c =====================================================================
 
 @node Suppressing output, Colors, Environments, gtroff Reference
@@ -10816,6 +10850,7 @@ The fill color is associated with the current environment
 (@pxref{Environments}).
 @endDefesc
 
+
 @c =====================================================================
 
 @node I/O, Postprocessor Access, Colors, gtroff Reference
@@ -10900,17 +10935,35 @@ jump to the end of file.
 @cindex reading from standard input (@code{rd})
 @cindex standard input, reading from (@code{rd})
 @cindex input, standard, reading from (@code{rd})
-@Defreq {rd, prompt}
+@Defreq {rd, [@Var{prompt} [@Var{arg1} @Var{arg2} @dots{}]]}
 Read from standard input, and include what is read as though it
 were part of the input file.  Text is read until a blank line
 is encountered.
+
+If standard input is a TTY input device (keyboard), write @var{prompt}
+to standard error, followed by a colon (or send BEL for a beep if no
+argument is given).
+
+Arguments after @var{prompt} are available for the input.  For example,
+the line
+
+@Example
+.rd data foo bar
+@endExample
+
+with the input @w{@samp{This is \$2.}} prints
+
+@Example
+This is bar.
+@endExample
 @endDefreq
 
 @cindex form letters
 @cindex letters, form
 Using the @code{nx} and @code{rd} requests,
 it is easy to set up form letters.  The form
-letter template is constructed like this:
+letter template is constructed like this, putting the following lines
+into a file called @file{repeat.let}:
 
 @Example
 .ce
@@ -10928,11 +10981,11 @@ Body of letter.
 
 @cindex @code{ex} request, used with @code{nx} and @code{rd}
 @noindent
-When this is run, the following file should be redirected in.  Note that
-requests included in this file are executed as though they were part of
-the form letter.  The last block of input is the @code{ex} requests
-which tells groff to stop processing.  If this was not there, groff
-would not know when to stop.
+When this is run, a file containing the following lines should be
+redirected in.  Note that requests included in this file are executed
+as though they were part of the form letter.  The last block of input
+is the @code{ex} request which tells groff to stop processing.  If
+this was not there, groff would not know when to stop.
 
 @Example
 Trent A. Fisher
@@ -10951,7 +11004,7 @@ Dear Mr. Adollar,
 @endExample
 
 @Defreq {pi, pipe}
-Pipes the output of @code{gtroff} to the shell command(s)
+Pipe the output of @code{gtroff} to the shell command(s)
 specified by @var{pipe}.  This request must occur before
 @code{gtroff} has a chance to print anything.
 
@@ -11000,7 +11053,7 @@ of the @code{system()} function executed by the last @code{sy} request.
 @cindex file, appending to (@code{opena})
 @DefreqList {open, stream file}
 @DefreqListEnd {opena, stream file}
-Opens the specified @var{file} for writing and
+Open the specified @var{file} for writing and
 associates the specified @var{stream} with it.
 
 The @code{opena} request is like @code{open}, but if the file exists,
@@ -11017,7 +11070,7 @@ option to activate unsafe mode.
 @cindex file, writing to (@code{write})
 @DefreqList {write, stream data}
 @DefreqListEnd {writec, stream data}
-Writes to the file associated with the specified @var{stream}.
+Write to the file associated with the specified @var{stream}.
 The stream must previously have
 been the subject of an open request.  The remainder of the line is
 interpreted as the @code{ds} request reads its second argument: A
@@ -11029,7 +11082,7 @@ The @code{writec} request is like @code{write}, but only
 
 @cindex @code{asciify} and @code{writem}
 @Defreq {writem, stream xx}
-Writes the contents of the macro or string @var{xx}
+Write the contents of the macro or string @var{xx}
 to the file associated with the specified @var{stream}.
 
 @var{xx} is read in copy mode, i.e., already formatted elements are
@@ -11041,7 +11094,7 @@ means a loss of information.
 @cindex closing file (@code{close})
 @cindex file, closing (@code{close})
 @Defreq {close, stream}
-Closes the specified @var{stream};
+Close the specified @var{stream};
 the stream is no longer an acceptable argument to the
 @code{write} request.
 
@@ -11054,12 +11107,13 @@ the stream is no longer an acceptable argument to the
 @end ignore
 @endDefreq
 
-@Defesc {\\V, ', xxx, '}
-Interpolates the contents of the specified
-environment variable, as returned by the function @code{getenv}.
-Specify the argument to @code{\V} as an identifier, i.e.@:
-@samp{\V@var{x}}, @samp{\V(@var{xx}} or @samp{\V[@var{xxx}]}.  @code{\V}
-is interpreted in copy-in mode.
+@DefescList {\\V, , e, }
+@DefescItem {\\V, @lparen{}, ev, }
+@DefescListEnd {\\V, @lbrack{}, env, @rbrack}
+Interpolate the contents of the specified environment variable
+@var{env} (one-character name@w{ }@var{e}, two-character name @var{ev})
+as returned by the function @code{getenv}.  @code{\V} is interpreted
+in copy-in mode.
 @endDefesc
 
 
@@ -11102,16 +11156,18 @@ Additionally, the backslash is represented as @code{\\}.
 This mechanism is currently used by @code{grohtml} only.
 @endDefesc
 
-@Defesc {\\Y, ', xxx, '}
-The @code{\Y} escape is called with an identifier (i.e.@:
-@code{\Y@var{x}}, @code{\Y(@var{xx}} or @code{\Y[@var{xxx}]}).  This is
-approximately equivalent to @samp{\X'\*[@var{xxx}]'}.  However, the
-contents of the string or macro @var{xxx} are not interpreted; also it
-is permitted for @var{xxx} to have been defined as a macro and thus
-contain newlines (it is not permitted for the argument to @code{\X} to
-contain newlines).  The inclusion of newlines requires an extension to
-the @acronym{UNIX} @code{troff} output format, and confuses drivers
-that do not know about this extension.
+@DefescList {\\Y, , n, }
+@DefescItem {\\Y, @lparen{}, nm, }
+@DefescListEnd {\\Y, @lbrack{}, name, @rbrack}
+This is approximately equivalent to @samp{\X'\*[@var{name}]'}
+(one-character name@w{ }@var{n}, two-character name @var{nm}).
+However, the contents of the string or macro @var{name} are not
+interpreted; also it is permitted for @var{name} to have been defined
+as a macro and thus contain newlines (it is not permitted for the
+argument to @code{\X} to contain newlines).  The inclusion of
+newlines requires an extension to the @acronym{UNIX} @code{troff}
+output format, and confuses drivers that do not know about this
+extension (@pxref{Line Continuation}).
 @endDefesc
 
 @xref{Output Devices}.
@@ -11129,36 +11185,76 @@ categorized elsewhere in this manual.
 @cindex printing line numbers (@code{nm})
 @cindex line numbers, printing (@code{nm})
 @cindex numbers, line, printing (@code{nm})
-@Defreq {nm, start inc space indent}
-Prints line numbers in the left margin.
+@Defreq {nm, [@Var{start} [@Var{inc} [@Var{space} [@Var{indent}]]]]}
+Print line numbers.
 @var{start} is the line number of the @emph{next}
-output line; this defaults to@w{ }1.  @var{inc} indicates on
-which lines numbers are printed, i.e.@: 5 means put line numbers on
-every 5@w{ }lines; this defaults to@w{ }1.  @var{space} is the
-space to be left between the number and the text; this defaults to@w{
-}1.  The fourth argument is the indentation of the line numbers.
-Without arguments, line numbers are turned off.
+output line.  @var{inc} indicates which line numbers are printed.
+For example, the value@w{ }5 means to emit only line numbers which
+are multiples of@w{ }5; this defaults to@w{ }1.  @var{space} is the
+space to be left between the number and the text; this defaults to
+one digit space.  The fourth argument is the indentation of the line
+numbers, defaulting to zero.  Both @var{space} and @var{indent} are
+given as multiples of digit spaces; they can be negative also.
+Without any arguments, line numbers are turned off.
+
+@code{gtroff} reserves three digit spaces for the line number (which is
+printed right-justified) plus the amount given by @var{indent}; the
+output lines are concatenated to the line numbers, separated by
+@var{space}, and @emph{without} reducing the line length.  Depending
+on the value of the horizontal page offset (as set with the
+@code{po} request), line numbers which are longer than the reserved
+space stick out to the left, or the whole line is moved to the right.
+
+Parameters corresponding to missing arguments are not changed; any
+non-digit argument (to be more precise, any argument starting with a
+character valid as a delimiter for identifiers) is also treated as
+missing.
+
+If line numbering has been disabled with a call to @code{nm} without
+an argument, it can be reactivated with @samp{.nm +0}, using the
+previously active line numbering parameters.
 
 The parameters of @code{nm} are associated with the current environment
 (@pxref{Environments}).
+
+@Example
+.po 1m
+.ll 2i
+This test shows how line numbering works with groff.
+.nm 999
+This test shows how line numbering works with groff.
+.br
+.nm xxx 3 2
+.ll -\w'0'u
+This test shows how line numbering works with groff.
+.nn 2
+This test shows how line numbering works with groff.
+@endExample
+
+@noindent
+And here the result:
+
+@Example
+ This  test shows how
+ line numbering works
+ 999 with   groff.   This
+1000 test shows how  line
+1001 numbering works with
+1002 groff.
+      This test shows how
+      line      numbering
+ works  with  groff.
+ This test shows how
+1005  line      numbering
+      works with groff.
+@endExample
 @endDefreq
 
 @c XXX xref ln register
 
 @Defreq {nn, [@Var{skip}]}
-Temporarily turns off line numbering.  The
-argument is the number of lines not to be numbered; this defaults
-to@w{ }1.
-
-@c XXX (does this disable incrementing or display?)
-
-@c XXX example
-
-@ignore
-@Example
-... line numbering example ...
-@endExample
-@end ignore
+Temporarily turns off line numbering.  The argument is the number
+of lines not to be numbered; this defaults to@w{ }1.
 @endDefreq
 
 @cindex margin characters (@code{mc})
@@ -11189,29 +11285,6 @@ there are programs available for doing this (they are called
 @end ignore
 @endDefreq
 
-@pindex soelim
-@cindex multi-file documents
-@cindex documents, multi-file
-@cindex setting input line number (@code{lf})
-@cindex input line number, setting (@code{lf})
-@cindex number, input line, setting (@code{lf})
-@Defreq {lf, line filename}
-A debugging aid for
-documents which are split into many files, then put together
-with @code{soelim} and other preprocessors.  The second argument is the
-name of the file and the first argument is the input line number in
-that file.  This way @code{gtroff} can produce error messages which are
-intelligible to the user.
-
-@c XXX example
-
-@ignore
-@Example
-... example of soelim'ed doc ...
-@endExample
-@end ignore
-@endDefreq
-
 @cindex PostScript, bounding box
 @cindex bounding box
 @DefreqList {psbb, filename}
@@ -11226,10 +11299,11 @@ Adobe's @dfn{Document Structuring Conventions} (DSC);
 the command searches for a @code{%%BoundingBox} comment
 and extracts the bounding box values into the number registers
 @code{llx}, @code{lly}, @code{urx}, and @code{ury}.
-If an error occurs (e.g. @code{psbb} cannot find
+If an error occurs (for example, @code{psbb} cannot find
 the @code{%%BoundingBox} comment),
 it sets the four number registers to zero.
 @endDefreq
+
 
 @c =====================================================================
 
@@ -11241,20 +11315,29 @@ it sets the four number registers to zero.
 @cindex output node
 @cindex node, output
 @code{gtroff} processes input in three steps.  One or more input
-characters are converted to an @dfn{input token}.  Then, one or more
-input tokens are converted to an @dfn{output node}.  Finally, output
-nodes are converted to the intermediate output language understood by
-all output devices.
+characters are converted to an @dfn{input token}.@footnote{Except the
+escapes @code{\f}, @code{\H}, @code{\R}, @code{\s}, and @code{\S}
+which are processed immediately if not in copy-in mode.}  Then, one
+or more input tokens are converted to an @dfn{output node}.  Finally,
+output nodes are converted to the intermediate output language
+understood by all output devices.
 
-For example, the input string @samp{fi\[:u]} is converted in a
+Actually, before step one happens, @code{gtroff} converts certain
+escape sequences into reserved input characters (not accessible by
+the user); such reserved characters are used for other internal
+processing also -- this is the very reason why not all characters
+are valid input.  @xref{Identifiers}, for more on this topic.
+
+For example, the input string @samp{fi\[:u]} is converted into a
 character token @samp{f}, a character token @samp{i}, and a special
 token @samp{:u} (representing u@w{ }umlaut).  Later on, the character
 tokens @samp{f} and @samp{i} are merged to a single output node
-representing the ligature glyph @samp{fi}; the same happens with
-@samp{:u}.  All output glyph nodes are `processed' which means that
-they are invariably associated with a given font, font size, advance
-width, etc.  During the formatting process, @code{gtroff} itself adds
-various nodes to control the data flow.
+representing the ligature glyph @samp{fi} (provided the current font
+has a glyph for this ligature); the same happens with @samp{:u}.  All
+output glyph nodes are `processed' which means that they are invariably
+associated with a given font, font size, advance width, etc.  During
+the formatting process, @code{gtroff} itself adds various nodes to
+control the data flow.
 
 Macros, diversions, and strings collect elements in two chained lists:
 a list of input tokens which have been passed unprocessed, and a list
@@ -11290,7 +11373,7 @@ It contains these elements.
 @noindent
 Elements 1, 7, and@w{ }8 are inserted by @code{gtroff}; the latter two
 (which are always present) specify the vertical extent of the last
-line, possibly modified by @code{\v}.  The @code{br} request finishes
+line, possibly modified by @code{\x}.  The @code{br} request finishes
 the current partial line, inserting a newline input token which is
 subsequently converted to a space when the diversion is reread.  Note
 that the word space node has a fixed width which isn't stretchable
@@ -11309,6 +11392,28 @@ empty); diversions and strings can contain elements in both lists.
 
 @code{gtroff} is not easy to debug, but there are some useful features
 and strategies for debugging.
+
+@pindex soelim
+@cindex multi-file documents
+@cindex documents, multi-file
+@cindex setting input line number (@code{lf})
+@cindex input line number, setting (@code{lf})
+@cindex number, input line, setting (@code{lf})
+@Defreq {lf, line filename}
+A debugging aid for documents which are split into many files,
+then put together with @code{soelim} and other preprocessors.
+The second argument is the name of the file and the first argument
+is the input line number in that file.  This way @code{gtroff} can
+produce error messages which are intelligible to the user.
+
+@c XXX example
+
+@ignore
+@Example
+... example of soelim'ed doc ...
+@endExample
+@end ignore
+@endDefreq
 
 @cindex printing to stderr (@code{tm})
 @cindex stderr, printing to (@code{tm})
@@ -12004,6 +12109,7 @@ is available as an extra package from the following address:
 @c original Teletype machines for which this sequence was appropriate are
 @c no longer in use).  You need a pager program like @code{less} which
 @c translates this into ISO 6429 SGR sequences to control terminals.
+
 
 @c =====================================================================
 

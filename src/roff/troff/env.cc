@@ -725,6 +725,7 @@ environment::environment(const environment *e)
   widow_control(e->widow_control),
 #endif /* WIDOW_CONTROL */
   ignore_next_eol(0),
+  emitted_node(0),
   cur_glyph_color(e->cur_glyph_color),
   prev_glyph_color(e->prev_glyph_color),
   cur_fill_color(e->cur_fill_color),
@@ -810,6 +811,8 @@ void environment::copy(const environment *e)
   hyphenation_space = e->hyphenation_space;
   hyphenation_margin = e->hyphenation_margin;
   composite = 0;
+  ignore_next_eol = e->ignore_next_eol;
+  emitted_node = e->emitted_node;
   cur_glyph_color= e->cur_glyph_color;
   prev_glyph_color = e->prev_glyph_color;
   cur_fill_color = e->cur_fill_color;
