@@ -187,6 +187,9 @@ PostScript command).
 This was the behaviour of groff version 1.18.1 and earlier; it is needed
 for older printers which don't understand PostScript LanguageLevel\~2.
 .
+It is also necessary if the output is further processed to get an
+encapsulated PS (EPS) file -- see below.
+.
 .IP
 The default value can be specified by a
 .
@@ -1003,6 +1006,37 @@ and
 .BR %%End\%Font
 comments)
 should be used.
+.
+.
+.SS Encapsulated PostScript
+.B grops
+itself doesn't emit bounding box information.
+.
+With the help of the
+.BR eps2eps (1)
+script which is part of GhostScript
+the following commands will produce an encapsulated PS file
+.B foo.eps
+from input file
+.BR foo :
+.
+.IP
+.B
+groff -P-b16 foo > foo.ps
+.br
+.B
+eps2eps foo.ps foo.tmp
+.br
+.B
+grep %%BoundingBox foo.tmp > foo.bbx
+.br
+.B
+cat foo.ps | sed \-e '/%%Orientation/rfoo.bbx' > foo.eps
+.br
+.B
+rm foo.tmp foo.bbx
+.br
+.
 .
 .
 .SS TrueType fonts
