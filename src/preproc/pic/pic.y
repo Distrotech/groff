@@ -1,4 +1,4 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1664,7 +1664,7 @@ place *lookup_label(const char *label)
 
 void define_label(const char *label, const place *pl)
 {
-  place *p = new place;
+  place *p = new place[1];
   *p = *pl;
   current_table->define(label, p);
 }
@@ -1681,7 +1681,7 @@ int lookup_variable(const char *name, double *val)
 
 void define_variable(const char *name, double val)
 {
-  place *p = new place;
+  place *p = new place[1];
   p->obj = 0;
   p->x = val;
   p->y = 0.0;

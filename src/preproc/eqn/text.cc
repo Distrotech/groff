@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -104,7 +104,7 @@ static void set_special_char_type(const char *ch, int st, int ft)
 {
   char_info *p = special_char_table.lookup(ch);
   if (!p) {
-    p = new char_info;
+    p = new char_info[1];
     special_char_table.define(ch, p);
   }
   if (st >= 0)
@@ -517,7 +517,7 @@ box *split_text(char *text)
 	fb = b;
     }
   }
-  delete text;
+  a_delete text;
   if (lb != 0)
     return lb;
   else if (fb != 0)

@@ -1874,6 +1874,13 @@ breakpoint *environment::choose_breakpoint()
 	    // No need to consider a non-hyphenated breakpoint.
 	    if (best_bp)
 	      delete best_bp;
+	    breakpoint *tem = bp->next;
+	    bp->next = 0;
+	    while (tem != 0) {
+	      breakpoint *tem1 = tem;
+	      tem = tem->next;
+	      delete tem1;
+	    }
 	    return bp;
 	  }
 	  // It fits but it's hyphenated.
@@ -3594,6 +3601,8 @@ void hyphen_trie::read_patterns_file(const char *name, int append,
   if (!append)
     clear();
   char buf[WORD_MAX];
+  for (int i = 0; i < WORD_MAX; i++)
+    buf[i] = 0;
   int num[WORD_MAX+1];
   errno = 0;
   char *path = 0;

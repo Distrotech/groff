@@ -1500,8 +1500,8 @@ void troff_output_file::trailer(vunits page_length)
 }
 
 troff_output_file::troff_output_file()
-: current_slant(0), current_height(0), nfont_positions(10), tbuf_len(0),
-  begun_page(0)
+: current_slant(0), current_height(0), current_fill_color(0),
+  current_glyph_color(0), nfont_positions(10), tbuf_len(0), begun_page(0)
 {
   font_position = new symbol[nfont_positions];
   put("x T ");

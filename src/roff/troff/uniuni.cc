@@ -1981,7 +1981,7 @@ unicode_decompose_init::unicode_decompose_init() {
   for (unsigned int i = 0;
        i < sizeof(unicode_decompose_list)/sizeof(unicode_decompose_list[0]);
        i++) {
-    unicode_decompose *dec = new unicode_decompose;
+    unicode_decompose *dec = new unicode_decompose[1];
     dec->value = unicode_decompose_list[i].value;
     unicode_decompose_table.define(unicode_decompose_list[i].key, dec);
   }

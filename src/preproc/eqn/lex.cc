@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -254,19 +254,19 @@ void init_table(const char *device)
 {
   unsigned int i;
   for (i = 0; i < sizeof(token_table)/sizeof(token_table[0]); i++) {
-    definition *def = new definition;
+    definition *def = new definition[1];
     def->is_macro = 0;
     def->tok = token_table[i].token;
     macro_table.define(token_table[i].name, def);
   }
   for (i = 0; i < sizeof(def_table)/sizeof(def_table[0]); i++) {
-    definition *def = new definition;
+    definition *def = new definition[1];
     def->is_macro = 1;
     def->contents = strsave(def_table[i].def);
     def->is_simple = 1;
     macro_table.define(def_table[i].name, def);
   }
-  definition *def = new definition;
+  definition *def = new definition[1];
   def->is_macro = 1;
   def->contents = strsave("1");
   macro_table.define(device, def);
@@ -910,7 +910,7 @@ void do_definition(int is_simple)
   const char *name = token_buffer.contents();
   definition *def = macro_table.lookup(name);
   if (def == 0) {
-    def = new definition;
+    def = new definition[1];
     macro_table.define(name, def);
   }
   else if (def->is_macro) {

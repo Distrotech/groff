@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -728,6 +728,7 @@ void ps_printer::define_encoding(const char *encoding, int encoding_index)
   }
   out.put_delimiter(']')
      .put_symbol("def");
+  fclose(fp);
 }
 
 void ps_printer::reencode_font(ps_font *f)

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -86,7 +86,7 @@ int character_indexer::named_char_index(const char *s)
 {
   int *np = table.lookup(s);
   if (!np) {
-    np = new int;
+    np = new int[1];
     *np = next_index++;
     table.define(s, np);
   }

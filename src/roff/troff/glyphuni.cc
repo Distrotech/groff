@@ -487,7 +487,7 @@ glyph_to_unicode_init::glyph_to_unicode_init() {
   for (unsigned int i = 0;
        i < sizeof(glyph_to_unicode_list)/sizeof(glyph_to_unicode_list[0]);
        i++) {
-    glyph_to_unicode *gtu = new glyph_to_unicode;
+    glyph_to_unicode *gtu = new glyph_to_unicode[1];
     gtu->value = glyph_to_unicode_list[i].value;
     glyph_to_unicode_table.define(glyph_to_unicode_list[i].key, gtu);
   }

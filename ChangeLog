@@ -1,3 +1,77 @@
+2003-02-10  Werner LEMBERG  <wl@gnu.org>
+
+	Improve error messages for `x F' (and `F') commands.
+
+	* src/include/error.h: Add declaration for
+	`current_source_filename'.
+	* src/libs/libgroff/filename.cc: Add `current_source_filename'.
+	* src/libs/libgroff/error.cc (do_error_with_file_and_line): Add
+	parameter for source file string.
+	Updated all callers.
+
+	* src/libs/libdriver/input.cc: Add `current_source_filename'.
+	(remember_source_filename): New function.
+	(parse_x_command <'F'>, do_file <'F'>): Use it.
+
+2003-02-09  Werner LEMBERG  <wl@gnu.org>
+
+	Make grotty not emit warnings about unknown colors more than
+	necessary.
+
+	* src/devices/grotty/tty.cc: Include `ptable.h'.
+	(TTY_MAX_COLORS): Removed.
+	(DEFAULT_COLOR_IDX): Defined to -1.
+	(glyph): Change `back_color_idx' and `fore_color_idx' to `char'.
+	(tty_printer): Change `curr_back_idx' and `curr_fore_idx' to `char'.
+	Change `tty_colors' to be a ptable.
+	First arg of `put_color' is now `char'.
+	New functions `make_rgb_string' and `tty_color'.
+	(tty_printer::tty_printer): Use `tty_color'.
+	(tty_printer::color_to_idx): Return value is now `char'.
+	Use `tty_color'.
+
+	* src/include/color.h (color): Add `print_color' member function.
+	* src/libs/libgroff/color.cc (color::print_color): Implement it.
+
+2003-02-08  Werner LEMBERG  <wl@gnu.org>
+
+	Valgrind fixes.
+
+	* src/devices/grops/ps.cc (ps_printer::define_encoding): Close
+	encoding file.
+
+	* src/include/ptable.h (PTABLE::~PTABLE, PTABLE::define): Always
+	assume that value has been allocated with `new[]', thus use
+	`a_delete' for deallocation.
+
+	* src/libs/libdriver/input.cc (get_integer_arg,
+	get_possibly_int_args, parse_x_command, do_file): Use `a_delete'
+	where appropriate.
+
+	* src/libs/libgroff/new.cc (delete) [!COOKIE_BUG]: Define.
+	* src/libs/libgroff/nametoindex.cc
+	(character_indexer::named_char_index): Use `new <type>[1]'.
+
+	* src/preproc/eqn/lex.cc (init_table, do_definition): Use `new
+	<type>[1]'.
+	* src/preproc/eqn/text.cc (set_special_char_type): Ditto.
+	(split_text): Use `a_delete'.
+
+	* src/preproc/pic/pic.y (define_label, define_variable): Use `new
+	<type>[1]'.
+
+	* src/roff/troff/env.cc (environment::choose_breakpoint): Avoid
+	harmless memory leak.
+	(hyphen_trie::read_patterns_file): Initialize `buf'.
+	* src/roff/troff/node.cc (troff_output_file::troff_output_file):
+	Initialize `current_fill_color'and `current_glyph_color'.
+	* src/roff/troff/glyphuni.cc
+	(glyph_to_unicode_init::glyph_to_unicode_init): Use `new <type>[1]'.
+	* src/roff/troff/uniuni.cc
+	(unicode_decompose_init::unicode_decompose_init): Ditto.
+	* src/roff/troff/uniglyph.cc
+	(unicode_to_glyph_init::unicode_to_glyph_init): Ditto.
+
 2003-01-26  Werner LEMBERG  <wl@gnu.org>
 
 	* src/utils/indxbib/indxbib.cc (main) [__EMX__]: Check with

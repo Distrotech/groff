@@ -1,4 +1,5 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2003
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -58,12 +59,13 @@ void *operator new(size_t size)
 #endif /* not COOKIE_BUG */
 }
 
-#ifdef COOKIE_BUG
-
 void operator delete(void *p)
 {
+#ifdef COOKIE_BUG
   if (p)
     free((void *)((char *)p - 8));
-}
-
+#else
+  if (p)
+    free(p);
 #endif /* COOKIE_BUG */
+}

@@ -2,9 +2,9 @@
 
 /* <groff_src_dir>/src/include/color.h
 
-Last update: 10 Apr 2002
+Last update: 9 Feb 2003
 
-Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+Copyright (C) 2001, 2002, 2003 Free Software Foundation, Inc.
     Written by Gaius Mulley <gaius@glam.ac.uk>
 
 This file is part of groff.
@@ -71,6 +71,8 @@ public:
   void get_cmyk(unsigned int *c, unsigned int *m,
 		unsigned int *y, unsigned int *k) const;
   void get_gray(unsigned int *g) const;
+
+  char *print_color();
 };
 
 #define Cyan components[0]

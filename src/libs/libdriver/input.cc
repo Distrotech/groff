@@ -43,8 +43,8 @@
    The prototyping for this file is done in driver.h (and error.h).
 
    Postprocessor programs must deallocate the global variables `pr' and
-   `device' using `delete', and `current_filename' using
-   `free((char *))'.
+   `device' with `delete', `current_filename' and
+   `current_source_filename' with `free((char *))'.
 */
 
 /* Changes of the 2001 rewrite of this file.
@@ -152,9 +152,10 @@
        So it could be replaced by a static local variable.  For
        example, a wrapper class `Postprocessor' for class `printer' with
        internal make_printer() and automatic clean-up would make sense.
-     - The global variables `current_filename' and `current_lineno' are
-       only used for error reporting.  So implement a static class
-       `Error' (`::' calls).
+     - The global variables `current_filename',
+       `current_source_filename', and `current_lineno' are only used for
+       error reporting.  So implement a static class `Error'
+       (`::' calls).
      - The global `device' is the name used during the formatting
        process; there should be a new variable for the device name used
        during the postprocessing.
@@ -346,6 +347,8 @@ public:
 // exported as extern by error.h (called from driver.h)
 // needed for error messages (see ../libgroff/error.cc)
 const char *current_filename = 0; // printable name of the current file
+				  // printable name of current source file
+const char *current_source_filename = 0;
 int current_lineno = 0;		  // current line number of printout
 
 // exported as extern by device.h;
@@ -418,6 +421,8 @@ void position_to_end_of_args(const IntArray * const);
 				// positioning after drawing
 void remember_filename(const char *);
 				// set global current_filename
+void remember_source_filename(const char *);
+				// set global current_source_filename
 void send_draw(const Char, const IntArray * const);
 				// call pr->draw
 void skip_line(void);		// unconditionally skip to next line
@@ -817,7 +822,7 @@ get_integer_arg(void)
     error("integer argument too large");
     number = 0;
   }
-  delete s;
+  a_delete s;
   return (IntArg) number;
 }
 
@@ -869,7 +874,7 @@ get_possibly_integer_args()
 	x = 0;
       }
       args->append((IntArg) x);
-      delete s;
+      a_delete s;
     }
     // Here, c is not a digit.
     // Terminate on comment, end of line, or end of file, while
@@ -1055,6 +1060,32 @@ remember_filename(const char *filename)
   if (current_filename == 0)
     fatal("can't malloc space for filename");
   strncpy((char *)current_filename, (char *)fname, len);
+}
+
+//////////////////////////////////////////////////////////////////////
+/* remember_source_filename():
+   Set global variable current_source_filename.
+
+   The actual filename is stored in current_filename.  This is used by
+   the postprocessors, expecting the name "<standard input>" for stdin.
+
+   filename: In-out-parameter; is changed to the new value also.
+*/
+void
+remember_source_filename(const char *filename)
+{
+  char *fname;
+  if (strcmp(filename, "-") == 0)
+    fname = "<standard input>";
+  else
+    fname = (char *) filename;
+  size_t len = strlen(fname) + 1;
+  if (current_source_filename != 0)
+    free((char *)current_source_filename);
+  current_source_filename = (const char *) malloc(len);
+  if (current_source_filename == 0)
+    fatal("can't malloc space for filename");
+  strncpy((char *)current_source_filename, (char *)fname, len);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1444,7 +1475,7 @@ parse_x_command(void)
       IntArg n = get_integer_arg();
       char *name = get_string_arg();
       pr->load_font(n, name);
-      delete name;
+      a_delete name;
       skip_line_x();
       break;
     }
@@ -1454,8 +1485,8 @@ parse_x_command(void)
       if (str_arg == 0)
 	warning("empty argument for `x F' command");
       else {
-	remember_filename(str_arg);
-	delete str_arg;
+	remember_source_filename(str_arg);
+	a_delete str_arg;
       }
       break;
     }
@@ -1495,7 +1526,7 @@ parse_x_command(void)
     {
       char *str_arg = get_string_arg();
       pr->special(str_arg, current_env, 'u');
-      delete str_arg;
+      a_delete str_arg;
       skip_line_x();
       break;
     }
@@ -1506,14 +1537,14 @@ parse_x_command(void)
 	error("`x X' command invalid before first `p' command");
       else
 	pr->special(str_arg, current_env);
-      delete str_arg;
+      a_delete str_arg;
       break;
     }
   default:			// ignore unknown x commands, but warn
     warning("unknown command `x %1'", subcmd);
     skip_line();
   }
-  delete subcmd_str;
+  a_delete subcmd_str;
   return stopped;
 }
 
@@ -1582,7 +1613,7 @@ do_file(const char *filename)
     str_arg = get_string_arg();
     if (str_arg[0] != 'T')
       fatal("the first command must be `x T'");
-    delete str_arg;
+    a_delete str_arg;
     char *tmp_dev = get_string_arg();
     if (pr == 0) {		// note: `pr' initialized after prologue
       device = tmp_dev;
@@ -1592,7 +1623,7 @@ do_file(const char *filename)
     else {
       if (device == 0 || strcmp(device, tmp_dev) != 0)
 	fatal("all files must use the same device");
-      delete tmp_dev;
+      a_delete tmp_dev;
     }
     skip_line_x();		// ignore further arguments
     current_env->size = 10 * font::sizescale;
@@ -1604,7 +1635,7 @@ do_file(const char *filename)
     str_arg = get_string_arg();
     if (str_arg[0] != 'r')
       fatal("the second command must be `x res'");
-    delete str_arg;
+    a_delete str_arg;
     int_arg = get_integer_arg();
     EnvInt font_res = font::res;
     if (int_arg != font_res)
@@ -1624,7 +1655,7 @@ do_file(const char *filename)
     str_arg = get_string_arg();
     if (str_arg[0] != 'i')
       fatal("the third command must be `x init'");
-    delete str_arg;
+    a_delete str_arg;
     skip_line_x();
   }
 
@@ -1701,7 +1732,7 @@ do_file(const char *filename)
 	  fatal_command(command);
 	char *str_arg = get_string_arg();
 	pr->set_special_char(str_arg, current_env);
-	delete str_arg;
+	a_delete str_arg;
 	break;
       }
     case 'D':			// drawing commands
@@ -1715,8 +1746,8 @@ do_file(const char *filename)
     case 'F':			// F: obsolete, replaced by `x F'
       {
 	char *str_arg = get_string_arg();
-	remember_filename(str_arg);
-	delete str_arg;
+	remember_source_filename(str_arg);
+	a_delete str_arg;
 	break;
       }
     case 'h':			// h: relative horizontal move
@@ -1766,7 +1797,7 @@ do_file(const char *filename)
 	  pr->set_ascii_char((unsigned char) c, current_env, &w);
 	  current_env->hpos += w;
 	}
-	delete str_arg;
+	a_delete str_arg;
 	break;
       }
     case 'u':			// u: print spaced word
@@ -1782,7 +1813,7 @@ do_file(const char *filename)
 	  pr->set_ascii_char((unsigned char) c, current_env, &w);
 	  current_env->hpos += w + kern;
 	}
-	delete str_arg;
+	a_delete str_arg;
 	break;
       }
     case 'v':			// v: relative vertical move

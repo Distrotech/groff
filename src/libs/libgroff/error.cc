@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -28,7 +28,9 @@ extern void fatal_error_exit();
 
 enum error_type { WARNING, ERROR, FATAL };
 
-static void do_error_with_file_and_line(const char *filename, int lineno,
+static void do_error_with_file_and_line(const char *filename,
+					const char *source_filename,
+					int lineno,
 					error_type type, 
 					const char *format, 
 					const errarg &arg1,
@@ -43,7 +45,10 @@ static void do_error_with_file_and_line(const char *filename, int lineno,
   if (lineno >= 0 && filename != 0) {
     if (strcmp(filename, "-") == 0)
       filename = "<standard input>";
-    fprintf(stderr, "%s:%d:", filename, lineno);
+    if (source_filename != 0)
+      fprintf(stderr, "%s (%s):%d:", filename, source_filename, lineno);
+    else
+      fprintf(stderr, "%s:%d:", filename, lineno);
     need_space = 1;
   }
   switch (type) {
@@ -74,8 +79,8 @@ static void do_error(error_type type,
 		     const errarg &arg2,
 		     const errarg &arg3)
 {
-  do_error_with_file_and_line(current_filename, current_lineno,
-			      type, format, arg1, arg2, arg3);
+  do_error_with_file_and_line(current_filename, current_source_filename,
+			      current_lineno, type, format, arg1, arg2, arg3);
 }
 
 
@@ -110,18 +115,18 @@ void error_with_file_and_line(const char *filename,
 			      const errarg &arg2,
 			      const errarg &arg3)
 {
-  do_error_with_file_and_line(filename, lineno, 
+  do_error_with_file_and_line(filename, 0, lineno, 
 			      ERROR, format, arg1, arg2, arg3);
 }
 
 void warning_with_file_and_line(const char *filename,
-			      int lineno,
-			      const char *format, 
-			      const errarg &arg1,
-			      const errarg &arg2,
-			      const errarg &arg3)
+				int lineno,
+				const char *format, 
+				const errarg &arg1,
+				const errarg &arg2,
+				const errarg &arg3)
 {
-  do_error_with_file_and_line(filename, lineno, 
+  do_error_with_file_and_line(filename, 0, lineno, 
 			      WARNING, format, arg1, arg2, arg3);
 }
 
@@ -132,6 +137,6 @@ void fatal_with_file_and_line(const char *filename,
 			      const errarg &arg2,
 			      const errarg &arg3)
 {
-  do_error_with_file_and_line(filename, lineno, 
+  do_error_with_file_and_line(filename, 0, lineno, 
 			      FATAL, format, arg1, arg2, arg3);
 }

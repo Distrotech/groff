@@ -2,9 +2,9 @@
 
 /* <groff_src_dir>/src/libs/libgroff/color.cc
 
-Last update: 10 Apr 2002
+Last update: 9 Feb 2003
 
-Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+Copyright (C) 2001, 2002, 2003 Free Software Foundation, Inc.
     Written by Gaius Mulley <gaius@glam.ac.uk>
 
 This file is part of groff.
@@ -358,6 +358,40 @@ void color::get_gray(unsigned int *g) const
     assert(0);
     break;
   }
+}
+
+char *color::print_color()
+{
+  char *s = new char[30];
+  switch (scheme) {
+  case DEFAULT:
+    sprintf(s, "default");
+    break;
+  case RGB:
+    sprintf(s, "rgb %.2ff %.2ff %.2ff",
+	    double(Red) / MAX_COLOR_VAL,
+	    double(Green) / MAX_COLOR_VAL,
+	    double(Blue) / MAX_COLOR_VAL);
+    break;
+  case CMY:
+    sprintf(s, "cmy %.2ff %.2ff %.2ff",
+	    double(Cyan) / MAX_COLOR_VAL,
+	    double(Magenta) / MAX_COLOR_VAL,
+	    double(Yellow) / MAX_COLOR_VAL);
+    break;
+  case CMYK:
+    sprintf(s, "cmyk %.2ff %.2ff %.2ff %.2ff",
+	    double(Cyan) / MAX_COLOR_VAL,
+	    double(Magenta) / MAX_COLOR_VAL,
+	    double(Yellow) / MAX_COLOR_VAL,
+	    double(Black) / MAX_COLOR_VAL);
+    break;
+  case GRAY:
+    sprintf(s, "gray %.2ff",
+	    double(Gray) / MAX_COLOR_VAL);
+    break;
+  }
+  return s;
 }
 
 color default_color;

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -20,6 +20,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "driver.h"
 #include "device.h"
+#include "ptable.h"
+
+declare_ptable(char)
+implement_ptable(char)
 
 extern "C" const char *Version_string;
 
@@ -77,8 +81,7 @@ static unsigned char bold_underline_mode = BOLD_MODE|UNDERLINE_MODE;
 // `CSI 0 m' exclusively
 #define SGR_DEFAULT CSI "0m"
 
-#define TTY_MAX_COLORS 8
-#define DEFAULT_COLOR_IDX TTY_MAX_COLORS
+#define DEFAULT_COLOR_IDX -1
 
 class tty_font : public font {
   tty_font(const char *);
@@ -138,8 +141,8 @@ public:
   short hpos;
   unsigned int code;
   unsigned char mode;
-  unsigned char back_color_idx;
-  unsigned char fore_color_idx;
+  char back_color_idx;
+  char fore_color_idx;
   void *operator new(size_t);
   void operator delete(void *);
   inline int draw_mode() { return mode & (VDRAW_MODE|HDRAW_MODE); }
@@ -178,16 +181,19 @@ class tty_printer : public printer {
   int nlines;
   int cached_v;
   int cached_vpos;
-  unsigned char curr_fore_idx;
-  unsigned char curr_back_idx;
+  char curr_fore_idx;
+  char curr_back_idx;
   int is_underline;
   int is_bold;
   int cu_flag;
-  color tty_colors[TTY_MAX_COLORS];
+  PTABLE(char) tty_colors;
   void make_underline();
   void make_bold(unsigned int);
-  unsigned char color_to_idx(color *col);
+  char color_to_idx(color *col);
   void add_char(unsigned int, int, int, color *, color *, unsigned char);
+  char *make_rgb_string(unsigned int, unsigned int, unsigned int);
+  int tty_color(unsigned int, unsigned int, unsigned int, char *,
+		char = DEFAULT_COLOR_IDX);
 public:
   tty_printer(const char *device);
   ~tty_printer();
@@ -197,39 +203,62 @@ public:
   void change_color(const environment *env);
   void change_fill_color(const environment *env);
   void put_char(unsigned int);
-  void put_color(unsigned char, int);
+  void put_color(char, int);
   void begin_page(int) { }
   void end_page(int page_length);
   font *make_font(const char *);
 };
 
+char *tty_printer::make_rgb_string(unsigned int r,
+				   unsigned int g,
+				   unsigned int b)
+{
+  char *s = new char[7];
+  s[0] = char(r >> 8);
+  s[1] = char(r & 0xff);
+  s[2] = char(g >> 8);
+  s[3] = char(g & 0xff);
+  s[4] = char(b >> 8);
+  s[5] = char(b & 0xff);
+  s[6] = 0;
+  return s;
+}
+
+int tty_printer::tty_color(unsigned int r,
+			   unsigned int g,
+			   unsigned int b, char *idx, char value)
+{
+  int unknown_color = 0;
+  char *s = make_rgb_string(r, g, b);
+  char *i = tty_colors.lookup(s);
+  if (!i) {
+    unknown_color = 1;
+    i = new char[1];
+    *i = value;
+    tty_colors.define(s, i);
+  }
+  *idx = *i;
+  a_delete s;
+  return unknown_color;
+}
+
 tty_printer::tty_printer(const char *device) : cached_v(0)
 {
   is_utf8 = !strcmp(device, "utf8");
-  tty_colors[0].set_rgb(0,			// black
- 			0,
-			0);
-  tty_colors[1].set_rgb(color::MAX_COLOR_VAL,	// red
-			0,
-			0);
-  tty_colors[2].set_rgb(0,			// green
-			color::MAX_COLOR_VAL,
-			0);
-  tty_colors[3].set_rgb(color::MAX_COLOR_VAL,	// yellow
-			color::MAX_COLOR_VAL,
-			0);
-  tty_colors[4].set_rgb(0,			// blue
-			0,
-			color::MAX_COLOR_VAL);
-  tty_colors[5].set_rgb(color::MAX_COLOR_VAL,	// magenta
-			0,
-			color::MAX_COLOR_VAL);
-  tty_colors[6].set_rgb(0,			// cyan
-			color::MAX_COLOR_VAL,
-			color::MAX_COLOR_VAL);
-  tty_colors[7].set_rgb(color::MAX_COLOR_VAL,	// white
-			color::MAX_COLOR_VAL,
-			color::MAX_COLOR_VAL);
+  char *dummy;
+  // black, white
+  (void)tty_color(0, 0, 0, dummy, 0);
+  (void)tty_color(color::MAX_COLOR_VAL,
+		  color::MAX_COLOR_VAL,
+		  color::MAX_COLOR_VAL, dummy, 7);
+  // red, green, blue
+  (void)tty_color(color::MAX_COLOR_VAL, 0, 0, dummy, 1);
+  (void)tty_color(0, color::MAX_COLOR_VAL, 0, dummy, 2);
+  (void)tty_color(0, 0, color::MAX_COLOR_VAL, dummy, 4);
+  // yellow, magenta, cyan
+  (void)tty_color(color::MAX_COLOR_VAL, color::MAX_COLOR_VAL, 0, dummy, 3);
+  (void)tty_color(color::MAX_COLOR_VAL, 0, color::MAX_COLOR_VAL, dummy, 5);
+  (void)tty_color(0, color::MAX_COLOR_VAL, color::MAX_COLOR_VAL, dummy, 6);
   nlines = 66;
   lines = new glyph *[nlines];
   for (int i = 0; i < nlines; i++)
@@ -274,17 +303,19 @@ void tty_printer::make_bold(unsigned int c)
   }
 }
 
-unsigned char tty_printer::color_to_idx(color *col)
+char tty_printer::color_to_idx(color *col)
 {
   if (col->is_default())
     return DEFAULT_COLOR_IDX;
-  for (int i = 0; i < TTY_MAX_COLORS; i++)
-    if (*col == tty_colors[i])
-      return (unsigned char)i;
-  unsigned r, g, b;
+  unsigned int r, g, b;
   col->get_rgb(&r, &g, &b);
-  error("Unknown color (%1, %2, %3) mapped to default", r, g, b);
-  return DEFAULT_COLOR_IDX;
+  char idx;
+  if (tty_color(r, g, b, &idx)) {
+    char *s = col->print_color();
+    error("Unknown color (%1) mapped to default", s);
+    a_delete s;
+  }
+  return idx;
 }
 
 void tty_printer::set_char(int i, font *f, const environment *env,
@@ -473,7 +504,7 @@ void tty_printer::put_char(unsigned int wc)
     putchar(wc);
 }
 
-void tty_printer::put_color(unsigned char color_index, int back)
+void tty_printer::put_color(char color_index, int back)
 {
   if (color_index == DEFAULT_COLOR_IDX) {
     putstring(SGR_DEFAULT);
