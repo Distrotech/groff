@@ -667,7 +667,12 @@
 .\" NS   doc-curr-size
 .\" NS   doc-macro-name
 .\" NS
+.\" NS local variable:
+.\" NS   doc-str-Ar-default
+.\" NS
 .\" NS width register `Ar' set in doc-common
+.
+.ds doc-str-Ar-default "file\ .\|.\|.
 .
 .de Ar
 .  nr doc-curr-font \n[.f]
@@ -680,25 +685,30 @@
 .
 .    if !\n[.$] \{\
 .      \" no argument
-.      nop \)file\ ...\f[P]\s[0]
+.      nop \)\*[doc-str-Ar-default]\f[P]\s[0]
 .  \}\}
 .
 .  if \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
-.      nop \)file\ ...\f[P]\s[0]\c
+.      nop \)\*[doc-str-Ar-default]\f[P]\s[0]\c
 .      doc-print-and-reset
 .    \}
 .    el \{\
-.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
-.        nop \)file\ ...\f[P]\s[0]\c
-.        \*[doc-arg\n[doc-arg-ptr]]
+.      if ((\n[doc-type\n[doc-arg-ptr]] == 1) : (\n[doc-type\n[doc-arg-ptr]] == 3)) \{\
+.        \" replace previous argument (Ar) with default value
+.        nr doc-arg-ptr -1
+.        ds doc-arg\n[doc-arg-ptr] "\*[doc-str-Ar-default]
+.        nr doc-type\n[doc-arg-ptr] 2
+.        ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.        \" recompute space vector for remaining arguments
+.        nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.        nr doc-arg-limit \n[doc-arg-ptr]
+.        doc-parse-space-vector
 .      \}
-.      el \{\
-.        if (\n[doc-type\n[doc-arg-ptr]] == 3) \
-.          nop \)file\ ...\c
-.        doc-print-recursive
-.  \}\}\}
+.      doc-print-recursive
+.  \}\}
 ..
 .
 .
@@ -6373,19 +6383,20 @@
 ..
 .
 .
-.ds doc-func-error-string "function returns the value\~0 if successful;
-.as doc-func-error-string " otherwise the value\~-1 is returned and
-.as doc-func-error-string " the global variable \*[doc-Va-font]errno\f[P]
-.as doc-func-error-string " is set to indicate the error.
-.
-.
 .\" NS Rv user macro
 .\" NS   return values
 .\" NS
 .\" NS width register `Rv' set in doc-common
 .\" NS
 .\" NS local variables:
-.\" NS   doc-str-Rv
+.\" NS   doc-str-Rv-prefix
+.\" NS   doc-str-Rv-suffix
+.
+.ds doc-str-Rv-prefix "The
+.ds doc-str-Rv-suffix "function returns the value\~0 if successful;
+.as doc-str-Rv-suffix " otherwise the value\~-1 is returned and
+.as doc-str-Rv-suffix " the global variable \*[doc-Va-font]errno\f[P]
+.as doc-str-Rv-suffix " is set to indicate the error.
 .
 .de Rv
 .
@@ -6413,9 +6424,9 @@
 .      if ((\n[doc-reg-Rv] < 2) : (\n[doc-reg-Rv] > 3)) \
 .        tm Usage: .Rv -std in sections 2 and 3 only (#\n[.c])
 .      br
-.      nop \)The
+.      nop \)\*[doc-str-Rv-prefix]
 .      Fn \$2
-.      nop \)\*[doc-func-error-string]
+.      nop \)\*[doc-str-Rv-suffix]
 .  \}\}
 ..
 .
