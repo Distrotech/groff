@@ -62,7 +62,6 @@ extern "C" const char *Version_string;
 #define IMAGE_BOARDER_PIXELS       0
 #define MAX_WIDTH                  8   // inches
 #define INLINE_LEADER_CHAR      '\\'
-#define MAX_RETRIES             4096   // number of different page directory names to try before giving up
 
 #define TRANSPARENT  "-background \"#FFF\" -transparent \"#FFF\""
 
@@ -838,32 +837,14 @@ static int createAllPages (void)
 {
   char buffer[4096];
   char *s;
-  int retries = MAX_RETRIES;
 
   imagePageStem = xtmptemplate(PAGE_TEMPLATE_LONG, PAGE_TEMPLATE_SHORT);
   strcpy(buffer, imagePageStem);
 
-  do {
-    if (mktemp(imagePageStem) == NULL) {
-      sys_fatal("mktemp");
-      return -1;
-    }
-    if (mkdir(imagePageStem, 0700) == 0) break;
-    if (errno == EEXIST) {
-      // directory already exists, try another name
-      retries--;
-      if (retries == 0) {
-	// time to give up
-	sys_fatal("mkdir");
-	return -1;
-      }
-    } else {
-      // another error, quit
-      sys_fatal("mkdir");
-      return -1;
-    }      
-    strcpy(imagePageStem, buffer);
-  } while (1);
+  if (mksdir(imagePageStem) < 0) {
+    sys_fatal("mksdir");
+    return -1;
+  }
 
   s = make_message("echo showpage | "
 		   "gs%s -q -dSAFER -sDEVICE=%s -r%d "

@@ -1,6 +1,5 @@
-// -*- C++ -*-
-/* Copyright (C) 1992, 2000, 2001 Free Software Foundation, Inc.
-     Written by James Clark (jjc@jclark.com)
+/* Copyright (C) 2001 Free Software Foundation, Inc.
+     Written by Werner Lemberg (wl@gnu.org)
 
 This file is part of groff.
 
@@ -18,42 +17,18 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-#include <sys/types.h>
-#include <sys/stat.h>
 
-#ifdef HAVE_CC_OSFCN_H
-#include <osfcn.h>
-#else
-#include <fcntl.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#endif
+/* This file is heavily based on the file mkstemp.c which is part of the
+   fileutils package. */
 
-#ifndef S_IRUSR
-#define S_IRUSR 0400
-#endif
 
-#ifndef S_IRGRP
-#define S_IRGRP 0040
-#endif
+extern int gen_tempname(char *, int = 0);
 
-#ifndef S_IROTH
-#define S_IROTH 0004
-#endif
-
-#ifndef S_IWUSR
-#define S_IWUSR 0200
-#endif
-
-#ifndef S_IXUSR
-#define S_IXUSR 0100
-#endif
-
-#ifndef S_ISREG
-#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
-#endif
-
-#ifndef O_RDONLY
-#define O_RDONLY 0
-#endif
+/* Generate a unique temporary directory name from TEMPLATE.
+   The last six characters of TEMPLATE must be "XXXXXX";
+   they are replaced with a string that makes the filename unique.
+   Then open the directory and return a fd. */
+int mksdir(char *tmpl)
+{
+  return gen_tempname(tmpl, 1);
+}

@@ -22,7 +22,7 @@ GROFF_CSH_HACK(SH_SCRIPT_SED_CMD='1s/.*/:/', SH_SCRIPT_SED_CMD='1s/a/a/')
 AC_SUBST(SH_SCRIPT_SED_CMD)
 dnl checks for headers
 AC_CHECK_HEADERS(stdlib.h unistd.h dirent.h limits.h sys/dir.h \
-                 string.h strings.h math.h)
+                 string.h strings.h math.h stdint.h sys/time.h)
 GROFF_ISC_SYSV3
 GROFF_POSIX
 GROFF_SRAND
@@ -35,7 +35,10 @@ GROFF_SYS_NERR
 GROFF_SYS_ERRLIST
 GROFF_OSFCN_H
 GROFF_LIMITS_H
+GROFF_INTTYPES_H
 dnl checks for typedefs
+GROFF_UNSIGNED_LONG_LONG
+GROFF_UINTMAX_T
 GROFF_TIME_T
 AC_TYPE_SIGNAL
 GROFF_STRUCT_EXCEPTION
@@ -47,7 +50,7 @@ saved_libs="$LIBS"
 LIBS="$LIBS -lc $LIBM"
 AC_REPLACE_FUNCS(fmod strtol getcwd strerror putenv)
 LIBS="$saved_libs"
-AC_CHECK_FUNCS(rename strcasecmp strncasecmp strsep)
+AC_CHECK_FUNCS(rename strcasecmp strncasecmp strsep gettimeofday)
 GROFF_MKSTEMP
 AC_DECL_SYS_SIGLIST
 dnl checks for compiler characteristics

@@ -43,6 +43,8 @@ int is_prime(unsigned);
 #include <strings.h>
 #endif
 
+int mksdir(char *tmpl);
+
 FILE *xtmpfile(char **namep = 0,
 	       const char *postfix_long = 0, const char *postfix_short = 0,
 	       int do_unlink = 1);

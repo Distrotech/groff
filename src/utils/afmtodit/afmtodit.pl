@@ -1,6 +1,6 @@
 #! /usr/bin/perl -P-
 # -*- Perl -*-
-# Copyright (C) 1989-2000 Free Software Foundation, Inc.
+# Copyright (C) 1989-2000, 2001 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
 # This file is part of groff.

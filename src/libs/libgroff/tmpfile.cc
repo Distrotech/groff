@@ -30,12 +30,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "error.h"
 #include "nonposix.h"
 
-#ifndef HAVE_MKSTEMP_PROTO
-extern "C" {
-  extern int mkstemp (char *);
-}
-#endif
-
 // If this is set, create temporary files there
 #define GROFF_TMPDIR_ENVVAR "GROFF_TMPDIR"
 // otherwise if this is set, create temporary files there
@@ -161,8 +155,6 @@ FILE *xtmpfile(char **namep,
 	       int do_unlink)
 {
   char *templ = xtmptemplate(postfix_long, postfix_short);
-
-#ifdef HAVE_MKSTEMP
   errno = 0;
   int fd = mkstemp(templ);
   if (fd < 0)
@@ -171,14 +163,6 @@ FILE *xtmpfile(char **namep,
   FILE *fp = fdopen(fd, FOPEN_RWB); // many callers of xtmpfile use binary I/O
   if (!fp)
     fatal("fdopen: %1", strerror(errno));
-#else /* not HAVE_MKSTEMP */
-  if (!mktemp(templ) || !templ[0])
-    fatal("cannot create file name for temporary file");
-  errno = 0;
-  FILE *fp = fopen(templ, FOPEN_RWB);
-  if (!fp)
-    fatal("cannot open `%1': %2", templ, strerror(errno));
-#endif /* not HAVE_MKSTEMP */
   if (do_unlink)
     add_tmp_file(templ);
   if (namep)

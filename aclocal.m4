@@ -474,13 +474,53 @@ fi
 AC_LANG_POP(C++)])dnl
 dnl
 dnl
-dnl Check for mkstemp() and its function prototype.
+dnl If mkstemp() isn't available, use our own mkstemp.cc file.
 dnl
 AC_DEFUN(GROFF_MKSTEMP,
-[AC_CHECK_FUNC(mkstemp,
-[AC_DEFINE(HAVE_MKSTEMP)
-AC_MSG_CHECKING([for mkstemp prototype in <stdlib.h>])
-AC_EGREP_CPP(mkstemp,
-[#include <stdlib.h>],
-AC_MSG_RESULT(yes);AC_DEFINE(HAVE_MKSTEMP_PROTO),
-AC_MSG_RESULT(no))])])
+[AC_LANG_PUSH(C++)
+AC_LIBSOURCE(mkstemp.cc)
+AC_CHECK_FUNC(mkstemp, , [_AC_LIBOBJ(mkstemp)])
+AC_LANG_POP(C++)])dnl
+dnl
+dnl
+dnl Test whether <inttypes.h> exists, doesn't clash with <sys/types.h>,
+dnl and declares uintmax_t.  Taken from the fileutils package.
+dnl
+AC_DEFUN(GROFF_INTTYPES_H,
+[AC_LANG_PUSH(C++)
+AC_MSG_CHECKING([for inttypes.h])
+AC_TRY_COMPILE([#include <sys/types.h>
+#include <inttypes.h>],
+[uintmax_t i = (uintmax_t)-1;],
+groff_cv_header_inttypes_h=yes,
+groff_cv_header_inttypes_h=no)
+AC_MSG_RESULT($groff_cv_header_inttypes_h)
+AC_LANG_POP(C++)])dnl
+dnl
+dnl
+dnl Test for working `unsigned long long'.  Taken from the fileutils package.
+dnl
+AC_DEFUN(GROFF_UNSIGNED_LONG_LONG,
+[AC_LANG_PUSH(C++)
+AC_MSG_CHECKING([for unsigned long long])
+AC_TRY_LINK([unsigned long long ull = 1; int i = 63;],
+[unsigned long long ullmax = (unsigned long long)-1;
+return ull << i | ull >> i | ullmax / ull | ullmax % ull;],
+groff_cv_type_unsigned_long_long=yes,
+groff_cv_type_unsigned_long_long=no)
+AC_MSG_RESULT($groff_cv_type_unsigned_long_long)
+AC_LANG_POP(C++)])dnl
+dnl
+dnl
+dnl Define uintmax_t to `unsigned long' or `unsigned long long'
+dnl if <inttypes.h> does not exist.  Taken from the fileutils package.
+dnl
+AC_DEFUN(GROFF_UINTMAX_T,
+[AC_REQUIRE([GROFF_INTTYPES_H])
+if test $groff_cv_header_inttypes_h = no; then
+	AC_REQUIRE([GROFF_UNSIGNED_LONG_LONG])
+	test $groff_cv_type_unsigned_long_long = yes \
+	  && ac_type='unsigned long long' \
+	  || ac_type='unsigned long'
+	AC_DEFINE_UNQUOTED(uintmax_t, $ac_type)
+fi])dnl

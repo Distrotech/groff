@@ -1,3 +1,28 @@
+2001-07-20  Werner LEMBERG  <wl@gnu.org>
+
+	* src/libs/libgroff/tmpname.cc: New file, defining get_tempname().
+	* src/libs/libgroff/mkstemp.cc: New file.
+	* src/libs/libgroff/mksdir.cc: New file.
+	* src/libs/libgroff/tmpfile.cc [HAVE_MKSTEMP_PROTO]: Removed.
+	(xtmpfile) [!HAVE_MKSTEMP]: Removed.
+	* src/libs/libgroff/Makefile.sub: Updated.
+	* src/include/lib.h: Add mksdir() prototype.
+	* src/include/posix.h: Define S_IXUSR if not yet defined.
+
+	* src/preproc/html/pre-html.cc (MAX_RETRIES): Removed.
+	(createAllPages): Use mksdir() instead of current code.
+	* src/utils/indxbib/indxbib.cc [HAVE_MKSTEMP_PROTO]: Removed.
+	(main): [!HAVE_MKSTEMP]: Removed.
+
+	* aclocal.m4 (GROFF_MKSTEMP): Updated to use new mkstemp.cc file.
+	(GROFF_INTTYPES_H, GROFF_UNSIGNED_LONG_LONG, GROFF_UINTMAX_T): New
+	macros.
+	* configure.ac: Add tests for stdint.h, sys/time.h, and
+	gettimeofday().
+	Call new GROFF_xxx macros.
+	* configure: Regenerated.
+	* Makefile.in: Comments updated.
+
 2001-07-20  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/preproc/html/pre-html.cc (scanArguments): Use getopt_long()
