@@ -115,7 +115,6 @@ DBRead(register FILE *file)
     type = DBGetType(string);	/* interpret element type */
     if (type < 0) {		/* no more data */
       done = TRUE;
-      (void) fclose(file);
     } else {
 #ifdef UW_FASTSCAN
       (void) xscanf(file, &x, &y);		/* always one point */
