@@ -1663,6 +1663,44 @@ char *get_html_translation (font *f, char *name)
 }
 
 /*
+ *  char_translate_to_html - convert a single non escaped character
+ *                           into the appropriate html character.
+ */
+
+int char_translate_to_html (font *f, char *buf, int buflen, char ch, int b, int and_single)
+{
+  if (and_single) {
+    int    t, l;
+    char  *translation;
+    char   name[2];
+
+    name[0] = ch;
+    name[1] = (char)0;
+    translation = get_html_translation(f, name);
+    if (translation) {
+      l = strlen(translation);
+      t = max(0, min(l, buflen-b));
+      strncpy(&buf[b], translation, t);
+      b += t;
+    } else {
+      if (b<buflen) {
+	buf[b] = ch;
+	b++;
+      }
+    }
+  } else {
+    /*
+     *  do not attempt to encode single characters
+     */
+    if (b<buflen) {
+      buf[b] = ch;
+      b++;
+    }
+  }
+  return( b );
+}
+
+/*
  *  str_translate_to_html - converts a string, str, into html text. It places
  *                          the output input buffer, buf. It truncates string, str, if
  *                          there is not enough space in buf.
@@ -1672,16 +1710,16 @@ char *get_html_translation (font *f, char *name)
 
 void str_translate_to_html (font *f, char *buf, int buflen, char *str, int len, int and_single)
 {
-  int         l;
   char       *translation;
   int         e;
   char        escaped_char[MAX_STRING_LENGTH];
+  int         l;
   int         i=0;
   int         b=0;
   int         t=0;
 
 #if 0
-  if (strcmp(str, "\\(\\\\-\\)") == 0) {
+  if (strcmp(str, "``@,;:\\\\()[]''") == 0) {
     stop();
   }
 #endif
@@ -1721,34 +1759,12 @@ void str_translate_to_html (font *f, char *buf, int buflen, char *str, int len, 
 	    }
 	  }
 	}
+      } else {
+	b = char_translate_to_html(f, buf, buflen, str[i], b, and_single);
+	i++;
       }
     } else {
-      if (and_single) {
-	char name[2];
-
-	name[0] = str[i];
-	name[1] = (char)0;
-	translation = get_html_translation(f, name);
-	if (translation) {
-	  l = strlen(translation);
-	  t = max(0, min(l, buflen-b));
-	  strncpy(&buf[b], translation, t);
-	  b += t;
-	} else {
-	  if (b<buflen) {
-	    buf[b] = str[i];
-	    b++;
-	  }
-	}
-      } else {
-	/*
-	 *  do not attempt to encode single characters
-	 */
-	if (b<buflen) {
-	  buf[b] = str[i];
-	  b++;
-	}
-      }
+      b = char_translate_to_html(f, buf, buflen, str[i], b, and_single);
       i++;
     }
   }
