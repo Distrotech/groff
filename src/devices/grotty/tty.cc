@@ -117,7 +117,7 @@ void *glyph::operator new(size_t)
 {
   if (!free_list) {
     const int BLOCK = 1024;
-    free_list = (glyph *)new char[sizeof(glyph)*BLOCK];
+    free_list = (glyph *)new char[sizeof(glyph) * BLOCK];
     for (int i = 0; i < BLOCK - 1; i++)
       free_list[i].next = free_list + i + 1;
     free_list[BLOCK - 1].next = 0;
@@ -156,7 +156,7 @@ public:
 
 tty_printer::tty_printer(const char *device) : cached_v(0)
 {
-  is_utf8 = !strcmp(device,"utf8");
+  is_utf8 = !strcmp(device, "utf8");
   nlines = 66;
   lines = new glyph *[nlines];
   for (int i = 0; i < nlines; i++)
@@ -168,7 +168,8 @@ tty_printer::~tty_printer()
   a_delete lines;
 }
 
-void tty_printer::set_char(int i, font *f, const environment *env, int w, const char *name)
+void tty_printer::set_char(int i, font *f, const environment *env,
+			   int w, const char *name)
 {
   if (w != font::hor)
     fatal("width of character not equal to horizontal resolution");
@@ -197,7 +198,7 @@ void tty_printer::add_char(unsigned int c, int h, int v, unsigned char mode)
     if (vpos > nlines) {
       glyph **old_lines = lines;
       lines = new glyph *[vpos + 1];
-      memcpy(lines, old_lines, nlines*sizeof(glyph *));
+      memcpy(lines, old_lines, nlines * sizeof(glyph *));
       for (int i = nlines; i <= vpos; i++)
 	lines[i] = 0;
       a_delete old_lines;
@@ -270,28 +271,28 @@ void tty_printer::draw(int code, int *p, int np, const environment *env)
   }
 }
 
-void tty_printer::put_char (unsigned int wc)
+void tty_printer::put_char(unsigned int wc)
 {
   if (is_utf8 && wc >= 0x80) {
-    char buf[6+1];
+    char buf[6 + 1];
     int count;
     char *p = buf;
     if (wc < 0x800)
-      count = 1, *p = (unsigned char) ((wc >> 6) | 0xC0);
+      count = 1, *p = (unsigned char)((wc >> 6) | 0xc0);
     else if (wc < 0x10000)
-      count = 2, *p = (unsigned char) ((wc >> 12) | 0xE0);
+      count = 2, *p = (unsigned char)((wc >> 12) | 0xe0);
     else if (wc < 0x200000)
-      count = 3, *p = (unsigned char) ((wc >> 18) | 0xF0);
+      count = 3, *p = (unsigned char)((wc >> 18) | 0xf0);
     else if (wc < 0x4000000)
-      count = 4, *p = (unsigned char) ((wc >> 24) | 0xF8);
-    else if (wc <= 0x7FFFFFFF)
-      count = 5, *p = (unsigned char) ((wc >> 30) | 0xFC);
+      count = 4, *p = (unsigned char)((wc >> 24) | 0xf8);
+    else if (wc <= 0x7fffffff)
+      count = 5, *p = (unsigned char)((wc >> 30) | 0xfC);
     else
       return;
-    do *++p = (unsigned char)(((wc >> (6 * --count)) & 0x3F) | 0x80);
+    do *++p = (unsigned char)(((wc >> (6 * --count)) & 0x3f) | 0x80);
       while (count > 0);
     *++p = '\0';
-    fputs(buf,stdout);
+    fputs(buf, stdout);
   } else {
     putchar(wc);
   }
@@ -330,12 +331,12 @@ void tty_printer::end_page(int page_length)
       p = tem;
     }
     int hpos = 0;
-    
     glyph *nextp;
     for (p = g; p; delete p, p = nextp) {
       nextp = p->next;
       if (nextp && p->hpos == nextp->hpos) {
-	if (p->draw_mode() == HDRAW_MODE && nextp->draw_mode() == VDRAW_MODE) {
+	if (p->draw_mode() == HDRAW_MODE &&
+	    nextp->draw_mode() == VDRAW_MODE) {
 	  nextp->code = '+';
 	  continue;
 	}
