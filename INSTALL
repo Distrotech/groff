@@ -1,196 +1,113 @@
-If you are using g++, you will need to install the header files from
-the appropriate version of libg++.  With g++ version 1.x, you will
-also need a libg++.a that contains at least xyzzy.o (if you're using
-GNU ld) and gnulib3.o.  With gcc/g++ version 2.0, you don't need
-libg++.a at all.
+1. Get a C++ compiler.  The C++ source files use a suffix of `.cc', so
+your C++ compiler must be able to handle this.  If you don't already
+have a C++ compiler, I suggest the latest release of either g++
+version 1 or gcc/g++ version 2. (g++ version 2 is included in gcc
+version 2).  If you are using g++, you will also need to install the
+corresponding version of libg++, unless your system header files
+provide C++ support.  If you're using gcc/g++ version 2.[012], I
+recommend you apply the patch in the file gcc.patch. (If you don't,
+configure will detect this and work around the bug, but this will make
+groff use significantly more memory.)
 
-If you're using gcc/g++ version 2.0, you'll need the following patch:
+2. In the directory that this file is in, type `./configure'.  If
+you're using `csh' on an old version of System V, you might need to
+type `sh configure' instead to prevent `csh' from trying to execute
+`configure' itself.
 
-*** cp-parse.y.~1~	Sat Feb 22 08:35:51 1992
---- cp-parse.y	Sun Mar  1 15:20:10 1992
-***************
-*** 1075,1081 ****
-  		    }
-  		  $$ = build_delete (type, expr, integer_three_node,
-  				     LOOKUP_NORMAL|LOOKUP_HAS_IN_CHARGE,
-! 				     TYPE_HAS_DESTRUCTOR (TREE_TYPE (type)) ? $$ : 0, 1);
-  		}
-  	| delete '[' ']' cast_expr  %prec UNARY
-  		{
---- 1075,1081 ----
-  		    }
-  		  $$ = build_delete (type, expr, integer_three_node,
-  				     LOOKUP_NORMAL|LOOKUP_HAS_IN_CHARGE,
-! 				     TYPE_HAS_DESTRUCTOR (TREE_TYPE (type)) ? $$ : 0, 0);
-  		}
-  	| delete '[' ']' cast_expr  %prec UNARY
-  		{
+The `configure' shell script attempts to guess correct values for
+various system-dependent variables used during compilation, and
+creates the Makefile.  It also creates a file `config.status' that you
+can run in the future to recreate the current configuration.
+
+Running `configure' takes a minute or two.  While it is running, it
+prints some messages that tell what it is doing.  It also performs
+some checks on your C++ compiler.  If these checks fail, it will print
+a message and exit.  In this case, you should correct the problems
+with your C++ compiler and then rerun configure.
+
+To compile the package in a different directory from the one
+containing the source code, you must use GNU make.  `cd' to the
+directory where you want the object files and executables to go and
+run `configure' with the option `--srcdir=DIR', where DIR is the
+directory that contains the source code.  Using this option is
+actually unnecessary if the source code is in the parent directory of
+the one in which you are compiling; `configure' automatically checks
+for the source code in `..' if it does not find it in the current
+directory.
+
+By default, `make install' will install the package's files in
+/usr/local/bin, /usr/local/lib/groff, and /usr/local/man.  You can
+specify an installation prefix other than /usr/local by giving
+`configure' the option `--prefix=PATH'.  Alternately, you can do so by
+changing the `prefix' variable in the Makefile that `configure'
+creates.
+
+You can specify separate installation prefixes for
+architecture-specific files and architecture-independent files.  If
+you give `configure' the option `--exec_prefix=PATH', the package will
+use PATH as the prefix for installing programs and libraries.  Data
+files and documentation will still use the regular prefix.  Normally,
+all files are installed using the regular prefix.
+
+You can tell `configure' to figure out the configuration for your
+system, and record it in `config.status', without actually configuring
+the package (creating `Makefile's and perhaps a configuration header
+file).  To do this, give `configure' the `--no-create' option.  Later,
+you can run `./config.status' to actually configure the package.  This
+option is useful mainly in `Makefile' rules for updating `config.status'
+and `Makefile'.  You can also give `config.status' the `--recheck'
+option, which makes it re-run `configure' with the same arguments you
+used before.  This is useful if you change `configure'.
+
+`configure' ignores any other arguments that you give it.
+
+If your system requires unusual options for compilation or linking
+that `configure' doesn't know about, you can give `configure' initial
+values for some variables by setting them in the environment.  In
+Bourne-compatible shells, you can do that on the command line like
+this:
+	CC='gcc -traditional' DEFS=-D_POSIX_SOURCE ./configure
+
+The `make' variables that you might want to override with environment
+variables when running `configure' are:
+
+(For these variables, any value given in the environment overrides the
+value that `configure' would choose:)
+CC		C compiler program.
+		Default is `cc', or `gcc' if `gcc' is in your PATH.
+CCC		C++ compiler program (for .cc files).
+		By default, configure will look for gcc version 2, g++,
+		and then CC.
+INSTALL		Program to use to install files.
+		Default is `install' if you have it, `cp' otherwise.
+PAGE		This should be `A4' if your PostScript printer uses
+		A4 paper and `letter' if your printer uses 8.5x11in
+		paper.
+
+(For these variables, any value given in the environment is added to
+the value that `configure' chooses:)
+DEFS		Configuration options, in the form `-Dfoo -Dbar ...'
+LIBS		Libraries to link with, in the form `-lfoo -lbar ...'
+CCLIBS		Libraries to link C++ programs with, in the same form.
 
 
-On a Sun 3 and other 68k machines, using libg++ 1.37.0 you will need
-to apply the following change to g++-include/math.h:
+If you need to do unusual things to compile the package, we encourage
+you to figure out how `configure' could check whether to do them, and
+mail diffs or instructions to the address given in the README so we
+can include them in the next release.
 
-*** math.h-	Sat Jan  6 14:09:52 1990
---- math.h	Tue Mar 13 02:07:01 1990
-***************
-*** 32,39 ****
-  
-  
-  #ifdef __HAVE_68881__		/* MC68881/2 Floating-Point Coprocessor */
-- #include <math-68881.h>
-  extern "C" {			/* fill in what we've left out */
-  
-  double  acosh(double);
-  double  asinh(double);
---- 32,39 ----
-  
-  
-  #ifdef __HAVE_68881__		/* MC68881/2 Floating-Point Coprocessor */
-  extern "C" {			/* fill in what we've left out */
-+ #include <math-68881.h>
-  
-  double  acosh(double);
-  double  asinh(double);
+3. Have a look at the generated Makefile.  The options you are most
+likely to want to change are near the beginning.  Make sure that the
+definition of PAGE is correct.
 
-If you have bison 1.11, you will need to apply the following fix to
-bison.simple if you want change any of the grammars:
+4. Type `make'.
 
-*** bison.simple.~1~	Fri Aug 10 12:13:41 1990
---- bison.simple	Fri Aug 10 12:24:46 1990
-***************
-*** 20,26 ****
---- 20,28 ----
-  
-  
-  #ifdef __GNUC__
-+ #ifndef alloca
-  #define alloca __builtin_alloca
-+ #endif /* Not alloca. */
-  #else /* Not GNU C.  */
-  #if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__)
-  #include <alloca.h>
-***************
-*** 114,123 ****
---- 116,129 ----
-  /* This is the most reliable way to avoid incompatibilities
-     in available built-in functions on various systems.  */
-  static void
-+ #ifdef __cplusplus
-+ __yy_bcopy (char *from, char *to, int count)
-+ #else
-  __yy_bcopy (from, to, count)
-       char *from;
-       char *to;
-       int count;
-+ #endif
-  {
-    register char *f = from;
-    register char *t = to;
-***************
-*** 127,133 ****
-      *t++ = *f++;
-  }
-  
-! #line 131 "/usr/local/lib/bison.simple"
-  int
-  yyparse()
-  {
---- 133,139 ----
-      *t++ = *f++;
-  }
-  
-! #line 137 "/usr/local/lib/bison.simple"
-  int
-  yyparse()
-  {
+5. Type `make install'.
 
-On a Sequent Symmetry S27 running Dynix 3.0.17, you'll need to use GNU
-make or add 'MAKE=make' to Makefiles which use $(MAKE).  You'll also
-need to change
+6. If you want to install gxditview (an X11 previewer), follow the
+instructions in the INSTALL file in the xditview directory.
 
-  dev=${GROFF_TYPESETTER:-@DEVICE@}
+7. Try groff out on one of the man pages, eg troff/troff.n.
 
-to
-
-  dev=$GROFF_TYPESETTER
-
-in groff.sh.  You should use gcc to compile xditview.
-
-You should only have to edit the top-level Makefile.  The comments
-should make it clear what has to be changed.  If you don't have a
-separate directory tree for local manual pages you can make
-MAN[157]EXT be l (that's an ell) or n, and MANROOT be /usr/man.  The
-changes you make to the top-level Makefile will be propagated to
-sub-makes, but this won't happen if you invoke make in the
-sub-directories.
-
-You might also need to edit groff.sh.  This is a shell-script that
-runs gtroff, an appropriate postprocessor and optionally various
-preprocessors.  (Actually, the shell-script is created from groff.sh
-by substituting for some variables surrounded by @s).  If your kernel
-doesn't understand #!, you will need to arrange for the script to be
-run by /bin/sh in some other way.
-
-If you want to use existing troff drivers you should change groff.sh
-so that it recognises them.  It is also a good idea to copy over the
-dev* directory for the device into a directory that's only searched by
-groff (eg /usr/local/lib/groff/font), so that you can take advantage
-of the groff extensions to the DESC and font formats.  Groff only uses
-the ASCII versions of the device files so you only need copy them.  If
-you want to use GNU eqn, it is essential that the font files contain
-correct height and depth information.  The format for this information
-is described in the groff_font(5) page.  The best way to add this
-information is to modify the program that generates the font files.
-As a last resort you could try using the program addftinfo: it
-attempts to guess plausible heights and depths.  To obtain good
-results you would probably have to do more work on addftinfo.
-
-To compile everything, just do a `make'.  If that works, then do a
-`make install'.
-
-If you have problems compiling pic/pic.tab.c or eqn/eqn.tab.c, you might
-want to try using your system's yacc.  Set YACC=yacc in the top-level
-Makefile, and also do
-
-  mv pic/pic.tab.c pic/pic.tab.c.dist
-  mv eqn/eqn.tab.c eqn/eqn.tab.c.dist
-
-so that the parsers will be regenerated using yacc (the supplied
-*.tab.[ch] files were generated by bison.)
-
-If you want to install xditview, you'll need to do that separately.
-Follow the instructions in xditview/INSTALL.
-
-The dvi files produced by grodvi can use fonts at non-standard
-magnifications.  You may need to compile fonts with Metafont at these
-magnifications. The CompileFonts script in the dvi/devdvi directory
-may help you to do this. (It will take a *long* time.)
-
-If you have problems printing existing troff documents, read the
-section on `Incompatibilities' in gtroff(1).  If you have existing
-macro packages that are in the habit of omitting the space between a
-macro or request and its arguments, it is good idea to produce a
-version with spaces so that you can use it with groff (without having
-to use the -C flag).  The file macros/fixmacros.sed is a sed script
-which will attempt to edit a file of macros so that it can be used
-with groff without the -C flag.
-
-If you have the DWB 2.0 mm macros installed on your machine, you might
-want to do a `make install.dwbmm'; this will copy the mm macros to
-groff's macro directory and fix a few problems that occur when using
-the DWB mm macros with groff; this requires the `patch' program.  If
-the patch in macros/mm.diff is rejected, carefully apply it by hand.
-If you do this make sure that TMAC_M=gm in the Makefile, so that the
-groff mm macros are installed as -mgm.
-
-You can share groff with a friend who has the same type of machine as
-you, but does not have a C++ compiler.  First do `make bindist'; this
-will create a subdirectory `bindist' containing a set of binaries, a
-Makefile and a README.  If you want to strip the binaries, now do a
-`make strip' in the bindist directory.  Rename the bindist directory
-to something more meaningful, tar it up, and give to your friend along
-with the original groff source distribution.  Your friend can then
-install groff just by editing the Makefile in the bindist directory
-and doing a make there; this will automatically install the non-binary
-parts of the groff source distribution as well as the binaries from
-the bindist directory.
+If you have problems, read the PROBLEMS file.  If this doesn't help
+send a bug report using the form in the file BUG-REPORT.

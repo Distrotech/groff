@@ -7,7 +7,10 @@
 #include <X11/Intrinsic.h>
 
 #include "device.h"
-#include "path.h"
+
+#ifndef FONTPATH
+#define FONTPATH "/usr/local/lib/groff/font:/usr/local/lib/font:/usr/lib/font"
+#endif
 
 extern void exit();
 extern char *strtok(), *strchr();

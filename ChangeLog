@@ -1,3 +1,1014 @@
+Tue Sep  1 18:24:53 1992  James Clark  (jjc at jclark)
+
+	* Version 1.06 released.
+
+	* Integrate mm 1.04.
+
+Fri Aug 28 11:28:19 1992  James Clark  (jjc at jclark)
+
+	* Makefile.comm, Makefile.ccpg, Makefile.cpg: Fix TAGS target.
+
+Thu Aug 27 11:03:33 1992  James Clark  (jjc at jclark)
+
+	* afmtodit/afmtodit.pl: Add -n option that disables generation of
+	ligatures command.
+	* devps/generate/Makefile (CR, CB, CI, CBI): Pass -n flag to
+	afmtodit. Regenerate.
+
+	* tmac/tmac.e ()z): Adjust _b if necessary so as to avoid moving
+	@f back past the current position.
+
+	* tmac/tmac.e: Change calls to @R so that comments are not part of
+	arguments.
+
+Tue Aug 25 10:42:07 1992  James Clark  (jjc at jclark)
+
+	* configure.in: Check for mkstemp with AC_HAVE_FUNCS.
+
+	* acgroff.m4 (GROFF_PROG_CCC): Don't check for <osfcn.h>. Instead
+	check that we can link a call to a function declared in <stdio.h>.
+	(GROFF_UNISTD_H): New macro.
+	* configure.in: Call it.
+	* Makefile.in: Document it.
+	* include/posix.h: New file.
+	* troff/troff.h: Don't include <osfcn.h>
+	* troff/input.cc: Include posix.h.
+	* libgroff/new.cc, libgroff/tmpfile.cc: Include posix.h rather than
+	osfcn.h.
+	* indxbib/indxbib.cc, libbib/{search.cc,linear.cc,index.cc}:
+	Include posix.h rather <sys/types.h>, <sys/stat.h>, <osfcn.h>,
+	<fcntl.h>.
+	* indxbib/indxbib.cc (S_IRUSR, S_IRGRP, S_IROTH): Delete definitions.
+	* libbib/index.cc (S_ISREG, O_RDONLY): Delete definitions.
+	* libbib/search.cc (O_RDONLY): Delete definition.
+	* refer/refer.cc, include/driver.h, pic/pic.h, groff/groff.cc:
+	Don't include <osfcn.h>.
+
+	* acgroff.m4 (GROFF_TIME_T): New macro.
+	* configure.in: Call it.
+	* Makefile.in: Document it.
+
+	* acgroff.m4 (GROFF_TRADITIONAL_CPP): New macro.
+	* configure.in: Call it.
+	* Makefile.in: Document -DTRADITIONAL_CPP.
+	* include/ptable.h: Don't include generic.h.
+	(name2): Define it.
+
+	* tmac/tmac.s (][): Make [T1 and [T2 aliases for [T.
+	Afterwards remove [T1 and [T2.
+	(ref*spec!0, ref*spec!2): Use T1 rather than T.
+	(ref*spec!1, ref*spec!4, ref*spec!4): Use T2 rather than T.
+	(ref*add-T2): Renamed from ref*add-T.
+	(ref*add-T1): New macro.
+
+Mon Aug 24 11:11:11 1992  James Clark  (jjc at jclark)
+
+	* acgroff.m4 (AC_PROG_CCC): Use GROFF_EXIT rather than exit 1.
+
+	* libbib/index.cc: Include <fcntl.h>.
+	(O_RDONLY): Define if necessary.
+	(make_index_search_item, index_search_item_iterator::get_tag,
+	index_search_item::check_files): Use O_RDONLY.
+	* libbib/seach.cc: Include <fcntl.h>, <sys/types.h>, <sys/stat.h>.
+	(O_RDONLY): Define if necessary.
+	(search_list::add_file): Use O_RDONLY.
+	* indxbib/indxbib.cc: Include <fcntl.h>, <sys/types.h>,
+	<sys/stat.h>.
+	(S_IRUSR, S_IRGRP, S_IROTH): Define if necessary.
+	(main): Use these.
+
+	* libbib/index.cc (S_ISREG): Define it if necessary.
+	(index_search_item::load): Use S_ISREG.
+
+	* include/driver.h: Include <errno.h>.
+
+Sun Aug 23 11:32:18 1992  James Clark  (jjc at jclark)
+
+	* eqn/box.cc (body_height): Increase default value to 85.
+	(body_depth): Increase default value to 35.
+
+Fri Aug 21 05:34:42 1992  James Clark  (jjc at jclark)
+
+	* eqn/pbox.h (SAVE_FONT_STRING): Define it.
+	* eqn/box.cc (box::top_level): Hide use of \R in a string that is
+	protected from expansion with \E.
+
+	* acgroff.m4 (GROFF_PAGE): Use `case' to test domain.
+
+	* Makefile (Makefile): New target.
+
+	* Makefile.sub (configure, distfiles): New targets.
+
+	* acgroff.m4 (GROFF_BROKEN_SPOOLER_FLAGS): Avoid using ${var:-val}
+	construct.
+
+Thu Aug 20 12:27:26 1992  James Clark  (jjc at jclark)
+
+	* eqn/box.cc (param_table): Add body_height and body_depth.
+
+	* eqn/lex.cc (def_table): Make circumflex in hat_def roman.
+
+Tue Aug 18 16:24:25 1992  James Clark  (jjc at jclark)
+
+	* psbb/Makefile.sub: Don't link with libgroff.a.
+
+	* acgroff.m4 (GROFF_PUTENV): New macro.
+	* configure.in: Call GROFF_PUTENV.
+	* Makefile.in: Document STDLIB_H_DECLARES_PUTENV.
+	* groff/groff.cc: Don't declare putenv if STDLIB_H_DECLARES_PUTENV
+	is defined.
+
+	* troff/env.cc (distribute_space): Rename force_forward argument
+	to force_reverse.  Reverse the list if force_reverse is true.
+
+Mon Aug 17 17:49:05 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.an: Don't define a string `T'. Just define Tm.
+
+	* eqn/pile.cc (matrix_box::compute_metrics): Don't allow computed
+	height or depth to be negative.  Guard against SUP_RAISE quantity
+	being negative.
+
+Sat Aug 15 08:18:54 1992  James Clark  (jjc at jclark)
+
+	* devps/generate/textmap: Add `an' (arrowhorizex).
+	* tmac/tmac.ps: \(an overlaps horizontally.
+	* tmac/tmac.dvi, tmac/tmac.tty: Add `an'.
+
+	* devps/symbolchars: Add arrowverttp, arrowvertbt.
+	* devps/textmap: Add arrowvertex.
+	* eqn/delim.cc (delim_table): Add uparrow, downarrow and
+	updownarrow delimiters.
+	* tmac/tmac.ps, tmac/tmac.X: Add definition of \(va.
+
+	* tbl/table.cc (simple_entry::position_vertically,
+	block_entry::position_vertically):  For a centered entry, perform
+	the motion in two stages.
+
+	* refer/refer.cc (split_punct): Don't call lookup_token if there
+	is no token.
+
+Fri Aug 14 11:14:58 1992  James Clark  (jjc at jclark)
+
+	* troff/input.cc (token::next): Delete token_node after copying
+	token.
+
+	* grodvi/grodvi.cc (dvi_printer::dvi_printer): Initialize
+	cur_point_size.
+
+	* libdriver/printer.cc (printer::load_font): Delete old_font_table.
+
+	* grops/ps.cc (ps_printer::define_encoding): Delete elements of vec.
+
+Tue Aug 11 13:50:38 1992  James Clark  (jjc at jclark)
+
+	* grops/ps.cc (usage): -b option takes an argument.
+
+	* devps/prologue (PLG): New procedure.
+	* grops/ps.cc (main, usage): New -g option.
+	(ps_printer::~ps_printer):  If guess_flag is set, guess the paper
+	length using PLG.
+
+Mon Aug 10 11:17:53 1992  James Clark  (jjc at jclark)
+
+	* include/cset.h: Include <limits.h> if we have it.
+
+	* libgroff/illegal.cc: New file.
+	* include/lib.h (illegal_input_char): Use table.
+	* troff/input.cc (ESCAPE_RIGHT_PARENTHESIS): Renumber to 0206.
+	* pic/lex.cc (ARG1): Renumber to 14.
+	* eqn/lex.cc (ARG1: Likewise.
+
+	* troff/Makefile.sub (majorminor.cc): Handle 3 part versions
+	(eg 1.05.90) correctly.
+
+Sun Aug  9 13:35:43 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.e (sr): Deleted. Set $r and $R directly.
+	Rename $r and $R registers to $v and $V.
+	($r, $R): Initialize to 0.
+	(@v, @V): New macros.
+	(sz): Call @v.
+	(@M): Call @V.
+
+	* troff/input.cc (main, usage): Add -R option that says not to
+	load troffrc.
+	* eqn/main.cc (main, usage): Rename -n to -R.
+
+Sat Aug  8 00:16:00 1992  James Clark  (jjc at jclark)
+
+	* devps/DESC.in: Leave font positions 5-9 blank.
+	* devdvi/DESC.in: Likewise.
+
+	* grog/grog.pl: Handle `.PS <file' correctly.
+
+	* troff/input.cc (input_stack::push): Improve error message when
+	input stack limit exceeded.
+
+Fri Aug  7 13:08:16 1992  James Clark  (jjc at jclark)
+
+	* refer/refer.cc (main): Fix typo in handling of `a' option.
+
+	* refer/refer.cc (do_bib): In state START after a newline remain
+	in state START.
+
+	* groff/groff.sh: Deleted.
+	* groff/Makefile.sub: Delete handling of groff.sh.
+
+	* pic/troff.cc (troff_output::text): Test \n(0p rather than \*(.T
+	to determine whether to use \X'ps:...'.
+	* tmac/troffrc: Set 0p register to 0.
+	* tmac/tmac.ps: Set 0p register to 1.
+
+	* groff/groff.cc: Support -X option. Give warning for -TXps and
+	transform to -X -Tps. Pass troff a -r.X=1 option if -X is used.
+	* tmac/troffrc: Support -r.X=1.
+
+	* pic/troff.cc (troff_output::dot): Don't test
+	zero_length_line_flag.
+
+Thu Aug  6 13:32:08 1992  James Clark  (jjc at jclark)
+
+	* include/lib.h: Declare getopt() and friends unless
+	STDLIB_H_DECLARES_GETOPT is defined.
+
+	* doc/chars.tr: Delete.
+	* man/groff_char.man: New file.
+
+Wed Aug  5 00:38:58 1992  James Clark  (jjc at jclark)
+
+	* tmac/tmac.e (np, bu): Test \n($p with string expression in case
+	user has changed register format.
+
+Mon Aug  3 11:22:18 1992  James Clark  (jjc at jclark)
+
+	* groff/groff.cc: Get rid of device_table.  Get postprocessor from
+	`postpro' command in DESC file.  Get spooler command from `print'
+	command in DESC file.  Execute spooler command with /bin/sh.
+
+	* groff/groff.cc: Split Unix-specific parts into...
+	* groff/pipeline.c: New file.
+
+	* LICENSE: Delete.
+	* COPYING: New file.
+	* all files: Update copyright notices.
+
+	* Rearrange files.  Redo Makefiles.  Use autoconf.
+
+Sat Aug  1 09:36:50 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (charinfo_to_node_list): Interpret character
+	definition with escape_char of `\'.
+
+Tue Jul 28 12:20:12 1992  James Clark  (jjc at jclark)
+
+	* lib/strerror.c, lib/iftoa.c, lib/itoa.c: Don't include lib.h.
+	Define INT_DIGITS as big enough for 64-bit integer.
+	* lib/strtol.c: Don't include lib.h.
+	* lib/lib.h: Delete ifdef __cplusplus stuff.
+
+Mon Jul 27 11:08:50 1992  James Clark  (jjc at jclark)
+
+	* ps/devps/Makefile: Add DESC to DEVICEFILES.  Separate out rule
+	for making DESC.  Make $(FONTS) depend on DESC. afmtodit should
+	get DESC from current directory.
+
+Sun Jul 26 15:38:26 1992  James Clark  (jjc at jclark)
+
+	* tbl/main.c (main): Always reset the line number when reading
+	from stdin.
+
+	* tbl/table.c (table::print_single_hline, table::print_double_hline,
+	table::define_bottom_macro, table::do_row, table::do_top): Round
+	vertical spacing up to vertical resolution.
+
+Fri Jul 24 14:32:07 1992  James Clark  (jjc at jclark)
+
+	* ps/ps.h (enum resource_type): Avoid comma at end of
+	enumerator-list.
+	* dvi/dvi.c (class dvi_printer): Likewise.
+	* dvi/tfmtodit.c (gf::load): Likewise.
+	* refer/label.y (struct expression): Likewise.
+	* refer/refer.c (class label_processing_state): Likewise.
+	* refer/indxbib.c (do_file): Likewise.
+	* troff/troff.c (enum warning_type): Likewise.
+	* tbl/main.c (process_data): Likewise.
+	* troff/charinfo.h (class charinfo):
+
+Wed Jul 22 09:17:58 1992  James Clark  (jjc at jclark)
+
+	* dvi/devdvi/textt.map: Add entry for `-'.  Regenerate fonts.
+
+Tue Jul 21 11:39:26 1992  James Clark  (jjc at jclark)
+
+	* groff.c: Move to new groff subdirectory.
+	* groff/Makefile: New file.
+	* Makefile: Remove handling of groff.c. Add groff to SUBDIRS.
+
+	* man/mdate.sh: Use ls -L if supported.
+
+	* Consolidate all header files produced by gendef into lib/defs.h.
+	* lib/macropath.c, lib/fontfile.c, lib/device.c: Include defs.h.
+	Don't include path.h.
+	* lib/Makefile (path.h): Don't generate.
+	* troff/input.c: Include defs.h. Don't include config.h.
+	* troff/Makefile (config.h): Don't generate.
+	* refer/index.h: Don't include suffix.h.
+	* refer/index.c: Include defs.h.
+	* refer/indxbib.c: Include defs.h.
+	* refer/refer.h, refer/lkbib.h: Don't include path.h. Include
+	defs.h.
+	* refer/Makefile (suffix.h, path.h): Don't generate.
+	* groff.c: Don't include config.h. Include defs.h.
+	* Makefile (config.h): Don't generate.
+	(lib/defs.h): Generate.
+	(topclean): Remove lib/defs.h.
+
+Mon Jul 20 10:12:57 1992  James Clark  (jjc at jclark)
+
+	* lib/malloc.c, lib/getpagesize.h: Deleted.
+	* Makefile: Add COOKIE_BUG configuration option.  Delete malloc
+	related stuff.
+	* lib/Makefile: Delete malloc-related stuff.
+	* lib/new.c: Workaround COOKIE_BUG if necessary.
+
+	* refer/lkbib.c, refer/indxbib.c: Don't include refer.h.  Include
+	needed header files directly.
+	* refer/refer.h: Omit definition of DEFAULT_INDEX.
+	* Makefile: Include definition of DEFAULT_INDEX in path.h.
+
+Sun Jul 19 10:19:22 1992  James Clark  (jjc at jclark)
+
+	* lib/font.c (FONT_COMMAND_HANDLER): Pass command name and single
+	argument.
+	* lib/font (font::load_desc, font::load): Don't split argument of
+	unknown command.
+	(font::handle_unknown_font_command): Change type.
+	* ps/ps.c (ps_font::handle_unknown_font_command,
+	handle_unknown_desc_command): Change type.
+	* dvi/dvi.c (dvi_font::handle_unknown_font_command): Change type.
+
+Fri Jul 17 11:12:49 1992  James Clark  (jjc at jclark)
+
+	* lib/font.h (font::handle_unknown_font_command): Add file and
+	line arguments.
+	* lib/font.c (font::handle_unknown_font_command):
+	* ps/ps.c (ps_font::handle_unknown_font_command):
+	* dvi/dvi.c (dvi_font::handle_unknown_font_command): Add file and
+	lineno arguments.  Use _with_file_and_line functions for error
+	reporting.
+
+	* lib/fontfile.c (font::unknown_desc_command_handler): New static
+	data member.
+	* lib/font.c (font::set_unknown_desc_command_handler): New
+	function.
+	(font::load_desc): For unknown commands, call
+	unknown_desc_command_handler if not null.
+	* lib/font.h (class font): Declare them.
+	(FONT_COMMAND_HANDLER): New typedef.
+	* ps/ps.c (handle_unknown_desc_command): New function.
+	(main): Set bflag if we had a -b option. Call
+	font::set_unknown_desc_command_handler.
+	(broken.h): Don't include.
+	* ps/Makefile: No need for broken.h.  Pass BROKEN_SPOOLER_FLAGS to
+	submake 
+	* ps/devps/Makefile: Add `broken' command to DESC file using
+	BROKEN_SPOOLER_FLAGS.
+
+	* macros/tmac.e ([, ]): Add as synonyms for { and }.
+
+	* macros/tmac.e ($p): Only exdent if \$3 > 0.
+
+	* macros/tmac.e (@R, @S): New macros.
+	Declare @, po, $0, $i, $p, df, so, fu, bt, *, ?a, ?b, ?C, ?e, ?H,
+	?I, ?n, ?o, ?R, ?s, ?T, ?W, ?w registers with @R.
+	Declare $H, $[0-9], .. macros with @S.
+	Declare |0, |1, |2, |3 strings with @S.
+
+	* macros/tmac.e (@S): Rename to @U.
+
+	* macros/tmac.e (@z): Define @b and bp as empty instead of
+	deleting them,
+
+	* macros/tmac.e (@m): Deleted.
+	(@h): Don't call @m.
+	(@z): Don't set @m trap.
+
+	* macros/tmac.e ($h, $f): Define |z as empty string.
+
+	* macros/tmac.e (@D): Rework to avoid unbalanced .el requests.
+	(@q): Likewise.
+
+	* macros/tmac.e (@h): Set ?H, ?C , ?s registers to 0 rather than
+	removing them.
+	()f): Likewise for * register.
+
+	* macros/tmac.e (sr): Don't ever scale the arguments. If the third
+	argument is missing, don't change $R.  Call sr with three
+	arguments when initializing.
+
+Thu Jul 16 12:17:12 1992  James Clark  (jjc at jclark)
+
+	* macros/tmac.e (sr): New macro.
+	Initialize $r and $R using sr.
+
+	* macros/tmac.e (,): Delete \*(#[.
+
+	* troff/env.c (set_tabs): Read the tab type even if the position
+	is bad.  Allow the position of the first tab stop to be negative.
+
+Wed Jul 15 13:14:37 1992  James Clark  (jjc at jclark)
+
+	* refer/dirnamemax.c: Use pathconf() if <unistd.h> defines
+	_POSIX_VERSION.
+	* refer/Makefile: Compile dirnamemax.c using -DHAVE_UNISTD_H
+	rather than -DPATHCONF_MISSING.
+	* Makefile: Get rid of PATHCONF_MISSING.
+
+	* refer/map.c: New file.
+	* refer/index.c: Interface to mmap through map.c.  Rename map_size
+	to map_len.
+	* refer/Makefile: Handle map.c.
+	* Makefile: Include -DHAVE_MMAP in OLDCFLAGS rather than CFLAGS.
+
+Tue Jul 14 14:15:20 1992  James Clark  (jjc at jclark)
+
+	* Makefile: RANLIB should be `true' if there is no ranlib.
+	* lib/Makefile (libgroff.a): Simplify.
+	* driver/Makefile (libdriver.a): Simplify.
+
+	* Makefile: Change -DWAIT_COREDUMP_0200 to -DWCOREFLAG=0200.
+	* groff.c (WCOREDUMP): Use WCOREFLAG.  Define only if not already
+	defined.
+
+Sat Jul 11 09:19:17 1992  James Clark  (jjc at jclark)
+
+	* troff/env.c (compare_ranges): Declare as extern "C".
+
+	* troff/input.c (init_registers): Use `struct tm' instead of `tm'.
+
+	* macros/tmac.s, macros/tmac.e: Change .nx /dev/null to .nx.
+
+Wed Jul  8 11:52:27 1992  James Clark  (jjc at jclark)
+
+	* pic/troff.c (troff_output::text): Merge in grops_output::text,
+	but conditionalize use of \X based on \*(.T.
+	(grops_output::*): Deleted.
+	* pic/output.h: Delete declaration of make_grops_output.
+	* pic/main.c (main): Ignore -p and -x.  driver_extension_flag is 1
+	by default. -n sets it to 0.
+	(usage): Corresponding changes.
+	* groff.c (main): Don't pass -x or -p to pic.
+	* groff.sh: Likewise.
+
+	* ps/ps.c (ps_printer::do_exec, ps_printer::do_file): Force ndefs
+	to be non-zero.
+
+	* ps/devps/afmtodit: Change calculation of asc_boundary and
+	desc_boundary.  Make these bounds inclusive.
+	* ps/devps: Regenerate font files.
+
+Tue Jul  7 13:14:15 1992  James Clark  (jjc at jclark)
+
+	* macros/tmac.latin1: New file.
+	* macros/tmac.tty-char: Use tmac.latin1.
+	(tmac.tty-tr): Deleted.
+	* macros/Makefile: Install tmac.latin1.
+	* macros/tmac.dvi: Use tmac.latin1.
+	* macros/troffrc: Translate \[char160] onto no-break space here.
+	* macros/{tmac.dvi,tmac.ps,tmac.tty,tmac.X75}: Don't do it here.
+
+Mon Jul  6 11:06:52 1992  James Clark  (jjc at jclark)
+
+	* macros/tmac.Xps: Use `do' request.
+
+	* macros/tmac.ps: Use `do' request.
+
+	* macros/tmac.e (@C): Use `do' request.
+
+	* macros/tmac.X, macros/tmac.Xps: Moved from xditview.
+	* macros/Makefile: Install tmac.X*.
+
+	* tty/tmac.tty, tty/tmac.tty-char: Move to macros.
+	* tty/Makefile: Don't install tmac.tty*.
+	* macros/Makefile: Install tmac.tty*.
+
+	* dvi/tmac.dvi: Move to macros.
+	* dvi/Makefile: Don't install tmac.dvi.
+	* macros/Makefile: Install tmac.dvi.
+
+	* ps/tmac.ps*: Move to macros.
+	* ps/Makefile: Don't install tmac.ps*.
+	* macros/Makefile: Install tmac.ps*.
+
+	* eqn/box.c: Provide draw_lines parameter corresponding to -D
+	option.
+	* macros/eqnrc: Set draw_lines parameter based on device.
+	* groff.c: Don't pass -D flag to eqn.
+	* groff.sh: Likewise.
+	* eqn/main.c: Warn about use of -D.
+
+	* troff/input.c (process_startup_file): New function.
+	(main): Call process_startup_file().
+	* macros/troffrc: New file.
+	* macros/Makefile: Install troffrc.
+	* groff.c (main): Don't pass extra -m option to troff. For a 
+	pseudo device pass the name of the pseudo device to troff using
+	-d.
+	* groff.sh: Likewise.
+	* groff.c (possible_command::prepend_arg): Deleted.
+
+	* troff/input.c (do_request): New function.
+	(init_input_requests): Bind "do" to do_request.
+
+	* eqn/main.c (main): Instead of loading eqnchar from device directory,
+	load eqnrc from macro directory.
+	* macros/eqnrc: New file.
+	* macros/Makefile: Install eqnrc.
+	* ps/devps/eqnchar: Deleted.
+	* ps/devps/Makefile: Don't install eqnchar.
+	* dvi/devdvi/eqnchar: Deleted.
+	* dvi/devdvi/Makefile: Don't install eqnchar.
+	* groff.c (main): Pass -M to eqn. Don't pass -F to eqn. New
+	variable optM.
+
+	* lib/device.[ch]: New files.
+	* lib/font.h (font::set_device_name, font::get_device_name):
+	Deleted.
+	* lib/fontfile.c: Use device.h.
+	* lib/Makefile: Handle device.[ch]. Make paths.h define DEVICE.
+	* troff/input.c: Delete definition of `device'.
+	(main): Don't initialize device.
+	* troff/troff.h: Include device.h rather than declaring device.
+	* troff/Makefile: No need to handle DEVICE.
+	* driver/input.c: Include device.h. Don't use
+	font::{set,get}_device_name.
+	* groff.c, Makefile: Rename device.h to config.h.
+	* groff.c: Use library device variable.
+	* eqn/main.c: Use library device variable.
+	* eqn/Makefile: No need to handle DEVICE.
+
+	* lib/searchpath.[ch]: New files.
+	* lib/Makefile: Handle searchpath.[ch].
+	* troff/input.c (open_file, init_dirs): Deleted.
+	(macro_dirs): Deleted.
+	(open_mac_file, macro_source): Use class search_path.
+	(add_string, struct string_list): Move definition.
+	(main): Change -M option to use macro_path. Delete call to
+	init_dirs().
+	* lib/fontfile.c (font::command_line_font_dir, font::open_file):
+	Rewrite to use class search_path.
+	* lib/font.h, lib/fontfile.c (font::cl_font_dirs): Deleted.
+	* lib/Makefile: fontfile.c depends on searchpath.h.
+	* lib/Makefile: Rename fontpath.h to paths.h. Make paths.h define
+	MACROPATH.
+	* lib/macropath.[ch]: New files.
+	* troff/Makefile: No need to handle MACROPATH.
+
+	* troff/input.c: Delete DUMP code.
+	* lib/fontfile.c, lib/font.h: Delete
+	font::forget_command_line_font_dirs.
+
+	* troff/input.c (push_token): New function.
+	(handle_first_page_transition): Use push_token().
+	(process_input_stack): Change handling of a space at the beginning
+	of the line.
+
+Sun Jul  5 17:11:09 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (font_dirs): Delete unused variable.
+
+	* eqn/lex.c (do_set): Correct error messages.
+
+Sat Jul  4 10:20:55 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (do_define_string): Allow the string name to be
+	followed immediately by a tab.
+	(define_character): Likewise.
+
+Thu Jul  2 10:59:15 1992  James Clark  (jjc at jclark)
+
+	* ps/ps.c (ps_printer::draw): When drawing an arc, don't allow k to
+	be negative.
+
+	* troff/input.c (input_iterator::is_file): New virtual function.
+	(file_iterator::is_file): New function.
+	(input_stack::end_file): New function.
+	(input_stack::next_file): Handle the situation where there is no
+	file on the input stack correctly.  Avoid making two passes over
+	the input stack.
+	(next_file): Make the filename optional; in this case call
+	input_stack::end_file().
+
+Wed Jul  1 10:17:25 1992  James Clark  (jjc at jclark)
+
+	* dvi/tmac.dvi: Change the definitions of \(ul and _ so that they
+	produce a real _ charater when the current font is CW and _
+	otherwise.
+
+	* lib/errarg.c (errarg::errarg(const char *)): Invert conditional
+	expression to work around gcc 2.2 bug.
+
+Wed Jun 24 08:12:24 1992  James Clark  (jjc at jclark)
+
+	* eqn/main.c (main): Don't give an error if we can't find eqnchar.
+
+	* troff/env.c (environment::add_padding): New function.
+	(environment::add_char): Use add_padding().
+	(environment::space): Likewise.
+	(environment::wrap_up_field): Add some padding if there is none
+	and there's no current tab.
+	* troff/env.h: Declare environment::add_padding.
+
+Mon Jun 22 08:37:45 1992  James Clark  (jjc@jclark)
+
+	* pic/pic.y: undef fmod and rand before declaring them.
+
+Sun Jun 14 11:40:18 1992  James Clark  (jjc@jclark)
+
+	* troff/input.c (main): If the DESC file specifies a font name of
+	0, then leave the corresponding font position empty.
+
+	* nroff.sh: New file.
+	* Makefile (install.nobin): Install nroff.sh.
+
+	* tty/devlatin1/R.proto: Add ao as synonym for de.
+	* tty/tmac.tty-char: Define ao as o.
+
+	* tty/dev{ascii,latin1}/R.proto: Add aq.
+	* tty/tmac.tty-char: Delete definition of aq.
+
+Mon Jun  8 11:43:20 1992  James Clark  (jjc@jclark)
+
+	* troff/input.c (init_charset_table): Don't translate 0240.
+	* ps/tmac.ps: Translate char160 to space.
+	* dvi/tmac.dvi: Likewise.
+	* tty/tmac.tty: Likewise.
+
+Sun Jun  7 10:52:35 1992  James Clark  (jjc@jclark)
+
+	* dvi/tmac.dvi: Add support for all Latin-1 characters.
+
+	* macros/tmac.s: Delete definitions of \(rg, \(ah, \(ad, \(a-,
+	\(ao, \(ac, \(ho, \(-D, \(Sd, \(TP, \(Tp, \(ss, \(AE, \(ae, \(OE,
+	\(oe, \(r?, \(r!.
+
+	* tty/tmac.tty-char: Add \(ah.
+
+	* dvi/tmac.dvi: Add definitions of Tp, TP, Sd, -D, ho.
+	No need to define \(FM and \(!/. Conditionalize all character
+	definitions.
+
+	* ps/devps/lgreekmap: Add +h, +f, +p.
+
+	* ps/tmac.psnew: New file.
+	* ps/Makefile: Install tmac.psnew.
+
+	* troff/input.c (charinfo_to_node_list): Don't ever interpret
+	character definitions in compatible mode.
+
+	* troff/input.c (remove_character): New function.
+	(init_input_requests): Bind remove_character to "rchar".
+
+	* ps/tmac.psold: New file.
+	* ps/Makefile: Install tmac.psold.
+	* ps/tmac.ps: Load tmac.psold. Move definitions of ISO Latin-1
+	characters into tmac.psold.  Make these definitions unconditional.
+
+	* tty/tmac.tty-char: Define \n(_C only if it is not already defined.
+
+	* ps/tmac.ps: Don't define \('c and \('C.
+
+	* ps/devps/textmap: Move Greek characters to...
+	* ps/devps/symbolchars:
+
+Sat Jun  6 16:41:17 1992  James Clark  (jjc@jclark)
+
+	* ps/devps/text.enc: Add quotesingle.
+	* ps/devps/textmap: Add +h, +f, +p, Fn, Bq, bq, aq, lz.
+	* tty/tmac.tty-char: Likewise.
+	* dvi/devdvi/texmi.map: Add +h, +f, +p.
+	* dvi/devdvi/texi.map: Add Fn.
+	* dvi/devdvi/msam.map: Add lz.
+	* dvi/tmac.dvi: Handle Bq, bq, aq.
+
+	* pic/lex.c (get_token): Recognize 'th.
+	* pic/map.y: Allow `expr'th in contexts where ORDINAL was allowed.
+
+Fri Jun  5 11:20:46 1992  James Clark  (jjc@jclark)
+
+	* ps/devps/textmap: Move di, mu, +- to...
+	* ps/devps/symbolchars:
+
+	* macros/tmac.s (@XS): Don't call par@reset or fi.
+	(XA): Call LP. Turn off adjustment. Reduce line length.
+
+	* macros/tmac.s: Initially alias XS to LP.
+	(XS): Rename to @XS.
+	(cov*ab-init): Alias XS to @XS.
+
+Thu Jun  4 09:12:05 1992  James Clark  (jjc@jclark)
+
+	* troff/token.h: Delete TOKEN_CHAR_HEIGHT, TOKEN_CHAR_SLANT,
+	TOKEN_FONT_NAME, TOKEN_FONT_POSITION, TOKEN_SIZE tokens.
+	(token::is_size, token::changes_env): Deleted.
+	* troff/number.c (parse_term): No need to process \s explicitly.
+	Call tok.next() only after scale indicator has been processed.
+	* troff/input.c (do_overstrike, do_bracket): No need to process \s,
+	\f etc explicitly.
+	(token::next): Handle \s, \f, \S, \H immediately rather than
+	returning them as tokens.
+	(token::operator==, token::description, token::add_to_node_list,
+	token::process): Remove handling of deleted tokens.
+
+	* troff/env.c (environment::add_char): When adding padding
+	indicator character, call start_line() if necessary.
+
+Wed Jun  3 09:55:50 1992  James Clark  (jjc@jclark)
+
+	* ps/devps/afmtodit: Don't output 0 kerns.
+
+	* ps/devps/afmtodit: Remove directory from name of encoding in
+	font description file.
+
+	* ps/devps/afmtodit: Improve error messages.
+
+	* ps/devps/afmtodit: Allow DESC file to be specified with -d.
+
+	* ps/devps/Makefile: Incorporate FontMakefile. Rework.
+	* ps/devps/FontMakefile: Deleted.
+	* ps/devps/afmname: New file.
+
+	* ps/devps/symbol.sed: New file.
+	* ps/devps/symbol.diff: Deleted.
+	* ps/devps/FontMakefile: Generate symbol.afm using symbol.sed.
+	Generate zapfdr.afm from zapfd.afm.
+
+	* tty/tmac.tty (tty-char): Prefix definition with ".
+
+	* macros/tmac.an (TP): Don't start a diversion if one has already
+	been started.
+
+	* tty/tmac.tty-char: Add Latin-1 characters.
+
+	* tty/tmac.tty-char: Incorporate suggestions from Paul Eggert.
+
+Tue Jun  2 00:54:34 1992  James Clark  (jjc@jclark)
+
+	* tbl/table.c (table::allocate): Delete old_vline, old_entry.
+	Move declaration of struct horizontal_span.
+
+	* tbl/table.c (table::table): Initialize span_list.
+	(table::~table): Delete span_list.
+
+	* lib/ptable.h (PTABLE(T)::~PTABLE(T)): Delete v.
+
+	* ps/devps/Makefile: Avoid dependency on GNU make.
+
+	* ps/tmac.ps: Check that character does not already exist before
+	defining it.
+
+	* tty/tmac.tty: Add definitions of \(ff, \(!=, \(==, \(~=, \(sq,
+	\(OE, \(oe, \(AE, \(ae, \(lh, \(rh. Delete definitions of \(en,
+	\(ru, \(ul, \(br, \(bv, \(sl which are in the font description
+	files.
+
+	* tty/tmac.tty-char: New file.
+	* tty/Makefile: Install tmac.tty-char.
+	* tty/tmac.tty: Move definitions of \(ua, \(da, \(uA, \(dA into
+	tmac.tty-char.
+
+	* tty/tmac.tty: Fix definition of \(34.
+
+	* tty/dev{ascii,latin1}/R.proto: Add ha and ti. Map
+	bracket-drawing characters onto |. Add *o.
+
+	* troff/env.c (environment::wrap_up_tab): Increment field_spaces
+	only if current_field.
+
+	* troff/dictionary.c (dictionary::lookup): Free old_table after
+	rehashing. 
+
+Mon Jun  1 10:15:22 1992  James Clark  (jjc@jclark)
+
+	* tty/dev{ascii,latin1}/R.proto: Add uppercase Greek characters
+	whose glyphs are identical to glyphs of some Roman character.
+
+	* tty/devlatin1/R.proto (bu): Deleted.
+	* tty/devascii/R.proto (bu): Deleted.
+	* tty/tmac.tty: Add definition of \(bu.
+
+	* eqn/main.c (do_file): Pass FILE as argument.
+	(main): Automatically load eqnchar.  New options -F and -n.
+	Pass do_file an opened FILE.
+	* groff.c: Don't pass eqnchar to eqn. Pass -F options onto eqn.
+	No need to include font.h.
+	* groff.sh: Likewise.  Don't need to use - for standard input.
+	Prefix files with -- if first file starts with -.
+
+	* macros/tmac.e: Conditionalize use of \$* on \n(.g.
+
+	* troff/env.c (environment::possibly_break_line): Don't set line
+	to 0 across call to output_line().  Don't call output_line() until
+	after discarding nodes after break.
+
+Sun May 31 10:45:29 1992  James Clark  (jjc@jclark)
+
+	* request.h (macro::empty): Declare it.
+	* input.c (macro::empty): New method.
+	(interpolate_macro):  Don't give a WARN_SPACE if the two-character
+	macro is empty.
+
+Sat May 30 10:27:15 1992  James Clark  (jjc@jclark)
+
+	* troff/env.c (environment::start_field): Decrement space_total
+	when a space is frozen.
+
+Fri May 22 14:34:38 1992  James Clark  (jjc@jclark)
+
+	* macros/tmac.an (R): Delete macro.
+
+	* troff/input.c (get_copy, token::next): Support \# (like \" but
+	newline is ignored).
+
+	* troff/input.c (token::next): Fix error message in 'Y' case.
+
+Thu May 21 09:26:24 1992  James Clark  (jjc@jclark)
+
+	* eqn/delim.c (define_extensible_string): Recognize any prefix of
+	a delimiter name.
+
+Fri May 15 10:20:41 1992  James Clark  (jjc at jclark)
+
+	* c++test.c: Include <osfcn.h>.
+
+	* lib/strtol.c, lib/getcwd.c, ps/psbb.c: Declare errno in case
+	<errno.h> doesn't.
+
+Fri May  8 09:37:19 1992  James Clark  (jjc at jclark)
+
+	* tbl/table.c (table::divide_span): Don't count column separation
+	if expand was specified.
+
+	* tbl/main.c (process_format): Don't ignore width specs in
+	continued format.  Give warning for changing equal widths or
+	column separation in continued format.
+	(process_data): Set column separation, minimum width, equal
+	columns at end of table.
+
+Thu May  7 08:50:40 1992  James Clark  (jjc at jclark)
+
+	* troff/node.c (kern_pair_node::add_discretionary_hyphen,
+	node::add_discretionary_hyphen): Use soft_hyphen_char.
+	(set_soft_hyphen_char): New function.
+	(init_node_requests): Bind to shc.  Initialize soft_hyphen_char.
+
+	* Makefile (c++tested): Give more helpful message if test fails.
+
+Tue May  5 10:58:39 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (init_charset_table): Translate 0240 to
+	an unbreakable space.
+
+	* troff/token.h (token::hyphen_indicator): New function.
+	* troff/charinfo.h (TRANSLATE_HYPHEN_INDICATOR): New special
+	translation.
+	* troff/input.c (translate): Allow translation to \%.
+	* troff/node.c (node::add_char): Handle
+	TRANSLATE_HYPHEN_INDICATOR.	
+	(make_node): Don't allow TRANSLATE_HYPHEN_INDICATOR here.
+
+	* troff/input.c (init_charset_table): Don't set BREAK_AFTER flag
+	for \(hy.
+
+	* tty/devlatin1/R.proto: \(hy and - should print as 055.
+
+Tue Apr 21 09:24:42 1992  James Clark  (jjc at jclark)
+
+	* groff.c (run_commands): If the last command gets a SIGPIPE send
+	a SIGPIPE to all children than haven't yet terminated.  When
+	command terminates, set pid field to -1.
+
+Fri Apr 17 11:20:48 1992  James Clark  (jjc at jclark)
+
+	* groff.c (main): Pass an appropriate -filename option to gxditview.
+
+Thu Apr 16 15:11:40 1992  James Clark  (jjc at jclark)
+
+	* Makefile.bd (install): Remove existing program before copying.
+
+	* Makefile, */Makefile, Makefile.bd, groff.sh, groff.c: Allow
+	programs which have Unix counterparts to be installed with
+	user-specified prefix.
+
+	* troff/input.c (exit_troff): Don't check if exit_started.
+	(exit_request): Don't call exit_troff if exit_started.
+
+	* Makefile.bd (install.mm): Rename to install.dwbmm.
+
+Tue Apr 14 10:05:10 1992  James Clark  (jjc at jclark)
+
+	* driver/input.c (do_file): Add missing break for '#' case.
+
+Mon Apr 13 10:11:02 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (input_stack::clear):  Clear past any boundaries and
+	then add the boundaries back.
+
+	* troff/input.c (exit_troff): Return immediately if already
+	exiting.
+
+	* macros/tmac.s (pg@end-text): New macro.  Use pg@end-text for the
+	end macro.
+	(pg*end-page): If the text has ended and there are no more
+	footnotes or keeps, exit.
+
+	* macros/doc-ditroff (Lq, Rq): Define as \(lq and \(rq.
+
+	* troff/input.c (init_charset_table): Make \(rq transparent by
+	default.
+
+	* macros/tmac.an: Define lq and rq strings.
+
+	* macros/tmac.s (Q, U): Define as \(lq and \(rq.
+
+Sun Apr 12 12:54:37 1992  James Clark  (jjc at jclark)
+
+	* troff/env.c (environment::final_break): New function.
+	(environment::newline): Set prev_line_interrupted to 2 if
+	exit_started.
+	* troff/env.h: Declare environment::final_break.
+	* troff/input.c (exit_troff): Call environment::final_break()
+	instead of environment::do_break().
+
+	* macros/Makefile: Install man.local if $(MACRODIR)/man.local
+	doesn't already exist.
+	* macros/man.local: New file.
+	* macros/tmac.an: Load man.local.
+	* macros/man.ultrix: New file.
+
+Sat Apr 11 17:32:04 1992  James Clark  (jjc at jclark)
+
+	* troff/input.c (exit_groff): Rename to...
+	(exit_troff): New function.
+
+	* troff/div.c (exit_started, done_end_macro,
+	seen_last_page_ejector): New global variables.
+	(began_page_in_end_macro): New static variable.
+	(exit_flag): Deleted.
+	(top_level_diversion::top_level_diversion): Initialize
+	last_page_count.
+	(top_level_diversion): More elaborate test for whether
+	cleanup_and_exit() should be called.
+	Set began_page_in_end_macro if the end macro isn't yet finished.
+	* troff/div.h (top_level_diversion::last_page_count): New data
+	member.
+	(top_level_diversion::set_last_page): New function.
+	(exit_started, done_end_macro, seen_last_page_ejector): Declare.
+	* troff/env.c (do_break): Zero prev_line_interrupted.
+	* troff/input.c (exit_flag): Delete declaration.
+	(LAST_PAGE_EJECTOR): New magic cookie.
+	(token::next): Handle LAST_PAGE_EJECTOR.
+	(exit_groff): Set exit_started and done_end_macro instead of
+	exit_flag.  Call top_level_diversion::set_last_page.  Push a
+	LAST_PAGE_EJECTOR instead of calling push_page_ejector().  Do
+	another ejection after setting seen_last_page_ejector.
+
+Thu Apr  9 04:37:11 1992  James Clark  (jjc at jclark)
+
+	* etc/grog.sh, etc/grog.sh: Recognize -me sh macro.
+
+	* macros/tmac.e (TH): Make sure there's room for the initial
+	header.
+
+	* macros/tmac.s (par@init): Make PD and DD at least \n(.V.
+	Set FVS in points rather than units.
+
+Mon Apr  6 11:21:32 1992  James Clark  (jjc at jclark)
+
+	* troff/div.c (top_level_diversion::add_trap): Don't consider the
+	position of empty slots.
+
+Fri Apr  3 10:46:45 1992  James Clark  (jjc at jclark)
+
+	* ps/devps/S: Fix height and depth of parenrightex.
+	* ps/devps/symbol.diff: Regenerate.
+
+Sat Mar 28 21:17:52 1992  James Clark  (jjc at jclark)
+
+	* tmac.e (u): Do underlining as in -mgs.
+
+Fri Mar 27 09:23:44 1992  James Clark  (jjc at jclark)
+
+	* tty/tty.c (tty_printer::end_page): If overstriking is
+	suppressed, still turn overstruck horizontal and vertical lines
+	into +.
+
+	* lib/new.c: Back out Feb 24 change; no longer needed with gcc
+	2.1.
+
+	* refer/label.y (format_expr::evaluate): Avoid use of %0*d.
+
 Wed Mar 18 09:29:10 1992  James Clark  (jjc at jclark)
 
 	* Version 1.05 released.
@@ -162,7 +1173,7 @@ Sat Feb 15 09:55:20 1992  James Clark  (jjc at jclark)
 	plain version of the tfont if the environment is composite.
 
 	* troff/node.c (font_info::get_space_width): Additional argument
-	giving space_size.  Handle constance space correctly. Scale by
+	giving space_size.  Handle constant space correctly. Scale by
 	space_size unless constant spaced.
 	(env_sentence_space_width): New function.
 	* troff/node.h: Declare it.

@@ -1,5 +1,5 @@
 .\"	Version:
-.ds RE 1.01
+.ds RE 1.04
 .ig
 Copyright (C) 1991 Free Software Foundation, Inc.
 mgm is written by Jörgen Hägg (jh@efd.lth.se)
@@ -196,7 +196,7 @@ Index		array!index
 .ds MO11 November
 .ds MO12 December
 .\" for GETR
-.ds Qrf See chapter \\*[Qrfh], page \\n[Qrfp].
+.ds Qrf See chapter \\*[Qrfh], page \\*[Qrfp].
 .\"	test for mgm macro. This can be used if the text must test
 .\"	what macros is used.
 .nr .mgm 1
@@ -563,7 +563,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	ds hd*toc-mark
 .\}
 .\"
-.if \\n[D]>1 .tm At header \\*[hd*toc-mark]
+.if \\n[D]>1 .tm At header \\*[hd*toc-mark] "\\$2"
 .nr hd*htype 0				\" hd*htype = check break and space
 .					\" 0 = run-in, 1 = break only, 2 = space
 .if \\n[hd*level]<=\\n[Hb] .nr hd*htype 1
@@ -665,27 +665,30 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr pg*top-margin 0
 .nr pg*foot-margin 0
 .nr pg*block-size 0
-.nr pg*footer-size 4v\"			 1v+footer+even/odd footer+1v
-.nr pg*header-size 7v\"			 3v+header+even/odd header+2v
+.nr pg*footer-size 5\"			 1v+footer+even/odd footer+2v
+.nr pg*header-size 7\"			 3v+header+even/odd header+2v
 .nr ft*note-size 0
 .nr pg*cur-column 0
 .nr pg*cols-per-page 1
 .nr pg*cur-po \n[@po]
 .nr pg*head-mark 0
+.\"
+.nr pg*ps \n[@ps]
+.nr pg*vs \n[@vs]
 .\" compatibility reasons. Why not use %??
 .aln P %
 .\"-------------------------
 .\" footer traps: set, enable and disable
 .de pg@set-new-trap
-.nr pg*foot-trap \\n[@pl]u-(\\n[pg*block-size]u+\\n[ft*note-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u)
-.if \\n[D]>2 .tm pg*foot-trap \\n[@pl]u-(\\n[pg*block-size]u+\\n[ft*note-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u) = \\n[pg*foot-trap]
+.nr pg*foot-trap \\n[@pl]u-(\\n[pg*block-size]u+\\n[ft*note-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]v)
+.if \\n[D]>2 .tm pg*foot-trap \\n[@pl]u-(\\n[pg*block-size]u+\\n[ft*note-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]v) = \\n[pg*foot-trap]
 .\" last-pos points to the position of the footer and bottom 
 .\" block below foot-notes.
-.nr pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]u)
+.nr pg*last-pos \\n[@pl]u-(\\n[pg*block-size]u+\\n[pg*foot-margin]u+\\n[pg*footer-size]v)
 ..
 .de pg@enable-trap
 .wh \\n[pg*foot-trap]u pg@footer
-.if \\n[D]>2 .tm pg@enable-trap .t=\\n[.t]
+.if \\n[D]>2 .tm pg@enable-trap .t=\\n[.t] nl=\\n[nl]
 ..
 .de pg@disable-trap
 .ch pg@footer
@@ -727,20 +730,20 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"------------------------------------------------------------
 .\" HEADER
 .de pg@header
-.if \\n[D]>1 .tm \\n[.F]:\\n[c.]: header for page# \\n[%]
+.if \\n[D]>1 .tm Page# \\n[%] (\\n[.F]:\\n[c.])
 .if \\n[Idxf] \{\
 .tl '<pagenr\ \\n[%]>'''
 .\}
 .if \\n[pg*top-enabled] \{\
 .	if \\n[pg*top-margin] .sp \\n[pg*top-margin]u
 .	ev pg*tl-ev
-.	init@reset
+.	pg@set-env
 .	ie !d TP \{\
 '		sp 3
 .		lt \\n[@ll]u
 .		tl \\*[pg*header]
-.		ie \\n[%]%2 .tl \\*[pg*even-header]
-.		el .tl \\*[pg*odd-header]
+.		ie o .tl \\*[pg*odd-header]
+.		el .tl \\*[pg*even-header]
 '		sp 2
 .	\}
 .	el .TP
@@ -796,10 +799,10 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"
 .\" print the footer and eject new page
 .ev pg*tl-ev
-.init@reset
+.pg@set-env
 .lt \\n[@ll]u
-.ie \\n[%]%2 .tl \\*[pg*even-footer]
-.el .tl \\*[pg*odd-footer]
+.ie o .tl \\*[pg*odd-footer]
+.el .tl \\*[pg*even-footer]
 .tl \\*[pg*footer]
 .ev
 .ie (\\n[ds*fnr]>=\\n[ds*o-fnr]):\\n[ft*exist] \{\
@@ -809,25 +812,41 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\}
 .el 'bp
 ..
+.\"-------------------------
 .\"
+.\" Initialize the title environment
+.de pg@set-env
+'na
+'nh
+'in 0
+'ti 0
+'ps \\n[pg*ps]
+'vs \\n[pg*vs]
+..
 .\"-------------------------
 .de PH
 .ds pg*header "\\$1
+.pg@set-new-size
 ..
 .de PF
 .ds pg*footer "\\$1
+.pg@set-new-size
 ..
 .de OH
 .ds pg*odd-header "\\$1
+.pg@set-new-size
 ..
 .de EH
 .ds pg*even-header "\\$1
+.pg@set-new-size
 ..
 .de OF
 .ds pg*odd-footer "\\$1
+.pg@set-new-size
 ..
 .de EF
 .ds pg*even-footer "\\$1
+.pg@set-new-size
 ..
 .de pg@clear-hd
 .ds pg*even-header
@@ -838,6 +857,11 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .ds pg*even-footer
 .ds pg*odd-footer
 .ds pg*footer
+..
+.de pg@set-new-size
+.nr pg*ps \\n[@ps]
+.nr pg*vs \\n[@vs]
+.pg@move-trap
 ..
 .\"-------------------------
 .\" end of page processing
@@ -957,7 +981,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 ..
 .\"-----------
 .de OP
-.SK 1+(\\n[%]%2)
+.br
+.ie o .if !\\n[pg*head-mark]=\\n[nl] .bp +2
+.el .bp
 ..
 .\"########### module footnotes ###################
 .nr ft*note-size 0
@@ -1131,16 +1157,17 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" nested DS/DE is allowed. No limit on depth.
 .de DS
 .br
-.ds@start 0 DS \\$*
+.ds@start 0 DS \\$@
 ..
 .\" floating display start
 .\" nested DF/DE is not allowed.
 .de DF
 .if \\n[ds*lvl] .@error "DF:nested floating is not allowed. Use DS."
-.ds@start 1 DF \\$*
+.ds@start 1 DF \\$@
 ..
 .\"---------------
 .nr ds*format 0\"	dummy value for .En/.EQ
+.nr ds*format! 0\"	no indent
 .nr ds*format!0 0\"	no indent
 .nr ds*format!L 0\"	no indent
 .nr ds*format!I 1\"	indent
@@ -1154,6 +1181,12 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr ds*format!RB 5\"	right justify as block
 .nr ds*format!5 5\"	right justify as block
 .\"---------------
+.nr ds*fill! 0\"	no fill
+.nr ds*fill!N 0\"	no fill
+.nr ds*fill!0 0\"	no fill
+.nr ds*fill!F 1\"	fill on
+.nr ds*fill!1 1\"	fill on
+.\"---------------
 .de ds@start
 .nr ds*ffloat \\$1
 .ds ds*type \\$2
@@ -1166,22 +1199,17 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\}
 .el .nr ds*format 0
 .\" fill or not to fill, that is the...
-.nr ds*fill -1
+.nr ds*fill 0
 .ie \\n[.$]>1 \{\
-.	if '\\$2'N' .nr ds*fill 0
-.	if '\\$2'0' .nr ds*fill 0
-.	if '\\$2'F' .nr ds*fill 1
-.	if '\\$2'1' .nr ds*fill 1
-.	if \\n[ds*fill]<0 .@error "\\*[ds*type]:wrong fill:\\$2"
+.	ie r ds*fill!\\$2 .nr ds*fill \\n[ds*fill!\\$2]
+.	el .@error "\\*[ds*type]:wrong fill:\\$2"
 .\}
-.el .nr ds*fill 0
 .nr ds*rindent 0
 .if \\n[.$]>2 .nr ds*rindent \\$3
 .\"
 .\"
 .nr ds*old-ll \\n[.l]
 .misc@push ds-ll \\n[.l]
-.misc@push ds-vs \\n[.v]
 .misc@push ds-form \\n[ds*format]
 .misc@push ds-ffloat \\n[ds*ffloat]
 .nr ds*i \\n[.i]
@@ -1204,7 +1232,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	ll -\\n[Si]n
 '	in +\\n[Si]n
 .\}
-.if (\\n[ds*format]=3)&(\\n[ds*format]=5) 'in 0
+.if (\\n[ds*format]=3):(\\n[ds*format]=5) 'in 0
 ..
 .\"---------------
 .de DE
@@ -1215,7 +1243,6 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr ds*width \\n[dl]
 .nr ds*height \\n[dn]
 .misc@pop-nr ds-ll ds*old-ll
-.misc@pop-nr ds-vs ds*old-vs
 .misc@pop-nr ds-form ds*format
 .misc@pop-nr ds-ffloat ds*ffloat
 .if (\\n[ds*format]>=2)&(\\n[ds*width]>\\n[ds*old-ll]) \{\
@@ -1226,9 +1253,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"
 'in 0
 'nf
-.if \\n[ds*format]=2 'ce \\n[ds*height]/\\n[ds*old-vs]
+.if \\n[ds*format]=2 'ce 9999
 .if \\n[ds*format]=3 'in (u;(\\n[ds*old-ll]-\\n[ds*width])/2)
-.if \\n[ds*format]=4 'rj \\n[ds*height]/\\n[ds*old-vs]
+.if \\n[ds*format]=4 'rj 9999
 .if \\n[ds*format]=5 'in (u;\\n[ds*old-ll]-\\n[ds*width])
 .\"
 .ie !\\n[ds*ffloat] \{\
@@ -1236,7 +1263,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	\"	Print static display
 .	\"	Eject page if display will fit one page and
 .	\"	there are less than half of the page left.
-.	nr ds*i \\n[pg*foot-trap]-\\n[pg*header-size]
+.	nr ds*i \\n[pg*foot-trap]-\\n[pg*header-size]v
 .	if (\\n[ds*height]>\\n[ds*i])&(\\n[.t]<(\\n[ds*i]/2)) \{\
 .		ne \\n[.t]u+1v
 .	\}
@@ -1252,6 +1279,8 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	SP \\n[Lsp]u
 .	di
 .\}
+.if \\n[ds*format]=2 'ce 0
+.if \\n[ds*format]=4 'rj 0
 .rm ds*div!\\n[ds*snr]
 .nr ds*snr -1
 .nr par@ind-flag 0
@@ -1403,41 +1432,21 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if \\n[.$]=2 .ds li*c-mark \\$1\ \\*[li*c-mark]
 .if '\\*[li*c-mark]'\ ' .ds li*c-mark
 .\"
+.\" determine where the text begins
 .nr li*text-begin \\n[li*tind]>?\w'\\*[li*c-mark]\ '
+.\"
+.\" determine where the mark begin
+.ie !\\n[li*pad] .nr li*in \\n[li*mind]
+.el .nr li*in \\n[li*text-begin]-\\n[li*pad]-\w'\\*[li*c-mark]'
+.if !\\n[li*in] .nr li*in 0
+.\"
 .ti -\\n[li*tind]u
 .\" no indentation if hanging indent
 .if (\w'\\*[li*c-mark]'=0)&((\\n[.$]=0):(\w'\\$1'=0)) .nr li*text-begin 0
-\Z'\&\\*[li*c-mark]'\h'\\n[li*text-begin]u'\&\c
+\Z'\&\h'\\n[li*in]u'\\*[li*c-mark]'\h'\\n[li*text-begin]u'\&\c
 .if \\n[li*type]=-1 .br
 ..
 .\"
-.\"
-.ig
-.nr li*c-tind \\n[li*tind]
-.if \\n[li*type]:\w'\\*[li*mark]' \{\
-.	ie \\n[li*pad] .nr li*c-tind \\n[li*pad]u+\w'\\*[li*c-mark]'u)
-.	el .nr li*c-tind \\n[li*tind]-\\n[li*mind]
-.\}
-.\" Give hanging row if arg1=="" or null and mark is empty
-.ie (\w'\\*[li*c-mark]'=0)&((\\n[.$]=0):(\w'\\$1'=0)) \{\
-.	ti -\\n[li*tind]u
-.\}
-.el \{\
-.	\" don't break if arg too big
-.	ie (\w'\\*[li*c-mark]'>\\n[li*tind])&(\\n[li*type]>-1) \{\
-.		ti -\\n[li*tind]u
-\&\\*[li*c-mark] \c
-.	\}
-.	el \{\
-.		ie \\n[li*c-tind]>\\n[li*tind] .ti -\\n[li*tind]u
-.		el .ti -\\n[li*c-tind]u
-\&\\*[li*c-mark]
-.		br
-.		\" break line if .BVL or no text between two .LI
-.		if \\n[li*type]>-1 .sp -1
-.	\}
-.\}
-..
 .\"-------------
 .de li@pop
 .nr li*lvl -1
@@ -1466,6 +1475,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"-------------
 .de AL
 .if \\n[.$]>3 .@error "AL: too many arguments"
+.if \\n[D]>2 .tm AL $*
 .ie \\n[.$]<=1 .LB \\n[Li] 0 2 1 "\\$1"
 .el \{\
 .	ie \\n[.$]=2 .LB 0\\$2 0 2 1 "\\$1"
@@ -1477,6 +1487,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 ..
 .de ML
 .if \\n[.$]>3 .@error "ML: too many arguments"
+.if \\n[D]>2 .tm ML $*
 .nr li*ml-width \w'\\$1'u+1n
 .if \\n[.$]<2 .LB \\n[li*ml-width]u 0 1 0 "\\$1"
 .if \\n[.$]=2 .LB 0\\$2 0 1 0 "\\$1"
@@ -1486,6 +1497,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\}
 ..
 .de VL
+.if \\n[D]>2 .tm VL $*
 .if \\n[.$]>3 .@error "VL: too many arguments"
 .if \\n[.$]<1 .@error "VL: missing text-indent"
 .ie \\n[.$]<3 .LB 0\\$1 0\\$2 0 0
@@ -1493,6 +1505,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 ..
 .\"	Bullet (for .BL)
 .de BL
+.if \\n[D]>2 .tm BL $*
 .ds BU \s-2\(bu\s0
 .if \\n[.$]>2 .@error "BL: too many arguments"
 .if \\n[.$]<1 .LB \\n[Pi] 0 1 0 \\*[BU]
@@ -1503,6 +1516,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\}
 ..
 .de DL
+.if \\n[D]>2 .tm DL $*
 .if \\n[.$]>2 .@error "DL: too many arguments"
 .if \\n[.$]<=1 .LB \\n[Pi] 0 1 0 \(em
 .if \\n[.$]=1 .LB 0\\$1 0 1 0 \(em
@@ -1512,6 +1526,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\}
 ..
 .de RL
+.if \\n[D]>2 .tm RL $*
 .if \\n[.$]>2 .@error "RL: too many arguments"
 .if \\n[.$]<1 .LB 6 0 2 4
 .if \\n[.$]=1 .LB 0\\$1 0 2 4
@@ -1522,6 +1537,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 ..
 .\" Broken Variable List. As .VL but text begin on the next line
 .de BVL
+.if \\n[D]>2 .tm BVL $*
 .if \\n[.$]>3 .@error "BVL: too many arguments"
 .if \\n[.$]<1 .@error "BVL: missing text-indent"
 .ie \\n[.$]<3 .LB 0\\$1 0\\$2 0 -1
@@ -1621,6 +1637,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .ta
 .\" equation with lable.
 .if \\n[dl] \{\
+.	br
 .	chop eq*div
 .	ie (\\n[Eq]%2) \{\
 .		\"	lable to the left
@@ -1816,7 +1833,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	if 0\\$6=1 .ds lix*lable \\*[Li\\$1]\ \\$3\\$5\\*[lix*ds-form]
 .	if 0\\$6=2 .ds lix*lable \\*[Li\\$1]\ \\$5\\*[lix*ds-form]
 .\}
-.nr lix*pgnr \\n[%]
+.ds lix*pgnr \\n[%]
 .\" print line if not between DS/DE
 .ie \\n[ds*lvl]<1 .lix@print-text "\\*[lix*lable]" "\\*[lix*text]"
 .el .lix@embedded-text "\\*[lix*lable]" "\\*[lix*text]"
@@ -1824,7 +1841,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" save line for LIST OF XXX
 .if !r lix*wth\\$1 .nr lix*wth\\$1 0
 .if \w'\\*[lix*lable]'>\\n[lix*wth\\$1] .nr lix*wth\\$1 \w'\\*[lix*lable]'
-.if \\n[\\$2] .lix@ds-save \\$1 \\n[lix*pgnr] "\\$4" "\\*[lix*lable]"
+.if \\n[\\$2] .lix@ds-save \\$1 \\*[lix*pgnr] "\\$4" "\\*[lix*lable]"
 .if !'\\$7'' .SETR \\$7 \\$3
 ..
 .\"-----------
@@ -2061,6 +2078,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	ds app*ind \\n+[app*nr]
 .	nr H1 \\n+[app*dnr]
 .\}
+.\"	clear lower counters
+.nr app*i 1 1
+.while \\n+[app*i]<8 .nr H\\n[app*i] 0 1
 ..
 .\"------------
 .de app@index
@@ -2165,7 +2185,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .el .ds cov*new-date \\*[MO\\n[mo]] \\n[dy], 19\\n[yr]
 .als DT cov*new-date
 .de ND
-.pg@disable-top-trap
+.\" don't remember why I did this: .pg@disable-top-trap
 .ds cov*new-date \\$1
 ..
 .\"-------------------
@@ -2251,13 +2271,13 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .		\" heading-number
 .		ds \\*[qrf*name]-hn \\*[hd*toc-mark]
 .		\" page-number
-.		nr \\*[qrf*name]-pn \\n[%]
+.		ds \\*[qrf*name]-pn \\n[%]
 .		\"
 .		\" append to file
 .		opena qrf*stream \\*[qrf*file].tmp
 .		write qrf*stream .ds \\*[qrf*name]-hn \\*[hd*toc-mark]
-.		write qrf*stream .nr \\*[qrf*name]-pn \\n[%]
-.		if !'\\$2'' write qrf*stream .ds \\*[qrf*name]-xx \\$2
+.		write qrf*stream .ds \\*[qrf*name]-pn \\n[%]
+.		if !'\\$2'' .write qrf*stream .ds \\*[qrf*name]-xx \\$2
 .		close qrf*stream
 .	\}
 .\}
@@ -2303,10 +2323,10 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if !r qrf*pass .tm "GETPN: No .INITR in this file"
 .ds qrf*name qrf*ref-\\$1
 .ie \\n[qrf*pass]=2 \{\
-.	ie !r \\*[qrf*name]-pn .tm "GETPN:\\$1 not defined"
+.	ie !d \\*[qrf*name]-pn .tm "GETPN:\\$1 not defined"
 .	el \{\
-.		ie \\n[.$]>1 .nr \\$2 \\n[\\*[qrf*name]-pn]
-.		el \\n[\\*[qrf*name]-pn]\c
+.		ie \\n[.$]>1 .ds \\$2 \\*[\\*[qrf*name]-pn]
+.		el \\*[\\*[qrf*name]-pn]\c
 .	\}
 .\}
 .el 9999\c

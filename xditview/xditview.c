@@ -58,6 +58,7 @@ extern void exit();
 
 static struct app_resources {
     char *print_command;
+    char *filename;
 } app_resources;
 
 #define offset(field) XtOffset(struct app_resources *, field)
@@ -67,6 +68,8 @@ static struct app_resources {
 static XtResource resources[] = {
   {"printCommand", "PrintCommand", XtRString, sizeof(char*),
        offset(print_command), XtRString, NULL},
+  {"filename", "Filename", XtRString, sizeof(char*),
+       offset(filename), XtRString, NULL},
 };
 
 #undef offset
@@ -79,6 +82,7 @@ static XrmOptionDescRec options[] = {
 {"-backingStore",   "*dvi.backingStore",    XrmoptionSepArg,	NULL},
 {"-resolution",	    "*dvi.resolution",      XrmoptionSepArg,	NULL},
 {"-printCommand",   ".printCommand",        XrmoptionSepArg,	NULL},
+{"-filename",       ".filename",            XrmoptionSepArg,	NULL},
 {"-noPolyText",	    "*dvi.noPolyText",	    XrmoptionNoArg,	"TRUE"},
 };
 
@@ -128,6 +132,7 @@ static void	NextPageAction(), PreviousPageAction(), SelectPageAction();
 static void	OpenFileAction(), QuitAction();
 static void	AcceptAction(), CancelAction();
 static void	PrintAction();
+static void	RerasterizeAction();
 
 XtActionsRec xditview_actions[] = {
     "NextPage",	    NextPageAction,
@@ -135,6 +140,7 @@ XtActionsRec xditview_actions[] = {
     "SelectPage",   SelectPageAction,
     "Print",	    PrintAction,
     "OpenFile",	    OpenFileAction,
+    "Rerasterize",  RerasterizeAction,
     "Quit",	    QuitAction,
     "Accept",	    AcceptAction,
     "Cancel",	    CancelAction,
@@ -215,6 +221,9 @@ void main(argc, argv)
     XtGetValues (dvi, pageNumberArgs, 1);
     if (file_name)
 	NewFile (file_name);
+    /* NewFile modifies current_file_name, so do this here. */
+    if (app_resources.filename)
+	strcpy(current_file_name, app_resources.filename);
     XtRealizeWidget (toplevel);
     if (file_name)
 	SetPageNumber (page_number);
@@ -392,6 +401,22 @@ DoPrint (name)
     pclose(print_file);
     signal(SIGPIPE, handler);
     strcpy(current_print_command, name);
+}
+
+static void
+RerasterizeAction()
+{
+    Arg	args[1];
+    int	number;
+
+    if (current_file_name[0] == 0) {
+	/* XXX display an error message */
+	return;
+    } 
+    XtSetArg (args[0], XtNpageNumber, &number);
+    XtGetValues (dvi, args, 1);
+    NewFile(current_file_name);
+    SetPageNumber (number);
 }
 
 /* ARGSUSED */

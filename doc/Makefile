@@ -1,11 +1,11 @@
-#Copyright (C) 1990, 1991 Free Software Foundation, Inc.
-#     Written by James Clark (jjc@jclark.uucp)
+#Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+#     Written by James Clark (jjc@jclark.com)
 #
 #This file is part of groff.
 #
 #groff is free software; you can redistribute it and/or modify it under
 #the terms of the GNU General Public License as published by the Free
-#Software Foundation; either version 1, or (at your option) any later
+#Software Foundation; either version 2, or (at your option) any later
 #version.
 #
 #groff is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -14,33 +14,31 @@
 #for more details.
 #
 #You should have received a copy of the GNU General Public License along
-#with groff; see the file LICENSE.  If not, write to the Free Software
+#with groff; see the file COPYING.  If not, write to the Free Software
 #Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
-TROFF=../troff/troff
-FFLAG=-F../ps
-GROPS=../ps/grops
-DOCS=chars.PS meref.PS meintro.PS
+FFLAG=-F..
+TROFF=../troff/troff -M../tmac $(FFLAG)
+GROPS=../grops/grops $(FFLAG)
+DOCS=meref.PS meintro.PS
 MEMACROS=../macros/tmac.e
-PSMACROS=../ps/tmac.ps
-SOELIM=../etc/soelim
+SOELIM=../soelim/soelim
 
 all: $(DOCS)
 
 .SUFFIXES: .tr .me .PS .dit
 
 .dit.PS:
-	$(GROPS) $(FFLAG) $< >$@
+	$(GROPS) $< >$@
 
 .me.dit:
 	$(SOELIM) $< \
 	| sed -e "s;@VERSION@;`cat ../VERSION`;" \
-	| $(TROFF) -i -Tps $(FFLAG) $(MEMACROS) $(PSMACROS) >$@
+	| $(TROFF) -Tps $(FFLAG) -me  >$@
 
 .tr.dit:
-	$(TROFF) -Tps $(FFLAG) $(PSMACROS) $< >$@
+	$(TROFF) -Tps $< >$@
 
-chars.PS: chars.dit
 meref.PS: meref.dit
 meintro.PS: meintro.dit
 
@@ -50,4 +48,8 @@ clean:
 	-rm -f *.PS *.dit core
 
 distclean: clean
+
 realclean: distclean
+
+extraclean: clean
+	-rm -f core *~ \#* junk temp grot

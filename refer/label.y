@@ -1,12 +1,12 @@
 /* -*- C++ -*-
-   Copyright (C) 1991 Free Software Foundation, Inc.
-     Written by James Clark (jjc@jclark.uucp)
+   Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+     Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
 
 groff is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 1, or (at your option) any later
+Software Foundation; either version 2, or (at your option) any later
 version.
 
 groff is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,7 +15,7 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License along
-with groff; see the file LICENSE.  If not, write to the Free Software
+with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 %{
@@ -47,7 +47,7 @@ struct expression {
     CONTAINS_VARIABLE = 01, 
     CONTAINS_STAR = 02,
     CONTAINS_FORMAT = 04,
-    CONTAINS_AT = 010,
+    CONTAINS_AT = 010
   };
   virtual ~expression() { }
   virtual void evaluate(int, const reference &, string &,
@@ -509,14 +509,11 @@ void format_expr::evaluate(int tentative, const reference &ref,
   if (type != '0')
     result += format_serial(type, num + 1);
   else {
-    char buf[INT_DIGITS + 1];
-    char *ptr = buf;
-    if (width > INT_DIGITS)
-      ptr = new char[width + 1];
-    sprintf(ptr, "%0*d", width, num + first_number);
+    const char *ptr = itoa(num + first_number);
+    int pad = width - strlen(ptr);
+    while (--pad >= 0)
+      result += '0';
     result += ptr;
-    if (ptr != buf)
-      a_delete ptr;
   }
 }
 

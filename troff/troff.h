@@ -1,12 +1,12 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991 Free Software Foundation, Inc.
-     Written by James Clark (jjc@jclark.uucp)
+/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+     Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
 
 groff is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 1, or (at your option) any later
+Software Foundation; either version 2, or (at your option) any later
 version.
 
 groff is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,7 +15,7 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License along
-with groff; see the file LICENSE.  If not, write to the Free Software
+with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 
@@ -25,11 +25,11 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 #include <time.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <osfcn.h>
 #include <errno.h>
 
 #include "lib.h"
 #include "assert.h"
+#include "device.h"
 
 #ifdef __GNUG__
 #define NO_RETURN volatile
@@ -48,7 +48,6 @@ extern units units_per_inch;
 extern units points_to_units(units n);
 extern units scale(units, double);
 
-extern const char *device;
 extern int ascii_output_flag;
 extern int suppress_output_flag;
 
@@ -79,7 +78,7 @@ enum warning_type {
   WARN_MISSING = 020000,
   WARN_INPUT = 040000,
   WARN_ESCAPE = 0100000,
-  WARN_SPACE = 0200000,
+  WARN_SPACE = 0200000
   // change WARN_TOTAL if you add more warning types
 };
 

@@ -28,11 +28,11 @@
 # -------------------------------------------------------------------------
 # platform-specific configuration parameters - edit sun.cf to change
 
-# platform:  $XConsortium: sun.cf,v 1.69 91/09/09 18:23:59 rws Exp $
+# platform:  $XConsortium: sun.cf,v 1.72.1.1 92/03/18 13:13:37 rws Exp $
 
 # operating system:  SunOS 4.1.1
 
-# $XConsortium: sunLib.rules,v 1.6 91/03/24 17:55:58 rws Exp $
+# $XConsortium: sunLib.rules,v 1.7 91/12/20 11:19:47 rws Exp $
 
 # -------------------------------------------------------------------------
 # site-specific configuration parameters that go after
@@ -91,7 +91,7 @@
      INSTINCFLAGS = -m 0444
      INSTMANFLAGS = -m 0444
      INSTDATFLAGS = -m 0444
-    INSTKMEMFLAGS = -m 4755
+    INSTKMEMFLAGS = -g kmem -m 2755
 
      TOP_INCLUDES = -I$(INCROOT)
 
@@ -201,7 +201,7 @@
          XILIBSRC = $(EXTENSIONSRC)/lib/xinput
       PHIGSLIBSRC = $(EXTENSIONSRC)/lib/PEX
 
-# $XConsortium: sunLib.tmpl,v 1.11 91/07/31 11:32:08 rws Exp $
+# $XConsortium: sunLib.tmpl,v 1.14.1.1 92/03/17 14:58:46 rws Exp $
 
 SHLIBLDFLAGS = -assert pure-text
 PICFLAGS = -pic
@@ -213,6 +213,7 @@ PICFLAGS = -pic
              XLIB = $(EXTENSIONLIB) -lX11
 
         DEPXMULIB = $(USRLIBDIR)/libXmu.sa.$(SOXMUREV)
+       XMULIBONLY = -lXmu
            XMULIB = -lXmu
 
        DEPOLDXLIB =
@@ -270,7 +271,6 @@ PICFLAGS = -pic
 GROFF_LIBDIR = /usr/local/lib/groff
 GROFF_FONTDIR = $(GROFF_LIBDIR)/font
 GROFF_FONTPATH = .:$(GROFF_FONTDIR):/usr/local/lib/font:/usr/lib/font
-GROFF_MACRODIR = $(GROFF_LIBDIR)/tmac
 DPIS = 75 100
 
 PROGRAMS = gxditview xtotroff
@@ -284,7 +284,7 @@ SRCS2 = xtotroff.c XFontName.c DviChar.c
 OBJS2 = xtotroff.o XFontName.o DviChar.o
 INCLUDES = -I$(TOOLKITSRC) -I$(TOP)
 MATHLIB = -lm
-DEFINES = $(SIGNAL_DEFINES) # -DX_NOT_STDC_ENV
+DEFINES = $(SIGNAL_DEFINES) -DFONTPATH=\"$(GROFF_FONTPATH)\" # -DX_NOT_STDC_ENV
 
  OBJS = $(OBJS1) $(OBJS2) $(OBJS3)
  SRCS = $(SRCS1) $(SRCS2) $(SRCS3)
@@ -334,15 +334,7 @@ install:: GXditview.ad
 	else (set -x; $(MKDIRHIER) $(DESTDIR)$(XAPPLOADDIR)); fi
 	$(INSTALL) -c $(INSTAPPFLAGS) GXditview.ad $(DESTDIR)$(XAPPLOADDIR)/GXditview
 
-install::
-	-[ -d $(GROFF_MACRODIR) ] || mkdir $(GROFF_MACRODIR)
-	-rm -f $(GROFF_MACRODIR)/tmac.Xps
-	cp tmac.Xps $(GROFF_MACRODIR)
-
 install.dev: xtotroff
-	-[ -d $(GROFF_MACRODIR) ] || mkdir $(GROFF_MACRODIR)
-	-rm -f $(GROFF_MACRODIR)/tmac.X
-	cp tmac.X $(GROFF_MACRODIR)
 	-[ -d $(GROFF_FONTDIR) ] || mkdir $(GROFF_FONTDIR)
 	@dir=`pwd`; \
 	for dpi in $(DPIS); do \
@@ -351,14 +343,10 @@ install.dev: xtotroff
 	|| mkdir $(GROFF_FONTDIR)/devX$$dpi; \
 	rm -f $(GROFF_FONTDIR)/devX$$dpi/DESC; \
 	sed -e "s/res 75/res $$dpi/" DESC >$(GROFF_FONTDIR)/devX$$dpi/DESC; \
-	rm -f $(GROFF_FONTDIR)/devX$$dpi/eqnchar; \
-	cp eqnchar $(GROFF_FONTDIR)/devX$$dpi; \
 	(cd $(GROFF_FONTDIR)/devX$$dpi; \
 	$$dir/xtotroff -g -r $$dpi -s 10 $$dir/FontMap); \
 	[ -d $(GROFF_FONTDIR)/devX$$dpi-12 ] \
 	|| mkdir $(GROFF_FONTDIR)/devX$$dpi-12; \
-	rm -f $(GROFF_FONTDIR)/devX$$dpi-12/eqnchar; \
-	cp eqnchar $(GROFF_FONTDIR)/devX$$dpi-12; \
 	rm -f $(GROFF_FONTDIR)/devX$$dpi-12/DESC; \
 	sed -e "s/res 75/res $$dpi/" -e 's/unitwidth 10/unitwidth 12/' DESC \
 	>$(GROFF_FONTDIR)/devX$$dpi-12/DESC; \
@@ -366,10 +354,8 @@ install.dev: xtotroff
 	$$dir/xtotroff -g -r $$dpi -s 12 $$dir/FontMap); \
 	done
 
-path.h: FORCE
-	@/bin/sh ../gendef path.h "FONTPATH=\"$(GROFF_FONTPATH)\""
-
-device.o: path.h
+extraclean: clean
+	-rm -f junk tmp grot old
 
 FORCE:
 
@@ -558,7 +544,7 @@ device.o: /local/include/X11/Xfuncproto.h /usr/include/stddef.h
 device.o: /local/include/X11/Xutil.h /local/include/X11/Xresource.h
 device.o: /local/include/X11/Core.h /local/include/X11/Composite.h
 device.o: /local/include/X11/Constraint.h /local/include/X11/Object.h
-device.o: /local/include/X11/RectObj.h device.h path.h
+device.o: /local/include/X11/RectObj.h device.h
 xtotroff.o: /local/include/X11/Xlib.h /usr/include/sys/types.h
 xtotroff.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 xtotroff.o: /local/include/X11/X.h /local/include/X11/Xfuncproto.h

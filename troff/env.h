@@ -1,12 +1,12 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991 Free Software Foundation, Inc.
-     Written by James Clark (jjc@jclark.uucp)
+/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+     Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
 
 groff is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 1, or (at your option) any later
+Software Foundation; either version 2, or (at your option) any later
 version.
 
 groff is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -15,7 +15,7 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License along
-with groff; see the file LICENSE.  If not, write to the Free Software
+with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
 struct size_range {
@@ -187,6 +187,7 @@ class environment {
   void hyphenate_line();
   void start_field();
   void wrap_up_field();
+  void add_padding();
   node *make_tab_node(hunits d, node *next = 0);
   node *get_prev_char();
 public:
@@ -258,6 +259,7 @@ public:
   void interrupt();
   void spread() { spread_flag = 1; }
   void do_break();			// .br
+  void final_break();
   void newline();
   void handle_tab(int is_leader = 0); // do a tab or leader
   void add_node(node *);

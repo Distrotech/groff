@@ -2,39 +2,17 @@ This file describes various problems that have been encountered in
 compiling, installing and running groff.  Suggestions for additions or
 other improvements to this file are welcome.
 
-* I am having problems compiling groff with g++ on a DECstation or
-other machine using a MIPS processor (such as SGI machines).
+* On a DECstation, gcc/g++ 2.2.2 gets a fatal signal while compiling
+tbl/main.c and tbl/table.c.
 
-Try getting g++ from foobar.colorado.edu:pub/Gnu-For-Pmax.
-
-* I am having problems compiling groff with g++ on a 386 PC
-running SVR3.2.
-
-I recommend using Michael Bloom's GNU COFF patches
-(tut.cis.ohio-state.edu:pub/gnu/coff/gnu-coff.tar.Z).
+Compile those two files without -O.
 
 * I get lots of `numeric overflow' error messages whenever I run
 groff; I compiled groff with AT&T C++ 2.0 with an ANSI C compiler.
 
-Include -DCFRONT_ANSI_BUG in CPPDEFINES in the top-level Makefile.  If
-that doesn't solve the problem, define INT_MIN as -INT_MAX in
-lib/lib.h.
-
-* Using SunOS 4.1 or 4.1.1, gtroff aborts in malloc.
-
-Include -DSUNOS_LOCALTIME_BUG in MALLOCFLAGS in the top-level Makefile.
-
-* When I try to compile groff with g++, I get lots of parse errors
-from files in /usr/include.
-
-You must install C++ versions of the standard include files; these are
-included with libg++.
-
-* g++ complains about conflicting declarations of fmod() while
-compiling pic.tab.c; I'm using a 68k based machine.
-
-This is a bug in the libg++ header files.  Apply the fix given in the
-INSTALL file.
+Make sure -DCFRONT_ANSI_BUG is included in DEFINES in the top-level
+Makefile.  If that doesn't solve the problem, define INT_MIN as
+-INT_MAX in libgroff/lib.h.
 
 * I get errors when I try to compile groff with Sun C++.
 
@@ -52,16 +30,21 @@ optarg, optind and opterr should be added to <stdlib.h>; in
 <sys/signal.h> the return type and the second argument type of
 signal() should be changed to be `void (*)(int)'.
 
-  You can either change
-them in place, or copy them to some other directory and include that
-directory with a -I option.
+You can either change them in place, or copy them to some other
+directory and include that directory with a -I option.
 
-* I get the error `make[2]: execve: /bin/sh: Arg list too long.'.
+* Groff can't handle my troff document. It works fine with AT&T troff.
 
-If you're using GNU make, try using /bin/make instead.  Alternatively,
-if you're using GNU make 3.59 or later, do something like:
-  echo .NOEXPORT: >make.noexport
-  MAKEFILES=`pwd`/make.noexport; export MAKEFILES
+Read the section on incompatibilities in gtroff(1).  Try using the -C
+option.  Alternatively there's the sed script in tmac/fixmacros.sed
+which will attempt to edit a file of macros so that it can be used
+with groff without the -C flag.
+
+* groff -Tdvi produces dvi files that use fonts at weird magnifications.
+
+Yes, it does.  You may need to compile fonts with Metafont at these
+magnifications. The CompileFonts script in the devdvi/generate
+directory may help you to do this. (It will take a *long* time.)
 
 * pic output is not centered horizontally; pictures sometimes run off
 the bottom of the page.
@@ -182,12 +165,13 @@ Some dvi drivers (notably early versions of xtex) do not correct
 handle dvi files that use a resolution different from that used by dvi
 files produced by TeX.  Try getting a more up to date driver.
 
-* I get lots of errors when I use groff with -mm.
+* I get lots of errors when I use groff with the AT&T -mm macros.
 
--mm needs a few changes to work with groff; `make install.mm' will
-copy your -mm macros to groff's macro directory and make the necessary
-changes.  You may need to edit the commands for the install.mm target
-in the Makefile.
+The AT&T -mm macros need a few changes to work with groff; `make
+install.dwbmm' will copy your -mm macros to groff's macro directory
+and make the necessary changes.  You may need to edit the commands for
+the install.mm target in the Makefile.  Alternatively use the groff
+-mm macros.
 
 * gtroff doesn't understand lines like `.ce99' with no space between
 the name of the request or macro and the arguments.
@@ -250,7 +234,7 @@ The solution is to fix the manual page:
 as when I print the document with -Tps: the line and page breaks come
 in different places.
 
-Use groff -TXps.
+Use groff -X -Tps.
 
 * In gpic expressions don't work at all. I'm using g++ 1.39 on a sparc.
 

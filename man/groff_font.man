@@ -4,6 +4,12 @@
 .ns
 .TP \\$1
 ..
+.\" Like TP, but if specified indent is more than half
+.\" the current line-length - indent, use the default indent.
+.de Tp
+.ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
+.el .TP "\\$1"
+..
 .TH GROFF_FONT @MAN5EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
 groff_font \- format of groff device and font description files
@@ -99,6 +105,9 @@ where
 .I m
 is the number of styles.
 This command may extend over more than one line.
+A font name of
+.B 0
+will cause no font to be mounted on the corresponding font position.
 .TP
 .BI family\  fam
 The default font family is
@@ -110,7 +119,7 @@ It is allowed for the sake of backwards compatibility.
 .LP
 The res, unitwidth, fonts and sizes lines are compulsory.
 Other commands are ignored by
-.B gtroff
+.B troff
 but may be used by postprocessors to store arbitrary information
 about the device in the DESC file.
 .SS Font file format
@@ -155,7 +164,7 @@ the current font, it will be searched for in any special fonts that
 are mounted.
 .LP
 Other commands are ignored by
-.B gtroff
+.B troff
 but may be used by postprocessors to store arbitrary information
 about the font in the font file.
 .LP
@@ -221,7 +230,7 @@ is special and indicates that the character is unnamed;
 such characters can only be used by means of the
 .B \eN
 escape sequence in
-.BR gtroff .
+.BR troff .
 .LP
 The
 .I type
@@ -327,7 +336,7 @@ the space between them should be increased by
 Most entries in kernpairs section will have a negative value for
 .IR n .
 .SH FILES
-.TP \w'@FONTDIR@/devname/DESC'u+3n
+.Tp \w'@FONTDIR@/devname/DESC'u+3n
 .BI @FONTDIR@/dev name /DESC
 Device description file for device
 .IR name .
@@ -339,4 +348,4 @@ of device
 .IR name .
 .SH "SEE ALSO"
 .BR groff_out (@MAN5EXT@),
-.BR gtroff (@MAN1EXT@).
+.BR \*gtroff (@MAN1EXT@).

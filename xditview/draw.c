@@ -327,26 +327,6 @@ int FakeCharacter (dw, buf, wid)
 	case pack2('F', 'l'):
 		chars = "ffl";
 		break;
-#if 0
-	case pack2('e', 'm'):	/* em dash */
-		chars = "--";
-		break;
-#endif
-	case pack2('f', '/'):	/* fraction slash */
-		chars = "/";
-		break;
-	case pack2('l', 'q'):
-		chars = "``";
-		break;
-	case pack2('r', 'q'):
-		chars = "''";
-		break;
-	case pack2('O', 'E'):
-		chars = "OE";
-		break;
-	case pack2('o', 'e'):
-		chars = "oe";
-		break;
 	}
 	if (!chars)
 		return 0;

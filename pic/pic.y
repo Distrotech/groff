@@ -1,11 +1,11 @@
-/* Copyright (C) 1989, 1990, 1991 Free Software Foundation, Inc.
-     Written by James Clark (jjc@jclark.uucp)
+/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+     Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
 
 groff is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 1, or (at your option) any later
+Software Foundation; either version 2, or (at your option) any later
 version.
 
 groff is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -14,7 +14,7 @@ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 for more details.
 
 You should have received a copy of the GNU General Public License along
-with groff; see the file LICENSE.  If not, write to the Free Software
+with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 %{
 #include "pic.h"
@@ -29,6 +29,9 @@ extern void push_body(const char *);
 extern void do_for(char *var, double from, double to,
 		   int by_is_multiplicative, double by, char *body);
 extern void do_lookahead();
+
+#undef fmod
+#undef rand
 
 extern "C" {
   double fmod(double, double);
@@ -97,6 +100,7 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token <lstr> COMMAND_LINE
 %token <str> DELIMITED
 %token <n> ORDINAL
+%token TH
 %token LEFT_ARROW_HEAD
 %token RIGHT_ARROW_HEAD
 %token DOUBLE_ARROW_HEAD
@@ -223,7 +227,7 @@ parses properly. */
 %left LABEL
 
 %left VARIABLE NUMBER '(' SIN COS ATAN2 LOG EXP SQRT MAX MIN INT RAND LAST 
-%left  ORDINAL HERE 
+%left ORDINAL HERE '`'
 
 /* these need to be lower than '-' */
 %left HEIGHT RADIUS WIDTH DIAMETER FROM TO AT THICKNESS
@@ -259,7 +263,7 @@ works */
 %type <spec> object_spec
 %type <pair> position
 %type <obtype> object_type
-%type <n> optional_ordinal_last
+%type <n> optional_ordinal_last ordinal
 %type <str> until
 %type <dv> sprintf_args
 %type <lstr> text print_args print_arg
@@ -1140,15 +1144,25 @@ label:
 		}
 	;
 
+ordinal:
+	ORDINAL
+		{ $$ = $1; }
+	| '`' any_expr TH
+		{
+		  // XXX Check for overflow (and non-integers?).
+		  $$ = (int)$2;
+		}
+	;
+
 optional_ordinal_last:
         LAST
 		{ $$ = 1; }
-  	| ORDINAL LAST
+  	| ordinal LAST
 		{ $$ = $1; }
 	;
 
 nth_primitive:
-	ORDINAL object_type
+	ordinal object_type
 		{
 		  int count = 0;
 		  for (object *p = olist.head; p != 0; p = p->next)
