@@ -4386,7 +4386,7 @@ node *do_suppress()
   int c = tok.ch();
   if (c != '[') {
     error("argument(s) of \\O must be enclosed in brackets (got %1)",
-	  char(s));
+	  char(c));
     return 0;
   }
   tok.next();
