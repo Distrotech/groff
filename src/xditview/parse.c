@@ -139,6 +139,7 @@ ParseInput(dw)
 			Newline (dw);
 			HorizontalGoto(dw, 0);
 			break;
+		case 'F':       /* input files */
 		case '+':	/* continuation of X device control */
 		case '#':	/* comment */
 			GetLine(dw, NULL, 0);
