@@ -86,6 +86,6 @@ done
 
 : ${GROFF_BIN_PATH=@BINDIR@}
 export GROFF_BIN_PATH
-PATH=$GROFF_BIN_PATH:$PATH groff -mtty-char $T $opts ${1+"$@"}
+PATH=$GROFF_BIN_PATH@PATH_SEPARATOR@$PATH groff -mtty-char $T $opts ${1+"$@"}
 
 # eof

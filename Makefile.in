@@ -21,6 +21,7 @@ srcdir=@srcdir@
 top_srcdir=@top_srcdir@
 VPATH=@srcdir@
 top_builddir=@groff_top_builddir@
+SEP=@PATH_SEPARATOR@
 
 version=`cat $(top_srcdir)/VERSION`
 # No additional number if revision is zero.
@@ -120,7 +121,7 @@ localfontdir=$(dataprogramdir)/site-font
 legacyfontdir=/usr/lib/font
 
 # `fontpath' says where to look for dev*/*.
-fontpath=$(localfontdir):$(fontdir):$(legacyfontdir)
+fontpath=$(localfontdir)$(SEP)$(fontdir)$(SEP)$(legacyfontdir)
 
 # `tmacdir' says where to install macros.
 tmacdir=$(datasubdir)/tmac
@@ -136,7 +137,7 @@ localtmacdir=$(dataprogramdir)/site-tmac
 # directory will be always added.
 # `troffrc' and `troffrc-end' (and `eqnrc') are searched neither in the
 # current nor in the home directory.
-tmacpath=$(systemtmacdir):$(localtmacdir):$(tmacdir)
+tmacpath=$(systemtmacdir)$(SEP)$(localtmacdir)$(SEP)$(tmacdir)
 
 # `sys_tmac_prefix' is prefix (if any) for system macro packages.
 sys_tmac_prefix=@sys_tmac_prefix@

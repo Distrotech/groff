@@ -287,7 +287,8 @@ int main(int argc, char **argv)
   strcat(index_file, INDEX_SUFFIX);
 #ifdef HAVE_RENAME
 #ifdef __EMX__
-  unlink(index_file);
+  if (access(index_file, R_OK) == 0)
+    unlink(index_file);
 #endif /* __EMX__ */
   if (rename(temp_index_file, index_file) < 0) {
 #ifdef __MSDOS__
@@ -494,7 +495,7 @@ static int do_file(const char *filename)
       else
 	ungetc(peek, fp);
     }
-#if defined(__MSDOS__) || defined(_MSC_VER)
+#if defined(__MSDOS__) || defined(_MSC_VER) || defined(__EMX__)
     else if (c == 0x1a)	// ^Z means EOF in text files
       break;
 #endif
