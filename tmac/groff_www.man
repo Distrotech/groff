@@ -20,272 +20,393 @@
 .\"
 .\" user level guide to using the -mwww macroset
 .\"
+.
 .do mso www.tmac
-.\" we need the .LINKS here as we use it in the middle as an example
-.\" once the user requests .LINKS then the automatic generation of links
-.\" at the top of the document is suppresed.
-.LINKS
+.
+.\" we need the .LK here as we use it in the middle as an example --
+.\" once the user requests .LK then the automatic generation of links
+.\" at the top of the document is suppressed.
+.LK
+.
+.
 .SH NAME
 groff_www \- groff macros for authoring web pages
-.LINE
+.HR
 .SH SYNOPSIS
 .B "groff \-mwww"
 [ options ]
 file ...
+.
+.
 .SH DESCRIPTION
-This manual page describes the GNU \-mwww macros, which is part of the
-groff document formatting system.
+This manual page describes the GNU \-mwww macro package, which is part of
+the groff document formatting system.
 The manual page is very a basic guide, and the html device driver
 .RB ( grohtml )
 has been completely rewritten but still remains as in an alpha state.
 It has been included into the distribution so that a lot of people have a
 chance to test it.
 Note that this macro file will be automatically called (via the
-\fCtroffrc\fP file) if you use \fC-Thtml\fP.
+.B troffrc
+file) if you use
+.BR \-Thtml .
 .PP
 To see the hyperlinks in action, please format this man page with the
 .B grohtml
 device.
 .PP
 Here is a summary of the functions found in this macro set.
-.SH SYNPOSIS
 .ta 2iL
-\&.HTMLINDEX	determine automatic link cut off
-.br
-	point for sections/headers
-.br
-\&.BODYCOLOR	specify colours on a web page
-.br
-\&.BACKGROUND	specify background image
-.br
+.nf
+\&.HX	automatic heading level cut off;
+	$1 point for sections/headers
+\&.BCL	specify colours on a web page
+\&.BGIMG	specify background image
 \&.URL	create a url using two parameters
-.br
-\&.MAILTO	create a html email address
-.br
 \&.FTP	create an ftp reference
-.br
-\&.IMAGE	include an image file
-.br
+\&.MTO	create a html email address
+\&.FTP	create an ftp reference
+\&.TAG	generate an html name
+\&.IMG	include an image file
+\&.PIMG	include png image
+\&.MPIMG	place png on the margin and
+	wrap text around it
+\&.HnS	begin heading
+\&.HnE	end heading
+\&.LK	emit automatically collected links.
+\&.HR	produce a horizontal rule
+\&.NHR	suppress automatic generation of rules.
+\&.HTL	only generate HTML title
+\&.ULS	unorder list begin
+\&.ULE	unorder list end
+\&.LI	insert a list item
+\&.DC	generate a drop capital
 \&.HTML	pass an html raw request to the
-.br
 	device driver
-.br
-\&.TAG	generate an html name tag from $1
-.br
-.\"\&.CDFTP	optionally create two different links
-.\".br
-.\"	depending on hostname
-.\".br
-\&.LINE	create a full width horizontal rule
-.br
+.fi
 .PP
 Output of the
-.IR pic ,
-.IR eqn ,
-.IR refer ,
+.BR pic ,
+.BR eqn ,
+.BR refer ,
 and
-.I tbl
+.B tbl
 preprocessors is acceptable as input.
+.
+.
 .SH REQUESTS
 .TP
-.B HTMLINDEX
-determines the cut off point for automatic link generation to headings.
-By default all headings found in a troff document have links created to them
-at the top of the html web page.
-It maybe that many of the lower heading levels do not require links.
-Alternatively some web pages may not need any heading links at all, in which
-case:
-.sp
+.B HX
+Specify the cut off depth when generating links from section headings.
+For example, a parameter of\~2 would cause
+.B grohtml
+to generate a list of links for
+.B .NH\ 1
+and
+.B .NH\ 2
+but not for
+.BR .NH\ 3 .
+Whereas
+.RS
+.IP
 .nf
-\fC\&.HTMLINDEX 0\fP
+.B .HX 0
 .fi
-.sp
+.RE
+.IP
 will tell
 .B grohtml
-not to generate links.
-An \fCHTMLINDEX\fP of 2 will mean that a heading
-.sp
-.B "1.1.1 Some Title"
-.sp
-will not be included in the links either as it is said to have a heading
-level of three.
-Another method for switching automatic headings is via the command line
-switch \fC-P-l\fP.
+that no heading links should be created at all.
+Another method for turning automatic headings off is by issuing the
+the command line switch
+.B \-P\-l
+to
+.BR groff .
+.
 .TP
-.B BODYCOLOR
-takes five parameters: foreground, background, active hypertext link,
-hypertext link not yet visited, and visited hypertext link colour.
+.B BCL
+This macro takes five parameters: foreground, background, active hypertext
+link, hypertext link not yet visited, and visited hypertext link colour.
+.
 .TP
-.B BACKGROUND
+.B BGIMG
 the only parameter to this macro is the background image file.
+.
 .TP
 .B URL
 generates
 .TAG URL
 a URL using either two or three arguments.
-$1 is the name of the link, $2 is the actual URL, and $3 is optional stuff
-to be printed immediately after $2.
+The first parameter is the actual URL, the second is the name of the link,
+and the third is optional stuff to be printed immediately afterwards.
 Hyphenation is disabled while printing the actual URL; explicit breakpoints
 should be inserted with the
-.B \e:
+.B \[rs]:
 escape.
 Here is how to encode
-.URL "homepage for groff" http://\:groff.\:ffii.\:org/ :
-.sp
-.nf
-\s-2\fC\&.URL "homepage for groff" http://\e:groff.\e:ffii.\e:org/ :\fP\s+2
-.fi
-.sp
-If this is processed by a device other than \fC-Thtml\fP
+.URL http://\:foo.\:org/ "foo" :
+.RS
+.IP
+.B .URL http://\[rs]:foo.\[rs]:org/ "foo" :
+.RE
+.IP
+If this is processed by a device other than 
+.B \-Thtml
 it appears as:
-homepage for groff \(lahttp://groff.\:ffii.\:org\(ra.
+.RS
+.IP
+\m[blue]foo\mP \[la]\fChttp://foo.org\fP\[ra]:
+.RE
+.IP
 The URL macro can be of any type; for example we can reference
-.URL "Eric Raymond's pic guide" pic.html
+.URL pic.html "Eric Raymond's pic guide" 
 by:
-.sp
-.nf
-\s-2\fC\&.URL "Eric Raymond's pic guide" pic.html\fP\s+2
-.fi
-.sp
+.RS
+.IP
+.B .URL pic.html \[dq]Eric Raymond's pic guide\[dq]
+.RE
+.
 .TP
-.B MAILTO
-generates an email html reference.
+.B MTO
+Generate an email html reference.
 The first argument is mandatory as the email address.
 The optional second argument is the text you see in your browser, and
-an optional third argument is stuff printed immediately after the
-second argument.
+an optional third argument is stuff printed immediately afterwards.
 Hyphenation is disabled while printing the actual email address.
-For example, the groff maintainers are
-.MAILTO wl@gnu.org "Werner Lemberg"
-and
-.MAILTO Ted.Harding@nessie.mcc.ac.uk "Ted Harding" .
-This is achieved by the following macros:
-.sp
-.nf
-\s-2\fC\&.MAILTO wl@gnu.org "Werner Lemberg"
-\&.MAILTO Ted.Harding@nessie.mcc.ac.uk "Ted Harding" .\s+2\fP
-.fi
-.sp
-Note that all the urls actually are treated as consuming no textual space
+For example, 
+.MTO joe@user.org "Joe User"
+was achieved by the following macro:
+.RS
+.IP
+.B .MTO joe@user.org \[dq]Joe User\[dq]
+.RE
+.IP
+Note that all the URLs actually are treated as consuming no textual space
 in groff.
 This could be considered as a bug since it causes some problems.
-To circumvent this, \fCwww.tmac\fP inserts a zero-width character which
-expands to a harmless space (only if run with -Thtml).
+To circumvent this,
+.B www.tmac
+inserts a zero-width character which expands to a harmless space (only if
+run with
+.BR \-Thtml ).
+.
 .TP
 .B FTP
 indicates that data can be obtained via ftp.
-The first argument is the browser text and the second is the url.
+The first argument is the url and the second is the browser text.
 A third argument, similar to the macros above, is intended for stuff printed
-immediately after the second argument.
+immediately afterwards.
 The second and the third parameter are optional.
 Hyphenation is disabled while printing the actual URL.
 As an example, here the location of the
-.FTP "current groff development distribution" \
-ftp://ftp.ffii.org/\:pub/\:groff/\:devel/\:groff-current.tar.gz .
+.FTP ftp://\:ftp.gnu.org/ "GNU ftp server" .
 The macro example above was specified by:
-.sp
-.nf
-\s-2\fC\&.FTP "current groff development distribution" \\
-ftp://ftp.ffii.org/\e:pub/\e:groff/\e:devel/\e:groff-current.tar.gz .\fP\s+2
-.fi
-.sp
-.TP
-.B IMAGE
-allows the document to include pictures.
-The first argument is the image file.
-The second optional argument gives the horizontal location;
-.B l
-puts the image to the left border,
-.B r
-to the right.
-Any other value centers the image.
-The next two arguments are optional also:
-Argument three is the width in pixels (default is 400 pixels if absent).
-The fourth argument is the height in pixels (default is the width value if
-absent).
-.sp
-.TP
-.B NO-AUTO-RULE
-suppresses generation of the top and bottom rules which grohtml emits
-by default.
-.sp
-.TP
-.B HTML
-all text after this macro is treated as raw html.
-If the document is processed \fIwithout\fP \fC-Thtml\fP then
-the macro is ignored.
-This macro is a building block for other higher level macros.
-.sp
-For example, the \fCBACKGROUND\fP macro is defined as:
-.nf
-\fC\&.de BACKGROUND
-\&.   HTML <body background=\\$1>
-\&..
-\fP
-.fi
+.RS
+.IP
+.B .FTP ftp://\[rs]:ftp.gnu.org/ \[dq]GNU ftp server\[dq] .
+.RE
+.
 .TP
 .B TAG
-generates an html name tag from its argument.
+Generates an html name tag from its argument.
 This can then be referenced using the
-.URL URL #URL
+.URL #URL URL
 macro.
-As you can see, you must precede the tag name with `\fC#\fP' since it is
-a local reference.
+As you can see, you must precede the tag name with
+.B #
+since it is a local reference.
 This link was achieved via placing a TAG in the URL description above;
 the source looks like this:
-.sp
+.RS
+.IP
 .nf
-\s-2\fC\&.TP
+.ft B
+\&.TP
 \&.B URL
 generates
 \&.TAG URL
-a URL using either two or three
-arguments.
-$1 is the name of the link, $2 is the actual URL.\fP\s+2
+a URL using either two or three arguments.
+\&.\|.\|.
 .fi
-.sp
+.ft P
+.RE
+.
 .TP
-.B LINE
-generates a full width horizontal rule.
+.B IMG
+Include a picture into the document.
+The first argument is the horizontal location: right, left, or center
+.RB ( \-R ,
+.BR \-L ,
+or
+.BR \-C ).
+The second argument is the filename.
+The optional third and fourth arguments are the width and height.
+If the width is absent it defaults to 1\~inch.
+If the height is absent it defaults to the width.
+This maps onto an html img tag.
+If you are including a png image then it is advisable to use the
+.B PIMG
+macro.
+.
+.TP
+.B PIMG
+Include an image in PNG format.
+This macro takes exactly the same parameters as the
+.B IMG
+macro; it has the advantage of working with postscript and html devices
+also since it can automatically convert the image into the EPS format,
+using the following programs
+of the
+.B netpbm
+package:
+.BR pngtopnm ,
+.BR pnmcrop ,
+and
+.BR pnmtops .
+If the document isn't processed with
+.B \-Thtml
+it is necessary to use the
+.B \-U
+option of groff.
+.
+.TP
+.B MPIMG
+Place a PNG image on the margin and wrap text around it.
+The first parameter is the alignment: left or right
+.RB ( \-L
+or
+.BR \-R ).
+The second argument is the filename.
+The optional third and fourth arguments are the width and height.
+If the width is absent it defaults to 1\~inch.
+If the height is absent it defaults to the width.
+.
+.TP
+.B HnS
+Begin heading.
+The heading level is specified by the first parameter.
+Use this macro of your headings contain URLs.
 Example:
-.sp
+.RS
+.IP
 .nf
-\fC\s-2\&.LINE\fP\s+2
+.ft B
+\&.HnS 1
+\&.HR
+GNU Troff
+\&.URL http://groff.ffii.org (Groff) 
+\&\(em a
+\&.URL http://www.gnu.org/ GNU
+\&project.
+\&Hosted by
+\&.URL http://ffii.org/ FFII .
+\&.HR
+\&.HnE
+.ft P
 .fi
-.sp
+.RE
+.
 .TP
-.B LINKS
-.TAG LINK
-requests that grohtml place the automatically generated links at this position.
-For example:
-.LINKS
-.SH
-SECTION HEADING LINKS
-.LP
+.B HnE
+End heading.
+.
+.TP
+.B LK
+.TAG LK
+Force grohtml to place the automatically generated links at this position.
+If this manual page has been processed with
+.B \-Thtml
+those links can be seen right here.
+.
+.LK
+.
+.
+.SH SECTION HEADING LINKS
 By default
 .B grohtml
 generates links to all section headings and places these at the top of the
 html document. (See
-.URL LINKS #LINK
-for details of how to switch this off or alter the position.
-.SH
-LIMITATIONS OF GROHTML
+.URL #LK LINKS
+for details of how to switch this off or alter the position).
+.
+.TP
+.B HR
+Generate a full-width horizontal rule.
+.
+.TP
+.B NHR
+Suppress generation of the top and bottom rules which grohtml emits
+by default.
+.
+.TP
+.B HTL
+Generate an HTML title only.
+This differs from the 
+.B TL
+macro of the
+.B ms
+macro package which generates both an HTML title and an H1 heading.
+Use it to provide an HTML title as search engine fodder but a graphic title
+in the document.
+.
+.TP
+.B HTML
+All text after this macro is treated as raw html.
+If the document is processed without
+.B \-Thtml
+then the macro is ignored.
+Internally, this macro is used as a building block for other higher-level
+macros.
+.IP
+For example, the
+.B BGIMG
+macro is defined as
+.RS
+.IP
+.nf
+.ft B
+\&.de BGIMG
+\&.   HTML <body background=\[rs]$1>
+\&..
+.ft P
+.fi
+.RE
+.
+.TP
+.B DC
+Produce a drop capital.
+The first parameter is the letter to be dropped and enlarged, the second
+parameter is the ajoining text whose height the first letter should not
+exceed.
+The optional third parameter is the color of the dropped letter.
+.
+.
+.SH LIMITATIONS OF GROHTML
 .LP
-Tbl information is currently rendered as a png image.
+.B tbl
+information is currently rendered as a PNG image.
+.
+.
 .SH FILES
 @MACRODIR@/www.tmac
+.
+.
 .SH "SEE ALSO"
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@)
 .BR grohtml (@MAN1EXT@),
-.LP
+.BR netpbm (1)
+.
+.
 .SH AUTHOR
-.B Grohtml
+.B grohtml
 was written by
-.MAILTO gaius@glam.ac.uk "Gaius Mulley"
+.MTO gaius@glam.ac.uk "Gaius Mulley"
+.
+.
 .SH BUGS
 Report bugs to the
-.MAILTO bug-groff@gnu.org "Groff Bug Mailing List" .
+.MTO bug-groff@\:gnu.org "Groff Bug Mailing List" .
 Include a complete, self-contained example that will allow the bug to be
 reproduced, and say which version of groff you are using.
 .

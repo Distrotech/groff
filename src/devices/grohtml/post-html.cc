@@ -1930,10 +1930,8 @@ void html_printer::do_links (void)
   current_paragraph->done_para();
   current_paragraph->done_table();
   auto_links = FALSE;   /* from now on only emit under user request */
-#if !defined(DEBUGGING)
   file_list.add_new_file(xtmpfile());
   html.set_file(file_list.get_file());
-#endif
 }
 
 /*
@@ -2443,11 +2441,7 @@ html_printer::html_printer()
   line_number(0),
   background(default_background)
 {
-#if defined(DEBUGGING)
-  file_list.add_new_file(stdout);
-#else
   file_list.add_new_file(xtmpfile());
-#endif
   html.set_file(file_list.get_file());
   if (font::hor != 24)
     fatal("horizontal resolution must be 24");

@@ -19,11 +19,11 @@
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 FFLAG=-F../font
-TROFF=../src/roff/troff/troff -M../tmac $(FFLAG)
-GROFF=../src/roff/groff/groff -p -e -t
+TFLAG=-M../tmac
+TROFF=../src/roff/troff/troff $(TFLAG) $(FFLAG) -ww
+GROFF=../src/roff/groff/groff $(TFLAG) $(FFLAG) -U -p -e -t -ww
 GROPS=../src/devices/grops/grops $(FFLAG)
 DOCS=meref.ps meintro.ps pic.ps pic.html homepage.ps homepage.html
-MEMACROS=../tmac/tmac.e
 SOELIM=../src/preproc/soelim/soelim
 
 groff_bin_dirs=\
@@ -58,32 +58,26 @@ all: $(DOCS)
 .me.dit:
 	$(SOELIM) $< \
 	| sed -e "s;@VERSION@;$(version)$(revision);" \
-	| $(TROFF) -Tps $(FFLAG) -me >$@
+	| $(TROFF) -Tps -me >$@
 .tr.dit:
 	$(TROFF) -Tps $< >$@
 
 .ms.html:
-	GROFF_TMAC_PATH=../tmac; \
-	export GROFF_TMAC_PATH; \
 	GROFF_BIN_PATH=$(groff_bin_path); \
 	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -P-b -P-I`echo $< | sed -e 's|.ms$$||'` \
-		   -P-D -Pimg -Thtml $(FFLAG) -U -ms >$@
+		   -P-Dimg -Thtml -ms >$@
 .ms.ascii:
-	GROFF_TMAC_PATH=../tmac; \
-	export GROFF_TMAC_PATH; \
 	GROFF_BIN_PATH=$(groff_bin_path); \
 	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
-	| $(GROFF) -Tascii $(FFLAG) -U -ms -mwww >$@
+	| $(GROFF) -Tascii -ms -mwww >$@
 .ms.ps:
-	GROFF_TMAC_PATH=../tmac; \
-	export GROFF_TMAC_PATH; \
 	GROFF_BIN_PATH=$(groff_bin_path); \
 	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
-	| $(GROFF) -Tps $(FFLAG) -U -ms -mwww >$@
+	| $(GROFF) -Tps -ms -mwww >$@
 
 .texinfo.dvi:
 	texi2dvi -e $<
@@ -100,13 +94,18 @@ gnu.eps: gnu.xpm
 gnu.png: gnu.xpm
 	xpmtoppm gnu.xpm | pnmtopng > gnu.png
 
-homepage.html: gnu.png
+homepage.html: homepage.ms gnu.png
+	GROFF_BIN_PATH=$(groff_bin_path); \
+	export GROFF_BIN_PATH; \
+	sed -e "s;@VERSION@;$(version)$(revision);" $< \
+	| $(GROFF) -P-Ihome -P-r -P-b -P-Dimg -Thtml -ms >$@
+
 homepage.ps: gnu.eps
 
 install:
 
 clean:
-	-rm -f *.ps *.html *.ascii *.png *.gif *.dit core
+	-rm -f *.ps *.html *.ascii *.png *.eps *.gif *.dit core
 	-rm -f *.aux *.dvi *.pdf *.log *.toc texput.log
 	-rm -f *.cp *.cps *.cv *.cn *.es *.ess *.fn *.fns *.ky *.kys \
                *.ma *.mas *.op *.ops *.pg *.pgs *.rq *.rqs *.st *.sts \

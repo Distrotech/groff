@@ -1,4 +1,4 @@
-/* Copyright (C) 2000 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
      Written by Eli Zaretskii (eliz@is.elta.co.il)
 
 This file is part of groff.

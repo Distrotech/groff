@@ -176,7 +176,7 @@
 @end macro
 
 
-@c definition of registers specific to macro packages
+@c definition of registers specific to macro packages, preprocessors, etc.
 
 @macro Defmpreg{name, package}
 @deffn Register @t{\\n[\name\]}
@@ -11202,16 +11202,51 @@ is available as an extra package from the following address:
 
 @menu
 * Invoking grohtml::
+* grohtml specific registers and strings::
 @end menu
 
 @c ---------------------------------------------------------------------
 
-@node Invoking grohtml,  , grohtml, grohtml
+@node Invoking grohtml, grohtml specific registers and strings, grohtml, grohtml
 @subsection Invoking @code{grohtml}
 @cindex invoking @code{grohtml}
 @cindex @code{grohtml}, invoking
 
 @c XXX
+
+@c ---------------------------------------------------------------------
+
+@node grohtml specific registers and strings,  , Invoking grohtml, grohtml
+@subsection @code{grohtml} specific registers and strings
+@cindex registers specific to @code{grohtml}
+@cindex strings specific to @code{grohtml}
+@cindex @code{grohtml}, registers and strings
+
+@DefmpregList {ps4html, grohtml}
+@DefstrListEnd {www-image-template, grohtml}
+The registers @code{ps4html} and @code{www-image-template} are defined
+by the @code{pre-grohtml} preprocessor.  @code{pre-grohtml} reads in
+the @code{troff} input, marks up the inline equations and passes the
+result firstly to
+
+@example
+troff -Tps -rps4html=1 -dwww-image-template=@var{template}
+@end example
+
+@noindent
+and secondly to
+
+@example
+troff -Thtml
+@end example
+
+The postscript device is used to create all the image files, and the
+register @code{ps4html} enables the macro sets to ignore floating
+keeps, footers, and headings.
+
+The register @code{www-image-template} is set to the user specified
+template name or the default name.
+@endDefmpreg
 
 
 @c =====================================================================
@@ -11852,7 +11887,8 @@ Requests appear without the leading control character (normally either
 @node Register Index, Macro Index, Operator Index, Top
 @chapter Register Index
 
-The macro package a specific register belongs to is appended in brackets.
+The macro package or program a specific register belongs to is appended in
+brackets.
 
 A register name@w{ }@code{x} consisting of exactly one character can be
 accessed as @samp{\nx}.  A register name @code{xx} consisting of exactly
@@ -11882,7 +11918,8 @@ They appear without the leading control character (normally @samp{.}).
 @node String Index, Glyph Name Index, Macro Index, Top
 @chapter String Index
 
-The macro package a specific string belongs to is appended in brackets.
+The macro package or program a specific string belongs to is appended in
+brackets.
 
 A string name@w{ }@code{x} consisting of exactly one character can be
 accessed as @samp{\*x}.  A string name @code{xx} consisting of exactly

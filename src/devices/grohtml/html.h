@@ -20,8 +20,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #if !defined(HTML_H)
 #  define HTML_H
-#  undef DEBUGGING
-// #  define DEBUGGING
 
 /*
  *  class and structure needed to buffer words

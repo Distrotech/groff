@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -791,8 +791,13 @@ void need_space()
 void page_number()
 {
   int n;
-  if (has_arg() && get_integer(&n, topdiv->get_page_number()))
-    topdiv->set_next_page_number(n);
+
+  // the ps4html register is set if we are using -Tps
+  // to generate images for html
+  reg *r = (reg *)number_reg_dictionary.lookup("ps4html");
+  if (r == NULL)
+    if (has_arg() && get_integer(&n, topdiv->get_page_number()))
+      topdiv->set_next_page_number(n);
   skip_line();
 }
 

@@ -99,22 +99,50 @@ o `groff_ms.7' has been completely rewritten.  It now contains a complete
 
 o Changes in www.tmac:
 
-    The macro `NO-AUTO-RULE' has been added; it suppresses the generation of
-    top and bottom rules which grohtml emits by default.
+    Note that HTML support is still in alpha change, so it is rather likely
+    that both macro names and macro syntax will change.  Some of the macros
+    mentioned below aren't really new but haven't been documented properly
+    before.
+    
+    The following macros have been renamed:
 
-    The image position parameter names in `IMAGE' has been changed to `-L',
+        MAILTO     -> MTO
+        IMAGE      -> IMG
+        LINE       -> HR
+
+    For consistency, the macros `URL', `FTL', and `MTO' now all have the
+    address as the first parameter followed by the description.
+
+    By default, grohtml generates links to all section headings at the top
+    of the document.  Use the new `LK' macro to specify a different place.
+
+    For specifying the background color and a background image, use the
+    new macros `BCL' and `BGIMG', respectively.
+
+    The macro `NHR' has been added; it suppresses the generation of top and
+    bottom rules which grohtml emits by default.
+
+    The new macro `HX' determines the cut-off point for automatic link
+    generation to headings.
+
+    The image position parameter names in `IMG' have been changed to `-L',
     `-R', and `-C'.
 
-    New macro `PNG-IMAGE' for inclusion of a PNG image (it will
-    automatically convert it into an EPS file if not -Thtml is used).
+    New macro `PIMG' for inclusion of a PNG image (it will automatically
+    convert it into an EPS file if not -Thtml is used).
 
-    New macro `MARGIN-PNG-IMAGE' for putting a PNG image into the left or
-    right margin  (it will automatically convert it into an EPS file if not
+    New macro `MPIMG' for putting a PNG image into the left or right margin
+    (it will automatically convert it into an EPS file if not
     -Thtml is used).
 
-    New macros HTML-H-BEGIN, HTML-H-END to define a header line block.
+    New macros `HnS', `HnE' to start and end a header line block.
 
-    New macro DROPCAP to produce dropcap characters.
+    New macro `DC' to produce dropcap characters.
+
+    New macro `HTL' to generate an HTML title line only but no H1 heading.
+
+    New macros `ULS' and `ULE' to start and end an unordered list.  The new
+    macro `LI' inserts a list item.
 
 Groff
 -----

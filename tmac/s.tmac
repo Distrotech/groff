@@ -265,8 +265,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .ns
 .@PP
 .if '\*(.T'html' \{\
-.       cov*tl-au-print
-.       als cov*tl-au-print @nop
+.	cov*tl-au-print
+.	als cov*tl-au-print @nop
 .	par@reset-env
 .	par@reset
 .	cov*print
@@ -304,7 +304,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .		bp 1
 .		als FS @FS
 .		als FE @FE
-.               CHECK-FOOTER-AND-KEEP
+.		CHECK-FOOTER-AND-KEEP
 .	\}
 .	br
 .\}
@@ -1563,6 +1563,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\}
 .di eqn*div
 .in 0
+.if \\n[eqn*type]=0 .HTML-IMAGE-LEFT
+.if \\n[eqn*type]=1 \{\
+.   if '\*(.T'html' .RS
+.   HTML-IMAGE-INLINE
+.\}
+.if \\n[eqn*type]=2 .HTML-IMAGE
 .nf
 ..
 .de @div-end!eqn*div
@@ -1576,7 +1582,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	di
 .	nr eqn*have-num 0
 .	if !'\\*[eqn*num]'' .nr eqn*have-num 1
-.	if \\n[dl]:\\n[eqn*have-num] \{\
+.	ie \\n[dl]:\\n[eqn*have-num] \{\
 .		sp \\n[DD]u
 .		par@reset
 .		ds eqn*tabs \\n[.tabs]
@@ -1603,7 +1609,20 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .		sp \\n[DD]u
 .		ta \\*[eqn*tabs]
 .	\}
+.	el \{
+.\" must terminate empty equations in html and ps4html as they contain
+.\" the HTML-IMAGE-END suppression nodes
+.		if \\n[dl] .chop eqn*div
+.		if '\*(.T'html' \\*[eqn*div]
+.		if r ps4html    \\*[eqn*div]
+.	\}
 .	fi
+.	if \\n[eqn*type]=0 .HTML-IMAGE-END
+.	if \\n[eqn*type]=1 \{\
+.		HTML-IMAGE-END
+.		if '\*(.T'html' .RE
+.	\}
+.	if \\n[eqn*type]=2 .HTML-IMAGE-END
 .\}
 ..
 .\" ****************************
@@ -1619,6 +1638,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ..
 .de @TS
 .sp \\n[DD]u
+.HTML-IMAGE
 .if '\\$1'H' .di tbl*header-div
 ..
 .de tbl@top-hook
@@ -1663,6 +1683,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	nr tbl*have-header 0
 .	sp \\n[DD]u
 .\}
+.	HTML-IMAGE-END
 .\" reset tabs
 .TA
 ..
@@ -1687,8 +1708,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	ds@need (u;\\$1)+1v
 .	in +(u;\\n[.l]-\\n[.i]-\\$2/2>?0)
 .\}
+.HTML-IMAGE
 ..
 .de PE
+.HTML-IMAGE-END
 .par@reset
 .sp \\n[DD]u+.5m
 ..
@@ -1905,29 +1928,29 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\" however this produced wierd results, so I've moved back to a more reliable
 .\" but less interesting solution --fixme--
 .   if '\*(.T'html' \{\
-.       rm KF
-.       als KF KS
-.       rm FS
-.       de FS
-.           br
-.           HTML-IMAGE
+.	rm KF
+.	als KF KS
+.	rm FS
+.	de FS
+.		br
+.		HTML-IMAGE
 \\..
-.       rm FE
-.       de FE
-.           br
-.           HTML-IMAGE-END
+.	rm FE
+.	de FE
+.		br
+.		HTML-IMAGE-END
 \\..
 .   \}
 .   if r ps4html \{\
-.       rm FS
-.       de FS
-.           br
-.           HTML-IMAGE
+.	rm FS
+.	de FS
+.		br
+.		HTML-IMAGE
 \\..
-.       rm FE
-.       de FE
-.           br
-.           HTML-IMAGE-END
+.	rm FE
+.	de FE
+.		br
+.		HTML-IMAGE-END
 \\..
 .   \}
 ..

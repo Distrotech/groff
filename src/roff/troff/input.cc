@@ -4616,6 +4616,8 @@ node *do_special()
   return new special_node(mac);
 }
 
+extern int image_no;		// from node.cc
+
 static node *do_suppress(symbol nm)
 {
   if (nm.is_null()) {
@@ -4686,8 +4688,9 @@ static node *do_suppress(symbol nm)
 	error("missing image name for \\O");
 	return 0;
       }
+      image_no++;
       if (begin_level == 1)
-	return new suppress_node(symbol(s), position);
+	return new suppress_node(symbol(s), position, image_no);
     }
     break;
   default:

@@ -4,7 +4,15 @@
 .\"
 .\" To make it work with other output devices also, we include www.tmac
 .\" directly.
+.\"
+.nr PS 10
+.nr VS 12
+.if '\*[.T]'html' .nr LL 10i
+.if r ps4html .nr LL 10i
+.LP
 .mso www.tmac
+.
+.HX 0
 .
 .defcolor darkred rgb 0.65f 0.1f 0.2f
 .defcolor darkgreen rgb 0.1f 0.5f 0.2f
@@ -12,7 +20,8 @@
 .
 .ds GNU \m[darkred]G\mP\m[darkgreen]N\mP\m[darkblue]U\mP
 .
-.HTML-TL
+.HTL
+.
 Home of Groff (GNU Troff).
 .
 .HTML-IMAGE-LEFT
@@ -20,45 +29,46 @@ Home of Groff (GNU Troff).
 \v'-0.5i'\h'1.5i'\s[50]\*[GNU] Troff\s0
 .HTML-IMAGE-END
 .
-.sp
-.LP
+.HnS 1
+.HR
 GNU Troff
-.URL (Groff) http://\:groff.ffii.org/
+.URL http://\:groff.ffii.org/ (Groff) 
 \[em] a
-.URL GNU http://\:www.gnu.org/
+.URL http://\:www.gnu.org/ GNU 
 project.
 Hosted by
-.URL FFII http://\:ffii.org/ .
-.br
-.LINE
-.LINKS
+.URL http://\:ffii.org/ FFII .
+.HR
+.HnE
+.LK
 .LP
-Groff (GNU Troff) is a document processor which reads plain text mixed with
+.DC T HE darkred
+groff (GNU Troff) software
+is a typesetting package which reads plain text mixed with
 formatting commands and produces formatted output.
-.LP
-Groff now supports HTML for the Web.
-Please see
-.URL "Groff Web Tips" "#Web Tips" .
+Groff now supports HTML.
+.\" Please see
+.\" .URL "Groff Web Tips" "#Web Tips" .
 .
 .
 .SH
 Download
 .LP
-.URL Germany "ftp://\:groff.ffii.org/\:pub/\:groff/"
+.URL "ftp://\:groff.ffii.org/\:pub/\:groff/" Germany 
 |
-.URL USA "ftp://\:ftp.gnu.org/\:gnu/\:groff/"
+.URL "ftp://\:ftp.gnu.org/\:gnu/\:groff/" USA 
 .LP
-.URL License http://\:www.gnu.org/\:copyleft/\:gpl.html
+.URL http://\:www.gnu.org/\:copyleft/\:gpl.html License 
 |
-.URL "Mailing list" http://\:ffii.org/\:mailman/\:listinfo/\:groff/
+.URL http://\:ffii.org/\:mailman/\:listinfo/\:groff/ "Mailing list" 
 |
-.URL "Groff for Windows" "http://\:www.cs.vu.nl/\:~tmgil/\:misc/\:wingroff.html"
+.URL "http://\:www.cs.vu.nl/\:~tmgil/\:misc/\:wingroff.html" "Groff for Windows" 
 .sp
 User issues lead:
-.MAILTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
+.MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
 .br
 Technical issues lead:
-.MAILTO wl@\:gnu.org "Werner Lemberg"
+.MTO wl@\:gnu.org "Werner Lemberg"
 .
 .
 .SH
@@ -74,7 +84,7 @@ typewriter-like devices.
 Also included is a modified version of the Berkeley -me macros, an enhanced
 version of the X11 xditview previewer, and an implementation of the -mm
 macros contributed by
-.MAILTO jh@\:axis.se "J\(:orgen H\(:agg" .
+.MTO jh@\:axis.se "J\(:orgen H\(:agg" .
 .LP
 See the file INSTALL for installation instructions.
 You will require a C++ compiler.
@@ -123,7 +133,7 @@ Please read the info pages of cvs for further details.
 .LP
 Alternatively, you can download snapshots (which are updated twice a day)
 from
-.URL here ftp://\:ftp.ffii.org/\:pub/\:groff/\:devel/\:groff-current.tar.gz
+.URL ftp://\:ftp.ffii.org/\:pub/\:groff/\:devel/\:groff-current.tar.gz here
 or a diff file relative to the latest official groff release as:
 .sp
 .RS
@@ -143,33 +153,190 @@ not.
 .LP
 Three mailing lists are available:
 .sp
-.RS
-.nf
-.ft C
-bug-groff@gnu.org      for reporting bugs
-groff@gnu.org          for general discussion of groff
-groff-commit@ffii.org  a read-only list showing logs of
-                       commitments to the CVS repository
-.ft P
-.fi
-.RE
+.ULS
+.LI
+.MTO bug-groff@gnu.org bug-groff@gnu.org
+for reporting bugs
+.LI
+.MTO groff@gnu.org groff@gnu.org
+for general discussion of groff
+.LI
+.MTO groff-commit@ffii.org groff-commit@ffii.org
+a read-only list showing logs of commitments to the CVS repository
+.ULE
 .sp
 .LP
 Note that groff@gnu.org is an alias for
-.MAILTO groff@\:ffii.org groff@\:ffii.org ;
+.MTO groff@\:ffii.org groff@\:ffii.org ;
 you must be subscribed to the `groff' and `groff-commit' lists to send mails.
 .LP
 To subscribe, send e-mail to [list]-request@[domain] (example:
-.MAILTO groff-request@\:ffii.org groff-request@\:ffii.org )
+.MTO groff-request@\:ffii.org groff-request@\:ffii.org )
 with the word `subscribe' in either the
 subject or body of the e-mail (don't include the quotes).
 .LP
 GNU groff was written by
-.MAILTO jjc@\:jclark.com "James Clark" .
+.MTO jjc@\:jclark.com "James Clark" .
 It is now maintained by
-.MAILTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
+.MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
 and
-.MAILTO wl@\:gnu.org "Werner Lemberg" .
+.MTO wl@\:gnu.org "Werner Lemberg" .
+.br
 .br
 .
+.
+.SH
+NEWS VERSION 1.18
+.LP
+This section describes recent user-visible changes in groff.  Bug
+fixes are not described.  There are more details in the man pages.
+.
+.
+.SH 2
+Troff
+.LP
+.ULS
+.LI
+Color support has been added to troff and pic (and to two device drivers,
+grops and grohtml -- other preprocessors and drivers will follow).  A new
+function `defcolor' defines colors; the escape sequence `\em' sets the
+drawing color, the escape sequence `\eM' specifies the background color for
+closed objects created with \eD'...' commands.  Similar to fonts, `\emP' and
+`\eMP' switch back to the previous color.  `\em' and `\eM' correspond to the
+new troff output commands `m' and `DF'.
+
+Outputting color can be disabled in troff and groff with the option -c
+(it is always disabled in compatibility mode).
+
+For defining color components as fractions between 0 and 1, a new scaling
+indicator `f' has been defined: 1f = 65536u.  For testing whether a color
+is defined (with .if and .ie), a new conditional operator `m' is
+available.
+
+More details can be found in the troff manual page.
+.LI
+It is now possible to have whitespace between the first and second dot (or
+the name of the ending macro) to end a macro definition.  Example:
+.RS
+.nf
+\fC\c
+\&.de !
+\&..
+\&.
+\&.de foo
+\&.  nop Hello, I'm `foo'.
+\&.  nop I will now define `bar'.
+\&.  de bar !
+\&.    nop Hello, I'm `bar'.
+\&.  !
+\&..\fP
+.fi
+.RE
+.LI
+`.fn' is a new string-valued register which returns the (internal) real
+font name; styles and families are properly concatenated.
+.LI
+The new request `fchar' can be used to provide fallback characters.  Its
+syntax is the same as the `char' request; the only difference is that a
+character defined with `.char' hides the glyph with the same name in the
+current font, whereas a character defined with `.fchar' is checked only if
+the particular glyph isn't found in the current font.  This test happens
+before checking special fonts.
+.LI
+The new request `itc' is a variant of `.it' for which a line interrupted
+with \ec counts as one input line.
+.LI
+A new escape sequence `\eO' is available (mainly for internal use with
+grohtml).  Please see groff_diff.man and groff.texinfo for more details.
+.LI
+Two macros `AT' (AT&T) and `UC' (Univ. of California) have been added to
+the man macros for compatibility with older BSD releases.
+.LI
+The `-xwidth' specifier in the mdoc macro package has been removed.  Its
+functionality is now integrated directly into `-width'.  Similarly,
+`-column' has been extended to has this functionality also.
+.LI
+A new macro `Ex' has been added to the mdoc macro package to document an
+exit status.
+.LI
+`troff.man' has been split.  Differences to UNIX troff are now documented
+in the new man page `groff_diff.man'.
+.LI
+groff_mwww.man' has been renamed to `groff_www.man'.  The file mwww.tmac
+has been removed.
+.LI
+The macro `NO-AUTO-RULE' has been added to www.tmac; it suppresses the
+generation of top and bottom rules which grohtml emits by default.
+.ULE
+.
+.
+.SH 2
+groff
+.LP
+.ULS
+.LI
+The new command line `-c' disables color output (which is always disabled
+in compatibility mode).
+.ULE
+.
+.
+.SH 2
+pic
+.LP
+.ULS
+.LI
+New keywords `color' (or `colour', `colored', `coloured'), `outline' (or
+`outlined'), and `shaded' are available.  `outline' sets the color of the
+outline, `shaded' the fill color, and `color' sets both.  Example:
+.RS
+\fCcircle shaded "green" outline "black" ;\fP
+.RE
+Color support for TeX output is not implemented yet.
+.ULE
+.
+.
+.SH 2
+Pic2graph
+.LP
+.ULS
+.LI
+A new script contributed by Eric S. Raymond <esr@thyrsus.com>.  It
+converts a PIC diagram into a cropped image.  Since it uses gs and the PNM
+library, virtually all graphics formats are available for output.
+.ULE
+.
+.
+.SH 2
+grops
+.LP
+.ULS
+.LI
+Color support has been added.
+.ULE
+.
+.
+.SH 2
+grohtml
+.LP
+.ULS
+.LI
+Color support for glyphs has been added.
+.LI
+New option `\fC-h\fP' to select the style of headings in HTML output.
+.ULE
+.
+.
+.SH 2
+Miscellaneous
+.LP
+.ULS
+.LI
+A new manual page `\fCditroff.7\fP' is available.
+.ULE
+.
+.HR
+.
+\s-2\fIThis document was produced using
+.URL http://groff.ffii.org/ groff-\n[.x].\n[.y] .\s0\fP
+.HR
 .\" EOF

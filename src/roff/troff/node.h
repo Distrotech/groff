@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -479,10 +479,11 @@ class suppress_node : public node {
   int emit_limits;	// must we issue the extent of the area written out?
   symbol filename;
   char position;
+  int  image_id;
 public:
   suppress_node(int, int);
-  suppress_node(symbol f, char p);
-  suppress_node(int, int, symbol f, char p);
+  suppress_node(symbol f, char p, int id);
+  suppress_node(int, int, symbol f, char p, int id);
   node *copy();
   void tprint(troff_output_file *);
   hunits width();

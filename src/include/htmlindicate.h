@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
      Written by Gaius Mulley <gaius@glam.ac.uk>
 
 This file is part of groff.
@@ -22,38 +22,16 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #define HTMLINDICATE_H
 
 /*
- *  graphic_start - emit a html graphic start indicator, but only
- *                  if one has not already been issued.
- *
- *                  The boolean, is_inline, should be:
- *
- *                  FALSE if this is called via EQ, TS, PS, and
- *                  TRUE if issued via delim $$  $ x over y $ etc.
- */
-extern void graphic_start(int is_inline);
-
-/*
- *  graphic_end - emit a html graphic end indicator, but only
- *                if a corresponding matching graphic-start has
- *                been issued.
- *
- */
-extern void graphic_end();
-
-/*
  *  html_begin_suppress - suppresses output for the html device
- *                        and resets the min/max registers for -Tps
+ *                        and resets the min/max registers for -Tps.
+ *                        Only called for inline images (such as eqn).
  *
- *                        The boolean, is_inline, should be:
- *
- *                        FALSE if this is called via EQ, TS, PS, and
- *                        TRUE if issued via delim $$  $ x over y $ etc.
  */
-extern void html_begin_suppress(int is_inline);
+extern void html_begin_suppress();
 
 /*
  *  html_end_suppress - end the suppression of output.
  */
-extern void html_end_suppress(int is_inline);
+extern void html_end_suppress();
 
 #endif

@@ -98,22 +98,22 @@ private:
   int               pageoffset;           /* .po value         */
   int               linelength;         /* current line length */
 
-  int    is_present        (HTML_TAG t);
-  void   end_tag           (tag_definition *t);
-  void   start_tag         (tag_definition *t);
-  void   push_para         (HTML_TAG t, void *arg);
-  void   push_para         (HTML_TAG t);
-  void   push_para         (color *c);
-  void   do_push           (tag_definition *p);
-  char  *shutdown          (HTML_TAG t);
-  void   check_emit_text   (tag_definition *t);
-  int    remove_break      (void);
-  void   issue_tag         (char *tagname, char *arg);
-  void   issue_color_begin (color *c);
-  void   issue_table_begin (char *arg);
-  void   issue_table_end   (void);
-  int    table_is_void     (tag_definition *t);
-  void   remove_def        (tag_definition *t);
-  void   dump_stack_element(tag_definition *p);
-  void   dump_stack        (void);
+  int    is_present          (HTML_TAG t);
+  void   end_tag             (tag_definition *t);
+  void   start_tag           (tag_definition *t);
+  void   push_para           (HTML_TAG t, void *arg);
+  void   push_para           (HTML_TAG t);
+  void   push_para           (color *c);
+  void   do_push             (tag_definition *p);
+  char  *shutdown            (HTML_TAG t);
+  void   check_emit_text     (tag_definition *t);
+  int    remove_break        (void);
+  void   issue_tag           (char *tagname, char *arg);
+  void   issue_color_begin   (color *c);
+  void   issue_table_begin   (char *arg);
+  void   issue_table_end     (void);
+  int    table_is_void       (tag_definition *t);
+  void   remove_def          (tag_definition *t);
+  void   dump_stack_element  (tag_definition *p);
+  void   dump_stack          (void);
 };

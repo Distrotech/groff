@@ -26,6 +26,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "macropath.h"
 #include "htmlindicate.h"
 #include "pbox.h"
+#include "ctype.h"
 
 #define STARTUP_FILE "eqnrc"
 
@@ -44,9 +45,6 @@ int one_size_reduction_flag = 0;
 int compatible_flag = 0;
 int no_newline_in_delim_flag = 0;
 int html = 0;
-// if we encounter a region marked as an image then we
-// do not mark up inline equations.
-int suppress_html = 0;
                       
 
 int read_line(FILE *fp, string *p)
@@ -81,33 +79,12 @@ void do_file(FILE *fp, const char *filename)
       if (interpret_lf_args(linebuf.contents() + 3))
 	current_lineno--;
     }
-    else if (linebuf.length() >= 12
-	     && linebuf[0] == '.' && linebuf[1] == 'H' && linebuf[2] == 'T'
-	     && linebuf[3] == 'M' && linebuf[4] == 'L' && linebuf[5] == '-'
-	     && linebuf[6] == 'I' && linebuf[7] == 'M' && linebuf[8] == 'A'
-	     && linebuf[9] == 'G' && linebuf[10] == 'E'
-	     && linebuf[11] == '\n') {
-      put_string(linebuf, stdout);
-      suppress_html++;
-    }
-    else if (linebuf.length() >= 16
-	     && linebuf[0] == '.' && linebuf[1] == 'H' && linebuf[2] == 'T'
-	     && linebuf[3] == 'M' && linebuf[4] == 'L' && linebuf[5] == '-'
-	     && linebuf[6] == 'I' && linebuf[7] == 'M' && linebuf[8] == 'A'
-	     && linebuf[9] == 'G' && linebuf[10] == 'E' && linebuf[11] == '-'
-	     && linebuf[12] == 'E' && linebuf[13] == 'N' && linebuf[14] == 'D'
-	     && linebuf[15] == '\n') {
-      put_string(linebuf, stdout);
-      suppress_html--;
-    }
     else if (linebuf.length() >= 4
 	     && linebuf[0] == '.'
 	     && linebuf[1] == 'E'
 	     && linebuf[2] == 'Q'
 	     && (linebuf[3] == ' ' || linebuf[3] == '\n'
 		 || compatible_flag)) {
-      if (html && (suppress_html == 0))
-	graphic_start(0);
       put_string(linebuf, stdout);
       int start_lineno = current_lineno + 1;
       str.clear();
@@ -139,8 +116,6 @@ void do_file(FILE *fp, const char *filename)
       }
       printf(".lf %d\n", current_lineno);
       put_string(linebuf, stdout);
-      if (html && (suppress_html == 0))
-	graphic_end();
     }
     else if (start_delim != '\0' && linebuf.search(start_delim) >= 0
 	     && inline_equation(fp, linebuf, str))
@@ -196,16 +171,16 @@ static int inline_equation(FILE *fp, string &linebuf, string &str)
       ptr = &linebuf[0];
     }
     str += '\0';
-    if (html && (suppress_html == 0)) {
+    if (html) {
       printf(".as1 %s ", LINE_STRING);
-      graphic_start(1);
+      html_begin_suppress();
       printf("\n");
     }
     init_lex(str.contents(), current_filename, start_lineno);
     yyparse();
-    if (html && (suppress_html == 0)) {
+    if (html) {
       printf(".as1 %s ", LINE_STRING);
-      graphic_end();
+      html_end_suppress();
       printf("\n");
     }
     start = delim_search(ptr, start_delim);

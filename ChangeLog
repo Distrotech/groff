@@ -1,3 +1,132 @@
+2002-02-17  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/Makefile (clean): Add *.eps.
+	(MEMACROS): Removed.
+	(TFLAG): New variable.
+	(TROFF): Use it.
+	Add -ww.
+	(GROFF): Use TFLAG, FFLAG, -U, -p, -e, -t, and -ww.
+	(.me.dit): Fixed.
+	(.ms.html, .ms.ascii, .ms.ps, homepage.html): Simplify.
+
+	* tmac/www.tmac: Use dummy diversion while resetting and disabling
+	`.tl'.
+	* tmac/e.tmac: Inserted some more `\"' to remove warnings if used
+	unstripped.
+	* src/roff/troff/troff.man: Fix order of parameter description.
+
+	* NEWS: Updated.
+
+2002-02-16  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Simplify image handling for grohtml.
+	Fix <p> bug.
+
+	* src/devices/grohtml/html-text.cc (DEBUGGING): Don't undefine but
+	comment out.
+	(html_text::dump_stack): Don't emit newline while debugging.
+	(html_text::do_push) [DEBUGGING]: Print more info.
+	(html_text::check_emit_text): Fix handling of <p>.
+	* src/devices/grohtml/html.h: Updated.
+	* src/devices/grohtml/output.cc (FPUTC, FPUTS, PUTC): New macros,
+	replacing `fputc', `fputs', `putc'.  If DEBUGGING is defined, they
+	send its data to stderr also.
+	Update all callers.
+	(simple_output::space_or_newline) [DEBUGGING]: Removed.
+	* src/devices/grohtml/post-html.cc (html_printer::do_links,
+	html_printer::html_printer): Remove `DEBUGGING' conditionals.
+
+	* src/include/html-strings.h (HTML_IMAGE_{CENTERED,LEFT,RIGHT,END}):
+	Removed.
+	* src/libs/libgroff/htmlhint.cc (is_in_graphic_start,
+	is_inline_image): Removed.
+	(html_begin_suppress, html_end_suppress): Don't take a parameter.
+	(graphic_start, graphic_end): Removed.
+	* src/include/htmlindicate.h: Updated.
+	* src/preproc/html/pre-html.cc (DEBUG_HTML): Removed.
+	(macroset_template): New global variable.
+	(makeFileName): Use `macroset_template'.
+	(write_end_image): Don't take a parameter.
+	Don't emit newline.
+	(write_start_image: Don't emit newline.
+	(char_buffer::write_upto_newline): Updated.
+	(char_buffer::skip_to_newline): Renamed to ...
+	(char_buffer::skip_until_newline): This.
+	Fix code.
+	(char_buffer::write_file_troff, char_buffer::write_file_html):
+	Simplified.
+	(createAllPages, createImage) [DEBUGGING]: Handle `debug' flag.
+	(removeAllPages): Remove `DEBUGGING' conditionals.
+	(addRegDef, dump_args): New functions.
+	(char_buffer::do_html, char_buffer::do_image): Handle
+	`www-image-template' command line variable.
+	Add more debugging code.
+	(addps4html): Removed.
+	(removeTempFiles) [DEBUGGING]: Handle `debug' flag.
+
+	* src/preproc/eqn/main.cc: Include `ctype.h'.
+	(suppress_html): Removed.
+	(do_file): Updated.
+	(inline_equation): Use `html_begin_suppress' and
+	`html_end_suppress'.
+	* src/preproc/pic/troff.cc: Don't include `htmlindicate.h'.
+	(troff_output::start_picture, troff_output::finish_picture):
+	Updated.
+	* src/preproc/tbl/main.cc: Don't include `htmlindicate.h'.
+	(process_input_file): Updated.
+
+	* src/roff/troff/div.cc (page_number): Set page number only if the
+	`ps4html' register isn't defined.
+	* src/roff/troff/input.cc (image_no): New external variable.
+	(do_suppress): Use it.
+	* src/roff/troff/node.h (suppress_node::image_id): New member.
+	* src/roff/troff/node.cc (image_no): Remove `static' keyword.
+	(suppress_node::suppress_node): Initialize `image_id' member.
+	(suppress_node::same): Handle `image_id' also.
+	(suppress_node::copy): Updated.
+	(last_image_id): New global variable.
+	(suppress_node::tprint): Use it.
+
+	* tmac/an-old.tmac (TS, TE, EQ, EN): Use HTML-IMAGE and
+	HTML-IMAGE-END.
+	* tmac/pspic.mac (PSPIC): Fix html support.
+	* tmac/s.tmac (@EQ, @EN, @TS, TE, PS, PE): Ditto.
+	* tmac/www.tmac (www-image-template): Set up.
+	(HTMLINDEX): Renamed to...
+	(HX): This.
+	(BODYCOLOR): Renamed to...
+	(BCL): This.
+	(BACKGROUND): Renamed to...
+	(BGIMG): This.
+	(URL): Change order of parameters for consistency.
+	(MAILTO): Renamed to...
+	(MTO): This.
+	(IMAGE, PNG-IMAGE, MARGIN-PNG-IMAGE): Renamed to...
+	(IMG, PIMG, MPIMG): This.
+	(HTML-H-BEGIN, HTML-H-END): Renamed to...
+	(HnS, HnE): This.
+	(LINKS): Renamed to...
+	(LK): This.
+	(LINE): Renamed to...
+	(HR): This.
+	(NO-AUTO-RULE): Renamed to...
+	(NHR): This.
+	(HTML-TL): Renamed to...
+	(HTL): This.
+	(UL-BEGIN, UL-END): Renamed to...
+	(ULS, ULE): This.
+	(DROPCAP): Renamed to...
+	(DC): This.
+	(TS, TE, EQ, EN): Provide default definitions.
+	(www-make-unique-name): Updated.
+	(HTML-IMAGE-INLINE): Fix typo.
+	* tmac/groff_www.man: Updated.
+
+	* doc/Makefile (homepage.html): Add option -r to grohtml.
+	Use shortened image name.
+	* doc/groff.texinfo: Updated info on grohtml strings and macros.
+	* doc/homepage.ms: Updated and extended.
+
 2002-02-14  Werner LEMBERG  <wl@gnu.org>
 
 	Don't use `CSI 39 m' and `CSI 49 m' but `CSI 0 m'.
@@ -73,7 +202,7 @@
 2002-02-09  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/gnu.xpm: New image.
-	* doc/Makefile (DOCS): Add homepage.ps
+	* doc/Makefile (DOCS): Add homepage.ps.
 	Add rules for converting xpm->png and xpm->eps.
 	Use `gnu.{xpm,eps}' as image names.
 	* doc/homepage.ms: Updated.

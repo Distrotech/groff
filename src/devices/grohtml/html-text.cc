@@ -40,7 +40,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "html-text.h"
 
-#undef DEBUGGING
+// #define DEBUGGING
 
 html_text::html_text (simple_output *op) :
   stackptr(NULL), lastptr(NULL), out(op), space_emitted(TRUE),
@@ -59,7 +59,7 @@ static int debugStack = FALSE;
 
 
 /*
- *  turnDebug - flip the debugStack boolean and return new value.
+ *  turnDebug - flip the debugStack boolean and return the new value.
  */
 
 static int turnDebug (void)
@@ -116,7 +116,6 @@ void html_text::dump_stack (void)
       dump_stack_element(p);
       p = p->next;
     }
-    fprintf(stderr, "\n");
     fflush(stderr);
   }
 }
@@ -224,9 +223,9 @@ void html_text::start_tag (tag_definition *t)
 int html_text::table_is_void (tag_definition *t)
 {
   if (linelength > 0) {
-    return( current_indentation*100/linelength <= 0 );
+    return current_indentation*100/linelength <= 0;
   } else {
-    return( FALSE );
+    return FALSE;
   }
 }
 
@@ -286,12 +285,11 @@ int html_text::is_present (HTML_TAG t)
   tag_definition *p=stackptr;
 
   while (p != NULL) {
-    if (t == p->type) {
-      return( TRUE );
-    }
+    if (t == p->type)
+      return TRUE;
     p = p->next;
   }
-  return( FALSE );
+  return FALSE;
 }
 
 
@@ -304,6 +302,10 @@ void html_text::do_push (tag_definition *p)
   HTML_TAG t = p->type;
 
 #if defined(DEBUGGING)
+  debugStack = TRUE;
+  fprintf(stderr, "entering do_push (");
+  dump_stack_element(p);
+  fprintf(stderr, ")\n");
   dump_stack();
 #endif
 
@@ -322,7 +324,7 @@ void html_text::do_push (tag_definition *p)
        */
       if (stackptr == lastptr) {
 	/*
-	 *  only on element of the stack
+	 *  only one element of the stack
 	 */
 	p->next       = stackptr;
 	stackptr      = p;	
@@ -332,9 +334,9 @@ void html_text::do_push (tag_definition *p)
 	 */
 	tag_definition *q = stackptr;
 
-	while (q->next != lastptr) {
+	while (q->next != lastptr)
 	  q = q->next;
-	}
+	
 	q->next       = p;
 	p->next       = lastptr;
       }
@@ -352,8 +354,14 @@ void html_text::do_push (tag_definition *p)
       lastptr = p;
     stackptr      = p;
   }
+
 #if defined(DEBUGGING)
   dump_stack();
+  if (stackptr && (stackptr->type == COLOR_TAG) &&
+      stackptr->next && (stackptr->next->type == TABLE_TAG) &&
+      stackptr->next->next && (stackptr->next->next->type == P_TAG))
+
+  fprintf(stderr, "exiting do_push\n");
 #endif
 }
 
@@ -495,7 +503,7 @@ void html_text::do_pre (void)
 
 int html_text::is_in_pre (void)
 {
-  return( is_present(PRE_TAG) );
+  return is_present(PRE_TAG);
 }
 
 /*
@@ -504,7 +512,7 @@ int html_text::is_in_pre (void)
 
 int html_text::is_in_table (void)
 {
-  return( is_present(TABLE_TAG) );
+  return is_present(TABLE_TAG);
 }
 
 /*
@@ -590,7 +598,7 @@ char *html_text::shutdown (HTML_TAG t)
       free(p);
     }
   }
-  return( arg );
+  return arg;
 }
 
 /*
@@ -686,16 +694,7 @@ void html_text::check_emit_text (tag_definition *t)
 	/*
 	 *  a table which will be emitted, is there a <p> succeeding it?
 	 */
-	if ((t->next != NULL) &&
-	    (t->next->type == P_TAG) &&
-	    ((t->next->arg1 == 0) || strcmp((char *)t->next->arg1, "") == 0)) {
-	  /*
-	   *  yes skip the <p>
-	   */
-	  check_emit_text(t->next->next);
-	} else {
-	  check_emit_text(t->next);
-	}
+	check_emit_text(t->next);
 	t->text_emitted = TRUE;
 	start_tag(t);
       }
@@ -757,7 +756,7 @@ void html_text::do_para (const char *arg)
 char *html_text::done_para (void)
 {
   space_emitted = TRUE;
-  return( shutdown(P_TAG) );
+  return shutdown(P_TAG);
 }
 
 /*
@@ -766,9 +765,9 @@ char *html_text::done_para (void)
 
 void html_text::do_space (void)
 {
-  if (is_in_pre()) {
+  if (is_in_pre())
     do_emittext("", 0);
-  } else {
+  else {
     do_para(done_para());
   }
   space_emitted = TRUE;
@@ -912,9 +911,9 @@ int html_text::remove_break (void)
       if (stackptr == NULL)
 	lastptr = NULL;
       q = stackptr;
-    } else if (l == 0) {
+    } else if (l == 0)
       error("stack list pointers are wrong");
-    } else {
+    else {
       l->next = p->next;
       q = p->next;
       if (l->next == NULL)
@@ -926,13 +925,12 @@ int html_text::remove_break (void)
    *  now determine whether text was issued before <br>
    */
   while (q != 0) {
-    if (q->text_emitted) {
-      return( TRUE );
-    } else {
+    if (q->text_emitted)
+      return TRUE;
+    else
       q = q->next;
-    }
   }
-  return( FALSE );
+  return FALSE;
 }
 
 /*
@@ -943,11 +941,10 @@ int html_text::remove_break (void)
 
 void html_text::do_small (void)
 {
-  if (is_present(BIG_TAG)) {
+  if (is_present(BIG_TAG))
     done_big();
-  } else {
+  else
     push_para(SMALL_TAG);
-  }
 }
 
 /*
@@ -956,11 +953,10 @@ void html_text::do_small (void)
 
 void html_text::do_big (void)
 {
-  if (is_present(SMALL_TAG)) {
+  if (is_present(SMALL_TAG))
     done_small();
-  } else {
+  else
     push_para(BIG_TAG);
-  }
 }
 
 /*

@@ -62,8 +62,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
  *  debugging grohtml
  */
 
-static int image_no=0;
-static int suppress_start_page=0;
+int image_no = 0;
+static int suppress_start_page = 0;
 
 #define STORE_WIDTH 1
 
@@ -3559,18 +3559,20 @@ tfont *special_node::get_tfont()
 /* suppress_node */
 
 suppress_node::suppress_node(int on_or_off, int issue_limits)
-: is_on(on_or_off), emit_limits(issue_limits), filename(0), position(0)
+: is_on(on_or_off), emit_limits(issue_limits),
+  filename(0), position(0), image_id(0)
 {
 }
 
-suppress_node::suppress_node(symbol f, char p)
-: is_on(2), emit_limits(0), filename(f), position(p)
+suppress_node::suppress_node(symbol f, char p, int id)
+: is_on(2), emit_limits(0), filename(f), position(p), image_id(id)
 {
 }
 
 suppress_node::suppress_node(int issue_limits, int on_or_off,
-			     symbol f, char p)
-: is_on(on_or_off), emit_limits(issue_limits), filename(f), position(p)
+			     symbol f, char p, int id)
+: is_on(on_or_off), emit_limits(issue_limits),
+  filename(f), position(p), image_id(id)
 {
 }
 
@@ -3579,8 +3581,8 @@ int suppress_node::same(node *n)
   return ((is_on == ((suppress_node *)n)->is_on)
 	  && (emit_limits == ((suppress_node *)n)->emit_limits)
 	  && (filename == ((suppress_node *)n)->filename)
-	  && (position == ((suppress_node *)n)->position));
-;
+	  && (position == ((suppress_node *)n)->position)
+	  && (image_id == ((suppress_node *)n)->image_id));
 }
 
 const char *suppress_node::type()
@@ -3590,7 +3592,7 @@ const char *suppress_node::type()
 
 node *suppress_node::copy()
 {
-  return new suppress_node(emit_limits, is_on, filename, position);
+  return new suppress_node(emit_limits, is_on, filename, position, image_id);
 }
 
 int get_reg_int(const char *p)
@@ -3629,6 +3631,7 @@ void suppress_node::put(troff_output_file *out, const char *s)
 
 static char last_position = 0;
 static const char *last_image_filename = 0;
+static int last_image_id = 0;
 
 inline int min(int a, int b)
 {
@@ -3660,16 +3663,16 @@ void suppress_node::tprint(troff_output_file *out)
   if (is_on == 2) {
     // remember position and filename
     last_position = position;
-    last_image_filename = filename.contents();
+    last_image_filename = strdup(filename.contents());
+    last_image_id = image_id;
   }
   else {
     // now check whether the suppress node requires us to issue limits.
     if (emit_limits) {
       char name[8192];
-      image_no++;
       // remember that the filename will contain a %d in which the
-      // image_no is placed
-      sprintf(name, last_image_filename, image_no);
+      // last_image_id is placed
+      sprintf(name, last_image_filename, last_image_id);
       if (is_html) {
 	switch (last_position) {
 	case 'c':
@@ -3697,7 +3700,7 @@ void suppress_node::tprint(troff_output_file *out)
       }
       else {
 	// postscript (or other device)
-	if (current_page != suppress_start_page)
+	if (suppress_start_page > 0 && current_page != suppress_start_page)
 	  error("suppression limit registers span more than one page;\n"
 	        "image description %1 will be wrong", image_no);
 	// remember that the filename will contain a %d in which the

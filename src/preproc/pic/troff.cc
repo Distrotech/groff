@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -21,7 +21,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "pic.h"
 #include "common.h"
-#include "htmlindicate.h"
 
 
 const double RELATIVE_THICKNESS = -1.0;
@@ -280,7 +279,6 @@ void troff_output::start_picture(double sc,
   scale = compute_scale(sc, ll, ur);
   height = (ur.y - ll.y)/scale;
   double width = (ur.x - ll.x)/scale;
-  graphic_start(0);
   printf(".PS %.3fi %.3fi", height, width);
   if (args)
     printf(" %s\n", args);
@@ -308,7 +306,6 @@ void troff_output::finish_picture()
   // this is a little gross
   set_location(current_filename, current_lineno);
   fputs(flyback_flag ? ".PF\n" : ".PE\n", stdout);
-  graphic_end();
 }
 
 void troff_output::command(const char *s,

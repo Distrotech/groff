@@ -20,7 +20,6 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "table.h"
-#include "htmlindicate.h"
 
 #define MAX_POINT_SIZE 99
 #define MAX_VERTICAL_SPACING 72
@@ -221,8 +220,6 @@ void process_input_file(FILE *fp)
       break;
     case HAD_TS:
       if (c == ' ' || c == '\n' || compatible_flag) {
-	printf(".if '\\*(.T'html' \\X(table-start(\n");
-	html_begin_suppress(0);
 	putchar('.');
 	putchar('T');
 	putchar('S');
@@ -244,16 +241,12 @@ void process_input_file(FILE *fp)
 	    fputs(".TE", stdout);
 	    while ((c = getc(fp)) != '\n') {
 	      if (c == EOF) {
-		printf(".if '\\*(.T'html' \\X(table-end(\n");
-		html_end_suppress(0);
 		putchar('\n');
 		return;
 	      }
 	      putchar(c);
 	    }
 	    putchar('\n');
-	    printf(".if '\\*(.T'html' \\X(table-end(\n");
-	    html_end_suppress(0);
 	    current_lineno++;
 	  }
 	}
