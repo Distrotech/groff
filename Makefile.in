@@ -189,6 +189,11 @@ man5dir=$(manroot)/man$(man5ext)
 man7ext=7
 man7dir=$(manroot)/man$(man7ext)
 
+# the configure script checks whether all necessary utility programs for
+# grohtml are available -- only then we can build the HTML documentation
+make_html=@make_html@
+make_install_html=@make_install_html@
+
 # DEFINES should include the following:
 # -DHAVE_MMAP			if you have mmap() and <sys/mman.h>
 # -DARRAY_DELETE_NEEDS_SIZE	if your C++ doesn't understand `delete []'
@@ -346,6 +351,8 @@ MDEFINES= \
   "man5dir=$(man5dir)" \
   "man7ext=$(man7ext)" \
   "man7dir=$(man7dir)" \
+  "make_html=$(make_html)" \
+  "make_install_html=$(make_install_html)" \
   "mkinstalldirs=$(mkinstalldirs)" \
   "tmac_wrap=$(tmac_wrap)" \
   "sys_tmac_prefix=$(sys_tmac_prefix)" \

@@ -38,10 +38,11 @@ groff_bin_path=`echo $(groff_bin_dirs) | sed -e 's| \+|:|g'`
 FFLAG=-F$(top_builddir)/font -F$(top_srcdir)/font
 TFLAG=-M$(top_builddir)/tmac -M$(top_srcdir)/tmac
 
-GROFF=GROFF_BIN_PATH=$(groff_bin_path); \
-      export GROFF_BIN_PATH; \
-      sed -e "s;@VERSION@;$(version)$(revision);" $< \
-      | $(top_builddir)/src/roff/groff/groff $(TFLAG) $(FFLAG) -Upet -ww
+GROFF=\
+  GROFF_BIN_PATH=$(groff_bin_path); \
+  export GROFF_BIN_PATH; \
+  sed -e "s;@VERSION@;$(version)$(revision);" $< \
+  | $(top_builddir)/src/roff/groff/groff $(TFLAG) $(FFLAG) -Upet -ww
 
 DOCFILES=\
   meref.me \
@@ -66,12 +67,14 @@ EXAMPLEFILES=\
 
 PROCESSEDEXAMPLEFILES=\
   webpage.ps \
-  webpage.html \
   gnu.eps \
   gnu.png \
   grnexmpl.ps
 
-EXAMPLEIMAGEFILES=\
+HTMLEXAMPLEFILES=\
+  webpage.html
+
+HTMLEXAMPLEIMAGEFILES=\
   webpage*
 
 imagedir=img
@@ -81,6 +84,7 @@ exampleimagedir=$(exampledir)/$(imagedir)
 CLEANADD=\
   $(PROCESSEDDOCFILES) \
   $(PROCESSEDEXAMPLEFILES) \
+  $(HTMLEXAMPLEFILES) \
   $(HTMLDOCFILES)
 
 CLEANDIRADD=\
@@ -105,7 +109,9 @@ CLEANNOTSRCDIRADD=\
 
 
 all: groff $(PROCESSEDDOCFILES) prepare_examples \
-     $(PROCESSEDEXAMPLEFILES) $(HTMLDOCFILES)
+     $(PROCESSEDEXAMPLEFILES) $(make_html)
+
+html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
 
 prepare_examples: grnexmpl.g
 	test -f grnexmpl.g || cp $(srcdir)/grnexmpl.g .
@@ -123,10 +129,9 @@ webpage.ps: gnu.eps
 
 grnexmpl.ps: grnexmpl.me grnexmpl.g
 
-
 distfiles: groff
 
-install_data: groff $(DOCFILES) $(PROCESSEDDOCFILES) $(HTMLDOCFILES) \
+install_data: groff $(DOCFILES) $(PROCESSEDDOCFILES) $(make_install_html) \
               $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 	-test -d $(infodir) || $(mkinstalldirs) $(infodir)
 # Prefer info files in builddir over srcdir; we test for
@@ -147,14 +152,6 @@ install_data: groff $(DOCFILES) $(PROCESSEDDOCFILES) $(HTMLDOCFILES) \
 	  rm -f $(docdir)/$$f; \
 	  $(INSTALL_DATA) $$f $(docdir)/$$f; \
 	done
-	-test -d $(htmldocdir) || $(mkinstalldirs) $(htmldocdir)
-	for f in $(HTMLDOCFILES); do \
-	  rm -f $(htmldocdir)/$$f; \
-	  $(INSTALL_DATA) $$f $(htmldocdir)/$$f; \
-	done
-	-test -d $(htmldocimagedir) || $(mkinstalldirs) $(htmldocimagedir)
-	rm -f $(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
-	$(INSTALL_DATA) $(imagedir)/$(HTMLDOCIMAGEFILES) $(htmldocimagedir)
 	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
 	for f in $(EXAMPLEFILES); do \
 	  rm -f $(exampledir)/$$f; \
@@ -164,9 +161,24 @@ install_data: groff $(DOCFILES) $(PROCESSEDDOCFILES) $(HTMLDOCFILES) \
 	  rm -f $(exampledir)/$$f; \
 	  $(INSTALL_DATA) $$f $(exampledir)/$$f; \
 	done
+
+install_html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
+	-test -d $(htmldocdir) || $(mkinstalldirs) $(htmldocdir)
+	for f in $(HTMLDOCFILES); do \
+	  rm -f $(htmldocdir)/$$f; \
+	  $(INSTALL_DATA) $$f $(htmldocdir)/$$f; \
+	done
+	-test -d $(htmldocimagedir) || $(mkinstalldirs) $(htmldocimagedir)
+	rm -f $(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
+	$(INSTALL_DATA) $(imagedir)/$(HTMLDOCIMAGEFILES) $(htmldocimagedir)
+	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
+	for f in $(HTMLEXAMPLEFILES); do \
+	  rm -f $(exampledir)/$$f; \
+	  $(INSTALL_DATA) $$f $(exampledir)/$$f; \
+	done
 	-test -d $(exampleimagedir) || $(mkinstalldirs) $(exampleimagedir)
-	rm -f $(exampleimagedir)/$(EXAMPLEIMAGEFILES)
-	$(INSTALL_DATA) $(imagedir)/$(EXAMPLEIMAGEFILES) $(exampleimagedir)
+	rm -f $(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
+	$(INSTALL_DATA) $(imagedir)/$(HTMLEXAMPLEIMAGEFILES) $(exampleimagedir)
 
 uninstall_sub:
 	-for f in groff groff-*; do \
@@ -184,5 +196,5 @@ uninstall_sub:
 	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES); do \
 	  rm -f $(exampledir)/$$f; \
 	done
-	-rm -f $(exampleimagedir)/$(EXAMPLEIMAGEFILES)
+	-rm -f $(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
 	-rmdir $(exampleimagedir)

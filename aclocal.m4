@@ -58,6 +58,31 @@ AC_DEFUN(GROFF_PROG_YACC,
 [AC_CHECK_PROGS(YACC, byacc 'bison -y', yacc)])dnl
 dnl
 dnl
+dnl The following programs are needed for grohtml.
+dnl
+AC_DEFUN(GROFF_HTML_PROGRAMS,
+[make_html=html
+make_install_html=install_html
+AC_CHECK_PROG(pnmcut, pnmcut, found, missing)
+AC_CHECK_PROG(pnmcrop, pnmcrop, found, missing)
+AC_CHECK_PROG(pnmtopng, pnmtopng, found, missing)
+AC_CHECK_PROG(gs, gs gsos2, found, missing)
+AC_CHECK_PROG(psselect, psselect, found, missing)
+case "x$pnmcut$pnmcrop$pnmtopng$gs$psselect" in
+*missing*)
+	make_html=
+	make_install_html=
+	AC_MSG_WARN([
+
+  Since one or more of the above five programs can't be found in the path,
+  the HTML backend of groff (grohtml) won't work properly.  Consequently,
+  no documentation in HTML format is built and installed.
+]) ;;
+esac
+AC_SUBST(make_html)
+AC_SUBST(make_install_html)])dnl
+dnl
+dnl
 dnl GROFF_CSH_HACK(if hack present, if not present)
 dnl
 AC_DEFUN(GROFF_CSH_HACK,

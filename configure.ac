@@ -67,6 +67,7 @@ GROFF_BROKEN_SPOOLER_FLAGS
 GROFF_PAGE
 GROFF_G
 GROFF_TMAC
+GROFF_HTML_PROGRAMS
 AC_CONFIG_FILES(stamp-h, [echo timestamp > stamp-h])
 AC_CONFIG_FILES([Makefile doc/Makefile src/xditview/Imakefile])
 AC_OUTPUT

@@ -1,3 +1,33 @@
+2002-06-15  Werner LEMBERG  <wl@gnu.org>
+
+	Don't produce HTML files if utility programs are missing.
+
+	* Makefile.in (make_html, make_install_html): New variables.
+	(MDEFINES): Updated.
+
+	* aclocal.m4 (GROFF_HTML_PROGRAMS): New function to test for HTML
+	utility programs.
+	* configure.ac: Use it.
+	* configure: Regenerated.
+
+	* doc/Makefile.sub (PROCESSEDEXAMPLEFILES): Move webpage.html to...
+	(HTMLEXAMPLESFILES): This new variable.
+	(EXAMPLESIMAGEFILES): Renamed to...
+	(HTMLEXAMPLEIMAGEFILES): This.
+	(CLEANADD): Add HTMLEXAMPLEFILES.
+	(all): Use `make_html'.
+	(html): New target.
+	(install_data): Use `make_install_html'.
+	Move html stuff to...
+	(install_html): This new target.
+	(uninstall_sub): Updated.
+
+2002-06-14  Bernd Warken  <bwarken@mayn.de>
+
+	* src/roff/grog/Makefile.sub (grog): Renamed to...
+	(grog.old): This.
+	(grog): New rule to always install grog.sh as grog.
+
 2002-06-08  Bernd Warken  <bwarken@mayn.de>
 
 	* src/roff/grog/grog.pl: Fix typo.
