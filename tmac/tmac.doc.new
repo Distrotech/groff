@@ -663,6 +663,57 @@
 ..
 .
 .
+.\" NS doc-print-prefixes macro
+.\" NS   print leading prefixes
+.\" NS
+.\" NS modifies:
+.\" NS   doc-arg-ptr
+.
+.de doc-print-prefixes
+.  while (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    if !(\n[doc-type\n[doc-arg-ptr]] == 4) \
+.      break
+.    nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
+.    nop \)\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]\c
+.    nr doc-arg-ptr +1
+.  \}
+..
+.
+.
+.\" NS doc-generic-macro macro
+.\" NS   this is the skeleton for most simple macros
+.\" NS
+.\" NS modifies:
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
+.
+.de doc-generic-macro
+.  if !\n[doc-arg-limit] \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name \$0
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
+.  \}
+.
+.  if \n[doc-arg-limit] \{\
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.      nr doc-curr-font \n[.f]
+.      nr doc-curr-size \n[.ps]
+.      nop \*[doc-\$0-font]\c
+.      doc-print-recursive
+.    \}
+.    el \{\
+.      tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
+.      doc-reset-args
+.  \}\}
+..
+.
+.
 .\" NS Ar user macro
 .\" NS   command line `argument' macro: `.Ar [args ...]'
 .\" NS
@@ -695,6 +746,7 @@
 .
 .  if \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
+.    doc-print-prefixes
 .    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
 .      nop \)\*[doc-str-Ar-default]\&\f[P]\s[0]\c
 .      doc-print-and-reset
@@ -720,32 +772,10 @@
 .\" NS Ad user macro
 .\" NS   Addresses
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Ad' set in doc-common
 .
-.de Ad
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Ad
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Ad address ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Ad-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Ad doc-generic-macro
+.ds doc-Ad-usage address
 .
 .
 .\" NS doc-in-synopsis-count global register
@@ -822,32 +852,10 @@
 .\" NS Cm user macro
 .\" NS   interactive command modifier (flag)
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Cm' set in doc-common
 .
-.de Cm
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Cm
-.      doc-parse-args \$@
-.    \}
-.    el \{\
-.      tm Usage: .Cm interactive_command_modifier ... (#\n[.c])
-.  \}\}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Cm-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Cm doc-generic-macro
+.ds doc-Cm-usage interactive_command_modifier
 .
 .
 .\" NS Dv user macro
@@ -855,125 +863,38 @@
 .\" NS
 .\" NS   this function uses the `Er' font
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Dv' set in doc-common
 .
-.de Dv
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Dv
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Dv defined_variable ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Er-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Dv doc-generic-macro
+.ds doc-Dv-usage defined_variable
+.als doc-Dv-font doc-Er-font
 .
 .
 .\" NS Em user macro
 .\" NS   emphasis
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Em' set in doc-common
 .
-.de Em
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Em
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Em text ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Em-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Em doc-generic-macro
+.ds doc-Em-usage text
 .
 .
 .\" NS Er user macro
 .\" NS   errno type
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Er' set in doc-common
 .
-.de Er
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Er
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Er errno_type ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Er-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Er doc-generic-macro
+.ds doc-Er-usage text
 .
 .
 .\" NS Ev user macro
 .\" NS   environment variable
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Ev' set in doc-common
 .
-.de Ev
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Ev
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Ev enviroment_variable ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Ev-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Ev doc-generic-macro
+.ds doc-Ev-usage text
 .
 .
 .\" NS doc-have-decl global register (bool)
@@ -1065,128 +986,44 @@
 .\" NS
 .\" NS   this function uses the `Ar' font
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Fr' set in doc-common
 .
-.de Fr
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Fr
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Fr function_return_value ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Ar-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Fr doc-generic-macro
+.ds doc-Fr-usage function_return_value
+.als doc-Fr-font doc-Ar-font
 .
 .
 .\" NS Ic user macro
 .\" NS   interactive command
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Ic' set in doc-common
 .
-.de Ic
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Ic
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Ic interactive_command ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Ic-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Ic doc-generic-macro
+.ds doc-Ic-usage interactive_command
 .
 .
 .\" NS Li user macro
 .\" NS   literals
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Li' set in doc-common
 .
-.de Li
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Li
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Li argument ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Li-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Li doc-generic-macro
+.ds doc-Li-usage argument
 .
 .
 .\" NS Or user macro
 .\" NS   pipe symbol (OR)
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
+.\" NS   this function uses the `Ic' font
 .\" NS
 .\" NS width register `Or' set in doc-common
 .\"
 .\" XXX: What is this function good for?  It sets a font but does not print
 .\"      a pipe symbol.  And it isn't documented.
 .
-.de Or
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Or
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Or ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Ic-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Or doc-generic-macro
+.ds doc-Or-usage
+.als doc-Or-font doc-Ic-font
 .
 .
 .\" NS Ms user macro
@@ -1194,32 +1031,11 @@
 .\" NS
 .\" NS   this function uses the `Sy' font
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Ms' set in doc-common
 .
-.de Ms
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Ms
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Ms math_symbol ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Sy-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Ms doc-generic-macro
+.ds doc-Ms-usage math_symbol
+.als doc-Ms-font doc-Sy-font
 .
 .
 .\" NS doc-command-name global string
@@ -1256,6 +1072,7 @@
 .
 .  if \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
+.    doc-print-prefixes
 .    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
 .      \" last argument
 .      ie "\*[doc-command-name]"" \{\
@@ -1348,63 +1165,19 @@
 .\" NS Sy user macro
 .\" NS   symbolics
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Sy' set in doc-common
 .
-.de Sy
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Sy
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Sy symbolic_text ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Sy-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Sy doc-generic-macro
+.ds doc-Sy-usage symbolic_text
 .
 .
 .\" NS Me user macro
 .\" NS   menu entries
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Me' set in doc-common
 .
-.de Me
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Me
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Me menu_entry ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Me-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Me doc-generic-macro
+.ds doc-Me-usage menu_entry
 .
 .
 .\" NS Tn user macro
@@ -1450,63 +1223,19 @@
 .\" NS Va user macro
 .\" NS   variable name
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Va' set in doc-common
 .
-.de Va
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Va
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Va variable_name ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Va-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Va doc-generic-macro
+.ds doc-Va-usage variable_name
 .
 .
 .\" NS No user macro
 .\" NS   normal text macro (default text style if mess up)
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `No' set in doc-common
 .
-.de No
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name No
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .No normal_text ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-No-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als No doc-generic-macro
+.ds doc-No-usage normal_text
 .
 .
 .\" NS doc-quote-left global string
@@ -1782,20 +1511,18 @@
 .  if \n[doc-in-synopsis-count] \
 .    doc-set-hard-space
 .
-.  \" the final `\)' prevents hyphenation in case the next character is `\%'
-.  ie \n[doc-arg-limit] \
-.    nop \)\*[doc-quote-left]\)\c
-.  el \{\
-.    doc-parse-args \$@
-.    nop \)\*[doc-quote-left]\)\c
-.
-.    if !\n[.$] \{\
-.      \" no argument
-.      nop \)\*[doc-quote-right]\)
+.  if !\n[doc-arg-limit] \{\
+.    ie \n[.$] \
+.      doc-parse-args \$@
+.    el \{\
+.      nop \)\*[doc-quote-left]\*[doc-quote-right]
 .  \}\}
 .
 .  if \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
+.    doc-print-prefixes
+.    \" the final `\)' prevents hyphenation in case the next character is `\%'
+.    nop \)\*[doc-quote-left]\)\c
 .    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
 .      \" last argument
 .      nop \)\*[doc-quote-right]\)\c
@@ -2275,6 +2002,11 @@
 .de doc-enclose-open
 .  if !\n[doc-arg-limit] \
 .    doc-parse-args \$@
+.
+.  nr doc-arg-ptr +1
+.  doc-print-prefixes
+.  nr doc-arg-ptr -1
+.
 .  nop \)\*[doc-quote-left]\)\c
 .
 .  \" start enclosure box
@@ -2775,24 +2507,37 @@
 ..
 .
 .
-.\" NS doc-curr-font-for-Ef global register
-.\" NS   saved current font from `Bf' request
+.\" NS doc-fontmode-depth global register
+.\" NS   font mode level
 .
-.nr doc-curr-font-for-Ef 0
+.nr doc-fontmode-depth 0
 .
 .
-.\" NS doc-curr-size-for-Ef global register
-.\" NS   saved current size from `Bf' request
+.\" NS doc-fontmode-font-stackXXX global register
+.\" NS   stack of saved current font from `Bf' request
+.\" NS
+.\" NS limit:
+.\" NS   doc-fontmode-depth
 .
-.nr doc-curr-size-for-Ef 0
+.nr doc-fontmode-font-stack0 0
+.
+.
+.\" NS doc-fontmode-size-stackXXX global register
+.\" NS   stack of saved current size from `Bf' request
+.\" NS
+.\" NS limit:
+.\" NS   doc-fontmode-depth
+.
+.nr doc-fontmode-size-stack0 0
 .
 .
 .\" NS Bf user macro
 .\" NS   begin font mode (will be begin-mode/end-mode in groff & TeX)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-curr-font-for-Ef
-.\" NS   doc-curr-size-for-Ef
+.\" NS   doc-fontmode-depth
+.\" NS   doc-fontmode-font-stackXXX
+.\" NS   doc-fontmode-size-stackXXX
 .\" NS   doc-macro-name
 .\" NS
 .\" NS width register `Bf' set in doc-common
@@ -2801,8 +2546,11 @@
 .  ds doc-macro-name Bf
 .
 .  ie \n[.$] \{\
-.    nr doc-curr-font-for-Ef \n[.f]
-.    nr doc-curr-size-for-Ef \n[.ps]
+.    nr doc-fontmode-depth +1
+.
+.    \" save current font and size
+.    nr doc-fontmode-font-stack\n[doc-fontmode-depth] \n[.f]
+.    nr doc-fontmode-size-stack\n[doc-fontmode-depth] \n[.ps]
 .
 .    ie        "\$1"Em" \
 .      nop \*[doc-Em-font]\c
@@ -2836,10 +2584,17 @@
 .de Ef
 .  ds doc-macro-name Ef
 .
-.  ie \n[.$] \
-.    tm Usage: .Ef (does not take arguments) (#\n[.c])
-.  el \
-.    nop \)\f[\n[doc-curr-font-for-Ef]]\s[\n[doc-curr-size-for-Ef]u]
+.  ie !\n[doc-fontmode-depth] \
+.    tm mdoc warning: Extraneous .Ef (#\n[.c])
+.  el \{\
+.    \" restore saved font and size
+.    nop \)\f[\n[doc-fontmode-font-stack\n[doc-fontmode-depth]]]\c
+.    nop \)\s[\n[doc-fontmode-size-stack\n[doc-fontmode-depth]]u]\c
+.
+.    nr doc-fontmode-font-stack\n[doc-fontmode-depth] 0
+.    nr doc-fontmode-size-stack\n[doc-fontmode-depth] 0
+.    nr doc-fontmode-depth -1
+.  \}
 ..
 .
 .
@@ -2978,10 +2733,11 @@
 .\" NS   doc-display-depth
 .\" NS   doc-display-ad-stackXXX
 .\" NS   doc-display-fi-stackXXX
+.\" NS   doc-display-file
 .\" NS   doc-display-indent-stackXXX
 .\" NS   doc-display-type-stackXXX
 .\" NS   doc-is-compact
-.\" NS   dpc-macro-name
+.\" NS   doc-macro-name
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-Bd
@@ -2991,6 +2747,7 @@
 .
 .  ie \n[.$] \{\
 .    nr doc-is-compact 0
+.    ds doc-display-file
 .    nr doc-reg-Bd 1
 .    nr doc-display-depth +1
 .
@@ -3062,11 +2819,15 @@
 .    if !\n[cR] \
 .      ne 2v
 .
+.    if !"\*[doc-display-file]"" \
+.      so \*[doc-display-file]
+.
 .    nr doc-is-compact 0
+.    ds doc-display-file
 .  \}
 .  el \{\
 .    tm1 "Usage: .Bd {-literal | -filled | -ragged | -centered | -unfilled}
-.    tm1 "           [-offset [string]] [-compact] (#\n[.c])
+.    tm1 "           [-offset [string]] [-compact] [-file name] (#\n[.c])
 .  \}
 ..
 .
@@ -3075,19 +2836,17 @@
 .\" NS   resolve remaining .Bd arguments
 .\" NS
 .\" NS modifies:
+.\" NS   doc-display-file
 .\" NS   doc-display-indent-stackXXX
 .\" NS   doc-is-compact
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-ddBa
-.\" NS   doc-str-ddBa
 .
 .de doc-do-Bd-args
 .  nr doc-reg-ddBa 1
-.  ds doc-str-ddBa
 .
 .  ie        "\$1"-offset" \{\
-.    ds doc-str-ddBa "\$2
 .    nr doc-reg-ddBa 2
 .
 .    ie        "\$2"left" \
@@ -3127,20 +2886,22 @@
 .  \}
 .  el \{ .ie "\$1"-compact" \
 .    nr doc-is-compact 1
+.  el \{ .ie "\$1"-file" \{\
+.    ie !"\$2"" \{\
+.      ds doc-display-file "\$2
+.      nr doc-reg-ddBa 2
+.    \}
+.    el \
+.      tm mdoc warning: .Bd `-file' keyword requires argument (#\n[.c])
+.  \}
 .  el \
 .      tm mdoc warning: Unknown keyword `\$1' in .Bd request (#\n[.c])
-.  \}
+.  \}\}
 .
 .  if (\n[doc-reg-ddBa] < \n[.$]) \{\
-.    \" have we seen `-offset' or `-compact'?
-.    ie "\*[doc-str-ddBa]"" \{\
-.      shift
-.      doc-do-Bd-args \$@
-.    \}
-.    el \{\
-.      shift 2
-.      doc-do-Bd-args \$@
-.  \}\}
+.    shift \n[doc-reg-ddBa]
+.    doc-do-Bd-args \$@
+.  \}
 ..
 .
 .
@@ -3552,8 +3313,6 @@
 .  nr doc-space-mode-saved \n[doc-space-mode]
 .  nr doc-have-space-saved \n[doc-have-space]
 .  nr doc-have-slot-saved \n[doc-have-slot]
-.  nr doc-curr-font-for-Ef-saved \n[doc-curr-font-for-Ef]
-.  nr doc-curr-size-for-Ef-saved \n[doc-curr-size-for-Ef]
 .  nr doc-keep-type-saved \n[doc-keep-type]
 .  nr doc-display-depth-saved \n[doc-display-depth]
 .  nr doc-is-compact-saved \n[doc-is-compact]
@@ -3564,6 +3323,15 @@
 .    nr doc-display-indent-stack\n[doc-reg-dsgv]-saved \n[doc-display-indent-stack\n[doc-reg-dsgv]]
 .    nr doc-display-ad-stack\n[doc-reg-dsgv]-saved \n[doc-display-ad-stack\n[doc-reg-dsgv]]
 .    nr doc-display-fi-stack\n[doc-reg-dsgv]-saved \n[doc-display-fi-stack\n[doc-reg-dsgv]]
+.    nr doc-reg-dsgv +1
+.  \}
+.
+.  nr doc-fontmode-depth-saved \n[doc-fontmode-depth]
+.
+.  nr doc-reg-dsgv 1
+.  while (\n[doc-reg-dsgv] <= \n[doc-fontmode-depth]) \{\
+.    nr doc-fontmode-font-stack\n[doc-reg-dsgv]-saved \n[doc-fontmode-font-stack\n[doc-reg-dsgv]]
+.    nr doc-fontmode-size-stack\n[doc-reg-dsgv]-saved \n[doc-fontmode-size-stack\n[doc-reg-dsgv]]
 .    nr doc-reg-dsgv +1
 .  \}
 .
@@ -3685,8 +3453,6 @@
 .  nr doc-space-mode \n[doc-space-mode-saved]
 .  nr doc-have-space \n[doc-have-space-saved]
 .  nr doc-have-slot \n[doc-have-slot-saved]
-.  nr doc-curr-font-for-Ef \n[doc-curr-font-for-Ef-saved]
-.  nr doc-curr-size-for-Ef \n[doc-curr-size-for-Ef-saved]
 .  nr doc-keep-type \n[doc-keep-type-saved]
 .  nr doc-display-depth \n[doc-display-depth-saved]
 .  nr doc-is-compact \n[doc-is-compact-saved]
@@ -3700,6 +3466,15 @@
 .    nr doc-reg-drgv +1
 .  \}
 .
+.  nr doc-fontmode-depth \n[doc-fontmode-depth-saved]
+.
+.  nr doc-reg-drgv 1
+.  while (\n[doc-reg-drgv] <= \n[doc-fontmode-depth]) \{\
+.    nr doc-fontmode-font-stack\n[doc-reg-drgv] \n[doc-fontmode-font-stack\n[doc-reg-drgv]]-saved
+.    nr doc-fontmode-size-stack\n[doc-reg-drgv] \n[doc-fontmode-size-stack\n[doc-reg-drgv]]-saved
+.    nr doc-reg-drgv +1
+.  \}
+.
 .  nr doc-list-depth \n[doc-list-depth-saved]
 .
 .  nr doc-reg-drgv 1
@@ -3707,10 +3482,10 @@
 .    ds doc-list-type-stack\n[doc-reg-drgv] "\*[doc-list-type-stack\n[doc-reg-drgv]-saved]
 .    nr doc-list-indent-stack\n[doc-reg-drgv] \n[doc-list-indent-stack\n[doc-reg-drgv]-saved]
 .    nr doc-compact-list-stack\n[doc-reg-drgv] \n[doc-compact-list-stack\n[doc-reg-drgv]-saved]
-.    ds doc-tag-prefix-stack\n[doc-reg-dsgv] "\*[doc-tag-prefix-stack\n[doc-reg-dsgv]-saved]
+.    ds doc-tag-prefix-stack\n[doc-reg-drgv] "\*[doc-tag-prefix-stack\n[doc-reg-drgv]-saved]
 .    ds doc-tag-width-stack\n[doc-reg-drgv] "\*[doc-tag-width-stack\n[doc-reg-drgv]-saved]
 .    nr doc-list-offset-stack\n[doc-reg-drgv] \n[doc-list-offset-stack\n[doc-reg-drgv]-saved]
-.    nr doc-enum-list-count-stack\n[doc-reg-dsgv] \n[doc-enum-list-count-stack\n[doc-reg-dsgv]-saved]
+.    nr doc-enum-list-count-stack\n[doc-reg-drgv] \n[doc-enum-list-count-stack\n[doc-reg-drgv]-saved]
 .    nr doc-reg-drgv +1
 .  \}
 .
@@ -4438,6 +4213,7 @@
 .
 .  if \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
+.    doc-print-prefixes
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      \" first argument must be a string
 .      ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
@@ -4469,38 +4245,17 @@
 .
 .de doc-Xr-usage
 .  tm Usage: .Xr manpage_name [section#] ... (#\n[.c])
+.  doc-reset-args
 ..
 .
 .
 .\" NS Sx user macro
 .\" NS   cross section reference
 .\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-curr-font
-.\" NS   doc-curr-size
-.\" NS   doc-macro-name
-.\" NS
 .\" NS width register `Sx' set in doc-common
 .
-.de Sx
-.  if !\n[doc-arg-limit] \{\
-.    ie \n[.$] \{\
-.      ds doc-macro-name Sx
-.      doc-parse-args \$@
-.    \}
-.    el \
-.      tm Usage: .Sx section_header ... (#\n[.c])
-.  \}
-.
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.ps]
-.    nop \*[doc-Sx-font]\c
-.    doc-print-recursive
-.  \}
-..
+.als Sx doc-generic-macro
+.ds doc-Sx-usage section_header
 .
 .
 .\" NS doc-end-column-list macro
@@ -5028,6 +4783,7 @@
 .  \}
 .
 .  nr doc-arg-ptr +1
+.  doc-print-prefixes
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.ps]
@@ -5191,6 +4947,7 @@
 .    nf
 .
 .    nr doc-arg-ptr +1
+.    doc-print-prefixes
 .    if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      nr doc-func-arg-count 1
 .      nr doc-curr-font \n[.f]

@@ -888,8 +888,6 @@
 .  tm doc-space-mode == \n[doc-space-mode]
 .  tm doc-have-space == \n[doc-have-space]
 .  tm doc-have-slot == \n[doc-have-slot]
-.  tm doc-curr-font-for-Ef == \n[doc-curr-font-for-Ef]
-.  tm doc-curr-size-for-Ef == \n[doc-curr-size-for-Ef]
 .  tm doc-keep-type == `\*[doc-keep-type]'
 .  tm doc-display-depth == \n[doc-display-depth]
 .  tm doc-is-compact == \n[doc-is-compact]
@@ -900,6 +898,15 @@
 .    tm doc-display-indent-stack\n[doc-reg-Rd] == \n[doc-display-indent-stack\n[doc-reg-Rd]]
 .    tm doc-display-ad-stack\n[doc-reg-Rd] == \n[doc-display-ad-stack\n[doc-reg-Rd]]
 .    tm doc-display-fi-stack\n[doc-reg-Rd] == \n[doc-display-fi-stack\n[doc-reg-Rd]]
+.    nr doc-reg-Rd +1
+.  \}
+.
+.  tm doc-fontmode-depth == \n[doc-fontmode-depth]
+.
+.  nr doc-reg-Rd 1
+.  while (\n[doc-reg-Rd] <= \n[doc-fontmode-depth]) \{\
+.    tm doc-fontmode-font-stack\n[doc-reg-Rd] == `\n[doc-fontmode-font-stack\n[doc-reg-Rd]]'
+.    tm doc-fontmode-size-stack\n[doc-reg-Rd] == `\n[doc-fontmode-size-stack\n[doc-reg-Rd]]'
 .    nr doc-reg-Rd +1
 .  \}
 .
