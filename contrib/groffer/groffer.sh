@@ -4,7 +4,7 @@
 
 # Source file position: <groff-source>/contrib/groffer/groffer.sh
 
-# Copyright (C) 2001,2002 Free Software Foundation, Inc.
+# Copyright (C) 2001,2002,2003 Free Software Foundation, Inc.
 # Written by Bernd Warken <bwarken@mayn.de>
 
 # This file is part of groff.
@@ -29,8 +29,8 @@ export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.3';
-_LAST_UPDATE='21 Oct 2002';
+_PROGRAM_VERSION='0.9.4';
+_LAST_UPDATE='22 Jan 2003';
 
 # This program is installed with groff version @VERSION@.
 
@@ -270,6 +270,8 @@ _DEBUG_LM='no';			# disable landmark messages
 # tmp_cat ()
 # tmp_create (<suffix>?)
 # to_tmp (<filename>)
+# trap_clean ()
+# trap_set (<functionname>)
 # usage ()
 # version ()
 # warning (<string>)
@@ -365,9 +367,8 @@ _SQUOTE="'";
 _TAB='	';
 
 # function return values; `0' means ok; other values are error codes
+export _ALL_EXIT;
 export _BAD;
-export _BAD2;
-export _BAD3;
 export _ERROR;
 export _GOOD;
 export _NO;
@@ -376,9 +377,9 @@ export _YES;
 
 _GOOD='0';			# return ok
 _BAD='1';			# return negatively, error code `1'
-_BAD2='2';			# return negatively, error code `2'
-_BAD3='3';			# return negatively, error code `3'
-_ERROR='255';			# for syntax errors; no `-1' in `ash'
+_ERROR='7';			# for syntax errors; no `-1' in `ash'
+
+_ALL_EXIT="${_GOOD} ${_BAD} ${_ERROR}"; # all exit codes (for `trap_set')
 
 _NO="${_BAD}";
 _YES="${_GOOD}";
@@ -789,8 +790,10 @@ landmark "1: debugging functions";
 #
 clean_up()
 {
-  rm -f "${_TMP_DIR}"/*;
-  rmdir "${_TMP_DIR}";
+  if test -d "${_TMP_DIR}"; then
+    rm -f "${_TMP_DIR}"/*;
+    rmdir "${_TMP_DIR}";
+  fi;
 }
 
 
@@ -2263,7 +2266,7 @@ man_do_filespec()
   local _spec;
   local _string;
   local s;
-  if is_empty "${MANPATH}"; then
+  if is_empty "${_MAN_PATH}"; then
     eval "${return_bad}";
   fi;
   if is_empty "$1"; then
@@ -3019,6 +3022,44 @@ to_tmp()
 
 
 ########################################################################
+# trap_clean ()
+#
+# disable trap on all exit codes ($_ALL_EXIT)
+#
+# Arguments: 0
+# Globals:   $_ALL_EXIT
+#
+trap_clean()
+{
+  func_check trap_clean = 0 "$@";
+  local i;
+  for i in ${_ALL_EXIT}; do
+    trap "" "$i" 2>/dev/null || true;
+  done;
+  eval "${return_ok}";
+}
+
+
+########################################################################
+# trap_set (<functionname>)
+#
+# call function on all exit codes ($_ALL_EXIT)
+#
+# Arguments: 1 (name of a shell function)
+# Globals:   $_ALL_EXIT
+#
+trap_set()
+{
+  func_check trap_set = 1 "$@";
+  local i;
+  for i in ${_ALL_EXIT}; do
+    trap "$1" "$i" 2>/dev/null || true;
+  done;
+  eval "${return_ok}";
+}
+
+
+########################################################################
 # usage ()
 #
 # print usage information to stderr
@@ -3034,18 +3075,18 @@ This is free software licensed under the GNU General Public License.
 
 EOF
 
-  echo2 "Usage: ${_PROGRAM_NAME} ${_header} [option]... [filespec]...";
+  echo2 "Usage: ${_PROGRAM_NAME} [option]... [filespec]...";
 
   cat >&2 <<EOF
 
 where "filespec" is one of
-  "filename"       name of a readablefile
+  "filename"       name of a readable file
   "-"              for standard input
   "man:name.n"     man page "name" in section "n"
   "man:name"       man page "name" in first section found
   "name.n"         man page "name" in section "n"
   "name"           man page "name" in first section found
-and some more (see groff(1) for details).
+and some more (see groffer(1) for details).
 
 Display roff files, standard input, and/or Unix manual pages with
 in a X window viewer or in a text pager.
@@ -3259,7 +3300,7 @@ main_init()
 {
   func_check main_init = 0 "$@";
   # call clean_up() on any signal
-  trap clean_up  2>/dev/null || true;
+  trap_set clean_up;
 
   for f in ${_CONFFILES}; do
     if is_file "$f"; then
@@ -4221,7 +4262,7 @@ main_display()
         _ADDOPTS_GROFF="${_ADDOPTS_GROFF} -T${_OPT_DEVICE}";
       fi;
       _groggy="$(tmp_cat | eval grog "${_options}")";
-      trap "" EXIT 2>/dev/null || true;
+      trap_clean;
       # start a new shell program to get another process ID.
       sh -c '
         set -e;
@@ -4236,7 +4277,7 @@ main_display()
           {
             rm -f "${_modefile}";
           }
-          trap clean_up EXIT 2>/dev/null || true;
+          trap clean_up 0 2>/dev/null || true;
           eval "${_groggy}" "${_ADDOPTS_GROFF}";
         ) &'
       ;;
@@ -4296,7 +4337,7 @@ main_display()
           ;;
       esac;
       _groggy="$(tmp_cat | grog -Tps)";
-      trap "" EXIT 2>/dev/null || true;
+      trap_clean;
       # start a new shell program to get another process ID.
       sh -c '
         set -e;
@@ -4316,7 +4357,7 @@ main_display()
           {
             rm -f "${_modefile}";
           }
-          trap clean_up EXIT 2>/dev/null || true;
+          trap clean_up 0 2>/dev/null || true;
           eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "${_modefile}";
         ) &'
       ;;
@@ -4373,7 +4414,7 @@ main_display()
 
 _do_display()
 {
-  trap "" EXIT 2>/dev/null || true;
+  trap_clean;
   # start a new shell program for another process ID and better
   # cleaning-up of the temporary files.
   sh -c '
@@ -4387,10 +4428,12 @@ _do_display()
     (
       clean_up()
       {
-        rm -f "${_TMP_DIR}"/*;
-        rmdir "${_TMP_DIR}";
+        if test -d "${_TMP_DIR}"; then
+          rm -f "${_TMP_DIR}"/*;
+          rmdir "${_TMP_DIR}";
+        fi;
       }
-      trap clean_up EXIT 2>/dev/null || true;
+      trap clean_up 0 2>/dev/null || true;
       eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "${_modefile}";
     ) &'
 }
