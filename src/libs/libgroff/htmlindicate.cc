@@ -21,7 +21,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <string.h>
 
-#include "posix.h"
+#include "nonposix.h"
 #include "stringclass.h"
 
 /*
@@ -40,6 +40,42 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 static int is_in_graphic_start = 0;
 
 /*
+ *  html_begin_suppress - if the 'htmlflip' variable is set to 1 then
+ *                        all text following this line will be suppressed by troff
+ *                        and if the -Thtml2 device is specified a generic IMAGE tag
+ *                        is emitted which is later filled in by the pre-html preprocessor.
+ */
+
+void html_begin_suppress (void)
+{
+  /*
+   *  the pre-html processor looks for <pre-html-image> and replaces it
+   *  with a sensible name
+   */
+  put_string(".if r html2enable .if '\\*(.T'html2' .IMAGE <pre-html-image>\n", stdout);
+#if 1
+  // debugging information
+  put_string(".if r html2enable .if !r htmlflip .tm \"htmlflip was not set?\"\n", stdout);
+#endif
+  put_string(".if r html2enable .if r htmlflip .output 1-\\n[htmlflip]\n", stdout);
+}
+
+/*
+ *  html_end_suppress - if the 'htmlflip' variable is 1 then
+ *                      enable generation of text after this line of troff.
+ *                      If 'htmlflip' and -Thtml2 is set then issue the
+ *                      upper x,y and lower x,y coordinates to stderr via
+ *                      a troff '.tm' command.
+ */
+
+void html_end_suppress (void)
+{
+  put_string(".if r html2enable .if r htmlflip .if !'\\*(.T'html2' .tm grohtml-info:page \\n% \\n[opminx] \\n[opminy] \\n[opmaxx] \\n[opmaxy] \\n[.H] \\n[.V] \\n[.F]\n",
+	       stdout);
+  put_string(".if r html2enable .if r htmlflip .output \\n[htmlflip]\n", stdout);
+}
+
+/*
  *  graphic_start - emit a html graphic start indicator, but only
  *                  if one has not already been issued.
  */
@@ -48,6 +84,7 @@ void graphic_start (void)
 {
   if (! is_in_graphic_start) {
     put_string(".if '\\*(.T'html' \\X(graphic-start(\\c\n", stdout);
+    html_begin_suppress();
     is_in_graphic_start = 1;
   }
 }
@@ -62,6 +99,7 @@ void graphic_end (void)
 {
   if (is_in_graphic_start) {
     put_string(".if '\\*(.T'html' \\X(graphic-end(\\c\n", stdout);
+    html_end_suppress();
     is_in_graphic_start = 0;
   }
 }

@@ -647,13 +647,16 @@ class real_output_file : public output_file {
 #ifndef POPEN_MISSING
   int piped;
 #endif
-  int printing;
+  int printing;        // decision via optional page list
+  int output_on;       // .output 1 or .output 0 requests
   virtual void really_transparent_char(unsigned char) = 0;
   virtual void really_print_line(hunits x, vunits y, node *n,
-				 vunits before, vunits after) = 0;
+				 vunits before, vunits after, hunits width) = 0;
   virtual void really_begin_page(int pageno, vunits page_length) = 0;
   virtual void really_copy_file(hunits x, vunits y, const char *filename);
   virtual void really_put_filename(const char *filename);
+  virtual void really_on();
+  virtual void really_off();
 protected:
   FILE *fp;
 public:
@@ -661,9 +664,11 @@ public:
   ~real_output_file();
   void flush();
   void transparent_char(unsigned char);
-  void print_line(hunits x, vunits y, node *n, vunits before, vunits after);
+  void print_line(hunits x, vunits y, node *n, vunits before, vunits after, hunits width);
   void begin_page(int pageno, vunits page_length);
   void put_filename(const char *filename);
+  void on();
+  void off();
   int is_printing();
   void copy_file(hunits x, vunits y, const char *filename);
 };
@@ -672,7 +677,7 @@ class suppress_output_file : public real_output_file {
 public:
   suppress_output_file();
   void really_transparent_char(unsigned char);
-  void really_print_line(hunits x, vunits y, node *n, vunits, vunits);
+  void really_print_line(hunits x, vunits y, node *n, vunits, vunits, hunits width);
   void really_begin_page(int pageno, vunits page_length);
 };
 
@@ -680,7 +685,7 @@ class ascii_output_file : public real_output_file {
 public:
   ascii_output_file();
   void really_transparent_char(unsigned char);
-  void really_print_line(hunits x, vunits y, node *n, vunits, vunits);
+  void really_print_line(hunits x, vunits y, node *n, vunits, vunits, hunits width);
   void really_begin_page(int pageno, vunits page_length);
   void outc(unsigned char c);
   void outs(const char *s);
@@ -740,10 +745,12 @@ public:
   void end_special();
   void word_marker();
   void really_transparent_char(unsigned char c);
-  void really_print_line(hunits x, vunits y, node *n, vunits before, vunits after);
+  void really_print_line(hunits x, vunits y, node *n, vunits before, vunits after, hunits width);
   void really_begin_page(int pageno, vunits page_length);
   void really_copy_file(hunits x, vunits y, const char *filename);
   void really_put_filename(const char *filename);
+  void really_on();
+  void really_off();
   void draw(char, hvpair *, int, font_size);
   int get_hpos() { return hpos; }
   int get_vpos() { return vpos; }
@@ -801,7 +808,7 @@ inline void troff_output_file::moveto(hunits h, vunits v)
 }
 
 void troff_output_file::really_print_line(hunits x, vunits y, node *n,
-					  vunits before, vunits after)
+					  vunits before, vunits after, hunits width)
 {
   moveto(x, y);
   while (n != 0) {
@@ -1092,6 +1099,16 @@ void troff_output_file::draw(char code, hvpair *point, int npoints,
   put('\n');
 }
 
+void troff_output_file::really_on ()
+{
+  flush_tbuf();
+}
+
+void troff_output_file::really_off ()
+{
+  flush_tbuf();
+}
+
 void troff_output_file::really_put_filename(const char *filename)
 {
   flush_tbuf();
@@ -1213,8 +1230,16 @@ void output_file::put_filename(const char *filename)
 {
 }
 
+void output_file::on()
+{
+}
+
+void output_file::off()
+{
+}
+
 real_output_file::real_output_file()
-: printing(0)
+: printing(0), output_on(1)
 {
 #ifndef POPEN_MISSING
   if (pipe_command) {
@@ -1277,27 +1302,36 @@ int real_output_file::is_printing()
 void real_output_file::begin_page(int pageno, vunits page_length)
 {
   printing = in_output_page_list(pageno);
-  if (printing)
+  if (printing && output_on)
     really_begin_page(pageno, page_length);
 }
 
 void real_output_file::copy_file(hunits x, vunits y, const char *filename)
 {
-  if (printing)
+  if (printing && output_on)
     really_copy_file(x, y, filename);
+  check_output_limits(x.to_units(), y.to_units());
 }
 
 void real_output_file::transparent_char(unsigned char c)
 {
-  if (printing)
+  if (printing && output_on)
     really_transparent_char(c);
 }
 
 void real_output_file::print_line(hunits x, vunits y, node *n,
-			     vunits before, vunits after)
+			     vunits before, vunits after, hunits width)
 {
-  if (printing)
-    really_print_line(x, y, n, before, after);
+  if (printing && output_on)
+    really_print_line(x, y, n, before, after, width);
+
+  if (before.to_units() < after.to_units()) {
+    check_output_limits(x.to_units()                 , y.to_units()+before.to_units());
+    check_output_limits(x.to_units()+width.to_units(), y.to_units()+after.to_units()+n->size());
+  } else {
+    check_output_limits(x.to_units()                 , y.to_units()+after.to_units());
+    check_output_limits(x.to_units()+width.to_units(), y.to_units()+before.to_units()+n->size());
+  }
   delete_node_list(n);
 }
 
@@ -1315,6 +1349,32 @@ void real_output_file::really_put_filename(const char *filename)
 {
 }
 
+void real_output_file::on()
+{
+  really_on();
+  if (output_on == 0) {
+    output_on = 1;
+  }
+  /*
+   *  lastly we reset the output registers 
+   */
+  reset_output_registers();
+}
+
+void real_output_file::off()
+{
+  really_off();
+  output_on = 0;
+}
+
+void real_output_file::really_on()
+{
+}
+
+void real_output_file::really_off()
+{
+}
+
 /* ascii_output_file */
 
 void ascii_output_file::really_transparent_char(unsigned char c)
@@ -1322,7 +1382,7 @@ void ascii_output_file::really_transparent_char(unsigned char c)
   putc(c, fp);
 }
 
-void ascii_output_file::really_print_line(hunits, vunits, node *n, vunits, vunits)
+void ascii_output_file::really_print_line(hunits, vunits, node *n, vunits, vunits, hunits width)
 {
   while (n != 0) {
     n->ascii_print(this);
@@ -1346,7 +1406,7 @@ suppress_output_file::suppress_output_file()
 {
 }
 
-void suppress_output_file::really_print_line(hunits, vunits, node *, vunits, vunits)
+void suppress_output_file::really_print_line(hunits, vunits, node *, vunits, vunits, hunits)
 {
 }
 

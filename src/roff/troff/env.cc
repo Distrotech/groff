@@ -1936,9 +1936,24 @@ void environment::final_break()
     do_break();
 }
 
+void environment::add_html_tag (const char *name)
+{
+  if (is_html2) {
+    // need to emit tag for post-grohtml
+    macro *m = new macro;
+
+    for (const char *p = name; *p; p++)
+      if (!illegal_input_char((unsigned char)*p))
+	m->append(*p);
+    output_pending_lines();
+    output_line(new special_node(*m), 0);
+  }  
+}
+
 void environment::do_break()
 {
   if (curdiv == topdiv && topdiv->before_first_page) {
+    add_html_tag("html-tag:eol");
     topdiv->begin_page();
     return;
   }
@@ -1969,6 +1984,7 @@ void environment::do_break()
 	break;
       }
     }
+    add_html_tag("html-tag:eol");
     node *tem = line;
     line = 0;
     output_line(tem, width_total);

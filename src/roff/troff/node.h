@@ -462,11 +462,13 @@ public:
   virtual void flush() = 0;
   virtual void transparent_char(unsigned char) = 0;
   virtual void print_line(hunits x, vunits y, node *n,
-			  vunits before, vunits after) = 0;
+			  vunits before, vunits after, hunits width) = 0;
   virtual void begin_page(int pageno, vunits page_length) = 0;
   virtual void copy_file(hunits x, vunits y, const char *filename) = 0;
   virtual int is_printing() = 0;
   virtual void put_filename (const char *filename);
+  virtual void on();
+  virtual void off();
 #ifdef COLUMN
   virtual void vjustify(vunits, symbol);
 #endif /* COLUMN */

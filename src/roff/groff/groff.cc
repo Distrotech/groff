@@ -84,7 +84,8 @@ public:
 
 int lflag = 0;
 char *spooler = 0;
-char *driver = 0;
+char *postdriver = 0;
+char *predriver = 0;
 
 possible_command commands[NCOMMANDS];
 
@@ -191,6 +192,10 @@ int main(int argc, char **argv)
       safer_flag = 0;
       break;
     case 'T':
+      if (strcmp(optarg, "html2") == 0) {
+	// force soelim to aid the html preprocessor
+	commands[SOELIM_INDEX].set_name(command_prefix, "soelim");
+      }
       if (strcmp(optarg, "Xps") == 0) {
 	warning("-TXps option is obsolete: use -X -Tps instead");
 	device = "ps";
@@ -251,17 +256,23 @@ int main(int argc, char **argv)
   font::set_unknown_desc_command_handler(handle_unknown_desc_command);
   if (!font::load_desc())
     fatal("invalid device `%1'", device);
-  if (!driver)
+  if (!postdriver)
     fatal("no `postpro' command in DESC file for device `%1'", device);
+
+  if (predriver) {
+    commands[TROFF_INDEX].insert_arg(commands[TROFF_INDEX].get_name());
+    commands[TROFF_INDEX].set_name(predriver);
+  }
+
   const char *real_driver = 0;
   if (Xflag) {
-    real_driver = driver;
-    driver = GXDITVIEW;
+    real_driver = postdriver;
+    postdriver = GXDITVIEW;
     commands[TROFF_INDEX].append_arg("-r" XREG "=", "1");
   }
-  if (driver)
-    commands[POST_INDEX].set_name(driver);
-  int gxditview_flag = driver && strcmp(xbasename(driver), GXDITVIEW) == 0;
+  if (postdriver)
+    commands[POST_INDEX].set_name(postdriver);
+  int gxditview_flag = postdriver && strcmp(xbasename(postdriver), GXDITVIEW) == 0;
   if (gxditview_flag && argc - optind == 1) {
     commands[POST_INDEX].append_arg("-title");
     commands[POST_INDEX].append_arg(argv[optind]);
@@ -372,6 +383,21 @@ void handle_unknown_desc_command(const char *command, const char *arg,
     else
       spooler = strsave(arg);
   }
+  if (strcmp(command, "prepro") == 0) {
+    if (arg == 0)
+      error_with_file_and_line(filename, lineno,
+			       "`prepro' command requires an argument");
+    else {
+      for (const char *p = arg; *p; p++)
+	if (csspace(*p)) {
+	  error_with_file_and_line(filename, lineno,
+				   "invalid `prepro' argument `%1'"
+				   ": program name required", arg);
+	  return;
+	}
+      predriver = strsave(arg);
+    }
+  }
   if (strcmp(command, "postpro") == 0) {
     if (arg == 0)
       error_with_file_and_line(filename, lineno,
@@ -384,7 +410,7 @@ void handle_unknown_desc_command(const char *command, const char *arg,
 				   ": program name required", arg);
 	  return;
 	}
-      driver = strsave(arg);
+      postdriver = strsave(arg);
     }
   }
 }

@@ -101,6 +101,7 @@ static symbol blank_line_macro_name;
 static int compatible_flag = 0;
 int ascii_output_flag = 0;
 int suppress_output_flag = 0;
+int is_html2 = 0;
 
 int tcommand_flag = 0;
 
@@ -4540,6 +4541,14 @@ int ps_get_line(char *buf, FILE *fp, const char* filename)
   return 1;
 }
 
+inline void assign_registers(int llx, int lly, int urx, int ury)
+{
+  llx_reg_contents = llx;
+  lly_reg_contents = lly;
+  urx_reg_contents = urx;
+  ury_reg_contents = ury;
+}
+
 void do_ps_file(FILE *fp, const char* filename)
 {
   bounding_box bb;
@@ -4562,9 +4571,10 @@ void do_ps_file(FILE *fp, const char* filename)
       break;
     if (strncmp(buf + 2, "BoundingBox:", 12) == 0) {
       int res = parse_bounding_box(buf + 14, &bb);
-      if (res == 1)
-	goto assign_registers;
-      else if (res == 2) {
+      if (res == 1) {
+	assign_registers(bb.llx, bb.lly, bb.urx, bb.ury);
+	return;
+      } else if (res == 2) {
 	bb_at_end = 1;
 	break;
       }
@@ -4611,18 +4621,13 @@ void do_ps_file(FILE *fp, const char* filename)
 	  }
 	}
       }
-      if (got_bb)
-	goto assign_registers;
+      if (got_bb) {
+	assign_registers(bb.llx, bb.lly, bb.urx, bb.ury);
+	return;
+      }
     }
   }
   error("%%%%BoundingBox comment not found in `%1'", filename);
-  return;
-
-assign_registers:
-  llx_reg_contents = bb.llx;
-  lly_reg_contents = bb.lly;
-  urx_reg_contents = bb.urx;
-  ury_reg_contents = bb.ury;
 }
 
 void ps_bbox_request()
@@ -5689,6 +5694,7 @@ int main(int argc, char **argv)
     case 'T':
       device = optarg;
       tflag = 1;
+      is_html2 = (strcmp(device, "html2") == 0);
       break;
     case 'C':
       compatible_flag = 1;
@@ -5797,6 +5803,7 @@ int main(int argc, char **argv)
   init_column_requests();
 #endif /* COLUMN */
   init_node_requests();
+  init_output_requests();
   number_reg_dictionary.define(".T", new constant_reg(tflag ? "1" : "0"));
   init_registers();
   init_reg_requests();
@@ -5869,6 +5876,72 @@ static void init_registers()
 			       new constant_reg(ascii_output_flag
 						? "1"
 						: "0"));
+}
+
+/*
+ *  .output request and associated registers
+ */
+
+static int output_reg_minx_contents = -1;
+static int output_reg_miny_contents = -1;
+static int output_reg_maxx_contents = -1;
+static int output_reg_maxy_contents = -1;
+
+void check_output_limits (int x, int y)
+{
+  if ((output_reg_minx_contents == -1) || (x < output_reg_minx_contents)) {
+    output_reg_minx_contents = x;
+  }
+  if (x > output_reg_maxx_contents) {
+    output_reg_maxx_contents = x;
+  }
+  if ((output_reg_miny_contents == -1) || (y < output_reg_miny_contents)) {
+    output_reg_miny_contents = y;
+  }
+  if (y > output_reg_maxy_contents) {
+    output_reg_maxy_contents = y;
+  }
+  // fprintf(stderr, "x = %d     y=%d     miny=%d     maxy=%d\n", x, y, output_reg_miny_contents, output_reg_maxy_contents);
+}
+
+void reset_output_registers()
+{
+  // fprintf(stderr, "reset_output_registers\n");
+  output_reg_minx_contents = -1;
+  output_reg_miny_contents = -1;
+  output_reg_maxx_contents = -1;
+  output_reg_maxy_contents = -1;
+}
+
+void output_request()
+{
+  if (has_arg()) {
+    int n;
+  
+    if (! get_integer(&n)) {
+      error("missing integer argument for output request");
+      n = 1;
+    }
+
+    if (break_flag)
+      curenv->do_break();
+
+    if (!the_output)
+      init_output();
+    if (n == 0) {
+      the_output->off();
+    } else {
+      the_output->on();
+    }
+  } else {
+    error("missing argument for output request");
+  }
+  skip_line();
+}
+
+void init_output_requests()
+{
+  init_request("output", output_request);
 }
 
 void init_input_requests()
@@ -5960,6 +6033,10 @@ void init_input_requests()
   number_reg_dictionary.define("lly", new variable_reg(&lly_reg_contents));
   number_reg_dictionary.define("urx", new variable_reg(&urx_reg_contents));
   number_reg_dictionary.define("ury", new variable_reg(&ury_reg_contents));
+  number_reg_dictionary.define("opminx", new variable_reg(&output_reg_minx_contents));
+  number_reg_dictionary.define("opminy", new variable_reg(&output_reg_miny_contents));
+  number_reg_dictionary.define("opmaxx", new variable_reg(&output_reg_maxx_contents));
+  number_reg_dictionary.define("opmaxy", new variable_reg(&output_reg_maxy_contents));
 }
 
 object_dictionary request_dictionary(501);

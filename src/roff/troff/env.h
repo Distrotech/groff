@@ -270,6 +270,7 @@ public:
   void spread() { spread_flag = 1; }
   void do_break();			// .br
   void final_break();
+  void add_html_tag (const char *name);
   void newline();
   void handle_tab(int is_leader = 0); // do a tab or leader
   void add_node(node *);

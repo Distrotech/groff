@@ -1,3 +1,61 @@
+2000-08-25  Werner LEMBERG  <wl@gnu.org>
+
+	* src/include/posix.h: Remove definition of FILENAME_MAX.
+
+	* src/preproc/html2/pre-html.h, pre-html.cc: Add return type to
+	`sys_fatal' and `stop' function().
+
+	* test-groff: Updated.
+
+2000-08-24  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Added the new troff command .output <arg> to suppress output (while
+	still obeying motion) and also the opminx, opminy, opmaxx, opmaxy
+	registers (for passing the output dimensions to the output device).
+
+	* src/roff/troff/div.cc (top_level_diversion::output): Use `width'
+	parameter.
+	* src/roff/troff/node.h, src/roff/troff/node.cc
+	(troff_output_file::really_print_line,
+	ascii_output_file::really_print_line,
+	supress_output_file::really_print_line): Use `width' parameter.
+	(troff_output_file::really_on, troff_output_file::really_off,
+	output_file::on, output_file::off, real_output_file::on,
+	real_output_file::off, real_output_file::really_on,
+	real_output_file::really_off): New functions.
+	(real_output_file:public output_file): New variable `output_on'.
+	(real_output_file::begin_page, real_output_file::copy_file,
+	real_output_file::transparent_char, real_output_file::print_line):
+	Use it.
+	(real_output_file::print_line): Use check_output_limits.
+	* src/roff/troff/reg.h, src/roff/troff/request.h,
+	src/roff/troff/input.cc (assign_registers): New function to remove
+	two `goto's.
+	(do_ps_file): Use it.
+	(check_output_limits, reset_output_registers, output_request,
+	init_output_requests): New functions.
+	(init_input_requests): Updated.
+
+	Added new grohtml2 device and html2 preprocessor (coding
+	not yet finished) which will eventually replace grohtml.
+
+	* Makefile.in, tmac/Makefile.sub, tmac/eqnrc, tmac/troffrc-end:
+	Updated.
+	* src/include/htmlindicate.h, src/include/htmlindicate
+	(html_begin_suppress, html_end_suppress): New functions.
+	* src/preproc/tbl/main.cc: Use it.
+	* src/roff/groff/groff.cc: Add support for html2 device (which will
+	automatically invoke the html2 preprocessor).
+	* src/roff/troff/input.cc (is_html2): New variable.
+	* src/roff/troff/troff.h, src/roff/troff/env.h,
+	src/roff/troff/env.cc (environment::add_html_tag): New function
+	(uses `is_html2').
+	(environment::do_break): Use it.
+	* font/devhtml2/*: New files.
+	* src/devices/grohtml2: New device.
+	* src/preproc/html2: New preprocessor.
+	* tmac/tmac.html-tags, tmac/tmac.html2: New files.
+
 2000-08-23  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grolbp/lbp.cc: Same workaround for sinix as for AIX.

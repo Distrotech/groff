@@ -66,6 +66,8 @@ public:
 
 extern object_dictionary number_reg_dictionary;
 extern void set_number_reg(symbol nm, units n);
+extern void check_output_limits(int x, int y);
+extern void reset_output_registers (void);
 
 reg *lookup_number_reg(symbol);
 #if 0

@@ -328,7 +328,7 @@ vunits top_level_diversion::distance_to_next_trap()
 }
 
 void top_level_diversion::output(node *nd, int retain_size,
-				 vunits vs, vunits post_vs, hunits /*width*/)
+				 vunits vs, vunits post_vs, hunits width)
 {
   no_space_mode = 0;
   vunits next_trap_pos;
@@ -346,7 +346,7 @@ void top_level_diversion::output(node *nd, int retain_size,
   vertical_position += v.pre;
   vertical_position += v.pre_extra;
   the_output->print_line(page_offset, vertical_position, nd,
-			 v.pre + v.pre_extra, v.post_extra);
+			 v.pre + v.pre_extra, v.post_extra, width);
   vertical_position += v.post_extra;
   if (vertical_position > high_water_mark)
     high_water_mark = vertical_position;

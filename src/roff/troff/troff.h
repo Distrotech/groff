@@ -41,6 +41,7 @@ extern units units_per_inch;
 
 extern int ascii_output_flag;
 extern int suppress_output_flag;
+extern int is_html2;
 
 extern int tcommand_flag;
 extern int vresolution;

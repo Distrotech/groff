@@ -37,5 +37,25 @@ extern void graphic_start (void);
 
 extern void graphic_end (void);
 
+
+/*
+ *  html_begin_suppress - if the 'htmlflip' variable is set to 1 then
+ *                        all text following this line will be suppressed by troff
+ *                        and if the -Thtml2 device is specified a generic IMAGE tag
+ *                        is emitted which is later filled in by the pre-html preprocessor.
+ */
+
+extern void html_begin_suppress (void);
+
+/*
+ *  html_end_suppress - if the 'htmlflip' variable has been set then
+ *                      enable generation of text after this line of troff.
+ *                      If 'htmlflip' and -Thtml2 is set then issue the
+ *                      upper x,y and lower x,y coordinates to stderr via
+ *                      a troff '.tm' command.
+ */
+
+extern void html_end_suppress (void);
+
 #endif
 
