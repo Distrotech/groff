@@ -5507,7 +5507,9 @@ void close_request()
   skip_line();
 }
 
-void write_request()
+// .write and .writec
+
+void do_write_request(int newline)
 {
   symbol stream = get_name(1);
   if (stream.is_null()) {
@@ -5527,9 +5529,20 @@ void write_request()
     c = get_copy(0);
   for (; c != '\n' && c != EOF; c = get_copy(0))
     fputs(asciify(c), fp);
-  fputc('\n', fp);
+  if (newline)
+    fputc('\n', fp);
   fflush(fp);
   tok.next();
+}
+
+void write_request()
+{
+  do_write_request(1);
+}
+
+void write_request_continue()
+{
+  do_write_request(0);
 }
 
 void write_macro_request()
@@ -6759,6 +6772,7 @@ void init_input_requests()
   init_request("opena", opena_request);
   init_request("close", close_request);
   init_request("write", write_request);
+  init_request("writec", write_request_continue);
   init_request("writem", write_macro_request);
   init_request("trf", transparent_file);
 #ifdef WIDOW_CONTROL
