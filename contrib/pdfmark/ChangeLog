@@ -1,3 +1,29 @@
+2005-02-28  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	Provide `pdfroff' shell script, and manpage to document it;
+	runs multiple groff passes, to format PDF documents.
+
+	* pdfroff.sh: New shell script template;
+	* pdfroff.man: New man page to document it.
+
+	Integrate `pdfmark' into normal groff build system;
+	install macro `pdfmark' packages, build and install `pdfroff',
+	and PDF format documentation.
+
+	* Makefile.sub: Rewritten.
+	* pdfmark.tmac: Modified.
+	(pdfhref): New macro operators, `D' and `Z'.
+	(pdf*href-D, pdf*href-Z): New macros: implement them.
+	(pdf*href.mark.resolve, pdf*href.mark.emit, pdf*href.mark.flush):
+	Modified macro algorithm, to eliminate inconsistencies between
+	`grohtml' representations of `opminy' from differing groff versions.
+	(pdf*href.mark, pdf*href.mark.release, pdf*href.mark.close):
+	deleted (redundant macros).
+	(PDFHREF.LEADING): Default value changed (was 2.5p; now -1.0p).
+	Global comment updates.
+
+	* TODO: Updated.
+
 2004-12-10  Werner LEMBERG  <wl@gnu.org>
 
 	* TODO: Updated.

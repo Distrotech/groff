@@ -455,17 +455,23 @@ inspiration has come from discussion on the groff mailing list
 .nr PDFPAGE.Y \\n(.p-\\n(nl+\\n[PDFHREF.VIEW.LEADING]
 ..
 .\" When we create a link "hot-spot" ...
-.\" "PDFHREF.LEADING" sets the distance above the top of the glyphs,
-.\" over which the hot spot will extend, while "PDFHREF.HEIGHT" sets
-.\" the hot spot height, PER LINE of text occupied by the reference.
+.\" "PDFHREF.LEADING" sets the distance above the top of the glyph
+.\" bounding boxes, in each line of link text, over which the link
+.\" hot-spot will extend, while "PDFHREF.HEIGHT" sets the hot-spot
+.\" height, PER LINE of text occupied by the reference.
 .\"
-.\" 2.5 points is a reasonable default value for "PDFHREF.LEADING";
-.\" (it may be changed, if desired). "PDFHREF.HEIGHT" is initially
-.\" set as one vertical spacing unit -- note that it is defined as
-.\" a string, so it will adapt to changes in the vertical spacing;
-.\" (changing it is NOT RECOMMENDED).
+.\" Since most fonts specify some leading space within the bounding
+.\" boxes of their glyphs, a better appearance may be achieved when
+.\" NEGATIVE leading is specified for link hot-spots;  indeed, when
+.\" the default 10pt Times font is used, -1.0 point seems to be a
+.\" reasonable default value for "PDFHREF.LEADING" -- it may be
+.\" changed, if desired.
 .\"
-.nr PDFHREF.LEADING  2.5p
+.\" "PDFHREF.HEIGHT" is initially set as one vertical spacing unit;
+.\" note that it is defined as a string, so it will adapt to changes
+.\" in the vertical spacing.  Changing it is NOT RECOMMENDED.
+.\"
+.nr PDFHREF.LEADING -1.0p
 .ds PDFHREF.HEIGHT   1.0v
 .\"
 .\" PDF readers generally place a rectangular border around link
@@ -529,15 +535,13 @@ inspiration has come from discussion on the groff mailing list
 .      nr pdf:href-X 0
 .   \"
 .   \" Handle the case where subcommand is specified as "-class",
-.   \" setting up appropriate macro aliases for subcommand handlers,
-.   \" and adjusting "pdf:href.ok" to indicate where a reference
-.   \" file list is required
+.   \" setting up appropriate macro aliases for subcommand handlers.
 .   \"
 .      if dpdf*href\\$1       .als pdf*href      pdf*href\\$1
 .      if dpdf*href\\$1.link  .als pdf*href.link pdf*href\\$1.link
 .      if dpdf*href\\$1.file  .als pdf*href.file pdf*href\\$1.file
 .   \"
-.   \" Repeat macro alias and "pdf:href.ok" setup
+.   \" Repeat macro alias setup
 .   \" for the case where the subcommand is specified as "class",
 .   \" (without a leading hyphen)
 .   \"
@@ -590,10 +594,14 @@ inspiration has come from discussion on the groff mailing list
 .\" and for decoding options with arguments, respectively
 .\"
 .de pdf:href.flag
+.\" ----------------------------------------------------------------------
+.\" ----------------------------------------------------------------------
 .nr pdf:href\\$1 1
 .nr pdf:href.argc 1
 ..
 .de pdf:href.option
+.\" ----------------------------------------------------------------------
+.\" ----------------------------------------------------------------------
 .ds pdf:href\\$1 \\$2
 .nr pdf:href.argc 2
 ..
@@ -715,6 +723,8 @@ inspiration has come from discussion on the groff mailing list
 ..
 .\"
 .de pdf*href.set
+.\" ----------------------------------------------------------------------
+.\" ----------------------------------------------------------------------
 .pdf*href.map.init
 .ie \\n(.$ \{\
 .   \"
@@ -758,6 +768,41 @@ inspiration has come from discussion on the groff mailing list
 .\"
 .ie '\\n(.z'' .tm gropdf-info:href \\*[PDFHREF.NAME] \\$*
 .el \!.\\$0 \\$@
+..
+.\"
+.\" Macro "pdf*href-D" is invoked when "pdfhref" is called
+.\" with the "D" reference class specifier; it provides a
+.\" standardised mechanism for interpreting reference data
+.\" exported by the "M" reference class, and may be used
+.\" to directly define external reference data, without the
+.\" use of "M" reference class designators in the source
+.\" document.
+.\"
+.de pdf*href-D
+.ds pdf:href-N
+.\"
+.\" Parse, interpret, and strip any specified options from the
+.\" argument list.  (Note that only options with a declared handler
+.\" will be processed; there is no provision for detecting invalid
+.\" options -- anything which is not recognised is assumed to start
+.\" the "descriptive text" component of the argument list).
+.\"
+.while dpdf:href.opt\\$1 \{\
+.   pdf:href.opt\\$1 \\$@
+.   shift \\n[pdf:href.argc]
+.   \}
+.\"
+.\" If we found "--", to mark the end of the options,
+.\" then we should discard it.
+.\"
+.if '\\$1'--' .shift
+.\"
+.ie '\\*[pdf:href-N]'' \{\
+.   pdf:warn pdfhref defined reference requires a name
+.   \}
+.el \{\
+.   ds pdf:href(\\*[pdf:href-N]).info \\$*
+.   \}
 ..
 .\"
 .\" Macro "pdf*href-F" is invoked when "pdfhref" is called
@@ -848,23 +893,29 @@ inspiration has come from discussion on the groff mailing list
 .ds PDFHREF.TEXT \\*[PDFHREF.TEXT]
 ..
 .de pdf*href.format.file
+.\" ----------------------------------------------------------------------
 .\" Include a file identifier in a formatted reference.
 .\" This is invoked ONLY by "pdf*href.format", and ONLY IF the
 .\" reference data includes an initial file identifier tuple.
+.\" ----------------------------------------------------------------------
 .\"
 .as PDFHREF.TEXT " \\*[PDFHREF.FILEREF]
 ..
 .de pdf*href.format.page
+.\" ----------------------------------------------------------------------
 .\" Include a page number in a formatted reference.
 .\" This is invoked ONLY by "pdf*href.format", and ONLY IF the
 .\" reference data includes an initial page number tuple.
+.\" ----------------------------------------------------------------------
 .\"
 .as PDFHREF.TEXT " \\*[PDFHREF.PAGEREF]
 ..
 .de pdf*href.format.section
+.\" ----------------------------------------------------------------------
 .\" Include a section number in a formatted reference.
 .\" This is invoked ONLY by "pdf*href.format", and ONLY IF the
 .\" reference data includes an initial section number tuple.
+.\" ----------------------------------------------------------------------
 .\"
 .as PDFHREF.TEXT " \\*[PDFHREF.SECTREF]
 ..
@@ -1042,6 +1093,8 @@ inspiration has come from discussion on the groff mailing list
 .nop \&\\*[pdf:href-A]
 ..
 .de pdf*href.map.init
+.\" ----------------------------------------------------------------------
+.\" ----------------------------------------------------------------------
 .\"
 .if dpdf:href.map-1 \{\
 .   \"
@@ -1056,6 +1109,32 @@ inspiration has come from discussion on the groff mailing list
 .   \}
 .als pdf*href.map.init pdf*href.mark.idle
 ..
+.\"
+.\" "pdf*href-Z" is used to add link co-ordinate entries to the
+.\" "pdf:href.map".  Primarily, it is used by the "pdfroff" formatter,
+.\" to pass link co-ordinate data from one "groff" formatting pass to
+.\" the next, and is not generally useful to the end user.
+.\"
+.de pdf*href-Z
+.\" ----------------------------------------------------------------------
+.\" Usage:
+.\"   .pdfhref Z page-index x-displacement y-displacement
+.\" Where:
+.\"   page-index      is the reference mark's page number
+.\"   x-displacement  is its offset from the left edge of the page
+.\"   y-displacement  is its offset from the top edge of the page
+.\" ( both displacement values are expressed in basic groff units, )
+.\" ( and measured perpendicular to their respective page edges.   )
+.\" ----------------------------------------------------------------------
+.\"
+.ie \\n(.$=3 .ds pdf:href.map-\\n+[pdf*href-Z.index] \\$*
+.el .pdf:error pdfhref Z operator expects exactly three arguments
+..
+.\" Initialise the auto-incrementing "pdf*href-Z.index" register,
+.\" to ensure that sub-map numbering starts at 1.
+.\"
+.nr pdf*href-Z.index 0 1
+.\"
 .de pdf*href.map.read
 .\" ----------------------------------------------------------------------
 .\" Usage: (internal use only):
@@ -1092,118 +1171,65 @@ inspiration has come from discussion on the groff mailing list
 .\"
 .rr pdf:null
 ..
-.\"
-.\" The "pdf*href.mark" macro is called internally, by "pdf*href", to
-.\" mark the start and end co-ordinates of the "link text" bounding box.
-.\" These are then used as the basis for computing the bounding box(es)
-.\" for the associated link "hot-spot".
-.\"
-.de pdf*href.mark(unused)
-.\" ----------------------------------------------------------------------
-.\" Usage: (internal use only):
-.\"   .pdf*href.mark co-ordinate name list ...
-.\" ----------------------------------------------------------------------
-.\"
-.\" Reads values from "pdf:href.map" to each named register, in turn
-.\" Reading to "null" discards the corresponding value in "pdf:href.map"
-.\"
-.\" Note that this requires two pass processing in "groff" ...
-.\" In pass 1, "pdf:href.map" is undefined; in pass 2, we source the
-.\" filtered output from pass 1, which defines it, (in terms of a series
-.\" of indexed sub-maps: "pdf:href.map-1" .. "pdf:href.map-N").
-.\"
-.pdf*href.map.init
-.ie !dpdf:href.map \{\
-.   \"
-.   \" In the first pass, we use the "grohtml" hook, to emit bounding
-.   \" box co-ordinates to "stderr"; (note that we use a zero width
-.   \" marker character, to obtain useful output -- we don't care that
-.   \" these may be visible, since this is effectively a "dummy run"
-.   \" through the formatter, and its PostScript output will be
-.   \" discarded).
-.   \"
-.   nop \O1|\h'-\w"|"u'\O2\c
-.   \}
-.el \{\
-.   \"
-.   \" In the second pass, we harvest the bounding box co-ordinates,
-.   \" which we read back from the reprocessed "stderr" output from
-.   \" the first pass, and assign them to specified registers.
-.   \" First however, we will create an internal reference to the
-.   \" "pdf:href.map"; we will read co-ordinates via this internal
-.   \" reference, to ensure the "pdf:href.map" is not deleted from
-.   \" the string namespace, when its data is exhausted.
-.   \"
-.   pdf*href.map.read \\$@
-.   \}
-..
 .de pdf*href.mark.begin
+.\" ----------------------------------------------------------------------
+.\" ----------------------------------------------------------------------
 .pdf*href.map.init
 .ie dpdf:href.map \{\
+.   \"
+.   \" Once we have established a document reference map,
+.   \" then this, and all subsequent calls to "pdf*href.mark.begin",
+.   \" may be redirected to the reference mark resolver, and the
+.   \" "pdf*href.mark.end" macro has nothing further to do.
+.   \"
 .   pdf*href.mark.resolve \\$@
 .   rn pdf*href.mark.resolve pdf*href.mark.begin
-.   als pdf*href.mark.end pdf*href.mark.close
+.   als pdf*href.mark.end pdf*href.mark.idle
 .   \}
 .el \{\
+.   \" Since we don't yet have a document reference map, the
+.   \" reference mark resolver will not work, in this pass of the
+.   \" formatter;  this, and all subsequent calls to "pdf*href.mark.begin",
+.   \" may be redirected to "pdf*href.mark.end", which is responsible
+.   \" for emitting the reference mark data to be incorporated into
+.   \" the reference map in a subsequent formatting pass.
+.   \"
 .   pdf*href.mark.end
 .   als pdf*href.mark.begin pdf*href.mark.end
 .   \}
 ..
 .de pdf*href.mark.resolve
+.\" ----------------------------------------------------------------------
+.\" ----------------------------------------------------------------------
 .ie '\\n(.z'' \{\
 .   ds pdf:href.link \\$1
-.   pdf*href.map.read spg llx ury epg
+.   nr pdf:urx \\n(.o+\\n(.l
+.   pdf*href.map.read spg llx ury epg urx.end lly.end
 .   ie \\n[pdf:spg]=\\n[pdf:epg] \{\
 .      \"
 .      \" This link is entirely contained on a single page ...
 .      \" emit the text, which defines the content of the link region,
 .      \" then make it active.
 .      \"
-.      pdf*href.map.read urx lly
-.      ie \\n[pdf:ury]=\\n[pdf:lly] \{\
+.      pdf*href.mark.emit 1 \\n[pdf:urx.end]
+.      if \\n[pdf:lly]<\\n[pdf:lly.end] \{\
 .         \"
-.         \" This link is entirely contained on a single output line;
-.         \" we may simply emit the "hot-spot" PDFMARK definition, as
-.         \" it has already been established.
-.         \"
-.         pdf*href.mark.emit 1
-.         \}
-.      el \{\
 .         \" This link spans multiple output lines; we must save its
 .         \" original end co-ordinates, then define a new intermediate
 .         \" end point, to create a PDFMARK "hot-spot" extending from
 .         \" the start of the link to the end if its first line.
 .         \"
-.         nr pdf:urx.end \\n[pdf:urx]
-.         nr pdf:ury.end \\n[pdf:lly]-\\n[PDFHREF.LEADING]
-.         nr pdf:urx \\n(.o+\\n(.l
-.         pdf*href.mark.emit 1
-.         \"
-.         \" Now, we adjust the initial "hot-spot" co-ordinates, to
-.         \" mark the beginning of its second line.
-.         \"
-.         nr pdf:llx \\n(.o+\\n[.in]
 .         nr pdf:ury +1v
-.         if !\\n[pdf:ury.end]=\\n[pdf:ury] \{\
-.            \"
-.            \" This link spans MORE than two lines, so we redefine
-.            \" its intermediate end point, in order to create a second
-.            \" "hot-spot", which spans all but the first and last lines
-.            \" of the "link text".
-.            \"
-.            nr pdf:lly \\n[pdf:ury.end]-1v+\\*[PDFHREF.HEIGHT]
+.         nr pdf:llx \\n(.o+\\n[.in]
+.         nr pdf:lly \\n[pdf:lly.end]-\\*[PDFHREF.HEIGHT]
+.         if \\n[pdf:ury]<\\n[pdf:lly] \{\
+.            nr pdf:lly +\\*[PDFHREF.HEIGHT]-1v
 .            pdf*href.mark.emit 2
+.            nr pdf:ury \\n[pdf:lly.end]-\\*[PDFHREF.HEIGHT]
 .            \}
-.         \" Finally, we adjust the "hot-spot" bounds once more, to
-.         \" create a final "hot-spot", which extends from the start of
-.         \" the last line of the "link text" to the originally computed
-.         \" "hot-spot" end point.
-.         \"
-.         nr pdf:urx \\n[pdf:urx.end]
-.         nr pdf:ury \\n[pdf:ury.end]
-.         rr pdf:urx.end pdf:ury.end
-.         pdf*href.mark.emit 0
+.         pdf*href.mark.emit 0 \\n[pdf:urx.end]
 .         \}
+.      pdf*href.mark.flush
 .      \}
 .   el \{\
 .      \" This link is split across a page break, so ...
@@ -1214,15 +1240,7 @@ inspiration has come from discussion on the groff mailing list
 .      \" First step: define the region from the start of the link,
 .      \" to the end of its first line.
 .      \"
-.      nr pdf:urx \\n(.o+\\n(.l
-.      pdf*href.mark.emit 1
-.      \"
-.      \" Save the vertical trim distance, between the current text
-.      \" base line and the top of the actual "hot-spot" region, so we
-.      \" can make a similar adjustment at the top of the next page.
-.      \"
-.      mk pdf:ury.trim
-.      nr pdf:ury.trim \\n[pdf:ury]-\\n[pdf:ury.trim]
+.      pdf*href.mark.emit 1 \\n[pdf:urx]
 .      \"
 .      \" All additional regions MUST align with the left margin.
 .      \"
@@ -1248,7 +1266,6 @@ inspiration has come from discussion on the groff mailing list
 .         \" termination handler, to deactivate it when done.
 .         \"
 .         als pdf*href.mark.hook pdf*href.mark.trap
-.         als pdf*href.mark.end  pdf*href.mark.release
 .         \"
 .         \" Now we set up "pdf:epg" to count the number of page breaks
 .         \" which this link will span, and emit the link text, leaving
@@ -1263,7 +1280,6 @@ inspiration has come from discussion on the groff mailing list
 .         \" we may discard the remaining map data for this link,
 .         \" and issue a diagnostic.
 .         \"
-.         pdf*href.map.read null null
 .         pdf:error pdfhref: link dissociated at page break (trap not initialised)
 .         if dPDFHREF.BROKEN.COLOR \{\
 .            \"
@@ -1290,73 +1306,59 @@ inspiration has come from discussion on the groff mailing list
 .de pdf*href.mark.emit
 .\" ----------------------------------------------------------------------
 .\" Usage:
-.\"   .pdf*href.mark.emit <action>
+.\"   .pdf*href.mark.emit <action> [<end-urx>]
 .\"     <action> == 0 --> normal operation -- link height = 1 line
 .\"     <action> == 1 --> start of link -- add leading above text
 .\"     <action> == 2 --> overtall link -- set intermediate baseline
 .\"     <action> == 3 --> split link -- break at bottom of page
 .\" ----------------------------------------------------------------------
 .\"
-.if \\$1=1 .nr pdf:ury -\\n[PDFHREF.LEADING]
-.if \\$1<2 .nr pdf:lly \\n[pdf:ury]u+\\*[PDFHREF.HEIGHT]
+.if \\$1=1 \{\
+.   \"
+.   \" Initialising a new link region ...
+.   \" Some different versions of "groff" disagree about the vertical
+.   \" displacement of "opminy", as emitted by "\O1|\h'-\w"|"u'\O2\c",
+.   \" relative to the current text baseline.  Therefore, recompute
+.   \" the link displacement, independently of "opminy".
+.   \"
+.   mk pdf:ury.base
+.   while \\n[pdf:ury.base]<\\n[pdf:ury] .nr pdf:ury.base +1v
+.   nr pdf:ury.base -1m+\\n[PDFHREF.LEADING]
+.   \"
+.   \" adjust the end-point vertical displacement by the same offset,
+.   \" and then relocate the link starting point to its new displacement,
+.   \" as established by this base line relative computation.
+.   \" 
+.   nr pdf:lly.end +\\n[pdf:ury.base]-\\n[pdf:ury]+\\*[PDFHREF.HEIGHT]
+.   rnn pdf:ury.base pdf:ury
+.   \}
+.if \\$1<2 \{\
+.   \"
+.   \" Link segment fits on a single line ...
+.   \" Set its height and end-point horizontal displacement accordingly.
+.   \"
+.   nr pdf:lly \\n[pdf:ury]+\\*[PDFHREF.HEIGHT]
+.   if \\n[pdf:lly]>=\\n[pdf:lly.end] .nr pdf:urx \\$2
+.   \}
 .ie \\$1=3 \{\
+.   \"
+.   \" Link segment extends beyond the next page break ...
+.   \" Recompute truncated height, to just fit portion on current page,
+.   \" recursing to emit it, and leaving page trap mechanism to place
+.   \" continuation region(s) on following page(s).
+.   \"
 .   nr pdf:lly (\\n[.t]u-\\n[.V]u)/1v
 .   if \\n[pdf:lly]>0 \{\
 .      nr pdf:lly \\n[pdf:ury]+\\n[pdf:lly]v-1v+\\*[PDFHREF.HEIGHT]
 .      pdf*href.mark.emit 2
 .      \}
 .   \}
-.el .pdfmark \\*[pdf:href.link] /Rect [\\*[pdf:bbox]] /ANN
-..
-.de pdf*href.mark.release
-.als pdf*href.mark.end pdf*href.mark.close
-.als pdf*href.mark.hook pdf*href.mark.idle
-.\"
-.\" Before finalising this link, check if its active region
-.\" extends beyond the first line of text on its last page.
-.\"
-.mk pdf:lly
-.ie \\n[pdf:lly]>\\n[pdf:ury] \{\
-.   \"
-.   \" When more than one line of link text overflows to a
-.   \" new page, then we need to compute an extra active region
-.   \" which will cover all but the last line of link text.
-.   \"
-.   nr pdf:lly +\\n[pdf:ury.trim]+\\n(.V-\\n[pdf:ury]
-.   nr pdf:lly \\n[pdf:lly]/1v*1v-1v+\\*[PDFHREF.HEIGHT]+\\n[pdf:ury]
-.   pdf*href.mark.emit 2
-.   nr pdf:ury \\n[pdf:lly]-\\*[PDFHREF.HEIGHT]+1v
-.   \"
-.   \" Now, retrieve the page co-ordinates
-.   \" for the end of the link text
-.   \"
-.   pdf*href.map.read urx lly
-.   \}
 .el \{\
-.   \" When the link text "overflow" occupies only a portion of
-.   \" the first line on its final page, then we need to compute
-.   \" the page co-ordinates for its upper right corner.
+.   \" Link region size and placement has been fully specified ...
+.   \" Emit it.
 .   \"
-.   pdf*href.map.read urx ury
-.   nr pdf:ury -\\n[PDFHREF.LEADING]
+.   pdfmark \\*[pdf:href.link] /Rect [\\*[pdf:bbox]] /ANN
 .   \}
-.\" Finally, on the last line of the reference,
-.\" define the "hot-spot" region to cover the portion of the
-.\" link, from start of line to the end of the link text.
-.\"
-.pdf*href.mark.emit 0
-.pdf*href.mark.flush
-..
-.de pdf*href.mark.flush
-.rr pdf:spg pdf:llx pdf:lly pdf:urx pdf:ury pdf:ury.trim pdf:epg
-.if dPDFHREF.COLOR .als PDFHREF.COLOUR PDFHREF.COLOR
-..
-.de pdf*href.mark.close
-.ie '\\n(.z'' .pdf*href.mark.flush
-.el \!.pdf*href.mark.end
-..
-.de pdf*href.mark.end
-\O1|\h'-\w"|"u'\O2\c
 ..
 .\"
 .\" When "pdf*href" emits a link for which the "hot-spot" spans a
@@ -1390,8 +1392,60 @@ inspiration has come from discussion on the groff mailing list
 .\" ----------------------------------------------------------------------
 .\"
 .mk pdf:ury
-.nr pdf:ury +\\n[pdf:ury.trim]
-.if \\n-[pdf:epg] .pdf*href.mark.emit 3
+.nr pdf:ury +1v-1m-\\n[PDFHREF.LEADING]
+.ie \\n-[pdf:epg] \{\
+.   \"
+.   \" The link "hot-spot" extends across more than one page break,
+.   \" so, for each page which is completely contained within the
+.   \" extent of the link, simply mark the entire text area on the
+.   \" page as a "hot-spot".
+.   \"
+.   pdf*href.mark.emit 3
+.   \}
+.el \{\
+.   \" The link "hot-spot" ends on the page which immediately follows
+.   \" the current page transition, so we may now finalise this link.
+.   \"
+.   nr pdf:lly \\n[pdf:ury]+\\*[PDFHREF.HEIGHT]
+.   if \\n[pdf:lly.end]>\\n[pdf:lly] \{\
+.      \"
+.      \" The "hot-spot" extends beyond the first line of text,
+.      \" on its final page; compute and emit "hot-spot" region to cover
+.      \" the full with of the text area, including all but the last
+.      \" line of the link text.
+.      \"
+.      while \\n[pdf:lly.end]>\\n[pdf:lly] .nr pdf:lly +1v
+.      nr pdf:lly -1v
+.      pdf*href.mark.emit 2
+.      \"
+.      \" Now, adjust the vertical "hot-spot" mapping reference,
+.      \" to identify the correct position for the the last line of
+.      \" text, over which the "hot-spot" extends.
+.      \"
+.      nr pdf:ury \\n[pdf:lly.end]-\\*[PDFHREF.HEIGHT]
+.      \}
+.   \"
+.   \" We now have exactly one final line of text, over which we must
+.   \" emit a "hot-spot" region;  map it, terminate page trap processing
+.   \" for this "hot-spot", and clean up the "hot-spot" mapping context.
+.   \"
+.   pdf*href.mark.emit 0 \\n[pdf:urx.end]
+.   als pdf*href.mark.hook pdf*href.mark.idle
+.   pdf*href.mark.flush
+.   \}
+..
+.de pdf*href.mark.flush
+.\" ----------------------------------------------------------------------
+.\" ----------------------------------------------------------------------
+.rr pdf:spg pdf:epg
+.rr pdf:llx pdf:lly pdf:urx pdf:ury
+.if dPDFHREF.COLOR .als PDFHREF.COLOUR PDFHREF.COLOR
+.rr pdf:urx.end pdf:lly.end
+..
+.de pdf*href.mark.end
+.\" ----------------------------------------------------------------------
+.\" ----------------------------------------------------------------------
+\O1|\h'-\w"|"u'\O2\c
 ..
 .\" Macro "pdf*href-I" is used for one time initialisation of special
 .\" "pdfhref" features; (currently, only the above page trap hook is
