@@ -3688,50 +3688,63 @@ The current hyphenation language is available in the read-only register
 @cindex manipulating spacing
 @cindex spacing, manipulating
 
-@findex sp
-The @code{sp} request will cause @code{gtroff} to space downwards the
-distance specified as the first argument.  With no argument it will
-advance 1@w{ }line.  A negative argument will cause @code{gtroff} to
-move up the page the specified distance.  If the argument is preceded by
-a @samp{|} @code{gtroff} will move that distance from the top of the
-page.  This request causes a line break.
+@Deffn{Request, sp, [@var{distance}]}
+Space downwards @var{distance}.  With no argument it will advance 1@w{
+}line.  A negative argument will cause @code{gtroff} to move up the page
+the specified distance.  If the argument is preceded by a @samp{|}
+@code{gtroff} will move that distance from the top of the page.  This
+request causes a line break.
+@end_Deffn
 
 @cindex double-spacing
-@findex ls
-@vindex .L
-For double or triple spaced output use @code{ls}.  This request causes
-@code{troff} to output @var{n}-1 blank lines after each line of text,
-where @var{n} is the argument given to the @code{ls} request.  With no
-argument @code{gtroff} will go back to single spacing.  The number
-register @code{.L} contains the current line spacing setting.
+@Deffn{Request, ls, [@var{nnn}]}
+Output @var{nnn}-1 blank lines after each line of text.  With no
+argument @code{gtroff} will go back to single spacing.  For example,
+@w{@samp{.ls 2}} causes double-spaced output.
 
-@findex \x
-@vindex .a
-Sometimes, extra vertical spacing is only needed occasionally, i.e.@: to
+@vindex .L
+The number register @code{.L} contains the current line spacing setting.
+@end_Deffn
+
+@Deffn{Escape, \\x, spacing}
+Sometimes, extra vertical spacing is only needed occasionally, e.g.@: to
 allow space for a tall construct (like an equation).  The @code{\x}
-escape will do this.  The escape is given a numerical argument (like
-@samp{\x'3p'}).  If this number is positive extra vertical space will be
-inserted below the current line.  A negative number will add space
-above.  If this escape is used multiple times on the same line, the
-maximum of the values is used.  The @code{.a} number register contains
-the most recent (nonnegative) extra vertical line space.
+escape will do this.  The escape is given a numerical argument, usually
+enclosed in quotes (like @samp{\x'3p'}).  If this number is positive
+extra vertical space will be inserted below the current line.  A
+negative number will add space above.  If this escape is used multiple
+times on the same line, the maximum of the values is used.
+
+@vindex .a
+The @code{.a} number register contains the most recent (nonnegative)
+extra vertical line space.
 
 @c XXX
 @example
 ... example of inline equation ...
 @end example
+@end_Deffn
 
-@findex ns
-@findex rs
+@findex sp
 @cindex no-space mode
 @cindex mode, no-space
-Spacing (either via @code{sp} or via blank lines) can be disabled with
-the @code{ns} request.  This will enable @dfn{no-space mode}.  This mode
-will end when actual text is output or the @code{rs} request is
-encountered.  No-space mode will also prevent requests to advance to the
-next page unless they are accompanied by a page number (@pxref{Page
-Control}, for more information).
+@cindex blank lines
+@cindex lines, blank
+@Deffn{Request, ns, }
+Enable @dfn{no-space mode}.  In this mode, spacing (either via @code{sp}
+or via blank lines) is disabled.  The @code{bp} request to advance to
+the next page is also disabled, except if it is accompanied by a page
+number (@pxref{Page Control}, for more information).  This mode will end
+when actual text is output or the @code{rs} request is encountered.
 
+This request is useful for macros which want to avoid that subsequent
+macros inadvertently insert some vertical space before the text starts
+(for example, to set up the first paragraph after a section header).
+@end_Deffn
+
+@Deffn{Request, rs, }
+Disable no-space mode.
+@end_Deffn
 
 @node Tabs and Fields, Character Translations, Manipulating Spacing, Programming Tutorial
 @section Tabs and Fields
