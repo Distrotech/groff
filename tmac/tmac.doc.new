@@ -637,7 +637,8 @@
 .    nr doc-reg-dpr \n[doc-arg-ptr]
 .
 .    ie (\n[doc-reg-dpr1] == 2) \
-.      nop \)\*[doc-str-dpr]\&\c
+.      \" the `\%' prevents hyphenation on a dash (`-')
+.      nop \)\%\*[doc-str-dpr]\&\c
 .    el \{\
 .      \" punctuation character
 .      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\c
@@ -1530,8 +1531,8 @@
 .  if !\n[doc-arg-limit] \
 .    ds doc-macro-name Aq
 .
-.  ds doc-quote-left <
-.  ds doc-quote-right >
+.  ds doc-quote-left \[la]
+.  ds doc-quote-right \[ra]
 .
 .  doc-enclose-string \$@
 ..
@@ -1856,7 +1857,7 @@
 .  if !\n[doc-arg-limit] \
 .    ds doc-macro-name Ao
 .
-.  ds doc-quote-left <
+.  ds doc-quote-left \[la]
 .
 .  doc-enclose-open \$@
 ..
@@ -1875,7 +1876,7 @@
 .  if !\n[doc-arg-limit] \
 .    ds doc-macro-name Ac
 .
-.  ds doc-quote-right >
+.  ds doc-quote-right \[ra]
 .
 .  doc-enclose-close \$@
 ..
@@ -4085,6 +4086,7 @@
 .    br
 .  nr doc-diag-list-input-line-count \n[.c]
 .
+.  nh
 .  nop \*[doc-Sy-font]\c
 .  if \n[doc-num-args] \
 .    doc-remaining-args
@@ -6452,7 +6454,7 @@
 .
 .  ie (\n[.$] > 1) \{\
 .    doc-get-arg-type \$2
-.    ie (\[doc-arg-type] < 3) \{\
+.    ie (\n[doc-arg-type] < 3) \{\
 .      Em \)\$2:
 .      ds doc-str-Lk Sy "\$1"
 .      doc-get-width "\$1"
