@@ -1551,7 +1551,7 @@ public:
   hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
   node *add_self(node *, hyphen_list **);
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   int character_type();
   int same(node *);
   const char *type();
@@ -1575,7 +1575,7 @@ public:
   node *add_self(node *, hyphen_list **);
   hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   int same(node *);
   const char *type();
   int force_tprint();
@@ -1601,7 +1601,7 @@ public:
   hyphenation_type get_hyphenation_type();
   int ends_sentence();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   int same(node *);
   const char *type();
   int force_tprint();
@@ -1630,7 +1630,7 @@ public:
   void split(int, node **, node **);
   hyphenation_type get_hyphenation_type();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   int same(node *);
   const char *type();
   int force_tprint();
@@ -2198,7 +2198,7 @@ public:
   ~italic_corrected_node();
   node *copy();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   hunits width();
   node *last_char_node();
   void vertical_extent(vunits *, vunits *);
@@ -2345,7 +2345,7 @@ public:
   void tprint(troff_output_file *);
   void zero_width_tprint(troff_output_file *);
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   hyphenation_type get_hyphenation_type();
   int overlaps_vertically();
   int overlaps_horizontally();
@@ -2462,7 +2462,7 @@ node *vertical_size_node::copy()
 
 node *hmotion_node::copy()
 { 
-  return new hmotion_node(n);
+  return new hmotion_node(n, was_tab);
 }
 
 node *space_char_hmotion_node::copy()
@@ -2980,74 +2980,88 @@ void space_char_hmotion_node::ascii_print(ascii_output_file *ascii)
 
 /* asciify methods */
 
-void node::asciify(macro *m)
+void node::asciify(macro *m, int)
 {
   m->append(this);
 }
       
-void glyph_node::asciify(macro *m)
+void glyph_node::asciify(macro *m, int unformat_only)
 {
-  unsigned char c = ci->get_ascii_code();
-  if (c != 0) {
-    m->append(c);
-    delete this;
-  }
-  else
+  if (unformat_only)
     m->append(this);
+  else {
+    unsigned char c = ci->get_ascii_code();
+    if (c != 0) {
+      m->append(c);
+      delete this;
+    }
+    else
+      m->append(this);
+  }
 }
 
-void kern_pair_node::asciify(macro *m)
+void kern_pair_node::asciify(macro *m, int unformat_only)
 {
-  n1->asciify(m);
-  n2->asciify(m);
+  n1->asciify(m, unformat_only);
+  n2->asciify(m, unformat_only);
   n1 = n2 = 0;
   delete this;
 }
 
-static void asciify_reverse_node_list(macro *m, node *n)
+static void asciify_reverse_node_list(macro *m, node *n, int unformat_only)
 {
   if (n == 0)
     return;
-  asciify_reverse_node_list(m, n->next);
-  n->asciify(m);
+  asciify_reverse_node_list(m, n->next, unformat_only);
+  n->asciify(m, unformat_only);
 }
 
-void dbreak_node::asciify(macro *m)
+void dbreak_node::asciify(macro *m, int unformat_only)
 {
-  asciify_reverse_node_list(m, none);
+  asciify_reverse_node_list(m, none, unformat_only);
   none = 0;
   delete this;
 }
 
-void ligature_node::asciify(macro *m)
+void ligature_node::asciify(macro *m, int unformat_only)
 {
-  n1->asciify(m);
-  n2->asciify(m);
+  n1->asciify(m, unformat_only);
+  n2->asciify(m, unformat_only);
   n1 = n2 = 0;
   delete this;
 }
 
-void break_char_node::asciify(macro *m)
+void break_char_node::asciify(macro *m, int unformat_only)
 {
-  ch->asciify(m);
+  ch->asciify(m, unformat_only);
   ch = 0;
   delete this;
 }
 
-void italic_corrected_node::asciify(macro *m)
+void italic_corrected_node::asciify(macro *m, int unformat_only)
 {
-  n->asciify(m);
+  n->asciify(m, unformat_only);
   n = 0;
   delete this;
 }
 
-void left_italic_corrected_node::asciify(macro *m)
+void left_italic_corrected_node::asciify(macro *m, int unformat_only)
 {
   if (n) {
-    n->asciify(m);
+    n->asciify(m, unformat_only);
     n = 0;
   }
   delete this;
+}
+
+void hmotion_node::asciify(macro *m, int)
+{
+  if (was_tab) {
+    m->append('\t');
+    delete this;
+  }
+  else
+    m->append(this);
 }
 
 space_char_hmotion_node::space_char_hmotion_node(hunits i, node *next)
@@ -3055,31 +3069,31 @@ space_char_hmotion_node::space_char_hmotion_node(hunits i, node *next)
 {
 }
 
-void space_char_hmotion_node::asciify(macro *m)
+void space_char_hmotion_node::asciify(macro *m, int)
 {
   m->append(ESCAPE_SPACE);
   delete this;
 }
 
-void word_space_node::asciify(macro *m)
+void word_space_node::asciify(macro *m, int)
 {
   for (int i = 0; i < num_spaces; i++)
     m->append(' ');
   delete this;
 }
 
-void unbreakable_space_node::asciify(macro *m)
+void unbreakable_space_node::asciify(macro *m, int)
 {
   m->append(ESCAPE_TILDE);
   delete this;
 }
 
-void line_start_node::asciify(macro *)
+void line_start_node::asciify(macro *, int)
 {
   delete this;
 }
 
-void vertical_size_node::asciify(macro *)
+void vertical_size_node::asciify(macro *, int)
 {
   delete this;
 }
@@ -3526,7 +3540,7 @@ public:
   void tprint(troff_output_file *);
   hyphenation_type get_hyphenation_type();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   hyphen_list *get_hyphen_list(hyphen_list *tail);
   node *add_self(node *, hyphen_list **);
   tfont *get_tfont();
@@ -3590,15 +3604,19 @@ hyphenation_type composite_node::get_hyphenation_type()
   return HYPHEN_MIDDLE;
 }
 
-void composite_node::asciify(macro *m)
+void composite_node::asciify(macro *m, int unformat_only)
 {
-  unsigned char c = ci->get_ascii_code();
-  if (c != 0) {
-    m->append(c);
-    delete this;
-  }
-  else
+  if (unformat_only)
     m->append(this);
+  else {
+    unsigned char c = ci->get_ascii_code();
+    if (c != 0) {
+      m->append(c);
+      delete this;
+    }
+    else
+      m->append(this);
+  }
 }
 
 void composite_node::ascii_print(ascii_output_file *ascii)

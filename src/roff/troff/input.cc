@@ -3671,7 +3671,7 @@ void length_macro()
     set_number_reg(ret, len);
 }
 
-void asciify_macro()
+void do_asciify_macro(int unformat_only)
 {
   symbol s = get_name(1);
   if (!s.is_null()) {
@@ -3690,12 +3690,22 @@ void asciify_macro()
 	if (c != 0)
 	  am.append(c);
 	else
-	  nd->asciify(&am);
+	  nd->asciify(&am, unformat_only);
       }
       *m = am;
     }
   }
   skip_line();
+}
+
+void asciify_macro()
+{
+  do_asciify_macro(0);
+}
+
+void unformat_macro()
+{
+  do_asciify_macro(1);
 }
 
 static void interpolate_environment_variable(symbol nm)
@@ -6251,6 +6261,7 @@ void init_input_requests()
   init_request("substring", substring_macro);
   init_request("length", length_macro);
   init_request("asciify", asciify_macro);
+  init_request("unformat", unformat_macro);
   init_request("warn", warn_request);
   init_request("open", open_request);
   init_request("opena", opena_request);

@@ -99,6 +99,8 @@ void do_divert(int append, int boxing)
 	curenv->line = curdiv->saved_line;
 	curenv->width_total = curdiv->saved_width_total;
 	curenv->space_total = curdiv->saved_space_total;
+	curenv->saved_indent = curdiv->saved_saved_indent;
+	curenv->target_text_length = curdiv->saved_target_text_length;
       }
       diversion *temp = curdiv;
       curdiv = curdiv->prev;
@@ -115,6 +117,8 @@ void do_divert(int append, int boxing)
       curdiv->saved_line = curenv->line;
       curdiv->saved_width_total = curenv->width_total;
       curdiv->saved_space_total = curenv->space_total;
+      curdiv->saved_saved_indent = curenv->saved_indent;
+      curdiv->saved_target_text_length = curenv->target_text_length;
       curenv->line = 0;
       curenv->start_line();
     }

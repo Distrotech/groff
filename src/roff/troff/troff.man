@@ -743,11 +743,9 @@ and space characters that were formatted and diverted into
 will be treated like ordinary input characters when
 .I xx
 is reread.
-Useful in conjunction with the
-.B .box
-and
+Useful for diversions in conjunction with the
 .B .writem
-requests.
+request.
 It can be also used for gross hacks; for example, this
 .RS
 .IP
@@ -768,6 +766,9 @@ It can be also used for gross hacks; for example, this
 will set register
 .B n
 to 1.
+Note that glyph information (font, font size, etc.) is not preserved; use
+.B .unformat
+instead.
 .TP
 .B .backtrace
 Print a backtrace of the input stack on stderr.
@@ -1502,6 +1503,17 @@ built-in condition true.
 This undoes the effect of the
 .B nroff
 request.
+.TP
+.BI .unformat\  xx
+This request `unformats' the diversion
+.IR xx ,
+converting all horizontal space back into input characters.
+Glyph information (font, font size, etc.) is retained.
+Useful in conjunction with the
+.B .box
+and
+.B .boxa
+requests.
 .TP
 .BI .vpt\  n
 Enable vertical position traps if

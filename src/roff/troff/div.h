@@ -25,6 +25,8 @@ class diversion {
   node *saved_line;
   hunits saved_width_total;
   int saved_space_total;
+  hunits saved_saved_indent;
+  hunits saved_target_text_length;
 protected:
   symbol nm;
   vunits vertical_position;

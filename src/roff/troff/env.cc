@@ -2598,7 +2598,7 @@ node *environment::make_tab_node(hunits d, node *next)
     leader_node = 0;
   }
   if (!leader_node)
-    return new hmotion_node(d, next);
+    return new hmotion_node(d, 1, next);
   node *n = new hline_node(d, leader_node, next);
   leader_node = 0;
   return n;

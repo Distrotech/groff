@@ -43,8 +43,15 @@ o `box' and `boxa' are two new requests which behave similarly to `di' and
   ending the diversion).
 
 o The `asciify' request has been extended to `unformat' space characters
-  also.  This makes it possible to reformat diversions; for example the
-  following
+  also.
+
+  `\ ' will no longer be unformatted as a space but remains an unpaddable,
+  unbreakable space character.
+
+o The new `unformat' request is similar to `asciify' but only converts
+  (formatted) horizontal space back to its input form, retaining font
+  information in.  This makes it possible to reformat diversions; for
+  example the following
 
     .ll 3i
     .
@@ -53,14 +60,14 @@ o The `asciify' request has been extended to `unformat' space characters
     .box box1
     .ev 1
     .nf
-    b01 b02 b03 b04 b05 b06 b07 b08 b09 b10.
+    \f[B]b01 b02 b03 b04 b05 b06 b07 b08 b09 b10.\f[P]
     .br
     .ev
     .box
     .
     c01 c02 c03 c04 c05 c06 c07 c08 c09 c10.
     .
-    .asciify box1
+    .unformat box1
     .box1
 
   gives
@@ -71,7 +78,7 @@ o The `asciify' request has been extended to `unformat' space characters
     b02 b03 b04 b05  b06  b07  b08
     b09 b10.
 
-  Without the `asciify' request, space characters are converted to word
+  Without the `unformat' request, space characters are converted to word
   space nodes which are no longer stretchable, and the result would be
 
     a01  a02  a03  a04 a05 a06 a07
@@ -79,9 +86,6 @@ o The `asciify' request has been extended to `unformat' space characters
     c05  c06 c07 c08 c09 c10.  b01
     b02 b03 b04 b05 b06 b07 b08
     b09 b10.
-
-  Note that `\ ' will no longer be unformatted as a space but remains an
-  unpaddable, unbreakable space character.
 
 o Two new requests `tm1' and `tmc' have been added to improve writing
   messages to the terminal.  `tm1' is similar to `tm' but allows leading

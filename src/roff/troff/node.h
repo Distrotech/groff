@@ -76,7 +76,7 @@ struct node {
   virtual node *add_self(node *, hyphen_list **);
   virtual hyphen_list *get_hyphen_list(hyphen_list *s = 0);
   virtual void ascii_print(ascii_output_file *);
-  virtual void asciify(macro *);
+  virtual void asciify(macro *, int);
   virtual int discardable();
   virtual void spread_space(int *, hunits *);
   virtual void freeze_space();
@@ -136,7 +136,7 @@ public:
   int same(node *);
   int force_tprint();
   const char *type();
-  void asciify(macro *);
+  void asciify(macro *, int);
 };
 
 class space_node : public node {
@@ -183,7 +183,7 @@ public:
   node *copy();
   void tprint(troff_output_file *);
   int same(node *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   const char *type();
   int merge_space(hunits);
   int force_tprint();
@@ -195,7 +195,7 @@ public:
   unbreakable_space_node(hunits, node * = 0);
   node *copy();
   int same(node *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   const char *type();
   int force_tprint();
   breakpoint *get_breakpoints(hunits width, int nspaces, breakpoint *rest = 0,
@@ -244,7 +244,7 @@ class vertical_size_node : public node {
 public:
   vertical_size_node(vunits i) : n(i) {}
   void set_vertical_size(vertical_size *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   node *copy();
   int same(node *);
   const char *type();
@@ -254,9 +254,13 @@ public:
 class hmotion_node : public node {
 protected:
   hunits n;
+  int was_tab;
 public:
-  hmotion_node(hunits i, node *next = 0) : node(next), n(i) {}
+  hmotion_node(hunits i, node *next = 0) : node(next), n(i), was_tab(0) {}
+  hmotion_node(hunits i, int flag, node *next = 0)
+    : node(next), n(i), was_tab(flag) {}
   node *copy();
+  void asciify(macro *, int);
   void tprint(troff_output_file *);
   hunits width();
   void ascii_print(ascii_output_file *);
@@ -270,7 +274,7 @@ public:
   space_char_hmotion_node(hunits i, node *next = 0);
   node *copy();
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   int same(node *);
   const char *type();
   int force_tprint();
@@ -363,7 +367,7 @@ public:
   ~left_italic_corrected_node();
   void tprint(troff_output_file *);
   void ascii_print(ascii_output_file *);
-  void asciify(macro *);
+  void asciify(macro *, int);
   node *copy();
   int same(node *);
   const char *type();

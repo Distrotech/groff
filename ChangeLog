@@ -1,3 +1,37 @@
+2001-01-23  Werner LEMBERG  <wl@gnu.org>
+
+	troff's `box' and `boxa' requests didn't preserve temporary
+	indentation.
+
+	* src/roff/troff/div.h (diversion): Add `saved_saved_indent' and
+	`saved_target_text_length' members.
+	* src/roff/troff/div.cc (do_divert): Use them.
+
+	Tabs (but not yet leaders and fields) are now handled correctly by
+	`asciify' request.
+
+	* node.h (hmotion_node): Add field `was_tab'.
+	* env.cc (environment::make_tab_node): Set it.
+	* node.cc (hmotion_node::copy, hmotion_node::asciify): Use it.
+
+	Added new request `unformat' which will, contrary to `asciify',
+	preserve font information after unformatting (i.e., only nodes
+	dealing with horizontal space are converted back to input
+	characters).
+
+	* input.cc (asciify_macro): Renamed to ...
+	(do_asciify_macro): this, having a new parameter `unformat_only'.
+	(asciify_macro, unformat_macro): New; using do_asciify_macro.
+	(init_input_requests): Added `unformat'.
+	* node.cc (*_node::asciify), asciify_reverse_node_list: Added
+	parameter to control asciification process.
+	* node.h (*_node::asciify): Ditto.
+	* NEWS, src/roff/troff/troff.man, man/groff.man: Document it.
+
+2001-01-20  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo: Minor improvement of `.in' documentation.
+
 2001-01-18  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/ps.tmac: Remove call of psold.tmac.
@@ -7,6 +41,8 @@
 
 	* font/devutf8/R.proto: Adding `shc' glyph.
 	* font/devutf8/NOTES: Updated.
+
+	* test-groff: Updated.
 
 2001-01-15  Gaius Mulley  <gaius@glam.ac.uk>
 
