@@ -2136,6 +2136,7 @@ int word_space_node::reread(int *bolp)
   if (unformat) {
     for (width_list *w = orig_width; w; w = w->next)
       curenv->space(w->width, w->sentence_width);
+    unformat = 0;
     return 1;
   }
   return 0;
@@ -2150,6 +2151,7 @@ int hmotion_node::reread(int *bolp)
 {
   if (unformat && was_tab) {
     curenv->handle_tab(0);
+    unformat = 0;
     return 1;
   }
   return 0;
@@ -3748,8 +3750,8 @@ void unformat_macro()
 	if (c != 0)
 	  am.append(c);
 	else {
-	  nd->set_unformat_flag();
-	  am.append(nd);
+	  if (nd->set_unformat_flag())
+	    am.append(nd);
 	}
       }
       *m = am;

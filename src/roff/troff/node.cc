@@ -2849,8 +2849,9 @@ vunits vmotion_node::vertical_width()
   return n;
 }
 
-void node::set_unformat_flag()
+int node::set_unformat_flag()
 {
+  return 1;
 }
 
 int node::character_type()
@@ -3733,9 +3734,10 @@ node *word_space_node::copy()
   return new word_space_node(n, set, w_new, unformat);
 }
 
-void word_space_node::set_unformat_flag()
+int word_space_node::set_unformat_flag()
 {
   unformat = 1;
+  return 1;
 }
 
 void word_space_node::tprint(troff_output_file *out)
@@ -4396,6 +4398,11 @@ const char *vertical_size_node::type()
   return "vertical_size_node";
 }
 
+int vertical_size_node::set_unformat_flag()
+{
+  return 0;
+}
+
 int vertical_size_node::force_tprint()
 {
   return 0;
@@ -4411,9 +4418,10 @@ const char *hmotion_node::type()
   return "hmotion_node";
 }
 
-void hmotion_node::set_unformat_flag()
+int hmotion_node::set_unformat_flag()
 {
   unformat = 1;
+  return 1;
 }
 
 int hmotion_node::force_tprint()

@@ -1,3 +1,27 @@
+2001-02-16  Werner LEMBERG  <wl@gnu.org>
+
+	Fixing a bug which prevented proper end-of-sentence recognition
+	between an `unformatted' box and the following text.  As a
+	consequence, vertical line distances are no longer preserved in
+	boxes after a call to `.unformat' -- because boxes aren't
+	line-oriented (contrary to diversions), this doesn't make sense
+	anyway.
+
+	* src/roff/troff/node.cc (*node::set_unformat_flag): Add return
+	value.
+	(vertical_size_node::set_unformat_flag): New method.
+	* src/roff/troff/node.hh: Updated.
+	* src/roff/troff/input.cc (word_space_node::reread,
+	hmotion_node::reread): Reset `unformat' flag after usage.
+	(unformat_macro): Append only if `set_unformat_flag()' returns
+	non-zero.
+	* src/roff/troff/troff.man: Updated.
+
+2001-02-15  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/troff.man, NEWS, man/groff.man: Improved
+	documentation of `asciify' and `unformat' requests.
+
 2001-02-13  Werner LEMBERG  <wl@gnu.org>
 
 	Redesigned the `unformat' request.  It is no longer connected with

@@ -744,7 +744,8 @@ This request `unformats' the diversion
 .I xx
 in such a way that
 .SM ASCII
-and space characters that were formatted and diverted into
+and space characters (and some escape sequences) that were formatted and
+diverted into
 .I xx
 will be treated like ordinary input characters when
 .I xx
@@ -1553,9 +1554,18 @@ request.
 .TP
 .BI .unformat\  xx
 This request `unformats' the diversion
-.IR xx ,
-converting all horizontal space back into input characters.
-Glyph information (font, font size, etc.) is retained.
+.IR xx .
+Contrary to the
+.B .asciify
+request, which tries to convert formatted elements of the diversion back
+to input tokens as much as possible,
+.B .unformat
+will only handle tabs and spaces between words (usually caused by spaces
+or newlines in the input) specially.
+The former are treated as if they were input tokens, and the latter are
+stretchable again.
+Note that the vertical size of lines is not preserved.
+Glyph information (font, font size, space width, etc.) is retained.
 Useful in conjunction with the
 .B .box
 and

@@ -57,7 +57,7 @@ struct node {
 
   virtual ~node();
   virtual node *copy() = 0;
-  virtual void set_unformat_flag();
+  virtual int set_unformat_flag();
   virtual int force_tprint() = 0;
   virtual hunits width();
   virtual hunits subscript_correction();
@@ -197,7 +197,7 @@ public:
   ~word_space_node();
   node *copy();
   int reread(int *);
-  void set_unformat_flag();
+  int set_unformat_flag();
   void tprint(troff_output_file *);
   int same(node *);
   void asciify(macro *);
@@ -267,6 +267,7 @@ public:
   void set_vertical_size(vertical_size *);
   void asciify(macro *);
   node *copy();
+  int set_unformat_flag();
   int same(node *);
   const char *type();
   int force_tprint();
@@ -284,7 +285,7 @@ public:
   : node(next), n(i), was_tab(flag1), unformat(flag2) {}
   node *copy();
   int reread(int *);
-  void set_unformat_flag();
+  int set_unformat_flag();
   void asciify(macro *);
   void tprint(troff_output_file *);
   hunits width();
