@@ -13,7 +13,7 @@ NORMALFILES=\
   tmac.mandoc tmac.andoc tmac.pic tmac.ps tmac.psnew tmac.psold tmac.pspic \
   tmac.psatk tmac.dvi tmac.tty tmac.tty-char tmac.X tmac.Xps tmac.latin1 \
   tmac.lj4 eqnrc troffrc troffrc-end tmac.safer tmac.html tmac.markup \
-  tmac.arkup tmac.a4 tmac.trace tmac.me tmac.mdoc
+  tmac.arkup tmac.a4 tmac.trace tmac.me tmac.mdoc tmac.an.old
 SPECIALFILES=tmac.an tmac.s tmac.man tmac.ms
 STRIPFILES=tmac.e tmac.doc tmac.doc.old
 MDOCFILES=doc-common doc-ditroff doc-nroff doc-syms
@@ -73,7 +73,10 @@ stamp-wrap:
 	if test -n "$(tmac_wrap)"; then \
 	  for m in ""$(tmac_wrap); do \
 	    rm -f $$m-wrap; \
-	    echo .cp 1 >$$m-wrap; \
+	    if test "$$m" = an; then \
+	      echo .do mso tmac.andoc >>$$m-wrap; \
+	    fi; \
+	    echo .cp 1 >>$$m-wrap; \
 	    echo .so $(sys_tmac_prefix)$$m >>$$m-wrap; \
 	  done; \
 	fi

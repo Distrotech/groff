@@ -1,3 +1,25 @@
+2000-08-06  Paul Eggert  <eggert@twinsun.com>
+
+	Add support for new BSD-style man pages (with ".Dd" instead of
+	".TH"), so that "groff -man" understands both styles, even
+	when running "groff -man" on a host whose system man page
+	macros don't support ".Dd".
+
+	* tmac/Makefile.sub (NORMALFILES): Add tmac.an.old.
+	(stamp-wrap): Source tmac.andoc first when wrapping man macros,
+	in case the system man macros don't define Dd or TH.
+
+	* tmac/tmac.an.old: Renamed from tmac/tmac.an.
+	* tmac/tmac.an: New one-line file.
+	* tmac/tmac.andoc (TH): Adjust to the tmac.an.old file renaming.
+
+2000-08-06  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/troff.man: Fixing typos.
+
+Version 1.16.1 released
+=======================
+
 2000-07-31  Werner LEMBERG  <wl@gnu.org>
 
 	Preparing release 1.16.1.
