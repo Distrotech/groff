@@ -23,7 +23,7 @@
 .\"
 .\"
 .\"
-\# Version 1.2-d
+\# Version 1.2-e
 \# -------------
 \#
 \# Antoine de St-Exupéry asserted that elegance in engineering is
@@ -448,6 +448,9 @@
 .       if !F\\n[.fn] \{\
 .          ft 0
 .       \}
+.    \}
+.    if \\n[#COLLATE]=1 \{\
+.       if !r#START \{ .DOC_FAM \\*[$FAMILY] \}
 .    \}
 .END
 \#
@@ -4158,7 +4161,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if '\\$0'EPIGRAPH_FAMILY'                .ds $EPI_FAM \\$1
 .    if '\\$0'FOOTNOTE_FAMILY'                .ds $FN_FAM \\$1
 .    if '\\$0'HDRFTR_CENTER_FAMILY'           .ds $HDRFTR_CENTER_FAM \\$1
-.    if '\\$0'HDRFTR_FAMILY'                  .ds $HDRFTR_FAM \\$1
+.    if '\\$0'HDRFTR_FAMILY' \{\
+.       ds $HDRFTR_FAM        \\$1
+.       ds $HDRFTR_LEFT_FAM   \\$1
+.       ds $HDRFTR_CENTER_FAM \\$1
+.       ds $HDRFTR_RIGHT_FAM  \\$1
+.    \}
 .    if '\\$0'HDRFTR_LEFT_FAMILY'             .ds $HDRFTR_LEFT_FAM \\$1
 .    if '\\$0'HDRFTR_RIGHT_FAMILY'            .ds $HDRFTR_RIGHT_FAM \\$1
 .    if '\\$0'HEAD_FAMILY'                    .ds $HEAD_FAM \\$1
@@ -6331,8 +6339,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC DOC_FAMILY END
 .    br
-.    ds $DOC_FAM \\$1
-.    FAMILY            \\*[$DOC_FAM]
+.    ds $DOC_FAM       \\$1
+.    ds $FAMILY        \\*[$DOC_FAM]
 .    TITLE_FAMILY      \\*[$DOC_FAM]
 .    SUBTITLE_FAMILY   \\*[$DOC_FAM]
 .    AUTHOR_FAMILY     \\*[$DOC_FAM]
@@ -6343,7 +6351,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    BLOCKQUOTE_FAMILY \\*[$DOC_FAM]
 .    EPIGRAPH_FAMILY   \\*[$DOC_FAM]
 .    HDRFTR_FAMILY     \\*[$DOC_FAM]
-.    PAGENUM_FAMILY    \\*[$DOC_FAM]
+.    FOOTNOTE_FAMILY   \\*[$DOC_FAM]
 .END
 \#
 \#
@@ -8423,7 +8431,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       el \{ .ne 3 \}
 .    \}
 .    ie \\n[#START] \{\
-.       if \\n[#DOC_HEADER]=0 \{ . \}
+.       if \\n[#DOC_HEADER]=0 \{ .RLD 1v \}
 .    \}
 .    el \{\
 .       if \\n[#PRINT_STYLE]=1 \{\
@@ -8621,9 +8629,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if \\n[#PRINT_STYLE]=1 \{ .nr #SH_LEAD_ADJUST \\n[#LEAD]/5 \}
 .    if \\n[#PRINT_STYLE]=2 \{ .nr #SH_LEAD_ADJUST \\n[#LEAD]/8 \}
-.    ie \\n[#START] \{ . \}
+.    ie \\n[#START] \{ .RLD 1v \}
 .    el \{\
-.       ie ( \\n[#TRAP_DISTANCE] < (\\n[#DOC_LEAD]u*2u) ) \{\
+.       ie ( \\n[#TRAP_DISTANCE] < \\n[#DOC_LEAD]*2 ) \{\
 .          ie \\n[#COLUMNS] \{ .COL_NEXT \}
 .          el \{ .bp \}
 .       \}
@@ -12660,311 +12668,311 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC FOOTER_CENTER_COLOR END
 .    HDRFTR_CENTER_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTER_COLOUR END
 .    HDRFTR_CENTER_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTER_FAM END
 .    HDRFTR_CENTER_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTER_FAMILY END
 .    HDRFTR_CENTER_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTER_FONT END
 .    HDRFTR_CENTER_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTER_FT END
 .    HDRFTR_CENTER_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTER_PS END
 .    HDRFTR_CENTER_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTER_SIZE END
 .    HDRFTR_CENTER_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_CAPS END
 .    HDRFTR_CENTER_CAPS \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_COLOR END
 .    HDRFTR_CENTRE_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_COLOUR END
 .    HDRFTR_CENTRE_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_FAM END
 .    HDRFTR_CENTER_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_FAMILY END
 .    HDRFTR_CENTER_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_FONT END
 .    HDRFTR_CENTER_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_FT END
 .    HDRFTR_CENTER_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_PS END
 .    HDRFTR_CENTER_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_CENTRE_SIZE END
 .    HDRFTR_CENTER_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_COLOR END
 .    HDRFTR_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_COLOUR END
 .    HDRFTR_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_FAM END
 .    HDRFTR_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_FAMILY END
 .    HDRFTR_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_LEFT_COLOR END
 .    HDRFTR_LEFT_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_LEFT_COLOUR END
 .    HDRFTR_LEFT_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_LEFT_FAM END
 .    HDRFTR_LEFT_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_LEFT_FAMILY END
 .    HDRFTR_LEFT_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_LEFT_FONT END
 .    HDRFTR_LEFT_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_LEFT_FT END
 .    HDRFTR_LEFT_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_LEFT_PS END
 .    HDRFTR_LEFT_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_LEFT_SIZE END
 .    HDRFTR_LEFT_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RIGHT_COLOR END
 .    HDRFTR_RIGHT_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RIGHT_COLOUR END
 .    HDRFTR_RIGHT_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RIGHT_FAM END
 .    HDRFTR_RIGHT_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RIGHT_FAMILY END
 .    HDRFTR_RIGHT_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RIGHT_FONT END
 .    HDRFTR_RIGHT_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RIGHT_FT END
 .    HDRFTR_RIGHT_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RIGHT_PS END
 .    HDRFTR_RIGHT_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RIGHT_SIZE END
 .    HDRFTR_RIGHT_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_RULE_COLOR END
 .    HDRFTR_RULE_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC FOOTER_SIZE END
 .    HDRFTR_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTER_COLOR END
 .    HDRFTR_CENTER_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTER_COLOUR END
 .    HDRFTR_CENTER_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTER_FAM END
 .    HDRFTR_CENTER_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTER_FAMILY END
 .    HDRFTR_CENTER_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTER_FONT END
 .    HDRFTR_CENTER_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTER_FT END
 .    HDRFTR_CENTER_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTER_PS END
 .    HDRFTR_CENTER_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTER_SIZE END
 .    HDRFTR_CENTER_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTRE_COLOR END
 .    HDRFTR_CENTRE_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTRE_COLOUR END
 .    HDRFTR_CENTRE_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTRE_FAM END
 .    HDRFTR_CENTER_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTRE_FAMILY END
 .    HDRFTR_CENTER_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTRE_FONT END
 .    HDRFTR_CENTER_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTRE_FT END
 .    HDRFTR_CENTER_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTRE_PS END
 .    HDRFTR_CENTER_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_CENTRE_SIZE END
 .    HDRFTR_CENTER_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_COLOR END
 .    HDRFTR_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_COLOUR END
 .    HDRFTR_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_FAM END
 .    HDRFTR_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_FAMILY END
 .    HDRFTR_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_LEFT_COLOR END
 .    HDRFTR_LEFT_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_LEFT_COLOUR END
 .    HDRFTR_LEFT_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_LEFT_FAM END
 .    HDRFTR_LEFT_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_LEFT_FAMILY END
 .    HDRFTR_LEFT_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_LEFT_FONT END
 .    HDRFTR_LEFT_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_LEFT_FT END
 .    HDRFTR_LEFT_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_LEFT_PS END
 .    HDRFTR_LEFT_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_LEFT_SIZE END
 .    HDRFTR_LEFT_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RIGHT_COLOR END
 .    HDRFTR_RIGHT_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RIGHT_COLOUR END
 .    HDRFTR_RIGHT_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RIGHT_FAM END
 .    HDRFTR_RIGHT_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RIGHT_FAMILY END
 .    HDRFTR_RIGHT_FAMILY \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RIGHT_FONT END
 .    HDRFTR_RIGHT_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RIGHT_FT END
 .    HDRFTR_RIGHT_FONT \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RIGHT_PS END
 .    HDRFTR_RIGHT_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RIGHT_SIZE END
 .    HDRFTR_RIGHT_SIZE \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_RULE_COLOR END
 .    HDRFTR_RULE_COLOR \\$1
-.END \\$1
+.END
 \#
 .MAC HEADER_SIZE END
 .    HDRFTR_SIZE \\$1
-.END \\$1
+.END
 \#
 \# HEADER and FOOTER aliases for HDRFTR macros.
 \#
