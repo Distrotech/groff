@@ -171,6 +171,7 @@ struct char_info {
   unsigned char code;
 };
 
+const uint16 NO_GLYPH = uint16(-1);
 const uint16 NO_SYMBOL_SET = 0;
 
 struct name_list {
@@ -179,74 +180,6 @@ struct name_list {
   name_list(const char *s, name_list *p) : name(strsave(s)), next(p) { }
   ~name_list() { a_delete name; }
 };
-
-struct symbol_set {
-  uint16 select;
-  uint16 index[256];
-};
-
-#define SYMBOL_SET(n, c) ((n) * 32 + ((c) - 64))
-
-// change this to '1' to compare results with original version
-#if 0
-uint16 text_symbol_sets[] = {
-  SYMBOL_SET(0, 'N'),		// Latin 1
-  SYMBOL_SET(6, 'J'),		// Microsoft Publishing
-  SYMBOL_SET(2, 'N'),		// Latin 2
-  0
-};
-
-uint16 special_symbol_sets[] = {
-  SYMBOL_SET(8, 'M'),
-  SYMBOL_SET(5, 'M'),
-  SYMBOL_SET(15, 'U'),
-  0
-};
-#else
-uint16 text_symbol_sets[] = {
-  SYMBOL_SET(19, 'U'),		// Windows Latin 1 ("ANSI", code page 1252)
-  SYMBOL_SET(7, 'J'),		// Desktop
-  SYMBOL_SET(6, 'J'),		// Microsoft Publishing
-  SYMBOL_SET(9, 'E'),		// Windows Latin 2, Code Page 1250
-  SYMBOL_SET(2, 'N'),		// Latin 2 (subset of 9M,
-				// so we should never get here)
-  SYMBOL_SET(0, 'N'),		// Latin 1 (subset of 19U,
-				// so we should never get here)
-  SYMBOL_SET(8, 'U'),		// HP Roman 8
-  SYMBOL_SET(10, 'J'),		// PS Standard
-  SYMBOL_SET(9, 'U'),		// Windows 3.0 "ANSI"
-
-//SYMBOL_SET(13, 'J'),		// Ventura International (deprecated)
-//SYMBOL_SET(6, 'M'),		// Ventura Math (deprecated)
-//SYMBOL_SET(14, 'J'),		// Ventura US (deprecated)
-  SYMBOL_SET(5, 'T'),		// Code Page 1254
-  SYMBOL_SET(0, 'D'),		// ISO 60, 7-bit Norwegian version 1
-  SYMBOL_SET(5, 'N'),		// ISO 8859-9, Latin 5
-  SYMBOL_SET(1, 'F'),		// ISO 69, 7-bit French
-  SYMBOL_SET(1, 'G'),		// ISO 21, 7-bit German
-  SYMBOL_SET(0, 'I'),		// ISO 15, 7-bit Italian
-  SYMBOL_SET(1, 'U'),		// Legal
-  SYMBOL_SET(12, 'J'),		// MC Text
-  SYMBOL_SET(10, 'U'),		// PC Code Page 437
-  SYMBOL_SET(11, 'U'),		// PC Code Page 437N
-  SYMBOL_SET(17, 'U'),		// PC Code Page 852
-  SYMBOL_SET(12, 'U'),		// PC Code Page 850
-  SYMBOL_SET(9, 'T'),		// PC Code Page 437T
-  SYMBOL_SET(2, 'S'),		// ISO 17, 7-bit Spanish
-  SYMBOL_SET(0, 'S'),		// ISO 11, 7-bit Swedish
-  SYMBOL_SET(1, 'E'),		// ISO 4, 7-bit UK English
-  SYMBOL_SET(0, 'U'),		// ISO 6, 7-bit ASCII English
-  0
-};
-
-uint16 special_symbol_sets[] = {
-  SYMBOL_SET(8, 'M'),		// Math 8
-  SYMBOL_SET(5, 'M'),		// PS Math
-  SYMBOL_SET(15, 'U'),		// Pi font
-  SYMBOL_SET(19, 'M'),		// Symbol font
-  0
-};
-#endif
 
 entry tags[max_tag + 1 - min_tag];
 
@@ -257,7 +190,6 @@ unsigned int charcode_name_table_size = 0;
 name_list **charcode_name_table = NULL;
 
 unsigned int n_symbol_sets;
-symbol_set *symbol_set_table;
 
 static int debug_flag = NO;
 static int special_flag = NO;	// not a special font
@@ -269,7 +201,6 @@ static int quiet_flag = NO;	// don't suppress warnings about symbols not found
 static char *hp_msl_to_ucode_name(int);
 static char *unicode_to_ucode_name(int);
 static int is_uname(char *);
-static int get_printcode(uint32, uint16 *, uint16 *);
 static char *show_symset(unsigned int);
 static void usage(FILE *);
 static void usage();
@@ -302,14 +233,15 @@ entry &tag_info(tag_type t)
   return tags[t - min_tag];
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
   program_name = argv[0];
 
   int opt;
   int res = 1200;		// PCL unit of measure for cursor moves
   int scalesize = 4;		// LaserJet 4 only allows 1/4 point increments
-  int unitwidth = 6350;		
+  int unitwidth = 6350;
   double ppi;			// points per inch
   double upem;			// design units per em
 
@@ -406,8 +338,8 @@ int main(int argc, char **argv)
   return 0;
 }
 
-static
-void usage(FILE *stream)
+static void
+usage(FILE *stream)
 {
   fprintf(stream,
 	  "usage: %s [-s] [-a] [-q] [-i n] tfm_file map_file output_font\n"
@@ -415,8 +347,8 @@ void usage(FILE *stream)
 	  program_name, program_name);
 }
 
-static
-void usage()
+static void
+usage()
 {
   usage(stderr);
   exit(1);
@@ -445,28 +377,32 @@ File::File(const char *s)
   end_ = buf_ + sb.st_size;
 }
 
-void File::skip(int n)
+void
+File::skip(int n)
 {
   if (end_ - ptr_ < n)
     fatal("unexpected end of file");
   ptr_ += n;
 }
 
-void File::seek(uint32 n)
+void
+File::seek(uint32 n)
 {
   if (uint32(end_ - buf_) < n)
     fatal("unexpected end of file");
   ptr_ = buf_ + n;
 }
 
-byte File::get_byte()
+byte
+File::get_byte()
 {
   if (ptr_ >= end_)
     fatal("unexpected end of file");
   return *ptr_++;
 }
 
-uint16 File::get_uint16()
+uint16
+File::get_uint16()
 {
   if (end_ - ptr_ < 2)
     fatal("unexpected end of file");
@@ -474,7 +410,8 @@ uint16 File::get_uint16()
   return n + (*ptr_++ << 8);
 }
 
-uint32 File::get_uint32()
+uint32
+File::get_uint32()
 {
   if (end_ - ptr_ < 4)
     fatal("unexpected end of file");
@@ -484,8 +421,8 @@ uint32 File::get_uint32()
   return n;
 }
 
-static
-void read_tags(File &f)
+static void
+read_tags(File &f)
 {
   if (f.get_byte() != 'I' || f.get_byte() != 'I')
     fatal("not an Intel format TFM file");
@@ -506,8 +443,8 @@ void read_tags(File &f)
   }
 }
 
-static
-int check_type()
+static int
+check_type()
 {
   require_tag(type_tag);
   int tfm_type = tag_info(type_tag).value;
@@ -524,8 +461,8 @@ int check_type()
   return tfm_type;
 }
 
-static
-void check_units(File &f, const int tfm_type, double *ppi, double *upem)
+static void
+check_units(File &f, const int tfm_type, double *ppi, double *upem)
 {
   require_tag(design_units_per_em_tag);
   f.seek(tag_info(design_units_per_em_tag).value);
@@ -543,16 +480,16 @@ void check_units(File &f, const int tfm_type, double *ppi, double *upem)
   *ppi = double(den) / num;
 }
 
-static
-void require_tag(tag_type t)
+static void
+require_tag(tag_type t)
 {
   if (!tag_info(t).present)
     fatal("tag %1 missing", int(t));
 }
 
 // put a human-readable font name in the file
-static
-void output_font_name(File &f)
+static void
+output_font_name(File &f)
 {
   char *p;
 
@@ -580,67 +517,52 @@ void output_font_name(File &f)
   delete font_name;
 }
 
-static
-void output_spacewidth()
+static void
+output_spacewidth()
 {
   require_tag(word_spacing_tag);
   printf("spacewidth %d\n", scale(tag_info(word_spacing_tag).value));
 }
 
-static
-void read_symbol_sets(File &f)
+static void
+read_symbol_sets(File &f)
 {
   uint32 symbol_set_dir_length = tag_info(symbol_set_tag).count;
   n_symbol_sets = symbol_set_dir_length/14;
-  symbol_set_table = new symbol_set[n_symbol_sets];
   unsigned int i;
+
+  for (i = 0; i < nchars; i++)
+    char_table[i].symbol_set = NO_SYMBOL_SET;
+
   for (i = 0; i < n_symbol_sets; i++) {
     f.seek(tag_info(symbol_set_tag).value + i*14);
     (void)f.get_uint32();		// offset to symbol set name
     uint32 off1 = f.get_uint32();	// offset to selection string
     uint32 off2 = f.get_uint32();	// offset to symbol set index array
-    (void)f.get_uint16();		// index array length
-					// (why is this needed?)
+
     f.seek(off1);
+    uint16 kind = 0;			// HP-GL "Kind 1" symbol set value
     unsigned int j;
-    uint16 kind = 0;
     for (j = 0; j < off2 - off1; j++) {
       unsigned char c = f.get_byte();
-      if ('0' <= c && c <= '9')
+      if ('0' <= c && c <= '9')		// value
 	kind = kind*10 + (c - '0');
-      else if ('A' <= c && c <= 'Z')
+      else if ('A' <= c && c <= 'Z')	// terminator
 	kind = kind*32 + (c - 64);
     }
-    symbol_set_table[i].select = kind;
-    for (j = 0; j < 256; j++)
-      symbol_set_table[i].index[j] = f.get_uint16();
-  }
-
-  for (i = 0; i < nchars; i++)
-    char_table[i].symbol_set = NO_SYMBOL_SET;
-
-  uint16 *symbol_set_selectors = special_flag ? special_symbol_sets
-					      : text_symbol_sets;
-  for (i = 0; symbol_set_selectors[i] != 0; i++) {
-    unsigned int j;
-    for (j = 0; j < n_symbol_sets; j++)
-      if (symbol_set_table[j].select == symbol_set_selectors[i])
-	break;
-    if (j < n_symbol_sets) {
-      for (int k = 0; k < 256; k++) {
-	uint16 index = symbol_set_table[j].index[k];
-	if (index != 0xffff
-	    && char_table[index].symbol_set == NO_SYMBOL_SET) {
-	  char_table[index].symbol_set = symbol_set_table[j].select;
-	  char_table[index].code = k;
-	}
+    for (j = 0; j < 256; j++) {
+      uint16 index = f.get_uint16();
+      if (index != NO_GLYPH
+	  && char_table[index].symbol_set == NO_SYMBOL_SET) {
+	char_table[index].symbol_set = kind;
+	char_table[index].code = j;
       }
     }
   }
 }
 
-static
-void read_char_table(File &f)
+static void
+read_char_table(File &f)
 {
   require_tag(charcode_tag);
   nchars = tag_info(charcode_tag).count;
@@ -650,7 +572,7 @@ void read_char_table(File &f)
   uint32 i;
   for (i = 0; i < nchars; i++)
     char_table[i].charcode = f.get_uint16();
-  
+
   require_tag(width_tag);
   f.seek(tag_info(width_tag).value);
   for (i = 0; i < nchars; i++)
@@ -683,8 +605,8 @@ void read_char_table(File &f)
     char_table[i].right_extent = f.get_uint16();
 }
 
-static
-void output_pclweight()
+static void
+output_pclweight()
 {
   require_tag(stroke_weight_tag);
   int stroke_weight = tag_info(stroke_weight_tag).value;
@@ -702,15 +624,15 @@ void output_pclweight()
   printf("pclweight %d\n", pcl_stroke_weight);
 }
 
-static
-void output_pclproportional()
+static void
+output_pclproportional()
 {
   require_tag(spacing_tag);
   printf("pclproportional %d\n", tag_info(spacing_tag).value == 0);
 }
 
-static
-void read_and_output_pcltypeface(File &f)
+static void
+read_and_output_pcltypeface(File &f)
 {
   printf("pcltypeface ");
   require_tag(typeface_tag);
@@ -724,8 +646,8 @@ void read_and_output_pcltypeface(File &f)
   printf("\n");
 }
 
-static
-void output_pclstyle()
+static void
+output_pclstyle()
 {
   unsigned pcl_style = 0;
   // older tfms don't have the posture tag
@@ -744,8 +666,8 @@ void output_pclstyle()
   printf("pclstyle %d\n", pcl_style);
 }
 
-static
-void output_slant()
+static void
+output_slant()
 {
   require_tag(slant_tag);
   int slant = int16(tag_info(slant_tag).value);
@@ -753,8 +675,8 @@ void output_slant()
     printf("slant %f\n", slant/100.0);
 }
 
-static
-void output_ligatures()
+static void
+output_ligatures()
 {
   // don't use ligatures for fixed space font
   require_tag(spacing_tag);
@@ -767,7 +689,7 @@ void output_ligatures()
   static const char *ligature_chars[] = {
     "fi", "fl", "ff", "Fi", "Fl"
     };
-  
+
   unsigned ligature_mask = 0;
   unsigned int i;
   for (i = 0; i < nchars; i++) {
@@ -791,8 +713,8 @@ void output_ligatures()
   }
 }
 
-static
-void read_and_output_kernpairs(File &f)
+static void
+read_and_output_kernpairs(File &f)
 {
   if (tag_info(pair_kern_tag).present) {
     printf("kernpairs\n");
@@ -819,8 +741,8 @@ void read_and_output_kernpairs(File &f)
   }
 }
 
-static 
-void output_charset(const int tfm_type)
+static void
+output_charset(const int tfm_type)
 {
   require_tag(slant_tag);
   double slant_angle = int16(tag_info(slant_tag).value)*PI/18000.0;
@@ -858,7 +780,7 @@ void output_charset(const int tfm_type)
       int subscript_correction = 0;
 
       if (italic_flag) {
-	italic_correction = scale(char_table[i].right_extent 
+	italic_correction = scale(char_table[i].right_extent
 				  - char_table[i].width
 				  + italic_sep);
 	if (italic_correction < 0)
@@ -892,12 +814,12 @@ void output_charset(const int tfm_type)
 
       if (tfm_type == UNICODE) {
 	if (charcode >= 0xE000 && charcode <= 0xF8FF)
-	  printf("\t\t-- HP PUA U+%04X", charcode);
+	  printf("\t-- HP PUA U+%04X", charcode);
 	else
-	  printf("\t\t-- U+%04X", charcode);
+	  printf("\t-- U+%04X", charcode);
       }
       else
-	printf("\t\t-- MSL %4d", charcode);
+	printf("\t-- MSL %4d", charcode);
       printf(" (%3s %3d)\n",
 	     show_symset(char_table[i].symbol_set), char_table[i].code);
 
@@ -936,8 +858,8 @@ void output_charset(const int tfm_type)
 
 #define em_fract(a) (upem >= 0 ? double(a)/upem : 0)
 
-static
-void dump_tags(File &f)
+static void
+dump_tags(File &f)
 {
   double upem = -1.0;
 
@@ -1153,8 +1075,8 @@ void dump_tags(File &f)
 }
 #undef em_fract
 
-static
-void dump_ascii(File &f, tag_type t)
+static void
+dump_ascii(File &f, tag_type t)
 {
   putchar('"');
   if (tag_info(t).count > 4) {
@@ -1168,8 +1090,8 @@ void dump_ascii(File &f, tag_type t)
   putchar('"');
 }
 
-static
-void dump_symbol_sets(File &f)
+static void
+dump_symbol_sets(File &f)
 {
   uint32 symbol_set_dir_length = tag_info(symbol_set_tag).count;
   uint32 n_symbol_sets = symbol_set_dir_length / 14;
@@ -1190,8 +1112,8 @@ void dump_symbol_sets(File &f)
   }
 }
 
-static 
-void dump_symbols(int tfm_type)
+static void
+dump_symbols(int tfm_type)
 {
   printf("Symbols:\n"
 	 "\n"
@@ -1218,15 +1140,13 @@ void dump_symbols(int tfm_type)
       printf(tfm_type == UNICODE ? "%4d (U+%04X)   "
 				 : "%4d (MSL %4d) ",
 	     i, charcode);
-      uint16 symset, code;
       if (char_table[i].symbol_set != NO_SYMBOL_SET)
 	printf("(%3s %3d)",
 	       show_symset(char_table[i].symbol_set), char_table[i].code);
-      else if (get_printcode(i, &symset, &code))
-	printf("[%3s %3d]  (set not searched)", show_symset(symset), code);
       putchar('\n');
     }
   }
+  putchar('\n');
 }
 
 static char *
@@ -1236,33 +1156,6 @@ show_symset(unsigned int symset)
 
    sprintf(symset_str, "%d%c", symset / 32, (symset & 31) + 64);
    return symset_str;
-}
-
-// search symbol sets opposite the state of the 's' option
-static int
-get_printcode(uint32 index, uint16 *symset, uint16 *code)
-{
-  uint16 *symbol_set_selectors = special_flag ? text_symbol_sets
-					      : special_symbol_sets;
-  for (unsigned int i = 0; symbol_set_selectors[i] != 0; i++) {
-    unsigned int j;
-    for (j = 0; j < n_symbol_sets; j++)
-      if (symbol_set_table[j].select == symbol_set_selectors[i])
-	break;
-    if (j < n_symbol_sets) {
-      for (unsigned int k = 0; k < 256; k++) {
-	uint16 ndx = symbol_set_table[j].index[k];
-	if (ndx == index) {
-	  *symset = symbol_set_table[j].select;
-	  *code = k;
-	  return 1;
-	}
-      }
-    }
-  }
-
-  // not found in text or special symbol sets
-  return 0;
 }
 
 static char *
@@ -1334,10 +1227,10 @@ is_uname(char *name)
       return 0;
 
   return 1;
-}   
+}
 
-static
-int read_map(const char *file, const int tfm_type)
+static int
+read_map(const char *file, const int tfm_type)
 {
   errno = 0;
   FILE *fp = fopen(file, "r");
@@ -1432,8 +1325,8 @@ int read_map(const char *file, const int tfm_type)
   return 1;
 }
 
-static
-const char *xbasename(const char *s)
+static const char *
+xbasename(const char *s)
 {
   // DIR_SEPS[] are possible directory separator characters, see
   // nonposix.h.  We want the rightmost separator of all possible
