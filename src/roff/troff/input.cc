@@ -3512,6 +3512,44 @@ void substring_macro()
   skip_line();
 }
 
+void length_macro()
+{
+  symbol ret;
+  ret = get_name(1);
+  if (ret.is_null()) {
+    skip_line();
+    return;
+  }
+  int c;
+  node *n;
+  if (tok.newline())
+    c = '\n';
+  else if (tok.tab())
+    c = '\t';
+  else if (!tok.space()) {
+    error("bad string definition");
+    skip_line();
+    return;
+  }
+  else
+    c = get_copy(&n);
+  while (c == ' ')
+    c = get_copy(&n);
+  if (c == '"')
+    c = get_copy(&n);
+  int len = 0;
+  while (c != '\n' && c != EOF) {
+    ++len;
+    c = get_copy(&n);
+  }
+  tok.next();
+  reg *r = (reg*)number_reg_dictionary.lookup(ret);
+  if (r)
+    r->set_value(len);
+  else
+    set_number_reg(ret, len);
+}
+
 void asciify_macro()
 {
   symbol s = get_name(1);
@@ -5832,6 +5870,7 @@ void init_input_requests()
   init_request("backtrace", backtrace_request);
   init_request("chop", chop_macro);
   init_request("substring", substring_macro);
+  init_request("length", length_macro);
   init_request("asciify", asciify_macro);
   init_request("warn", warn_request);
   init_request("open", open_request);
