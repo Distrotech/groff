@@ -896,10 +896,10 @@ A replacement for @code{ditroff} with many extensions.
 The @code{soelim}, @code{pic}, @code{tbl}, and @code{eqn} preprocessors.
 
 @item
-Postprocessors for character devices, @acronym{PostScript}, @TeX{}
-DVI, and X@w{ }windows.  GNU @code{troff} also eliminated the need for
-a separate @code{nroff} program with a postprocessor which would
-produce @acronym{ASCII} output.
+Postprocessors for character devices, @sc{PostScript}, @TeX{} DVI, and
+X@w{ }windows.  GNU @code{troff} also eliminated the need for a
+separate @code{nroff} program with a postprocessor which would produce
+@acronym{ASCII} output.
 
 @item
 A version of the @file{me} macros and an implementation of the
@@ -1056,11 +1056,11 @@ mathematical pictures (@code{ideal}) and chemical structures
 @cindex output devices
 @cindex devices for output
 
-@code{groff} actually produces device independent code which may be fed
-into a postprocessor to produce output for a particular device.
-Currently, @code{groff} has postprocessors for @acronym{PostScript}
-devices, character terminals, X@w{ }Windows (for previewing), @TeX{} DVI
-format, HP LaserJet@w{ }4 and Canon LBP printers (which use
+@code{groff} actually produces device independent code which may be
+fed into a postprocessor to produce output for a particular device.
+Currently, @code{groff} has postprocessors for @sc{PostScript}
+devices, character terminals, X@w{ }Windows (for previewing), @TeX{}
+DVI format, HP LaserJet@w{ }4 and Canon LBP printers (which use
 @acronym{CAPSL}), and @acronym{HTML}.
 
 
@@ -1244,7 +1244,7 @@ following are the output devices currently available:
 
 @table @code
 @item ps
-For @acronym{PostScript} printers and previewers.
+For @sc{PostScript} printers and previewers.
 
 @item dvi
 For @TeX{} DVI format.
@@ -2481,6 +2481,7 @@ Users of macro packages may skip it if not interested in details.
 * I/O::                         
 * Postprocessor Access::        
 * Miscellaneous::               
+* Groff Internals::             
 * Debugging::                   
 * Implementation Differences::  
 * Summary::                     
@@ -5170,7 +5171,7 @@ Originally, @code{nroff} and @code{troff} were two separate programs,
 the former for tty output, the latter for everything else.  With GNU
 @code{troff}, both programs are merged into one executable, sending
 its output to a device driver (@code{grotty} for tty devices,
-@code{grops} for @acronym{PostScript}, etc.) which interprets the
+@code{grops} for @sc{PostScript}, etc.) which interprets the
 intermediate output of @code{gtroff}.  For @acronym{UNIX} @code{troff}
 it makes sense to talk about @dfn{Nroff mode} and @dfn{Troff mode}
 since the differences are hardcoded.  For GNU @code{troff}, this
@@ -5715,7 +5716,7 @@ the current family.
 
 @cindex postscript fonts
 @cindex fonts, postscript
-Currently, only @acronym{PostScript} fonts are set up to this mechanism.
+Currently, only @sc{PostScript} fonts are set up to this mechanism.
 By default, @code{gtroff} uses the Times family with the four styles
 @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
 
@@ -5767,11 +5768,11 @@ applied to the member of the current family corresponding to that style.
 
 @pindex DESC
 @kindex styles
-The default family can be set with the @option{-f} option (@pxref{Groff
-Options}).  The @code{styles} command in the @file{DESC} file controls
-which font positions (if any) are initially associated with styles
-rather than fonts.  For example, the default setting for
-@acronym{PostScript} fonts
+The default family can be set with the @option{-f} option
+(@pxref{Groff Options}).  The @code{styles} command in the @file{DESC}
+file controls which font positions (if any) are initially associated
+with styles rather than fonts.  For example, the default setting for
+@sc{PostScript} fonts
 
 @Example
 styles R I B BI
@@ -5791,8 +5792,8 @@ is equivalent to
 this can give surprising results if the current font position is
 associated with a style.
 
-In the following example, we want to access the @acronym{PostScript}
-font @code{FooBar} from the font family @code{Foo}:
+In the following example, we want to access the @sc{PostScript} font
+@code{FooBar} from the font family @code{Foo}:
 
 @Example
 .sty \n[.fp] Bar
@@ -5802,8 +5803,8 @@ font @code{FooBar} from the font family @code{Foo}:
 
 @noindent
 The default font position at start-up is@w{ }1; for the
-@acronym{PostScript} device, this is associated with style @samp{R},
-so @code{gtroff} tries to open @code{FooR}.
+@sc{PostScript} device, this is associated with style @samp{R}, so
+@code{gtroff} tries to open @code{FooR}.
 
 A solution to this problem is to use a dummy font like the following:
 
@@ -5948,11 +5949,11 @@ A @dfn{symbol} is simply a named glyph.  Within @code{gtroff}, all
 glyph names of a particular font are defined in its font file.  If the
 user requests a glyph not available in this font, @code{gtroff} looks
 up an ordered list of @dfn{special fonts}.  By default, the
-@acronym{PostScript} output device supports the two special fonts
-@samp{SS} (slanted symbols) and @samp{S} (symbols) (the former is
-looked up before the latter).  Other output devices use different
-names for special fonts.  Fonts mounted with the @code{fonts} keyword
-in the @file{DESC} file are globally available.  To install additional
+@sc{PostScript} output device supports the two special fonts @samp{SS}
+(slanted symbols) and @samp{S} (symbols) (the former is looked up
+before the latter).  Other output devices use different names for
+special fonts.  Fonts mounted with the @code{fonts} keyword in the
+@file{DESC} file are globally available.  To install additional
 special fonts locally (i.e.@: for a particular font), use the
 @code{fspecial} request.
 
@@ -6257,10 +6258,10 @@ word `file'.  This produces a cleaner look (albeit subtle) to the
 printed output.  Usually, ligatures are not available in fonts for tty
 output devices.
 
-Most @acronym{PostScript} fonts support the fi and fl ligatures.  The
-C/A/T typesetter that was the target of AT&T @code{troff} also
-supported `ff', `ffi', and `ffl' ligatures.  Advanced typesetters or
-`expert' fonts may include ligatures for `ft' and `ct', although GNU
+Most @sc{PostScript} fonts support the fi and fl ligatures.  The C/A/T
+typesetter that was the target of AT&T @code{troff} also supported
+`ff', `ffi', and `ffl' ligatures.  Advanced typesetters or `expert'
+fonts may include ligatures for `ft' and `ct', although GNU
 @code{troff} does not support these (yet).
 
 @cindex ligatures enabled register
@@ -6450,7 +6451,7 @@ and vertical spacing.  The @dfn{type size} is approximately the height
 of the tallest character.@footnote{This is usually the parenthesis.
 Note that in most cases the real dimensions of the glyphs in a font
 are @emph{not} related to its type size!  For example, the standard
-@acronym{PostScript} font families `Times Roman', `Helvetica', and
+@sc{PostScript} font families `Times Roman', `Helvetica', and
 `Courier' can't be used together at 10@dmn{pt}; to get acceptable
 output, the size of `Helvetica' has to be reduced by one point, and
 the size of `Courier' must be increased by one point.}  @dfn{Vertical
@@ -6487,10 +6488,15 @@ decrease) the type size (in points).  Specify @var{size} as either an
 absolute point size, or as a relative change from the current size.
 The size@w{ }0, or no argument, goes back to the previous size.
 
-Default unit of @code{ps} is @samp{z}.
+Default unit of @code{size} is @samp{z}.  If @code{size} is zero or
+negative, it is set to 1@dmn{u}.
 
 The read-only number register @code{.s} returns the point size in
-points as a decimal fraction.
+points as a decimal fraction.  This is a string.  To get the point
+size in scaled points, use the @code{.ps} register instead.
+
+@code{.s} is associated with the current environment
+(@pxref{Environments}).
 
 @Example
 snap, snap,
@@ -6546,8 +6552,14 @@ default unit is @samp{p}.
 If @code{vs} is called without an argument, the vertical spacing is
 reset to the previous value before the last call to @code{vs}.
 
+@vindex .V
+@code{gtroff} creates a warning of type @code{range} if @var{space} is
+zero or negative; the vertical spacing is then set to the vertical
+resolution (as given in the @code{.V} register).
+
 The read-only number register @code{.v} contains the current vertical
-spacing.
+spacing; it is associated with the current environment
+(@pxref{Environments}).
 @endDefreq
 
 @c XXX example
@@ -6574,9 +6586,9 @@ spacing.
 @rqindex tkf
 @esindex \H
 @esindex \s
-A @dfn{scaled point} is equal to 1/@var{sizescale} points, where
-@var{sizescale} is specified in the @file{DESC} file (1@w{ }by
-default.)  There is a new scale indicator @samp{z} which has the
+A @dfn{scaled point} is equal to @math{1/@var{sizescale}} points,
+where @var{sizescale} is specified in the @file{DESC} file (1@w{ }by
+default).  There is a new scale indicator @samp{z} which has the
 effect of multiplying by @var{sizescale}.  Requests and escape
 sequences in @code{gtroff} interpret arguments that represent a point
 size as being in units of scaled points, but they evaluate each such
@@ -6608,15 +6620,30 @@ scale indicators.
 @vindex .s
 @Defreg {.ps}
 A read-only number register returning the point size in scaled points.
+
+@code{.ps} is associated with the current environment
+(@pxref{Environments}).
 @endDefreg
 
 @cindex last-requested point size register
+@cindex point size, last-requested
+@vindex .ps
+@vindex .s
 @Defreg {.psr}
 @Defregx {.sr}
 The last-requested point size in scaled points is contained in the
-@code{.psr} read-only number register.  The last requested point size in
-points as a decimal fraction can be found in @code{.sr}.  This is a
+@code{.psr} read-only number register.  The last requested point size
+in points as a decimal fraction can be found in @code{.sr}.  This is a
 string-valued read-only number register.
+
+Note that the requested point sizes are device-independent, whereas
+the values returned by the @code{.ps} and @code{.s} registers are not.
+For example, if a point size of 11@dmn{pt} is requested for a DVI
+device, 10.95@dmn{pt} are actually used (as specified in the
+@file{DESC} file).
+
+Both registers are associated with the current environment
+(@pxref{Environments}).
 @endDefreg
 
 The @code{\s} escape has the following syntax for working with
@@ -6651,32 +6678,38 @@ Increase or or decrease the point size by @var{n} scaled points;
 @cindex strings
 
 @code{gtroff} has string variables, which are entirely for user
-convenience (i.e.@: there are no built-in strings).
+convenience (i.e.@: there are no built-in strings exept @code{.T}, but
+even this is a read-write string variable).
 
-@Defreq {ds, name string}
-@Defescx {\\*, , n, }
-@Defescx {\\*, @lparen{}, nm, }
-@Defescx {\\*, @lbrack{}, name, @rbrack{}}
-Defines and accesses a string variable.
-
-@Example
-.ds UX \s-1UNIX\s0\u\s-3tm\s0\d
-@endExample
-
-@esindex \*
 @cindex string interpolation
 @cindex string expansion
 @cindex interpolation of strings
 @cindex expansion of strings
-Use the @code{\*} escape to @dfn{interpolate}, or expand in-place,
-a previously-defined string variable.
+@Defreq {ds, name [@Var{string}]}
+@Defescx {\\*, , n, }
+@Defescx {\\*, @lparen{}, nm, }
+@Defescx {\\*, @lbrack{}, name, @rbrack{}}
+Define and access a string variable @var{name} (one-character name
+@var{n}, two-character name @var{nm}).
+
+Example:
 
 @Example
+.ds UX \s-1UNIX\s0\u\s-3tm\s0\d
+.
 The \*(UX Operating System
 @endExample
 
-If the string named by the @code{\*} does not exist, the escape is
-replaced by nothing.
+The @code{\*} escape @dfn{interpolates} (expands in-place) a
+previously-defined string variable.  To be more precise, the stored
+string is pushed onto the input stack which is then parsed by
+@code{gtroff}.  Similar to number registers, it is possible to nest
+strings, i.e. a string variables can be called within string
+variables.
+
+If the string named by the @code{\*} does not exist, it is defined as
+empty, and a warning of type @samp{mac} is emitted (see
+@ref{Debugging}, for more details).
 
 @cindex comments, with @code{ds}
 @strong{Caution:} Unlike other requests, the second argument to the
@@ -6700,9 +6733,9 @@ escape adjacent with the end of the string.
 @cindex quotes, trailing
 @cindex leading spaces with @code{ds}
 @cindex spaces with @code{ds}
-To produce leading space the string can be started with a double quote.
-No trailing quote is needed; in fact, any trailing quote is included in
-your string.
+To produce leading space the string can be started with a double
+quote.  No trailing quote is needed; in fact, any trailing quote is
+included in your string.
 
 @Example
 .ds sign "           Yours in a white wine sauce,
@@ -6714,14 +6747,102 @@ your string.
 @cindex newline character in strings, escaping
 @cindex escaping newline characters in strings
 Strings are not limited to a single line of text.  A string can span
-several lines by escaping the newlines with a backslash.  The resulting
-string is stored @emph{without} the newlines.
+several lines by escaping the newlines with a backslash.  The
+resulting string is stored @emph{without} the newlines.
 
 @Example
 .ds foo lots and lots \
 of text are on these \
 next several lines
 @endExample
+
+It is not possible to have real newlines in a string.
+
+@cindex name space of macros and strings
+@cindex macros, shared name space with strings
+@cindex strings, shared name space with macros
+Strings, macros, and diversions (and boxes) share the same name space.
+Internally, even the same mechanism is used to store them.  This has
+some interesting consequences.  For example, it is possible to call a
+macro with string syntax and vice versa.
+
+@Example
+.de xxx
+a funny test.
+..
+This is \*[xxx]
+    @result{} This is a funny test.
+
+.ds yyy a funny test
+This is
+.yyy
+    @result{} This is a funny test.
+@endExample
+
+Diversions and boxes can be also called with string syntax.  It is not
+possible to pass arguments to a macro if called with @code{\*}.
+
+Another consequence is that you can copy one-line diversions or boxes
+to a string.
+
+@Example
+.di xxx
+a \fItest\fR
+.br
+.di
+.ds yyy This is \*[xxx]\c
+\*[yyy].
+    @result{} @r{This is a }@i{test}.
+@endExample
+
+@noindent
+As the previous example shows, it is possible to store formatted
+output in strings.  The @code{\c} escape prevents the insertion of an
+additional blank line in the output.
+
+Copying diversions longer than a single output line produces
+unexpected results.
+
+@Example
+.di xxx
+a funny
+.br
+test
+.br
+.di
+.ds yyy This is \*[xxx]\c
+\*[yyy].
+    @result{} test This is a funny.
+@endExample
+
+Usually, it is not predictable whether a diversion contains one or
+more output lines, so this mechanism should be avoided.  With
+@acronym{UNIX} @code{troff}, this was the only solution to strip off a
+final newline from a diversion.  Another disadvantage is that the
+spaces in the copied string are already formatted, making them
+unstretchable.  This can cause ugly results.
+
+@rqindex chop
+@rqindex unformat
+A clean solution to this problem is available in GNU @code{troff},
+using the requests @code{chop} to remove the final newline of a
+diversion, and @code{unformat} to make the horizontal spaces
+stretchable again.
+
+@Example
+.box xxx
+a funny
+.br
+test
+.br
+.box
+.chop xxx
+.unformat xxx
+This is \*[xxx].
+    @result{} This is a funny test.
+@endExample
+
+@xref{Groff Internals}, for more informations.
 @endDefreq
 
 @cindex appending to strings
@@ -8263,8 +8384,8 @@ is interpreted in copy-in mode.
 @cindex postprocessor access
 @cindex access of postprocessor
 
-There are two escapes which give information directly
-to the postprocessor.  This is particularly useful for embedding
+There are two escapes which give information directly to the
+postprocessor.  This is particularly useful for embedding
 @sc{PostScript} into the final document.
 
 @Defesc {\\X, ', xxx, '}
@@ -8289,7 +8410,7 @@ that do not know about this extension.
 
 @c =====================================================================
 
-@node Miscellaneous, Debugging, Postprocessor Access, gtroff Reference
+@node Miscellaneous, Groff Internals, Postprocessor Access, gtroff Reference
 @section Miscellaneous
 @cindex miscellaneous
 
@@ -8375,7 +8496,78 @@ intelligible to the user.
 
 @c =====================================================================
 
-@node Debugging, Implementation Differences, Miscellaneous, gtroff Reference
+@node Groff Internals, Debugging, Miscellaneous, gtroff Reference
+@section Groff Internals
+
+@cindex input token
+@cindex token, input
+@cindex output node
+@cindex node, output
+@code{gtroff} processes input in three steps.  One or more input
+characters are converted to an @dfn{input token}.  Then, one or more
+input tokens are converted to an @dfn{output node}.  Finally, output
+nodes are converted to the intermediate output language understood by
+all output devices.
+
+For example, the input string @samp{fi\[:u]} is converted in a
+character token @samp{f}, a character token @samp{i}, and a special
+token @samp{:u} (representing u@w{ }umlaut).  Later on, the character
+tokens @samp{f} and @samp{i} are merged to a single output node
+representing the ligature glyph @samp{fi}; the same happens with
+@samp{:u}.  All output glyph nodes are `processed' which means that
+they are invariably associated with a given font, font size, advance
+width, etc.  During the formatting process, @code{gtroff} itself adds
+various nodes to control the data flow.
+
+Macros, diversions, and strings collect elements in two chained lists:
+a list of input tokens which have been passed unprocessed, and a list
+of output nodes.  Consider the following the diversion.
+
+@Example
+.di xxx
+a
+\!b
+c
+.br
+.di
+@endExample
+
+@noindent  
+It contains these elements.
+
+@multitable {@i{vertical size node}} {token list} {element number}
+@item node list               @tab token list @tab element number
+
+@item @i{line start node}     @tab ---        @tab 1
+@item @i{glyph node @code{a}} @tab ---        @tab 2
+@item @i{word space node}     @tab ---        @tab 3
+@item ---                     @tab @code{b}   @tab 4
+@item ---                     @tab @code{\n}  @tab 5
+@item @i{glyph node @code{c}} @tab ---        @tab 6
+@item @i{vertical size node}  @tab ---        @tab 7
+@item @i{vertical size node}  @tab ---        @tab 8
+@item ---                     @tab @code{\n}  @tab 9
+@end multitable
+
+@esindex \v
+@rqindex unformat
+@noindent
+Elements 1, 7, and@w{ }8 are inserted by @code{gtroff}; the latter two
+(which are always present) specify the vertical extent of the last
+line, possibly modified by @code{\v}.  The @code{br} request finishes
+the current partial line, inserting a newline input token which is
+subsequently converted to a space when the diversion is reread.  Note
+that the word space node has a fixed width which isn't stretchable
+anymore.  To convert horizontal space nodes back to input tokens, use
+the @code{unformat} request.
+
+Macros only contain elements in the token list (and the node list is
+empty); diversions and strings can contain elements in both lists.
+
+
+@c =====================================================================
+
+@node Debugging, Implementation Differences, Groff Internals, gtroff Reference
 @section Debugging
 @cindex debugging
 
