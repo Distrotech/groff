@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 # -*- Perl -*-
-# Copyright (C) 1989-2000, 2001, 2002 Free Software Foundation, Inc.
+# Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
 # This file is part of groff.
@@ -23,7 +23,7 @@ $prog = $0;
 $prog =~ s@.*/@@;
 
 do 'getopts.pl';
-do Getopts('ve:sd:i:a:n');
+do Getopts('a:d:e:i:mnsv');
 
 if ($opt_v) {
     print "GNU afmtodit (groff) version @VERSION@\n";
@@ -31,7 +31,8 @@ if ($opt_v) {
 }
 
 if ($#ARGV != 2) {
-    die "Usage: $prog [-nsv] [-d DESC] [-e encoding] [-i n] [-a angle] afmfile mapfile font\n";
+    die "usage: $prog [-mnsv] [-a angle] [-d DESC] [-e encoding]\n" .
+	"       [-i n] afmfile mapfile font\n";
 }
 
 $afm = $ARGV[0];
@@ -284,6 +285,9 @@ for ($i = 0; $i < 256; $i++) {
 	    $subscript_correction = $italic_correction if
 		$subscript_correction > $italic_correction;
 	    $left_math_fit = $left_side_bearing{$ch} + $opt_i;
+	    if (defined $opt_m) {
+		$left_math_fit = 0 if $left_math_fit < 0;
+	    }
 	}
 	if (defined $italic_correction{$ch}) {
 	    $italic_correction = $italic_correction{$ch};
