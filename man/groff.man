@@ -542,7 +542,14 @@ Groff provides a printable representation with the
 escape sequence.
 .TP
 .character \(dq
-The double quote is used to enclose arguments in requests and macros.
+The double quote is used to enclose arguments in requests and macros.  In
+the
+.request .ds
+and
+.request .as
+requests, a leading double quote in the argument will be stripped off,
+making everything else afterwards the string to be defined (enabling leading
+whitespace).
 The escaped double quote
 .esc \(dq
 introduces a comment.
@@ -1607,6 +1614,20 @@ Transparently output the contents of file
 Print
 .argument anything
 on terminal (UNIX standard message output).
+.
+.REQ .tm1 anything
+Print
+.argument anything
+on terminal (UNIX standard message output), allowing leading whitespace if
+.argument anything
+starts with
+.character \(dq
+(which will be stripped off).
+.
+.REQ .tmc anything
+Similar to
+.request .tm1
+without emitting a final newline.
 .
 .REQ .tr abcd....
 Translate

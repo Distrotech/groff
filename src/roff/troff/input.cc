@@ -4760,20 +4760,43 @@ const char *input_char_description(int c)
   return buf;
 }
 
-// .tm
+// .tm, .tm1, and .tmc
 
-void terminal()
+void do_terminal(int newline, int string_like)
 {
   if (!tok.newline() && !tok.eof()) {
     int c;
-    while ((c = get_copy(NULL)) == ' ' || c == '\t')
-      ;
+    for (;;) {
+      c = get_copy(NULL);
+      if (string_like && c == '"') {
+	c = get_copy(NULL);
+	break;
+      }
+      if (c != ' ' && c != '\t')
+	break;
+    }
     for (; c != '\n' && c != EOF; c = get_copy(NULL))
       fputs(asciify(c), stderr);
   }
-  fputc('\n', stderr);
+  if (newline)
+    fputc('\n', stderr);
   fflush(stderr);
   tok.next();
+}
+
+void terminal()
+{
+  do_terminal(1, 0);
+}
+
+void terminal1()
+{
+  do_terminal(1, 1);
+}
+
+void terminal_continue()
+{
+  do_terminal(0, 1);
 }
 
 dictionary stream_dictionary(20);
@@ -5991,6 +6014,8 @@ void init_input_requests()
   init_request("ec", set_escape_char);
   init_request("pc", set_page_character);
   init_request("tm", terminal);
+  init_request("tm1", terminal1);
+  init_request("tmc", terminal_continue);
   init_request("ex", exit_request);
   init_request("em", end_macro);
   init_request("blm", blank_line_macro);
