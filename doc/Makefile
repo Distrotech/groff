@@ -1,4 +1,5 @@
-# Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+# Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+#   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
 # This file is part of groff.
@@ -49,7 +50,7 @@ revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' ../REVISION`
 
 all: $(DOCS)
 
-.SUFFIXES: .tr .me .ms .ps .dit .html .ascii .texinfo .dvi
+.SUFFIXES: .tr .me .ms .ps .dit .html .ascii .texinfo .dvi .pdf
 
 .dit.ps:
 	$(GROPS) $< >$@
@@ -90,6 +91,12 @@ all: $(DOCS)
 .texinfo.dvi:
 	texi2dvi -e $<
 
+.texinfo.pdf:
+	texi2dvi -e --pdf $<
+
+.texinfo.html:
+	makeinfo --html --no-split $<
+
 groff: groff.texinfo
 	makeinfo groff.texinfo
 
@@ -102,7 +109,7 @@ install:
 
 clean:
 	-rm -f *.ps *.html *.ascii *.png *.gif *.dit core
-	-rm -f *.aux *.dvi *.log *.toc texput.log
+	-rm -f *.aux *.dvi *.pdf *.log *.toc texput.log
 	-rm -f *.cp *.cps *.cv *.cn *.es *.ess *.fn *.fns *.ky *.kys \
                *.ma *.mas *.op *.ops *.pg *.pgs *.rq *.rqs *.st *.sts \
                *.tp *.tps *.tr *.vr *.vrs
