@@ -3909,7 +3909,7 @@ void do_define_character(char_mode mode, const char *font_name)
       m->append((unsigned char)c);
     c = get_copy(&n);
   }
-  m = ci->set_macro(m, mode);
+  m = ci->setx_macro(m, mode);
   if (m)
     delete m;
   tok.next();
@@ -7727,7 +7727,14 @@ void charinfo::set_asciify_code(unsigned char c)
   asciify_code = c;
 }
 
-macro *charinfo::set_macro(macro *m, char_mode cm)
+macro *charinfo::set_macro(macro *m)
+{
+  macro *tem = mac;
+  mac = m;
+  return tem;
+}
+
+macro *charinfo::setx_macro(macro *m, char_mode cm)
 {
   macro *tem = mac;
   mac = m;

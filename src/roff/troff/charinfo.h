@@ -77,7 +77,8 @@ public:
   void set_flags(unsigned char);
   void set_special_translation(int, int);
   int get_special_translation(int = 0);
-  macro *set_macro(macro *, char_mode = CHAR_NORMAL);
+  macro *set_macro(macro *);
+  macro *setx_macro(macro *, char_mode);
   macro *get_macro();
   int first_time_not_found();
   void set_number(int);
