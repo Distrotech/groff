@@ -119,7 +119,7 @@ void common_output::ellipse_arc(const position &cent,
   }
 }
 
-// output a dashed ellipse as a series of straight lines
+// output a dashed ellipse as a series of arcs
 
 void common_output::dashed_ellipse(const position &cent, const distance &dim,
 				   const line_type &lt)

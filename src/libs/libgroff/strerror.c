@@ -23,6 +23,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #endif
 
 #include <stdio.h>
+#include <errno.h>
 #include <stdlib.h>		/* for MinGW */
 
 #define INT_DIGITS 19		/* enough for 64 bit integer */

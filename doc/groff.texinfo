@@ -12703,6 +12703,27 @@ appended to the lines.
 With no arguments the margin character is turned off.
 If this occurs before a break, no margin character is printed.
 
+For compatibility with @acronym{AT&T} @code{troff}, a call to @code{mc}
+to set the margin character can't be undone immediately; at least one
+line gets a margin character.  Thus
+
+@Example
+.ll 1i
+.mc \[br]
+.mc
+xxx
+.br
+xxx
+@endExample
+
+@noindent
+produces
+
+@Example
+xxx        |
+xxx
+@endExample
+
 @cindex @code{tl} request, and @code{mc}
 For empty lines and lines produced by the @code{tl} request no margin
 character is emitted.
@@ -12715,7 +12736,7 @@ The margin character is associated with the current environment
 This is quite useful for indicating text that has changed, and, in fact,
 there are programs available for doing this (they are called
 @code{nrchbar} and @code{changebar} and can be found in any
-@samp{comp.sources.unix} archive.
+@samp{comp.sources.unix} archive).
 
 @Example
 .ll 3i

@@ -3851,11 +3851,10 @@ void html_printer::do_file_components (void)
       current = next;
       next = file_list.next_file_name();
       next += '\0';
-      fclose(stdout);
       string split_file = file_list.file_name();
       split_file += '\0';
-      stdout = fopen(split_file.contents(), "w");
-      html.set_file(stdout);
+      fflush(stdout);
+      freopen(split_file.contents(), "w", stdout);
       fragment_no++;
       write_navigation(top, prev, next, current);
     }
