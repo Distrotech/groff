@@ -187,7 +187,7 @@
 .
 .      if (\n[doc-args-processed] == 1) \{\
 .        nop \f[B]DEBUG(doc-parse-args) MACRO:\f[P] `.\*[doc-macro-name]'
-.        nop \f[B]Line #:\f[P] \n[.c]
+.        nop \& \f[B]Line #:\f[P] \n[.c]
 .      \}
 .      nop \t\f[B]Argc:\f[P] \n[doc-args-processed]
 .      nop \ \f[B]Argv:\f[P] `\*[doc-arg\n[doc-args-processed]]'
@@ -302,7 +302,7 @@
 .      if (\n[doc-args-processed] == 1) \{\
 .        nop \f[B]DEBUG(doc-parse-arg-vector)
 .        nop MACRO:\f[P] `.\*[doc-macro-name]'
-.        nop \ \f[B]Line #:\f[P] \n[.c]
+.        nop \& \f[B]Line #:\f[P] \n[.c]
 .      \}
 .      nop \t\f[B]Argc:\f[P] \n[doc-args-processed]
 .      nop \ \f[B]Argv:\f[P] `\*[doc-arg\n[doc-args-processed]]'
@@ -460,10 +460,6 @@
 .\" NS   saved doc-out-string
 .
 .
-.\" NS doc-diversion-input-line-count register
-.\" NS   count of lines read from input file
-.
-.
 .\" NS doc-diversion-level register
 .\" NS   diversion count
 .
@@ -477,7 +473,6 @@
 .  nr doc-diversion-level +1
 .  ds doc-saved-out-string \&\*[doc-out-string]
 .  ds doc-out-string
-.  nr doc-diversion-input-line-count \n[.c]
 .  ev doc-divert-environment
 .  fi
 .  di doc-diversion
@@ -492,7 +487,7 @@
 .  di
 .  ev
 .
-.  ie ((\n[.c] - \n[doc-diversion-input-line-count]) > 1) \{\
+.  ie \n[dn] \{\
 .    ds doc-str-dedap \&\*[doc-diversion]\c
 .    ds doc-out-string \*[doc-saved-out-string]\*[doc-str-dedap]\*[doc-out-string]
 .  \}
@@ -537,12 +532,12 @@
 .  \}
 .
 .  if \n[doc-args-processed] \{\
-.    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \{\
 .      as doc-out-string \|\-\f[P]\s[0]
 .      doc-print-and-reset
 .    \}
 .    el \{\
-.      nr doc-arg-ptr +1
 .      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
 .        as doc-out-string \|\-\f[P]\s[0]
 .        \*[doc-arg\n[doc-arg-ptr]]
@@ -644,12 +639,13 @@
 .      as doc-out-string \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .      as doc-out-string "\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
 .    \}
-.    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
+.
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \{\
 .      as doc-out-string \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .      doc-print-and-reset
 .    \}
 .    el \{\
-.      nr doc-arg-ptr +1
 .      as doc-out-string \*[doc-space\n[doc-reg-dpr]]
 .      doc-print-recursive
 .    \}
@@ -677,12 +673,12 @@
 .  \}
 .
 .  if \n[doc-args-processed] \{\
-.    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \{\
 .      as doc-out-string \&file\ ...\f[P]\s[0]
 .      doc-print-and-reset
 .    \}
 .    el \{\
-.      nr doc-arg-ptr +1
 .      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
 .        as doc-out-string \&file\ ...\f[P]\s[0]
 .        \*[doc-arg\n[doc-arg-ptr]]
@@ -714,9 +710,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Ad-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -754,9 +750,9 @@
 .
 .  br
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Nm-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .
@@ -811,9 +807,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Cm-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -836,9 +832,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Er-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -872,9 +868,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Em-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -897,9 +893,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Er-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -922,9 +918,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Ev-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -988,9 +984,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Ar-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1013,9 +1009,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Ic-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1049,9 +1045,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Li-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1074,9 +1070,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Ic-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1099,9 +1095,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Sy-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1134,7 +1130,11 @@
 .    el \{\
 .      ds doc-macro-name Nm
 .
-.      nr doc-reg-Nm 1
+.      ie "\$1"" \
+.        ds doc-arg1 "\*[doc-command-name]
+.      el \
+.        ds doc-arg1 "\$1
+.      nr doc-reg-Nm 2
 .      while (\n[doc-reg-Nm] <= \n[.$]) \{\
 .        ds doc-arg\n[doc-reg-Nm] "\$[\n[doc-reg-Nm]]
 .        nr doc-reg-Nm +1
@@ -1146,13 +1146,13 @@
 .  \}
 .
 .  if \n[doc-args-processed] \{\
-.    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \{\
 .      as doc-out-string \&\*[doc-Nm-font]\*[doc-command-name]\f[P]\s[0]
 .      doc-print-and-reset
 .    \}
 .    el \{\
 .      as doc-out-string \&\*[doc-Nm-font]
-.      nr doc-arg-ptr +1
 .      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
 .        as doc-out-string \&\*[doc-command-name]\f[P]\s[0]
 .        \*[doc-arg\n[doc-arg-ptr]]
@@ -1201,9 +1201,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Pa-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1237,9 +1237,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Sy-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1262,9 +1262,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Tn-font-shape]\*[doc-Tn-font-size]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1287,9 +1287,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Tn-font-size]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -1312,9 +1312,9 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Va-font]
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -1339,8 +1339,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .      \*[doc-arg\n[doc-arg-ptr]]
 .    el \{\
@@ -1524,7 +1524,8 @@
 .    as doc-out-string \&\*[doc-quote-left]
 .
 .  if \n[doc-args-processed] \{\
-.    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \{\
 .      as doc-out-string \&\*[doc-quote-right]
 .      doc-print-and-reset
 .    \}
@@ -1538,14 +1539,7 @@
 .      \}
 .      el \
 .        doc-append-arg "\*[doc-quote-right]" punct-suffix
-.      nr doc-arg-ptr +1
-.      if "\*[doc-type\n[doc-arg-ptr]]"macro" \
-.        \*[doc-arg\n[doc-arg-ptr]]
-.      if d doc-type\n[doc-arg-ptr] \{\
-.        if !"\*[doc-type\n[doc-arg-ptr]]"macro" \{\
-.          nr doc-arg-ptr -1
-.          No
-.        \}
+.      doc-do-\*[doc-type\n[doc-arg-ptr]]
 .      \}
 .    \}
 .  \}
@@ -1870,7 +1864,6 @@
 .          nr doc-diversion-level +1
 .          ds doc-saved-out-string \&\*[doc-out-string]
 .          ds doc-out-string
-.          nr doc-diversion-input-line-count \n[.c]
 .          ev doc-divert-environment
 .          fi
 .          di doc-diversion
@@ -2012,12 +2005,11 @@
 .  \}
 .
 .  if \n[doc-args-processed] \{\
-.    ie (\n[doc-args-processed] == \n[doc-arg-ptr]) \
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-args-processed] < \n[doc-arg-ptr]) \
 .      doc-print-and-reset
-.    el \{\
-.      nr doc-arg-ptr +1
+.    el \
 .      doc-do-\*[doc-type\n[doc-arg-ptr]]
-.    \}
 .  \}
 ..
 .
@@ -2618,7 +2610,7 @@
 .  br
 .
 .  if !\n[doc-display-depth] \
-.    tm mdoc: Extraneous .Ed
+.    tm mdoc warning: Extraneous .Ed (#\n[.c])
 .
 .  if "\*[doc-display-type-stack\n[doc-display-depth]]"literal" \{\
 .    ft \n[doc-curr-font]
@@ -2835,7 +2827,9 @@
 .              nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
 .        \}
 .        el \{\
-.          ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
+.\" XXX ?
+.          doc-get-arg-type \*[doc-str-dBla]
+.          ie "\*[doc-arg-type]"macro" \
 .            nr doc-list-offset-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
 .          el \
 .            nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
@@ -2945,6 +2939,7 @@
 .  \" .tmc Here is
 .  \" .tm1 " doc-list-stack[\n[doc-list-depth]]==\*[doc-str-It]
 .
+.  br
 .  if !\n[cR] \
 .    ne 3v
 .
@@ -3376,8 +3371,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
 .    el \{\
@@ -3386,18 +3381,18 @@
 .      el \{\
 .        as doc-out-string \&\*[doc-Xr-font]
 .        as doc-out-string \*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
-.        if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.          nr doc-arg-ptr +1
+.        nr doc-arg-ptr +1
+.        if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .          if "\*[doc-type\n[doc-arg-ptr]]"string" \{\
-.            as doc-out-string \&(\*[doc-arg\n[doc-arg-ptr]])
+.            as doc-out-string \&\*[lp]\*[doc-arg\n[doc-arg-ptr]]\*[rp]
 .            nr doc-arg-ptr +1
 .          \}
-.
-.          if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \
-.            doc-do-\*[doc-type\n[doc-arg-ptr]]
 .        \}
+.        ie (\n[doc-args-processed] >= \n[doc-arg-ptr]) \
+.          doc-do-\*[doc-type\n[doc-arg-ptr]]
+.        el \
+.          doc-print-and-reset
 .      \}
-.      doc-print-and-reset
 .    \}
 .  \}
 ..
@@ -3418,8 +3413,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Sx-font]
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
@@ -3615,10 +3610,7 @@
 .      nr doc-num-args \n[.$]
 .      doc-parse-arg-vector
 .      nr doc-arg-ptr +1
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
-.        \*[doc-arg\n[doc-arg-ptr]]
-.      el \
-.        No
+.      No
 .    \}
 .  \}
 .  el \
@@ -3787,9 +3779,9 @@
 .  ie \n[doc-func-arg-count] \
 .    doc-do-function
 .  el \{\
-.    if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .      as doc-out-string \*[doc-Fa-font]
-.      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
 .      nr doc-curr-size \n[.s]
 .      doc-print-recursive
@@ -3820,12 +3812,9 @@
 .    \" .\}
 .
 .    if (\n[doc-func-arg-count] > 1) \{\
-.      as doc-out-string \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]],
+.      as doc-out-string \&\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\|,
 .      as doc-out-string \*[doc-space\n[doc-arg-ptr]]\*[doc-Fa-font]
 .      as doc-out-string \*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
-.      \" .as doc-out-string \&\,\*[doc-space\n[doc-arg-ptr]]
-.      \" .as doc-out-string \f[P]\s[0]\*[doc-Fa-font]
-.      \" .as doc-out-string \*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
 .    \}
 .
 .    if (\n[doc-func-arg-count] == 1) \{\
@@ -3916,16 +3905,16 @@
 .    nr doc-in-synopsis-section +1
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    as doc-out-string \&\*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]
 .    as doc-out-string \f[P]\s[0]\*[lp]
 .
-.    ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .      as doc-out-string \*[doc-Fa-font]
-.      nr doc-arg-ptr +1
 .      doc-do-function-\*[doc-type\n[doc-arg-ptr]]
 .    \}
 .    el \{\
@@ -3942,8 +3931,14 @@
 .\" NS doc-do-function-macro macro
 .
 .de doc-do-function-macro
-.  as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.  nop \*[doc-arg\n[doc-arg-ptr]]
+.  ie \n[doc-in-synopsis-section] \{\
+.    as doc-out-string \&\*[rp]\f[R];\f[P]
+.    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.  \}
+.  el \
+.    as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.
+.  \*[doc-arg\n[doc-arg-ptr]]
 ..
 .
 .
@@ -3975,7 +3970,12 @@
 .    doc-do-function-\*[doc-type\n[doc-arg-ptr]]
 .  \}
 .  el \{\
-.    as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.    ie \n[doc-in-synopsis-section] \{\
+.      as doc-out-string \&\*[rp]\f[R];\f[P]
+.      as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.    \}
+.    el \
+.      as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .    doc-print-and-reset
 .  \}
 ..
@@ -3984,8 +3984,15 @@
 .\" NS doc-do-function-punct-suffix macro
 .
 .de doc-do-function-punct-suffix
-.  as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.  as doc-out-string \*[doc-arg\n[doc-arg-ptr]]
+.  ie \n[doc-in-synopsis-section] \{\
+.    as doc-out-string \&\*[rp]\f[R];\f[P]
+.    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.    as doc-out-string \*[doc-arg\n[doc-arg-ptr]]
+.  \}
+.  el \{\
+.    as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.    as doc-out-string \*[doc-arg\n[doc-arg-ptr]]
+.  \}
 .
 .  ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \
 .    No
@@ -3998,8 +4005,15 @@
 .\" NS   write out function
 .
 .de doc-do-function-punct-prefix
-.  as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
-.  as doc-out-string \*[doc-space\n[doc-arg-ptr]]\*[doc-arg\n[doc-arg-ptr]]
+.  ie \n[doc-in-synopsis-section] \{\
+.    as doc-out-string \&\*[rp]\f[R];\f[P]
+.    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.    as doc-out-string \*[doc-space\n[doc-arg-ptr]]\*[doc-arg\n[doc-arg-ptr]]
+.  \}
+.  el \{\
+.    as doc-out-string \&\*[rp]\f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
+.    as doc-out-string \*[doc-space\n[doc-arg-ptr]]\*[doc-arg\n[doc-arg-ptr]]
+.  \}
 .
 .  ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
@@ -4080,10 +4094,10 @@
 .    nr doc-in-synopsis-section +1
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-nesting-level +1
 .    nr doc-func-arg-count 1
-.    nr doc-arg-ptr +1
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .
@@ -4120,8 +4134,11 @@
 .
 .  nr doc-func-arg-count 0
 .  nr doc-nesting-level -1
-.  as doc-out-string \|\*[rp]
 .
+.  ie \n[doc-in-synopsis-section] \
+.    as doc-out-string \|\*[rp]\f[R];\f[P]
+.  el \
+.    as doc-out-string \|\*[rp]
 .  ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
 .    \*[doc-arg\n[doc-arg-ptr]]
@@ -4356,8 +4373,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4397,8 +4414,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .
@@ -4442,8 +4459,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4480,8 +4497,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4508,8 +4525,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4547,8 +4564,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4583,8 +4600,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4622,8 +4639,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4661,8 +4678,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4702,8 +4719,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    ie !\n[doc-is-reference] \{\
@@ -4734,8 +4751,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-do-references
@@ -4751,6 +4768,7 @@
 .
 .de doc-do-references
 .  hy 0
+.
 .  ds doc-str-ddr \*[doc-type\n[doc-arg-ptr]]
 .
 .  ie "\*[doc-str-ddr]"macro" \{\
@@ -4847,8 +4865,8 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
-.    nr doc-arg-ptr +1
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
