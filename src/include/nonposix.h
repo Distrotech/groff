@@ -100,6 +100,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /* Defaults, for Posix systems.  */
 
+#ifndef SET_BINARY
+# define SET_BINARY(f) do {} while(0)
+#endif
 #ifndef FOPEN_RB
 # define FOPEN_RB      "r"
 #endif

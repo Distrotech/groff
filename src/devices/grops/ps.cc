@@ -1838,9 +1838,7 @@ int main(int argc, char **argv)
       assert(0);
     }
   font::set_unknown_desc_command_handler(handle_unknown_desc_command);
-#ifdef SET_BINARY
   SET_BINARY(fileno(stdout));
-#endif
   if (optind >= argc)
     do_file("-");
   else {

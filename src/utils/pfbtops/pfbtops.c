@@ -1,4 +1,4 @@
-/* Copyright (C) 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1992, 2001, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -32,6 +32,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /* Binary bytes per output line. */
 #define BYTES_PER_LINE (64/2)
+#define MAX_LINE_LENGTH 78
 #define HEX_DIGITS "0123456789abcdef"
 
 static char *program_name;
@@ -86,70 +87,64 @@ int main(argc, argv)
     usage(stderr);
     exit(1);
   }
-  if (argc > optind && !freopen(argv[optind], "r", stdin))
-    {
-      perror(argv[optind]);
-      exit(1);
-    }
-#ifdef SET_BINARY
+  if (argc > optind && !freopen(argv[optind], "r", stdin)) {
+    perror(argv[optind]);
+    exit(1);
+  }
   SET_BINARY(fileno(stdin));
-#endif
-  for (;;)
-    {
-      int type, c, i;
-      long n;
+  for (;;) {
+    int type, c, c1, i;
+    long n;
 
+    c = getchar();
+    if (c != 0x80)
+      error("first byte of packet not 0x80");
+    type = getchar();
+    if (type == 3)
+      break;
+    if (type != 1 && type != 2)
+      error("bad packet type");
+    n = 0;
+    for (i = 0; i < 4; i++) {
       c = getchar();
-      if (c != 0x80)
-	error("first byte of packet not 0x80");
-      type = getchar();
-      if (type == 3)
-	break;
-      if (type != 1 && type != 2)
-	error("bad packet type");
-      n = 0;
-      for (i = 0; i < 4; i++)
-	{
-	  c = getchar();
-	  if (c == EOF)
-	    error("end of file in packet header");
-	  n |= (long)c << (i << 3);
-	}
-      if (n < 0)
-	error("negative packet length");
-      if (type == 1)
-	{
-	  while (--n >= 0)
-	    {
-	      c = getchar();
-	      if (c == EOF)
-		error("end of file in text packet");
-	      if (c == '\r')
-		c = '\n';
-	      putchar(c);
-	    }
-	  if (c != '\n')
-	    putchar('\n');
-	}
-      else
-	{
-	  int count = 0;
-	  while (--n >= 0)
-	    {
-	      c = getchar();
-	      if (c == EOF)
-		error("end of file in binary packet");
-	      if (count >= BYTES_PER_LINE)
-		{
-		  putchar('\n');
-		  count = 0;
-		}
-	      count++;
-	      putchar(HEX_DIGITS[(c >> 4) & 0xf]);
-	      putchar(HEX_DIGITS[c & 0xf]);
-	    }
-	  putchar('\n');
-	}
+      if (c == EOF)
+	error("end of file in packet header");
+      n |= (long)c << (i << 3);
     }
+    if (n < 0)
+      error("negative packet length");
+    if (type == 1) {
+      while (--n >= 0) {
+	c = getchar();
+	if (c == EOF)
+	  error("end of file in text packet");
+	if (c == '\r') {
+	  c1 = getchar();
+	  if (c1 != '\n')
+	    ungetc(c1, stdin);
+	  c = '\n';
+	}  
+	putchar(c);
+      }
+      if (c != '\n')
+        putchar('\n');
+    }
+    else {
+      int count = 0;
+      while (--n >= 0) {
+	c = getchar();
+	if (c == EOF)
+	  error("end of file in binary packet");
+	if (count >= BYTES_PER_LINE) {
+	  putchar('\n');
+	  count = 0;
+	}
+	count++;
+	putchar(HEX_DIGITS[(c >> 4) & 0xf]);
+	putchar(HEX_DIGITS[c & 0xf]);
+      }
+      putchar('\n');
+    }
+  }
   exit(0);
 }

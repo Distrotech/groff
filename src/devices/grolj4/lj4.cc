@@ -686,9 +686,7 @@ int main(int argc, char **argv)
     default:
       assert(0);
     }
-#ifdef SET_BINARY
   SET_BINARY(fileno(stdout));
-#endif
   if (optind >= argc)
     do_file("-");
   else {

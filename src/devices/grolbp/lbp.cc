@@ -169,9 +169,7 @@ lbp_printer::lbp_printer(int ps, double pw, double pl)
   cur_symbol_set(0),
   req_linethickness(-1)
 {
-#ifdef SET_BINARY
   SET_BINARY(fileno(stdout));
-#endif
   lbpinit(stdout);
   lbpputs("\033c\033;\033[2&z\033[7 I\033[?32h\033[?33h\033[11h");
   wp54charset(); // Define the new symbol set
