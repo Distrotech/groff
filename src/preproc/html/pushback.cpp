@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -191,7 +191,7 @@ void pushBackBuffer::skipUntilToken (void)
  *             left alone.
  */
 
-int pushBackBuffer::isString (char *s)
+int pushBackBuffer::isString (const char *s)
 {
   int length=strlen(s);
   int i=0;

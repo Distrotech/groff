@@ -41,7 +41,7 @@ PTABLE(unicode_decompose) unicode_decompose_table;
 
 struct {
   const char *key;
-  char *value;
+  const char *value;
 } unicode_decompose_list[] = {
   { "00C0", "20041_0300" },
   { "00C1", "20041_0301" },
@@ -1982,7 +1982,7 @@ unicode_decompose_init::unicode_decompose_init() {
        i < sizeof(unicode_decompose_list)/sizeof(unicode_decompose_list[0]);
        i++) {
     unicode_decompose *dec = new unicode_decompose[1];
-    dec->value = unicode_decompose_list[i].value;
+    dec->value = (char *)unicode_decompose_list[i].value;
     unicode_decompose_table.define(unicode_decompose_list[i].key, dec);
   }
 }

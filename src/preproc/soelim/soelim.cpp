@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -30,7 +30,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "nonposix.h"
 
 static size_t include_list_length;
-static char **include_list;
+static const char **include_list;
 
 int compatible_flag = 0;
 
@@ -41,14 +41,14 @@ int do_file(const char *filename);
 
 
 static void
-include_path_append(char *path)
+include_path_append(const char *path)
 {
   ++include_list_length;
   size_t nbytes = include_list_length * sizeof(char *);
   if (include_list)
-    include_list = (char **)realloc((void *)include_list, nbytes);
+    include_list = (const char **)realloc((void *)include_list, nbytes);
   else
-    include_list = (char **)malloc(nbytes);
+    include_list = (const char **)malloc(nbytes);
   if (include_list == NULL)
     {
       fprintf(stderr, "%s: out of memory\n", program_name);
@@ -180,7 +180,7 @@ int do_file(const char *filename)
     size_t j;
     for (j = 0; j < include_list_length; ++j)
     {
-      char *path = include_list[j];
+      const char *path = include_list[j];
       if (0 == strcmp(path, "."))
 	whole_filename = filename;
       else

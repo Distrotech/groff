@@ -36,7 +36,7 @@ PTABLE(unicode_to_glyph) unicode_to_glyph_table;
 
 struct {
   const char *key;
-  char *value;
+  const char *value;
 } unicode_to_glyph_list[] = {
   { "0021", "!" },
 //{ "0022", "\"" },
@@ -491,7 +491,7 @@ unicode_to_glyph_init::unicode_to_glyph_init() {
        i < sizeof(unicode_to_glyph_list)/sizeof(unicode_to_glyph_list[0]);
        i++) {
     unicode_to_glyph *utg = new unicode_to_glyph[1];
-    utg->value = unicode_to_glyph_list[i].value;
+    utg->value = (char *)unicode_to_glyph_list[i].value;
     unicode_to_glyph_table.define(unicode_to_glyph_list[i].key, utg);
   }
 }

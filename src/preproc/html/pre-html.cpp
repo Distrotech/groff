@@ -97,7 +97,7 @@ static char *psFileName       = NULL;           // name of postscript file
 static char *psPageName       = NULL;           // name of file containing postscript current page
 static char *regionFileName   = NULL;           // name of file containing all image regions
 static char *imagePageName    = NULL;           // name of bitmap image containing current page
-static char *image_device     = "pnmraw";
+static const char *image_device = "pnmraw";
 static int   image_res        = DEFAULT_IMAGE_RES;
 static int   vertical_offset  = 0;
 static char *image_template   = NULL;           // image template filename
@@ -318,7 +318,7 @@ public:
   void write_file_html(void);
   void write_file_troff(void);
   void write_upto_newline (char_block **t, int *i, int is_html);
-  int  can_see(char_block **t, int *i, char *string);
+  int  can_see(char_block **t, int *i, const char *string);
   int  skip_spaces(char_block **t, int *i);
   void skip_until_newline(char_block **t, int *i);
 private:
@@ -383,7 +383,7 @@ int char_buffer::read_file (FILE *fp)
  *  writeNbytes - writes n bytes to stdout.
  */
 
-static void writeNbytes (char *s, int l)
+static void writeNbytes (const char *s, int l)
 {
   int n=0;
   int r;
@@ -402,7 +402,7 @@ static void writeNbytes (char *s, int l)
  *  writeString - writes a string to stdout.
  */
 
-static void writeString (char *s)
+static void writeString (const char *s)
 {
   writeNbytes(s, strlen(s));
 }
@@ -584,7 +584,7 @@ void char_buffer::write_upto_newline (char_block **t, int *i, int is_html)
  *  can_see - returns TRUE if we can see string in t->buffer[i] onwards
  */
 
-int char_buffer::can_see (char_block **t, int *i, char *string)
+int char_buffer::can_see (char_block **t, int *i, const char *string)
 {
   int j         = 0;
   int l         = strlen(string);

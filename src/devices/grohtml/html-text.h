@@ -116,7 +116,7 @@ private:
   char  *shutdown            (HTML_TAG t);
   void   check_emit_text     (tag_definition *t);
   int    remove_break        (void);
-  void   issue_tag           (char *tagname, char *arg);
+  void   issue_tag           (const char *tagname, const char *arg);
   void   issue_color_begin   (color *c);
   void   remove_def          (tag_definition *t);
   html_indent *remove_indent (HTML_TAG tag);

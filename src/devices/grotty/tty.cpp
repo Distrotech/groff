@@ -220,7 +220,7 @@ char *tty_printer::make_rgb_string(unsigned int r,
   s[3] = char(g & 0xff);
   s[4] = char(b >> 8);
   s[5] = char(b & 0xff);
-  s[6] = 0x80;
+  s[6] = char(0x80);
   s[7] = 0;
   // avoid null-bytes in string
   for (int i = 0; i < 6; i++)

@@ -170,7 +170,7 @@ void html_text::end_tag (tag_definition *t)
  *  issue_tag - writes out an html tag with argument.
  */
 
-void html_text::issue_tag (char *tagname, char *arg)
+void html_text::issue_tag (const char *tagname, const char *arg)
 {
   if ((arg == 0) || (strlen(arg) == 0)) {
     out->put_string(tagname);

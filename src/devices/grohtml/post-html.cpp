@@ -410,7 +410,7 @@ public:
   html_table     *tab;                  // table description
 
 private:
-  text_glob           (style *s, char *str, int length,
+  text_glob           (style *s, const char *str, int length,
 		       int min_vertical , int min_horizontal,
 		       int max_vertical , int max_horizontal,
 		       bool is_troff_command,
@@ -418,7 +418,7 @@ private:
 		       bool is_a_line    , int  thickness);
 };
 
-text_glob::text_glob (style *s, char *str, int length,
+text_glob::text_glob (style *s, const char *str, int length,
 		      int min_vertical, int min_horizontal,
 		      int max_vertical, int max_horizontal,
 		      bool is_troff_command,
@@ -1562,7 +1562,7 @@ class html_printer : public printer {
   void remove_tabs                    (void);
   void remove_courier_tabs            (void);
   void update_min_max                 (colType type_of_col, int *minimum, int *maximum, text_glob *g);
-  void add_table_end                  (char *);
+  void add_table_end                  (const char *);
   // ADD HERE
 
 public:
@@ -2693,7 +2693,7 @@ void html_printer::update_min_max (colType type_of_col, int *minimum, int *maxim
  *                  debugging string.
  */
 
-void html_printer::add_table_end (char *
+void html_printer::add_table_end (const char *
 #if defined(DEBUG_TABLES)
   debug_string
 #endif

@@ -6757,7 +6757,7 @@ static void process_macro_file(const char *mac)
   process_input_stack();
 }
 
-static void process_startup_file(char *filename)
+static void process_startup_file(const char *filename)
 {
   char *path;
   search_path *orig_mac_path = mac_path;

@@ -48,7 +48,7 @@ class pushBackBuffer
   float readNumber     (void);
   int   readInt        (void);
   char *readString     (void);
-  int   isString       (char *string);
+  int   isString       (const char *string);
 };
 
 
