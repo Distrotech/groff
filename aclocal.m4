@@ -124,6 +124,12 @@ AC_DEFUN([GROFF_PNMTOPS_NOSETPAGE],
    fi
    AC_SUBST([pnmtops_nosetpage])])
 
+# Check location of `gs'.
+
+AC_DEFUN([GROFF_GHOSTSCRIPT_PATH],
+  [AC_PATH_TOOL(GHOSTSCRIPT, gs gsos2, missing)
+   AC_SUBST(GHOSTSCRIPT)])
+
 # GROFF_CSH_HACK(if hack present, if not present)
 
 AC_DEFUN([GROFF_CSH_HACK],

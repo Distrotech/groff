@@ -43,6 +43,10 @@ revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' $(top_srcdir)/REVISION`
 # world).
 PAGE=@PAGE@
 
+# The name of the ghostscript program. Normally, gs, on GNU/Linux
+# but it might be different on cygwin systems.
+GHOSTSCRIPT=@GHOSTSCRIPT@
+
 # Normally the Postscript driver, grops, produces output that conforms
 # to version 3.0 of the Adobe Document Structuring Conventions.
 # Unfortunately some spoolers and previewers can't handle such output.
@@ -303,6 +307,8 @@ make_install_html=@make_install_html@
 # -DRETSIGTYPE=int		if signal handlers return int not void	
 # -DIS_EBCDIC_HOST		if the host's encoding is EBCDIC
 # -DPAGEA4			if the the printer's page size is A4
+# -DGHOSTSCRIPT=gs		the name (and directory if required) of the
+#				ghostscript program
 DEFINES=@DEFS@
 
 # Include
@@ -400,6 +406,7 @@ MDEFINES= \
   "OBJEXT=$(OBJEXT)" \
   "OTHERDEVDIRS=$(OTHERDEVDIRS)" \
   "PAGE=$(PAGE)" \
+  "GHOSTSCRIPT=$(GHOSTSCRIPT)" \
   "PERLPATH=$(PERLPATH)" \
   "PSPRINT=$(PSPRINT)" \
   "PURIFY=$(PURIFY)" \
@@ -705,7 +712,6 @@ uninstall_dirs:
 	  $(datasubdir) $(dataprogramdir) $(datadir) $(infodir) \
 	  $(exampledir) $(htmldocdir) $(docdir) \
 	  $(libprogramdir) $(libdir)
-
 
 .PHONY: check
 check:
