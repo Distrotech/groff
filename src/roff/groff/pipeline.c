@@ -102,6 +102,8 @@ static const char *sh = "sh";
 static const char *cmd = "cmd";
 static const char *command = "command";
 
+extern int strcasecmp(const char *, const char *);
+
 char *sbasename(const char *path)
 {
   char *base;
@@ -189,13 +191,22 @@ int is_system_shell(const char *prog)
 
 #ifdef _WIN32
 
-/* Windows 32 doesn't have fork() */
+/*
+  Windows 32 doesn't have fork(), so we need to start asynchronous child
+  processes with spawn() rather than exec().  If there is more than one
+  command, i.e., a pipeline, the parent must set up each child's I/O
+  redirection prior to the spawn.  The original stdout must be restored
+  before spawning the last process in the pipeline, and the original
+  stdin must be restored in the parent after spawning the last process
+  and before waiting for any of the children.
+*/
 
 int run_pipeline(int ncommands, char ***commands, int no_pipe)
 {
-  int save_stdin, save_stdout;
   int i;
-  int last_input = 0;
+  int last_input;
+  int save_stdin;
+  int save_stdout;
   int ret = 0;
   char err_str[BUFSIZ];
   PID_T pids[MAX_COMMANDS];
@@ -209,18 +220,22 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
     if (ncommands > 1 && !no_pipe) {
       /* last command doesn't need a new pipe */
       if (i < ncommands - 1) {
-	if (_pipe(pdes, BUFSIZ, _O_BINARY | _O_NOINHERIT) < 0) {
+	if (pipe(pdes) < 0) {
 	  sprintf(err_str, "%s: pipe", commands[i][0]);
 	  sys_fatal(err_str);
 	}
       }
       /* 1st command; writer */
       if (i == 0) {
+	/* save stdin */
+	if ((save_stdin = dup(STDIN_FILENO)) < 0)
+	  sys_fatal("dup stdin");
 	/* save stdout */
-	if ((save_stdout = _dup(STDOUT_FILENO)) < 0)
+	if ((save_stdout = dup(STDOUT_FILENO)) < 0)
 	  sys_fatal("dup stdout");
+
 	/* connect stdout to write end of pipe */
-	if (_dup2(pdes[1], STDOUT_FILENO) < 0) {
+	if (dup2(pdes[1], STDOUT_FILENO) < 0) {
 	  sprintf(err_str, "%s: dup2(stdout)", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -228,17 +243,26 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
 	  sprintf(err_str, "%s: close(pipe[WRITE])", commands[i][0]);
 	  sys_fatal(err_str);
 	}
+	/*
+	   Save the read end of the pipe so that it can be connected to
+	   stdin of the next program in the pipeline during the next
+	   pass through the loop.
+	*/
 	last_input = pdes[0];
       }
       /* reader and writer */
       else if (i < ncommands - 1) {
 	/* connect stdin to read end of last pipe */
-	if (_dup2(last_input, STDIN_FILENO) < 0) {
+	if (dup2(last_input, STDIN_FILENO) < 0) {
 	  sprintf(err_str, " %s: dup2(stdin)", commands[i][0]);
 	  sys_fatal(err_str);
 	}
+	if (close(last_input) < 0) {
+	  sprintf(err_str, "%s: close(last_input)", commands[i][0]);
+	  sys_fatal(err_str);
+	}
 	/* connect stdout to write end of new pipe */
-	if (_dup2(pdes[1], STDOUT_FILENO) < 0) {
+	if (dup2(pdes[1], STDOUT_FILENO) < 0) {
 	  sprintf(err_str, "%s: dup2(stdout)", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -251,7 +275,7 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
       /* last command; reader */
       else {
 	/* connect stdin to read end of last pipe */
-	if (_dup2(last_input, STDIN_FILENO) < 0) {
+	if (dup2(last_input, STDIN_FILENO) < 0) {
 	  sprintf(err_str, "%s: dup2(stdin)", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -260,7 +284,7 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
 	  sys_fatal(err_str);
 	}
 	/* restore original stdout */
-	if (_dup2(save_stdout, STDOUT_FILENO) < 0) {
+	if (dup2(save_stdout, STDOUT_FILENO) < 0) {
 	  sprintf(err_str, "%s: dup2(save_stdout))", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -271,7 +295,7 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
  	}
       }
     }
-    if ((pid = _spawnvp(_P_NOWAIT, commands[i][0], commands[i])) < 0) {
+    if ((pid = spawnvp(_P_NOWAIT, commands[i][0], commands[i])) < 0) {
       error("couldn't exec %1: %2",
 	    commands[i][0], strerror(errno), (char *)0);
       fflush(stderr);			/* just in case error() doesn't */
@@ -279,13 +303,27 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
     }
     pids[i] = pid;
   }
+
+  if (ncommands > 1 && !no_pipe) {
+    /* restore original stdin if it was redirected */
+    if (dup2(save_stdin, STDIN_FILENO) < 0) {
+      sprintf(err_str, "dup2(save_stdin))");
+      sys_fatal(err_str);
+    }
+    /* close stdin copy */
+    if (close(save_stdin) < 0) {
+      sprintf(err_str, "close(save_stdin)");
+      sys_fatal(err_str);
+    }
+  }
+
   for (i = 0; i < ncommands; i++) {
     int status;
-    int pid;
+    PID_T pid;
 
     pid = pids[i];
     if ((pid = WAIT(&status, pid, _WAIT_CHILD)) < 0) {
-      sprintf(err_str, "%s: cwait", commands[i][0]);
+      sprintf(err_str, "%s: wait", commands[i][0]);
       sys_fatal(err_str);
     }
     else if (status != 0)

@@ -1,3 +1,38 @@
+2004-02-27  Jeff Conrad  <jeff_conrad@msn.com>
+
+	* src/include/nonposix.h (write, dup, dup2, close) [_MSC_VER]:
+	New macros.
+
+	* src/roff/groff/pipeline.c: Declare strcasecmp.
+	(run_pipeline) [_WIN32]: Use function name variants which don't
+	start with `_'.
+	Fix stream handling.
+
+2004-02-27  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	* src/include/nonposix.h: Fix declaration of `system_shell_name'.
+	Declare `spawnvp_wrapper' and macro definitions of spawnvp only
+	for platforms which use the native Win32 runtime libraries.
+	(FLUSH_INPUT_PIPE) [_UWIN]: Provide non-empty version.
+
+	* src/libs/libgroff/quotearg.c (QUOTE_ARG_MALLOC_ERROR,
+	QUOTE_ARG_REALLOC_ERROR): Fix string.
+
+	* src/preproc/html/pre-html.cpp: Remove declaration of
+	`spawnvp_wrapper'.
+	Don't use __MINGW32__.
+	s/DEBUG_FILE/DEBUG_FILE_DIR/.
+	(DEBUG_TEXT, DEBUG_NAME, DEBUG_FILE) [DEBUGGING]: New macros.
+	(OUTPUT_STREAM, PS_OUTPUT_STREAM, REGION_OUTPUT_STREAM): New macros.
+	(char_buffer::run_output_filter) [MAY_FORK_CHILD_PROCESS]: Fix
+	calls to `set_redirection' and `WAIT'.
+	[MAY_SPAWN_ASYNCHRONOUS_CHILD]: Remove unused variable `i' and `j'.
+	Fix calls to `set_redirection' and `save_and_redirect'.
+	(char_buffer::do_html, char_buffer::do_image) [DEBUGGING]: Fix calls
+	to `set_redirection' and `save_and_redirect'.
+	(usage): Fix message.
+	(makeTempFiles, main): Use `DEBUG_FILE'.
+
 2004-02-21  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/troff.h (WARN_TOTAL): Fix value.

@@ -28,7 +28,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 /* Define the default mechanism, and messages, for error reporting
  * (user may substitute a preferred alternative, by defining his own
  *  implementation of the macros REPORT_ERROR, QUOTE_ARG_MALLOC_FAILED
- *  and QUOTE_ARG_REALLOC_FAILED, in a header file called 'nonposix.h').
+ *  and QUOTE_ARG_REALLOC_FAILED, in the header file `nonposix.h').
  */
 
 #include "nonposix.h"
@@ -37,10 +37,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # define REPORT_ERROR(WHY)  fprintf(stderr, "%s:%s\n", program_name, WHY)
 #endif
 #ifndef  QUOTE_ARG_MALLOC_ERROR
-# define QUOTE_ARG_MALLOC_ERROR   "malloc:buffer allocation failed"
+# define QUOTE_ARG_MALLOC_ERROR   "malloc: Buffer allocation failed"
 #endif
 #ifndef  QUOTE_ARG_REALLOC_ERROR
-# define QUOTE_ARG_REALLOC_ERROR  "realloc:buffer resize failed"
+# define QUOTE_ARG_REALLOC_ERROR  "realloc: Buffer resize failed"
 #endif
 
 extern char *program_name;	/* main program must define this */
@@ -58,8 +58,8 @@ needs_quoting(const char *string)
   if (string == NULL)		/* ignore NULL strings */
     return FALSE;
 
-  if (*string == '\0')		/* preserve explicit null arguments */
-    return TRUE;
+  if (*string == '\0')		/* explicit arguments of zero length	  */
+    return TRUE;		/* need quoting, so they aren't discarded */
         
   while (*string) {
     /* Scan non-NULL strings, up to '\0' terminator,

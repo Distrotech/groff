@@ -29,12 +29,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # include <process.h>
 #endif
 
-#define SPAWNVP_C 1
+#define SPAWN_FUNCTION_WRAPPERS 1
 
 /* Define the default mechanism, and messages, for error reporting
  * (user may substitute a preferred alternative, by defining his own
- *  implementation of the macros REPORT_ERROR, QUOTE_ARG_MALLOC_FAILED
- *  and QUOTE_ARG_REALLOC_FAILED, in a header file called 'nonposix.h').
+ *  implementation of the macros REPORT_ERROR and ARGV_MALLOC_ERROR,
+ *  in the header file `nonposix.h').
  */
 
 #include "nonposix.h"
@@ -42,8 +42,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #ifndef  REPORT_ERROR
 # define REPORT_ERROR(WHY)  fprintf(stderr, "%s:%s\n", program_name, WHY)
 #endif
-#ifndef  SPAWNVP_MALLOC_ERROR
-# define SPAWNVP_MALLOC_ERROR   "malloc:allocation for 'argv' failed"
+#ifndef  ARGV_MALLOC_ERROR
+# define ARGV_MALLOC_ERROR    "malloc: Allocation for 'argv' failed"
 #endif
 
 extern char *program_name;
@@ -84,12 +84,12 @@ spawnvp_wrapper(int mode, char *path, char **argv)
       /* If we didn't get enough space,
        * then complain, and bail out gracefully. */
 
-      REPORT_ERROR(SPAWNVP_MALLOC_ERROR);
+      REPORT_ERROR(ARGV_MALLOC_ERROR);
       exit(1);
     }
 
     /* Now copy the passed `argv' into our new vector,
-     * quoting it contents as required. */
+     * quoting its contents as required. */
     
     for (i = 0; i < argc; i++)
       quoted_argv[i] = quote_arg(argv[i]);

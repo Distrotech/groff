@@ -59,17 +59,11 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #  define WAIT(s,p,m)	_cwait(s,p,m)
 #  define creat(p,m)	_creat(p,m)
 #  define read(f,b,s)	_read(f,b,s)
+#  define write(f,b,s)	_write(f,b,s)
+#  define dup(f)	_dup(f)
+#  define dup2(f1,f2)	_dup2(f1,f2)
+#  define close(f)	_close(f)
 #  define isatty(f)	_isatty(f)
-
-/* Workaround for broken argument parsing
-   in child process invoked through MSVC `spawnvp()' function. */
-#  ifndef SPAWNVP_C
-#   undef  spawnvp
-#   define spawnvp	spawnvp_wrapper
-#   undef  _spawnvp
-#   define _spawnvp	spawnvp
-#  endif
-
 # endif
 # define SET_BINARY(f)	do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
 # define FOPEN_RB	"rb"
@@ -123,17 +117,19 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # ifdef __cplusplus
   extern "C" {
 # endif
-    const char * system_shell_name(void);
+    char       * system_shell_name(void);
     const char * system_shell_dash_c(void);
     int		 is_system_shell(const char *);
-    int		 spawnvp_wrapper(int, char *, char **);
 # ifdef __cplusplus
   }
 # endif
 
 #endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN__)
+/* Win32 implementations which use the Microsoft runtime library
+ * are prone to hanging when a pipe reader quits with unread data in the pipe.
+ * `gtroff' avoids this, by invoking `FLUSH_INPUT_PIPE()', defined as ... */
 # define FLUSH_INPUT_PIPE(fd)		      \
  do if (!isatty(fd))			      \
  {					      \
@@ -141,7 +137,30 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
    while (read(fd, drain, sizeof(drain)) > 0) \
      ;					      \
  } while (0)
+
+/* The Microsoft runtime library also has a broken argument passing mechanism,
+ * which may result in improper grouping of arguments passed to a child process
+ * by the `spawn()' family of functions.  In `groff', only the `spawnvp()'
+ * function is affected; we work around this defect, by substituting a
+ * wrapper function in place of `spawnvp()' calls. */
+
+# ifdef __cplusplus
+  extern "C" {
+# endif
+  int spawnvp_wrapper(int, char *, char **);
+# ifdef __cplusplus
+  }
+# endif
+# ifndef SPAWN_FUNCTION_WRAPPERS
+#  undef  spawnvp
+#  define spawnvp      spawnvp_wrapper
+#  undef  _spawnvp
+#  define _spawnvp     spawnvp
+# endif /* SPAWN_FUNCTION_WRAPPERS */
+
 #else
+/* Other implementations do not suffer from Microsoft runtime bugs,
+ * but `gtroff' requires a dummy definition for FLUSH_INPUT_PIPE() */
 # define FLUSH_INPUT_PIPE(fd)	do {} while(0)
 #endif
 
