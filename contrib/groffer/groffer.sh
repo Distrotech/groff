@@ -25,8 +25,8 @@
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.7';
-_LAST_UPDATE='30 Apr 2004';
+_PROGRAM_VERSION='0.9.8';
+_LAST_UPDATE='12 May 2004';
 
 
 ########################################################################
@@ -34,7 +34,7 @@ _LAST_UPDATE='30 Apr 2004';
 # if `ash' is available restart the script using `ash';
 # otherwise just go on.
 
-if test "${_groffer_run}" = ''; then
+if test _"${_groffer_run}"_ = __; then
   # only reached during the first run of the script
 
   export _PROGRAM_NAME;
@@ -103,16 +103,16 @@ if test "${_groffer_run}" = ''; then
   #
   _test_on_shell()
   {
-    if test "$#" -le 0 || test "$1" = ''; then
+    if test "$#" -le 0 || test _"$1"_ = __; then
       return 1;
     fi;
     # do not quote $1 to allow arguments
-    test "$($1 -c 's=ok; echo -n "$s"' 2>/dev/null)" = 'ok';
+    test _"$($1 -c 's=ok; echo -n "$s"' 2>/dev/null)"_ = _ok_;
   }
 
   # do the shell determination
   _shell="$(_get_opt_shell "$@")";
-  if test "${_shell}" = ''; then
+  if test _"${_shell}"_ = __; then
     _shell='ash';
   fi;
   if _test_on_shell "${_shell}"; then
@@ -137,7 +137,7 @@ if test "${_groffer_run}" = ''; then
 
 fi; # end of first run
 
-if test "${_groffer_run}" != 'second';
+if test _"${_groffer_run}"_ != _second_;
 then
   echo "$_groffer_run should be 'second' here." >&2
   exit 1
@@ -490,7 +490,7 @@ test "a" = "a" || exit 1;
 # Test of `echo' and the `$()' construct.
 #
 echo -n '' >/dev/null || exit "${_ERROR}";
-if test "$(echo -n 'te' && echo -n '' && echo -n 'st')" != "test"; then
+if test _"$(echo -n 'te' && echo -n '' && echo -n 'st')"_ != _test_; then
   exit "${_ERROR}";
 fi;
 
@@ -631,7 +631,7 @@ reset;
 #
 landmark()
 {
-  if test "${_DEBUG_LM}" = 'yes'; then
+  if test _"${_DEBUG_LM}"_ = _yes_; then
     echo ">>> $*" >&2;
   fi;
 }
@@ -709,7 +709,7 @@ error()
       ;;
     *) echo2 'groffer error: wrong number of arguments in error().'; ;;
   esac;
-  if test "${_DEBUG}" = 'yes'; then
+  if test _"${_DEBUG}"_ = _yes_; then
     func_stack_dump;
   fi;
   clean_up;
@@ -803,7 +803,7 @@ func_check()
     error \
       "${_fname}"'() needs '"${_comp} ${_nargs}"' argument'"${_s}"'.';
   fi;
-  if test "${_DEBUG}" = 'yes'; then
+  if test _"${_DEBUG}"_ = _yes_; then
     func_push "${_fname} $*";
   fi;
 }
@@ -822,7 +822,7 @@ func_check()
 #
 func_pop()
 {
-  if test "${_DEBUG}" = 'yes'; then
+  if test _"${_DEBUG}"_ = _yes_; then
     if test "$#" -ne 0; then
       error 'func_pop() does not have arguments.';
     fi;
@@ -856,7 +856,7 @@ func_pop()
 func_push()
 {
   local _element;
-  if test "${_DEBUG}" = 'yes'; then
+  if test _"${_DEBUG}"_ = _yes_; then
     if test "$#" -ne 1; then
       error 'func_push() needs 1 argument.';
     fi;
@@ -869,7 +869,7 @@ func_push()
         _element="$1";
         ;;
     esac;
-    if test "${_FUNC_STACK}" = ''; then
+    if test _"${_FUNC_STACK}"_ = __; then
       _FUNC_STACK="${_element}";
     else
       _FUNC_STACK="${_element}!${_FUNC_STACK}";
@@ -889,7 +889,7 @@ func_stack_dump()
   case "${_FUNC_STACK}" in
     *!*)
       _rest="${_FUNC_STACK}";
-      while test "${_rest}" != ''; do
+      while test _"${_rest}"_ != __; do
         # get part before the first bang `!'.
         diag "$(echo -n "${_rest}" | sed -e 's/!.*$//')";
         # delete part before and including the first bang `!'.
@@ -934,7 +934,7 @@ fi;
 # Test of `unset'.
 #
 _test='test';
-if unset _test >/dev/null 2>&1 && test "${_test}" = ''; then
+if unset _test >/dev/null 2>&1 && test _"${_test}"_ = __; then
   true;
 else
   unset()
@@ -960,7 +960,7 @@ if _t_e_s_t_f_u_n_c_; then
 else
   local()
   {
-    if test "$1" != ''; then
+    if test _"$1"_ != __; then
       error "overriding global variable \`$1' with local value.";
     fi;
   }
@@ -981,7 +981,7 @@ _t_e_s_t_f_u_n_c_()
 }
 
 _t_e_s_t_f_u_n_c_;
-if test "${_global}" != 'inside' || test "${_clobber}" != 'outside';
+if test _"${_global}"_ != _inside_ || test _"${_clobber}"_ != _outside_;
 then
   error "Cannot assign to global variables from within functions.";
 fi;
@@ -993,9 +993,9 @@ unset _clobber;
 ########################################################################
 # Test of function `sed'.
 #
-if test "$(echo xTesTx \
+if test _"$(echo xTesTx \
            | sed -e 's/^.\([Tt]e*x*sTT*\).*$/\1/' \
-           | sed -e '\|T|s||t|g')" != 'test';
+           | sed -e '\|T|s||t|g')"_ != _test_;
 then
   error 'Test of "sed" command failed.';
 fi;
@@ -1004,7 +1004,7 @@ fi;
 ########################################################################
 # Test of function `cat'.
 #
-if test "$(echo test | cat)" != "test"; then
+if test _"$(echo test | cat)"_ != _test_; then
   error 'Test of "cat" command failed.';
 fi;
 
@@ -1012,12 +1012,12 @@ fi;
 ########################################################################
 # Test for compression.
 #
-if test "$(echo 'test' | gzip -c -d -f - 2>/dev/null)" = 'test'; then
+if test _"$(echo 'test' | gzip -c -d -f - 2>/dev/null)"_ = _test_; then
   _HAS_COMPRESSION='yes';
   if echo 'test' | bzip2 -c 2>/dev/null | bzip2 -t 2>/dev/null \
-     && test "$(echo 'test' | bzip2 -c 2>/dev/null \
-                            | bzip2 -d -c 2>/dev/null)" \
-             = 'test'; then
+     && test _"$(echo 'test' | bzip2 -c 2>/dev/null \
+                            | bzip2 -d -c 2>/dev/null)"_ \
+             = _test_; then
     _HAS_BZIP='yes';
   else
     _HAS_BZIP='no';
@@ -1112,7 +1112,7 @@ base_name()
 # Arguments: 1, a file name.
 # Output: the content of <file>, possibly decompressed.
 #
-if test "${_HAS_COMPRESSION}" = 'yes'; then
+if test _"${_HAS_COMPRESSION}"_ = _yes_; then
   catz()
   {
     func_check catz = 1 "$@";
@@ -1426,7 +1426,7 @@ is_dir()
 is_empty()
 {
   func_check is_empty = 1 "$@";
-  if test "$1" = ''; then
+  if test _"$1"_ = __; then
     eval "${return_yes}";
   fi;
   eval "${return_no}";
@@ -1444,7 +1444,7 @@ is_empty()
 is_equal()
 {
   func_check is_equal = 2 "$@";
-  if test "$1" = "$2"; then
+  if test _"$1"_ = _"$2"_; then
     eval "${return_yes}";
   fi;
   eval "${return_no}";
