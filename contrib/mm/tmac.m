@@ -8,7 +8,7 @@
 .ig
 
 Copyright (C) 1991-2000 Free Software Foundation, Inc.
-mgm is written by Jörgen Hägg <jh@axis.se>
+mgm is written by Jörgen Hägg <jh@axis.com>
 
 mgm is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -1461,7 +1461,13 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .ie ''\\$2' .nr pg*column-sep \\n[pg*column-size]/15
 .el .nr pg*column-sep (n;\\$2)
 .\"
-.nr pg*cols-per-page (u;\\n[.l]/(\\n[pg*column-size]+\\n[pg*column-sep]+1))
+.\" calculate the number of columns/page
+.nr pg*cols-per-page 0
+.nr pg*i \\n[pg*column-size]
+.while \\n[pg*i]<=\\n[.l] \{\
+.	nr pg*cols-per-page \\n[pg*cols-per-page]+1
+.	nr pg*i \\n[pg*i]+\\n[pg*column-sep]+\\n[pg*column-size]
+.\}
 .nr pg*cur-column 0 1
 .nr pg*cur-po \\n[@po]u
 .ll \\n[pg*column-size]u
