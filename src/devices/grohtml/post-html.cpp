@@ -3622,6 +3622,7 @@ void html_printer::lookahead_for_tables (void)
       } else if (g->is_ce() && (start_of_table != NULL)) {
 	add_table_end("*** CE ***");
 	start_of_table->remember_table(tbl);
+ 	tbl = new html_table(&html, -1);
 	start_of_table = NULL;
 	last = NULL;
       } else if (g->is_ta()) {
