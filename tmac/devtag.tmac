@@ -1,5 +1,5 @@
 .ig
-www.tmac - macro package for adding HTML elements to roff documents.
+devtag.tmac - macro package for adding tags to roff documents.
 
 File position: <groff_source_top>/tmac/devtag.tmac
 Installed position: groff's main macro directory.
@@ -35,15 +35,19 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 
 A simple set of macros to provide markup devices (currently only grohtml)
 with tags that define the meaning of the formatted text and also
-basic formatting instructions. It generalises the tag concept used within
+basic formatting instructions.  It generalizes the tag concept used within
 grohtml and in the future it is hoped that more markup based devices
-can capitalise on this work. It also clearly defines those tags which are
-honoured by grohtml. Note that not all tags are included here. Some
-of the grohtml specific tags (header specific and jobname etc) are
-called directly from within www.tmac. The tags defined here are
-reasonably generic and could be applied to the -Tdoc device when it
-is written.
+can capitalize on this work.  It also clearly defines those tags which are
+honoured by grohtml.  Note that not all tags are included here.  Some
+of the grohtml specific tags (header specific and jobname, etc.) are
+called directly from within www.tmac.  The tags defined here are
+reasonably generic and could be applied to other devices.
 ..
+.
+.do if d DEVTAG-NH .nx
+.
+.nr _C \n(.C
+.cp 0
 .
 .\" --------------------------------------------------------------------
 .\" DEVTAG <name>
@@ -112,6 +116,10 @@ is written.
 .de DEVTAG-COL-NEXT
 .   DEVTAG-NEXT ".col \\$1"
 ..
+.
+.
+.cp \n[_C]
+.
 .
 .\" --------------------------------------------------------------------
 .\" Emacs settings
