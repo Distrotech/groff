@@ -173,8 +173,8 @@ resource_manager::resource_manager()
   extern const char *version_string;
   extern const char *revision_string;
   unsigned revision_uint;
-  if ( !read_uint_arg( &revision_string, &revision_uint) )
-	  revision_uint = 0;
+  if (!read_uint_arg(&revision_string, &revision_uint))
+    revision_uint = 0;
   string procset_version(version_string);
   procset_resource = lookup_resource(RESOURCE_PROCSET, procset_name,
 				     procset_version, revision_uint);
@@ -957,8 +957,8 @@ void resource_manager::process_file(int rank, FILE *fp, const char *filename,
     "DocumentSuppliedFiles:",
   };
   
-  const int NHEADER_COMMENTS = (sizeof(header_comment_table)
-				/ sizeof(header_comment_table[0]));
+  const int NHEADER_COMMENTS = sizeof(header_comment_table)
+			       / sizeof(header_comment_table[0]);
   struct comment_info {
     const char *name;
     int (resource_manager::*proc)(const char *, int, FILE *, FILE *);
