@@ -1026,8 +1026,19 @@ static color *lookup_color(symbol nm)
 
 static color *default_black(color *c)
 {
-  if (c == 0)
-    return lookup_color(symbol("black"));
+  symbol b = symbol("black");
+  if (c == 0) {
+    color *black = (color *)color_dictionary.lookup(b);
+    if (black == 0) {
+      warning(WARN_COLOR, "default color `black' not defined");
+      color *tem = new color;
+      tem->set_cmyk((unsigned int)0, (unsigned int)0,
+		    (unsigned int)0, (unsigned int)0);
+      return (color *)color_dictionary.lookup(b, tem);
+    }
+    else
+      return black;
+  }
   else
     return c;
 }
