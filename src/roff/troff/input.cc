@@ -1034,7 +1034,8 @@ static color *default_black(color *c)
       color *tem = new color;
       tem->set_cmyk((unsigned int)0, (unsigned int)0,
 		    (unsigned int)0, (unsigned int)0);
-      return (color *)color_dictionary.lookup(b, tem);
+      (void)color_dictionary.lookup(b, tem);
+      return tem;
     }
     else
       return black;
