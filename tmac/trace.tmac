@@ -5,19 +5,24 @@
 .nr _C \n(.C
 .cp 0
 .
+.do ds !!sp " \"
+.
 .eo
 .
 .rn de !!de
+.
 .
 .!!de de
 .  do ecs
 .  ec
 .  do !!de \$1
-.    ie "\$1"\\$0" .tm *** de trace enter: \\$0 \\$@
-.    el .tm *** de trace enter \$1: \\$0 \\$@
+.    ie "\$1"\\$0" .do tm1 "\\*[!!sp]*** de trace enter: \\$0 \\$@
+.    el .do tm1 "\*[!!sp]*** trace enter \$1: \\$0 \\$@
+.    do as !!sp " \"
 .    do nop \\*[!!\$1]\\
-.    ie "\$1"\\$0" .tm *** trace exit: \\$0 \\$@
-.    el .tm *** trace exit \$1: \\$0 \\$@
+.    do substring !!sp 1
+.    ie "\$1"\\$0" .do tm1 "\\*[!!sp]*** trace exit: \\$0 \\$@
+.    el .do tm1 "\*[!!sp]*** trace exit \$1: \\$0 \\$@
 \..
 .
 .  do ds !!d1 !!\$1
@@ -33,11 +38,13 @@
 .  do ecs
 .  ec
 .  do !!am \$1
-.    ie "\$1"\\$0" .tm *** am trace enter: \\$0 \\$@
-.    el .tm *** am trace enter \$1: \\$0 \\$@
+.    ie "\$1"\\$0" .do tm1 "\\*[!!sp]*** am trace enter: \\$0 \\$@
+.    el .do tm1 "\*[!!sp]*** am trace enter \$1: \\$0 \\$@
+.    as !!sp " \"
 .    do nop \\*[!!\$1]\\
-.    ie "\$1"\\$0" .tm *** trace exit: \\$0 \\$@
-.    el .tm *** trace exit \$1: \\$0 \\$@
+.    substring !!sp 1
+.    ie "\$1"\\$0" .do tm1 "\\*[!!sp]*** trace exit: \\$0 \\$@
+.    el .do tm1 "\*[!!sp]*** trace exit \$1: \\$0 \\$@
 \..
 .
 .  do ds !!a1 !!\$1
