@@ -167,14 +167,29 @@ int main(int argc, char **argv)
       break;
     case 'v':
     case 'C':
-      commands[SOELIM_INDEX].append_arg(buf);
-      commands[PIC_INDEX].append_arg(buf);
-      commands[GRAP_INDEX].append_arg(buf);
-      commands[TBL_INDEX].append_arg(buf);
-      commands[GRN_INDEX].append_arg(buf);
-      commands[EQN_INDEX].append_arg(buf);
-      commands[TROFF_INDEX].append_arg(buf);
-      break;
+      {
+	extern const char *Version_string;
+	fprintf(stderr,
+		"GNU groff version %s\n", Version_string);
+	fprintf(stderr,
+		"Copyright (C) 2000 Free Software Foundation, Inc.\n"
+		"GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
+		"You may redistribute copies of groff and its subprograms\n"
+		"under the terms of the GNU General Public License.\n"
+		"For more information about these matters, see the file named COPYING.\n");
+	fprintf(stderr, "\ncalled subprograms:\n\n");
+	fflush(stderr);
+	commands[SOELIM_INDEX].append_arg(buf);
+	commands[REFER_INDEX].append_arg(buf);
+	commands[PIC_INDEX].append_arg(buf);
+	commands[GRAP_INDEX].append_arg(buf);
+	commands[TBL_INDEX].append_arg(buf);
+	commands[GRN_INDEX].append_arg(buf);
+	commands[EQN_INDEX].append_arg(buf);
+	commands[TROFF_INDEX].append_arg(buf);
+	commands[POST_INDEX].append_arg(buf);
+	break;
+      }
     case 'N':
       commands[EQN_INDEX].append_arg(buf);
       break;

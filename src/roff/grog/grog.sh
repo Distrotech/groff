@@ -15,7 +15,10 @@ do
 	-)
 		break;;
 	-C)
-		sp=; opts="$opts -C"; shift;;
+		sp=; opts="$opts -C"; shift; break;;
+	-v)
+		echo "GNU grog version @VERSION@"
+		exit 0;;
 	-*)
 		opts="$opts $arg"; shift;;
 	*)

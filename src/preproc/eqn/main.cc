@@ -253,7 +253,7 @@ int main(int argc, char **argv)
     case 'C':
       compatible_flag = 1;
       break;
-    case 'R':			// don't load eqnchar
+    case 'R':			// don't load eqnrc
       load_startup_file = 0;
       break;
     case 'M':
@@ -264,6 +264,7 @@ int main(int argc, char **argv)
 	extern const char *Version_string;
 	fprintf(stderr, "GNU eqn version %s\n", Version_string);
 	fflush(stderr);
+	exit(0);
 	break;
       }
     case 'd':

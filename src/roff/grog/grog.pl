@@ -13,6 +13,7 @@ push(@command, "groff");
 while ($ARGV[0] =~ /^-./) {
     $arg = shift(@ARGV);
     $sp = "" if $arg eq "-C";
+    &usage(0) if $arg eq "-v";
     last if $arg eq "--";
     push(@command, $arg);
 }
@@ -124,6 +125,12 @@ sub process {
 	}
     }
     close(FILE);
+}
+
+sub usage {
+    local($exit_status) = $_;
+    print "GNU groff version @VERSION@\n";
+    exit $exit_status;
 }
 
 if ($pic || $tbl || $eqn || $grn || $grap || $refer) {

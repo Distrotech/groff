@@ -339,7 +339,7 @@ int main(int argc, char **argv)
 	  extern const char *Version_string;
 	  fprintf(stderr, "GNU refer version %s\n", Version_string);
 	  fflush(stderr);
-	  opt++;
+	  exit(0);
 	  break;
 	}
       case '-':

@@ -64,6 +64,7 @@ int main(int argc, char **argv)
 	extern const char *Version_string;
 	fprintf(stderr, "post-grohtml version %s\n", Version_string);
 	fflush(stderr);
+	exit(0);
 	break;
       }
     case 'F':

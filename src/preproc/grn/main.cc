@@ -265,6 +265,7 @@ main(int argc,
 	extern const char *Version_string;
 	fprintf(stderr, "GNU grn version %s\n", Version_string);
 	fflush(stderr);
+	exit(0);
 	break;
       }
       case 'C':		/* compatibility mode */

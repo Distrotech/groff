@@ -726,6 +726,7 @@ int main(int argc, char **argv)
 	extern const char *Version_string;
 	fprintf(stderr, "GNU pre-grohtml version %s\n", Version_string);
 	fflush(stderr);
+	exit(0);
       }
     } else {
       ok = do_file(argv[i]);

@@ -720,6 +720,7 @@ int main(int argc, char **argv)
 				fprintf(stderr, "grolbp version %s\n",\
 				version_string);
 				fflush(stderr);
+				exit(0);
 				break;
       				};
 		  case 'o'  : {
