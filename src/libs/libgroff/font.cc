@@ -98,7 +98,7 @@ int text_file::next()
   if (fp == 0)
     return 0;
   if (buf == 0) {
-    buf = new char [128];
+    buf = new char[128];
     size = 128;
   }
   for (;;) {
@@ -159,6 +159,9 @@ font::font(const char *s)
 
 font::~font()
 {
+  for (int i = 0; i < ch_used; i++)
+    if (ch[i].special_device_coding)
+      a_delete ch[i].special_device_coding;
   a_delete ch;
   a_delete ch_index;
   if (kern_hash_table) {
@@ -669,20 +672,15 @@ int font::load(int *not_found)
 	    t.error("bad code `%1' for character `%2'", p, nm);
 	    return 0;
 	  }
-
 	  p = strtok(0, WS);
 	  if ((p == NULL) || (strcmp(p, "--") == 0)) {
 	    metric.special_device_coding = NULL;
-	  } else {
-	    char *name=(char *)malloc(strlen(p)+1);
-
-	    if (name == NULL) {
-	      fatal("malloc failed while reading character encoding");
-	    }
+	  }
+	  else {
+	    char *name = new char[strlen(p) + 1];
 	    strcpy(name, p);
 	    metric.special_device_coding = name;
 	  }
-
 	  if (strcmp(nm, "---") == 0) {
 	    last_index = number_to_index(metric.code);
 	    add_entry(last_index, metric);

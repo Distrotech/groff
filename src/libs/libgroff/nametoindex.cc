@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -45,7 +45,6 @@ private:
   int ascii_index[256];
   int small_number_index[NSMALL];
   PTABLE(int) table;
-  int lookup_char(const char *, int);
 };
 
 character_indexer::character_indexer()
