@@ -23,7 +23,7 @@
 .\"
 .\"
 .\"
-\# Version 1.1.6-d
+\# Version 1.1.6-e
 \# ---------------
 \#
 .if (\n[.x]\n[.y] < 118) \
@@ -410,9 +410,6 @@
 \#   multiplied by #AUTOLEAD_VALUE instead of the two being added
 \#   together.
 \#
-\#   When AUTOLEAD is turned off, the leading reverts to the leading value
-\#   in effect prior to invoking AUTOLEAD.
-\#
 .MAC AUTOLEAD END
 .    if \\n[#PRINT_STYLE]=1 \{ .return \}
 .    if \\n[#IGNORE]        \{ .return \}
@@ -490,7 +487,7 @@
 \#  separately with ".char".
 \#
 \#  As of v. 1.18, one can pass arguments to inline strings/macros,
-\#  hence it is now possible to do \*[BU #] where #, inline, is the desired
+\#  hence it is now possible to do \*[BU n] where n, inline, is the desired
 \#  number of kern units.  The original .char definitions have been left in
 \#  for backward compatibility with documents created prior to mom-1.1.3c.
 \#
@@ -1216,23 +1213,23 @@
 \#   Typesetting tabs are set with TAB_SET, which requires a tab number,
 \#   an indent (offset) from the left margin and a length (optionally
 \#   with a quad direction and an instruction to fill lines).  After tabs
-\#   are set with TS, they are called with .TAB <#>, where <#>
+\#   are set with TS, they are called with .TAB n, where "n"
 \#   corresponds to the number passed to TAB_SET as a valid tab number.
 \#
 \#   String tabs allow the user to mark off tab positions inline.  Tab
 \#   indents and lengths are calculated from the beginning and end
 \#   positions of the marks.  Up to 19 string tabs may be created,
-\#   numbered 1-19.  Once created, they are called with .TAB <#>,
+\#   numbered 1-19.  Once created, they are called with .TAB n,
 \#   just like typesetting tabs.
 \#
 \#   Setting up string tabs is a two-step procedure.  First, the user
 \#   enters an input line in which s/he wants to mark off string tabs.
-\#   The beginning of a tab is marked with \*[ST<#>], where <#> is
+\#   The beginning of a tab is marked with \*[STn], where "n" is
 \#   the desired number of the tab.  The end of the the tab is marked
-\#   with \*[ST<#>X].  All ST's must have a matching STX.  String tabs
+\#   with \*[STnX].  All ST's must have a matching STX.  String tabs
 \#   may be nested.
 \#
-\#   Next, the user invokes .ST <#> for every string tab defined, and
+\#   Next, the user invokes .ST n for every string tab defined, and
 \#   optionally passes quad information to it.  That done, string tabs
 \#   can be called just like typesetting tabs.
 \#
@@ -1320,11 +1317,11 @@
 \# *Arguments:
 \#   <#>  ident(ipPcm)  length(ipPcm)  [L | R | C | J [QUAD]]
 \# *Function:
-\#   Creates macros TAB<#> and TAB <#>, where # is any arbitrary number.
-\#   TAB# is a typesetting tab (i.e. a tab defined as an indent
+\#   Creates macros TABn and TAB n, where "n" is any arbitrary number.
+\#   TABn is a typesetting tab (i.e. a tab defined as an indent
 \#   from the page left offset plus a line length.)
 \# *Notes:
-\#   <#>    = arbitrary digit to identify the tab
+\#   n      = arbitrary digit to identify the tab
 \#   indent = indent from left margin; unit of measure required
 \#   length = length of tab (unit of measure required; can be
 \#            \w'<string>'u--if more than one word in string, surround
@@ -1350,7 +1347,7 @@
 \#   means exactly the same thing, except that input lines are joined and
 \#   the area delimted by the tab filled with centered text.
 \#
-\#   TAB <#> can be called at any time after being set.
+\#   TAB n can be called at any time after being set.
 \#
 \#   Tabs are NOT columnar in behaviour.  If the text inside a
 \#   tab runs to several lines, when you call the next tab a break
@@ -1365,7 +1362,7 @@
 \#   If you want to reset tabs, you must use .TQ before .TAB_SET.
 \#
 \#   Note that indents are turned off automatically whenever a new
-\#   tab is called with TAB #.
+\#   tab is called with TAB n.
 \#
 \#   Tabs themselves are user-invoked using the TAB macro with a numeric
 \#   argument, e.g. TAB 1.
@@ -3235,7 +3232,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ds $COPY_STYLE \\$1
 .    if '\\*[$COPY_STYLE]'DRAFT' \{\
 .       nr #COPY_STYLE 1
-.       if !r#DRAFT \{ .DRAFT 1 \}
+.       if !d$DRAFT \{ .DRAFT 1 \}
 .    \}
 .    if '\\*[$COPY_STYLE]'FINAL' \{ .nr #COPY_STYLE 2         \}
 .    if !d$CHAPTER_STRING        \{ .CHAPTER_STRING "Chapter" \}
@@ -3251,14 +3248,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                ds $HDRFTR_CENTER
 .             \}
 .             el \{\
-.                ie !\\n[#REVISION] \{\
+.                ie '\\*[$REVISION]'' \{\
 .                   ds $HDRFTR_CENTER \
-                    \\*[$DRAFT_STRING] \\n[#DRAFT]
+                    \\*[$DRAFT_STRING]\\*[$DRAFT]
 .                \}
 .                el \{\
 .                   ds $HDRFTR_CENTER \
-                    \\*[$DRAFT_STRING] \\n[#DRAFT], \
-                    \\*[$REVISION_STRING] \\n[#REVISION]
+                    \\*[$DRAFT_STRING]\\*[$DRAFT], \
+                    \\*[$REVISION_STRING] \\*[$REVISION]
 .                \}
 .             \}
 .          \}
@@ -3288,65 +3285,115 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .                el \{\
 .                   ie !'\\*[$CHAPTER_TITLE]'' \{\
-.                      ds \\*[$CHAPTER_TITLE]
+.                      ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                   \}
 .                   el \{ .ds $HDRFTR_CENTER \\*[$CHAPTER_STRING] \\*[$CHAPTER] \}
 .                \}
 .             \}
 .             el \{\
-.                ie !\\n[#REVISION] \{\
+.                ie '\\*[$REVISION]'' \{\
 .                   ie '\\*[$CHAPTER]'' \{\
 .                      ie !'\\*[$CHAPTER_TITLE]'' \{\
-.                         ds $HDRFTR_CENTER \
-                          \\*[$CHAPTER_TITLE], \
-                          \\*[$DRAFT_STRING] \\n[#DRAFT]
+.                         ie '\\*[$DRAFT]'' \{\
+.                            ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
+.                         \}
+.                         el \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_TITLE], \
+                             \\*[$DRAFT_STRING]\\*[$DRAFT]
+.                         \}
 .                      \}
 .                      el \{\
-.                         ds $HDRFTR_CENTER \
-                          \\*[$CHAPTER_STRING], \
-                          \\*[$DRAFT_STRING] \\n[#DRAFT]
+.                         ie '\\*[$DRAFT]'' \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_STRING]
+.                         \}
+.                         el \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_STRING], \
+                             \\*[$DRAFT_STRING]\\*[$DRAFT]
+.                         \}
 .                      \}
 .                   \}
 .                   el \{\
 .                      ie !'\\*[$CHAPTER_TITLE]'' \{\
-.                         ds $HDRFTR_CENTER \
-                          \\*[$CHAPTER_TITLE], \
-                          \\*[$DRAFT_STRING] \\n[#DRAFT]
+.                         ie '\\*[$DRAFT]'' \{\
+.                            ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
+.                         \}
+.                         el \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_TITLE], \
+                             \\*[$DRAFT_STRING]\\*[$DRAFT]
+.                         \}
 .                      \}
 .                      el \{\
-.                         ds $HDRFTR_CENTER \
-                          \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
-                          \\*[$DRAFT_STRING] \\n[#DRAFT]
+.                         ie '\\*[$DRAFT]'' \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_STRING] \\*[$CHAPTER]
+.                         \}
+.                         el \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
+                             \\*[$DRAFT_STRING]\\*[$DRAFT]
+.                         \}
 .                      \}
 .                   \}
 .                \}
 .                el \{\
 .                   ie '\\*[$CHAPTER]'' \{\
 .                      ie !'\\*[$CHAPTER_TITLE]'' \{\
-.                         ds $HDRFTR_CENTER \
-                          \\*[$CHAPTER_TITLE], \
-                          \\*[$DRAFT_STRING] \\n[#DRAFT], \
-                          \\*[$REVISION_STRING] \\n[#REVISION] 
+.                         ie '\\*[$DRAFT]'' \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_TITLE], \
+                             \\*[$REVISION_STRING] \\*[$REVISION] 
+.                         \}
+.                         el \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_TITLE], \
+                             \\*[$DRAFT_STRING]\\*[$DRAFT], \
+                             \\*[$REVISION_STRING] \\*[$REVISION] 
+.                         \}
 .                      \}
 .                      el \{\
-.                         ds $HDRFTR_CENTER \
-                          \\*[$CHAPTER_STRING], \
-                          \\*[$DRAFT_STRING] \\n[#DRAFT], \
-                          \\*[$REVISION_STRING] \\n[#REVISION] 
+.                         ie '\\*[$DRAFT]'' \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_STRING], \
+                             \\*[$REVISION_STRING] \\*[$REVISION] 
+.                         \}
+.                         el \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_STRING], \
+                             \\*[$DRAFT_STRING]\\*[$DRAFT], \
+                             \\*[$REVISION_STRING] \\*[$REVISION] 
+.                         \}
 .                      \}
 .                   \}
 .                   el \{\
 .                      ie !'\\*[$CHAPTER_TITLE]'' \{\
-.                         ds $HDRFTR_CENTER \
-                          \\*[$CHAPTER_TITLE], \
-                          \\*[$DRAFT_STRING] \\n[#DRAFT], \
-                          \\*[$REVISION_STRING] \\n[#REVISION] 
+.                         ie '\\*[$DRAFT]'' \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_TITLE], \
+                             \\*[$REVISION_STRING] \\*[$REVISION] 
+.                         \}
+.                         el \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_TITLE], \
+                             \\*[$DRAFT_STRING]\\*[$DRAFT], \
+                             \\*[$REVISION_STRING] \\*[$REVISION] 
+.                         \}
 .                      \}
 .                      el \{\
-.                         ds $HDRFTR_CENTER \
-                          \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
-                          \\*[$DRAFT_STRING] \\n[#DRAFT], \
-                          \\*[$REVISION_STRING] \\n[#REVISION] 
+.                         ie '\\*[$DRAFT]'' \{\
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
+                             \\*[$REVISION_STRING] \\*[$REVISION] 
+.                         \}
+.                         el \{
+.                            ds $HDRFTR_CENTER \
+                             \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
+                             \\*[$DRAFT_STRING]\\*[$DRAFT], \
+                             \\*[$REVISION_STRING] \\*[$REVISION] 
+.                         \}
 .                      \}
 .                   \}
 .                \}
@@ -3387,16 +3434,28 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          el \{\
 .             if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{\
-.                ie !\\n[#REVISION] \{\
-.                   ds $HDRFTR_CENTER \
-                    \\*[$DOC_TYPE], \
-                    \\*[$DRAFT_STRING] \\n[#DRAFT]
+.                ie '\\*[$REVISION]'' \{\
+.                   ie '\\*[$DRAFT]'' \{\
+.                      ds $HDRFTR_CENTER \\*[$DOC_TYPE]
+.                   \}
+.                   el \{\
+.                      ds $HDRFTR_CENTER \
+                       \\*[$DOC_TYPE], \
+                       \\*[$DRAFT_STRING]\\*[$DRAFT]
+.                   \}
 .                \}
 .                el \{\
-.                   ds $HDRFTR_CENTER \
-                    \\*[$DOC_TYPE], \
-                    \\*[$DRAFT_STRING] \\n[#DRAFT], \
-                    \\*[$REVISION_STRING] \\n[#REVISION]
+.                   ie '\\*[$DRAFT]'' \{\
+.                      ds $HDRFTR_CENTER \
+                       \\*[$DOC_TYPE], \
+                       \\*[$REVISION_STRING] \\*[$REVISION]
+.                   \}
+.                   el \{\
+.                      ds $HDRFTR_CENTER \
+                       \\*[$DOC_TYPE], \
+                       \\*[$DRAFT_STRING]\\*[$DRAFT], \
+                       \\*[$REVISION_STRING] \\*[$REVISION]
+.                   \}
 .                \}
 .             \}
 .          \}
@@ -3446,12 +3505,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC DRAFT END \"Draft number
-.    nr #DRAFT \\$1
+.    ie '\\$1'' \{ .ds $DRAFT \}
+.    el         \{ .ds $DRAFT " \\$1\}
 .END
 \#
 \#
 .MAC REVISION END \"Revision number
-.    nr #REVISION \\$1
+.    ds $REVISION \\$1
 .END
 \#
 \#
@@ -8548,8 +8608,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       rr #TOC_FIRST_PAGE
 .    \}
 .    ie \\n[#DRAFT_WITH_PAGENUM] \{\
-.       ie !\\n[#REVISION] \{ .PRINT "\\*[$DRAFT_STRING] \\n[#DRAFT] / \\n[#PAGENUMBER]" \}
-.       el \{ .PRINT "\\*[$DRAFT_STRING] \\n[#DRAFT], \\*[$REVISION_STRING] \\n[#REVISION] / \\n[#PAGENUMBER]" \}
+.       ie '\\*[$REVISION]'' \{\
+.          PRINT "\\*[$DRAFT_STRING]\\*[$DRAFT] / \\n[#PAGENUMBER]"
+.       \}
+.       el \{\
+.          ie '\\*[$DRAFT]'' \{\
+.             PRINT "\\*[$REVISION_STRING] \\*[$REVISION] / \\n[#PAGENUMBER]"
+.          \}
+.          el \{\
+.             PRINT "\\*[$DRAFT_STRING]\\*[$DRAFT], \\*[$REVISION_STRING] \\*[$REVISION] / \\n[#PAGENUMBER]"
+.          \}
+.       \}
 .    \}
 .    el \{\
 .       ie \\n[#PAGE_NUM_HYPHENS] \{ .PRINT "- \\n[#PAGENUMBER] -" \}

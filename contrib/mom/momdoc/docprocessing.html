@@ -856,14 +856,29 @@ Macro: <strong>DRAFT</strong> <var>&lt;draft #&gt;</var>
 <a href="#COPYSTYLE">COPYSTYLE DRAFT</a>.
 If the <strong>COPYSTYLE</strong> is <strong>FINAL</strong> (the
 default), <strong>mom</strong> ignores <strong>DRAFT</strong>.
-<strong>DRAFT</strong> only accepts a
-<a href="definitions.html#TERMS_NUMERICARGUMENT">numeric argument</a>.
+<strong>DRAFT</strong> accepts both alphabetic and numeric
+arguments, hence it's possible to do either
 <p>
-<strong>Mom</strong> prints the draft number beside the word
-&quot;Draft&quot; in the middle part of
+<pre>
+	.DRAFT 2
+	   or
+	.DRAFT Two
+</pre>
+
+<strong>Mom</strong> prints the argument to <strong>.DRAFT</strong>
+(i.e. the draft number) beside the word &quot;Draft&quot; in the
+middle part of
 <a href="definitions.html#TERMS_HEADER">page headers</a>.
 <p>
-<a name="DRAFT_STRING"><strong>DRAFT STRING</strong></a>
+<strong>A small word of caution:</strong> If your argument to
+<strong>.DRAFT</strong> is more than one word long, you must
+enclose the argument in double-quotes.
+<p>
+You may, if you wish, invoke <strong>.DRAFT</strong> without an
+argument, in which case, no draft number will be printed beside
+&quot;Draft&quot; in headers or footers.
+<p>
+<a name="DRAFT_STRING"><strong>DRAFT_STRING</strong></a>
 <p>
 If you're not writing in English, you can ask <strong>mom</strong>
 to use the word for draft in your own language by telling
@@ -873,6 +888,28 @@ like this:
 <pre>
 	.DRAFT_STRING "Jet"
 </pre>
+
+Equally, <strong>DRAFT_STRING</strong> can be used to roll your own
+solution to something other than the word &quot;Draft.&quot;  For
+example, you might want &quot;Trial run alpha-three&quot; to appear
+in the headers of a draft version.  You'd accomplish this by doing
+<p>
+<pre>
+	.DRAFT alpha-three
+	.DRAFT_STRING "Trial run
+</pre>
+
+<strong>.DRAFT</strong> without an argument, above, ensures that
+only the <strong>DRAFT_STRING</strong> gets printed.
+<p>
+<strong>NOTE:</strong> If you define both a blank <strong>.DRAFT</strong>
+and a blank <strong>.DRAFT_STRING</strong>, <strong>mom</strong>
+skips the draft field in headers entirely.  If this is what you
+want, this is also the only way to do it.  Simply leaving out
+<strong>.DRAFT</strong> and <strong>.DRAFT_STRING</strong> will
+result in <strong>mom</strong> using her default, which is to print
+&quot;Draft 1&quot;.
+<br>
 
 <!---REVISION--->
 
@@ -886,24 +923,69 @@ Macro: <strong>REVISION</strong> <var>&lt;revision #&gt;</var>
 <a href="#COPYSTYLE">COPYSTYLE DRAFT</a>.
 If the <strong>COPYSTYLE</strong> is <strong>FINAL</strong>
 (the default), <strong>mom</strong> ignores the
-<strong>REVISION</strong> macro.  <strong>REVISION</strong> only
-accepts a
-<a href="definitions.html#TERMS_NUMERICARGUMENT">numeric argument</a>.
+<strong>REVISION</strong> macro. <strong>REVISION</strong> accepts
+both alphabetic and numeric arguments, hence it's possible to do
+either
 <p>
+<pre>
+	.REVISION 2
+	   or
+	.REVISION Two
+</pre>
+
 <strong>Mom</strong> prints the revision number beside the shortform
 &quot;Rev.&quot; in the middle part of
 <a href="definitions.html#TERMS_HEADER">page headers</a>.
 <p>
-<a name="REVISION_STRING"><strong>REVISION STRING</strong></a>
+<strong>A small word of caution:</strong> If your argument to
+<strong>.REVISION</strong> is more than one word long, you must
+enclose the argument in double-quotes.
+<p>
+You may, if you wish, invoke <strong>.REVISION</strong> without an
+argument, in which case, no revision number will be printed beside
+&quot;Rev.&quot; in headers or footers.
+<p>
+<a name="REVISION_STRING"><strong>REVISION_STRING</strong></a>
 <p>
 If you're not writing in English, you can ask <strong>mom</strong>
-to use the word for revision, or a shortform therof in your own language
-by telling her what it is with the <strong>REVISION_STRING</strong>
-macro, like this:
+to use the word for revision, or a shortform therof, in
+your own language by telling her what it is with the
+<strong>REVISION_STRING</strong> macro, like this:
 <p>
 <pre>
 	.REVISION_STRING "Rév."
 </pre>
+
+Additionally, you may sometimes want to make use of
+<strong>mom</strong>'s
+<a href="#COPYSTYLE">COPYSTYLE DRAFT</a>
+but not actually require any draft information.  For example, you
+might like <strong>mom</strong> to indicate only the revision number
+of your document.  The way to do that is to define an empty
+<strong>.DRAFT</strong> and <strong>.DRAFT_STRING</strong> in
+addition to <strong>.REVISION</strong>, like this:
+<p>
+<pre>
+	.DRAFT
+	.DRAFT_STRING
+	.REVISION 2
+</pre>
+
+<p>
+Equally, if you want to roll your own solution to what revision
+information appears in headers, you could do something like this:
+<pre>
+	.DRAFT
+	.DRAFT_STRING
+	.REVISION "two-twenty-two"
+	.REVISION_STRING "Revision"
+</pre>
+
+<p>
+The above, naturally, has no draft information.  If you want to
+roll your own <strong>.DRAFT</strong> and/or
+<strong>.DRAFT_STRING</strong> as well, simply supply arguments to
+either or both.
 <hr>
 
 <!========================================================================>
