@@ -50,6 +50,7 @@ int is_prime(unsigned);
 #endif
 
 #ifndef HAVE_SNPRINTF
+#include <stdarg.h>
 extern "C" {
   int snprintf(char *, size_t, const char *, /*args*/ ...);
   int vsnprintf(char *, size_t, const char *, va_list);
