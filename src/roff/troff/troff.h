@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -88,3 +88,7 @@ int warning(warning_type, const char *,
 	    const errarg & = empty_errarg,
 	    const errarg & = empty_errarg,
 	    const errarg & = empty_errarg);
+int output_warning(warning_type, const char *,
+		   const errarg & = empty_errarg,
+		   const errarg & = empty_errarg,
+		   const errarg & = empty_errarg);

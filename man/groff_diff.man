@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 15 Apr 2002
+Last update : 11 May 2002
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -1913,6 +1913,36 @@ are special and will be searched for characters not in the current
 font.
 .
 .TP
+.BI .spreadwarn\  limit
+Make
+.B troff
+emit a warning if the additional space inserted for each space between
+words in an output line is larger or equal to
+.IR limit .
+.
+A negative value is changed to zero; no argument toggles the warning on
+and off without changing
+.IR limit .
+.
+The default scaling indicator is\~\c
+.BR m .
+.
+At startup,
+.B spreadwarn
+is deactivated, and
+.I limit
+is set to 3m.
+.
+For example,
+.B .spreadwarn\ 0.2m
+will cause a warning if
+.B troff
+must add 0.2m or more for each interword space in a line.
+.
+This request is active only if text is justified to both margins (using
+.BR .ad\ b ).
+.
+.TP
 .BI .sty\  n\ f
 Associate style\~\c
 .I f
@@ -2206,6 +2236,24 @@ will disable all warnings except that about missing characters.
 If
 .I n
 is not given, all warnings will be enabled.
+.
+.TP
+.BI .warnscale\  si
+Set the scaling indicator used in warnings to
+.IR si .
+.
+Valid values for
+.I si
+are
+.BR u ,
+.BR i ,
+.BR c ,
+.BR p ,
+and
+.BR P .
+.
+At startup, it is set to\~\c
+.BR i .
 .
 .TP
 .BI .while \ c\ anything

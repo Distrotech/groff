@@ -2,7 +2,7 @@
 .ig
 groff.man
 
-Last update: 21 Apr 2002
+Last update: 11 May 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -746,21 +746,21 @@ There is a sophisticated interface for handling tab positions.
 A
 .B numerical value
 is a signed or unsigned integer or float with or without an appended
-scale indicator.
+scaling indicator.
 .
 A
-.B scale indicator
+.B scaling indicator
 is a one-character abbreviation for a unit of measurement.
 .
-A number followed by a scale indicator signifies a size value.
+A number followed by a scaling indicator signifies a size value.
 .
-By default, numerical values do not have a scale indicator, i.e., they
+By default, numerical values do not have a scaling indicator, i.e., they
 are normal numbers.
 .
 .P
 The
 .I roff
-language defines the following scale indicators.
+language defines the following scaling indicators.
 .
 .
 .P
@@ -1385,7 +1385,7 @@ or
 .BR grey .
 .I component
 can be single components specified as fractions in the range 0 to 1
-(default scale indicator\~\c
+(default scaling indicator\~\c
 .scaleindicator f ),
 as a string of two-digit hexadecimal color components with a leading
 .BR # ,
@@ -1436,7 +1436,7 @@ but with compatibility mode switched off during string expansion.
 .REQ .dt N trap
 Set diversion trap to position
 .I N
-(default scale indicator\~\c
+(default scaling indicator\~\c
 .scaleindicator v ).
 .
 .REQ .ec
@@ -1610,7 +1610,7 @@ Switch to hyphenation mode
 .REQ .hym n
 Set the hyphenation margin to
 .I n
-(default scale indicator\~\c
+(default scaling indicator\~\c
 .scaleindicator m ).
 .
 .REQ .hys n
@@ -1647,7 +1647,7 @@ Change to previous indent value.
 .REQ .in \[+-]N
 Change indent according to
 .I \[+-]N
-(default scale indicator\~\c
+(default scaling indicator\~\c
 .scaleindicator m ).
 .
 .REQ .it N trap
@@ -1710,7 +1710,7 @@ Set line length according to
 .I \[+-]N
 (default size
 .scalednumber 6.5 i ,
-default scale indicator\~\c
+default scaling indicator\~\c
 .scaleindicator m ).
 .
 .REQ .ls
@@ -1724,7 +1724,7 @@ i.e.,
 blank lines are inserted after each text output line.
 .
 .REQ .lt \[+-]N
-Length of title (default scale indicator\~\c
+Length of title (default scaling indicator\~\c
 .scaleindicator m ).
 .
 .REQ .mc
@@ -1740,7 +1740,7 @@ Set margin character to
 .I c
 and distance to
 .I N
-from right margin (default scale indicator\~\c
+from right margin (default scaling indicator\~\c
 .scaleindicator m ).
 .
 .REQ .mk register
@@ -1761,7 +1761,7 @@ Need a one-line vertical space.
 .REQ .ne N
 Need
 .I N
-vertical space (default scale indicator\~\c
+vertical space (default scaling indicator\~\c
 .scaleindicator v ).
 .
 .REQ .nf
@@ -1850,7 +1850,7 @@ The current page length is stored in
 .REQ .pl \[+-]N
 Change page length to
 .I \[+-]N
-(default scale indicator\~\c
+(default scaling indicator\~\c
 .scaleindicator v ).
 .
 .REQ .pm
@@ -1903,7 +1903,7 @@ Change to previous post-vertical line spacing.
 .REQ .pvs \[+-]N
 Change post-vertical line spacing according to
 .I \[+-]N
-(default scale indicator\~\c
+(default scaling indicator\~\c
 .scaleindicator p ).
 .
 .REQ .rchar c1 c2 .\|.\|.\&
@@ -1949,7 +1949,7 @@ Restore spacing; turn no-space mode off.
 .REQ .rt \[+-]N
 Return
 .I (upward only)
-to marked vertical place (default scale indicator\~\c
+to marked vertical place (default scaling indicator\~\c
 .scaleindicator v ).
 .
 .REQ .shc
@@ -1992,6 +1992,15 @@ Fonts
 .IR s2 ,
 etc.\& are special and will be searched for characters not in the
 current font.
+.
+.REQ .spreadwarn
+Toggle the spread warning on and off without changing its value.
+.
+.REQ .spreadwarn limit
+Emit a warning if each space in an output line is widened by
+.I limit
+or more (default scaling indicator\~\c
+.scaleindicator m ).
 .
 .REQ .ss N
 Space-character size set to
@@ -2162,7 +2171,7 @@ Change to previous vertical base line spacing.
 .REQ .vs \[+-]N
 Set vertical base line spacing according to
 .I \[+-]N
-(default scale indicator\~\c
+(default scaling indicator\~\c
 .scaleindicator p ).
 Default value is
 .scalednumber 12 p .
@@ -2170,6 +2179,10 @@ Default value is
 .REQ .warn n
 Set warnings code to
 .IR n .
+.
+.REQ .warnscale si
+Set scaling indicator used in warnings to
+.IR si .
 .
 .REQ .wh N
 Remove (first) trap at position

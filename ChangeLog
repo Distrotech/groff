@@ -1,3 +1,26 @@
+2002-05-11  Werner LEMBERG  <wl@gnu.org>
+
+	Adding `warnscale' and `spreadwarn' requests, based on a patch from
+	Jeffrey Friedl <jfriedl@yahoo.com>.
+
+	* src/roff/troff/input.cc (spread_limit, warn_scale,
+	warn_scaling_indicator): New global variables.
+	(warnscale_request, spreadwarn_requests): New functions.
+	(main): Initialize `warn_scale' and `warn_scaling_indicator'.
+	(init_input_requests): Updated.
+	(error_type): Add `OUTPUT_WARNING'.
+	(do_error): Handle it.
+	(output_warning): New warning function which shows output location.
+	* src/roff/troff/env.h (spread_limit): New external variable.
+	* src/roff/troff/env.cc (environment::choose_breakpoint): Use
+	`output_warning'.
+	(distribute_space): Emit warning if added space is larger than
+	`spread_limit'.
+	(environment::possibly_break_line): Emit warning if a line can't
+	be adjusted on both sides.
+
+	* doc/groff.texinfo, man/groff_diff.man, man/groff.man: Document it.
+
 2002-05-08  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/node.cc (special_node::special_node): Use

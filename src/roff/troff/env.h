@@ -356,6 +356,8 @@ void init_environments();
 void read_hyphen_file(const char *name);
 void title();
 
+extern double spread_limit;
+
 extern int break_flag;
 extern symbol default_family;
 extern int translate_space_to_dummy;

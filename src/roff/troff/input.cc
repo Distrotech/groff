@@ -122,6 +122,11 @@ int have_input = 0;		// whether \f, \H, \R, \s, or \S has
 int tcommand_flag = 0;
 int safer_flag = 1;		// safer by default
 
+double spread_limit = -3.0 - 1.0;	// negative means deactivated
+
+double warn_scale;
+char warn_scaling_indicator;
+
 search_path *mac_path = &safer_macro_path;
 
 static int get_copy(node**, int = 0);
@@ -5604,6 +5609,47 @@ void write_macro_request()
   skip_line();
 }
 
+void warnscale_request()
+{
+  if (has_arg()) {
+    char c = tok.ch();
+    if (c == 'u')
+      warn_scale = 1.0;
+    else if (c == 'i')
+      warn_scale = (double)units_per_inch;
+    else if (c == 'c')
+      warn_scale = (double)units_per_inch / 2.54;
+    else if (c == 'p')
+      warn_scale = (double)units_per_inch / 72.0;
+    else if (c == 'P')
+      warn_scale = (double)units_per_inch / 6.0;
+    else {
+      warning(WARN_SCALE,
+	      "invalid scaling indicator `%1', using `i' instead", c);
+      c = 'i';
+    }
+    warn_scaling_indicator = c;
+  }
+  skip_line();
+}
+
+void spreadwarn_request()
+{
+  hunits n;
+  if (has_arg() && get_hunits(&n, 'm')) {
+    if (n < 0)
+      n = 0;
+    hunits em = curenv->get_size();
+    spread_limit = (double)n.to_units()
+		   / (em.is_zero() ? hresolution : em.to_units());
+  }
+  else
+    spread_limit = -spread_limit - 1;	// no arg toggles on/off without
+					// changing value; we mirror at
+					// -0.5 to make zero a valid value
+  skip_line();
+}
+
 static void init_charset_table()
 {
   char buf[16];
@@ -6659,6 +6705,8 @@ int main(int argc, char **argv)
   vresolution = font::vert;
   sizescale = font::sizescale;
   tcommand_flag = font::tcommand;
+  warn_scale = (double)units_per_inch;
+  warn_scaling_indicator = 'i';
   if (!fflag && font::family != 0 && *font::family != '\0')
     default_family = symbol(font::family);
   font_size::init_size_table(font::sizes);
@@ -6877,6 +6925,8 @@ void init_input_requests()
 #endif /* not POPEN_MISSING */
   init_request("psbb", ps_bbox_request);
   init_request("defcolor", define_color);
+  init_request("warnscale", warnscale_request);
+  init_request("spreadwarn", spreadwarn_request);
   number_reg_dictionary.define("systat", new variable_reg(&system_status));
   number_reg_dictionary.define("slimit",
 			       new variable_reg(&input_stack::limit));
@@ -7151,7 +7201,7 @@ static void copy_mode_error(const char *format,
     error(format, arg1, arg2, arg3);
 }
 
-enum error_type { WARNING, ERROR, FATAL };
+enum error_type { WARNING, OUTPUT_WARNING, ERROR, FATAL };
 
 static void do_error(error_type type,
 		     const char *format,
@@ -7180,6 +7230,18 @@ static void do_error(error_type type,
   case WARNING:
     fputs("warning: ", stderr);
     break;
+  case OUTPUT_WARNING:
+    double fromtop = topdiv->get_vertical_position().to_units() / warn_scale;
+    fprintf(stderr, "warning [p %d, %.1f%c",
+	    topdiv->get_page_number(), fromtop, warn_scaling_indicator);
+    if (topdiv != curdiv) {
+      double fromtop1 = curdiv->get_vertical_position().to_units()
+			/ warn_scale;
+      fprintf(stderr, ", div `%s', %.1f%c",
+	      curdiv->get_diversion_name(), fromtop1, warn_scaling_indicator);
+    }
+    fprintf(stderr, "]: ");
+    break;
   }
   errprint(format, arg1, arg2, arg3);
   fputc('\n', stderr);
@@ -7196,6 +7258,20 @@ int warning(warning_type t,
 {
   if ((t & warning_mask) != 0) {
     do_error(WARNING, format, arg1, arg2, arg3);
+    return 1;
+  }
+  else
+    return 0;
+}
+
+int output_warning(warning_type t,
+		   const char *format,
+		   const errarg &arg1,
+		   const errarg &arg2,
+		   const errarg &arg3)
+{
+  if ((t & warning_mask) != 0) {
+    do_error(OUTPUT_WARNING, format, arg1, arg2, arg3);
     return 1;
   }
   else

@@ -5926,6 +5926,15 @@ The @code{\:} escape inserts a zero-width break point
 @Example
 ... check the /var/log/\:httpd/\:access_log file ...
 @endExample
+
+@cindex @code{\X}, followed by @code{\%}
+@cindex @code{\Y}, followed by @code{\%}
+@cindex @code{\%}, following @code{\X} or @code{\Y}
+Note that @code{\X} and @code{\Y} start a word, that is, the @code{\%}
+escape in (say) @w{@samp{ \X'...'\%foobar}} and
+@w{@samp{ \Y'...'\%foobar}} no longer prevents hyphenation but inserts
+a hyphenation point at the beginning of @samp{foobar}; most likely
+this isn't what you want to do.
 @endDefesc
 
 @Defreq {hc, [@Var{char}]}
@@ -11985,7 +11994,37 @@ to set the maximum number of objects on the input stack.
 If @code{slimit} is less than or equal to@w{ }0,
 there is no limit set.
 With no limit, a buggy recursive macro can exhaust virtual memory.
+
+The default value is 1000; this is a compile-time constant.
 @endDefreg
+
+@Defreq {warnscale, si}
+Set the scaling indicator used in warnings to @var{si}.  Valid values for
+@var{si} are @samp{u}, @samp{i}, @samp{c}, @samp{p}, and @samp{P}.  At
+startup, it is set to @samp{i}.
+@endDefreq
+
+@Defreq {spreadwarn, [@Var{limit}]}
+Make @code{gtroff} emit a warning if the additional space inserted for
+each space between words in an output line is larger or equal to
+@var{limit}.  A negative value is changed to zero; no argument toggles the
+warning on and off without changing @var{limit}.  The default scaling
+indicator is @samp{m}.  At startup, @code{spreadwarn} is deactivated, and
+@var{limit} is set to 3@dmn{m}.
+
+For example,
+
+@Example
+.spreadwarn 0.2m
+@endExample
+
+@noindent
+will cause a warning if @code{gtroff} must add 0.2@dmn{m} or more for each
+interword space in a line.
+
+This request is active only if text is justified to both margins (using
+@w{@samp{.ad b}}).
+@endDefreq
 
 @cindex warnings
 @code{gtroff} has command line options for printing out more warnings

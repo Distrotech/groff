@@ -1884,7 +1884,7 @@ breakpoint *environment::choose_breakpoint()
   }
   if (best_bp) {
     if (!best_bp_fits)
-      warning(WARN_BREAK, "can't break line");
+      output_warning(WARN_BREAK, "can't break line");
     return best_bp;
   }
   return 0;
@@ -1970,6 +1970,14 @@ static void distribute_space(node *n, int nspaces, hunits desired_space,
   static int reverse = 0;
   if (force_reverse || reverse)
     n = node_list_reverse(n);
+  if (!force_reverse && nspaces > 0 && spread_limit >= 0
+      && desired_space.to_units() > 0) {
+    hunits em = curenv->get_size();
+    double Ems = (double)desired_space.to_units() / nspaces
+		 / (em.is_zero() ? hresolution : em.to_units());
+    if (Ems > spread_limit)
+      output_warning(WARN_BREAK, "spreading %1m per space", Ems);
+  }
   for (node *tem = n; tem; tem = tem->next)
     tem->spread_space(&nspaces, &desired_space);
   if (force_reverse || reverse)
@@ -2004,6 +2012,9 @@ void environment::possibly_break_line(int start_here, int forced)
     case ADJUST_BOTH:
       if (bp->nspaces != 0)
 	extra_space_width = target_text_length - bp->width;
+      else if (bp->width > 0 && target_text_length > 0
+	       && target_text_length > bp->width)
+	output_warning(WARN_BREAK, "cannot adjust line");
       break;
     case ADJUST_CENTER:
       saved_indent += (target_text_length - bp->width)/2;
