@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -632,7 +632,7 @@ a single field,
 ? means that the previous argument is optional, * means that the
 previous argument can occur any number of times. */
 
-struct {
+struct S {
   const char *name;
   command_t func;
   const char *arg_types;

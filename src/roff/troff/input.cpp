@@ -71,14 +71,12 @@ void init_column_requests();
 
 static node *read_draw_node();
 static void read_color_draw_node(token &);
-void handle_first_page_transition();
 static void push_token(const token &);
 void copy_file();
 #ifdef COLUMN
 void vjustify();
 #endif /* COLUMN */
 void transparent_file();
-void process_input_stack();
 
 token tok;
 int break_flag = 0;
@@ -1910,11 +1908,11 @@ void token::next()
 	  if (s == 0)
 	    s = get_charinfo(cc == 'l' ? "ru" : "br");
 	  type = TOKEN_NODE;
-	  node *n = curenv->make_char_node(s);
+	  node *char_node = curenv->make_char_node(s);
 	  if (cc == 'l')
-	    nd = new hline_node(x, n);
+	    nd = new hline_node(x, char_node);
 	  else
-	    nd = new vline_node(x, n);
+	    nd = new vline_node(x, char_node);
 	  return;
 	}
       case 'm':
@@ -3623,8 +3621,8 @@ int macro::empty()
   return empty_macro == 1;
 }
 
-macro_iterator::macro_iterator(symbol s, macro &m, const char *how_invoked)
-: string_iterator(m, how_invoked, s), args(0), argc(0)
+macro_iterator::macro_iterator(symbol s, macro &m, const char *how_called)
+: string_iterator(m, how_called, s), args(0), argc(0)
 {
 }
 

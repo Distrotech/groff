@@ -78,12 +78,21 @@ extern char *strerror();
 #include "pipeline.h"
 
 #define error c_error
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern void error(const char *, const char *, const char *, const char *);
 extern void c_fatal(const char *, const char *, const char *, const char *);
+extern const char *i_to_a(int);		/* from libgroff */
+
+#ifdef __cplusplus
+}
+#endif
 
 static void sys_fatal(const char *);
 static const char *xstrsignal(int);
-const char *i_to_a(int);		// from libgroff
 
 
 #if defined(__MSDOS__) \

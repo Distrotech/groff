@@ -1,5 +1,6 @@
 /* -*- C++ -*-
-   Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1989, 1990, 1991, 1992, 2000, 2004
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -970,8 +971,8 @@ label_info *lookup_label(const string &label)
       label_table[i] = 0;
     for (i = 0; i < old_size; i++)
       if (old_table[i]) {
-	unsigned h = hash_string(label_pool.contents() + old_table[i]->start,
-				 old_table[i]->length);
+	h = hash_string(label_pool.contents() + old_table[i]->start,
+			old_table[i]->length);
 	label_info **p;
 	for (p = label_table + (h % label_table_size);
 	     *p != 0;

@@ -515,7 +515,7 @@ static void makeFileName(void)
   }
 
   if (image_dir == NULL)
-    image_dir = "";
+    image_dir = (char *)"";
   else if (strlen(image_dir) > 0
 	   && image_dir[strlen(image_dir) - 1] != '/') {
     image_dir = make_message("%s/", image_dir);
@@ -676,15 +676,15 @@ void char_buffer::write_upto_newline(char_block **t, int *i, int is_html)
  *  can_see - Return TRUE if we can see string in t->buffer[i] onwards.
  */
 
-int char_buffer::can_see(char_block **t, int *i, const char *string)
+int char_buffer::can_see(char_block **t, int *i, const char *str)
 {
   int j = 0;
-  int l = strlen(string);
+  int l = strlen(str);
   int k = *i;
   char_block *s = *t;
 
   while (s) {
-    while (k < s->used && j < l && s->buffer[k] == string[j]) {
+    while (k < s->used && j < l && s->buffer[k] == str[j]) {
       j++;
       k++;
     }
@@ -693,7 +693,7 @@ int char_buffer::can_see(char_block **t, int *i, const char *string)
       *t = s;
       return TRUE;
     }
-    else if (k < s->used && s->buffer[k] != string[j])
+    else if (k < s->used && s->buffer[k] != str[j])
       return( FALSE );
     s = s->next;
     k = 0;
@@ -774,11 +774,11 @@ void char_buffer::emit_troff_output(int device_format_selector)
   //     Buffer data is written to the output stream
   //     with no translation, for image file creation in the post-processor.
 
-  int index = 0;
+  int idx = 0;
   char_block *element = head;
 
   while (element != NULL)
-    write_upto_newline(&element, &index, device_format_selector);
+    write_upto_newline(&element, &idx, device_format_selector);
 
 #if 0
   if (close(stdoutfd) < 0)
@@ -1095,9 +1095,9 @@ static imageList listOfImages;	// List of images defined by the region file.
  *                   image.
  */
 
-static void generateImages(char *regionFileName)
+static void generateImages(char *region_file_name)
 {
-  pushBackBuffer *f=new pushBackBuffer(regionFileName);
+  pushBackBuffer *f=new pushBackBuffer(region_file_name);
 
   while (f->putPB(f->getPB()) != eof) {
     if (f->isString("grohtml-info:page")) {
@@ -1199,18 +1199,18 @@ static void alterDeviceTo(int argc, char *argv[], int toImage)
   if (toImage) {
     while (i < argc) {
       if (strcmp(argv[i], "-Thtml") == 0)
-	argv[i] = IMAGE_DEVICE;
+	argv[i] = (char *)IMAGE_DEVICE;
       i++;
     }
-    argv[troff_arg] = "groff";	/* rather than troff */
+    argv[troff_arg] = (char *)"groff";	/* rather than troff */
   }
   else {
     while (i < argc) {
       if (strcmp(argv[i], IMAGE_DEVICE) == 0)
-	argv[i] = "-Thtml";
+	argv[i] = (char *)"-Thtml";
       i++;
     }
-    argv[troff_arg] = "groff";	/* use groff -Z */
+    argv[troff_arg] = (char *)"groff";	/* use groff -Z */
   }
 }
 
@@ -1230,7 +1230,7 @@ char **addZ(int argc, char *argv[])
     new_argv[i] = argv[i];
     i++;
   }
-  new_argv[i] = "-Z";
+  new_argv[i] = (char *)"-Z";
   while (i < argc) {
     new_argv[i + 1] = argv[i];
     i++;
@@ -1275,7 +1275,7 @@ void dump_args(int argc, char *argv[])
   fprintf(stderr, "\n");
 }
 
-int char_buffer::run_output_filter(int filter, int argc, char **argv)
+int char_buffer::run_output_filter(int filter, int /* argc */, char **argv)
 {
   int pipedes[2];
   PID_T child_pid;

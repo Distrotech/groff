@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003
+/* Copyright (C) 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by Werner Lemberg (wl@gnu.org)
 
@@ -49,14 +49,14 @@ static void add_iso_paper(char series, int offset,
 }
 
 // length and width in inch
-static void add_american_paper(const char *name, int index,
+static void add_american_paper(const char *name, int idx,
 			       double length, double width )
 {
   char *p = new char[strlen(name) + 1];
   strcpy(p, name);
-  papersizes[index].name = p;
-  papersizes[index].length = length;
-  papersizes[index].width = width;
+  papersizes[idx].name = p;
+  papersizes[idx].length = length;
+  papersizes[idx].width = width;
 }
 
 int papersize_init::initialised = 0;

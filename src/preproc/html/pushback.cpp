@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -312,7 +312,7 @@ float pushBackBuffer::readNumber (void)
 char *pushBackBuffer::readString (void)
 {
   char  buffer[MAXPUSHBACKSTACK];
-  char *string = 0;
+  char *str = 0;
   int   i=0;
   char ch=getPB();
 
@@ -326,8 +326,8 @@ char *pushBackBuffer::readString (void)
   }
   if (i < MAXPUSHBACKSTACK) {
     buffer[i] = (char)0;
-    string = (char *)malloc(strlen(buffer)+1);
-    strcpy(string, buffer);
+    str = (char *)malloc(strlen(buffer)+1);
+    strcpy(str, buffer);
   }
-  return( string );
+  return( str );
 }

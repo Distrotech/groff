@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1223,9 +1223,9 @@ table *process_data(table_input &in, format *f, options *opt)
 	  format_index = f->nrows - 1;
 	// A format row that is all lines doesn't use up a data line.
 	while (format_index < f->nrows - 1) {
-	  int c;
-	  for (c = 0; c < ncolumns; c++) {
-	    entry_format *e = f->entry[format_index] + c;
+	  int cnt;
+	  for (cnt = 0; cnt < ncolumns; cnt++) {
+	    entry_format *e = f->entry[format_index] + cnt;
 	    if (e->type != FORMAT_HLINE
 		&& e->type != FORMAT_DOUBLE_HLINE
 		// Unfortunately tbl treats a span as needing data.
@@ -1233,11 +1233,11 @@ table *process_data(table_input &in, format *f, options *opt)
 		)
 	      break;
 	  }
-	  if (c < ncolumns)
+	  if (cnt < ncolumns)
 	    break;
-	  for (c = 0; c < ncolumns; c++)
-	    tbl->add_entry(current_row, c, input_entry,
-			   f->entry[format_index] + c, current_filename,
+	  for (cnt = 0; cnt < ncolumns; cnt++)
+	    tbl->add_entry(current_row, cnt, input_entry,
+			   f->entry[format_index] + cnt, current_filename,
 			   current_lineno);
 	  tbl->add_vlines(current_row, f->vline[format_index]);
 	  format_index++;

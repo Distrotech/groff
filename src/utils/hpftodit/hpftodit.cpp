@@ -608,11 +608,11 @@ read_symbol_sets(File &f)
 	break;
     if (j < n_symbol_sets) {
       for (int k = 0; k < 256; k++) {
-	uint16 index = symbol_set_table[j].index[k];
-	if (index != NO_GLYPH
-	    && char_table[index].symbol_set == NO_SYMBOL_SET) {
-	  char_table[index].symbol_set = symbol_set_table[j].select;
-	  char_table[index].code = k;
+	uint16 idx = symbol_set_table[j].index[k];
+	if (idx != NO_GLYPH
+	    && char_table[idx].symbol_set == NO_SYMBOL_SET) {
+	  char_table[idx].symbol_set = symbol_set_table[j].select;
+	  char_table[idx].code = k;
 	}
       }
     }
@@ -630,11 +630,11 @@ read_symbol_sets(File &f)
 	break;
     if (j < n_symbol_sets) {
       for (int k = 0; k < 256; k++) {
-	uint16 index = symbol_set_table[j].index[k];
-	if (index != NO_GLYPH
-	    && char_table[index].symbol_set == NO_SYMBOL_SET) {
-	  char_table[index].symbol_set = symbol_set_table[j].select;
-	  char_table[index].code = k;
+	uint16 idx = symbol_set_table[j].index[k];
+	if (idx != NO_GLYPH
+	    && char_table[idx].symbol_set == NO_SYMBOL_SET) {
+	  char_table[idx].symbol_set = symbol_set_table[j].select;
+	  char_table[idx].code = k;
 	}
       }
     }
@@ -1176,9 +1176,9 @@ static void
 dump_symbol_sets(File &f)
 {
   uint32 symbol_set_dir_length = tag_info(symbol_set_tag).count;
-  uint32 n_symbol_sets = symbol_set_dir_length / 14;
+  uint32 num_symbol_sets = symbol_set_dir_length / 14;
 
-  for (uint32 i = 0; i < n_symbol_sets; i++) {
+  for (uint32 i = 0; i < num_symbol_sets; i++) {
     f.seek(tag_info(symbol_set_tag).value + i * 14);
     (void)f.get_uint32();		// offset to symbol set name
     uint32 off1 = f.get_uint32();	// offset to selection string
@@ -1189,7 +1189,7 @@ dump_symbol_sets(File &f)
       if ('0' <= c && c <= '9')
 	putchar(c);
       else if ('A' <= c && c <= 'Z')
-	printf(i < n_symbol_sets - 1 ? "%c," : "%c", c);
+	printf(i < num_symbol_sets - 1 ? "%c," : "%c", c);
     }
   }
 }

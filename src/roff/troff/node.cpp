@@ -399,11 +399,11 @@ symbol get_font_name(int fontno, environment *env)
   return f;
 }
 
-hunits font_info::get_space_width(font_size fs, int space_size)
+hunits font_info::get_space_width(font_size fs, int space_sz)
 {
   if (is_constant_spaced == CONSTANT_SPACE_NONE)
     return scale(hunits(fm->get_space_width(fs.to_scaled_points())),
-			space_size, 12);
+			space_sz, 12);
   else if (is_constant_spaced == CONSTANT_SPACE_ABSOLUTE)
     return constant_space;
   else
@@ -2437,9 +2437,9 @@ hunits dbreak_node::width()
 node *dbreak_node::last_char_node()
 {
   for (node *n = none; n; n = n->next) {
-    node *last = n->last_char_node();
-    if (last)
-      return last;
+    node *last_node = n->last_char_node();
+    if (last_node)
+      return last_node;
   }
   return 0;
 }
@@ -2482,7 +2482,7 @@ public:
   int force_tprint();
 };
 
-node *node::add_italic_correction(hunits *width)
+node *node::add_italic_correction(hunits *wd)
 {
   hunits ic = italic_correction();
   if (ic.is_zero())
@@ -2490,7 +2490,7 @@ node *node::add_italic_correction(hunits *width)
   else {
     node *next1 = next;
     next = 0;
-    *width += ic;
+    *wd += ic;
     return new italic_corrected_node(this, ic, next1);
   }
 }
@@ -2881,16 +2881,16 @@ bracket_node::~bracket_node()
 node *bracket_node::copy()
 {
   bracket_node *on = new bracket_node;
-  node *last = 0;
+  node *last_node = 0;
   node *tem;
   if (list)
     list->last = 0;
   for (tem = list; tem; tem = tem->next) {
     if (tem->next)
       tem->next->last = tem;
-    last = tem;
+    last_node = tem;
   }
-  for (tem = last; tem; tem = tem->last)
+  for (tem = last_node; tem; tem = tem->last)
     on->bracket(tem->copy());
   return on;
 }
@@ -2994,20 +2994,20 @@ void node::spread_space(int*, hunits*)
 {
 }
 
-void space_node::spread_space(int *nspaces, hunits *desired_space)
+void space_node::spread_space(int *n_spaces, hunits *desired_space)
 {
   if (!set) {
-    assert(*nspaces > 0);
-    if (*nspaces == 1) {
+    assert(*n_spaces > 0);
+    if (*n_spaces == 1) {
       n += *desired_space;
       *desired_space = H0;
     }
     else {
-      hunits extra = *desired_space / *nspaces;
+      hunits extra = *desired_space / *n_spaces;
       *desired_space -= extra;
       n += extra;
     }
-    *nspaces -= 1;
+    *n_spaces -= 1;
     set = 1;
   }
 }
@@ -3338,8 +3338,8 @@ void hmotion_node::asciify(macro *m)
 }
 
 space_char_hmotion_node::space_char_hmotion_node(hunits i, color *c,
-						 node *next)
-: hmotion_node(i, c, next)
+						 node *nxt)
+: hmotion_node(i, c, nxt)
 {
 }
 
@@ -3393,14 +3393,14 @@ int node::nbreaks()
   return 0;
 }
 
-breakpoint *space_node::get_breakpoints(hunits width, int ns,
+breakpoint *space_node::get_breakpoints(hunits wd, int ns,
 					breakpoint *rest, int is_inner)
 {
   if (next && next->discardable())
     return rest;
   breakpoint *bp = new breakpoint;
   bp->next = rest;
-  bp->width = width;
+  bp->width = wd;
   bp->nspaces = ns;
   bp->hyphenated = 0;
   if (is_inner) {
@@ -3437,12 +3437,12 @@ static breakpoint *node_list_get_breakpoints(node *p, hunits *widthp,
   return rest;
 }
 
-breakpoint *dbreak_node::get_breakpoints(hunits width, int ns,
+breakpoint *dbreak_node::get_breakpoints(hunits wd, int ns,
 					 breakpoint *rest, int is_inner)
 {
   breakpoint *bp = new breakpoint;
   bp->next = rest;
-  bp->width = width;
+  bp->width = wd;
   for (node *tem = pre; tem != 0; tem = tem->next)
     bp->width += tem->width();
   bp->nspaces = ns;
@@ -3456,7 +3456,7 @@ breakpoint *dbreak_node::get_breakpoints(hunits width, int ns,
     bp->nd = this;
     bp->index = 0;
   }
-  return node_list_get_breakpoints(none, &width, ns, bp);
+  return node_list_get_breakpoints(none, &wd, ns, bp);
 }
 
 int dbreak_node::nbreaks()
@@ -3983,10 +3983,10 @@ node *reverse_node_list(node *n)
   return r;
 }
 
-void composite_node::vertical_extent(vunits *min, vunits *max)
+void composite_node::vertical_extent(vunits *minimum, vunits *maximum)
 {
   n = reverse_node_list(n);
-  node_list_vertical_extent(n, min, max);
+  node_list_vertical_extent(n, minimum, maximum);
   n = reverse_node_list(n);
 }
 
@@ -4778,9 +4778,9 @@ int hmotion_node::force_tprint()
   return 0;
 }
 
-node *hmotion_node::add_self(node *n, hyphen_list **p)
+node *hmotion_node::add_self(node *nd, hyphen_list **p)
 {
-  next = n;
+  next = nd;
   hyphen_list *pp = *p;
   *p = (*p)->next;
   delete pp;
@@ -4808,9 +4808,9 @@ int space_char_hmotion_node::force_tprint()
   return 0;
 }
 
-node *space_char_hmotion_node::add_self(node *n, hyphen_list **p)
+node *space_char_hmotion_node::add_self(node *nd, hyphen_list **p)
 {
-  next = n;
+  next = nd;
   hyphen_list *pp = *p;
   *p = (*p)->next;
   delete pp;
@@ -4935,8 +4935,8 @@ int italic_corrected_node::force_tprint()
   return 0;
 }
 
-left_italic_corrected_node::left_italic_corrected_node(node *x)
-: node(x), n(0)
+left_italic_corrected_node::left_italic_corrected_node(node *xx)
+: node(xx), n(0)
 {
 }
 
@@ -5011,12 +5011,13 @@ hunits left_italic_corrected_node::width()
   return n ? n->width() + x : H0;
 }
 
-void left_italic_corrected_node::vertical_extent(vunits *min, vunits *max)
+void left_italic_corrected_node::vertical_extent(vunits *minimum,
+						 vunits *maximum)
 {
   if (n)
-    n->vertical_extent(min, max);
+    n->vertical_extent(minimum, maximum);
   else
-    node::vertical_extent(min, max);
+    node::vertical_extent(minimum, maximum);
 }
 
 hunits left_italic_corrected_node::skew()
@@ -5305,9 +5306,9 @@ const char *unbreakable_space_node::type()
   return "unbreakable_space_node";
 }
 
-node *unbreakable_space_node::add_self(node *n, hyphen_list **p)
+node *unbreakable_space_node::add_self(node *nd, hyphen_list **p)
 {
-  next = n;
+  next = nd;
   hyphen_list *pp = *p;
   *p = (*p)->next;
   delete pp;
@@ -5555,13 +5556,13 @@ void font_family::invalidate_fontno(int n)
 {
   assert(n >= 0 && n < font_table_size);
   dictionary_iterator iter(family_dictionary);
-  symbol nm;
+  symbol nam;
   font_family *fam;
-  while (iter.get(&nm, (void **)&fam)) {
-    int map_size = fam->map_size;
-    if (n < map_size)
+  while (iter.get(&nam, (void **)&fam)) {
+    int mapsize = fam->map_size;
+    if (n < mapsize)
       fam->map[n] = -1;
-    for (int i = 0; i < map_size; i++)
+    for (int i = 0; i < mapsize; i++)
       if (fam->map[i] == n)
 	fam->map[i] = -1;
   }

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cpp
  *  but it owes a huge amount of ideas and raw code from
@@ -507,11 +507,11 @@ text_glob::text_glob (style *s, const char *str, int length,
 		      int max_vertical, int max_horizontal,
 		      bool is_troff_command,
 		      bool is_auto_image, bool is_special_command,
-		      bool is_a_line, int line_thickness)
+		      bool is_a_line_flag, int line_thickness)
   : text_style(*s), text_string(str), text_length(length),
     minv(min_vertical), minh(min_horizontal), maxv(max_vertical), maxh(max_horizontal),
     is_tag(is_troff_command), is_img_auto(is_auto_image), is_special(is_special_command),
-    is_line(is_a_line), thickness(line_thickness), tab(NULL)
+    is_line(is_a_line_flag), thickness(line_thickness), tab(NULL)
 {
 }
 
@@ -567,11 +567,11 @@ void text_glob::text_glob_special (style *s, char *str, int length,
 void text_glob::text_glob_line (style *s,
 				int min_vertical , int min_horizontal,
 				int max_vertical , int max_horizontal,
-				int thickness)
+				int thickness_value)
 {
   text_glob *g = new text_glob(s, "", 0,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
-			       FALSE, FALSE, FALSE, TRUE, thickness);
+			       FALSE, FALSE, FALSE, TRUE, thickness_value);
   *this = *g;
   delete g;
 }
@@ -1286,15 +1286,18 @@ void page::add_tag (style *s, const string &str,
 
 void page::add_line (style *s,
 		     int line_number,
-		     int x1, int y1, int x2, int y2,
+		     int x_1, int y_1, int x_2, int y_2,
 		     int thickness)
 {
-  if (y1 == y2) {
+  if (y_1 == y_2) {
     text_glob *g = new text_glob();
     g->text_glob_line(s,
-		      min(y1, y2), min(x1, y2), max(y1, y2), max(x1, x2),
+		      min(y_1, y_2), min(x_1, x_2),
+		      max(y_1, y_2), max(x_1, x_2),
 		      thickness);
-    glyphs.add(g, line_number, min(y1, y2), min(x1, y2), max(y1, y2), max(x1, x2));
+    glyphs.add(g, line_number,
+	       min(y_1, y_2), min(x_1, x_2),
+	       max(y_1, y_2), max(x_1, x_2));
   }
 }
 
@@ -1351,10 +1354,10 @@ void page::add_and_encode (style *s, const string &str,
 	if (html_glyph)
 	  html_string += html_glyph;
 	else {
-	  int index=s->f->name_to_index((troff_charname + '\0').contents());
+	  int idx=s->f->name_to_index((troff_charname + '\0').contents());
 	  
-	  if (s->f->contains(index) && (index != 0))
-	    html_string += s->f->get_code(index);
+	  if (s->f->contains(idx) && (idx != 0))
+	    html_string += s->f->get_code(idx);
 	}
       }
     } else
@@ -2885,7 +2888,7 @@ void html_printer::lookahead_for_tables (void)
   int         ncol           = 0;
   int         colmin;
   int         colmax;
-  html_table *table          = new html_table(&html, -1);
+  html_table *tbl            = new html_table(&html, -1);
   const char *tab_defs       = NULL;
   char        align          = 'L';
   int         nf             = FALSE;
@@ -2914,11 +2917,11 @@ void html_printer::lookahead_for_tables (void)
 	if (type_of_col == tab_tag && start_of_table != NULL) {
 	  page_contents->glyphs.move_left();
 	  insert_tab_te();
-	  start_of_table->remember_table(table);
-	  table = new html_table(&html, -1);
+	  start_of_table->remember_table(tbl);
+	  tbl = new html_table(&html, -1);
 	  page_contents->insert_tag(string("*** TAB -> COL ***"));
 	  if (tab_defs != NULL)
-	    table->tab_stops->init(tab_defs);
+	    tbl->tab_stops->init(tab_defs);
 	  start_of_table = NULL;
 	  last = NULL;
 	}
@@ -2932,28 +2935,28 @@ void html_printer::lookahead_for_tables (void)
 	type_of_col = tab_tag;
 	colmin = g->get_tab_args(&align);
 	align = 'L'; // for now as 'C' and 'R' are broken
-	ncol = table->find_tab_column(colmin);
+	ncol = tbl->find_tab_column(colmin);
 	colmin += pageoffset + indentation;
-	colmax = table->get_tab_pos(ncol+1);
+	colmax = tbl->get_tab_pos(ncol+1);
 	if (colmax > 0)
 	  colmax += pageoffset + indentation;
       } else if (g->is_tab0()) {
 	if (type_of_col == col_tag && start_of_table != NULL) {
 	  page_contents->glyphs.move_left();
 	  insert_tab_te();
-	  start_of_table->remember_table(table);
-	  table = new html_table(&html, -1);
+	  start_of_table->remember_table(tbl);
+	  tbl = new html_table(&html, -1);
 	  page_contents->insert_tag(string("*** COL -> TAB ***"));
 	  start_of_table = NULL;
 	  last = NULL;
 	}
 	if (tab_defs != NULL)
-	  table->tab_stops->init(tab_defs);
+	  tbl->tab_stops->init(tab_defs);
 
 	type_of_col = tab0_tag;
 	ncol = 1;
 	colmin = 0;
-	colmax = table->get_tab_pos(2) + pageoffset + indentation;
+	colmax = tbl->get_tab_pos(2) + pageoffset + indentation;
       } else if (! g->is_a_tag())
 	update_min_max(type_of_col, &colmin, &colmax, g);
 
@@ -2967,34 +2970,34 @@ void html_printer::lookahead_for_tables (void)
 	seen_text = FALSE;
       } else if (g->is_ce() && (start_of_table != NULL)) {
 	add_table_end("*** CE ***");
-	start_of_table->remember_table(table);
+	start_of_table->remember_table(tbl);
 	start_of_table = NULL;
 	last = NULL;
       } else if (g->is_ta()) {
 	tab_defs = g->text_string;
-	if (!table->tab_stops->compatible(tab_defs)) {
+	if (!tbl->tab_stops->compatible(tab_defs)) {
 	  if (start_of_table != NULL) {
 	    add_table_end("*** TABS ***");
-	    start_of_table->remember_table(table);
-	    table = new html_table(&html, -1);
+	    start_of_table->remember_table(tbl);
+	    tbl = new html_table(&html, -1);
 	    start_of_table = NULL;
 	    type_of_col = none;
 	    last = NULL;
 	  }
-	  table->tab_stops->init(tab_defs);
+	  tbl->tab_stops->init(tab_defs);
 	}
       }
 
       if (((! g->is_a_tag()) || g->is_tab()) && (start_of_table != NULL)) {
 	// we are in a table and have a glyph
-	if ((ncol == 0) || (! table->add_column(ncol, colmin, colmax, align))) {
+	if ((ncol == 0) || (! tbl->add_column(ncol, colmin, colmax, align))) {
 	  if (ncol == 0)
 	    add_table_end("*** NCOL == 0 ***");
 	  else
 	    add_table_end("*** CROSSED COLS ***");
 
-	  start_of_table->remember_table(table);
-	  table = new html_table(&html, -1);
+	  start_of_table->remember_table(tbl);
+	  tbl = new html_table(&html, -1);
 	  start_of_table = NULL;
 	  type_of_col = none;
 	  last = NULL;
@@ -3038,13 +3041,13 @@ void html_printer::lookahead_for_tables (void)
 	  page_contents->glyphs.move_left();
 
       insert_tab_te();
-      start_of_table->remember_table(table);
-      table = NULL;
+      start_of_table->remember_table(tbl);
+      tbl = NULL;
       page_contents->insert_tag(string("*** LAST ***"));      
     }
   }
-  if (table != NULL)
-    delete table;
+  if (tbl != NULL)
+    delete tbl;
 
   // and reset the registers
   pageoffset = old_pageoffset;
@@ -3498,17 +3501,17 @@ html_printer::html_printer()
  *  add_to_sbuf - adds character code or name to the sbuf.
  */
 
-void html_printer::add_to_sbuf (int index, const string &s)
+void html_printer::add_to_sbuf (int idx, const string &s)
 {
   if (sbuf_style.f == NULL)
     return;
 
   char *html_glyph = NULL;
-  unsigned int code = sbuf_style.f->get_code(index);
+  unsigned int code = sbuf_style.f->get_code(idx);
 
   if (s.empty()) {
-    if (sbuf_style.f->contains(index))
-      html_glyph = (char *)sbuf_style.f->get_special_device_encoding(index);
+    if (sbuf_style.f->contains(idx))
+      html_glyph = (char *)sbuf_style.f->get_special_device_encoding(idx);
     else
       html_glyph = NULL;
     
@@ -3524,7 +3527,7 @@ void html_printer::add_to_sbuf (int index, const string &s)
     sbuf += html_glyph;
 }
 
-int html_printer::sbuf_continuation (int index, const char *name,
+int html_printer::sbuf_continuation (int idx, const char *name,
 				     const environment *env, int w)
 {
   /*
@@ -3534,7 +3537,7 @@ int html_printer::sbuf_continuation (int index, const char *name,
       || ((sbuf_prev_hpos < sbuf_end_hpos)
 	  && (env->hpos < sbuf_end_hpos)
 	  && ((sbuf_end_hpos-env->hpos < env->hpos-sbuf_prev_hpos)))) {
-    add_to_sbuf(index, name);
+    add_to_sbuf(idx, name);
     sbuf_prev_hpos = sbuf_end_hpos;
     sbuf_end_hpos += w + sbuf_kern;
     return TRUE;
@@ -3546,7 +3549,7 @@ int html_printer::sbuf_continuation (int index, const char *name,
        */
 
       if (env->hpos-sbuf_end_hpos < space_width) {
-	add_to_sbuf(index, name);
+	add_to_sbuf(idx, name);
 	sbuf_prev_hpos = sbuf_end_hpos;
 	sbuf_end_hpos = env->hpos + w;
 	return TRUE;
@@ -3563,18 +3566,18 @@ int html_printer::sbuf_continuation (int index, const char *name,
 
 char *get_html_translation (font *f, const string &name)
 {
-  int index;
+  int idx;
 
   if ((f == 0) || name.empty())
     return NULL;
   else {
-    index = f->name_to_index((char *)(name + '\0').contents());
-    if (index == 0) {
+    idx = f->name_to_index((char *)(name + '\0').contents());
+    if (idx == 0) {
       error("character `%s' not found", (name + '\0').contents());
       return NULL;
     } else
-      if (f->contains(index))
-	return (char *)f->get_special_device_encoding(index);
+      if (f->contains(idx))
+	return (char *)f->get_special_device_encoding(idx);
       else
 	return NULL;
   }
@@ -3587,7 +3590,7 @@ char *get_html_translation (font *f, const string &name)
  *               is flushed.
  */
 
-int html_printer::overstrike(int index, const char *name, const environment *env, int w)
+int html_printer::overstrike(int idx, const char *name, const environment *env, int w)
 {
   if ((env->hpos < sbuf_end_hpos)
       || ((sbuf_kern != 0) && (sbuf_end_hpos - sbuf_kern < env->hpos))) {
@@ -3597,7 +3600,7 @@ int html_printer::overstrike(int index, const char *name, const environment *env
     if (overstrike_detected) {
       /* already detected, remove previous glyph and use this glyph */
       sbuf.set_length(last_sbuf_length);
-      add_to_sbuf(index, name);
+      add_to_sbuf(idx, name);
       sbuf_end_hpos = env->hpos + w;
       return TRUE;
     } else {
@@ -3606,7 +3609,7 @@ int html_printer::overstrike(int index, const char *name, const environment *env
       if (! is_bold(sbuf_style.f))
 	flush_sbuf();
       overstrike_detected = TRUE;
-      add_to_sbuf(index, name);
+      add_to_sbuf(idx, name);
       sbuf_end_hpos = env->hpos + w;
       return TRUE;
     }

@@ -113,7 +113,8 @@ int pending_output_line::output()
   return 1;
 }
 
-void environment::output(node *nd, int no_fill, vunits vs, vunits post_vs,
+void environment::output(node *nd, int no_fill_flag,
+			 vunits vs, vunits post_vs,
 			 hunits width)
 {
 #ifdef WIDOW_CONTROL
@@ -131,29 +132,30 @@ void environment::output(node *nd, int no_fill, vunits vs, vunits post_vs,
 #endif /* WIDOW_CONTROL */
   if (!trap_sprung_flag && !pending_lines
 #ifdef WIDOW_CONTROL
-      && (!widow_control || no_fill)
+      && (!widow_control || no_fill_flag)
 #endif /* WIDOW_CONTROL */
       ) {
-    curdiv->output(nd, no_fill, vs, post_vs, width);
+    curdiv->output(nd, no_fill_flag, vs, post_vs, width);
     emitted_node = 1;
   } else {
     pending_output_line **p;
     for (p = &pending_lines; *p; p = &(*p)->next)
       ;
-    *p = new pending_output_line(nd, no_fill, vs, post_vs, width);
+    *p = new pending_output_line(nd, no_fill_flag, vs, post_vs, width);
   }
 }
 
 // a line from .tl goes at the head of the queue
 
-void environment::output_title(node *nd, int no_fill, vunits vs,
-			       vunits post_vs, hunits width)
+void environment::output_title(node *nd, int no_fill_flag,
+			       vunits vs, vunits post_vs,
+			       hunits width)
 {
   if (!trap_sprung_flag)
-    curdiv->output(nd, no_fill, vs, post_vs, width);
+    curdiv->output(nd, no_fill_flag, vs, post_vs, width);
   else
-    pending_lines = new pending_output_line(nd, no_fill, vs, post_vs, width,
-					    pending_lines);
+    pending_lines = new pending_output_line(nd, no_fill_flag, vs, post_vs,
+					    width, pending_lines);
 }
 
 void environment::output_pending_lines()
@@ -2145,7 +2147,7 @@ void environment::final_break()
  *                 the key troff commands
  */
 
-void environment::add_html_tag(int force, const char *name)
+void environment::add_html_tag(int force, const char *nm)
 {
   if (!force && (curdiv != topdiv))
     return;
@@ -2159,11 +2161,11 @@ void environment::add_html_tag(int force, const char *name)
       topdiv->begin_page();
     macro *m = new macro;
     m->append_str("html-tag:");
-    for (const char *p = name; *p; p++)
+    for (const char *p = nm; *p; p++)
       if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);
     curdiv->output(new special_node(*m), 1, 0, 0, 0);
-    if (strcmp(name, ".nf") == 0)
+    if (strcmp(nm, ".nf") == 0)
       curenv->ignore_next_eol = 1;
   }
 }
@@ -2174,7 +2176,7 @@ void environment::add_html_tag(int force, const char *name)
  *                 of i.
  */
 
-void environment::add_html_tag(int force, const char *name, int i)
+void environment::add_html_tag(int force, const char *nm, int i)
 {
   if (!force && (curdiv != topdiv))
     return;
@@ -2188,7 +2190,7 @@ void environment::add_html_tag(int force, const char *name, int i)
       topdiv->begin_page();
     macro *m = new macro;
     m->append_str("html-tag:");
-    for (const char *p = name; *p; p++)
+    for (const char *p = nm; *p; p++)
       if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);
     m->append(' ');
@@ -2242,7 +2244,7 @@ void environment::add_html_tag_tabs(int force)
   }
 }
 
-node *environment::make_html_tag(const char *name, int i)
+node *environment::make_html_tag(const char *nm, int i)
 {
   if (is_html) {
     /*
@@ -2253,7 +2255,7 @@ node *environment::make_html_tag(const char *name, int i)
       topdiv->begin_page();
     macro *m = new macro;
     m->append_str("html-tag:");
-    for (const char *p = name; *p; p++)
+    for (const char *p = nm; *p; p++)
       if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);
     m->append(' ');
@@ -2263,7 +2265,7 @@ node *environment::make_html_tag(const char *name, int i)
   return 0;
 }
 
-node *environment::make_html_tag(const char *name)
+node *environment::make_html_tag(const char *nm)
 {
   if (is_html) {
     /*
@@ -2274,7 +2276,7 @@ node *environment::make_html_tag(const char *name)
       topdiv->begin_page();
     macro *m = new macro;
     m->append_str("html-tag:");
-    for (const char *p = name; *p; p++)
+    for (const char *p = nm; *p; p++)
       if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);
     return new special_node(*m);
@@ -2282,7 +2284,7 @@ node *environment::make_html_tag(const char *name)
   return 0;
 }
 
-void environment::do_break(int spread)
+void environment::do_break(int do_spread)
 {
   if (curdiv == topdiv && topdiv->before_first_page) {
     topdiv->begin_page();
@@ -2294,7 +2296,7 @@ void environment::do_break(int spread)
     // this is so that hyphenation works
     line = new space_node(H0, get_fill_color(), line);
     space_total++;
-    possibly_break_line(0, spread);
+    possibly_break_line(0, do_spread);
   }
   while (line != 0 && line->discardable()) {
     width_total -= line->width();
@@ -2388,8 +2390,8 @@ void title()
     tem->next = n;
     n = tem;
   }
-  hunits title_length(curenv->title_length);
-  hunits f = title_length - part_width[1];
+  hunits length_title(curenv->title_length);
+  hunits f = length_title - part_width[1];
   hunits f2 = f/2;
   n = new hmotion_node(f2 - part_width[2], curenv->get_fill_color(), n);
   p = part[1];
@@ -2408,7 +2410,7 @@ void title()
     n = tem;
   }
   curenv->output_title(n, !curenv->fill, curenv->vertical_spacing,
-		       curenv->total_post_vertical_spacing(), title_length);
+		       curenv->total_post_vertical_spacing(), length_title);
   curenv->hyphen_line_count = 0;
   tok.next();
 }  
@@ -2858,25 +2860,25 @@ node *environment::make_tab_node(hunits d, node *next)
 void environment::handle_tab(int is_leader)
 {
   hunits d;
-  hunits abs;
+  hunits absolute;
   if (current_tab)
     wrap_up_tab();
   charinfo *ci = is_leader ? leader_char : tab_char;
   delete leader_node;
   leader_node = ci ? make_char_node(ci) : 0;
-  tab_type t = distance_to_next_tab(&d, &abs);
+  tab_type t = distance_to_next_tab(&d, &absolute);
   switch (t) {
   case TAB_NONE:
     return;
   case TAB_LEFT:
     add_node(make_tab_node(d));
-    add_node(make_html_tag("tab L", abs.to_units()));
+    add_node(make_html_tag("tab L", absolute.to_units()));
     return;
   case TAB_RIGHT:
-    add_node(make_html_tag("tab R", abs.to_units()));
+    add_node(make_html_tag("tab R", absolute.to_units()));
     break;
   case TAB_CENTER:
-    add_node(make_html_tag("tab C", abs.to_units()));
+    add_node(make_html_tag("tab C", absolute.to_units()));
     break;
   default:
     assert(0);

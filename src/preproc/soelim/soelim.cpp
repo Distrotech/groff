@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001, 2003, 2004
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -37,7 +38,6 @@ int compatible_flag = 0;
 int raw_flag = 0;
 int tex_flag = 0;
 
-extern int interpret_lf_args(const char *);
 extern "C" const char *Version_string;
 
 int do_file(const char *filename);

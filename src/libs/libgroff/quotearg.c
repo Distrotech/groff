@@ -47,8 +47,10 @@ extern char *program_name;	/* main program must define this */
 
 #undef FALSE
 #undef TRUE
+#define FALSE 0
+#define TRUE  1
 
-static enum {FALSE=0, TRUE}
+static int
 needs_quoting(const char *string)
 {
   /* Scan `string' to see whether it needs quoting for MSVC `spawn'/`exec'
@@ -98,7 +100,7 @@ quote_arg(char *string)
      * plus two enclosing quotes and one `\0' terminator.
      */
     
-    if ((quoted = malloc(2 * strlen(string) + 3)) == NULL) {
+    if ((quoted = (char *)malloc(2 * strlen(string) + 3)) == NULL) {
       /* Couldn't get a buffer for the quoted string,
        * so complain, and bail out gracefully.
        */
@@ -169,7 +171,7 @@ quote_arg(char *string)
 
     *++q = '"';
     *++q = '\0';
-    if ((string = realloc(quoted, strlen(quoted) + 1)) == NULL) {
+    if ((string = (char *)realloc(quoted, strlen(quoted) + 1)) == NULL) {
       /* but bail out gracefully, on error */
 
       REPORT_ERROR(QUOTE_ARG_REALLOC_ERROR);

@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -264,9 +265,9 @@ int tty_printer::tty_color(unsigned int r,
   return unknown_color;
 }
 
-tty_printer::tty_printer(const char *device) : cached_v(0)
+tty_printer::tty_printer(const char *dev) : cached_v(0)
 {
-  is_utf8 = !strcmp(device, "utf8");
+  is_utf8 = !strcmp(dev, "utf8");
   if (is_utf8) {
     hline_char = 0x2500;
     vline_char = 0x2502;

@@ -1,4 +1,4 @@
-/* Copyright (C) 1992, 2001, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 1992, 2001, 2003, 2004 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -35,10 +35,11 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #define MAX_LINE_LENGTH 78
 #define HEX_DIGITS "0123456789abcdef"
 
+extern const char *Version_string;
+
 static char *program_name;
 
-static void error(s)
-     char *s;
+static void error(const char *s)
 {
   fprintf(stderr, "%s: %s\n", program_name, s);
   exit(2);
@@ -160,12 +161,9 @@ static void get_binary(int n)
   putchar('\n');
 }
 
-int main(argc, argv)
-     int argc;
-     char **argv;
+int main(int argc, char **argv)
 {
   int opt;
-  extern int optind;
   static const struct option long_options[] = {
     { "help", no_argument, 0, CHAR_MAX + 1 },
     { "version", no_argument, 0, 'v' },
@@ -177,12 +175,9 @@ int main(argc, argv)
   while ((opt = getopt_long(argc, argv, "v", long_options, NULL)) != EOF) {
     switch (opt) {
     case 'v':
-      {
-	extern const char *Version_string;
-	printf("GNU pfbtops (groff) version %s\n", Version_string);
-	exit(0);
-	break;
-      }
+      printf("GNU pfbtops (groff) version %s\n", Version_string);
+      exit(0);
+      break;
     case CHAR_MAX + 1: /* --help */
       usage(stdout);
       exit(0);

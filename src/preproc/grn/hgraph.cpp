@@ -43,7 +43,7 @@ extern int ytop;
 extern int ybottom;
 extern int xleft;
 extern int xright;
-extern enum {
+extern enum E {
   OUTLINE, FILL, BOTH
 } polyfill;
 
@@ -62,8 +62,8 @@ void tmove(POINT * ptr);
 void cr();
 void drawwig(POINT * ptr, int type);
 void HGtline(int x1, int y1);
-void dx(double x);
-void dy(double y);
+void deltax(double x);
+void deltay(double y);
 void HGArc(register int cx, register int cy, int px, int py, int angle);
 void picurve(register int *x, register int *y, int npts);
 void HGCurve(int *x, int *y, int numpoints);
@@ -223,8 +223,8 @@ HGPrintElt(ELT *element,
 
 	    while (!Nullpoint((PTNextPoint(p1)))) {
 	      p1 = PTNextPoint(p1);
-	      dx((double) p1->x);
-	      dy((double) p1->y);
+	      deltax((double) p1->x);
+	      deltay((double) p1->y);
 	      if (length++ > LINELENGTH) {
 		length = 0;
 		printf("\\\n");
@@ -233,8 +233,8 @@ HGPrintElt(ELT *element,
 
 	    /* close polygon if not done so by user */
 	    if ((firstx != p1->x) || (firsty != p1->y)) {
-	      dx((double) firstx);
-	      dy((double) firsty);
+	      deltax((double) firstx);
+	      deltay((double) firsty);
 	    }
 	    putchar('\'');
 	    cr();
@@ -412,7 +412,7 @@ HGSetBrush(int mode)
 
 
 /*----------------------------------------------------------------------------*
- | Routine:	dx (x_destination)
+ | Routine:	deltax (x_destination)
  |
  | Results:	Scales and outputs a number for delta x (with a leading
  |		space) given `lastx' and x_destination.
@@ -421,7 +421,7 @@ HGSetBrush(int mode)
  *----------------------------------------------------------------------------*/
 
 void
-dx(double x)
+deltax(double x)
 {
   register int ix = (int) (x * troffscale);
 
@@ -431,7 +431,7 @@ dx(double x)
 
 
 /*----------------------------------------------------------------------------*
- | Routine:	dy (y_destination)
+ | Routine:	deltay (y_destination)
  |
  | Results:	Scales and outputs a number for delta y (with a leading
  |		space) given `lastyline' and y_destination.
@@ -441,7 +441,7 @@ dx(double x)
  *----------------------------------------------------------------------------*/
 
 void
-dy(double y)
+deltay(double y)
 {
   register int iy = (int) (y * troffscale);
 
@@ -970,11 +970,11 @@ change(register int x,
  *----------------------------------------------------------------------------*/
 
 void
-HGtline(int x1,
-	int y1)
+HGtline(int x_1,
+	int y_1)
 {
-  register int x0 = lastx;
-  register int y0 = lasty;
+  register int x_0 = lastx;
+  register int y_0 = lasty;
   register int dx;
   register int dy;
   register int oldcoord;
@@ -986,7 +986,7 @@ HGtline(int x1,
   register int dotcounter;
 
   if (linmod == SOLID) {
-    line(x1, y1);
+    line(x_1, y_1);
     return;
   }
 
@@ -995,11 +995,11 @@ HGtline(int x1,
 
   xinc = 1;
   yinc = 1;
-  if ((dx = x1 - x0) < 0) {
+  if ((dx = x_1 - x_0) < 0) {
     xinc = -xinc;
     dx = -dx;
   }
-  if ((dy = y1 - y0) < 0) {
+  if ((dy = y_1 - y_0) < 0) {
     yinc = -yinc;
     dy = -dy;
   }
@@ -1007,48 +1007,48 @@ HGtline(int x1,
   res2 = 0;
   visible = 0;
   if (dx >= dy) {
-    oldcoord = y0;
-    while (x0 != x1) {
-      if ((x0 & dotcounter) && !visible) {
-	change(x0, y0, 0);
+    oldcoord = y_0;
+    while (x_0 != x_1) {
+      if ((x_0 & dotcounter) && !visible) {
+	change(x_0, y_0, 0);
 	visible = 1;
-      } else if (visible && !(x0 & dotcounter)) {
-	change(x0 - xinc, oldcoord, 1);
+      } else if (visible && !(x_0 & dotcounter)) {
+	change(x_0 - xinc, oldcoord, 1);
 	visible = 0;
       }
       if (res1 > res2) {
-	oldcoord = y0;
+	oldcoord = y_0;
 	res2 += dx - res1;
 	res1 = 0;
-	y0 += yinc;
+	y_0 += yinc;
       }
       res1 += dy;
-      x0 += xinc;
+      x_0 += xinc;
     }
   } else {
-    oldcoord = x0;
-    while (y0 != y1) {
-      if ((y0 & dotcounter) && !visible) {
-	change(x0, y0, 0);
+    oldcoord = x_0;
+    while (y_0 != y_1) {
+      if ((y_0 & dotcounter) && !visible) {
+	change(x_0, y_0, 0);
 	visible = 1;
-      } else if (visible && !(y0 & dotcounter)) {
-	change(oldcoord, y0 - yinc, 1);
+      } else if (visible && !(y_0 & dotcounter)) {
+	change(oldcoord, y_0 - yinc, 1);
 	visible = 0;
       }
       if (res1 > res2) {
-	oldcoord = x0;
+	oldcoord = x_0;
 	res2 += dy - res1;
 	res1 = 0;
-	x0 += xinc;
+	x_0 += xinc;
       }
       res1 += dx;
-      y0 += yinc;
+      y_0 += yinc;
     }
   }
   if (visible)
-    change(x1, y1, 1);
+    change(x_1, y_1, 1);
   else
-    change(x1, y1, 0);
+    change(x_1, y_1, 0);
 }
 
 /* EOF */

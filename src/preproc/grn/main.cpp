@@ -125,7 +125,7 @@ int lastyline;			/* A line's vertical position is NOT the  */
 /* `default' command and are reset each time the    */
 /* start of a picture (.GS) is found.               */
 
-char *deffont[] =
+const char *deffont[] =
 {"R", "I", "B", "S"};
 int defsize[] =
 {10, 16, 24, 36};
@@ -160,7 +160,7 @@ int style[STYLES] =
 double scale = 1.0;		/* no scaling, default */
 int defpoint = 0;		/* flag for pointsize scaling */
 char *defstipple = (char *) 0;
-enum {
+enum E {
   OUTLINE, FILL, BOTH
 } polyfill;
 
@@ -430,7 +430,7 @@ initpic()
     thick[i] = defthick[i];
   }
   for (i = 0; i < FONTS; i++) {		/* font name defaults */
-    tfont[i] = deffont[i];
+    tfont[i] = (char *)deffont[i];
   }
   for (i = 0; i < SIZES; i++) {		/* font size defaults */
     tsize[i] = defsize[i];
@@ -518,7 +518,7 @@ conv(register FILE *fp,
 
       if (stipple == (char *) NULL)	/* if user forgot stipple    */
 	if (has_polygon(PICTURE))	/* and picture has a polygon */
-	  stipple = DEFSTIPPLE;		/* then set the default      */
+	  stipple = (char *)DEFSTIPPLE;		/* then set the default      */
 
       if ((temp = bottompoint - toppoint) < 0.1)
 	temp = 0.1;
@@ -781,17 +781,17 @@ interpret(char *line)
 
   case 'l':			/* l */
     if (isdigit(str1[1])) {	/* set stipple index */
-      int index = atoi(str1 + 1), val;
+      int idx = atoi(str1 + 1), val;
 
-      if (index < 0 || index > NSTIPPLES) {
-	error("bad stipple number %1 at line %2", index, linenum);
+      if (idx < 0 || idx > NSTIPPLES) {
+	error("bad stipple number %1 at line %2", idx, linenum);
 	break;
       }
       if (!defstipple_index)
 	defstipple_index = other_stipple_index;
       val = atoi(str2);
       if (val >= 0 && val < 256)
-	stipple_index[index] = val;
+	stipple_index[idx] = val;
       else
 	error("bad stipple index value at line %1", linenum);
       break;

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -286,10 +286,10 @@ protected:
   unsigned char unformat;
   color *col;			/* for grotty */
 public:
-  hmotion_node(hunits i, color *c, node *next = 0)
-    : node(next), n(i), was_tab(0), unformat(0), col(c) {}
-  hmotion_node(hunits i, int flag1, int flag2, color *c, node *next = 0)
-    : node(next), n(i), was_tab(flag1), unformat(flag2), col(c) {}
+  hmotion_node(hunits i, color *c, node *nxt = 0)
+    : node(nxt), n(i), was_tab(0), unformat(0), col(c) {}
+  hmotion_node(hunits i, int flag1, int flag2, color *c, node *nxt = 0)
+    : node(nxt), n(i), was_tab(flag1), unformat(flag2), col(c) {}
   node *copy();
   int reread(int *);
   int set_unformat_flag();
@@ -337,7 +337,7 @@ class hline_node : public node {
   hunits x;
   node *n;
 public:
-  hline_node(hunits i, node *c, node *next = 0) : node(next), x(i), n(c) {}
+  hline_node(hunits i, node *c, node *nxt = 0) : node(nxt), x(i), n(c) {}
   ~hline_node();
   node *copy();
   hunits width();
@@ -351,7 +351,7 @@ class vline_node : public node {
   vunits x;
   node *n;
 public:
-  vline_node(vunits i, node *c, node *next= 0) : node(next), x(i), n(c) {}
+  vline_node(vunits i, node *c, node *nxt = 0) : node(nxt), x(i), n(c) {}
   ~vline_node();
   node *copy();
   void tprint(troff_output_file *);

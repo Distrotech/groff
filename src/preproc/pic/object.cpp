@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
      Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -716,9 +716,9 @@ void closed_object::set_fill(double f)
   fill = f;
 }
 
-void closed_object::set_fill_color(char *fill)
+void closed_object::set_fill_color(char *f)
 {
-  color_fill = strsave(fill);
+  color_fill = strsave(f);
 }
 
 class box_object : public closed_object {
@@ -1587,21 +1587,21 @@ void arc_object::update_bounding_box(bounding_box *p)
     start_quad += 4.0;
   while (end_quad <= start_quad)
     end_quad += 4.0;
-  double radius = max(hypot(start_offset), hypot(end_offset));
+  double r = max(hypot(start_offset), hypot(end_offset));
   for (int q = int(start_quad) + 1; q < end_quad; q++) {
     position offset;
     switch (q % 4) {
     case 0:
-      offset.x = radius;
+      offset.x = r;
       break;
     case 1:
-      offset.y = radius;
+      offset.y = r;
       break;
     case 2:
-      offset.x = -radius;
+      offset.x = -r;
       break;
     case 3:
-      offset.y = -radius;
+      offset.y = -r;
       break;
     }
     p->encompass(cent + offset);

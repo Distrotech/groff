@@ -304,7 +304,7 @@ int main(int argc, char **argv)
   const char *real_driver = 0;
   if (Xflag) {
     real_driver = postdriver;
-    postdriver = GXDITVIEW;
+    postdriver = (char *)GXDITVIEW;
     commands[TROFF_INDEX].append_arg("-r" XREG "=", "1");
   }
   if (postdriver)

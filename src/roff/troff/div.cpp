@@ -468,7 +468,7 @@ trap::trap(symbol s, vunits n, trap *p)
 {
 }
 
-void top_level_diversion::add_trap(symbol nm, vunits pos)
+void top_level_diversion::add_trap(symbol nam, vunits pos)
 {
   trap *first_free_slot = 0;
   trap **p;
@@ -478,22 +478,22 @@ void top_level_diversion::add_trap(symbol nm, vunits pos)
 	first_free_slot = *p;
     }
     else if ((*p)->position == pos) {
-      (*p)->nm = nm;
+      (*p)->nm = nam;
       return;
     }
   }
   if (first_free_slot) {
-    first_free_slot->nm = nm;
+    first_free_slot->nm = nam;
     first_free_slot->position = pos;
   }
   else
-    *p = new trap(nm, pos, 0);
+    *p = new trap(nam, pos, 0);
 }  
 
-void top_level_diversion::remove_trap(symbol nm)
+void top_level_diversion::remove_trap(symbol nam)
 {
   for (trap *p = page_trap_list; p; p = p->next)
-    if (p->nm == nm) {
+    if (p->nm == nam) {
       p->nm = NULL_SYMBOL;
       return;
     }
@@ -508,10 +508,10 @@ void top_level_diversion::remove_trap_at(vunits pos)
     }
 }
       
-void top_level_diversion::change_trap(symbol nm, vunits pos)
+void top_level_diversion::change_trap(symbol nam, vunits pos)
 {
   for (trap *p = page_trap_list; p; p = p->next)
-    if (p->nm == nm) {
+    if (p->nm == nam) {
       p->position = pos;
       return;
     }

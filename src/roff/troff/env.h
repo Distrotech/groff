@@ -359,7 +359,6 @@ extern void push_env(int);
 
 void init_environments();
 void read_hyphen_file(const char *name);
-void title();
 
 extern double spread_limit;
 

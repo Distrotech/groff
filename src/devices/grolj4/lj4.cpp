@@ -278,10 +278,10 @@ int is_unprintable(unsigned char c)
   return c < 32 && (c == 0 || (7 <= c && c <= 15) || c == 27);
 }
 
-void lj4_printer::set_char(int index, font *f, const environment *env,
+void lj4_printer::set_char(int idx, font *f, const environment *env,
 			   int w, const char *)
 {
-  int code = f->get_code(index);
+  int code = f->get_code(idx);
 
   unsigned char ch = code & 0xff;
   unsigned short symbol_set = code >> 8;

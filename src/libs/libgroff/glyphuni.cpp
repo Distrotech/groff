@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003
+/* Copyright (C) 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by Werner Lemberg <wl@gnu.org>
 
@@ -34,7 +34,7 @@ implement_ptable(glyph_to_unicode)
 
 PTABLE(glyph_to_unicode) glyph_to_unicode_table;
 
-struct {
+struct S {
   const char *key;
   const char *value;
 } glyph_to_unicode_list[] = {

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by Gaius Mulley <gaius@glam.ac.uk>
      using adjust_arc_center() from printer.cpp, written by James Clark.
@@ -115,25 +115,25 @@ int printer::adjust_arc_center(const int *p, double *c)
  *                            max/min limits.  The arc is drawn clockwise.
  */
 
-void check_output_arc_limits(int x1, int y1,
-			     int xv1, int yv1,
-			     int xv2, int yv2,
-			     double c0, double c1,
+void check_output_arc_limits(int x_1, int y_1,
+			     int xv_1, int yv_1,
+			     int xv_2, int yv_2,
+			     double c_0, double c_1,
 			     int *minx, int *maxx,
 			     int *miny, int *maxy)
 {
-  int radius = (int)sqrt(c0 * c0 + c1 * c1);
+  int radius = (int)sqrt(c_0 * c_0 + c_1 * c_1);
   // clockwise direction
-  int xcenter = x1 + xv1;
-  int ycenter = y1 + yv1;
-  int xend = xcenter + xv2;
-  int yend = ycenter + yv2;
+  int xcenter = x_1 + xv_1;
+  int ycenter = y_1 + yv_1;
+  int xend = xcenter + xv_2;
+  int yend = ycenter + yv_2;
   // for convenience, transform to counterclockwise direction,
   // centered at the origin
   int xs = xend - xcenter;
   int ys = yend - ycenter;
-  int xe = x1 - xcenter;
-  int ye = y1 - ycenter;
+  int xe = x_1 - xcenter;
+  int ye = y_1 - ycenter;
   *minx = *maxx = xs;
   *miny = *maxy = ys;
   if (xe > *maxx)

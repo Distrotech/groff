@@ -29,6 +29,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # include <process.h>
 #endif
 
+#if defined(__MSDOS__) \
+    || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN__)) \
+    || defined(__EMX__)
+
 #define SPAWN_FUNCTION_WRAPPERS 1
 
 /* Define the default mechanism, and messages, for error reporting
@@ -80,7 +84,7 @@ spawnvp_wrapper(int mode, char *path, char **argv)
      * We will use a copy of the `argv', in which to do the quoting,
      * so we must allocate space for it. */
 
-    if ((quoted_argv = malloc(++argc * sizeof(char **))) == NULL) {
+    if ((quoted_argv = (char **)malloc(++argc * sizeof(char **))) == NULL) {
       /* If we didn't get enough space,
        * then complain, and bail out gracefully. */
 
@@ -112,5 +116,7 @@ spawnvp_wrapper(int mode, char *path, char **argv)
 
   return status;
 }
+
+#endif  /* __MSDOS__ || _WIN32 */
 
 /* spawnvp.c: end of file */

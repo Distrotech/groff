@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -340,12 +340,12 @@ void dvi_printer::set_color(color *col)
   do_special(buf);
 }
 
-void dvi_printer::set_char(int index, font *f, const environment *env,
+void dvi_printer::set_char(int idx, font *f, const environment *env,
 			   int w, const char *)
 {
   if (*env->col != cur_color)
     set_color(env->col);
-  int code = f->get_code(index);
+  int code = f->get_code(idx);
   if (env->size != cur_point_size || f != cur_font) {
     cur_font = f;
     cur_point_size = env->size;
@@ -384,7 +384,7 @@ void dvi_printer::set_char(int index, font *f, const environment *env,
   }
   possibly_begin_line();
   end_h = env->hpos + w;
-  cur_h += scale(f->get_width(index, UNITWIDTH)/MULTIPLIER,
+  cur_h += scale(f->get_width(idx, UNITWIDTH)/MULTIPLIER,
 		 cur_point_size*RES_7227);
   if (cur_h > max_h)
     max_h = cur_h;
@@ -709,24 +709,26 @@ void draw_dvi_printer::draw(int code, int *p, int np, const environment *env)
     fill_flag = 1;
     // fall through
   case 'c':
-    // troff adds an extra argument to C
-    if (np != 1 && !(code == 'C' && np == 2)) {
-      error("1 argument required for circle");
+    {
+      // troff adds an extra argument to C
+      if (np != 1 && !(code == 'C' && np == 2)) {
+	error("1 argument required for circle");
+	break;
+      }
+      moveto(env->hpos+p[0]/2, env->vpos);
+      if (fill_flag)
+	fill_next(env);
+      else
+	set_line_thickness(env);
+      int rad;
+      rad = milliinches(p[0]/2);
+      sprintf(buf, "%s 0 0 %d %d 0 6.28319",
+	      (fill_flag ? "ia" : "ar"),
+	      rad,
+	      rad);
+      do_special(buf);
       break;
     }
-    moveto(env->hpos+p[0]/2, env->vpos);
-    if (fill_flag)
-      fill_next(env);
-    else
-      set_line_thickness(env);
-    int rad;
-    rad = milliinches(p[0]/2);
-    sprintf(buf, "%s 0 0 %d %d 0 6.28319",
-	    (fill_flag ? "ia" : "ar"),
-	    rad,
-	    rad);
-    do_special(buf);
-    break;
   case 'l':
     if (np != 2) {
       error("2 arguments required for line");

@@ -1,3 +1,117 @@
+2004-04-08  Art Haas  <ahaas@airmail.net>
+
+	* src/libs/libgroff/glyphuni.cpp (glyph_to_unicode_list),
+	src/libs/libgroff/uniglyph.cpp (unicode_to_glyph_list),
+	src/libs/libgroff/uniuni.cpp (unicode_decompose_list),
+	src/preproc/eqn/box.cpp (param_table), src/preproc/grn/hgraph.cpp
+	(polyfill), src/preproc/grn/main.cpp (polyfill),
+	src/preproc/refer/command.cpp (command_table),
+	src/utils/tfmtodit.cpp (lig_table): Don't use anonymous types (which
+	gcc 3.5 doesn't like).
+
+2004-04-08  Werner Lemberg  <wl@gnu.org>
+
+	Removing many compiler warnings.  groff should now compile with
+	a C++ compiler used for C files also.  [Simple variable renamings
+	to avoid shadowing aren't logged in detail.]
+
+	* src/devices/grodvi/dvi.cpp: Some local variable renamings.
+	(draw_dvi_printer::draw) ['c']: Enclose in block.
+
+	* src/devices/grohtml/post-html.cpp: Some local variable renamings.
+	(page::add_line): Fix typos.
+	* src/devices/grohtml/html-text.cpp: Some local variable renamings.
+
+	* src/devices/grolbp/lbp.cpp: Don't define _GNU_SOURCE.
+	Some local variable renamings.
+	* src/devices/grolbp/lbp.h: Some local variable renamings.
+
+	* src/devices/grolj4/lj4.cpp, src/devices/grotty/tty.cpp: Some local
+	variable renamings.
+
+	* src/libs/libbib/index.cpp (index_search_item_iterator::get_tag):
+	Remove redundant local variable declaration.
+	* src/libs/libbib/map.c (mapread, unmap): Don't use K&R style.
+	Don't use `caddr_t' but `void *'.
+	Enclose functions with `extern "C"' for C++.
+
+	* src/libs/libdriver/input.cpp (remember_filename,
+	remember_source_filename): Use cast for string constant.
+
+	* src/libs/libgroff/font.cpp, src/libs/libgroff/fontfile.cpp,
+	src/libs/libgroff/nametoindex.cpp, src/libs/libgroff/paper.cpp,
+	src/libs/libgroff/geometry.cpp: Some local variable renamings.
+	* src/libs/libgroff/iftoa.c, src/libs/libgroff/itoa.c: Don't use K&R
+	style.
+	Enclose functions with `extern "C"' for C++.
+	* src/libs/libgroff/quotearg.c (TRUE,FALSE): Define as macros.
+	(needs_quoting): Return `int'.
+	(quote_arg): Add proper casts to malloc and realloc.
+	* src/libs/libgroff/spawnvp.c: Compile code only for MS-DOS and
+	various MS Windows environments.
+	(spawnvp_wrapper): Add proper cast to malloc.
+
+	* src/preproc/eqn/box.h: Remove redundant declarations of
+	`make_script_box', `make_mark_box' and `make_lineup_box'.
+	* src/preproc/eqn/eqn.y: Remove redundant declaration of `strsave'.
+	* src/preproc/eqn/script.cpp, src/preproc/eqn/pile.cpp: Some local
+	variable renamings.
+
+	* src/preproc/grn/hpoint.cpp: Some local variable renamings.
+	* src/preproc/grn/hgraph.cpp: Some local variable renamings.
+	(dx, dy): Renamed functions to...
+	(deltax, deltay): This.
+	* src/preproc/grn/main.cpp: Some local variable renamings.
+	(deffont): Add `const'.
+	(initpic, conv): Use cast for string constant.
+
+	* src/preproc/html/pre-html.cpp: Some local variable renamings.
+	(makeFileName, alterDeviceTo, addZ): Use cast for string constant.
+	(char_buffer::run_output_filter): Second argument is unused.
+	* src/preproc/html/pushback.cpp: Some local variable renamings.
+
+	* src/preproc/pic/pic.y: Remove redundant declaration of `do_copy'.
+	* src/preproc/pic/object.cpp: Some local variable renamings.
+
+	* src/preproc/refer/label.y (lookup_label): Remove redundant
+	declaration of local variable.
+
+	* src/preproc/soelim.cpp: Remove redundant declaration of
+	`interpret_lf_args'.
+
+	* src/preproc/tbl/main.cpp: Some local variable renamings.
+
+	* src/roff/groff/groff.cpp (main): Use cast for string constant.
+	* src/roff/groff/pipeline.c: Enclose declarations of `error',
+	`c_fatal', and `i_to_a' with `extern "C"' for C++.
+	Don't use C++-style comments.
+
+	* src/roff/troff/env.h: Remove redundant declaration of `title'.
+	* src/roff/troff/node.h, src/roff/troff/env.cpp,
+	src/roff/troff/div.cpp, src/roff/troff/node.cpp: Some local variable
+	renamings.
+	* src/roff/troff/div.h: Remove redundant declaration of
+	`end_diversions'.
+	* src/roff/troff/troff.h: Remove redundant declaration of
+	`cleanup_and_exit'
+	* src/roff/troff/input.cpp: Remove redundant declaration of
+	`handle_first_page_transition' and `process_input_stack'.
+
+	* src/utils/hpftodit.cpp: Some local variable renamings.
+
+	* src/utils/indxbib/signal.c: Enclose functions with `extern "C"'
+	for C++.
+	Don't define RETSIGTYPE.
+	* src/utils/indxbib/indxbib.cpp: Some local variable renamings.
+
+	* src/utils/pfbtops/pfbtops.cpp: Don't use K&R style.
+	(error): Use `const' in argument.
+	(main): Remove redundant declaration of `optind'.
+	Move declaration of `Version_string' to top-level.
+
+	* PROBLEMS: Document difficulties compiling signal.c if a C++
+	compiler is used for C.
+
 2004-04-07  Werner Lemberg  <wl@gnu.org>
 
 	* Makefile.sub (DISTCLEANFILES): Add `test-groff'.

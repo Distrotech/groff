@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003
+/* Copyright (C) 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by Werner Lemberg <wl@gnu.org>
 
@@ -39,7 +39,7 @@ PTABLE(unicode_decompose) unicode_decompose_table;
 
 // the first digit in the composite string gives the number of composites
 
-struct {
+struct S {
   const char *key;
   const char *value;
 } unicode_decompose_list[] = {

@@ -33,8 +33,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "device.h"
 #include "searchpath.h"
 
-void cleanup_and_exit(int n);
-
 typedef int units;
 
 extern units scale(units n, units x, units y); // scale n by x/y

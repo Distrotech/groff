@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -397,12 +397,12 @@ const char *font::get_special_device_encoding(int c)
   return( ch[ch_index[c]].special_device_coding );
 }
 
-void font::alloc_ch_index(int index)
+void font::alloc_ch_index(int idx)
 {
   if (nindices == 0) {
     nindices = 128;
-    if (index >= nindices)
-      nindices = index + 10;
+    if (idx >= nindices)
+      nindices = idx + 10;
     ch_index = new short[nindices];
     for (int i = 0; i < nindices; i++)
       ch_index[i] = -1;
@@ -410,8 +410,8 @@ void font::alloc_ch_index(int index)
   else {
     int old_nindices = nindices;
     nindices *= 2;
-    if (index >= nindices)
-      nindices = index + 10;
+    if (idx >= nindices)
+      nindices = idx + 10;
     short *old_ch_index = ch_index;
     ch_index = new short[nindices];
     memcpy(ch_index, old_ch_index, sizeof(short)*old_nindices);
@@ -458,16 +458,16 @@ void font::compact()
   }
 }
 
-void font::add_entry(int index, const font_char_metric &metric)
+void font::add_entry(int idx, const font_char_metric &metric)
 {
-  assert(index >= 0);
-  if (index >= nindices)
-    alloc_ch_index(index);
-  assert(index < nindices);
+  assert(idx >= 0);
+  if (idx >= nindices)
+    alloc_ch_index(idx);
+  assert(idx < nindices);
   if (ch_used + 1 >= ch_size)
     extend_ch();
   assert(ch_used + 1 < ch_size);
-  ch_index[index] = ch_used;
+  ch_index[idx] = ch_used;
   ch[ch_used++] = metric;
 }
 
@@ -704,12 +704,12 @@ int font::load(int *not_found)
 	    t.error("unnamed character cannot be duplicate");
 	    return 0;
 	  }
-	  int index = name_to_index(nm);
-	  if (index < 0) {
+	  int idx = name_to_index(nm);
+	  if (idx < 0) {
 	    t.error("invalid character `%1'", nm);
 	    return 0;
 	  }
-	  copy_entry(index, last_index);
+	  copy_entry(idx, last_index);
 	}
 	else {
 	  font_char_metric metric;
@@ -758,9 +758,9 @@ int font::load(int *not_found)
 	    metric.special_device_coding = NULL;
 	  }
 	  else {
-	    char *name = new char[strlen(p) + 1];
-	    strcpy(name, p);
-	    metric.special_device_coding = name;
+	    char *nam = new char[strlen(p) + 1];
+	    strcpy(nam, p);
+	    metric.special_device_coding = nam;
 	  }
 	  if (strcmp(nm, "---") == 0) {
 	    last_index = number_to_index(metric.code);

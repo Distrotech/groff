@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001, 2004 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -670,7 +670,7 @@ enum { CH_f, CH_i, CH_l, CH_ff, CH_fi, CH_fl, CH_ffi, CH_ffl };
 
 // Each possible ligature appears in this table.
 
-struct {
+struct S {
   unsigned char c1, c2, res;
   const char *ch;
 } lig_table[] = {
