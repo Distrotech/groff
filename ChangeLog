@@ -1,3 +1,25 @@
+2004-03-05  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	* Makefile.in (SEP): Replaced with...
+	(RT_SEP, SH_SEP): Separators for the target platform's native path
+	separator and the build environment, respectively.
+	(fontpath, tmacpath): Use RT_SEP.
+	(MDEFINES): Updated.
+
+	* contrib/mom/Makefile.sub (GROFF_BIN_PATH): Use SH_SEP.
+	* doc/Makefile.sub (GROFF_BIN_PATH): Use SH_SEP.
+	* src/preproc/eqn/Makefile.sub (neqn): Use SH_SEP.
+	* src/roff/nroff/Makefile.sub (nroff): Use SH_SEP.
+
+2004-03-05  Werner LEMBERG  <wl@gnu.org>
+
+	* fonts/devlj4/Makefile.sub (LJ4RES): Set to 1200.  This helps to
+	reduce alignment problems with newer printers which use built-in
+	TrueType fonts (instead of the older Intellifonts).  The ideal
+	solution is to provide a second set of groff metric files, but this
+	is extremely time-consuming to produce, given that HP's metric
+	files are very rudimentary.
+
 2004-03-01  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grolj4/lj4.cpp (main): Fix argument of getopt_long.

@@ -1,4 +1,5 @@
-# Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004
+#   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
 # This file is part of groff.
@@ -23,7 +24,15 @@ srcdir=@srcdir@
 top_srcdir=@abs_top_srcdir@
 VPATH=@srcdir@
 top_builddir=@abs_top_builddir@
-SEP=@GROFF_PATH_SEPARATOR@
+
+# `RT_SEP' is the operating system's native PATH SEPARATOR CHAR, which
+# is to be used in runtime PATHs compiled into groff executables.
+RT_SEP=@GROFF_PATH_SEPARATOR@
+
+# `SH_SEP' is a alternative PATH SEPARATOR CHAR, to be used in shell
+# scripts and makefile rules; it may be the same as `RT_SEP', but,
+# particularly in some Microsoft environments, it may differ.
+SH_SEP=@PATH_SEPARATOR@
 
 version=`cat $(top_srcdir)/VERSION`
 # No additional number if revision is zero.
@@ -123,7 +132,7 @@ localfontdir=$(dataprogramdir)/site-font
 legacyfontdir=/usr/lib/font
 
 # `fontpath' says where to look for dev*/*.
-fontpath=$(localfontdir)$(SEP)$(fontdir)$(SEP)$(legacyfontdir)
+fontpath=$(localfontdir)$(RT_SEP)$(fontdir)$(RT_SEP)$(legacyfontdir)
 
 # `tmacdir' says where to install macros.
 tmacdir=$(datasubdir)/tmac
@@ -139,7 +148,7 @@ localtmacdir=$(dataprogramdir)/site-tmac
 # directory will be always added.
 # `troffrc' and `troffrc-end' (and `eqnrc') are searched neither in the
 # current nor in the home directory.
-tmacpath=$(systemtmacdir)$(SEP)$(localtmacdir)$(SEP)$(tmacdir)
+tmacpath=$(systemtmacdir)$(RT_SEP)$(localtmacdir)$(RT_SEP)$(tmacdir)
 
 # `sys_tmac_prefix' is prefix (if any) for system macro packages.
 sys_tmac_prefix=@sys_tmac_prefix@
@@ -373,7 +382,8 @@ MDEFINES= \
   "PURIFY=$(PURIFY)" \
   "PURIFYCCFLAGS=$(PURIFYCCFLAGS)" \
   "RANLIB=$(RANLIB)" \
-  "SEP=$(SEP)" \
+  "RT_SEP=$(RT_SEP)" \
+  "SH_SEP=$(SH_SEP)" \
   "SHELL=$(SHELL)" \
   "SH_SCRIPT_SED_CMD=$(SH_SCRIPT_SED_CMD)" \
   "TTYDEVDIRS=$(TTYDEVDIRS)" \
