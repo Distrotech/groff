@@ -1524,7 +1524,7 @@ requests adjust the placing of @dfn{whitespace} (blank lines or
 spaces).
 
 @cindex new page (@code{bp})
-The @samp{.bp} request starts a new page, causing a line break.
+The @code{bp} request starts a new page, causing a line break.
 
 @cindex blank line (@code{sp})
 @cindex empty line (@code{sp})
@@ -2918,7 +2918,7 @@ This may or may not be the effect you want, especially if some
 of the definitions break and some do not.
 The following examples show two possible ways to force a break.
 
-The first workaround uses the @code{.br}
+The first workaround uses the @code{br}
 request to force a break after printing the term or label.
 
 @Example
@@ -3357,7 +3357,7 @@ Two-column mode.
 @Defmac {MC, [@Var{width} [@Var{gutter}]], ms}
 Multi-column mode.
 If you specify no arguments, it is equivalent to the
-@code{.2C} macro.
+@code{2C} macro.
 Otherwise, @var{width} is the width of each column and
 @var{gutter} is the space between columns.
 The @code{MINGW} number register controls the default gutter width.
@@ -4931,7 +4931,7 @@ interfering with the appearance of the final output.
 @cindex @code{as}, @code{as1} requests, and comments
 If the escape is to the right of some text or a request, that portion
 of the line is ignored, but the space leading up to it is noticed by
-@code{gtroff}.  This only affects the @code{.ds} and @code{.as}
+@code{gtroff}.  This only affects the @code{ds} and @code{as}
 request and its variants.
 
 @cindex tabs, before comments
@@ -6854,6 +6854,36 @@ undefined is possible also; @code{tr} does not check whether the
 entities in its argument do exist.
 
 @xref{Gtroff Internals}.
+
+@item
+@code{troff} no longer has a hard-coded dependency on @w{Latin-1};
+all @code{char@var{XXX}} entities have been removed from the font
+description files.  This has a notable consequence which shows up in
+warnings like @code{can't find character with input code @var{XXX}}
+if the @code{tr} request isn't handled properly.
+
+Consider the following translation:
+
+@Example
+.tr @'e@'E
+@endExample
+
+@noindent
+This maps input character @code{@'e} onto glyph @code{@'E}, which is
+identical to glyph @code{char201}.  But this glyph intentionally
+doesn't exist!  Instead, @code{\[char201]} is treated as an input
+character entity and is by default mapped onto @code{\['E]}, and
+@code{gtroff} doesn't handle translations of translations.
+
+The right way to write the above translation is
+
+@Example
+.tr @'e\['E]
+@endExample
+
+@noindent
+With other words, the first argument of @code{tr} should be an input
+character or entity, and the second one a glyph entity.
 
 @item
 Without an argument, the @code{tr} request is ignored.
