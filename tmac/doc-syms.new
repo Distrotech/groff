@@ -47,11 +47,11 @@
 .  ds doc-str-Ux \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .  as doc-out-string \*[doc-Tn-font-size]UNIX\*[doc-str-Ux]
 .
-.  if !\n[doc-args-processed] \
+.  if !\n[doc-arg-limit] \
 .    if \n[.$] \
 .      doc-parse-args \$@
 .
-.  ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
 .    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .      \*[doc-arg\n[doc-arg-ptr]]
@@ -76,7 +76,7 @@
 .  nr doc-curr-size \n[.s]
 .  ds doc-str-Bx \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .
-.  if !\n[doc-args-processed] \{\
+.  if !\n[doc-arg-limit] \{\
 .    ie !\n[.$] \{\
 .      nop \*[doc-Tn-font-size]BSD\*[doc-str-Bx]
 .      nop \*[doc-Tn-font-size]UNIX\*[doc-str-Bx]
@@ -100,12 +100,12 @@
 .    doc-clean-vectors
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
 .    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
 .      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]\*[doc-Tn-font-size]
 .      as doc-out-string BSD\*[doc-str-Bx]
-.      ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.      ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .        nr doc-reg-Bx (\n[doc-arg-ptr] + 1)
 .        ie "\*[doc-type\n[doc-reg-Bx]]"string" \{\
 .          if "\*[doc-arg\n[doc-reg-Bx]]"Reno" \{\
@@ -126,7 +126,7 @@
 .            as doc-out-string \-Tahoe
 .          \}
 .
-.          ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.          ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .            nr doc-arg-ptr +1
 .            doc-print-recursive
 .          \}
@@ -240,7 +240,7 @@
 .ds Ai \*[doc-Tn-font-size]ANSI
 .
 .de St
-.  if !\n[doc-args-processed] \{\
+.  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \{\
 .      ds doc-macro-name St
 .
@@ -259,7 +259,7 @@
 .    \}
 .  \}
 .
-.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    ds doc-str-St \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
@@ -293,7 +293,7 @@
 .      \" .as doc-out-string " (``\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]'')
 .    \}
 .
-.    ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.    ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .      nr doc-arg-ptr +1
 .      doc-print-recursive
 .    \}

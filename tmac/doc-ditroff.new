@@ -215,7 +215,7 @@
 .\" NS   doc-reg-Ql, doc-reg-Ql1
 .
 .de Ql
-.  if !\n[doc-args-processed] \{\
+.  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \{\
 .      ds doc-macro-name Ql
 .      doc-parse-args \$@
@@ -238,8 +238,8 @@
 .    el \{\
 .      \" if .Ql has been called directly, we must shift all elements in
 .      \" the argument vector to the right so that we can insert `Li'
-.      nr doc-reg-Ql \n[doc-args-processed]
-.      nr doc-reg-Ql1 (\n[doc-args-processed] + 1)
+.      nr doc-reg-Ql \n[doc-arg-limit]
+.      nr doc-reg-Ql1 (\n[doc-arg-limit] + 1)
 .      while \n[doc-reg-Ql] \{\
 .        rn doc-arg\n[doc-reg-Ql] doc-arg\n[doc-reg-Ql1]
 .        rn doc-type\n[doc-reg-Ql] doc-type\n[doc-reg-Ql1]
@@ -250,7 +250,7 @@
 .      ds doc-arg1 Li
 .      ds doc-type1 macro
 .      ds doc-space1
-.      nr doc-args-processed +1
+.      nr doc-arg-limit +1
 .    \}
 .
 .    ds doc-quote-left "\*[doc-left-singlequote]
