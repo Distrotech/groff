@@ -2031,7 +2031,7 @@ are passed through transparently; a
 .B %
 is added to the end of the line to avoid unwanted spaces.
 You can safely use this feature to change fonts or to
-change the value of \fB\ebaselineskip\fR.
+change the value of \fB\ebaselineskip\fP.
 Anything else may well produce undesirable results; use at your own risk.
 Lines beginning with a period are not given any special treatment.
 .PP
@@ -2056,6 +2056,12 @@ figname = bar;
 .DE
 .R
 .KE
+.LP
+Use this feature sparsingly and only if really needed:
+A different name means a new box register in \*[tx], and the maximum number
+of box registers is only 256.
+Also be careful not to use a predefined \*[tx] or \*[lx] macro name as
+an argument to \fBfigname\fP since this inevitably causes an error.
 .
 .
 .NH 1
