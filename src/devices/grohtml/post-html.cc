@@ -2368,6 +2368,9 @@ void html_printer::troff_tag (text_glob *g)
   } else if (strncmp(t, ".vs", 3) == 0) {
     char *a = (char *)t+3;
     do_verticalspacing(a);
+  } else if (strncmp(t, ".ps", 3) == 0) {
+    char *a = (char *)t+3;
+    do_pointsize(a);
   } else if (strcmp(t, ".links") == 0) {
     do_links();
   } else if (strcmp(t, ".no-auto-rule") == 0) {
@@ -3212,6 +3215,7 @@ html_printer::html_printer()
   pageoffset(0),
   indentation(0),
   prev_indent(0),
+  pointsize(0),
   line_number(0),
   background(default_background)
 {
