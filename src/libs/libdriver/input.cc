@@ -762,7 +762,8 @@ get_extended_arg(void)
 	break;
       }
     }
-    buf.append(c);
+    else
+      buf.append(c);
     c = get_char();
   }
   return buf.make_string();

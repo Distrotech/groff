@@ -14,7 +14,7 @@
 Home of Groff (GNU Troff).
 .HTML-IMAGE-LEFT
 .PSPIC -L gnubw.eps 1i 1i
-\v'-0.5i'\h'1.0i'\s[40]\*[GNU] Troff\s0
+\v'-0.5i'\h'1.0i'\s[50]\*[GNU] Troff\s0
 .HTML-IMAGE-END
 .sp
 .LP

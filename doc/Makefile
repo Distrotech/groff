@@ -101,7 +101,7 @@ groff: groff.texinfo
 	makeinfo groff.texinfo
 
 gnubw.eps: gnupng
-	pngtopnm gnupng | pnmscale 0.1 | pnmtops -noturn > gnubw.eps
+	pngtopnm gnupng | pnmtops -noturn > gnubw.eps
 
 homepage.html: gnubw.eps
 

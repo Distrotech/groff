@@ -507,7 +507,7 @@ Dashed Objects
 .PP
 We've already seen that the modifier \fBdashed\fP can change the line
 style of an object from solid to dashed.  GNU \fBgpic\fP permits you to
-dot or dash ellipses, circles, and arcs (and splines in \(*tx mode
+dot or dash ellipses, circles, and arcs (and splines in \*(tx mode
 only); some versions of DWB may only permit dashing of lines and
 boxes.  It's possible to change the dash interval by specifying a
 number after the modifier.
@@ -529,7 +529,7 @@ box dashed 0.2 "0.2";
 Dotted Objects
 .PP
 Another available qualifier is \fBdotted\fP.  GNU \fBgpic\fP permits
-you to dot or dash ellipses, circles, and arcs (and splines in \(*tx
+you to dot or dash ellipses, circles, and arcs (and splines in \*(tx
 mode only); some versions of DWB may only permit dashing of lines and
 boxes.  It too can be suffixed with a number to specify the interval
 between dots:
@@ -602,8 +602,8 @@ The default thickness of the lines used to draw objects is controlled by the
 variable.
 This gives the thickness of lines in points.
 A negative value means use the default thickness:
-in \(*tx output mode, this means use a thickness of 8 milliinches;
-in \(*tx output mode with the
+in \*(tx output mode, this means use a thickness of 8 milliinches;
+in \*(tx output mode with the
 .B -c
 option, this means use the line thickness specified by
 .B .ps
@@ -1306,6 +1306,7 @@ boxht@0.5@Default height of a box
 boxwid@0.75@Default height of a box
 lineht@0.5@Default length of vertical line
 linewid@0.75@Default length of horizontal line
+linethick@-1@Default line thickness
 arcrad @0.25@Default radius of an arc
 circlerad@0.25@Default radius of a circle
 ellipseht@0.5@Default height of an ellipse
@@ -1880,7 +1881,7 @@ change the value of \fI\ebaselineskip\fR.
 Anything else may well produce undesirable results; use at your own risk.
 Lines beginning with a period are not given any special treatment.
 .PP
-The \(*tx mode of \fIpic\fP(1) will \fInot\fP translate \fBtroff\fP
+The \*(tx mode of \fIpic\fP(1) will \fInot\fP translate \fBtroff\fP
 font and size changes included in text strings!
 .NH 1
 Obsolete Commands
