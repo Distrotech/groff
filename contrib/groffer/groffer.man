@@ -162,9 +162,17 @@ FDL in the main directory of the groff source package.
 .c --------------------------------------------------------------------
 .c .File_name  (<path_name>)
 .c
-.c Display a directory name.
+.c Display a file or directory name in CB font.
 .c
 .de File_name
+.  Header_CB \\$@
+..
+.c --------------------------------------------------------------------
+.c .Header_CB  (<path_name>)
+.c
+.c Display a line in CB font, for example after .TP
+.c
+.de Header_CB
 .  nh
 .  Text \f[CB]\\$1\f[]\\$2
 .  hy
@@ -1168,14 +1176,14 @@ Originates from GNU
 .
 .Opt_def -- foreground color
 This is equivalent to
-.Opt_short fg .
+.Opt_long fg .
 .
 .
 .Opt_def -- fg color
 Set the foreground color of the viewer window.
 .
 This is an adaption of the X Toolkit option
-.Opt_short bg .
+.Opt_long bg .
 .
 The argument is an X color name, see
 .BR (1)
@@ -1184,7 +1192,7 @@ for details.
 .
 .Opt_def -- font font_name
 This is equivalent to
-.Opt_short ft .
+.Opt_long ft .
 .
 .
 .Opt_def -- ft font_name
@@ -1264,7 +1272,7 @@ The following mode values are recognized:
 .
 .
 .TP
-.B auto
+.Header_CB auto
 Display in the default manner; this actually means to try the modes
 .IR ps ,
 .IR x ,
@@ -1278,40 +1286,41 @@ with
 .
 .
 .TP
-.B dvi
+.Header_CB dvi
 Display formatted input in a dvi viewer program; equivalent to
 .Opt_long dvi .
 .
 .
 .TP
-.B pdf
+.Header_CB pdf
 Display formatted input in a PDF (Portable Document Format) viewer
 program; equivalent to
 .Opt_long pdf .
 .
 .
 .TP
-.B ps
+.Header_CB ps
 Display formatted input in a Postscript viewer program; equivalent to
 .Opt_long ps .
 .
 .
 .TP
-.B tty
+.Header_CB tty
 Display formatted input in a text terminal; equivalent to
 .Opt_long tty .
 .
 .
 .TP
-.B www
+.Header_CB www
 Display formatted input in a internet browser program; equivalent to
 .Opt_long www .
 .
 .
 .TP
-.B x
+.Header_CB x
 Display formatted input in a native roff viewer such as
-.BR gxditview (@MAN1EXT@); equivalent to
+.BR gxditview (@MAN1EXT@);
+equivalent to
 .Opt_long x .
 .
 .
@@ -1324,7 +1333,7 @@ They are only interesting for advanced applications.
 .
 .
 .TP
-.B groff
+.Header_CB groff
 Generate device output with plain
 .I groff
 without using the special viewing features of
@@ -1339,7 +1348,7 @@ is assumed.
 .
 .
 .TP
-.B source
+.Header_CB source
 Display source code; same as
 .Opt_short Q .
 .
@@ -2329,10 +2338,11 @@ prepending should be preferred to appending and setting in order not
 to delete the environment variable provided by the 
 .
 .Topic
-Write functions for calling viewer programs in a special way and feed
-them into the
+Write a function for calling a viewer program for a special
+.I mode
+and feed this name into its corresponding
 .Opt_long \f[I]mode\f[]\-viewer
-options.
+option.
 .
 Note that the name of such a function must coincide with some existing
 program in the system path

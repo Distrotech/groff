@@ -30,7 +30,7 @@ export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
 _PROGRAM_VERSION='0.9.2';
-_LAST_UPDATE='14 Oct 2002';
+_LAST_UPDATE='17 Oct 2002';
 
 ########################################################################
 # Determine the shell under which to run this script;
@@ -3327,6 +3327,10 @@ main_parse_MANOPT()
   local _list;
   _list='';
   if test "${MANOPT}" != ''; then
+    MANOPT="$(echo -n "${MANOPT}" | \
+      sed -e 's/^'"${_SPACE}${_SPACE}"'*//')";
+  fi;
+  if test "${MANOPT}" = ''; then
     eval "${return_ok}";
   fi;
   # add arguments in $MANOPT by mapping them to groffer options
