@@ -1,3 +1,30 @@
+2002-11-02  Werner LEMBERG  <wl@gnu.org>
+
+	Adding support for composite glyphs: \[xxx yyy ...] and the
+	`composite' request.
+
+	* src/roff/troff/glyphuni.cc: New file for mapping groff glyph names
+	to Unicode-based glyph names.
+	* src/roff/troff/uniglyph.cc: New file for mapping Unicode-based
+	glyph names to groff glyph names.
+	* src/roff/troff/uniuni.cc: New file for canonically decomposing
+	Unicode-based glyph names.
+	* src/roff/troff/input.cc: Include unicode.h.
+	* src/roff/troff/unicode.cc, src/roff/troff/unicode.h: New files
+	for handling Unicode glyph names.
+	(composite_glyph_name): New function.
+	(token::next) <'['>: Handle Unicode glyph names and composite
+	glyphs.
+	(composite_dictionary): New dictionary for the `composite' request.
+	(composite_request): Implement `composite' request.
+	(init_input_requests): Add `composite'.
+	Alphabetically sorted.
+	* src/roff/troff/env.cc (tabs_save, tabs_restore): Removed (already
+	commented out).
+	(init_env_requests): Alphabetically sorted.
+	Removed `tas' and `tar' (already commented out).
+	* src/roff/troff/Makefile.sub: Updated.
+
 2002-10-31  Ruslan Ermilov <ru@FreeBSD.org>
 
 	* src/roff/nroff/nroff.man, src/roff/nroff/nroff.sh: Fix description

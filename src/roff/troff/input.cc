@@ -35,6 +35,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "macropath.h"
 #include "defs.h"
 #include "input.h"
+#include "unicode.h"
 
 // Needed for getpid() and isatty()
 #include "posix.h"
@@ -134,6 +135,7 @@ static void interpolate_macro(symbol);
 static void interpolate_number_format(symbol);
 static void interpolate_environment_variable(symbol);
 
+static symbol composite_glyph_name(symbol);
 static void interpolate_arg(symbol);
 static request_or_macro *lookup_request(symbol);
 static int get_delim_number(units *, int);
@@ -1760,21 +1762,21 @@ void token::next()
 	break;
       case '$':
 	{
-	  symbol nm = read_escape_name();
-	  if (!(nm.is_null() || nm.is_empty()))
-	    interpolate_arg(nm);
+	  symbol s = read_escape_name();
+	  if (!(s.is_null() || s.is_empty()))
+	    interpolate_arg(s);
 	  break;
 	}
       case '*':
 	{
-	  symbol nm = read_escape_name(WITH_ARGS);
-	  if (!(nm.is_null() || nm.is_empty())) {
+	  symbol s = read_escape_name(WITH_ARGS);
+	  if (!(s.is_null() || s.is_empty())) {
 	    if (have_string_arg) {
 	      have_string_arg = 0;
-	      interpolate_string_with_args(nm);
+	      interpolate_string_with_args(s);
 	    }
 	    else
-	      interpolate_string(nm);
+	      interpolate_string(s);
 	  }
 	  break;
 	}
@@ -1906,9 +1908,9 @@ void token::next()
       case 'n':
 	{
 	  int inc;
-	  symbol nm = read_increment_and_escape_name(&inc);
-	  if (!(nm.is_null() || nm.is_empty()))
-	    interpolate_number_reg(nm, inc);
+	  symbol s = read_increment_and_escape_name(&inc);
+	  if (!(s.is_null() || s.is_empty()))
+	    interpolate_number_reg(s, inc);
 	  break;
 	}
       case 'N':
@@ -1967,9 +1969,9 @@ void token::next()
 	return;
       case 'V':
 	{
-	  symbol nm = read_escape_name();
-	  if (!(nm.is_null() || nm.is_empty()))
-	    interpolate_environment_variable(nm);
+	  symbol s = read_escape_name();
+	  if (!(s.is_null() || s.is_empty()))
+	    interpolate_environment_variable(s);
 	  break;
 	}
       case 'w':
@@ -2033,9 +2035,33 @@ void token::next()
 	break;
       case '[':
 	if (!compatible_flag) {
-	  nm = read_long_escape_name();
-	  if (nm.is_null() || nm.is_empty())
+	  symbol s = read_long_escape_name(WITH_ARGS);
+	  if (s.is_null() || s.is_empty())
 	    break;
+	  if (have_string_arg) {
+	    have_string_arg = 0;
+	    nm = composite_glyph_name(s);
+	  }
+	  else {
+	    const char *gn = check_unicode_name(s.contents());
+	    if (gn) {
+	      const char *gn_decomposed = decompose_unicode(gn);
+	      if (gn_decomposed)
+		gn = &gn_decomposed[1];
+	      const char *groff_gn = unicode_to_glyph_name(gn);
+	      if (groff_gn)
+		nm = symbol(groff_gn);
+	      else {
+		char *buf = new char[strlen(gn) + 1 + 1];
+		strcpy(buf, "u");
+		strcat(buf, gn);
+		nm = symbol(buf);
+		a_delete buf;
+	      }
+	    }
+	    else
+	      nm = symbol(s.contents());
+	  }
 	  type = TOKEN_SPECIAL;
 	  return;
 	}
@@ -3581,6 +3607,101 @@ macro_iterator::~macro_iterator()
     args = args->next;
     delete tem;
   }
+}
+
+dictionary composite_dictionary(17);
+
+void composite_request()
+{
+  symbol from = get_name(1);
+  if (!from.is_null()) {
+    const char *from_gn = glyph_name_to_unicode(from.contents());
+    if (!from_gn) {
+      from_gn = check_unicode_name(from.contents());
+      if (!from_gn) {
+	error("invalid composite glyph name `%1'", from.contents());
+	skip_line();
+	return;
+      }
+    }
+    const char *from_decomposed = decompose_unicode(from_gn);
+    if (from_decomposed)
+      from_gn = &from_decomposed[1];
+    symbol to = get_name(1);
+    if (to.is_null())
+      composite_dictionary.remove(symbol(from_gn));
+    else {
+      const char *to_gn = glyph_name_to_unicode(to.contents());
+      if (!to_gn) {
+	to_gn = check_unicode_name(to.contents());
+	if (!to_gn) {
+	  error("invalid composite glyph name `%1'", to.contents());
+	  skip_line();
+	  return;
+	}
+      }
+      const char *to_decomposed = decompose_unicode(to_gn);
+      if (to_decomposed)
+	to_gn = &to_decomposed[1];
+      if (strcmp(from_gn, to_gn) == 0)
+	composite_dictionary.remove(symbol(from_gn));
+      else
+	composite_dictionary.lookup(symbol(from_gn), (void *)to_gn);
+    }
+  }
+  skip_line();
+}
+
+static symbol composite_glyph_name(symbol nm)
+{
+  macro_iterator *mi = new macro_iterator();
+  decode_string_args(mi);
+  input_stack::push(mi);
+  const char *gn = glyph_name_to_unicode(nm.contents());
+  if (!gn) {
+    gn = check_unicode_name(nm.contents());
+    if (!gn) {
+      error("invalid base glyph `%1' in composite glyph name", nm.contents());
+      return EMPTY_SYMBOL;
+    }
+  }
+  const char *gn_decomposed = decompose_unicode(gn);
+  string glyph_name(gn_decomposed ? &gn_decomposed[1] : gn);
+  string gl;
+  int n = input_stack::nargs();
+  for (int i = 1; i <= n; i++) {
+    glyph_name += '_';
+    input_iterator *p = input_stack::get_arg(i);
+    gl.clear();
+    int c;
+    while ((c = p->get(0)) != EOF)
+      gl += c;
+    gl += '\0';
+    const char *u = glyph_name_to_unicode(gl.contents());
+    if (!u) {
+      u = check_unicode_name(gl.contents());
+      if (!u) {
+	error("invalid component `%1' in composite glyph name",
+	      gl.contents());
+	return EMPTY_SYMBOL;
+      }
+    }
+    const char *decomposed = decompose_unicode(u);
+    if (decomposed)
+      u = &decomposed[1];
+    void *mapped_composite = composite_dictionary.lookup(symbol(u));
+    if (mapped_composite)
+      u = (const char *)mapped_composite;
+    glyph_name += u;
+  }
+  glyph_name += '\0';
+  const char *groff_gn = unicode_to_glyph_name(glyph_name.contents());
+  if (groff_gn)
+    return symbol(groff_gn);
+  gl.clear();
+  gl += 'u';
+  gl += glyph_name;
+  return symbol(gl.contents());
 }
 
 int trap_sprung_flag = 0;
@@ -7067,6 +7188,7 @@ void init_input_requests()
   init_request("chop", chop_macro);
   init_request("close", close_request);
   init_request("color", activate_color);
+  init_request("composite", composite_request);
   init_request("continue", while_continue_request);
   init_request("cp", compatible);
   init_request("de", define_macro);
@@ -7096,6 +7218,7 @@ void init_input_requests()
   init_request("lf", line_file);
   init_request("mso", macro_source);
   init_request("nop", nop_request);
+  init_request("nroff", nroff_request);
   init_request("nx", next_file);
   init_request("open", open_request);
   init_request("opena", opena_request);
@@ -7124,32 +7247,31 @@ void init_input_requests()
   init_request("trf", transparent_file);
   init_request("trin", translate_input);
   init_request("trnt", translate_no_transparent);
+  init_request("troff", troff_request);
   init_request("unformat", unformat_macro);
+#ifdef COLUMN
+  init_request("vj", vjustify);
+#endif /* COLUMN */
   init_request("warn", warn_request);
+  init_request("warnscale", warnscale_request);
   init_request("while", while_request);
   init_request("write", write_request);
   init_request("writec", write_request_continue);
   init_request("writem", write_macro_request);
-  init_request("nroff", nroff_request);
-  init_request("troff", troff_request);
-#ifdef COLUMN
-  init_request("vj", vjustify);
-#endif /* COLUMN */
-  init_request("warnscale", warnscale_request);
   number_reg_dictionary.define(".$", new nargs_reg);
   number_reg_dictionary.define(".C", new constant_int_reg(&compatible_flag));
+  number_reg_dictionary.define(".c", new lineno_reg);
+  number_reg_dictionary.define(".color", new constant_int_reg(&color_flag));
   number_reg_dictionary.define(".F", new filename_reg);
+  number_reg_dictionary.define(".g", new constant_reg("1"));
   number_reg_dictionary.define(".H", new constant_int_reg(&hresolution));
   number_reg_dictionary.define(".R", new constant_reg("10000"));
   number_reg_dictionary.define(".V", new constant_int_reg(&vresolution));
-  extern const char *revision;
-  number_reg_dictionary.define(".Y", new constant_reg(revision));
-  number_reg_dictionary.define(".c", new lineno_reg);
-  number_reg_dictionary.define(".g", new constant_reg("1"));
-  number_reg_dictionary.define(".color", new constant_int_reg(&color_flag));
   number_reg_dictionary.define(".warn", new constant_int_reg(&warning_mask));
   extern const char *major_version;
   number_reg_dictionary.define(".x", new constant_reg(major_version));
+  extern const char *revision;
+  number_reg_dictionary.define(".Y", new constant_reg(revision));
   extern const char *minor_version;
   number_reg_dictionary.define(".y", new constant_reg(minor_version));
   number_reg_dictionary.define("c.", new writable_lineno_reg);

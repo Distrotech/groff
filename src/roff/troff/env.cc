@@ -2752,22 +2752,6 @@ const char *environment::get_tabs()
   return tabs.to_string();
 }
 
-#if 0
-tab_stops saved_tabs;
-
-void tabs_save()
-{
-  saved_tabs = curenv->tabs;
-  skip_line();
-}
-
-void tabs_restore()
-{
-  curenv->tabs = saved_tabs;
-  skip_line();
-}
-#endif
-
 tab_type environment::distance_to_next_tab(hunits *distance)
 {
   return line_tabs
@@ -3187,102 +3171,98 @@ const char *environment::get_requested_point_size_string()
 
 void init_env_requests()
 {
-  init_request("it", input_trap);
-  init_request("itc", input_trap_continued);
   init_request("ad", adjust);
-  init_request("na", no_adjust);
-  init_request("ev", environment_switch);
-  init_request("evc", environment_copy);
-  init_request("lt", title_length);
-  init_request("ps", point_size);
-  init_request("sizes", override_sizes);
-  init_request("ft", font_change);
-  init_request("fam", family_change);
-  init_request("ss", space_size);
-  init_request("fi", fill);
-  init_request("nf", no_fill);
-  init_request("ce", center);
-  init_request("rj", right_justify);
-  init_request("vs", vertical_spacing);
-  init_request("ls", line_spacing);
-  init_request("ll", line_length);
-  init_request("in", indent);
-  init_request("ti", temporary_indent);
-  init_request("ul", underline);
-  init_request("cu", continuous_underline);
-  init_request("cc", control_char);
-  init_request("c2", no_break_control_char);
   init_request("br", break_request);
   init_request("brp", break_spread_request);
-  init_request("tl", title);
-  init_request("ta", set_tabs);
-  init_request("linetabs", line_tabs_request);
+  init_request("c2", no_break_control_char);
+  init_request("cc", control_char);
+  init_request("ce", center);
+  init_request("cu", continuous_underline);
+  init_request("ev", environment_switch);
+  init_request("evc", environment_copy);
+  init_request("fam", family_change);
   init_request("fc", field_characters);
-  init_request("mc", margin_character);
-  init_request("nn", no_number);
-  init_request("nm", number_lines);
-  init_request("tc", tab_character);
-  init_request("lc", leader_character);
-  init_request("hy", hyphenate_request);
+  init_request("fi", fill);
+  init_request("ft", font_change);
   init_request("hc", hyphen_char);
-  init_request("nh", no_hyphenate);
   init_request("hlm", hyphen_line_max_request);
+  init_request("hy", hyphenate_request);
+  init_request("hym", hyphenation_margin_request);
+  init_request("hys", hyphenation_space_request);
+  init_request("in", indent);
+  init_request("it", input_trap);
+  init_request("itc", input_trap_continued);
+  init_request("lc", leader_character);
+  init_request("linetabs", line_tabs_request);
+  init_request("ll", line_length);
+  init_request("ls", line_spacing);
+  init_request("lt", title_length);
+  init_request("mc", margin_character);
+  init_request("na", no_adjust);
+  init_request("nf", no_fill);
+  init_request("nh", no_hyphenate);
+  init_request("nm", number_lines);
+  init_request("nn", no_number);
+  init_request("ps", point_size);
+  init_request("pvs", post_vertical_spacing);
+  init_request("rj", right_justify);
+  init_request("sizes", override_sizes);
+  init_request("ss", space_size);
+  init_request("ta", set_tabs);
+  init_request("ti", temporary_indent);
+  init_request("tc", tab_character);
+  init_request("tl", title);
+  init_request("ul", underline);
+  init_request("vs", vertical_spacing);
 #ifdef WIDOW_CONTROL
   init_request("wdc", widow_control_request);
 #endif /* WIDOW_CONTROL */
-#if 0
-  init_request("tas", tabs_save);
-  init_request("tar", tabs_restore);
-#endif  
-  init_request("hys", hyphenation_space_request);
-  init_request("hym", hyphenation_margin_request);
-  init_request("pvs", post_vertical_spacing);
-  init_int_env_reg(".f", get_font);
   init_int_env_reg(".b", get_bold);
+  init_vunits_env_reg(".cdp", get_prev_char_depth);
+  init_int_env_reg(".ce", get_center_lines);
+  init_vunits_env_reg(".cht", get_prev_char_height);
+  init_hunits_env_reg(".csk", get_prev_char_skew);
+  init_string_env_reg(".ev", get_name_string);
+  init_int_env_reg(".f", get_font);
+  init_string_env_reg(".fam", get_font_family_string);
+  init_string_env_reg(".fn", get_font_name_string);
+  init_int_env_reg(".hlc", get_hyphen_line_count);
+  init_int_env_reg(".hlm", get_hyphen_line_max);
+  init_int_env_reg(".hy", get_hyphenation_flags);
+  init_hunits_env_reg(".hym", get_hyphenation_margin);
+  init_hunits_env_reg(".hys", get_hyphenation_space);
   init_hunits_env_reg(".i", get_indent);
   init_hunits_env_reg(".in", get_saved_indent);
   init_int_env_reg(".int", get_prev_line_interrupted);
+  init_int_env_reg(".linetabs", get_line_tabs);
+  init_hunits_env_reg(".lt", get_title_length);
   init_int_env_reg(".j", get_adjust_mode);
   init_hunits_env_reg(".k", get_text_length);
+  init_int_env_reg(".L", get_line_spacing);
   init_hunits_env_reg(".l", get_line_length);
   init_hunits_env_reg(".ll", get_saved_line_length);
-  init_int_env_reg(".L", get_line_spacing);
   init_hunits_env_reg(".n", get_prev_text_length);
-  init_string_env_reg(".s", get_point_size_string);
-  init_string_env_reg(".sr", get_requested_point_size_string);
   init_int_env_reg(".ps", get_point_size);
   init_int_env_reg(".psr", get_requested_point_size);
-  init_int_env_reg(".u", get_fill);
-  init_vunits_env_reg(".v", get_vertical_spacing);
   init_vunits_env_reg(".pvs", get_post_vertical_spacing);
-  init_hunits_env_reg(".w", get_prev_char_width);
+  init_int_env_reg(".rj", get_right_justify_lines);
+  init_string_env_reg(".s", get_point_size_string);
   init_int_env_reg(".ss", get_space_size);
   init_int_env_reg(".sss", get_sentence_space_size);
-  init_string_env_reg(".fam", get_font_family_string);
-  init_string_env_reg(".fn", get_font_name_string);
-  init_string_env_reg(".ev", get_name_string);
-  init_int_env_reg(".hy", get_hyphenation_flags);
-  init_int_env_reg(".hlm", get_hyphen_line_max);
-  init_int_env_reg(".hlc", get_hyphen_line_count);
-  init_hunits_env_reg(".lt", get_title_length);
+  init_string_env_reg(".sr", get_requested_point_size_string);
   init_string_env_reg(".tabs", get_tabs);
-  init_int_env_reg(".linetabs", get_line_tabs);
-  init_hunits_env_reg(".csk", get_prev_char_skew);
-  init_vunits_env_reg(".cht", get_prev_char_height);
-  init_vunits_env_reg(".cdp", get_prev_char_depth);
-  init_int_env_reg(".ce", get_center_lines);
-  init_int_env_reg(".rj", get_right_justify_lines);
-  init_hunits_env_reg(".hys", get_hyphenation_space);
-  init_hunits_env_reg(".hym", get_hyphenation_margin);
-  number_reg_dictionary.define("ln", new variable_reg(&next_line_number));
+  init_int_env_reg(".u", get_fill);
+  init_vunits_env_reg(".v", get_vertical_spacing);
+  init_hunits_env_reg(".w", get_prev_char_width);
   number_reg_dictionary.define("ct", new variable_reg(&ct_reg_contents));
-  number_reg_dictionary.define("sb", new variable_reg(&sb_reg_contents));
-  number_reg_dictionary.define("st", new variable_reg(&st_reg_contents));
+  number_reg_dictionary.define("hp", new horizontal_place_reg);
+  number_reg_dictionary.define("ln", new variable_reg(&next_line_number));
   number_reg_dictionary.define("rsb", new variable_reg(&rsb_reg_contents));
   number_reg_dictionary.define("rst", new variable_reg(&rst_reg_contents));
-  number_reg_dictionary.define("ssc", new variable_reg(&ssc_reg_contents));
+  number_reg_dictionary.define("sb", new variable_reg(&sb_reg_contents));
   number_reg_dictionary.define("skw", new variable_reg(&skw_reg_contents));
-  number_reg_dictionary.define("hp", new horizontal_place_reg);
+  number_reg_dictionary.define("ssc", new variable_reg(&ssc_reg_contents));
+  number_reg_dictionary.define("st", new variable_reg(&st_reg_contents));
 }
 
 // Hyphenation - TeX's hyphenation algorithm with a less fancy implementation.
