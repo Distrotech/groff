@@ -484,7 +484,7 @@ or
 are treated transparently, not influencing the sentence-ending behaviour).
 To change this, insert
 .Ql \e&
-after the dot:
+before or after the dot:
 .
 .Bd -literal -offset indent
 The
@@ -495,9 +495,11 @@ The
 \&.Ql \e&.
 character.
 \&.Pp
-The
-\&.Ql .\e&
-character.
+\&.Li test .
+test
+\&.Pp
+\&.Li test.
+test
 .Ed
 .Pp
 .
@@ -512,15 +514,17 @@ The
 .Ql \&.
 character.
 .Pp
-The
-.Ql .\&
-character.
+.Li test .
+test
+.Pp
+.Li test.
+test
 .Ed
 .Pp
 .
-As can be seen in the first line,
+As can be seen in the first and third line,
 .Nm \-mdoc
-handles punctuation characters specially.
+handles punctuation characters specially in macro arguments.
 This will be explained in section
 .Sx General Syntax
 below.
@@ -1758,9 +1762,6 @@ mode.
 .El
 .Pp
 .
-\#
-\#=====================================================================
-\#
 Examples of quoting:
 .Pp
 .
@@ -1810,139 +1811,193 @@ extended argument list macros are discussed below.
 .Ss No\-Op or Normal Text Macro
 .
 The macro
-.Li \&.No
+.Ql .No
 is
-a hack for words in a macro command line which should
+can be used in a macro command line for parameters which should
 .Em not
-be formatted and follows the conventional syntax
-for content macros.
+be formatted.
+Be careful to add
+.Ql \e&
+to the word
+.Ql \&No
+if you really want that English word (and not the macro) as a parameter.
+.Pp
+.Dl Usage: .No Ao argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .No\ test\ Ta\ with\ Ta\ tabs" -compact -offset 15n
+.It Li ".No test Ta with Ta tabs"
+.No test Ta with Ta tabs
+.El
+.
 .Ss No\-Space Macro
+.
 The
-.Ql \&.Ns
-macro eliminates unwanted spaces in between macro requests.
-It is useful for old style argument lists where there is no space
-between the flag and argument:
-.Bl -tag -width ".Op Fl I Ns Ar directoryxx" -offset indent
+.Ql .Ns
+macro suppresses insertion of a space between the current position and its
+first parameter.
+For example, it is useful for old style argument lists where there is no
+space between the flag and argument:
+.
+\# XXX Usage
+.
+.Pp
+.Bl -tag -xwidth ".Li .Op\ Fl\ I\ Ns\ Ar\ directory" -compact -offset 15n
 .It Li ".Op Fl I Ns Ar directory"
-produces
 .Op Fl I Ns Ar directory
 .El
 .Pp
-Note: the
-.Ql \&.Ns
+Note: The
+.Ql .Ns
 macro always invokes the
-.Ql \&.No
-macro after eliminating the space unless another macro name
-follows it.
-The macro
-.Ql \&.Ns
-is parsed and is callable.
+.Ql .No
+macro after eliminating the space unless another macro name follows it.
+.
 .Ss Section Cross References
+.
 The
-.Ql \&.Sx
-macro designates a reference to a section header
-within the same document.
-It is parsed and is callable.
+.Ql .Sx
+macro designates a reference to a section header within the same document.
 .Pp
-.Bl -tag -width "Li \&.Sx FILES" -offset 14n
-.It Li \&.Sx FILES
+.Dl Usage: .Sx Ao section reference Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Sx\ FILES" -offset 15n
+.It Li ".Sx FILES"
 .Sx FILES
 .El
+.
 .Ss Symbolic
-The symbolic emphasis macro is generally a boldface macro in
-either the symbolic sense or the traditional English usage.
+.
+The symbolic emphasis macro is generally a boldface macro in either the
+symbolic sense or the traditional English usage.
 .Pp
-.Dl Usage: .Sy symbol ... \*[doc-punct-chars]
-.Bl -tag -width ".Sy Important Noticex" -compact -offset 14n
-.It Li \&.Sy Important Notice
+.Dl Usage: .Sy Ao symbol Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Sy\ Important\ Notice" -compact -offset 15n
+.It Li ".Sy Important Notice"
 .Sy Important Notice
 .El
 .Pp
-The
-.Ql \&.Sy
-macro is parsed and is callable.
-Arguments to
-.Ql \&.Sy
-may be quoted.
+.
 .Ss References and Citations
+.
 The following macros make a modest attempt to handle references.
 At best, the macros make it convenient to manually drop in a subset of
-refer style references.
+.Em refer
+style references.
 .Pp
 .Bl -tag -width 6n -offset indent -compact
-.It Li ".Rs"
-Reference Start.
-Causes a line break and begins collection
-of reference information until the
-reference end macro is read.
-.It Li ".Re"
-Reference End.
+.It Li .Rs
+Reference start (does not take arguments).
+Causes a line break in the
+.Sx "SEE ALSO"
+section and begins collection of reference information until the reference
+end macro is read.
+.It Li .Re
+Reference end (does not take arguments).
 The reference is printed.
-.It Li ".%A"
-Reference author name, one name per invocation.
-.It Li ".%B"
+.It Li .%A
+Reference author name; one name per invocation.
+.It Li .%B
 Book title.
-.It Li ".\&%C"
-City/place.
-.It Li ".\&%D"
+.It Li .%C
+City/place (not implemented yet).
+.It Li .%D
 Date.
-.It Li ".%J"
+.It Li .%I
+Issuer/publisher name.
+.It Li .%J
 Journal name.
-.It Li ".%N"
+.It Li .%N
 Issue number.
-.It Li ".%O"
+.It Li .%O
 Optional information.
-.It Li ".%P"
+.It Li .%P
 Page number.
-.It Li ".%R"
+.It Li .%Q
+Corporate or foreign author.
+.It Li .%R
 Report name.
-.It Li ".%T"
+.It Li .%T
 Title of article.
-.It Li ".%V"
-Volume(s).
+.It Li .%V
+Volume.
 .El
 .Pp
-The macros beginning with
+Macros beginning with
 .Ql %
-are not callable, and are parsed only for the trade name macro which
-returns to its caller.
-(And not very predictably at the moment either.)
-The purpose is to allow trade names
-to be pretty printed in
-.Xr troff Ns / Ns Xr ditroff
+are not callable but accept multiple arguments in the usual way.
+Only the
+.Ql .Tn
+macro is handled properly as a parameter; other macros will cause strange
 output.
-.Ss Trade Names (or Acronyms and Type Names)
-The trade name macro is generally a small caps macro for
-all upper case words longer than two characters.
+.Ql .%B
+and
+.Ql .%T
+can be used outside of the
+.Ql .Rs/.Re
+environment.
 .Pp
-.Dl Usage: .Tn symbol ... \*[doc-punct-chars]
-.Bl -tag -width ".Tn ASCII" -compact -offset 14n
-.It Li \&.Tn DEC
+Example:
+.Bd -literal -offset indent
+\&.Rs
+\&.%A "Matthew Bar"
+\&.%A "John Foo"
+\&.%T "Implementation Notes on foobar(1)"
+\&.%R "Technical Report ABC-DE-12-345"
+\&.%Q "Drofnats College, Nowhere"
+\&.%D "April 1991"
+\&.Re
+.Ed
+.Pp
+produces
+.Pp
+.Bd -filled -offset indent
+.Rs
+.%A "Matthew Bar"
+.%A "John Foo"
+.%T "Implementation Notes on foobar(1)"
+.%R "Technical Report ABC-DE-12-345"
+.%Q "Drofnats College, Nowhere"
+.%D "April 1991"
+.Re
+.Ed
+.
+.Ss Trade Names (or Acronyms and Type Names)
+.
+The trade name macro prints its arguments in a smaller font.
+Its intended use is to imitate a small caps fonts for uppercase acronyms.
+.Pp
+.Dl Usage: .Tn Ao symbol Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Tn\ ASCII" -compact -offset 15n
+.It Li ".Tn DEC"
 .Tn DEC
-.It Li \&.Tn ASCII
+.It Li ".Tn ASCII"
 .Tn ASCII
 .El
 .Pp
-The
-.Ql \&.Tn
-macro
-is parsed and is callable by other macros.
+.
 .Ss Extended Arguments
+.
 The
-.Li \&.Xo
+.Li .Xo
 and
-.Li \&.Xc
-macros allow one to extend an argument list
-on a macro boundary.
-Argument lists cannot
-be extended within a macro
-which expects all of its arguments on one line such
-as
-.Ql \&.Op .
+.Li .Xc
+macros allow one to extend an argument list on a macro boundary for the
+.Ql .It
+macro (see below).
+Note that
+.Li .Xo
+and
+.Li .Xc
+are implemented similarly to all other macros opening and closing an
+enclosure (without inserting characters, of course).
+This means that the following is true for those macros also.
 .Pp
 Here is an example of
-.Ql \&.Xo
+.Ql .Xo
 using the space mode macro to turn spacing off:
+.
 .Bd -literal -offset indent
 \&.Sm off
 \&.It Xo Sy I Ar operation
@@ -1951,9 +2006,11 @@ using the space mode macro to turn spacing off:
 \&.Sm on
 .Ed
 .Pp
-Produces
+.
+produces
+.
 .Bd -filled -offset indent
-.Bl -tag -width flag -compact
+.Bl -tag -compact
 .Sm off
 .It Xo Sy I Ar operation
 .No \en Ar count No \en
@@ -1962,19 +2019,22 @@ Produces
 .El
 .Ed
 .Pp
+.
 Another one:
+.
 .Bd -literal -offset indent
 \&.Sm off
-\&.It Cm S No \&/ Ar old_pattern Xo
-\&.No \&/ Ar new_pattern
-\&.No \&/ Op Cm g
+\&.It Cm S No / Ar old_pattern Xo
+\&.No / Ar new_pattern
+\&.No / Op Cm g
 \&.Xc
 \&.Sm on
 .Ed
 .Pp
-Produces
+.
+produces
 .Bd -filled -offset indent
-.Bl -tag -width flag -compact
+.Bl -tag -compact
 .Sm off
 .It Cm S No \&/ Ar old_pattern Xo
 .No \&/ Ar new_pattern
@@ -1984,69 +2044,41 @@ Produces
 .El
 .Ed
 .Pp
+.
 Another example of
-.Ql \&.Xo
-and using enclosure macros:
-Test the value of an variable.
+.Ql .Xo
+and enclosure macros: Test the value of a variable.
+.
 .Bd -literal -offset indent
 \&.It Xo
 \&.Ic .ifndef
 \&.Oo \e&! Oc Ns Ar variable
-\&.Op Ar operator variable ...
+\&.Op Ar operator variable Ld
 \&.Xc
 .Ed
 .Pp
-Produces
+.
+produces
+.
 .Bd -filled -offset indent
 .Bl -tag -width flag -compact
 .It Xo
 .Ic .ifndef
 .Oo \&! Oc Ns Ar variable
-.Op Ar operator variable ...
+.Op Ar operator variable Ld
 .Xc
 .El
 .Ed
 .Pp
-Test:
-.Em This is a Sm Em very special test , Sm a very special test .
-.Pp
-All of the above examples have used the
-.Ql \&.Xo
-macro on the argument list of the
-.Ql \&.It
-(list-item)
-macro.
-The extend macros are not used very often, and when they are
-it is usually to extend the list-item argument list.
-Unfortunately, this is also where the extend macros are the
-most finicky.
-In the first two examples, spacing was turned off;
-in the third, spacing was desired in part of the output but
-not all of it.
-To make these macros work in this situation make sure
-the
-.Ql \&.Xo
-and
-.Ql \&.Xc
-macros are placed as shown in the third example.
-If the
-.Ql \&.Xo
-macro is not alone on the
-.Ql \&.It
-argument list, spacing will be unpredictable.
-The
-.Ql \&.Ns
-(no\-space macro)
-must not occur as the first or last macro on a line
-in this situation.
-Out of 900 manual pages (about 1500 actual pages)
-currently released with
-.Bx
-only fifteen use the
-.Ql \&.Xo
-macro.
+.
+.
+\#
+\#=====================================================================
+\#
 .Sh PAGE STRUCTURE DOMAIN
+.
 .Ss Section Headers
+.
 The first three
 .Ql \&.Sh
 section header macros
