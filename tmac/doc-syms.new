@@ -76,9 +76,18 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Bx, doc-str-Bx1, doc-reg-Bx
+.\" NS   doc-str-Bx, doc-str-Bx1, doc-reg-Bx, doc-str-Bx-XXX
 .\" NS
 .\" NS width register `Bx' defined in doc-common
+.
+.ds doc-str-Bx-Reno  \-Reno
+.ds doc-str-Bx-reno  \-Reno
+.ds doc-str-Bx-Tahoe \-Tahoe
+.ds doc-str-Bx-tahoe \-Tahoe
+.ds doc-str-Bx-Lite  \-Lite
+.ds doc-str-Bx-lite  \-Lite
+.ds doc-str-Bx-Lite2 \-Lite2
+.ds doc-str-Bx-lite2 \-Lite2
 .
 .de Bx
 .  nr doc-curr-font \n[.f]
@@ -110,25 +119,14 @@
 .        if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .          nr doc-arg-ptr +1
 .          ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.            ie        "\*[doc-arg\n[doc-arg-ptr]]"Reno" \
-.              as doc-str-Bx1 \-Reno
-.            el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"reno" \
-.              as doc-str-Bx1 \-Reno
-.            el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"Tahoe" \
-.              as doc-str-Bx1 \-Tahoe
-.            el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"tahoe" \
-.              as doc-str-Bx1 \-Tahoe
-.            el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"Lite" \
-.              as doc-str-Bx1 \-Lite
-.            el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"lite" \
-.              as doc-str-Bx1 \-Lite
-.            el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"Lite2" \
-.              as doc-str-Bx1 \-Lite2
-.            el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"lite2" \
-.              as doc-str-Bx1 \-Lite2
+.            ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
+.              ie d doc-str-Bx-\*[doc-arg\n[doc-arg-ptr]] \
+.                as doc-str-Bx1 "\*[doc-str-Bx-\*[doc-arg\n[doc-arg-ptr]]]
+.              el \
+.                nr doc-arg-ptr -1
+.            \}
 .            el \
 .              nr doc-arg-ptr -1
-.            \}\}\}\}\}\}\}
 .          \}
 .          el \
 .            nr doc-arg-ptr -1
@@ -167,9 +165,34 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-At, doc-str-At1, doc-reg-At
+.\" NS   doc-str-At, doc-str-At1, doc-reg-At, doc-str-At-XXX
 .\" NS
 .\" NS width register `At' defined in doc-common
+.
+.ds doc-str-At-32v \&Version\~32V
+.as doc-str-At-32v " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.ds doc-str-At-v1  \&Version\~1
+.as doc-str-At-v1  " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.ds doc-str-At-v2  \&Version\~2
+.as doc-str-At-v2  " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.ds doc-str-At-v3  \&Version\~3
+.as doc-str-At-v3  " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.ds doc-str-At-v4  \&Version\~4
+.as doc-str-At-v4  " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.ds doc-str-At-v5  \&Version\~5
+.as doc-str-At-v5  " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.ds doc-str-At-v6  \&Version\~6
+.as doc-str-At-v6  " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.ds doc-str-At-v7  \&Version\~7
+.as doc-str-At-v7  " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.ds doc-str-At-V   \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V
+.as doc-str-At-V   " \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.ds doc-str-At-V.1 \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.1
+.as doc-str-At-V.1 " \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.ds doc-str-At-V.2 \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.2
+.as doc-str-At-V.2 " \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.ds doc-str-At-V.4 \*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.4
+.as doc-str-At-V.4 " \*[doc-Tn-font-size]UNIX\*[doc-str-At]
 .
 .de At
 .  nr doc-curr-font \n[.f]
@@ -188,56 +211,17 @@
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.      ie        "\*[doc-arg\n[doc-arg-ptr]]"32v" \{\
-.        ds doc-str-At1 "\&Version\~32V
-.        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"v1" \{\
-.        ds doc-str-At1 "\&Version\~1
-.        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"v2" \{\
-.        ds doc-str-At1 "\&Version\~2
-.        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"v3" \{\
-.        ds doc-str-At1 "\&Version\~3
-.        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"v4" \{\
-.        ds doc-str-At1 "\&Version\~4
-.        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"v5" \{\
-.        ds doc-str-At1 "\&Version\~5
-.        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"v6" \{\
-.        ds doc-str-At1 "\&Version\~6
-.        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"v7" \{\
-.        ds doc-str-At1 "\&Version\~7
-.        as doc-str-At1 " \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"V" \{\
-.        ds doc-str-At1 "\*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V
-.        as doc-str-At1 " \*[doc-Tn-font-size]UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"V.1" \{\
-.        ds doc-str-At1 "\*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.1
-.        as doc-str-At1 " \*[doc-Tn-font-size]UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"V.2" \{\
-.        ds doc-str-At1 "\*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.2
-.        as doc-str-At1 " \*[doc-Tn-font-size]UNIX\*[doc-str-At]
-.      \}
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"V.4" \{\
-.        ds doc-str-At1 "\*[doc-Tn-font-size]AT&T\*[doc-str-At] System\~V.4
-.        as doc-str-At1 " \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.      ie \A\*[doc-arg\n[doc-arg-ptr]] \{\
+.        ie d doc-str-At-\*[doc-arg\n[doc-arg-ptr]] \
+.          ds doc-str-At1 "\*[doc-str-At-\*[doc-arg\n[doc-arg-ptr]]]
+.        el \{\
+.          tmc mdoc warning: .At: Unknown AT&T UNIX version
+.          tm1 " `\*[doc-arg\n[doc-arg-ptr]]' (#\n[.c])
+.          nr doc-arg-ptr -1
+.      \}\}
 .      el \
 .        nr doc-arg-ptr -1
-.    \}\}\}\}\}\}\}\}\}\}\}\}\}
+.    \}
 .    el \
 .      nr doc-arg-ptr -1
 .  \}
@@ -266,6 +250,8 @@
 .\" NS
 .\" NS width register `Fx' defined in doc-common
 .
+.\" we use the doc-operating-system-FreeBSD-* strings defined in doc-common
+.
 .de Fx
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
@@ -283,39 +269,17 @@
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.      as doc-str-Fx1 \~\*[doc-arg\n[doc-arg-ptr]]
-.
-.      ie        "\*[doc-arg\n[doc-arg-ptr]]"1.0" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.1" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.1.5" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.1.5.1" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.0" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.0.5" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.1" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.1.5" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.1.6" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.1.7" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.1" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.2" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.5" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.6" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.7" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"2.2.8" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.0" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.1" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.2" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.3" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.4" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"3.5" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"4.0" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"4.1" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"4.2" .
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"5.0" .
-.      el \{\
-.        tmc "mdoc warning: .Fx: Unknown FreeBSD version
-.        tm1 " `\*[doc-arg\n[doc-arg-ptr]]' (#\n[.c])
-.    \}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}\}
+.      ie \A\*[doc-arg\n[doc-arg-ptr]] \{\
+.        ie d doc-operating-system-FreeBSD-\*[doc-arg\n[doc-arg-ptr]] \
+.          as doc-str-Fx1 \~\*[doc-operating-system-FreeBSD-\*[doc-arg\n[doc-arg-ptr]]]
+.        el \{\
+.          tmc mdoc warning: .Fx: Unknown FreeBSD version
+.          tm1 " `\*[doc-arg\n[doc-arg-ptr]]' (#\n[.c])
+.          as doc-str-Fx1 \~\*[doc-arg\n[doc-arg-ptr]]
+.      \}\}
+.      el \
+.        as doc-str-Fx1 \~\*[doc-arg\n[doc-arg-ptr]]
+.    \}
 .    el \
 .      nr doc-arg-ptr -1
 .  \}
@@ -344,6 +308,8 @@
 .\" NS
 .\" NS width register `Nx' defined in doc-common
 .
+.\" we use the doc-operating-system-NetBSD-* strings defined in doc-common
+.
 .de Nx
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
@@ -362,14 +328,17 @@
 .  if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.      ie        "\*[doc-arg\n[doc-arg-ptr]]"0.8a" .as doc-str-Nx1 \~0.8A
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"0.9a" .as doc-str-Nx1 \~0.9A
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.0a" .as doc-str-Nx1 \~1.0A
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.2a" .as doc-str-Nx1 \~1.2A
-.      el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"1.2b" .as doc-str-Nx1 \~1.2B
+.      ie \A\*[doc-arg\n[doc-arg-ptr]] \{\
+.        ie d doc-operating-system-NetBSD-\*[doc-arg\n[doc-arg-ptr]] \
+.          as doc-str-Nx1 \~\*[doc-operating-system-NetBSD-\*[doc-arg\n[doc-arg-ptr]]]
+.        el \{\
+.          tmc mdoc warning: .Nx: Unknown NetBSD version
+.          tm1 " `\*[doc-arg\n[doc-arg-ptr]]' (#\n[.c])
+.          as doc-str-Nx1 \~\*[doc-arg\n[doc-arg-ptr]]
+.      \}\}
 .      el \
 .        as doc-str-Nx1 \~\*[doc-arg\n[doc-arg-ptr]]
-.      \}\}\}\}\}
+.    \}
 .    el \
 .      nr doc-arg-ptr -1
 .  \}
@@ -568,13 +537,12 @@
 .    ds doc-str-St1
 .    ie \A\*[doc-arg\n[doc-arg-ptr]] \{\
 .      ie d doc-str-St-\*[doc-arg\n[doc-arg-ptr]] \
-.        ds doc-str-St1 \*[doc-str-St-\*[doc-arg\n[doc-arg-ptr]]]
+.        ds doc-str-St1 "\*[doc-str-St-\*[doc-arg\n[doc-arg-ptr]]]
 .      el \
 .        doc-St-usage
 .    \}
 .    el \
 .      doc-St-usage
-.    \}
 .
 .    \" replacing argument with result
 .    ds doc-arg\n[doc-arg-ptr] "\*[doc-str-St1]
@@ -583,6 +551,8 @@
 .  \}
 ..
 .
+.
+.\" NS doc-St-usage macro
 .
 .de doc-St-usage
 .  tm1 "Usage: .St [-p1003.1 | -p1003.1-88 | -p1003.1-90 | -p1003.1b |
@@ -635,7 +605,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    ie d doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]] \
-.      ds doc-str-Lb \*[doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]]]
+.      ds doc-str-Lb "\*[doc-str-Lb-\*[doc-arg\n[doc-arg-ptr]]]
 .    el \{\
 .      tmc "mdoc warning: .Lb: no description for library
 .      tm1 " `\*[doc-arg\n[doc-arg-ptr]]' available
