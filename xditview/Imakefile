@@ -1,0 +1,64 @@
+   GROFF_LIBDIR = /usr/local/lib/groff
+  GROFF_FONTDIR = $(GROFF_LIBDIR)/font
+ GROFF_FONTPATH = .:$(GROFF_FONTDIR):/usr/local/lib/font:/usr/lib/font
+ GROFF_MACRODIR = $(GROFF_LIBDIR)/tmac
+           DPIS = 75 100
+
+       PROGRAMS = gxditview xtotroff
+        DEPLIBS = XawClientDepLibs
+LOCAL_LIBRARIES = XawClientLibs
+          SRCS1 = xditview.c Dvi.c draw.c font.c lex.c page.c \
+                  parse.c XFontName.c DviChar.c device.c
+          OBJS1 = xditview.o Dvi.o draw.o font.o lex.o page.o \
+                  parse.o XFontName.o DviChar.o device.o
+          SRCS2 = xtotroff.c XFontName.c DviChar.c
+          OBJS2 = xtotroff.o XFontName.o DviChar.o
+       INCLUDES = -I$(TOOLKITSRC) -I$(TOP)
+        MATHLIB = -lm
+	DEFINES = $(SIGNAL_DEFINES)
+
+ComplexProgramTarget_1(gxditview,$(LOCAL_LIBRARIES),$(MATHLIB))
+NormalProgramTarget(xtotroff,$(OBJS2),$(XDEPLIB),$(XLIB), /**/)
+
+InstallAppDefaults(GXditview)
+
+install.dev: xtotroff
+	-[ -d $(GROFF_MACRODIR) ] || mkdir $(GROFF_MACRODIR)
+	-rm -f $(GROFF_MACRODIR)/tmac.X
+	cp tmac.X $(GROFF_MACRODIR)
+	-[ -d $(GROFF_FONTDIR) ] || mkdir $(GROFF_FONTDIR)
+	@dir=`pwd`; \
+	for dpi in $(DPIS); do \
+	echo Installing devX$$dpi; \
+	[ -d $(GROFF_FONTDIR)/devX$$dpi ] \
+	|| mkdir $(GROFF_FONTDIR)/devX$$dpi; \
+	rm -f $(GROFF_FONTDIR)/devX$$dpi/DESC; \
+	sed -e "s/res 75/res $$dpi/" DESC >$(GROFF_FONTDIR)/devX$$dpi/DESC; \
+	rm -f $(GROFF_FONTDIR)/devX$$dpi/eqnchar; \
+	cp eqnchar $(GROFF_FONTDIR)/devX$$dpi; \
+	(cd $(GROFF_FONTDIR)/devX$$dpi; \
+	$$dir/xtotroff -g $$dir/FontMap.X$$dpi); \
+	[ -d $(GROFF_FONTDIR)/devX$$dpi-12 ] \
+	|| mkdir $(GROFF_FONTDIR)/devX$$dpi-12; \
+	rm -f $(GROFF_FONTDIR)/devX$$dpi-12/eqnchar; \
+	cp eqnchar $(GROFF_FONTDIR)/devX$$dpi-12; \
+	rm -f $(GROFF_FONTDIR)/devX$$dpi-12/DESC; \
+	sed -e "s/res 75/res $$dpi/" -e 's/unitwidth 10/unitwidth 12/' DESC \
+	>$(GROFF_FONTDIR)/devX$$dpi-12/DESC; \
+	sed -e "s/100-$$dpi-$$dpi/120-$$dpi-$$dpi/" \
+	FontMap.X$$dpi >FontMap.X$$dpi-12; \
+	(cd $(GROFF_FONTDIR)/devX$$dpi-12; \
+	$$dir/xtotroff -g $$dir/FontMap.X$$dpi-12); \
+	done
+
+path.h: FORCE
+	@echo \#define FONTPATH \"$(GROFF_FONTPATH)\" >path.h.n
+	@cmp -s path.h.n path.h || cp path.h.n path.h
+	@rm -f path.h.n
+
+depend.o: path.h
+
+clean::
+	for dpi in $(DPIS); do $(RM) FontMap.X$$dpi-12; done
+
+FORCE:

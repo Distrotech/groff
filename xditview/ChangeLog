@@ -1,0 +1,75 @@
+Sun May 26 14:14:01 1991  James Clark  (jjc at jclark)
+
+	* xditview.c (Syntax): Update.
+
+	* Dvi.c (DviSaveToFile, SaveToFile): New functions.
+	(FindPage): Check that we're not readingTmp before checking for
+	end of file of normal input file.
+	(ClassPartInitialize): New function.
+	* Dvi.h: Add declaration of DviSaveToFile.
+	* DviP.h: Add save method to DviClassPart. Declare
+	InheritSaveToFile.
+	* xditview.c (DoPrint, Print, PrintAction): New functions.
+	* xditview.c: Add print menu entry.
+	* xditview.c: Provide printCommand application resource.
+	* lex.c: Don't output EOF to temporary file.
+
+	* Dvi.c (QueryGeometry): Check request->request_mode.
+
+	* Dvi.c (SetDevice): New function.
+	(SetDeviceResolution): Deleted.
+
+	* Dvi.c: Add resolution resource.
+	* DviP.h: Add definitions of XtNResolution and XtCResolution.
+	* xditview.c: Add -resolution argument.
+	* GXditview.ad: Add default for GXditview.height.
+	* Dvi.c (Initialize, SetDevice): Use default_resolution.
+    
+	* Dvi.c: Make MY_HEIGHT and MY_WIDTH use the paperlength and
+	paperwidth commands in the DESC file.
+	
+	* Dvi.c: Add SS font to default font map.
+
+	* draw.c: Rewritten so as not to assume device and display
+	resolution is the same.
+	* DviP.h: Include device.h. Add device_font member to DviFontList.
+	Add adjustable arrary to DviCharCache. Add text_x_width,
+	text_device_width, word_flag, device_font, device_font_number,
+	device, native, device_resolution, display_resolution,
+	paperlength, paperwidth, scale_factor, sizescale members.
+	* Dvi.c (Initialize): Initialize new variable used by draw.c
+	(Destroy): Call device_destroy.
+	* font.c (MaxFontPosition): New function.
+	(LookupFontSizeBySize): Handle sizescale.
+	(InstallFont): Load the device font.
+	(ForgetFonts): New function.
+	(QueryDeviceFont): New function.
+	* parse.c (ParseInput): Handle t and u commands. Split off
+	character output into draw.c.
+	(ParseDeviceControl): Ignore res command. Use the device argument
+	to the T command.
+
+	* font.c (MapXNameToDviName): Ifdefed out.
+
+	* path.h: New file.
+	* device.c, device.h: New files.
+
+	* DviChar.c: Add entries for lB, rB, oq, lC, rC, md.
+
+	* INSTALL: New file.
+
+	* libxdvi: Merged into main directory.
+	* xtotroff.c, xditview.c: Change includes accordingly.	
+
+	* devX75, devX100: Merged into main directory.
+	* xditview.man: Renamed to gxditview.man.
+
+	* Xditview.ad: Renamed to GXditview.ad.
+	* xditview.c (main): Use class of GXditview rather than xditview.
+
+	* Imakefile: New file.
+	* Makefile: Deleted.
+
+	* xtotroff.c (MapFont): Unlink output file before opening it.
+
+	* Started separate ChangeLog.
