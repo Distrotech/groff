@@ -243,8 +243,8 @@ Out of the box, the groff package supports \%latin-9 only for \-Tps,
 .LI
 Composite glyphs are now supported.
 To do this, a subset of the Adobe Glyph List (AGL) Algorithm as described in
-.URL http://partners.adobe.com/asn/developer/typeforum/unicodegn.html \
-     http://partners.adobe.com/asn/developer/typeforum/unicodegn.html
+.URL http://partners.adobe.com/asn/tech/type/unicodegn.jsp \
+     http://partners.adobe.com/asn/tech/type/unicodegn.jsp
 is used to construct glyph names based on Unicode character codes.
 The existing groff glyph names are frozen; no glyph names which can't be
 constructed algorithmically will be added in the future.
