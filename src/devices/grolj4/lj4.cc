@@ -35,6 +35,8 @@ X command to include bitmap graphics
 #include "driver.h"
 #include "nonposix.h"
 
+extern "C" const char *Version_string;
+
 static struct {
   const char *name;
   int code;
@@ -647,7 +649,6 @@ int main(int argc, char **argv)
       }
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU grolj4 (groff) version %s\n", Version_string);
 	exit(0);
 	break;

@@ -22,6 +22,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "driver.h"
 #include "nonposix.h"
 
+extern "C" const char *Version_string;
+
 #define DEFAULT_LINEWIDTH 40
 static int linewidth = DEFAULT_LINEWIDTH;
 
@@ -863,7 +865,6 @@ int main(int argc, char **argv)
     switch(c) {
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU grodvi (groff) version %s\n", Version_string);
 	exit(0);
 	break;

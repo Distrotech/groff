@@ -36,6 +36,7 @@ static char **include_list;
 int compatible_flag = 0;
 
 extern int interpret_lf_args(const char *);
+extern "C" const char *Version_string;
 
 int do_file(const char *filename);
 
@@ -77,7 +78,6 @@ int main(int argc, char **argv)
     switch (opt) {
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU soelim (groff) version %s\n", Version_string);
 	exit(0);
 	break;

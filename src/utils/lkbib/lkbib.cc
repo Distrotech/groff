@@ -32,6 +32,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "refid.h"
 #include "search.h"
 
+extern "C" const char *Version_string;
+
 static void usage(FILE *stream)
 {
   fprintf(stream, "usage: %s [-nv] [-p database] [-i XYZ] [-t N] keys ...\n",
@@ -78,7 +80,6 @@ int main(int argc, char **argv)
       }
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU lkbib (groff) version %s\n", Version_string);
 	exit(0);
 	break;

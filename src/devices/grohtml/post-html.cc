@@ -39,6 +39,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <stdio.h>
 #include <fcntl.h>
 
+extern "C" const char *Version_string;
+
 #if !defined(TRUE)
 #   define TRUE  (1==1)
 #endif
@@ -2771,7 +2773,6 @@ html_printer::~html_printer()
   header.write_headings(stdout, FALSE);
   write_rule();
   {
-    extern const char *Version_string;
     html.begin_comment("Creator     : ")
        .put_string("groff ")
        .put_string("version ")
@@ -2884,7 +2885,6 @@ int main(int argc, char **argv)
     switch(c) {
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU post-grohtml (groff) version %s\n", Version_string);
 	exit(0);
 	break;

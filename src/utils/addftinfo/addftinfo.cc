@@ -31,6 +31,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "cset.h"
 #include "guess.h"
 
+extern "C" const char *Version_string;
+
 static void usage(FILE *stream);
 static void usage();
 static void version();
@@ -142,7 +144,6 @@ static void usage()
 
 static void version()
 {
-  extern const char *Version_string;
   printf("GNU addftinfo (groff) version %s\n", Version_string);
   exit(0);
 }

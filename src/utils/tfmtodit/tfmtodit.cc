@@ -59,6 +59,8 @@ both be zero. */
 #include "cset.h"
 #include "nonposix.h"
 
+extern "C" const char *Version_string;
+
 /* Values in the tfm file should be multiplied by this. */
 
 #define MULTIPLIER 1
@@ -717,7 +719,6 @@ int main(int argc, char **argv)
       }
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU tfmtodit (groff) version %s\n", Version_string);
 	exit(0);
 	break;

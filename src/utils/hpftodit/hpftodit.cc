@@ -41,6 +41,8 @@ put filename in error messages (or fix lib)
 #include "cset.h"
 #include "nonposix.h"
 
+extern "C" const char *Version_string;
+
 #define SIZEOF(v) (sizeof(v)/sizeof(v[0]))
 
 const int MULTIPLIER = 3;
@@ -226,7 +228,6 @@ int main(int argc, char **argv)
       break;
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU hpftodit (groff) version %s\n", Version_string);
 	exit(0);
       }
@@ -782,7 +783,7 @@ int read_map(const char *file)
       fclose(fp);
       return 0;
     }
-    if (n >= msl_name_table_size) {
+    if ((size_t)n >= msl_name_table_size) {
       size_t old_size = msl_name_table_size;
       name_list **old_table = msl_name_table;
       msl_name_table_size = n + 256;

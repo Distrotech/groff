@@ -23,7 +23,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <stdio.h>
 #include <signal.h>
 #include <ctype.h>
-#include <string.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -47,7 +46,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #define PID_T int
 #endif /* not _POSIX_VERSION */
 
-extern char *strerror();
+extern "C" const char *Version_string;
 
 #include "pre-html.h"
 #include "pushbackbuffer.h"
@@ -1008,7 +1007,6 @@ int scanArguments (int argc, char **argv)
       vertical_offset = atoi((char *)(argv[i]+2));
     } else if ((strcmp(argv[i], "-v") == 0)
 	       || (strcmp(argv[i], "--version") == 0)) {
-      extern const char *Version_string;
       printf("GNU pre-grohtml (groff) version %s\n", Version_string);
       exit(0);
     } else if ((strcmp(argv[i], "-h") == 0)

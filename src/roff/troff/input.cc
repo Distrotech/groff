@@ -73,6 +73,8 @@ extern "C" {
 // initial size of buffer for reading names; expanded as necessary
 #define ABUF_SIZE 16
 
+extern "C" const char *Version_string;
+
 #ifdef COLUMN
 void init_column_requests();
 #endif /* COLUMN */
@@ -6097,7 +6099,6 @@ int main(int argc, char **argv)
     switch(c) {
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU troff (groff) version %s\n", Version_string);
 	exit(0);
 	break;

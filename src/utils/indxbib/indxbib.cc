@@ -38,6 +38,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "nonposix.h"
 
 extern "C" {
+  const char *Version_string;
   // Solaris 2.5.1 has these functions,
   // but its stdlib.h fails to declare them.
   char *mktemp(char *);
@@ -180,7 +181,6 @@ int main(int argc, char **argv)
       break;
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU indxbib (groff) version %s\n", Version_string);
 	exit(0);
 	break;

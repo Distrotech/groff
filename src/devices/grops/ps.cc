@@ -33,6 +33,8 @@ extern "C" {
 }
 #endif /* NEED_DECLARATION_PUTENV */
 
+extern "C" const char *Version_string;
+
 static int landscape_flag = 0;
 static int manual_feed_flag = 0;
 static int ncopies = 1;
@@ -1119,7 +1121,6 @@ ps_printer::~ps_printer()
   putchar('\n');
   out.set_file(stdout);
   {
-    extern const char *Version_string;
     out.begin_comment("Creator:")
        .comment_arg("groff")
        .comment_arg("version")
@@ -1495,7 +1496,6 @@ int main(int argc, char **argv)
     switch(c) {
     case 'v':
       {
-	extern const char *Version_string;
 	printf("GNU grops (groff) version %s\n", Version_string);
 	exit(0);
 	break;

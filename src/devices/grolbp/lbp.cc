@@ -33,6 +33,8 @@ TODO
 
 #include "nonposix.h"
 
+extern "C" const char *Version_string;
+
 static short int papersize = -1,  // papersize
 		 orientation = -1 , // orientation
 		 paperlength = 0, // Custom Paper size
@@ -715,7 +717,6 @@ int main(int argc, char **argv)
 		  case 'l'  : 	orientation = 1;
 		  		break;
 		  case 'v'  :	{
-				extern const char *Version_string;
 				printf("GNU grolbp (groff) version %s\n",
 				       Version_string);
 				exit(0);
