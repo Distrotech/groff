@@ -98,6 +98,24 @@ argument is a const char *.  Fix the declaration of open() in
 
 ----------------------------------------------------------------------
 
+* On a host using Unix make (e.g. Solaris), if you are compiling for
+  multiple architectures by building in a subdirectory, the make stops
+  with a message like this:
+
+    make: Fatal error: Don't know how to make target `assert.o'
+
+  or like this:
+
+    make: Fatal error: Can't find /u/src/groff/src/include/Makefile.sub': No such file or directory
+
+This occurs because GNU make and Unix make handle VPATH differently,
+and the groff build relies on GNU make's VPATH handling.
+
+Use GNU make to work around the problem.  In Solaris 8, GNU make is
+on the Software Companion CD and is installed as /opt/sfw/bin/gmake.
+
+----------------------------------------------------------------------
+
 * On Ultrix, the make stops with the message
 
   *** Error code 1

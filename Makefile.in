@@ -368,8 +368,12 @@ TARGETS=all install install_bin install_data clean distclean mostlyclean \
 
 # This ENVSETUP gork is required by the DJGPP build on Windows 9X,
 # where Make needs to be case-sensitive to find files like BI and VERSION.
-ENVSETUP=`test -f $(srcdir)/makefile.ccpg*\
-	&& test -f $(srcdir)/Makefile.ccpg* && echo export FNCASE=y`
+ENVSETUP=\
+	if test -f $(srcdir)/makefile.ccpg* && \
+	   test -f $(srcdir)/Makefile.ccpg*; \
+	then FNCASE=y; export FNCASE; \
+	else :; \
+	fi
 
 do=all
 dodirs=$(ALLDIRS) dot

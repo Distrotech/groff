@@ -38,7 +38,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "nonposix.h"
 
 extern "C" {
-  // Sun's stdlib.h fails to declare this.
+  // Solaris 2.5.1 has these functions,
+  // but its stdlib.h fails to declare them.
   char *mktemp(char *);
   int mkstemp(char *);
 }
