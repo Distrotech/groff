@@ -4471,24 +4471,6 @@
 .      ds doc-space\n[doc-reg-dcl]
 .    \}
 .
-.    \" XXX: Using a box here is a hack since GNU troff has problems with
-.    \"      tabs in interrupted lines.  The following
-.    \"
-.    \"        a\c
-.    \"        \t\c
-.    \"        b
-.    \"
-.    \"      doesn't work as expected
-.    box doc-item-box\n[doc-list-depth]
-.    ev doc-item-env\n[doc-list-depth]
-.    in 0
-.    nf
-.    doc-do-\n[doc-type\n[doc-arg-ptr]]
-.    br
-.    ev
-.    box
-.    unformat doc-item-box\n[doc-list-depth]
-.
 .    if !\n[doc-list-indent-stack\n[doc-list-depth]] \
 .      nr doc-list-indent-stack\n[doc-list-depth] \n[doc-column-indent-width]u
 .    if !\n[.u] \{\
@@ -4497,11 +4479,14 @@
 .    \}
 .    ti -\n[doc-column-indent-width]u
 .
-.    doc-item-box\n[doc-list-depth]
+.    doc-do-\n[doc-type\n[doc-arg-ptr]]
 .  \}
 .  el \
 .    tm Usage: .It column_string [Ta [column_string ...] ] (#\n[.c])
 ..
+.
+.
+.linetabs
 .
 .
 .\" NS Ta user macro
