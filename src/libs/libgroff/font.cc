@@ -738,7 +738,7 @@ int font::load(int *not_found)
 	    return 0;
 	  }
 	  if (type < 0 || type > 255) {
-	    t.error("character code `%1' out of range", type);
+	    t.error("character type `%1' out of range", type);
 	    return 0;
 	  }
 	  metric.type = type;
@@ -1032,4 +1032,3 @@ font::set_unknown_desc_command_handler(FONT_COMMAND_HANDLER func)
   unknown_desc_command_handler = func;
   return prev;
 }
-

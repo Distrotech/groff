@@ -106,23 +106,24 @@ option.
 .SH OPTIONS
 .TP
 .BI \-b n
-Workaround broken spoolers and previewers.
+Provide workarounds for older printers, broken spoolers, and previewers.
 .
 Normally
 .B grops
-produces output that conforms
-the Document Structuring Conventions version 3.0.
+produces output at PostScript LanguageLevel\~2 that conforms to the
+Document Structuring Conventions version 3.0.
 .
-Unfortunately some spoolers and previewers can't handle such output.
+Some older printers, spoolers, and previewers can't handle such output.
 .
 The value of\~\c
 .I n
 controls what
 .B grops
-does to its output acceptable to such programs.
+does to make its output acceptable to such programs.
 .
 A value of\~0 will cause grops not to employ any workarounds.
 .
+.IP
 Add\~1 if no
 .B %%BeginDocumentSetup
 and
@@ -135,10 +136,12 @@ comment and the first
 .B %%Page
 comment.
 .
+.IP
 Add\~2 if lines in included files beginning with
 .B %!
 should be stripped out; this is needed for Sun's pageview previewer.
 .
+.IP
 Add\~4 if
 .BR %%Page ,
 .BR %%Trailer
@@ -152,6 +155,7 @@ and
 .B %%EndDocument
 comments.
 .
+.IP
 Add\~8 if the first line of the PostScript output should be
 .B %!PS-Adobe-2.0
 rather than
@@ -159,9 +163,18 @@ rather than
 this is needed when using Sun's Newsprint with a printer that requires
 page reversal.
 .
-Add\~16 if no media size information should be included in the document.
-This was the behaviour of version 1.18.1 and earlier.
+.IP
+Add\~16 if no media size information should be included in the document
+(this is, neither use
+.B %%DocumentMedia
+nor the
+.B setpagedevice
+PostScript command).
 .
+This was the behaviour of groff version 1.18.1 and earlier; it is needed
+for older printers which don't understand PostScript LanguageLevel\~2.
+.
+.IP
 The default value can be specified by a
 .
 .RS
