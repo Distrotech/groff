@@ -492,6 +492,9 @@
 .  ds doc-out-string
 .  ev doc-divert-environment
 .  fi
+.
+.  if \n[doc-debug] \
+.    tm begin of `doc-diversion' at line #\n[.c]
 .  di doc-diversion
 ..
 .
@@ -2169,7 +2172,7 @@
 .de doc-get-arg-type
 .  ds doc-arg-type string
 .
-.  if ((\n[doc-width] < 3) & \A'\$1') \{\
+.  if ((\n[doc-width] < 3) & \A\$1) \{\
 .    ie (\n[doc-width] == 1) \{\
 .      if d doc-punct\$1 \{\
 .        ie "\*[doc-punct\$1]"punct-suffix" \
@@ -2197,7 +2200,7 @@
 .  ds doc-arg-type string
 .  doc-get-arg-width \$1
 .
-.  if ((\n[doc-width] < 3) & \A'\*[doc-arg\$1]') \{\
+.  if ((\n[doc-width] < 3) & \A\*[doc-arg\$1]) \{\
 .    ie (\n[doc-width] == 1) \{\
 .      if d doc-punct\*[doc-arg\$1] \{\
 .        ie "\*[doc-punct\*[doc-arg\$1]]"punct-suffix" \
@@ -2334,7 +2337,7 @@
 .de doc-do-xref-punct-suffix
 .  as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .  nr doc-arg-ptr +1
-.  \" XXX ?
+.  \" XXX: ?
 .  n\\C\\n(aP
 ..
 .
@@ -2345,7 +2348,7 @@
 .de doc-do-xref-punct-prefix
 .  as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
 .  nr doc-arg-ptr +1
-.  \" XXX ?
+.  \" XXX: ?
 .  n\\C\\n(aP
 ..
 .
@@ -2573,7 +2576,7 @@
 .    if (\n[doc-reg-ddBa] == 1) \{\
 .      nr doc-reg-ddBa 2
 .      \" test whether argument is a valid numeric expression
-.      ie \B"\$2" \
+.      ie \B\$2 \
 .        nr doc-indent-stack\n[doc-display-depth] \$2
 .      el \{\
 .        doc-get-width "\$2"
@@ -2738,7 +2741,7 @@
 .
 .        \" initialize column list
 .        if "\*[doc-list-stack\n[doc-list-depth]]"column-list" \{\
-.          doc-set-column-tab\n[doc-num-columns]
+.          doc-set-column-tab \n[doc-num-columns]
 .          nr doc-list-indent-stack\n[doc-list-depth] 0
 '          in -\n[doc-column-indent-width]u
 .          if !\n[doc-compact-list-stack\n[doc-list-depth]] \
@@ -2788,7 +2791,7 @@
 .        ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
 .
 .        \" test whether argument is a valid numeric expression
-.        ie \B"\*[doc-str-dBla]" \
+.        ie \B\*[doc-str-dBla] \
 .          nr doc-list-indent-stack\n[doc-list-depth] \*[doc-str-dBla]
 .        el \{\
 .          doc-get-arg-width \n[doc-arg-ptr]
@@ -2813,7 +2816,7 @@
 .          el \{\
 .            ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
 .
-.            ie \B"\*[doc-str-dBla]" \
+.            ie \B\*[doc-str-dBla] \
 .              nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
 .            el \{\
 .              doc-get-arg-width \n[doc-arg-ptr]
@@ -2865,45 +2868,41 @@
 .    nr doc-reg-El 0
 .    ds doc-str-El \*[doc-list-stack\n[doc-list-depth]]
 .
-.    if "\*[doc-str-El]"column-list" \{\
-.      nr doc-reg-El 1
-.      doc-do-end-column-list
-.    \}
-.
-.    if "\*[doc-str-El]"enum-list" \
+.    ie "\*[doc-str-El]"enum-list" \
 .      nr doc-enum-list-count 0
+.    el \{\
+.      ie "\*[doc-str-El]"column-list" \{\
+.        nr doc-reg-El 1
+.        doc-do-end-column-list
+.      \}
+.      el \{\
+.        ie "\*[doc-str-El]"item-list" \{\
+.          nr doc-reg-El 1
+'          in (\n[.i]u - \n[doc-list-offset-stack\n[doc-list-depth]]u)
+.          doc-decrement-list-stack
+.          nr doc-list-depth -1
+.          doc-increment-list-stack
+.        \}
+.        el \{\
+.          ie "\*[doc-str-El]"ohang-list" \{\
+.            nr doc-reg-El 1
+'            in (\n[.i]u - \n[doc-list-offset-stack\n[doc-list-depth]]u)
+.            doc-decrement-list-stack
+.            nr doc-list-depth -1
+.            doc-increment-list-stack
+.          \}
+.          el \{\
+.            if "\*[doc-str-El]"inset-list" \{\
+.              nr doc-reg-El 1
+'              in (\n[.i]u - \n[doc-list-offset-stack\n[doc-list-depth]]u)
+.              doc-decrement-list-stack
+.              nr doc-list-depth -1
+.              doc-increment-list-stack
+.    \}\}\}\}\}
 .
-.    if \n[doc-have-diag-list] \{\
-.      nr doc-reg-El 1
+.    \" XXX: this code should be modified to work nested lists of any type
+.    if \n[doc-have-diag-list] \
 .      nr doc-have-diag-list 0
-.      doc-decrement-list-stack
-.      nr doc-list-depth -1
-.      doc-increment-list-stack
-.    \}
-.
-.    if "\*[doc-str-El]"item-list" \{\
-'      in (\n[.i]u - \n[doc-list-offset-stack\n[doc-list-depth]]u)
-.      doc-decrement-list-stack
-.      nr doc-list-depth -1
-.      doc-increment-list-stack
-.      nr doc-reg-El 1
-.    \}
-.
-.    if "\*[doc-str-El]"ohang-list" \{\
-'      in (\n[.i]u - \n[doc-list-offset-stack\n[doc-list-depth]]u)
-.      doc-decrement-list-stack
-.      nr doc-list-depth -1
-.      doc-increment-list-stack
-.      nr doc-reg-El 1
-.    \}
-.
-.    if "\*[doc-str-El]"inset-list" \{\
-'      in (\n[.i]u - \n[doc-list-offset-stack\n[doc-list-depth]]u)
-.      doc-decrement-list-stack
-.      nr doc-list-depth -1
-.      doc-increment-list-stack
-.      nr doc-reg-El 1
-.    \}
 .
 .    if !\n[doc-reg-El] \
 .      doc-end-list
@@ -2929,15 +2928,8 @@
 .de It
 .  ds doc-str-It \*[doc-list-stack\n[doc-list-depth]]
 .
-.  if "\*[doc-str-It]"" \{\
-.    tm mdoc error: .It without preceding .Bl
-.    tmc Usage .It -list-type [-width [string] | -compact | -offset [string]]
-.    tm1 " (#\n[.c])
-.    tm .It \$@
-.  \}
-.
-.  \" .tmc Here is
-.  \" .tm1 " doc-list-stack[\n[doc-list-depth]]==\*[doc-str-It]
+.  if "\*[doc-str-It]"" \
+.    tm mdoc error: .It without preceding .Bl (#\n[.c])
 .
 .  br
 .  if !\n[cR] \
@@ -2947,77 +2939,76 @@
 .    ds doc-macro-name It
 .    ds doc-out-string
 .
+.    \" fill argument vector
 .    nr doc-reg-It 1
 .    while (\n[doc-reg-It] <= \n[.$]) \{\
 .      ds doc-arg\n[doc-reg-It] "\$[\n[doc-reg-It]]
 .      nr doc-reg-It +1
 .    \}
 .
-.    nr doc-reg-It 0
 .    nr doc-num-args \n[.$]
+.    nr doc-arg-ptr 0
+.    nr doc-reg-It 1
 .
-.    if "\*[doc-str-It]"diag-list" \{\
-.      nr doc-reg-It 1
-.      nr doc-arg-ptr 0
+.    ie "\*[doc-str-It]"diag-list" \{\
 .      doc-remaining-args
 .      doc-diag-list
+.      nr doc-reg-It 0
 .    \}
-.
-.    if "\*[doc-str-It]"column-list" \{\
-.      ds doc-out-string
-.      nr doc-arg-ptr 0
-.      nr doc-reg-It 1
-.      doc-column-list
-.    \}
-.
-.    if "\*[doc-str-It]"item-list" \{\
-.      nr doc-arg-ptr 0
-.      nr doc-reg-It 1
-.      doc-item-list
-.    \}
-.
-.    if !\n[doc-reg-It] \{\
-.      doc-parse-arg-vector
-.
-.      \" tm1 "It list-type==\*[doc-str-It]
-.      \" tm1 "   doc-arg-ptr==\n[doc-arg-ptr]
-.      \" tm1 "   beg arg(doc-arg[1])==\*[doc-arg1]
-.      \" tm1 "   doc-nesting-level==\n[doc-nesting-level]
-.      \" tm1 "   doc-in-diversion==\n[doc-in-diversion]
-.      \" tm1 "   doc-saved-list-immediate==\n[doc-saved-list-immediate]
-.      \" tm1 "   doc-args-processed==\n[doc-args-processed]
-.
-.      nr doc-nesting-level +1
-.      nr doc-list-immediate 1
-.      nr doc-arg-ptr +1
-.      ds doc-curr-type \*[doc-type\n[doc-arg-ptr]]
-.      ds doc-curr-arg "\*[doc-arg\n[doc-arg-ptr]]
-.
-.      if \n[doc-in-files-section] \{\
-.        ds doc-save-Pa-font "\*[doc-Pa-font]
-.        if n \
-.          ds doc-Pa-font "\*[doc-No-font]
+.    el \{\
+.      ie "\*[doc-str-It]"column-list" \{\
+.        ds doc-out-string
+.        doc-column-list
+.        nr doc-reg-It 0
 .      \}
-.
-.      ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
-.        \*[doc-arg\n[doc-arg-ptr]]
 .      el \{\
-.        nr doc-arg-ptr -1
-.        No
+.        ie "\*[doc-str-It]"tag-list" \
+.          nr doc-reg-It 2
+.        el \{\
+.          ie "\*[doc-str-It]"hang-list" \
+.            nr doc-reg-It 2
+.          el \{\
+.            ie "\*[doc-str-It]"ohang-list" \
+.              nr doc-reg-It 2
+.            el \{\
+.              if "\*[doc-str-It]"inset-list" \
+.                nr doc-reg-It 2
+.    \}\}\}\}\}
+.
+.    if \n[doc-reg-It] \{\
+.      ie (\n[doc-reg-It] == 2) \{\
+.        \" handle remaining list types with arguments
+.        doc-parse-arg-vector
+.
+.        nr doc-nesting-level +1
+.        nr doc-list-immediate 1
+.        nr doc-arg-ptr 1
+.        ds doc-curr-type \*[doc-type1]
+.        ds doc-curr-arg "\*[doc-arg1]
+.
+.        if \n[doc-in-files-section] \{\
+.          ds doc-save-Pa-font "\*[doc-Pa-font]
+.          if n \
+.            ds doc-Pa-font "\*[doc-No-font]
+.        \}
+.
+.        ie "\*[doc-type1]"macro" \
+.          \*[doc-arg1]
+.        el \{\
+.          nr doc-arg-ptr 0
+.          No
+.        \}
+.
+.        ie \n[doc-saved-list-immediate] \
+.          ds doc-saved-list-type "\*[doc-str-It]
+.        el \
+.          doc-\*[doc-str-It]
 .      \}
-.
-.      \" tm1 "in It here is doc-out-string==\*[doc-out-string]
-.      \" tm1 "   arg(doc-arg[1])==\*[doc-arg1]
-.      \" tm1 "   doc-nesting-level==\n[doc-nesting-level]
-.      \" tm1 "   doc-in-diversion==\n[doc-in-diversion]
-.      \" tm1 "   doc-saved-list-immediate==\n[doc-saved-list-immediate]
-.      \" tm1 "   doc-args-processed==\n[doc-args-processed]
-.
-.      ie \n[doc-saved-list-immediate] \
-.        ds doc-saved-list-type "\*[doc-str-It]
-.      el \
+.      el \{\
+.        .tm1 "mdoc warning: .It requests in lists of type `\*[doc-str-It]'
+.        .tm1 "              don't take arguments (#\n[.c])
 .        doc-\*[doc-str-It]
-.  \}\}
+.  \}\}\}
 .  el \
 .    doc-\*[doc-str-It]
 ..
@@ -3027,7 +3018,7 @@
 .\" NS   .It item of list-type inset
 .
 .de doc-inset-list
-.  doc-set-vertical-and-indent
+.  doc-set-vertical-and-indent 0
 .  br
 .  nop \&\*[doc-out-string]
 .
@@ -3046,7 +3037,7 @@
 .\" NS   doc-reg-dhl
 .
 .de doc-hang-list
-.  doc-set-vertical-and-indent-and-offset
+.  doc-set-vertical-and-indent 1
 .  nr doc-reg-dhl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-dhl]u
 .
@@ -3131,27 +3122,8 @@
 .
 .\" NS doc-do-list macro
 .\" NS   .It item of list-type enum/bullet/hyphen
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-ddl
 .
-.de doc-do-list
-.  doc-set-vertical-and-indent-and-offset
-.  nr doc-reg-ddl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
-.  ti -\n[doc-reg-ddl]u
-.
-.  ie (\w\*[doc-out-string]u >= \n[doc-list-indent-stack\n[doc-list-depth]]u) \
-.    nop \&\*[doc-out-string]
-.  el \
-.    nop \&\*[doc-out-string]\h'|\n[doc-reg-ddl]u'\c
-.
-.  nr doc-nesting-level -1
-.  \" .nr doc-in-diversion 1
-.  ds doc-out-string
-.  nr doc-list-immediate 0
-.  doc-reset-args
-'  fi
-..
+.als doc-do-list doc-hang-list
 .
 .
 .\" NS doc-diag-list macro
@@ -3190,10 +3162,9 @@
 .\" NS   doc-reg-dtl
 .
 .de doc-tag-list
-.  \" tm in doc-tag-list here is doc-out-string==\*[doc-out-string]
 .  if !\n[have-tag-width] \
 .    doc-get-tag-width
-.  doc-set-vertical-and-indent-and-offset
+.  doc-set-vertical-and-indent 1
 .  nr doc-reg-dtl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-dtl]u
 .
@@ -3224,7 +3195,7 @@
 .  if !"TagwidtH"\*[doc-tag-width-stack\n[doc-list-depth]]" \{\
 .    ie "\*[doc-curr-type]"macro" \{\
 .
-.\" XXX what is `lN'?
+.\" XXX: what is `lN'?
 .
 .      ds doc-tag-width-stack\n[lN] \*[doc-curr-arg]
 .      nr doc-list-indent-stack\n[lN] \n[\*[doc-curr-arg]]
@@ -3239,29 +3210,9 @@
 ..
 .
 .
-.\" NS doc-set-vertical-and-indent-and-offset macro
-.\" NS   set up vertical spacing (if compact) and indent (with offset)
-.
-.de doc-set-vertical-and-indent-and-offset
-.  ie \n[doc-have-indent] \{\
-.    nr doc-have-indent 0
-.    nr have-tag-width 0
-.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
-.      sp \n[doc-display-vertical]u
-.    in (\n[.i]u + \n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-list-offset-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
-.  \}
-.  el \{\
-.    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
-.      sp \n[doc-display-vertical]u
-.  \}
-.
-.  if !\n[cR] \
-.    ne 2v
-..
-.
-.
 .\" NS doc-set-vertical-and-indent macro
-.\" NS   set up vertical spacing (if compact) and indent (without offset)
+.\" NS   set up vertical spacing (if compact) and indent (with offset if
+.\" NS   $1 is non-zero)
 .
 .de doc-set-vertical-and-indent
 .  ie \n[doc-have-indent] \{\
@@ -3270,6 +3221,8 @@
 .    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
 .      sp \n[doc-display-vertical]u
 .    in (\n[.i]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
+.    if \$1 \
+.      in +(\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  \}
 .  el \{\
 .    if !\n[doc-compact-list-stack\n[doc-list-depth]] \
@@ -3308,16 +3261,12 @@
 .\" NS   list end function
 .
 .de doc-end-list
-.  \" .tm in doc-list-depth:
-.  \" .tm1 "  doc-list-offset-stack[\n[doc-list-depth]]==\n[doc-list-offset-stack\n[doc-list-depth]]
-.  \" .tm1 "  doc-list-indent-stack[\n[doc-list-depth]]==\n[doc-list-indent-stack\n[doc-list-depth]]
+'  in (\n[.i]u - \n[doc-list-indent-stack\n[doc-list-depth]]u - \n[doc-digit-width]u)
 .
-.  ie (\n[doc-list-offset-stack\n[doc-list-depth]] > 0) \{\
-'    in (\n[.i]u - \n[doc-list-indent-stack\n[doc-list-depth]]u - \n[doc-list-offset-stack\n[doc-list-depth]]u - \n[doc-digit-width]u)
-.    rr doc-list-offset-stack\n[doc-list-depth]
+.  if \n[doc-list-offset-stack\n[doc-list-depth]] \{\
+'    in -\n[doc-list-offset-stack\n[doc-list-depth]]u
+.    nr doc-list-offset-stack\n[doc-list-depth] 0
 .  \}
-.  el \
-'    in (\n[.i]u - \n[doc-list-indent-stack\n[doc-list-depth]]u - \n[doc-digit-width]u)
 .
 .  if (\n[doc-list-depth] <= 0) \
 .    tm mdoc warning: extraneous .El call (#\n[.c])
@@ -3367,23 +3316,23 @@
 .
 .de Xr
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Xr
 .      doc-parse-args \$@
-.  \}\}
+.    \}
+.    el \
+.      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \
 .      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
 .    el \{\
-.      ie !"\*[doc-type\n[doc-arg-ptr]]"string" \
-.        doc-do-xref-\*[doc-type\n[doc-arg-ptr]]
-.      el \{\
+.      ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
 .        as doc-out-string \*[doc-Xr-font]
 .        as doc-out-string "\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
+.
 .        nr doc-arg-ptr +1
 .        if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .          if "\*[doc-type\n[doc-arg-ptr]]"string" \{\
@@ -3394,7 +3343,10 @@
 .          doc-do-\*[doc-type\n[doc-arg-ptr]]
 .        el \
 .          doc-print-and-reset
-.  \}\}\}
+.      \}
+.      el \
+.        doc-do-xref-\*[doc-type\n[doc-arg-ptr]]
+.  \}\}
 ..
 .
 .
@@ -3405,12 +3357,13 @@
 .
 .de Sx
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Sx Section Header \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Sx
 .      doc-parse-args \$@
-.  \}\}
+.    \}
+.    el \
+.      tm Usage: .Sx section_header \*[doc-punct-chars] (#\n[.c])
+.  \}
 .
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
@@ -3427,7 +3380,7 @@
 .
 .de doc-do-end-column-list
 '  in (\n[.i]u - \n[doc-list-offset-stack\n[doc-list-depth]]u - \n[doc-list-indent-stack\n[doc-list-depth]]u)
-.  ta T .5i 1i
+.  ta T .5i
 .  fi
 .  doc-decrement-list-stack
 .  nr doc-list-depth -1
@@ -3435,48 +3388,35 @@
 ..
 .
 .
-.\" NS doc-set-column-tab[1-6] macro
-.\" NS   establish tabs for list-type column
+.\" NS doc-set-column-tab macro
+.\" NS   establish tabs for list-type column: `.doc-set-column-tab num_cols'
+.\" NS
+.\" NS local variable:
+.\" NS   doc-str-dsct, doc-str-dsct1, doc-reg-dsct
 .
-.de doc-set-column-tab1
-.  ta \w\*[doc-arg1]    u
-.  nr doc-column-indent-width \w\*[doc-arg1]    u
-'  in (\n[.i]u + \n[doc-column-indent-width]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
-..
+.de doc-set-column-tab
+.  ds doc-str-dsct
+.  nr doc-reg-dsct 1
+.  nr doc-column-indent-width 0
 .
+.  ie (\$1 < 5) \
+.    ds doc-str-dsct1 "    \"
+.  el \{\
+.    ie (\$1 == 5) \
+.      ds doc-str-dsct1 "   \"
+.    el \{\
+.      \" XXX: this is packed abnormally close -- intercolumn width
+.      \"      should be configurable
+.      ds doc-str-dsct1 " \"
+.  \}\}
 .
-.de doc-set-column-tab2
-.  ta \w\*[doc-arg1]    u +\w\*[doc-arg2]    u
-.  nr doc-column-indent-width (\w\*[doc-arg1]    u + \w\*[doc-arg2]    u)
-'  in (\n[.i]u + \n[doc-column-indent-width]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
-..
+.  while (\n[doc-reg-dsct] <= \$1) \{\
+.    as doc-str-dsct " +\w\*[doc-arg\n[doc-reg-dsct]]\*[doc-str-dsct1]u
+.    nr doc-column-indent-width +\w\*[doc-arg\n[doc-reg-dsct]]\*[doc-str-dsct1]u
+.    nr doc-reg-dsct +1
+.  \}
 .
-.
-.de doc-set-column-tab3
-.  ta \w\*[doc-arg1]    u +\w\*[doc-arg2]    u +\w\*[doc-arg3]    u
-.  nr doc-column-indent-width (\w\*[doc-arg1]    u + \w\*[doc-arg2]    u + \w\*[doc-arg3]    u)
-'  in (\n[.i]u + \n[doc-column-indent-width]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
-..
-.
-.
-.de doc-set-column-tab4
-.  ta \w\*[doc-arg1]    u +\w\*[doc-arg2]    u +\w\*[doc-arg3]    u +\w\*[doc-arg4]    u
-.  nr doc-column-indent-width (\w\*[doc-arg1]    u + \w\*[doc-arg2]    u + \w\*[doc-arg3]    u + \w\*[doc-arg4]    u)
-'  in (\n[.i]u + \n[doc-column-indent-width]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
-..
-.
-.
-.de doc-set-column-tab5
-.  ta \w\*[doc-arg1]   u +\w\*[doc-arg2]   u +\w\*[doc-arg3]   u +\w\*[doc-arg4]   u +\w\*[doc-arg5]   u
-.  nr doc-column-indent-width (\w\*[doc-arg1]   u + \w\*[doc-arg2]   u + \w\*[doc-arg3]   u + \w\*[doc-arg4]   u +\w\*[doc-arg5]   u)
-'  in (\n[.i]u + \n[doc-column-indent-width]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
-..
-.
-.
-.\" This is packed abnormally close; intercol width should be an option
-.de doc-set-column-tab6
-.  ta \w\*[doc-arg1] u +\w\*[doc-arg2] u +\w\*[doc-arg3] u +\w\*[doc-arg4] u +\w\*[doc-arg5] u +\w\*[doc-arg6] u
-.  nr doc-column-indent-width (\w\*[doc-arg1] u + \w\*[doc-arg2] u + \w\*[doc-arg3] u + \w\*[doc-arg4] u + \w\*[doc-arg5] u + \w\*[doc-arg6] u)
+.  ta \*[doc-str-dsct]
 '  in (\n[.i]u + \n[doc-column-indent-width]u + \n[doc-list-offset-stack\n[doc-list-depth]]u)
 ..
 .
@@ -3523,23 +3463,16 @@
 .  ie \n[doc-args-processed] \{\
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
-.      if "\*[doc-arg\n[doc-arg-ptr]]"Ta" \{\
-.        nr doc-reg-Ta (\n[doc-arg-ptr] - 1)
-.        ds doc-space\n[doc-reg-Ta]
-.      \}
 .      as doc-out-string \t
 .      doc-do-\*[doc-type\n[doc-arg-ptr]]
 .    \}
 .    el \{\
 .      as doc-out-string \t\c
-.      ds doc-space\n[doc-arg-ptr]
-.      doc-print-out-string
-.      doc-reset-args
-.      \" .ds doc-out-string
+.      doc-print-and-reset
 .  \}\}
 .  el \{\
 .    tm1 "Usage: Ta must follow column entry: e.g. (#\n[.c])
-.    tm1 "         .It column_string [Ta [column_string ...] ]
+.    tm1 "         .It column_string [Ta [column_string ...]]
 .  \}
 ..
 .
@@ -3556,24 +3489,17 @@
 '  ta T .5i
 .  in (\n[.i]u + \n[doc-display-indent]u)
 .
-.  ie !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Dl argument ... (#\n[.c])
-.    el \{\
-.      ds doc-macro-name Dl
-.
-.      nr doc-reg-Dl 1
-.      while (\n[doc-reg-Dl] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-Dl] "\$[\n[doc-reg-Dl]]
-.        nr doc-reg-Dl +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
-.      Li
-.  \}\}
-.  el \
+.  ie \n[doc-args-processed] \
 .    tm Usage: .Dl not callable by other macros (#\n[.c])
+.  el \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name Dl
+.      doc-parse-args \$@
+.      Li
+.    \}
+.    el \
+.      tm Usage: .Dl argument ... (#\n[.c])
+.  \}
 .
 .  in (\n[.i]u - \n[doc-display-indent]u)
 ..
@@ -3591,25 +3517,18 @@
 '  ta T .5i
 .  in (\n[.i]u + \n[doc-display-indent]u)
 .
-.  ie !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .D1 argument ... (#\n[.c])
-.    el \{\
+.  ie \n[doc-args-processed] \
+.    tm Usage: .D1 not callable by other macros (#\n[.c])
+.  el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name D1
-.
-.      nr doc-reg-D1 1
-.      while (\n[doc-reg-D1] <= \n[.$]) \{\
-.        ds doc-arg\n[doc-reg-D1] "\$[\n[doc-reg-D1]]
-.        nr doc-reg-D1 +1
-.      \}
-.
-.      nr doc-num-args \n[.$]
-.      doc-parse-arg-vector
+.      doc-parse-args \$@
 .      nr doc-arg-ptr +1
 .      No
-.  \}\}
-.  el \
-.    tm Usage: .D1 not callable by other macros (#\n[.c])
+.    \}
+.    el \
+.      tm Usage: .D1 argument ... (#\n[.c])
+.  \}
 .
 .  in (\n[.i]u - \n[doc-display-indent]u)
 ..
@@ -3619,7 +3538,7 @@
 .\" NS   defunct
 .
 .de Ex
-.  tm mdoc error: .Ex defunct, use .D1: \$@
+.  tm mdoc error: .Ex defunct, use .D1: \$@ (#\n[.c])
 ..
 .
 .
