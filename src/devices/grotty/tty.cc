@@ -200,8 +200,8 @@ public:
   void set_char(int, font *, const environment *, int, const char *name);
   void draw(int code, int *p, int np, const environment *env);
   void special(char *arg, const environment *env, char type);
-  void change_color(const environment *env);
-  void change_fill_color(const environment *env);
+  void change_color(const environment * const env);
+  void change_fill_color(const environment * const env);
   void put_char(unsigned int);
   void put_color(char, int);
   void begin_page(int) { }
@@ -436,12 +436,12 @@ void tty_printer::special(char *arg, const environment *env, char type)
   }
 }
 
-void tty_printer::change_color(const environment *env)
+void tty_printer::change_color(const environment * const env)
 {
   add_char(0, env->hpos, env->vpos, env->col, env->fill, COLOR_CHANGE);
 }
 
-void tty_printer::change_fill_color(const environment *env)
+void tty_printer::change_fill_color(const environment * const env)
 {
   add_char(0, env->hpos, env->vpos, env->col, env->fill, COLOR_CHANGE);
 }
