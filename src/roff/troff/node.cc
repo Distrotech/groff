@@ -787,6 +787,8 @@ public:
   void fill_color(color *c);
   int get_hpos() { return hpos; }
   int get_vpos() { return vpos; }
+  friend void space_char_hmotion_node::tprint(troff_output_file *);
+  friend void unbreakable_space_node::tprint(troff_output_file *);
 };
 
 static void put_string(const char *s, FILE *fp)
@@ -4408,6 +4410,17 @@ void hmotion_node::tprint(troff_output_file *out)
   out->right(n);
 }
 
+void space_char_hmotion_node::tprint(troff_output_file *out)
+{
+  out->fill_color(col);
+  if (is_html) {
+    out->flush_tbuf();
+    out->do_motion();
+    out->put("N160\n");		// this is &nbsp;
+  }
+  out->right(n);
+}
+
 void vmotion_node::tprint(troff_output_file *out)
 {
   out->fill_color(col);
@@ -5261,6 +5274,19 @@ const char *word_space_node::type()
 int word_space_node::force_tprint()
 {
   return 0;
+}
+
+void unbreakable_space_node::tprint(troff_output_file *out)
+{
+  out->fill_color(col);
+  if (is_html) {
+    out->flush_tbuf();
+    out->do_motion();
+    out->put("N160\n");		// this is &nbsp;
+  }
+  else
+    out->word_marker();
+  out->right(n);
 }
 
 int unbreakable_space_node::same(node *nd)

@@ -283,8 +283,8 @@ void html_table::set_linelength (int linelen)
     }
     p = c;
   }
-  if (p != NULL && p->right != 0)
-    add_column(p->no+1, p->right+1, linelen, 'L');
+  if (p != NULL && p->right > 0)
+    add_column(p->no+1, p->right, linelength, 'L');
 }
 
 /*
@@ -306,7 +306,7 @@ int html_table::get_effective_linelength (void)
 void html_table::add_indent (int indent)
 {
   if (columns != NULL && columns->left > indent)
-    add_column(0, indent, columns->left-1, 'L');
+    add_column(0, indent, columns->left, 'L');
 }
 
 /*
@@ -518,7 +518,7 @@ int html_table::insert_column (int coln, int hstart, int hend, char align)
     c = c->next;
   }
   if ((l != NULL) && (hstart < l->right))
-    return FALSE;  // new column bumps into previous one
+    return FALSE;	// new column bumps into previous one
   
   if ((l != NULL) && (l->next != NULL) &&
       (l->next->left < hend))
@@ -554,7 +554,7 @@ int html_table::modify_column (cols *c, int hstart, int hend, char align)
     l = l->next;
 
   if ((l != NULL) && (hstart < l->right))
-    return FALSE;  // new column bumps into previous one
+    return FALSE;	// new column bumps into previous one
   
   if ((c->next != NULL) && (c->next->left < hend))
     return FALSE;  // new column bumps into next one
@@ -577,7 +577,7 @@ int html_table::modify_column (cols *c, int hstart, int hend, char align)
 
 int html_table::find_tab_column (int pos)
 {
-  // remember the first column is reserved for un tabbed glyphs
+  // remember the first column is reserved for untabbed glyphs
   return tab_stops->find_tab(pos)+1;
 }
 
@@ -619,7 +619,7 @@ int html_table::no_columns (void)
 
 int html_table::is_gap (cols *c)
 {
-  if (c == NULL || c->right == 0 || c->next == NULL)
+  if (c == NULL || c->right <= 0 || c->next == NULL)
     return 0;
   else
     return ((c->next->left - c->right)*100 + get_effective_linelength()/2)

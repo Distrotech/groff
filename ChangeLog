@@ -1,3 +1,24 @@
+2003-03-31  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grohtml/html-table.cc: Fix column width calculation.
+	(html_table::set_linelength): Don't add 1.
+	(html_table::add_indent): Don't subtract 1.
+
+	* tmac/html.tmac: Set default page offset to zero.
+
+2003-03-30  Werner LEMBERG  <wl@gnu.org>
+
+	Make groff emit `&nbsp;' for `\ ' and `\~' if `-Thtml' is used.
+
+	* src/roff/troff/node.cc (space_char_hmotion_node::tprint,
+	unbreakable_space_node::tprint): New functions.
+	(troff_output_file): Make space_char_hmotion_mode::tprint and
+	unbreakable_space_node::tprint to friends.
+	* src/roff/troff/node.h: Updated.
+
+	* font/devhtml/R.proto: Add `&nbsp' at position 0xA0 (as defined
+	in the HTML standard).
+
 2003-03-29  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/env.cc (point_size): Fix emission of html tag.

@@ -218,6 +218,7 @@ public:
   unbreakable_space_node(hunits, color *, node * = 0);
   node *copy();
   int reread(int *);
+  void tprint(troff_output_file *);
   int same(node *);
   void asciify(macro *);
   const char *type();
@@ -311,6 +312,7 @@ public:
   node *copy();
   void ascii_print(ascii_output_file *);
   void asciify(macro *);
+  void tprint(troff_output_file *);
   int same(node *);
   const char *type();
   int force_tprint();
