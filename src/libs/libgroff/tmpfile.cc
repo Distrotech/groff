@@ -114,9 +114,9 @@ char *xtmptemplate(const char *postfix_long, const char *postfix_short)
 // This should be portable to all platforms.
 
 struct xtmpfile_list {
-  const char *fname;
+  char *fname;
   xtmpfile_list *next;
-  xtmpfile_list(const char *fn) : fname(fn), next(0) {}
+  xtmpfile_list(char *fn) : fname(fn), next(0) {}
 };
 
 xtmpfile_list *xtmpfiles_to_delete = 0;

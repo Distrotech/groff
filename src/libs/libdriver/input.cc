@@ -297,9 +297,11 @@ class Char {
 public:
   Char(void) : data('\0') {}
   Char(const int c) : data(c) {}
+  bool operator==(char c) const { return (data == c) ? true : false; }
   bool operator==(int c) const { return (data == c) ? true : false; }
   bool operator==(const Char c) const
 		  { return (data == c.data) ? true : false; }
+  bool operator!=(char c) const { return !(*this == c); }
   bool operator!=(int c) const { return !(*this == c); }
   bool operator!=(const Char c) const { return !(*this == c); }
   operator int() const { return (int) data; }
