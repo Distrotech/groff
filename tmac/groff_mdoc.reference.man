@@ -584,6 +584,7 @@ The body of a man page is easily constructed from a basic template:
 \&.\e" .Sh BUGS
 .Ed
 .Pp
+.
 The first items in the template are the macros
 .Ql .Dd ,
 .Ql .Os ,
@@ -1299,6 +1300,7 @@ may be used with
 (function argument).
 .Pp
 Example:
+.
 .Bd -literal -offset indent
 \&.Fo "int res_mkquery"
 \&.Fa "int op"
@@ -1313,7 +1315,9 @@ Example:
 \&.Fc
 .Ed
 .Pp
+.
 Produces:
+.
 .Bd -filled -offset indent
 .Fo "int res_mkquery"
 .Fa "int op"
@@ -1328,6 +1332,7 @@ Produces:
 .Fc
 .Ed
 .Pp
+.
 In the
 .Sx SYNOPSIS
 section, the function will always begin at the beginning of line.
@@ -1481,6 +1486,7 @@ Here a typical example of the
 and
 .Ql .Oo
 macros:
+.
 .Bd -literal -offset indent
 \&.Oo
 \&.Op Fl k Ar kilobytes
@@ -1489,7 +1495,9 @@ macros:
 \&.Oc
 .Ed
 .Pp
+.
 Produces:
+.
 .Bd -filled -offset indent
 .Oo
 .Op Fl k Ar kilobytes
@@ -1574,64 +1582,88 @@ are possible:
 .Pp
 .Dl 32v, v1, v2, v3, v4, v5, v6, v7, V, V.1, V.2, V.3, V.4
 .
-\#
-\#=====================================================================
-\#
 .Ss BSD Macro
 .
-.Dl Usage: .Bx [Version/release] ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Bx\ 4.3\ ." -compact -offset 14n
-.It Li ".Bx"
+.Pp
+.Dl "Usage: .Bx" Bro -alpha | -beta | -devel Brc Ld
+.Dl "       .Bx" Oo Ao version Ac Oo Ao release Ac Oc Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Bx\ -devel" -compact -offset 15n
+.It Li .Bx
 .Bx
 .It Li ".Bx 4.3 ."
 .Bx 4.3 .
+.It Li ".Bx -devel"
+.Bx -devel
 .El
 .Pp
-The
-.Ql \&.Bx
-macro is parsed and is callable.
+.Ao Li version Ac
+will be prepended to the string
+.Ql Bx .
+The following values for
+.Ao Li release Ac
+are possible:
+.Pp
+.Dl Reno, reno, Tahoe, tahoe, Lite, lite, Lite2, lite2
+.
 .Ss NetBSD Macro
-.Dl Usage: .Nx [Version/release] ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Nx\ 1.4\ ." -compact -offset 14n
-.It Li ".Nx"
+.
+.Pp
+.Dl Usage: .Nx Oo Ao version Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Nx\ 1.4\ ." -compact -offset 15n
+.It Li .Nx
 .Nx
 .It Li ".Nx 1.4 ."
 .Nx 1.4 .
 .El
 .Pp
-The
-.Ql \&.Nx
-macro is parsed and is callable.
+For possible values of
+.Ao Li version Ac
+see the description of the
+.Ql .Os
+request above in section
+.Sx "TITLE MACROS" .
+.
 .Ss FreeBSD Macro
-.Dl Usage: .Fx [Version/release] ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Fx\ 2.2\ ." -compact -offset 14n
-.It Li ".Fx"
+.
+.Pp
+.Dl Usage: .Fx Oo Ao version Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Fx\ 2.2\ ." -compact -offset 15n
+.It Li .Fx
 .Fx
 .It Li ".Fx 2.2 ."
 .Fx 2.2 .
 .El
 .Pp
-The
-.Ql \&.Fx
-macro is parsed and is callable.
+For possible values of
+.Ao Li version Ac
+see the description of the
+.Ql .Os
+request above in section
+.Sx "TITLE MACROS" .
+.
 .Ss UNIX Macro
-.Dl Usage: .Ux ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Ux" -compact -offset 14n
-.It Li ".Ux"
+.
+.Pp
+.Dl Usage: .Ux Ld
+.Pp
+.Bl -tag -xwidth ".Li .Ux" -compact -offset 15n
+.It Li .Ux
 .Ux
 .El
-.Pp
-The
-.Ql \&.Ux
-macro is parsed and is callable.
+.
 .Ss Emphasis Macro
+.
 Text may be stressed or emphasized with the
-.Ql \&.Em
+.Ql .Em
 macro.
 The usual font for emphasis is italic.
 .Pp
-.Dl Usage: .Em argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Em\ vide\ infra\ )\ )\ ," -compact -offset 14n
+.Dl Usage: .Em Ao argument Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Em\ vide\ infra\ )\ )\ ," -compact -offset 15n
 .It Li ".Em does not"
 .Em does not
 .It Li ".Em exceed 1024 ."
@@ -1639,7 +1671,7 @@ The usual font for emphasis is italic.
 .It Li ".Em vide infra ) ) ,"
 .Em vide infra ) ) ,
 .El
-.\" .Pp
+.\" XXX
 .\" The emphasis can be forced across several lines of text by using
 .\" the
 .\" .Ql \&.Bf
@@ -1655,146 +1687,128 @@ The usual font for emphasis is italic.
 .\" to acquire infinite wealthy and fame. Its that inifinity
 .\" word that does it to them. Ruins them.
 .\" .Ef
-.Pp
-The
-.Ql \&.Em
-macro is parsed and is callable.
-It is an error to call
-.Ql \&.Em
-without arguments.
+.
 .Ss Enclosure and Quoting Macros
+.
 The concept of enclosure is similar to quoting.
-The object being to enclose one or more strings between
-a pair of characters like quotes or parentheses.
-The terms quoting and enclosure are used
-interchangeably throughout this document.
-Most of the
-one line enclosure macros end
-in small letter
+The object being to enclose one or more strings between a pair of characters
+like quotes or parentheses.
+The terms quoting and enclosure are used interchangeably throughout this
+document.
+Most of the one-line enclosure macros end in small letter
 .Ql q
 to give a hint of quoting, but there are a few irregularities.
-For each enclosure macro
-there is also a pair of open and close macros which end
-in small letters
+For each enclosure macro there is also a pair of open and close macros which
+end in small letters
 .Ql o
 and
 .Ql c
 respectively.
-These can be used across one or more lines of text
-and while they have nesting limitations, the one line quote macros
-can be used inside
-of them.
 .Pp
-.ne 5
-.Bd -filled -offset indent
-.Bl -column "quote " "close " "open " "Enclose Stringx(in XX) " XXstringXX
-.Em " Quote	 Close	 Open	Function	Result"
-\&.Aq	.Ac	.Ao	Angle Bracket Enclosure	<string>
-\&.Bq	.Bc	.Bo	Bracket Enclosure	[string]
-\&.Dq	.Dc	.Do	Double Quote	``string''
-	.Ec	.Eo	Enclose String (in XX)	XXstringXX
-\&.Pq	.Pc	.Po	Parenthesis Enclosure	(string)
-\&.Ql			Quoted Literal	`st' or string
-\&.Qq	.Qc	.Qo	Straight Double Quote	"string"
-\&.Sq	.Sc	.So	Single Quote	`string'
+.ne 10
+.
+.Bd -filled -offset 4n
+.Bl -column "quote" "close" "open" "Angle Bracket Enclosure" "`string' or string"
+.Em Quote Ta Em Open Ta Em Close Ta Em Function               Ta Em Result
+.No .Aq   Ta    .Ao  Ta    .Ac   Ta "Angle Bracket Enclosure" Ta Ao string Ac
+.No .Bq   Ta    .Bo  Ta    .Bc   Ta "Bracket Enclosure"       Ta Bo string Bc
+.No .Brq  Ta    .Bro Ta    .Brc  Ta "Brace Enclosure"         Ta Bro string Brc
+.No .Dq   Ta    .Do  Ta    .Dc   Ta "Double Quote"            Ta Do string Dc
+.No       Ta    .Eo  Ta    .Ec   Ta "Enclose String (in XX)"  Ta XXstringXX
+.No .Pq   Ta    .Po  Ta    .Pc   Ta "Parenthesis Enclosure"   Ta Po string Pc
+.No .Ql   Ta         Ta          Ta "Quoted Literal"          Ta "`string' or string"
+.No .Qq   Ta    .Qo  Ta    .Qc   Ta "Straight Double Quote"   Ta Qo string Qc
+.No .Sq   Ta    .So  Ta    .Sc   Ta "Single Quote"            Ta So string Sc
 .El
 .Ed
 .Pp
-Except for the irregular macros noted below, all
-of the quoting macros are parsed and callable.
-All handle punctuation properly, as long as it
-is presented one character at a time and separated by spaces.
-The quoting macros examine opening and closing punctuation
-to determine whether it comes before or after the
-enclosing string.
-This makes some nesting possible.
-.Bl -tag -width xxx,xxxx
-.It Li \&.Ec , \&.Eo
-These macros expect the first argument to be the
-opening and closing strings respectively.
-.It Li \&.Ql
-The quoted literal macro behaves differently for
-.Xr troff
-than
-.Xr nroff .
+.
+.Bl -tag -xwidth ".Li .Ec,\ .Eo"
+.It Li .Ec , .Eo
+These macros expect the first argument to be the opening and closing strings
+respectively.
+.It Li .Ql
+The quoted literal macro behaves differently in troff and nroff mode.
 If formatted with
 .Xr nroff ,
 a quoted literal is always quoted.
-If formatted with
-troff, an item is only quoted if the width
-of the item is less than three constant width characters.
-This is to make short strings more visible where the font change
-to literal (constant width) is less noticeable.
-.It Li \&.Pf
-The prefix macro is not callable, but it is parsed:
-.Bl -tag -width "(namexx" -offset indent
+If formatted with troff, an item is only quoted if the width of the item is
+less than three constant width characters.
+This is to make short strings more visible where the font change to literal
+(constant width) is less noticeable.
+.It Li .Pf
+The prefix macro suppresses the whitespace between its first and second
+argument:
+.
+.Bl -tag -xwidth ".Li .Pf\ (\ Fa\ name2" -offset indent
 .It Li ".Pf ( Fa name2"
-becomes
-.Pf ( Fa name2 .
+.Pf ( Fa name2
 .El
-.It Li \&.Ns
+.Pp
+.
 The
-.Ql \&.Ns
-(no\-space) macro, which
-.Em is
-callable,
-performs the analogous suffix function.
-.It Li ".Ap
-The \&.Ap macro inserts an apostrophe and exits any special text modes,
-continuing in
-.Li \&.No
+.Ql .Ns
+macro (see below) performs the analogous suffix function.
+.It Li .Ap
+The
+.Ql .Ap
+macro inserts an apostrophe and exits any special text modes, continuing in
+.Ql .No
 mode.
 .El
 .Pp
-.ne 4
+.
+\#
+\#=====================================================================
+\#
 Examples of quoting:
-.Bl -tag -width ".Aq Pa ctype.h ) ,xxxxxxxx" -compact -offset indent
-.It Li \&.Aq
+.Pp
+.
+.Bl -tag -xwidth ".Li .Bq\ Em\ Greek\ ,\ French\ ." -compact -offset indent
+.It Li .Aq
 .Aq
-.It Li \&.Aq \&Ar ctype.h\ )\ ,
+.It Li ".Aq Ar ctype.h ) ,"
 .Aq Ar ctype.h ) ,
-.It Li \&.Bq
+.It Li .Bq
 .Bq
-.It Li \&.Bq \&Em Greek \&, French \&.
+.It Li ".Bq Em Greek , French ."
 .Bq Em Greek , French .
-.It Li \&.Dq
+.It Li .Dq
 .Dq
 .It Li ".Dq string abc ."
 .Dq string abc .
 .It Li ".Dq \'^[A-Z]\'"
 .Dq \'^[A-Z]\'
-.It Li "\&.Ql man mdoc"
+.It Li ".Ql man mdoc"
 .Ql man mdoc
-.It Li \&.Qq
+.It Li .Qq
 .Qq
-.It Li "\&.Qq string ) ,"
+.It Li ".Qq string ) ,"
 .Qq string ) ,
-.It Li "\&.Qq string Ns ),"
+.It Li ".Qq string Ns ),"
 .Qq string Ns ),
-.It Li \&.Sq
+.It Li .Sq
 .Sq
-.It Li "\&.Sq string
+.It Li ".Sq string"
 .Sq string
-.It Li "\&.Em or Ap ing
+.It Li ".Em or Ap ing"
 .Em or Ap ing
 .El
 .Pp
+.
 For a good example of nested enclosure macros, see the
-.Ql \&.Op
+.Ql .Op
 option macro.
-It was created from the same
-underlying enclosure macros as those presented in the list
-above.
+It was created from the same underlying enclosure macros as those presented
+in the list above.
 The
-.Ql \&.Xo
+.Ql .Xo
 and
-.Ql \&.Xc
-extended argument list macros
-were also built from the same underlying routines and are a good
-example of
-.Nm \-mdoc
-macro usage at its worst.
+.Ql .Xc
+extended argument list macros are discussed below.
+.
 .Ss No\-Op or Normal Text Macro
+.
 The macro
 .Li \&.No
 is

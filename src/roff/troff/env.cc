@@ -2560,6 +2560,11 @@ void line_tabs_request()
   skip_line();
 }
 
+int environment::get_line_tabs()
+{
+  return line_tabs;
+}
+
 void environment::wrap_up_tab()
 {
   if (!current_tab)
@@ -3005,6 +3010,7 @@ void init_env_requests()
   init_int_env_reg(".hlc", get_hyphen_line_count);
   init_hunits_env_reg(".lt", get_title_length);
   init_string_env_reg(".tabs", get_tabs);
+  init_int_env_reg(".linetabs", get_line_tabs);
   init_hunits_env_reg(".csk", get_prev_char_skew);
   init_vunits_env_reg(".cht", get_prev_char_height);
   init_vunits_env_reg(".cdp", get_prev_char_depth);

@@ -250,6 +250,7 @@ public:
     { return env_half_narrow_space_width(this); }
   hunits get_input_line_position();
   const char *get_tabs();
+  int get_line_tabs();
   int get_hyphenation_flags();
   int get_hyphen_line_max();
   int get_hyphen_line_count();
