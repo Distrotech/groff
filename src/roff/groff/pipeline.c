@@ -1,4 +1,4 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -85,10 +85,6 @@ static void sys_fatal(const char *);
 static const char *xstrsignal(int);
 const char *i_to_a(int);		// from libgroff
 
-/* MSVC can support asynchronous processes, but it's unlikely to have
-   fork().  So, until someone writes an emulation, let them at least
-   have a workable groff by using the good-ole DOS pipe simulation
-   via temporary files...  */
 
 #if defined(__MSDOS__) \
     || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN__)) \
@@ -102,66 +98,93 @@ const char *i_to_a(int);		// from libgroff
 
 #include "nonposix.h"
 
-/* A signal handler that just records that a signal has happened.  */
-static int child_interrupted;
-
-static RETSIGTYPE signal_catcher(int signo)
-{
-  child_interrupted++;
-}
-
 static const char *sh = "sh";
+static const char *cmd = "cmd";
 static const char *command = "command";
 
-const char *system_shell_name(void)
+char *sbasename(const char *path)
 {
-  static const char *shell_name;
+  char *base;
+  const char *p1, *p2;
 
-  /* We want them to be able to use a Unixy shell if they have it
-     installed.  Let spawnlp try to find it, but if it fails, default
-     to COMMAND.COM.  */
-  if (shell_name == NULL) {
-    int sh_found = spawnlp(P_WAIT, sh, sh, "-c", ":", NULL) == 0;
+  p1 = path;
+  if ((p2 = strrchr(p1, '\\'))
+      || (p2 = strrchr(p1, '/'))
+      || (p2 = strrchr(p1, ':')))
+    p1 = p2 + 1;
+  if ((p2 = strrchr(p1, '.'))
+      && ((strcasecmp(p2, ".exe") == 0)
+	  || (strcasecmp(p2, ".com") == 0)))
+    ;
+  else
+    p2 = p1 + strlen(p1);
 
-    if (sh_found)
-      shell_name = sh;
-    else
-      shell_name = command;
-  }
-  return shell_name;
+  base = malloc((size_t)(p2 - p1));
+  strncpy(base, p1, p2 - p1);
+  *(base + (p2 - p1)) = '\0';
+
+  return(base);
+}
+
+/* Get the name of the system shell */
+char *system_shell_name(void)
+{
+  const char *shell_name;
+
+  /*
+     Use a Unixy shell if it's installed.  Use SHELL if set; otherwise,
+     let spawnlp try to find sh; if that fails, use COMSPEC if set; if
+     not, try cmd.exe; if that fails, default to command.com.
+   */
+
+  if ((shell_name = getenv("SHELL")) != NULL)
+    ;
+  else if (spawnlp(_P_WAIT, sh, sh, "-c", ":", NULL) == 0)
+    shell_name = sh;
+  else if ((shell_name = getenv("COMSPEC")) != NULL)
+    ;
+  else if (spawnlp(_P_WAIT, cmd, cmd, "/c", ";", NULL) == 0)
+    shell_name = cmd;
+  else
+    shell_name = command;
+
+  return sbasename(shell_name);
 }
 
 const char *system_shell_dash_c(void)
 {
-  if (strcmp(system_shell_name(), sh) == 0)
-    return "-c";
+  char *shell_name;
+  const char *dash_c;
+
+  shell_name = system_shell_name();
+
+  /* Assume that if the shell name ends in "sh", it's Unixy */
+  if (strcasecmp(shell_name + strlen(shell_name) - strlen("sh"), "sh") == 0)
+    dash_c = "-c";
   else
-    return "/c";
+    dash_c = "/c";
+
+  free(shell_name);
+  return dash_c;
 }
 
-int is_system_shell(const char *shell)
+int is_system_shell(const char *prog)
 {
-  size_t shlen;
-  size_t ibase = 0, idot, i;
+  int result;
+  char *this_prog, *system_shell;
 
-  if (!shell)	/* paranoia */
+  if (!prog)	/* paranoia */
     return 0;
-  idot = shlen = strlen(shell);
 
-  for (i = 0; i < shlen; i++) {
-    if (shell[i] == '.')
-      idot = i;
-    else if (shell[i] == '/' || shell[i] == '\\' || shell[i] == ':') {
-      ibase = i + 1;
-      idot = shlen;
-    }
-  }
+  this_prog = sbasename(prog);
+  system_shell = system_shell_name();
 
-  /* "sh" and "sh.exe" should compare equal.  */
-  return (strncasecmp(shell + ibase, system_shell_name(), idot - ibase) == 0
-	  && (idot == shlen
-	      || strcasecmp(shell + idot, ".exe") == 0
-	      || strcasecmp(shell + idot, ".com") == 0));
+  result = strcasecmp(this_prog, system_shell) == 0;
+
+  free(this_prog);
+  free(system_shell);
+
+  return result;
 }
 
 #ifdef _WIN32
@@ -186,7 +209,7 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
     if (ncommands > 1 && !no_pipe) {
       /* last command doesn't need a new pipe */
       if (i < ncommands - 1) {
-	if (_pipe(pdes, BUFSIZ, O_BINARY | O_NOINHERIT) < 0) {
+	if (_pipe(pdes, BUFSIZ, _O_BINARY | _O_NOINHERIT) < 0) {
 	  sprintf(err_str, "%s: pipe", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -194,10 +217,10 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
       /* 1st command; writer */
       if (i == 0) {
 	/* save stdout */
-	if ((save_stdout = _dup(1)) < 0)
+	if ((save_stdout = _dup(STDOUT_FILENO)) < 0)
 	  sys_fatal("dup stdout");
 	/* connect stdout to write end of pipe */
-	if (_dup2(pdes[1], 1) < 0) {
+	if (_dup2(pdes[1], STDOUT_FILENO) < 0) {
 	  sprintf(err_str, "%s: dup2(stdout)", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -210,12 +233,12 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
       /* reader and writer */
       else if (i < ncommands - 1) {
 	/* connect stdin to read end of last pipe */
-	if (_dup2(last_input, 0) < 0) {
+	if (_dup2(last_input, STDIN_FILENO) < 0) {
 	  sprintf(err_str, " %s: dup2(stdin)", commands[i][0]);
 	  sys_fatal(err_str);
 	}
 	/* connect stdout to write end of new pipe */
-	if (_dup2(pdes[1], 1) < 0) {
+	if (_dup2(pdes[1], STDOUT_FILENO) < 0) {
 	  sprintf(err_str, "%s: dup2(stdout)", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -228,7 +251,7 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
       /* last command; reader */
       else {
 	/* connect stdin to read end of last pipe */
-	if (_dup2(last_input, 0) < 0) {
+	if (_dup2(last_input, STDIN_FILENO) < 0) {
 	  sprintf(err_str, "%s: dup2(stdin)", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -237,7 +260,7 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
 	  sys_fatal(err_str);
 	}
 	/* restore original stdout */
-	if (_dup2(save_stdout, 1) < 0) {
+	if (_dup2(save_stdout, STDOUT_FILENO) < 0) {
 	  sprintf(err_str, "%s: dup2(save_stdout))", commands[i][0]);
 	  sys_fatal(err_str);
 	}
@@ -274,9 +297,18 @@ int run_pipeline(int ncommands, char ***commands, int no_pipe)
 #else  /* not _WIN32 */
 
 /* MSDOS doesn't have `fork', so we need to simulate the pipe by running
-   the programs in sequence with standard streams redirected fot and
+   the programs in sequence with standard streams redirected to and
    from temporary files.
 */
+
+
+/* A signal handler that just records that a signal has happened.  */
+static int child_interrupted;
+
+static RETSIGTYPE signal_catcher(int signo)
+{
+  child_interrupted++;
+}
 
 int run_pipeline(int ncommands, char ***commands, int no_pipe)
 {
