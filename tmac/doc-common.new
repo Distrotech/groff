@@ -98,7 +98,6 @@
 .nr Fr 12n\" ?
 .nr Ft 8n\" ?
 .nr Fx 12n\" ?
-.nr Hf 8n\" ?
 .nr Ic 10n
 .nr In 12n\" ?
 .nr It 8n\" ?
@@ -120,7 +119,6 @@
 .nr Op 14n
 .nr Or 6n\" ?
 .nr Os 6n\" ?
-.nr Ot 8n\" ?
 .nr Ox 12n\" ?
 .nr Pa 32n
 .nr Pc 3
@@ -702,15 +700,20 @@
 .    \" `doc-Sh-font'
 .    ie "\*[doc-macro-name]"Sh" \{\
 .      nr doc-arg-ptr +1
-.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.      ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.ps]
 .        nop \*[doc-Sh-font]\c
 .        doc-print-recursive
+.      \}
+.      el \{\
+.        tm Usage: .Sh section_name ... (#\n[.c])
+.        doc-reset-args
 .    \}\}
-.    el \
-.      tm Usage: .Sh section_name ... (#\n[.c])
-.  \}
+.    el \{\
+.      tm Usage: .Sh not callable by other macros (#\n[.c])
+.      doc-reset-args
+.  \}\}
 .  el \{\
 .    ie \n[.$] \{\
 .      ds doc-macro-name Sh
@@ -772,12 +775,10 @@
 .      \}
 .
 .      nr doc-arg-ptr +1
-.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.ps]
-.        nop \*[doc-Sh-font]\c
-.        doc-print-recursive
-.      \}
+.      nr doc-curr-font \n[.f]
+.      nr doc-curr-size \n[.ps]
+.      nop \*[doc-Sh-font]\c
+.      doc-print-recursive
 .
 .      if t \
 .        ss \n[doc-reg-Sh] \n[doc-reg-Sh1]
@@ -806,15 +807,20 @@
 .    \" `doc-Sh-font'
 .    ie "\*[doc-macro-name]"Ss" \{\
 .      nr doc-arg-ptr +1
-.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.      ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.ps]
 .        nop \*[doc-Sh-font]\c
 .        doc-print-recursive
+.      \}
+.      el \{\
+.        tm Usage: .Ss subsection_name ... (#\n[.c])
+.        doc-reset-args
 .    \}\}
-.    el \
-.      tm Usage: .Ss subsection_name ... (#\n[.c])
-.  \}
+.    el \{\
+.      tm Usage: .Ss not callable by other macros (#\n[.c])
+.      doc-reset-args
+.  \}\}
 .  el \{\
 .    ie \n[.$] \{\
 .      ds doc-macro-name Ss
@@ -830,12 +836,10 @@
 .      ss (\n[.ss] * 5 / 4) (\n[.sss] * 5 / 4)
 .
 .      nr doc-arg-ptr +1
-.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.ps]
-.        nop \*[doc-Sh-font]\c
-.        doc-print-recursive
-.      \}
+.      nr doc-curr-font \n[.f]
+.      nr doc-curr-size \n[.ps]
+.      nop \*[doc-Sh-font]\c
+.      doc-print-recursive
 .
 .      ss \n[doc-reg-Ss] \n[doc-reg-Ss1]
 .
