@@ -1,3 +1,24 @@
+2001-12-23  Werner LEMBERG  <wl@gnu.org>
+
+	Adding an `itc' request (input line trap accepting \c).
+
+	* src/roff/troff/env.h (environment): New member
+	`continued_input_trap'.
+	Make `do_input_trap' a friend function instead of `input_trap'.
+	* src/roff/troff/env.cc (environment::environment,
+	environment::copy): Updated.
+	(environment::newline): Implement it.
+	(do_input_trap): New function.
+	(input_trap): Call `do_input_trap'.
+	(input_trap_continued): New function.
+	(init_env_requests): Updated.
+	* src/roff/troff/TODO: Updated.
+
+	* tmac/an-old.tmac (SH, SS, B, I, SM, SB, TP): Use `.itc' instead of
+	`.it'.
+
+	* src/preproc/grn/hdb.cc (DBRead): Really chop after 127 characters.
+
 2001-12-22  Ruslan Ermilov  <ru@FreeBSD.org>
 
 	* tmac/doc-common, tmac/doc-syms: Small updates.

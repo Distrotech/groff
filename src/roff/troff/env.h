@@ -140,6 +140,7 @@ class environment {
   int underline_spaces;
   symbol input_trap;
   int input_trap_count;
+  int continued_input_trap;
   node *line;			// in reverse order
   hunits prev_text_length;
   hunits width_total;
@@ -321,7 +322,7 @@ public:
   friend void indent();
   friend void temporary_indent();
   friend void do_underline(int);
-  friend void input_trap();
+  friend void do_input_trap(int);
   friend void set_tabs();
   friend void margin_character();
   friend void no_number();
