@@ -18,118 +18,126 @@ Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 fdl.txt in the main directory of the groff source package.
 ..
+.
 .\" --------------------------------------------------------------------
 .\" Setup
 .\" --------------------------------------------------------------------
+.
 .if n .mso tmac.tty-char
+.
 .\" for formatting of single quotes in documenting code
 .ds q \(fm
 .\" for formatting of double quotes, twice because of Emacs highlighting
 .ds dquote "
 .ds dquote "
-.\"
-.de MP
-.ds @tmp@ \\fB\\$1\\fP\\fR(\\$2)\\fP
-.shift 2
-\&\\*[@tmp@]\\$*
-.rm @tmp@
-..
+.
 .de BIP
-.ie (\\n[.$]<=2) \
-.	BI $@
-.el \{\
-.	ds @tmp@ \\fB\\$1\\fP\\fI\\$2\\fP
-.	shift 2
+.  ie (\\n[.$] <= 2) \
+.    BI $@
+.  el \{\
+.    ds @tmp@ \\fB\\$1\\fP\\fI\\$2\\fP
+.    shift 2
 \&\\*[@tmp@]\\$*
-.	rm @tmp@
-.\}
+.    rm @tmp@
+.  \}
 ..
+.
 .de regname
-.	ds @tmp@ \&\\fI\\en[\\fP\\fB\\$1\\fP\\fI]\\fP
-.	shift 1
+.  ds @tmp@ \&\\en[\\fB\\$1\\fP]
+.  shift 1
 \&\\*[@tmp@]\\$*
-.	rm @tmp@
+.  rm @tmp@
 ..
+.
 .\" request synopsis
 .de REQ
-.	ds @tmp@ \&\\$1
-.	shift 1
-.	IP "\\fB\&\\*[@tmp@]\\fP \\fI\&\\$*\\fP" 10n
-.	rm @tmp@
+.  ds @tmp@ \&\\$1
+.  shift 1
+.  IP "\\fB\&\\*[@tmp@]\\fP \\fI\&\\$*\\fP" 10n
+.  rm @tmp@
 ..
+.
 .\" escape sequence synopsis
 .de ESC
-.	ds @tmp@ \&\\$1
-.	shift 1
-.	IP "\\fB\\e\&\\*[@tmp@]\\fP\\fI\&\\$*\\fP"
-.	rm @tmp@
+.  ds @tmp@ \&\\$1
+.  shift 1
+.  IP "\\fB\\e\&\\*[@tmp@]\\fP\\fI\&\\$*\\fP"
+.  rm @tmp@
 ..
+.
 .\" escape sequence synopsis
 .de ESC[]
-.	ds @arg1@ \&\\$1
-.	ds @arg2@ \&\\$2
-.	shift 2
-.	IP "\\fB\\e\&\\*[@arg1@][\\fP\\fI\&\\*[@arg2@]\\fP\\fB]\&\\$*\\fP"
-.	rm @arg1@
-.	rm @arg2@
+.  ds @arg1@ \&\\$1
+.  ds @arg2@ \&\\$2
+.  shift 2
+.  IP "\\fB\\e\&\\*[@arg1@][\\fP\\fI\&\\*[@arg2@]\\fP\\fB]\&\\$*\\fP"
+.  rm @arg1@
+.  rm @arg2@
 ..
+.
 .\" escape sequence with quoted argument
-.	de ESCq
-.	ds @tmp@ \&\\$1
-.	shift 1
-.	IP "\\fB\\e\&\\*[@tmp@]\\fP\\fI\\*q\&\\$*\\*q\\fP"
-.	rm @tmp@
+.  de ESCq
+.  ds @tmp@ \&\\$1
+.  shift 1
+.  IP "\\fB\\e\&\\*[@tmp@]\\fP\\fI\\*q\&\\$*\\*q\\fP"
+.  rm @tmp@
 ..
+.
 .\" 2-escapes (special characters)
 .de ESc
-.	ds @tmp@ \\$1
-.	TP 14n
-.	BR \\e(\&\\*[@tmp@] \ \ \ \\(\\*[@tmp@]
-.	shift 1
+.  ds @tmp@ \\$1
+.  TP 14n
+.  BR \\e(\&\\*[@tmp@] \ \ \ \\(\\*[@tmp@]
+.  shift 1
 \\$*.
-.	rm @tmp@
+.  rm @tmp@
 ..
+.
 .\" 2-escapes (special characters) with extra argument
 .de EScx
-.	ds @tmp@ \\$1
-.	TP 14n
-.	BR \\e(\&\\*[@tmp@] \ \ \ \\$2
-.	shift 2
+.  ds @tmp@ \\$1
+.  TP 14n
+.  BR \\e(\&\\*[@tmp@] \ \ \ \\$2
+.  shift 2
 \\$*.
-.	rm @tmp@
+.  rm @tmp@
 ..
+.
 .\" Greek characters
 .de GREEK
-.	ds OLDT@BS \\n[.tabs]
-.	br
-.	ie t \{\
-.		ta 6n 9n 30n T 6n 9n
+.  ds OLDT@BS \\n[.tabs]
+.  br
+.  ie t \{\
+.    ta 6n 9n 30n T 6n 9n
 \\fB\\e(*\\$1\\fP\t\\fI\\(*\\$1\\fP\t\\$2\t\
 \\fB\\e(*\\$3\\fP\t\\fI\\(*\\$3\\fP\t\\$4
-.	\}
-.	el \{\
-.		ta 6n 30n T 6n
+.  \}
+.  el \{\
+.    ta 6n 30n T 6n
 \\fB\\e(*\\$1\\fP\t\\$2\t\
 \\fB\\e(*\\$3\\fP\t\\$4
-.	\}
-.	ta \\*[OLDT@BS]
-.	rm OLDT@BS
+.  \}
+.  ta \\*[OLDT@BS]
+.  rm OLDT@BS
 ..
+.
 .\" synopsis for registers
 .de REG
-.	TP 10n
+.  TP 10n
 \&\\en[\\fB\\$1\\fP]
-.	shift 1
+.  shift 1
 .if \\n[.$] \&\\$*
 ..
+.
 .\" description of warnings
 .de Warning
-.	ne 2v+1
-.	TP 12n
+.  ne (2v + 1)
+.  TP 12n
 \&\\fB\\$1\\fP
 \&\\fI\\$2\\fP
-.	br
+.  br
 ..
+.
 .\" --------------------------------------------------------------------
 .\" Title
 .\" --------------------------------------------------------------------
@@ -174,7 +182,7 @@ This file is not maintained, so it might already be out of date.
 The full documentation with more detailed, actual, and concise information
 is found in the
 .I groff
-.MP info 1
+.BR info (1)
 file.
 .\" --------------------------------------------------------------------
 .SH "ELEMENTS"
@@ -1646,29 +1654,29 @@ is defined as \fC\e(*a\fP.
 .GREEK z zeta Z Zeta
 .if t \{\
 .ds OLDT@BS \n[.tabs]
-.	ta T 0.6c
-.	LP
+.  ta T 0.6c
+.  LP
 In the order of the Greek alphabet this looks like
-.	LP
-.	ne 2v+1u
+.  LP
+.  ne 2v+1u
 \(*a	\(*b	\(*g	\(*d	\(*e	\(*z	\(*g	\(*y	\
 \(*h	\(*i	\(*k	\(*l	\(*m	\(*n	\(*c	\(*o	\
 \(*p	\(*r	\(*s	\(*t	\(*u	\(*f	\(*x	\(*q	\(*z
-.	br
+.  br
 a	b	g	d	e	z	g	y	\
 h	i	k	l	m	n	c	o	\
 p	r	s	t	u	f	x	q	z
-.	LP
-.	ne 2v+1u
+.  LP
+.  ne 2v+1u
 \(*A	\(*B	\(*G	\(*D	\(*E	\(*Z	\(*G	\(*Y	\
 \(*H	\(*I	\(*K	\(*L	\(*M	\(*N	\(*C	\(*O	\
 \(*P	\(*R	\(*S	\(*T	\(*U	\(*F	\(*X	\(*Q	\(*Z
-.	br
+.  br
 A	B	G	D	E	Z	G	Y	\
 H	I	K	L	M	N	C	O	\
 P	R	S	T	U	F	X	Q	Z
-.	ta \*[OLDT@BS]
-.	rm OLDT@BS
+.  ta \*[OLDT@BS]
+.  rm OLDT@BS
 .\}
 .\" --------------------------------------------------------------------
 .SH REGISTERS
@@ -2222,7 +2230,7 @@ the gory details were left for the groff info file.
 .\" --------------------------------------------------------------------
 The main source of information for the groff language is the
 .B groff
-.MP info 1
+.BR info (1)
 file.
 .LP
 For a survey of the groff system and further documentation pointers see

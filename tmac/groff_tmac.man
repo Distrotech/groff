@@ -7,8 +7,6 @@ This is part of groff, the GNU roff type-setting system.
 Copyright (C) 2000 Free Software Foundation, Inc.
 written by Bernd Warken <bwarken@mayn.de>
 
-Last update: 28 Apr 2000
-
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
 any later version published by the Free Software Foundation; with the
@@ -19,26 +17,25 @@ Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 fdl.txt in the main directory of the groff source package.
 ..
+.
 .\" --------------------------------------------------------------------
 .\" Setup
 .\" --------------------------------------------------------------------
-.de MP
-.ds @tmp@ \\fB\\$1\\fP\\fR(\\$2)\\fP
-.shift 2
-\\*[@tmp@]\\$*
-.rm @tmp@
-..
+.
 .de BIR
-.ie \\n[.$]<3 .BI $@
-.el \{
-.ds @tmp@ \\fB\\$1\\fP\\fI\\$2\\fP
-.shift 2
+.  ie (\\n[.$] < 3) \
+.    BI $@
+.  el \{\
+.    ds @tmp@ \\fB\\$1\\fP\\fI\\$2\\fP
+.    shift 2
 \\*[@tmp@]\\fR\\$*\\fP
-.rm @tmp@
-.\}
+.    rm @tmp@
+.  \}
 ..
+.
 .ds dquote \&"
 .ds dquote \&"\" make Emacs happy
+.
 .\" --------------------------------------------------------------------
 .\" Title
 .\" --------------------------------------------------------------------
@@ -85,6 +82,7 @@ was called
 .I mdoc
 because the command-line for activating it reads
 .RS
+.LP
 .BIR "troff\ \-m" doc .
 .RE
 .LP
@@ -97,9 +95,13 @@ the
 .I man
 macro package may be specified as
 .RS
+.LP
 .BIR "groff\ \-m\ " man ,
+.br
 .BIR "groff\ \-m" an ,
+.br
 .BIR "groff\ \-m" man , or
+.br
 .BIR "groff\ \-m " an .
 .RE
 .LP
@@ -348,7 +350,7 @@ the GNU Free Document License (FDL).
 The authoritative source of information for all details of the groff
 system is the
 .I groff
-.MP info 1
+.BR info (1)
 file.
 .LP
 For a groff overview, see

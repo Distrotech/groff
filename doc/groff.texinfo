@@ -646,18 +646,22 @@ an editor and a text formatter.  Also, many word processors follow the
 Although @acronym{WYSIWYG} systems may be easier to use, they have a
 number of disadvantages compared to @code{troff}:
 
-@itemize @bullet{}
+@itemize @bullet
 @item
 They must be used on a graphics display to do any operations on a
 document.
+
 @item
 Most of the @acronym{WYSIWYG} systems are either non-free or are not
 very portable.
+
 @item
 @code{troff} is firmly entrenched in all @acronym{UNIX} systems.
+
 @item
 It is difficult to have a wide range of capabilities available within
 the confines of a GUI/window system.
+
 @item
 It is more difficult to make global changes to a document.
 @end itemize
@@ -674,9 +678,16 @@ impossible to accomplish complex actions.''  --Doug Gwyn (22/Jun/91 in
 @cindex history
 
 @cindex @code{runoff}
+@cindex @code{rf}
 @code{troff} can trace its origins back to a formatting program called
-@code{runoff} which ran on MIT's CTSS system.  This name came from the
-common phrase of the time ``I'll run off a document.''
+@code{runoff}, written by J.@w{ }E.@w{ }Saltzer, which ran on MIT's CTSS
+system.  This name came from the common phrase of the time ``I'll run
+off a document.''  Bob Morris ported it to the 635 architecture and
+called the program @code{roff} (an abbreviation of @code{runoff}).  It
+has then been rewritten as @code{rf} for the PDP-7 (before having
+@acronym{UNIX}), and at the same time (1969), Doug McIllroy rewrote an
+extended and simplified version of @code{roff} in the @acronym{BCPL}
+programming language.
 
 @cindex @code{roff}
 The first version of @acronym{UNIX} was developed on a PDP-7 which was
@@ -684,20 +695,19 @@ sitting around Bell Labs.  In 1971 the developers wanted to get a PDP-11
 for further work on the operating system.  In order to justify the cost
 for this system, they proposed that they would implement a document
 formatting system for the AT&T patents division.  This first formatting
-program was a reimplementation of @code{runoff}.  In accordance with
-@acronym{UNIX}'s penchant for abbreviations, it was named @code{roff}
-(an abbreviation of @code{runoff}).
+program was a reimplementation of McIllroy's @code{roff}, written by
+J.@w{ }F.@w{ }Ossanna.
 
 @cindex @code{nroff}
 When they needed a more flexible language, a new version of @code{roff}
 called @code{nroff} (Newer @code{roff}) was written.  It had a much more
 complicated syntax, but provided the basis for all future versions.
-When they got a Graphic Systems CAT Phototypesetter, J.@w{ }F.@w{
-}Ossanna wrote a version of @code{nroff} which would drive it.  It was
-dubbed @code{troff} for typesetter @code{roff}, although many people
-have speculated that it actually means Times @code{roff} because of the
-use of the Times font family in @code{troff} by default.  As such, the
-name @code{troff} is pronounced `@w{t-roff}' rather than `trough'.
+When they got a Graphic Systems CAT Phototypesetter, Ossanna wrote a
+version of @code{nroff} which would drive it.  It was dubbed
+@code{troff} for typesetter @code{roff}, although many people have
+speculated that it actually means Times @code{roff} because of the use
+of the Times font family in @code{troff} by default.  As such, the name
+@code{troff} is pronounced `@w{t-roff}' rather than `trough'.
 
 With @code{troff} came @code{nroff} (they were actually the same program
 except for some @samp{#ifdefs}), which was for producing output for line
@@ -744,16 +754,19 @@ James Clark began work on a GNU implementation of @code{ditroff} in
 early@w{ }1989.  The first version, @code{groff}@w{ }0.3.1, was released
 June@w{ }1990.  @code{groff} included
 
-@itemize @bullet{}
+@itemize @bullet
 @item
 A replacement for @code{ditroff} with many extensions.
+
 @item
 The @code{soelim}, @code{pic}, @code{tbl}, and @code{eqn} preprocessors.
+
 @item
 Postprocessors for character devices, @sc{PostScript}, @TeX{} DVI, and
 X@w{ }windows.  GNU @code{troff} also eliminated the need for a separate
 @code{nroff} program with a postprocessor which would produce
 @acronym{ASCII} output.
+
 @item
 A version of the @file{me} macros and an implementation of the
 @file{man} macros.
@@ -786,43 +799,61 @@ a wide range of low-level text formatting operations.  Using these, it
 is possible to perform a wide range of formatting tasks, such as
 footnotes, table of contents, multiple columns, etc.
 
-@itemize @bullet{}
+@itemize @bullet
 @item
 Text filling, adjusting, and centering
+
 @item
 Hyphenation
+
 @item
 Page control
+
 @item
 Font and character size control
+
 @item
 Vertical spacing (i.e.@: double spacing)
+
 @item
 Line length and indenting
+
 @item
 Macros, strings, diversions, and traps
+
 @item
 Number registers
+
 @item
 Tabs, leaders, and fields
+
 @item
 Input and output conventions and character translation
+
 @item
 Overstrike, bracket, line drawing, and zero-width functions
+
 @item
 Local horizontal and vertical motions and the width function
+
 @item
 Three-part titles
+
 @item
 Output line numbering
+
 @item
 Conditional acceptance of input
+
 @item
 Environment switching
+
 @item
 Insertions from the standard input
+
 @item
 Input/output file switching
+
 @item
 Output and error messages
 @end itemize
@@ -989,18 +1020,25 @@ command to format a file.
 @table @samp
 @item -h
 Print a help message.
+
 @item -e
 Preprocess with @code{geqn}.
+
 @item -t
 Preprocess with @code{gtbl}.
+
 @item -g
 Preprocess with @code{ggrn}.
+
 @item -G
 Preprocess with @code{grap}.
+
 @item -p
 Preprocess with @code{gpic}.
+
 @item -s
 Preprocess with @code{gsoelim}.
+
 @item -R
 Preprocess with @code{grefer}.  No mechanism is provided for passing
 arguments to @code{grefer} because most @code{grefer} options have
@@ -1012,58 +1050,76 @@ for more details.
 Note that @code{gtroff} also accepts a @option{-R} option, which is not
 accessible via @code{groff}.  This option prevents the loading of the
 @file{troffrc} and @file{troffrc-end} files.
+
 @item -v
 Make programs run by @code{groff} print out their version number.
+
 @item -V
 Print the pipeline on stdout instead of executing it.
+
 @item -z
 Suppress output from @code{gtroff}.  Only error messages will be
 printed.
+
 @item -Z
 Do not postprocess the output of @code{gtroff}.  Normally @code{groff}
 will automatically run the appropriate postprocessor.
+
 @item -P@var{arg}
 Pass @var{arg} to the postprocessor.  Each argument should be passed
 with a separate @option{-P} option.  Note that @code{groff} does not
 prepend @samp{-} to @var{arg} before passing it to the postprocessor.
+
 @item -l
 Send the output to a printer.  The command used for this is specified by
 the print command in the device description file.
+
 @item -L@var{arg}
 Pass @var{arg} to the spooler.  Each argument should be passed with a
 separate @option{-L} option.  Note that @code{groff} does not prepend a
 @samp{-} to @var{arg} before passing it to the postprocessor.
+
 @item -T@var{dev}
 Prepare output for device @var{dev}.  The default device is @samp{ps}.
 The following are the output devices currently available:
 @table @code
 @item ps
 For @sc{PostScript} printers and previewers.
+
 @item dvi
 For @TeX{} DVI format.
+
 @item X75
 For a 75@dmn{dpi} X11 previewer.
+
 @item X100
 For a 100@dmn{dpi} X11 previewer.
+
 @item ascii
 For typewriter-like devices.
+
 @item latin1
 For typewriter-like devices using the @w{ISO Latin-1} (@w{ISO 8859-1})
 character set.
+
 @item utf8
 For typewriter-like devices which use the Unicode (@w{ISO 10646})
 character set with @w{UTF-8} encoding.
+
 @item cp1047
 @cindex @acronym{EBCDIC} encoding
 @cindex cp1047
 @cindex IBM cp1047
 For typewriter-like devices which use the @acronym{EBCDIC} encoding IBM
 cp1047.
+
 @item lj4
 For an HP LaserJet4-compatible (or other PCL5-compatible) printer.
+
 @item lbp
 For Canon @acronym{CAPSL} printers (@w{LBP-4} and @w{LBP-8} series laser
 printers).
+
 @item html
 To produce @acronym{HTML} output.
 @end table
@@ -1079,6 +1135,7 @@ The postprocessor to be used for a device is specified by the
 @code{postpro} command in the device description file.  (@xref{Font
 Files}, for more info.)  This can be overridden with the @option{-X}
 option.
+
 @item -X
 Preview with @code{gxditview} instead of using the usual postprocessor.
 This is unlikely to produce good results except with @option{-Tps}.
@@ -1087,47 +1144,62 @@ Note that this is not the same as using @option{-TX75} or
 @option{-TX100} to view a document with @code{gxditview}: The former
 will us the metrics of the specified device, whereas the latter will use
 X-specific fonts and metrics.
+
 @item -N
 Don't allow newlines with @code{eqn} delimiters.  This is the same as
 the @option{-N} option in @code{geqn}.
+
 @item -S
 Safer mode.  Pass the @option{-S} option to @code{gpic} and use the
 @option{-msafer} macros with @code{gtroff} (enabled by default).
+
 @item -U
 Unsafe mode.  Reverts to the old unsafe behaviour.
+
 @item -a
 @vindex .A
 Generate an @acronym{ASCII} approximation of the typeset output.  The
 read-only register @code{.A} is then set to@w{ }1.  @xref{Built-in
 Registers}.
+
 @item -b
 Print a backtrace with each warning or error message.  This backtrace
 should help track down the cause of the error.  The line numbers given
 in the backtrace may not always be correct: @code{gtroff} can get
 confused by @code{as} or @code{am} requests while counting line numbers.
+
 @item -i
 Read the standard input after all the named input files have been
 processed.
+
 @item -w@var{name}
 Enable warning @var{name}.  Available warnings are described in
 @ref{Debugging}.  Multiple @option{-w} options are allowed.
+
 @item -W@var{name}
 Inhibit warning @var{name}.  Multiple @option{-W} options are allowed.
+
 @item -E
 Inhibit all error messages.
+
 @item -C
 Enable compatibility mode.
+
 @item -d@var{cs}
 @itemx -d@var{name}=s
-Define @var{c} or @var{name} to be a string @var{s}; @var{c} must be a
-one-letter @var{name}.
+Define @var{c} or @var{name} to be a string @var{s}.  @var{c} must be a
+one-letter name; @var{name} can be of arbitrary length.
+
 @item -f@var{fam}
 Use @var{fam} as the default font family.
+
 @item -m@var{name}
 Read in the file @file{tmac.@var{name}}.  Normally this will be searched
 for in the library directory of @code{groff}.
+
 @item -n@var{num}
 Number the first page @var{num}.
+
 @item -o@var{list}
 @vindex .P
 Output only pages in @var{list}, which is a comma-separated list of page
@@ -1139,17 +1211,21 @@ the list.
 
 Within @code{gtroff}, this information can be extracted with the
 @samp{.P} register.  @xref{Built-in Registers}.
+
 @item -r@var{cn}
 @itemx -r@var{name}=@var{n}
-Set number register @var{c} or @var{name} to @var{n}; @var{c} must be a
-one-letter @var{name}; @var{n} can be any @code{gtroff} numeric
-expression.
+Set number register @var{c} or @var{name} to @var{n}.  @var{c} must be a
+one-letter name; @var{name} can be of arbitrary length.  @var{n} can be
+any @code{gtroff} numeric expression.
+
 @item -F@var{dir}
 Search @var{dir} for subdirectories dev@var{name} (@var{name} is the
 name of the device) for the @file{DESC} file and font files before the
 normal directory.
+
 @item -M@var{dir}
 Search directory @var{dir} for macro files before the normal directory.
+
 @item -I@var{dir}
 This option is as described in @ref{gsoelim}.  It implies the
 @option{-s} option.
@@ -1172,20 +1248,25 @@ If this is set to @var{X}, then @code{groff} will run
 @code{tbl}, @code{pic}, @code{eqn}, @code{grn}, @code{refer}, and
 @code{soelim}.  It does not apply to @code{grops}, @code{grodvi},
 @code{grotty}, @code{grohtml}, @code{grolj4}, and @code{gxditview}.
+
 @item GROFF_TMAC_PATH
 @tindex GROFF_TMAC_PATH
 A colon separated list of directories in which to search for macro
 files.
+
 @item GROFF_TYPESETTER
 @tindex GROFF_TYPESETTER
 The default output device.
+
 @item GROFF_FONT_PATH
 @tindex GROFF_FONT_PATH
 A colon separated list of directories in which to search for the
 @code{dev}@var{name} directory.
+
 @item PATH
 @tindex PATH
 The search path for commands executed by @code{groff}.
+
 @item GROFF_TMPDIR
 @tindex GROFF_TMPDIR
 @tindex TMPDIR
@@ -1678,11 +1759,14 @@ It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
 @item -rC1
 If more than one manual page is given on the command line, number the
 pages continuously, rather than starting each at@w{ }1.
+
 @item -rD1
 Double-sided printing.  Footers for even and odd pages are formatted
 differently.
+
 @item -rP @var{nnn}
 Enumeration of pages will start with @var{nnn} rather than with@w{ }1.
+
 @item -rX @var{nnn}
 After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
 @var{nnn}c, etc.  For example, the option @option{-rX2} will produce the
@@ -2247,14 +2331,16 @@ Since @code{gtroff} does filling automatically, it is traditional in
 paragraphs.  These are some conventions commonly used when typing
 @code{gtroff} text:
 
-@itemize @bullet{}
+@itemize @bullet
 @item
 Break lines after punctuation, particularly at the end of sentences,
 and in other logical places.  Keep separate phrases on lines by
 themselves, as entire phrases are often added or deleted when editing.
+
 @item
 Try to keep lines less than 40-60@w{ }characters, to allow space for
 inserting more text.
+
 @item
 Do not try to do any formatting in a @acronym{WYSIWYG} manner (i.e.,
 don't try and use spaces to get proper indentation).
@@ -2294,23 +2380,27 @@ current settings (e.g.@: type size) of @code{gtroff}.
 @cindex unit, @code{i}
 Inches.  An antiquated measurement unit still in use in certain
 backwards countries.  One inch is equal to@w{ }2.54@dmn{cm}.
+
 @item c
 @cindex centimeter
 @cindex @code{c} unit
 @cindex unit, @code{c}
 Centimeters.  One centimeter is equal to@w{ }0.3937@dmn{in}.
+
 @item p
 @cindex points
 @cindex @code{p} unit
 @cindex unit, @code{p}
 Points.  This is a typesetter's measurement used for measure type size.
 It is 72@w{ }points to an inch.
+
 @item P
 @cindex pica
 @cindex @code{P} unit
 @cindex unit, @code{P}
 Pica.  Another typesetting measurement.  6@w{ }Picas to an inch (and
 12@w{ }points to a pica).
+
 @item s
 @itemx z
 @cindex @code{s} unit
@@ -2333,11 +2423,13 @@ text.
 Ems.  This unit is equal to the current font size in points.  So called
 because it is @emph{approximately} the width of the letter@w{ }@samp{m}
 in the current font.
+
 @item n
 @cindex en unit
 @cindex @code{n} unit
 @cindex unit, @code{n}
 Ens.  This is half of an em.
+
 @item v
 @cindex vertical space
 @cindex space, vertical
@@ -2345,6 +2437,7 @@ Ens.  This is half of an em.
 @cindex unit, @code{v}
 Vertical space.  This is equivalent to the current line spacing.
 @xref{Sizes}, for more information about this.
+
 @item M
 @cindex @code{M} unit
 @cindex unit, @code{M}
@@ -2408,6 +2501,7 @@ Arithmetic: @samp{+} (addition), @samp{-} (subtraction), @samp{/}
 @code{gtroff} only provides integer arithmetic.  The internal type used
 for computing results is @samp{int}, which is usually a 32@dmn{bit}
 signed integer.
+
 @item
 @cindex comparison operators
 @cindex operators, comparison
@@ -2420,12 +2514,14 @@ signed integer.
 Comparison: @samp{<} (less than), @samp{>} (greater than), @samp{<=}
 (less than or equal), @samp{>=} (greater than or equal), @samp{=}
 (equal), @samp{==} (the same as @samp{=}).
+
 @item
 @cindex logical operators
 @cindex operators, logical
 @opindex &
 @opindex :
 Logical: @samp{&} (logical and), @samp{:} (logical or).
+
 @item
 @cindex unary operators
 @cindex operators, unary
@@ -2438,6 +2534,7 @@ Unary operators: @samp{-} (negating, i.e.@: changing the sign), @samp{+}
 (just for completeness; does nothing in expressions), @samp{!} (logical
 not; this works only within @code{if} and @code{while} requests).  See
 below for the use of unary operators in motion requests.
+
 @item
 @cindex extremum operators
 @cindex operators, extremum
@@ -2445,7 +2542,9 @@ below for the use of unary operators in motion requests.
 @opindex <?
 Extrema: @samp{>?} (maximum), @samp{<?} (minimum).  For example,
 @samp{5>?3} yields@w{ }@samp{5}.
+
 @c XXX add examples
+
 @item
 @cindex scaling operator
 @cindex operator, scaling
@@ -2503,22 +2602,24 @@ almost any printable character.  The exception are the following
 characters:
 
 @itemize @bullet
+@item
 @cindex whitespace characters
 @cindex newline character
 @cindex character, whitespace
-@item
 Whitespace characters (space, tabs, and newlines).
+
+@item
 @cindex character, backspace
 @cindex backspace character
-@item
 @cindex @acronym{EBCDIC} encoding
 Backspace (@acronym{ASCII}@w{ }@code{0x08} resp.@: @acronym{EBCDIC}@w{
 }@code{0x16}) and character code @code{0x01}.
+
+@item
 @cindex illegal input characters
 @cindex input characters, illegal
 @cindex characters, illegal input
 @cindex unicode
-@item
 The following input characters are illegal and will be ignored if
 @code{groff} runs on a machine based on @acronym{ASCII}, causing a
 warning message: @code{0x00}, @code{0x0B}, @code{0x0D}-@code{0x1F},
@@ -2583,11 +2684,13 @@ Identifiers in @code{gtroff} can be any length, but, in some contexts,
 @findex (
 @findex [
 @findex ]
-@itemize @bullet{}
+@itemize @bullet
 @item
 Single character.
+
 @item
 Two characters.  Must be prefixed with @samp{(} in some situations.
+
 @item
 Arbitrary length (@code{gtroff} only).  Must be bracketed with @samp{[}
 and@w{ }@samp{]} in some situations.  Any length identifier can be put
@@ -2720,10 +2823,12 @@ possible syntax forms.
 @itemize @bullet
 @item
 The next single character is the identifier.
+
 @item
 If this single character is an opening parenthesis, take the following
 two characters as the identifier.  Note that there is no closing
 parenthesis after the identifier.
+
 @item
 If this single character is an opening bracket, take all characters
 until a closing bracket as the identifier.
@@ -2833,10 +2938,12 @@ Finally, the escapes @code{\D}, @code{\h}, @code{\H}, @code{\l},
 @code{\x} can't use the following characters as delimiters:
 
 @itemize @bullet
+@item
 @cindex numbers
 @cindex digits
-@item
 The digits @code{0}-@code{9}.
+
+@item
 @cindex operators
 @opindex +
 @opindex -
@@ -2851,8 +2958,8 @@ The digits @code{0}-@code{9}.
 @opindex (
 @opindex )
 @opindex .
-@item
 The (single character) operators @samp{+-/*%<>=&:().}.
+
 @item
 @cindex space character
 @cindex character, space
@@ -2861,6 +2968,8 @@ The (single character) operators @samp{+-/*%<>=&:().}.
 @cindex newline character
 @cindex character, newline
 The space, tab, and newline characters.
+
+@item
 @findex \%
 @findex \@{
 @findex \@}
@@ -2874,7 +2983,6 @@ The space, tab, and newline characters.
 @findex \c
 @findex \e
 @findex \p
-@item
 All escape sequences except @code{\%}, @code{\@{}, @code{\@}},
 @code{\'}, @code{\`}, @code{\-}, @code{\_}, @code{\!}, @code{\@@},
 @code{\/}, @code{\c}, @code{\e}, and @code{\p}.
@@ -2883,12 +2991,15 @@ All escape sequences except @code{\%}, @code{\@{}, @code{\@}},
 @findex \\
 @findex \e
 @findex \E
-To have a backslash appear in the output several escapes are defined:
-@code{\\}, @code{\e} or @code{\E}.  These are very similar, and only
-differ with respect to being used in macros or diversions.
-@xref{Copy-in Mode}, and @ref{Diversions}, for more information.
+To have a backslash (resp.@: the current escape character) appear in the
+output several escapes are defined: @code{\\}, @code{\e} or @code{\E}.
+These are very similar, and only differ with respect to being used in
+macros or diversions.  @xref{Copy-in Mode}, and @ref{Diversions}, for
+more information.
 
-@xref{Identifiers}.
+@c XXX explanation of \E
+
+@xref{Identifiers}, and @ref{Character Translations}.
 
 @menu
 * Comments::                    
@@ -3177,17 +3288,22 @@ formats are available:
 @table @code
 @item 1
 This is the default format, decimal numbers: 1, 2, 3,@w{ }@dots{}
+
 @item 0@dots{}01
 Decimal numbers with as many leading zeros as specified.  So, @samp{01}
 would result in 01, 02, 03,@w{ }@dots{}
+
 @item I
 @cindex roman numerals
 @cindex numerals, Roman
 Upper-case Roman numerals: 0, I, II, III, IV,@w{ }@dots{}
+
 @item i
 Lower-case Roman numerals: 0, i, ii, iii, iv,@w{ }@dots{}
+
 @item A
 Upper-case letters: A, B, C, @dots{},@w{ }Z, AA, AB,@w{ }@dots{}
+
 @item a
 Lower-case letters: a, b, c, @dots{},@w{ }z, aa, ab,@w{ }@dots{}
 @end table
@@ -3230,31 +3346,37 @@ read-only.  A complete listing of all built-in registers can be found in
 @cindex resolution, horizontal
 @vindex .H
 Horizontal resolution in basic units.
+
 @item .V
 @cindex vertical resolution
 @cindex resolution, vertical
 @vindex .V
 Vertical resolution in basic units.
+
 @item dw
 @cindex day of the week
 @cindex date, day of the week
 @vindex dw
 Day of the week (1-7).
+
 @item dy
 @cindex day of the month
 @cindex date, day of the month
 @vindex dy
 Day of the month (1-31).
+
 @item mo
 @cindex month of the year
 @cindex date, month of the year
 @vindex mo
 Current month (1-12).
+
 @item year
 @cindex date, year
 @cindex year, current
 @vindex year
 The current year.
+
 @item yr
 @vindex yr
 The current year minus@w{ }1900.  Unfortunately, the documentation of
@@ -3292,6 +3414,7 @@ This document was formatted in \n(y4.
 The current @emph{input} line number.  Register @samp{.c} is read-only,
 whereas @samp{c.} (a @code{gtroff} extension) is writable also,
 affecting both @samp{.c} and @samp{c.}.
+
 @item ln
 @vindex ln
 @findex nm
@@ -3299,37 +3422,45 @@ affecting both @samp{.c} and @samp{c.}.
 @cindex line number, output
 The current @emph{output} line number after a call to the @code{nm}
 request to activate line numbering.
+
 @c XXX xref nm request
+
 @item .x
 @vindex .x
 @cindex major version number
 @cindex version number, major
 The major version number.  For example, if the version number is@w{
 }1.03 then @code{.x} will contain@w{ }@samp{1}.
+
 @item .y
 @vindex .y
 @cindex minor version number
 @cindex version number, minor
 The minor version number.  For example, if the version number is@w{
 }1.03 then @code{.y} will contain@w{ }@samp{03}.
+
 @item .Y
 @vindex .Y
 @cindex revision number
 The revision number of @code{groff}.
+
 @item .g
 @vindex .g
 Always@w{ }1.  Macros should use this to determine whether they are
 running under GNU @code{troff}.
+
 @item .A
 @vindex .A
 If the command line option @option{-a} is used to produce an
 @acronym{ASCII} approximation of the output, this is set to@w{ }1, zero
 otherwise.  @xref{Groff Options}.
+
 @item .P
 @vindex .P
 This register indicates whether the current page is actually being
 printed, i.e., whether the @option{-o} option is being used to only
 print selected pages.  @xref{Groff Options}, for more information.
+
 @item .T
 @vindex .T
 If @code{gtroff} is called with the @option{-T} command line option, the
@@ -3401,14 +3532,17 @@ Enable adjusting.  @var{mode} can have one of the following values:
 @cindex ragged-right
 Adjust text to the left margin.  This produces what is traditionally
 called ragged-right text.
+
 @item r
 @cindex ragged-left
 Adjust text to the right margin, producing ragged-left text.
+
 @item c
 @cindex centered text
 @findex ce
 Center filled text.  This is different to the @code{ce} request which
 only centers text without filling.
+
 @item b
 @itemx n
 Justify to both margins.  This is default of @code{gtroff}.
@@ -3553,10 +3687,13 @@ Enable hyphenation.  The request has an optional numeric argument,
 @item 1
 The default argument if @var{mode} is omitted.  Hyphenate without
 restrictions.
+
 @item 2
 Do not hyphenate the last word on a page or column.
+
 @item 4
 Do not hyphenate the last two characters of a word.
+
 @item 8
 Do not hyphenate the first two characters of a word.
 @end table
@@ -4052,32 +4189,134 @@ foo            bar       smurf
 @cindex character translations
 @cindex translations of characters
 
-@findex cc
-@findex c2
 @findex .
 @findex '
+@cindex control character
+@cindex character, control
+@cindex no-break control character
+@cindex character, no-break control
+@cindex control character, no-break
 The control character (@samp{.}) and the no-break control character
 (@samp{'}) can be changed with the @code{cc} and @code{c2} requests,
-respectively.  The single argument is the new character to be used.
-With no argument the normal control character is restored.
+respectively.
 
-@findex ec
-@findex eo
-The @code{eo} request will completely disable the escape mechanism.  The
-@code{ec} request can be used to change the escape character from the
-default @samp{\} to what is specified as an argument.  It can be also
-used to re-enable the escape mechanism after an @code{eo} request.
+@Deffn{Request, cc, [@var{c}]}
+Set the control character to @var{c}.  With no argument the normal
+control character @samp{.} is restored.
+@end_Deffn
+
+@Deffn{Request, c2, [@var{c}]}
+Set the no-break control character to @var{c}.  With no argument the
+normal control character @samp{'} is restored.
+@end_Deffn
+
+@findex \
+@Deffn{Request, eo, }
+Disable the escape mechanism completely.  After executing this request,
+the backslash character @samp{\} no longer starts an escape sequence.
+@end_Deffn
+
+@cindex escape character
+@cindex character, escape
+@Deffn{Request, ec, [@var{c}]}
+Set the escape character to @var{c}.  With no argument the normal escape
+character @samp{\} is restored.  It can be also used to re-enable the
+escape mechanism after an @code{eo} request.
+
+Note that changing the escape character globally will likely break macro
+packages since @code{gtroff} has no mechanism (like @TeX{}) to `intern'
+macros, i.e., to convert a macro definition into an internal form which
+is independent of its printed representation.  If a macro is called, it
+will be executed literally.
+@end_Deffn
+
+@Deffn{Escape, \\e, }
+This escape sequence prints the current escape character (which is the
+backslash character @samp{\} by default).
+@end_Deffn
 
 @findex tr
-The @code{tr} request will translate characters.
+The @code{tr} request will @dfn{translate} characters.
+
+Some notes:
+
+@itemize @bullet
+@item
+@findex \(
+@findex \[
+@findex \'
+@findex \`
+@findex \-
+@findex \_
+@findex \C
+@findex \N
+@cindex special character
+@cindex character, special
+@cindex numbered character
+@cindex character, numbered
+Special characters (@code{\(@var{xx}}, @code{\[@var{xxx}]},
+@code{\C'@var{xxx}'}, @code{\'}, @code{\`}, @code{\-}, @code{\_}) and
+numbered characters (@code{\N'@var{xxx}'}) can be translated also.
+
+@item
+@findex \e
+@findex \%
+The @code{\e} and @code{\%} escapes can be translated also.
+
+@item
+@cindex backspace character
+@cindex character, backspace
+@cindex leader character
+@cindex character, leader
+@cindex newline character
+@cindex character, newline
+@cindex tab character
+@cindex character, tab
+@findex \a
+@findex \t
+The following characters can't be translated: backspace, newline, leader
+(and @code{\a}), tab (and @code{\t}).
+
+@item
+@findex \&
+The character pair @samp{@var{X}\&} (this is an arbitrary character@w{
+}@var{X} followed by the zero width space character) will map this
+character to nothing.
+
+@example
+.tr a\&
+foo bar
+    @result{} foo br
+@end example
+
+@noindent
+It is even possible to map the space character to nothing:
+
+@example
+.tr aa \&
+foo bar
+    @result{} foobar
+@end example
+
+@noindent
+As shown in the example, the space character can't be the first
+character pair as an argument of @code{tr}.  It is also not possible to
+map the space character to any other character; requests like
+@w{@samp{.tr aa x}} will be ignored.
+
+If justification is active, lines will be justified inspite of the
+`empty' space character (but there is no minimal distance, i.e.@: the
+space character, between words).
+@end itemize
 
 @c XXX more info
 
-@findex trnt
 @findex \!
+@findex trnt
 @code{trnt} is the same as the @code{tr} request except that the
 translations do not apply to text that is transparently throughput into
 a diversion with @code{\!}.  @xref{Diversions}, for more information.
+
 For example,
 
 @example
@@ -4130,6 +4369,7 @@ output, defining the @dfn{left margin}.  It can be adjusted with the
 number register @code{.o}.  Note that this request does not cause a
 break, so changing the page offset in the middle of text being filled
 may not yield the expected result.
+
 @item in
 @cindex indentation
 @cindex line indentation
@@ -4146,6 +4386,7 @@ There is also the request @code{ti} which will cause one output line to
 be indented, after which the indentation returns to@w{ }0.  This request
 causes a break.  The number register @code{.in} is the indent that
 applies to the current output line.
+
 @item ll
 @cindex line length
 @cindex length of line
@@ -4582,16 +4823,19 @@ are the characters to have those properties.
 @cindex characters, end of sentence
 the character ends sentences (initially characters @samp{.?!} have this
 property)
+
 @item 2
 @cindex hyphenating characters
 @cindex characters, hyphenation
 lines can be broken before the character (initially no characters have
 this property)
+
 @item 4
 @glindex hy
 @glindex em
 lines can be broken after the character (initially the characters
 @samp{-\(hy\(em} have this property)
+
 @item 8
 @cindex overlapping characters
 @cindex characters, overlapping
@@ -4600,10 +4844,12 @@ lines can be broken after the character (initially the characters
 @glindex ru
 the character overlaps horizontally (initially the characters
 @samp{\(ul\(rn\(ru} have this property)
+
 @item 16
 @glindex br
 the character overlaps vertically (initially character @samp{\(br} has
 this property)
+
 @item 32
 @cindex transparent characters
 @cindex character, transparent
@@ -4832,13 +5078,16 @@ and the text begins.  Any of the following forms are valid:
 @item \s@var{n}
 Set the point size to @var{n}@w{ }points.  @var{n}@w{ }must be either 0
 or in the range 4 to@w{ }39.
-@itemx \s+@var{n}
+
+@item \s+@var{n}
 @itemx \s-@var{n}
 Increase resp.@: decrease the point size by @var{n}@w{ }points.
 @var{n}@w{ }must be exactly one digit.
+
 @item \s(@var{nn}
 Set the point size to @var{nn}@w{ }points.  @var{nn} must be exactly two
 digits.
+
 @item \s+(@var{nn}
 @itemx \s-(@var{nn}
 @itemx \s(+@var{nn}
@@ -4921,6 +5170,7 @@ register.
 @itemx \s'@var{n}'
 Set the point size to @var{n} scaled points; @var{n}@w{ }is a numeric
 expression with a default scale indicator of @samp{z}.
+
 @item \s[+@var{n}]
 @itemx \s[-@var{n}]
 @itemx \s+[@var{n}]
@@ -5089,20 +5339,25 @@ available:
 @item e
 @itemx o
 True if the current page is even or odd numbered (respectively).
+
 @item n
 @itemx t
 True if the document is being processed by @code{nroff} (or a character
 device) resp.@: @code{troff}.
+
 @item '@var{xxx}'@var{yyy}'
 True if the string @var{xxx} is equal to the string @var{yyy}.  Other
 characters can be used in place of the single quotes.
 @c XXX (Which?)
 The strings are `formatted' before being compared.
 @c XXX (?)
+
 @item r@var{xxx}
 True if there is a number register named @var{xxx}.
+
 @item d@var{xxx}
 True if there is a string, macro, diversion, or request named @var{xxx}.
+
 @item c@var{ch}
 @findex char
 True if there is a character @var{ch} available; @var{ch} is either an
@@ -5407,8 +5662,10 @@ There are some special case escapes for vertical motion.
 @ftable @code
 @item \r
 move upwards@w{ }1@dmn{v}.
+
 @item \u
 move upwards@w{ }.5@dmn{v}.
+
 @item \d
 move down@w{ }.5@dmn{v}.
 @end ftable
@@ -5424,20 +5681,26 @@ There are a number of special case escapes for horizontal motion:
 @item \@key{SP}
 an unbreakable and unpaddable (i.e.@: not expanded during filling)
 space.  (Note: It is a backslash followed by a space.)
+
 @item \~
 an unbreakable space that stretches like a normal inter-word space when a
 line is adjusted.
+
 @item \|
 a 1/6th em space.
+
 @item \^
 a 1/12th em space.
+
 @item \0
 a space the size of a digit.
+
+@item \&
 @cindex zero width space character
 @cindex character, zero width space
 @cindex space character, zero width
-@item \&
 A zero width space.
+
 @item \)
 Like @code{\&} except that it behaves like a character declared with the
 @code{cflags} request to be transparent for the purposes of end of
@@ -5470,36 +5733,43 @@ settings.
 After use, @code{\w} sets several registers:
 
 @table @code
-@vindex st
-@vindex sb
 @item st
 @itemx sb
+@vindex st
+@vindex sb
 The highest and lowest point, respectively, in @var{text}.
-@vindex rst
-@vindex rsb
+
 @item rst
 @itemx rsb
+@vindex rst
+@vindex rsb
 Like the @code{st} and @code{sb} registers, but takes account of the
 heights and depths of characters.
-@vindex ct
+
 @item ct
+@vindex ct
 is set according to what kinds of characters occur in @var{text}:
 @table @asis
 @item 0
 only short characters, no descenders or tall characters.
+
 @item 1
 descender
+
 @item 2
 tall character
+
 @item 3
 both a descender and a tall character
 @end table
-@vindex ssc
+
 @item ssc
+@vindex ssc
 The amount of horizontal space (possibly negative) that should be added
 to the last character before a subscript.
-@vindex skw
+
 @item skw
+@vindex skw
 How far to right of the center of the last character in the @code{\w}
 argument, the center of an accent from a Roman font should be placed
 over that character.
@@ -5616,22 +5886,28 @@ Draw a line from the current location to the relative point specified by
 @cindex circles
 Draw a circle with a diameter of @var{d} with the leftmost point at the
 current position.
+
 @item \D'C @var{d}'
 Draw a solid circle with the same parameters as an outlined circle.
+
 @item \D'e @var{dx} @var{dy}'
 @cindex ellipses
 Draw an ellipse with a horizontal diameter of @var{dx} and a vertical
 diameter of @var{dy} with the leftmost point at the current position.
+
 @item \D'E @var{dx} @var{dy}'
 Draw a solid ellipse with the same parameters as an outlined ellipse.
+
 @item \D'a @var{dx1} @var{dy1} @var{dx2} @var{dy2}'
 @cindex arcs
 Draw an arc clockwise from the current location through the two
 specified locations (@var{dx1},@var{dy1}) and (@var{dx2},@var{dy2}).
+
 @item \D'~ @var{dx1} @var{dy1} @var{dx2} @var{dy2} ...'
 @cindex splines
 Draw a spline from the current location to (@var{dx1},@var{dy1}) and
 then to (@var{dx2},@var{dy2}), and so on.
+
 @item \D'f @var{n}'
 @cindex gray shading
 @cindex shading
@@ -5641,6 +5917,7 @@ corresponds solid white and 1000 to solid black, and values in between
 correspond to intermediate shades of gray.  This applies only to solid
 circles, solid ellipses and solid polygons.  By default, a level of@w{
 }1000 will be used.
+
 @item \D'p @var{dx1} @var{dy1} @var{dx2} @var{dy2} ...'
 @cindex polygons
 Draw a polygon from the current location to (@var{dx1},@var{dy1}) and
@@ -5653,7 +5930,7 @@ are exhausted, a line is drawn back to the starting point.
 ... box example (yes, again)...
 @end example
 
-@itemx \D'P @var{dx1} @var{dy1} @var{dx2} @var{dy2} ...'
+@item \D'P @var{dx1} @var{dy1} @var{dx2} @var{dy2} ...'
 Draw a solid polygon with the same parameters as an outlined polygon.
 
 @c XXX example
@@ -6000,17 +6277,22 @@ processing.  It is possible to switch amongst these environments; by
 default @code{gtroff} processes text in environment@w{ }0.  The
 following is the information kept in an environment.
 
-@itemize @bullet{}
+@itemize @bullet
 @item
 type size
+
 @item
 font (family and style)
+
 @item
 page parameters
+
 @item
 fill/adjust mode
+
 @item
 tab stops
+
 @item
 partially collected lines
 @end itemize
@@ -6346,11 +6628,12 @@ intelligible to the user.
 @code{gtroff} is not easy to debug, but there are some useful features
 and strategies for debugging.
 
-@itemize @bullet{}
+@itemize @bullet
 @item
 @findex tm
 The @code{tm} request will send output to stderr; this is very useful
 for printing debugging output.
+
 @item
 When doing something involved it is useful to leave the debugging
 statements in the code and have them turned on by a command line flag.
@@ -6372,26 +6655,31 @@ groff -rDB=1 file
 The @code{ab} request is similar to the @code{tm} request, except that
 it will cause @code{gtroff} to stop processing.  With no argument it
 will print @samp{User Abort}.
+
 @item
 @findex ex
 @cindex exiting
 The @code{ex} request will also cause @code{gtroff} to stop processing
 (if encountered at the topmost level; see also @ref{I/O}.
+
 @item
 If it is known in advance that there will be many errors and no useful
 output, @code{gtroff} can be forced to suppress formatted output with
 the @option{-z} flag.
+
 @item
 @findex pm
 @cindex dumping symbol table
 @cindex symbol table, dumping
 The @code{pm} request will dump out the entire symbol table.
+
 @item
 @findex pnr
 @cindex dumping number registers
 @cindex number registers, dumping
 The @code{pnr} request will print the names and contents of all
 currently defined number registers on stderr.
+
 @item
 @findex ptr
 @cindex dumping traps
@@ -6400,6 +6688,7 @@ The @code{ptr} request will print the names and positions of all traps
 (not including input line traps and diversion traps) on stderr.  Empty
 slots in the page trap list are printed as well, because they can affect
 the priority of subsequently planted traps.
+
 @item
 @findex fl
 @cindex flush output
@@ -6410,17 +6699,20 @@ The @code{fl} request instructs @code{gtroff} to flush its output
 immediately.  The intention is that this be used when using
 @code{gtroff} interactively.  There is little other use for it.  This
 request causes a line break.
+
 @item
 @findex backtrace
 @cindex backtrace of input stack
 @cindex input stack, backtrace
 The @code{backtrace} request will print a backtrace of the input stack
 on stderr.
+
 @item
 @cindex warnings
 @code{gtroff} has command line options for printing out more warnings
 (@option{-w}) and for printing backtraces (@option{-b}) when a warning
 or an error occurs.  The most verbose level of warnings is @option{-ww}.
+
 @item
 @findex warn
 @vindex .warn
@@ -6448,38 +6740,47 @@ the @option{-w} and @option{-W} options; the number is used by the
 @item char
 @itemx 1
 Non-existent characters.  This is enabled by default.
+
 @item number
 @itemx 2
 Invalid numeric expressions.  This is enabled by default.
 @xref{Expressions}.
+
 @item break
 @itemx 4
 In fill mode, lines which could not be broken so that their length was
 less than the line length.  This is enabled by default.
+
 @item delim
 @itemx 8
 Missing or mismatched closing delimiters.
+
 @item el
 @itemx 16
 @findex ie
 @findex el
 Use of the @code{el} request with no matching @code{ie} request.
 @xref{if-else}.
+
 @item scale
 @itemx 32
 Meaningless scaling indicators.
+
 @item range
 @itemx 64
 Out of range arguments.
+
 @item syntax
 @itemx 128
 Dubious syntax in numeric expressions.
+
 @item di
 @itemx 256
 @findex di
 @findex da
 Use of @code{di} or @code{da} without an argument when there is no
 current diversion.
+
 @item mac
 @itemx 512
 @findex de
@@ -6488,6 +6789,7 @@ Use of undefined strings, macros and diversions.  When an undefined
 string, macro or diversion is used, that string is automatically defined
 as empty.  So, in most cases, at most one warning will be given for each
 name.
+
 @item  reg
 @itemx 1024
 @findex nr
@@ -6496,23 +6798,29 @@ Use of undefined number registers.  When an undefined number register is
 used, that register is automatically defined to have a value of@w{ }0.
 A definition is automatically made with a value of@w{ }0.  So, in most
 cases, at most one warning will be given for use of a particular name.
+
 @item  tab
 @itemx 2048
 Use of a tab character where a number was expected.
+
 @item  right-brace
 @itemx 4096
 @findex \@}
 Use of @code{\@}} where a number was expected.
+
 @item  missing
 @itemx 8192
 Requests that are missing non-optional arguments.
+
 @item  input
 @itemx 16384
 Illegal input characters.
+
 @item  escape
 @itemx 32768
 Unrecognized escape sequences.  When an unrecognized escape sequence is
 encountered, the escape character is ignored.
+
 @item  space
 @itemx 65536
 @cindex compatibility mode
@@ -6522,13 +6830,16 @@ encountered, and the first two characters of the name make a defined
 name.  The request or macro will not be invoked.  When this warning is
 given, no macro is automatically defined.  This is enabled by default.
 This warning will never occur in compatibility mode.
+
 @item  font
 @itemx 131072
 Non-existent fonts.  This is enabled by default.
+
 @item all
 All warnings except @samp{di}, @samp{mac} and @samp{reg}.  It is
 intended that this covers all warnings that are useful with traditional
 macro packages.
+
 @item w
 All warnings.
 @end table
@@ -7037,18 +7348,25 @@ search special fonts to find a character.
 @table @code
 @item H@var{n}
 @c XXX
+
 @item V@var{n}
 @c XXX
+
 @item h@var{n}
 @c XXX
+
 @item v@var{n}
 @c XXX
+
 @item c@var{n}
 @c XXX
+
 @item C@var{n}
 @c XXX
+
 @item @var{nn}@var{c}
 @c XXX
+
 @item t@var{xxx}
 @var{xxx} is any sequence of characters terminated by a space or a
 newline; the first character should be printed at the current position,
@@ -7063,6 +7381,7 @@ command.
 @pindex DESC
 This command is only allowed if the @samp{tcommand} line is present in
 the @file{DESC} file.
+
 @item u@var{n} @var{xxx}
 This is same as the @samp{t} command except that after printing each
 character, the current horizontal position is increased by the sum of
@@ -7070,20 +7389,25 @@ the width of that character and@w{ }@var{n}.
 
 This command is only allowed if the @samp{tcommand} line is present in
 the @file{DESC} file.
+
 @item n@var{a}@var{b}
 @c XXX
+
 @item p@var{n}
 @c XXX
+
 @item s@var{n}
 @kindex sizescale
 @pindex DESC
 The argument to the @samp{s} command is in scaled points (units of
 points/@var{n}, where @var{n} is the argument to the @samp{sizescale}
 command in the @file{DESC} file).
+
 @item f@var{n}
 @item x @dots{} \n
 Device control.
 @c XXX more info
+
 @item D@var{c} @var{x}@dots{}\n
 @c XXX
 @end table
@@ -7101,10 +7425,13 @@ The first argument can be abbreviated to the first letter.
 @table @code
 @item x init
 @c XXX
+
 @item x T
 @c XXX
+
 @item x res @var{n} @var{h} @var{v}
 @c XXX
+
 @item x H
 @c XXX more info
 The argument to the @w{@samp{x Height}} command is also in scaled
@@ -7159,21 +7486,26 @@ completely obscure everything beneath it.  A value greater than@w{ }1000
 or less than@w{ }0 can also be used: this means fill with the shade of
 gray that is currently being used for lines and text.  Normally this
 will be black, but some drivers may provide a way of changing this.
+
 @item DC @var{d}
 Draw a solid circle with a diameter of@w{ }@var{d} with the leftmost
 point at the current position.
+
 @item DE @var{dx} @var{dy}
 Draw a solid ellipse with a horizontal diameter of@w{ }@var{dx} and a
 vertical diameter of@w{ }@var{dy} with the leftmost point at the current
 position.
+
 @item Dp @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{} @var{dxn} @var{dyn}
 Draw a polygon with.  The first vertex is at the current position, the
 second vertex at an offset (@var{dx1},@var{dy1}) from the current
 position, the second vertex at an offset (@var{dx2},@var{dy2}) from the
 first vertex, and so on up to the @var{n}-th vertex.  At the moment, GNU
 @code{pic} only uses this command to generate triangles and rectangles.
+
 @item DP @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{} @var{dxn} @var{dyn}
 Like @code{Dp} but draw a solid rather than outlined polygon.
+
 @item Dt @var{n}
 @cindex line thickness
 @cindex thickness of lines
@@ -7267,51 +7599,61 @@ called@w{ }@file{F}.
 The @file{DESC} file can contain the following types of line:
 
 @table @code
-@kindex res
 @item res @var{n}
+@kindex res
 There are @var{n} machine units per inch.
-@kindex hor
+
 @item hor @var{n}
+@kindex hor
 The horizontal resolution is @var{n} machine units.
-@kindex vert
+
 @item vert @var{n}
+@kindex vert
 The vertical resolution is @var{n} machine units.
-@kindex sizescale
+
 @item sizescale @var{n}
+@kindex sizescale
 The scale factor for point sizes.  By default this has a value of@w{ }1.
 One scaled point is equal to one point/@var{n}.  The arguments to the
 @code{unitwidth} and @code{sizes} commands are given in scaled points.
 @xref{Fractional Type Sizes}, for more information.
-@kindex unitwidth
+
 @item unitwidth @var{n}
+@kindex unitwidth
 Quantities in the font files are given in machine units for fonts whose
 point size is @var{n}@w{ }scaled points.
-@kindex tcommand
+
 @item tcommand
+@kindex tcommand
 This means that the postprocessor can handle the @samp{t} and @samp{u}
 output commands.
-@kindex sizes
+
 @item sizes @var{s1} @var{s2} @dots{} @var{sn} 0
+@kindex sizes
 This means that the device has fonts at @var{s1}, @var{s2}, @dots{}
 @var{sn} scaled points.  The list of sizes must be terminated by a@w{
 }0.  Each @var{si} can also be a range of sizes @var{m}-@var{n}.  The
 list can extend over more than one line.
-@kindex styles
+
 @item styles @var{S1} @var{S2} @dots{} @var{Sm}
+@kindex styles
 The first @var{m}@w{ }font positions will be associated with styles
 @var{S1} @dots{} @var{Sm}.
-@kindex fonts
+
 @item fonts @var{n} @var{F1} @var{F2} @var{F3} @dots{} @var{Fn}
+@kindex fonts
 Fonts @var{F1} @dots{} @var{Fn} will be mounted in the font positions
 @var{m}+1, @dots{}, @var{m}+@var{n} where @var{m} is the number of
 styles.  This command may extend over more than one line.  A font name
 of@var{ }0 will cause no font to be mounted on the corresponding font
 position.
-@kindex family
+
 @item family @var{fam}
+@kindex family
 The default font family is @var{fam}.
-@kindex charset
+
 @item charset
+@kindex charset
 This line and everything following in the file are ignored.  It is
 allowed for the sake of backwards compatibility.
 @end table
@@ -7334,25 +7676,29 @@ each containing a sequence of blank delimited words; the first word in
 the line is a key, and subsequent words give a value for that key.
 
 @table @code
-@kindex name
 @item name @var{F}
+@kindex name
 The name of the font is@w{ }@var{F}.
-@kindex spacewidth
+
 @item spacewidth @var{n}
+@kindex spacewidth
 The normal width of a space is@w{ }@var{n}.
-@kindex slant
+
 @item slant @var{n}
+@kindex slant
 The characters of the font have a slant of @var{n}@w{ }degrees.
 (Positive means forward.)
-@kindex ligatures
+
 @item ligatures @var{lig1} @var{lig2} @dots{} @var{lign} [0]
+@kindex ligatures
 Characters @var{lig1}, @var{lig2}, @dots{}, @var{lign} are ligatures;
 possible ligatures are @samp{ff}, @samp{fi}, @samp{fl}, @samp{ffi} and
 @samp{ffl}.  For backwards compatibility, the list of ligatures may be
 terminated with a@w{ }0.  The list of ligatures may not extend over more
 than one line.
-@kindex special
+
 @item special
+@kindex special
 The font is special; this means that when a character is requested that
 is not present in the current font, it will be searched for in any
 special fonts that are mounted.
@@ -7413,8 +7759,10 @@ The @var{type} field gives the character type:
 @table @code
 @item 1
 the character has an descender, for example, `p';
+
 @item 2
 the character has an ascender, for example, `b';
+
 @item 3
 the character has both an ascender and a descender, for example, `('.
 @end table
