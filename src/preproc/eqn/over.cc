@@ -119,7 +119,7 @@ int over_box::compute_metrics(int style)
 void over_box::output()
 {
   if (reduce_size)
-    printf("\\s[\\n[" SMALL_SIZE_FORMAT "]s]", uid);
+    printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
 #ifdef USE_Z
   printf("\\Z" DELIMITER_CHAR);
 #endif
