@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -39,6 +39,7 @@ int font::vert = 1;
 int font::unitwidth = 0;
 int font::paperwidth = 0;
 int font::paperlength = 0;
+const char *font::papersize = 0;
 int font::biggestfont = 0;
 int font::spare2 = 0;
 int font::sizescale = 1;

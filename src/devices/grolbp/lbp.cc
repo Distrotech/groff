@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994, 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000, 2001, 2002 Free Software Foundation, Inc.
      Written by Francisco Andrés Verdú <pandres@dragonet.es> with many ideas
      taken from the other groff drivers.
 
@@ -30,6 +30,7 @@ TODO
 #include "driver.h"
 #include "lbp.h"
 #include "charset.h"
+#include "paper.h"
 
 #include "nonposix.h"
 
@@ -543,7 +544,7 @@ static struct
 {
     const char *name;
     int code;
-} papersizes[] =
+} lbp_papersizes[] =
 {{ "A4", 14 },
 { "letter", 30 },
 { "legal", 32 },
@@ -551,92 +552,25 @@ static struct
 };
 
 
-static int set_papersize(const char *papersize)
+static int set_papersize(const char *paperformat)
 {
   unsigned int i;
 
   // First test for a standard (i.e. supported directly by the printer)
-  // papersize
-  for (i = 0 ; i < sizeof(papersizes)/sizeof(papersizes[0]); i++)
+  // paper size
+  for (i = 0 ; i < sizeof(lbp_papersizes)/sizeof(lbp_papersizes[0]); i++)
   {
-  	if (strcasecmp(papersizes[i].name,papersize) == 0)
-				return papersizes[i].code;
-   };
+    if (strcasecmp(lbp_papersizes[i].name,paperformat) == 0)
+				return lbp_papersizes[i].code;
+  }
 
-   // Now test for a custom papersize
-   if (strncasecmp("cust",papersize,4) == 0)
-   {
-     char *p ,
-     	  *p1,
-	  *papsize;
-
-      p = papsize = strsave(&papersize[4]);
-      if (papsize == NULL) return -1;
-      p1 = strsep(&p,"x");
-      if (p == NULL)
-      {  // let's test for an uppercase x
-        p = papsize ;
-        p1 = strsep(&p,"X");
-        if (p == NULL) { a_delete papsize; return -1;};
-      }; // if (p1 == NULL)
-      paperlength = atoi(p1);
-      if (paperlength == 0) { a_delete papsize;  return -1;};
-      paperwidth = atoi(p);
-      if (paperwidth == 0) { a_delete papsize; return -1;};
-      a_delete papsize;
-      return 82;
-    }; // if (strcnasecmp("cust",papersize,4) == 0)
-
-   return -1;
+  // Otherwise, we assume a custom paper size
+  return 82;
 };
-
-static int handle_papersize_command(const char *arg)
-{
-  int n = set_papersize(arg);
-
-      if (n < 0)
-      {  // If is not a standard nor custom paper size
-         // let's see if it's a file (i.e /etc/papersize )
-	 FILE *f = fopen(arg,"r");
-	 if (f != NULL)
-	 {  // the file exists and is readable
-	    char psize[255],*p;
-	    fgets(psize,254,f);
-	    fclose(f);
-	    // set_papersize doesn't like the trailing \n
-	    p = psize; while (*p) p++;
-	    if (*(--p) == '\n') *p = 0x00;
-
-	    n = set_papersize(psize);
-	  }; // if (f != NULL)
-       }; // if (n < 0)
-
-   return n;
-}; // handle_papersize_command
-
 
 static void handle_unknown_desc_command(const char *command, const char *arg,
 					const char *filename, int lineno)
 {
-  // papersize command
-  if (strcasecmp(command, "papersize") == 0) {
-    // We give priority to command line options
-    if (papersize > 0) return;
-    if (arg == 0)
-      error_with_file_and_line(filename, lineno,
-			       "`papersize' command requires an argument");
-    else
-     {
-       int n = handle_papersize_command(arg);
-       if (n < 0)
-	error_with_file_and_line(filename, lineno,
-				 "unknown paper size `%1'", arg);
-       else
-	papersize = n;
-
-      }; // if (arg == 0) ... else ...
-    }; // if (strcasecmp(command, "papersize")
-
   // orientation command
   if (strcasecmp(command, "orientation") == 0) {
     // We give priority to command line options
@@ -670,13 +604,13 @@ static void usage(FILE *stream)
   fprintf(stream,
 	  "usage: %s [-lvh] [-c n] [-p paper_size] [-F dir] [-o or] "\
 	  " [files ...]\n"\
-	  "          -o --orientation=[portrait|landscape]\n"\
-	  "	  -v --version\n"\
-	  "	  -c --copies=numcopies\n"\
-	  "	  -l --landscape\n"\
-	  "	  -p --papersize=paper_size\n"\
-	  "	  -F --fontdir=dir\n"\
-	  "	  -h --help\n",
+	  "       -o --orientation=[portrait|landscape]\n"\
+	  "       -v --version\n"\
+	  "       -c --copies=numcopies\n"\
+	  "       -l --landscape\n"\
+	  "       -p --papersize=paper_size\n"\
+	  "       -F --fontdir=dir\n"\
+	  "       -h --help\n",
 	  program_name);
 }; // usage
 
@@ -697,11 +631,23 @@ int main(int argc, char **argv)
     		  case 'F'  : 	font::command_line_font_dir(optarg);
 	      			break;
     		  case 'p'  : {
-				int n = handle_papersize_command(optarg);
-				if (n < 0)
-	  			   error("unknown paper size `%1'", optarg);
-				else
-	  			  papersize = n;
+				const char *s;
+				double unscaled_paperlength;
+				double unscaled_paperwidth;
+				if (!font::scan_papersize(optarg, s,
+							  &unscaled_paperlength,
+							  &unscaled_paperwidth))
+				   error("invalid paper size `%1' ignored",
+					 optarg);
+				else {
+				   papersize = set_papersize(s);
+				   paperlength = (short int)
+						   (unscaled_paperlength
+						    * font::res + 0.5);
+				   paperwidth = (short int)
+						   (unscaled_paperwidth
+						    * font::res + 0.5);
+				}
 				break;
       			      };
 		  case 'l'  : 	orientation = 1;

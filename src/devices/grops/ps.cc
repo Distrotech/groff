@@ -23,6 +23,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "stringclass.h"
 #include "cset.h"
 #include "nonposix.h"
+#include "paper.h"
 
 #include "ps.h"
 #include <time.h>
@@ -42,6 +43,7 @@ static int linewidth = -1;
 // Non-zero means generate PostScript code that guesses the paper
 // length using the imageable area.
 static int guess_flag = 0;
+static double user_paper_length = 0;
 
 // Non-zero if -b was specified on the command line.
 static int bflag = 0;
@@ -532,7 +534,7 @@ class ps_printer : public printer {
   void set_color(color *c, int fill = 0);
 
 public:
-  ps_printer();
+  ps_printer(double);
   ~ps_printer();
   void set_char(int i, font *f, const environment *env, int w, const char *name);
   void draw(int code, int *p, int np, const environment *env);
@@ -543,7 +545,8 @@ public:
   void end_of_line();
 };
 
-ps_printer::ps_printer()
+// `pl' is in inches
+ps_printer::ps_printer(double pl)
 : out(0, MAX_LINE_LENGTH),
   pages_output(0),
   sbuf_len(0),
@@ -574,9 +577,12 @@ ps_printer::ps_printer()
   res = r;
   out.set_fixed_point(point);
   space_char_index = font::name_to_index("space");
-  paper_length = font::paperlength;
+  if (pl == 0)
+    paper_length = font::paperlength;
+  else
+    paper_length = int(pl * font::res + 0.5);
   if (paper_length == 0)
-    paper_length = 11*font::res;
+    paper_length = 11 * font::res;
   equalise_spaces = font::res >= 72000;
 }
 
@@ -1538,7 +1544,7 @@ void ps_printer::do_endinvis(char *, const environment *)
 
 printer *make_printer()
 {
-  return new ps_printer;
+  return new ps_printer(user_paper_length);
 }
 
 static void usage(FILE *stream);
@@ -1555,18 +1561,22 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "F:P:glmc:w:vb:", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "b:c:F:glmp:P:vw:", long_options, NULL))
 	 != EOF)
     switch(c) {
-    case 'v':
-      printf("GNU grops (groff) version %s\n", Version_string);
-      exit(0);
+    case 'b':
+      // XXX check this
+      broken_flags = atoi(optarg);
+      bflag = 1;
       break;
     case 'c':
       if (sscanf(optarg, "%d", &ncopies) != 1 || ncopies <= 0) {
 	error("bad number of copies `%s'", optarg);
 	ncopies = 1;
       }
+      break;
+    case 'F':
+      font::command_line_font_dir(optarg);
       break;
     case 'g':
       guess_flag = 1;
@@ -1577,8 +1587,9 @@ int main(int argc, char **argv)
     case 'm':
       manual_feed_flag = 1;
       break;
-    case 'F':
-      font::command_line_font_dir(optarg);
+    case 'p':
+      if (!font::scan_papersize(optarg, 0, &user_paper_length, 0))
+	error("invalid custom paper size `%1' ignored", optarg);
       break;
     case 'P':
       env = "GROPS_PROLOGUE";
@@ -1588,16 +1599,15 @@ int main(int argc, char **argv)
       if (putenv(strsave(env.contents())))
 	fatal("putenv failed");
       break;
+    case 'v':
+      printf("GNU grops (groff) version %s\n", Version_string);
+      exit(0);
+      break;
     case 'w':
       if (sscanf(optarg, "%d", &linewidth) != 1 || linewidth < 0) {
 	error("bad linewidth `%1'", optarg);
 	linewidth = -1;
       }
-      break;
-    case 'b':
-      // XXX check this
-      broken_flags = atoi(optarg);
-      bflag = 1;
       break;
     case CHAR_MAX + 1: // --help
       usage(stdout);

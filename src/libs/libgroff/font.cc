@@ -29,6 +29,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "error.h"
 #include "cset.h"
 #include "font.h"
+#include "paper.h"
 
 const char *const WS = " \t\n\r";
 
@@ -205,6 +206,34 @@ static int scale_round(int n, int x, int y)
 inline int font::scale(int w, int sz)
 {
   return sz == unitwidth ? w : scale_round(w, sz, unitwidth);
+}
+
+int font::unit_scale(double *value, char unit)
+{
+  // we scale everything to inch
+  double divisor = 0;
+  switch (unit) {
+  case 'i':
+    divisor = 1;
+    break;
+  case 'p':
+    divisor = 72;
+    break;
+  case 'P':
+    divisor = 6;
+    break;
+  case 'c':
+    divisor = 2.54;
+    break;
+  default:
+    assert(0);
+    break;
+  }
+  if (divisor) {
+    *value /= divisor;
+    return 1;
+  }
+  return 0;
 }
 
 int font::get_skew(int c, int point_size, int sl)
@@ -473,6 +502,58 @@ static char *trim_arg(char *p)
   return p;
 }
 
+int font::scan_papersize(const char *p,
+			 const char *size, double *length, double *width)
+{
+  double l, w;
+  char lu[2], wu[2];
+  const char *pp = p;
+  int test_file = 1;
+  char line[255];
+again:
+  if (csdigit(*pp)) {
+    if (sscanf(pp, "%lf%1[ipPc],%lf%1[ipPc]", &l, lu, &w, wu) == 4
+	&& l > 0 && w > 0
+	&& unit_scale(&l, lu[0]) && unit_scale(&w, wu[0])) {
+      if (length)
+	*length = l;
+      if (width)
+	*width = w;
+      if (size)
+	size = "custom";
+      return 1;
+    }
+  }
+  else {
+    int i;
+    for (i = 0; i < NUM_PAPERSIZES; i++)
+      if (strcasecmp(papersizes[i].name, pp) == 0) {
+	if (length)
+	  *length = papersizes[i].length;
+	if (width)
+	  *width = papersizes[i].width;
+	if (size)
+	  size = papersizes[i].name;
+	return 1;
+      }
+    if (test_file) {
+      FILE *f = fopen(p, "r");
+      if (f) {
+	fgets(line, 254, f);
+	fclose(f);
+	test_file = 0;
+	char *linep = line;
+	// skip final newline, if any
+	if (*(--linep) == '\n')
+	  *linep = '\0';
+	pp = line;
+	goto again;
+      }
+    }
+  }
+  return 0;
+}
+
 // If the font can't be found, then if not_found is non-NULL, it will be set
 // to 1 otherwise a message will be printed.
 
@@ -732,9 +813,9 @@ static struct {
   { "sizescale", &font::sizescale }
   };
 
-
 int font::load_desc()
 {
+  double unscaled_paperwidth, unscaled_paperlength;
   int nfonts = 0;
   FILE *fp;
   char *path;
@@ -764,15 +845,6 @@ int font::load_desc()
 	t.error("bad number `%1'", q);
 	return 0;
       }
-    }
-    else if (strcmp("tcommand", p) == 0) {
-      tcommand = 1;
-    }
-    else if (strcmp("pass_filenames", p) == 0) {
-      pass_filenames = 1;
-    }
-    else if (strcmp("use_charnames_in_special", p) == 0) {
-      use_charnames_in_special = 1;
     }
     else if (strcmp("family", p) == 0) {
       p = strtok(0, WS);
@@ -811,6 +883,20 @@ int font::load_desc()
       }
       font_name_table[nfonts] = 0;
     }
+    else if (strcmp("papersize", p) == 0) {
+      p = strtok(0, WS);
+      if (!p) {
+	t.error("papersize command requires an argument");
+	return 0;
+      }
+      if (!scan_papersize(p, papersize, &unscaled_paperlength,
+			  &unscaled_paperwidth)) {
+	t.error("bad paper size");
+	return 0;
+      }
+    }
+    else if (strcmp("pass_filenames", p) == 0)
+      pass_filenames = 1;
     else if (strcmp("sizes", p) == 0) {
       int n = 16;
       sizes = new int[n];
@@ -881,6 +967,10 @@ int font::load_desc()
 	style_table[i++] = tem;
       }
     }
+    else if (strcmp("tcommand", p) == 0)
+      tcommand = 1;
+    else if (strcmp("use_charnames_in_special", p) == 0)
+      use_charnames_in_special = 1;
     else if (strcmp("charset", p) == 0)
       break;
     else if (unknown_desc_command_handler) {
@@ -917,6 +1007,8 @@ int font::load_desc()
     t.error("bad `vert' value");
     return 0;
   }
+  paperwidth = int(unscaled_paperwidth * res + 0.5);
+  paperlength = int(unscaled_paperlength * res + 0.5);
   return 1;
 }      
 

@@ -42,16 +42,17 @@ grops \- PostScript driver for groff
 .B grops
 .
 .de OP
-.ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\\$2" "\ ]"
+.ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\%\\$2" "\ ]"
 .el .RB "[\ " "\\$1" "\ ]"
 ..
 .
 .OP \-glmv
 .OP \-b n
 .OP \-c n
-.OP \-w n
 .OP \-F dir
+.OP \-p papersize
 .OP \-P prologue
+.OP \-w n
 .RI "[\ " files\|.\|.\|. "\ ]"
 .br
 .ad \na
@@ -175,6 +176,15 @@ Print
 copies of each page.
 .
 .TP
+.BI \-F dir
+Prepend directory
+.IB dir /dev name
+to the search path for prologue, font, and device description files;
+.I name
+is the name of the device, usually
+.BR ps .
+.
+.TP
 .BI \-g
 Guess the page length.
 .
@@ -195,13 +205,18 @@ Print the document in landscape format.
 Turn manual feed on for the document.
 .
 .TP
-.BI \-F dir
-Prepend directory
-.IB dir /dev name
-to the search path for prologue, font, and device description files;
-.I name
-is the name of the device, usually
-.BR ps .
+.BI \-p paper-size
+Set physical dimension of output medium.
+.
+This overrides the
+.B papersize
+and
+.B paperlength
+commands in the
+.B DESC
+file; it accepts the same arguments as the
+.B papersize
+command.
 .
 .TP
 .BI \-P prologue-file
@@ -816,6 +831,16 @@ printing on a page whose length is
 .IR n \~\c
 machine units.
 .
+Common values are 792000 for letter paper and 841890 for paper in A4 format.
+.
+Alternatively, it can contain
+.IP
+.BI papersize\  string
+.LP
+to specify a paper size; see
+.BR groff_font (@MAN5EXT@)
+for more information.
+.
 Each font description file must contain a command
 .IP
 .BI internalname\  psname
@@ -881,7 +906,7 @@ this should consist of lines of the form
 .
 .IP
 .I
-font  filename
+font filename
 .
 .LP
 where

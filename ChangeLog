@@ -1,3 +1,45 @@
+2002-06-02  Werner LEMBERG  <wl@gnu.org>
+
+	Adding a new keyword `papersize' to the DESC file format (similar
+	but not completely identical to grolbp's extension).  grops now has
+	a -p command line option to override `papersize'.  Finally, grolbp
+	has been adapted to the new syntax.
+
+	* src/libs/libgroff/paper.cc, src/include/paper.h: New files.  It
+	defines and initializes the `papersizes[]' array with NUM_PAPERSIZES
+	elements.
+	* src/libs/libgroff/Makefile.sub (OBJS): Add `paper.o'.
+	(CCSRCS): Add `paper.cc'.
+
+	* src/include/font.h (font): Add `papersize' element.
+	* src/libs/libgroff/font.cc (font::unit_scale): New helper function.
+	(font::scan_papersize): New function.
+	(font::load_desc): Use it for handling `papersize' keyword.
+	* src/libs/libgroff/fontfile.cc: Initialize `font::papersize'.
+
+	* src/devices/grops/ps.cc: Include paper.h.
+	(user_paper_length): New global variable.
+	(ps_printer): Use paper length as initializer.
+	(make_printer): Updated.
+	(main): Handle new `-p' option.
+	* src/devices/grops/grops.man: Updated.
+
+	* src/devices/grolbp/lbp.cc: Include paper.h.
+	s/papersizes/lbp_papersizes/.
+	(set_papersize): Use new `papersizes' array.
+	(handle_unknown_desc_command): Don't handle `papersize'.
+	(main): Use `font::scan_papersize' for handling `-p' option.
+	* src/devices/grolbp/grolbp.man: Updated.
+
+	* man/groff_font.man: Document `papersize'.
+	* NEWS: Updated.
+
+2002-05-30  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grops/TODO: Updated.
+	* src/devices/grops/grops.man: More info on paper formats.
+	* man/groff_font.man: Document `paperheight' and `paperwidth'.
+
 2002-05-29  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/Makefile.sub (CLEANADD): Add grnexmpl.g, groff, and groff-*
