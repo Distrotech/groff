@@ -237,14 +237,19 @@ Turn manual feed on for the document.
 Set physical dimension of output medium.
 .
 This overrides the
-.B papersize
+.BR papersize ,
+.BR paperlength ,
 and
-.B paperlength
+.B paperwidth
 commands in the
 .B DESC
 file; it accepts the same arguments as the
 .B papersize
 command.
+.
+See
+.B groff_font (@MAN5EXT@)
+for details.
 .
 .TP
 .BI \-P prologue-file
@@ -719,58 +724,13 @@ extracted from within groff by using the
 .B psbb
 request.
 .
-.RS
-.LP
-The
-.B \-mps
-macros (which are automatically loaded when
-.B grops
-is run by the groff command) include a
-.B PSPIC
-macro which allows a picture to be easily imported.
-.
-This has the format
 .IP
-\&\fB.PSPIC\fP [\fB\-L\fP|\fB-R\fP|\fB\-I\fP \fIn\fP]\ \fI\|file\fP [\fIwidth\fP [\fIheight\fP]]
-.
-.LP
-.I file
-is the name of the file containing the illustration;
-.I width
-and
-.I height
-give the desired width and height of the graphic.
-.
-The
-.I width
-and
-.I height
-arguments may have scaling indicators attached;
-the default scaling indicator is\~\c
-.BR i .
-.
-This macro will scale the graphic uniformly
-in the x and y\~directions so that it is no more than
-.I width
-wide
-and
-.I height
-high.
-.
-By default, the graphic will be horizontally centered.
-.
-The
-.BI \-L
-and
-.BI \-R
-cause the graphic to be left-aligned and right-aligned
-respectively.
-.
-The
-.B \-I
-option causes the graphic to be indented by\~\c
-.IR n .
-.RE
+See
+.BR groff_tmac (@MAN5EXT@)
+for a description of the
+.B PSPIC
+macro which provides a convenient high-level interface for inclusion of
+PostScript graphics.
 .
 .TP
 .B \[rs]X'ps:\ invis'
@@ -838,7 +798,8 @@ must be in the format output by
 This is described in
 .BR groff_out (@MAN5EXT@).
 .
-In addition the device and font description files for the device used
+.LP
+In addition, the device and font description files for the device used
 must meet certain requirements.
 .
 The device and font description files supplied for
@@ -855,25 +816,12 @@ The
 .B ps
 device uses a resolution of 72000 and a sizescale of 1000.
 .
-The device description file should contain a command
-.IP
-.BI paperlength\  n
 .LP
-which says that output should be generated which is suitable for
-printing on a page whose length is
-.IR n \~\c
-machine units.
-.
-Common values are 792000 for letter paper and 841890 for paper in A4 format.
-.
-Alternatively, it can contain
-.IP
-.BI papersize\  string
-.LP
-to specify a paper size; see
+The device description file must contain a valid paper size; see
 .BR groff_font (@MAN5EXT@)
 for more information.
 .
+.LP
 Each font description file must contain a command
 .IP
 .BI internalname\  psname
@@ -1152,7 +1100,8 @@ Temporary file.
 .BR pfbtops (@MAN1EXT@),
 .BR groff_out (@MAN5EXT@),
 .BR groff_font (@MAN5EXT@),
-.BR groff_char (@MAN7EXT@)
+.BR groff_char (@MAN7EXT@),
+.BR groff_tmac (@MAN5EXT@)
 .
 .\" Local Variables:
 .\" mode: nroff

@@ -14,4 +14,9 @@ CLEANADD=DESC
 
 DESC: DESC.in
 	cat $(srcdir)/DESC.in >DESC
+	if test "$(PAGE)" = A4; then \
+	  echo "papersize a4" >>DESC; \
+	else \
+	  echo "papersize letter" >>DESC; \
+	fi
 	test -z '$(DVIPRINT)' || echo print '$(DVIPRINT)' >>DESC

@@ -21,6 +21,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "driver.h"
 #include "nonposix.h"
+#include "paper.h"
 
 extern "C" const char *Version_string;
 
@@ -28,6 +29,10 @@ extern "C" const char *Version_string;
 static int linewidth = DEFAULT_LINEWIDTH;
 
 static int draw_flag = 1;
+
+static int landscape_flag = 0;
+static double user_paper_length = 0;
+static double user_paper_width = 0;
 
 /* These values were chosen because:
 
@@ -499,12 +504,26 @@ void dvi_printer::begin_page(int i)
     out4(0);
   out4(last_bop);
   last_bop = tem;
-  if (cur_color != default_color)
-    set_color(&cur_color);
   // By convention position (0,0) in a dvi file is placed at (1in, 1in).
   cur_h = font::res;
   cur_v = font::res;
   end_h = 0;
+  if (page_count == 1) {
+    char buf[256];
+    // at least dvips uses this
+    double length = user_paper_length ? user_paper_length :
+					double(font::paperlength) / font::res;
+    double width = user_paper_width ? user_paper_width :
+				      double(font::paperwidth) / font::res;
+    if (width > 0 && length > 0) {
+      sprintf(buf, "papersize=%.3fin,%.3fin",
+	      landscape_flag ? length : width,
+	      landscape_flag ? width : length);
+      do_special(buf);
+    }
+  }
+  if (cur_color != default_color)
+    set_color(&cur_color);
 }
 
 void dvi_printer::end_page(int)
@@ -895,8 +914,23 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "F:vw:d", long_options, NULL)) != EOF)
+  while ((c = getopt_long(argc, argv, "dF:lp:vw:", long_options, NULL))
+	 != EOF)
     switch(c) {
+    case 'd':
+      draw_flag = 0;
+      break;
+    case 'l':
+      landscape_flag = 1;
+      break;
+    case 'F':
+      font::command_line_font_dir(optarg);
+      break;
+    case 'p':
+      if (!font::scan_papersize(optarg, 0,
+				&user_paper_length, &user_paper_width))
+	error("invalid custom paper size `%1' ignored", optarg);
+      break;
     case 'v':
       {
 	printf("GNU grodvi (groff) version %s\n", Version_string);
@@ -909,12 +943,6 @@ int main(int argc, char **argv)
 	error("bad line width");
 	linewidth = DEFAULT_LINEWIDTH;
       }
-      break;
-    case 'd':
-      draw_flag = 0;
-      break;
-    case 'F':
-      font::command_line_font_dir(optarg);
       break;
     case CHAR_MAX + 1: // --help
       usage(stdout);

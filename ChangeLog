@@ -1,3 +1,27 @@
+2003-03-13  Werner LEMBERG  <wl@gnu.org>
+
+	Add options -p and -l to grodvi.
+
+	* src/devices/grodvi/dvi.cc: Include paper.h.
+	(landscape_flag, user_paper_length, user_paper_width): New global
+	variables.
+	(dvi_printer::begin_page): Emit `papersize' special.
+	Set color after initialization of `cur_h' and `cur_v'.
+	(main): Add options `-l' and `-p'.
+	* font/devdvi/Makefile.sub (DESC): Set `papersize'.
+	* src/devices/grodvi/grodvi.man, NEWS: Updated.
+
+	* src/devices/grops/psrm.cc (valid_input_table): Fixed.
+
+2003-03-12  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grops/grops.man: Move documentation of .PSPIC to...
+	* man/groff_tmac.man: This man page.
+	* man/groff_font.man: Declare `paperwidth' and `paperlength' as
+	deprecated.
+
+	* tmac/X.tmac: Don't load pspic.tmac.
+
 2003-03-11  Werner LEMBERG  <wl@gnu.org>
 
 	Make variable `pr' local to libdriver/input.cc.  Based on a patch

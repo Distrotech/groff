@@ -1,4 +1,3 @@
-.
 .TH GROFF_TMAC @MAN5EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
 groff_tmac \- macro files in the roff typesetting system
@@ -449,6 +448,66 @@ orientation:
 .IP
 .Shell_cmd "groff \-Tps \-dpaper=a4l \-P\-pa4 \-P\-l \-ms foo.ms > foo.ps"
 .
+.
+.TP
+.B pspic
+A single macro is provided in this file,
+.BR PSPIC ,
+to include a PostScript graphic in a document.
+.
+It makes only sense for output devices which support inclusion of PS
+images:
+.BR \-Tps ,
+.BR \-Tdvi ,
+and
+.BR \-Thtml ;
+the file is then loaded automatically.
+.
+Syntax:
+.RS
+.IP
+\&\fB.PSPIC\fP [\fB\-L\fP|\fB-R\fP|\fB\-I\fP \fIn\fP]\ \fI\|file\fP [\fIwidth\fP [\fIheight\fP]]
+.RE
+.
+.IP
+.I file
+is the name of the file containing the illustration;
+.I width
+and
+.I height
+give the desired width and height of the graphic.
+.
+The
+.I width
+and
+.I height
+arguments may have scaling indicators attached;
+the default scaling indicator is\~\c
+.BR i .
+.
+This macro will scale the graphic uniformly
+in the x and y\~directions so that it is no more than
+.I width
+wide
+and
+.I height
+high.
+.
+By default, the graphic will be horizontally centered.
+.
+The
+.BI \-L
+and
+.BI \-R
+options cause the graphic to be left-aligned and right-aligned,
+respectively.
+.
+The
+.B \-I
+option causes the graphic to be indented by\~\c
+.I n
+(default scaling indicator is\~\c
+.BR m ).
 .
 .TP
 .B tty-char
