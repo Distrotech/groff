@@ -6090,24 +6090,16 @@
 .
 .\" XXX: what does this function without `-std'?
 .
-.  if !\n[.$] \{\
-.    tm Usage: .Rv [-std] (#\n[.c])
+.  if \n[doc-arg-limit] \{\
+.    tm Usage: .Rv not callable by other macros (#\n[.c])
+.    doc-reset-args
 .    return
 .  \}
 .
-.  \" .ds doc-macro-name Rv
-.  \" .nr doc-arg-ptr 0
-.  \" .nr lR +1
-.  \" .ds doc-arg1 \$2
-.  \" .ds doc-arg2 \$3
-.  \" .ds doc-arg3 \$4
-.  \" .ds doc-arg4 \$5
-.  \" .ds doc-arg5 \$6
-.  \" .ds doc-arg6 \$7
-.  \" .ds doc-arg7 \$8
-.  \" .ds doc-arg8 \$9
-.  \" .
-.  \" .nr doc-num-args (\n[.$] - 1)
+.  if !\n[.$] \{\
+.    tm Usage: .Rv [-std] <function> (#\n[.c])
+.    return
+.  \}
 .
 .  if "\$1"-std" \{\
 .    nr doc-reg-Rv \*[doc-section]
