@@ -619,6 +619,8 @@ int main(int argc, char **argv)
 {
   program_name = argv[0];
   static char stderr_buf[BUFSIZ];
+  if (getenv("GROFF_NO_SGR"))
+    old_drawing_scheme = 1;
   setbuf(stderr, stderr_buf);
   int c;
   static const struct option long_options[] = {
