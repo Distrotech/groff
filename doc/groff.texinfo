@@ -8091,7 +8091,7 @@ special fonts.  Fonts mounted with the @code{fonts} keyword in the
 special fonts locally (i.e.@: for a particular font), use the
 @code{fspecial} request.
 
-In summary, @code{gtroff} tries the following to find a given symbol:
+Here the exact rules how @code{gtroff} searches a given symbol:
 
 @itemize @bullet
 @item
@@ -8110,8 +8110,15 @@ test all fonts in the order of appearance in the last @code{fspecial}
 call if appropriate.
 
 @item
+If the symbol has been defined with the @code{fschar} request for the
+current font, use it.
+
+@item
 Check all fonts in the order of appearance in the last @code{special}
 call.
+
+@item
+If the symbol has been defined with the @code{schar} request, use it.
 
 @item
 As a last resort, consult all fonts loaded up to now for special fonts
@@ -8322,9 +8329,14 @@ property).
 @endDefreq
 
 @DefreqList {char, g [@Var{string}]}
-@DefreqListEnd {fchar, g [@Var{string}]}
+@DefreqItem {fchar, g [@Var{string}]}
+@DefreqItem {fschar, f g [@Var{string}]}
+@DefreqListEnd {schar, g [@Var{string}]}
 @cindex defining character (@code{char})
+@cindex defining fallback character (@code{fchar}, @code{fschar}, @code{schar})
 @cindex character, defining (@code{char})
+@cindex character, defining fallback (@code{fchar}, @code{fschar}, @code{schar})
+@cindex fallback character, defining (@code{fchar}, @code{fschar}, @code{schar})
 @cindex creating new characters (@code{char})
 @cindex defining symbol (@code{char})
 @cindex symbol, defining (@code{char})
@@ -8351,7 +8363,7 @@ processed.  Any emboldening, constant spacing or track kerning is
 applied to this object rather than to individual characters in
 @var{string}.
 
-A glyph defined by this request can be used just
+A glyph defined by these requests can be used just
 like a normal glyph provided by the output device.  In particular,
 other characters can be translated to it with the @code{tr} or
 @code{trin} requests; it can be made the leader character by the
@@ -8383,16 +8395,35 @@ The @code{fchar} request defines a fallback glyph:
 @code{gtroff} only checks for glyphs defined with @code{fchar}
 if it cannot find the glyph in the current font.
 @code{gtroff} carries out this test before checking special fonts.
+
+@code{fschar} defines a fallback glyph for font@w{ }@var{f}: @code{gtroff}
+checks for glyphs defined with @code{fschar} after the list of fonts
+declared as font-specific special fonts with the @code{fspecial} request,
+but before the list of fonts declared as global special fonts with the
+@code{special} request.
+
+Finally, the @code{schar} request defines a global fallback glyph:
+@code{gtroff} checks for glyphs defined with @code{schar} after the list
+of fonts declared as global special fonts with the @code{special} request,
+but before the already mounted special fonts.
+
+@xref{Using Symbols}, for a detailed description of the glyph
+searching mechanism in @code{gtroff}.
 @endDefreq
 
-@Defreq {rchar, c1 c2 @dots{}}
-@cindex removing glyph definition (@code{rchar})
-@cindex glyph, removing definition (@code{rchar})
+@DefreqList {rchar, c1 c2 @dots{}}
+@DefreqListEnd {rfschar, f c1 c2 @dots{}}
+@cindex removing glyph definition (@code{rchar}, @code{rfschar})
+@cindex glyph, removing definition (@code{rchar}, @code{rfschar})
+@cindex fallback glyph, removing definition (@code{rchar}, @code{rfschar})
 Remove the definitions of glyphs @var{c1}, @var{c2},@w{
-}@enddots{} This undoes the effect of a @code{char} or @code{fchar}
-request.
+}@enddots{} This undoes the effect of a @code{char}, @code{fchar}, or
+@code{schar} request.
 
 It is possible to omit the whitespace between arguments.
+
+The request @code{rfschar} removes glyph definitions defined with
+@code{fschar} for glyph@w{ }f.
 @endDefreq
 
 @xref{Special Characters}.
@@ -8422,11 +8453,11 @@ Use the @code{special} request to define special fonts.  Initially, this
 list is empty.
 
 Use the @code{fspecial} request to designate special fonts only when
-font@w{ }@var{f} font is active.  Initially, this list is empty.
+font@w{ }@var{f} is active.  Initially, this list is empty.
 
 Previous calls to @code{special} or @code{fspecial} are overwritten;
 without arguments, the particular list of special fonts is set to empty.
-Special fonts are then searched in the order of the arguments.
+Special fonts are searched in the order they appear as arguments.
 
 All fonts which appear in a call to @code{special} or @code{fspecial} are
 loaded.

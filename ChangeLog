@@ -1,3 +1,39 @@
+2002-11-10  Werner LEMBERG  <wl@gnu.org>
+
+	Added three new requests `schar', `fschar', and `rfschar'.  `schar'
+	defines a glyph which is searched after the check for fonts declared
+	with `.special' (and before the check for all mounted special
+	fonts).  `fschar' defines a glyph for a particular font which is
+	searched after the check for fonts declared with `.fspecial' (and
+	before the check for fonts declared with `.special').  `rfschar'
+	removes glyphs defined with `fschar'.
+
+	* src/roff/troff/token.h (char_mode): New enum.
+	Declare do_define_character.
+	* src/roff/troff/charinfo.h (charinfo): Replace `fallback' with
+	`mode'.
+	(charinfo::is_fallback): Updated.
+	(charinfo::is_special): New method.
+	* src/roff/troff/input.cc (do_define_character): Add and use
+	optional second parameter used as a prefix for font-specific glyph
+	names.
+	(define_character, define_fallback_character): Updated.
+	(define_special_character): New function.
+	(init_input_requests): Add `schar'.
+	(charinfo::charinfo, charinfo::set_macro): Updated.
+	* src/roff/troff/node.cc: Include `stringclass.h'.
+	(make_glyph_node): Handle special glyphs defined with `.schar' and
+	`.fschar'.
+	(define_font_special_character, remove_font_special_character): New
+	functions.
+	(init_node_requests): Sorted.
+	Add `fschar' and `rfschar'.
+	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo:
+	Document new requests.
+
+	* font/devhtml/R.proto, font/devutf8/R.proto: Add `va'.
+	* tmac/dvi.tmac: Add `va' for CW and CWI (using `.fschar').
+
 2002-11-08  Werner LEMBERG  <wl@gnu.org>
 
 	Added new font `SC' (cmtex10) to devdvi.

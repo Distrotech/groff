@@ -171,17 +171,17 @@ are described in detail.
 .\" --------------------------------------------------------------------
 .
 The names of number registers, fonts, strings/\:macros/\:diversions,
-special characters, and colors can be of any length.
+special characters (glyphs), and colors can be of any length.
 .
 In escape sequences, additionally to the classical
 .BI ( xx
-construction for a two character name, you can use
+construction for a two-character name, you can use
 .BI [ xxx ]
 for a name of arbitrary length, for example in
 .
 .TP \w'\[rs]f[xxx]'u+3n
 .BI \[rs][ xxx ]
-Print the special character called
+Print the special character (glyph) called
 .IR xxx .
 .
 .TP
@@ -387,7 +387,7 @@ is empty.
 .
 .TP
 .BI \[rs]C' xxx '
-Typeset character named
+Typeset glyph named
 .IR xxx .
 Normally it is more convenient to use
 .BI \[rs][ xxx ]\f[R].
@@ -463,15 +463,15 @@ switches back to the previous color.
 .
 .TP
 .BI \[rs]N' n '
-Typeset the character with code
+Typeset the glyph with index
 .I n
 in the current font.
 .I n
 can be any integer.
 .
-Most devices only have characters with codes between 0 and 255.
+Most devices only have glyphs with indices between 0 and 255.
 .
-If the current font does not contain a character with that code,
+If the current font does not contain a glyph with that code,
 special fonts will
 .I not
 be searched.
@@ -490,12 +490,12 @@ request, for example
 .RE
 .
 .IP
-The code of each character is given in the fourth column in the font
+The index of each glyph is given in the fourth column in the font
 description file after the
 .B charset
 command.
 .
-It is possible to include unnamed characters in the font description
+It is possible to include unnamed glyphs in the font description
 file by using a name of
 .BR \-\-\- ;
 the
@@ -756,9 +756,9 @@ will print\~\c
 .
 .TP
 .B \[rs]/
-This increases the width of the preceding character so that the
-spacing between that character and the following character will be
-correct if the following character is a roman character.
+This increases the width of the preceding glyph so that the
+spacing between that glyph and the following glyph will be
+correct if the following glyph is a roman glyph.
 .
 .if t \{\
 .  nop For example, if an italic f is immediately followed by a roman
@@ -773,14 +773,14 @@ correct if the following character is a roman character.
 .  nop and avoids this problem.
 .\}
 It is a good idea to use this escape sequence whenever an italic
-character is immediately followed by a roman character without any
+glyph is immediately followed by a roman glyph without any
 intervening space.
 .
 .TP
 .B \[rs],
-This modifies the spacing of the following character so that the
-spacing between that character and the preceding character will
-correct if the preceding character is a roman character.
+This modifies the spacing of the following glyph so that the
+spacing between that glyph and the preceding glyph will
+correct if the preceding glyph is a roman glyph.
 .
 .if t \{\
 .  nop For example, inserting
@@ -791,7 +791,7 @@ correct if the preceding character is a roman character.
 .  el       \f[R](\^\f[I]f\f[R].
 .\}
 It is a good idea to use this escape sequence whenever a roman
-character is immediately followed by an italic character without any
+glyph is immediately followed by an italic glyph without any
 intervening space.
 .
 .TP
@@ -1064,11 +1064,11 @@ have this property).
 .
 .TP
 .BI .char\  c\ string
-Define character
+Define glyph
 .I c
 to be
 .IR string .
-Every time character
+Every time glyph
 .I c
 needs to be printed,
 .I string
@@ -1083,12 +1083,12 @@ while
 is being processed.
 .
 Any emboldening, constant spacing or track kerning will be applied to
-this object rather than to individual characters in
+this object rather than to individual glyphs in
 .IR string .
 .
 .IP
-A character defined by this request can be used just like a normal
-character provided by the output device.
+A glyph defined by this request can be used just like a normal
+glyph provided by the output device.
 .
 In particular other characters can be translated to it with the
 .B tr
@@ -1104,18 +1104,18 @@ correctly, if the
 request is used to give the character a hyphenation code.
 .
 .IP
-There is a special anti-recursion feature: use of character within the
-character's definition will be handled like normal characters not
+There is a special anti-recursion feature: Use of glyph within the
+glyph's definition will be handled like normal glyphs not
 defined with
 .BR char .
 .IP
-A character definition can be removed with the
+A glyph definition can be removed with the
 .B rchar
 request.
 .
 .TP
 .BI .chop\  xx
-Chop the last character off macro, string, or diversion
+Chop the last element off macro, string, or diversion
 .IR xx .
 This is useful for removing the newline from the end of diversions
 that are to be interpolated as strings.
@@ -1350,20 +1350,40 @@ request for more information on font families.
 .
 .TP
 .BI .fchar\  c\ string
-Define fallback character
+Define fallback glyph
 .I c
 to be
 .IR string .
+.
 The syntax of this request is the same as the
 .B char
-request; the only difference is that a character defined with
+request; the only difference is that a glyph defined with
 .B char
 hides the glyph with the same name in the current font, whereas a
-character defined with
+glyph defined with
 .B fchar
 is checked only if the particular glyph isn't found in the current font.
 .
 This test happens before checking special fonts.
+.
+.TP
+.BI .fschar\  f\ c\ string
+Define fallback glyph
+.I c
+for font
+.I f
+to be
+.IR string .
+.
+The syntax of this request is the same as the
+.B char
+request (with an additional argument to specify the font); a glyph
+defined with
+.B fschar
+is searched after the list of fonts declared with the
+.B fspecial
+request but before the list of fonts declared with
+.BR special .
 .
 .TP
 .BI .fspecial\  f\ s1\ s2\|.\|.\|.\&
@@ -1372,7 +1392,7 @@ When the current font is
 fonts
 .IR s1 ,
 .IR s2 ,\|.\|.\|.\&
-will be special, that is, they will searched for characters not in
+will be special, that is, they will searched for glyphs not in
 the current font.
 .
 Any fonts specified in the
@@ -1847,7 +1867,7 @@ with a positive value which are applied after the line is output.
 .
 .TP
 .BI .rchar\  c1\ c2\|.\|.\|.\&
-Remove the definitions of characters
+Remove the definitions of glyphs
 .IR c1 ,
 .IR c2 ,\|.\|.\|.
 This undoes the effect of a
@@ -1859,6 +1879,15 @@ request.
 Within a macro, return immediately.
 .
 No effect otherwise.
+.
+.TP
+.BI .rfschar\  c1\ c2\|.\|.\|.\&
+Remove the font-specific definitions of glyphs
+.IR c1 ,
+.IR c2 ,\|.\|.\|.
+This undoes the effect of a
+.B fschar
+request.
 .
 .TP
 .B .rj
@@ -1889,6 +1918,21 @@ to
 .IR yy .
 .
 .TP
+.BI .schar\  c\ string
+Define global fallback glyph
+.I c
+to be
+.IR string .
+.
+The syntax of this request is the same as the
+.B char
+request; a glyph defined with
+.B schar
+is searched after the list of fonts declared with the
+.B special
+request but before the mounted special fonts.
+.
+.TP
 .BI .shc\  c
 Set the soft hyphen character to
 .IR c .
@@ -1896,11 +1940,11 @@ If
 .I c
 is omitted, the soft hyphen character will be set to the default
 .BR \[rs](hy .
-The soft hyphen character is the character which will be inserted when
+The soft hyphen character is the glyph which will be inserted when
 a word is hyphenated at a line break.
 .
 If the soft hyphen character does not exist in the font of the
-character immediately preceding a potential break point, then the line
+glyph immediately preceding a potential break point, then the line
 will not be broken at that point.
 .
 Neither definitions (specified with the
@@ -1956,7 +2000,7 @@ than a single line.
 Fonts
 .IR s1 ,
 .IR s2 ,
-are special and will be searched for characters not in the current
+are special and will be searched for glyphs not in the current
 font.
 .
 Without arguments, reset the list of special fonts to be empty.
@@ -2068,7 +2112,7 @@ Enable track kerning for font
 .IR f .
 When the current font is
 .I f
-the width of every character will be increased by an amount between
+the width of every glyph will be increased by an amount between
 .I n1
 and
 .IR n2 ;
@@ -2280,7 +2324,7 @@ For example,
 .B .warn\~0
 will disable all warnings, and
 .B .warn\~1
-will disable all warnings except that about missing characters.
+will disable all warnings except that about missing glyphs.
 .
 If
 .I n
@@ -2467,9 +2511,9 @@ The following read-only registers are available:
 .
 .TP
 .B \[rs]n[.cdp]
-The depth of the last character added to the current environment.
+The depth of the last glyph added to the current environment.
 .
-It is positive if the character extends below the baseline.
+It is positive if the glyph extends below the baseline.
 .
 .TP
 .B \[rs]n[.ce]
@@ -2479,9 +2523,9 @@ request.
 .
 .TP
 .B \[rs]n[.cht]
-The height of the last character added to the current environment.
+The height of the last glyph added to the current environment.
 .
-It is positive if the character extends above the baseline.
+It is positive if the glyph extends above the baseline.
 .
 .TP
 .B \[rs]n[.color]
@@ -2489,12 +2533,12 @@ It is positive if the character extends above the baseline.
 .
 .TP
 .B \[rs]n[.csk]
-The skew of the last character added to the current environment.
+The skew of the last glyph added to the current environment.
 .
 The
 .I skew
-of a character is how far to the right of the center of a character
-the center of an accent over that character should be placed.
+of a glyph is how far to the right of the center of a glyph
+the center of an accent over that glyph should be placed.
 .
 .TP
 .B \[rs]n[.ev]
@@ -2737,19 +2781,19 @@ Like the
 .B st
 and
 .B sb
-registers, but take account of the heights and depths of characters.
+registers, but take account of the heights and depths of glyphs.
 .
 .TP
 .B \[rs]n[ssc]
 The amount of horizontal space (possibly negative) that should be
-added to the last character before a subscript.
+added to the last glyph before a subscript.
 .
 .TP
 .B \[rs]n[skw]
-How far to right of the center of the last character in the
+How far to right of the center of the last glyph in the
 .B \[rs]w
 argument, the center of an accent from a roman font should be placed
-over that character.
+over that glyph.
 .
 .P
 Other available read/write number registers are:
@@ -2864,9 +2908,9 @@ is
 .
 .P
 If the font description file contains pairwise kerning information,
-characters from that font will be kerned.
+glyphs from that font will be kerned.
 .
-Kerning between two characters can be inhibited by placing a
+Kerning between two glyphs can be inhibited by placing a
 .B \[rs]&
 between them.
 .
@@ -2936,13 +2980,13 @@ True if there is a color named
 .
 .TP
 .BI .if\ c ch
-True if there is a character
+True if there is a glyph
 .IR ch
 available;
 .I ch
 is either an
 .SM ASCII
-character or a special character
+character or a glyph (special character)
 .BI \[rs]( xx
 or
 .BI \[rs][ xxx ]\f[R];
@@ -3018,7 +3062,7 @@ command is also in scaled points.
 .
 .TP
 .BI N n
-Print character with index\~\c
+Print glyph with index\~\c
 .I n
 (a non-negative integer) of the current font.
 .
@@ -3031,12 +3075,13 @@ commands.
 .TP
 .BI t xxx
 .I xxx
-is any sequence of characters terminated by a space or a newline; the
-first character should be printed at the current position, the current
-horizontal position should be increased by the width of the first
-character, and so on for each character.
+is any sequence of characters terminated by a space or a newline (to
+be more precise, it is a sequence of glyphs which are accessed with
+the corresponding characters); the first character should be printed at
+the current position, the current horizontal position should be increased
+by the width of the first character, and so on for each character.
 .
-The width of the character is that given in the font file,
+The width of the glyph is that given in the font file,
 appropriately scaled for the current point size, and rounded so that
 it is a multiple of the horizontal resolution.
 .
@@ -3056,15 +3101,15 @@ Note that single characters can have the eighth bit set, as can the
 names of fonts and special characters.
 .
 .P
-The names of characters and fonts can be of arbitrary length; drivers
+The names of glyphs and fonts can be of arbitrary length; drivers
 should not assume that they will be only two characters long.
 .
 .P
-When a character is to be printed, that character will always be
+When a glyph is to be printed, that glyph will always be
 in the current font.
 .
 Unlike device-independent troff, it is not necessary for drivers to
-search special fonts to find a character.
+search special fonts to find a glyph.
 .
 .P
 For color support, some new commands have been added:
@@ -3449,10 +3494,10 @@ pointsize will be set to 10\~scaled points.
 In
 .I groff
 mode, there is a fundamental difference between unformatted input
-characters, and formatted output characters.
+characters, and formatted output characters (glyphs).
 .
-Everything that affects how an output character will be output is
-stored with the character; once an output character has been
+Everything that affects how a glyph will be output is
+stored with the glyph; once a glyph has been
 constructed it is unaffected by any subsequent requests that are
 executed, including the
 .request bd ,
@@ -3464,16 +3509,20 @@ or
 requests.
 .
 .P
-Normally output characters are constructed from input characters at
-the moment immediately before the character is added to the current
+Normally glyphs are constructed from input characters at
+the moment immediately before the glyph is added to the current
 output line.
 .
 Macros, diversions and strings are all, in fact, the same type of
-object; they contain lists of input characters and output characters
+object; they contain lists of input characters and glyphs
 in any combination.
 .
 .P
-An output character does not behave like an input character for the
+Special characters can be both; before being added to the output, they
+act as input entities, afterwards they denote glyphs.
+.
+.P
+A glyph does not behave like an input character for the
 purposes of macro processing; it does not inherit any of the special
 properties that the input character from which it was constructed
 might have had.
@@ -3500,7 +3549,7 @@ this will be printed as
 .esc \[rs] .
 So each pair of input backslashes
 .squoted \[rs]\[rs]
-is turned into a single output backslash
+is turned into a single output backslash glyph
 .squoted \[rs]
 and the resulting output backslashes are not interpreted as escape
 characters when they are reread.

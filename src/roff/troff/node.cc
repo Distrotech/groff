@@ -38,6 +38,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "input.h"
 #include "div.h"
 #include "geometry.h"
+#include "stringclass.h"
 
 #include "nonposix.h"
 
@@ -4501,6 +4502,16 @@ node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
       sf = sf->next;
     }
     if (!found) {
+      symbol f = font_table[fontno]->get_name();
+      string gl(f.contents());
+      gl += ' ';
+      gl += s->nm.contents();
+      gl += '\0';
+      charinfo *ci = get_charinfo(symbol(gl.contents()));
+      if (ci && ci->get_macro())
+	return make_composite_node(ci, env);
+    }
+    if (!found) {
       sf = global_special_fonts;
       while (sf != 0 && !found) {
 	fn = sf->n;
@@ -4509,18 +4520,17 @@ node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
 	sf = sf->next;
       }
     }
-    if (!found
-#if 0	
-	&& global_special_fonts == 0 && font_table[fontno]->sf == 0
-#endif
-	) {
+    if (!found)
+      if (s->is_special())
+	return make_composite_node(s, env);
+    if (!found) {
       for (fn = 0; fn < font_table_size; fn++)
 	if (font_table[fn]
 	    && font_table[fn]->is_special()
 	    && font_table[fn]->contains(s)) {
-	      found = 1;
-	      break;
-	    }
+	  found = 1;
+	  break;
+	}
     }
     if (!found) {
       if (!no_error_message && s->first_time_not_found()) {
@@ -5569,6 +5579,44 @@ int get_underline_fontno()
   return underline_fontno;
 }
 
+void define_font_special_character()
+{
+  int n = get_fontno();
+  if (n < 0) {
+    skip_line();
+    return;
+  }
+  symbol f = font_table[n]->get_name();
+  do_define_character(CHAR_FONT_SPECIAL, f.contents());
+}
+
+void remove_font_special_character()
+{
+  int n = get_fontno();
+  if (n < 0) {
+    skip_line();
+    return;
+  }
+  symbol f = font_table[n]->get_name();
+  while (!tok.newline() && !tok.eof()) {
+    if (!tok.space() && !tok.tab()) {
+      charinfo *s = tok.get_char(1);
+      string gl(f.contents());
+      gl += ' ';
+      gl += s->nm.contents();
+      gl += '\0';
+      charinfo *ci = get_charinfo(symbol(gl.contents()));
+      if (!ci)
+	break;
+      macro *m = ci->set_macro(0);
+      if (m)
+	delete m;
+    }
+    tok.next();
+  }
+  skip_line();
+}
+
 static void read_special_fonts(special_font_list **sp)
 {
   special_font_list *s = *sp;
@@ -5878,18 +5926,20 @@ const char *printing_reg::get_string()
 
 void init_node_requests()
 {
-  init_request("fp", font_position);
-  init_request("sty", style);
-  init_request("cs", constant_space);
   init_request("bd", bold_font);
-  init_request("uf", underline_font);
-  init_request("lg", ligature);
-  init_request("kern", kern_request);
-  init_request("tkf", track_kern);
-  init_request("special", special_request);
+  init_request("cs", constant_space);
+  init_request("fp", font_position);
+  init_request("fschar", define_font_special_character);
   init_request("fspecial", font_special_request);
   init_request("ftr", font_translate);
+  init_request("kern", kern_request);
+  init_request("lg", ligature);
+  init_request("rfschar", remove_font_special_character);
   init_request("shc", set_soft_hyphen_char);
+  init_request("special", special_request);
+  init_request("sty", style);
+  init_request("tkf", track_kern);
+  init_request("uf", underline_font);
   number_reg_dictionary.define(".fp", new next_available_font_position_reg);
   number_reg_dictionary.define(".kern",
 			       new constant_int_reg(&global_kern_mode));

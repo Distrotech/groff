@@ -1543,10 +1543,18 @@ name to short
 name on position
 .IR n .
 .
+.REQ .fschar f c anything
+Define fallback character
+.I c
+for font
+.I f
+as string
+.IR anything .
+.
 .REQ .fspecial font
 Reset list of special fonts for
 .I font
-to empty.
+to be empty.
 .
 .REQ .fspecial font s1 s2 .\|.\|.\&
 When the current font is
@@ -1944,6 +1952,14 @@ Read insertion.
 .REQ .return
 Return from a macro.
 .
+.REQ .rfschar f c1 c2 .\|.\|.\&
+Remove the definitions of characters
+.IR c1 ,
+.IR c2 ,
+.I .\|.\|.\&
+for font
+.IR f .
+.
 .REQ .rj n
 Right justify the next
 .I n
@@ -1977,6 +1993,12 @@ Return
 .I (upward only)
 to marked vertical place (default scaling indicator\~\c
 .scaleindicator v ).
+.
+.REQ .schar c anything
+Define global fallback character
+.I c
+as string
+.IR anything .
 .
 .REQ .shc
 Reset soft hyphen character to
@@ -2013,7 +2035,7 @@ up or down according to sign of
 .scaleindicator v ).
 .
 .REQ .special
-Reset global list of special fonts to empty.
+Reset global list of special fonts to be empty.
 .
 .REQ .special s1 s2 .\|.\|.\&
 Fonts

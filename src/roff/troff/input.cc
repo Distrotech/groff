@@ -3868,7 +3868,7 @@ void append_nocomp_string()
   do_define_string(DEFINE_APPEND, CALLING_DISABLE_COMP);
 }
 
-void do_define_character(int fallback)
+void do_define_character(char_mode mode, const char *font_name)
 {
   node *n;
   int c;
@@ -3877,6 +3877,13 @@ void do_define_character(int fallback)
   if (ci == 0) {
     skip_line();
     return;
+  }
+  if (font_name) {
+    string s(font_name);
+    s += ' ';
+    s += ci->nm.contents();
+    s += '\0';
+    ci = get_charinfo(symbol(s.contents()));
   }
   tok.next();
   if (tok.newline())
@@ -3902,7 +3909,7 @@ void do_define_character(int fallback)
       m->append((unsigned char)c);
     c = get_copy(&n);
   }
-  m = ci->set_macro(m, fallback);
+  m = ci->set_macro(m, mode);
   if (m)
     delete m;
   tok.next();
@@ -3910,12 +3917,17 @@ void do_define_character(int fallback)
 
 void define_character()
 {
-  do_define_character(0);
+  do_define_character(CHAR_NORMAL);
 }
 
 void define_fallback_character()
 {
-  do_define_character(1);
+  do_define_character(CHAR_FALLBACK);
+}
+
+void define_special_character()
+{
+  do_define_character(CHAR_SPECIAL);
 }
 
 static void remove_character()
@@ -7235,6 +7247,7 @@ void init_input_requests()
   init_request("return", return_macro_request);
   init_request("rm", remove_macro);
   init_request("rn", rename_macro);
+  init_request("schar", define_special_character);
   init_request("shift", shift);
   init_request("so", source);
   init_request("spreadwarn", spreadwarn_request);
@@ -7671,7 +7684,7 @@ charinfo::charinfo(symbol s)
 : translation(0), mac(0), special_translation(TRANSLATE_NONE),
   hyphenation_code(0), flags(0), ascii_code(0), asciify_code(0),
   not_found(0), transparent_translate(1), translate_input(0),
-  fallback(0), nm(s)
+  mode(CHAR_NORMAL), nm(s)
 {
   index = next_index++;
 }
@@ -7714,11 +7727,11 @@ void charinfo::set_asciify_code(unsigned char c)
   asciify_code = c;
 }
 
-macro *charinfo::set_macro(macro *m, int f)
+macro *charinfo::set_macro(macro *m, char_mode cm)
 {
   macro *tem = mac;
   mac = m;
-  fallback = f;
+  mode = cm;
   return tem;
 }
 
