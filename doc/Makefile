@@ -98,8 +98,9 @@ install:
 clean:
 	-rm -f *.ps *.html *.ascii *.png *.gif *.dit core
 	-rm -f *.aux *.dvi *.log *.toc texput.log
-	-rm -f *.cp *.cps *.cv *.cn *.fn *.fns *.gl *.gls *.ky *.kys \
-               *.ma *.mas *.op *.ops *.pg *.pgs *.tp *.tps *.tr *.vr *.vrs
+	-rm -f *.cp *.cps *.cv *.cn *.es *.ess *.fn *.fns *.ky *.kys \
+               *.ma *.mas *.op *.ops *.pg *.pgs *.rq *.rqs *.st *.sts \
+               *.tp *.tps *.tr *.vr *.vrs
 	-rm -rf img
 
 distclean: clean
