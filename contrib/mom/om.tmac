@@ -10657,18 +10657,21 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# The main macros that handle footnote processing.
 \# -----------------------------------------------
 \#
-\# Sometimes, #VARIABLE_FOOTER_POS sets FOOTER at a location so
-\# close to the next legal baseline that, visually, one has the
-\# impression another line of running text would fit on the page.
-\# VFP_CHECK is always set to the line just above the one where
-\# FOOTER will be sprung, and checks for this condition.  If it
-\# exists, FOOTER is set one line lower on the page, thus squeezing
-\# in an extra line of running text.  This is a judgment call on
-\# my part, but seems to work well.  If there are problems (e.g.
-\# footnotes really do look jammed), the user should probably adjust
-\# FOOTNOTE_AUTOLEAD and/or FOOTNOTE_RULE_ADJ.
+\# Sometimes, #VARIABLE_FOOTER_POS sets FOOTER at a location that
+\# gives the impression another line of running text could fit on
+\# the page.  VFP_CHECK is always set to the line just above the
+\# one where FOOTER will be sprung, and checks for this condition.
+\# If it exists, FOOTER is set one line lower on the page, thus
+\# squeezing in an extra line of running text.  This is a judgment
+\# call on my part, but seems to work well.  If there are problems
+\# (e.g. footnotes really do look jammed), the user should probably
+\# adjust FOOTNOTE_AUTOLEAD and/or FOOTNOTE_RULE_ADJ.
 \# 
+\# The macro has to be run in its own environment, otherwise the
+\# first word of the last line before the footnotes gets chopped.
+\#
 .MAC VFP_CHECK END
+.    ev VFP_CHECK
 \# The trap also has to be removed each time VFP_CHECK is run
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ch VFP_CHECK
@@ -10695,6 +10698,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          \}
 .       \}
 .    \}
+.    ev
 .END
 \#
 \# FN_OVERFLOW_TRAP starts off "underneath" FOOTER, but is revealed as
