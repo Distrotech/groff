@@ -123,12 +123,6 @@ tmac_prefix=g
 # The groff -mm macros will be available as -m$(tmac_m_prefix)m.
 tmac_m_prefix=\
  `for i in $(tmac_wrap) ""; do case "$$i" in m) echo $(tmac_prefix);; esac; done`
-# The groff -ms macros will be available as -m$(tmac_s_prefix)s.
-tmac_s_prefix=\
- `for i in $(tmac_wrap) ""; do case "$$i" in s) echo $(tmac_prefix);; esac; done`
-# The groff -man macros will be available as -m$(tmac_an_prefix)an.
-tmac_an_prefix=\
- `for i in $(tmac_wrap) ""; do case "$$i" in an) echo $(tmac_prefix);; esac; done`
 
 # Extension to be used for refer index files.  Index files are not
 # sharable between different architectures, so you might want to use
@@ -285,8 +279,6 @@ MDEFINES= \
   "mkinstalldirs=$(mkinstalldirs)" \
   "tmac_wrap=$(tmac_wrap)" \
   "sys_tmac_prefix=$(sys_tmac_prefix)" \
-  "tmac_an_prefix=$(tmac_an_prefix)" \
-  "tmac_s_prefix=$(tmac_s_prefix)" \
   "tmac_m_prefix=$(tmac_m_prefix)" \
   "CCC=$(CCC)" \
   "CC=$(CC)" \
