@@ -153,6 +153,22 @@
 .nr Xo 1
 .nr Xr 10n
 .
+.\" requests which must be processed after the closing delimiter of `Op'
+.\" and friends
+.ds doc-after-Ao
+.ds doc-after-Bo
+.ds doc-after-Bro
+.ds doc-after-Do
+.ds doc-after-Eo
+.ds doc-after-Fo
+.ds doc-after-Ns
+.ds doc-after-Oo
+.ds doc-after-Po
+.ds doc-after-Qo
+.ds doc-after-So
+.ds doc-after-Xo
+.
+.
 .nr doc-display-indent 6n
 .
 .
@@ -211,10 +227,13 @@
 .\" NS   document title
 .\" NS
 .\" NS modifies:
-.\" NS   doc-document-title, doc-volume, doc-section
+.\" NS   doc-document-title
+.\" NS   doc-section
+.\" NS   doc-volume
 .\" NS
 .\" NS local variables:
-.\" NS   doc-volume-ds-XXX, doc-volume-as-XXX
+.\" NS   doc-volume-as-XXX
+.\" NS   doc-volume-ds-XXX
 .\" NS
 .\" NS width register `Dt' set above
 .
@@ -333,13 +352,13 @@
 .\" NS Os user macro (not parsed, not callable)
 .\" NS   operating system
 .\" NS
-.\" NS width register `Os' set above
+.\" NS modifies:
+.\" NS   doc-operating-system
 .\" NS
 .\" NS local variables:
 .\" NS   doc-operating-system-XXX-XXX
 .\" NS
-.\" NS modifies:
-.\" NS   doc-operating-system
+.\" NS width register `Os' set above
 .
 .ds doc-operating-system-ATT-7th 7th\~Edition
 .ds doc-operating-system-ATT-7   7th\~Edition
@@ -466,11 +485,11 @@
 .\" NS Dd user macro (not parsed, not callable)
 .\" NS   set document date
 .\" NS
-.\" NS local variables:
-.\" NS   doc-date-XXX
-.\" NS
 .\" NS modifies:
 .\" NS   doc-date-string
+.\" NS
+.\" NS local variables:
+.\" NS   doc-date-XXX
 .\" NS
 .\" NS width register `Dd' set above
 .
@@ -509,11 +528,11 @@
 .\" NS   print page header
 .
 .de doc-header
-.  ev doc-caption-environment
+.  ev doc-env-dh
 .  doc-setup-page-layout
 .  if !\n[cR] \
 '    sp \n[doc-header-space]u
-.  tl @\*[doc-caption-font]\*[doc-header-string]\f[P]@\*[doc-caption-font2]\*[doc-volume]\f[P]@\*[doc-caption-font]\*[doc-header-string]\f[P]@
+.  tl \*[doc-caption-font]\*[doc-header-string]\f[P]\*[doc-caption-font2]\*[doc-volume]\f[P]\*[doc-caption-font]\*[doc-header-string]\f[P]
 '  sp \n[doc-header-space]u
 .  ev
 ..
@@ -529,7 +548,7 @@
 .    ev doc-caption-enviroment
 .    doc-setup-page-layout
 '    sp \n[doc-footer-space]u
-.    tl @\*[doc-caption-font]\*[doc-operating-system]\f[P]@\*[doc-caption-font2]\*[doc-date-string]\f[P]@%@
+.    tl \*[doc-caption-font]\*[doc-operating-system]\f[P]\*[doc-caption-font2]\*[doc-date-string]\f[P]%
 '    bp
 .    ev
 .  \}
@@ -557,7 +576,7 @@
 .
 .  if \n[cR] \{\
 '    sp
-.    tl @\*[doc-caption-font]\*[doc-operating-system]\f[P]@\*[doc-caption-font2]\*[doc-date-string]\f[P]@%@
+.    tl \*[doc-caption-font]\*[doc-operating-system]\f[P]\*[doc-caption-font2]\*[doc-date-string]\f[P]\*[doc-caption-font]\*[doc-operating-system]\f[P]
 .    \" suppress empty lines after the footer
 .    pl \n[nl]u
 .  \}
@@ -625,7 +644,8 @@
 .\" NS   subsection
 .\" NS
 .\" NS local variable:
-.\" NS   doc-reg-Ss, doc-reg-Ss1
+.\" NS   doc-reg-Ss
+.\" NS   doc-reg-Ss1
 .\" NS
 .\" NS width register `Ss' set above
 .
@@ -636,9 +656,9 @@
 .    ie "\*[doc-macro-name]"Ss" \{\
 .      nr doc-arg-ptr +1
 .      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.        as doc-out-string \*[doc-Sh-font]
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
+.        nop \*[doc-Sh-font]\c
 .        doc-print-recursive
 .    \}\}
 .    el \
@@ -660,9 +680,9 @@
 .
 .      nr doc-arg-ptr +1
 .      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.        as doc-out-string \*[doc-Sh-font]
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
+.        nop \*[doc-Sh-font]\c
 .        doc-print-recursive
 .      \}
 .
@@ -701,7 +721,6 @@
 .    nr doc-reg-Rd +1
 .  \}
 .
-.  tm doc-out-string == `\*[doc-out-string]'
 .  tm doc-curr-font == \n[doc-curr-font]
 .  tm doc-curr-size == \n[doc-curr-size]
 .  tm doc-in-synopsis-count == \n[doc-in-synopsis-count]
@@ -713,7 +732,6 @@
 .  tm doc-quote-right == `\*[doc-quote-right]'
 .  tm doc-nesting-level == \n[doc-nesting-level]
 .  tm doc-no-space == \n[doc-no-space]
-.  tm doc-have-append == \n[doc-have-append]
 .  tm doc-space == `\*[doc-space]'
 .  tm doc-saved-space == `\*[doc-saved-space]'
 .  tm doc-space-mode == \n[doc-space-mode]

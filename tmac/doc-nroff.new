@@ -110,7 +110,9 @@
 .\" NS   set up page layout
 .\" NS
 .\" NS modifies:
-.\" NS   doc-header-space, doc-footer-space, doc-display-vertical
+.\" NS   doc-display-vertical
+.\" NS   doc-footer-space
+.\" NS   doc-header-space
 .
 .de doc-setup-page-layout
 .  ie \n[cR] \
@@ -232,7 +234,9 @@
 .\" NS   quoted literal define
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-quote-left, doc-quote-right
+.\" NS   doc-macro-name
+.\" NS   doc-quote-left
+.\" NS   doc-quote-right
 .\" NS
 .\" NS width register `Ql' set in doc-common
 .
@@ -273,10 +277,16 @@
 .\" NS   section headers
 .\" NS
 .\" NS modifies:
-.\" NS   doc-in-synopsis-count, doc-indent-synopsis, doc-in-files-section,
-.\" NS   doc-in-see-also-section, doc-in-authors-section, doc-is-func,
-.\" NS   doc-func-count, doc-func-args-processed, doc-num-func-args,
 .\" NS   doc-func-arg
+.\" NS   doc-func-args-processed
+.\" NS   doc-func-count
+.\" NS   doc-in-authors-section
+.\" NS   doc-in-files-section
+.\" NS   doc-in-see-also-section
+.\" NS   doc-in-synopsis-count
+.\" NS   doc-indent-synopsis
+.\" NS   doc-is-func
+.\" NS   doc-num-func-args
 .\" NS
 .\" NS width register `Sh' set in doc-common
 .
@@ -287,9 +297,9 @@
 .    ie "\*[doc-macro-name]"Sh" \{\
 .      nr doc-arg-ptr +1
 .      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.        as doc-out-string \*[doc-Sh-font]
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
+.        nop \*[doc-Sh-font]\c
 .        doc-print-recursive
 .    \}\}
 .    el \
@@ -312,21 +322,22 @@
 .        nr doc-in-files-section 0
 .        nr doc-in-authors-section 0
 .
-.        if "\$1"SYNOPSIS" \
+.        ie        "\$1"SYNOPSIS" \
 .          nr doc-in-synopsis-count 1
-.        if "\$1"DESCRIPTION" \{\
+.        el \{ .ie "\$1"DESCRIPTION" \{\
 .          nr doc-is-func 0
 .          nr doc-func-count 0
 .          nr doc-func-args-processed 0
 .          nr doc-num-func-args 0
 .          ds doc-func-arg
 .        \}
-.        if "\$1"SEE" \
+.        el \{ .ie "\$1"SEE" \
 .          nr doc-in-see-also-section 1
-.        if "\$1"FILES" \
+.        el \{ .ie "\$1"FILES" \
 .          nr doc-in-files-section 1
-.        if "\$1"AUTHORS" \
+.        el .if    "\$1"AUTHORS" \
 .          nr doc-in-authors-section 1
+.        \}\}\}
 .
 .        in 0
 .        nr doc-have-author 0
@@ -342,13 +353,13 @@
 .
 .      nr doc-arg-ptr +1
 .      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.        as doc-out-string \*[doc-Sh-font]
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.s]
+.        nop \*[doc-Sh-font]\c
 .        doc-print-recursive
 .      \}
 .
-.      in (\n[.i]u + \n[doc-subheader-indent]u)
+.      in +\n[doc-subheader-indent]u
 .      ns
 .    \}
 .    el \

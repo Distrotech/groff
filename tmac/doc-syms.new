@@ -40,7 +40,8 @@
 .\" NS   print `...' (similar to TeX's \ldots command)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-macro-name
 .\" NS
 .\" NS width register `Ld' defined in doc-common
 .
@@ -70,7 +71,10 @@
 .\" NS   print UNIX
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS
 .\" NS local variable:
 .\" NS   doc-str-Ux
@@ -107,10 +111,15 @@
 .\" NS   print BSD (fix smaller nroff version)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Bx, doc-str-Bx1, doc-str-Bx-XXX
+.\" NS   doc-str-Bx
+.\" NS   doc-str-Bx1
+.\" NS   doc-str-Bx-XXX
 .\" NS
 .\" NS width register `Bx' defined in doc-common
 .
@@ -198,10 +207,15 @@
 .\" NS   print AT&T UNIX
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-At, doc-str-At1, doc-str-At-XXX
+.\" NS   doc-str-At
+.\" NS   doc-str-At1
+.\" NS   doc-str-At-XXX
 .\" NS
 .\" NS width register `At' defined in doc-common
 .
@@ -281,10 +295,14 @@
 .\" NS   print FreeBSD
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Fx, doc-str-Fx1
+.\" NS   doc-str-Fx
+.\" NS   doc-str-Fx1
 .\" NS
 .\" NS width register `Fx' defined in doc-common
 .
@@ -341,10 +359,14 @@
 .\" NS   print NetBSD
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Nx, doc-str-Nx1
+.\" NS   doc-str-Nx
+.\" NS   doc-str-Nx1
 .\" NS
 .\" NS width register `Nx' defined in doc-common
 .
@@ -402,10 +424,14 @@
 .\" NS   print OpenBSD
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Ox, doc-str-Ox1
+.\" NS   doc-str-Ox
+.\" NS   doc-str-Ox1
 .\" NS
 .\" NS width register `Ox' defined in doc-common
 .
@@ -450,10 +476,14 @@
 .\" NS   print BSD/OS
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Bsx, doc-str-Bsx1
+.\" NS   doc-str-Bsx
+.\" NS   doc-str-Bsx1
 .\" NS
 .\" NS width register `Bsx' defined in doc-common
 .
@@ -509,52 +539,58 @@
 .\" NS Px user macro
 .\" NS   print POSIX
 .
-.ds Px \*[doc-Tn-font-size]POSIX
+.ds Px \*[doc-Tn-font-size]\%POSIX
 .
 .
 .\" NS Ai user macro
 .\" NS   print ANSI
 .
-.ds Ai \*[doc-Tn-font-size]ANSI
+.ds Ai \*[doc-Tn-font-size]\%ANSI
 .
 .
 .\" NS St user macro
 .\" NS   standards (posix, ansi - formal standard names)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS 
 .\" NS local variable:
-.\" NS   doc-str-St, doc-str-St1, doc-reg-St, doc-str-St-XXX
+.\" NS   doc-reg-St
+.\" NS   doc-str-St
+.\" NS   doc-str-St1
+.\" NS   doc-str-St-XXX
 .\" NS
 .\" NS width register `St' defined in doc-common
 .
-.ds doc-str-St--p1003.1     \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1
-.as doc-str-St--p1003.1     " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
-.ds doc-str-St--p1003.1-88  \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1-1988
-.as doc-str-St--p1003.1-88  " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
-.ds doc-str-St--p1003.1-90  \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1-1990
-.as doc-str-St--p1003.1-90  " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
-.ds doc-str-St--p1003.1b    \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1b
-.as doc-str-St--p1003.1b    " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
-.ds doc-str-St--p1003.1b-93 \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1b-1993
-.as doc-str-St--p1003.1b-93 " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
-.ds doc-str-St--p1003.1g    \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.1g
-.as doc-str-St--p1003.1g    " (\*[Lq]\*[Px]\*[doc-str-St]\*[Rq])
-.ds doc-str-St--p1003.2     \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.2
-.as doc-str-St--p1003.2     " (\*[Lq]\*[Px]\*[doc-str-St].2\*[Rq])
-.ds doc-str-St--p1003.2-92  \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 1003.2-1992
-.as doc-str-St--p1003.2-92  " (\*[Lq]\*[Px]\*[doc-str-St].2\*[Rq])
+.ds doc-str-St--p1003.1     \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 1003.1
+.as doc-str-St--p1003.1     " (\*[Lq]\)\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1-88  \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 1003.1-1988
+.as doc-str-St--p1003.1-88  " (\*[Lq]\)\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1-90  \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 1003.1-1990
+.as doc-str-St--p1003.1-90  " (\*[Lq]\)\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1b    \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 1003.1b
+.as doc-str-St--p1003.1b    " (\*[Lq]\)\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1b-93 \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 1003.1b-1993
+.as doc-str-St--p1003.1b-93 " (\*[Lq]\)\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.1g    \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 1003.1g
+.as doc-str-St--p1003.1g    " (\*[Lq]\)\*[Px]\*[doc-str-St]\*[Rq])
+.ds doc-str-St--p1003.2     \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 1003.2
+.as doc-str-St--p1003.2     " (\*[Lq]\)\*[Px]\*[doc-str-St].2\*[Rq])
+.ds doc-str-St--p1003.2-92  \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 1003.2-1992
+.as doc-str-St--p1003.2-92  " (\*[Lq]\)\*[Px]\*[doc-str-St].2\*[Rq])
 .ds doc-str-St--iso9945-1   \*[doc-Tn-font-size]ISO/IEC\*[doc-str-St] 9945-1:1996
-.as doc-str-St--iso9945-1   " (\*[Lq]\*[Px]\*[doc-str-St].1\*[Rq])
+.as doc-str-St--iso9945-1   " (\*[Lq]\)\*[Px]\*[doc-str-St].1\*[Rq])
 .ds doc-str-St--ansiC       \*[doc-Tn-font-size]ISO\*[doc-str-St] 9899:1990
 .as doc-str-St--ansiC       " (\*[Lq]\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]\*[Rq])
 .als doc-str-St--isoC doc-str-St--ansiC
-.ds doc-str-St--ansiC-89    \*[doc-Tn-font-size]ANSI \*[doc-str-St]X\~3.159-1989
-.as doc-str-St--ansiC-89    " (\*[Lq]\*[doc-Tn-font-size]ANSI\~C\*[doc-str-St]\*[Rq])
+.ds doc-str-St--ansiC-89    \*[Ai] \*[doc-str-St]X\~3.159-1989
+.as doc-str-St--ansiC-89    " (\*[Lq]\)\*[Ai]\~C\*[doc-str-St]\*[Rq])
 .ds doc-str-St--iso9899     \*[doc-Tn-font-size]ISO\*[doc-str-St] 9899-1990
 .as doc-str-St--iso9899     " (\*[Lq]\*[doc-Tn-font-size]ISO\~C\*[doc-str-St]\*[Rq])
-.ds doc-str-St--ieee754     \*[doc-Tn-font-size]IEEE\*[doc-str-St] Std 754-1985
+.ds doc-str-St--ieee754     \*[doc-Tn-font-size]\%IEEE\*[doc-str-St] Std 754-1985
 .ds doc-str-St--iso8802-3   \*[doc-Tn-font-size]ISO\*[doc-str-St] 8802-3:1989
 .ds doc-str-St--xpg3        \*[doc-Tn-font-size]X/Open\*[doc-str-St] Portability Guide Issue\~3
 .as doc-str-St--xpg3        " (\*[Lq]\*[doc-Tn-font-size]XPG\*[doc-str-St]\^3\*[Rq])
@@ -614,10 +650,15 @@
 .\" NS   formal library names for LIBRARY sections
 .\" NS
 .\" NS modifies:
-.\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
+.\" NS   doc-arg-ptr
+.\" NS   doc-curr-font
+.\" NS   doc-curr-size
+.\" NS   doc-macro-name
 .\" NS 
 .\" NS local variable:
-.\" NS   doc-str-Lb, doc-reg-Lb, doc-str-Lb-XXX
+.\" NS   doc-reg-Lb
+.\" NS   doc-str-Lb
+.\" NS   doc-str-Lb-XXX
 .\" NS
 .\" NS width register `Lb' defined in doc-common
 .
