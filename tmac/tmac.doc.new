@@ -48,8 +48,6 @@
 .
 .cp 0
 .
-.eo
-.
 .
 .\" Load start-up files
 .ie t .mso mdoc/doc-ditroff.new
@@ -57,6 +55,8 @@
 .
 .mso mdoc/doc-common.new
 .mso mdoc/doc-syms.new
+.
+.eo
 .
 .
 .\" NS doc-inline-debug user register (bool)
@@ -487,6 +487,8 @@
 .\" NS   doc-out-string, doc-curr-space
 .
 .de doc-print-out-string
+.  nh
+.
 .  if !(\n[doc-in-list] : \n[doc-nesting-level]) \
 .    if !\n[doc-no-printing] \{\
 .      nop \&\*[doc-out-string]
@@ -578,7 +580,7 @@
 .  nr doc-reg-dfr1 \n[doc-type\n[doc-arg-ptr]]
 .  ds doc-str-dfr "\*[doc-arg\n[doc-arg-ptr]]
 .
-.  hy 0
+.  nh
 .
 .  ie (\n[doc-reg-dfr1] == 1) \{\
 .    as doc-out-string \f[P]\s[0]
@@ -653,8 +655,6 @@
 .de doc-print-recursive
 .  nr doc-reg-dpr1 \n[doc-type\n[doc-arg-ptr]]
 .  ds doc-str-dpr "\*[doc-arg\n[doc-arg-ptr]]
-.
-.  hy 0
 .
 .  ie (\n[doc-reg-dpr1] == 1) \{\
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
@@ -2244,9 +2244,10 @@
 .        doc-print-and-reset
 .    \}
 .    el \{\
-.      nr doc-str-dec (\n[doc-arg-ptr] + 1)
-.      if (\n[doc-type\n[doc-str-dec]] == 2) \
-.        as doc-out-string "\*[doc-space\n[doc-arg-limit]]
+\#.      nr doc-str-dec (\n[doc-arg-ptr] + 1)
+\#.      if (\n[doc-type\n[doc-str-dec]] == 2) \
+\#.        as doc-out-string "\*[doc-space\n[doc-arg-limit]]
+.        as doc-out-string "\*[doc-space\n[doc-arg-ptr]]
 .      No
 .  \}\}
 .
@@ -3752,6 +3753,8 @@
 .\" NS   doc-out-string, doc-in-list
 .
 .de doc-inset-list
+.  nh
+.
 .  doc-set-vertical-and-indent 0
 .  br
 .  nop \&\*[doc-out-string]
@@ -3760,6 +3763,8 @@
 .  ds doc-out-string
 .  doc-reset-args
 '  fi
+.
+.  hy
 ..
 .
 .
@@ -3773,6 +3778,8 @@
 .\" NS   doc-reg-dhl
 .
 .de doc-hang-list
+.  nh
+.
 .  doc-set-vertical-and-indent 1
 .  nr doc-reg-dhl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
 .  ti -\n[doc-reg-dhl]u
@@ -3786,6 +3793,8 @@
 .  ds doc-out-string
 .  doc-reset-args
 '  fi
+.
+.  hy
 ..
 .
 .
@@ -3796,6 +3805,8 @@
 .\" NS   doc-out-string, doc-in-list
 .
 .de doc-ohang-list
+.  nh
+.
 .  doc-set-vertical-and-indent 0
 .  nop \&\*[doc-out-string]
 .  br
@@ -3804,6 +3815,8 @@
 .  ds doc-out-string
 .  doc-reset-args
 '  fi
+.
+.  hy
 ..
 .
 .
@@ -3896,6 +3909,8 @@
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
 .
+.  nh
+.
 .  ie \n[doc-have-diag-list] \{\
 .    ie ((\n[.c] - \n[doc-diag-list-input-line-count]) > 1) \
 .      doc-paragraph
@@ -3912,6 +3927,8 @@
 .  doc-reset-args
 .  ds doc-out-string
 '  fi
+.
+.  hy
 ..
 .
 .
@@ -3925,6 +3942,8 @@
 .\" NS   doc-reg-dtl
 .
 .de doc-tag-list
+.  nh
+.
 .  if !\n[doc-have-tag-width] \
 .    doc-get-tag-width
 .  doc-set-vertical-and-indent 1
@@ -3946,6 +3965,8 @@
 .  ds doc-out-string
 .  doc-reset-args
 '  fi
+.
+.  hy
 ..
 .
 .
@@ -4595,7 +4616,7 @@
 .\" NS width register `Fn' set in doc-common
 .
 .de Fn
-.  hy 0
+.  nh
 .
 .  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \{\
@@ -4798,7 +4819,7 @@
 .\" NS width register `Fo' set in doc-common
 .
 .de Fo
-.  hy 0
+.  nh
 .
 .  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \{\
@@ -5705,7 +5726,7 @@
 .\" NS   doc-reg-ddr, doc-reg-ddr1
 .
 .de doc-do-references
-.  hy 0
+.  nh
 .
 .  nr doc-reg-ddr1 \n[doc-type\n[doc-arg-ptr]]
 .
@@ -5862,7 +5883,7 @@
 .    \" .nr doc-num-args (\n[.$] - 1)
 .
 .    if "\$1"-std" \{\
-.      doc-reg-Rv \*[doc-section]
+.      nr doc-reg-Rv \*[doc-section]
 .      if ((\n[doc-reg-Rv] < 2) : (\n[doc-reg-Rv] > 3)) \
 .        tm Usage: .Rv -std in sections 2 and 3 only (#\n[.c])
 .      br
