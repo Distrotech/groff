@@ -1,3 +1,24 @@
+2002-01-25  Larry Kollar  <kollar@alltel.net>
+
+	* tmac/groff_ms.man: Typographical improvements.
+
+2002-01-25  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/groff.texinfo: Updated version and copyright.
+	* src/devices/grops/grops.man: Updated.
+
+	* tmac/groff_tmac.man: Fix `ig' macro.
+
+	* tmac/an-old.tmac (ne): Redefine `ne' request to be a no-op in
+	nroff mode.
+	Use `.ne' unconditionally everywhere.
+	(TS): Only insert some vertical space.  Doing a page break is no
+	longer necessary due to the redefinition of the `ne' request.
+
+	* src/libs/libdriver/input.cc (parse_D_command): Don't emit a
+	warning for unknown subcommands but parse and pass them to the
+	device driver.
+
 2002-01-24  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/groff_www.man, NEWS: Fix typos.
@@ -21,7 +42,7 @@
 	Note that currently grohtml doesn't handle colors properly.  This
 	has to be fixed.
 
-	* src/libgroff/itoa.c (UINT_DIGITS): New macro.
+	* src/libs/libgroff/itoa.c (UINT_DIGITS): New macro.
 	(ui_to_a): New function.
 	* src/include/lib.h: Updated.
 
@@ -32,7 +53,7 @@
 	(color::operator==, color:operator!=): New.
 	(Red, Green, Blue, Cyan, Magenta, Yellow, Black, Gray): New macros
 	to make access to the `components' array more comprehensible.
-	* src/libgroff/color.cc: Implement new color support.
+	* src/libs/libgroff/color.cc: Implement new color support.
 	(atoh): Small fixes.
 	(color::read_encoding): Simplified for new troff intermediate color
 	output format.
@@ -534,7 +555,7 @@
 
 2001-11-29  Werner LEMBERG  <wl@gnu.org>
 
-	* src/lib/libbib/map.c, src/utils/pfbtops/pfbtops.c: Include
+	* src/libs/libbib/map.c, src/utils/pfbtops/pfbtops.c: Include
 	stdlib.h.
 
 	* src/roff/troff/input.cc (read_draw_node): Emit error message if
@@ -1773,8 +1794,8 @@ Version 1.17 released
 
 	* src/devices/grohtml-old/*: Removed.
 	* font/devhtml-old/*: Removed.
-	* src/libgroff/htmlindicate.cc (graphic_start, graphic_end): Remove
-	comments.
+	* src/libs/libgroff/htmlindicate.cc (graphic_start, graphic_end):
+	Remove comments.
 	* Makefile.in (CCPROGDIRS, DEVDIRS): Updated.
 	* test-groff (PATH): Updated.
 	* tmac/Makefile.sub (NORMALFILES): Updated.
@@ -1786,11 +1807,11 @@ Version 1.17 released
 	* tmac/www.tmac: Remove special code for html-old device.
 	Replace `html-or-html-old' register with `www-html'.
 
-	* src/libgroff/tmpfile.cc (remove_tmp_files),
-	src/libgroff/htmlindicate.cc (graphic_end), include/htmlindicate.h,
-	src/preproc/grn/*.cc, src/roff/groff/env.{cc,h}: Remove `void'
-	parameter if used as a single argument for consistency with rest of
-	source code.
+	* src/libs/libgroff/tmpfile.cc (remove_tmp_files),
+	src/libs/libgroff/htmlindicate.cc (graphic_end),
+	include/htmlindicate.h, src/preproc/grn/*.cc,
+	src/roff/groff/env.{cc,h}: Remove `void' parameter if used as a
+	single argument for consistency with rest of source code.
 
 	* aclocal.m4, tmac/an-old.tmac: Fix copyright.
 
@@ -2899,10 +2920,10 @@ Version 1.17 released
 	files.  Add home directory to unsafe path for consistency.  Don't
 	include the home directory in the font path.
 
-	* src/lib/libgroff/macropath.cc: Add `config_macro_path', change
+	* src/libs/libgroff/macropath.cc: Add `config_macro_path', change
 	`macro_path'.
 	* src/include/macropath.h: Add `config_macrp_path'.
-	* src/lib/libgroff/fontfile.cc: Fix font path.
+	* src/libs/libgroff/fontfile.cc: Fix font path.
 	* src/roff/troff/input.cc (process_startup_file): Use
 	`config_macro_path'.
 	(main): Select unsafe path if -U is given.
@@ -3058,8 +3079,8 @@ Version 1.17 released
 	* configure.in: Fix typo in comment.
 	* configure: Regenerated.
 
-	* src/libgroff/*, src/include/*, src/roff/troff/*: Fixing copyright
-	dates.
+	* src/libs/libgroff/*, src/include/*, src/roff/troff/*: Fixing
+	copyright dates.
 
 2000-11-08  Werner LEMBERG  <wl@gnu.org>
 
@@ -3631,7 +3652,7 @@ Version 1.16.1 released
 	(search_path::open_file): Use IS_ABSOLUTE, PATH_SEP and DIR_SEPS,
 	to support non-Posix systems.
 
-	* src/libc/libbib/search.cc: #include nonposix.h.
+	* src/libs/libbib/search.cc: #include nonposix.h.
 	(search_list::add_file): Open the file in binary mode.
 
 	* src/libs/libbib/linear.cc: #include nonposix.h.

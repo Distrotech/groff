@@ -347,7 +347,8 @@ ColorArg color_from_Df_command(IntArg);	// transform old color into new
 void fatal_command(char);	// abort for illegal command
 inline Char get_char(void);	// read next character from input stream
 ColorArg get_color_arg(void);	// read in argument for new color cmds
-IntArray *get_D_fixed_args(const int, const bool = false); // read in fixed no. of int args
+IntArray *get_D_fixed_args(const int, const bool = false);
+				// read in fixed no. of int args
 IntArray *get_D_variable_args(void); // variable, even no. of int args
 char *get_extended_arg(void);	// argument for `x X' (several lines)
 IntArg get_integer_arg(void);	// read in next integer argument
@@ -575,7 +576,8 @@ get_color_arg(void) {
 
    number: In-parameter, the number of args to be retrieved.
    ignore: In-parameter, ignore next argument -- GNU troff always emits
-           pairs of parameters for `D' extensions.  Default is `false'.
+           pairs of parameters for `D' extensions added by groff.
+           Default is `false'.
 
    Return: New IntArray containing the arguments.
 */
@@ -1114,6 +1116,7 @@ parse_D_command()
   switch((int) subcmd) {
   case '~':			// D~: draw B-spline
     // actually, this isn't available for some postprocessors
+  default:			// unknown options are passed to the device
     {
       IntArray *args = get_D_variable_args();
       send_draw(subcmd, args);
@@ -1197,11 +1200,6 @@ parse_D_command()
       delete args;
       break;
     }
-  default:			// ignore unknown D commands, but warn
-    warning("unknown command `D%1'", (char) subcmd);
-    skip_line();
-    // no positioning
-    break;
   } // end of D subcommands
 }
 

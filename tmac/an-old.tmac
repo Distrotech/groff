@@ -63,6 +63,11 @@
 .if \n[an-html] .nr C 1
 .if r ps4html .nr C 1
 .
+.if n \{\
+.  de ne
+.  .
+.\}
+.
 .de set-an-margin
 .  nr an-margin \\n[IN]
 ..
@@ -256,7 +261,7 @@
 .  nr an-break-flag 1
 .  ps \\n[PS-SH]u
 .  ft B
-.  if !\\n[cR] .ne (2v + 1u)
+.  ne (2v + 1u)
 .  if \\n[.$] \&\\$*
 ..
 .
@@ -273,7 +278,7 @@
 .  nr an-break-flag 1
 .  ps \\n[PS-SS]u
 .  ft B
-.  if !\\n[cR] .ne (2v + 1u)
+.  ne (2v + 1u)
 .  if \\n[.$] \&\\$*
 ..
 .
@@ -337,7 +342,7 @@
 .  di
 .  ie (\\n[dl] + \\n[an-tag-sep] > \\n[an-prevailing-indent]) \{\
 .    in \\n[an-margin]u
-.    if !\\n[cR] .ne (2v + 1u)
+.    ne (2v + 1u)
 .    an-div
 .    br
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
@@ -346,7 +351,7 @@
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .    ti -\\n[an-prevailing-indent]u
 .    chop an-div
-.    if !\\n[cR] .ne (1v + 1u)
+.    ne (1v + 1u)
 \\*[an-div]\\h'|\\n[an-prevailing-indent]u'\c
 .  \}
 ..
@@ -370,7 +375,7 @@
 .    vs \\n[VS]u
 .    ft R
 .    sp \\n[PD]u
-.    if !\\n[cR] .ne (1v + 1u)
+.    ne (1v + 1u)
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .  \}
 .  el \{\
@@ -385,7 +390,7 @@
 .  vs \\n[VS]u
 .  ft R
 .  sp \\n[PD]u
-.  if !\\n[cR] .ne (1v + 1u)
+.  ne (1v + 1u)
 .  if \\n[.$] .nr an-prevailing-indent (n;\\$1)
 .  in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .  ti \\n[an-margin]u
@@ -494,12 +499,6 @@
 .
 .de1 TS
 .  sp \\n[PD]u
-.  if n \{\
-.    nr an-pl \\n[.p]
-.    pl \\n[nl]u
-.    bp
-.    pl \\n[an-pl]u
-.  \}
 ..
 .
 .de1 TE
