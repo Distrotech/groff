@@ -270,17 +270,15 @@ www functionality.  It should work with any macro set.
 .\" an auxiliary macro for HTML (without following space)
 .\"
 .de HTML-NS
-.  if \\n[www-html] \
-.    tag "html:\\$*
+.  tag "html:\\$*
 ..
 .\"
 .\" emit a HTML tag after shutting down a (possibly open) paragraph
 .\"
 .de HTML</p>
 .  if \\n[www-html] \{\
-.    \" the following line makes the vertical mode leave, so to say
-.    nop \&
-.    nop \X^html</p>:\\$*^
+.    \" the `\&' makes the vertical mode leave, so to say
+.    nop \&\X^html</p>:\\$*^
 .  \}
 ..
 .\" --------------------------------------------------------------------
@@ -422,8 +420,7 @@ www functionality.  It should work with any macro set.
 .\"   Emit a tag for grohtml (without a space).  This is an internal macro.
 .\"
 .de HTML-TAG-NS
-.  if \\n[www-html] \
-.    tag html-tag:\\$*
+.  tag html-tag:\\$*
 ..
 .\" --------------------------------------------------------------------
 .\" HTML-TAG-NEXT
@@ -432,8 +429,7 @@ www functionality.  It should work with any macro set.
 .\"   This is an internal macro.
 .\"
 .de HTML-TAG-NEXT
-.  if \\n[www-html] \
-.    taga html-tag:\\$*
+.  taga html-tag:\\$*
 ..
 .
 .\" --------------------------------------------------------------------
@@ -674,20 +670,15 @@ www functionality.  It should work with any macro set.
 .\"   section/numbered headings at this position.
 .\"
 .de LK
-.    HTML-TAG ".links"
+.  HTML-TAG-NS ".links"
 ..
 .\" --------------------------------------------------------------------
 .\" HR
 .\"
-.\"   Produce a horizontal line
+.\"   Produce a horizontal line.
 .\"
 .de HR
-.  ie \\n[www-html] \{\
-.    ti 0
-.    HTML "<hr>"
-.  \}
-.  el \
-.    sp
+.  HTML-NS "<hr>"
 ..
 .\" --------------------------------------------------------------------
 .\" NHR
@@ -702,7 +693,8 @@ www functionality.  It should work with any macro set.
 .\" www-end-nowhere - end of input trap called to finish diversion.
 .\"
 .de www-end-nowhere
-.  if !\\n[www-html] .di
+.  if !\\n[www-html] \
+.    di
 .  HTML-TAG ".eo.tl"
 ..
 .\" --------------------------------------------------------------------
@@ -718,7 +710,8 @@ www functionality.  It should work with any macro set.
 .\"
 .de HTL
 .  HTML-TAG ".html-tl"
-.  if !\\n[www-html] .di www-nowhere
+.  if !\\n[www-html] \
+.    di www-nowhere
 .  it 2 www-end-nowhere
 ..
 .

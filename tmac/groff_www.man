@@ -35,6 +35,8 @@
 .SH NAME
 groff_www \- groff macros for authoring web pages
 .HR
+.
+.
 .SH SYNOPSIS
 .B "groff \-mwww"
 [ options ]
@@ -81,6 +83,7 @@ Here is a summary of the functions found in this macro set.
 \&.HR	produce a horizontal rule
 \&.NHR	suppress automatic generation of rules.
 \&.HTL	only generate HTML title
+\&.HEAD	add data to <head> block
 \&.ULS	unorder list begin
 \&.ULE	unorder list end
 \&.LI	insert a list item
@@ -378,7 +381,9 @@ those links can be seen right here.
 .
 .TP
 .B .HR
-Generate a full-width horizontal rule.
+Generate a full-width horizontal rule for
+.BR \-Thtml .
+No effect for all other devices.
 .
 .TP
 .B .NHR
@@ -396,6 +401,23 @@ macro package which generates both an HTML title and an <H1> heading.
 Use it to provide an HTML title as search engine fodder but a graphic title
 in the document.
 The macro terminates when a space or break is seen (.sp, .br).
+.
+.TP
+.B .HEAD
+Add arbitrary HTML data to the <head> block.
+Ignored if not processed with
+.BR \-Thtml .
+Example:
+.RS
+.IP
+.nf
+.B ".HEAD" "\[dq]<link \[rs]"
+.B "  rel=\[dq]\[dq]icon\[dq]\[dq] \[rs]"
+.B "  type=\[dq]\[dq]image/png\[dq]\[dq] \[rs]"
+.B "  href=\[dq]\[dq]http://foo.org//bar.png\[dq]\[dq]/>\[dq]"
+.fi
+.ft P
+.RE
 .
 .TP
 .B .HTML

@@ -2489,23 +2489,23 @@ void html_printer::determine_header_level (int level)
 void html_printer::do_heading (char *arg)
 {
   text_glob *g;
-  text_glob *l = 0;
   int  level=atoi(arg);
+  int  horiz;
 
   header.header_buffer.clear();
   page_contents->glyphs.move_right();
   if (! page_contents->glyphs.is_equal_to_head()) {
     g = page_contents->glyphs.get_data();
+    horiz = g->minh;
     do {
       if (g->is_auto_img()) {
 	string img=generate_img_src((char *)(g->text_string + 20));
 
 	if (! img.empty()) {
 	  simple_anchors = TRUE;  // we cannot use full heading anchors with images
-	  if (l != 0)
+	  if (horiz < g->minh)
 	    header.header_buffer += " ";
 	  
-	  l = g;
 	  header.header_buffer += img;
 	}
       }
@@ -2519,10 +2519,10 @@ void html_printer::do_heading (char *arg)
 	/*
 	 *  we ignore the other tag commands when constructing a heading
 	 */
-	if (l != 0)
+	if (horiz < g->minh)
 	  header.header_buffer += " ";
-	l = g;
 
+	horiz = g->maxh;
 	header.header_buffer += string(g->text_string, g->text_length);
       }
       page_contents->glyphs.move_right();
@@ -2827,7 +2827,7 @@ void html_printer::do_flush (void)
 
 void html_printer::do_links (void)
 {
-  current_paragraph->done_para();
+  html.end_line();                      // flush line
   auto_links = FALSE;   /* from now on only emit under user request */
   file_list.add_new_file(xtmpfile());
   file_list.set_links_required();
