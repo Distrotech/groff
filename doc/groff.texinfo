@@ -13,11 +13,15 @@
 @c   findex: requests, escapes, and functions
 @c   vindex: registers
 @c   kindex: commands in font files
-@c   pindex: programs
+@c   pindex: programs and files
 @c   tindex: environment variables
+@c   maindex: macros and strings
+@c   glindex: glyph names
 @c
 @c tindex and cindex are merged.
 
+@defcodeindex ma
+@defcodeindex gl
 @syncodeindex tp cp
 
 
@@ -152,6 +156,8 @@ contributions are welcome.  Send them to bug-groff@@gnu.org.
 * Installation::                
 * Request and Operator Index::  
 * Register Index::              
+* Macro and String Index::      
+* Glyph Name Index::            
 * Font File Keyword Index::     
 * Program and File Index::      
 * Concept Index::               
@@ -847,6 +853,10 @@ Large portions of this manual were taken from existing documents, most
 notably, the manual pages for the @code{groff} package by James Clark,
 and Eric Allman's papers on the @option{-me} macro package.
 
+The section on the @option{-man} macro package is partly based on
+Susan@w{ }G.@: Kleinmann's @file{groff_man} manual page written for the
+Debian GNU/Linux system.
+
 
 
 @node Invoking groff, Tutorial for Macro Users, Introduction, Top
@@ -869,13 +879,13 @@ don't contain proprietary software, this prefix is omitted since GNU
 @code{groff} is never replaced by @code{roff}.
 
 @menu
-* Options::                     
+* Groff Options::               
 * Environment::                 
 * Invocation Examples::         
 @end menu
 
 
-@node Options, Environment, Invoking groff, Invoking groff
+@node Groff Options, Environment, Invoking groff, Invoking groff
 @section Options
 @cindex options
 
@@ -1077,7 +1087,7 @@ This option is as described in @ref{gsoelim}.  It implies the
 @end table
 
 
-@node Environment, Invocation Examples, Options, Invoking groff
+@node Environment, Invocation Examples, Groff Options, Invoking groff
 @section Environment
 @cindex environment variables
 @cindex variables in environment
@@ -1560,8 +1570,352 @@ This chapter documents the main macro packages that come with
 @node -man, -mdoc, Macro Packages, Macro Packages
 @section -man
 @cindex @option{-man}
+@pindex tmac.an
 
-@c XXX documentation
+This is the most popular and probably the most important macro package
+of @code{groff}.  It is easy to use, and a vast majority of manual pages
+use it.
+
+@menu
+* Man options::                 
+* Man usage::                   
+* Man font macros::             
+* Miscellaneous man stuff::     
+@end menu
+
+@node Man options, Man usage, -man, -man
+@subsection Options
+
+The command line format for using the @option{-man} macros with
+@code{groff} is:
+
+@c XXX document @TMAC_AN_PREFIX@
+
+@example
+groff -man [ -rC1 ] [ -rD1 ] [ -rP @var{nnn} ] [ -rX @var{nnn} ]
+      [ @var{files}@dots{} ] 
+@end example
+
+@table @code
+@item -rC1
+If more than one manual page is given on the command line, number the
+pages continuously, rather than starting each at@w{ }1.
+@item -rD1
+Double-sided printing.  Footers for even and odd pages are formatted
+differently.
+@item -rP @var{nnn}
+Enumeration of pages will start with @var{nnn} rather than with@w{ }1.
+@item -rX @var{nnn}
+After page @var{nnn}, number pages as @var{nnn}a, @var{nnn}b,
+@var{nnn}c, etc.  For example, the option @option{-rX2} will produce the
+following page numbers: 1, 2, 2a, 2b, 2c, etc.
+@end table
+
+@node Man usage, Man font macros, Man options, -man
+@subsection Usage
+
+@pindex man.local
+This section describes the available macros for manual pages.  For
+further customization, put additional macros and requests into the file
+@file{man.local} which will be loaded immediately after @file{tmac.an}.
+
+@maindex TH
+@defmac TH title section [@var{extra1}] [@var{extra2}] [@var{extra3}]
+Sets the title of the man page to @var{title} and the section to
+@var{section}, which must take on a value between 1 and@w{ }8.  The
+value @var{section} may also have a string appended, e.g.@: @samp{.pm},
+to indicate a specific subsection of the man pages.
+
+Both @var{title} and @var{section} are positioned at the left and right
+in the header line (with @var{section} in parentheses immediately
+appended to @var{title}.  @var{extra1} will be positioned in the middle
+of the footer line.  @var{extra2} will be positioned at the left in the
+footer line (resp.@: at the left on even pages and at the right on odd
+pages if double-sided printing is active).  @var{extra3} is centered in
+the header line.
+
+For @acronym{HTML} output, headers and footers are completely supressed.
+
+Additionally, this macro starts a new page; the new line number is@w{ }1
+again (except if the @option{-rC1} option is given on the command
+line)---this feature is intended only for formatting multiple man pages;
+a single man page should contain exactly one @code{TH} macro at the
+beginning of the file.
+@end defmac
+
+@maindex SH
+@defmac SH [@var{heading}]
+Sets up an unnumbered section heading sticking out to the left.  Prints
+out all the text following @code{SH} up to the end of the line (resp.@:
+the text in the next line if there is no argument to @code{SH}) in bold
+face, at a default size of 9@w{ }point.  Additionally, the left margin
+for the following text is reset to its default value.
+@end defmac
+
+@maindex SS
+@defmac SS [@var{heading}]
+Sets up an unnumbered section heading.  Prints out all the text
+following @code{SS} up to the end of the line (resp.@: the text in the
+next line if there is no argument to @code{SS}) in bold face, at a
+default size of 10@w{ }point.  Additionally, the left margin for the
+following text is reset to its default value.
+@end defmac
+
+@maindex TP
+@defmac TP [@var{nnn}]
+Sets up an indented paragraph with label.  The indentation is set to
+@var{nnn} if that argument is supplied (the default unit is @samp{n} if
+omitted), otherwise it is set to the default indentation value.
+
+The first line of text following this macro is interpreted as a string
+to be printed flush-left, as it is appropriate for a label.  It is not
+interpreted as part of a paragraph, so there is no attempt to fill the
+first line with text from the following input lines.  Nevertheless, if
+the label is not as wide as the indentation, then the paragraph starts
+at the same line (but indented), continuing on the following lines.  If
+the label is wider than the indentation, then the descriptive part of
+the paragraph begins on the line following the label, entirely indented.
+Note that neither font shape nor font size of the label is set to a
+default value; on the other hand, the rest of the text will have default
+font settings.
+@end defmac
+
+@maindex LP
+@maindex PP
+@maindex P
+@defmac LP
+@defmacx PP
+@defmacx P
+These macros are mutual aliases.  Any of them causes a line break at the
+current position, followed by a vertical space downwards by the amount
+specified by the @code{PD} macro.  The font size and shape are reset to
+the default value (10@dmn{pt} resp.@: Roman).  Finally, the current left
+margin is restored.
+@end defmac
+
+@maindex IP
+@defmac IP [@var{designator}] [@var{nnn}]
+Sets up an indented paragraph, using @var{designator} as a tag to mark
+its beginning.  The indentation is set to @var{nnn} if that argument is
+supplied (default unit is @samp{n}), otherwise the default indentation
+value is used.  Font size and face of the paragraph (but not the
+designator) are reset to its default values.  To start an indented
+paragraph with a particular indentation but without a designator, use
+@samp{""} (two doublequotes) as the first argument of @code{IP}.
+
+For example, to start a paragraph with bullets as the designator and
+4@dmn{en} indentation, write
+
+@example
+.IP \(bu 4
+@end example
+@end defmac
+
+@maindex HP
+@defmac HP [@var{nnn}]
+Sets up a paragraph with hanging left indentation.  The indentation is
+set to @var{nnn} if that argument is supplied (default unit is
+@samp{n}), otherwise the default indentation value is used.  Font size
+and face are reset to its default values.
+@end defmac
+
+@maindex RS
+@defmac RS [@var{nnn}]
+This macro moves the left margin to the right by the value @var{nnn} if
+specified (default unit is @samp{n}); otherwise the default indentation
+value is used.  Calls to the @code{RS} macro can be nested.
+@end defmac
+
+@maindex RE
+@defmac RE [@var{nnn}]
+This macro moves the left margin back to level @var{nnn}; if no argument
+is given, it moves one level back.  The first level (i.e., no call to
+@code{RS} yet) has number@w{ }1, and each call to @code{RS} increases
+the level by@w{ }1.
+@end defmac
+
+@maindex SH
+@maindex SS
+@maindex TP
+@maindex LP
+@maindex PP
+@maindex P
+@maindex IP
+@maindex HP
+To summarize, the following macros cause a line break with the insertion
+of vertical space (which amount can be changed with the @code{PD}
+macro): @code{SH}, @code{SS}, @code{TP}, @code{LP} (@code{PP},
+@code{P}), @code{IP}, and @code{HP}.
+
+@maindex RS
+@maindex RE
+The macros @code{RS} and @code{RE} also cause a break but no insertion
+of vertical space.
+
+@node Man font macros, Miscellaneous man stuff, Man usage, -man
+@subsection Macros to set fonts
+
+The standard font is Roman; the default text size is 10@w{ }point.
+
+@maindex SM
+@defmac SM [@var{text}]
+Causes the text on the same line or the text on the next line to appear
+in a font that is one point size smaller than the default font.
+@end defmac
+
+@maindex SB
+@defmac SB [@var{text}]
+Causes the text on the same line or the text on the next line to appear
+in boldface font, one point size smaller than the default font.
+@end defmac
+
+@maindex BI
+@defmac BI text
+Causes text on the same line to appear alternately in bold face and
+italic.  The text must be on the same line as the macro call.  Thus
+
+@example
+.BI this "word and" that
+@end example
+
+@noindent
+would cause `this' and `that' to appear in bold face, while `word and'
+appears in italics.
+@end defmac
+
+@maindex IB
+@defmac IB text
+Causes text to appear alternately in italic and bold face.  The text
+must be on the same line as the macro call.
+@end defmac
+
+@maindex RI
+@defmac RI text
+Causes text on the same line to appear alternately in roman and italic.
+The text must be on the same line as the macro call.
+@end defmac
+
+@maindex IR
+@defmac IR text
+Causes text on the same line to appear alternately in italic and roman.
+The text must be on the same line as the macro call.
+@end defmac
+
+@maindex BR
+@defmac BR text
+Causes text on the same line to appear alternately in bold face and
+roman.  The text must be on the same line as the macro call.
+@end defmac
+
+@maindex RB
+@defmac RB text
+Causes text on the same line to appear alternately in roman and bold
+face.  The text must be on the same line as the macro call.
+@end defmac
+
+@maindex R
+@defmac R [@var{text}]
+Causes @var{text} to appear in roman font.  If no text is present on the
+line where the macro is called, then the text of the next line appears
+in roman.  This is the default font to which text is returned at the end
+of processing of the other macros.
+@end defmac
+
+@maindex B
+@defmac B [@var{text}]
+Causes @var{text} to appear in bold face.  If no text is present on the
+line where the macro is called, then the text of the next line appears
+in bold face.
+@end defmac
+
+@maindex I
+@defmac I [@var{text}]
+Causes @var{text} to appear in italic.  If no text is present on the
+line where the macro is called, then the text of the next line appears
+in italic.
+@end defmac
+
+@node Miscellaneous man stuff,  , Man font macros, -man
+@subsection Miscellaneous
+
+@pindex grohtml
+@cindex @option{-man}, default indentation
+@cindex default indentation, @option{-man}
+The default indentation is 7.2@dmn{n} for all output devices except for
+@code{grohtml} which uses 1.2@dmn{i} instead.
+
+@maindex DT
+@maindex TH
+@defmac DT
+Sets tabs every 0.5@w{ }inches.  Since this macro is always called
+during a @code{TH} request, it makes sense to call it only if the tab
+positions have been changed.
+@end defmac
+
+@maindex PD
+@defmac PD [@var{nnn}]
+Adjusts the empty space before a new paragraph (resp.@: section).  The
+optional argument gives the amount of space (default units are
+@samp{v}); without parameter, the value is reset to its default value
+(1@w{ }line for tty devices, 0.4@dmn{v}@w{ }otherwise).
+@end defmac
+
+@maindex SH
+@maindex SS
+@maindex TP
+@maindex LP
+@maindex PP
+@maindex P
+@maindex IP
+@maindex HP
+This affects the macros @code{SH}, @code{SS}, @code{TP}, @code{LP}
+(resp.@: @code{PP} and @code{P}), @code{IP}, and @code{HP}.
+
+The following strings are defined:
+
+@maindex \*S
+@defmac \*S
+Switch back to the default font size.
+@end defmac
+
+@maindex \*R
+@defmac \*R
+The `registered' sign.
+@end defmac
+
+@maindex \*(Tm
+@defmac \*(Tm
+The `trademark' sign.
+@end defmac
+
+@maindex \*(lq
+@maindex \*(rq
+@glindex lq
+@glindex rq
+@defmac \*(lq
+@defmacx \*(rq
+Left and right quote.
+This is equal to @code{\(lq} and @code{\(rq}, respectively.
+@end defmac
+
+@cindex preprocessor, calling convention
+@cindex calling convention of preprocessors
+If a preprocessor like @code{gtbl} or @code{geqn} is needed, it has
+become usage to make the first line of the man page look like this:
+
+@example
+.\" @var{word}
+@end example
+
+@pindex geqn
+@pindex grefer
+@pindex gtbl
+@pindex man
+Note the single space character after the double quote.  @var{word}
+consists of letters for the needed preprocessors: @samp{e} for
+@code{geqn}, @samp{r} for @code{grefer}, @samp{t} for @code{gtbl}.
+Modern implementations of the @code{man} program read this first line
+and automatically call the right preprocessor(s).
 
 
 @node -mdoc, -ms, -man, Macro Packages
@@ -2790,7 +3144,7 @@ zero otherwise.
 @vindex .P
 This register indicates whether the current page is actually being
 printed, i.e., whether the @option{-o} option is being used to only
-print selected pages.  @xref{Options}, for more information.
+print selected pages.  @xref{Groff Options}, for more information.
 @end table
 
 
@@ -6705,14 +7059,28 @@ Most entries in kernpairs section will have a negative value for@w{
 
 
 
-@node Register Index, Font File Keyword Index, Request and Operator Index, Top
+@node Register Index, Macro and String Index, Request and Operator Index, Top
 @chapter Register Index
 
 @printindex vr
 
 
 
-@node Font File Keyword Index, Program and File Index, Register Index, Top
+@node Macro and String Index, Glyph Name Index, Register Index, Top
+@chapter Macro and String Index
+
+@printindex ma
+
+
+
+@node Glyph Name Index, Font File Keyword Index, Macro and String Index, Top
+@chapter Glyph Name Index
+
+@printindex gl
+
+
+
+@node Font File Keyword Index, Program and File Index, Glyph Name Index, Top
 @chapter Font File Keyword Index
 
 @printindex ky
