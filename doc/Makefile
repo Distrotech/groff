@@ -44,13 +44,19 @@ meintro.ps: meintro.dit
 
 # This production must use -p -e -t so pic/eqn processing is done
 pic.ps: pic.ms
-	sed $< -e "s;@VERSION@;`cat ../VERSION`;" \
+	sed -e "s;@VERSION@;`cat ../VERSION`;" $< \
 	| ../groff/groff -p -e -t -Tps $(FFLAG) -ms  >$@
+
+pic.html: pic.ms
+	sed -e "s;@VERSION@;`cat ../VERSION`;" $< \
+	| ../groff/groff -p -e -t -Thtml $(FFLAG) -ms -mhtml >$@
 
 install:
 
 clean:
-	-rm -f *.ps *.dit core
+	-rm -f *.ps *.html *.png *.gif *.dit core
+	-rm -f *.aux *.cp *.cps *.cv *.cn *.dvi *.fn *.fns *.ky *.kys \
+               *.log *.op *.pg *.pgs *.ps *.toc *.tp *.tps *.tr *.vr *.vrs
 
 distclean: clean
 
