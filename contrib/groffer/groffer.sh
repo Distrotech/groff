@@ -2,7 +2,7 @@
 
 # groffer - display groff files
 
-# File position: <groff-source>/contrib/groffer/groffer
+# Source file position: <groff-source>/contrib/groffer/groffer.sh
 
 # Copyright (C) 2001,2002 Free Software Foundation, Inc.
 # Written by Bernd Warken <bwarken@mayn.de>
@@ -29,8 +29,10 @@ export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.2';
-_LAST_UPDATE='17 Oct 2002';
+_PROGRAM_VERSION='0.9.3';
+_LAST_UPDATE='21 Oct 2002';
+
+# This program is installed with groff version @VERSION@.
 
 ########################################################################
 # Determine the shell under which to run this script;
@@ -215,7 +217,6 @@ _DEBUG_LM='no';			# disable landmark messages
 # base_name (path)
 # catz (<file>)
 # clean_up ()
-# clean_up_secondary ()
 # diag (text>*)
 # dirname_append (<path> [<dir...>])
 # dirname_chop (<path>)
@@ -612,9 +613,9 @@ export _OPT_X;			# groff option -X.
 export _OPT_XRM;		# specify X resource.
 export _OPT_Z;			# groff option -Z.
 # _TMP_* temporary files
-export _TMP_DIR;		# directory for temporary files
+export _TMP_DIR;		# groff directory for temporary files
+export _TMP_DIR_SUB;		# groffer directory for temporary files
 export _TMP_CAT;		# stores concatenation of everything
-export _TMP_PREFIX;		# dir and base name for temporary files
 export _TMP_STDIN;		# stores stdin, if any
 
 # these variables are preset in section `Preset' after the rudim. test
@@ -672,8 +673,8 @@ _HAS_OPTS_POSIX='';
 
 # _TMP_* temporary files
 _TMP_DIR='';
+_TMP_DIR_SUB='';
 _TMP_CAT='';
-_TMP_PREFIX='';
 _TMP_STDIN='';
 
 
@@ -788,19 +789,8 @@ landmark "1: debugging functions";
 #
 clean_up()
 {
-  clean_up_secondary;
-  rm -f "${_TMP_CAT}";
-}
-
-
-##############
-# clean_up_secondary ()
-#
-# Clean up temporary files without $_TMP_CAT.
-#
-clean_up_secondary()
-{
-  rm -f "${_TMP_STDIN}";
+  rm -f "${_TMP_DIR}"/*;
+  rmdir "${_TMP_DIR}";
 }
 
 
@@ -1273,14 +1263,6 @@ fi;
 # clean_up ()
 #
 # Do the final cleaning up before exiting; used by the trap calls.
-#
-# defined above
-
-
-########################################################################
-# clean_up_secondary ()
-#
-# Do the second but final cleaning up.
 #
 # defined above
 
@@ -2913,7 +2895,7 @@ if test "${_HAS_COMPRESSION}" = 'yes'; then
   {
     local _f;
     func_check save_stdin = 0 "$@";
-    _f="$(tmp_create)";
+     _f="${_TMP_DIR}"/INPUT;
     cat >"${_f}";
     catz "${_f}" >"${_TMP_STDIN}";
     rm -f "${_f}";
@@ -3005,9 +2987,9 @@ tmp_create()
 {
   func_check tmp_create '<=' 1 "$@";
   local _tmp;
-  _tmp="${_TMP_PREFIX}${_PROCESS_ID}$1";
+  _tmp="${_TMP_DIR}/$1";
   echo -n >"${_tmp}";
-  echo -n "${_tmp}";
+  echo -n "${_tmp}";		# output file name
   eval "${return_ok}";
 }
 
@@ -3286,24 +3268,39 @@ main_init()
   done;
 
   # determine temporary directory
+  umask 000;
+  _TMP_DIR='';
   for d in "${GROFF_TMPDIR}" "${TMPDIR}" "${TMP}" "${TEMP}" \
            "${TEMPDIR}" "${HOME}"'/tmp' '/tmp' "${HOME}" '.';
   do
     if test "$d" != ""; then
       if test -d "$d" && test -r "$d" && test -w "$d"; then
-        _TMP_DIR="$d";
-        break;
+        _TMP_DIR="${d}/${_PROGRAM_NAME}${_PROCESS_ID}";
+        if test -d "${_TMP_DIR}"; then
+	  rm -f "${_TMP_DIR}"/*;
+          break;
+        else
+          mkdir "${_TMP_DIR}";
+          if test ! -d "${_TMP_DIR}"; then
+	    _TMP_DIR='';
+	    continue;
+  	  fi;
+          break;
+	fi;
+      fi;
+      if test ! -w "${_TMP_DIR}"; then
+	_TMP_DIR='';
+	continue;
       fi;
     fi;
   done;
   unset d;
-  if test "${_TMP_DIR}" = ""; then
-    error "Couldn't find a directory for storing temorary files.";
+  if test "${_TMP_DIR}" = ''; then
+    error "Couldn't create a directory for storing temporary files.";
   fi;
-  _TMP_PREFIX="${_TMP_DIR}/${_PROGRAM_NAME}";
 
-  _TMP_CAT="$(tmp_create)";
-  _TMP_STDIN="$(tmp_create i)";
+  _TMP_CAT="$(tmp_create groffer_cat)";
+  _TMP_STDIN="$(tmp_create groffer_input)";
   eval "${return_ok}";
 } # main_init()
 
@@ -4048,7 +4045,7 @@ main_do_fileargs()
       _exitcode="${_GOOD}";
     fi;
   done;
-  clean_up_secondary;
+  rm -f "${_TMP_STDIN}";
   if is_equal "${_exitcode}" "${_BAD}"; then
     eval "${return_bad}";
   fi;
@@ -4191,7 +4188,7 @@ main_set_resources()
 # Globals:
 #   in: $_DISPLAY_MODE, $_OPT_DEVICE,
 #       $_ADDOPTS_GROFF, $_ADDOPTS_POST, $_ADDOPTS_X,
-#       $_REGISTERED_TITLE, $_TMP_PREFIX, $_TMP_CAT,
+#       $_REGISTERED_TITLE, $_TMP_CAT,
 #       $_OPT_PAGER $PAGER $_MANOPT_PAGER
 #
 landmark '19: main_display()';
@@ -4377,7 +4374,8 @@ main_display()
 _do_display()
 {
   trap "" EXIT 2>/dev/null || true;
-  # start a new shell program to get another process ID.
+  # start a new shell program for another process ID and better
+  # cleaning-up of the temporary files.
   sh -c '
     set -e;
     _PROCESS_ID="$$";
@@ -4389,7 +4387,8 @@ _do_display()
     (
       clean_up()
       {
-        rm -f "${_modefile}";
+        rm -f "${_TMP_DIR}"/*;
+        rmdir "${_TMP_DIR}";
       }
       trap clean_up EXIT 2>/dev/null || true;
       eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "${_modefile}";
