@@ -666,7 +666,7 @@ vjustify_node::vjustify_node(symbol t)
 
 node *vjustify_node::copy()
 {
-  return new vjustify_node(typ);
+  return new vjustify_node(typ, div_nest_level);
 }
 
 const char *vjustify_node::type()

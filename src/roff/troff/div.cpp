@@ -51,7 +51,9 @@ static vunits needed_space;
 
 diversion::diversion(symbol s) 
 : prev(0), nm(s), vertical_position(V0), high_water_mark(V0),
-  no_space_mode(0), marked_place(V0)
+  no_space_mode(0), needs_push(0), marked_place(V0),
+  any_chars_added(0), saved_seen_break(0), saved_seen_space(0),
+  saved_seen_eol(0), saved_suppress_next_eol(0)
 {
 }
 
@@ -97,6 +99,10 @@ void do_divert(int append, int boxing)
   symbol nm = get_name();
   if (nm.is_null()) {
     if (curdiv->prev) {
+      curenv->seen_break = curdiv->saved_seen_break;
+      curenv->seen_space = curdiv->saved_seen_space;
+      curenv->seen_eol = curdiv->saved_seen_eol;
+      curenv->suppress_next_eol = curdiv->saved_suppress_next_eol;
       if (boxing) {
 	curenv->line = curdiv->saved_line;
 	curenv->width_total = curdiv->saved_width_total;
@@ -116,6 +122,13 @@ void do_divert(int append, int boxing)
     macro_diversion *md = new macro_diversion(nm, append);
     md->prev = curdiv;
     curdiv = md;
+    curdiv->saved_seen_break = curenv->seen_break;
+    curdiv->saved_seen_space = curenv->seen_space;
+    curdiv->saved_seen_eol = curenv->seen_eol;
+    curdiv->saved_suppress_next_eol = curenv->suppress_next_eol;
+    curenv->seen_break = 0;
+    curenv->seen_space = 0;
+    curenv->seen_eol = 0;
     if (boxing) {
       curdiv->saved_line = curenv->line;
       curdiv->saved_width_total = curenv->width_total;
@@ -202,7 +215,7 @@ macro_diversion::macro_diversion(symbol s, int append)
   // We can now catch the situation described above by comparing
   // the length of the charlist in the macro_header with the length
   // stored in the macro. When we detect this, we copy the contents.
-  mac = new macro;
+  mac = new macro(1);
   if (append) {
     request_or_macro *rm 
       = (request_or_macro *)request_dictionary.lookup(s);
@@ -257,9 +270,8 @@ void macro_diversion::output(node *nd, int retain_size,
     nd->set_vertical_size(&v);
     node *temp = nd;
     nd = nd->next;
-    if (temp->interpret(mac)) {
+    if (temp->interpret(mac))
       delete temp;
-    }
     else {
 #if 1
       temp->freeze_space();
@@ -445,6 +457,8 @@ void top_level_diversion::space(vunits n, int forced)
   vunits next_trap_pos;
   trap *next_trap = find_next_trap(&next_trap_pos);
   vunits y = vertical_position + n;
+  curenv->seen_space += n.to_units()
+			/ curenv->get_vertical_spacing().to_units();
   if (vertical_position_traps_flag && next_trap != 0 && y >= next_trap_pos) {
     vertical_position = next_trap_pos;
     nl_reg_contents = vertical_position.to_units();
@@ -639,7 +653,7 @@ void page_offset()
     n = topdiv->prev_page_offset;
   topdiv->prev_page_offset = topdiv->page_offset;
   topdiv->page_offset = n;
-  curenv->add_html_tag(0, ".po", n.to_units());
+  topdiv->modified_tag.incl(MTSM_PO);
   skip_line();
 }
 
@@ -732,11 +746,11 @@ void restore_spacing()
   skip_line();
 }
 
-/* It is necessary to generate a break before before reading the argument,
-because otherwise arguments using | will be wrong. But if we just
+/* It is necessary to generate a break before reading the argument,
+because otherwise arguments using | will be wrong.  But if we just
 generate a break as usual, then the line forced out may spring a trap
 and thus push a macro onto the input stack before we have had a chance
-to read the argument to the sp request. We resolve this dilemma by
+to read the argument to the sp request.  We resolve this dilemma by
 setting, before generating the break, a flag which will postpone the
 actual pushing of the macro associated with the trap sprung by the
 outputting of the line forced out by the break till after we have read
@@ -758,17 +772,15 @@ void space_request()
   else
     // The line might have had line spacing that was truncated.
     truncated_space += n;
-  curenv->add_html_tag(1, ".sp", n.to_units());
+  
   tok.next();
 }
 
 void blank_line()
 {
   curenv->do_break();
-  if (!trap_sprung_flag && !curdiv->no_space_mode) {
+  if (!trap_sprung_flag && !curdiv->no_space_mode)
     curdiv->space(curenv->get_vertical_spacing());
-    curenv->add_html_tag(1, ".sp", 1);
-  }
   else
     truncated_space += curenv->get_vertical_spacing();
 }
@@ -832,7 +844,6 @@ void flush_output()
     curenv->do_break();
   if (the_output)
     the_output->flush();
-  curenv->add_html_tag(1, ".fl");
   tok.next();
 }
 

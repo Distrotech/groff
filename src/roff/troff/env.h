@@ -19,6 +19,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+class statem;
+
 struct size_range {
   int min;
   int max;
@@ -149,7 +151,6 @@ class environment {
   hunits width_total;
   int space_total;
   hunits input_line_start;
-  tab_stops tabs;
   node *tab_contents;
   hunits tab_width;
   hunits tab_distance;
@@ -185,8 +186,6 @@ class environment {
 #ifdef WIDOW_CONTROL
   int widow_control;
 #endif /* WIDOW_CONTROL */
-  int ignore_next_eol;
-  int emitted_node;    // have we emitted a node since the last html eol tag?
   color *glyph_color;
   color *prev_glyph_color;
   color *fill_color;
@@ -195,9 +194,9 @@ class environment {
   tab_type distance_to_next_tab(hunits *);
   tab_type distance_to_next_tab(hunits *distance, hunits *leftpos);
   void start_line();
-  void output_line(node *, hunits);
+  void output_line(node *, hunits, int);
   void output(node *nd, int retain_size, vunits vs, vunits post_vs,
-	      hunits width);
+	      hunits width, int was_centered);
   void output_title(node *nd, int retain_size, vunits vs, vunits post_vs,
 		    hunits width);
 #ifdef WIDOW_CONTROL
@@ -211,6 +210,11 @@ class environment {
   node *make_tab_node(hunits d, node *next = 0);
   node *get_prev_char();
 public:
+  int seen_space;
+  int seen_eol;
+  int suppress_next_eol;
+  int seen_break;
+  tab_stops tabs;
   const symbol name;
   unsigned char control_char;
   unsigned char no_break_control_char;
@@ -219,6 +223,7 @@ public:
   environment(symbol);
   environment(const environment *);	// for temporary environment
   ~environment();
+  statem *construct_state(int only_eol);
   void copy(const environment *);
   int is_dummy() { return dummy; }
   int is_empty();
@@ -291,11 +296,7 @@ public:
   void possibly_break_line(int start_here = 0, int forced = 0);
   void do_break(int spread = 0);	// .br
   void final_break();
-  void add_html_tag(int, const char *);
-  void add_html_tag(int, const char *, int);
-  void add_html_tag_tabs(int);
-  node *make_html_tag(const char *name, int i);
-  node *make_html_tag(const char *);
+  node *make_tag(const char *name, int i);
   void newline();
   void handle_tab(int is_leader = 0); // do a tab or leader
   void add_node(node *);
@@ -314,6 +315,9 @@ public:
   const char *get_point_size_string();
   const char *get_requested_point_size_string();
   void output_pending_lines();
+  void construct_format_state(node *n, int was_centered, int fill);
+  void construct_new_line_state(node *n);
+  void dump_troff_state();
   
   friend void title_length();
   friend void space_size();

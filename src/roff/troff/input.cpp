@@ -19,6 +19,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+#define DEBUGGING
+
 #include "troff.h"
 #include "dictionary.h"
 #include "hvunits.h"
@@ -29,7 +31,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "token.h"
 #include "div.h"
 #include "charinfo.h"
-#include "stringclass.h"
 #include "font.h"
 #include "macropath.h"
 #include "defs.h"
@@ -117,6 +118,7 @@ double spread_limit = -3.0 - 1.0;	// negative means deactivated
 
 double warn_scale;
 char warn_scaling_indicator;
+int debug_state = 0;            // turns on debugging of the html troff state
 
 search_path *mac_path = &safer_macro_path;
 
@@ -195,9 +197,12 @@ void restore_escape_char()
 class input_iterator {
 public:
   input_iterator();
+  input_iterator(int is_div);
   virtual ~input_iterator() {}
   int get(node **);
   friend class input_stack;
+  int is_diversion;
+  statem *diversion_state;
 protected:
   const unsigned char *ptr;
   const unsigned char *eptr;
@@ -221,7 +226,12 @@ private:
 };
 
 input_iterator::input_iterator()
-: ptr(0), eptr(0)
+: ptr(0), eptr(0), is_diversion(0)
+{
+}
+
+input_iterator::input_iterator(int is_div)
+: ptr(0), eptr(0), is_diversion(is_div)
 {
 }
 
@@ -415,18 +425,21 @@ public:
   static int is_return_boundary();
   static void remove_boundary();
   static int get_level();
+  static int get_div_level();
   static void increase_level();
   static void decrease_level();
   static void clear();
   static void pop_macro();
   static void save_compatible_flag(int);
   static int get_compatible_flag();
-
+  static statem *get_diversion_state();
+  static void check_end_diversion(input_iterator *t);
   static int limit;
+  static int div_level;
+  static statem *diversion_state;
 private:
   static input_iterator *top;
   static int level;
-
   static int finish_get(node **);
   static int finish_peek();
 };
@@ -434,6 +447,10 @@ private:
 input_iterator *input_stack::top = &nil_iterator;
 int input_stack::level = 0;
 int input_stack::limit = DEFAULT_INPUT_STACK_LIMIT;
+int input_stack::div_level = 0;
+statem *input_stack::diversion_state = NULL;
+int suppress_push=0;
+
 
 inline int input_stack::get_level()
 {
@@ -448,6 +465,11 @@ inline void input_stack::increase_level()
 inline void input_stack::decrease_level()
 {
   level--;
+}
+
+inline int input_stack::get_div_level()
+{
+  return div_level;
 }
 
 inline int input_stack::get(node **np)
@@ -469,6 +491,12 @@ int input_stack::finish_get(node **np)
     if (top == &nil_iterator)
       break;
     input_iterator *tem = top;
+    check_end_diversion(tem);
+#if defined(DEBUGGING)
+  if (debug_state)
+    if (tem->is_diversion)
+      fprintf(stderr, "in diversion level = %d\n", input_stack::get_div_level());
+#endif
     top = top->next;
     level--;
     delete tem;
@@ -484,6 +512,14 @@ inline int input_stack::peek()
   return (top->ptr < top->eptr) ? *top->ptr : finish_peek();
 }
 
+void input_stack::check_end_diversion(input_iterator *t)
+{
+  if (t->is_diversion) {
+    div_level--;
+    diversion_state = t->diversion_state;
+  }
+}
+
 int input_stack::finish_peek()
 {
   for (;;) {
@@ -493,6 +529,7 @@ int input_stack::finish_peek()
     if (top == &nil_iterator)
       break;
     input_iterator *tem = top;
+    check_end_diversion(tem);
     top = top->next;
     level--;
     delete tem;
@@ -522,6 +559,8 @@ void input_stack::remove_boundary()
 {
   assert(top->is_boundary());
   input_iterator *temp = top->next;
+  check_end_diversion(top);
+
   delete top;
   top = temp;
   level--;
@@ -535,6 +574,37 @@ void input_stack::push(input_iterator *in)
     fatal("input stack limit exceeded (probable infinite loop)");
   in->next = top;
   top = in;
+  if (top->is_diversion) {
+    div_level++;
+    in->diversion_state = diversion_state;
+    diversion_state = curenv->construct_state(0);
+#if defined(DEBUGGING)
+    if (debug_state) {
+      curenv->dump_troff_state();
+      fflush(stderr);
+    }
+#endif
+  }
+#if defined(DEBUGGING)
+  if (debug_state)
+    if (top->is_diversion) {
+      fprintf(stderr, "in diversion level = %d\n", input_stack::get_div_level());
+      fflush(stderr);
+    }
+#endif
+}
+
+statem *get_diversion_state()
+{
+  return input_stack::get_diversion_state();
+}
+
+statem *input_stack::get_diversion_state()
+{
+  if (diversion_state == NULL)
+    return NULL;
+  else
+    return new statem(diversion_state);
 }
 
 input_iterator *input_stack::get_arg(int i)
@@ -613,6 +683,7 @@ void input_stack::end_file()
   for (input_iterator **pp = &top; *pp != &nil_iterator; pp = &(*pp)->next)
     if ((*pp)->is_file()) {
       input_iterator *tem = *pp;
+      check_end_diversion(tem);
       *pp = (*pp)->next;
       delete tem;
       level--;
@@ -627,6 +698,7 @@ void input_stack::clear()
     if (top->is_boundary())
       nboundaries++;
     input_iterator *tem = top;
+    check_end_diversion(tem);
     top = top->next;
     level--;
     delete tem;
@@ -647,6 +719,7 @@ void input_stack::pop_macro()
       nboundaries++;
     is_macro = top->is_macro();
     input_iterator *tem = top;
+    check_end_diversion(tem);
     top = top->next;
     level--;
     delete tem;
@@ -1031,6 +1104,7 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  int is_tag();
 };
 
 int non_interpreted_char_node::same(node *nd)
@@ -1044,6 +1118,11 @@ const char *non_interpreted_char_node::type()
 }
 
 int non_interpreted_char_node::force_tprint()
+{
+  return 0;
+}
+
+int non_interpreted_char_node::is_tag()
 {
   return 0;
 }
@@ -1495,6 +1574,7 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  int is_tag();
 };
 
 token_node::token_node(const token &t) : tk(t)
@@ -1522,6 +1602,11 @@ const char *token_node::type()
 }
 
 int token_node::force_tprint()
+{
+  return 0;
+}
+
+int token_node::is_tag()
 {
   return 0;
 }
@@ -2579,12 +2664,16 @@ int node::reread(int *)
   return 0;
 }
 
+int global_diverted_space = 0;
+
 int diverted_space_node::reread(int *bolp)
 {
+  global_diverted_space = 1;
   if (curenv->get_fill())
     trapping_blank_line();
   else
     curdiv->space(n);
+  global_diverted_space = 0;
   *bolp = 1;
   return 1;
 }
@@ -2641,10 +2730,33 @@ void process_input_stack()
 	    tok.next();
 	  } while (tok.white_space());
 	  symbol nm = get_name();
+#if defined(DEBUGGING)
+	  if (debug_state) {
+	    if (! nm.is_null()) {
+	      if (strcmp(nm.contents(), "test") == 0) {
+		fprintf(stderr, "found it!\n");
+		fflush(stderr);
+	      }
+	      fprintf(stderr, "interpreting [%s]", nm.contents());
+	      if (strcmp(nm.contents(), "di") == 0 && topdiv != curdiv)
+		fprintf(stderr, " currently in diversion: %s",
+			curdiv->get_diversion_name());
+	      fprintf(stderr, "\n");
+	      fflush(stderr);
+	    }
+	  }
+#endif
 	  if (nm.is_null())
 	    skip_line();
-	  else
+	  else {
 	    interpolate_macro(nm);
+#if defined(DEBUGGING)
+	    if (debug_state) {
+	      fprintf(stderr, "finished interpreting [%s] and environment state is\n", nm.contents());
+	      curenv->dump_troff_state();
+	    }
+#endif
+	  }
 	  suppress_next = 1;
 	}
 	else {
@@ -2652,6 +2764,11 @@ void process_input_stack()
 	    ;
 	  else {
 	    for (;;) {
+#if defined(DEBUGGING)
+	      if (debug_state) {
+		fprintf(stderr, "found [%c]\n", ch); fflush(stderr);
+	      }
+#endif
 	      curenv->add_char(charset_table[ch]);
 	      tok.next();
 	      if (tok.type != token::TOKEN_CHAR)
@@ -3029,6 +3146,7 @@ macro::~macro()
 }
 
 macro::macro()
+: is_a_diversion(0)
 {
   if (!input_stack::get_location(1, &filename, &lineno)) {
     filename = 0;
@@ -3041,10 +3159,27 @@ macro::macro()
 
 macro::macro(const macro &m)
 : p(m.p), filename(m.filename), lineno(m.lineno), len(m.len),
-  empty_macro(m.empty_macro)
+  empty_macro(m.empty_macro), is_a_diversion(m.is_a_diversion)
 {
   if (p != 0)
     p->count++;
+}
+
+macro::macro(int is_div)
+  : is_a_diversion(is_div)
+{
+  if (!input_stack::get_location(1, &filename, &lineno)) {
+    filename = 0;
+    lineno = 0;
+  }
+  len = 0;
+  empty_macro = 1;
+  p = 0;
+}
+
+int macro::is_diversion()
+{
+  return is_a_diversion;
 }
 
 macro &macro::operator=(const macro &m)
@@ -3059,6 +3194,7 @@ macro &macro::operator=(const macro &m)
   lineno = m.lineno;
   len = m.len;
   empty_macro = m.empty_macro;
+  is_a_diversion = m.is_a_diversion;
   return *this;
 }
 
@@ -3209,11 +3345,12 @@ public:
   void backtrace();
   void save_compatible_flag(int f) { saved_compatible_flag = f; }
   int get_compatible_flag() { return saved_compatible_flag; }
+  int is_diversion();
 };
 
 string_iterator::string_iterator(const macro &m, const char *p, symbol s)
-: mac(m), how_invoked(p),
-  newline_flag(0), lineno(1), nm(s)
+: input_iterator(m.is_a_diversion), mac(m), how_invoked(p), newline_flag(0),
+  lineno(1), nm(s)
 {
   count = mac.len;
   if (count != 0) {
@@ -3239,6 +3376,11 @@ string_iterator::string_iterator()
   count = 0;
 }
 
+int string_iterator::is_diversion()
+{
+  return mac.is_diversion();
+}
+
 int string_iterator::fill(node **np)
 {
   if (newline_flag)
@@ -3254,6 +3396,10 @@ int string_iterator::fill(node **np)
   if (*p == '\0') {
     if (np)
       *np = nd->copy();
+    if (is_diversion())
+      (*np)->div_nest_level = input_stack::get_div_level();
+    else
+      (*np)->div_nest_level = 0;
     nd = nd->next;
     eptr = ptr = p + 1;
     count--;
@@ -3441,6 +3587,7 @@ public:
   void add_arg(const macro &m);
   void shift(int n);
   int is_macro() { return 1; }
+  int is_diversion();
 };
 
 input_iterator *macro_iterator::get_arg(int i)
@@ -4953,6 +5100,7 @@ public:
   int same(node *);
   const char *type();
   int force_tprint();
+  int is_tag();
 };
 
 non_interpreted_node::non_interpreted_node(const macro &m) : mac(m)
@@ -4975,6 +5123,11 @@ const char *non_interpreted_node::type()
 }
 
 int non_interpreted_node::force_tprint()
+{
+  return 0;
+}
+
+int non_interpreted_node::is_tag()
 {
   return 0;
 }
@@ -5363,6 +5516,7 @@ int do_if_request()
     environment env2(curenv);
     environment *oldenv = curenv;
     curenv = &env1;
+    suppress_push = 1;
     for (int i = 0; i < 2; i++) {
       for (;;) {
 	tok.next();
@@ -5386,6 +5540,7 @@ int do_if_request()
     delete_node_list(n2);
     curenv = oldenv;
     have_input = 0;
+    suppress_push = 0;
     tok.next();
   }
   else {
@@ -5896,6 +6051,54 @@ const char *input_char_description(int c)
   }
   sprintf(buf, "character code %d", c);
   return buf;
+}
+
+void tag()
+{
+  if (!tok.newline() && !tok.eof()) {
+    string s;
+    int c;
+    for (;;) {
+      c = get_copy(0);
+      if (c == '"') {
+	c = get_copy(0);
+	break;
+      }
+      if (c != ' ' && c != '\t')
+	break;
+    }
+    s = "x X ";
+    for (; c != '\n' && c != EOF; c = get_copy(0))
+      s += (char)c;
+    s += '\n';
+    if (is_html)
+      curenv->add_node(new tag_node(s, 0));
+  }
+  tok.next();
+}
+
+void taga()
+{
+  if (!tok.newline() && !tok.eof()) {
+    string s;
+    int c;
+    for (;;) {
+      c = get_copy(0);
+      if (c == '"') {
+	c = get_copy(0);
+	break;
+      }
+      if (c != ' ' && c != '\t')
+	break;
+    }
+    s = "x X ";
+    for (; c != '\n' && c != EOF; c = get_copy(0))
+      s += (char)c;
+    s += '\n';
+    if (is_html)
+      curenv->add_node(new tag_node(s, 1));
+  }
+  tok.next();
 }
 
 // .tm, .tm1, and .tmc
@@ -7066,8 +7269,12 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { 0, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "abciI:vw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU",
-			  long_options, 0))
+#if defined(DEBUGGING)
+#define DEBUG_OPTION "D"
+#endif
+  while ((c = getopt_long(argc, argv,
+			  "abciI:vw:W:zCEf:m:n:o:r:d:F:M:T:tqs:RU"
+			  DEBUG_OPTION, long_options, 0))
 	 != EOF)
     switch(c) {
     case 'v':
@@ -7160,6 +7367,11 @@ int main(int argc, char **argv)
     case 'U':
       safer_flag = 0;	// unsafe behaviour
       break;
+#if defined(DEBUGGING)
+    case 'D':
+      debug_state = 1;
+      break;
+#endif
     case CHAR_MAX + 1: // --help
       usage(stdout, argv[0]);
       exit(0);
@@ -7395,6 +7607,8 @@ void init_input_requests()
   init_request("spreadwarn", spreadwarn_request);
   init_request("substring", substring_request);
   init_request("sy", system_request);
+  init_request("tag", tag);
+  init_request("taga", taga);
   init_request("tm", terminal);
   init_request("tm1", terminal1);
   init_request("tmc", terminal_continue);
