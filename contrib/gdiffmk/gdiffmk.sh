@@ -57,7 +57,11 @@ OPTIONS:
 function Exit {
 	exitcode=$1
 	shift
-	echo >&2 "${cmd}:  $@"
+	for arg
+	do
+		echo >&2 "${cmd}:  $1"
+		shift
+	done
 	exit ${exitcode}
 }
 
@@ -74,11 +78,11 @@ function FileRead {
 
 	if test ! -e "$2"
 	then
-		Exit $1  "File \`$2' not found."
+		Exit $1 "File \`$2' not found."
 	fi
 	if test ! -r "$2"
 	then
-		Exit $1  "File \`$2' not readable."
+		Exit $1 "File \`$2' not readable."
 	fi
 }
 
@@ -101,7 +105,7 @@ function FileCreate {
 			Exit $1 "File \`$2' not created; " \
 			  "Cannot write directory \`$( dirname "$2" )'."
 		fi
-		Exit $1  "File \`$2' not writeable."
+		Exit $1 "File \`$2' not writeable."
 	fi
 }
 
@@ -114,7 +118,9 @@ function WouldClobber {
 
 	if test "$1" -ef "$3"
 	then
-		Exit 3 "\`$3' is the same as \`$2' and would be clobbered."
+		Exit 3 \
+		  "The $2 and OUTPUT arguments both point to the same file," \
+		  "\`$1', and it would be overwritten."
 	fi
 }
 
@@ -241,14 +247,14 @@ diff -D"${label}" -- ${FILE1} ${FILE2}  |
 		  p
 		  d
 		}
-		/^#ifndef '"${label}"'/,/^#endif \/\* [not ]*'"${label}"'/ {
+		/^#ifndef '"${label}"'/,/^#endif \/\* [!not ]*'"${label}"'/ {
 		  /^#else \/\* '"${label}"'/,/^#endif \/\* '"${label}"'/ {
 		    /^#else \/\* '"${label}"'/    s/.*/.mc '"${changemark}"'/
 		    /^#endif \/\* '"${label}"'/   s/.*/.mc/
 		    p
 		    d
 		  }
-		  /^#endif \/\* not '"${label}"'/ {
+		  /^#endif \/\* \(not\|!\) '"${label}"'/ {
 		   s/.*/.mc '"${deletemark}"'/p
 		   a\
 .mc
