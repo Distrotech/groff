@@ -22,12 +22,12 @@
 extern int linenum;		/* current line number in input file */
 extern char gremlinfile[];	/* name of file currently reading */
 extern int SUNFILE;		/* TRUE if SUN gremlin file */
-extern void savebounds(float x, float y);
+extern void savebounds(double x, double y);
 
 /* imports from hpoint.cpp */
 
 extern POINT *PTInit();
-extern POINT *PTMakePoint(float x, float y, POINT ** pplist);
+extern POINT *PTMakePoint(double x, double y, POINT ** pplist);
 
 
 int DBGetType(register char *s);
@@ -79,12 +79,12 @@ DBRead(register FILE *file)
 {
   register int i;
   register int done;		/* flag for input exhausted */
-  register float nx;		/* x holder so x is not set before orienting */
+  register double nx;		/* x holder so x is not set before orienting */
   int type;			/* element type */
   ELT *elist;			/* pointer to the file's elements */
   POINT *plist;			/* pointer for reading in points */
   char string[MAXSTRING], *txt;
-  float x, y;			/* x and y are read in point coords */
+  double x, y;			/* x and y are read in point coords */
   int len, brush, size;
   int lastpoint;
 
@@ -99,7 +99,7 @@ DBRead(register FILE *file)
     SUNFILE = TRUE;
   }
 
-  (void) fscanf(file, "%d%f%f\n", &size, &x, &y);
+  (void) fscanf(file, "%d%lf%lf\n", &size, &x, &y);
   /* ignore orientation and file positioning point */
 
   done = FALSE;
@@ -119,7 +119,7 @@ DBRead(register FILE *file)
 #ifdef UW_FASTSCAN
       (void) xscanf(file, &x, &y);		/* always one point */
 #else
-      (void) fscanf(file, "%f%f\n", &x, &y);	/* always one point */
+      (void) fscanf(file, "%lf%lf\n", &x, &y);	/* always one point */
 #endif	/* UW_FASTSCAN */
       plist = PTInit();		/* NULL point list */
 
@@ -143,7 +143,7 @@ DBRead(register FILE *file)
 	  if (string[0] == '*') {	/* SUN gremlin file */
 	    lastpoint = TRUE;
 	  } else {
-	    (void) sscanf(string, "%f%f", &x, &y);
+	    (void) sscanf(string, "%lf%lf", &x, &y);
 	    if ((x == -1.00 && y == -1.00) && (!SUNFILE))
 	      lastpoint = TRUE;
 	  }
@@ -169,7 +169,7 @@ DBRead(register FILE *file)
 	  if (string[0] == '*') {	/* SUN gremlin file */
 	    lastpoint = TRUE;
 	  } else {
-	    (void) sscanf(string, "%f%f", &x, &y);
+	    (void) sscanf(string, "%lf%lf", &x, &y);
 	    if ((x == -1.00 && y == -1.00) && (!SUNFILE))
 	      lastpoint = TRUE;
 	  }
@@ -280,8 +280,8 @@ DBGetType(register char *s)
  */
 int
 xscanf(FILE *f,
-       float *xp,
-       float *yp)
+       double *xp,
+       double *yp)
 {
   register int c, i, j, m, frac;
   int iscale = 1, jscale = 1;	/* x = i/scale, y=j/jscale */

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -70,7 +70,7 @@ struct entry_format : public entry_modifier {
   void debug_print() const;
 };
 
-struct table_entry;
+class table_entry;
 struct horizontal_span;
 struct stuff;
 struct vertical_rule;

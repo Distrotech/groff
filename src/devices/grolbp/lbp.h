@@ -348,11 +348,11 @@ static inline void
 splinerel(double px,double py,int flush)
 {
   static int lx = 0 ,ly = 0;
-  static float pend = 0.0;
+  static double pend = 0.0;
   static int dy = 0, despx = 0, despy = 0, sigpend = 0;
   int dxnew ,dynew, sg;
   char xcoord[4],ycoord[4];
-  float npend ;
+  double npend ;
 
   if (flush == -1) {lx = (int)px; ly = (int)py; return;};
 

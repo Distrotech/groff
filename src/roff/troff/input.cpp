@@ -150,7 +150,7 @@ static symbol get_delim_name();
 static void init_registers();
 static void trapping_blank_line();
 
-struct input_iterator;
+class input_iterator;
 input_iterator *make_temp_iterator(const char *);
 const char *input_char_description(int);
 
@@ -2968,7 +2968,7 @@ node_list::~node_list()
   delete_node_list(head);
 }
 
-struct macro_header {
+class macro_header {
 public:
   int count;
   char_list cl;

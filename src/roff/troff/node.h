@@ -35,7 +35,7 @@ class ascii_output_file;
 
 struct breakpoint;
 struct vertical_size;
-struct charinfo;
+class charinfo;
 
 class macro;
 

@@ -63,7 +63,7 @@ inline int font_size::to_points()
   return p/sizescale;
 }
 
-struct environment;
+class environment;
 
 hunits env_digit_width(environment *);
 hunits env_space_width(environment *);
@@ -94,11 +94,11 @@ public:
 const unsigned MARGIN_CHARACTER_ON = 1;
 const unsigned MARGIN_CHARACTER_NEXT = 2;
 
-struct charinfo;
+class charinfo;
 struct node;
 struct breakpoint;
-struct font_family;
-struct pending_output_line;
+class font_family;
+class pending_output_line;
 
 class environment {
   int dummy;			// dummy environment used for \w

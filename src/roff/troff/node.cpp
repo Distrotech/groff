@@ -111,7 +111,7 @@ struct conditional_bold {
   conditional_bold(int, hunits, conditional_bold * = 0);
 };
 
-struct tfont;
+class tfont;
 
 class font_info {
   tfont *last_tfont;

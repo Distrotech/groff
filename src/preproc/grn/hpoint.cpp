@@ -24,8 +24,8 @@ PTInit()
  * into the pointlist.
  */
 POINT *
-PTMakePoint(float x,
-	    float y,
+PTMakePoint(double x,
+	    double y,
 	    POINT **pplist)
 {
   register POINT *pt;

@@ -1,5 +1,5 @@
 // -*- C -*-
-/* Copyright (C) 2000, 2001, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -39,16 +39,16 @@ class pushBackBuffer
   int         stdIn;
 
  public:
-        pushBackBuffer (char *);
-  ~     pushBackBuffer ();
-  char  getPB          (void);
-  char  putPB          (char ch);
-  void  skipUntilToken (void);
-  void  skipToNewline  (void);
-  float readNumber     (void);
-  int   readInt        (void);
-  char *readString     (void);
-  int   isString       (const char *string);
+         pushBackBuffer (char *);
+  ~      pushBackBuffer ();
+  char   getPB          (void);
+  char   putPB          (char ch);
+  void   skipUntilToken (void);
+  void   skipToNewline  (void);
+  double readNumber     (void);
+  int    readInt        (void);
+  char  *readString     (void);
+  int    isString       (const char *string);
 };
 
 

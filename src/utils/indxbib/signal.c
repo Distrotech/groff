@@ -20,6 +20,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 /* Unfortunately vendors seem to have problems writing a <signal.h>
 that is correct for C++, so we implement all signal handling in C. */
 
+#include <stdlib.h>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

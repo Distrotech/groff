@@ -2,7 +2,7 @@
 
 // <groff_src_dir>/src/include/printer.h
 
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
@@ -49,7 +49,7 @@ struct environment {
   color *fill;
 };
 
-struct font;
+class font;
 
 struct font_pointer_list {
   font *p;

@@ -67,12 +67,12 @@ void deltay(double y);
 void HGArc(register int cx, register int cy, int px, int py, int angle);
 void picurve(register int *x, register int *y, int npts);
 void HGCurve(int *x, int *y, int numpoints);
-void Paramaterize(int x[], int y[], float h[], int n);
-void PeriodicSpline(float h[], int z[],
-		    float dz[], float d2z[], float d3z[],
+void Paramaterize(int x[], int y[], double h[], int n);
+void PeriodicSpline(double h[], int z[],
+		    double dz[], double d2z[], double d3z[],
 		    int npoints);
-void NaturalEndSpline(float h[], int z[],
-		      float dz[], float d2z[], float d3z[],
+void NaturalEndSpline(double h[], int z[],
+		      double dz[], double d2z[], double d3z[],
 		      int npoints);
 
 
@@ -166,8 +166,8 @@ HGPrintElt(ELT *element,
 	   *    stipple fonts).
 	   * If polyfill=BOTH, just use the \D'p ...' command.
 	   */
-	  float firstx = p1->x;
-	  float firsty = p1->y;
+	  double firstx = p1->x;
+	  double firsty = p1->y;
 
 	  length = 0;		/* keep track of line length so */
 				/* single lines don't get long  */
@@ -713,9 +713,9 @@ HGCurve(int *x,
 	int *y,
 	int numpoints)
 {
-  float h[MAXPOINTS], dx[MAXPOINTS], dy[MAXPOINTS];
-  float d2x[MAXPOINTS], d2y[MAXPOINTS], d3x[MAXPOINTS], d3y[MAXPOINTS];
-  float t, t2, t3;
+  double h[MAXPOINTS], dx[MAXPOINTS], dy[MAXPOINTS];
+  double d2x[MAXPOINTS], d2y[MAXPOINTS], d3x[MAXPOINTS], d3y[MAXPOINTS];
+  double t, t2, t3;
   register int j;
   register int k;
   register int nx;
@@ -751,7 +751,7 @@ HGCurve(int *x,
     if ((x[j] == x[j + 1]) && (y[j] == y[j + 1]))
       continue;
     for (k = 0; k <= PointsPerInterval; ++k) {
-      t = (float) k *h[j] / (float) PointsPerInterval;
+      t = (double) k *h[j] / (double) PointsPerInterval;
       t2 = t * t;
       t3 = t * t * t;
       nx = x[j] + (int) (t * dx[j] + t2 * d2x[j] / 2 + t3 * d3x[j] / 6);
@@ -779,14 +779,14 @@ HGCurve(int *x,
 void
 Paramaterize(int x[],
 	     int y[],
-	     float h[],
+	     double h[],
 	     int n)
 {
   register int dx;
   register int dy;
   register int i;
   register int j;
-  float u[MAXPOINTS];
+  double u[MAXPOINTS];
 
   for (i = 1; i <= n; ++i) {
     u[i] = 0;
@@ -814,16 +814,16 @@ Paramaterize(int x[],
  *----------------------------------------------------------------------------*/
 
 void
-PeriodicSpline(float h[],	/* paramaterization  */
+PeriodicSpline(double h[],	/* paramaterization  */
 	       int z[],		/* point list */
-	       float dz[],	/* to return the 1st derivative */
-	       float d2z[],	/* 2nd derivative */
-	       float d3z[],	/* 3rd derivative */
+	       double dz[],	/* to return the 1st derivative */
+	       double d2z[],	/* 2nd derivative */
+	       double d3z[],	/* 3rd derivative */
 	       int npoints)	/* number of valid points */
 {
-  float d[MAXPOINTS];
-  float deltaz[MAXPOINTS], a[MAXPOINTS], b[MAXPOINTS];
-  float c[MAXPOINTS], r[MAXPOINTS], s[MAXPOINTS];
+  double d[MAXPOINTS];
+  double deltaz[MAXPOINTS], a[MAXPOINTS], b[MAXPOINTS];
+  double c[MAXPOINTS], r[MAXPOINTS], s[MAXPOINTS];
   int i;
 
   /* step 1 */
@@ -886,15 +886,15 @@ PeriodicSpline(float h[],	/* paramaterization  */
  *----------------------------------------------------------------------------*/
 
 void
-NaturalEndSpline(float h[],	/* parameterization */
+NaturalEndSpline(double h[],	/* parameterization */
 		 int z[],	/* Point list */
-		 float dz[],	/* to return the 1st derivative */
-		 float d2z[],	/* 2nd derivative */
-		 float d3z[],	/* 3rd derivative */
+		 double dz[],	/* to return the 1st derivative */
+		 double d2z[],	/* 2nd derivative */
+		 double d3z[],	/* 3rd derivative */
 		 int npoints)	/* number of valid points */
 {
-  float d[MAXPOINTS];
-  float deltaz[MAXPOINTS], a[MAXPOINTS], b[MAXPOINTS];
+  double d[MAXPOINTS];
+  double deltaz[MAXPOINTS], a[MAXPOINTS], b[MAXPOINTS];
   int i;
 
   /* step 1 */

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -133,9 +133,9 @@ struct horizontal_span {
   horizontal_span(int, int, horizontal_span *);
 };
 
-struct single_line_entry;
-struct double_line_entry;
-struct simple_entry;
+class single_line_entry;
+class double_line_entry;
+class simple_entry;
 
 class table_entry {
 friend class table;

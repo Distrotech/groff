@@ -87,7 +87,7 @@ struct trap {
   trap(symbol, vunits, trap *);
 };
 
-struct output_file;
+class output_file;
 
 class top_level_diversion : public diversion {
   int page_number;

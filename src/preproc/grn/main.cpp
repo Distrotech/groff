@@ -90,7 +90,7 @@ extern void HGPrintElt(ELT *element, int baseline);
 extern ELT *DBInit();
 extern ELT *DBRead(register FILE *file);
 extern POINT *PTInit();
-extern POINT *PTMakePoint(float x, float y, POINT **pplist);
+extern POINT *PTMakePoint(double x, double y, POINT **pplist);
 
 
 #define SUN_SCALEFACTOR 0.70
@@ -328,6 +328,8 @@ main(int argc,
 	fputs(inputline, stdout);
     }
   }
+
+  return 0;
 }
 
 
@@ -686,8 +688,8 @@ savestate()
  *----------------------------------------------------------------------------*/
 
 void
-savebounds(float x,
-	   float y)
+savebounds(double x,
+	   double y)
 {
   if (x < leftpoint)
     leftpoint = x;

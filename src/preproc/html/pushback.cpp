@@ -274,15 +274,15 @@ int pushBackBuffer::readInt (void)
  *  convertToFloat - converts integers, a and b into a.b
  */
 
-static float convertToFloat (int a, int b)
+static double convertToFloat (int a, int b)
 {
   int c=10;
-  float f;
+  double f;
 
   while (b>c) {
     c *= 10;
   }
-  f = ((float)a) + (((float)b)/((float)c));
+  f = ((double)a) + (((double)b)/((double)c));
   return( f );
 }
 
@@ -290,7 +290,7 @@ static float convertToFloat (int a, int b)
  *  readNumber - returns a float representing the word just read.
  */
 
-float pushBackBuffer::readNumber (void)
+double pushBackBuffer::readNumber (void)
 {
   int i;
   char ch;
@@ -300,7 +300,7 @@ float pushBackBuffer::readNumber (void)
     return convertToFloat(i, readInt());
   }
   putPB(ch);
-  return (float)i;
+  return (double)i;
 }
 
 /*
