@@ -98,6 +98,15 @@ datadir=@datadir@
 dataprogramdir=$(datadir)/groff
 datasubdir=$(dataprogramdir)/$(version)$(revision)
 
+# docdir says where to install documentation files
+docdir=$(datadir)/doc/groff/$(version)$(revision)
+
+# exampledir says where to install example files
+exampledir=$(docdir)/examples
+
+# htmldocdir says where to install documentation in HTML format
+htmldocdir=$(docdir)/html
+
 # fontdir says where to install dev*/*.
 fontdir=$(datasubdir)/font
 
@@ -307,6 +316,9 @@ MDEFINES= \
   "datadir=$(datadir)" \
   "dataprogramdir=$(dataprogramdir)" \
   "datasubdir=$(datasubdir)" \
+  "docdir=$(docdir)" \
+  "exampledir=$(exampledir)" \
+  "htmldocdir=$(htmldocdir)" \
   "libdir=$(libdir)" \
   "libprogramdir=$(libprogramdir)" \
   "bindir=$(bindir)" \
@@ -409,7 +421,8 @@ OTHERDIRS=\
   src/roff/nroff \
   contrib/mm \
   contrib/pic2graph \
-  contrib/groffer
+  contrib/groffer \
+  contrib/mom
 ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
   $(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS) $(OTHERDIRS)
 EXTRADIRS=\
@@ -577,6 +590,7 @@ uninstall_dirs:
 	-rmdir $(man1dir) $(man5dir) $(man7dir) $(manroot) \
 	  $(tmacdir) $(systemtmacdir) $(localtmacdir) $(fontdir) $(bindir) \
 	  $(datasubdir) $(dataprogramdir) $(datadir) \
+	  $(docdir) $(exampledir) $(htmldocdir) \
 	  $(libprogramdir) $(libdir)
 
 
