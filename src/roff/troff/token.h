@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -103,6 +103,7 @@ extern token tok;		// the current token
 extern symbol get_name(int required = 0);
 extern symbol get_long_name(int required = 0);
 extern charinfo *get_optional_char();
+extern char *read_string();
 extern void check_missing_character();
 extern void skip_line();
 extern void handle_initial_title();

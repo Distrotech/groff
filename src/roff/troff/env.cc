@@ -1163,6 +1163,47 @@ void point_size()
   skip_line();
 }
 
+void override_sizes()
+{
+  int n = 16;
+  int *sizes = new int[n];
+  int i = 0;
+  char *buf = read_string();
+  if (!buf)
+    return;
+  char *p = strtok(buf, " \t");
+  for (;;) {
+    if (!p)
+      break;
+    int lower, upper;
+    switch (sscanf(p, "%d-%d", &lower, &upper)) {
+    case 1:
+      upper = lower;
+      // fall through
+    case 2:
+      if (lower <= upper && lower >= 0)
+	break;
+      // fall through
+    default:
+      warning(WARN_RANGE, "bad size range `%1'", p);
+      return;
+    }
+    if (i + 2 > n) {
+      int *old_sizes = sizes;
+      sizes = new int[n*2];
+      memcpy(sizes, old_sizes, n*sizeof(int));
+      n *= 2;
+      a_delete old_sizes;
+    }
+    sizes[i++] = lower;
+    if (lower == 0)
+      break;
+    sizes[i++] = upper;
+    p = strtok(0, " \t");
+  }
+  font_size::init_size_table(sizes);
+}
+
 void space_size()
 {
   int n;
@@ -3065,6 +3106,7 @@ void init_env_requests()
   init_request("evc", environment_copy);
   init_request("lt", title_length);
   init_request("ps", point_size);
+  init_request("sizes", override_sizes);
   init_request("ft", font_change);
   init_request("fam", family_change);
   init_request("ss", space_size);
