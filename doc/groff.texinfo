@@ -4808,11 +4808,11 @@ text will be printed.
 @item ll
 @cindex line length
 @cindex length of line
-@vindex .l
-@vindex .ll
 @dfn{Line length} -- This is the distance from the left margin to right
 margin.
 @end ftable
+
+@c XXX improve example
 
 @example
 .in +.5i
@@ -4863,7 +4863,8 @@ the previous value before the last call to @code{po}.
 @Deffn{Request, in, [@var{indent}]}
 @Deffnx{Request, in, +indent}
 @Deffnx{Request, in, -indent}
-Set indentation to @var{indent}.  This request causes a break.
+Set indentation to @var{indent} (resp.@: increment or decrement the
+current value by @var{indent}).  This request causes a break.
 Initially, there is no indentation.
 
 If @code{in} is called without an argument, the indentation is reset to
@@ -4880,20 +4881,20 @@ The effect of @code{in} is delayed until a partially collected line (if
 it exists) is output.
 
 @vindex .i
-The current indentation can be found in the built-in number register
-@samp{.i}.
+The current indentation (as set by @code{in}) can be found in the
+built-in number register @samp{.i}.
 @end_Deffn
 
 @Deffn{Request, ti, offset}
 @Deffnx{Request, ti, +offset}
 @Deffnx{Request, ti, -offset}
-Temporarily indent the next output line only by @var{offset}.  If an
+Temporarily indent the next output line by @var{offset}.  If an
 increment or decrement value is specified, adjust the temporary
 indentation relative to the value set by the @code{in} request.
 
 This request causes a break; its value is associated with the current
 environment.  The default scaling indicator is@w{ }@code{m}.  A call of
-@code{ti} without arguments is ignored.
+@code{ti} without an argument is ignored.
 
 If the total indentation value is negative (which is not allowed),
 @code{gtroff} emits a warning of type @samp{range} and sets the
@@ -4905,22 +4906,41 @@ The effect of @code{ti} is delayed until a partially collected line (if
 it exists) is output.
 
 @vindex .in
-The number register @code{.in} is the indent that applies to the current
-output line.
+The number register @code{.in} is the indentation that applies to the
+current output line.
+
+The difference between @code{.i} and @code{.in} is that the latter takes
+into account whether a partially collected line still uses the old
+indentation value resp.@: a temporary indentation value is active.
 @end_Deffn
 
 @Deffn{Request, ll, [@var{length}]}
+@Deffnx{Request, ll, +length}
+@Deffnx{Request, ll, -length}
+Set the line length to @var{length} (resp.@: increment or decrement the
+current value by @var{length}).  Initially, the line length is set to
+6.5@dmn{i}.  The effect of @code{ll} is delayed until a partially
+collected line (if it exists) is output.  The default scaling indicator
+is@w{ }@code{m}.
 
-Set the line length to @var{length}.
+If @code{ll} is called without an argument, the line length is reset to
+the previous value before the last call to @code{ll}.  If a negative
+line length is specified (which is not allowed), @code{gtroff} emits a
+warning of type @samp{range} and sets the line length to zero.
 
-The current line length can be found in the built-in number register
-@code{.l}.
+The line length is associated with the current environment.
 
-Note, as the figure implies, line length is not affected by the current
-indentation.  The number register @code{.ll} is the line length that
-applies to the current output line.
+@vindex .l
+@vindex .ll
+The current line length (as set by @code{ll}) can be found in the
+built-in number register @code{.l}.  The number register @code{.ll} is
+the line length that applies to the current output line.
 
+Similar to @code{.i} and @code{.in}, the difference between @code{.l}
+and @code{.ll} is that the latter takes into account whether a partially
+collected line still uses the old line length value.
 @end_Deffn
+
 
 @c =====================================================================
 
@@ -4934,14 +4954,28 @@ page layout.
 
 @cindex page length
 @cindex length of page
-@findex pl
+@Deffn{Request, pl, [@var{length}]}
+@Deffnx{Request, pl, +length}
+@Deffnx{Request, pl, -length}
+Set the @dfn{page length} to @var{length} (resp.@: increment or
+decrement the current value by @var{length}).  This is the length of the
+physical output page.  The default scaling indicator is@w{ }@code{v}.
+
 @vindex .p
-The @dfn{page length} can be specified via the @code{pl} request.  This
-is the length of the physical output page.  The current setting can be
-found in the built-in number register @code{.p}.  Note that this only
-specifies the size of the page, not the top and bottom margins.  Those
-are not done by groff directly.  @xref{Traps}, for further information
-on how to do this.
+The current setting can be found in the built-in number register
+@samp{.p}.
+
+@cindex top margin
+@cindex margin, top
+@cindex bottom margin
+@cindex margin, bottom
+Note that this only specifies the size of the page, not the top and
+bottom margins.  Those are not set by groff directly.  @xref{Traps}, for
+further information on how to do this.
+
+@c XXX negative .pl values
+
+@end_Deffn
 
 @cindex headers
 @cindex footers

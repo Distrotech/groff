@@ -1,6 +1,6 @@
 diff -aruN groff/Makefile.msc groff.win32/Makefile.msc
 --- groff/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/Makefile.msc	Fri May 12 09:19:06 2000
++++ groff.win32/Makefile.msc	Wed May 17 09:15:07 2000
 @@ -0,0 +1,37 @@
 +
 +
@@ -29,7 +29,7 @@ diff -aruN groff/Makefile.msc groff.win32/Makefile.msc
 +	cd ..\grodvi
 +	$(MAKECMD)
 +	cd ..\..\..
-+	-md bin
++	-del bin\*.orig
 +	copy src\devices\grodvi\grodvi.exe bin
 +	copy src\devices\grolj4\grolj4.exe bin
 +	copy src\devices\grops\grops.exe bin
@@ -41,37 +41,37 @@ diff -aruN groff/Makefile.msc groff.win32/Makefile.msc
 +	copy src\roff\troff\hyphen.us tmac
 diff -aruN groff/bin/gs.cmd groff.win32/bin/gs.cmd
 --- groff/bin/gs.cmd	Thu Jan  1 00:00:00 1970
-+++ groff.win32/bin/gs.cmd	Mon Jan 31 22:57:20 2000
++++ groff.win32/bin/gs.cmd	Wed May 17 08:57:48 2000
 @@ -0,0 +1,2 @@
 +@echo off
 +gswin32c -sDEVICE=ljet3 -sOutputFile=%1.jep -q -dNOPAUSE %1.ps <nul
 diff -aruN groff/bin/nroff.cmd groff.win32/bin/nroff.cmd
 --- groff/bin/nroff.cmd	Thu Jan  1 00:00:00 1970
-+++ groff.win32/bin/nroff.cmd	Sun Jan 21 04:08:16 1996
++++ groff.win32/bin/nroff.cmd	Wed May 17 08:57:48 2000
 @@ -0,0 +1,2 @@
 +@echo off
 +troff -Tascii %1 %2 %3 %4 %5 %6 %7 %8 %9 |grotty 
 diff -aruN groff/bin/troff-dvi.cmd groff.win32/bin/troff-dvi.cmd
 --- groff/bin/troff-dvi.cmd	Thu Jan  1 00:00:00 1970
-+++ groff.win32/bin/troff-dvi.cmd	Thu Sep  3 00:08:58 1998
++++ groff.win32/bin/troff-dvi.cmd	Wed May 17 08:57:48 2000
 @@ -0,0 +1,2 @@
 +@echo off
 +troff -Tdvi %1 %2 %3 %4 %5 %6 %7 %8 %9 |grodvi 
 diff -aruN groff/bin/troff-lj.cmd groff.win32/bin/troff-lj.cmd
 --- groff/bin/troff-lj.cmd	Thu Jan  1 00:00:00 1970
-+++ groff.win32/bin/troff-lj.cmd	Sun Jan 21 04:09:08 1996
++++ groff.win32/bin/troff-lj.cmd	Wed May 17 08:57:48 2000
 @@ -0,0 +1,2 @@
 +@echo off
 +troff -Tlj4 %1 %2 %3 %4 %5 %6 %7 %8 %9 |grolj4 
 diff -aruN groff/bin/troff-ps.cmd groff.win32/bin/troff-ps.cmd
 --- groff/bin/troff-ps.cmd	Thu Jan  1 00:00:00 1970
-+++ groff.win32/bin/troff-ps.cmd	Sun Jan 21 04:07:00 1996
++++ groff.win32/bin/troff-ps.cmd	Wed May 17 08:57:48 2000
 @@ -0,0 +1,2 @@
 +@echo off
 +troff -Tps %1 %2 %3 %4 %5 %6 %7 %8 %9 |grops 
 diff -aruN groff/font/devascii/B groff.win32/font/devascii/B
 --- groff/font/devascii/B	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devascii/B	Thu May 11 15:04:35 2000
++++ groff.win32/font/devascii/B	Wed May 17 08:57:48 2000
 @@ -0,0 +1,166 @@
 +name B
 +internalname 2
@@ -241,7 +241,7 @@ diff -aruN groff/font/devascii/B groff.win32/font/devascii/B
 +ti	"
 diff -aruN groff/font/devascii/BI groff.win32/font/devascii/BI
 --- groff/font/devascii/BI	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devascii/BI	Thu May 11 15:04:35 2000
++++ groff.win32/font/devascii/BI	Wed May 17 08:57:48 2000
 @@ -0,0 +1,166 @@
 +name BI
 +internalname 3
@@ -411,7 +411,7 @@ diff -aruN groff/font/devascii/BI groff.win32/font/devascii/BI
 +ti	"
 diff -aruN groff/font/devascii/DESC groff.win32/font/devascii/DESC
 --- groff/font/devascii/DESC	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devascii/DESC	Thu May 11 15:04:35 2000
++++ groff.win32/font/devascii/DESC	Wed May 17 08:57:48 2000
 @@ -0,0 +1,8 @@
 +res 240
 +hor 24
@@ -423,7 +423,7 @@ diff -aruN groff/font/devascii/DESC groff.win32/font/devascii/DESC
 +postpro grotty
 diff -aruN groff/font/devascii/I groff.win32/font/devascii/I
 --- groff/font/devascii/I	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devascii/I	Thu May 11 15:04:35 2000
++++ groff.win32/font/devascii/I	Wed May 17 08:57:48 2000
 @@ -0,0 +1,166 @@
 +name I
 +internalname 1
@@ -593,7 +593,7 @@ diff -aruN groff/font/devascii/I groff.win32/font/devascii/I
 +ti	"
 diff -aruN groff/font/devascii/R groff.win32/font/devascii/R
 --- groff/font/devascii/R	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devascii/R	Thu May 11 15:04:35 2000
++++ groff.win32/font/devascii/R	Wed May 17 08:57:48 2000
 @@ -0,0 +1,165 @@
 +name R
 +spacewidth 24
@@ -762,7 +762,7 @@ diff -aruN groff/font/devascii/R groff.win32/font/devascii/R
 +ti	"
 diff -aruN groff/font/devdvi/DESC groff.win32/font/devdvi/DESC
 --- groff/font/devdvi/DESC	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devdvi/DESC	Fri May 12 09:11:46 2000
++++ groff.win32/font/devdvi/DESC	Wed May 17 08:57:48 2000
 @@ -0,0 +1,10 @@
 +sizescale 100
 +unitwidth 131072
@@ -776,7 +776,7 @@ diff -aruN groff/font/devdvi/DESC groff.win32/font/devdvi/DESC
 +postpro grodvi
 diff -aruN groff/font/devlatin1/B groff.win32/font/devlatin1/B
 --- groff/font/devlatin1/B	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devlatin1/B	Thu May 11 15:04:35 2000
++++ groff.win32/font/devlatin1/B	Wed May 17 08:57:48 2000
 @@ -0,0 +1,356 @@
 +name B
 +internalname 2
@@ -1136,7 +1136,7 @@ diff -aruN groff/font/devlatin1/B groff.win32/font/devlatin1/B
 +char255	"
 diff -aruN groff/font/devlatin1/BI groff.win32/font/devlatin1/BI
 --- groff/font/devlatin1/BI	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devlatin1/BI	Thu May 11 15:04:35 2000
++++ groff.win32/font/devlatin1/BI	Wed May 17 08:57:48 2000
 @@ -0,0 +1,356 @@
 +name BI
 +internalname 3
@@ -1496,7 +1496,7 @@ diff -aruN groff/font/devlatin1/BI groff.win32/font/devlatin1/BI
 +char255	"
 diff -aruN groff/font/devlatin1/DESC groff.win32/font/devlatin1/DESC
 --- groff/font/devlatin1/DESC	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devlatin1/DESC	Thu May 11 15:04:35 2000
++++ groff.win32/font/devlatin1/DESC	Wed May 17 08:57:48 2000
 @@ -0,0 +1,8 @@
 +res 240
 +hor 24
@@ -1508,7 +1508,7 @@ diff -aruN groff/font/devlatin1/DESC groff.win32/font/devlatin1/DESC
 +postpro grotty
 diff -aruN groff/font/devlatin1/I groff.win32/font/devlatin1/I
 --- groff/font/devlatin1/I	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devlatin1/I	Thu May 11 15:04:35 2000
++++ groff.win32/font/devlatin1/I	Wed May 17 08:57:48 2000
 @@ -0,0 +1,356 @@
 +name I
 +internalname 1
@@ -1868,7 +1868,7 @@ diff -aruN groff/font/devlatin1/I groff.win32/font/devlatin1/I
 +char255	"
 diff -aruN groff/font/devlatin1/R groff.win32/font/devlatin1/R
 --- groff/font/devlatin1/R	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devlatin1/R	Thu May 11 15:04:35 2000
++++ groff.win32/font/devlatin1/R	Wed May 17 08:57:48 2000
 @@ -0,0 +1,355 @@
 +name R
 +spacewidth 24
@@ -2227,7 +2227,7 @@ diff -aruN groff/font/devlatin1/R groff.win32/font/devlatin1/R
 +char255	"
 diff -aruN groff/font/devlj4/DESC groff.win32/font/devlj4/DESC
 --- groff/font/devlj4/DESC	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devlj4/DESC	Fri May 12 09:13:18 2000
++++ groff.win32/font/devlj4/DESC	Wed May 17 08:57:48 2000
 @@ -0,0 +1,12 @@
 +res 600
 +unitwidth 12700
@@ -2243,7 +2243,7 @@ diff -aruN groff/font/devlj4/DESC groff.win32/font/devlj4/DESC
 +papersize letter
 diff -aruN groff/font/devps/DESC groff.win32/font/devps/DESC
 --- groff/font/devps/DESC	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devps/DESC	Fri May 12 09:13:46 2000
++++ groff.win32/font/devps/DESC	Wed May 17 08:57:48 2000
 @@ -0,0 +1,13 @@
 +res 72000
 +hor 1
@@ -2260,7 +2260,7 @@ diff -aruN groff/font/devps/DESC groff.win32/font/devps/DESC
 +paperlength 792000
 diff -aruN groff/font/devps/prologue groff.win32/font/devps/prologue
 --- groff/font/devps/prologue	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devps/prologue	Thu May 11 15:04:33 2000
++++ groff.win32/font/devps/prologue	Wed May 17 08:57:48 2000
 @@ -0,0 +1,155 @@
 +%!PS-Adobe-3.0 Resource-ProcSet
 +/setpacking where{
@@ -2419,7 +2419,7 @@ diff -aruN groff/font/devps/prologue groff.win32/font/devps/prologue
 +}if
 diff -aruN groff/font/devps/symbolsl.pfa groff.win32/font/devps/symbolsl.pfa
 --- groff/font/devps/symbolsl.pfa	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devps/symbolsl.pfa	Thu May 11 15:04:34 2000
++++ groff.win32/font/devps/symbolsl.pfa	Wed May 17 08:57:48 2000
 @@ -0,0 +1,29 @@
 +%!PS-Adobe-3.0 Resource-Font
 +%%DocumentNeededResources: font Symbol
@@ -2452,7 +2452,7 @@ diff -aruN groff/font/devps/symbolsl.pfa groff.win32/font/devps/symbolsl.pfa
 +MakeTransformedFont
 diff -aruN groff/font/devps/zapfdr.pfa groff.win32/font/devps/zapfdr.pfa
 --- groff/font/devps/zapfdr.pfa	Thu Jan  1 00:00:00 1970
-+++ groff.win32/font/devps/zapfdr.pfa	Thu May 11 15:04:34 2000
++++ groff.win32/font/devps/zapfdr.pfa	Wed May 17 08:57:48 2000
 @@ -0,0 +1,218 @@
 +%!PS-Adobe-3.0 Resource-Font
 +%%DocumentNeededResources: font ZapfDingbats
@@ -2674,7 +2674,7 @@ diff -aruN groff/font/devps/zapfdr.pfa groff.win32/font/devps/zapfdr.pfa
 +/ZapfDingbats-Reverse currentdict end definefont pop
 diff -aruN groff/src/devices/grodvi/Makefile.msc groff.win32/src/devices/grodvi/Makefile.msc
 --- groff/src/devices/grodvi/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/devices/grodvi/Makefile.msc	Wed Feb  9 14:32:31 2000
++++ groff.win32/src/devices/grodvi/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,21 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -2699,7 +2699,7 @@ diff -aruN groff/src/devices/grodvi/Makefile.msc groff.win32/src/devices/grodvi/
 +
 diff -aruN groff/src/devices/grolj4/Makefile.msc groff.win32/src/devices/grolj4/Makefile.msc
 --- groff/src/devices/grolj4/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/devices/grolj4/Makefile.msc	Wed Feb  9 14:24:11 2000
++++ groff.win32/src/devices/grolj4/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,22 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -2725,7 +2725,7 @@ diff -aruN groff/src/devices/grolj4/Makefile.msc groff.win32/src/devices/grolj4/
 +
 diff -aruN groff/src/devices/grops/Makefile.msc groff.win32/src/devices/grops/Makefile.msc
 --- groff/src/devices/grops/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/devices/grops/Makefile.msc	Wed Feb  9 14:30:08 2000
++++ groff.win32/src/devices/grops/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,23 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -2752,7 +2752,7 @@ diff -aruN groff/src/devices/grops/Makefile.msc groff.win32/src/devices/grops/Ma
 +
 diff -aruN groff/src/devices/grotty/Makefile.msc groff.win32/src/devices/grotty/Makefile.msc
 --- groff/src/devices/grotty/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/devices/grotty/Makefile.msc	Wed Feb  9 14:28:41 2000
++++ groff.win32/src/devices/grotty/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,22 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -2778,7 +2778,7 @@ diff -aruN groff/src/devices/grotty/Makefile.msc groff.win32/src/devices/grotty/
 +
 diff -aruN groff/src/include/defs.h groff.win32/src/include/defs.h
 --- groff/src/include/defs.h	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/include/defs.h	Wed Feb  9 16:10:46 2000
++++ groff.win32/src/include/defs.h	Wed May 17 08:57:48 2000
 @@ -0,0 +1,12 @@
 +
 +#define	FONTPATH	"c:/groff/font"
@@ -2794,7 +2794,7 @@ diff -aruN groff/src/include/defs.h groff.win32/src/include/defs.h
 +
 diff -aruN groff/src/include/getopt.h groff.win32/src/include/getopt.h
 --- groff/src/include/getopt.h	Sat Apr  8 06:04:36 2000
-+++ groff.win32/src/include/getopt.h	Fri Apr 14 19:06:35 2000
++++ groff.win32/src/include/getopt.h	Wed May 17 08:57:48 2000
 @@ -150,7 +150,7 @@
  			     int __long_only);
  # endif
@@ -2806,7 +2806,7 @@ diff -aruN groff/src/include/getopt.h groff.win32/src/include/getopt.h
  extern int getopt_long_only ();
 diff -aruN groff/src/libs/libdriver/Makefile.msc groff.win32/src/libs/libdriver/Makefile.msc
 --- groff/src/libs/libdriver/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/libs/libdriver/Makefile.msc	Wed Feb  9 13:42:49 2000
++++ groff.win32/src/libs/libdriver/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,22 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -2832,7 +2832,7 @@ diff -aruN groff/src/libs/libdriver/Makefile.msc groff.win32/src/libs/libdriver/
 +
 diff -aruN groff/src/libs/libgroff/Makefile.msc groff.win32/src/libs/libgroff/Makefile.msc
 --- groff/src/libs/libgroff/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/libs/libgroff/Makefile.msc	Fri Apr 14 19:28:44 2000
++++ groff.win32/src/libs/libgroff/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,53 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -2889,14 +2889,14 @@ diff -aruN groff/src/libs/libgroff/Makefile.msc groff.win32/src/libs/libgroff/Ma
 +
 diff -aruN groff/src/libs/libgroff/version.cc groff.win32/src/libs/libgroff/version.cc
 --- groff/src/libs/libgroff/version.cc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/libs/libgroff/version.cc	Wed Feb  9 14:00:24 2000
++++ groff.win32/src/libs/libgroff/version.cc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,3 @@
 +const char *version_string = "1.16";
 +const char *revision_string = "0";
 +const char *Version_string = "1.16";
 diff -aruN groff/src/preproc/eqn/Makefile.msc groff.win32/src/preproc/eqn/Makefile.msc
 --- groff/src/preproc/eqn/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/preproc/eqn/Makefile.msc	Wed Feb  9 14:21:53 2000
++++ groff.win32/src/preproc/eqn/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,39 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -2939,7 +2939,7 @@ diff -aruN groff/src/preproc/eqn/Makefile.msc groff.win32/src/preproc/eqn/Makefi
 +
 diff -aruN groff/src/preproc/pic/Makefile.msc groff.win32/src/preproc/pic/Makefile.msc
 --- groff/src/preproc/pic/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/preproc/pic/Makefile.msc	Wed Feb  9 14:25:39 2000
++++ groff.win32/src/preproc/pic/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,31 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -2974,7 +2974,7 @@ diff -aruN groff/src/preproc/pic/Makefile.msc groff.win32/src/preproc/pic/Makefi
 +
 diff -aruN groff/src/preproc/tbl/Makefile.msc groff.win32/src/preproc/tbl/Makefile.msc
 --- groff/src/preproc/tbl/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/preproc/tbl/Makefile.msc	Wed Feb  9 14:26:58 2000
++++ groff.win32/src/preproc/tbl/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,26 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -3004,7 +3004,7 @@ diff -aruN groff/src/preproc/tbl/Makefile.msc groff.win32/src/preproc/tbl/Makefi
 +
 diff -aruN groff/src/roff/troff/Makefile.msc groff.win32/src/roff/troff/Makefile.msc
 --- groff/src/roff/troff/Makefile.msc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/roff/troff/Makefile.msc	Wed Feb  9 14:18:53 2000
++++ groff.win32/src/roff/troff/Makefile.msc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,34 @@
 +
 +#  Makefile for Microsoft Visual C++ 6.0
@@ -3042,7 +3042,7 @@ diff -aruN groff/src/roff/troff/Makefile.msc groff.win32/src/roff/troff/Makefile
 +
 diff -aruN groff/src/roff/troff/majorminor.cc groff.win32/src/roff/troff/majorminor.cc
 --- groff/src/roff/troff/majorminor.cc	Thu Jan  1 00:00:00 1970
-+++ groff.win32/src/roff/troff/majorminor.cc	Wed Feb  9 14:02:10 2000
++++ groff.win32/src/roff/troff/majorminor.cc	Wed May 17 08:57:48 2000
 @@ -0,0 +1,3 @@
 +const char *major_version = "1";
 +const char *minor_version = "16";

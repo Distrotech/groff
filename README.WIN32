@@ -22,25 +22,31 @@ The following programs were used, running on Windows NT 4.0:
 Build Instructions
 ------------------
 
-Unpack groff (using gzip & tar) as follows:
+. Unpack groff (using gzip & tar) as follows:
 
     cd \
     gzip -dc groff-1.16.tar.gz | tar xvf -
 
-Now apply the patch file `win32-diffs':
+. Now apply the patch file `win32-diffs':
 
     cd \groff-1.16
     patch -p1 < win32-diffs
 
-Build everything by typing:
+  Note that with older versions of `patch', you will get a lot of
+  *.orig files (most of them are empty) which can be safely deleted.
+
+. Edit the file `src/include/defs.h' and adapt the path names to
+  your needs.
+
+. Build everything by typing:
 
     nmake -f Makefile.msc
 
 You are done.
 
-The bin directory contains some .cmd files to help show how to run
+The `bin' directory contains some .cmd files to help show how to run
 stuff.  Since Windows 95/98 doesn't understand .cmd files, if you are
-operating under that OS you'll have to rename them to .bat files. 
+operating under that OS, you'll have to rename them to .bat files. 
 .bat files do have output redirection problems.
 
 
