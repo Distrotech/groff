@@ -219,6 +219,20 @@ void escape_off()
   skip_line();
 }
 
+static int saved_escape_char = '\\';
+
+void save_escape_char()
+{
+  saved_escape_char = escape_char;
+  skip_line();
+}
+
+void restore_escape_char()
+{
+  escape_char = saved_escape_char;
+  skip_line();
+}
+
 class input_iterator {
 public:
   input_iterator();
@@ -1054,6 +1068,38 @@ static int do_name_test()
   return some_char && !bad_char;
 }
 
+static int do_expr_test()
+{
+  token start;
+  start.next();
+  int start_level = input_stack::get_level();
+  if (!start.delimiter(1))
+    return 0;
+  tok.next();
+  // disable all warning and error messages temporarily
+  int saved_warning_mask = warning_mask;
+  int saved_inhibit_errors = inhibit_errors;
+  warning_mask = 0;
+  inhibit_errors = 1;
+  int dummy;
+  int result = get_number(&dummy, 'u');
+  warning_mask = saved_warning_mask;
+  inhibit_errors = saved_inhibit_errors;
+  if (tok == start && input_stack::get_level() == start_level)
+    return result;
+  // ignore everything up to the delimiter in case we aren't right there
+  for (;;) {
+    tok.next();
+    if (tok.newline() || tok.eof()) {
+      warning(WARN_DELIM, "missing closing delimiter");
+      break;
+    }
+    if (tok == start && input_stack::get_level() == start_level)
+      break;
+  }
+  return 0;
+}
+
 #if 0
 static node *do_zero_width()
 {
@@ -1456,6 +1502,10 @@ void token::next()
       case 'b':
 	nd = do_bracket();
 	type = TOKEN_NODE;
+	return;
+      case 'B':
+	c = '0' + do_expr_test();
+	type = TOKEN_CHAR;
 	return;
       case 'c':
 	goto ESCAPE_c;
@@ -6035,6 +6085,8 @@ void init_input_requests()
   init_request("pm", print_macros);
   init_request("eo", escape_off);
   init_request("ec", set_escape_char);
+  init_request("ecs", save_escape_char);
+  init_request("ecr", restore_escape_char);
   init_request("pc", set_page_character);
   init_request("tm", terminal);
   init_request("tm1", terminal1);

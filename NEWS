@@ -28,6 +28,18 @@ Two new requests `tm1' and `tmc' have been added to improve writing messages
 to the terminal.  `tm1' is similar to `tm' but allows leading whitespace.
 `tmc' is similar to `tm1' but doesn't emit a final newline.
 
+A new request `dei' (define indirect) has been added.  The first and second
+parameter of `dei' are taken from string registers instead directly; this
+very special request is needed to make `tmac.trace' independent from the
+escape character (which might even be disabled).
+
+It is now possible to save and restore the escape character with two new
+requests `ecs' and `ecr'.
+
+The new escape sequence \B'...' is an analogon to `\A': If the string within
+the delimiters is a valid numeric expression, return character `1', and `0'
+otherwise.
+
 grops
 -----
 

@@ -1,3 +1,37 @@
+2000-10-07  Werner LEMBERG  <wl@gnu.org>
+
+	Adding a new escape sequence \B'...': If the string between
+	the delimiters is a valid numeric expression, return the character
+	`1', and `0' otherwise.  This is an analogon to \A.
+
+	* src/roff/troff/input.cc (do_expr_test): Implement it.
+	(token::next): Use it.
+	* src/roff/troff/troff.man, NEWS, man/groff.man: Document it.
+
+	* tmac/tmac.trace: Made independent from escape character.
+
+2000-10-06  Werner LEMBERG  <wl@gnu.org>
+
+	Adding a new request .dei: define indirect.  The first and second
+	parameter of .dei are taken from string registers instead directly;
+	this very special request is needed to make tmac.trace independent
+	from the escape character (which might even be disabled).
+
+	* src/roff/troff/input.cc (do_define_macro): Implement it.
+	(define_macro_indirect): New function.
+	(init_input_requests): Use it.
+
+	Adding two requests .ecs and .ecr: Save and restore the escape
+	character.  These two requests are needed to make tmac.trace
+	independent from the escape character (which might even be
+	disabled).
+
+	* src/roff/troff/input.cc (save_escape_char, restore_escape_char):
+	Implement it.
+	(init_input_requests): Use it.
+
+	* src/roff/troff/troff.man, NEWS, man/groff.man: Updated.
+
 2000-09-22  Ricardo Soares Guimarães <ricardo@conectiva.com.br>
 
 	Adding a new option -P and new environment variable GROPS_PROLOGUE
@@ -9,6 +43,7 @@
 	* src/devices/grops/grops.man, NEWS: Document it.
 
 2000-09-22  Werner LEMBERG  <wl@gnu.org>
+
 	* INSTALL: Add info about selecting paper format.
 
 2000-09-21  Werner LEMBERG  <wl@gnu.org>
@@ -7743,4 +7778,5 @@ Sat Jul 14 11:23:01 1990  James Clark  (jjc at yquem)
 
 Local Variables:
 version-control: never
+coding: latin-1
 End:

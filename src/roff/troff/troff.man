@@ -383,6 +383,20 @@ is empty.
 This is useful if you want to lookup user input in some sort of
 associative table.
 .TP
+.BI \eB' anything '
+This expands to
+.B 1
+or
+.B 0
+according as
+.I anything
+is or is not a valid numeric expression.
+It will return
+.B 0
+if
+.I anything
+is empty.
+.TP
 .BI \eC' xxx '
 Typeset character named
 .IR xxx .
@@ -864,6 +878,27 @@ disable it.
 In compatibility mode, long names are not recognised, and the
 incompatibilities caused by long names do not arise.
 .TP
+.BI .dei\  xx\ yy
+Define macro indirectly.
+The following example
+.RS
+.IP
+.ne 2v+\n(.Vu
+.ft B
+.nf
+\&.ds xx aa
+\&.ds yy bb
+\&.dei xx yy
+.fi
+.RE
+.IP
+is equivalent to
+.RS
+.IP
+.B
+\&.de aa bb
+.RE
+.TP
 .BI .do\  xxx
 Interpret
 .I .xxx
@@ -885,6 +920,17 @@ sourced by
 .I xxx
 are interpreted.
 .RE
+.TP
+.B .ecs
+Save current escape character.
+.TP
+.B .ecr
+Restore escape character saved with
+.BR ecs .
+Without a previous call to
+.BR ecs ,
+.RB ` \e '
+will be the new escape character.
 .TP
 .BI .evc\  xx
 Copy the contents of environment

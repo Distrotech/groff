@@ -1010,6 +1010,21 @@ until
 .request .end
 is called.
 .
+.REQ .dei macro
+Define or redefine a macro whose name is contained in the string register
+.argument macro
+until
+.request ..
+is called.
+.
+.REQ .dei macro end
+Define or redefine a macro indirectly.
+.argument macro
+and
+.argument end
+are string registers whose contents are interpolated for the macro name
+and the end macro, respectively.
+.
 .REQ .di
 End current diversion.
 .
@@ -1041,6 +1056,13 @@ Reset escape character to
 .REQ .ec c
 Set escape character to
 .argument c .
+.
+.REQ .ecs
+Save current escape character.
+.
+.REQ .ecr
+Restore escape character saved with
+.request .ecs .
 .
 .REQ .el anything
 Else part for if-else (\c
@@ -1947,14 +1969,24 @@ Non-interpreted leader character.
 .ESCq A anything
 If
 .argument anything
-acceptable as name of a string, macro, diversion, register,
-environment or font it is
-.number 1
-otherwise
-.number 0 .
+is acceptable as a name of a string, macro, diversion, register,
+environment or font it expands to
+.number 1 ,
+and
+.number 0
+otherwise.
 .
 .ESCq b abc...
 Bracket building function.
+.
+.ESCq B anything
+If
+.argument anything
+is acceptable as a valid numeric expression it expands to
+.number 1 ,
+and
+.number 0
+otherwise.
 .
 .ESC c
 Interrupt text processing.
