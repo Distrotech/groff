@@ -3,8 +3,8 @@
 # groffer.sh
 
 PROGRAM_NAME=groffer
-PROGRAM_VERSION="0.4 (beta)"
-LAST_UPDATE="07 Jan 2002"
+PROGRAM_VERSION="0.5 (beta)"
+LAST_UPDATE="08 Jan 2002"
 
 # Copyright (C) 2001 Free Software Foundation, Inc.
 # Written by Bernd Warken <bwarken@mayn.de>
@@ -65,6 +65,10 @@ function abort ()
 #                              Setup
 ########################################################################
 
+export PROGRAM_NAME;
+export PROGRAM_VERSION;
+export LAST_UPDATE;
+
 set -a
 
 # Survey of functions defined in this document
@@ -87,9 +91,9 @@ set -a
 # error (<err_no> <text>*)
 # get_manpath ()
 # get_next_quoted (<arg>*)
-# get_title ()
 # is_substring_of (<part> <string>)
 # leave ()
+# make_title ()
 # manpage_search_filespec (<filespec>)
 # manpage_search_name (<name> <section>?)
 # normalize_args (<arg>*)
@@ -99,7 +103,7 @@ set -a
 # shift_quoted (<arg>*)
 # supercat (<filearg>*)
 # tmp_cat ()
-# tmp_create ()
+# tmp_create (<suffix>?)
 # unquote (<arg>*)
 # usage ()
 # version ()
@@ -125,7 +129,6 @@ DISPLAY_MODE=""			# determined from command line arguments
 FILE_ARGS=""			# the non-option command line parameters
 HAS_COMPRESSION=""		# `yes' if compression is available
 HAS_MANW=""			# `yes' if `man -w' is available
-HAS_MKTEMP=""			# `yes' if `mktemp' program is available
 HAS_OPTS_GNU=""			# `yes' if GNU `getopt' is available
 HAS_OPTS_POSIX=""		# `yes' if POSIX `getopts' is available
 MAN_PATH=""			# search path for man-pages
@@ -146,10 +149,10 @@ TMP_TITLE=""			# stores the names of processed args
 
 # command line arguments
 GROFFER_LONGOPTS="help man no-man source tty version";
-GROFFER_ARG_LONGS="device: manpath: title: xrdb:";
-GROFFER_SHORTOPTS="hQT:vX";
+GROFFER_ARG_LONGS="device: dpi: manpath: title: xrdb:";
+GROFFER_SHORTOPTS="hQT:v";
 GROFF_ARG_SHORTS="d:f:F:I:L:m:M:n:o:P:r:w:W:"; # inhereted from groff
-GROFF_SHORTOPTS="abcegilpstzCEGNRSUVZ";	       # inhereted from groff
+GROFF_SHORTOPTS="abcegilpstzCEGNRSUVXZ";       # inhereted from groff
 ALL_SHORTOPTS=\
 "${GROFFER_SHORTOPTS}${GROFF_SHORTOPTS}${GROFF_ARG_SHORTS}";
 ALL_LONGOPTS="${GROFFER_LONGOPTS} $GROFFER_ARG_LONGS";
@@ -255,16 +258,6 @@ if [ "$TEMP_DIR" = "" ]; then
   exit 1;
 fi;
 TEMP_PREFIX="${TEMP_DIR}/${PROGRAM_NAME}";
-
-# test whether function `mktemp' is available
-_tmp="$(mktemp "${TEMP_DIR}/.${PROGRAM_NAME}".XXXXXX)" 2>/dev/null;
-if [ "$_tmp" != "" ]; then
-  HAS_MKTEMP="yes";
-  rm -f "$_tmp";
-else
-  HAS_MKTEMP="no";
-fi;
-unset _tmp;
 
 
 ########################################################################
@@ -641,31 +634,6 @@ get_next_quoted()
 
 
 ########################################################################
-# get_title ()
-#
-# create title for X from the $TMP_TITLE file
-#
-# Globals : $TMP_TITLE $OPT_XRDB $OPT_TITLE
-# Output  : generated title
-#
-get_title()
-{
-  if [ "$OPT_TITLE" != "" ]; then
-    # title was set by option --title
-    output "$OPT_TITLE";
-    return 0;
-  fi;
-  if is_substring_of "-title" "$OPT_XRDB"; then
-    # $OPT_XRDB is handled anyway, so no extra output from here
-    return 0;
-  fi;
-  # no title was supplied on the command line, take the default title
-  # constisting of the processed filespecs, stored in file $TMP_TITLE.
-  cat "$TMP_TITLE";
-}
-
-
-########################################################################
 # is_substring_of (<part> <string>)
 #
 # Test whether `part' is contained in `string'.
@@ -696,6 +664,36 @@ leave()
 {
   clean_up;
   exit 0;
+}
+
+
+########################################################################
+# make_title ()
+#
+# Create title for X from the different possibilities.
+# Delete $TMP_TITLE file.
+#
+# Globals : $TMP_TITLE $OPT_XRDB $OPT_TITLE
+# Output  : retrieved title
+#
+make_title()
+{
+  if [ "$OPT_TITLE" != "" ]; then
+    # title was set by option --title
+    output "$OPT_TITLE";
+  elif is_substring_of "-title" "$OPT_XRDB"; then
+    # $OPT_XRDB is handled anyway, so no extra output from here
+    true;
+  else
+    # no title was supplied on the command line, take the default title
+    # constisting of the processed filespecs, stored in file $TMP_TITLE.
+    if [ "$TMP_TITLE" != "" ]; then
+      cat "$TMP_TITLE";
+    fi;
+  fi;
+  if [ "$TMP_TITLE" != "" ]; then
+    rm -f "$TMP_TITLE";
+  fi;
 }
 
 
@@ -1133,61 +1131,24 @@ tmp_cat()
 
 
 ########################################################################
-# tmp_create ()
+# tmp_create (<suffix>?)
 #
 # create temporary file 
 #
-# Output  : file generated title 
+# It's safe to use the shell process ID together with a suffix to
+# have multiple temporary files.
 #
-if [ "$HAS_MKTEMP" = "yes" ]; then
+# Output : name of created file
+#
 
-  tmp_create()
-  {
-    local _i;
-    local _tmp="";
-    # unquoted is ok, because mktemp output has no space chars
-    _tmp="$(mktemp "${TEMP_PREFIX}XXXXXX" 2>/dev/null)"; # automatic
-    if [ "$_tmp" = "" ]; then
-      HAS_MKTEMP="no";		# try manually
-    else
-      if [ ! -e "$_tmp" ]; then
-        echo -n >"$_tmp";
-      fi;
-      output "$_tmp";
-      return 0;
-    fi;
-    if [ "$_tmp" = "" ]; then
-      error 1 "Could not manually create temporary file.";
-    fi
-    echo -n >"$_tmp";
-    output "$_tmp";
-  }
-
-else
-
-  tmp_create()
-  {
-    local _i;
-    local _tmp="";
-    _tmp="";			# manual determination
-    for _i in a b c d e f g h i j k l m n o p q r s t u v w x y z \
-              A B C D E F G H I J K L M N O P Q R S T U V W X Y Z; do
-      _tmp="${TEMP_PREFIX}$$${_i}";
-      if [ -e "$_tmp" ]; then
-        _tmp="";
-        continue;
-      else
-        break;  
-      fi;
-    done;
-    if [ "$_tmp" = "" ]; then
-      error 1 "Could not manually create temporary file.";
-    fi
-    echo -n >"$_tmp";
-    output "$_tmp";
-  }
-
-fi;
+tmp_create()
+{
+  local _i;
+  local _tmp="";
+  _tmp="${TEMP_PREFIX}${PROCESS_ID}$1";
+  echo -n >"$_tmp";
+  output "$_tmp";
+}
 
 
 ########################################################################
@@ -1225,30 +1186,33 @@ unquote()
 usage()
 {
   echo2;
+  local _gap="$(echo -n $PROGRAM_NAME | sed -e '/./s// /g')";
   version;
   cat >&2 <<EOF
 Copyright (C) 2001 Free Software Foundation, Inc.
 This is free software licensed under the GNU General Public License.
 
-Usage : $PROGRAM_NAME [options] [file] [-]
-                  [manpage.x] [man:manpage] [man:manpage(x)] ...
+Usage : $PROGRAM_NAME [options] [file] [-] [[man:]manpage.x]
+        $_gap [[man:]manpage(x)] [[man:]manpage]...
 
-Display groff files, standard input, and/or Unix manual pages with
-gxditview in X window or in a text pager.
+Display roff files, standard input, and/or Unix manual pages with
+in a X window viewer or in a text pager.
 "-" stands for including standard input.
-"manpage" is the name of a man-page, "x" its section.
-All parameters and standard input are decompressed on-the-fly (by zcat).
+"manpage" is the name of a man page, "x" its section.
+All input is decompressed on-the-fly (by gzip).
 
--c --stdout    tty output without a pager
--h --help      print this usage message.
--Q --source    output as roff source.
--T --device    set device for X or tty output.
--v --version   print version information.
--X --dpi=res   set resolution to "res" ("75" or "100" (default)).
---man          check file arguments first on being man-pages.
---manpath=path preset path for searching man-pages, "" means disable.
---xrdb=opt     pass "opt" as option to gxditview (several allowed).
-All other options are interpreted as "groff" parameters and tranferred
+-h --help        print this usage message.
+-Q --source      output as roff source.
+-T --device=name set device for X or tty output.
+-v --version     print version information.
+--dpi=res        set resolution to "res" ("75" or "100" (default)).
+--man            check file parameters first whether they are man pages.
+--manpath=path   preset path for searching man-pages.
+--no-man         disable man-page facility.
+--title='text'   set the title of the viewer window in X.
+--tty            force paging on text terminal even when in X.
+--xrdb=opt       pass "opt" as option to gxditview (several allowed).
+All other options are interpreted as "groff" parameters and transferred
 unmodified to "grog".
 EOF
 
@@ -1357,9 +1321,22 @@ until [ "$1" = "--" -o "$1" = "'--'" ]; do
       version;
      leave;
       ;;
-    -X)				# set X resolution 75 dpi (default 100).
-      OPT_DEVICE="";
-      OPT_DPI=75;
+    --dpi)			# set resolution for X devices, arg
+      _arg="$(get_next_quoted $*)";
+      set -- $(shift_quoted $*);
+      case "$_arg" in
+        75|75dpi)
+          OPT_DEVICE="";
+          OPT_DPI=75;
+          ;;
+        100|100dpi)
+          OPT_DEVICE="";
+          OPT_DPI=100;
+          ;;
+        *)
+	  error "only resoutions of 75 or 100 dpi are supported";
+          ;;
+      esac;
       ;;
     --man)			# interpret all file params as man-pages
       OPT_MAN="yes";
@@ -1459,12 +1436,12 @@ fi;
 trap clean_up  2>/dev/null || true;
 
 # save standard input
-TMP_INPUT="$(tmp_create)";
+TMP_INPUT="$(tmp_create i)";
 save_stdin_if_any;
 
 # built up title consisting of processed filespecs
 if [ "$DISPLAY_MODE" = "X" ]; then
-  TMP_TITLE="$(tmp_create)";
+  TMP_TITLE="$(tmp_create t)";
   output "$PROGRAM_NAME :" > $TMP_TITLE;
 
   register_title()
@@ -1492,15 +1469,10 @@ fi;
 # temporary storage of all input
 TMP_CAT="$(tmp_create)";
 supercat $FILE_ARGS >"$TMP_CAT"; # this does the main work
-set -- $(ls -l -L "$TMP_CAT");	 # check on empty
-if [ "$5" -eq 0 ]; then
-  echo2 "input is empty, nothing to display.";
-  leave;
-fi;
 
-if [ -f "$TMP_INPUT" ]; then
+if [ "$TMP_INPUT" != "" ]; then
   rm -f "$TMP_INPUT";
-fi
+fi;
 
 
 ########################################################################
@@ -1517,16 +1489,31 @@ case "$DISPLAY_MODE" in
     clean_up;
     ;;
   X)
+    _title="$(make_title)";
     if [ "$OPT_DPI" = "" ]; then
       OPT_DPI="$(check_dpi)";	# sanity check for using 100 dpi default
     fi;
     _groggy="$(tmp_cat | grog $OTHER_OPTIONS -TX"${OPT_DPI}" -Z )";
     trap "" EXIT 2>/dev/null || true;
-    tmp_cat | eval $_groggy | \
-      ( trap clean_up EXIT 2>/dev/null || true;
-        gxditview $OPT_XRDB -title "$(get_title)" -;
-        clean_up;
-      ) & 
+    # start a new shell program to get another process ID.
+    sh -c '
+      clean_up()
+      {
+        if [ "$TMP_CAT" != "" ]; then
+	  rm -f "$TMP_CAT";
+	fi;
+      }
+      PROCESS_ID="$$";
+      _old_tmp="$TMP_CAT";
+      TMP_CAT="${TEMP_PREFIX}${PROCESS_ID}";
+      rm -f "$TMP_CAT";
+      mv "$_old_tmp" "$TMP_CAT";
+      cat "$TMP_CAT" | eval $_groggy | \
+      (
+        trap clean_up EXIT 2>/dev/null || true;
+        gxditview $OPT_XRDB -title "$_title" -;
+        rm -f ;
+      ) &'
     ;;
   tty)
     _groggy="$(tmp_cat | grog $OTHER_OPTIONS -Tlatin1)";
