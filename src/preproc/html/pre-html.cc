@@ -66,15 +66,12 @@ extern "C" const char *Version_string;
 
 #define TRANSPARENT  "-background \"#FFF\" -transparent \"#FFF\""
 
-#ifdef __MSDOS__
-#define PAGE_TEMPLATE "pg"
-#define PS_TEMPLATE "ps"
-#define REGION_TEMPLATE "rg"
-#else
-#define PAGE_TEMPLATE "-page-"
-#define PS_TEMPLATE "-ps-"
-#define REGION_TEMPLATE "-regions-"
-#endif
+#define PAGE_TEMPLATE_SHORT "pg"
+#define PAGE_TEMPLATE_LONG "-page-"
+#define PS_TEMPLATE_SHORT "ps"
+#define PS_TEMPLATE_LONG "-ps-"
+#define REGION_TEMPLATE_SHORT "rg"
+#define REGION_TEMPLATE_LONG "-regions-"
 
 #if 0
 #   define  DEBUGGING
@@ -112,7 +109,6 @@ static int   debug          = FALSE;
 static char *troffFileName  = NULL;             // output of pre-html output which is sent to troff -Tps
 static char *htmlFileName   = NULL;             // output of pre-html output which is sent to troff -Thtml
 #endif
-
 
 /*
  *  Images are generated via postscript, gs and the pnm utilities.
@@ -854,7 +850,7 @@ static int createAllPages (void)
   char *s;
   int retries = MAX_RETRIES;
 
-  imagePageStem = xtmptemplate(PAGE_TEMPLATE);
+  imagePageStem = xtmptemplate(PAGE_TEMPLATE_LONG, PAGE_TEMPLATE_SHORT);
   strcpy(buffer, imagePageStem);
 
   do {
@@ -1368,19 +1364,46 @@ static int makeTempFiles (void)
   troffFileName  = "/tmp/prehtml-troff";
   htmlFileName   = "/tmp/prehtml-html";
 #else
+
+#if 0
+  FILE *f;
+
+  f = xtmpfile(&psFileName,
+	       PS_TEMPLATE_LONG, PS_TEMPLATE_SHORT,
+	       FALSE);
+  if (f == NULL) {
+    sys_fatal("xtmpfile");
+    return -1;
+  }
+  fclose(f);
+  f = xtmpfile(&regionFileName,
+	       REGION_TEMPLATE_LONG, REGION_TEMPLATE_SHORT,
+	       FALSE);
+  if (f == NULL) {
+    sys_fatal("xtmpfile");
+    return -1;
+  }
+  fclose(f);
+#else
   int fd;
 
-  if ((fd = mkstemp(psFileName = xtmptemplate(PS_TEMPLATE))) == -1) {
+  if ((fd = mkstemp(psFileName =
+		      xtmptemplate(PS_TEMPLATE_LONG,
+				   PS_TEMPLATE_SHORT))) == -1) {
     sys_fatal("mkstemp");
     return -1;
   }
   close(fd);
-  if ((fd = mkstemp(regionFileName = xtmptemplate(REGION_TEMPLATE))) == -1) {
+  if ((fd = mkstemp(regionFileName =
+		      xtmptemplate(REGION_TEMPLATE_LONG,
+				   REGION_TEMPLATE_SHORT))) == -1) {
     sys_fatal("mkstemp");
     unlink(psFileName);
     return -1;
   }
   close(fd);
+#endif
+
 #endif
   return 0;
 }

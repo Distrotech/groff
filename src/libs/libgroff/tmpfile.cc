@@ -48,11 +48,49 @@ extern "C" {
 # define DEFAULT_TMPDIR "/tmp"
 #endif
 // Use this as the prefix for temporary filenames.
-#ifdef __MSDOS__
-#define TMPFILE_PREFIX ""
-#else
-#define TMPFILE_PREFIX "groff"
-#endif
+#define TMPFILE_PREFIX_SHORT ""
+#define TMPFILE_PREFIX_LONG "groff"
+
+char *tmpfile_prefix;
+size_t tmpfile_prefix_len;
+int use_short_postfix = 0;
+
+struct temp_init {
+  temp_init();
+  ~temp_init();
+} _temp_init;
+
+temp_init::temp_init()
+{
+  const char *tem = getenv(GROFF_TMPDIR_ENVVAR);
+  if (!tem) {
+    tem = getenv(TMPDIR_ENVVAR);
+    if (!tem)
+      tem = DEFAULT_TMPDIR;
+  }
+  size_t tem_len = strlen(tem);
+  const char *tem_end = tem + tem_len - 1;
+  int need_slash = strchr(DIR_SEPS, *tem_end) == NULL ? 1 : 0;
+  char *tem2 = new char[tem_len + need_slash + 1];
+  strcpy(tem2, tem);
+  if (need_slash)
+    strcat(tem2, "/");
+  const char *tem3 = TMPFILE_PREFIX_LONG;
+  if (file_name_max(tem2) <= 14) {
+    tem3 = TMPFILE_PREFIX_SHORT;
+    use_short_postfix = 1;
+  }
+  tmpfile_prefix_len = tem_len + need_slash + strlen(tem3);
+  tmpfile_prefix = new char[tmpfile_prefix_len + 1];
+  strcpy(tmpfile_prefix, tem2);
+  strcat(tmpfile_prefix, tem3);
+  a_delete tem2;
+}
+
+temp_init::~temp_init()
+{
+  a_delete tmpfile_prefix;
+}
 
 /*
  *  Generate a temporary name template with a postfix
@@ -62,34 +100,18 @@ extern "C" {
  *  only the *template* is returned.
  */
 
-char *xtmptemplate(char *postfix)
+char *xtmptemplate(const char *postfix_long, const char *postfix_short)
 {
-  const char *dir = getenv(GROFF_TMPDIR_ENVVAR);
+  const char *postfix = use_short_postfix ? postfix_short : postfix_long;
   int postlen = 0;
-
   if (postfix)
     postlen = strlen(postfix);
-    
-  if (!dir) {
-    dir = getenv(TMPDIR_ENVVAR);
-    if (!dir)
-      dir = DEFAULT_TMPDIR;
-  }
-
-  size_t dir_len = strlen(dir);
-  const char *dir_end = dir + dir_len - 1;
-  int needs_slash = strchr(DIR_SEPS, *dir_end) == NULL;
-  char *templ = new char[strlen(dir) + needs_slash
-		+ sizeof(TMPFILE_PREFIX) - 1 + 6 + 1 + postlen];
-  strcpy(templ, dir);
-  if (needs_slash)
-    strcat(templ, "/");
-  strcat(templ, TMPFILE_PREFIX);
+  char *templ = new char[tmpfile_prefix_len + postlen + 6 + 1];
+  strcpy(templ, tmpfile_prefix);
   if (postlen > 0)
     strcat(templ, postfix);
   strcat(templ, "XXXXXX");
-
-  return( templ );
+  return templ;
 }
 
 // The trick with unlinking the temporary file while it is still in
@@ -136,9 +158,11 @@ static void add_tmp_file(const char *name)
 
 // Open a temporary file and with fatal error on failure.
 
-FILE *xtmpfile(char **namep, char *postfix, int do_unlink)
+FILE *xtmpfile(char **namep,
+	       const char *postfix_long, const char *postfix_short,
+	       int do_unlink)
 {
-  char *templ = xtmptemplate(postfix);
+  char *templ = xtmptemplate(postfix_long, postfix_short);
 
 #ifdef HAVE_MKSTEMP
   errno = 0;

@@ -439,11 +439,14 @@ int text_glob::is_auto_img (void)
 
 /*
  *  is_br - returns TRUE if the glob is a tag containing a .br
+ *          or an implied .br
  */
 
 int text_glob::is_br (void)
 {
-  return( is_a_tag() && (strcmp("html-tag:.br", text_string) == 0) );
+  return( is_a_tag() && ((strcmp("html-tag:.br", text_string) == 0) ||
+			 (strcmp("html-tag:.ce", text_string) == 0) ||
+			 (strcmp("html-tag:.nf", text_string) == 0)) );
 }
 
 /*

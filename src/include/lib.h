@@ -43,8 +43,10 @@ int is_prime(unsigned);
 #include <strings.h>
 #endif
 
-FILE *xtmpfile(char **namep = 0, char *postfix = 0, int do_unlink = 1);
-char *xtmptemplate(char *extension = 0);
+FILE *xtmpfile(char **namep = 0,
+	       const char *postfix_long = 0, const char *postfix_short = 0,
+	       int do_unlink = 1);
+char *xtmptemplate(const char *postfix_long, const char *postfix_short);
 
 #ifdef NEED_DECLARATION_POPEN
 

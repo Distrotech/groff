@@ -1,3 +1,50 @@
+2001-07-12  Ruslan Ermilov  <ru@FreeBSD.org>
+
+	Merge -xwidth into -width.  Add -xwidth functionality to -column
+	also.
+
+	* tmac/doc.tmac (Bl): Add dummy doc-typeXXX and doc-spaceXXX to
+	avoid warning.
+	(doc-do-Bl-args): Merge -xwidth code with -width.  Test whether
+	string immediately following a leading dot starts with a valid mdoc
+	argument.
+	Add similar code to the -column branch.
+	(doc-Bl-usage): Updated.
+	* groff_mdoc.man: s/-xwidth/-width/.
+
+2001-07-12  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* src/devices/grohtml/post-html.cc (text_glob::is_br): Stop titles
+	running into centered or non-formatted text.
+
+2001-07-11  Werner LEMBERG  <wl@gnu.org>
+
+	Introduce short and long prefixes to have the selection at run-time
+	whether there is a 8+3 limit for names of temporary files.
+
+	* src/libs/libgroff/tmpfile.cc (TMPFILE_PREFIX): Replaced with...
+	(TMPFILE_PREFIX_SHORT, TMPFILE_PREFIX_LONG): This.
+	(tmpfile_prefix, tmpfile_prefix_len, use_short_prefix): New
+	variables.
+	(temp_init): New global structure to initialize above three
+	variables.
+	(xtmptemplate): Use two parameters for long and short prefix.
+	Simplify code use above three variables.
+	(xtmpfile): Use long and short prefixes as parameters.
+	* src/include/lib.h: Updated.
+
+	* src/preproc/html/pre-html.cc ({PAGE,PS,REGION}_TEMPLATE): Replace
+	with ...
+	({PAGE,PS,REGION}_TEMPLATE_{SHORT,LONG}): This.
+	(createAllPages, makeTempFiles): Updated.
+
+2001-07-09  Werner LEMBERG  <wl@gnu.org>
+
+	* REVISION: Increased to 3.
+
+Version 1.17.2 released
+=======================
+
 2001-07-07  Werner LEMBERG  <wl@gnu.org>
 
 	* src/utils/indxbib/indxbib.cc (main): Change type of `name_max'
