@@ -329,8 +329,14 @@ ps_output &ps_output::put_fix_number(int i)
 ps_output &ps_output::put_float(double d)
 {
   char buf[128];
-  sprintf(buf, "%.3g", d);
-  int len = strlen(buf);
+  sprintf(buf, "%.4f", d);
+  int last = strlen(buf) - 1;
+  while (buf[last] == '0')
+    last--;
+  if (buf[last] == '.')
+    last--;
+  buf[++last] = '\0';
+  int len = last + 1;
   if (col > 0 && col + len + need_space > max_line_length) {
     putc('\n', fp);
     col = 0;
