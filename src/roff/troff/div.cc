@@ -1114,6 +1114,29 @@ void nl_reg::set_value(units n)
     topdiv->before_first_page = 2;
 }
 
+class no_space_mode_reg : public reg {
+public:
+  int get_value(units *);
+  const char *get_string();
+};
+
+int no_space_mode_reg::get_value(units *val)
+{
+  if (curdiv == topdiv)
+    *val = topdiv->no_space_mode;
+  else
+    *val = 0;
+  return 1;
+}
+
+const char *no_space_mode_reg::get_string()
+{
+  if (curdiv == topdiv)
+    return topdiv->no_space_mode ? "1" : "0";
+  else
+    return "0";
+}
+
 void init_div_requests()
 {
   init_request("wh", when_request);
@@ -1143,6 +1166,7 @@ void init_div_requests()
   number_reg_dictionary.define(".z", new diversion_name_reg);
   number_reg_dictionary.define(".o", new page_offset_reg);
   number_reg_dictionary.define(".p", new page_length_reg);
+  number_reg_dictionary.define(".q", new no_space_mode_reg);
   number_reg_dictionary.define(".d", new vertical_position_reg);
   number_reg_dictionary.define(".h", new high_water_mark_reg);
   number_reg_dictionary.define(".t", new distance_to_next_trap_reg);
