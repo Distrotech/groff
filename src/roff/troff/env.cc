@@ -1020,7 +1020,7 @@ void environment_copy()
       if (n >= 0 && n < NENVIRONMENTS)
 	e = env_table[n];
       else
-	nm = itoa(n);
+	nm = i_to_a(n);
     }
   }
   else
@@ -1028,7 +1028,7 @@ void environment_copy()
   if (!e && !nm.is_null())
     e = (environment *)env_dictionary.lookup(nm);
   if (e == 0) {
-    error("Inexistent environment to copy from");
+    error("No environment to copy from");
     return;
   }
   else

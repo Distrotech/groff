@@ -4931,6 +4931,13 @@ first time that they are referenced.  The @code{.ev} register contains
 the name or number of the current environment.  This is a string-valued
 register.
 
+Note that a call to @code{ev} (with argument) will push the previously
+active environment onto a stack.  If, say, environments @samp{foo},
+@{bar}, and @{zap} are called (in that order), the first @{ev} request
+without parameter will switch back to environment @samp{bar} (which will
+be popped off the stack), and a second call will switch back to
+environment @samp{foo}.
+
 @c XXX example
 
 @example
@@ -4951,6 +4958,10 @@ Here another example:
 \(dg Note the large, friendly letters.
 .ev
 @end example
+
+@findex evc
+To copy an environment into the current one, use the @code{evc} request,
+which takes the name of the environment to copy from as an argument.
 
 
 @node I/O, Postprocessor Access, Environments, Programming Tutorial
