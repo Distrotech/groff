@@ -1,3 +1,17 @@
+2003-08-26  Heinz-Jürgen Oertel  <hj.oertel@surfeu.de>
+
+	Add key character `x' to tbl which makes tbl call a user-defined
+	macro on a table cell.
+
+	* src/preproc/tbl/table.h (entry_modifier): Add `macro'.
+	* src/preproc/tbl/table.cpp (block_entry::do_divert): Call
+	`set_modifier' after printing the compatibility request.
+	(set_modifier): Print call to `m->macro' if not empty.
+	* src/preproc/tbl/main.cpp (entry_format::debug_print): Handle
+	`macro'.
+	(process_format): Implement cases `x' and `X'.
+	* src/preproc/tbl/tbl.man, NEWS: Updated.
+
 2003-08-15  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/groff.texinfo: Minor fixes.

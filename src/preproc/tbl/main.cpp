@@ -573,6 +573,11 @@ void entry_format::debug_print() const
     put_string(font, stderr);
     putc(' ', stderr);
   }
+  if (!macro.empty()) {
+    putc('m', stderr);
+    put_string(macro, stderr);
+    putc(' ', stderr);
+  }
   switch (vertical_alignment) {
   case entry_modifier::CENTER:
     break;
@@ -882,6 +887,40 @@ format *process_format(table_input &in, options *opt,
 	  if (!csdigit(cc)
 	      && c != EOF && c != ' ' && c != '\t' && c != '.' && c != '\n') {
 	    list->font += char(c);
+	    c = in.get();
+	  }
+	}
+	break;
+      case 'x':
+      case 'X':
+	do {
+	  c = in.get();
+	} while (c == ' ' || c == '\t');
+	if (c == EOF) {
+	  error("missing macro name");
+	  break;
+	}
+	if (c == '(') {
+	  for (;;) {
+	    c = in.get();
+	    if (c == EOF || c == ' ' || c == '\t') {
+	      error("missing `)'");
+	      break;
+	    }
+	    if (c == ')') {
+	      c = in.get();
+	      break;
+	    }
+	    list->macro += char(c);
+	  }
+	}
+	else {
+	  list->macro = c;
+	  char cc = c;
+	  c = in.get();
+	  if (!csdigit(cc)
+	      && c != EOF && c != ' ' && c != '\t' && c != '.' && c != '\n') {
+	    list->macro += char(c);
 	    c = in.get();
 	  }
 	}

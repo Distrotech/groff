@@ -687,8 +687,8 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
   if (alphabetic)
     prints("-2n");
   prints("\n");
-  set_modifier(mod);
   prints(".cp \\n(" COMPATIBLE_REG "\n");
+  set_modifier(mod);
   set_location();
   prints(contents);
   prints(".br\n.di\n.cp 0\n");
@@ -965,6 +965,8 @@ void set_modifier(const entry_modifier *m)
       prints('-');
     printfs("%1\n", as_string(m->vertical_spacing.val));
   }
+  if (!m->macro.empty())
+    printfs(".%1\n", m->macro);
 }
 
 void set_inline_modifier(const entry_modifier *m)

@@ -41,6 +41,7 @@ struct entry_modifier {
   inc_number point_size;
   inc_number vertical_spacing;
   string font;
+  string macro;
   enum { CENTER, TOP, BOTTOM } vertical_alignment;
   char zero_width;
   char stagger;
