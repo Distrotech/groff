@@ -1545,13 +1545,10 @@ static int scanArguments(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv,
-			  "+a:g:o:i:I:j:D:F:s:vbdhlrnp", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "+a:bdD:F:g:hi:I:j:lno:prs:S:v",
+			  long_options, NULL))
 	 != EOF)
     switch(c) {
-    case 'v':
-      printf("GNU pre-grohtml (groff) version %s\n", Version_string);
-      exit(0);
     case 'a':
       textAlphaBits = min(max(MIN_ALPHA_BITS, atoi(optarg)),
 			  MAX_ALPHA_BITS);
@@ -1559,6 +1556,20 @@ static int scanArguments(int argc, char **argv)
 	error("cannot use 3 bits of antialiasing information");
 	exit(1);
       }
+      break;
+    case 'b':
+      // handled by post-grohtml (set background color to white)
+      break;
+    case 'd':
+#if defined(DEBUGGING)
+      debug = TRUE;
+#endif
+      break;
+    case 'D':
+      image_dir = optarg;
+      break;
+    case 'F':
+      font_path.command_line_dir(optarg);
       break;
     case 'g':
       graphicAlphaBits = min(max(MIN_ALPHA_BITS, atoi(optarg)),
@@ -1568,26 +1579,23 @@ static int scanArguments(int argc, char **argv)
 	exit(1);
       }
       break;
-    case 'b':
-      // handled by post-grohtml (set background color to white)
-      break;
-    case 'D':
-      image_dir = optarg;
-      break;
-    case 'I':
-      image_template = optarg;
+    case 'h':
+      // handled by post-grohtml
       break;
     case 'i':
       image_res = atoi(optarg);
       break;
-    case 'F':
-      font_path.command_line_dir(optarg);
-      break;
-    case 's':
-      // handled by post-grohtml (use font size n as the html base font size)
+    case 'I':
+      image_template = optarg;
       break;
     case 'j':
       // handled by post-grohtml (set job name for multiple file output)
+      break;
+    case 'l':
+      // handled by post-grohtml (no automatic section links)
+      break;
+    case 'n':
+      // handled by post-grohtml (generate simple heading anchors)
       break;
     case 'o':
       vertical_offset = atoi(optarg);
@@ -1595,14 +1603,18 @@ static int scanArguments(int argc, char **argv)
     case 'p':
       show_progress = TRUE;
       break;
-    case 'd':
-#if defined(DEBUGGING)
-      debug = TRUE;
-#endif
+    case 'r':
+      // handled by post-grohtml (no header and footer lines)
       break;
-    case 'h':
-      // handled by post-grohtml
+    case 's':
+      // handled by post-grohtml (use font size n as the html base font size)
       break;
+    case 'S':
+      // handled by post-grohtml (set file split level)
+      break;
+    case 'v':
+      printf("GNU pre-grohtml (groff) version %s\n", Version_string);
+      exit(0);
     case CHAR_MAX + 1: // --help
       usage(stdout);
       exit(0);

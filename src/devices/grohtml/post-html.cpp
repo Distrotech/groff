@@ -85,6 +85,7 @@ static int multiple_files = FALSE;                   /* must we the output be di
                                                      /* heading?                                 */
 static int base_point_size = 0;                      /* which troff font size maps onto html     */
                                                      /* size 3?                                  */
+static int split_level = 2;                          /* what heading level to split at?          */
 static string head_info;                             /* user supplied information to be placed   */
                                                      /* into <head> </head>                      */
 
@@ -2476,7 +2477,7 @@ void html_printer::determine_header_level (int level)
     }
   }
   header.header_level = level+1;
-  if (header.header_level == 2) {
+  if (header.header_level >= 2 && header.header_level <= split_level) {
     header.no_of_level_one_headings++;
     insert_split_file();
   }
@@ -4813,29 +4814,39 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "a:g:o:i:I:j:D:F:s:vbdhlrnp", long_options, NULL))
+  while ((c = getopt_long(argc, argv, "a:bdD:F:g:hi:I:j:lno:prs:S:v",
+			  long_options, NULL))
 	 != EOF)
     switch(c) {
-    case 'v':
-      printf("GNU post-grohtml (groff) version %s\n", Version_string);
-      exit(0);
-      break;
     case 'a':
       /* text antialiasing bits - handled by pre-html */
-      break;
-    case 'g':
-      /* graphic antialiasing bits - handled by pre-html */
       break;
     case 'b':
       // set background color to white
       default_background = new color;
       default_background->set_gray(color::MAX_COLOR_VAL);
       break;
+    case 'd':
+      /* handled by pre-html */
+      break;
+    case 'D':
+      /* handled by pre-html */
+      break;
     case 'F':
       font::command_line_font_dir(optarg);
       break;
-    case 's':
-      base_point_size = atoi(optarg);
+    case 'g':
+      /* graphic antialiasing bits - handled by pre-html */
+      break;
+    case 'h':
+      /* do not use the Hn headings of html, but manufacture our own */
+      manufacture_headings = TRUE;
+      break;
+    case 'i':
+      /* handled by pre-html */
+      break;
+    case 'I':
+      /* handled by pre-html */
       break;
     case 'j':
       multiple_files = TRUE;
@@ -4844,15 +4855,8 @@ int main(int argc, char **argv)
     case 'l':
       auto_links = FALSE;
       break;
-    case 'r':
-      auto_rule = FALSE;
-      break;
-    case 'd':
-      /* handled by pre-html */
-      break;
-    case 'h':
-      /* do not use the Hn headings of html, but manufacture our own */
-      manufacture_headings = TRUE;
+    case 'n':
+      simple_anchors = TRUE;
       break;
     case 'o':
       /* handled by pre-html */
@@ -4860,17 +4864,18 @@ int main(int argc, char **argv)
     case 'p':
       /* handled by pre-html */
       break;
-    case 'i':
-      /* handled by pre-html */
+    case 'r':
+      auto_rule = FALSE;
       break;
-    case 'I':
-      /* handled by pre-html */
+    case 's':
+      base_point_size = atoi(optarg);
       break;
-    case 'D':
-      /* handled by pre-html */
+    case 'S':
+      split_level = atoi(optarg) + 1;
       break;
-    case 'n':
-      simple_anchors = TRUE;
+    case 'v':
+      printf("GNU post-grohtml (groff) version %s\n", Version_string);
+      exit(0);
       break;
     case CHAR_MAX + 1: // --help
       usage(stdout);

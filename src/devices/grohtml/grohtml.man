@@ -46,16 +46,17 @@ grohtml \- html driver for groff
 .  el .RB "[\ " "\\$1" "\ ]"
 ..
 .
-.OP \-vbphlrn
+.OP \-bhlnprv
+.OP \-a \%aa-text-bits
 .OP \-D dir
 .OP \-F dir
+.OP \-g \%aa-graphic-bits
 .OP \-i \%resolution
 .OP \-I \%image-stem
-.OP \-o \%image-vertical-offset
 .OP \-j \%filename
-.OP \-a \%aa-text-bits
-.OP \-g \%aa-graphic-bits
+.OP \-o \%image-vertical-offset
 .OP \-s size
+.OP \-S level
 .RI "[\ " files\|.\|.\|. "\ ]"
 .br
 .ad \na
@@ -117,6 +118,26 @@ from issuing antialiasing commands to
 .BR gs .
 .
 .TP
+.B \-b
+Initialize the background color to white.
+.
+.TP
+.BI \-D dir
+Inform
+.B grohtml
+to place all image files into directory
+.IR dir .
+.
+.TP
+.BI \-F dir
+Prepend directory
+.IB dir /dev name
+to the search path for font and device description files;
+.I name
+is the name of the device, usually
+.BR html .
+.
+.TP
 .BI \-g aa-graphic-bits
 Number of bits of antialiasing information to be used by
 .I graphics
@@ -135,10 +156,6 @@ from issuing antialiasing commands to
 .BR gs .
 .
 .TP
-.B \-b
-Initialize the background color to white.
-.
-.TP
 .B \-h
 Generate section and number headings by using
 .BR <B> .\|.\|. </B>
@@ -147,49 +164,6 @@ and increasing the font size, rather than using the
 \&.\|.\|.\c
 .BI </H n >
 tags.
-.
-.TP
-.B \-l
-Turn off the production of automatic section links at the top of the
-document.
-.
-.TP
-.B \-r
-Turn off the automatic header and footer line (html rule).
-.
-.TP
-.B \-s size
-Set the base point size of the source file.
-Thereafter when this point size is used in the source it will correspond
-to the html base size.
-Every increase of two points in the source will yield a
-.B <big>
-tag, and conversely when a decrease of two points is seen a
-.B <small>
-tag is emitted.
-.
-.TP
-.B \-n
-Generate simple heading anchors whenever a section/number heading is found.
-Without the option the anchor value is the textual heading.
-This can cause problems when a heading contains a `?' on older versions of
-some browsers (Netscape).
-This flag is automatically turned on if a heading contains an image.
-.
-.TP
-.B \-p
-Display page rendering progress to stderr.
-.B grohtml
-only displays a page number when an image is required.
-.
-.TP
-.BI \-F dir
-Prepend directory
-.IB dir /dev name
-to the search path for font and device description files;
-.I name
-is the name of the device, usually
-.BR html .
 .
 .TP
 .BI \-i resolution
@@ -208,26 +182,59 @@ If omitted grohtml uses
 is the process ID).
 .
 .TP
-.BI \-o vertical-offset
-Specify the vertical offset of images in points.
-.
-.TP
-.BI \-D dir
-Inform
-.B grohtml
-to place all image files into directory
-.IR dir .
-.
-.TP
 .BI \-j filename
 Inform
 .B grohtml
 to split the html output into multiple files.
 The
 .I filename
-is the stem and all level one section headings start a new
-file, named
+is the stem and specified section headings
+(default is level one) start a new file, named
 .IR filename-n.html .
+.
+.TP
+.B \-l
+Turn off the production of automatic section links at the top of the
+document.
+.
+.TP
+.B \-n
+Generate simple heading anchors whenever a section/number heading is found.
+Without the option the anchor value is the textual heading.
+This can cause problems when a heading contains a `?' on older versions of
+some browsers (Netscape).
+This flag is automatically turned on if a heading contains an image.
+.
+.TP
+.BI \-o vertical-offset
+Specify the vertical offset of images in points.
+.
+.TP
+.B \-p
+Display page rendering progress to stderr.
+.B grohtml
+only displays a page number when an image is required.
+.
+.TP
+.B \-r
+Turn off the automatic header and footer line (html rule).
+.
+.TP
+.B \-s size
+Set the base point size of the source file.
+Thereafter when this point size is used in the source it will correspond
+to the html base size.
+Every increase of two points in the source will yield a
+.B <big>
+tag, and conversely when a decrease of two points is seen a
+.B <small>
+tag is emitted.
+.
+.TP
+.BI \-S level
+When splitting html output,
+split at the heading level (or higher) defined by
+.IR level .
 .
 .TP
 .B \-v
