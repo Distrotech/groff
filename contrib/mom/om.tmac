@@ -23,8 +23,8 @@
 .\"
 .
 .
-\# Version 1.1.6
-\# -------------
+\# Version 1.1.6-a
+\# ---------------
 \#
 .if (\n[.x]\n[.y] < 118) \
 .  ab You need GNU troff version 1.18 or higher to run this version of mom!
@@ -3264,7 +3264,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       el \{\
 .          ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
 .          el \{ .PAGENUM_STYLE DIGIT \}
-.          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{ .ds $HDRFTR_CENTER \}
+.          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{\
+.             ds $HDRFTR_CENTER
+.             rr #USER_DEF_HDRFTR_CENTER
+.          \}
 .       \}
 .    \}
 \# Chapter
@@ -3626,7 +3629,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .MAC DEFAULTS END
 .    if !d$PAPER \{ .PAPER LETTER \}
 .    if !\\n[#DOC_TYPE]   \{ .DOCTYPE DEFAULT \}
-.    if \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
+.    ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
+.    el \{\
+.       if !\\n[#COPY_STYLE]=1 \{ .PAGENUM_STYLE DIGIT \}
+.    \}
 .    if !\\n[#COPY_STYLE] \{ .COPYSTYLE FINAL \}
 .    if \\n[#DRAFT_WITH_PAGENUM] \{ .COPYSTYLE \\*[$COPY_STYLE] \}
 .    if \\n[#DOC_TYPE]=4 \{\
@@ -3749,12 +3755,30 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !r#TOC_SH_INDENT             \{ .TOC_SUBHEAD_INDENT  30p       \}
 .    if !r#TOC_PH_INDENT             \{ .TOC_PARAHEAD_INDENT 42p       \}
 \# String defaults for both PRINTSTYLEs
-.    if !d$DOC_TITLE                  \{ .ds $DOC_TITLE \E*[$TITLE]        \}
+.    ie \\n[#DOC_TYPE]=1 \{\
+.       ie '\\*[$DOC_TITLE]'' \{\
+.          if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT  \\*[$AUTHOR_1]  \}
+.          rr #USER_DEF_HDRFTR_LEFT
+.          if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$TITLE]     \}
+.          rr #USER_DEF_HDRFTR_RIGHT
+.       \}
+.       el \{\
+.          if \\n[#COPY_STYLE]=1 \{ .DRAFT_WITH_PAGENUMBER \}
+.          if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT  \\*[$AUTHOR_1]  \}
+.          rr #USER_DEF_HDRFTR_LEFT
+.          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{ .ds $HDRFTR_CENTER \\*[$TITLE]    \}
+.          rr #USER_DEF_HDRFTR_CENTER
+.          if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$DOC_TITLE] \}
+.          rr #USER_DEF_HDRFTR_RIGHT
+.       \}
+.    \}
+.    el \{\
+.       if \\n[#USER_DEF_HDRFTR_LEFT]=0   \{ .ds $HDRFTR_LEFT  \\*[$AUTHOR_1]  \}
+.       rr #USER_DEF_HDRFTR_LEFT
+.       if \\n[#USER_DEF_HDRFTR_RIGHT]=0  \{ .ds $HDRFTR_RIGHT \\*[$TITLE]     \}
+.       rr #USER_DEF_HDRFTR_RIGHT
+.    \}
 .    if !d$ATTRIBUTE_STRING           \{ .ATTRIBUTE_STRING "by"            \}
-.    if \\n[#USER_DEF_HDRFTR_LEFT]=0  \{ .ds $HDRFTR_LEFT  \\*[$AUTHOR_1]  \}
-.    rr #USER_DEF_HDRFTR_LEFT
-.    if \\n[#USER_DEF_HDRFTR_RIGHT]=0 \{ .ds $HDRFTR_RIGHT \\*[$DOC_TITLE] \}
-.    rr #USER_DEF_HDRFTR_RIGHT
 .    if !d$FINIS_STRING               \{ .FINIS_STRING "END"               \}
 \# Defaults for printstyle TYPEWRITE
 .    if \\n[#PRINT_STYLE]=1 \{\
@@ -4055,7 +4079,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ab PRINTSTYLE missing
 .    \}
 .    nr #DOCS 1
-.    DEFAULTS
 .    if \\n[#COLLATE] \{\
 .       COPYSTYLE \\*[$COPY_STYLE]
 .       nr #HEADERS_ON \\n[#HEADER_STATE]
@@ -4067,6 +4090,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          rm $RESTORE_PAGENUM_STYLE
 .       \}
 .    \}
+.    DEFAULTS
 \#
 .    ie \\n[#COLLATED_DOC]=1 \{\
 \# Collect TITLE for TOC.
@@ -5992,7 +6016,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .           PRINT \\v'-(\\n[#LEAD]u*2u)'\\n[#PAGENUMBER]
 .       \}
 .       el \{\
-.          ie !'\\*[$HDRFTR_RIGHT]'' \{ .PRINT \v'-(\\n[#LEAD]u*2u)'\\*[$HDRFTR_RIGHT] \}
+.          ie !'\\*[$HDRFTR_RIGHT]'' \{ .PRINT \\v'-(\\n[#LEAD]u*2u)'\\*[$HDRFTR_RIGHT] \}
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS OFF \}
@@ -6053,7 +6077,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .           PRINT \\v'-(\\n[#LEAD]u*2u)'\\n[#PAGENUMBER]
 .       \}
 .       el \{\
-.          ie !'\\*[$HDRFTR_RIGHT]'' \{ .PRINT \v'-(\\n[#LEAD]u*2u)'\\*[$HDRFTR_RIGHT] \}
+.          ie !'\\*[$HDRFTR_RIGHT]'' \{ .PRINT \\v'-(\\n[#LEAD]u*2u)'\\*[$HDRFTR_RIGHT] \}
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS OFF \}
@@ -6229,15 +6253,15 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    sp |\\n[#HEADER_MARGIN]u-1v
 .    ll \\n[#DOC_L_LENGTH]u
 .    ta \\n(.lu
-.    if \\n[#PRINT_STYLE]=2 \{\
-.      FAMILY  \\*[$HDRFTR_FAM]
-.      FT      R
-.      PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
-.    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       fam C
 .       ft  R
 .       ps  12\\*[$HDRFTR_SIZE_CHANGE]
+.    \}
+.    if \\n[#PRINT_STYLE]=2 \{\
+.      FAMILY  \\*[$HDRFTR_FAM]
+.      FT      R
+.      PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
 .    \}
 .    nr #HDRFTR_PT_SIZE \\n[#PT_SIZE]
 .    if \\n[#CAPS_ON] \{\
@@ -6247,6 +6271,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#UNDERLINE_ON] \{\
 .       nr #UNDERLINE_WAS_ON 1
 .       UNDERLINE OFF
+.    \}
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#ENDNOTES]=1 \{\
+.          if \\n[#EN_SINGLESPACE] \{\   \"Endnotes s-spaced have different lead
+.             nr #RESTORE_DOC_LEAD \\n[#DOC_LEAD]
+.             nr #DOC_LEAD \\n[#EN_LEAD]u
+.          \}
+.       \}
 .    \}
 .    ie \\n[#HEADERS_ON] \{\
 .       PRINT_HDRFTR
@@ -6261,6 +6293,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{ .sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u \}
 .       \}
 .       el \{ .sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u \}
+.    \}
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       if \\n[#ENDNOTES]=1 \{\
+.          if \\n[#EN_SINGLESPACE] \{\
+.             nr #DOC_LEAD \\n[#RESTORE_DOC_LEAD]u
+.             rr #RESTORE_DOC_LEAD
+.          \}
+.       \}
 .    \}
 .    nr #PAGE_TOP \\n(nl
 .    ev
@@ -9680,20 +9720,20 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC ENDNOTES END
 .    nr #ENDNOTES 1
+.    nr #PAGINATION_STATE \\n[#PAGINATE]
 .    nr #EN_FIRST_PAGE 1
 .    nr #HEADER_STATE \\n[#HEADERS_ON]
-.    ds $UR_PAGENUM_STYLE \\*[$PAGENUM_STYLE]
+.    ds $RESTORE_PAGENUM_STYLE \\*[$PAGENUM_STYLE]
 .    if \\n[#HEADERS_ON]=1 \{\
 .       if !\\n[#EN_ALLOWS_HEADERS_ALL] \{ .HEADERS OFF \}
 .    \}
-.    if \\n[#DOC_TYPE]=2 \{\
+.    if \\n[#HEADER_STATE]=1 \{\
 .       ie \\n[#EN_HDRFTR_CENTER]=1 \{ . \}
-.       el \{ .HDRFTR_CENTER \}
+.       el \{ .rm $HDRFTR_CENTER  \}
 .    \}
 .    ie !\\n[#SUSPEND_PAGINATION] \{\
 .       if \\n[#PAGINATE]=1 \{\
 .          if \\n[#PAGE_NUM_V_POS]=1 \{\
-.             ds $RESTORE_PAGENUM_STYLE \\*[$PAGENUM_STYLE]
 .             PAGENUM_STYLE \\*[$EN_PN_STYLE]
 .             if \\n[#EN_FIRST_PN] \{ .PAGENUMBER \\n[#EN_FIRST_PN]-1 \}
 .             if r#EN_NO_FIRST_PN \{ .nr #PAGINATE 0 \}
@@ -9701,9 +9741,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    el \{\
-.       ds $RESTORE_PAGENUM_STYLE \\*[$PAGENUM_STYLE]
-.          ie \\n[#PAGE_NUM_V_POS]=2 \{ .nr #PAGINATE 1 \}
-.          el \{ .nr #PAGINATE 0 \}
+.       ie \\n[#PAGE_NUM_V_POS]=2 \{ .nr #PAGINATE 1 \}
+.       el \{ .nr #PAGINATE 0 \}
 .    \}
 .    if \\n[#FOOTERS_ON]=1 \{\
 .       if !'\\*[$HDRFTR_CENTER_OLD]'' \{ .ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_OLD] \}
@@ -9714,9 +9753,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          FOOTERS
 .          rr #FOOTERS_WERE_ON
 .       \}
-.       if \\n[#PAGINATION_WAS_ON] \{\
-.          PAGINATE
-.          rr #PAGINATION_WAS_ON
+.       if \\n[#PAGINATION_WAS_ON] \{\ \"This register only set in FINIS
+.          if \\n[#PAGINATION_STATE]=1 \{\
+.             PAGINATE
+.             rr #PAGINATION_WAS_ON
+.          \}
 .       \}
 .       rr #FINIS
 .    \}
@@ -9725,8 +9766,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       rr #FOOTERS_WERE_ON
 .    \}
 .    if \\n[#PAGINATION_WAS_ON] \{\
-.       PAGINATE
-.       rr #PAGINATION_WAS_ON
+.       if \\n[#PAGINATION_STATE]=1 \{\
+.          PAGINATE
+.          rr #PAGINATION_WAS_ON
+.       \}
 .    \}
 .    if \\n[#FOOTERS_ON]=1 \{\
 .       ds $HDRFTR_CENTER \\*[$HDRFTR_CENTER_NEW]
@@ -9735,15 +9778,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    ie !\\n[#SUSPEND_PAGINATION] \{\
 .       if \\n[#PAGE_NUM_V_POS]=1 \{\
-.          if r#EN_NO_FIRST_PN \{ .nr #PAGINATE 1 \}
+.          if r#EN_NO_FIRST_PN \{\
+.             if \\n[#PAGINATION_STATE]=1 \{\
+.                nr #PAGINATE 1
+.             \}
+.          \}
 .       \}
 .    \}
 .    el \{\
 .       if \\n[#PAGE_NUM_V_POS]=2 \{ .nr #PAGINATE 0 \}
 .    \}
-.    if '\\*[$RESTORE_PAGENUM_STYLE]'' \{\
-.       ds $RESTORE_PAGENUM_STYLE \\*[$UR_PAGENUM_STYLE]
-.    \}
+.    rr #PAGINATION_STATE
 .    PAGENUM_STYLE \\*[$EN_PN_STYLE]
 .    if \\n[#EN_FIRST_PN] \{ .PAGENUMBER \\n[#EN_FIRST_PN] \}
 .    if \\n[#HEADER_STATE]=1 \{\
@@ -10375,6 +10420,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nf
 .    TOC_ENTRIES
 .    br
+.    rr #TOC
 .END
 \# ====================================================================
 \#
