@@ -178,7 +178,7 @@ is_system_shell(const char *shell)
 
 #ifdef _WIN32
 
-/* Win32 doesn't have fork() */
+/* Windows 32 doesn't have fork() */
 
 int
 run_pipeline(int ncommands, char ***commands, int no_pipe)

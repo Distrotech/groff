@@ -1710,7 +1710,7 @@ void token::next()
     }
     else {
     handle_escape_char:
-      cc = input_stack::get(0);
+      cc = input_stack::get(&n);
       switch(cc) {
       case '(':
 	nm = read_two_char_escape_name();
