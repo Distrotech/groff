@@ -1400,8 +1400,12 @@ read_map(const char *file, const int tfm_type)
 	charcode_name_table[i] = NULL;
     }
 
-    for (; ptr; ptr = strtok(NULL, " \n\t"))
+    // a '#' that isn't the first groff name begins a comment
+    for (int names = 1; ptr; ptr = strtok(NULL, " \n\t")) {
+      if (names++ > 1 && *ptr == '#')
+	break;
       charcode_name_table[n] = new name_list(ptr, charcode_name_table[n]);
+    }
   }
   fclose(fp);
   return 1;

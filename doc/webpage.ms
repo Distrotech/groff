@@ -173,6 +173,14 @@ gunzip -c ../groff-\[la]version\[ra]-current.diff.gz | patch -p1
 .fi
 .in
 
+Finally, it is possible to access the CVS with a browser by pointing it
+to
+
+.in 2m
+.URL http://www.ffii.org/cgi-bin/viewcvs.cgi/ \
+     http://www.ffii.org/cgi-bin/viewcvs.cgi/
+.in
+
 Please report bugs using the form in the file BUG-REPORT; the idea of this
 is to make sure that FSF has all the information it needs to fix the bug.
 At the very least, read the BUG-REPORT form and make sure that you supply

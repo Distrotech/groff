@@ -1,4 +1,4 @@
-# Copyright (C) 1994, 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 1994, 2002, 2003, 2004 Free Software Foundation, Inc.
 #     Written by James Clark (jjc@jclark.com)
 #
 # This file is part of groff.
@@ -41,6 +41,8 @@ SFLAG=-s
 srcdir=generate
 TEXTMAP=$(srcdir)/text.map
 SPECIALMAP=$(srcdir)/special.map
+SYMBOLMAP=$(srcdir)/symbol.map
+WINGDINGSMAP=$(srcdir)/wingdings.map
 
 FONTS=\
   AB ABI AI AR \
@@ -54,7 +56,8 @@ FONTS=\
   TNRB TNRBI TNRI TNRR \
   UB UBI UI UR \
   UCB UCBI UCI UCR \
-  CLARENDON CORONET MARIGOLD S
+  CLARENDON CORONET MARIGOLD S \
+  SYMBOL WINGDINGS
 
 all: $(FONTS)
 
@@ -240,6 +243,14 @@ AB: $(AUTOFONT)/arlb000s.tfm $(TEXTMAP)
 # Arial Bold Italic
 ABI: $(AUTOFONT)/arlj000s.tfm $(TEXTMAP)
 	$(HPFTODIT) $(IFLAG) $(AUTOFONT)/arlj000s.tfm $(TEXTMAP) $@
+
+# Symbol
+SYMBOL: $(AUTOFONT)/9nb00078.tfm $(SYMBOLMAP)
+	$(HPFTODIT) $(AUTOFONT)/9nb00078.tfm $(SYMBOLMAP) $@
+
+# Wingdings
+WINGDINGS: $(AUTOFONT)/9nb00095.tfm $(WINGDINGSMAP)
+	$(HPFTODIT) $(AUTOFONT)/9nb00095.tfm $(WINGDINGSMAP) $@
 
 
 clean:
