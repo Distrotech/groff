@@ -116,7 +116,7 @@
 .ds doc-right-singlequote \&'
 .ds doc-left-singlequote \&`
 .\" q is `official'
-.ds q \&"
+.ds q \[dq]
 .
 .\" math stuff -- all macro names are `official'
 .ds Pi \[*p]
@@ -216,8 +216,12 @@
 .
 .de Ql
 .  if !\n[doc-args-processed] \{\
-.    ds doc-macro-name Ql
-.    doc-parse-args \$@
+.    ie \n[.$] \{\
+.      ds doc-macro-name Ql
+.      doc-parse-args \$@
+.    \}
+.    el \
+.      tm Usage: .Ql argument ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-reg-Ql (\n[doc-arg-ptr] + 1)

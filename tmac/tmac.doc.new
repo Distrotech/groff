@@ -155,16 +155,26 @@
 .
 .  \" handle `|' specially for some requests
 .  ie "\$1"|" \{\
-.    if "\*[doc-macro-name]"Op" \
+.    ie "\*[doc-macro-name]"Op" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    if "\*[doc-macro-name]"Ar" \
-.      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    if "\*[doc-macro-name]"Fl" \
-.      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    if "\*[doc-macro-name]"Cm" \
-.      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    if "\*[doc-macro-name]"It" \
-.      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.    el \{\
+.      ie "\*[doc-macro-name]"Ar" \
+.        ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.      el \{\
+.        ie "\*[doc-macro-name]"Fl" \
+.          ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.        el \{\
+.          ie "\*[doc-macro-name]"Cm" \
+.            ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.          el \{\
+.            ie "\*[doc-macro-name]"It" \
+.              ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.            el \
+.              ds doc-arg\n[doc-args-processed] |
+.          \}
+.        \}
+.      \}
+.    \}
 .  \}
 .  el \
 .    ds doc-arg\n[doc-args-processed] "\$1
@@ -273,16 +283,24 @@
 .
 .  \" handle `|' specially for some requests
 .  if "\*[doc-arg\n[doc-args-processed]]"|" \{\
-.    if "\*[doc-macro-name]"Op" \
+.    ie "\*[doc-macro-name]"Op" \
 .      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    if "\*[doc-macro-name]"Ar" \
-.      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    if "\*[doc-macro-name]"Fl" \
-.      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    if "\*[doc-macro-name]"Cm" \
-.      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
-.    if "\*[doc-macro-name]"It" \
-.      ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.    el \{\
+.      ie "\*[doc-macro-name]"Ar" \
+.        ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.      el \{\
+.        ie "\*[doc-macro-name]"Fl" \
+.          ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.        el \{\
+.          ie "\*[doc-macro-name]"Cm" \
+.            ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.          el \{\
+.            if "\*[doc-macro-name]"It" \
+.              ds doc-arg\n[doc-args-processed] \f[R]|\f[P]
+.          \}
+.        \}
+.      \}
+.    \}
 .  \}
 .
 .  \" get argument type and set spacing
@@ -1070,7 +1088,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage .Li argument ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Li argument ... \*[doc-punct-chars] (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -1556,11 +1574,11 @@
 .    as doc-out-string \&\*[doc-quote-left]
 .  el \{\
 .    ie \n[.$] \{\
-.      \".as doc-macro-name (doc-enclose-string)
 .      doc-parse-args \$@
 .      as doc-out-string \&\*[doc-quote-left]
 .    \}
 .    el \{\
+.      \" no argument
 .      as doc-out-string \&\*[doc-quote-left]\*[doc-quote-right]
 .      doc-print-out-string
 .    \}
@@ -1585,7 +1603,6 @@
 .        doc-append-arg "\*[doc-quote-right]" punct-suffix
 .
 .      doc-do-\*[doc-type\n[doc-arg-ptr]]
-.      \}
 .    \}
 .  \}
 ..
@@ -2004,7 +2021,7 @@
 .
 .
 .\" NS Pf user macro
-.\" NS   prefix (calls .doc-make-prefix): `.Pf prefix arg ...'
+.\" NS   prefix: `.Pf prefix arg ...'
 .\" NS
 .\" NS width register `.Pf' set in doc-common
 .
@@ -2015,15 +2032,16 @@
 .  ds doc-quote-left "\$1
 .
 .  shift
-.  doc-make-prefix \$@
-..
 .
-.
-.\" NS doc-make-prefix macro
-.\" NS   prefix (for prefixing open quotes, brackets, etc.)
-.
-.de doc-make-prefix
-.  ie !\n[doc-args-processed] \{\
+.  ie \n[doc-args-processed] \{\
+.    ie ((\n[doc-args-processed] - \n[doc-arg-ptr]) > 1) \{\
+.      nr doc-arg-ptr +1
+.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
+.    \}
+.    el \
+.      tm mdoc warning: .Pf: trailing prefix (#\n[.c])
+.  \}
+.  el \{\
 .    as doc-out-string \&\*[doc-quote-left]
 .    ie (\n[.$] < 2) \{\
 .      tm mdoc warning: .Pf: missing arguments (#\n[.c])
@@ -2031,14 +2049,6 @@
 .    \}
 .    el \
 .      doc-parse-args \$@
-.  \}
-.  el \{\
-.    ie ((\n[doc-args-processed] - \n[doc-arg-ptr]) > 1) \{\
-.      nr doc-arg-ptr +1
-.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
-.    \}
-.    el \
-.      tm mdoc warning: .Pf: trailing prefix (#\n[.c])
 .  \}
 .
 .  if \n[doc-args-processed] \{\
@@ -2052,8 +2062,7 @@
 .
 .
 .\" NS Ns user macro
-.\" NS   remove space (space removal done by .doc-parse-args or
-.\" NS   .doc-parse-arg-vector)
+.\" NS   remove space (space removal done by .doc-parse-args)
 .\" NS
 .\" NS width register `.Ns' set in doc-common
 .
@@ -2120,40 +2129,88 @@
 .
 .
 .\" NS Sm user macro
-.\" NS   space mode
+.\" NS   space mode (`.Sm'/`.Sm on'/`.Sm off')
+.\" NS
+.\" NS   without argument, toggle space mode
 .\" NS
 .\" NS width register `.Sm' set in doc-common
+.\" NS
+.\" NS local variable:
+.\" NS   doc-reg-Sm
 .
 .de Sm
 .  if !\n[doc-args-processed] \{\
-.    ie !\n[.$] \
-.      tm Usage: .Sm [off | on] (#\n[.c])
-.    el \{\
+.    ie \n[.$] \{\
 .      ds doc-macro-name Sm
 .      doc-parse-args \$@
+.    \}
+.    el \{\
+.      ie \n[doc-space-mode] \
+.        nr doc-space-mode 0
+.      el \
+.        nr doc-space-mode 1
 .    \}
 .  \}
 .
 .  if \n[doc-args-processed] \{\
 .    nr doc-arg-ptr +1
-.    if "\*[doc-arg\n[doc-arg-ptr]]"on" \{\
+.
+.    \" avoid a warning message in case `Sm' is the last parameter
+.    if !d doc-arg\n[doc-arg-ptr] \
+.      ds doc-arg\n[doc-arg-ptr]
+.
+.    ie "\*[doc-arg\n[doc-arg-ptr]]"on" \{\
 .      ds doc-space "\*[doc-soft-space]
 .      nr doc-space-mode 1
 .    \}
-.    if "\*[doc-arg\n[doc-arg-ptr]]"off" \{\
-.      ds doc-space
-.      ds doc-curr-space
-.\" XXX
-.      rm doc-space1 doc-space2 doc-space3 doc-space4
-.      rm doc-space5 doc-space6 doc-space7 doc-space8 doc-space9
-.
-.      nr doc-space-mode 0
+.    el \{\
+.      ie "\*[doc-arg\n[doc-arg-ptr]]"off" \{\
+.        ds doc-space
+.        ds doc-curr-space
+.        nr doc-space-mode 0
+.      \}
+.      el \{\
+.        \" no argument for Sm
+.        nr doc-arg-ptr -1
+.        ie \n[doc-space-mode] \
+.          nr doc-space-mode 0
+.        el \
+.          nr doc-space-mode 1
+.      \}
 .    \}
 .
-.    ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \
-.      No
-.    el \
-.      doc-reset-args
+.    ie \n[doc-space-mode] \{\
+.      \" recompute space vector for remaining arguments
+.      nr doc-num-args (\n[doc-args-processed] - \n[doc-arg-ptr])
+.      nr doc-args-processed \n[doc-arg-ptr]
+.      nr doc-reg-Sm \n[doc-arg-ptr]
+.      if \n[doc-num-args] \{\
+.        doc-parse-arg-vector
+.        nr doc-arg-ptr \n[doc-reg-Sm]
+.      \}
+.    \}
+.    el \{\
+.      \" reset remaining space vector elements
+.      nr doc-reg-Sm (\n[doc-arg-ptr] + 1)
+.      while (\n[doc-reg-Sm] <= \n[doc-args-processed]) \{\
+.        ds doc-space\n[doc-reg-Sm]
+.        nr doc-reg-Sm +1
+.      \}
+.    \}
+.
+.    \" do we have parameters to print?
+.    ie (\n[doc-args-processed] <= \n[doc-arg-ptr]) \{\
+.      \" ignore `.Sm on' and `.Sm off' without additional parameters
+.      ie (\n[doc-arg-ptr] > 1) \
+.        doc-print-and-reset
+.      el \
+.        doc-reset-args
+.    \}
+.    el \{\
+.      \" skip `Sm' argument
+.      nr doc-arg-ptr +1
+.      doc-print-recursive
+.    \}
 .  \}
 ..
 .
@@ -2168,37 +2225,29 @@
 .\" NS   get argument type (`macro', `string', `punct-suffix', or
 .\" NS   `punct-prefix')
 .\" NS
+.\" NS   this macro expects the width of the argument in `doc-width'
+.\" NS
 .\" NS modifies:
 .\" NS   doc-arg-type
 .
 .de doc-get-arg-type
-.  ds doc-arg-type
-.  ie ((\n[doc-width] > 2) : (\A'\$1' == 0)) \
-.    ds doc-arg-type string
-.  el \{\
-.    if (\n[doc-width] == 1) \{\
-.      ie d z\$1 \{\
-.        ie "\*[z\$1]"punct-suffix" \
+.  ds doc-arg-type string
+.
+.  if ((\n[doc-width] < 3) & \A'\$1') \{\
+.    ie (\n[doc-width] == 1) \{\
+.      if d doc-punct\$1 \{\
+.        ie "\*[doc-punct\$1]"punct-suffix" \
 .          ds doc-arg-type punct-suffix
 .        el \{\
-.          ie "\*[z\$1]"punct-prefix" \
+.          if "\*[doc-punct\$1]"punct-prefix" \
 .            ds doc-arg-type punct-prefix
-.          el \
-.            ds doc-arg-type string
 .        \}
 .      \}
-.      el \
-.        ds doc-arg-type string
 .    \}
-.    if (\n[doc-width] == 2) \{\
-.      ie r \$1 \{\
-.        ie \n[\$1] \
+.    el \{\
+.      if r \$1 \
+.        if \n[\$1] \
 .          ds doc-arg-type macro
-.        el \
-.          ds doc-arg-type string
-.      \}
-.      el \
-.        ds doc-arg-type string
 .    \}
 .  \}
 ..
@@ -2212,35 +2261,24 @@
 .\" NS   doc-arg-type
 .
 .de doc-get-arg-type*
-.  ds doc-arg-type
+.  ds doc-arg-type string
 .  doc-get-arg-width \$1
 .
-.  ie ((\n[doc-width] > 2) : (\A'\*[doc-arg\$1]' == 0)) \
-.    ds doc-arg-type string
-.  el \{\
-.    if (\n[doc-width] == 1) \{\
-.      ie d z\*[doc-arg\$1] \{\
-.        ie "\*[z\*[doc-arg\$1]]"punct-suffix" \
+.  if ((\n[doc-width] < 3) & \A'\*[doc-arg\$1]') \{\
+.    ie (\n[doc-width] == 1) \{\
+.      if d doc-punct\*[doc-arg\$1] \{\
+.        ie "\*[doc-punct\*[doc-arg\$1]]"punct-suffix" \
 .          ds doc-arg-type punct-suffix
 .        el \{\
-.          ie "\*[z\*[doc-arg\$1]]"punct-prefix" \
+.          if "\*[doc-punct\*[doc-arg\$1]]"punct-prefix"
 .            ds doc-arg-type punct-prefix
-.          el \
-.            ds doc-arg-type string
 .        \}
 .      \}
-.      el \
-.        ds doc-arg-type string
 .    \}
-.    if (\n[doc-width] == 2) \{\
-.      ie r \*[doc-arg\$1] \{\
-.        ie \n[\*[doc-arg\$1]] \
+.    el \{\
+.      if r \*[doc-arg\$1] \
+.        if \n[\*[doc-arg\$1]] \
 .          ds doc-arg-type macro
-.        el \
-.          ds doc-arg-type string
-.      \}
-.      el \
-.        ds doc-arg-type string
 .    \}
 .  \}
 ..
@@ -2264,14 +2302,16 @@
 .de doc-set-spacing-for-macro
 .  nr doc-reg-dssfm1 \n[\*[doc-arg\n[doc-args-processed]]]
 .
-.  \" closing macros like .Ac, Bc., etc. have value 3
+.  \" closing macros like .Ac, Bc., etc. have value 3 (remove space before
+.  \" argument)
 .  ie (\n[doc-reg-dssfm1] == 3) \{\
 .    nr doc-reg-dssfm (\n[doc-args-processed] - 1)
 .    ds doc-space\n[doc-reg-dssfm]
 .    ds doc-space\n[doc-args-processed] "\*[doc-space]
 .  \}
 .  el \{\
-.    \" macros like .Ap and .Ns have value 2
+.    \" macros like .Ap and .Ns have value 2 (remove space before and after
+.    \" argument)
 .    ie (\n[doc-reg-dssfm1] == 2) \{\
 .      nr doc-reg-dssfm (\n[doc-args-processed] - 1)
 .      ds doc-space\n[doc-reg-dssfm]

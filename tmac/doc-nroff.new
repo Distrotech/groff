@@ -114,7 +114,7 @@
 .ds doc-left-singlequote `
 .ds doc-right-singlequote '
 .\" q is `official'
-.ds q \&"
+.ds q \[dq]
 .
 .\" math stuff -- all macro names are `official'
 .ds Pi pi
@@ -193,23 +193,10 @@
 .\" NS   quoted literal define
 .\" NS
 .\" NS width register `.Ql' set in doc-common
-.\" NS
-.\" NS local variable:
-.\" NS   doc-reg-Ql
 .
 .de Ql
-.  if !\n[doc-args-processed] \{\
+.  if !\n[doc-args-processed] \
 .    ds doc-macro-name Ql
-.
-.    nr doc-reg-Ql 1
-.    while (\n[doc-reg-Ql] <= \n[.$]) \{\
-.      ds doc-arg\n[doc-reg-Ql] "\$[\n[doc-reg-Ql]]
-.      nr doc-reg-Ql +1
-.    \}
-.
-.    nr doc-num-args \n[.$]
-.    doc-parse-arg-vector
-.  \}
 .
 .  ds doc-quote-left "\*[doc-left-singlequote]
 .  ds doc-quote-right "\*[doc-right-singlequote]
