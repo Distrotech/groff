@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -33,6 +33,7 @@ class charinfo {
   char not_found;
   char transparent_translate;	// non-zero means translation applies to
 				// to transparent throughput
+  char fallback;
 public:
   enum { 
     ENDS_SENTENCE = 1,
@@ -68,12 +69,13 @@ public:
   void set_flags(unsigned char);
   void set_special_translation(int, int);
   int get_special_translation(int = 0);
-  macro *set_macro(macro *);
+  macro *set_macro(macro *, int = 0);
   macro *get_macro();
   int first_time_not_found();
   void set_number(int);
   int get_number();
   int numbered();
+  int is_fallback();
   symbol *get_symbol();
 };
 
@@ -114,6 +116,11 @@ inline int charinfo::transparent()
 inline int charinfo::numbered()
 {
   return flags & NUMBERED;
+}
+
+inline int charinfo::is_fallback()
+{
+  return fallback;
 }
 
 inline charinfo *charinfo::get_translation(int transparent_throughput)

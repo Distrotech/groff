@@ -4389,6 +4389,8 @@ node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
   int fn = fontno;
   int found = font_table[fontno]->contains(s);
   if (!found) {
+    if (s->is_fallback())
+      return make_composite_node(s, env);
     if (s->numbered()) {
       if (!no_error_message)
 	warning(WARN_CHAR, "can't find numbered character %1",
@@ -4467,7 +4469,7 @@ node *make_node(charinfo *ci, environment *env)
   if (tem)
     ci = tem;
   macro *mac = ci->get_macro();
-  if (mac)
+  if (mac && !ci->is_fallback())
     return make_composite_node(ci, env);
   else
     return make_glyph_node(ci, env);
@@ -4513,7 +4515,7 @@ node *node::add_char(charinfo *ci, environment *env,
   if (tem)
     ci = tem;
   macro *mac = ci->get_macro();
-  if (mac) {
+  if (mac && !ci->is_fallback()) {
     res = make_composite_node(ci, env);
     if (res) {
       res->next = this;

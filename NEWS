@@ -40,7 +40,14 @@ o It is now possible to have whitespace between the first and second dot (or
     ..
 
 o `.fn' is a new string-valued register which returns the (internal) real
-  font name; style and families are properly concatenated.
+  font name; styles and families are properly concatenated.
+
+o The new request `fchar' can be used to provide fallback characters.  Its
+  syntax is the same as the `char' request; the only difference is that a
+  character defined with `.char' hides the glyph with the same name in the
+  current font, whereas a character defined with `.fchar' is checked only if
+  the particular glyph isn't found in the current font.  This test happens
+  before checking special fonts.
 
 o A new escape sequence `\O' is available (mainly for internal use with
   grohtml).  Please see groff_diff.man and groff.texinfo for more details.

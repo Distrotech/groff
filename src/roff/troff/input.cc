@@ -3579,7 +3579,7 @@ void append_string()
   do_define_string(1);
 }
 
-void define_character()
+void do_define_character(int fallback)
 {
   node *n;
   int c;
@@ -3613,10 +3613,20 @@ void define_character()
       m->append((unsigned char)c);
     c = get_copy(&n);
   }
-  m = ci->set_macro(m);
+  m = ci->set_macro(m, fallback);
   if (m)
     delete m;
   tok.next();
+}
+
+void define_character()
+{
+  do_define_character(0);
+}
+
+void define_fallback_character()
+{
+  do_define_character(1);
 }
 
 static void remove_character()
@@ -6708,6 +6718,7 @@ void init_input_requests()
   init_request("rd", read_request);
   init_request("cp", compatible);
   init_request("char", define_character);
+  init_request("fchar", define_fallback_character);
   init_request("rchar", remove_character);
   init_request("hcode", hyphenation_code);
   init_request("while", while_request);
@@ -7125,7 +7136,7 @@ int charinfo::next_index = 0;
 charinfo::charinfo(symbol s)
 : translation(0), mac(0), special_translation(TRANSLATE_NONE),
   hyphenation_code(0), flags(0), ascii_code(0), not_found(0),
-  transparent_translate(1), nm(s)
+  transparent_translate(1), fallback(0), nm(s)
 {
   index = next_index++;
 }
@@ -7154,10 +7165,11 @@ void charinfo::set_ascii_code(unsigned char c)
   ascii_code = c;
 }
 
-macro *charinfo::set_macro(macro *m)
+macro *charinfo::set_macro(macro *m, int f)
 {
   macro *tem = mac;
   mac = m;
+  fallback = f;
   return tem;
 }
 

@@ -1,3 +1,19 @@
+2001-12-19  Werner LEMBERG  <wl@gnu.org>
+
+	Implement a fallback character request `.fchar'.
+
+	* src/roff/troff/charinfo.h (charinfo): New flag `fallback'.
+	(is_fallback): New inline function.
+	* src/roff/troff/input.cc (do_define_character): New function.
+	(define_character): Call `do_define_character'.
+	(define_fallback_character): New function.
+	(init_input_requests): Add `fchar'.
+	(charinfo::charinfo): Updated.
+	(charinfo::set_macro): New argument to set `fallback' flag.
+	* src/roff/troff/node.cc (make_glyph_node, make_node,
+	node::add_char): Check `fallback' flag.
+	* NEWS, man/groff_diff.man, man/groff_man: Updated.
+
 2001-12-16  Werner LEMBERG  <wl@gnu.org>
 
 	* groff.texinfo: Document exact search algorithm for glyphs.
