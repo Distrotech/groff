@@ -560,7 +560,7 @@ void environment::set_glyph_color(color *c)
 {
   if (interrupted)
     return;
-  curenv->prev_glyph_color = curenv->prev_glyph_color;
+  curenv->prev_glyph_color = curenv->cur_glyph_color;
   curenv->cur_glyph_color = c;
 }
 
@@ -568,7 +568,7 @@ void environment::set_fill_color(color *c)
 {
   if (interrupted)
     return;
-  curenv->prev_fill_color = curenv->prev_fill_color;
+  curenv->prev_fill_color = curenv->cur_fill_color;
   curenv->cur_fill_color = c;
 }
 
