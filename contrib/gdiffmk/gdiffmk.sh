@@ -1,21 +1,24 @@
 #!/bin/sh
-# This file is part of GNU gdiffmk.
-#
-# GNU gdiffmk is free software; you can redistribute it and/or modify it
-# under the terms of the GNU General Public License as published by the
-# Free Software Foundation; either version 2, or (at your option) any
-# later version.
-#
-# GNU gdiffmk is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
+# Copyright (C) 2004 Free Software Foundation, Inc.
+# Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
+
+# This file is part of the gdiffmk utility, which is part of groff.
+
+# groff is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# groff is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+# License for more details.
+
 # You should have received a copy of the GNU General Public License
-# along with gdiffmk; see the file COPYING.  If not, write to the
-#    Free Software Foundation, Inc.
-#    59 Temple Place - Suite 330
-#    Boston, MA 02111-1307, USA.
+# along with groff; see the files COPYING and LICENSE in the top
+# directory of the groff source.  If not, write to the Free Software
+# Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# This file is part of GNU gdiffmk.
 
 
 cmd=$( basename $0 )
