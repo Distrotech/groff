@@ -2,13 +2,14 @@
 # $Id$
 #
 PROG=mmroff
+MAN1=\
+  mmroff.n
 MAN7=\
   groff_mm.n \
-  groff_mmse.n \
-  mmroff.n
+  groff_mmse.n
 FILES=0.MT 5.MT 4.MT ms.cov se_ms.cov 
 # Local configuration files with default values.
-LOCALE = locale se_locale
+LOCALE=locale se_locale
 CLEANADD=temp
 
 all: mmroff
@@ -32,7 +33,8 @@ install_m:
 	$(INSTALL_DATA) $(srcdir)/m.tmac $(tmacdir)/$(tmac_m_prefix)m.tmac
 	@sed -e "s;^.mso m.tmac;.mso $(tmac_m_prefix)m.tmac;g" \
 		$(srcdir)/mse.tmac > $(tmacdir)/$(tmac_m_prefix)mse.tmac
-install_mmroff : mmroff
+
+install_mmroff: mmroff
 	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
 	-rm -f $(bindir)/mmroff
 	$(INSTALL_SCRIPT) mmroff $(bindir)/mmroff
@@ -41,7 +43,6 @@ mmroff: mmroff.pl
 	-rm -f $@
 	-sed -e 's;/usr/bin/perl;$(PERLPATH);' $(srcdir)/mmroff.pl >$@
 	-chmod +x $@
-
 
 uninstall_sub:
 	-for f in $(FILES); do rm -f $(tmacdir)/mm/$$f; done
