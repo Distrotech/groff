@@ -513,9 +513,19 @@
 .  el \{\
 .    ie r ps4html \{\
 .      www-make-unique-name
+.      \" To avoid interferences with another DC macro call which is located
+.      \" very near to the current one, we draw the glyph on a separate page.
+.      \" Otherwise it could theoretically happen that the dropped capital
+.      \" glyphs overlap.
+.      bp
+.      ev www-DC
+.      vs 80p
 .      nop \O[5i\\*[www-unique-name].png]\O[1]
-.      nop \m[\\*[www-dropcolor]]\s[40]\O[3]\\$1\O[4]\s0\m[]
-.      nop \O[2]\O[1]
+.      nop \m[\\*[www-dropcolor]]\s[40]\O[3]\\$1\O[4]
+.      nop \O[2]\O[0]
+.      br
+.      ev
+.      bp
 .    \}
 .    el \{\
 .      nr dummy \w'\\$1'u

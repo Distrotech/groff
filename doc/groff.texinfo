@@ -9783,13 +9783,13 @@ Note that macro identifiers are shared with identifiers for strings and
 diversions.
 @endDefreq
 
-@DefreqList {am, xx}
-@DefreqItem {am1, xx}
-@DefreqListEnd {ami, xx yy}
+@DefreqList {am, name [@Var{end}]}
+@DefreqItem {am1, name [@Var{end}]}
+@DefreqListEnd {ami, name [@Var{end}]}
 @cindex appending to a macro (@code{am})
 @cindex macro, appending (@code{am})
 Works similarly to @code{de} except it appends onto the macro named
-@var{xx}.  So, to make the previously defined @samp{P} macro actually
+@var{name}.  So, to make the previously defined @samp{P} macro actually
 do indented instead of block paragraphs, add the necessary code to the
 existing macro like this:
 
@@ -9807,7 +9807,7 @@ the end.
 
 The @code{ami} request appends indirectly,
 meaning that @code{gtroff} expands strings whose names
-are @var{xx} or @var{yy} before performing the append.
+are @var{name} or @var{end} before performing the append.
 
 @pindex trace.tmac
 Using @file{trace.tmac}, you can trace calls to @code{am} and @code{am1}.
@@ -10659,7 +10659,7 @@ integer which can be represented in @code{groff}) if there are no diversion
 traps.
 @endDefreg
 
-@Defreq {ch, macro dist}
+@Defreq {ch, macro [@Var{dist}]}
 @cindex changing trap location (@code{ch})
 @cindex trap, changing location (@code{ch})
 Change the location of a trap.
