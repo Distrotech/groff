@@ -86,11 +86,11 @@ This is the GNU groff document formatting system.
 The version number is given in the file VERSION.
 
 Included in this release are implementations of troff, pic, eqn, tbl, refer,
-the -man macros and the -ms macros, and drivers for PostScript, TeX dvi
+the \-man macros and the \-ms macros, and drivers for PostScript, TeX dvi
 format, HP LaserJet 4 printers, HTML format (still alpha), and
 typewriter-like devices.
-Also included is a modified version of the Berkeley -me macros, an enhanced
-version of the X11 xditview previewer, and an implementation of the -mm
+Also included is a modified version of the Berkeley \-me macros, an enhanced
+version of the X11 xditview previewer, and an implementation of the \-mm
 macros contributed by
 .MTO jh@\:axis.se "J\[:o]rgen H\[:a]gg" .
 
@@ -106,7 +106,7 @@ The file PROBLEMS describes various problems that have been encountered in
 compiling, installing, and running groff.
 
 For the moment, the documentation assumes that you are already familiar with
-the Unix versions of troff, -man, -ms and the preprocessors.
+the Unix versions of troff, \-man, \-ms and the preprocessors.
 
 The most recent released version of groff is always available by anonymous
 ftp from ftp.gnu.org in the directory pub/\:gnu/\:groff.
@@ -238,6 +238,15 @@ items.
 .ULE
 .
 .SH 2
+grolbp
+
+.ULS
+.LI
+The option \-w (\-\-linewidth) has been added (similar to other device
+drivers) to set the default line width.
+.ULE
+.
+.SH 2
 Miscellaneous
 
 .ULS
@@ -329,8 +338,8 @@ Two new glyph symbols are available: `eu' is the official Euro symbol;
 `Eu' is a font-specific glyph variant.
 
 .LI
-The new glyph symbols `t+-', `tdi', and `tmu' are textual variants of
-`+-', `di', and `mu', respectively.
+The new glyph symbols `t+\-', `tdi', and `tmu' are textual variants of
+`+\-', `di', and `mu', respectively.
 
 .LI
 Latin-1 character 181 (PS name `mu', Unicode name U+00B5 MICRO SIGN) has
@@ -405,7 +414,7 @@ them.
 .LI
 The syntax of the `substring' request has been changed:
 The first character in a string now has index\~0, the last character
-has index\~-1.
+has index\~\-1.
 Note that this is an incompatible change.
 
 .LI
@@ -615,17 +624,16 @@ The new macro `HX' determines the cut-off point for automatic link
 generation to headings.
 
 .LI
-The image position parameter names in `IMG' have been changed to `-L',
-`-R', and `-C'.
+The image position parameter names in `IMG' have been changed to `\-L',
+`\-R', and `\-C'.
 
 .LI
 New macro `PIMG' for inclusion of a PNG image (it will automatically
-convert it into an EPS file if not -Thtml is used).
+convert it into an EPS file if not \-Thtml is used).
 
 .LI
 New macro `MPIMG' for putting a PNG image into the left or right margin
-(it will automatically convert it into an EPS file if not
--Thtml is used).
+(it will automatically convert it into an EPS file if not \-Thtml is used).
 
 .LI
 New macros `HnS', `HnE' to start and end a header line block.
@@ -774,7 +782,7 @@ Two font families are now available: `T' and `H'.
 
 .LI
 EC and TC fonts have been integrated.
-Use `-mec' (calling the file ec.tmac) to switch to them.
+Use `\-mec' (calling the file ec.tmac) to switch to them.
 Those fonts give a much better coverage of the symbols defined by groff
 than the CM fonts.
 

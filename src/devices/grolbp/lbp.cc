@@ -42,6 +42,9 @@ static double user_paperlength = 0;	// Custom Paper size
 static double user_paperwidth = 0;
 static int ncopies = 1;			// Number of copies
 
+#define DEFAULT_LINEWIDTH_FACTOR 40	// 0.04em
+static int linewidth_factor = DEFAULT_LINEWIDTH_FACTOR;
+
 static int set_papersize(const char *paperformat);
 
 class lbp_font : public font {
@@ -67,7 +70,7 @@ public:
   font *make_font(const char *);
   void end_of_line();
 private:
-  void set_line_thickness(int size, int dot = 0);
+  void set_line_thickness(int size,const environment *env);
   void vdmstart();
   void vdmflush(); // the name vdmend was already used in lbp.h
   void setfillmode(int mode);
@@ -82,8 +85,9 @@ private:
   int cur_size;
   unsigned short cur_symbol_set;
   int line_thickness;
+  int req_linethickness; // requested line thickness
   int papersize;
-  int paperlength;	// custum paper size
+  int paperlength;	// custom paper size
   int paperwidth;
 };
 
@@ -161,7 +165,7 @@ lbp_printer::lbp_printer(int ps, double pw, double pl)
   cur_font(0),
   cur_size(0),
   cur_symbol_set(0),
-  line_thickness(-1)
+  req_linethickness(-1)
 {
 #ifdef SET_BINARY
   SET_BINARY(fileno(stdout));
@@ -278,21 +282,24 @@ void lbp_printer::set_char(int index, font *f, const environment *env,
     if (psf->is_scalable) {
       // Scalable font selection is different from bitmaped
       lbpprintf("\033Pz%s.IBML\033\\\033[%d C", psf->lbpname,
-		(int)((env->size * 300) / 72));
+		(int)((env->size * font::res) / 72));
     }
     else
       // bitmapped font
       lbpprintf("\033Pz%s.IBML\033\\\n", font_name(psf, env->size));
     lbpputs("\033)' 1");	// Select IBML and IBMR1 symbol set
-    cur_size = env->size;
     cur_font = psf;
     cur_symbol_set = 0;
+     // Update the line thickness if needed
+    if ((req_linethickness < 0 ) && (env->size != cur_size))
+  	set_line_thickness(req_linethickness,env);
+    cur_size = env->size;
   }
   if (symbol_set != cur_symbol_set) {
     if (cur_symbol_set == 3)
       // if current symbol set is Symbol we must restore the font
       lbpprintf("\033Pz%s.IBML\033\\\033[%d C", cur_font->lbpname,
-		(int)((env->size * 300) / 72));
+		(int)((env->size * font::res) / 72));
     switch (symbol_set) {
     case 0:
       lbpputs("\033('$2\033)' 1");	// Select IBML and IBMR1 symbol sets
@@ -305,7 +312,7 @@ void lbp_printer::set_char(int index, font *f, const environment *env,
       break;
     case 3:
       lbpprintf("\033PzSymbol.SYML\033\\\033[%d C",
-		(int)((env->size * 300) / 72));
+		(int)((env->size * font::res) / 72));
       lbpputs("\033(\"!!0\033)\"!!1");	// Select symbol font
       break;
     case 4:
@@ -318,8 +325,11 @@ void lbp_printer::set_char(int index, font *f, const environment *env,
     if (!cur_font->is_scalable)
       lbpprintf("\033Pz%s.IBML\033\\\n", font_name(cur_font, env->size));
     else
-      lbpprintf("\033[%d C", (int)((env->size * 300) / 72));
+      lbpprintf("\033[%d C", (int)((env->size * font::res) / 72));
     cur_size = env->size;
+     // Update the line thickness if needed
+    if (req_linethickness < 0 ) 
+  	set_line_thickness(req_linethickness,env);
   }
   if ((env->hpos != cur_hpos) || (env->vpos != cur_vpos)) {
     // lbpmoveabs(env->hpos - ((5 * 300) / 16), env->vpos);
@@ -394,8 +404,35 @@ inline void lbp_printer::polygon(int hpos, int vpos, int np, int *p)
   vdmpolygon((np /2) + 1, points);
 }
 
+inline void lbp_printer::set_line_thickness(int size,const environment *env)
+{
+      if (size == 0)
+	line_thickness = 1;
+      else {
+      	if (size < 0)
+		// line_thickness =
+		//   (env->size * (font::res/72)) * (linewidth_factor/1000)
+		// we ought to check for overflow
+		line_thickness =
+		  env->size * linewidth_factor * font::res / 72000;
+      	else // size > 0
+        	line_thickness = size;
+      } // else from if (size == 0)
+      if (line_thickness < 1)
+	line_thickness = 1;
+      if (vdminited())
+	vdmlinewidth(line_thickness);
+      req_linethickness = size; // an size requested
+      /*  fprintf(stderr, "thickness: %d == %d, size %d, %d \n",
+        size, line_thickness, env->size,req_linethickness); */
+   return;
+}; // lbp_printer::set_line_thickness
+
 void lbp_printer::draw(int code, int *p, int np, const environment *env)
 {
+  if ((req_linethickness < 0 ) && (env->size != cur_size))
+		set_line_thickness(req_linethickness,env);
+
   switch (code) {
   case 't':
     if (np == 0)
@@ -404,23 +441,9 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
       if (np != 1 && np != 2) {
 	error("0 or 1 argument required for thickness");
 	break;
-      }
-      if (p[0] == 0)
-	line_thickness = 1;
-      if (p[0] < 0)
-	// Default = 1 point
-	line_thickness = (int)(env->size * 30 / 72);
-      line_thickness = (int)((abs(p[0]) * env->size) / 10);
-      if ((line_thickness > 16) && (!vdminited())) {
-	/* for greater thickness we must use VDM */
-	vdmstart();
-	// vdmlinewidth(line_thickness); // already done in vdmstart()
-      }
-      if (vdminited())
-	vdmlinewidth(line_thickness);
-      // fprintf(stderr, "\nthickness: %d == %d, size %d\n",
-      //         p[0], line_thickness, env->size);
-    }
+      };
+    set_line_thickness(p[0],env);
+    };
     break;
   case 'l':	// Line
     if (np != 2) {
@@ -430,9 +453,9 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
     if (!vdminited())
       vdmstart();
     vdmline(env->hpos, env->vpos, p[0], p[1]);
-    // fprintf(stderr, "\nline: %d,%d - %d,%d thickness %d == %d\n",
-    //         env->hpos - 64,env->vpos -64, env->hpos - 64 + p[0],
-    //         env->vpos -64 + p[1], env->size, line_thickness);
+/*     fprintf(stderr, "\nline: %d,%d - %d,%d thickness %d == %d\n",
+             env->hpos - 64,env->vpos -64, env->hpos - 64 + p[0],
+             env->vpos -64 + p[1], env->size, line_thickness);*/
     break;
   case 'R':	// Rule
     if (np != 2) {
@@ -608,6 +631,7 @@ static struct option long_options[] = {
   { "copies", required_argument, NULL, 'c' },
   { "landscape", no_argument, NULL, 'l' },
   { "papersize", required_argument, NULL, 'p' },
+  { "linewidth", required_argument, NULL, 'w' },
   { "fontdir", required_argument, NULL, 'F' },
   { "help", no_argument, NULL, 'h' },
   { NULL, 0, 0, 0 }
@@ -616,15 +640,17 @@ static struct option long_options[] = {
 static void usage(FILE *stream)
 {
   fprintf(stream,
-	  "usage: %s [-lvh] [-c n] [-p paper_size] [-F dir] [-o or] "
-	  " [files ...]\n"
-	  "       -o --orientation=[portrait|landscape]\n"
-	  "       -v --version\n"
-	  "       -c --copies=numcopies\n"
-	  "       -l --landscape\n"
-	  "       -p --papersize=paper_size\n"
-	  "       -F --fontdir=dir\n"
-	  "       -h --help\n",
+	  "usage: %s [-lvh] [-c n] [-p paper_size] [-F dir] [-o or]\n"
+	  "       [-w width] [files ...]\n"
+	  "\n"
+	  "  -o --orientation=[portrait|landscape]\n"
+	  "  -v --version\n"
+	  "  -c --copies=numcopies\n"
+	  "  -l --landscape\n"
+	  "  -p --papersize=paper_size\n"
+	  "  -w --linewidth=width\n"
+	  "  -F --fontdir=dir\n"
+	  "  -h --help\n",
 	  program_name);
 }
 
@@ -637,7 +663,7 @@ int main(int argc, char **argv)
   int c = 0;
   int option_index = 0;
   while (c >= 0) {
-    c = getopt_long (argc, argv, "F:p:lvo:c:h",
+    c = getopt_long (argc, argv, "F:p:lvo:c:hw:",
 		     long_options, &option_index);
     switch (c) {
     case 'F':
@@ -680,6 +706,18 @@ int main(int argc, char **argv)
 	  error("out of range argument for -c");
 	else
 	  ncopies = unsigned(n);
+	break;
+      }
+    case 'w':
+      {
+	char *ptr;
+	long n = strtol(optarg, &ptr, 10);
+	if (n == 0 && ptr == optarg)
+	  error("argument for -w must be a non-negative integer");
+	else if (n < 0 || n > INT_MAX)
+	  error("out of range argument for -w");
+	else
+	  linewidth_factor = int(n);
 	break;
       }
     case 'h':

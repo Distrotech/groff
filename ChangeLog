@@ -1,3 +1,31 @@
+2002-09-23  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grolbp/lbp.cc: Replace `300' with `font::res' where
+	appropriate.
+	(DEFAULT_LINEWIDTH_FACTOR): New macro.
+	(linewidth_factor): New global variable.
+	(lbp_printer::set_line_thickness): Fix case for size < 0, using
+	linewidth_factor.
+	(long_options): Add -w/--linewidth option.
+	(usage): Updated.
+	(main): Handle -w option to set linewidth_factor.
+	(lbp_printer::lbp_printer): Initialize req_linethickness, not
+	line_thickness.
+
+	* src/devices/grolbp/grolbp.man, NEWS, doc/webpage.ms: Updated.
+
+2002-09-22  Paco Andrés Verdú  <pandres@dragonet.es>
+
+	Fixed a bug in the line thickness setting code.
+
+	* src/devices/grolbp/lbp.cc (lbp_printer::req_linethickness): New
+	variable.
+	(lbp_printer::set_line_thickness): Pass environment as second
+	parameter.
+	Implement it actually.
+	(lpb_printer::set_char, lbp_printer::draw): Use `req_linethickness'
+	and `set_line_thickness, depending on the current font size.
+
 2002-09-21  Werner LEMBERG  <wl@gnu.org>
 
 	Some Debian patches.
