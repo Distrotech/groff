@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2004 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -19,6 +19,8 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include <ctype.h>
+
+#include "lib.h"
 #include "cset.h"
 
 cset csalpha(CSET_BUILTIN);

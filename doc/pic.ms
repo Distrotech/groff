@@ -1731,7 +1731,7 @@ Accordingly, the command
 .RS
 .KS
 .IP
-.ft CW
+.CW
 .nf
 \&.PS
 copy thru % circle at ($1,$2) % until "END"
@@ -1750,7 +1750,7 @@ is equivalent to
 .RS
 .KS
 .IP
-.ft CW
+.CW
 .nf
 \&.PS
 circle at (1,2)
@@ -1787,6 +1787,27 @@ This has a similar effect to a line beginning with
 or
 \fB\e\fR\|,
 but allows the values of variables to be passed through.
+.LP
+For example,
+.KS
+.DS
+.CW
+.nf
+\&.PS
+x = 14
+command ".ds string x is " x "."
+\&.PE
+\e*[string]
+.DE
+.R
+.KE
+.LP
+prints
+.DS
+.CW
+x is 14.
+.R
+.DE
 .
 .NH 2
 Executing Shell Commands

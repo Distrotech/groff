@@ -62,6 +62,10 @@ public:
   friend class list_box;
 };
 
+box *make_script_box(box *, box *, box *);
+box *make_mark_box(box *);
+box *make_lineup_box(box *);
+
 class list_box : public box {
   int is_script;
   box_list list;

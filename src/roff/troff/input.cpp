@@ -154,6 +154,8 @@ class input_iterator;
 input_iterator *make_temp_iterator(const char *);
 const char *input_char_description(int);
 
+void process_input_stack();
+
 
 void set_escape_char()
 {

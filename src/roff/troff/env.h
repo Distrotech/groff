@@ -71,6 +71,8 @@ hunits env_sentence_space_width(environment *);
 hunits env_narrow_space_width(environment *);
 hunits env_half_narrow_space_width(environment *);
 
+void title();
+
 struct tab;
 
 enum tab_type { TAB_NONE, TAB_LEFT, TAB_CENTER, TAB_RIGHT };
