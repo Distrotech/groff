@@ -7,14 +7,14 @@ VERSION 1.18
 Troff
 -----
 
-o Color support has been added to troff and pic (and to two device drivers,
-  grops and grohtml -- other preprocessors and drivers will follow).  A new
-  function `defcolor' defines colors; the escape sequence `\m' sets the
-  drawing color, the escape sequence `\M' specifies the background color for
-  closed objects created with \D'...' commands.  Similar to fonts, `\mP' and
-  `\MP' switch back to the previous color.  `\m' and `\M' correspond to the
-  new troff output commands `m' and `DF'.  The device-specific default color
-  is called `default' and can't be redefined.
+o Color support has been added to troff and pic (and to the device drivers
+  grops, grotty, and grohtml -- other preprocessors and drivers will
+  follow).  A new function `defcolor' defines colors; the escape sequence
+  `\m' sets the drawing color, the escape sequence `\M' specifies the
+  background color for closed objects created with \D'...' commands.
+  Similar to fonts, `\mP' and `\MP' switch back to the previous color.  `\m'
+  and `\M' correspond to the new troff output commands `m' and `DF'.  The
+  device-specific default color is called `default' and can't be redefined.
 
   Outputting color can be disabled in troff and groff with the option -c
   (it is always disabled in compatibility mode).
@@ -100,6 +100,13 @@ Groff
 o The new command line option `-c' disables color output (which is always
   disabled in compatibility mode).
 
+Nroff
+-----
+
+o Two new command line options `-c' and `-C'; the former passes `-c' to
+  grotty (switching to the old output scheme); the latter passes `-C' to
+  groff (enabling compatibility mode).
+
 Pic
 ---
 
@@ -131,6 +138,33 @@ Grops
 -----
 
 o Color support has been added.
+
+
+Grotty
+------
+
+o Color support has been added, using the SGR (ISO 6429, sometimes called
+  ANSI color) escape sequences.
+
+o SGR escape sequences are now used by default for underlining and bold
+  printing also, no longer using the backspace character trick.  To revert
+  to the old behaviour, use the `-c' switch.
+
+  Note that you have to use the `-R' option of `less' to make SGR escapes
+  display correctly.  On the other hand, terminal programs and consoles like
+  `xterm' which support SGR sequences natively can directly display the
+  output of grotty.  Consequently, the options `-b', `-B', `-u', and `-U'
+  work only in combination with `-c' and are ignored silently otherwise.
+
+  For the `man' program, it may be necessary to add the `-R' option of
+  `less' to the $PAGER environment variable; alternatively, you can use
+  `man's `-P' option (or adapt its configuration file accordingly).  See
+  man(1) for more details.
+
+o If the new option `-i' is used (only in SGR mode), grotty sends escape
+  sequences to set the italic font attribute instead of the underline
+  attribute for italic fonts.  Note that many terminals don't have support
+  for this (including xterm).
 
 Grohtml
 -------

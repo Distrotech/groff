@@ -1,3 +1,54 @@
+2002-02-07  Werner LEMBERG  <wl@gnu.org>
+
+	Adding options -C (compatibility mode) and -c (grotty's old output
+	scheme) to nroff.
+
+	* src/roff/nroff/nroff.sh: Implement it.
+	Remove `-Wall'.
+	* NEWS, src/roff/nroff/nroff.man: Updated.
+
+2002-02-06  Werner LEMBERG  <wl@gnu.org>
+
+	Implementing color support in grotty.  The new switch -c activates
+	the old drawing scheme, disabling color at the same time.  The new
+	switch `-i' selects italic instead of underlining (SGR only).
+
+	* src/devices/grotty/tty.cc (putstring): New define instead of
+	`fputs'.  Updated all callers.
+	(old_drawing_scheme): New global variable.
+	(COLOR_CHANGE): New enum value.
+	(SGR_*): New defines containing color handling escape sequences.
+	(TTY_MAX_COLORS, DEFAULT_COLOR_IDX): New defines.
+	(glyph): New members `back_color_idx' and `fore_color_idx'.
+	(glyph::order): Add COLOR_CHANGE.
+	(tty_printer): New members `cur_fore_idx', `curr_back_idx',
+	`is_underline', `is_bold', `cu_flag', `tty_colors'.
+	New methods `make_underline', `make_bold', `color_to_idx',
+	`change_color', `put_color'.
+	(cu_flag): Moved into `tty_printer' class.
+	(tty_printer::tty_printer): Initialize colors.
+	(tty_printer::add_char, tty_printer::set_char, tty_printer::special,
+	tty_printer::draw, tty_printer::end_page): Handle colors also.
+	(main): Add options `-c' and `-i'.
+	(usage): Updated.
+	* NEWS, src/devices/grotty/grotty.man: Updated.
+
+	* src/include/errarg.h (errarg): Add support for `unsigned int'.
+	* src/libs/libgroff/errarg.c: Implement it.
+
+	* src/include/printer.h (printer): Add `change_color' method
+	(currently used by grotty only).
+	* src/libs/libdriver/printer.cc: Implement it.
+	* src/libs/libdriver/input.cc (parse_D_command, do_file): Add
+	call to `pr->change_color'.
+
+	* src/roff/troff/node.cc (troff_output_file::fill_color,
+	troff_output_file::glyph_color): Call `do_motion'.
+
+	* tmac/tty.tmac: Add color definitions.
+
+	* src/roff/groff/groff.man: Minor fixes.
+
 2002-02-05  Bernd Warken  <bwarken@mayn.de>
 
 	* src/libs/libdriver/input.cc: Introduce `EnvInt' typedef and use
@@ -8,6 +59,9 @@
 	* src/roff/troff/input.cc (process_input_stack): Fix the case
 	where leading spaces are followed by \f or \s; previously, an
 	incorrect space width has been used.
+
+	* doc/roff.man (quoted_char): Fix argument.
+	(comment): Define string.
 
 2002-02-04  Larry Kollar  <kollar@alltel.net>
 

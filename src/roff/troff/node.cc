@@ -821,6 +821,7 @@ inline void troff_output_file::put(unsigned int i)
 void troff_output_file::start_special(tfont *tf, int no_init_string)
 {
   flush_tbuf();
+  do_motion();
 
   /*
    *  although this is extremely unlikely to have an effect on other devices
@@ -830,7 +831,6 @@ void troff_output_file::start_special(tfont *tf, int no_init_string)
     if (tf != current_tfont)
       set_font(tf);
   }
-  do_motion();
   if (!no_init_string)
     put("x X ");
 }
@@ -1139,6 +1139,7 @@ void troff_output_file::fill_color(color *col)
   if ((current_pagecolor == col) || disable_color_flag)
     return;
   flush_tbuf();
+  do_motion();
   put("DF");
   unsigned int components[4];
   color_scheme cs;
@@ -1187,6 +1188,7 @@ void troff_output_file::glyph_color(color *col)
   if ((current_glyphcolor == col) || disable_color_flag)
     return;
   flush_tbuf();
+  do_motion();
   put("m");
   unsigned int components[4];
   color_scheme cs;

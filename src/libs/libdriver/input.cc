@@ -1352,6 +1352,7 @@ parse_D_command()
     }
   case 'F':			// DF: set fill color, several formats
     parse_color_command(current_env->fill);
+    pr->change_color(current_env);
     // no positioning (setting-only command)
     skip_line_x();
     break;
@@ -1704,6 +1705,7 @@ do_file(const char *filename)
       break;
     case 'm':			// m: glyph color
       parse_color_command(current_env->col);
+      pr->change_color(current_env);
       break;
     case 'n':			// n: print end of line
 				// ignore two arguments (historically)

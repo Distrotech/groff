@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -105,6 +106,10 @@ void printer::draw(int, int *, int, const environment *)
 {
 }
 
+void printer::change_color(const environment *)
+{
+}
+
 void printer::set_ascii_char(unsigned char c, const environment *env, 
 			     int *widthp)
 {
@@ -126,13 +131,12 @@ void printer::set_special_char(const char *nm, const environment *env,
 			       int *widthp)
 {
   font *f;
-  int   w;
+  int w;
   int i = set_char_and_width(nm, env, &w, &f);
   if (i != -1) {
     set_char(i, f, env, w, nm);
-    if (widthp) {
+    if (widthp)
       *widthp = w;
-    }
   }
 }
 

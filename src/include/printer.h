@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -54,6 +55,7 @@ public:
 			 int *widthp, font **f);
   font *get_font_from_index(int fontno);
   virtual void draw(int code, int *p, int np, const environment *env);
+  virtual void change_color(const environment *env);
   virtual void begin_page(int) = 0;
   virtual void end_page(int page_length) = 0;
   virtual font *make_font(const char *nm);
