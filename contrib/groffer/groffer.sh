@@ -25,8 +25,8 @@
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.11';
-_LAST_UPDATE='15 June 2004';
+_PROGRAM_VERSION='0.9.12';
+_LAST_UPDATE='15 November 2004';
 
 
 ########################################################################
@@ -334,18 +334,18 @@ _OPTS_GROFFER_LONG_NA="'auto' 'debug' 'default' 'dvi' \
 
 _OPTS_GROFFER_LONG_ARG="\
 'apropos' 'apropos-data' 'apropos-devel' 'apropos-progs' \
-'default-modes' 'dvi-viewer' 'extension' 'fg' 'fn' 'font' \
+'default-modes' 'device' 'dvi-viewer' 'extension' 'fg' 'fn' 'font' \
 'foreground' 'html-viewer' 'mode' 'pdf-viewer' 'ps-viewer' 'shell' \
 'tty-viewer' 'www-viewer' 'x-viewer' 'X-viewer'";
 
 ##### groffer options inhereted from groff
 
 _OPTS_GROFF_SHORT_NA="'a' 'b' 'c' 'C' 'e' 'E' 'g' 'G' 'i' 'l' 'N' 'p' \
-'R' 's' 'S' 't' 'U' 'V' 'z'";
+'R' 's' 'S' 't' 'U' 'z'";
 _OPTS_GROFF_SHORT_ARG="'d' 'f' 'F' 'I' 'L' 'm' 'M' 'n' 'o' 'P' 'r' \
 'w' 'W'";
-_OPTS_GROFF_LONG_NA="'source'";
-_OPTS_GROFF_LONG_ARG="'device' 'macro-file'";
+_OPTS_GROFF_LONG_NA="";
+_OPTS_GROFF_LONG_ARG="";
 
 ##### groffer options inhereted from the X Window toolkit
 
@@ -473,8 +473,7 @@ export _OPT_WHATIS;		# print the one-liner man info
 export _OPT_XRM;		# specify X resource.
 export _OPT_Z;			# groff option -Z.
 # _TMP_* temporary files
-export _TMP_DIR;		# groff directory for temporary files
-export _TMP_DIR_SUB;		# groffer directory for temporary files
+export _TMP_DIR;		# groffer directory for temporary files
 export _TMP_CAT;		# stores concatenation of everything
 export _TMP_STDIN;		# stores stdin, if any
 
@@ -533,7 +532,6 @@ _HAS_OPTS_POSIX='';
 
 # _TMP_* temporary files
 _TMP_DIR='';
-_TMP_DIR_SUB='';
 _TMP_CAT='';
 _TMP_STDIN='';
 
@@ -653,8 +651,7 @@ landmark "1: debugging functions";
 clean_up()
 {
   if test -d "${_TMP_DIR}"; then
-    rm -f "${_TMP_DIR}"/*;
-    rmdir "${_TMP_DIR}";
+    rm -f -r "${_TMP_DIR}";
   fi;
 }
 
@@ -1459,6 +1456,24 @@ is_equal()
 
 
 ########################################################################
+# is_existing (<name>)
+#
+# Test whether `name' is an existing file or directory.
+#
+# Arguments : 1
+# Return    : `0' if arg1 exists, `1' otherwise.
+#
+is_existing()
+{
+  func_check is_existing = 1 "$@";
+  if test -e "$1"; then
+    eval "${return_yes}";
+  fi;
+  eval "${return_no}";
+}
+
+
+########################################################################
 # is_file (<name>)
 #
 # Test whether `name' is a readable file.
@@ -1488,11 +1503,9 @@ is_file()
 #
 is_non_empty_file()
 {
-  func_check is_empty = 1 "$@";
-  if is_file "$1"; then
-    if is_not_empty "$(cat "$1" | sed -e '/./q')"; then
-      eval "${return_yes}";
-    fi;
+  func_check is_non_empty_file = 1 "$@";
+  if is_file "$1" && test -s "$1"; then
+    eval "${return_yes}";
   fi;
   eval "${return_no}";
 }
@@ -3211,7 +3224,7 @@ where()
 #
 # set exit trap and create temporary files
 #
-# Globals: $_TMP_CAT, $_TMP_STDIN
+# Globals: $_TMP_DIR, $_TMP_CAT, $_TMP_STDIN
 #
 landmark '13: main_init()';
 main_init()
@@ -3220,32 +3233,52 @@ main_init()
   # call clean_up() on any signal
   trap_set clean_up;
 
-  # determine temporary directory
-  umask 000;
+  # create temporary directory
+  umask 0022;
   _TMP_DIR='';
   for d in "${GROFF_TMPDIR}" "${TMPDIR}" "${TMP}" "${TEMP}" \
            "${TEMPDIR}" "${HOME}"'/tmp' '/tmp' "${HOME}" '.';
   do
-    if is_not_empty "$d"; then
-      if obj d is_dir && obj d is_writable; then
-        _TMP_DIR="${d}/${_PROGRAM_NAME}${_PROCESS_ID}";
-        if obj _TMP_DIR is_dir; then
-	  rm -f "${_TMP_DIR}"/*;
-          break;
-        else
-          mkdir "${_TMP_DIR}";
-          if obj _TMP_DIR is_not_dir; then
-            _TMP_DIR='';
-	    continue;
-          fi;
-          break;
-  	fi;
-      fi;
-      if obj _TMP_DIR is_not_writable; then
-	_TMP_DIR='';
-	continue;
-      fi;
+    if obj d is_empty || obj d is_not_dir || obj d is_not_writable; then
+      continue;
     fi;
+    case "$d" in
+    */)
+      _TMP_DIR="${d}";
+      ;;
+    *)
+      _TMP_DIR="${d}"'/';
+      ;;
+    esac;
+    _TMP_DIR="${_TMP_DIR}${_PROGRAM_NAME}${_PROCESS_ID}";
+    while obj _TMP_DIR is_existing; do
+      rm -f -r "${_TMP_DIR}" 2>/dev/null;
+      if obj _TMP_DIR is_existing; then
+        # $_TMP_DIR could not be removed
+        _TMP_DIR="${_TMP_DIR}"'X';
+        continue;
+      else
+        # $_TMP_DIR was removed
+        break;
+      fi;
+    done;
+    mkdir "${_TMP_DIR}";
+    if is_not_equal "$?" 0; then
+      if obj _TMP_DIR is_existing; then
+        rm -f -r "${_TMP_DIR}" 2>/dev/null;
+      fi;
+      _TMP_DIR='';
+      continue;
+    fi;
+    if obj _TMP_DIR is_dir && obj _TMP_DIR is_writable; then
+      # $_TMP_DIR can now be used as temporary directory
+      break;
+    fi;
+    if obj _TMP_DIR is_existing; then
+      rm -f -r "${_TMP_DIR}" 2>/dev/null;
+    fi;
+    _TMP_DIR='';
+    continue;
   done;
   unset d;
   if obj _TMP_DIR is_empty; then
