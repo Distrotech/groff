@@ -354,7 +354,7 @@ char *make_message(const char *fmt, ...)
     n = vsnprintf(p, size, fmt, ap);
     va_end(ap);
     /* If that worked, return the string. */
-    if (n > -1 && n < size) {
+    if (n > -1 && n < size - 1) { /* glibc 2.1 and pre-ANSI C 99 */
       if (size > n + 1) {
 	np = strsave(p);
 	free(p);
@@ -363,8 +363,6 @@ char *make_message(const char *fmt, ...)
       return p;
     }
     /* Else try again with more space. */
-    if (n > -1)		/* glibc 2.1 */
-      size = n + 1;	/* precisely what is needed */
     else		/* glibc 2.0 */
       size *= 2;	/* twice the old size */
     if ((np = (char *)realloc(p, size)) == NULL) {
