@@ -23,8 +23,8 @@
 .\"
 .\"
 .\"
-\# Version 1.1.6-e
-\# ---------------
+\# Version 1.7
+\# -----------
 \#
 .if (\n[.x]\n[.y] < 118) \
 .  ab You need GNU troff version 1.18 or higher to run this version of mom!
@@ -56,6 +56,7 @@
 .ALIAS    NEWPAGE         bp
 .ALIAS    SPREAD          brp
 .ALIAS    STRING          ds
+.ALIAS    ESC_CHAR        ec
 \#
 \# ALIASES FOR NUMBER REGISTERS
 \# ----------------------------
@@ -370,6 +371,20 @@
 .END
 \#
 \#
+\# *Arguments:
+\#   <point size of type>
+\# *Function:
+\#   Sets point size to user supplied value in scaled points.
+\#   Intended to be called inline with \*[SIZE <n><unit>]
+\# *Notes:
+\#   Can be used with a unit of measure or not.
+\#
+.MAC SIZE END
+\c
+.ps \\$1
+.END
+\#
+\#
 \# LEADING
 \# -------
 \# *Argument:
@@ -440,7 +455,6 @@
 .ds PREV \EfP
 .ds S    \Es
 \#
-\#
 \# =====================================================================
 \#
 \# +++KERNING+++
@@ -476,14 +490,14 @@
 \#  of kerning between two letters as expressed in Us remains
 \#  visually similar regardless of changes in point size.
 \#
-\#  N.B.--the amount of inline kerning supplied by \*[BU#] or
-\#  \*[FU#] is added to or subtracted from any kerning that already
+\#  N.B.--the amount of inline kerning supplied by \*[BU<n>] or
+\#  \*[FU<n>] is added to or subtracted from any kerning that already
 \#  takes place between two characters when automatic kerning is
 \#  turned on.
 \#
 \#  In groff v. 1.17.2, it was not possible to pass arguments to macros that
 \#  were executed with inline escapes, nor thence to evaluate conditional
-\#  expressions.  Consequently, each pseudo-escape \[BU#] had to be defined
+\#  expressions.  Consequently, each pseudo-escape \[BU<n>] had to be defined
 \#  separately with ".char".
 \#
 \#  As of v. 1.18, one can pass arguments to inline strings/macros,
@@ -1020,27 +1034,46 @@
 \#   Turns smartquotes on or off.
 \# *Notes:
 \#   The " character is read outside the macro when mom is
-\#   processed.  The strings for open/close ($QUOTE#) are then
-\#   defined in the macro.  \N'34' is the ASCII code for ".  If
-\#   incompatibilities arise, find the code for " that applies
-\#   to your system and plug in that code instead.
+\#   processed.  The strings for open/close ($QUOTE<n>) are then
+\#   defined in the macro.
+\#
+\#   (Note to myself: ascii code for " is \N'34'.)
 \#
 .char " \\*[$QUOTE\\n[#OPEN_CLOSE]]\R'#OPEN_CLOSE (1-\\n[#OPEN_CLOSE])'
 \#
 .MAC SMARTQUOTES END
+.    rr #ARGS_TO_SQ
 .    ie '\\$1'' \{\
 .       nr #OPEN_CLOSE 0
-.       ds $QUOTE0 ``
-.       ds $QUOTE1 ''
-.       nr #SMART_QUOTES 1
+.       ds $QUOTE0 \\[lq]
+.       ds $QUOTE1 \\[rq]
 .    \}
 .    el \{\
-.       ds $QUOTE0 \\N'34'
-.       ds $QUOTE1 \\N'34'
-.       nr #SMART_QUOTES 0
+.       if '\\$1',,' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Bq]
+.          ds $QUOTE1 \\[lq]
+.       \}
+.       if '\\$1'<<' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Fo]\\ 
+.          ds $QUOTE1 \\ \\[Fc]
+.       \}
+.       if '\\$1'>>' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Fc]\\|
+.          ds $QUOTE1 \\|\\[Fo]
+.       \}
+.       if !r#ARGS_TO_SQ \{\
+.       ds $QUOTE0 \\[dq]
+.       ds $QUOTE1 \\[dq]
+.       \}
 .    \}
 .END
 \#
+.ds $QUOTE0 \[dq]
+.ds $QUOTE1 \[dq]
+\# Strings for foot and inch marks
 .ds FOOT \(fm
 .ds INCH \(fm\(fm
 \#
@@ -1424,7 +1457,7 @@
 \# *Argument:
 \#   <none>
 \# *Function:
-\#   Automagically moves to TAB#+1 on the same line as the last
+\#   Automagically moves to TAB<n+1> on the same line as the last
 \#   line of the previous tab.
 \# *Notes:
 \#   If the tabs being aligned fall too close to the footer
@@ -1432,10 +1465,9 @@
 \#   unless TRAP...TRAP OFF is used.
 \#
 .MAC TN END
-.    br
+.    EL
 .    nr #NEXT_TAB \\n[#CURRENT_TAB]+1
 .    TAB\\n[#NEXT_TAB]
-.    sp -1v
 .END
 \#
 \#
@@ -2458,9 +2490,9 @@
 \# change the value, simply pass a new value.  Values for TI and HI
 \# are *not* additive.
 \#
-\# HI presupposes that you already have a left or both indent
-\# on.  HI will never hang a line outside the left margin of a
-\# document.  In other words, you must have IL or IB on before you
+\# HI presupposes that you already have a left or both indent on.
+\# HI will never hang a line outside the left margin of a document
+\# or column.  In other words, you must have IL or IB on before you
 \# can use HI.
 \#
 \# INDENT LEFT
@@ -10534,6 +10566,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    br
 .    rr #TOC
 .END
+\#
 \# ====================================================================
 \#
 \# +++COLUMNS+++
@@ -10587,6 +10620,332 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       el \{ .FOOTER \}
 .    \}
+.END
+\#
+\# ====================================================================
+\#
+\# +++LISTS+++
+\#
+\# LIST
+\# ----
+\# *Arguments:
+\#   [ BULLET | DASH | DIGIT | ALPHA | USER ] [ <separator> ] [ <off> ]
+\# *Function:
+\#   Stores indent information in effect prior to invocation and
+\#   initializes a list with the supplied enumerator (and separator).
+\# *Notes:
+\#   Default enumerator is a bullet.
+\#
+\#   Enumerator *must* be supplied for every list that's to the
+\#   right of another list, every time, unless the default bullet is
+\#   desired.
+\#
+\#   <off> moves back one list level intuitively, or exits lists
+\#   completely if the level at which it's invoked is the first.
+\#
+.MAC LIST END
+.    if !r#DEPTH \{\
+.       nr #STORED_HL_INDENT \\n[#HL_INDENT]
+.       nr #STORED_T_INDENT  \\n[#T_INDENT]
+.       nr #CURRENT_L_LENGTH \\n(.l
+.       nr #DEPTH 0 1
+.       if \\n[#INDENT_ACTIVE]=1 \{\
+.          if \\n[#INDENT_LEFT_ACTIVE]=1 \{\
+.             nr #STORED_L_INDENT \\n[#L_INDENT]
+.             nr #RESTORE_PREV_INDENT 1
+.          \}
+.          if \\n[#INDENT_BOTH_ACTIVE]=1 \{\
+.             nr #STORED_BL_INDENT \\n[#BL_INDENT]
+.             nr #STORED_BR_INDENT \\n[#BR_INDENT]
+.             IBX
+.             nr #ORIG_L_LENGTH \\n(.l
+.             IB
+.             nr #RESTORE_PREV_INDENT 2
+.          \}
+.          if \\n[#INDENT_RIGHT_ACTIVE]=1 \{\
+.             nr #STORED_R_INDENT \\n[#R_INDENT]
+.             IRX
+.             nr #ORIG_L_LENGTH \\n(.l
+.             IR
+.             nr #RESTORE_PREV_INDENT 3
+.             if \\n[#INDENT_LEFT_ACTIVE]=1 \{ .nr #RESTORE_PREV_INDENT 4 \}
+.          \}
+.       \}
+.    \}
+.    if \\n[#NUM_ARGS]=0 \{\
+.       nr #ARGS_TO_LIST 1 \" So default behaves as if LIST BULLET
+.       ds $ENUMERATOR\\n+[#DEPTH] \(bu
+.       ds $SEPARATOR
+.    \}
+.    if \\n[#NUM_ARGS]>0 \{\
+.       rr #ARGS_TO_LIST \" Clear this before processing arg 1.
+.       if '\\$1'DASH'   \{\
+.          nr #ARGS_TO_LIST 1
+.          ds $ENUMERATOR\\n+[#DEPTH] \(en
+.          ds $SEPARATOR\\n[#DEPTH]
+.       \}
+.       if '\\$1'BULLET' \{\
+.          nr #ARGS_TO_LIST 1
+.          ds $ENUMERATOR\\n+[#DEPTH] \(bu
+.          ds $SEPARATOR\\n[#DEPTH]
+.       \}
+.       if '\\$1'DIGIT'  \{\
+.          nr #ARGS_TO_LIST 1
+.          nr #ENUMERATOR\\n+[#DEPTH] 0 1
+.          ds $ENUMERATOR_TYPE\\n[#DEPTH] register
+.          ds $SEPARATOR\\n[#DEPTH] .
+.          if \\n[#NUM_ARGS]=2 \{\
+.             ie '\\$2'NONE' \{ .ds $SEPARATOR\\n[#DEPTH]\}
+.             el             \{ .ds $SEPARATOR\\n[#DEPTH] \\$2\}
+.          \}
+.       \}
+.       if '\\$1'ALPHA'  \{\
+.          nr #ARGS_TO_LIST 1
+.          nr #ENUMERATOR\\n+[#DEPTH] 0 1
+.          af #ENUMERATOR\\n[#DEPTH] a
+.          ds $ENUMERATOR_TYPE\\n[#DEPTH] register
+.          ds $SEPARATOR\\n[#DEPTH] )
+.          if \\n[#NUM_ARGS]=2 \{\
+.             ie '\\$2'NONE' \{ .ds $SEPARATOR\\n[#DEPTH]\}
+.             el             \{ .ds $SEPARATOR\\n[#DEPTH] \\$2\}
+.          \}
+.       \}
+.       if '\\$1'USER'   \{\
+.          nr #ARGS_TO_LIST 1
+.          ds $ENUMERATOR\\n+[#DEPTH] \\$2
+.          ds $SEPARATOR\\n[#DEPTH]
+.       \}
+.       if \\n[#NUM_ARGS]=1 \{\
+.          if !r#ARGS_TO_LIST \{\
+.             ie \\n[#DEPTH]=1 \{\
+.                ie \\n[#NEXT_DEPTH_BACK]=0 \{\
+.                   SET_LIST_INDENT
+.                   if \\n[#QUIT]=1 \{\
+.                      QUIT_LISTS
+.                      return
+.                   \}
+.                   return
+.                \}
+.                el \{\
+.                   QUIT_LISTS
+.                   return
+.                \} 
+.             \}
+.             el \{\
+.                SET_LIST_INDENT
+.                return
+.             \}
+.          \}
+.       \}
+.    \}
+.    nr #TOTAL_LISTS \\n[#DEPTH]
+.    ie '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'register' \{\
+.       nr #LIST_INDENT\\n[#DEPTH] \\w'm\\*[$SEPARATOR\\n[#DEPTH]]\\ '
+.    \}
+.    el \{\
+.       nr #LIST_INDENT\\n[#DEPTH] \\w'\\*[$ENUMERATOR\\n[#DEPTH]]\\0'
+.    \}
+.    LL \\n[#CURRENT_L_LENGTH]u
+.    ie \\n[#DEPTH]=1 \{\
+.       ie \\n[#INDENT_ACTIVE]=1 \{\
+.          if \\n[#INDENT_LEFT_ACTIVE]=1 \{\
+.             nr #L_INDENT \\n[#L_INDENT]+\\n[#LIST_INDENT\\n[#DEPTH]]
+.             nr #HL_INDENT\\n[#DEPTH] \\n[#LIST_INDENT\\n[#DEPTH]]
+.             nr #LIST_INDENT\\n[#DEPTH] \\n[#L_INDENT]
+.          \}
+.          if \\n[#INDENT_BOTH_ACTIVE]=1 \{\
+.             nr #L_INDENT \\n[#BL_INDENT]+\\n[#LIST_INDENT\\n[#DEPTH]]
+.             nr #HL_INDENT\\n[#DEPTH] \\n[#LIST_INDENT\\n[#DEPTH]]
+.             nr #LIST_INDENT\\n[#DEPTH] \\n[#L_INDENT]
+.          \}
+.          if \\n[#INDENT_RIGHT_ACTIVE]=1 \{\
+.             ie \\n[#INDENT_LEFT_ACTIVE]=1 \{\
+.             \" Don't do anything; we already have a left indent
+.             \}
+.             el \{\
+.                nr #L_INDENT +\\n[#LIST_INDENT\\n[#DEPTH]]
+.                nr #HL_INDENT\\n[#DEPTH] \\n[#LIST_INDENT\\n[#DEPTH]]
+.             \}
+.          \}
+.       \}
+.       el \{\
+.          nr #L_INDENT +\\n[#LIST_INDENT\\n[#DEPTH]]
+.          nr #HL_INDENT\\n[#DEPTH] \\n[#LIST_INDENT\\n[#DEPTH]]
+.       \}
+.    \}
+.    el \{\
+.       nr #L_INDENT +\\n[#LIST_INDENT\\n[#DEPTH]]
+.       nr #HL_INDENT\\n[#DEPTH] \\n[#LIST_INDENT\\n[#DEPTH]]
+.    \}
+.END
+\#
+\#
+\# ITEM
+\# ----
+\# *Arguments:
+\#   none
+\# *Function:
+\#   Prints enumerator for a given list depth and prepares mom to
+\#   receive the text of an item.
+\#
+.MAC ITEM END
+.    KERN OFF
+.    IL 
+.    ll \\n[#CURRENT_L_LENGTH]u \" Set ll again because IL turns IB off.
+.    TRAP OFF
+.    HI \\n[#HL_INDENT\\n[#DEPTH]]u
+.    ie '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'register' \{\
+.       ie '\\g[#ENUMERATOR\\n[#DEPTH]]'0' \{\
+.          ie \\n[#PAD_LIST_DIGITS\\n[#DEPTH]]=1 \{\
+.             ie \\n[#ENUMERATOR\\n[#DEPTH]]<9 \{\
+.                PRINT \\0\\n+[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
+.             \}
+.             el \{\
+.                PRINT \\n+[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
+.             \}
+.          \}
+.          el \{\
+.             PRINT \\n+[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
+.          \}
+.       \}
+.       el \{\
+.          PRINT \\n+[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
+.       \}
+.    \}
+.    el \{\
+.       PRINT \\*[$ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
+.    \}
+.    EL
+.    TRAP
+.    KERN
+.END
+\#
+\#
+\# SHIFT LIST
+\# ---------
+\# *Arguments:
+\#   <amount by which to indent a list to the right>
+\# *Function:
+\#   Adds the value of the arg to the current list's indent.
+\# *Notes:
+\#   Requires a unit of measure.
+\#
+.MAC SHIFT_LIST END
+.    nr #LIST_INDENT\\n[#DEPTH] \\n[#L_INDENT]+(\\$1)
+.    nr #L_INDENT \\n[#LIST_INDENT\\n[#DEPTH]]
+.END
+\#
+\#
+\# PAD LIST DIGITS
+\# ---------------
+\# *Arguments:
+\#   [ LEFT ]
+\# *Function:
+\#   Adds a figure space to a list's hanging and left indent.  If
+\#   LEFT is given, sets reg. #PAD_LIST_DIGITS to 1 for use in ITEM.
+\#
+.MAC PAD_LIST_DIGITS END
+.    if '\\g[#ENUMERATOR\\n[#DEPTH]]'0' \{\
+.       nr #LIST_INDENT\\n[#DEPTH] +\\w'\\0'
+.       nr #L_INDENT \\n[#LIST_INDENT\\n[#DEPTH]]+\\n[#LIST_INDENT\\n-[#DEPTH]]
+.       nr #HL_INDENT\\n+[#DEPTH] +\\w'\\n[#ENUMERATOR\\n[#DEPTH]]'
+.       if '\\$1'LEFT' \{ .nr #PAD_LIST_DIGITS\\n[#DEPTH] 1 \}
+.    \}
+.END
+\#
+\#
+\# RESET LIST
+\# ----------
+\# *Arguments:
+\#   none
+\# *Function:
+\#   Resets register enumerators to 1 or a.
+\#
+.MAC RESET_LIST END
+.    nr #ENUMERATOR\\n[#DEPTH] 0 1
+.END
+\#
+\#
+\# QUIT LISTS
+\# ----------
+\# *Arguments:
+\#   none
+\# *Function:
+\#   Exits lists cleanly and restores any indents that were in
+\#   effect prior to LIST.
+\#
+.MAC QUIT_LISTS END
+.   IQ CLEAR
+.   nr #HL_INDENT \\n[#STORED_HL_INDENT]
+.   nr #T_INDENT  \\n[#STORED_T_INDENT]
+.   rr #STORED_HL_INDENT
+.   if \\n[#RESTORE_PREV_INDENT]=1 \{\
+.      nr #L_INDENT  \\n[#STORED_L_INDENT]
+.      IL
+.      rr #STORED_L_INDENT
+.   \}
+.   if \\n[#RESTORE_PREV_INDENT]=2 \{\
+.      nr #BL_INDENT \\n[#STORED_BL_INDENT]
+.      nr #BR_INDENT \\n[#STORED_BR_INDENT]
+.      LL \\n[#ORIG_L_LENGTH]u
+.      IB
+.      rr #STORED_BL_INDENT
+.      rr #STORED_BR_INDENT
+.   \}
+.   if \\n[#RESTORE_PREV_INDENT]=3 \{\
+.      nr #R_INDENT \\n[#STORED_R_INDENT]
+.      LL \\n[#ORIG_L_LENGTH]u
+.      IR
+.      rr #STORED_R_INDENT
+.   \}
+.   if \\n[#RESTORE_PREV_INDENT]=4 \{\
+.      nr #R_INDENT \\n[#STORED_R_INDENT]
+.      nr #L_INDENT \\n[#STORED_L_INDENT]
+.      LL \\n[#ORIG_L_LENGTH]u
+.      IR
+.      IL
+.      rr #STORED_R_INDENT
+.      rr #STORED_L_INDENT
+.   \}
+.\" Clean up after exiting last depth of list
+.   nr #REMOVE 0 1
+.   while \\n+[#REMOVE]<=\\n[#TOTAL_LISTS] \{\
+.      rr #LIST_INDENT\\n[#REMOVE]
+.      rr #ENUMERATOR\\n[#REMOVE]
+.      rm $ENUMERATOR\\n[#REMOVE]
+.      rr #SEPARATOR\\n[#REMOVE]
+.      rm $ENUMERATOR_TYPE\\n[#REMOVE]
+.      rr #PAD_LIST_DIGITS\\n[#REMOVE]
+.   \}
+.   rr #REMOVE
+.   rr #TOTAL_LISTS
+.   rr #QUIT
+.   rr #DEPTH
+.   rr #NEXT_DEPTH_BACK
+.   rr #RESTORE_PREV_INDENT
+.   rr #ORIG_L_LENGTH
+.   rr #CURRENT_L_LENGTH
+.END
+\#
+\#
+\# SET LIST INDENT
+\# ---------------
+\# *Arguments:
+\#   none
+\# *Function:
+\#   Restores indent of prev. list in nested lists.  Also sets the
+\#   #QUIT register if an invocation of LIST OFF applies to the first
+\#   level of list.
+\#
+.MAC SET_LIST_INDENT END
+.    nr #NEXT_DEPTH_BACK \\n[#DEPTH]-1
+.    if \\n[#NEXT_DEPTH_BACK]=0 \{\
+.       nr #QUIT 1
+.       return
+.    \}
+.    ie \\n[#NEXT_DEPTH_BACK]=1 \{ .nr #L_INDENT \\n[#LIST_INDENT1] \}
+.    el \{ .nr #L_INDENT -\\n[#LIST_INDENT\\n[#DEPTH]] \}
+.    nr #HL_INDENT \\n[#HL_INDENT\\n-[#DEPTH]]
 .END
 \#
 \# ====================================================================

@@ -216,6 +216,14 @@ arguments as
 		<li><a href="#BLOCKQUOTE">BLOCKQUOTE</a>
 		<li><a href="#BLOCKQUOTE_CONTROL">Blockquote control</a>
 	</ul>
+	<li><a href="#LIST_INTRO">Nested lists</a>
+	<ul>
+		<li><a href="#LIST">LIST</a>
+		<ul>
+			<li><a href="#ITEM">ITEM</a>
+		</ul>
+		<li><a href="#LIST_CONTROL">List control</a>
+	</ul>
 	<li><a href="#FOOTNOTE_INTRO">Footnotes</a>
 	<ul>
 		<li><a href="#FOOTNOTE">FOOTNOTE</a>
@@ -816,11 +824,6 @@ the escape in the string for each line, like this:
         or
     .HEAD "\[DOWN 3p]First line" "\[DOWN 3p]Next line" 
 </pre>
-
-
-
-
-<br>
 <hr>
 
 <!====================================================================>
@@ -1168,9 +1171,13 @@ or underlined
 <a href="docprocessing.html#PRINTSTYLE">(PRINTSTYLE TYPEWRITE)</a>,
 indented from the left margin.  Obviously, she's thinking
 &quot;quotes from poetry or song lyrics&quot;, but with the
-quote control macros you can change her defaults so
-<strong>QUOTE</strong> serves other needs, e.g. entering snippets of
-programming code, command line instructions, and so on.
+<a href="#QUOTE_CONTROL">quote control macros</a>
+you can change her defaults so <strong>QUOTE</strong> serves other
+needs, e.g. entering verbatim snippets of programming code, command
+line instructions, and so on.  (See the
+<a href="#QUOTE_TIP">tip</a>
+below for suggestions about including programming code snippets in
+documents.)
 <p>
 <a name="QUOTE_SPACING"></a>
 Besides indenting quotes, <strong>mom</strong> further sets them
@@ -1195,7 +1202,49 @@ and
 <a href="#BLOCKQUOTE">BLOCKQUOTE</a>,
 as does the control macro
 <a href="#QUOTE_INDENT">QUOTE_INDENT</a>.
-<br>
+<p>
+<a name="QUOTE_TIP"><strong>TIP:</strong></a>
+If you want to include snippets of programming code in
+<strong>mom</strong> documents, you may come acropper of the fact
+that groff (and <strong>mom</strong>'s) escape character is the
+backslash.  In order for <strong>mom</strong> not to interpret
+backslashes that occur in code snippets as escapes, you have to
+tell <strong>mom</strong> that the backslash character is
+(temporarily) no longer the escape character.  The easiest way
+to do this is to set the escape character to something else for
+the duration of the code snippet.  You accomplish this with
+<strong>ESC_CHAR</strong>, like this:
+<p>
+<pre>
+	.ESC_CHAR c
+</pre>
+
+where &quot;c&quot;, above, is the alternate escape character
+(which should be a character that does not appear in the code).  To
+set the escape character back to the backslash, simply invoke
+<strong>.ESC_CHAR</strong> by itself (i.e. with no argument).
+<p>
+Because <strong>mom</strong>, by default, sets the text after
+<strong>.QUOTE</strong> in italic (for <strong>PRINTSTYLE
+TYPESET</strong>) or underlined (for <strong>PRINTSTYLE
+TYPEWRITE</strong>), you'll want to change that behaviour as
+well.  Therefore, a recipe for setting verbatim code snippets using
+<strong>QUOTE</strong> could be (assuming you want a fixed width
+font like Courier):
+<p>
+<pre>
+	\# You only need the first two lines before the first invocation
+	\# of QUOTE.  They stay in effect for all subsequent invocations.
+	\#
+	.QUOTE_FONT       CR    \" Set quote font to Courier roman
+	.UNDERLINE_QUOTES OFF   \" Don't underline quotes in TYPEWRITE
+	.QUOTE
+	.ESC_CHAR ^             \" Change escape character to ^
+	&lt;code snippet&gt;
+	.ESC_CHAR               \" Restore escape character to \
+	.QUOTE OFF
+
+</pre>
 
 <!---QUOTE--->
 
@@ -1402,6 +1451,363 @@ X</strong>...).
 <strong>NOTE:</strong> This macro also sets <strong>mom</strong>'s
 spacing policy for
 <a href="#QUOTE_INTRO">quotes</a>.
+<br>
+<hr>
+
+<!====================================================================>
+
+<a name="LIST_INTRO"><h2><u>Nested lists</u></h2></a>
+<ul>
+	<li><a href="#LIST">Tag: LIST</a>
+	<li><a href="#ITEM">Tag: ITEM</a>
+	<li><a href="#LIST_CONTROL">LIST control macros</a>
+</ul>
+<p>
+Lists are points or items of interest or importance that are
+separated from
+<a href="definitions.html#TERMS_RUNNING">running text</a>
+by enumerators.  Some typical enumerators are
+<a href="definitions.html#TERMS_EM">en-dashes</a>,
+<a href="definitions.html#TERMS_BULLET">bullets</a>,
+digits and letters.
+<p>
+Setting lists with <strong>mom</strong> is easy.  First, you
+initialize a list with the <strong>LIST</strong> macro.  Then, for
+every item in the list, you invoke the macro, <strong>ITEM</strong>,
+followed by the text of the item.  When a list is finished, you
+exit the list with <strong>LIST OFF</strong> (or
+<strong>QUIT</strong>, <strong>END</strong>, <strong>X</strong>,
+etc.)
+<p>
+By default <strong>mom</strong> starts each list with the enumerator
+flush with the left margin of running text that comes before it,
+like this:
+<p>
+<pre>
+	My daily schedule needs organizing.  I can't
+	seem to get everything done I want.
+	o an hour's worth of exercise
+	o time to prepare at least one healthy
+	  meal per day
+	o reading time
+	o work on mom
+	o writing
+	  - changes from publisher
+	  - current novel
+	o a couple of hours at the piano
+</pre>
+
+In other words, <strong>mom</strong> does not, by default, indent
+entire lists.  Indenting a list is controlled by the macro,
+<a href="#"SHIFT_LIST>SHIFT_LIST</a>.
+(This is a design decision; there are too many instances where a
+default indent is not desirable.)  Equally, <strong>mom</strong>
+does not add any extra space above or below lists.
+<p>
+Lists can be nested (as in the example above).  In other words, you
+can set lists within lists, each with an enumerator (and possibly,
+indent) of your choosing.  In nested lists, each invocation of
+<strong>LIST OFF</strong> takes you back to the previous depth (or
+level) of list, with that list's enumerator and indent intact.  The
+final <strong>LIST OFF</strong> exits lists completely and returns
+you to the left margin of running text.
+<p>
+Finally, lists can be used in documents created with either the
+document processing macros or just the typesetting macros.
+<br>
+
+<!---LIST--->
+
+<hr width="66%" align="left">
+<p>
+<a name="LIST">
+	Macro: <strong>LIST</strong> <var>[ BULLET | DASH | DIGIT | ALPHA | USER ] [ &lt;separator&gt; | &lt;user-defined enumerator&gt; ] [ &lt;off&gt; ]</var></a>
+
+<p>
+Invoked by itself (i.e. with no argument), <strong>LIST</strong>
+initializes a list (with bullets as the default enumerator).
+Afterwards, each block of input text preceded by
+<a href="#ITEM">.ITEM</a>,
+on a line by itself, is treated as a list item.
+<p>
+The optional arguments <strong>BULLET</strong>,
+<strong>DASH</strong>, <strong>DIGIT</strong> (for arabic
+numerals), <strong>ALPHA</strong> (for lowercase letters) and
+<strong>USER</strong> allow you to say what kind of enumerator you
+want for a given list.
+<p>
+If you choose <strong>DIGIT</strong> or <strong>ALPHA</strong>, you
+may enter the optional argument <strong>separator</strong> to say
+what kind of separator you want after the enumerator.  The separator
+can be anything you like.  The default for <strong>DIGIT</strong> is
+a period (dot), like this:
+<p>
+<pre>
+	1. A list item
+</pre>
+
+The default separator for <strong>ALPHA</strong> is a right
+parenthesis, like this:
+<p>
+<pre>
+	a) A list item
+</pre>
+
+If you want digits with a right-parenthesis separator, you'd do
+<p>
+<pre>
+	.LIST DIGIT )
+	.ITEM
+	A list item
+</pre>
+
+which would produce
+<p>
+<pre>
+	1) A list item
+</pre>
+
+<strong>BULLET</strong>, <strong>DASH</strong> and
+<strong>USER</strong> do not take a separator.
+<p>
+<strong>USER</strong> lets you make up your own enumerator.  For
+example, if you want a list enumerated with <strong>=&gt;</strong>,
+<p>
+<pre>
+	.LIST USER =&gt;
+	.ITEM
+	A list item
+</pre>
+
+will produce
+
+<p>
+<pre>
+	=&gt; A list item
+</pre>
+
+If the argument to <strong>USER</strong> contains spaces, you must
+enclose the argument in double quotes.
+<p>
+Any single argument other than <strong>BULLET</strong>,
+<strong>DASH</strong>, <strong>DIGIT</strong>,
+<strong>ALPHA</strong> or <strong>USER</strong> takes you out of the
+current list.  If you are at the first list-level (or -depth),
+<strong>mom</strong> returns you to the left margin of running text.
+Any indents that were in effect prior to setting the list are fully
+restored.  If you are in a nested list, <strong>mom</strong> moves
+you back one list-level and restores the enumerator, separator and
+indent appropriate to that level.
+<p>
+Each invocation of <strong>LIST</strong> must be matched by a
+corresponding <strong>LIST OFF</strong> in order to fully exit
+lists.  For example, 
+<p>
+<pre>
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore.
+	o List item in level 1
+	o List item in level 1
+	  - List item in level 2
+	  - List item in level 2
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore.
+</pre>
+
+is created like this:
+<p>
+<pre>
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore.
+	.LIST BULLET
+	.ITEM
+	List item in level 1
+	.ITEM
+	List item in level 1
+	.LIST DASH
+	.ITEM
+	List item in level 2
+	.ITEM
+	List item in level 2
+	.LIST OFF    \" Turn level 2 list off
+	.LIST OFF    \" Turn level 1 list off
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore.
+</pre>
+
+<strong>NOTE:</strong> Every time you invoke <strong>LIST</strong>
+to start a list (as opposed to exiting one), you must supply an
+enumerator (and optionally, a separator) for the list, unless you
+want <strong>mom</strong>'s default enumerator, which is a bullet.
+Within nested lists, <strong>mom</strong> stores the enumerator,
+separator and indent for any list you return <em>backwards</em> to
+(i.e. with <strong>LIST OFF</strong>), but does not store any
+information for lists you move <em>forward</em> to.
+<br>
+
+<hr width="33%" align="left">
+<p>
+<a name="ITEM">
+	Macro: <strong>ITEM</strong>
+<p>
+After you've initialized a list with
+<a href="#LIST">LIST</a>,
+precede each item you want in the list with <strong>ITEM</strong>.
+<strong>Mom</strong> takes care of everything else with respect to
+setting the item appropriate to the list you're in.
+<p>
+In document processing, it is legal to have list items that contain
+multiple paragraphs.  Simply issue a
+<a href="#PP">PP</a>
+request for each paragraph <em>following</em> the first item.
+I.e., don't do this:
+<p>
+<pre>
+	.ITEM
+	.PP
+	Some text...
+	.PP
+	A second paragraph of text
+</pre>
+
+but rather
+<p>
+<pre>
+	.ITEM
+	Some text...
+	.PP
+	A second paragraph of text
+</pre>
+<hr width="33%" align="left">
+
+<a name="LIST_CONTROL"><h3><u>List control macros</u></h3></a>
+<ol>
+	<li><a href="#SHIFT_LIST">Indenting lists (SHIFT_LIST)</a>
+	<li><a href="#RESET_LIST">Resetting an initialized list's enumerator (RESET_LIST)</a>
+	<li><a href="#PAD_LIST_DIGITS">Padding digit enumerators (PAD_LIST_DIGITS)</a>
+</ol>
+
+<a name="SHIFT_LIST"><h3><u>1. Indenting lists -- SHIFT_LIST</u></h3></a>
+<p>
+If you want a list to be indented to the right of running text, or
+indented to the right of a current list, use the macro
+<strong>SHIFT_LIST</strong> immediately after
+<a href="#LIST">LIST</a>.
+<strong>SHIFT_LIST</strong> takes just one argument: the amount by
+which you want the list shifted to the right.  The argument requires
+a
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>,
+<p>
+<strong>SHIFT_LIST</strong> applies <em>only</em> to the list you
+just initialized with <strong>LIST</strong>.  It does not carry
+over from one invocation of <strong>LIST</strong> to the next.
+However, the indent remains in effect when you <em>return</em> to a
+list level in a nested list.
+<p>
+For example, if you want a 2-level list, with each list indented to
+the right by 18
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>,
+<p>
+<pre>
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore.
+	.LIST           \" List 1
+	.SHIFT_LIST 18p \" Indent 18 points right of running text
+	.ITEM
+	List 1 item
+	.ITEM
+	List 1 item
+	.LIST DASH      \" List 2
+	.SHIFT_LIST 18p \" Indent 18 points right of list 1
+	.ITEM
+	List 2 item
+	.ITEM
+	List 2 item
+	.LIST OFF       \" Move back to list 1
+	.ITEM
+	List 1 item
+	.ITEM
+	List 1 item
+	.LIST OFF       \" Exit lists
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore.
+</pre>
+
+produces (approximately)
+<p>
+<pre>
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore.
+	    o List 1 item
+	    o List 1 item
+	        - List 2 item
+	        - List 2 item
+	    o List 1 item
+	    o List 1 item
+	Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore.
+</pre>
+
+<a name="RESET_LIST"><h3><u>2. Resetting an initialized list's enumerator -- RESET_LIST</u></h3></a>
+<p>
+In nested lists, if your choice of list enumerator for a given level
+of list is either <strong>DIGIT</strong> or <strong>ALPHA</strong>,
+you may sometimes want to reset the list's enumerator back to
+&quot;1&quot; or &quot;a&quot; when you return, within the nest, to
+that list.  Consider the following:
+<p>
+<pre>
+	Things to do religiously each and every day:
+	1. Take care of the dog
+	   a) walk every day
+	   b) brush once a week
+	      - trim around the eyes every fourth brushing
+	      - don't forget to check nails
+	2. Feed the cat
+	   a) soft food on Mon., Wed. and Fri.
+	   b) dry food on Tues., Thurs. and Sat.
+	   c) canned tuna on Sunday
+</pre>
+
+Normally, within a nested list, when you return to an alpha- or
+digit-enumerated list, the enumerator continues incrementing from
+where it left off.  That means, in the example above, the normal
+state of affairs for the alpha'ed list under &quot;2.  Feed the
+cat&quot; would be c), d) and e).  The solution, in such a case, is
+simply to reset the enumerator --before <strong>ITEM</strong>! --
+with the macro, <strong>RESET_LIST</strong>.
+<p>
+<strong>RESET_LIST</strong> does exactly what it says -- resets the
+list -- and doesn't take any arguments.
+<p>
+<a name="PAD_LIST_DIGITS"><h3><u>3. Padding digit enumerators (PAD_LIST_DIGITS)</a></u></h3></a>
+<p>
+When your choice of enumerators is <strong>DIGIT</strong> AND the
+number of items in the list exceeds nine (9), you have to make a
+design decision: should <strong>mom</strong> leave room for the
+extra numeral in two-numeral digits to the right or the left of
+the single-numeral digits?  If you want the extra space to the
+right, just invoke the macro, <strong>PAD_LIST_DIGITS</strong> by
+itself.  This will produce something like
+<p>
+<pre>
+	8.  List item
+	9.  List item
+	10. List item
+</pre>
+
+If you want the extra space to the left, invoke
+<strong>PAD_LIST_DIGITS</strong> with the single argument,
+<strong>LEFT</strong>, which will produce
+<p>
+<pre>
+	 8. List item
+	 9. List item
+	10. List item
+</pre>
+
+Of course, if the number of items in the list is less than ten
+(10), there's no need for <strong>PAD_LIST_DIGITS</strong>.
 <br>
 <hr>
 

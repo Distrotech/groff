@@ -139,6 +139,7 @@ DROPCAP_FAMILY   Drop cap family
 DROPCAP_FONT     Drop cap font
 DROPCAP_GUTTER   Drop cap gutter
 DROPCAP_OFF      Support only; restores .in if there was one
+ESC_CHAR         Alias for .ec
 EW               Extra white -- loosen overall line kern
                  (character spacing)
 LEADER_CHARACTER Sets leader character
@@ -164,6 +165,10 @@ TYPESIZE    Diverts SIZESPECS routine so it doesn't print
 +++NUMBER REGISTERS+++
 
 #ALD                    ALD value
+#ARGS_TO_LIST           Tells LIST whether LIST was invoked with a legal arg;
+                        controls LIST OFF processing
+#ARGS_TO_SQ             Tells SMARTQUOTES whether it was invoked with a legal
+                        arg; controls SMARTQUOTES OFF processing
 #AUTOLEAD_FACTOR        Using FACTOR arg to AUTOLEAD? (toggle)
 #AUTO_LEAD              Using autolead? (toggle)
 #AUTO_LEAD_VALUE        Auto leading value
@@ -175,9 +180,12 @@ c                       column mark
 #CONDENSE               Are we in pseudo-condense mode? (toggle)
 #COND_WIDTH             Width of pseudo-condensed type
                         (pointsize x $COND_PERCENT)
+#CURRENT_L_LENGTH       Current line length at first invocation of LIST;
+                        like #ORIG_L_LENGTH
 #CURRENT_TAB            Current tab number
 #DC_GUT                 Width of dropcap gutter
 #DEGREES                # of degrees slant for pseudo-italic
+#ENUMERATOR<n>          Number register enumerator for depth <n> in lists 
 #EXTEND                 Are we in pseudo-extend mode? (toggle)
 #EXT_WIDTH              Width of pseudo-extended type
                         (pointsize x $EXT_PERCENT)
@@ -207,17 +215,21 @@ c                       column mark
 #LAST_TAB               Last tab number set in multi-columns
 #LEAD                   Leading (alias)
 #LIGATURES              Ligatures on? (toggle)
+#LIST_INDENT<n>         Left indent of list <n>
 #L_INDENT               Value of left indent
 #L_LENGTH               Line length
 #L_MARGIN               Page offset if set with LMARGIN;
                         if .po used, \n(.o returns page offset
 #LOOP                   #LOOP=1 if a while loop executes; otherwise 0.
+#NEXT_DEPTH_BACK        Next list level back in lists
 #NEXT_TAB               Current tab number + 1 (used in TN)
 #NEXT_TAB               Next tab in an n+1 sequence
 #OPEN_CLOSE             Manipulates character " to print `` or ''
+#ORIGINAL_L_LENGTH      Used in LIST for IB processing; holds \n(.l
 p                       Output line horiz position at end of
                         $PAD_STRING
 #PAD_COUNT              Number of times # was included in arg to PAD
+#PAD_LIST_DIGITS        Pad list digits to the left? <toggle>
 #PAD_SPACE              Size of padding space
 #PAGE_LENGTH            Page length (alias)
 #PAGE_WIDTH             Page width
@@ -227,13 +239,17 @@ p                       Output line horiz position at end of
 #Q_AT_TOP               Does a quote start at the top of a new page?
                         (toggle)
 #QUAD                   In autoquad mode? (toggle)
+#QUIT                   Tells LIST whether to exit lists completely <toggle>
+#REMOVE                 Used in LIST OFF cleanup
 #RESTORE_LEAD           Lead value in effect prior to AUTOLEAD
 #RESTORE_LINE_LENGTH    Restores actual line length in RULE
 #RESTORE_PT_SIZE        Stores current point size (in units) prior
                         to underscore
 #R_INDENT               Value of right indent
-#RLD                    RLD value
 #R_MARGIN               Right margin
+#RESTORE_PREV_INDENT    Tells LIST OFF what kind of indent was active prior to
+                        first invocation of LIST
+#RLD                    RLD value
 #SILENT                 Is silent on? (toggle)
 #SIZE_FOR_PAD           Used to ensure that the size in effect prior
                         to PAD is restored at the start of every
@@ -247,15 +263,22 @@ p                       Output line horiz position at end of
 #ST_OFFSET              Offset (from current tab) to add to #ST&lt;#&gt;_OFFSET
                           when calculating string indents set from within tabs
 #ST&lt;#&gt;_OFFSET           Indent of autotab &lt;#&gt; (page offset)
+#STORED_L_INDENT        Current left indent at first invocation of LIST
+#STORED_R_INDENT        Current right indent at first invocation of LIST
+#STORED_BL_INDENT       Current "both, left" indent at first invocation of LIST
+#STORED_BR_INDENT       Current "both, right" indent at first invocation of LIST
+#STORED_HL_INDENT       Current hanging indent at first invocation of LIST
+#STORED_T_INDENT        Current temporary indent at first invocation of LIST
 t                       "mark" register set in T_MARGIN; recalled
                         in LS and AUTOLEAD if #T_MARGIN_SET is 1
-#TAB_ACTIVE             Are we in a tab? (toggle)
-#TAB_NUMBER             Tab number
-#TAB_OFFSET             Tab indent
 #T_INDENT               Value of temporary indent
 #T_MARGIN               Top margin
 #T_MARGIN_SET           Did we set the top margin with T_MARGIN?
                         (toggle)
+#TAB_ACTIVE             Are we in a tab? (toggle)
+#TAB_NUMBER             Tab number
+#TAB_OFFSET             Tab indent
+#TOTAL_LISTS            Total number of lists in a nest
 #USER_SET_L_LENGTH      Did user invoke LL? (toggle)
 #USER_SET_TITLE_ITEM    Did user invoke TOC_TITLE_ENTRY?
 u                       Horiz position of start of underscore
@@ -268,6 +291,7 @@ $CURRENT_TAB         Current tab number
 $DC_ADJUST           +|- # of points to subtract from dropcap
 $DC_FAM              Drop cap family
 $DC_FT               Drop cap font
+$ENUMERATOR<n>       String enumerator for depth <n> in lists 
 $EXT_PERCENT         Percentage by which to pseudo-extend type
 $FAMILY              Family
 $FAMILY_FOR_PAD      Used to ensure that the family in effect prior
@@ -281,6 +305,7 @@ $QUOTE0              ``
 $QUOTE1              ''
 $RESTORE_QUAD_VALUE  Quad value for use in restoring L, R, C, J
                      (after tabs)
+$SEPARATOR<n>        Separator for depth <n> in lists
 $SS_VAR              Holds + or - sentence space value
 $ST&lt;#&gt;_FILL          Always QUAD if QUAD passed to ST &lt;#&gt;
 $ST&lt;#&gt;_QUAD_DIR      Quad direction supplied to ST for &lt;#&gt;
@@ -400,23 +425,28 @@ PRINTSTYLE  Print style (TYPEWRITE or TYPESET)
 
 Document tags
 -------------
-BLOCKQUOTE  Block-indented, quoted text
-COL_BREAK   Breaks and spreads line before invocation; moves to
-            next column on page or 1st col of next page.  An alias
-            of COL_NEXT.
-COL_NEXT    Moves to next column on page or 1st col of next page
-ENDNOTE     Endnote
-ENDNOTES    Output endnotes
-EPIGRAPH    Epigraph before 1st para 
-FINIS       Prints --END--
-FOOTNOTE    Collects footnotes in text for printing at bottom of page
-HEAD        Section title (main heads)
-LINEBREAK   Break between narrative sections
-PARAHEAD    Paragraph head
-PP          Paragraph
-QUOTE       Poetic or line for line quotes
-START       Prints info collected with doc info macros
-SUBHEAD     Subheads
+BLOCKQUOTE      Block-indented, quoted text
+COL_BREAK       Breaks and spreads line before invocation; moves to
+                next column on page or 1st col of next page.  An alias
+                of COL_NEXT.
+COL_NEXT        Moves to next column on page or 1st col of next page
+ENDNOTE         Endnote
+ENDNOTES        Output endnotes
+EPIGRAPH        Epigraph before 1st para 
+FINIS           Prints --END--
+FOOTNOTE        Collects footnotes in text for printing at bottom of page
+HEAD            Section title (main heads)
+ITEM            Begin a list item
+LINEBREAK       Break between narrative sections
+LIST            Initialize a list
+PAD_LIST_DIGITS Leave space for two-numeral digit enumerators in a list
+PARAHEAD        Paragraph head
+PP              Paragraph
+QUOTE           Poetic or line for line quotes
+RESET_LIST      Reset digit or alpha list enumerator
+SHIFT_LIST      Move a list over to the right
+START           Prints info collected with doc info macros
+SUBHEAD         Subheads
 
 Headers/footers
 --------------
@@ -731,6 +761,8 @@ PRINT_PAGE_NUMBER    Invoked in HEADER or FOOTER
 PRINT_USERDEF_HDRFTR Prints user defined, single string recto/verso
                      header/footer
 REMOVE_INDENT        Removes indents set with CHECK_INDENT
+QUIT_LISTS           Exit lists cleanly and completely
+SET_LIST_INDENT      Restore indent of a prev. level of list
 TRAPS                Sets hdrftr traps; optionally adjusts #DOC_LEAD
                      to fill page to #B_MARGIN
 

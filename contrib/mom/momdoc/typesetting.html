@@ -1140,16 +1140,17 @@ a line break that trips the trap (hey, I like that --
 <strong>mom</strong> can't recover.  She places the line after
 the <strong>EL</strong> on the next page.
 <p>
-If you need <strong>EL</strong> functionality on the last line of
-a page with a footer trap, turn the trap off with
-<a href="goodies.html#TRAP">TRAP</a>,
-as in this example:
+If you need <strong>EL</strong> functionality on the last line of a
+page that has a footer trap, turn the trap off by surrounding the
+line to be <strong>EL</strong>'d with
+<a href="goodies.html#TRAP">TRAP</a>
+requests, as in following example.
 <p>
 <pre>
-	3.
-	.TRAP OFF
-	.EL
-	.TRAP
+	.TRAP OFF  \" Turn trap off
+	3.		   \" Input the first line
+	.EL        \" Invoke EL...
+	.TRAP      \" ...and turn trap back on *before* inputting next line
 	\*[FP12]Establish, once and for all, if 42 really is the answer.
 </pre>
 
@@ -2997,23 +2998,51 @@ sequence (tab n+1) without advancing on the page.  See the
 in the description of the <strong>TAB</strong> macro for an
 example of how <strong>TN</strong> works.
 <p>
-<strong>NOTE:</strong> <strong>TN</strong> is like
+<strong>NOTE:</strong> You <em>must</em> put text in the
+<a href="definitions.html#TERMS_INPUTLINE">input line</a>
+immediately after <strong>TN</strong>. &quot;Stacking&quot; of
+<strong>TN</strong>'s is not allowed.  In other words, you cannot
+do
+<p>
+<pre>
+	.TAB 1
+	Some text
+	.TN
+	Some more text
+	.TN
+	.TN
+	Yet more text
+</pre>
+
+The above example, assuming tabs numbered from 1 to 4, should be entered
+<p>
+<pre>
+	.TAB 1
+	Some text
+	.TN
+	Some more text
+	.TAB 4
+	Yet more text
+</pre>
+<p>
+<strong>ADDITIONAL NOTE:</strong> <strong>TN</strong> is like
 <a href="#EL">EL</a>
 in that it doesn't work as advertised on the last line before a
-footer trap is sprung.  If you need to use <strong>TN</strong>
-on the last line of a page with a footer trap, turn the trap off with
+footer trap is sprung.  If you need to use <strong>TN</strong> on
+the last line of a page that has a footer trap, turn the trap off by
+surrounding the line to be <strong>TN</strong>'d with
 <a href="goodies.html#TRAP">TRAP</a>,
-as in this example:
+requests, as in the following example.
 <p>
 <pre>
 	.TAB_SET 1 0  1P  L
 	.TAB_SET 2 1P 20P L
 	.TAB 1
-	.TRAP OFF
-	1.
-	.TN
+	.TRAP OFF  \" Turn trap off
+	1.         \" Input the first line
+	.TN        \" Invoke TN...
+	.TRAP      \" ...and turn trap back on *before* inputting next line
 	The first rule of survival is &quot;make and keep good friends.&quot;
-	.TRAP
 </pre>
 
 The above, at the bottom of a page, will look something like this:

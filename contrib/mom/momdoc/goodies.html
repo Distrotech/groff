@@ -28,7 +28,7 @@ nearly indispensible) routines to simplify typesetting.
 	<li><a href="#ALIAS">ALIAS</a> (rename macros)
 	<li><a href="#SILENT">SILENT</a> (&quot;hide&quot; input lines from output)
 	<li><a href="#TRAP">TRAP</a> (suspend/re-invoke traps)
-	<li><a href="#SMARTQUOTES">SMARTQUOTES</a>
+	<li><a href="#SMARTQUOTES">SMARTQUOTES</a> (convert typewriter doublequotes to proper doublequotes)
 	<li><a href="#CAPS">CAPS</a> (convert to upper case)
 	<br>
 	<li><strong>Underscore/underline</strong>
@@ -59,11 +59,20 @@ nearly indispensible) routines to simplify typesetting.
 			<li><a href="#DROPCAP_GUTTER">DROPCAP_GUTTER</a> (change space between drop cap and running text) 
 		</ul>
 	</ul>
-	<li><strong>Superscript</strong>
+	<li><strong>Superscripts</strong>
 	<ul>
 		<li><a href="#SUP">\*[SUP]</a> (set superscript)
 		<li><a href="#CONDSUP">\*[CONDSUP]</a> (set condensed superscript)
 		<li><a href="#EXTSUP">\*[EXTSUP}</a> (set extended superscript)
+	</ul>
+	<li><strong>Lists</strong>
+	<ul>
+		<li><a href="docelement.html#LIST_INTRO">Introduction to lists</a>
+		<li><a href="docelement.html#LIST">LIST</a>
+		<li><a href="docelement.html#ITEM">ITEM</a>
+		<li><a href="docelement.html#SHIFT_LIST">SHIFT_LIST</a>
+		<li><a href="docelement.html#RESET_LIST">RESET_LIST</a>
+		<li><a href="docelement.html#PAD_LIST_DIGITS">PAD_LIST_DIGITS</a>
 	</ul>
 </ul>
 
@@ -213,9 +222,9 @@ in order for one page to finish and another to start.
 <p>
 Sometimes, traps get sprung when you don't want them, notably
 when using the
-<a href="#EL">EL</a>
+<a href="typesetting.html#EL">EL</a>
 and
-<a href="#TN">TN</a>
+<a href="typesetting.html#TN">TN</a>
 macros.  If this happens, surround just the offending macros and
 input lines with
 <p>
@@ -237,14 +246,18 @@ of <strong>EL</strong> and <strong>TN</strong> to see
 <!---SMARTQUOTES--->
 
 <hr width="66%" align="left">
-<a name="SMARTQUOTES"><h3><u>Smartquotes</u></h3></a>
+<a name="SMARTQUOTES"><h3><u>Convert typewriter doublequotes to proper doublequotes</u></h3></a>
 <br>
-Macro: <strong>SMARTQUOTES</strong> <var>toggle</var>
+Macro: <strong>SMARTQUOTES</strong> <var>[&lt;off&gt;] [ ,, | &gt;&gt; | &lt;&lt; ]</var>
 
 <p>
-<strong>SMARTQUOTES</strong> converts all instances of the
-inch-mark, (<kbd>"</kbd> -- also called a &quot;doublequote&quot;),
-into the appropriate instances of true open- and close-doublequotes.
+If you <strong>SMARTQUOTES</strong> without an argument,
+<strong>mom</strong> converts all instances of the inch-mark,
+(<kbd>"</kbd> --also called a &quot;doublequote&quot;), into
+the appropriate instances of true Anglo-American open-and
+close-doublequotes.  (See the paragraphs on the meaning of the
+optional arguments for how to get SMARTQUOTES to behave correctly
+for non-English quoting styles.)
 <p>
 Typographically, there is a difference between the inch-mark and
 doublequotes -- a BIG difference.  Sadly, typewriters and computer
@@ -255,19 +268,66 @@ typeset copy.  Failure to turn inches into quotes is the first thing
 a professional typesetter notices in documents prepared by amateurs.
 And you don't want to look like an amateur, do you?
 <p>
-When preparing documents for typesetting, by all means, use the
-inch-mark.  Just make sure to turn <strong>SMARTQUOTES</strong>
-on.  <strong>SMARTQUOTES</strong> is a toggle, so invoking it with
-no argument turns it on, and invoking it with any argument at all
-turns it off.
+If you invoke <strong>SMARTQUOTES</strong> with one of the optional
+arguments <strong>,,</strong>, <strong>&gt;&gt;</strong> or
+<strong>&lt;&lt;</strong>, you can use <kbd>"</kbd> as &quot;cheap&quot;
+open- and close-quotes when inputting text in a language other than
+English, and have <strong>mom</strong> convert them, on output,
+into the chosen open- and close-quote style.
+<p>
+<strong>,,</strong>
+opens quotes with &quot;lowered doublequotes&quot; and closes them
+with &quot;raised doublequotes&quot;, as in this ascii
+approximation:
+<p>
+<pre>
+	,,Hilfe !``
+</pre>
+
+<strong>&gt;&gt;</strong>
+opens quotes with guillemets pointing to the right, and closes
+them with guillemets pointing to the left, as in this ascii
+approximation:
+<p>
+<pre>
+	&gt;&gt;Zurück !&lt;&lt;
+</pre>
+
+<strong>&lt;&lt;</strong>
+opens quotes with guillemets pointing to the left, and closes
+them with guillemets pointing to the right, as in this ascii
+approximation:
+<p>
+<pre>
+	&lt;&lt;Mais monsieur! Je ne suis pas ce genre de fille!&gt;&gt;
+</pre>
+
+Please note: the arguments to <strong>SMARTQUOTES</strong> are
+literal ASCII characters. ,, is two commas, &lt;&lt; is two
+less-than signs and &gt;&gt; is two greater-than signs.
+<p>
+Turn <strong>SMARTQUOTES</strong> off by passing it any argument
+<em>not</em> in the argument list (e.g. <strong>OFF</strong>,
+<strong>QUIT</strong>, <strong>X</strong>, etc.)
 <p>
 If you're using the
 <a href="docprocessing.html#DOCPROCESSING">document processing macros</a>
 with
 <a href="#PRINTSTYLE">PRINTSTYLE TYPESET</a>,
-<strong>SMARTQUOTES</strong> is on by default; with
+<strong>SMARTQUOTES</strong> is on by default (in the Anglo-American
+style); with
 <a href="#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
 it's off by default (and should probably stay that way).
+<p>
+Finally, if you're fussy about the kerning of quote marks in
+relation to the text they surround, or have special quoting needs,
+you have to enter quote marks by hand using groff's native
+<a href="definitions.html#TERMS_INLINES">inline escapes</a>
+for special characters (see man groff_char for a complete list of
+special characters).  Entering quote marks this way allows you to
+use <strong>mom</strong>'s
+<a href="inlines.html#INLINE_KERNING_MOM">inline kerning escapes</a>
+to fine-tune the look of quotes.
 <p>
 <strong>NOTE:</strong> <strong>SMARTQUOTES</strong> does not work on
 single quotes, which most people input with the apostrophe (found at
@@ -566,7 +626,7 @@ rules into the whitespace through the use of string tabs and
 (Instead of <strong>\*[RULE]</strong>,
 groff's line drawing function,
 <a href="inlines.html#INLINE_LINEDRAWING_GROFF">\l</a>
-could be used instead.)
+could be used.)
 <p>
 <pre>
 	.LL 30P
