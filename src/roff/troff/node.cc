@@ -355,7 +355,7 @@ void font_info::set_constant_space(constant_space_type type, units x)
   }
 }
 
-void font_info::set_track_kern(track_kerning_function  &tk)
+void font_info::set_track_kern(track_kerning_function &tk)
 {
   if (track_kern != tk) {
     track_kern = tk;
@@ -456,7 +456,8 @@ hunits tfont::get_width(charinfo *c)
     return (hunits(fm->get_width(c->get_index(), size.to_scaled_points()))
 	    + track_kern + bold_offset);
   else
-    return (hunits(fm->get_width(c->get_index(), size.to_scaled_points())) + track_kern);
+    return (hunits(fm->get_width(c->get_index(), size.to_scaled_points()))
+	    + track_kern);
 }
 
 vunits tfont::get_char_height(charinfo *c)

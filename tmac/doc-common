@@ -1,5 +1,5 @@
-.\" Copyright (c) 1991 The Regents of the University of California.
-.\" All rights reserved.
+.\" Copyright (c) 1991, 1993
+.\"	The Regents of the University of California.  All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -29,7 +29,7 @@
 .\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
 .\"
-.\"     @(#)doc-common 5.7 (Berkeley) 8/5/91
+.\"     @(#)doc-common	8.1 (Berkeley) 06/08/93
 .\"
 .\"     %beginstrip%
 .
@@ -88,7 +88,6 @@
 .nr Er 17n
 .nr Es 12n
 .nr Ev 15n
-.nr Ex 10n
 .nr Fa 12n
 .nr Fc 3
 .nr Fd 12n\" ?
@@ -652,6 +651,12 @@
 ..
 .
 .
+.\" NS doc-in-synopsis-section global register (bool)
+.\" NS   whether we are in the `synopsis' section
+.
+.nr doc-in-synopsis-section 0
+.
+.
 .\" NS doc-in-see-also-section global register (bool)
 .\" NS   whether we are in the `see also' section
 .
@@ -690,8 +695,9 @@
 .\" NS   doc-in-authors-section
 .\" NS   doc-in-files-section
 .\" NS   doc-in-see-also-section
-.\" NS   doc-in-synopsis-count
+.\" NS   doc-in-synopsis-section
 .\" NS   doc-indent-synopsis
+.\" NS   doc-indent-synopsis-active
 .\" NS   doc-is-func
 .\" NS   doc-num-func-args
 .\" NS
@@ -738,9 +744,6 @@
 .    ds doc-macro-name Sh
 .    doc-parse-args \$@
 .
-.    nr doc-in-synopsis-count 0
-.    nr doc-indent-synopsis 0
-.
 .    if t \
 '      ad
 .
@@ -752,6 +755,7 @@
 '      in 0
 .    \}
 .    el \{\
+.      nr doc-in-synopsis-section 0
 .      nr doc-in-see-also-section 0
 .      nr doc-in-files-section 0
 .      nr doc-in-authors-section 0
@@ -759,7 +763,9 @@
 .      ie        "\*[doc-str-dfp]"\*[doc-section-synopsis]" \{\
 .        if t \
 .          na
-.        nr doc-in-synopsis-count 1
+.        nr doc-in-synopsis-section 1
+.        nr doc-indent-synopsis 0
+.        nr doc-indent-synopsis-active 0
 .      \}
 .      el \{ .ie "\*[doc-str-dfp]"\*[doc-section-description]" \{\
 .        nr doc-is-func 0
@@ -897,8 +903,8 @@
 .
 .  tm doc-curr-font == \n[doc-curr-font]
 .  tm doc-curr-size == \n[doc-curr-size]
-.  tm doc-in-synopsis-count == \n[doc-in-synopsis-count]
 .  tm doc-indent-synopsis == \n[doc-indent-synopsis]
+.  tm doc-indent-synopsis-active == \n[doc-indent-synopsis-active]
 .  tm doc-have-decl == \n[doc-have-decl]
 .  tm doc-have-var == \n[doc-have-var]
 .  tm doc-command-name == `\*[doc-command-name]'
@@ -1005,6 +1011,7 @@
 .  tm doc-footer-space == \n[doc-footer-space]
 .  tm doc-display-vertical == \n[doc-display-vertical]
 .  tm doc-header-string == `\*[doc-header-string]'
+.  tm doc-in-synopsis-section == \n[doc-in-synopsis-section]
 .  tm doc-in-see-also-section == \n[doc-in-see-also-section]
 .  tm doc-in-files-section == \n[doc-in-files-section]
 .  tm doc-in-authors-section == \n[doc-in-authors-section]

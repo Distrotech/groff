@@ -1,3 +1,29 @@
+2001-04-10  Ruslan Ermilov  <ru@freebsd.org>
+
+	Fix indentation in SYNOPSIS.
+
+	Updated to include changes of latest BSD mdoc version (basically,
+	`.Fn' and `.Fc' put a final semicolon after a function declaration
+	in the SYNOPSIS section.
+
+	* tmac/doc.tmac (doc-in-synopsis-count): Replaced with ...
+	(doc-in-synopsis-section): New variable.  Updated all related
+	functions.
+	(doc-indent-synopsis-active): New register.
+	(Nd, Fn, Fo): Use it.
+	(Cd): It requires manipulation of \n[doc-indent-synopsis] so that
+	`.Cd' with long argument line produces indented wrapped lines. 
+	Also, the misplaced `.nop \*[doc-Nm-font]\c'' caused extra
+	undesirable line break to be output.
+	(doc-do-func-decl, Nm, Vt, Fn, Fo): Remove extraneous calls to
+	`.rs'.
+	(Fn, Fc): Add final `;' to output.
+	(doc-save-global-vars, doc-restore-global-vars): Updated.
+	* tmac/doc-common: Remove `Ex' register.
+	Updated.
+	* tmac/doc-ditroff, tmac/doc-nroff, tmac/doc-syms: Updated
+	copyright.
+
 2001-04-06  Ruslan Ermilov  <ru@freebsd.org>
 
 	* tmac/doc.tmac (Cd): Simplify code.
