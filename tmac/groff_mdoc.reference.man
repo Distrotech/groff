@@ -162,12 +162,15 @@ as follows:
 .    It "Flags"
 .    It "Functions (Library Routines)"
 .    It "Function Types"
+.    It "Return Values"
 .    \" .It "Header File (including source code)"
 .    It "Interactive Commands"
+.    It "Library Names"
 .    It "Literals"
 .    It "Names"
 .    It "Options"
 .    It "Pathnames"
+.    It "Standards"
 .    It "Variables"
 .    It "Manual Page Cross References"
 .  El
@@ -180,13 +183,17 @@ as follows:
 .    It "BSD Macro"
 .    It "NetBSD Macro"
 .    It "FreeBSD Macro"
+.    It "OpenBSD Macro"
+.    It "BSD/OS Macro"
 .    It "UNIX Macro"
 .    It "Emphasis Macro"
+.    It "Font Mode"
 .    It "Enclosure and Quoting Macros"
 .    It "No-Op or Normal Text Macro"
 .    It "No-Space Macro"
 .    It "Section Cross References"
 .    It "Symbolics"
+.    It "Mathematical Symbols"
 .    It "References and Citations"
 .    It "Trade Names (or Acronyms and Type Names)"
 .    It "Extended Arguments"
@@ -202,6 +209,9 @@ as follows:
 .    It "Examples and Displays"
 .    It "Tagged Lists and Columns"
 .  El
+.
+.  It
+.  Tn "MISCELLANEOUS MACROS"
 .
 .  It
 .  Tn "PREDEFINED STRINGS"
@@ -1450,6 +1460,33 @@ name to appear on the next line).
 .Ft struct stat
 .El
 .
+.Ss "Return Values"
+.
+The
+.Ql .Rv
+macro generates text for use in the
+.Sx RETURN VALUES
+section.
+.Pp
+.Dl Usage: .Rv Oo -std Oc Ao function Ac Ld
+.Pp
+For example,
+.Ql ".Rv -std atexit"
+produces:
+.
+.Bd -ragged -offset -indent
+\# a small hack to suppress a warning message
+.ds section-old "\*[section]
+.ds section 2
+.Rv -std atexit
+.ds section "\*[section-old]
+.Ed
+.Pp
+.
+The
+.Fl std
+option is valid only for manual page sections\~2 and\~3.
+.
 .Ss "Interactive Commands"
 .
 The
@@ -1469,6 +1506,67 @@ macro designates an interactive or internal command.
 .Pp
 .
 The default width is 12n.
+.
+.Ss "Library Names"
+.
+The
+.Ql .Lb
+macro is used to specify the library where a particular function is compiled
+in.
+.Pp
+.Dl Usage: .Lb Ao argument Ac Ld
+.Pp
+Available arguments to
+.Ql .Lb 
+and their results are:
+.
+.Pp
+.Bl -tag -xwidth ".Li libossaudio" -compact -offset indent
+.It Li libarm32
+.Li libarm32
+.It Li libc
+.Lb libc
+.It Li libcompat
+.Lb libcompat
+.It Li libcrypt
+.Lb libcrypt
+.It Li libcurses
+.Lb libcurses
+.It Li libedit
+.Lb libedit
+.It Li libi386
+.Lb libi386
+.It Li libipsec
+.Lb libipsec
+.It Li libkvm
+.Lb libkvm
+.It Li libm
+.Lb libm
+.It Li libmenu
+.Lb libmenu
+.It Li libossaudio
+.Lb libossaudio
+.It Li libposix
+.Lb libposix
+.It Li libresolv
+.Lb libresolv
+.It Li libtermcap
+.Lb libtermcap
+.It Li libutil
+.Lb libutil
+.It Li libz
+.Lb libz
+.El
+.Pp
+.
+Local, OS-specific additions might be found in the file
+.Pa mdoc.local ;
+look for strings named
+.Ql str-Lb-XXX .
+.Ql XXX
+then denotes the keyword to be used with the
+.Ql .Lb
+macro.
 .
 .Ss Literals
 .
@@ -1632,6 +1730,62 @@ macro formats path or file names.
 .
 The default width is 32n.
 .
+.Ss Standards
+.
+The
+.Ql .St
+macro replaces standard abbreviations with their formal names.
+.Pp
+.Dl Usage: .St Ao abbreviation Ac Ld
+.Pp
+Available pairs for
+.Dq Abbreviation/Formal Name
+are:
+.
+.Pp
+.Bl -tag -xwidth ".Li -p1003.1b-93" -compact -offset indent
+.It Li -ansiC
+.St -ansiC
+.It Li "-ansiC-89"
+.St -ansiC-89
+.It Li "-ieee754"
+.St -ieee754
+.It Li "-iso8802-3"
+.St -iso8802-3
+.It Li "-iso9899"
+.St -iso9899
+.It Li "-iso9945-1"
+.St -iso9945-1
+.It Li "-isoC"
+.St -isoC
+.It Li "-isoC-99"
+.St -isoC-99
+.It Li "-p1003.1"
+.St -p1003.1
+.It Li "-p1003.1-88"
+.St -p1003.1-88
+.It Li "-p1003.1-90"
+.St -p1003.1-90
+.It Li "-p1003.1b"
+.St -p1003.1b
+.It Li "-p1003.1b-93"
+.St -p1003.1b-93
+.It Li "-p1003.1g"
+.St -p1003.1g
+.It Li "-p1003.2"
+.St -p1003.2
+.It Li "-p1003.2-92"
+.St -p1003.2-92
+.It Li "-susv2"
+.St -susv2
+.It Li "-xpg3"
+.St -xpg3
+.It Li "-xpg4"
+.St -xpg4
+.It Li "-xpg4.2"
+.St -xpg4.2
+.El
+.
 .Ss Variables
 .
 Generic variable reference.
@@ -1759,6 +1913,26 @@ see the description of the
 request above in section
 .Sx "TITLE MACROS" .
 .
+.Ss "OpenBSD Macro"
+.
+.Pp
+.Dl Usage: .Ox Oo Ao version Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Ox\ 1.0" -compact -offset 15n
+.It Li ".Ox 1.0"
+.Ox 1.0
+.El
+.
+.Ss "BSD/OS Macro"
+.
+.Pp
+.Dl Usage: .Bsx Oo Ao version Ac Oc Ld
+.Pp
+.Bl -tag -xwidth ".Li .Bsx\ 1.0" -compact -offset 15n
+.It Li ".Bsx 1.0"
+.Bsx 1.0
+.El
+.
 .Ss "UNIX Macro"
 .
 .Pp
@@ -1790,22 +1964,39 @@ The usual font for emphasis is italic.
 .
 The default width is 10n.
 .
-.\" XXX
-.\" The emphasis can be forced across several lines of text by using
-.\" the
-.\" .Ql \&.Bf
-.\" macro discussed in
-.\" .Sx Modes
-.\" under
-.\" .Sx PAGE STRUCTURE DOMAIN .
-.\" .Pp
-.\" .Bf -emphasis
-.\" We are certain the reason most people desire a Harvard MBA
-.\" so they can become to be successful philanthropists.  Only
-.\" mathematicians and physicists go to graduate school strictly
-.\" to acquire infinite wealthy and fame. Its that inifinity
-.\" word that does it to them. Ruins them.
-.\" .Ef
+.Ss "Font Mode"
+.
+The
+.Ql .Bf
+font mode must be ended with the
+.Ql .Ef
+macro (the latter doesn't take parameters).
+Font modes may not be nested within other font modes.
+.Pp
+.Ql .Bf
+has the following syntax:
+.Pp
+.Dl .Bf Ao font mode Ac
+.Pp
+.Ao font mode Ac
+must be one of the following three types:
+.Pp
+.Bl -tag -xwidth ".Sy \&Sy | Fl symbolic" -compact -offset indent
+.It Sy \&Em | Fl emphasis
+Same as if the 
+.Ql .Em
+macro was used for the entire block of text.
+.It Sy \&Li | Fl literal
+Same as if the
+.Ql .Li
+macro was used for the entire block of text.
+.It Sy \&Sy | Fl symbolic
+Same as if the
+.Ql .Sy
+macro was used for the entire block of text.
+.El
+.Pp
+Both macros are neither callable nor parsed.
 .
 .Ss "Enclosure and Quoting Macros"
 .
@@ -1835,7 +2026,7 @@ respectively.
 .No .Bq   Ta    .Bo  Ta    .Bc   Ta "Bracket Enclosure"       Ta Bo string Bc
 .No .Brq  Ta    .Bro Ta    .Brc  Ta "Brace Enclosure"         Ta Bro string Brc
 .No .Dq   Ta    .Do  Ta    .Dc   Ta "Double Quote"            Ta Do string Dc
-.No       Ta    .Eo  Ta    .Ec   Ta "Enclose String (in XX)"  Ta XXstringXX
+.No .Eq   Ta    .Eo  Ta    .Ec   Ta "Enclose String (in XX)"  Ta XXstringXX
 .No .Pq   Ta    .Po  Ta    .Pc   Ta "Parenthesis Enclosure"   Ta Po string Pc
 .No .Ql   Ta         Ta          Ta "Quoted Literal"          Ta "`string' or string"
 .No .Qq   Ta    .Qo  Ta    .Qc   Ta "Straight Double Quote"   Ta Qo string Qc
@@ -1853,6 +2044,9 @@ have a default width value of 12n.
 .It Li .Ec , .Eo
 These macros expect the first argument to be the opening and closing strings
 respectively.
+.It Li .Eq
+The first and second argument of this macro are the opening resp.\& the
+closing string (followed by the arguments to be enclosed).
 .It Li .Ql
 The quoted literal macro behaves differently in troff and nroff mode.
 If formatted with
@@ -2013,6 +2207,20 @@ symbolic sense or the traditional English usage.
 .Bl -tag -xwidth ".Li .Sy\ Important\ Notice" -compact -offset 15n
 .It Li ".Sy Important Notice"
 .Sy Important Notice
+.El
+.Pp
+.
+The default width is 6n.
+.
+.Ss Mathematical Symbols
+.
+Use this macro for mathematical symbols and similar things.
+.Pp
+.Dl Usage: .Ms Ao math symbol Ac Ld
+.Pp
+.Bl -tag -xwidth ".Li .Ms\ sigma" -compact -offset 15n
+.It Li ".Ms sigma"
+.Ms sigma
 .El
 .Pp
 .
@@ -2356,6 +2564,12 @@ style references are not accommodated.
 .Pp
 It is recommended that the cross references are sorted on the section
 number, and then alphabetically on the names within a section.
+Example:
+.Pp
+.Xr ls 1 ,
+.Xr ps 1 ,
+.Xr group 5 ,
+.Xr passwd 5
 .It Li ".Sh STANDARDS"
 If the command, library function or file adheres to a specific
 implementation such as
@@ -2372,11 +2586,14 @@ Any command which does not adhere to any specific standards should be
 outlined historically in this section.
 .It Li ".Sh AUTHORS"
 Credits should be placed here.
+The
+.Ql .An
+macro should be used to specify the name(s) of the person(s).
 .It Li ".Sh DIAGNOSTICS"
 Diagnostic messages from a command should be placed in this section.
 .It Li ".Sh ERRORS"
 Specific error handling, especially from library functions (man page
-sections\~2 and\~3) should go here.
+sections 2, 3, and\~9) should go here.
 The
 .Ql .Er
 macro is used to specify an error (errno).
@@ -2390,7 +2607,7 @@ User-specified
 sections may be added; for example, this section was set with:
 .
 .Bd -literal -offset 15n
-\&.Sh PAGE LAYOUT MACROS
+\&.Sh PAGE STRUCTURE DOMAIN
 .Ed
 .
 .Ss "Paragraphs and Line Spacing"
@@ -2412,7 +2629,9 @@ macro (which both assert a vertical distance unless the
 .Fl compact
 flag is given).
 .Pp
-The macro is neither callable nor parsed and doesn't take arguments.
+The macro is neither callable nor parsed and doesn't take arguments; an
+alternative name is
+.Ql .Lp .
 .El
 .
 .\" XXX
@@ -3165,6 +3384,33 @@ means that
 is required for the tag list type.
 .
 .
+.Sh "MISCELLANEOUS MACROS"
+.
+.Bl -tag -xwidth ".Li .Bt"
+.It Li .Bt
+prints
+.
+.Bd -ragged -offset indent
+.Bt
+.Ed
+.Pp
+It is neither callable no parsable and takes no arguments.
+.
+.It Li .Ld
+This macro is similar to TeX's \eldots command; it prints
+.Ql Ld .
+.
+.It Li .Ud
+prints
+.
+.Bd -ragged -offset indent
+.Ud
+.Ed
+.Pp
+It is neither callable no parsable and takes no arguments.
+.El
+.
+.
 .Sh "PREDEFINED STRINGS"
 .
 The following strings are predefined as may be used by
@@ -3422,15 +3668,6 @@ template for writing a man page
 .
 .Sh BUGS
 .
-Undesirable hyphenation on the dash of a flag
-argument is not yet resolved, and causes
-occasional mishaps in the
-.Sx DESCRIPTION
-section.
-(line break on the hyphen).
-.Pp
-Predefined strings are not declared in documentation.
-.Pp
 Section 3f has not been added to the header routines.
 .Pp
 .Ql \&.Nm
@@ -3444,11 +3681,6 @@ if the line length is too short.
 Occasionally it
 separates the last parenthesis, and sometimes
 looks ridiculous if a line is in fill mode.
-.Pp
-The method used to prevent header and footer page
-breaks (other than the initial header and footer) when using
-nroff occasionally places an unsightly partially filled line (blank)
-at the would be bottom of the page.
 .Pp
 If the outer-most list definition doesn't have a
 .Fl width
