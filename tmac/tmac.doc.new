@@ -1528,7 +1528,7 @@
 .  \}
 .
 .  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
 .      \*[doc-arg\n[doc-arg-ptr]]
 .    el \{\
@@ -1536,6 +1536,8 @@
 .      nr doc-curr-size \n[.s]
 .      doc-print-recursive
 .  \}\}
+.  el \
+.    doc-print-and-reset
 ..
 .
 .
@@ -1731,6 +1733,38 @@
 ..
 .
 .
+.\" NS Es user macro
+.\" NS   set up arguments (i.e., the left and right quotation character as
+.\" NS   first and second argument) for .En call
+.\" NS
+.\" NS modifies:
+.\" NS   doc-macro-name, doc-quote-left, doc-quote-right, doc-arg-ptr
+.
+.de Es
+.  if !\n[doc-arg-limit] \{\
+.    ie (\n[.$] > 2) \{\
+.        ds doc-macro-name Es
+.        doc-parse-args \$@
+.    \}
+.    el \{\
+.      ds doc-quote-left "\$1
+.      ds doc-quote-right "\$2
+.  \}\}
+.
+.  if \n[doc-arg-limit] \{\
+.    nr doc-arg-ptr +1
+.    ds doc-quote-left "\*[doc-arg\n[doc-arg-ptr]]
+.    nr doc-arg-ptr +1
+.    ds doc-quote-right "\*[doc-arg\n[doc-arg-ptr]]
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \
+.      doc-do-\n[doc-type\n[doc-arg-ptr]]
+.    el \
+.      doc-print-and-reset
+.  \}
+..
+.
+.
 .\" NS doc-enclose-string macro
 .\" NS   enclose string with given args (e.g. [ and ])
 .\" NS
@@ -1778,6 +1812,12 @@
 .      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .  \}\}
 ..
+.
+.
+.\" NS En user macro
+.\" NS   enclose arguments with quotation characters set up with `.Es'
+.
+.als En doc-enclose-string
 .
 .
 .\" NS doc-skip-punct-backwards macro
@@ -3601,8 +3641,10 @@
 .      nr doc-enum-list-count 0
 .      doc-end-list 1
 .    \}
-.    el \{ .ie "\*[doc-str-El]"diag-list" \
+.    el \{ .ie "\*[doc-str-El]"diag-list" \{\
 .      nr doc-have-diag-list 0
+.      doc-end-list 0
+.    \}
 .    el \{ .ie "\*[doc-str-El]"column-list" \
 .      doc-end-column-list
 .    el \{ .ie "\*[doc-str-El]"item-list" \
@@ -4603,6 +4645,8 @@
 .\" NS width register `Fn' set in doc-common
 .
 .de Fn
+.  hy 0
+.
 .  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \{\
 .      ds doc-macro-name Fn
@@ -4674,6 +4718,8 @@
 .    if \n[doc-in-synopsis-count] \
 .      in -\n[doc-indent-synopsis]u
 .  \}
+.
+.  hy
 ..
 .
 .
@@ -4685,7 +4731,7 @@
 .
 .de doc-do-func-1
 .  ie \n[doc-in-synopsis-count] \{\
-.    as doc-out-string \&\*[rp]\f[R];\f[P]
+.    as doc-out-string \&\*[rp]
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .  \}
 .  el \
@@ -4729,7 +4775,7 @@
 .  \}
 .  el \{\
 .    ie \n[doc-in-synopsis-count] \{\
-.      as doc-out-string \&\*[rp]\f[R];\f[P]
+.      as doc-out-string \&\*[rp]
 .      as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .    \}
 .    el \
@@ -4748,7 +4794,7 @@
 .
 .de doc-do-func-3
 .  ie \n[doc-in-synopsis-count] \{\
-.    as doc-out-string \&\*[rp]\f[R];\f[P]
+.    as doc-out-string \&\*[rp]
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .    as doc-out-string "\*[doc-arg\n[doc-arg-ptr]]
 .  \}
@@ -4772,7 +4818,7 @@
 .
 .de doc-do-func-4
 .  ie \n[doc-in-synopsis-count] \{\
-.    as doc-out-string \&\*[rp]\f[R];\f[P]
+.    as doc-out-string \&\*[rp]
 .    as doc-out-string \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]
 .    as doc-out-string "\*[doc-space\n[doc-arg-ptr]]\*[doc-arg\n[doc-arg-ptr]]
 .  \}
@@ -4888,7 +4934,7 @@
 .  nr doc-nesting-level -1
 .
 .  ie \n[doc-in-synopsis-count] \
-.    as doc-out-string \|\*[rp]\f[R];\f[P]
+.    as doc-out-string \|\*[rp]
 .  el \
 .    as doc-out-string \|\*[rp]
 .  ie (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
@@ -5934,7 +5980,8 @@
 .\" NS   emit warning and print empty line
 .
 .de doc-empty-line
-.  tm mdoc warning: Empty input line #\n[.c]!
+.  if !"\*[doc-macro-name]"Bd" \
+.    tm mdoc warning: Empty input line #\n[.c]!
 .  sp
 ..
 .
