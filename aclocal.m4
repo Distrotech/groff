@@ -460,8 +460,8 @@ dnl
 dnl This simplifies Makefile rules.
 dnl
 AC_DEFUN(GROFF_BUILDDIR,
-[top_builddir=`pwd`
-AC_SUBST(top_builddir)])dnl
+[groff_top_builddir=`pwd`
+AC_SUBST(groff_top_builddir)])dnl
 dnl
 dnl
 dnl Check for EBCDIC - stolen from the OS390 Unix LYNX port

@@ -92,7 +92,7 @@ void process_input_stack();
 const char *program_name = 0;
 token tok;
 int break_flag = 0;
-int disable_color_flag = 0;
+int color_flag = 1;		// colors are on by default
 static int backtrace_flag = 0;
 #ifndef POPEN_MISSING
 char *pipe_command = 0;
@@ -1192,6 +1192,16 @@ static color *read_gray()
     col->set_gray(g);
   }
   return col;
+}
+
+static void activate_color()
+{
+  int n;
+  if (has_arg() && get_integer(&n))
+    color_flag = n != 0;
+  else
+    color_flag = 1;
+  skip_line();
 }
 
 static void define_color()
@@ -6636,7 +6646,7 @@ int main(int argc, char **argv)
       compatible_flag = 1;
       // fall through
     case 'c':
-      disable_color_flag = 1;
+      color_flag = 0;
       break;
     case 'M':
       macro_path.command_line_dir(optarg);
@@ -6883,6 +6893,7 @@ void init_input_requests()
   init_request("char", define_character);
   init_request("chop", chop_macro);
   init_request("close", close_request);
+  init_request("color", activate_color);
   init_request("continue", while_continue_request);
   init_request("cp", compatible);
   init_request("de", define_macro);
@@ -6962,6 +6973,7 @@ void init_input_requests()
   number_reg_dictionary.define(".Y", new constant_reg(revision));
   number_reg_dictionary.define(".c", new lineno_reg);
   number_reg_dictionary.define(".g", new constant_reg("1"));
+  number_reg_dictionary.define(".color", new constant_int_reg(&color_flag));
   number_reg_dictionary.define(".warn", new constant_int_reg(&warning_mask));
   extern const char *major_version;
   number_reg_dictionary.define(".x", new constant_reg(major_version));

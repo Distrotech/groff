@@ -43,7 +43,7 @@ extern units units_per_inch;
 
 extern int ascii_output_flag;
 extern int suppress_output_flag;
-extern int disable_color_flag;
+extern int color_flag;
 extern int is_html;
 
 extern int tcommand_flag;

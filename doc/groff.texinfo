@@ -11180,6 +11180,21 @@ production of the next inline image.
 @section Colors
 @cindex colors
 
+@DefreqList {color, [@Var{n}]}
+@DefregListEnd {.color}
+If @var{n} is missing or non-zero, activate colors (this is the default);
+otherwise, turn it off.
+
+The read-only number register @code{.color} is@w{ }1 if colors are active,
+0@w{ }otherwise.
+
+Internally, @code{color} sets a global flag; it does not produce a token.
+Similar to the @code{cp} request, you should use it at the beginning of
+your document to control color output.
+
+Colors can be also turned off with the @option{-c} command line option.
+@endDefreq
+
 @Defreq {defcolor, ident scheme color_components}
 Define color with name @var{ident}.  @var{scheme} can be one of  the
 following values: @code{rgb} (three components), @code{cym} (three
@@ -12288,12 +12303,11 @@ interpreted as the start of a long name.  In compatibility mode GNU
 If @var{n} is missing or non-zero, turn on compatibility mode;
 otherwise, turn it off.
 
-The number
-register @code{.C} is@w{ }1 if compatibility mode is on, 0@w{
-}otherwise.
+The read-only number register @code{.C} is@w{ }1 if compatibility mode is
+on, 0@w{ }otherwise.
 
-Compatibility mode can be turned on with the
-@option{-C} command line option.
+Compatibility mode can be also turned on with the @option{-C} command line
+option.
 
 The @code{do} request turns off compatibility mode
 while executing its arguments as a @code{gtroff} command.

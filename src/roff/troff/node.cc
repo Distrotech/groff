@@ -1153,7 +1153,7 @@ void troff_output_file::set_font(tfont *tf)
 
 void troff_output_file::fill_color(color *col)
 {
-  if ((current_pagecolor == col) || disable_color_flag)
+  if ((current_pagecolor == col) || !color_flag)
     return;
   flush_tbuf();
   do_motion();
@@ -1202,7 +1202,7 @@ void troff_output_file::fill_color(color *col)
 
 void troff_output_file::glyph_color(color *col)
 {
-  if ((current_glyphcolor == col) || disable_color_flag)
+  if ((current_glyphcolor == col) || !color_flag)
     return;
   flush_tbuf();
   do_motion();
