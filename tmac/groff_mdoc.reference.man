@@ -72,9 +72,9 @@ A complete reference for writing
 manual pages with the
 .Nm \-mdoc
 macro package; a
-.Em content Ns \-based
+.Em content Ns -based
 and
-.Em domain Ns \-based
+.Em domain Ns -based
 formatting package for
 .Tn GNU
 .Xr troff 1 .
@@ -86,9 +86,9 @@ In
 .Nm \-mdoc ,
 page layout macros make up the
 .Em "page structure domain"
-which consists of macros for titles, section headers, displays and lists --
-essentially items which affect the physical position of text on a formatted
-page.
+which consists of macros for titles, section headers, displays and lists
+\- essentially items which affect the physical position of text on a
+formatted page.
 In addition to the page structure domain, there are two more domains, the
 .Em manual
 domain and the
@@ -489,7 +489,7 @@ To change this, insert
 .Ql \e&
 before or after the dot:
 .
-.Bd -literal -offset indent
+.Bd -literal -offset indent -compact
 The
 \&.Ql .
 character.
@@ -641,7 +641,7 @@ Example:
 .It Li .Xx Xo
 .Aq foo 
 .Brq bar1 | bar2
-.Op -test1 Op -test2 | -test3
+.Op \-test1 Op \-test2 | \-test3
 .Ld
 .Xc
 .El
@@ -724,7 +724,6 @@ parameter.  By default, the following architecture keywords are defined:
 In the following examples, the left (which is identical to the right) and
 the middle part of the manual page header strings are shown.
 .
-.Pp
 .Bd -ragged
 .Bl -tag -xwidth ".Li .Dt\ FOO\ 2\ mac68k" -compact -offset indent
 .It Li ".Dt FOO 7"
@@ -783,6 +782,7 @@ is the acronym for the operating system and
 .Ql YYY
 the release ID.
 .
+.Bd -ragged -compact
 .Bl -tag -xwidth ".No FreeBSD" -offset indent
 .It ATT
 7th, 7, III, 3, V, V.2, V.3, V.4
@@ -796,6 +796,7 @@ the release ID.
 2.2.2, 2.2.5, 2.2.6, 2.2.7, 2.2.8, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 4.0, 4.1,
 4.2, 5.0
 .El
+.Ed
 .Pp
 .
 For
@@ -933,6 +934,7 @@ from the example above might be referred to as
 or
 .Em file arguments .
 Some command line argument lists are quite long:
+.
 .Bd -ragged
 .Bl -tag -xwidth ".Nm make" -offset indent -compact
 .It Nm make
@@ -1264,8 +1266,8 @@ macro is identical, but without the dash.
 .Cm cfv .
 .It Li ".Fl s v t"
 .Fl s v t
-.It Li ".Fl - ,"
-.Fl - ,
+.It Li ".Fl \- ,"
+.Fl \- ,
 .It Li ".Fl xyz ) ,"
 .Fl xyz ) ,
 .It Li ".Fl |"
@@ -1604,7 +1606,7 @@ are possible:
 .Bx
 .It Li ".Bx 4.3 ."
 .Bx 4.3 .
-.It Li ".Bx -devel"
+.It Li ".Bx \-devel"
 .Bx -devel
 .El
 .Pp
@@ -1951,6 +1953,7 @@ can be used outside of the
 environment.
 .Pp
 Example:
+.
 .Bd -literal -offset indent
 \&.Rs
 \&.%A "Matthew Bar"
@@ -1963,8 +1966,8 @@ Example:
 .Ed
 .Pp
 produces
-.Pp
-.Bd -filled -offset indent
+.
+.Bd -ragged -offset indent
 .Rs
 .%A "Matthew Bar"
 .%A "John Foo"
@@ -2152,7 +2155,6 @@ configuration device usage macro.
 Several other macros may be necessary to produce the synopsis line as shown
 below:
 .
-.Pp
 .Bd -filled -offset indent
 .Nm cat
 .Op Fl benstuv
@@ -2256,6 +2258,7 @@ Blatant problems with the topic go here.
 User-specified
 .Ql .Sh
 sections may be added; for example, this section was set with:
+.
 .Bd -literal -offset 15n
 \&.Sh PAGE LAYOUT MACROS
 .Ed
@@ -2271,11 +2274,11 @@ The macro is not necessary after a
 .Ql .Sh
 or
 .Ql .Ss
-macro or before
-a
+macro or before a
 .Ql .Bl
-macro.
-(which asserts a vertical distance unless the
+or
+.Ql .Bd
+macro (which both assert a vertical distance unless the
 .Fl compact
 flag is given).
 .Pp
@@ -2430,9 +2433,6 @@ More work needs to be done with the keep macros; specifically, a
 .Fl line
 option should be added.
 .
-\#
-\#=====================================================================
-\#
 .Ss Examples and Displays
 .
 There are six types of displays.
@@ -2475,11 +2475,11 @@ display must be ended with the
 macro.
 It has the following syntax:
 .Pp
-.Bd -ragged -offset indent
-.Li .Bd Ao "display type" Ac
-.Li     Oo -literal | -filled | -unfilled | -ragged | -centered Oc
-.Li     Oo -offset Ao string Ac Oc Oo -compact Oc
-.Ed
+.Bl -tag -xwidth ".Li .Bd" -offset indent
+.It Li .Bd Xo
+.Bro \-literal | \-filled | \-unfilled | \-ragged | \-centered Brc
+.Oo \-offset Ao string Ac Oc Oo \-compact Oc Xc
+.El
 .Pp
 .
 .Bl -tag -xwidth ".Fl file Ao Ar file name Ac " -compact
@@ -2546,16 +2546,35 @@ This macro needs work and perhaps may never do the right thing within
 .
 If
 .Ao string Ac
-is a valid numeric expression instead, use that value for indentation.
-If not,
+is a valid numeric expression instead
+.Pf ( Em with a scale indicator other than
+.Sq Em u ) ,
+use that value for indentation.
+The most useful scale indicators are
+.Sq m
+and
+.Sq n ,
+specifying the so-called
+.Em \&Em
+and
+.Em "En square" .
+This is approximately the width of the letter
+.Sq m
+resp.\& the letter
+.Sq n
+of the current font (for nroff output, both scale indicators give the same
+values).
+If
 .Ao string Ac
-is tested whether it is an
+isn't a numeric expression, it is tested whether it is an
 .Nm \-mdoc
 macro name, and the default offset value associated with this macro is used.
 Finally, if all tests fail,
 the width of
 .Ao string Ac
 (typeset with a fixed-width font) is taken as the offset.
+.It Fl compact
+Suppress insertion of vertical space before begin of display.
 .El
 .
 .It Li .Ed
@@ -2565,119 +2584,332 @@ End display (doesn't take parameters).
 .Ss Tagged Lists and Columns
 .
 There are several types of lists which may be initiated with the
-.Ql ".Bl"
+.Ql .Bl
 begin-list macro.
-Items within the list
-are specified with the
-.Ql ".It"
-item macro and
-each list must end with the
-.Ql ".El"
+Items within the list are specified with the
+.Ql .It
+item macro, and each list must end with the
+.Ql .El
 macro.
-Lists other than
-.Li \-enum
-may be nested within themselves and within displays.
-The use of columns inside of lists or lists inside of columns
-is unproven.
+Lists may be nested within themselves and within displays.
+The use of columns inside of lists or lists inside of columns is unproven.
 .Pp
-In addition, several list attributes may be specified such as
-the width of a tag, the list offset, and compactness
-(blank lines between items allowed or disallowed).
+In addition, several list attributes may be specified such as the width of a
+tag, the list offset, and compactness (blank lines between items allowed or
+disallowed).
 Most of this document has been formatted with a tag style list
-.Pq Fl tag .
-For a change of pace, the list-type used to present the list-types
-is an over-hanging list
-.Pq Fl ohang .
-This type of list is quite popular with
-.Tn TeX
-users, but might look a bit funny after having read many pages of
-tagged lists.
-The following list types are accepted by
-.Ql ".Bl" :
+.Pf ( Fl tag ) .
 .Pp
-.Bl -ohang -compact
-.It Fl bullet
-.It Fl dash
-.It Fl enum
-.It Fl hyphen
-.It Fl item
-These five are the simplest types of lists.
-Once the
-.Ql ".Bl"
-macro has been given, items in the list are merely
-indicated by a line consisting solely of the
-.Ql ".It"
-macro.
-For example, the source text for a simple enumerated list
-would look like:
-.Bd -literal -offset indent-two
-\&.Bl -enum -compact
-\&.It
-\&Item one goes here.
-\&.It
-\&And item two here.
-\&.It
-\&Lastly item three goes here.
-\&.El
-.Ed
+It has the following syntax forms:
 .Pp
-The results:
-.Pp
-.Bl -enum -offset indent-two -compact
-.It
-Item one goes here.
-.It
-And item two here.
-.It
-Lastly item three goes here.
+.Bl -tag -xwidth ".Li .Bl" -offset indent -compact
+.It Li .Bl Xo
+.Bro \-hang | \-ohang | \-tag | \-diag | \-inset Brc
+.Oo \-width Ao string Ac Oc Oo \-xwidth Ao command Ac Oc
+.Oo \-offset Ao string Ac Oc Oo \-compact Oc Xc
+.It Li .Bl Xo
+.No \-column Oo \-offset Ao string Ac Oc
+.Ao string1 Ac Ao string2 Ac Ld Xc
+.It Li .Bl Xo
+.Bro \-item | \-enum Oo \-nested Oc | \-bullet | \-hyphen | \-dash Brc
+.Oo \-offset Ao string Ac Oc Oo \-compact Oc Xc
 .El
 .Pp
-A simple bullet list construction:
-.Bd -literal -offset indent-two
-\&.Bl -bullet -compact
+.
+And now a detailed description of the list types.
+.
+.Pp
+.Bl -tag -xwidth ".Fl column" -compact
+.It Fl bullet
+A bullet list.
+.
+.Bd -literal -offset indent
+\&.Bl -bullet -offset indent -compact
 \&.It
-\&Bullet one goes here.
+Bullet one goes here.
 \&.It
-\&Bullet two here.
+Bullet two here.
 \&.El
 .Ed
 .Pp
+.
 Produces:
-.Bl -bullet -offset indent-two -compact
+.
+.Pp
+.Bl -bullet -offset indent -compact
 .It
 Bullet one goes here.
 .It
 Bullet two here.
 .El
 .Pp
+.
+.It Fl dash No ( or Fl hyphen )
+A dash list.
+.
+.Bd -literal -offset indent
+\&.Bl -dash -offset indent -compact
+\&.It
+Dash one goes here.
+\&.It
+Dash two here.
+\&.El
+.Ed
+.Pp
+.
+Produces:
+.
+.Pp
+.Bl -dash -offset indent -compact
+.It
+Dash one goes here.
+.It
+Dash two here.
+.El
+.Pp
+.
+.It Fl enum
+An enumerated list.
+.
+.Bd -literal -offset indent
+\&.Bl -enum -offset indent -compact
+\&.It
+Item one goes here.
+\&.It
+And item two here.
+\&.El
+.Ed
+.Pp
+.
+The result:
+.
+.Pp
+.Bl -enum -offset indent -compact
+.It
+Item one goes here.
+.It
+And item two here.
+.El
+.Pp
+.
+If you want to nest enumerated lists, use the
+.Fl nested
+flag (starting with the second-level list):
+.
+.Bd -literal -offset indent
+\&.Bl -enum -offset indent -compact
+\&.It
+Item one goes here
+\&.Bl -enum -nested -compact
+\&.It
+Item two goes here.
+\&.It
+And item three here.
+\&.El
+\&.It
+And item four here.
+\&.El
+.Ed
+.Pp
+.
+Result:
+.
+.Pp
+.Bl -enum -offset indent -compact
+.It
+Item one goes here.
+.Bl -enum -nested -compact
+.It
+Item two goes here.
+.It
+And item three here.
+.El
+.It
+And item four here.
+.El
+.Pp
+.
+.It Fl item
+A list of type
+.Fl item
+without list markers.
+.
+.Bd -literal -offset indent
+\&.Bl -item -offset indent
+\&.It
+Item one goes here.
+Item one goes here.
+Item one goes here.
+\&.It
+Item two here.
+Item two here.
+Item two here.
+\&.El
+.Ed
+.Pp
+.
+Produces:
+.
+.Pp
+.Bl -item -offset indent
+.It
+Item one goes here.
+Item one goes here.
+Item one goes here.
+.It
+Item two here.
+Item two here.
+Item two here.
+.El
+.Pp
+.
 .It Fl tag
+A list with tags.
+Use
+.Fl width
+or
+.Fl xwidth
+to specify the tag width.
+.
+.Pp
+.Bl -tag -width "PPID" -compact -offset indent
+.It SL
+sleep time of the process (seconds blocked)
+.It PAGEIN
+number of disk
+.Tn I/O Ns 's
+resulting from references by the process
+to pages not loaded in core.
+.It UID
+numerical user-id of process owner
+.It PPID
+numerical id of parent of process priority
+(non-positive when in non-interruptible wait)
+.El
+.Pp
+.
+The raw text:
+.
+.Bd -literal -offset indent
+\&.Bl -tag -width "PPID" -compact -offset indent
+\&.It SL
+sleep time of the process (seconds blocked)
+\&.It PAGEIN
+number of disk
+\&.Tn I/O Ns 's
+resulting from references by the process
+to pages not loaded in core.
+\&.It UID
+numerical user-id of process owner
+\&.It PPID
+numerical id of parent of process priority
+(non-positive when in non-interruptible wait)
+\&.El
+.Ed
+.Pp
+.
 .It Fl diag
+Diag lists create section-four diagnostic lists and are similar to inset
+lists except callable macros are ignored.
+This list type can't be nested; the flags
+.Fl offset
+and
+.Fl compact
+are ignored
+.Pf ( Fl width
+resp.\&
+.Fl xwidth
+are not meaningful in this context).
+.Pp
+Example:
+.
+.Bd -literal -offset indent
+\&.Bl -diag
+\&.It You can't use Sy here.
+The message says all.
+\&.El
+.Ed
+.Pp
+.
+produces
+.
+.Pp
+.Sy "You can't use Sy here" . "\ " No "The message says all" .
+.Pp
+.
 .It Fl hang
+A list with hanging tags.
+.
+.Bl -hang -offset indent
+.It Em Hanged
+labels appear similar to tagged lists when the
+label is smaller than the label width.
+.It Em Longer hanged list labels
+blend in to the paragraph unlike
+tagged paragraph labels.
+.El
+.Pp
+And the unformatted text which created it:
+.
+.Bd -literal -offset indent
+\&.Bl -hang -offset indent
+\&.It Em Hanged
+labels appear similar to tagged lists when the
+label is smaller than the label width.
+\&.It Em Longer hanged list labels
+blend in to the paragraph unlike
+tagged paragraph labels.
+\&.El
+.Ed
+.Pp
+.
 .It Fl ohang
+Lists with overhanging tags don't use indentation for the items; tags are
+written to a separate line.
+.Pp
+.Bl -ohang -offset indent
+.It Sy SL
+sleep time of the process (seconds blocked)
+.It Sy PAGEIN
+number of disk
+.Tn I/O Ns 's
+resulting from references by the process
+to pages not loaded in core.
+.It Sy UID
+numerical user-id of process owner
+.It Sy PPID
+numerical id of parent of process priority
+(non-positive when in non-interruptible wait)
+.El
+.Pp
+.
+The raw text:
+.
+.Bd -literal -offset indent
+\&.Bl -ohang -offset indent
+\&.It Sy SL
+sleep time of the process (seconds blocked)
+\&.It Sy PAGEIN
+number of disk
+\&.Tn I/O Ns 's
+resulting from references by the process
+to pages not loaded in core.
+\&.It Sy UID
+numerical user-id of process owner
+\&.It Sy PPID
+numerical id of parent of process priority
+(non-positive when in non-interruptible wait)
+\&.El
+.Ed
+.Pp
+.
 .It Fl inset
-These list-types collect arguments specified with the
-.Ql \&.It
-macro and create a label which may be
-.Em inset
-into the forthcoming text,
-.Em hanged
-from the forthcoming text,
-.Em overhanged
-from above and not indented or
-.Em tagged .
-This
-list was constructed with the
-.Ql Fl ohang
-list-type.
-The
-.Ql \&.It
-macro is parsed only for the inset, hang
-and tag list-types and is not callable.
 Here is an example of inset labels:
 .Bl -inset -offset indent
 .It Em Tag
-The tagged list (also called a tagged paragraph) is the
-most common type of list used in the Berkeley manuals.
+The tagged list (also called a tagged paragraph)
+is the most common type of list used in the
+Berkeley manuals.
 Use a
 .Fl width
 attribute as described below.
@@ -2697,87 +2929,70 @@ manuals to other formats.
 .El
 .Pp
 Here is the source text which produced the above example:
+.
 .Bd -literal -offset indent
 \&.Bl -inset -offset indent
 \&.It Em Tag
-\&The tagged list (also called a tagged paragraph) is the
-\&most common type of list used in the Berkeley manuals.
+The tagged list (also called a tagged paragraph)
+is the most common type of list used in the
+Berkeley manuals.
 \&.It Em Diag
-\&Diag lists create section four diagnostic lists
-\&and are similar to inset lists except callable
-\&macros are ignored.
+Diag lists create section four diagnostic lists
+and are similar to inset lists except callable
+macros are ignored.
 \&.It Em Hang
-\&Hanged labels are a matter of taste.
+Hanged labels are a matter of taste.
 \&.It Em Ohang
-\&Overhanging labels are nice when space is constrained.
+Overhanging labels are nice when space is constrained.
 \&.It Em Inset
-\&Inset labels are useful for controlling blocks of
-\&paragraphs and are valuable for converting
+Inset labels are useful for controlling blocks of
+paragraphs and are valuable for converting
 \&.Nm \-mdoc
-\&manuals to other formats.
+manuals to other formats.
 \&.El
 .Ed
 .Pp
-Here is a hanged list with just one item:
-.Bl -hang -offset indent
-.It Em Hanged
-labels appear similar to tagged lists when the
-label is smaller than the label width.
-.It Em Longer hanged list labels
-blend in to the paragraph unlike
-tagged paragraph labels.
+.
+.It Fl column
+This list type generates multiple columns.
+The number of columns and the width of each column is determined by the
+arguments to the
+.Fl column
+list.
+Each
+.Ql .It
+argument is parsed to make a row, each column within the row is a separate
+argument separated by a tab or the
+.Ql .Ta
+macro.
+.Pp
+The table:
+.
+.Bl -column -offset indent String Nroff Troff
+.It Sy String Ta Sy Nroff Ta Sy Troff
+.It Li <= Ta <= Ta \*(<=
+.It Li >= Ta >= Ta \*(>=
 .El
 .Pp
-And the unformatted text which created it:
+.
+was produced by:
+.
 .Bd -literal -offset indent
-\&.Bl -hang -offset indent
-\&.It Em Hanged
-\&labels appear similar to tagged lists when the
-\&label is smaller than the label width.
-\&.It Em Longer hanged list labels
-\&blend in to the paragraph unlike
-\&tagged paragraph labels.
+\&.Bl -column -offset indent String Nroff Troff
+\&.It Sy String Ta Sy Nroff Ta Sy Troff
+\&.It Li <= Ta <= Ta \e*(<=
+\&.It Li >= Ta >= Ta \e*(>=
 \&.El
 .Ed
-.Pp
-The tagged list which follows uses a width specifier to control
-the width of the tag.
-.Pp
-.Bl -tag -width "PAGEIN" -compact -offset indent
-.It SL
-sleep time of the process (seconds blocked)
-.It PAGEIN
-number of disk
-.Tn I/O Ns 's
-resulting from references
-by the process to pages not loaded in core.
-.It UID
-numerical user-id of process owner
-.It PPID
-numerical id of parent of process process priority
-(non-positive when in non-interruptible wait)
 .El
 .Pp
-The raw text:
-.Bd -literal -offset indent
-\&.Bl -tag -width "PAGEIN" -compact -offset indent
-\&.It SL
-\&sleep time of the process (seconds blocked)
-\&.It PAGEIN
-\&number of disk
-\&.Tn I/O Ns 's
-\&resulting from references
-\&by the process to pages not loaded in core.
-\&.It UID
-\&numerical user-id of process owner
-\&.It PPID
-\&numerical id of parent of process process priority
-\&(non-positive when in non-interruptible wait)
-\&.El
-.Ed
-.Pp
-Acceptable width specifiers:
-.Bl -tag -width Ar -offset indent
+.
+\#
+\#=====================================================================
+\#
+Other keywords:
+.
+.Bl -tag -xwidth ".Fl width Ar \&Fl" -offset indent
 .It Fl width Ar "\&Fl"
 sets the width to the default width for a flag.
 All callable
@@ -2817,35 +3032,7 @@ This effectively
 means that
 .Fl width
 is required for the tag list type.
-.Pp
-.It Fl column
-This list type generates multiple columns.
-The number of columns and the width of each column is determined by
-the arguments to the
-.Fl column
-list.
-Each
-.Ql ".It"
-argument is parsed to make a row, each column within the
-row is a separate argument separated by a tab or the
-.Ql ".Ta"
-macro.
-.El
-The table:
-.Bl -column "String" "Nroff" "Troff" -offset indent
-.It Sy "String" Ta Sy "Nroff" Ta Sy "Troff"
-.It Li "<=" Ta \&<\&= Ta \*(<=
-.It Li ">=" Ta \&>\&= Ta \*(>=
-.El
-.Pp
-was produced by:
-.Bd -literal -offset indent
-\&.Bl -column "String" "Nroff" "Troff" -offset indent
-\&.It Sy "String" Ta Sy "Nroff" Ta Sy "Troff"
-\&.It Li "<=" Ta \&<\&= Ta \*(<=
-\&.It Li ">=" Ta \&>\&= Ta \*(>=
-\&.El
-.Ed
+.
 .Sh PREDEFINED STRINGS
 The following strings are predefined as may be used by
 preceding with the troff string interpreting sequence
@@ -2877,7 +3064,7 @@ The interpreting sequence may be used any where in the text.
 .It Li "Ge" Ta >= Ta \*(Ge
 .It Li "Lt" Ta < Ta \*(Gt
 .It Li "Gt" Ta > Ta \*(Lt
-.It Li "Pm" Ta +- Ta \*(Pm
+.It Li "Pm" Ta +\- Ta \*(Pm
 .It Li "If" Ta infinity Ta \*(If
 .It Li "Na" Ta \fINaN\fP Ta \*(Na
 .It Li "Ba" Ta \fR\&|\fP Ta \*(Ba
@@ -2971,6 +3158,7 @@ artificially created problem (a flag argument
 which should be
 .Ql \e&aC
 in order to work):
+.
 .Bd -literal -offset indent
 \&.Db on
 \&.Op Fl aC Ar file )
@@ -2978,6 +3166,7 @@ in order to work):
 .Ed
 .Pp
 The resulting output:
+.
 .Bd -literal -offset indent
 DEBUGGING ON
 DEBUG(argv) MACRO: `.Op'  Line #: 2
@@ -3020,11 +3209,13 @@ argument list as it was read.
 In this next example, the offending
 .Ql \&aC
 is escaped:
+.
 .Bd -literal -offset indent
 \&.Db on
 \&.Em An escaped \e&aC
 \&.Db off
 .Ed
+.
 .Bd -literal -offset indent
 DEBUGGING ON
 DEBUG(fargv) MACRO: `.Em'  Line #: 2
@@ -3069,7 +3260,7 @@ files unsuitable for hardcopy.
 There is a register named
 .Ql \&cR
 which can be set to zero in the site dependent style file
-.Pa /usr/src/share/tmac/doc-nroff
+.Pa /usr/\:src/\:share/\:tmac/\:doc-nroff
 to restore the old style behavior.
 .Sh FILES
 .Bl -tag -width /usr/share/misc/mdoc.template -compact
