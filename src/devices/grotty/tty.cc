@@ -69,8 +69,10 @@ static unsigned char bold_underline_mode = BOLD_MODE|UNDERLINE_MODE;
 #define SGR_NO_ITALIC CSI "23m"
 #define SGR_UNDERLINE CSI "4m"
 #define SGR_NO_UNDERLINE CSI "24m"
-#define SGR_DEFAULT_COLOR CSI "39m"
-#define SGR_BACK_DEFAULT_COLOR CSI "49m"
+// many terminals can't handle `CSI 39 m' and `CSI 49 m' to reset
+// the foreground and bachground color, respectively; thus we use
+// `CSI 0 m' exclusively
+#define SGR_DEFAULT CSI "0m"
 
 #define TTY_MAX_COLORS 8
 #define DEFAULT_COLOR_IDX TTY_MAX_COLORS
@@ -429,8 +431,21 @@ void tty_printer::put_char(unsigned int wc)
 
 void tty_printer::put_color(unsigned char color_index, int back)
 {
-  if (color_index == DEFAULT_COLOR_IDX)
-    color_index = 9;
+  if (color_index == DEFAULT_COLOR_IDX) {
+    putstring(SGR_DEFAULT);
+    // set bold and underline again
+    if (is_bold)
+      putstring(SGR_BOLD);
+    if (is_underline) {
+      if (italic_flag)
+	putstring(SGR_ITALIC);
+      else
+	putstring(SGR_UNDERLINE);
+    }
+    // set other color again
+    back = !back;
+    color_index = back ? curr_back_idx : curr_fore_idx;
+  }
   putstring(CSI);
   if (back)
     putchar('4');
@@ -577,20 +592,11 @@ void tty_printer::end_page(int page_length)
       put_char(p->code);
       hpos++;
     }
-    if (!old_drawing_scheme) {
-      if (is_underline) {
-	if (italic_flag)
-	  putstring(SGR_NO_ITALIC);
-	else
-	  putstring(SGR_NO_UNDERLINE);
-      }
-      if (is_bold)
-	putstring(SGR_NO_BOLD);
-      if (curr_fore_idx != DEFAULT_COLOR_IDX)
-	putstring(SGR_DEFAULT_COLOR);
-      if (curr_back_idx != DEFAULT_COLOR_IDX)
-	putstring(SGR_BACK_DEFAULT_COLOR);
-    }
+    if (!old_drawing_scheme
+	&& (is_bold || is_underline
+	    || curr_fore_idx != DEFAULT_COLOR_IDX
+	    || curr_back_idx != DEFAULT_COLOR_IDX))
+      putstring(SGR_DEFAULT);
     putchar('\n');
   }
   if (form_feed_flag) {
