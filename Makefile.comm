@@ -96,12 +96,18 @@ extraclean: distclean
 	-rm -f \#* *~ =* core junk grot old temp tmp tem
 
 .SUFFIXES:
-.SUFFIXES: .o .cc .c .y .man .n
+.SUFFIXES: .o .obj .cc .c .y .man .n
 
 .cc.o:
 	$(COMPILE.cc) $<
 
 .c.o:
+	$(COMPILE.c) $<
+
+.cc.obj:
+	$(COMPILE.cc) $<
+
+.c.obj:
 	$(COMPILE.c) $<
 
 .y.cc:
