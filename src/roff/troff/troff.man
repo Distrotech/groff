@@ -2,11 +2,11 @@
 .ig
 troff.man
 
-Last update : 13 Nov 2001
+Last update : 9 Jan 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+Copyright (C) 1989, 2000, 2001, 2002 Free Software Foundation, Inc.
 
 written by James Clark
 
@@ -29,6 +29,16 @@ FDL in the main directory of the groff source package.
 .\" --------------------------------------------------------------------
 .
 .mso www.tmac
+.
+.if n \{\
+.  mso tty-char.tmac
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.\}
+.
+.if '\*[.T]'dvi' \
+.  ftr CB CW
 .
 .de TQ
 .br
@@ -94,6 +104,7 @@ its parameter.
 This manual page describes the GNU version of
 .BR troff .
 It is part of the groff document formatting system.
+.
 It is functionally compatible with UNIX troff, but has many extensions,
 see
 .BR \%groff_diff (@MAN7EXT@).
@@ -116,7 +127,9 @@ approximation of the typeset output.
 .TP
 .B \-b
 Print a backtrace with each warning or error message.
+.
 This backtrace should help track down the cause of the error.
+.
 The line numbers given in the backtrace may not always be correct, for
 .BR @g@troff 's
 idea of line numbers gets confused by
@@ -178,7 +191,8 @@ is scanned before all other font directories.
 .
 .TP
 .B \-i
-Read the standard input after all the named input files have been processed.
+Read the standard input after all the named input files have been
+processed.
 .
 .TP
 .BI \-m name
@@ -187,6 +201,7 @@ Read in the file
 If it isn't found, try
 .BI tmac. name
 instead.
+.
 It will be first searched for in directories given with the
 .B \-M
 command line option, then in directories given in the
@@ -200,6 +215,7 @@ mode), the home directory, @SYSTEMMACRODIR@, @LOCALMACRODIR@, and
 Search directory (or directory path)
 .I dir
 for macro files.
+.
 This is scanned before all other macro directories.
 .
 .TP
@@ -261,6 +277,7 @@ rather than the default
 .TP
 .B \-U
 Unsafe mode.
+.
 This will enable the following requests:
 .BR open ,
 .BR opena ,
@@ -270,6 +287,7 @@ and
 .BR pi .
 For security reasons, these potentially dangerous requests are disabled
 otherwise.
+.
 It will also add the current directory to the macro search path.
 .
 .TP
@@ -283,6 +301,7 @@ Enable warning
 Available warnings are described in the section
 .I WARNINGS
 below.
+.
 For example, to enable all warnings, use
 .B \-w
 .BR all .
@@ -310,6 +329,7 @@ Suppress formatted output.
 The warnings that can be given by
 .B @g@troff
 are divided into the following categories.
+.
 The name associated with each warning is used by the
 .B \-w
 and
@@ -344,44 +364,25 @@ _
 .ta \nxuR
 .
 .TP \nxu+3n
+.BR break "\t4"
+In fill mode, lines which could not be broken so that their length was
+less than the line length.
+.
+This is enabled by default.
+.
+.TP
 .BR char "\t1"
 Non-existent characters.
+.
 This is enabled by default.
 .
 .TP
-.BR number "\t2"
-Invalid numeric expressions.
-This is enabled by default.
-.
-.TP
-.BR break "\t4"
-In fill mode, lines which could not be broken so that their length was less
-than the line length.
-This is enabled by default.
+.BR color "\t524288"
+Color related warnings.
 .
 .TP
 .BR delim "\t8"
 Missing or mismatched closing delimiters.
-.
-.TP
-.BR el "\t16"
-Use of the
-.B el
-request with no matching
-.B ie
-request.
-.
-.TP
-.BR scale "\t32"
-Meaningless scaling indicators.
-.
-.TP
-.BR range "\t64"
-Out of range arguments.
-.
-.TP
-.BR syntax "\t128"
-Dubious syntax in numeric expressions.
 .
 .TP
 .BR di "\t256"
@@ -392,60 +393,24 @@ or
 without an argument when there is no current diversion.
 .
 .TP
-.BR mac "\t512"
-Use of undefined strings, macros and diversions.
-When an undefined string, macro or diversion is used, that string is
-automatically defined as empty.
-So, in most cases, at most one warning will be given for each name.
-.
-.TP
-.BR reg "\t1024"
-Use of undefined number registers.
-When an undefined number register is used, that register is automatically
-defined to have a value of\~0.
-So, in most cases, at most one warning will be given for use of a particular
-name.
-.
-.TP
-.BR tab "\t2048"
-Inappropriate use of a tab character.
-Either use of a tab character where a number was expected, or use of tab
-character in an unquoted macro argument.
-.
-.TP
-.BR right-brace "\t4096"
-Use of
-.B \e}
-where a number was expected.
-.
-.TP
-.BR missing "\t8192"
-Requests that are missing non-optional arguments.
-.
-.TP
-.BR input "\t16384"
-Illegal input characters.
+.BR el "\t16"
+Use of the
+.B el
+request with no matching
+.B ie
+request.
 .
 .TP
 .BR escape "\t32768"
 Unrecognized escape sequences.
-When an unrecognized escape sequence is encountered, the escape character is
-ignored.
 .
-.TP
-.BR space "\t65536"
-Missing space between a request or macro and its argument.
-This warning will be given when an undefined name longer than two characters
-is encountered, and the first two characters of the name make a defined
-name.
-The request or macro will not be invoked.
-When this warning is given, no macro is automatically defined.
-This is enabled by default.
-This warning will never occur in compatibility mode.
+When an unrecognized escape sequence is encountered, the escape
+character is ignored.
 .
 .TP
 .BR font "\t131072"
 Non-existent fonts.
+.
 This is enabled by default.
 .
 .TP
@@ -453,11 +418,83 @@ This is enabled by default.
 Illegal escapes in text ignored with the
 .B ig
 request.
-These are conditions that are errors when they do not occur in ignored text.
+.
+These are conditions that are errors when they do not occur in ignored
+text.
 .
 .TP
-.BR color "\t524288"
-Color related warnings.
+.BR input "\t16384"
+Illegal input characters.
+.
+.TP
+.BR mac "\t512"
+Use of undefined strings, macros and diversions.
+.
+When an undefined string, macro or diversion is used, that string is
+automatically defined as empty.
+.
+So, in most cases, at most one warning will be given for each name.
+.
+.TP
+.BR missing "\t8192"
+Requests that are missing non-optional arguments.
+.
+.TP
+.BR number "\t2"
+Invalid numeric expressions.
+.
+This is enabled by default.
+.
+.TP
+.BR range "\t64"
+Out of range arguments.
+.
+.TP
+.BR reg "\t1024"
+Use of undefined number registers.
+.
+When an undefined number register is used, that register is
+automatically defined to have a value of\~0.
+.
+So, in most cases, at most one warning will be given for use of a
+particular name.
+.
+.TP
+.BR right-brace "\t4096"
+Use of
+.B \[rs]}
+where a number was expected.
+.
+.TP
+.BR scale "\t32"
+Meaningless scaling indicators.
+.
+.TP
+.BR space "\t65536"
+Missing space between a request or macro and its argument.
+.
+This warning will be given when an undefined name longer than two
+characters is encountered, and the first two characters of the name
+make a defined name.
+.
+The request or macro will not be invoked.
+.
+When this warning is given, no macro is automatically defined.
+.
+This is enabled by default.
+.
+This warning will never occur in compatibility mode.
+.
+.TP
+.BR syntax "\t128"
+Dubious syntax in numeric expressions.
+.
+.TP
+.BR tab "\t2048"
+Inappropriate use of a tab character.
+Either use of a tab character where a number was expected, or use of tab
+character in an unquoted macro argument.
+.
 .P
 There are also names that can be used to refer to groups of warnings:
 .
@@ -465,7 +502,7 @@ There are also names that can be used to refer to groups of warnings:
 .B all
 All warnings except
 .BR di ,
-.B mac
+.BR mac ,
 and
 .BR reg .
 It is intended that this covers all warnings that are useful with
@@ -486,11 +523,10 @@ All warnings.
 A colon separated list of directories in which to search for
 macro files.
 .B @g@troff
-will scan directories given in
-the
+will scan directories given in the
 .B \-M
-option before these, and in standard directories (current directory if in
-unsafe mode, home directory,
+option before these, and in standard directories (current directory if
+in unsafe mode, home directory,
 .BR @LOCALMACRODIR@ ,
 .BR @SYSTEMMACRODIR@ ,
 .BR @MACRODIR@ )
@@ -553,6 +589,7 @@ are neither searched in the current nor in the home directory by
 default for security reasons (even if the
 .B \-U
 option is given).
+.
 Use the
 .B \-M
 command line option or the
@@ -565,11 +602,12 @@ necessary.
 .SH AUTHOR
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 1989, 2001 Free Software Foundation, Inc.
+Copyright (C) 1989, 2001, 2002 Free Software Foundation, Inc.
 .
 .P
 This document is distributed under the terms of the FDL (GNU Free
 Documentation License) version 1.1 or later.
+.
 You should have received a copy of the FDL on your system, it is also
 available on-line at the
 .URL "GNU copyleft site" http://www.gnu.org/copyleft/fdl.html .
@@ -582,6 +620,7 @@ and
 This document is part of
 .IR groff ,
 the GNU roff distribution.
+.
 .
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
@@ -614,6 +653,7 @@ The differences of the
 language and the
 .I classical troff
 language.
+.
 Currently, this is the most actual document of the
 .I groff
 system.
