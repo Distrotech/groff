@@ -39,9 +39,9 @@ const int BLOCK_SIZE = 1024;
 // the table will increase in size as necessary
 // the size will be chosen from the following array
 // add some more if you want
-// I think it unlikely that we'll need more than a million symbols
 static const unsigned int table_sizes[] = { 
-101, 503, 1009, 2003, 3001, 4001, 5003, 10007, 20011, 40009, 80021, 160001, 500009, 1000003, 0 
+  101, 503, 1009, 2003, 3001, 4001, 5003, 10007, 20011, 40009, 80021,
+  160001, 500009, 1000003, 1500007, 2000003, 0 
 };
 const double FULL_MAX = 0.3;	// don't let the table get more than this full
 

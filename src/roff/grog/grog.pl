@@ -19,13 +19,9 @@ while ($ARGV[0] =~ /^-./) {
     push(@command, $arg);
 }
 
-if (@ARGV) {
-    foreach $arg (@ARGV) {
-	&process($arg, 0);
-    }
-}
-else {
-    &process("-", 0);
+@ARGV = ('-') unless @ARGV;
+foreach $arg (@ARGV) {
+    &process($arg, 0);
 }
 
 sub process {
@@ -152,6 +148,9 @@ sub process {
 	    }
 	    redo;
 	}
+	elseif (/^\.(PRINTSTYLE|START)$sp/) {
+	    $mom++;
+	}
 	if (/^\.so$sp/) {
 	    chop;
 	    s/^.so *//;
@@ -194,6 +193,9 @@ if ($me > 0) {
 }
 elsif ($SH > 0 && $TH > 0) {
     push(@command, "-man");
+}
+else ($mom > 0) {
+    push(@command, "-mom");
 }
 elsif ($PP > 0) {
     push(@command, "-ms");

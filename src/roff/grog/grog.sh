@@ -71,6 +71,7 @@ egrep -h "^\.(\[|\])|((P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|.* Oo|Oc|.* O
 		Oo--
 	}
 }
+/^\.(PRINTSTYLE|START)/ { mom++ }
 
 END {
 	if (files ~ /^-/)
@@ -91,6 +92,8 @@ END {
 		printf " -me"
 	else if (SH > 0 && TH > 0)
 		printf " -man"
+	else if (mom > 0)
+		printf " -mom"
 	else if (PP > 0)
 		printf " -ms"
 	else if (P > 0 || mm > 0)

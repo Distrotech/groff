@@ -527,6 +527,7 @@ AC_DEFUN(GROFF_MKSTEMP,
 AC_LANG_PUSH(C++)
 AC_LIBSOURCE(mkstemp.cc)
 AC_TRY_LINK([#include <stdlib.h>
+#include <unistd.h>
 int (*f) (char *);],
 [f = mkstemp;],
 AC_MSG_RESULT(yes);AC_DEFINE(HAVE_MKSTEMP, 1,
