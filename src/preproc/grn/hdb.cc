@@ -247,6 +247,8 @@ DBGetType(register char *s)
   default:
     fatal("unknown element type");
   }
+
+  return 0;				/* never reached */
 }
 
 #ifdef UW_FASTSCAN

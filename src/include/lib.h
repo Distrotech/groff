@@ -58,7 +58,7 @@ inline int illegal_input_char(int c)
 }
 
 #ifndef HAVE_STRCASECMP
-#  define	strcasecmp(a,b)	strcmp((a),(b))
+#define strcasecmp(a,b) strcmp((a),(b))
 #endif
 
 #ifdef HAVE_CC_LIMITS_H
