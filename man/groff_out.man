@@ -615,6 +615,13 @@ Move
 .unit u
 horizontally to the right.
 .
+.I [54]
+allows negative values for
+.I n
+also, but
+.I groff
+doesn't use this.
+.
 .command mc "cyan magenta yellow"
 Set color for glyphs and line drawing using the CMY color scheme,
 where all arguments are integers between 0 and \n[@maxcolor] with black
@@ -748,6 +755,13 @@ basic units\~\c
 down
 .RI ( n
 is a non-negative integer).
+.
+.I [54]
+allows negative values for
+.I n
+also, but
+.I groff
+doesn't use this.
 .
 .command w
 Informs about a paddable white space to increase readability.
@@ -1156,7 +1170,7 @@ escape sequence
 In
 .I classical troff
 output, the writing of a single character was mostly done by a very
-strange command that combined a horizontal move and the printing of an
+strange command that combined a horizontal move and the printing of a
 character.
 .
 It didn't have a command code, but is represented by a 3-character
@@ -1189,9 +1203,11 @@ because the width of the characters can become much larger than two
 decimal digits.
 .
 In groff, this is only used for the devices
-.B X75
+.BR X75 ,
+.BR X75-12 ,
+.BR X100 ,
 and
-.BR X100 .
+.B X100-12 .
 .
 For other devices,
 the commands
