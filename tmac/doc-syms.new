@@ -1,0 +1,273 @@
+.\" Copyright (c) 1991 The Regents of the University of California.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"      This product includes software developed by the University of
+.\"      California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)doc-syms 5.6 (Berkeley) 8/5/91
+.\"
+.\"     %beginstrip%
+.
+.\" NS Ux user macro
+.\" NS   print UNIX
+.\" NS
+.\" NS width register `.Ux' defined in doc-common
+.\" NS
+.\" NS local variable:
+.\" NS   doc-str-Ux
+.
+.de Ux
+.  nr cF \n[.f]
+.  nr cZ \n[.s]
+.  ds doc-str-Ux \&\f[\n[cF]]\s[\n[cZ]]
+.  as doc-out-string \&\*[doc-Tn-font-size]UNIX\*[doc-str-Ux]
+.
+.  if (\n[doc-args-processed] == 0) \{\
+.    if (\n[.$] > 0) .doc-parse-args \$1 \$2 \$3 \$4 \$5 \$6 \$7 \$8 \$9
+.  \}
+.
+.  ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie "\*[doc-type\n[doc-arg-ptr]]"macro" \{\
+.      \*[doc-arg\n[doc-arg-ptr]]
+.    \}
+.    el .doc-print-recursive
+.  \}
+.  el .doc-print-and-reset
+..
+.
+.
+.\" NS Bx user macro
+.\" NS   print BSD UNIX (fix smaller nroff version)
+.\" NS
+.\" NS width register `.Bx' defined in doc-common
+.\" NS
+.\" NS local variable:
+.\" NS   doc-str-Bx
+.
+.de Bx
+.  nr cF \n[.f]
+.  nr cZ \n[.s]
+.  ds doc-str-Bx \&\f[\n[cF]]\s[\n[cZ]]
+.
+.  if (\n[doc-args-processed] == 0) \{\
+.    ie (\n[.$] == 0) \&\*[doc-Tn-font-size]BSD\*[doc-str-Bx] \*[doc-Tn-font-size]UNIX\*[doc-str-Bx]
+.    el .doc-parse-args \$1 \$2 \$3 \$4 \$5 \$6 \$7 \$8 \$9
+.  \}
+.
+.  if "\$1"-alpha" \{\
+.    nop \&currently in alpha test.
+.    doc-clean-vectors
+.  \}
+.
+.  if "\$1"-beta" \{\
+.    nop \&currently in beta test.
+.    doc-clean-vectors
+.  \}
+.
+.  if "\$1"-devel" \{\
+.    nop \&currently under development.
+.    doc-clean-vectors
+.  \}
+.
+.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.    nr doc-arg-ptr +1
+.    ie "\*[doc-type\n[doc-arg-ptr]]"string" \{\
+.      as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]\&\*[doc-Tn-font-size]BSD\*[doc-str-Bx]
+.      ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.        nr jj (\n[doc-arg-ptr] + 1)
+.        ie "\*[doc-type\n[jj]]"string" \{\
+.          if "\*[doc-arg\n[jj]]"Reno" \{\
+.            nr doc-arg-ptr +1
+.            as doc-out-string \&\-Reno
+.          \}
+.          if "\*[doc-arg\n[jj]]"reno" \{\
+.            nr doc-arg-ptr +1
+.            as doc-out-string \&\-Reno
+.          \}
+.
+.          if "\*[doc-arg\n[jj]]"Tahoe" \{\
+.            nr doc-arg-ptr +1
+.            as doc-out-string \&\-Tahoe
+.          \}
+.          if "\*[doc-arg\n[jj]]"tahoe" \{\
+.            nr doc-arg-ptr +1
+.            as doc-out-string \&\-Tahoe
+.          \}
+.
+.          ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.            nr doc-arg-ptr +1
+.            doc-print-recursive
+.          \}
+.          el .doc-print-and-reset
+.        \}
+.        el \{\
+.          nr doc-arg-ptr +1
+.          doc-print-recursive
+.        \}
+.        rr jj
+.      \}
+.      el .doc-print-and-reset
+.    \}
+.    el \{\
+.      as doc-out-string \&\*[doc-Tn-font-size]BSD\*[doc-str-Bx] U\*[doc-Tn-font-size]NIX\*[doc-str-Bx]
+.      doc-print-recursive
+.    \}
+.  \}
+..
+.
+.
+.\" NS Ud user macro
+.\" NS   print "currently under development" (HISTORY section)
+.\" NS
+.\" NS width register `.Ud' defined in doc-common
+.
+.de Ud
+.  nop \&currently under development.
+..
+.
+.
+.\" NS At user macro
+.\" NS   print AT&T UNIX
+.\" NS
+.\" NS width register `.At' defined in doc-common
+.\" NS
+.\" NS local variable:
+.\" NS   doc-str-At
+.
+.de At
+.  nr cF \n[.f]
+.  nr cZ \n[.s]
+.  ds doc-str-At \&\f[\n[cF]]\s[\n[cZ]]
+.
+.  if (\n[.$] == 2) \{\
+.    if "\$1"32v" \&Version 32V \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
+.    if "\$1"v6" \&Version 6 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
+.    if "\$1"v7" \&Version 7 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]\$2
+.    if "\$1"V" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
+.    if "\$1"V.1" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V.1 \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
+.    if "\$1"V.4" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V.4 \*[doc-Tn-font-size]UNIX\*[doc-str-At]\$2
+.  \}
+.
+.  if (\n[.$] == 1) \{\
+.    if "\$1"32v" \&Version 32V \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.    if "\$1"v6" \&Version 6 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.    if "\$1"v7" \&Version 7 \*[doc-Tn-font-size]AT&T UNIX\*[doc-str-At]
+.    if "\$1"V" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.    if "\$1"V.1" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V.1 \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.    if "\$1"V.4" \&\*[doc-Tn-font-size]AT&T\*[doc-str-At] System V.4 \*[doc-Tn-font-size]UNIX\*[doc-str-At]
+.  \}
+..
+.
+.
+.\" The Bt macro should go away now
+.
+.\" NS Bt user macro
+.\" NS   print "is currently in beta test." (HISTORY section)
+.\" NS
+.\" NS width register `.Bt' defined in doc-common
+.
+.de Bt
+.  nop \&is currently in beta test.
+..
+.
+.
+.\" NS St macro - standards (posix, ansi - formal standard names)
+.\" NS
+.\" NS width register `.St' defined in doc-common
+.\" NS
+.\" NS local variable:
+.\" NS   doc-str-St
+.
+.ds Px \*[doc-Tn-font-size]POSIX
+.ds Ai \*[doc-Tn-font-size]ANSI
+.
+.de St
+.  if (\n[doc-args-processed] == 0) \{\
+.    ie (\n[.$] == 0) \{\
+.      tm Usage: .St [-p1003.1-88 | -p1003.2 | -ansiC-89 | -iso ] \*[doc-punct-chars] ... (#\n[.c])
+.    \}
+.    el \{\
+.      ds doc-macro-name St
+.      nr doc-arg-ptr 0
+.      ds doc-arg1 \$1
+.      ds doc-arg2 \$2
+.      ds doc-arg3 \$3
+.      ds doc-arg4 \$4
+.      ds doc-arg5 \$5
+.      ds doc-arg6 \$6
+.      ds doc-arg7 \$7
+.      ds doc-arg8 \$8
+.      ds doc-arg9 \$9
+.
+.      nr doc-num-args \n[.$]
+.      doc-parse-arg-vector
+.    \}
+.  \}
+.
+.  if (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.    nr cF \n[.f]
+.    nr cZ \n[.s]
+.    ds doc-str-St \&\f[\n[cF]]\s[\n[cZ]]
+.    nr doc-arg-ptr +1
+.
+.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.1-88" \{\
+.      ds doc-out-string \&\*[doc-Tn-font-size]IEEE Std\*[doc-str-St]1003.1-1988\*[doc-space]
+.      as doc-out-string (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.    \}
+.
+.    if "\*[doc-arg\n[doc-arg-ptr]]"-p1003.2" \{\
+.      ds doc-out-string \&\*[doc-Tn-font-size]IEEE Std\*[doc-str-St]1003.2\*[doc-space]
+.      as doc-out-string (``\*[doc-Tn-font-size]\*[Px]\*[doc-str-St]'')
+.    \}
+.
+.    if "\*[doc-arg\n[doc-arg-ptr]]"-ansiC" \{\
+.      ds doc-out-string \&\*[doc-Tn-font-size]ANSI C\*[doc-str-St]3.159-1989\*[doc-space]
+.      as doc-out-string (``\*[doc-Tn-font-size]ANSI C\*[doc-str-St]'')
+.    \}
+.
+.    if "\*[doc-arg\n[doc-arg-ptr]]"-ansiC-89" \{\
+.      ds doc-out-string \&\*[doc-Tn-font-size]ANSI C\*[doc-str-St]3.159-1989\*[doc-space]
+.      as doc-out-string (``\*[doc-Tn-font-size]ANSI C\*[doc-str-St]'')
+.    \}
+.
+.    if "\*[doc-arg\n[doc-arg-ptr]]"-iso8802-3" \{\
+.      ds doc-out-string \&\*[doc-Tn-font-size]ISO \*[doc-str-St]8802-3: 1989
+.      \" .ds doc-out-string \&\*[doc-Tn-font-size]ISO \*[doc-str-St]8802-3: 1989\*[doc-space]
+.      \" .as doc-out-string (``\*[doc-Tn-font-size]ANSI C\*[doc-str-St]'')
+.    \}
+.
+.    ie (\n[doc-args-processed] > \n[doc-arg-ptr]) \{\
+.      nr doc-arg-ptr +1
+.      doc-print-recursive
+.    \}
+.    el .doc-print-and-reset
+.  \}
+..
+.
+.\" EOF

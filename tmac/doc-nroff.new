@@ -1,0 +1,274 @@
+.\" Copyright (c) 1991 The Regents of the University of California.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"      This product includes software developed by the University of
+.\"      California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)doc-nroff 5.6 (Berkeley) 8/5/91
+.\"
+.\" tmac.mdoc-nroff
+.\"     %beginstrip%
+.\"
+.
+.\" use -rcR=0 to have multiple pages instead of a single, very long page
+.if !rcR .nr cR 1
+.
+.ds doc-caption-font \f[R]
+.ds doc-caption-font2 \f[R]
+.ds doc-Ad-font \f[I]
+.ds doc-Ar-font \f[I]
+.ds doc-Cm-font \f[B]
+.ds doc-Em-font \f[I]
+.ds doc-Er-font \f[R]
+.ds doc-Ev-font \f[R]
+.ds doc-Fa-font \f[I]
+.ds doc-Fd-font \f[B]
+.ds doc-Fl-font \f[B]
+.ds doc-Fn-font \f[B]
+.ds doc-Ft-font \f[I]
+.ds doc-Ic-font \f[B]
+.ds doc-Li-font \f[R]
+.ds doc-Nm-font \f[B]
+.ds doc-No-font \f[R]
+.ds doc-Pa-font \f[I]
+.ds doc-Sh-font \f[B]
+.ds doc-Sy-font \f[B]
+.ds doc-Sx-font \f[I]
+.ds doc-Tn-font-shape \f[R]
+.ds doc-Tn-font-size
+.ds doc-Va-font \f[I]
+.ds doc-Xr-font \f[R]
+.
+.ds doc-left-parenthesis \f[R]\|(\f[P]
+.ds doc-right-parenthesis \f[R]\|)\f[P]
+.ds lp \f[R]\|(\f[P]
+.ds rp \f[R]\|)\f[P]
+.ds doc-left-bracket \f[R]\|[\|\f[P]
+.ds doc-right-bracket \f[R]\|]\f[P]
+.
+.\" MISCELLANEOUS
+.ds doc-punct-chars {\ .\ ,\ ;\ :\ (\ )\ [\ ]}
+.nr doc-subheader-indent .5i
+.nr doc-paragraph-space 1v
+.
+.ds doc-digit-string \0\0
+.ec
+.nr doc-digit-width \w'\0\0'u
+.eo
+.
+.
+.de doc-setup-page-layout
+.  ie \n[cR] .nr doc-header-space 0
+.  el .nr doc-header-space .5i
+.  nr doc-footer-space .5i
+.
+.  ll 78n
+.  lt 78n
+.  po 0i
+.
+.  nr doc-display-vertical 1v
+.  ad l
+.  na
+..
+.
+.
+.ds <= \&<\&=
+.ds >= \&>\&=
+.
+.\" Lq and Rq are `official'
+.ds Rq ''
+.ds Lq ``
+.ds ua ^
+.ds aa \'
+.ds ga \`
+.ds doc-left-singlequote `
+.ds doc-right-singlequote '
+.\" q is `official'
+.ds q \&"
+.
+.\" Math stuff -- all macro names are `official'
+.ds Pi pi
+.ds Ne !=
+.ds Le <=
+.ds Ge >=
+.ds Lt <
+.ds Gt >
+.ds Pm +-
+.ds If infinity
+.ds Na \f[I]NaN\f[P]
+.ds Ba \f[R]|\f[P]
+.
+.de doc-setup-header
+.  nr % 1
+.  ds doc-header-string \*[doc-document-title]
+.  if !"\*[doc-section]"Null" \{\
+.    as doc-header-string \|(\|\*[doc-section]\|)
+.  \}
+.
+.  ie \n[cR] .doc-header
+.  el \{\
+.    wh 0 doc-header
+.    wh -1.167i doc-footer
+.  \}
+.
+.  if ((\n[nl] == 0) : (\n[nl] == -1)) 'bp
+.
+.  em doc-end-macro
+..
+.
+.
+.ec
+.nr doc-fixed-width \w'0'
+.eo
+.
+.
+.\" NS doc-get-width macro
+.\" NS   computes the width of a string as a multiple of `doc-fixed-width':
+.\" NS   `.doc-get-width string'
+.\" NS
+.\" NS modifies:
+.\" NS   doc-width
+.
+.de doc-get-width
+.  nr doc-width \w\$1
+.  ie (\n[doc-width] >= \n[doc-fixed-width]) \{\
+.    ie (\n[doc-width] % \n[doc-fixed-width]) \{\
+.      nr doc-width ((\n[doc-width] / \n[doc-fixed-width]) + 1)
+.    \}
+.    el .nr doc-width (\n[doc-width] / \n[doc-fixed-width])
+.  \}
+.  el .nr doc-width 0
+..
+.
+.
+.\" NS doc-get-arg-width macro
+.\" NS   computes the width of an argument as a multiple of
+.\" NS   `doc-fixed-width': `.doc-get-arg-width arg-index'
+.\" NS
+.\" NS modifies:
+.\" NS   doc-width
+.
+.de doc-get-arg-width
+.  nr doc-width \w\*[doc-arg\$1]
+.  ie (\n[doc-width] >= \n[doc-fixed-width]) \{\
+.    ie (\n[doc-width] % \n[doc-fixed-width]) \{\
+.      nr doc-width ((\n[doc-width] / \n[doc-fixed-width]) + 1)
+.    \}
+.    el .nr doc-width (\n[doc-width] / \n[doc-fixed-width])
+.  \}
+.  el .nr doc-width 0
+..
+.
+.
+.\" NS Ql macro
+.\" NS   quoted literal define
+.\" NS
+.\" NS width register `.Ql' set in doc-common
+.
+.de Ql
+.  if (\n[doc-args-processed] == 0) \{\
+.    ds doc-macro-name Ql
+.    ds doc-arg1 \$1
+.    ds doc-arg2 \$2
+.    ds doc-arg3 \$3
+.    ds doc-arg4 \$4
+.    ds doc-arg5 \$5
+.    ds doc-arg6 \$6
+.    ds doc-arg7 \$7
+.    ds doc-arg8 \$8
+.    ds doc-arg9 \$9
+.
+.    nr doc-num-args \n[.$]
+.    doc-parse-arg-vector
+.  \}
+.
+.  ds doc-quote-left \&\*[doc-left-singlequote]
+.  ds doc-quote-right \&\*[doc-right-singlequote]
+.
+.  doc-enclose-string \$1 \$2 \$3 \$4 \$5 \$6 \$7 \$8 \$9
+..
+.
+.
+.\" NS Sh macro
+.\" NS   section headers
+.\" NS
+.\" NS width register `.Sh' set in doc-common
+.\" NS
+.\" NS doc-in-synopsis-section register - Section Header SYNOPSIS flag
+.\" NS doc-in-files-section register - Section Header FILES flag
+.\" NS doc-in-see-also-section register - Section Header SEE ALSO flag
+.\" NS doc-in-standards-section register - Section Header STANDARDS flag
+.
+.de Sh
+.  nr doc-in-synopsis-section 0
+.  nr doc-indent-synopsis 0
+.
+.  ie "\$1"NAME" \{\
+.    doc-setup-header
+'    in 0
+.  \}
+.  el \{\
+.    nr doc-in-synopsis-section 0
+.    nr doc-in-see-also-section 0
+.    nr doc-in-files-section 0
+.    nr doc-in-standards-section 0
+.    nr doc-in-authors-section 0
+.
+.    if "\$1"SEE" .nr doc-in-see-also-section 1
+.    if "\$1"FILES" .nr doc-in-files-section 1
+.    if "\$1"STANDARDS" .nr doc-in-standards-section 1
+.    if "\$1"SYNOPSIS" .nr doc-in-synopsis-section 1
+.
+.    if "\$1"DESCRIPTION" \{\
+.      rr fB
+.      rr Fb
+.      ds Fb
+.      nr fY 0
+.      nr fZ 0
+.    \}
+.
+.    if "\$1"AUTHORS" .nr doc-in-authors-section 1
+.
+.    in 0
+.  \}
+.
+.  doc-setup-page-layout
+'  sp
+.  ns
+.  ta .5i 1i 1.5i 2i 2.5i 3i 3.5i 4i 4.5i 5i 5.5i 6i 6.5i
+.  if !\n[cR] .ne 3
+'  fi
+.  nop \&\*[doc-Sh-font]\$1 \|\$2 \|\$3 \|\$4 \|\$5 \|\$6 \|\$7 \|\$8 \|\$9
+.  nop \&\f[P]\s[0]\&
+.
+.  in (\n[.i]u + \n[doc-subheader-indent]u)
+.
+.  ns
+..
+.
+.\" EOF

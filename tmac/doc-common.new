@@ -1,0 +1,560 @@
+.\" Copyright (c) 1991 The Regents of the University of California.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"      This product includes software developed by the University of
+.\"      California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)doc-common 5.7 (Berkeley) 8/5/91
+.\"
+.\"     %beginstrip%
+.
+.eo
+.
+.
+.nr %A 1
+.nr %B 1\" ?
+.nr %D 1\" ?
+.nr %J 1
+.nr %N 1
+.nr %O 1
+.nr %P 1\" ?
+.nr %Q 1\" ?
+.nr %R 1
+.nr %T 1
+.nr %V 1
+.nr Ac 3
+.nr Ad 12n
+.nr An 12n
+.nr Ao 12n
+.nr Ap 2
+.nr Aq 12n
+.nr Ar 12n
+.nr At 8n\" ?
+.nr Bc 3
+.nr Bd 8n\" ?
+.nr Bf 8n\" ?
+.nr Bk 8n\" ?
+.nr Bl 1
+.nr Bo 12n
+.nr Bq 12n
+.nr Bt 8n\" ?
+.nr Bx 12n
+.nr Cd 12n
+.nr Cm 10n
+.nr D1 8n\" ?
+.nr Dc 3
+.nr Dl 8n\" ?
+.nr Dt 8n\" ?
+.nr Do 10n
+.nr Dq 12n
+.nr Dv 12n
+.nr Ec 3
+.nr Ed 8n\" ?
+.nr Ef 8n\" ?
+.nr Ek 8n\" ?
+.nr El 1
+.nr Em 10n
+.nr Eo 12n
+.nr Eq 12n
+.nr Er 12n
+.nr Ev 15n
+.nr Ex 10n
+.nr Fa 12n
+.nr Fc 3
+.nr Fd 12n\" ?
+.nr Fl 10n
+.nr Fn 16n
+.nr Fo 16n
+.nr Fr 12n\" ?
+.nr Ft 8n\" ?
+.nr Hf 8n\" ?
+.nr Ic 10n
+.nr It 8n\" ?
+.nr Li 16n
+.nr Lp 8n\" ?
+.nr Ms 6n
+.nr Nd 8n\" ?
+.nr Nm 10n
+.nr No 12n
+.nr Ns 2
+.nr Oc 3
+.nr Oo 10n
+.nr Op 14n
+.nr Or 6n\" ?
+.nr Os 6n\" ?
+.nr Ot 8n\" ?
+.nr Pa 32n
+.nr Pc 3
+.nr Pf 12n
+.nr Po 12n
+.nr Pp 8n\" ?
+.nr Pq 12n
+.nr Re 8n\" ?
+.nr Rs 8n\" ?
+.nr Qc 3
+.nr Ql 16n
+.nr Qo 12n
+.nr Qq 12n
+.nr Rv 1
+.nr Sc 3
+.nr Sf 8n\" ?
+.nr Sh 8n\" ?
+.nr Sm 8n\" ?
+.nr So 12n
+.nr Sq 12n
+.nr Ss 8n\" ?
+.nr St 8n\" ?
+.nr Sx 16n
+.nr Sy 6n
+.nr Ta 1
+.nr Tn 10n
+.nr Ud 8n\" ?
+.nr Ux 10n
+.nr Va 12n
+.nr Vt 8n\" ?
+.nr Xc 3
+.nr Xo 1
+.nr Xr 10n
+.
+.nr doc-display-indent 6n
+.
+.\" space strings
+.ds doc-soft-space \& \&
+.ds doc-hard-space \&\ \&
+.
+.\" punctuation values
+.ds z. punct-suffix
+.ds z, punct-suffix
+.ds z: punct-suffix
+.ds z; punct-suffix
+.ds z( punct-prefix
+.ds z) punct-suffix
+.ds z[ punct-prefix
+.ds z] punct-suffix
+.
+.\" Matching pairs
+.ds z( z)
+.ds z[ z]
+.ds z< z>
+.
+.\" This is disgusting, troff does not parse ``if'' stmt properly
+.ds z0
+.ds z1
+.ds z2
+.ds z3
+.ds z4
+.ds z5
+.ds z6
+.ds z7
+.ds z8
+.ds z9
+.ds z#
+.
+.
+.\" Header assembly macros
+.
+.\" NS Dt user macro
+.\" NS   document title
+.\" NS
+.\" NS width register `.Dt' set above
+.
+.de Dt
+.  ds doc-document-title UNTITLED
+.  ds doc-volume LOCAL
+.  ds doc-section Null
+.
+.  if !"\$1"" .ds doc-document-title \$1
+.  if !"\$2"" \{\
+.    ds doc-section \$2
+.    \" .if "\$3"" \{\
+.    if (\$2 >= 1) .if (\$2 <= 8) \{\
+.      ds doc-volume System Reference Manual
+.      if (\$2 > 1) .if (\$2 < 6) .ds doc-volume System Programmer's Manual
+.      if "\$2"8" .ds doc-volume System Manager's Manual
+.    \}
+.
+.    if "\$2"unass" .ds doc-volume DRAFT
+.    if "\$2"draft" .ds doc-volume DRAFT
+.    if "\$2"paper" .ds doc-volume UNTITLED
+.    \" .\}
+.  \}
+.
+.  if !"\$3"" \{\
+.    if "\$3"USD" .ds doc-volume User's Supplementary Documents
+.    if "\$3"PS1" .ds doc-volume Programmers's Supplementary Documents
+.    if "\$3"AMD" .ds doc-volume Ancestral Manual Documents
+.    if "\$3"SMM" .ds doc-volume System Manager's Manual
+.    if "\$3"URM" .ds doc-volume Reference Manual
+.    if "\$3"PRM" .ds doc-volume Programmers's Manual
+.    if "\$3"IND" .ds doc-volume Manual Master Index
+.    \" .if "\$3"CON" .ds doc-volume Contributed Software Manual
+.    \" .if "\$3"IMP" .ds doc-volume Implementation Notes
+.    \" .if "\$3"HOW" .ds doc-volume How Pocket Manual
+.    if "\$3"LOCAL" .ds doc-volume Local Manual
+.
+.    if "\$3"tahoe" .as doc-volume \ (Tahoe Architecture)
+.    if "\$3"vax" .as doc-volume \ (VAX Architecture)
+.    if "\$3"hp300" .as doc-volume \ (HP300 Architecture)
+.
+.    if "\*[doc-volume]"LOCAL" .ds doc-volume \$3
+.\}
+..
+.
+.
+.\" NS Os user macro
+.\" NS   operating system (behaviour changes after first call)
+.\" NS
+.\" NS width register `.Os' set above
+.\" NS
+.\" NS local variable:
+.\" NS   doc-str-Os
+.
+.de Os
+.  ds doc-operating-system Null
+.
+.  if "\$1"" \{\
+.    ds doc-operating-system BSD Experimental
+.  \}
+.
+.  if "\$2"" \{\
+.    ds doc-str-Os Non-Null
+.  \}
+.
+.  if "\$1"ATT" \{\
+.    ds doc-operating-system AT&T
+.
+.    if "\$2""    .as doc-operating-system \0UNIX
+.    if "\$2"7th" .as doc-operating-system \07th Edition
+.    if "\$2"7"   .as doc-operating-system \07th Edition
+.    if "\$2"III" .as doc-operating-system \0System III
+.    if "\$2"3"   .as doc-operating-system \0System III
+.    if "\$2"V"   .as doc-operating-system \0System V
+.    if "\$2"V.2" .as doc-operating-system \0System V Release 2
+.    if "\$2"V.3" .as doc-operating-system \0System V Release 3
+.    if "\$2"V.4" .as doc-operating-system \0System V Release 4
+.  \}
+.
+.  if "\$1"BSD" \{\
+.    if "\$2"3"    .ds doc-operating-system 3rd Berkeley Distribution
+.    if "\$2"4"    .ds doc-operating-system 4th Berkeley Distribution
+.    if "\$2"4.1"  .ds doc-operating-system 4.1 Berkeley Distribution
+.    if "\$2"4.2"  .ds doc-operating-system 4.2 Berkeley Distribution
+.    if "\$2"4.3"  .ds doc-operating-system 4.3 Berkeley Distribution
+.    if "\$2"4.3T" .ds doc-operating-system 4.3-Tahoe Berkeley Distribution
+.    if "\$2"4.3R" .ds doc-operating-system 4.3-Reno Berkeley Distribution
+.    if "\$2"4.3t" .ds doc-operating-system 4.3-Tahoe Berkeley Distribution
+.    if "\$2"4.3r" .ds doc-operating-system 4.3-Reno Berkeley Distribution
+.    if "\$2"4.4"  .ds doc-operating-system BSD Experimental
+.  \}
+.
+.  if "\*[doc-operating-system]"Null" .ds doc-operating-system \0\$1
+.  if "\*[doc-str-Os]"Non-Null" .as doc-operating-system \0\$2
+..
+.
+.
+.\" NS Dd user macro
+.\" NS   set document date
+.\" NS
+.\" NS width register `.Dd' set above
+.
+.de Dd
+.  \" XXX why do we need gX?
+.  if !ddoc-date-string .nr gX 1
+.
+.  ie \n[.$] \{\
+.    ie (\n[.$] == 3) \{\
+.      ds doc-date-string \$1 \$2 \$3
+.    \}
+.    el \{\
+.      if "\n[mo]"1" .ds doc-date-string January
+.      if "\n[mo]"2" .ds doc-date-string February
+.      if "\n[mo]"3" .ds doc-date-string March
+.      if "\n[mo]"4" .ds doc-date-string April
+.      if "\n[mo]"5" .ds doc-date-string May
+.      if "\n[mo]"6" .ds doc-date-string June
+.      if "\n[mo]"7" .ds doc-date-string July
+.      if "\n[mo]"8" .ds doc-date-string August
+.      if "\n[mo]"9" .ds doc-date-string September
+.      if "\n[mo]"10" .ds doc-date-string October
+.      if "\n[mo]"11" .ds doc-date-string November
+.      if "\n[mo]"12" .ds doc-date-string December
+.
+.      as doc-date-string \&\ \n[dy], \n[year]
+.    \}
+.  \}
+.  el \{\
+.    ds doc-date-string Epoch
+.  \}
+..
+.
+.
+.de doc-header
+.  ev doc-caption-environment
+.  doc-setup-page-layout
+.  if !\n[cR] 'sp \n[doc-header-space]u
+.  tl @\*[doc-caption-font]\*[doc-header-string]\f[P]@\*[doc-caption-font2]\*[doc-volume]\f[P]@\*[doc-caption-font]\*[doc-header-string]\f[P]@
+'  sp \n[doc-header-space]u
+.  ev
+..
+.
+.
+.de doc-footer
+.  ie \n[cR] 'br
+.  el \{\
+.    ev doc-caption-enviroment
+.    doc-setup-page-layout
+'    sp \n[doc-footer-space]u
+.    tl @\*[doc-caption-font]\*[doc-operating-system]\f[P]@\*[doc-caption-font2]\*[doc-date-string]\f[P]@%@
+'    bp
+.    ev
+.  \}
+.  \" .tm IN 444 doc-footer .k == \n[.k] and nl == \n[nl]
+..
+.
+.
+.de doc-end-macro
+.  fl
+.
+.  if \n[cR] \{\
+'    sp
+.    tl @\*[doc-caption-font]\*[doc-operating-system]\f[P]@\*[doc-caption-font2]\*[doc-date-string]\f[P]@%@
+.    pl \n[nl]u
+.\}
+..
+.
+.
+.\" NS Pp user macro
+.\" NS   new paragraph
+.\" NS
+.\" NS width register `.Pp' set above
+.
+.de Pp
+.  sp \n[doc-paragraph-space]u
+.  if !\n[cR] .ne 2
+.  ns
+..
+.
+.
+.\" NS Lp user macro
+.\" NS   same as .Pp
+.\" NS
+.\" NS width register `.Lp' set above
+.
+.als Lp Pp
+.
+.
+.de LP
+.  tm Not a \-mdoc command: .LP
+..
+.
+.
+.de PP
+.  tm Not a \-mdoc command: .PP
+..
+.
+.
+.de pp
+.  tm Not a \-mdoc command: .pp
+..
+.
+.
+.\" NS Nd user macro
+.\" NS   name description
+.\" NS
+.\" NS width register `.Nd' set above
+.
+.de Nd
+.  nop \&\-\& \$*
+..
+.
+.
+.\" NS Ss user register
+.\" NS   subsection
+.\" NS
+.\" NS width register `.Ss' set above
+.
+.de Ss
+.  sp
+.  if !\n[cR] .ne 2
+.  ti -.25i
+.  nop \&\*[doc-Sh-font]\$1 \|\$2 \|\$3 \|\$4 \|\$5 \|\$6 \|\$7 \|\$8 \|\$9
+.  nop \&\f[P]\s[0]
+.  ta T .5i
+.  if !\n[cR] .ne 2
+.  br
+..
+.
+.
+.de Rd
+.  tm MDOC REGISTER DUMP
+.  tm Db==\n[Db] register DEBUG MODE
+.
+.  tm L[0-9] registers - stack of list types
+.  tm L0==\n[L0]
+.  tm L1==\n[L1]
+.  tm L2==\n[L2]
+.  tm L3==\n[L3]
+.  tm L4==\n[L4]
+.  tm L5==\n[L5]
+.  tm L6==\n[L6]
+.  tm L7==\n[L7]
+.  tm L8==\n[L8]
+.  tm L9==\n[L9]
+.
+.  tm O[0-9] registers - stack of indent
+.  tm O0==\n[O0]
+.  tm O1==\n[O1]
+.  tm O2==\n[O2]
+.  tm O3==\n[O3]
+.  tm O4==\n[O4]
+.  tm O5==\n[O5]
+.  tm O6==\n[O6]
+.  tm O7==\n[O7]
+.  tm O8==\n[O8]
+.  tm O9==\n[O9]
+.
+.  tm doc-args-processed==\n[doc-args-processed] register
+.  tm1 "  arguments processed so far (doc-parse-args/doc-parse-arg-vector)
+.  tm aJ==\n[aJ] register
+.  tm1 "  for doc-skip-punct-backwards
+.  tm aN==\n[aN] register
+.  tm doc-arg-ptr==\n[doc-arg-ptr] register
+.  tm1 "  argument pointer (doc-parse-args)
+.  tm doc-arg-type==\*[doc-arg-type] string
+.  tm1 "  argument type
+.  tm bK==\n[bK] register - Book Name flag
+.  tm cF==\n[cF] register save current font
+.  tm cI==\n[cI] register - column indent width
+.  tm cZ==\n[cZ] register save current font size
+.  tm dK==\n[dK] register - Date flag
+.
+.  tm d[0-9] registers - display-type stack
+.  tm d0==\n[d0]
+.  tm d1==\n[d1]
+.  tm d2==\n[d2]
+.  tm d3==\n[d3]
+.  tm d4==\n[d4]
+.  tm d5==\n[d5]
+.  tm d6==\n[d6]
+.  tm d7==\n[d7]
+.  tm d8==\n[d8]
+.  tm d9==\n[d9]
+.
+.  tm doc-diversion-level==\n[doc-diversion-level] register
+.  tm1 "  diversion count
+.  tm doc-declaration-count==\n[doc-declaration-count] register
+.  tm1 "  subroutine test (in synopsis only)
+.  tm doc-num-args==\n[doc-num-args] register
+.  tm1 "  number of arguments (must set to \n[.$] prior to use)
+.  tm fY==\n[fY] register - dick with old style function declarations (fortran)
+.  tm doc-function-count==\n[doc-function-count] register
+.  tm1 "  also subroutine count (in synopsis only)
+.
+.  tm iI==\n[iI] local register (indent for inline debug mode)
+.  tm iN==\n[iN] register DEBUG MODE (inline if 1, to stderr if 0)
+.  tm doc-indent-synopsis==\n[doc-indent-synopsis] register
+.  tm1 "  indent second command line in a synopsis
+.  tm jK==\n[jK] register - [reference] Journal Name flag
+.  tm jM==\n[jM] local register
+.  tm jN==\n[jN] local register
+.  tm lC==\n[lC] register - list type stack counter
+.  tm lK==\n[lK] register count of lines read from input file
+.  tm nK==\n[nK] register - [reference] issue number flag
+.  tm nU==\n[nU] register count
+.  tm oK==\n[oK] register - [reference] optional information flag
+.  tm doc-nesting-level==\n[doc-nesting-level] register
+.  tm1 "  (extension possible)
+.
+.  tm o[0-9] register offset stack (nested tags)
+.  tm o0==\n[o0]
+.  tm o1==\n[o1]
+.  tm o2==\n[o2]
+.  tm o3==\n[o3]
+.  tm o4==\n[o4]
+.  tm o5==\n[o5]
+.  tm o6==\n[o6]
+.  tm o7==\n[o7]
+.  tm o8==\n[o8]
+.  tm o9==\n[o9]
+.
+.  tm doc-nesting-level==\n[doc-nesting-level] register
+.  tm1 "  open ended line flag
+.  tm pK==\n[pK] register - [reference] page number flag
+.  tm qK==\n[qK] register - Corporate or Foreign Author flag
+.  tm rK==\n[rK] register - [reference] report flag
+.  tm rS==\n[rS] register - Reference Start flag
+.  tm doc-space-mode==\n[doc-space-mode] register
+.  tm1 "  default is one (space mode on)
+.  tm tK==\n[tK] register - reference title flag
+.  tm tP==\n[tP] register tag flag (for diversions)
+.  tm tX==\n[tX] register (initial class)
+.  tm tY==\n[tY] register (next possible lC value)
+.
+.  tm t[0-9] register tag string stack (nested tags)
+.  tm t0==\n[t0]
+.  tm t1==\n[t1]
+.  tm t2==\n[t2]
+.  tm t3==\n[t3]
+.  tm t4==\n[t4]
+.  tm t5==\n[t5]
+.  tm t6==\n[t6]
+.  tm t7==\n[t7]
+.  tm t8==\n[t8]
+.  tm t9==\n[t9]
+.
+.  tm uK==\n[uK] register - reference author(s) counter
+.  tm vK==\n[vK] register - reference volume flag
+.
+.  tm v[0-9] register vertical tag break stack
+.  tm v0==\n[v0]
+.  tm v1==\n[v1]
+.  tm v2==\n[v2]
+.  tm v3==\n[v3]
+.  tm v4==\n[v4]
+.  tm v5==\n[v5]
+.  tm v6==\n[v6]
+.  tm v7==\n[v7]
+.  tm v8==\n[v8]
+.  tm v9==\n[v9]
+.
+.  tm w[0-9] register tag stack (nested tags)
+.  tm w0==\n[w0]
+.  tm w1==\n[w1]
+.  tm w2==\n[w2]
+.  tm w3==\n[w3]
+.  tm w4==\n[w4]
+.  tm w5==\n[w5]
+.  tm w6==\n[w6]
+.  tm w7==\n[w7]
+.  tm w8==\n[w8]
+.  tm w9==\n[w9]
+.
+.  tm END OF REGISTER DUMP
+..
+.
+.\" EOF
