@@ -3223,7 +3223,7 @@ public:
   hyphen_trie() {}
   ~hyphen_trie() {}
   void hyphenate(const char *word, int len, int *hyphens);
-  void read_patterns_file(const char *name);
+  void read_patterns_file(const char *name, int append);
 };
 
 
@@ -3426,9 +3426,10 @@ void hyphen_trie::do_delete(void *v)
   }
 }
   
-void hyphen_trie::read_patterns_file(const char *name)
+void hyphen_trie::read_patterns_file(const char *name, int append)
 {
-  clear();
+  if (!append)
+    clear();
   char buf[WORD_MAX];
   int num[WORD_MAX+1];
   errno = 0;
@@ -3520,16 +3521,26 @@ void hyphenate(hyphen_list *h, unsigned flags)
   }
 }
 
-static void hyphenation_patterns_file()
+static void do_hyphenation_patterns_file(int append)
 {
   symbol name = get_long_name(1);
   if (!name.is_null()) {
     if (!current_language)
       error("no current hyphenation language");
     else
-      current_language->patterns.read_patterns_file(name.contents());
+      current_language->patterns.read_patterns_file(name.contents(), append);
   }
   skip_line();
+}
+
+static void hyphenation_patterns_file()
+{
+  do_hyphenation_patterns_file(0);
+}
+
+static void hyphenation_patterns_file_append()
+{
+  do_hyphenation_patterns_file(1);
 }
 
 class hyphenation_language_reg : public reg {
@@ -3547,5 +3558,6 @@ void init_hyphen_requests()
   init_request("hw", hyphen_word);
   init_request("hla", set_hyphenation_language);
   init_request("hpf", hyphenation_patterns_file);
+  init_request("hpfa", hyphenation_patterns_file_append);
   number_reg_dictionary.define(".hla", new hyphenation_language_reg);
 }
