@@ -60,19 +60,21 @@ int is_prime(unsigned);
 #include <strings.h>
 #endif
 
+#include <stdarg.h>
+
 /* HP-UX 10.20 and LynxOS 4.0.0 don't declare snprintf() */
 #if !defined(HAVE_SNPRINTF) || defined(NEED_DECLARATION_SNPRINTF)
-extern "C" {
-  int snprintf(char *, size_t, const char *, /*args*/ ...);
-}
+extern "C" { int snprintf(char *, size_t, const char *, /*args*/ ...); }
 #endif
 
 /* LynxOS 4.0.0 has snprintf() but no vsnprintf() */
 #if !defined(HAVE_VSNPRINTF) || defined(NEED_DECLARATION_VSNPRINTF)
-#include <stdarg.h>
-extern "C" {
-  int vsnprintf(char *, size_t, const char *, va_list);
-}
+extern "C" { int vsnprintf(char *, size_t, const char *, va_list); }
+#endif
+
+/* LynxOS 4.0.0 doesn't declare vfprintf() */
+#ifdef NEED_DECLARATION_VFPRINTF
+extern "C" { int vfprintf(FILE *, const char *, va_list); }
 #endif
 
 #ifndef HAVE_MKSTEMP
@@ -109,29 +111,21 @@ inline int invalid_input_char(int c)
 
 #ifdef HAVE_STRCASECMP
 #ifdef NEED_DECLARATION_STRCASECMP
-extern "C" {
-  // Ultrix4.3's string.h fails to declare this.
-  int strcasecmp(const char *, const char *);
-}
+// Ultrix4.3's string.h fails to declare this.
+extern "C" { int strcasecmp(const char *, const char *); }
 #endif /* NEED_DECLARATION_STRCASECMP */
 #else /* not HAVE_STRCASECMP */
-extern "C" {
-  int strcasecmp(const char *, const char *);
-}
+extern "C" { int strcasecmp(const char *, const char *); }
 #endif /* HAVE_STRCASECMP */
 
 #if !defined(_AIX) && !defined(sinix) && !defined(__sinix__)
 #ifdef HAVE_STRNCASECMP
 #ifdef NEED_DECLARATION_STRNCASECMP
-extern "C" {
-  // SunOS's string.h fails to declare this.
-  int strncasecmp(const char *, const char *, int);
-}
+// SunOS's string.h fails to declare this.
+extern "C" { int strncasecmp(const char *, const char *, int); }
 #endif /* NEED_DECLARATION_STRNCASECMP */
 #else /* not HAVE_STRNCASECMP */
-extern "C" {
-  int strncasecmp(const char *, const char *, size_t);
-}
+extern "C" { int strncasecmp(const char *, const char *, size_t); }
 #endif /* HAVE_STRNCASECMP */
 #endif /* !_AIX && !sinix && !__sinix__ */
 
