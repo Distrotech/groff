@@ -3231,6 +3231,7 @@ void init_env_requests()
   init_int_env_reg(".f", get_font);
   init_string_env_reg(".fam", get_font_family_string);
   init_string_env_reg(".fn", get_font_name_string);
+  init_int_env_reg(".height", get_char_height);
   init_int_env_reg(".hlc", get_hyphen_line_count);
   init_int_env_reg(".hlm", get_hyphen_line_max);
   init_int_env_reg(".hy", get_hyphenation_flags);
@@ -3252,6 +3253,7 @@ void init_env_requests()
   init_vunits_env_reg(".pvs", get_post_vertical_spacing);
   init_int_env_reg(".rj", get_right_justify_lines);
   init_string_env_reg(".s", get_point_size_string);
+  init_int_env_reg(".slant", get_char_slant);
   init_int_env_reg(".ss", get_space_size);
   init_int_env_reg(".sss", get_sentence_space_size);
   init_string_env_reg(".sr", get_requested_point_size_string);

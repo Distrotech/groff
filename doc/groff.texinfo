@@ -8996,13 +8996,17 @@ necessary in GNU @code{troff}.  Nevertheless, they are supported.
 
 @DefescList {\\H, ', height, '}
 @DefescItem {\\H, ', @t{+}height, '}
-@DefescListEnd {\\H, ', @t{-}height, '}
+@DefescItem {\\H, ', @t{-}height, '}
+@DefregListEnd {.height}
 @cindex changing the font height (@code{\H})
 @cindex font height, changing (@code{\H})
 @cindex height, font, changing (@code{\H})
 Change (increment, decrement) the height of the current font, but not
 the width.  If @var{height} is zero, restore the original height.
 Default scaling indicator is @samp{z}.
+
+The read-only number register @code{.height} contains the font height as
+set by @code{\H}.
 
 Currently, only the @option{-Tps} device supports this feature.
 
@@ -9031,11 +9035,15 @@ points larger than the current font size).
 @endDefesc
 
 @DefescList {\\S, ', slant, '}
+@DefregListEnd {.slant}
 @cindex changing the font slant (@code{\S})
 @cindex font slant, changing (@code{\S})
 @cindex slant, font, changing (@code{\S})
 Slant the current font by @var{slant} degrees.  Positive values slant
 to the right.
+
+The read-only number register @code{.slant} contains the font slant as
+set by @code{\S}.
 
 Currently, only the @option{-Tps} device supports this feature.
 
