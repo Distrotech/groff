@@ -235,8 +235,16 @@ html_table::html_table (simple_output *op, int linelen)
 
 html_table::~html_table ()
 {
+  cols *c;
   if (tab_stops != NULL)
     delete tab_stops;
+  
+  c = columns;
+  while (columns != NULL) {
+    columns = columns->next;
+    free(c);
+    c = columns;
+  }
 }
 
 /*

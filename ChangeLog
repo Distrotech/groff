@@ -1,3 +1,46 @@
+2003-02-20  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Valgrind fixes.
+
+	* src/devices/grohtml/html-table.cc (html_table::~html_table):
+	Deallocate `columns' list.
+	* src/devices/grohtml/post-html.cc (char_block::~char_block):
+	New destructor.
+	(text_glob::text_glob_html, text_glob::text_glob_special,
+	text_glob::text_glob_line, text_glob::text_glob_auto_image,
+	text_glob::text_glob_tag): Avoid memory leaks.
+	(text_glob::remember_table): Free memory before reassigning.
+
+2003-02-19  Werner LEMBERG  <wl@gnu.org>
+
+	Add glyph `+e', greek lunate epsilon symbol, and `-h' (with the
+	alias `hbar'), the Planck constant over two pi.
+
+	* font/devdvi/generate/texmi.map: Use `*e' for position 15 and
+	`+e' for position 34.
+	* font/devdvi/generate/texsy.map: Replace `DI' and `HE' with
+	`u2662' and `u2661'.
+	* font/devdvi/{MI,S}: Regenerated.
+	* font/devhtml/R.proto, font/devutf8/R.proto: Add `+e', `-h', `hbar'.
+	* font/devlbp/*: Add `hbar' alias.
+	* font/devlj4/generate/special.map: Ditto.
+	* font/devlj4/S: Regenerated.
+	* font/devps/generate/symbolchars: Add `+e'.
+	* font/devps/generate/textmap: Fix PS name for `-h'.
+	Add `hbar' alias.
+	* font/devps/symbolmap: Regenerated.
+
+	* src/devices/grops/ps.cc (transform_fill): Removed since unused.
+
+	* src/roff/troff/glyphuni.cc (glyph_to_unicode_list): Add `+e',
+	`-h', `hbar'.
+	* src/roff/troff/uniglyph.cc (unicode_to_glyph_list): Add `+e',
+	`-h'.
+
+	* tmac/X.tmac, tmac/ps.tmac: Provide definitions for `-h' and
+	`hbar'.
+	* tmac/tty-char.tmac: Add `+e'.
+
 2003-02-17  Werner LEMBERG  <wl@gnu.org>
 
 	Another round trying to really fix problems with `have_input'.
@@ -43,7 +86,7 @@
 
 	* src/include/color.h (color): New members `free_list' and `next'.
 	New member functions `new' and `delete'.
-	Add deconstructor.
+	Add destructor.
 	* src/libs/libgroff/color.cc: Implement it.
 
 	* src/libs/libgroff/font.cc (font::add_kern): Use integer cast

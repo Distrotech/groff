@@ -70,11 +70,6 @@ double radians(double d)
   return d*PI/180.0;
 }
 
-inline double transform_fill(int fill)
-{
-  return 1 - fill/double(FILL_MAX);
-}
-
 // This is used for testing whether a character should be output in the
 // PostScript file using \nnn, so we really want the character to be
 // less than 0200.

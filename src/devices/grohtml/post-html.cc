@@ -261,6 +261,7 @@ struct char_block {
 
   char_block();
   char_block(int length);
+  ~char_block();
 };
 
 char_block::char_block()
@@ -274,6 +275,12 @@ char_block::char_block(int length)
   buffer = (char *)malloc(max(length, char_block::SIZE));
   if (buffer == NULL)
     fatal("out of memory error");
+}
+
+char_block::~char_block()
+{
+  if (buffer != NULL)
+    free(buffer);
 }
 
 class char_buffer {
@@ -448,6 +455,7 @@ void text_glob::text_glob_html (style *s, char *str, int length,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
 			       FALSE, FALSE, FALSE, FALSE, 0);
   *this = *g;
+  delete g;
 }
 
 /*
@@ -465,6 +473,7 @@ void text_glob::text_glob_special (style *s, char *str, int length,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
 			       FALSE, FALSE, TRUE, FALSE, 0);
   *this = *g;
+  delete g;
 }
 
 /*
@@ -480,6 +489,7 @@ void text_glob::text_glob_line (style *s,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
 			       FALSE, FALSE, FALSE, TRUE, thickness);
   *this = *g;
+  delete g;
 }
 
 /*
@@ -513,6 +523,7 @@ void text_glob::text_glob_auto_image(style *s, char *str, int length,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
 			       TRUE, TRUE, FALSE, FALSE, 0);
   *this = *g;
+  delete g;
 }
 
 /*
@@ -527,6 +538,7 @@ void text_glob::text_glob_tag (style *s, char *str, int length,
 			       min_vertical, min_horizontal, max_vertical, max_horizontal,
 			       TRUE, FALSE, FALSE, FALSE, 0);
   *this = *g;
+  delete g;
 }
 
 /*
@@ -747,6 +759,8 @@ int text_glob::get_tab_args (char *align)
 
 void text_glob::remember_table (html_table *t)
 {
+  if (tab != NULL)
+    delete tab;
   tab = t;
 }
 
