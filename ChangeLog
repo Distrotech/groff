@@ -1,3 +1,41 @@
+2004-11-25  Werner LEMBERG  <wl@gnu.org>
+
+	* src/utils/xtotroff/xtotroff.c: Reformat to be similar to other
+	groff source files.
+	Include config.h.
+	Include limits.h.
+	Remove X_NOT_STDC_ENV conditional.
+	(Version_string, program_name): New global variables.
+	(groff_flag): Removed.
+	(MapFont): Updated.
+	(usage): Take a stream as argument.
+	Use `program_name'.
+	Update all callers.
+	(main): Add `long_options' array for `--help' and `--version'.
+	Make `-g' a dummy option.
+	Handle `-v' and unknown options.
+	Remove unused `position' variable.
+
+	* src/utils/xtotroff/Makefile.sub (MAN1): Define.
+	(XLIBS): Add LIBGROFF.
+
+	* src/utils/xtotroff/xtotroff.man, src/utils/xtotroff/Makefile.in:
+	New files.
+
+	* src/devices/xditview/Dvi.c (default_font_map): Split into three
+	parts to avoid compiler warning.
+	(resources): Don't initialize with `default_font_map'.
+	(ClassInitialize): Initialize first element of `resources'.
+
+	* src/devices/xditview/Makefile.sub (devdir, xtotroff, DPIS, fonts):
+	Removed.
+
+	* src/utils/lkbib/lkbib.man, src/utils/lookbib/lookbib.man,
+	src/utils/pfbtops/pfbtops.man: Revised, updated.
+
+	* configure.ac: Generate src/utils/xtotroff/Makefile.
+	* configure: Regenerated.
+
 2004-11-24  Werner LEMBERG  <wl@gnu.org>
 
 	First fixes to get produce HTML.

@@ -30,7 +30,7 @@ static char Xrcsid[] = "$XConsortium: Dvi.c,v 1.9 89/12/10 16:12:25 rws Exp $";
 
 /* Private Data */
 
-static char default_font_map[] = "\
+static char default_font_map_1[] = "\
 TR	-adobe-times-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
 TI	-adobe-times-medium-i-normal--*-100-*-*-*-*-iso8859-1\n\
 TB	-adobe-times-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
@@ -39,10 +39,14 @@ CR	-adobe-courier-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
 CI	-adobe-courier-medium-o-normal--*-100-*-*-*-*-iso8859-1\n\
 CB	-adobe-courier-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
 CBI	-adobe-courier-bold-o-normal--*-100-*-*-*-*-iso8859-1\n\
+";
+static char default_font_map_2[] = "\
 HR	-adobe-helvetica-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
 HI	-adobe-helvetica-medium-o-normal--*-100-*-*-*-*-iso8859-1\n\
 HB	-adobe-helvetica-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
 HBI	-adobe-helvetica-bold-o-normal--*-100-*-*-*-*-iso8859-1\n\
+";
+static char default_font_map_3[] = "\
 NR	-adobe-new century schoolbook-medium-r-normal--*-100-*-*-*-*-iso8859-1\n\
 NI	-adobe-new century schoolbook-medium-i-normal--*-100-*-*-*-*-iso8859-1\n\
 NB	-adobe-new century schoolbook-bold-r-normal--*-100-*-*-*-*-iso8859-1\n\
@@ -59,7 +63,7 @@ SS	-adobe-symbol-medium-r-normal--*-100-*-*-*-*-adobe-fontspecific\n\
 static XtResource resources[] = { 
 	{(String)XtNfontMap, (String)XtCFontMap, (String)XtRString,
 	 sizeof (char *), offset(dvi.font_map_string),
-	 (String)XtRString, (XtPointer)default_font_map},
+	 (String)XtRString, NULL /* set in code */},
 	{(String)XtNforeground, (String)XtCForeground, (String)XtRPixel,
 	 sizeof (unsigned long), offset(dvi.foreground),
 	 (String)XtRString, (XtPointer)"XtDefaultForeground"},
@@ -169,6 +173,16 @@ WidgetClass dviWidgetClass = (WidgetClass) &dviClassRec;
 
 static void ClassInitialize (void)
 {
+	int len1 = strlen(default_font_map_1);
+	int len2 = strlen(default_font_map_2);
+	int len3 = strlen(default_font_map_3);
+	char *dfm = XtMalloc(len1 + len2 + len3 + 1);
+	char *ptr = dfm;
+	strcpy(ptr, default_font_map_1); ptr += len1;
+	strcpy(ptr, default_font_map_2); ptr += len2;
+	strcpy(ptr, default_font_map_3);
+	resources[0].default_addr = dfm;
+
 	XtAddConverter( XtRString, XtRBackingStore, XmuCvtStringToBackingStore,
 			NULL, 0 );
 }
