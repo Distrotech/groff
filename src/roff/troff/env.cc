@@ -1095,6 +1095,8 @@ void environment_switch()
     }
   }
   skip_line();
+  curenv->add_node(new glyph_color_node(curenv->get_glyph_color()));
+  curenv->add_node(new fill_color_node(curenv->get_fill_color()));
 }
 
 void environment_copy()
@@ -1123,6 +1125,8 @@ void environment_copy()
   else
     curenv->copy(e);
   skip_line();
+  curenv->add_node(new glyph_color_node(curenv->get_glyph_color()));
+  curenv->add_node(new fill_color_node(curenv->get_fill_color()));
 }
 
 static symbol P_symbol("P");
