@@ -1,3 +1,36 @@
+2001-05-06  Werner LEMBERG  <wl@gnu.org>
+
+	Added two new requests `de1' and `am1' which are similar to `de' and
+	`am' with the difference that compatibility mode is saved on entry,
+	switched off during macro execution, and restored on exit.
+
+	* src/roff/troff/input.h: Added two new special characters
+	(COMPATIBLE_SAVE, COMPATIBLE_RESTORE).
+	* src/roff/troff/input.cc (input_iterator): Added two member
+	functions `save_compatible_flag' and `get_compatible_flag'.
+	(input_stack): Ditto.
+	(string_iterator): Ditto.  Also add private member
+	`saved_compatible_flag'.
+	(token::next): Use COMPATIBLE_SAVE and COMPATIBLE_RESTORE.
+	(calling_mode): New enumeration.
+	(do_define_macro): Use it.  Insert COMPATIBLE_SAVE and
+	COMPATIBLE_RESTORE at the beginning and end of macro, respectively.
+	(define_macro, define_indirect_macro, append_macro, ignore): Use
+	`calling_mode'.
+	(define_nocomp_macro, append_nocomp_macro): New functions.
+	(init_input_requests): Updated.
+	(do_request): Rename local variable `saved_compatible_flag' to
+	`old_compatible_flag'.
+	* NEWS, src/roff/troff/troff.man, man/groff.man: Document it.
+
+	* tmac/an-old.tmac: Use `de1' instead of `de' request for all
+	public and trap-invoked macros.  As a consequence, the man macros
+	work in compatibility mode also.
+
+2001-05-06  Solar Designer  <solar@openwall.com>
+
+	* Makefile.in: Use $(mandir).
+
 2001-05-06  Alexios Zavras <zvr@pobox.com>
 
 	* src/utils/afmtodit/afmtodit.pl: Fix serious typo.

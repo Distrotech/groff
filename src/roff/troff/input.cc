@@ -208,6 +208,8 @@ private:
   virtual int internal_level() { return 0; }
   virtual int is_file() { return 0; }
   virtual int is_macro() { return 0; }
+  virtual void save_compatible_flag(int) {}
+  virtual int get_compatible_flag() { return 0; }
 };
 
 input_iterator::input_iterator()
@@ -408,6 +410,8 @@ public:
   static int get_level();
   static void clear();
   static void pop_macro();
+  static void save_compatible_flag(int);
+  static int get_compatible_flag();
 
   static int limit;
 private:
@@ -626,6 +630,16 @@ void input_stack::pop_macro()
   // Keep while_request happy.
   for (; nboundaries > 0; --nboundaries)
     add_return_boundary();
+}
+
+inline void input_stack::save_compatible_flag(int f)
+{
+  top->save_compatible_flag(f);
+}
+
+inline int input_stack::get_compatible_flag()
+{
+  return top->get_compatible_flag();
 }
 
 void backtrace_request()
@@ -1274,6 +1288,13 @@ void token::next()
     if (cc != escape_char || escape_char == 0) {
     handle_normal_char:
       switch(cc) {
+      case COMPATIBLE_SAVE:
+	input_stack::save_compatible_flag(compatible_flag);
+	compatible_flag = 0;
+	continue;
+      case COMPATIBLE_RESTORE:
+	compatible_flag = input_stack::get_compatible_flag();
+	continue;
       case EOF:
 	type = TOKEN_EOF;
 	return;
@@ -2051,14 +2072,14 @@ static void trapping_blank_line()
 
 void do_request()
 {
-  int saved_compatible_flag = compatible_flag;
+  int old_compatible_flag = compatible_flag;
   compatible_flag = 0;
   symbol nm = get_name();
   if (nm.is_null())
     skip_line();
   else
     interpolate_macro(nm);
-  compatible_flag = saved_compatible_flag;
+  compatible_flag = old_compatible_flag;
 }
 
 inline int possibly_handle_first_page_transition()
@@ -2703,6 +2724,7 @@ class string_iterator : public input_iterator {
   char_block *bp;
   int count;			// of characters remaining
   node *nd;
+  int saved_compatible_flag;
 protected:
   symbol nm;
   string_iterator();
@@ -2712,6 +2734,8 @@ public:
   int peek();
   int get_location(int, const char **, int *);
   void backtrace();
+  void save_compatible_flag(int f) { saved_compatible_flag = f; }
+  int get_compatible_flag() { return saved_compatible_flag; }
 };
 
 string_iterator::string_iterator(const macro &m, const char *p, symbol s)
@@ -3449,11 +3473,12 @@ void handle_initial_title()
 static symbol dot_symbol(".");
 
 enum define_mode { DEFINE_NORMAL, DEFINE_APPEND, DEFINE_IGNORE };
+enum calling_mode { CALLING_NORMAL, CALLING_INDIRECT, CALLING_DISABLE_COMP };
 
-void do_define_macro(define_mode mode, int indirect)
+void do_define_macro(define_mode mode, calling_mode calling)
 {
   symbol nm, term;
-  if (indirect) {
+  if (calling == CALLING_INDIRECT) {
     symbol temp1 = get_name(1);
     if (temp1.is_null()) {
       skip_line();
@@ -3499,6 +3524,8 @@ void do_define_macro(define_mode mode, int indirect)
       mac = *mm;
   }
   int bol = 1;
+  if (calling == CALLING_DISABLE_COMP)
+    mac.append(COMPATIBLE_SAVE);
   for (;;) {
     while (c == ESCAPE_NEWLINE) {
       if (mode == DEFINE_NORMAL || mode == DEFINE_APPEND)
@@ -3528,6 +3555,8 @@ void do_define_macro(define_mode mode, int indirect)
 	    mm = new macro;
 	    request_dictionary.define(nm, mm);
 	  }
+	  if (calling == CALLING_DISABLE_COMP)
+	    mac.append(COMPATIBLE_RESTORE);
 	  *mm = mac;
 	}
 	if (term != dot_symbol) {
@@ -3577,23 +3606,33 @@ void do_define_macro(define_mode mode, int indirect)
 
 void define_macro()
 {
-  do_define_macro(DEFINE_NORMAL, 0);
+  do_define_macro(DEFINE_NORMAL, CALLING_NORMAL);
+}
+
+void define_nocomp_macro()
+{
+  do_define_macro(DEFINE_NORMAL, CALLING_DISABLE_COMP);
 }
 
 void define_indirect_macro()
 {
-  do_define_macro(DEFINE_NORMAL, 1);
+  do_define_macro(DEFINE_NORMAL, CALLING_INDIRECT);
 }
 
 void append_macro()
 {
-  do_define_macro(DEFINE_APPEND, 0);
+  do_define_macro(DEFINE_APPEND, CALLING_NORMAL);
+}
+
+void append_nocomp_macro()
+{
+  do_define_macro(DEFINE_APPEND, CALLING_DISABLE_COMP);
 }
 
 void ignore()
 {
   ignoring = 1;
-  do_define_macro(DEFINE_IGNORE, 0);
+  do_define_macro(DEFINE_IGNORE, CALLING_NORMAL);
   ignoring = 0;
 }
 
@@ -6349,7 +6388,9 @@ void init_input_requests()
   init_request("as", append_string);
   init_request("de", define_macro);
   init_request("dei", define_indirect_macro);
+  init_request("de1", define_nocomp_macro);
   init_request("am", append_macro);
+  init_request("am1", append_nocomp_macro);
   init_request("ig", ignore);
   init_request("rm", remove_macro);
   init_request("rn", rename_macro);
