@@ -179,7 +179,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .ll (u;\\n[LL]*5/6)
 .nr cov*n-au 0
 .HTML-TAG-NS ".tl"
-.nr need_eo_tl 1
 ..
 .de @AU
 .par@reset
@@ -381,7 +380,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .rs
 .sp 3
 .ce 9999
-.if d cov*tl-div .cov*tl-div
+.if d cov*tl-div \{\
+.    cov*tl-div
+.    HTML-TAG-NS ".eo.tl"
+.\}
 .nr cov*i 1
 .nr cov*sp 1v
 .while \\n[cov*i]<=\\n[cov*n-au] \{\

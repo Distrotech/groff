@@ -694,7 +694,8 @@ int text_glob::is_eo_tl (void)
 
 int text_glob::is_nf (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.fi", 12) == 0) &&
+  return is_tag && (strncmp(text_string, "html-tag:.fi",
+			    strlen("html-tag:.fi")) == 0) &&
          (get_arg() == 0);
 }
 
@@ -704,7 +705,8 @@ int text_glob::is_nf (void)
 
 int text_glob::is_fi (void)
 {
-  return( is_tag && (strncmp(text_string, "html-tag:.fi", 12) == 0) &&
+  return( is_tag && (strncmp(text_string, "html-tag:.fi",
+			     strlen("html-tag:.fi")) == 0) &&
 	  (get_arg() == 1) );
 }
 
@@ -723,7 +725,8 @@ int text_glob::is_eo_h (void)
 
 int text_glob::is_ce (void)
 {
-  return is_tag && (strcmp(text_string, "html-tag:.ce") == 0);
+  return is_tag && (strncmp(text_string, "html-tag:.ce",
+			    strlen("html-tag:.ce")) == 0);
 }
 
 /*
@@ -732,7 +735,8 @@ int text_glob::is_ce (void)
 
 int text_glob::is_in (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.in ", strlen("html-tag:.in ")) == 0);
+  return is_tag && (strncmp(text_string, "html-tag:.in ",
+			    strlen("html-tag:.in ")) == 0);
 }
 
 /*
@@ -741,7 +745,8 @@ int text_glob::is_in (void)
 
 int text_glob::is_po (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.po ", strlen("html-tag:.po ")) == 0);
+  return is_tag && (strncmp(text_string, "html-tag:.po ",
+			    strlen("html-tag:.po ")) == 0);
 }
 
 /*
@@ -750,7 +755,8 @@ int text_glob::is_po (void)
 
 int text_glob::is_ti (void)
 {
-  return is_tag && (strncmp(text_string, "html-tag:.ti ", strlen("html-tag:.ti ")) == 0);
+  return is_tag && (strncmp(text_string, "html-tag:.ti ",
+			    strlen("html-tag:.ti ")) == 0);
 }
 
 /*
@@ -2076,6 +2082,8 @@ class html_printer : public printer {
   void handle_state_assertion         (text_glob *g);
   void do_end_para                    (text_glob *g);
   int  round_width                    (int x);
+  void handle_tag_within_title        (text_glob *g);
+  
   // ADD HERE
 
 public:
@@ -2205,6 +2213,20 @@ void html_printer::emit_raw (text_glob *g)
     supress_sub_sup = TRUE;
     restore_troff_indent();
   }
+}
+
+/*
+ *  handle_tag_within_title - handle a limited number of tags within
+ *                            the context of a table. Those tags which
+ *                            set values rather than generate spaces
+ *                            and paragraphs.
+ */
+
+void html_printer::handle_tag_within_title (text_glob *g)
+{
+  if (g->is_in() || g->is_ti() || g->is_po() || g->is_ce() || g->is_ll()
+      || g->is_fi() || g->is_nf())
+    troff_tag(g);
 }
 
 /*
@@ -2353,6 +2375,7 @@ void html_printer::do_title (void)
 	  title.has_been_found = TRUE;
 	  return;
 	} else if (t->is_a_tag()) {
+	  handle_tag_within_title(t);
 	  page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
 	  removed_from_head = ((!page_contents->glyphs.is_empty()) &&
 			       (page_contents->glyphs.is_equal_to_head()));
@@ -2369,7 +2392,8 @@ void html_printer::do_title (void)
 	  removed_from_head = ((!page_contents->glyphs.is_empty()) &&
 			       (page_contents->glyphs.is_equal_to_head()));
 	}
-      } while ((! page_contents->glyphs.is_equal_to_head()) || (removed_from_head));
+      } while ((! page_contents->glyphs.is_equal_to_head()) ||
+	       (removed_from_head));
     }
   }
 }
