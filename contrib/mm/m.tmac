@@ -37,7 +37,7 @@ Index		array!index
 .if \n(.C .ab The groff mm macros do not work in compatibility mode.
 .if (\n[.warn] == 65543) .warn
 .\" ######## init #######
-.\"	Contents level [0:7], contents saved if heading level <= Cl
+.\"	Contents level [0:14], contents saved if heading level <= Cl
 .nr Cl 2
 .\"	Eject page between LIST OF XXXX if Cp == 0
 .nr Cp 0
@@ -66,20 +66,27 @@ Index		array!index
 .nr H5 0 1
 .nr H6 0 1
 .nr H7 0 1
-.\"	Heading break level [0:7]
+.nr H8 0 1
+.nr H9 0 1
+.nr H10 0 1
+.nr H11 0 1
+.nr H12 0 1
+.nr H13 0 1
+.nr H14 0 1
+.\"	Heading break level [0:14]
 .nr Hb 2
-.\"	heading centering level, [0:7]
+.\"	heading centering level, [0:14]
 .nr Hc 0
 .\"	header format
-.ds HF 2 2 2 2 2 2 2
+.ds HF 2 2 2 2 2 2 2 2 2 2 2 2 2 2
 .\"	heading temp. indent [0:2]
 .\"	0 -> 0 indent, left margin
 .\"	1 -> indent to right , like .P 1
 .\"	2 -> indent to line up with text part of preceding heading
 .nr Hi 1
 .\"	header pointsize
-.ds HP 0 0 0 0 0 0 0
-.\"	heading space level [0:7]
+.ds HP 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+.\"	heading space level [0:14]
 .nr Hs 2
 .\"	heading numbering type
 .\"	0 -> multiple (1.1.1 ...)
@@ -930,7 +937,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"
 .\"	clear lower counters
 .nr hd*i 1 1
-.while \\n+[hd*i]<8 .if \\n[hd*level]<\\n[hd*i] .nr H\\n[hd*i] 0 1
+.while \\n+[hd*i]<15 .if \\n[hd*level]<\\n[hd*i] .nr H\\n[hd*i] 0 1
 .\"
 .\" save last text for use in TP
 .if \\n[hd*level]=1 .ds H1txt \\$2\\$3
@@ -962,7 +969,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if \\n[hd*level]>1 .as hd*mark \\n[H2]
 .\"
 .nr hd*i 2 1
-.while \\n+[hd*i]<8 .if \\n[hd*level]>(\\n[hd*i]-1) .as hd*mark .\\n[H\\n[hd*i]]
+.while \\n+[hd*i]<15 .if \\n[hd*level]>(\\n[hd*i]-1) .as hd*mark .\\n[H\\n[hd*i]]
 .if \\n[Ht] .ds hd*mark \\n[H\\n[hd*level]].
 .\"
 .\" special case, no dot after level one heading if not H1dot true
@@ -1076,7 +1083,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"--------
 .de HM
 .nr hd*i 0 1
-.while \\n+[hd*i]<8 .af H\\n[hd*i] \\$[\\n[hd*i]] 1
+.while \\n+[hd*i]<15 .af H\\n[hd*i] \\$[\\n[hd*i]] 1
 ..
 .\"----------------------
 .\" set page-nr, called from header 
@@ -2883,7 +2890,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\}
 .\"	clear lower counters
 .nr app*i 1 1
-.while \\n+[app*i]<8 .nr H\\n[app*i] 0 1
+.while \\n+[app*i]<15 .nr H\\n[app*i] 0 1
 ..
 .\"------------
 .de app@index
