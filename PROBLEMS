@@ -90,6 +90,24 @@ and pager to versions which can handle SGR.
 
 ----------------------------------------------------------------------
 
+* The UTF-8 output of grotty has strange characters for the minus, the
+  hyphen, and the right quote.  Why?
+
+The used Unicode characters (U+2212 for the minus sign and U+2010 for
+the hyphen) are the correct ones, but many programs can't search them
+properly.  The same is true for the right quote (U+201D).  To map those
+characters back to the ASCII characters, insert the following code
+snippet into the `troffrc' configuration file:
+
+.if '\*[.T]'utf8' \{\
+.  char \- \N'45'
+.  char  - \N'45'
+.  char  ' \N'39'
+.\}
+
+
+----------------------------------------------------------------------
+
 * My document says that the current year is 19100, not 2000.
 
 In groff, as in traditional troff, the yr number register yields the

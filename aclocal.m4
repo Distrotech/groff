@@ -213,13 +213,14 @@ AC_LANG_POP(C++)])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_SYS_ERRLIST,
-[AC_MSG_CHECKING([for sys_errlist[] in <errno.h> or <stdio.h>])
+[AC_MSG_CHECKING([for sys_errlist[] in <errno.h>, <stdio.h>, or <stdlib.h>])
 AC_TRY_COMPILE([#include <errno.h>
-#include <stdio.h>],
+#include <stdio.h>
+#include <stdlib.h>],
 [int k; k = (int)sys_errlist[0];],
 AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_ERRLIST, 1,
-			     [Define if you have sys_errlist in <errno.h>
-			      or in <stdio.h>.]),
+			     [Define if you have sys_errlist in <errno.h>,
+			      <stdio.h>, or <stdlib.h>.]),
 AC_MSG_RESULT(no))])dnl
 dnl
 dnl
