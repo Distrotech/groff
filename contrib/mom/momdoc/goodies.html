@@ -10,16 +10,16 @@
 <a href="inlines.html#TOP">Next</a>&nbsp;&nbsp;
 <a href="typesetting.html#TOP">Prev</a>&nbsp;&nbsp;
 <a href="toc.html">Back to Table of Contents</a>
-
+<p>
 <a name="TOP"></a>
 <a name="GOODIES">
-	<h2><u>Goodies</u></h2>
+	<h1 align="center"><u>Goodies</u></h1>
 </a>
-
+<p>
 <a name="INTRO_GOODIES"></a>
 The macros in this section are a collection of useful (and sometimes
-nearly indispensible) routines to simplify typesetting.
-
+nearly indispensable) routines to simplify typesetting.
+<p>
 <a name="INDEX_GOODIES">
 	<h3><u>Goodies list</u></h3>
 </a>
@@ -151,7 +151,7 @@ of your documents, please.
 <strong>EXPERTS:</strong> <strong>ALIAS</strong> is an alias of
 <code>.als</code>.  You can use either, or mix 'n' match with
 impunity.
-<br>
+<p>
 
 <!---SILENT--->
 
@@ -204,7 +204,7 @@ or
 to which you've passed the <strong>J</strong> or <strong>QUAD</strong>
 argument.  You must insert <code>.BR</code> yourself, or risk a
 portion of your text disappearing into a black hole.
-<br>
+<p>
 
 <!---TRAP--->
 
@@ -241,7 +241,7 @@ turns it off (i.e. suspends the trap), and no argument turns it
 Have a look at the <strong>IMPORTANT</strong> sections
 of <strong>EL</strong> and <strong>TN</strong> to see
 <strong>TRAP</strong> in action.
-<br>
+<p>
 
 <!---SMARTQUOTES--->
 
@@ -249,15 +249,20 @@ of <strong>EL</strong> and <strong>TN</strong> to see
 <a name="SMARTQUOTES"><h3><u>Convert typewriter doublequotes to proper doublequotes</u></h3></a>
 <br>
 Macro: <strong>SMARTQUOTES</strong> <var>[&lt;off&gt;] [ ,, | &gt;&gt; | &lt;&lt; ]</var>
+<br>
+or
+<br>
+Macro: <strong>SMARTQUOTES</strong> <var>DA | DE | EN | ES | FR | IT | NL | NO | PT | SV</var>
 
 <p>
-If you <strong>SMARTQUOTES</strong> without an argument,
+If you invoke <strong>SMARTQUOTES</strong> without an argument,
 <strong>mom</strong> converts all instances of the inch-mark,
-(<kbd>"</kbd> --also called a &quot;doublequote&quot;), into
-the appropriate instances of true Anglo-American open-and
-close-doublequotes.  (See the paragraphs on the meaning of the
-optional arguments for how to get SMARTQUOTES to behave correctly
-for non-English quoting styles.)
+(<kbd>"</kbd> -- also called a &quot;doublequote&quot;), into
+the appropriate instances of true Anglo-American open- and
+close-doublequotes.  (See
+<a href="#SQ_INTERNATIONAL">Internationalization</a>
+for how to get SMARTQUOTES to behave correctly for non-English
+quoting styles.)
 <p>
 Typographically, there is a difference between the inch-mark and
 doublequotes -- a BIG difference.  Sadly, typewriters and computer
@@ -268,43 +273,59 @@ typeset copy.  Failure to turn inches into quotes is the first thing
 a professional typesetter notices in documents prepared by amateurs.
 And you don't want to look like an amateur, do you?
 <p>
+<a name="SQ_INTERNATIONAL"><h3>Internationalization</h3></a>
+<p>
 If you invoke <strong>SMARTQUOTES</strong> with one of the optional
-arguments <strong>,,</strong>, <strong>&gt;&gt;</strong> or
-<strong>&lt;&lt;</strong>, you can use <kbd>"</kbd> as &quot;cheap&quot;
+arguments (<kbd>,,</kbd> or <kbd>&gt;&gt;</kbd> or
+<kbd>&lt;&lt;</kbd>) you can use <kbd>&quot;</kbd> as &quot;cheap&quot;
 open- and close-quotes when inputting text in a language other than
 English, and have <strong>mom</strong> convert them, on output,
 into the chosen open- and close-quote style.
 <p>
-<strong>,,</strong>
-opens quotes with &quot;lowered doublequotes&quot; and closes them
-with &quot;raised doublequotes&quot;, as in this ascii
+<kbd>,,</kbd> opens quotes with &quot;lowered doublequotes&quot; and
+closes them with &quot;raised doublequotes&quot;, as in this ascii
 approximation:
 <p>
 <pre>
 	,,Hilfe !``
 </pre>
 
-<strong>&gt;&gt;</strong>
-opens quotes with guillemets pointing to the right, and closes
-them with guillemets pointing to the left, as in this ascii
-approximation:
+<kbd>&gt;&gt;</kbd> opens quotes with guillemets pointing to the
+right, and closes them with guillemets pointing to the left, as in
+this ascii approximation:
 <p>
 <pre>
 	&gt;&gt;Zurück !&lt;&lt;
 </pre>
 
-<strong>&lt;&lt;</strong>
-opens quotes with guillemets pointing to the left, and closes
-them with guillemets pointing to the right, as in this ascii
-approximation:
+<kbd>&lt;&lt;</kbd> opens quotes with guillemets pointing to the
+left, and closes them with guillemets pointing to the right, as in
+this ascii approximation:
 <p>
 <pre>
 	&lt;&lt;Mais monsieur! Je ne suis pas ce genre de fille!&gt;&gt;
 </pre>
 
-Please note: the arguments to <strong>SMARTQUOTES</strong> are
-literal ASCII characters. ,, is two commas, &lt;&lt; is two
-less-than signs and &gt;&gt; is two greater-than signs.
+Please note: the above arguments to <strong>SMARTQUOTES</strong>
+are literal ASCII characters. <kbd>,,</kbd> is two commas,
+<kbd>&lt;&lt;</kbd> is two less-than signs and <kbd>&gt;&gt;</kbd>
+is two greater-than signs.
+<p>
+Alternatively, you can pass <strong>SMARTQUOTES</strong> the
+two-letter, ISO 639 abbreviation for the language you're writing in,
+and <strong>mom</strong> will output the correct quotes.
+<p>
+<pre>
+	.SMARTQUOTES DA     = Danish      &gt;&gt;text&lt;&lt;
+	.SMARTQUOTES DE     = German      ,,text``
+	.SMARTQUOTES ES     = Spanish     ``text´´
+	.SMARTQUOTES FR     = French      &lt;&lt; text &gt;&gt;
+	.SMARTQUOTES IT     = Italian     &lt;&lt; text &gt;&gt;
+	.SMARTQUOTES NL     = Dutch       ´´text´´
+	.SMARTQUOTES NO     = Norwegian   &lt;&lt;text&gt;&gt;
+	.SMARTQUOTES PT     = Portuguese  &lt;&lt;text&gt;&gt;
+	.SMARTQUOTES SV     = Swedish     &gt;&gt;text&gt;&gt;
+</pre>
 <p>
 Turn <strong>SMARTQUOTES</strong> off by passing it any argument
 <em>not</em> in the argument list (e.g. <strong>OFF</strong>,
@@ -349,7 +370,7 @@ the foot- and inch-marks, when you need them, with the
 <a href="definitions.html#TERMS_INLINES">inline escapes</a>
 <strong>\*[FOOT]</strong> and <strong>\*[INCH]</strong>, instead
 of <kbd>'</kbd> and <kbd>"</kbd>.
-<br>
+<p>
 
 <!---CAPS--->
 
@@ -443,7 +464,7 @@ no solution to the occasional problems with justified copy.
 printed, looks fine.  Generally, I recommend using <strong>gv</strong>
 to preview files anyway.  See the section on
 <a href="#PREVIEWING">previewing</a>.
-<br>
+<p>
 
 <!---UNDERSCORE2--->
 
@@ -487,7 +508,7 @@ to <strong>UNDERSCORE2</strong> as to
 <strong>UNDERSCORE</strong>.  See the
 <a href="#NOTES_UNDERSCORE">NOTES</a>
 for <strong>UNDERSCORE</strong>.
-<br>
+<p>
 
 <!---UNDERLINE--->
 
@@ -500,7 +521,7 @@ Macro: <strong>UNDERLINE</strong> <var>toggle</var>
 If your font is Courier, or you're using the document processing macro
 <a href="#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
 <strong>UNDERLINE</strong> allows you to underline words and
-passages that, in typeset copy, would be italicised.  You invoke
+passages that, in typeset copy, would be italicized.  You invoke
 <strong>UNDERLINE</strong> as you do with all toggle macros --
 by itself (i.e. with no argument) to initiate underlining, and
 with any argument to turn underlining off.
@@ -513,7 +534,7 @@ readable copy than a solid underline.
 <a href="definitions.html#TERMS_INLINES">inline</a>
 with the escapes
 <a href="#UL">\*[UL]...\*[ULX].</a>
-<br>
+<p>
 
 <!---UL--->
 
@@ -526,7 +547,7 @@ Inline: <strong>\*[UL]...\*[ULX]</strong>
 If your font is Courier, or you're using the document processing macro
 <a href="#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
 <strong>\*[UL]...\*[ULX]</strong> underlines words and
-passages that, in typeset copy, would be italicised.
+passages that, in typeset copy, would be italicized.
 <p>
 <strong>\*[UL]</strong> underlines all letters, words and numbers
 following it, but not punctuation or spaces.  This makes for more
@@ -691,7 +712,7 @@ this is to use the groff
 <strong>\(lq</strong> and <strong>\(rq</strong> (leftquote and
 rightquote respectively) whenever double-quotes are required in the
 string passed to <strong>PAD</strong>.
-<br>
+<p>
 
 <!---PAD_MARKER--->
 
@@ -717,7 +738,7 @@ Once you've changed the pad marker, the new marker remains in
 effect for every instance of
 <a href="#PAD">PAD</a>
 until you change it again (say, back to the pound sign).
-<br>
+<p>
 
 <!---\*[LEADER]--->
 
@@ -921,7 +942,7 @@ e.g.
 <a href="definitions.html#TERMS_PICASPOINTS">points</a>,
 therefore do not append any
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
-to the argument.  And always be sure to preprend the plus or
+to the argument.  And always be sure to prepend the plus or
 minus sign, depending on whether you want the drop cap larger or
 smaller.
 
@@ -975,7 +996,6 @@ I'm neither a mathematician nor a chemist, so I don't need them.
 Of course, anyone who wishes to contribute a subscript routine to
 <strong>mom</strong> will receive eternal blessings not only in this
 lifetime, but in all lifetimes to come.
-
 <p>
 <hr>
 <a href="inlines.html#TOP">Next</a>&nbsp;&nbsp;

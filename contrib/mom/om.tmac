@@ -23,8 +23,8 @@
 .\"
 .\"
 .\"
-\# Version 1.1.7
-\# -------------
+\# Version 1.1.7-1
+\# ---------------
 \#
 .if (\n[.x]\n[.y] < 118) \
 .  ab You need GNU troff version 1.18 or higher to run this version of mom!
@@ -55,7 +55,6 @@
 .ALIAS    PAGELENGTH      pl
 .ALIAS    NEWPAGE         bp
 .ALIAS    SPREAD          brp
-.ALIAS    STRING          ds
 .ALIAS    ESC_CHAR        ec
 \#
 \# ALIASES FOR NUMBER REGISTERS
@@ -84,9 +83,9 @@
 \# *Arguments:
 \#   none
 \# *Function:
-\#   The .em macro executed at the end of letters.  Turns footers and
-\#   pagination off, terminates and outputs diversion CLOSING, indented with
-\#   the author's name underneath.
+\#   The .em macro executed at the end of letters.  Turns footers
+\#   and pagination off, terminates and outputs diversion CLOSING
+\#   (indented with the author's name underneath).
 \#
 .MAC ALL_DONE END
 .    br
@@ -121,7 +120,7 @@
 \# PAGE WIDTH
 \# ----------
 \# *Argument:
-\#   <width of printer sheet (ipPc)>
+\#   <width of printer sheet>
 \# *Function:
 \#   Stores user supplied page width in register #PAGE_WIDTH.
 \# *Notes:
@@ -139,7 +138,7 @@
 \# L_MARGIN
 \# --------
 \# *Argument:
-\#   <offset from page left (ipPc)>
+\#   <offset from page left>
 \# *Function:
 \#   Stores user supplied page offset in register #L_MARGIN.
 \#   Sets .po to user supplied offset.
@@ -156,7 +155,7 @@
 \# R_MARGIN
 \# --------
 \# *Argument:
-\#   <width of right margin (ipPc)>
+\#   <width of right margin>
 \# *Function:
 \#   Stores user supplied right margin in register #R_MARGIN.
 \# *Notes:
@@ -180,7 +179,7 @@
 \# T_MARGIN
 \# --------
 \# *Argument:
-\#   <distance to advance from top of page (ipPcv)>
+\#   <distance to advance from top of page>
 \# *Function:
 \#   Stores the user supplied top margin in register #T_MARGIN.
 \#   Advances user supplied depth from the top of the page.
@@ -202,7 +201,7 @@
 \# B_MARGIN
 \# --------
 \# *Argument:
-\#   <space to leave at the bottom of the page (ipPcv)>
+\#   <space to leave at the bottom of the page>
 \# *Function:
 \#   Stores the user supplied bottom margin in register #B_MARGIN.
 \# *Notes:
@@ -289,7 +288,7 @@
 \# LINE LENGTH
 \# -----------
 \# *Argument:
-\#   <line length (iPpc)>
+\#   <line length>
 \# *Function:
 \#   Stores user supplied line length in register #L_LENGTH.
 \#   Sets .ll to #L_LENGTHu
@@ -371,6 +370,8 @@
 .END
 \#
 \#
+\# SIZE (inline)
+\# -------------
 \# *Arguments:
 \#   <point size of type>
 \# *Function:
@@ -496,7 +497,7 @@
 \#  turned on.
 \#
 \#  In groff v. 1.17.2, it was not possible to pass arguments to macros that
-\#  were executed with inline escapes, nor thence to evaluate conditional
+\#  were called with inline escapes, nor thence to evaluate conditional
 \#  expressions.  Consequently, each pseudo-escape \[BU<n>] had to be defined
 \#  separately with ".char".
 \#
@@ -510,88 +511,26 @@
 .ds BU   \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*\\$1u)'
 .ds FU   \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*\\$1u)'
 \#
-.ds BU1  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*1u)'
-.ds BU2  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*2u)'
-.ds BU3  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*3u)'
-.ds BU4  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*4u)'
-.ds BU5  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*5u)'
-.ds BU6  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*6u)'
-.ds BU7  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*7u)'
-.ds BU8  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*8u)'
-.ds BU9  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*9u)'
-.ds BU10 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*10u)'
-.ds BU11 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*11u)'
-.ds BU12 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*12u)'
-.ds BU13 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*13u)'
-.ds BU14 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*14u)'
-.ds BU15 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*15u)'
-.ds BU16 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*16u)'
-.ds BU17 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*17u)'
-.ds BU18 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*18u)'
-.ds BU19 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*19u)'
-.ds BU20 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*20u)'
-.ds BU21 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*21u)'
-.ds BU22 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*22u)'
-.ds BU23 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*23u)'
-.ds BU24 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*24u)'
-.ds BU25 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*25u)'
-.ds BU26 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*26u)'
-.ds BU27 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*27u)'
-.ds BU28 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*28u)'
-.ds BU29 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*29u)'
-.ds BU30 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*30u)'
-.ds BU31 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*31u)'
-.ds BU32 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*32u)'
-.ds BU33 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*33u)'
-.ds BU34 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*34u)'
-.ds BU35 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*35u)'
-.ds BU36 \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*36u)'
+\# Initialize strings for pre-1.1.3c-style BU and FU
 \#
+.nr #LOOP 0 1
+.while \n+[#LOOP]<37 \{\
+.   ds BU\n[#LOOP]  \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*\n[#LOOP]u)'
+.\}
 \#
-.ds FU1  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*1u)'
-.ds FU2  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*2u)'
-.ds FU3  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*3u)'
-.ds FU4  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*4u)'
-.ds FU5  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*5u)'
-.ds FU6  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*6u)'
-.ds FU7  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*7u)'
-.ds FU8  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*8u)'
-.ds FU9  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*9u)'
-.ds FU10 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*10u)'
-.ds FU11 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*11u)'
-.ds FU12 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*12u)'
-.ds FU13 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*13u)'
-.ds FU14 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*14u)'
-.ds FU15 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*15u)'
-.ds FU16 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*16u)'
-.ds FU17 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*17u)'
-.ds FU18 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*18u)'
-.ds FU19 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*19u)'
-.ds FU20 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*20u)'
-.ds FU21 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*21u)'
-.ds FU22 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*22u)'
-.ds FU23 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*23u)'
-.ds FU24 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*24u)'
-.ds FU25 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*25u)'
-.ds FU26 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*26u)'
-.ds FU27 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*27u)'
-.ds FU28 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*28u)'
-.ds FU29 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*29u)'
-.ds FU30 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*30u)'
-.ds FU31 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*31u)'
-.ds FU32 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*32u)'
-.ds FU33 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*33u)'
-.ds FU34 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*34u)'
-.ds FU35 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*35u)'
-.ds FU36 \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*36u)'
+.nr #LOOP 0 1
+.while \n+[#LOOP]<37 \{\
+.   ds FU\n[#LOOP]  \h'(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*\n[#LOOP]u)'
+.\}
+.rr #LOOP
 \#
 \#
 \# *Horizontal movements
 \#  BP1...12.75 and FP1...12.75 move backwards or forwards inline by the
 \#  specified number of points.
-\#  Left in for backward compatibility with mom-1.1.3c, the preferred
-\#  methods for inline horizontal movements are now \*[BCK #<unit>] and
-\#  \*[FWD #<unit>].
+\#  Left in for backward compatibility with mom-1.1.3c, the
+\#  preferred methods for inline horizontal movements are now
+\#  \*[BCK <n><unit>] and \*[FWD <n><unit>].
 \#
 .ds BCK  \h'-\\$1\\$2'
 .ds FWD  \h'\\$1\\$2'
@@ -780,7 +719,7 @@
 \# *Arguments:
 \#   <none> | <anything> | DEFAULT
 \#                 or
-\#   LINES <#> | MARGIN <#> | SPACE <#>
+\#   LINES <n> | MARGIN <n> | SPACE <n>
 \# *Function:
 \#   Turns auto hyphenation on or off, resets the hyphenation style
 \#   to default, or permits the setting of various hyphenation
@@ -795,9 +734,9 @@
 \#   above) if that behaviour is desired after changes have been
 \#   made to LINES, MARGIN, or SPACE.
 \#
-\#   HY LINES <#> sets the number of allowable consecutive hyphenated lines.
+\#   HY LINES <n> sets the number of allowable consecutive hyphenated lines.
 \#
-\#   HY MARGIN <#> sets the amount of space (ipPcm) allowed at the end
+\#   HY MARGIN <n> sets the amount of space (ipPcm) allowed at the end
 \#   of a line in QUAD mode before hyphenation is tripped (e.g. if there's
 \#   only 6 points left, groff won't try to hyphenate the next word).
 \#
@@ -864,7 +803,7 @@
 \#   Creates or modifies register #ALD.  Adds user supplied lead
 \#   below current baseline.
 \# *Notes:
-\#   Requires unit of measure ipPcmv.
+\#   Requires a unit of measure.
 \#
 .MAC ALD END
 .    nr #ALD (\\$1)
@@ -880,7 +819,7 @@
 \#   Creates or modifies register #RLD.  Reverses user supplied
 \#   lead above current baseline.
 \# *Notes:
-\#   Requires unit of measure ipPcmv.
+\#   Requires a unit of measure.
 \#
 .MAC RLD END
 .    nr #RLD (\\$1)
@@ -889,10 +828,11 @@
 \#
 \# ALD/RLD STRINGS
 \# ---------------
-\# The strings \*[ALD.25]...\*[ALD12.75] and their corresponding \*[RLD]
-\# forms have been left in for backward compatibility with documents
-\# created using mom-1.1.3c or earlier.  The prefered methods of advancing
-\# and reversing on the page inline are \*[UP #<unit>] and \*[DOWN #<unit>].
+\# The strings \*[ALD.25]...\*[ALD12.75] and their corresponding
+\# \*[RLD] forms have been left in for backward compatibility with
+\# documents created using mom-1.1.3c or earlier.  The prefered
+\# methods of advancing and reversing on the page inline are \*[UP <n><unit>]
+\# and \*[DOWN <n><unit>].
 \#
 .ds DOWN      \v'\\$1\\$2'
 .ds UP        \v'-\\$1\\$2'
@@ -1015,7 +955,7 @@
 \#   Ligatures may be supplied manually with \(fi, \(fl, etc.
 \#
 .MAC LIGATURES END
-.    ie '\\$1''   \{\
+.    ie '\\$1'' \{\
 .       lg
 .       nr #LIGATURES 1
 .    \}
@@ -1029,9 +969,12 @@
 \# SMARTQUOTES
 \# -----------
 \# *Arguments:
-\#   <none> | <anything>
+\#   [ ,, ] | [ << ] | [ >> ] | <anything>
+\#   or
+\#   [ DA | DE | EN | ES | FR | IT | NL | NO | PT | SV ] | <anything>
 \# *Function:
-\#   Turns smartquotes on or off.
+\#   Turns smartquotes on (optionally with a quoting style from the
+\#   argument list, or off).
 \# *Notes:
 \#   The " character is read outside the macro when mom is
 \#   processed.  The strings for open/close ($QUOTE<n>) are then
@@ -1056,24 +999,71 @@
 .       \}
 .       if '\\$1'<<' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fo]\\ 
-.          ds $QUOTE1 \\ \\[Fc]
+.          ds $QUOTE0 \\[Fo]
+.          ds $QUOTE1 \\[Fc]
 .       \}
 .       if '\\$1'>>' \{\
 .          nr #ARGS_TO_SQ 1
-.          ds $QUOTE0 \\[Fc]\\|
-.          ds $QUOTE1 \\|\\[Fo]
+.          ds $QUOTE0 \\[Fc]
+.          ds $QUOTE1 \\[Fo]
+.       \}
+.       if '\\$1'DA' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Fc]
+.          ds $QUOTE1 \\[Fo]
+.       \}
+.       if '\\$1'DE' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Bq]
+.          ds $QUOTE1 \\[lq]
+.       \}
+.       if '\\$1'ES' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[lq]
+.          ds $QUOTE1 \\[rq]
+.       \}
+.       if '\\$1'FR' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Fo]\\|
+.          ds $QUOTE1 \\|\\[Fc]
+.       \}
+.       if '\\$1'IT' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Fo]\\|
+.          ds $QUOTE1 \\|\\[Fc]
+.       \}
+.       if '\\$1'NL' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[rq]
+.          ds $QUOTE1 \\[rq]
+.       \}
+.       if '\\$1'NO' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Fo]
+.          ds $QUOTE1 \\[Fc]
+.       \}
+.       if '\\$1'PT' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Fo]
+.          ds $QUOTE1 \\[Fc]
+.       \}
+.       if '\\$1'SV' \{\
+.          nr #ARGS_TO_SQ 1
+.          ds $QUOTE0 \\[Fc]
+.          ds $QUOTE1 \\[Fc]
 .       \}
 .       if !r#ARGS_TO_SQ \{\
-.       ds $QUOTE0 \\[dq]
-.       ds $QUOTE1 \\[dq]
+.          ds $QUOTE0 \\[dq]
+.          ds $QUOTE1 \\[dq]
 .       \}
 .    \}
 .END
 \#
 .ds $QUOTE0 \[dq]
 .ds $QUOTE1 \[dq]
+\#
 \# Strings for foot and inch marks
+\#
 .ds FOOT \(fm
 .ds INCH \(fm\(fm
 \#
@@ -1110,9 +1100,9 @@
 \# *Argument:
 \#   <none>
 \# *Function:
-\#  Turns fill on and sets .ad to b.
+\#   Turns fill on and sets .ad to b.
 \# *Notes:
-\#  Justifies text left and right.
+\#   Justifies text left and right.
 \#
 .MAC JUSTIFY END
 .    if \\n[#TAB_ACTIVE]=0 \{\
@@ -1191,6 +1181,7 @@
 .    ce 0
 .    nf
 .    nr #FILL 1
+.    if '\\n(.z'LETTERHEAD1' \{ .rr #DATE_FIRST \}
 .END
 \#
 \#
@@ -1271,46 +1262,21 @@
 \# Strings for string tab inlines
 \# ------------------------------
 \#
-.ds ST1 \Ek[#ST1_OFFSET]
-.ds ST2 \Ek[#ST2_OFFSET]
-.ds ST3 \Ek[#ST3_OFFSET]
-.ds ST4 \Ek[#ST4_OFFSET]
-.ds ST5 \Ek[#ST5_OFFSET]
-.ds ST6 \Ek[#ST6_OFFSET]
-.ds ST7 \Ek[#ST7_OFFSET]
-.ds ST8 \Ek[#ST8_OFFSET]
-.ds ST9 \Ek[#ST9_OFFSET]
-.ds ST10 \Ek[#ST10_OFFSET]
-.ds ST11 \Ek[#ST11_OFFSET]
-.ds ST12 \Ek[#ST12_OFFSET]
-.ds ST13 \Ek[#ST13_OFFSET]
-.ds ST14 \Ek[#ST14_OFFSET]
-.ds ST15 \Ek[#ST15_OFFSET]
-.ds ST16 \Ek[#ST16_OFFSET]
-.ds ST17 \Ek[#ST17_OFFSET]
-.ds ST18 \Ek[#ST18_OFFSET]
-.ds ST19 \Ek[#ST19_OFFSET]
+\# Initialize string tab markers numbered 1 to 19.
 \#
-.ds ST1X \Ek[#ST1_MARK]
-.ds ST2X \Ek[#ST2_MARK]
-.ds ST3X \Ek[#ST3_MARK]
-.ds ST4X \Ek[#ST4_MARK]
-.ds ST5X \Ek[#ST5_MARK]
-.ds ST6X \Ek[#ST6_MARK]
-.ds ST7X \Ek[#ST7_MARK]
-.ds ST8X \Ek[#ST8_MARK]
-.ds ST9X \Ek[#ST9_MARK]
-.ds ST10X \Ek[#ST10_MARK]
-.ds ST11X \Ek[#ST11_MARK]
-.ds ST12X \Ek[#ST12_MARK]
-.ds ST13X \Ek[#ST13_MARK]
-.ds ST14X \Ek[#ST14_MARK]
-.ds ST15X \Ek[#ST15_MARK]
-.ds ST16X \Ek[#ST16_MARK]
-.ds ST17X \Ek[#ST17_MARK]
-.ds ST18X \Ek[#ST18_MARK]
-.ds ST19X \Ek[#ST19_MARK]
-\# Reserved ST numbers for internal use
+.nr #LOOP 0 1
+.while \n+[#LOOP]<20 \{\
+.   ds ST\n[#LOOP] \Ek[#ST\n[#LOOP]_OFFSET]
+.\}
+\#
+.nr #LOOP 0 1
+.while \n+[#LOOP]<20 \{\
+.   ds ST\n[#LOOP]X \Ek[#ST\n[#LOOP]_MARK]
+.\}
+.rr #LOOP
+\#
+\#
+\# These are reserved ST numbers for internal use
 .ds ST100  \Ek[#ST100_OFFSET]
 .ds ST100X \Ek[#ST100_MARK]
 .ds ST101  \Ek[#ST101_OFFSET]
@@ -1348,7 +1314,7 @@
 \# TAB SET
 \# -------
 \# *Arguments:
-\#   <#>  ident(ipPcm)  length(ipPcm)  [L | R | C | J [QUAD]]
+\#   <n>  ident(ipPcm)  length(ipPcm)  [L | R | C | J [QUAD]]
 \# *Function:
 \#   Creates macros TABn and TAB n, where "n" is any arbitrary number.
 \#   TABn is a typesetting tab (i.e. a tab defined as an indent
@@ -1390,12 +1356,12 @@
 \#
 \#   If you want tabs to line up bottom-line to bottom-line (most likely
 \#   single line tabs), use .TN (provided the tabs are numbered sequentially).
-\#   Otherwise, you must use .EL then .TAB # if you want them to align.
+\#   Otherwise, you must use .EL then .TAB <n> if you want them to align.
 \#
 \#   If you want to reset tabs, you must use .TQ before .TAB_SET.
 \#
 \#   Note that indents are turned off automatically whenever a new
-\#   tab is called with TAB n.
+\#   tab is called with TAB <n>.
 \#
 \#   Tabs themselves are user-invoked using the TAB macro with a numeric
 \#   argument, e.g. TAB 1.
@@ -2260,7 +2226,6 @@
 .    ds $DROPCAP         \\$1
 .    nr #DC_LINES        \\$2-1
 .    ds $RESTORE_COND    \\*[$COND_PERCENT]
-.    ds $RESTORE_EXT     \\*[$EXT_PERCENT]
 .    if '\\$3'COND'      \{ .CONDENSE \\$4 \}
 .    if '\\$3'EXT'       \{ .EXTEND \\$4 \}
 .    if !r#DC_GUT        \{ .nr #DC_GUT (3p) \}
@@ -2421,11 +2386,12 @@
 \# .IR means "indent right," and so on.
 \#
 \# The first time any of the indent macros is used, it requires an
-\# argument--the size of the indent in ipPcm.  The size may also
-\# be entered using the \w'#' function--very useful for numbered
-\# lists using HI).  The unit of measure is required.  Subsequent
-\# invocations don't require the argument; the indent measure remains the
-\# same until it's changed by invoking the macro with an argument again.
+\# argument--the size of the indent (with a unit of measure).  The
+\# size may also be entered using the \w escape--very useful
+\# for numbered lists using HI.  The unit of measure is required.
+\# Subsequent invocations don't require the argument; the indent
+\# measure remains the same until it's changed by invoking the macro
+\# with an argument again.
 \#
 \# If no indents are in effect, the arguments passed to indent macros are
 \# measured from the left and right margins of the page.  If a left indent
@@ -2435,7 +2401,7 @@
 \# to it, its value will be the value last in effect, unless you pass
 \# it an argument.  If you do pass an argument, it is added to the last
 \# value in effect, unless you cleared the indent with one of
-\# .I<LRB>X macros.
+\# .I<LRB>X/Q macros.
 \#
 \# Example
 \# -------
@@ -3420,7 +3386,7 @@ y\\R'#DESCENDER \\n[.cdp]'
                              \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
                              \\*[$REVISION_STRING] \\*[$REVISION] 
 .                         \}
-.                         el \{
+.                         el \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
                              \\*[$DRAFT_STRING]\\*[$DRAFT], \
@@ -3620,17 +3586,29 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# +++LETTER MACROS+++
 \#
+\# First, create a register to hold incrementing numbers to be
+\# appended to LETTERHEAD.
+\#
+.nr #FIELD 0 1
+\#
 \# DATE
 \# ----
 \# *Arguments:
-\#   <date string>
+\#   <none>
 \# *Function:
-\#   Stores date string in string $DATE.
+\#   Stores date (entered on the line after .DATE) in diversion
+\#   LETTERHEAD<n>
 \#
 .MAC DATE END
-.    nr #DATE 1
-.    di DATE
-.    RIGHT
+.    if !'\\n(.z'' \{ .di \}
+.    di LETTERHEAD\\n+[#FIELD]
+.    ie \\n[#FIELD]=1 \{\
+.       nr #DATE_FIRST 1
+.       RIGHT
+.    \}
+.    el \{\
+.       LEFT
+.    \}
 .END
 \#
 \#
@@ -3639,12 +3617,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# *Arguments:
 \#   <none>
 \# *Function:
-\#  Stores "to" info in diversion TO_ADDRESS.
+\#   Stores addressee address (entered on the line after .TO) in
+\#   diversion LETTERHEAD<n>
 \#
 .MAC TO END
 .    if !'\\n(.z'' \{ .di \}
-.    nr #TO 1
-.    di TO_ADDRESS
+.    di LETTERHEAD\\n+[#FIELD]
 .    LEFT
 .END
 \#
@@ -3654,12 +3632,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# *Arguments:
 \#   <none>
 \# *Function:
-\#  Stores "from" info in diversion FROM_ADDRESS.
+\#   Stores addresser address (entered on the line after .FROM) in
+\#   diversion LETTERHEAD<n>
 \#
 .MAC FROM END
 .    if !'\\n(.z'' \{ .di \}
-.    nr #FROM 1
-.    di FROM_ADDRESS
+.    di LETTERHEAD\\n+[#FIELD]
 .    LEFT
 .END
 \#
@@ -3667,14 +3645,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# GREETING
 \# --------
 \# *Arguments:
-\#   <greeting string>
+\#   <none>
 \# *Function:
-\#   Stores greeting in string $GREETING.
+\#   Stores greeting (entered on the line after .GREETING) in
+\#   diversion LETTERHEAD<n>
 \#
 .MAC GREETING END
 .    if !'\\n(.z'' \{ .di \}
-.    nr #GREETING 1
-.    di GREETING
+.    di LETTERHEAD\\n+[#FIELD]
 .    LEFT
 .END
 \#
@@ -3684,7 +3662,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# *Arguments:
 \#   <closing string>
 \# *Function:
-\#   Stores greeting in string $CLOSING.
+\#   Stores greeting in diversion CLOSING.
 \#
 .MAC CLOSING END
 .    br
@@ -4286,7 +4264,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#DOC_TYPE]=4 \{\
 .          if !'\\n(.z'' \{ .di \}
 .       \}
+.       nr #STORED_PP_INDENT \\n[#PP_INDENT]
+.       PARA_INDENT 0
 .       PP
+.       PARA_INDENT \\n[#STORED_PP_INDENT]u
+.       rr #STORED_PP_INDENT
 .       ie r#ADVANCE_FROM_TOP \{\
 .          sp |\\n[#ADVANCE_FROM_TOP]u-1v
 .          SHIM
@@ -4465,8 +4447,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                    ie \\n[#SINGLE_SPACE] \{ .RLD \\n[#DOC_LEAD]u \}
 .                    el \{ .ALD \\n[#DOC_LEAD]u/2u \}
 .                 \}
-.             \}
 .             vs  \\n[#DOC_LEAD]u
+.             \}
 .             el \{\
 .                ie !d$SUBTITLE \{\
 .                   ie \\n[#SINGLE_SPACE] \{ .RLD \\n[#DOC_LEAD]u*2u \}
@@ -4959,11 +4941,33 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   perfectly flush bottom margins.  Any time SHIM is used, it
 \#   ensures that the next output line falls on a legal baseline.
 \#
+\# First, a little convenience macro
+\#
+.MAC PROCESS_SHIM END
+.    while \\n+[#LEGAL_BASELINE]<\\n[#CURRENT_V_POS] \{\
+.
+.    \}
+.    nr #SHIM \\n[#LEGAL_BASELINE]-\\n[#CURRENT_V_POS]
+.END
+\#
 .MAC SHIM END
 .    nr #CURRENT_V_POS \\n(.d
-.    nr #LEGAL_BASELINE \\n[#T_MARGIN] \\n[#DOC_LEAD]
-.    while \\n+[#LEGAL_BASELINE]<\\n[#CURRENT_V_POS] \{ . \}
-.    nr #SHIM \\n[#LEGAL_BASELINE]-\\n[#CURRENT_V_POS]
+.    nr #LEGAL_BASELINE \\n[#T_MARGIN]-1v \\n[#DOC_LEAD]
+.    ie r#ADVANCE_FROM_TOP \{\
+.       ie \\n[#CURRENT_V_POS]<(\\n[#T_MARGIN]-1v) \{\
+.          while \\n-[#LEGAL_BASELINE]>\\n[#CURRENT_V_POS] \{\
+.
+.          \}
+.          nr #LEGAL_BASELINE +\\n[#DOC_LEAD]
+.          nr #SHIM \\n[#LEGAL_BASELINE]-\\n[#CURRENT_V_POS]
+.       \}
+.       el \{\
+.          PROCESS_SHIM
+.       \}
+.    \}
+.    el \{\
+.       PROCESS_SHIM
+.    \}
 .    ALD \\n[#SHIM]u
 .END
 \#
@@ -5323,7 +5327,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #EPI_LINES \\n[#EPI_DEPTH]/\\n[#EPI_LEAD]
 .    ie \\n[#START] \{\
 .       nr #EPI_WHITESPACE (\\n[#DOC_LEAD]*\\n[#EPI_LINES])-\\n[#EPI_DEPTH]
-.       while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{ .nr #EPI_WHITESPACE -\\n[#DOC_LEAD] \}
+.       while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
+.             nr #EPI_WHITESPACE -\\n[#DOC_LEAD]
+.       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          RLD \\n[#DOC_LEAD]u
 .          if \\n[#EPI_WHITESPACE]<\\n[#DOC_LEAD] \{\
@@ -5338,7 +5344,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ie \\n[#EPI_DEPTH]<\\n[#TRAP_DISTANCE] \{\
 .          nr #EPI_FITS 1
 .          nr #EPI_WHITESPACE (\\n[#DOC_LEAD]*\\n[#EPI_LINES])-\\n[#EPI_DEPTH]
-.          while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{ .nr #EPI_WHITESPACE -\\n[#DOC_LEAD] \}
+.          while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
+.                nr #EPI_WHITESPACE -\\n[#DOC_LEAD]
+.          \}
 .          ie \\n[#PRINT_STYLE]=1 \{\
 .             if \\n[#EPI_WHITESPACE]=\\n[#DOC_LEAD] \{ .ALD \\n[#EPI_WHITESPACE]u/2u \}
 .          \}
@@ -5353,10 +5361,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       el \{\
 .          nr #EPI_LINES_TO_TRAP 0 1
-.          while \\n[#EPI_LEAD]*\\n+[#EPI_LINES_TO_TRAP]<\\n[#TRAP_DISTANCE] \{ .nr #LOOP 1 \}
+.          while \\n[#EPI_LEAD]*\\n+[#EPI_LINES_TO_TRAP]<\\n[#TRAP_DISTANCE] \{\
+.                nr #LOOP 1
+.          \}
 .          nr #EPI_LINES_TO_TRAP -1
 .          nr #EPI_WHITESPACE (\\n[#EPI_LINES_TO_TRAP]*\\n[#DOC_LEAD])-(\\n[#EPI_LINES_TO_TRAP]*\\n[#EPI_LEAD])
-.          while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{ .nr #EPI_WHITESPACE -\\n[#DOC_LEAD] \}
+.          while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
+.                nr #EPI_WHITESPACE -\\n[#DOC_LEAD]
+.          \}
 .          if \\n[#EPI_WHITESPACE]<\\n[#DOC_LEAD] \{ .ALD \\n[#EPI_WHITESPACE]u \}
 .          if \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{ .ALD \\n[#EPI_WHITESPACE]u-\\n[#DOC_LEAD]u \}
 .      \}
@@ -5398,7 +5410,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ie \\n[#FN_FOR_EPI] \{\
 .             nr #EPI_LINES_TO_END 1
 .             nr #EPI_WHITESPACE (\\n[#EPI_LINES_TO_END]*\\n[#DOC_LEAD])-(\\n[#EPI_LINES_TO_END]*\\n[#EPI_LEAD])
-.             while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{ .nr #EPI_WHITESPACE -\\n[#DOC_LEAD] \}
+.             while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
+.                   nr #EPI_WHITESPACE -\\n[#DOC_LEAD]
+.             \}
 .             ALD \\n[#EPI_WHITESPACE]u-(\\n[#DOC_LEAD]u-\\n[#EPI_LEAD]u)
 .          \}
 .          el \{\
@@ -5420,7 +5434,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if \\n[#LOOP] \{. nr #EPI_LINES_TO_END +1 \}
 .          rr #LOOP
 .          nr #EPI_WHITESPACE (\\n[#EPI_LINES_TO_END]*\\n[#DOC_LEAD])-(\\n[#EPI_LINES_TO_END]*\\n[#EPI_LEAD])
-.          while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{ .nr #EPI_WHITESPACE -\\n[#DOC_LEAD] \}
+.          while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
+.                nr #EPI_WHITESPACE -\\n[#DOC_LEAD]
+.          \}
 .          ALD \\n[#EPI_WHITESPACE]u-(\\n[#DOC_LEAD]u-\\n[#EPI_LEAD]u)
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             if !\\n[#SINGLE_SPACE] \{\
@@ -6252,14 +6268,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=1 \{ .LEFT   \}
 .             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=2 \{ .CENTER \}
 .             if \\n[#USERDEF_HDRFTR_VERSO_QUAD]=3 \{ .RIGHT  \}
-.          \}
-.          PRINT \\*[$USERDEF_HDRFTR_VERSO]
-.          EL
-.          if \\n[#FOOTERS_ON] \{\
-.             di NULL
-.             SIZESPECS
-.             nr #HDRFTR_HEIGHT \\n[#CAP_HEIGHT]
-.             di
+.             PRINT \\*[$USERDEF_HDRFTR_VERSO]
+.             EL
+.             if \\n[#FOOTERS_ON] \{\
+.                di NULL
+.                SIZESPECS
+.                nr #HDRFTR_HEIGHT \\n[#CAP_HEIGHT]
+.                di
+.             \}
 .          \}
 .          el \{\
 .             if \\n[#USERDEF_HDRFTR_RECTO_QUAD]=1 \{ .LEFT   \}
@@ -7758,30 +7774,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    br
 .    if \\n[#DOC_TYPE]=4 \{\
 .       if !'\\n(.z'' \{ .di \}
-.       if \\n[#DATE] \{\
-.          nf
-.          DATE
-.          QUAD \\*[$DOC_QUAD]
-.          ALD \\n[#DOC_LEAD]u*2u
-.          rr #DATE
-.       \}
-.       if \\n[#TO] \{\
-.          nf
-.          TO_ADDRESS
-.          ALD \\n[#DOC_LEAD]u
-.          rr #TO
-.       \}
-.       if \\n[#FROM] \{\
-.          nf
-.          FROM_ADDRESS
-.          ALD \\n[#DOC_LEAD]u
-.          rr #FROM
-.       \}
-.       if \\n[#GREETING] \{\
-.          nf
-.          GREETING
-.          ALD \\n[#DOC_LEAD]u
-.          rr #GREETING
+.       nr #TOTAL_FIELDS \\n[#FIELD]
+.       nr #FIELD        0 1
+.       nr #NUM_FIELDS   0 1
+.       if \\n[#TOTAL_FIELDS]>0 \{\
+.          while \\n+[#NUM_FIELDS]<=\\n[#TOTAL_FIELDS] \{\
+.             nf
+.             LETTERHEAD\\n+[#FIELD]
+.             QUAD \\*[$DOC_QUAD]
+.             ALD \\n[#DOC_LEAD]u
+.             if \\n[#DATE_FIRST]=1 \{ .ALD \\n[#DOC_LEAD]u \}
+.             rr #DATE_FIRST
+.             rm LETTERHEAD\\n[#FIELD]
+.          \}
+.          rr #FIELD
+.          rr #NUM_FIELDS
+.          rr #TOTAL_FIELDS
 .       \}
 .    \}
 .    rr #PP_ACTIVE
@@ -8990,8 +8998,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                if \\n[#PRINT_STYLE]=1 \{ .PRINT "(\\n[#FN_NUMBER])\c" \}
 .                if \\n[#PRINT_STYLE]=2 \{ .PRINT "\*[SUP]\\n[#FN_NUMBER]\*[SUPX]\c" \}
 .             \}
-.         \}
-.      \}
+.          \}
+.       \}
 .    \}
 .    el \{\
 .       ie '\\$1'INDENT' \{\
@@ -9047,16 +9055,16 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .          nr #VARIABLE_FOOTER_POS -\\n[#DIVER_DEPTH]
 .          if \\n[#FN_COUNT]=1 \{ .nr #VARIABLE_FOOTER_POS -1v \}
-.          \}
-.          ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
-.          if (\\n(nl+1v)>(\\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS]) \{\
-.             ch FOOTER \\n(nlu+1v
-.          \}
-.          if \\n[#FN_DEFER] \{\
-.             nr #VARIABLE_FOOTER_POS 0-\\n[#B_MARGIN]u
-.             ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
-.          \}
 .       \}
+.       ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
+.       if (\\n(nl+1v)>(\\n[#PAGE_LENGTH]+\\n[#VARIABLE_FOOTER_POS]) \{\
+.          ch FOOTER \\n(nlu+1v
+.       \}
+.       if \\n[#FN_DEFER] \{\
+.          nr #VARIABLE_FOOTER_POS 0-\\n[#B_MARGIN]u
+.          ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
+.       \}
+.    \}
 .    nr #NO_FN_MARKER 0
 .END
 \#
@@ -10629,7 +10637,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# LIST
 \# ----
 \# *Arguments:
-\#   [ BULLET | DASH | DIGIT | ALPHA | USER ] [ <separator> ] [ <off> ]
+\#   [ BULLET | DASH | DIGIT | ALPHA | USER ] [ <separator> ] [ <anything> ]
 \# *Function:
 \#   Stores indent information in effect prior to invocation and
 \#   initializes a list with the supplied enumerator (and separator).
@@ -10640,7 +10648,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   right of another list, every time, unless the default bullet is
 \#   desired.
 \#
-\#   <off> moves back one list level intuitively, or exits lists
+\#   <anything> moves back one list level intuitively, or exits lists
 \#   completely if the level at which it's invoked is the first.
 \#
 .MAC LIST END
@@ -11106,9 +11114,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #LINES_PER_PAGE 0 1
 .       nr #DOC_LEAD_ADJ 0 1
 .       nr #DEPTH_TO_B_MARGIN \\n[#PAGE_LENGTH]-\\n[#B_MARGIN]-1v
-.       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n+[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{ . \}
+.       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n+[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
+.
+.       \}
 .       nr #LINES_PER_PAGE -1
-.       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]+\\n+[#DOC_LEAD_ADJ]*\\n[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{ . \}
+.       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]+\\n+[#DOC_LEAD_ADJ]*\\n[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
+.
+.       \}
 .       DOC_LEAD \\n[#DOC_LEAD]u+\\n[#DOC_LEAD_ADJ]u
 .    \}
 \#  *...or calculate new B_MARGIN based on # of lines (at #DOC_LEAD) that fit
@@ -11116,7 +11128,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    el \{\
 .       nr #LINES_PER_PAGE 0 1
 .       nr #DEPTH_TO_B_MARGIN \\n[#PAGE_LENGTH]-\\n[#B_MARGIN]-1v
-.       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n+[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{ . \}
+.       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n+[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
+.
+.       \}
 .       nr #B_MARGIN \\n[#PAGE_LENGTH]-(\\n[#T_MARGIN]+(\\n[#DOC_LEAD]*\\n[#LINES_PER_PAGE]))
 .    \}
 \#  *Set footer and footnote overflow traps
