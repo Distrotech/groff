@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1910,8 +1910,7 @@ breakpoint *environment::choose_breakpoint()
 
 void environment::hyphenate_line(int start_here)
 {
-  if (line == 0)
-    return;
+  assert(line != 0);
   hyphenation_type prev_type = line->get_hyphenation_type();
   node **startp;
   if (start_here)
@@ -1926,9 +1925,7 @@ void environment::hyphenate_line(int start_here)
   if (*startp == 0)
     return;
   node *tem = *startp;
-  int i = 0;
   do {
-    ++i;
     tem = tem->next;
   } while (tem != 0 && tem->get_hyphenation_type() == HYPHEN_MIDDLE);
   int inhibit = (tem != 0 && tem->get_hyphenation_type() == HYPHEN_INHIBIT);
@@ -1936,8 +1933,9 @@ void environment::hyphenate_line(int start_here)
   hyphen_list *sl = 0;
   tem = *startp;
   node *forward = 0;
+  int i = 0;
   while (tem != end) {
-    sl = tem->get_hyphen_list(sl);
+    sl = tem->get_hyphen_list(sl, &i);
     node *tem1 = tem;
     tem = tem->next;
     tem1->next = forward;
@@ -3288,13 +3286,13 @@ class hyphen_trie : private trie {
   void do_match(int i, void *v);
   void do_delete(void *v);
   void insert_pattern(const char *pat, int patlen, int *num);
-  void insert_hyphenation(dictionary ex, const char *pat, int patlen);
+  void insert_hyphenation(dictionary *ex, const char *pat, int patlen);
   int hpf_getc(FILE *f);
 public:
   hyphen_trie() {}
   ~hyphen_trie() {}
   void hyphenate(const char *word, int len, int *hyphens);
-  void read_patterns_file(const char *name, int append, dictionary ex);
+  void read_patterns_file(const char *name, int append, dictionary *ex);
 };
 
 struct hyphenation_language {
@@ -3462,7 +3460,7 @@ void hyphen_trie::insert_pattern(const char *pat, int patlen, int *num)
   insert(pat, patlen, op);
 }
 
-void hyphen_trie::insert_hyphenation(dictionary ex, const char *pat,
+void hyphen_trie::insert_hyphenation(dictionary *ex, const char *pat,
 				     int patlen)
 {
   char buf[WORD_MAX + 1];
@@ -3483,7 +3481,7 @@ void hyphen_trie::insert_hyphenation(dictionary ex, const char *pat,
     buf[i] = 0;
     unsigned char *tem = new unsigned char[npos + 1];
     memcpy(tem, pos, npos + 1);
-    tem = (unsigned char *)ex.lookup(symbol(buf), tem);
+    tem = (unsigned char *)ex->lookup(symbol(buf), tem);
     if (tem)
       a_delete tem;
   }
@@ -3591,7 +3589,7 @@ fail:
 }
 
 void hyphen_trie::read_patterns_file(const char *name, int append,
-				     dictionary ex)
+				     dictionary *ex)
 {
   if (!append)
     clear();
@@ -3774,7 +3772,7 @@ static void do_hyphenation_patterns_file(int append)
     else
       current_language->patterns.read_patterns_file(
 			  name.contents(), append,
-			  current_language->exceptions);
+			  &current_language->exceptions);
   }
   skip_line();
 }

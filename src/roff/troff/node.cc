@@ -1786,7 +1786,7 @@ public:
   color *get_fill_color();
   void tprint(troff_output_file *);
   void zero_width_tprint(troff_output_file *);
-  hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
+  hyphen_list *get_hyphen_list(hyphen_list *, int *);
   node *add_self(node *, hyphen_list **);
   void ascii_print(ascii_output_file *);
   void asciify(macro *);
@@ -1813,7 +1813,7 @@ public:
   ~ligature_node();
   node *copy();
   node *add_self(node *, hyphen_list **);
-  hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
+  hyphen_list *get_hyphen_list(hyphen_list *, int *);
   void ascii_print(ascii_output_file *);
   void asciify(macro *);
   int same(node *);
@@ -1831,7 +1831,7 @@ public:
   node *copy();
   node *merge_glyph_node(glyph_node *);
   node *add_self(node *, hyphen_list **);
-  hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
+  hyphen_list *get_hyphen_list(hyphen_list *, int *);
   node *add_discretionary_hyphen();
   hunits width();
   node *last_char_node();
@@ -1967,8 +1967,9 @@ units glyph_node::size()
   return tf->get_size().to_units();
 }
 
-hyphen_list *glyph_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *glyph_node::get_hyphen_list(hyphen_list *tail, int *count)
 {
+  (*count)++;
   return new hyphen_list(ci->get_hyphenation_code(), tail);
 }
 
@@ -2002,7 +2003,7 @@ color *glyph_node::get_fill_color()
   return fcol;
 }
 
-node *node::merge_glyph_node(glyph_node * /*gn*/)
+node *node::merge_glyph_node(glyph_node *)
 {
   return 0;
 }
@@ -2118,9 +2119,10 @@ void ligature_node::ascii_print(ascii_output_file *ascii)
   n2->ascii_print(ascii);
 }
 
-hyphen_list *ligature_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *ligature_node::get_hyphen_list(hyphen_list *tail, int *count)
 {
-  return n1->get_hyphen_list(n2->get_hyphen_list(tail));
+  hyphen_list *hl = n2->get_hyphen_list(tail, count);
+  return n1->get_hyphen_list(hl, count);
 }
 
 node *ligature_node::add_self(node *n, hyphen_list **p)
@@ -2280,14 +2282,15 @@ node *dbreak_node::copy()
   return p;
 }
 
-hyphen_list *node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *node::get_hyphen_list(hyphen_list *tail, int *)
 {
   return tail;
 }
 
-hyphen_list *kern_pair_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *kern_pair_node::get_hyphen_list(hyphen_list *tail, int *count)
 {
-  return n1->get_hyphen_list(n2->get_hyphen_list(tail));
+  hyphen_list *hl = n2->get_hyphen_list(tail, count);
+  return n1->get_hyphen_list(hl, count);
 }
 
 class hyphen_inhibitor_node : public node {
@@ -2466,7 +2469,7 @@ public:
   int same(node *);
   hyphenation_type get_hyphenation_type();
   tfont *get_tfont();
-  hyphen_list *get_hyphen_list(hyphen_list *ss = 0);
+  hyphen_list *get_hyphen_list(hyphen_list *, int *);
   int character_type();
   void tprint(troff_output_file *);
   hunits subscript_correction();
@@ -2576,9 +2579,10 @@ node *italic_corrected_node::add_self(node *nd, hyphen_list **p)
   return nd;
 }
 
-hyphen_list *italic_corrected_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *italic_corrected_node::get_hyphen_list(hyphen_list *tail,
+						    int *count)
 {
-  return n->get_hyphen_list(tail);
+  return n->get_hyphen_list(tail, count);
 }
 
 int italic_corrected_node::character_type()
@@ -2600,7 +2604,7 @@ public:
   int character_type();
   int ends_sentence();
   node *add_self(node *, hyphen_list **);
-  hyphen_list *get_hyphen_list(hyphen_list *s = 0);
+  hyphen_list *get_hyphen_list(hyphen_list *, int *);
   void tprint(troff_output_file *);
   void zero_width_tprint(troff_output_file *);
   void ascii_print(ascii_output_file *);
@@ -2674,7 +2678,7 @@ node *break_char_node::add_self(node *n, hyphen_list **p)
   return n;
 }
 
-hyphen_list *break_char_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *break_char_node::get_hyphen_list(hyphen_list *tail, int *count)
 {
   return new hyphen_list(0, tail);
 }
@@ -3851,7 +3855,7 @@ public:
   hyphenation_type get_hyphenation_type();
   void ascii_print(ascii_output_file *);
   void asciify(macro *);
-  hyphen_list *get_hyphen_list(hyphen_list *tail);
+  hyphen_list *get_hyphen_list(hyphen_list *, int *);
   node *add_self(node *, hyphen_list **);
   tfont *get_tfont();
   int same(node *);
@@ -3937,8 +3941,9 @@ void composite_node::ascii_print(ascii_output_file *ascii)
 
 }
 
-hyphen_list *composite_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *composite_node::get_hyphen_list(hyphen_list *tail, int *count)
 {
+  (*count)++;
   return new hyphen_list(ci->get_hyphenation_code(), tail);
 }
 
@@ -4762,7 +4767,7 @@ node *hmotion_node::add_self(node *n, hyphen_list **p)
   return this;
 }
 
-hyphen_list *hmotion_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *hmotion_node::get_hyphen_list(hyphen_list *tail, int *)
 {
   return new hyphen_list(0, tail);
 }
@@ -4792,7 +4797,8 @@ node *space_char_hmotion_node::add_self(node *n, hyphen_list **p)
   return this;
 }
 
-hyphen_list *space_char_hmotion_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *space_char_hmotion_node::get_hyphen_list(hyphen_list *tail,
+						      int *)
 {
   return new hyphen_list(0, tail);
 }
@@ -5041,9 +5047,10 @@ hyphenation_type left_italic_corrected_node::get_hyphenation_type()
     return HYPHEN_MIDDLE;
 }
 
-hyphen_list *left_italic_corrected_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *left_italic_corrected_node::get_hyphen_list(hyphen_list *tail,
+							 int *count)
 {
-  return n ? n->get_hyphen_list(tail) : tail;
+  return n ? n->get_hyphen_list(tail, count) : tail;
 }
 
 node *left_italic_corrected_node::add_self(node *nd, hyphen_list **p)
@@ -5086,7 +5093,7 @@ node *overstrike_node::add_self(node *n, hyphen_list **p)
   return this;
 }
 
-hyphen_list *overstrike_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *overstrike_node::get_hyphen_list(hyphen_list *tail, int *)
 {
   return new hyphen_list(0, tail);
 }
@@ -5273,7 +5280,7 @@ node *unbreakable_space_node::add_self(node *n, hyphen_list **p)
   return this;
 }
 
-hyphen_list *unbreakable_space_node::get_hyphen_list(hyphen_list *tail)
+hyphen_list *unbreakable_space_node::get_hyphen_list(hyphen_list *tail, int *)
 {
   return new hyphen_list(0, tail);
 }

@@ -1,3 +1,42 @@
+2003-01-24  Werner LEMBERG  <wl@gnu.org>
+
+	Add US-english hyphenation exceptions (converted from Barbara
+	Beeton's hyphenation exception log reports which appear irregularly
+	in TUGBoat).
+
+	* tmac/hyphen.us: Updated to latest version.
+	* tmac/README: Updated.
+	* tmac/hyphenex.us, tmac/hyphenex.sh: New files.
+	* tmac/troffrc: Load `hyphenex.us'.
+	* tmac/Makefile.sub (NORMALFILES): Add `hyphenex.us'.
+	* doc/groff.texinfo: Updated.
+
+2003-01-23  Werner LEMBERG  <wl@gnu.org>
+
+	Improve hyphenation slightly.  This is a first step in redesigning
+	the hyphenation algorithm to make it more flexible (e.g. allowing
+	kerns and ligatures between the hyphenation character and the
+	following character -- while not used normally in English, other
+	languages like German would benefit).
+
+	* src/roff/troff/env.cc (environment::hyphenate_line): Use
+	assertion instead of if-clause.
+	Let `get_hyphen_list' return the number of involved characters in
+	the hyphenation pattern instead of computing it directly (which
+	often yields too small values).
+	* src/roff/troff/node.h (*::get_hyphen_list): Add second parameter.
+	* src/roff/troff/node.cc (*::get_hyphen_list): Handle new second
+	parameter.
+
+2003-01-22  Werner LEMBERG  <wl@gnu.org>
+
+	Fixing a bug which caused groff to hang if the hyphenation exception
+	dictionary tried to grow.
+
+	* src/roff/troff/env.cc (hyphen_trie::insert_hyphenation,
+	hyphen_trie::read_patterns_file, do_hyphenation_patterns_file): Use
+	pointer to dictionary.
+
 2003-01-20  Werner LEMBERG  <wl@gnu.org>
 
 	* src/utils/afmtodit/afmtodit.pl: Add switch `-m' to suppress
