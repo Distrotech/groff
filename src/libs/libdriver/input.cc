@@ -297,8 +297,11 @@ class Char {
 public:
   Char(void) : data('\0') {}
   Char(const int c) : data(c) {}
-  bool operator==(int c) { return (data == c) ? true : false; }
-  bool operator==(Char c) { return (data == c.data) ? true : false; }
+  bool operator==(int c) const { return (data == c) ? true : false; }
+  bool operator==(const Char c) const
+		  { return (data == c.data) ? true : false; }
+  bool operator!=(int c) const { return !(*this == c); }
+  bool operator!=(const Char c) const { return !(*this == c); }
   operator int() const { return (int) data; }
   operator unsigned char() const { return (unsigned char) data; }
   operator char() const { return (char) data; }
@@ -929,7 +932,7 @@ get_string_arg(void)
 inline bool
 is_space_or_tab(const Char c)
 {
-  return (c == (Char) ' ' || c == (Char) '\t') ? true : false;
+  return (c == Char(' ') || c == Char('\t')) ? true : false;
 }
 
 //////////////////////////////////////////////////////////////////////
