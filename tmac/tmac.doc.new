@@ -2174,13 +2174,9 @@
 .
 .  if ((\n[doc-width] < 3) & \A\$1) \{\
 .    ie (\n[doc-width] == 1) \{\
-.      if d doc-punct\$1 \{\
-.        ie "\*[doc-punct\$1]"punct-suffix" \
-.          ds doc-arg-type punct-suffix
-.        el \{\
-.          if "\*[doc-punct\$1]"punct-prefix" \
-.            ds doc-arg-type punct-prefix
-.    \}\}\}
+.      if d doc-punct\$1 \
+.        ds doc-arg-type \*[doc-punct\$1]
+.    \}
 .    el \{\
 .      if r \$1 \
 .        if \n[\$1] \
@@ -2190,25 +2186,27 @@
 .
 .
 .\" NS doc-get-arg-type* macro
-.\" NS   same as `.doc-get-arg-type' but uses doc-argXXX strings
+.\" NS   similar to as `.doc-get-arg-type' but uses doc-argXXX strings
+.\" NS
+.\" NS   this macro doesn't use the `doc-width' register; it uses the
+.\" NS   `.length' request to get the number of characters in a string
+.\" NS   literally
 .\" NS
 .\" NS modifies:
-.\" NS
 .\" NS   doc-arg-type
+.\" NS
+.\" NS local variable:
+.\" NS   doc-reg-dgat
 .
 .de doc-get-arg-type*
 .  ds doc-arg-type string
-.  doc-get-arg-width \$1
+.  length doc-reg-dgat "\*[doc-arg\$1]
 .
-.  if ((\n[doc-width] < 3) & \A\*[doc-arg\$1]) \{\
-.    ie (\n[doc-width] == 1) \{\
-.      if d doc-punct\*[doc-arg\$1] \{\
-.        ie "\*[doc-punct\*[doc-arg\$1]]"punct-suffix" \
-.          ds doc-arg-type punct-suffix
-.        el \{\
-.          if "\*[doc-punct\*[doc-arg\$1]]"punct-prefix"
-.            ds doc-arg-type punct-prefix
-.    \}\}\}
+.  if ((\n[doc-reg-dgat] < 3) & \A\*[doc-arg\$1]) \{\
+.    ie (\n[doc-reg-dgat] == 1) \{\
+.      if d doc-punct\*[doc-arg\$1] \
+.        ds doc-arg-type \*[doc-punct\*[doc-arg\$1]]
+.    \}
 .    el \{\
 .      if r \*[doc-arg\$1] \
 .        if \n[\*[doc-arg\$1]] \
