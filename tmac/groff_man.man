@@ -23,7 +23,7 @@ groff_man \- groff `an' macros to support generation of man pages
 .SH DESCRIPTION
 .
 The 
-.B tmac.an 
+.B tmac.@TMAC_AN_PREFIX@an 
 macros used to generate man pages with 
 .I groff
 were written by James Clark.  
@@ -67,7 +67,7 @@ This section describes the available macros for manual pages.
 For further customization, put additional macros and requests into the file
 .B man.local
 which will be loaded immediately after
-.BR tmac.an .
+.BR tmac.@TMAC_AN_PREFIX@an .
 .TP
 .BI .TH " title section " [ extra1 "] [" extra2 "] [" extra3 ]
 Sets the title of the man page to 
@@ -97,20 +97,33 @@ active).
 is centered in the header line.
 .IP
 For HTML output, headers and footers are completely supressed.
+.IP
+Additionally, this macro starts a new page; the new line number is\ 1 again
+(except if the `-rC1' option is given on the command line) -- this feature
+is intended only for formatting multiple man pages; a single man page should
+contain exactly one
+.B TH
+macro at the beginning of the file.
 .TP
 .BI ".SH [" "text for a heading" ]
 Sets up an unnumbered section heading sticking out to the left.
-Prints out all the text following `.SH' up to the end of the line (resp. the
-text in the next line if there is no argument to `.SH') in bold face, at a
-default size of 9\ point.
+Prints out all the text following
+.B SH
+up to the end of the line (resp. the text in the next line if there is no
+argument to
+.BR SH )
+in bold face, at a default size of 9\ point.
 Additionally, the left margin for the following text is reset to its default
 value.
 .TP
 .BI ".SS [" "text for a heading" ]
 Sets up an unnumbered section heading.
-Prints out all the text following `.SS' up to the end of the line (resp. the
-text in the next line if there is no argument to `.SS') in bold face, at a
-default size of 10\ point.
+Prints out all the text following
+.B SS
+up to the end of the line (resp. the text in the next line if there is no
+argument to
+.BR SS )
+in bold face, at a default size of 10\ point.
 Additionally, the left margin for the following text is reset to its default
 value.
 .TP
@@ -132,7 +145,9 @@ paragraph begins on the line following the label, entirely indented.
 Note that neither font shape nor font size of the label is set to a default
 value; on the other hand, the rest of the text will have default font
 settings.
-The `.TP' macro is the macro used for the explanations you are just reading.
+The
+.B TP
+macro is the macro used for the explanations you are just reading.
 .TP
 .B .LP
 .TQ
@@ -141,7 +156,9 @@ The `.TP' macro is the macro used for the explanations you are just reading.
 .B .P
 These macros are mutual aliases.
 Any of them causes a line break at the current position, followed by a
-vertical space downwards by the amount specified by the `PD' macro.
+vertical space downwards by the amount specified by the
+.B PD
+macro.
 The font size and shape are reset to the default value (10pt resp. Roman).
 Finally, the current left margin is restored.
 .TP
@@ -162,14 +179,17 @@ For example, the following paragraphs were all set up with bullets as the
 designator, using `.IP\ \\(bu\ 4':
 .RS
 .IP \(bu 4
-`IP' is one of the three macros used in 
-.B tmac.an
+.B IP
+is one of the three macros used in 
+.B tmac.@TMAC_AN_PREFIX@an
 to format lists.
 .IP \(bu 4
-`HP' is another.
+.B HP
+is another.
 This macro produces a paragraph with a left hanging indentation.
 .IP \(bu 4
-`TP' is another.
+.B TP
+is another.
 This macro produces an unindented label followed by an indented paragraph.
 .RE
 .TP
@@ -184,7 +204,9 @@ The following paragraph illustrates the effect of this macro with hanging
 indentation set to\ 4:
 .RS
 .HP 4
-This is a paragraph following an invocation of the `.HP' macro.
+This is a paragraph following an invocation of the
+.B HP
+macro.
 As you can see, it produces a paragraph where all lines but the first are
 indented.
 .RE
@@ -194,14 +216,38 @@ This macro moves the left margin to the right by the value
 .I nnn
 if specified (default unit is `n'); otherwise the default indentation value
 is used.
-Calls to the `RS' macro can be nested.
+Calls to the
+.B RS
+macro can be nested.
 .TP
 .BI ".RE [" nnn ]
 This macro moves the left margin back to level
 .IR nnn ;
 if no argument is given, it moves one level back.
-The first level (i.e., no call to `RS' yet) has number\ 1, and each call to
-`RS' increases the level by\ 1.
+The first level (i.e., no call to
+.B RS
+yet) has number\ 1, and each call to
+.B RS
+increases the level by\ 1.
+.PP
+To summarize, the following macros cause a line break with the insertion of
+vertical space (which amount can be changed with the
+.B PD
+macro):
+.BR SH ,
+.BR SS ,
+.BR TP ,
+.B LP
+.RB ( PP ,
+.BR P ),
+.BR IP ,
+and
+.BR HP .
+The macros
+.B RS
+and
+.B RS
+also cause a break but no insertion of vertical space.
 .
 .SH "MACROS TO SET FONTS"
 .
@@ -311,21 +357,51 @@ The `trademark' sign.
 .B \e*(rq
 Left and right quote.
 This is equal to `\e(lq' and `\e(rq', respectively.
+.PP
+If a preprocessor like
+.B tbl
+or
+.B eqn
+is needed, it has become usage to make the first line of the man page look
+like this:
+.PP
+.RS
+.BI .\e"\  word
+.RE
+.PP
+Note the single space character after the double quote.
+.I word
+consists of letters for the needed preprocessors: `e' for
+.BR eqn ,
+`r' for
+.BR refer ,
+and `t' for
+.BR table .
+Modern implementations of the
+.B man
+program read this first line and automatically call the right
+preprocessor(s).
 .
 .SH "SEE ALSO"
 .
 Since the 
-.B tmac.an
+.B tmac.@TMAC_AN_PREFIX@an
 macros consist of groups of 
 .I groff 
 requests, one can, in principle, supplement the functionality of the
-.B tmac.an
+.B tmac.@TMAC_AN_PREFIX@an
 macros with individual 
 .I groff
 requests where necessary.
 A complete list of these requests is available on the WWW at
+.PP
 .ce 1
 http://www.cs.pdx.edu/~trent/gnu/groff/groff_toc.html
+.PP
+.BR @g@tbl (@MAN1EXT@),
+.BR @g@eqn (@MAN1EXT@),
+.BR @g@refer (@MAN1EXT@),
+.BR man (@MAN1EXT@)
 .
 .SH AUTHOR
 .
