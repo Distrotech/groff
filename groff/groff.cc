@@ -107,7 +107,7 @@ int main(int argc, char **argv)
   int zflag = 0;
   int iflag = 0;
   int Xflag = 0;
-  int safe_flag = 1;
+  int safer_flag = 1;
   int opt;
   const char *command_prefix = getenv("GROFF_COMMAND_PREFIX");
   if (!command_prefix)
@@ -175,10 +175,10 @@ int main(int argc, char **argv)
       commands[TROFF_INDEX].append_arg(buf);
       break;
     case 'S':
-      safe_flag = 1;
+      safer_flag = 1;
       break;
     case 'U':
-      safe_flag = 0;
+      safer_flag = 0;
       break;
     case 'T':
       if (strcmp(optarg, "Xps") == 0) {
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
       break;
     }
   }
-  if ( safe_flag ) {
+  if (safer_flag) {
     commands[PIC_INDEX].append_arg("-S");
     commands[TROFF_INDEX].insert_arg("-msafer");
   } else {

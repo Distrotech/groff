@@ -5331,6 +5331,13 @@ struct string_list {
   string_list(const char *ss) : s(ss), next(0) {}
 };
 
+static void prepend_string(const char *s, string_list **p)
+{
+  string_list *l = new string_list(s);
+  l->next = *p;
+  *p = l;
+}
+
 static void add_string(const char *s, string_list **p)
 {
   while (*p)
@@ -5360,7 +5367,7 @@ int main(int argc, char **argv)
   int tflag = 0;
   int fflag = 0;
   int nflag = 0;
-  int safe_flag = 1;		// safe by default
+  int safer_flag = 1;		// safer by default
   int no_rc = 0;		// don't process troffrc
   int next_page_number;
   opterr = 0;
@@ -5446,7 +5453,7 @@ int main(int argc, char **argv)
       // silently ignore these
       break;
     case 'U':
-      safe_flag = 0;	// unsafe behaviour
+      safer_flag = 0;	// unsafe behaviour
       break;
     case '?':
       usage(argv[0]);
@@ -5505,8 +5512,8 @@ int main(int argc, char **argv)
   }
   if (!no_rc)
     process_startup_file();
-  if ( safe_flag )
-    add_string( "safer", &macros);
+  if (safer_flag)
+    prepend_string("safer", &macros);
   while (macros) {
     process_macro_file(macros->s);
     string_list *tem = macros;
