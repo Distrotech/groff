@@ -552,6 +552,7 @@ environment::environment(symbol nm)
   space_total(0),
   input_line_start(0),
   tabs(units_per_inch/2, TAB_LEFT),
+  line_tabs(0),
   current_tab(TAB_NONE),
   leader_node(0),
   tab_char(0),
@@ -635,6 +636,7 @@ environment::environment(const environment *e)
   space_total(0),
   input_line_start(0),
   tabs(e->tabs),
+  line_tabs(e->line_tabs),
   current_tab(TAB_NONE),
   leader_node(0),
   tab_char(e->tab_char),
@@ -713,6 +715,7 @@ void environment::copy(const environment *e)
   pending_lines = 0;
   discarding = 0;
   tabs = e->tabs;
+  line_tabs = e->line_tabs;
   current_tab = TAB_NONE;
   current_field = 0;
   margin_character_flags = e->margin_character_flags;
@@ -2070,7 +2073,7 @@ void environment::add_html_tag_tabs(void)
       case TAB_NONE:
 	break;
       }
-    } while ((t != TAB_NONE) && (l<get_line_length())) ;
+    } while ((t != TAB_NONE) && (l < get_line_length()));
     output_pending_lines();
     output(new special_node(*m), !fill, 0, 0, 0);
     output_pending_lines();
@@ -2532,7 +2535,9 @@ void tabs_restore()
 
 tab_type environment::distance_to_next_tab(hunits *distance)
 {
-  return curenv->tabs.distance_to_next_tab(get_input_line_position(), distance);
+  return line_tabs
+    ? curenv->tabs.distance_to_next_tab(get_text_length(), distance)
+    : curenv->tabs.distance_to_next_tab(get_input_line_position(), distance);
 }
 
 void field_characters()
@@ -2542,6 +2547,16 @@ void field_characters()
     padding_indicator_char = get_optional_char();
   else
     padding_indicator_char = 0;
+  skip_line();
+}
+
+void line_tabs_request()
+{
+  int n;
+  if (has_arg() && get_integer(&n))
+    curenv->line_tabs = n != 0;
+  else
+    curenv->line_tabs = 1;
   skip_line();
 }
 
@@ -2585,7 +2600,7 @@ void environment::wrap_up_tab()
   }
   tab_field_spaces = 0;
   tab_contents = 0;
-  tab_width =  H0;
+  tab_width = H0;
   tab_distance = H0;
   current_tab = TAB_NONE;
 }
@@ -2941,6 +2956,7 @@ void init_env_requests()
   init_request("br", break_request);
   init_request("tl", title);
   init_request("ta", set_tabs);
+  init_request("linetabs", line_tabs_request);
   init_request("fc", field_characters);
   init_request("mc", margin_character);
   init_request("nn", no_number);

@@ -11,7 +11,7 @@ o `-mFOO' will now search first for `FOO.tmac' and then for `tmac.FOO'.  The
   using the latter scheme to avoid 8+3 name clashes.
 
 o The new environment variable GROFF_BIN_PATH will be checked for programs
-  groff is calling (preprocessors, troff, and output devices) before PATH. 
+  groff is calling (preprocessors, troff, and output devices) before PATH.
   If not set, it defaults to the directory where the groff binary is
   located.  Previously, it was PATH only.  The nroff script will only use
   GROFF_BIN_PATH to find the groff binary but passes both the GROFF_BIN_PATH
@@ -87,6 +87,27 @@ o The new `unformat' request is similar to `asciify' but only converts
     b02 b03 b04 b05 b06 b07 b08
     b09 b10.
 
+o The new request `linetabs' controls the `line-tabs' mode.  In line-tabs
+  mode, tab distances are computed relative to the (current) output line.
+  Otherwise they are taken relative to the input line.  For example, the
+  following
+
+    .ds x a\t\c
+    .ds y b\t\c
+    .ds z c
+    .ta 1i 3i
+    \*x
+    \*y
+    \*z
+
+  yields
+
+    a         b         c
+
+  In line-tabs mode, the same code gives
+
+    a         b                   c
+
 o Two new requests `tm1' and `tmc' have been added to improve writing
   messages to the terminal.  `tm1' is similar to `tm' but allows leading
   whitespace.  `tmc' is similar to `tm1' but doesn't emit a final newline.
@@ -111,6 +132,10 @@ o The new read-only register `.int' is set to a positive value if the last
 o The `writem' request is not new, but hasn't been documented before.  This
   is similar to `write' but instead of a string the contents of a given
   macro or string is written to a stream.
+
+o The read/write number register `hp' to get/set the current horizontal
+  position relative to the input line isn't new but hasn't been documented
+  properly before.
 
 Nroff
 -----
@@ -161,7 +186,7 @@ o For security reasons the following changes have been done:
     variable if you really need the current directory.
 
 o groff will now install its data files into
-  /usr/local/share/groff/<version> by default, following the GNU standard. 
+  /usr/local/share/groff/<version> by default, following the GNU standard.
   Additionally, a local tmac directory (by default
   /usr/local/share/groff/site-tmac) will be scanned before the standard tmac
   directory.  Wrapper files for system-specific macro packages (if

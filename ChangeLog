@@ -1,3 +1,16 @@
+2001-01-25  Werner LEMBERG  <wl@gnu.org>
+
+	Adding the `linetabs' request.  If set, tab distances are not
+	computed relative to the input line but relative to the output line.
+
+	* src/roff/troff/env.h (environment): New member `line_tabs'.
+	* src/roff/troff/env.cc (line_tabs_request): Implement request.
+	(environment::environment, environment::copy): Updated.
+	(environment::distance_to_next_tab): Use `line_tabs'.
+	(init_env_requests): Register request.
+	* src/roff/troff/troff.man, man/groff.man, NEWS: Document it.  Other
+	fixes.
+
 2001-01-24  Werner LEMBERG  <wl@gnu.org>
 
 	Introducing a new read-only register `.int' which is set to a

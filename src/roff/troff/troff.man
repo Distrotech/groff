@@ -336,7 +336,7 @@ and so sets the pointsize to 10250 scaled points,
 which is equal to 10.25 points.
 .LP
 The number register
-.B \en(.s
+.B \en[.s]
 returns the pointsize in points as decimal fraction.
 There is also a new number register
 .B \en[.ps]
@@ -1175,6 +1175,44 @@ and return it in the number register
 .I xx
 (which is not necessarily defined before).
 .TP
+.BI .linetabs\  n
+If
+.I n
+is non-zero or missing, enable line-tabs mode, otherwise disable it (which
+is the default).
+In line-tabs mode, tab distances are computed relative to the (current)
+output line.
+Otherwise they are taken relative to the input line.
+For example, the following
+.RS
+.IP
+.ne 6v+\n(.Vu
+.ft B
+.nf
+\&.ds x a\et\ec
+\&.ds y b\et\ec
+\&.ds z c
+\&.ta 1i 3i
+\e*x
+\e*y
+\e*z
+.fi
+.RE
+.IP
+yields
+.RS
+.IP
+a         b         c
+.RE
+.IP
+In line-tabs mode, the same code gives
+.RS
+.IP
+a         b                   c
+.RE
+.IP
+Line-tabs mode is associated with the current environment.
+.TP
 .BI .mso\  file
 The same as the
 .B so
@@ -1848,25 +1886,25 @@ warnings.
 The number associated with each warning is listed in the `Warnings'
 subsection.
 .TP
-.B \en(.x
+.B \en[.x]
 The major version number.
 For example, if the version number is
 .B 1.03
 then
-.B \en(.x
+.B \en[.x]
 will contain
 .BR 1 .
 .TP
-.B \en(.y
+.B \en[.y]
 The minor version number.
 For example, if the version number is
 .B 1.03
 then
-.B \en(.y
+.B \en[.y]
 will contain
 .BR 03 .
 .TP
-.B \en(.Y
+.B \en[.Y]
 The revision number of groff.
 .TP
 .B \en[llx]
@@ -1881,7 +1919,7 @@ These four registers are set by the
 request and contain the bounding box values (in PostScript units) of a given
 PostScript image.
 .LP
-The following registers are set by the
+The following read/write registers are set by the
 .B \ew
 escape sequence:
 .TP
@@ -1905,7 +1943,15 @@ in the
 argument,
 the center of an accent from a roman font should be placed over that character.
 .LP
-The following read/write number registers are available:
+Other available read/write number registers are:
+.TP
+.B \en[c.]
+The current input line number.
+.B \en[.c]
+is a read-only alias to this register.
+.TP
+.B \en[hp]
+The current horizontal position at input line.
 .TP
 .B \en[systat]
 The return value of the system() function executed by the last
@@ -1923,7 +1969,7 @@ The current year.
 Note that the traditional
 .B troff
 number register
-.B \en(yr
+.B \en[yr]
 is the current year minus 1900.
 .
 .SS Miscellaneous
@@ -1938,7 +1984,7 @@ command line option, namely the current output device (for example,
 or
 .IR ascii ).
 Note that this is not the same as the (read-only) number register
-.B \en(.T
+.B \en[.T]
 which is defined to be\ 1 if
 .B troff
 is called with the
@@ -2201,7 +2247,7 @@ command line option, and turned on or off with the
 .B cp
 request.
 The number register
-.B \en(.C
+.B \en[.C]
 is 1 if compatibility mode is on, 0 otherwise.
 .LP
 GNU troff

@@ -139,7 +139,7 @@ class environment {
   int underline_lines;
   symbol input_trap;
   int input_trap_count;
-  node *line; // in reverse order
+  node *line;			// in reverse order
   hunits prev_text_length;
   hunits width_total;
   int space_total;
@@ -148,6 +148,7 @@ class environment {
   node *tab_contents;
   hunits tab_width;
   hunits tab_distance;
+  int line_tabs;
   tab_type current_tab;
   node *leader_node;
   charinfo *tab_char;
@@ -165,8 +166,8 @@ class environment {
   hunits margin_character_distance;
   node *numbering_nodes;
   hunits line_number_digit_width;
-  int number_text_separation; // in digit spaces
-  int line_number_indent;	 // in digit spaces
+  int number_text_separation;	// in digit spaces
+  int line_number_indent;	// in digit spaces
   int line_number_multiple;
   int no_number_count;
   unsigned hyphenation_flags;
@@ -323,6 +324,7 @@ public:
   friend void tabs_save();
   friend void tabs_restore();
 #endif
+  friend void line_tabs_request();
   friend void title();
 #ifdef WIDOW_CONTROL
   friend void widow_control_request();
