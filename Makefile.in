@@ -69,6 +69,15 @@ BROKEN_SPOOLER_FLAGS=@BROKEN_SPOOLER_FLAGS@
 # `DEVICE' is the default device.
 DEVICE=ps
 
+# `XDEVDIRS' is either `font/devX{75,100}{,-12}' or empty.
+XDEVDIRS=@XDEVDIRS@
+
+# `XPROGDIRS' is either `src/devices/xditview src/utils/xtotroff' or empty.
+XPROGDIRS=@XPROGDIRS@
+
+# `XLIBDIRS' is either `src/libs/libxutil' or empty.
+XLIBDIRS=@XLIBDIRS@
+
 # `TTYDEVDIRS' is either `font/devascii font/devlatin1' (for
 # ASCII) or `font/devcp1047' (for EBCDIC) plus font/devutf8.
 TTYDEVDIRS=@TTYDEVDIRS@ font/devutf8
@@ -313,6 +322,12 @@ CCFLAGS=@CXXFLAGS@
 CFLAGS=@CFLAGS@
 CPPFLAGS=@CPPFLAGS@
 LDFLAGS=@LDFLAGS@
+
+X_CFLAGS=@X_CFLAGS@
+X_LIBS=@X_LIBS@
+X_EXTRA_LIBS=@X_EXTRA_LIBS@
+X_PRE_LIBS=@X_PRE_LIBS@
+
 YACC=@YACC@
 YACCFLAGS=-v
 
@@ -392,6 +407,13 @@ MDEFINES= \
   "SH_SCRIPT_SED_CMD=$(SH_SCRIPT_SED_CMD)" \
   "SH_DEPS_SED_SCRIPT=$(SH_DEPS_SED_SCRIPT)" \
   "TTYDEVDIRS=$(TTYDEVDIRS)" \
+  "XDEVDIRS=$(XDEVDIRS)" \
+  "XLIBDIRS=$(XLIBDIRS)" \
+  "XPROGDIRS=$(XPROGDIRS)" \
+  "X_CFLAGS=$(X_CFLAGS)" \
+  "X_LIBS=$(X_LIBS)" \
+  "X_EXTRA_LIBS=$(X_EXTRA_LIBS)" \
+  "X_PRE_LIBS=$(X_PRE_LIBS)" \
   "YACC=$(YACC)" \
   "YACCFLAGS=$(YACCFLAGS)" \
   "bindir=$(bindir)" \
@@ -444,7 +466,8 @@ INCDIRS=src/include
 LIBDIRS=\
   src/libs/libgroff \
   src/libs/libdriver \
-  src/libs/libbib
+  src/libs/libbib \
+  $(XLIBDIRS)
 CCPROGDIRS=\
   src/roff/groff \
   src/roff/troff \
@@ -467,16 +490,14 @@ CCPROGDIRS=\
   src/utils/indxbib \
   src/utils/lkbib \
   src/utils/addftinfo
-CPROGDIRS=src/utils/pfbtops
+CPROGDIRS=\
+  src/utils/pfbtops \
+  $(XPROGDIRS)
 PROGDEPDIRS=arch/misc
 PROGDIRS=$(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
 DEVDIRS=\
   font/devps \
   font/devdvi \
-  font/devX75 \
-  font/devX75-12 \
-  font/devX100 \
-  font/devX100-12 \
   font/devhtml
 ALLTTYDEVDIRS=\
   font/devascii \
@@ -497,12 +518,11 @@ OTHERDIRS=\
   contrib/mom \
   doc
 ALLDIRS=$(INCDIRS) $(LIBDIRS) $(PROGDIRS) \
-  $(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS) $(OTHERDIRS)
+  $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS) $(OTHERDIRS)
 EXTRADIRS=\
   font/devps/generate \
   font/devdvi/generate \
   font/devlj4/generate \
-  src/xditview \
   doc
 NOMAKEDIRS=\
   arch/djgpp \
@@ -512,7 +532,7 @@ NOMAKEDIRS=\
   contrib/mom/momdoc \
   src/libs/snprintf
 DISTDIRS=\
-  $(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(OTHERDEVDIRS) \
+  $(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) \
   $(ALLTTYDEVDIRS) $(OTHERDIRS) $(EXTRADIRS) $(NOMAKEDIRS)
 TARGETS=all install install_bin install_data clean distclean mostlyclean \
   realclean extraclean distfiles TAGS depend uninstall_sub
@@ -589,7 +609,7 @@ $(CCPROGDIRS): FORCE
 	  -f $(top_srcdir)/Makefile.ccpg \
 	  -f Makefile.dep $(do)
 
-$(DEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE
+$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \

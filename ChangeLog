@@ -1,3 +1,87 @@
+2004-06-01  Werner LEMBERG  <wl@gnu.org>
+
+	Integrate gxditview into groff's standard directory hierarchy.
+
+	* src/xditview/*: Moved to ...
+	* src/devices/xditview/*: Here.
+	Moved DviChar.h and XFontName.h to src/include.
+	Moved DviChar.c and XFontName.c to new directory src/libs/libxutil.
+	Split off `xmalloc' into new file src/libs/libxutil/xmalloc.c.
+	Moved xtotroff.c to new directory src/utils/xtotroff.
+	Provide proper Makefile.sub files (reusing the stuff from
+	Imakefile.in).
+	DESC renamed to DESC.in.
+	Removed GXDitview-ad.h, INSTALL, Imakefile.in.
+	Converted everything from K&R to ANSI C.
+	Decorated with const where appropriate.
+	Cast string constants with `String' and `char *' where appropriate.
+	Made it compile with C++ (used as a C compiler).
+	Removed other minor compiler warnings.
+
+	* src/devices/xditview/device.c: Include config.h, string.h, and
+	defs.h.
+	Don't declare `exit', `strtok', `strchr', and `getenv'.
+	(FONTPATH): Remove.
+
+	* src/devices/xditview/font.c: Don't declare `XParseFontName' and
+	`XFormatFontName'.
+
+	* src/devices/xditview/xditview.c: Include config.h.
+	Include stdio.h earlier.
+	Protect declaration of `popen' and `pclose' with
+	NEED_DECLARATION_POPEN and NEED_DECLARATION_PCLOSE.
+	Replace `caddr_t' with `XtPointer'.
+	(MakePromptFunc): New typedef.
+	(DoPrint): Use RETSIGTYPE.
+	(promptfunction): Change type to MakePromptFunc.
+	(MakePrompt): Use MakePromptFunc for third argument.
+	(xmalloc): Removed.
+
+	* src/devices/xditview/ad2c: Add casts to `String'.
+
+	* src/include/XFontName.h (XFontNameString): Don't use array
+	notation.
+	Add prototypes for `XParseFontName', `XFormatFontName',
+	`XCompareFontName', and `XCopyFontName'.
+
+	* src/include/Makefile.sub (HDRS): Add `DviChar.h' and
+	`XFontName.h'.
+
+	* src/utils/xtotroff/xtotroff.c: Include getopt.h.
+	Don't declare `XParseFontName' and `XFormatFontName'.
+	(xmalloc): Removed.
+	(main): Remove `optind' and `optarg'.
+
+	* Makefile.in (XDEVDIRS, XPROGDIRS, XLIBDIRS): New variables
+	(to select programs which need X).
+	Make XDEVIDIRS depend on `FORCE'.
+	(X_CFLAGS, X_LIBS, X_EXTRA_LIBS, X_PRE_LIBS): New variables (for
+	X support).
+	(MDEFINES): Updated.
+	(LIBDIRS): Use XLIBDIRS.
+	(CPROGDIRS): Use XPROGDIRS.
+	(DEVDIRS): Remove font directories for gxditview.
+	(ALLDIRS, DISTDIRS): Add XDEVDIRS.
+	(EXTRADIRS): Remove src/xditview.
+
+	* Makefile.sub (DISCLEANFILES): Updated.
+
+	* Makefile.comm (LIBXUTIL): New variable.
+	(.cpp.o, .cpp.obj): Handle EXTRA_CCFLAGS.
+	(.c.o, .c.obj, .y.o): Handle EXTRA_CFLAGS.
+
+	* Makefile.cpg, Makefile.ccpg ($PROG): Handle EXTRA_LDFLAGS.
+
+	* aclocal.m4 (GROFF_X11): New function.
+
+	* configure.ac: Call GROFF_X11.
+	Don't create src/xditview/Imakefile.
+	Don't emit notice how to build gxditview.
+
+	* configure: Regenerated.
+
+	* test-groff.in (GROFF_BIN_PATH, XENVIRONMENT): Updated.
+
 2004-05-28  Akihiro Sagawa  <sagawa@sohgoh.net>
 
 	* Makefile.in (CPPFLAGS): Define.

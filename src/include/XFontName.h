@@ -42,4 +42,9 @@ typedef struct _xFontName {
 #define SpacingProportional	"P"
 #define SpacingCharacterCell	"C"
 
-typedef char	XFontNameString[256];
+typedef char	*XFontNameString;
+
+Bool XParseFontName (XFontNameString, XFontName *, unsigned int *);
+Bool XFormatFontName (XFontName *, unsigned int, XFontNameString);
+Bool XCompareFontName (XFontName *, XFontName *, unsigned int);
+Bool XCopyFontName (XFontName *, XFontName *, unsigned int);

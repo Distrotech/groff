@@ -16,22 +16,22 @@
 
 typedef struct _dviCharNameHash {
 	struct _dviCharNameHash	*next;
-	char			*name;
+	const char		*name;
 	int			position;
 } DviCharNameHash;
 
 typedef struct _dviCharNameMap {
-    char		*encoding;
+    const char		*encoding;
     int			special;
-    char		*dvi_names[DVI_MAP_SIZE][DVI_MAX_SYNONYMS];
+    const char		*dvi_names[DVI_MAP_SIZE][DVI_MAX_SYNONYMS];
     DviCharNameHash	*buckets[DVI_HASH_SIZE];
 } DviCharNameMap;
 
-extern DviCharNameMap	*DviFindMap ( /* char *encoding */ );
-extern void		DviRegisterMap ( /* DviCharNameMap *map */ );
+DviCharNameMap		*DviFindMap (char *);
+void			DviRegisterMap (DviCharNameMap *);
 #ifdef NOTDEF
-extern char		*DviCharName ( /* DviCharNameMap *map, int index, int synonym */ );
+char			*DviCharName (DviCharNameMap *, int, int);
 #else
 #define DviCharName(map,index,synonym)	((map)->dvi_names[index][synonym])
 #endif
-extern int		DviCharIndex ( /* DviCharNameMap *map, char *name */ );
+int			DviCharIndex (DviCharNameMap *, const char *);

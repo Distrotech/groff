@@ -30,6 +30,7 @@ LINK.c=$(CC) $(CFLAGS) $(LDFLAGS)
 LIBGROFF=$(top_builddir)/src/libs/libgroff/libgroff.$(LIBEXT)
 LIBBIB=$(top_builddir)/src/libs/libbib/libbib.$(LIBEXT)
 LIBDRIVER=$(top_builddir)/src/libs/libdriver/libdriver.$(LIBEXT)
+LIBXUTIL=$(top_builddir)/src/libs/libxutil/libxutil.$(LIBEXT)
 MLIB=
 XLIBS=
 YTABH=
@@ -98,16 +99,16 @@ extraclean: distclean
 .SUFFIXES: .o .obj .cpp .c .y .man .n
 
 .cpp.o:
-	$(COMPILE.cpp) $<
+	$(COMPILE.cpp) $(EXTRA_CCFLAGS) $<
 
 .c.o:
-	$(COMPILE.c) $<
+	$(COMPILE.c) $(EXTRA_CFLAGS) $<
 
 .cpp.obj:
-	$(COMPILE.cpp) $<
+	$(COMPILE.cpp) $(EXTRA_CCFLAGS) $<
 
 .c.obj:
-	$(COMPILE.c) $<
+	$(COMPILE.c) $(EXTRA_CFLAGS) $<
 
 .y.cpp:
 	if test -n "$(YTABH)"; then \
@@ -132,7 +133,7 @@ extraclean: distclean
 	-test -f y.tab.c && mv y.tab.c y_tab.c
 	mv y_tab.c $(YTABC)
 	test -z "$(YTABH)" || mv y_tab.h $(YTABH)
-	$(COMPILE.cpp) $(YTABC)
+	$(COMPILE.cpp) $(EXTRA_CCFLAGS) $(YTABC)
 
 .man.n:
 	@echo Making $@ from $<

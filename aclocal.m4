@@ -843,3 +843,34 @@ make an error "Path separator is ';'"
      [GROFF_PATH_SEPARATOR=";"])
    AC_MSG_RESULT([$GROFF_PATH_SEPARATOR])
    AC_SUBST(GROFF_PATH_SEPARATOR)])
+
+# Check for X11.
+
+AC_DEFUN([GROFF_X11],
+  [AC_REQUIRE([AC_PATH_XTRA])
+   have_no_x=$no_x
+   if test -z "$have_no_x"; then
+     AC_MSG_CHECKING([for Xaw library])
+     AC_LINK_IFELSE([
+         AC_LANG_PROGRAM([[
+
+#include <X11/Intrinsic.h>
+#include <X11/Xaw/Simple.h>
+
+         ]],
+         [])
+       ],
+       [AC_MSG_RESULT([yes])],
+       [AC_MSG_RESULT([no])
+        have_no_x="yes"])
+   fi
+   if test "X$have_no_x" = "Xyes"; then
+     AC_MSG_NOTICE([gxditview and xtotroff won't be built])
+   else
+     XDEVDIRS="font/devX75 font/devX75-12 font/devX100 font/devX100-12"
+     XPROGDIRS="src/devices/xditview src/utils/xtotroff"
+     XLIBDIRS="src/libs/libxutil"
+   fi
+   AC_SUBST([XDEVDIRS])
+   AC_SUBST([XPROGDIRS])
+   AC_SUBST([XLIBDIRS])])

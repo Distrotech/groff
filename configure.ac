@@ -10,6 +10,7 @@ AC_PROG_CXX
 GROFF_CXX_CHECK
 GROFF_EBCDIC
 GROFF_OS390
+GROFF_X11
 GROFF_PRINT
 AC_PATH_PROG([PERLPATH], [perl], [/usr/bin/perl])
 GROFF_PROG_YACC
@@ -91,17 +92,6 @@ GROFF_HTML_PROGRAMS
 GROFF_PNMTOPS_NOSETPAGE
 
 AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
-AC_CONFIG_FILES([Makefile doc/Makefile src/xditview/Imakefile])
+AC_CONFIG_FILES([Makefile doc/Makefile])
 AC_CONFIG_FILES([test-groff], [chmod +x test-groff])
 AC_OUTPUT
-
-AC_MSG_NOTICE([
-
-  Configuration completed.
-
-  You can now say `make' to compile the groff package and `make install'
-  to install it afterwards.
-
-  If you want to compile xditview, change the directory to `src/xditview'
-  and follow the instructions given in the file `INSTALL'.
-])
