@@ -367,6 +367,7 @@ $(LIBDIRS): FORCE
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
+	test -f Makefile.dep || touch Makefile.dep; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
@@ -380,6 +381,7 @@ $(CPROGDIRS): FORCE
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
+	test -f Makefile.dep || touch Makefile.dep; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
@@ -393,6 +395,7 @@ $(CCPROGDIRS): FORCE
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
+	test -f Makefile.dep || touch Makefile.dep; \
 	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
