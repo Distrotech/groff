@@ -1164,7 +1164,7 @@ void point_size()
     if (n <= 0)
       n = 1;
     curenv->set_size(n);
-    curenv->add_html_tag(1, ".ps", n);
+    curenv->add_html_tag(0, ".ps", n);
   }
   else
     curenv->set_size(0);

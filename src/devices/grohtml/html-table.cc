@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002 Free Software Foundation, Inc.
+/* Copyright (C) 2002, 2003 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-table.cc
  *
@@ -379,28 +379,50 @@ void html_table::emit_col (int n)
     // have we a gap?
     if (last_col != NULL) {
       if (is_gap(b))
-	out->put_string("<td width=\"").put_number(is_gap(b)).put_string("%\"></td>").nl();
+	out->put_string("<td width=\"")
+	    .put_number(is_gap(b))
+	    .put_string("%\"></td>")
+	    .nl();
       b = b->next;
     }
 
     // move across to column n
     while (b != c) {
-      width = ((get_right(b) - b->left) * 100)/get_effective_linelength();
-      out->put_string("<td width=\"").put_number(width).put_string("%\"></td>").nl();
+      width = ((get_right(b) - b->left)*100 + get_effective_linelength()/2)
+	      / get_effective_linelength();
+      if (width)
+	out->put_string("<td width=\"")
+	    .put_number(width)
+	    .put_string("%\"></td>")
+	    .nl();
       // have we a gap?
       if (is_gap(b))
-	out->put_string("<td width=\"").put_number(is_gap(b)).put_string("%\"></td>").nl();
+	out->put_string("<td width=\"")
+	    .put_number(is_gap(b))
+	    .put_string("%\"></td>")
+	    .nl();
       b = b->next;
     }
-    width = ((get_right(b) - b->left) * 100)/get_effective_linelength();
+    width = ((get_right(b) - b->left)*100 + get_effective_linelength()/2)
+	    / get_effective_linelength();
     switch (b->alignment) {
-
-    case 'C': out->put_string("<td width=\"").put_number(width).put_string("%\" align=center>").nl();
+    case 'C':
+      out->put_string("<td width=\"")
+	  .put_number(width)
+	  .put_string("%\" align=center>")
+	  .nl();
       break;
-    case 'R': out->put_string("<td width=\"").put_number(width).put_string("%\" align=right>").nl();
+    case 'R':
+      out->put_string("<td width=\"")
+	  .put_number(width)
+	  .put_string("%\" align=right>")
+	  .nl();
       break;
     default:
-      out->put_string("<td width=\"").put_number(width).put_string("%\">").nl();
+      out->put_string("<td width=\"")
+	  .put_number(width)
+	  .put_string("%\">")
+	  .nl();
     }
     // remember column, b
     last_col = b;
@@ -600,7 +622,8 @@ int html_table::is_gap (cols *c)
   if (c == NULL || c->right == 0 || c->next == NULL)
     return 0;
   else
-    return (c->next->left - c->right)*100/get_effective_linelength();
+    return ((c->next->left - c->right)*100 + get_effective_linelength()/2)
+	   / get_effective_linelength();
 }
 
 /*

@@ -95,7 +95,7 @@
 .\" .TH title section extra1 extra2 extra3
 .de1 TH
 .  if \\n[an-html] \{\
-.    HTML-TAG ".tl"
+.    HTML-TAG-NS ".tl"
 \\$1
 .  \}
 .
@@ -208,6 +208,8 @@
 ..
 .
 .de1 BT
+.  if r ps4html \
+.    return
 .  ie \\n[D] \{\
 .    if o .tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
 .    if e .tl '\\*[an-page-string]'\\*[an-extra1]'\\*[an-extra2]'
@@ -290,7 +292,7 @@
 .  fi
 .  in \\n[an-margin]u
 .  ti 0
-.  HTML-TAG ".NH \\n[an-level]"
+.  HTML-TAG-NS ".NH \\n[an-level]"
 .  it 1 an-trap
 .  nr an-no-space-flag 1
 .  nr an-break-flag 1
@@ -368,10 +370,10 @@
 ..
 .
 .de an-do-tag
-.  nr an-div? 0
 .  br
-.  ll
 .  di
+.  nr an-div? 0
+.  ll
 .  ie (\\n[dl] + \\n[an-tag-sep] > \\n[an-prevailing-indent]) \{\
 .    in \\n[an-margin]u
 .    ne (2v + 1u)
@@ -387,26 +389,8 @@
 .    ti -\\n[an-prevailing-indent]u
 .    chop an-div
 .    ne (1v + 1u)
-\\*[an-div]\\h'|\\n[an-prevailing-indent]u'\c
-.  \}
-..
-.
-.de an-do-tag-html
-.  nr an-div? 0
-.  br
-.  ll
-.  di
-.  ie ((\\n[dl] + \\n[an-tag-sep]) > \\n[an-prevailing-indent]) \{\
-.    in \\n[an-margin]u
-.    an-div
-.    in (\\n[an-margin]u + \\n[an-prevailing-indent]u + \\n[an-tag-sep]u)
-.  \}
-.  el \{\
-.    in (\\n[an-margin]u + \\n[an-prevailing-indent]u + \\n[an-tag-sep]u)
-.    ti \\n[an-margin]u
-.    chop an-div
 .    HTML-TAG-NS ".col 1"
-\\*[an-div]\\h'|\\n[an-prevailing-indent]u'\\h'\\n[an-tag-sep]u'\c
+\\*[an-div]\\h'|\\n[an-prevailing-indent]u'\c
 .    HTML-TAG-NS ".col 2"
 .  \}
 ..
@@ -591,11 +575,7 @@
 .ds lq \(lq
 .ds rq \(rq
 .
-.ie \n[an-html] \{\
-.  rm an-do-tag
-.  als an-do-tag an-do-tag-html
-.\}
-.el \{\
+.if !\n[an-html] \{\
 .  if !rHY .nr HY 14
 .  hy \n[HY]
 .\}

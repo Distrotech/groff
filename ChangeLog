@@ -1,3 +1,43 @@
+2003-03-29  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/env.cc (point_size): Fix emission of html tag.
+	Otherwise, the following code
+
+	  .di xxx
+	  .ps 10
+	  a
+	  .br
+	  .di
+	  x\*[xxx]
+
+	produces `x a' instead of `xa'.  This is a temporary fix, disabling
+	font changes in diversions for -Thtml.
+
+	* tmac/an-old.tmac (TH, SH): Use `HTML-TAG-NS' instead of
+	`HTML-TAG'.
+	(an-do-tag-html): Merge with ...
+	(an-do-tag): This macro.
+	Change code slightly to circumvent grohtml bug.
+	* tmac/troffrc-end: Define dummy for HTML-TAG-NS.
+
+	* src/devices/grohtml/html-table.cc (html_table::emit_col,
+	html_table::is_gap): Round `width' properly.
+
+	* tmac/html.tmac: Provide some default layout parameters for
+	grohtml.
+
+	* font/devhtml/DESC.proto: Don't use discrete values for `sizes'
+	command.
+
+2003-03-28  Werner LEMBERG  <wl@gnu.org>
+
+	src/devices/grops/ps.cc (ps_printer::do_import): Fix error message.
+
+2003-03-27  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/an-old.tmac (BT): Don't call .tl if register `ps4html' is
+	defined.
+
 2003-03-20  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/env.cc (vertical_spacing): Allow zero value for

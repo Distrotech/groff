@@ -1704,7 +1704,7 @@ void ps_printer::do_import(char *arg, const environment *env)
     return;
   }
   if (*p != '\0') {
-    error("superflous argument `%1' for X import command", p);
+    error("superfluous argument `%1' for X import command", p);
     return;
   }
   int llx = parms[0];
@@ -1753,8 +1753,8 @@ void ps_printer::do_import(char *arg, const environment *env)
      .put_symbol("PBEGIN");
   rm.import_file(arg, out);
   // do this here just in case application defines PEND
-  out.put_symbol("end");
-  out.put_symbol("PEND");
+  out.put_symbol("end")
+     .put_symbol("PEND");
 }
 
 void ps_printer::do_invis(char *, const environment *)
