@@ -849,7 +849,21 @@ Similar to
 .BR .am , 
 but compatibility mode is switched off during execution.
 .
-On entry, the current compatibility mode is saved and restored at exit.
+To be more precise, a `compatibility save' token is inserted at the
+beginning of the macro addition, and a `compatibility restore' token at
+the end.
+.
+As a consequence, the requests
+.BR am ,
+.BR am1 ,
+.BR de ,
+and
+.B de1
+can be intermixed freely since the compatibility save/\:restore tokens
+only affect the macro parts defined by
+.B .am1
+and
+.BR .ds1 .
 .
 .TP
 .BI .asciify\  xx
@@ -902,7 +916,20 @@ Similar to
 .BR .as , 
 but compatibility mode is switched off during expansion.
 .
-On entry, the current compatibility mode is saved and restored at exit.
+To be more precise, a `compatibility save' token is inserted at the
+beginning of the string, and a `compatibility restore' token at the end.
+.
+As a consequence, the requests
+.BR as ,
+.BR as1 ,
+.BR ds ,
+and
+.B ds1
+can be intermixed freely since the compatibility save/\:restore tokens
+only affect the (sub)strings defined by
+.B as1
+and
+.BR ds1 .
 .
 .TP
 .B .backtrace
@@ -1232,7 +1259,8 @@ Similar to
 .BR .ds , 
 but compatibility mode is switched off during expansion.
 .
-On entry, the current compatibility mode is saved and restored at exit.
+To be more precise, a `compatibility save' token is inserted at the
+beginning of the string, and a `compatibility restore' token at the end.
 .
 .TP
 .B .ecs
