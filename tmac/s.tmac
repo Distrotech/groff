@@ -1159,13 +1159,18 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .de TA
 .ta T 5n
 ..
+.\" \n[PORPHANS] sets number of initial lines of any paragraph,
+.\" which must be kept together, without any included page break.
+.\" Initialise to reproduce original behaviour; user may adjust it.
+.if !rPORPHANS .nr PORPHANS 1
+.
 .de par*start
 .ds@auto-end
 .nr \\n[.ev]:pli \\$1
 .nr \\n[.ev]:pri \\$2
 .par@reset
 .sp \\n[\\n[.ev]:PD]u
-.ne 1v+\\n(.Vu
+.ne \\n[PORPHANS]v+\\n(.Vu
 ..
 .de par@finish
 .nr \\n[.ev]:pli 0
@@ -1366,14 +1371,37 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\}
 .el \!.par*box-draw \\$1 \\$2
 ..
+.\" \n[HORPHANS] sets how many lines of the following paragraph must be
+.\" kept together, with a preceding section header.  Initialise it,
+.\" to reproduce original behaviour; user may change it.
+.if !rHORPHANS .nr HORPHANS 1
+.
+.\" \n[GROWPS] and \n[PSINCR] cause auto-increment of header point size.
+.\" Initialise them, so they have no effect, unless explicitly set by the user.
+.if !rGROWPS .nr GROWPS 0
+.if !rPSINCR .nr PSINCR 1p
+.
 .de SH-NO-TAG
 .par@finish
-.\" Keep together the heading and the first two lines of the next paragraph.
-.ne 3v+\\n[\\n[.ev]:PD]u+\\n(.Vu
+.\" Keep the heading and the first few lines of the next paragraph together.
+.\" (\n[HORPHANS] defines "first few" -- default = 1; user may redefine it).
+.nr sh*minvs \\n[HORPHANS]v
+.if \\n[sh*psincr]<0 .nr sh*psincr 0
+.ie \\n(VS<1000 .par*vs \\n(VSp+\\n[sh*psincr]u
+.el .par*vs \\n(VSp/1000u+\\n[sh*psincr]u
+.ne 2v+\\n[sh*minvs]u+\\n[\\n[.ev]:PD]u+\\n(.Vu
+.\" Adjust point size for heading text, as specified by \n[GROWPS] and \n[PSINCR].
+.ie \\n(PS<1000 .ps \\n(PS+\\n[sh*psincr]u
+.el .ps \\n(PSz/1000u+\\n[sh*psincr]u
 .sp 1
 .ft B
 ..
 .de @SH
+.\" Standard ms implementation does not expect an argument,
+.\" but allow ".SH n" to make heading point size match ".NH n",
+.\" for same "n", when \n[GROWPS] and \n[PSINCR] are set.
+.  nr sh*psincr 0
+.  if 0\\$1>0 .nr sh*psincr (\\n[GROWPS]-0\\$1)*\\n[PSINCR]
 .  SH-NO-TAG
 .  HTML-TAG ".SH 1"
 ..
@@ -1535,15 +1563,18 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	\}
 .	nr H\\n[nh*hl] +1
 .\}
-.ds SN
-.nr nh*i 0
+.ds SN-NO-DOT \\n(H1
+.nr nh*i 1
 .while \\n[nh*i]<\\n[nh*hl] \{\
 .	nr nh*i +1
-.	as SN \\n[H\\n[nh*i]].
+.	as SN-NO-DOT .\\n[H\\n[nh*i]]
 .\}
+.ds SN-DOT \\*[SN-NO-DOT].
+.if !dSN .als SN SN-DOT
+.nr sh*psincr (\\n[GROWPS]-\\n[nh*hl])*\\n[PSINCR]
 .SH-NO-TAG
 .HTML-TAG ".NH \\$1"
-\\*[SN]
+\\*[SN-DOT]
 ..
 .\" ****************************
 .\" ******** module toc ********

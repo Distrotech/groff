@@ -1,3 +1,65 @@
+2004-09-19  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	This change implements the following features:
+
+	PORPHANS
+	  New numeric register: Defines number of lines following LP, PP,
+	  QP, IP or XP, which must be kept together, before any automatic
+	  page break.  If insufficient space remains on the current page, a
+	  page break is forced before the new paragraph begins.
+
+	HORPHANS
+	  New numeric register: Sets number of lines of following paragraph
+	  which must be kept with a heading, defined by NH or SH, before any
+	  automatic page break.  If insufficient space remains on the
+	  current page, a page break is forced before the heading.
+
+	GROWPS
+	  (Thanks to Joerg van den Hoff, for this idea).
+
+	  New numeric register: Sets the first level of heading (set with
+	  NH), which will keep the same point size as body text; e.g. if
+	  GROWPS is set to 3, .NH 3, .NH 4, ... will produce headings at the
+	  point size specified by \n[PS], but .NH 2 and .NH 1 will have
+	  progressively larger point sizes, determined by \n[PSINCR] (see
+	  below).
+
+	PSINCR
+	  New numeric register: Sets the point size increment for each level
+	  of heading, (set with NH), below the threshold level set by
+	  GROWPS; e.g. if \n[PS] = 10, \n[GROWPS] = 3 and \n[PSINCR] = 2.0p,
+	  then .NH 1 will produce 14pt headings, .NH 2 will produce 12pt,
+	  and all other levels will remain at 10pt, (because \n[PS] = 10).
+
+	SH
+	  Existing macro now accepts a numeric argument, to make heading
+	  size match that of NH with same argument value, when the
+	  GROWPS/PSINCR feature is enabled.
+
+	SN-DOT
+	  New string, set by NH macro, replaces the existing (undocumented)
+	  use of SN, to represent the assigned section number.
+
+	SN-NO-DOT
+	  New string, set by NH macro, represents the assigned section
+	  number, but omits the terminal period (periods at intermediate
+	  levels are retained).
+
+	SN
+	  String set by NH macro, originally undocumented, now implemented
+	  as an alias for SN-DOT (which reproduces original behaviour).
+
+	* tmac/s.tmac (PORPHANS): New register.
+	(par*start): Use it.
+	(HORPHANS, GROWPS, PSINCR): New registers.
+	(SH-NO-TAG, @SH): Use them.
+	(@NH): Improved.
+
+2004-09-19  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	* NEWS, doc/groff.texinfo, tmac/groff_ms.man: Document the deletion
+	of `Ds' and `De' macros.
+
 2004-09-10  Werner LEMBERG  <wl@gnu.org>
 
 	In tbl, handle \a as an interpreted leader character if in
