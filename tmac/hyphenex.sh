@@ -1,3 +1,6 @@
+#! /bin/sh
+#
+#
 # hyphenex.sh
 #
 # This small filter converts a hyphenation exception log article for
@@ -5,7 +8,14 @@
 #
 # Written by Werner Lemberg <wl@gnu.org>.
 #
-# Version 1.0 (2003/01/25)
+# Version 1.2 (2003/04/15)
+#
+# Public domain.
+#
+#
+# Usage:
+#
+#   sh hyphenex.sh < tugboat-article > hyphenation-exceptions
 
 sed -n '
 1 i\
@@ -13,6 +23,8 @@ sed -n '
 % log article in TUGBoat.\
 %\
 % This is an automatically generated file.  Do not edit!\
+%\
+% Please contact Barbara Beeton <bnb@ams.org> for corrections and omissions.\
 \
 \\hyphenation{
 $ i\
