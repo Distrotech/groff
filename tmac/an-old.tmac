@@ -514,11 +514,23 @@
 .  HTML-IMAGE-END
 ..
 .
+.de1 R
+\c
+.  ie \\n[.$] \{\
+.    tm `R' is a string (producing the registered sign), not a macro.
+.    nop \\$*
+.  \}
+.  el \{\
+.    ie c\[rg] \
+.      nop \[rg]\c
+.    el \
+.      nop (Reg.)\c
+.  \}
+..
+.
 .\" these strings must work in compatibility mode also
 .
 .ds S \s'\\n(PSu'
-.ie c\[rg] .ds R \(rg
-.el        .ds R (Reg.)
 .ie c\[tm] .ds Tm \(tm
 .el        .ds Tm (TM)
 .ds lq \(lq

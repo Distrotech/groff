@@ -1,3 +1,38 @@
+2002-02-28  Werner LEMBERG  <wl@gnu.org>
+
+	Add color support to grodvi (for drawing colors are currently
+	translated to gray values).
+
+	* src/devices/grodvi/dvi.cc (FILL_MAX): Removed.
+	(dvi_printer): Add `cur_color' member.
+	(dvi_printer::set_color): New function.
+	(draw_dvi_printer): Remove `fill'.
+	(draw_dvi_printer::fill_next): Pass environment as parameter.
+	Update code for new color support translated to gray.
+	(dvi_printer::set_char): Updated.
+	(dvi_printer::begin_page, dvi_printer::end_page): Handle color
+	changes crossing the page border.
+	(dvi_printer::draw): Updated.
+	Remove cases `f' and `F'.
+	* tmac/dvi.tmac: Add color definitions.
+	* NEWS, src/devices/grodvi/grodvi.man: Updated.
+
+	* tmac/an-old.tmac (R): Make this a macro to emit a warning if
+	used incorrectly.
+
+	* aclocal.m4 (GROFF_NEED_DECLARATION): Use test similar to recent
+	versions of autoconf.
+	* configure: Updated.
+
+	* doc/homepage.ms: Use `.blm'.
+	* tmac/www.tmac (www-depth): New auxiliary variable.
+	(www-pop-level): Don't issue HTML tag.
+	(ULS, ULE, LI): Use absolute indentation.
+
+	* src/devices/grops/ps.cc (ps_printer::begin_page,
+	ps_printer::end_page): Switch forth and back to default color while
+	starting a new page.
+
 2002-02-27  Werner LEMBERG  <wl@gnu.org>
 
 	Add EC and TC fonts to devdvi.

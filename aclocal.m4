@@ -492,7 +492,9 @@ AC_CACHE_VAL(groff_cv_decl_needed_$1,
 #ifdef HAVE_MATH_H
 #include <math.h>
 #endif],
-[char *(*pfn) = (char *(*)) $1],
+[#ifndef $1
+  char *p = (char *) $1;
+#endif],
 groff_cv_decl_needed_$1=no,
 groff_cv_decl_needed_$1=yes)])
 AC_MSG_RESULT($groff_cv_decl_needed_$1)

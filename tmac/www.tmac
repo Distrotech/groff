@@ -412,6 +412,7 @@
 .ds www-level2 \[sq]\ \ \"
 .ds www-level3 \[ci]\ \ \"
 .nr www-level 0
+.nr www-depth 0
 .
 .\"
 .\" Auxiliary macro for ULS.
@@ -428,7 +429,6 @@
 .  if !\\n[www-level] \
 .    www-error "trying to terminate a list which does not exist"
 .  nr www-level -1
-.  HTML "</ul>"
 ..
 .\"
 .\" ULS
@@ -439,8 +439,11 @@
 .  www-push-level
 .  ie \\n[www-html] \
 .    HTML "<ul>"
-.  el \
-.    in +\w'\\*[www-level\\n[www-level]]'u
+.  el \{\
+.    if (\\n[www-level] == 1) \
+.      nr www-depth \\n[.i]
+.    nr www-depth +\w'\\*[www-level\\n[www-level]]'u
+.  \}
 ..
 .\"
 .\" ULE
@@ -450,8 +453,10 @@
 .de ULE
 .  ie \\n[www-html] \
 .    HTML "</ul>"
-.  el \
-.    in -\w'\\*[www-level\\n[www-level]]'u
+.  el \{\
+.    nr www-depth -\w'\\*[www-level\\n[www-level]]'u
+.    in \\n[www-depth]
+.  \}
 .  www-pop-level
 ..
 .\"
@@ -463,6 +468,7 @@
 .  ie \\n[www-html] \
 .    HTML "<li>"
 .  el \{\
+.    in \\n[www-depth]u
 .    ti -\w'\\*[www-level\\n[www-level]]'u
 .    nop \\*[www-level\\n[www-level]]\c
 .  \}

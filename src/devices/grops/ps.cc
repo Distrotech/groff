@@ -1144,11 +1144,14 @@ void ps_printer::begin_page(int n)
   out.simple_comment("BeginPageSetup")
      .put_symbol("BP")
      .simple_comment("EndPageSetup");
+  if (sbuf_color != default_color)
+    set_color(&sbuf_color);
 }
 
 void ps_printer::end_page(int)
 {
   flush_sbuf();
+  set_color(&default_color);
   out.put_symbol("EP");
   if (invis_count != 0) {
     error("missing `endinvis' command");
