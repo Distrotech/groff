@@ -174,11 +174,10 @@ is_system_shell (const char *shell)
 
   /* "sh" and "sh.exe" should compare equal.  */
   return
-    ((strncasecmp (monocased_shell + ibase, system_shell_name(), idot - ibase)
-      == 0)
+    (strncasecmp (shell + ibase, system_shell_name (), idot - ibase) == 0
      && (idot == shlen
-	 || strcasecmp(monocased_shell + idot, ".exe") == 0
-	 || strcasecmp(monocased_shell + idot, ".com") == 0));
+	 || strcasecmp (shell + idot, ".exe") == 0
+	 || strcasecmp (shell + idot, ".com") == 0));
 }
 
 /* MSDOS doesn't have `fork', so we need to simulate the pipe by
