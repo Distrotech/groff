@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
      Written by Eli Zaretskii (eliz@is.elta.co.il)
 
 This file is part of groff.
@@ -29,8 +29,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #if defined(__MSDOS__) || defined(__EMX__) \
     || (defined(_WIN32) && !defined(_UWIN) && !defined(__CYGWIN__))
 
-/* Binary I/O nuisances.  Note: "setmode" is right for DJGPP and
-   Borland; Windows compilers might need _setmode or some such.  */
+/* Binary I/O nuisances. */
 # include <fcntl.h>
 # include <io.h>
 # ifdef HAVE_UNISTD_H
@@ -57,7 +56,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #  define setmode(f,m)	_setmode(f,m)
 #  define WAIT(s,p,m)	_cwait(s,p,m)
 #  define creat(p,m)	_creat(p,m)
-#  define read(f,b,s)   _read(f,b,s)
+#  define read(f,b,s)	_read(f,b,s)
+#  define isatty(f)	_isatty(f)
 # endif
 # define SET_BINARY(f)	do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
 # define FOPEN_RB	"rb"
@@ -118,6 +118,18 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
   }
 # endif
 
+#endif
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
+# define FLUSH_INPUT_PIPE(fd)		      \
+ do if (!isatty(fd))			      \
+ {					      \
+   char drain[BUFSIZ];			      \
+   while (read(fd, drain, sizeof(drain)) > 0) \
+     ;					      \
+ } while (0)
+#else
+# define FLUSH_INPUT_PIPE(fd)	do {} while(0)
 #endif
 
 /* Defaults, for Posix systems.  */

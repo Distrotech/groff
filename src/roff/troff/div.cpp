@@ -22,6 +22,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 // diversions
 
+#include "nonposix.h"
+
 #include "troff.h"
 #include "dictionary.h"
 #include "hvunits.h"
@@ -542,6 +544,7 @@ void cleanup_and_exit(int exit_code)
     the_output->trailer(topdiv->get_page_length());
     delete the_output;
   }
+  FLUSH_INPUT_PIPE(STDIN_FILENO);
   exit(exit_code);
 }
 
