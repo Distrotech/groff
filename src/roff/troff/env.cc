@@ -2956,6 +2956,12 @@ const char *environment::get_font_family_string()
   return family->nm.contents();
 }
 
+const char *environment::get_font_name_string()
+{
+  symbol f = get_font_name(fontno, this);
+  return f.contents();
+}
+
 const char *environment::get_name_string()
 {
   return name.contents();
@@ -3105,6 +3111,7 @@ void init_env_requests()
   init_int_env_reg(".ss", get_space_size);
   init_int_env_reg(".sss", get_sentence_space_size);
   init_string_env_reg(".fam", get_font_family_string);
+  init_string_env_reg(".fn", get_font_name_string);
   init_string_env_reg(".ev", get_name_string);
   init_int_env_reg(".hy", get_hyphenation_flags);
   init_int_env_reg(".hlm", get_hyphen_line_max);

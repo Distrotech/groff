@@ -149,6 +149,7 @@ public:
   int get_bold(hunits *);
   int is_special();
   int is_style();
+  friend symbol get_font_name(int, environment *);
 };
 
 class tfont_spec {
@@ -378,6 +379,15 @@ int font_info::is_named(symbol s)
 symbol font_info::get_name()
 {
   return internal_name;
+}
+
+symbol get_font_name(int fontno, environment *env)
+{
+  symbol f = font_table[fontno]->get_name();
+  if (font_table[fontno]->is_style()) {
+    return concat(env->get_family()->nm, f);
+  }
+  return f;
 }
 
 hunits font_info::get_space_width(font_size fs, int space_size)

@@ -300,6 +300,7 @@ public:
   void space(hunits, hunits);
   void space_newline();
   const char *get_font_family_string();
+  const char *get_font_name_string();
   const char *get_name_string();
   const char *get_point_size_string();
   const char *get_requested_point_size_string();
