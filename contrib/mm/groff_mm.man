@@ -860,13 +860,16 @@ Both page numbers and header marks, tab separated
 .TP
 .B "INITR filename"
 Initialize the refencemacros.
-References will be written to
-\fIfilename.tmp\fP and \fIfilename.qrf\fP.
-Requires two passes with groff.
-The first looks for references and the second includes them.
+References will be written to stderr and is supposed to
+be written to \fIfilename.qrf\fP. 
+Requires two passes with groff, this is handled by a
+separate program called \fBmmroff\fP, the reason is that
+groff is often installed without the unsafe operations that
+\fBINITR\fP requiered.
+The first pass looks for references and the second one includes them.
 \fBINITR\fP can be used several times, but it is only the first
 occurrence of \fBINITR\fP that is active.
-Option \fB-U\fP might be needed if \fBunsafe\fP-errors occur.
+
 See also \fBSETR\fP, \fBGETPN\fP and \fBGETHN\fP.
 .TP
 .B "IND arg1 [arg2 [...]]"

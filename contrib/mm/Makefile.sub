@@ -33,6 +33,10 @@ install_m:
 	$(INSTALL_DATA) $(srcdir)/m.tmac $(tmacdir)/$(tmac_m_prefix)m.tmac
 	@sed -e "s;^.mso m.tmac;.mso $(tmac_m_prefix)m.tmac;g" \
 		$(srcdir)/mse.tmac > $(tmacdir)/$(tmac_m_prefix)mse.tmac
+	@sed -e "s;^.mso mse.tmac;.mso $(tmac_m_prefix)mse.tmac;g" \
+		$(srcdir)/mmse.tmac > $(tmacdir)/$(tmac_m_prefix)mmse.tmac
+	@sed -e "s;^.mso m.tmac;.mso $(tmac_m_prefix)m.tmac;g" \
+		$(srcdir)/mm.tmac > $(tmacdir)/$(tmac_m_prefix)mm.tmac
 
 install_mmroff: mmroff
 	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
@@ -51,6 +55,8 @@ uninstall_sub:
 	done
 	-rm -f $(tmacdir)/tmac.$(tmac_m_prefix)m
 	-rm -f $(tmacdir)/$(tmac_m_prefix)m.tmac
+	-rm -f $(tmacdir)/$(tmac_m_prefix)mm.tmac
 	-rm -f $(tmacdir)/$(tmac_m_prefix)mse.tmac
+	-rm -f $(tmacdir)/$(tmac_m_prefix)mmse.tmac
 	-rmdir $(tmacdir)/mm
 	-rm -f $(bindir)/mmroff

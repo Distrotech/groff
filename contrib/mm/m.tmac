@@ -1978,6 +1978,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\" nested DS/DE is allowed. No limit on depth.
 .de DS
 .br
+.nr XXX \\n[nl]
 .nr ds*lvl +1
 .ds@set-format \\$@
 .\"
@@ -2035,9 +2036,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .nr ds*i \\n[Lsp]
 .if r Dsp .nr ds*i \\n[Dsp]
 .\"
-.if \\n[Ds] .SP \\n[ds*i]u
+.if \\n[Ds] .sp \\n[ds*i]u
 .ds*div!\\n[ds*snr]
-.if \\n[Ds] .SP \\n[ds*i]u
+.if \\n[Ds] .sp \\n[ds*i]u
 .\"
 .if \\n[ds*format]=2 'ce 0
 .if \\n[ds*format]=4 'rj 0
@@ -2313,10 +2314,11 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .de eq@check
 .if !'\\*[eq*label]'' \{\
 .	mk
-'	sp (u;\\$1/2-.45v)
+.	\" space down to middle of equation
+'	sp (u;\\$1/2)
 .	ie (\\n[Eq]%2) \{\
 .		\"	label to the left
-\h'|0'\\*[eq*label]\c
+\h'|0'\\*[eq*label]
 .	\}
 .	el \{\
 .		\"	label to the right

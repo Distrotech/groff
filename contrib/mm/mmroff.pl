@@ -66,11 +66,12 @@ while(<MACRO>) {
 close(MACRO);
 
 
-if ($rfilename && @out) {
+if ($rfilename) {
 	push(@out, ".nr pict*max-height $max_height\n") if defined $max_height;
 	push(@out, ".nr pict*max-width $max_width\n") if defined $max_width;
 
 	open(OUT, ">$rfilename") || "create $rfilename:$!";
+	print OUT '.\" references', "\n";
 	my $i;
 	for $i (@out) {
 		print OUT $i;
