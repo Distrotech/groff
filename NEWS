@@ -20,8 +20,8 @@ o Color support has been added to troff and pic (and to two device drivers,
   (it is always disabled in compatibility mode).
 
   For defining color components as fractions between 0 and 1, a new scaling
-  indicator `f' has been defined: 1f = 65536u.  For testing whether a color
-  is defined (with .if and .ie), a new conditional operator `m' is
+  indicator `f' has been introduced: 1f = 65536u.  For testing whether a
+  color is defined (with .if and .ie), a new conditional operator `m' is
   available.
 
   More details can be found in the groff_diff.7 manual page and in
@@ -65,7 +65,7 @@ o Two macros `AT' (AT&T) and `UC' (Univ. of California) have been added to
 
 o The `-xwidth' specifier in the mdoc macro package has been removed.  Its
   functionality is now integrated directly into `-width'.  Similarly,
-  `-column' has been extended to has this functionality also.
+  `-column' has been extended to provide this functionality also.
 
 o A new macro `Ex' has been added to the mdoc macro package to document an
   exit status.
@@ -96,6 +96,8 @@ o New keywords `color' (or `colour', `colored', `coloured'), `outline' (or
   outline, `shaded' the fill color, and `color' sets both.  Example:
 
     circle shaded "green" outline "black" ;
+
+  Filled arrows always use the outline color for filling.
 
   Color support for TeX output is not implemented yet.
 
@@ -162,8 +164,8 @@ o Two new requests `de1' and `am1' which are similar to `de' and `am' but
 
 o Added request `brp'.  This is the same as `\p'.
 
-o Similar to other versions of troff, `.ns' now works in all diversions,
-  not only in the top-level one.
+o Similar to other versions of troff, the `ns' request now works in all
+  diversions, not only in the top-level one.
 
 o New read-only number register `.ns'.  Returns 1 if in no-space mode,
   0 otherwise.
@@ -193,7 +195,7 @@ Groff
 o `-mFOO' now searches first for `FOO.tmac' and then for `tmac.FOO'.  The
   old behaviour has been changed to overcome problems with platforms which
   have an 8+3 file name limit, and platforms which have other versions of
-  troff installed also. Additionally, all macro files have been renamed
+  troff installed also.  Additionally, all macro files have been renamed
   using the latter scheme to avoid 8+3 name clashes.
 
 o The new environment variable GROFF_BIN_PATH is checked for programs groff
@@ -201,7 +203,7 @@ o The new environment variable GROFF_BIN_PATH is checked for programs groff
   set, it defaults to the directory where the groff binary is located.
   Previously, it was PATH only.  The nroff script only uses GROFF_BIN_PATH
   to find the groff binary but passes both the GROFF_BIN_PATH and PATH
-  environment variable to groff.
+  environment variables to groff.
 
 Troff
 -----
@@ -210,11 +212,11 @@ o The mdoc package has been completely rewritten, using the full power of
   GNU troff to remove limitations of Unix troff (which is no longer
   supported).  Most important changes are:
 
-  . No argument limit.
-  . Almost all macros are parsed and callable (if it makes sense).
+  . No argument limit
+  . Almost all macros are parsed and callable (if it makes sense)
   . `.Lb': prints library names
   . `.Nm <punctuation>' now works as expected; `.Nm "" <punctuation>' has
-    been withdrawn.
+    been withdrawn
   . Updated `.St' command
   . `.Fx': prints FreeBSD
   . `.Ox': prints OpenBSD
@@ -222,18 +224,18 @@ o The mdoc package has been completely rewritten, using the full power of
   . `.Brq', `.Bro', `.Brc': brace enclosure macros
   . `.Bd -centered': center lines
   . `.Bl -xwidth <string>': interpret <string> and use the resulting width
-  . support for double-sided printing (-rD1 command line switch)
-  . support for 11pt and 12pt document sizes (-rS11, -rS12 command line
+  . Support for double-sided printing (-rD1 command line switch)
+  . Support for 11pt and 12pt document sizes (-rS11, -rS12 command line
     switches)
 
-  `groff_mdoc.man' replaces `groff_mdoc.samples.man'; it now completely
+  `groff_mdoc.7' replaces `groff_mdoc.samples.7'; it now completely
   documents the mdoc package.
 
   Great care has been taken to assure backwards compatibility.  If you
   encounter any abnormal results, please report them to bug-groff@gnu.org.
 
 o A new command line option for the `man' macros (similar to the `mdoc'
-  package has been implemented: `-rcR=1' (now the default in nroff mode)
+  package) has been implemented: `-rcR=1' (now the default in nroff mode)
   produces one single, very long page instead of multiple pages.  `-rcR=0'
   deactivates it.
 
@@ -394,7 +396,7 @@ o For security reasons the following changes have been done:
   . Files specified with the .mso request or given with the `-m' command
     line option, and hyphenation patterns loaded with `.hpf' are no longer
     searched in the current directory by default (besides the usual tmac
-    path). Instead, the home directory is used. To add the current
+    path).  Instead, the home directory is used.  To add the current
     directory, either use the `-U' or `-M' command line option or set the
     GROFF_TMAC_PATH environment variable to an appropriate value.
 
@@ -581,8 +583,8 @@ roff language), and roff.7 (a general survey on GNU troff).
 Miscellaneous
 -------------
 
-A port to win32 (for use with Microsoft Visual C++ 6.0) is now part of the
-distribution.  It has been contributed by Blake McBride
+A partial port to win32 (for use with Microsoft Visual C++ 6.0) is now part
+of the distribution.  It has been contributed by Blake McBride
 <blake@florida-software.com>.
 
 More information about programs, macros, documentation, etc., which is
@@ -597,44 +599,43 @@ VERSION 1.12
 ============
 
 Finally, there are new maintainers for groff.  Mailing lists and a CVS
-repository are available also.  See the file README for details.  Not
-all reported bug could be fixed, so please send mails again if
-something is still not working.
+repository are available also. See the file README for details.  Not all
+reported bugs could be fixed, so please send mails again if something is
+still not working.
 
 Most of the installation problems should have vanished now (most
 notably the $(tmac_wrap) bug).
 
-There is now a man page called groff_man.man which documents the
-basics of the -man macros.  It has been originally written by Susan
-G. Kleinmann <sgk@debian.org>.
+There is now a man page called groff_man.7 which documents the basics of the
+-man macros.  It has been originally written by Susan G. Kleinmann
+<sgk@debian.org>.
 
-A (still incomplete) groff reference manual in texinfo format
-originally contributed by Trent A. Fisher <trent@gnurd.portland.or.us>.
+A (still incomplete) groff reference manual in texinfo format originally
+contributed by Trent A. Fisher <trent@gnurd.portland.or.us>.
 
 me.man and msafer.man have been renamed to groff_me.man
 resp. groff_msafer.man for consistency.
 
-Default strings for macros in doc-common resp. tmac.an no longer
-contain the word `UNIX'.
+Default strings for macros in doc-common resp. tmac.an no longer contain the
+word `UNIX'.
 
 groff should now be Y2k safe (fixes contributed by Paul Eggert
 <eggert@twinsun.com>).
 
-Following the GNU standards, groff will now use the prefix
-`/usr/local/' as the default instead of replacing an existent groff
-binary.
+Following the GNU standards, groff will now use the prefix `/usr/local/' as
+the default instead of replacing an existent groff binary.
 
 groff, troff, nroff, and pic now support the -U flag to activate unsafe
-behaviour (without -msafer); the -S flag for using the -msafer macros
-is now the default.
+behaviour (without -msafer); the -S flag for using the -msafer macros is now
+the default.
 
 Grohtml
 -------
 
-This is a new output device for producing HTML output contributed by
-Gaius Mulley <gaius@glam.ac.uk>.  It is still very alpha but has been
-included into the distribution so that a lot of people have a chance
-to test it.  Bug reports are highly welcome.
+This is a new output device for producing HTML output contributed by Gaius
+Mulley <gaius@glam.ac.uk>.  It is still very alpha but has been included
+into the distribution so that a lot of people have a chance to test it.  Bug
+reports are highly welcome.
 
 Grolj4
 ------

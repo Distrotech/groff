@@ -51,6 +51,44 @@
 @end tex
 
 
+@c To assure correct HTML translation, some ugly hacks are necessary.
+@c While processing a @def... request, the HTML translator looks at the
+@c next line to decide whether it should start indentation or not.  If
+@c it is something starting with @def... (e.g. @deffnx), it doesn't.
+@c So we must assure during macro expansion that a @def... is seen.
+@c
+@c The following macros have to be used:
+@c
+@c One item:
+@c
+@c   @Def...
+@c
+@c Two items:
+@c
+@c   @Def...List
+@c   @Def...ListEnd
+@c
+@c More than two:
+@c
+@c   @Def...List
+@c   @Def...Item
+@c   @Def...Item
+@c   ...
+@c   @Def...ListEnd
+@c
+@c The definition block must end with
+@c
+@c   @endDef...
+@c
+@c The above is valid for texinfo 4.0f.
+
+
+@c a dummy macro to assure the `@def...'
+
+@macro defdummy
+@end macro
+
+
 @c definition of requests
 
 @macro Defreq{name, arg}
@@ -58,7 +96,19 @@
 @rqindex \name\
 @end macro
 
-@macro Defreqx{name, arg}
+@macro DefreqList{name, arg}
+@deffn Request @t{.\name\} \arg\
+@defdummy
+@rqindex \name\
+@end macro
+
+@macro DefreqItem{name, arg}
+@deffnx Request @t{.\name\} \arg\
+@defdummy
+@rqindex \name\
+@end macro
+
+@macro DefreqListEnd{name, arg}
 @deffnx Request @t{.\name\} \arg\
 @rqindex \name\
 @end macro
@@ -75,7 +125,19 @@
 @esindex \name\
 @end macro
 
-@macro Defescx{name, delimI, arg, delimII}
+@macro DefescList{name, delimI, arg, delimII}
+@deffn Escape @t{\name\\delimI\}@var{\arg\}@t{\delimII\}
+@defdummy
+@esindex \name\
+@end macro
+
+@macro DefescItem{name, delimI, arg, delimII}
+@deffnx Escape @t{\name\\delimI\}@var{\arg\}@t{\delimII\}
+@defdummy
+@esindex \name\
+@end macro
+
+@macro DefescListEnd{name, delimI, arg, delimII}
 @deffnx Escape @t{\name\\delimI\}@var{\arg\}@t{\delimII\}
 @esindex \name\
 @end macro
@@ -92,7 +154,19 @@
 @vindex \name\
 @end macro
 
-@macro Defregx{name}
+@macro DefregList{name}
+@deffn Register @t{\\n[\name\]}
+@defdummy
+@vindex \name\
+@end macro
+
+@macro DefregItem{name}
+@deffnx Register @t{\\n[\name\]}
+@defdummy
+@vindex \name\
+@end macro
+
+@macro DefregListEnd{name}
 @deffnx Register @t{\\n[\name\]}
 @vindex \name\
 @end macro
@@ -109,7 +183,19 @@
 @vindex \name\ @r{[}\package\@r{]}
 @end macro
 
-@macro Defmpregx{name, package}
+@macro DefmpregList{name, package}
+@deffn Register @t{\\n[\name\]}
+@defdummy
+@vindex \name\ @r{[}\package\@r{]}
+@end macro
+
+@macro DefmpregItem{name, package}
+@deffnx Register @t{\\n[\name\]}
+@defdummy
+@vindex \name\ @r{[}\package\@r{]}
+@end macro
+
+@macro DefmpregListEnd{name, package}
 @deffnx Register @t{\\n[\name\]}
 @vindex \name\ @r{[}\package\@r{]}
 @end macro
@@ -126,7 +212,19 @@
 @maindex \name\ @r{[}\package\@r{]}
 @end macro
 
-@macro Defmacx{name, arg, package}
+@macro DefmacList{name, arg, package}
+@defmac @t{.\name\} \arg\
+@defdummy
+@maindex \name\ @r{[}\package\@r{]}
+@end macro
+
+@macro DefmacItem{name, arg, package}
+@defmacx @t{.\name\} \arg\
+@defdummy
+@maindex \name\ @r{[}\package\@r{]}
+@end macro
+
+@macro DefmacListEnd{name, arg, package}
 @defmacx @t{.\name\} \arg\
 @maindex \name\ @r{[}\package\@r{]}
 @end macro
@@ -143,7 +241,19 @@
 @stindex \name\ @r{[}\package\@r{]}
 @end macro
 
-@macro Defstrx{name, package}
+@macro DefstrList{name, package}
+@deffn String @t{\name\}
+@defdummy
+@stindex \name\ @r{[}\package\@r{]}
+@end macro
+
+@macro DefstrItem{name, package}
+@deffnx String @t{\name\}
+@defdummy
+@stindex \name\ @r{[}\package\@r{]}
+@end macro
+
+@macro DefstrListEnd{name, package}
 @deffnx String @t{\name\}
 @stindex \name\ @r{[}\package\@r{]}
 @end macro
@@ -2184,9 +2294,9 @@ set to a default value; on the other hand, the rest of the text has
 default font settings.
 @endDefmac
 
-@Defmac {LP, , man}
-@Defmacx {PP, , man}
-@Defmacx {P, , man}
+@DefmacList {LP, , man}
+@DefmacItem {PP, , man}
+@DefmacListEnd {P, , man}
 These macros are mutual aliases.  Any of them causes a line break at
 the current position, followed by a vertical space downwards by the
 amount specified by the @code{PD} macro.  The font size and shape are
@@ -2366,8 +2476,8 @@ The `trademark' sign.
 
 @cindex @code{lq} glyph, and @code{lq} string [@code{man}]
 @cindex @code{rq} glyph, and @code{rq} string [@code{man}]
-@Defstr {lq, man}
-@Defstrx {rq, man}
+@DefstrList {lq, man}
+@DefstrListEnd {rq, man}
 Left and right quote.  This is equal to @code{\(lq} and @code{\(rq},
 respectively.
 @endDefstr
@@ -2532,7 +2642,7 @@ to make them easy to find and edit as necessary.
 
 @unnumberedsubsubsec Margin Settings
 
-@Defmpreg{PO, ms}
+@Defmpreg {PO, ms}
 Defines the page offset (i.e.@: the left margin).
 There is no explicit right margin setting; the combination of
 the @code{PO} and @code{LL} registers implicitly define the
@@ -2543,7 +2653,7 @@ Effective: next page.
 Default value: 1@dmn{i}.
 @endDefmpreg
 
-@Defmpreg{LL, ms}
+@Defmpreg {LL, ms}
 Defines the line length (i.e.@: the width of the body text).
 
 Effective: next paragraph.
@@ -2551,7 +2661,7 @@ Effective: next paragraph.
 Default: 6@dmn{i}.
 @endDefmpreg
 
-@Defmpreg{LT, ms}
+@Defmpreg {LT, ms}
 Defines the title length (i.e.@: the header and footer width).
 This is usually the same as @code{LL}, but not necessarily.
 
@@ -2560,7 +2670,7 @@ Effective: next paragraph.
 Default: 6@dmn{i}.
 @endDefmpreg
 
-@Defmpreg{HM, ms}
+@Defmpreg {HM, ms}
 Defines the header margin height at the top of the page.
 
 Effective: next page.
@@ -2568,7 +2678,7 @@ Effective: next page.
 Default: 1@dmn{i}.
 @endDefmpreg
 
-@Defmpreg{FM, ms}
+@Defmpreg {FM, ms}
 Defines the footer margin height at the bottom of the page.
 
 Effective: next page.
@@ -2578,7 +2688,7 @@ Default: 1@dmn{i}.
 
 @unnumberedsubsubsec Text Settings
 
-@Defmpreg{PS, ms}
+@Defmpreg {PS, ms}
 Defines the point size of the body text.
 
 Effective: next paragraph.
@@ -2586,7 +2696,7 @@ Effective: next paragraph.
 Default: 10@dmn{p}.
 @endDefmpreg
 
-@Defmpreg{VS, ms}
+@Defmpreg {VS, ms}
 Defines the space between lines (line height plus leading).
 
 Effective: next paragraph.
@@ -2596,7 +2706,7 @@ Default: 12@dmn{p}.
 
 @unnumberedsubsubsec Paragraph Settings
 
-@Defmpreg{PI, ms}
+@Defmpreg {PI, ms}
 Defines the initial indent of a @code{.PP} paragraph.
 
 Effective: next paragraph.
@@ -2604,7 +2714,7 @@ Effective: next paragraph.
 Default: 5@dmn{n}.
 @endDefmpreg
 
-@Defmpreg{PD, ms}
+@Defmpreg {PD, ms}
 Defines the space between paragraphs.
 
 Effective: next paragraph.
@@ -2612,7 +2722,7 @@ Effective: next paragraph.
 Default: 0.3@dmn{v}.
 @endDefmpreg
 
-@Defmpreg{QI, ms}
+@Defmpreg {QI, ms}
 Defines the indent on both sides of a quoted (@code{.QP}) paragraph.
 
 Effective: next paragraph.
@@ -2622,7 +2732,7 @@ Default: 5@dmn{n}.
 
 @unnumberedsubsubsec Footnote Settings
 
-@Defmpreg{FL, ms}
+@Defmpreg {FL, ms}
 Defines the length of a footnote.
 
 Effective: next footnote.
@@ -2630,7 +2740,7 @@ Effective: next footnote.
 Default: @math{@code{\n[LL]} * 5 / 6}.
 @endDefmpreg
 
-@Defmpreg{FI, ms}
+@Defmpreg {FI, ms}
 Defines the footnote indent.
 
 Effective: next footnote.
@@ -2638,7 +2748,7 @@ Effective: next footnote.
 Default: 2@dmn{n}.
 @endDefmpreg
 
-@Defmpreg{FF, ms}
+@Defmpreg {FF, ms}
 The footnote format:
 @table @code
 @item 0
@@ -2662,7 +2772,7 @@ Default: 0.
 
 @unnumberedsubsubsec Miscellaneous Number Registers
 
-@Defmpreg{MINGW, ms}
+@Defmpreg {MINGW, ms}
 Defines the minimum width between columns in a multi-column document.
 
 Effective: next page.
@@ -2680,7 +2790,7 @@ Default: 2@dmn{n}.
 Use the following macros to create a cover page for your document
 in the order shown.
 
-@Defmac{RP, [@code{no}], ms}
+@Defmac {RP, [@code{no}], ms}
 Specifies the report format for your document.
 The report format creates a separate cover page.
 The default action (no @code{.RP}
@@ -2694,25 +2804,25 @@ does not repeat any of the title page information
 on page 1 of the document.
 @endDefmac
 
-@Defmac{DA, [@dots{}], ms}
+@Defmac {DA, [@dots{}], ms}
 (optional) Print the current date, or the arguments to the macro if any,
 on the title page (if specified) and in the footers.
 This is the default for @code{nroff}.
 @endDefmac
 
-@Defmac{ND, [@dots{}], ms}
+@Defmac {ND, [@dots{}], ms}
 (optional) Print the current date, or the arguments to the macro if any,
 on the title page (if specified) but not in the footers.
 This is the default for @code{troff}.
 @endDefmac
 
-@Defmac{TL, , ms}
+@Defmac {TL, , ms}
 Specifies the document title.
 @code{groff} collects text following the @code{.TL}
 macro into the title, until reaching the author name or abstract.
 @endDefmac
 
-@Defmac{AU, , ms}
+@Defmac {AU, , ms}
 Specifies the author's name, which appears on the
 line (or lines) immediately following.
 You can specify multiple authors as follows:
@@ -2731,20 +2841,20 @@ Monolithic Corporation
 @endExample
 @endDefmac
 
-@Defmac{AI, , ms}
+@Defmac {AI, , ms}
 Specifies the author's institution.
 You can specify multiple institutions in the same way
 that you specify multiple authors.
 @endDefmac
 
-@Defmac{AB, [@code{no}], ms}
+@Defmac {AB, [@code{no}], ms}
 Begins the abstract.
 The default is to print the word @acronym{ABSTRACT},
 centered and in italics, above the text of the abstract.
 The word @code{no} as an optional argument suppresses this heading.
 @endDefmac
 
-@Defmac{AE, , ms}
+@Defmac {AE, , ms}
 End the abstract.
 @endDefmac
 
@@ -2811,15 +2921,15 @@ Examples include paragraphs, sections, and other groups.
 
 The following paragraph types are available.
 
-@Defmac{PP, , ms}
+@Defmac {PP, , ms}
 Sets a paragraph with an initial indent.
 @endDefmac
 
-@Defmac{LP, , ms}
+@Defmac {LP, , ms}
 Sets a paragraph with no initial indent.
 @endDefmac
 
-@Defmac{QP, , ms}
+@Defmac {QP, , ms}
 Sets a paragraph that is indented at both left and right margins.
 The effect is identical to the @acronym{HTML} @code{<BLOCKQUOTE>} element.
 The next paragraph or heading returns margins to normal.
@@ -2863,8 +2973,8 @@ using the same font family and point size as the body text.
 
 The following describes the heading macros:
 
-@Defmac{NH, @Var{curr-level}, ms}
-@Defmacx{NH, @t{S} @Var{level0} @dots{}, ms}
+@DefmacList {NH, @Var{curr-level}, ms}
+@DefmacListEnd {NH, @t{S} @Var{level0} @dots{}, ms}
 Numbered heading.
 The argument is either a numeric argument to indicate the
 level of the heading, or the letter @code{S} followed by numeric arguments
@@ -2875,7 +2985,7 @@ If you specify heading levels out of sequence, such as invoking
 prints a warning on standard error.
 @endDefmac
 
-@Defmac{SH, , ms}
+@Defmac {SH, , ms}
 Unnumbered subheading.
 @endDefmac
 
@@ -2888,7 +2998,7 @@ Unnumbered subheading.
 The @file{ms} macros provide a variety of methods to highlight
 or emphasize text:
 
-@Defmac{B, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+@Defmac {B, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in @strong{bold type}.
 If you specify a second argument, @code{groff} prints it in the
 previous font after the bold text, with no intervening space
@@ -2909,40 +3019,40 @@ prints all text following in bold until
 the next highlighting, paragraph, or heading macro.
 @endDefmac
 
-@Defmac{R, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+@Defmac {R, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in roman (or regular) type.
 It operates similarly to the @code{B} macro otherwise.
 @endDefmac
 
-@Defmac{I, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+@Defmac {I, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in @emph{italic type}.
 It operates similarly to the @code{B} macro otherwise.
 @endDefmac
 
-@Defmac{CW, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+@Defmac {CW, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in a @code{constant width face}.
 It operates similarly to the @code{B} macro otherwise.
 @endDefmac
 
-@Defmac{BI, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
+@Defmac {BI, [@Var{txt} [@Var{post} [@Var{pre}]]], ms}
 Sets its first argument in bold italic type.
 It operates similarly to the @code{B} macro otherwise.
 @endDefmac
 
-@Defmac{BX, [@Var{txt}], ms}
+@Defmac {BX, [@Var{txt}], ms}
 Prints its argument and draws a box around it.
 If you want to box a string that contains spaces,
 use a digit-width space (@code{\0}).
 @endDefmac
 
-@Defmac{UL, [@Var{txt} [@Var{post}]], ms}
+@Defmac {UL, [@Var{txt} [@Var{post}]], ms}
 Prints its first argument with an underline.
 If you specify a second argument, @code{groff}
 prints it in the previous font after
 the underlined text, with no intervening space.
 @endDefmac
 
-@Defmac{LG, , ms}
+@Defmac {LG, , ms}
 Prints all text following in larger type
 (two points larger than the current point size) until
 the next font size, highlighting, paragraph, or heading macro.
@@ -2950,7 +3060,7 @@ You can specify this macro multiple times
 to enlarge the point size as needed.
 @endDefmac
 
-@Defmac{SM, , ms}
+@Defmac {SM, , ms}
 Prints all text following in smaller type
 (two points smaller than the current point size) until
 the next type size, highlighting, paragraph, or heading macro.
@@ -2958,7 +3068,7 @@ You can specify this macro multiple times
 to reduce the point size as needed.
 @endDefmac
 
-@Defmac{NL, , ms}
+@Defmac {NL, , ms}
 Prints all text following in the normal point size
 (that is, the value of the @code{PS} register).
 @endDefmac
@@ -2971,7 +3081,7 @@ Prints all text following in the normal point size
 
 The @code{.IP} macro handles duties for all lists.
 
-@Defmac{IP, [@Var{marker} [@Var{width}]], ms}
+@Defmac {IP, [@Var{marker} [@Var{width}]], ms}
 The @var{marker} is usually a bullet character (@code{\[bu]})
 for unordered lists, a number (or auto-incrementing number
 register) for numbered lists, or a word or phrase for indented
@@ -3120,8 +3230,8 @@ To set nested lists, use the @code{RS} and @code{RE} macros.
 @cindex @file{ms}, nested lists
 @cindex Nested lists (ms)
 
-@Defmac{RS, , ms}
-@Defmacx{RE, , ms}
+@DefmacList {RS, , ms}
+@DefmacListEnd {RE, , ms}
 These macros begin and end a section indented to line
 up with the body of an @code{IP} macro.
 @endDefmac
@@ -3176,9 +3286,9 @@ as-is without inserting @code{br} requests in between each line.
 Displays can be @dfn{kept} on a single page, or allowed
 to break across pages.
 
-@Defmac{DS, @t{L}, ms}
-@Defmacx{LD, , ms}
-@Defmacx{DE, , ms}
+@DefmacList {DS, @t{L}, ms}
+@DefmacItem {LD, , ms}
+@DefmacListEnd {DE, , ms}
 Left-justified display.
 The @samp{.DS L} call generates a page break, if necessary,
 to keep the entire display on one page.
@@ -3186,9 +3296,9 @@ The @code{LD} macro allows the display to break across pages.
 The @code{DE} macro ends the display.
 @endDefmac
 
-@Defmac{DS, @t{I}, ms}
-@Defmacx{ID, , ms}
-@Defmacx{DE, , ms}
+@DefmacList {DS, @t{I}, ms}
+@DefmacItem {ID, , ms}
+@DefmacListEnd {DE, , ms}
 Indents the display as defined by the @code{DI} register.
 The @samp{.DS I} call generates a page break, if necessary,
 to keep the entire display on one page.
@@ -3196,9 +3306,9 @@ The @code{ID} macro allows the display to break across pages.
 The @code{DE} macro ends the display.
 @endDefmac
 
-@Defmac{DS, @t{B}, ms}
-@Defmacx{BD, , ms}
-@Defmacx{DE, , ms}
+@DefmacList {DS, @t{B}, ms}
+@DefmacItem {BD, , ms}
+@DefmacListEnd {DE, , ms}
 Sets a block-centered display: the entire display is left-justified,
 but indented so that the longest line in the display is centered
 on the page.
@@ -3208,9 +3318,9 @@ The @code{BD} macro allows the display to break across pages.
 The @code{DE} macro ends the display.
 @endDefmac
 
-@Defmac{DS, @t{C}, ms}
-@Defmacx{CD, , ms}
-@Defmacx{DE, , ms}
+@DefmacList {DS, @t{C}, ms}
+@DefmacItem {CD, , ms}
+@DefmacListEnd {DE, , ms}
 Sets a centered display: each line in the display is centered.
 The @samp{.DS C} call generates a page break, if necessary,
 to keep the entire display on one page.
@@ -3218,9 +3328,9 @@ The @code{CD} macro allows the display to break across pages.
 The @code{DE} macro ends the display.
 @endDefmac
 
-@Defmac{DS, @t{R}, ms}
-@Defmacx{RD, , ms}
-@Defmacx{DE, , ms}
+@DefmacList {DS, @t{R}, ms}
+@DefmacItem {RD, , ms}
+@DefmacListEnd {DE, , ms}
 Right-justifies each line in the display.
 The @samp{.DS R} call generates a page break, if necessary,
 to keep the entire display on one page.
@@ -3236,14 +3346,14 @@ immediately following.
 The @file{ms} macros provide the @code{KS} and @code{KE}
 macros for this purpose.
 
-@Defmac{KS, , ms}
-@Defmacx{KE, , ms}
+@DefmacList {KS, , ms}
+@DefmacListEnd {KE, , ms}
 The @code{KS} macro begins a block of text to be kept on a
 single page, and the @code{KE} macro ends the block.
 @endDefmac
 
-@Defmac{KF, , ms}
-@Defmacx{KE, , ms}
+@DefmacList {KF, , ms}
+@DefmacListEnd {KE, , ms}
 Specifies a @dfn{floating keep};
 if the keep cannot fit on the current page, @code{groff}
 holds the contents of the keep and allows text following
@@ -3263,8 +3373,8 @@ there is not enough vertical space remaining on the page.
 Use the following macros to draw a box around a section of
 text (such as a display).
 
-@Defmac{B1, , ms}
-@Defmacx{B2, , ms}
+@DefmacList {B1, , ms}
+@DefmacListEnd {B2, , ms}
 Marks the beginning and ending of text that is to have a
 box drawn around it.
 The @code{B1} macro begins the box; the @code{B2} macro ends it.
@@ -3294,8 +3404,8 @@ The @file{ms} macros support the standard
 You mark text meant for preprocessors by enclosing it
 in pairs of tags as follows.
 
-@Defmac{TS, [@code{H}], ms}
-@Defmacx{TE, , ms}
+@DefmacList {TS, [@code{H}], ms}
+@DefmacListEnd {TE, , ms}
 Denotes a table, to be processed by the @code{tbl} preprocessor.
 The optional argument @code{H} to @code{TS} instructs @code{groff}
 to create a running header with the information
@@ -3305,23 +3415,23 @@ table; if the table runs onto another page, @code{groff}
 prints the header on the next page as well.
 @endDefmac
 
-@Defmac{PS, , ms}
-@Defmacx{PE, , ms}
+@DefmacList {PS, , ms}
+@DefmacListEnd {PE, , ms}
 Denotes a graphic, to be processed by the @code{pic} preprocessor.
 You can create a @code{pic} file by hand, using the @acronym{AT&T}
 @code{pic} manual available on the Web as a reference, or by using
 a graphics program such as @code{xfig}.
 @endDefmac
 
-@Defmac{EQ, [@Var{align}], ms}
-@Defmacx{EN, , ms}
+@DefmacList {EQ, [@Var{align}], ms}
+@DefmacListEnd {EN, , ms}
 Denotes an equation, to be processed by the @code{eqn} preprocessor.
 The optional @var{align} argument can be @code{C}, @code{L}, or
 @code{I} to center (the default), left-justify, or indent the equation.
 @endDefmac
 
-@Defmac{[, , ms}
-@Defmacx{], , ms}
+@DefmacList {[, , ms}
+@DefmacListEnd {], , ms}
 Denotes a reference, to be processed by the @code{refer} preprocessor.
 The @acronym{GNU} @cite{refer(1)} manpage provides a comprehensive
 reference to the preprocessor and the format of the bibliographic
@@ -3369,12 +3479,12 @@ The @file{ms} macro package has a flexible footnote system.
 You can specify either numbered footnotes or symbolic footnotes
 (that is, using a marker such as a dagger symbol).
 
-@Defstr{*, ms}
+@Defstr {*, ms}
 Specifies the location of a numbered footnote marker in the text.
 @endDefesc
 
-@Defmac{FS, , ms}
-@Defmacx{FE, , ms}
+@DefmacList {FS, , ms}
+@DefmacListEnd {FE, , ms}
 Specifies the text of the footnote.
 The default action is to create a numbered footnote;
 you can create a symbolic footnote by placing the character
@@ -3422,15 +3532,15 @@ the proper number registers and strings.
 For documents that do not distinguish between odd and even pages,
 set the following strings:
 
-@Defstr{LH, ms}
-@Defstrx{CH, ms}
-@Defstrx{RH, ms}
+@DefstrList {LH, ms}
+@DefstrItem {CH, ms}
+@DefstrListEnd {RH, ms}
 Sets the left, center, and right headers.
 @endDefstr
 
-@Defstr{LF, ms}
-@Defstrx{CF, ms}
-@Defstrx{RF, ms}
+@DefstrList {LF, ms}
+@DefstrItem {CF, ms}
+@DefstrListEnd {RF, ms}
 Sets the left, center, and right footers.
 @endDefstr
 
@@ -3438,10 +3548,10 @@ Sets the left, center, and right footers.
 For documents that need different information printed in the
 even and odd pages, use the following macros:
 
-@Defmac{OH, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
-@Defmacx{EH, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
-@Defmacx{OF, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
-@Defmacx{EF, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
+@DefmacList {OH, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
+@DefmacItem {EH, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
+@DefmacItem {OF, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
+@DefmacListEnd {EF, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}, ms}
 The @code{OH} and @code{EH} macros define headers for the odd and even pages;
 the @code{OF} and @code{EF} macros define footers for the odd and even pages.
 This is more flexible than defining the individual strings.
@@ -3473,15 +3583,15 @@ all of them force a page break if a multi-column mode is already set.
 However, if the current mode is single-column, starting a multi-column
 mode does @strong{not} force a page break.
 
-@Defmac{1C, , ms}
+@Defmac {1C, , ms}
 Single-column mode.
 @endDefmac
 
-@Defmac{2C, , ms}
+@Defmac {2C, , ms}
 Two-column mode.
 @endDefmac
 
-@Defmac{MC, [@Var{width} [@Var{gutter}]], ms}
+@Defmac {MC, [@Var{width} [@Var{gutter}]], ms}
 Multi-column mode.
 If you specify no arguments, it is equivalent to the
 @code{.2C} macro.
@@ -3503,8 +3613,8 @@ Assuming that you want the table of contents to consist of
 the document's headings, you need to repeat those headings
 wrapped in @code{XS} and @code{XE} macros.
 
-@Defmac{XS, , ms}
-@Defmacx{XE, , ms}
+@DefmacList {XS, , ms}
+@DefmacListEnd {XE, , ms}
 These macros bracket a table of contents entry.
 The macros are very simple; they cannot indent a heading based on its level.
 The easiest way to work around this is to add tabs
@@ -3532,7 +3642,7 @@ Methodology
 @endExample
 @endDefmac
 
-@Defmac{TC, , ms}
+@Defmac {TC, , ms}
 Prints the table of contents at the specified point.
 You should usually place this macro at the end of the
 file, since @code{groff} is a single-pass formatter and
@@ -3610,22 +3720,22 @@ A cover sheet macro
 The @code{groff -ms} macros have a few minor extensions
 compared to the @acronym{AT&T} @code{troff -ms} macros.
 
-@Defmac{AM, , ms}
+@Defmac {AM, , ms}
 Improved accent marks.
 @endDefmac
 
-@Defmac{DS, @t{I}, ms}
+@Defmac {DS, @t{I}, ms}
 Indented display.
 The default behavior of @acronym{AT&T} @code{troff -ms}
 was to indent; the @code{groff} default prints displays
 flush left with the body text.
 @endDefmac
 
-@Defmac{CW, , ms}
+@Defmac {CW, , ms}
 Print text in @code{constant width} (Courier) font.
 @endDefmac
 
-@Defmac{IX, , ms}
+@Defmac {IX, , ms}
 Indexing term (printed on standard error).
 You can write a script to capture and process an index
 generated in this manner.
@@ -3635,7 +3745,7 @@ generated in this manner.
 The following additional number registers
 appear in @code{groff -ms}:
 
-@Defmpreg{MINGW, ms}
+@Defmpreg {MINGW, ms}
 Specifies a minimum space
 between columns (for multi-column output); this takes the
 place of the @code{GW} register that was documented but apparently
@@ -3646,16 +3756,16 @@ not implemented in @acronym{AT&T} @code{troff}.
 Several new string registers are available as well.
 You can change these to handle (for example) the local language.
 
-@Defstr{REFERENCES, ms}
+@Defstr {REFERENCES, ms}
 Contains the string printed at the beginning of the
 references (bibliography) page.
 @endDefstr
 
-@Defstr{ABSTRACT, ms}
+@Defstr {ABSTRACT, ms}
 Contains the string printed at the beginning of the abstract.
 @endDefstr
 
-@Defstr{TOC, ms}
+@Defstr {TOC, ms}
 Contains the string printed at the beginning of the table of contents.
 @endDefstr
 
@@ -4861,8 +4971,8 @@ details of formatting parameters.
 Define or set registers using the @code{nr} request or the
 @code{\R} escape.
 
-@Defreq {nr, ident value}
-@Defescx {\\R, ', ident value, '}
+@DefreqList {nr, ident value}
+@DefescListEnd {\\R, ', ident value, '}
 Set number register @var{ident} to @var{value}.  If @var{ident}
 doesn't exist, @code{gtroff} creates it.
 
@@ -4880,10 +4990,10 @@ For example, the following two lines are equivalent:
 Both @code{nr} and @code{\R} have two additional special forms to
 increment or decrement a register.
 
-@Defreq {nr, ident @t{+}@Var{value}}
-@Defreqx {nr, ident @t{-}@Var{value}}
-@Defescx {\\R, ', ident @t{+}@Var{value}, '}
-@Defescx {\\R, ', ident @t{-}@Var{value}, '}
+@DefreqList {nr, ident @t{+}@Var{value}}
+@DefreqItem {nr, ident @t{-}@Var{value}}
+@DefescItem {\\R, ', ident @t{+}@Var{value}, '}
+@DefescListEnd {\\R, ', ident @t{-}@Var{value}, '}
 Increment (decrement) register @var{ident} by @var{value}.
 
 @Example
@@ -4955,9 +5065,9 @@ Numeric registers can be accessed via the @code{\n} escape.
 @cindex assignments, nested
 @cindex indirect assignments
 @cindex assignments, indirect
-@Defesc {\\n, , i, }
-@Defescx {\\n, @lparen{}, id, }
-@Defescx {\\n, @lbrack{}, ident, @rbrack}
+@DefescList {\\n, , i, }
+@DefescItem {\\n, @lparen{}, id, }
+@DefescListEnd {\\n, @lbrack{}, ident, @rbrack}
 Interpolate number register with name @var{ident} (one-character name
 @var{i}, two-character name @var{id}).  This means that the value of
 the register is expanded in-place while @code{gtroff} is parsing the
@@ -5004,16 +5114,16 @@ escape doesn't support this notation.
 To activate auto-incrementing, the escape @code{\n} has a special
 syntax form.
 
-@Defesc {\\n, +, i, }
-@Defescx {\\n, -, i, }
-@Defescx {\\n, @lparen{}+, id, }
-@Defescx {\\n, @lparen{}-, id, }
-@Defescx {\\n, +@lparen{}, id, }
-@Defescx {\\n, -@lparen{}, id, }
-@Defescx {\\n, @lbrack{}+, ident, @rbrack{}}
-@Defescx {\\n, @lbrack{}-, ident, @rbrack{}}
-@Defescx {\\n, +@lbrack{}, ident, @rbrack{}}
-@Defescx {\\n, -@lbrack{}, ident, @rbrack{}}
+@DefescList {\\n, +, i, }
+@DefescItem {\\n, -, i, }
+@DefescItem {\\n, @lparen{}+, id, }
+@DefescItem {\\n, @lparen{}-, id, }
+@DefescItem {\\n, +@lparen{}, id, }
+@DefescItem {\\n, -@lparen{}, id, }
+@DefescItem {\\n, @lbrack{}+, ident, @rbrack{}}
+@DefescItem {\\n, @lbrack{}-, ident, @rbrack{}}
+@DefescItem {\\n, +@lbrack{}, ident, @rbrack{}}
+@DefescListEnd {\\n, -@lbrack{}, ident, @rbrack{}}
 Before interpolating, increment or decrement @var{ident}
 (one-character name @var{i}, two-character name @var{id}) by the
 auto-increment value as specified with the @code{nr} request (or the
@@ -5139,9 +5249,9 @@ then apply the @code{af} request to this other register.
 
 @cindex format of register (@code{\g})
 @cindex register, format (@code{\g})
-@Defesc {\\g, , i, }
-@Defescx {\\g, @lparen{}, id, }
-@Defescx {\\g, @lbrack{}, ident, @rbrack{}}
+@DefescList {\\g, , i, }
+@DefescItem {\\g, @lparen{}, id, }
+@DefescListEnd {\\g, @lbrack{}, ident, @rbrack{}}
 Return the current format of the specified register @var{ident}
 (one-character name @var{i}, two-character name @var{id}).  For
 example, @samp{\ga} after the previous example would produce the
@@ -5349,8 +5459,8 @@ the @code{fi} request.
 
 @cindex fill mode (@code{fi})
 @cindex mode, fill (@code{fi})
-@Defreq {fi, }
-@Defregx {.u}
+@DefreqList {fi, }
+@DefregListEnd {.u}
 Activate fill mode (which is the default).  This request implicitly
 enables adjusting; it also inserts a break in the text currently being
 filled.  The read-only number register @code{.u} is set to@w{ }1.
@@ -5371,8 +5481,8 @@ The fill mode status is associated with the current environment
 (@pxref{Environments}).
 @endDefreq
 
-@Defreq {ad, [@Var{mode}]}
-@Defregx {.j}
+@DefreqList {ad, [@Var{mode}]}
+@DefregListEnd {.j}
 Set adjusting mode.
 
 Activation and deactivation of adjusting is done implicitly with
@@ -5465,9 +5575,9 @@ is formatted as
 @cindex sentence space size register (@code{.sss})
 @cindex size of sentence space register (@code{.sss})
 @cindex space between sentences register (@code{.sss})
-@Defreq {ss, word_space_size [@Var{sentence_space_size}]}
-@Defregx {.ss}
-@Defregx {.sss}
+@DefreqList {ss, word_space_size [@Var{sentence_space_size}]}
+@DefregItem {.ss}
+@DefregListEnd {.sss}
 Change the minimum size of a space between filled words.  It takes its
 units as one twelfth of the space width parameter for the current
 font.  Initially both the @var{word_space_size} and
@@ -5506,8 +5616,8 @@ The request is ignored if there is no parameter.
 
 @cindex centering lines (@code{ce})
 @cindex lines, centering (@code{ce})
-@Defreq {ce, [@Var{nnn}]}
-@Defregx {.ce}
+@DefreqList {ce, [@Var{nnn}]}
+@DefregListEnd {.ce}
 Center text.  While the @w{@samp{.ad c}} request also centers text,
 it fills the text as well.  @code{ce} does not fill the
 text it affects.  This request causes a break.
@@ -5560,8 +5670,8 @@ remaining to be centered, as set by the @code{ce} request.
 @cindex justifying text (@code{rj})
 @cindex text, justifying (@code{rj})
 @cindex right-justifying (@code{rj})
-@Defreq {rj, [@Var{nnn}]}
-@Defregx {.rj}
+@DefreqList {rj, [@Var{nnn}]}
+@DefregListEnd {.rj}
 Justify unfilled text to the right margin.  Arguments are identical to
 the @code{ce} request.  The @code{.rj} read-only number register is
 the number of lines to be right-justified as set by the @code{rj}
@@ -5579,8 +5689,8 @@ request.  This request causes a break.
 As discussed in @ref{Hyphenation}, @code{gtroff} hyphenates words.
 There are a number of ways to influence hyphenation.
 
-@Defreq {hy, [@Var{mode}]}
-@Defregx {.hy}
+@DefreqList {hy, [@Var{mode}]}
+@DefregListEnd {.hy}
 Enable hyphenation.  The request has an optional numeric argument,
 @var{mode}, to restrict hyphenation if necessary:
 
@@ -5625,9 +5735,9 @@ The hyphenation mode is associated with the current environment
 @cindex consecutive hyphenated lines (@code{hlm})
 @cindex lines, consecutive hyphenated (@code{hlm})
 @cindex hyphenated lines, consecutive (@code{hlm})
-@Defreq {hlm, [@Var{nnn}]}
-@Defregx {.hlm}
-@Defregx {.hlc}
+@DefreqList {hlm, [@Var{nnn}]}
+@DefregItem {.hlm}
+@DefregListEnd {.hlc}
 Set the maximum number of consecutive hyphenated lines to @var{nnn}.
 If this number is negative, there is no maximum.  The default value
 is@w{ }@minus{}1 if @var{nnn} is omitted.  This value is associated
@@ -5739,8 +5849,8 @@ This request is ignored if it has no parameter.
 @cindex hyphenation margin (@code{hym})
 @cindex margin for hyphenation (@code{hym})
 @cindex @code{ad} request, and hyphenation margin
-@Defreq {hym, [@Var{length}]}
-@Defregx {.hym}
+@DefreqList {hym, [@Var{length}]}
+@DefregListEnd {.hym}
 Set the (right) hyphenation margin to @var{length}.  If the current
 adjustment mode is not @samp{b} or@w{ }@samp{n}, the line is not
 hyphenated if it is shorter than @var{length}.  Without an argument,
@@ -5759,8 +5869,8 @@ number register.
 
 @cindex hyphenation space (@code{hys})
 @cindex @code{ad} request, and hyphenation space
-@Defreq {hys, [@Var{hyphenation_space}]}
-@Defregx {.hys}
+@DefreqList {hys, [@Var{hyphenation_space}]}
+@DefregListEnd {.hys}
 Set the hyphenation space to @var{hyphenation_space}.  If the current
 adjustment mode is @samp{b} or@w{ }@samp{n}, don't hyphenate the line
 if it can be justified by adding no more than @var{hyphenation_space}
@@ -5801,8 +5911,8 @@ soft hyphen character.
 @cindex @code{hw} request, and hyphenation language
 @pindex troffrc
 @pindex troffrc-end
-@Defreq {hla, language}
-@Defregx {.hla}
+@DefreqList {hla, language}
+@DefregListEnd {.hla}
 Set the current hyphenation language to the string @var{language}.
 Hyphenation exceptions specified with the @code{hw} request and
 hyphenation patterns specified with the @code{hpf} request are both
@@ -5840,8 +5950,8 @@ request causes a line break.  The default scaling indicator is@w{
 @endDefreq
 
 @cindex double spacing (@code{ls})
-@Defreq {ls, [@Var{nnn}]}
-@Defregx {.L}
+@DefreqList {ls, [@Var{nnn}]}
+@DefregListEnd {.L}
 Output @w{@var{nnn}@minus{}1} blank lines after each line of text.
 With no argument, @code{gtroff} uses the previous value before the
 last @code{ls} call.
@@ -5863,8 +5973,8 @@ spacing setting.
 @c XXX document \n[nl]
 @c XXX document \n[nl] == -1 if vertical position is zero
 
-@Defesc {\\x, ', spacing, '}
-@Defregx {.a}
+@DefescList {\\x, ', spacing, '}
+@DefregListEnd {.a}
 Sometimes, extra vertical spacing is only needed occasionally, e.g.@:
 to allow space for a tall construct (like an equation).  The @code{\x}
 escape does this.  The escape is given a numerical argument, usually
@@ -5893,8 +6003,8 @@ The @code{.a} read-only number register contains the most recent
 @cindex mode, no-space (@code{ns})
 @cindex blank lines, disabling
 @cindex lines, blank, disabling
-@Defreq {ns, }
-@Defregx {.ns}
+@DefreqList {ns, }
+@DefregListEnd {.ns}
 Enable @dfn{no-space mode}.  In this mode, spacing (either via
 @code{sp} or via blank lines) is disabled.  The @code{bp} request to
 advance to the next page is also disabled, except if it is accompanied
@@ -5934,8 +6044,8 @@ This escape is a non-interpreted tab character.  In copy mode
 (@pxref{Copy-in Mode}), @code{\t} is the same as a real tab character.
 @endDefesc
 
-@Defreq {ta, [@Var{n1} @Var{n2} @dots{} @Var{nn} @t{T} @Var{r1} @Var{r2} @dots{} @Var{rn}]}
-@Defregx {.tabs}
+@DefreqList {ta, [@Var{n1} @Var{n2} @dots{} @Var{nn} @t{T} @Var{r1} @Var{r2} @dots{} @Var{rn}]}
+@DefregListEnd {.tabs}
 Change tab stop positions.  This request takes a series of tab
 specifiers as arguments (optionally divided into two groups with the
 letter @samp{T}) which indicate where each tab stop is to be
@@ -6541,10 +6651,10 @@ Replace me with a better (and more) example!
 @endExample
 
 @pindex troffrc
-@Defreq {po, [@Var{offset}]}
-@Defreqx {po, @t{+}@Var{offset}}
-@Defreqx {po, @t{-}@Var{offset}}
-@Defregx {.o}
+@DefreqList {po, [@Var{offset}]}
+@DefreqItem {po, @t{+}@Var{offset}}
+@DefreqItem {po, @t{-}@Var{offset}}
+@DefregListEnd {.o}
 Set horizontal page offset to @var{offset} (or increment or decrement
 the current value by @var{offset}).  Note that this request does not
 cause a break, so changing the page offset in the middle of text being
@@ -6573,10 +6683,10 @@ the previous value before the last call to @code{po}.
 @endExample
 @endDefreq
 
-@Defreq {in, [@Var{indent}]}
-@Defreqx {in, @t{+}@Var{indent}}
-@Defreqx {in, @t{-}@Var{indent}}
-@Defregx {.i}
+@DefreqList {in, [@Var{indent}]}
+@DefreqItem {in, @t{+}@Var{indent}}
+@DefreqItem {in, @t{-}@Var{indent}}
+@DefregListEnd {.i}
 Set indentation to @var{indent} (or increment or decrement the
 current value by @var{indent}).  This request causes a break.
 Initially, there is no indentation.
@@ -6599,10 +6709,10 @@ The current indentation (as set by @code{in}) can be found in the
 read-only number register @samp{.i}.
 @endDefreq
 
-@Defreq {ti, offset}
-@Defreqx {ti, @t{+}@Var{offset}}
-@Defreqx {ti, @t{-}@Var{offset}}
-@Defregx {.in}
+@DefreqList {ti, offset}
+@DefreqItem {ti, @t{+}@Var{offset}}
+@DefreqItem {ti, @t{-}@Var{offset}}
+@DefregListEnd {.in}
 Temporarily indent the next output line by @var{offset}.  If an
 increment or decrement value is specified, adjust the temporary
 indentation relative to the value set by the @code{in} request.
@@ -6628,11 +6738,11 @@ into account whether a partially collected line still uses the old
 indentation value or a temporary indentation value is active.
 @endDefreq
 
-@Defreq {ll, [@Var{length}]}
-@Defreqx {ll, @t{+}@Var{length}}
-@Defreqx {ll, @t{-}@Var{length}}
-@Defregx {.l}
-@Defregx {.ll}
+@DefreqList {ll, [@Var{length}]}
+@DefreqItem {ll, @t{+}@Var{length}}
+@DefreqItem {ll, @t{-}@Var{length}}
+@DefregItem {.l}
+@DefregListEnd {.ll}
 Set the line length to @var{length} (or increment or decrement the
 current value by @var{length}).  Initially, the line length is set to
 6.5@dmn{i}.  The effect of @code{ll} is delayed until a partially
@@ -6670,10 +6780,10 @@ page layout.
 
 @cindex page length (@code{pl})
 @cindex length of page (@code{pl})
-@Defreq {pl, [@Var{length}]}
-@Defreqx {pl, @t{+}@Var{length}}
-@Defreqx {pl, @t{-}@Var{length}}
-@Defregx {.p}
+@DefreqList {pl, [@Var{length}]}
+@DefreqItem {pl, @t{+}@Var{length}}
+@DefreqItem {pl, @t{-}@Var{length}}
+@DefregListEnd {p}
 Set the @dfn{page length} to @var{length} (or increment or decrement
 the current value by @var{length}).  This is the length of the
 physical output page.  The default scaling indicator is@w{ }@code{v}.
@@ -6746,10 +6856,10 @@ changing the font or font size) are undone after processing @code{tl}.
 @cindex length of title line (@code{lt})
 @cindex title line, length (@code{lt})
 @cindex title line length register (@code{.lt})
-@Defreq {lt, [@Var{length}]}
-@Defreqx {lt, @t{+}@Var{length}}
-@Defreqx {lt, @t{-}@Var{length}}
-@Defregx {.lt}
+@DefreqList {lt, [@Var{length}]}
+@DefreqItem {lt, @t{+}@Var{length}}
+@DefreqItem {lt, @t{-}@Var{length}}
+@DefregListEnd {.lt}
 The title line is printed using its own line length, which is
 specified (or incremented or decremented) with the @code{lt} request.
 Initially, the title line length is set to 6.5@dmn{i}.  If a negative
@@ -6767,10 +6877,10 @@ number register; it is associated with the current environment
 
 @cindex page number (@code{pn})
 @cindex number, page (@code{pn})
-@Defreq {pn, page}
-@Defreqx {pn, @t{+}@Var{page}}
-@Defreqx {pn, @t{-}@Var{page}}
-@Defregx {.pn}
+@DefreqList {pn, page}
+@DefreqItem {pn, @t{+}@Var{page}}
+@DefreqItem {pn, @t{-}@Var{page}}
+@DefregListEnd {.pn}
 Change (increase or decrease) the page number of the @emph{next} page.
 The only argument is the page number; the request is ignored without a
 parameter.
@@ -6806,9 +6916,9 @@ Note that this doesn't affect the number register @code{%}.
 
 @cindex new page (@code{bp})
 @cindex page, new (@code{bp})
-@Defreq {bp, [@Var{page}]}
-@Defreqx {bp, @t{+}@Var{page}}
-@Defreqx {bp, @t{-}@Var{page}}
+@DefreqList {bp, [@Var{page}]}
+@DefreqItem {bp, @t{+}@Var{page}}
+@DefreqListEnd {bp, @t{-}@Var{page}}
 Stop processing the current page and move to the next page.  This
 request causes a break.  It can also take an argument to set
 (increase, decrease) the page number of the next page.  The only
@@ -6904,10 +7014,10 @@ special symbols (Greek, mathematics).
 @kindex styles
 @kindex family
 @pindex DESC
-@Defreq {ft, [@Var{font}]}
-@Defescx {\\f, , f, }
-@Defescx {\\f, @lparen{}, fn, }
-@Defescx {\\f, @lbrack{}, font, @rbrack}
+@DefreqList {ft, [@Var{font}]}
+@DefescItem {\\f, , f, }
+@DefescItem {\\f, @lparen{}, fn, }
+@DefescListEnd {\\f, @lbrack{}, font, @rbrack}
 The @code{ft} request and the @code{\f} escape change the current font
 to @var{font} (one-character name @var{f}, two-character name
 @var{fn}).
@@ -6987,8 +7097,8 @@ different font family on the command line (@pxref{Groff Options}).
 
 @cindex changing font family (@code{fam})
 @cindex font family, changing (@code{fam})
-@Defreq {fam, [@Var{family}]}
-@Defregx {.fam}
+@DefreqList {fam, [@Var{family}]}
+@DefregListEnd {.fam}
 Switch font family to @var{family}.  If no argument is given, switch
 back to the previous font family.  The current font family is available
 in the read-only number register @samp{.fam} (this is a string-valued
@@ -7099,9 +7209,9 @@ on which various fonts are mounted.
 
 @cindex mounting font (@code{fp})
 @cindex font, mounting (@code{fp})
-@Defreq {fp, pos font [@Var{external-name}]}
-@Defregx {.f}
-@Defregx {.fp}
+@DefreqList {fp, pos font [@Var{external-name}]}
+@DefregItem {.f}
+@DefregListEnd {.fp}
 Mount font @var{font} at position @var{pos} (which must be a
 non-negative integer).  This numeric position can then be referred to
 with font changing commands.  When @code{gtroff} starts it is using
@@ -7159,10 +7269,10 @@ syntax forms to access font positions.
 @kindex styles
 @kindex family
 @pindex DESC
-@Defreq {ft, nnn}
-@Defescx {\\f, , n, }
-@Defescx {\\f, @lparen{}, nn, }
-@Defescx {\\f, @lbrack{}, nnn, @rbrack}
+@DefreqList {ft, nnn}
+@DefescItem {\\f, , n, }
+@DefescItem {\\f, @lparen{}, nn, }
+@DefescListEnd {\\f, @lbrack{}, nnn, @rbrack}
 Change the current font position to @var{nnn} (one-digit position
 @var{n}, two-digit position @var{nn}), which must be a non-negative
 integer.
@@ -7256,8 +7366,8 @@ have been called the first time) for special fonts and check them.
 
 @xref{Font Files}, and @ref{Special Fonts}, for more details.
 
-@Defesc {\\, @lparen{}, nm, }
-@Defescx {\\, @lbrack{}, name, @rbrack}
+@DefescList {\\, @lparen{}, nm, }
+@DefescListEnd {\\, @lbrack{}, name, @rbrack}
 Insert a symbol @var{name} (two-character name @var{nm}).  There is no
 special syntax for one-character names -- the natural form
 @samp{\@var{n}} would collide with escapes.
@@ -7488,9 +7598,9 @@ a non-negative font position or the name of a font.
 
 @cindex imitating bold face (@code{bd})
 @cindex bold face, imitating (@code{bd})
-@Defreq {bd, font [@Var{offset}]}
-@Defreqx {bd, font1 font2 [@Var{offset}]}
-@Defregx {.b}
+@DefreqList {bd, font [@Var{offset}]}
+@DefreqItem {bd, font1 font2 [@Var{offset}]}
+@DefregListEnd {.b}
 Artificially create a bold font by printing each character twice,
 slightly offset.
 
@@ -7563,8 +7673,8 @@ fonts may include ligatures for `ft' and `ct', although GNU
 @cindex activating ligatures (@code{lg})
 @cindex ligatures, activating (@code{lg})
 @cindex ligatures enabled register (@code{.lg})
-@Defreq {lg, [@Var{flag}]}
-@Defregx {.lg}
+@DefreqList {lg, [@Var{flag}]}
+@DefregListEnd {.lg}
 The ligature mechanism can be switched on or off with the @code{lg}
 request; if the parameter is non-zero or missing, ligatures are
 enabled, otherwise disabled.  Default is on.  The current ligature
@@ -7589,8 +7699,8 @@ have the same width don't use kerning.
 @cindex activating kerning (@code{kern})
 @cindex kerning, activating (@code{kern})
 @cindex kerning enabled register (@code{.kern})
-@Defreq {kern, [@Var{flag}]}
-@Defregx {.kern}
+@DefreqList {kern, [@Var{flag}]}
+@DefregListEnd {.kern}
 Kerning can be activated with the @code{kern} request.  If the
 parameter is non-zero or missing, enable pairwise kerning, otherwise
 disable it.  The read-only number register @code{.kern} is set to@w{
@@ -7781,11 +7891,11 @@ typesetters, as @dfn{leading}.
 @cindex changing type sizes (@code{ps}, @code{\s})
 @cindex type sizes, changing (@code{ps}, @code{\s})
 @cindex point sizes, changing (@code{ps}, @code{\s})
-@Defreq {ps, [@Var{size}]}
-@Defreqx {ps, @t{+}@Var{size}}
-@Defreqx {ps, @t{-}@Var{size}}
-@Defescx {\\s, , size, }
-@Defregx {.s}
+@DefreqList {ps, [@Var{size}]}
+@DefreqItem {ps, @t{+}@Var{size}}
+@DefreqItem {ps, @t{-}@Var{size}}
+@DefescItem {\\s, , size, }
+@DefregListEnd {.s}
 Use the @code{ps} request or the @code{\s} escape to change (increase,
 decrease) the type size (in points).  Specify @var{size} as either an
 absolute point size, or as a relative change from the current size.
@@ -7848,10 +7958,10 @@ Some devices may only have certain permissible sizes, in which case
 @cindex changing vertical spacing (@code{vs})
 @cindex vertical spacing, changing (@code{vs})
 @cindex vertical spacing register (@code{.v})
-@Defreq {vs, [@Var{space}]}
-@Defreqx {vs, @t{+}@Var{space}}
-@Defreqx {vs, @t{-}@Var{space}}
-@Defregx {.v}
+@DefreqList {vs, [@Var{space}]}
+@DefreqItem {vs, @t{+}@Var{space}}
+@DefreqItem {vs, @t{-}@Var{space}}
+@DefregListEnd {.v}
 Change (increase, decrease) the vertical spacing by @var{space}.  The
 default unit is @samp{p}.
 
@@ -7934,8 +8044,8 @@ A read-only number register returning the point size in scaled points.
 @cindex point size registers, last-requested (@code{.psr}, @code{.sr})
 @cindex @code{.ps} register, in comparison with @code{.psr}
 @cindex @code{.s} register, in comparison with @code{.sr}
-@Defreg {.psr}
-@Defregx {.sr}
+@DefregList {.psr}
+@DefregListEnd {.sr}
 The last-requested point size in scaled points is contained in the
 @code{.psr} read-only number register.  The last requested point size
 in points as a decimal fraction can be found in @code{.sr}.  This is a
@@ -7990,10 +8100,10 @@ even this is a read-write string variable).
 @cindex string expansion (@code{\*})
 @cindex interpolation of strings (@code{\*})
 @cindex expansion of strings (@code{\*})
-@Defreq {ds, name [@Var{string}]}
-@Defescx {\\*, , n, }
-@Defescx {\\*, @lparen{}, nm, }
-@Defescx {\\*, @lbrack{}, name, @rbrack{}}
+@DefreqList {ds, name [@Var{string}]}
+@DefescItem {\\*, , n, }
+@DefescItem {\\*, @lparen{}, nm, }
+@DefescListEnd {\\*, @lbrack{}, name, @rbrack{}}
 Define and access a string variable @var{name} (one-character name
 @var{n}, two-character name @var{nm}).  If @var{name} already exists,
 @code{ds} overwrites the previous definition.
@@ -8377,8 +8487,8 @@ more info.
 
 @c XXX .nop request
 
-@Defreq {ie, expr anything}
-@Defreqx {el, anything}
+@DefreqList {ie, expr anything}
+@DefreqListEnd {el, anything}
 Use the @code{ie} and @code{el} requests to write an if-then-else.
 The first request is the `if' part and the latter is the `else' part.
 
@@ -8397,8 +8507,8 @@ The first request is the `if' part and the latter is the `else' part.
 @cindex conditional block, end (@code{\@}})
 @cindex block, conditional, begin (@code{\@{})
 @cindex block, condititional, end (@code{\@}})
-@c @Defesc {\\@@@{, , , }
-@c @Defescx {\\@@@}, , , }
+@c @DefescList {\\@@@{, , , }
+@c @DefescListEnd {\\@@@}, , , }
 In many cases, an if (or if-else) construct needs to execute more than
 one request.  This can be done using the @code{\@{} and @code{\@}}
 escapes.  The following example shows the possible ways to use these
@@ -8648,9 +8758,9 @@ escapes:
 @cindex copy-in mode, and macro arguments
 @cindex macro arguments (@code{\$})
 @cindex arguments, macro (@code{\$})
-@Defesc {\\$, n, , }
-@Defescx {\\$, @lparen{}, nn, }
-@Defescx {\\$, @lbrack{}, nnn, @rbrack{}}
+@DefescList {\\$, n, , }
+@DefescItem {\\$, @lparen{}, nn, }
+@DefescListEnd {\\$, @lbrack{}, nnn, @rbrack{}}
 The escapes @code{\$@var{n}}, @code{\$(@var{nn}} and
 @code{\$[@var{nnn}]} retrieve the @var{n}@dmn{th}, @var{nn}@dmn{th} or
 @var{nnn}@dmn{th} argument.  As usual, the first form only accepts a
@@ -8669,8 +8779,8 @@ arguments 1 to@w{ }@var{n} are no longer available.  Shifting by
 negative amounts is currently undefined.
 @endDefreq
 
-@Defesc {\\$*, , , }
-@Defescx {\\$@@, , , }
+@DefescList {\\$*, , , }
+@DefescListEnd {\\$@@, , , }
 In some cases it is convenient to use all of the arguments at once (for
 example, to pass the arguments along to another macro).  The @code{\$*}
 escape concatenates all the arguments separated by spaces.  A
@@ -8720,8 +8830,8 @@ vertical motion, @code{sp}.
 @cindex returning to marked page location (@code{rt})
 @cindex page location, returning to marked (@code{rt})
 @cindex location, page, returning to marked (@code{rt})
-@Defreq {mk, [@Var{reg}]}
-@Defreqx {rt, [@Var{dist}]}
+@DefreqList {mk, [@Var{reg}]}
+@DefreqListEnd {rt, [@Var{dist}]}
 The request @code{mk} can be used to mark a location on a page, for
 movement to later.  This request takes a register name as an argument
 in which to store the current page location.  With no argument it
@@ -9147,8 +9257,8 @@ setting footnotes
 @cindex enabling vertical position traps (@code{vpt})
 @cindex vertical position traps, enabling (@code{vpt})
 @cindex vertical position trap enable register (@code{.vpt})
-@Defreq {vpt, flag}
-@Defregx {.vpt}
+@DefreqList {vpt, flag}
+@DefregListEnd {.vpt}
 Enables vertical position traps if @var{flag} is non-zero, or disables
 them otherwise.  Vertical position traps are traps set by the @code{wh}
 or @code{dt} requests.  Traps set by the @code{it} request are not
@@ -9341,8 +9451,8 @@ page, footnotes, tables of contents and indices.
 @cindex diversion, ending (@code{di})
 @cindex appending to diversion (@code{da})
 @cindex diversion, appending (@code{da})
-@Defreq {di, macro}
-@Defreqx {da, macro}
+@DefreqList {di, macro}
+@DefreqListEnd {da, macro}
 Begins a diversion.  Like the @code{de}
 request, it takes an argument of a macro name to divert subsequent text
 into.  The @code{da} macro appends to an existing diversion.
@@ -9365,8 +9475,8 @@ into.  The @code{da} macro appends to an existing diversion.
 @cindex vertical position in diversion register (@code{.d})
 @cindex position, vertical, in diversion, register (@code{.d})
 @cindex diversion, vertical position in, register (@code{.d})
-@Defreg {.z}
-@Defregx {.d}
+@DefregList {.z}
+@DefregListEnd {.d}
 Diversions may be nested.  The read-only number register @code{.z}
 contains the name of the current diversion (this is a string-valued
 register).  The read-only number register @code{.d} contains the current
@@ -9382,8 +9492,8 @@ text baseline of the lowest line on the page.  This is a read-only
 register.
 @endDefreg
 
-@Defreg {dn}
-@Defregx {dl}
+@DefregList {dn}
+@DefregListEnd {dl}
 After completing a diversion, the read-write number registers @code{dn}
 and @code{dl} contain the vertical and horizontal size of the diversion.
 
@@ -9426,8 +9536,8 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 
 @cindex transparent output (@code{\!})
 @cindex output, transparent (@code{\!})
-@Defesc {\\!, , , }
-@Defescx {\\?, , @Var{anything}, \\?}
+@DefescList {\\!, , , }
+@DefescListEnd {\\?, , @Var{anything}, \\?}
 Prevents requests, macros and escapes from being
 interpreted when read into a diversion.  This takes the given text
 and @dfn{transparently} embeds it into the diversion.  This is useful for
@@ -9537,8 +9647,8 @@ named @samp{0}, @samp{1} and@w{ }@samp{2}.
 @cindex switching environment (@code{ev})
 @cindex environment, switching (@code{ev})
 @cindex environment number/name register (@code{.ev})
-@Defreq {ev, env}
-@Defregx {.ev}
+@DefreqList {ev, env}
+@DefregListEnd {.ev}
 Switches to another environment.  The argument @var{env} is the name of
 the environment to switch to.  With no argument, @code{gtroff} switches
 back to the previous environment.  There is no limit on the number of
@@ -9686,9 +9796,9 @@ Note that @code{f} is the default scaling indicator for the
 @endExample
 @endDefreq
 
-@Defesc {\\m, , c, }
-@Defescx {\\m, @lparen{}, co, }
-@Defescx {\\m, @lbrack{}, color, @rbrack}
+@DefescList {\\m, , c, }
+@DefescItem {\\m, @lparen{}, co, }
+@DefescListEnd {\\m, @lbrack{}, color, @rbrack}
 Set drawing color.  The following example shows how to turn the next four
 words red.
 
@@ -9699,9 +9809,9 @@ words red.
 The escape @code{\mP} returns to the previous color.
 @endDefesc
 
-@Defesc {\\M, , c, }
-@Defescx {\\M, @lparen{}, co, }
-@Defescx {\\M, @lbrack{}, color, @rbrack}
+@DefescList {\\M, , c, }
+@DefescItem {\\M, @lparen{}, co, }
+@DefescListEnd {\\M, @lbrack{}, color, @rbrack}
 Set background color for filled objects drawn with the
 @code{\D'@dots{}'} commands.
 
@@ -9745,8 +9855,8 @@ to include @file{tmac.@var{name}} and vice versa.
 
 @cindex transparent output (@code{cf}, @code{trf})
 @cindex output, transparent (@code{cf}, @code{trf})
-@Defreq {cf, file}
-@Defreqx {trf, file}
+@DefreqList {cf, file}
+@DefreqListEnd {trf, file}
 Transparently outputs the contents of @var{file}.  Each line is output
 as it were preceded by @code{\!}; however, the lines are not subject to
 copy mode interpretation.  If the file does not end with a newline, then
@@ -9842,8 +9952,8 @@ specified by @var{pipe}.  This request must occur before
 @code{gtroff} has a chance to print anything.
 @endDefreq
 
-@Defreq {sy, cmds}
-@Defregx {systat}
+@DefreqList {sy, cmds}
+@DefregListEnd {systat}
 In @dfn{unsafe} mode, executes the shell command(s) specified by
 @var{cmds}.  The output is not saved anyplace, so it is up to the user
 to do so.
@@ -9879,8 +9989,8 @@ of the @code{system()} function executed by the last @code{sy} request.
 @cindex file, opening (@code{open})
 @cindex appending to file (@code{opena})
 @cindex file, appending to (@code{opena})
-@Defreq {open, stream file}
-@Defreqx {opena, stream file}
+@DefreqList {open, stream file}
+@DefreqListEnd {opena, stream file}
 Opens the specified @var{file} for writing and
 associates the specified @var{stream} with it.
 
@@ -10213,8 +10323,8 @@ or an error occurs.  The most verbose level of warnings is @option{-ww}.
 
 @cindex level of warnings (@code{warn})
 @cindex warnings, level (@code{warn})
-@Defreq {warn, [@Var{flags}]}
-@Defregx {.warn}
+@DefreqList {warn, [@Var{flags}]}
+@DefregListEnd {.warn}
 Controls the level of warnings checked for.  The @var{flags} are the sum
 of the numbers associated with each warning that is to be enabled; all
 other warnings are disabled.  The number associated with each warning is
