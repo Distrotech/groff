@@ -482,7 +482,7 @@ dnl
 AC_DEFUN(GROFF_MKSTEMP,
 [AC_LANG_PUSH(C++)
 AC_LIBSOURCE(mkstemp.cc)
-AC_CHECK_FUNC(mkstemp, , [_AC_LIBOBJ(mkstemp)])
+AC_CHECK_FUNC(mkstemp, [AC_DEFINE(HAVE_MKSTEMP)], [_AC_LIBOBJ(mkstemp)])
 AC_LANG_POP(C++)])dnl
 dnl
 dnl

@@ -43,6 +43,12 @@ int is_prime(unsigned);
 #include <strings.h>
 #endif
 
+#ifndef HAVE_MKSTEMP
+/* since mkstemp() is defined as a real C++ function if taken from
+   groff's mkstemp.cc we need a declaration */
+int mkstemp(char *tmpl);
+#endif /* HAVE_MKSTEMP */
+
 int mksdir(char *tmpl);
 
 FILE *xtmpfile(char **namep = 0,
@@ -51,15 +57,11 @@ FILE *xtmpfile(char **namep = 0,
 char *xtmptemplate(const char *postfix_long, const char *postfix_short);
 
 #ifdef NEED_DECLARATION_POPEN
-
 extern "C" { FILE *popen(const char *, const char *); }
-
 #endif /* NEED_DECLARATION_POPEN */
 
 #ifdef NEED_DECLARATION_PCLOSE
-
 extern "C" { int pclose (FILE *); }
-
 #endif /* NEED_DECLARATION_PCLOSE */
 
 size_t file_name_max(const char *fname);
@@ -72,6 +74,15 @@ inline int illegal_input_char(int c)
 {
   return c >= 0 && illegal_char_table[c];
 }
+
+#ifdef HAVE_STRCASECMP
+#ifdef NEED_DECLARATION_STRCASECMP
+extern "C" {
+  // Ultrix's string.h fails to declare this.
+  int strcasecmp(const char *, const char *);
+}
+#endif /* NEED_DECLARATION_STRCASECMP */
+#endif /* HAVE_STRCASECMP */
 
 #if !defined(_AIX) && !defined(sinix) && !defined(__sinix__)
 #ifdef HAVE_STRNCASECMP
