@@ -25,8 +25,8 @@
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.10';
-_LAST_UPDATE='1 June 2004';
+_PROGRAM_VERSION='0.9.11';
+_LAST_UPDATE='15 June 2004';
 
 
 ########################################################################
@@ -3489,12 +3489,6 @@ main_parse_args()
       --all)
           _OPT_ALL="yes";
           ;;
-      --ascii)
-        list_append _ADDOPTS_GROFF '-mtty-char';
-        if obj _mode is_empty; then
-          _mode='text';
-        fi;
-        ;;
       --apropos)		# run `apropos'
 	apropos_run "$1";
         _code="$?";
@@ -3502,22 +3496,28 @@ main_parse_args()
         exit "${_code}";
         ;;
       --apropos-data)		# run `apropos' for data sections
-	apropos_run "$1" | grep '^[^(]*([457])';
+	apropos_run "$1" | grep '^[^(]*([457][^)]*)';
         _code="$?";
         clean_up;
         exit "${_code}";
         ;;
       --apropos-devel)		# run `apropos' for development sections
-	apropos_run "$1" | grep '^[^(]*([239])';
+	apropos_run "$1" | grep '^[^(]*([239][^)]*)';
         _code="$?";
         clean_up;
         exit "${_code}";
         ;;
       --apropos-progs)		# run `apropos' for program sections
-	apropos_run "$1" | grep '^[^(]*([168])';
+	apropos_run "$1" | grep '^[^(]*([168][^)]*)';
         _code="$?";
         clean_up;
         exit "${_code}";
+        ;;
+      --ascii)
+        list_append _ADDOPTS_GROFF '-mtty-char';
+        if obj _mode is_empty; then
+          _mode='text';
+        fi;
         ;;
       --auto)			# the default automatic mode
         _mode='';
