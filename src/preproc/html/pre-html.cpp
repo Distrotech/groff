@@ -64,7 +64,9 @@ extern "C" const char *Version_string;
 #define IMAGE_BOARDER_PIXELS       0
 #define INLINE_LEADER_CHAR      '\\'
 
-#define TRANSPARENT  "-background white -transparent white"
+// Don't use colour names here!  Otherwise there is a dependency on
+// a file called `rgb.txt' which maps names to colours.
+#define TRANSPARENT  "-background rgb:f/f/f -transparent rgb:f/f/f"
 #define MIN_ALPHA_BITS             0
 #define MAX_ALPHA_BITS             4
 
