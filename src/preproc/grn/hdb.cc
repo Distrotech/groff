@@ -15,6 +15,7 @@
 #include "error.h"
 
 #define MAXSTRING 128
+#define MAXSTRING_S "127"
 
 /* imports from main.cc */
 
@@ -89,7 +90,7 @@ DBRead(register FILE *file)
 
   SUNFILE = FALSE;
   elist = DBInit();
-  (void) fscanf(file, "%s\n", string);
+  (void) fscanf(file, "%" MAXSTRING_S "s\n", string);
   if (strcmp(string, "gremlinfile")) {
     if (strcmp(string, "sungremlinfile")) {
       error("`%1' is not a gremlin file", gremlinfile);
@@ -103,10 +104,10 @@ DBRead(register FILE *file)
 
   done = FALSE;
   while (!done) {
-    /* if (fscanf(file,"%s\n", string) == EOF) */
+    /* if (fscanf(file,"%" MAXSTRING_S "s\n", string) == EOF) */
     /* I changed the scanf format because the element */
     /* can have two words (e.g. CURVE SPLINE)         */
-    if (fscanf(file, "\n%[^\n]\n", string) == EOF) {
+    if (fscanf(file, "\n%" MAXSTRING_S "[^\n]\n", string) == EOF) {
       error("`%1', error in file format", gremlinfile);
       return (elist);
     }
