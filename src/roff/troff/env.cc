@@ -543,7 +543,7 @@ color *environment::get_prev_glyph_color()
 
 color *environment::get_glyph_color()
 {
-  return cur_glyph_color;
+  return glyph_color;
 }
 
 color *environment::get_prev_fill_color()
@@ -553,23 +553,23 @@ color *environment::get_prev_fill_color()
 
 color *environment::get_fill_color()
 {
-  return cur_fill_color;
+  return fill_color;
 }
 
 void environment::set_glyph_color(color *c)
 {
   if (interrupted)
     return;
-  curenv->prev_glyph_color = curenv->cur_glyph_color;
-  curenv->cur_glyph_color = c;
+  curenv->prev_glyph_color = curenv->glyph_color;
+  curenv->glyph_color = c;
 }
 
 void environment::set_fill_color(color *c)
 {
   if (interrupted)
     return;
-  curenv->prev_fill_color = curenv->cur_fill_color;
-  curenv->cur_fill_color = c;
+  curenv->prev_fill_color = curenv->fill_color;
+  curenv->fill_color = c;
 }
 
 environment::environment(symbol nm)
@@ -640,9 +640,9 @@ environment::environment(symbol nm)
 #endif /* WIDOW_CONTROL */
   ignore_next_eol(0),
   emitted_node(0),
-  cur_glyph_color(&default_color),
+  glyph_color(&default_color),
   prev_glyph_color(&default_color),
-  cur_fill_color(&default_color),
+  fill_color(&default_color),
   prev_fill_color(&default_color),
   name(nm),
   control_char('.'),
@@ -730,9 +730,9 @@ environment::environment(const environment *e)
 #endif /* WIDOW_CONTROL */
   ignore_next_eol(0),
   emitted_node(0),
-  cur_glyph_color(e->cur_glyph_color),
+  glyph_color(e->glyph_color),
   prev_glyph_color(e->prev_glyph_color),
-  cur_fill_color(e->cur_fill_color),
+  fill_color(e->fill_color),
   prev_fill_color(e->prev_fill_color),
   name(e->name),		// so that eg `.if "\n[.ev]"0"' works
   control_char(e->control_char),
@@ -817,9 +817,9 @@ void environment::copy(const environment *e)
   composite = 0;
   ignore_next_eol = e->ignore_next_eol;
   emitted_node = e->emitted_node;
-  cur_glyph_color= e->cur_glyph_color;
+  glyph_color= e->glyph_color;
   prev_glyph_color = e->prev_glyph_color;
-  cur_fill_color = e->cur_fill_color;
+  fill_color = e->fill_color;
   prev_fill_color = e->prev_fill_color;
 }
 
@@ -2374,9 +2374,9 @@ void title()
   curenv->char_slant = env.char_slant;
   curenv->fontno = env.fontno;
   curenv->prev_fontno = env.prev_fontno;
-  curenv->cur_glyph_color = env.cur_glyph_color;
+  curenv->glyph_color = env.glyph_color;
   curenv->prev_glyph_color = env.prev_glyph_color;
-  curenv->cur_fill_color = env.cur_fill_color;
+  curenv->fill_color = env.fill_color;
   curenv->prev_fill_color = env.prev_fill_color;
   node *n = 0;
   node *p = part[2];

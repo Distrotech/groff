@@ -185,9 +185,9 @@ class environment {
 #endif /* WIDOW_CONTROL */
   int ignore_next_eol;
   int emitted_node;    // have we emitted a node since the last html eol tag?
-  color *cur_glyph_color;
+  color *glyph_color;
   color *prev_glyph_color;
-  color *cur_fill_color;
+  color *fill_color;
   color *prev_fill_color;
 
   tab_type distance_to_next_tab(hunits *);
