@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 12 Feb 2003
+   Last update: 14 Feb 2003
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -282,7 +282,7 @@ public:
   ~IntArray(void);
   const IntArg operator[](const size_t i) const
   {
-    if (i >= num_stored || i < 0)
+    if (i >= num_stored)
       fatal("index out of range");
     return (const IntArg) data[i];
   }

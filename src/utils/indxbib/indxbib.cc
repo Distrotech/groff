@@ -222,8 +222,7 @@ int main(int argc, char **argv)
   else
     name_max = file_name_max(".");
   const char *filename = p ? p + 1 : basename;
-  if (name_max >= 0 &&
-      (strlen(filename) + sizeof(INDEX_SUFFIX) - 1) > name_max)
+  if (strlen(filename) + sizeof(INDEX_SUFFIX) - 1 > name_max)
     fatal("`%1.%2' is too long for a filename", filename, INDEX_SUFFIX);
   if (p) {
     p++;

@@ -605,7 +605,8 @@ int ps_printer::set_encoding_index(ps_font *f)
   return f->encoding_index = next_encoding_index++;
 }
 
-void ps_printer::set_char(int i, font *f, const environment *env, int w, const char *name)
+void ps_printer::set_char(int i, font *f, const environment *env, int w,
+			  const char *)
 {
   if (i == space_char_index || invis_count > 0)
     return;

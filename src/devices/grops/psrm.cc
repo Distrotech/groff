@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -724,7 +724,7 @@ int read_one_of(const char **ptr, const char **s, int n)
   return -1;
 }
 
-void skip_possible_newline(const char *ptr, FILE *fp, FILE *outfp)
+void skip_possible_newline(FILE *fp, FILE *outfp)
 {
   int c = getc(fp);
   if (c == '\r') {
@@ -816,7 +816,7 @@ int resource_manager::do_begin_data(const char *ptr, int, FILE *fp,
       }
     } while ((unit == Bytes ? bytecount : linecount) < numberof);
   }
-  skip_possible_newline(ptr, fp, outfp);
+  skip_possible_newline(fp, outfp);
   char buf[PS_LINE_MAX + 2];
   if (!ps_get_line(buf, fp)) {
     error("missing %%%%EndData line");
@@ -858,7 +858,7 @@ int resource_manager::do_begin_binary(const char *ptr, int, FILE *fp,
     else if (c == '\n')
       current_lineno++;
   }
-  skip_possible_newline(ptr, fp, outfp);
+  skip_possible_newline(fp, outfp);
   char buf[PS_LINE_MAX + 2];
   if (!ps_get_line(buf, fp)) {
     error("missing %%%%EndBinary line");

@@ -31,23 +31,6 @@ extern void do_for(char *var, double from, double to,
 		   int by_is_multiplicative, double by, char *body);
 extern void do_lookahead();
 
-#ifndef HAVE_FMOD
-extern "C" {
-  double fmod(double, double);
-}
-#endif
-
-#undef rand
-#undef srand
-extern "C" {
-  int rand();
-#ifdef RET_TYPE_SRAND_IS_VOID
-  void srand(unsigned int);
-#else
-  int srand(unsigned int);
-#endif
-}
-
 /* Maximum number of characters produced by printf("%g") */
 #define GDIGITS 14
 

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote output.cc
  *  but it owes a huge amount of ideas and raw code from
@@ -175,7 +175,7 @@ simple_output &simple_output::end_line()
   return *this;
 }
 
-simple_output &simple_output::special(const char *s)
+simple_output &simple_output::special(const char *)
 {
   return *this;
 }

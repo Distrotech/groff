@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994, 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
      Written by Francisco Andrés Verdú <pandres@dragonet.es> with many ideas
      taken from the other groff drivers.
 
@@ -25,7 +25,9 @@ TODO
 
  - Add X command to include bitmaps
 */
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 
 #include "driver.h"
 #include "lbp.h"
@@ -271,7 +273,7 @@ char *lbp_printer::font_name(const lbp_font *f, const int siz)
 }
 
 void lbp_printer::set_char(int index, font *f, const environment *env,
-			   int w, const char *name)
+			   int w, const char *)
 {
   int code = f->get_code(index);
   unsigned char ch = code & 0xff;

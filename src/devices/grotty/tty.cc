@@ -319,7 +319,7 @@ char tty_printer::color_to_idx(color *col)
 }
 
 void tty_printer::set_char(int i, font *f, const environment *env,
-			   int w, const char *name)
+			   int w, const char *)
 {
   if (w != font::hor)
     fatal("width of character not equal to horizontal resolution");

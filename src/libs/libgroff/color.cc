@@ -2,7 +2,7 @@
 
 /* <groff_src_dir>/src/libs/libgroff/color.cc
 
-Last update: 9 Feb 2003
+Last update: 15 Feb 2003
 
 Copyright (C) 2001, 2002, 2003 Free Software Foundation, Inc.
     Written by Gaius Mulley <gaius@glam.ac.uk>
@@ -45,6 +45,32 @@ min(const unsigned int a, const unsigned int b)
     return b;
 }
 
+color *color::free_list = 0;
+
+void *color::operator new(size_t n)
+{
+  assert(n == sizeof(color));
+  if (!free_list) {
+    const int BLOCK = 128;
+    free_list = (color *)new char[sizeof(color)*BLOCK];
+    for (int i = 0; i < BLOCK - 1; i++)
+      free_list[i].next = free_list + i + 1;
+    free_list[BLOCK-1].next = 0;
+  }
+  color *p = free_list;
+  free_list = (color *)(free_list->next);
+  p->next = 0;
+  return p;
+}
+
+void color::operator delete(void *p)
+{
+  if (p) {
+    ((color *)p)->next = free_list;
+    free_list = (color *)p;
+  }
+}
+
 color::color(const color * const c)
 {
   scheme = c->scheme;
@@ -52,6 +78,10 @@ color::color(const color * const c)
   components[1] = c->components[1];
   components[2] = c->components[2];
   components[3] = c->components[3];
+}
+
+color::~color()
+{
 }
 
 int color::operator==(const color & c) const

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -82,6 +82,9 @@ struct delimiter {
   {
     "|", LEFT_DELIM|RIGHT_DELIM, "|", "\\[bar%s]",
     "\\[barex]",
+    0,
+    0,
+    0,
   },
   {
     "floor", LEFT_DELIM, "\\(lf", "\\[floorleft%s]",
@@ -101,26 +104,43 @@ struct delimiter {
     "ceiling", LEFT_DELIM, "\\(lc", "\\[ceilingleft%s]",
     "\\[bracketleftex]",
     "\\[bracketlefttp]",
+    0,
+    0,
   },
   {
     "ceiling", RIGHT_DELIM, "\\(rc", "\\[ceilingright%s]",
     "\\[bracketrightex]",
     "\\[bracketrighttp]",
+    0,
+    0,
   },
   {
     "||", LEFT_DELIM|RIGHT_DELIM, "|", "\\[bar%s]",
     "\\[bardblex]",
+    0,
+    0,
+    0,
   },
   {
     "<", LEFT_DELIM|RIGHT_DELIM, "\\(la", "\\[angleleft%s]",
+    0,
+    0,
+    0,
+    0,
   },
   {
     ">", LEFT_DELIM|RIGHT_DELIM, "\\(ra", "\\[angleright%s]",
+    0,
+    0,
+    0,
+    0,
   },
   {
     "uparrow", LEFT_DELIM|RIGHT_DELIM, "\\(ua", "\\[arrowup%s]",
     "\\[arrowvertex]",
     "\\[arrowverttp]",
+    0,
+    0,
   },
   {
     "downarrow", LEFT_DELIM|RIGHT_DELIM, "\\(da", "\\[arrowdown%s]",

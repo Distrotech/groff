@@ -1252,11 +1252,8 @@ static void define_color()
     skip_line();
     return;
   }
-  if (col) {
-    color *old_col = (color *)color_dictionary.lookup(color_name, col);
-    if (old_col)
-      delete old_col;
-  }
+  if (col)
+    (void)color_dictionary.lookup(color_name, col);
   skip_line();
 }
 
@@ -2546,7 +2543,7 @@ int diverted_copy_file_node::reread(int *bolp)
   return 1;
 }
 
-int word_space_node::reread(int *bolp)
+int word_space_node::reread(int *)
 {
   if (unformat) {
     for (width_list *w = orig_width; w; w = w->next)
@@ -2562,7 +2559,7 @@ int unbreakable_space_node::reread(int *)
   return 0;
 }
 
-int hmotion_node::reread(int *bolp)
+int hmotion_node::reread(int *)
 {
   if (unformat && was_tab) {
     curenv->handle_tab(0);
@@ -7187,9 +7184,8 @@ void check_output_limits(int x, int y)
     output_reg_maxy_contents = y;
 }
 
-void reset_output_registers(int miny)
+void reset_output_registers()
 {
-  // fprintf(stderr, "reset_output_registers\n");
   output_reg_minx_contents = -1;
   output_reg_miny_contents = -1;
   output_reg_maxx_contents = -1;

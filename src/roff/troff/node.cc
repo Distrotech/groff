@@ -858,7 +858,7 @@ inline void troff_output_file::moveto(hunits h, vunits v)
 }
 
 void troff_output_file::really_print_line(hunits x, vunits y, node *n,
-					  vunits before, vunits after, hunits width)
+					  vunits before, vunits after, hunits)
 {
   moveto(x, y);
   while (n != 0) {
@@ -1533,7 +1533,7 @@ void output_file::trailer(vunits)
 {
 }
 
-void output_file::put_filename(const char *filename)
+void output_file::put_filename(const char *)
 {
 }
 
@@ -1644,7 +1644,7 @@ void real_output_file::put_filename(const char *filename)
   really_put_filename(filename);
 }
 
-void real_output_file::really_put_filename(const char *filename)
+void real_output_file::really_put_filename(const char *)
 {
 }
 
@@ -1681,7 +1681,8 @@ void ascii_output_file::really_transparent_char(unsigned char c)
   putc(c, fp);
 }
 
-void ascii_output_file::really_print_line(hunits, vunits, node *n, vunits, vunits, hunits width)
+void ascii_output_file::really_print_line(hunits, vunits, node *n,
+					  vunits, vunits, hunits)
 {
   while (n != 0) {
     n->ascii_print(this);
@@ -2678,7 +2679,7 @@ node *break_char_node::add_self(node *n, hyphen_list **p)
   return n;
 }
 
-hyphen_list *break_char_node::get_hyphen_list(hyphen_list *tail, int *count)
+hyphen_list *break_char_node::get_hyphen_list(hyphen_list *tail, int *)
 {
   return new hyphen_list(0, tail);
 }
@@ -3820,7 +3821,7 @@ void suppress_node::tprint(troff_output_file *out)
       if (is_on) {
 	out->on();
 	// lastly we reset the output registers
-	reset_output_registers(out->get_vpos());
+	reset_output_registers();
       }
       else
 	out->off();

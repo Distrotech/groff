@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -346,7 +346,7 @@ inline int font::hash_kern(int i1, int i2)
 void font::add_kern(int i1, int i2, int amount)
 {
   if (!kern_hash_table) {
-    kern_hash_table = new font_kern_list *[KERN_HASH_TABLE_SIZE];
+    kern_hash_table = new font_kern_list *[int(KERN_HASH_TABLE_SIZE)];
     for (int i = 0; i < KERN_HASH_TABLE_SIZE; i++)
       kern_hash_table[i] = 0;
   }

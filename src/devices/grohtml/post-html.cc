@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cc
  *  but it owes a huge amount of ideas and raw code from
@@ -260,7 +260,7 @@ struct char_block {
   char_block   *next;
 
   char_block();
-  char_block::char_block(int length);
+  char_block(int length);
 };
 
 char_block::char_block()
@@ -1541,7 +1541,7 @@ class html_printer : public printer {
   void remove_tabs                    (void);
   void remove_courier_tabs            (void);
   void update_min_max                 (colType type_of_col, int *minimum, int *maximum, text_glob *g);
-  void add_table_end                  (char *debug_string);
+  void add_table_end                  (char *);
   // ADD HERE
 
 public:
@@ -1611,7 +1611,7 @@ void html_printer::end_of_line()
  *  emit_line - writes out a horizontal rule.
  */
 
-void html_printer::emit_line (text_glob *g)
+void html_printer::emit_line (text_glob *)
 {
   // --fixme-- needs to know the length in percentage
   html.put_string("<hr>");
@@ -2671,7 +2671,11 @@ void html_printer::update_min_max (colType type_of_col, int *minimum, int *maxim
  *                  debugging string.
  */
 
-void html_printer::add_table_end (char *debug_string)
+void html_printer::add_table_end (char *
+#if defined(DEBUG_TABLES)
+  debug_string
+#endif
+)
 {
   page_contents->glyphs.move_left();
   insert_tab_te();

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -336,7 +336,7 @@ void dvi_printer::set_color(color *col)
 }
 
 void dvi_printer::set_char(int index, font *f, const environment *env,
-			   int w, const char *name)
+			   int w, const char *)
 {
   if (*env->col != cur_color)
     set_color(env->col);

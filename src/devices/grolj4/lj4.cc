@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994, 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1994, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -278,7 +278,7 @@ int is_unprintable(unsigned char c)
 }
 
 void lj4_printer::set_char(int index, font *f, const environment *env,
-			   int w, const char *name)
+			   int w, const char *)
 {
   int code = f->get_code(index);
 

@@ -1,3 +1,69 @@
+2003-02-14  Werner LEMBERG  <wl@gnu.org>
+
+	Add memory management for colors to deallocate unnamed colors
+	properly.
+
+	* src/include/color.h (color): New members `free_list' and `next'.
+	New member functions `new' and `delete'.
+	Add deconstructor.
+	* src/libs/libgroff/color.cc: Implement it.
+
+	* src/libs/libgroff/font.cc (font::add_kern): Use integer cast
+	for array size of new operator.
+
+	* src/libs/libdriver/input.cc (IntArray::operator[]): Remove
+	redundant comparison.
+
+	* src/roff/troff/input.cc (word_space_node::reread,
+	hmotion_node::reread): Avoid warning about unused parameter.
+	(reset_output_registers): Remove redundant parameter.
+	(define_color): Undo change 2003-02-12.
+
+	* src/roff/troff/reg.h: Updated.
+
+	* src/roff/troff/node.cc (troff_output_file::really_print_line,
+	output_file::put_filename, real_output_file::really_put_filename,
+	ascii_output_file::really_print_line,
+	break_char_node::get_hyphen_list): Avoid warning about unused
+	parameter.
+	(suppress_node::tprint): Updated.
+
+	* configure.ac: Check declaration for rand() and srand().
+	* configure: Regenerated.
+
+	* src/preproc/pic/pic.h: Declare fmod(), rand(), and srand()
+	conditionally.
+	* src/preproc/pic/pic.y: Remove declaration of fmod(), rand(),
+	and srand().
+
+	* src/preproc/eqn/delim.cc (delim_table): Add missing initializers
+	to avoid compiler warnings.
+
+	* src/preproc/grn/hgraph.cc (HGPrintElt): Second parameter is
+	unused.
+
+	* src/devices/grops/ps.cc (ps_printer::set_char): Last parameter
+	is unused.
+	* src/devices/grops/psrm.cc (skip_possible_newline): Remove first
+	(unused) parameter.
+	Updated all callers.
+
+	* src/devices/grotty/tty.cc (tty_printer::set_char): Last parameter
+	is unused.
+	* src/devices/grodvi/dvi.cc (dvi_printer::set_char): Ditto.
+	* src/devices/grolj4/lj4.cc (lj4_printer::set_char): Ditto.
+
+	* src/devices/grohtml/post-html.cc (html_printer::emit_line):
+	Parameter is unused.
+	(html_printer::add_table_end): Define parameter conditionally.
+	* src/devices/grohtml/output.cc (simple_output::special): Parameter
+	is unused.
+
+	* src/devices/grolbp/lbp.cc: Define _GNU_SOURCE conditionally.
+	(lbp_printer::set_char): Last parameter is unused.
+
+	* src/utils/indxbib/indxbib.cc (main): Remove redundant comparison.
+
 2003-02-13  Werner LEMBERG  <wl@gnu.org>
 
 	New commands \D'Fr ...', \D'Fc ...', etc. for orthogonality.

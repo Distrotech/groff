@@ -87,7 +87,7 @@ void NaturalEndSpline(float h[], int z[],
 
 void
 HGPrintElt(ELT *element,
-	   int baseline)
+	   int /* baseline */)
 {
   register POINT *p1;
   register POINT *p2;
