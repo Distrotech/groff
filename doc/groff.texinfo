@@ -1328,9 +1328,9 @@ thoughts on the subject'', followed by a single blank line.
 @findex ce
 @cindex centering lines
 @cindex lines, centering
-Text lines can be centered by using the @samp{.ce} request.  The line
-after @samp{.ce} is centered (horizontally) on the page.  To center more
-than one line, use @w{@samp{.ce @var{N}}} (where @var{N} is the number
+Text lines can be centered by using the @code{ce} request.  The line
+after @code{ce} is centered (horizontally) on the page.  To center more
+than one line, use @w{@code{.ce @var{N}}} (where @var{N} is the number
 of lines to center), followed by the @var{N}@w{ }lines.  If you want to
 center many lines but don't want to count them, type:
 
@@ -1341,7 +1341,7 @@ lines to center
 @end example
 
 @noindent
-The @w{@samp{.ce 0}} request tells @code{groff} to center zero more
+The @w{@samp{ce 0}} request tells @code{groff} to center zero more
 lines, in other words, stop centering.
 
 @findex br
@@ -1349,7 +1349,7 @@ lines, in other words, stop centering.
 @cindex break
 All of these requests cause a break; that is, they always start a new
 line.  If you want to start a new line without performing any other
-action, use @samp{.br}.
+action, use @code{br}.
 
 
 @node Common Features,  , Basics, Tutorial for Macro Users
@@ -1978,7 +1978,7 @@ Parentheses may be used as in any other language.  However, in
 @code{gtroff} they are necessary to ensure order of evaluation.
 @code{gtroff} has no operator precedence; expressions are evaluated left
 to right.  This means that @samp{3+5*4} is evaluated as if it were
-parenthesized like @samp{(3+5)*4}, not as @samp{3+(5*4)}, like you may
+parenthesized like @samp{(3+5)*4}, not as @samp{3+(5*4)}, as you may
 expect.
 
 @findex +
@@ -2008,34 +2008,39 @@ expressions, unless the entire expression is surrounded by parentheses.
 @section Identifiers
 @cindex identifiers
 
-@findex \
-@findex [
-@findex ]
-@findex ?
 Like any other language, @code{gtroff} has rules for properly formed
 @dfn{identifiers}.  In @code{gtroff}, an identifier can be made up of
 almost any printable character.  The exception are the following
 characters:
 
 @itemize @bullet
+@cindex whitespace characters
+@cindex newline character
+@cindex character, whitespace
 @item
 Whitespace characters (space, tabs, and newlines).
+@cindex character, backspace
+@cindex backspace character
 @item
 Backspace (@code{0x08}) and character code @code{0x01}.
 @cindex illegal input characters
 @cindex input characters, illegal
 @cindex characters, illegal input
+@cindex unicode
 @item
 The following input characters are illegal and will be ignored, causing
 a warning message: @code{0x00}, @code{0x0B}, @code{0x0D}-@code{0x1F},
-@code{0x80}-@code{0x9F}.
+@code{0x80}-@code{0x9F}.  Currently, some of these reserved codepoints
+are used internally, thus making it non-trivial to extend @code{gtroff}
+to cover Unicode or other character sets resp.@: encodings which use
+characters of these ranges.
+
+Note that illegal characters will be removed before parsing; an
+identifier `foo', followed by an illegal character, followed by `bar'
+will be treated as `foobar'.
 @end itemize
 
- @samp{\} (backslash), 
-, and the character codes @code{0x00}@footnote{The null
-character is an invalid character which causes a warning message and
-will be ignored.} and @code{0x01}.  So, for example, any of the
-following is valid.
+For example, any of the following is valid.
 
 @example
 br
@@ -2045,8 +2050,9 @@ end-list
 @@_
 @end example
 
-Note that identifiers longer than two characters and containing a
-closing bracket (@samp{]}) can't be accessed with escape sequences which
+@findex ]
+Note that identifiers longer than two characters with a closing bracket
+(@samp{]}) in its name can't be accessed with escape sequences which
 expect an identifier as a parameter.
 
 @c XXX xref
@@ -2086,6 +2092,8 @@ and@w{ }@samp{]} in some situations.  Any length identifier can be put
 in brackets.
 @end itemize
 
+@cindex undefined identifiers
+@cindex indentifiers, undefined
 Unlike many other programming languages, undefined identifiers are
 silently ignored or expanded to nothing.
 
@@ -2166,11 +2174,17 @@ or double), or have the spaces @dfn{escaped} with backslashes.
 .uh The\ Mouse\ Problem
 @end example
 
+@findex \~
 @noindent
 The first line is the @code{uh} macro being called with 3 arguments,
 @samp{The}, @samp{Mouse}, and @samp{Problem}.  The latter two have the
 same effect or calling the @code{uh} macro with one argument @samp{The
-Mouse Problem}.
+Mouse Problem}.@footnote{The last solution, i.e., using escaped spaces,
+is `classical' in the sense that it can be found in most @code{troff}
+documents.  Nevertheless, it is not optimal in all situations since
+@samp{\ } inserts a fixed-width space character which can't stretch.
+@code{gtroff} provides a different command @code{\~} to insert a
+stretchable space.}
 
 @findex ds
 Note, however, that the @code{ds} request works differently.
@@ -2199,7 +2213,7 @@ changed; @xref{Character Translations}.
 @findex [
 @findex ]
 Escape sequences which require an identifier as a parameter accept three
-possibilities of syntax.
+possible syntax forms.
 
 @itemize @bullet
 @item
@@ -2241,8 +2255,8 @@ what that escape expects.  Example:
 @findex \X
 Note that the quote character can be replaced with any other character
 which does not occur in the argument (even a newline or a space
-character) in the following escapes: @samp{\o}, @samp{\b}, and
-@samp{\X}.  This makes e.g.
+character) in the following escapes: @code{\o}, @code{\b}, and
+@code{\X}.  This makes e.g.
 
 @example
 A caf
@@ -2255,7 +2269,7 @@ in Paris
 @end example
 
 @noindent
-possible, but it is better to avoid this feature to avoid confusion.
+possible, but it is better not to use this feature to avoid confusion.
 
 @findex \%
 @findex \ 
@@ -2287,11 +2301,11 @@ possible, but it is better to avoid this feature to avoid confusion.
 @findex \u
 The following escapes sequences (which are handled similar to characters
 since they don't take a parameter) are also allowed as delimiters:
-@samp{\%}, @samp{\ }, @samp{\|}, @samp{\^}, @samp{\@{}, @samp{\@}},
-@samp{\'}, @samp{\`}, @samp{\-}, @samp{\_}, @samp{\!}, @samp{\?},
-@samp{\@@}, @samp{\)}, @samp{\/}, @samp{\,}, @samp{\&}, @samp{\~},
-@samp{\0}, @samp{\a}, @samp{\c}, @samp{\d}, @samp{\e}, @samp{\E},
-@samp{\p}, @samp{\r}, @samp{\t}, and @samp{\u}.  Again, don't use these
+@code{\%}, @w{@samp{\ }}, @code{\|}, @code{\^}, @code{\@{}, @code{\@}},
+@code{\'}, @code{\`}, @code{\-}, @code{\_}, @code{\!}, @code{\?},
+@code{\@@}, @code{\)}, @code{\/}, @code{\,}, @code{\&}, @code{\~},
+@code{\0}, @code{\a}, @code{\c}, @code{\d}, @code{\e}, @code{\E},
+@code{\p}, @code{\r}, @code{\t}, and @code{\u}.  Again, don't use these
 if possible.
 
 @findex \A
@@ -2299,7 +2313,7 @@ if possible.
 @findex \C
 @findex \w
 No newline characters as delimiters are allowed in the following
-escapes: @samp{\A}, @samp{\Z}, @samp{\C}, and @samp{\w}.
+escapes: @code{\A}, @code{\Z}, @code{\C}, and @code{\w}.
 
 @findex \D
 @findex \h
@@ -2312,15 +2326,15 @@ escapes: @samp{\A}, @samp{\Z}, @samp{\C}, and @samp{\w}.
 @findex \S
 @findex \v
 @findex \x
-Finally, the escapes @samp{\D}, @samp{\h}, @samp{\H}, @samp{\l},
-@samp{\L}, @samp{\N}, @samp{\R}, @samp{\s}, @samp{\S}, @samp{\v}, and
-@samp{\x} can't use the following characters as delimiters:
+Finally, the escapes @code{\D}, @code{\h}, @code{\H}, @code{\l},
+@code{\L}, @code{\N}, @code{\R}, @code{\s}, @code{\S}, @code{\v}, and
+@code{\x} can't use the following characters as delimiters:
 
 @itemize @bullet
 @cindex numbers
 @cindex digits
 @item
-The digits @samp{0}-@samp{9}.
+The digits @code{0}-@code{9}.
 @cindex operators
 @findex +
 @findex -
@@ -2336,7 +2350,7 @@ The digits @samp{0}-@samp{9}.
 @findex )
 @findex .
 @item
-The operators @samp{+-/*%<>=&:().}.
+The (single character) operators @samp{+-/*%<>=&:().}.
 @item
 @cindex space character
 @cindex character, space
@@ -2359,9 +2373,9 @@ The space, tab, and newline characters.
 @findex \e
 @findex \p
 @item
-All escape sequences except @samp{\%}, @samp{\@{}, @samp{\@}},
-@samp{\'}, @samp{\`}, @samp{\-}, @samp{\_}, @samp{\!}, @samp{\@@},
-@samp{\/}, @samp{\c}, @samp{\e}, and @samp{\p}.
+All escape sequences except @code{\%}, @code{\@{}, @code{\@}},
+@code{\'}, @code{\`}, @code{\-}, @code{\_}, @code{\!}, @code{\@@},
+@code{\/}, @code{\c}, @code{\e}, and @code{\p}.
 @end itemize
 
 @findex \\
@@ -2383,11 +2397,12 @@ information.
 @subsubsection Comments
 @cindex comments
 
-@findex \"
 Probably one of the most@footnote{Unfortunately, this is a lie.  But
 hopefully future @code{gtroff} hackers will believe it :-)} common forms
-of escapes is the comment.  They begin with the @code{\"} escape and end
-at the end of the input line.
+of escapes is the comment.
+
+@deffn Escape \"
+Start a comment.  Everything to the end of the input line is ignored.
 
 This may sound simple, but it can be tricky to keep the comments from
 interfering with the appearance of your final output.
@@ -2405,24 +2420,60 @@ request and macro arguments.
 @cindex undefined request
 @cindex request, undefined
 If you have a comment on a line by itself, it will be treated as a blank
-line, because after eliminating the comment, that is all that remains.
-So, it is common to start the line with @code{.\"} which will cause the
-line to be treated as an undefined request.
+line, because after eliminating the comment, that is all that remains:
+
+@example
+Test
+\" comment
+Test
+@end example
+
+@noindent
+will produce
+
+@example
+Test
+
+Test
+@end example
+
+As a consequence, it is common to start the line with @code{.\"} which
+will cause the line to be treated as an undefined request and thus
+ignored completely.
 
 Another commenting scheme seen sometimes is three consecutive single
 quotes (@code{'''}) at the beginning of a line.  This works, but
 @code{gtroff} will give a warning about an undefined macro, which is
 harmless, but irritating.
+@end deffn
 
-@findex \#
+@deffn Escape \#
 Now to avoid all this @code{gtroff} has a new comment mechanism using
 the @code{\#} escape.  This escape works the same as @code{\"} except
-that the newline is also ignored.
+that the newline is also ignored:
+
+@example
+Test
+\# comment
+Test
+@end example
+
+@noindent
+will produce
+
+@example
+Test Test
+@end example
+
+@noindent
+as expected.
+@end deffn
 
 @findex ig
 For large blocks of text, the @code{ig} request may be useful.
 @xref{Strings}.
 
+@c XXX definition of .ig
 
 @node Registers, Manipulating Filling and Adjusting, Embedded Commands, Programming Tutorial
 @section Registers
@@ -2432,7 +2483,7 @@ Numeric variables in @code{gtroff} are called @dfn{registers}.  There
 are a number of built-in registers, supplying anything from the date to
 details of formatting parameters.
 
-@xref{Identifiers}.
+@xref{Identifiers}, for details on register identifiers.
 
 @menu
 * Setting Registers::           
@@ -2447,67 +2498,131 @@ details of formatting parameters.
 @cindex setting registers
 @cindex registers, setting
 
-@findex nr
-@findex \R
 Registers are defined resp.@: set via the @code{nr} request or the
-@code{\R} escape.  For example, the following two lines are equivalent:
+@code{\R} escape.
+
+@deffn Request nr ident value
+@deffnx Escape \R ident value
+Set number register @var{ident} to @var{value}.  If @var{ident} doesn't
+exist, it will be created.
+@end deffn
+
+For example, the following two lines are equivalent:
 
 @example
 .nr a 1
 \R'a 1'
 @end example
 
-@findex rr
-The @code{rr} request will remove the register specified by the
-argument.
+Both @code{nr} and @code{\N} have two additional special forms to
+increment resp.@: decrement a register.
 
-@findex rnn
-The @code{rnn} request will rename a number register.  The format is
-@w{@samp{.rnn @var{x} @var{y}}}, which will rename number register
-@var{x} to @var{y}.
+@deffn Request nr ident +value
+@deffnx Request nr ident -value
+@deffnx Escape \N ident +value
+@deffnx Escape \N ident -value
+Increment (decrement) register @var{ident} by @var{value}.
 
-@findex aln
-Aliases can be created for a number register.  The format is
-@w{@samp{.aln @var{xx} @var{yy}}}, which will create an alias @var{xx}
-for number register object named @var{yy}.  The new name and the old
-name will be exactly equivalent.  If @var{yy} is undefined, a warning of
-type @samp{reg} will be generated, and the request will be ignored.
-@xref{Debugging}, for information about warnings.
+@example
+.nr a 1
+.nr a +1
+\na
+    @result{} 2
+@end example
+
+To assign the negated value of a register to another register, some care
+must be taken to get the desired result:
+
+@example
+.nr a 7
+.nr b 3
+.nr a -\nb
+\na
+    @result{} 4
+.nr a (-\nb)
+\na
+    @result{} -3
+@end example
+
+@noindent
+The surrounding parentheses prevent the interpretation of the minus sign
+as a decrementing operator.
+@end deffn
+
+@deffn Request rr ident
+Remove number register @var{ident}.
+@end deffn
+
+@deffn Request rnn ident1 ident2
+Rename number register @var{ident1} to @var{ident2}.
+@end deffn
+
+@deffn Request aln ident1 ident2
+This request creates an alias @var{ident1} for a number register
+@var{ident2}.  The new name and the old name will be exactly equivalent.
+If @var{ident1} is undefined, a warning of type @samp{reg} will be
+generated, and the request will be ignored.  @xref{Debugging}, for
+information about warnings.
+@end deffn
 
 @node Interpolating Registers, Auto-increment, Setting Registers, Registers
 @subsection Interpolating Registers
 @cindex interpolating registers
 @cindex registers, interpolating
 
-@findex \n
-Numeric registers are @dfn{interpolated} via the @code{\n} escape.
+Numeric registers can be accessed via the @code{\n} escape.
 
-@c XXX the following is wrong.  Should I say any more than the above??
-@c This means that the value of the number register is expanded in-place
-@c on the input line before any other actions, i.e. before requests and
-@c escapes are interpreted.
+@deffn Escape \n ident
+@c XXX is the following correct?
+Interpolate number register @var{ident}.  This means that the value of
+the register is expanded in-place while @code{gtroff} is parsing the
+input line.
 
 @example
+.nr a 5
 .nr as \na+\na
 \n(as
+    @result{} 10
 @end example
+@end deffn
 
 @node Auto-increment, Assigning Formats, Interpolating Registers, Registers
 @subsection Auto-increment
 @cindex auto-increment
 @cindex increment, automatic
 
-@findex nr
 Number registers can also be auto-incremented and auto-decremented.  You
 can specify the increment resp.@: decrement factor with a third argument
-to the @code{nr} request.  The default value is@w{ }0.  For example,
+to the @code{nr} request or @code{\N} escape.
+
+@deffn Request nr ident value incr
+@deffnx Escape \N ident value incr
+Set number register @var{ident} to @var{value}; the increment for
+auto-incrementing is set to @var{incr}.
+@end deffn
+
+To activate auto-incrementing, the escape @code{\n} has a special syntax
+form.
+
+@deffn Escape \n +ident
+@deffnx Escape \n -ident
+Before interpolating, increment resp.@: decrement @var{ident} by the
+auto-increment value as specified with the @code{nr} request (or the
+@code{\N} escape).  If no auto-increment value has been specified, both
+syntax forms are identical to @code{\n}.
+@end deffn
+
+For example,
 
 @example
 .nr a 0 1
-.nr xx 0 5
+.nr xx 0 -5
+.nr foo 0 2
 \n+a, \n+a, \n+a, \n+a, \n+a
 .br
-\n+(xx, \n+(xx, \n+(xx, \n+(xx, \n+(xx
+\n-(xx, \n-(xx, \n-(xx, \n-(xx, \n-(xx
+.br
+\n+[foo], \n+[foo], \n+[foo], \n+[foo], \n+[foo]
 @end example
 
 @noindent
@@ -2515,10 +2630,11 @@ produces
 
 @example
 1, 2, 3, 4, 5
-5, 10, 15, 20, 25
+-5, -10, -15, -20, -25
+2, 4, 6, 8, 10
 @end example
 
-If you want to change the increment factor without changing the value of
+If you want to change the increment value without changing the value of
 a register, the following can be used.
 
 @example
@@ -2542,9 +2658,9 @@ format.  The following output formats are available:
 @table @samp
 @item 1
 This is the default format, decimal numbers: 1, 2, 3,@w{ }@dots{}
-@item 001
-Decimal numbers with as many leading zeros as specified.  So, @samp{001}
-would result in 001, 002, 003,@w{ }@dots{}
+@item 0@dots{}01
+Decimal numbers with as many leading zeros as specified.  So, @samp{01}
+would result in 01, 02, 03,@w{ }@dots{}
 @item I
 @cindex roman numerals
 @cindex numerals, Roman
@@ -2574,7 +2690,8 @@ The following example will produce @samp{10, X, j, 010}:
 @findex \g
 The @code{\g} escape returns the current format of the specified
 register.  For example, @samp{\ga} after the previous example would
-produce @samp{001}.
+produce the string @samp{001}.  If the register hasn't been defined yet,
+nothing is returned.
 
 @node Built-in Registers,  , Assigning Formats, Registers
 @subsection Built-in Registers
