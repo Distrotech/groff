@@ -30,7 +30,7 @@ export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
 _PROGRAM_VERSION='0.9.0';
-_LAST_UPDATE='27 June 2002';
+_LAST_UPDATE='12 July 2002';
 
 export _DEBUG;
 _DEBUG='no';			# disable debugging information
@@ -1883,7 +1883,7 @@ list_from_cmdline()
         fi;
         error "${FUNCNAME}(): --${_opt} is not an option."
         ;;
-      -*)			# short option (cluster)
+      -?*)			# short option (cluster)
         _rest="$(string_del_leading "${_arg}" "-")";
         while is_not_empty "${_rest}"; do
           _optchar="$(string_get_leading "${_rest}" '.')";
@@ -3343,6 +3343,7 @@ EOF
 version()
 {
   echo2 "${_PROGRAM_NAME} ${_PROGRAM_VERSION} of ${_LAST_UPDATE}";
+  groff -v 2>&1 | sed -e '/^ *$/q' | sed -e '1s/^/is part of /' >&2;  
 }
 
 
@@ -4386,6 +4387,13 @@ main_display()
   export _addopts;
   export _groggy;
   export _modefile;
+
+  # Some display programs have trouble with empty input.  
+  # This is avoided by feeding a space character in this case.
+  if is_empty "$(tmp_cat | sed -e '/./q')"; then
+    echo ' ' > "${_TMP_CAT}";
+  fi;
+
   case "${_DISPLAY_MODE}" in
     groff)
       _ADDOPTS_GROFF="${_ADDOPTS_GROFF} ${_ADDOPTS_POST}";
