@@ -332,8 +332,6 @@ void html_table::emit_table_header (int space)
 
   last_col = NULL;
   if (linelength > 0) {
-    int n = no_columns() + no_gaps();
-
     out->nl();
     out->nl();
 
@@ -345,9 +343,7 @@ void html_table::emit_table_header (int space)
     start_space = space;
     out->put_string("<table width=\"100%\"")
       .put_string(" border=0 rules=\"none\" frame=\"void\"\n")
-      .put_string("       cols=\"")
-      .put_number(n)
-      .put_string("\" cellspacing=\"0\" cellpadding=\"0\"")
+      .put_string("       cellspacing=\"0\" cellpadding=\"0\"")
       .put_string(start_space ? " style=\"margin-top: 8px; margin-bottom: 8px\"" : "")
       .put_string(">")
       .nl();

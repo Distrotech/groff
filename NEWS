@@ -52,52 +52,66 @@ o A security problem (reported as CAN-2004-0969) has been fixed.
 Macro packages
 --------------
 
-o The ms macros now support fractional point sizes: A value for the PS, VS,
-  FPS, and VPS register larger than or equal to 1000 is always divided by
-  1000.  For example, `.nr PS 10250' sets the document's font size to
-  10.25 points.
+o ms.tmac
 
-o The `Ds' and `De' macros provided in ms since groff version 1.19 have been
-  removed; the equivalent `DS' and `DE' macros should be used instead.  X11
-  documents which actually use `Ds' and `De' always load a specific macro
-  file from the X11 distribution (macros.t) which provides proper
-  definitions for the two macros.
+  . Support for fractional point sizes: A value for the `PS', `VS', `FPS',
+    and `VPS' register larger than or equal to 1000 is always divided by
+    1000.  For example, `.nr PS 10250' sets the document's font size to
+    10.25 points.
 
-o The following registers have been added to the ms macros for improving
-  layout control:
+  . The `Ds' and `De' macros provided in ms since groff version 1.19 have
+    been removed; the equivalent `DS' and `DE' macros should be used
+    instead.  X11 documents which actually use `Ds' and `De' always load a
+    specific macro file from the X11 distribution (`macros.t') which
+    provides proper definitions for the two macros.
 
-  PORPHANS
-    Defines number of lines following LP, PP, QP, IP or XP which must be
-    kept together, before any automatic page break.
+  . The following registers have been added for improving layout control:
 
-  HORPHANS
-    Sets number of lines of following paragraph which must be kept with a
-    heading, defined by NH or SH, before any automatic page break.
+    PORPHANS
+      Defines number of lines following `LP', `PP', `QP', `IP' or `XP' which
+      must be kept together, before any automatic page break.
 
-  GROWPS
-    Sets the first level of heading (set with NH) which will keep the same
-    point size as body text.
+    HORPHANS
+      Sets number of lines of following paragraph which must be kept with a
+      heading, defined by `NH' or `SH', before any automatic page break.
 
-  PSINCR
-    Sets the point size increment for each level of heading (set with NH),
-    below the threshold level set by GROWPS; e.g., if \n[PS] = 10,
-    \n[GROWPS] = 3 and \n[PSINCR] = 2.0p, then .NH 1 will produce 14pt
-    headings, .NH 2 will produce 12pt, and all other levels will remain
-    at 10pt (because \n[PS] = 10).
+    GROWPS
+      Sets the first level of heading (set with `NH') which will keep the
+      same point size as body text.
 
-o The SH macro in the ms package now accepts a numeric argument, to make
-  heading size match that of NH with same argument value when the
-  GROWPS/PSINCR feature is enabled.
+    PSINCR
+      Sets the point size increment for each level of heading (set with
+      `NH'), below the threshold level set by `GROWPS'; e.g., if
+      \n[PS] = 10, \n[GROWPS] = 3 and \n[PSINCR] = 2.0p, then `.NH 1' will
+      produce 14pt headings, `.NH 2' will produce 12pt, and all other levels
+      will remain at 10pt (because \n[PS] = 10).
 
-o www.tmac:
+  . The `SH' macro now accepts a numeric argument, to make heading size
+    match that of `NH' with same argument value when the `GROWPS'/`PSINCR'
+    feature is enabled.
 
-  The HR macro no longer causes an empty line for non-HTML devices.
+  Please refer to the documentation of the ms package for other, minor
+  improvements.
+
+o me.tmac
+
+  The section type set with the `++' request is available in the `_M'
+  register.  This isn't new but hasn't been documented before.
+
+o www.tmac
+
+  The `HR' macro no longer causes an empty line for non-HTML devices.
 
   A new macro `HEAD' has been added to directly add data to the
   <head>...</head> block.
 
-Please refer to the documentation of the ms package for other, minor
-improvements.
+Miscellaneous
+-------------
+
+o Two new keywords to the DESC file have been added which are needed for
+  grohtml: `image_generator' and `unscaled_charwidths'.  The former gives
+  the name of the program which creates PNG images, and the latter makes
+  troff always use unscaled character widths.
 
 
 VERSION 1.19.1
