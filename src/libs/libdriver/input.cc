@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 29 Jan 2002
+   Last update: 5 Feb 2002
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -138,6 +138,8 @@
    - Various comments were added.
 
    TODO
+   - Add scaling facility for classical device independence and
+     non-groff devices.
    - Should a missing `x stop' be warned?
    - Get rid of the stupid drawing positioning.
    - Can the `Dt' command be completely handled by setting environment
@@ -157,10 +159,11 @@
      - The global variables `current_filename' and `current_lineno' are
        only used for error reporting.  So implement a static class
        `Error' (`::' calls).
-     - Can the global `device' be made independent of libgroff?
+     - Stop using global `device'; design a new scheme based on
+       postprocessors.
   - Implement the B-spline drawing `D~' for all graphical devices.
-  - Make `environment' a class with a delete method to get rid of
-    delete_current_env().
+  - Make `environment' a class with an overflow check for its members
+    and a delete method to get rid of delete_current_env().
   - The class definitions of this document could go into a new file.
   - Once things will have been settled the comments in this document
     could be strongly reduced.
@@ -246,28 +249,19 @@
 #include <ctype.h>
 #include <math.h>
 
+
 /**********************************************************************
                            local types
  **********************************************************************/
+
+// integer type used in the fields of struct environment (see printer.h)
+typedef int EnvInt;
 
 // integer arguments of groff_out commands, must be >= 32 bits
 typedef int IntArg;
 
 // color components of groff_out color commands, must be >= 32 bits
 typedef unsigned int ColorArg;
-
-#ifdef USE_ENV_STACK
-class EnvStack {
-  environment **data;
-  size_t num_allocated;
-  size_t num_stored;
-public:
-  EnvStack(void);
-  ~EnvStack(void);
-  environment *pop(void);
-  void push(environment *e);
-};
-#endif // USE_ENV_STACK
 
 // Array for IntArg values.
 class IntArray {
@@ -276,7 +270,7 @@ class IntArray {
   IntArg *data;
 public:
   IntArray(void);
-  IntArray(const int);
+  IntArray(const size_t);
   ~IntArray(void);
   const IntArg operator[](const size_t i) const
   {
@@ -319,6 +313,20 @@ public:
   void reset(void);		// set `num_stored' to 0
 };
 
+#ifdef USE_ENV_STACK
+class EnvStack {
+  environment **data;
+  size_t num_allocated;
+  size_t num_stored;
+public:
+  EnvStack(void);
+  ~EnvStack(void);
+  environment *pop(void);
+  void push(environment *e);
+};
+#endif // USE_ENV_STACK
+
+
 /**********************************************************************
                           external variables
  **********************************************************************/
@@ -346,9 +354,6 @@ const char *device = 0;		  // cancel former init with literal
 
 FILE *current_file = 0;		// current input stream for parser
 
-// parser environment, created and deleted by each run of do_file()
-environment *current_env = 0;
-
 // npages: number of pages processed so far (including current page),
 //         _not_ the page number in the printout (can be set with `p').
 int npages = 0;
@@ -359,8 +364,13 @@ COLORARG_MAX = (ColorArg) 65536U; // == 0xFFFF + 1 == 0x10000
 const IntArg
 INTARG_MAX = (IntArg) 0x7FFFFFFF; // maximal signed 32 bits number
 
+// parser environment, created and deleted by each run of do_file()
+environment *current_env = 0;
+
+#ifdef USE_ENV_STACK
 const size_t
 envp_size = sizeof(environment *);
+#endif // USE_ENV_STACK
 
 
 /**********************************************************************
@@ -375,22 +385,27 @@ void fatal_command(char);	// abort for illegal command
 inline Char get_char(void);	// read next character from input stream
 ColorArg get_color_arg(void);	// read in argument for new color cmds
 IntArray *get_D_fixed_args(const size_t);
-				// read in fixed number of int args
+				// read in fixed number of integer
+				// arguments
 IntArray *get_D_fixed_args_odd_dummy(const size_t);
-				// get fixed number of int args plus ignore
-IntArray *get_D_variable_args(void); // variable, even no. of int args
+				// read in a fixed number of integer
+				// arguments plus optional dummy
+IntArray *get_D_variable_args(void);
+                                // variable, even number of int args
 char *get_extended_arg(void);	// argument for `x X' (several lines)
 IntArg get_integer_arg(void);	// read in next integer argument
 IntArray *get_possibly_integer_args();
 				// 0 or more integer arguments
 char *get_string_arg(void);	// read in next string arg, ended by WS
-inline bool is_space_or_tab(const Char); // test on space/tab char
+inline bool is_space_or_tab(const Char);
+				// test on space/tab char
 Char next_arg_begin(void);	// skip white space on current line
 Char next_command(void);	// go to next command, evt. diff. line
 inline bool odd(const int);	// test if integer is odd
 void position_to_end_of_args(const IntArray * const);
-				// after drawing
-void remember_filename(const char *); // set global current_filename
+				// positioning after drawing
+void remember_filename(const char *);
+				// set global current_filename
 void send_draw(const Char, const IntArray * const);
 				// call pr->draw
 void skip_line(void);		// unconditionally skip to next line
@@ -408,6 +423,7 @@ void parse_color_command(color *);
 				// color sub(sub)commands m and DF
 void parse_D_command(void);	// graphical subcommands
 bool parse_x_command(void);	// device controller subcommands
+
 
 /**********************************************************************
                          class methods
@@ -480,7 +496,7 @@ IntArray::IntArray(void)
   num_stored = 0;
 }
 
-IntArray::IntArray(const int n)
+IntArray::IntArray(const size_t n)
 {
   if (n <= 0)
     fatal("number of integers to be allocated must be > 0");
@@ -1038,7 +1054,7 @@ remember_filename(const char *filename)
 void
 send_draw(const Char subcmd, const IntArray * const args)
 {
-  int n = (int) args->len();
+  EnvInt n = (EnvInt) args->len();
   pr->draw((int) subcmd, (IntArg *) args->get_data(), n, current_env);
 }
 
@@ -1067,7 +1083,8 @@ skip_line(void)
 
 //////////////////////////////////////////////////////////////////////
 /* skip_line_checked ():
-   Check that the rest of the line has no arguments left, then skip line.
+   Check that there aren't any arguments left on the rest of the line,
+   then skip line.
 
    Spaces, tabs, and a comment are allowed before newline or EOF.
    All other characters raise an error.
@@ -1566,7 +1583,8 @@ do_file(const char *filename)
       fatal("the second command must be `x res'");
     delete str_arg;
     int_arg = get_integer_arg();
-    if (int_arg != font::res)
+    EnvInt font_res = font::res;
+    if (int_arg != font_res)
       fatal("resolution does not match");
     int_arg = get_integer_arg();
     if (int_arg != font::hor)
@@ -1631,10 +1649,11 @@ do_file(const char *filename)
 	s[1] = (char) c;
 	s[2] = '\0';
 	errno = 0;
-	long int hor_pos = strtol(s, 0, 10);
+	long int x = strtol(s, 0, 10);
 	if (errno != 0)
 	  error("couldn't convert 2 digits");
-	current_env->hpos += (IntArg) hor_pos;
+	EnvInt hor_pos = (EnvInt) x;
+	current_env->hpos += hor_pos;
 	c = next_arg_begin();
 	if ((int) c == '\n' || (int) c == EOF)
 	  error("character argument expected");
@@ -1678,15 +1697,16 @@ do_file(const char *filename)
 	break;
       }
     case 'h':			// h: relative horizontal move
-      current_env->hpos += get_integer_arg();
+      current_env->hpos += (EnvInt) get_integer_arg();
       break;
     case 'H':			// H: absolute horizontal positioning
-      current_env->hpos = get_integer_arg();
+      current_env->hpos = (EnvInt) get_integer_arg();
       break;
     case 'm':			// m: glyph color
       parse_color_command(current_env->col);
       break;
-    case 'n':			// n: print end of line, ignore 2 arguments
+    case 'n':			// n: print end of line
+				// ignore two arguments (historically)
       if (npages <= 0)
 	fatal_command(command);
       pr->end_of_line();
@@ -1716,9 +1736,9 @@ do_file(const char *filename)
 	if (npages <= 0)
 	  fatal_command(command);
 	char *str_arg = get_string_arg();
-	int i = 0;
+	size_t i = 0;
 	while ((c = str_arg[i++]) != '\0') {
-	  int w;
+	  EnvInt w;
 	  pr->set_ascii_char((unsigned char) c, current_env, &w);
 	  current_env->hpos += w;
 	}
@@ -1730,11 +1750,11 @@ do_file(const char *filename)
 	char c;
 	if (npages <= 0)
 	  fatal_command(command);
-	int kern = get_integer_arg();
+	EnvInt kern = (EnvInt) get_integer_arg();
 	char *str_arg = get_string_arg();
-	int i = 0;
+	size_t i = 0;
 	while ((c = str_arg[i++]) != '\0') {
-	  int w;
+	  EnvInt w;
 	  pr->set_ascii_char((unsigned char) c, current_env, &w);
 	  current_env->hpos += w + kern;
 	}
@@ -1742,10 +1762,10 @@ do_file(const char *filename)
 	break;
       }
     case 'v':			// v: relative vertical move
-      current_env->vpos += get_integer_arg();
+      current_env->vpos += (EnvInt) get_integer_arg();
       break;
     case 'V':			// V: absolute vertical positioning
-      current_env->vpos = get_integer_arg();
+      current_env->vpos = (EnvInt) get_integer_arg();
       break;
     case 'w':			// w: inform about paddable space
       break;
