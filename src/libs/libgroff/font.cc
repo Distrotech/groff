@@ -815,7 +815,6 @@ static struct {
 
 int font::load_desc()
 {
-  double unscaled_paperwidth, unscaled_paperlength;
   int nfonts = 0;
   FILE *fp;
   char *path;
@@ -889,10 +888,15 @@ int font::load_desc()
 	t.error("papersize command requires an argument");
 	return 0;
       }
+      double unscaled_paperwidth, unscaled_paperlength;
       if (!scan_papersize(p, papersize, &unscaled_paperlength,
 			  &unscaled_paperwidth)) {
 	t.error("bad paper size");
 	return 0;
+      }
+      else {
+	paperwidth = int(unscaled_paperwidth * res + 0.5);
+	paperlength = int(unscaled_paperlength * res + 0.5);
       }
     }
     else if (strcmp("pass_filenames", p) == 0)
@@ -1007,8 +1011,6 @@ int font::load_desc()
     t.error("bad `vert' value");
     return 0;
   }
-  paperwidth = int(unscaled_paperwidth * res + 0.5);
-  paperlength = int(unscaled_paperlength * res + 0.5);
   return 1;
 }      
 
