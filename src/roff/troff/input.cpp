@@ -4885,6 +4885,7 @@ public:
   non_interpreted_node(const macro &);
   int interpret(macro *);
   node *copy();
+  int ends_sentence();
   int same(node *);
   const char *type();
   int force_tprint();
@@ -4892,6 +4893,11 @@ public:
 
 non_interpreted_node::non_interpreted_node(const macro &m) : mac(m)
 {
+}
+
+int non_interpreted_node::ends_sentence()
+{
+  return 2;
 }
 
 int non_interpreted_node::same(node *nd)
