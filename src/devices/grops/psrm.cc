@@ -816,7 +816,7 @@ int resource_manager::do_begin_data(const char *ptr, int, FILE *fp,
       }
     } while ((unit == Bytes ? bytecount : linecount) < numberof);
   }
-  skip_possible_newline();
+  skip_possible_newline(ptr, fp, outfp);
   char buf[PS_LINE_MAX + 2];
   if (!ps_get_line(buf, fp)) {
     error("missing %%%%EndData line");
@@ -858,7 +858,7 @@ int resource_manager::do_begin_binary(const char *ptr, int, FILE *fp,
     else if (c == '\n')
       current_lineno++;
   }
-  skip_possible_newline();
+  skip_possible_newline(ptr, fp, outfp);
   char buf[PS_LINE_MAX + 2];
   if (!ps_get_line(buf, fp)) {
     error("missing %%%%EndBinary line");
