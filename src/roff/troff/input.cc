@@ -108,7 +108,7 @@ static void disable_warning(const char *);
 static int escape_char = '\\';
 static symbol end_macro_name;
 static symbol blank_line_macro_name;
-int compatible_flag = 0;
+static int compatible_flag = 0;
 int ascii_output_flag = 0;
 int suppress_output_flag = 0;
 int is_html = 0;
