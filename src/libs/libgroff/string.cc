@@ -291,7 +291,7 @@ char *string::extract() const
   for (i = 0; i < n; i++)
     if (p[i] != '\0')
       *r++ = p[i];
-  q[n] = '\0';
+  *r = '\0';
   return q;
 }
 

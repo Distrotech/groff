@@ -34,9 +34,9 @@ Home of Groff (GNU Troff).
 .HTML-IMAGE-LEFT
 .PSPIC -L gnu.eps 2i 2i
 .ie r ps4html \
-.  nop \v'-0.75i'\h'2.0i'\s[100]\*[GNU] Troff\s0
+.  nop \v'-0.66i'\h'2.0i'\s[100]\*[GNU] Troff\s0
 .el \
-.  nop \v'-0.75i'\h'2.0i'\s[60]\*[GNU] Troff\s0
+.  nop \v'-0.66i'\h'2.0i'\s[60]\*[GNU] Troff\s0
 .HTML-IMAGE-END
 .
 .HnS 1

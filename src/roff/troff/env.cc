@@ -1383,7 +1383,8 @@ void indent()
   curenv->have_temporary_indent = 0;
   curenv->prev_indent = curenv->indent;
   curenv->indent = temp;
-  curenv->add_html_tag(1, ".in", temp.to_units());
+  if (break_flag)
+    curenv->add_html_tag(1, ".in", temp.to_units());
   tok.next();
 }
 

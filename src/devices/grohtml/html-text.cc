@@ -220,7 +220,7 @@ void html_text::start_tag (tag_definition *t)
                    } else {
 		     out->nl();
 		     out->simple_comment("INDENTATION");
-		     t->indent->begin(start_space);
+		     t->indent->begin(FALSE);
 		     start_space = FALSE;
                      issue_tag("<p", (char *)t->arg1);
 		   }
@@ -232,7 +232,7 @@ void html_text::start_tag (tag_definition *t)
   case PRE_TAG:    if (t->indent != NULL) {
                      out->nl();
 		     out->simple_comment("INDENTATION");
-		     t->indent->begin(start_space);
+		     t->indent->begin(FALSE);
 		     start_space = FALSE;
                    }
                    out->enable_newlines(TRUE);

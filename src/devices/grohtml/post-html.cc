@@ -372,7 +372,6 @@ public:
   int  is_eol              (void);
   int  is_auto_img         (void);
   int  is_br               (void);
-  int  is_br_ni            (void);
   int  is_in               (void);
   int  is_po               (void);
   int  is_ti               (void);
@@ -693,19 +692,6 @@ int text_glob::is_auto_img (void)
  */
 
 int text_glob::is_br (void)
-{
-  return( is_a_tag() && ((strcmp ("html-tag:.br", text_string) == 0) ||
-			 (strncmp("html-tag:.sp", text_string, 11) == 0) ||
-			 (strcmp ("html-tag:.ce", text_string) == 0) ||
-			 (strncmp ("html-tag:.in", text_string, 11) == 0)) );
-}
-
-/*
- *  is_br_ni - returns TRUE if the glob is a tag containing a .br
- *             or an implied .br, but not an .in
- */
-
-int text_glob::is_br_ni (void)
 {
   return( is_a_tag() && ((strcmp ("html-tag:.br", text_string) == 0) ||
 			 (strncmp("html-tag:.sp", text_string, 11) == 0) ||
@@ -2239,7 +2225,7 @@ void html_printer::do_tab_ts (text_glob *g)
 
     t->set_linelength(max_linelength);
     t->add_indent(pageoffset);
-    t->emit_table_header(need_space);
+    t->emit_table_header(FALSE);
   }
 
   table = t;
@@ -2841,11 +2827,11 @@ void html_printer::lookahead_for_tables (void)
 	  last = g;
 	  found_col = FALSE;
 	}
-      } else if (g->is_br_ni() || (nf && g->is_eol())) {
+      } else if (g->is_br() || (nf && g->is_eol())) {
 	do {
 	  g = page_contents->glyphs.move_right_get_data();
 	  nf = calc_nf(g, nf);
-	} while ((g != NULL) && (g->is_br_ni() || (nf && g->is_eol())));
+	} while ((g != NULL) && (g->is_br() || (nf && g->is_eol())));
 	start_of_line = g;
 	seen_text = FALSE;
 	ncol = 0;
@@ -3580,12 +3566,9 @@ html_printer::~html_printer()
 
   /*
    *  'HTML: The definitive guide', O'Reilly, p47. advises against specifying
-   *         the dtd, so for the moment I'll leave this commented out.
-   *         If requested we could always emit it if a command line switch
-   *         was present.
-   *
-   *  fputs("<!doctype html public \"-//IETF//DTD HTML 4.0//EN\">\n", stdout);
+   *         the dtd.
    */
+  // fputs("<!doctype html public \"-//IETF//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n", stdout);
   fputs("<html>\n", stdout);
   fputs("<head>\n", stdout);
   fputs("<meta name=\"generator\" content=\"groff -Thtml, see www.gnu.org\">\n", stdout);
