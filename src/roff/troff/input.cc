@@ -1828,8 +1828,18 @@ void token::next()
 	nd = new hmotion_node(x);
 	return;
       case 'H':
-	if (get_delim_number(&x, 'z', curenv->get_requested_point_size()))
-	  curenv->set_char_height(x);
+	// don't take height increments relative to previous height if
+	// in compatibility mode
+	if (!compatible_flag && curenv->get_char_height())
+	{
+	  if (get_delim_number(&x, 'z', curenv->get_char_height()))
+	    curenv->set_char_height(x);
+	}
+	else
+	{
+	  if (get_delim_number(&x, 'z', curenv->get_requested_point_size()))
+	    curenv->set_char_height(x);
+	}
 	if (!compatible_flag)
 	  have_input = 1;
 	break;

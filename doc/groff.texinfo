@@ -8335,16 +8335,28 @@ the fly:
 @Example
 .mc \H'+5z'x\H'0'
 @endExample
+
+In compatibility mode, @code{gtroff} behaves differently:  If an
+increment or decrement is used, it is always taken relative to the
+current point size and not relative to the previously selected font
+height.  Thus,
+
+@Example
+.cp 1
+\H'+5'test \H'+5'test
+@endExample
+
+@noindent
+prints the word @samp{test} twice with the same font height (five
+points larger than the current font size).
 @endDefesc
 
 @cindex changing the font slant (@code{\S})
 @cindex font slant, changing (@code{\S})
 @cindex slant, font, changing (@code{\S})
 @DefescList {\\S, ', slant, '}
-@DefescItem {\\S, ', @t{+}@Var{slant}, '}
-@DefescListEnd {\\S, ', @t{-}@Var{slant}, '}
-Change (increment, decrement) the slant of the current font by @var{slant}
-degrees.  Positive values slant to the right.
+Slant the current font by @var{slant} degrees.  Positive values slant
+to the right.
 
 Currently, only the @option{-Tps} device supports this feature.
 
@@ -8356,6 +8368,9 @@ the fly:
 @Example
 .mc \S'20'x\S'0'
 @endExample
+
+This request is incorrectly documented in the original @acronym{UNIX}
+troff manual; the slant is always set to an absolute value.
 @endDefesc
 
 @cindex underlining (@code{ul})
