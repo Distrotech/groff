@@ -1,5 +1,5 @@
 .TH GROFF_WWW @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
-.\" Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+.\" Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 .\"      Written by Gaius Mulley (gaius@glam.ac.uk)
 .\"
 .\" This file is part of groff.
@@ -284,14 +284,33 @@ option of groff.
 .TP
 .B MPIMG
 Place a PNG image on the margin and wrap text around it.
-The first parameter is the alignment: left or right
+The first parameters are optional.
+The alignment: left or right
 .RB ( \-L
 or
-.BR \-R ).
-The second argument is the filename.
-The optional third and fourth arguments are the width and height.
+.BR \-R )
+specifies the margin where the picture is placed at.
+The default alignment is left
+.RB ( -L ).
+Optionally,
+.BI \-G \~gap
+can be used to arrange a gap between the picture
+and the text that wraps around it.
+The default gap width is zero.
+.br
+The first non-optional argument is the filename.
+The optional following arguments are the width and height.
 If the width is absent it defaults to 1\~inch.
 If the height is absent it defaults to the width.
+Example:
+.RS
+.IP
+.nf
+.ft B
+\&.MPIMG -L -G 2c foo.png 3c 1.5c
+.ft P
+.fi
+.RE
 .
 .TP
 .B HnS
