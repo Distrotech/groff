@@ -11,6 +11,85 @@ Generic Problems
 
 
 
+* Displaying a man page on a terminal with/without my favourite pager
+  only gives garbage.
+
+groff by default now uses SGR escape sequences (`ANSI color') to
+control the display attributes (bold, underlined, colour) on TTYs. 
+Some terminals (e.g. `kterm') don't understand SGR, and some pagers
+(e.g. older versions of `less' or `less' without the -R option) don't
+understand SGR either.  There are three solutions to fix this, in order
+of preference; please read the grotty man page for more details.
+
+The fourth and probably best option is to update your terminal program
+and pager to versions which can handle SGR.
+
+  1. Set the GROFF_NO_SGR environment variable.
+
+  2. Pass option -c to grotty.
+
+  3. Append the following fragment to the `troffrc' file:
+
+
+--- start ---
+.if n \{\
+.  nr _C \n(.C
+.  cp 0
+.
+.  \" The following code sets a top-of-page trap to disable grotty's TTY
+.  \" mode.  Since neither \X nor .output can be used before the first
+.  \" page has started, we must use a trap.  To make it work with troff's
+.  \" -o option, we wait until the first printed page.
+.
+.  de sgr@dummy
+.  .
+.
+.  rn wh wh@old
+.
+.  \" The stand-alone version.  If no other trap is set, we can safely
+.  \" insert the truncated vertical space caused by the trap (if any).
+.  \" Otherwise we assume that the document's main macro package takes
+.  \" care of that.  As soon as the trap has been executed, it is removed.
+.  de1 no@sgr
+.    if \\n[.P] \{\
+.      if (\\n[.t] == \\n[.p]) \{\
+.        rn wh@old wh
+.        rm no@sgr
+.        wh 0
+.        sp \\n[.trunc]
+.        nop \X'tty: sgr 0'
+.        sp -1
+.    \}\}
+.  .
+.
+.  wh@old 0 no@sgr
+.
+.  \" The piggyback version to be appended to macros planted with the
+.  \" modified h' request.
+.  de1 no@sgr1
+.    if \\n[.P] \{\
+.      rn wh@old wh
+.      ds no@sgr1
+.      nop \X'tty: sgr 0'
+.      sp -1
+.    \}
+.  .
+.
+.  \" We redefine the h' request so that o@sgr1' is appended to
+.  \" the trap macro.
+.  de1 wh
+.    am1 \\$2 sgr@dummy
+.      no@sgr1
+.    sgr@dummy
+.    wh@old \\$1 \\$2
+.  .
+.
+.  cp \n[_C]
+.\}
+--- end ---
+
+----------------------------------------------------------------------
+
 * My document says that the current year is 19100, not 2000.
 
 In groff, as in traditional troff, the yr number register yields the
