@@ -5391,6 +5391,31 @@ Horizontal resolution in basic units.
 @vindex .V
 Vertical resolution in basic units.
 
+@item seconds
+@cindex seconds, current time (@code{seconds})
+@cindex time, current, seconds (@code{seconds})
+@cindex current time, seconds (@code{seconds})
+@vindex seconds
+The number of seconds after the minute, normally in the range@w{ }0
+to@w{ }59, but can be up to@w{ }61 to allow for leap seconds.  Initialized
+at start-up of @code{gtroff}.
+
+@item minutes
+@cindex minutes, current time (@code{minutes})
+@cindex time, current, minutes (@code{minutes})
+@cindex current time, minutes (@code{minutes})
+@vindex minutes
+The number of minutes after the hour, in the range@w{ }0 to@w{ }59.
+Initialized at start-up of @code{gtroff}.
+
+@item hours
+@cindex hours, current time (@code{hours})
+@cindex time, current, hours (@code{hours})
+@cindex current time, hours (@code{hours})
+@vindex hours
+The number of hours past midnight, in the range@w{ }0 to@w{ }23.
+Initialized at start-up of @code{gtroff}.
+
 @item dw
 @cindex day of the week register (@code{dw})
 @cindex date, day of the week register (@code{dw})
@@ -11481,8 +11506,8 @@ This request causes an error if used in safer mode (which is the default).
 Use @code{groff}'s or @code{troff}'s @option{-U} option to activate unsafe
 mode.
 
-For example, the following example introduces the current time
-into a document:
+For example, the following code fragment introduces the current time into a
+document:
 
 @cindex time, current
 @cindex current time
@@ -11498,8 +11523,20 @@ into a document:
 @noindent
 Note that this works by having the @code{perl} script (run by @code{sy})
 print out the @code{nr} requests which set the number registers
-@samp{H}, @samp{M} and @samp{S}, and then reads those commands in with
+@code{H}, @code{M}, and @code{S}, and then reads those commands in with
 the @code{so} request.
+
+For most practical purposes, the number registers @code{seconds},
+@code{minutes}, and @code{hours} which are initialized at start-up of
+@code{gtroff} should be sufficient.  Use the @code{af} request to get a
+formatted output:
+
+@Example
+.af hours 00
+.af minutes 00
+.af seconds 00
+\n[hours]:\n[minutes]:\n[seconds]
+@endExample
 
 @cindex @code{system()} return value register (@code{systat})
 The @code{systat} read-write number register contains the return value

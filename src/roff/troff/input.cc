@@ -6837,6 +6837,9 @@ static void init_registers()
     t = time(0);
   // Use struct here to work around misfeature in old versions of g++.
   struct tm *tt = localtime(&t);
+  set_number_reg("seconds", int(tt->tm_sec));
+  set_number_reg("minutes", int(tt->tm_min));
+  set_number_reg("hours", int(tt->tm_hour));
   set_number_reg("dw", int(tt->tm_wday + 1));
   set_number_reg("dy", int(tt->tm_mday));
   set_number_reg("mo", int(tt->tm_mon + 1));
