@@ -357,6 +357,7 @@ public:
   int         is_eol      (void);
   int         is_auto_img (void);
   int         is_br       (void);
+  int         is_eol_ce   (void);
 
   style           text_style;
   char           *text_string;
@@ -417,6 +418,15 @@ int text_glob::is_a_tag (void)
 int text_glob::is_eol (void)
 {
   return( is_tag && (strcmp(text_string, "html-tag:eol") == 0) );
+}
+
+/*
+ *  is_eol_ce - returns TRUE if glob contains the tag eol.ce
+ */
+
+int text_glob::is_eol_ce (void)
+{
+  return( is_tag && (strcmp(text_string, "html-tag:eol.ce") == 0) );
 }
 
 /*
@@ -1071,6 +1081,7 @@ class html_printer : public printer {
   int   end_subscript                 (text_glob *g);
   int   start_superscript             (text_glob *g);
   int   end_superscript               (text_glob *g);
+  void  outstanding_eol               (int n);
 
   // ADD HERE
 
@@ -1279,6 +1290,18 @@ void html_printer::do_auto_image (text_glob *g, const char *filename)
 }
 
 /*
+ *  outstanding_eol - call do_eol, n, times.
+ */
+
+void html_printer::outstanding_eol (int n)
+{
+  while (n > 0) {
+    do_eol();
+    n--;
+  }
+}
+
+/*
  *  do_title - handle the .tl commands from troff.
  */
 
@@ -1286,6 +1309,7 @@ void html_printer::do_title (void)
 {
   text_glob    *t;
   int           removed_from_head;
+  int           eol_ce = 0;
   char          buf[MAX_STRING_LENGTH];
 
   if (page_number == 1) {
@@ -1313,16 +1337,23 @@ void html_printer::do_title (void)
 	  /* skip raw commands
 	   */
 	  page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
+	} else if (t->is_eol_ce()) {
+	  /*  process the eol associated with .ce
+	   */
+	  eol_ce++;
+	  page_contents->glyphs.sub_move_right(); 	  /* move onto next word */
 	} else if (t->is_eol()) {
 	  /* end of title found
 	   */
 	  title.has_been_found = TRUE;
+	  outstanding_eol(eol_ce);
 	  return;
 	} else if (t->is_a_tag()) {
 	  /* end of title found, but move back so that we read this tag and process it
 	   */
 	  page_contents->glyphs.move_left();           /* move backwards to last word */
 	  title.has_been_found = TRUE;
+	  outstanding_eol(eol_ce);
 	  return;
 	} else if (found_title_start) {
 	    strcat(title.text, " ");
@@ -1342,7 +1373,7 @@ void html_printer::do_title (void)
 	}
       } while ((! page_contents->glyphs.is_equal_to_head()) || (removed_from_head));
     }
-    // page_contents->glyphs.move_left();           /* move backwards to last word */
+    outstanding_eol(eol_ce);
   }
 }
 
@@ -1744,6 +1775,8 @@ void html_printer::troff_tag (text_glob *g)
   char *t=(char *)g->text_string+9;
 
   if (g->is_eol()) {
+    do_eol();
+  } else if (g->is_eol_ce()) {
     do_eol();
   } else if (strncmp(t, ".sp", 3) == 0) {
     current_paragraph->do_space();

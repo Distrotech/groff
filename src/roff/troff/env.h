@@ -181,7 +181,6 @@ class environment {
 #ifdef WIDOW_CONTROL
   int widow_control;
 #endif /* WIDOW_CONTROL */
-  int need_eol;
   int ignore_next_eol;
   int emitted_node;    // have we emitted a node since the last html eol tag?
   color *cur_glyph_color;

@@ -248,6 +248,8 @@ class file_iterator : public input_iterator {
   const char *filename;
   int popened;
   int newline_flag;
+  int suppress_newline_flag;	// used by html
+  int seen_escape;
   enum { BUF_SIZE = 512 };
   unsigned char buf[BUF_SIZE];
   void close();
@@ -264,7 +266,8 @@ public:
 };
 
 file_iterator::file_iterator(FILE *f, const char *fn, int po)
-: fp(f), lineno(1), filename(fn), popened(po), newline_flag(0)
+: fp(f), lineno(1), filename(fn), popened(po),
+  newline_flag(0), suppress_newline_flag(0), seen_escape(0)
 {
   if ((font::use_charnames_in_special) && (fn != 0)) {
     if (!the_output)
@@ -302,6 +305,8 @@ int file_iterator::next_file(FILE *f, const char *s)
   fp = f;
   lineno = 1;
   newline_flag = 0;
+  suppress_newline_flag = 0;
+  seen_escape = 0;
   popened = 0;
   ptr = 0;
   eptr = 0;
@@ -310,11 +315,12 @@ int file_iterator::next_file(FILE *f, const char *s)
 
 int file_iterator::fill(node **)
 {
-  if (newline_flag) {
+  if (newline_flag && !suppress_newline_flag) {
     curenv->add_html_tag_eol();
     lineno++;
   }
   newline_flag = 0;
+  suppress_newline_flag = 0;
   unsigned char *p = buf;
   ptr = p;
   unsigned char *e = p + BUF_SIZE;
@@ -327,9 +333,13 @@ int file_iterator::fill(node **)
     else {
       *p++ = c;
       if (c == '\n') {
+	if (seen_escape && is_html)
+	  suppress_newline_flag = 1;
+	seen_escape = 0;
 	newline_flag = 1;
 	break;
       }
+      seen_escape = (c == '\\');
     }
   }
   if (p > buf) {
@@ -1073,9 +1083,9 @@ static unsigned int get_color_element(const char *scheme, const char *color)
     warning(WARN_RANGE, "%1 cannot be negative: set to 0", color);
     return 0;
   }
-  if (val > 65536) {
+  if (val > color::MAX_COLOR_VAL+1) {
     warning(WARN_RANGE, "%1 cannot be greater than 1", color);
-    return 65535;	// this is 0xffff
+    return color::MAX_COLOR_VAL;
   }
   return (unsigned int)val;
 }
@@ -2968,6 +2978,7 @@ class string_iterator : public input_iterator {
   macro mac;
   const char *how_invoked;
   int newline_flag;
+  int suppress_newline_flag;	// used by html
   int lineno;
   char_block *bp;
   int count;			// of characters remaining
@@ -2987,7 +2998,8 @@ public:
 };
 
 string_iterator::string_iterator(const macro &m, const char *p, symbol s)
-: mac(m), how_invoked(p), newline_flag(0), lineno(1), nm(s)
+: mac(m), how_invoked(p),
+  newline_flag(0), suppress_newline_flag(0), lineno(1), nm(s)
 {
   count = mac.length;
   if (count != 0) {
@@ -3008,6 +3020,7 @@ string_iterator::string_iterator()
   nd = 0;
   ptr = eptr = 0;
   newline_flag = 0;
+  suppress_newline_flag = 0;
   how_invoked = 0;
   lineno = 1;
   count = 0;
@@ -3041,6 +3054,8 @@ int string_iterator::fill(node **np)
     unsigned char c = *p;
     if (c == '\n' || c == ESCAPE_NEWLINE) {
       newline_flag = 1;
+      if (is_html && c == ESCAPE_NEWLINE)
+	suppress_newline_flag = 1;
       p++;
       break;
     }

@@ -633,7 +633,6 @@ environment::environment(symbol nm)
 #ifdef WIDOW_CONTROL
   widow_control(0),
 #endif /* WIDOW_CONTROL */
-  need_eol(0),
   ignore_next_eol(0),
   emitted_node(0),
   cur_glyph_color(0),
@@ -723,7 +722,6 @@ environment::environment(const environment *e)
 #ifdef WIDOW_CONTROL
   widow_control(e->widow_control),
 #endif /* WIDOW_CONTROL */
-  need_eol(0),
   ignore_next_eol(0),
   cur_glyph_color(e->cur_glyph_color),
   prev_glyph_color(e->prev_glyph_color),
@@ -1192,10 +1190,8 @@ void no_fill()
     tok.next();
   if (break_flag)
     curenv->do_break();
-
   curenv->fill = 0;
   curenv->add_html_tag(".nf");
-  curenv->ignore_next_eol = 1;
   curenv->add_html_tag(".po", topdiv->get_page_offset().to_units());
   tok.next();
 }
@@ -1609,6 +1605,7 @@ void environment::newline()
     hunits x = target_text_length - width_total;
     if (x > H0)
       saved_indent += x/2;
+    add_html_tag("eol.ce");
     to_be_output = line;
     to_be_output_width = width_total;
     line = 0;
@@ -2069,14 +2066,11 @@ void environment::add_html_tag_eol()
   if (is_html) {
     if (ignore_next_eol > 0)
       ignore_next_eol--;
-    else if (need_eol > 0) {
-      need_eol--;
-      add_html_tag("eol");
-    }
-    else if (!fill && emitted_node) {
-      add_html_tag("eol");
-      emitted_node = 0;
-    }
+    else
+      if (!fill && emitted_node) {
+	add_html_tag("eol");
+	emitted_node = 0;
+      }
   }
 }
 
@@ -2100,6 +2094,8 @@ void environment::add_html_tag(const char *name)
       if (!illegal_input_char((unsigned char)*p))
 	m->append(*p);
     add_node(new special_node(*m));
+    if (strcmp(name, ".nf") == 0)
+      curenv->ignore_next_eol = 1;
   }
 }
 
@@ -2112,15 +2108,6 @@ void environment::add_html_tag(const char *name)
 void environment::add_html_tag(const char *name, int i)
 {
   if (is_html) {
-    if (strcmp(name, ".ce") == 0) {
-      if (i == 0)
-	need_eol = 0;
-      else {
-	need_eol = i;
-	ignore_next_eol = 1;  // since the .ce creates an eol
-      }
-    }
-
     /*
      * need to emit tag for post-grohtml
      * but we check to see whether we can emit specials

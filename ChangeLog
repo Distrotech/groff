@@ -1,3 +1,31 @@
+2001-10-10  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* src/roff/troff/input.cc (file_iterator): New members
+	`suppress_newline_flag' and `seen_escape'.
+	(file_iterator::next_file): Updated.
+	(file_iterator::fill): Use it.
+	(string_iterator): New member `suppress_newline_flag'.
+	(string_iterator::fill): Set it.
+	(get_color_element): Use MAX_COLOR_VAL.
+	* src/roff/troff/env.cc (environment): Remove `need_eol'.
+	(no_fill): Don't set `env->ignore_next_eol'.
+	(environment::newline): Handle `eol' tag properly.
+	Emit `eol.ce'.
+	(environment::add_html_tag): Set `env->ignore_next_eol'.
+	Don't handle `.ce'.
+	* src/roff/troff/env.h (environment): Updated.
+
+	* src/devices/grohtml/post-html.cc (text_glob::is_eol_ce): New
+	member function.
+	(html_printer::outstanding_eol): New member function.
+	(html_printer::do_title): Use new functions.
+	(html_printer::troff_tag): Test `id_eol_ce'.
+
+2001-10-10  Werner LEMBERG  <wl@gnu.org>
+
+	* tmac/color.tmac, tmac/color-html.tmac: Use `.do' to make those
+	files work with -C also.
+
 2001-10-05  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/pic.ms: Minor fix.
