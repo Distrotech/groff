@@ -220,7 +220,7 @@
                ;;
 
              --no-reference-dictionary)
-               DIFF=":" REFFILE="$NULLDEV" REFCOPY="$NULLDEV"
+               AWK=":" DIFF=":" REFFILE="$NULLDEV" REFCOPY="$NULLDEV"
                ;;
 
              --stylesheet)
