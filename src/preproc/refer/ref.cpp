@@ -420,8 +420,7 @@ void reference::compute_sort_key()
   sort_fields += '\0';
   const char *sf = sort_fields.contents();
   while (*sf != '\0') {
-    if (sf > sort_fields)
-      sort_key += SORT_SEP;
+    sort_key += SORT_SEP;
     char f = *sf++;
     int n = 1;
     if (*sf == '+') {

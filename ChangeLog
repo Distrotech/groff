@@ -1,3 +1,11 @@
+2003-08-23  Stephen Gildea  <gildea@stop.mail-abuse.org>
+
+	* src/preproc/ref/ref.cpp (reference::compute_sort_key): Always
+	insert SORT_SEP.  With certain combinations of sort specifications,
+	refer sorted entries in the wrong order.  In particular, entries
+	with a missing field should be be sorted before all entries that
+	have that field, before refer looks to the next field.
+
 2003-08-23  Werner LEMBERG  <wl@gnu.org>
 
 	* src/utils/pfbtops/Makefile.sub (LINK.c): Define it so that the
