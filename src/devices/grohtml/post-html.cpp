@@ -3772,7 +3772,7 @@ int html_printer::is_line_start (int nf)
     do {
       page_contents->glyphs.move_left();
       g = page_contents->glyphs.get_data();
-      result = !g->is_a_tag();
+      result = g->is_a_tag();
       if (g->is_fi())
 	nf = FALSE;
       else if (g->is_nf())
@@ -3849,27 +3849,27 @@ void html_printer::start_font (const char *fontname)
     current_paragraph->do_italic();
   } else if (strcmp(fontname, "CR") == 0) {
     if ((! fill_on) && (is_courier_until_eol()) &&
-	is_line_start(fill_on)) {
+	is_line_start(! fill_on)) {
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
   } else if (strcmp(fontname, "CI") == 0) {
     if ((! fill_on) && (is_courier_until_eol()) &&
-	is_line_start(fill_on)) {
+	is_line_start(! fill_on)) {
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
     current_paragraph->do_italic();
   } else if (strcmp(fontname, "CB") == 0) {
     if ((! fill_on) && (is_courier_until_eol()) &&
-	is_line_start(fill_on)) {
+	is_line_start(! fill_on)) {
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
     current_paragraph->do_bold();
   } else if (strcmp(fontname, "CBI") == 0) {
     if ((! fill_on) && (is_courier_until_eol()) &&
-	is_line_start(fill_on)) {
+	is_line_start(! fill_on)) {
       current_paragraph->do_pre();
     }
     current_paragraph->do_tt();
