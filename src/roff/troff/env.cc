@@ -1321,8 +1321,8 @@ void vertical_spacing()
 {
   vunits temp;
   if (has_arg() && get_vunits(&temp, 'p', curenv->vertical_spacing)) {
-    if (temp <= V0) {
-      warning(WARN_RANGE, "vertical spacing must be greater than 0");
+    if (temp < V0) {
+      warning(WARN_RANGE, "vertical spacing must not be negative");
       temp = vresolution;
     }
   }
