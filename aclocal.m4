@@ -832,3 +832,33 @@ AC_DEFUN([GROFF_UINTMAX_T],
        [Define uintmax_t to `unsigned long' or `unsigned long long' if
 	<inttypes.h> does not exist.])
    fi])
+
+# Identify PATH_SEPARATOR character to use in GROFF_FONT_PATH and
+# GROFF_TMAC_PATH which is appropriate for the target system (POSIX=':',
+# MS-DOS/Win32=';').
+#
+# The logic to resolve this test is already encapsulated in
+# `${srcdir}/src/include/nonposix.h'.
+
+AC_DEFUN([GROFF_TARGET_PATH_SEPARATOR],
+  [AC_MSG_CHECKING([separator character to use in groff search paths])
+   cp ${srcdir}/src/include/nonposix.h conftest.h
+   AC_COMPILE_IFELSE([
+       AC_LANG_PROGRAM([[
+        
+#include <ctype.h>
+#include "conftest.h"
+
+       ]],
+       [[
+
+#if PATH_SEP_CHAR == ';'
+make an error "Path separator is ';'"
+#endif
+
+       ]])
+     ],
+     [GROFF_PATH_SEPARATOR=":"],
+     [GROFF_PATH_SEPARATOR=";"])
+   AC_MSG_RESULT([$GROFF_PATH_SEPARATOR])
+   AC_SUBST(GROFF_PATH_SEPARATOR)])

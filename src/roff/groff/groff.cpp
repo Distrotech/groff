@@ -240,7 +240,7 @@ int main(int argc, char **argv)
     case 'F':
       font::command_line_font_dir(optarg);
       if (Fargs.length() > 0) {
-	Fargs += PATH_SEP[0];
+	Fargs += PATH_SEP_CHAR;
 	Fargs += optarg;
       }
       else
@@ -378,7 +378,7 @@ int main(int argc, char **argv)
     e += Fargs;
     char *fontpath = getenv("GROFF_FONT_PATH");
     if (fontpath && *fontpath) {
-      e += PATH_SEP[0];
+      e += PATH_SEP_CHAR;
       e += fontpath;
     }
     e += '\0';
@@ -404,7 +404,7 @@ int main(int argc, char **argv)
     else
       f += BINPATH;
     if (path && *path) {
-      f += PATH_SEP[0];
+      f += PATH_SEP_CHAR;
       f += path;
     }
     f += '\0';

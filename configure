@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD CPP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap pnmcut pnmcrop pnmtopng psselect pnmtops gs make_html make_install_html pnmtops_nosetpage LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD CPP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR pnmcut pnmcrop pnmtopng psselect pnmtops gs make_html make_install_html pnmtops_nosetpage LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -7596,6 +7596,70 @@ echo $ECHO_N "checking which system macro packages should be made available... $
    echo "$as_me:$LINENO: result: $tmac_wrap" >&5
 echo "${ECHO_T}$tmac_wrap" >&6
 
+echo "$as_me:$LINENO: checking separator character to use in groff search paths" >&5
+echo $ECHO_N "checking separator character to use in groff search paths... $ECHO_C" >&6
+   cp ${srcdir}/src/include/nonposix.h conftest.h
+   cat >conftest.$ac_ext <<_ACEOF
+
+       /* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+
+#include <ctype.h>
+#include "conftest.h"
+
+
+int
+main ()
+{
+
+
+#if PATH_SEP_CHAR == ';'
+make an error "Path separator is ';'"
+#endif
+
+
+  ;
+  return 0;
+}
+
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  GROFF_PATH_SEPARATOR=":"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+GROFF_PATH_SEPARATOR=";"
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+   echo "$as_me:$LINENO: result: $GROFF_PATH_SEPARATOR" >&5
+echo "${ECHO_T}$GROFF_PATH_SEPARATOR" >&6
+
 make_html=html
    make_install_html=install_html
 
@@ -8545,6 +8609,7 @@ s,@PAGE@,$PAGE,;t t
 s,@g@,$g,;t t
 s,@sys_tmac_prefix@,$sys_tmac_prefix,;t t
 s,@tmac_wrap@,$tmac_wrap,;t t
+s,@GROFF_PATH_SEPARATOR@,$GROFF_PATH_SEPARATOR,;t t
 s,@pnmcut@,$pnmcut,;t t
 s,@pnmcrop@,$pnmcrop,;t t
 s,@pnmtopng@,$pnmtopng,;t t

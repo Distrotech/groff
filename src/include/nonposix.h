@@ -37,24 +37,24 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #  include <unistd.h>
 # endif
 # if defined(_MSC_VER) || defined(__MINGW32__)
-#  define POPEN_RT     "rt"
-#  define POPEN_WT     "wt"
-#  define popen(c,m)   _popen(c,m)
-#  define pclose(p)    _pclose(p)
-#  define pipe(pfd)    _pipe((pfd),0,_O_BINARY|_O_NOINHERIT)
-#  define getpid()     (1)
-#  define mkdir(p,m)   _mkdir(p)
-#  define setmode(f,m) _setmode(f,m)
-#  define WAIT(s,p,m)  _cwait(s,p,m)
-#  define creat(p,m)   _creat(p,m)
+#  define POPEN_RT	"rt"
+#  define POPEN_WT	"wt"
+#  define popen(c,m)	_popen(c,m)
+#  define pclose(p)	_pclose(p)
+#  define pipe(pfd)	_pipe((pfd),0,_O_BINARY|_O_NOINHERIT)
+#  define getpid()	(1)
+#  define mkdir(p,m)	_mkdir(p)
+#  define setmode(f,m)	_setmode(f,m)
+#  define WAIT(s,p,m)	_cwait(s,p,m)
+#  define creat(p,m)	_creat(p,m)
 # endif
-# define SET_BINARY(f) do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
-# define FOPEN_RB      "rb"
-# define FOPEN_WB      "wb"
-# define FOPEN_RWB     "wb+"
+# define SET_BINARY(f)	do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
+# define FOPEN_RB	"rb"
+# define FOPEN_WB	"wb"
+# define FOPEN_RWB	"wb+"
 # ifndef O_BINARY
 #  ifdef _O_BINARY
-#   define O_BINARY    (_O_BINARY)
+#   define O_BINARY	(_O_BINARY)
 #  endif
 # endif
 
@@ -62,36 +62,37 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
    systems don't have standard places where it lives, and might not
    have it installed to begin with.  We want to give them some leeway.  */
 # ifdef __EMX__
-#  define getcwd(b,s)  _getcwd2(b,s)
+#  define getcwd(b,s)	_getcwd2(b,s)
 # else
-#  define BSHELL        (system_shell_name())
-#  define BSHELL_DASH_C (system_shell_dash_c())
-#  define IS_BSHELL(s)  (is_system_shell(s))
+#  define BSHELL	(system_shell_name())
+#  define BSHELL_DASH_C	(system_shell_dash_c())
+#  define IS_BSHELL(s)	(is_system_shell(s))
 # endif
 
 /* The separator for directories in PATH and other environment
    variables.  */
-# define PATH_SEP      ";"
+# define PATH_SEP	";"
+# define PATH_SEP_CHAR	';'
 
 /* Characters that separate directories in a path name.  */
-# define DIR_SEPS      "/\\:"
+# define DIR_SEPS	"/\\:"
 
 /* How to tell if the argument is an absolute file name.  */
 # define IS_ABSOLUTE(f) \
  ((f)[0] == '/' || (f)[0] == '\\' || (f)[0] && (f)[1] == ':')
 
 /* The executable extension.  */
-# define EXE_EXT       ".exe"
+# define EXE_EXT	".exe"
 
 /* The system null device.  */
-# define NULL_DEV      "NUL"
+# define NULL_DEV	"NUL"
 
 /* The default place to create temporary files.  */
 # ifndef P_tmpdir
 #  ifdef _P_tmpdir
-#   define P_tmpdir _P_tmpdir
+#   define P_tmpdir	_P_tmpdir
 #  else
-#   define P_tmpdir "c:/temp"
+#   define P_tmpdir	"c:/temp"
 #  endif
 # endif
 
@@ -101,7 +102,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # endif
     const char * system_shell_name(void);
     const char * system_shell_dash_c(void);
-    int          is_system_shell(const char *);
+    int		 is_system_shell(const char *);
 # ifdef __cplusplus
   }
 # endif
@@ -111,56 +112,57 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 /* Defaults, for Posix systems.  */
 
 #ifndef SET_BINARY
-# define SET_BINARY(f) do {} while(0)
+# define SET_BINARY(f)	do {} while(0)
 #endif
 #ifndef FOPEN_RB
-# define FOPEN_RB      "r"
+# define FOPEN_RB	"r"
 #endif
 #ifndef FOPEN_WB
-# define FOPEN_WB      "w"
+# define FOPEN_WB	"w"
 #endif
 #ifndef FOPEN_RWB
-# define FOPEN_RWB     "w+"
+# define FOPEN_RWB	"w+"
 #endif
 #ifndef POPEN_RT
-# define POPEN_RT      "r"
+# define POPEN_RT	"r"
 #endif
 #ifndef POPEN_WT
-# define POPEN_WT      "w"
+# define POPEN_WT	"w"
 #endif
 #ifndef O_BINARY
-# define O_BINARY      0
+# define O_BINARY	0
 #endif
 #ifndef BSHELL
-# define BSHELL	       "/bin/sh"
+# define BSHELL		"/bin/sh"
 #endif
 #ifndef BSHELL_DASH_C
-# define BSHELL_DASH_C "-c"
+# define BSHELL_DASH_C	"-c"
 #endif
 #ifndef IS_BSHELL
-# define IS_BSHELL(s)  ((s) && strcmp(s,BSHELL) == 0)
+# define IS_BSHELL(s)	((s) && strcmp(s,BSHELL) == 0)
 #endif
 #ifndef PATH_SEP
-# define PATH_SEP      ":"
+# define PATH_SEP	":"
+# define PATH_SEP_CHAR	':'
 #endif
 #ifndef DIR_SEPS
-# define DIR_SEPS      "/"
+# define DIR_SEPS	"/"
 #endif
 #ifndef IS_ABSOLUTE
-# define IS_ABSOLUTE(f) ((f)[0] == '/')
+# define IS_ABSOLUTE(f)	((f)[0] == '/')
 #endif
 #ifndef EXE_EXT
-# define EXE_EXT       ""
+# define EXE_EXT	""
 #endif
 #ifndef NULL_DEV
-# define NULL_DEV      "/dev/null"
+# define NULL_DEV	"/dev/null"
 #endif
 #ifndef GS_NAME
-# define GS_NAME       "gs"
+# define GS_NAME	"gs"
 #endif
 #ifndef WAIT
-# define WAIT(s,p,m)   wait(s)
+# define WAIT(s,p,m)	wait(s)
 #endif
 #ifndef _WAIT_CHILD
-# define _WAIT_CHILD   0
+# define _WAIT_CHILD	0
 #endif

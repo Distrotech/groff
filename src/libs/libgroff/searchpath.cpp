@@ -76,11 +76,11 @@ void search_path::command_line_dir(const char *s)
   char *p = dirs;
   p += old_len - init_len;
   if (init_len == 0)
-    *p++ = PATH_SEP[0];
+    *p++ = PATH_SEP_CHAR;
   memcpy(p, s, slen);
   p += slen;
   if (init_len > 0) {
-    *p++ = PATH_SEP[0];
+    *p++ = PATH_SEP_CHAR;
     memcpy(p, old + old_len - init_len, init_len);
     p += init_len;
   }
@@ -104,7 +104,7 @@ FILE *search_path::open_file(const char *name, char **pathp)
   unsigned namelen = strlen(name);
   char *p = dirs;
   for (;;) {
-    char *end = strchr(p, PATH_SEP[0]);
+    char *end = strchr(p, PATH_SEP_CHAR);
     if (!end)
       end = strchr(p, '\0');
     int need_slash = end > p && strchr(DIR_SEPS, end[-1]) == 0;
@@ -156,7 +156,7 @@ FILE *search_path::open_file_cautious(const char *name, char **pathp,
   unsigned namelen = strlen(name);
   char *p = dirs;
   for (;;) {
-    char *end = strchr(p, PATH_SEP[0]);
+    char *end = strchr(p, PATH_SEP_CHAR);
     if (!end)
       end = strchr(p, '\0');
     int need_slash = end > p && strchr(DIR_SEPS, end[-1]) == 0;
