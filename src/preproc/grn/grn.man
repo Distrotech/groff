@@ -1,0 +1,356 @@
+.de TQ
+.br
+.ns
+.TP \\$1
+..
+.\" Like TP, but if specified indent is more than half
+.\" the current line-length - indent, use the default indent.
+.de Tp
+.ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
+.el .TP "\\$1"
+..
+.TH GRN @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+@g@grn \- groff preprocessor for gremlin files
+.SH SYNOPSIS
+.BR @g@grn
+[ options ] ... [
+.I file
+] ...
+.SH DESCRIPTION
+.I @g@grn
+is a preprocessor for including
+.I gremlin
+pictures in
+.I groff
+input.
+.I @g@grn
+writes to standard output, processing only input lines between two that
+start with
+.B .GS
+and
+.BR .GE.
+Those lines must contain
+.I @g@grn
+commands (see below).
+These commands request a
+.I gremlin
+file, and the picture in that file is
+converted and placed in the
+.I troff
+input stream.
+The
+.B .GS
+request may be followed by a C, L, or R to center, left, or right
+justify the whole
+.I gremlin
+picture (default justification is center).
+If no
+.I file
+is mentioned, the standard input is read.
+At the end of the picture, the position on the page is the bottom of the
+.I gremlin
+picture.
+If the
+.I @g@grn
+entry is ended with
+.B .GF
+instead of
+.BR .GE ,
+the position is left at the top of the picture.
+.PP
+Please note that currently only the \-me macro package has support for
+.BR .GS ,
+.BR .GE ,
+and
+.BR .GF .
+.PP
+The following command-line options are understood:
+.TP
+.BI \-T dev
+Prepare output for printer
+.IR dev .
+The default device is
+.BR @DEVICE@ .
+See
+.BR groff (@MAN1EXT@)
+for acceptable devices.
+.TP
+.BI \-M dir
+Set the library to directory
+.IR dir .
+If a
+.I gremlin
+file cannot be found in the current directory,
+.I dir
+is prepended to the filename for a second try.
+The default library directory is
+.BR @MACRODIR@ .
+.TP
+.BI \-F dir
+Search
+.I dir
+for subdirectories
+.BI dev name
+.RI ( name
+is the name of the device) for the
+.B DESC
+file before the normal
+.BR @FONTDIR@ .
+.TP
+.B \-C
+Recognize
+.B .GS
+and
+.B .GE
+(resp.
+.BR .GF )
+even when followed by a character other than space or newline.
+.TP
+.B \-s
+This switch causes the picture to be traversed twice:
+The first time, only the interiors of filled polygons (as borderless
+polygons) are printed.
+The second time, the outline is printed as a series of line segments.
+This way, postprocessors that overwrite rather than merge picture elements
+(such as Postscript) can still have text and graphics on a shaded
+background.
+.TP
+.B \-v
+Print the version number.
+.SH GRN COMMANDS
+Each input line between
+.B .GS
+and
+.B .GE
+may have one
+.I @g@grn
+command.
+Commands consist of one or two strings separated by white space, the first
+string being the command and the second its operand.
+Commands may be upper or lower case and abbreviated down to one character.
+.PP
+Commands that affect a picture's environment (those listed before
+.BR default ,
+see below) are only in effect for the current picture:
+The environment is reinitialized to the defaults at the start of the next
+picture.
+The commands are as follows:
+.TP
+.BI 1\  N
+.TQ
+.BI 2\  N
+.TQ
+.BI 3\  N
+.TQ
+.BI 4\  N
+Set
+.IR gremlin 's
+text size number 1 (2, 3, or 4) to
+.I N
+points.
+The default is 12 (resp. 16, 24, and 36).
+.TP
+.BI roman\  f
+.TQ
+.BI italics\  f
+.TQ
+.BI bold\  f
+.TQ
+.BI special\  f
+Set the roman (italics, bold, or special) font to
+.IR troff 's
+font
+.I f
+(either a name or number).
+The default is R (resp. I, B, and S).
+.TP
+.BI l\  f
+.TQ
+.BI stipple\  f
+Set the stipple font to
+.IR troff 's
+stipple font
+.I f
+(name or number).
+The command
+.B stipple
+may be abbreviated down as far as `st' (to avoid
+confusion with
+.BR special ).
+There is
+.I no
+default for stipples (unless one is set by the default command), and it is
+illegal to include a
+.I gremlin
+picture with polygons without specifying a
+stipple font.
+.TP
+.BI x\  N
+.TQ
+.BI scale\  N
+Magnify the picture (in addition to any default magnification) by
+.IR N ,
+a floating point number larger than zero.
+The command
+.B scale
+may be abbreviated down to `sc'.
+.TP
+.BI narrow\  N
+.TQ
+.BI medium\  N
+.TQ
+.BI thick\  N
+Set the thickness of
+.IR gremlin 's
+narrow (medium or thick) lines to
+.IR N .
+The default is 1 (resp. 3 and 5) pixels.
+.TP
+.BI pointscale\  <off/on>
+Scale text to match the picture.
+Gremlin text is usually printed in the point size specified with the
+commands
+.BR 1 ,\  2 ,\  3 ,\ or\  4
+regardless of any scaling factors in the picture.
+Setting
+.B pointscale
+will cause the point sizes to scale with the picture (within
+.IR troff 's
+limitations, of course).
+An operand of anything but
+.I off
+will turn text scaling on.
+.TP
+.B default
+Reset the picture environment defaults to the settings in the current
+picture.
+This is meant to be used as a global parameter setting mechanism at the
+beginning of the
+.I troff
+input file, but can be used at any time to reset the
+default settings.
+.TP
+.BI width\  N
+Forces the picture to be
+.I N
+inches wide.
+This overrides any scaling factors present in the same picture.
+.RB ` width
+.IR 0 '
+is ignored.
+.TP
+.BI height\  N
+Forces picture to be
+.I N
+inches high, overriding other scaling factors.
+If both `width' and `height' are specified the tighter constraint will
+determine the scale of the picture.
+.B Height
+and
+.B width
+commands are not saved with a
+.B default
+command.
+They will, however, affect point size scaling if that option is set.
+.TP
+.BI file\  name
+Get picture from
+.I gremlin
+file
+.I name
+located the current directory (or in the library directory; see the
+.B \-M
+option above).
+If two
+.B file
+commands are given, the second one overrides the first.
+If
+.I name
+doesn't exist, an error message is reported and processing continues from
+the
+.B .GE
+line.
+.SH NOTES ABOUT GROFF
+Since
+.I @g@grn
+is a preprocessor, it doesn't know about current indents, point sizes,
+margins, number registers, etc.
+Consequently, no
+.I troff
+input can be placed between the
+.B .GS
+and
+.B .GE
+requests.
+However,
+.I gremlin
+text is now processed by
+.IR troff ,
+so anything legal in a single line of
+.I troff
+input is legal in a line of
+.I gremlin
+text (barring `.' directives at the beginning of a line).
+Thus, it is possible to have equations within a
+.I gremlin
+figure by including in the
+.I gremlin
+file
+.I eqn
+expressions enclosed by previously defined delimiters (e.g.
+.IR $$ ).
+.PP
+When using
+.I @g@grn
+along with other preprocessors, it is best to run
+.I tbl
+before
+.IR @g@grn ,
+.IR pic ,
+and/or
+.I ideal
+to avoid overworking
+.IR tbl .
+.I Eqn
+should always be run last.
+.PP
+A picture is considered an entity, but that doesn't stop
+.I troff
+from trying to break it up if it falls off the end of a page.
+Placing the picture between `keeps' in \-me macros will ensure proper
+placement.
+.PP
+.I @g@grn
+uses
+.IR troff 's 
+number registers
+.B g1
+through
+.B g9
+and sets registers
+.B g1
+and
+.B g2
+to the width and height of the
+.I gremlin
+figure (in device units) before entering the
+.B .GS
+request (this is for those who want to rewrite these macros).
+.SH FILES
+.Tp \w'@FONTDIR@/devname/DESC'u+3n
+.BI @FONTDIR@/dev name /DESC
+Device description file for device
+.IR name .
+.SH SEE ALSO
+.BR gremlin (1),
+.BR groff (@MAN1EXT@),
+.BR pic (@MAN1EXT@),
+.BR ideal (1)
+.SH HISTORY
+.PP
+David Slattengren and Barry Roitblat wrote the original Berkeley
+.IR grn .
+.PP
+Daniel Senderowicz and Werner Lemberg modified it for
+.IR groff .
