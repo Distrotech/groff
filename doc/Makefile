@@ -68,7 +68,8 @@ all: $(DOCS)
 	GROFF_BIN_PATH=$(groff_bin_path); \
 	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
-	| $(GROFF) -P-I$< -P-D -Pimg -Thtml $(FFLAG) -U -ms >$@
+	| $(GROFF) -P-I`echo $< | sed -e 's|.ms$$||'` \
+		   -P-D -Pimg -Thtml $(FFLAG) -U -ms >$@
 
 .ms.ascii:
 	GROFF_TMAC_PATH=../tmac; \

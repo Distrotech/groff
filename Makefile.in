@@ -512,10 +512,14 @@ dist:
 	cd tmp; \
 	$(LN_S) ../Makefile .; \
 	$(LN_S) $$srcdir/* . 2>/dev/null || true; \
+	rm -rf CVS; \
 	for d in $(DISTDIRS); do \
-	  (cd $$d; $(LN_S) $$srcdir/$$d/* . 2>/dev/null || true); \
+	  (cd $$d; \
+	   $(LN_S) $$srcdir/$$d/* . 2>/dev/null; \
+	   rm -rf CVS || true); \
 	done; \
-	$(MAKE) srcdir=$$srcdir VPATH=$$srcdir extraclean; \
+	$(MAKE) srcdir=. VPATH=. distfiles; \
+	$(MAKE) srcdir=. VPATH=. extraclean; \
 	for d in $(EXTRADIRS); do \
 	  (cd $$d; $(MAKE) extraclean); \
 	done; \
