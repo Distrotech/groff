@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -34,7 +34,8 @@ int vresolution = 1;
 int units_per_inch;
 int sizescale;
 
-static int parse_expr(units *v, int scale_indicator, int parenthesised);
+static int parse_expr(units *v, int scale_indicator,
+		      int parenthesised, int rigid = 0);
 static int start_number();
 
 int get_vunits(vunits *res, unsigned char si)
@@ -57,6 +58,21 @@ int get_hunits(hunits *res, unsigned char si)
   units x;
   if (parse_expr(&x, si, 0)) {
     *res = hunits(x);
+    return 1;
+  }
+  else
+    return 0;
+}
+
+// for \B
+
+int get_number_rigidly(units *res, unsigned char si)
+{
+  if (!start_number())
+    return 0;
+  units x;
+  if (parse_expr(&x, si, 0, 1)) {
+    *res = x;
     return 1;
   }
   else
@@ -220,11 +236,13 @@ enum { OP_LEQ = 'L', OP_GEQ = 'G', OP_MAX = 'X', OP_MIN = 'N' };
 
 #define SCALE_INDICATOR_CHARS "icPmnpuvMsz"
 
-static int parse_term(units *v, int scale_indicator, int parenthesised);
+static int parse_term(units *v, int scale_indicator,
+		      int parenthesised, int rigid);
 
-static int parse_expr(units *v, int scale_indicator, int parenthesised)
+static int parse_expr(units *v, int scale_indicator,
+		      int parenthesised, int rigid)
 {
-  int result = parse_term(v, scale_indicator, parenthesised);
+  int result = parse_term(v, scale_indicator, parenthesised, rigid);
   while (result) {
     if (parenthesised)
       tok.skip();
@@ -270,7 +288,7 @@ static int parse_expr(units *v, int scale_indicator, int parenthesised)
       return result;
     }
     units v2;
-    if (!parse_term(&v2, scale_indicator, parenthesised))
+    if (!parse_term(&v2, scale_indicator, parenthesised, rigid))
       return 0;
     int overflow = 0;
     switch (op) {
@@ -376,7 +394,8 @@ static int parse_expr(units *v, int scale_indicator, int parenthesised)
   return result;
 }
 
-static int parse_term(units *v, int scale_indicator, int parenthesised)
+static int parse_term(units *v, int scale_indicator,
+		      int parenthesised, int rigid)
 {
   int negative = 0;
   for (;;)
@@ -396,7 +415,7 @@ static int parse_term(units *v, int scale_indicator, int parenthesised)
     // | is not restricted to the outermost level
     // tbl uses this
     tok.next();
-    if (!parse_term(v, scale_indicator, parenthesised))
+    if (!parse_term(v, scale_indicator, parenthesised, rigid))
       return 0;
     int tem;
     tem = (scale_indicator == 'v'
@@ -427,6 +446,8 @@ static int parse_term(units *v, int scale_indicator, int parenthesised)
     tok.next();
     c = tok.ch();
     if (c == ')') {
+      if (rigid)
+	return 0;
       warning(WARN_SYNTAX, "empty parentheses");
       tok.next();
       *v = 0;
@@ -448,10 +469,12 @@ static int parse_term(units *v, int scale_indicator, int parenthesised)
       scale_indicator = 0;
       tok.next();
     }
-    if (!parse_expr(v, scale_indicator, 1))
+    if (!parse_expr(v, scale_indicator, 1, rigid))
       return 0;
     tok.skip();
     if (tok.ch() != ')') {
+      if (rigid)
+	return 0;
       warning(WARN_SYNTAX, "missing `)' (got %1)", tok.description());
     }
     else
@@ -503,7 +526,7 @@ static int parse_term(units *v, int scale_indicator, int parenthesised)
   case '=':
     warning(WARN_SYNTAX, "empty left operand");
     *v = 0;
-    return 1;
+    return rigid ? 0 : 1;
   default:
     warning(WARN_NUMBER, "numeric expression expected (got %1)",
 	    tok.description());

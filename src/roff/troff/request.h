@@ -70,7 +70,7 @@ public:
 };
 
 extern void init_input_requests();
-extern void init_html_requests();
+extern void init_markup_requests();
 extern void init_div_requests();
 extern void init_node_requests();
 extern void init_reg_requests();

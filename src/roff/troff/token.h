@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -108,6 +109,8 @@ extern void handle_initial_title();
 
 struct hunits;
 extern void read_title_parts(node **part, hunits *part_width);
+
+extern int get_number_rigidly(units *result, unsigned char si);
 
 extern int get_number(units *result, unsigned char si);
 extern int get_integer(int *result);

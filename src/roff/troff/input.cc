@@ -1043,7 +1043,7 @@ static int do_expr_test()
   warning_mask = 0;
   inhibit_errors = 1;
   int dummy;
-  int result = get_number(&dummy, 'u');
+  int result = get_number_rigidly(&dummy, 'u');
   warning_mask = saved_warning_mask;
   inhibit_errors = saved_inhibit_errors;
   if (tok == start && input_stack::get_level() == start_level)
