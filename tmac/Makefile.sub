@@ -19,7 +19,7 @@ all: stamp-strip stamp-wrap
 install_data: $(NORMALFILES) $(SPECIALFILES) stamp-wrap stamp-strip man.local
 	-test -d $(tmacdir) || mkdir $(tmacdir)
 	if test -n "$(tmac_wrap)"; then \
-	  for m in $(tmac_wrap); do \
+	  for m in "$(tmac_wrap)"; do \
 	    $(INSTALL_DATA) $$m-wrap $(tmacdir)/tmac.$$m; \
 	  done; \
 	fi
@@ -53,7 +53,7 @@ stamp-strip: $(STRIPFILES) $(MDOCFILES)
 
 stamp-wrap:
 	if test -n "$(tmac_wrap)"; then \
-	  for m in $(tmac_wrap); do \
+	  for m in "$(tmac_wrap)"; do \
 	    rm -f $$m-wrap; \
 	    echo .cp 1 >$$m-wrap; \
 	    echo .so $(sys_tmac_prefix)$$m >>$$m-wrap; \
@@ -63,7 +63,7 @@ stamp-wrap:
 
 uninstall_sub:
 	-if test -n "$(tmac_wrap)"; then \
-	  for m in $(tmac_wrap); do rm -f $(tmacdir)/tmac.$$m; done; \
+	  for m in "$(tmac_wrap)"; do rm -f $(tmacdir)/tmac.$$m; done; \
 	fi
 	-for f in $(NORMALFILES) $(STRIPFILES); do rm -f $(tmacdir)/$$f; done
 	-rm -f $(tmacdir)/tmac.$(tmac_s_prefix)s

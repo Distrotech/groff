@@ -1,5 +1,5 @@
 .\"------------
-.\" $Id: 0.MT,v 1.27 1995/04/24 05:37:50 jh Exp $
+.\" $Id: 0.MT,v 1.1.1.1 1999/05/21 04:50:47 wlemb Exp $
 .\" Cover sheet. Memorandum type 0-3 and "string".
 .\"------------
 .if !r Au .nr Au 1
