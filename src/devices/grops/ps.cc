@@ -1475,7 +1475,7 @@ int main(int argc, char **argv)
   static char stderr_buf[BUFSIZ];
   setbuf(stderr, stderr_buf);
   int c;
-  while ((c = getopt(argc, argv, "F:glmc:w:vb:")) != EOF)
+  while ((c = getopt(argc, argv, "F:P:glmc:w:vb:")) != EOF)
     switch(c) {
     case 'v':
       {
@@ -1501,6 +1501,9 @@ int main(int argc, char **argv)
       break;
     case 'F':
       font::command_line_font_dir(optarg);
+      break;
+    case 'P':
+      setenv("GROPS_PROLOGUE", optarg, 1);
       break;
     case 'w':
       if (sscanf(optarg, "%d", &linewidth) != 1 || linewidth < 0) {
@@ -1535,7 +1538,9 @@ int main(int argc, char **argv)
 
 static void usage()
 {
-  fprintf(stderr, "usage: %s [-glmv] [-b n] [-c n] [-w n] [-F dir] [files ...]\n",
-	  program_name);
+  fprintf(
+    stderr,
+    "usage: %s [-glmv] [-b n] [-c n] [-w n] [-P prologue] [-F dir] [files ...]\n",
+    program_name);
   exit(1);
 }

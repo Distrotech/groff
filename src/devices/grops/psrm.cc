@@ -24,7 +24,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "ps.h"
 
-#define PROLOGUE "prologue"
+#define GROPS_PROLOGUE "prologue"
 
 static void print_ps_string(const string &s, FILE *outfp);
 
@@ -259,9 +259,12 @@ void resource_manager::output_prolog(ps_output &out)
   FILE *outfp = out.get_file();
   out.end_line();
   char *path;
-  FILE *fp = font::open_file(PROLOGUE, &path);
+  if (!getenv("GROPS_PROLOGUE"))
+    setenv("GROPS_PROLOGUE", GROPS_PROLOGUE, 0);
+  char *prologue = getenv("GROPS_PROLOGUE");
+  FILE *fp = font::open_file(prologue, &path);
   if (!fp)
-    fatal("can't find `%1'", PROLOGUE);
+    fatal("can't find `%1'", prologue);
   fputs("%%BeginResource: ", outfp);
   procset_resource->print_type_and_name(outfp);
   putc('\n', outfp);

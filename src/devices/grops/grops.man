@@ -41,6 +41,7 @@ grops \- PostScript driver for groff
 .OP \-c n
 .OP \-w n
 .OP \-F dir
+.OP \-P prologue
 .RI "[\ " files\|.\|.\|. "\ ]"
 .br
 .ad \na
@@ -156,10 +157,18 @@ Turn manual feed on for the document.
 .BI \-F dir
 Search the directory
 .IB dir /dev name
-for font and device description files;
+for prologue, font and device description files;
 .I name
 is the name of the device, usually
 .BR ps .
+.TP
+.BI \-P prologue-file
+Use the file
+.I prologue-file
+(in the font path) as the prologue instead of the default prologue file
+.BR prologue .
+This option overrides the environment variable
+.SM GROPS_PROLOGUE.
 .TP
 .BI \-w n
 Lines should be drawn using a thickness of
@@ -793,6 +802,21 @@ and
 .BR %%EndFont
 comments)
 should be used.
+.SH ENVIRONMENT
+.TP
+.SM
+.B GROPS_PROLOGUE
+If this is set to
+.IR foo ,
+then
+.B grops
+will use the file
+.I foo
+(in the font path) instead of the default prologue file
+.BR prologue .
+The option
+.B \-P
+overrides this environment variable.
 .SH FILES
 .Tp \w'\fB@FONTDIR@/devps/download'u+2n
 .B @FONTDIR@/devps/DESC
