@@ -37,7 +37,7 @@ GREEKFONTS=SS
 TEXTFONTS=AB ABI AI AR BMB BMBI BMI BMR CB CBI CI CR HB HBI HI HR HNB HNBI \
   HNI HNR NB NBI NI NR PB PBI PI PR TB TBI TI TR ZCMI
 
-FONTS=$(TEXTFONTS) $(SPECIALFONTS) $(GREEKFONTS) $(DINGBATSFONTS)
+FONTS=$(TEXTFONTS) $(SPECIALFONTS) $(GREEKFONTS) $(DINGBATSFONTS) EURO
 
 DESC=$(srcdir)/../DESC
 AFMTODIT=afmtodit -d$(DESC)
@@ -195,6 +195,13 @@ S: symbol.afm
 
 ZDR: zapfdr.afm
 	$(AFMTODIT) -s $(RFLAG) zapfdr.afm $(srcdir)/dingbats.rmap $@
+
+# the map is just a dummy
+EURO: freeeuro.afm
+	$(AFMTODIT) $(RFLAG) freeeuro.afm symbolmap $@
+
+freeeuro.afm freeeuro.pfa: generate/freeeuro.sfd
+	pfaedit -script generate/sfdtopfa generate/freeeuro.sfd
 
 symbol.afm: $(srcdir)/symbol.sed
 	-rm -f $@
