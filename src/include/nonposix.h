@@ -25,7 +25,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #  define _WIN32
 # endif
 # define setmode(f,m) _setmode(f,m)
-# define fileno(f)    _fileno(f)
 #endif
 
 #if defined(__MSDOS__) || (defined(_WIN32) && !defined(__CYGWIN32__))

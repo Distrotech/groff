@@ -6159,11 +6159,11 @@ int main(int argc, char **argv)
       safer_flag = 0;	// unsafe behaviour
       break;
     case CHAR_MAX + 1: // --help
-      usage(stdout,argv[0]);
+      usage(stdout, argv[0]);
       exit(0);
       break;
     case '?':
-      usage(stderr,argv[0]);
+      usage(stderr, argv[0]);
       exit(1);
       break;		// never reached
     default:

@@ -1,12 +1,33 @@
+2001-04-11  Blake McBride  <blake@florida-software.com>
+
+	* src/include/nonposix.h (fileno) [_MSC_VER]: Removed.
+
+2001-04-11  Werner LEMBERG  <wl@gnu.org>
+
+	* font/devlbp/Makefile.sub (CLEANADD): Set it.
+	* tmac/Makefile.sub (CLEANADD): Add tmac.local-s.
+	* Makefile.in (dist): Don't remove src/xditview/Imakefile, but ...
+	* Makefile.sub (DISTCLEANFILES): Here.
+
+	* libs/libgroff/new.cc: Include `nonposix.h'.
+	* win32-diffs: Updated.
+
 2001-04-10  Ruslan Ermilov  <ru@FreeBSD.org>
 
 	Added skeleton macro for defunct macros.
 
 	Updated documentation.
 
+	When inside displays, an empty input line warning should be
+	suppressed.  If another macro call is put inside a display,
+	all subsequent empty lines found in that display caused a
+	warning to be emitted.
+
 	* tmac/doc.tmac (doc-defunct-macro): New macro.
 	(Db, Ds, Ex, Or, Sf): Reimplemented using this macro.
 	(doc-restore-global-vars): Fixed typo.
+	(doc-empty-line): Check the `doc-display-depth' register to
+	determine whether we are inside display or not.
 
 	* tmac/doc-common: Removed `Or' and `Sf' registers.
 	Moved obsolete `Ds' macro to doc.tmac.
@@ -86,8 +107,8 @@
 	Fix indentation in SYNOPSIS.
 
 	Updated to include changes of latest BSD mdoc version (basically,
-	`.Fn' and `.Fc' put a final semicolon after a function declaration
-	in the SYNOPSIS section.
+	the only change is that `.Fn' and `.Fc' put a final semicolon after
+	a function declaration in the SYNOPSIS section).
 
 	* tmac/doc.tmac (doc-in-synopsis-count): Replaced with ...
 	(doc-in-synopsis-section): New variable.  Updated all related
