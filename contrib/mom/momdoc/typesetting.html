@@ -566,7 +566,7 @@ for an explanation.
 <ul>
 	<li><a href="#FAMILY">FAMILY</a> (type family)
 	<li><a href="#FONT">FONT</a> (font)
-	<li><a href="#PS">PS</a> (point size of type)
+	<li><a href="#PS">PT_SIZE</a> (point size of type)
 	<li><a href="#LEADING">LS</a> (line spacing/leading)
 	<li><a href="#AUTOLEAD">AUTOLEAD</a> (automatic line spacing)
 	<li><a href="#LINELENGTH">LL</a> (line length)
@@ -668,42 +668,42 @@ Fonts can also be changed inline.  See
 <a href="inlines.html#INLINE_FONTS_MOM">Inline Escapes, font control</a>.
 <br>
 
-<!---PS--->
+<!---PT_SIZE--->
 
 <hr width="66%" align="left">
 <a name="PS"><h3><u>Point size of type</u></h3></a>
 <br>
-Macro: <strong>PS</strong> <var>&lt;size of type in points&gt;</var>
+Macro: <strong>PT_SIZE</strong> <var>&lt;size of type in points&gt;</var>
 <br>
 <em>*Does not require a <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a></em>
 
 <p>
-<strong>PS</strong> (Point Size) takes one argument: the size of type
+<strong>PT_SIZE</strong> (Point Size) takes one argument: the size of type
 in points.  Unlike most other macros that establish the size or measure
-of something, <strong>PS</strong> does not require that you supply a
+of something, <strong>PT_SIZE</strong> does not require that you supply a
 unit of measure since it's a near universal convention that type size
 is measured in points.  Therefore, to change the type size to, say,
 11 points, enter
 <p>
 <pre>
-	.PS 11
+	.PT_SIZE 11
 </pre>
 
 Point sizes may be fractional (e.g.  10.25 or 12.5).
 <p>
 You can prepend a plus or a minus sign to the argument to
-<strong>PS</strong>, in which case the point size will be changed by +
+<strong>PT_SIZE</strong>, in which case the point size will be changed by +
 or - the original value.  For example, if the point size is 12,
 and you want 14, you can do
 <p>
 <pre>
-	.PS +2
+	.PT_SIZE +2
 </pre>
 
 then later reset it to 12 with
 <p>
 <pre>
-	.PS -2
+	.PT_SIZE -2
 </pre>
 
 The size of type can also be changed inline.  See
@@ -722,7 +722,7 @@ Macro: <strong>LS</strong> <var>&lt;distance between lines&gt;</var>
 <p>
 <strong>LS</strong> (Line Space) takes one argument: the distance you want, typically
 in points, from baseline to baseline of type.  The argument may
-be fractional (e.g. 12.25 or 14.5).  Like <strong>PS</strong>,
+be fractional (e.g. 12.25 or 14.5).  Like <strong>PT_SIZE</strong>,
 <strong>LS</strong> does not require a unit of measure, since
 <a href="definitions.html#TERMS_LEADING">leading</a>
 is most often given in points.  Therefore, to set the linespace to
@@ -775,7 +775,7 @@ Macro: <strong>AUTOLEAD</strong> <var>&lt;amount of automatic leading&gt; [FACTO
 <p>
 Without the <strong>FACTOR</strong> argument, <strong>AUTOLEAD</strong>
 calculates the linespace for you by adding its argument to the
-current point size of type. All subsequent <strong>PS</strong>
+current point size of type. All subsequent <strong>PT_SIZE</strong>
 requests automatically update the linespacing by the autolead amount.
 <p>
 Used in this way, <strong>AUTOLEAD</strong> does not require a unit
@@ -791,7 +791,7 @@ As an example, if your current point size of type is 12, entering
 
 changes the linespace to 14 points, regardless any linespacing
 already in effect.  From here on, every change to the size of type
-(with <strong>PS</strong>, not
+(with <strong>PT_SIZE</strong>, not
 <a href="definitions.html#TERMS_INLINES">inline</a>)
 changes the linespace as well.  If you decrease the type size to 9
 points, the leading decreases to 11 points.  If you increase the type
@@ -2100,7 +2100,7 @@ off with <strong>\*[CONDX]</strong>.
 <strong>IMPORTANT:</strong> You MUST turn <strong>\*[COND]</strong>
 off before making any changes to the point size of your type, either
 via the
-<a href="#PS">PS</a>
+<a href="#PS">PT_SIZE</a>
 macro or with the <strong>\s</strong> inline escape.  If you wish
 the new point size to be pseudo-condensed, simply reinvoke
 <strong>\*[COND]</strong> afterwards.  Equally,
@@ -2185,7 +2185,7 @@ off with <strong>\*[EXTX]</strong>.
 <strong>IMPORTANT:</strong> You MUST turn <strong>\*[EXT]</strong>
 off before making any changes to the point size of your type, either
 via the
-<a href="#PS">PS</a>
+<a href="#PS">PT_SIZE</a>
 macro or with the <strong>\s</strong> inline escape.  If you wish
 the new point size to be pseudo-extended, simply reinvoke
 <strong>\*[EXT]</strong> afterwards.  Equally,
@@ -2452,11 +2452,11 @@ Here's how the input for our sample employee evaluation looks
 <p>
 <pre>
 	.PAGE 8.5i 11i 1i 1i 1i
-	.FAMILY T
-	.FT R
-	.PS 14
-	.LS 16
-	.QUAD LEFT
+	.FAMILY  T
+	.FT      R
+	.PT_SIZE 14
+	.LS      16
+	.QUAD    LEFT
 	.KERN
 	.HY OFF
 	.SS 0
@@ -2647,11 +2647,11 @@ evaluation form utilising string tabs.
 <p>
 <pre>
 	.PAGE 8.5i 11i 1i 1i 1i
-	.FAMILY T
-	.FT R
-	.PS 14
-	.LS 16
-	.QUAD LEFT
+	.FAMILY  T
+	.FT      R
+	.PT_SIZE 14
+	.LS      16
+	.QUAD    LEFT
 	.KERN
 	.HY OFF
 	.SS 0
@@ -2729,8 +2729,6 @@ the gutters are wider.
 	<a name="TAB_SET"><h3><u>Set up typsetting tabs</u></h3></a>
 <br>
 Macro: <strong>TAB_SET</strong> <var>&lt;tab number&gt; &lt;indent&gt; &lt;length&gt;  L | R | C | J [ QUAD ]</var>
-<br>
-Alias: <strong>TS</strong>
 <br>
 <em>*&lt;indent&gt; and &lt;length&gt; require a <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a></em>
 
@@ -3636,10 +3634,10 @@ Consider the following example:
 <p>
 <pre>
 	.PAGE 8.5i 11i 1i 1i 1i 1i
-	.FAMILY T
-	.FT R
-	.PS 12
-	.LS 14
+	.FAMILY  T
+	.FT      R
+	.PT_SIZE 12
+	.LS      14
 	.JUSTIFY
 	.KERN
 	.SS 0

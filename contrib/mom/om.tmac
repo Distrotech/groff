@@ -23,6 +23,8 @@
 .\"
 .
 .
+\# Version 1.1.2a
+\#
 \# Inasmuch as possible, macros that turn a feature on or off follow
 \# a similar style.  Invoking the macro without an argument turns
 \# the feature on.  Invoking it with any other argument turns it off.
@@ -89,7 +91,7 @@
 .       if !'\\n(.z'' \{ .di \}
 .       IX CLEAR
 .       TQ
-.       TS 1 \\n[#DOC_L_LENGTH]u/2u \\n[#DOC_L_LENGTH]u/2u LEFT
+.       TAB_SET 1 \\n[#DOC_L_LENGTH]u/2u \\n[#DOC_L_LENGTH]u/2u LEFT
 .       ALD \\n[#DOC_LEAD]u*2u
 .       TAB 1
 .       if \\n[#CLOSING] \{\
@@ -350,7 +352,7 @@
 \# *Notes:
 \#   Must NOT use a unit of measure.
 \#
-.MAC PS END
+.MAC PT_SIZE END
 .    if \\n[#PRINT_STYLE]=1 \{ .return \}
 .    if \\n[#IGNORE]        \{ .return \}
 .    nr #PT_SIZE_SET 1
@@ -396,7 +398,7 @@
 \# *Function:
 \#   Stores user supplied auto-lead value in register #AUTOLEAD_VALUE.
 \#   Adds #AUT0LEAD_VALUE to #PT_SIZE when invoked to set leading.
-\#   All subsequent PS requests reset the leading in the same way until
+\#   All subsequent PT_SIZE requests reset the leading in the same way until
 \#   AUTOLEAD is turned off.
 \# *Notes:
 \#   With the optional FACTOR argument, the current point size is
@@ -1276,10 +1278,10 @@
 .    \}
 .    nr #ST\\$1_LENGTH \\n[#ST\\$1_MARK]-\\n[#ST\\$1_OFFSET]
 .    ie \\n[#IN_TAB] \{\
-.       TS \\$1 \\n[#ST\\$1_OFFSET]u+\\n[#ST_OFFSET]u \\n[#ST\\$1_LENGTH]u \\*[$ST\\$1_QUAD_DIR] \\*[$ST\\$1_FILL]
+.       TAB_SET \\$1 \\n[#ST\\$1_OFFSET]u+\\n[#ST_OFFSET]u \\n[#ST\\$1_LENGTH]u \\*[$ST\\$1_QUAD_DIR] \\*[$ST\\$1_FILL]
 .    \}
 .    el \{\
-.       TS \\$1 \\n[#ST\\$1_OFFSET]u \\n[#ST\\$1_LENGTH]u \\*[$ST\\$1_QUAD_DIR] \\*[$ST\\$1_FILL]
+.       TAB_SET \\$1 \\n[#ST\\$1_OFFSET]u \\n[#ST\\$1_LENGTH]u \\*[$ST\\$1_QUAD_DIR] \\*[$ST\\$1_FILL]
 .    \}
 .END
 \#
@@ -1309,12 +1311,12 @@
 \#
 \#   Examples:
 \#
-\#     .TS 1 2P+6p 12P C
+\#     .TAB_SET 1 2P+6p 12P C
 \#
 \#   means "create a tab numbered 1 that starts 2 picas and 6 points from
 \#   the left margin, is 12 picas long, and centre each input line."
 \#
-\#     .TS 1 2P+6P 12P C QUAD
+\#     .TAB_SET 1 2P+6P 12P C QUAD
 \#
 \#   means exactly the same thing, except that input lines are joined and
 \#   the area delimted by the tab filled with centered text.
@@ -1331,7 +1333,7 @@
 \#   single line tabs), use .TN (provided the tabs are numbered sequentially).
 \#   Otherwise, you must use .EL then .TAB # if you want them to align.
 \#
-\#   If you want to reset tabs, you must use .TQ before .TS.
+\#   If you want to reset tabs, you must use .TQ before .TAB_SET.
 \#
 \#   Note that indents are turned off automatically whenever a new
 \#   tab is called with TAB #.
@@ -2728,14 +2730,70 @@
 .MAC CAPS END
 .    ie '\\$1'' \{\
 .       tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
-.       tr àÀâÂáÁäÄåÅèÈêÊéÉëËìÌîÎíÍïÏòÒôÔóÓöÖùÙûÛúÚüÜ
-.       tr çÇñÑ
+.       tr à\[`A]
+.       tr â\[^A]
+.       tr á\['A]
+.       tr ä\[:A]
+.       tr å\[oA]
+.       tr ã\[~A]
+.       tr æ\[AE]
+.       tr è\[`E]
+.       tr ê\[^E]
+.       tr é\['E]
+.       tr ë\[:E]
+.       tr ì\[`I]
+.       tr î\[^I]
+.       tr í\['I]
+.       tr ï\[:I]
+.       tr ò\[`O]
+.       tr ô\[^O]
+.       tr ó\['O]
+.       tr ö\[:O]
+.       tr õ\[~O]
+.       tr ø\[/O]
+.       tr ù\[`U]
+.       tr û\[^U]
+.       tr ú\['U]
+.       tr ü\[:U]
+.       tr ç\[,C]
+.       tr ð\[-D]
+.       tr ñ\[~N]
+.       tr þ\[TP]
+.       tr ý\['Y]
 .       nr #CAPS_ON 1
 .    \}
 .    el \{\
 .       tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
-.       tr ààââááääååèèêêééëëììîîííïïòòôôóóööùùûûúúüü
-.       tr ççññ
+.       tr à\[`a]
+.       tr â\[^a]
+.       tr á\['a]
+.       tr ä\[:a]
+.       tr å\[oa]
+.       tr ã\[~a]
+.       tr æ\[ae]
+.       tr è\[`e]
+.       tr ê\[^e]
+.       tr é\['e]
+.       tr ë\[:e]
+.       tr ì\[`i]
+.       tr î\[^i]
+.       tr í\['i]
+.       tr ï\[:i]
+.       tr ò\[`o]
+.       tr ô\[^o]
+.       tr ó\['o]
+.       tr ö\[:o]
+.       tr õ\[~o]
+.       tr ø\[/o]
+.       tr ù\[`u]
+.       tr û\[^u]
+.       tr ú\['u]
+.       tr ü\[:u]
+.       tr ç\[,c]
+.       tr ð\[Sd]
+.       tr ñ\[~n]
+.       tr þ\[Tp]
+.       tr ý\['y]
 .       rr #CAPS_ON
 .    \}
 .END
@@ -2775,7 +2833,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS    PADMARKER       PAD_MARKER
 .ALIAS    TABSET          TAB_SET
 .ALIAS    TB              TAB
-.ALIAS    TS              TAB_SET
 .ALIAS    UNDERSCORE_2    UNDERSCORE2
 \#
 \#
@@ -2910,8 +2967,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !\\n[#DOC_TYPE]=4 \{ .R_MARGIN 6P \}
 .       FAMILY  T
 .       FT      R
-.       if !\\n[#DOC_TYPE]=4 \{ .PS 12.5 \}
-.       if !\\n[#DOC_TYPE]=4 \{ .LS 16   \}
+.       if !\\n[#DOC_TYPE]=4 \{ .PT_SIZE 12.5 \}
+.       if !\\n[#DOC_TYPE]=4 \{ .LS 16 \}
 .       JUSTIFY
 .       HY
 .       HY_SET 2 36p 1p
@@ -3234,7 +3291,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #DOC_TYPE 4
 .       L_MARGIN 1.125i
 .       R_MARGIN 1.125i
-.       PS 12
+.       PT_SIZE 12
 .       LS 13.5
 .       DOCHEADER OFF
 .       PARA_INDENT 3m
@@ -3247,6 +3304,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       FOOTER_RULE OFF
 .       FOOTER_LEFT ""
 .       FOOTER_CENTER ""
+.       FOOTER_RIGHT_SIZE +0
 .       FOOTER_RIGHT ".../\E*[$SUITE]
 .       FOOTER_ON_FIRST_PAGE
 .       em ALL_DONE
@@ -3629,11 +3687,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             CAPS OFF
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
-.             FAMILY \\*[$TITLE_FAM]
-.             FT     \\*[$TITLE_FT]
-.             PS     \\n[#DOC_PT_SIZE]u\\*[$TITLE_SIZE_CHANGE]
-.             LS     \\n[#DOCHEADER_LEAD]u
-.             PRINT \\*[$TITLE]
+.             FAMILY  \\*[$TITLE_FAM]
+.             FT      \\*[$TITLE_FT]
+.             PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$TITLE_SIZE_CHANGE]
+.             LS      \\n[#DOCHEADER_LEAD]u
+.             PRINT   \\*[$TITLE]
 .             \\n+[#DOCHEADER_LINES]
 .             CAPS OFF
 .          \}
@@ -3652,10 +3710,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                el \{ .vs \\n[#DOC_LEAD]u \}
 .             \}
 .             if \\n[#PRINT_STYLE]=2 \{\
-.                FAMILY \\*[$SUBTITLE_FAM]
-.                FT     \\*[$SUBTITLE_FT]
-.                PS     \\n[#DOC_PT_SIZE]u\\*[$SUBTITLE_SIZE_CHANGE]
-.                LS     \\n[#DOCHEADER_LEAD]u
+.                FAMILY  \\*[$SUBTITLE_FAM]
+.                FT      \\*[$SUBTITLE_FT]
+.                PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$SUBTITLE_SIZE_CHANGE]
+.                LS      \\n[#DOCHEADER_LEAD]u
 .             \}
 .             PRINT \\*[$SUBTITLE]
 .             \\n+[#DOCHEADER_LINES]
@@ -3684,10 +3742,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .             \}
 .             if \\n[#PRINT_STYLE]=2 \{\
-.                FAMILY \\*[$AUTHOR_FAM]
-.                FT     \\*[$AUTHOR_FT]
-.                PS     \\n[#DOC_PT_SIZE]u\\*[$AUTHOR_SIZE_CHANGE]
-.                LS     \\n[#DOCHEADER_LEAD]u
+.                FAMILY  \\*[$AUTHOR_FAM]
+.                FT      \\*[$AUTHOR_FT]
+.                PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$AUTHOR_SIZE_CHANGE]
+.                LS      \\n[#DOCHEADER_LEAD]u
 .             \}
 .             PRINT \\*[$ATTRIBUTE_STRING]
 .             \\n+[#DOCHEADER_LINES]
@@ -3723,10 +3781,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             el \{ .vs \\n[#DOC_LEAD]u \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
-.             FAMILY \\*[$TITLE_FAM]
-.             FT     \\*[$TITLE_FT]
-.             PS     \\n[#DOC_PT_SIZE]u\\*[$TITLE_SIZE_CHANGE]
-.             LS     \\n[#DOC_LEAD]u
+.             FAMILY  \\*[$TITLE_FAM]
+.             FT      \\*[$TITLE_FT]
+.             PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$TITLE_SIZE_CHANGE]
+.             LS      \\n[#DOC_LEAD]u
 .          \}
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             CAPS
@@ -3756,10 +3814,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             CAPS OFF
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
-.             FAMILY \\*[$TITLE_FAM]
-.             FT     \\*[$TITLE_FT]
-.             PS     \\n[#DOC_PT_SIZE]u\\*[$TITLE_SIZE_CHANGE]
-.             LS     \\n[#DOCHEADER_LEAD]u
+.             FAMILY  \\*[$TITLE_FAM]
+.             FT      \\*[$TITLE_FT]
+.             PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$TITLE_SIZE_CHANGE]
+.             LS      \\n[#DOCHEADER_LEAD]u
 .             PRINT \\*[$TITLE]
 .             \\n+[#DOCHEADER_LINES]
 .             CAPS OFF
@@ -3779,10 +3837,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                el \{ .vs \\n[#DOC_LEAD]u \}
 .             \}
 .             if \\n[#PRINT_STYLE]=2 \{\
-.                FAMILY \\*[$SUBTITLE_FAM]
-.                FT     \\*[$SUBTITLE_FT]
-.                PS     \\n[#DOC_PT_SIZE]u\\*[$SUBTITLE_SIZE_CHANGE]
-.                LS     \\n[#DOCHEADER_LEAD]u
+.                FAMILY  \\*[$SUBTITLE_FAM]
+.                FT      \\*[$SUBTITLE_FT]
+.                PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$SUBTITLE_SIZE_CHANGE]
+.                LS      \\n[#DOCHEADER_LEAD]u
 .             \}
 .             PRINT \\*[$SUBTITLE]
 .             \\n+[#DOCHEADER_LINES]
@@ -3811,10 +3869,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .             \}
 .             if \\n[#PRINT_STYLE]=2 \{\
-.                FAMILY \\*[$AUTHOR_FAM]
-.                FT     \\*[$AUTHOR_FT]
-.                PS     \\n[#DOC_PT_SIZE]u\\*[$AUTHOR_SIZE_CHANGE]
-.                LS     \\n[#DOCHEADER_LEAD]u
+.                FAMILY  \\*[$AUTHOR_FAM]
+.                FT      \\*[$AUTHOR_FT]
+.                PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$AUTHOR_SIZE_CHANGE]
+.                LS      \\n[#DOCHEADER_LEAD]u
 .             \}
 .             PRINT \\*[$ATTRIBUTE_STRING]
 .             \\n+[#DOCHEADER_LINES]
@@ -3858,10 +3916,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             if \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
-.             FAMILY \\*[$DOCTYPE_FAM]
-.             FT     \\*[$DOCTYPE_FT]
-.             PS     \\n[#DOC_PT_SIZE]u\\*[$DOCTYPE_SIZE_CHANGE]
-.             LS     \\n[#DOCHEADER_LEAD]u
+.             FAMILY  \\*[$DOCTYPE_FAM]
+.             FT      \\*[$DOCTYPE_FT]
+.             PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$DOCTYPE_SIZE_CHANGE]
+.             LS      \\n[#DOCHEADER_LEAD]u
 .             ALD \\n[#DOCHEADER_LEAD]u
 .             \\n+[#DOCHEADER_LINES]
 .             UNDERSCORE   "\\*[$DOC_TYPE]
@@ -4246,7 +4304,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .MAC DOC_PT_SIZE END
 .    if \\n[#IGNORE] \{ .return \}
 .    br
-.    PS \\$1
+.    PT_SIZE \\$1
 .    nr #DOC_PT_SIZE \\n[#PT_SIZE]
 .END
 \#
@@ -4555,9 +4613,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          nr #EPI_LEAD_DIFF \\n[#DOC_LEAD]-\\n[#EPI_LEAD]
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          FAMILY \\*[$EPI_FAM]
-.          FT \\*[$EPI_FT]
-.          PS \\n[#DOC_PT_SIZE]u\\*[$EPI_SIZE_CHANGE]
+.          FAMILY   \\*[$EPI_FAM]
+.          FT       \\*[$EPI_FT]
+.          PT_SIZE  \\n[#DOC_PT_SIZE]u\\*[$EPI_SIZE_CHANGE]
 .          AUTOLEAD \\n[#EPI_AUTOLEAD]
 .          nr #EPI_LEAD      \\n[#LEAD]
 .          nr #EPI_LEAD_DIFF \\n[#DOC_LEAD]-\\n[#EPI_LEAD]
@@ -4607,7 +4665,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             FAMILY   \\*[$EPI_FAM]
 .             FT       \\*[$EPI_FT]
-.             PS       \\n[#DOC_PT_SIZE]u\\*[$EPI_SIZE_CHANGE]
+.             PT_SIZE  \\n[#DOC_PT_SIZE]u\\*[$EPI_SIZE_CHANGE]
 .             AUTOLEAD \\n[#EPI_AUTOLEAD]
 .             QUAD     \\*[$EPI_QUAD]
 .             HY
@@ -5137,7 +5195,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ie '\\$0'HDRFTR_RULE_INTERNAL' \{\
 .       ie \\n[#USERDEF_HDRFTR] \{\
 .          nr #CAP_HEIGHT_ADJUST \\n[#HDRFTR_HEIGHT]
-.          PS 12
+.          PT_SIZE 12
 .          if \\n[#HEADERS_ON] \{ .ALD \\n[#HDRFTR_RULE_GAP]u \}
 .          if \\n[#FOOTERS_ON] \{\
 .              RLD \\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
@@ -5159,7 +5217,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             \}
 .             el \{ .nr #CAP_HEIGHT_ADJUST \\n[#RIGHT_CAP_HEIGHT] \}
 .          \}
-.          PS 12
+.          PT_SIZE 12
 .          if \\n[#HEADERS_ON] \{ .ALD \\n[#HDRFTR_RULE_GAP]u \}
 .          if \\n[#FOOTERS_ON] \{\
 .              RLD \\n[#LEAD]u*3u+\\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
@@ -5402,9 +5460,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS OFF \}
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       FAMILY \\*[$HDRFTR_LEFT_FAM]
-.       FT     \\*[$HDRFTR_LEFT_FT]
-.       PS     \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_LEFT_SIZE_CHANGE]
+.       FAMILY  \\*[$HDRFTR_LEFT_FAM]
+.       FT      \\*[$HDRFTR_LEFT_FT]
+.       PT_SIZE \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_LEFT_SIZE_CHANGE]
 .       if \\n[#FOOTERS_ON] \{\
 .          di NULL
 .          SIZESPECS
@@ -5421,9 +5479,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_LEFT_CAPS] \{ .CAPS OFF \}
-.       FAMILY \\*[$HDRFTR_CENTER_FAM]
-.       FT     \\*[$HDRFTR_CENTER_FT]
-.       PS     \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_CENTER_SIZE_CHANGE]
+.       FAMILY  \\*[$HDRFTR_CENTER_FAM]
+.       FT      \\*[$HDRFTR_CENTER_FT]
+.       PT_SIZE \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_CENTER_SIZE_CHANGE]
 .       if \\n[#FOOTERS_ON] \{\
 .          di NULL
 .          SIZESPECS
@@ -5440,9 +5498,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_CENTER_CAPS] \{ .CAPS OFF \}
-.       FAMILY \\*[$HDRFTR_RIGHT_FAM]
-.       FT     \\*[$HDRFTR_RIGHT_FT]
-.       PS     \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_RIGHT_SIZE_CHANGE]
+.       FAMILY  \\*[$HDRFTR_RIGHT_FAM]
+.       FT      \\*[$HDRFTR_RIGHT_FT]
+.       PT_SIZE \\n[#HDRFTR_PT_SIZE]u\\*[$HDRFTR_RIGHT_SIZE_CHANGE]
 .       if \\n[#FOOTERS_ON] \{\
 .          di NULL
 .          SIZESPECS
@@ -5482,9 +5540,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #PAGENUMBER \\n%+\\n[#PAGE_NUM_ADJ]
 .    fc ^ #
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       FAMILY \\*[$HDRFTR_FAM]
-.       FT     R
-.       PS     \\n[#HDRFTR_PT_SIZE]u
+.       FAMILY  \\*[$HDRFTR_FAM]
+.       FT      R
+.       PT_SIZE \\n[#HDRFTR_PT_SIZE]u
 .    \}
 .    ie \\n[#RECTO_VERSO] \{\
 .       if o \{\
@@ -5630,9 +5688,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ll \\n[#DOC_L_LENGTH]u
 .    ta \\n(.lu
 .    if \\n[#PRINT_STYLE]=2 \{\
-.      FAMILY \\*[$HDRFTR_FAM]
-.      FT     R 
-.      PS     \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
+.      FAMILY  \\*[$HDRFTR_FAM]
+.      FT      R 
+.      PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
 .    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       fam C
@@ -5870,9 +5928,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    po \\n[#DOC_L_MARGIN]u
 .    ll \\n[#DOC_L_LENGTH]u
 .    ta \\n(.lu
-.    FAMILY \\*[$HDRFTR_FAM]
-.    FT     R 
-.    PS     \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
+.    FAMILY  \\*[$HDRFTR_FAM]
+.    FT      R 
+.    PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       fam C
 .       ft  R
@@ -6172,10 +6230,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       UNDERLINE OFF
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       FAMILY \\*[$HEAD_FAM]
-.       FT \\*[$HEAD_FT]
-.       PS \\n[#DOC_PT_SIZE]u\\*[$HEAD_SIZE_CHANGE]
-.       LS \\n[#DOC_LEAD]u
+.       FAMILY  \\*[$HEAD_FAM]
+.       FT      \\*[$HEAD_FT]
+.       PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$HEAD_SIZE_CHANGE]
+.       LS      \\n[#DOC_LEAD]u
 .    \}
 .    if r#QUOTE             \{ .rr #QUOTE \}
 .    if r#EPIGRAPH          \{ .rr #EPIGRAPH \}
@@ -6361,11 +6419,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       UNDERLINE OFF
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       FAMILY \\*[$SH_FAM]
-.       FT     \\*[$SH_FT]
-.       PS     \\n[#DOC_PT_SIZE]u\\*[$SH_SIZE_CHANGE]
-.       LS     \\n[#DOC_LEAD]u
-.       QUAD   \\*[$SH_QUAD]
+.       FAMILY  \\*[$SH_FAM]
+.       FT      \\*[$SH_FT]
+.       PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$SH_SIZE_CHANGE]
+.       LS      \\n[#DOC_LEAD]u
+.       QUAD    \\*[$SH_QUAD]
 .    \}
 .    if \\n[#PRINT_STYLE]=1 \{ .nr #SH_LEAD_ADJUST \\n[#LEAD]/5 \}
 .    if \\n[#PRINT_STYLE]=2 \{ .nr #SH_LEAD_ADJUST \\n[#LEAD]/8 \}
@@ -6601,9 +6659,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       FAM \\*[$PH_FAM]
-.       FT  \\*[$PH_FT]
-.       PS  \\*[$PH_SIZE_CHANGE]
+.       FAM     \\*[$PH_FAM]
+.       FT      \\*[$PH_FT]
+.       PT_SIZE \\*[$PH_SIZE_CHANGE]
 .       ie \\n[#NUMBER_PH] \{\
 .          if \\n[#NUMBER_HEAD] \{\
 .             ie \\n[#NUMBER_SH] \{\
@@ -6627,9 +6685,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       el \{\
 .          PRINT "\\$1\h'.6m'\c"
 .       \}
-.       FAMILY \\*[$DOC_FAM]
-.       FT     \\*[$PP_FT]
-.       PS     \\n[#DOC_PT_SIZE]u
+.       FAMILY  \\*[$DOC_FAM]
+.       FT      \\*[$PP_FT]
+.       PT_SIZE \\n[#DOC_PT_SIZE]u
 .       if \\n[#SLANT_WAS_ON] \{\
 .          rr #SLANT_WAS_ON 1
 . \\*[SLANT]\c
@@ -6846,11 +6904,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       \}
 .       el \{\
-.          FAMILY \\*[$DOC_FAM]
-.          FT     \\*[$PP_FT]
-.          PS     \\n[#DOC_PT_SIZE]u
-.          LS     \\n[#DOC_LEAD]u
-.          QUAD   \\*[$DOC_QUAD]
+.          FAMILY  \\*[$DOC_FAM]
+.          FT      \\*[$PP_FT]
+.          PT_SIZE \\n[#DOC_PT_SIZE]u
+.          LS      \\n[#DOC_LEAD]u
+.          QUAD    \\*[$DOC_QUAD]
 .       \}
 .       ie \\n[#PP]=0 \{\
 .          if \\n[#INDENT_FIRST_PARAS] \{\
@@ -7051,10 +7109,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          LEFT
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          FAMILY \\*[$QUOTE_FAM]
-.          FT     \\*[$QUOTE_FT]
-.          PS     \\n[#DOC_PT_SIZE]u\\*[$QUOTE_SIZE_CHANGE]
-.          LS     \\n[#DOC_LEAD]u
+.          FAMILY  \\*[$QUOTE_FAM]
+.          FT      \\*[$QUOTE_FT]
+.          PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$QUOTE_SIZE_CHANGE]
+.          LS      \\n[#DOC_LEAD]u
 .          LEFT
 .       \}
 .       nr #Q_TOP \\n(nl
@@ -7169,11 +7227,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          HY OFF
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          FAMILY \\*[$BQUOTE_FAM]
-.          FT     \\*[$BQUOTE_FT]
-.          PS     \\n[#DOC_PT_SIZE]u\\*[$BQUOTE_SIZE_CHANGE]
-.          LS     \\n[#DOC_LEAD]u
-.          QUAD \\*[$BQUOTE_QUAD]
+.          FAMILY  \\*[$BQUOTE_FAM]
+.          FT      \\*[$BQUOTE_FT]
+.          PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$BQUOTE_SIZE_CHANGE]
+.          LS      \\n[#DOC_LEAD]u
+.          QUAD    \\*[$BQUOTE_QUAD]
 .          HY
 .       \}
 .       nr #Q_TOP \\n(nl
@@ -7443,7 +7501,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# PAGE NUMBER FORMAT
 \# ------------------
 \# *Arguments:
-\#   ARABIC | ROMAN | roman | ALPHA | alpha
+\#   DIGIT | ROMAN | roman | ALPHA | alpha
 \# *Function:
 \#   Assigns user entered format to #PAGENUMBER.
 \#
@@ -7522,9 +7580,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    po \\n[#DOC_L_MARGIN]u
 .    ll \\n[#DOC_L_LENGTH]u
 .    ta \\n(.lu
-.    FAMILY \\*[$PAGE_NUM_FAM]
-.    FT     \\*[$PAGE_NUM_FT]
-.    PS     \\n[#DOC_PT_SIZE]u\\*[$PAGE_NUM_SIZE_CHANGE]
+.    FAMILY  \\*[$PAGE_NUM_FAM]
+.    FT      \\*[$PAGE_NUM_FT]
+.    PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$PAGE_NUM_SIZE_CHANGE]
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       fam C
 .       ft  R
@@ -7731,11 +7789,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .MAC FOOTNOTE_RULE END
 .    ie '\\$0'PRINT_FOOTNOTE_RULE' \{\
 .       if \\n[#FN_RULE]=0 \{ .RLD 1v \}
-\!.     PS 12  \"Not sure why these have to be transparently embedded, but they do.
+\!.     PT_SIZE 12  \"Not sure why these have to be transparently embedded, but they do.
 .       RLD 1v
 .       LEFT
 .       PRINT \\v'-\\n[#FN_RULE_ADJ]u'\\l'\\n[#FN_RULE_LENGTH]u'\\v'+\\n[#FN_RULE_ADJ]u'
-\!.     PS \\n[#DOC_PT_SIZE]u\\*$[FN_SIZE_CHANGE]
+\!.     PT_SIZE \\n[#DOC_PT_SIZE]u\\*$[FN_SIZE_CHANGE]
 .       QUAD \\*[$FN_QUAD]
 .    \}
 .    el \{\
@@ -7821,11 +7879,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ll -\\n[#FN_BR_INDENT]u
 .          ta \\n(.lu
 .       \}
-.       FAMILY \\*[$FN_FAM]
-.       FT     \\*[$FN_FT]
-.       PS     \\n[#DOC_PT_SIZE]u\\*[$FN_SIZE_CHANGE]
+.       FAMILY   \\*[$FN_FAM]
+.       FT       \\*[$FN_FT]
+.       PT_SIZE  \\n[#DOC_PT_SIZE]u\\*[$FN_SIZE_CHANGE]
 .       AUTOLEAD \\n[#FN_AUTOLEAD]
-.       QUAD \\*[$FN_QUAD]
+.       QUAD     \\*[$FN_QUAD]
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          fam C
 .          ft  R
@@ -8087,6 +8145,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    QUAD $DOC_QUAD
 .    LS \\n[#DOC_LEAD]u
 .    NEWPAGE
+.    rr #PAGENUM_STYLE_SET
 .END
 \#
 \#

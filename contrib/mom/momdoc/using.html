@@ -7,6 +7,8 @@
 
 <!====================================================================>
 
+<a href="typesetting.html#TOP">Next</a>&nbsp;&nbsp;
+<a href="definitions.html#TOP">Prev</a>&nbsp;&nbsp;
 <a href="toc.html">Back to Table of Contents</a>
 
 <a name="TOP"></a>
@@ -125,9 +127,9 @@ chapter of a book.
 	.DOCTYPE    CHAPTER
 	.PRINTSTYPE TYPESET
 	\#
-	.FAM P
-	.PS  10
-	.LS  12
+	.FAM     P
+	.PT_SIZE 10
+	.LS      12
 	\#
 	.START
 </pre>
@@ -158,6 +160,17 @@ with whatever is appropriate to your box.
 Sadly, it is well beyond the scope of this manual to tell you
 how to set up a printing system.  See the README file for
 minimum requirements to run groff with <strong>mom</strong>.
+<p>
+<strong>NOTE FOR ADVANCED USERS:</strong> I've sporadically had groff
+choke on perfectly innocent sourced files within <strong>mom</strong>
+documents.  You'll know you have this problem when groff complains that
+it can't find the sourced file even when you can plainly see that the
+file exists, and that you've given <code>.so</code> the right path and
+name.  Should this happen, pass groff the <code>-U</code> (unsafe mode)
+option along with the other options you require.  Theoretically, you
+only need <code>-U</code> with <code>.open, .opena, .pso, .sy,</code>
+and <code>.pi</code>, however reality seems, at times, to dictate
+otherwise.
 
 <a name="USING_PREVIEWING">
 	<h2><u>How to preview documents</u></h2>
@@ -193,7 +206,7 @@ like a lot of work, I've set up my editor (elvis) to do it for me.
 Whenever I'm working on a document that needs previewing/checking,
 I fire up <strong>gv</strong> with the &quot;Watch File&quot;
 option turned on.  To look at the file, I tell elvis to process
-it (with groff) and send it to the temporary file (<kbd>groff
+it (with groff) and send it to a temporary file (<kbd>groff
 -mom filename &gt; filename.ps</kbd>), then open the file inside
 <strong>gv</strong>.  Ever after, when I want to look at any changes
 I make, I simply tell elvis to work his magic again.  The Watch File
@@ -202,6 +215,9 @@ and automatically loads the new version.  Voilà! -- instant previewing.
 
 <p>
 <hr>
+<a href="typesetting.html#TOP">Next</a>&nbsp;&nbsp;
+<a href="definitions.html#TOP">Prev</a>&nbsp;&nbsp;
+<a href="#TOP">Top</a>&nbsp;&nbsp;
 <a href="toc.html">Back to Table of Contents</a>
 </body>
 </html>

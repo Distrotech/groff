@@ -16,7 +16,7 @@
 \#
 .FAM T         \" Times Roman family
 .FT  B         \" Bold font
-.PS  12        \" Point size
+.PT_SIZE  12   \" Point size
 .LS  14        \" Leading (line spacing)
 .LEFT          \" Set lines flush left, nofill mode
 \#
@@ -30,7 +30,7 @@ and multi-columns"
 \#
 \#
 .FAM H         \" Helvetica family
-.PS  10
+.PT_SIZE  10
 .LS  11        \" New leading
 \#
 \# The following uses a combination of padding, string tabs, and the FP escape
@@ -126,7 +126,7 @@ Superbe\|!  Une aubaine à ne pas manquer.  Prêt à boire maintenant.
 \# hanging indent, you must first set a left indent.
 \#
 .FT I          \" Change font to italic
-.PS -.5        \" Reduce point size by 1/2 point
+.PT_SIZE -.5   \" Reduce point size by 1/2 point
 .LS -.5        \" Reduce leading by 1/2 point
 .JUSTIFY       \" Set text justified
 \#
@@ -170,7 +170,7 @@ Otherwise, it smells like cheap lipstick.
 .ALD 2P        \" Add 2-picas extra space before next example
 .FAM T
 .FT  B
-.PS  12
+.PT_SIZE  12
 .LS  14
 Example 2:
 .ALD .25v
@@ -186,12 +186,12 @@ groff inline escapes \(lq and \(rq (leftquote and rightquote).
 .SP            \" Add an extra linespace
 \#
 \#
-.PS 12.5
+.PT_SIZE 12.5
 .LS 14
-.PS -1         \" Reduce point size by 1 point
+.PT_SIZE -1   \" Reduce point size by 1 point
 Passage using groff defaults
-.ALD .5v       \" Add an extra 1/2 line space
-.PS +1         \" Restore point size
+.ALD .5v      \" Add an extra 1/2 line space
+.PT_SIZE +1   \" Restore point size
 .QUAD LEFT     \" Set quad left, fill mode
 .IB 3P         \" Indent 3 picas from both the left and right margins
 .FT R
@@ -230,12 +230,12 @@ felt as such to him who has done the wrong.
 \# flaws are fixed with inline escapes.
 \#
 .FT B
-.PS -1
+.PT_SIZE -1
 .LEFT
 The same passage, \*[BU4]"massaged"
 .ALD .5v
 .FT R
-.PS +1 
+.PT_SIZE +1 
 .QUAD LEFT
 .HY OFF           \" Turn automatic hyphenation off
 .BR_AT_LINE_KERN  \" Automatically insert a line break (.BR) with each invocation of .RW and .EW 
@@ -267,7 +267,7 @@ the wrong.
 .RW 0
 .WS +0         \" Restore normal wordspacing
 .ALD 6p
-.PS -.5
+.PT_SIZE -.5
 .RIGHT
 \*[RLD1.5]\(em\*[ALD1.5]\*[BP3]Edgar \*[BP1]Allen Poe, \*[IT]The Cask of Amontillado\*[PREV]
 .IX CLEAR      \" Cancel and clear stored values of all indents
@@ -279,7 +279,7 @@ the wrong.
 \#
 .FAM T
 .FT  B
-.PS  12
+.PT_SIZE  12
 .LS  14
 .LEFT
 Example 3:
@@ -288,7 +288,7 @@ Example 3:
 .SP            \" Add an extra line space
 .FAM N         \" New Century Schoolbook family
 .FT  R
-.PS  11
+.PT_SIZE  11
 .LS  13
 .HY            \" Turn hyphenation back on
 .JUSTIFY       \" Justify text
@@ -365,7 +365,7 @@ list...
 \#
 .FAM T
 .FT  B
-.PS  12
+.PT_SIZE  12
 .LS  14
 .LEFT
 .SP
@@ -377,7 +377,7 @@ Example 4:
 .SP
 .FAM N
 .FT  R
-.PS  11
+.PT_SIZE  11
 .LS  13
 .JUSTIFY
 Although setting up string tabs is a bit more complex than setting
@@ -478,7 +478,7 @@ Generally speaking, once you get the hang of string tabs and the
 .NEWPAGE
 .FAM T
 .FT  B
-.PS  12
+.PT_SIZE  12
 .LS  14
 .LEFT
 Example 5:
@@ -486,7 +486,7 @@ Example 5:
 .UNDERSCORE 3.75p "Word spacing"
 .ALD 8p
 .FAM P         \" Palatino family
-.PS  11
+.PT_SIZE  11
 .LS  14
 \#
 \# The "label" lines for the following are set in Helvetica bold, one
@@ -520,7 +520,7 @@ N\*[BU1]o\*[BU1]w \*[BU1]is the time for all good men to come to the aid of the 
 \#
 .FAM T
 .FT  B
-.PS  12
+.PT_SIZE  12
 .LS  14
 .LEFT
 Example 6:
@@ -529,7 +529,7 @@ Example 6:
 .ALD 8p
 .FAM P         \" Palatino family
 .FT  R
-.PS  11
+.PT_SIZE  11
 .LS  15
 \#
 \# Here, we set up some tabs so the examples can go into facing columns.
@@ -580,7 +580,7 @@ Example 6:
 \#
 .FAM T
 .FT  B
-.PS  12
+.PT_SIZE  12
 .LS  14
 .LEFT
 Example 7:
@@ -591,16 +591,20 @@ and a dropcap"
 \#
 \#
 .FT R
-.PS 11
+.PT_SIZE 11
 .LS 12
 .BR_AT_LINE_KERN OFF    \" In justified text, it's best to have this OFF
 \#
 \#
-.TS 1  0      18.5P  J  \" TS is an alias for TAB_SET
-.TS 2  20.5P  18.5P  J
+.TAB_SET 1  0      18.5P  J
+.TAB_SET 2  20.5P  18.5P  J
 .MCO
 .ALD 5P+9p
-.PSPIC penguin.ps
+\#
+\# The little picture won't show up when you preview this file unless you
+\# change the path to the pic to its actual location on your system.
+\#
+.PSPIC mom/examples/penguin.ps
 .MCR
 .TAB 1
 .DROPCAP_FONT B
