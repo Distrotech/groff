@@ -6829,7 +6829,7 @@ The following example defines strings to begin and end
 a superscript:
 
 @Example
-.ds @{ \v'-.3m'\s'\Es[.s]*60/100'
+.ds @{ \v'-.3m'\s'\En[.s]*60/100'
 .ds @} \s0\v'.3m'
 @endExample
 
@@ -10683,7 +10683,7 @@ Note that a page can't be ejected if @code{vpt} is set to zero.
 @endDefreq
 
 @Defreq {wh, dist [@Var{macro}]}
-Set a page location trap.  Positive values for @var{dist} set
+Set a page location trap.  Non-negative values for @var{dist} set
 the trap relative to the top of the page; negative values set
 the trap relative to the bottom of the page.  Default scaling
 indicator is @samp{v}.
@@ -10724,7 +10724,8 @@ It is possible to have more than one trap at the same location; to do so,
 the traps must be defined at different locations, then moved together with
 the @code{ch} request; otherwise the second trap would replace the first
 one.  Earlier defined traps hide later defined traps if moved to the same
-position (the many empty lines caused by the @code{bp} request are omitted):
+position (the many empty lines caused by the @code{bp} request are omitted
+in the following example):
 
 @Example
 .de a
@@ -10774,9 +10775,9 @@ traps.
 Change the location of a trap.
 The first argument is the name of the macro to be invoked at
 the trap, and the second argument is the new location for the trap
-(note that the parameters are specified the opposite of the @code{wh}
-request).  This is useful for building up footnotes in a diversion to
-allow more space at the bottom of the page for them.
+(note that the parameters are specified in opposite order as in the
+@code{wh} request).  This is useful for building up footnotes in a
+diversion to allow more space at the bottom of the page for them.
 
 Default scaling indicator for @var{dist} is @samp{v}.  If @var{dist}
 is missing, the trap is removed.
@@ -10844,6 +10845,16 @@ Another line.
 @endExample
 @endDefreg
 
+@cindex diversions, and traps
+@cindex traps, and diversions
+An important fact to consider while designing macros is that diversions and
+traps do not interact normally.  For example, if a trap invokes a header
+macro (while outputting a diversion) which tries to change the font on the
+current page, the effect will not be visible before the diversion has
+completely been printed (except for input protected with @code{\!} or
+@code{\?}) since the data in the diversion is already formatted.  In most
+cases, this is not the expected behaviour.
+
 @c ---------------------------------------------------------------------
 
 @node Diversion Traps, Input Line Traps, Page Location Traps, Traps
@@ -10858,7 +10869,7 @@ Another line.
 @cindex trap, diversion, setting (@code{dt})
 Set a trap @emph{within} a diversion.
 @var{dist} is the location of the trap
-(identical to the @code{.wh} request; default scaling indicator is
+(identical to the @code{wh} request; default scaling indicator is
 @samp{v}) and @var{macro} is the name of the macro to be invoked.  The
 number register @code{.t} still works within diversions.
 @xref{Diversions}, for more information.
@@ -10899,9 +10910,9 @@ next @var{n}@tie{}lines in a bold font.
 @cindex interrupted lines and input line traps (@code{itc})
 @cindex traps, input line, and interrupted lines (@code{itc})
 @cindex lines, interrupted, and input line traps (@code{itc})
-The @code{itc} request is identical,
-except that a line interrupted with @code{\c}
-counts as one input line.
+The @code{itc} request is identical
+except that an interrupted text line (ending with @code{\c})
+is not counted as a separate line.
 
 Both requests are associated with the current environment
 (@pxref{Environments}); switching to another environment disables the
@@ -11047,7 +11058,7 @@ Diversions may be nested.  The read-only number register @code{.z}
 contains the name of the current diversion (this is a string-valued
 register).  The read-only number register @code{.d} contains the current
 vertical place in the diversion.  If not in a diversion it is the same
-as the register @code{nl}.
+as register @code{nl}.
 @endDefreg
 
 @Defreg {.h}
@@ -11125,15 +11136,15 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 @cindex transparent output (@code{\!}, @code{\?})
 @cindex output, transparent (@code{\!}, @code{\?})
 Prevent requests, macros, and escapes from being
-interpreted when read into a diversion.  This takes the given text
-and @dfn{transparently} embeds it into the diversion.  This is useful for
+interpreted when read into a diversion.  Both escapes take the given text
+and @dfn{transparently} embed it into the diversion.  This is useful for
 macros which shouldn't be invoked until the diverted text is actually
 output.
 
 The @code{\!} escape transparently embeds text up to
 and including the end of the line.
 The @code{\?} escape transparently embeds text until the next
-occurrence of the @code{\?} escape.  For example:
+occurrence of the @code{\?} escape.  Example:
 
 @Example
 \?@var{anything}\?
@@ -11185,7 +11196,7 @@ at all; its argument is simply ignored.
 @cindex @code{output} request, and @code{\!}
 @Defreq {output, string}
 Emit @var{string} directly to the @code{gtroff} intermediate output
-(subject to copy-mode interpretation);  this is similar to @code{\!} used
+(subject to copy-mode interpretation); this is similar to @code{\!} used
 at the top level.  An initial double quote in @var{string} is stripped off
 to allow initial blanks.
 
