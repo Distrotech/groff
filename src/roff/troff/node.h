@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -172,21 +173,25 @@ public:
 
 class word_space_node : public space_node {
 protected:
-  word_space_node(hunits, int, node * = 0);
+  int num_spaces;
+  word_space_node(hunits, int, int, node * = 0);
 public:
-  word_space_node(hunits, node * = 0);
+  word_space_node(hunits, int, node * = 0);
   node *copy();
   void tprint(troff_output_file *);
   int same(node *);
+  void asciify(macro *);
   const char *type();
+  int merge_space(hunits);
 };
 
 class unbreakable_space_node : public word_space_node {
-  unbreakable_space_node(hunits, int, node * = 0);
+  unbreakable_space_node(hunits, int, int, node * = 0);
 public:
   unbreakable_space_node(hunits, node * = 0);
   node *copy();
   int same(node *);
+  void asciify(macro *);
   const char *type();
   breakpoint *get_breakpoints(hunits width, int nspaces, breakpoint *rest = 0,
 			      int is_inner = 0);
@@ -218,7 +223,7 @@ public:
 
 class extra_size_node : public node {
   vunits n;
- public:
+public:
   extra_size_node(vunits i) : n(i) {}
   void set_vertical_size(vertical_size *);
   node *copy();
@@ -270,7 +275,6 @@ class vmotion_node : public node {
   int same(node *);
   const char *type();
 };
-
 
 class hline_node : public node {
   hunits x;
@@ -403,7 +407,6 @@ public:
   int same(node *);
   const char *type();
 };
-
 
 struct hvpair {
   hunits h;

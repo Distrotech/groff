@@ -734,18 +734,21 @@ or string diversion is currently undefined or if it is defined to be a
 request; normally they modify the value of an existing object.
 .TP
 .BI .asciify\  xx
-This request only exists in order to make it possible
-to make certain gross hacks work with GNU troff.
-It `unformats' the diversion
+This request `unformats' the diversion
 .I xx
 in such a way that
 .SM ASCII
-characters that were formatted and diverted into
+and space characters that were formatted and diverted into
 .I xx
 will be treated like ordinary input characters when
 .I xx
 is reread.
-For example, this
+Useful in conjunction with the
+.B .box
+and
+.B .writem
+requests.
+It can be also used for gross hacks; for example, this
 .RS
 .IP
 .ne 7v+\n(.Vu
@@ -1568,16 +1571,16 @@ a leading
 .B \(ts
 will be stripped.
 .TP
-.BI .writem\  stream\ xxx
+.BI .writem\  stream\ xx
 Write the contents of the macro or string
-.I xxx
+.I xx
 to the stream named
 .IR stream .
 .I stream
 must previously have been the subject of an
 .B open
 request.
-.I xxx
+.I xx
 is read in copy mode.
 .
 .SS Extended requests

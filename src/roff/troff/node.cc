@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -33,6 +34,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "charinfo.h"
 #include "font.h"
 #include "reg.h"
+#include "input.h"
 
 #include "nonposix.h"
 
@@ -3005,7 +3007,20 @@ space_char_hmotion_node::space_char_hmotion_node(hunits i, node *next)
 
 void space_char_hmotion_node::asciify(macro *m)
 {
-  m->append(' ');
+  m->append(ESCAPE_SPACE);
+  delete this;
+}
+
+void word_space_node::asciify(macro *m)
+{
+  for (int i = 0; i < num_spaces; i++)
+    m->append(' ');
+  delete this;
+}
+
+void unbreakable_space_node::asciify(macro *m)
+{
+  m->append(ESCAPE_TILDE);
   delete this;
 }
 
@@ -3375,18 +3390,19 @@ void composite_node::vertical_extent(vunits *min, vunits *max)
   n = reverse_node_list(n);
 }
 
-word_space_node::word_space_node(hunits d, node *x) : space_node(d, x)
+word_space_node::word_space_node(hunits d, int n, node *x)
+: space_node(d, x), num_spaces(n)
 {
 }
 
-word_space_node::word_space_node(hunits d, int s, node *x)
-: space_node(d, s, x)
+word_space_node::word_space_node(hunits d, int s, int n, node *x)
+: space_node(d, s, x), num_spaces(n)
 {
 }
 
 node *word_space_node::copy()
 {
-  return new word_space_node(n, set);
+  return new word_space_node(n, set, num_spaces);
 }
 
 void word_space_node::tprint(troff_output_file *out)
@@ -3395,19 +3411,26 @@ void word_space_node::tprint(troff_output_file *out)
   space_node::tprint(out);
 }
 
+int word_space_node::merge_space(hunits h)
+{
+  n += h;
+  num_spaces++;
+  return 1;
+}
+
 unbreakable_space_node::unbreakable_space_node(hunits d, node *x)
-: word_space_node(d, x)
+: word_space_node(d, 1, x)
 {
 }
 
-unbreakable_space_node::unbreakable_space_node(hunits d, int s, node *x)
-: word_space_node(d, s, x)
+unbreakable_space_node::unbreakable_space_node(hunits d, int s, int n, node *x)
+: word_space_node(d, s, n, x)
 {
 }
 
 node *unbreakable_space_node::copy()
 {
-  return new unbreakable_space_node(n, set);
+  return new unbreakable_space_node(n, set, num_spaces);
 }
 
 breakpoint *unbreakable_space_node::get_breakpoints(hunits, int,

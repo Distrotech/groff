@@ -1,3 +1,34 @@
+2001-01-12  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cc: Move definition of special characters
+	like `ESCAPE_TILDE' to ...
+	* src/roff/troff/input.h: New file.
+	* src/roff/troff/Makefile.sub (HDRS): Add it.
+
+	Extending the .asciify request to `unformat' space characters also.
+
+	* src/roff/troff/node.h (word_space_node): Add `num_spaces' element
+	to count input space characters.
+	Update constructors to take care of it.
+	* src/roff/troff/node.cc (space_char_hmotion_node::asciify): Use
+	`ESCAPE_SPACE' instead of normal space.
+	(word_space_node::asciify): New method.
+	(unbreakable_space_node::asciify): New method.
+	(word_space_node::merge_space): New method.
+	* src/roff/troff/env.cc (environment::space_newline,
+	environment::space): Add code to initialize `num_spaces' (using the
+	constructor of `word_space_node').
+	* NEWS, src/roff/troff/troff.man, man/groff.man, doc/groff.texinfo:
+	Document it.
+
+2001-01-09  Werner LEMBERG  <wl@gnu.org>
+
+	* man/groff_char.man: Use table header traps only conditionally.
+
+2001-01-09  Bjarni Ingi Gíslason  <bjarniig@hi.is>
+
+	* man/groff_char.man: Add `ý' and `Ý' to the `acute' group.
+
 2001-01-08  Werner LEMBERG  <wl@gnu.org>
 
 	Introducing the `box' and `boxa' requests which are similar to
@@ -22,14 +53,14 @@
 
 2000-12-21  Werner LEMBERG  <wl@gnu.org>
 
-	Ignore `.ss' request if in compatibility mode.
+	Ignore `ss' request if in compatibility mode.
 
 	* src/roff/troff/input.cc: Make `compatible_flag' non-static.
 	* src/roff/troff/env.h: Added extern `compatible_flag' declaration.
 	* src/roff/troff/env.cc (space_size): Use it.
 
 	* doc/groff.texinfo, src/roff/troff/troff.man: Fix documentation of
-	`.ss' request in nroff mode.
+	`ss' request in nroff mode.
 
 	* tmac/an-old.tmac: Fixed some serious bugs introduced with latest
 	changes.
@@ -53,7 +84,7 @@
 	* src/preproc/tbl/table.cc (table::print): Fix `indent cannot be
 	negative' warning.
 
-	* tmac/e.tmac: Add `.T&' macro.
+	* tmac/e.tmac: Add `T&' macro.
 	Fix `indent cannot be negative' warning.
 	* tmac/s.tmac: Fix `indent cannot be negative' warning.
 
@@ -75,9 +106,9 @@
 
 	* tmac/an-old.tmac: Implementing the -rcR switch (similar to mdoc);
 	if -rcR=1 (which is now the default in nroff mode), a single, very
-	long page is created instead of multiple pages: All `.ne' and `.wh'
+	long page is created instead of multiple pages: All `ne' and `wh'
 	requests are put into conditionals; a new macro `an-end' is added to
-	be called with `.em'.
+	be called with `em'.
 
 	Some other minor cleanups.
 

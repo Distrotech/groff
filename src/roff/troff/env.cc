@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -381,11 +382,14 @@ void environment::space_newline()
     if (node_list_ends_sentence(line) == 1)
       x += env_sentence_space_width(this);
   }
+  int num_spaces = 1;
+  if (node_list_ends_sentence(line) == 1)
+    num_spaces++;
   if (line != 0 && line->merge_space(x)) {
     width_total += x;
     return;
   }
-  add_node(new word_space_node(x));
+  add_node(new word_space_node(x, num_spaces));
   possibly_break_line(spread_flag);
   spread_flag = 0;
 }
@@ -413,7 +417,7 @@ void environment::space()
     *tp += x;
     return;
   }
-  add_node(new word_space_node(x));
+  add_node(new word_space_node(x, 1));
   possibly_break_line(spread_flag);
   spread_flag = 0;
 }

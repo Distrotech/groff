@@ -42,6 +42,44 @@ o `box' and `boxa' are two new requests which behave similarly to `di' and
   `da' but don't include a partially filled line (which is restored after
   ending the diversion).
 
+o The `asciify' request has been extended to `unformat' space characters
+  also.  This makes it possible to reformat diversions; for example the
+  following
+
+    .ll 3i
+    .
+    a01 a02 a03 a04 a05 a06 a07 a08 a09 a10.
+    .
+    .box box1
+    .ev 1
+    .nf
+    b01 b02 b03 b04 b05 b06 b07 b08 b09 b10.
+    .br
+    .ev
+    .box
+    .
+    c01 c02 c03 c04 c05 c06 c07 c08 c09 c10.
+    .
+    .asciify box1
+    .box1
+
+  gives
+
+    a01  a02  a03  a04 a05 a06 a07
+    a08 a09 a10.  c01 c02 c03  c04
+    c05  c06 c07 c08 c09 c10.  b01
+    b02 b03 b04 b05  b06  b07  b08
+    b09 b10.
+
+  Without the `asciify' request, space characters are converted to word
+  space nodes which are no longer stretchable, and the result would be
+
+    a01  a02  a03  a04 a05 a06 a07
+    a08 a09 a10.  c01 c02 c03  c04
+    c05  c06 c07 c08 c09 c10.  b01
+    b02 b03 b04 b05 b06 b07 b08
+    b09 b10.
+
 o Two new requests `tm1' and `tmc' have been added to improve writing
   messages to the terminal.  `tm1' is similar to `tm' but allows leading
   whitespace.  `tmc' is similar to `tm1' but doesn't emit a final newline.
