@@ -36,7 +36,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "defs.h"
 #include "input.h"
 
-// Needed for getpid().
+// Needed for getpid() and isatty()
 #include "posix.h"
 
 #include "nonposix.h"
@@ -46,17 +46,6 @@ extern "C" {
   int putenv(const char *);
 }
 #endif /* NEED_DECLARATION_PUTENV */
-
-#ifdef ISATTY_MISSING
-#undef isatty
-#define isatty(n) (1)
-#else /* not ISATTY_MISSING */
-#ifndef isatty
-extern "C" {
-  int isatty(int);
-}
-#endif /* not isatty */
-#endif /* not ISATTY_MISSING */
 
 #define MACRO_PREFIX "tmac."
 #define MACRO_POSTFIX ".tmac"

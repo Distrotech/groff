@@ -54,7 +54,7 @@ saved_libs="$LIBS"
 LIBS="$LIBS -lc $LIBM"
 AC_REPLACE_FUNCS(fmod getcwd putenv snprintf strerror strtol)
 LIBS="$saved_libs"
-AC_CHECK_FUNCS(gettimeofday rename strcasecmp strncasecmp strsep)
+AC_CHECK_FUNCS(gettimeofday isatty rename strcasecmp strncasecmp strsep)
 GROFF_MKSTEMP
 AC_DECL_SYS_SIGLIST
 dnl checks for compiler characteristics
