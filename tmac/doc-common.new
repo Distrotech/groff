@@ -96,9 +96,11 @@
 .nr Ft 8n\" ?
 .nr Hf 8n\" ?
 .nr Ic 10n
+.nr In 12n\" ?
 .nr It 8n\" ?
 .nr Li 16n
 .nr Lp 8n\" ?
+.nr Me 6n
 .nr Ms 6n
 .nr Nd 8n\" ?
 .nr Nm 10n
@@ -352,7 +354,19 @@
 .
 .
 .de doc-end-macro
+.  \" We may still have a partial line in the enviroment.  If this is the
+.  \" case, and we happen to be on the last line of the page, the `.fl'
+.  \" request will cause the page to be ejected and troff will immediately
+.  \" exit.  If we are in nroff mode, this would be unfortunate, since we
+.  \" would never get a chance to output the footer.  So we fudge the page
+.  \" length to make sure that the last page is never ejected until we want
+.  \" it to be.
+.  if \n[cR] \
+.    pl +3v
 .  fl
+.
+.  if \n[doc-list-depth] \
+.    tm mdoc warning: list open at EOF!  A .Bl directive has no matching .El
 .
 .  if \n[cR] \{\
 '    sp
@@ -398,6 +412,11 @@
 ..
 .
 .
+.de SH
+.  tm Not a \-mdoc command: .SH
+..
+.
+.
 .\" NS Nd user macro
 .\" NS   name description
 .\" NS
@@ -422,7 +441,7 @@
 .  el \{\
 .    sp
 .    if !\n[cR] \
-.      ne 2
+.      ne 3
 .    ti -.25i
 .    nop \&\*[doc-Sh-font]\$1\c
 .    nr doc-reg-Ss 2

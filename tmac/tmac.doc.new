@@ -934,13 +934,10 @@
 .nr doc-declaration-count 0
 .
 .
-.\" NS Fd user macro
-.\" NS   function declaration - not callable (& no err check)
-.\" NS
-.\" NS width register `.Fd' set in doc-common
+.\" NS doc-do-function-declaration macro
 .
-.de Fd
-.  ds doc-macro-name Fd
+.de doc-do-function-declaration
+.  ds doc-macro-name \$1
 .
 .  if \n[doc-in-synopsis-section] \{\
 .    \" if a variable type was the last thing given, want vertical space
@@ -962,7 +959,31 @@
 .
 .  nr doc-curr-font \n[.f]
 .  nr doc-curr-size \n[.s]
+..
+.
+.
+.\" NS Fd user macro
+.\" NS   function declaration - not callable (& no err check)
+.\" NS
+.\" NS width register `.Fd' set in doc-common
+.
+.de Fd
+.  doc-do-function-declaration Fd
 .  nop \&\*[doc-Fd-font]\$*
+.  br
+.  ft \n[doc-curr-font]
+.  fs \n[doc-curr-size]
+..
+.
+.
+.\" NS In user macro
+.\" NS   #include statement - not callable (& no err check)
+.\" NS
+.\" NS width register `.In' set in doc-common
+.
+.de In
+.  doc-do-function-declaration In
+.  nop \&\*[doc-Fd-font]#include <\$1>
 .  br
 .  ft \n[doc-curr-font]
 .  fs \n[doc-curr-size]
@@ -1240,6 +1261,42 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
 .    as doc-out-string \&\*[doc-Sy-font]
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.s]
+.    doc-print-recursive
+.  \}
+..
+.
+.
+.\" NS Me user macro
+.\" NS   menu entries
+.\" NS
+.\" NS width register `.Me' set in doc-common
+.\" NS
+.\" NS local variable:
+.\" NS   doc-reg-Me
+.
+.de Me
+.  if !\n[doc-args-processed] \{\
+.    ie !\n[.$] \
+.      tm Usage: .Me menu entry ... \*[doc-punct-chars] (#\n[.c])
+.    el \{\
+.      ds doc-macro-name Me
+.
+.      nr doc-reg-Me 1
+.      while (\n[doc-reg-Me] <= \n[.$]) \{\
+.        ds doc-arg\n[doc-reg-Me] "\$[\n[doc-reg-Me]]
+.        nr doc-reg-Me +1
+.      \}
+.
+.      nr doc-num-args \n[.$]
+.      doc-parse-arg-vector
+.    \}
+.  \}
+.
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
+.    as doc-out-string \&\*[doc-Me-font]
 .    nr doc-curr-font \n[.f]
 .    nr doc-curr-size \n[.s]
 .    doc-print-recursive
@@ -4271,6 +4328,14 @@
 .      nop \&\*[doc-Em-font]\*[doc-book-name]\*[doc-No-font],
 .  \}
 .
+.  if \n[doc-publisher-count] \{\
+.    nr doc-reference-count -1
+.    ie !\n[doc-reference-count] \
+.      nop \&\*[doc-Em-font]\*[doc-publisher-name]\*[doc-No-font].
+.    el \
+.      nop \&\*[doc-Em-font]\*[doc-publisher-name]\*[doc-No-font],
+.  \}
+.
 .  if \n[doc-journal-count] \{\
 .    nr doc-reference-count -1
 .    ie !\n[doc-reference-count] \
@@ -4452,6 +4517,45 @@
 .      while (\n[doc-reg-%D] <= \n[.$]) \{\
 .        ds doc-arg\n[doc-reg-%D] "\$[\n[doc-reg-%D]]
 .        nr doc-reg-%D +1
+.      \}
+.
+.      nr doc-num-args \n[.$]
+.      doc-parse-arg-vector
+.    \}
+.  \}
+.
+.  nr doc-arg-ptr +1
+.  if (\n[doc-args-processed] >= \n[doc-arg-ptr]) \{\
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.s]
+.    doc-do-references
+.  \}
+..
+.
+.
+.\" NS %I user macro
+.\" NS   [reference] issuer/publisher name
+.\" NS
+.\" NS width register `.%I' set in doc-common
+.\" NS
+.\" NS local variable:
+.\" NS   doc-reg-%I
+.
+.de %I
+.  if !\n[doc-args-processed] \{\
+.    ie !\n[.$] \
+.      tm Usage: .%I Issuer/Publisher Name (#\n[.c])
+.    el \{\
+.      nr doc-publisher-count +1
+.      nr doc-reference-count +1
+.      ds doc-reference-string-name doc-publisher-name
+.
+.      ds doc-macro-name %I
+.
+.      nr doc-reg-%I 1
+.      while (\n[doc-reg-%I] <= \n[.$]) \{\
+.        ds doc-arg\n[doc-reg-%I] "\$[\n[doc-reg-%I]]
+.        nr doc-reg-%I +1
 .      \}
 .
 .      nr doc-num-args \n[.$]
@@ -4929,6 +5033,14 @@
 .      nop \&\*[doc-func-error-string]
 .    \}
 .  \}
+..
+.
+.
+.rn em e@
+.
+.de em
+.  tm mdoc error: end-macro (.em) respecification is not allowed. (#\n[.c])
+.  ab Should this have been .Em ...?
 ..
 .
 .
