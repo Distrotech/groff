@@ -637,7 +637,7 @@ and different defaults.  DWB \fBfillval\fP defaults to 0.3 and smaller
 values are darker; GNU \fBfillval\fP uses 0 for white and 1 for black.
 .KS
 .PS
-circle fill; move; circle fill 0.4; move; circle fill 0.2;  
+circle fill; move; circle fill 0.4; move; circle fill 0.9;
 .PE
 .CE "5: \fBcircle fill; move; circle fill 0.4; move; circle fill 0.9;\fR"
 .PP
@@ -1463,7 +1463,7 @@ define jumperblock {
 
     # Use {} to avoid changing position from last box draw.
     # This is necessary so move in any direction will work as expected
-    {"Jumpers in state $1$2$2$3$4$5$6" at last box .s + (0, -0.2);}
+    {"Jumpers in state $1$2$3$4$5$6" at last box .s + (0, -0.2);}
 }
 
 # Sample macro invocations
@@ -1506,7 +1506,7 @@ define jumperblock {
 
     # Use {} to avoid changing position from last box draw.
     # This is necessary so move in any direction will work as expected
-    {"Jumpers in state $1$2$2$3$4$5$6" at last box .s + (0, -0.2);}
+    {"Jumpers in state $1$2$3$4$5$6" at last box .s + (0, -0.2);}
 }
 
 # Sample macro invocations

@@ -4699,13 +4699,13 @@ All escape sequences except @code{\%}, @code{\@{}, @code{\@}},
 @code{\/}, @code{\c}, @code{\e}, and @code{\p}.
 @end itemize
 
-@cindex printing backslash (@code{\\}, @code{\e}, @code{\E})
-@cindex backslash, printing (@code{\\}, @code{\e}, @code{\E})
+@cindex printing backslash (@code{\\}, @code{\e}, @code{\E}, @code{\(rs})
+@cindex backslash, printing (@code{\\}, @code{\e}, @code{\E}, @code{\(rs})
 To have a backslash (actually, the current escape character) appear in the
 output several escapes are defined: @code{\\}, @code{\e} or @code{\E}.
 These are very similar, and only differ with respect to being used in
-macros or diversions.  @xref{Copy-in Mode}, and @ref{Diversions}, for
-more information.
+macros or diversions.  @xref{Implementation Differences}, @ref{Copy-in
+Mode}, and @ref{Diversions}, for more information.
 
 @c XXX explanation of \E
 
@@ -10491,6 +10491,8 @@ constructed might have had.  For example,
 .x
 @endExample
 
+@cindex printing backslash (@code{\\}, @code{\e}, @code{\E}, @code{\(rs})
+@cindex backslash, printing (@code{\\}, @code{\e}, @code{\E}, @code{\(rs})
 @cindex @code{\e}, incompatibilities with Unix @code{troff}
 @cindex @code{\!}, incompatibilities with Unix @code{troff}
 @cindex @code{\?}, incompatibilities with Unix @code{troff}
@@ -10506,7 +10508,9 @@ correct way to obtain a printable backslash is to use the @code{\e}
 escape sequence: This always prints a single instance of the current
 escape character, regardless of whether or not it is used in a
 diversion; it also works in both GNU @code{troff} and @acronym{UNIX}
-@code{troff}.  To store, for some reason, an escape sequence in a
+@code{troff}.@footnote{To be completely independent of the current
+escape character, use @code{\(rs} which represents a reverse solidus
+(backslash) glyph.}  To store, for some reason, an escape sequence in a
 diversion that will be interpreted when the diversion is reread, either
 use the traditional @code{\!} transparent output facility, or, if this
 is unsuitable, the new @code{\?} escape sequence.
