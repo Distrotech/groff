@@ -902,6 +902,22 @@ patch is available.  Use GCC 2.95.2 or later instead.
 
 ----------------------------------------------------------------------
 
+* I get warnings from the Sun linker while using gcc 3.4.0:
+
+  ld: warning: relocation error: R_SPARC_UA32:
+      file groff/src/libs/libgroff/libgroff.a(getopt.o): symbol optarg:
+      external symbolic relocation against non-allocatable
+      section .debug_info; cannot be processed at runtime:
+      relocation ignored
+
+This seems to be a known problem (Sun bugs #4910101 and #4910810,
+filed in September 2003; gcc bug #15599, filed May 2004) without a
+public fix as of this writing.  A work-around is to use option
+`-gstabs+' instead of `-g' (and a high probability that the output is
+only debuggable with gdb but not with Sun's debuggers).
+
+----------------------------------------------------------------------
+
 * I get lots of `numeric overflow' error messages whenever I run
   groff; I compiled groff with AT&T C++ 2.0 with an ANSI C compiler.
 
