@@ -859,6 +859,7 @@ int imageList::createPage (int pageno)
   s = make_message("echo showpage | "
 		   "gs%s -q -dBATCH -dSAFER "
 		   "-dDEVICEWIDTHPOINTS=%d -dFIXEDMEDIA=true "
+                   "-sPAPERSIZE=letter "
 		   "-sDEVICE=%s -r%d %s "
 		   "-sOutputFile=%s %s -\n",
 		   EXE_EXT,
@@ -1072,6 +1073,7 @@ static void generateImages (char *regionFileName)
     fprintf(stderr, "done\n");
     fflush(stderr);
   }
+  delete f;
 }
 
 /*
