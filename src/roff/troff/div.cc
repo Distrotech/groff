@@ -235,8 +235,7 @@ void macro_diversion::output(node *nd, int retain_size,
       mac->append(temp);
     }
   }
-  if (!v.post_extra.is_zero())
-    last_post_line_extra_space = v.post_extra.to_units();
+  last_post_line_extra_space = v.post_extra.to_units();
   if (!retain_size) {
     v.pre = vs;
     v.post = post_vs;
@@ -339,8 +338,7 @@ void top_level_diversion::output(node *nd, int retain_size,
   vertical_size v(vs, post_vs);
   for (node *tem = nd; tem != 0; tem = tem->next)
     tem->set_vertical_size(&v);
-  if (!v.post_extra.is_zero())
-    last_post_line_extra_space = v.post_extra.to_units();
+  last_post_line_extra_space = v.post_extra.to_units();
   if (!retain_size) {
     v.pre = vs;
     v.post = post_vs;
