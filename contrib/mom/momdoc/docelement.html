@@ -221,6 +221,11 @@ arguments as
 		<li><a href="#FOOTNOTE">FOOTNOTE</a>
 		<li><a href="#FOOTNOTE_CONTROL">Footnote control</a>
 	</ul>
+	<li><a href="#ENDNOTE_INTRO">Endnotes</a>
+	<ul>
+		<li><a href="#ENDNOTE">ENDNOTE</a>
+		<li><a href="#ENDNOTE_CONTROL">Endnote control</a>
+	</ul>
 	<li><a href="#FINIS_INTRO">Document termination</a>
 	<ul>
 		<li><a href="#FINIS">FINIS</a>
@@ -239,14 +244,16 @@ arguments as
 </ul>
 <p>
 <a href="definitions.html#TERMS_EPIGRAPH">Epigraphs</a>
-color, flavour, or comment on the text they precede.  Typically,
-they are centered on the page and set in a smaller point size
-than that of paragraph text.
+color, flavour, or comment on the document they precede.  Typically,
+they are centered at the top of a document's first page (underneath the
+title) and set in a smaller point size than that of paragraph text.
 <p>
 By default, <strong>mom</strong> sets epigraphs centered and
 <a href="definitions.html#TERMS_NOFILL">unfilled</a>;
 this lets you input them on a line for line basis.  This behaviour
-can be changed to accomodate filled epigraph &quot;blocks.&quot;
+can be changed to accomodate
+<a href="definitions.html#TERMS_FILLED">filled</a>
+epigraph &quot;blocks.&quot;
 <br>
 
 <!---EPIGRAPH--->
@@ -306,7 +313,10 @@ See
 (The next two apply to &quot;block&quot; style epigraphs only)
 
 .EPIGRAPH_QUAD      default = same as paragraphs
-.EPIGRAPH_INDENT    default = para indent x 3 (for typeset), x 2 (for typewrite)
+.EPIGRAPH_INDENT*   default = para indent x 3 (for typeset), x 2 (for typewrite)
+
+*Indent here refers to the indent from both the left and right margins
+ that centres the block style epigraph on the page.
 </pre>
 <hr>
 
@@ -1073,7 +1083,8 @@ to characters that don't sit on the
 minus sign, and must include a unit of measure.
 <p>
 If you enter <strong>LINEBREAK_CHAR</strong> with no arguments,
-sections of text will be separated by two blank lines.
+sections of text will be separated by two blank lines when you invoke
+<strong>LINEBREAK</strong>.
 <p>
 <strong>Mom</strong>'s default for <strong>LINEBREAK_CHAR</strong> is
 <p>
@@ -1354,6 +1365,7 @@ spacing policy for
 
 <a name="FOOTNOTE_INTRO"><h2><u>Footnotes</u></h2></a>
 <ul>
+	<li><a href="#FOOTNOTE_BEHAVIOUR">Footnote behaviour</a>
 	<li><a href="#FOOTNOTE">Tag: FOOTNOTE</a>
 	<li><a href="#FOOTNOTE_CONTROL">FOOTNOTE control macros</a>
 </ul>
@@ -1470,7 +1482,7 @@ direction and indent value.  <strong>L, R,</strong> and
 <strong>B</strong> may be used in place of <strong>LEFT,
 RIGHT,</strong> and <strong>BOTH</strong>.
 <strong>FOOTNOTE</strong> must be invoked with <strong>INDENT</strong>
-for every footnote you want indented; <strong>Mom</strong> does
+for every footnote you want indented; <strong>mom</strong> does
 not save any footnote indent information from invocation to
 invocation.
 <p>
@@ -1593,6 +1605,589 @@ raises the rule by 4-1/4 points.  Note that you can only raise
 the rule, not lower it.  A
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
 is required.
+<br>
+<hr>
+
+<!====================================================================>
+
+<a name="ENDNOTE_INTRO"><h2><u>Endnotes</u></h2></a>
+<ul>
+	<li><a href="#ENDNOTE_BEHAVIOUR">Endnote behaviour</a>
+	<ul>
+		<li><a href="#ENDNOTE_SPACING">A Note on Endnote Spacing</a>
+		<li><a href="#ENDNOTE_COLUMNS">Endnotes and columnar documents</a>
+	</ul>
+	<li><a href="#ENDNOTE">Tag: ENDNOTE</a>
+	<li><a href="#ENDNOTES">Macro: ENDNOTES</a> -- tell <strong>mom</strong> to output endnotes
+	<li><a href="#ENDNOTE_CONTROL">ENDNOTE control macros</a>
+</ul>
+
+<p>
+Embedding endnotes into <strong>mom</strong> documents is accomplished
+the same way as embedding
+<a href="#FOOTNOTE_INTRO">footnotes</a>.  The example below is
+identical to the one shown in the
+<a href="#FOOTNOTE_EXAMPLE">introduction to footnotes</a>,
+except that <kbd>.FOOTNOTE</kbd> has been replaced with
+<kbd>.ENDNOTE</kbd>.
+<p>
+<a name="ENDNOTE_EXAMPLE"></a>
+<pre>
+	...the doctrines of Identity as urged by Schelling\c
+	.ENDNOTE
+	&lt;endnote about who the hell is Schelling&gt;
+	.ENDNOTE OFF
+	were generally the points of discussion presenting the most
+	of beauty to the imaginative Morella.
+</pre>
+
+As with footnotes, note the obligatory use of the <strong>\c</strong>
+<a href="definitions.html#TERMS_INLINES">inline escape</a>.
+<p>
+Endnotes differ from footnotes in two ways (other than the fact that
+endnotes come at the end of a document whereas footnotes appear in the
+body of the document):
+<br>
+<ol>
+    <li>Endnotes are always numbered incrementally throughout a
+	    document.  In other words, you don't get a choice of marker styles,
+	    as you do with footnotes.
+	<li>Endnotes MUST be output explicitly; <strong>mom</strong> does
+		not output them for you.  In
+		<a href="rectoverso.html#COLLATE">collated</a>
+		documents, this allows you to choose whether you
+		want the endnotes to appear at the end of each chapter or
+		section, or grouped together at the very end of the document.
+</ol>
+<p>
+Within endnotes, you may use the document element tags
+<a href="#PP">PP</a>,
+<a href="#QUOTE">QUOTE</a>
+and
+<a href="#BLOCKQUOTE">BLOCKQUOTE</a>.
+This provides the flexibility to create endnotes that run to several
+paragraphs, as well as to embed cited text within endnotes.
+<p>
+Should you wish to change the appearance of quotes or blockquotes that
+appear within endnotes, you may do so with the
+<a href="#QUOTE_CONTROL">quote control macros</a>
+or
+<a href="#BLOCKQUOTE_CONTROL">blockquote control macros</a>.
+HOWEVER... you must make the changes <em>within</em> each endnote, prior
+to invoking <strong>QUOTE</strong> or <strong>BLOCKQUOTE</strong>, and
+undo them prior to terminating the endnote (i.e. before <strong>ENDNOTE
+OFF</strong>), otherwise the changes will affect subsequent quotes and
+blockquotes that appear in the document body as well.
+
+<a name="ENDNOTE_BEHAVIOUR"><h3><u>Endnote behaviour</u></h3></a>
+<p>
+When you output endnotes (with
+<a href="#ENDNOTES">ENDNOTES</a>),
+<strong>mom</strong> finishes processing the last page of your document,
+then breaks to a new page for printing the endnotes.  If the document
+type is
+<a href="docprocessing.html#DOCTYPE">CHAPTER</a>,
+the centre part of the
+<a href="definitions.html#TERMS_HEADER">header</a>
+(or footer), which, by default, contains a chapter number or title, is
+removed.
+<p>
+By default, <strong>mom</strong> starts the endnotes page with a
+bold, centered, double-underscored head, &quot;ENDNOTES&quot;.
+Underneath--flush left, bold, and underscored--she prints the document
+title (or, in the case of chapters, the chapter number or title).  She
+then prints the endnotes.  Each endnote is identified by its appropriate
+number, in bold, right aligned to two placeholders.  The text of the
+endnotes themselves is indented to the right of the numbers.
+<p>
+If the endnotes are grouped together at the end of a collated document,
+each section of the document that contains endnotes is identified by its
+own unique title (or chapter number or title), bold, flush left, and
+underscored.
+<p>
+Of course, all the defaults, as well as the overall style of the
+endnotes page, can be changed with the
+<a href="#ENDNOTE_CONTROL">endnote control macros</a>.
+The attentive will notice that endnotes have an awful lot of control
+macros.  This is because endnotes are like a mini-document unto
+themselves, and therefore need not be bound by the style parameters of
+the body of the document.
+
+<a name="ENDNOTE_SPACING">
+	<h3><u>A Note on Endnote Spacing</u></h3>
+</a>
+<p>
+On the endnotes page(s), each new endnote is separated from the
+previous endnote by a full line space.  This can result in a bottom
+margin that hangs, and is the one instance, other than the use of
+<a href="#PP_SPACE">PARA_SPACE</a>,
+where <strong>mom</strong> allows unequal bottom alignment of pages.
+Should you wish to correct this, by adding or subtracting small amounts
+of space between endnotes that appear together on an endnote page, make
+the adjustment (with
+<a href="typesetting.html#ALD">ALD</a>,
+<a href="typesetting.html#RLD">RLD</a>
+or
+<a href="typesetting.html#SPACE">SPACE</a>)
+<em>at the end of each endnote</em> (i.e. just before invoking
+<a href="#ENDNOTE">ENDNOTE OFF</a>)
+rather than at the top.
+
+<a name="ENDNOTE_COLUMNS">
+	<h3><u>Endnotes and columnar documents</u></h3>
+</a>
+<p>
+At present, there is no way to set a document in columns (see
+<a href="docprocessing.html#COLUMNS">COLUMNS</a>)
+and then turn off column mode for endnotes.  If your document is set in
+columns, your endnotes will be, too.
+<br>
+<hr>
+
+<!---ENDNOTE--->
+
+<p>
+<a name="ENDNOTE">
+	Macro: <strong>ENDNOTE</strong> <var>&lt;toggle&gt;</var>
+	<br>
+	<em>*See <a href="#ENDNOTE_NOTE">HYPER-IMPORTANT NOTE</a>!!!
+</a>
+
+<p>
+<strong>ENDNOTE</strong> is a toggle macro, therefore invoking it
+on a line by itself allows you to enter an endnote in the body of a
+document.  Invoking it with any other argument 
+(i.e. <strong>OFF, QUIT, END, X...</strong>) tells <strong>mom</strong>
+that you've finished the endnote.
+<p>
+<strong>NOTE:</strong> If an endnote runs to more than one paragraph,
+<strong>DO NOT</strong> begin the endnote with the
+<a href="#PP">PP</a>
+tag.  Use <strong>PP</strong> only to introduce subsequent paragraphs.
+<p>
+<a name="ENDNOTE_NOTE"><strong>HYPER-IMPORTANT NOTE:</strong></a>
+The final word on the
+<a href="definitions.html#TERMS_INPUTLINE">input line</a>
+that comes immediately before <strong>ENDNOTE</strong> MUST terminate
+with a
+<a href="typesetting.html#JOIN">\c</a>
+inline escape.  Otherwise, the endnote number for the word won't be attached to
+it (i.e. <strong>mom</strong> will insert a word space between the word
+and the number).  See the
+<a href="#ENDNOTE_EXAMPLE">endnote example</a>
+above.
+<br>
+
+<!---ENDNOTES--->
+
+<hr width="66%" align="left">
+<p>
+<a name="ENDNOTES">Macro: <strong>ENDNOTES</strong></a>
+
+<p>
+Unlike footnotes, which <strong>mom</strong> automatically outputs at the
+bottom of pages, endnotes must be explicitly output by you, the user.
+<strong>ENDNOTES</strong>, by itself (i.e. without any argument), is
+the macro to do this.
+<p>
+Typically, you'll use <strong>ENDNOTES</strong> at the end of
+a document.  If it's a single (i.e. not collated) document,
+<strong>mom</strong> will print the endnotes pertaining to it.  If it's
+a collated document, <strong>mom</strong> will print all the endnotes
+contained within all sections of the document (typically chapters),
+appropriately identified and numbered.
+<p>
+Should you wish to output the endnotes for each section of a collated
+document at the ends of the sections (instead of at the very end of the
+document), simply invoke <strong>ENDNOTES</strong> immediately prior to
+<a href="rectoverso.html#COLLATE">COLLATE</a>.
+<strong>Mom</strong> will print the endnotes, identified and numbered
+appropriately, on a separate page prior to starting the next section of
+the document.  Each subsequent invocation of <strong>ENDNOTES</strong>
+outputs only those endnotes that <strong>mom</strong> collected
+after the previous invocation.
+<br>
+<hr width="66%" align="left">
+
+<a name="ENDNOTE_CONTROL"><h3><u>Endnote control macros</u></h3></a>
+<p>
+Every time you embed an endnote in the body of a document,
+<strong>mom</strong> collects <em>and processes</em> the endnote for
+later outputting when you invoke
+<a href="#ENDNOTES">ENDNOTES</a>.
+For this reason, endnote control macros should always be invoked prior
+to the first instance of
+<a href="#ENDNOTE">ENDNOTE/ENDNOTE OFF</a>.
+<br>
+<ol>
+	<li><a href="#ENDNOTES_GENERAL"><strong>General endnotes-pages style control</strong></a>
+		<ul>
+			<li><a href="#ENDNOTE_GENERAL">Base family/font/quad for endnotes-pages</a>
+			<li><a href="#ENDNOTE_PT_SIZE">Base point size for the endnotes-pages</a>
+			<li><a href="#ENDNOTE_LEAD">Leading of endnotes-pages</a>
+			<li><a href="#ENDNOTE_PARA_INDENT">Size of paragraph first line indent in multi-paragraph endnotes</a>
+			<li><a href="#ENDNOTE_PARA_SPACE">Inserting space between paragraphs of multi-paragraph endnotes</a>
+		</ul>
+	<li><a href="#ENDNOTES_MAIN_TITLE"><strong>Endnotes-page head control</strong></a>
+		<ul>
+			<li><a href="#ENDNOTE_STRING">Creating/modifying the endnotes-page head</a>
+			<li><a href="#ENDNOTE_STRING_CONTROL">Endnotes-page head control</a>
+			<li><a href="#ENDNOTE_STRING_UNDERSCORE">Endnotes-page head underscoring</a>
+		</ul>
+	<li><a href="#ENDNOTES_DOC_TITLE"><strong>Endnote document-identification title</strong></a>
+		<ul>
+			<li><a href="#ENDNOTE_TITLE">Creating/modifying the endnote document-identification title</a>
+			<li><a href="#ENDNOTE_TITLE_CONTROL">Document-identification title control</a>
+			<li><a href="#ENDNOTE_TITLE_UNDERSCORE">Document-identification title underscoring</a>
+		</ul>
+	<li><a href="#ENDNOTES_NUMBERING"><strong>Endnotes-pages endnote numbering style</strong></a>
+		<ul>
+			<li><a href="#ENDNOTE_NUMBER_CONTROL">Endnotes-pages endnote numbering style control</a>
+			<li><a href="#ENDNOTE_NUMBER_ALIGNMENT">Endnote numbering alignment</a>
+			<ul>
+				<li><a href="#ENDNOTE_NUMBERS_ALIGN_RIGHT">ENDNOTE_NUMBERS_ALIGN_RIGHT</a>
+				<li><a href="#ENDNOTE_NUMBERS_ALIGN_LEFT">ENDNOTE_NUMBERS_ALIGN_LEFT</a>
+			</ul>
+		</ul>
+</ol>
+<hr>
+
+<a name="ENDNOTES_GENERAL"><h2><u>1. General endnotes page style control</u></h2>
+
+<a name="ENDNOTE_GENERAL"><h3><u>Endnote family/font/quad</u></h3></a>
+<p>
+See
+<a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
+<p>
+<pre>
+.ENDNOTE_FAMILY    default = prevailing document family; default is Times Roman
+.ENDNOTE_FONT      default = roman
+.ENDNOTE_QUAD      default = justified
+</pre>
+
+<!---ENDNOTE_PT_SIZE--->
+
+<a name="ENDNOTE_PT_SIZE"><h3><u>Endnote point size</u></h3></a>
+<p>
+Macro: <strong>ENDNOTE_PT_SIZE</strong> <var>&lt;base type size of endnotes&gt;</var>
+
+<p>
+Unlike most other control macros that deal with size of document
+elements, <strong>ENDNOTE_PT_SIZE</strong> takes as its argument an
+absolute value, relative to nothing.  Therefore, the argument represents
+the size of endnote type in
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>,
+unless you append an alternative
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>.
+For example,
+<p>
+<pre>
+	.ENDNOTE_PT_SIZE 12
+</pre>
+
+sets the base point size of type on the endnotes page to 12
+points, whereas
+<p>
+<pre>
+	.ENDNOTE_PT_SIZE .6i
+</pre>
+
+sets the base point size of type on the endnotes page to 1/6 of an
+inch.
+<p>
+The type size set with <strong>ENDNOTE_PT_SIZE</strong> is the size of
+type used for the text of the endnotes, and forms the basis from which
+the point size of other endnote page elements is calculated.
+<p>
+The default for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>
+is 12 points (the same default size used in the body of the document).
+
+<!---ENDNOTE_LEAD--->
+
+<a name="ENDNOTE_LEAD"><h3><u>Endnote lead</u></h3></a>
+<p>
+Macro: <strong>ENDNOTE_LEAD</strong> <var>&lt;base leading of endnotes&gt;</var>
+
+<p>
+Unlike most other control macros that deal with leading of document
+elements, <strong>ENDNOTE_LEAD</strong> takes as its argument an
+absolute value, relative to nothing.  Therefore, the argument represents
+the
+<a href="definitions.html#TERMS_LEADING">leading</a>
+of endnotes in
+<a href="definitions.html#TERMS_PICASPOINTS">points</a>
+unless you append an alternative
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>.
+For example,
+<p>
+<pre>
+	.ENDNOTE_LEAD 14
+</pre>
+
+sets the base leading of type on the endnotes page to 14
+points, whereas
+<p>
+<pre>
+	.ENDNOTE_LEAD .5i
+</pre>
+
+sets the base leading of type on the endnotes page to 1/2 inch.
+<p>
+The default for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>
+is 14 points.
+
+<!---ENDNOTE_PARA_INDENT--->
+
+<a name="ENDNOTE_PARA_INDENT"><h3><u>Endnote paragraph indent</u></h3></a>
+<p>
+Macro: <strong>ENDNOTE_PARA_INDENT</strong> <var>&lt;amount to indent first line of paragraphs in endnotes&gt;</var>
+<br>
+<em>*Requires a <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a></em>
+
+<p>
+<strong>ENDNOTE_PARA_INDENT</strong> works exactly the same way as
+<a href="#PARA_INDENT">PARA_INDENT</a>,
+except that the indent given is the amount by which to indent the first
+lines of endnote paragraphs, not document body paragraphs.
+<p>
+The default is 1.5
+<a href="definitions.html#TERMS_EM">ems</a>
+for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>;
+1/2 inch for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>.
+
+<p>
+<strong>NOTE:</strong> The first line of the first paragraph of endnotes
+(the one attached immediately to the identifying endnote number) is
+never indented.  Only subsequent paragraphs are affected by
+<strong>ENDNOTE_PARA_INDENT</strong>.  
+
+<!---ENDNOTE_PARA_SPACE--->
+
+<a name="ENDNOTE_PARA_SPACE"><h3><u>Endnote paragraph spacing</u></h3></a>
+<p>
+Macro: <strong>ENDNOTE_PARA_SPACE</strong> <var>&lt;toggle&gt;</var>
+
+<p>
+<strong>ENDNOTE_PARA_SPACE</strong> works exactly the same way as
+<a href="#PP_SPACE">PARA_SPACE</a>,
+except that it inserts a blank line between endnote paragraphs, not
+document body paragraphs.
+<p>
+The default is not to insert a blank line between paragraphs in
+endnotes.
+<p>
+<strong>NOTE:</strong> Each endnote itself is always separated from any
+previous endnote by a line space.  <strong>ENDNOTE_PARA_SPACE</strong>
+refers only to paragraphs that appear within each discrete endnote.
+
+<a name="ENDNOTES_MAIN_TITLE"><h2><u>2. Endnotes page head control</u></h2>
+
+<!---ENDNOTE_STRING--->
+
+<a name="ENDNOTE_STRING"><h3><u>Endnotes-page head string</u></h3></a>
+<p>
+Macro: <strong>ENDNOTE_STRING</strong> <var>&quot;&lt;head to print at the top of endnotes&gt;&quot;</var>
+
+<p>
+By default, <strong>mom</strong> prints the word &quot;ENDNOTES&quot;
+as a head at the top of the first page of endnotes.  If you want her
+to print something else, invoke <strong>ENDNOTE_STRING</strong> with
+the endnotes-page head you want, surrounded by double-quotes.  If
+you don't want a head at the top of the first endnotes-page, invoke
+<strong>ENDNOTE_STRING</strong> with a blank argument (either two
+double-quotes side by side -- <kbd>&quot;&quot;</kbd> -- or no argument
+at all).
+
+<!---ENDNOTE_STRING_CONTROL--->
+
+<a name="ENDNOTE_STRING_CONTROL"><h3><u>Endnotes-page head control</u></h3></a>
+<p>
+See
+<a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
+<p>
+<pre>
+.ENDNOTE_STRING_FAMILY    default = prevailing document family; default is Times Roman
+.ENDNOTE_STRING_FONT*     default = bold
+.ENDNOTE_STRING_SIZE      default = +1
+.ENDNOTE_STRING_QUAD      default = centered
+
+*Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
+</pre>
+
+<!---ENDNOTE_STRING_UNDERSCORE--->
+
+<a name="ENDNOTE_STRING_UNDERSCORE"><h3><u>Endnotes-page head underscoring</h3></u></a>
+<p>
+Macro: <strong>ENDNOTE_STRING_UNDERSCORE</strong> <var>toggle | 2</var>
+
+<p>
+Invoked by itself, <strong>ENDNOTE_STRING_UNDERSCORE</strong> will
+underscore the endnotes-page head.  Invoked with the argument 2
+(i.e. the digit 2), <strong>ENDNOTE_STRING_UNDERSCORE</strong> will
+double-underscore the head.  Invoked with any other argument, the macro
+disables underscoring of the head.
+<p>
+<strong>Mom</strong>'s default is to double-underscore the
+head, therefore if you want no underscoring, you must insert
+<kbd>.ENDNOTE_STRING_UNDERSCORE OFF</kbd> (or <kbd>QUIT, X, NO,
+NONE,</kbd> etc.) into your document prior to outputting endnotes with
+<a href="#ENDNOTES">ENDNOTES</a>.
+
+<!---ENDNOTE_TITLE--->
+
+<a name="ENDNOTES_DOC_TITLE"><h2><u>3. Endnote document-identification title</u></h2>
+<a name="ENDNOTE_TITLE"><h3><u>Endnote document-identification title string</u></h3></a>
+<p>
+Macro: <strong>ENDNOTE_TITLE</strong> <var>&quot;&lt;title to identify a document in endnotes&gt;&quot;</var>
+
+<p>
+By default, <strong>mom</strong> identifies the document(s) to which
+endnotes belong by the document title(s) given to the
+<a href="docprocessing.html#TITLE">TITLE</a>
+macro.  If you want her to identify the document(s) another way,
+invoke <strong>ENDNOTE_TITLE</strong> with the identifying title you
+want, surrounded by double-quotes.  If you don't any identifying title,
+invoke <strong>ENDNOTE_TITLE</strong> with a blank argument (either two
+double-quotes side by side -- <kbd>&quot;&quot;</kbd> -- or no argument
+at all).
+
+<!---ENDNOTE_TITLE_CONTROL--->
+
+<a name="ENDNOTE_TITLE_CONTROL"><h3><u>Endnote document-identification title control</u></h3></a>
+<p>
+See
+<a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
+<p>
+<pre>
+.ENDNOTE_TITLE_FAMILY    default = prevailing document family; default is Times Roman
+.ENDNOTE_TITLE_FONT      default = bold
+.ENDNOTE_TITLE_SIZE*     default = 0
+.ENDNOTE_TITLE_QUAD      default = left
+
+*Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
+</pre>
+
+<!---ENDNOTE_TITLE_UNDERSCORE--->
+
+<a name="ENDNOTE_TITLE_UNDERSCORE"><h3><u>Endnote document-identification title underscoring</h3></u></a>
+<p>
+Macro: <strong>ENDNOTE_TITLE_UNDERSCORE</strong> <var>toggle</var>
+
+<p>
+Inovked by itself, <strong>ENDNOTE_TITLE_UNDERSCORE</strong> will
+underscore the endnote document-identification title.  Invoked with any
+other argument, the macro disables underscoring of the title.
+<p>
+<strong>Mom</strong>'s default is to underscore the document-identification title, therefore if you want no underscoring, you must
+insert <kbd>.ENDNOTE_TITLE_UNDERSCORE OFF</kbd> (or <kbd>QUIT, X, NO,
+NONE,</kbd> etc.) into your document prior to outputting endnotes with
+<a href="#ENDNOTES">ENDNOTES</a>.
+
+at all.
+
+<!---ENDNOTE_NUMBERING--->
+
+<a name="ENDNOTES_NUMBERING"><h2><u>4. Endnotes-pages endnote numbering style</u></h2>
+
+<a name="ENDNOTE_NUMBER_CONTROL"><h3><u>Endnote numbering style control</u></h3></a>
+<p>
+See
+<a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
+<p>
+Please note that the control macros for endnote numbering affect only
+the numbers that appear on the endnotes pages themselves, not the
+endnote numbers that appear in the body of the document(s).
+<p>
+<pre>
+.ENDNOTE_NUMBER_FAMILY    default = prevailing document family; default is Times Roman
+.ENDNOTE_NUMBER_FONT      default = bold
+.ENDNOTE_NUMBER_SIZE*     default = 0
+
+*Relative to the size of the endnotes text (set with ENDNOTE_PT_SIZE)
+</pre>
+
+<a name="ENDNOTE_NUMBER_ALIGNMENT"><h3><u>Endnote numbering alignment</u></h3></a>
+<p>
+By default, <strong>mom</strong> hangs the numbers on endnotes pages,
+aligned right to two placeholders, producing this:
+<p>
+<a name="ENDNOTE_NUMBERING_ALIGNMENT_EXAMPLE"></a>
+<pre>
+	 9. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	    sed diam nonumy eirmod tempor invidunt ut labore et
+	    dolore magna aliquyam erat, sed diam voluptua.
+
+	10. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	    sed diam nonumy eirmod tempor invidunt ut labore et
+	    dolore magna aliquyam erat, sed diam voluptua.
+</pre>
+
+The macros to alter this behaviour are
+<br>
+<ul>
+	<li><a href="#ENDNOTE_NUMBERS_ALIGN_RIGHT"><strong>ENDNOTE_NUMBERS_ALIGN_RIGHT</strong></a>
+	<li><a href="#ENDNOTE_NUMBERS_ALIGN_LEFT"><strong>ENDNOTE_NUMBERS_ALIGN_LEFT</strong></a>
+</ul>
+<br>
+<hr width="66%" align="left">
+
+<!---ENDNOTE_NUMBERS_ALIGN_RIGHT--->
+
+<p>
+<a name="ENDNOTE_NUMBERS_ALIGN_RIGHT">
+	Macro: <strong>ENDNOTE_NUMBERS_ALIGN_RIGHT</strong> <var>&lt;number of placeholders&gt;</var>
+</a>
+<p>
+<strong>ENDNOTE_NUMBERS_ALIGN_RIGHT</strong> takes one (non-optional)
+argument: the number of placeholders to reserve for right alignment of
+endnote numbers.
+<p>
+For example, if you have fewer than ten endnotes, you might want to do
+<p>
+<pre>
+	.ENDNOTE_NUMBERS_ALIGN_RIGHT 1
+</pre>
+
+which would ensure that the endnote numbers hang, but are all flush
+with the page's left margin.  If, god help you, you have over a hundred
+endnotes, you'd want to do
+<p>
+<pre>
+	.ENDNOTE_NUMBERS_ALIGN_RIGHT 3
+</pre>
+
+to ensure that the numbers hang and are properly right-aligned.
+<br>
+<hr width="66%" align="left">
+
+<!---ENDNOTE_NUMBERS_ALIGN_LEFT--->
+
+<p>
+<a name="ENDNOTE_NUMBERS_ALIGN_LEFT">
+	Macro: <strong>ENDNOTE_NUMBERS_ALIGN_LEFT</strong>
+</a>
+<p>
+If you don't want the endnote numbers to hang and right-align, invoke
+<strong>ENDNOTE_NUMBERS_ALIGN_LEFT</strong>, which doesn't require any
+argument.  This disables hanging and right-alignment of endnote numbers,
+so that the example
+<a href="#ENDNOTE_NUMBERING_ALIGNMENT_EXAMPLE">above</a>
+comes out like this:
+<p>
+<pre>
+	9. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore et
+	dolore magna aliquyam erat, sed diam voluptua.
+
+	10. Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+	sed diam nonumy eirmod tempor invidunt ut labore et
+	dolore magna aliquyam erat, sed diam voluptua.
+</pre>
+
 <br>
 <hr>
 

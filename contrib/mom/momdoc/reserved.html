@@ -7,23 +7,7 @@
 
 <!====================================================================>
 
-<a href="appendices.html#TOP">Prev</a>&nbsp;&nbsp;
-<a href="toc.html">Back to Table of Contents</a>
-
-<a name="TOP"></a>
-<a name="RESERVED">
-	<h2 align="center"><u>LIST OF RESERVED WORDS</u></h2>
-</a>
-
-<p>
-The following is a list of &quot;reserved&quot; words used by
-<strong>mom</strong>.  Before changing the name of any macro or
-document element tag with
-<a href="goodies.html#ALIAS">ALIAS</a>,
-I strongly recommend doing a search of this page for your proposed
-new name.  If you find it in the left hand column, DON'T USE IT.
-Choose something else instead.
-<p>
+<a href="appendices.html#TOP">Prev</a>&nbsp;&nbsp; <a href="toc.html">Back to Table of Contents</a> <a name="TOP"></a> <a name="RESERVED"> <h2 align="center"><u>LIST OF RESERVED WORDS</u></h2> </a> <p> The following is a list of &quot;reserved&quot; words used by <strong>mom</strong>.  Before changing the name of any macro or document element tag with <a href="goodies.html#ALIAS">ALIAS</a>, I strongly recommend doing a search of this page for your proposed new name.  If you find it in the left hand column, DON'T USE IT.  Choose something else instead.  <p>
 Anyone interested in playing around inside <strong>mom</strong>'s macro
 file (om.tmac) will find this list useful as well since it lists all
 (I hope) the macros, strings, and number registers <strong>mom</strong>
@@ -185,6 +169,9 @@ c                       column mark
 #DEGREES                # of degrees slant for pseudo-italic
 #EXTEND                 Are we in pseudo-extend mode? (toggle)
 #EXT_WIDTH              Width of pseudo-extended type (pointsize x $EXT_PERCENT)
+#FONT_FOR_PAD           Used to ensure that the font in effect prior
+                          to PAD is restored at the start of every iteration
+                          of $PAD_STRING
 #H_INDENT               Value of left indent when IH
 #HL_INDENT              Value of the hang when IH
 #HYPHENATE              Hyphenation on? (toggle)
@@ -227,6 +214,9 @@ p                       Output line horiz position at end of $PAD_STRING
 #RLD                    RLD value
 #R_MARGIN               Right margin
 #SILENT                 Is silent on? (toggle)
+#SIZE_FOR_PAD           Used to ensure that the size in effect prior
+                          to PAD is restored at the start of every iteration
+                          of $PAD_STRING
 #SLANT_ON               Is SLANT on? (toggle)
 #SMART_QUOTES           Smartquotes on? (toggle)
 #SPACE_TO_END           Whitespace at end of string passed to PAD
@@ -255,6 +245,9 @@ $DC_FAM              Drop cap family
 $DC_FT               Drop cap font
 $EXT_PERCENT         Percentage by which to pseudo-extend type
 $FAMILY              Family
+$FAMILY_FOR_PAD      Used to ensure that the family in effect prior
+                       to PAD is restored at the start of every iteration
+                       of $PAD_STRING
 $FONT                Font
 $PAD_MARKER          Character to mark off padding in PAD
 $PAD_STRING          Arg passed to PAD
@@ -324,6 +317,7 @@ EXTEXT       Extended superscript
 EXT          Pseudo-extend type
 EXTSUPX      Extended superscript off
 LEADER       Deposit leader to end of current LL or TAB
+RULE         Draw a rule to the full measure of the current line or tab length
 SLANT        Slant (pseudo-italic on
 SLANTX       Slant off
 ST&lt;#&gt;        String tab end marker
@@ -366,6 +360,8 @@ Document tags
 BLOCKQUOTE  Block-indented, quoted text
 COL_BREAK   Breaks and spreads line before invocation; moves to next column on page or 1st col of next page.  An alias of COL_NEXT.
 COL_NEXT    Moves to next column on page or 1st col of next page
+ENDNOTE     Endnote
+ENDNOTES    Output endnotes
 EPIGRAPH    Epigraph before 1st para 
 FINIS       Prints --END--
 FOOTNOTE    Collects footnotes in text for printing at bottom of page
@@ -418,6 +414,30 @@ DOCTYPE                  Type of doc (DEFAULT, CHAPTER, NAMED, LETTER)
 DO_QUOTE                 Print quote (invoked from QUOTE or BLOCKQUOTE)
 DRAFT_STRING             What to print whenever the word "draft" is required
 DRAFT_WITH_PAGENUMBER    Attach draft/revision info to page number (instead of putting it HEADER center)
+ENDNOTE_FAMILY           Family for endnotes
+ENDNOTE_FONT             Font for endnotes
+ENDNOTE_LEAD             Leading for endnotes page
+ENDNOTE_PARA_INDENT      First line indent of paras in multi-para endnotes
+ENDNOTE_PARA_SPACE       Whether to space paras in multi-para endnotes
+ENDNOTE_PT_SIZE          Base point size for endnotes page
+ENDNOTE_QUAD             Endnote quad
+ENDNOTE_STRING           Endnotes page head
+ENDNOTE_STRING_FAMILY    Family for endnotes page head
+ENDNOTE_STRING_FONT      Font for endnotes page head
+ENDNOTE_STRING_QUAD      Quad direction for endnotes page head
+ENDNOTE_STRING_SIZE      Size for endnotes page head
+ENDNOTE_STRING_UNDERSCORE Underscoring of endnotes page head
+ENDNOTE_TITLE            Endnotes identifying title
+ENDNOTE_TITLE_FAMILY     Family for endnotes identifying title
+ENDNOTE_TITLE_FONT       Font for endnotes identifying title
+ENDNOTE_TITLE_QUAD       Quad direction for endnotes identifying title
+ENDNOTE_TITLE_SIZE       Size for endnotes identifying title
+ENDNOTE_TITLE_UNDERSCORE Underscoring of endnotes identifying title
+ENDNOTE_NUMBER_FAMILY    Family of endnote numbers
+ENDNOTE_NUMBER_FONT      Font of endnote numbers
+ENDNOTE_NUMBER_SIZE      Size of endnote numbers
+ENDNOTE_NUMBERS_ALIGN_RIGHT Hang endnote numbers and align right
+ENDNOTE_NUMBERS_ALIGN_LEFT  Dont' hang endnote numbers and align left
 EPIGRAPH_AUTOLEAD        Autolead value for epigraphs
 EPIGRAPH_FAMILY          Family to use in epigraphs
 EPIGRAPH_FONT            Font to use in epigraphs
@@ -602,7 +622,19 @@ dc                         "mark" register for document columns
 #DRAFT                     The draft number
 #DRAFT_WITH_PAGENUM        Are we attaching draft/revision info to page number? (toggle)
 #EM_ADJUST                 Amount to raise \(em at END
+#EN_PS                     ps of endnotes
+#EN_LEAD                   Lead of endnotes
+#EN_STRING_UNDERSCORE      Underscore endnotes page head? (toggle)
+#EN_TITLE_UNDERSCORE       Underscore endnotes document identifier? (toggle)
+#EN_NUMBERS_ALIGN_RIGHT    Hang and align endnote numbers right? (toggle)
+#EN_NUMBERS_ALIGN_LEFT     Align endnote numbers with left margin? (toggle)
+#EN_NUMBERS_PLACEHOLDERS   Number of placeholders when endnote numbers hang and align right
+#EN_NUMBER_L_LENGTH        Line length for endnote numbers when they're right aligned
+#EN_PP_INDENT              First line indent of paras in multi-para endnotes
+#EN_PP_SPACE               Space multi-paras in endnotes? (toggle)
+#EN_TEXT_INDENT            Page offset for text of endnotes when numbers right align
 #END_QUOTE                 For PP=0 indenting; did we just end a quote? (toggle)
+#ENDNOTE                   Are we in an endnote? (toggle)
 #EPI_ACTIVE                Are we in an epigraph? (toggle)
 #EPI_DEPTH                 Depth of epigraph from first baseline to last
 #EPI_FITS                  Does epigraph fit on page/column? (toggle)
@@ -671,6 +703,7 @@ dc                         "mark" register for document columns
 #L_MARGIN_DIFF             Difference between DOC_L_MARGIN and L_MARGIN
 #n%_AT_PAGENUM_SET         Page # from n% when PAGENUMBER invoked
 #NEXT_AUTHOR               Supplies correct digit to AUTHOR_&lt;#&gt; when printing authors in doc header
+#NO_TRAP_RESET             Should we reset page traps? (toggle)
 #NUM_AUTHORS               # of authors mod 2 to test if odd or even # of authors
 #NUMBER_HEAD               Are heads numbered? (toggle)
 #NUMBER_PH                 Are paraheads numbered? (toggle)
@@ -709,8 +742,13 @@ dc                         "mark" register for document columns
 #QUOTE                     1=PQUOTE, 2=BQUOTE
 #RECTO_VERSO               Switch HEADER_LEFT and HEADER_RIGHT on alternate pages? (toggle); default=0
 #REPEAT                    Number of times to repeat linebreak character
+#RESET_EN_PP               Holds value of register #EN_PP_INDENT
 #RESET_FN_NUMBER           Should fn# start at 1 on every page? (toggle)
+#RESET_L_LENGTH            Stores current line length when necessary
+#RESET_PARA_SPACE          Holds current value of toggle register #PP_SPACE
 #RESET_PP_INDENT           Stores value of PP_INDENT when necessary
+#RESET_QUOTE_SPACING       Stores value of toggle register #FULLSPACE_QUOTES (used in endnotes)
+#RESTORE_DOC_LEAD          Holds value of current doc lead (used in endnotes)
 #RESTORE_OFFSET            Page offset at moment footer trap is sprung; not currently used
 #REVISION                  The revision number
 #RIGHT_CAP_HEIGHT          Cap height of right string in headers/footers
@@ -760,6 +798,22 @@ $DOCTYPE_FAM                    Family to use for DOCTYPE string in doc header
 $DOCTYPE_FT                     Font to use for DOCTYPE string in doc header
 $DOCTYPE_SIZE_CHANGE            ps in/decrease of DOCTYPE string in doc header*
 $DRAFT_STRING                   What to print whenever the word "draft" is required
+$EN_FAMILY                      Family for endnotes
+$EN_FT                          Font for endnotes
+$EN_QUAD                        Quad for endnotes
+$EN_STRING                      Endnotes page head
+$EN_STRING_FAM                  Endnotes page head family
+$EN_STRING_FT                   Endnotes page head font
+$EN_STRING_QUAD                 Endnotes page head quad direction
+$EN_STRING_SIZE_CHANGE          Endnotes page head size***
+$EN_TITLE                       Endnote document identifier
+$EN_TITLE_FAM                   Endnote document identifier family
+$EN_TITLE_FT                    Endnote document identifier font
+$EN_TITLE_QUAD                  Endnote document identifier quad direction
+$EN_TITLE_SIZE_CHANGE           Endnote document identifier size***
+$EN_NUMBER_FAM                  Endnote numbering family
+$EN_NUMBER_FT                   Endnote numbering font
+$EN_NUMBER_SIZE_CHANGE          Endnote numbering size***
 $EPI_AUTOLEAD                   Autolead value (decimals ok) of epigraphs
 $EPI_FAM                        Family to use in epigraphs
 $EPI_FT                         Font to use in epigraphs
@@ -818,8 +872,9 @@ $TITLE_SIZE_CHANGE              ps in/decrease of title in doc header*
 $USERDEF_HDRFTR_RECTO           User defined header/footer recto string
 $USERDEF_HDRFTR_VERSO           User defined header/footer verso string
 
- *relative to #DOC_PT_SIZE
-**relative to overall ps of headers as set by HEADER_SIZE
+  *relative to #DOC_PT_SIZE
+ **relative to overall ps of headers as set by HEADER_SIZE
+***relative to overall ps of endnotes
 
 +++PREPROCESSOR KEYWORDS+++
 

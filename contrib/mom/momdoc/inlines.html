@@ -88,6 +88,7 @@ that take
 		<li><a href="#INLINE_KERNING_MOM">Pairwise kerning</a>
 		<li><a href="#INLINE_HORIZONTAL_MOM">Horizontal movement</a>
 		<li><a href="#INLINE_VERTICAL_MOM">Vertical movement</a>
+		<li><a href="#INLINE_RULE_MOM">Full measure rules</a>
 	</ul>
 	<li><a name="INLINES_GROFF"><strong>Groff inline escapes</strong></a>
 	<ul>
@@ -282,6 +283,32 @@ more than 12.75 points, or wish to use a
 other than points, use the groff inline
 <a href="#INLINE_VERTICAL_GROFF">\v</a>.
 <br>
+
+<!---INLINE_RULE_MOM--->
+
+<hr width="66%" align="left">
+<a name="INLINE_RULE_MOM"><h3><u>Full measure rules</u></h3></a>
+
+<p>
+I find I often need rules drawn to the full measure of the current line
+or tab length.  The official way to do this is <kbd>\l'\n(.lu'</kbd>,
+which is annoying to type, and doesn't mean a whole heck of a lot if
+you're new to groff.  The inline, <strong>\*[RULE]</strong>, is a simple
+replacement for <strong>\l'\n(.lu'</strong>.  Use it whenever you need
+a rule drawn to the full measure of the current line or tab length, for
+example:
+<p>
+<pre>
+	.LL 6P
+	\*[RULE]
+</pre>
+
+The above draws a rule the full measure of the 6-pica line length.
+<p>
+See groff's
+<a href="#INLINE_LINEDRAWING_GROFF">Horizontal line drawing function</a>
+for more information on drawing horizontal rules.
+<br>
 <hr>
 
 <!---INLINE_FONT_GROFF--->
@@ -435,6 +462,10 @@ Therefore, to set a 3-pica rule into a line of text, you'd do
 
 <strong>\l'3P'</strong> above not only draws the rule, but
 advances 3 picas horizontally as well, just as you'd expect.
+<p>
+For an easy way of drawing rules to the full measure of the current
+line or tab length, see 
+<a href="#INLINE_RULE_MOM">Full measure rules</a>.
 <p>
 The weight (thickness) of rules varies according to the point size
 in effect when you invoke <strong>\l</strong>, but you can't fix

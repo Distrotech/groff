@@ -132,6 +132,11 @@
 				<li><a href="docelement.html#FOOTNOTE">FOOTNOTE</a>
 				<li><a href="docelement.html#FOOTNOTE_CONTROL">Footnote control</a>
 			</ul>
+			<li><a href="docelement.html#ENDNOTE_INTRO"><strong>Endnotes</strong></a>
+			<ul>
+				<li><a href="docelement.html#ENDNOTE">ENDNOTE</a>
+				<li><a href="docelement.html#ENDNOTE_CONTROL">Endnote control</a>
+			</ul>
 			<li><a href="docelement.html#FINIS_INTRO"><strong>Document termination</strong></a>
 			<ul>
 				<li><a href="docelement.html#FINIS">FINIS</a>
@@ -189,13 +194,9 @@
 			<li><a href="letters.html#TUTORIAL">Tutorial on writing letters</a>
 			<li><a href="letters.html#LETTERS_DEFAULTS">Default style for letters</a>
 			<li><a href="letters.html#LETTERS_MACROS">The letter macros</a>
-
-
-
 		</ul>
 	</ul>
 </ul>
-<br>
 <hr>
 
 <h2><a name="INTRO_MACROS_DOCPROCESSING"><u>Introduction to document processing</u></a></h2>
@@ -803,18 +804,21 @@ for how <strong>mom</strong>'s outputs each part of the page header.)
 <strong>CHAPTER</strong> prints &quot;Chapter #&quot; in place of a
 <a href="definitions.html#TERMS_DOCHEADER">docheader</a>
 (# is what you gave to
-<a href="#CHAPTER">CHAPTER</a>).
-Page headers contain the author, the title of the book (which
-you gave with
+<a href="#CHAPTER">CHAPTER</a>),
+or, if you omit the <strong>CHAPTER</strong> macro and give the chapter
+a title with
+<a href="#CHAPTER_STRING">CHAPTER_STRING</a>,
+<strong>mom</strong> prints the chapter title.  Page headers contain the
+author, the title of the book (which you gave with
 <a href="#TITLE">TITLE</a>),
-and &quot;Chapter #&quot;.  (See
+and &quot;Chapter #&quot; (or the chapter title).  See
 <a href="headfootpage.html#HEADER_STYLE">Default Specs for Headers</a>
 for <strong>mom</strong>'s default type parameters for each part of
-the page header.)
+the page header.
 <p>
 <em>*See the
 <a href="#CHAPTER_NOTE">Special Note on CHAPTER</a>
-below for how you can make CHAPTER print something
+below for how you can make DOCTYPE CHAPTER print something
 other than &quot;Chapter #&quot; as its docheader.</em>
 <p>
 <strong>NAMED</strong> takes an additional argument: a name
@@ -840,23 +844,28 @@ introduced by &quot;Chapter #&quot;.  Other types of documents
 (reports and so on) often require specific titles for chapters.
 If your document is of this latter type, use <strong>DOCTYPE
 CHAPTER</strong> in the following way:
-<p>
+<br>
 <ol>
 	<li>Omit the
 		<a href="#REFERENCE_MACROS">reference macro</a>
 		<a href="#CHAPTER">CHAPTER</a>
 	<li>Invoke
-		<a href="#CHAPTER_STRING"><code>.CHAPTER_STRING</code></a>
+		<a href="#CHAPTER_STRING">.CHAPTER_STRING</a>
 		with the title you'd like the chapter to have (enclosed
 		in double-quotes, of course).
-	<li>Optionally, if you'd like the chapter title to appear
-		in the the center part of
-		<a href="definitions.html#TERMS_HEADER">page headers</a>
-		(its default location), invoke
-		<a href="headfootpage.html#HDRFTR_CENTER"><code>.HEADER_CENTER</code></a>
-		with the same title you gave to <strong>CHAPTER_STRING</strong>.
-
 </ol>
+<p>
+Here's a recipe for setting up a chapter entitled &quot;The DMCA
+Nazis&quot;.
+<pre>
+	.AUTHOR &quot;Outraged Hacker&quot;
+	.TITLE  &quot;Limiting Copyright&quot;
+	\#
+	.DOCTYPE    CHAPTER
+	.PRINTSTYLE TYPESET
+	\#
+	.CHAPTER_STRING &quot;The DMCA Nazis&quot;
+</pre>
 <br>
 
 <!---PRINTSTYLE--->
