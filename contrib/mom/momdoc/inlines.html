@@ -111,21 +111,21 @@ that take
 <a name="INLINE_FONTS_MOM"><h3><u>Changing fonts</u></h3></a>
 
 <p>
-<strong>Mom</strong> provides five inlines to change fonts
-inline.
+<strong>Mom</strong> provides five escapes for changing fonts
+inline:
 <p>
 <table valign="baseline" cellpadding="10" summary="inlinefonts">
 <tr>
 	<td><strong>\*[ROM]</strong></td>
-	<td>Change font to roman</td>
+	<td>Change font to medium roman</td>
 </tr>
 <tr>
 	<td><strong>\*[IT]</strong></td>
-	<td>Change font to italic</td>
+	<td>Change font to medium italic</td>
 </tr>
 <tr>
 	<td><strong>\*[BD]</strong></td>
-	<td>Change font to bold </td>
+	<td>Change font to bold roman</td>
 </tr>
 <tr>
 	<td><strong>\*[BDI]</strong></td>
@@ -137,15 +137,16 @@ inline.
 </tr>
 </table>
 <p>
-See also
-<a href="#INLINE_FONTS_GROFF">font control with \f</a>
-for other ways to change fonts inline.
+These escapes are provided for merely for convenience, legibility,
+and consistency when typesetting with <strong>mom</strong>.  For
+more complete and flexible inline font control, please see
+<a href="#INLINE_FONTS_GROFF">font control with \f</a>.
 
 <p>
 <strong>NOTE:</strong> If you're using the
 <a href="docprocessing.html#DOCPROCESSING">document processing macros</a>,
 inline font changes remain in effect only for the duration of the
-current macro.
+current document element tag.
 <p>
 
 <!---INLINE_SIZE_MOM--->
@@ -477,43 +478,47 @@ for more information on drawing horizontal rules.
 
 <p>
 Groff's basic mechanism for inline font control is the escape
-<strong>\f</strong>. 
+<strong>\f[&lt;</strong>font&gt;<strong>]</strong>. 
 <p>
 <table valign="baseline" cellpadding="10" summary="inlinefontsgroff">
 <tr>
-	<td><strong>\fR</strong></td>
-	<td>Change font to roman</td>
+	<td><strong>\f[R]</strong></td>
+	<td>Change font to medium roman (equivalent to mom's <strong>\*[ROM]</strong>)</td>
 </tr>
 <tr>
-	<td><strong>\fI</strong></td>
-	<td>Change font to italic</td>
+	<td><strong>\f[I]</strong></td>
+	<td>Change font to medium italic (equivalent to mom's <strong>\*[IT]</strong>)</td>
 </tr>
 <tr>
-	<td><strong>\fB</strong></td>
-	<td>Change font to bold</td>
+	<td><strong>\f[B]</strong></td>
+	<td>Change font to bold roman (equivalent to mom's <strong>\*[BD]</strong>)</td>
 </tr>
 <tr>
-	<td><strong>\f(BI</strong></td>
-	<td>Change font to bold italic</td>
+	<td><strong>\f[BI]</strong></td>
+	<td>Change font to bold italic (equivalent to mom's <strong>\*[BDI]</strong>)</td>
 </tr>
 <tr>
-	<td><strong>\fP</strong></td>
-	<td>Revert to previous font</td>
+	<td><strong>\f[P]</strong></td>
+	<td>Revert to previous font (equivalent to mom's <strong>\*[PREV]</strong>)</td>
 </tr>
 </table>
 <p>
-A special instance of <strong>\f</strong> is
-<strong>\f[font]</strong>, where &quot;font&quot; can be a
-complete legal family/font name combo.  This is especially
-useful should you need to change both family and font inline.
-For example, if your prevailing family and font are Times Roman
-and you want a few words in Courier Bold Italic, you could do
-this:
+<strong>\f[&lt;</strong>font&gt;<strong>]</strong> can be used with
+any legal font style registered with groff.  (See
+<a href="appendices.html#STYLE_EXTENSIONS">here</a>
+for a list of pre-registered font styles provided by
+<strong>mom</strong>).
+<p>
+<strong>\f[&lt;</strong>font&gt;<strong>]</strong> can also take a
+complete legal family+font name combo.  This is especially useful
+should you need to change both family and font inline.  For example,
+if your prevailing family and font are Times Roman and you want a
+few words in Courier Bold Italic, you could do this:
 <p>
 <pre>
 	.FAM T
 	.FT  R
-	The command \f[CBI]ls -l\fP gives a &quot;long&quot; directory listing.
+	The command \f[CBI]ls -l\f[P] gives a &quot;long&quot; directory listing.
 </pre>
 
 The Unix command &quot;ls -l&quot; will appear in Courier Bold Italic

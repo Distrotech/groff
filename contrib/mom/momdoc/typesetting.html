@@ -30,7 +30,7 @@
 		<li><a href="#INTRO_BASIC_PARAMS">Introduction to Basic Parameters</a>
 		<li><a href="#INDEX_BASIC">List of macros</a>
 	</ul>
-	<li><strong>JUSTIFYING, QUADDING, FILLING, BREAKING LINES</strong>
+	<li><strong>JUSTIFYING, QUADDING, FILLING, BREAKING and JOINING LINES</strong>
 	<ul>
 		<li><a href="#INTRO_JUST_QUAD_FILL">Introduction to justify, quad, fill, break</a>
 		<li><a href="#INDEX_JUST">List of macros</a>
@@ -111,7 +111,7 @@ the same thing.
 package, independent of the
 <a href="docprocessing.html#DOCPROCESSING">document processing macros</a>.
 With them, you can typeset on-the-fly.  Book covers, your best
-friend's résumé, a poster for a lost dog --none of these requires
+friend's résumé, a poster for a lost dog--none of these requires
 structured document processing (page headers, paragraphs, heads,
 footnotes, etc).  What they do demand is precise control over every
 element on the page.  The typesetting macros give you that control.
@@ -768,15 +768,15 @@ For inline control of fonts, see
 <a href="inlines.html#INLINE_FONTS_MOM">Inline Escapes, font control</a>.
 <p>
 <a name="FONT_NOTE"></a>
-<strong>NOTE: Mom, versions 1.1.9-a</strong> and higher,
+<strong>NOTE: mom, versions 1.1.9-a</strong> and higher,
 considerably extends the range of arguments you can pass to
 <strong>FT</strong>, making it more convenient to add and access
 fonts of differing
 <a href="definitions.html#TERMS_WEIGHT">weights</a>
 and
 <a href="definitions.html#TERMS_SHAPE">shapes</a>
-within the same family.  Have a look at the Appendices,
-<a href="appendices.html#STYLE_EXTENSIONS">Adding PostScript fonts to groff</a>,
+within the same family.  Have a look
+<a href="appendices.html#STYLE_EXTENSIONS">here</a>
 for a list of the weight/style arguments <strong>mom</strong>
 allows.
 <p>
@@ -1102,7 +1102,8 @@ for an explanation.
 		<li><a href="#SPACE">SPACE</a> (break a line and add space before the next output line)
 		<li><a href="#SPREAD">SPREAD</a> (break and force-justify an output line)
 	</ul>
-	<li><strong>Joining lines</strong>
+	<li><strong>Joining input lines in
+	<a href="definitions.html#TERMS_NOFILL">nofill mode</a></strong>
 	<ul>
 		<li><a href="#JOIN">\c</a> inline escape
 	</ul>
@@ -1272,11 +1273,15 @@ You can use either, or mix 'n' match with impunity.
 Macro: <strong>EL</strong>
 <br>
 <em>*In nofill modes (LEFT, RIGHT, CENTER), you must terminate the
-line preceding EL with the \c inline escape.  Furthermore, in
-nofill modes, EL does not work after the PAD macro.  See the
+line input preceding EL with the </em><kbd>\c</kbd><em> inline
+escape.  See
 <a href="#EL_NOTES">NOTES</a>,
-below.</em>
-
+below.
+<br>
+Furthermore, in nofill modes, EL does not work after the PAD macro.
+See
+<a href="#EL_EXCEPTION">Exception</a>
+for a workaround</em>.
 <p>
 The mnemonic "EL" is borrowed from old Compugraphic typesetting
 systems, where it stood for "End Line."  Conceptually,
@@ -1302,8 +1307,9 @@ instead of calculating the lead that needs to be added to 12.5 to
 get 24.  To demonstrate:
 <p>
 <pre>
+	.LEFT
 	.LS 12.5
-	A line of text.
+	A line of text.\c
 	.EL
 	.ALD 24p
 	The next line of text.
@@ -1312,6 +1318,7 @@ get 24.  To demonstrate:
 may be more intuitive than
 <p>
 <pre>
+	.LEFT
 	.LS 12.5
 	A line of text.
 	.ALD 11.5p
@@ -1371,6 +1378,7 @@ If <strong>EL</strong> is used after most macros or groff
 (see the exception, below), you don't have to worry about this,
 regardless of the fill mode.  Just type <kbd>.EL</kbd>
 <p>
+<a name="EL_EXCEPTION"></a>
 <strong>Exception: EL</strong> does not work after the
 <a href="goodies.html#PAD">PAD</a>
 macro when you're in a nofill mode.  If you require
@@ -1379,11 +1387,13 @@ in a nofill mode, you have to perform its function
 &quot;manually&quot;, e.g.
 <p>
 <pre>
-	.CENTER      \" CENTER is a nofill mode
+	.CENTER    \" CENTER is a nofill mode
 	.PAD "#\*[ST1]A line of text\*[ST1X]#"
-	.TRAP OFF  -+
-	.SP -1v     | - a "manual" EL
-	.TRAP      -+
+	\#
+	.TRAP OFF  \" -+
+	.SP -1v    \"  |--> this is a "manual" EL
+	.TRAP      \" -+
+	\#
 	.ST 1 L
 	.TAB 1
 	.ALD 2p
@@ -1405,8 +1415,10 @@ Alias: <strong>SP</strong>
 <p>
 <strong>SPACE</strong> breaks a line, just like
 <strong>BR</strong>, then adds space after the line.  With no
-argument, it adds an extra line space.  If you pass it a numeric
-argument without supplying a
+argument, it adds an extra line space of a value equal to the
+current
+<a href="definitions.html#TERMS_LEADING">leading</a>.
+If you pass it a numeric argument without supplying a
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>,
 it advances that number of extra line spaces.  For example:
 <p>
@@ -1424,15 +1436,18 @@ breaks the line and adds two extra linespaces.
 
 <p>
 If you supply a unit of measure, <strong>SPACE</strong> breaks the
-line then adds the specified amount of extra space to the current
-linespace, as in
+line then advances one linespace (at the current
+<a href="definitions.html#TERMS_LEADING">leading</a>)
+PLUS the specified amount of extra space given to
+<strong>SPACE</strong>,
+as in
 <p>
 <pre>
 	.SPACE 6p
 </pre>
 
-which breaks the line then adds six points of space to the current
-linespace.
+which breaks the line and advances one full linespace plus six
+points.
 
 <p>
 <strong>SUGGESTION: SPACE</strong> and
@@ -1524,6 +1539,17 @@ words of the output line would read
 Please also note that had the example been in one of the
 <a href="definitions.html#TERMS_FILLED">fill modes</a>,
 there'd have been no need for the <strong>\c</strong>.  
+<p>
+<strong>Addendum:</strong> The example, above, is designed to
+demonstrate the use of <strong>\c</strong>.  However, an easier and
+more intuitive way to accomplish the family/font change in the
+example would be with the groff
+<a href="definitions.html#TERMS_INLINES">inline escape</a>,
+<a href="inlines.html#INLINE_FONTS_GROFF">\f</a>.
+<p>
+<pre>
+	Some lines of text to be \f[HB]joined\*[PREV] together.
+</pre>
 <p>
 <hr>
 
@@ -1755,7 +1781,7 @@ you could turn <strong>HY</strong> off by entering
 <strong>HY</strong> observes the following default hyphenation rules:
 <br>
 <ol>
-	<li>Last lines (i.e. ones that will spring a trap -- typically
+	<li>Last lines (i.e. ones that will spring a trap--typically
 	the last line on a page) will not be hyphenated.
 	<li>The first and last two characters of a word are never
 	split off.
@@ -2113,7 +2139,7 @@ be missing an italic font, or a bold font.  Or you might not be able
 to get your hands on a condensed family.  That's where these macros
 and inline escapes come in.  With them, you can fake the fonts
 you're missing.  A word of caution, though: &quot;faked&quot;
-fonts are just that -- faked.  You should only use them as a
+fonts are just that--faked.  You should only use them as a
 last resort, and then only sparingly.  A word or two or a line
 or two in a faked font will pass unnoticed; large patches of
 type in a faked font look typographically cheap.
@@ -3518,7 +3544,7 @@ Macro: <strong>MCO</strong>
 is the macro you use to begin multi-column setting.  It marks
 the current
 <a href="definitions.html#TERMS_BASELINE">baseline</a>
-as the top of your columns, for use late with
+as the top of your columns, for use later with
 <a href="#MCR">MCR</a>.  See the
 <a href="#MULTI_COLUMNS">introduction to columns</a>
 for an explanation of multi-columns and some sample
