@@ -132,11 +132,11 @@ void do_file(FILE *fp, const char *filename)
       non_empty_flag = 0;
       inline_flag = 0;
       yyparse();
+      restore_compatibility();
       if (non_empty_flag) {
 	printf(".lf %d\n", current_lineno - 1);
 	output_string();
       }
-      restore_compatibility();
       printf(".lf %d\n", current_lineno);
       put_string(linebuf, stdout);
       if (html && (suppress_html == 0))
@@ -217,9 +217,9 @@ static int inline_equation(FILE *fp, string &linebuf, string &str)
       break;
     }
   }
+  restore_compatibility();
   printf(".lf %d\n", current_lineno);
   output_string();
-  restore_compatibility();
   printf(".lf %d\n", current_lineno + 1);
   return 1;
 }

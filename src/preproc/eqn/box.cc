@@ -232,7 +232,7 @@ void start_string()
 
 void output_string()
 {
-  printf("\\*[" LINE_STRING "]\n");
+  printf("\\*(" LINE_STRING "\n");
 }
 
 void restore_compatibility()
