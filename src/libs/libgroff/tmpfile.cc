@@ -43,11 +43,22 @@ extern "C" {
 // Use this as the prefix for temporary filenames.
 #define TMPFILE_PREFIX  "groff"
 
-// Open a temporary file with fatal error on failure.
+/*
+ *  Generate a temporary name template with a postfix
+ *  immediately after the TMPFILE_PREFIX.
+ *  It uses the groff preferences for a temporary directory.
+ *  Note that no file name is either created or opened,
+ *  only the *template* is returned.
+ */
 
-FILE *xtmpfile()
+char *xtmptemplate(char *postfix=0)
 {
   const char *dir = getenv(GROFF_TMPDIR_ENVVAR);
+  int postlen = 0;
+
+  if (postfix)
+    postlen = strlen(postfix);
+    
   if (!dir) {
     dir = getenv(TMPDIR_ENVVAR);
     if (!dir)
@@ -57,12 +68,23 @@ FILE *xtmpfile()
   const char *p = strrchr(dir, '/');
   int needs_slash = (!p || p[1]);
   char *templ = new char[strlen(dir) + needs_slash
-			    + sizeof(TMPFILE_PREFIX) - 1 + 6 + 1];
+		+ sizeof(TMPFILE_PREFIX) - 1 + 6 + 1 + postlen];
   strcpy(templ, dir);
   if (needs_slash)
     strcat(templ, "/");
   strcat(templ, TMPFILE_PREFIX);
+  if (postlen > 0)
+    strcat(templ, postfix);
   strcat(templ, "XXXXXX");
+
+  return( templ );
+}
+
+// Open a temporary file and with fatal error on failure.
+
+FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1)
+{
+  char *templ = xtmptemplate(postfix);
 
 #ifdef HAVE_MKSTEMP
   errno = 0;
@@ -81,15 +103,19 @@ FILE *xtmpfile()
   if (!fp)
     fatal("cannot open `%1': %2", templ, strerror(errno));
 #endif /* not HAVE_MKSTEMP */
-  if (unlink(templ) < 0)
+  if ((do_unlink) && (unlink(templ) < 0))
     error("cannot unlink `%1': %2", templ, strerror(errno));
-  a_delete templ;
+  if ((namep != 0) && ((*namep) != 0)) {
+    *namep = templ;
+  } else {
+    a_delete templ;
+  }
   return fp;
 }
 
 #if 0
 // If you're not running Unix, the following will do:
-FILE *xtmpfile()
+FILE *xtmpfile(char **namep, char *postfix=0, int do_unlink=1)
 {
   FILE *fp = tmpfile();
   if (!fp)

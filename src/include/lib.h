@@ -53,7 +53,8 @@ int is_prime(unsigned);
 
 #include <stdio.h>
 
-FILE *xtmpfile();
+FILE *xtmpfile(char **namep=0, char *postfix=0, int do_unlink=1);
+char *xtmptemplate(char *extension=0);
 
 #ifndef STDIO_H_DECLARES_POPEN
 
