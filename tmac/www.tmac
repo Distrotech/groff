@@ -786,43 +786,101 @@ www functionality.  It should work with any macro set.
 ..
 .
 .\" --------------------------------------------------------------------
-.\" auxiliary definitions for ULS / ULE
+.\" auxiliary definitions for lists
 .\"
-.ds www-level1 \[bu]\ \ \"
-.ds www-level2 \[sq]\ \ \"
-.ds www-level3 \[ci]\ \ \"
-.nr www-level 0
+.ds www-ul-level1 \[bu]\ \ \"
+.ds www-ul-level2 \[sq]\ \ \"
+.ds www-ul-level3 \[ci]\ \ \"
+.nr www-ul-level 0
+.
+.ds www-ol-level1 decimal\"
+.ds www-ol-level2 lower-alpha\"
+.ds www-ol-level3 lower-roman\"
+.ds www-ol-tmp 00\ \ \"
+.nr www-ol-ctr1 0 1
+.nr www-ol-ctr2 0 1
+.nr www-ol-ctr3 0 1
+.af www-ol-ctr2 a
+.af www-ol-ctr3 i
+.nr www-ol-level 0
+.
+.nr www-dl-level 0
+.nr www-dl-shift 5n
+.
+.\"
+.\" allow nested lists
+.\"
 .nr www-depth 0
+.nr www-li-indent \n[.i]
+.ds www-level0 nop\"
+.ds www-level1
+.ds www-level2
+.ds www-level3
+.ds www-level4
+.ds www-level5
+.ds www-level6
+.ds www-level7
+.ds www-level8
+.ds www-level9
+.
+.\" which macro to use for LI
+.de www-push-li
+.  nr www-depth +1
+.  ds www-level\\n[www-depth] \\$1\"
+.  als LI \\$1
+..
+.
+.de www-pop-li
+.  nr www-depth -1
+.  als LI \\*[www-level\\n[www-depth]]
+..
 .
 .\"
 .\" Auxiliary macro for ULS.
 .\"
-.de www-push-level
-.  nr www-level +1
-.  if (\\n[www-level] > 3) \
-.    www-error "too many levels of indentation (\\n[www-level])"
+.de www-push-ul-level
+.  nr www-ul-level +1
+.  if (\\n[www-ul-level] > 3) \
+.    www-error "ULS: too many levels of indentation (\\n[www-ul-level])"
 ..
 .\"
 .\" Auxiliary macro for ULE.
 .\"
-.de www-pop-level
-.  if !\\n[www-level] \
-.    www-error "trying to terminate a list which does not exist"
-.  nr www-level -1
+.de www-pop-ul-level
+.  if !\\n[www-ul-level] \
+.    www-error "ULE: trying to terminate a list which does not exist"
+.  nr www-ul-level -1
 ..
+.
+.\"
+.\" Auxiliary macro for OLS.
+.\"
+.de www-push-ol-level
+.  nr www-ol-level +1
+.  if (\\n[www-ol-level] > 3) \
+.    www-error "OLS: too many levels of indentation (\\n[www-ol-level])"
+..
+.\"
+.\" Auxiliary macro for OLE.
+.\"
+.de www-pop-ol-level
+.  if !\\n[www-ol-level] \
+.    www-error "OLE: trying to terminate a list which does not exist"
+.  nr www-ol-level -1
+..
+.
 .\" --------------------------------------------------------------------
 .\" ULS
 .\"
 .\"   Start an unordered list.
 .\"
 .de ULS
-.  www-push-level
+.  www-push-li www-li-ul
+.  www-push-ul-level
 .  ie \\n[www-html] \
 .    HTML</p> "<ul>"
 .  el \{\
-.    if (\\n[www-level] == 1) \
-.      nr www-depth \\n[.i]
-.    nr www-depth +\w'\\*[www-level\\n[www-level]]'u
+.    nr www-li-indent +\w'\\*[www-ul-level\\n[www-ul-level]]'u
 .  \}
 ..
 .\" --------------------------------------------------------------------
@@ -832,26 +890,118 @@ www functionality.  It should work with any macro set.
 .\"
 .de ULE
 .  ie \\n[www-html] \
-.    HTML</p> "</ul>"
+.    HTML "</ul>"
 .  el \{\
-.    nr www-depth -\w'\\*[www-level\\n[www-level]]'u
-.    in \\n[www-depth]u
+.    nr www-li-indent -\w'\\*[www-ul-level\\n[www-ul-level]]'u
+.    in \\n[www-li-indent]u
 .  \}
-.  www-pop-level
+.  www-pop-ul-level
+.  www-pop-li
+..
+.\" --------------------------------------------------------------------
+.\" OLS
+.\"
+.\"   Start an ordered list.
+.\"
+.de OLS
+.  www-push-li www-li-ol
+.  www-push-ol-level
+.  ie \\n[www-html] \
+.    HTML</p> "<ol style='list-style-type: \\*[www-ol-level\\n[www-ol-level]]'>"
+.  el \
+.    nr www-li-indent +\w'\\*[www-ol-tmp]'u
+..
+.\" --------------------------------------------------------------------
+.\" OLE
+.\"
+.\"   End an ordered list.
+.\"
+.de OLE
+.  ie \\n[www-html] \
+.    HTML "</ol>"
+.  el \{\
+.    nr www-li-indent -\w'\\*[www-ol-tmp]'u
+.    in \\n[www-li-indent]u
+.    nr www-ol-ctr\\n[www-ol-level] 0 1
+.  \}
+.  www-pop-ol-level
+.  www-pop-li
+..
+.\" --------------------------------------------------------------------
+.\"
+.\" DLS
+.\"   Start a definition list.
+.\"
+.de DLS
+.  www-push-li www-li-dl
+.  nr www-dl-level +1
+.  ie \\n[www-html] \
+.    HTML</p> "<dl>"
+.  el \{\
+.    nr www-li-indent +\\n[www-dl-shift]u
+.    in \\n[www-li-indent]u
+.  \}
+..
+.\" --------------------------------------------------------------------
+.\"
+.\" DLE
+.\"   End a definition list.
+.\"
+.de DLE
+.  ie \\n[www-html] \
+.    HTML "</dl>"
+.  el \{\
+.    nr www-li-indent -\\n[www-dl-shift]u
+.    in \\n[www-li-indent]u
+.  \}
+.  nr www-dl-level -1
+.  www-pop-li
 ..
 .\" --------------------------------------------------------------------
 .\" LI
 .\"
 .\"   Insert a list item.
 .\"
-.de LI
+.\" ********
+.\" www-li-ul - bulleted list item
+.\"
+.de www-li-ul
 .  ie \\n[www-html] \
-.    HTML</p> "<li>"
+.    HTML-NS "<li>"
 .  el \{\
 .    www:paraspace
-.    in \\n[www-depth]u
-.    ti -\w'\\*[www-level\\n[www-level]]'u
-.    nop \\*[www-level\\n[www-level]]\c
+.    in \\n[www-li-indent]u
+.    ti -\w'\\*[www-ul-level\\n[www-ul-level]]'u
+.    nop \\*[www-ul-level\\n[www-ul-level]]\c
+.  \}
+..
+.\" ********
+.\" www-li-ol - numbered list item
+.\"
+.de www-li-ol
+.  ie \\n[www-html] \
+.    HTML-NS "<li>"
+.  el \{\
+.    www:paraspace
+.    in \\n[www-li-indent]u
+.    ti -\w'\\n[www-ol-ctr\\n[www-ol-level]]\ \ 'u
+.    nop \\n+[www-ol-ctr\\n[www-ol-level]]\ \ \c
+.  \}
+..
+.\" ********
+.\" www-li-dl - definition list item
+.\"
+.de www-li-dl
+.  ie \\n[www-html] \{\
+.    HTML "<dt>\\$1</dt>"
+.    HTML-NS "<dd>"
+.  \}
+.  el \{\
+.    www:paraspace
+.    in \\n[www-li-indent]u
+.    ti -\\n[www-dl-shift]u
+.    nop \&\\$1
+.    br
 .  \}
 ..
 .\" --------------------------------------------------------------------
