@@ -3826,8 +3826,20 @@
 .\" NS local variables:
 .\" NS   doc-reg-It
 .\" NS   doc-str-It
+.\" NS   doc-XXX-list-type
 .\" NS
 .\" NS width register `It' set in doc-common
+.
+.nr doc-bullet-list-type 1
+.nr doc-column-list-type 0
+.nr doc-dash-list-type 1
+.nr doc-diag-list-type 0
+.nr doc-enum-list-type 1
+.nr doc-hang-list-type 2
+.nr doc-inset-list-type 2
+.nr doc-item-list-type 1
+.nr doc-ohang-list-type 2
+.nr doc-tag-list-type 2
 .
 .de It
 .  ds doc-str-It \*[doc-list-type-stack\n[doc-list-depth]]
@@ -3858,20 +3870,7 @@
 .    nr doc-arg-ptr 0
 .  \}
 .
-.  nr doc-reg-It 1
-.  ie        "\*[doc-str-It]"diag-list" \
-.    nr doc-reg-It 0
-.  el \{ .ie "\*[doc-str-It]"column-list" \
-.    nr doc-reg-It 0
-.  el \{ .ie "\*[doc-str-It]"tag-list" \
-.    nr doc-reg-It 2
-.  el \{ .ie "\*[doc-str-It]"hang-list" \
-.    nr doc-reg-It 2
-.  el \{ .ie "\*[doc-str-It]"ohang-list" \
-.    nr doc-reg-It 2
-.  el \{ .if "\*[doc-str-It]"inset-list" \
-.    nr doc-reg-It 2
-.  \}\}\}\}\}
+.  nr doc-reg-It \n[doc-\*[doc-str-It]-type]
 .
 .  if \n[doc-reg-It] \{\
 .    \" start item box

@@ -361,10 +361,10 @@
 .\" NS
 .\" NS width register `Os' set above
 .
-.ds doc-operating-system-ATT-7th 7th\~Edition
 .ds doc-operating-system-ATT-7   7th\~Edition
-.ds doc-operating-system-ATT-III System\~III
+.als doc-operating-system-ATT-7th doc-operating-system-ATT-7
 .ds doc-operating-system-ATT-3   System\~III
+.als doc-operating-system-ATT-III doc-operating-system-ATT-3
 .ds doc-operating-system-ATT-V   System\~V
 .ds doc-operating-system-ATT-V.2 System\~V Release\~2
 .ds doc-operating-system-ATT-V.3 System\~V Release\~3
@@ -377,8 +377,8 @@
 .ds doc-operating-system-BSD-4.3  4.3\~Berkeley Distribution
 .ds doc-operating-system-BSD-4.3T 4.3-Tahoe Berkeley Distribution
 .ds doc-operating-system-BSD-4.3R 4.3-Reno Berkeley Distribution
-.ds doc-operating-system-BSD-4.3t 4.3-Tahoe Berkeley Distribution
-.ds doc-operating-system-BSD-4.3r 4.3-Reno Berkeley Distribution
+.als doc-operating-system-BSD-4.3t doc-operating-system-BSD-4.3T
+.als doc-operating-system-BSD-4.3r doc-operating-system-BSD-4.3R
 .ds doc-operating-system-BSD-4.4  4.4BSD
 .
 .ds doc-operating-system-NetBSD-0.8  0.8
@@ -673,11 +673,19 @@
 .\" NS   doc-is-func
 .\" NS   doc-num-func-args
 .\" NS
-.\" NS local variable:
+.\" NS local variables:
 .\" NS   doc-reg-Sh
 .\" NS   doc-reg-Sh1
+.\" NS   doc-section-XXX
 .\" NS
 .\" NS width register `Sh' set in doc-common
+.
+.ds doc-section-name        NAME
+.ds doc-section-synopsis    SYNOPSIS
+.ds doc-section-description DESCRIPTION
+.ds doc-section-see-also    SEE
+.ds doc-section-files       FILES
+.ds doc-section-authors     AUTHORS
 .
 .de Sh
 .  ie \n[doc-arg-limit] \{\
@@ -705,7 +713,7 @@
 .      if t \
 '        ad
 .
-.      ie "\$1"NAME" \{\
+.      ie "\$1"\*[doc-section-name]" \{\
 .        doc-setup-header
 '        in 0
 .      \}
@@ -714,25 +722,25 @@
 .        nr doc-in-files-section 0
 .        nr doc-in-authors-section 0
 .
-.        ie        "\$1"SYNOPSIS" \{\
+.        ie        "\$1"\*[doc-section-synopsis]" \{\
 .          if t \
 .            na
 .          nr doc-in-synopsis-count 1
 .        \}
-.        el \{ .ie "\$1"DESCRIPTION" \{\
+.        el \{ .ie "\$1"\*[doc-section-description]" \{\
 .          nr doc-is-func 0
 .          nr doc-func-count 0
 .          nr doc-func-args-processed 0
 .          nr doc-num-func-args 0
 .        \}
-.        el \{ .ie "\$1"SEE" \{\
+.        el \{ .ie "\$1"\*[doc-section-see-also]" \{\
 .          if t \
 .            na
 .          nr doc-in-see-also-section 1
 .        \}
-.        el \{ .ie "\$1"FILES" \
+.        el \{ .ie "\$1"\*[doc-section-files]" \
 .          nr doc-in-files-section 1
-.        el .if    "\$1"AUTHORS" \
+.        el .if    "\$1"\*[doc-section-authors]" \
 .          nr doc-in-authors-section 1
 .        \}\}\}
 .
