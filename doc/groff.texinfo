@@ -598,7 +598,7 @@ disadvantages compared to @code{troff}:
 
 @itemize @bullet{}
 @item
-They must be used on a bitmapped display to do any operations on your
+They must be used on a graphics display to do any operations on a
 document.
 @item
 Most of the WYSIWYG systems are either non-free or are not very
@@ -732,9 +732,9 @@ output device to produce HTML output, have been added.
 @cindex capabilities of @code{groff}
 
 So what exactly is @code{groff} capable of doing?  @code{groff} provides
-a wide range of low-level text formatting operations.  Using these, you
-can perform a wide range of formatting tasks, such as footnotes, table
-of contents, multiple columns, etc.
+a wide range of low-level text formatting operations.  Using these, it
+is possible to perform a wide range of formatting tasks, such as
+footnotes, table of contents, multiple columns, etc.
 
 @itemize @bullet{}
 @item
@@ -784,11 +784,11 @@ Output and error messages
 
 Since @code{groff} provides such low level facilities, it can be quite
 difficult to use by itself.  However, @code{groff} provides a
-@dfn{macro} facility which allows you to specify how certain routine
-operations (e.g.@w{ }starting paragraphs, printing headers and footers,
-etc.)@: should be done.  These macros can be collected together into a
-@dfn{macro package}.  There are a number of macro packages available;
-the most common (and the ones described in this manual) are @code{-man},
+@dfn{macro} facility to specify how certain routine operations (e.g.@w{
+}starting paragraphs, printing headers and footers, etc.)@: should be
+done.  These macros can be collected together into a @dfn{macro
+package}.  There are a number of macro packages available; the most
+common (and the ones described in this manual) are @code{-man},
 @code{-mdoc}, @code{-me}, @code{-ms}, and @code{-mm}.
 
 
@@ -909,8 +909,8 @@ groff [ -abeghilpstvzCENRSUVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
       [ @var{files}@dots{} ]
 @end example
 
-The command line format for @code{gtroff} is as follows.  As you can
-see, many of the options to @code{groff} are actually passed on to
+The command line format for @code{gtroff} is as follows.  As can be
+seen, many of the options to @code{groff} are actually passed on to
 @code{gtroff}.
 
 @example
@@ -1053,7 +1053,8 @@ the list.
 @item -r@var{cn}
 @itemx -r@var{name}=@var{n}
 Set number register @var{c} or @var{name} to @var{n}; @var{c} must be a
-one-letter @var{name}; @var{n} can be any troff numeric expression.
+one-letter @var{name}; @var{n} can be any @code{gtroff} numeric
+expression.
 @item -F@var{dir}
 Search @var{dir} for subdirectories dev@var{name} (@var{name} is the
 name of the device) for the @file{DESC} file and font files before the
@@ -1170,16 +1171,16 @@ grog -Tdvi paper.ms
 
 @noindent
 will guess the appropriate command to print @file{paper.ms} and then
-print it to the command line after adding the @samp{-Tdvi} option.  If
-you want to directly execute it, enclose the call to @code{grog} in
-backquotes on the @sc{Unix} shell prompt:
+print it to the command line after adding the @samp{-Tdvi} option.  For
+direct execution, enclose the call to @code{grog} in backquotes on the
+@sc{Unix} shell prompt:
 
 @example
 `grog -Tdvi paper.ms` > paper.dvi
 @end example
 
 @noindent
-As you can see, it is still necessary to redirect the output to
+As seen in the example, it is still necessary to redirect the output to
 something meaningful (i.e.@: either a file or a pager program like
 @code{less}).
 
@@ -1207,8 +1208,8 @@ macro package.
 @section Basics
 @cindex basics
 
-This section covers some of the basic concepts you will need to
-understand to use a macro package.@footnote{This section is derived from
+This section covers some of the basic concepts necessary to understand
+how to use a macro package.@footnote{This section is derived from
 @cite{Writing Papers with nroff using -me} by Eric P.@w{ }Allman.}
 References are made throughout to more detailed information, if desired.
 
@@ -1263,11 +1264,11 @@ Four score and seven years ago,...
 
 @cindex break
 @cindex line break
-Sometimes you may want to start a new output line even though the line
-you are on is not yet full; for example, at the end of a paragraph.  To
-do this you can cause a @dfn{break}, which starts a new output line.
-Some requests cause a break automatically, as do blank input lines and
-input lines beginning with a space.
+Sometimes a new output line should be started even though the current
+line is not yet full; for example, at the end of a paragraph.  To do
+this it is possible to cause a @dfn{break}, which starts a new output
+line.  Some requests cause a break automatically, as do blank input
+lines and input lines beginning with a space.
 
 Not all input lines are text to be formatted.  Some of the input lines
 are requests which describe how to format the text.  Requests always
@@ -1280,24 +1281,24 @@ correct place, and so forth.
 
 Here a few hints for preparing text for input to @code{gtroff}.  First,
 keep the input lines short.  Short input lines are easier to edit, and
-@code{gtroff} will pack words onto longer lines for you anyhow.  In
-keeping with this, it is helpful to begin a new line after every period,
-comma, or phrase, since common corrections are to add or delete
-sentences or phrases.  Secondly, do not hyphenate words at the end of
-lines---@code{gtroff} is smart enough to hyphenate words for you as
+@code{gtroff} will pack words onto longer lines anyhow.  In keeping with
+this, it is helpful to begin a new line after every period, comma, or
+phrase, since common corrections are to add or delete sentences or
+phrases.  Secondly, do not hyphenate words at the end of
+lines---@code{gtroff} is smart enough to hyphenate words for the user as
 needed, but is not smart enough to take hyphens out and join a word back
 together.  Also, words such as ``mother-in-law'' should not be broken
-over a line, since then you will get a space where not wanted, such as
+over a line, since then a space can occur where not wanted, such as
 ``@w{mother- in}-law''.
 
 @findex ls
 @cindex double spacing
 @cindex spacing
-@code{gtroff} will double space output text automatically if you use the
-request @w{@samp{.ls 2}}.  You can revert to single spaced mode by
+@code{gtroff} will double space output text automatically if using the
+request @w{@samp{.ls 2}}.  Single spaced mode can be reactivated by
 typing @w{@samp{.ls 1}}.
 
-A number of requests allow you to change the way the printed copy looks,
+A number of requests allow to change the way the printed copy looks,
 sometimes called the @dfn{layout} of the output page.  Most of these
 requests adjust the placing of @dfn{white space} (blank lines or
 spaces).
@@ -1331,8 +1332,8 @@ thoughts on the subject'', followed by a single blank line.
 Text lines can be centered by using the @code{ce} request.  The line
 after @code{ce} is centered (horizontally) on the page.  To center more
 than one line, use @w{@code{.ce @var{N}}} (where @var{N} is the number
-of lines to center), followed by the @var{N}@w{ }lines.  If you want to
-center many lines but don't want to count them, type:
+of lines to center), followed by the @var{N}@w{ }lines.  To center many
+lines without counting them, type:
 
 @example
 .ce 1000
@@ -1348,8 +1349,8 @@ lines, in other words, stop centering.
 @cindex line break
 @cindex break
 All of these requests cause a break; that is, they always start a new
-line.  If you want to start a new line without performing any other
-action, use @code{br}.
+line.  To start a new line without performing any other action, use
+@code{br}.
 
 
 @node Common Features,  , Basics, Tutorial for Macro Users
@@ -1409,10 +1410,10 @@ supply macros for starting chapters and appendices.
 
 @subsection Headers and Footers
 
-Every macro packages gives you some way to manipulate the headers and
-footers (or @dfn{titles}) on each page.  Some packages will allow you to
-have different ones on the even and odd pages (for material printed in a
-book form).
+Every macro packages gives some way to manipulate the headers and
+footers (or @dfn{titles}) on each page.  Some packages will allow for
+different ones on the even and odd pages (for material printed in a book
+form).
 
 The titles are called three-part titles, that is, there is a
 left-justified part, a centered part, and a right-justified part.  An
@@ -1421,8 +1422,8 @@ with the @samp{%} character (@pxref{Page Layout} for more details).
 
 @subsection Page Layout
 
-Most macro packages let you specify top and bottom margins and other
-details about the appearance of the printed pages.
+Most macro packages let thte user specify top and bottom margins and
+other details about the appearance of the printed pages.
 
 @subsection Displays
 @cindex displays
@@ -1444,9 +1445,9 @@ used in this paper.
 
 @cindex keep
 A @dfn{keep} is a display of lines which are kept on a single page if
-possible.  An example of where you would use a keep might be a diagram.
-Keeps differ from lists in that lists may be broken over a page boundary
-whereas keeps will not.
+possible.  An example for a keep might be a diagram.  Keeps differ from
+lists in that lists may be broken over a page boundary whereas keeps
+will not.
 
 @cindex keep, floating
 @cindex floating keep
@@ -1587,9 +1588,9 @@ This chapter documents the main macro packages that come with
 @cindex programming tutorial
 @cindex tutorial for programming
 
-This chapter covers @strong{all} of the facilities of @code{gtroff}.  If
-you are intending to use a macro package, you probably do not want to
-read this chapter.
+This chapter covers @strong{all} of the facilities of @code{gtroff}.
+Users of macro packages may skip it.
+
 
 @menu
 * Text::                        
@@ -1632,7 +1633,7 @@ read this chapter.
 
 @code{gtroff} input files contain text with control commands
 interspersed throughout.  But, even without control codes, @code{gtroff}
-will still do several things with your text: filling and adjusting,
+will still do several things the input text: filling and adjusting,
 adding additional space after sentences, hyphenating and inserting
 implicit line breaks.
 
@@ -1706,9 +1707,9 @@ line it will append two @dfn{sentence spaces} in the formatted output.
 
 @code{gtroff} translates @dfn{tabulator stops}, also called @dfn{tabs},
 in the input into movements to the next tab stop.  These tab stops are
-initially located every half inch across the page.  Using this you can
-make simple tables.  However, this can often be deceptive as the
-appearance (and width) of your text on a terminal and the results from
+initially located every half inch across the page.  Using this simple
+tables can easily be made.  However, this can often be deceptive as the
+appearance (and width) of the text on a terminal and the results from
 @code{gtroff} can vary greatly.
 
 Also, a possible sticking point is that lines beginning with tab
@@ -1757,7 +1758,7 @@ A line which begins with a space will cause a break and the space will
 be output at the beginning of the next line.  Note that this space isn't
 adjusted, even in fill mode.
 
-The end of file will also cause a break (otherwise the last line of your
+The end of file will also cause a break (otherwise the last line of the
 document may vanish!)
 
 Certain requests also cause breaks, implicitly or explicity.  This will
@@ -1904,8 +1905,8 @@ length of 3.5@w{ }inches and the results:
 @end example
 
 @noindent
-As you can see, the safest way to specify measurements is to always
-attach a scaling indicator.
+As shown in the example, the safest way to specify measurements is to
+always attach a scaling indicator.
 
 
 @node Expressions, Identifiers, Measurements, Programming Tutorial
@@ -1978,8 +1979,7 @@ Parentheses may be used as in any other language.  However, in
 @code{gtroff} they are necessary to ensure order of evaluation.
 @code{gtroff} has no operator precedence; expressions are evaluated left
 to right.  This means that @samp{3+5*4} is evaluated as if it were
-parenthesized like @samp{(3+5)*4}, not as @samp{3+(5*4)}, as you may
-expect.
+parenthesized like @samp{(3+5)*4}, not as @samp{3+(5*4)}, as expected.
 
 @findex +
 @findex -
@@ -2058,12 +2058,12 @@ expect an identifier as a parameter.
 @c XXX xref
 
 @deffn Escape \A ident
-You can test whether an identifier @var{ident} is valid in @code{gtroff}
-with the @code{\A} escape.  It expands to the character@w{ }1 or@w{ }0
-according to whether its argument (given in quotes) is or is not
-acceptable as the name of a string, macro, diversion, number register,
-environment, or font.  It will return@w{ }0 if no argument is given.
-This is useful if you want to look up user input in some sort of
+Whether an identifier @var{ident} is valid in @code{gtroff} can be
+tested with the @code{\A} escape.  It expands to the character@w{ }1
+or@w{ }0 according to whether its argument (given in quotes) is or is
+not acceptable as the name of a string, macro, diversion, number
+register, environment, or font.  It will return@w{ }0 if no argument is
+given.  This is useful for looking up user input in some sort of
 associative table.
 
 @example
@@ -2107,16 +2107,15 @@ silently ignored or expanded to nothing.
 @cindex embedded commands
 @cindex commands, embedded
 
-With most documents you need more functionality beyond filling, adjusting
-and implicit line breaking.  In order to gain further functionality,
-@code{gtroff} allows commands to be embedded into your text, in two
-ways.
+Most documents need more functionality beyond filling, adjusting and
+implicit line breaking.  In order to gain further functionality,
+@code{gtroff} allows commands to be embedded into the text, in two ways.
 
 The first is a @dfn{request} which takes up an entire line, and does
 some large scale operation (e.g.@: break lines, start new pages).
 
-The other is an @dfn{escape} which can be embedded anywhere in your
-text, or even as an argument to a request.
+The other is an @dfn{escape} which can be embedded anywhere in the text,
+or even as an argument to a request.
 @c XXX (Not always?)
 Escapes generally do more minor operations like sub- and superscripts,
 print a symbol, etc.
@@ -2146,11 +2145,11 @@ arguments.
 @cindex character, zero width space
 @cindex space character, zero width
 @findex \&
-If you want to begin a line with a control character without it being
-interpreted, precede it with @code{\&}.  This represents a zero width
-space, which means it will not affect your output.
+To begin a line with a control character without it being interpreted,
+precede it with @code{\&}.  This represents a zero width space, which
+means it will not affect the output.
 
-In most cases you will use the period as a control character.  Several
+In most cases the period is used as a control character.  Several
 requests will cause a break; using the single quote control character
 will prevent this.
 
@@ -2175,6 +2174,7 @@ or double), or have the spaces @dfn{escaped} with backslashes.
 @end example
 
 @findex \~
+@findex \@key{SP}
 @noindent
 The first line is the @code{uh} macro being called with 3 arguments,
 @samp{The}, @samp{Mouse}, and @samp{Problem}.  The latter two have the
@@ -2272,7 +2272,7 @@ in Paris
 possible, but it is better not to use this feature to avoid confusion.
 
 @findex \%
-@findex \ 
+@findex \@key{SP}
 @findex \|
 @findex \^
 @findex \@{
@@ -2381,11 +2381,10 @@ All escape sequences except @code{\%}, @code{\@{}, @code{\@}},
 @findex \\
 @findex \e
 @findex \E
-If you want to have a backslash appear in your output, you can use
-several escapes: @code{\\}, @code{\e} or @code{\E}.  These are very
-similar, and only differ with respect to being used in macros or
-diversions.  @xref{Copy-in Mode}, and @ref{Diversions}, for more
-information.
+To have a backslash appear in the output several escapes are defined:
+@code{\\}, @code{\e} or @code{\E}.  These are very similar, and only
+differ with respect to being used in macros or diversions.
+@xref{Copy-in Mode}, and @ref{Diversions}, for more information.
 
 @xref{Identifiers}.
 
@@ -2405,7 +2404,7 @@ of escapes is the comment.
 Start a comment.  Everything to the end of the input line is ignored.
 
 This may sound simple, but it can be tricky to keep the comments from
-interfering with the appearance of your final output.
+interfering with the appearance of the final output.
 
 @findex ds
 If the escape is to the right of some text or a request, that portion of
@@ -2413,14 +2412,14 @@ the line will be ignored, but the space leading up to it will be noticed
 by @code{gtroff}.  This only affects the @code{.ds} request.
 @c XXX (any others?)
 
-One possibly irritating idiosyncracy is that you must not use tabs to
-line up your comments.  Tabs are not treated as white space between the
+One possibly irritating idiosyncracy is that tabs must not be used to
+line up comments.  Tabs are not treated as white space between the
 request and macro arguments.
 
 @cindex undefined request
 @cindex request, undefined
-If you have a comment on a line by itself, it will be treated as a blank
-line, because after eliminating the comment, that is all that remains:
+A comment on a line by itself will be treated as a blank line, because
+after eliminating the comment, that is all that remains:
 
 @example
 Test
@@ -2591,9 +2590,9 @@ input line.
 @cindex auto-increment
 @cindex increment, automatic
 
-Number registers can also be auto-incremented and auto-decremented.  You
-can specify the increment resp.@: decrement factor with a third argument
-to the @code{nr} request or @code{\N} escape.
+Number registers can also be auto-incremented and auto-decremented.  The
+increment resp.@: decrement factor can be specified with a third
+argument to the @code{nr} request or @code{\N} escape.
 
 @deffn Request nr ident value incr
 @deffnx Escape \N ident value incr
@@ -2634,8 +2633,8 @@ produces
 2, 4, 6, 8, 10
 @end example
 
-If you want to change the increment value without changing the value of
-a register, the following can be used.
+To change the increment value without changing the value of a register,
+the following can be used.
 
 @example
 .nr a \na 10
@@ -2725,10 +2724,10 @@ The year.
 @item yr
 @vindex yr
 The year minus@w{ }1900.  Unfortunately, the @sc{Unix} Version@w{ }7
-troff documentation had a year@w{ }2000 bug: It incorrectly claimed that
-@samp{\n(yr} was the last two digits of the year.  That claim has never
-been true of either traditional @code{troff} or GNU @code{troff}.  If
-you see old @code{troff} input that looks like this:
+@code{troff} documentation had a year@w{ }2000 bug: It incorrectly
+claimed that @samp{\n(yr} was the last two digits of the year.  That
+claim has never been true of either traditional @code{troff} or GNU
+@code{troff}.  Old @code{troff} input that looks like this:
 
 @example
 '\" The following line stopped working after 1999
@@ -2736,15 +2735,14 @@ This document was formatted in 19\n(yr.
 @end example
 
 @noindent
-you can correct it as follows:
+can be corrected as follows:
 
 @example
 This document was formatted in \n[year].
 @end example
 
 @noindent
-or, if you want to be portable to older @code{troff} versions, as
-follows:
+or, to be portable to older @code{troff} versions, as follows:
 
 @example
 .nr y4 1900+\n(yr
@@ -2866,10 +2864,10 @@ adjusted.
 @cindex size of sentence space
 @cindex space between sentences
 @findex ss
-The @code{ss} request allows you to change the minimum size of a space
-between filled words.  This request takes its units as one twelfth of
-the space width parameter for the current font.  Initially both the word
-space size and the sentence space size are@w{ }12.
+The @code{ss} request changes the minimum size of a space between filled
+words.  It takes its units as one twelfth of the space width parameter
+for the current font.  Initially both the word space size and the
+sentence space size are@w{ }12.
 
 If two arguments are given to the @code{ss} request, the second argument
 gives the sentence space size.  If the second argument is not given, the
@@ -2881,8 +2879,8 @@ follow the end of a sentence in the middle of a line, then the second
 space will be a sentence space.  Note that the behaviour of @sc{Unix}
 @code{troff} will be exactly that exhibited by GNU @code{troff} if a
 second argument is never given to the @code{ss} request.  In GNU
-@code{troff}, as in @sc{Unix} @code{troff}, you should always follow a
-sentence with either a newline or two spaces.
+@code{troff}, as in @sc{Unix} @code{troff}, a sentence should always be
+followed with either a newline or two spaces.
 
 @vindex .ss
 @vindex .sss
@@ -2903,8 +2901,8 @@ single argument @code{ce} takes is a number indicating the number of
 lines to be centered.  If the argument is zero, centering is disabled.
 
 A common idiom is to turn on centering for a large number of lines, and
-then turn off centering when you are done with the centered text.  This
-is useful for any request which takes a number of lines as an argument.
+to turn off centering after text to be centered.  This is useful for any
+request which takes a number of lines as an argument.
 
 @example
 .ce 1000
@@ -2982,9 +2980,9 @@ consecutive hyphenated lines are available in the number register
 @code{.hlc}.
 
 @findex hw
-The @code{hw} request allows you to specify how a specific word is to be
-hyphenated.  It takes only one argument which is the word with hyphens
-at the hyphenation points.  For example: 
+The @code{hw} request specifies how a specific word is to be hyphenated.
+It takes only one argument which is the word with hyphens at the
+hyphenation points.  For example:
 
 @example
 .hw in-sa-lub-rious
@@ -3003,19 +3001,19 @@ This request can be used more than once.
 @cindex character, hyphenation
 @cindex disabling hyphenation
 @cindex hyphenation, disabling
-You can also tell @code{gtroff} how to hyphenate words on the fly with
-the use of the @code{\%} escape, also known as the @dfn{hyphenation
-character}.  Preceding a word with this character will prevent it from
-being hyphenated, putting it in a word will indicate to @code{gtroff}
-that the word may be hyphenated at that point.  Note that this mechanism
-will only affect one word; if you want to change the hyphenation of a
-word for the entire document, use the @code{hw} request.
+To tell @code{gtroff} how to hyphenate words on the fly, the @code{\%}
+escape, also known as the @dfn{hyphenation character}, can be used.
+Preceding a word with this character will prevent it from being
+hyphenated, putting it in a word will indicate to @code{gtroff} that the
+word may be hyphenated at that point.  Note that this mechanism will
+only affect one word; to change the hyphenation of a word for the entire
+document, use the @code{hw} request.
 
 @findex hc
-The @code{hc} request allows you to change the hyphenation character.
-The character specified as an argument will then work the same as the
-@code{\%} escape, and, thus, no longer appear in the output.  Without
-an argument it will return the hyphenation character to @code{\%}.
+The @code{hc} request changes the hyphenation character.  The character
+specified as an argument will then work the same as the @code{\%}
+escape, and, thus, no longer appear in the output.  Without an argument
+it will return the hyphenation character to @code{\%}.
 
 @cindex hyphenation patterns
 @cindex pattern for hyphenation
@@ -3121,12 +3119,11 @@ page.
 @cindex double-spacing
 @findex ls
 @vindex .L
-Often you may want your output to be double or triple spaced.  The
-@code{ls} request will cause @code{troff} to output @var{n}-1 blank
-lines after each line of text, where @var{n} is the argument given to
-the @code{ls} request.  With no argument @code{gtroff} will go back to
-single spacing.  The number register @code{.L} contains the current line
-spacing setting.
+For double or triple spaced output use @code{ls}.  This request causes
+@code{troff} to output @var{n}-1 blank lines after each line of text,
+where @var{n} is the argument given to the @code{ls} request.  With no
+argument @code{gtroff} will go back to single spacing.  The number
+register @code{.L} contains the current line spacing setting.
 
 @findex \x
 @vindex .a
@@ -3222,24 +3219,22 @@ request.
 
 @findex tc
 Normally @code{gtroff} will fill the space to the next tab stop with
-spaces.  In some cases you may wish to change this.  The @code{tc}
-request will do this.  With no argument @code{gtroff} will revert to
-using spaces.
+spaces.  This can be change with the @code{tc} request.  With no
+argument @code{gtroff} will revert to using spaces.
 
 @subsection Leaders
 @cindex leaders
 
 @findex lc
-Sometimes you may wish to use the @code{tc} request to fill a tab stop
-with a given character, but also, you want to use normal tab stops on
+Sometimes it may may be desirable to use the @code{tc} request to fill a
+particular tab stop with a given character, but also normal tab stops on
 the rest of the line.  For this @code{gtroff} provides an alternate tab
 mechanism, called @dfn{leaders} which will do just that.  They are used
 exclusively to produce a repeated run of characters to the next tab
 stop.
 
-You can declare what character will be repeated with the @code{lc}
-request.  If you do not give it an argument, the leaders will act the
-same as tabs.
+The character that will be repeated can be declared with the @code{lc}
+request.  Without an argument, the leaders will act the same as tabs.
 
 @findex \a
 Leader are invoked by using the @code{\a} escape while specifying the
@@ -3247,9 +3242,9 @@ Leader are invoked by using the @code{\a} escape while specifying the
 
 @cindex table of contents
 @cindex contents, table of
-Thus for a table of contents you may want to have tab stops defined so
+For a table of contents, to name an example, tab stops may be defined so
 that the section number is one tab stop, the title is the second with
-the remaining space being filled with a line of dots and then the page
+the remaining space being filled with a line of dots, and then the page
 number slightly separated from the dots.
 
 @example
@@ -3350,7 +3345,7 @@ output, defining the @dfn{left margin}.  It can be adjusted with the
 @code{po} request, and the current setting can be found in the built-in
 number register @code{.o}.  Note that this request does not cause a
 break, so changing the page offset in the middle of text being filled
-may not do what you expect.
+may not yield the expected result.
 @item in
 @cindex indentation
 @cindex line indentation
@@ -3402,9 +3397,9 @@ page layout.
 @cindex length of page
 @findex pl
 @vindex .p
-Troff lets you specify the @dfn{page length} via the @code{pl} request.
-This is the length of the physical output page.  The current setting can
-be found in the built-in number register @code{.p}.  Note that this only
+The @dfn{page length} can be specified via the @code{pl} request.  This
+is the length of the physical output page.  The current setting can be
+found in the built-in number register @code{.p}.  Note that this only
 specifies the size of the page, not the top and bottom margins.  Those
 are not done by groff directly.  @xref{Traps}, for further information
 on how to do this.
@@ -3412,8 +3407,8 @@ on how to do this.
 @cindex headers
 @cindex footers
 @cindex titles
-Troff provides several operations which help in setting up top and
-bottom titles (or headers and footers)
+@code{gtroff} provides several operations which help in setting up top
+and bottom titles (or headers and footers)
 
 @cindex title line
 @cindex three-part title
@@ -3423,7 +3418,7 @@ The @code{tl} request will print a @dfn{title line}, which consists of
 three parts: a left justified portion, a centered portion and a right
 justified portion.  The argument to @code{tl} is specified as
 @code{'@var{left}'@var{center}'@var{right}'}.  The @samp{%} character is
-replaced with the current page number.  You can change this character
+replaced with the current page number.  This character can be changed
 with the @code{pc} request (see below).
 
 @cindex length of title line
@@ -3464,9 +3459,9 @@ mechanism is disabled.
 
 @findex bp
 @findex pn
-To stop processing the current page, and move to the next page, you can
-invoke the @code{bp} request.  This request will also cause a break.  It
-can also take an argument of what the next page should be numbered.  The
+To stop processing the current page, and move to the next page, invoke
+the @code{bp} request.  This request will also cause a break.  It can
+also take an argument of what the next page should be numbered.  The
 only difference between @code{bp} and @code{pn} is that @code{pn} does
 not cause a break or actually eject a page.
 
@@ -3481,16 +3476,16 @@ not cause a break or actually eject a page.
 
 @cindex orphan
 @findex ne
-Often you may want to make sure that you have a certain amount of space
-before a new page occurs.  This is most useful to make sure that there
-is not a single @dfn{orphan} line left at the bottom of a page.  The
-@code{ne} request will ensure that there is a certain distance,
-specified by the first argument, before the next page is triggered
-(@pxref{Traps}, for further information).  The default unit for
-@code{ne} is @code{v} and the default argument is@w{ }1@dmn{v}.
+It is often necessary to force a certain amount of space before a new
+page occurs.  This is most useful to make sure that there is not a
+single @dfn{orphan} line left at the bottom of a page.  The @code{ne}
+request will ensure that there is a certain distance, specified by the
+first argument, before the next page is triggered (@pxref{Traps}, for
+further information).  The default unit for @code{ne} is @code{v} and
+the default argument is@w{ }1@dmn{v}.
 
 For example, to make sure that no fewer than 2@w{ }lines get orphaned,
-you can do the following before each paragraph:
+do the following before each paragraph:
 
 @example
 .ne 2
@@ -3515,8 +3510,8 @@ and the default unit is @code{v}.
 
 @findex ft
 @findex \f
-@code{gtroff} gives you the ability to switch fonts at any point in your
-text.  There are two ways to do this, via the @code{ft} request and the
+@code{gtroff} has the ability to switch fonts at any point in the text.
+There are two ways to do this, via the @code{ft} request and the
 @code{\f} escape.
 
 Fonts are generally specified as upper-case strings, which are usually
@@ -3546,8 +3541,9 @@ used via an escape.
 @findex ft
 @cindex previous font
 @cindex font, previous
-You can change fonts with both the @code{ft} request.  With no arguments
-it will switch to the previous font (also known as @samp{P}).
+Font changes can be done either with the @code{ft} request or the
+@code{\f} request.  With no arguments it will switch to the previous
+font (also known as @samp{P}).
 
 @example
 eggs, bacon,
@@ -3570,8 +3566,8 @@ Both of the above examples will produce the same output.  Note the usage
 of @samp{P} to indicate the previous font---using @code{\f} it is not
 possible to omit this parameter.
 
-Sometimes when putting letters of different fonts, you need more or less
-space at such boundaries.  There are two escapes to help with this.
+Sometimes when putting letters of different fonts, more or less space at
+such boundaries are needed.  There are two escapes to help with this.
 
 @findex \/
 @cindex italic correction
@@ -3644,14 +3640,14 @@ style.  Specifying a font without the family part will cause
 @code{gtroff} to use that style of the current family.  By default,
 @code{gtroff} uses the Times family.
 
-This way, you can just use the basic four fonts and select a different
-font family on the command line.
+This way, it is possible to use the basic four fonts and to select a
+different font family on the command line.
 
 @findex fam
 @vindex .fam
-You can also switch font families with the @code{fam} request.  The
-current font family is available in the number register @code{.fam}.
-This is a string-valued register.
+Font families can be switched with the @code{fam} request.  The current
+font family is available in the number register @code{.fam}.  This is a
+string-valued register.
 
 @example
 spam,
@@ -3734,8 +3730,8 @@ gives the external name of the font, which is used for finding the font
 description file.  The second argument gives the internal name of the
 font which is used to refer to the font in @code{gtroff} after it has
 been mounted.  If there is no third argument then the internal name will
-be used as the external name.  This feature allows you to use fonts with
-long names in compatibility mode.
+be used as the external name.  This feature make it possible to use
+fonts with long names in compatibility mode.
 
 @node Using Symbols, Artificial Fonts, Font Positions, Fonts
 @subsection Using Symbols
@@ -3831,7 +3827,7 @@ having a zero space factor in @TeX{} (initially characters
 @findex char
 @cindex defining characters
 @cindex characters, defining
-You can create new characters with the @code{char} request.  It is
+New characters can be created with the @code{char} request.  It is
 called as
 
 @example
@@ -3922,7 +3918,7 @@ What are ligatures?
 
 @findex lg
 @vindex .lg
-You can switch the ligature mechanism on or off with the @code{lg}
+The ligature mechanism can be switched on or off with the @code{lg}
 request; if the parameter is non-zero or missing, ligatures are enabled,
 otherwise disabled.  Default is on.  The current ligature mode can be
 found in the number register @code{.lg} (set to@w{ }1 if ligatures are
@@ -3941,7 +3937,7 @@ characters can be inhibited by placing @code{\&} between them.
 
 @findex kern
 @vindex .kern
-You can activate kerning with the @code{kern} request.  If the parameter
+Kerning can be activated with the @code{kern} request.  If the parameter
 is non-zero or missing, enable pairwise kerning, otherwise disable it.
 The number register @code{.kern} is set to@w{ }1 if pairwise kerning is
 enabled, 0@w{ }otherwise.
@@ -3987,9 +3983,9 @@ vertical spacing.  The @dfn{type size} is the height from the text
 below this baseline).  @dfn{Vertical spacing} is the amount of space
 @code{gtroff} allows for a line of text; normally, this is about 20%@w{
 }larger than the current type size.  Ratios smaller than this can result
-in hard-to-read text; larger that this, it will spread your text out
-more vertically (useful for term papers).  By default, @code{gtroff}
-uses 10@w{ }point type on 12@w{ }point spacing.
+in hard-to-read text; larger that this, it will spread the text out more
+vertically (useful for term papers).  By default, @code{gtroff} uses
+10@w{ }point type on 12@w{ }point spacing.
 
 @cindex leading
 The difference between type size and vertical spacing is known, by
@@ -4010,16 +4006,16 @@ typesetters, as @dfn{leading}.
 @findex \s
 @vindex .s
 @vindex .v
-Using the @code{ps} request and the @code{\s} escape you can change the
-type size.  The @code{vs} request will change the vertical spacing.  The
-default unit for the @code{ps} and @code{vs} requests are points.  The
-number registers @code{.s} and @code{.v} contain the current type size
-and vertical spacing.
+Using the @code{ps} request and the @code{\s} escape the type size can
+be changed.  The @code{vs} request will change the vertical spacing.
+The default unit for the @code{ps} and @code{vs} requests are points.
+The number registers @code{.s} and @code{.v} contain the current type
+size and vertical spacing.
 
-These requests take parameters in units of points.  You can specify
-sizes as an absolute size, or as a relative change from the current
-size.  The size@w{ }0 means go back to the previous size.  With no
-argument it will also revert to the previous size.
+These requests take parameters in units of points.  It is possible to
+specify sizes as an absolute size, or as a relative change from the
+current size.  The size@w{ }0 means go back to the previous size.  With
+no argument it will also revert to the previous size.
 
 @example
 snap, snap,
@@ -4181,8 +4177,8 @@ unwanted space into a string.
 @end example
 
 @noindent
-Instead you should either put the comment on another line or have the
-comment escape adjacent with the end of the string.
+Instead the comment should be put on another line or have the comment
+escape adjacent with the end of the string.
 
 @example
 .ds UX \s-1UNIX\s0\u\s-3tm\s0\d\"  UNIX trademark
@@ -4192,7 +4188,7 @@ comment escape adjacent with the end of the string.
 @cindex quotes, trailing
 @cindex leading spaces with @code{ds}
 @cindex spaces with @code{ds}
-If you need leading space you can start the string with a double quote.
+To produce leading space the string can be started with a double quote.
 No trailing quote is needed; in fact, any trailing quote is included in
 your string.
 
@@ -4203,7 +4199,7 @@ your string.
 @findex as
 @cindex appending to strings
 @cindex strings, appending
-You can also append onto a string with the @code{as} request.  It works
+The @code{as} request will append a string to another string.  It works
 similar to the @code{ds} request except that it appends the second
 argument onto the string named by the first argument.
 
@@ -4326,8 +4322,8 @@ been defined by the @code{char} request.
 @subsection if-else
 @cindex if-else
 
-Troff has if-then-else constructs like other languages, although the
-formatting can be painful.
+@code{gtroff} has if-then-else constructs like other languages, although
+the formatting can be painful.
 
 @findex if
 The @code{if} request has the following syntax:
@@ -4363,10 +4359,10 @@ The first request is the `if' part and the latter is the `else' part.
 
 @findex \@{
 @findex \@}
-In many cases you want more than one request to be executed as a result
-of any of these requests.  This can be done using the @code{\@{} and
-@code{\@}} escapes.  The following example shows the possible ways to
-use these escapes (note the position of the opening and closing braces).
+In many cases more than one request is to be executed as a result of any
+of these requests.  This can be done using the @code{\@{} and @code{\@}}
+escapes.  The following example shows the possible ways to use these
+escapes (note the position of the opening and closing braces).
 
 @example
 .ie t \@{\
@@ -4437,9 +4433,9 @@ name for the macro as the first argument.  Subsequent lines are copied
 into an internal buffer until the line @code{..} is encountered.  The
 optional second argument to @code{de} can change this ending token.
 
-For example, suppose at the beginning of each paragraph, you want cause
-a break, move down a partial line and indent the first line.  Such a
-macro (it is called @code{P}) could be defined as follows:
+Here a small example macro called @samp{P} which will cause a break and
+the insertion of some vertical space.  It could be used to separate
+paragraphs.
 
 @example
 .de P
@@ -4450,9 +4446,10 @@ macro (it is called @code{P}) could be defined as follows:
 
 @findex am
 The @code{am} request works similarly to @code{de} except it appends
-onto the macro named by the first argument.  So, if we decide we want
-our previously defined @code{P} macro to actually do indented instead of
-block paragraphs we can add the necessary code to our existing macro:
+onto the macro named by the first argument.  So, to make the previously
+defined @samp{P} macro actually do indented instead of block paragraphs,
+is is possible to add the necessary code to the existing macro like
+this:
 
 @example
 .am P
@@ -4482,12 +4479,12 @@ Macros can be aliased with the @code{als} request.
 @findex \*
 @findex \\
 @findex \@key{RET}
-When troff reads in the text for a macro or diversion it copies the text
-(including request lines, but excluding escapes) into an internal
-buffer.  Escapes will be converted into an internal form, except for
-@code{\n}, @code{\$}, @code{\*}, @code{\\} and @code{\@key{RET}} which
-are evaluated and inserted into the text where the escape was located.
-This is known as @dfn{copy-in} mode.
+When @code{gtroff} reads in the text for a macro or diversion it copies
+the text (including request lines, but excluding escapes) into an
+internal buffer.  Escapes will be converted into an internal form,
+except for @code{\n}, @code{\$}, @code{\*}, @code{\\} and
+@code{\@key{RET}} which are evaluated and inserted into the text where
+the escape was located.  This is known as @dfn{copy-in} mode.
 
 What this means is that you can specify when these escapes are to be
 evaluated (either at copy-in time or at the time of use) by insulating
@@ -4525,9 +4522,8 @@ The escapes @code{\$@var{n}}, @code{\$(@var{nn}} and
 number (larger than zero), the second only a two-digit number (larger or
 equal to@w{ }10), and the third any positive integer value (larger than
 zero).  Macros can have an unlimited number of arguments.  Note that due
-to copy-in mode, you will want to have two backslashes on these in
-actual use, since you do not want them interpolated until the macro is
-actually invoked.
+to copy-in mode, two backslashes should be used on these in actual use
+to prevent interpolation until the macro is actually invoked.
 
 @findex shift
 The request @code{shift} will shift the arguments 1@w{ }position, or as
@@ -4538,12 +4534,12 @@ negative amounts is currently undefined.
 
 @findex \$*
 @findex \$@@
-In some cases you will want to just use all of the arguments at once.
-For example if you pass the arguments along to another macro.  The
-@code{\$*} escape is the concatenation of all the arguments separated by
-spaces.  A similar escape is @code{\$@@}, which is the concatenation of
-all the arguments with each surrounded by double quotes, and separated
-by spaces.
+In some cases it is convenient to use all of the arguments at once (for
+example, to pass the arguments along to another macro).  The @code{\$*}
+escape is the concatenation of all the arguments separated by spaces.  A
+similar escape is @code{\$@@}, which is the concatenation of all the
+arguments with each surrounded by double quotes, and separated by
+spaces.
 
 @findex \$0
 @findex als
@@ -4594,19 +4590,18 @@ location marked with the @code{mk} request
 ... dual column example ...
 @end example
 
-The following escapes will give you much finer control of movements
-about the page.
+The following escapes give fine control of movements about the page.
 
 @findex \v
 @cindex vertical motion
 @cindex motion, vertical
-The @code{\v'@var{e}'} will let you do arbitrary vertical motion from
-the current location on the page.  The argument@w{ }@var{e} specifies
-the distance to move; positive is downwards and negative upwards.  The
+The @code{\v'@var{e}'} enables arbitrary vertical motion from the
+current location on the page.  The argument@w{ }@var{e} specifies the
+distance to move; positive is downwards and negative upwards.  The
 default unit for this escape is vertical spaces, @code{v}'s.  Beware,
 however, that @code{gtroff} will leave text processing to continue
-wherever the motion ends, so if you don't want to interfere with text
-processing, make sure your motions are balanced.
+wherever the motion ends, so to avoid interference with text processing,
+motions should be balanced.
 
 There are some special case escapes for vertical motion.
 
@@ -4659,7 +4654,7 @@ sentence recognition.
 @findex \w
 @cindex width escape
 @cindex escape, width
-Often you will want to do horizontal movement based on the width of some
+A frequent need is to do horizontal movement based on the width of some
 arbitrary text (e.g.@: given as an argument to a macro).  For that,
 there is the escape @code{\w'@var{text}'} which will interpolate to the
 width of the given @var{text} in basic units.
@@ -4727,8 +4722,8 @@ over that character.
 
 @code{gtroff} provides a number of ways to draw lines and other figures
 on the page.  Used in combination with the page motion commands
-(@pxref{Page Motions}, for more info) you can draw a wide variety of
-figures.  However, for complex drawings these operations can be quite
+(@pxref{Page Motions}, for more info), a wide variety of figures can be
+drawn.  However, for complex drawings these operations can be quite
 cumbersome, and it may be wise to use graphic preprocessors like
 @code{gpic} or @code{ggrn}.  @xref{gpic}, and @ref{ggrn}, for more
 information.
@@ -4757,16 +4752,15 @@ of the line.
 @cindex line drawing character
 @cindex character for line drawing
 The optional second parameter @var{c} is a character to draw the line
-with.  If this second argument is not specified, troff will use the
-underscore character.
+with.  If this second argument is not specified, @code{gtroff} will use
+the underscore character.
 
 @cindex zero width space character
 @cindex character, zero width space
 @cindex space character, zero width
 @findex \&
-If you need to separate the two arguments (to prevent troff from
-interpreting a drawing character as a scaling indicator), you can
-separate them with @code{\&}.
+To separate the two arguments (to prevent @code{gtroff} from
+interpreting a drawing character as a scaling indicator) use @code{\&}.
 
 Here a small useful example:
 
@@ -4946,9 +4940,9 @@ The number register @code{.t} is the distance to the next trap.
 @cindex trap, changing location
 The location of a trap can be changed later on with the @code{ch}
 request.  The first argument is the name of the macro to be invoked at
-the trap and the second argument is the new location for the trap.  This
-is useful when you are building up footnotes in a diversion, and you
-need to allow more space at the bottom of the page for them.
+the trap, and the second argument is the new location for the trap.
+This is useful for building up footnotes in a diversion to allow more
+space at the bottom of the page for them.
 
 @c XXX
 
@@ -5038,9 +5032,9 @@ The @code{em} request will set a trap at the end of input.  The macro
 specified as an argument will be executed after the last line of the
 input file has been processed.
 
-For example, if your document had to have a section at the bottom of the
-last page for someone to approve your document, you could set it up with
-@code{em}.
+For example, if the document had to have a section at the bottom of the
+last page for someone to approve it, the @code{em} request could be
+used.
 
 @example
 .de approval
@@ -5061,11 +5055,11 @@ Date:\t\t\a
 @section Diversions
 @cindex diversions
 
-In @code{gtroff} you can @dfn{divert} text into a named storage area.
-Due to the similarity to defining macros it is sometimes said to be
-stored in a macro.  This is used for saving text for output at a later
-time, which is useful for keeping blocks of text on the same page,
-footnotes, tables of contents and indices.
+In @code{gtroff} it is possible to @dfn{divert} text into a named
+storage area.  Due to the similarity to defining macros it is sometimes
+said to be stored in a macro.  This is used for saving text for output
+at a later time, which is useful for keeping blocks of text on the same
+page, footnotes, tables of contents and indices.
 
 @findex di
 @findex da
@@ -5133,7 +5127,7 @@ There are two ways to prevent this; either way will take the given text
 and @dfn{transparently} embed it into the diversion.  The first method
 is to prefix the line with @code{\!}.  This will cause the entire line
 to be transparently inserted into the diversion.  This is useful for
-macros you do not want invoked until the diverted text is actually
+macros which shouldn't be invoked until the diverted text is actually
 output.
 
 @c XXX anything is read in copy mode. (what about \! ??)
@@ -5146,8 +5140,8 @@ The other way is to surround the text by the @code{\?} escape, i.e.
 @end example
 
 @noindent
-@var{anything} may not contain newlines; use @code{\!} if you want to
-embed newlines in a diversion.  The escape sequence @code{\?} is also
+@var{anything} may not contain newlines; use @code{\!}  to embed
+newlines in a diversion.  The escape sequence @code{\?} is also
 recognized in copy mode and turned into a single internal code; it is
 this code that terminates anything.  Thus the following example will
 print@w{ }4.
@@ -5198,14 +5192,14 @@ will set register @code{n} to@w{ }1.
 @section Environments
 @cindex environments
 
-Often you will need to print some text in a certain format regardless of
-what may be in effect at the time, for example, in a trap invoked macro
-to print headers and footers.  To solve this @code{gtroff} has
-@dfn{environments} in which text is processed.  An environment contains
-most of the parameters that control text processing.  You can switch
-amongst these environments; by default @code{gtroff} processes text in
-environment@w{ }0.  The following is the information kept in an
-environment.
+It happens frequently that some text should be printed in a certain
+format regardless of what may be in effect at the time, for example, in
+a trap invoked macro to print headers and footers.  To solve this
+@code{gtroff} has @dfn{environments} in which text is processed.  An
+environment contains most of the parameters that control text
+processing.  It is possible to switch amongst these environments; by
+default @code{gtroff} processes text in environment@w{ }0.  The
+following is the information kept in an environment.
 
 @itemize @bullet{}
 @item
@@ -5223,8 +5217,8 @@ partially collected lines
 @end itemize
 
 These environments may be given arbitrary names (@pxref{Identifiers},
-for more info).  Old versions of troff only had environments named
-@samp{0}, @samp{1} and@w{ }@samp{2}.
+for more info).  Old versions of @code{troff} only had environments
+named @samp{0}, @samp{1} and@w{ }@samp{2}.
 
 @findex ev
 @vindex .ev
@@ -5294,8 +5288,8 @@ The @code{cf} and @code{trf} requests are to include a file.  It will
 transparently output the contents of file filename.  Each line is output
 as it were preceded by @code{\!}; however, the lines are not subject to
 copy-mode interpretation.  If the file does not end with a newline, then
-a newline will be added.  For example, you can define a macro@w{
-}@code{x} containing the contents of file@w{ }@file{f}, using
+a newline will be added.  For example, to define a macro@w{ }@code{x}
+containing the contents of file@w{ }@file{f}, use
 
 @example
 .di x
@@ -5313,7 +5307,9 @@ considered a bug.
 
 @findex trf
 With @code{trf}, unlike @code{cf}, the file cannot contain characters
-such as NUL that are not legal troff input characters.
+such as NUL that are not legal @code{gtroff} input characters.
+
+@c XXX xref to illegal input characters
 
 @findex nx
 The @code{nx} request will force @code{gtroff} to continue processing of
@@ -5326,8 +5322,8 @@ blank line is encountered.
 
 @cindex form letters
 @cindex letters, form
-Using these two requests you can set up form letters.  The form letter
-template is constructed like this:
+Using these two requests it is easy to set up form letters.  The form
+letter template is constructed like this:
 
 @example
 .ce
@@ -5375,12 +5371,12 @@ Dear Mr. Adollar,
 @findex sy
 The @code{sy} request will allow arbitrary system commands to be
 executed from within a @code{gtroff} document.  The output is not saved
-anyplace, so it is up to you to do so.
+anyplace, so it is up to the user to do so.
 
 @c XXX add info about safer and unsafe mode
 
 For example, the following example will introduce the current time
-into your document:
+into a document:
 
 @cindex time, current
 @cindex current time
@@ -5446,9 +5442,9 @@ copy-in mode.
 @cindex postprocessor access
 @cindex access of postprocessor
 
-There are two escapes which will allow you to give information directly
+There are two escapes which will allow information to be directly given
 to the postprocessor.  This is particularly useful for embedding
-@sc{PostScript} into your final document.
+@sc{PostScript} into the final document.
 
 @findex \X
 The @code{\X} escape will embed its argument into the @code{gtroff}
@@ -5483,7 +5479,7 @@ request.  The first argument is the line number of the @emph{next}
 output line; this defaults to@w{ }1.  The second argument indicates on
 which lines numbers will be printed, i.e.@: 5 means put line numbers on
 every 5@w{ }lines; this defaults to@w{ }1.  The third argument is the
-space to be left between the number and your text; this defaults to@w{
+space to be left between the number and the text; this defaults to@w{
 }1.  The fourth argument is the indentation of the line numbers.
 Without arguments, line numbers are turned off.
 
@@ -5503,11 +5499,11 @@ to@w{ }1.
 @findex mc
 @cindex margin characters
 @cindex characters for margins
-Margin characters can be automatically printed to the right of your text
+Margin characters can be automatically printed to the right of the text
 with the @code{mc} request.  The first argument is the character to be
-printed, and the second argument is the distance away from your text.
-With no arguments the margin characters are turned off.  If this occurs
-before a break, no margin character will be printed.
+printed, and the second argument is the distance away from the main body
+text.  With no arguments the margin characters are turned off.  If this
+occurs before a break, no margin character will be printed.
 
 @pindex nrchbar
 @pindex changebar
@@ -5530,7 +5526,7 @@ The primary reason for the existence of @code{lf} is to make debugging
 documents which are split into many files, which are then put together
 with @code{soelim} and other preprocessors.  The first argument is the
 name of the file and the second argument is the input line number in
-that file.  This way troff can produce error messages which are
+that file.  This way @code{gtroff} can produce error messages which are
 intelligible to the user.
 
 @c XXX example
@@ -5561,7 +5557,7 @@ statements in the code and have them turned on by a command line flag.
 @end example
 
 @noindent
-Then you can activate these statements with:
+To activate these statements say
 
 @example
 groff -rDB=1 file
@@ -5579,9 +5575,9 @@ will print @samp{User Abort}.
 The @code{ex} request will also cause @code{gtroff} to stop processing
 (if encountered at the topmost level; see also @ref{I/O}.
 @item
-If you know you are going to get many errors and no useful output, you
-can tell @code{gtroff} to suppress formatted output with the @samp{-z}
-flag.
+If it is known in advance that there will be many errors and no useful
+output, @code{gtroff} can be forced to suppress formatted output with
+the @samp{-z} flag.
 @item
 @findex pm
 @cindex dumping symbol table
@@ -5853,11 +5849,11 @@ they were reread and would end up printing one @samp{\}.  The correct
 way to obtain a printable backslash is to use the @code{\e} escape
 sequence: This will always print a single instance of the current escape
 character, regardless of whether or not it is used in a diversion; it
-will also work in both GNU @code{troff} and @sc{Unix} @code{troff}.  If
-you wish for some reason to store in a diversion an escape sequence that
-will be interpreted when the diversion is reread, you can either use the
-traditional @code{\!} transparent output facility, or, if this is
-unsuitable, the new @code{\?} escape sequence.
+will also work in both GNU @code{troff} and @sc{Unix} @code{troff}.  To
+store, for some reason, an escape sequence in a diversion that will be
+interpreted when the diversion is reread, either use the traditional
+@code{\!} transparent output facility, or, if this is unsuitable, the
+new @code{\?} escape sequence.
 
 @xref{Diversions}, for more information.
 
@@ -6603,7 +6599,7 @@ is@w{ }@var{n}.  For example, @samp{char163} would be equivalent to the
 character with code@w{ }163 which is the pounds sterling sign in @w{ISO
 Latin-1} character set.  The name @samp{---} is special and indicates
 that the character is unnamed; such characters can only be used by means
-of the @code{\N} escape sequence in troff.
+of the @code{\N} escape sequence in @code{gtroff}.
 
 @c XXX input encodings vs. output encodings
 
@@ -6629,12 +6625,15 @@ Anything on the line after the @var{code} field will be ignored.
 
 The @var{metrics} field has the form:
 
-@smallexample
-@var{width[,height[,depth[,italic_correction[,left_italic_correction[,subscript_correction]]]]]}
-@end smallexample
+@example
+@var{width}[,@var{height}[,@var{depth}[,@var{italic_correction}
+  [,@var{left_italic_correction}[,@var{subscript_correction}]]]]]
+@end example
 
-There must not be any spaces between these subfields.  Missing subfields
-are assumed to be@w{ }0.  The subfields are all decimal integers.  Since
+@noindent
+There must not be any spaces between these subfields (it has been split
+here into two lines for better legibility only).  Missing subfields are
+assumed to be@w{ }0.  The subfields are all decimal integers.  Since
 there is no associated binary format, these values are not required to
 fit into a variable of type @samp{char} as they are in @code{ditroff}.
 The @var{width} subfield gives the width of the character.  The
