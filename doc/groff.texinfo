@@ -578,8 +578,8 @@ it under certain conditions; type `show c' for details.
 The hypothetical commands @samp{show@w{ }w} and @samp{show@w{ }c} should
 show the appropriate parts of the General Public License.  Of course,
 the commands you use may be called something other than @samp{show@w{
-}w} and @samp{show@w{ }c}; they could even be mouse-clicks or menu
-items---whatever suits your program.
+}w} and @samp{show@w{ }c}; they could even be mouse-clicks or menu items
+-- whatever suits your program.
 
 You should also get your employer (if you work as a programmer) or your
 school, if any, to sign a ``copyright disclaimer'' for the program, if
@@ -1326,7 +1326,7 @@ groff -man -rD1 -z file
 
 @noindent
 Check @var{file} with the @file{man} macro package, forcing double-sided
-printing---don't produce any output.
+printing -- don't produce any output.
 
 @subsection @code{grog}
 
@@ -1461,9 +1461,9 @@ keep the input lines short.  Short input lines are easier to edit, and
 @code{gtroff} will pack words onto longer lines anyhow.  In keeping with
 this, it is helpful to begin a new line after every period, comma, or
 phrase, since common corrections are to add or delete sentences or
-phrases.  Secondly, do not hyphenate words at the end of
-lines---@code{gtroff} is smart enough to hyphenate words for the user as
-needed, but is not smart enough to take hyphens out and join a word back
+phrases.  Secondly, do not hyphenate words at the end of lines --
+@code{gtroff} is smart enough to hyphenate words for the user as needed,
+but is not smart enough to take hyphens out and join a word back
 together.  Also, words such as ``mother-in-law'' should not be broken
 over a line, since then a space can occur where not wanted, such as
 ``@w{mother- in}-law''.
@@ -1799,9 +1799,9 @@ the header line.
 For @acronym{HTML} output, headers and footers are completely supressed.
 
 Additionally, this macro starts a new page; the new line number is@w{ }1
-again (except if the @option{-rC1} option is given on the command
-line)---this feature is intended only for formatting multiple man pages;
-a single man page should contain exactly one @code{TH} macro at the
+again (except if the @option{-rC1} option is given on the command line)
+-- this feature is intended only for formatting multiple man pages; a
+single man page should contain exactly one @code{TH} macro at the
 beginning of the file.
 @end_Defmac
 
@@ -2131,6 +2131,7 @@ Users of macro packages may skip it if not interested in details.
 * Manipulating Spacing::        
 * Tabs and Fields::             
 * Character Translations::      
+* Troff and Nroff Mode::        
 * Line Layout::                 
 * Page Layout::                 
 * Page Control::                
@@ -2314,8 +2315,8 @@ A line which begins with a space will cause a break and the space will
 be output at the beginning of the next line.  Note that this space isn't
 adjusted, even in fill mode.
 
-The end of file will also cause a break---otherwise the last line of the
-document may vanish!
+The end of file will also cause a break -- otherwise the last line of
+the document may vanish!
 
 Certain requests also cause breaks, implicitly or explicitly.  This will
 be discussed in @ref{Manipulating Filling and Adjusting}.
@@ -2367,7 +2368,7 @@ these units are understood, by @code{gtroff}, to be a multiple of its
 specified @code{gtroff} converts this into its @dfn{basic units}.  This
 basic unit, represented by a @samp{u}, is a device dependent measurement
 which is quite small, ranging from 1/75th to 1/72000th of an inch.  The
-values may be given as fractional numbers---nevertheless, fractional
+values may be given as fractional numbers -- nevertheless, fractional
 basic units are always rounded to integers.
 
 Some of the measurement units are completely independent of any of the
@@ -2622,7 +2623,8 @@ Backspace (@acronym{ASCII}@w{ }@code{0x08} resp.@: @acronym{EBCDIC}@w{
 @cindex unicode
 The following input characters are illegal and will be ignored if
 @code{groff} runs on a machine based on @acronym{ASCII}, causing a
-warning message: @code{0x00}, @code{0x0B}, @code{0x0D}-@code{0x1F},
+warning message of type @samp{input} (@pxref{Debugging}, for more
+details): @code{0x00}, @code{0x0B}, @code{0x0D}-@code{0x1F},
 @code{0x80}-@code{0x9F}.
 
 And here the illegal input characters if @code{groff} runs on an
@@ -2801,7 +2803,7 @@ Note, however, that the @code{ds} request works differently.
 
 @code{gtroff} has a @dfn{macro} facility for defining a series of lines
 which can be invoked by name.  They are called in the same manner as
-requests---arguments also may be passed in the same manner.
+requests -- arguments also may be passed in the same manner.
 
 @xref{Writing Macros}, and @ref{Request Arguments}.
 
@@ -3119,6 +3121,9 @@ Registers are defined resp.@: set via the @code{nr} request or the
 @Deffnx{Escape, \\R, ident value}
 Set number register @var{ident} to @var{value}.  If @var{ident} doesn't
 exist, it will be created.
+
+The argument to @code{\R} has to be enclosed in quotes usually.
+@xref{Escapes}, for details on parameter delimiting characters.
 @end_Deffn
 
 For example, the following two lines are equivalent:
@@ -3128,13 +3133,13 @@ For example, the following two lines are equivalent:
 \R'a 1'
 @end example
 
-Both @code{nr} and @code{\N} have two additional special forms to
+Both @code{nr} and @code{\R} have two additional special forms to
 increment resp.@: decrement a register.
 
 @Deffn{Request, nr, ident +value}
 @Deffnx{Request, nr, ident -value}
-@Deffnx{Escape, \\N, ident +value}
-@Deffnx{Escape, \\N, ident -value}
+@Deffnx{Escape, \\R, ident +value}
+@Deffnx{Escape, \\R, ident -value}
 Increment (decrement) register @var{ident} by @var{value}.
 
 @example
@@ -3176,11 +3181,13 @@ with a @samp{0}:
 @end_Deffn
 
 @Deffn{Request, rr, ident}
-Remove number register @var{ident}.
+Remove number register @var{ident}.  If @var{ident} doesn't exist, the
+request is ignored.
 @end_Deffn
 
 @Deffn{Request, rnn, ident1 ident2}
-Rename number register @var{ident1} to @var{ident2}.
+Rename number register @var{ident1} to @var{ident2}.  If either
+@var{ident1} or @var{ident2} doesn't exist, the request is ignored.
 @end_Deffn
 
 @Deffn{Request, aln, ident1 ident2}
@@ -3219,12 +3226,13 @@ input line.
 
 Number registers can also be auto-incremented and auto-decremented.  The
 increment resp.@: decrement factor can be specified with a third
-argument to the @code{nr} request or @code{\N} escape.
+argument to the @code{nr} request or @code{\R} escape.
 
+@findex \R
 @Deffn{Request, nr, ident value incr}
-@Deffnx{Escape, \\N, ident value incr}
 Set number register @var{ident} to @var{value}; the increment for
-auto-incrementing is set to @var{incr}.
+auto-incrementing is set to @var{incr}.  Note that the @code{\R} escape
+doesn't support this notation.
 @end_Deffn
 
 To activate auto-incrementing, the escape @code{\n} has a special syntax
@@ -3234,7 +3242,7 @@ form.
 @Deffnx{Escape, \\n, -ident}
 Before interpolating, increment resp.@: decrement @var{ident} by the
 auto-increment value as specified with the @code{nr} request (or the
-@code{\N} escape).  If no auto-increment value has been specified, both
+@code{\R} escape).  If no auto-increment value has been specified, both
 syntax forms are identical to @code{\n}.
 @end_Deffn
 
@@ -3279,7 +3287,6 @@ variety of formats (numbers, Roman numerals, etc).  This is done using
 the @code{af} request.
 
 @Deffn{Request, af, ident format}
-
 Change the output format of a number register.  The first argument
 @var{ident} is the name of the number register to be changed, and the
 second argument @var{format} is the output format.  The following output
@@ -3287,11 +3294,14 @@ formats are available:
 
 @table @code
 @item 1
-This is the default format, decimal numbers: 1, 2, 3,@w{ }@dots{}
+Decimal numbers.  This is the default format: 1, 2, 3,@w{ }@dots{}
 
-@item 0@dots{}01
-Decimal numbers with as many leading zeros as specified.  So, @samp{01}
-would result in 01, 02, 03,@w{ }@dots{}
+@item 0@dots{}0
+Decimal numbers with as many digits as specified.  So, @samp{00} would
+result in printing numbers as 01, 02, 03,@w{ }@dots{}
+
+In fact, any digit instead of zeros will do; @code{gtroff} only counts
+how many digits are specified.
 
 @item I
 @cindex roman numerals
@@ -3308,6 +3318,10 @@ Upper-case letters: A, B, C, @dots{},@w{ }Z, AA, AB,@w{ }@dots{}
 Lower-case letters: a, b, c, @dots{},@w{ }z, aa, ab,@w{ }@dots{}
 @end table
 
+Omitting the number register format will cause a warning of type
+@samp{missing}.  @xref{Debugging}, for more details.  Specifying a
+nonexistent format causes an error.
+
 The following example will produce @samp{10, X, j, 010}:
 
 @example
@@ -3321,12 +3335,24 @@ The following example will produce @samp{10, X, j, 010}:
 .af a 001
 \na
 @end example
+
+The largest number representable for the @samp{i} and @samp{I} formats
+is 39999 (resp.@: -39999); @acronym{UNIX} @code{troff} uses @samp{z} and
+@samp{w} to represent 10000 and 5000 in Roman numerals, and so does
+@code{gtroff}.  Currently, the correct glyphs (Unicode code points
+@code{U+2182} and @code{U+2181}, respectively) are not available.
+
+If @var{ident} doesn't exist, it will be created.
+
+Changing the output format of a read-only register causes an error.  It
+is necessary to first copy the register's value to a writeable register,
+then apply the @code{af} request to this other register.
 @end_Deffn
 
 @Deffn{Escape, \\g, ident}
 Return the current format of the specified register @var{ident}.  For
 example, @samp{\ga} after the previous example would produce the string
-@samp{001}.  If the register hasn't been defined yet, nothing is
+@samp{000}.  If the register hasn't been defined yet, nothing is
 returned.
 @end_Deffn
 
@@ -3977,7 +4003,7 @@ previous example.
 @end example
 
 @code{gtroff} supports an extended syntax to specify repeat values after
-the @samp{T} mark (these values are always taken as relative)---this is
+the @samp{T} mark (these values are always taken as relative) -- this is
 the usual way to specify tabs set at equal intervals.  The following is,
 yet again, the same as the previous examples.  It does even more since
 it defines an infinite number of tab stops separated by one inch.
@@ -4184,7 +4210,7 @@ foo            bar       smurf
 @end example
 
 
-@node Character Translations, Line Layout, Tabs and Fields, Programming Tutorial
+@node Character Translations, Troff and Nroff Mode, Tabs and Fields, Programming Tutorial
 @section Character Translations
 @cindex character translations
 @cindex translations of characters
@@ -4235,8 +4261,17 @@ This escape sequence prints the current escape character (which is the
 backslash character @samp{\} by default).
 @end_Deffn
 
-@findex tr
-The @code{tr} request will @dfn{translate} characters.
+A @dfn{translation} is a mapping of an input character to an output
+character.  The default mappings are given in the font definition files
+for the specific output device (@pxref{Font Files}); all mappings (both
+with @code{tr} and in the font definition files) occur at output time,
+i.e., the input character gets assigned the metric information of the
+mapped output character.
+
+@Deffn{Request, tr, @var{a}@var{b}@var{c}@var{d}@dots{}}
+Translate character @var{a} to @var{b}, character @var{c} to @var{d},
+etc.  If there is an odd number of arguments, the last one will be
+translated to the space character.
 
 Some notes:
 
@@ -4250,13 +4285,15 @@ Some notes:
 @findex \_
 @findex \C
 @findex \N
+@findex char
 @cindex special character
 @cindex character, special
 @cindex numbered character
 @cindex character, numbered
 Special characters (@code{\(@var{xx}}, @code{\[@var{xxx}]},
-@code{\C'@var{xxx}'}, @code{\'}, @code{\`}, @code{\-}, @code{\_}) and
-numbered characters (@code{\N'@var{xxx}'}) can be translated also.
+@code{\C'@var{xxx}'}, @code{\'}, @code{\`}, @code{\-}, @code{\_}),
+characters defined with the @code{char} request, and numbered characters
+(@code{\N'@var{xxx}'}) can be translated also.
 
 @item
 @findex \e
@@ -4274,13 +4311,19 @@ The @code{\e} and @code{\%} escapes can be translated also.
 @cindex character, tab
 @findex \a
 @findex \t
-The following characters can't be translated: backspace, newline, leader
-(and @code{\a}), tab (and @code{\t}).
+The following characters can't be translated: space (with one exception,
+see below), backspace, newline, leader (and @code{\a}), tab (and
+@code{\t}).
+
+@item
+@findex shc
+Translations are not considered for finding the soft hyphen character
+set with the @code{shc} request.
 
 @item
 @findex \&
-The character pair @samp{@var{X}\&} (this is an arbitrary character@w{
-}@var{X} followed by the zero width space character) will map this
+The character pair @samp{@var{c}\&} (this is an arbitrary character@w{
+}@var{c} followed by the zero width space character) will map this
 character to nothing.
 
 @example
@@ -4307,12 +4350,17 @@ map the space character to any other character; requests like
 If justification is active, lines will be justified inspite of the
 `empty' space character (but there is no minimal distance, i.e.@: the
 space character, between words).
-@end itemize
 
-@c XXX more info
+@item
+After an output character has been constructed (this happens at the
+moment immediately before the character is appended to an output
+character list, either by direct output, in a macro, diversion, or
+string), it is no longer affected by @code{tr}.
+@end itemize
+@end_Deffn
 
 @findex \!
-@findex trnt
+@Deffn{Request, trnt, @var{a}@var{b}@var{c}@var{d}@dots{}}
 @code{trnt} is the same as the @code{tr} request except that the
 translations do not apply to text that is transparently throughput into
 a diversion with @code{\!}.  @xref{Diversions}, for more information.
@@ -4330,9 +4378,20 @@ For example,
 @noindent
 will print @samp{b}; if @code{trnt} is used instead of @code{tr} it will
 print @samp{a}.
+@end_Deffn
 
 
-@node Line Layout, Page Layout, Character Translations, Programming Tutorial
+@node Troff and Nroff Mode, Line Layout, Character Translations, Programming Tutorial
+@section Troff and Nroff Mode
+@cindex troff mode
+@cindex mode, troff
+@cindex nroff mode
+@cindex mode, nroff
+
+@c XXX .troff, .nroff
+
+
+@node Line Layout, Page Layout, Troff and Nroff Mode, Programming Tutorial
 @section Line Layout
 @cindex line layout
 @cindex layout, line
@@ -4345,11 +4404,13 @@ request which manipulates that dimension.
 
 @example
 @group
-              | -->| in |<--                   |
-           -->| po |<-----------ll------------>|
+                -->| in |<--
+                   |<-----------ll------------>|
               +----+----+----------------------+----+
               |    :    :                      :    |
               +----+----+----------------------+----+
+           -->| po |<--
+              |<--------paper width---------------->|
 @end group
 @end example
 
@@ -4363,21 +4424,17 @@ These dimensions are:
 @cindex page offset
 @cindex offset, page
 @vindex .o
-@dfn{Page offset}--This is the leftmost position of text on the final
-output, defining the @dfn{left margin}.  It can be adjusted with the
-@code{po} request, and the current setting can be found in the built-in
-number register @code{.o}.  Note that this request does not cause a
-break, so changing the page offset in the middle of text being filled
-may not yield the expected result.
+@dfn{Page offset} -- This is the leftmost position of text on the final
+output, defining the @dfn{left margin}.
 
 @item in
 @cindex indentation
 @cindex line indentation
 @findex in
 @vindex .i
-@dfn{Indentation}--This is the distance from the left margin where text
-will be printed.  This can be adjusted with the @code{in} request, and
-the current setting can be found in the built-in number register.
+@dfn{Indentation} -- This is the distance from the left margin where
+text will be printed.  This can be adjusted with the @code{in} request,
+and the current setting can be found in the built-in number register.
 @code{.i}.  This request causes a break.
 
 @findex ti
@@ -4392,7 +4449,7 @@ applies to the current output line.
 @cindex length of line
 @vindex .l
 @vindex .ll
-@dfn{Line length}--This is the distance from the left margin to right
+@dfn{Line length} -- This is the distance from the left margin to right
 margin.  This can be adjusted with the @code{ll} request, and the
 current setting can be found in the built-in number register @code{.l}
 Note, as the figure implies, line length is not affected by the current
@@ -4410,6 +4467,41 @@ Replace me with a better (and more) example!
 .ll +.5i
 @end example
 
+@cindex troff mode
+@cindex mode, troff
+@cindex nroff mode
+@cindex mode, nroff
+@Deffn{Request, po, [@var{offset}]}
+
+Set horizontal page offset to @var{offset}.  Note that this request does
+not cause a break, so changing the page offset in the middle of text
+being filled may not yield the expected result.  The initial value is
+1@dmn{i} if in troff mode, and 0 if in nroff mode (@pxref{Troff and
+Nroff Mode}); the default scaling indicator is@w{ }@code{m} (and not@w{
+}@code{v} as incorrectly documented in the original @acronym{UNIX} troff
+manual).
+
+@vindex .o
+The current page offset can be found in the built-in number register
+@samp{.o}.
+
+If @code{po} is called without an argument, the page offset is reset to
+its previous value:
+
+@example
+\n[.o]
+    @result{} 0
+.po 3i
+\n[.o]
+    @result{} 720
+.po 2i
+\n[.o]
+    @result{} 480
+.po
+\n[.o]
+    @result{} 720
+@end example
+@end_Deffn
 
 @node Page Layout, Page Control, Line Layout, Programming Tutorial
 @section Page Layout
@@ -4589,7 +4681,7 @@ eggs, bacon, \fBspam\fP and sausage.
 
 @noindent
 Both of the above examples will produce the same output.  Note the usage
-of @samp{P} to indicate the previous font---using @code{\f} it is not
+of @samp{P} to indicate the previous font -- using @code{\f} it is not
 possible to omit this parameter.
 
 Sometimes when putting letters of different fonts, more or less space at
@@ -4863,7 +4955,7 @@ this property)
 an end of sentence character followed by any number of characters with
 this property will be treated as the end of a sentence if followed by a
 newline or two spaces; in other words the character is @dfn{transparent}
-for the purposes of end of sentence recognition---this is the same as
+for the purposes of end of sentence recognition -- this is the same as
 having a zero space factor in @TeX{} (initially characters
 @samp{"')]*\(dg\(rq} have this property).
 @end table
@@ -5341,9 +5433,12 @@ available:
 True if the current page is even or odd numbered (respectively).
 
 @item n
-@itemx t
-True if the document is being processed by @code{nroff} (or a character
-device) resp.@: @code{troff}.
+@findex nroff
+True if the document is being processed in nroff mode.
+
+@item t
+@findex troff
+True if the document is being processed in troff mode.
 
 @item '@var{xxx}'@var{yyy}'
 True if the string @var{xxx} is equal to the string @var{yyy}.  Other

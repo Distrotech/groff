@@ -66,6 +66,20 @@ general_reg::general_reg() : format('1'), width(0), inc(0)
 {
 }
 
+static char uppercase_array[] = {
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+  'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+  'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+  'Y', 'Z',
+};
+
+static char lowercase_array[] = {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+  'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+  'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+  'y', 'z',
+};
+
 static const char *number_value_to_ascii(int value, char format, int width)
 {
   static char buf[128];		// must be at least 21
@@ -167,10 +181,11 @@ static const char *number_value_to_ascii(int value, char format, int width)
 	    d = 26;
 	  n -= d;
 	  n /= 26;
-	  *p++ = format + d - 1;
+	  *p++ = format == 'a' ? lowercase_array[d - 1] :
+				 uppercase_array[d - 1];
 	}
 	*p-- = 0;
-	char *q = buf[0] == '-' ? buf+1 : buf;
+	char *q = buf[0] == '-' ? buf + 1 : buf;
 	while (q < p) {
 	  char temp = *q;
 	  *q = *p;
