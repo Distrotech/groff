@@ -59,14 +59,11 @@ extern "C" const char *Version_string;
 #include "pushback.h"
 #include "html-strings.h"
 
+#define DEFAULT_LINE_LENGTH        7   // inches wide
 #define DEFAULT_IMAGE_RES        100   // number of pixels per inch resolution
 #define IMAGE_BOARDER_PIXELS       0
-#define MAX_WIDTH                  8   // inches
 #define INLINE_LEADER_CHAR      '\\'
-#define A4_LENGTH             841890   // taken from devps/Makefile.sub
 #define LETTER_LENGTH         792000   // taken from devps/Makefile.sub
-#define A4_OFFSET                  0
-#define LETTER_OFFSET             50   // 50/72 of an inch
 
 #define TRANSPARENT  "-background white -transparent white"
 #define MIN_ALPHA_BITS             0
@@ -108,7 +105,6 @@ static char *image_template   = NULL;           // image template filename
 static char *macroset_template= NULL;           // image template passed to troff by -D
 static int   troff_arg        = 0;              // troff arg index
 static char *image_dir        = NULL;           // user specified image directory
-static char *gsPaper          = NULL;           // the paper size that gs must use
 static int   textAlphaBits    = MAX_ALPHA_BITS;
 static int   graphicAlphaBits = MAX_ALPHA_BITS;
 static char *antiAlias        = NULL;           // antialias arguments we pass to gs.
@@ -258,8 +254,7 @@ static int get_papersize (void)
 
 static void determine_vertical_offset (void)
 {
-  vertical_offset = ((A4_LENGTH-get_papersize())*72)/postscriptRes;
-  gsPaper = "-sPAPERSIZE=a4";
+  vertical_offset = ((LETTER_LENGTH-get_papersize())*72)/postscriptRes;
 }
 
 /*
@@ -790,6 +785,10 @@ public:
   imageList();
   ~imageList();
   void  add(int x1, int y1, int x2, int y2, int page, int res, int maxx, char *name);
+  void  createImages (void);
+  int   createPage (int pageno);
+  void  createImage (imageItem *i);
+  int   getMaxX (int pageno);
 };
 
 /*
@@ -818,7 +817,7 @@ imageList::~imageList ()
  *  createPage - creates one image of, page pageno, from the postscript file.
  */
 
-static int createPage (int pageno)
+int imageList::createPage (int pageno)
 {
   char *s;
 
@@ -826,6 +825,10 @@ static int createPage (int pageno)
     return 0;
 
   if (currentPageNo >= 1) {
+    /*
+     *  we need to unlink the files which change each time a new page is processed.
+     *  The final unlink is done by xtmpfile when pre-grohtml exits.
+     */
     unlink(imagePageName);
     unlink(psPageName);
   }
@@ -854,10 +857,12 @@ static int createPage (int pageno)
   html_system(s, 1);
   
   s = make_message("echo showpage | "
-		   "gs%s %s -q -dBATCH -dSAFER -sDEVICE=%s -r%d %s"
+		   "gs%s -q -dBATCH -dSAFER "
+		   "-dDEVICEWIDTHPOINTS=%d -dFIXEDMEDIA=true "
+		   "-sDEVICE=%s -r%d %s "
 		   "-sOutputFile=%s %s -\n",
 		   EXE_EXT,
-		   gsPaper,
+		   (getMaxX(pageno) * image_res) / postscriptRes,
 		   image_device,
 		   image_res,
 		   antiAlias,
@@ -904,10 +909,27 @@ int max (int x, int y)
 }
 
 /*
+ *  getMaxX - returns the largest right hand position for any image on, pageno
+ */
+
+int imageList::getMaxX (int pageno)
+{
+  imageItem *h = head;
+  int x        = postscriptRes * DEFAULT_LINE_LENGTH;
+
+  while (h != NULL) {
+    if (h->pageNo == pageno)
+      x = max(h->X2, x);
+    h = h->next;
+  }
+  return x;
+}
+
+/*
  *  createImage - generates a minimal png file from the set of page images.
  */
 
-static void createImage (imageItem *i)
+void imageList::createImage (imageItem *i)
 {
   if (i->X1 != -1) {
     char *s;
@@ -963,7 +985,20 @@ void imageList::add (int x1, int y1, int x2, int y2, int page, int res, int maxx
     tail->next = i;
     tail = i;
   }
-  createImage(i);
+}
+
+/*
+ *  createImages - foreach image descriptor on the imageList, create the actual image.
+ */
+
+void imageList::createImages (void)
+{
+  imageItem *h = head;
+
+  while (h != NULL) {
+    createImage(h);
+    h = h->next;
+  }
 }
 
 static imageList listOfImages;  // list of images defined by the region file.
@@ -1013,7 +1048,7 @@ static void generateImages (char *regionFileName)
       int y1     = f->readInt();
       int x2     = f->readInt();
       int y2     = f->readInt();
-      int maxx   = max(f->readInt(), MAX_WIDTH*image_res);
+      int maxx   = f->readInt();
       char *name = f->readString();
       int res    = postscriptRes;
       listOfImages.add(x1, y1, x2, y2, page, res, maxx, name);
@@ -1031,6 +1066,8 @@ static void generateImages (char *regionFileName)
       fputc(f->getPB(), stderr);
     }
   }
+  
+  listOfImages.createImages();
   if (show_progress) {
     fprintf(stderr, "done\n");
     fflush(stderr);
@@ -1368,7 +1405,6 @@ int scanArguments (int argc, char **argv)
       break;
     case 'o':
       vertical_offset = atoi(optarg);
-      gsPaper = "";  // do not specify the paper size now
       break;
     case 'p':
       show_progress = TRUE;
@@ -1425,7 +1461,7 @@ static int makeTempFiles (void)
   /* psPageName contains a single page of postscript */
   f = xtmpfile(&psPageName,
 	       PS_TEMPLATE_LONG, PS_TEMPLATE_SHORT,
-	       FALSE);
+	       TRUE);
   if (f == NULL) {
     sys_fatal("xtmpfile");
     return -1;
@@ -1435,7 +1471,7 @@ static int makeTempFiles (void)
   /* imagePageName contains a bitmap image of the single postscript page */
   f = xtmpfile(&imagePageName,
 	       PAGE_TEMPLATE_LONG, PAGE_TEMPLATE_SHORT,
-	       FALSE);
+	       TRUE);
   if (f == NULL) {
     sys_fatal("xtmpfile");
     return -1;
@@ -1445,7 +1481,7 @@ static int makeTempFiles (void)
   /* psFileName contains a postscript file of the complete document */
   f = xtmpfile(&psFileName,
 	       PS_TEMPLATE_LONG, PS_TEMPLATE_SHORT,
-	       FALSE);
+	       TRUE);
   if (f == NULL) {
     sys_fatal("xtmpfile");
     return -1;
@@ -1455,7 +1491,7 @@ static int makeTempFiles (void)
   /* regionFileName contains a list of the images and their boxed coordinates */
   f = xtmpfile(&regionFileName,
 	       REGION_TEMPLATE_LONG, REGION_TEMPLATE_SHORT,
-	       FALSE);
+	       TRUE);
   if (f == NULL) {
     sys_fatal("xtmpfile");
     return -1;

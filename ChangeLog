@@ -1,3 +1,22 @@
+2002-08-21  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* src/preproc/html/pre-html.cc (DEFAULT_LINE_LENGTH): New macro.
+	(MAX_WIDTH, A4_LENGTH, A4_OFFSET, LETTER_OFFSET): Removed.
+	(gsPaper): Removed.
+	(determine_vertical_offset): Use LETTER_LENGTH.
+	(createPage): Moved to ...
+	(imageList::createPage): This.
+	Call gs with -dDEVICEWIDTHPOINTS to avoid cropping.
+	(imageList::getMaxX): New function.
+	(createImage): Moved to ...
+	(imageList::createImage): This.
+	(imageList::createImages): New function.
+	(generateImages): Read `maxx' directly.
+	Updated.
+	(scanArguments): Don't specify `gsPaper' for `-o'.
+	(makeTempFiles): Call `xtmpfile' with the last argument set to
+	`TRUE'.
+
 2002-08-24  Werner LEMBERG  <wl@gnu.org>
 
 	* src/include/nonposix.h (mkdir, WAIT, creat) [_MSC_VER]: Define.
