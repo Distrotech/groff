@@ -2,8 +2,9 @@
 .\"
 .\" Define the PSPIC macro.
 .\"
-.\" When used other than with -Tps, it will draw a box around where
+.\" When used other than with -Tps or -Tdvi, it will draw a box around where
 .\" the picture would go.
+.
 .de PSPIC
 .  nr ps-offset-mode 0
 .  ie '\\$1'-L' \{\
@@ -55,16 +56,37 @@
 .
 .    ne (\\n[ps-desht]u + 1v)
 .
-.    if (\\n[ps-offset-mode] = 0) \
+.    if (\\n[ps-offset-mode] == 0) \
 .      nr ps-offset (\\n[.l] - \\n[.i] - \\n[ps-deswid] / 2)
-.    if (\\n[ps-offset-mode] = 1) \
+.    if (\\n[ps-offset-mode] == 1) \
 .      nr ps-offset 0
-.    if (\\n[ps-offset-mode] = 2) \
+.    if (\\n[ps-offset-mode] == 2) \
 .      nr ps-offset (\\n[.l] - \\n[.i] - \\n[ps-deswid])
-.    ie (\\n[.$] >= 3) \
-.      ds ps-desht \\n[ps-desht]
-.    el \
-.      ds ps-desht \" empty
+.
+.    ie '\*[.T]'dvi' \{\
+.      ie (\\n[ps-wid]p == \\n[ps-deswid]) \{\
+.        ds ps-scale \" empty
+.        ds ps-hoffset hoffset=-\\n[llx]
+.        ds ps-voffset voffset=-\\n[lly]
+.      \}
+.      el \{\
+.        nr ps-scale (\\n[ps-deswid] * 100 / \\n[ps-wid]p)
+.        nr ps-hoffset (-\\n[llx] * \\n[ps-scale] / 100)
+.        nr ps-voffset (-\\n[lly] * \\n[ps-scale] / 100)
+.        ds ps-scale hscale=\\n[ps-scale] vscale=\\n[ps-scale]
+.        ds ps-hoffset hoffset=\\n[ps-hoffset]
+.        ds ps-voffset voffset=\\n[ps-voffset]
+.      \}
+.
+\h'\\n[ps-offset]u'\
+\v'\\n[ps-desht]u'\
+\X'psfile=\\$1 \\*[ps-hoffset] \\*[ps-voffset] \\*[ps-scale]'
+.    \}
+.    el \{\
+.      ie (\\n[.$] >= 3) \
+.        ds ps-desht \\n[ps-desht]
+.      el \
+.        ds ps-desht \" empty
 .
 \h'\\n[ps-offset]u'\
 \X'ps: invis'\
@@ -73,8 +95,12 @@
 \v'\\n[ps-desht]u'\
 \X'ps: import \
        \\$1 \\n[llx] \\n[lly] \\n[urx] \\n[ury] \\n[ps-deswid] \\*[ps-desht]'
+.    \}
+.
 .    br
 .    sp \\n[ps-desht]u
 .  \}
 .  HTML-IMAGE-END
 ..
+.
+.\" end of pspic.tmac
