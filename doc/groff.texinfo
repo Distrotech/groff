@@ -6071,6 +6071,9 @@ invoked by the @file{troffrc} or @file{troffrc-end} file; by default,
 @file{troffrc} loads hyphenation patterns for American English (in file
 @file{hyphen.us}).
 
+A second call to @code{hpf} (for the same language) will replace the
+hyphenation patterns with the new ones.
+
 Invoking @code{hpf} causes an error if there is no current hyphenation
 language.
 @endDefreq
@@ -10241,7 +10244,7 @@ of the @code{system()} function executed by the last @code{sy} request.
 Opens the specified @var{file} for writing and
 associates the specified @var{stream} with it.
 
-The @code{opena} is like @code{open}, but if the file exists, append to
+The @code{opena} request is like @code{open}, but if the file exists, append to
 it instead of truncating it.
 @endDefreq
 
@@ -10249,12 +10252,16 @@ it instead of truncating it.
 @cindex mode, copy-in, and @code{write} requests
 @cindex writing to file (@code{write})
 @cindex file, writing to (@code{write})
-@Defreq {write, stream data}
+@DefreqList {write, stream data}
+@DefreqListEnd {writec, stream data}
 Writes to the file associated with the specified @var{stream}.
 The stream must previously have
 been the subject of an open request.  The remainder of the line is
 interpreted as the @code{ds} request reads its second argument: A
 leading @samp{"} is stripped, and it is read in copy-in mode.
+
+The @code{writec} request is like @code{write}, but only
+@code{write} appends a newline to the data.
 @endDefreq
 
 @cindex closing file (@code{close})
