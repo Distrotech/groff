@@ -1805,7 +1805,7 @@ is read, packed onto output lines, and justified to produce:
 
 @quotation
 Now is the time for all good men to come to the aid of their party.
-Four score and seven years ago,...
+Four score and seven years ago,@dots{}
 @end quotation
 
 @cindex break
@@ -6189,13 +6189,13 @@ The only multi-character construction recognized is @code{^^@var{xx}}
 No macro expansion.
 
 @item
-@code{hpf} checks for the expression @code{\patterns@{...@}}
+@code{hpf} checks for the expression @code{\patterns@{@dots{}@}}
 (possibly with whitespace before and after the braces).
 Everything between the braces is taken as hyphenation patterns.
 Consequently, @code{@{} and @code{@}} are not allowed in patterns.
 
 @item
-Similarly, @code{\hyphenation@{...@}} gives a list of hyphenation
+Similarly, @code{\hyphenation@{@dots{}@}} gives a list of hyphenation
 exceptions.
 
 @item
@@ -7433,10 +7433,10 @@ for one line only.
 @Defreq {sv, [@Var{space}]}
 @code{sv} is similar to the @code{ne} request; it reserves the
 specified amount of vertical space.  If the desired amount of space
-exists before the next trap (bottom page boundary), the space is
-output immediately (ignoring a partial filled line which stays
-untouched).  If there is not enough space, it is stored for later
-output via the @code{os} request.  The default value is@w{ }1@dmn{v}
+exists before the next trap (or the bottom page boundary if no trap is
+set), the space is output immediately (ignoring a partially filled line
+which stays untouched).  If there is not enough space, it is stored for
+later output via the @code{os} request.  The default value is@w{ }1@dmn{v}
 if no argument is given; the default unit is @samp{v}.
 @endDefreq
 
@@ -7552,7 +7552,7 @@ the current family.
 @cindex postscript fonts
 @cindex fonts, postscript
 Currently, fonts for the devices @option{-Tps}, @option{-Tdvi}, and
-@option{-Tlpb} are set up to this mechanism.
+@option{-Tlbp} are set up to this mechanism.
 By default, @code{gtroff} uses the Times family with the four styles
 @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
 
@@ -7637,7 +7637,7 @@ is equivalent to
 .sty 4 BI
 @endExample
 
-@code{.fam} always checks whether the current font position is valid;
+@code{fam} always checks whether the current font position is valid;
 this can give surprising results if the current font position is
 associated with a style.
 
@@ -7842,7 +7842,14 @@ have been called the first time) for special fonts and check them.
 @DefescListEnd {\\, @lbrack{}, name, @rbrack}
 Insert a symbol @var{name} (two-character name @var{nm}).  There is no
 special syntax for one-character names -- the natural form
-@samp{\@var{n}} would collide with escapes.
+@samp{\@var{n}} would collide with escapes.@footnote{Note that a
+one-character symbol is not the same as an input character, i.e., the
+character @code{a} is not the same as @code{\[a]}.  By default,
+@code{groff} defines only a single one-character symbol, @code{\[-]};
+it is usually accessed as @code{\-}.  On the other hand, @code{gtroff}
+has the special feature that @code{\[char@var{XXX}]} is the same as the
+input character with character code @var{XXX}.  For example,
+@code{\[char97]} is identical to the letter @code{a}.}
 
 If @var{name} is undefined, a warning of type @samp{char} is generated,
 and the escape is ignored.  @xref{Debugging}, for information about
@@ -7899,7 +7906,7 @@ use these.
 @Defreq {cflags, n c1 c2 @dots{}}
 Each character has certain properties associated with it.  These
 properties can be modified with the @code{cflags} request.  The first
-argument is the the sum of the desired flags and the remaining
+argument is the sum of the desired flags and the remaining
 arguments are the characters to have those properties.  It is possible
 to omit the spaces between the characters.
 
@@ -7982,18 +7989,18 @@ applied to this object rather than to individual characters in
 
 A character defined by this request can be used just
 like a normal character provided by the output device.  In particular,
-other characters can be translated to it with the @code{tr} request;
-it can be made the leader character by the @code{lc} request; repeated
-patterns can be drawn with the character using the @code{\l} and
-@code{\L} escape sequences; words containing the character can be
-hyphenated correctly, if the @code{hcode} request is used to give the
-character a hyphenation code.
+other characters can be translated to it with the @code{tr} or
+@code{trin} requests; it can be made the leader character by the
+@code{lc} request; repeated patterns can be drawn with the character
+using the @code{\l} and @code{\L} escape sequences; words containing
+the character can be hyphenated correctly if the @code{hcode} request
+is used to give the character a hyphenation code.
 
 There is a special anti-recursion
 feature: Use of character within the character's definition is handled
 like normal characters not defined with @code{char}.
 
-Note that the @code{tr} and @code{trin} requests takes precedence if
+Note that the @code{tr} and @code{trin} requests take precedence if
 @code{char} accesses the same character.
 
 @Example
@@ -8018,7 +8025,8 @@ if it cannot find the glyph in the current font.
 @cindex character, removing definition (@code{rchar})
 @Defreq {rchar, c1 c2 @dots{}}
 Remove the definitions of characters @var{c1}, @var{c2},@w{
-}@enddots{} This undoes the effect of a @code{char} request.
+}@enddots{} This undoes the effect of a @code{char} or @code{fchar}
+request.
 
 It is possible to omit the whitespace between arguments.
 @endDefreq
@@ -8081,8 +8089,8 @@ This command is associated with the current environment
 
 @c XXX @xref should be changed to grotty
 
-@xref{Troff and Nroff Mode}, for a discussion how underlining is
-implemented in for tty output devices, and which problems can arise.
+@c @xref{Troff and Nroff Mode}, for a discussion how underlining is
+@c implemented in for tty output devices, and which problems can arise.
 
 The @code{ul} request does not underline spaces.
 @endDefreq
@@ -8244,6 +8252,10 @@ width is a linear function of the point size.
 
 The default unit is @samp{z} for @var{s1} and @var{s2}, @samp{p} for
 @var{n1} and @var{n2}.
+
+Note that the track kerning amount is added even to the rightmost character
+in a line; for large values it is thus recommended to increase the line
+length by the same amount to compensate it.
 @endDefreq
 
 Sometimes, when typesetting letters of different fonts, more or less
@@ -8407,7 +8419,7 @@ term papers).  By default, @code{gtroff} uses 10@w{ }point type on
 
 @cindex leading
 The difference between type size and vertical spacing is known, by
-typesetters, as @dfn{leading}.
+typesetters, as @dfn{leading} (this is pronounced `ledding').
 
 @menu
 * Changing Type Sizes::
@@ -8600,9 +8612,9 @@ string-valued read-only number register.
 
 Note that the requested point sizes are device-independent, whereas
 the values returned by the @code{.ps} and @code{.s} registers are not.
-For example, if a point size of 11@dmn{pt} is requested for a DVI
-device, 10.95@dmn{pt} are actually used (as specified in the
-@file{DESC} file).
+For example, if a point size of 11@dmn{pt} is requested, and a
+@code{sizes} request (or a @code{sizescale} line in a @file{DESC} file)
+specifies 10.95@dmn{pt} instead, this value is actually used.
 
 Both registers are associated with the current environment
 (@pxref{Environments}).
@@ -8668,11 +8680,10 @@ The @code{\*} escape @dfn{interpolates} (expands in-place) a
 previously-defined string variable.  To be more precise, the stored
 string is pushed onto the input stack which is then parsed by
 @code{gtroff}.  Similar to number registers, it is possible to nest
-strings, i.e. a string variables can be called within string
-variables.
+strings, i.e. string variables can be called within string variables.
 
-If the string named by the @code{\*} does not exist, it is defined as
-empty, and a warning of type @samp{mac} is emitted (see
+If the string named by the @code{\*} escape does not exist, it is
+defined as empty, and a warning of type @samp{mac} is emitted (see
 @ref{Debugging}, for more details).
 
 @cindex comments, with @code{ds}
@@ -8721,7 +8732,9 @@ of text are on these \
 next several lines
 @endExample
 
-It is not possible to have real newlines in a string.
+It is not possible to have real newlines in a string.  To put a single
+double quote character into a string, use two consecutive double quote
+characters.
 
 The @code{ds1} request turns off compatibility mode
 while interpreting a string.  To be more precise, a @dfn{compatibility
@@ -8963,7 +8976,8 @@ True if the document is being processed in troff mode (i.e., the
 @code{.troff} command has been issued).
 
 @item v
-Always false.
+Always false.  This condition is for compatibility with other
+@code{troff} versions only.
 
 @item '@var{xxx}'@var{yyy}'
 True if the string @var{xxx} is equal to the string @var{yyy}.  Other
@@ -9293,7 +9307,7 @@ is equivalent to:
 @endExample
 
 @pindex trace.tmac
-Using @file{trace.tmac}, you can trace calls to @code{de}.
+Using @file{trace.tmac}, you can trace calls to @code{de} and @code{de1}.
 
 @c XXX info about common identifier pool for strings, macros, and
 @c     diversions.
@@ -9325,7 +9339,7 @@ meaning that @code{gtroff} expands strings whose names
 are @var{xx} or @var{yy} before performing the append.
 
 @pindex trace.tmac
-Using @file{trace.tmac}, you can trace calls to @code{am}.
+Using @file{trace.tmac}, you can trace calls to @code{am} and @code{am1}.
 @endDefreq
 
 @cindex alias, creating (@code{als})
@@ -9333,10 +9347,10 @@ Using @file{trace.tmac}, you can trace calls to @code{am}.
 @xref{Strings}, for the @code{als} request to rename a macro.
 
 The @code{de}, @code{am}, @code{di}, @code{da}, @code{ds}, and
-@code{as} requests only create a new object if the name of the macro,
-diversion or string diversion is currently undefined or if it is
-defined to be a request; normally they modify the value of an existing
-object.
+@code{as} requests (together with its variants) only create a new object
+if the name of the macro, diversion or string diversion is currently
+undefined or if it is defined to be a request; normally they modify the
+value of an existing object.
 
 @Defreq {return, }
 Exits a macro,
@@ -9391,10 +9405,13 @@ The following example prints the numbers 20 and@w{ }10:
 @subsection Parameters
 @cindex parameters
 
-@cindex number of arguments register (@code{.$})
-@vindex .$
 The arguments to a macro can be examined using a variety of escapes.
-The number of arguments is available in the @code{.$} number register.
+
+@cindex number of arguments register (@code{.$})
+@Defreg {.$}
+The number of arguments in a macro.  This is a read-only number register.
+@endDefreg
+
 Any individual argument can be retrieved with one of the following
 escapes:
 
@@ -9417,7 +9434,7 @@ prevent interpolation until the macro is actually invoked.
 @Defreq {shift, [@Var{n}]}
 Shifts the arguments 1@w{ }position, or as
 many positions as specified by its argument.  After executing this
-request, argument@w{ }@var{i} becomes argument @var{i}-@var{n};
+request, argument@w{ }@var{i} becomes argument @math{@var{i}-@var{n}};
 arguments 1 to@w{ }@var{n} are no longer available.  Shifting by
 negative amounts is currently undefined.
 @endDefreq
@@ -9429,7 +9446,8 @@ example, to pass the arguments along to another macro).  The @code{\$*}
 escape concatenates all the arguments separated by spaces.  A
 similar escape is @code{\$@@}, which concatenates all the
 arguments with each surrounded by double quotes, and separated by
-spaces.
+spaces.  If not in compatibility mode, the input level of double quotes
+is preserved (see @ref{Request Arguments}).
 @endDefesc
 
 @cindex macro name register (@code{\$0})
@@ -9440,17 +9458,16 @@ The name used to invoke the current macro.
 The @code{als} request can make a macro have more than one name.
 
 @Example
-.de vl
-.ie \\n(.$=1 .ds Vl Pre-Release Version
-.el          .ds Vl Version \\$3, \\$4.
+.de generic-macro
+.  ...
+.  if \\n[error] \@{\
+.    tm \\$0: Houston, we have a problem.
+.    return
+.  \@}
 ..
-@endExample
-
-@noindent
-This would be called as
-
-@Example
-.vl $Id$
+.
+.als foo generic-macro
+.als bar generic-macro
 @endExample
 @endDefesc
 
@@ -9467,12 +9484,14 @@ This would be called as
 @xref{Manipulating Spacing}, for a discussion of the main request for
 vertical motion, @code{sp}.
 
-@cindex marking page location (@code{mk})
-@cindex page location, marking (@code{mk})
-@cindex location, page, marking (@code{mk})
-@cindex returning to marked page location (@code{rt})
-@cindex page location, returning to marked (@code{rt})
-@cindex location, page, returning to marked (@code{rt})
+@cindex marking vertical page location (@code{mk})
+@cindex page location, vertical, marking (@code{mk})
+@cindex location, vertical, page, marking (@code{mk})
+@cindex vertical page location, marking (@code{mk})
+@cindex returning to marked vertical page location (@code{rt})
+@cindex page location, vertical, returning to marked (@code{rt})
+@cindex location, vertical, page, returning to marked (@code{rt})
+@cindex vertical page location, returning to marked (@code{rt})
 @DefreqList {mk, [@Var{reg}]}
 @DefreqListEnd {rt, [@Var{dist}]}
 The request @code{mk} can be used to mark a location on a page, for
@@ -9513,18 +9532,19 @@ consider a page bottom trap macro which prints a marker in the margin to
 indicate continuation of a footnote or something similar.
 @endDefesc
 
-There are some special case escapes for vertical motion.
+There are some special-case escapes for vertical motion.
 
-@ftable @code
-@item \r
-move upwards@w{ }1@dmn{v}.
+@Defesc {\\r, , , }
+Move upwards@w{ }1@dmn{v}.
+@endDefesc
 
-@item \u
-move upwards@w{ }.5@dmn{v}.
+@Defesc {\\u, , , }
+Move upwards@w{ }.5@dmn{v}.
+@endDefesc
 
-@item \d
-move down@w{ }.5@dmn{v}.
-@end ftable
+@Defesc {\\d, , , }
+Move down@w{ }.5@dmn{v}.
+@endDefesc
 
 @cindex inserting horizontal space (@code{\h})
 @cindex horizontal space (@code{\h})
@@ -9536,39 +9556,35 @@ and negative leftwards.
 @c XXX Is there a default unit for this?
 @endDefesc
 
-There are a number of special case escapes for horizontal motion:
+There are a number of special-case escapes for horizontal motion.
 
-@ftable @code
-@item \@key{SP}
+@cindex space, unbreakable
+@cindex unbreakable space
+@Defesc {\\@key{SP}, , , }
 An unbreakable and unpaddable (i.e.@: not expanded during filling)
 space.  (Note: This is a backslash followed by a space.)
+@endDefesc
 
-@item \~
+@Defesc {\\~, , , }
 An unbreakable space that stretches like a normal inter-word space
 when a line is adjusted.
+@endDefesc
 
-@item \|
+@Defesc {\\|, , , }
 A 1/6@dmn{th} em space.  Ignored for tty output devices (rounded to
 zero).
+@endDefesc
 
-@item \^
+@Defesc {\\^, , , }
 A 1/12@dmn{th} em space.  Ignored for tty output devices (rounded to
 zero).
+@endDefesc
 
-@item \0
+@cindex space, width of a digit
+@cindex digit width space
+@Defesc {\\0, , , }
 A space the size of a digit.
-
-@item \&
-@cindex zero width space character (@code{\&})
-@cindex character, zero width space (@code{\&})
-@cindex space character, zero width (@code{\&})
-A zero width space.
-
-@item \)
-Like @code{\&} except that it behaves like a character declared with
-the @code{cflags} request to be transparent for the purposes of
-end-of-sentence recognition.
-@end ftable
+@endDefesc
 
 The following string sets the @TeX{} logo:
 
@@ -9583,6 +9599,7 @@ The following string sets the @TeX{} logo:
 @DefregItem {sb}
 @DefregItem {rst}
 @DefregItem {rsb}
+@DefregItem {ct}
 @DefregItem {ssc}
 @DefregListEnd {skw}
 Used as @code{\w'@var{text}'},
@@ -9642,16 +9659,32 @@ over that character.
 @end table
 @endDefesc
 
-@Defesc {\\k, ', x, '}
-Stores the current horizontal position in register@w{ }@var{x}.
-Use this, for example, to return to the beginning of a string
-for highlighting or other decoration.
+@cindex saving horizontal input line position (@code{\k})
+@cindex horizontal input line position, saving (@code{\k})
+@cindex input line position, horizontal, saving (@code{\k})
+@cindex position, horizontal input line, saving (@code{\k})
+@cindex line, input, horizontal position, saving (@code{\k})
+@DefescList {\\k, , p, }
+@DefescItem {\\k, @lparen{}, ps, }
+@DefescListEnd {\\k, @lbrack{}, position, @rbrack}
+Stores the current horizontal position in the @emph{input} line in
+number register with name @var{position} (one-character name@w{ }@var{p},
+two-character name @var{ps}).  Use this, for example, to return to the
+beginning of a string for highlighting or other decoration.
 @endDefesc
 
+@cindex horizontal input line position register (@code{hp})
+@cindex input line, horizontal position, register (@code{hp})
+@cindex position, horizontal, in input line, register (@code{hp})
+@cindex line, input, horizontal position, register (@code{hp})
 @Defreg {hp}
 The current horizontal position at the input line.
 @endDefreg
 
+@cindex horizontal output line position register (@code{.k})
+@cindex output line, horizontal position, register (@code{.k})
+@cindex position, horizontal, in output line, register (@code{.k})
+@cindex line, output, horizontal position, register (@code{.k})
 @Defreg {.k}
 A read-only number register containing the current horizontal output
 position.
@@ -9698,20 +9731,14 @@ All drawing is done via escapes.
 @cindex drawing horizontal lines (@code{\l})
 @cindex horizontal line, drawing (@code{\l})
 @cindex line, horizontal, drawing (@code{\l})
-@Defesc {\\l, ', l c, '}
-Draws a line rightwards from the current
-location.  The full syntax for this escape is:
-
-@Example
-\l'@var{l}@var{c}'
-@endExample
-
-@noindent
-where @var{l} is the length of the line to be drawn, starting at the
+@DefescList {\\l, ', @Var{l}, '}
+@DefescListEnd {\\l, ', @Var{l}@Var{c}, '}
+Draws a line rightwards from the current location.
+@var{l} is the length of the line to be drawn, starting at the
 current location; positive numbers draw to the right, and negative
 numbers draw towards the left.  This can also be specified absolutely
 (i.e.@: with a leading @samp{|}) which draws back to the beginning
-of the line.
+of the input line.
 
 @cindex underscore character
 @cindex character, underscore
@@ -9731,11 +9758,10 @@ Here a small useful example:
 
 @Example
 .de box
-\(br\\$*\(br\l'|0\(rn'\l'|0\(ul'
+\[br]\\$*\[br]\l'|0\[rn]'\l'|0\[ul]'
 ..
 @endExample
 
-@cindex @code{|}, used as a box rule
 @noindent
 Note that this works by outputting a box rule (a vertical line), then
 the text given as an argument and then another box rule.  Then the line
@@ -9750,7 +9776,8 @@ the @emph{input} line.
 @cindex character for line drawing
 @cindex box rule character
 @cindex character, box rule
-@Defesc {\\L, ', l c, '}
+@DefescList {\\L, ', @Var{l}, '}
+@DefescListEnd {\\L, ', @Var{l}@Var{c}, '}
 Draws vertical lines.  Its parameters are
 similar to the @code{\l} escape.  The
 movement is downwards for positive values,
@@ -9763,7 +9790,7 @@ ends.
 
 @ignore
 @Example
-...box macro...
+... box macro ...
 @endExample
 @end ignore
 @endDefesc
@@ -9771,10 +9798,13 @@ ends.
 @Defesc {\\D, ', command arg @dots{}, '}
 The @code{\D} escape provides a variety of drawing functions.
 Note that on character devices, only vertical and horizontal lines are
-supported within @code{grotty}.
+supported within @code{grotty}; other devices may only support a subset
+of the available drawing functions.
 
 @table @code
 @item \D'l @var{dx} @var{dy}'
+@cindex line, drawing (@w{@code{\D'l @dots{}'}})
+@cindex drawing a line (@w{@code{\D'l @dots{}'}})
 Draw a line from the current location to the relative point specified by
 (@var{dx},@var{dy}).
 
@@ -9782,67 +9812,99 @@ Draw a line from the current location to the relative point specified by
 
 @ignore
 @Example
-...revised box macro...
+... revised box macro ...
 @endExample
 @end ignore
 
 @item \D'c @var{d}'
-@cindex circle drawing (@code{\D})
-@cindex drawing a circle (@code{\D})
+@cindex circle, drawing (@w{@code{\D'c @dots{}'}})
+@cindex drawing a circle (@w{@code{\D'c @dots{}'}})
 Draw a circle with a diameter of@w{ }@var{d} with the leftmost point at the
 current position.
 
 @item \D'C @var{d}'
+@cindex circle, solid, drawing (@w{@code{\D'C @dots{}'}})
+@cindex drawing a solid circle (@w{@code{\D'C @dots{}'}})
+@cindex solid circle, drawing (@w{@code{\D'C @dots{}'}})
 Draw a solid circle with the same parameters as an outlined circle.
 
-@item \D'e @var{dx} @var{dy}'
-@cindex drawing an ellipse (@code{\D})
-@cindex ellipse drawing (@code{\D})
-Draw an ellipse with a horizontal diameter of @var{dx} and a vertical
-diameter of @var{dy} with the leftmost point at the current position.
+@item \D'e @var{x} @var{y}'
+@cindex drawing an ellipse (@w{@code{\D'e @dots{}'}})
+@cindex ellipse, drawing (@w{@code{\D'e @dots{}'}})
+Draw an ellipse with a horizontal diameter of @var{x} and a vertical
+diameter of @var{y} with the leftmost point at the current position.
 
-@item \D'E @var{dx} @var{dy}'
+@item \D'E @var{x} @var{y}'
+@cindex ellipse, solid, drawing (@w{@code{\D'E @dots{}'}})
+@cindex drawing a solid ellipse (@w{@code{\D'E @dots{}'}})
+@cindex solid ellipse, drawing (@w{@code{\D'E @dots{}'}})
 Draw a solid ellipse with the same parameters as an outlined ellipse.
 
 @item \D'a @var{dx1} @var{dy1} @var{dx2} @var{dy2}'
-@cindex arc drawing (@code{\D})
-@cindex drawing an arc (@code{\D})
+@cindex arc, drawing (@w{@code{\D'a @dots{}'}})
+@cindex drawing an arc (@w{@code{\D'a @dots{}'}})
 Draw an arc clockwise from the current location through the two
-specified locations (@var{dx1},@var{dy1}) and (@var{dx2},@var{dy2}).
+specified relative locations (@var{dx1},@var{dy1}) and
+(@var{dx2},@var{dy2}).  The coordinates of the first point are relative
+to the current position, and the coordinates of the second point are
+relative to the first point.
 
-@item \D'~ @var{dx1} @var{dy1} @var{dx2} @var{dy2} ...'
-@cindex drawing a spline (@code{\D})
-@cindex spline drawing (@code{\D})
-Draw a spline from the current location to (@var{dx1},@var{dy1}) and
-then to (@var{dx2},@var{dy2}), and so on.
+@item \D'~ @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{}'
+@cindex drawing a spline (@w{@code{\D'~ @dots{}'}})
+@cindex spline, drawing (@w{@code{\D'~ @dots{}'}})
+Draw a spline from the current location to the relative point
+(@var{dx1},@var{dy1}) and then to (@var{dx2},@var{dy2}), and so on.
 
 @item \D'f @var{n}'
-@cindex gray shading (@code{\D})
-@cindex shading (@code{\D})
-@cindex shades for filling objects (@code{\D})
+@cindex gray shading (@w{@code{\D'f @dots{}'}})
+@cindex shading (@w{@code{\D'f @dots{}'}})
+@cindex shades for filling objects (@w{@code{\D'f @dots{}'}})
 Set the shade of gray to be used for filling solid objects to@w{
 }@var{n}; @var{n}@w{ }must be an integer between 0 and@w{ }1000, where 0
 corresponds solid white and 1000 to solid black, and values in between
 correspond to intermediate shades of gray.  This applies only to solid
-circles, solid ellipses and solid polygons.  By default, a level of@w{
-}1000 is used.
+circles, solid ellipses, and solid polygons.  By default, a level of
+1000 is used.
 
-@item \D'p @var{dx1} @var{dy1} @var{dx2} @var{dy2} ...'
-@cindex drawing a polygon (@code{\D})
-@cindex polygon drawing (@code{\D})
-Draw a polygon from the current location to (@var{dx1},@var{dy1}) and
-then to (@var{dx2},@var{dy2}) and so on.  When the specified data points
-are exhausted, a line is drawn back to the starting point.
+This command is obsolete; use @w{@code{\D'Fg @dots{}'}} instead, or
+even better, the @code{\M} escape.
+
+@item \D'Fr @var{red} @var{green} @var{blue}'
+@itemx \D'Fc @var{cyan} @var{magenta} @var{yellow}'
+@itemx \D'Fk @var{cyan} @var{magenta} @var{yellow} @var{black}'
+@itemx \D'Fg @var{gray}'
+Set fill color for solid drawing objects.  @samp{r} gives colors in the
+RGB color space, @samp{c} for CMY, and @samp{k} for CMYK.  @samp{g}
+specifies a gray shade.  The arguments are integers between 0 and 65536;
+for gray, a value of zero means black.
+
+It is more convenient to use the @code{\M} escape instead to define and
+use colors.  @xref{Colors}, for more details.
+
+@item \D'Fd'
+Set fill color for solid drawing objects to the default fill color (black
+in most cases).  Again, using @code{\M} provides a better interface.
+
+@item \D'p @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{}'
+@cindex drawing a polygon (@w{@code{\D'p @dots{}'}})
+@cindex polygon, drawing (@w{@code{\D''p @dots{}}})
+Draw a polygon from the current location to the relative position
+(@var{dx1},@var{dy1}) and then to (@var{dx2},@var{dy2}) and so on.
+When the specified data points are exhausted, a line is drawn back
+to the starting point.
 
 @c XXX example
 
 @ignore
 @Example
-... box example (yes, again)...
+... box example (yes, again) ...
 @endExample
 @end ignore
 
-@item \D'P @var{dx1} @var{dy1} @var{dx2} @var{dy2} ...'
+@item \D'P @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{}'
+@cindex polygon, solid, drawing (@w{@code{\D'P @dots{}'}})
+@cindex drawing a solid polygon (@w{@code{\D'P @dots{}'}})
+@cindex solid polygon, drawing (@w{@code{\D'P @dots{}'}})
 Draw a solid polygon with the same parameters as an outlined polygon.
 
 @c XXX example
@@ -9854,14 +9916,16 @@ Draw a solid polygon with the same parameters as an outlined polygon.
 @end ignore
 
 @item \D't @var{n}'
-@cindex line thickness (@code{\D})
-@cindex thickness of lines (@code{\D})
+@cindex line thickness (@w{@code{\D't @dots{}'}})
+@cindex thickness of lines (@w{@code{\D't @dots{}'}})
 Set the current line thickness to @var{n}@w{ }machine units.  A value of
 zero selects the smallest available line thickness.  A negative value
 makes the line thickness proportional to the current point size (this is
 the default behaviour of @code{ditroff}).
 @end table
 @endDefesc
+
+@xref{Drawing Functions}.
 
 @cindex pile, character (@code{\b})
 @cindex character pile (@code{\b})
@@ -9875,8 +9939,6 @@ to build large brackets and braces.
 \b'\(lt\(bv\(lk\(bv\(lb'
 @endExample
 @endDefesc
-
-@xref{Drawing Functions}.
 
 
 @c =====================================================================
@@ -10818,7 +10880,7 @@ the stream is no longer an acceptable argument to the
 
 @ignore
 @Example
-... example of open write &c...
+... example of open write &c ...
 @endExample
 @end ignore
 @endDefreq
