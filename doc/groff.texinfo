@@ -7244,8 +7244,8 @@ lines (starting with the next one) into an internal buffer until it
 encounters the line @samp{..} (two dots).  The optional second
 argument to @code{de} changes this to a macro to @samp{.@var{end}}.
 
-Note that no leading whitespace is allowed in the line containing the
-ending token (either @samp{..} or the macro @samp{.@var{end}}).
+There can be whitespace after the first dot in the line containing the
+ending token (either @samp{.} or macro @samp{@var{end}}).
 
 Here a small example macro called @samp{P} which causes a break and
 inserts some vertical space.  It could be used to separate paragraphs.
@@ -8092,28 +8092,35 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 @example
 @group
 .\" Center text both horizontally & vertically
+.
+.\" Enclose macro definitions in .eo and .ec to avoid the doubling of \
+.eo
+.\" macro .(c starts centering mode
 .de (c
-.br
-.nf
-.di @@c
+.  br
+.  nf
+.  di @@c
 ..
 @end group
 @group
+.\" macro .)c terminates centering mode
 .de )c
-.br
-.di
-.nr @@s (((\\n(.tu-\\n(dnu)/2u)-1v)
-.sp \\n(@@su
-.ce 1000
-.nf
-.@c
-.br
-.ce 0
-.sp \\n(@@su
-.br
-.fi
-.rr @@s
+.  br
+.  di
+.  nr @@s (((\n[.t]u - \n[dn]u) / 2u) - 1v)
+.  sp \n[@@s]u
+.  ce 1000
+.  @@c
+.  ce 0
+.  sp \n[@@s]u
+.  br
+.  fi
+.  rr @@s
+.  rm @@s
+.  rm @@c
 ..
+.\" End of macro definitions, restore escape mechanism
+.ec
 @end group
 @end example
 @endDefreg

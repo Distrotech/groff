@@ -3797,11 +3797,17 @@ void do_define_macro(define_mode mode, calling_mode calling)
       const char *s = term.contents();
       int d = 0;
       // see if it matches term
-      int i;
-      for (i = 0; s[i] != 0; i++) {
-	d = get_copy(&n);
-	if ((unsigned char)s[i] != d)
-	  break;
+      int i = 0;
+      if (s[0] != 0) {
+	while ((d = get_copy(&n)) == ' ' || d == '\t')
+	  ;
+	if ((unsigned char)s[0] == d) {
+	  for (i = 1; s[i] != 0; i++) {
+	    d = get_copy(&n);
+	    if ((unsigned char)s[i] != d)
+	      break;
+	  }
+	}
       }
       if (s[i] == 0
 	  && ((i == 2 && compatible_flag)
