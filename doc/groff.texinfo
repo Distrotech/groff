@@ -8,7 +8,7 @@
 @c
 
 @c %**start of header (This is for running Texinfo on a region.)
-@setfilename  groff
+@setfilename groff
 @settitle The GNU Troff Manual
 @setchapternewpage odd
 @footnotestyle separate
@@ -278,15 +278,50 @@
 @end macro
 
 
+@c <text>
+
+@tex
+\gdef\angles#1{\angleleft{}\r{#1}\angleright{}}
+@end tex
+
+@macro angles{text}
+<\text\>
+@end macro
+
+
+@c a <= sign
+
+@tex
+\gdef\LE{\le}
+@end tex
+
+@macro LE
+<=
+@end macro
+
+
+@c due to a bug in texinfo 4.2, the spacing of `<' is bad in @item
+
+@tex
+\gdef\LT{\string<}
+@end tex
+
+@macro LT
+<
+@end macro
+
+
 @c We need special parentheses and brackets:
 @c
 @c . Real parentheses in @deffn produce an error while compiling with
 @c   TeX
 @c . Real brackets use the wrong font in @deffn, overriding @t{}.
 @c
+@c Since macros aren't expanded in @deffn during -E, the following
+@c definitions are for non-TeX only.
+@c
 @c This is true for texinfo 4.0.
 
-@ifnottex
 @macro lparen
 (
 @end macro
@@ -299,28 +334,9 @@
 @macro rbrack
 ]
 @end macro
-@end ifnottex
-
-@iftex
-@macro lparen
-@@lparen
-@end macro
-@macro rparen
-@@rparen
-@end macro
-@macro lbrack
-@@lbrack
-@end macro
-@macro rbrack
-@@rbrack
-@end macro
-@end iftex
 
 
 @c Note: We say `Roman numerals' but `roman font'.
-
-
-@c XXX comment all examples
 
 
 @dircategory Miscellaneous
@@ -1232,6 +1248,7 @@ prefix is omitted since GNU @code{troff} is the only used incarnation of
 @menu
 * Groff Options::
 * Environment::
+* Macro Directories::
 * Invocation Examples::
 @end menu
 
@@ -1458,17 +1475,21 @@ X-specific fonts and metrics.
 Don't allow newlines with @code{eqn} delimiters.  This is the same as
 the @option{-N} option in @code{geqn}.
 
+@item -S
 @cindex @code{open} request, and safer mode
 @cindex @code{opena} request, and safer mode
 @cindex @code{pso} request, and safer mode
 @cindex @code{sy} request, and safer mode
 @cindex @code{pi} request, and safer mode
-@item -S
+@cindex safer mode
+@cindex mode, safer
 Safer mode.  Pass the @option{-S} option to @code{gpic} and disable the
 @code{open}, @code{opena}, @code{pso}, @code{sy}, and @code{pi}
 requests.  For security reasons, this is enabled by default.
 
 @item -U
+@cindex mode, unsafe
+@cindex unsafe mode
 Unsafe mode.  Reverts to the old unsafe behaviour.
 
 @item -a
@@ -1526,8 +1547,6 @@ Read in the file @file{@var{name}.tmac}.  Normally @code{groff} searches
 for this in its macro directories.  If it isn't found, it tries
 @file{tmac.@var{name}} (and searches in the same directories).
 
-@c XXX document local and system macro dirs
-
 @item -n@var{num}
 Number the first page @var{num}.
 
@@ -1562,7 +1581,7 @@ for font files before looking in the standard directories.
 
 @item -M@var{dir}
 Search directory @file{@var{dir}} for macro files before the standard
-directories.
+directories (@pxref{Macro Directories}).
 
 @item -I@var{dir}
 This option is as described in @ref{gsoelim}.  It implies the
@@ -1572,7 +1591,7 @@ This option is as described in @ref{gsoelim}.  It implies the
 
 @c =====================================================================
 
-@node Environment, Invocation Examples, Groff Options, Invoking groff
+@node Environment, Macro Directories, Groff Options, Invoking groff
 @section Environment
 @cindex environment variables
 @cindex variables in environment
@@ -1583,20 +1602,22 @@ not within @code{gtroff}) which can modify the behavior of @code{groff}.
 @table @code
 @item GROFF_COMMAND_PREFIX
 @tindex GROFF_COMMAND_PREFIX@r{, environment variable}
+@cindex command prefix
+@cindex prefix, for commands
 If this is set to@w{ }@var{X}, then @code{groff} runs @code{@var{X}troff}
 instead of @code{gtroff}.  This also applies to @code{tbl}, @code{pic},
 @code{eqn}, @code{grn}, @code{refer}, and @code{soelim}.  It does not
 apply to @code{grops}, @code{grodvi}, @code{grotty}, @code{pre-grohtml},
 @code{post-grohtml}, @code{grolj4}, and @code{gxditview}.
 
-@c XXX document default values
+The default command prefix is determined during the installation process.
+If a non-GNU troff system is found, prefix @samp{g} is used, none
+otherwise.
 
 @item GROFF_TMAC_PATH
 @tindex GROFF_TMAC_PATH@r{, environment variable}
 A colon-separated list of directories in which to search for macro files
-(before the default directories are tried).
-
-@c XXX document local and system macro dirs
+(before the default directories are tried).  @xref{Macro Directories}.
 
 @item GROFF_TYPESETTER
 @tindex GROFF_TYPESETTER@r{, environment variable}
@@ -1631,7 +1652,79 @@ above.
 
 @c =====================================================================
 
-@node Invocation Examples,  , Environment, Invoking groff
+@node Macro Directories, Invocation Examples, Environment, Invoking groff
+@section Macro Directories
+@cindex macro directories
+@cindex directories for macros
+@cindex searching macros
+@cindex macros, searching
+
+All macro file names must be named @code{@var{name}.tmac} or
+@code{tmac.@var{name}} to make the @option{-m@var{name}} command line
+option work.  The @code{mso} request doesn't have this restriction; any
+file name can be used, and @code{gtroff} won't try to append or prepend
+the @samp{tmac} string.
+
+@cindex tmac, directory
+@cindex directory, for tmac files
+@cindex tmac, path
+@cindex path, for tmac files
+@cindex searching macro files
+@cindex macro files, searching
+@cindex files, macro, searching
+Macro files are kept in the @dfn{tmac directories}, all of which
+constitute the @dfn{tmac path}.  The elements of the search path for
+macro files are (in that order):
+
+@itemize @bullet
+@item
+The directories specified with @code{gtroff}'s or @code{groff}'s
+@option{-M} command line option.
+
+@item
+@tindex GROFF_TMAC_PATH@r{, environment variable}
+The directories given in the @env{GROFF_TMAC_PATH} environment
+variable.
+
+@item
+@cindex safer mode
+@cindex mode, safer
+@cindex unsafe mode
+@cindex mode, unsafe
+@cindex current directory
+@cindex directory, current
+The current directory (only if in unsafe mode using the @option{-U}
+command line switch).
+
+@item
+@cindex home directory
+@cindex directory, home
+The home directory.
+
+@item
+@cindex site-specific directory
+@cindex directory, site-specific
+@cindex platform-specific directory
+@cindex directory, platform-specific
+A site-specific (platform-independent) directory, a platform-specific
+directory, and the main tmac directory; the default locations are
+
+@Example
+/usr/local/share/groff/site-tmac
+/usr/local/lib/groff/site-tmac
+/usr/local/share/groff/1.18/tmac
+@endExample
+
+@noindent
+assuming that the version of @code{groff} is 1.18, and the installation
+prefix was @file{/usr/local}.  It is possible to fine-tune those
+directories during the installation process.
+@end itemize
+
+
+@c =====================================================================
+
+@node Invocation Examples,  , Macro Directories, Invoking groff
 @section Invocation Examples
 @cindex invocation examples
 @cindex examples of invocation
@@ -1969,24 +2062,26 @@ sacred to be touched.
 And there are also indented paragraphs which begin with a tag or label
 at the margin and the remaining text indented.
 
-@example
-@group
+@Example
 one   This is  the first paragraph.  Notice  how the first
       line of  the resulting  paragraph lines up  with the
       other lines in the paragraph.
-@end group
-@group
+@endExample
+@Example
 longlabel
       This  paragraph   had  a  long   label.   The  first
       character of text on the first line does not line up
       with  the  text  on  second  and  subsequent  lines,
       although they line up with each other.
-@end group
-@end example
+@endExample
 
 A variation of this is a bulleted list.
 
-@c XXX description
+@Example
+.     Bulleted lists start with a bullet.   It is possible
+      to use other characters instead of the bullet.
+@endExample
+
 
 @c ---------------------------------------------------------------------
 
@@ -9021,8 +9116,8 @@ provides the scaling factor.
 For example, if the scaling factor is 1000,
 then the value 12000 is 12@w{ }points.
 
-Each argument can be a single point size (such as 12000),
-or a range of sizes (such as 4000-72000).
+Each argument can be a single point size (such as @samp{12000}),
+or a range of sizes (such as @samp{4000-72000}).
 You can optionally end the list with a zero.
 @endDefreq
 
@@ -10612,7 +10707,7 @@ the default behaviour of @code{ditroff}).
 @end table
 @endDefesc
 
-@xref{Drawing Functions}.
+@xref{Graphics Commands}.
 
 @Defesc {\\b, ', string, '}
 @cindex pile, character (@code{\b})
@@ -11069,8 +11164,7 @@ in the return value of the @code{.h} register.
 After completing a diversion, the read-write number registers @code{dn}
 and @code{dl} contain the vertical and horizontal size of the diversion.
 
-@example
-@group
+@Example
 .\" Center text both horizontally & vertically
 .
 .\" Enclose macro definitions in .eo and .ec
@@ -11085,8 +11179,8 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 .  nf
 .  di @@c
 ..
-@end group
-@group
+@endExample
+@Example
 .\" macro .)c terminates centering mode
 .de )c
 .  br
@@ -11106,8 +11200,7 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 ..
 .\" End of macro definitions, restore escape mechanism
 .ec
-@end group
-@end example
+@endExample
 @endDefreg
 
 @DefescList {\\!, , , }
@@ -11489,6 +11582,10 @@ large documents, e.g.@: keeping each chapter in a separate file.
 Read the standard output from the specified @var{command}
 and includes it in place of the @code{pso} request.
 
+@cindex safer mode
+@cindex mode, safer
+@cindex unsafe mode
+@cindex mode, unsafe
 This request causes an error if used in safer mode (which is the default).
 Use @code{groff}'s or @code{troff}'s @option{-U} option to activate unsafe
 mode.
@@ -11622,6 +11719,10 @@ Pipe the output of @code{gtroff} to the shell command(s)
 specified by @var{pipe}.  This request must occur before
 @code{gtroff} has a chance to print anything.
 
+@cindex safer mode
+@cindex mode, safer
+@cindex unsafe mode
+@cindex mode, unsafe
 @code{pi} causes an error if used in safer mode (which is the default).
 Use @code{groff}'s or @code{troff}'s @option{-U} option to activate unsafe
 mode.
@@ -11648,6 +11749,10 @@ the specified commands.  Consequently, calling @code{groff} without the
 Execute the shell command(s) specified by @var{cmds}.  The output is not
 saved anyplace, so it is up to the user to do so.
 
+@cindex safer mode
+@cindex mode, safer
+@cindex unsafe mode
+@cindex mode, unsafe
 This request causes an error if used in safer mode (which is the default).
 Use @code{groff}'s or @code{troff}'s @option{-U} option to activate unsafe
 mode.
@@ -11689,6 +11794,10 @@ associates the specified @var{stream} with it.
 The @code{opena} request is like @code{open}, but if the file exists,
 append to it instead of truncating it.
 
+@cindex safer mode
+@cindex mode, safer
+@cindex unsafe mode
+@cindex mode, unsafe
 Both @code{open} and @code{opena} cause an error if used in safer mode
 (which is the default).  Use @code{groff}'s or @code{troff}'s @option{-U}
 option to activate unsafe mode.
@@ -11803,7 +11912,7 @@ as a macro and thus contain newlines (it is not permitted for the
 argument to @code{\X} to contain newlines).  The inclusion of
 newlines requires an extension to the @acronym{UNIX} @code{troff}
 output format, and confuses drivers that do not know about this
-extension (@pxref{Line Continuation}).
+extension (@pxref{Device Control Commands}).
 @endDefesc
 
 @xref{Output Devices}.
@@ -11919,13 +12028,30 @@ there are programs available for doing this (they are called
 @code{nrchbar} and @code{changebar} and can be found in any
 @samp{comp.sources.unix} archive.
 
-@c XXX example
-
-@ignore
 @Example
-... margin char example ...
+.ll 3i
+.mc |
+This paragraph is highlighted with a margin
+character.
+.sp
+Note that vertical space isn't marked.
+.br
+\&
+.br
+But we can fake it with `\&'.
 @endExample
-@end ignore
+
+Result:
+
+@Example
+This  paragraph is highlighted |
+with a margin character.       |
+
+Note that vertical space isn't |
+marked.                        |
+                               |
+But we can fake it with `\&'.  |
+@endExample
 @endDefreq
 
 @DefreqList {psbb, filename}
@@ -12959,16 +13085,16 @@ by the @code{pre-grohtml} preprocessor.  @code{pre-grohtml} reads in
 the @code{troff} input, marks up the inline equations and passes the
 result firstly to
 
-@example
+@Example
 troff -Tps -rps4html=1 -dwww-image-template=@var{template}
-@end example
+@endExample
 
 @noindent
 and secondly to
 
-@example
+@Example
 troff -Thtml
-@end example
+@endExample
 
 The PostScript device is used to create all the image files, and the
 register @code{ps4html} enables the macro sets to ignore floating
@@ -13026,276 +13152,883 @@ template name or the default name.
 @cindex @code{gtroff}, output
 @cindex output, @code{gtroff}
 
-This section describes the format output of GNU @code{troff}.  The
-output format used by GNU @code{troff} is very similar -- but
-not identical -- to that used by
-@acronym{UNIX} device-independent @code{troff} (@code{ditroff}).
+This section describes the intermediate output format of GNU
+@code{troff}.  This output is produced by a run of @code{gtroff}
+before it is fed into a device postprocessor program.
+
+As @code{groff} is a wrapper program around @code{gtroff} that
+automatically calls a postprocessor, this output does not show up
+normally.  This is why it is called @dfn{intermediate}.
+@code{groff} provides the option @option{-Z} to inhibit postprocessing,
+such that the produced intermediate output is sent to standard output
+just like calling @code{gtroff} manually.
+
+@cindex troff output
+@cindex output, troff
+@cindex intermediate output
+@cindex output, intermediate
+Here, the term @dfn{troff output} describes what is output by
+@code{gtroff}, while @dfn{intermediate output} refers to the language
+that is accepted by the parser that prepares this output for the
+postprocessors.  This parser is smarter on whitespace and implements
+obsolete elements for compatibility, otherwise both formats are the
+same.@footnote{The parser and postprocessor for intermediate output
+can be found in the file@*
+@file{@var{groff-source-dir}/src/libs/libdriver/input.cc}.}
+
+The main purpose of the intermediate output concept is to facilitate
+the development of postprocessors by providing a common programming
+interface for all devices.  It has a language of its own that is
+completely different from the @code{gtroff} language.  While the
+@code{gtroff} language is a high-level programming language for text
+processing, the intermediate output language is a kind of low-level
+assembler language by specifying all positions on the page for writing
+and drawing.
+
+The intermediate output produced by @code{gtroff} is fairly readable,
+while output from @acronym{AT&T} @code{troff} is rather hard to
+understand because of strange habits that are still supported, but not
+used any longer by @code{gtroff}.
 
 @menu
-* Output Format::
-* Device Control::
-* Drawing Functions::
-* Line Continuation::
+* Language Concepts::
+* Command Reference::
+* Intermediate Output Examples::
+* Output Language Compatibility::
 @end menu
 
 @c ---------------------------------------------------------------------
 
-@node Output Format, Device Control, gtroff Output, gtroff Output
-@subsection Output Format
-@cindex output format
-@cindex format of output
+@node Language Concepts, Command Reference, gtroff Output, gtroff Output
+@subsection Language Concepts
 
-@cindex 8-bit input
-@cindex input, 8-bit
-The output format is text based, as opposed to a binary format (like
-@TeX{} DVI).  The output format is @w{8-bit} clean, thus single
-characters can have the eighth bit set, as can the names of fonts and
-special characters.
+During the run of @code{gtroff}, the input data is cracked down to the
+information on what has to be printed at what position on the intended
+device.  So the language of the intermediate output format can be quite
+small.  Its only elements are commands with and without arguments.
+In this section, the term @dfn{command} always refers to the intermediate
+output language, and never to the @code{gtroff} language used for document
+formatting.  There are commands for positioning and text writing, for drawing, and
+for device controlling.
 
-The output format consists of single command characters with attached
-parameters which are separated from subsequent text by whitespace or a
-newline.
+@menu
+* Separation::
+* Argument Units::
+* Document Parts::
+@end menu
 
-The names of characters and fonts can be of arbitrary length; drivers
-should not assume that they are only two characters long (as
-@code{ditroff} does).
+@node Separation, Argument Units, Language Concepts, Language Concepts
+@subsubsection Separation
 
-When a character is to be printed, that character is always in the
-current font.  Unlike @code{ditroff}, it is not necessary for drivers to
-search special fonts to find a character.
+@acronym{AT&T} @code{troff} output has strange requirements on whitespace.
+The @code{gtroff} output parser, however, is smart about whitespace by
+making it maximally optional.  The whitespace characters, i.e., the
+tab, space, and newline characters, always have a syntactical meaning.
+They are never printable because spacing within the output is always
+done by positioning commands.
 
-@table @code
-@item H@var{n}
-@c XXX
+Any sequence of space or tab characters is treated as a single
+@dfn{syntactical space}.  It separates commands and arguments, but is
+only required when there would occur a clashing between the command code
+and the arguments without the space.  Most often, this happens when
+variable-length command names, arguments, argument lists, or command
+clusters meet.  Commands and arguments with a known, fixed length need
+not be separated by syntactical space.
 
-@item V@var{n}
-@c XXX
+A line break is a syntactical element, too.  Every command argument can be
+followed by whitespace, a comment, or a newline character.  Thus a
+@dfn{syntactical line break} is defined to consist of optional
+syntactical space that is optionally followed by a comment, and a
+newline character.
 
-@item h@var{n}
-@c XXX
+The normal commands, those for positioning and text, consist of a
+single letter taking a fixed number of arguments.  For historical reasons,
+the parser allows to stack such commands on the same line, but
+fortunately, in @code{gtroff}'s intermediate output, every command with
+at least one argument is followed by a line break, thus providing
+excellent readability.
 
-@item v@var{n}
-@c XXX
+The other commands -- those for drawing and device controlling --
+have a more complicated structure; some recognize long command names,
+and some take a variable number of arguments.  So all @samp{D} and
+@samp{x} commands were designed to request a syntactical line break
+after their last argument.  Only one command, @w{@samp{x X}},
+has an argument that can stretch over several lines; all other
+commands must have all of their arguments on the same line as the
+command, i.e., the arguments may not be splitted by a line break.
 
-@item c@var{n}
-@c XXX
+Empty lines (these are lines containing only space and/or a comment), can
+occur everywhere.  They are just ignored.
 
-@item C@var{n}
-@c XXX
+@node Argument Units, Document Parts, Separation, Language Concepts
+@subsubsection Argument Units
 
-@item @var{nn}@var{c}
-@c XXX
+Some commands take integer arguments that are assumed to represent
+values in a measurement unit, but the letter for the corresponding
+scale indicator is not written with the output command arguments.
+Most commands assume the scale indicator @samp{u}, the basic unit of
+the device, some use @samp{z}, the scaled point unit of the device,
+while others, such as the color commands, expect plain integers.
 
-@item t@var{xxx}
-@var{xxx} is any sequence of characters terminated by a space or a
-newline; the first character should be printed at the current position,
-the the current horizontal position should be increased by the width of
-the first character, and so on for each character.  The width of the
-character is that given in the font file, appropriately scaled for the
-current point size, and rounded so that it is a multiple of the
-horizontal resolution.  Special characters cannot be printed using this
-command.
+Note that single characters can have the eighth bit set, as can the
+names of fonts and special characters.  The names of characters and
+fonts can be of arbitrary length.  A character that is to be printed
+will always be in the current font.
 
-@kindex tcommand
-@pindex DESC@r{, and @code{tcommand}}
-This command is only allowed if the @samp{tcommand} line is present in
-the @file{DESC} file.
+A string argument is always terminated by the next whitespace
+character (space, tab, or newline); an embedded @samp{#} character is
+regarded as part of the argument, not as the beginning of a comment
+command.  An integer argument is already terminated by the next
+non-digit character, which then is regarded as the first character of
+the next argument or command.
 
-@item u@var{n} @var{xxx}
-This is same as the @samp{t} command except that after printing each
-character, the current horizontal position is increased by the sum of
-the width of that character and@w{ }@var{n}.
+@node Document Parts,  , Argument Units, Language Concepts
+@subsubsection Document Parts
 
-This command is only allowed if the @samp{tcommand} line is present in
-the @file{DESC} file.
+A correct intermediate output document consists of two parts, the
+@dfn{prologue} and the @dfn{body}.
 
-@item n@var{a}@var{b}
-@c XXX
-
-@item p@var{n}
-@c XXX
-
-@item s@var{n}
-@kindex sizescale
-@pindex DESC@r{, and @code{sizescale}}
-The argument to the @samp{s} command is in scaled points (units of
-points/@var{n}, where @var{n} is the argument to the @samp{sizescale}
-command in the @file{DESC} file).
-
-@item f@var{n}
-@item x @dots{} \n
-Device control.
-@c XXX more info
-
-@item D@var{c} @var{x}@dots{}\n
-@c XXX
-@end table
-
-@c ---------------------------------------------------------------------
-
-@node Device Control, Drawing Functions, Output Format, gtroff Output
-@subsection Device Control
-@cindex device control
-@cindex control of devices
-
-The @samp{x} command is normally followed by a letter or word indicating
-the function to perform, followed by whitespace separated arguments.
-
-The first argument can be abbreviated to the first letter.
-
-@table @code
-@item x init
-@c XXX
-
-@item x T
-@c XXX
-
-@item x res @var{n} @var{h} @var{v}
-@c XXX
-
-@item x H
-@c XXX more info
-The argument to the @w{@samp{x Height}} command is also in scaled
-points.
-@end table
-
-The first three output commands are guaranteed to be:
+The task of the prologue is to set the general device parameters
+using three exactly specified commands.  @code{gtroff}'s prologue
+is guaranteed to consist of the following three lines (in that order):
 
 @Example
-x T device
-x res n h v
+x T @var{device}
+x res @var{n} @var{h} @var{v}
 x init
 @endExample
 
 @noindent
-For example, the input
+with the arguments set as outlined in @ref{Device Control Commands}.
+Note that the parser for the intermediate output format is able to
+swallow additional whitespace and comments as well even in the
+prologue.
 
-@Example
-crunchy \fH\s+2frog\s0\fP!?
-@endExample
+The body is the main section for processing the document data.
+Syntactically, it is a sequence of any commands different from the
+ones used in the prologue.  Processing is terminated as soon as the
+first @w{@samp{x stop}} command is encountered; the last line of any
+@code{gtroff} intermediate output always contains such a command.
 
-@noindent
-produces
-
-@c XXX example
-
-@ignore
-@Example
-... sample output here ...
-@endExample
-@end ignore
+Semantically, the body is page oriented.  A new page is started by a
+@samp{p} command.  Positioning, writing, and drawing commands are
+always done within the current page, so they cannot occur before the
+first @samp{p} command.  Absolute positioning (by the @samp{H} and
+@samp{V} commands) is done relative to the current page; all other
+positioning is done relative to the current location within this page.
 
 @c ---------------------------------------------------------------------
 
-@node Drawing Functions, Line Continuation, Device Control, gtroff Output
-@subsection Drawing Functions
-@cindex drawing functions
-@cindex functions for drawing
+@node Command Reference, Intermediate Output Examples, Language Concepts, gtroff Output
+@subsection Command Reference
 
-@pindex gpic
-The @samp{D} drawing command has been extended.  These extensions are
-used by GNU @code{pic} only if the @option{-x} option is given.
+This section describes all intermediate output commands, both from
+@acronym{AT&T} @code{troff} as well as the @code{gtroff} extensions.
 
-@xref{Drawing Requests}.
+@menu
+* Comment Command::
+* Simple Commands::
+* Graphics Commands::
+* Device Control Commands::
+* Obsolete Command::
+@end menu
+
+@node Comment Command, Simple Commands, Command Reference, Command Reference
+@subsubsection Comment Command
 
 @table @code
-@c XXX ...
-@item Df @var{n}
-Set the shade of gray to be used for filling solid objects to@w{
-}@var{n}; @var{n}@w{ }must be an integer between 0 and@w{ }1000, where 0
-corresponds solid white and 1000 to solid black, and values in between
-correspond to intermediate shades of gray.  This applies only to solid
-circles, solid ellipses and solid polygons.  By default, a level of@w{
-}1000 is used.  Whatever color a solid object has, it should
-completely obscure everything beneath it.  A value greater than@w{ }1000
-or less than@w{ }0 can also be used: this means fill with the shade of
-gray that is currently being used for lines and text.  Normally this
-is black, but some drivers may provide a way of changing this.
+@item #@var{anything}@angles{end of line}
+A comment.  Ignore any characters from the @samp{#} character up to
+the next newline character.
 
-@item DC @var{d}
-Draw a solid circle with a diameter of@w{ }@var{d} with the leftmost
-point at the current position.
-
-@item DE @var{dx} @var{dy}
-Draw a solid ellipse with a horizontal diameter of@w{ }@var{dx} and a
-vertical diameter of@w{ }@var{dy} with the leftmost point at the current
-position.
-
-@item Dp @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{} @var{dxn} @var{dyn}
-Draw a polygon with automatic closure.  The first vertex is at the
-current position, the second vertex at an offset (@var{dx1},@var{dy1})
-from the current position, the second vertex at an offset
-(@var{dx2},@var{dy2}) from the first vertex, and so on up to the
-@var{n}@dmn{th} vertex.  At the moment, GNU @code{pic} only uses this
-command to generate triangles and rectangles.
-
-@item DP @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{} @var{dxn} @var{dyn}
-Like @code{Dp} but draw a solid rather than outlined polygon.
-
-@item Dt @var{n}
-@cindex line thickness
-@cindex thickness of lines
-Set the current line thickness to @var{n}@w{ }machine units.
-Traditionally, @acronym{UNIX} @code{troff} drivers use a line thickness
-proportional to the current point size; drivers should continue to do
-this if no @code{Dt} command has been given, or if a @code{Dt} command
-has been given with a negative value of@w{ }@var{n}.  A zero value of@w{
-}@var{n} selects the smallest available line thickness.
+This command is the only possibility for commenting in the intermediate
+output.  Each comment can be preceded by arbitrary syntactical space;
+every command can be terminated by a comment.
 @end table
 
-A difficulty arises in how the current position should be changed after
-the execution of these commands.  This is not of great importance since
-the code generated by GNU @code{pic} does not depend on this.  Given a
-drawing command of the form
+@node Simple Commands, Graphics Commands, Comment Command, Command Reference
+@subsubsection Simple Commands
+
+The commands in this subsection have a command code consisting of a
+single character, taking a fixed number of arguments.  Most of them
+are commands for positioning and text writing.  These commands are
+smart about whitespace.  Optionally, syntactical space can be inserted
+before, after, and between the command letter and its arguments.
+All of these commands are stackable, i.e., they can be preceded by
+other simple commands or followed by arbitrary other commands on the
+same line.  A separating syntactical space is only necessary when two
+integer arguments would clash or if the preceding argument ends with a
+string argument.
+
+@table @code
+@ignore
+.if (\n[@USE_ENV_STACK] == 1) \{\
+.command {
+Open a new environment by copying the actual device configuration data
+to the environment stack.
+.
+The current environment is setup by the device specification and
+manipulated by the setting commands.
+.
+.
+.command }
+Close the actual environment (opened by a preceding
+.BR { \~command)
+and restore the previous environment from the environment
+stack as the actual device configuration data.
+.
+\}              \" endif @USE_ENV_STACK
+@end ignore
+
+@item C @var{xxx}@angles{whitespace}
+Print a special groff character named @var{xxx}.  The trailing
+syntactical space or line break is necessary to allow character names
+of arbitrary length.  The character is printed at the current print
+position; the character's size is read from the font file.  The print
+position is not changed.
+
+@item c @var{c}
+Print character@w{ }@var{c} at the current print position; the
+character's size is read from the font file.  The print position is
+not changed.
+
+@item f @var{n}
+Set font to font number@w{ }@var{n} (a non-negative integer).
+
+@item H @var{n}
+Move right to the absolute vertical position@w{ }@var{n} (a
+non-negative integer in basic units @samp{u} relative to left edge
+of current page.
+
+@item h @var{n}
+Move @var{n} (a non-negative integer) basic units @samp{u} horizontally
+to the right.  The original @acronym{UNIX} troff manual allows negative
+values for @var{n} also, but @code{gtroff} doesn't use this.
+
+@item m @var{color-scheme} @r{[}@var{component} @dots{}@r{]}
+Set the color for text (glyphs), line drawing, and the outline of
+graphic objects using different color schemes; the analoguous command
+for the filling color of graphic objects is @samp{DF}.  The color
+components are specified as integer arguments between 0 and 65536.
+The number of color components and their meaning vary for the
+different color schemes.  These commands are generated by
+@code{gtroff}'s escape sequence @code{\m}.  No position changing.
+These commands are a @code{gtroff} extension.
+
+@table @code
+@item mc @var{cyan} @var{magenta} @var{yellow}
+Set color using the CMY color scheme, having the 3@w{ }color components
+@var{cyan}, @var{magenta}, and @var{yellow}.
+
+@item md
+Set color to the default color value (black in most cases).
+No component arguments.
+
+@item mg @var{gray}
+Set color to the shade of gray given by the argument, an integer
+between 0 (black) and 65536 (white).
+
+@item mk @var{cyan} @var{magenta} @var{yellow} @var{black}
+Set color using the CMYK color scheme, having the 4@w{ }color components
+@var{cyan}, @var{magenta}, @var{yellow}, and @var{black}.
+
+@item mr @var{red} @var{green} @var{blue}
+Set color using the RGB color scheme, having the 3@w{ }color components
+@var{red}, @var{green}, and @var{blue}.
+
+@end table
+
+@item N @var{n}
+Print character with index@w{ }@var{n} (a non-negative integer) of the
+current font.  This command is a @code{gtroff} extension.
+
+@item n @var{b} @var{a}
+Inform the device about a line break, but no positioning is done by
+this command.  In @acronym{AT&T} @code{troff}, the integer arguments
+@var{b} and@w{ }@var{a} informed about the space before and after the
+current line to make the intermediate output more human readable
+without performing any action.  In groff, they are just ignored, but
+they must be provided for compatibility reasons.
+
+@item p @var{n}
+Begin a new page in the outprint.  The page number is set
+to@w{ }@var{n}.  This page is completely independent of pages formerly
+processed even if those have the same page number.  The vertical
+position on the outprint is automatically set to@w{ }0.  All
+positioning, writing, and drawing is always done relative to a page,
+so a @samp{p} command must be issued before any of these commands.
+
+@item s @var{n}
+Set point size to @var{n}@w{ }scaled points (this is unit @samp{z}).
+@acronym{AT&T} @code{troff} used the unit points (@samp{p}) instead.
+@xref{Output Language Compatibility}.
+
+@item t @var{xxx}@angles{whitespace}
+@itemx t @var{xxx} @var{dummy-arg}@angles{whitespace}
+Print a word, i.e., a sequence of characters @var{xxx} terminated by
+a space character or a line break; an optional second integer argument
+is ignored (this allows the formatter to generate an even number of
+arguments).  The first character should be printed at the current
+position, the current horizontal position should then be increased by
+the width of the first character, and so on for each character.
+The widths of the characters are read from the font file, scaled for the
+current point size, and rounded to a multiple of the horizontal
+resolution.  Special characters cannot be printed using this command
+(use the @samp{C} command for named characters).  This command is a
+@code{gtroff} extension; it is only used for devices whose @file{DESC}
+file contains the @code{tcommand} keyword (@pxref{DESC File Format}).
+
+@item u @var{n} @var{xxx}@angles{whitespace}
+Print word with track kerning.  This is the same as the @samp{t}
+command except that after printing each character, the current
+horizontal position is increased by the sum of the width of that
+character and@w{ }@var{n} (an integer in basic units @samp{u}).
+This command is a @code{gtroff} extension; it is only used for devices
+whose @file{DESC} file contains the @code{tcommand} keyword
+(@pxref{DESC File Format}).
+
+@item V @var{n}
+Move down to the absolute vertical position@w{ }@var{n} (a
+non-negative integer in basic units @samp{u}) relative to upper edge
+of current page.
+
+@item v @var{n}
+Move @var{n}@w{ }basic units @samp{u} down (@var{n} is a non-negative
+integer).  The original @acronym{UNIX} troff manual allows negative
+values for @var{n} also, but @code{gtroff} doesn't use this.
+
+@item w
+Informs about a paddable white space to increase readability.
+The spacing itself must be performed explicitly by a move command.
+
+@end table
+
+@node Graphics Commands, Device Control Commands, Simple Commands, Command Reference
+@subsubsection Graphics Commands
+
+Each graphics or drawing command in the intermediate output starts
+with the letter @samp{D}, followed by one or two characters that
+specify a subcommand; this is followed by a fixed or variable number
+of integer arguments that are separated by a single space character.
+A @samp{D} command may not be followed by another command on the same line
+(apart from a comment), so each @samp{D} command is terminated by a
+syntactical line break.
+
+@code{gtroff} output follows the classical spacing rules (no space
+between command and subcommand, all arguments are preceded by a
+single space character), but the parser allows optional space between
+the command letters and makes the space before the first argument
+optional.  As usual, each space can be any sequence of tab and space
+characters.
+
+Some graphics commands can take a variable number of arguments.
+In this case, they are integers representing a size measured in basic
+units @samp{u}.  The arguments called @var{h1}, @var{h2}, @dots{},
+@var{hn} stand for horizontal distances where positive means right,
+negative left.  The arguments called @var{v1}, @var{v2}, @dots{},
+@var{vn} stand for vertical distances where positive means down,
+negative up.  All these distances are offsets relative to the current
+location.
+
+Unless indicated otherwise, each graphics command directly corresponds
+to a similar @code{gtroff} @code{\D} escape sequence.  @xref{Drawing
+Requests}.
+
+Unknown @samp{D} commands are assumed to be device-specific.
+Its arguments are parsed as strings; the whole information is then
+sent to the postprocessor.
+
+In the following command reference, the syntax element
+@angles{line break} means a syntactical line break as defined above.
+
+@table @code
+@item D~ @var{h1} @var{v1} @var{h2} @var{v2} @dots{} @var{hn} @var{vn}@angles{line break}
+Draw B-spline from current position to offset (@var{h1},@var{v1}),
+then to offset (@var{h2},@var{v2}), if given, etc.@: up to
+(@var{hn},@var{vn}).  This command takes a variable number of argument
+pairs; the current position is moved to the terminal point of the drawn
+curve.
+
+@item Da @var{h1} @var{v1} @var{h2} @var{v2}@angles{line break}
+Draw arc from current position to
+(@var{h1},@var{v1})@math{+}(@var{h2},@var{v2}) with center at
+(@var{h1},@var{v1}); then move the current position to the final point
+of the arc.
+
+@item DC @var{d}@angles{line break}
+@itemx DC @var{d} @var{dummy-arg}@angles{line break}
+Draw a solid circle using the current fill color with
+diameter@w{ }@var{d} (integer in basic units @samp{u}) with leftmost
+point at the current position; then move the current position to the
+rightmost point of the circle.  An optional second integer argument is
+ignored (this allows the formatter to generate an even number of
+arguments).  This command is a @code{gtroff} extension.
+
+@item Dc @var{d}@angles{line break}
+Draw circle line with diameter@w{ }@var{d} (integer in basic units
+@samp{u}) with leftmost point at the current position; then move the
+current position to the rightmost point of the circle.
+
+@item DE @var{h} @var{v}@angles{line break}
+Draw a solid ellipse in the current fill color with a horizontal
+diameter of@w{ }@var{h} and a vertical diameter of@w{ }@var{v} (both
+integers in basic units @samp{u}) with the leftmost point at the
+current position; then move to the rightmost point of the ellipse.
+This command is a @code{gtroff} extension.
+
+@item De @var{h} @var{v}@angles{line break}
+Draw an outlined ellipse with a horizontal diameter of@w{ }@var{h}
+and a vertical diameter of@w{ }@var{v} (both integers in basic units
+@samp{u}) with the leftmost point at current position; then move to
+the rightmost point of the ellipse.
+
+@item DF @var{color-scheme} @r{[}@var{component} @dots{}@r{]}@angles{line break}
+Set fill color for solid drawing objects using different color
+schemes; the analoguous command for setting the color of text, line
+graphics, and the outline of graphic objects is @samp{m}.
+The color components are specified as integer arguments between 0 and
+65536.  The number of color components and their meaning vary for the
+different color schemes.  These commands are generated by @code{gtroff}'s
+escape sequences @w{@code{\D'F @dots{}'}} and @code{\M} (with no other
+corresponding graphics commands).  No position changing.  This command
+is a @code{gtroff} extension.
+
+@table @code
+@item DFc @var{cyan} @var{magenta} @var{yellow}@angles{line break}
+Set fill color for solid drawing objects using the CMY color scheme,
+having the 3@w{ }color components @var{cyan}, @var{magenta}, and
+@var{yellow}.
+
+@item DFd@angles{line break}
+Set fill color for solid drawing objects to the default fill color value
+(black in most cases).  No component arguments.
+
+@item DFg @var{gray}@angles{line break}
+Set fill color for solid drawing objects to the shade of gray given by
+the argument, an integer between 0 (black) and 65536 (white).
+
+@item DFk @var{cyan} @var{magenta} @var{yellow} @var{black}@angles{line break}
+Set fill color for solid drawing objects using the CMYK color scheme,
+having the 4@w{ }color components @var{cyan}, @var{magenta}, @var{yellow},
+and @var{black}.
+
+@item DFr @var{red} @var{green} @var{blue}@angles{line break}
+Set fill color for solid drawing objects using the RGB color scheme,
+having the 3@w{ }color components @var{red}, @var{green}, and @var{blue}.
+
+@end table
+
+@item Df @var{n}@angles{line break}
+The argument@w{ }@var{n} must be an integer in the range @math{-32767}
+to 32767.
+
+@table @asis
+@item @math{0 @LE @var{n} @LE 1000}
+Set the color for filling solid drawing objects to a shade of gray,
+where 0 corresponds to solid white, 1000 (the default) to solid black,
+and values in between to intermediate shades of gray; this is
+obsoleted by command @samp{DFg}.
+
+@item @math{@var{n} @LT 0} or @math{@var{n} @LT 1000}
+Set the filling color to the color that is currently being used for
+the text and the outline, see command @samp{m}.  For example, the
+command sequence
 
 @Example
-\D'@var{c} @var{x1} @var{y1} @var{x2} @var{y2} @dots{} @var{xn} @var{yn}'
-@endExample
-
-@cindex @code{\w}, and drawing commands
-@cindex @code{st} register, and drawing commands
-@cindex @code{sb} register, and drawing commands
-@noindent
-where @var{c} is not one of @samp{c}, @samp{e}, @samp{l}, @samp{a} or
-@samp{~}, @acronym{UNIX} @code{troff} treats each x@w{ }value
-as a horizontal quantity, and each y@w{ }value as a vertical
-quantity; it assumes that the width of the drawn object is the sum of
-all x@w{ }values, and that the height is the sum of all y@w{ }values.
-(The assumption about the height can be seen by examining the @code{st}
-and @code{sb} registers after using such a @code{D}@w{ }command in a
-@code{\w} escape sequence.)  This rule also holds for all the original
-drawing commands with the exception of @code{De}.  For the sake of
-compatibility GNU @code{troff} also follows this rule, even though it
-produces an ugly result in the case of the @code{Df}, @code{Dt}, and, to
-a lesser extent, @code{DE}@w{ }commands.  Thus after executing a
-@code{D}@w{ }command of the form
-
-@Example
-D@var{c} @var{x1} @var{y1} @var{x2} @var{y2} @dots{} @var{xn} @var{yn}
+mg 0 0 65536
+Df -1
 @endExample
 
 @noindent
-the current position should be increased horizontally by the sum of all
-x@w{ }values and vertically by the sum of all y@w{ }values.
+sets all colors to blue.
+
+@end table
+
+@noindent
+No position changing.  This command is a @code{gtroff} extension.
+
+@item Dl @var{h} @var{v}@angles{line break}
+Draw line from current position to offset (@var{h},@var{v}) (integers
+in basic units @samp{u}); then set current position to the end of the
+drawn line.
+
+@item Dp @var{h1} @var{v1} @var{h2} @var{v2} @dots{} @var{hn} @var{vn}@angles{line break}
+Draw a polygon line from current position to offset (@var{h1},@var{v1}),
+from there to offset (@var{h2},@var{v2}), etc.@: up to offset
+(@var{hn},@var{vn}), and from there back to the starting position.
+For historical reasons, the position is changed by adding the sum of
+all arguments with odd index to the actual horizontal position and the
+even ones to the vertical position.  Although this doesn't make sense
+it is kept for compatibility.
+@ignore
+As the polygon is closed, the end of drawing is the starting point, so
+the position doesn't change.
+@end ignore
+This command is a @code{gtroff} extension.
+
+@item Dp @var{h1} @var{v1} @var{h2} @var{v2} @dots{} @var{hn} @var{vn}@angles{line break}
+Draw a solid polygon in the current fill color rather than an outlined
+polygon, using the same arguments and positioning as the corresponding
+@samp{Dp} command.
+@ignore
+No position changing.
+@end ignore
+This command is a @code{gtroff} extension.
+
+@item Dt @var{n}@angles{line break}
+Set the current line thickness to@w{ }@var{n} (an integer in basic
+units @samp{u}) if @math{@var{n}>0}; if @math{@var{n}=0} select the
+smallest available line thickness; if @math{@var{n}<0} set the line
+thickness proportional to the point size (this is the default before
+the first @samp{Dt} command was specified).  For historical reasons,
+the horizontal position is changed by adding the argument to the actual
+horizontal position, while the vertical position is not changed.
+Although this doesn't make sense it is kept for compatibility.
+@ignore
+No position changing.
+@end ignore
+This command is a @code{gtroff} extension.
+
+@end table
+
+@node Device Control Commands, Obsolete Command, Graphics Commands, Command Reference
+@subsubsection Device Control Commands
+
+Each device control command starts with the letter @samp{x},
+followed by a space character (optional or arbitrary space or tab in
+@code{gtroff}) and a subcommand letter or word; each argument (if any)
+must be preceded by a syntactical space.  All @samp{x} commands are
+terminated by a syntactical line break; no device control command can
+be followed by another command on the same line (except a comment).
+
+The subcommand is basically a single letter, but to increase
+readability, it can be written as a word, i.e., an arbitrary sequence
+of characters terminated by the next tab, space, or newline character.
+All characters of the subcommand word but the first are simply ignored.
+For example, @code{gtroff} outputs the initialization command
+@w{@samp{x i}} as @w{@samp{x init}} and the resolution command
+@w{@samp{x r}} as @w{@samp{x res}}.
+
+In the following, the syntax element @angles{line break} means a
+syntactical line break (@pxref{Separation}).
+
+@table @code
+@item xF @var{name}@angles{line break}
+The @samp{F} stands for @var{Filename}.
+
+Use @var{name} as the intended name for the current file in error
+reports.  This is useful for remembering the original file name when
+@code{gtroff} uses an internal piping mechanism.  The input file is
+not changed by this command.  This command is a @code{gtroff} extension.
+
+@item xf @var{n} @var{s}@angles{line break}
+The @samp{f} stands for @var{font}.
+
+Mount font position@w{ }@var{n} (a non-negative integer) with font
+named@w{ }@var{s} (a text word).  @xref{Font Positions}.
+
+@item xH @var{n}@angles{line break}
+The @samp{H} stands for @var{Height}.
+
+Set character height to@w{ }@var{n} (a positive integer in scaled
+points @samp{z}).  @acronym{AT&T} @code{troff} uses the unit points
+(@samp{p}) instead.  @xref{Output Language Compatibility}.
+
+@item xi@angles{line break}
+The @samp{i} stands for @var{init}.
+
+Initialize device.  This is the third command of the prologue.
+
+@item xp@angles{line break}
+The @samp{p} stands for @var{pause}.
+
+Parsed but ignored.  The original @acronym{UNIX} troff manual writes
+
+@display
+pause device, can be restarted
+@end display
+
+@item xr @var{n} @var{h} @var{v}@angles{line break}
+The @samp{r} stands for @var{resolution}.
+
+Resolution is@w{ }@var{n}, while @var{h} is the minimal horizontal
+motion, and @var{v} the minimal vertical motion possible with this
+device; all arguments are positive integers in basic units @samp{u}
+per inch.  This is the second command of the prologue.
+
+@item xS @var{n}@angles{line break}
+The @samp{S} stands for @var{Slant}.
+
+Set slant to@w{ }@var{n} (an integer in basic units @samp{u}).
+
+@item xs@angles{line break}
+The @samp{s} stands for @var{stop}.
+
+Terminates the processing of the current file; issued as the last
+command of any intermediate troff output.
+
+@item xt@angles{line break}
+The @samp{t} stands for @var{trailer}.
+
+Generate trailer information, if any.  In @var{gtroff}, this is
+actually just ignored.
+
+@item xT @var{xxx}@angles{line break}
+The @samp{T} stands for @var{Typesetter}.
+
+Set name of device to word @var{xxx}, a sequence of characters ended
+by the next white space character.  The possible device names coincide
+with those from the groff @option{-T} option.  This is the first
+command of the prologue.
+
+@item xu @var{n}@angles{line break}
+The @samp{u} stands for @var{underline}.
+
+Configure underlining of spaces.  If @var{n} is@w{ }1, start
+underlining of spaces; if @var{n} is@w{ }0, stop underlining of spaces.
+This is needed for the @code{cu} request in nroff mode and is ignored
+otherwise.  This command is a @code{gtroff} extension.
+
+@item xX @var{anything}@angles{line break}
+The @samp{x} stands for @var{X-escape}.
+
+Send string @var{anything} uninterpreted to the device.  If the line
+following this command starts with a @samp{+} character this line is
+interpreted as a continuation line in the following sense.  The
+@samp{+} is ignored, but a newline character is sent instead to the
+device, the rest of the line is sent uninterpreted.  The same applies
+to all following lines until the first character of a line is not a
+@samp{+} character.  This command is generated by the @code{gtroff}
+escape sequence @code{\X}.  The line-continuing feature is a
+@code{gtroff} extension.
+
+@end table
+
+@node Obsolete Command,  , Device Control Commands, Command Reference
+@subsubsection Obsolete Command
+In @acronym{AT&T} @code{troff} output, the writing of a single
+character is mostly done by a very strange command that combines a
+horizontal move and the printing of a character.  It doesn't have a
+command code, but is represented by a 3-character argument consisting
+of exactly 2@w{ }digits and a character.
+
+@table @asis
+@item @var{dd}@var{c}
+Move right @var{dd} (exactly two decimal digits) basic units @samp{u},
+then print character@w{ }@var{c}.
+
+In @code{gtroff}, arbitrary syntactical space around and within this
+command is allowed to be added.  Only when a preceding command on the
+same line ends with an argument of variable length a separating space
+is obligatory.  In @acronym{AT&T} @code{troff}, large clusters of these
+and other commands are used, mostly without spaces; this made such output
+almost unreadable.
+
+@end table
+
+For modern high-resolution devices, this command does not make sense
+because the width of the characters can become much larger than two
+decimal digits.  In @code{gtroff}, this is only used for the devices
+@code{X75}, @code{X75-12}, @code{X100}, and @code{X100-12}.  For other
+devices, the commands @samp{t} and @samp{u} provide a better
+functionality.
 
 @c ---------------------------------------------------------------------
 
-@node Line Continuation,  , Drawing Functions, gtroff Output
-@subsection Line Continuation
-@cindex line continuation in output commands
-@cindex output commands, line continuation
+@node Intermediate Output Examples, Output Language Compatibility, Command Reference, gtroff Output
+@subsection Intermediate Output Examples
 
-There is a continuation convention which permits the argument to the
-@w{@samp{x X}} command to contain newlines: When outputting the argument
-to the @w{@samp{x X}} command, GNU @code{troff} follows each newline
-in the argument with a @samp{+} character (as usual, it terminates
-the entire argument with a newline); thus if the line after the line
-containing the @w{@samp{x X}} command starts with @samp{+}, then the
-newline ending the line containing the @w{@samp{x X}} command should be
-treated as part of the argument to the @w{@samp{x X}} command, the
-@samp{+} should be ignored, and the part of the line following the
-@samp{+} should be treated like the part of the line following the
-@w{@samp{x X}} command.
+This section presents the intermediate output generated from the same
+input for three different devices.  The input is the sentence
+@samp{hell world} fed into @code{gtroff} on the command line.
+
+@table @asis
+@item High-resolution device @code{ps}
+
+This is the standard output of @code{gtroff} if no @option{-T} option
+is given.
+
+@example
+@group
+shell> echo "hell world" | groff -Z -T ps
+
+x T ps
+x res 72000 1 1
+x init
+@end group
+p1
+x font 5 TR
+f5
+s10000
+V12000
+H72000
+thell
+wh2500
+tw
+H96620
+torld
+n12000 0
+@group
+x trailer
+V792000
+x stop
+@end group
+@end example
+
+@noindent
+This output can be fed into @code{grops} to get its representation as
+a PostScript file.
+
+@item Low-resolution device @code{latin1}
+
+This is similar to the high-resolution device except that the
+positioning is done at a minor scale.  Some comments (lines starting
+with @samp{#}) were added for clarification; they were not generated
+by the formatter.
+
+@example
+@group
+shell> echo "hell world" | groff -Z -T latin1
+
+# prologue
+x T latin1
+x res 240 24 40
+x init
+@end group
+# begin a new page
+p1
+# font setup
+x font 1 R
+f1
+s10
+# initial positioning on the page
+V40
+H0
+# write text `hell'
+thell
+# inform about space, and issue a horizontal jump
+wh24
+# write text `world'
+tworld
+# announce line break, but do nothing because ...
+n40 0
+@group
+# ... the end of the document has been reached
+x trailer
+V2640
+x stop
+@end group
+@end example
+
+@noindent
+This output can be fed into @code{grotty} to get a formatted text
+document.
+
+@item @code{AT&T} @code{troff} output
+Since a computer monitor has a very low resolution compared to modern
+printers the intermediate output for the X@w{ }devices can use the
+jump-and-write command with its 2-digit displacements.
+
+@example
+@group
+shell> echo "hell world" | groff -Z -T X100
+
+x T X100
+x res 100 1 1
+x init
+@end group
+p1
+x font 5 TR
+f5
+s10
+V16
+H100
+# write text with jump-and-write commands
+ch07e07l03lw06w11o07r05l03dh7
+n16 0
+@group
+x trailer
+V1100
+x stop
+@end group
+@end example
+
+@noindent
+This output can be fed into @code{xditview} or @code{gxditview}
+for displaying in@w{ }X.
+
+Due to the obsolete jump-and-write command, the text clusters in the
+@acronym{AT&T} @code{troff} output are almost unreadable.
+
+@end table
+
+@c ---------------------------------------------------------------------
+
+@node Output Language Compatibility,  , Intermediate Output Examples, gtroff Output
+@subsection Output Language Compatibility
+
+The intermediate output language of @acronym{AT&T} @code{troff}
+was first documented in the @acronym{UNIX} troff manual, with later
+additions documented in @cite{A Typesetter-indenpendent TROFF},
+written by Brian Kernighan.
+
+The @code{gtroff} intermediate output format is compatible with this
+specification except for the following features.
+
+@itemize @bullet
+@item
+The classical quasi device independence is not yet implemented.
+
+@item
+The old hardware was very different from what we use today.  So the
+@code{groff} devices are also fundamentally different from the ones in
+@acronym{AT&T} @code{troff}.  For example, the @acronym{AT&T}
+PostScript device is called @code{post} and has a resolution of only
+720 units per inch, suitable for printers 20 years ago, while
+@code{groff}'s @code{ps} device has a resolution of
+72000 units per inch.  Maybe, by implementing some rescaling
+mechanism similar to the classical quasi device independence,
+@code{groff} could emulate @acronym{AT&T}'s @code{post} device.
+
+@item
+The B-spline command @samp{D~} is correctly handled by the
+intermediate output parser, but the drawing routines aren't
+implemented in some of the postprocessor programs.
+
+@item
+The argument of the commands @samp{s} and @w{@samp{x H}} has the
+implicit unit scaled point @samp{z} in @code{gtroff}, while
+@acronym{AT&T} @code{troff} has point (@samp{p}).  This isn't an
+incompatibility but a compatible extension, for both units coincide
+for all devices without a @code{sizescale} parameter in the @file{DESC}
+file, including all postprocessors from @acronym{AT&T} and
+@code{groff}'s text devices.  The few @code{groff} devices with
+a @code{sizescale} parameter either do not exist for @acronym{AT&T}
+@code{troff}, have a different name, or seem to have a different
+resolution.  So conflicts are very unlikely.
+
+@item
+The position changing after the commands @samp{Dp}, @samp{DP}, and
+@samp{Dt} is illogical, but as old versions of @code{gtroff} used this
+feature it is kept for compatibility reasons.
+
+@ignore
+Temporarily, there existed some confusion on the positioning after the
+@samp{D} commands that are groff extensions.  This has been clarified
+by establishing the classical rule for all groff drawing commands:
+
+@itemize
+@item
+The position after a graphic object has been drawn is at its end;
+for circles and ellipses, the `end' is at the right side.
+
+@item
+From this, the positionings specified for the drawing commands above
+follow quite naturally.
+@end itemize
+@end ignore
+
+@end itemize
 
 
 @c =====================================================================
