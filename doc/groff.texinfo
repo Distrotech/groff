@@ -3167,11 +3167,11 @@ The following is an example of a numbered list.
 @Example
 .nr step 1 1
 A numbered list:
-.IP \\n[step] 3
+.IP \n[step] 3
 lawyers
-.IP \\n+[step]
+.IP \n+[step]
 guns
-.IP \\n+[step]
+.IP \n+[step]
 money
 @endExample
 
@@ -4087,6 +4087,7 @@ Users of macro packages may skip it if not interested in details.
 * Character Translations::
 * Troff and Nroff Mode::
 * Line Layout::
+* Line Control::
 * Page Layout::
 * Page Control::
 * Fonts::
@@ -4596,8 +4597,8 @@ of the @emph{input} line.
 @samp{+} and @samp{-} are also treated differently by the following
 requests and escapes: @code{bp}, @code{in}, @code{ll}, @code{lt},
 @code{nm}, @code{nr}, @code{pl}, @code{pn}, @code{po}, @code{ps},
-@code{rt}, @code{ti}, @code{\R}, and @code{\s}.  Here, leading plus and
-minus signs indicate increments and decrements.
+@code{rt}, @code{ti}, @code{\H}, @code{\R}, and @code{\s}.
+Here, leading plus and minus signs indicate increments and decrements.
 
 @c XXX add more xref
 @xref{Setting Registers}.
@@ -5165,12 +5166,11 @@ All escape sequences except @code{\%}, @code{\:}, @code{\@{}, @code{\@}},
 To have a backslash (actually, the current escape character) appear in the
 output several escapes are defined: @code{\\}, @code{\e} or @code{\E}.
 These are very similar, and only differ with respect to being used in
-macros or diversions.  @xref{Implementation Differences}, @ref{Copy-in
-Mode}, and @ref{Diversions}, for more information.
+macros or diversions.  @xref{Character Translations}, for an exact
+description of those escapes.
 
-@c XXX explanation of \E
-
-@xref{Identifiers}, and @ref{Character Translations}.
+@xref{Implementation Differences}, @ref{Copy-in Mode}, and @ref{Diversions},
+@ref{Identifiers}, for more information.
 
 @menu
 * Comments::
@@ -5828,6 +5828,8 @@ filled.  The read-only number register @code{.u} is set to@w{ }1.
 
 The fill mode status is associated with the current environment
 (@pxref{Environments}).
+
+See @ref{Line Control}, for interaction with the @code{\c} escape.
 @endDefreq
 
 @cindex no-fill mode (@code{nf})
@@ -5840,6 +5842,8 @@ disables adjusting; it also causes a break.  The number register
 
 The fill mode status is associated with the current environment
 (@pxref{Environments}).
+
+See @ref{Line Control}, for interaction with the @code{\c} escape.
 @endDefreq
 
 @DefreqList {ad, [@Var{mode}]}
@@ -6642,8 +6646,8 @@ relative to the (current) output line instead of the input line.
 For example, the following code:
 
 @Example
-.ds x a\\t\\c
-.ds y b\\t\\c
+.ds x a\t\c
+.ds y b\t\c
 .ds z c
 .ta 1i 3i
 \*x
@@ -6867,10 +6871,23 @@ Without a previous call to @code{ecs}, this request
 sets the escape character to @code{\}.
 @endDefreq
 
-@DefescList {\\e, , , }
+@DefescList {\\\\, , , }
+@DefescItem {\\e, , , }
 @DefescListEnd {\\E, , , }
 Print the current escape character (which is the backslash character
 @samp{\} by default).
+
+@code{\\} is a `delayed' backslash; more precisely, it is the default
+escape character followed by a backslash, which no longer has special
+meaning due to the leading escape character.  It is @emph{not} an escape
+sequence in the usual sense!  In any unknown escape sequence
+@code{\@var{X}} the escape character is ignored and @var{X} is printed.
+But if @var{X} is equal to the current escape character, no warning is
+emitted.
+
+As a consequence, only at top-level or in a diversion a backslash glyph is
+printed; in copy-in mode, it expands to a single backslash which then
+combines with the following character to an escape sequence.
 
 The @code{\E} escape differs from @code{\e} by printing an escape
 character that is not interpreted in copy mode.
@@ -6883,6 +6900,61 @@ a superscript:
 .ds @{ \v'-.3m'\s'\Es[.s]*60/100'
 .ds @} \s0\v'.3m'
 @endExample
+
+Another example to demonstrate the differences between the various escape
+sequences, using a strange escape character, @samp{-}.
+
+@Example
+.ec -
+.de xxx
+--A'123'
+..
+.xxx
+    @result{} -A'foo'
+@endExample
+
+@noindent
+The result is surprising for most users, expecting @samp{1} since
+@samp{foo} is a valid identifier.  What has happened?  As mentioned
+above, the leading escape character makes the following character
+ordinary.  Written with the default escape character the sequence
+@samp{--} becomes @samp{\-} -- this is the minus sign.
+
+If the escape character followed by itself is a valid escape sequence,
+only @code{\E} yields the expected result:
+
+@Example
+.ec -
+.de xxx
+-EA'123'
+..
+.xxx
+    @result{} 1
+@endExample
+@endDefesc
+
+@Defesc {\\., , , }
+Similar to @code{\\}, the sequence @code{\.} isn't a real escape sequence.
+As before, a warning message is suppressed if the escape character is
+followed by a dot, and the dot itself is printed.
+
+@Example
+.de foo
+.  nop foo
+.
+.  de bar
+.    nop bar
+\\..
+.
+..
+.foo
+.bar
+    @result{} foo bar
+@endExample
+
+@noindent
+The first backslash is consumed while the macro is read, and the second
+is swallowed while exexuting macro @code{foo}.
 @endDefesc
 
 A @dfn{translation} is a mapping of an input character to an output
@@ -7081,7 +7153,7 @@ conditions.
 
 @c =====================================================================
 
-@node Line Layout, Page Layout, Troff and Nroff Mode, gtroff Reference
+@node Line Layout, Line Control, Troff and Nroff Mode, gtroff Reference
 @section Line Layout
 @cindex line layout
 @cindex layout, line
@@ -7259,7 +7331,128 @@ collected line still uses the old line length value.
 
 @c =====================================================================
 
-@node Page Layout, Page Control, Line Layout, gtroff Reference
+@node Line Control, Page Layout, Line Layout, gtroff Reference
+@section Line Control
+@cindex line control
+@cindex control, line
+
+It is important to understand how @code{gtroff} handles input and output
+lines.
+
+Many escapes use positioning relative to the input line.  For example,
+this
+
+@Example
+This is a \h'|1.2i'test.
+
+This is a
+\h'|1.2i'test.
+@endExample
+
+@noindent
+produces
+
+@Example
+This is a   test.
+
+This is a             test.
+@endExample
+
+The main usage of this feature is to define macros which act exactly
+at the place where called.
+
+@Example
+.\" A simple macro to underline a word
+.de underline
+.  nop \\$1\l'|0\[ul]'
+..
+@endExample
+
+@noindent
+In the above example, @samp{|0} specifies a negative distance from the
+current position (at the end of the just emitted argument @code{\$1}) back
+to the beginning of the input line.  Thus, the @samp{\l} escape draws a
+line from right to left.
+
+@cindex input line continuation
+@cindex line, input, continuation
+@cindex continuation, input line
+@cindex output line continuation
+@cindex line, output, continuation
+@cindex continuation, output line
+@cindex interrupted line
+@cindex line, interrupted
+@code{gtroff} makes a difference between input and output line
+continuation; the latter is also called @dfn{interrupting} a line.
+
+@DefescList {\\@key{RET}, , ,}
+@DefescItem {\\c, , ,}
+@DefregListEnd{.int}
+Continue a line.  @code{\@key{RET}} (this is a backslash at the end
+of a line immediately followed by a newline) works on the input level,
+suppressing the effects of the following newline in the input.
+
+@Example
+This is a \
+.test
+    @result{} This is a .test
+@endExample
+
+The @samp{|} operator is also affected.
+
+@cindex @code{\R} escape, after @code{\c}
+@code{\c} works on the output level.  Anything after this escape on the
+same line is ignored, except @code{\R} which works as usual.  Anything
+before @code{\c} on the same line will be appended to the current partial
+output line.  The next non-command line after an interrupted line counts
+as a new input line.
+
+The visual results depend on whether no-fill mode is active.
+
+@itemize @bullet
+@item
+@cindex @code{\c} escape, and no-fill mode
+@cindex no-fill mode, and @code{\c}
+@cindex mode, no-fill, and @code{\c}
+If no-fill mode is active (using the @code{nf} request), the next input
+text line after @code{\c} will be handled as a continuation of the same
+input text line.
+
+@Example
+.nf
+This is a \c
+test.
+    @result{} This is a test.
+@endExample
+
+@item
+@cindex @code{\c} escape, and fill mode
+@cindex fill mode, and @code{\c}
+@cindex mode, fill, and @code{\c}
+If fill mode is active (using the @code{fi} request), a word interrupted
+with @code{\c} will be continued with the text on the next input text line,
+without an intervening space.
+
+@Example
+This is a te\c
+st.
+    @result{} This is a test.
+@endExample
+@end itemize
+
+Note that an intervening control line which causes a break is stronger
+than @code{\c}, flushing out the current partial line in the usual way.
+
+@cindex interrupted line register (@code{.int})
+The @code{.int} register contains a positive value
+if the last output line was interrupted with @code{\c}; this is
+associated with the current environment (@pxref{Environments}).
+
+@endDefesc
+
+@c =====================================================================
+
+@node Page Layout, Page Control, Line Control, gtroff Reference
 @section Page Layout
 @cindex page layout
 @cindex layout, page
@@ -10303,7 +10496,6 @@ number register @code{.t} still works within diversions.
 @cindex trap, input line, setting (@code{it})
 @DefreqList {it, n macro}
 @DefreqItem {itc, n macro}
-@DefregListEnd {.int}
 Set an input line trap.
 @var{n}@w{ }is the number of lines of input which may be read before
 springing the trap, @var{macro} is the macro to be invoked.
@@ -10314,11 +10506,12 @@ next @var{n}@w{ }lines in a bold font.
 
 @Example
 .de B
-.it \\$1 B-end
-.ft B
+.  it \\$1 B-end
+.  ft B
 ..
+.
 .de B-end
-.ft R
+.  ft R
 ..
 @endExample
 
@@ -10334,11 +10527,6 @@ Both requests are associated with the current environment
 (@pxref{Environments}); switching to another environment disables the
 current input trap, and going back reactivates it, restoring the number
 of already processed lines.
-
-@cindex interrupted line register (@code{.int})
-The @code{.int} register contains a positive value
-if the last output line was interrupted with @code{\c}; this is
-associated with the current environment (@pxref{Environments}).
 @endDefreq
 
 @c ---------------------------------------------------------------------
