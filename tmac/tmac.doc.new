@@ -43,10 +43,14 @@
 .
 .
 .if !\n(.g \
-.  ab This version of mdoc can be run with groff only!
+.  ab This version of mdoc can be run with GNU troff only!
 .
 .
 .cp 0
+.
+.
+.if ((\n[.x] == 0) : ((\n[.x] == 1) & (\n[.y] < 17))) \
+.  ab You need GNU troff version 1.17 or higher to run this version of mdoc!
 .
 .
 .\" Load start-up files
@@ -633,7 +637,7 @@
 .    nr doc-reg-dpr \n[doc-arg-ptr]
 .
 .    ie (\n[doc-reg-dpr1] == 2) \
-.      nop \)\*[doc-str-dpr]\c
+.      nop \)\*[doc-str-dpr]\&\c
 .    el \{\
 .      \" punctuation character
 .      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\c
@@ -881,7 +885,7 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Em text ... \*[doc-punct-chars] (#\n[.c])
+.      tm Usage: .Em text ... (#\n[.c])
 .  \}
 .
 .  nr doc-arg-ptr +1
@@ -2326,10 +2330,6 @@
 .  if !\n[doc-arg-limit] \
 .    ds doc-macro-name Pf
 .
-.  ds doc-quote-left "\$1
-.
-.  shift
-.
 .  ie \n[doc-arg-limit] \{\
 .    ie ((\n[doc-arg-limit] - \n[doc-arg-ptr]) > 1) \{\
 .      nr doc-arg-ptr +1
@@ -2339,14 +2339,14 @@
 .      tm mdoc warning: .Pf: trailing prefix (#\n[.c])
 .  \}
 .  el \{\
-.    nop \)\*[doc-quote-left]\)\c
-.    ie (\n[.$] < 2) \{\
+.    nop \)\$1\)\c
+.    shift
+.    ie \n[.$] \
+.      doc-parse-args \$@
+.    el \{\
 .      tm mdoc warning: .Pf: missing arguments (#\n[.c])
 .      nop \)
-.    \}
-.    el \
-.      doc-parse-args \$@
-.  \}
+.  \}\}
 .
 .  if \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
@@ -3218,8 +3218,10 @@
 .      ds doc-list-type-stack\n[doc-list-depth] ohang-list
 .      nr doc-have-indent 1
 .    \}
-.    el \{ .ie "\$1"-column" \
+.    el \{ .ie "\$1"-column" \{\
 .      ds doc-list-type-stack\n[doc-list-depth] column-list
+.      linetabs 1
+.    \}
 .    el \{\
 .      tm mdoc warning: Unknown list type `\$1' in .Bl request
 .      tm
@@ -4410,6 +4412,7 @@
 .\" NS   doc-list-depth
 .
 .de doc-end-column-list
+.  linetabs 0
 '  in -(\n[doc-list-offset-stack\n[doc-list-depth]]u + \n[doc-list-indent-stack\n[doc-list-depth]]u)
 .  ta T .5i
 .  fi
@@ -4510,9 +4513,7 @@
 .de Ta
 .  ie \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
-.    linetabs 1
 .    nop \*[doc-tab]\c
-.    linetabs 0
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \
 .      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .    el \
@@ -5138,8 +5139,6 @@
 .          nr doc-indent-synopsis (8u * \n[doc-fixed-width]u)
 .      \}
 .
-.      in +\n[doc-indent-synopsis]u
-.      ti -\n[doc-indent-synopsis]u
 .      nr doc-in-synopsis-count +1
 .    \}
 .
@@ -5198,6 +5197,10 @@
 .    box
 .    unformat doc-func-box
 .
+.    if \n[doc-in-synopsis-count] \{\
+.      in +\n[doc-indent-synopsis]u
+.      ti -\n[doc-indent-synopsis]u
+.    \}
 .    nh
 .    doc-func-box
 .    doc-reset-args
