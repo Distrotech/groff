@@ -65,7 +65,7 @@
 @deffnx Request @t{.\name\} \arg\
 @end macro
 
-@macro end_Defreq
+@macro endDefreq
 @end deffn
 @end macro
 
@@ -82,7 +82,7 @@
 @deffnx Escape @t{\name\\delimI\}@var{\arg\}@t{\delimII\}
 @end macro
 
-@macro end_Defesc
+@macro endDefesc
 @end deffn
 @end macro
 
@@ -99,7 +99,7 @@
 @deffnx Register @t{\\n[\name\]}
 @end macro
 
-@macro end_Defreg
+@macro endDefreg
 @end deffn
 @end macro
 
@@ -116,7 +116,7 @@
 @defmacx @t{.\name\} \arg\
 @end macro
 
-@macro end_Defmac
+@macro endDefmac
 @end defmac
 @end macro
 
@@ -133,7 +133,7 @@
 @deffnx String @t{\name\} \arg\
 @end macro
 
-@macro end_Defstr
+@macro endDefstr
 @end deffn
 @end macro
 
@@ -145,7 +145,7 @@
 @group
 @end macro
 
-@macro end_Example
+@macro endExample
 @end group
 @end example
 @end macro
@@ -1144,7 +1144,7 @@ groff [ -abeghilpstvzCEGNRSUVXZ ] [ -F@var{dir} ] [ -m@var{name} ]
       [ -M@var{dir} ] [ -d@var{cs} ] [ -r@var{cn} ] [ -n@var{num} ]
       [ -o@var{list} ] [ -P@var{arg} ] [ -L@var{arg} ] [ -I@var{dir} ]
       [ @var{files}@dots{} ]
-@end_Example
+@endExample
 
 The command line format for @code{gtroff} is as follows.
 
@@ -1153,7 +1153,7 @@ gtroff [ -abivzCERU ] [ -w@var{name} ] [ -W@var{name} ] [ -d@var{cs} ]
        [ -f@var{fam} ] [ -m@var{name} ] [ -n@var{num} ]
        [ -o@var{list} ] [ -r@var{cn} ] [ -T@var{name} ]
        [ -F@var{dir} ] [ -M@var{dir} ] [ @var{files}@dots{} ]
-@end_Example
+@endExample
 
 @noindent
 Obviously, many of the options to @code{groff} are actually passed on to
@@ -1327,8 +1327,9 @@ Registers}.  A typical example is
 
 @Example
 groff -a -man -Tdvi troff.man | less
-@end_Example
+@endExample
 
+@noindent
 which shows how lines are broken for the DVI device.  Note that this
 option is rather useless today since graphic output devices are
 available virtually everywhere.
@@ -1488,7 +1489,7 @@ corresponding command lines.
 
 @Example
 groff file
-@end_Example
+@endExample
 
 @noindent
 This command processes @file{file} without a macro package or a
@@ -1497,7 +1498,7 @@ output is sent to @code{stdout}.
 
 @Example
 groff -t -mandoc -Tascii file | less
-@end_Example
+@endExample
 
 @noindent
 This is basically what a call to the @code{man} program does.
@@ -1509,7 +1510,7 @@ displays the result.
 
 @Example
 groff -X -m me file
-@end_Example
+@endExample
 
 @noindent
 Preview @file{file} with @code{gxditview}, using the @file{me} macro
@@ -1524,7 +1525,7 @@ for example, to load @file{trace.tmac}, either @samp{-mtrace} or
 
 @Example
 groff -man -rD1 -z file
-@end_Example
+@endExample
 
 @noindent
 Check @file{file} with the @file{man} macro package, forcing
@@ -1559,7 +1560,7 @@ For example,
 
 @Example
 grog -Tdvi paper.ms
-@end_Example
+@endExample
 
 @noindent
 guesses the appropriate command to print @file{paper.ms} and then prints
@@ -1569,7 +1570,7 @@ direct execution, enclose the call to @code{grog} in backquotes at the
 
 @Example
 `grog -Tdvi paper.ms` > paper.dvi
-@end_Example
+@endExample
 
 @noindent
 As seen in the example, it is still necessary to redirect the output to
@@ -1624,14 +1625,14 @@ meaning of that request.  For example, the request
 
 @Example
 .sp
-@end_Example
+@endExample
 
 @noindent
 spaces one line, but
 
 @Example
 .sp 4
-@end_Example
+@endExample
 
 @noindent
 spaces four lines.  The number@w{ }4 is an argument to the @code{sp}
@@ -1651,7 +1652,7 @@ to come to the aid
 of their party.
 Four score and seven
 years ago,...
-@end_Example
+@endExample
 
 @noindent
 is read, packed onto output lines, and justified to produce:
@@ -1729,7 +1730,7 @@ be of the form @var{N}i (for @var{N}@w{ }inches) or @var{N}c (for
 .sp 1.5i
 My thoughts on the subject
 .sp
-@end_Example
+@endExample
 
 @noindent
 leaves one and a half inches of space, followed by the line ``My
@@ -1749,7 +1750,7 @@ lines without counting them, type:
 .ce 1000
 lines to center
 .ce 0
-@end_Example
+@endExample
 
 @noindent
 The @w{@samp{.ce 0}} request tells @code{groff} to center zero more
@@ -1812,7 +1813,7 @@ the indentation:
 Some   men  look   at  constitutions   with  sanctimonious
 reverence, and deem them like the ark of the covenant, too
 sacred to be touched.
-@end_Example
+@endExample
 
 @noindent
 And there are also indented paragraphs which begin with a tag or label
@@ -1936,8 +1937,8 @@ of automatically numbering either type of annotation.
 (usually the page number) attached to each entry after a row of dots.
 The table accumulates throughout the paper until printed, usually after
 the paper has ended.  Many macro packages provide the ability to have
-several tables of contents (e.g.@: a standard table of contents,
-a list of tables, etc).
+several tables of contents (e.g.@: a standard table of contents, a list
+of tables, etc).
 
 @c ---------------------------------------------------------------------
 
@@ -2064,8 +2065,9 @@ The command line format for using the @file{man} macros with
 @Example
 groff -m man [ -rcR=1 ] [ -rC1 ] [ -rD1 ] [ -rP@var{nnn} ]
       [ -rS@var{xx} ] [ -rX@var{nnn} ] [ @var{files}@dots{} ]
-@end_Example
+@endExample
 
+@noindent
 It is possible to use @samp{-man} instead of @w{@samp{-m man}}.
 
 @table @code
@@ -2107,7 +2109,7 @@ further customization, put additional macros and requests into the file
 @file{man.local} which is loaded immediately after the @file{man}
 package.
 
-@Defmac{TH, title section [@Var{extra1}] [@Var{extra2}] [@Var{extra3}]}
+@Defmac {TH, title section [@Var{extra1}] [@Var{extra2}] [@Var{extra3}]}
 Sets the title of the man page to @var{title} and the section to
 @var{section}, which must have a value between 1 and@w{ }8.  The value
 of @var{section} may also have a string appended, e.g.@: @samp{.pm}, to
@@ -2128,25 +2130,25 @@ again (except if the @option{-rC1} option is given on the command line)
 -- this feature is intended only for formatting multiple man pages; a
 single man page should contain exactly one @code{TH} macro at the
 beginning of the file.
-@end_Defmac
+@endDefmac
 
-@Defmac{SH, [@Var{heading}]}
+@Defmac {SH, [@Var{heading}]}
 Sets up an unnumbered section heading sticking out to the left.  Prints
-out all the text following @code{SH} up to the end of the line (or
-the text in the next line if there is no argument to @code{SH}) in bold
+out all the text following @code{SH} up to the end of the line (or the
+text in the next line if there is no argument to @code{SH}) in bold
 face, one size larger than the base document size.  Additionally, the
 left margin for the following text is reset to its default value.
-@end_Defmac
+@endDefmac
 
-@Defmac{SS, [@Var{heading}]}
+@Defmac {SS, [@Var{heading}]}
 Sets up an unnumbered (sub)section heading.  Prints out all the text
-following @code{SS} up to the end of the line (or the text in the
-next line if there is no argument to @code{SS}) in bold face, at the
-same size as the base document size.  Additionally, the left margin for
-the following text is reset to its default value.
-@end_Defmac
+following @code{SS} up to the end of the line (or the text in the next
+line if there is no argument to @code{SS}) in bold face, at the same
+size as the base document size.  Additionally, the left margin for the
+following text is reset to its default value.
+@endDefmac
 
-@Defmac{TP, [@Var{nnn}]}
+@Defmac {TP, [@Var{nnn}]}
 Sets up an indented paragraph with label.  The indentation is set to
 @var{nnn} if that argument is supplied (the default unit is @samp{n} if
 omitted), otherwise it is set to the default indentation value.
@@ -2160,21 +2162,21 @@ at the same line (but indented), continuing on the following lines.  If
 the label is wider than the indentation, then the descriptive part of
 the paragraph begins on the line following the label, entirely indented.
 Note that neither font shape nor font size of the label is set to a
-default value; on the other hand, the rest of the text has default
-font settings.
-@end_Defmac
+default value; on the other hand, the rest of the text has default font
+settings.
+@endDefmac
 
 @Defmac{LP}
 @Defmacx{PP}
-@Defmacx{P}
+@Defmacx {P}
 These macros are mutual aliases.  Any of them causes a line break at the
 current position, followed by a vertical space downwards by the amount
 specified by the @code{PD} macro.  The font size and shape are reset to
-the default value (10@dmn{pt} Roman).  Finally, the current left
-margin is restored.
-@end_Defmac
+the default value (10@dmn{pt} Roman).  Finally, the current left margin
+is restored.
+@endDefmac
 
-@Defmac{IP, [@Var{designator}] [@Var{nnn}]}
+@Defmac {IP, [@Var{designator}] [@Var{nnn}]}
 Sets up an indented paragraph, using @var{designator} as a tag to mark
 its beginning.  The indentation is set to @var{nnn} if that argument is
 supplied (default unit is @samp{n}), otherwise the default indentation
@@ -2188,30 +2190,30 @@ For example, to start a paragraph with bullets as the designator and
 
 @Example
 .IP \(bu 4
-@end_Example
-@end_Defmac
+@endExample
+@endDefmac
 
 @cindex hanging indentation, in manual pages
-@Defmac{HP, [@Var{nnn}]}
+@Defmac {HP, [@Var{nnn}]}
 Sets up a paragraph with hanging left indentation.  The indentation is
 set to @var{nnn} if that argument is supplied (default unit is
 @samp{n}), otherwise the default indentation value is used.  Font size
 and face are reset to their default values.
-@end_Defmac
+@endDefmac
 
 @cindex left margin, how to move, in manual pages
-@Defmac{RS, [@Var{nnn}]}
+@Defmac {RS, [@Var{nnn}]}
 This macro moves the left margin to the right by the value @var{nnn} if
 specified (default unit is @samp{n}); otherwise the default indentation
 value is used.  Calls to the @code{RS} macro can be nested.
-@end_Defmac
+@endDefmac
 
-@Defmac{RE, [@Var{nnn}]}
+@Defmac {RE, [@Var{nnn}]}
 This macro moves the left margin back to level @var{nnn}; if no argument
 is given, it moves one level back.  The first level (i.e., no call to
 @code{RS} yet) has number@w{ }1, and each call to @code{RS} increases
 the level by@w{ }1.
-@end_Defmac
+@endDefmac
 
 @maindex SH
 @maindex SS
@@ -2240,68 +2242,67 @@ vertical space.
 
 The standard font is Roman; the default text size is 10@w{ }point.
 
-@Defmac{SM, [@Var{text}]}
-Sets the text on the same line or the text on the next line
-in a font that is one point size smaller than the default font.
-@end_Defmac
+@Defmac {SM, [@Var{text}]}
+Sets the text on the same line or the text on the next line in a font
+that is one point size smaller than the default font.
+@endDefmac
 
 @cindex boldface, in manual pages
-@Defmac{SB, [@Var{text}]}
-Sets the text on the same line or the text on the next line
-in boldface font, one point size smaller than the default font.
-@end_Defmac
+@Defmac {SB, [@Var{text}]}
+Sets the text on the same line or the text on the next line in boldface
+font, one point size smaller than the default font.
+@endDefmac
 
-@Defmac{BI, text}
+@Defmac {BI, text}
 Sets its arguments alternately in bold face and italic.  Thus,
 
 @Example
 .BI this "word and" that
-@end_Example
+@endExample
 
 @noindent
-would set ``this'' and ``that'' in bold face, and ``word
-and'' in italics.
-@end_Defmac
+would set ``this'' and ``that'' in bold face, and ``word and'' in
+italics.
+@endDefmac
 
-@Defmac{IB, text}
+@Defmac {IB, text}
 Sets its arguments alternately in italic and bold face.
-@end_Defmac
+@endDefmac
 
-@Defmac{RI, text}
+@Defmac {RI, text}
 Sets its arguments alternately in roman and italic.
-@end_Defmac
+@endDefmac
 
-@Defmac{IR, text}
+@Defmac {IR, text}
 Sets its arguments alternately in italic and roman.
-@end_Defmac
+@endDefmac
 
-@Defmac{BR, text}
+@Defmac {BR, text}
 Sets its arguments alternately in bold face and roman.
-@end_Defmac
+@endDefmac
 
-@Defmac{RB, text}
+@Defmac {RB, text}
 Sets its arguments alternately in roman and bold face.
-@end_Defmac
+@endDefmac
 
-@Defmac{R, [@Var{text}]}
-Sets @var{text} in roman font.  If no text is present on the
-line where the macro is called, then the text of the next line appears
-in roman.  This is the default font to which text is returned at the end
-of processing of the other macros.
-@end_Defmac
+@Defmac {R, [@Var{text}]}
+Sets @var{text} in roman font.  If no text is present on the line where
+the macro is called, then the text of the next line appears in roman.
+This is the default font to which text is returned at the end of
+processing of the other macros.
+@endDefmac
 
-@Defmac{B, [@Var{text}]}
-Sets @var{text} in bold face.  If no text is present on the
-line where the macro is called, then the text of the next line appears
-in bold face.
-@end_Defmac
+@Defmac {B, [@Var{text}]}
+Sets @var{text} in bold face.  If no text is present on the line where
+the macro is called, then the text of the next line appears in bold
+face.
+@endDefmac
 
 @cindex italic, in manual pages
-@Defmac{I, [@Var{text}]}
-Sets @var{text} in italic.  If no text is present on the
-line where the macro is called, then the text of the next line appears
-in italic.
-@end_Defmac
+@Defmac {I, [@Var{text}]}
+Sets @var{text} in italic.  If no text is present on the line where the
+macro is called, then the text of the next line appears in italic.
+@endDefmac
 
 @c ---------------------------------------------------------------------
 
@@ -2316,19 +2317,19 @@ The default indentation is 7.2@dmn{n} for all output devices except for
 
 @maindex TH
 @cindex tab stops, in manual pages
-@Defmac{DT}
+@Defmac {DT}
 Sets tabs every 0.5@w{ }inches.  Since this macro is always called
 during a @code{TH} request, it makes sense to call it only if the tab
 positions have been changed.
-@end_Defmac
+@endDefmac
 
 @cindex empty space before a paragraph, in manual pages
-@Defmac{PD, [@Var{nnn}]}
+@Defmac {PD, [@Var{nnn}]}
 Adjusts the empty space before a new paragraph (or section).  The
 optional argument gives the amount of space (default units are
 @samp{v}); without parameter, the value is reset to its default value
 (1@w{ }line for tty devices, 0.4@dmn{v}@w{ }otherwise).
-@end_Defmac
+@endDefmac
 
 @maindex SH
 @maindex SS
@@ -2338,8 +2339,8 @@ optional argument gives the amount of space (default units are
 @maindex P
 @maindex IP
 @maindex HP
-This affects the macros @code{SH}, @code{SS}, @code{TP}, @code{LP}
-(as well as @code{PP} and @code{P}), @code{IP}, and @code{HP}.
+This affects the macros @code{SH}, @code{SS}, @code{TP}, @code{LP} (as
+well as @code{PP} and @code{P}), @code{IP}, and @code{HP}.
 
 @c ---------------------------------------------------------------------
 
@@ -2348,25 +2349,25 @@ This affects the macros @code{SH}, @code{SS}, @code{TP}, @code{LP}
 
 The following strings are defined:
 
-@Defstr{*S}
+@Defstr {*S}
 Switch back to the default font size.
-@end_Defstr
+@endDefstr
 
-@Defstr{*R}
+@Defstr {*R}
 The `registered' sign.
-@end_Defstr
+@endDefstr
 
-@Defstr{Tm}
+@Defstr {Tm}
 The `trademark' sign.
-@end_Defstr
+@endDefstr
 
 @glindex lq
 @glindex rq
 @Defstr{lq}
-@Defstrx{rq}
-Left and right quote.
-This is equal to @code{\(lq} and @code{\(rq}, respectively.
-@end_Defstr
+@Defstrx {rq}
+Left and right quote.  This is equal to @code{\(lq} and @code{\(rq},
+respectively.
+@endDefstr
 
 @c ---------------------------------------------------------------------
 
@@ -2381,12 +2382,13 @@ this:
 
 @Example
 .\" @var{word}
-@end_Example
+@endExample
 
 @pindex geqn@r{, invocation in manual pages}
 @pindex grefer@r{, invocation in manual pages}
 @pindex gtbl@r{, invocation in manual pages}
 @pindex man@r{, invocation of preprocessors}
+@noindent
 Note the single space character after the double quote.  @var{word}
 consists of letters for the needed preprocessors: @samp{e} for
 @code{geqn}, @samp{r} for @code{grefer}, @samp{t} for @code{gtbl}.
@@ -2822,7 +2824,7 @@ line length of 3.5@w{ }inches and their results:
 7/2i      @result{}   0i
 7i/2      @result{}   0.1i
 7i/2u     @result{}   3.5i
-@end_Example
+@endExample
 
 @noindent
 Everything is converted to basic units first.  In the above example it
@@ -3015,9 +3017,10 @@ PP
 (l
 end-list
 @@_
-@end_Example
+@endExample
 
 @rqindex ]
+@noindent
 Note that identifiers longer than two characters with a closing bracket
 (@samp{]}) in its name can't be accessed with escape sequences which
 expect an identifier as a parameter.  For example, @samp{\[foo]]}
@@ -3026,7 +3029,7 @@ accesses the glyph @samp{foo}, followed by @samp{]}, whereas
 
 @c XXX xref
 
-@Defesc{\\A, ', ident, '}
+@Defesc {\\A, ', ident, '}
 Use the @code{\A} escape to test
 whether an identifier @var{ident} is valid in @code{gtroff}.
 It expands to the character@w{ }1
@@ -3039,8 +3042,8 @@ sort of associative table.
 @Example
 \A'end-list'
     @result{} 1
-@end_Example
-@end_Defesc
+@endExample
+@endDefesc
 
 @xref{Escapes}, for details on parameter delimiting characters.
 
@@ -3170,7 +3173,7 @@ Here are a few examples:
 .uh The Mouse Problem
 .uh "The Mouse Problem"
 .uh The\ Mouse\ Problem
-@end_Example
+@endExample
 
 @esindex \~
 @esindex \@key{SP}
@@ -3239,7 +3242,7 @@ Examples:
 \fB
 \n(XX
 \*[TeX]
-@end_Example
+@endExample
 
 @rqindex '
 @cindex argument delimiting characters
@@ -3253,7 +3256,7 @@ escape expects.  Example:
 
 @Example
 \l'1.5i\(bu'
-@end_Example
+@endExample
 
 @esindex \o
 @esindex \b
@@ -3271,7 +3274,7 @@ e\'
 
 in Paris
   @result{} A caf@'e in Paris
-@end_Example
+@endExample
 
 @noindent
 possible, but it is better not to use this feature to avoid confusion.
@@ -3411,7 +3414,7 @@ Probably one of the most@footnote{Unfortunately, this is a lie.  But
 hopefully future @code{gtroff} hackers will believe it @code{:-)}}
 common forms of escapes is the comment.
 
-@Defesc{\\", , , }
+@Defesc {\\", , , }
 Start a comment.  Everything to the end of the input line is ignored.
 
 This may sound simple, but it can be tricky to keep the comments from
@@ -3438,7 +3441,7 @@ after eliminating the comment, that is all that remains:
 Test
 \" comment
 Test
-@end_Example
+@endExample
 
 @noindent
 produces
@@ -3447,20 +3450,20 @@ produces
 Test
 
 Test
-@end_Example
+@endExample
 
-Thus, it is common to start the line with @code{.\"} which
-causes the line to be treated as an undefined request and thus
-ignored completely.
+To avoid this, it is common to start the line with @code{.\"} which
+causes the line to be treated as an undefined request and thus ignored
+completely.
 
 @rqindex '
 Another commenting scheme seen sometimes is three consecutive single
 quotes (@code{'''}) at the beginning of a line.  This works, but
 @code{gtroff} gives a warning about an undefined macro (namely
 @code{''}), which is harmless, but irritating.
-@end_Defesc
+@endDefesc
 
-@Defesc{\\#, , , }
+@Defesc {\\#, , , }
 To avoid all this, @code{gtroff} has a new comment mechanism using
 the @code{\#} escape.  This escape works the same as @code{\"} except
 that the newline is also ignored:
@@ -3469,20 +3472,20 @@ that the newline is also ignored:
 Test
 \# comment
 Test
-@end_Example
+@endExample
 
 @noindent
 produces
 
 @Example
 Test Test
-@end_Example
+@endExample
 
 @noindent
 as expected.
-@end_Defesc
+@endDefesc
 
-@Defreq{ig, yy}
+@Defreq {ig, yy}
 Ignores all input until @code{gtroff} encounters the macro named
 @code{.}@var{yy} on a line by itself (or @code{..} if @var{yy}
 is not specified).  This is useful for commenting out large
@@ -3500,20 +3503,22 @@ the .ig request and the ".." at the
 end of the block.
 ..
 More text text text...
-@end_Example
+@endExample
 
+@noindent
 produces
 
 @Example
 text text text@dots{}  More text text text@dots{}
-@end_Example
+@endExample
 
+@noindent
 Note that the commented-out block of text does not
 cause a break.
 
 The input is read in copy-mode; auto-incremented registers @emph{are}
 affected (@pxref{Auto-increment}).
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -3546,29 +3551,29 @@ details of formatting parameters.
 Define or set registers using the @code{nr} request or the
 @code{\R} escape.
 
-@Defreq{nr, ident value}
-@Defescx{\\R, ', ident value, '}
+@Defreq {nr, ident value}
+@Defescx {\\R, ', ident value, '}
 Set number register @var{ident} to @var{value}.  If @var{ident} doesn't
 exist, @code{gtroff} creates it.
 
 The argument to @code{\R} usually has to be enclosed in quotes.
 @xref{Escapes}, for details on parameter delimiting characters.
-@end_Defreq
+@endDefreq
 
 For example, the following two lines are equivalent:
 
 @Example
 .nr a 1
 \R'a 1'
-@end_Example
+@endExample
 
 Both @code{nr} and @code{\R} have two additional special forms to
 increment or decrement a register.
 
-@Defreq{nr, ident @t{+}@Var{value}}
-@Defreqx{nr, ident @t{-}@Var{value}}
-@Defescx{\\R, ', ident @t{+}@Var{value}, '}
-@Defescx{\\R, ', ident @t{-}@Var{value}, '}
+@Defreq {nr, ident @t{+}@Var{value}}
+@Defreqx {nr, ident @t{-}@Var{value}}
+@Defescx {\\R, ', ident @t{+}@Var{value}, '}
+@Defescx {\\R, ', ident @t{-}@Var{value}, '}
 Increment (decrement) register @var{ident} by @var{value}.
 
 @Example
@@ -3576,7 +3581,7 @@ Increment (decrement) register @var{ident} by @var{value}.
 .nr a +1
 \na
     @result{} 2
-@end_Example
+@endExample
 
 @cindex negating register values
 To assign the negated value of a register to another register, some care
@@ -3591,7 +3596,7 @@ must be taken to get the desired result:
 .nr a (-\nb)
 \na
     @result{} -3
-@end_Example
+@endExample
 
 @noindent
 The surrounding parentheses prevent the interpretation of the minus sign
@@ -3607,26 +3612,26 @@ with a @samp{0}:
 .nr a 0\nb
 \na
     @result{} -3
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
-@Defreq{rr, ident}
+@Defreq {rr, ident}
 Remove number register @var{ident}.  If @var{ident} doesn't exist, the
 request is ignored.
-@end_Defreq
+@endDefreq
 
-@Defreq{rnn, ident1 ident2}
+@Defreq {rnn, ident1 ident2}
 Rename number register @var{ident1} to @var{ident2}.  If either
 @var{ident1} or @var{ident2} doesn't exist, the request is ignored.
-@end_Defreq
+@endDefreq
 
-@Defreq{aln, ident1 ident2}
+@Defreq {aln, ident1 ident2}
 This request creates an alias @var{ident1} for a number register
 @var{ident2}.  The new name and the old name are exactly equivalent.
 If @var{ident1} is undefined, a warning of type @samp{reg} is
 generated, and the request is ignored.  @xref{Debugging}, for
 information about warnings.
-@end_Defreq
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -3637,9 +3642,9 @@ information about warnings.
 
 Numeric registers can be accessed via the @code{\n} escape.
 
-@Defesc{\\n, , i, }
-@Defescx{\\n, @lparen{}, id, }
-@Defescx{\\n, @lbrack{}, ident, @rbrack}
+@Defesc {\\n, , i, }
+@Defescx {\\n, @lparen{}, id, }
+@Defescx {\\n, @lbrack{}, ident, @rbrack}
 @c XXX is the following correct?
 Interpolate number register with name @var{ident} (one-character name
 @var{i}, two-character name @var{id}).  This means that the value of the
@@ -3651,8 +3656,8 @@ line.
 .nr as \na+\na
 \n(as
     @result{} 10
-@end_Example
-@end_Defesc
+@endExample
+@endDefesc
 
 @c ---------------------------------------------------------------------
 
@@ -3666,27 +3671,27 @@ increment or decrement value can be specified with a third argument to
 the @code{nr} request or @code{\R} escape.
 
 @esindex \R
-@Defreq{nr, ident value incr}
+@Defreq {nr, ident value incr}
 Set number register @var{ident} to @var{value}; the increment for
 auto-incrementing is set to @var{incr}.  Note that the @code{\R} escape
 doesn't support this notation.
-@end_Defreq
+@endDefreq
 
 To activate auto-incrementing, the escape @code{\n} has a special syntax
 form.
 
-@Defesc{\\n, +, i, }
-@Defescx{\\n, -, i, }
-@Defescx{\\n, @lparen{}+, id, }
-@Defescx{\\n, @lparen{}-, id, }
-@Defescx{\\n, @lbrack{}+, ident, @rbrack{}}
-@Defescx{\\n, @lbrack{}-, ident, @rbrack{}}
+@Defesc {\\n, +, i, }
+@Defescx {\\n, -, i, }
+@Defescx {\\n, @lparen{}+, id, }
+@Defescx {\\n, @lparen{}-, id, }
+@Defescx {\\n, @lbrack{}+, ident, @rbrack{}}
+@Defescx {\\n, @lbrack{}-, ident, @rbrack{}}
 Before interpolating, increment or decrement @var{ident} (one-character
 name @var{i}, two-character name @var{id}) by the auto-increment value
 as specified with the @code{nr} request (or the @code{\R} escape).  If
 no auto-increment value has been specified, these syntax forms are
 identical to @code{\n}.
-@end_Defesc
+@endDefesc
 
 For example,
 
@@ -3699,7 +3704,7 @@ For example,
 \n-(xx, \n-(xx, \n-(xx, \n-(xx, \n-(xx
 .br
 \n+[foo], \n+[foo], \n+[foo], \n+[foo], \n+[foo]
-@end_Example
+@endExample
 
 @noindent
 produces
@@ -3708,7 +3713,7 @@ produces
 1, 2, 3, 4, 5
 -5, -10, -15, -20, -25
 -2, -4, -6, -8, -10
-@end_Example
+@endExample
 
 @cindex increment value without changing the register
 To change the increment value without changing the value of a register
@@ -3716,7 +3721,7 @@ To change the increment value without changing the value of a register
 
 @Example
 .nr a \na 10
-@end_Example
+@endExample
 
 @c ---------------------------------------------------------------------
 
@@ -3731,7 +3736,7 @@ representation of that number.  This output format can be changed to a
 variety of formats (numbers, Roman numerals, etc.).  This is done using
 the @code{af} request.
 
-@Defreq{af, ident format}
+@Defreq {af, ident format}
 Change the output format of a number register.  The first argument
 @var{ident} is the name of the number register to be changed, and the
 second argument @var{format} is the output format.  The following output
@@ -3782,7 +3787,7 @@ The following example produces @samp{10, X, j, 010}:
 \na,
 .af a 001
 \na
-@end_Example
+@endExample
 
 @cindex roman numerals, maximum and minimum
 @cindex maximum values of Roman numerals
@@ -3801,19 +3806,19 @@ If @var{ident} doesn't exist, it is created.
 Changing the output format of a read-only register causes an error.  It
 is necessary to first copy the register's value to a writeable register,
 then apply the @code{af} request to this other register.
-@end_Defreq
+@endDefreq
 
 @cindex format of register
 @cindex register, format
-@Defesc{\\g, , i, }
-@Defescx{\\g, @lparen{}, id, }
-@Defescx{\\g, @lbrack{}, ident, @rbrack{}}
+@Defesc {\\g, , i, }
+@Defescx {\\g, @lparen{}, id, }
+@Defescx {\\g, @lbrack{}, ident, @rbrack{}}
 Return the current format of the specified register @var{ident}
 (one-character name @var{i}, two-character name @var{id}).  For example,
 @samp{\ga} after the previous example would produce the string
 @samp{000}.  If the register hasn't been defined yet, nothing is
 returned.
-@end_Defesc
+@endDefesc
 
 @c ---------------------------------------------------------------------
 
@@ -3875,14 +3880,14 @@ or GNU @code{troff}.  Old @code{troff} input that looks like this:
 @Example
 '\" The following line stopped working after 1999
 This document was formatted in 19\n(yr.
-@end_Example
+@endExample
 
 @noindent
 can be corrected as follows:
 
 @Example
 This document was formatted in \n[year].
-@end_Example
+@endExample
 
 @noindent
 or, to be portable to older @code{troff} versions, as follows:
@@ -3890,7 +3895,7 @@ or, to be portable to older @code{troff} versions, as follows:
 @Example
 .nr y4 1900+\n(yr
 This document was formatted in \n(y4.
-@end_Example
+@endExample
 
 @item .c
 @vindex .c
@@ -3960,7 +3965,7 @@ number register @code{.T} is set to@w{ }1, and zero otherwise.
 
 @stindex .T
 @cindex output device register
-Additionally, @code{gtroff} predefines a single (read/write) string
+Additionally, @code{gtroff} predefines a single read-write string
 register @code{.T} which contains the current output device (for
 example, @samp{latin1} or @samp{ps}).
 @end table
@@ -3995,7 +4000,7 @@ other requests also cause breaks, but implicitly.  These are
 @code{bp}, @code{ce}, @code{cf}, @code{fi}, @code{fl}, @code{in},
 @code{nf}, @code{rj}, @code{sp}, @code{ti}, and @code{trf}.
 
-@Defreq{br, }
+@Defreq {br, }
 Break the current line, i.e., the input collected so far is emitted
 without adjustment.
 
@@ -4007,8 +4012,8 @@ a
 'br
 b
     @result{} a b
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 Initially, @code{gtroff} fills and adjusts text to both margins.
 Filling can be disabled via the @code{nf} request and re-enabled with
@@ -4016,19 +4021,19 @@ the @code{fi} request.
 
 @cindex fill mode
 @cindex mode, fill
-@Defreq{fi, }
-@Defregx{.u}
+@Defreq {fi, }
+@Defregx {.u}
 Activate fill mode (which is the default).  This request implicitly
-enables adjusting; it also inserts a break in the text currently
-being filled.  The number register @code{.u} is set to@w{ }1.
+enables adjusting; it also inserts a break in the text currently being
+filled.  The read-only number register @code{.u} is set to@w{ }1.
 
 The fill mode status is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
 @cindex no-fill mode
 @cindex mode, no-fill
-@Defreq{nf, }
+@Defreq {nf, }
 Activate no-fill mode.  Input lines are output as-is, retaining line
 breaks and ignoring the current line length.  This command implicitly
 disables adjusting; it also causes a break.  The number register
@@ -4036,10 +4041,10 @@ disables adjusting; it also causes a break.  The number register
 
 The fill mode status is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
-@Defreq{ad, [@Var{mode}]}
-@Defregx{.j}
+@Defreq {ad, [@Var{mode}]}
+@Defregx {.j}
 Set adjusting mode.
 
 Activation and deactivation of adjusting is done implicitly with
@@ -4082,26 +4087,27 @@ text
 text
 .ad  \" back to centering
 text
-@end_Example
+@endExample
 
 @cindex current adjustment mode register
-The current adjustment mode is available in the number register
-@code{.j}; it can be stored and subsequently used to set adjustment.
+The current adjustment mode is available in the read-only number
+register @code{.j}; it can be stored and subsequently used to set
+adjustment.
 
 The adjustment mode status is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
-@Defreq{na, }
+@Defreq {na, }
 Disable adjusting.  This request won't change the current adjustment
 mode: A subsequent call to @code{ad} uses the previous adjustment
 setting.
 
 The adjustment mode status is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
-@Defesc{\\p, , , }
+@Defesc {\\p, , , }
 Adjust the current line and cause a break.
 
 In most cases this produces very ugly results, since @code{gtroff}
@@ -4113,16 +4119,17 @@ line by line:
   This is an uninteresting sentence.
   This is an uninteresting sentence.\p
   This is an uninteresting sentence.
-@end_Example
+@endExample
 
+@noindent
 is formatted as
 
 @Example
   This is  an uninteresting  sentence.   This  is an
   uninteresting                            sentence.
   This is an uninteresting sentence.
-@end_Example
-@end_Defesc
+@endExample
+@endDefesc
 
 @cindex word space size
 @cindex size of word space
@@ -4130,9 +4137,9 @@ is formatted as
 @cindex sentence space size
 @cindex size of sentence space
 @cindex space between sentences
-@Defreq{ss, word_space_size [@Var{sentence_space_size}]}
+@Defreq {ss, word_space_size [@Var{sentence_space_size}]}
 @Defregx{.ss}
-@Defregx{.sss}
+@Defregx {.sss}
 Change the minimum size of a space between filled words.  It takes its
 units as one twelfth of the space width parameter for the current font.
 Initially both the @var{word_space_size} and @var{sentence_space_size}
@@ -4152,9 +4159,9 @@ of @acronym{UNIX} @code{troff} is the same as that exhibited by GNU
 @code{troff}.  In GNU @code{troff}, as in @acronym{UNIX} @code{troff}, a
 sentence should always be followed by either a newline or two spaces.
 
-The number registers @code{.ss} and @code{.sss} hold the values of the
-parameters set by the first and second arguments of the @code{ss}
-request.
+The read-only number registers @code{.ss} and @code{.sss} hold the
+values of the parameters set by the first and second arguments of the
+@code{ss} request.
 
 The word space and sentence space values are associated with the current
 environment (@pxref{Environments}).
@@ -4164,12 +4171,12 @@ ignored in nroff mode; the given values are then rounded down to a
 multiple of@w{ }12.
 
 The request is ignored if there is no parameter.
-@end_Defreq
+@endDefreq
 
 @cindex centering lines
 @cindex lines, centering
-@Defreq{ce, [@Var{nnn}]}
-@Defregx{.ce}
+@Defreq {ce, [@Var{nnn}]}
+@Defregx {.ce}
 Center text.  While the @w{@samp{.ad c}} request also centers text,
 it fills the text as well.  @code{ce} does not fill the
 text it affects.  This request causes a break.
@@ -4187,8 +4194,9 @@ between the `.ce' and the `.ad c' request.
 .ad c
 This is a small text fragment which shows the differences
 between the `.ce' and the `.ad c' request.
-@end_Example
+@endExample
 
+@noindent
 And here the result:
 
 @Example
@@ -4199,11 +4207,11 @@ between the `.ce' and the `.ad c' request.
   This is a small text fragment which
 shows the differences between the `.ce'
         and the `.ad c' request.
-@end_Example
+@endExample
 
-With no arguments, @code{ce} centers the next line of text.
-@var{nnn} specifies the number of lines to be centered.  If
-the argument is zero or negative, centering is disabled.
+With no arguments, @code{ce} centers the next line of text.  @var{nnn}
+specifies the number of lines to be centered.  If the argument is zero
+or negative, centering is disabled.
 
 @rqindex ll
 @rqindex in
@@ -4217,20 +4225,20 @@ centering for a large number of lines, and to turn off centering after
 text to be centered.  This is useful for any request which takes a
 number of lines as an argument.
 
-The @code{.ce} number register contains the number of lines remaining to
-be centered, as set by the @code{ce} request.
-@end_Defreq
+The @code{.ce} read-only number register contains the number of lines
+remaining to be centered, as set by the @code{ce} request.
+@endDefreq
 
 @cindex justifying text
 @cindex text, justifying
 @cindex right-justifying
-@Defreq{rj, [@Var{nnn}]}
-@Defregx{.rj}
+@Defreq {rj, [@Var{nnn}]}
+@Defregx {.rj}
 Justify unfilled text to the right margin.  Arguments are identical to
-the @code{ce} request.  The @code{.rj} number register is the number of
-lines to be right-justified as set by the @code{rj} request.  This
-request causes a break.
-@end_Defreq
+the @code{ce} request.  The @code{.rj} read-only number register is the
+number of lines to be right-justified as set by the @code{rj} request.
+This request causes a break.
+@endDefreq
 
 
 @c =====================================================================
@@ -4243,8 +4251,8 @@ request causes a break.
 As discussed in @ref{Hyphenation}, @code{gtroff} hyphenates words.
 There are a number of ways to influence hyphenation.
 
-@Defreq{hy, [@Var{mode}]}
-@Defregx{.hy}
+@Defreq {hy, [@Var{mode}]}
+@Defregx {.hy}
 Enable hyphenation.  The request has an optional numeric argument,
 @var{mode}, to restrict hyphenation if necessary:
 
@@ -4268,20 +4276,20 @@ Values in the previous table are additive.  For example, the value@w{
 two characters of a word.
 
 @cindex hyphenation restrictions register
-The current hyphenation restrictions can be found in the number register
-@samp{.hy}.
+The current hyphenation restrictions can be found in the read-only
+number register @samp{.hy}.
 
 The hyphenation mode is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
-@Defreq{nh, }
+@Defreq {nh, }
 Disable hyphenation (i.e., set the hyphenation mode to zero).  Note that
 the hyphenation mode of the last call to @code{hy} is not remembered.
 
 The hyphenation mode is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
 @esindex \%
 @cindex explicit hyphens
@@ -4289,9 +4297,9 @@ The hyphenation mode is associated with the current environment
 @cindex consecutive hyphenated lines
 @cindex lines, consecutive hyphenated
 @cindex hyphenated lines, consecutive
-@Defreq{hlm, [@Var{nnn}]}
+@Defreq {hlm, [@Var{nnn}]}
 @Defregx{.hlm}
-@Defregx{.hlc}
+@Defregx {.hlc}
 Set the maximum number of consecutive hyphenated lines to @var{nnn}.  If
 this number is negative, there is no maximum.  The default value is@w{
 }@minus{}1 if @var{nnn} is omitted.  This value is associated with the
@@ -4301,18 +4309,19 @@ environment.  Hyphens resulting from @code{\%} are counted; explicit
 hyphens are not.
 
 The current setting of @code{hlm} is available in the @code{.hlm}
-register.  Also the number of immediately preceding consecutive
-hyphenated lines are available in the number register @samp{.hlc}.
-@end_Defreq
+read-only number register.  Also the number of immediately preceding
+consecutive hyphenated lines are available in the read-only number
+register @samp{.hlc}.
+@endDefreq
 
-@Defreq{hw, word1 word2 @dots{}}
+@Defreq {hw, word1 word2 @dots{}}
 Define how @var{word1}, @var{word2}, etc.@: are to be hyphenated.  The
 words must be given with hyphens at the hyphenation points.  For
 example:
 
 @Example
 .hw in-sa-lub-rious
-@end_Example
+@endExample
 
 @noindent
 Besides the space character, any character whose hyphenation code value
@@ -4329,13 +4338,13 @@ This request is ignored if there is no parameter.
 In old versions of @code{troff} there was a limited amount of space to
 store such information; fortunately, with @code{gtroff}, this is no
 longer a restriction.
-@end_Defreq
+@endDefreq
 
 @cindex hyphenation character
 @cindex character, hyphenation
 @cindex disabling hyphenation
 @cindex hyphenation, disabling
-@Defesc{\\%, , , }
+@Defesc {\\%, , , }
 To tell @code{gtroff} how to hyphenate words on the fly, use the @code{\%}
 escape, also known as the @dfn{hyphenation character}.
 Preceding a word with this character prevents it from being
@@ -4343,9 +4352,9 @@ hyphenated; putting it inside a word indicates to @code{gtroff} that the
 word may be hyphenated at that point.  Note that this mechanism
 only affects that one occurrence of the word; to change the hyphenation
 of a word for the entire document, use the @code{hw} request.
-@end_Defesc
+@endDefesc
 
-@Defreq{hc, [@Var{char}]}
+@Defreq {hc, [@Var{char}]}
 Change the hyphenation character to @var{char}.  This character
 then works the same as the @code{\%} escape, and thus, no longer appears
 in the output.  Without an argument, @code{hc} resets the
@@ -4353,11 +4362,11 @@ hyphenation character to be @code{\%} (the default) only.
 
 The hyphenation character is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
 @cindex hyphenation patterns
 @cindex patterns for hyphenation
-@Defreq{hpf, pattern_file}
+@Defreq {hpf, pattern_file}
 Read in a file of hyphenation patterns.  This file is searched for
 in the same way as @file{@var{name}.tmac} (or
 @file{tmac.@var{name}}) is searched for if the @option{-m@var{name}}
@@ -4384,11 +4393,11 @@ invoked by the @file{troffrc} or @file{troffrc-end} file; by default,
 
 Invoking @code{hpf} causes an error if there is no current hyphenation
 language.
-@end_Defreq
+@endDefreq
 
 @cindex hyphenation code
 @cindex code, hyphenation
-@Defreq{hcode, c1 code1 c2 code2 @dots{}}
+@Defreq {hcode, c1 code1 c2 code2 @dots{}}
 Sets the hyphenation code of character @var{c1} to @var{code1}, that of
 @var{c2} to @var{code2}, etc.  A hyphenation code must be a single input
 character (not a special character) other than a digit or a space.
@@ -4397,35 +4406,36 @@ set to itself, and each upper-case letter (@samp{A}-@samp{Z}) has a
 hyphenation code which is the lower-case version of itself.
 
 This request is ignored if it has no parameter.
-@end_Defreq
+@endDefreq
 
 @cindex hyphenation margin
 @cindex margin for hyphenation
 @rqindex ad
-@Defreq{hym, [@Var{length}]}
-@Defregx{.hym}
+@Defreq {hym, [@Var{length}]}
+@Defregx {.hym}
 Set the (right) hyphenation margin to @var{length}.  If the current
-adjustment mode is not@w{ }@samp{b}, the line is not hyphenated if
-it is shorter than @var{length}.  Without an argument, the hyphenation
-margin is reset to its default value, which is@w{ }0.  The default
-scaling indicator for this request is@w{ }@code{m}.  The hyphenation
-margin is associated with the current environment
+adjustment mode is not @samp{b} or@w{ }@samp{n}, the line is not
+hyphenated if it is shorter than @var{length}.  Without an argument, the
+hyphenation margin is reset to its default value, which is@w{ }0.  The
+default scaling indicator for this request is@w{ }@code{m}.  The
+hyphenation margin is associated with the current environment
 (@pxref{Environments}).
 
 A negative argument resets the hyphenation margin to zero, emitting
 a warning of type @samp{range}.
 
 @cindex current hyphenation margin register
-The current hyphenation margin is available in the @code{.hym} register.
-@end_Defreq
+The current hyphenation margin is available in the @code{.hym} read-only
+number register.
+@endDefreq
 
 @cindex hyphenation space
 @rqindex ad
-@Defreq{hys, [@Var{hyphenation_space}]}
-@Defregx{.hys}
+@Defreq {hys, [@Var{hyphenation_space}]}
+@Defregx {.hys}
 Set the hyphenation space to @var{hyphenation_space}.  If the current
-adjustment mode is@w{ }@samp{b}, don't hyphenate the line if it
-can be justified by adding no more than @var{hyphenation_space} extra
+adjustment mode is @samp{b} or@w{ }@samp{n}, don't hyphenate the line if
+it can be justified by adding no more than @var{hyphenation_space} extra
 space to each word space.  Without argument, the hyphenation space is
 set to its default value, which is@w{ }0.  The default scaling indicator
 for this request is@w{ }@code{m}.  The hyphenation space is associated
@@ -4435,15 +4445,16 @@ A negative argument resets the hyphenation space to zero, emitting a
 warning of type @samp{range}.
 
 @cindex current hyphenation space register
-The current hyphenation space is available in the @code{.hys} register.
-@end_Defreq
+The current hyphenation space is available in the @code{.hys} read-only
+number register.
+@endDefreq
 
 @cindex soft hyphen character
 @cindex character, soft hyphen
 @glindex hy
 @rqindex char
 @rqindex tr
-@Defreq{shc, [@Var{char}]}
+@Defreq {shc, [@Var{char}]}
 Set the soft hyphen character to @var{char}.  If the argument is
 omitted, the soft hyphen character is set to the default character
 @code{\(hy} (this is the start-up value of @code{gtroff} also).  The
@@ -4454,14 +4465,14 @@ break point, then the line is not broken at that point.  Neither
 definitions (specified with the @code{char} request) nor translations
 (specified with the @code{tr} request) are considered when finding the
 soft hyphen character.
-@end_Defreq
+@endDefreq
 
 @rqindex hpf
 @rqindex hw
 @pindex troffrc
 @pindex troffrc-end
-@Defreq{hla, language}
-@Defregx{.hla}
+@Defreq {hla, language}
+@Defregx {.hla}
 Set the current hyphenation language to the string @var{language}.
 Hyphenation exceptions specified with the @code{hw} request and
 hyphenation patterns specified with the @code{hpf} request are both
@@ -4478,8 +4489,8 @@ read-only number register @samp{.hla}.
 .ds curr_language \n[.hla]
 \*[curr_language]
     @result{} us
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 
 @c =====================================================================
@@ -4489,18 +4500,18 @@ read-only number register @samp{.hla}.
 @cindex manipulating spacing
 @cindex spacing, manipulating
 
-@Defreq{sp, [@Var{distance}]}
+@Defreq {sp, [@Var{distance}]}
 Space downwards @var{distance}.  With no argument it advances 1@w{
 }line.  A negative argument causes @code{gtroff} to move up the page
 the specified distance.  If the argument is preceded by a @samp{|}
 then @code{gtroff} moves that distance from the top of the page.  This
 request causes a line break.  The default scaling indicator is@w{
 }@code{v}.
-@end_Defreq
+@endDefreq
 
 @cindex double-spacing
-@Defreq{ls, [@Var{nnn}]}
-@Defregx{.L}
+@Defreq {ls, [@Var{nnn}]}
+@Defregx {.L}
 Output @w{@var{nnn}@minus{}1} blank lines after each line of text.  With
 no argument, @code{gtroff} uses the previous value before the last
 @code{ls} call.
@@ -4509,17 +4520,18 @@ no argument, @code{gtroff} uses the previous value before the last
 .ls 2    \" This causes double-spaced output
 .ls 3    \" This causes triple-spaced output
 .ls      \" Again double spaced
-@end_Example
+@endExample
 
 The line spacing is associated with the current environment
 (@pxref{Environments}).
 
 @cindex current line spacing register
-The number register @code{.L} contains the current line spacing setting.
-@end_Defreq
+The read-only number register @code{.L} contains the current line
+spacing setting.
+@endDefreq
 
-@Defesc{\\x, ', spacing, '}
-@Defregx{.a}
+@Defesc {\\x, ', spacing, '}
+@Defregx {.a}
 Sometimes, extra vertical spacing is only needed occasionally, e.g.@: to
 allow space for a tall construct (like an equation).  The @code{\x}
 escape does this.  The escape is given a numerical argument, usually
@@ -4532,23 +4544,23 @@ maximum of the values is used.
 @xref{Escapes}, for details on parameter delimiting characters.
 
 @cindex extra vertical line space register
-The @code{.a} number register contains the most recent (nonnegative)
-extra vertical line space.
+The @code{.a} read-only number register contains the most recent
+(nonnegative) extra vertical line space.
 
 @c XXX
 @ignore
 @Example
 ... example of inline equation ...
-@end_Example
+@endExample
 @end ignore
-@end_Defesc
+@endDefesc
 
 @rqindex sp
 @cindex no-space mode
 @cindex mode, no-space
 @cindex blank lines, disabling
 @cindex lines, blank, disabling
-@Defreq{ns, }
+@Defreq {ns, }
 Enable @dfn{no-space mode}.  In this mode, spacing (either via @code{sp}
 or via blank lines) is disabled.  The @code{bp} request to advance to
 the next page is also disabled, except if it is accompanied by a page
@@ -4561,14 +4573,14 @@ macros inadvertently insert some vertical space before the text starts
 is associated with the current diversion level.
 
 @c XXX xref
-@end_Defreq
+@endDefreq
 
-@Defreq{rs, }
+@Defreq {rs, }
 Disable no-space mode.  This request is associated with the current
 diversion level.
 
 @c XXX xref
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -4583,13 +4595,13 @@ A tab character (@acronym{ASCII} char@w{ }9, @acronym{EBCDIC} char@w{
 }5) causes a horizontal movement to the next tab stop (much
 like it did on a typewriter).
 
-@Defesc{\\t, , , }
+@Defesc {\\t, , , }
 This escape is a non-interpreted tab character.  In copy mode
 (@pxref{Copy-in Mode}), @code{\t} is the same as a real tab character.
-@end_Defesc
+@endDefesc
 
-@Defreq{ta, [@Var{n1} @Var{n2} @dots{} @Var{nn} @t{T} @Var{r1} @Var{r2} @dots{} @Var{rn}]}
-@Defregx{.tabs}
+@Defreq {ta, [@Var{n1} @Var{n2} @dots{} @Var{nn} @t{T} @Var{r1} @Var{r2} @dots{} @Var{rn}]}
+@Defregx {.tabs}
 Change tab stop positions.  This request takes a series of tab
 specifiers as arguments (optionally divided into two groups with the
 letter @samp{T}) which indicate where each tab stop is to be (overriding
@@ -4601,7 +4613,7 @@ one inch.
 
 @Example
 .ta 1i 2i 3i 4i 5i 6i
-@end_Example
+@endExample
 
 Tab stops can also be specified using a leading @samp{+}
 which means that the specified tab stop is set relative to
@@ -4610,7 +4622,7 @@ previous example.
 
 @Example
 .ta 1i +1i +1i +1i +1i +1i
-@end_Example
+@endExample
 
 @code{gtroff} supports an extended syntax to specify repeat values after
 the @samp{T} mark (these values are always taken as relative) -- this is
@@ -4620,7 +4632,7 @@ it defines an infinite number of tab stops separated by one inch.
 
 @Example
 .ta T 1i
-@end_Example
+@endExample
 
 Now we are ready to interpret the full syntax given at the beginning:
 Set tabs at positions @var{n1}, @var{n2}, @dots{}, @var{nn} and then set
@@ -4638,7 +4650,7 @@ specifier.  The default justification is @samp{L}.  Example:
 
 @Example
 .ta 1i 2iC 2iR
-@end_Example
+@endExample
 
 Some notes:
 
@@ -4654,7 +4666,7 @@ can be neither stretched nor squeezed.  For example,
 .ds foo a\tb\tc
 .ta T 5i
 \*[foo]
-@end_Example
+@endExample
 
 @noindent
 creates a single line which is a bit longer than 10@w{ }inches (a string
@@ -4665,7 +4677,7 @@ following:
 .ds bar a\tb b\tc
 .ta T 5i
 \*[bar]
-@end_Example
+@endExample
 
 @noindent
 @code{gtroff} first converts the tab stops of the line into unbreakable
@@ -4690,7 +4702,7 @@ Consider the following example
 .br
 \*[ZZZ]
 .br
-@end_Example
+@endExample
 
 @noindent
 which produces the following output:
@@ -4699,7 +4711,7 @@ which produces the following output:
 foo                 bar              foo
 foo                 bar           foobar
 foo                 bar              foobar
-@end_Example
+@endExample
 
 @noindent
 The first line right-justifies the second `foo' relative to the tab
@@ -4722,26 +4734,26 @@ has tab stops preset every 0.8@dmn{i}).
 @end itemize
 
 @cindex current tab settings register
-The number register @code{.tabs} contains a string representation of the
-current tab settings suitable for use as an argument to the @code{ta}
-request.
+The read-only number register @code{.tabs} contains a string
+representation of the current tab settings suitable for use as an
+argument to the @code{ta} request.
 
 @Example
 .ds tab-string \n[.tabs]
 \*[tab-string]
     @result{} T120u
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
-@cindex tab repitition character
-@cindex character, tab repitition
-@Defreq{tc, [@Var{fill-char}]}
+@cindex tab repetition character
+@cindex character, tab repetition
+@Defreq {tc, [@Var{fill-char}]}
 Normally @code{gtroff} fills the space to the next tab stop with
 whitespace.  This can be changed with the @code{tc} request.  With no
 argument @code{gtroff} reverts to using whitespace, which is the default.
-The value of this @dfn{tab repitition} character is associated with the
+The value of this @dfn{tab repetition} character is associated with the
 current environment (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
 @menu
 * Leaders::                     
@@ -4766,21 +4778,21 @@ character: It moves to the next tab stop.  The only difference is that
 for this movement, the fill character defaults to a period character and
 not to space.
 
-@Defesc{\\a, , , }
+@Defesc {\\a, , , }
 This escape is a non-interpreted leader character.  In copy mode
 (@pxref{Copy-in Mode}), @code{\a} is the same as a real leader
 character.
-@end_Defesc
+@endDefesc
 
-@cindex leader repitition character
-@cindex character, leader repitition
-@Defreq{lc, [@Var{fill-char}]}
+@cindex leader repetition character
+@cindex character, leader repetition
+@Defreq {lc, [@Var{fill-char}]}
 Declares the leader character.
 Without an argument, leaders act the same as tabs (i.e.,
 using whitespace for filling).  @code{gtroff}'s start-up value is @samp{.}.
-The value of this @dfn{leader repitition} character is associated with
+The value of this @dfn{leader repetition} character is associated with
 the current environment (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
 @cindex table of contents
 @cindex contents, table of
@@ -4794,14 +4806,14 @@ number slightly separated from the dots.
 .lc .
 .ta 1i 5i +.25i
 \*[entry]
-@end_Example
+@endExample
 
 @noindent
 This produces
 
 @Example
 1.1  Foo..........................................  12
-@end_Example
+@endExample
 
 @c ---------------------------------------------------------------------
 
@@ -4826,11 +4838,11 @@ lengths plus the stretchable space equal to the field width.  If more
 than one padding character is inserted, the available space is evenly
 distributed among them.
 
-@Defreq{fc, [@Var{delim-char} [@Var{padding-char}]]}
+@Defreq {fc, [@Var{delim-char} [@Var{padding-char}]]}
 Define a delimiting and a padding character for fields.  If the latter
 is missing, the padding character defaults to a space character.  If
 there is no argument at all, the field mechanism is disabled (which is
-the default).  Note that contrary to e.g.@: the tab repitition
+the default).  Note that contrary to e.g.@: the tab repetition
 character, delimiting and padding characters are not associated to the
 current environment (@pxref{Environments}).
 
@@ -4842,7 +4854,7 @@ Example:
 #foo^bar^smurf#
 .br
 #foo^^bar^smurf#
-@end_Example
+@endExample
 
 @noindent
 and here the result:
@@ -4850,8 +4862,8 @@ and here the result:
 @Example
 foo         bar          smurf
 foo            bar       smurf
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 
 @c =====================================================================
@@ -4872,22 +4884,22 @@ The control character (@samp{.}) and the no-break control character
 (@samp{'}) can be changed with the @code{cc} and @code{c2} requests,
 respectively.
 
-@Defreq{cc, [@Var{c}]}
+@Defreq {cc, [@Var{c}]}
 Set the control character to @var{c}.  With no argument the default
 control character @samp{.} is restored.  The value of the control
 character is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
-@Defreq{c2, [@Var{c}]}
+@Defreq {c2, [@Var{c}]}
 Set the no-break control character to @var{c}.  With no argument the
 default control character @samp{'} is restored.  The value of the
 no-break control character is associated with the current environment
 (@pxref{Environments}).
-@end_Defreq
+@endDefreq
 
 @esindex \\
-@Defreq{eo, }
+@Defreq {eo, }
 Disable the escape mechanism completely.  After executing this request,
 the backslash character @samp{\} no longer starts an escape sequence.
 
@@ -4909,12 +4921,12 @@ necessary then to double the escape character.  Here an example:
 .  ft R
 ..
 .ec
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @cindex escape character
 @cindex character, escape
-@Defreq{ec, [@Var{c}]}
+@Defreq {ec, [@Var{c}]}
 Set the escape character to @var{c}.  With no argument the default
 escape character @samp{\} is restored.  It can be also used to re-enable
 the escape mechanism after an @code{eo} request.
@@ -4924,12 +4936,12 @@ packages since @code{gtroff} has no mechanism (like @TeX{}) to `intern'
 macros, i.e., to convert a macro definition into an internal form which
 is independent of its representation.  If a macro is called, it is
 executed literally.
-@end_Defreq
+@endDefreq
 
-@Defesc{\\e, , , }
+@Defesc {\\e, , , }
 This escape sequence prints the current escape character (which is the
 backslash character @samp{\} by default).
-@end_Defesc
+@endDefesc
 
 A @dfn{translation} is a mapping of an input character to an output
 character.  The default mappings are given in the font definition files
@@ -4938,7 +4950,7 @@ with @code{tr} and in the font definition files) occur at output time,
 i.e., the input character gets assigned the metric information of the
 mapped output character.
 
-@Defreq{tr, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
+@Defreq {tr, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
 Translate character @var{a} to @var{b}, character @var{c} to @var{d},
 etc.  If there is an odd number of arguments, the last one is
 translated to the space character.
@@ -5005,7 +5017,7 @@ character to nothing.
 .tr a\&
 foo bar
     @result{} foo br
-@end_Example
+@endExample
 
 @noindent
 It is even possible to map the space character to nothing:
@@ -5014,7 +5026,7 @@ It is even possible to map the space character to nothing:
 .tr aa \&
 foo bar
     @result{} foobar
-@end_Example
+@endExample
 
 @noindent
 As shown in the example, the space character can't be the first
@@ -5037,11 +5049,11 @@ string), it is no longer affected by @code{tr}.
 @item
 Without an argument, the @code{tr} request is ignored.
 @end itemize
-@end_Defreq
+@endDefreq
 
 @esindex \!
 @cindex @code{\!}, and @code{trnt}
-@Defreq{trnt, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
+@Defreq {trnt, @Var{a}@Var{b}@Var{c}@Var{d}@dots{}}
 @code{trnt} is the same as the @code{tr} request except that the
 translations do not apply to text that is transparently throughput into
 a diversion with @code{\!}.  @xref{Diversions}, for more information.
@@ -5054,12 +5066,12 @@ For example,
 \!.tm a
 .di
 .x
-@end_Example
+@endExample
 
 @noindent
 prints @samp{b}; if @code{trnt} is used instead of @code{tr} it
 prints @samp{a}.
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -5084,7 +5096,7 @@ provides two built-in conditions @samp{n} and @samp{t} for the
 
 @pindex troffrc
 @pindex troffrc-end
-@Defreq{troff, }
+@Defreq {troff, }
 Make the @samp{t} built-in condition true (and the @samp{n} built-in
 condition false) for @code{if}, @code{ie}, and @code{while} conditional
 requests.  This is the default if @code{gtroff} (@emph{not}
@@ -5092,17 +5104,17 @@ requests.  This is the default if @code{gtroff} (@emph{not}
 the start-up files @file{troffrc} and @file{troffrc-end}.  Without
 @option{-R}, @code{gtroff} stays in troff mode if the output device is
 not a tty (e.g.@: `ps').
-@end_Defreq
+@endDefreq
 
 @pindex tty.tmac
-@Defreq{nroff, }
+@Defreq {nroff, }
 Make the @samp{n} built-in condition true (and the @samp{t} built-in
 condition false) for @code{if}, @code{ie}, and @code{while} conditional
 requests.  This is the default if @code{gtroff} uses a tty output
 device; the code for switching to nroff mode is in the file
 @file{tty.tmac} which is loaded by the start-up file
 @code{troffrc}.
-@end_Defreq
+@endDefreq
 
 @xref{Conditionals and Loops}, for more details on built-in conditions.
 
@@ -5128,7 +5140,7 @@ request which manipulates each dimension.
               +----+----+----------------------+----+
            -->| po |<--
               |<--------paper width---------------->|
-@end_Example
+@endExample
 
 @noindent
 These dimensions are:
@@ -5165,16 +5177,16 @@ be indented from both margins.
 Replace me with a better (and more) example!
 .in -.5i
 .ll +.5i
-@end_Example
+@endExample
 
 @cindex troff mode
 @cindex mode, troff
 @cindex nroff mode
 @cindex mode, nroff
-@Defreq{po, [@Var{offset}]}
-@Defreqx{po, @t{+}@Var{offset}}
-@Defreqx{po, @t{-}@Var{offset}}
-@Defregx{.o}
+@Defreq {po, [@Var{offset}]}
+@Defreqx {po, @t{+}@Var{offset}}
+@Defreqx {po, @t{-}@Var{offset}}
+@Defregx {.o}
 Set horizontal page offset to @var{offset} (or increment or
 decrement the current value by @var{offset}).  Note that this request
 does not cause a break, so changing the page offset in the middle of
@@ -5184,7 +5196,7 @@ Nroff Mode}); the default scaling indicator is@w{ }@code{m} (and not@w{
 }@code{v} as incorrectly documented in the original @acronym{UNIX} troff
 manual).
 
-The current page offset can be found in the built-in number register
+The current page offset can be found in the read-only number register
 @samp{.o}.
 
 If @code{po} is called without an argument, the page offset is reset to
@@ -5200,13 +5212,13 @@ the previous value before the last call to @code{po}.
 .po
 \n[.o]
     @result{} 720
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
-@Defreq{in, [@Var{indent}]}
-@Defreqx{in, @t{+}@Var{indent}}
-@Defreqx{in, @t{-}@Var{indent}}
-@Defregx{.i}
+@Defreq {in, [@Var{indent}]}
+@Defreqx {in, @t{+}@Var{indent}}
+@Defreqx {in, @t{-}@Var{indent}}
+@Defregx {.i}
 Set indentation to @var{indent} (or increment or decrement the
 current value by @var{indent}).  This request causes a break.
 Initially, there is no indentation.
@@ -5225,13 +5237,13 @@ The effect of @code{in} is delayed until a partially collected line (if
 it exists) is output.  A temporary indent value is reset to zero also.
 
 The current indentation (as set by @code{in}) can be found in the
-built-in number register @samp{.i}.
-@end_Defreq
+read-only number register @samp{.i}.
+@endDefreq
 
-@Defreq{ti, offset}
-@Defreqx{ti, @t{+}@Var{offset}}
-@Defreqx{ti, @t{-}@Var{offset}}
-@Defregx{.in}
+@Defreq {ti, offset}
+@Defreqx {ti, @t{+}@Var{offset}}
+@Defreqx {ti, @t{-}@Var{offset}}
+@Defregx {.in}
 Temporarily indent the next output line by @var{offset}.  If an
 increment or decrement value is specified, adjust the temporary
 indentation relative to the value set by the @code{in} request.
@@ -5249,19 +5261,19 @@ normal indentation, if @var{offset} is given as a relative value.
 The effect of @code{ti} is delayed until a partially collected line (if
 it exists) is output.
 
-The number register @code{.in} is the indentation that applies to the
-current output line.
+The read-only number register @code{.in} is the indentation that applies
+to the current output line.
 
 The difference between @code{.i} and @code{.in} is that the latter takes
 into account whether a partially collected line still uses the old
 indentation value or a temporary indentation value is active.
-@end_Defreq
+@endDefreq
 
-@Defreq{ll, [@Var{length}]}
-@Defreqx{ll, @t{+}@Var{length}}
-@Defreqx{ll, @t{-}@Var{length}}
+@Defreq {ll, [@Var{length}]}
+@Defreqx {ll, @t{+}@Var{length}}
+@Defreqx {ll, @t{-}@Var{length}}
 @Defregx{.l}
-@Defregx{.ll}
+@Defregx {.ll}
 Set the line length to @var{length} (or increment or decrement the
 current value by @var{length}).  Initially, the line length is set to
 6.5@dmn{i}.  The effect of @code{ll} is delayed until a partially
@@ -5277,13 +5289,13 @@ The line length is associated with the current environment.
 
 @cindex current line length register
 The current line length (as set by @code{ll}) can be found in the
-built-in number register @code{.l}.  The number register @code{.ll} is
-the line length that applies to the current output line.
+read-only number register @samp{.l}.  The read-only number register
+@code{.ll} is the line length that applies to the current output line.
 
 Similar to @code{.i} and @code{.in}, the difference between @code{.l}
 and @code{.ll} is that the latter takes into account whether a partially
 collected line still uses the old line length value.
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -5298,16 +5310,16 @@ page layout.
 
 @cindex page length
 @cindex length of page
-@Defreq{pl, [@Var{length}]}
-@Defreqx{pl, @t{+}@Var{length}}
-@Defreqx{pl, @t{-}@Var{length}}
-@Defregx{.p}
-Set the @dfn{page length} to @var{length} (or increment or
-decrement the current value by @var{length}).  This is the length of the
-physical output page.  The default scaling indicator is@w{ }@code{v}.
+@Defreq {pl, [@Var{length}]}
+@Defreqx {pl, @t{+}@Var{length}}
+@Defreqx {pl, @t{-}@Var{length}}
+@Defregx {.p}
+Set the @dfn{page length} to @var{length} (or increment or decrement the
+current value by @var{length}).  This is the length of the physical
+output page.  The default scaling indicator is@w{ }@code{v}.
 
 @cindex current page length register
-The current setting can be found in the built-in number register
+The current setting can be found in the read-only number register
 @samp{.p}.
 
 @cindex top margin
@@ -5315,13 +5327,16 @@ The current setting can be found in the built-in number register
 @cindex bottom margin
 @cindex margin, bottom
 Note that this only specifies the size of the page, not the top and
-bottom margins.  Those are not set by groff directly.  @xref{Traps}, for
-further information on how to do this.
+bottom margins.  Those are not set by @code{gtroff} directly.
+@xref{Traps}, for further information on how to do this.
 
 Negative @code{pl} values are possible also, but not very useful: No
 trap is sprung, and each line is output on a single page (thus
 suppressing all vertical spacing).
-@end_Defreq
+
+If no argument or an invalid argument is given, @code{pl} sets the page
+length to 11@dmn{i}.
+@endDefreq
 
 @cindex headers
 @cindex footers
@@ -5331,55 +5346,91 @@ and bottom titles (or headers and footers).
 
 @cindex title line
 @cindex three-part title
-@Defreq{tl, 'left'center'right'}
-@Defregx{%}
-The @code{tl} request prints a @dfn{title line}, which consists of
-three parts: a left justified portion, a centered portion and a right
-justified portion.  The argument to @code{tl} is specified as
-@code{'@var{left}'@var{center}'@var{right}'}.  The @samp{%} character is
-replaced with the current page number.  This character can be changed
+@cindex page number character
+@Defreq {tl, @t{'}@Var{left}@t{'}@Var{center}@t{'}@Var{right}@t{'}}
+The @code{tl} request prints a @dfn{title line}, which consists of three
+parts: a left justified portion, a centered portion, and a right
+justified portion.  The argument separator @samp{'} can be replaced with
+any character not occurring in the title line.  The @samp{%} character
+is replaced with the current page number.  This character can be changed
 with the @code{pc} request (see below).
-@end_Defreq
+
+Without argument, @code{tl} is ignored.
+
+Some notes:
+
+@itemize @bullet
+@item
+A title line is not restricted to the top or bottom of a page.
+
+@item
+@code{tl} prints the title line immediately, ignoring a partially filled
+line (which stays untouched).
+
+@item
+It is not an error to omit closing delimiters.  For example,
+@w{@samp{.tl /foo}} is equivalent to @w{@samp{.tl /foo///}}: It prints a
+title line with the left justified word @samp{foo}; the centered and
+right justfied parts are empty.
+
+@item
+Any modifications to the current environment within @code{tl} (e.g.@:
+changing the font or font size) are undone after processing @code{tl}.
+
+@item
+@code{tl} accepts the same parameter delimiting characters as the
+@code{\A} escape; see @ref{Escapes}.
+@end itemize
+
+@endDefreq
 
 @cindex length of title line
 @cindex title line, length
 @cindex current title line length register
-@Defreq{lt, [@Var{length}]}
-@Defreqx{lt, @t{+}@Var{length}}
-@Defreqx{lt, @t{-}@Var{length}}
-@Defregx{.lt}
+@Defreq {lt, [@Var{length}]}
+@Defreqx {lt, @t{+}@Var{length}}
+@Defreqx {lt, @t{-}@Var{length}}
+@Defregx {.lt}
 The title line is printed using its own line length, which is specified
 (or incremented or decremented) with the @code{lt} request.  Initially,
-the title line length is set to 6.5@dmn{i}.  The current setting of this
-is available in the @code{.lt} number register.
+the title line length is set to 6.5@dmn{i}.  If a negative line length
+is specified (which is not allowed), @code{gtroff} emits a warning of
+type @samp{range} and sets the title line length to zero.  The default
+scaling indicator is@w{ }@code{m}.  If @code{lt} is called without an
+argument, the title length is reset to the previous value before the
+last call to @code{lt}.
 
-If @code{lt} is called without an argument, the title length is reset to
-the previous value before the last call to @code{lt}.  The default
-scaling indicator is@w{ }@code{m}.
-@end_Defreq
+The current setting of this is available in the @code{.lt} read-only
+number register.
+@endDefreq
 
 @cindex page number
 @cindex number, page
-@Defreq{pn, page}
-@Defregx{.pn}
+@Defreq {pn, page}
+@Defregx {.pn}
 The @code{pn} request changes the page number of the @emph{next}
-page.  The only argument is the page number.
+page.  The only argument is the page number; the request is ignored
+without a parameter.
 
-@vindex %
+The read-only number register @code{.pn} contains the number of the next
+page: either the value set by a @code{pn} request, or the number of the
+current page plus@w{ }1.
+@endDefreq
+
 @cindex current page number register
-The current page number is stored in the number register @code{%}.  The
-number register @code{.pn} contains the number of the next page: either
-the value set by a @code{pn} request, or the number of the current page
-plus@w{ }1.
-@end_Defreq
+@Defreg {%}
+A read-write register holding the current page number.
+@endDefreg
 
 @cindex changing the page number character
 @cindex page number character, changing
-@Defreq{pc, char}
+@vindex %
+@Defreq {pc, [@Var{char}]}
 The @code{pc} request changes the page number character (used by the
 @code{tl} request) to a different character.  With no argument, this
-mechanism is disabled.
-@end_Defreq
+mechanism is disabled.  Note that this doesn't affect the number
+register @code{%}.
+@endDefreq
 
 @xref{Traps}.
 
@@ -5391,31 +5442,32 @@ mechanism is disabled.
 @cindex page control
 @cindex control, page
 
-@rqindex bp
 @rqindex pn
 @cindex new page
+@Defreq {bp, [@Var{page}]}
 To stop processing the current page, and move to the next page, invoke
-the @code{bp} request.  This request also causes a break.  It can
-also take an argument of what the next page should be numbered.  The
-only difference between @code{bp} and @code{pn} is that @code{pn} does
-not cause a break or actually eject a page.
+@code{bp}.  This request causes a break.  It can also take an argument
+of what the next page should be numbered.  The only difference between
+@code{bp} and @code{pn} is that @code{pn} does not cause a break or
+actually eject a page.
 
 @Example
-.de newpage
-'bp
-'sp .5i
-.tl 'left top'center top'right top'
-'sp .3i
-..
-@end_Example
+.de newpage                         \" define macro
+'bp                                 \" begin page
+'sp .5i                             \" vertical space
+.tl 'left top'center top'right top' \" title
+'sp .3i                             \" vertical space
+..                                  \" end macro
+@endExample
+@endDefreq
 
-@cindex orphan
-@Defreq{ne, space}
+@cindex orphan line
+@Defreq {ne, space}
 It is often necessary to force a certain amount of space before a new
 page occurs.  This is most useful to make sure that there is not a
 single @dfn{orphan} line left at the bottom of a page.  The @code{ne}
-request ensures that there is a certain distance, specified by the
-first argument, before the next page is triggered (see @ref{Traps}, for
+request ensures that there is a certain distance, specified by the first
+argument, before the next page is triggered (see @ref{Traps}, for
 further information).  The default unit for @code{ne} is @code{v} and
 the default argument is@w{ }1@dmn{v}.
 
@@ -5426,19 +5478,19 @@ do the following before each paragraph:
 .ne 2
 .ti +5n
 text
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @rqindex os
 @rqindex ne
-@Defreq{sv, space}
+@Defreq {sv, space}
 @code{sv} is similar to the @code{ne} request; it reserves the specified
 amount of vertical space.  If the desired amount of space exists before
 the next trap (bottom page boundary), the space is output
 immediately.  If there is not enough space, it is stored for later
 output via the @code{os} request.  The default argument is@w{ }1@dmn{v}
 and the default unit is @code{v}.
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -5449,8 +5501,8 @@ and the default unit is @code{v}.
 
 @code{gtroff} can switch fonts at any point in the text.
 
-@Defreq{ft, font}
-@Defescx{\\f, ', font, '}
+@Defreq {ft, font}
+@Defescx {\\f, ', font, '}
 The @code{ft} request and the @code{\f} escape change the
 current font to @samp{font}.
 
@@ -5464,7 +5516,7 @@ least one symbol font which contains various special symbols (Greek,
 mathematics).  Such symbols fonts cannot be used directly, but should be
 used via an escape.
 @c XXX should we list PostScript fonts here too?
-@end_Defreq
+@endDefreq
 
 @menu
 * Changing Fonts::              
@@ -5495,7 +5547,7 @@ eggs, bacon,
 spam
 .ft
 and sausage.
-@end_Example
+@endExample
 
 @esindex \f
 Use the @code{\f} escape to change fonts in the middle of
@@ -5503,7 +5555,7 @@ words:
 
 @Example
 eggs, bacon, \fBspam\fP and sausage.
-@end_Example
+@endExample
 
 @noindent
 Both of the above examples produce the same output.  Note the usage
@@ -5515,7 +5567,7 @@ such boundaries are needed.  There are two escapes to help with this.
 
 @cindex italic correction
 @cindex correction, italic
-@Defesc{\\/, , , }
+@Defesc {\\/, , , }
 The @code{\/} escape increases the width of the preceding character so
 that the spacing between that character and the following character is
 correct if the following character is a Roman character.  For
@@ -5529,11 +5581,11 @@ amount of space is also called @dfn{italic correction}.
 @c XXX example
 @c producing @i{f}), which is ugly.  Inserting \/ produces f) and avoids
 @c this problem.
-@end_Defesc
+@endDefesc
 
 @cindex left italic correction
 @cindex correction, left italic
-@Defesc{\\\,, , , }
+@Defesc {\\\,, , , }
 The @code{\,} escape modifies the spacing of the following character so
 that the spacing between that character and the preceding character is
 correct if the preceding character is a Roman character.
@@ -5545,7 +5597,7 @@ correction}, but this term isn't used widely.
 @c XXX example
 @c For example, inserting \, between the parenthesis and the f changes
 @c (f to (f.
-@end_Defesc
+@endDefesc
 
 @rqindex ft
 @rqindex ul
@@ -5557,12 +5609,12 @@ correction}, but this term isn't used widely.
 @rqindex fspecial
 @rqindex fp
 @rqindex code
-@Defreq{ftr, F G}
+@Defreq {ftr, F G}
 The @code{ftr} request translates fonts; its syntax is
 
 @Example
 .ftr @var{F} @var{G}
-@end_Example
+@endExample
 
 @noindent
 which translates font@w{ }@var{F} to font@w{ }@var{G}.  Whenever a font
@@ -5571,7 +5623,7 @@ named @var{F} is referred to in a @code{\f} escape sequence, or in the
 @code{fspecial}, @code{fp}, or @code{code} requests, font@w{ }@var{G}
 is used.  If @var{G} is missing, or equal to @var{F} then font@w{
 }@var{F} is not translated.
-@end_Defreq
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -5592,11 +5644,11 @@ style.  Specifying a font without the family part causes
 This way, it is possible to use the basic four fonts and to select a
 different font family on the command line.
 
-@Defreq{fam, family}
-@Defregx{.fam}
-Switch font families with the @code{fam} request.  The current
-font family is available in the number register @code{.fam}.  This is a
-string-valued register.
+@Defreq {fam, family}
+@Defregx {.fam}
+Switch font families with the @code{fam} request.  The current font
+family is available in the read-only number register @code{.fam}.  This
+is a string-valued register.
 
 @Example
 spam,
@@ -5610,8 +5662,8 @@ spam,
 baked beans,
 .ft R
 and spam.
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -5625,9 +5677,9 @@ of @code{troff}, @code{gtroff} has the concept of font @dfn{positions},
 on which various fonts are mounted.  The last one or two are reserved
 for the symbol font(s).
 
-@Defreq{fp, pos font [@Var{external-name}]}
+@Defreq {fp, pos font [@Var{external-name}]}
 @Defregx{.f}
-@Defregx{.fp}
+@Defregx {.fp}
 New fonts can be mounted with the @code{fp} request.  These numeric
 positions can then be referred to with font changing commands.  When
 @code{gtroff} starts it is using font number one.
@@ -5643,30 +5695,31 @@ nudge, nudge,
 .ft 3
 say no more!
 .ft
-@end_Example
+@endExample
 
 @noindent
 Note that after these font changes have taken place, the original font
 is restored.
 
 @cindex current font position register
-The current font in use, as a font position, is available in number
-register @code{.f}.  This can be useful to remember the current font,
-for later recall.
+The current font in use, as a font position, is available in the
+read-only number register @code{.f}.  This can be useful to remember the
+current font, for later recall.
 
 @Example
 .nr save-font \n(.f
 ... lots 'o text ...
 .ft \n[save-font]
-@end_Example
+@endExample
 
 @cindex next free font position register
-The number of the next free font position is available in the number
-register @code{.fp}.  This is useful when mounting a new font, like so:
+The number of the next free font position is available in the read-only
+number register @code{.fp}.  This is useful when mounting a new font,
+like so:
 
 @Example
 .fp \n[.fp] NEATOFONT
-@end_Example
+@endExample
 
 @pindex DESC@r{, and font mounting}
 Fonts not listed in the @file{DESC} file are automatically mounted on
@@ -5686,7 +5739,7 @@ font which is used to refer to the font in @code{gtroff} after it has
 been mounted.  If there is no third argument then the internal name is
 used as the external name.  This feature makes it possible to use
 fonts with long names in compatibility mode.
-@end_Defreq
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -5708,17 +5761,17 @@ or @code{\[*p]}.
 
 @Example
 area = \(*p\fIr\fP\u2\d
-@end_Example
+@endExample
 
-@Defesc{\\C, ', xxx, '}
+@Defesc {\\C, ', xxx, '}
 The escape @code{\C'@var{xxx}'} typesets the character named
 @var{xxx}.  Normally it is more convenient to use @code{\[@var{xxx}]}.
 But @code{\C} has the advantage that it is compatible with recent
 versions of @code{ditroff} and is available in compatibility mode.
-@end_Defesc
+@endDefesc
 
 @rqindex char
-@Defesc{\\N, ', n, '}
+@Defesc {\\N, ', n, '}
 The escape @code{\N'@var{n}'} typesets the character with code@w{
 }@var{n} in the current font.  @var{n} can be any integer.  Most devices
 only have characters with codes between 0 and@w{ }255.  If the current
@@ -5728,8 +5781,8 @@ conveniently used in conjunction with the @code{char} request:
 
 @Example
 .char \[phone] \f(ZD\N'37'
-@end_Example
-@end_Defesc
+@endExample
+@endDefesc
 
 @noindent
 @pindex DESC
@@ -5804,13 +5857,13 @@ having a zero space factor in @TeX{} (initially characters
 @cindex defining characters
 @cindex characters, defining
 @cindex creating new characters
-@Defreq{char, c string}
+@Defreq {char, c string}
 New characters can be created with the @code{char} request.  It is
 called as
 
 @Example
 .char @var{c} @var{string}
-@end_Example
+@endExample
 
 @rqindex tr
 @rqindex lc
@@ -5835,15 +5888,15 @@ if the @code{hcode} request is used to give the character a hyphenation
 code.  There is a special anti-recursion feature: use of character
 within the character's definition is handled like normal characters
 not defined with @code{char}.
-@end_Defreq
+@endDefreq
 
 @cindex removing character definition
 @cindex character, removing definition
-@Defreq{rchar, def}
+@Defreq {rchar, def}
 A character definition can be removed with the @code{rchar} request.
 Its arguments are the characters to be removed.  This undoes the effect
 of a @code{char} request.
-@end_Defreq
+@endDefreq
 
 @xref{Special Characters}.
 
@@ -5861,39 +5914,39 @@ were separate programs.  These are no longer necessary in GNU
 @code{troff}.
 
 @cindex underlining
-@Defreq{ul, lines}
+@Defreq {ul, lines}
 The @code{ul} request prints subsequent lines in italics on a device
 capable of it, or underlines the text on a character output device.  The
 single argument is the number of lines to be ``underlined,'' with no
 argument, the next line is underlined.
 The @code{ul} request does not underline spaces.
-@end_Defreq
+@endDefreq
 
 @cindex continuous underlining
 @cindex underlining, continuous
-@Defreq{cu, lines}
+@Defreq {cu, lines}
 The @code{cu} request is similar to @code{ul}
 but underlines spaces as well.
-@end_Defreq
+@endDefreq
 
 @c XXX more info
 
 @cindex underline font
 @cindex font for underlining
-@Defreq{uf, font}
+@Defreq {uf, font}
 The @code{uf} request sets the underline font used by @code{ul} and
 @code{cu}.
-@end_Defreq
+@endDefreq
 
 @cindex imitating bold face
 @cindex bold face, imitating
-@Defreq{bd, font offset}
+@Defreq {bd, font offset}
 The @code{bd} request artificially creates a bold font by printing each
 character twice, slightly offset.  The first argument specifies the font
 to embolden, and the second is the number of basic units, minus one, by
 which the two characters is offset.  If the second argument is
 missing, emboldening is turned off.
-@end_Defreq
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -5916,18 +5969,18 @@ for ft and ct, although GNU @code{troff} does not support these yet.
 @c XXX more info -> nroff mode
 
 @cindex ligatures enabled register
-@Defreq{lg, [@Var{flag}]}
-@Defregx{.lg}
+@Defreq {lg, [@Var{flag}]}
+@Defregx {.lg}
 The ligature mechanism can be switched on or off with the @code{lg}
 request; if the parameter is non-zero or missing, ligatures are enabled,
 otherwise disabled.  Default is on.  The current ligature mode can be
-found in the number register @code{.lg} (set to@w{ }1 if ligatures are
-enabled, 0@w{ }otherwise).
+found in the read-only number register @code{.lg} (set to 1 or@w{ }2 if
+ligatures are enabled, 0@w{ }otherwise).
 
 Setting the ligature mode to@w{ }2 enables the two-character
 ligatures (fi, fl, and ff) and disables the three-character
 ligatures (ffi and ffl).
-@end_Defreq
+@endDefreq
 
 @dfn{Pairwise kerning} is another subtle typesetting mechanism
 that moves characters closer together when space permits.
@@ -5939,13 +5992,13 @@ The @code{a} is tucked slightly under the @code{T}.
 
 @c XXX more info
 @cindex kerning enabled register
-@Defreq{kern, [@Var{flag}]}
+@Defreq {kern, [@Var{flag}]}
 @Defregx{.kern}
-@Defescx{\\&, , , }
+@Defescx {\\&, , , }
 Kerning can be activated with the @code{kern} request.  If the parameter
 is non-zero or missing, enable pairwise kerning, otherwise disable it.
-The number register @code{.kern} is set to@w{ }1 if pairwise kerning is
-enabled, 0@w{ }otherwise.
+The read-only number register @code{.kern} is set to@w{ }1 if pairwise
+kerning is enabled, 0@w{ }otherwise.
 
 @cindex zero width space character
 @cindex character, zero width space
@@ -5953,7 +6006,7 @@ enabled, 0@w{ }otherwise.
 If the font description file contains pairwise kerning information,
 characters from that font are kerned.  Kerning between two
 characters can be inhibited by placing @code{\&} between them.
-@end_Defreq
+@endDefreq
 
 
 @cindex track kerning
@@ -5967,7 +6020,7 @@ or spread some text to fill a narrow column.
 Track kerning must be used with great care since it is usually
 considered bad typography if the reader notices the effect.
 
-@Defreq{tkf, f s1 n1 s2 n2}
+@Defreq {tkf, f s1 n1 s2 n2}
 Enable track kerning for font@w{ }@var{f}.  If the current font is@w{
 }@var{f} the width of every character is increased by an amount
 between @var{n1} and @var{n2}; if the current point size is less than or
@@ -5977,7 +6030,7 @@ greater than or equal to @var{s2} the width is increased by
 less than or equal to @var{s2} the increase in width is a linear
 function of the point size.
 @c XXX can n1 or n2 be negative?
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -6017,16 +6070,15 @@ typesetters, as @dfn{leading}.
 @cindex changing type sizes
 @cindex type sizes, changing
 
-@Defreq{ps, [@Var{size}]}
-@Defescx{\\s, , size, }
-@Defregx{.s}
-Use the @code{ps} request or the @code{\s} escape to
-change the type size (in points).  Specify the @var{size} as either
-an absolute point size, or as a relative change from the
-current size.  The size@w{ }0, or no argument, goes back to
-the previous size.
+@Defreq {ps, [@Var{size}]}
+@Defescx {\\s, , size, }
+@Defregx {.s}
+Use the @code{ps} request or the @code{\s} escape to change the type
+size (in points).  Specify the @var{size} as either an absolute point
+size, or as a relative change from the current size.  The size@w{ }0, or
+no argument, goes back to the previous size.
 
-The number register @code{.s} returns the point size in points
+The read-only number register @code{.s} returns the point size in points
 as a decimal fraction.
 
 @Example
@@ -6036,7 +6088,7 @@ grin, grin,
 .ps +2
 wink, wink, \s+2nudge, nudge,\s+8 say no more!
 .ps 10
-@end_Example
+@endExample
 
 The @code{\s} escape may be called in a variety of ways.  Much like
 other escapes there must be a way to determine where the argument ends
@@ -6069,23 +6121,24 @@ the @code{\s} escape.
 
 Some devices may only have certain permissible sizes, in which case
 @code{gtroff} rounds to the nearest permissible size.
-@end_Defreq
+@endDefreq
 
 @cindex current type size register
 @cindex current vertical spacing register
-@Defreq{vs, space}
-@Defregx{.v}
+@Defreq {vs, space}
+@Defregx {.v}
 Changes the vertical spacing.  The default unit is points.
 
-The number register @code{.v} contains the current vertical spacing.
-@end_Defreq
+The read-only number register @code{.v} contains the current vertical
+spacing.
+@endDefreq
 
 @c XXX example
 
 @ignore
 @Example
 ... .sz macro example?? ...
-@end_Example
+@endExample
 @end ignore
 
 @c ---------------------------------------------------------------------
@@ -6136,20 +6189,20 @@ equal to @samp{1m}.  Be sure not to confuse the @samp{s} and @samp{z}
 scale indicators.
 
 @vindex .s
-@Defreg{.ps}
-Returns the point size in scaled points.
-@end_Defreg
+@Defreg {.ps}
+A read-only number register returning the point size in scaled points.
+@endDefreg
 
 @cindex last-requested point size register
 @Defreg{.psr}
-@Defregx{.sr}
+@Defregx {.sr}
 The last-requested point size in scaled points is contained in the
-@code{.psr} number register.  The last requested point size in points as
-a decimal fraction can be found in @code{.sr}.  This is a string-valued
-register.
-@end_Defreg
+@code{.psr} read-only number register.  The last requested point size in
+points as a decimal fraction can be found in @code{.sr}.  This is a
+string-valued read-only number register.
+@endDefreg
 
-The \\s escape has the following syntax for working with
+The @code{\s} escape has the following syntax for working with
 fractional type sizes:
 
 @table @code
@@ -6183,15 +6236,15 @@ Increase or or decrease the point size by @var{n} scaled points;
 @code{gtroff} has string variables, which are entirely for user
 convenience (i.e.@: there are no built-in strings).
 
-@Defreq{ds, name string}
-@Defescx{\\*, , n, }
-@Defescx{\\*, @lparen{}, nm, }
-@Defescx{\\*, @lbrack{}, name, @rbrack{}}
+@Defreq {ds, name string}
+@Defescx {\\*, , n, }
+@Defescx {\\*, @lparen{}, nm, }
+@Defescx {\\*, @lbrack{}, name, @rbrack{}}
 Defines and accesses a string variable.
 
 @Example
 .ds UX \s-1UNIX\s0\u\s-3tm\s0\d
-@end_Example
+@endExample
 
 @esindex \*
 @cindex string interpolation
@@ -6203,7 +6256,7 @@ a previously-defined string variable.
 
 @Example
 The \*(UX Operating System
-@end_Example
+@endExample
 
 If the string named by the @code{\*} does not exist, the escape is
 replaced by nothing.
@@ -6216,7 +6269,7 @@ unwanted space into a string.
 
 @Example
 .ds UX \s-1UNIX\s0\u\s-3tm\s0\d \" UNIX trademark
-@end_Example
+@endExample
 
 @noindent
 Instead the comment should be put on another line or have the comment
@@ -6224,7 +6277,7 @@ escape adjacent with the end of the string.
 
 @Example
 .ds UX \s-1UNIX\s0\u\s-3tm\s0\d\"  UNIX trademark
-@end_Example
+@endExample
 
 @cindex trailing quotes
 @cindex quotes, trailing
@@ -6236,7 +6289,7 @@ your string.
 
 @Example
 .ds sign "           Yours in a white wine sauce,
-@end_Example
+@endExample
 
 @esindex \@key{RET}
 @cindex multi-line strings
@@ -6251,24 +6304,24 @@ string is stored @emph{without} the newlines.
 .ds foo lots and lots \
 of text are on these \
 next several lines
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @cindex appending to strings
 @cindex strings, appending
-@Defreq{as, name string}
+@Defreq {as, name string}
 The @code{as} request appends a string to another string.  It is
 similar to the @code{ds} request except that it appends the second
 argument onto the string named by the first argument.
 
 @Example
 .as sign " with shallots, onions and garlic,
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @cindex substrings
-@Defreq{substring, xx n1 [@Var{n2}]}
-@Defreqx{length, xx string}
+@Defreq {substring, xx n1 [@Var{n2}]}
+@Defreqx {length, xx string}
 Rudimentary string manipulation routines are given with the
 @code{substring} and @code{length} requests.
 
@@ -6288,26 +6341,26 @@ Here the syntax of the @code{length} request:
 The @code{length} request
 computes the length of @var{string} and returns it in the number
 register@w{ }@var{xx} (which is not necessarily defined before).
-@end_Defreq
+@endDefreq
 
 @cindex rename request
 @cindex rename macro
 @cindex rename string
-@Defreq{rn, xx yy}
+@Defreq {rn, xx yy}
 Renames the request, macro, or string @var{xx} to @var{yy}.
-@end_Defreq
+@endDefreq
 
 @cindex remove request
 @cindex remove macro
 @cindex remove string
-@Defreq{rm, xx}
+@Defreq {rm, xx}
 Removes the request, macro, or string @var{xx}.
 @code{gtroff} treats subsequent invocations as if the
 object had never been defined.
-@end_Defreq
+@endDefreq
 
 @cindex alias
-@Defreq{als, new old}
+@Defreq {als, new old}
 Create an alias named @var{new} for the request, string,
 macro, or diversion object named @var{old}.  The new name and
 the old name are exactly equivalent (it is similar to a hard
@@ -6320,14 +6373,14 @@ and @code{as} requests only create a new object if the name
 of the macro, diversion or string diversion is currently
 undefined or if it is defined to be a request; normally
 they modify the value of an existing object.
-@end_Defreq
+@endDefreq
 
-@Defreq{chop, xx}
+@Defreq {chop, xx}
 Remove (chop) the last character from the macro, string,
 or diversion named @var{xx}. This is useful for removing
 the newline from the end of diversions that are to be
 interpolated as strings.
-@end_Defreq
+@endDefreq
 
 @xref{Identifiers}, and @ref{Comments}.
 
@@ -6370,8 +6423,9 @@ characters can be used in place of the double quotes.
 .  tm true
 .el \
 .  tm false
-@end_Example
+@endExample
 
+@noindent
 yields ``true''.  The resulting motions, character sizes, and fonts
 have to match, and not the individual motion, size, and font requests.
 Here, @samp{|} and @samp{\fR|\fP} both result in a roman @samp{|}
@@ -6410,7 +6464,7 @@ been defined by the @code{char} request.
 @code{gtroff} has if-then-else constructs like other languages, although
 the formatting can be painful.
 
-@Defreq{if, expr anything}
+@Defreq {if, expr anything}
 Evaluates the expression @var{expr}, and executes @var{anything} (the
 remainder of the line) if @var{expr} evaluates to
 non-zero (true).  @var{anything} is interpreted as though it was on
@@ -6421,29 +6475,29 @@ Here are some examples:
 @Example
 .if t .ls 2				\" double spacing in troff
 .if 0 .ab how'd this happen?
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @c XXX .nop request
 
-@Defreq{ie, expr anything}
-@Defreqx{el, anything}
+@Defreq {ie, expr anything}
+@Defreqx {el, anything}
 Use the @code{ie} and @code{el} requests to write an if-then-else.
 The first request is the `if' part and the latter is the `else' part.
 
 @Example
 .ie n .ls 2 \" double spacing in nroff
 .el .ls 1 \" single spacing in troff
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @c this looks like a bug in makeinfo: you can't have `@{' as an argument
 @c to deffn
 
 @esindex \@{
 @esindex \@}
-@c @Defesc{\\@@@{, , , }
-@c @Defescx{\\@@@}, , , }
+@c @Defesc{\\@@@ {, , , }
+@c @Defescx {\\@@@}, , , }
 In many cases, an if (or if-else) construct needs to execute
 more than one request.
 This can be done using the @code{\@{} and @code{\@}}
@@ -6460,8 +6514,8 @@ escapes (note the position of the opening and closing braces).
 .    ds lq "
 .    ds rq "\@}
 .ds qq "
-@end_Example
-@c @end_Defesc
+@endExample
+@c @endDefesc
 
 @xref{Expressions}.
 
@@ -6474,7 +6528,7 @@ escapes (note the position of the opening and closing braces).
 @code{gtroff} provides a looping construct using the @code{while}
 request, which is used much like the @code{if} (and related) requests.
 
-@Defreq{while, expr anything}
+@Defreq {while, expr anything}
 Evaluates the expression @var{expr}, and repeatedly executes
 @var{anything} (the remainder of the line) until @var{expr}
 evaluates to 0 or false.
@@ -6483,14 +6537,14 @@ evaluates to 0 or false.
 .nr a 0 1
 .while (\na<9) \&\n+a,
 \&\n+a
-@end_Example
+@endExample
 
 @noindent
 The preceding example produces:
 
 @Example
 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-@end_Example
+@endExample
 
 @cindex zero width space character
 @cindex character, zero width space
@@ -6499,20 +6553,20 @@ The preceding example produces:
 @noindent
 Note the usage of the @code{\&} escape to avoid a control character at
 the beginning of a line.
-@end_Defreq
+@endDefreq
 
 @rqindex while
 @cindex @code{break}, in a @code{while} loop
 @cindex @code{continue}, in a @code{while} loop
-@Defreq{break, }
+@Defreq {break, }
 @dfn{break} out of a while loop.  Be sure
 not to confuse this with the @code{br} request (causing a line break).
-@end_Defreq
+@endDefreq
 
-@Defreq{continue, }
+@Defreq {continue, }
 Finishes the current iteration of a while
 loop, immediately restarting the next iteration.
-@end_Defreq
+@endDefreq
 
 @xref{Expressions}.
 
@@ -6527,7 +6581,7 @@ loop, immediately restarting the next iteration.
 A @dfn{macro} is a collection of text and embedded commands which can be
 invoked multiple times.  Use macros to define common operations.
 
-@Defreq{de, name [@Var{end}]}
+@Defreq {de, name [@Var{end}]}
 Defines a new macro named @var{name}.  @code{gtroff} copies
 subsequent lines into an internal buffer until it encounters
 the line @code{..} (two dots).  The
@@ -6542,7 +6596,7 @@ paragraphs.
 .br
 .sp .8v
 ..
-@end_Example
+@endExample
 
 @c XXX add info about indirect macro calls:
 @c
@@ -6554,10 +6608,10 @@ paragraphs.
 @c   => test from xxx test
 
 @c XXX info about common identifier pool for strings and macros.
-@end_Defreq
+@endDefreq
 
 @cindex appending, to a macro
-@Defreq{am, xx}
+@Defreq {am, xx}
 Works similarly to @code{de} except it appends
 onto the macro named @var{xx}.  So, to make the previously
 defined @samp{P} macro actually do indented instead of block paragraphs,
@@ -6568,11 +6622,11 @@ this:
 .am P
 .ti +5n
 ..
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @cindex alias
-@Defreq{als, new old}
+@Defreq {als, new old}
 Create an alias named @var{new} for the request, string,
 macro, or diversion object named @var{old}.  The new name and
 the old name are exactly equivalent (it is similar to a hard
@@ -6585,7 +6639,7 @@ and @code{as} requests only create a new object if the name
 of the macro, diversion or string diversion is currently
 undefined or if it is defined to be a request; normally
 they modify the value of an existing object.
-@end_Defreq
+@endDefreq
 
 @menu
 * Copy-in Mode::                
@@ -6632,7 +6686,7 @@ The following example prints the numbers 20 and@w{ }10:
 \&\\nx
 ..
 .y
-@end_Example
+@endExample
 
 @c ---------------------------------------------------------------------
 
@@ -6647,9 +6701,9 @@ Any individual argument can be retrieved with one of the following
 escapes:
 
 @cindex copy-in mode, and macro arguments
-@Defesc{\\$, n, , }
-@Defescx{\\$, @lparen{}, nn, }
-@Defescx{\\$, @lbrack{}, nnn, @rbrack{}}
+@Defesc {\\$, n, , }
+@Defescx {\\$, @lparen{}, nn, }
+@Defescx {\\$, @lbrack{}, nnn, @rbrack{}}
 The escapes @code{\$@var{n}}, @code{\$(@var{nn}} and
 @code{\$[@var{nnn}]} retrieve the @var{n}@dmn{th}, @var{nn}@dmn{th} or
 @var{nnn}@dmn{th} argument.  As usual, the first form only accepts a
@@ -6658,29 +6712,29 @@ or equal to@w{ }10), and the third any positive integer value (larger
 than zero).  Macros can have an unlimited number of arguments.  Note
 that due to copy-in mode, use two backslashes on these in actual use to
 prevent interpolation until the macro is actually invoked.
-@end_Defesc
+@endDefesc
 
-@Defreq{shift, [@Var{n}]}
+@Defreq {shift, [@Var{n}]}
 Shifts the arguments 1@w{ }position, or as
 many positions as specified by its argument.  After executing this
 request, argument@w{ }@var{i} becomes argument @var{i}-@var{n};
 arguments 1 to@w{ }@var{n} are no longer available.  Shifting by
 negative amounts is currently undefined.
-@end_Defreq
+@endDefreq
 
-@Defesc{\\$*, , , }
-@Defescx{\\$@@, , , }
+@Defesc {\\$*, , , }
+@Defescx {\\$@@, , , }
 In some cases it is convenient to use all of the arguments at once (for
 example, to pass the arguments along to another macro).  The @code{\$*}
 escape concatenates all the arguments separated by spaces.  A
 similar escape is @code{\$@@}, which concatenates all the
 arguments with each surrounded by double quotes, and separated by
 spaces.
-@end_Defesc
+@endDefesc
 
 @rqindex als
 @cindex @code{als}, use with @code{\$0}
-@Defesc{\\$0, , , }
+@Defesc {\\$0, , , }
 The name used to invoke the current macro.
 The @code{als} request can make a macro have more than one name.
 
@@ -6689,14 +6743,15 @@ The @code{als} request can make a macro have more than one name.
 .ie \\n(.$=1 .ds Vl Pre-Release Version
 .el          .ds Vl Version \\$3, \\$4.
 ..
-@end_Example
+@endExample
 
+@noindent
 This would be called as
 
 @Example
 .vl $Id$
-@end_Example
-@end_Defesc
+@endExample
+@endDefesc
 
 @xref{Request Arguments}.
 
@@ -6709,14 +6764,14 @@ This would be called as
 @cindex motions, page
 
 @cindex @code{sp}, as vertical page motion
-@Defreq{sp, [@Var{len}]}
+@Defreq {sp, [@Var{len}]}
 Motions up and down the page can be done with the @code{sp} request.
 However, this causes a break so that the actual effect is to move to the
 left margin and then to the specified location.
-@end_Defreq
+@endDefreq
 
-@Defreq{mk, [@Var{reg}]}
-@Defreqx{rt, reg}
+@Defreq {mk, [@Var{reg}]}
+@Defreqx {rt, reg}
 The request @code{mk} can be used to mark a location on a page, for
 movement to later.  This request takes a register name as an argument in
 which to store the current page location.  With no argument it
@@ -6730,15 +6785,15 @@ location marked with the @code{mk} request.
 @ignore
 @Example
 ... dual column example ...
-@end_Example
+@endExample
 @end ignore
-@end_Defreq
+@endDefreq
 
 The following escapes give fine control of movements about the page.
 
 @cindex vertical motion
 @cindex motion, vertical
-@Defesc{\\v, ', e, '}
+@Defesc {\\v, ', e, '}
 The @code{\v'@var{e}'} escape enables arbitrary vertical motion from the
 current location on the page.  The argument@w{ }@var{e} specifies the
 distance to move; positive is downwards and negative upwards.  The
@@ -6746,7 +6801,7 @@ default unit for this escape is vertical spaces, @code{v}'s.  Beware,
 however, that @code{gtroff} continues text processing at the point
 where the motion ends, so you should always balance motions
 to avoid interference with text processing.
-@end_Defesc
+@endDefesc
 
 There are some special case escapes for vertical motion.
 
@@ -6764,12 +6819,12 @@ move down@w{ }.5@dmn{v}.
 @cindex inserting horizontal space
 @cindex horizontal space
 @cindex space, horizontal
-@Defesc{\\h, ', e, '}
+@Defesc {\\h, ', e, '}
 The @code{\h'@var{e}'} escape provides horizontal motions.  The
 expression@w{ }@var{e} indicates how far to move: positive is rightwards
 and negative leftwards.
 @c XXX Is there a default unit for this?
-@end_Defesc
+@endDefesc
 
 There are a number of special case escapes for horizontal motion:
 
@@ -6807,11 +6862,11 @@ The following string sets the @TeX{} logo:
 
 @Example
 .ds TeX T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X
-@end_Example
+@endExample
 
 @cindex width escape
 @cindex escape, width
-@Defesc{\\w, ', text, '}
+@Defesc {\\w, ', text, '}
 Used as @code{\w'@var{text}'},
 returns the width of the specified @var{text} in basic units.
 This allows horizontal movement based on the width of some
@@ -6822,7 +6877,7 @@ arbitrary text (e.g.@: given as an argument to a macro).
 @ignore
 @Example
 ... strlen example ...
-@end_Example
+@endExample
 @end ignore
 
 Font changes may occur in @var{text} which don't affect current
@@ -6873,17 +6928,18 @@ How far to right of the center of the last character in the @code{\w}
 argument, the center of an accent from a Roman font should be placed
 over that character.
 @end table
-@end_Defesc
+@endDefesc
 
-@Defesc{\\k, ', x, '}
+@Defesc {\\k, ', x, '}
 Stores the current horizontal position in register @var{x}.
 Use this, for example, to return to the beginning of a string
 for highlighting or other decoration.
-@end_Defesc
+@endDefesc
 
-@Defreg{.k}
-Contains the current horizontal output position.
-@end_Defreg
+@Defreg {.k}
+A read-only number register containing the current horizontal output
+position.
+@endDefreg
 
 @c XXX documentation
 
@@ -6908,13 +6964,13 @@ All drawing is done via escapes.
 @cindex drawing horizontal lines
 @cindex horizontal line, drawing
 @cindex line, horizontal, drawing
-@Defesc{\\l, ', l c, '}
+@Defesc {\\l, ', l c, '}
 Draws a line rightwards from the current
 location.  The full syntax for this escape is:
 
 @Example
 \l'@var{l}@var{c}'
-@end_Example
+@endExample
 
 @noindent
 where @var{l} is the length of the line to be drawn, starting at the
@@ -6944,15 +7000,15 @@ Here a small useful example:
 .de box
 \(br\\$*\(br\l'|0\(rn'\l'|0\(ul'
 ..
-@end_Example
+@endExample
 
-@noindent
 @opindex |
+@noindent
 Note that this works by outputting a box rule (a vertical line), then
 the text given as an argument and then another box rule.  Then the line
 drawing escapes both draw from the current location to the beginning of
 the @emph{input} line.
-@end_Defesc
+@endDefesc
 
 @cindex drawing vertical lines
 @cindex vertical line drawing
@@ -6961,7 +7017,7 @@ the @emph{input} line.
 @cindex character for line drawing
 @cindex box rule character
 @cindex character, box rule
-@Defesc{\\L, ', l c, '}
+@Defesc {\\L, ', l c, '}
 Draws vertical lines.  Its parameters are
 similar to the @code{\l} escape.  The
 movement is downwards for positive values,
@@ -6975,11 +7031,11 @@ ends.
 @ignore
 @Example
 ...box macro...
-@end_Example
+@endExample
 @end ignore
-@end_Defesc
+@endDefesc
 
-@Defesc{\\D, ', command arg @dots{}, '}
+@Defesc {\\D, ', command arg @dots{}, '}
 The @code{\D} escape provides a variety of drawing functions.
 While the previous escapes work on a character device, these
 escapes do not.
@@ -6994,7 +7050,7 @@ Draw a line from the current location to the relative point specified by
 @ignore
 @Example
 ...revised box macro...
-@end_Example
+@endExample
 @end ignore
 
 @item \D'c @var{d}'
@@ -7050,7 +7106,7 @@ are exhausted, a line is drawn back to the starting point.
 @ignore
 @Example
 ... box example (yes, again)...
-@end_Example
+@endExample
 @end ignore
 
 @item \D'P @var{dx1} @var{dy1} @var{dx2} @var{dy2} ...'
@@ -7061,7 +7117,7 @@ Draw a solid polygon with the same parameters as an outlined polygon.
 @ignore
 @Example
 ... shaded box example ...
-@end_Example
+@endExample
 @end ignore
 
 @item \D't @var{n}'
@@ -7072,19 +7128,19 @@ zero selects the smallest available line thickness.  A negative value
 makes the line thickness proportional to the current point size (this is
 the default behaviour of @code{ditroff}).
 @end table
-@end_Defesc
+@endDefesc
 
 @cindex pile, character
 @cindex character pile
-@Defesc{\\b, ', string, '}
+@Defesc {\\b, ', string, '}
 @dfn{Piles} a sequence of characters
 vertically, and centers it vertically on the current line.  Use it
 to build large brackets and braces.
 
 @Example
 \b'\(lt\(bv\(lk\(bv\(lb'
-@end_Example
-@end_Defesc
+@endExample
+@endDefesc
 
 @xref{Drawing Functions}.
 
@@ -7130,18 +7186,18 @@ setting footnotes
 @end itemize
 
 @cindex vertical position trap enable register
-@Defreq{vpt, flag}
-@Defregx{.vpt}
-Enables vertical position traps if @var{flag}
-is non-zero, or disables them otherwise.  Vertical position traps
-are traps set by the @code{wh} or @code{dt} requests.  Traps set by the
-@code{it} request are not vertical position traps.  The parameter that
-controls whether vertical position traps are enabled is global.
-Initially vertical position traps are enabled.  The current setting of
-this is available in the @code{.vpt} number register.
-@end_Defreq
+@Defreq {vpt, flag}
+@Defregx {.vpt}
+Enables vertical position traps if @var{flag} is non-zero, or disables
+them otherwise.  Vertical position traps are traps set by the @code{wh}
+or @code{dt} requests.  Traps set by the @code{it} request are not
+vertical position traps.  The parameter that controls whether vertical
+position traps are enabled is global.  Initially vertical position traps
+are enabled.  The current setting of this is available in the
+@code{.vpt} read-only number register.
+@endDefreq
 
-@Defreq{wh, dist macro}
+@Defreq {wh, dist macro}
 Sets a page location trap.  Positive values for @var{dist} set
 the trap relative to the top of the page; negative values set
 the trap relative to the bottom of the page.
@@ -7169,18 +7225,18 @@ set headers and footers.
 ..
 .wh 0   hd            \" trap at top of the page
 .wh -1i fo            \" trap one inch from bottom
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @cindex distance to next trap
 @cindex trap, distance
-@Defreg{.t}
-The distance to the next trap.
-@end_Defreg
+@Defreg {.t}
+A read-only number register holding the distance to the next trap.
+@endDefreg
 
 @cindex changing trap location
 @cindex trap, changing location
-@Defreq{ch, dist macro}
+@Defreq {ch, dist macro}
 Changes the location of a trap.
 The first argument is the name of the macro to be invoked at
 the trap, and the second argument is the new location for the trap
@@ -7193,28 +7249,28 @@ space at the bottom of the page for them.
 @ignore
 @Example
 ... (simplified) footnote example ...
-@end_Example
+@endExample
 @end ignore
-@end_Defreq
+@endDefreq
 
-@Defreg{.ne}
-The number register @code{.ne} contains the amount of space that was
-needed in the last @code{ne} request that caused a trap to be sprung.
-Useful in conjunction with the @code{.trunc} register.  @xref{Page
-Control}, for more information.
-@end_Defreg
+@Defreg {.ne}
+The read-only number register @code{.ne} contains the amount of space
+that was needed in the last @code{ne} request that caused a trap to be
+sprung.  Useful in conjunction with the @code{.trunc} register.
+@xref{Page Control}, for more information.
+@endDefreg
 
 @rqindex ne
 @cindex @code{ne}, and the @code{.trunc} register
-@Defreg{.trunc}
-Contains the amount of vertical space
-truncated by the most recently sprung vertical position trap, or, if the
-trap was sprung by a @code{ne} request, minus the amount of vertical
-motion produced by the @code{ne} request.  In other words, at the point
-a trap is sprung, it represents the difference of what the vertical
-position would have been but for the trap, and what the vertical
-position actually is.
-@end_Defreg
+@Defreg {.trunc}
+A read-only register containing the amount of vertical space truncated
+by the most recently sprung vertical position trap, or, if the trap was
+sprung by an @code{ne} request, minus the amount of vertical motion
+produced by the @code{ne} request.  In other words, at the point a trap
+is sprung, it represents the difference of what the vertical position
+would have been but for the trap, and what the vertical position
+actually is.
+@endDefreg
 
 @c ---------------------------------------------------------------------
 
@@ -7225,14 +7281,14 @@ position actually is.
 
 @vindex .t
 @cindex @code{.t}, and diversions
-@Defreq{dt, dist macro}
+@Defreq {dt, dist macro}
 Sets a trap @emph{within} a diversion.
 @var{dist} is the first argument is the location of the trap
 (identical to the @code{.wh} request)
 and @var{macro} is the name of the macro to be invoked.  The
 number register @code{.t} still works within diversions.
 @xref{Diversions}, for more information.
-@end_Defreq
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -7241,7 +7297,7 @@ number register @code{.t} still works within diversions.
 @cindex input line traps
 @cindex traps, input line
 
-@Defreq{it, n macro}
+@Defreq {it, n macro}
 Sets an input line trap.
 @var{n} is the number of lines of input which may be read before
 @dfn{springing} the trap, @var{macro} is the macro to be invoked.
@@ -7258,8 +7314,8 @@ next @var{n}@w{ }lines in a bold font.
 .de B-end
 .ft R
 ..
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -7268,7 +7324,7 @@ next @var{n}@w{ }lines in a bold font.
 @cindex end-of-input traps
 @cindex traps, end-of-input
 
-@Defreq{em, macro}
+@Defreq {em, macro}
 Sets a trap at the end of input.  The @var{macro}
 specified is executed after the last line of the
 input file has been processed.
@@ -7289,8 +7345,8 @@ Approved:\t\a
 Date:\t\t\a
 ..
 .em approval
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 
 @c =====================================================================
@@ -7305,8 +7361,8 @@ said to be stored in a macro.  This is used for saving text for output
 at a later time, which is useful for keeping blocks of text on the same
 page, footnotes, tables of contents and indices.
 
-@Defreq{di, macro}
-@Defreqx{da, macro}
+@Defreq {di, macro}
+@Defreqx {da, macro}
 Begins a diversion.  Like the @code{de}
 request, it takes an argument of a macro name to divert subsequent text
 into.  The @code{da} macro appends to an existing diversion.
@@ -7318,32 +7374,34 @@ into.  The @code{da} macro appends to an existing diversion.
 @ignore
 @Example
 ... end-note example ...
-@end_Example
+@endExample
 @end ignore
-@end_Defreq
+@endDefreq
 
 @vindex nl
 @vindex .h
 @cindex nested diversions
 @cindex diversion, nested
 @Defreg{.z}
-@Defregx{.d}
-Diversions may be nested.  The number register @code{.z} contains the
-name of the current diversion.  The number register @code{.d} contains
-the current vertical place in the diversion.  If not in a diversion it
-is the same as the register @code{nl}.
-@end_Defreg
+@Defregx {.d}
+Diversions may be nested.  The read-only number register @code{.z}
+contains the name of the current diversion (this is a string-valued
+register).  The read-only number register @code{.d} contains the current
+vertical place in the diversion.  If not in a diversion it is the same
+as the register @code{nl}.
+@endDefreg
 
 @c XXX more info
 
-@Defreg{.h}
+@Defreg {.h}
 The @dfn{high-water mark} on the current page.  It corresponds to the
-text baseline of the lowest line on the page.
-@end_Defreg
+text baseline of the lowest line on the page.  This is a read-only
+register.
+@endDefreg
 
 @Defreg{dn}
-@Defregx{dl}
-After completing a diversion, the built-in number registers @code{dn}
+@Defregx {dl}
+After completing a diversion, the read-write number registers @code{dn}
 and @code{dl} contain the vertical and horizontal size of the diversion.
 
 @example
@@ -7373,12 +7431,12 @@ and @code{dl} contain the vertical and horizontal size of the diversion.
 ..
 @end group
 @end example
-@end_Defreg
+@endDefreg
 
 @cindex transparent output
 @cindex output, transparent
-@Defesc{\\!, , , }
-@Defescx{\\?, , @Var{anything}, \\?}
+@Defesc {\\!, , , }
+@Defescx {\\?, , @Var{anything}, \\?}
 Prevents requests, macros and escapes from being
 interpreted when read into a diversion.  This takes the given text
 and @dfn{transparently} embeds it into the diversion.  This is useful for
@@ -7394,7 +7452,7 @@ occurrence of the @code{\?} escape.  For example:
 
 @Example
 \?@var{anything}\?
-@end_Example
+@endExample
 
 @noindent
 @var{anything} may not contain newlines; use @code{\!}  to embed
@@ -7419,12 +7477,12 @@ prints@w{ }4.
 .di
 .nr x 4
 .f
-@end_Example
-@end_Defesc
+@endExample
+@endDefesc
 
 @cindex unformatting diversions
 @cindex diversion, unformatting
-@Defreq{asciify, div}
+@Defreq {asciify, div}
 @dfn{Unformats} the diversion specified by @var{div}
 in such a way that @acronym{ASCII} and space characters that
 were formatted and diverted are treated like ordinary input
@@ -7440,10 +7498,10 @@ hacks; for example, the following sets register @code{n} to@w{ }1.
 .tr @@@@
 .asciify x
 .x
-@end_Example
+@endExample
 
 @xref{Copy-in Mode}.
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -7487,15 +7545,14 @@ named @samp{0}, @samp{1} and@w{ }@samp{2}.
 
 @cindex switch environments
 @cindex current environment number/name register
-@Defreq{ev, env}
-@Defregx{.ev}
-Switches to another environment.  The argument @var{env}
-is the name of the environment to switch to.  With no argument,
-@code{gtroff} switches back to the previous environment.  There is no
-limit on the number of named environments; they are created the
-first time that they are referenced.  The @code{.ev} register contains
-the name or number of the current environment.  This is a string-valued
-register.
+@Defreq {ev, env}
+@Defregx {.ev}
+Switches to another environment.  The argument @var{env} is the name of
+the environment to switch to.  With no argument, @code{gtroff} switches
+back to the previous environment.  There is no limit on the number of
+named environments; they are created the first time that they are
+referenced.  The @code{.ev} read-only register contains the name or
+number of the current environment.  This is a string-valued register.
 
 Note that a call to @code{ev} (with argument) pushes the previously
 active environment onto a stack.  If, say, environments @samp{foo},
@@ -7509,7 +7566,7 @@ switches back to environment @samp{foo}.
 @ignore
 @Example
 ... page break macro, revised ...
-@end_Example
+@endExample
 @end ignore
 
 Here is an example:
@@ -7527,13 +7584,13 @@ Here is an example:
 .ev footnote-env
 \(dg Note the large, friendly letters.
 .ev
-@end_Example
-@end_Defreq
+@endExample
+@endDefreq
 
 @cindex copy environment
-@Defreq{evc, env}
+@Defreq {evc, env}
 Copies the environment @var{env} into the current environment.
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -7542,7 +7599,7 @@ Copies the environment @var{env} into the current environment.
 @section Suppressing output
 @cindex suppressing output
 
-@Defesc{\\O, , num, }
+@Defesc {\\O, , num, }
 Disables or enables output depending on the value of @var{num}:
 
 @table @samp
@@ -7575,7 +7632,7 @@ Enable output of glyphs (the default).  Also write out to @code{stderr}
 the page number and four registers encompassing the glyphs previously
 written since the last call to @code{\O}.
 @end table
-@end_Defesc
+@endDefesc
 
 
 @c =====================================================================
@@ -7591,26 +7648,26 @@ written since the last call to @code{\O}.
 
 @cindex including a file
 @cindex file inclusion
-@Defreq{so, file}
+@Defreq {so, file}
 Reads in the specified @var{file} and
 includes it in place of the @code{so} request.  This is quite useful for
 large documents, e.g.@: keeping each chapter in a separate file.
 @xref{gsoelim}, for more information.
-@end_Defreq
+@endDefreq
 
-@Defreq{mso, file}
+@Defreq {mso, file}
 Identical to the @code{so} request except that @code{gtroff}
 searches for the specified
 @var{file} in the same directories as macro files for the
 the @option{-m} command line option.  If the file name to be included
 has the form @file{@var{name}.tmac} and it isn't found, @code{mso} tries
 to include @file{tmac.@var{name}} and vice versa.
-@end_Defreq
+@endDefreq
 
 @cindex transparent output
 @cindex output, transparent
-@Defreq{cf, file}
-@Defreqx{trf, file}
+@Defreq {cf, file}
+@Defreqx {trf, file}
 Transparently outputs the contents of @var{file}.  Each line is output
 as it were preceded by @code{\!}; however, the lines are not subject to
 copy mode interpretation.  If the file does not end with a newline, then
@@ -7621,7 +7678,7 @@ containing the contents of file@w{ }@file{f}, use
 .di x
 .trf f
 .di
-@end_Example
+@endExample
 
 The request @w{@code{.cf @var{filename}}}, when used in a diversion,
 embeds an object in the diversion which, when reread, causes the
@@ -7637,18 +7694,18 @@ considered a bug.  This request causes a line break.
 With @code{trf}, unlike @code{cf}, the file cannot contain characters
 such as NUL that are not valid @code{gtroff} input characters
 (@pxref{Identifiers}).  This request causes a line break.
-@end_Defreq
+@endDefreq
 
-@Defreq{nx, }
+@Defreq {nx, }
 Forces @code{gtroff} to continue processing of
 the file specified as an argument.
-@end_Defreq
+@endDefreq
 
-@Defreq{rd, }
+@Defreq {rd, }
 The @code{rd} request reads from standard input, and includes what is
 read as though it were part of the input file.  Text is read until a
 blank line is encountered.
-@end_Defreq
+@endDefreq
 
 @cindex form letters
 @cindex letters, form
@@ -7668,7 +7725,7 @@ letter template is constructed like this:
 Body of letter.
 .bp
 .nx repeat.let
-@end_Example
+@endExample
 
 @rqindex ex
 @noindent
@@ -7692,19 +7749,19 @@ San Diego, CA  92103
 Dear Mr. Adollar,
 
 .ex
-@end_Example
+@endExample
 
-@Defreq{pi, pipe}
+@Defreq {pi, pipe}
 Pipes the output of @code{gtroff} to the shell command(s)
 specified by @var{pipe}.  This request must occur before
 @code{gtroff} has a chance to print anything.
-@end_Defreq
+@endDefreq
 
-@Defreq{sy, cmds}
-@Defregx{systat}
-In @dfn{unsafe} mode, executes the shell command(s)
-specified by @var{cmds}.  The output is not saved
-anyplace, so it is up to the user to do so.
+@Defreq {sy, cmds}
+@Defregx {systat}
+In @dfn{unsafe} mode, executes the shell command(s) specified by
+@var{cmds}.  The output is not saved anyplace, so it is up to the user
+to do so.
 
 @c XXX add info about safer and unsafe mode
 
@@ -7720,7 +7777,7 @@ into a document:
 .so /tmp/x\n[$$]
 .sy rm /tmp/x\n[$$]
 \nH:\nM:\nS
-@end_Example
+@endExample
 
 @noindent
 Note that this works by having the @code{perl} script (run by @code{sy})
@@ -7729,30 +7786,30 @@ print out the @code{nr} requests which set the number registers
 the @code{so} request.
 
 @cindex @code{system()} return value register
-The @code{systat} number register contains the return value of the
-@code{system()} function executed by the last @code{sy} request.
-@end_Defreq
+The @code{systat} read-write number register contains the return value
+of the @code{system()} function executed by the last @code{sy} request.
+@endDefreq
 
-@Defreq{open, stream file}
-@Defreqx{opena, stream file}
+@Defreq {open, stream file}
+@Defreqx {opena, stream file}
 Opens the specified @var{file} for writing and
 associates the specified @var{stream} with it.
 
 The @code{opena} is like @code{open}, but if the file exists, append to
 it instead of truncating it.
-@end_Defreq
+@endDefreq
 
 @cindex copy-in mode, and @code{write} requests
 @cindex mode, copy-in, and @code{write} requests
-@Defreq{write, stream data}
+@Defreq {write, stream data}
 Writes to the file associated with the specified @var{stream}.
 The stream must previously have
 been the subject of an open request.  The remainder of the line is
 interpreted as the @code{ds} request reads its second argument: A
 leading @samp{"} is stripped, and it is read in copy-in mode.
-@end_Defreq
+@endDefreq
 
-@Defreq{close, stream}
+@Defreq {close, stream}
 Closes the specified @var{stream};
 the stream is no longer an acceptable argument to the
 @code{write} request.
@@ -7762,17 +7819,17 @@ the stream is no longer an acceptable argument to the
 @ignore
 @Example
 ... example of open write &c...
-@end_Example
+@endExample
 @end ignore
-@end_Defreq
+@endDefreq
 
-@Defesc{\\V, ', xxx, '}
+@Defesc {\\V, ', xxx, '}
 Interpolates the contents of the specified
 environment variable, as returned by the function @code{getenv}.
 Specify the argument to @code{\V} as an identifier, i.e.@:
 @samp{\V@var{x}}, @samp{\V(@var{xx}} or @samp{\V[@var{xxx}]}.  @code{\V}
 is interpreted in copy-in mode.
-@end_Defesc
+@endDefesc
 
 
 @c =====================================================================
@@ -7786,12 +7843,12 @@ There are two escapes which give information directly
 to the postprocessor.  This is particularly useful for embedding
 @sc{PostScript} into the final document.
 
-@Defesc{\\X, ', xxx, '}
+@Defesc {\\X, ', xxx, '}
 Embeds its argument into the @code{gtroff}
 output preceded with @w{@samp{x X}}.
-@end_Defesc
+@endDefesc
 
-@Defesc{\\Y, ', xxx, '}
+@Defesc {\\Y, ', xxx, '}
 The @code{\Y} escape is called with an identifier (i.e.@:
 @code{\Y@var{x}}, @code{\Y(@var{xx}} or @code{\Y[@var{xxx}]}).  This is
 approximately equivalent to @samp{\X'\*[@var{xxx}]'}.  However, the
@@ -7801,7 +7858,7 @@ contain newlines (it is not permitted for the argument to @code{\X} to
 contain newlines).  The inclusion of newlines requires an extension to
 the @acronym{UNIX} @code{troff} output format, and confuses drivers
 that do not know about this extension.
-@end_Defesc
+@endDefesc
 
 @xref{Output Devices}.
 
@@ -7817,7 +7874,7 @@ categorized elsewhere in this manual.
 
 @cindex line numbers
 @cindex numbers, line
-@Defreq{nm, start inc space indent}
+@Defreq {nm, start inc space indent}
 Prints line numbers in the left margin.
 @var{start} is the line number of the @emph{next}
 output line; this defaults to@w{ }1.  @var{inc} indicates on
@@ -7826,11 +7883,11 @@ every 5@w{ }lines; this defaults to@w{ }1.  @var{space} is the
 space to be left between the number and the text; this defaults to@w{
 }1.  The fourth argument is the indentation of the line numbers.
 Without arguments, line numbers are turned off.
-@end_Defreq
+@endDefreq
 
 @c XXX xref ln register
 
-@Defreq{nn, [@Var{skip}]}
+@Defreq {nn, [@Var{skip}]}
 Temporarily turns off line numbering.  The
 argument is the number of lines not to be numbered; this defaults
 to@w{ }1.
@@ -7842,13 +7899,13 @@ to@w{ }1.
 @ignore
 @Example
 ... line numbering example ...
-@end_Example
+@endExample
 @end ignore
-@end_Defreq
+@endDefreq
 
 @cindex margin characters
 @cindex characters for margins
-@Defreq{mc, char dist}
+@Defreq {mc, char dist}
 Prints margin characters to the right of the text.
 The first argument is the character to be
 printed, and the second argument is the distance away from the main body
@@ -7867,14 +7924,14 @@ there are programs available for doing this (they are called
 @ignore
 @Example
 ... margin char example ...
-@end_Example
+@endExample
 @end ignore
-@end_Defreq
+@endDefreq
 
 @pindex soelim
 @cindex multi-file documents
 @cindex documents, multi-file
-@Defreq{lf, line filename}
+@Defreq {lf, line filename}
 A debugging aid for
 documents which are split into many files, then put together
 with @code{soelim} and other preprocessors.  The second argument is the
@@ -7887,9 +7944,9 @@ intelligible to the user.
 @ignore
 @Example
 ... example of soelim'ed doc ...
-@end_Example
+@endExample
 @end ignore
-@end_Defreq
+@endDefreq
 
 
 @c =====================================================================
@@ -7901,38 +7958,38 @@ intelligible to the user.
 @code{gtroff} is not easy to debug, but there are some useful features
 and strategies for debugging.
 
-@Defreq{tm, string}
+@Defreq {tm, string}
 Sends the @var{string} to the standard error stream;
 this is very useful for printing debugging output among other things.
-@end_Defreq
+@endDefreq
 
 @cindex aborting
-@Defreq{ab, [@Var{string}]}
+@Defreq {ab, [@Var{string}]}
 Similar to the @code{tm} request, except that
 it causes @code{gtroff} to stop processing.  With no argument it
 prints @samp{User Abort}.
-@end_Defreq
+@endDefreq
 
 @cindex @code{ex}, use in debugging
 @cindex exiting
-@Defreq{ex, }
+@Defreq {ex, }
 The @code{ex} request also causes @code{gtroff} to stop processing
 if encountered at the topmost level; see also @ref{I/O}.
-@end_Defreq
+@endDefreq
 
 When doing something involved it is useful to leave the debugging
 statements in the code and have them turned on by a command line flag.
 
 @Example
 .if \n(DB .tm debugging output
-@end_Example
+@endExample
 
 @noindent
 To activate these statements say
 
 @Example
 groff -rDB=1 file
-@end_Example
+@endExample
 
 @c XXX .tm1, .tmc requests
 
@@ -7942,43 +7999,43 @@ the @option{-z} flag.
 
 @cindex dumping symbol table
 @cindex symbol table, dumping
-@Defreq{pm, }
+@Defreq {pm, }
 The @code{pm} request prints out the entire symbol table on @code{stderr}.
-@end_Defreq
+@endDefreq
 
 @cindex dumping number registers
 @cindex number registers, dumping
-@Defreq{pnr, }
+@Defreq {pnr, }
 Prints the names and contents of all
 currently defined number registers on @code{stderr}.
-@end_Defreq
+@endDefreq
 
 @cindex dumping traps
 @cindex traps, dumping
-@Defreq{ptr, }
+@Defreq {ptr, }
 Prints the names and positions of all traps
 (not including input line traps and diversion traps) on @code{stderr}.
 Empty slots in the page trap list are printed as well, because they can
 affect the priority of subsequently planted traps.
-@end_Defreq
+@endDefreq
 
 @cindex flush output
 @cindex output, flush
 @cindex interactive use of @code{gtroff}
 @cindex @code{gtroff}, interactive use
-@Defreq{fl, }
+@Defreq {fl, }
 Instructs @code{gtroff} to flush its output
 immediately.  The intent is for interactive use.
 @code{gtroff}; there is little other use for it.  This
 request causes a line break.
-@end_Defreq
+@endDefreq
 
 @cindex backtrace of input stack
 @cindex input stack, backtrace
-@Defreq{backtrace, }
+@Defreq {backtrace, }
 The @code{backtrace} request prints a backtrace of the input stack
 to the standard error stream.
-@end_Defreq
+@endDefreq
 
 @cindex warnings
 @code{gtroff} has command line options for printing out more warnings
@@ -7987,18 +8044,18 @@ or an error occurs.  The most verbose level of warnings is @option{-ww}.
 
 @cindex level of warnings
 @cindex warnings, level
-@Defreq{warn, [@Var{flags}]}
-@Defregx{.warn}
-Controls the level of warnings checked for.  The
-@var{flags} are the sum of the numbers associated with each warning
-that is to be enabled; all other warnings are disabled.  The number
-associated with each warning is listed below.  For example,
-@w{@code{.warn 0}} disables all warnings, and @w{@code{.warn 1}}
-disables all warnings except that about missing characters.  If an
-argument is not given, all warnings are enabled.
+@Defreq {warn, [@Var{flags}]}
+@Defregx {.warn}
+Controls the level of warnings checked for.  The @var{flags} are the sum
+of the numbers associated with each warning that is to be enabled; all
+other warnings are disabled.  The number associated with each warning is
+listed below.  For example, @w{@code{.warn 0}} disables all warnings,
+and @w{@code{.warn 1}} disables all warnings except that about missing
+characters.  If an argument is not given, all warnings are enabled.
 
-The number register @code{.warn} contains the current warning level.
-@end_Defreq
+The read-only number register @code{.warn} contains the current warning
+level.
+@endDefreq
 
 @c ---------------------------------------------------------------------
 
@@ -8149,7 +8206,7 @@ interprets
 
 @Example
 .dsabcd
-@end_Example
+@endExample
 
 @esindex \*
 @esindex \n
@@ -8203,7 +8260,7 @@ indicators and thus
 
 @Example
 .ps 10u
-@end_Example
+@endExample
 
 @noindent
 sets the point size to 10@w{ }points, whereas in GNU @code{troff} it
@@ -8244,7 +8301,7 @@ constructed might have had.  For example,
 .br
 .di
 .x
-@end_Example
+@endExample
 
 @esindex \e
 @esindex \!
@@ -8268,6 +8325,9 @@ diversion; it also works in both GNU @code{troff} and @acronym{UNIX}
 diversion that will be interpreted when the diversion is reread, either
 use the traditional @code{\!} transparent output facility, or, if this
 is unsuitable, the new @code{\?} escape sequence.
+
+@c XXX .tl compatibility mode -> input stack level
+@c XXX .if compatibility mode -> input stack level
 
 @xref{Diversions}, for more information.
 
@@ -8818,14 +8878,14 @@ The first three output commands are guaranteed to be:
 x T device
 x res n h v
 x init
-@end_Example
+@endExample
 
 @noindent
 For example, the input
 
 @Example
 crunchy \fH\s+2frog\s0\fP!?
-@end_Example
+@endExample
 
 @noindent
 produces
@@ -8835,7 +8895,7 @@ produces
 @ignore
 @Example
 ... sample output here ...
-@end_Example
+@endExample
 @end ignore
 
 @c ---------------------------------------------------------------------
@@ -8904,7 +8964,7 @@ drawing command of the form
 
 @Example
 \D'@var{c} @var{x1} @var{y1} @var{x2} @var{y2} @dots{} @var{xn} @var{yn}'
-@end_Example
+@endExample
 
 @esindex \w
 @vindex st
@@ -8926,7 +8986,7 @@ a lesser extent, @code{DE}@w{ }commands.  Thus after executing a
 
 @Example
 D@var{c} @var{x1} @var{y1} @var{x2} @var{y2} @dots{} @var{xn} @var{yn}
-@end_Example
+@endExample
 
 @noindent
 the current position should be increased horizontally by the sum of all
@@ -9115,7 +9175,7 @@ separated by blanks or tabs.  The format is
 
 @Example
 @var{name} @var{metrics} @var{type} @var{code} @var{comment}
-@end_Example
+@endExample
 
 @cindex 8-bit input
 @cindex input, 8-bit
@@ -9167,7 +9227,7 @@ The @var{metrics} field has the form:
 @Example
 @var{width}[,@var{height}[,@var{depth}[,@var{italic_correction}
   [,@var{left_italic_correction}[,@var{subscript_correction}]]]]]
-@end_Example
+@endExample
 
 @noindent
 There must not be any spaces between these subfields (it has been split
@@ -9197,7 +9257,7 @@ A line in the @code{charset} section can also have the format
 
 @Example
 @var{name} "
-@end_Example
+@endExample
 
 @noindent
 This indicates that @var{name} is just another name for the character
@@ -9209,8 +9269,9 @@ sequence of lines of the form:
 
 @Example
 @var{c1} @var{c2} @var{n}
-@end_Example
+@endExample
 
+@noindent
 This means that when character @var{c1} appears next to character
 @var{c2} the space between them should be increased by@w{ }@var{n}.
 Most entries in the kernpairs section have a negative value for@w{
