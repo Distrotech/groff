@@ -1,8 +1,8 @@
 .ig
 groffer.man
 
-Version     : groffer 0.3 (alpha)
-Last update : 05 Jan 2002
+Version     : groffer 0.4 (beta)
+Last update : 07 Jan 2002
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -31,6 +31,7 @@ FDL in the main directory of the groff source package.
 .  ftr CI I
 .  ftr CB B
 .\}
+.
 .if '\*[.T]'dvi' \{\
 .  ftr CB CW
 .\}
@@ -46,105 +47,74 @@ FDL in the main directory of the groff source package.
 .
 .ds Ellipsis .\|.\|.\"
 .
-.ad b
-.
 .\" --------------------------------------------------------------------
 .\" Start macro definitions
 .eo
 .
-.\" --------------------------------------------------------------------
-.de TP+
-.br
-.ns
-.TP \$1
+.de c
+.\" this is like a comment request when escape mechanism is off
 ..
-.\" --------------------------------------------------------------------
+.c  --------------------------------------------------------------------
 .de Text
 .  nop \)\$*
 ..
-.\" --------------------------------------------------------------------
-.\" Topic
-.\"
-.\" a bulleted paragraph
-.\"
-.de Topic
-.  TP 2m
-.  Text \(bu
+.c --------------------------------------------------------------------
+.c environment variable
+.de EnvVar
+.  SM
+.  BR \$1 \$2
 ..
-.\" --------------------------------------------------------------------
-.\" LongOpt  ([name [punct]])
-.\"
-.\" `--name' somwhere in the text 
-.\" second arg is punctuation
-.\"
+.c --------------------------------------------------------------------
+.c LongOpt  ([name [punct]])
+.c
+.c `--name' somwhere in the text 
+.c second arg is punctuation
+.c
 .de LongOpt
 .  ds @opt \$1\"
 .  shift
 .  Text \f(CB\*[@--]\fP\fB\*[@opt]\fP\/\$*
 .  rm @opt
 ..
-.\" --------------------------------------------------------------------
-.\" ShortOpt ([char [punct]])
-.\"
-.\" `-c' somwhere in the text 
-.\" second arg is punctuation
-.\"
-.de ShortOpt
-.  ds @opt \$1\"
-.  shift
-.  Text \f(CB\*[@-]\*[@opt]\fP\/\$*
-.  rm @opt
-..
-.\" --------------------------------------------------------------------
-.\" [LongOpt]  (name [arg])
-.\"
-.\" long option in synopsis
-.\"
+.c --------------------------------------------------------------------
+.c [LongOpt]  (name [arg])
+.c
+.c long option in synopsis
+.c
 .de [LongOpt]
-.  if \n[.$]=0 .return
+.  if (\n[.$] == 0) \
+.    return
 .  ds @opt \$1\"
 .  shift
-.  ie \n[.$]=0 \
-.    Text \fR[\fP\f(CB\*[@--]\fP\fB\*[@opt]\fP\fR]\fP
-.  el \
-.    Text \fR[\fP\f(CB\*[@--]\fP\fB\*[@opt] \fP\fI\/\$*\fP\fR]\fP
+.  ie (\n[.$] == 0) \
+.    Text \f[R][\f[P]\f[CB]\*[@--]\f[P]\f[B]\*[@opt]\f[P]\f[R]]\f[P]
+.  el \{\
+.    Text \f[R][\f[P]\f[CB]\*[@--]\f[P]\f[B]\*[@opt]
+.    Text \f[P]\f[I]\/\$*\f[P]\f[R]]\f[P]
+.  \}
 .  rm @opt
 ..
-.\" --------------------------------------------------------------------
-.\" [ShortOpt]  (name [arg])
-.\"
-.\" short option in synopsis
-.\"
-.de [ShortOpt]
-.  if \n[.$]=0 .return
-.  ds @opt \$1\"
-.  shift
-.  ie \n[.$]=0 \
-.    Text \fR[\fP\f(CB\*[@-]\*[@opt]\fP\fR]\fP
-.  el \
-.    Text \fR[\fP\f(CB\*[@-]\*[@opt] \fP\fI\/\$*\fP\fR]\fP
-.  rm @opt
-..
-.\" --------------------------------------------------------------------
-.\" OptDef  (shortopt [longopt [argument]])
-.\"
-.\" option documentation
-.\" args : `shortopt', `longopt' can be ""
-.\"
+.c --------------------------------------------------------------------
+.c OptDef  (shortopt [longopt [argument]])
+.c
+.c option documentation
+.c args : `shortopt', `longopt' can be ""
+.c
 .de OptDef
 .  rm @short
 .  rm @long
 .  rm @arg
-.  if \n[.$]>=1 \{\
-.    ds @arg1 "\$1\"
-.    if !'\*[@arg1]'' .ds @short "\f(CB\*[@-]\*[@arg1]\fP\"
-.    if \n[.$]>=2 \{\
+.  if (\n[.$] >= 1) \{\
+.    ds @1 \$1\"
+.    if !'\*[@1]'' \
+.      ds @short \f[CB]\*[@-]\*[@1]\f[P]\"
+.    if (\n[.$] >= 2) \{\
 .      if !'\*[@short]'' \
-.        as @short \f(CW\0\fP
-.      ds @arg2 "\$2\"
-.      if !'\*[@arg2]'' \
-.        ds @long "\f(CB\*[@--]\fP\fB\*[@arg2]\fP\"
-.      if \n[.$]>=3 \{\
+.        as @short \f[CW]\0\f[P]\"
+.      ds @2 \$2\"
+.      if !'\*[@2]'' \
+.        ds @long \f[CB]\*[@--]\f[P]\f[B]\*[@2]\f[P]\"
+.      if (\n[.$] >= 3) \{\
 .        if !'\*[@long]'' \
 .          as @long \|=\|\"
 .        shift 2
@@ -152,26 +122,50 @@ FDL in the main directory of the groff source package.
 .      \}
 .    \}
 .  \}
-.  IP "\fR\*[@short]\*[@long]\*[@arg]\fP"
+.  IP "\f[R]\*[@short]\*[@long]\*[@arg]\f[P]"
+.  rm @1
+.  rm @2
 .  rm @arg
-.  rm @arg1
-.  rm @arg2
 .  rm @short
 .  rm @long
 ..
-.\" --------------------------------------------------------------------
-.\" environment variable
-.de EnvVar
-.  SM
-.  BR \$1 \$2
-..
-.\" --------------------------------------------------------------------
-.\" a shell command line
+.c --------------------------------------------------------------------
+.c a shell command line
 .de ShellCommand
 .  br
-.  IR "shell>" "\h'1m'\f(CB\$*\fP\/"
+.  Text \f[I]shell#\h'1n'\f[P]\f[CB]\$*\f[P]\"
 ..
-.\" --------------------------------------------------------------------
+.c --------------------------------------------------------------------
+.c ShortOpt ([char [punct]])
+.c
+.c `-c' somwhere in the text 
+.c second arg is punctuation
+.c
+.de ShortOpt
+.  ds @opt \$1\"
+.  shift
+.  Text \f(CB\*[@-]\*[@opt]\fP\/\$*
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c [ShortOpt]  (name [arg])
+.c
+.c short option in synopsis
+.c
+.de [ShortOpt]
+.  if (\n[.$] == 0] \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie (\n[.$] == 0) \
+.    Text \f[R][\f[P]\f[CB]\*[@-]\*[@opt]\f[P]\f[R]]\f[P]
+.  el \{\
+.    Text \f[R][\f[P]\f[CB]\*[@-]\*[@opt]
+.    Text \f[P]\f[I]\/\$*\f[P]\f[R]]\f[P]
+.  \}
+.  rm @opt
+..
+.c --------------------------------------------------------------------
 .de Synopsis
 .  ds @arg1 \$1\"
 .  nr @old_indent \n(.i
@@ -186,6 +180,22 @@ FDL in the main directory of the groff source package.
 .  br
 .  ad
 .  in
+..
+.c --------------------------------------------------------------------
+.c Topic
+.c
+.c a bulleted paragraph
+.c
+.de Topic
+.  TP 2m
+.  Text \[bu]
+..
+.c --------------------------------------------------------------------
+.c Extends .TP header
+.de TP+
+.br
+.ns
+.TP \$1
 ..
 .ec
 .\" End of macro definitions
@@ -209,9 +219,12 @@ groffer \- display groff files and man-pages on X and tty
 .[ShortOpt] Q
 .[ShortOpt] X
 .[ShortOpt] T device
+.[ShortOpt] W arg
 .[LongOpt] man
 .[LongOpt] manpath man_page_dirs
+.[LongOpt] no-man
 .[LongOpt] title title_in_X_mode
+.[LongOpt] tty
 .[LongOpt] xrdb X_resouce_options
 .RI [ groff_options ]
 .RI [ filespec
@@ -349,17 +362,24 @@ known from
 .SH OPTIONS
 .\" --------------------------------------------------------------------
 .
+If your system does not support GNU long options you can use the
+.ShortOpt W
+to simulate long options.
+.
+POSIX has reserved this option for such uses.
+.
+.P
 The following options are caught be groffer and have a special
 meaning.
 .
 .OptDef h help
-print usage message to standard error and exit.
+Print usage message to standard error and exit.
 .
 .OptDef Q source
-output the roff source code of the input files unprocessed.
+Output the roff source code of the input files unprocessed.
 .
 .OptDef T device devname
-use
+Use
 .I devname
 as the output device, just like in plain groff;
 if this is
@@ -371,14 +391,37 @@ devices generate output that was processed for the specified device;
 this is printed onto standard output without a pager.
 .
 .OptDef v version
-print version information onto standard error.
+Print version information onto standard error.
+.
+.OptDef W "" arg
+There are 3 applications for the
+.ShortOpt W
+option:
+.br
+.ShortOpt W
+.I longopt
+is equivalent to
+.LongOpt longopt
+.br
+.ShortOpt W
+.I 'longopt=arg'
+is equivalent to
+.LongOpt longopt
+.I 'arg'
+.br
+.ShortOpt W
+.I warning
+is equivalent to the groff option
+.ShortOpt W
+.I warning
+and is internally sent to groff.
 .
 .OptDef X
-display in X window with a resolution of 75 dpi.
+Display in X window with a resolution of 75 dpi.
 .
 .OptDef "" man
-check the non-option command line arguments (filespecs) first on being
-man-pages, then if they represent an existing file.
+Check the non-option command line arguments (filespecs) first on being
+man-pages, then whether they represent an existing file.
 .
 By default, a filespec is first tested if it is an existing file.
 .
@@ -386,19 +429,25 @@ By default, a filespec is first tested if it is an existing file.
 .br
 .ns
 .OptDef "" manpath "'dir1:dir2:\*[Ellipsis]'"
-use the specified search path for retrieving man-pages instead of the
+Use the specified search path for retrieving man-pages instead of the
 program defaults.
 .
 If the argument is set to the empty string "" the search for man-page
 is disabled.
 .
+.OptDef "" no-man
+Do not check for man-pages.
+.
 .OptDef "" title "'some title of your own'"
-set the title for the diplay window.
+Set the title for the diplay window.
 .
 This effects only the X mode.
 .
+.OptDef "" tty
+Use output on a text pager even when in X.
+.
 .OptDef "" xrdb "'\*[@-]\fIopt1 arg1\fP \*[@-]\fIopt2 arg2 ...\fP'"
-pass the argument unchanged to the X display program gxditview of
+Pass the argument unchanged to the X display program gxditview of
 groffer.
 .
 All options of
@@ -428,7 +477,7 @@ resource option to set the title of the display window..
 .
 .TP
 .LongOpt		\" just `--'
-signals the end of option processing; all remaining arguments are
+Signals the end of option processing; all remaining arguments are
 interpreted as filespec parameters.
 .
 .P
@@ -555,13 +604,11 @@ The program has a decompression facility.
 .
 If standard input or a file that is specified as a command line
 parameter was compressed by a format that is understood by
-.BR zcat (1)
+.BR gzip (1)
 it is decompressed on-the-fly.
 .
 This includes the GNU
 .B .gz
-compression format of
-.BR gzip (1)
 and the traditional
 .B .Z
 compression.
@@ -745,6 +792,99 @@ trees are stored.
 .
 .
 .\" --------------------------------------------------------------------
+.SH "EXAMPLES"
+.\" --------------------------------------------------------------------
+.
+The usage of groffer is very easy.
+.
+Usually, it is just called with a filename or man-page.
+.
+The following examples, however, show that groffer has much more fancy
+capabilities.
+.
+.TP
+.ShellCommand groffer docs/meintro.ms
+Format and display the file
+.I meintro.ms
+in directory
+.I ./docs
+using a graphical viewer when in X window, or the
+.B less
+pager program when not in X.
+.
+The file must exist in this case because the slash character
+.RB ` / '
+suggests that this cannot be a man-page.
+.
+.TP
+.ShellCommand groffer groffer.1 'less(1)' man:roff
+.
+If none of the arguments is an existing file then lookup the three
+man-pages named
+.I groffer
+(in section\~1),
+.I less
+(in section\~1),
+and
+.I roff
+(in the section with the lowest number, being\~7 in this case).
+.
+The formatted files are concatenated and displayed in one piece.
+.
+.TP
+.ShellCommand LANG=de groffer --man --source -T html groff >groff.html
+.
+Lookup the source file of the German manual page for the
+.B groff
+program, decompress it, convert it into htlm format and write the
+result into the file
+.IR groff.html
+.
+.TP
+.ShellCommand cat stdin.1.gz | PAGER=more groffer --tty a.ms - b.ms.Z
+Display existing files
+.IR a.ms ,
+.IR stdin.1.gz (decompress),
+and
+.IR b.ms.Z (decompress)
+in this sequence on the text terminal, using
+.BR more
+as pager program instead of the default pager
+.BR less .
+.
+.TP
+.ShellCommand groffer -Wno-man -Wtitle=hello -Wmac groff.1
+.
+Assume that
+.I groff.1
+is not meant to denote a man-page, but an existing file
+in the current directory.
+.
+Process this file with the
+.RI ` mac '
+warnings disabled and display the result using
+.RI ` hello '
+as the viewer window's title.
+.
+The first two
+.option W
+options simulate long options; but as
+.I mac
+is not a long option for groffer it is passed unchanged to groff,
+where it disables the specified warnings.
+.
+This command is equivalent to
+.ShellCommand groffer --title=hello --man -W mac groff.7
+.
+.TP
+.ShellCommand echo '\[rs]fIgroffer\[rs]fP is \[rs]fBfat' |
+.TP+
+.ShellCommand groffer --xrdb='-bg red -fg yellow'
+.
+Try it :-)
+.
+.
+.\" --------------------------------------------------------------------
 .SH "COMPATIBILITY"
 .\" --------------------------------------------------------------------
 .
@@ -752,14 +892,18 @@ The
 .B groffer
 shell script should be compatible to both POSIX and GNU.
 .
+POSIX compatibility refers to
+.B P1003.2/D11.2
+of September 1991.
+.
 .P
 This document describes the behavior on GNU systems.
 .
 Due to the limitations of POSIX as compared to GNU, not all features
 of groffer are available on non-GNU systems.
 .
-This includes long options, arguments with embedded space characters,
-and the search capabilities of man-pages.
+This includes arguments with embedded space characters, and the search
+capabilities of man-pages.
 .
 .P
 The groffer program can handle option arguments and file names that
@@ -782,15 +926,12 @@ tries to guess the groff command line options for given input files.
 .TP
 .BR gxditview (@MAN1EXT@)
 the GNU version of the roff viewer
-.BR xditview (@MAN1EXT@)
-of the X window system.
+.BR xditview (1)
+distributed with the the X window system.
 .
 .TP
 .BR gzip (1)
-.TP+
-.BR gunzip (1)
-.TP+
-.BR zcat (1)
+decompression of .gz or .Z files.
 .
 .TP
 .BR man (1)
@@ -809,7 +950,7 @@ Documentation License) version 1.1 or later.
 .
 You should have received a copy of the FDL on your system, it is also
 available on-line at the
-.URL "GNU copyleft site" http://www.gnu.org/copyleft/fdl.html .
+.URL "GNU copyleft site" http://\:www.gnu.org/\:copyleft/\:fdl.html .
 .
 .P
 This document is part of
@@ -817,7 +958,7 @@ This document is part of
 the GNU roff distribution.
 .
 It was written by
-.MAILTO bwarken@mayn.de "Bernd Warken" .
+.URL "Bernd Warken" mailto:bwarken@mayn.de .
 .
 .
 \" --------------------------------------------------------------------

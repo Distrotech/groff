@@ -1,14 +1,41 @@
+2002-01-07  Bernd Warken  <bwarken@mayn.de>
+
+	* groffer 0.4 (beta) released (integrated into groff `contrib')
+	
+	* groffer.man:
+	- New features documented.
+	- Macros stream-lined.
+	- Section EXAMPLES added.
+	
+	* groffer.sh:
+	- System tests added/optimized.
+	- Speed/memory optimizations by defining some shell functions
+	  alternatively depending on the text results.
+	- Use `gzip' for decompression instead of `zcat'.
+	- Signal handling added for clean exiting by `trap'.
+	- Temporary files exist only as long as necessary.
+	- Setup of path for man-pages moved after the option parsing.
+	- Fixed a bug in determining the path for man-pages.
+	- Fixed a bug in the handling of non-groffer options.
+
+	* New features:
+	- New option --tty for forcing paging on text terminal.
+	- New option --no-man for disabling the man-page feature.
+	- Implement reserved POSIX -W feature to simulate long options.
+	- gxditview is now run as a background process.
+
 2002-01-05  Werner LEMBERG  <wl@gnu.org>
 
-	Integrate groffer into groff's `contrib' tree.
+        * Integrate groffer into groff's `contrib' tree.
 
-	* Makefile: Replaced by...
-	* Makefile.sub: New file.
-	* groffer: Replaced by...
-	* groffer.sh: New file.
+        * Makefile: Replaced by...
+        Makefile.sub: New file.
 
-	* groffer.man (OptDef): Add missing backslashes.
-	Update copyright.
+        * groffer: Replaced by...
+        groffer.sh: New file.
+
+        * groffer.man (OptDef): Add missing backslashes.
+        Update copyright.
 
 2001-12-15  Bernd Warken  <bwarken@mayn.de>
 
@@ -22,7 +49,12 @@
 	characters (GNU only) .
 
 	* Several search methods for man-pages when no `man -w' is
-	available.
+	available ($MANPATH, mandb, a default path).
+
+	* Language support for man-pages.
+
+	* Recognize the following filespecs as man-page parameters:
+	  man:name(section), man:name, name.section, name.
 	
 2001-12-03  Bernd Warken  <bwarken@mayn.de>
 

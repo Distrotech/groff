@@ -1,8 +1,10 @@
 #!/bin/sh
 
+# groffer.sh
+
 PROGRAM_NAME=groffer
-PROGRAM_VERSION="0.3 (alpha)"
-LAST_UPDATE="15 Dec 2001"
+PROGRAM_VERSION="0.4 (beta)"
+LAST_UPDATE="07 Jan 2002"
 
 # Copyright (C) 2001 Free Software Foundation, Inc.
 # Written by Bernd Warken <bwarken@mayn.de>
@@ -24,6 +26,7 @@ LAST_UPDATE="15 Dec 2001"
 # Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
+
 ########################################################################
 #                           Description
 ########################################################################
@@ -32,6 +35,8 @@ LAST_UPDATE="15 Dec 2001"
 
 # This script tries to avoid features of special shells, so some
 # elements are programmed in a more complicated way than necessary.
+
+
 
 ########################################################################
 #                            Debugging
@@ -55,11 +60,50 @@ function abort ()
   error 2>/dev/null || exit 1;
 }
 
+
 ########################################################################
 #                              Setup
 ########################################################################
 
 set -a
+
+# Survey of functions defined in this document
+
+# The elements specified within paranthesis `(<>)' give hints to what
+# the arguments are meant to be; the argument names are irrelevant.
+# <>?     0 or 1
+# <>*     arbitrarily many incl. none
+# <>      exactly 1
+
+# append_args (<arg>*)
+# base_name (path)
+# catz (<file>*)
+# check_dpi ()
+# clean_up ()
+# count_next_quoted (<arg>*)
+# del_all_leading_from (<regexp> <string>)
+# del_ext_from (<extension> <filename>)
+# echo2 (<text>*)
+# error (<err_no> <text>*)
+# get_manpath ()
+# get_next_quoted (<arg>*)
+# get_title ()
+# is_substring_of (<part> <string>)
+# leave ()
+# manpage_search_filespec (<filespec>)
+# manpage_search_name (<name> <section>?)
+# normalize_args (<arg>*)
+# output (<text>*)
+# register_title (<filespec>*)
+# save_stdin_if_any ()
+# shift_quoted (<arg>*)
+# supercat (<filearg>*)
+# tmp_cat ()
+# tmp_create ()
+# unquote (<arg>*)
+# usage ()
+# version ()
+
 
 ########################################################################
 #                       Environment Variables
@@ -77,6 +121,7 @@ set -a
 #   _[a-z_]          local loop variables,  e.g. $_i
 
 # global variables
+DISPLAY_MODE=""			# determined from command line arguments
 FILE_ARGS=""			# the non-option command line parameters
 HAS_COMPRESSION=""		# `yes' if compression is available
 HAS_MANW=""			# `yes' if `man -w' is available
@@ -91,25 +136,28 @@ OPT_DPI=""			# groff -X option
 OPT_MAN=""			# interpret file params as man-pages
 OPT_MANPATH=""			# manual setting of path for man-pages
 OPT_TITLE=""			# title for gxditview window
+OPT_TTY=""			# use text display instead of X
 OPT_XRDB=""			# X resource arguments to gxditview
 TEMP_DIR=""			# directory for temporary files
+TEMP_PREFIX=""			# directory for temporary files
 TMP_CAT=""			# stores concatenation of everything
 TMP_INPUT=""			# stores stdin, if any
-TMP_DONE=""			# stores the names of processed args
+TMP_TITLE=""			# stores the names of processed args
 
 # command line arguments
-GROFFER_LONGOPTS="device: help man manpath: source title: version \
-                  xrdb:";
+GROFFER_LONGOPTS="help man no-man source tty version";
+GROFFER_ARG_LONGS="device: manpath: title: xrdb:";
 GROFFER_SHORTOPTS="hQT:vX";
 GROFF_ARG_SHORTS="d:f:F:I:L:m:M:n:o:P:r:w:W:"; # inhereted from groff
 GROFF_SHORTOPTS="abcegilpstzCEGNRSUVZ";	       # inhereted from groff
 ALL_SHORTOPTS=\
 "${GROFFER_SHORTOPTS}${GROFF_SHORTOPTS}${GROFF_ARG_SHORTS}";
-ALL_LONGOPTS="${GROFFER_LONGOPTS}";
+ALL_LONGOPTS="${GROFFER_LONGOPTS} $GROFFER_ARG_LONGS";
 
 PROCESS_ID="$$"			# for shutting down the program
 
 ENABLE_MANPAGES=yes		# enable search for man-pages
+
 
 ########################################################################
 #                        System Test
@@ -117,10 +165,12 @@ ENABLE_MANPAGES=yes		# enable search for man-pages
 
 # Test the availability of the system utilities used in this script.
 
+
 ########################################################################
 # Test of function "test".
 #
 [ "a" = "a" ] || exit 1;
+
 
 ########################################################################
 # Test of function "echo".
@@ -128,6 +178,22 @@ ENABLE_MANPAGES=yes		# enable search for man-pages
 if [ "$(echo -n 'te' && echo -n && echo 'st')" != "test" ]; then
   echo 'Test of "echo" command failed.' >&2;
   exit 1;
+fi;
+
+
+########################################################################
+# Test of function "true".
+#
+if ! true >/dev/null 2>&1; then
+  true ()
+  {
+    : ;
+  }
+
+  false ()
+  {
+    ! : ;
+  }
 fi;
 
 ########################################################################
@@ -139,6 +205,7 @@ then
   exit 1;
 fi;
 
+
 ########################################################################
 # Test of function "grep".
 #
@@ -146,6 +213,7 @@ if [ "$( (echo no; echo test) | grep -e '^.e..$')" != "test" ]; then
   echo 'Test of "grep" command failed.' >&2;
   exit 1;
 fi;
+
 
 ########################################################################
 # Test of function "cat".
@@ -155,14 +223,16 @@ if [ "$(echo test | cat)" != "test" ]; then
   exit 1;
 fi;
 
+
 ########################################################################
 # Test for compression.
 #
-if [ "$(echo test | zcat -f -)" = "test" ]; then
+if [ "$(echo test | gzip -c -d -f -)" = "test" ]; then
   HAS_COMPRESSION="yes";
 else
   HAS_COMPRESSION="no";
 fi;
+
 
 ########################################################################
 # Test for temporary directory and file generating utility
@@ -184,6 +254,7 @@ if [ "$TEMP_DIR" = "" ]; then
   echo "Couldn't find a directory for storing temorary files." >&2;
   exit 1;
 fi;
+TEMP_PREFIX="${TEMP_DIR}/${PROGRAM_NAME}";
 
 # test whether function `mktemp' is available
 _tmp="$(mktemp "${TEMP_DIR}/.${PROGRAM_NAME}".XXXXXX)" 2>/dev/null;
@@ -194,6 +265,7 @@ else
   HAS_MKTEMP="no";
 fi;
 unset _tmp;
+
 
 ########################################################################
 # Test option parsing programs.
@@ -225,6 +297,7 @@ unset _res;
 OPTIND=1;
 OPTARG="";
 
+
 ########################################################################
 # Determine search method for man-pages
 #
@@ -244,100 +317,13 @@ if _files="$(man -w man 2>/dev/null)"; then
     HAS_MANW="no";
   fi;
 fi;
-if [ "$HAS_MANW" != "yes" ]; then
-  if [ "$MANPATH" = "" ]; then
-    _dirs="$(manpath 2>/dev/null | tr : ' ')";
-    if [ "$?" != 0 -o "$_dirs" = "" ]; then
-      MANPATH="$_dirs";
-    fi
-  fi
-  if [ "$MANPATH" = "" ]; then # set some default path
-    _manpath="/usr/local/share/man /usr/local/man \
-              /usr/share/man /usr/man \
-              /usr/X11R6/man /usr/openwin/man \
-              /opt/man /opt/gnome/man /opt/kde/man";
-  else
-    _manpath="$(echo -n $MANPATH | tr : ' ')";
-  fi;
-  _dirs="";
-  for _p in $_manpath; do
-    if [ -d "$_p" -a -r "$_p" -a -x "$_p" ]; then
-      if [ "$_dirs" = "" ]; then
-        _dirs="$_p";
-      else
-        _dirs="$_dirs $_p";
-      fi;
-    fi;
-  done;
-  _manpath="$_dirs";
-  if [ "$LANG" = "" ]; then
-    MAN_PATH="$_manpath";
-  else				# language-specific directories
-    MAN_PATH="";
-    # two-letter version of $LANG
-    _lang_short="$(echo $LANG | sed -e '\|^\(..\).*$|s||\1|')";
-    for _p in $_manpath; do
-      _dirs="${_p}/${_lang_short}*"; # all dirs for 2-letter lang code
-      if [ "$_dirs" != "" ]; then
-        if [ -d "${_p}/${LANG}" ]; then
-	  _dirs="$_dirs ${_p}/${LANG}";
-	fi;
-      fi;
-      if [ "$MAN_PATH" = "" ]; then
-        MAN_PATH="$_dirs $_p";
-      else
-        MAN_PATH="$MAN_PATH $_dirs $_p";
-      fi;
-    done;    
-  fi;
-fi;
 unset _files;
-unset _dirs;
 unset _i;
-unset _p;
-unset _manpath;
 
 ########################################################################
 #                           Shell Funtions
 ########################################################################
 
-# Survey of functions defined here
-
-# The elements specified within paranthesis `(<>)' give hints to what
-# the arguments are meant to be; the argument names are irrelevant.
-# <>?     0 or 1
-# <>*     arbitrarily many incl. none
-# <>      exactly 1
-
-# append_args (<arg>*)
-# base_name (path)
-# catz (<file>*)
-# check_dpi ()
-# clean_up ()
-# count_next_quoted (<arg>*)
-# del_all_leading_from (<regexp> <string>)
-# del_ext_from (<extension> <filename>)
-# echo2 (<text>*)
-# error (<err_no> <text>*)
-# get_manpath ()
-# get_next_quoted (<arg>*)
-# get_title ()
-# is_substring_of (<part> <string>)
-# leave ()
-# manpage_from_path (<name> <section>?)
-# manpage_search_filespec (<filespec>)
-# manpage_search_name (<name> <section>?)
-# normalize_args (<arg>*)
-# output (<text>*)
-# register_done_file (<filespec>*)
-# save_stdin_if_any ()
-# shift_quoted (<arg>*)
-# supercat (<filearg>*)
-# tmp_cat ()
-# tmp_create ()
-# unquote (<arg>*)
-# usage ()
-# version ()
 
 ########################################################################
 # append_args (<arg>*)
@@ -367,6 +353,7 @@ append_args()
   output "$_res";
 }
 
+
 ########################################################################
 # base_name (path)
 #
@@ -384,23 +371,25 @@ base_name()
   output "$1" | sed -e '\|^\(.*/\)\+|s|||';
 }
 
+
 ########################################################################
 # catz (<file>*)
 #
 # If compression is available decompress standard input and write it to
 # standard output; otherwise copy standard input to standard output.
 #
-catz()
-{
-  if [ "$HAS_COMPRESSION" = "yes" ]; then
-    if [ "$#" = 0 ]; then
-      set -- -;
-    fi;
-    zcat -f "$@";
-  else
+if [ "$HAS_COMPRESSION" = "yes" ]; then
+  catz()
+  {
+    cat "$@" | gzip -c -d -f;
+  }
+else
+  catz()
+  {
     cat "$@";
-  fi;
-}
+  }
+fi;
+
 
 ########################################################################
 # check_dpi ()
@@ -422,6 +411,7 @@ check_dpi()
   output "$_res";
 }
 
+
 ########################################################################
 # clean_up () :
 #
@@ -429,8 +419,14 @@ check_dpi()
 #
 clean_up()
 {
-  rm -f "$TMP_CAT" "$TMP_INPUT" "$TMP_DONE";
+  local _i;
+  for _i in "$TMP_CAT" "$TMP_INPUT" "$TMP_TITLE"; do
+    if [ -f "$_i" ]; then
+      rm -r "$_i";
+    fi;
+  done;
 }
+
 
 ########################################################################
 # count_next_quoted (<arg>*)
@@ -470,6 +466,7 @@ count_next_quoted()
   output $_number;
 }
 
+
 ########################################################################
 # del_all_leading_from (<regexp> <string>)
 #
@@ -485,6 +482,7 @@ del_all_leading_from()
   fi
   output "$2" | sed -e '\|^\('"$1"'\)\+|s|||';
 }
+
 
 ########################################################################
 # del_ext_from (<extension> <filename>)
@@ -502,6 +500,7 @@ del_ext_from()
   output "$2" | sed -e "\|^ *\('\?.*\)$1\('\?\) *"'$|s||\1\2|';
 }
 
+
 ########################################################################
 # echo2 (<text>*)
 #
@@ -513,6 +512,7 @@ echo2()
 {
   echo "$*" >&2;
 }
+
 
 ########################################################################
 # error (<err_no> <text>*)
@@ -534,6 +534,7 @@ error()
   exit 1;
 }
 
+
 ########################################################################
 # get_manpath ()
 #
@@ -541,7 +542,7 @@ error()
 #
 # Return  : `0' if a valid path was retrieved.
 # Output  : path as space-separated list (intended for $MAN_PATH).
-# Globals : system : $MANPATH $LANG
+# Globals : system : $MANPATH $LC_ALL $LANG
 #           file   : $OPT_MANPATH $MAN_PATH
 #
 get_manpath()
@@ -583,14 +584,19 @@ get_manpath()
   if [ "$_manpath" = "" ]; then
     return 1;
   fi;
-  if [ "$LANG" = "" ]; then
+  if [ "$LC_ALL" = "" -a "$LANG" = "" ]; then
     MAN_PATH="$_manpath";
   else				# language-specific directories
     MAN_PATH="";
+    if [ "$LC_ALL" != "" ]; then
+      _lang_var="$LC_ALL";
+    else
+      _lang_var="$LANG";
+    fi
     # two-letter version of $LANG
-    _short_code="$(echo $LANG | sed -e '\|^\(..\).*$|s||\1|')";
+    _short_code="$(echo $_lang_var | sed -e '\|^\(..\).*$|s||\1|')";
     for _p in $_manpath; do
-      _langdir="${_p}/${LANG}";
+      _langdir="${_p}/${_lang_var}";
       _all="$(ls -d "${_p}/${_short_code}"* 2>/dev/null)";
 			# all dirs with this 2-letter lang code
       _langs="";
@@ -633,12 +639,13 @@ get_next_quoted()
                   sed -e "\|^ *'\(.*\)' *"'$|s||\1|';
 }
 
+
 ########################################################################
 # get_title ()
 #
-# create title for X from the $TMP_DONE file
+# create title for X from the $TMP_TITLE file
 #
-# Globals : $TMP_DONE $OPT_XRDB $OPT_TITLE
+# Globals : $TMP_TITLE $OPT_XRDB $OPT_TITLE
 # Output  : generated title
 #
 get_title()
@@ -653,9 +660,10 @@ get_title()
     return 0;
   fi;
   # no title was supplied on the command line, take the default title
-  # constisting of the processed filespecs, stored in file $TMP_DONE.
-  cat "$TMP_DONE";
+  # constisting of the processed filespecs, stored in file $TMP_TITLE.
+  cat "$TMP_TITLE";
 }
+
 
 ########################################################################
 # is_substring_of (<part> <string>)
@@ -678,6 +686,7 @@ is_substring_of()
   fi;
 }
 
+
 ########################################################################
 # leave ()
 #
@@ -689,52 +698,6 @@ leave()
   exit 0;
 }
 
-########################################################################
-# manpage_from_path (<name> <section>?)
-#
-# Get position of man-page using the $MAN_PATH variable.
-#
-# Globals   : $MAN_PATH must be preset as space-separated list of dirs.
-#             $LANG system language preset.
-# Arguments : either 2 (`name' `section') or 1 (`name').
-# Output    : the file position for the man-page
-# Return    : `0'
-#
-manpage_from_path()
-{
-  local _i;
-  local _p;
-  local _dirs;
-  local _args;
-  local _name="$1";
-  local _section="$2";
-  case "$#" in
-    1) _args="$1"; ;;
-    2) _args="$2 $1"; ;;
-    *)
-      false;
-      error 1 "man_from_path : needs 1 or 2 arguments.";
-      ;;
-  esac;
-  if [ "$HAS_MANW" = "yes" ]; then
-    error manpage_from_path : "man -w" is available.
-  fi;
-  if [ "$MAN_PATH" = "" ]; then
-    return 0;
-  fi;
-  for _p in $MAN_PATH; do
-    set -- "$(ls -d "${_p}/man${_section}"*"/${_name}.${_section}"* \
-                 2>/dev/null)";
-    while [ "$#" -gt 0 ]; do
-      if [ -f "$1" -a -r "$1" ]; then
-        output "$1";
-	return 0;
-      fi;
-      shift;
-    done;
-  done;
-  return 1;
-}
 
 ########################################################################
 # manpage_search_filespec (<filespec>)
@@ -748,6 +711,8 @@ manpage_from_path()
 # Output    : filename of man page, if any.
 # Return    : `0' if man page was found, `1' else.
 # 
+# Only called from supercat().
+#
 manpage_search_filespec()
 {
   local _file="";
@@ -758,24 +723,35 @@ manpage_search_filespec()
     return 1;
   fi;
   _arg="$1";
-#  _arg="$(output "$1" | sed -e "\|'\(.*\)'|s||\1|")";
   case "$_arg" in
     */*)			# contains directory part, not handled
       return 1;
       ;;
-    man:?*\(?*\))		# `man:' URL with section
+    man:?*\(?*\))		# man:name(section)
       _name="$(output "$_arg" |
                  sed -e '\|^man:\([^(]\+\)(\(.*\))$|s||\1|')";
       _section="$(output $_arg |
                  sed -e '\|^man:\([^(]\+\)(\(.*\))$|s||\2|')";
       if _file="$(manpage_search_name "$_name" "$_section")" &&
-        [ "$_file" != "" ]; then
+          [ "$_file" != "" ]; then
         output "$_file";
         return 0;
       fi;
       return 1;
       ;;
-    man:?*)			# `man:' URL without section
+    man:?*.?*)			# man:name.section
+      _name="$(output "$_arg" |
+                 sed -e '\|^man:\([^.]\+\)\.\(.*\)$|s||\1|')";
+      _section="$(output $_arg |
+                 sed -e '\|^man:\([^.]\+\)\.\(.*\)$|s||\2|')";
+      if _file="$(manpage_search_name "$_name" "$_section")" &&
+          [ "$_file" != "" ]; then
+        output "$_file";
+        return 0;
+      fi;
+      return 1;
+      ;;
+    man:?*)			# man:name
       _name="$(output "$_arg" | sed -e '\|^man:|s|||')";
       if _file="$(manpage_search_name "$_name")"; then
         output "$_file";
@@ -813,6 +789,7 @@ manpage_search_filespec()
   return 1;
 }
 
+
 ########################################################################
 # manpage_search_name (<name> <section>?)
 #
@@ -820,14 +797,56 @@ manpage_search_filespec()
 # lowest section using `man -w'.
 #
 # Arguments : either 2 (`name' `section') or 1 (`name').
+# Globals   : $MAN_PATH must be preset as space-separated list of dirs.
 # Output    : the file position for the man-page
 #
-manpage_search_name()
-{
-  local _i;
-  local _name;
-  local _section;
-  case "$#" in
+# Only called from man_page_filespec().
+#
+if [ "$HAS_MANW" = "yes" ]; then # use man -w
+
+  manpage_search_name()
+  {
+    local _i;
+    local _name;
+    local _section;
+    if [ "$MAN_PATH" = "" ]; then
+      return 0;
+    fi;
+    case "$#" in
+    1)
+      _name="$1";
+      _section="";
+      ;;
+    2)
+      _name="$1";
+      _section="$2";
+      ;;
+    *)
+      error "manpage_search_name : needs 1 or 2 arguments.";
+      ;;
+    esac;
+    for _i in $(man -w $_section "$_name" 2>/dev/null); do
+      if [ -f "$_i" -a -r "$_i" ] &&
+         (catz "$_i" | grog | grep -e '-man') >/dev/null 2>&1;
+      then
+        output "$_i";
+        return 0;
+      fi
+    done;
+    return 1;
+  }
+
+else				# manually search man-page
+
+  manpage_search_name()
+  {
+    local _name;
+    local _section;
+    local _p;
+    if [ "$MAN_PATH" = "" ]; then
+      return 0;
+    fi;
+    case "$#" in
     1)
       _name="$1";
       _section="";
@@ -839,22 +858,23 @@ manpage_search_name()
     *)
       error "man_search_name : needs 1 or 2 arguments.";
       ;;
-  esac;
-  if [ "$HAS_MANW" = "yes" ]; then
-    for _i in $(man -w $_section "$_name" 2>/dev/null); do
-      if [ -f "$_i" -a -r "$_i" ] &&
-         (catz "$_i" | grog | grep -e '-man') >/dev/null 2>&1;
-      then
-        output "$_i";
-        return 0;
-      fi
+    esac;
+    for _p in $MAN_PATH; do
+      set -- "$(ls -d "${_p}/man${_section}"*"/${_name}.${_section}"* \
+                2>/dev/null)";
+      while [ "$#" -gt 0 ]; do
+        if [ -f "$1" -a -r "$1" ]; then
+          output "$1";
+	  return 0;
+        fi;
+        shift;
+      done;
     done;
-  else
-    manpage_from_path $_section "$_name";
-    return 0;
-  fi;
-  return 1;
-}
+    return 1;
+  }
+
+fi;
+
 
 ########################################################################
 # normalize_args (<arg>+)
@@ -865,17 +885,17 @@ manpage_search_name()
 # Globals   : $ALL_LONGOPTS $ALL_SHORTOPTS
 # Output    : arguments in normalized form
 #
-normalize_args()
-{
-  local _args;
-  local _long_opts="";
-  local _i;
-  local _res;
-  local _opt;
-  if [ "$#" -eq 0 ]; then
-    set -- -;
-  fi;
-  if [ "$HAS_OPTS_GNU" = "yes" ]; then
+if [ "$HAS_OPTS_GNU" = "yes" ]; then
+
+  normalize_args()
+  {
+    local _args;
+    local _long_opts="";
+    local _i;
+    local _res;
+    if [ "$#" -eq 0 ]; then
+      set -- -;
+    fi;
     _long_opts="";
     for _i in ${ALL_LONGOPTS}; do
       _long_opts="$(append_args $_long_opts -l "$_i")";
@@ -886,7 +906,21 @@ normalize_args()
     else
       error 'wrong option';
     fi;   
-  elif [ "$HAS_OPTS_POSIX" = "yes" ]; then # POSIX getopts
+  }
+
+elif [ "$HAS_OPTS_POSIX" = "yes" ]; then # POSIX getopts
+
+  normalize_args()
+  {
+    local _args;
+    local _long_opts="";
+    local _i;
+    local _res;
+    local _opt;
+    local _param;
+    if [ "$#" -eq 0 ]; then
+      set -- -;
+    fi;
     case "--[^ ]" in
       "$_args") error "long options are only available in GNU."; ;;
     esac;
@@ -928,8 +962,12 @@ normalize_args()
     else
       error 'error in option parsing';
     fi;
-  fi;
-}
+  }
+
+else
+  error 'no option processor abvailable.';
+fi;
+
 
 ########################################################################
 # output (<text>*)
@@ -947,22 +985,15 @@ output()
   fi;
 }
 
+
 ########################################################################
-# register_done_file (<filespec>)
+# register_title (<filespec>)
 #
-# Transform argument into a title element and append to $TMP_DONE file.
+# Transform argument into a title element and append to $TMP_TITLE file.
 #
-register_done_file() {
-  set -- $(base_name "$*");	    # remove directory part
-  set -- $(del_ext_from .gz "$*"); # remove .hz
-  set -- $(del_ext_from .Z "$*");   # remove .Z
-  case "$#" in
-    0) return; ;;
-    1) _res="$1"; ;;
-    *) _res="'$*'"; ;;
-  esac;
-  output " $_res" >> "$TMP_DONE";
-}
+# This is defined in the main:temporary section
+
+
 
 ########################################################################
 # save_stdin_if_any ()
@@ -982,6 +1013,7 @@ save_stdin_if_any()
   done;
 }
 
+
 ########################################################################
 # shift_quoted (<arg>*)
 #
@@ -998,6 +1030,7 @@ shift_quoted()
   shift "$(count_next_quoted $_args)";
   output $*;
 }
+
 
 ########################################################################
 # supercat (<filearg>*)
@@ -1047,7 +1080,7 @@ supercat()
     fi;
     if [ "$_filespec" = "-" ]; then
       catz "$TMP_INPUT";
-      register_done_file "-";
+      register_title "-";
       continue;       
     fi
     if [ "$ENABLE_MANPAGES" = "yes"  ]; then
@@ -1065,7 +1098,7 @@ supercat()
         File)
           if [ -f "$_filespec" -a -r "$_filespec" ]; then
             catz "$_filespec";
-	    register_done_file "$_filespec";
+	    register_title "$_filespec";
 	    _done="yes";
 	    break;
           fi;
@@ -1074,7 +1107,7 @@ supercat()
           _manfile="$(manpage_search_filespec "$_filespec")";
           if [ "$?" -eq 0  ]; then
             catz "$_manfile";
-	    register_done_file "$_manfile";
+	    register_title "$_manfile";
 	    _done="yes";
 	    break;
           fi;
@@ -1084,8 +1117,9 @@ supercat()
     if [ "$_done" != "yes" ]; then
       echo2 \"$_filespec\" is neither a file nor a man-page.;
     fi;
-   done;
+  done;
 }
+
 
 ########################################################################
 # tmp_cat ()
@@ -1097,6 +1131,7 @@ tmp_cat()
   cat "$TMP_CAT";
 }
 
+
 ########################################################################
 # tmp_create ()
 #
@@ -1104,17 +1139,14 @@ tmp_cat()
 #
 # Output  : file generated title 
 #
-tmp_create()
-{
-  local _i;
-  local _tmp="";
-  local _prefix="${TEMP_DIR}/.${PROGRAM_NAME}.";
-  if [ "$TEMP_DIR" = "" ]; then
-    error 1 "Temporary directory must be determined first.";
-  fi;
-  if [ "$HAS_MKTEMP" = "yes" ]; then
+if [ "$HAS_MKTEMP" = "yes" ]; then
+
+  tmp_create()
+  {
+    local _i;
+    local _tmp="";
     # unquoted is ok, because mktemp output has no space chars
-    _tmp="$(mktemp "${_prefix}.XXXXXX" 2>/dev/null)"; # automatic
+    _tmp="$(mktemp "${TEMP_PREFIX}XXXXXX" 2>/dev/null)"; # automatic
     if [ "$_tmp" = "" ]; then
       HAS_MKTEMP="no";		# try manually
     else
@@ -1124,12 +1156,23 @@ tmp_create()
       output "$_tmp";
       return 0;
     fi;
-  fi;
-  if [ "$HAS_MKTEMP" != "yes" ]; then
+    if [ "$_tmp" = "" ]; then
+      error 1 "Could not manually create temporary file.";
+    fi
+    echo -n >"$_tmp";
+    output "$_tmp";
+  }
+
+else
+
+  tmp_create()
+  {
+    local _i;
+    local _tmp="";
     _tmp="";			# manual determination
     for _i in a b c d e f g h i j k l m n o p q r s t u v w x y z \
               A B C D E F G H I J K L M N O P Q R S T U V W X Y Z; do
-      _tmp="${_prefix}$$${_i}";
+      _tmp="${TEMP_PREFIX}$$${_i}";
       if [ -e "$_tmp" ]; then
         _tmp="";
         continue;
@@ -1137,13 +1180,15 @@ tmp_create()
         break;  
       fi;
     done;
-  fi;
-  if [ "$_tmp" = "" ]; then
-    error 1 "Could not manually create temporary file.";
-  fi
-  echo -n >"$_tmp";
-  output "$_tmp";
-}
+    if [ "$_tmp" = "" ]; then
+      error 1 "Could not manually create temporary file.";
+    fi
+    echo -n >"$_tmp";
+    output "$_tmp";
+  }
+
+fi;
+
 
 ########################################################################
 # unquote (<arg>*)
@@ -1170,6 +1215,7 @@ unquote()
   done;
   output "$_res";
 }
+
 
 ########################################################################
 # usage ()
@@ -1209,12 +1255,17 @@ EOF
   if [ "$HAS_OPTS_GNU" != "yes" ]; then
     cat >&2 <<EOF
 
-Your system does not support GNU long options.  All options starting
-with double-minus are not available.
+Your system does not support GNU long options.  You can use the POSIX
+feature -W to simulate them.
+-Wlongopt      simulate long options, euivalent to  "--longopt".
+-Wlongopt=arg  simulate long options, euivalent to  "--longopt=arg".
+-Wnon_option   internally sent to groff without modifications.
+Unknown arguments to the -W command are transferred to groff.
 EOF
   echo2;
   fi;
 }
+
 
 ########################################################################
 # version ()
@@ -1226,17 +1277,21 @@ version()
   echo2 "$PROGRAM_NAME $PROGRAM_VERSION of $LAST_UPDATE";
 }
 
+
 ########################################################################
 #                              main
 ########################################################################
 
 # The main area contains the following parts:
 # - argument parsing
+# - setup for display mode
+# - setup for man-pages
 # - temporary files
 # - display
 
+
 ########################################################################
-# main : argument parsing
+# argument parsing (main)
 #
 set -- $(normalize_args "$@");
 
@@ -1244,7 +1299,7 @@ set -- $(normalize_args "$@");
 # Note that all arguments to options and all non-option parameters are
 # enclosed in single quotes, while options are not quoted.  The quotes
 # must be removed before being used, see function `unqote'. For example,
-# -X -m 'man' -- 'file1' '-' 'file2'
+# -X -m 'www' -- 'file1' '-' 'file2'
 
 # parse options
 until [ "$1" = "--" -o "$1" = "'--'" ]; do
@@ -1252,6 +1307,26 @@ until [ "$1" = "--" -o "$1" = "'--'" ]; do
   #
   _opt="$1";
   shift;
+  if [ "$_opt" = "-W" ]; then
+    _arg="$(get_next_quoted $*)";
+    if echo "$GROFFER_LONGOPTS" | tr " " '
+'       | grep "^$_arg"'$' >/dev/null 2>&1; then
+      # long option without argument triggered
+      _opt="--$_arg";
+      set -- $(shift_quoted $*);
+    elif is_substring_of "[^=]=" "$_arg"; then
+      # possibly long option with argument
+      _argopt="$(echo "$_arg" | sed -e '\|^\([^=]\+\)=.*$|s||\1|')";
+      _argarg="$(echo "$_arg" | sed -e '\|^[^=]\+=\(.*\)$|s||\1|')";
+      if echo "$GROFFER_ARG_LONGS" | tr " " '
+'          | grep "^$_argopt"':$' >/dev/null 2>&1; then
+         # long option with argument triggered
+         _opt="--$_argopt";
+         set -- "'$_argarg'" $(shift_quoted $*);
+      fi
+    fi
+  fi;				# else -W does not mean a long option
+
   case "$_opt" in
     -h|--help)
       usage;
@@ -1289,7 +1364,7 @@ until [ "$1" = "--" -o "$1" = "'--'" ]; do
     --man)			# interpret all file params as man-pages
       OPT_MAN="yes";
       if [ "$ENABLE_MANPAGES" != "yes" ] ; then
-        error "confilicting options --man and --manpath.";
+        error "empty path for man-pages.";
       fi;
       ;;
     --manpath)			# specify search path for man-pages, arg
@@ -1298,16 +1373,23 @@ until [ "$1" = "--" -o "$1" = "'--'" ]; do
       if [ "$OPT_MANPATH" = "" ]; then
         ENABLE_MANPAGES="no";
         if [ "$OPT_MAN" = "yes" ] ; then
-          error "confilicting options --man and --manpath.";
+          error "empty path for man-pages.";
         fi;
       else
         ENABLE_MANPAGES="yes";
       fi;
       HAS_MANW="";
       ;;
+    --no-man)			# interpret all file params as man-pages
+      OPT_MAN="no";
+      ENABLE_MANPAGES="no";
+      ;;
     --title)
       OPT_TITLE="$(get_next_quoted $*)";
       set -- $(shift_quoted $*);
+      ;;
+    --tty)
+      OPT_TTY="yes";
       ;;
     --xrdb)			# add X resource for gxditview, arg
       _arg="$(get_next_quoted $*)";
@@ -1319,9 +1401,10 @@ until [ "$1" = "--" -o "$1" = "'--'" ]; do
       if is_substring_of "$_opt_char" "${GROFF_SHORTOPTS}"; then
         OTHER_OPTIONS="$(append_args "$OTHER_OPTIONS" "$_opt")";
       elif is_substring_of "$_opt_char" "${GROFF_ARG_SHORTS}"; then
+        _arg="$(get_next_quoted $*)";
         OTHER_OPTIONS="$(\
-          append_args $OTHER_OPTIONS "${1}$(unquote ${2})")";
-	shift;			# argument
+          append_args $OTHER_OPTIONS "${_opt}${_arg}")";
+        set -- $(shift_quoted $*);
       else
         error 1 "Unknown option : $1";
       fi;
@@ -1342,27 +1425,71 @@ if [ "$#" -eq 0 ]; then         # use "-" for standard input
 fi;
 FILE_ARGS="$*";			# all file parameters; do not change
 
-# setup for man-pages
 
-if [ "$ENABLE_MANPAGES" = "yes" -a "$HAS_MANW" != "yes" ]; then
+########################################################################
+# setup for display mode (main)
+#
+DISPLAY_MODE="";
+if [ "$OPT_SOURCE" = "yes" ]; then
+  DISPLAY_MODE="source";	# output source code
+elif [ "$OPT_DEVICE" != "" ]; then
+  DISPLAY_MODE="device";	# non-X device, cat to stdout
+elif [ "$DISPLAY" != "" -a "$OPT_TTY" != "yes" ]; then
+  DISPLAY_MODE="X";		# X
+else
+  DISPLAY_MODE="tty";		# tty
+fi;
+
+
+########################################################################
+# setup for man-pages (main)
+#
+if [ "$ENABLE_MANPAGES" = "yes" ]; then
   MAN_PATH="$(get_manpath)";
   if [ "$MAN_PATH" = "" ]; then
     ENABLE_MANPAGES="no";
   fi;
 fi;
 
-########################################################################
-# main : temporary files
+
+#######################################################################
+# temporary files (main)
 #
+
+trap clean_up  2>/dev/null || true;
+
 # save standard input
 TMP_INPUT="$(tmp_create)";
 save_stdin_if_any;
 
 # built up title consisting of processed filespecs
-TMP_DONE="$(tmp_create)";
-output "$PROGRAM_NAME :" > $TMP_DONE;
+if [ "$DISPLAY_MODE" = "X" ]; then
+  TMP_TITLE="$(tmp_create)";
+  output "$PROGRAM_NAME :" > $TMP_TITLE;
 
-# output parameter files (and stdin) decompressed into temporary file
+  register_title()
+  {
+    set -- $(base_name "$*");	    # remove directory part
+    set -- $(del_ext_from .gz "$*"); # remove .hz
+    set -- $(del_ext_from .Z "$*");   # remove .Z
+    case "$#" in
+    0) return; ;;
+    1) _res="$1"; ;;
+    *) _res="'$*'"; ;;
+    esac;
+    output " $_res" >> "$TMP_TITLE";
+  }
+
+else
+
+  register_title()
+  {
+    true;			# dummy
+  }
+
+fi;
+
+# temporary storage of all input
 TMP_CAT="$(tmp_create)";
 supercat $FILE_ARGS >"$TMP_CAT"; # this does the main work
 set -- $(ls -l -L "$TMP_CAT");	 # check on empty
@@ -1371,40 +1498,37 @@ if [ "$5" -eq 0 ]; then
   leave;
 fi;
 
-########################################################################
-# main : display
-#
-_mode="";
-if [ "$OPT_SOURCE" = "yes" ]; then # output source code
-  _mode="source";
-elif [ "$OPT_DEVICE" != "" ]; then # non-X device, cat to stdout
-  _mode="device";
-elif [ "$DISPLAY" != "" ]; then	# within X window
-  _mode="X";
-else				# tty
-  _mode="tty";
-fi;
+if [ -f "$TMP_INPUT" ]; then
+  rm -f "$TMP_INPUT";
+fi
 
-case "$_mode" in
+
+########################################################################
+# display (main)
+#
+case "$DISPLAY_MODE" in
   source)
     tmp_cat;
+    clean_up;
     ;;
   device)
     _groggy="$(tmp_cat | grog $OTHER_OPTIONS -T"${OPT_DEVICE}")";
     tmp_cat | eval $_groggy;
+    clean_up;
     ;;
   X)
     if [ "$OPT_DPI" = "" ]; then
       OPT_DPI="$(check_dpi)";	# sanity check for using 100 dpi default
     fi;
     _groggy="$(tmp_cat | grog $OTHER_OPTIONS -TX"${OPT_DPI}" -Z )";
+    trap "" EXIT 2>/dev/null || true;
     tmp_cat | eval $_groggy | \
-      gxditview $OPT_XRDB -title "$(get_title)" -;
+      ( trap clean_up EXIT 2>/dev/null || true;
+        gxditview $OPT_XRDB -title "$(get_title)" -;
+        clean_up;
+      ) & 
     ;;
   tty)
-    if [ "$OPT_DPI" = "" ]; then
-      error 1 "Not in X window, no X device available.";
-    fi;
     _groggy="$(tmp_cat | grog $OTHER_OPTIONS -Tlatin1)";
     if [ "$PAGER" = "" ]; then
       _pager=less;
@@ -1412,6 +1536,9 @@ case "$_mode" in
       _pager=$PAGER;
     fi;
     tmp_cat | eval $_groggy | $_pager;
+    clean_up;
+    ;;
+  *)
+    clean_up;
     ;;
 esac;
-clean_up;
