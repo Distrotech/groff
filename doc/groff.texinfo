@@ -8077,6 +8077,8 @@ sometimes more than one character maps to a single glyph (this is a
 @cindex special fonts
 @kindex fonts
 @pindex DESC
+@cindex @code{special} request, and glyph search order
+@cindex @code{fspecial} request, and glyph search order
 A @dfn{symbol} is simply a named glyph.  Within @code{gtroff}, all
 glyph names of a particular font are defined in its font file.  If the
 user requests a glyph not available in this font, @code{gtroff} looks
@@ -8103,17 +8105,49 @@ Check the current font.
 If the symbol has been defined with the @code{fchar} request, use it.
 
 @item
-Check all fonts given with the @code{fspecial} request, in the order
-of appearance in @code{fspecial} calls.
+Check whether the current font has a font-specific list of special fonts;
+test all fonts in the order of appearance in the last @code{fspecial}
+call if appropriate.
 
 @item
-Check all fonts given with the @code{special} request, in the order
-of appearance in @code{special} calls (inclusively the special fonts
-defined in the @file{DESC} file, which come first).
+Check all fonts in the order of appearance in the last @code{special}
+call.
 
 @item
-As a last resort, consult all fonts loaded up to now (in the order they
-have been called the first time) for special fonts and check them.
+As a last resort, consult all fonts loaded up to now for special fonts
+and check them, starting with the lowest font number.  Note that this can
+sometimes lead to surprising results since the @code{fonts} line in the
+@file{DESC} file often contains empty positions which are filled later
+on.  For example, consider the following:
+
+@Example
+fonts 3 0 0 FOO
+@endExample
+
+@noindent
+This mounts font @code{foo} at font position@w{ }3.  We assume that
+@code{FOO} is a special font, containing glyph @code{foo},
+and that no font has been loaded yet.  The line
+
+@Example
+.fspecial BAR BAZ
+@endExample
+
+@noindent
+makes font @code{BAZ} special only if font @code{BAR} is active.  We
+further assume that @code{BAZ} is really a special font, i.e., the font
+description file contains the @code{special} keyword, and that it
+also contains glyph @code{foo} with a special shape fitting to font
+@code{BAR}.  After executing @code{fspecial}, font @code{BAR} is loaded at
+font position@w{ }1, and @code{BAZ} at position@w{ }2.
+
+We now switch to a new font @code{XXX}, trying to access glyph @code{foo}
+which is assumed to be missing.  There are neither font-specific special
+fonts for @code{XXX} nor any other fonts made special with the
+@code{special} request, so @code{gtroff} starts the search for special
+fonts in the list of already mounted fonts, with increasing font
+positions.  Consequently, it finds @code{BAZ} before @code{FOO} even for
+@code{XXX} which is not the intended behaviour.
 @end itemize
 
 @xref{Font Files}, and @ref{Special Fonts}, for more details.
@@ -8380,20 +8414,24 @@ searching mechanism in @code{gtroff}.
 
 Usually, only non-TTY devices have special fonts.
 
-@DefreqList {special, s1 s2 @dots{}}
-@DefreqListEnd {fspecial, f s1 s2 @dots{}}
+@DefreqList {special, [@Var{s1} @Var{s2} @dots{}]}
+@DefreqListEnd {fspecial, f [@Var{s1} @Var{s2} @dots{}]}
 @kindex fonts
 @pindex DESC
-Use the @code{special} request to define special fonts.  They are
-appended to the list of global special fonts in the given order.
-The first entries in this list are the fonts defined with the
-@code{fonts} command in the @file{DESC} file which are marked as
-special in the corresponding font description files.
-
-Use the @code{fspecial} request to designate special fonts
-only when font@w{ }@var{f} font is active.  They are appended to the
-list of special fonts for @var{f} in the given order.  Initially, this
+Use the @code{special} request to define special fonts.  Initially, this
 list is empty.
+
+Use the @code{fspecial} request to designate special fonts only when
+font@w{ }@var{f} font is active.  Initially, this list is empty.
+
+Previous calls to @code{special} or @code{fspecial} are overwritten;
+without arguments, the particular list of special fonts is set to empty.
+Special fonts are then searched in the order of the arguments.
+
+All fonts which appear in a call to @code{special} or @code{fspecial} are
+loaded.
+
+@xref{Using Symbols}, for the exact search order of glyphs.
 @endDefreq
 
 @c ---------------------------------------------------------------------
