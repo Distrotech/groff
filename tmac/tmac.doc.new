@@ -252,7 +252,7 @@
 .      if \n[doc-nesting-level] \
 .        if !\n[doc-func-arg-count] \
 .          if !\n[doc-no-space] \
-.            as doc-out-string "\*[doc-space]
+.            as doc-out-string "\*[doc-line-space]
 .
 .      \" the following happens e.g. for `.Ns' or `.Oo'
 .      ie "\*[doc-space\n[doc-arg-limit]]"" \
@@ -288,7 +288,7 @@
 .    if \n[doc-nesting-level] \
 .      if !\n[doc-func-arg-count] \
 .        if !\n[doc-no-space] \
-.          as doc-out-string "\*[doc-space]
+.          as doc-out-string "\*[doc-line-space]
 .    nr doc-no-space 0
 .  \}
 ..
@@ -366,7 +366,7 @@
 .    if \n[doc-nesting-level] \
 .      if !\n[doc-func-arg-count] \
 .        if !\n[doc-no-space] \
-.          as doc-out-string "\*[doc-space]
+.          as doc-out-string "\*[doc-line-space]
 .
 .    ie "\*[doc-space\n[doc-arg-limit]]"" \
 .      nr doc-no-space 1
@@ -1719,12 +1719,17 @@
 .\" NS
 .\" NS local variables:
 .\" NS   doc-reg-des (for communication with doc-skip-punct-backwards)
+.\" NS   doc-str-des
 .\" NS
 .\" NS requires:
 .\" NS   doc-quote-left, doc-quote-right
 .
 .de doc-enclose-string
-.  doc-set-hard-space
+.  if \n[doc-in-synopsis-count] \{\
+.    ds doc-str-des "\*[doc-line-space]
+.    doc-set-hard-space
+.    ds doc-line-space "\*[doc-str-des]
+.  \}
 .
 .  ie \n[doc-arg-limit] \
 .    as doc-out-string \&\*[doc-quote-left]
@@ -1762,7 +1767,8 @@
 .      doc-do-\n[doc-type\n[doc-arg-ptr]]
 .  \}\}
 .
-.  doc-set-soft-space
+.  if \n[doc-in-synopsis-count] \
+.    doc-set-soft-space
 ..
 .
 .
@@ -2331,6 +2337,13 @@
 .ds doc-space "\*[doc-soft-space]
 .
 .
+.\" NS doc-line-space global string
+.\" NS   first space in a line (used by `doc-parse-args' and
+.\" NS   `doc-parse-arg-vector')
+.
+.ds doc-line-space "\*[doc-soft-space]
+.
+.
 .\" NS doc-soft-space constant string
 .\" NS   soft (stretchable) space (defined in doc-common)
 .
@@ -2343,10 +2356,15 @@
 .\" NS   set current space string to hard (unpaddable) space.
 .\" NS
 .\" NS modifies:
-.\" NS   doc-space
+.\" NS   doc-space, doc-line-space
 .
 .de doc-set-hard-space
-.  ds doc-space "\*[doc-hard-space]
+.  ie "\*[doc-space]"" \
+.    ds doc-saved-space "\*[doc-hard-space]
+.  el \{\
+.    ds doc-space "\*[doc-hard-space]
+.    ds doc-line-space "\*[doc-hard-space]
+.  \}
 ..
 .
 .
@@ -2354,10 +2372,15 @@
 .\" NS   set current space string to soft space (troff limitation)
 .\" NS
 .\" NS modifies:
-.\" NS   doc-space
+.\" NS   doc-space, doc-line-space
 .
 .de doc-set-soft-space
-.  ds doc-space "\*[doc-soft-space]
+.  ie "\*[doc-space]"" \
+.    ds doc-saved-space "\*[doc-soft-space]
+.  el \{\
+.    ds doc-space "\*[doc-soft-space]
+.    ds doc-line-space "\*[doc-soft-space]
+.  \}
 ..
 .
 .
@@ -2380,7 +2403,7 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-macro-name, doc-arg-limit, doc-num-args, doc-arg-ptr,
-.\" NS   doc-argXXX, doc-spaceXXX, doc-space-mode, doc-space
+.\" NS   doc-argXXX, doc-spaceXXX, doc-space-mode, doc-space, doc-line-space
 .\" NS
 .\" NS width register `Sm' set in doc-common
 .\" NS
@@ -2409,12 +2432,14 @@
 .
 .    ie "\*[doc-arg\n[doc-arg-ptr]]"on" \{\
 .      ds doc-space "\*[doc-saved-space]
+.      ds doc-line-space "\*[doc-saved-space]
 .      nr doc-space-mode 1
 .    \}
 .    el \{\
 .      ie "\*[doc-arg\n[doc-arg-ptr]]"off" \{\
 .        ds doc-saved-space "\*[doc-space]
 .        ds doc-space
+.        ds doc-line-space
 .        nr doc-space-mode 0
 .      \}
 .      el \{\
@@ -3308,6 +3333,7 @@
 .  nr doc-in-list-saved \n[doc-in-list]
 .  ds doc-space-saved "\*[doc-space]
 .  ds doc-saved-space-saved "\*[doc-saved-space]
+.  ds doc-line-space-saved "\*[doc-line-space]
 .  nr doc-space-mode-saved \n[doc-space-mode]
 .  nr doc-curr-font-for-Ef-saved \n[doc-curr-font-for-Ef]
 .  nr doc-curr-size-for-Ef-saved \n[doc-curr-size-for-Ef]
@@ -3441,6 +3467,7 @@
 .  nr doc-in-list \n[doc-in-list-saved]
 .  ds doc-space "\*[doc-space-saved]
 .  ds doc-saved-space "\*[doc-saved-space-saved]
+.  ds doc-line-space "\*[doc-line-space-saved]
 .  nr doc-space-mode \n[doc-space-mode-saved]
 .  nr doc-curr-font-for-Ef \n[doc-curr-font-for-Ef-saved]
 .  nr doc-curr-size-for-Ef \n[doc-curr-size-for-Ef-saved]
