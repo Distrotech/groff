@@ -37,10 +37,10 @@
 .
 .\" use -rC=1 to number pages continuously
 .
-.if !rC .nr C 0
+.if !r C .nr C 0
 .
 .\" use -rcR=1 to force the creation of a single, very long page
-.if !rcR .nr cR 0
+.if !r cR .nr cR 0
 .
 .ec
 .
@@ -269,7 +269,7 @@
 .\" NS   doc-reg-Sh
 .
 .de Sh
-.  nr doc-in-synopsis-section 0
+.  nr doc-in-synopsis-count 0
 .  nr doc-indent-synopsis 0
 .
 '  ad
@@ -279,7 +279,7 @@
 '    in 0
 .  \}
 .  el \{\
-.    nr doc-in-synopsis-section 0
+.    nr doc-in-synopsis-count 0
 .    nr doc-in-see-also-section 0
 .    nr doc-in-files-section 0
 .    nr doc-in-standards-section 0
@@ -287,14 +287,14 @@
 .
 .    if "\$1"SYNOPSIS" \{\
 .      na
-.      nr doc-in-synopsis-section 1
+.      nr doc-in-synopsis-count 1
 .    \}
 .    if "\$1"DESCRIPTION" \{\
-.      nr doc-is-func-type 0
-.      nr doc-function-count 0
-.      nr doc-function-args-processed 0
-.      nr doc-num-function-args 0
-.      ds doc-function-arg
+.      nr doc-is-func 0
+.      nr doc-func-count 0
+.      nr doc-func-args-processed 0
+.      nr doc-num-func-args 0
+.      ds doc-func-arg
 .    \}
 .    if "\$1"SEE" \{\
 .      nr doc-in-see-also-section 1
