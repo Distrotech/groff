@@ -462,6 +462,7 @@ int lookup_keyword(const char *str, int len)
     { "do", DO },
     { "dotted", DOTTED },
     { "down", DOWN },
+    { "east", EAST },
     { "ellipse", ELLIPSE },
     { "else", ELSE },
     { "end", END },
@@ -485,6 +486,7 @@ int lookup_keyword(const char *str, int len)
     { "max", K_MAX },
     { "min", K_MIN },
     { "move", MOVE },
+    { "north", NORTH },
     { "of", OF },
     { "outline", OUTLINED },
     { "outlined", OUTLINED },
@@ -501,6 +503,7 @@ int lookup_keyword(const char *str, int len)
     { "shaded", SHADED },
     { "sin", SIN },
     { "solid", SOLID },
+    { "south", SOUTH },
     { "spline", SPLINE },
     { "sprintf", SPRINTF },
     { "sqrt", SQRT },
@@ -518,6 +521,7 @@ int lookup_keyword(const char *str, int len)
     { "up", UP },
     { "upper", UPPER },
     { "way", WAY },
+    { "west", WEST },
     { "wid", WIDTH },
     { "width", WIDTH },
     { "with", WITH },
@@ -1820,6 +1824,46 @@ int yylex()
       lookahead_token = get_token(1);
       if (lookahead_token != LEFT && lookahead_token != RIGHT) {
 	yylval.str = strsave("lower");
+	return VARIABLE;
+      }
+      else
+	return t;
+    case NORTH:
+      // recognise NORTH only before OF
+      old_context_buffer = context_buffer;
+      lookahead_token = get_token(1);
+      if (lookahead_token != OF) {
+	yylval.str = strsave("north");
+	return VARIABLE;
+      }
+      else
+	return t;
+    case SOUTH:
+      // recognise SOUTH only before OF
+      old_context_buffer = context_buffer;
+      lookahead_token = get_token(1);
+      if (lookahead_token != OF) {
+	yylval.str = strsave("south");
+	return VARIABLE;
+      }
+      else
+	return t;
+    case EAST:
+      // recognise EAST only before OF
+      old_context_buffer = context_buffer;
+      lookahead_token = get_token(1);
+      if (lookahead_token != OF) {
+	yylval.str = strsave("east");
+	return VARIABLE;
+      }
+      else
+	return t;
+    case WEST:
+      // recognise WEST only before OF
+      old_context_buffer = context_buffer;
+      lookahead_token = get_token(1);
+      if (lookahead_token != OF) {
+	yylval.str = strsave("west");
 	return VARIABLE;
       }
       else

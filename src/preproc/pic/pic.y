@@ -1,4 +1,4 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -202,6 +202,10 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token GREATEREQUAL
 %token LEFT_CORNER
 %token RIGHT_CORNER
+%token NORTH
+%token SOUTH
+%token EAST
+%token WEST
 %token CENTER
 %token END
 %token START
@@ -247,7 +251,7 @@ parses properly. */
 works */
 %left DOT_N DOT_E DOT_W DOT_S DOT_NE DOT_SE DOT_NW DOT_SW DOT_C
 %left DOT_START DOT_END TOP BOTTOM LEFT_CORNER RIGHT_CORNER
-%left UPPER LOWER CENTER START END
+%left UPPER LOWER NORTH SOUTH EAST WEST CENTER START END
 
 %left ','
 %left OROR
@@ -436,11 +440,20 @@ placeless_element:
 
 reset_variables:
 	RESET VARIABLE
-		{ reset($2); a_delete $2; }
+		{
+		  reset($2);
+		  a_delete $2;
+		}
 	| reset_variables VARIABLE
-		{ reset($2); a_delete $2; }
+		{
+		  reset($2);
+		  a_delete $2;
+		}
 	| reset_variables ',' VARIABLE
-		{ reset($3); a_delete $3; }
+		{
+		  reset($3);
+		  a_delete $3;
+		}
 	;
 
 print_args:
@@ -486,7 +499,11 @@ simple_if:
 	IF any_expr THEN
 		{ delim_flag = 1; }
 	DELIMITED
-		{ delim_flag = 0; $$.x = $2; $$.body = $5; }
+		{
+		  delim_flag = 0;
+		  $$.x = $2;
+		  $$.body = $5;
+		}
 	;
 
 until:
@@ -535,11 +552,20 @@ text_expr:
 
 optional_by:
 	/* empty */
-		{ $$.val = 1.0; $$.is_multiplicative = 0; }
+		{
+		  $$.val = 1.0;
+		  $$.is_multiplicative = 0;
+		}
 	| BY expr
-		{ $$.val = $2; $$.is_multiplicative = 0; }
+		{
+		  $$.val = $2;
+		  $$.is_multiplicative = 0;
+		}
 	| BY '*' expr
-		{ $$.val = $3; $$.is_multiplicative = 1; }
+		{
+		  $$.val = $3;
+		  $$.is_multiplicative = 1;
+		}
 	;
 
 element:
@@ -558,7 +584,11 @@ element:
 		  }
 		}
 	| LABEL ':' optional_separator element
-		{ $$ = $4; define_label($1, & $$); a_delete $1; }
+		{
+		  $$ = $4;
+		  define_label($1, & $$);
+		  a_delete $1;
+		}
 	| LABEL ':' optional_separator position_not_place
 		{
 		  $$.obj = 0;
@@ -606,17 +636,11 @@ optional_element:
 
 object_spec:
 	BOX
-		{
-		  $$ = new object_spec(BOX_OBJECT);
-		}
+		{ $$ = new object_spec(BOX_OBJECT); }
 	| CIRCLE
-		{
-		  $$ = new object_spec(CIRCLE_OBJECT);
-		}
+		{ $$ = new object_spec(CIRCLE_OBJECT); }
 	| ELLIPSE
-		{
-		  $$ = new object_spec(ELLIPSE_OBJECT);
-		}
+		{ $$ = new object_spec(ELLIPSE_OBJECT); }
 	| ARC
 		{
 		  $$ = new object_spec(ARC_OBJECT);
@@ -1045,9 +1069,7 @@ object_spec:
 
 text:
 	TEXT
-		{
-		  $$ = $1;
-		}
+		{ $$ = $1; }
 	| SPRINTF '(' TEXT sprintf_args ')'
 		{
 		  $$.filename = $3.filename;
@@ -1134,7 +1156,10 @@ between:
 
 expr_pair:
 	expr ',' expr
-		{ $$.x = $1; $$.y = $3; }
+		{
+		  $$.x = $1;
+		  $$.y = $3;
+		}
 	| '(' expr_pair ')'
 		{ $$ = $2; }
 	;
@@ -1180,9 +1205,7 @@ label:
 		  a_delete $1;
 		}
 	| nth_primitive
-		{
-		  $$.obj = $1;
-		}
+		{ $$.obj = $1; }
 	| label '.' LABEL
 		{
 		  path pth($3);
@@ -1264,9 +1287,7 @@ object_type:
 
 label_path:
  	'.' LABEL
-		{
-		  $$ = new path($2);
-		}
+		{ $$ = new path($2); }
 	| label_path '.' LABEL
 		{
 		  $$ = $1;
@@ -1276,28 +1297,20 @@ label_path:
 
 relative_path:
 	corner
-		{
-		  $$ = new path($1);
-		}
+		{ $$ = new path($1); }
 	/* give this a lower precedence than LEFT and RIGHT so that
 	   [A: box] with .A left == [A: box] with (.A left) */
-
   	| label_path %prec TEXT
-		{
-		  $$ = $1;
-		}
+		{ $$ = $1; }
 	| label_path corner
 		{
 		  $$ = $1;
 		  $$->append($2);
 		}
-	;
 
 path:
 	relative_path
-		{
-		  $$ = $1;
-		}
+		{ $$ = $1; }
 	| '(' relative_path ',' relative_path ')'
 		{
 		  $$ = $2;
@@ -1381,6 +1394,14 @@ corner:
 		{ $$ = &object::north_east; }
 	| LOWER RIGHT_CORNER
 		{ $$ = &object::south_east; }
+	| NORTH
+		{ $$ = &object::north; }
+	| SOUTH
+		{ $$ = &object::south; }
+	| EAST
+		{ $$ = &object::east; }
+	| WEST
+		{ $$ = &object::west; }
 	| CENTER
 		{ $$ = &object::center; }
 	| START
@@ -1547,7 +1568,10 @@ expr:
 		  $$ = (rand() & 0x7fff) / double(0x8000);
 		}
 	| SRAND '(' any_expr ')'
-		{ $$ = 0; srand((unsigned int)$3); }
+		{
+		  $$ = 0;
+		  srand((unsigned int)$3);
+		}
 	| expr '<' expr
 		{ $$ = ($1 < $3); }
 	| expr LESSEQUAL expr
