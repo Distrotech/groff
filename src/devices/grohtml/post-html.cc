@@ -1367,6 +1367,7 @@ void html_printer::emit_raw (text_glob *g)
     if (in_table) {
       current_paragraph->do_indent(NULL, 0, pageoffset, linelength);
       current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
+      indent.text.clear();
     }
 #endif
   }
@@ -1742,6 +1743,7 @@ void html_printer::do_linelength (char *arg)
   if (fill_on) {
     linelength = atoi(arg);
     current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
+    indent.text.clear();
   }
 #endif
 }
@@ -1756,6 +1758,7 @@ void html_printer::do_pageoffset (char *arg)
   pageoffset = atoi(arg);
   if (fill_on) {
     current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
+    indent.text.clear();
   }
 #endif
 }
@@ -1770,6 +1773,7 @@ void html_printer::do_indentation (char *arg)
   if (fill_on) {
     indentation = atoi(arg);
     current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
+    indent.text.clear();
   }
 #endif
 }
@@ -1786,6 +1790,7 @@ void html_printer::do_tempindent (char *arg)
     prev_indent    = indentation;
     indentation    = atoi(arg);
     current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
+    indent.text.clear();
   }
 #endif
 }
@@ -1954,6 +1959,7 @@ void html_printer::do_break (void)
     if (end_tempindent == 0) {
       indentation = prev_indent;
       current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
+      indent.text.clear();
     }
   }
 #endif
@@ -2674,6 +2680,7 @@ void html_printer::begin_page(int n)
   current_paragraph      = new html_text(&html);
 #if defined(INDENTATION)
   current_paragraph->do_indent(page_contents->buffer.add_string(indent.text), indentation, pageoffset, linelength);
+  indent.text.clear();
 #endif
   current_paragraph->do_para("");
 }
