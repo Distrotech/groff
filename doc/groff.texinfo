@@ -814,6 +814,7 @@ Similarly, we say @samp{gpic}, @samp{geqn}, etc.
 * Groff Options::
 * Environment::
 * Macro Directories::
+* Font Directories::
 * Invocation Examples::
 @end menu
 
@@ -1146,7 +1147,9 @@ the start-up file).
 @item -F@var{dir}
 Search @file{@var{dir}} for subdirectories @file{dev@var{name}}
 (@var{name} is the name of the device), for the @file{DESC} file, and
-for font files before looking in the standard directories.
+for font files before looking in the standard directories (@pxref{Font
+Directories}).  This option is passed to all pre- and postprocessors
+using the @env{GROFF_FONT_PATH} environment variable.
 
 @item -M@var{dir}
 Search directory @file{@var{dir}} for macro files before the standard
@@ -1196,7 +1199,7 @@ The default output device.
 @tindex GROFF_FONT_PATH@r{, environment variable}
 A colon-separated list of directories in which to search for the
 @code{dev}@var{name} directory (before the default directories are
-tried).
+tried).  @xref{Font Directories}.
 
 @item GROFF_BIN_PATH
 @tindex GROFF_BIN_PATH@r{, environment variable}
@@ -1221,7 +1224,7 @@ above.
 
 @c =====================================================================
 
-@node Macro Directories, Invocation Examples, Environment, Invoking groff
+@node Macro Directories, Font Directories, Environment, Invoking groff
 @section Macro Directories
 @cindex macro directories
 @cindex directories for macros
@@ -1293,7 +1296,65 @@ directories during the installation process.
 
 @c =====================================================================
 
-@node Invocation Examples,  , Macro Directories, Invoking groff
+@node Font Directories, Invocation Examples, Macro Directories, Invoking groff
+@section Font Directories
+@cindex font directories
+@cindex directories for fonts
+@cindex searching fonts
+@cindex fonts, searching
+
+Basically, there is no restriction how font files for @code{groff} are
+named and how long font names are; however, to make the font family
+mechanism work (@pxref{Font Families}), fonts within a family should
+start with the family name, followed by the shape.  For example, the
+Times family uses @samp{T} for the family name and @samp{R}, @samp{B},
+@samp{I}, and @samp{BI} to indicate the shapes `roman', `bold',
+`italic', and `bold italic', respectively.  Thus the final font names
+are @samp{TR}, @samp{TB}, @samp{TI}, and @samp{TBI}.
+
+@cindex font path
+@cindex path, for font files
+All font files are kept in the @dfn{font directories} which constitute
+the @dfn{font path}.  The file search functions will always append the
+directory @code{dev}@var{name}, where @var{name} is the name of the
+output device.  Assuming, say, DVI output, and @file{/foo/bar} as a
+font directory, the font files for @code{grodvi} must be in
+@file{/foo/bar/devdvi}.
+
+The elements of the search path for font files are (in that order):
+
+@itemize @bullet
+@item
+The directories specified with @code{gtroff}'s or @code{groff}'s
+@option{-F} command line option.  All device drivers and some
+preprocessors also have this option.
+
+@item
+@tindex GROFF_FONT_PATH@r{, environment variable}
+The directories given in the @env{GROFF_FONT_PATH} environment
+variable.
+
+@item
+@cindex site-specific directory
+@cindex directory, site-specific
+A site-specific directory and the main font directory; the default
+locations are
+
+@Example
+/usr/local/share/groff/site-font
+/usr/local/share/groff/1.18/font
+@endExample
+
+@noindent
+assuming that the version of @code{groff} is 1.18, and the installation
+prefix was @file{/usr/local}.  It is possible to fine-tune those
+directories during the installation process.
+@end itemize
+
+
+@c =====================================================================
+
+@node Invocation Examples,  , Font Directories, Invoking groff
 @section Invocation Examples
 @cindex invocation examples
 @cindex examples of invocation

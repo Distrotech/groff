@@ -2215,9 +2215,6 @@ void html_printer::do_tab_ts (text_glob *g)
   html_table *t = g->get_table();
 
   if (t != NULL) {
-    int need_space = ((! current_paragraph->ever_emitted_text()) &&
-		      current_paragraph->starts_with_space());
-
     current_paragraph->done_pre();
     current_paragraph->done_para();
 
