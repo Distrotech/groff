@@ -7388,6 +7388,7 @@ node *charinfo_to_node_list(charinfo *ci, const environment *envp)
   curenv = oldenv;
   compatible_flag = old_compatible_flag;
   escape_char = old_escape_char;
+  have_input = 0;
   return n;
 }
 
