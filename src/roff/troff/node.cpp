@@ -987,7 +987,7 @@ void troff_output_file::put_char_width(charinfo *ci, tfont *tf,
     return;
   }
   set_font(tf);
-  char c = ci->get_ascii_code();
+  unsigned char c = ci->get_ascii_code();
   if (c == '\0') {
     glyph_color(gcol);
     fill_color(fcol);
@@ -1065,7 +1065,7 @@ void troff_output_file::put_char(charinfo *ci, tfont *tf,
   if (!is_on())
     return;
   set_font(tf);
-  char c = ci->get_ascii_code();
+  unsigned char c = ci->get_ascii_code();
   if (c == '\0') {
     glyph_color(gcol);
     fill_color(fcol);
