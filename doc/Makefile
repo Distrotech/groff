@@ -19,7 +19,7 @@
 
 FFLAG=-F../font
 TROFF=../src/roff/troff/troff -M../tmac $(FFLAG)
-GROFF=../src/rof/groff/groff -p -e -t
+GROFF=../src/roff/groff/groff -p -e -t
 GROPS=../src/devices/grops/grops $(FFLAG)
 DOCS=meref.ps meintro.ps pic.ps pic.html homepage.html
 MEMACROS=../tmac/tmac.e
@@ -31,7 +31,7 @@ revision=`sed -e 's/^0$$//' -e 's/^[1-9].*$$/.&/' ../REVISION`
 
 all: $(DOCS)
 
-.SUFFIXES: .tr .me .ms .ps .dit
+.SUFFIXES: .tr .me .ms .ps .dit .html .ascii
 
 .dit.ps:
 	$(GROPS) $< >$@
@@ -39,34 +39,28 @@ all: $(DOCS)
 .me.dit:
 	$(SOELIM) $< \
 	| sed -e "s;@VERSION@;$(version)$(revision);" \
-	| $(TROFF) -Tps $(FFLAG) -me  >$@
+	| $(TROFF) -Tps $(FFLAG) -me >$@
 
 .tr.dit:
 	$(TROFF) -Tps $< >$@
 
-%.html: %.ms
-	export GROFF_TMAC_PATH=../tmac ; \
+.ms.html:
+	GROFF_TMAC_PATH=../tmac; \
+	export GROFF_TMAC_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -Thtml $(FFLAG) -U -ms >$@
 
-%.ascii: %.ms
-	export GROFF_TMAC_PATH=../tmac ; \
+.ms.ascii:
+	GROFF_TMAC_PATH=../tmac; \
+	export GROFF_TMAC_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -Tascii $(FFLAG) -U -ms -markup >$@
 
-%.ps: %.ms
-	export GROFF_TMAC_PATH=../tmac ; \
+.ms.ps:
+	GROFF_TMAC_PATH=../tmac; \
+	export GROFF_TMAC_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -Tps $(FFLAG) -U -ms -markup >$@
-
-meref.ps: meref.dit
-meintro.ps: meintro.dit
-
-# This production must use -p -e -t so pic/eqn processing is done
-pic.ps: pic.ms
-	export GROFF_TMAC_PATH=../tmac ; \
-	sed -e "s;@VERSION@;$(version)$(revision);" $< \
-	| $(GROFF) -Tps $(FFLAG) -ms  >$@
 
 install:
 
