@@ -87,7 +87,7 @@
 .nr En 12n
 .nr Eo 12n
 .nr Eq 12n
-.nr Er 12n
+.nr Er 17n
 .nr Es 12n
 .nr Ev 15n
 .nr Ex 10n
@@ -137,11 +137,11 @@
 .nr Rv 1
 .nr Sc 3
 .nr Sf 8n\" ?
-.nr Sh 8n\" ?
+.nr Sh 8n
 .nr Sm 8n\" ?
 .nr So 12n
 .nr Sq 12n
-.nr Ss 8n\" ?
+.nr Ss 8n
 .nr St 8n\" ?
 .nr Sx 16n
 .nr Sy 6n
@@ -612,34 +612,61 @@
 ..
 .
 .
-.\" NS Ss user macro (not parsed, not callable)
+.\" NS Ss user macro (not callable)
 .\" NS   subsection
-.\" NS
-.\" NS width register `Ss' set above
 .\" NS
 .\" NS local variable:
 .\" NS   doc-reg-Ss, doc-reg-Ss1
+.\" NS
+.\" NS width register `Ss' set above
 .
 .de Ss
-.  ie \n[.$] \{\
-.    sp
-.    if !\n[cR] \
-.      ne 3
-.    ti -.25i
-.
-.    nr doc-reg-Ss \n[.ss]
-.    nr doc-reg-Ss1 \n[.sss]
-.    ss (\n[.ss] * 5 / 4) (\n[.sss] * 5 / 4)
-.    nop \*[doc-Sh-font]\$*\f[P]\s[0]
-.    ss \n[doc-reg-Ss] \n[doc-reg-Ss1]
-.
-.    ta T .5i
-.    if !\n[cR] \
-.      ne 2
-.    br
+.  ie \n[doc-arg-limit] \{\
+.    \" we only allow `Ss' within `Ss'; it will change the font back to
+.    \" `doc-Sh-font'
+.    ie "\*[doc-macro-name]"Ss" \{\
+.      nr doc-arg-ptr +1
+.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.        as doc-out-string \*[doc-Sh-font]
+.        nr doc-curr-font \n[.f]
+.        nr doc-curr-size \n[.s]
+.        doc-print-recursive
+.    \}\}
+.    el \
+.      tm Usage: .Ss subsection_name ... (#\n[.c])
 .  \}
-.  el \
-.    tm Usage: .Ss subsection_name ... (#\n[.c])
+.  el \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name Ss
+.      doc-parse-args \$@
+.
+.      sp
+.      if !\n[cR] \
+.        ne 3
+.      ti -.25i
+.
+.      nr doc-reg-Ss \n[.ss]
+.      nr doc-reg-Ss1 \n[.sss]
+.      ss (\n[.ss] * 5 / 4) (\n[.sss] * 5 / 4)
+.
+.      nr doc-arg-ptr +1
+.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.        as doc-out-string \*[doc-Sh-font]
+.        nr doc-curr-font \n[.f]
+.        nr doc-curr-size \n[.s]
+.        doc-print-recursive
+.      \}
+.
+.      ss \n[doc-reg-Ss] \n[doc-reg-Ss1]
+.
+.      ta T .5i
+.      if !\n[cR] \
+.        ne 2
+.      br
+.    \}
+.    el \
+.      tm Usage: .Ss subsection_name ... (#\n[.c])
+.  \}
 ..
 .
 .

@@ -270,11 +270,13 @@
 .  nr doc-reg-Ql (\n[doc-arg-ptr] + 1)
 .  doc-get-arg-width \n[doc-reg-Ql]
 .
-.  \" don't use quotes if we have more than two arguments
-.  if (\n[doc-arg-limit] > \n[doc-reg-Ql]) \
-.    nr doc-width 3
+.  \" don't use quotes if we have more than two succeeding string arguments
+.  nr doc-reg-Ql +1
+.  if (\n[doc-arg-limit] >= \n[doc-reg-Ql]) \
+.    if (\n[doc-type\n[doc-reg-Ql]] == 2) \
+.      nr doc-width 3
 .
-.  \" make a difference in quotation style between for strings longer
+.  \" make a difference in quotation style for strings longer
 .  \" than two characters
 .  ie (\n[doc-width] > 2) \
 .    Li
@@ -327,81 +329,106 @@
 .nr doc-in-authors-section 0
 .
 .
-.\" NS Sh user macro (not parsed, not callable)
+.\" NS Sh user macro (not callable)
 .\" NS   section headers
 .\" NS
 .\" NS modifies:
-.\" NS   doc-in-synopsis-count, doc-indent-synopsis, doc-in-see-also-section,
-.\" NS   doc-in-files-section, doc-in-authors-section, doc-have-author,
-.\" NS   doc-is-func, doc-func-count, doc-func-args-processed,
-.\" NS   doc-num-func-args, doc-func-arg
+.\" NS   doc-in-synopsis-count, doc-indent-synopsis, doc-in-files-section,
+.\" NS   doc-in-see-also-section, doc-in-authors-section, doc-is-func,
+.\" NS   doc-func-count, doc-func-args-processed, doc-num-func-args,
+.\" NS   doc-func-arg
 .\" NS
 .\" NS local variable:
-.\" NS   doc-reg-Sh
+.\" NS   doc-reg-Sh, doc-reg-Sh1
 .\" NS
 .\" NS width register `Sh' set in doc-common
 .
 .de Sh
-.  nr doc-in-synopsis-count 0
-.  nr doc-indent-synopsis 0
-.
-'  ad
-.
-.  ie "\$1"NAME" \{\
-.    doc-setup-header
-'    in 0
+.  ie \n[doc-arg-limit] \{\
+.    \" we only allow `Sh' within `Sh'; it will change the font back to
+.    \" `doc-Sh-font'
+.    ie "\*[doc-macro-name]"Sh" \{\
+.      nr doc-arg-ptr +1
+.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.        as doc-out-string \*[doc-Sh-font]
+.        nr doc-curr-font \n[.f]
+.        nr doc-curr-size \n[.s]
+.        doc-print-recursive
+.    \}\}
+.    el \
+.      tm Usage: .Sh section_name ... (#\n[.c])
 .  \}
 .  el \{\
-.    nr doc-in-see-also-section 0
-.    nr doc-in-files-section 0
-.    nr doc-in-authors-section 0
+.    ie \n[.$] \{\
+.      ds doc-macro-name Sh
+.      doc-parse-args \$@
 .
-.    if "\$1"SYNOPSIS" \{\
-.      na
-.      nr doc-in-synopsis-count 1
-.    \}
-.    if "\$1"DESCRIPTION" \{\
-.      nr doc-is-func 0
-.      nr doc-func-count 0
-.      nr doc-func-args-processed 0
-.      nr doc-num-func-args 0
-.      ds doc-func-arg
-.    \}
-.    if "\$1"SEE" \{\
-.      nr doc-in-see-also-section 1
-.      na
-.    \}
-.    if "\$1"FILES" \
-.      nr doc-in-files-section 1
-.    if "\$1"AUTHORS" \
-.      nr doc-in-authors-section 1
+.      nr doc-in-synopsis-count 0
+.      nr doc-indent-synopsis 0
 .
-.    in 0
-.    nr doc-have-author 0
+'      ad
+.
+.      ie "\$1"NAME" \{\
+.        doc-setup-header
+'        in 0
+.      \}
+.      el \{\
+.        nr doc-in-see-also-section 0
+.        nr doc-in-files-section 0
+.        nr doc-in-authors-section 0
+.
+.        if "\$1"SYNOPSIS" \{\
+.          na
+.          nr doc-in-synopsis-count 1
+.        \}
+.        if "\$1"DESCRIPTION" \{\
+.          nr doc-is-func 0
+.          nr doc-func-count 0
+.          nr doc-func-args-processed 0
+.          nr doc-num-func-args 0
+.          ds doc-func-arg
+.        \}
+.        if "\$1"SEE" \{\
+.          na
+.          nr doc-in-see-also-section 1
+.        \}
+.        if "\$1"FILES" \
+.          nr doc-in-files-section 1
+.        if "\$1"AUTHORS" \
+.          nr doc-in-authors-section 1
+.
+.        in 0
+.        nr doc-have-author 0
+.      \}
+.
+.      doc-setup-page-layout
+'      sp
+.      ns
+.      ta T .5i
+.      if !\n[cR] \
+.        ne 3
+'      fi
+.
+.      nr doc-reg-Ss \n[.ss]
+.      nr doc-reg-Ss1 \n[.sss]
+.      ss (\n[.ss] * 5 / 4) (\n[.sss] * 5 / 4)
+.
+.      nr doc-arg-ptr +1
+.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.        as doc-out-string \*[doc-Sh-font]
+.        nr doc-curr-font \n[.f]
+.        nr doc-curr-size \n[.s]
+.        doc-print-recursive
+.      \}
+.
+.      ss \n[doc-reg-Ss] \n[doc-reg-Ss1]
+.
+.      in (\n[.i]u + \n[doc-subheader-indent]u)
+.      ns
+.    \}
+.    el \
+.      tm Usage: .Sh section_name ... (#\n[.c])
 .  \}
-.
-.  doc-setup-page-layout
-'  sp
-.  ns
-.  ta T .5i
-.  if !\n[cR] \
-.    ne 3
-'  fi
-.
-.  ie \n[.$] \{\
-.    nop \*[doc-Sh-font]\$1\c
-.    nr doc-reg-Sh 2
-.    while (\n[doc-reg-Sh] <= \n[.$]) \{\
-.      nop \& \|\$[\n[doc-reg-Sh]]\c
-.      nr doc-reg-Sh +1
-.    \}
-.    nop \f[P]\s[0]
-.  \}
-.  el \
-.    tm Usage: .Sh section_name ... (#\n[.c])
-.
-.  in (\n[.i]u + \n[doc-subheader-indent]u)
-.  ns
 ..
 .
 .\" EOF
