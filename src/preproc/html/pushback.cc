@@ -29,6 +29,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "error.h"
 #include "stringclass.h"
 #include "posix.h"
+#include "nonposix.h"
 
 #include <errno.h>
 #include <sys/types.h>

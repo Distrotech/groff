@@ -1073,7 +1073,7 @@ static void waitForChild (PID_T pid)
   PID_T waitpd;
   int   status;
 
-  waitpd = wait(&status);
+  waitpd = WAIT(&status, pid, _WAIT_CHILD);
   if (waitpd != pid)
     sys_fatal("wait");
 }

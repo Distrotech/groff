@@ -24,7 +24,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # ifndef _WIN32
 #  define _WIN32
 # endif
-# define setmode(f,m) _setmode(f,m)
 #endif
 
 #if defined(__MSDOS__) \
@@ -37,17 +36,21 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 # ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 # endif
-# define SET_BINARY(f) do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
-# define FOPEN_RB      "rb"
-# define FOPEN_WB      "wb"
-# define FOPEN_RWB     "wb+"
 # ifdef _MSC_VER
 #  define POPEN_RT     "rt"
 #  define POPEN_WT     "wt"
 #  define popen(c,m)   _popen(c,m)
 #  define pclose(p)    _pclose(p)
 #  define getpid()     (1)
+#  define mkdir(p,m)   _mkdir(p)
+#  define setmode(f,m) _setmode(f,m)
+#  define WAIT(s,p,m)  _cwait(s,p,m)
+#  define creat(p,m)   _creat(p,m)
 # endif
+# define SET_BINARY(f) do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
+# define FOPEN_RB      "rb"
+# define FOPEN_WB      "wb"
+# define FOPEN_RWB     "wb+"
 # ifndef O_BINARY
 #  ifdef _O_BINARY
 #   define O_BINARY    (_O_BINARY)
@@ -137,4 +140,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #endif
 #ifndef GS_NAME
 # define GS_NAME       "gs"
+#endif
+#ifndef WAIT
+# define WAIT(s,p,m)   wait(s)
+#endif
+#ifndef _WAIT_CHILD
+# define _WAIT_CHILD   0
 #endif

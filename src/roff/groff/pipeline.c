@@ -36,6 +36,14 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 extern char *strerror();
 #endif
 
+#ifndef HAVE_STRCASECMP
+#define strcasecmp(a,b) strcmp((a),(b))
+#endif
+
+#ifndef HAVE_STRNCASECMP
+#define strncasecmp(a,b,c) strncmp((a),(b),(c))
+#endif
+
 #ifdef _POSIX_VERSION
 
 #include <sys/wait.h>
