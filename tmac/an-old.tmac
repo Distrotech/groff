@@ -183,24 +183,26 @@
 .    ds an-extra1
 .    ds an-extra2
 .  \}
-.  el \
-.    ds an-page-string \\n[%]
-.  if r X \{\
-.    if (\\n[%] > \\n[X]) \{\
-.      nr an-page-letter (\\n[%] - \\n[X])
-.      ds an-page-string \\n[X]\\n[an-page-letter]
-.    \}
-.  \}
-.  ie \\n[html-or-html-old] \
-.    tl ''''
 .  el \{\
-.    ie \\n[D] \{\
-.      if o .tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
-.      if e .tl '\\*[an-page-string]'\\*[an-extra1]'\\*[an-extra2]'
+.    ie r X \{\
+.      if (\\n[%] > \\n[X]) \{\
+.        nr an-page-letter (\\n[%] - \\n[X])
+.        ds an-page-string \\n[X]\\n[an-page-letter]
+.      \}
 .    \}
-.    el \
-.      tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
+.    el \{\
+.      ie \\n[cR] \
+.        ds an-page-string "\\*[an-title](\\*[an-section])
+.      el \
+.        ds an-page-string \\n[%]
+.    \}
 .  \}
+.  ie \\n[D] \{\
+.    if o .tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
+.    if e .tl '\\*[an-page-string]'\\*[an-extra1]'\\*[an-extra2]'
+.  \}
+.  el \
+.    tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
 .  ev
 ..
 .
