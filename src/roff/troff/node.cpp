@@ -5391,7 +5391,8 @@ static symbol get_font_translation(symbol nm)
 
 dictionary font_dictionary(50);
 
-static int mount_font_no_translate(int n, symbol name, symbol external_name)
+static int mount_font_no_translate(int n, symbol name, symbol external_name,
+				   int check_only = 0)
 {
   assert(n >= 0);
   // We store the address of this char in font_dictionary to indicate
@@ -5401,7 +5402,9 @@ static int mount_font_no_translate(int n, symbol name, symbol external_name)
   void *p = font_dictionary.lookup(external_name);
   if (p == 0) {
     int not_found;
-    fm = font::load_font(external_name.contents(), &not_found);
+    fm = font::load_font(external_name.contents(), &not_found, check_only);
+    if (check_only)
+      return fm != 0;
     if (!fm) {
       if (not_found)
 	warning(WARN_FONT, "can't find font `%1'", external_name.contents());
@@ -5418,6 +5421,8 @@ static int mount_font_no_translate(int n, symbol name, symbol external_name)
   }
   else
     fm = (font*)p;
+  if (check_only)
+    return 1;
   if (n >= font_table_size) {
     if (n - font_table_size > 1000) {
       error("font position too much larger than first unused position");
@@ -5441,6 +5446,19 @@ int mount_font(int n, symbol name, symbol external_name)
   else
     external_name = get_font_translation(external_name);
   return mount_font_no_translate(n, name, external_name);
+}
+
+int check_font(symbol fam, symbol name)
+{
+  if (check_style(name))
+    name = concat(fam, name);
+  return mount_font_no_translate(0, name, name, 1);
+}
+
+int check_style(symbol s)
+{
+  int i = symbol_fontno(s);
+  return i < 0 ? 0 : font_table[i]->is_style();
 }
 
 void mount_style(int n, symbol name)

@@ -1,4 +1,28 @@
-2004-06-27  Werner LEMBERG  <wl@gnu.org
+2004-06-29  Werner LEMBERG  <wl@gnu.org>
+
+	Implement two new conditional operators `F <name>' and `S <name>'
+	which check whether <name> is a valid font or style, respectively.
+
+	* src/libs/libgroff/font.cpp (text_file): Add `silent' member.
+	(text_file::text_file): Updated.
+	(text_file::error): Don't emit message if `silent' is set.
+	(font::load_font): Add optional third argument (which is directly
+	passed to `load'.
+	(font::load): Add optional second argument to check the header of
+	a font only, without emitting warning or error messages.
+	* src/include/font.h (font): Updated.
+
+	* src/roff/troff/input.cpp (do_if_request): Implement `S' and `F'
+	conditionals.
+	* src/roff/troff/node.cpp (mount_font_no_translate): Add optional
+	fourth argument to check a font without mounting.
+	(check_font, check_style): New functions.
+	* src/roff/troff/node.h: Updated.
+
+	* man/groff_diff.man, man/groff.man, NEWS, doc/groff.texinfo:
+	Updated.
+
+2004-06-27  Werner LEMBERG  <wl@gnu.org>
 
 	Implement new string-valued register `.sty' to return the current
 	style name.

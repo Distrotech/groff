@@ -5272,6 +5272,24 @@ int do_if_request()
     result = character_exists(ci, curenv);
     tok.next();
   }
+  else if (c == 'F') {
+    tok.next();
+    symbol nm = get_long_name(1);
+    if (nm.is_null()) {
+      skip_alternative();
+      return 0;
+    }
+    result = check_font(curenv->get_family()->nm, nm);
+  }
+  else if (c == 'S') {
+    tok.next();
+    symbol nm = get_long_name(1);
+    if (nm.is_null()) {
+      skip_alternative();
+      return 0;
+    }
+    result = check_style(nm);
+  }
   else if (tok.space())
     result = 0;
   else if (tok.delimiter()) {

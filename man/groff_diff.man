@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 27 Jun 2004
+Last update : 29 Jun 2004
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -1440,7 +1440,11 @@ Whenever a font named
 .I f
 is referred to in an
 .B \[rs]f
-escape sequence, or in the
+escape sequence, in the
+.B F
+and
+.B S
+conditional operators, or in the
 .BR ft ,
 .BR ul ,
 .BR bd ,
@@ -3079,6 +3083,26 @@ has been defined by the
 .B char
 request.
 .
+.TP
+.BI .if\ F f
+True if font
+.I f
+exists.
+.
+.B f
+is handled as if it was opened with the
+.B ft
+request (this is, font translation and styles are applied), without
+actually mounting it.
+.
+.TP
+.BI .if\ S s
+True if style
+.I s
+has been registered.
+.
+Font translation is applied.
+.
 .P
 The
 .B tr
@@ -3095,16 +3119,11 @@ Example:
 .ne 6v+\n(.Vu
 .ft CB
 .nf
-.Text .de foo
-.Text .  nop Hello, I'm `foo'.
-.Text .  nop I will now define `bar'.
+.Text .if t \[rs]{\[rs]
 .Text .  de bar
 .Text .    nop Hello, I'm `bar'.
 .Text .  .
-.Text .  nop Done.
-.Text ..
-.Text .foo
-.Text .bar
+.Text .\[rs]}
 .fi
 .
 .

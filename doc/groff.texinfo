@@ -8282,8 +8282,12 @@ the current environment.
 @cindex @code{fspecial} request, and font translations
 @cindex @code{fp} request, and font translations
 @cindex @code{sty} request, and font translations
+@cindex @code{if} request, and font translations
+@cindex @code{ie} request, and font translations
+@cindex @code{while} request, and font translations
 Translate font@tie{}@var{f} to font@tie{}@var{g}.  Whenever a font
-named@tie{}@var{f} is referred to in a @code{\f} escape sequence, or in the
+named@tie{}@var{f} is referred to in a @code{\f} escape sequence,
+in the @code{F} and @code{S} conditional operators, or in the
 @code{ft}, @code{ul}, @code{bd}, @code{cs}, @code{tkf},
 @code{special}, @code{fspecial}, @code{fp}, or @code{sty} requests,
 font@tie{}@var{g} is used.  If @var{g} is missing or equal to@tie{}@var{f}
@@ -10208,6 +10212,17 @@ conditional operator is a misnomer since it tests names of output
 glyphs.}; @var{g} is either an @acronym{ASCII} character or a special
 character (@code{\(@var{gg}} or @code{\[@var{ggg}]}); the condition
 is also true if @var{g} has been defined by the @code{char} request.
+
+@item F @var{font}
+True if a font named @var{font} exists.  @var{font} is handled as if it was
+opened with the @code{ft} request (this is, font translation and styles are
+applied), without actually mounting it.
+
+This test doesn't load the complete font but only its header to verify
+its validity.
+
+@item S @var{style}
+True if style @var{style} has been registered.  Font translation is applied.
 @end table
 
 Note that these operators can't be combined with other operators like

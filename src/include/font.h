@@ -57,7 +57,7 @@ public:
 
   static int scan_papersize(const char *, const char **, double *, double *);
 
-  static font *load_font(const char *, int *not_found = 0);
+  static font *load_font(const char *, int * = 0, int = 0);
   static void command_line_font_dir(const char *path);
   static FILE *open_file(const char *name, char **pathp);
   static int load_desc();
@@ -117,5 +117,5 @@ private:
 					   const char *file, int lineno);
 protected:
   font(const char *);
-  int load(int *not_found = 0);
+  int load(int * = 0, int = 0);
 };

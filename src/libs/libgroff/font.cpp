@@ -71,6 +71,7 @@ struct text_file {
   int lineno;
   int size;
   int skip_comments;
+  int silent;
   char *buf;
   text_file(FILE *fp, char *p);
   ~text_file();
@@ -82,7 +83,7 @@ struct text_file {
 };
 
 text_file::text_file(FILE *p, char *s) 
-: fp(p), path(s), lineno(0), size(0), skip_comments(1), buf(0)
+: fp(p), path(s), lineno(0), size(0), skip_comments(1), silent(0), buf(0)
 {
 }
 
@@ -141,7 +142,8 @@ void text_file::error(const char *format,
 		      const errarg &arg2,
 		      const errarg &arg3)
 {
-  error_with_file_and_line(path, lineno, format, arg1, arg2, arg3);
+  if (!silent)
+    error_with_file_and_line(path, lineno, format, arg1, arg2, arg3);
 }
 
 
@@ -479,10 +481,10 @@ void font::copy_entry(int new_index, int old_index)
   ch_index[new_index] = ch_index[old_index];
 }
 
-font *font::load_font(const char *s, int *not_found)
+font *font::load_font(const char *s, int *not_found, int head_only)
 {
   font *f = new font(s);
-  if (!f->load(not_found)) {
+  if (!f->load(not_found, head_only)) {
     delete f;
     return 0;
   }
@@ -557,7 +559,7 @@ again:
 // If the font can't be found, then if not_found is non-NULL, it will be set
 // to 1 otherwise a message will be printed.
 
-int font::load(int *not_found)
+int font::load(int *not_found, int head_only)
 {
   char *path;
   FILE *fp;
@@ -570,6 +572,7 @@ int font::load(int *not_found)
   }
   text_file t(fp, path);
   t.skip_comments = 1;
+  t.silent = head_only;
   char *p;
   for (;;) {
     if (!t.next()) {
@@ -638,6 +641,8 @@ int font::load(int *not_found)
     else
       break;
   }
+  if (head_only)
+    return 1;
   char *command = p;
   int had_charset = 0;
   t.skip_comments = 0;

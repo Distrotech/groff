@@ -51,8 +51,8 @@ struct node {
   node *next;
   node *last;
   node();
-  node(node *n);
-  node *add_char(charinfo *c, environment *, hunits *widthp, int *spacep);
+  node(node *);
+  node *add_char(charinfo *, environment *, hunits *, int *);
 
   virtual ~node();
   virtual node *copy() = 0;
@@ -67,7 +67,7 @@ struct node {
   virtual int merge_space(hunits, hunits, hunits);
   virtual vunits vertical_width();
   virtual node *last_char_node();
-  virtual void vertical_extent(vunits *min, vunits *max);
+  virtual void vertical_extent(vunits *, vunits *);
   virtual int character_type();
   virtual void set_vertical_size(vertical_size *);
   virtual int ends_sentence();
@@ -81,9 +81,7 @@ struct node {
   virtual void spread_space(int *, hunits *);
   virtual void freeze_space();
   virtual void is_escape_colon();
-  virtual breakpoint *get_breakpoints(hunits width, int nspaces,
-				      breakpoint *rest = 0,
-				      int is_inner = 0);
+  virtual breakpoint *get_breakpoints(hunits, int, breakpoint * = 0, int = 0);
   virtual int nbreaks();
   virtual void split(int, node **, node **);
   virtual hyphenation_type get_hyphenation_type();
@@ -172,8 +170,7 @@ public:
   void is_escape_colon();
   void spread_space(int *, hunits *);
   void tprint(troff_output_file *);
-  breakpoint *get_breakpoints(hunits width, int nspaces, breakpoint *rest = 0,
-			      int is_inner = 0);
+  breakpoint *get_breakpoints(hunits, int, breakpoint * = 0, int = 0);
   int nbreaks();
   void split(int, node **, node **);
   void ascii_print(ascii_output_file *);
@@ -222,8 +219,7 @@ public:
   void asciify(macro *);
   const char *type();
   int force_tprint();
-  breakpoint *get_breakpoints(hunits width, int nspaces, breakpoint *rest = 0,
-			      int is_inner = 0);
+  breakpoint *get_breakpoints(hunits, int, breakpoint * = 0, int = 0);
   int nbreaks();
   void split(int, node **, node **);
   int merge_space(hunits, hunits, hunits);
@@ -235,7 +231,7 @@ public:
 class diverted_space_node : public node {
 public:
   vunits n;
-  diverted_space_node(vunits d, node *p = 0);
+  diverted_space_node(vunits, node * = 0);
   node *copy();
   int reread(int *);
   int same(node *);
@@ -247,7 +243,7 @@ class diverted_copy_file_node : public node {
   symbol filename;
 public:
   vunits n;
-  diverted_copy_file_node(symbol s, node *p = 0);
+  diverted_copy_file_node(symbol, node * = 0);
   node *copy();
   int reread(int *);
   int same(node *);
@@ -388,7 +384,7 @@ public:
 class zero_width_node : public node {
   node *n;
 public:
-  zero_width_node(node *gn);
+  zero_width_node(node *);
   ~zero_width_node();
   node *copy();
   void tprint(troff_output_file *);
@@ -397,7 +393,7 @@ public:
   int force_tprint();
   void append(node *);
   int character_type();
-  void vertical_extent(vunits *min, vunits *max);
+  void vertical_extent(vunits *, vunits *);
 };
 
 class left_italic_corrected_node : public node {
@@ -492,8 +488,8 @@ class suppress_node : public node {
   int  image_id;
 public:
   suppress_node(int, int);
-  suppress_node(symbol f, char p, int id);
-  suppress_node(int, int, symbol f, char p, int id);
+  suppress_node(symbol, char, int);
+  suppress_node(int, int, symbol, char, int);
   node *copy();
   void tprint(troff_output_file *);
   hunits width();
@@ -501,7 +497,7 @@ public:
   const char *type();
   int force_tprint();
 private:
-  void put(troff_output_file *out, const char *s);
+  void put(troff_output_file *, const char *);
 };
 
 struct hvpair {
@@ -530,15 +526,15 @@ public:
 };
 
 class charinfo;
-node *make_node(charinfo *ci, environment *);
+node *make_node(charinfo *, environment *);
 int character_exists(charinfo *, environment *);
 
-int same_node_list(node *n1, node *n2);
-node *reverse_node_list(node *n);
+int same_node_list(node *, node *);
+node *reverse_node_list(node *);
 void delete_node_list(node *);
 node *copy_node_list(node *);
 
-int get_bold_fontno(int f);
+int get_bold_fontno(int);
 
 inline hyphen_list::hyphen_list(unsigned char code, hyphen_list *p)
 : hyphen(0), breakable(0), hyphenation_code(code), next(p)
@@ -546,9 +542,11 @@ inline hyphen_list::hyphen_list(unsigned char code, hyphen_list *p)
 }
 
 extern void read_desc();
-extern int mount_font(int n, symbol, symbol = NULL_SYMBOL);
-extern void mount_style(int n, symbol);
-extern int is_good_fontno(int n);
+extern int mount_font(int, symbol, symbol = NULL_SYMBOL);
+extern int check_font(symbol, symbol);
+extern int check_style(symbol);
+extern void mount_style(int, symbol);
+extern int is_good_fontno(int);
 extern int symbol_fontno(symbol);
 extern int next_available_font_position();
 extern void init_size_table(int *);
@@ -559,7 +557,7 @@ class output_file {
 public:
   output_file();
   virtual ~output_file();
-  virtual void trailer(vunits page_length);
+  virtual void trailer(vunits);
   virtual void flush() = 0;
   virtual void transparent_char(unsigned char) = 0;
   virtual void print_line(hunits x, vunits y, node *n,
@@ -567,7 +565,7 @@ public:
   virtual void begin_page(int pageno, vunits page_length) = 0;
   virtual void copy_file(hunits x, vunits y, const char *filename) = 0;
   virtual int is_printing() = 0;
-  virtual void put_filename(const char *filename);
+  virtual void put_filename(const char *);
   virtual void on();
   virtual void off();
 #ifdef COLUMN
@@ -581,7 +579,7 @@ extern char *pipe_command;
 
 extern output_file *the_output;
 extern void init_output();
-int in_output_page_list(int n);
+int in_output_page_list(int);
 
 class font_family {
   int *map;
