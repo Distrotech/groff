@@ -24,6 +24,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "token.h"
 #include "search.h"
 #include "command.h"
+#include "lib.h"
 
 extern "C" const char *Version_string;
 
