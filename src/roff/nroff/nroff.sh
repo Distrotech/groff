@@ -58,9 +58,11 @@ for i
       # ignore other devices
       ;;
     -u*)
-      # Solaris 2.2 `man' uses -u0; ignore it,
+      # Solaris 2.2 through at least Solaris 9 `man' invokes
+      # `nroff -u0 ... | col -x'.  Ignore the -u0,
       # since `less' and `more' can use the emboldening info.
-      ;;
+      # However, disable SGR, since Solaris `col' mishandles it.
+      opts="$opts -P-c" ;;
     -v | --version)
       echo "GNU nroff (groff) version @VERSION@"
       exit 0 ;;
