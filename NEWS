@@ -7,6 +7,10 @@ VERSION 1.18.2
 Troff
 -----
 
+o Non-slanted PostScript metrics have been changed again; they no longer
+  contain negative left italic correction values.  This assures correct
+  spacing with eqn.
+
 o Composite glyphs are now supported.  To do this, a subset of the Adobe
   Glyph List (AGL) Algorithm as described in 
 
@@ -68,14 +72,19 @@ o The font `freeeuro.pfa' has been added to provide various default glyph
 Grotty
 ------
 
-o New option -r.  It is similar to the -i option except it tells grotty to
+o New option `-r'.  It is similar to the -i option except it tells grotty to
   use the `reverse video' attribute to render italic fonts.
 
 Refer
 -----
 
-o The environment variable $REFER to override the name of the default
+o The environment variable `REFER' to override the name of the default
   database isn't new but hasn't been documented before.
+
+Afmtodit
+--------
+
+o New option `-m' to prevent negative left italic correction values.
 
 
 VERSION 1.18.1
@@ -85,11 +94,11 @@ Troff
 -----
 
 o The non-slanted PostScript font definition files have been regenerated to
-  include left and right italic correction values. Applying those to a glyph
-  (this is, prepending the glyph with `\,' and appending `\/' to the glyph)
-  sets the glyph width to the real value given by the horizontal bounding
-  box values. Without those escapes, the advance width for the particular
-  glyph is used (which can differ considerably).
+  include left and right italic correction values.  Applying those to a
+  glyph (this is, prepending the glyph with `\,' and appending `\/' to the
+  glyph) sets the glyph width to the real value given by the horizontal
+  bounding box values.  Without those escapes, the advance width for the
+  particular glyph is used (which can differ considerably).
 
   Most users will neither need this feature nor notice a difference in
   existing documents (provided \, and \/ is used as advertised, namely for
