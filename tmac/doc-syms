@@ -36,37 +36,6 @@
 .
 .eo
 .
-.\" NS Ld user macro
-.\" NS   print `...' (similar to TeX's \ldots command)
-.\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr
-.\" NS   doc-macro-name
-.\" NS
-.\" NS width register `Ld' defined in doc-common
-.
-.de Ld
-.  if !\n[doc-arg-limit] \
-.    if \n[.$] \{\
-.      ds doc-macro-name Ld
-.      doc-parse-args \$@
-.    \}
-.
-.  \" replace current argument with result
-.  ds doc-arg\n[doc-arg-ptr] \|.\|.\|.\&
-.  nr doc-type\n[doc-arg-ptr] 2
-.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
-.
-.  \" recompute space vector for remaining arguments
-.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
-.  nr doc-arg-limit \n[doc-arg-ptr]
-.  if \n[doc-num-args] \
-.    doc-parse-space-vector
-.
-.  doc-print-recursive
-..
-.
-.
 .\" NS Ux user macro
 .\" NS   print UNIX
 .\" NS

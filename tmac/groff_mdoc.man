@@ -141,7 +141,7 @@ as follows:
 .  Tn "INTRODUCTION OF MANUAL AND GENERAL TEXT DOMAINS"
 .
 .  Bl -tag -width 2n -compact
-.    It "What's in a Name" Ns Ld
+.    It "What's in a Name" Ns ...
 .    It "General Syntax"
 .  El
 .
@@ -157,11 +157,11 @@ as follows:
 .    It "Defined Variables"
 .    It "Errno's"
 .    It "Environment Variables"
-.    It "Function Arguments"
-.    It "Function Declarations"
 .    It "Flags"
-.    It "Functions (Library Routines)"
+.    It "Function Declarations"
 .    It "Function Types"
+.    It "Functions (Library Routines)"
+.    It "Function Arguments"
 .    It "Return Values"
 .    \" .It "Header File (including source code)"
 .    It "Interactive Commands"
@@ -555,35 +555,33 @@ The body of a man page is easily constructed from a basic template:
 .
 .Bd -literal -offset indent
 \&.\e" The following requests are required for all man pages.
-\&.
 \&.Dd Month day, year
 \&.Os [OPERATING_SYSTEM] [version/release]
 \&.Dt DOCUMENT_TITLE [section number] [architecture/volume]
 \&.Sh NAME
 \&.Nm name
 \&.Nd one line description of name
+\&.\e" This next request is for sections 2 and 3 only.
+\&.\e" .Sh LIBRARY
 \&.Sh SYNOPSIS
 \&.Sh DESCRIPTION
-\&.
 \&.\e" The following requests should be uncommented and
 \&.\e" used where appropriate.
 \&.\e" .Sh IMPLEMENTATION NOTES
 \&.\e" This next request is for sections 2, 3 and 9 function
 \&.\e" return values only.
 \&.\e" .Sh RETURN VALUES
-\&.
-\&.\e" This next request is for sections 1, 6, 7 & 8 only.
+\&.\e" This next request is for sections 1, 6, 7 and 8 only.
 \&.\e" .Sh ENVIRONMENT
 \&.\e" .Sh FILES
 \&.\e" .Sh EXAMPLES
-\&.
-\&.\e" This next request is for sections 1, 6, 7, 8 & 9 only
+\&.\e" This next request is for sections 1, 6, 7, 8 and 9 only
 \&.\e"     (command return values (to shell) and
-\&.\e"	  fprintf/stderr type diagnostics)
+\&.\e"     fprintf/stderr type diagnostics).
 \&.\e" .Sh DIAGNOSTICS
-\&.
-\&.\e" The next request is for sections 2, 3 & 9 error
-\&.\e" and signal handling only.
+\&.\e" .Sh COMPATIBILITY
+\&.\e" This next request is for sections 2, 3 and 9 error
+\&.\e"     and signal handling only.
 \&.\e" .Sh ERRORS
 \&.\e" .Sh SEE ALSO
 \&.\e" .Sh STANDARDS
@@ -626,7 +624,7 @@ about content macros before page layout macros is recommended.
 In the description of all macros below, optional arguments are put into
 brackets.
 An ellipsis
-.Pf ( Sq Ld )
+.Pf ( Sq ... )
 represents zero or more additional arguments.
 Alternative values for a parameter are separated with
 .Ql | .
@@ -643,7 +641,7 @@ Example:
 .Aq foo 
 .Brq bar1 | bar2
 .Op \-test1 Op \-test2 | \-test3
-.Ld
+.No ...
 .Xc
 .El
 .
@@ -689,7 +687,7 @@ If omitted,
 .Sq Tn UNTITLED
 is used.
 The section number may be a number in the range
-.No 1,\~ Ns Ld Ns ,\~9
+.No 1,\~ Ns ... Ns ,\~9
 or
 .Ql unass ,
 .Ql draft ,
@@ -697,6 +695,25 @@ or
 .Ql paper .
 If it is specified, and no volume name is given, a default volume name is
 used.
+.
+.Pp
+Under
+.Tn \*[operating-system] ,
+the following sections are defined:
+.Pp
+.Bl -column LOCAL -offset indent -compact
+.It Li 1   Ta "\*[volume-ds-1]"
+.It Li 2   Ta "\*[volume-ds-2]"
+.It Li 3   Ta "\*[volume-ds-3]"
+.It Li 4   Ta "\*[volume-ds-4]"
+.It Li 5   Ta "\*[volume-ds-5]"
+.It Li 6   Ta "\*[volume-ds-6]"
+.It Li 7   Ta "\*[volume-ds-7]"
+.It Li 8   Ta "\*[volume-ds-8]"
+.It Li 9   Ta "\*[volume-ds-9]"
+.El
+.Pp
+.
 A volume name may be arbitrary or one of the following:
 .
 .Pp
@@ -774,9 +791,11 @@ This macro is neither callable nor parsed.
 .Op Aq release
 .Xc
 If the first parameter is empty,
-.Sq Tn BSD
-is used as the default operating system.
-This may be overridden in the local configuration file.
+the default
+.Sq Tn "\*[operating-system]"
+is used.
+This may be overridden in the local configuration file,
+.Pa mdoc.local .
 In general, the name of the operating system should be the common acronym,
 e.g.\&
 .Tn BSD
@@ -865,7 +884,7 @@ This macro is neither callable nor parsed.
 .
 .Sh "INTRODUCTION OF MANUAL AND GENERAL TEXT DOMAINS"
 .
-.Ss "What's in a Name" Ns Ld
+.Ss "What's in a Name" Ns ...
 .
 The manual domain macro names are derived from the day to day informal
 language used to describe commands, subroutines and related files.
@@ -888,7 +907,7 @@ macros are themselves a type of command; the general syntax for a troff
 command is:
 .
 .Bd -filled -offset indent
-.Li ".Xx argument1 argument2" Ld
+.Li ".Xx argument1 argument2" ...
 .Ed
 .Pp
 .
@@ -962,7 +981,7 @@ Some command line argument lists are quite long:
 .Op Fl j Ar max_jobs
 .Op Ar variable Ns = Ns Ar value
 .Bk
-.Op Ar target Ld
+.Op Ar target ...
 .Ek
 .El
 .Ed
@@ -999,7 +1018,7 @@ The make command line was produced from:
 \&.Op Fl j Ar max_jobs
 \&.Op Ar variable Ns = Ns Ar value
 \&.Bk
-\&.Op Ar target Ld
+\&.Op Ar target ...
 \&.Ek
 .Ed
 .Pp
@@ -1077,7 +1096,7 @@ Typical syntax is shown in the first content macro displayed below,
 .
 The address macro identifies an address construct.
 .Pp
-.Dl Usage: .Ad Ao address Ac Ld
+.Dl Usage: .Ad Ao address Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Ad\ f1\ ,\ f2\ ,\ f3\ :" -compact -offset 15n
 .It Li ".Ad addr1"
@@ -1102,7 +1121,7 @@ The
 macro is used to specify the name of the author of the item being
 documented, or the name of the author of the actual manual page.
 .Pp
-.Dl Usage: .An Ao author name Ac Ld
+.Dl Usage: .An Ao author name Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .An\ \*[q]Joe\ Author\*[q]\ )\ )\ ," -offset 15n
 .It Li ".An \*[q]Joe Author\*[q]"
@@ -1143,8 +1162,11 @@ To turn splitting back on, write
 The
 .Li .Ar
 argument macro may be used whenever an argument is referenced.
+If called without arguments, the
+.Sq Ar
+string is output.
 .Pp
-.Dl Usage: .Ar Oo Ao argument Ac Oc Ld
+.Dl Usage: .Ar Oo Ao argument Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Ar\ file1\ file2" -compact -offset 15n
 .It Li .Ar
@@ -1172,7 +1194,7 @@ macro is used to demonstrate a
 .Xr config 8
 declaration for a device interface in a section four manual.
 .Pp
-.Dl Usage: .Cd Ao argument Ac Ld
+.Dl Usage: .Cd Ao argument Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Cd\ Xdevice\ le0\ at\ scode?X" -offset 15n
 .It Li ".Cd \*[q]device le0 at scode?\*[q]"
@@ -1205,7 +1227,7 @@ A variable (or constant) which is defined in an include file
 is specified by the macro
 .Ql .Dv .
 .Pp
-.Dl Usage: .Dv Ao defined variable Ac Ld
+.Dl Usage: .Dv Ao defined variable Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Dv\ MAXHOSTNAMELEN" -compact -offset 15n
 .It Li ".Dv MAXHOSTNAMELEN"
@@ -1229,7 +1251,7 @@ used with the
 .Ql .Bq
 general text domain macro, as it would be used in a section two manual page.
 .Pp
-.Dl Usage: .Er Ao errno type Ac Ld
+.Dl Usage: .Er Ao errno type Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Bq\ Er\ ENOTDIR" -compact -offset 15n
 .It Li ".Er ENOENT"
@@ -1249,7 +1271,7 @@ The
 .Ql .Ev
 macro specifies an environment variable.
 .Pp
-.Dl Usage: .Ev Ao argument Ac Ld
+.Dl Usage: .Ev Ao argument Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Ev\ PRINTER\ )\ )\ ," -compact -offset 15n
 .It Li ".Ev DISPLAY"
@@ -1262,61 +1284,6 @@ macro specifies an environment variable.
 .Pp
 .
 The default width is 15n.
-.
-.Ss "Function Arguments"
-.
-The
-.Ql .Fa
-macro is used to refer to function arguments (parameters) outside of the
-.Sx SYNOPSIS
-section of the manual or inside the
-.Sx SYNOPSIS
-section if the enclosure macros
-.Ql .Fo
-and
-.Ql .Fc
-instead of
-.Ql .Fn
-are used.
-.Ql .Fa
-may also be used to refer to structure members.
-.Pp
-.Dl Usage: .Fa Ao function argument Ac Ld
-.Pp
-.Bl -tag -xwidth ".Li .Fa\ d_namlen\ )\ )\ ," -compact -offset 15n
-.It Li ".Fa d_namlen ) ) ,"
-.Fa d_namlen ) ) ,
-.It Li ".Fa iov_len"
-.Fa iov_len
-.El
-.Pp
-.
-The default width is 12n.
-.
-.Ss "Function Declarations"
-.
-The
-.Ql .Fd
-macro is used in the
-.Sx SYNOPSIS
-section with section two or three functions.
-It is neither callable nor parsed.
-.Pp
-.Dl Usage: .Fd Ao argument Ac Ld
-.Pp
-.Bl -tag -xwidth ".Li .Fd\ X#include\ <sys/types.h>X" -compact -offset 15n
-.It Li ".Fd \*[q]#include <sys/types.h>\*[q]"
-.Fd "#include <sys/types.h>"
-.El
-.Pp
-In the
-.Sx SYNOPSIS
-section a
-.Ql .Fd
-request causes a line break if a function has already been presented and a
-break has not occurred.
-This leaves a nice vertical space in between the previous function call and
-the declaration for the next function.
 .
 .Ss Flags
 .
@@ -1331,7 +1298,7 @@ For interactive command flags, which are not prepended with a dash, the
 (command modifier)
 macro is identical, but without the dash.
 .Pp
-.Dl Usage: .Fl Ao argument Ac Ld
+.Dl Usage: .Fl Ao argument Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Fl\ xyz\ )\ ," -compact -offset 15n
 .It Li .Fl
@@ -1361,6 +1328,65 @@ a single dash will result in two dashes.
 .Pp
 The default width is 12n.
 .
+.Ss "Function Declarations"
+.
+The
+.Ql .Fd
+macro is used in the
+.Sx SYNOPSIS
+section with section two or three functions.
+It is neither callable nor parsed.
+.Pp
+.Dl Usage: .Fd Ao argument Ac ...
+.Pp
+.Bl -tag -xwidth ".Li .Fd\ X#include\ <sys/types.h>X" -compact -offset 15n
+.It Li ".Fd \*[q]#include <sys/types.h>\*[q]"
+.Fd "#include <sys/types.h>"
+.El
+.Pp
+In the
+.Sx SYNOPSIS
+section a
+.Ql .Fd
+request causes a line break if a function has already been presented and a
+break has not occurred.
+This leaves a nice vertical space in between the previous function call and
+the declaration for the next function.
+.
+.Pp
+The
+.Ql .In
+.Li ( #include
+statement)
+macro is the short form of the above example.
+It specifies the C\~header file as being included in a C\~program.
+It also causes a line break, and is neither callable nor parsed.
+.Pp
+.Dl Usage: .In Ao header file Ac
+.Pp
+.Bl -tag -xwidth ".Li .In\ stdio.h" -compact -offset 15n
+.It Li ".In stdio.h"
+.In stdio.h
+.El
+.
+.Ss "Function Types"
+.
+This macro is intended for the
+.Sx SYNOPSIS
+section.
+It may be used anywhere else in the man page without problems, but its main
+purpose is to present the function type in kernel normal form for the
+.Sx SYNOPSIS
+of sections two and three (it causes a line break, allowing the function
+name to appear on the next line).
+.Pp
+.Dl Usage: .Ft Ao type Ac ...
+.Pp
+.Bl -tag -xwidth ".Li .Ft\ struct\ stat" -compact -offset 15n
+.It Li ".Ft struct stat"
+.Ft struct stat
+.El
+.
 .Ss "Functions (Library Routines)"
 .
 The 
@@ -1369,15 +1395,15 @@ macro is modeled on
 .Tn ANSI\~C
 conventions.
 .Pp
-.Dl Usage: .Fn Ao function Ac Oo Ao parameter Ac Oc Ld
+.Dl Usage: .Fn Ao function Ac Oo Ao parameter Ac Oc ...
 .Pp
-.Bl -tag -xwidth ".Li .Fn\ Xint\ alignX\ Xchar\ *ptrX\ ," -compact -offset 15n
+.Bl -tag -xwidth ".Li .Fn\ align\ Xchar\ *ptrX\ ," -compact -offset 15n
 .It Li ".Fn getchar"
 .Fn getchar
 .It Li ".Fn strlen ) ,"
 .Fn strlen ) ,
-.It Li ".Fn \*[q]int align\*[q] \*[q]char *ptr\*[q] ,"
-.Fn "int align" "char *ptr" ,
+.It Li ".Fn align \*[q]char *ptr\*[q] ,"
+.Fn align "char *ptr" ,
 .El
 .Pp
 Note that any call to another macro signals the end of the
@@ -1397,7 +1423,8 @@ may be used with
 Example:
 .
 .Bd -literal -offset indent
-\&.Fo "int res_mkquery"
+\&.Ft int
+\&.Fo res_mkquery
 \&.Fa "int op"
 \&.Fa "char *dname"
 \&.Fa "int class"
@@ -1414,7 +1441,8 @@ Example:
 Produces:
 .
 .Bd -ragged -offset indent
-.Fo "int res_mkquery"
+.Ft int
+.Fo res_mkquery
 .Fa "int op"
 .Fa "char *dname"
 .Fa "int class"
@@ -1443,23 +1471,35 @@ and
 .Ql .Fo
 are 12n and 16n, respectively.
 .
-.Ss "Function Types"
+.Ss "Function Arguments"
 .
-This macro is intended for the
+The
+.Ql .Fa
+macro is used to refer to function arguments (parameters) outside of the
 .Sx SYNOPSIS
-section.
-It may be used anywhere else in the man page without problems, but its main
-purpose is to present the function type in kernel normal form for the
+section of the manual or inside the
 .Sx SYNOPSIS
-of sections two and three (it causes a line break, allowing the function
-name to appear on the next line).
+section if the enclosure macros
+.Ql .Fo
+and
+.Ql .Fc
+instead of
+.Ql .Fn
+are used.
+.Ql .Fa
+may also be used to refer to structure members.
 .Pp
-.Dl Usage: .Ft Ao type Ac Ld
+.Dl Usage: .Fa Ao function argument Ac ...
 .Pp
-.Bl -tag -xwidth ".Li .Ft\ struct\ stat" -compact -offset 15n
-.It Li ".Ft struct stat"
-.Ft struct stat
+.Bl -tag -xwidth ".Li .Fa\ d_namlen\ )\ )\ ," -compact -offset 15n
+.It Li ".Fa d_namlen ) ) ,"
+.Fa d_namlen ) ) ,
+.It Li ".Fa iov_len"
+.Fa iov_len
 .El
+.Pp
+.
+The default width is 12n.
 .
 .Ss "Return Values"
 .
@@ -1469,7 +1509,7 @@ macro generates text for use in the
 .Sx RETURN VALUES
 section.
 .Pp
-.Dl Usage: .Rv Oo -std Oc Ao function Ac Ld
+.Dl Usage: .Rv Oo -std Oc Ao function Ac ...
 .Pp
 For example,
 .Ql ".Rv -std atexit"
@@ -1497,7 +1537,7 @@ The
 .Ql .Ic
 macro designates an interactive or internal command.
 .Pp
-.Dl Usage: .Ic Ao argument Ac Ld
+.Dl Usage: .Ic Ao argument Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Ic\ setenv\ ,\ unsetenv" -compact -offset 15n
 .It Li ".Ic :wq"
@@ -1518,7 +1558,7 @@ The
 macro is used to specify the library where a particular function is compiled
 in.
 .Pp
-.Dl Usage: .Lb Ao argument Ac Ld
+.Dl Usage: .Lb Ao argument Ac ...
 .Pp
 Available arguments to
 .Ql .Lb 
@@ -1579,7 +1619,7 @@ The
 literal macro may be used for special characters, variable constants, etc.\&
 -- anything which should be displayed as it would be typed.
 .Pp
-.Dl Usage: .Li Ao argument Ac Ld
+.Dl Usage: .Li Ao argument Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Li\ cntrl-D\ )\ ,"  -compact -offset 15n
 .It Li ".Li \een"
@@ -1588,8 +1628,8 @@ literal macro may be used for special characters, variable constants, etc.\&
 .Li M1 M2 M3 ;
 .It Li ".Li cntrl-D ) ,"
 .Li cntrl-D ) ,
-.It Li ".Li 1024 Ld"
-.Li 1024 Ld
+.It Li ".Li 1024 ..."
+.Li 1024 ...
 .El
 .Pp
 .
@@ -1629,7 +1669,7 @@ to
 .Ql .Nm ,
 it can not recall the first argument it was invoked with.
 .Pp
-.Dl Usage: .Nm Oo Ao argument Ac Oc Ld
+.Dl Usage: .Nm Oo Ao argument Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Nm\ groff_mdoc" -compact -offset 15n
 .It Li ".Nm groff_mdoc"
@@ -1659,7 +1699,7 @@ and
 across one or more lines or to specify the exact position of the closing
 parenthesis.
 .Pp
-.Dl Usage: .Op Oo Ao option Ac Oc Ld
+.Dl Usage: .Op Oo Ao option Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Op\ Fl\ c\ Ar\ objfil\ Op\ Ar\ corfil\ ," -compact -offset 15n
 .It Li .Op
@@ -1678,8 +1718,8 @@ parenthesis.
 .Op Fl c Ar objfil Op Ar corfil ,
 .It Li ".Op word1 word2"
 .Op word1 word2
-.It Li ".Li .Op Oo Ao option Ac Oc Ld"
-.Li .Op Oo Ao options Ac Oc Ld
+.It Li ".Li .Op Oo Ao option Ac Oc ..."
+.Li .Op Oo Ao options Ac Oc ...
 .El
 .Pp
 Here a typical example of the
@@ -1719,8 +1759,11 @@ are 14n and 10n, respectively.
 The
 .Ql .Pa
 macro formats path or file names.
+If called without arguments, the
+.Sq Pa
+string is output, which represents the current user's home directory.
 .Pp
-.Dl Usage: .Pa Oo Ao pathname Ac Oc Ld
+.Dl Usage: .Pa Oo Ao pathname Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Pa\ /tmp/fooXXXXX\ )\ ." -compact -offset 15n
 .It Li .Pa
@@ -1740,7 +1783,7 @@ The
 .Ql .St
 macro replaces standard abbreviations with their formal names.
 .Pp
-.Dl Usage: .St Ao abbreviation Ac Ld
+.Dl Usage: .St Ao abbreviation Ac ...
 .Pp
 Available pairs for
 .Dq Abbreviation/Formal Name
@@ -1844,7 +1887,7 @@ Miscellaneous
 .
 Generic variable reference.
 .Pp
-.Dl Usage: .Va Ao variable Ac Ld
+.Dl Usage: .Va Ao variable Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Va\ Xchar\ sX\ ]\ )\ )\ ," -compact -offset 15n
 .It Li ".Va count"
@@ -1868,7 +1911,7 @@ macro expects the first argument to be a manual page name.
 The optional second argument, if a string (defining the manual section), is
 put into parentheses.
 .Pp
-.Dl Usage: .Xr Ao man page name Ac Oo Ao section Ac Oc Ld
+.Dl Usage: .Xr Ao man page name Ac Oo Ao section Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Xr\ xinit\ 1x\ ;" -compact -offset 15n
 .It Li ".Xr mdoc"
@@ -1890,7 +1933,7 @@ The default width is 10n.
 .Ss "AT&T Macro"
 .
 .Pp
-.Dl Usage: .At Oo Ao version Ac Oc Ld
+.Dl Usage: .At Oo Ao version Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .At\ v6\ ." -compact -offset 15n
 .It Li .At
@@ -1908,8 +1951,8 @@ are possible:
 .Ss "BSD Macro"
 .
 .Pp
-.Dl "Usage: .Bx" Bro -alpha | -beta | -devel Brc Ld
-.Dl "       .Bx" Oo Ao version Ac Oo Ao release Ac Oc Oc Ld
+.Dl "Usage: .Bx" Bro -alpha | -beta | -devel Brc ...
+.Dl "       .Bx" Oo Ao version Ac Oo Ao release Ac Oc Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Bx\ -devel" -compact -offset 15n
 .It Li .Bx
@@ -1932,7 +1975,7 @@ are possible:
 .Ss "NetBSD Macro"
 .
 .Pp
-.Dl Usage: .Nx Oo Ao version Ac Oc Ld
+.Dl Usage: .Nx Oo Ao version Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Nx\ 1.4\ ." -compact -offset 15n
 .It Li .Nx
@@ -1951,7 +1994,7 @@ request above in section
 .Ss "FreeBSD Macro"
 .
 .Pp
-.Dl Usage: .Fx Oo Ao version Ac Oc Ld
+.Dl Usage: .Fx Oo Ao version Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Fx\ 2.2\ ." -compact -offset 15n
 .It Li .Fx
@@ -1970,7 +2013,7 @@ request above in section
 .Ss "OpenBSD Macro"
 .
 .Pp
-.Dl Usage: .Ox Oo Ao version Ac Oc Ld
+.Dl Usage: .Ox Oo Ao version Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Ox\ 1.0" -compact -offset 15n
 .It Li ".Ox 1.0"
@@ -1980,7 +2023,7 @@ request above in section
 .Ss "BSD/OS Macro"
 .
 .Pp
-.Dl Usage: .Bsx Oo Ao version Ac Oc Ld
+.Dl Usage: .Bsx Oo Ao version Ac Oc ...
 .Pp
 .Bl -tag -xwidth ".Li .Bsx\ 1.0" -compact -offset 15n
 .It Li ".Bsx 1.0"
@@ -1990,7 +2033,7 @@ request above in section
 .Ss "UNIX Macro"
 .
 .Pp
-.Dl Usage: .Ux Ld
+.Dl Usage: .Ux ...
 .Pp
 .Bl -tag -xwidth ".Li .Ux" -compact -offset 15n
 .It Li .Ux
@@ -2004,7 +2047,7 @@ Text may be stressed or emphasized with the
 macro.
 The usual font for emphasis is italic.
 .Pp
-.Dl Usage: .Em Ao argument Ac Ld
+.Dl Usage: .Em Ao argument Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Em\ vide\ infra\ )\ )\ ," -compact -offset 15n
 .It Li ".Em does not"
@@ -2203,7 +2246,7 @@ to the word
 .Ql \&No
 if you really want that English word (and not the macro) as a parameter.
 .Pp
-.Dl Usage: .No Ao argument Ac Ld
+.Dl Usage: .No Ao argument Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .No\ test\ Ta\ with\ Ta\ tabs" -compact -offset 15n
 .It Li ".No test Ta with Ta tabs"
@@ -2222,8 +2265,8 @@ first parameter.
 For example, it is useful for old style argument lists where there is no
 space between the flag and argument:
 .Pp
-.Dl "Usage:" Ld Ao argument Ac \&Ns Oo Ao argument Ac Oc Ld
-.Dl "      " .Ns Ao argument Ac Ld
+.Dl "Usage:" ... Ao argument Ac \&Ns Oo Ao argument Ac Oc ...
+.Dl "      " .Ns Ao argument Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Op\ Fl\ I\ Ns\ Ar\ directory" -compact -offset 15n
 .It Li ".Op Fl I Ns Ar directory"
@@ -2248,7 +2291,7 @@ The
 .Ql .Sx
 macro designates a reference to a section header within the same document.
 .Pp
-.Dl Usage: .Sx Ao section reference Ac Ld
+.Dl Usage: .Sx Ao section reference Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Sx\ FILES" -offset 15n
 .It Li ".Sx FILES"
@@ -2263,7 +2306,7 @@ The default width is 16n.
 The symbolic emphasis macro is generally a boldface macro in either the
 symbolic sense or the traditional English usage.
 .Pp
-.Dl Usage: .Sy Ao symbol Ac Ld
+.Dl Usage: .Sy Ao symbol Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Sy\ Important\ Notice" -compact -offset 15n
 .It Li ".Sy Important Notice"
@@ -2277,7 +2320,7 @@ The default width is 6n.
 .
 Use this macro for mathematical symbols and similar things.
 .Pp
-.Dl Usage: .Ms Ao math symbol Ac Ld
+.Dl Usage: .Ms Ao math symbol Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Ms\ sigma" -compact -offset 15n
 .It Li ".Ms sigma"
@@ -2377,7 +2420,7 @@ produces
 The trade name macro prints its arguments in a smaller font.
 Its intended use is to imitate a small caps fonts for uppercase acronyms.
 .Pp
-.Dl Usage: .Tn Ao symbol Ac Ld
+.Dl Usage: .Tn Ao symbol Ac ...
 .Pp
 .Bl -tag -xwidth ".Li .Tn\ ASCII" -compact -offset 15n
 .It Li ".Tn DEC"
@@ -2466,7 +2509,7 @@ and enclosure macros: Test the value of a variable.
 \&.It Xo
 \&.Ic .ifndef
 \&.Oo \e&! Oc Ns Ar variable Oo
-\&.Ar operator variable Ld
+\&.Ar operator variable ...
 \&.Oc Xc
 .Ed
 .Pp
@@ -2478,7 +2521,7 @@ produces
 .It Xo
 .Ic .ifndef
 .Oo \&! Oc Ns Ar variable Oo
-.Ar operator variable Ld
+.Ar operator variable ...
 .Oc Xc
 .El
 .Ed
@@ -2489,9 +2532,9 @@ produces
 .
 .Ss "Section Headers"
 .
-The first three
+The following
 .Ql .Sh
-section header macros listed below are required in every man page.
+section header macros are required in every man page.
 The remaining section headers are recommended at the discretion of the
 author writing the manual page.
 The
@@ -2504,7 +2547,7 @@ only; it then reactivates the default font for
 .Pp
 The default width is 8n.
 .
-.Bl -tag -xwidth ".Li .Sh\ DESCRIPTION"
+.Bl -tag -xwidth ".Li .Sh\ RETURN\ VALUES"
 .It Li ".Sh NAME"
 The
 .Ql ".Sh NAME"
@@ -2528,6 +2571,14 @@ available is small.
 first prints
 .Ql - ,
 then all its arguments.
+.
+.It Li ".Sh LIBRARY"
+This section is for section two and three function calls.
+It should consist of a single
+.Ql .Lb
+macro call;
+see
+.Sx "Library Names" .
 .
 .It Li ".Sh SYNOPSIS"
 The
@@ -2589,6 +2640,19 @@ To create such a list, the
 macros are used (see
 .Sx Lists and Columns
 below).
+.
+.It Li ".Sh IMPLEMENTATION NOTES"
+Implementation specific information should be placed here.
+.
+.It Li ".Sh RETURN VALUES"
+Sections 2, 3 and\~9 function return values should go here.
+The
+.Ql .Rv
+macro may be used to generate text for use in the
+.Sx RETURN VALUES
+section for most section 2 and 3 library functions;
+see
+.Sx "Return Values" .
 .El
 .Pp
 .
@@ -2598,17 +2662,13 @@ section headers are part of the preferred manual page layout and must be
 used appropriately to maintain consistency.
 They are listed in the order in which they would be used.
 .
-.Bl -tag -xwidth ".Li .Sh\ ENVIRONMENT"
+.Bl -tag -xwidth ".Li .Sh\ COMPATIBILITY"
 .It Li ".Sh ENVIRONMENT"
 The
 .Sx ENVIRONMENT
 section should reveal any related environment variables and clues to their
 behavior and/or usage.
-.It Li ".Sh EXAMPLES"
-There are several ways to create examples.
-See the
-.Sx EXAMPLES
-section below for details.
+.
 .It Li ".Sh FILES"
 Files which are used or created by the man page subject should be listed via
 the
@@ -2616,6 +2676,27 @@ the
 macro in the
 .Sx FILES
 section.
+.
+.It Li ".Sh EXAMPLES"
+There are several ways to create examples.
+See the
+.Sx EXAMPLES
+section below for details.
+.
+.It Li ".Sh DIAGNOSTICS"
+Diagnostic messages from a command should be placed in this section.
+.
+.It Li ".Sh COMPATIBILITY"
+Known compatibility issues (e.g. deprecated options or parameters)
+should be listed here.
+.
+.It Li ".Sh ERRORS"
+Specific error handling, especially from library functions (man page
+sections 2, 3, and\~9) should go here.
+The
+.Ql .Er
+macro is used to specify an error (errno).
+.
 .It Li ".Sh SEE ALSO"
 References to other material on the man page topic and cross references to
 other relevant man pages should be placed in the
@@ -2629,13 +2710,15 @@ Currently
 style references are not accommodated.
 .Pp
 It is recommended that the cross references are sorted on the section
-number, and then alphabetically on the names within a section.
+number, then alphabetically on the names within a section, and placed
+in that order and comma separated.
 Example:
 .Pp
 .Xr ls 1 ,
 .Xr ps 1 ,
 .Xr group 5 ,
 .Xr passwd 5
+.
 .It Li ".Sh STANDARDS"
 If the command, library function or file adheres to a specific
 implementation such as
@@ -2647,22 +2730,17 @@ If the command does not adhere to any standard, its history should be noted
 in the
 .Sx HISTORY
 section.
+.
 .It Li ".Sh HISTORY"
 Any command which does not adhere to any specific standards should be
 outlined historically in this section.
+.
 .It Li ".Sh AUTHORS"
 Credits should be placed here.
 The
 .Ql .An
 macro should be used to specify the name(s) of the person(s).
-.It Li ".Sh DIAGNOSTICS"
-Diagnostic messages from a command should be placed in this section.
-.It Li ".Sh ERRORS"
-Specific error handling, especially from library functions (man page
-sections 2, 3, and\~9) should go here.
-The
-.Ql .Er
-macro is used to specify an error (errno).
+.
 .It Li ".Sh BUGS"
 Blatant problems with the topic go here.
 .El
@@ -2870,10 +2948,10 @@ There are seven types of displays.
 Display one line of indented text.
 This macro is parsed but not callable.
 .Pp
-.Dl Fl ldghfstru
+.D1 Fl ldghfstru
 .Pp
 The above was produced by:
-.Li ".Dl Fl ldghfstru" .
+.Li ".D1 Fl ldghfstru" .
 .
 .It Li .Dl
 (This is D-ell.)
@@ -3038,7 +3116,7 @@ It has the following syntax forms:
 .Oo \-offset Ao string Ac Oc Oo \-compact Oc Xc
 .It Li .Bl Xo
 .No \-column Oo \-offset Ao string Ac Oc
-.Ao string1 Ac Ao string2 Ac Ld Xc
+.Ao string1 Ac Ao string2 Ac ... Xc
 .It Li .Bl Xo
 .Bro \-item | \-enum Oo \-nested Oc | \-bullet | \-hyphen | \-dash Brc
 .Oo \-offset Ao string Ac Oc Oo \-compact Oc Xc
@@ -3581,7 +3659,7 @@ It is neither callable nor parsed and takes no arguments.
 .
 .It Li .Fr
 .Pp
-.Dl Usage: .Fr Ao function return value Ac Ld
+.Dl Usage: .Fr Ao function return value Ac ...
 .Pp
 Don't use this macro.
 It allows a break right before the return value (usually a single digit)
@@ -3600,27 +3678,6 @@ followed by the file name, then the contents of
 .Dl Usage: .Hf Ao file Ac
 .Pp
 It is neither callable nor parsed.
-.
-.It Li .In
-Specify C\~header file as being included in a C\~program.
-.Pp
-.Dl Usage: .In Ao header file Ac
-.Pp
-This function causes a line break.
-For example, the line
-.Pp
-.In stdio.h
-.Pp
-is produced by
-.Ql ".In stdio.h" .
-.Pp
-It is neither callable nor parsed.
-.
-.It Li .Ld
-This macro is similar to TeX's
-.Ql \eldots
-command; it prints
-.Sq Ld .
 .
 .It Li .Lk
 To be written.
@@ -3669,7 +3726,7 @@ source file describes it as
 .It Li .Sm
 Activate (toggle) space mode.
 .Pp
-.Dl Usage: .Sm Oo on | off Oc Ld
+.Dl Usage: .Sm Oo on | off Oc ...
 .Pp
 If space mode is off, no spaces between macro arguments are inserted.
 If called without a parameter (or if the next parameter is neither

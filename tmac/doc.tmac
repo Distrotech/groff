@@ -161,11 +161,14 @@
 .
 .  nr doc-arg-limit +1
 .
-.  \" handle `|' specially
-.  ie "\$1"|" \
+.  \" handle `|' and `...' specially
+.  ie        "\$1"|" \
 .    ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
+.  el \{ .ie "\$1"..." \
+.    ds doc-arg\n[doc-arg-limit] \|.\|.\|.
 .  el \
 .    ds doc-arg\n[doc-arg-limit] "\$1
+.  \}
 .
 .  \" get argument type and set spacing
 .  doc-get-arg-type* \n[doc-arg-limit]
@@ -208,8 +211,11 @@
 .
 .  nr doc-arg-limit +1
 .
-.  if "\*[doc-arg\n[doc-arg-limit]]"|" \
+.  ie        "\*[doc-arg\n[doc-arg-limit]]"|" \
 .    ds doc-arg\n[doc-arg-limit] \f[R]|\f[P]
+.  el \{ .if "\*[doc-arg\n[doc-arg-limit]]"..." \
+.    ds doc-arg\n[doc-arg-limit] \|.\|.\|.
+.  \}
 .
 .  doc-get-arg-type* \n[doc-arg-limit]
 .  nr doc-type\n[doc-arg-limit] \n[doc-arg-type]

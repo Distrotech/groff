@@ -102,7 +102,6 @@
 .nr In 12n\" ?
 .nr It 8n\" ?
 .nr Lb 11n
-.nr Ld 4n
 .nr Li 16n
 .nr Lk 6n\" ?
 .nr Lp 8n\" ?
@@ -239,15 +238,15 @@
 .
 .\" an alternative, more detailed scheme for naming the manual sections
 .\"
-.\" .ds doc-volume-ds-1 System General Commands Manual
-.\" .ds doc-volume-ds-2 System Calls Manual
-.\" .ds doc-volume-ds-3 System Library Functions Manual
-.\" .ds doc-volume-ds-4 System Kernel Interfaces Manual
-.\" .ds doc-volume-ds-5 System File Formats Manual
-.\" .ds doc-volume-ds-6 System Games Manual
-.\" .ds doc-volume-ds-7 System Miscellaneous Information Manual
-.\" .ds doc-volume-ds-8 System Manager's Manual
-.\" .ds doc-volume-ds-9 System Kernel Developer's Manual
+.ds doc-volume-ds-1 System General Commands Manual
+.ds doc-volume-ds-2 System Calls Manual
+.ds doc-volume-ds-3 System Library Functions Manual
+.ds doc-volume-ds-4 System Kernel Interfaces Manual
+.ds doc-volume-ds-5 System File Formats Manual
+.ds doc-volume-ds-6 System Games Manual
+.ds doc-volume-ds-7 System Miscellaneous Information Manual
+.ds doc-volume-ds-8 System Manager's Manual
+.ds doc-volume-ds-9 System Kernel Developer's Manual
 .
 .ds doc-volume-ds-USD   System User's Supplementary Documents
 .ds doc-volume-ds-PS1   System Programmer's Supplementary Documents
@@ -346,8 +345,10 @@
 .
 .\" NS doc-operating-system global string
 .\" NS   the exact version of the operating system
+.\" NS
+.\" NS override this in `mdoc.local', if necessary
 .
-.ds doc-operating-system
+.ds doc-operating-system BSD
 .
 .
 .\" NS Os user macro (not parsed, not callable)
@@ -429,15 +430,11 @@
 .ds doc-operating-system-FreeBSD-4.3     4.3
 .ds doc-operating-system-FreeBSD-5.0     5.0
 .
-.ds doc-operating-system-default BSD
-.
 .de Os
-.  ds doc-operating-system Null
-.
 .  if "\$1"" \
-.    ds doc-operating-system "\*[doc-operating-system-default]
+.    return
 .
-.  if "\$1"ATT" \{\
+.  ie        "\$1"ATT" \{\
 .    ds doc-operating-system AT&T
 .    if \A\$2 \{\
 .      ie d doc-operating-system-ATT-\$2 \
@@ -445,25 +442,14 @@
 .      el \
 .        as doc-operating-system " UNIX
 .  \}\}
-.
-.  if "\$1"BSD" \{\
+.  el \{ .ie "\$1"BSD" \{\
 .    if \A\$2 \{\
 .      ie d doc-operating-system-BSD-\$2 \
 .        ds doc-operating-system "\*[doc-operating-system-BSD-\$2]
 .      el \
 .        tm mdoc warning: .Os: Unknown BSD version `\$2' (#\n[.c])
 .  \}\}
-.
-.  if "\$1"NetBSD" \{\
-.    ds doc-operating-system NetBSD
-.    if \A\$2 \{\
-.      ie d doc-operating-system-NetBSD-\$2 \
-.        as doc-operating-system \~\*[doc-operating-system-NetBSD-\$2]
-.      el \
-.        tm mdoc warning: .Os: Unknown NetBSD version `\$2' (#\n[.c])
-.  \}\}
-.
-.  if "\$1"FreeBSD" \{\
+.  el \{ .ie "\$1"FreeBSD" \{\
 .    ds doc-operating-system FreeBSD
 .    if \A\$2 \{\
 .      ie d doc-operating-system-FreeBSD-\$2 \
@@ -471,12 +457,19 @@
 .      el \
 .        tm mdoc warning: .Os: Unknown FreeBSD version `\$2' (#\n[.c])
 .  \}\}
-.
-.  if "\*[doc-operating-system]"Null" \{\
+.  el \{ .ie "\$1"NetBSD" \{\
+.    ds doc-operating-system NetBSD
+.    if \A\$2 \{\
+.      ie d doc-operating-system-NetBSD-\$2 \
+.        as doc-operating-system \~\*[doc-operating-system-NetBSD-\$2]
+.      el \
+.        tm mdoc warning: .Os: Unknown NetBSD version `\$2' (#\n[.c])
+.  \}\}
+.  el \{\
 .    ds doc-operating-system \$1
 .    if !"\$2"" \
 .      as doc-operating-system " \$2
-.  \}
+.  \}\}\}\}
 ..
 .
 .
