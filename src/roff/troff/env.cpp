@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -20,7 +20,6 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "troff.h"
-#include "symbol.h"
 #include "dictionary.h"
 #include "hvunits.h"
 #include "env.h"
@@ -3091,6 +3090,16 @@ const char *environment::get_font_family_string()
   return family->nm.contents();
 }
 
+const char *environment::get_glyph_color_string()
+{
+  return glyph_color->nm.contents();
+}
+
+const char *environment::get_fill_color_string()
+{
+  return fill_color->nm.contents();
+}
+
 const char *environment::get_font_name_string()
 {
   symbol f = get_font_name(fontno, this);
@@ -3247,6 +3256,8 @@ void init_env_requests()
   init_int_env_reg(".L", get_line_spacing);
   init_hunits_env_reg(".l", get_line_length);
   init_hunits_env_reg(".ll", get_saved_line_length);
+  init_string_env_reg(".M", get_fill_color_string);
+  init_string_env_reg(".m", get_glyph_color_string);
   init_hunits_env_reg(".n", get_prev_text_length);
   init_int_env_reg(".ps", get_point_size);
   init_int_env_reg(".psr", get_requested_point_size);

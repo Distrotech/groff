@@ -1,4 +1,41 @@
-2003-01-05  Werner LEMBERG  <wl@gnu.org>
+2004-01-06  Werner LEMBERG  <wl@gnu.org>
+
+	Implement string-valued registers \n[.m] and \n[.M] to return the
+	name of the current drawing and background color, respectively.
+
+	* src/roff/troff/symbol.h: Moved to...
+	* src/include/symbol.h: Here.
+	Small fixes to make it work outside of the `troff' directory.
+	* src/roff/troff/symbol.cpp: Moved to...
+	* src/libs/libgroff/symbol.cpp: Here.
+	Small fixes to make it work outside of the `troff' directory.
+
+	* src/include/Makefile.sub (HDRS), src/libs/libgroff/Makefile.sub
+	(OBJS, CCSRCS), src/roff/troff/Makefile.sub (OBJS, CCSRCS, HDRS):
+	Updated.
+
+	* src/include/color.h: Include symbol.h.
+	(color): Add new field `nm'.
+	* src/libs/libgroff/color.cpp (color::color): Updated.
+
+	* src/roff/troff/dictionary.cpp, src/roff/troff/div.cpp,
+	src/roff/troff/node.cpp, src/roff/troff/number.cpp,
+	src/roff/troff/reg.cpp: Don't include symbol.h.
+
+	* src/roff/troff/env.cpp: Don't include symbol.h.
+	(environment::get_glyph_color_string,
+	environment_get_fill_color_string): New member functions.
+	(init_env_requests): Handle `.m' and `.M' registers.
+	* src/roff/troff/input.cpp: Don't include symbol.h.
+	(default_symbol): Moved to symbol.cpp/symbol.h.
+	(do_glyph_color, do_fill_color, define_color): Pass symbol name
+	to color constructor.
+	* src/roff/troff/env.h: Updated.
+
+	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo:
+	Document new registers.
+
+2004-01-05  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/nroff.cpp (space_node::get_breakpoints,
 	space_node::nbreaks): Protect against zero `next' field.

@@ -24,6 +24,7 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include <stddef.h>
+#include "symbol.h"
 
 enum color_scheme {DEFAULT, CMY, CMYK, RGB, GRAY};
 
@@ -38,8 +39,9 @@ private:
 		    const size_t);
 
 public:
+  symbol nm;
   enum {MAX_COLOR_VAL = 0xffff};
-  color() : scheme(DEFAULT){}
+  color(symbol s = default_symbol) : scheme(DEFAULT), nm(s) {}
   color(const color * const);
   ~color();
   void *operator new(size_t);

@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -18,8 +19,10 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+#include "lib.h"
 
-#include "troff.h"
+#include "errarg.h"
+#include "error.h"
 #include "symbol.h"
 
 const char **symbol::table = 0;
@@ -152,3 +155,5 @@ symbol concat(symbol s1, symbol s2)
   a_delete buf;
   return res;
 }
+
+symbol default_symbol("default");

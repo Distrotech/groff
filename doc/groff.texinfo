@@ -23,7 +23,7 @@
 @copying
 This manual documents GNU @code{troff} version 1.19.
 
-Copyright @copyright{} 1994-2000, 2001, 2002, 2003
+Copyright @copyright{} 1994-2000, 2001, 2002, 2003, 2004
 Free Software Foundation, Inc.
 
 @quotation
@@ -370,8 +370,8 @@ Software Foundation raise funds for GNU development.''
 @titlepage
 @title groff
 @subtitle The GNU implementation of @code{troff}
-@subtitle Edition 1.19
-@subtitle Spring 2003
+@subtitle Edition 1.19.1
+@subtitle Spring 2004
 @author by Trent A.@tie{}Fisher
 @author and Werner Lemberg (@email{bug-groff@@gnu.org})
 
@@ -12217,7 +12217,8 @@ Note that @code{f} is the default scaling indicator for the
 
 @DefescList {\\m, , c, }
 @DefescItem {\\m, @lparen{}, co, }
-@DefescListEnd {\\m, @lbrack{}, color, @rbrack}
+@DefescItem {\\m, @lbrack{}, color, @rbrack}
+@DefregListEnd {.m}
 Set drawing color.  The following example shows how to turn the next four
 words red.
 
@@ -12226,6 +12227,12 @@ words red.
 @endExample
 
 The escape @code{\m[]} returns to the previous color.
+
+@cindex drawing color name register (@code{.m})
+@cindex name, drawing color, register (@code{.m})
+@cindex color name, drawing, register (@code{.m})
+The name of the current drawing color is available in the read-only,
+string-valued number register @samp{.m}.
 
 The drawing color is associated with the current environment
 (@pxref{Environments}).
@@ -12242,7 +12249,8 @@ the fly:
 
 @DefescList {\\M, , c, }
 @DefescItem {\\M, @lparen{}, co, }
-@DefescListEnd {\\M, @lbrack{}, color, @rbrack}
+@DefescItem {\\M, @lbrack{}, color, @rbrack}
+@DefregListEnd {.M}
 Set background color for filled objects drawn with the
 @code{\D'@dots{}'} commands.
 
@@ -12253,6 +12261,12 @@ A red ellipse can be created with the following code:
 @endExample
 
 The escape @code{\M[]} returns to the previous fill color.
+
+@cindex background color name register (@code{.M})
+@cindex name, background color, register (@code{.M})
+@cindex color name, background, register (@code{.M})
+The name of the current background color is available in the read-only,
+string-valued number register @samp{.M}.
 
 The fill color is associated with the current environment
 (@pxref{Environments}).

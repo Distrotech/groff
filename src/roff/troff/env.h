@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -303,6 +303,8 @@ public:
   void space();
   void space(hunits, hunits);
   void space_newline();
+  const char *get_glyph_color_string();
+  const char *get_fill_color_string();
   const char *get_font_family_string();
   const char *get_font_name_string();
   const char *get_name_string();

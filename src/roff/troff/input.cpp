@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -20,7 +20,6 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "troff.h"
-#include "symbol.h"
 #include "dictionary.h"
 #include "hvunits.h"
 #include "env.h"
@@ -1039,7 +1038,6 @@ static node *do_suppress(symbol nm);
 static void do_register();
 
 dictionary color_dictionary(501);
-static symbol default_symbol("default");
 
 static color *lookup_color(symbol nm)
 {
@@ -1063,7 +1061,7 @@ void do_glyph_color(symbol nm)
     if (tem)
       curenv->set_glyph_color(tem);
     else
-      (void)color_dictionary.lookup(nm, new color);
+      (void)color_dictionary.lookup(nm, new color(nm));
   }
 }
 
@@ -1078,7 +1076,7 @@ void do_fill_color(symbol nm)
     if (tem)
       curenv->set_fill_color(tem);
     else
-      (void)color_dictionary.lookup(nm, new color);
+      (void)color_dictionary.lookup(nm, new color(nm));
   }
 }
 
@@ -1262,8 +1260,10 @@ static void define_color()
     skip_line();
     return;
   }
-  if (col)
+  if (col) {
+    col->nm = color_name;
     (void)color_dictionary.lookup(color_name, col);
+  }
   skip_line();
 }
 
