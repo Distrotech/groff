@@ -32,12 +32,16 @@ extern "C" {
 }
 
 /* stdio.h on IRIX, OSF/1, emx, and UWIN include getopt.h */
+/* unistd.h on CYGWIN includes getopt.h */
 
 #if !(defined(__sgi) \
       || (defined(__osf__) && defined(__alpha)) \
       || defined(_UWIN) \
-      || defined(__EMX__))
+      || defined(__EMX__) \
+      || defined(__CYGWIN__))
 #include <groff-getopt.h>
+#else
+#include <getopt.h>
 #endif
 
 char *strsave(const char *s);
