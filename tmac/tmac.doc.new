@@ -2288,14 +2288,12 @@
 .  nh
 .  nop \*[doc-enclosure-box\n[doc-nesting-level]]\c
 .  nop \)\*[doc-quote-right]\)\c
-.  hy
 .
 .  if !\n[doc-arg-limit] \{\
 .    doc-parse-args \$@
 .
 .    if !\n[.$] \
-.      if \n[doc-space-mode] \
-.        nop \)
+.      doc-print-and-reset
 .  \}
 .
 .  if \n[doc-arg-limit] \{\
@@ -4345,6 +4343,8 @@
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      \" first argument must be a string
 .      ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
+.        nr doc-curr-font \n[.f]
+.        nr doc-curr-size \n[.s]
 .        nop \*[doc-Xr-font]\c
 .        nop \)\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]\c
 .
@@ -5201,6 +5201,7 @@
 .      in +\n[doc-indent-synopsis]u
 .      ti -\n[doc-indent-synopsis]u
 .    \}
+.
 .    nh
 .    doc-func-box
 .    doc-reset-args
