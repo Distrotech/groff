@@ -2533,8 +2533,8 @@ and automatically call the right preprocessor(s).
 
 @c XXX documentation
 @c XXX this is a placeholder until we get stuff knocked into shape
-See the @code{mdoc} manpage (type @command{man 7 groff_mdoc} at
-the command line).
+See the @cite{groff_mdoc(7)} man page (type @command{man groff_mdoc}
+at the command line).
 
 
 @c =====================================================================
@@ -3504,7 +3504,7 @@ The optional @var{align} argument can be @code{C}, @code{L}, or@w{
 @DefmacList {[, , ms}
 @DefmacListEnd {], , ms}
 Denotes a reference, to be processed by the @code{refer} preprocessor.
-The @acronym{GNU} @cite{refer(1)} manpage provides a comprehensive
+The @acronym{GNU} @cite{refer(1)} man page provides a comprehensive
 reference to the preprocessor and the format of the bibliographic
 database.
 @endDefmac
@@ -4056,7 +4056,7 @@ groff's @file{doc} directory.
 
 @c XXX documentation
 @c XXX this is a placeholder until we get stuff knocked into shape
-See the @code{mm} manpage (type @command{man 7 groff_mm} at
+See the @cite{groff_mm(7)} man page (type @command{man groff_mm} at
 the command line).
 
 
@@ -4608,6 +4608,7 @@ of the @emph{input} line.
 @cindex @code{pn} request, using @code{+} and@w{ }@code{-}
 @cindex @code{po} request, using @code{+} and@w{ }@code{-}
 @cindex @code{ps} request, using @code{+} and@w{ }@code{-}
+@cindex @code{pvs} request, using @code{+} and@w{ }@code{-}
 @cindex @code{rt} request, using @code{+} and@w{ }@code{-}
 @cindex @code{ti} request, using @code{+} and@w{ }@code{-}
 @cindex @code{\H} escape, using @code{+} and@w{ }@code{-}
@@ -4616,7 +4617,7 @@ of the @emph{input} line.
 @samp{+} and @samp{-} are also treated differently by the following
 requests and escapes: @code{bp}, @code{in}, @code{ll}, @code{lt},
 @code{nm}, @code{nr}, @code{pl}, @code{pn}, @code{po}, @code{ps},
-@code{rt}, @code{ti}, @code{\H}, @code{\R}, and @code{\s}.
+@code{pvs}, @code{rt}, @code{ti}, @code{\H}, @code{\R}, and @code{\s}.
 Here, leading plus and minus signs indicate increments and decrements.
 
 @xref{Setting Registers}, for some examples.
@@ -7124,7 +7125,7 @@ string), it is no longer affected by @code{tr}.
 Translating undefined characters is possible also; @code{tr} does not
 check whether the characters in its argument are defined.
 
-@c XXX xref
+@xref{Gtroff Internals}.
 
 @item
 Without an argument, the @code{tr} request is ignored.
@@ -7255,16 +7256,33 @@ text is printed.
 margin.
 @end ftable
 
-@c XXX improve example
+A simple demonstration:
 
 @Example
+.ll 3i
+This is text without indentation.
+The line length has been set to 3\~inch.
 .in +.5i
 .ll -.5i
-A bunch of really boring text which should
-be indented from both margins.
-Replace me with a better (and more) example!
-.in -.5i
-.ll +.5i
+Now the left and right margins are both increased.
+.in
+.ll
+Calling .in and .ll without parameters restore
+the previous values.
+@endExample
+
+Result:
+
+@Example
+This  is text without indenta-
+tion.   The  line  length  has
+been set to 3 inch.
+     Now   the  left  and
+     right  margins   are
+     both increased.
+Calling  .in  and  .ll without
+parameters restore the  previ-
+ous values.
 @endExample
 
 @pindex troffrc
@@ -7688,9 +7706,9 @@ page occurs.  This is most useful to make sure that there is not a
 single @dfn{orphan} line left at the bottom of a page.  The @code{ne}
 request ensures that there is a certain distance, specified by the
 first argument, before the next page is triggered (see @ref{Traps},
-for further information).  The default unit for @code{ne} is @samp{v};
-the default value of @var{space} is@w{ }1@dmn{v} if no argument is
-given.
+for further information).  The default scaling indicator for @code{ne}
+is @samp{v}; the default value of @var{space} is@w{ }1@dmn{v} if no
+argument is given.
 
 For example, to make sure that no fewer than 2@w{ }lines get orphaned,
 do the following before each paragraph:
@@ -7713,7 +7731,7 @@ exists before the next trap (or the bottom page boundary if no trap is
 set), the space is output immediately (ignoring a partially filled line
 which stays untouched).  If there is not enough space, it is stored for
 later output via the @code{os} request.  The default value is@w{ }1@dmn{v}
-if no argument is given; the default unit is @samp{v}.
+if no argument is given; the default scaling indicator is @samp{v}.
 
 @cindex @code{sv} request, and no-space mode
 @cindex @code{os} request, and no-space mode
@@ -8214,8 +8232,26 @@ If @var{name} is undefined, a warning of type @samp{char} is generated,
 and the escape is ignored.  @xref{Debugging}, for information about
 warnings.
 
-The list of available symbols is device dependent; see @ref{Glyph Name
-Index} for some of them discussed in this reference.
+@cindex list of available glyphs (@cite{groff_char(7)} man page)
+@cindex available glyphs, list (@cite{groff_char(7)} man page)
+@cindex glyphs, available, list (@cite{groff_char(7)} man page)
+The list of available symbols is device dependent; see the
+@cite{groff_char(7)} man page for a complete list for the given output
+device.  For example, say
+
+@Example
+man -Tdvi groff_char > groff_char.dvi
+@endExample
+
+@noindent
+for a list using the default DVI fonts (not all versions of the
+@code{man} program support the @option{-T} option).  If you want to
+use an additional macro package to change the used fonts, @code{groff}
+must be called directly:
+
+@Example
+groff -Tdvi -mec -man groff_char.7 > groff_char.dvi
+@endExample
 
 @c XXX list of common symbols
 @endDefesc
@@ -8417,17 +8453,30 @@ It is possible to omit the whitespace between arguments.
 @cindex special fonts
 @cindex fonts, special
 
-@c XXX Add some more wrapper text up here.
 Special fonts are those that @code{gtroff} searches
 when it cannot find the requested character in the current font.
 The Symbol font is usually a special font.
 
+@code{gtroff} provides the following two requests to add more special
+fonts.  @xref{Using Symbols}, for a detailed description of the glyph
+searching mechanism in @code{gtroff}.
+
+Usually, only non-TTY devices have special fonts.
+
 @DefreqList {special, s1 s2 @dots{}}
 @DefreqListEnd {fspecial, f s1 s2 @dots{}}
-Use the @code{special} request to define special fonts.
+@kindex fonts
+@pindex DESC
+Use the @code{special} request to define special fonts.  They are
+appended to the list of global special fonts in the given order.
+The first entries in this list are the fonts defined with the
+@code{fonts} command in the @file{DESC} file which are marked as
+special in the corresponding font description files.
 
 Use the @code{fspecial} request to designate special fonts
-only when font@w{ }@var{f} font is active.
+only when font@w{ }@var{f} font is active.  They are appended to the
+list of special fonts for @var{f} in the given order.  Initially, this
+list is empty.
 @endDefreq
 
 @c ---------------------------------------------------------------------
@@ -8451,7 +8500,7 @@ necessary in GNU @code{troff}.  Nevertheless, they are supported.
 @DefescListEnd {\\H, ', @t{-}@Var{height}, '}
 Change (increment, decrement) the height of the current font, but not
 the width.  If @var{height} is zero, restore the original height.
-Default unit is @samp{z}.
+Default scaling indicator is @samp{z}.
 
 Currently, only the @option{-Tps} device supports this feature.
 
@@ -8597,7 +8646,8 @@ value is taken from the current font size (as set with the @code{ps}
 request) when the font is effectively in use.  Without second and
 third argument, constant character space mode is deactivated.
 
-Default unit for @var{em-size} is @samp{z}; @var{width} is an integer.
+Default scaling indicator for @var{em-size} is @samp{z}; @var{width} is
+an integer.
 @endDefreq
 
 @c ---------------------------------------------------------------------
@@ -8684,8 +8734,8 @@ width is increased by @var{n2}; if the point size is greater than or
 equal to @var{s1} and less than or equal to @var{s2} the increase in
 width is a linear function of the point size.
 
-The default unit is @samp{z} for @var{s1} and @var{s2}, @samp{p} for
-@var{n1} and @var{n2}.
+The default scaling indicator is @samp{z} for @var{s1} and @var{s2},
+@samp{p} for @var{n1} and @var{n2}.
 
 Note that the track kerning amount is added even to the rightmost character
 in a line; for large values it is thus recommended to increase the line
@@ -8879,8 +8929,8 @@ decrease) the type size (in points).  Specify @var{size} as either an
 absolute point size, or as a relative change from the current size.
 The size@w{ }0, or no argument, goes back to the previous size.
 
-Default unit of @code{size} is @samp{z}.  If @code{size} is zero or
-negative, it is set to 1@dmn{u}.
+Default scaling indicator of @code{size} is @samp{z}.  If @code{size}
+is zero or negative, it is set to 1@dmn{u}.
 
 @cindex type size registers (@code{.s}, @code{.ps})
 @cindex point size registers (@code{.s}, @code{.ps})
@@ -8966,7 +9016,7 @@ You can optionally end the list with a zero.
 @DefreqItem {vs, @t{-}@Var{space}}
 @DefregListEnd {.v}
 Change (increase, decrease) the vertical spacing by @var{space}.  The
-default unit is @samp{p}.
+default scaling indicator is @samp{p}.
 
 If @code{vs} is called without an argument, the vertical spacing is
 reset to the previous value before the last call to @code{vs}.
@@ -9027,7 +9077,7 @@ and the @code{ls} request.
 @DefreqItem {pvs, @t{-}@Var{space}}
 @DefregListEnd {.pvs}
 Change (increase, decrease) the post-vertical spacing by
-@var{space}.  The default unit is @samp{p}.
+@var{space}.  The default scaling indicator is @samp{p}.
 
 If @code{pvs} is called without an argument, the post-vertical spacing is
 reset to the previous value before the last call to @code{pvs}.
@@ -9040,13 +9090,6 @@ post-vertical spacing; it is associated with the current environment
 (@pxref{Environments}).
 @endDefreq
 
-@c XXX example
-
-@ignore
-@Example
-... .sz macro example?? ...
-@endExample
-@end ignore
 
 @c ---------------------------------------------------------------------
 
@@ -9393,14 +9436,15 @@ character before the last character has index@w{ }@minus{}1, etc.
 @cindex length of a string (@code{length})
 @cindex string, length of (@code{length})
 @Defreq {length, reg str}
-Compute the length of @var{str} and returns it in the number
-register@w{ }@var{reg}.  If @var{reg} doesn't exist, it is created.
+Compute the number of characters of @var{str} and return it in the
+number register @var{reg}.  If @var{reg} doesn't exist, it is created.
+@code{str} is read in copy mode. 
 
 @Example
-.ds xxx abcdefgh
-.length yyy xxx
+.ds xxx abcd\h'3i'efgh
+.length yyy \n[xxx]
 \n[yyy]
-    @result{} 8
+    @result{} 14
 @endExample
 @endDefreq
 
@@ -9434,7 +9478,7 @@ Remove (chop) the last character from the macro, string, or diversion
 named @var{xx}. This is useful for removing the newline from the end
 of diversions that are to be interpolated as strings.  This command
 can be used repeatedly; see @ref{Gtroff Internals}, for details on
-nodes inserted by @code{gtroff} automatically.
+nodes inserted additionally by @code{gtroff}.
 @endDefreq
 
 @xref{Identifiers}, and @ref{Comments}.
@@ -9446,8 +9490,6 @@ nodes inserted by @code{gtroff} automatically.
 @section Conditionals and Loops
 @cindex conditionals and loops
 @cindex loops and conditionals
-
-@c XXX Introductory text
 
 @menu
 * Operators in Conditionals::
@@ -9763,9 +9805,30 @@ inserts some vertical space.  It could be used to separate paragraphs.
 ..
 @endExample
 
-@c XXX add info about macro definitions in macros.
+The following example defines a macro within another.  Remember that
+expansion must be protected twice; once for reading the macro and
+once for executing.
 
-@c XXX give example for end macro.
+@Example
+\# a dummy macro to avoid a warning
+.de end
+..
+.
+.de foo
+.  de bar end
+.    nop \f[B]Hallo \\\\$1!\f[]
+.  end
+..
+.
+.foo
+.bar Joe
+    @result{} @b{Hallo Joe!}
+@endExample
+
+@noindent
+Since @code{\f} has no expansion, it isn't necessary to protect its
+backslash.  Had we defined another macro within @code{bar} which takes
+a parameter, eight backslashes would be necessary before @samp{$1}.
 
 The @code{de1} request turns off compatibility mode
 while executing the macro.  On entry, the current compatibility mode
@@ -9812,8 +9875,8 @@ is equivalent to:
 @pindex trace.tmac
 Using @file{trace.tmac}, you can trace calls to @code{de} and @code{de1}.
 
-@c XXX info about common identifier pool for strings, macros, and
-@c     diversions.
+Note that macro identifiers are shared with identifiers for strings and
+diversions.
 @endDefreq
 
 @cindex appending, to a macro (@code{am})
@@ -10006,14 +10069,68 @@ be used later by the @code{rt} or the @code{sp} request (or the
 The @code{rt} request returns @emph{upwards} to the location marked
 with the last @code{mk} request.  If used with an argument, return to
 a position which distance from the top of the page is @var{dist} (no
-previous call to @code{mk} is necessary in this case).
+previous call to @code{mk} is necessary in this case).  Default scaling
+indicator is @samp{v}.
 
-@c XXX example
-@ignore
+Here a primitive solution for a two-column macro.
+
 @Example
-... dual column example ...
+.nr column-length 1.5i
+.nr column-gap 4m
+.nr bottom-margin 1m
+.
 @endExample
-@end ignore
+@Example
+.de 2c
+.  br
+.  mk
+.  ll \\n[column-length]u
+.  wh -\\n[bottom-margin]u 2c-trap
+.  nr right-side 0
+..
+.
+@endExample
+@Example
+.de 2c-trap
+.  ie \\n[right-side] \@{\.    nr right-side 0
+.    po -(\\n[column-length]u + \\n[column-gap]u)
+.    \" remove trap
+.    wh -\\n[bottom-margin]u
+.  \@}
+.  el \@{\
+.    \" switch to right side
+.    nr right-side 1
+.    po +(\\n[column-length]u + \\n[column-gap]u)
+.    rt
+.  \@}
+..
+.
+@endExample
+@Example
+.pl 1.5i
+.ll 4i
+This is a small test which shows how the
+rt request works in combination with mk.
+
+.2c
+Starting here, text is typeset in two columns.
+Note that this implementation isn't robust
+and thus not suited for a real two-column
+macro.
+@endExample
+
+Result:
+
+@Example
+This is a small test which shows how the
+rt request works in combination with mk.
+
+Starting  here,    isn't    robust
+text is typeset    and   thus  not
+in two columns.    suited  for   a
+Note that  this    real two-column
+implementation     macro.
+@endExample
 @endDefreq
 
 The following escapes give fine control of movements about the page.
@@ -10024,8 +10141,8 @@ The following escapes give fine control of movements about the page.
 Move vertically, usually from the current location on the page (if no
 absolute position operator @samp{|} is used).  The
 argument@w{ }@var{e} specifies the distance to move; positive is
-downwards and negative upwards.  The default unit for this escape
-@samp{v}.  Beware, however, that @code{gtroff} continues text
+downwards and negative upwards.  The default scaling indicator for this
+escape is @samp{v}.  Beware, however, that @code{gtroff} continues text
 processing at the point where the motion ends, so you should always
 balance motions to avoid interference with text processing.
 
@@ -10053,10 +10170,9 @@ Move down@w{ }.5@dmn{v}.
 @cindex space, horizontal (@code{\h})
 @Defesc {\\h, ', e, '}
 Move horizontally, usually from the current location (if no absolute
-position operator @samp{|} is used).  The
-expression@w{ }@var{e} indicates how far to move: positive is rightwards
-and negative leftwards.
-@c XXX Is there a default unit for this?
+position operator @samp{|} is used).  The expression@w{ }@var{e}
+indicates how far to move: positive is rightwards and negative
+leftwards.  The default scaling indicator for this escape is @samp{m}.
 @endDefesc
 
 There are a number of special-case escapes for horizontal motion.
@@ -10109,13 +10225,10 @@ Return the width of the specified @var{text} in basic units.
 This allows horizontal movement based on the width of some
 arbitrary text (e.g.@: given as an argument to a macro).
 
-@c XXX example
-
-@ignore
 @Example
-... strlen example ...
+The length of the string `abc' is \w'abc'u.
+    @result{} The length of the string `abc' is 72u.
 @endExample
-@end ignore
 
 Font changes may occur in @var{text} which don't affect current
 settings.
@@ -10227,8 +10340,6 @@ an actual emergency!
 @endExample
 @endDefesc
 
-@c XXX documentation
-
 
 @c =====================================================================
 
@@ -10252,12 +10363,15 @@ All drawing is done via escapes.
 @cindex line, horizontal, drawing (@code{\l})
 @DefescList {\\l, ', @Var{l}, '}
 @DefescListEnd {\\l, ', @Var{l}@Var{c}, '}
-Draw a line rightwards from the current location.
-@var{l} is the length of the line to be drawn, starting at the
-current location; positive numbers draw to the right, and negative
-numbers draw towards the left.  This can also be specified absolutely
-(i.e.@: with a leading @samp{|}) which draws back to the beginning
-of the input line.
+Draw a line horizontally.  @var{l} is the length of the line to be
+drawn.  If it is positive, start the line at the current location and
+draw to the right; its end point is the new current location.  Negative
+values are handled differently: The line starts at the current location
+and draws to the left, but the current location doesn't move.
+
+@var{l} can also be specified absolutely (i.e.@: with a leading
+@samp{|}) which draws back to the beginning of the input line.
+Default scaling indicator is @samp{m}.
 
 @cindex underscore character
 @cindex character, underscore
@@ -10265,7 +10379,7 @@ of the input line.
 @cindex character for line drawing
 The optional second parameter@w{ }@var{c} is a character to draw the line
 with.  If this second argument is not specified, @code{gtroff} uses
-the underscore character.
+the underscore character, @code{\[ru]}.
 
 @cindex zero width space character (@code{\&})
 @cindex character, zero width space (@code{\&})
@@ -10283,9 +10397,10 @@ Here a small useful example:
 
 @noindent
 Note that this works by outputting a box rule (a vertical line), then
-the text given as an argument and then another box rule.  Then the line
-drawing escapes both draw from the current location to the beginning of
-the @emph{input} line.
+the text given as an argument and then another box rule.  Finally, the
+line drawing escapes both draw from the current location to the
+beginning of the @emph{input} line -- this works because the line
+length is negative, not moving the current point.
 @endDefesc
 
 @cindex drawing vertical lines (@code{\L})
@@ -10298,20 +10413,25 @@ the @emph{input} line.
 @DefescList {\\L, ', @Var{l}, '}
 @DefescListEnd {\\L, ', @Var{l}@Var{c}, '}
 Draw vertical lines.  Its parameters are
-similar to the @code{\l} escape.  The
-movement is downwards for positive values,
-and upwards for negative values.  The
-default character is the box rule character.  As with the vertical
-motion escapes, text processing blindly continues where the line
-ends.
+similar to the @code{\l} escape, except that the default scaling
+indicator is @samp{v}.  The movement is downwards for positive values,
+and upwards for negative values.  The default character is the box rule
+character, @code{\[br]}.  As with the vertical motion escapes, text
+processing blindly continues where the line ends.
 
-@c XXX example
-
-@ignore
 @Example
-... box macro ...
+This is a \L'3v'test.
 @endExample
-@end ignore
+
+@noindent
+Here the result, produced with @code{grotty}.
+
+@Example
+This is a
+          |
+          |
+          |test.
+@endExample
 @endDefesc
 
 @Defesc {\\D, ', command arg @dots{}, '}
@@ -10320,6 +10440,11 @@ Note that on character devices, only vertical and horizontal lines are
 supported within @code{grotty}; other devices may only support a subset
 of the available drawing functions.
 
+The default scaling indicator for all subcommands of @code{\D} is
+@samp{m} for horizontal distances and @samp{v} for vertical ones.
+Exceptions are @w{@code{\D'f @dots{}'}} and @w{@code{\D't @dots{}'}}
+which use @code{u} as the default.
+
 @table @code
 @item \D'l @var{dx} @var{dy}'
 @cindex line, drawing (@w{@code{\D'l @dots{}'}})
@@ -10327,13 +10452,29 @@ of the available drawing functions.
 Draw a line from the current location to the relative point specified by
 (@var{dx},@var{dy}).
 
-@c XXX example
+The following example is a macro for creating a box around a text string;
+for simplicity, the box margin is taken as a fixed value, 0.2@dmn{m}.
 
-@ignore
 @Example
-... revised box macro ...
+.de BOX
+.  nr @@wd \w'\\$1'
+\h'.2m'\
+\h'-.2m'\v'(.2m - \\n[rsb]u)'\
+\D'l 0 -(\\n[rst]u - \\n[rsb]u + .4m)'\
+\D'l (\\n[@@wd]u + .4m) 0'\
+\D'l 0 (\\n[rst]u - \\n[rsb]u + .4m)'\
+\D'l -(\\n[@@wd]u + .4m) 0'\
+\h'.2m'\v'-(.2m - \\n[rsb]u)'\
+\\$1\
+\h'.2m'
+..
 @endExample
-@end ignore
+
+@noindent
+First, the width of the string is stored in register @code{@@wd}.  Then,
+four lines are drawn to form a box, properly offset by the box margin.
+The registers @code{rst} and @code{rsb} are set by the @code{\w} escape,
+containing the largest height and depth of the whole string.
 
 @item \D'c @var{d}'
 @cindex circle, drawing (@w{@code{\D'c @dots{}'}})
@@ -10345,7 +10486,8 @@ current position.
 @cindex circle, solid, drawing (@w{@code{\D'C @dots{}'}})
 @cindex drawing a solid circle (@w{@code{\D'C @dots{}'}})
 @cindex solid circle, drawing (@w{@code{\D'C @dots{}'}})
-Draw a solid circle with the same parameters as an outlined circle.
+Draw a solid circle with the same parameters as an outlined circle.  No
+outline is drawn.
 
 @item \D'e @var{x} @var{y}'
 @cindex drawing an ellipse (@w{@code{\D'e @dots{}'}})
@@ -10358,6 +10500,7 @@ diameter of @var{y} with the leftmost point at the current position.
 @cindex drawing a solid ellipse (@w{@code{\D'E @dots{}'}})
 @cindex solid ellipse, drawing (@w{@code{\D'E @dots{}'}})
 Draw a solid ellipse with the same parameters as an outlined ellipse.
+No outline is drawn.
 
 @item \D'a @var{dx1} @var{dy1} @var{dx2} @var{dy2}'
 @cindex arc, drawing (@w{@code{\D'a @dots{}'}})
@@ -10393,27 +10536,34 @@ Draw a polygon from the current location to the relative position
 When the specified data points are exhausted, a line is drawn back
 to the starting point.
 
-@c XXX example
-
-@ignore
-@Example
-... box example (yes, again) ...
-@endExample
-@end ignore
-
 @item \D'P @var{dx1} @var{dy1} @var{dx2} @var{dy2} @dots{}'
 @cindex polygon, solid, drawing (@w{@code{\D'P @dots{}'}})
 @cindex drawing a solid polygon (@w{@code{\D'P @dots{}'}})
 @cindex solid polygon, drawing (@w{@code{\D'P @dots{}'}})
 Draw a solid polygon with the same parameters as an outlined polygon.
+No outline is drawn.
 
-@c XXX example
+Here a better variant of the box macro to fill the box with some color.
+Note that the box must be drawn before the text since colors in
+@code{gtroff} are not transparent; the filled polygon would hide the
+text completely.
 
-@ignore
 @Example
-... shaded box example ...
+.de BOX
+.  nr @@wd \w'\\$1'
+\h'.2m'\
+\h'-.2m'\v'(.2m - \\n[rsb]u)'\
+\M[lightcyan]\
+\D'P 0 -(\\n[rst]u - \\n[rsb]u + .4m) \
+     (\\n[@@wd]u + .4m) 0 \
+     0 (\\n[rst]u - \\n[rsb]u + .4m) \
+     -(\\n[@@wd]u + .4m) 0'\
+\h'.2m'\v'-(.2m - \\n[rsb]u)'\
+\M[]\
+\\$1\
+\h'.2m'
+..
 @endExample
-@end ignore
 
 @item \D't @var{n}'
 @cindex line thickness (@w{@code{\D't @dots{}'}})
@@ -10517,13 +10667,15 @@ are enabled.  The current setting of this is available in the
 @code{.vpt} read-only number register.
 @endDefreq
 
-@Defreq {wh, dist macro}
+@Defreq {wh, dist [@Var{macro}]}
 Set a page location trap.  Positive values for @var{dist} set
 the trap relative to the top of the page; negative values set
-the trap relative to the bottom of the page.
+the trap relative to the bottom of the page.  Default scaling
+indicator is @samp{v}.
 
 @var{macro} is the name of the macro to execute when the
-trap is sprung.
+trap is sprung.  If @var{macro} is missing, remove the first trap
+(if any) at @var{dist}.
 
 @cindex page headers
 @cindex page footers
@@ -10611,6 +10763,9 @@ the trap, and the second argument is the new location for the trap
 request).  This is useful for building up footnotes in a diversion to
 allow more space at the bottom of the page for them.
 
+Default scaling indicator for @var{dist} is @samp{v}.  If @var{dist}
+is missing, the trap is removed.
+
 @c XXX
 
 @ignore
@@ -10653,8 +10808,8 @@ actually is.
 @Defreq {dt, dist macro}
 Set a trap @emph{within} a diversion.
 @var{dist} is the location of the trap
-(identical to the @code{.wh} request)
-and @var{macro} is the name of the macro to be invoked.  The
+(identical to the @code{.wh} request; default scaling indicator is
+@samp{v}) and @var{macro} is the name of the macro to be invoked.  The
 number register @code{.t} still works within diversions.
 @xref{Diversions}, for more information.
 @endDefreq
@@ -10926,8 +11081,6 @@ and @dfn{transparently} embeds it into the diversion.  This is useful for
 macros which shouldn't be invoked until the diverted text is actually
 output.
 
-@c XXX anything is read in copy mode. (what about \! ??)
-
 The @code{\!} escape transparently embeds text up to
 and including the end of the line.
 The @code{\?} escape transparently embeds text until the next
@@ -10961,6 +11114,8 @@ prints@w{ }4.
 .nr x 4
 .f
 @endExample
+
+Both escapes read the data in copy mode.
 @endDefesc
 
 @cindex unformatting diversions (@code{asciify})
@@ -11049,7 +11204,7 @@ named @samp{0}, @samp{1}, and @samp{2}.
 @cindex switching environment (@code{ev})
 @cindex environment, switching (@code{ev})
 @cindex environment number/name register (@code{.ev})
-@DefreqList {ev, env}
+@DefreqList {ev, [@Var{env}]}
 @DefregListEnd {.ev}
 Switch to another environment.  The argument @var{env} is the name of
 the environment to switch to.  With no argument, @code{gtroff} switches
@@ -11064,14 +11219,6 @@ active environment onto a stack.  If, say, environments @samp{foo},
 @code{ev} request without parameter switches back to environment
 @samp{bar} (which is popped off the stack), and a second call
 switches back to environment @samp{foo}.
-
-@c XXX example
-
-@ignore
-@Example
-... page break macro, revised ...
-@endExample
-@end ignore
 
 Here is an example:
 
@@ -11541,13 +11688,19 @@ Close the specified @var{stream};
 the stream is no longer an acceptable argument to the
 @code{write} request.
 
-@c XXX example
+Here a simple macro to write an index entry.
 
-@ignore
 @Example
-... example of open write &c ...
+.open idx test.idx
+.
+.de IX
+.  write idx \\n[%] \\$*
+..
+.
+.IX test entry
+.
+.close idx
 @endExample
-@end ignore
 @endDefreq
 
 @DefescList {\\V, , e, }
@@ -11834,6 +11987,34 @@ the @code{unformat} request.
 
 Macros only contain elements in the token list (and the node list is
 empty); diversions and strings can contain elements in both lists.
+
+Some requests like @code{tr} or @code{cflags} work on glyph
+identifiers only; this means that the associated glyph can be changed
+without destroying this association.  This can be very helpful for
+substituting glyphs.  In the following example, we assume that
+glyph @samp{foo} isn't available by default, so we provide a
+substitution using the @code{fchar} request and map it to input
+character @samp{x}.
+
+@Example
+.fchar \[foo] foo
+.tr x \[foo]
+@endExample
+
+@noindent
+Now let us assume that we install an additional special font
+@samp{bar} which has glyph @samp{foo}.
+
+@Example
+.special bar
+.rchar \[foo]
+@endExample
+
+@noindent
+Since glyphs defined with @code{fchar} are searched before glyphs
+in special fonts, we must call @code{rchar} to remove the definition
+of the fallback glyph.  Anyway, the translation is still active;
+@samp{x} now maps to the real glyph @samp{foo}.
 
 
 @c =====================================================================
