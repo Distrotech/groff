@@ -115,12 +115,13 @@ void tex_output::start_picture(double sc, const position &ll,
     might be non-zero if text from text attributes lies outside pic's
     idea of the bounding box of the picture. */
   printf("\\expandafter\\ifx\\csname %s\\endcsname\\relax\n"
-	 "  \\newbox\\%s\n"
+	 "  \\expandafter\\newbox\\csname %s\\endcsname\n"
 	 "\\fi\n"
 	 "\\ifx\\graphtemp\\undefined\n"
 	 "  \\newdimen\\graphtemp\n"
 	 "\\fi\n"
-	 "\\setbox\\%s=\\vtop{\\vskip 0pt\\hbox{%%\n",
+	 "\\expandafter\\setbox\\csname %s\\endcsname\n"
+	 " =\\vtop{\\vskip 0pt\\hbox{%%\n",
 	 graphname, graphname, graphname);
   pen_size = -2.0;
 }

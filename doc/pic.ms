@@ -2446,7 +2446,8 @@ At the beginning of each picture, `figname' is reset to the vbox name
 `graph'; this command has only a meaning in \*[tx] mode.  While the grammar
 rules allow digits and the underscore in the value of `figname', \*[tx]
 normally accepts uppercase and lowercase letters only as box names
-(\fBpic\fP doesn't use `\ecsname' to circumvent this limitation).
+(you have to use `\ecsname' if you really need to circumvent this
+limitation).
 .DS
 .CW
 <any-expr> ::=
