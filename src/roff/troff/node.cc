@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -4487,7 +4487,8 @@ node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
   int fn = fontno;
   int found = font_table[fontno]->contains(s);
   if (!found) {
-    if (s->is_fallback())
+    macro *mac = s->get_macro();
+    if (mac && s->is_fallback())
       return make_composite_node(s, env);
     if (s->numbered()) {
       if (!no_error_message)
@@ -4522,7 +4523,7 @@ node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
       }
     }
     if (!found)
-      if (s->is_special())
+      if (mac && s->is_special())
 	return make_composite_node(s, env);
     if (!found) {
       for (fn = 0; fn < font_table_size; fn++)
