@@ -35,6 +35,9 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include <unistd.h>
 #endif
 
+#include <stdio.h>
+#include <fcntl.h>
+
 #include "ordered_list.h"
 
 #if !defined(TRUE)
@@ -1547,8 +1550,11 @@ void html_printer::set_char(int i, font *f, const environment *env, int w, const
 void html_printer::make_new_image_name (void)
 {
   image_number++;
-  if ((strcmp(current_filename, "<standard input>") == 0) ||
-      (strcmp(current_filename, "-") == 0)) {
+
+  if ((current_filename == 0) ||
+      (strcmp(current_filename, "<standard input>") == 0) ||
+      (strcmp(current_filename, "-") == 0) ||
+      (strchr(current_filename, '/') != 0)) {
     sprintf(image_name, "grohtml-%d-%ld", image_number, (long)getpid());
   } else {
     sprintf(image_name, "%s-%d-%ld", current_filename, image_number, (long)getpid());
@@ -2402,18 +2408,27 @@ int html_printer::is_less (graphic_glob *g, text_glob *t)
   return( (g->minv < t->minv) || ((g->minv == t->minv) && (g->minh < t->minh)) );
 }
 
-static FILE *create_file (char *filename)
+/*
+ *  create_tmp_file - opens a filename in /tmp carefully checking for failure
+ *                    otherwise security could be circumvented.
+ */
+
+static FILE *create_tmp_file (char *filename)
 {
   FILE *f;
+  int   fd;
 
   errno = 0;
-  f = fopen(filename, "w");
-  if (f == 0) {
-    error("can't create `%1'", filename);
-    return( 0 );
-  } else {
-    return( f );
+  /* This file is in /tmp, so open carefully */
+  fd = open(filename, O_WRONLY | O_CREAT | O_EXCL, 0600);
+  if (fd < 0) {
+    fatal("can't create `%1'", filename);
   }
+  f  = fdopen(fd, "w");
+  if (f == 0) {
+    fatal("can't create `%1'", filename);
+  }
+  return( f );
 }
 
 void html_printer::convert_to_image (char *name)
@@ -2490,7 +2505,7 @@ void html_printer::display_globs (int is_to_html)
   if (! is_to_html) {
     is_center = html_position_region();
     create_temp_name(name, "troff");
-    f = create_file(name);
+    f = create_tmp_file(name);
     troff.set_file(f);
     prologue();
     output_style.f = 0;
