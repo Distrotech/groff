@@ -2654,48 +2654,6 @@
 ..
 .
 .
-.\" NS doc-do-xref-1 macro
-.\" NS   ignore if macro
-.
-.de doc-do-xref-1
-..
-.
-.
-.\" NS doc-do-xref-2 macro
-.\" NS   ignore if string
-.
-.de doc-do-xref-2
-..
-.
-.
-.\" NS doc-do-xref-3 macro
-.\" NS   append if punctuation suffix
-.\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr, doc-out-string
-.
-.de doc-do-xref-3
-.  as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
-.  nr doc-arg-ptr +1
-.  \" XXX: ?
-.  n\\C\\n(aP
-..
-.
-.
-.\" NS doc-do-xref-4 macro
-.\" NS   append if punctuation prefix
-.\" NS
-.\" NS modifies:
-.\" NS   doc-arg-ptr, doc-out-string
-.
-.de doc-do-xref-4
-.  as doc-out-string \&\*[doc-arg\n[doc-arg-ptr]]
-.  nr doc-arg-ptr +1
-.  \" XXX: ?
-.  n\\C\\n(aP
-..
-.
-.
 .\" NS doc-curr-font-for-Ef global register
 .\" NS   saved current font from `Bf' request
 .
@@ -4162,7 +4120,7 @@
 .
 .
 .\" NS Xr user macro
-.\" NS   cross reference (man page only)
+.\" NS   cross reference (for man pages only)
 .\" NS
 .\" NS modifies:
 .\" NS   doc-macro-name, doc-arg-ptr, doc-out-string
@@ -4176,32 +4134,40 @@
 .      doc-parse-args \$@
 .    \}
 .    el \
-.      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
+.      doc-Xr-usage
 .  \}
 .
-.  nr doc-arg-ptr +1
-.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
-.      tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
-.    el \{\
+.  if \n[doc-arg-limit] \{\
+.    nr doc-arg-ptr +1
+.    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.      \" first argument must be a string
 .      ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .        as doc-out-string \*[doc-Xr-font]
 .        as doc-out-string "\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
 .
 .        nr doc-arg-ptr +1
-.        if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.          if (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
-.            as doc-out-string \&\*[lp]\*[doc-arg\n[doc-arg-ptr]]\*[rp]
-.            nr doc-arg-ptr +1
-.        \}\}
-.        ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \
-.          doc-do-\n[doc-type\n[doc-arg-ptr]]
+.        ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.          \" modify second argument if it is a string
+.          if (\n[doc-type\n[doc-arg-ptr]] == 2) \
+.            ds doc-arg\n[doc-arg-ptr] \*[lp]\*[doc-arg\n[doc-arg-ptr]]\*[rp]
+.          doc-print-recursive
+.        \}
 .        el \
 .          doc-print-and-reset
 .      \}
 .      el \
-.        doc-do-xref-\n[doc-type\n[doc-arg-ptr]]
-.  \}\}
+.        doc-Xr-usage
+.    \}
+.    el \
+.      doc-Xr-usage
+.  \}
+..
+.
+.
+.\" NS doc-Xr-usage macro
+.
+.de doc-Xr-usage
+.  tm Usage: .Xr manpage_name [section#] \*[doc-punct-chars] (#\n[.c])
 ..
 .
 .
