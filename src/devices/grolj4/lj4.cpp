@@ -159,6 +159,11 @@ void lj4_font::handle_unknown_font_command(const char *command,
   }
 }
 
+int printer::round_width(int x)
+{
+  return x;
+}
+
 class lj4_printer : public printer {
 public:
   lj4_printer(int);

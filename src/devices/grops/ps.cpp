@@ -1778,6 +1778,11 @@ void ps_printer::do_endinvis(char *, const environment *)
     --invis_count;
 }
 
+int printer::round_width(int x)
+{
+  return x;
+}
+
 printer *make_printer()
 {
   return new ps_printer(user_paper_length);

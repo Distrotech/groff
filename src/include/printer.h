@@ -83,6 +83,8 @@ public:
   virtual void end_of_line();
   virtual void special(char *arg, const environment *env,
 		       char type = 'p');
+  virtual int round_width(int);
+
 protected:
   font_pointer_list *font_list;
   font **font_table;

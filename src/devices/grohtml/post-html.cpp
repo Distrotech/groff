@@ -3681,6 +3681,7 @@ void html_printer::set_numbered_char(int num, const environment *env,
     w = nbsp_width;
   else
     w = f->get_width(i, env->size);
+  w = round_width(w);
   if (widthp)
     *widthp = w;
   set_char(i, f, env, w, 0);
@@ -3978,6 +3979,25 @@ void html_printer::special(char *s, const environment *env, char type)
 			     env->vpos               , env->hpos);
     }
   }
+}
+
+/*
+ *  taken from number.cpp in src/roff/troff, [hunits::hunits(units x)]
+ */
+
+int printer::round_width(int x)
+{
+  int r = font::hor;
+  int n;
+
+  // don't depend on the rounding direction for division of negative integers
+  if (r == 1)
+    n = x;
+  else
+    n = (x < 0
+	 ? -((-x + r/2 - 1)/r)
+	 : (x + r/2 - 1)/r);
+  return n * r;
 }
 
 int main(int argc, char **argv)
