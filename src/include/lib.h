@@ -26,7 +26,11 @@ extern "C" {
   const char *if_to_a(int, int);
 }
 
+/* stdio.h on IRIX includes getopt.h */
+
+#ifndef __sgi
 #include <groff-getopt.h>
+#endif
 
 char *strsave(const char *s);
 int is_prime(unsigned);
