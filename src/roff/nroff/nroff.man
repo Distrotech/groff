@@ -20,31 +20,26 @@ the original English.
 .SH NAME
 @g@nroff \- emulate nroff command with groff
 .SH SYNOPSIS
+.nr a \n(.j
+.ad l
+.nr i \n(.i
+.in +\w'\fB@g@nroff 'u
+.ti \niu
 .B @g@nroff
-[
-.B \-h
-]
-[
-.B \-i
-]
-[
-.BI \-m name
-]
-[
-.BI \-n num
-]
-[
-.BI \-o list
-]
-[
-.BI \-r cn
-]
-[
-.BI \-T name
-]
-[
-.I file\|.\|.\|.
-]
+.de OP
+.ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\\$2" "\ ]"
+.el .RB "[\ " "\\$1" "\ ]"
+..
+.OP \-h
+.OP \-i
+.OP \-m name
+.OP \-n num
+.OP \-o list
+.OP \-r cn
+.OP \-T name
+.RI "[\ " file\|.\|.\|. "\ ]"
+.br
+.ad \na
 .SH DESCRIPTION
 The
 .B @g@nroff

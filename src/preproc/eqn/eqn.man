@@ -31,34 +31,27 @@ the original English.
 .SH NAME
 @g@eqn \- format equations for troff
 .SH SYNOPSIS
+.nr a \n(.j
+.ad l
+.nr i \n(.i
+.in +\w'\fB@g@eqn 'u
+.ti \niu
 .B @g@eqn
-[
-.B \-rvCNR
-]
-[
-.BI \-d cc
-]
-[
-.BI \-T name
-]
-[
-.BI \-M dir
-]
-[
-.BI \-f F
-]
-[
-.BI \-s n
-]
-[
-.BI \-p n
-]
-[
-.BI \-m n
-]
-[
-.IR files \|.\|.\|.
-]
+.de OP
+.ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\\$2" "\ ]"
+.el .RB "[\ " "\\$1" "\ ]"
+..
+.OP \-rvCNR
+.OP \-d cc
+.OP \-T name
+.OP \-M dir
+.OP \-f F
+.OP \-s n
+.OP \-p n
+.OP \-m n
+.RI "[\ " files\|.\|.\|. "\ ]"
+.br
+.ad \na
 .SH DESCRIPTION
 This manual page describes the GNU version of
 .BR eqn ,
