@@ -702,22 +702,24 @@
 .  if \n[doc-arg-limit] \{\
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.      ie (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
+.      if (\n[doc-type\n[doc-arg-ptr]] == 1) \{\
 .        tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
 .
-.        \" the right action here would be to reset the argument counters --
-.        \" unfortunately, a small number of manual pages (less than 2%
-.        \" for FreeBSD which has been used for testing) relies on the old
-.        \" behaviour, so it is commented out
+.        \" the right action here would be to reset the argument counters
+.        \" and bail out -- unfortunately, a small number of manual pages
+.        \" (less than 2% for FreeBSD which has been used for testing)
+.        \" relied on the old behaviour (silently ignore this error),
+.        \" so it is commented out
 .
-.        \" .doc-reset-args
+.\"      doc-reset-args
 .      \}
-.      el \{\
+.\"    el \{\
 .        nr doc-curr-font \n[.f]
 .        nr doc-curr-size \n[.ps]
 .        nop \*[doc-\$0-font]\c
 .        doc-print-recursive
-.    \}\}
+.\"    \}
+.    \}
 .    el \{\
 .      tm Usage: .\$0 \*[doc-\$0-usage] ... (#\n[.c])
 .      doc-reset-args
@@ -3137,12 +3139,6 @@
 ..
 .
 .
-.\" NS doc-have-tag-width global register (bool)
-.\" NS   set if a tag width has been explicitly given
-.
-.nr doc-have-tag-width 0
-.
-.
 .\" NS doc-do-Bl-args macro
 .\" NS   resolve remaining .Bl arguments
 .\" NS
@@ -3150,7 +3146,6 @@
 .\" NS   doc-arg-ptr
 .\" NS   doc-argXXX
 .\" NS   doc-compact-list-stackXXX
-.\" NS   doc-have-tag-width
 .\" NS   doc-list-indent-stackXXX
 .\" NS   doc-list-offset-stackXXX
 .\" NS   doc-num-columns
@@ -3190,9 +3185,6 @@
 .
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-width" \{\
 .      nr doc-arg-ptr +1
-.      \" XXX: this code should be modified to handle nested lists
-.      \"      of any type
-.      nr doc-have-tag-width 1
 .      ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
 .      ds doc-str-dBla "\*[doc-arg\n[doc-arg-ptr]]
 .
@@ -3239,9 +3231,6 @@
 .
 .    el \{ .ie "\*[doc-arg\n[doc-arg-ptr]]"-xwidth" \{\
 .      nr doc-arg-ptr +1
-.      \" XXX: this code should be modified to handle nested lists
-.      \"      of any type
-.      nr doc-have-tag-width 1
 .      ds doc-tag-width-stack\n[doc-list-depth] TagwidtH
 .
 .      ds doc-str-dBla \*[doc-arg\n[doc-arg-ptr]]
@@ -3278,7 +3267,9 @@
 .          nr doc-list-offset-stack\n[doc-list-depth] \*[doc-str-dBla]
 .        el \{\
 .          doc-get-arg-width \n[doc-arg-ptr]
-.          ie (\n[doc-width] == 2) \{\
+.          ie (\n[doc-width] <= 3) \{\
+.            \" if the offset parameter is a macro, use the macro's
+.            \" width as specified in doc-common
 .            doc-get-arg-type \*[doc-str-dBla]
 .            ie (\n[doc-arg-type] == 1) \
 .              nr doc-list-offset-stack\n[doc-list-depth] \n[\*[doc-str-dBla]]
@@ -3384,7 +3375,6 @@
 .  \}
 .
 .  nr doc-have-indent-saved \n[doc-have-indent]
-.  nr doc-have-tag-width-saved \n[doc-have-tag-width]
 .  ds doc-saved-Pa-font-saved "\*[doc-saved-Pa-font]
 .  nr doc-curr-type-saved \n[doc-curr-type]
 .  ds doc-curr-arg-saved "\*[doc-curr-arg]
@@ -3524,7 +3514,6 @@
 .  \}
 .
 .  nr doc-have-indent \n[doc-have-indent-saved]
-.  nr doc-have-tag-width \n[doc-have-tag-width-saved]
 .  ds doc-saved-Pa-font "\*[doc-saved-Pa-font-saved]
 .  nr doc-curr-type \n[doc-curr-type-saved]
 .  ds doc-curr-arg "\*[doc-curr-arg-saved]
@@ -4007,7 +3996,7 @@
 .  ev
 .  box
 .
-.  if !\n[doc-have-tag-width] \
+.  if !"TagwidtH"\*[doc-tag-width-stack\n[doc-list-depth]]" \
 .    doc-get-tag-width
 .  doc-set-vertical-and-indent 1
 .  nr doc-reg-dtl (\n[doc-list-indent-stack\n[doc-list-depth]]u + \n[doc-digit-width]u)
@@ -4036,7 +4025,7 @@
 .
 .
 .\" NS doc-get-tag-width macro
-.\" NS   resolve unknown tag width (.Bl [inset | tag] only)
+.\" NS   resolve unknown tag width (`tag' list-type only)
 .\" NS
 .\" NS modifies:
 .\" NS   doc-have-indent
@@ -4048,16 +4037,13 @@
 .\" NS   doc-curr-type
 .
 .de doc-get-tag-width
-.  if !"TagwidtH"\*[doc-tag-width-stack\n[doc-list-depth]]" \{\
-.    ie (\n[doc-curr-type] == 1) \{\
-.      ds doc-tag-width-stack\n[doc-list-depth] \*[doc-curr-arg]
-.      nr doc-list-indent-stack\n[doc-list-depth] \n[\*[doc-curr-arg]]
-.    \}
-.    el \{\
-.      ds doc-tag-width-stack\n[doc-list-depth] No
-.      nr doc-list-indent-stack\n[doc-list-depth] \n[No]
-.    \}
-.    nr doc-have-tag-width 1
+.  ie (\n[doc-curr-type] == 1) \{\
+.    ds doc-tag-width-stack\n[doc-list-depth] \*[doc-curr-arg]
+.    nr doc-list-indent-stack\n[doc-list-depth] \n[\*[doc-curr-arg]]
+.  \}
+.  el \{\
+.    ds doc-tag-width-stack\n[doc-list-depth] No
+.    nr doc-list-indent-stack\n[doc-list-depth] \n[No]
 .  \}
 ..
 .
@@ -4068,7 +4054,6 @@
 .\" NS
 .\" NS modifies:
 .\" NS   doc-have-indent
-.\" NS   doc-have-tag-width
 .
 .de doc-set-vertical-and-indent
 .  ie \n[doc-have-indent] \{\
@@ -4162,8 +4147,6 @@
 .  doc-decrement-list-stack
 .  nr doc-list-depth -1
 .  doc-increment-list-stack
-.
-.  nr doc-have-tag-width 0
 ..
 .
 .

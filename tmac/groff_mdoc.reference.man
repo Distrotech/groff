@@ -491,8 +491,7 @@ To change this, insert
 .Ql \e&
 before or after the dot:
 .
-.Pp
-.Bd -literal -offset indent -compact
+.Bd -literal -offset indent
 The
 \&.Ql .
 character.
@@ -1486,6 +1485,9 @@ produces:
 The
 .Fl std
 option is valid only for manual page sections\~2 and\~3.
+Currently, this macro does nothing if used without the
+.Fl std
+flag.
 .
 .Ss "Interactive Commands"
 .
@@ -1971,7 +1973,7 @@ The
 font mode must be ended with the
 .Ql .Ef
 macro (the latter doesn't take parameters).
-Font modes may not be nested within other font modes.
+Font modes may be nested within other font modes.
 .Pp
 .Ql .Bf
 has the following syntax:
@@ -2827,7 +2829,7 @@ It has the following syntax:
 .Bl -tag -xwidth ".Li .Bd" -offset indent
 .It Li .Bd Xo
 .Bro \-literal | \-filled | \-unfilled | \-ragged | \-centered Brc
-.Oo \-offset Ao string Ac Oc Oo \-compact Oc Xc
+.Oo \-offset Ao string Ac Oc Oo \-file Ao file name Ac Oc Oo \-compact Oc Xc
 .El
 .Pp
 .
@@ -2849,15 +2851,16 @@ and right side).
 Display block with literal font (usually fixed-width).
 Useful for source code or simple tabbed or spaced text.
 .It Fl file Ao Ar file name Ac
-The file name following the
+The file which name follows the
 .Fl file
-flag is read and displayed.
-Literal mode is asserted and tabs are set at 8\~constant width character
-intervals.
-However, any
+flag is read and displayed before any data enclosed with
+.Ql .Bd
+and
+.Ql .Ed ,
+using the selected display type.
+Any
 .Xr troff/ Ns Nm \-mdoc
 commands in the file will be processed.
-Currently, this feature is not implemented.
 .It Fl offset Ao Ar string Ac
 If
 .Fl offset
@@ -3337,53 +3340,147 @@ was produced by:
 .El
 .Pp
 .
+Other keywords:
+.
+.Bl -tag -xwidth ".Fl indent Ao Ar string Ac"
+.It Fl width Ao Ar string Ac
+If
+.Ao string Ac
+is a valid numeric expression
+.Pf ( Em with a scale indicator other than
+.Sq Em u ) ,
+use that value for indentation.
+The most useful scale indicators are
+.Sq m
+and
+.Sq n ,
+specifying the so-called
+.Em \&Em
+and
+.Em "En square" .
+This is approximately the width of the letter
+.Sq m
+resp.\& the letter
+.Sq n
+of the current font (for nroff output, both scale indicators give the same
+values).
+If
+.Ao string Ac
+isn't a numeric expression, it is tested whether it is an
+.Nm \-mdoc
+macro name, and the default offset value associated with this macro is used.
+Finally, if all tests fail,
+the width of
+.Ao string Ac
+(typeset with a fixed-width font) is taken as the offset.
+.Pp
+If a width is not specified for the tag list type, the first time
+.Ql .It
+is invoked, an attempt is made to determine an appropriate width.
+If the first argument to
+.Ql .It
+is a callable macro, the default width for that macro will be used as if the
+macro name had been supplied as the width (otherwise, the default width of
+.Ql .No
+is used).
+However, if another item in the list is given with a different callable
+macro name, a new and nested list is assumed.
+This effectively means that
+.Fl width
+or
+.Fl xwidth
+is required for more complicated tag lists.
+.It Fl xwidth Ao Ar string Ac
+Interpret
+.Ao string Ac
+and use the width of the result.
+Almost all lists in this document use this option.
+.Pp
+Example:
+.
+.Bd -literal -offset indent
+\&.Bl -tag -xwidth ".Fl test Ao Ar string Ac"
+\&.It Fl test Ao Ar string Ac
+This is a longer sentence to show how the
+\&.Fl xwidth
+flag works in combination with a tag list.
+\&.El
+.Ed
+.Pp
+.
+gives:
+.
+.Bl -tag -xwidth ".Fl test Ao Ar string Ac"
+.It Fl test Ao Ar string Ac
+This is a longer sentence to show how the
+.Fl xwidth
+flag works in combination with a tag list.
+.El
+.Pp
+.
+Note that the current state of
+.Nm \-mdoc
+is saved before
+.Ao string Ac
+is interpreted; afterwards, all variables are restored again.
+However, boxes (used for enclosures) can't be saved in
+.Tn GNU
+.Xr troff 1 ;
+as a consequence, arguments must always be
+.Em balanced
+to avoid nasty errors.
+For example, don't say
+.Ql ".Ao string"
+but
+.Ql ".Ao string Xc"
+instead if you really need only an opening angle bracket.
+.It Fl offset Ao Ar string Ac
+If
+.Ao string Ac
+is
+.Ql -indent ,
+a default indent value (normally set to\~6n, similar to the value used in
+.Ql .Dl
+or
+.Ql .Bd )
+is used.
+If
+.Ao string Ac
+is a valid numeric expression instead
+.Pf ( Em with a scale indicator other than
+.Sq Em u ) ,
+use that value for indentation.
+The most useful scale indicators are
+.Sq m
+and
+.Sq n ,
+specifying the so-called
+.Em \&Em
+and
+.Em "En square" .
+This is approximately the width of the letter
+.Sq m
+resp.\& the letter
+.Sq n
+of the current font (for nroff output, both scale indicators give the same
+values).
+If
+.Ao string Ac
+isn't a numeric expression, it is tested whether it is an
+.Nm \-mdoc
+macro name, and the default offset value associated with this macro is used.
+Finally, if all tests fail,
+the width of
+.Ao string Ac
+(typeset with a fixed-width font) is taken as the offset.
+.It Fl compact
+Suppress insertion of vertical space before the list and between list items.
+.El
+.
+.
 \#
 \#=====================================================================
 \#
-Other keywords:
-.
-.Bl -tag -xwidth ".Fl width Ar \&Fl" -offset indent
-.It Fl width Ar "\&Fl"
-sets the width to the default width for a flag.
-All callable
-macros have a default width value.
-The
-.Ql \&.Fl ,
-value is presently
-set to ten constant width characters or about five sixth of
-an inch.
-.It Fl width Ar "24n"
-sets the width to 24 constant width characters or about two
-inches.
-The
-.Ql n
-is absolutely necessary for the scaling to work correctly.
-.It Fl width Ar "ENAMETOOLONG"
-sets width to the constant width length of the
-string given.
-.It Fl width Ar "\\*qint mkfifo\\*q"
-again, the width is set to the constant width of the string
-given.
-.El
-.Pp
-If a width is not specified for the tag list type, the first
-time
-.Ql \&.It
-is invoked, an attempt is made to determine an appropriate
-width.
-If the first argument to
-.Ql ".It"
-is a callable macro, the default width for that macro will be used
-as if the macro name had been supplied as the width.
-However,
-if another item in the list is given with a different callable
-macro name, a new and nested list is assumed.
-This effectively
-means that
-.Fl width
-is required for the tag list type.
-.
-.
 .Sh "MISCELLANEOUS MACROS"
 .
 .Bl -tag -xwidth ".Li .Bt"
@@ -3681,15 +3778,6 @@ if the line length is too short.
 Occasionally it
 separates the last parenthesis, and sometimes
 looks ridiculous if a line is in fill mode.
-.Pp
-If the outer-most list definition doesn't have a
-.Fl width
-argument, the
-.Ql ".It"
-elements of inner lists may not work (producing a list where
-each successive element
-.Sq walks
-to the right).
 .Pp
 The list and display macros to not do any keeps
 and certainly should be able to.
