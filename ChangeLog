@@ -1,6 +1,84 @@
+2001-03-16  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Introduced simple html tables to implement indentation.
+
+	* src/devices/grohtml/html.h (word, word_list): New structures.
+	(simple_output): Use it.
+	* src/devices/grohtml/post-html.cc: Add `INDENTATION'.
+	(html_printer): Improve indentation handling.
+	(html_printer::emit_raw): Set `in_table' element.  Handle
+	indentation if set.
+	(html_printer::write_header): Move conditional downwards.
+	Don't allow whitespace in tags.
+	(html_printer::do_linelength): Handle line length and indentation
+	conditionally.
+	(html_printer::do_pageoffset): Handle indentation conditionally.
+	(html_printer::do_indentation): Ditto.
+	(html_printer::do_tempindent): New function member.
+	(html_printer::do_fill): Take care of indentation.
+	(html_printer::do_flush): Finish table.
+	(html_printer::do_links): Ditto.
+	(html_printer::do_break): New function for handling `.br' and `.ti'.
+	(html_printer::troff_tag): Use it.
+	Handle `.ti'.
+	(html_printer::flush_globs): Fix.
+	(html_printer::flush_page): Finish table.
+	(html_printer::html_printer): Fix error message.  Set up
+	`linelength'.
+	(html_printer::add_to_sbuf): Remove special handling of character
+	code 255.
+	(to_unicode): Remove `stop()'.
+	(html_printer::write_title): Cleanup.
+	(html_printer::begin_page): Use `put_string()'.  Handle indentation.
+	(html_printer::~html_printer): Flush text and end the line.
+	Use `put_string()'.
+	* src/devices/grohtml/html_text.h: Add more *_TAG enum values.
+	* src/devices/grohtml/html_text.cc (html_text::end_tag): Fix
+	emission of tags.
+	(html_text::start_tag): Disable newlines.
+	(html_text::table_is_void): New function.
+	(html_text::issue_table_begin): Ditto.
+	(html_text::issue_table_end): Ditto.
+	(html_text::push_para): Better table handling.
+	(html_text::do_indent): New function.
+	(html_text::do_table): Ditto.
+	(html_text::done_table): Ditto.
+	(html_text::do_tt): Handle PRE_TAG.
+	(html_text::is_in_table): New function.
+	(html_text::check_emit_text): Handle tables.
+	(html_text::do_emittext): Use `nl()'.
+	(html_text::do_para): Handle table.
+	(html_text::remove_def): New function.
+	* src/devices/grohtml/output.cc (word, word_list): Implement
+	methods.
+	(simple_output::end_line): Flush last word.
+	(simple_output::simple_comment): Ditto.
+	(simple_output::begin_comment): Recoded.
+	(simple_output::end_comment): Ditto.
+	(simple_output::comment_arg): Removed.
+	(simple_output::check_newline): Improve test and flush last word.
+	(simple_output::space_or_newline): Improved.
+	(simple_output::write_newline): Replaced with...
+	(simple_output::nl): This.
+	(simple_output::put_raw_char): Flush last word.
+	(simple_output::check_space): Removed.
+	(simple_output::put_translated_string): Ditto.
+	(simple_output::put_string): Simplified.
+	(simple_output::put_number): Updated.
+	(simple_output::put_float): Ditto.
+	(simple_output::put_symbol): Removed.
+	(simple_output::enable_newlines): Add `check_newline()'.
+	(simple_output::flush_last_word): New function.
+
+	* src/roff/troff/enc.cc (no_fill): Remove call to add_html_tag().
+	* src/roff/troff/div.cc (page_offset): Add call to add_html_tag().
+
+	* tmac/s.tmac (@PP, @IP): Add html conditional code.
+	* tmac/an-old.tmac (TP): Ditto.
+
 2001-03-09  Ruslan Ermilov  <ru@freebsd.org>
 
-	mdate.sh: Make it POSIX compliant.
+	* mdate.sh: Make it POSIX compliant.
 
 2001-03-09  Werner LEMBERG  <wl@gnu.org>
 

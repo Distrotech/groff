@@ -31,7 +31,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
  *  html tags
  */
 
-typedef enum {I_TAG, B_TAG, P_TAG, SUB_TAG, SUP_TAG, TT_TAG, PRE_TAG, SMALL_TAG, BIG_TAG, BREAK_TAG} HTML_TAG;
+typedef enum {I_TAG, B_TAG, P_TAG, SUB_TAG, SUP_TAG, TT_TAG,
+	      PRE_TAG, SMALL_TAG, BIG_TAG, BREAK_TAG, TABLE_TAG} HTML_TAG;
 
 typedef struct tag_definition {
   HTML_TAG        type;
@@ -65,6 +66,7 @@ public:
   void   do_space       (void);
   void   do_break       (void);
   void   do_newline     (void);
+  void   do_table       (void);
   void   done_bold      (void);
   void   done_italic    (void);
   char  *done_para      (void);
@@ -74,24 +76,34 @@ public:
   void   done_pre       (void);
   void   done_small     (void);
   void   done_big       (void);
+  void   do_indent      (int indent, int pageoff, int linelen);
   int    emitted_text   (void);
   int    emit_space     (void);
   int    is_in_pre      (void);
   void   remove_tag     (HTML_TAG tag);
   void   remove_sub_sup (void);
+  void   done_table     (void);
+  int    is_in_table    (void);
 
 private:
   tag_definition   *stackptr;    /* the current paragraph state */
   tag_definition   *lastptr;     /* the end of the stack        */
   simple_output    *out;
   int               space_emitted;
+  int               current_indentation;  /* current .in value */
+  int               pageoffset;           /* .po value         */
+  int               linelength;         /* current line length */
 
-  int    is_present      (HTML_TAG t);
-  void   end_tag         (tag_definition *t);
-  void   start_tag       (tag_definition *t);
-  void   push_para       (HTML_TAG t, char *arg);
-  char  *shutdown        (HTML_TAG t);
-  void   check_emit_text (tag_definition *t);
-  int    remove_break    (void);
-  void   issue_tag       (char *tagname, char *arg);
+  int    is_present        (HTML_TAG t);
+  void   end_tag           (tag_definition *t);
+  void   start_tag         (tag_definition *t);
+  void   push_para         (HTML_TAG t, char *arg);
+  char  *shutdown          (HTML_TAG t);
+  void   check_emit_text   (tag_definition *t);
+  int    remove_break      (void);
+  void   issue_tag         (char *tagname, char *arg);
+  void   issue_table_begin (tag_definition *t);
+  void   issue_table_end   (void);
+  int    table_is_void     (tag_definition *t);
+  void   remove_def        (tag_definition *t);
 };

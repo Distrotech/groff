@@ -639,6 +639,7 @@ void page_offset()
     n = topdiv->prev_page_offset;
   topdiv->prev_page_offset = topdiv->page_offset;
   topdiv->page_offset = n;
+  curenv->add_html_tag(".po", n.to_units());
   skip_line();
 }
 

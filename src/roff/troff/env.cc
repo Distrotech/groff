@@ -1130,10 +1130,9 @@ void no_fill()
 {
   while (!tok.newline() && !tok.eof())
     tok.next();
-  if (break_flag) {
+  if (break_flag)
     curenv->do_break();
-    curenv->add_html_tag(".br");
-  }
+
   curenv->fill = 0;
   curenv->add_html_tag(".nf");
   curenv->ignore_next_eol = 1;
@@ -2030,6 +2029,7 @@ void environment::add_html_tag(const char *name, int i)
 	ignore_next_eol = 1;  // since the .ce creates an eol
       }
     }
+
     /*
      * need to emit tag for post-grohtml
      * but we check to see whether we can emit specials

@@ -1132,7 +1132,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .de @PP
 .par*start 0 0
 .nr \\n[.ev]:ai \\n[\\n[.ev]:PI]
-.ti +\\n[\\n[.ev]:ai]u
+.if !'\*(.T'html' .ti +\\n[\\n[.ev]:ai]u
 ..
 .de @QP
 .nr \\n[.ev]:ai \\n[\\n[.ev]:PI]
@@ -1153,11 +1153,18 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .	par*pop-tag-env
 .	di
 .	chop par*label
-.	ti -\\n[\\n[.ev]:ai]u
-.	ie \\n[dl]+1n<=\\n[\\n[.ev]:ai] \\*[par*label]\h'|\\n[\\n[.ev]:ai]u'\c
-.	el \{\
+.	ie '\*(.T'html' \{\
+.		ti -\\n[\\n[.ev]:ai]u
 \\*[par*label]
-.	br
+.		br
+.	\}
+.	el \{\
+.		ti -\\n[\\n[.ev]:ai]u
+.		ie \\n[dl]+1n<=\\n[\\n[.ev]:ai] \\*[par*label]\h'|\\n[\\n[.ev]:ai]u'\c
+.		el \{\
+\\*[par*label]
+.			br
+.		\}
 .	\}
 .	rm par*label
 .\}

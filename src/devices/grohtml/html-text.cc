@@ -42,7 +42,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 
 html_text::html_text (simple_output *op) :
-  stackptr(NULL), lastptr(NULL), out(op), space_emitted(TRUE)
+  stackptr(NULL), lastptr(NULL), out(op), space_emitted(TRUE),
+  current_indentation(-1), pageoffset(-1), linelength(-1)
 {
 }
 
@@ -61,13 +62,19 @@ void html_text::end_tag (tag_definition *t)
 
   case I_TAG:      out->put_string("</i>"); break;
   case B_TAG:      out->put_string("</b>"); break;
-  case P_TAG:      out->put_string("</p>"); out->write_newline(); out->enable_newlines(FALSE); break;
+  case P_TAG:      out->put_string("</p>").nl().enable_newlines(FALSE); break;
   case SUB_TAG:    out->put_string("</sub>"); break;
   case SUP_TAG:    out->put_string("</sup>"); break;
   case TT_TAG:     out->put_string("</tt>"); break;
-  case PRE_TAG:    out->put_string("</pre>\n"); out->enable_newlines(TRUE); break;
+  case PRE_TAG:    out->put_string("</pre>");
+                   if (! is_present(TABLE_TAG)) {
+		     out->nl();
+		     out->enable_newlines(TRUE);
+		   }
+		   break;
   case SMALL_TAG:  out->put_string("</small>"); break;
   case BIG_TAG:    out->put_string("</big>"); break;
+  case TABLE_TAG:  issue_table_end(); break;
 
   default:
     error("unrecognised tag");
@@ -101,18 +108,50 @@ void html_text::start_tag (tag_definition *t)
 
   case I_TAG:      issue_tag("<i", t->arg1); break;
   case B_TAG:      issue_tag("<b", t->arg1); break;
-  case P_TAG:      issue_tag("\n<p", t->arg1); out->enable_newlines(TRUE); break;
+  case P_TAG:      issue_tag("\n<p", t->arg1);
+                   out->enable_newlines(TRUE); break;
   case SUB_TAG:    issue_tag("<sub", t->arg1); break;
   case SUP_TAG:    issue_tag("<sup", t->arg1); break;
   case TT_TAG:     issue_tag("<tt", t->arg1); break;
-  case PRE_TAG:    issue_tag("\n<pre", t->arg1); out->enable_newlines(FALSE); break;
+  case PRE_TAG:    out->nl(); issue_tag("<pre", t->arg1);
+                   out->enable_newlines(FALSE); break;
   case SMALL_TAG:  issue_tag("<small", t->arg1); break;
   case BIG_TAG:    issue_tag("<big", t->arg1); break;
+  case TABLE_TAG:  issue_table_begin(t); break;
   case BREAK_TAG:  break;
 
   default:
     error("unrecognised tag");
   }
+}
+
+int html_text::table_is_void (tag_definition *t)
+{
+  if (linelength > 0) {
+    return( current_indentation*100/linelength <= 0 );
+  } else {
+    return( FALSE );
+  }
+}
+
+void html_text::issue_table_begin (tag_definition *t)
+{
+  if (linelength > 0) {
+    int width=current_indentation*100/linelength;
+
+    if (width > 0) {
+      out->put_string("<table width=\"100%\" rules=\"none\" frame=\"none\"\n       cols=\"2\" cellspacing=\"0\" cellpadding=\"0\">").nl();
+      out->put_string("<tr valign=\"top\" align=\"left\">").nl();
+      out->put_string("<td width=\"").put_number(width).put_string("%\"></td>");
+      out->put_string("<td width=\"").put_number(100-width).put_string("%\">").nl();
+    }
+  }
+}
+
+void html_text::issue_table_end (void)
+{
+  out->put_string("</td></table>").nl();
+  out->enable_newlines(TRUE);
 }
 
 /*
@@ -166,19 +205,95 @@ void html_text::push_para (HTML_TAG t, char *arg)
   p->text_emitted = FALSE;
 
   /*
-   *  if t is a P_TAG or PRE_TAG make sure it goes on the end of the stack.
+   *  if t is a P_TAG or TABLE_TAG or PRE_TAG make sure it goes on the end of the stack.
+   *  But we insist that a TABLE_TAG is always after a PRE_TAG
+   *  and that a P_TAG is always after a TABLE_TAG
    */
 
-  if (((t == P_TAG) || (t == PRE_TAG)) && (lastptr != NULL)) {
-    lastptr->next = p;
-    lastptr       = p;
-    p->next       = NULL;
+  if (((t == P_TAG) || (t == PRE_TAG) || (t == TABLE_TAG)) &&
+      (lastptr != NULL)) {
+    if (((lastptr->type == TABLE_TAG) && (t == PRE_TAG)) ||
+	((lastptr->type == P_TAG) && (t == TABLE_TAG))) {
+      /*
+       *  insert p before the lastptr
+       */
+      if (stackptr == lastptr) {
+	/*
+	 *  only on element of the stack
+	 */
+	p->next       = stackptr;
+	stackptr      = p;	
+      } else {
+	/*
+	 *  more than one element is on the stack
+	 */
+	tag_definition *q = stackptr;
+
+	while (q->next != lastptr) {
+	  q = q->next;
+	}
+	q->next       = p;
+	p->next       = lastptr;
+      }
+    } else {
+      /*
+       *  store, p, at the end
+       */
+      lastptr->next = p;
+      lastptr       = p;
+      p->next       = NULL;
+    }
   } else {
     p->next       = stackptr;
     if (stackptr == NULL)
       lastptr = p;
     stackptr      = p;
   }
+}
+
+/*
+ *  do_indent - remember the indent parameters and if
+ *              indent is > pageoff and indent has changed
+ *              then we start a html table to implement the indentation.
+ */
+
+void html_text::do_indent (int indent, int pageoff, int linelen)
+{
+  if ((current_indentation != -1) &&
+      (pageoffset+current_indentation != indent+pageoff)) {
+      /*
+       *  actual indentation of text has changed, we need to put
+       *  a table tag onto the stack.
+       */
+    do_table();
+  }
+  current_indentation = indent;
+  pageoffset          = pageoff;
+  linelength          = linelen;
+}
+
+void html_text::do_table (void)
+{
+  int in_pre = is_in_pre();
+  // char *para_type = done_para();
+  done_pre();
+  shutdown(TABLE_TAG);   // shutdown a previous table, if present
+  remove_break();
+  if (in_pre) {
+    do_pre();
+  }
+  // do_para(para_type);
+  push_para(TABLE_TAG, "");
+}
+
+/*
+ *  done_table - terminates a possibly existing table.
+ */
+
+void html_text::done_table (void)
+{
+  shutdown(TABLE_TAG);
+  space_emitted = TRUE;
 }
 
 /*
@@ -215,7 +330,7 @@ void html_text::do_tt (void)
 {
   done_bold();
   done_italic();
-  if (! is_present(TT_TAG)) {
+  if ((! is_present(TT_TAG)) && (! is_present(PRE_TAG))) {
     push_para(TT_TAG, "");
   }
 }
@@ -243,6 +358,15 @@ void html_text::do_pre (void)
 int html_text::is_in_pre (void)
 {
   return( is_present(PRE_TAG) );
+}
+
+/*
+ *  is_in_table - returns TRUE if we are currently within a table.
+ */
+
+int html_text::is_in_table (void)
+{
+  return( is_present(TABLE_TAG) );
 }
 
 /*
@@ -389,9 +513,37 @@ void html_text::done_big (void)
 void html_text::check_emit_text (tag_definition *t)
 {
   if ((t != NULL) && (! t->text_emitted)) {
-    check_emit_text(t->next);
-    t->text_emitted = TRUE;
-    start_tag(t);
+    /*
+     *  we peep and see whether there is a <p> before the <table>
+     * in which case we skip the <p>
+     */
+    if (t->type == TABLE_TAG) {
+      if (table_is_void(t)) {
+	tag_definition *n = t->next;
+	remove_def(t);
+	check_emit_text(n);
+      } else {
+	/*
+	 *  a table which will be emitted, is there a <p> succeeding it?
+	 */
+	if ((t->next != NULL) &&
+	    (t->next->type == P_TAG) &&
+	    ((t->next->arg1 == 0) || strcmp(t->next->arg1, "") == 0)) {
+	  /*
+	   *  yes skip the <p>
+	   */
+	  check_emit_text(t->next->next);
+	} else {
+	  check_emit_text(t->next);
+	}
+	t->text_emitted = TRUE;
+	start_tag(t);
+      }
+    } else {
+      check_emit_text(t->next);
+      t->text_emitted = TRUE;
+      start_tag(t);
+    }
   }
 }
 
@@ -409,9 +561,9 @@ void html_text::do_emittext (char *s, int length)
     check_emit_text(stackptr);
     if (text) {
       if (is_present(PRE_TAG)) {
-	out->put_string("\n");
+	out->nl();
       } else {
-	out->put_string("<br>\n");
+	out->put_string("<br>").nl();
       }
     }
   } else {
@@ -430,6 +582,9 @@ void html_text::do_para (char *arg)
   done_pre();
   if (! is_present(P_TAG)) {
     remove_sub_sup();
+    if ((arg != 0) && (strcmp(arg, "") != 0)) {
+      remove_tag(TABLE_TAG);
+    }
     push_para(P_TAG, arg);
     space_emitted = TRUE;
   }
@@ -509,20 +664,20 @@ int html_text::emit_space (void)
 }
 
 /*
- *  remove_tag - removes a tag from the stack.
+ *  remove_def - removes a definition, t, from the stack.
  */
 
-void html_text::remove_tag (HTML_TAG tag)
+void html_text::remove_def (tag_definition *t)
 {
   tag_definition *p    = stackptr;
   tag_definition *l    = 0;
   tag_definition *q    = 0;
     
-  while ((p != 0) && (p->type != tag)) {
+  while ((p != 0) && (p != t)) {
     l = p;
     p = p->next;
   }
-  if ((p != 0) && (p->type == tag)) {
+  if ((p != 0) && (p == t)) {
     if (p == stackptr) {
       stackptr = stackptr->next;
       if (stackptr == NULL)
@@ -538,6 +693,21 @@ void html_text::remove_tag (HTML_TAG tag)
     }
     free(p);
   }
+}
+
+/*
+ *  remove_tag - removes a tag from the stack.
+ */
+
+void html_text::remove_tag (HTML_TAG tag)
+{
+  tag_definition *p = stackptr;
+    
+  while ((p != 0) && (p->type != tag)) {
+    p = p->next;
+  }
+  if ((p != 0) && (p->type == tag))
+    remove_def(p);
 }
 
 /*

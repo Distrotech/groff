@@ -55,6 +55,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #define UNICODE_DESC_START           0x80            /* all character entities above this are     */
                                                      /* either encoded by their glyph names or if */
                                                      /* there is no name then we use &#nnn;       */
+#define INDENTATION                                  /* #undef INDENTATION to remove .in handling */
 
 typedef enum {CENTERED, LEFT, RIGHT, INLINE} TAG_ALIGNMENT;
 
@@ -967,11 +968,13 @@ class html_printer : public printer {
   page                *page_contents;
   html_text           *current_paragraph;
   int                  end_center;
+  int                  end_tempindent;
   TAG_ALIGNMENT        next_tag;
   int                  fill_on;
   int                  linelength;
   int                  pageoffset;
   int                  indentation;
+  int                  prev_indent;
   int                  pointsize;
   int                  vertical_spacing;
   int                  line_number;
@@ -1007,9 +1010,8 @@ class html_printer : public printer {
   int   is_courier_until_eol          (void);
   void  start_size                    (int from, int to);
   void  do_font                       (text_glob *g);
-  void  do_space                      (void);
-  void  do_break                      (void);
   void  do_center                     (char *arg);
+  void  do_break                      (void);
   void  do_eol                        (void);
   void  do_title                      (void);
   void  do_fill                       (int on);
@@ -1019,13 +1021,13 @@ class html_printer : public printer {
   void  do_linelength                 (char *arg);
   void  do_pageoffset                 (char *arg);
   void  do_indentation                (char *arg);
+  void  do_tempindent                 (char *arg);
   void  do_verticalspacing            (char *arg);
   void  do_pointsize                  (char *arg);
   void  do_centered_image             (void);
   void  do_left_image                 (void);
   void  do_right_image                (void);
   void  do_auto_image                 (text_glob *g, const char *filename);
-  void  do_indent                     (char *arg);
   void  do_links                      (void);
   void  do_flush                      (void);
   int   is_in_middle                  (int left, int right);
@@ -1094,6 +1096,8 @@ void html_printer::emit_raw (text_glob *g)
     determine_space(g);
     current_paragraph->do_emittext(g->text_string, g->text_length);
   } else {
+    int in_table=current_paragraph->is_in_table();
+
     current_paragraph->done_para();
     switch (next_tag) {
 
@@ -1113,6 +1117,13 @@ void html_printer::emit_raw (text_glob *g)
     current_paragraph->done_para();
     next_tag        = INLINE;
     supress_sub_sup = TRUE;
+#if defined(INDENTATION)
+    if (in_table) {
+      stop();
+      current_paragraph->do_indent(0, pageoffset, linelength);
+      current_paragraph->do_indent(indentation, pageoffset, linelength);
+    }
+#endif
   }
 }
 
@@ -1276,11 +1287,12 @@ void html_printer::write_header (void)
       header.header_level = 7;
     }
 
-    if (cutoff_heading+2 > header.header_level) {
-      // firstly we must terminate any font and type faces
-      current_paragraph->done_para();
-      supress_sub_sup = TRUE;
+    // firstly we must terminate any font and type faces
+    current_paragraph->done_para();
+    current_paragraph->done_table();
+    supress_sub_sup = TRUE;
 
+    if (cutoff_heading+2 > header.header_level) {
       // now we save the header so we can issue a list of links
       header.no_of_headings++;
       style st;
@@ -1298,7 +1310,7 @@ void html_printer::write_header (void)
 
       // lastly we generate a tag
 
-      html.put_string("\n<a name=\"");
+      html.nl().put_string("<a name=\"");
       if (simple_anchors) {
 	char buffer[MAX_LINE_LENGTH];
 
@@ -1307,10 +1319,7 @@ void html_printer::write_header (void)
       } else {
 	html.put_string(header.header_buffer);
       }
-      html.put_string("\"></a>\n");
-    } else {
-      current_paragraph->done_para();
-      supress_sub_sup = TRUE;
+      html.put_string("\"></a>").nl();
     }
 
     // and now we issue the real header
@@ -1320,7 +1329,7 @@ void html_printer::write_header (void)
     html.put_string(header.header_buffer);
     html.put_string("</h");
     html.put_number(header.header_level);
-    html.put_string(">\n");
+    html.put_string(">").nl();
 
     current_paragraph->do_para("");
   }
@@ -1420,7 +1429,12 @@ int html_printer::is_courier_until_eol (void)
 
 void html_printer::do_linelength (char *arg)
 {
-  linelength = atoi(arg);
+#if defined(INDENTATION)
+  if (fill_on) {
+    linelength = atoi(arg);
+    current_paragraph->do_indent(indentation, pageoffset, linelength);
+  }
+#endif
 }
 
 /*
@@ -1429,7 +1443,12 @@ void html_printer::do_linelength (char *arg)
 
 void html_printer::do_pageoffset (char *arg)
 {
+#if defined(INDENTATION)
   pageoffset = atoi(arg);
+  if (fill_on) {
+    current_paragraph->do_indent(indentation, pageoffset, linelength);
+  }
+#endif
 }
 
 /*
@@ -1438,7 +1457,28 @@ void html_printer::do_pageoffset (char *arg)
 
 void html_printer::do_indentation (char *arg)
 {
-  indentation = atoi(arg);
+#if defined(INDENTATION)
+  if (fill_on) {
+    indentation = atoi(arg);
+    current_paragraph->do_indent(indentation, pageoffset, linelength);
+  }
+#endif
+}
+
+/*
+ *  do_tempindent - handle the .ti command from troff.
+ */
+
+void html_printer::do_tempindent (char *arg)
+{
+#if defined(INDENTATION)
+  if (fill_on) {
+    end_tempindent = 1;
+    prev_indent    = indentation;
+    indentation    = atoi(arg);
+    current_paragraph->do_indent(indentation, pageoffset, linelength);
+  }
+#endif
 }
 
 /*
@@ -1465,6 +1505,10 @@ void html_printer::do_pointsize (char *arg)
 
 void html_printer::do_fill (int on)
 {
+  current_paragraph->do_break();
+  output_hpos = indentation+pageoffset;
+  supress_sub_sup = TRUE;
+
   if (fill_on != on) {
     if (is_font_courier(output_style.f) && (is_courier_until_eol())) {
       if (on) {
@@ -1487,7 +1531,7 @@ void html_printer::do_eol (void)
     current_paragraph->do_newline();
     current_paragraph->do_break();
   }
-  output_hpos = pageoffset;
+  output_hpos = indentation+pageoffset;
   if (end_center > 0) {
     if (end_center > 1) {
       current_paragraph->do_break();
@@ -1507,6 +1551,7 @@ void html_printer::do_eol (void)
 void html_printer::do_flush (void)
 {
   current_paragraph->done_para();
+  current_paragraph->done_table();
 }
 
 /*
@@ -1516,11 +1561,33 @@ void html_printer::do_flush (void)
 void html_printer::do_links (void)
 {
   current_paragraph->done_para();
+  current_paragraph->done_table();
   auto_links = FALSE;   /* from now on only emit under user request */
 #if !defined(DEBUGGING)
   file_list.add_new_file(xtmpfile());
   html.set_file(file_list.get_file());
 #endif
+}
+
+/*
+ *  do_break - handles the ".br" request and also
+ *             undoes an outstanding ".ti" command.
+ */
+
+void html_printer::do_break (void)
+{
+  current_paragraph->do_break();
+#if defined(INDENTATION)
+  if (end_tempindent > 0) {
+    end_tempindent--;
+    if (end_tempindent == 0) {
+      indentation = prev_indent;
+      current_paragraph->do_indent(indentation, pageoffset, linelength);
+    }
+  }
+#endif
+  output_hpos = indentation+pageoffset;
+  supress_sub_sup = TRUE;
 }
 
 /*
@@ -1540,9 +1607,7 @@ void html_printer::troff_tag (text_glob *g)
     current_paragraph->do_space();
     supress_sub_sup = TRUE;
   } else if (strncmp(t, ".br", 3) == 0) {
-    current_paragraph->do_break();
-    output_hpos = pageoffset;
-    supress_sub_sup = TRUE;
+    do_break();
   } else if (strcmp(t, ".centered-image") == 0) {
     do_centered_image();
   } else if (strcmp(t, ".right-image") == 0) {
@@ -1575,6 +1640,9 @@ void html_printer::troff_tag (text_glob *g)
   } else if (strncmp(t, ".in", 3) == 0) {
     char *a = (char *)t+3;
     do_indentation(a);
+  } else if (strncmp(t, ".ti", 3) == 0) {
+    char *a = (char *)t+3;
+    do_tempindent(a);
   } else if (strncmp(t, ".vs", 3) == 0) {
     char *a = (char *)t+3;
     do_verticalspacing(a);
@@ -1605,7 +1673,7 @@ void html_printer::flush_globs (void)
     do {
       g = page_contents->glyphs.get_data();
 
-      if (strcmp(g->text_string, "ZZZZ") == 0) {
+      if (strcmp(g->text_string, "XXXXXXX") == 0) {
 	stop();
       }
 
@@ -1635,6 +1703,7 @@ void html_printer::flush_page (void)
   // page_contents->dump_page();
   flush_globs();
   current_paragraph->done_para();
+  current_paragraph->done_table();
   
   // move onto a new page
   delete page_contents;
@@ -2074,11 +2143,13 @@ html_printer::html_printer()
   supress_sub_sup(TRUE),
   cutoff_heading(100),
   end_center(0),
+  end_tempindent(0),
   next_tag(INLINE),
   fill_on(TRUE),
-  linelength(0),
   pageoffset(0),
   indentation(0),
+  prev_indent(0),
+  linelength(0),
   line_number(0)
 {
 #if defined(DEBUGGING)
@@ -2088,9 +2159,9 @@ html_printer::html_printer()
 #endif
   html.set_file(file_list.get_file());
   if (font::hor != 24)
-    fatal("horizontal resolution must be 1");
+    fatal("horizontal resolution must be 24");
   if (font::vert != 40)
-    fatal("vertical resolution must be 1");
+    fatal("vertical resolution must be 40");
 #if 0
   // should be sorted html..
   if (font::res % (font::sizescale*72) != 0)
@@ -2106,6 +2177,7 @@ html_printer::html_printer()
   html.set_fixed_point(point);
   space_char_index  = font::name_to_index("space");
   paper_length      = font::paperlength;
+  linelength        = font::res*13/2;
   if (paper_length == 0)
     paper_length    = 11*font::res;
 
@@ -2132,8 +2204,6 @@ void html_printer::add_char_to_sbuf (unsigned char code)
 
 void html_printer::add_to_sbuf (unsigned char code, const char *name)
 {
-  if (code == 255) stop();
-
   if (name == 0) {
     add_char_to_sbuf(code);
   } else {
@@ -2314,7 +2384,6 @@ static char *to_unicode (unsigned char ch)
 {
   static char buf[20];
 
-  stop();
   sprintf(buf, "&#%u;", (unsigned int)ch);
   return( buf );
 }
@@ -2477,16 +2546,16 @@ void html_printer::write_title (int in_head)
     if (in_head) {
       html.put_string("<title>");
       html.put_string(title.text);
-      html.put_string("</title>\n\n");
+      html.put_string("</title>").nl().nl();
     } else {
       title.has_been_written = TRUE;
       html.put_string("<h1 align=center>");
       html.put_string(title.text);
-      html.put_string("</h1>\n\n");
+      html.put_string("</h1>").nl().nl();
     }
   } else if (in_head) {
     // place empty title tags to help conform to `tidy'
-    html.put_string("<title></title>\n");
+    html.put_string("<title></title>").nl();
   }
 }
 
@@ -2503,7 +2572,7 @@ static void write_rule (void)
 void html_printer::begin_page(int n)
 {
   page_number            =  n;
-  html.begin_comment("Page: ").comment_arg(i_to_a(page_number)).end_comment();;
+  html.begin_comment("Page: ").put_string(i_to_a(page_number)).end_comment();;
   no_of_printed_pages++;
 
   output_style.f         =  0;
@@ -2515,6 +2584,9 @@ void html_printer::begin_page(int n)
   output_vpos            = -1;
   output_vpos_max        = -1;
   current_paragraph      = new html_text(&html);
+#if defined(INDENTATION)
+  current_paragraph->do_indent(indentation, pageoffset, linelength);
+#endif
   current_paragraph->do_para("");
 }
 
@@ -2531,9 +2603,17 @@ font *html_printer::make_font(const char *nm)
 
 html_printer::~html_printer()
 {
-  current_paragraph->done_para();
+  current_paragraph->flush_text();
+  html.end_line();
   html.set_file(stdout);
-  // fputs("<!doctype html public \"-//IETF//DTD HTML 4.0//EN\">\n", stdout);
+  /*
+   *  'HTML: The definitive guide', O'Reilly, p47. advises against specifying
+   *         the dtd, so for the moment I'll leave this commented out.
+   *         If requested we could always emit it if a command line switch
+   *         was present.
+   *
+   *  fputs("<!doctype html public \"-//IETF//DTD HTML 4.0//EN\">\n", stdout);
+   */
   fputs("<html>\n", stdout);
   fputs("<head>\n", stdout);
   fputs("<meta name=\"generator\" content=\"groff -Thtml, see www.gnu.org\">\n", stdout);
@@ -2547,9 +2627,9 @@ html_printer::~html_printer()
   {
     extern const char *Version_string;
     html.begin_comment("Creator     : ")
-       .comment_arg("groff ")
-       .comment_arg("version ")
-       .comment_arg(Version_string)
+       .put_string("groff ")
+       .put_string("version ")
+       .put_string(Version_string)
        .end_comment();
   }
   {
@@ -2560,10 +2640,10 @@ html_printer::~html_printer()
 #endif
     t = time(0);
     html.begin_comment("CreationDate: ")
-       .comment_arg(ctime(&t))
-       .end_comment();
+      .put_string(ctime(&t))
+      .end_comment();
   }
-  html.begin_comment("Total number of pages: ").comment_arg(i_to_a(no_of_printed_pages)).end_comment();
+  html.begin_comment("Total number of pages: ").put_string(i_to_a(no_of_printed_pages)).end_comment();
   html.end_line();
   /*
    *  now run through the file list copying each temporary file in turn and emitting the links.
