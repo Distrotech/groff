@@ -5007,7 +5007,10 @@
 .\" NS   doc-volume-name, doc-date, doc-page-number-string, doc-book-name
 .
 .de doc-reset-reference
-.  nr doc-author-count 0
+.  while (\n[doc-author-count]) \{\
+.    ds doc-author-name\n[doc-author-count]
+.    nr doc-author-count -1
+.  \}
 .  nr doc-journal-count 0
 .  nr doc-issue-count 0
 .  nr doc-optional-count 0

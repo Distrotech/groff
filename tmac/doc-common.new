@@ -176,6 +176,8 @@
 .nr doc-punct) 3
 .nr doc-punct[ 4
 .nr doc-punct] 3
+.nr doc-punct? 3
+.nr doc-punct! 3
 .
 .
 .\" header assembly macros
@@ -222,14 +224,18 @@
 .\" .ds volume-ds-9 System Kernel Developer's Manual
 .
 .ds doc-volume-ds-USD   System User's Supplementary Documents
-.ds doc-volume-ds-PS1   System Programmers's Supplementary Documents
+.ds doc-volume-ds-PS1   System Programmer's Supplementary Documents
 .ds doc-volume-ds-AMD   System Ancestral Manual Documents
 .ds doc-volume-ds-SMM   System Manager's Manual
 .ds doc-volume-ds-URM   System Reference Manual
-.ds doc-volume-ds-PRM   System Programmers's Manual
+.ds doc-volume-ds-PRM   System Programmer's Manual
 .ds doc-volume-ds-KM    System Kernel Manual
 .ds doc-volume-ds-IND   System Manual Master Index
 .ds doc-volume-ds-LOCAL System Local Manual
+.ds doc-volume-ds-CON   System Contributed Software Manual
+.
+.als doc-volume-ds-MMI doc-volume-ds-IND
+.als doc-volume-ds-LOC doc-volume-ds-LOCAL
 .
 .ds doc-volume-as-alpha    (Alpha Architecture)
 .ds doc-volume-as-amiga    (Amiga Architecture)
@@ -268,6 +274,11 @@
 .ds doc-volume-as-x68k     (x68k Architecture)
 .
 .de Dt
+.  \" reset default arguments
+.  ds doc-document-title UNTITLED
+.  ds doc-volume LOCAL
+.  ds doc-section Null
+.
 .  if !"\$1"" \
 .    ds doc-document-title "\$1
 .

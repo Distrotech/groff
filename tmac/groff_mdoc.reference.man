@@ -1,4 +1,12 @@
-.\"     $NetBSD: mdoc.samples.7,v 1.21 1999/08/23 21:54:20 ross Exp $
+.\" groff_mdoc.reference.man
+.\"
+.\"   A complete reference for mdocNG (not finished yet)
+.\"
+.\" Based on NetBSD's mdoc.samples.7, version 1.21.
+.\"
+.\"
+.\"   Warning: You can't format this file with the old mdoc macros!
+.\"
 .\"
 .\" Copyright (c) 1990, 1993
 .\"     The Regents of the University of California.  All rights reserved.
@@ -33,7 +41,7 @@
 .\"
 .\"     @(#)mdoc.samples.7 8.2 (Berkeley) 12/30/93
 .\"
-.\" This tutorial sampler invokes every macro in the package several
+.\" This reference invokes every macro in the package several
 .\" times and is guaranteed to give a worst case performance
 .\" for an already extremely slow package.
 .\"
@@ -43,26 +51,23 @@
 .
 .Dd January 1, 2001
 .Os
-.Dt MDOC.SAMPLES 7
+.Dt MDOC.REFERENCE 7
 .
 .
 .Sh NAME
 .
-.Nm mdoc.samples
-.Nd tutorial sampler for writing
-.Ux
-manuals with
-.Nm \-mdoc
+.Nm mdoc.reference
+.Nd reference for groff's mdoc implementation
 .
 .
 .Sh SYNOPSIS
 .
-.Nm man mdoc.samples
+.Nm man mdoc.reference
 .
 .
 .Sh DESCRIPTION
 .
-A tutorial sampler for writing
+A complete reference for writing
 .Ux
 manual pages with the
 .Nm \-mdoc
@@ -111,9 +116,6 @@ of actual length and without sexist intention.
 .
 .Sh GETTING STARTED
 .
-Since a tutorial document is normally read when a person desires to use the
-material immediately, the assumption has been made that the user of this
-document may be impatient.
 The material presented in the remainder of this document is outlined
 as follows:
 .
@@ -632,7 +634,7 @@ used to construct headers and footers only.
 .Bl -tag -width 6n
 .It Li .Dt Xo
 .Op Aq document title
-.Op Aq section#
+.Op Aq section number
 .Op Aq volume
 .Xc
 The document title is the subject of the man page and must be in
@@ -674,12 +676,38 @@ and
 for
 .Ql LOCAL .
 Values from the previous table will specify a new volume name.
+If the third parameter is a keyword designating a computer architecture,
+its value is appended to the volume name as specified by the second
+parameter.  By default, the following architectures are defined:
+.
+.Bd -ragged -offset indent
+alpha, amiga, arc, arm26, arm32, atari, bebox, cobalt, evbsh3, hp300,
+hpcmips, i386, luna68k, m68k, mac68k, macppc, mips, mmeye, mvme68k, news68k,
+newsmips, next68k, ofppc, pc532, pmax, powerpc, prep, sgimips, sh3, sparc,
+sparc64, sun3, tahoe, vax, x68k
+.Ed
+.Pp
+.
+In the following examples, the left (which is identical to the right) and
+the middle part of the manual page header strings are shown.
+.
+.Pp
+.Bl -tag -xwidth ".Li .Dt FOO 2 mac68k" -compact -offset indent
+.It Li .Dt FOO 7
+.Ql FOO(7)
+.Ql System Reference Manual
+.It Li .Dt FOO 2 mac68k
+.Ql FOO(2)
+.Ql System Programmer's Manual (mac68k Architecture)
+.It Li .Dt FOO \*[q]\*[q] bar
+.Ql FOO
+.Ql bar
+.El
+.Pp
+.
 \#
 \#=====================================================================
 \#
-The next table's parameters will append the parameter value to the volume
-name as specified
-.
 .It Li \&.Os operating_system release#
 The name of the operating system
 should be the common acronym, e.g.
@@ -1365,9 +1393,9 @@ to
 it can not recall the first argument it was invoked with.
 .Pp
 .Dl Usage: .Nm argument ... \*[doc-punct-chars]
-.Bl -tag -xwidth ".Li \&.Nm mdoc.samples" -compact -offset 14n
-.It Li \&.Nm mdoc.samples
-.Nm mdoc.samples
+.Bl -tag -xwidth ".Li \&.Nm mdoc.reference" -compact -offset 14n
+.It Li \&.Nm mdoc.reference
+.Nm mdoc.reference
 .It Li \&.Nm \e-mdoc
 .Nm \-mdoc
 .It Li \&.Nm foo\ )\ )\ ,
@@ -1937,10 +1965,8 @@ Produces
 .El
 .Ed
 .Pp
-.Db on
 Test:
 .Em This is a Sm Em very special test , Sm a very special test .
-.Db off
 .Pp
 All of the above examples have used the
 .Ql \&.Xo
@@ -2904,9 +2930,7 @@ If one or more files are involved
 may be bogus.
 If there is only one file, it should be accurate.
 The second line gives the argument count, the argument
-.Db on
 .Pq Ql \&Fl
-.Db off
 and its length.
 If the length of an argument is two characters, the
 argument is tested to see if it is executable (unfortunately, any
