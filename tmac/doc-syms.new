@@ -34,6 +34,36 @@
 .\"     %beginstrip%
 .
 .
+.\" NS Ld user macro
+.\" NS   print `...' (similar to TeX's \ldots command)
+.\" NS
+.\" NS modifies:
+.\" NS   doc-macro-name, doc-arg-ptr
+.\" NS
+.\" NS width register `Ld' defined in doc-common
+.
+.de Ld
+.  if !\n[doc-arg-limit] \
+.    if \n[.$] \{\
+.      ds doc-macro-name Ld
+.      doc-parse-args \$@
+.    \}
+.
+.  \" replace current argument with result
+.  ds doc-arg\n[doc-arg-ptr] \&.\|.\|.\&
+.  nr doc-type\n[doc-arg-ptr] 2
+.  ds doc-space\n[doc-arg-ptr] "\*[doc-space]
+.
+.  \" recompute space vector for remaining arguments
+.  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
+.  nr doc-arg-limit \n[doc-arg-ptr]
+.  if \n[doc-num-args] \
+.    doc-parse-space-vector
+.
+.  doc-print-recursive
+..
+.
+.
 .\" NS Ux user macro
 .\" NS   print UNIX
 .\" NS
@@ -41,7 +71,7 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Ux, doc-reg-Ux
+.\" NS   doc-str-Ux
 .\" NS
 .\" NS width register `Ux' defined in doc-common
 .
@@ -64,11 +94,8 @@
 .  \" recompute space vector for remaining arguments
 .  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
 .  nr doc-arg-limit \n[doc-arg-ptr]
-.  nr doc-reg-Ux \n[doc-arg-ptr]
-.  if \n[doc-num-args] \{\
-.    doc-parse-arg-vector
-.    nr doc-arg-ptr \n[doc-reg-Ux]
-.  \}
+.  if \n[doc-num-args] \
+.    doc-parse-space-vector
 .
 .  doc-print-recursive
 ..
@@ -81,7 +108,7 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Bx, doc-str-Bx1, doc-reg-Bx, doc-str-Bx-XXX
+.\" NS   doc-str-Bx, doc-str-Bx1, doc-str-Bx-XXX
 .\" NS
 .\" NS width register `Bx' defined in doc-common
 .
@@ -148,11 +175,8 @@
 .  \" recompute space vector for remaining arguments
 .  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
 .  nr doc-arg-limit \n[doc-arg-ptr]
-.  nr doc-reg-Bx \n[doc-arg-ptr]
-.  if \n[doc-num-args] \{\
-.    doc-parse-arg-vector
-.    nr doc-arg-ptr \n[doc-reg-Bx]
-.  \}
+.  if \n[doc-num-args] \
+.    doc-parse-space-vector
 .
 .  doc-print-recursive
 ..
@@ -175,7 +199,7 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-At, doc-str-At1, doc-reg-At, doc-str-At-XXX
+.\" NS   doc-str-At, doc-str-At1, doc-str-At-XXX
 .\" NS
 .\" NS width register `At' defined in doc-common
 .
@@ -244,11 +268,8 @@
 .  \" recompute space vector for remaining arguments
 .  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
 .  nr doc-arg-limit \n[doc-arg-ptr]
-.  nr doc-reg-At \n[doc-arg-ptr]
-.  if \n[doc-num-args] \{\
-.    doc-parse-arg-vector
-.    nr doc-arg-ptr \n[doc-reg-At]
-.  \}
+.  if \n[doc-num-args] \
+.    doc-parse-space-vector
 .
 .  doc-print-recursive
 ..
@@ -261,7 +282,7 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Fx, doc-str-Fx1, doc-reg-Fx
+.\" NS   doc-str-Fx, doc-str-Fx1
 .\" NS
 .\" NS width register `Fx' defined in doc-common
 .
@@ -307,11 +328,8 @@
 .  \" recompute space vector for remaining arguments
 .  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
 .  nr doc-arg-limit \n[doc-arg-ptr]
-.  nr doc-reg-Fx \n[doc-arg-ptr]
-.  if \n[doc-num-args] \{\
-.    doc-parse-arg-vector
-.    nr doc-arg-ptr \n[doc-reg-Fx]
-.  \}
+.  if \n[doc-num-args] \
+.    doc-parse-space-vector
 .
 .  doc-print-recursive
 ..
@@ -324,7 +342,7 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Nx, doc-str-Nx1, doc-reg-Nx
+.\" NS   doc-str-Nx, doc-str-Nx1
 .\" NS
 .\" NS width register `Nx' defined in doc-common
 .
@@ -371,11 +389,8 @@
 .  \" recompute space vector for remaining arguments
 .  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
 .  nr doc-arg-limit \n[doc-arg-ptr]
-.  nr doc-reg-Nx \n[doc-arg-ptr]
-.  if \n[doc-num-args] \{\
-.    doc-parse-arg-vector
-.    nr doc-arg-ptr \n[doc-reg-Nx]
-.  \}
+.  if \n[doc-num-args] \
+.    doc-parse-space-vector
 .
 .  doc-print-recursive
 ..
@@ -388,7 +403,7 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Ox, doc-str-Ox1, doc-reg-Ox
+.\" NS   doc-str-Ox, doc-str-Ox1
 .\" NS
 .\" NS width register `Ox' defined in doc-common
 .
@@ -422,11 +437,8 @@
 .  \" recompute space vector for remaining arguments
 .  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
 .  nr doc-arg-limit \n[doc-arg-ptr]
-.  nr doc-reg-Ox \n[doc-arg-ptr]
-.  if \n[doc-num-args] \{\
-.    doc-parse-arg-vector
-.    nr doc-arg-ptr \n[doc-reg-Ox]
-.  \}
+.  if \n[doc-num-args] \
+.    doc-parse-space-vector
 .
 .  doc-print-recursive
 ..
@@ -439,7 +451,7 @@
 .\" NS   doc-macro-name, doc-curr-font, doc-curr-size, doc-arg-ptr
 .\" NS
 .\" NS local variable:
-.\" NS   doc-str-Bsx, doc-str-Bsx1, doc-reg-Bsx
+.\" NS   doc-str-Bsx, doc-str-Bsx1
 .\" NS
 .\" NS width register `Bsx' defined in doc-common
 .
@@ -473,11 +485,8 @@
 .  \" recompute space vector for remaining arguments
 .  nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
 .  nr doc-arg-limit \n[doc-arg-ptr]
-.  nr doc-reg-Bsx \n[doc-arg-ptr]
-.  if \n[doc-num-args] \{\
-.    doc-parse-arg-vector
-.    nr doc-arg-ptr \n[doc-reg-Bsx]
-.  \}
+.  if \n[doc-num-args] \
+.    doc-parse-space-vector
 .
 .  doc-print-recursive
 ..

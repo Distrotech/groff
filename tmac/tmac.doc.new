@@ -391,6 +391,28 @@
 ..
 .
 .
+.\" NS doc-parse-space-vector macro
+.\" NS   parse space vector (recursive)
+.\" NS
+.\" NS modifies:
+.\" NS   doc-spaceXXX, doc-arg-limit, doc-num-args, doc-curr-space
+.
+.de doc-parse-space-vector
+.  nr doc-arg-limit +1
+.
+.  doc-set-spacing-\n[doc-type\n[doc-arg-limit]]
+.
+.  ie (\n[doc-num-args] == 1) \{\
+.    ds doc-curr-space "\*[doc-space\n[doc-arg-limit]]
+.    nr doc-num-args 0
+.  \}
+.  el \{\
+.    nr doc-num-args -1
+.    doc-parse-space-vector
+.  \}
+..
+.
+.
 .\" NS doc-remaining-args macro
 .\" NS   output remaining arguments as-is, separated by spaces (until
 .\" NS   `doc-num-args' is exhausted), to `doc-out-string'
@@ -2418,10 +2440,8 @@
 .      \" recompute space vector for remaining arguments
 .      nr doc-num-args (\n[doc-arg-limit] - \n[doc-arg-ptr])
 .      nr doc-arg-limit \n[doc-arg-ptr]
-.      nr doc-reg-Sm \n[doc-arg-ptr]
-.      if \n[doc-num-args] \{\
-.        doc-parse-arg-vector
-.        nr doc-arg-ptr \n[doc-reg-Sm]
+.      if \n[doc-num-args] \
+.        doc-parse-space-vector
 .    \}\}
 .    el \{\
 .      \" reset remaining space vector elements

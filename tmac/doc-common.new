@@ -105,6 +105,7 @@
 .nr In 12n\" ?
 .nr It 8n\" ?
 .nr Lb 6n\" ?
+.nr Ld 4n
 .nr Li 16n
 .nr Lk 6n\" ?
 .nr Lp 8n\" ?
@@ -617,7 +618,7 @@
 .\" NS width register `Ss' set above
 .\" NS
 .\" NS local variable:
-.\" NS   doc-reg-Ss
+.\" NS   doc-reg-Ss, doc-reg-Ss1
 .
 .de Ss
 .  ie \n[.$] \{\
@@ -626,13 +627,11 @@
 .      ne 3
 .    ti -.25i
 .
-.    nop \*[doc-Sh-font]\$1\c
-.    nr doc-reg-Ss 2
-.    while (\n[doc-reg-Ss] <= \n[.$]) \{\
-.      nop \& \|\$[\n[doc-reg-Ss]]\c
-.      nr doc-reg-Ss +1
-.    \}
-.    nop \f[P]\s[0]
+.    nr doc-reg-Ss \n[.ss]
+.    nr doc-reg-Ss1 \n[.sss]
+.    ss (\n[.ss] * 5 / 4) (\n[.sss] * 5 / 4)
+.    nop \*[doc-Sh-font]\$*\f[P]\s[0]
+.    ss \n[doc-reg-Ss] \n[doc-reg-Ss1]
 .
 .    ta T .5i
 .    if !\n[cR] \
