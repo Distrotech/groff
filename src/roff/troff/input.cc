@@ -1979,7 +1979,7 @@ void token::next()
 	{
 	  next();
 	  if (type == TOKEN_NODE)
-	  nd = new zero_width_node(nd);
+	    nd = new zero_width_node(nd);
 	  else {
   	    charinfo *ci = get_char(1);
 	    if (ci == 0)

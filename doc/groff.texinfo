@@ -8148,6 +8148,24 @@ name of @samp{---}; the @code{\N} escape sequence is the only way to
 use these.
 @endDefesc
 
+Some escape sequences directly map onto special glyphs.
+
+@Defesc {\\', , , }
+This is a backslash followed by the apostrophe character, @acronym{ASCII}
+character @code{0x27} (@acronym{EBCDIC} character @code{0x7D}).  The same
+as @code{\[aa]}, the acute accent.
+@endDefesc
+
+@Defesc {\\`, , , }
+This is a backslash followed by @acronym{ASCII} character @code{0x60}
+(@acronym{EBCDIC} character @code{0x79} usually).  The same as
+@code{\[ga]}, the grave accent.
+@endDefesc
+
+@Defesc {\\-, , , }
+This is the same as @code{\[-]}, the minus sign in the current font.
+@endDefesc
+
 @c XXX should be `glyph', not `character'
 
 @cindex character properties (@code{cflags})
@@ -10064,6 +10082,23 @@ A read-only number register containing the current horizontal output
 position.
 @endDefreg
 
+@cindex overstriking characters (@code{\o})
+@cindex characters, overstriking (@code{\o})
+@Defesc {\\o, ', @Var{a}@Var{b}@Var{c}, '}
+Overstrike characters @var{a}, @var{b}, @var{c}, @dots{}; the characters
+are centered, and the resulting spacing is the largest width of the
+affected characters.
+@endDefesc
+
+@cindex zero-width printing (@code{\z}, @code{\Z})
+@cindex printing, zero-width (@code{\z}, @code{\Z})
+@Defesc {\\z, , c, , }
+Print character @var{c} with zero width, i.e., without spacing.  Use
+this to overstrike characters left-aligned.
+@endDefesc
+
+@cindex zero-width printing (@code{\z}, @code{\Z})
+@cindex printing, zero-width (@code{\z}, @code{\Z})
 @Defesc {\\Z, ', anything, '}
 Print @var{anything}, then restore the horizontal and vertical position.
 The argument may not contain tabs or leaders.
@@ -13207,6 +13242,9 @@ Requests appear without the leading control character (normally either
 
 @node Escape Index, Operator Index, Request Index, Top
 @chapter Escape Index
+
+Any escape sequence @code{\@var{X}} with @var{X} not in the list below
+emits a warning, printing character @var{X}.
 
 @printindex es
 
