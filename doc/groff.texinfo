@@ -538,11 +538,12 @@ necessary.  Here is a sample; alter the names:
 
 @smallexample
 @group
-Yoyodyne, Inc., hereby disclaims all copyright interest in the program
-`Gnomovision' (which makes passes at compilers) written by James
-Hacker.
+Yoyodyne, Inc., hereby disclaims all copyright interest
+in the program `Gnomovision' (which makes passes at compilers)
+written by James Hacker.
 
-@var{signature of Ty Coon}, 1 April 1989 Ty Coon, President of Vice
+@var{signature of Ty Coon}, 1 April 1989
+Ty Coon, President of Vice
 @end group
 @end smallexample
 
@@ -1653,7 +1654,7 @@ as many of them together on one output line as it can.  This is known as
 @dfn{filling}.
 
 Once @code{gtroff} has a @dfn{filled} line it will try to @dfn{adjust}
-it.  which means it will widen the spacing between words until the text
+it.  Which means it will widen the spacing between words until the text
 reaches the right margin (in the default adjustment mode).  Extra spaces
 between words are preserved, but spaces at the end of lines are ignored.
 Spaces at the front of a line will cause a @dfn{break} (breaks will be
@@ -2014,8 +2015,10 @@ expressions, unless the entire expression is surrounded by parentheses.
 Like any other language, @code{gtroff} has rules for properly formed
 @dfn{identifiers}.  In @code{gtroff} an identifier can be made up of
 almost any printable character.  The only exception are characters which
-are interpreted by @code{gtroff} (backslash, square brackets, and
-@samp{?}).  So, for example, any of the following is valid.
+are interpreted by @code{gtroff} (backslash, square brackets, @dots{}).
+So, for example, any of the following is valid.
+
+@c XXX which characters exactly?
 
 @example
 br
@@ -2025,13 +2028,20 @@ end-list
 @@_
 @end example
 
-@findex \A
-You can test whether an identifier is valid in @code{gtroff} with the
-@code{\A} escape.  It expands to@w{ }1 or@w{ }0 according to whether its
-argument (given in quotes) is or is not acceptable as the name of a
-string, macro, diversion, number register, environment, or font.  It
-will return@w{ }0 if no argument is given.  This is useful if you want
-to look up user input in some sort of associative table.
+@deffn Escape \A ident
+You can test whether an identifier @var{ident} is valid in @code{gtroff}
+with the @code{\A} escape.  It expands to the character@w{ }1 or@w{ }0
+according to whether its argument (given in quotes) is or is not
+acceptable as the name of a string, macro, diversion, number register,
+environment, or font.  It will return@w{ }0 if no argument is given.
+This is useful if you want to look up user input in some sort of
+associative table.
+
+@example
+\A'end-list'
+    @result{} 1
+@end example
+@end deffn
 
 @c XXX add xrefs above
 
@@ -2098,9 +2108,12 @@ A request line begins with a control character, which is either a single
 quote (@samp{'}) or a period (@samp{.}).  These can be changed;
 @xref{Character Translations}, for details.  After this there may be
 optional tabs or spaces followed by an identifier which is the name of
-the request.  This may be followed by any number of space separated
+the request.  This may be followed by any number of space-separated
 arguments.
 
+@cindex zero width space character
+@cindex character, zero width space
+@cindex space character, zero width
 @findex \&
 If you want to begin a line with a control character without it being
 interpreted, precede it with @code{\&}.  This represents a zero width
@@ -2124,8 +2137,6 @@ The line is split into arguments according to spaces.  An argument which
 is intended to contain spaces can either be enclosed in quotes (single
 or double), or have the spaces @dfn{escaped} with backslashes.
 
-So, for example:
-
 @example
 .uh The Mouse Problem
 .uh "The Mouse Problem"
@@ -2138,9 +2149,9 @@ The first line is the @code{uh} macro being called with 3 arguments,
 same effect or calling the @code{uh} macro with one argument @samp{The
 Mouse Problem}.
 
+@findex ds
 Note, however, that the @code{ds} request works differently.
-
-@xref{Strings}.
+@xref{Strings}, for more details.
 
 @node Macros, Escapes, Requests, Embedded Commands
 @subsection Macros
@@ -2156,23 +2167,31 @@ requests---arguments also may be passed in the same manner.
 @subsection Escapes
 @cindex escapes
 
-@findex \e
-@findex \\
 Escapes may occur anywhere in the input to @code{gtroff}.  They begin
-with a backslash and are followed by a single character which indicates
-the function to be performed.  If you want to have a backslash appear in
-your document, you should use the escape sequence @code{\e}.  Merely
-escaping the backslash with another backslash will work in @emph{some}
-circumstances.
+with a backslash usually and are followed by a single character which
+indicates the function to be performed.  The escape character can be
+changed; @xref{Character Translations}.
 
-Many escapes have no parameters; those that do, do so in one of two
-ways.  For escapes which require an identifier there must be a way for
-@code{gtroff} to tell where the identifier ends and the text begins.  It
-assumes that the next single character is the identifier, but if that
-character is an opening parenthesis, it takes the next two characters as
-the identifier; and if the next character is an opening bracket, all
-characters until a closing bracket are taken as the identifier.  Note
-that in the second case there is no closing parenthesis.  For example:
+@findex (
+@findex [
+@findex ]
+Escape sequences which require an identifier as a parameter accept three
+possibilities of syntax.
+
+@itemize @bullet
+@item
+The next single character is the identifier.
+@item
+If this single character is an opening parenthesis, take the following
+two characters as the identifier.  Note that there is no closing
+parenthesis after the identifier.
+@item
+If this single character is an opening bracket, take all characters
+until a closing bracket as the identifier.
+@end itemize
+
+@noindent
+Examples:
 
 @example
 \fB
@@ -2181,14 +2200,146 @@ that in the second case there is no closing parenthesis.  For example:
 @end example
 
 @findex '
+@cindex argument delimiting characters
+@cindex characters, argument delimiting
+@cindex delimiting characters for arguments
 Other escapes may require several arguments and/or some special format.
-In these cases the @dfn{argument} is enclosed in single quotes
-@c XXX (not required??)
-and the enclosing text is decoded according to what that escape expects.
+In such cases the argument is traditionally enclosed in single quotes
+(and quotes are always used in this manual for the definitions of the
+escape sequences).  The enclosed text is then processed according to
+what that escape expects.  Example:
 
 @example
 \l'1.5i\(bu'
 @end example
+
+@findex \o
+@findex \b
+@findex \X
+Note that the quote character can be replaced with any other character
+which does not occur in the argument (even a newline or a space
+character) in the following escapes: @samp{\o}, @samp{\b}, and
+@samp{\X}.  This makes e.g.
+
+@example
+A caf
+\o
+e\'
+
+
+in Paris
+  @result{} A caf@'e in Paris
+@end example
+
+@noindent
+possible, but it is better to avoid this feature to avoid confusion.
+
+@findex \%
+@findex \ 
+@findex \|
+@findex \^
+@findex \@{
+@findex \@}
+@findex \'
+@findex \`
+@findex \-
+@findex \_
+@findex \!
+@findex \?
+@findex \@@
+@findex \)
+@findex \/
+@findex \,
+@findex \&
+@findex \~
+@findex \0
+@findex \a
+@findex \c
+@findex \d
+@findex \e
+@findex \E
+@findex \p
+@findex \r
+@findex \t
+@findex \u
+The following escapes sequences (which are handled similar to characters
+since they don't take a parameter) are also allowed as delimiters:
+@samp{\%}, @samp{\ }, @samp{\|}, @samp{\^}, @samp{\@{}, @samp{\@}},
+@samp{\'}, @samp{\`}, @samp{\-}, @samp{\_}, @samp{\!}, @samp{\?},
+@samp{\@@}, @samp{\)}, @samp{\/}, @samp{\,}, @samp{\&}, @samp{\~},
+@samp{\0}, @samp{\a}, @samp{\c}, @samp{\d}, @samp{\e}, @samp{\E},
+@samp{\p}, @samp{\r}, @samp{\t}, and @samp{\u}.  Again, don't use these
+if possible.
+
+@findex \A
+@findex \Z
+@findex \C
+@findex \w
+No newline characters as delimiters are allowed in the following
+escapes: @samp{\A}, @samp{\Z}, @samp{\C}, and @samp{\w}.
+
+@findex \D
+@findex \h
+@findex \H
+@findex \l
+@findex \L
+@findex \N
+@findex \R
+@findex \s
+@findex \S
+@findex \v
+@findex \x
+Finally, the escapes @samp{\D}, @samp{\h}, @samp{\H}, @samp{\l},
+@samp{\L}, @samp{\N}, @samp{\R}, @samp{\s}, @samp{\S}, @samp{\v}, and
+@samp{\x} can't use the following characters as delimiters:
+
+@itemize @bullet
+@cindex numbers
+@cindex digits
+@item
+The digits @samp{0}-@samp{9}.
+@cindex operators
+@findex +
+@findex -
+@findex /
+@findex *
+@findex %
+@findex <
+@findex >
+@findex =
+@findex &
+@findex :
+@findex (
+@findex )
+@findex .
+@item
+The operators @samp{+-/*%<>=&:().}.
+@item
+@cindex space character
+@cindex character, space
+@cindex tab character
+@cindex character, tab
+@cindex newline character
+@cindex character, newline
+The space, tab, and newline characters.
+@findex \%
+@findex \@{
+@findex \@}
+@findex \'
+@findex \`
+@findex \-
+@findex \_
+@findex \!
+@findex \@@
+@findex \/
+@findex \c
+@findex \e
+@findex \p
+@item
+All escape sequences except @samp{\%}, @samp{\@{}, @samp{\@}},
+@samp{\'}, @samp{\`}, @samp{\-}, @samp{\_}, @samp{\!}, @samp{\@@},
+@samp{\/}, @samp{\c}, @samp{\e}, and @samp{\p}.
+@end itemize
 
 @findex \\
 @findex \e
@@ -3494,6 +3645,8 @@ description file after the charset command.  It is possible to include
 unnamed characters in the font description file by using a name of
 @samp{---}; the @code{\N} escape sequence is the only way to use these.
 
+@c XXX should be `glyph', not `character'
+
 @findex cflags
 @cindex character properties
 @cindex properties of characters
@@ -3639,6 +3792,9 @@ What is kerning?
 
 @c XXX more info
 
+@cindex zero width space character
+@cindex character, zero width space
+@cindex space character, zero width
 If the font description file contains pairwise kerning information,
 characters from that font will be kerned.  Kerning between two
 characters can be inhibited by placing @code{\&} between them.
@@ -4110,6 +4266,9 @@ The preceding example produces:
 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 @end example
 
+@cindex zero width space character
+@cindex character, zero width space
+@cindex space character, zero width
 @findex \&
 @noindent
 Note the usage of the @code{\&} escape to avoid a control character at
@@ -4340,6 +4499,9 @@ a 1/6th em space.
 a 1/12th em space.
 @item \0
 a space the size of a digit.
+@cindex zero width space character
+@cindex character, zero width space
+@cindex space character, zero width
 @item \&
 A zero width space.
 @item \)
@@ -4458,6 +4620,9 @@ The optional second parameter @var{c} is a character to draw the line
 with.  If this second argument is not specified, troff will use the
 underscore character.
 
+@cindex zero width space character
+@cindex character, zero width space
+@cindex space character, zero width
 @findex \&
 If you need to separate the two arguments (to prevent troff from
 interpreting a drawing character as a scaling indicator), you can
@@ -5484,8 +5649,8 @@ GNU @code{troff} does not allow the use of the escape sequences
 @code{\@key{SP}}, @code{\'}, @code{\`}, @code{\-}, @code{\_}, @code{\!},
 @code{\%}, and @code{\c} in names of strings, macros, diversions, number
 registers, fonts or environments; @sc{Unix} @code{troff} does.  The
-@code{\A} escape sequence may be helpful in avoiding use of these escape
-sequences in names.
+@code{\A} escape sequence (@pxref{Identifiers}) may be helpful in
+avoiding use of these escape sequences in names.
 
 @cindex fractional point sizes
 @cindex point sizes, fractional

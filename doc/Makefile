@@ -67,7 +67,8 @@ install:
 clean:
 	-rm -f *.ps *.html *.ascii *.png *.gif *.dit core
 	-rm -f *.aux *.cp *.cps *.cv *.cn *.dvi *.fn *.fns *.ky *.kys \
-               *.log *.op *.pg *.pgs *.ps *.toc *.tp *.tps *.tr *.vr *.vrs
+               *.log *.op *.pg *.pgs *.ps *.toc *.tp *.tps *.tr *.vr *.vrs \
+               texput.log
 
 distclean: clean
 
