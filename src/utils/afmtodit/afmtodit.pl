@@ -1,4 +1,4 @@
-#! /usr/bin/perl -P-
+#! /usr/bin/perl
 # -*- Perl -*-
 # Copyright (C) 1989-2000, 2001, 2002 Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
