@@ -600,10 +600,10 @@ When the diversion is reread,
 will be interpreted.
 .I anything
 may not contain newlines; use
-.B \e!
+.B \e!\&
 if you want to embed newlines in a diversion.
 The escape sequence
-.B \e?
+.B \e?\&
 is also recognised in copy mode and turned into a single internal
 code; it is this code that terminates
 .IR anything .
@@ -795,7 +795,7 @@ which is ORed from the following:
 1
 the character ends sentences
 (initially characters
-.B .?!
+.B .?!\&
 have this property);
 .TP
 2
@@ -1601,6 +1601,9 @@ Like the word space size, the sentence space is in units of
 one twelfth of the spacewidth parameter for the current font.
 Initially both the word space size and the sentence
 space size are 12.
+Contrary to UNIX troff, GNU troff handles this request in nroff mode
+also (if not in compatibility mode); a given value is then rounded down
+to the nearest multiple of\~12.
 The sentence space size is used in two circumstances:
 if the end of a sentence occurs at the end of a line in fill mode, then
 both an inter-word space and a sentence space will be added;
@@ -2231,9 +2234,9 @@ diversion; it will also work in both GNU troff and UNIX troff.
 If you wish for some reason to store in a diversion an escape
 sequence that will be interpreted when the diversion is reread,
 you can either use the traditional
-.B \e!
+.B \e!\&
 transparent output facility, or, if this is unsuitable, the new
-.B \e?
+.B \e?\&
 escape sequence.
 .
 .

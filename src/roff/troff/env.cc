@@ -1084,7 +1084,7 @@ void point_size()
 void space_size()
 {
   int n;
-  if (get_integer(&n)) {
+  if (get_integer(&n) && !compatible_flag) {
     curenv->space_size = n;
     if (has_arg() && get_integer(&n))
       curenv->sentence_space_size = n;

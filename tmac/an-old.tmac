@@ -76,14 +76,14 @@
 .
 .  \" use sizes similar to LaTeX
 .  if t \{\
-.    ie (\n[S] == 11) \{\
+.    ie (\\n[S] == 11) \{\
 .      nr PS    10.95z
 .      nr PS-SS 10.95z
 .      nr PS-SH 12z
 .      nr VS    13.6p
 .    \}
 .    el \{\
-.      if (\n[S] == 12) \{\
+.      if (\\n[S] == 12) \{\
 .        nr PS    12z
 .        nr PS-SS 12z
 .        nr PS-SH 14.4z
@@ -108,17 +108,17 @@
 .  nr an-break-flag 0
 .  nr an-div? 0
 .
-.  ie \n[cR] \
+.  ie \\n[cR] \
 .    an-header
 .  el \{\
 .    wh 0 an-header
 .    wh -1i an-footer
 .    wh -.5i an-p-footer
-.  \}
 .
-.  if (\\n[nl] > 0) \{\
-.    ie \n[C] .bp (\\n[%] + 1)
-.    el       .bp 1
+.    if (\\n[nl] > 0) \{\
+.      ie \\n[C] .bp (\\n[%] + 1)
+.      el        .bp 1
+.    \}
 .  \}
 ..
 .
@@ -139,9 +139,13 @@
 .  ie '\*[.T]'html' \
 .    tl ''''
 .  el \{\
-.    sp .5i
+.    if !\\n[cR] \
+.      sp .5i
 .    tl '\\*[an-title](\\*[an-section])'\\*[an-extra3]'\\*[an-title](\\*[an-section])'
-.    sp |1i
+.    ie !\\n[cR] \
+.      sp |1i
+.    el \
+.      sp .5i
 .  \}
 .  ev
 .  ns
@@ -165,15 +169,15 @@
 .  el \
 .    ds an-page-string \\n[%]
 .  if r X \{\
-.    if (\\n[%] > \n[X]) \{\
-.      nr an-page-letter (\\n[%] - \n[X])
-.      ds an-page-string \n[X]\\n[an-page-letter]
+.    if (\\n[%] > \\n[X]) \{\
+.      nr an-page-letter (\\n[%] - \\n[X])
+.      ds an-page-string \\n[X]\\n[an-page-letter]
 .    \}
 .  \}
 .  ie '\*[.T]'html' \
 .    tl ''''
 .  el \{\
-.    ie \n[D] \{\
+.    ie \\n[D] \{\
 .      if o .tl '\\*[an-extra2]'\\*[an-extra1]'\\*[an-page-string]'
 .      if e .tl '\\*[an-page-string]'\\*[an-extra1]'\\*[an-extra2]'
 .    \}
@@ -207,7 +211,7 @@
 .  nr an-break-flag 1
 .  ps \\n[PS-SH]u
 .  ft B
-.  if !\n[cR] .ne (2v + 1u)
+.  if !\\n[cR] .ne (2v + 1u)
 .  if \\n[.$] \&\\$*
 ..
 .
@@ -224,7 +228,7 @@
 .  nr an-break-flag 1
 .  ps \\n[PS-SS]u
 .  ft B
-.  if !\n[cR] .ne (2v + 1u)
+.  if !\\n[cR] .ne (2v + 1u)
 .  if \\n[.$] \&\\$*
 ..
 .
@@ -283,7 +287,7 @@
 .  di
 .  ie (\\n[dl] + \\n[an-tag-sep] > \\n[an-prevailing-indent]) \{\
 .    in \\n[an-margin]u
-.    if !\n[cR] .ne (2v + 1u)
+.    if !\\n[cR] .ne (2v + 1u)
 .    an-div
 .    br
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
@@ -292,7 +296,7 @@
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .    ti -\\n[an-prevailing-indent]u
 .    chop an-div
-.    if !\n[cR] .ne (1v + 1u)
+.    if !\\n[cR] .ne (1v + 1u)
 \\*[an-div]\\h'|\\n[an-prevailing-indent]u'\c
 .  \}
 ..
@@ -316,7 +320,7 @@
 .    vs \\n[VS]u
 .    ft R
 .    sp \\n[PD]u
-.    if !\n[cR] .ne (1v + 1u)
+.    if !\\n[cR] .ne (1v + 1u)
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .  \}
 .  el \{\
@@ -331,7 +335,7 @@
 .  vs \\n[VS]u
 .  ft R
 .  sp \\n[PD]u
-.  if !\n[cR] .ne (1v + 1u)
+.  if !\\n[cR] .ne (1v + 1u)
 .  if \\n[.$] .nr an-prevailing-indent (n;\\$1)
 .  in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .  ti \\n[an-margin]u
