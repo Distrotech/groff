@@ -661,6 +661,79 @@ environment::environment(const environment *e)
 {
 }
 
+void environment::copy(const environment *e)
+{
+  prev_line_length = e->prev_line_length;
+  line_length = e->line_length;
+  prev_title_length = e->prev_title_length;
+  title_length = e->title_length;
+  prev_size = e->prev_size;
+  size = e->size;
+  prev_requested_size = e->prev_requested_size;
+  requested_size = e->requested_size;
+  char_height = e->char_height;
+  char_slant = e->char_slant;
+  space_size = e->space_size;
+  sentence_space_size = e->sentence_space_size;
+  adjust_mode = e->adjust_mode;
+  fill = e->fill;
+  interrupted = 0;
+  prev_line_interrupted = 0;
+  center_lines = 0;
+  right_justify_lines = 0;
+  prev_vertical_spacing = e->prev_vertical_spacing;
+  vertical_spacing = e->vertical_spacing;
+  prev_post_vertical_spacing = e->prev_post_vertical_spacing,
+  post_vertical_spacing = e->post_vertical_spacing,
+  prev_line_spacing = e->prev_line_spacing;
+  line_spacing = e->line_spacing;
+  prev_indent = e->prev_indent;
+  indent = e->indent;
+  have_temporary_indent = 0;
+  temporary_indent = 0;
+  underline_lines = 0;
+  input_trap_count = 0;
+  prev_text_length = e->prev_text_length;
+  width_total = 0;
+  space_total = 0;
+  input_line_start = 0;
+  control_char = e->control_char;
+  no_break_control_char = e->no_break_control_char;
+  hyphen_indicator_char = e->hyphen_indicator_char;
+  spread_flag = 0;
+  line = 0;
+  pending_lines = 0;
+  discarding = 0;
+  tabs = e->tabs;
+  current_tab = TAB_NONE;
+  current_field = 0;
+  margin_character_flags = e->margin_character_flags;
+  margin_character_node = e->margin_character_node;
+  margin_character_distance = e->margin_character_distance;
+  numbering_nodes = 0;
+  number_text_separation = e->number_text_separation;
+  line_number_multiple = e->line_number_multiple;
+  line_number_indent = e->line_number_indent;
+  no_number_count = e->no_number_count;
+  tab_char = e->tab_char;
+  leader_char = e->leader_char;
+  hyphenation_flags = e->hyphenation_flags;
+  fontno = e->fontno;
+  prev_fontno = e->prev_fontno;
+  dummy = e->dummy;
+  family = e->family;
+  prev_family = e->prev_family;
+  leader_node = 0;
+#ifdef WIDOW_CONTROL
+  widow_control = e->widow_control;
+#endif /* WIDOW_CONTROL */
+  hyphen_line_max = e->hyphen_line_max;
+  hyphen_line_count = 0;
+  hyphenation_space = e->hyphenation_space;
+  hyphenation_margin = e->hyphenation_margin;
+  composite = 0;
+}
+
 environment::~environment()
 {
   delete leader_node;
@@ -935,6 +1008,33 @@ void environment_switch()
   skip_line();
 }
 
+void environment_copy()
+{
+  symbol nm;
+  environment *e=0;
+  tok.skip();
+  if (!tok.delimiter()) {
+    // It looks like a number.
+    int n;
+    if (get_integer(&n)) {
+      if (n >= 0 && n < NENVIRONMENTS)
+	e = env_table[n];
+      else
+	nm = itoa(n);
+    }
+  }
+  else
+    nm = get_long_name(1);
+  if (!e && !nm.is_null())
+    e = (environment *)env_dictionary.lookup(nm);
+  if (e == 0) {
+    error("Inexistent environment to copy from");
+    return;
+  }
+  else
+    curenv->copy(e);
+  skip_line();
+}
 
 static symbol P_symbol("P");
 
@@ -2673,6 +2773,7 @@ void init_env_requests()
   init_request("ad", adjust);
   init_request("na", no_adjust);
   init_request("ev", environment_switch);
+  init_request("evc", environment_copy);
   init_request("lt", title_length);
   init_request("ps", point_size);
   init_request("ft", font_change);

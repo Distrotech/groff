@@ -521,6 +521,19 @@ static struct
 { "executive", 40 },
 };
 
+#ifndef HAVE_STRSEP
+// Solaris 8 doesn't have the strsep function
+char *strsep(char **pcadena, const char *delim)
+{
+  char *p;
+
+	p = strtok(*pcadena,delim);
+ 	*pcadena = strtok(NULL,delim);
+    return p;
+ 
+};
+#endif
+
 static int set_papersize(const char *papersize)
 {
   int i;
@@ -693,8 +706,8 @@ int main(int argc, char **argv)
 				   else 
 				     error("unknown orientation '%1'", optarg);
 				 }; 
-				};
 				break;
+			      };
     		  case 'c'  : {
 				char *ptr;
 				long n = strtol(optarg, &ptr, 10);
