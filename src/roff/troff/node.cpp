@@ -3762,7 +3762,7 @@ void suppress_node::tprint(troff_output_file *out)
   if (is_on == 2) {
     // remember position and filename
     last_position = position;
-    const char *tem = last_image_filename;
+    char *tem = (char *)last_image_filename;
     last_image_filename = strsave(filename.contents());
     if (tem)
       a_delete tem;
