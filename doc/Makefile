@@ -90,11 +90,11 @@ groff: groff.texinfo
 	makeinfo groff.texinfo
 
 gnu.eps: gnu.xpm
-	xpmtoppm gnu.xpm | pnmtops -noturn > gnu.eps
+	xpmtoppm gnu.xpm | pnmdepth 15 | pnmtops -noturn > gnu.eps
 gnu.png: gnu.xpm
-	xpmtoppm gnu.xpm | pnmtopng > gnu.png
+	xpmtoppm gnu.xpm | pnmdepth 15 | pnmtopng > gnu.png
 
-homepage.html: homepage.ms gnu.png
+homepage.html: homepage.ms gnu.eps
 	GROFF_BIN_PATH=$(groff_bin_path); \
 	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \

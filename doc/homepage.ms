@@ -31,8 +31,8 @@
 Home of Groff (GNU Troff).
 .
 .HTML-IMAGE-LEFT
-.PSPIC -L gnu.eps 1i 1i
-\v'-0.5i'\h'1.5i'\s[50]\*[GNU] Troff\s0
+.PSPIC -L gnu.eps 2i 2i
+\v'-0.75i'\h'2.0i'\s[70]\*[GNU] Troff\s0
 .HTML-IMAGE-END
 .
 .HnS 1

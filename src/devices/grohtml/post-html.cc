@@ -1160,6 +1160,7 @@ class html_printer : public printer {
   int                  sbuf_start_hpos;
   int                  sbuf_vpos;
   int                  sbuf_end_hpos;
+  int                  sbuf_prev_hpos;
   int                  sbuf_kern;
   style                sbuf_style;
   int                  last_sbuf_length;
@@ -2344,6 +2345,7 @@ void html_printer::flush_sbuf()
     output_hpos = sbuf_end_hpos;
     output_vpos = sbuf_vpos;
     last_sbuf_length = 0;
+    sbuf_prev_hpos = sbuf_end_hpos;
     overstrike_detected = FALSE;
     sbuf.clear();
   }
@@ -2496,8 +2498,15 @@ void html_printer::add_to_sbuf (unsigned char code, const string &s)
 int html_printer::sbuf_continuation (unsigned char code, const char *name,
 				     const environment *env, int w)
 {
-  if (sbuf_end_hpos == env->hpos) {
+  /*
+   *  lets see whether the glyph is closer to the end of sbuf
+   */
+  if ((sbuf_end_hpos == env->hpos)
+      || ((sbuf_prev_hpos < sbuf_end_hpos)
+	  && (env->hpos < sbuf_end_hpos)
+	  && ((sbuf_end_hpos-env->hpos < env->hpos-sbuf_prev_hpos)))) {
     add_to_sbuf(code, name);
+    sbuf_prev_hpos = sbuf_end_hpos;
     sbuf_end_hpos += w + sbuf_kern;
     return TRUE;
   } else {
@@ -2509,6 +2518,7 @@ int html_printer::sbuf_continuation (unsigned char code, const char *name,
 
       if (env->hpos-sbuf_end_hpos < space_width) {
 	add_to_sbuf(code, name);
+	sbuf_prev_hpos = sbuf_end_hpos;
 	sbuf_end_hpos = env->hpos + w;
 	return TRUE;
       }
@@ -2599,6 +2609,7 @@ void html_printer::set_char(int i, font *f, const environment *env, int w, const
   add_to_sbuf(code, name);
   sbuf_end_hpos = env->hpos + w;
   sbuf_start_hpos = env->hpos;
+  sbuf_prev_hpos = env->hpos;
   sbuf_vpos = env->vpos;
   sbuf_style = sty;
   sbuf_kern = 0;
