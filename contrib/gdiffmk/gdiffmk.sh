@@ -49,8 +49,8 @@ OPTIONS:
   -D             Show the deleted portions from changed and deleted text.
                   Default delimiting marks:  \`[[' .... \`]]'.
   -B             By default, the deleted texts marked by the \`-D' option end
-                  with an added troff \`.br\' command.  This option prevents
-                  the added \`.br\'.
+                  with an added troff \`.br' command.  This option prevents
+                  the added \`.br'.
   -M MARK1 MARK2 Change the delimiting marks for the \`-D' option.
 
   -x DIFFCMD     Use a different diff(1) command;
@@ -179,11 +179,15 @@ do
 	-D )
 		D_option=D_option
 		;;
-	-M )
+	-M* )
+		MARK1=$( RequiresArgument "${OPTION}" $2 )		&&
+			shift
+		if [ $# -lt 2 ]
+		then
+			Usage "Option \`-M' is missing the MARK2 value."
+		fi
+		MARK2=$2
 		shift
-		MARK1=$1
-		shift
-		MARK2=$1
 		;;
 	-B )
 		br=.
