@@ -59,6 +59,7 @@ extern "C" {
 
 #define USAGE_EXIT_CODE 1
 #define MACRO_PREFIX "tmac."
+#define MACRO_POSTFIX ".tmac"
 #define INITIAL_STARTUP_FILE "troffrc"
 #define FINAL_STARTUP_FILE   "troffrc-end"
 #define DEFAULT_INPUT_STACK_LIMIT 1000
@@ -5636,20 +5637,19 @@ static void parse_output_page_list(char *p)
 
 static FILE *open_mac_file(const char *mac, char **path)
 {
-  char *s = new char[strlen(mac)+strlen(MACRO_PREFIX)+1];
-  strcpy(s, MACRO_PREFIX);
-  strcat(s, mac);
-  FILE *fp = macro_path.open_file(s, path);
-  // Try FOOBAR.tmac if tmac.FOOBAR failed.  Some tmac.* file names
-  // clash after truncation to 8+3 DOS limits, so this allows to
-  // rename them to *.tmac instead.
+  // Try first FOOBAR.tmac, then tmac.FOOBAR
+  char *s1 = new char[strlen(mac)+strlen(MACRO_POSTFIX)+1];
+  strcpy(s1, mac);
+  strcat(s1, MACRO_POSTFIX);
+  FILE *fp = macro_path.open_file(s1, path);
+  a_delete s1;
   if (!fp) {
-    strcpy(s, mac);
-    strcat(s, ".");
-    strncat(s, MACRO_PREFIX, strcspn(MACRO_PREFIX, "."));
-    fp = macro_path.open_file(s, path);
+    char *s2 = new char[strlen(mac)+strlen(MACRO_PREFIX)+1];
+    strcpy(s2, MACRO_PREFIX);
+    strcat(s2, mac);
+    fp = macro_path.open_file(s2, path);
+    a_delete s2;
   }
-  a_delete s;
   return fp;
 }
 
@@ -5689,16 +5689,26 @@ void macro_source()
     char *path;
     FILE *fp = macro_path.open_file(nm.contents(), &path);
     // .mso doesn't (and cannot) go through open_mac_file, so we
-    // need to do it here manually...
+    // need to do it here manually: If we have tmac.FOOBAR, try
+    // FOOBAR.tmac and vice versa
     if (!fp) {
       const char *fn = nm.contents();
       if (strncasecmp(fn, MACRO_PREFIX, sizeof(MACRO_PREFIX) - 1) == 0) {
-	char *s = new char[strlen(fn) + 1];
+	char *s = new char[strlen(fn) + sizeof(MACRO_POSTFIX)];
 	strcpy(s, fn + sizeof(MACRO_PREFIX) - 1);
-	strcat(s, ".");
-	strncat(s, MACRO_PREFIX, strcspn(MACRO_PREFIX, "."));
+	strcat(s, MACRO_POSTFIX);
 	fp = macro_path.open_file(s, &path);
 	a_delete s;
+      }
+      if (!fp) {
+	if (strncasecmp(fn + strlen(fn) - sizeof(MACRO_POSTFIX) + 1,
+			MACRO_POSTFIX, sizeof(MACRO_POSTFIX) - 1) == 0) {
+	  char *s = new char[strlen(fn) + sizeof(MACRO_PREFIX)];
+	  strcpy(s, MACRO_PREFIX);
+	  strncat(s, fn, strlen(fn) - sizeof(MACRO_POSTFIX) + 1);
+	  fp = macro_path.open_file(s, &path);
+	  a_delete s;
+	}
       }
     }
     if (fp) {

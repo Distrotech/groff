@@ -172,11 +172,11 @@ run-time, the groff option
 .option \-m \ \c
 .argument name
 makes the definitions in the macro file
-.BI tmac. name
+.IB name .tmac
 available as described in the section
 .BR NAMING .
 If this file isn't found,
-.IB name .tmac
+.BI tmac. name
 will be searched.
 .LP
 It is also possible to include the macro file into the document by using 
@@ -193,12 +193,12 @@ convenient to use
 .request .mso
 instead because it searches the tmac path for the filename.
 Additionally, if the file name to be included has the form
-.BI tmac. name
+.IB name .tmac
 and it isn't found,
 .request .mso
 will try to open
-.IB name .tmac
-instead.
+.BI tmac. name
+instead and vice versa.
 .LP
 Note that in order to resolve the
 .request .so
@@ -206,8 +206,9 @@ and
 .request .mso
 requests the roff preprocessor
 .shellcommand soelim
-must be called.  This can be done either directly by a pipeline on the
-command line or by using the
+must be called if the files to be included needs preprocessing.
+This can be done either directly by a pipeline on the command line or by
+using the
 .option \-s
 option of
 .shellcommand groff .
@@ -295,9 +296,9 @@ request as described in the
 section.
 .LP
 To use the tmac functionality, call the macro file
-.BI tmac. whatever
+.IB whatever .tmac
 (or 
-.IB whatever .tmac\c
+.BI tmac. whatever\c
 ) and put it in some directory of the tmac path, cf. section
 .BR FILES .
 Then documents can include it with the
@@ -346,15 +347,15 @@ and
 .SH FILES
 .\" --------------------------------------------------------------------
 All macro names must be named
-.BI tmac. name
-or
 .IB name .tmac
+or
+.BI tmac. name
 to use the tmac mechanism.
 .LP
 The macro files are kept in the
 .B tmac
 .BR directories ,
-all of which constitue the
+all of which constitute the
 .B tmac
 .BR path.
 In accordance with the Filesystem Hierarchy Standard (FHS), the standard
