@@ -23,7 +23,7 @@
 .\"
 .\"
 .\"
-\# Version 1.2-b
+\# Version 1.2-c
 \# -------------
 \#
 \# Antoine de St-Exupéry asserted that elegance in engineering is
@@ -103,7 +103,6 @@
 \#
 .ALIAS    MAC             de
 .ALIAS    BR              br
-.ALIAS    SPACE           sp
 .ALIAS    SP              sp
 .ALIAS    PAGELENGTH      pl
 .ALIAS    SPREAD          brp
@@ -301,7 +300,8 @@
 \#   The trap is set in .T_MARGIN or .PAGE
 \#
 .MAC DO_T_MARGIN END
-.    ev 1
+.    ev T_MARGIN
+.    nr #T_MARGIN_SET 1
 .    sp |\\n[#T_MARGIN]u-1v
 .    ev
 .    sp -\\n[#T_MARGIN_LEAD_ADJ]u
@@ -319,7 +319,7 @@
 \#
 .MAC DO_B_MARGIN END
 .    nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
-.    ev 1
+.    ev B_MARGIN
 .    bp
 .    ev
 .END
@@ -338,7 +338,11 @@
 .MAC NEWPAGE END
 .    br
 .    ie \\n[#B_MARGIN_SET]=1 \{\
-.       ie !\\n[#DOCS]=1 \{ .DO_B_MARGIN \}
+.       ie !\\n[#DOCS]=1 \{\
+.          ev NP
+.          bp
+.          ev
+.       \}
 .       el \{\
 .          if \\n[#COLUMNS]=1 \{ .nr #COL_NUM \\n[#NUM_COLS] \}
 .          ie !\\n[#FN_DEPTH] \{\
@@ -352,11 +356,7 @@
 .       \}
 .    \}
 .    el \{\
-.       nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
-.       ev 1
-.       bp
-.       ev
-.       sp -\\n[#T_MARGIN_LEAD_ADJ]u
+.       DO_B_MARGIN
 .    \}
 .END
 \#
@@ -552,18 +552,42 @@
 \#   Does not require unit of measure.  LS automatically turns off AUTOLEAD.
 \#
 .MAC LS END
+.    br
 .    if \\n[#PRINT_STYLE]=1 \{ .return \}
 .    if \\n[#IGNORE]        \{ .return \}
-.    nr #LEAD_SET 1
+.    if \\n(nl=0 \{ .nr #TOP_LEAD 1 \}
 .    if \\n[#AUTO_LEAD] \{\
 .       rr #AUTO_LEAD
 .       rr #AUTOLEAD_FACTOR
 .    \}
+.    nr #OLD_LEAD \\n(.v
 .    vs \\$1
-.    if \\n[#T_MARGIN_SET]=1 \{\
-.       sp |\\n[#T_MARGIN]u-1v
-.       rr #T_MARGIN_SET
+.    nr #TOP_BASELINE_ADJ \\n(.v-\\n[#OLD_LEAD]
+.    if \\n[#TOP_ALD]=1 \{\
+.       sp -\\n[#TOP_BASELINE_ADJ]u
+.       rr #TOP_ALD
 .    \}
+\# The following clause ensures that the first .LS call after a top
+\# margin has been set (.T_MARGIN or .PAGE) doesn't change the
+\# vertical position on the page
+.    if \\n[#T_MARGIN_SET]=1 \{\
+.       ie (\\n(nl >= \\n[#T_MARGIN]) \{\
+'          sp -\\n[#TOP_BASELINE_ADJ]u
+.          rr #T_MARGIN_SET
+.       \}
+.       el \{\
+.          if !\\n[#TOP_LEAD]=0&\\n[#TOP_ALD]=0 \{ .nr #TOP_LEAD 1 \}
+.          vs 1u
+.          sp |\\n[#T_MARGIN]u
+.          wh \\n(nlu+1v RESET_LEAD
+.          rr #T_MARGIN_SET
+.       \}
+.    \}
+.END
+\#
+.MAC RESET_LEAD END
+'    vs
+.    ch RESET_LEAD
 .END
 \#
 \#
@@ -961,8 +985,29 @@
 \#   Requires a unit of measure.
 \#
 .MAC ALD END
-.    nr #ALD (\\$1)
-.    sp \\n[#ALD]u
+.    if \\n(nl=0 \{ .nr #TOP_ALD 1 \}
+.    if \\n(nl=\\n[#T_MARGIN] \{ .nr #TOP_LEAD 1 \}
+.    if \\n[#TOP_LEAD]=1 \{\
+.       rr #TOP_ALD
+.       rr #TOP_LEAD
+.       RESET_LEAD
+.       RLD 1v
+.    \}
+.    if '\\$0'ALD' \{\
+.       nr #ALD (\\$1)
+.       ie \\n(nl=\\n[#T_MARGIN] \{\
+.          PRINT \&
+.          sp \\n[#ALD]u-1v
+.       \}
+.       el \{ .sp \\n[#ALD]u \}
+.    \}
+.    if '\\$0'SPACE' \{\
+.       ie \\n(nl=\\n[#T_MARGIN] \{\
+.          PRINT \&
+.          sp \\$1-1v
+.       \}
+.       el \{ .sp \\$1u \}
+.    \}
 .END
 \#
 \#
@@ -2513,7 +2558,16 @@
 .    \}
 .    ds $DROPCAP         \\$1
 .    nr #DC_LINES        \\$2-1
-.    ds $RESTORE_COND    \\*[$COND_PERCENT]
+.    if \\n[#CONDENSE]=1 \{\
+.       ds $RESTORE_COND \\*[$COND_PERCENT]
+\\*[CONDX]
+.       nr #CONDENSE_WAS_ON 1
+.    \}
+.    if \\n[#EXTEND]=1 \{\
+.       ds $RESTORE_EXT \\*[$EXT_PERCENT]
+\\*[EXTX]
+.       nr #EXTEND_WAS_ON 1
+.    \}
 .    if '\\$3'COND'      \{ .CONDENSE \\$4 \}
 .    if '\\$3'EXT'       \{ .EXTEND \\$4 \}
 .    if !r#DC_GUT        \{ .nr #DC_GUT (3p) \}
@@ -2552,17 +2606,25 @@
 .    if '\\$3'COND' \{ \E*[COND] \}
 .    if '\\$3'EXT'  \{ \E*[EXT]  \}
 .    ie \\n(.i \{ .in +\w'\\*[$DROPCAP]'u+\\n[#DC_GUT]u \}
-.    el \{ .in \w'\\*[$DROPCAP]'u+\\n[#DC_GUT]u \}
+.    el        \{ .in \w'\\*[$DROPCAP]'u+\\n[#DC_GUT]u \}
 .    if '\\$3'COND' \{ \E*[CONDX]\c \}
 .    if '\\$3'EXT'  \{ \E*[EXTX]\c \}
 .    rt \\nxu
 .    FAM \\*[$RESTORE_FAM]
 .    FT  \\*[$RESTORE_FT]
 .    ps \\n[#RESTORE_PT_SIZE]u
-.    CONDENSE \\*[$RESTORE_COND]
-.    EXTEND   \\*[$RESTORE_EXT]
+.    if \\n[#CONDENSE_WAS_ON] \{\
+.       CONDENSE \\*[$RESTORE_COND]
+\\*[COND]\c
+.    \}
+.    if \\n[#EXTEND_WAS_ON] \{\
+.       EXTEND \\*[$RESTORE_EXT]
+\\*[EXT]\c
+.    \}
 .    ie \\n(.u \{ .wh \\n(.du+\\n[#DC_HEIGHT]u-1v DROPCAP_OFF \}
 .    el \{ .wh \\n(.du+\\n[#DC_HEIGHT]u DROPCAP_OFF \}
+.    rr #CONDENSE_WAS_ON
+.    rr #EXTEND_WAS_ON
 .    rm $DROPCAP
 .    rr #DC_LINES
 .    rm $RESTORE_COND
@@ -3256,6 +3318,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS    LIG             LIGATURES
 .ALIAS    NEWCOLOUR       NEWCOLOR
 .ALIAS    PADMARKER       PAD_MARKER
+.ALIAS    SPACE           ALD
 .ALIAS    TABSET          TAB_SET
 .ALIAS    TB              TAB
 .ALIAS    UNDERSCORE_2    UNDERSCORE2
@@ -7876,7 +7939,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#.rr #START
 \#.return
 \#.\}
-\#
 .    nr #L_MARGIN_DIFF \\n[#L_MARGIN]-\\n[#DOC_L_MARGIN]
 .    if !\\n[#FN_DEFER] \{\
 .       nr #DIVER_DEPTH 0
@@ -7886,7 +7948,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# it.
 \#
 \#.if \\n[#DIVERTED]=2 \{ .nr #FN_DEPTH -\\n[#VFP_DIFF] \}
-\#
 .          if \\n[#DIVERTED]=3 \{ .nr #FN_DEPTH +\\n[#VFP_DIFF] \}
 .          sp |\\n[#PAGE_LENGTH]u-(\\n[#B_MARGIN]u+\\n[#FN_DEPTH]u-\\n[#DOC_LEAD]u)
 .          po \\n[#DOC_L_MARGIN]u
@@ -10615,7 +10676,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# in case I \# discover why I thought it was needed.
 \#
 \#\!.RLD \\n[#FN_LEAD]u
-\#
 .                      rr #PREV_FN_DEFERRED
 .                      \}
 .                   \}
@@ -10658,7 +10718,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# (re)discovering why it was needed.
 \#
 \#.if \\n[#FN_COUNT_FOR_COLS_AT_FOOTER]=0 \{ .rr #PREV_FN_DEFERRED \}
-\#
 .       if \\n[#FN_COUNT_AT_FOOTER]>1 \{ .rr #PREV_FN_DEFERRED \}
 .    \}
 .    if !\\n[#FN_DEFER] \{\
@@ -10703,6 +10762,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    \}
 .    el \{ .nr #FN_COUNT 0 1 \}
 .    if \\n[#DIVER_FN]=2 \{ .rr #DIVER_FN \}
+.    rr #FROM_DIVERT_FN
 .END
 \#
 \# DIVERT_FN_LEFTOVER is called in PROCESS_FN_LEFTOVER (at

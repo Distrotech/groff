@@ -167,6 +167,8 @@ PAD              Insert padding spaces at marked places
 PADMARKER        Sets character to use instead of # in PAD
 PRINT            Simply prints args passed to it; keeps my code
                  indented nicely
+RESET_LEAD       Trap invoked macro which resets the lead to the
+                 value passed to LS when LS is called at Top Of Page
 RW               Reduce white -- tighten overall line kern
                  (character spacing)
 SILENT           Don't print lines till SILENT OFF
@@ -200,6 +202,7 @@ TYPESIZE    Diverts SIZESPECS routine so it doesn't print
 #BR_INDENT              Value of right indent when IB
 c                       column mark
 #CONDENSE               Are we in pseudo-condense mode? (toggle)
+#CONDENSE_WAS_ON        For restoring \*[COND] in DROPCAP
 #COND_WIDTH             Width of pseudo-condensed type
                         (pointsize x $COND_PERCENT)
 #CURRENT_L_LENGTH       Current line length at first invocation of LIST;
@@ -208,9 +211,10 @@ c                       column mark
 #DC_GUT                 Width of dropcap gutter
 #DEGREES                # of degrees slant for pseudo-italic
 #ENUMERATOR&lt;n&gt;          Number register enumerator for depth &lt;n&gt; in lists 
-#EXTEND                 Are we in pseudo-extend mode? (toggle)
 #EXT_WIDTH              Width of pseudo-extended type
                         (pointsize x $EXT_PERCENT)
+#EXTEND                 Are we in pseudo-extend mode? (toggle)
+#EXTEND_WAS_ON          For restoring \*[EXT] in DROPCAP
 #FILL_MODE              Are we in fill mode (i.e. \n(.u=1)? (toggle)
 #H_INDENT               Value of left indent when IH
 #HL_INDENT              Value of the hang when IH
@@ -245,12 +249,14 @@ c                       column mark
 #NEXT_DEPTH_BACK        Next list level back in lists
 #NEXT_TAB               Current tab number + 1 (used in TN)
 #NEXT_TAB               Next tab in an n+1 sequence
+#OLD_LEAD               Lead in effect prior to changing it with .vs
+                        in .LS
 #OPEN_CLOSE             Manipulates character " to print `` or ''
 #ORIGINAL_L_LENGTH      Used in LIST for IB processing; holds \n(.l
 p                       Output line horiz position at end of
                         $PAD_STRING
 #PAD_COUNT              Number of times # was included in arg to PAD
-#PAD_LIST_DIGITS        Pad list digits to the left? &lt;toggle&gt;
+#PAD_LIST_DIGITS        Pad list digits to the left? (toggle)
 #PAD_SPACE              Size of padding space
 #PAGE_LENGTH            Page length (alias)
 #PAGE_WIDTH             Page width
@@ -264,7 +270,7 @@ p                       Output line horiz position at end of
                         (toggle)
 #QUAD                   In autoquad mode? (toggle)
 #QUIT                   Tells LIST whether to exit lists completely
-                        &lt;toggle&gt;
+                        (toggle)
 #REMOVE                 Used in LIST OFF cleanup
 #RESTORE_LEAD           Lead value in effect prior to AUTOLEAD
 #RESTORE_LINE_LENGTH    Restores actual line length in RULE
@@ -308,6 +314,13 @@ t                       "mark" register set in T_MARGIN; recalled
 #TAB_ACTIVE             Are we in a tab? (toggle)
 #TAB_NUMBER             Tab number
 #TAB_OFFSET             Tab indent
+#TOP_ALD                Was ALD called at Top Of Page before text input?
+                        (toggle)
+#TOP_BASELINE_ADJ       Amount by which to adjust the baseline position
+                        of the first line on the page if an LS request
+                        is greater than the current lead
+#TOP_LEAD               Was LS called at Top Of Page before text input?
+                        (toggle)
 #TOTAL_LISTS            Total number of lists in a nest
 #USER_SET_L_LENGTH      Did user invoke LL? (toggle)
 #USER_SET_TITLE_ITEM    Did user invoke TOC_TITLE_ENTRY?
