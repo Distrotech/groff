@@ -41,9 +41,9 @@
 @c to avoid uppercasing in @deffn while converting to info, we define
 @c our special @Var{}
 @c
-@c due to a bug in makeinfo 4.0, macros are not expanded in @deffn (but
-@c the macro definition is properly removed), so we have to define
-@c @Var{} directly in TeX also
+@c due to a (not officially documented) `feature' in makeinfo 4.0,
+@c macros are not expanded in @deffn (but the macro definition is
+@c properly removed), so we have to define @Var{} directly in TeX also
 
 @macro Var{arg}
 \arg\
@@ -188,6 +188,9 @@
 @@rbrack
 @end macro
 @end iftex
+
+
+@c Note: We say `Roman numerals' but `roman font'.
 
 
 @c XXX comment all examples
@@ -1367,7 +1370,7 @@ assignments happen before loading any macro file (including the start-up
 file).
 
 @item -f@var{fam}
-Use @var{fam} as the default font family.
+Use @var{fam} as the default font family.  @xref{Font Families}.
 
 @item -m@var{name}
 Read in the file @file{@var{name}.tmac}.  Normally @code{groff} searches
@@ -2166,13 +2169,13 @@ default value; on the other hand, the rest of the text has default font
 settings.
 @endDefmac
 
-@Defmac{LP}
-@Defmacx{PP}
+@Defmac {LP}
+@Defmacx {PP}
 @Defmacx {P}
 These macros are mutual aliases.  Any of them causes a line break at the
 current position, followed by a vertical space downwards by the amount
 specified by the @code{PD} macro.  The font size and shape are reset to
-the default value (10@dmn{pt} Roman).  Finally, the current left margin
+the default value (10@dmn{pt} roman).  Finally, the current left margin
 is restored.
 @endDefmac
 
@@ -2240,7 +2243,7 @@ vertical space.
 @cindex fonts in manual pages
 @cindex @code{man}, how to set fonts
 
-The standard font is Roman; the default text size is 10@w{ }point.
+The standard font is roman; the default text size is 10@w{ }point.
 
 @Defmac {SM, [@Var{text}]}
 Sets the text on the same line or the text on the next line in a font
@@ -2326,9 +2329,9 @@ positions have been changed.
 @cindex empty space before a paragraph, in manual pages
 @Defmac {PD, [@Var{nnn}]}
 Adjusts the empty space before a new paragraph (or section).  The
-optional argument gives the amount of space (default units are
-@samp{v}); without parameter, the value is reset to its default value
-(1@w{ }line for tty devices, 0.4@dmn{v}@w{ }otherwise).
+optional argument gives the amount of space (default unit is @samp{v});
+without parameter, the value is reset to its default value (1@w{ }line
+for tty devices, 0.4@dmn{v}@w{ }otherwise).
 @endDefmac
 
 @maindex SH
@@ -2363,7 +2366,7 @@ The `trademark' sign.
 
 @glindex lq
 @glindex rq
-@Defstr{lq}
+@Defstr {lq}
 @Defstrx {rq}
 Left and right quote.  This is equal to @code{\(lq} and @code{\(rq},
 respectively.
@@ -3757,7 +3760,7 @@ format @samp{1} could be specified as @samp{0} also (and exactly this is
 returned by the @code{\g} escape, see below).
 
 @item I
-@cindex roman numerals
+@cindex Roman numerals
 @cindex numerals, Roman
 Upper-case Roman numerals: 0, I, II, III, IV,@w{ }@enddots{}
 
@@ -3789,7 +3792,7 @@ The following example produces @samp{10, X, j, 010}:
 \na
 @endExample
 
-@cindex roman numerals, maximum and minimum
+@cindex Roman numerals, maximum and minimum
 @cindex maximum values of Roman numerals
 @cindex minimum values of Roman numerals
 The largest number representable for the @samp{i} and @samp{I} formats
@@ -4138,7 +4141,7 @@ is formatted as
 @cindex size of sentence space
 @cindex space between sentences
 @Defreq {ss, word_space_size [@Var{sentence_space_size}]}
-@Defregx{.ss}
+@Defregx {.ss}
 @Defregx {.sss}
 Change the minimum size of a space between filled words.  It takes its
 units as one twelfth of the space width parameter for the current font.
@@ -4298,7 +4301,7 @@ The hyphenation mode is associated with the current environment
 @cindex lines, consecutive hyphenated
 @cindex hyphenated lines, consecutive
 @Defreq {hlm, [@Var{nnn}]}
-@Defregx{.hlm}
+@Defregx {.hlm}
 @Defregx {.hlc}
 Set the maximum number of consecutive hyphenated lines to @var{nnn}.  If
 this number is negative, there is no maximum.  The default value is@w{
@@ -4530,6 +4533,9 @@ The read-only number register @code{.L} contains the current line
 spacing setting.
 @endDefreq
 
+@c XXX document \n[nl]
+@c XXX document \n[nl] == -1 if vertical position is zero
+
 @Defesc {\\x, ', spacing, '}
 @Defregx {.a}
 Sometimes, extra vertical spacing is only needed occasionally, e.g.@: to
@@ -4567,17 +4573,22 @@ the next page is also disabled, except if it is accompanied by a page
 number (see @ref{Page Control}, for more information).  This mode
 ends when actual text is output or the @code{rs} request is encountered.
 
+@cindex top-level diversion
+@cindex diversion, top-level
 This request is useful for macros which want to avoid that subsequent
 macros inadvertently insert some vertical space before the text starts
 (for example, to set up the first paragraph after a section header).  It
-is associated with the current diversion level.
+has no effect if not called within the top-level diversion
+(@pxref{Diversions}).
 
 @c XXX xref
 @endDefreq
 
+@cindex top-level diversion
+@cindex diversion, top-level
 @Defreq {rs, }
-Disable no-space mode.  This request is associated with the current
-diversion level.
+Disable no-space mode.  It has no effect if not called within the
+top-level diversion (@pxref{Diversions}).
 
 @c XXX xref
 @endDefreq
@@ -5272,7 +5283,7 @@ indentation value or a temporary indentation value is active.
 @Defreq {ll, [@Var{length}]}
 @Defreqx {ll, @t{+}@Var{length}}
 @Defreqx {ll, @t{-}@Var{length}}
-@Defregx{.l}
+@Defregx {.l}
 @Defregx {.ll}
 Set the line length to @var{length} (or increment or decrement the
 current value by @var{length}).  Initially, the line length is set to
@@ -5381,7 +5392,6 @@ changing the font or font size) are undone after processing @code{tl}.
 @code{tl} accepts the same parameter delimiting characters as the
 @code{\A} escape; see @ref{Escapes}.
 @end itemize
-
 @endDefreq
 
 @cindex length of title line
@@ -5401,7 +5411,9 @@ argument, the title length is reset to the previous value before the
 last call to @code{lt}.
 
 The current setting of this is available in the @code{.lt} read-only
-number register.
+number register; it is associated with the current environment
+(@pxref{Environments}).
+
 @endDefreq
 
 @cindex page number
@@ -5459,37 +5471,42 @@ actually eject a page.
 'sp .3i                             \" vertical space
 ..                                  \" end macro
 @endExample
+
+@cindex top-level diversion
+@cindex diversion, top-level
+@code{bp} has no effect if not called within the top-level diversion
+(@pxref{Diversions}).
 @endDefreq
 
 @cindex orphan line
-@Defreq {ne, space}
+@Defreq {ne, [@Var{space}]}
 It is often necessary to force a certain amount of space before a new
 page occurs.  This is most useful to make sure that there is not a
 single @dfn{orphan} line left at the bottom of a page.  The @code{ne}
 request ensures that there is a certain distance, specified by the first
 argument, before the next page is triggered (see @ref{Traps}, for
-further information).  The default unit for @code{ne} is @code{v} and
-the default argument is@w{ }1@dmn{v}.
+further information).  The default unit for @code{ne} is @samp{v}; the
+default value of @var{space} is@w{ }1@dmn{v} if no argument is given.
 
 For example, to make sure that no fewer than 2@w{ }lines get orphaned,
 do the following before each paragraph:
 
 @Example
 .ne 2
-.ti +5n
-text
+text text text
 @endExample
 @endDefreq
 
 @rqindex os
 @rqindex ne
-@Defreq {sv, space}
+@Defreq {sv, [@Var{space}]}
 @code{sv} is similar to the @code{ne} request; it reserves the specified
 amount of vertical space.  If the desired amount of space exists before
-the next trap (bottom page boundary), the space is output
-immediately.  If there is not enough space, it is stored for later
-output via the @code{os} request.  The default argument is@w{ }1@dmn{v}
-and the default unit is @code{v}.
+the next trap (bottom page boundary), the space is output immediately
+(ignoring a partial filled line which stays untouched).  If there is not
+enough space, it is stored for later output via the @code{os} request.
+The default value is@w{ }1@dmn{v} if no argument is given; the default
+unit is @samp{v}.
 @endDefreq
 
 
@@ -5501,22 +5518,11 @@ and the default unit is @code{v}.
 
 @code{gtroff} can switch fonts at any point in the text.
 
-@Defreq {ft, font}
-@Defescx {\\f, ', font, '}
-The @code{ft} request and the @code{\f} escape change the
-current font to @samp{font}.
-
-Fonts are generally specified as upper-case strings, which are usually
-1@w{ }to 4 characters representing an abbreviation or acronym of the font
-name.
-
-The basic set of fonts are @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
+The basic set of fonts is @samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
 These are Times Roman, Italic, Bold, and Bold Italic.  There is also at
 least one symbol font which contains various special symbols (Greek,
 mathematics).  Such symbols fonts cannot be used directly, but should be
-used via an escape.
-@c XXX should we list PostScript fonts here too?
-@endDefreq
+used via an escape (@pxref{Using Symbols}).
 
 @menu
 * Changing Fonts::              
@@ -5534,12 +5540,34 @@ used via an escape.
 @cindex changing fonts
 @cindex fonts, changing
 
-@rqindex ft
+@rqindex sty
+@rqindex fam
+@kindex styles
+@kindex family
+@pindex DESC
+@Defreq {ft, [@Var{font}]}
+@Defescx {\\f, , f, }
+@Defescx {\\f, @lparen{}, fn, }
+@Defescx {\\f, @lbrack{}, font, @rbrack}
+The @code{ft} request and the @code{\f} escape change the current font
+to @var{font} (one-character name @var{f}, two-character name @var{fn}).
+
+If @var{font} is a style name (as set with the @code{sty} request or
+with the @code{styles} command in the @file{DESC} file), use it within
+the current font family (as set with the @code{fam} request or with the
+@code{family} command in the @file{DESC} file).
+
 @cindex previous font
 @cindex font, previous
-Use the @code{ft} request or the @code{\f} request to change fonts.
-With no arguments, @code{.ft} switches to the previous
-font (use @code{\fP} to do this with an escape).
+With no argument or using @samp{P} as an argument, @code{.ft} switches
+to the previous font.  Use @code{\fP} or @code{\f[P]} to do this with
+the escape.
+
+Fonts are generally specified as upper-case strings, which are usually
+1@w{ }to 4 characters representing an abbreviation or acronym of the
+font name.  This is no limitation, just a convention.
+
+The example below produces two identical lines.
 
 @Example
 eggs, bacon,
@@ -5547,57 +5575,12 @@ eggs, bacon,
 spam
 .ft
 and sausage.
-@endExample
 
-@esindex \f
-Use the @code{\f} escape to change fonts in the middle of
-words:
-
-@Example
 eggs, bacon, \fBspam\fP and sausage.
 @endExample
 
-@noindent
-Both of the above examples produce the same output.  Note the usage
-of @samp{P} to indicate the previous font -- this cannot be omitted
-using @code{\f}.
-
-Sometimes, when typesetting letters of different fonts, more or less space at
-such boundaries are needed.  There are two escapes to help with this.
-
-@cindex italic correction
-@cindex correction, italic
-@Defesc {\\/, , , }
-The @code{\/} escape increases the width of the preceding character so
-that the spacing between that character and the following character is
-correct if the following character is a Roman character.  For
-example, if an italic@w{ }f is immediately followed by a Roman right
-parenthesis, then in many fonts the top right portion of the @code{f}
-overlaps the top left of the right parenthesis.  Use
-this escape sequence whenever an italic character is immediately
-followed by a Roman character without any intervening space.  This small
-amount of space is also called @dfn{italic correction}.
-
-@c XXX example
-@c producing @i{f}), which is ugly.  Inserting \/ produces f) and avoids
-@c this problem.
-@endDefesc
-
-@cindex left italic correction
-@cindex correction, left italic
-@Defesc {\\\,, , , }
-The @code{\,} escape modifies the spacing of the following character so
-that the spacing between that character and the preceding character is
-correct if the preceding character is a Roman character.
-Use this escape sequence whenever a Roman character is
-immediately followed by an italic character without any intervening
-space.  In analogy to above, this space could be called @dfn{left italic
-correction}, but this term isn't used widely.
-
-@c XXX example
-@c For example, inserting \, between the parenthesis and the f changes
-@c (f to (f.
-@endDefesc
+@xref{Font Positions}, for an alternative syntax.
+@endDefreq
 
 @rqindex ft
 @rqindex ul
@@ -5609,20 +5592,13 @@ correction}, but this term isn't used widely.
 @rqindex fspecial
 @rqindex fp
 @rqindex code
-@Defreq {ftr, F G}
-The @code{ftr} request translates fonts; its syntax is
-
-@Example
-.ftr @var{F} @var{G}
-@endExample
-
-@noindent
-which translates font@w{ }@var{F} to font@w{ }@var{G}.  Whenever a font
-named @var{F} is referred to in a @code{\f} escape sequence, or in the
-@code{ft}, @code{ul}, @code{bd}, @code{cs}, @code{tkf}, @code{special},
-@code{fspecial}, @code{fp}, or @code{code} requests, font@w{ }@var{G}
-is used.  If @var{G} is missing, or equal to @var{F} then font@w{
-}@var{F} is not translated.
+@Defreq {ftr, f [@Var{g}]}
+This request translates font@w{ }@var{f} to font@w{ }@var{g}.  Whenever
+a font named @var{f} is referred to in a @code{\f} escape sequence, or
+in the @code{ft}, @code{ul}, @code{bd}, @code{cs}, @code{tkf},
+@code{special}, @code{fspecial}, @code{fp}, or @code{code} requests,
+font@w{ }@var{g} is used.  If @var{g} is missing or equal to @var{f} the
+translation is undone.
 @endDefreq
 
 @c ---------------------------------------------------------------------
@@ -5631,37 +5607,87 @@ is used.  If @var{G} is missing, or equal to @var{F} then font@w{
 @subsection Font Families
 @cindex font families
 @cindex families, font
+@cindex font styles
+@cindex styles, font
 
 Due to the variety of fonts available, @code{gtroff} has added the
-concept of font families.  Each of these families has four styles
-(@samp{R}, @samp{I}, @samp{B} and @samp{BI}).
+concept of @dfn{font families} and @dfn{font styles}.  The fonts are
+specified as the concatenation of the font family and style.  Specifying
+a font without the family part causes @code{gtroff} to use that style of
+the current family.
 
-The fonts are specified as the concatenation of the font family and
-style.  Specifying a font without the family part causes
-@code{gtroff} to use that style of the current family.  By default,
-@code{gtroff} uses the Times family.
+@cindex postscript fonts
+@cindex fonts, postscript
+Currently, only @acronym{PostScript} fonts are set up to this mechanism.
+By default, @code{gtroff} uses the Times family with the four styles
+@samp{R}, @samp{I}, @samp{B}, and @samp{BI}.
 
 This way, it is possible to use the basic four fonts and to select a
-different font family on the command line.
+different font family on the command line (@pxref{Groff Options}).
 
 @Defreq {fam, family}
 @Defregx {.fam}
-Switch font families with the @code{fam} request.  The current font
-family is available in the read-only number register @code{.fam}.  This
-is a string-valued register.
+Switch font family to @var{family}.  If no argument is given, switch
+back to the previous font family.  The current font family is available
+in the read-only number register @samp{.fam} (this is a string-valued
+register); it is associated with the current environment.
 
 @Example
 spam,
-.fam H
+.fam H    \" helvetica family
 spam,
-.ft B
+.ft B     \" family H + style B = font HB
 spam,
-.fam T
+.fam T    \" times family
 spam,
-.ft AR
+.ft AR    \" font AR
 baked beans,
-.ft R
+.ft R     \" family T + style R = font TR
 and spam.
+@endExample
+@endDefreq
+
+@rqindex cs
+@rqindex bd
+@rqindex tkf
+@rqindex uf
+@rqindex fspecial
+@Defreq {sty, n style}
+Associate @var{style} with font position@w{ }@var{n}.  A font position
+can be associated either with a font or with a style.  The current font
+is the index of a font position and so is also either a font or a style.
+When it is a style, the font that is actually used is the font the name
+of which is the concatenation of the name of the current family and the
+name of the current style.  For example, if the current font is@w{ }1
+and font position@w{ }1 is associated with style@w{ }@samp{R} and the
+current font family is@w{ }@samp{T}, then font @samp{TR} will be used.
+If the current font is not a style, then the current family is ignored.
+When the requests @code{cs}, @code{bd}, @code{tkf}, @code{uf}, or
+@code{fspecial} are applied to a style, then they will instead be
+applied to the member of the current family corresponding to that style.
+
+@var{n} must be a positive integer value.
+
+@pindex DESC
+@kindex styles
+The default family can be set with the @option{-f} option (@pxref{Groff
+Options}).  The @code{styles} command in the @file{DESC} file controls
+which font positions (if any) are initially associated with styles
+rather than fonts.  For example, the default settings for
+@acronym{PostScript} fonts
+
+@Example
+styles R I B BI
+@endExample
+
+@noindent
+are equivalent to
+
+@Example
+.sty 1 R
+.sty 2 I
+.sty 3 B
+.sty 4 BI
 @endExample
 @endDefreq
 
@@ -5672,43 +5698,27 @@ and spam.
 @cindex font positions
 @cindex positions, font
 
-For the sake of old phototypesetters and compatability with old versions
+For the sake of old phototypesetters and compatibility with old versions
 of @code{troff}, @code{gtroff} has the concept of font @dfn{positions},
-on which various fonts are mounted.  The last one or two are reserved
-for the symbol font(s).
+on which various fonts are mounted.
 
 @Defreq {fp, pos font [@Var{external-name}]}
-@Defregx{.f}
+@Defregx {.f}
 @Defregx {.fp}
 New fonts can be mounted with the @code{fp} request.  These numeric
 positions can then be referred to with font changing commands.  When
-@code{gtroff} starts it is using font number one.
-
-@Example
-.fp 1 H
-.fp 2 HI
-.fp 3 HB
-wink, wink,
-.ft 2
-nudge, nudge,
-.ft
-.ft 3
-say no more!
-.ft
-@endExample
-
-@noindent
-Note that after these font changes have taken place, the original font
-is restored.
+@code{gtroff} starts it is using font position@w{ }1 (which must exist).
 
 @cindex current font position register
 The current font in use, as a font position, is available in the
-read-only number register @code{.f}.  This can be useful to remember the
-current font, for later recall.
+read-only number register @samp{.f}.  This can be useful to remember the
+current font for later recall.  It is associated with the current
+environment (@pxref{Environments}).
 
 @Example
-.nr save-font \n(.f
-... lots 'o text ...
+.nr save-font \n[.f]
+.ft B
+... text text text ...
 .ft \n[save-font]
 @endExample
 
@@ -5728,10 +5738,9 @@ to be mounted explicitly with the @code{fp} request on an unused font
 position, it should be mounted on the first unused font position, which
 can be found in the @code{.fp} register.  Although @code{gtroff} does
 not enforce this strictly, it does not allow a font to be mounted at a
-position whose number is much greater than that of any currently used
-position.
+position whose number is much greater (approx.@: 1000 positions) than
+that of any currently used position.
 
-@rqindex fp
 The @code{fp} request has an optional third argument.  This argument
 gives the external name of the font, which is used for finding the font
 description file.  The second argument gives the internal name of the
@@ -5739,6 +5748,46 @@ font which is used to refer to the font in @code{gtroff} after it has
 been mounted.  If there is no third argument then the internal name is
 used as the external name.  This feature makes it possible to use
 fonts with long names in compatibility mode.
+@endDefreq
+
+Both the @code{ft} request and the @code{\f} escape have alternative
+syntax forms to access font positions.
+
+@rqindex sty
+@rqindex fam
+@kindex styles
+@kindex family
+@pindex DESC
+@Defreq {ft, [@Var{nnn}]}
+@Defescx {\\f, , n, }
+@Defescx {\\f, @lparen{}, nn, }
+@Defescx {\\f, @lbrack{}, nnn, @rbrack}
+Change the current font position to @var{nnn} (one-digit position
+@var{n}, two-digit position @var{nn}).
+
+If @var{nnn} is associated with a style (as set with the @code{sty}
+request or with the @code{styles} command in the @file{DESC} file), use
+it within the current font family (as set with the @code{fam} request or
+with the @code{family} command in the @file{DESC} file).
+
+@cindex previous font
+@cindex font, previous
+With no argument or using @samp{0} as an argument, @code{.ft} switches
+to the previous font (position).  Use @code{\f0} or @code{\f[0]} to do
+this with the escape.
+
+@Example
+this is font 1
+.ft 2
+this is font 2
+.ft                   \" switch back to font 1
+.ft 3
+this is font 3
+.ft
+this is font 1 again
+@endExample
+
+@xref{Changing Fonts}, for the standard syntax form.
 @endDefreq
 
 @c ---------------------------------------------------------------------
@@ -5993,7 +6042,7 @@ The @code{a} is tucked slightly under the @code{T}.
 @c XXX more info
 @cindex kerning enabled register
 @Defreq {kern, [@Var{flag}]}
-@Defregx{.kern}
+@Defregx {.kern}
 @Defescx {\\&, , , }
 Kerning can be activated with the @code{kern} request.  If the parameter
 is non-zero or missing, enable pairwise kerning, otherwise disable it.
@@ -6031,6 +6080,49 @@ less than or equal to @var{s2} the increase in width is a linear
 function of the point size.
 @c XXX can n1 or n2 be negative?
 @endDefreq
+
+Sometimes, when typesetting letters of different fonts, more or less
+space at such boundaries are needed.  There are two escapes to help with
+this.
+
+@cindex italic correction
+@cindex correction, italic
+@cindex correction between italic and roman character
+@cindex roman character, correction after italic character
+@cindex italic character, correction before roman character
+@Defesc {\\/, , , }
+The @code{\/} escape increases the width of the preceding character so
+that the spacing between that character and the following character is
+correct if the following character is a roman character.  For example,
+if an italic@w{ }@code{f} is immediately followed by a roman right
+parenthesis, then in many fonts the top right portion of the @code{f}
+overlaps the top left of the right parenthesis.  Use this escape
+sequence whenever an italic character is immediately followed by a roman
+character without any intervening space.  This small amount of space is
+also called @dfn{italic correction}.
+
+@c XXX example
+@c producing @i{f}), which is ugly.  Inserting \/ produces f) and avoids
+@c this problem.
+@endDefesc
+
+@cindex left italic correction
+@cindex correction, left italic
+@cindex roman character, correction before italic character
+@cindex italic character, correction after roman character
+@Defesc {\\\,, , , }
+The @code{\,} escape modifies the spacing of the following character so
+that the spacing between that character and the preceding character is
+correct if the preceding character is a roman character.  Use this
+escape sequence whenever a roman character is immediately followed by an
+italic character without any intervening space.  In analogy to above,
+this space could be called @dfn{left italic correction}, but this term
+isn't used widely.
+
+@c XXX example
+@c For example, inserting \, between the parenthesis and the f changes
+@c (f to (f.
+@endDefesc
 
 
 @c =====================================================================
@@ -6127,7 +6219,7 @@ Some devices may only have certain permissible sizes, in which case
 @cindex current vertical spacing register
 @Defreq {vs, space}
 @Defregx {.v}
-Changes the vertical spacing.  The default unit is points.
+Changes the vertical spacing.  The default unit is @samp{p}.
 
 The read-only number register @code{.v} contains the current vertical
 spacing.
@@ -6194,7 +6286,7 @@ A read-only number register returning the point size in scaled points.
 @endDefreg
 
 @cindex last-requested point size register
-@Defreg{.psr}
+@Defreg {.psr}
 @Defregx {.sr}
 The last-requested point size in scaled points is contained in the
 @code{.psr} read-only number register.  The last requested point size in
@@ -6496,7 +6588,7 @@ The first request is the `if' part and the latter is the `else' part.
 
 @esindex \@{
 @esindex \@}
-@c @Defesc{\\@@@ {, , , }
+@c @Defesc {\\@@@ {, , , }
 @c @Defescx {\\@@@}, , , }
 In many cases, an if (or if-else) construct needs to execute
 more than one request.
@@ -6797,10 +6889,10 @@ The following escapes give fine control of movements about the page.
 The @code{\v'@var{e}'} escape enables arbitrary vertical motion from the
 current location on the page.  The argument@w{ }@var{e} specifies the
 distance to move; positive is downwards and negative upwards.  The
-default unit for this escape is vertical spaces, @code{v}'s.  Beware,
-however, that @code{gtroff} continues text processing at the point
-where the motion ends, so you should always balance motions
-to avoid interference with text processing.
+default unit for this escape @samp{v}.  Beware, however, that
+@code{gtroff} continues text processing at the point where the motion
+ends, so you should always balance motions to avoid interference with
+text processing.
 @endDefesc
 
 There are some special case escapes for vertical motion.
@@ -6925,7 +7017,7 @@ to the last character before a subscript.
 @item skw
 @vindex skw
 How far to right of the center of the last character in the @code{\w}
-argument, the center of an accent from a Roman font should be placed
+argument, the center of an accent from a roman font should be placed
 over that character.
 @end table
 @endDefesc
@@ -7361,6 +7453,9 @@ said to be stored in a macro.  This is used for saving text for output
 at a later time, which is useful for keeping blocks of text on the same
 page, footnotes, tables of contents and indices.
 
+@c XXX describe top-level diversion
+@c XXX index entry for top-level diversion
+
 @Defreq {di, macro}
 @Defreqx {da, macro}
 Begins a diversion.  Like the @code{de}
@@ -7382,7 +7477,7 @@ into.  The @code{da} macro appends to an existing diversion.
 @vindex .h
 @cindex nested diversions
 @cindex diversion, nested
-@Defreg{.z}
+@Defreg {.z}
 @Defregx {.d}
 Diversions may be nested.  The read-only number register @code{.z}
 contains the name of the current diversion (this is a string-valued
@@ -7399,7 +7494,7 @@ text baseline of the lowest line on the page.  This is a read-only
 register.
 @endDefreg
 
-@Defreg{dn}
+@Defreg {dn}
 @Defregx {dl}
 After completing a diversion, the read-write number registers @code{dn}
 and @code{dl} contain the vertical and horizontal size of the diversion.
@@ -9245,10 +9340,10 @@ the lowest point below the baseline to which the character extends
 baseline, it should be given a zero depth, rather than a negative depth.
 The @var{italic_correction} subfield gives the amount of space that
 should be added after the character when it is immediately to be
-followed by a character from a Roman font.  The
+followed by a character from a roman font.  The
 @var{left_italic_correction} subfield gives the amount of space that
 should be added before the character when it is immediately to be
-preceded by a character from a Roman font.  The
+preceded by a character from a roman font.  The
 @var{subscript_correction} gives the amount of space that should be
 added after a character before adding a subscript.  This should be less
 than the italic correction.

@@ -1082,9 +1082,8 @@ void font_change()
 
 void family_change()
 {
-  symbol s = get_name(1);
-  if (!s.is_null())
-    curenv->set_family(s);
+  symbol s = get_name();
+  curenv->set_family(s);
   skip_line();
 }
 

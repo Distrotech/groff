@@ -800,12 +800,12 @@ vunits saved_space;
 void save_vertical_space()
 {
   vunits x;
-  if (get_vunits(&x, 'v')) {
-    if (curdiv->distance_to_next_trap() > x)
-      curdiv->space(x, 1);
-    else
-      saved_space = x;
-  }
+  if (!has_arg() || !get_vunits(&x, 'v'))
+    x = curenv->get_vertical_spacing();
+  if (curdiv->distance_to_next_trap() > x)
+    curdiv->space(x, 1);
+  else
+    saved_space = x;
   skip_line();
 }
 
