@@ -6204,10 +6204,10 @@ is formatted as
 @cindex sentence space size register (@code{.sss})
 @cindex size of sentence space register (@code{.sss})
 @cindex space between sentences register (@code{.sss})
-Change the minimum size of a space between filled words.  It takes its
-units as one twelfth of the space width parameter for the current
-font.  Initially both the @var{word_space_size} and
-@var{sentence_space_size} are@tie{}12.
+Change the size of a space between words.  It takes its units as one
+twelfth of the space width parameter for the current font.
+Initially both the @var{word_space_size} and @var{sentence_space_size}
+are@tie{}12.  In fill mode, the values specify the minimum distance.
 
 @cindex fill mode
 @cindex mode, fill
@@ -6236,6 +6236,34 @@ ignored if a TTY output device is used; the given values are then
 rounded down to a multiple of@tie{}12 (@pxref{Implementation Differences}).
 
 The request is ignored if there is no parameter.
+
+@cindex discardable horizontal space
+@cindex space, discardable, horizontal
+@cindex horizontal discardable space
+Another useful application of the @code{ss} request is to insert
+discardable horizontal space, i.e., space which is discarded at a line
+break.  For example, paragraph-style footnotes could be separated this
+way:
+
+@Example
+.ll 4.5i
+1.\ This is the first footnote.\c
+.ss 48
+.nop
+.ss 12
+2.\ This is the second footnote.
+@endExample
+
+@noindent
+The result:
+
+@Example
+1. This is the first footnote.        2. This
+is the second footnote.
+@endExample
+
+@noindent
+Note that the @code{\h} escape produces unbreakable space.
 @endDefreq
 
 @DefreqList {ce, [@Var{nnn}]}
@@ -10719,6 +10747,9 @@ Move horizontally, usually from the current location (if no absolute
 position operator @samp{|} is used).  The expression@tie{}@var{e}
 indicates how far to move: positive is rightwards and negative
 leftwards.  The default scaling indicator for this escape is @samp{m}.
+
+This horizontal space is not discarded at the end of a line.  To insert
+discardable space of a certain length use the @code{ss} request.
 @endDefesc
 
 There are a number of special-case escapes for horizontal motion.
@@ -11662,8 +11693,16 @@ in the return value of the @code{.h} register.
 
 @DefregList {dn}
 @DefregListEnd {dl}
+@cindex @code{dn} register, and @code{da} (@code{boxa})
+@cindex @code{dl} register, and @code{da} (@code{boxa})
+@cindex @code{da} request, and @code{dn} (@code{dl})
+@cindex @code{boxa} request, and @code{dn} (@code{dl})
 After completing a diversion, the read-write number registers @code{dn}
 and @code{dl} contain the vertical and horizontal size of the diversion.
+Note that only the just processed lines are counted: For the computation
+of @code{dn} and @code{dl}, the requests @code{da} and @code{boxa} are
+handled as if @code{di} and @code{box} had been used -- lines which have
+been already stored in a macro are not taken into account.
 
 @Example
 .\" Center text both horizontally & vertically
