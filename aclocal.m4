@@ -203,6 +203,17 @@ AC_MSG_RESULT(no))
 AC_LANG_POP(C++)])dnl
 dnl
 dnl
+AC_DEFUN(GROFF_STDINT_H,
+[AC_LANG_PUSH(C++)
+AC_MSG_CHECKING([C++ <stdint.h>])
+AC_TRY_COMPILE([#include <stdint.h>],
+[uint32_t x; int32_t y;],
+AC_MSG_RESULT(yes);AC_DEFINE(HAVE_CC_STDINT_H, 1,
+			     [Define if you have a C++ <stdint.h>.]),
+AC_MSG_RESULT(no))
+AC_LANG_POP(C++)])dnl
+dnl
+dnl
 AC_DEFUN(GROFF_TIME_T,
 [AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([for declaration of time_t])

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1992, 2001, 2003 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -37,9 +37,9 @@ size_t file_name_max(const char *fname)
 
 #else /* not _POSIX_VERSION */
 
-#ifdef HAVE_LIMITS_H
+#ifdef HAVE_CC_LIMITS_H
 #include <limits.h>
-#endif /* HAVE_LIMITS_H */
+#endif /* HAVE_CC_LIMITS_H */
 
 #ifdef HAVE_DIRENT_H
 #include <dirent.h>

@@ -5284,8 +5284,6 @@ void unbreakable_space_node::tprint(troff_output_file *out)
     out->do_motion();
     out->put("N160\n");		// this is &nbsp;
   }
-  else
-    out->word_marker();
   out->right(n);
 }
 

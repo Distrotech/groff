@@ -1,4 +1,4 @@
-/* Copyright (C) 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2001, 2003 Free Software Foundation, Inc.
      Written by Werner Lemberg (wl@gnu.org)
 
 This file is part of groff.
@@ -48,7 +48,7 @@ extern "C" {
 #endif
 #endif
 
-#if HAVE_STDINT_H
+#if HAVE_CC_STDINT_H
 # include <stdint.h>
 #endif
 
