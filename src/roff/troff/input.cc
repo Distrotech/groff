@@ -4176,6 +4176,11 @@ static void begin_alternative()
     tok.next();
 }
 
+void nop_request()
+{
+  while (tok.space())
+    tok.next();
+}
 
 static int_stack if_else_stack;
 
@@ -5975,6 +5980,7 @@ void init_input_requests()
   init_request("ig", ignore);
   init_request("rm", remove_macro);
   init_request("rn", rename_macro);
+  init_request("nop", nop_request);
   init_request("if", if_request);
   init_request("ie", if_else_request);
   init_request("el", else_request);
