@@ -2056,6 +2056,8 @@
 .  evc 0
 .  in 0
 .  nf
+.  \" we insert something to make .chop always work
+.  nop \&\c
 .
 .  \" increase nesting level *after* parsing of arguments
 .  nr doc-nesting-level +1
@@ -3194,6 +3196,11 @@
 .de doc-do-Bl-args
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    \" avoid a warning message in case e.g. `-offset' has no parameter
+.    nr doc-reg-dBla (\n[doc-arg-ptr] + 1)
+.    if !d doc-arg\n[doc-reg-dBla]
+.      ds doc-arg\n[doc-reg-dBla]
+.
 .    nr doc-reg-dBla 1
 .
 .    ie        "\*[doc-arg\n[doc-arg-ptr]]"-compact" \
