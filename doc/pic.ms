@@ -654,7 +654,7 @@ has been filled, so that the text will not be obscured by the filling.
 .PP
 The closed-object modifier \fBsolid\fR is equivalent to \fBfill\fR 
 with the darkest fill value (DWB \fBpic\fR had this capability but
-mentioned it only in a reference opinion).  
+mentioned it only in a reference section).  
 .NH 1
 More About Text Placement
 .PP
@@ -1372,10 +1372,12 @@ Various built-in functions are supported: \fBsin(\fIx\fB)\fR,
 \fBcos(\fIx\fB)\fR, \fBlog(\fIx\fB)\fR, \fBexp(\fIx\fB)\fR,
 \fBsqrt(\fIx\fB)\fR, \fBmax(\fIx\fB,\fIy\fB)\fR,
 \fBatan2(\fIx\fB,\fIy\fB)\fR, \fBmin(\fIx\fB,\fIy\fB)\fR,
-\fBint(\fIx\fB)\fR, and \fBrand()\fP.
+\fBint(\fIx\fB)\fR, \fBrand()\fP, and \fBsrand()\fP.
 Both \fBexp\fP and \fBlog\fP are
-base 10; \fBint\fP does integer truncation; and \fBrand()\fP returns a
-random number in [0-1).
+base 10; \fBint\fP does integer truncation; \fBrand()\fP returns a
+random number in [0-1), and \fBsrand()\fP sets the seed for 
+a new sequence of pseudo-random numbers to be returned by \fBrand()\fP
+(\fBsrand()\fP is a GNU extension).
 .PP
 GNU \fBgpic\fP also documents a one-argument form or rand,
 \fBrand(\fIx\fB)\fR, which returns a random number between 1 and

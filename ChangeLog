@@ -1,3 +1,33 @@
+2001-07-17  Gaius Mulley  <gaius@glam.ac.uk>
+
+	Replace call to `troff' with `groff -Z' to make it aware of
+	GROFF_BIN_PATH.
+
+	* src/preproc/html/pre-html.cc (TROFF_COMMAND): New macro.
+	(troff_command, command_prefix): Removed.
+	(alterDeviceTo): Use groff.
+	(addZ): New function.
+	(char_buffer::do_html): Use it.
+	(scanArguments): Use TROFF_COMMAND.
+	(findPrefix): Removed.
+	(main): Updated.
+	* src/roff/groff/groff.cc (main): Handle zflag for preprocessors.
+
+2001-07-17  Eric S. Raymond  <esr@snark.thyrsus.com>
+
+	* doc/pic.ms: Documentation fixes.
+
+2001-07-17  Werner LEMBERG  <wl@gnu.org>
+
+	Replace atexit() with global destructor.
+
+	* src/libs/libgroff/tmpfile.cc (xtmpfile_list): Add constructor.
+	(xtmpfile_list_init): New global structure to deallocate
+	xtmpfile_list on exit.  Its destructor inherits most code from
+	remove_tmp_files().
+	(remove_tmp_files): Deleted.
+	(add_tmp_file): Simplified.
+
 2001-07-16  Werner LEMBERG  <wl@gnu.org>
 
 	Replace strdup() with strsave().

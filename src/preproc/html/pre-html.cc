@@ -72,6 +72,7 @@ extern "C" const char *Version_string;
 #define PS_TEMPLATE_LONG "-ps-"
 #define REGION_TEMPLATE_SHORT "rg"
 #define REGION_TEMPLATE_LONG "-regions-"
+#define TROFF_COMMAND "troff"
 
 #if 0
 #   define  DEBUGGING
@@ -101,8 +102,6 @@ static int   image_res      = DEFAULT_IMAGE_RES;
 static int   vertical_offset= DEFAULT_VERTICAL_OFFSET;
 static char *image_template = NULL;             // image template filename
 static int   troff_arg      = 0;                // troff arg index
-static char *command_prefix = NULL;             // optional prefix for some installations.
-static char *troff_command  = NULL;
 static char *image_dir      = NULL;             // user specified image directory
 #if defined(DEBUGGING)
 static int   debug          = FALSE;
@@ -1119,7 +1118,7 @@ static void waitForChild (PID_T pid)
  *  alterDeviceTo - if toImage is set then the arg list is altered to include
  *                     IMAGE_DEVICE and we invoke groff rather than troff.
  *                  else 
- *                     set -Thtml and troff
+ *                     set -Thtml and groff
  */
 
 static void alterDeviceTo (int argc, char *argv[], int toImage)
@@ -1141,8 +1140,34 @@ static void alterDeviceTo (int argc, char *argv[], int toImage)
       }
       i++;
     }
-    argv[troff_arg] = troff_command;  /* use troff */
+    argv[troff_arg] = "groff";   /* use groff -Z */
   }
+}
+
+/*
+ *  addZ - appends -Z onto the command list for groff.
+ */
+
+char **addZ (int argc, char *argv[])
+{
+  char **new_argv = (char **)malloc((argc+2)*sizeof(char *));
+  int   i=0;
+
+  if (new_argv == NULL)
+    sys_fatal("malloc");
+
+  while (i<troff_arg) {
+    new_argv[i] = argv[i];
+    i++;
+  }
+  new_argv[i] = "-Z";
+  while (i<argc) {
+    new_argv[i+1] = argv[i];
+    i++;
+  }
+  argc++;
+  new_argv[argc] = NULL;
+  return( new_argv );
 }
 
 /*
@@ -1159,8 +1184,10 @@ int char_buffer::do_html(int argc, char *argv[])
     sys_fatal("pipe");
 
   alterDeviceTo(argc, argv, 0);
-  argv += troff_arg;   // skip all arguments up to troff/groff
+  argv += troff_arg;   // skip all arguments up to groff
   argc -= troff_arg;
+  argv = addZ(argc, argv);
+  argc++;
 
 #if defined(DEBUG_HTML)
   write_file_html();
@@ -1327,7 +1354,7 @@ int scanArguments (int argc, char **argv)
 	       || (strcmp(argv[i], "-?") == 0)) {
       usage(stdout);
       exit(0);
-    } else if (strcmp(argv[i], troff_command) == 0) {
+    } else if (strcmp(argv[i], TROFF_COMMAND) == 0) {
       /* remember troff argument number */
       troff_arg = i;
 #if defined(DEBUGGING)
@@ -1391,25 +1418,6 @@ static void removeTempFiles (void)
 #endif
 }
 
-/*
- *  findPrefix - finds the optional prefix to the groff utilities.
- *               It also builds the 'troff' executable name.
- */
-
-static void findPrefix (void)
-{
-  command_prefix = getenv("GROFF_COMMAND_PREFIX");
-  if (!command_prefix)
-    command_prefix = PROG_PREFIX;
-  troff_command = (char *)malloc(strlen("troff")+strlen(command_prefix)+1);
-  if (troff_command == NULL)
-    sys_fatal("malloc");
-
-  strcpy(troff_command, command_prefix);
-  strcat(troff_command, "troff");
-}
-
-
 int main(int argc, char **argv)
 {
   program_name = argv[0];
@@ -1417,7 +1425,6 @@ int main(int argc, char **argv)
   int found=0;
   int ok=1;
 
-  findPrefix();
   i = scanArguments(argc, argv);
   checkImageDir();
   makeFileName();

@@ -281,7 +281,7 @@ int main(int argc, char **argv)
   if (!postdriver)
     fatal("no `postpro' command in DESC file for device `%1'", device);
 
-  if (predriver) {
+  if (predriver && !zflag) {
     commands[TROFF_INDEX].insert_arg(commands[TROFF_INDEX].get_name());
     const char *p = Pargs.contents();
     const char *end = p + Pargs.length();

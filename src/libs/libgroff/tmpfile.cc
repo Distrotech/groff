@@ -117,43 +117,41 @@ char *xtmptemplate(const char *postfix_long, const char *postfix_short)
 // The trick with unlinking the temporary file while it is still in
 // use is not portable, it will fail on MS-DOS and most MS-Windows
 // filesystems.  So it cannot be used on non-Posix systems.
-// Instead, we maintain a list of files to be deleted on exit, and
-// register an atexit function that will remove them all in one go.
+// Instead, we maintain a list of files to be deleted on exit.
 // This should be portable to all platforms.
 
-static struct xtmpfile_list {
-  struct xtmpfile_list *next;
-  char fname[1];
-} *xtmpfiles_to_delete;
+struct xtmpfile_list {
+  const char *fname;
+  xtmpfile_list *next;
+  xtmpfile_list(const char *fn) : fname(fn), next(0) {}
+};
 
-static void remove_tmp_files()
+xtmpfile_list *xtmpfiles_to_delete = 0;
+
+struct xtmpfile_list_init {
+  ~xtmpfile_list_init();
+} _xtmpfile_list_init;
+
+xtmpfile_list_init::~xtmpfile_list_init()
 {
-  struct xtmpfile_list *p = xtmpfiles_to_delete;
-
-  while (p) {
-    if (unlink(p->fname) < 0)
-      error("cannot unlink `%1': %2", p->fname, strerror(errno));
-    struct xtmpfile_list *old = p;
-    p = p->next;
-    free(old);
+  xtmpfile_list *x = xtmpfiles_to_delete;
+  while (x != 0) {
+    if (unlink(x->fname) < 0)
+      error("cannot unlink `%1': %2", x->fname, strerror(errno));
+    xtmpfile_list *tmp = x;
+    x = x->next;
+    a_delete tmp->fname;
+    delete tmp;
   }
 }
 
 static void add_tmp_file(const char *name)
 {
-  if (xtmpfiles_to_delete == NULL)
-    atexit(remove_tmp_files);
-
-  struct xtmpfile_list *p
-    = (struct xtmpfile_list *)malloc(sizeof(struct xtmpfile_list)
-				     + strlen (name));
-  if (p == NULL) {
-    error("cannot unlink `%1': %2", name, strerror(errno));
-    return;
-  }
-  p->next = xtmpfiles_to_delete;
-  strcpy(p->fname, name);
-  xtmpfiles_to_delete = p;
+  char *s = new char[strlen(name)];
+  strcpy(s, name);
+  xtmpfile_list *x = new xtmpfile_list(s);
+  x->next = xtmpfiles_to_delete;
+  xtmpfiles_to_delete = x;
 }
 
 // Open a temporary file and with fatal error on failure.
