@@ -720,6 +720,7 @@ In the following examples, the left (which is identical to the right) and
 the middle part of the manual page header strings are shown.
 .
 .Pp
+.Bd -ragged
 .Bl -tag -xwidth ".Li .Dt FOO 2 mac68k" -compact -offset indent
 .It Li .Dt FOO 7
 .Ql FOO(7)
@@ -731,6 +732,7 @@ the middle part of the manual page header strings are shown.
 .Ql FOO
 .Ql bar
 .El
+.Ed
 .Pp
 .
 Local, OS-specific additions might be found in the file
@@ -928,7 +930,8 @@ from the example above might be referred to as
 or
 .Em file arguments .
 Some command line argument lists are quite long:
-.Bl -tag -xwidth ".Nm make" -offset indent
+.Bd -ragged
+.Bl -tag -xwidth ".Nm make" -offset indent -compact
 .It Nm make
 .Op Fl eiknqrstv
 .Op Fl D Ar variable
@@ -941,6 +944,7 @@ Some command line argument lists are quite long:
 .Op Ar target Ld
 .Ek
 .El
+.Ed
 .Pp
 .
 Here one might talk about the command
@@ -1322,7 +1326,7 @@ Example:
 .
 Produces:
 .
-.Bd -filled -offset indent
+.Bd -ragged -offset indent
 .Fo "int res_mkquery"
 .Fa "int op"
 .Fa "char *dname"
@@ -1581,7 +1585,7 @@ put into parentheses.
 .El
 .Pp
 The following values for
-.Ao Li version Ac
+.Ao version Ac
 are possible:
 .Pp
 .Dl 32v, v1, v2, v3, v4, v5, v6, v7, V, V.1, V.2, V.3, V.4
@@ -1601,11 +1605,11 @@ are possible:
 .Bx -devel
 .El
 .Pp
-.Ao Li version Ac
+.Ao version Ac
 will be prepended to the string
 .Ql Bx .
 The following values for
-.Ao Li release Ac
+.Ao release Ac
 are possible:
 .Pp
 .Dl Reno, reno, Tahoe, tahoe, Lite, lite, Lite2, lite2
@@ -1623,7 +1627,7 @@ are possible:
 .El
 .Pp
 For possible values of
-.Ao Li version Ac
+.Ao version Ac
 see the description of the
 .Ql .Os
 request above in section
@@ -1642,7 +1646,7 @@ request above in section
 .El
 .Pp
 For possible values of
-.Ao Li version Ac
+.Ao version Ac
 see the description of the
 .Ql .Os
 request above in section
@@ -1837,9 +1841,9 @@ macro suppresses insertion of a space between the current position and its
 first parameter.
 For example, it is useful for old style argument lists where there is no
 space between the flag and argument:
-.
-\# XXX Usage
-.
+.Pp
+.Dl "Usage:" Ld Ao argument Ac \&Ns Oo Ao argument Ac Oc Ld
+.Dl "      " .Ns Ao argument Ac Ld
 .Pp
 .Bl -tag -xwidth ".Li .Op\ Fl\ I\ Ns\ Ar\ directory" -compact -offset 15n
 .It Li ".Op Fl I Ns Ar directory"
@@ -1851,6 +1855,12 @@ Note: The
 macro always invokes the
 .Ql .No
 macro after eliminating the space unless another macro name follows it.
+If used as a request (i.e., the second form above in the
+.Sq Usage
+line,
+.Ql .Ns
+is identical to
+.Ql .No .
 .
 .Ss Section Cross References
 .
@@ -2433,111 +2443,124 @@ This macro is parsed but not callable.
 .Dl Fl ldghfstru
 .Pp
 The above was produced by:
-.Li \&.Dl Fl ldghfstru .
-.It Li \&.Dl
-(D-ell)
+.Li ".Dl Fl ldghfstru" .
+.
+.It Li .Dl
+(This is D-ell.)
 Display one line of indented
 .Em literal
 text.
 The
-.Ql \&.Dl
-example macro has been used throughout this
-file.
-It allows
-the indent (display) of one line of text.
-Its default font is set to
-constant width (literal) however
-it is parsed and will recognized other macros.
-It is not callable however.
+.Ql .Dl
+example macro has been used throughout this file.
+It allows the indentation (display) of one line of text.
+Its default font is set to constant width (literal).
+.Ql .Dl
+is parsed but not callable.
 .Pp
 .Dl % ls -ldg /usr/local/bin
 .Pp
-The above was produced by
-.Li \&.Dl % ls -ldg /usr/local/bin .
-.It Li \&.Bd
-Begin-display.
+The above was produced by:
+.Li ".Dl % ls -ldg /usr/local/bin" .
+.
+.It Li .Bd
+Begin display.
 The
-.Ql \&.Bd
+.Ql .Bd
 display must be ended with the
-.Ql \&.Ed
+.Ql .Ed
 macro.
-Displays may be nested within lists, but may
-.Em not
-contain other displays; this also prohibits nesting
-of .D1 and .Dl one-line displays.
-.Ql \&.Bd
-has the following syntax:
+It has the following syntax:
 .Pp
-.Dl ".Bd display-type [-offset offset_value] [-compact]"
+.Bd -ragged -offset indent
+.Li .Bd Ao "display type" Ac
+.Li     Oo -literal | -filled | -unfilled | -ragged | -centered Oc
+.Li     Oo -offset Ao string Ac Oc Oo -compact Oc
+.Ed
 .Pp
-The display-type must be one of the following four types and
-may have an offset specifier for indentation:
-.Ql \&.Bd .
-.Pp
-.Bl -tag -width "file file_name  " -compact
+.
+.Bl -tag -xwidth ".Fl file Ao Ar file name Ac " -compact
 .It Fl ragged
-Fill, but do not adjust the right margin.
+Fill, but do not adjust the right margin (only left-justify).
+.It Fl centered
+Center lines between the current left and right margin.
+Note that each single line is centered.
 .It Fl unfilled
-Do not fill: display a block of text as typed, the
-right (and left) margin edges are left ragged.
+Do not fill; display a block of text as typed, using line breaks as
+specified by the user.
+This can produce overlong lines without warning messages.
 .It Fl filled
-Display a filled (formatted) block.
-The block of text is formatted (the edges are filled \-
-not left unjustified).
+Display a filled block.
+The block of text is formatted (i.e., the text is justified on both the left
+and right side).
 .It Fl literal
-Display a literal block, useful for source code or
-simple tabbed or spaced text.
-.It Fl file Ar file_name
+Display block with literal font (usually fixed-width).
+Useful for source code or simple tabbed or spaced text.
+.It Fl file Ao Ar file name Ac
 The file name following the
 .Fl file
 flag is read and displayed.
-Literal mode is
-asserted and tabs are set at 8 constant width character
-intervals, however any
+Literal mode is asserted and tabs are set at 8\~constant width character
+intervals.
+However, any
 .Xr troff/ Ns Nm \-mdoc
-commands in file will be processed.
-.It Fl offset Ar string
+commands in the file will be processed.
+Currently, this feature is not implemented.
+.It Fl offset Ao Ar string Ac
 If
 .Fl offset
-is specified with one of the following strings, the string
-is interpreted to indicate the level of indentation for the
-forthcoming block of text:
+is specified with one of the following strings, the string is interpreted to
+indicate the level of indentation for the forthcoming block of text:
+.
 .Pp
-.Bl -tag -width "indent-two" -compact
+.Bl -tag -xwidth ".Ar indent-two" -compact
 .It Ar left
-Align block on the current left margin,
-this is the default mode of
-.Ql \&.Bd .
+Align block on the current left margin; this is the default mode of
+.Ql .Bd .
 .It Ar center
 Supposedly center the block.
-At this time
-unfortunately, the block merely gets
-left aligned about an imaginary center margin.
+At this time unfortunately, the block merely gets left aligned about an
+imaginary center margin.
 .It Ar indent
-Indents by one default indent value or tab.
-The default
-indent value is also used for the
-.Ql \&.D1
-display so one is guaranteed the two types of displays
-will line up.
-This indent is normally set to 6n or about two
-thirds of an inch (six constant width characters).
+Indent by one default indent value or tab.
+The default indent value is also used for the
+.Ql .D1
+and 
+.Ql .Dl
+macros, so one is guaranteed the two types of displays will line up.
+The indentation value is normally set to\~6n or about two thirds of an inch
+(six constant width characters).
 .It Ar indent-two
-Indents two times the default indent value.
+Indent two times the default indent value.
 .It Ar right
 This
 .Em left
-aligns the block about two inches from
-the right side of the page.
-This macro needs
-work and perhaps may never do the right thing by
+aligns the block about two inches from the right side of the page.
+This macro needs work and perhaps may never do the right thing within
 .Xr troff .
 .El
+.Pp
+.
+If
+.Ao string Ac
+is a valid numeric expression instead, use that value for indentation.
+If not,
+.Ao string Ac
+is tested whether it is an
+.Nm \-mdoc
+macro name, and the default offset value associated with this macro is used.
+Finally, if all tests fail,
+the width of
+.Ao string Ac
+(typeset with a fixed-width font) is taken as the offset.
 .El
-.It ".Ed"
-End-display.
+.
+.It Li .Ed
+End display (doesn't take parameters).
 .El
+.
 .Ss Tagged Lists and Columns
+.
 There are several types of lists which may be initiated with the
 .Ql ".Bl"
 begin-list macro.

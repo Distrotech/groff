@@ -485,7 +485,7 @@
 .\" NS doc-curr-size global register
 .\" NS   saved current font size
 .
-.nr doc-curr-size \n[.s]
+.nr doc-curr-size \n[.ps]
 .
 .eo
 .
@@ -506,7 +506,7 @@
 .
 .de Fl
 .  nr doc-curr-font \n[.f]
-.  nr doc-curr-size \n[.s]
+.  nr doc-curr-size \n[.ps]
 .  nop \*[doc-Fl-font]\c
 .
 .  if !\n[doc-arg-limit] \{\
@@ -582,10 +582,10 @@
 .          ie "\*[doc-str-dfr]"-" \
 .            nop \|\-\^\-\|\c
 .          el \
-.            nop \|\-\)\%\*[doc-str-dfr]\c
+.            nop \|\%\-\*[doc-str-dfr]\c
 .    \}\}\}
 .    el \{\
-.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\c
+.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
 .      nop \)\*[doc-str-dfr]\f[P]\s[0]\c
 .    \}
 .
@@ -630,7 +630,7 @@
 .  ds doc-str-dpr "\*[doc-arg\n[doc-arg-ptr]]
 .
 .  ie (\n[doc-reg-dpr1] == 1) \{\
-.    nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\c
+.    nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
 .    \*[doc-str-dpr]
 .  \}
 .  el \{\
@@ -638,17 +638,17 @@
 .
 .    ie (\n[doc-reg-dpr1] == 2) \
 .      \" the `\%' prevents hyphenation on a dash (`-')
-.      nop \)\%\*[doc-str-dpr]\&\c
+.      nop \%\*[doc-str-dpr]\&\c
 .    el \{\
 .      \" punctuation character
-.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\c
+.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
 .      nop \)\*[doc-str-dpr]\f[P]\s[0]\c
 .    \}
 .
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-arg-limit] < \n[doc-arg-ptr]) \{\
 .      \" last argument
-.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\c
+.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
 .      doc-print-and-reset
 .    \}
 .    el \{\
@@ -671,7 +671,7 @@
 .
 .de Ar
 .  nr doc-curr-font \n[.f]
-.  nr doc-curr-size \n[.s]
+.  nr doc-curr-size \n[.ps]
 .  nop \*[doc-Ar-font]\c
 .
 .  if !\n[doc-arg-limit] \{\
@@ -726,7 +726,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Ad-font]\c
 .    doc-print-recursive
 .  \}
@@ -777,7 +777,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .
 .    ie \n[doc-in-synopsis-count] \{\
 .      if "\*[doc-macro-name]"Cd" \{\
@@ -828,7 +828,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Cm-font]\c
 .    doc-print-recursive
 .  \}
@@ -861,7 +861,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Er-font]\c
 .    doc-print-recursive
 .  \}
@@ -892,7 +892,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Em-font]\c
 .    doc-print-recursive
 .  \}
@@ -923,7 +923,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Er-font]\c
 .    doc-print-recursive
 .  \}
@@ -954,7 +954,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Ev-font]\c
 .    doc-print-recursive
 .  \}
@@ -1001,7 +1001,7 @@
 .  \}
 .
 .  nr doc-curr-font \n[.f]
-.  nr doc-curr-size \n[.s]
+.  nr doc-curr-size \n[.ps]
 ..
 .
 .
@@ -1020,7 +1020,7 @@
 .    nop \*[doc-Fd-font]\$*
 .    br
 .    ft \n[doc-curr-font]
-.    ps \n[doc-curr-size]
+.    ps \n[doc-curr-size]u
 .  \}
 ..
 .
@@ -1040,7 +1040,7 @@
 .    nop \*[doc-Fd-font]#include <\$1>
 .    br
 .    ft \n[doc-curr-font]
-.    ps \n[doc-curr-size]
+.    ps \n[doc-curr-size]u
 .  \}
 ..
 .
@@ -1071,7 +1071,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Ar-font]\c
 .    doc-print-recursive
 .  \}
@@ -1102,7 +1102,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Ic-font]\c
 .    doc-print-recursive
 .  \}
@@ -1133,7 +1133,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Li-font]\c
 .    doc-print-recursive
 .  \}
@@ -1167,7 +1167,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Ic-font]\c
 .    doc-print-recursive
 .  \}
@@ -1200,7 +1200,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Sy-font]\c
 .    doc-print-recursive
 .  \}
@@ -1248,7 +1248,7 @@
 .    \}
 .    el \{\
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      rs
 .
@@ -1305,7 +1305,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Pa-font]\c
 .    doc-print-recursive
 .  \}
@@ -1336,7 +1336,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Sy-font]\c
 .    doc-print-recursive
 .  \}
@@ -1367,7 +1367,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Me-font]\c
 .    doc-print-recursive
 .  \}
@@ -1399,7 +1399,7 @@
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .      nop \)\*[doc-Tn-font-size]\c
 .      ie !\n[doc-is-reference] \{\
 .        nop \)\*[doc-Tn-font-shape]\c
@@ -1438,7 +1438,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Va-font]\c
 .    doc-print-recursive
 .  \}
@@ -1457,10 +1457,6 @@
 .\" NS width register `No' set in doc-common
 .
 .de No
-.  nr doc-curr-font \n[.f]
-.  nr doc-curr-size \n[.s]
-.  nop \*[doc-No-font]\c
-.
 .  if !\n[doc-arg-limit] \{\
 .    ie \n[.$] \{\
 .      ds doc-macro-name No
@@ -1471,14 +1467,12 @@
 .  \}
 .
 .  nr doc-arg-ptr +1
-.  ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.    ie (\n[doc-type\n[doc-arg-ptr]] == 1) \
-.      \*[doc-arg\n[doc-arg-ptr]]
-.    el \
-.      doc-print-recursive
+.  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.    nr doc-curr-font \n[.f]
+.    nr doc-curr-size \n[.ps]
+.    nop \*[doc-No-font]\c
+.    doc-print-recursive
 .  \}
-.  el \
-.    doc-print-and-reset
 ..
 .
 .
@@ -2253,6 +2247,7 @@
 .  \" start enclosure box
 .  box doc-enclosure-box\n[doc-nesting-level]
 .  ev doc-enclosure-env\n[doc-nesting-level]
+.  evc 0
 .  in 0
 .  nf
 .
@@ -2774,7 +2769,7 @@
 .
 .  ie \n[.$] \{\
 .    nr doc-curr-font-for-Ef \n[.f]
-.    nr doc-curr-size-for-Ef \n[.s]
+.    nr doc-curr-size-for-Ef \n[.ps]
 .
 .    ie        "\$1"Em" \
 .      nop \*[doc-Em-font]\c
@@ -2811,7 +2806,7 @@
 .  ie \n[.$] \
 .    tm Usage: .Ef (does not take arguments) (#\n[.c])
 .  el \
-.    nop \)\f[\n[doc-curr-font-for-Ef]]\s[\n[doc-curr-size-for-Ef]]
+.    nop \)\f[\n[doc-curr-font-for-Ef]]\s[\n[doc-curr-size-for-Ef]u]
 ..
 .
 .
@@ -2973,7 +2968,7 @@
 .    ie        "\$1"-literal" \{\
 .      ds doc-display-type-stack\n[doc-display-depth] literal
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      ie t \{\
 .        nop \*[doc-Li-font]\c
@@ -3083,7 +3078,7 @@
 .        nr doc-display-indent-stack\n[doc-display-depth] \$2
 .      el \{\
 .        doc-get-width "\$2"
-.        ie (\n[doc-width] == 2) \{\
+.        ie (\n[doc-width] <= 3) \{\
 .          \" if the offset parameter is a macro, use the macro's
 .          \" width as specified in doc-common
 .          doc-get-arg-type "\$2"
@@ -3138,7 +3133,7 @@
 .
 .  if "\*[doc-display-type-stack\n[doc-display-depth]]"literal" \{\
 .    ft \n[doc-curr-font]
-.    ps \n[doc-curr-size]
+.    ps \n[doc-curr-size]u
 .  \}
 .
 .  in -\n[doc-display-indent-stack\n[doc-display-depth]]u
@@ -3424,6 +3419,7 @@
 .        doc-reset-args
 .        box doc-box-dBla
 .        ev doc-env-dBla
+.        evc 0
 .        in 0
 .        nf
 .        nop \*[doc-str-dBla]
@@ -3881,6 +3877,7 @@
 .    \" start item box
 .    box doc-item-box\n[doc-list-depth]
 .    ev doc-item-env\n[doc-list-depth]
+.    evc 0
 .    in 0
 .    nf
 .  \}
@@ -3947,7 +3944,6 @@
 .
 .  nr doc-in-list 0
 .  doc-reset-args
-'  fi
 ..
 .
 .
@@ -3986,7 +3982,6 @@
 .
 .  nr doc-in-list 0
 .  doc-reset-args
-'  fi
 ..
 .
 .
@@ -4010,7 +4005,6 @@
 .
 .  nr doc-in-list 0
 .  doc-reset-args
-'  fi
 ..
 .
 .
@@ -4027,7 +4021,6 @@
 .  br
 .
 .  doc-reset-args
-'  fi
 ..
 .
 .
@@ -4112,7 +4105,7 @@
 .
 .de doc-diag-list
 .  nr doc-curr-font \n[.f]
-.  nr doc-curr-size \n[.s]
+.  nr doc-curr-size \n[.ps]
 .
 .  ie \n[doc-have-diag-list] \{\
 .    ie ((\n[.c] - \n[doc-diag-list-input-line-count]) > 1) \
@@ -4128,10 +4121,9 @@
 .  nop \*[doc-Sy-font]\c
 .  if \n[doc-num-args] \
 .    doc-remaining-args
-.  nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\*[doc-hard-space]\c
+.  nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\*[doc-hard-space]\c
 .
 .  doc-print-and-reset
-'  fi
 ..
 .
 .
@@ -4157,6 +4149,7 @@
 .  \" we use a box without `.nf' to compute the tag width (via `dl' register)
 .  box doc-box-dtl
 .  ev doc-env-dtl
+.  evc 0
 .  fi
 .  ad 0
 .  in 0
@@ -4190,7 +4183,6 @@
 .
 .  nr doc-in-list 0
 .  doc-reset-args
-'  fi
 ..
 .
 .
@@ -4389,6 +4381,9 @@
 .\" NS   doc-arg-ptr
 .\" NS   doc-macro-name
 .\" NS
+.\" NS local variables:
+.\" NS   doc-reg-Xr
+.\" NS
 .\" NS width register `Xr' set in doc-common
 .
 .de Xr
@@ -4407,19 +4402,19 @@
 .      \" first argument must be a string
 .      ie (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.s]
-.        nop \*[doc-Xr-font]\c
-.        nop \)\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]\c
+.        nr doc-curr-size \n[.ps]
+.        ds doc-arg\n[doc-arg-ptr] \*[doc-Xr-font]\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]
 .
-.        nr doc-arg-ptr +1
-.        ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
-.          \" modify second argument if it is a string
-.          if (\n[doc-type\n[doc-arg-ptr]] == 2) \
-.            ds doc-arg\n[doc-arg-ptr] \*[lp]\*[doc-arg\n[doc-arg-ptr]]\*[rp]
-.          doc-print-recursive
+.        if (\n[doc-arg-limit] > \n[doc-arg-ptr]) \{\
+.          nr doc-reg-Xr (\n[doc-arg-ptr] + 1)
+.          \" modify second argument if it is a string and
+.          \" remove space inbetween
+.          if (\n[doc-type\n[doc-reg-Xr]] == 2) \{\
+.            ds doc-arg\n[doc-reg-Xr] \*[lp]\*[doc-arg\n[doc-reg-Xr]]\*[rp]
+.            ds doc-space\n[doc-arg-ptr]
+.          \}
 .        \}
-.        el \
-.          doc-print-and-reset
+.        doc-print-recursive
 .      \}
 .      el \
 .        doc-Xr-usage
@@ -4461,7 +4456,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Sx-font]\c
 .    doc-print-recursive
 .  \}
@@ -4706,7 +4701,7 @@
 .    \}
 .
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Ft-font]\c
 .    doc-print-recursive
 .
@@ -4767,7 +4762,7 @@
 .    \}
 .
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Ft-font]\c
 .    doc-print-recursive
 .  \}
@@ -4842,7 +4837,7 @@
 .    nr doc-arg-ptr +1
 .    if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .      nop \*[doc-Fa-font]\c
 .      doc-print-recursive
 .
@@ -4901,7 +4896,7 @@
 .      ds doc-arg\n[doc-arg-ptr] "\*[doc-func-arg]
 .
 .    if (\n[doc-func-arg-count] > 1) \{\
-.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\|,\)\c
+.      nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\|,\)\c
 .      nop \)\*[doc-space\n[doc-arg-ptr]]\*[doc-Fa-font]\c
 .      nop \)\*[doc-arg\n[doc-arg-ptr]]\f[P]\s[0]\c
 .    \}
@@ -4995,7 +4990,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    nop \*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]\c
 .    nop \f[P]\s[0]\*[lp]\)\c
 .
@@ -5004,7 +4999,7 @@
 .      if (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .        nop \*[doc-Fa-font]\c
 .        doc-do-func-args
-.        nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\c
+.        nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
 .    \}\}
 .
 .    nop \)\*[rp]\)\c
@@ -5056,7 +5051,7 @@
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    if (\n[doc-type\n[doc-arg-ptr]] == 2) \{\
 .      nr doc-reg-ddfa (\n[doc-arg-ptr] - 1)
-.      nop \|\f[\n[doc-curr-font]]\s[\n[doc-curr-size]],\)\c
+.      nop \|\f[\n[doc-curr-font]]\s[\n[doc-curr-size]u],\)\c
 .      nop \)\*[doc-space\n[doc-reg-ddfa]]\f[P]\s[0]\|\c
 .      doc-do-func-args
 .  \}\}
@@ -5151,6 +5146,7 @@
 .    \" start function box
 .    box doc-func-box
 .    ev doc-func-env
+.    evc 0
 .    in 0
 .    nf
 .
@@ -5158,7 +5154,7 @@
 .    if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      nr doc-func-arg-count 1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      nop \*[doc-Fn-font]\*[doc-arg\n[doc-arg-ptr]]\c
 .      nop \f[P]\s[0]\*[lp]\)\c
@@ -5219,7 +5215,7 @@
 .    nr doc-arg-ptr +1
 .    ie (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .      doc-print-recursive
 .    \}
 .    el \
@@ -5573,11 +5569,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" save to reference box
 .      box doc-author-name\n[doc-author-count]
 .      ev doc-env-%A
+.      evc 0
 .      in 0
 .      nf
 .      doc-do-references
@@ -5632,12 +5629,13 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      ie \n[doc-is-reference] \{\
 .        \" append to reference box
 .        boxa doc-book-name
 .        ev doc-env-%B
+.        evc 0
 .        in 0
 .        nf
 .        nop \*[doc-Em-font]\c
@@ -5694,11 +5692,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-date
 .      ev doc-env-%D
+.      evc 0
 .      in 0
 .      nf
 .      doc-do-references
@@ -5750,11 +5749,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-publisher-name
 .      ev doc-env-%I
+.      evc 0
 .      in 0
 .      nf
 .      nop \*[doc-Em-font]\c
@@ -5807,11 +5807,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-journal-name
 .      ev doc-env-%J
+.      evc 0
 .      in 0
 .      nf
 .      nop \*[doc-Em-font]\c
@@ -5864,11 +5865,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-issue-name
 .      ev doc-env-%N
+.      evc 0
 .      in 0
 .      nf
 .      doc-do-references
@@ -5920,11 +5922,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-optional-string
 .      ev doc-env-%O
+.      evc 0
 .      in 0
 .      nf
 .      doc-do-references
@@ -5976,11 +5979,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-page-number-string
 .      ev doc-env-%P
+.      evc 0
 .      in 0
 .      nf
 .      doc-do-references
@@ -6032,11 +6036,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-corporate-name
 .      ev doc-env-%Q
+.      evc 0
 .      in 0
 .      nf
 .      doc-do-references
@@ -6088,11 +6093,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-report-name
 .      ev doc-env-%R
+.      evc 0
 .      in 0
 .      nf
 .      doc-do-references
@@ -6153,11 +6159,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .      ie \n[doc-is-reference] \{\
 .        \" append to reference box
 .        boxa doc-reference-title-name-for-book
 .        ev doc-env-%T
+.        evc 0
 .        in 0
 .        nf
 .        nop \*[doc-No-font]\c
@@ -6169,9 +6176,10 @@
 .
 .        nr doc-arg-ptr +1
 .        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.s]
+.        nr doc-curr-size \n[.ps]
 .        boxa doc-reference-title-name
 .        ev doc-env-%T
+.        evc 0
 .        in 0
 .        nf
 .        nop \*[doc-Em-font]\c
@@ -6228,11 +6236,12 @@
 .
 .      nr doc-arg-ptr +1
 .      nr doc-curr-font \n[.f]
-.      nr doc-curr-size \n[.s]
+.      nr doc-curr-size \n[.ps]
 .
 .      \" append to reference box
 .      boxa doc-volume-name
 .      ev doc-env-%V
+.      evc 0
 .      in 0
 .      nf
 .      doc-do-references
@@ -6260,7 +6269,7 @@
 .  nr doc-reg-ddr1 \n[doc-type\n[doc-arg-ptr]]
 .
 .  ie (\n[doc-reg-ddr1] == 1) \{\
-.    \" .nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]]\c
+.    \" .nop \f[\n[doc-curr-font]]\s[\n[doc-curr-size]u]\c
 .    doc-append-arg \c 3
 .    \*[doc-arg\n[doc-arg-ptr]]
 .  \}
@@ -6297,25 +6306,11 @@
 .  doc-paragraph
 .  nop File:
 .  Pa \$1
-.  doc-paragraph
 .
-.  nr doc-curr-font \n[.f]
-.  nr doc-curr-size \n[.s]
-.
-.  ie t \{\
-.    nop \*[doc-Li-font]
-.    br
-.    ta T 9n
-.  \}
-.  el \
-.    ta T 8n
-.
-.  nf
+.  Bd -literal
 .  so \$1
-.  fi
+.  Ed
 .
-.  ft \n[doc-curr-font]
-.  ps \n[doc-curr-size]
 .  doc-paragraph
 ..
 .
@@ -6363,7 +6358,7 @@
 .  nr doc-arg-ptr +1
 .  if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .    nr doc-curr-font \n[.f]
-.    nr doc-curr-size \n[.s]
+.    nr doc-curr-size \n[.ps]
 .    doc-print-recursive
 .  \}
 ..

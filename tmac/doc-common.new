@@ -641,6 +641,139 @@
 ..
 .
 .
+.\" NS doc-in-see-also-section global register (bool)
+.\" NS   whether we are in the `see also' section
+.
+.nr doc-in-see-also-section 0
+.
+.
+.\" NS doc-in-files-section global register (bool)
+.\" NS   whether we are in the `files' section
+.
+.nr doc-in-files-section 0
+.
+.
+.\" NS doc-in-authors-section global register (bool)
+.\" NS   whether we are in the `authors' section
+.
+.nr doc-in-authors-section 0
+.
+.
+.\" NS Sh user macro (not callable)
+.\" NS   section headers
+.\" NS
+.\" NS modifies:
+.\" NS   doc-func-args-processed
+.\" NS   doc-func-count
+.\" NS   doc-in-authors-section
+.\" NS   doc-in-files-section
+.\" NS   doc-in-see-also-section
+.\" NS   doc-in-synopsis-count
+.\" NS   doc-indent-synopsis
+.\" NS   doc-is-func
+.\" NS   doc-num-func-args
+.\" NS
+.\" NS local variable:
+.\" NS   doc-reg-Sh
+.\" NS   doc-reg-Sh1
+.\" NS
+.\" NS width register `Sh' set in doc-common
+.
+.de Sh
+.  ie \n[doc-arg-limit] \{\
+.    \" we only allow `Sh' within `Sh'; it will change the font back to
+.    \" `doc-Sh-font'
+.    ie "\*[doc-macro-name]"Sh" \{\
+.      nr doc-arg-ptr +1
+.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.        nr doc-curr-font \n[.f]
+.        nr doc-curr-size \n[.ps]
+.        nop \*[doc-Sh-font]\c
+.        doc-print-recursive
+.    \}\}
+.    el \
+.      tm Usage: .Sh section_name ... (#\n[.c])
+.  \}
+.  el \{\
+.    ie \n[.$] \{\
+.      ds doc-macro-name Sh
+.      doc-parse-args \$@
+.
+.      nr doc-in-synopsis-count 0
+.      nr doc-indent-synopsis 0
+.
+.      if t \
+'        ad
+.
+.      ie "\$1"NAME" \{\
+.        doc-setup-header
+'        in 0
+.      \}
+.      el \{\
+.        nr doc-in-see-also-section 0
+.        nr doc-in-files-section 0
+.        nr doc-in-authors-section 0
+.
+.        ie        "\$1"SYNOPSIS" \{\
+.          if t \
+.            na
+.          nr doc-in-synopsis-count 1
+.        \}
+.        el \{ .ie "\$1"DESCRIPTION" \{\
+.          nr doc-is-func 0
+.          nr doc-func-count 0
+.          nr doc-func-args-processed 0
+.          nr doc-num-func-args 0
+.        \}
+.        el \{ .ie "\$1"SEE" \{\
+.          if t \
+.            na
+.          nr doc-in-see-also-section 1
+.        \}
+.        el \{ .ie "\$1"FILES" \
+.          nr doc-in-files-section 1
+.        el .if    "\$1"AUTHORS" \
+.          nr doc-in-authors-section 1
+.        \}\}\}
+.
+.        in 0
+.        nr doc-have-author 0
+.      \}
+.
+.      doc-setup-page-layout
+'      sp
+.      ns
+.      ta T .5i
+.      if !\n[cR] \
+.        ne 3
+'      fi
+.
+.      if t \{\
+.        nr doc-reg-Sh \n[.ss]
+.        nr doc-reg-Sh1 \n[.sss]
+.        ss (\n[.ss] * 5 / 4) (\n[.sss] * 5 / 4)
+.      \}
+.
+.      nr doc-arg-ptr +1
+.      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
+.        nr doc-curr-font \n[.f]
+.        nr doc-curr-size \n[.ps]
+.        nop \*[doc-Sh-font]\c
+.        doc-print-recursive
+.      \}
+.
+.      if t \
+.        ss \n[doc-reg-Sh] \n[doc-reg-Sh1]
+.
+.      in +\n[doc-subheader-indent]u
+.      ns
+.    \}
+.    el \
+.      tm Usage: .Sh section_name ... (#\n[.c])
+.  \}
+..
+.
+.
 .\" NS Ss user macro (not callable)
 .\" NS   subsection
 .\" NS
@@ -658,7 +791,7 @@
 .      nr doc-arg-ptr +1
 .      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.s]
+.        nr doc-curr-size \n[.ps]
 .        nop \*[doc-Sh-font]\c
 .        doc-print-recursive
 .    \}\}
@@ -682,7 +815,7 @@
 .      nr doc-arg-ptr +1
 .      if (\n[doc-arg-limit] >= \n[doc-arg-ptr]) \{\
 .        nr doc-curr-font \n[.f]
-.        nr doc-curr-size \n[.s]
+.        nr doc-curr-size \n[.ps]
 .        nop \*[doc-Sh-font]\c
 .        doc-print-recursive
 .      \}
