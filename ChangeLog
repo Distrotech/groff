@@ -1,3 +1,23 @@
+2003-02-16  Werner LEMBERG  <wl@gnu.org>
+
+	* src/devices/grotty/tty.cc (tty_printer::make_rgb_string): Avoid
+	null-bytes in created string.
+
+	* src/roff/troff/input.cc (lookup_color, interpolate_macro,
+	alias_macro, lookup_request): Improve warning messages.
+
+	* src/roff/troff/node.cc (suppress_node::tprint): Use `strsave',
+	not `strdup'.
+	Free `last_image_filename'.
+
+	* src/preproc/html/pre-html.cc (char_block::char_block): Initialize
+	`buffer'.
+	(imageList::createPage, imageList::createImage): Use `free', not
+	`a_delete'.
+	(imageItem::~imageItem): Free `imageName'.
+	(addRegDef): Use `strsave', not `strdup'.
+	(get_resolution): Free `pathp'.
+
 2003-02-15  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grotty/tty.cc (tty_printer::tty_printer): Fix pointer

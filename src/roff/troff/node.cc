@@ -3759,7 +3759,10 @@ void suppress_node::tprint(troff_output_file *out)
   if (is_on == 2) {
     // remember position and filename
     last_position = position;
-    last_image_filename = strdup(filename.contents());
+    const char *tem = last_image_filename;
+    last_image_filename = strsave(filename.contents());
+    if (tem)
+      a_delete(tem);
     last_image_id = image_id;
     // printf("start of image and page = %d\n", current_page);
   }

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -197,6 +197,7 @@ static unsigned int get_resolution (void)
   FILE *f;
   unsigned int res;
   f = font_path.open_file("devps/DESC", &pathp);
+  a_delete pathp;
   if (f == 0)
     fatal("can't open devps/DESC");
   while (get_line(f)) {
@@ -303,6 +304,8 @@ struct char_block {
 char_block::char_block()
 : used(0), next(0)
 {
+  for (int i = 0; i < SIZE; i++)
+    buffer[i] = 0;
 }
 
 class char_buffer {
@@ -723,6 +726,8 @@ imageItem::imageItem (int x1, int y1, int x2, int y2, int page, int res, int max
 
 imageItem::~imageItem ()
 {
+  if (imageName)
+    free(imageName);
 }
 
 /*
@@ -831,7 +836,7 @@ int imageList::createPage (int pageno)
   }
 #endif
   html_system(s, 1);
-  a_delete s;
+  free(s);
   currentPageNo = pageno;
   return 0;
 }
@@ -909,7 +914,7 @@ void imageList::createImage (imageItem *i)
       }
 #endif
       html_system(s, 0);
-      a_delete s;
+      free(s);
     } else {
       fprintf(stderr, "failed to generate image of page %d\n", i->pageNo);
       fflush(stderr);
@@ -1142,7 +1147,7 @@ char **addRegDef (int argc, char *argv[], const char *numReg)
     new_argv[i] = argv[i];
     i++;
   }
-  new_argv[argc] = strdup(numReg);
+  new_argv[argc] = strsave(numReg);
   argc++;
   new_argv[argc] = NULL;
   return new_argv;

@@ -213,14 +213,21 @@ char *tty_printer::make_rgb_string(unsigned int r,
 				   unsigned int g,
 				   unsigned int b)
 {
-  char *s = new char[7];
+  char *s = new char[8];
   s[0] = char(r >> 8);
   s[1] = char(r & 0xff);
   s[2] = char(g >> 8);
   s[3] = char(g & 0xff);
   s[4] = char(b >> 8);
   s[5] = char(b & 0xff);
-  s[6] = 0;
+  s[6] = 0x80;
+  s[7] = 0;
+  // avoid null-bytes in string
+  for (int i = 0; i < 6; i++)
+    if (!s[i]) {
+      s[i] = 1;
+      s[6] |= 1 << i;
+    }
   return s;
 }
 

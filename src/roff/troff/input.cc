@@ -1038,7 +1038,7 @@ static color *lookup_color(symbol nm)
     return &default_color;
   color *c = (color *)color_dictionary.lookup(nm);
   if (c == 0)
-    warning(WARN_COLOR, "`%1' not defined", nm.contents());
+    warning(WARN_COLOR, "color `%1' not defined", nm.contents());
   return c;
 }
 
@@ -3477,12 +3477,13 @@ static void interpolate_macro(symbol nm)
 	macro *m = r->to_macro();
 	if (!m || !m->empty())
 	  warned = warning(WARN_SPACE,
-			   "`%1' not defined (probable missing space after `%2')",
+			   "macro `%1' not defined "
+			   "(probably missing space after `%2')",
 			   nm.contents(), buf);
       }
     }
     if (!warned) {
-      warning(WARN_MAC, "`%1' not defined", nm.contents());
+      warning(WARN_MAC, "macro `%1' not defined", nm.contents());
       p = new macro;
       request_dictionary.define(nm, p);
     }
@@ -4287,7 +4288,7 @@ void alias_macro()
     symbol s2 = get_name(1);
     if (!s2.is_null()) {
       if (!request_dictionary.alias(s1, s2))
-	warning(WARN_MAC, "`%1' not defined", s2.contents());
+	warning(WARN_MAC, "macro `%1' not defined", s2.contents());
     }
   }
   skip_line();
@@ -7336,7 +7337,7 @@ static request_or_macro *lookup_request(symbol nm)
   assert(!nm.is_null());
   request_or_macro *p = (request_or_macro *)request_dictionary.lookup(nm);
   if (p == 0) {
-    warning(WARN_MAC, "`%1' not defined", nm.contents());
+    warning(WARN_MAC, "macro `%1' not defined", nm.contents());
     p = new macro;
     request_dictionary.define(nm, p);
   }
