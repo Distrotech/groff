@@ -6713,6 +6713,10 @@ moment immediately before the character is appended to an output
 character list, either by direct output, in a macro, diversion, or
 string), it is no longer affected by @code{tr}.
 
+@item
+Translating undefined characters is possible also; @code{tr} does not
+check whether the characters in its argument are defined.
+
 @c XXX xref
 
 @item
@@ -7322,9 +7326,10 @@ different font family on the command line (@pxref{Groff Options}).
 @DefreqList {fam, [@Var{family}]}
 @DefregListEnd {.fam}
 Switch font family to @var{family}.  If no argument is given, switch
-back to the previous font family.  The current font family is available
-in the read-only number register @samp{.fam} (this is a string-valued
-register); it is associated with the current environment.
+back to the previous font family.  The value at start-up is @samp{T}.
+The current font family is available in the read-only number register
+@samp{.fam} (this is a string-valued register); it is associated with
+the current environment.
 
 @Example
 spam,

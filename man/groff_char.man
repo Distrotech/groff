@@ -16,30 +16,48 @@ versions, except that this permission notice may be included in
 translations approved by the Free Software Foundation instead of in
 the original English.
 ..
+.
 .\" For best results, print this with groff.
+.
 .ds aq \(aq
-.ie !\n(.g .if '\(aq'' .ds aq \'
+.ie !\n(.g \
+.	if '\(aq'' .ds aq \'
 .el \{\
-.	tr \(aq\(aq
-.	if !c\(aq .ds aq \'
+.	tr \[aq]\[aq]
+.	if !c\[aq] .ds aq \'
+.	\" This is very special.  The standard devdvi fonts don't have a
+.	\" real `aq' glyph; it is defined with .char to be ' instead.  The
+.	\" tr request below in the definition of the C macro maps ' onto
+.	\" the `aq' glyph which would cause a recursive loop.  gtroff
+.	\" prevents this within the char request, trying to access glyph
+.	\" `aq' directly from the font.  Consequently, we get a warning,
+.	\" and nothing is printed.
+.	\"
+.	\" The following line prevents this.
+.	if '\*[.T]'dvi' .if '\n[.fam]'T' .ds aq \'
 .\}
+.
 .if !\n(.g .ig
 .\" .Ac accented-char accent char
 .de Ac
-.char \\$1 \\$3\
+.	char \\$1 \\$3\
 \k[acc]\
 \h'(u;-\w'\\$2'-\w'\\$3'/2+\\\\n[skw]+(\w'x'*0)-\\\\n[skw])'\
 \v'(u;\w'x'*0+\\\\n[rst]+(\w'\\$3'*0)-\\\\n[rst])'\
 \\$2\
 \v'(u;\w'x'*0-\\\\n[rst]+(\w'\\$3'*0)+\\\\n[rst])'\
 \h'|\\\\n[acc]u'
-.hcode \\$1\\$3
+.	hcode \\$1\\$3
 ..
+.
 .Ac \(vc \(ah c
 .Ac \(vC \(ah C
+.
 .TH GROFF_CHAR @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
 groff_char \- groff character names
+.
+.
 .SH DESCRIPTION
 This manual page lists the standard
 .B groff
@@ -80,71 +98,83 @@ a larger glyph can be obtained with
 .BR \e(ha .
 .sp
 'nf
+.
 .nr Sp 3n
 .ta \w'\fIOutput'u+\n(Spu +\w'\fIInput'u+\n(Spu +\w'\fIInput'u+\n(Spu \
 +\w'periodcentered'u+\n(Spu
+.
 .de C0
-.C \\$1 "" \\$1 \\$2 "\\$3"
+.	C \\$1 "" \\$1 \\$2 "\\$3"
 ..
+.
 .de C1
-.C \e\\$1 "" \\\\\\$1 \\$2 "\\$3"
+.	C \e\\$1 "" \\\\\\$1 \\$2 "\\$3"
 ..
+.
 .de C2
-.C \e(\\$1 "" \\(\\$1 \\$2 "\\$3"
+.	C \e(\\$1 "" \\(\\$1 \\$2 "\\$3"
 ..
+.
 .if !\n(.g .ig
 .de CD
-.C \[char\\$1] \\$1 \[char\\$1] \\$2 "\\$3"
+.	C \[char\\$1] \\$1 \[char\\$1] \\$2 "\\$3"
 ..
+.
 .do fspecial CR R
+.
 .\" input-name decimal-code output-name ps-name description
 .if !\n(.g .ig
 .de C
-.if c\\$3 \{\
-.ft CR
-.tr `\`'\*(aq
-.in 0
-.di CH
-\&\\$1
-.br
-.di
-.in
-.ft
-.ds CH \\*(CH\
-.tr ``''
-\&\\$3\t\\*(CH\t\\$2\t\\$4\t\\$5
-.\}
+.	if c\\$3 \{\
+.		ft CR
+.		tr `\`'\*[aq]
+.		in 0
+.		di CH
+.		nop \&\\$1
+.		br
+.		di
+.		in
+.		ft
+.		ds CH \\*[CH]\
+.		tr ``''
+.		nop \&\\$3\t\\*[CH]\t\\$2\t\\$4\t\\$5
+.	\}
 ..
+.
 .if \n(.g .ig
 .de C
-.if !'\\$3'' \{\
-.ft B
-.tr `\`'\*(aq
-.in 0
-.di CH
+.	if !'\\$3'' \{\
+.		ft B
+.		tr `\`'\*(aq
+.		in 0
+.		di CH
 \&\\$1
-.br
-.di
-.in
-.ft
-.ds CH \\*(CH\
-.tr ``''
+.		br
+.		di
+.		in
+.		ft
+.		ds CH \\*(CH\
+.		tr ``''
 \&\\$3\t\\*(CH\t\\$2\t\\$4\t\\$5
-.\}
+.	\}
 ..
+.
 .if !\n[cR] .wh \n(nlu+\n(.tu-\n(.Vu Fo
+.
 .de Fo
-'bp
-.He
+'	bp
+.	He
 ..
+.
 .de He
-.ft I
+.	ft I
 Output	Input	Input	PostScript	Notes
 	name	code	name
-.ft
-.LP
-'nf
+.	ft
+.	LP
+'	nf
 ..
+.
 .He
 .CD 33 exclam
 .CD 34 quotedbl
@@ -380,7 +410,7 @@ Output	Input	Input	PostScript	Notes
 .C2 fl fl "fl ligature"
 .C2 Fi ffi "ffi ligature"
 .C2 Fl ffl "ffl ligature"
-.C2 OK \& "check mark, tick"
+.C2 OK a19 "check mark, tick"
 .C2 Of ordfeminine
 .C2 Om ordmasculine
 .C2 pc periodcentered
@@ -392,7 +422,7 @@ Output	Input	Input	PostScript	Notes
 .C2 <> arrowboth "horizontal double-headed arrow"
 .C2 da arrowdown
 .C2 ua arrowup
-.C2 va \& "vertical double-headed arrow"
+.C2 va arrowupdn "vertical double-headed arrow"
 .C2 lA arrowdblleft
 .C2 rA arrowdblright
 .C2 hA arrowdblboth "horizontal double-headed double arrow"
@@ -568,6 +598,8 @@ Output	Input	Input	PostScript	Notes
 .C2 eu \& "official Euro symbol"
 .C2 Eu Euro "font-specific Euro glyph variant"
 .ch Fo
+.
+.
 .SH "SEE ALSO"
 .BR groff (@MAN1EXT@)
 .br

@@ -19,11 +19,17 @@ o Color support has been added to troff and pic (and to the device drivers
   `\m' sets the drawing color, the escape sequence `\M' specifies the
   background color for closed objects created with \D'...' commands.
   Similar to fonts, `\mP' and `\MP' switch back to the previous color.  `\m'
-  and `\M' correspond to the new troff output commands `m' and `DF'.  The
-  device-specific default color is called `default' and can't be redefined.
+  and `\M' correspond to the new troff output command sets starting with `m'
+  and `DF'.  The device-specific default color is called `default' and can't
+  be redefined.
+
+  The old `Df' output command is mapped onto `DFg'; all color output
+  commands don't change the current font position (consequently, `Df'
+  doesn't either).
 
   Outputting color can be disabled in troff and groff with the option -c
-  (it is always disabled in compatibility mode).
+  (it is always disabled in compatibility mode).  See the section on grotty
+  for the GROFF_NO_SGR environment variable also.
 
   For defining color components as fractions between 0 and 1, a new scaling
   indicator `f' has been introduced: 1f = 65536u.  For testing whether a
@@ -108,7 +114,7 @@ o Changes in www.tmac:
     that both macro names and macro syntax will change.  Some of the macros
     mentioned below aren't really new but haven't been documented properly
     before.
-    
+
     The following macros have been renamed:
 
         MAILTO     -> MTO

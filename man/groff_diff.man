@@ -302,7 +302,7 @@ Spaces are permitted in a number expression within parentheses.
 indicates a scale of 100ths of an em.
 .B f
 indicates a scale of 65536 units, providing fractions for color
-definitions with
+definitions with the
 .B defcolor
 request.
 .
@@ -774,7 +774,7 @@ This causes the insertion of a zero-width break point.
 .
 It is equal to
 .B \[rs]%
-but without insertion of a soft hyphen character.
+within a word but without insertion of a soft hyphen character.
 .
 .TP
 .B \[rs]#
@@ -1005,12 +1005,12 @@ hyphenation codes.
 .IP 8
 The character overlaps horizontally (initially characters
 .B \[rs](ul\[rs](rn\[rs](ru
-have this property);
+have this property).
 .
 .IP 16
 The character overlaps vertically (initially character
 .B \[rs](br
-has this property);
+has this property).
 .
 .IP 32
 An end-of-sentence character followed by any number of characters with
@@ -1292,6 +1292,8 @@ If
 .I xx
 is missing, switch back to previous font family.
 .
+The value at start-up is `T'.
+.
 See the description of the
 .B sty
 request for more information on font families.
@@ -1376,7 +1378,7 @@ character) other than a digit or a space.
 .
 Initially each lower-case letter has a hyphenation code, which is
 itself, and each upper-case letter has a hyphenation code which is the
-lower case version of itself.
+lower-case version of itself.
 .
 See also the
 .B hpf
@@ -1794,7 +1796,9 @@ The default family can be set with the
 .B \-f
 option.
 .
-The styles command in the
+The
+.B styles
+command in the
 .SM DESC
 file controls which font positions (if any) are initially associated
 with styles rather than fonts.
@@ -2091,24 +2095,6 @@ request without any arguments, just as for numbered environments.
 .
 There is no limit on the number of named environments; they will be
 created the first time that they are referenced.
-.
-.TP
-.BI .fp\  n\ f1\ f2
-The
-.B fp
-request has an optional third argument.
-.
-This argument gives the external name of the font, which is used for
-finding the font description file.
-.
-The second argument gives the internal name of the font which is used
-to refer to the font in troff after it has been mounted.
-.
-If there is no third argument then the internal name will be used as
-the external name.
-.
-This feature allows you to use fonts with long names in compatibility
-mode.
 .
 .TP
 .BI .ss\  m\ n
@@ -2575,6 +2561,18 @@ escape sequence, a character that appears at a different input level
 to the starting delimiter character will not be recognised as the
 closing delimiter character.
 .
+The same is true for
+.BR \[rs]A ,
+.BR \[rs]b ,
+.BR \[rs]B ,
+.BR \[rs]C ,
+.BR \[rs]l ,
+.BR \[rs]L ,
+.BR \[rs]o ,
+.BR \[rs]X ,
+and
+.BR \[rs]Z .
+.
 When decoding a macro argument that is delimited by double quotes, a
 character that appears at a different input level to the starting
 delimiter character will not be recognised as the closing delimiter
@@ -2591,6 +2589,7 @@ In a long escape name
 will not be recognized as a closing delimiter except when it occurs at
 the same input level as the opening
 .BR ] .
+.
 In compatibility mode, no attention is paid to the input-level.
 .
 .P
@@ -2674,7 +2673,6 @@ Only the differences are documented here.
 .SS "Units"
 .\" --------------------------------------------------------------------
 .
-.P
 The argument to the
 .B s
 command is in scaled points (units of
@@ -2693,6 +2691,12 @@ command is also in scaled points.
 .\" --------------------------------------------------------------------
 .SS "Text Commands"
 .\" --------------------------------------------------------------------
+.
+.TP
+.BI N n
+Print character with index\~\c
+.I n
+(a non-negative integer) of the current font.
 .
 .P
 If the
@@ -2739,32 +2743,25 @@ Unlike device-independent troff, it is not necessary for drivers to
 search special fonts to find a character.
 .
 .P
-For color support, a new command has been added:
+For color support, some new commands have been added:
 .
 .TP
-.Text \f[B]m \f[I]r g b\f[R]
+.Text \f[B]mc \f[I]cyan magenta yellow\f[R]
 .TQ
-.Text \f[B]m #\f[I]rrggbb\f[R]
+.Text \f[B]md\f[R]
 .TQ
-.Text \f[B]m ##\f[I]rrrrggggbbbb\f[R]
-Set the red, green, and blue components of the current drawing color to
-.IR r ,
-.IR g ,
-and
-.I b
-(to be specified as fractions in the range 0 to 1), or
-.IR rr ,
-.IR gg ,
-and
-.I bb
-(to be specified as hexadecimal values in the range 0 to 0xff), or
-.IR rrrr ,
-.IR gggg ,
-and
-.I bbbb
-(to be specified as hexadecimal values in the range 0 to 0xffff).
-.B troff
-emits only the latest form.
+.Text \f[B]mg \f[I]gray\f[R]
+.TQ
+.Text \f[B]mk \f[I]cyan magenta yellow black\f[R]
+.TQ
+.Text \f[B]mr \f[I]red green blue\f[R]
+Set the color components of the current drawing color, using various
+color schemes.
+.
+.B md
+resets the drawing color to the default value.
+.
+The arguments are integers in the range 0 to 65536.
 .
 .P
 The
@@ -2840,8 +2837,7 @@ delim $$
 .EN
 .
 .TP
-.Text \f[B]Dp\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ \c
-.Text $dx sub n$ $dy sub n$\[rs]n
+.Text \f[B]Dp\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
 Draw a polygon with, for $i = 1 ,..., n+1$, the
 .IR i -th
 vertex at the current position 
@@ -2852,8 +2848,7 @@ At the moment, GNU pic only uses this command to generate triangles
 and rectangles.
 .
 .TP
-.Text \f[B]DP\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ \c
-.Text $dx sub n$ $dy sub n$\[rs]n
+.Text \f[B]DP\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
 .
 Like
 .B Dp
@@ -2885,8 +2880,7 @@ does not depend on this.
 .
 Given a drawing command of the form
 .IP
-\f[B]\[rs]D\[fm]\f[I]c\f[R] $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$ \
-$x sub n$ $y sub n$\[fm]
+\f[B]\[rs]D\[fm]\f[I]c\f[R] $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$ $x sub n$ $y sub n$\[fm]
 .
 .P
 where
@@ -2916,7 +2910,6 @@ exception of
 .BR De .
 For the sake of compatibility GNU troff also follows this rule, even
 though it produces an ugly result in the case of the
-.BR Df ,
 .BR Dt ,
 and, to a lesser extent,
 .B DE
@@ -2935,17 +2928,28 @@ the current position should be increased by
 $( sum from i=1 to n x sub i , sum from i=1 to n y sub i )$.
 .
 .P
-Another extension is
+Another set of extensions is
 .
 .TP
-.Text \f[B]DF \f[I]r g b\f[R]\*[ic]\[rs]n
+.Text \f[B]DFc \f[I]cyan magenta yellow\f[R]\*[ic]\[rs]n
 .TQ
-.Text \f[B]DF #\f[I]rrggbb\f[R]\*[ic]\[rs]n
+.Text \f[B]DFd\f[R]\*[ic]\[rs]n
 .TQ
-.Text \f[B]DF ##\f[I]rrrrggggbbbb\f[R]\*[ic]\[rs]n
-Set the RGB components of the filling color similar to the
+.Text \f[B]DFg \f[I]gray\f[R]\*[ic]\[rs]n
+.TQ
+.Text \f[B]DFk \f[I]cyan magenta yellow black\f[R]\*[ic]\[rs]n
+.TQ
+.Text \f[B]DFr \f[I]red green blue\f[R]\*[ic]\[rs]n
+Set the color components of the filling color similar to the
 .B m
-command above.
+commands above.
+.
+.P
+Note that
+.B Df
+is now mapped onto
+.BR DFg .
+The current position isn't changed by those colour commands.
 .
 .
 .\" --------------------------------------------------------------------
@@ -3001,7 +3005,6 @@ for groff.
 .SS "Groff Language"
 .\" --------------------------------------------------------------------
 .
-.P
 .I groff
 provides a
 .B compatibility mode
@@ -3275,7 +3278,6 @@ command line options and warnings are still documented in
 .SH "SEE ALSO"
 .\" --------------------------------------------------------------------
 .
-.P
 The
 .I groff info
 .IR file ,
