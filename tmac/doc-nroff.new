@@ -129,31 +129,41 @@
 ..
 .
 .
-.ds <= \&<\&=
-.ds >= \&>\&=
+.ds doc-left-singlequote \[oq]
+.ds doc-right-singlequote \[cq]
 .
-.\" Lq and Rq are `official'
-.ds Rq ''
-.ds Lq ``
-.ds ua ^
-.ds aa \'
-.ds ga \`
-.ds doc-left-singlequote `
-.ds doc-right-singlequote '
-.\" q is `official'
+.\" the following strings are `official'
+.ds <= \[<=]
+.ds >= \[>=]
+.ds aa \[aa]
+.ds ga \[ga]
 .ds q \[dq]
-.
-.\" math stuff -- all macro names are `official'
-.ds Pi pi
-.ds Ne !=
-.ds Le <=
-.ds Ge >=
+.ds Ne \[!=]
+.ds Le \[<=]
+.ds Ge \[>=]
 .ds Lt <
 .ds Gt >
-.ds Pm +-
-.ds If infinity
+.ds Pm \[+-]
 .ds Na \f[I]NaN\f[P]
 .ds Ba \f[R]|\f[P]
+.
+.\" Unicode TTYs have all glyph forms; for other TTY character sets we need
+.\" character representations which are different from GNU troff's standard
+.\" forms.
+.ie '\*[.T]'utf8' \{\
+.  ds Rq \[rq]
+.  ds Lq \[lq]
+.  ds ua \[ua]
+.  ds Pi \[*p]
+.  ds If \[if]
+.\}
+.el \{\
+.  ds Rq ''
+.  ds Lq ``
+.  ds ua ^
+.  ds Pi pi
+.  ds If infinity
+.\}
 .
 .
 .\" NS doc-header-string global string
