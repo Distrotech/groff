@@ -7438,15 +7438,18 @@ vertical motion, @code{sp}.
 @cindex page location, returning to marked (@code{rt})
 @cindex location, page, returning to marked (@code{rt})
 @Defreq {mk, [@Var{reg}]}
-@Defreqx {rt, reg}
+@Defreqx {rt, [@Var{dist}]}
 The request @code{mk} can be used to mark a location on a page, for
-movement to later.  This request takes a register name as an argument in
-which to store the current page location.  With no argument it
-stores the location in an internal register.  The results of this can be
-used later by the @code{rt} or the @code{sp} request.  The @code{rt}
-request returns @emph{upwards} to the location given in the register
-name given as an argument; with no argument it returns to the
-location marked with the @code{mk} request.
+movement to later.  This request takes a register name as an argument
+in which to store the current page location.  With no argument it
+stores the location in an internal register.  The results of this can
+be used later by the @code{rt} or the @code{sp} request (or the
+@code{\v} escape).
+
+The @code{rt} request returns @emph{upwards} to the location marked
+with the last @code{mk} request.  If used with an argument, return to
+a position which distance from the top of the page is @var{dist} (no
+previous call to @code{mk} is necessary in this case).
 
 @c XXX example
 @ignore
@@ -7468,6 +7471,10 @@ default unit for this escape @samp{v}.  Beware, however, that
 @code{gtroff} continues text processing at the point where the motion
 ends, so you should always balance motions to avoid interference with
 text processing.
+
+@code{\v} doesn't trigger a trap.  This can be quite useful; for example,
+consider a page bottom trap macro which prints a marker in the margin to
+indicate continuation of a footnote or something similar.
 @endDefesc
 
 There are some special case escapes for vertical motion.
@@ -7705,8 +7712,8 @@ ends.
 
 @Defesc {\\D, ', command arg @dots{}, '}
 The @code{\D} escape provides a variety of drawing functions.
-While the previous escapes work on a character device, these
-escapes do not.
+Note that on character devices, only vertical and horizontal lines are
+supported within @code{grotty}.
 
 @table @code
 @item \D'l @var{dx} @var{dy}'

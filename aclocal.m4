@@ -504,12 +504,15 @@ dnl
 dnl If mkstemp() isn't available, use our own mkstemp.cc file.
 dnl
 AC_DEFUN(GROFF_MKSTEMP,
-[AC_LANG_PUSH(C++)
+[AC_MSG_CHECKING([for mkstemp])
+AC_LANG_PUSH(C++)
 AC_LIBSOURCE(mkstemp.cc)
-AC_CHECK_FUNC(mkstemp,
-	      [AC_DEFINE(HAVE_MKSTEMP, 1,
-			 [Define if you have mkstemp().])],
-	      [_AC_LIBOBJ(mkstemp)])
+AC_TRY_LINK([#include <stdlib.h>
+int (*f) (char *);],
+[f = mkstemp;],
+AC_MSG_RESULT(yes);AC_DEFINE(HAVE_MKSTEMP, 1,
+			     [Define if you have mkstemp().]),
+AC_MSG_RESULT(no);_AC_LIBOBJ(mkstemp))
 AC_LANG_POP(C++)])dnl
 dnl
 dnl
