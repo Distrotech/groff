@@ -1,5 +1,8 @@
 \input texinfo   @c -*-texinfo-*-
 
+@documentlanguage en
+@documentencoding ISO-8859-1
+
 @c
 @c Please convert this manual with `texi2dvi -e groff.texinfo' due to
 @c problems in texinfo regarding expansion of user-defined macros.
@@ -352,9 +355,39 @@ Software Foundation raise funds for GNU development.''
 @end macro
 
 
+@c This suppresses the word `Appendix' in the appendix headers.
+
 @tex
 \gdef\gobblefirst#1#2{#2}
 \gdef\putwordAppendix{\gobblefirst}
+@end tex
+
+
+@c We map some latin-1 characters to corresponding texinfo macros.
+
+@tex
+\global\catcode`^^e4\active % ä
+\gdef^^e4{\"a}
+\global\catcode`^^c4\active % Ä
+\gdef^^c4{\"A}
+\global\catcode`^^e9\active % é
+\gdef^^e9{\'e}
+\global\catcode`^^c9\active % É
+\gdef^^c9{\'E}
+\global\catcode`^^f6\active % ö
+\gdef^^f6{\"o}
+\global\catcode`^^d6\active % Ö
+\gdef^^d6{\"O}
+\global\catcode`^^fc\active % ü
+\gdef^^fc{\"u}
+\global\catcode`^^dc\active % Ü
+\gdef^^dc{\"U}
+\global\catcode`^^e6\active % æ
+\gdef^^e6{\ae}
+\global\catcode`^^c6\active % Æ
+\gdef^^c6{\AE}
+\global\catcode`^^df\active % ß
+\gdef^^df{\ss}
 @end tex
 
 
@@ -544,7 +577,7 @@ Since there are several things which cannot be done easily in
 transform certain parts of a document into @code{troff}, which made a
 very natural use of pipes in @acronym{UNIX}.
 
-The @code{eqn} preprocessor allowed mathematical formul@ae{} to be
+The @code{eqn} preprocessor allowed mathematical formulæ to be
 specified in a much simpler and more intuitive manner.  @code{tbl} is a
 preprocessor for formatting tables.  The @code{refer} preprocessor (and
 the similar program, @code{bib}) processes citations in a document
@@ -4029,7 +4062,7 @@ Upside-down exclamation point.
 @endDefstr
 
 @Defstr {8, ms}
-German @ss{} ligature.
+German ß ligature.
 @endDefstr
 
 @Defstr {3, ms}
@@ -4057,11 +4090,11 @@ Hooked o.
 @endDefstr
 
 @Defstr {ae, ms}
-Lowercase @ae{} ligature.
+Lowercase æ ligature.
 @endDefstr
 
 @Defstr {Ae, ms}
-Uppercase @AE{} ligature.
+Uppercase Æ ligature.
 @endDefstr
 
 @c ---------------------------------------------------------------------
@@ -5287,7 +5320,7 @@ e\'
 
 
 in Paris
-  @result{} A caf@'e in Paris
+  @result{} A café in Paris
 @endExample
 
 @noindent
@@ -6399,8 +6432,8 @@ right-justified is associated with the current environment
 @cindex manipulating hyphenation
 @cindex hyphenation, manipulating
 
-As discussed in @ref{Hyphenation}, @code{gtroff} hyphenates words.
-There are a number of ways to influence hyphenation.
+
+Here a description of requests which influence hyphenation.
 
 @DefreqList {hy, [@Var{mode}]}
 @DefregListEnd {.hy}
@@ -6622,10 +6655,28 @@ language.
 Set the hyphenation code of character @var{c1} to @var{code1}, that of
 @var{c2} to @var{code2}, etc.  A hyphenation code must be a single
 input character (not a special character) other than a digit or a
-space.  Initially each lower-case letter (@samp{a}-@samp{z}) has its
-hyphenation code set to itself, and each upper-case letter
-(@samp{A}-@samp{Z}) has a hyphenation code which is the lower-case
-version of itself.
+space.
+
+To make hyphenation work, hyphenation codes must be set up.  At
+start-up, groff only assigns hyphenation codes to the letters
+@samp{a}-@samp{z} (mapped to themselves) and to the letters
+@samp{A}-@samp{Z} (mapped to @samp{a}-@samp{z}); all other hyphenation
+codes are set to zero.  Normally, hyphenation patterns contain only
+lowercase letters which should be applied regardless of case.  With
+other words, the words `FOO' and `Foo' should be hyphenated exactly the
+same way as the word `foo' is hyphenated, and this is what @code{hcode}
+is good for.  Words which contain other letters won't be hyphenated
+properly if the corresponding hyphenation patterns actually do contain
+them.  For example, the following @code{hcode} requests are necessary to
+assign hyphenation codes to the letters @samp{ÄäÖöÜüß} (this is needed
+for German):
+
+@Example
+.hcode ä ä  Ä ä
+.hcode ö ö  Ö ö
+.hcode ü ü  Ü ü
+.hcode ß ß
+@endExample
 
 This request is ignored if it has no parameter.
 @endDefreq
@@ -7499,11 +7550,11 @@ if the @code{tr} request isn't handled properly.
 Consider the following translation:
 
 @Example
-.tr @'e@'E
+.tr éÉ
 @endExample
 
 @noindent
-This maps input character @code{@'e} onto glyph @code{@'E}, which is
+This maps input character @code{é} onto glyph @code{É}, which is
 identical to glyph @code{char201}.  But this glyph intentionally
 doesn't exist!  Instead, @code{\[char201]} is treated as an input
 character entity and is by default mapped onto @code{\['E]}, and
@@ -7512,7 +7563,7 @@ character entity and is by default mapped onto @code{\['E]}, and
 The right way to write the above translation is
 
 @Example
-.tr @'e\['E]
+.tr é\['E]
 @endExample
 
 @noindent

@@ -1,4 +1,4 @@
-# Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
 #      Written by Werner Lemberg <wl@gnu.org>
 # 
 # This file is part of groff.
@@ -102,7 +102,7 @@ imagedir=img
 .texinfo.pdf:
 	$(TEXI2DVI) -e --pdf $<
 .texinfo.html:
-	$(MAKEINFO) -I$(srcdir) --html --no-split $<
+	$(MAKEINFO) --enable-encoding -I$(srcdir) --html --no-split $<
 
 
 all: prepare_examples
@@ -111,7 +111,7 @@ prepare_examples: grnexmpl.g
 	test -f grnexmpl.g || cp $(srcdir)/grnexmpl.g .
 
 groff: groff.texinfo
-	$(MAKEINFO) -I$(srcdir) $(srcdir)/groff.texinfo
+	$(MAKEINFO) --enable-encoding -I$(srcdir) $(srcdir)/groff.texinfo
 
 gnu.eps: gnu.xpm
 	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | $(pnmtops) -noturn >$@
