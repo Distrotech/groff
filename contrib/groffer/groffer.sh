@@ -29,8 +29,8 @@ export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.1';
-_LAST_UPDATE='30 Sep 2002';
+_PROGRAM_VERSION='0.9.2';
+_LAST_UPDATE='12 Oct 2002';
 
 ########################################################################
 # Determine the shell under which to run this script;
@@ -492,8 +492,8 @@ _OPTS_GROFFER_LONG_ARG="'background' 'bd' 'bg' 'bw' 'default-modes' \
 
 ##### options inhereted from groff
 
-_OPTS_GROFF_SHORT_NA="'a' 'b' 'c' 'e' 'g' 'i' 'l' 'p' 's' 't' 'z' \
-'C' 'E' 'G' 'N' 'R' 'S' 'U' 'V'";
+_OPTS_GROFF_SHORT_NA="'a' 'b' 'c' 'C' 'e' 'E' 'g' 'G' 'i' 'l' 'N' 'p' \
+'R' 's' 'S' 't' 'U' 'V' 'z'";
 _OPTS_GROFF_SHORT_ARG="'d' 'f' 'F' 'I' 'L' 'm' 'M' 'n' 'o' 'P' 'r' \
 'w' 'W'";
 _OPTS_GROFF_LONG_NA="";
@@ -1044,9 +1044,9 @@ func_stack_dump()
       _rest="${_FUNC_STACK}";
       while test "${_rest}" != ''; do
         # get part before the first bang `!'.
-        diag "$(echo -n "${_rest}" | sed -e 's/^\([^!]*\)!.*$/\1/')";
-        # delete part up to the first bang `!'.
-        _rest="$(echo -n "${_rest}" | sed -e 's/^!*[^!]*!*//')";
+        diag "$(echo -n "${_rest}" | sed -e 's/!.*$//')";
+        # delete part before and including the first bang `!'.
+        _rest="$(echo -n "${_rest}" | sed -e 's/^[^!]*!//')";
       done;
       ;;
     *)
@@ -1219,8 +1219,8 @@ base_name()
       do_nothing;
       ;;
     */*)
-      # delete everything up to last slash `/'.
-      echo -n "$1" | sed -e '\|^.*/*\([^/]*\)$|s||\1|';
+      # delete everything before and including the last slash `/'.
+      echo -n "$1" | sed -e '\|^.*//*\([^/]*\)$|s||\1|';
       ;;
     *)
       echo -n "$1";
@@ -1926,7 +1926,7 @@ list_from_args()
 
 
 ########################################################################
-# list_from_cmdline (<s_n> <s_a> <l_n> <l_n> [<cmdline_arg>...])
+# list_from_cmdline (<s_n> <s_a> <l_n> <l_a> [<cmdline_arg>...])
 #
 # Transform command line arguments into a normalized form.
 #
@@ -2033,20 +2033,20 @@ list_from_cmdline()
           # get next short option from cluster (first char of $_rest)
           _optchar="$(echo -n "${_rest}" | sed -e 's/^\(.\).*$/\1/')";
           # remove first character from ${_rest};
-          _rest="$(echo -n "${_rest}" | 's/^.//')";
+          _rest="$(echo -n "${_rest}" | sed -e 's/^.//')";
           if list_has "${_short_n}" "${_optchar}"; then
             _result="$(list_append "${_result}" "-${_optchar}")";
             continue;
           elif list_has "${_short_a}" "${_optchar}"; then
             # remove leading character
             case "${_optchar}" in
-              /)		# cannot use normal `sed' separator
+              /)
                 _rest="$(echo -n "${_rest}" | sed -e '\|^.|s|||')";
                 ;;
               ?)
                 _rest="$(echo -n "${_rest}" | sed -e 's/^.//')";
                 ;;
-              *)
+              ??*)
                 error "${_fn} several chars parsed for short option."
                 ;;
             esac;
@@ -3313,7 +3313,8 @@ main_init()
 ########################################################################
 # main_parse_MANOPT ()
 #
-# Parse $MANOPT; this clobbered by the command line.
+# Parse $MANOPT to retrieve man options, but only if it is a non-empty
+# string; found man arguments can be overwritten by the command line.
 #
 # Globals:
 #   in: $MANOPT, $_OPTS_MAN_*
@@ -3327,7 +3328,10 @@ main_parse_MANOPT()
   local _opt;
   local _list;
   _list='';
-  # feed in $MANOPT
+  if test "${MANOPT}" != ''; then
+    eval "${return_ok}";
+  fi;
+  # add arguments in $MANOPT by mapping them to groffer options
   eval set -- "$(list_from_cmdline \
     "${_OPTS_MAN_SHORT_NA}" "${_OPTS_MAN_SHORT_ARG}" \
     "${_OPTS_MAN_LONG_NA}" "${_OPTS_MAN_LONG_ARG}" \
