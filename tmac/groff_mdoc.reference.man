@@ -321,7 +321,7 @@ to specify an optional flag with an argument:
 .Bl -tag -xwidth ".Op Fl s Ar bytes" -offset indent
 .It Op Fl s Ar bytes
 is produced by
-.Ql Li .Op \&Fl s \&Ar bytes
+.Ql Li ".Op Fl s Ar bytes"
 .El
 .
 .Pp
@@ -332,7 +332,7 @@ string with the escape sequence
 .Bl -tag -xwidth ".Op \&Fl s \&Ar bytes" -offset indent
 .It Op \&Fl s \&Ar bytes
 is produced by
-.Ql Li .Op \e&Fl s \e&Ar bytes
+.Ql Li ".Op \e&Fl s \e&Ar bytes"
 .El
 .
 .Pp
@@ -457,6 +457,9 @@ A warning is emitted when an empty input line is found outside of displays
 Use
 .Ql .sp
 instead.
+(Well, it is even better to use
+.Nm \-mdoc
+macros to avoid the usage of low-level commands).
 .Pp
 Leading spaces will cause a break and are output directly.
 Avoid this behaviour if possible.
@@ -495,10 +498,10 @@ The
 \&.Ql \e&.
 character.
 \&.Pp
-\&.Li test .
+\&.No test .
 test
 \&.Pp
-\&.Li test.
+\&.No test.
 test
 .Ed
 .Pp
@@ -514,10 +517,10 @@ The
 .Ql \&.
 character.
 .Pp
-.Li test .
+.No test .
 test
 .Pp
-.Li test.
+.No test.
 test
 .Ed
 .Pp
@@ -595,14 +598,14 @@ The first items in the template are the macros
 and
 .Ql .Dt ;
 the document date, the operating system the man page or subject source is
-developed or modified for, and the man page title
-.Pq in Em upper case
+developed or modified for, and the man page title (in
+.Em upper case )
 along with the section of the manual the page belongs in.
 These macros identify the page and are discussed below in
 .Sx TITLE MACROS .
 .Pp
 The remaining items in the template are section headers
-.Pq Li .Sh ;
+.Pf ( Li .Sh ) ;
 of which
 .Sx NAME ,
 .Sx SYNOPSIS ,
@@ -622,7 +625,7 @@ about content macros before page layout macros is recommended.
 In the description of all macros below, optional arguments are put into
 brackets.
 An ellipsis
-.Pq Ql Ld
+.Pf ( Ql Ld )
 represents zero or more additional arguments.
 Alternative values for a parameter are separated with
 .Ql | .
@@ -708,11 +711,13 @@ If the third parameter is a keyword designating a computer architecture,
 its value is appended to the volume name as specified by the second
 parameter.  By default, the following architecture keywords are defined:
 .
+\# we use `No' to avoid hyphenation
 .Bd -ragged -offset indent
-alpha, amiga, arc, arm26, arm32, atari, bebox, cobalt, evbsh3, hp300,
-hpcmips, i386, luna68k, m68k, mac68k, macppc, mips, mmeye, mvme68k, news68k,
-newsmips, next68k, ofppc, pc532, pmax, powerpc, prep, sgimips, sh3, sparc,
-sparc64, sun3, tahoe, vax, x68k
+.No alpha , amiga , arc , arm26 , arm32 , atari , bebox , cobalt , evbsh3 ,
+.No hp300 , hpcmips , i386 , luna68k , m68k , mac68k , macppc , mips ,
+.No mmeye , mvme68k , news68k , newsmips , next68k , ofppc , pc532 , pmax ,
+.No powerpc , prep , sgimips , sh3 , sparc , sparc64 , sun3 , tahoe , vax ,
+.No x68k
 .Ed
 .Pp
 .
@@ -721,14 +726,14 @@ the middle part of the manual page header strings are shown.
 .
 .Pp
 .Bd -ragged
-.Bl -tag -xwidth ".Li .Dt FOO 2 mac68k" -compact -offset indent
-.It Li .Dt FOO 7
+.Bl -tag -xwidth ".Li .Dt\ FOO\ 2\ mac68k" -compact -offset indent
+.It Li ".Dt FOO 7"
 .Ql FOO(7)
 .Ql System Reference Manual
-.It Li .Dt FOO 2 mac68k
+.It Li ".Dt FOO 2 mac68k"
 .Ql FOO(2)
 .Ql System Programmer's Manual (mac68k Architecture)
-.It Li .Dt FOO \*[q]\*[q] bar
+.It Li ".Dt FOO \*[q]\*[q] bar"
 .Ql FOO
 .Ql bar
 .El
@@ -820,13 +825,11 @@ ugly.
 .Pp
 This macro is neither callable nor parsable.
 .
-.It Li .Dd Xo
-.Oo
+.It Li .Dd Oo
 .Aq month
 .Aq day ,
 .Aq year
 .Oc
-.Xc
 If
 .Ql Dd
 has no arguments,
@@ -868,7 +871,7 @@ macros are themselves a type of command; the general syntax for a troff
 command is:
 .
 .Bd -filled -offset indent
-.Li .Xx argument1 argument2 Ld
+.Li ".Xx argument1 argument2" Ld
 .Ed
 .Pp
 .
@@ -1289,7 +1292,7 @@ macro is modeled on ANSI C conventions.
 .Fn getchar
 .It Li ".Fn strlen ) ,"
 .Fn strlen ) ,
-.It Li .Fn "\*[q]int align\*[q]" "\*[q]char *ptr\*[q]" ,
+.It Li ".Fn \*[q]int align\*[q] \*[q]char *ptr\*[q] ,"
 .Fn "int align" "char *ptr" ,
 .El
 .Pp
@@ -1731,7 +1734,7 @@ respectively.
 .Ed
 .Pp
 .
-.Bl -tag -xwidth ".Li .Ec,\ .Eo"
+.Bl -tag -xwidth ".Li .Ec , .Eo"
 .It Li .Ec , .Eo
 These macros expect the first argument to be the opening and closing strings
 respectively.
