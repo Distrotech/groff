@@ -3774,7 +3774,10 @@ void suppress_node::tprint(troff_output_file *out)
       char name[8192];
       // remember that the filename will contain a %d in which the
       // last_image_id is placed
-      sprintf(name, last_image_filename, last_image_id);
+      if (last_image_filename == (char *) 0)
+	*name = '\0';
+      else
+	sprintf(name, last_image_filename, last_image_id);
       if (is_html) {
 	switch (last_position) {
 	case 'c':
