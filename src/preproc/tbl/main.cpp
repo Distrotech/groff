@@ -1334,13 +1334,19 @@ table *process_data(table_input &in, format *f, options *opt)
 		  }
 		  break;
 		case GOT_RIGHT_BRACE:
+		  if ((opt->flags & table::NOSPACES)) {
+		    while (c == ' ')
+		      c = in.get();
+		    if (c == EOF)
+		      break;
+		  }
 		  if (c == '\n' || c == tab_char)
 		    state = END;
 		  else {
 		    input_entry += 'T';
 		    input_entry += '}';
 		    input_entry += c;
-		    state = c == '\n' ? START : MIDDLE;
+		    state = MIDDLE;
 		  }
 		  break;
 		case MIDDLE:
