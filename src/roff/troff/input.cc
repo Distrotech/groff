@@ -4006,6 +4006,11 @@ static int read_size(int *x)
     default:
       assert(0);
     }
+    if (*x <= 0) {
+      warning(WARN_RANGE,
+	      "\\s request results in non-positive point size; set to 1");
+      *x = 1;
+    }
     return 1;
   }
   else {
