@@ -38,6 +38,9 @@
 .nr _C \n(.C
 .cp 0
 .
+.if (\n[.x]\n[.y]\n[.Y] < 1171) \
+.  ab You need GNU troff version 1.17.1 or higher to run this version of man!
+.
 .if !r D .nr D 0
 .if !r C .nr C 0
 .if !r S .nr S 10
@@ -459,13 +462,15 @@
 .  in \\n[an-margin]u
 ..
 .
-.ds S \s[\\n[PS]]
-.ie c\[rg] .ds R \[rg]
+.\" these strings must work in compatibility mode also
+.
+.ds S \s(\\n(PS
+.ie c\[rg] .ds R \(rg
 .el        .ds R (Reg.)
-.ie c\[tm] .ds Tm \[tm]
+.ie c\[tm] .ds Tm \(tm
 .el        .ds Tm (TM)
-.ds lq \[lq]
-.ds rq \[rq]
+.ds lq \(lq
+.ds rq \(rq
 .
 .if !\n[an-html] .hy 14
 .
