@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004
+# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -322,7 +322,7 @@ make_install_pdfdoc=@make_install_pdfdoc@
 # -DHAVE_STRUCT_EXCEPTION	if <math.h> defines struct exception
 # -DRETSIGTYPE=int		if signal handlers return int not void	
 # -DIS_EBCDIC_HOST		if the host's encoding is EBCDIC
-# -DPAGEA4			if the the printer's page size is A4
+# -DPAGE=A4			if the the printer's page size is A4
 # -DGHOSTSCRIPT=gs		the name (and directory if required) of the
 #				ghostscript program
 DEFINES=@DEFS@
@@ -566,6 +566,7 @@ NOMAKEDIRS=\
   contrib/mm/mm \
   contrib/mom/examples \
   contrib/mom/momdoc \
+  contrib/gdiffmk/tests \
   src/libs/snprintf
 DISTDIRS=\
   $(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) \
@@ -694,7 +695,12 @@ dist:
 	$(MAKE) srcdir=. VPATH=. distfiles; \
 	$(MAKE) srcdir=. VPATH=. extraclean; \
 	for d in $(EXTRADIRS); do \
-	  (cd $$d; $(MAKE) extraclean); \
+	  (cd $$d; \
+	   if test -f Makefile; then \
+	     $(MAKE) extraclean; \
+	   else \
+	     $(MAKE) -f $(top_builddir)/$$d/Makefile extraclean; \
+	   fi); \
 	done; \
 	rm -f Makefile; \
 	$(LN_S) $$srcdir/Makefile.init Makefile

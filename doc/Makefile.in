@@ -82,6 +82,7 @@ GROFF=GROFF_COMMAND_PREFIX=''; \
 imagedir=img
 
 .SUFFIXES: .me .ms .ps .html .txt .texinfo .dvi .pdf
+.PHONY: all prepare_examples clean distclean realclean extraclean
 
 # For simplicity, we always call grn and eqn.
 .me.txt:
@@ -132,7 +133,7 @@ grnexmpl.ps: grnexmpl.me grnexmpl.g
 
 
 clean:
-	-rm -f *.ps *.html *.txt *.png *.eps *.gif *.dit core
+	-rm -f *.ps *.html *.txt core
 	-rm -f *.aux *.dvi *.pdf *.log *.toc texput.log
 	-rm -f *.cp *.cps *.cv *.cn *.es *.ess *.fn *.fns *.ky *.kys \
                *.ma *.mas *.op *.ops *.pg *.pgs *.rq *.rqs *.st *.sts \
@@ -142,6 +143,7 @@ clean:
 distclean: clean
 
 realclean: distclean
+	-rm -f *.png *.eps
 
-extraclean: clean
+extraclean: distclean
 	-rm -f core *~ \#* junk temp grot
