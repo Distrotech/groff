@@ -22,11 +22,11 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
    file tempname.c which is part of the fileutils package. */
 
 
+#include "lib.h"
+
 #include <stddef.h>
 #include <stdlib.h>
-#include <string.h>
 #include <errno.h>
-#include <stdio.h>
 
 #include "posix.h"
 #include "nonposix.h"

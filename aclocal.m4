@@ -86,7 +86,8 @@ if grep '[34]\.' /usr/options/cb.name >/dev/null 2>&1
 changequote([,])dnl
 then
 	AC_MSG_RESULT(yes)
-	AC_DEFINE(_SYSV3)
+	AC_DEFINE(_SYSV3, 1,
+		  [Define if you have ISC 3.x or 4.x.])
 else
 	AC_MSG_RESULT(no)
 fi])dnl
@@ -97,7 +98,8 @@ AC_DEFUN(GROFF_POSIX,
 AC_LANG_PUSH(C++)
 AC_TRY_COMPILE([#include <stdio.h>
 extern "C" { void fileno(int); }],,
-AC_MSG_RESULT(yes);AC_DEFINE(_POSIX_SOURCE),
+AC_MSG_RESULT(yes);AC_DEFINE(_POSIX_SOURCE, 1,
+			     [Define if -D_POSIX_SOURCE is necessary.]),
 AC_MSG_RESULT(no))
 AC_LANG_POP(C++)])dnl
 dnl
@@ -109,7 +111,8 @@ AC_DEFUN(GROFF_SRAND,
 AC_MSG_CHECKING([for return type of srand])
 AC_TRY_COMPILE([#include <stdlib.h>
 extern "C" { void srand(unsigned int); }],,
-AC_MSG_RESULT(void);AC_DEFINE(RET_TYPE_SRAND_IS_VOID),
+AC_MSG_RESULT(void);AC_DEFINE(RET_TYPE_SRAND_IS_VOID, 1,
+			      [Define if srand() returns void not int.]),
 AC_MSG_RESULT(int))
 AC_LANG_POP(C++)])dnl
 dnl
@@ -120,7 +123,9 @@ AC_MSG_CHECKING([for sys_nerr in <errno.h> or <stdio.h>])
 AC_TRY_COMPILE([#include <errno.h>
 #include <stdio.h>],
 [int k; k = sys_nerr;],
-AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_NERR),
+AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_NERR, 1,
+			     [Define if you have sysnerr in <errno.h> or
+			      <stdio.h>.]),
 AC_MSG_RESULT(no))
 AC_LANG_POP(C++)])dnl
 dnl
@@ -130,7 +135,9 @@ AC_DEFUN(GROFF_SYS_ERRLIST,
 AC_TRY_COMPILE([#include <errno.h>
 #include <stdio.h>],
 [int k; k = (int)sys_errlist[0];],
-AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_ERRLIST),
+AC_MSG_RESULT(yes);AC_DEFINE(HAVE_SYS_ERRLIST, 1,
+			     [Define if you have sys_errlist in <errno.h>
+			      or in <stdio.h>.]),
 AC_MSG_RESULT(no))])dnl
 dnl
 dnl
@@ -139,7 +146,8 @@ AC_DEFUN(GROFF_OSFCN_H,
 AC_MSG_CHECKING([C++ <osfcn.h>])
 AC_TRY_COMPILE([#include <osfcn.h>],
 [read(0, 0, 0); open(0, 0);],
-AC_MSG_RESULT(yes);AC_DEFINE(HAVE_CC_OSFCN_H),
+AC_MSG_RESULT(yes);AC_DEFINE(HAVE_CC_OSFCN_H, 1,
+			     [Define if you have a C++ <osfcn.h>.]),
 AC_MSG_RESULT(no))
 AC_LANG_POP(C++)])dnl
 dnl
@@ -149,7 +157,8 @@ AC_DEFUN(GROFF_LIMITS_H,
 AC_MSG_CHECKING([C++ <limits.h>])
 AC_TRY_COMPILE([#include <limits.h>],
 [int x = INT_MIN; int y = INT_MAX; int z = UCHAR_MAX;],
-AC_MSG_RESULT(yes);AC_DEFINE(HAVE_CC_LIMITS_H),
+AC_MSG_RESULT(yes);AC_DEFINE(HAVE_CC_LIMITS_H, 1,
+			     [Define if you have a C++ <limits.h>.]),
 AC_MSG_RESULT(no))
 AC_LANG_POP(C++)])dnl
 dnl
@@ -160,7 +169,9 @@ AC_MSG_CHECKING([for declaration of time_t])
 AC_TRY_COMPILE([#include <time.h>],
 [time_t t = time(0); struct tm *p = localtime(&t);],
 AC_MSG_RESULT(yes),
-AC_MSG_RESULT(no);AC_DEFINE(LONG_FOR_TIME_T))
+AC_MSG_RESULT(no);AC_DEFINE(LONG_FOR_TIME_T, 1,
+			    [Define if localtime() takes a long * not a
+			     time_t *.]))
 AC_LANG_POP(C++)])dnl
 dnl
 dnl
@@ -168,18 +179,19 @@ AC_DEFUN(GROFF_STRUCT_EXCEPTION,
 [AC_MSG_CHECKING([struct exception])
 AC_TRY_COMPILE([#include <math.h>],
 [struct exception e;],
-AC_MSG_RESULT(yes);AC_DEFINE(HAVE_STRUCT_EXCEPTION),
+AC_MSG_RESULT(yes);AC_DEFINE(HAVE_STRUCT_EXCEPTION, 1,
+			     [Define if <math.h> defines struct exception.]),
 AC_MSG_RESULT(no))])dnl
 dnl
 dnl
 AC_DEFUN(GROFF_ARRAY_DELETE,
 [AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([whether ANSI array delete syntax supported])
-AC_TRY_COMPILE(,
-changequote(,)dnl
-char *p = new char[5]; delete [] p;changequote([,]),
+AC_TRY_COMPILE(, [char *p = new char[5]; delete [] p;],
 AC_MSG_RESULT(yes),
-AC_MSG_RESULT(no);AC_DEFINE(ARRAY_DELETE_NEEDS_SIZE))
+AC_MSG_RESULT(no);AC_DEFINE(ARRAY_DELETE_NEEDS_SIZE, 1,
+			    [Define if your C++ doesn't understand
+			     `delete []'.]))
 AC_LANG_POP(C++)])dnl
 dnl
 dnl
@@ -188,7 +200,9 @@ AC_DEFUN(GROFF_TRADITIONAL_CPP,
 [AC_LANG_PUSH(C++)
 AC_MSG_CHECKING([traditional preprocessor])
 AC_TRY_COMPILE([#define name2(a,b) a/**/b],[int name2(foo,bar);],
-AC_MSG_RESULT(yes);AC_DEFINE(TRADITIONAL_CPP),
+AC_MSG_RESULT(yes);AC_DEFINE(TRADITIONAL_CPP, 1,
+			     [Define if your C++ compiler uses a
+			      traditional (Reiser) preprocessor.]),
 AC_MSG_RESULT(no))
 AC_LANG_POP(C++)])dnl
 dnl
@@ -207,7 +221,11 @@ main()
   exit(i != 0200);
 #endif
 }],
-AC_MSG_RESULT(yes);AC_DEFINE(WCOREFLAG,0200),
+AC_MSG_RESULT(yes);AC_DEFINE(WCOREFLAG, 0200,
+			     [Define if the 0200 bit of the status returned
+			      by wait() indicates whether a core image was
+			      produced for a process that was terminated by
+			      a signal.]),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(no))])dnl
 dnl
@@ -261,7 +279,8 @@ changequote([,])dnl
 fi
 test -n "$PAGE" || PAGE=letter
 if test "x$PAGE" = "xA4"; then
-	AC_DEFINE(PAGEA4)
+	AC_DEFINE(PAGEA4, 1,
+		  [Define if the printer's page size is A4.])
 fi
 AC_MSG_RESULT($PAGE)
 AC_SUBST(PAGE)])dnl
@@ -419,7 +438,8 @@ make an error "Character set is not EBCDIC"
 groff_cv_ebcdic="yes"
  TTYDEVDIRS="font/devcp1047"
  AC_MSG_RESULT(yes)
- AC_DEFINE(IS_EBCDIC_HOST),
+ AC_DEFINE(IS_EBCDIC_HOST, 1,
+	   [Define if the host's encoding is EBCDIC.]),
 groff_cv_ebcdic="no"
  TTYDEVDIRS="font/devascii font/devlatin1 font/devutf8"
  AC_MSG_RESULT(no))
@@ -475,7 +495,8 @@ groff_cv_decl_needed_$1=no,
 groff_cv_decl_needed_$1=yes)])
 AC_MSG_RESULT($groff_cv_decl_needed_$1)
 if test $groff_cv_decl_needed_$1 = yes; then
-	AC_DEFINE([NEED_DECLARATION_]translit($1, [a-z], [A-Z]))
+	AC_DEFINE([NEED_DECLARATION_]translit($1, [a-z], [A-Z]), 1,
+		  [Define if your C++ doesn't declare ]$1[().])
 fi
 AC_LANG_POP(C++)])dnl
 dnl
@@ -485,7 +506,10 @@ dnl
 AC_DEFUN(GROFF_MKSTEMP,
 [AC_LANG_PUSH(C++)
 AC_LIBSOURCE(mkstemp.cc)
-AC_CHECK_FUNC(mkstemp, [AC_DEFINE(HAVE_MKSTEMP)], [_AC_LIBOBJ(mkstemp)])
+AC_CHECK_FUNC(mkstemp,
+	      [AC_DEFINE(HAVE_MKSTEMP, 1,
+			 [Define if you have mkstemp().])],
+	      [_AC_LIBOBJ(mkstemp)])
 AC_LANG_POP(C++)])dnl
 dnl
 dnl
@@ -528,5 +552,8 @@ if test $groff_cv_header_inttypes_h = no; then
 	test $groff_cv_type_unsigned_long_long = yes \
 	  && ac_type='unsigned long long' \
 	  || ac_type='unsigned long'
-	AC_DEFINE_UNQUOTED(uintmax_t, $ac_type)
+	AC_DEFINE_UNQUOTED(uintmax_t, $ac_type,
+			   [Define uintmax_t to `unsigned long' or
+			    `unsigned long long' if <inttypes.h> does not
+			    exist.])
 fi])dnl

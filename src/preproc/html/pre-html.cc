@@ -20,13 +20,13 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #define PREHTMLC
 
-#include <stdio.h>
+#include "lib.h"
+
 #include <signal.h>
 #include <ctype.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <errno.h>
-#include "lib.h"
 #include "errarg.h"
 #include "error.h"
 #include "stringclass.h"

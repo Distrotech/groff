@@ -67,9 +67,10 @@
  */
 
 
+#include "lib.h"
+
 #include <ctype.h>
 #include <stdlib.h>
-#include <string.h>
 #include "gprint.h"
 
 #include "device.h"
@@ -77,7 +78,6 @@
 #include "searchpath.h"
 #include "macropath.h"
 
-#include "lib.h"
 #include "errarg.h"
 #include "error.h"
 #include "defs.h"

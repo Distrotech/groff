@@ -20,13 +20,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 // A front end for groff.
 
-#include <stdio.h>
-#include <string.h>
+#include "lib.h"
+
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
 
-#include "lib.h"
 #include "assert.h"
 #include "errarg.h"
 #include "error.h"

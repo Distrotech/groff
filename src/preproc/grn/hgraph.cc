@@ -4,6 +4,8 @@
  * to troff input.
  */
 
+#include "lib.h"
+
 #include "gprint.h"
 
 #ifdef NEED_DECLARATION_HYPOT

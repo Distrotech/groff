@@ -1,5 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT
+AC_CONFIG_HEADERS(src/include/config.h:src/include/config.hin)
 AC_CONFIG_SRCDIR([src/roff/groff/groff.cc])
 dnl checks for programs
 GROFF_SRCDIR
@@ -66,5 +67,6 @@ GROFF_PAGE
 GROFF_G
 GROFF_TMAC
 $srcdir/mkinstalldirs src/xditview
+AC_CONFIG_FILES(stamp-h, [echo timestamp > stamp-h])
 AC_CONFIG_FILES([Makefile src/xditview/Imakefile])
 AC_OUTPUT

@@ -19,8 +19,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <string.h>
+#include "lib.h"
+
 #include <ctype.h>
 #include <assert.h>
 #include <math.h>
@@ -29,7 +29,6 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #include "error.h"
 #include "cset.h"
 #include "font.h"
-#include "lib.h"
 
 const char *const WS = " \t\n\r";
 

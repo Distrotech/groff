@@ -222,7 +222,7 @@ man7dir=$(manroot)/man$(man7ext)
 #				if your C++ <string.h> doesn't declare
 #				strncasecmp()
 #
-# -DRET_TYPE_SRAND_IS_VOID	if your srand() returns void or int
+# -DRET_TYPE_SRAND_IS_VOID	if srand() returns void not int
 # -DHAVE_SYS_NERR		if you have sysnerr in <errno.h> or <stdio.h>
 # -DHAVE_SYS_ERRLIST		if you have sys_errlist in <errno.h> or
 #				<stdio.h>
@@ -549,6 +549,8 @@ dist:
 
 .PHONY: $(ALLDIRS) dot $(TARGETS) FORCE
 
+# Create a Makefile in $(subdir).  This is useful for development since it
+# avoids running make recursively.
 subdir_Makefile: Makefile.cfg
 	$(MAKE) do=Makefile $(subdir)
 

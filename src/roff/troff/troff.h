@@ -20,15 +20,14 @@ with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 
-#include <stdio.h>
+#include "lib.h"
+
 #include <ctype.h>
-#include <string.h>
 #include <time.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <errno.h>
 
-#include "lib.h"
 #include "assert.h"
 #include "device.h"
 #include "searchpath.h"

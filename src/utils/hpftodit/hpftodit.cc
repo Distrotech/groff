@@ -28,13 +28,12 @@ make it work with TrueType fonts
 put filename in error messages (or fix lib)
 */
 
-#include <stdio.h>
+#include "lib.h"
+
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
 #include <errno.h>
 #include "assert.h"
-#include "lib.h"
 #include "posix.h"
 #include "errarg.h"
 #include "error.h"
