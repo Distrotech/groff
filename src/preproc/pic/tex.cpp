@@ -110,15 +110,17 @@ void tex_output::start_picture(double sc, const position &ll,
   scale = compute_scale(sc, ll, ur);
   height = (ur.y - ll.y)/scale;
   width = (ur.x - ll.x)/scale;
-  /* the point of \vskip 0pt is to ensure that the vtop gets
-    a height of 0 rather than the height of the hbox; this
-    might be non-zero if text from text attributes lies outside pic's
-    idea of the bounding box of the picture. */
+  /* The point of \vskip 0pt is to ensure that the vtop gets
+     a height of 0 rather than the height of the hbox; this
+     might be non-zero if text from text attributes lies outside pic's
+     idea of the bounding box of the picture. */
+  /* \newbox and \newdimen are defined with \outer in plain.tex and can't
+     be used directly in an \if clause. */
   printf("\\expandafter\\ifx\\csname %s\\endcsname\\relax\n"
-	 "  \\expandafter\\newbox\\csname %s\\endcsname\n"
+	 "   \\csname newbox\\expandafter\\endcsname\\csname %s\\endcsname\n"
 	 "\\fi\n"
 	 "\\ifx\\graphtemp\\undefined\n"
-	 "  \\newdimen\\graphtemp\n"
+	 "  \\csname newdimen\\endcsname\\graphtemp\n"
 	 "\\fi\n"
 	 "\\expandafter\\setbox\\csname %s\\endcsname\n"
 	 " =\\vtop{\\vskip 0pt\\hbox{%%\n",

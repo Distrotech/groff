@@ -2012,8 +2012,7 @@ your document:
 .DS
 .CW
 \edef\egpicbox#1{%
-  \eexpandafter\esetbox\ecsname #1\eendcsname
-   \evbox{\eexpandafter\eunvbox\ecsname #1\eendcsname\ekern 0pt}
+  \evbox{\eunvbox\ecsname #1\eendcsname\ekern 0pt}}
 .R
 .DE
 .KE
