@@ -5625,7 +5625,7 @@ By default, @code{gtroff} uses the Times family with the four styles
 This way, it is possible to use the basic four fonts and to select a
 different font family on the command line (@pxref{Groff Options}).
 
-@Defreq {fam, family}
+@Defreq {fam, [@Var{family}]}
 @Defregx {.fam}
 Switch font family to @var{family}.  If no argument is given, switch
 back to the previous font family.  The current font family is available
@@ -5635,12 +5635,12 @@ register); it is associated with the current environment.
 @Example
 spam,
 .fam H    \" helvetica family
-spam,
+spam,     \" used font is family H + style R = HR
 .ft B     \" family H + style B = font HB
 spam,
 .fam T    \" times family
-spam,
-.ft AR    \" font AR
+spam,     \" used font is family T + style B = TB
+.ft AR    \" font AR (not a style)
 baked beans,
 .ft R     \" family T + style R = font TR
 and spam.
@@ -5666,14 +5666,14 @@ When the requests @code{cs}, @code{bd}, @code{tkf}, @code{uf}, or
 @code{fspecial} are applied to a style, then they will instead be
 applied to the member of the current family corresponding to that style.
 
-@var{n} must be a positive integer value.
+@var{n} must be a non-negative integer value.
 
 @pindex DESC
 @kindex styles
 The default family can be set with the @option{-f} option (@pxref{Groff
 Options}).  The @code{styles} command in the @file{DESC} file controls
 which font positions (if any) are initially associated with styles
-rather than fonts.  For example, the default settings for
+rather than fonts.  For example, the default setting for
 @acronym{PostScript} fonts
 
 @Example
@@ -5681,7 +5681,7 @@ styles R I B BI
 @endExample
 
 @noindent
-are equivalent to
+is equivalent to
 
 @Example
 .sty 1 R
@@ -5689,6 +5689,36 @@ are equivalent to
 .sty 3 B
 .sty 4 BI
 @endExample
+
+@code{.fam} always checks whether the current font position is valid;
+this can give surprising results if the current font position is
+associated with a style.
+
+In the following example, we want to access the @acronym{PostScript}
+font @code{FooBar} from the font family @code{Foo}:
+
+@Example
+.sty \n[.fp] Bar
+.fam Foo
+    @result{} warning: can't find font `FooR'
+@endExample
+
+@noindent
+The default font position at start-up is@w{ }1; for the
+@acronym{PostScript} device, this is associated with style @samp{R},
+so @code{gtroff} tries to open @code{FooR}.
+
+A solution to this problem is to use a dummy font like the following:
+
+@Example
+.fp 0 dummy TR    \" set up dummy font at position 0
+.sty \n[.fp] Bar  \" register style `Bar'
+.ft 0             \" switch to font at position 0
+.fam Foo          \" activate family `Foo'
+.ft Bar           \" switch to font `FooBar'
+@endExample
+
+@xref{Font Positions}.
 @endDefreq
 
 @c ---------------------------------------------------------------------
@@ -5705,9 +5735,11 @@ on which various fonts are mounted.
 @Defreq {fp, pos font [@Var{external-name}]}
 @Defregx {.f}
 @Defregx {.fp}
-New fonts can be mounted with the @code{fp} request.  These numeric
-positions can then be referred to with font changing commands.  When
-@code{gtroff} starts it is using font position@w{ }1 (which must exist).
+Mount font @var{font} at position @var{pos} (which must be a
+non-negative integer).  This numeric position can then be referred to
+with font changing commands.  When @code{gtroff} starts it is using
+font position@w{ }1 (which must exist; position@w{ }0 is unused
+usually at start-up).
 
 @cindex current font position register
 The current font in use, as a font position, is available in the
@@ -5724,7 +5756,7 @@ environment (@pxref{Environments}).
 
 @cindex next free font position register
 The number of the next free font position is available in the read-only
-number register @code{.fp}.  This is useful when mounting a new font,
+number register @samp{.fp}.  This is useful when mounting a new font,
 like so:
 
 @Example
@@ -5733,11 +5765,11 @@ like so:
 
 @pindex DESC@r{, and font mounting}
 Fonts not listed in the @file{DESC} file are automatically mounted on
-the next available font position when they are referenced.  If a font is
-to be mounted explicitly with the @code{fp} request on an unused font
-position, it should be mounted on the first unused font position, which
-can be found in the @code{.fp} register.  Although @code{gtroff} does
-not enforce this strictly, it does not allow a font to be mounted at a
+the next available font position when they are referenced.  If a font
+is to be mounted explicitly with the @code{fp} request on an unused
+font position, it should be mounted on the first unused font position,
+which can be found in the @code{.fp} register.  Although @code{gtroff}
+does not enforce this strictly, it is not allowed to mount a font at a
 position whose number is much greater (approx.@: 1000 positions) than
 that of any currently used position.
 
@@ -5758,23 +5790,18 @@ syntax forms to access font positions.
 @kindex styles
 @kindex family
 @pindex DESC
-@Defreq {ft, [@Var{nnn}]}
+@Defreq {ft, nnn}
 @Defescx {\\f, , n, }
 @Defescx {\\f, @lparen{}, nn, }
 @Defescx {\\f, @lbrack{}, nnn, @rbrack}
 Change the current font position to @var{nnn} (one-digit position
-@var{n}, two-digit position @var{nn}).
+@var{n}, two-digit position @var{nn}), which must be a non-negative
+integer.
 
 If @var{nnn} is associated with a style (as set with the @code{sty}
 request or with the @code{styles} command in the @file{DESC} file), use
 it within the current font family (as set with the @code{fam} request or
 with the @code{family} command in the @file{DESC} file).
-
-@cindex previous font
-@cindex font, previous
-With no argument or using @samp{0} as an argument, @code{.ft} switches
-to the previous font (position).  Use @code{\f0} or @code{\f[0]} to do
-this with the escape.
 
 @Example
 this is font 1
@@ -5797,36 +5824,40 @@ this is font 1 again
 @cindex using symbols
 @cindex symbols, using
 
-@esindex \(
-@esindex \[
-Symbols can be inserted by using a special escape sequence.  This escape
-is simply the escape character (usually a backslash) followed by an
-identifier.  The symbol identifiers have to be two or more characters,
-since single characters conflict with all the other escapes.  The
-identifier can be either preceded by a parenthesis if it is two
-characters long, or surrounded by square brackets.  So, the symbol for
-the mathematical Greek letter `pi' can be produced either by @code{\(*p}
-or @code{\[*p]}.
+@Defesc {\\, @lparen{}, nm, }
+@Defescx {\\, @lbrack{}, name, @rbrack}
+Insert a symbol @var{name} (two-character name @var{nm}).  There is no
+special syntax for one-character names -- the natural form @samp{\@var{n}}
+would collide with escapes.
 
-@Example
-area = \(*p\fIr\fP\u2\d
-@endExample
+If @var{name} is undefined, a warning of type @samp{char} is generated,
+and the escape is ignored.  @xref{Debugging}, for information about
+warnings.
+
+The list of available symbols is device dependent; see @ref{Glyph Name
+Index} for some of them discussed in this reference.
+
+@c XXX list of common symbols
+@endDefesc
 
 @Defesc {\\C, ', xxx, '}
-The escape @code{\C'@var{xxx}'} typesets the character named
-@var{xxx}.  Normally it is more convenient to use @code{\[@var{xxx}]}.
-But @code{\C} has the advantage that it is compatible with recent
-versions of @code{ditroff} and is available in compatibility mode.
+Typeset the character named @var{xxx}.  Normally it is more convenient
+to use @code{\[@var{xxx}]}, but @code{\C} has the advantage that it is
+compatible with newer versions of @code{ditroff} and is available in
+compatibility mode.
 @endDefesc
 
 @rqindex char
+@cindex unicode
 @Defesc {\\N, ', n, '}
-The escape @code{\N'@var{n}'} typesets the character with code@w{
-}@var{n} in the current font.  @var{n} can be any integer.  Most devices
-only have characters with codes between 0 and@w{ }255.  If the current
-font does not contain a character with that code, special fonts are
-@emph{not} searched.  The @code{\N} escape sequence can be
-conveniently used in conjunction with the @code{char} request:
+Typesets the character with code@w{ }@var{n} in the current font (this
+is @strong{not} the input character code).  @var{n} can be any
+integer.  Most devices only have characters with codes between 0
+and@w{ }255; the Unicode output device uses codes in the range
+0--65536.  If the current font does not contain a character with that
+code, special fonts are @emph{not} searched.  The @code{\N} escape
+sequence can be conveniently used in conjunction with the @code{char}
+request:
 
 @Example
 .char \[phone] \f(ZD\N'37'
