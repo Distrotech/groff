@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -110,7 +110,7 @@ int table_input::get()
 	else {
 	  state = MIDDLE;
 	  if (c == '\0') {
-	    error("illegal input character code 0");
+	    error("invalid input character code 0");
 	    break;
 	  }
 	}
@@ -139,7 +139,7 @@ int table_input::get()
 	  current_lineno++;
 	}
 	else if (c == '\0') {
-	  error("illegal input character code 0");
+	  error("invalid input character code 0");
 	  break;
 	}
 	return c;

@@ -5,26 +5,30 @@
 .\" To make it work with other output devices also, we include www.tmac
 .\" directly.
 .mso www.tmac
+.
 .defcolor darkred rgb 0.65f 0.1f 0.2f
 .defcolor darkgreen rgb 0.1f 0.5f 0.2f
 .defcolor darkblue rgb 0.1f 0.2f 0.6f
+.
 .ds GNU \m[darkred]G\mP\m[darkgreen]N\mP\m[darkblue]U\mP
-.nr LL 8i
+.
 .HTML-TL
 Home of Groff (GNU Troff).
+.
 .HTML-IMAGE-LEFT
-.PSPIC -L gnubw.eps 1i 1i
-\v'-0.5i'\h'1.0i'\s[50]\*[GNU] Troff\s0
+.PSPIC -L gnu.eps 1i 1i
+\v'-0.5i'\h'1.5i'\s[50]\*[GNU] Troff\s0
 .HTML-IMAGE-END
+.
 .sp
 .LP
 GNU Troff
-.URL (Groff) http://groff.ffii.org/
-\(em a
-.URL GNU http://www.gnu.org/
+.URL (Groff) http://\:groff.ffii.org/
+\[em] a
+.URL GNU http://\:www.gnu.org/
 project.
 Hosted by
-.URL FFII http://ffii.org/ .
+.URL FFII http://\:ffii.org/ .
 .br
 .LINE
 .LINKS
@@ -35,25 +39,28 @@ formatting commands and produces formatted output.
 Groff now supports HTML for the Web.
 Please see
 .URL "Groff Web Tips" "#Web Tips" .
-.sp
+.
+.
 .SH
 Download
 .LP
-.URL Germany "ftp://groff.ffii.org/pub/groff/"
+.URL Germany "ftp://\:groff.ffii.org/\:pub/\:groff/"
 |
-.URL USA "ftp://ftp.gnu.org/gnu/groff/"
+.URL USA "ftp://\:ftp.gnu.org/\:gnu/\:groff/"
 .LP
-.URL License http://www.gnu.org/copyleft/gpl.html
+.URL License http://\:www.gnu.org/\:copyleft/\:gpl.html
 |
-.URL "Mailing list" http://ffii.org/mailman/listinfo/groff/
+.URL "Mailing list" http://\:ffii.org/\:mailman/\:listinfo/\:groff/
 |
-.URL "Groff for Windows" "http://www.cs.vu.nl/~tmgil/misc/wingroff.html"
+.URL "Groff for Windows" "http://\:www.cs.vu.nl/\:~tmgil/\:misc/\:wingroff.html"
 .sp
 User issues lead:
-.MAILTO Ted.Harding@nessie.mcc.ac.uk "Ted Harding"
+.MAILTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
 .br
 Technical issues lead:
-.MAILTO wl@gnu.org "Werner Lemberg"
+.MAILTO wl@\:gnu.org "Werner Lemberg"
+.
+.
 .SH
 README
 .LP
@@ -67,7 +74,7 @@ typewriter-like devices.
 Also included is a modified version of the Berkeley -me macros, an enhanced
 version of the X11 xditview previewer, and an implementation of the -mm
 macros contributed by
-.MAILTO jh@axis.se "J\(:orgen H\(:agg" .
+.MAILTO jh@\:axis.se "J\(:orgen H\(:agg" .
 .LP
 See the file INSTALL for installation instructions.
 You will require a C++ compiler.
@@ -84,7 +91,7 @@ For the moment, the documentation assumes that you are already familiar with
 the Unix versions of troff, -man, -ms and the preprocessors.
 .LP
 The most recent released version of groff is always available by anonymous
-ftp from ftp.gnu.org in the directory pub/gnu/groff.
+ftp from ftp.gnu.org in the directory pub/\:gnu/\:groff.
 .LP
 A CVS repository is now available, containing the current development
 version of groff.
@@ -92,11 +99,11 @@ You can access it with the commands:
 .sp
 .RS
 .nf
-\fC
+.ft C
 export CVSROOT=:pserver:anoncvs@anoncvs.ffii.org:/var/cvs
 cvs login
 cvs -z9 co groff
-\fR
+.ft P
 .fi
 .RE
 .sp
@@ -106,9 +113,9 @@ After a successful login you no longer need the first two commands; an
 update of a checked out repository should be done with:
 .sp
 .RS
-\fC
+.ft C
 cvs -z9 update -dP
-\fR
+.ft P
 .RE
 .sp
 .LP
@@ -116,13 +123,13 @@ Please read the info pages of cvs for further details.
 .LP
 Alternatively, you can download snapshots (which are updated twice a day)
 from
-.URL here ftp://ftp.ffii.org/pub/groff/devel/groff-current.tar.gz
+.URL here ftp://\:ftp.ffii.org/\:pub/\:groff/\:devel/\:groff-current.tar.gz
 or a diff file relative to the latest official groff release as:
 .sp
 .RS
-\fC
+.ft C
 ftp://ftp.ffii.org/pub/groff/devel/groff-[version]-current.diff.gz
-\fR
+.ft P
 .RE
 .sp
 .LP
@@ -138,31 +145,31 @@ Three mailing lists are available:
 .sp
 .RS
 .nf
-\fC
+.ft C
 bug-groff@gnu.org      for reporting bugs
 groff@gnu.org          for general discussion of groff
 groff-commit@ffii.org  a read-only list showing logs of
                        commitments to the CVS repository
-\fP
+.ft P
 .fi
 .RE
 .sp
 .LP
 Note that groff@gnu.org is an alias for
-.MAILTO groff@ffii.org groff@ffii.org ;
+.MAILTO groff@\:ffii.org groff@\:ffii.org ;
 you must be subscribed to the `groff' and `groff-commit' lists to send mails.
 .LP
 To subscribe, send e-mail to [list]-request@[domain] (example:
-.MAILTO groff-request@ffii.org groff-request@ffii.org )
+.MAILTO groff-request@\:ffii.org groff-request@\:ffii.org )
 with the word `subscribe' in either the
 subject or body of the e-mail (don't include the quotes).
 .LP
 GNU groff was written by
-.MAILTO jjc@jclark.com "James Clark" .
+.MAILTO jjc@\:jclark.com "James Clark" .
 It is now maintained by
-.MAILTO Ted.Harding@nessie.mcc.ac.uk "Ted Harding"
+.MAILTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
 and
-.MAILTO wl@gnu.org "Werner Lemberg" .
+.MAILTO wl@\:gnu.org "Werner Lemberg" .
 .br
 .
 .\" EOF

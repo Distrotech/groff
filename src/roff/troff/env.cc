@@ -2095,7 +2095,7 @@ void environment::add_html_tag(const char *name)
     macro *m = new macro;
     m->append_str("html-tag:");
     for (const char *p = name; *p; p++)
-      if (!illegal_input_char((unsigned char)*p))
+      if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);
     add_node(new special_node(*m));
     if (strcmp(name, ".nf") == 0)
@@ -2121,7 +2121,7 @@ void environment::add_html_tag(const char *name, int i)
     macro *m = new macro;
     m->append_str("html-tag:");
     for (const char *p = name; *p; p++)
-      if (!illegal_input_char((unsigned char)*p))
+      if (!invalid_input_char((unsigned char)*p))
 	m->append(*p);
     m->append(' ');
     m->append_int(i);

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -389,7 +389,7 @@ static int ps_get_line(char *buf, FILE *fp)
   int err = 0;
   while (c != '\r' && c != '\n' && c != EOF) {
     if ((c < 0x1b && !white_space(c)) || c == 0x7f)
-      error("illegal input character code %1", int(c));
+      error("invalid input character code %1", int(c));
     else if (i < PS_LINE_MAX)
       buf[i++] = c;
     else if (!err) {

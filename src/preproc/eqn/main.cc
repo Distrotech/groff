@@ -54,10 +54,10 @@ int read_line(FILE *fp, string *p)
   p->clear();
   int c = -1;
   while ((c = getc(fp)) != EOF) {
-    if (!illegal_input_char(c))
+    if (!invalid_input_char(c))
       *p += char(c);
     else
-      error("illegal input character code `%1'", c);
+      error("invalid input character code `%1'", c);
     if (c == '\n')
       break;
   }
@@ -312,9 +312,9 @@ int main(int argc, char **argv)
     case 'd':
       if (optarg[0] == '\0' || optarg[1] == '\0')
 	error("-d requires two character argument");
-      else if (illegal_input_char(optarg[0]))
+      else if (invalid_input_char(optarg[0]))
 	error("bad delimiter `%1'", optarg[0]);
-      else if (illegal_input_char(optarg[1]))
+      else if (invalid_input_char(optarg[1]))
 	error("bad delimiter `%1'", optarg[1]);
       else {
 	start_delim = optarg[0];

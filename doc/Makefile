@@ -22,7 +22,7 @@ FFLAG=-F../font
 TROFF=../src/roff/troff/troff -M../tmac $(FFLAG)
 GROFF=../src/roff/groff/groff -p -e -t
 GROPS=../src/devices/grops/grops $(FFLAG)
-DOCS=meref.ps meintro.ps pic.ps pic.html homepage.html
+DOCS=meref.ps meintro.ps pic.ps pic.html homepage.ps homepage.html
 MEMACROS=../tmac/tmac.e
 SOELIM=../src/preproc/soelim/soelim
 
@@ -59,7 +59,6 @@ all: $(DOCS)
 	$(SOELIM) $< \
 	| sed -e "s;@VERSION@;$(version)$(revision);" \
 	| $(TROFF) -Tps $(FFLAG) -me >$@
-
 .tr.dit:
 	$(TROFF) -Tps $< >$@
 
@@ -71,7 +70,6 @@ all: $(DOCS)
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -P-b -P-I`echo $< | sed -e 's|.ms$$||'` \
 		   -P-D -Pimg -Thtml $(FFLAG) -U -ms >$@
-
 .ms.ascii:
 	GROFF_TMAC_PATH=../tmac; \
 	export GROFF_TMAC_PATH; \
@@ -79,7 +77,6 @@ all: $(DOCS)
 	export GROFF_BIN_PATH; \
 	sed -e "s;@VERSION@;$(version)$(revision);" $< \
 	| $(GROFF) -Tascii $(FFLAG) -U -ms -mwww >$@
-
 .ms.ps:
 	GROFF_TMAC_PATH=../tmac; \
 	export GROFF_TMAC_PATH; \
@@ -90,20 +87,21 @@ all: $(DOCS)
 
 .texinfo.dvi:
 	texi2dvi -e $<
-
 .texinfo.pdf:
 	texi2dvi -e --pdf $<
-
 .texinfo.html:
 	makeinfo --html --no-split $<
 
 groff: groff.texinfo
 	makeinfo groff.texinfo
 
-gnubw.eps: gnupng
-	pngtopnm gnupng | pnmtops -noturn > gnubw.eps
+gnu.eps: gnu.xpm
+	xpmtoppm gnu.xpm | pnmtops -noturn > gnu.eps
+gnu.png: gnu.xpm
+	xpmtoppm gnu.xpm | pnmtopng > gnu.png
 
-homepage.html: gnubw.eps
+homepage.html: gnu.png
+homepage.ps: gnu.eps
 
 install:
 

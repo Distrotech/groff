@@ -381,7 +381,7 @@ envp_size = sizeof(environment *);
 ColorArg color_from_Df_command(IntArg);
 				// transform old color into new
 void delete_current_env(void);	// delete global var current_env
-void fatal_command(char);	// abort for illegal command
+void fatal_command(char);	// abort for invalid command
 inline Char get_char(void);	// read next character from input stream
 ColorArg get_color_arg(void);	// read in argument for new color cmds
 IntArray *get_D_fixed_args(const size_t);
@@ -611,12 +611,12 @@ void delete_current_env(void)
 
 //////////////////////////////////////////////////////////////////////
 /* fatal_command():
-   Emit error message about illegal command and abort.
+   Emit error message about invalid command and abort.
 */
 void
 fatal_command(char command)
 {
-  fatal("`%1' command illegal before first `p' command", command);
+  fatal("`%1' command invalid before first `p' command", command);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1273,7 +1273,7 @@ parse_color_command(color *col)
     col->set_rgb(red, green, blue);
     break;
   default:
-    error("illegal color scheme `%1'", (int) subcmd);
+    error("invalid color scheme `%1'", (int) subcmd);
     break;
   } // end of color subcommands
 }
@@ -1482,7 +1482,7 @@ parse_x_command(void)
     {
       char *str_arg = get_extended_arg(); // includes line skip
       if (npages <= 0)
-	error("`x X' command illegal before first `p' command");
+	error("`x X' command invalid before first `p' command");
       else
 	pr->special(str_arg, current_env);
       delete str_arg;

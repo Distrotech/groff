@@ -74,11 +74,11 @@ size_t file_name_max(const char *fname);
 
 int interpret_lf_args(const char *p);
 
-extern char illegal_char_table[];
+extern char invalid_char_table[];
 
-inline int illegal_input_char(int c)
+inline int invalid_input_char(int c)
 {
-  return c >= 0 && illegal_char_table[c];
+  return c >= 0 && invalid_char_table[c];
 }
 
 #ifdef HAVE_STRCASECMP

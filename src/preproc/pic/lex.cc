@@ -84,8 +84,8 @@ int file_input::read_line()
       int c = getc(fp);
       if (c == EOF)
 	break;
-      else if (illegal_input_char(c))
-	lex_error("illegal input character code %1", c);
+      else if (invalid_input_char(c))
+	lex_error("invalid input character code %1", c);
       else {
 	line += char(c);
 	if (c == '\n') 
@@ -154,7 +154,7 @@ int macro_input::peek()
     return (unsigned char)*p;
 }
 
-// Character representing $1.  Must be illegal input character.
+// Character representing $1.  Must be invalid input character.
 #define ARG1 14
 
 char *process_body(const char *body)
@@ -1626,8 +1626,8 @@ simple_file_input::~simple_file_input()
 int simple_file_input::get()
 {
   int c = getc(fp);
-  while (illegal_input_char(c)) {
-    error("illegal input character code %1", c);
+  while (invalid_input_char(c)) {
+    error("invalid input character code %1", c);
     c = getc(fp);
   }
   if (c == '\n')
@@ -1638,8 +1638,8 @@ int simple_file_input::get()
 int simple_file_input::peek()
 {
   int c = getc(fp);
-  while (illegal_input_char(c)) {
-    error("illegal input character code %1", c);
+  while (invalid_input_char(c)) {
+    error("invalid input character code %1", c);
     c = getc(fp);
   }
   if (c != EOF)

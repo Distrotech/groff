@@ -330,8 +330,8 @@ int file_iterator::fill(node **)
     int c = getc(fp);
     if (c == EOF)
       break;
-    if (illegal_input_char(c))
-      warning(WARN_INPUT, "illegal input character code %1", int(c));
+    if (invalid_input_char(c))
+      warning(WARN_INPUT, "invalid input character code %1", int(c));
     else {
       *p++ = c;
       if (c == '\n') {
@@ -357,8 +357,8 @@ int file_iterator::fill(node **)
 int file_iterator::peek()
 {
   int c = getc(fp);
-  while (illegal_input_char(c)) {
-    warning(WARN_INPUT, "illegal input character code %1", int(c));
+  while (invalid_input_char(c)) {
+    warning(WARN_INPUT, "invalid input character code %1", int(c));
     c = getc(fp);
   }
   if (c != EOF)
@@ -692,7 +692,7 @@ static int get_char_for_escape_name()
     copy_mode_error("end of input in escape name");
     return '\0';
   default:
-    if (!illegal_input_char(c))
+    if (!invalid_input_char(c))
       break;
     // fall through
   case '\n':
@@ -1384,7 +1384,7 @@ static node *do_zero_width()
 	&& (compatible_flag || input_stack::get_level() == start_level))
       break;
     if (!tok.add_to_node_list(&rev))
-      error("illegal token in argument to \\Z");
+      error("invalid token in argument to \\Z");
   }
   node *n = 0;
   while (rev) {
@@ -2337,7 +2337,7 @@ inline int possibly_handle_first_page_transition()
 
 static int transparent_translate(int cc)
 {
-  if (!illegal_input_char(cc)) {
+  if (!invalid_input_char(cc)) {
     charinfo *ci = charset_table[cc];
     switch (ci->get_special_translation(1)) {
     case charinfo::TRANSLATE_SPACE:
@@ -3467,7 +3467,7 @@ void read_request()
     while (c == ' ')
       c = get_copy(0);
     while (c != EOF && c != '\n' && c != ' ') {
-      if (!illegal_input_char(c)) {
+      if (!invalid_input_char(c)) {
 	if (reading_from_terminal)
 	  fputc(c, stderr);
 	had_prompt = 1;
@@ -3488,8 +3488,8 @@ void read_request()
   int nl = 0;
   int c;
   while ((c = getchar()) != EOF) {
-    if (illegal_input_char(c))
-      warning(WARN_INPUT, "illegal input character code %1", int(c));
+    if (invalid_input_char(c))
+      warning(WARN_INPUT, "invalid input character code %1", int(c));
     else {
       if (c == '\n') {
 	if (nl)
@@ -4568,7 +4568,7 @@ static void encode_char(macro *mac, char c)
       }
     }
     else {
-      error("%1 is illegal within \\X", tok.description());
+      error("%1 is invalid within \\X", tok.description());
     }
   }
   else {
@@ -5156,7 +5156,7 @@ int ps_get_line(char *buf, FILE *fp, const char* filename)
   int err = 0;
   while (c != '\r' && c != '\n' && c != EOF) {
     if ((c < 0x1b && !white_space(c)) || c == 0x7f)
-      error("illegal input character code %1 in `%2'", int(c), filename);
+      error("invalid input character code %1 in `%2'", int(c), filename);
     else if (i < PS_LINE_MAX)
       buf[i++] = c;
     else if (!err) {
@@ -5352,7 +5352,7 @@ const char *asciify(int c)
     buf[1] = ':';
     break;
   default:
-    if (illegal_input_char(c))
+    if (invalid_input_char(c))
       buf[0] = '\0';
     else
       buf[0] = c;
@@ -5378,7 +5378,7 @@ const char *input_char_description(int c)
     return "a node";
   }
   static char buf[sizeof("magic character code ") + 1 + INT_DIGITS];
-  if (illegal_input_char(c)) {
+  if (invalid_input_char(c)) {
     const char *s = asciify(c);
     if (*s) {
       buf[0] = '`';
@@ -5999,7 +5999,7 @@ char *read_string()
     ;
   int i = 0;
   while (c != '\n' && c != EOF) {
-    if (!illegal_input_char(c)) {
+    if (!invalid_input_char(c)) {
       if (i + 2 > len) {
 	char *tem = s;
 	s = new char[len*2];
@@ -6116,8 +6116,8 @@ void transparent_file()
 	int c = getc(fp);
 	if (c == EOF)
 	  break;
-	if (illegal_input_char(c))
-	  warning(WARN_INPUT, "illegal input character code %1", int(c));
+	if (invalid_input_char(c))
+	  warning(WARN_INPUT, "invalid input character code %1", int(c));
 	else {
 	  curdiv->transparent_output(c);
 	  bol = c == '\n';
@@ -6348,7 +6348,7 @@ static void set_string(const char *name, const char *value)
 {
   macro *m = new macro;
   for (const char *p = value; *p; p++)
-    if (!illegal_input_char((unsigned char)*p))
+    if (!invalid_input_char((unsigned char)*p))
       m->append(*p);
   request_dictionary.define(name, m);
 }

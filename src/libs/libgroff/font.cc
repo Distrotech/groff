@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -93,7 +93,6 @@ text_file::~text_file()
     fclose(fp);
 }
 
-
 int text_file::next()
 {
   if (fp == 0)
@@ -108,8 +107,8 @@ int text_file::next()
       int c = getc(fp);
       if (c == EOF)
 	break;
-      if (illegal_input_char(c))
-	error("illegal input character code `%1'", int(c));
+      if (invalid_input_char(c))
+	error("invalid input character code `%1'", int(c));
       else {
 	if (i + 1 >= size) {
 	  char *old_buf = buf;
@@ -585,12 +584,12 @@ int font::load(int *not_found)
 	}
 	int i1 = name_to_index(c1);
 	if (i1 < 0) {
-	  t.error("illegal character `%1'", c1);
+	  t.error("invalid character `%1'", c1);
 	  return 0;
 	}
 	int i2 = name_to_index(c2);
 	if (i2 < 0) {
-	  t.error("illegal character `%1'", c2);
+	  t.error("invalid character `%1'", c2);
 	  return 0;
 	}
 	add_kern(i1, i2, n);
@@ -623,7 +622,7 @@ int font::load(int *not_found)
 	  }
 	  int index = name_to_index(nm);
 	  if (index < 0) {
-	    t.error("illegal character `%1'", nm);
+	    t.error("invalid character `%1'", nm);
 	    return 0;
 	  }
 	  copy_entry(index, last_index);
@@ -691,7 +690,7 @@ int font::load(int *not_found)
 	  else {
 	    last_index = name_to_index(nm);
 	    if (last_index < 0) {
-	      t.error("illegal character `%1'", nm);
+	      t.error("invalid character `%1'", nm);
 	      return 0;
 	    }
 	    add_entry(last_index, metric);

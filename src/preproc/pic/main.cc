@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989-1992, 2000, 2001, 2002 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -80,8 +80,8 @@ int top_input::get()
     return c;
   }
   int c = getc(fp);
-  while (illegal_input_char(c)) {
-    error("illegal input character code %1", int(c));
+  while (invalid_input_char(c)) {
+    error("invalid input character code %1", int(c));
     c = getc(fp);
     bol = 0;
   }
@@ -152,8 +152,8 @@ int top_input::peek()
   if (push_back[0] != EOF)
     return push_back[0];
   int c = getc(fp);
-  while (illegal_input_char(c)) {
-    error("illegal input character code %1", int(c));
+  while (invalid_input_char(c)) {
+    error("invalid input character code %1", int(c));
     c = getc(fp);
     bol = 0;
   }

@@ -848,7 +848,7 @@ interpret(char *line)
     if (par > 0.0)
       xscale *= par;
     else
-      error("illegal scale value on line %1", linenum);
+      error("invalid scale value on line %1", linenum);
     break;
 
   case 'f':			/* file */
