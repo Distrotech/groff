@@ -51,13 +51,18 @@ static int italic_flag = 0;
 static int reverse_flag = 0;
 static int old_drawing_scheme = 0;
 
+static int hline_char = '-';
+static int vline_char = '|';
+
 enum {
   UNDERLINE_MODE = 0x01,
   BOLD_MODE = 0x02,
   VDRAW_MODE = 0x04,
   HDRAW_MODE = 0x08,
   CU_MODE = 0x10,
-  COLOR_CHANGE = 0x20
+  COLOR_CHANGE = 0x20,
+  START_LINE = 0x40,
+  END_LINE = 0x80
 };
 
 // Mode to use for bold-underlining.
@@ -254,6 +259,10 @@ int tty_printer::tty_color(unsigned int r,
 tty_printer::tty_printer(const char *device) : cached_v(0)
 {
   is_utf8 = !strcmp(device, "utf8");
+  if (is_utf8) {
+    hline_char = 0x2500;
+    vline_char = 0x2502;
+  }
   schar dummy;
   // black, white
   (void)tty_color(0, 0, 0, &dummy, 0);
@@ -464,10 +473,22 @@ void tty_printer::draw(int code, int *p, int np, const environment *env)
       v += len;
       len = -len;
     }
-    while (len >= 0) {
-      add_char('|', env->hpos, v, env->col, env->fill, VDRAW_MODE);
+    if (len >= 0 && len <= font::vert)
+      add_char(vline_char, env->hpos, v, env->col, env->fill,
+	       VDRAW_MODE|START_LINE|END_LINE);
+    else {
+      add_char(vline_char, env->hpos, v, env->col, env->fill,
+	       VDRAW_MODE|START_LINE);
       len -= font::vert;
       v += font::vert;
+      while (len > 0) {
+	add_char(vline_char, env->hpos, v, env->col, env->fill,
+		 VDRAW_MODE|START_LINE|END_LINE);
+	len -= font::vert;
+	v += font::vert;
+      }
+      add_char(vline_char, env->hpos, v, env->col, env->fill,
+	       VDRAW_MODE|END_LINE);
     }
   }
   if (p[1] == 0) {
@@ -478,10 +499,22 @@ void tty_printer::draw(int code, int *p, int np, const environment *env)
       h += len;
       len = -len;
     }
-    while (len >= 0) {
-      add_char('-', h, env->vpos, env->col, env->fill, HDRAW_MODE);
+    if (len >= 0 && len <= font::hor)
+      add_char(hline_char, h, env->vpos, env->col, env->fill,
+	       HDRAW_MODE|START_LINE|END_LINE);
+    else {
+      add_char(hline_char, h, env->vpos, env->col, env->fill,
+	       HDRAW_MODE|START_LINE);
       len -= font::hor;
       h += font::hor;
+      while (len > 0) {
+	add_char(hline_char, h, env->vpos, env->col, env->fill,
+		 HDRAW_MODE|START_LINE|END_LINE);
+	len -= font::hor;
+	h += font::hor;
+      }
+      add_char(hline_char, h, env->vpos, env->col, env->fill,
+	       HDRAW_MODE|END_LINE);
     }
   }
 }
@@ -543,6 +576,20 @@ void tty_printer::put_color(schar color_index, int back)
   }
 }
 
+// The possible Unicode combinations for crossing characters.
+//
+// `  ' = 0, ` -' = 4, `- ' = 8, `--' = 12,
+//
+// `  ' = 0, ` ' = 1, `|' = 2, `|' = 3
+//            |                 |
+
+static int crossings[4*4] = {
+  0x0000, 0x2577, 0x2575, 0x2502,
+  0x2576, 0x250C, 0x2514, 0x251C,
+  0x2574, 0x2510, 0x2518, 0x2524,
+  0x2500, 0x252C, 0x2534, 0x253C
+};
+
 void tty_printer::end_page(int page_length)
 {
   if (page_length % font::vert != 0)
@@ -590,7 +637,12 @@ void tty_printer::end_page(int page_length)
       if (nextp && p->hpos == nextp->hpos) {
 	if (p->draw_mode() == HDRAW_MODE &&
 	    nextp->draw_mode() == VDRAW_MODE) {
-	  nextp->code = '+';
+	  if (is_utf8)
+	    nextp->code =
+	      crossings[((p->mode & (START_LINE|END_LINE)) >> 4)
+			+ ((nextp->mode & (START_LINE|END_LINE)) >> 6)];
+	  else
+	    nextp->code = '+';
 	  continue;
 	}
 	if (p->draw_mode() != 0 && p->draw_mode() == nextp->draw_mode()) {
