@@ -24,8 +24,9 @@
 #
 # This is a self-extracting MS-DOS archive (in ZIP format).
 #
-# Metric files for the Arial and Times New Roman families have been
-# replaced with versions which have more glyphs and kerning pairs:
+# Metric files for the Arial and Times New Roman families and the Symbol
+# font have been replaced with versions which have more glyphs and/or
+# kerning pairs:
 #
 #   ftp://ftp.ffii.org/pub/groff/contrib/lj4/tfmlj4x.zip
 
@@ -245,8 +246,8 @@ ABI: $(AUTOFONT)/arlj000s.tfm $(TEXTMAP)
 	$(HPFTODIT) $(IFLAG) $(AUTOFONT)/arlj000s.tfm $(TEXTMAP) $@
 
 # Symbol
-SYMBOL: $(AUTOFONT)/9nb00078.tfm $(SYMBOLMAP)
-	$(HPFTODIT) $(AUTOFONT)/9nb00078.tfm $(SYMBOLMAP) $@
+SYMBOL: $(AUTOFONT)/9nb28703.tfm $(SYMBOLMAP)
+	$(HPFTODIT) $(AUTOFONT)/9nb28703.tfm $(SYMBOLMAP) $@
 
 # Wingdings
 WINGDINGS: $(AUTOFONT)/9nb00095.tfm $(WINGDINGSMAP)
