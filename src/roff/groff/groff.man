@@ -188,7 +188,7 @@ FDL in the main directory of the groff source package.
 .c Environment variable
 .de EnvVar
 .  SM
-.  BR \$1 \$2
+.  BR \%\$1 \$2
 ..
 .c --------------------------------------------------------------------
 .c a shell command line
@@ -1284,8 +1284,16 @@ If this is not set but the environment variable
 .EnvVar TMPDIR
 instead, temporary files will be created in the directory
 .EnvVar $TMPDIR .
+On MS-DOS and Windows\ 32 platforms, the environment variables
+.EnvVar TMP
+and
+.EnvVar TEMP
+(in that order) are searched also, after
+.EnvVar GROFF_TMPDIR
+and
+.EnvVar TMPDIR .
 .
-Otherwise temporary files will be created in
+Otherwise, temporary files will be created in
 .BR /tmp .
 The
 .BR \%@g@refer (@MAN1EXT@),

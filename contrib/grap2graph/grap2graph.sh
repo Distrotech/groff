@@ -54,15 +54,32 @@ do
     shift
 done
 
+# create temporary directory
+tmp=
+for d in "$GROFF_TMPDIR" "$TMPDIR" "$TMP" "$TEMP" /tmp; do
+    test -z "$d" && continue
+
+    tmp=`(umask 077 && mktemp -d -q "$d/grap2graph-XXXXXX") 2> /dev/null` \
+    && test -n "$tmp" && test -d "$tmp" \
+    && break
+
+    tmp=$d/grap2graph$$-$RANDOM
+    (umask 077 && mkdir $tmp) 2> /dev/null && break
+done;
+if test -z "$tmp"; then
+    echo "$0: cannot create temporary directory" >&2
+    { (exit 1); exit 1; }
+fi
+
+trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0 2 15 
+
 # Here goes:
 # 1. Add .G1/.G2.
 # 2. Process through grap(1) to emit pic markup.
 # 3. Process through groff(1) with pic preprocessing to emit Postscript.
 # 4. Use convert(1) to crop the Postscript and turn it into a bitmap.
-tmp=/usr/tmp/grap2graph-$$
-trap "rm ${tmp}.*" 0 2 15 
-(echo ".G1"; cat; echo ".G2") | grap | groff -p $groff_opts -Tps | \
-	convert -crop 0x0 $convert_opts - ${tmp}.${format} \
-	&& cat ${tmp}.${format}
+(echo ".G1"; cat; echo ".G2") | grap | groff -p $groff_opts -Tps -P-pletter | \
+    convert -crop 0x0 $convert_opts - $tmp/grap2graph.$format \
+    && cat $tmp/grap2graph.$format
 
 # End
