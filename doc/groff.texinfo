@@ -438,26 +438,26 @@ contributions are welcome.  Send them to bug-groff@@gnu.org.
 @end ifinfo
 
 @menu
-* Copying::
-* Introduction::
-* Invoking groff::
-* Tutorial for Macro Users::
-* Macro Packages::
-* gtroff Reference::
-* Preprocessors::
-* Output Devices::
-* File formats::
-* Installation::
-* Request Index::
-* Escape Index::
-* Operator Index::
-* Register Index::
-* Macro Index::
-* String Index::
-* Glyph Name Index::
-* Font File Keyword Index::
-* Program and File Index::
-* Concept Index::
+* Copying::                     
+* Introduction::                
+* Invoking groff::              
+* Tutorial for Macro Users::    
+* Macro Packages::              
+* gtroff Reference::            
+* Preprocessors::               
+* Output Devices::              
+* File formats::                
+* Installation::                
+* Request Index::               
+* Escape Index::                
+* Operator Index::              
+* Register Index::              
+* Macro Index::                 
+* String Index::                
+* Glyph Name Index::            
+* Font File Keyword Index::     
+* Program and File Index::      
+* Concept Index::               
 @end menu
 
 
@@ -871,13 +871,13 @@ use) for about 3@w{ }decades.  It is quite widespread and firmly
 entrenched in the @acronym{UNIX} community.
 
 @menu
-* What Is groff?::
-* History::
-* groff Capabilities::
-* Macro Package Intro::
-* Preprocessor Intro::
-* Output device intro::
-* Credits::
+* What Is groff?::              
+* History::                     
+* groff Capabilities::          
+* Macro Package Intro::         
+* Preprocessor Intro::          
+* Output device intro::         
+* Credits::                     
 @end menu
 
 
@@ -1228,9 +1228,9 @@ prefix is omitted since GNU @code{troff} is the only used incarnation of
 @code{troff}.  Exception: @code{groff} is never replaced by @code{roff}.
 
 @menu
-* Groff Options::
-* Environment::
-* Invocation Examples::
+* Groff Options::               
+* Environment::                 
+* Invocation Examples::         
 @end menu
 
 
@@ -1662,7 +1662,7 @@ Check @file{file} with the @file{man} macro package, forcing
 double-sided printing -- don't produce any output.
 
 @menu
-* grog::
+* grog::                        
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -1725,8 +1725,8 @@ people.  This chapter covers the material needed to efficiently use a
 macro package.
 
 @menu
-* Basics::
-* Common Features::
+* Basics::                      
+* Common Features::             
 @end menu
 
 
@@ -1908,20 +1908,20 @@ All macro packages provide certain common capabilities which fall into
 the following categories.
 
 @menu
-* Paragraphs::
-* Sections and Chapters::
-* Headers and Footers::
-* Page Layout Adjustment::
-* Displays::
-* Footnotes and Annotations::
-* Table of Contents::
-* Indices::
-* Paper Formats::
-* Multiple Columns::
-* Font and Size Changes::
-* Predefined Strings::
-* Preprocessor Support::
-* Configuration and Customization::
+* Paragraphs::                  
+* Sections and Chapters::       
+* Headers and Footers::         
+* Page Layout Adjustment::      
+* Displays::                    
+* Footnotes and Annotations::   
+* Table of Contents::           
+* Indices::                     
+* Paper Formats::               
+* Multiple Columns::            
+* Font and Size Changes::       
+* Predefined Strings::          
+* Preprocessor Support::        
+* Configuration and Customization::  
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -2151,11 +2151,11 @@ This chapter documents the main macro packages that come with
 @code{groff}.
 
 @menu
-* man::
-* mdoc::
-* ms::
-* me::
-* mm::
+* man::                         
+* mdoc::                        
+* ms::                          
+* me::                          
+* mm::                          
 @end menu
 
 
@@ -2173,12 +2173,12 @@ of @code{groff}.  It is easy to use, and a vast majority of manual pages
 are based on it.
 
 @menu
-* Man options::
-* Man usage::
-* Man font macros::
-* Miscellaneous man macros::
-* Predefined man strings::
-* Preprocessors in man pages::
+* Man options::                 
+* Man usage::                   
+* Man font macros::             
+* Miscellaneous man macros::    
+* Predefined man strings::      
+* Preprocessors in man pages::  
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -2532,13 +2532,13 @@ paragraphs, lists, footnotes, pagination,
 and a table of contents.
 
 @menu
-* ms Intro::
-* General ms Structure::
-* ms Document Control Registers::
-* ms Cover Page Macros::
-* ms Body Text::
-* ms Page Layout::
-* Differences from AT&T ms::
+* ms Intro::                    
+* General ms Structure::        
+* ms Document Control Registers::  
+* ms Cover Page Macros::        
+* ms Body Text::                
+* ms Page Layout::              
+* Differences from AT&T ms::    
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -2896,7 +2896,7 @@ user demand.
 
 @c ---------------------------------------------------------------------
 
-@node ms Body Text, Paragraphs in ms, ms Cover Page Macros, ms
+@node ms Body Text, ms Page Layout, ms Cover Page Macros, ms
 @subsection Body text
 @cindex @file{ms}, body text
 
@@ -2904,13 +2904,14 @@ This section describes macros used to mark up the body of your document.
 Examples include paragraphs, sections, and other groups.
 
 @menu
-* Paragraphs in ms::
-* Headings in ms::
-* Highlighting in ms::
-* Lists in ms::
-* ms Displays and Keeps::
-* ms Insertions::
-* ms Footnotes::
+* Paragraphs in ms::            
+* Headings in ms::              
+* Highlighting in ms::          
+* Lists in ms::                 
+* ms Displays and Keeps::       
+* ms Insertions::               
+* Example multi-page table::    
+* ms Footnotes::                
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -2935,7 +2936,13 @@ The effect is identical to the @acronym{HTML} @code{<BLOCKQUOTE>} element.
 The next paragraph or heading returns margins to normal.
 @endDefmac
 
-The following markup uses all three paragraph macros.
+@Defmac {XP, , ms}
+Sets a paragraph whose lines are indented,
+except for the first line.
+This is a Berkeley extension.
+@endDefmac
+
+The following markup uses all four paragraph macros.
 
 @Example
 @cartouche
@@ -2954,10 +2961,21 @@ For free software, we chose
 .B Emacs ,
 from its first appearance as a standalone
 editor through the current version (v20).
+See [Bloggs 2002] for details.
 .QP
 Franklin's Law applied to software:
 software expands to outgrow both
 RAM and disk space over time.
+.LP
+Bibliography:
+.XP
+Bloggs, Joseph R.,
+.I "Everyone's a Critic" ,
+Underground Press, March 2002.
+A definitive work that answers all questions
+and criticisms about the quality and usability of
+free software.
+
 @end cartouche
 @endExample
 
@@ -3444,7 +3462,7 @@ database.
 
 @c ---------------------------------------------------------------------
 
-@node Example multi-page table, ms Footnotes, ms Insertions, ms Insertions
+@node Example multi-page table, ms Footnotes, ms Insertions, ms Body Text
 @subsubsection An example multi-page table
 @cindex Example markup, multi-page table (ms)
 @cindex Multi-page table, example markup (ms)
@@ -3470,7 +3488,7 @@ l | l .
 
 @c ---------------------------------------------------------------------
 
-@node ms Footnotes, ms Page Layout, Example multi-page table, ms Body Text
+@node ms Footnotes,  , Example multi-page table, ms Body Text
 @subsubsection Footnotes
 @cindex @file{ms}, footnotes
 @cindex Footnotes (ms)
@@ -3487,10 +3505,12 @@ Specifies the location of a numbered footnote marker in the text.
 @DefmacListEnd {FE, , ms}
 Specifies the text of the footnote.
 The default action is to create a numbered footnote;
-you can create a symbolic footnote by placing the character
-(such as @code{\[dg]} for the dagger character) at the proper location,
-followed by the symbol and the text of the footnote
-enclosed by @code{FS} and @code{FE} macros.
+you can create a symbolic footnote by specifying
+a @dfn{mark} character
+(such as @code{\[dg]} for the dagger character)
+in the body text and as an argument to the @code{FS} macro,
+followed by the text of the footnote
+and the @code{FE} macro.
 @endDefmac
 
 You can control how @code{groff}
@@ -3499,7 +3519,7 @@ prints footnote numbers by changing the value of the
 
 @c ---------------------------------------------------------------------
 
-@node ms Page Layout, ms Headers and Footers, ms Footnotes, ms
+@node ms Page Layout, Differences from AT&T ms, ms Body Text, ms
 @subsection Page layout
 @cindex @file{ms}, page layout
 @cindex Page layout (ms)
@@ -3514,10 +3534,11 @@ You can change the layout by setting
 the proper number registers and strings.
 
 @menu
-* ms Headers and Footers::
-* ms Margins::
-* ms Multiple Columns::
-* ms TOC::
+* ms Headers and Footers::      
+* ms Margins::                  
+* ms Multiple Columns::         
+* ms TOC::                      
+* ms Strings and Special Characters::  
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -3602,7 +3623,7 @@ The @code{MINGW} number register controls the default gutter width.
 
 @c ---------------------------------------------------------------------
 
-@node ms TOC, Differences from AT&T ms, ms Multiple Columns, ms Page Layout
+@node ms TOC, ms Strings and Special Characters, ms Multiple Columns, ms Page Layout
 @subsubsection Creating a table of contents
 @cindex @file{ms}, creating table of contents
 @cindex Table of contents, creating (ms)
@@ -3613,9 +3634,12 @@ Assuming that you want the table of contents to consist of
 the document's headings, you need to repeat those headings
 wrapped in @code{XS} and @code{XE} macros.
 
-@DefmacList {XS, , ms}
+@DefmacList {XS, [@Var{page}, ms}
+@DefmacItem {XA, [@Var{page}, ms}
 @DefmacListEnd {XE, , ms}
-These macros bracket a table of contents entry.
+These macros define a table of contents
+or an individual entry in the table of contents,
+depending on their use.
 The macros are very simple; they cannot indent a heading based on its level.
 The easiest way to work around this is to add tabs
 to the table of contents string.
@@ -3640,14 +3664,48 @@ Methodology
 ...
 @end cartouche
 @endExample
+
+You can manually create a table of contents
+by beginning with the @code{XS} macro for the first entry,
+specifying the page number for that entry as the argument to @code{XS}.
+Add subsequent entries using the @code{XA} macro,
+specifying the page number for that entry as the argument to @code{XA}.
+The following is an example:
+
+@Example
+@cartouche
+.XS 1
+Introduction
+.XA 2
+A Brief History of the Universe
+.XA 729
+Details of Galactic Formation
+...
+.XE
+@end cartouche
+@endExample
 @endDefmac
 
-@Defmac {TC, , ms}
-Prints the table of contents at the specified point.
+@Defmac {TC, [@code{no}], ms}
+Prints the table of contents on a new page,
+setting the page number to @strong{i} (Roman numeral one).
 You should usually place this macro at the end of the
 file, since @code{groff} is a single-pass formatter and
 can only print what has been collected up to the point
 that the @code{TC} macro appears.
+
+The optional argument @code{no} suppresses printing
+the title specified by the string register @code{TOC}.
+@endDefmac
+
+@Defmac{PX, [@code{no}], ms}
+Prints the table of contents on a new page,
+using the current page numbering sequence.
+Use this macro to print a manually-generated table of contents
+at the beginning of your document.
+
+The optional argument @Var{no} suppresses printing
+the title specified by the string register @code{TOC}.
 @endDefmac
 
 The @cite{Groff and Friends HOWTO}
@@ -3660,7 +3718,167 @@ a great deal of time in the long run if you use @file{ms} regularly.
 
 @c ---------------------------------------------------------------------
 
-@node Differences from AT&T ms, Missing ms Macros, ms TOC, ms
+@node ms Strings and Special Characters,  , ms TOC, ms Page Layout
+@subsubsection Strings and Special Characters
+@cindex @file{ms}, strings
+@cindex @file{ms}, special characters
+@cindex @file{ms}, accent marks
+@cindex Accent marks
+@cindex Special characters
+@cindex Strings in @file{ms}
+
+The @file{ms} macros provide the following predefined strings.
+You can change the string definitions to help in creating
+documents in languages other than English.
+
+@Defstr {REFERENCES, ms}
+Contains the string printed at the beginning of the
+references (bibliography) page.
+The default is "References".
+@endDefstr
+
+@Defstr {ABSTRACT, ms}
+Contains the string printed at the beginning of the abstract.
+The default is "ABSTRACT".
+@endDefstr
+
+@Defstr {TOC, ms}
+Contains the string printed at the beginning of the table of contents.
+@endDefstr
+
+@DefstrList {MONTH1, ms}
+@DefstrItem {MONTH2, ms}
+@DefstrItem {MONTH3, ms}
+@DefstrItem {MONTH4, ms}
+@DefstrItem {MONTH5, ms}
+@DefstrItem {MONTH6, ms}
+@DefstrItem {MONTH7, ms}
+@DefstrItem {MONTH8, ms}
+@DefstrItem {MONTH9, ms}
+@DefstrItem {MONTH10, ms}
+@DefstrItem {MONTH11, ms}
+@DefstrListEnd {MONTH12, ms}
+Prints the full name of the month in dates.
+The default is "January", "February", etc.
+@endDefstr
+
+The following special characters are available:
+
+@Defstr {-, ms}
+Prints an em dash.
+@endDefstr
+
+@DefstrList {*Q, ms}
+@DefstrListEnd {*U, ms}
+Prints typographer's quotes in troff,
+plain quotes in nroff.
+@code{*Q} is the left quote and @code{*U} is the right quote.
+@endDefstr
+
+Improved accent marks are available in the @file{ms} macros.
+
+@Defmac {AM, , ms}
+Specify this macro at the beginning of your document
+to enable extended accent marks and special characters.
+This is a Berkeley extension.
+
+To use the accent marks, place them @strong{after}
+the character being accented.
+@endDefmac
+
+The following accent marks are available
+after invoking the @code{AM} macro:
+
+@Defstr {\', ms}
+Acute accent.
+@endDefstr
+
+@Defstr {\`, ms}
+Grave accent.
+@endDefstr
+
+@Defstr {^, ms}
+Circumflex.
+@endDefstr
+
+@Defstr {\,, ms}
+Cedilla.
+@endDefstr
+
+@Defstr {~, ms}
+Tilde.
+@endDefstr
+
+@Defstr {:, ms}
+Umlaut.
+@endDefstr
+
+@Defstr {v, ms}
+Hacek.
+@endDefstr
+
+@Defstr {_, ms}
+Macron (overbar).
+@endDefstr
+
+@Defstr {., ms}
+Underdot.
+@endDefstr
+
+@Defstr {o, ms}
+Ring above.
+@endDefstr
+
+The following are standalone characters
+available after invoking the @code{AM} macro:
+
+@Defstr {?, ms}
+Upside-down question mark.
+@endDefstr
+
+@Defstr {!, ms}
+Upside-down exclamation point.
+@endDefstr
+
+@Defstr {8, ms}
+German @ss{} ligature.
+@endDefstr
+
+@Defstr {3, ms}
+Yogh.
+@endDefstr
+
+@Defstr {Th, ms}
+Uppercase thorn.
+@endDefstr
+
+@Defstr {th, ms}
+Lowercase thorn.
+@endDefstr
+
+@Defstr {D-, ms}
+Uppercase eth.
+@endDefstr
+
+@Defstr {d-, ms}
+Lowercase eth.
+@endDefstr
+
+@Defstr {q, ms}
+Hooked o.
+@endDefstr
+
+@Defstr {ae, ms}
+Lowercase @ae{} ligature.
+@endDefstr
+
+@Defstr {Ae, ms}
+Uppercase @AE{} ligature.
+@endDefstr
+
+@c ---------------------------------------------------------------------
+
+@node Differences from AT&T ms,  , ms Page Layout, ms
 @subsection Differences from @acronym{AT&T} @file{ms}
 @cindex @file{ms}, differences from @acronym{AT&T}
 @cindex @acronym{AT&T}, @code{ms} differences
@@ -3670,8 +3888,8 @@ This section lists the (minor) differences between the
 @code{troff -ms} macros.
 
 @menu
-* Missing ms Macros::
-* Additional ms Macros::
+* Missing ms Macros::           
+* Additional ms Macros::        
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -3714,7 +3932,7 @@ A cover sheet macro
 
 @c ---------------------------------------------------------------------
 
-@node Additional ms Macros, , Missing ms Macros, Differences from AT&T ms
+@node Additional ms Macros,  , Missing ms Macros, Differences from AT&T ms
 @subsubsection @code{groff} macros not appearing in AT&T @code{troff}
 
 The @code{groff -ms} macros have a few minor extensions
@@ -3722,6 +3940,7 @@ compared to the @acronym{AT&T} @code{troff -ms} macros.
 
 @Defmac {AM, , ms}
 Improved accent marks.
+@xref{ms Strings and Special Characters}, for details.
 @endDefmac
 
 @Defmac {DS, @t{I}, ms}
@@ -3755,19 +3974,7 @@ not implemented in @acronym{AT&T} @code{troff}.
 @sp 1
 Several new string registers are available as well.
 You can change these to handle (for example) the local language.
-
-@Defstr {REFERENCES, ms}
-Contains the string printed at the beginning of the
-references (bibliography) page.
-@endDefstr
-
-@Defstr {ABSTRACT, ms}
-Contains the string printed at the beginning of the abstract.
-@endDefstr
-
-@Defstr {TOC, ms}
-Contains the string printed at the beginning of the table of contents.
-@endDefstr
+@xref{ms Strings and Special Characters}, for details.
 
 
 @c =====================================================================
@@ -3805,41 +4012,41 @@ Users of macro packages may skip it if not interested in details.
 
 
 @menu
-* Text::
-* Input Conventions::
-* Measurements::
-* Expressions::
-* Identifiers::
-* Embedded Commands::
-* Registers::
-* Manipulating Filling and Adjusting::
-* Manipulating Hyphenation::
-* Manipulating Spacing::
-* Tabs and Fields::
-* Character Translations::
-* Troff and Nroff Mode::
-* Line Layout::
-* Page Layout::
-* Page Control::
-* Fonts::
-* Sizes::
-* Strings::
-* Conditionals and Loops::
-* Writing Macros::
-* Page Motions::
-* Drawing Requests::
-* Traps::
-* Diversions::
-* Environments::
-* Suppressing output::
-* Colors::
-* I/O::
-* Postprocessor Access::
-* Miscellaneous::
-* Gtroff Internals::
-* Debugging::
-* Implementation Differences::
-* Summary::
+* Text::                        
+* Input Conventions::           
+* Measurements::                
+* Expressions::                 
+* Identifiers::                 
+* Embedded Commands::           
+* Registers::                   
+* Manipulating Filling and Adjusting::  
+* Manipulating Hyphenation::    
+* Manipulating Spacing::        
+* Tabs and Fields::             
+* Character Translations::      
+* Troff and Nroff Mode::        
+* Line Layout::                 
+* Page Layout::                 
+* Page Control::                
+* Fonts::                       
+* Sizes::                       
+* Strings::                     
+* Conditionals and Loops::      
+* Writing Macros::              
+* Page Motions::                
+* Drawing Requests::            
+* Traps::                       
+* Diversions::                  
+* Environments::                
+* Suppressing output::          
+* Colors::                      
+* I/O::                         
+* Postprocessor Access::        
+* Miscellaneous::               
+* Gtroff Internals::            
+* Debugging::                   
+* Implementation Differences::  
+* Summary::                     
 @end menu
 
 
@@ -3868,11 +4075,11 @@ inserting implicit line breaks
 @end itemize
 
 @menu
-* Filling and Adjusting::
-* Hyphenation::
-* Sentences::
-* Tab Stops::
-* Implicit Line Breaks::
+* Filling and Adjusting::       
+* Hyphenation::                 
+* Sentences::                   
+* Tab Stops::                   
+* Implicit Line Breaks::        
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -4175,7 +4382,7 @@ Vertical space.  This is equivalent to the current line spacing.
 @end table
 
 @menu
-* Default Units::
+* Default Units::               
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -4482,9 +4689,9 @@ Escapes generally do more minor operations like sub- and superscripts,
 print a symbol, etc.
 
 @menu
-* Requests::
-* Macros::
-* Escapes::
+* Requests::                    
+* Macros::                      
+* Escapes::                     
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -4561,7 +4768,7 @@ requests cause a break implicitly; using the single quote control
 character prevents this.
 
 @menu
-* Request Arguments::
+* Request Arguments::           
 @end menu
 
 @node Request Arguments,  , Requests, Requests
@@ -4823,7 +5030,7 @@ Mode}, and @ref{Diversions}, for more information.
 @xref{Identifiers}, and @ref{Character Translations}.
 
 @menu
-* Comments::
+* Comments::                    
 @end menu
 
 @node Comments,  , Escapes, Escapes
@@ -4954,11 +5161,11 @@ details of formatting parameters.
 @xref{Identifiers}, for details on register identifiers.
 
 @menu
-* Setting Registers::
-* Interpolating Registers::
-* Auto-increment::
-* Assigning Formats::
-* Built-in Registers::
+* Setting Registers::           
+* Interpolating Registers::     
+* Auto-increment::              
+* Assigning Formats::           
+* Built-in Registers::          
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -6202,8 +6409,8 @@ associated with the current environment (@pxref{Environments}).
 @endDefreq
 
 @menu
-* Leaders::
-* Fields::
+* Leaders::                     
+* Fields::                      
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -6992,13 +7199,13 @@ devices, there is also at least one symbol font which contains various
 special symbols (Greek, mathematics).
 
 @menu
-* Changing Fonts::
-* Font Families::
-* Font Positions::
-* Using Symbols::
-* Special Fonts::
-* Artificial Fonts::
-* Ligatures and Kerning::
+* Changing Fonts::              
+* Font Families::               
+* Font Positions::              
+* Using Symbols::               
+* Special Fonts::               
+* Artificial Fonts::            
+* Ligatures and Kerning::       
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -7879,8 +8086,8 @@ The difference between type size and vertical spacing is known, by
 typesetters, as @dfn{leading}.
 
 @menu
-* Changing Type Sizes::
-* Fractional Type Sizes::
+* Changing Type Sizes::         
+* Fractional Type Sizes::       
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -8358,9 +8565,9 @@ nodes inserted by @code{gtroff} automatically.
 @cindex loops and conditionals
 
 @menu
-* Operators in Conditionals::
-* if-else::
-* while::
+* Operators in Conditionals::   
+* if-else::                     
+* while::                       
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -8701,8 +8908,8 @@ defined to be a request; normally they modify the value of an existing
 object.
 
 @menu
-* Copy-in Mode::
-* Parameters::
+* Copy-in Mode::                
+* Parameters::                  
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -9226,10 +9433,10 @@ given location in the current diversion, after a certain number of input
 lines or at the end of input.
 
 @menu
-* Page Location Traps::
-* Diversion Traps::
-* Input Line Traps::
-* End-of-input Traps::
+* Page Location Traps::         
+* Diversion Traps::             
+* Input Line Traps::            
+* End-of-input Traps::          
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10337,7 +10544,7 @@ level.
 @endDefreq
 
 @menu
-* Warnings::
+* Warnings::                    
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10653,13 +10860,13 @@ This chapter describes all preprocessors that come with @code{groff} or
 which are freely available.
 
 @menu
-* geqn::
-* gtbl::
-* gpic::
-* ggrn::
-* grap::
-* grefer::
-* gsoelim::
+* geqn::                        
+* gtbl::                        
+* gpic::                        
+* ggrn::                        
+* grap::                        
+* grefer::                      
+* gsoelim::                     
 @end menu
 
 
@@ -10673,7 +10880,7 @@ which are freely available.
 @c XXX
 
 @menu
-* Invoking geqn::
+* Invoking geqn::               
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10696,7 +10903,7 @@ which are freely available.
 @c XXX
 
 @menu
-* Invoking gtbl::
+* Invoking gtbl::               
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10719,7 +10926,7 @@ which are freely available.
 @c XXX
 
 @menu
-* Invoking gpic::
+* Invoking gpic::               
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10742,7 +10949,7 @@ which are freely available.
 @c XXX
 
 @menu
-* Invoking ggrn::
+* Invoking ggrn::               
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10779,7 +10986,7 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking grefer::
+* Invoking grefer::             
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10802,7 +11009,7 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking gsoelim::
+* Invoking gsoelim::            
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10827,14 +11034,14 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Special Characters::
-* grotty::
-* grops::
-* grodvi::
-* grolj4::
-* grolbp::
-* grohtml::
-* gxditview::
+* Special Characters::          
+* grotty::                      
+* grops::                       
+* grodvi::                      
+* grolj4::                      
+* grolbp::                      
+* grohtml::                     
+* gxditview::                   
 @end menu
 
 
@@ -10859,7 +11066,7 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking grotty::
+* Invoking grotty::             
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10881,8 +11088,8 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking grops::
-* Embedding PostScript::
+* Invoking grops::              
+* Embedding PostScript::        
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10913,7 +11120,7 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking grodvi::
+* Invoking grodvi::             
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10935,7 +11142,7 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking grolj4::
+* Invoking grolj4::             
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10957,7 +11164,7 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking grolbp::
+* Invoking grolbp::             
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -10979,7 +11186,7 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking grohtml::
+* Invoking grohtml::            
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -11001,7 +11208,7 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* Invoking gxditview::
+* Invoking gxditview::          
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -11027,8 +11234,8 @@ is available as an extra package from the following address:
 @c XXX
 
 @menu
-* gtroff Output::
-* Font Files::
+* gtroff Output::               
+* Font Files::                  
 @end menu
 
 
@@ -11045,10 +11252,10 @@ not identical -- to that used by
 @acronym{UNIX} device-independent @code{troff} (@code{ditroff}).
 
 @menu
-* Output Format::
-* Device Control::
-* Drawing Functions::
-* Line Continuation::
+* Output Format::               
+* Device Control::              
+* Drawing Functions::           
+* Line Continuation::           
 @end menu
 
 @c ---------------------------------------------------------------------
@@ -11327,8 +11534,8 @@ file called @file{DESC} and for each font@w{ }@var{f} a font file
 called@w{ }@file{@var{f}}.
 
 @menu
-* DESC File Format::
-* Font File Format::
+* DESC File Format::            
+* Font File Format::            
 @end menu
 
 @c ---------------------------------------------------------------------
