@@ -1,5 +1,5 @@
 # Autoconf macros for groff.
-# Copyright (C) 1989-1995, 2001, 2002, 2003, 2004
+# Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2005
 # Free Software Foundation, Inc.
 #
 # This file is part of groff.
@@ -1034,10 +1034,10 @@ AC_DEFUN([GROFF_APPRESDIR_CHECK],
   (an existing file will be saved as `GXditview.old').
   To install it into a different directory, say, `/etc/gxditview',
   add `--with-appresdir=/etc/gxditview' to the configure script
-  and rerun it.  The environment variable `APPLRESDIR' must then
-  be set to `/etc/' (note the trailing slash), omitting the
-  `gxditview' part which is automatically appended by the X11
-  searching routines for resource files.  More details can be
+  command line options and rerun it.  The environment variable
+  `APPLRESDIR' must then be set to `/etc/' (note the trailing slash),
+  omitting the `gxditview' part which is automatically appended by
+  the X11 searching routines for resource files.  More details can be
   found in the X(7) manual page.
        ])
      fi

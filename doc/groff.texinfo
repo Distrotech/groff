@@ -349,9 +349,14 @@ Software Foundation raise funds for GNU development.''
 
 
 @c a <= sign
+@c
+@c A value defined with @set is embedded into three group levels if
+@c called with @value, so we need seven \aftergroup to put \le outside
+@c of the groups -- this is necessary to get proper mathematical spacing.
 
 @tex
-\gdef\LEmacro{\le}
+\gdef\LEmacro{\aftergroup\aftergroup\aftergroup\aftergroup
+              \aftergroup\aftergroup\aftergroup\le}
 @end tex
 
 @iftex
@@ -6113,7 +6118,7 @@ read-only.  A complete listing of all built-in registers can be found in
 @item \n[.F]
 @cindex current input file name register (@code{.F})
 @cindex input file name, current, register (@code{.F})
-@vindex \n[.F]
+@vindex .F
 This string-valued register returns the current input file name.
 
 @item \n[.H]
@@ -6187,7 +6192,7 @@ Current month (1-12).
 The current year.
 
 @item \n[yr]
-@vindex \n[yr]
+@vindex yr
 The current year minus@tie{}1900.  Unfortunately, the documentation of
 @acronym{UNIX} Version@tie{}7's @code{troff} had a year@tie{}2000 bug: It
 incorrectly claimed that @code{yr} contains the last two digits of the

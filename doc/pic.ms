@@ -972,7 +972,7 @@ picture to the smallest bounding box before writing it out.  For
 example, if you have a picture consisting of a small box with its lower
 left corner at (2,2) and another small box with its upper right corner
 at (5,5), the width and height of the image are both 3\~units and
-not~5.  To get the origin at (0,0) included, simply add an invisible
+not\~5.  To get the origin at (0,0) included, simply add an invisible
 object to the picture, positioning the object's left corner at (0,0).
 .
 .NH 2
