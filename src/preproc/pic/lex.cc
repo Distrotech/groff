@@ -960,7 +960,7 @@ int get_token(int lookup_flag)
 	  double factor = 1.0;
 	  for (;;) {
 	    c = input_stack::peek_char();
-	    if (!c == EOF || !csdigit(c))
+	    if (c == EOF || !csdigit(c))
 	      break;
 	    input_stack::get_char();
 	    context_buffer += char(c);
