@@ -205,6 +205,20 @@ and
 .
 .
 .SH
+NEWS VERSION 1.18.2
+.
+.SH 2
+grotty
+
+.ULS
+.LI
+New option \-r.
+It is similar to the \-i option except it tells grotty to use the `reverse
+video' attribute to render italic fonts.
+.ULE
+.
+.
+.SH
 NEWS VERSION 1.18.1
 .
 .SH 2
