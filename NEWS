@@ -49,6 +49,35 @@ o The `Ds' and `De' macros provided in ms since groff version 1.19 have been
   file from the X11 distribution (macros.t) which provides proper
   definitions for the two macros.
 
+o The following registers have been added to the ms macros for improving
+  layout control:
+
+  PORPHANS
+    Defines number of lines following LP, PP, QP, IP or XP which must be
+    kept together, before any automatic page break.
+
+  HORPHANS
+    Sets number of lines of following paragraph which must be kept with a
+    heading, defined by NH or SH, before any automatic page break.
+
+  GROWPS
+    Sets the first level of heading (set with NH) which will keep the same
+    point size as body text.
+
+  PSINCR
+    Sets the point size increment for each level of heading (set with NH),
+    below the threshold level set by GROWPS; e.g., if \n[PS] = 10,
+    \n[GROWPS] = 3 and \n[PSINCR] = 2.0p, then .NH 1 will produce 14pt
+    headings, .NH 2 will produce 12pt, and all other levels will remain
+    at 10pt (because \n[PS] = 10).
+
+o The SH macro in the ms package now accepts a numeric argument, to make
+  heading size match that of NH with same argument value when the
+  GROWPS/PSINCR feature is enabled.
+
+Please refer to the documentation of the ms package for other, minor
+improvements.
+
 
 VERSION 1.19.1
 ==============
