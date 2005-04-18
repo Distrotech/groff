@@ -1,4 +1,4 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -101,7 +101,6 @@ static const char *xstrsignal(int);
 
 #include <process.h>
 #include <fcntl.h>
-#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
