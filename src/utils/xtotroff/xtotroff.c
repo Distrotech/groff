@@ -176,10 +176,11 @@ static int MapFont(char *font_name, const char *troff_name)
   for (c = fi->min_char_or_byte2; c <= fi->max_char_or_byte2; c++) {
     const char *name = DviCharName(char_map, c, 0);
     if (charExists(fi, c)) {
+      int param[5];
+
       wid = charWidth(fi, c);
 
       fprintf(out, "%s\t%d", name ? name : "---", wid);
-      int param[5];
       param[0] = charHeight(fi, c);
       param[1] = charDepth(fi, c);
       param[2] = 0;		/* charRBearing (fi, c) - wid */
