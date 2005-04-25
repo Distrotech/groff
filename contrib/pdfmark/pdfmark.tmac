@@ -272,6 +272,15 @@ inspiration has come from discussion on the groff mailing list
 .\"
 .ds PDFBOOKMARK.VIEW /FitH \\n[PDFPAGE.Y] u
 .\"
+.\" "PDFOUTLINE.FOLDLEVEL" controls how the document outline will be
+.\" displayed.  It is a number, defining the maximum heading level
+.\" which will be visible, without outline expansion by the user, in
+.\" the initial view of the document outline.  Assuming that no sane
+.\" document will ever extend to 10,000 levels of nested headings,
+.\" this initial default value causes outlines to be fully expanded.
+.\"
+.nr PDFOUTLINE.FOLDLEVEL 10000
+.\"
 .\" The actual job of creating an outline reference
 .\" is performed by the "pdfbookmark" macro.
 .\"
@@ -390,7 +399,12 @@ inspiration has come from discussion on the groff mailing list
 .nr pdf:bm.ic +1
 .nr pdf:bm.lc +1
 .pdf:pop nr pdf:bm.rc pdf:bm.c\\n[pdf:bm.lc]
-.if \\n[pdf:bm.rc] .as pdf:bm\\n[pdf:bm.ic] " /Count \\n[pdf:bm.rc]
+.if \\n[pdf:bm.rc] \{\
+.   ds pdf:bm.fold
+.   if \\n[pdf:bm.lc]>\\n[PDFOUTLINE.FOLDLEVEL] .ds pdf:bm.fold -
+.   as pdf:bm\\n[pdf:bm.ic] " /Count \\*[pdf:bm.fold]\\n[pdf:bm.rc]
+.   rm pdf:bm.fold
+.   \}
 .pdfmark \\*[pdf:bm\\n[pdf:bm.ic]] /OUT
 .rm pdf:bm\\n[pdf:bm.ic]
 .\"

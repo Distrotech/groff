@@ -10,6 +10,11 @@ Publishing with GNU Troff
 .\"
 .pdfview /PageMode /UseOutlines
 .\"
+.\" Initialise the outline view to show only three heading levels,
+.\" with additional subordinate level headings folded.
+.\"
+.nr PDFOUTLINE.FOLDLEVEL 3
+.\"
 .\" Add document identification meta-data
 .\"
 .pdfinfo /Title     Portable Document Format Publishing with GNU Troff
@@ -843,6 +848,79 @@ ensure that these are computed
 invoking the
 .CW pdfhref
 macro.
+.NH 3
+.XN -N outline-folding -- Folding the Outline to Conceal Less Significant Headings
+.LP
+When a document incorporates many subheadings,
+at deeply nested levels,
+it may be desirable to \(lqfold\(rq the outline
+such that only the major heading levels are initially visible,
+yet making the inferior subheadings accessible,
+by allowing the reader to expand the view of any heading branch on demand.
+.LP
+The
+.CW pdfmark
+macros support this capability,
+through the setting of the
+.CW PDFOUTLINE.FOLDLEVEL
+register.
+This register should be set to the number of heading levels
+which it is desired to show in expanded form, in the
+.EM initial
+document outline display;
+all subheadings at deeper levels will still be added to the outline,
+but will not become visible until the outline branch containing them is expanded.
+'ne 5
+For example, the setting used in this document:
+.QS
+.LD
+.fam C
+\&.\e" Initialise the outline view to show only three heading levels,
+\&.\e" with additional subordinate level headings folded.
+\&.\e"
+\&.nr PDFOUTLINE.FOLDLEVEL 3
+.DE
+.QE
+.LP
+results in only the first three levels of headings being displayed
+in the document outline,
+.EM until
+the reader chooses to expand the view,
+and so reveal the lower level headings in any outline branch.
+.LP
+The initial default setting of
+.CW PDFOUTLINE.FOLDLEVEL ,
+if the document author does not choose to change it,
+is 10,000.
+This is orders of magnitude greater than the maximum heading level
+which is likely to be used in any document;
+thus the default behaviour will be to show document outlines fully expanded,
+to display all headings defined,
+at all levels within each document.
+.LP
+The setting of
+.CW PDFOUTLINE.FOLDLEVEL
+may be changed at any time;
+however, the effect of each such change may be difficult to predict,
+since it is applied not only to outline entries which are defined
+.EM after
+the setting is changed,
+but also to any entries which remain in the outline cache,
+.EM at
+this time.
+Therefore, it is recommended that
+.CW PDFOUTLINE.FOLDLEVEL
+should be set
+.EM once ,
+at the start of each document;
+if it
+.EM is
+deemed necessary to change it at any other time,
+the outline cache should be flushed,
+.XR pdfsync ), (
+.EM immediately
+before the change,
+which should immediately preceed a level one heading.
 .NH 3
 .XN -N multipart-outline -- Outlines for Multipart Documents
 .LP
