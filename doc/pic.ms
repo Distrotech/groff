@@ -2688,6 +2688,7 @@ ways to specify positions:
 <position> ::=
   <position-not-place>
   <place>
+  ( <position> )
 .R
 .DE
 .DS
