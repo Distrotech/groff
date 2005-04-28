@@ -95,7 +95,8 @@ CLEANADD=\
   $(HTMLDOCFILESALL) \
   groff.aux groff.cp* groff.dvi groff.es* groff.fn* groff.html groff.ky* \
   groff.log groff.ma* groff.op* groff.pdf groff.pg* groff.ps groff.rq* \
-  groff.st* groff.toc groff.tp groff.vr*
+  groff.st* groff.toc groff.tp groff.vr* \
+  examples.stamp
 
 CLEANDIRADD=\
   $(imagedir)
@@ -126,9 +127,19 @@ all: groff $(PROCESSEDDOCFILES) prepare_examples \
 
 html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
 
-prepare_examples: grnexmpl.g groff.css
+prepare_examples: examples.stamp
+
+examples.stamp: grnexmpl.g groff.css gnu.eps
 	test -f grnexmpl.g || cp $(srcdir)/grnexmpl.g .
 	test -f groff.css || cp $(srcdir)/groff.css .
+	if test ! -f gnu.eps; then \
+	  if test -f $(srcdir)/gnu.eps; then \
+	    cp $(srcdir)/gnu.eps .; \
+	  elif test -f $(top_builddir)/contrib/pdfmark/gnu.eps; then \
+	    cp $(top_builddir)/contrib/pdfmark/gnu.eps .; \
+	  fi; \
+	fi
+	echo timestamp > $@
 
 groff: groff.texinfo
 	$(MAKEINFO) --enable-encoding -I$(srcdir) $(srcdir)/groff.texinfo
@@ -136,6 +147,7 @@ groff: groff.texinfo
 gnu.eps: gnu.xpm
 	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | \
           $(pnmtops_nosetpage) -noturn -rle >$@
+
 gnu.png: gnu.xpm
 	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | pnmtopng >$@
 
