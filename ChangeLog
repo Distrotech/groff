@@ -1,3 +1,38 @@
+2004-04-30  Werner LEMBERG  <wl@gnu.org>
+
+	AC_TYPE_SIGNAL from current autoconf can fail if CC=g++.
+
+	* aclocal.m4 (GROFF_TYPE_SIGNAL): New function.
+	* configure.ac: Use GROFF_TYPE_SIGNAL, not AC_TYPE_SIGNAL.
+	* configure, src/include/config.hin: Regenerated.
+
+	* PROBLEMS: Updated.
+
+	Update getopt files.
+
+	* src/include/getopt.h, src/libs/libgroff/getopt.c,
+	src/libs/libgroff/getopt1.c: Updated from GNU libc CVS.
+
+	* src/include/getopt_int.h: New file (from GNU libc CVS).
+
+	* src/include/groff-getopt.h: Updated.
+
+	* src/include/Makefile.sub (HDRS): Add getopt_int.h.
+
+
+	* font/devutf8/NOTES: Updated.
+
+2004-04-28  Werner LEMBERG  <wl@gnu.org>
+
+	Bug fix for Win32 relocatable code.  Based on a patch from Keith
+	Marshall.
+
+	* src/libs/libgroff/maxpathname.cpp (PATH_MAX): Test for `_MAX_PATH'
+	also.
+
+	* src/libs/libgroff/relocate.c (DEBUG): Define it conditionally.
+	(searchpath) [_WIN32]: Use `_fullpath', not `realpath'.
+
 2005-04-28  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
 	Correct `gnu.eps' handling for build from distribution tarball, with

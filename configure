@@ -8285,35 +8285,42 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-echo "$as_me:$LINENO: checking return type of signal handlers" >&5
-echo $ECHO_N "checking return type of signal handlers... $ECHO_C" >&6
-if test "${ac_cv_type_signal+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
+echo "$as_me:$LINENO: checking for return type of signal handlers" >&5
+echo $ECHO_N "checking for return type of signal handlers... $ECHO_C" >&6
+   for groff_declaration in \
+     'extern "C" void (*signal (int, void (*)(int)))(int);' \
+     'extern "C" void (*signal (int, void (*)(int)) throw ())(int);' \
+     'void (*signal ()) ();'
+   do
+     cat >conftest.$ac_ext <<_ACEOF
+
+	 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
+
+
 #include <sys/types.h>
 #include <signal.h>
 #ifdef signal
 # undef signal
 #endif
-#ifdef __cplusplus
-extern "C" void (*signal (int, void (*)(int)))(int);
-#else
-void (*signal ()) ();
-#endif
+$groff_declaration
+
 
 int
 main ()
 {
+
+
 int i;
+
+
   ;
   return 0;
 }
+
 _ACEOF
 rm -f conftest.$ac_objext
 if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
@@ -8337,23 +8344,33 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_type_signal=void
+  break
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_type_signal=int
+continue
 fi
 rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-echo "$as_me:$LINENO: result: $ac_cv_type_signal" >&5
-echo "${ECHO_T}$ac_cv_type_signal" >&6
+   done
 
-cat >>confdefs.h <<_ACEOF
-#define RETSIGTYPE $ac_cv_type_signal
+   if test -n "$groff_declaration"; then
+     echo "$as_me:$LINENO: result: void" >&5
+echo "${ECHO_T}void" >&6
+
+cat >>confdefs.h <<\_ACEOF
+#define RETSIGTYPE void
 _ACEOF
 
+   else
+     echo "$as_me:$LINENO: result: int" >&5
+echo "${ECHO_T}int" >&6
 
+cat >>confdefs.h <<\_ACEOF
+#define RETSIGTYPE int
+_ACEOF
+
+   fi
 echo "$as_me:$LINENO: checking struct exception" >&5
 echo $ECHO_N "checking struct exception... $ECHO_C" >&6
    cat >conftest.$ac_ext <<_ACEOF

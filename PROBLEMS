@@ -723,30 +723,6 @@ byacc.
 
 ----------------------------------------------------------------------
 
-* My compiler fails to build src/utils/indxbib/signal.c, giving
-  messages like
-
-    signal.c: cannot convert `int (*)(int)' to `void (*)(int)'
-    for argument `2' to `void (* signal(int, void (*)(int)))(int)'
-
-  I use a C++ compiler for compiling C programs.
-
-The current version of the configure script doesn't handle C++ very
-well if used as a substitute for a C compiler.  In this particular
-case, it failed to recognize the proper return type of signal handlers.
-An easy fix is to manually edit the file `src/include/config.h'
-(created by configure), changing the line
-
-  #define RETSIGTYPE int
-
-to
-
-  #define RETSIGTYPE void
-
-Say `make clean' before restarting compilation.
-
-----------------------------------------------------------------------
-
 * There are many empty `Makefile.dep' files.  Is this a bug?
 
 No.  Real dependency files are created with a `make depend' call.

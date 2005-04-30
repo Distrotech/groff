@@ -266,6 +266,48 @@ extern "C" { void srand(unsigned int); }
      [AC_MSG_RESULT([int])])
    AC_LANG_POP([C++])])
 
+# In April 2005, autoconf's AC_TYPE_SIGNAL is still broken.
+
+AC_DEFUN([GROFF_TYPE_SIGNAL],
+  [AC_MSG_CHECKING([for return type of signal handlers])
+   for groff_declaration in \
+     'extern "C" void (*signal (int, void (*)(int)))(int);' \
+     'extern "C" void (*signal (int, void (*)(int)) throw ())(int);' \
+     'void (*signal ()) ();' 
+   do
+     AC_COMPILE_IFELSE([
+	 AC_LANG_PROGRAM([[
+
+#include <sys/types.h>
+#include <signal.h>
+#ifdef signal
+# undef signal
+#endif
+$groff_declaration
+
+	 ]],
+	 [[
+
+int i;
+
+	 ]])
+       ],
+       [break],
+       [continue])
+   done
+
+   if test -n "$groff_declaration"; then
+     AC_MSG_RESULT([void])
+     AC_DEFINE([RETSIGTYPE], [void],
+       [Define as the return type of signal handlers
+	(`int' or `void').])
+   else
+     AC_MSG_RESULT([int])
+     AC_DEFINE([RETSIGTYPE], [int],
+       [Define as the return type of signal handlers
+	(`int' or `void').])
+   fi])
+
 AC_DEFUN([GROFF_SYS_NERR],
   [AC_LANG_PUSH([C++])
    AC_MSG_CHECKING([for sys_nerr in <errno.h>, <stdio.h>, or <stdlib.h>])

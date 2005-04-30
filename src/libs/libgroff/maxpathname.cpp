@@ -52,7 +52,11 @@ size_t path_name_max()
 #  ifdef MAX_PATH
 #   define PATH_MAX MAX_PATH
 #  else /* !MAX_PATH */
-#   define PATH_MAX 255
+#   ifdef _MAX_PATH
+#    define PATH_MAX _MAX_PATH
+#   else /* !_MAX_PATH */
+#    define PATH_MAX 255
+#   endif /* !_MAX_PATH */
 #  endif /* !MAX_PATH */
 # endif /* !MAXPATHLEN */
 #endif /* !PATH_MAX */

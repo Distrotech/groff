@@ -35,7 +35,9 @@
 #endif
 
 #define INSTALLPATHLEN (sizeof(INSTALLPATH) - 1)
-#define DEBUG 0
+#ifndef DEBUG
+# define DEBUG 0
+#endif
 
 extern "C" const char *program_name;
 
@@ -82,7 +84,11 @@ char *searchpath(const char *name, const char *pathp)
   // or if NAME is found in the current directory.
   if (!access (name, F_OK)) {
     path = new char[path_name_max()];
+#ifdef _WIN32
+    path = _fullpath(path, name, path_name_max());
+#else
     path = realpath(name, path);
+#endif
 #if DEBUG
     fprintf(stderr, "searchpath: found `%s'\n", path);
 #endif
@@ -167,7 +173,7 @@ void set_current_prefix()
 # if DEBUG
   fprintf(stderr, "curr_prefix: %s\n", curr_prefix);
 # endif /* DEBUG */
-#else /* _WIN32 */
+#else /* !_WIN32 */
   curr_prefix = searchpath(program_name, getenv("PATH"));
   if (!curr_prefix && !strchr(program_name, '.')) {	// try with extensions
     pathextstr = strsave(getenv("PATHEXT"));
@@ -178,7 +184,7 @@ void set_current_prefix()
   }
   if (!curr_prefix)
     return;
-#endif /* _WIN32 */
+#endif /* !_WIN32 */
   msw2posixpath(curr_prefix);
 #if DEBUG
   fprintf(stderr, "curr_prefix: %s\n", curr_prefix);
