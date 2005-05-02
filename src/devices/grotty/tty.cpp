@@ -309,7 +309,7 @@ void tty_printer::make_underline(int w)
       int n = w / font::hor;
       for (int i = 0; i < n; i++)
 	putchar('_');
-      for (int i = 0; i < n; i++)
+      for (int j = 0; j < n; j++)
 	putchar('\b');
     }
   }

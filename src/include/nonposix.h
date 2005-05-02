@@ -65,6 +65,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 #  define dup2(f1,f2)	_dup2(f1,f2)
 #  define close(f)	_close(f)
 #  define isatty(f)	_isatty(f)
+#  define access(p,m)	_access(p,m)
 # endif
 # define SET_BINARY(f)	do {if (!isatty(f)) setmode(f,O_BINARY);} while(0)
 # define FOPEN_RB	"rb"

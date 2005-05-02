@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1992, 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1992, 2000, 2001, 2002, 2005 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -56,6 +56,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #ifndef O_RDONLY
 #define O_RDONLY 0
+#endif
+
+#ifndef F_OK
+#define F_OK 0
 #endif
 
 #ifndef HAVE_ISATTY

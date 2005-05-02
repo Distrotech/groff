@@ -9,6 +9,15 @@
 	src/include/Makefile.sub, src/libs/libgroff/getopt.c,
 	src/libs/libgroff/getopt1.c: Revert to previous version.
 
+
+	* src/include/nonposix.h (access) [_MSC_VER]: New macro.
+
+	* src/include/posix.h (F_OK): Define conditionally.
+
+	* src/devices/grotty/tty.cpp (tty_printer::make_underline): Use
+	different variable name in second `for' loop to avoid MSVC compiler
+	problem.
+
 2004-04-30  Werner LEMBERG  <wl@gnu.org>
 
 	AC_TYPE_SIGNAL from current autoconf can fail if CC=g++.
@@ -18,6 +27,7 @@
 	* configure, src/include/config.hin: Regenerated.
 
 	* PROBLEMS: Updated.
+
 
 	Update getopt files.
 
