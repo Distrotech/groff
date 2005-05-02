@@ -40,18 +40,25 @@
 # We need both 'grep' and 'sed' programs, to parse script options,
 # and we also need 'cat', to display help and some error messages,
 # so ensure they are all installed, before we continue.
+# (Again, note that we first check the status from 'type', BEFORE
+#  we attempt to use the result, because Cygwin's 'ash' uses 'stdout'
+#  instead of 'stderr', to display its 'not found' message).
 #
-  CAT=`exec 2>$NULLDEV ; set :\`type cat\` ; eval echo '$'$#`
-  GREP=`exec 2>$NULLDEV ; set :\`type grep\` ; eval echo '$'$#`
-  SED=`exec 2>$NULLDEV ; set :\`type sed\` ; eval echo '$'$#`
+  CAT=':' GREP=':' SED=':'
+  type cat >$NULLDEV 2>&1 && CAT=`set :\`type cat\` ; eval echo '$'$#`
+  type grep >$NULLDEV 2>&1 && GREP=`set :\`type grep\` ; eval echo '$'$#`
+  type sed >$NULLDEV 2>&1 && SED=`set :\`type sed\` ; eval echo '$'$#`
 #
 # Another fundamental requirement is the 'groff' program itself;
+# we will first perform a PATH search to locate this;  however,
 # we will prefer any version existing in a specified GROFF_BIN_DIR,
 # or, if unspecified, the installed location of 'groff' programs;
-# (we DO NOT use a PATH search, to locate 'groff').
+# (this will override the result of the initial PATH search).
 #
-  GBIN=${GROFF_BIN_DIR-"@GROFF_BIN_DIR@"}
-  GROFF=`exec 2>$NULLDEV ; set :\`type $GBIN/groff\` ; eval echo '$'$#`
+  GROFF=':'
+  type groff >$NULLDEV 2>&1 && GROFF=`set :\`type groff\` ; eval echo '$'$#`
+  type ${GROFF_BIN_DIR="@GROFF_BIN_DIR@"}/groff >$NULLDEV 2>&1 \
+    && GROFF=`set :\`type $GROFF_BIN_DIR/groff\` ; eval echo '$'$#`
 #
 # If one or more of these is missing, diagnose and bail out.
 #
@@ -342,15 +349,15 @@
 #   In order to correctly resolve 'pdfmark' references,
 #   we need to have both the 'awk' and 'diff' programs available.
 #
-    NO=''
-    set ${GROFF_AWK_INTERPRETER-"@GROFF_AWK_INTERPRETERS@"}
+    NO='' AWK=':'
+    eval set ${GROFF_AWK_INTERPRETER-"@GROFF_AWK_INTERPRETERS@"}
     while test $# -gt 0
     do
-      AWK=`exec 2>$NULLDEV ; set :\`type $1\` ; eval echo '$'$#`
+      type $1 >$NULLDEV 2>&1 && AWK=`set :\`type $1\` ; eval echo '$'$#`
       test "$AWK" = ":" || set "$AWK"
       shift
     done
-    DIFF=`exec 2>$NULLDEV ; set :\`type diff\` ; eval echo '$'$#`
+    type diff >$NULLDEV 2>&1 && DIFF=`set :\`type diff\` ; eval echo '$'$#`
     test "$AWK" = ":" && echo >&2 "$NOPROG 'awk' in PATH" && NO="$NO 'awk'"
     test "$DIFF" = ":" && echo >&2 "$NOPROG 'diff' in PATH" && NO="$NO 'diff'"
     if test -n "$NO"
@@ -436,10 +443,11 @@
 # from which the PDF output will be compiled -- but before proceding further ...
 # let's make sure we have a GhostScript interpreter to convert them!
 #
-  set ${GROFF_GHOSTSCRIPT_INTERPRETER-"@GROFF_GHOSTSCRIPT_INTERPRETERS@"}
+  GS=':'
+  eval set ${GROFF_GHOSTSCRIPT_INTERPRETER-"@GROFF_GHOSTSCRIPT_INTERPRETERS@"}
   while test $# -gt 0
   do
-    GS=`exec 2>$NULLDEV ; set :\`type $1\` ; eval echo '$'$#`
+    type $1 >$NULLDEV 2>&1 && GS=`set :\`type $1\` ; eval echo '$'$#`
     test "$GS" = ":" || set "$GS"
     shift
   done
