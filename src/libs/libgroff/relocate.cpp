@@ -167,9 +167,9 @@ void set_current_prefix()
   // using GetModuleFileName on MS-Windows,
   // and searching along PATH on other systems.
 #ifdef _WIN32
-  int len = GetModuleFileName(0, curr_prefix, MAX_PATH);
+  int len = GetModuleFileName(0, curr_prefix, path_name_max());
   if (len)
-    len = GetShortPathName(curr_prefix, curr_prefix, MAX_PATH);
+    len = GetShortPathName(curr_prefix, curr_prefix, path_name_max());
 # if DEBUG
   fprintf(stderr, "curr_prefix: %s\n", curr_prefix);
 # endif /* DEBUG */

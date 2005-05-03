@@ -37,6 +37,8 @@ size_t path_name_max()
 
 #else /* not _POSIX_VERSION */
 
+#include <stdlib.h>
+
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 #else /* not HAVE_DIRENT_H */
