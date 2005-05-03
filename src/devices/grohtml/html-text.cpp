@@ -284,7 +284,7 @@ void html_text::flush_text (void)
     }
     p = stackptr;
     stackptr = stackptr->next;
-    free(p);
+    delete p;
   }
   lastptr = NULL;
 }
@@ -374,7 +374,7 @@ void html_text::do_push (tag_definition *p)
 
 void html_text::push_para (HTML_TAG t, void *arg, html_indent *in)
 {
-  tag_definition *p=(tag_definition *)malloc(sizeof(tag_definition));
+  tag_definition *p= new tag_definition;
 
   p->type         = t;
   p->arg1         = arg;
@@ -394,7 +394,7 @@ void html_text::push_para (HTML_TAG t)
 
 void html_text::push_para (color *c)
 {
-  tag_definition *p=(tag_definition *)malloc(sizeof(tag_definition));
+  tag_definition *p = new tag_definition;
 
   p->type         = COLOR_TAG;
   p->arg1         = NULL;
@@ -534,7 +534,7 @@ char *html_text::shutdown (HTML_TAG t)
 	lastptr = NULL;
       if (p->indent != NULL)
 	delete p->indent;
-      free(p);
+      delete p;
     }
 
     /*
@@ -547,7 +547,7 @@ char *html_text::shutdown (HTML_TAG t)
 	push_para(temp->type, temp->arg1, temp->indent);
       p    = temp;
       temp = temp->next;
-      free(p);
+      delete p;
     }
   }
   return arg;
@@ -879,7 +879,7 @@ void html_text::remove_def (tag_definition *t)
       if (l->next == NULL)
 	lastptr = l;
     }
-    free(p);
+    delete p;
   }
 }
 
@@ -945,7 +945,7 @@ int html_text::remove_break (void)
       if (l->next == NULL)
 	lastptr = l;
     }
-    free(p);
+    delete p;
   }
   /*
    *  now determine whether text was issued before <br>

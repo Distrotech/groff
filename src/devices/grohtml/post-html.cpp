@@ -362,7 +362,7 @@ char_block::char_block()
 char_block::char_block(int length)
 : used(0), next(NULL)
 {
-  buffer = (char *)malloc(max(length, char_block::SIZE));
+  buffer = new char[max(length, char_block::SIZE)];
   if (buffer == NULL)
     fatal("out of memory error");
 }
@@ -370,7 +370,7 @@ char_block::char_block(int length)
 char_block::~char_block()
 {
   if (buffer != NULL)
-    free(buffer);
+    a_delete buffer;
 }
 
 class char_buffer {
@@ -1688,16 +1688,16 @@ assert_state::~assert_state ()
   while (xhead != NULL) {
     t = xhead;
     xhead = xhead->next;
-    free((void *)t->val);
-    free((void *)t->id);
-    free(t);
+    a_delete t->val;
+    a_delete t->id;
+    delete t;
   }
   while (yhead != NULL) {
     t = yhead;
     yhead = yhead->next;
-    free((void *)t->val);
-    free((void *)t->id);
-    free(t);
+    a_delete t->val;
+    a_delete t->id;
+    delete t;
   }
 }
 
@@ -1724,7 +1724,7 @@ void assert_state::add (assert_pos **h,
     compare(t, v, f, l);
   else {
     if (t == NULL) {
-      t = (assert_pos *)malloc(sizeof(struct assert_pos));
+      t = new assert_pos;
       t->next = *h;
       (*h) = t;
     }
@@ -1740,9 +1740,9 @@ void assert_state::add (assert_pos **h,
     }
     t->id = i;
     t->val = v;
-    a_delete c;
-    a_delete f;
-    a_delete l;
+    a_delete (char *)c;
+    a_delete (char *)f;
+    a_delete (char *)l;
   }
 }
 
@@ -1797,7 +1797,7 @@ void assert_state::close (const char *c)
 const char *replace_negate_str (const char *before, char *after)
 {
   if (before != NULL)
-    a_delete before;
+    a_delete (char *)before;
 
   if (strlen(after) > 0) {
     int d = atoi(after);
@@ -1818,7 +1818,7 @@ const char *replace_negate_str (const char *before, char *after)
 const char *replace_str (const char *before, const char *after)
 {
   if (before != NULL)
-    a_delete before;
+    a_delete (char *)before;
   return after;
 }
 
@@ -4725,7 +4725,7 @@ static char *get_str (const char *s, char **n)
   while ((s[i] != (char)0) && (s[i] != ',') && (s[i] != ']'))
     i++;
   if (i>0) {
-    v = (char *)malloc(i+1);
+    v = new char[i+1];
     memcpy(v, s, i+1);
     v[i] = (char)0;
     if (s[i] == ',')

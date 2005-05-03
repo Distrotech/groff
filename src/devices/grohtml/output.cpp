@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003, 2004, 2005 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote output.cpp
  *  but it owes a huge amount of ideas and raw code from
@@ -67,7 +67,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 word::word (const char *w, int n)
   : next(0)
 {
-  s = (char *)malloc(n+1);
+  s = new char[n+1];
   strncpy(s, w, n);
   s[n] = (char)0;
 }
@@ -78,7 +78,7 @@ word::word (const char *w, int n)
 
 word::~word ()
 {
-  free(s);
+  a_delete s;
 }
 
 /*

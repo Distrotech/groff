@@ -63,7 +63,7 @@ void tabs::delete_list (void)
   while (p != NULL) {
     q = p;
     p = p->next;
-    free(q);
+    delete q;
   }
   tab = NULL;
 }
@@ -150,10 +150,10 @@ void tabs::init (const char *s)
     while ((*s != (char)0) && !isspace(*s))
       s++;
     if (last == NULL) {
-      tab = (tab_position *)malloc(sizeof(tab_position));
+      tab = new tab_position;
       last = tab;
     } else {
-      last->next = (tab_position *)malloc(sizeof(tab_position));
+      last->next = new tab_position;
       last = last->next;
     }
     last->alignment = align;
@@ -253,7 +253,7 @@ html_table::~html_table ()
   c = columns;
   while (columns != NULL) {
     columns = columns->next;
-    free(c);
+    delete c;
     c = columns;
   }
 }
@@ -269,7 +269,7 @@ void html_table::remove_cols (cols *c)
   while (c != NULL) {
     p = c;
     c = c->next;
-    free(p);
+    delete p;
   }
 }
 
@@ -571,7 +571,7 @@ int html_table::insert_column (int coln, int hstart, int hend, char align)
       (l->next->left < hend))
     return FALSE;  // new column bumps into next one
 
-  n = (cols *)malloc(sizeof(cols));
+  n = new cols;
   if (l == NULL) {
     n->next = columns;
     columns = n;
