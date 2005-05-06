@@ -1688,15 +1688,15 @@ assert_state::~assert_state ()
   while (xhead != NULL) {
     t = xhead;
     xhead = xhead->next;
-    a_delete t->val;
-    a_delete t->id;
+    a_delete (char *)t->val;
+    a_delete (char *)t->id;
     delete t;
   }
   while (yhead != NULL) {
     t = yhead;
     yhead = yhead->next;
-    a_delete t->val;
-    a_delete t->id;
+    a_delete (char *)t->val;
+    a_delete (char *)t->id;
     delete t;
   }
 }
