@@ -90,4 +90,26 @@ being maintained.  Users are encouraged to update to elvis 2.2h or
 higher, and to use elvis_syntax.new for mom highlighting.
 
 I'll be very happy if someone decides to send me syntax highlighting
-rules for vim and emacs. :)
+rules for emacs. :)
+
+***mom.vim***
+
+Christian V. J. Brüssow has kindly contributed a set of mom syntax
+highlighting rules for use with vim.  Copy the file to your
+~/.vim/syntax directory, then, if your vim isn't already set up to
+do so, enable mom syntax highlighting with
+
+    :syntax enable
+
+or
+
+    :syntax on
+
+Please note: I don't use vim, so I won't be making changes to this
+file myself.  Christian Brüssow is the maintainer of the ruleset,
+which is available on the Web at
+
+    http://www.cvjb.de/comp/vim/mom.vim
+
+Contact Christian (cvjb@cvjb.de) if you have any suggestions or
+requests.

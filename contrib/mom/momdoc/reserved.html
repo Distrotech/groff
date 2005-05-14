@@ -272,6 +272,8 @@ p                       Output line horiz position at end of
 #REMOVE                 Used in LIST OFF cleanup
 #RESTORE_LEAD           Lead value in effect prior to AUTOLEAD
 #RESTORE_LINE_LENGTH    Restores actual line length in RULE
+#RESTORE_LN_NUMBER      Start linenumbering again with stored
+                        #NEXT_LN? (toggle)
 #RESTORE_PT_SIZE        Stores current point size (in units) prior
                         to underscore
 #R_INDENT               Value of right indent
@@ -491,42 +493,65 @@ DOC_COVERTITLE      User-defined doc cover title string
 
 Document style
 --------------
-COPYSTYLE   Output style (DRAFT or FINAL)
-DEFAULTS    In START, sets defaults
-DOCTYPE     Kind of doc (DEFAULT, CHAPTER, NAMED, LETTER)
-PAGENUMBER  Page number that appears on 1st page of doc
-PAPER       Paper size (LETTER, LEGAL, A4)
-PRINTSTYLE  Print style (TYPEWRITE or TYPESET)
+COPYSTYLE     Output style (DRAFT or FINAL)
+DEFAULTS      In START, sets defaults
+DOCTYPE       Kind of doc (DEFAULT, CHAPTER, NAMED, LETTER)
+PAGENUMBER    Page number that appears on 1st page of doc
+PAPER         Paper size (LETTER, LEGAL, A4)
+PRINTSTYLE    Print style (TYPEWRITE or TYPESET)
+NUMBER_LINES  Number output lines in the left margin
 
-Document tags
--------------
-ADD_SPACE       Special macro to add space to the top of a pages after
-                page 1; must be preceded by NEWPAGE
-BLOCKQUOTE      Block-indented, quoted text
-COL_BREAK       Breaks and spreads line before invocation; moves to
-                next column on page or 1st col of next page.  An alias
-                of COL_NEXT.
-COL_NEXT        Moves to next column on page or 1st col of next page
-ENDNOTE         Endnote
-ENDNOTES        Output endnotes
-EPIGRAPH        Epigraph before 1st para 
-FINIS           Prints --END--
-FOOTNOTE        Collects footnotes in text for printing at bottom of page
-HEAD            Section title (main heads)
-ITEM            Begin a list item
-LINEBREAK       Break between narrative sections
-LIST            Initialize a list
-PAD_LIST_DIGITS Leave space for two-numeral digit enumerators in a list
-PARAHEAD        Paragraph head
-PP              Paragraph
-QUOTE           Poetic or line for line quotes
-RESET_LIST      Reset digit or alpha list enumerator
-SHIFT_LIST      Move a list over to the right
-START           Prints info collected with doc info macros
-SUBHEAD         Subheads
+Document tags and macros
+------------------------
+ADD_SPACE               Special macro to add space to the top of a pages after
+                        page 1; must be preceded by NEWPAGE
+BIBLIOGRAPHY            Begin a bibliography page
+BIBLIOGRAPHY_TYPE       LIST or PLAIN
+BLOCKQUOTE              Block-indented, quoted text
+COL_BREAK               Breaks and spreads line before invocation; moves to
+                        next column on page or 1st col of next page.  An alias
+                        of COL_NEXT.
+COL_NEXT                Moves to next column on page or 1st col of next page
+ENDNOTE                 Endnote
+ENDNOTE_REFS            Send REFs to endnotes
+ENDNOTES                Output endnotes
+EPIGRAPH                Epigraph before 1st para 
+FINIS                   Prints --END--
+FOOTNOTE                Collects footnotes in text for printing at bottom of page
+FOOTNOTE_REFS           Send REFs to footnotes
+HEAD                    Section title (main heads)
+HYPHENATE_REFS          Turn on/off hyphenation of REF references
+ITEM                    Begin a list item
+LINEBREAK               Break between narrative sections
+LIST                    Initialize a list
+MN                      Margin note
+MN_INIT                 Initialize parameters for margin notes
+NUMBER_LINES            Number text lines
+NUMBER_BLOCKQUOTE_LINES Number blockquote lines
+NUMBER_QUOTE_LINES      Number quote lines
+PAD_LIST_DIGITS         Leave space for two-numeral digit enumerators
+                        in a list
+PARAHEAD                Paragraph head
+PP                      Paragraph
+QUOTE                   Poetic or line for line quotes
+REF                     Wrapper around FOOTNOTE or ENDNOTE, depending
+                        on FOOTNOTE_REFS or ENDNOTE_REFS
+REF(                    Begin embedded reference, parens
+REF)                    End embedded reference, parens
+REF[                    Begin embedded reference, square brackets
+REF]                    End embedded reference, square brackets
+REF{                    Begin embedded reference, braces
+REF}                    End embedded reference, braces
+REF_INDENT              Amount of 2nd line indent of references for
+                        footnote, endnote or bibliography refs
+RESET_LIST              Reset digit or alpha list enumerator
+SHIFT_LIST              Move a list over to the right
+START                   Sets doc defaults and prints info collected
+                        with doc info macros
+SUBHEAD                 Subheads
 
 Headers/footers
---------------
+---------------
 BREAK_QUOTE          Manually break a footnoted quote that crosses
                      a page/column
 DO_FOOTER            Prints footer (after footnote processing, if any)
@@ -580,34 +605,6 @@ DOC_COVER_ADVANCE        Vertical place on page to start outputting
                          doc cover material
 DOC_COVER_LEAD           Lead in/decrease for doc cover pages
 
-***Endnotes***
-
-ENDNOTE_LEAD                Leading for endnotes page
-ENDNOTE_PARA_INDENT         First line indent of paras in multi-para
-                            endnotes
-ENDNOTE_PARA_SPACE          Whether to space paras in multi-para endnotes
-ENDNOTE_PT_SIZE             Base point size for endnotes page
-ENDNOTE_STRING              Endnotes page head
-ENDNOTE_STRING_CAPS         Capitalize the endnotes string
-ENDNOTE_STRING_UNDERSCORE   Underscoring of endnotes page head
-ENDNOTE_TITLE               Endnotes identifying title
-ENDNOTE_TITLE_UNDERSCORE    Underscoring of endnotes identifying title
-ENDNOTE_NUMBERS_ALIGN_RIGHT Hang endnote numbers and align right
-ENDNOTE_NUMBERS_ALIGN_LEFT  Don't hang endnote numbers and align left
-ENDNOTES_ALLOWS_HEADERS     Page headers on endnotes pages? (toggle)
-ENDNOTES_FIRST_PAGENUMBER   Page number to appear on page 1 of endnotes
-                            pages
-ENDNOTES_HDRFTR_CENTER      Print header/footer centre string on endnotes
-                            pages?
-ENDNOTES_HEADER_CENTER      Print header centre string on endnotes pages?
-ENDNOTES_FOOTER_CENTER      Print footer centre string on endnotes pages?
-ENDNOTES_NO_COLUMNS         Turn columnar mode off for endnotes pages
-ENDNOTES_NO_FIRST_PAGENUM   Don't print a pagenumber on page 1 of
-                            endnotes.
-ENDNOTES_PAGENUM_STYLE      Set numbering style for endnotes pages page
-                            numbers
-SINGLESPACE_ENDNOTES        Single space TYPEWRITE endnotes
-
 ***Epigraphs and finis***
 
 EPIGRAPH_AUTOLEAD        Autolead value for epigraphs
@@ -617,16 +614,75 @@ FINIS_STRING             What to print when FINIS is invoked
 
 ***Footnotes***
 
-FOOTNOTE_AUTOLEAD        Autolead to use in footnotes
-FOOTNOTE_MARKERS         Turns footnote markers on or off
-FOOTNOTE_MARKER_STYLE    STAR or NUMBER; default=STAR
-FOOTNOTE_RULE_ADJ        # of points to raise footnote rule from its
-                         baseline
-FOOTNOTE_RULE_LENGTH     Length of footnote separator rule
-FOOTNOTE_RULE            Turns printing of fn separator rule on or off;
-                         default is on
-RESET_FOOTNOTE_NUMBER    Reset fn# to 1, or, if arg PAGE, reset
-                         automatically to 1 on every page
+FOOTNOTE_AUTOLEAD             Autolead to use in footnotes
+FOOTNOTE_LINENUMBER_BRACKETS  Brackets for footnote linenumbers
+FOOTNOTE_LINENUMBER_SEPARATOR Separator for footnote linenumbers
+FOOTNOTE_MARKERS              Turns footnote markers on or off
+FOOTNOTE_MARKER_STYLE         STAR or NUMBER; default=STAR
+FOOTNOTE_RULE_ADJ             # of points to raise footnote rule from its
+                              baseline
+FOOTNOTE_RULE_LENGTH          Length of footnote separator rule
+FOOTNOTE_RULE                 Turns printing of fn separator rule on or off;
+                              default is on
+FOOTNOTE_SPACING              Post footnote item spacing
+FOOTNOTES_RUN_ON              Run footnotes on (line numbering mode only)
+RESET_FOOTNOTE_NUMBER         Reset fn# to 1, or, if arg PAGE, reset
+                              automatically to 1 on every page
+RUNON_WARNING                 Utility macro; warns if FOOTNOTES_RUN_ON
+                              was called when fn marker style is STAR or NUMBER
+
+***Endnotes***
+
+ENDNOTE_LEAD                 Leading for endnotes page
+ENDNOTE_LINENUMBER_BRACKETS  Brackets around line numbers identifying
+                             endnotes and text
+ENDNOTE_LINENUMBER_GAP       Amount of space to leave between line
+ENDNOTE_LINENUMBER_SEPARATOR Separator between line numbers identifying
+                             endnotes and the endnote item text
+                             endnotes and text
+ENDNOTE_MARKER_STYLE         NUMBER or LINE
+ENDNOTE_NUMBERS_ALIGN_RIGHT  Hang endnote numbers and align right
+ENDNOTE_NUMBERS_ALIGN_LEFT   Don't hang endnote numbers and align left
+ENDNOTE_PARA_INDENT          First line indent of paras in multi-para
+                             endnotes
+ENDNOTE_PARA_SPACE           Whether to space paras in multi-para endnotes
+ENDNOTE_PT_SIZE              Base point size for endnotes page
+ENDNOTE_STRING               Endnotes page head
+ENDNOTE_STRING_CAPS          Capitalize the endnotes string
+ENDNOTE_STRING_UNDERSCORE    Underscoring of endnotes page head
+ENDNOTE_TITLE                Endnotes identifying title
+ENDNOTE_TITLE_SPACE          Distance from top of page to endnotest title
+ENDNOTE_TITLE_UNDERSCORE     Underscoring of endnotes identifying title
+ENDNOTES_ALLOWS_HEADERS      Page headers on endnotes pages? (toggle)
+ENDNOTES_FIRST_PAGENUMBER    Page number to appear on page 1 of endnotes
+                             pages
+ENDNOTES_HDRFTR_CENTER       Print header/footer centre string on endnotes
+                             pages?
+ENDNOTES_HEADER_CENTER       Print header centre string on endnotes pages?
+ENDNOTES_FOOTER_CENTER       Print footer centre string on endnotes pages?
+ENDNOTES_NO_COLUMNS          Turn columnar mode off for endnotes pages
+ENDNOTES_NO_FIRST_PAGENUM    Don't print a pagenumber on page 1 of
+                             endnotes.
+ENDNOTES_PAGENUM_STYLE       Set numbering style for endnotes pages page
+                             numbers
+SINGLESPACE_ENDNOTES         Single space TYPEWRITE endnotes
+
+***Bibliographies***
+
+BIBLIOGRAPHY_ALLOWS_HEADERS    Allow headers on bib pages
+BIBLIOGRAPHY_FIRST_PAGENUMBER  Starting page number for bibliographies
+BIBLIOGRAPHY_HDRFTR_CENTER     Header/footer center string for bib pages
+BIBLIOGRAPHY_LEAD              Base lead of bib pages
+BIBLIOGRAPHY_NO_COLUMNS        De-columnize bibliographies
+BIBLIOGRAPHY_NO_FIRST_PAGENUM  Don't print a page number on the first
+                               page of bibliographies
+BIBLIOGRAPHY_PAGENUM_STYLE     Format for bib pages page numbering
+BIBLIOGRAPHY_PT_SIZE           Base point size for bib pages
+BIBLIOGRAPHY_SPACING           Post bib entry space
+BIBLIOGRAPHY_STRING            String for bib title
+BIBLIOGRAPHY_STRING_CAPS       Capitalize bib title string
+BIBLIOGRAPHY_STRING_UNDERSCORE Underscore bib title string
+SINGLESPACE_BIBLIOGRAPHY       Singlespace bibs if PRINTSTYLE TYPEWRITE
 
 ***Headers and footers***
 
@@ -704,6 +760,12 @@ INDENT_FIRST_PARAS       Indent 1st paras? (doc default=not indented)
 PARA_INDENT              Size of para indent
 PARA_SPACE               Put a line space before paras
 PP_FONT                  Overall doc font
+
+***Quotes***
+
+Q_FITS                  Utility macro for DO_QUOTE
+Q_NOFIT                 Utility macro for DO_QUOTE
+QUOTE_AUTOLEAD          Leading of (block)quotes
 
 ***Line/section breaks***
 
@@ -825,7 +887,11 @@ DO_EPIGRAPH          Outputs epigraphs with space adjustments before
                      and after
 FN_OVERFLOW_TRAP     Fixed at B_MARGIN; if footnotes run longer than
                      B_MARGIN, diverts excess into FN_OVERFLOW
+GET_ROMAN_INDENT     Figures out amount of space to reserve
+                     for roman numerals in lists
 HDRFTR_RULE          Prints rule under header or over footer
+MN_OVERFLOW_TRAP     Trap-invoked macro to collect margin note
+                     overflows
 PRINT_FOOTNOTE_RULE  An alias of PRINT_FOOTNOTE; prints footnote
                      separator rule
 PRINT_HDRFTR         Prints header/footer (trap invoked)
@@ -837,6 +903,9 @@ PROCESS_SHIM         Calculates #SHIM when \n(.d is lower on the
 PROCESS_FN_IN_DIVER  Processes footnotes gathered in a diversion (called
                      at page/column breaks)
 REMOVE_INDENT        Removes indents set with CHECK_INDENT
+Q_FITS               Handles spacing of quotes when quote fits on the page
+Q_NOFIT              Handles spacing of quotes when quote does not fit on
+                     the page
 QUIT_LISTS           Exit lists cleanly and completely
 SET_LIST_INDENT      Restore indent of a prev. level of list
 SHIM                 Advance to next "legal" baseline
@@ -855,18 +924,21 @@ VFP_CHECK            Trap-sprung macro 1 legal baseline higher than
 
 +++DIVERSIONS+++
 
-B_QUOTE       Block (indented) quote text
-CLOSING       Closing (i.e. Yours truly,)
-EPI_TEXT      Epigraph text
-END_NOTES     Endnotes text
-FN_IN_DIVER   Footnotes gathered from inside a diversion
-FN_OVERFLOW   Excess footnotes when B_MARGIN is reached
-FOOTNOTES     Text of footnotes
-GREETING      Full salutation (e.g. Dear John Smith,)
-LETTERHEAD&lt;n&gt; Date, addresser, addressee or greeting;
-              &lt;n&gt; is from 1 to 4, supplied by #FIELD
-P_QUOTE       Line for line (poetic) quote text
-TOC_ENTRIES   TOC entries
+B_QUOTE           Block (indented) quote text
+CLOSING           Closing (i.e. Yours truly,)
+EPI_TEXT          Epigraph text
+END_NOTES         Endnotes text
+FN_IN_DIVER       Footnotes gathered from inside a diversion
+FN_OVERFLOW       Excess footnotes when B_MARGIN is reached
+FOOTNOTES         Text of footnotes
+GREETING          Full salutation (e.g. Dear John Smith,)
+LETTERHEAD&lt;n&gt;     Date, addresser, addressee or greeting;
+                  &lt;n&gt; is from 1 to 4, supplied by #FIELD
+P_QUOTE           Line for line (poetic) quote text
+RUNON_FOOTNOTES   Special diversion for run-on footnotes
+RUNON_FN_IN_DIVER Special diversion for run-on footnotes inside
+                  (block)quotes
+TOC_ENTRIES       TOC entries
 
 +++NUMBER REGISTERS+++
 
@@ -874,10 +946,15 @@ TOC_ENTRIES   TOC entries
                            doesn't fall below what should be the
                            correct last printed line of running
                            text
+#ADD_BREAK                 Instructs FOOTNOTEs and ENDNOTEs to add
+                           a break afer processing a footnote if
+                           we're not in fill mode
+#ADJ_BIB_LEAD              Adjust BIB_LEAD? (toggle)
 #ADJ_DOC_LEAD              Adjust DOC_LEAD? (toggle)
 #ADJ_TOC_LEAD              Adjust TOC_LEAD? (toggle)
 #ARG_NUM                   Keeps track of number of args passed to a
                            macro
+#ARGS_TO_LIST              Was LIST passed some args? (toggle)
 #AUTHOR_[n]                Strings passed to AUTHOR
 #AUTHOR_LINES              # of lines of authors in doc header; odd=0
                            even=1
@@ -892,7 +969,29 @@ TOC_ENTRIES   TOC entries
 #BMARG                     Position of unvarying bottom margin
                            during doc processing; required for
                            collecting footnotes inside diversions
+#BIB_ALLOWS_HEADERS        Put headers on bib pages? (toggle)
+#BIB_ALLOWS_HEADERS_ALL    Put headers on all bib pages? (toggle)
+#BIB_FIRST_PAGE            Tells PRINT_PAGE_NUMBER about bibliography
+                           first page number
+#BIB_FIRST_PN              Starting pagenumber for bibliographies
+#BIB_HDRFTR_CENTER         Put a center string in bib page headers?
+                           (toggle)
+#BIB_LEAD                  Bibliography lead, expressed in points
+#BIB_LIST                  Output bibs in list style? (toggle)
+#BIB_NO_COLS               De-columnize bibliographies? (toggle)
+#BIB_NO_FIRST_PN           Put a page number on the first page of
+                           bibliographies? (toggle)
+#BIB_SINGLESPACE           Single-space TYPEWRITE bibliographies? (toggle)
+#BIB_SPACE                 Post item space for bibliography pages
+#BIB_STRING_CAPS           Capitalize bib title? (toggle)
+#BIB_STRING_UNDERSCORE     Underscore bib title? 0=no; 1=yes; 2=double
+#BIB_PS                    Base point size for bibliography pages expressed
+                           in points
+#BIBLIOGRAPHY              Are we doing a bib page? (toggle)
+#BQ_AUTOLEAD               Register created by BLOCKQUOTE_AUTOLEAD
+#BQ_LEAD                   Leading of blockquotes
 #BQUOTE_COLOR              Colored blockquotes? (toggle)
+#BQUOTE_LN                 Number blockquotes? (toggle)
 #BROKEN_QUOTE              Did we invoke BREAK_QUOTE? (toggle)
 #CAP_HEIGHT_ADJUST         Tallest cap height of strings LEFT, CENTER,
                            and RIGHT in footers; used to place rule
@@ -936,8 +1035,12 @@ dc                         "mark" register for document columns
 #DIVER_FN                  Register that tells FOOTNOTE whether to
                            "move" or "defer" a footnote collected
                            inside a diversion
+#DEFER_BIB_SPACING         Tells DEFAULTS to do BIBLIOGRAPHY_SPACING
+                           if it was called before START
 #DEFER_PAGINATION          Tells COLLATE to restore pagination (from
                            RESTORE_PAGINATION
+#DELAY_SHIM                Instructs DO_QUOTE to delay SHIM when quote
+                           falls at the top of a page
 #DEPTH_1                   Doc header depth with lead adjustment
                            (#DOCHEADER_LINES * #DOCHEADER_LEAD)
 #DEPTH_2                   Doc header depth without lead adjustment
@@ -987,17 +1090,31 @@ dc                         "mark" register for document columns
 #DONE_ONCE                 Keeps track of how many times footnotes
                            have been collected inside the same diversion
 #DONT_RULE_ME              Rule this (apparent) first footnote? (toggle)
+#DIVER_LN_OFF              Turn linenumbering off in (block)quotes?
+                           (toggle)
 #DRAFT_WITH_PAGENUM        Are we attaching draft/revision info to page
                            number? (toggle)
 #EM_ADJUST                 Amount to raise \(em at END
 #EN_ALLOWS_HEADERS         Put page headers on endnotes pages? (toggle)
 #EN_ALLOWS_HEADERS_ALL     Put page headers on all endnotes pages?
                            (toggle)
+#EN_BQ_AUTOLEAD            Register created by EN_BLOCKQUOTE_AUTOLEAD
+#EN_BQ_LEAD                Leading of blockquotes on endnotes pages
+#EN_FIGURE_SPACE           Width of \0, for use with formatting endnotes
 #EN_FIRST_PAGE             Tells PRINT_PAGE_NUMBER about endnotes
                            first page number
 #EN_FIRST_PN               Page number that appears on page 1 of
                            endnotes pages.
+#EN_HDRFTR_CENTER          Should we print centre string of
+                           headers/footers on endnotes pages? (toggle)
 #EN_LEAD                   Lead of endnotes
+#EN_LN_BRACKETS            Are we using brackets for line-numbered
+                           endnotes (toggle)
+#EN_LN_SEP                 Are we using a separator for line-numbered
+                           endnotes (toggle)
+#EN_MARK                   \n(ln when \*[EN-MARK] is called
+#EN_MARK_2                 \n(ln when ENDNOTE is called
+#EN_MARKER_STYLE           1=NUMBER; 2=LINE
 #EN_NO_COLS                Do not set endnotes in columns? (toggle)
 #EN_NO_FIRST_PN            Put pagenumber on 1st page of endnotes?
                            (toggle)
@@ -1013,6 +1130,9 @@ dc                         "mark" register for document columns
                            endnotes
 #EN_PP_SPACE               Space multi-paras in endnotes? (toggle)
 #EN_PS                     ps of endnotes
+#EN_Q_AUTOLEAD             Register created by EN_QUOTE_AUTOLEAD
+#EN_Q_LEAD                 Leading of quotes on endnotes pages
+#EN_REF                    Put REFs in endnotes? (toggle)
 #EN_SINGLESPACE            Single space endnotes pages? (toggle)
 #EN_STRING_CAPS            Should ENDNOTES capitalize the endnotes
                            string? (toggle)
@@ -1024,9 +1144,8 @@ dc                         "mark" register for document columns
 #END_QUOTE                 For PP=0 indenting; did we just end a quote?
                            (toggle)
 #ENDNOTE                   Are we in an endnote? (toggle)
+#ENDNOTE_REFS              Are REFs going to endnotes? (toggle)
 #ENDNOTES                  Are we in an endnote (for FOOTERs; toggle)
-#EN_HDRFTR_CENTER          Should we print centre string of
-                           headers/footers on endnotes pages? (toggle)
 #EPI_ACTIVE                Are we in an epigraph? (toggle)
 #EPI_COLOR                 Colored epigraphs? (toggle)
 #EPI_DEPTH                 Depth of epigraph from first baseline to
@@ -1078,6 +1197,12 @@ dc                         "mark" register for document columns
 #FN_L_INDENT               Left indent of INDENT LEFT in footnotes
 #FN_LINES                  Number of lines in fn; used to calculate
                            fn depth
+#FN_LN_BRACKETS            Are footnote linenumber brackets being used?
+                           (toggle)
+#FN_LN_SEP                 Is a footnote linenumber separator being used?
+                           (toggle)
+#FN_MARK                   \n(ln when \*[FN-MARK] is called
+#FN_MARK_2                 \n(nl when FOOTNOTE is called
 #FN_MARKERS                Print footnote markers? (toggle)
 #FN_MARKER_STYLE           1=STAR; 2=NUMBER
 #FN_NUMBER                 The footnote number attached to running text
@@ -1087,10 +1212,12 @@ dc                         "mark" register for document columns
 #FN_OVERFLOW_TRAP_POS      The register that sets the position of
                            trap FN_OVERFLOW_TRAP.
 #FN_R_INDENT               Right indent of INDENT RIGHT in footnotes
+#FN_REF                    Put REFs in footnotes? (toggle)
 #FN_RULE_ADJ               # of points to raise footnote separator from
                            its baseline
 #FN_RULE_LENGTH            Length of footnote separator rule
 #FN_RULE                   Print fn rule? (toggle)
+#FN_SPACE                  Post footnote space
 #FN_WAS_DEFERED            Tells HEADER about a deferred footnote
 #FOOTER_DIFF               In TRAPS, the difference between the
                            original #B_MARGIN and #VISUAL_B_MARGIN
@@ -1155,25 +1282,32 @@ dc                         "mark" register for document columns
 #HOW_MANY                  Number of blank pages to output
 #IGNORE                    Should we ignore this macro? Set to 1 in
                            TYPEWRITE.
+#IN_BIB_LIST               Tells ITEM we're doing a bibliography in
+                           list style
 #INDENT_FIRST_PARAS        Indent first paras? (toggle)
 #INDENT_FIRSTS             Tells footnotes to leave INDENT_FIRST_PARAS
                            alone if it's on for running text.
 #ITALIC_MEANS_ITALIC       For TYPEWRITE.  1=yes; 0=no
-#LEFT_CAP_HEIGHT           Cap height of left string in headers/footers
-#LEGAL_BASELINE            Calculates vet. position of next legal
-                           baseline in SHIM
-#LETTER_STYLE              1=BUSINESS 2=PERSONAL
-#LINEBREAK                 Did we have a linebreak? (toggle)
-#LINEBREAK_COLOR           Colored linebreak? (toggle)
-#LINES_PER_PAGE            # of lines (at DOC_LEAD) that fit on
-                           page after #B_MARGIN is set
 #L_LENGTH_FOR_EPI          Stores line length at top of doc for use
                            with EPIGRAPH when columns are on
 #L_MARGIN_DIFF             Difference between DOC_L_MARGIN and
                            L_MARGIN
+#LEFT_CAP_HEIGHT           Cap height of left string in headers/footers
+#LEGAL_BASELINE            Calculates vert. position of next legal
+                           baseline in SHIM
+#LETTER_STYLE              1=BUSINESS 2=PERSONAL
+#LINEBREAK                 Did we have a linebreak? (toggle)
+#LINEBREAK_COLOR           Colored linebreak? (toggle)
+#LINENUMBERS               Holds various states of line-numbering when
+                           line numbering is enabled
+#LINES_PER_PAGE            # of lines (at DOC_LEAD) that fit on
+                           page after #B_MARGIN is set
+#LN                        Are line numbers on? (toggle)
 #MISC_&lt;n&gt;            Used to print "next" misc lines in DO_COVER
 #MISC_NUM                  Number of MISC lines
 #MISCS                     =#MISC_NUM in DO_COVER
+#MN_OVERFLOW_LEFT          If 1, left margin note text overflows
+#MN_OVERFLOW_RIGHT         If 1, right margin note text overflows
 #n%_AT_PAGENUM_SET         Page # from n% when PAGENUMBER invoked
 #NEEDS_SPACE               Instruct FOOTNOTE, when called by
                            PROCESS_FN_IN_DIVER, that if the footnote
@@ -1181,6 +1315,8 @@ dc                         "mark" register for document columns
                            raised by 1v (set in DIVER_FN_2_PRE)
 #NEXT_AUTHOR               Supplies correct digit to AUTHOR_&lt;#&gt;
                            when printing authors in doc header
+#NEXT_LN                   Next linenumber when \n(ln has to be stored
+                           because linenumbering suspended
 #NEXT_MISC                 Incrementing counter for misc lines in
                            DO_COVER
 #NO_BACK_UP                Instructs FN_OVERFLOW_TRAP not to
@@ -1249,20 +1385,34 @@ dc                         "mark" register for document columns
 #PRINT_STYLE               Typewrite=1, typeset=2
 #PT_SIZE_IN_UNITS          Stored value of \n[.ps] from last time
                            PT_SIZE was called
+#Q_AUTOLEAD                Register created by QUOTE_AUTOLEAD
 #Q_DEPTH                   Depth of quote
 #Q_FITS                    Does this quote fit on one page/column?
                            (toggle)
+#Q_LEAD                    Leading of quotes
+#Q_LEAD_DIFF               Difference between leading of running text
+                           and the leading used in quotes/blockquotes
+#Q_LEAD_REAL               Leading of quotes and blockquotes saved at the
+                           ends of their respective diversions
 #Q_L_LENGTH                Line length of quotes
 #Q_OFFSET                  Page offset for quotes
 #Q_OFFSET_VALUE            Factor by which to multiply PP_INDENT to
                            offset quotes
+#Q_PARTIAL_DEPTH           The amount of a quote/blockquote that fits at
+                           the bottom of a page when a quote/blockquote
+                           spans pages
 #Q_PP                      In PP, stores para # in QUOTE.  Removed in
                            ENDQUOTE.
+#Q_SPACE_ADJ               The flexible amount of whitespace to add before
+                           and after a quote/blockquote
 #Q_TOP                     Vertical place on page that a quote starts
 #QUOTE                     1=PQUOTE, 2=BQUOTE
 #QUOTE_COLOR               Color quotes (poetic)? (toggle)
+#QUOTE_LN                  Linenumber quotes? (toggle)
 #RECTO_VERSO               Switch HEADER_LEFT and HEADER_RIGHT on
                            alternate pages? (toggle); default=0
+#REF_HYPHENATE             Hyphenate REFs? (toggle)
+#REF_WARNING               Have we issued a ref warning? (toggle)
 #REPEAT                    Number of times to repeat linebreak
                            character
 #RESERVED_SPACE            Just enough room to put 1 more line of
@@ -1280,6 +1430,7 @@ dc                         "mark" register for document columns
                            #FULLSPACE_QUOTES (used in endnotes)
 #RESTORE_DOC_LEAD          Holds value of current doc lead (used in
                            endnotes)
+#RESTORE_HY                Restore hyphenation after .][? (toggle)
 #RESTORE_OFFSET            Page offset at moment footer trap is sprung;
                            not currently used
 #RESTORE_TOC_PN_PADDING    Saves #TOC_PN_PADDING in TOC prior to
@@ -1288,6 +1439,11 @@ dc                         "mark" register for document columns
                            headers/footers
 #RULED                     Tells FOOTNOTE if a rule (or space has been
                            put above the first footnote on the page
+#RUNON_FN_IN_DIVER         If #LN=1, if we're in a (block)quote, instructs
+                           FOOTNOTE to unformat diversion RUNON_FN_IN_DIVER
+#RUNON_FOOTNOTES           If #LN=1, instructs FOOTNOTE to unformat
+                           diversion RUNON_FOOTNOTES
+#RUN_ON                    Are we using run-on footnotes? (toggle)
 #SAVED_DIVER_FN_COUNT      In the case of a footnote inside a
                            diversion that should be treated as a
                            "normal" footnote, FOOTNOTE needs to
@@ -1311,6 +1467,7 @@ dc                         "mark" register for document columns
 #SAVED_FN_DEPTH_2          Footnote depth after to adding footnote
                            diversion depth to FN_DEPTH; used when
                            footnote text will overflow
+#SAVED_FOOTER_POS          Position of FOOTER in DO_QUOTE (hack)
 #SAVED_LEAD                In FOOTER and DO_FOOTER, stores the
                            lead in effect prior to outputting
                            FOOTNOTES or performing either
@@ -1322,11 +1479,14 @@ dc                         "mark" register for document columns
                            performed with the #SAVED_LEAD in
                            order to remove register #AUTO_LEAD or
                            #AUTO_LEAD_FACTOR.
+#SEP_TYPE                  Set to 1 if LIST separator is ( or [ or {
 #SH_LEAD_ADJUST            #DOC_LEAD/8 (TYPESET) or /2 (TYPEWRITE)
                            (used for subhead spacing)
 #SH_NUM                    Subhead number
 #SHIM                      Amount of lead required to advance to
                            next legal baseline
+#SILENT_BQUOTE_LN          "Silently" linenumber blockquotes? (toggle)
+#SILENT_QUOTE_LN           "Silently" linenumber quotes? (toggle)
 #SINGLE_SPACE              Is TYPEWRITE in single space mode? (toggle)
 #SKIP_FOOTER               If 1, instructs DO_FOOTER to do nothing
                            if B_MARGIN falls below FOOTER_MARGIN
@@ -1345,6 +1505,7 @@ dc                         "mark" register for document columns
                            PRINT_HDRFTR that START has been invoked,
                            allowing PRINT_HDRFTR to decide whether or
                            not to print a footer on page 1
+#START_FOR_MNinit          If 1, defer processing MN_INIT until #START
 #STORED_PP_INDENT          Temporarily holds value of #PP_INDENT
 #SUITE                     Current page number (for letters)
 #SUP_PT_SIZE               Point size of superscript
@@ -1408,12 +1569,31 @@ y                          Vertical position stored with mk in hdrftrs.
  
 +++STRINGS+++
 
+$1ST_LETTER                      First letter of first arg to LIST
+$ADJUST_BIB_LEAD                 2nd arg to BIBLIOGRAPHY_LEAD; if not blank
+                                 adjust bib leading
 $ATTRIBUTE_STRING               "by" line in doc header
 $AUTHOR_1...9                    Document author(s)
 $AUTHOR_FAM                      Family to use for author in doc header
 $AUTHOR_FT                       Font to use for author in doc header
 $AUTHOR_SIZE_CHANGE              ps in/decrease of author in doc header*
 $AUTHOR_PT_SIZE                  Absolute ps of authors
+$BIB_FAM                         Bibliography page family
+$BIB_FT                          Bibliography page font
+$BIB_LEAD                        Base leading for bibliographies
+$BIB_LIST_SEPARATOR              Separator between enumerator and text
+                                 when outputting bibliographies in LIST style
+$BIB_LIST_PREFIX                 Prefix before enumerator when outputting
+                                 bibliographies in LIST style
+$BIB_PN_STYLE                    Format of bibliography page numbers
+$BIB_SPACE                       Post entry space for bibliographies
+$BIB_STRING                      Bibliography title string
+$BIB_STRING_FAM                  Bib title family
+$BIB_STRING_FT                   Bib title font
+$BIB_STRING_QUAD                 Bib title quad
+$BIB_STRING_SIZE_CHANGE          Bib title size (+ or -)
+$BQ_LN_GUTTER                    Gutter between line numbers and bquotes in
+                                 bquotes
 $BQUOTE_COLOR                    Blockquote color
 $BQUOTE_FAM                      Family to use for blockquotes
 $BQUOTE_FT                       Font to use for blockquotes
@@ -1464,6 +1644,7 @@ $COVER_MISC_FAM                  Cover misc family
 $COVER_MISC_FT                   Cover misc font
 $COVER_MISC_SIZE_CHANGE          Cover misc size*
 $COVER_MISC_COLOR                Cover misc color
+$CURRENT_EV                      \n[.ev] at REF_BRACKETS_START
 $DOC_COVER_FAM                   Overall doc cover family
 $DOC_COVER_COLOR                 Overall doc cover color
 $DOC_COVER_TITLE                 User-defined doc cover title string
@@ -1516,8 +1697,23 @@ $DOCTYPE_PT_SIZE                 Absolute ps of DOCTYPE
 $DRAFT                           The draft number (string valued)
 $DRAFT_STRING                    What to print whenever the word "draft"
                                  is required
+EN_MARK                          Inline, gets #EN_MARK (\(ln)
+$EN_CLOSE_BRACKET                Close bracket for line-number enumerated
+                                 endnotes
 $EN_FAMILY                       Family for endnotes
 $EN_FT                           Font for endnotes
+$EN_LINENUMBER                   String to print for line-number enumerators
+                                 in line-numbered endnotes
+$EN_LN_FAM                       Family for line-numbers in line-number
+                                 identified endnotes
+$EN_LN_FT                        Font for line-numbers in line-number
+                                 identified endnotes
+$EN_LN_GAP                       Gap to leave in initial endnote lines
+                                 between line-number identifies and text
+$EN_OPEN_BRACKET                 Open bracket for line-number enumerated
+                                 endnotes
+$EN_LN_SIZE_CHANGE               Size change (+ or -) for line-numbers in
+                                 line-number identified endnotes
 $EN_PN_STYLE                     Pagenumbering style for endnotes pages
 $EN_QUAD                         Quad for endnotes
 $EN_STRING                       Endnotes page head
@@ -1542,12 +1738,23 @@ $EPI_FT                          Font to use in epigraphs
 $EPI_QUAD                        Quad in block-style epigraphs
                                  (justified or left)
 $EPI_SIZE_CHANGE                 ps in/decrease of epigraphs*
+$EVAL_BIB_SPACE                  Temporary string to find out if the
+                                 arg to BIBLIOGRAPHY_SPACING ended in "v"
 $FINIS_COLOR                     Color of FINIS string
 $FINIS_STRING                    What to print when FINIS macro is
                                  invoked
 $FIRST_DOC_TITLE                 1st doc's title captured in COLLATE
+FN_MARK                          Inline, gets #FN_MARK (\n(ln)
+$FN_CLOSE_BRACKET                Close bracket for line-number identified
+                                 footnotes
 $FN_FAM                          Family used in footnotes
 $FN_FT                           Font used in footnotes
+$FN_LINENUMBER                   String to print before footnotes when
+                                 line-numbering enabled for footnotes
+$FN_LN_SEP                       Separator after line-number identified
+                                 footnotes
+$FN_OPEN_BRACKET                 Open bracket for line-number identified
+                                 footnotes
 $FN_QUAD                         Quad used in footnotes
 $FN_SIZE_CHANGE                  ps in/decrease of footnotes*
 $FOOTNOTE_COLOR                  Footnote color
@@ -1592,7 +1799,16 @@ $HEAD_SIZE_CHANGE                ps in/decrease of section titles*
 $LINEBREAK_CHAR                  Character that marks line breaks
 $LINEBREAK_CHAR_V_ADJ            +|- amount by which to raise/lower
                                  linebreak character
+$LAST_CHAR                       Temporary string used to discover whether
+                                 user has remembered to put a digit after
+                                 ROMAN or roman in arg to LIST
 $LINEBREAK_COLOR                 Linebreak color
+$LIST_ARG_1                      The first arg to LIST (minus digits if
+                                 ROMAN or roman
+$LN_GUTTER                       Gutter to leave between line numbers
+                                 and text
+$LN_INC                          2nd arg to NUMBER_LINES as a string
+$LN_NUM                          1st arg to NUMBER_LINES as a string
 $MISC_COLOR                      Misc line color
 $MISC_QUAD                       Misc line quad
 PAGE#                            For use in hdrftr strings where page #
@@ -1606,10 +1822,21 @@ $PAPER                           Paper size (LETTER, A4, LEGAL);
                                  default=LETTER
 $PH_COLOR                        Parahead color
 $PP_FT                           Font used in paragraphs
+$ROMAN_WIDTH                     The digit(s) appended to ROMAN or
+                                 roman LIST args
+$Q_LN_GUTTER                     Gutter between linenumbers and quotes
+                                 in quotes
 $QUOTE_COLOR                     Quote (poetic) color
 $QUOTE_FAM                       Family to use for pquotes
 $QUOTE_FT                        Font to use for pquotes
 $QUOTE_SIZE_CHANGE               ps in/decrease of pquotes*
+$REF_BIB_INDENT                  2nd line indent value for references in
+                                 bibliographies
+$REF_EN_INDENT                   2nd line indent value for references in
+                                 endnotes
+$REF_FN_INDENT                   2nd line indent value for references in
+                                 footnotes
+$RESTORE_SS_VAR                  Saves \*[$SS_VAR] for use with ref*build
 #REVISION                        The revision number (string valued)
 $REVISION_STRING                 What to print whenever the word
                                  "revision" is required
@@ -1774,168 +2001,195 @@ TOC_PS                TOC_PT_SIZE
 
 +++The following are used for docelement type-style control+++
 
-AUTHOR_FAMILY              _FAMILY
-AUTHOR_FONT                _FONT
-AUTHOR_SIZE                _SIZE
-BLOCKQUOTE_COLOR           _COLOR
-BLOCKQUOTE_FAMILY          _FAMILY
-BLOCKQUOTE_FONT            _FONT
-BLOCKQUOTE_QUAD            _QUAD
-BLOCKQUOTE_SIZE            _SIZE
-CHAPTER_TITLE_COLOR        _COLOR
-CHAPTER_TITLE_FAMILY       _FAMILY
-CHAPTER_TITLE_FONT         _FONT
-CHAPTER_TITLE_SIZE         _SIZE
-COVER_COPYRIGHT_COLOR      _COLOR
-COVER_COPYRIGHT_FAMILY     _FAMILY
-COVER_COPYRIGHT_FONT       _FONT
-COVER_COPYRIGHT_QUAD       _QUAD
-COVER_COPYRIGHT_SIZE       _SIZE
-COVER_ATTRIBUTE_COLOR      _COLOR
-COVER_AUTHOR_COLOR         _COLOR
-COVER_AUTHOR_FAMILY        _FAMILY
-COVER_AUTHOR_FONT          _FONT
-COVER_AUTHOR_SIZE          _SIZE
-COVER_COLOR                _COLOR
-COVER_DOCTYPE_COLOR        _COLOR
-COVER_DOCTYPE_FAMILY       _FAMILY
-COVER_DOCTYPE_FONT         _FONT
-COVER_DOCTYPE_SIZE         _SIZE
-COVER_FAMILY               _FAMILY
-COVER_MISC_COLOR           _COLOR
-COVER_MISC_QUAD            _QUAD
-COVER_SUBTITLE_COLOR       _COLOR
-COVER_SUBTITLE_FAMILY      _FAMILY
-COVER_SUBTITLE_FONT        _FONT
-COVER_SUBTITLE_SIZE        _SIZE
-COVER_TITLE_COLOR          _COLOR
-COVER_TITLE_FAMILY         _FAMILY
-COVER_TITLE_FONT           _FONT
-COVER_TITLE_SIZE           _SIZE
-DOC_COVER_COPYRIGHT_COLOR  _COLOR
-DOC_COVER_COPYRIGHT_FAMILY _FAMILY
-DOC_COVER_COPYRIGHT_FONT   _FONT
-DOC_COVER_COPYRIGHT_QUAD   _QUAD
-DOC_COVER_COPYRIGHT_SIZE   _SIZE
-DOC_COVER_ATTRIBUTE_COLOR  _COLOR
-DOC_COVER_AUTHOR_COLOR     _COLOR
-DOC_COVER_AUTHOR_FAMILY    _FAMILY
-DOC_COVER_AUTHOR_FONT      _FONT
-DOC_COVER_AUTHOR_SIZE      _SIZE
-DOC_COVER_COLOR            _COLOR
-DOC_COVER_DOCTYPE_COLOR    _COLOR
-DOC_COVER_DOCTYPE_FAMILY   _FAMILY
-DOC_COVER_DOCTYPE_FONT     _FONT
-DOC_COVER_DOCTYPE_SIZE     _SIZE
-DOC_COVER_FAMILY           _FAMILY
-DOC_COVER_MISC_COLOR       _COLOR
-DOC_COVER_MISC_QUAD        _QUAD
-DOC_COVER_SUBTITLE_COLOR   _COLOR
-DOC_COVER_SUBTITLE_FAMILY  _FAMILY
-DOC_COVER_SUBTITLE_FONT    _FONT
-DOC_COVER_SUBTITLE_SIZE    _SIZE
-DOC_COVER_TITLE_COLOR      _COLOR
-DOC_COVER_TITLE_FAMILY     _FAMILY
-DOC_COVER_TITLE_FONT       _FONT
-DOC_COVER_TITLE_SIZE       _SIZE
-DOC_QUAD                   _QUAD
-DOCHEADER_COLOR            _COLOR
-DOCHEADER_FAMILY           _FAMILY
-DOCTYPE_FAMILY             _FAMILY
-DOCTYPE_FONT               _FONT
-DOCTYPE_SIZE               _SIZE
-ENDNOTE_FAMILY             _FAMILY
-ENDNOTE_FONT               _FONT
-ENDNOTE_NUMBER_FAMILY      _FAMILY
-ENDNOTE_NUMBER_FONT        _FONT
-ENDNOTE_NUMBER_SIZE        _SIZE
-ENDNOTE_QUAD               _QUAD
-ENDNOTE_STRING_FAMILY      _FAMILY
-ENDNOTE_STRING_FONT        _FONT
-ENDNOTE_STRING_QUAD        _QUAD
-ENDNOTE_STRING_SIZE        _SIZE
-ENDNOTE_TITLE_FAMILY       _FAMILY
-ENDNOTE_TITLE_FONT         _FONT
-ENDNOTE_TITLE_QUAD         _QUAD
-ENDNOTE_TITLE_SIZE         _SIZE
-EPIGRAPH_COLOR             _COLOR
-EPIGRAPH_FAMILY            _FAMILY
-EPIGRAPH_FONT              _FONT
-EPIGRAPH_QUAD              _QUAD
-EPIGRAPH_SIZE              _SIZE
-FINIS_COLOR                _COLOR
-FOOTNOTE_COLOR             _COLOR
-FOOTNOTE_FAMILY            _FAMILY
-FOOTNOTE_FONT              _FONT
-FOOTNOTE_QUAD              _QUAD
-FOOTNOTE_SIZE              _SIZE
-HDRFTR_CENTER_FAMILY       _FAMILY
-HDRFTR_CENTER_FONT         _FONT
-HDRFTR_CENTER_SIZE         _SIZE
-HDRFTR_COLOR               _COLOR
-HDRFTR_FAMILY              _FAMILY
-HDRFTR_LEFT_FAMILY         _FAMILY
-HDRFTR_LEFT_FONT           _FONT
-HDRFTR_LEFT_SIZE           _SIZE
-HDRFTR_RIGHT_FAMILY        _FAMILY
-HDRFTR_RIGHT_FONT          _FONT
-HDRFTR_RIGHT_SIZE          _SIZE
-HDRFTR_RULE_COLOR          _COLOR
-HDRFTR_SIZE                _SIZE
-HEAD_COLOR                 _COLOR
-HEAD_FAMILY                _FAMILY
-HEAD_FONT                  _FONT
-HEAD_QUAD                  _QUAD
-HEAD_SIZE                  _SIZE
-LINEBREAK_COLOR            _COLOR
-MISC_COLOR                 _COLOR
-MISC_QUAD                  _QUAD
-PAGENUM_COLOR              _COLOR
-PAGENUM_FAMILY             _FAMILY
-PAGENUM_FONT               _FONT
-PARAHEAD_COLOR             _COLOR
-PARAHEAD_FAMILY            _FAMILY
-PARAHEAD_FONT              _FONT
-PARAHEAD_SIZE              _SIZE
-QUOTE_COLOR                _COLOR
-QUOTE_FAMILY               _FAMILY
-QUOTE_FONT                 _FONT
-QUOTE_INDENT               _INDENT
-QUOTE_SIZE                 _SIZE
-SUBHEAD_COLOR              _COLOR
-SUBHEAD_FAMILY             _FAMILY
-SUBHEAD_FONT               _FONT
-SUBHEAD_SIZE               _SIZE
-SUBTITLE_COLOR             _COLOR
-SUBTITLE_FAMILY            _FAMILY
-SUBTITLE_FONT              _FONT
-SUBTITLE_SIZE              _SIZE
-TITLE_COLOR                _COLOR
-TITLE_FAMILY               _FAMILY
-TITLE_FONT                 _FONT
-TITLE_SIZE                 _SIZE
-TOC_FAM                    _FAMILY
-TOC_FAMILY                 _FAMILY
-TOC_HEADER_FAMILY          _FAMILY
-TOC_HEADER_FONT            _FONT
-TOC_HEADER_QUAD            _QUAD
-TOC_HEADER_SIZE            _SIZE
-TOC_HEAD_FAMILY            _FAMILY
-TOC_HEAD_FONT              _FONT
-TOC_HEAD_SIZE              _SIZE
-TOC_PARAHEAD_FAMILY        _FAMILY
-TOC_PARAHEAD_FONT          _FONT
-TOC_PARAHEAD_SIZE          _SIZE
-TOC_PN_FAMILY              _FAMILY
-TOC_PN_FONT                _FONT
-TOC_PN_SIZE                _SIZE
-TOC_PT_SIZE                _SIZE
-TOC_SUBHEAD_FAMILY         _FAMILY
-TOC_SUBHEAD_FONT           _FONT
-TOC_SUBHEAD_SIZE           _SIZE
-TOC_TITLE_FAMILY           _FAMILY
-TOC_TITLE_FONT             _FONT
-TOC_TITLE_SIZE             _SIZE
+AUTHOR_FAMILY                 _FAMILY
+AUTHOR_FONT                   _FONT
+AUTHOR_SIZE                   _SIZE
+BIBLIOGRAPHY_FAMILY           _FAMILY
+BIBLIOGRAPHY_FONT             _FONT
+BIBLIOGRAPHY_FOOTER_CENTER    BIBLIOGRAPHY_HDRFTR_CENTER
+BIBLIOGRAPHY_FOOTER_CENTRE    BIBLIOGRAPHY_HDRFTR_CENTRE
+BIBLIOGRAPHY_HEADER_CENTER    BIBLIOGRAPHY_HDRFTR_CENTER
+BIBLIOGRAPHY_HEADER_CENTRE    BIBLIOGRAPHY_HDRFTR_CENTRE
+BIBLIOGRAPHY_QUAD             _QUAD
+BIBLIOGRAPHY_STRING_FAMILY    _FAMILY
+BIBLIOGRAPHY_STRING_FONT      _FONT
+BIBLIOGRAPHY_STRING_QUAD      _QUAD
+BIBLIOGRAPHY_STRING_SIZE      _SIZE
+BLOCKQUOTE_AUTOLEAD           Q_AUTOLEAD
+BLOCKQUOTE_AUTOLEAD           QUOTE_AUTOLEAD
+BLOCKQUOTE_COLOR              _COLOR
+BLOCKQUOTE_FAMILY             _FAMILY
+BLOCKQUOTE_FONT               _FONT
+BLOCKQUOTE_QUAD               _QUAD
+BLOCKQUOTE_SIZE               _SIZE
+CHAPTER_TITLE_COLOR           _COLOR
+CHAPTER_TITLE_FAMILY          _FAMILY
+CHAPTER_TITLE_FONT            _FONT
+CHAPTER_TITLE_SIZE            _SIZE
+COVER_ATTRIBUTE_COLOR         _COLOR
+COVER_AUTHOR_COLOR            _COLOR
+COVER_AUTHOR_FAMILY           _FAMILY
+COVER_AUTHOR_FONT             _FONT
+COVER_AUTHOR_SIZE             _SIZE
+COVER_COLOR                   _COLOR
+COVER_COPYRIGHT_COLOR         _COLOR
+COVER_COPYRIGHT_FAMILY        _FAMILY
+COVER_COPYRIGHT_FONT          _FONT
+COVER_COPYRIGHT_QUAD          _QUAD
+COVER_COPYRIGHT_SIZE          _SIZE
+COVER_DOCTYPE_COLOR           _COLOR
+COVER_DOCTYPE_FAMILY          _FAMILY
+COVER_DOCTYPE_FONT            _FONT
+COVER_DOCTYPE_SIZE            _SIZE
+COVER_FAMILY                  _FAMILY
+COVER_MISC_COLOR              _COLOR
+COVER_MISC_QUAD               _QUAD
+COVER_SUBTITLE_COLOR          _COLOR
+COVER_SUBTITLE_FAMILY         _FAMILY
+COVER_SUBTITLE_FONT           _FONT
+COVER_SUBTITLE_SIZE           _SIZE
+COVER_TITLE_COLOR             _COLOR
+COVER_TITLE_FAMILY            _FAMILY
+COVER_TITLE_FONT              _FONT
+COVER_TITLE_SIZE              _SIZE
+DOC_COVER_ATTRIBUTE_COLOR     _COLOR
+DOC_COVER_AUTHOR_COLOR        _COLOR
+DOC_COVER_AUTHOR_FAMILY       _FAMILY
+DOC_COVER_AUTHOR_FONT         _FONT
+DOC_COVER_AUTHOR_SIZE         _SIZE
+DOC_COVER_COLOR               _COLOR
+DOC_COVER_COPYRIGHT_COLOR     _COLOR
+DOC_COVER_COPYRIGHT_FAMILY    _FAMILY
+DOC_COVER_COPYRIGHT_FONT      _FONT
+DOC_COVER_COPYRIGHT_QUAD      _QUAD
+DOC_COVER_COPYRIGHT_SIZE      _SIZE
+DOC_COVER_DOCTYPE_COLOR       _COLOR
+DOC_COVER_DOCTYPE_FAMILY      _FAMILY
+DOC_COVER_DOCTYPE_FONT        _FONT
+DOC_COVER_DOCTYPE_SIZE        _SIZE
+DOC_COVER_FAMILY              _FAMILY
+DOC_COVER_MISC_COLOR          _COLOR
+DOC_COVER_MISC_QUAD           _QUAD
+DOC_COVER_SUBTITLE_COLOR      _COLOR
+DOC_COVER_SUBTITLE_FAMILY     _FAMILY
+DOC_COVER_SUBTITLE_FONT       _FONT
+DOC_COVER_SUBTITLE_SIZE       _SIZE
+DOC_COVER_TITLE_COLOR         _COLOR
+DOC_COVER_TITLE_FAMILY        _FAMILY
+DOC_COVER_TITLE_FONT          _FONT
+DOC_COVER_TITLE_SIZE          _SIZE
+DOCHEADER_COLOR               _COLOR
+DOCHEADER_FAMILY              _FAMILY
+DOC_QUAD                      _QUAD
+DOCTYPE_FAMILY                _FAMILY
+DOCTYPE_FONT                  _FONT
+DOCTYPE_SIZE                  _SIZE
+ENDNOTE_BLOCKQUOTE_AUTOLEAD   Q_AUTOLEAD
+ENDNOTE_BLOCKQUOTE_AUTOLEAD   QUOTE_AUTOLEAD
+ENDNOTE_FAMILY                _FAMILY
+ENDNOTE_FONT                  _FONT
+ENDNOTE_LINENUMBER_FAMILY     _FAMILY
+ENDNOTE_LINENUMBER_FONT       _FONT
+ENDNOTE_LINENUMBER_SIZE       _SIZE
+ENDNOTE_NUMBER_FAMILY         _FAMILY
+ENDNOTE_NUMBER_FONT           _FONT
+ENDNOTE_NUMBER_SIZE           _SIZE
+ENDNOTE_QUAD                  _QUAD
+ENDNOTE_QUOTE_AUTLOEAD        Q_AUTOLEAD
+ENDNOTE_QUOTE_AUTOLEAD        QUOTE_AUTOLEAD
+ENDNOTE_STRING_FAMILY         _FAMILY
+ENDNOTE_STRING_FONT           _FONT
+ENDNOTE_STRING_QUAD           _QUAD
+ENDNOTE_STRING_SIZE           _SIZE
+ENDNOTE_TITLE_FAMILY          _FAMILY
+ENDNOTE_TITLE_FONT            _FONT
+ENDNOTE_TITLE_QUAD            _QUAD
+ENDNOTE_TITLE_SIZE            _SIZE
+EPIGRAPH_COLOR                _COLOR
+EPIGRAPH_FAMILY               _FAMILY
+EPIGRAPH_FONT                 _FONT
+EPIGRAPH_QUAD                 _QUAD
+EPIGRAPH_SIZE                 _SIZE
+FINIS_COLOR                   _COLOR
+FOOTNOTE_COLOR                _COLOR
+FOOTNOTE_FAMILY               _FAMILY
+FOOTNOTE_FONT                 _FONT
+FOOTNOTE_QUAD                 _QUAD
+FOOTNOTE_SIZE                 _SIZE
+HDRFTR_CENTER_FAMILY          _FAMILY
+HDRFTR_CENTER_FONT            _FONT
+HDRFTR_CENTER_SIZE            _SIZE
+HDRFTR_COLOR                  _COLOR
+HDRFTR_FAMILY                 _FAMILY
+HDRFTR_LEFT_FAMILY            _FAMILY
+HDRFTR_LEFT_FONT              _FONT
+HDRFTR_LEFT_SIZE              _SIZE
+HDRFTR_RIGHT_FAMILY           _FAMILY
+HDRFTR_RIGHT_FONT             _FONT
+HDRFTR_RIGHT_SIZE             _SIZE
+HDRFTR_RULE_COLOR             _COLOR
+HDRFTR_SIZE                   _SIZE
+HEAD_COLOR                    _COLOR
+HEAD_FAMILY                   _FAMILY
+HEAD_FONT                     _FONT
+HEAD_QUAD                     _QUAD
+HEAD_SIZE                     _SIZE
+LINEBREAK_COLOR               _COLOR
+MISC_COLOR                    _COLOR
+MISC_QUAD                     _QUAD
+PAGENUM_COLOR                 _COLOR
+PAGENUM_FAMILY                _FAMILY
+PAGENUM_FONT                  _FONT
+PARAHEAD_COLOR                _COLOR
+PARAHEAD_FAMILY               _FAMILY
+PARAHEAD_FONT                 _FONT
+PARAHEAD_SIZE                 _SIZE
+QUOTE_COLOR                   _COLOR
+QUOTE_FAMILY                  _FAMILY
+QUOTE_FONT                    _FONT
+QUOTE_INDENT                  _INDENT
+QUOTE_SIZE                    _SIZE
+REF_INDENT                    INDENT_REFS
+REF)                          REF_BRACKETS_END
+REF]                          REF_BRACKETS_END
+REF}                          REF_BRACKETS_END
+REF(                          REF_BRACKETS_START
+REF[                          REF_BRACKETS_START
+REF{                          REF_BRACKETS_START
+SUBHEAD_COLOR                 _COLOR
+SUBHEAD_FAMILY                _FAMILY
+SUBHEAD_FONT                  _FONT
+SUBHEAD_SIZE                  _SIZE
+SUBTITLE_COLOR                _COLOR
+SUBTITLE_FAMILY               _FAMILY
+SUBTITLE_FONT                 _FONT
+SUBTITLE_SIZE                 _SIZE
+TITLE_COLOR                   _COLOR
+TITLE_FAMILY                  _FAMILY
+TITLE_FONT                    _FONT
+TITLE_SIZE                    _SIZE
+TOC_FAM                       _FAMILY
+TOC_FAMILY                    _FAMILY
+TOC_HEADER_FAMILY             _FAMILY
+TOC_HEADER_FONT               _FONT
+TOC_HEADER_QUAD               _QUAD
+TOC_HEADER_SIZE               _SIZE
+TOC_HEAD_FAMILY               _FAMILY
+TOC_HEAD_FONT                 _FONT
+TOC_HEAD_SIZE                 _SIZE
+TOC_PARAHEAD_FAMILY           _FAMILY
+TOC_PARAHEAD_FONT             _FONT
+TOC_PARAHEAD_SIZE             _SIZE
+TOC_PN_FAMILY                 _FAMILY
+TOC_PN_FONT                   _FONT
+TOC_PN_SIZE                   _SIZE
+TOC_PT_SIZE                   _SIZE
+TOC_SUBHEAD_FAMILY            _FAMILY
+TOC_SUBHEAD_FONT              _FONT
+TOC_SUBHEAD_SIZE              _SIZE
+TOC_TITLE_FAMILY              _FAMILY
+TOC_TITLE_FONT                _FONT
+TOC_TITLE_SIZE                _SIZE
 </pre>
 
 <hr>
