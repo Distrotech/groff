@@ -79,7 +79,7 @@ trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0 2 15
 # 3. Process through groff(1) with pic preprocessing to emit Postscript.
 # 4. Use convert(1) to crop the Postscript and turn it into a bitmap.
 (echo ".G1"; cat; echo ".G2") | grap | groff -p $groff_opts -Tps -P-pletter | \
-    convert -crop 0x0 $convert_opts - $tmp/grap2graph.$format \
+    convert -trim -crop 0x0 $convert_opts - $tmp/grap2graph.$format \
     && cat $tmp/grap2graph.$format
 
 # End
