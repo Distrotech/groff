@@ -5,6 +5,16 @@ Publishing with GNU Troff
 .AU Keith Marshall
 .AI <keith.d.marshall@ntlworld.com>
 .CE
+.\"
+.\" Specify the Internet address for the groff web site.
+.\" Currently, there are two available addresses; a copy is maintained at ...
+.\"
+.ds GROFF-WEBSITE http://www.gnu.org/software/groff
+.\"
+.\" ... but the official home site is at ...
+.\"
+.ds GROFF-WEBSITE http://groff.ffii.org
+.\"
 .\" Set the PDF default document view attribute, to ensure that the document
 .\" outline is visible, each time the document is opened in Acrobat Reader.
 .\"
@@ -204,7 +214,7 @@ GNU/Linux, and on Microsoft\*(rg Windows\(tm2000 operating platforms, using
 .pdfhref M footnote1
 Later versions should, and some earlier versions may, be equally suitable.
 See
-.pdfhref W http://groff.ffii.org
+.pdfhref W \*[GROFF-WEBSITE]
 for information and availability of the latest version.
 .FE
 in association with
@@ -472,15 +482,13 @@ macro.
 As an example of how it is used,
 the identification meta\(hydata attached to this document
 was specified using a macro sequence similar to:\(en
-.RS
-.LD
-.fam C
+.DS I
+.CW
 \&.pdfinfo /Title     PDF Document Publishing with GNU Troff
 \&.pdfinfo /Author    Keith Marshall
 \&.pdfinfo /Subject   How to Exploit PDF Features with GNU Troff
 \&.pdfinfo /Keywords  groff troff PDF pdfmark
 .DE
-.RE
 Notice that the
 .CW pdfinfo
 macro is repeated, once for each
@@ -1078,6 +1086,18 @@ This operation has been described earlier,
 Place a \(lqnamed destination\(rq reference mark at the current output position,
 in the current PDF document,
 .XR mark-dest ). (
+.IP \*[= D]
+Specify the content of a PDF document reference dictionary entry;
+typically, such entries are generated automatically,
+by transformation of the intermediate output resulting from the use of
+.CW pdfhref
+.CWB M \& \& \(rq, \(lq
+with the
+.CWB -X \& \& \(rq \(lq
+modifier,
+.XR create-map ); (
+however, it is also possible to specify such entries manually,
+.XR user-format ). (
 .IP \*[= L]
 Insert an active link to a named destination,
 .XR link-named ), (
@@ -1102,6 +1122,18 @@ Specify a user defined macro, to be called by
 .CW pdfhref ,
 when formatting the text in the active region of a link,
 .XR set-format ). (
+.IP \*[= Z]
+Define the absolute position on the physical PDF output page,
+where the \(lqhot\(hyspot\(rq associated with an active link is to be placed.
+Invoked in pairs, marking the starting and ending PDF page co\(hyordinates
+for each link \(lqhot\(hyspot\(rq, this operator is rarely, if ever,
+specified directly by the user;
+rather, appropriate
+.CW pdfhref
+.CWB Z \& \& \(rq \(lq
+specifications are inserted automatically into the document reference map
+during the PDF document formatting process,
+.XR create-map ). (
 .IP \*[= I]
 Initialise support for
 .CW pdfhref
@@ -2052,7 +2084,71 @@ operator; nevertheless, the invocation syntax is similar, having the form
 .B -- ] [
 .I "descriptive text ...\&"
 .LP
-where
+where the optional
+.CWB -D
+.CWBI URI > <
+modifier specifies the address for the target Internet resource,
+in any appropriate
+.EM "Uniform Resource Identifier"
+format, while the
+.CWI descriptive
+.CWI text
+argument specifies the text which is to appear in the \(lqhot\(hyspot\(rq
+region, and the
+.CWB -P
+.CWBI prefix\(hytext > <
+and
+.CWB -A
+.CWBI affixed\(hytext > <
+options have the same effect as in the case of local document links,
+.XR link-intern ). (
+.LP
+Notice that it is not mandatory to include the
+.CWB -D
+.CWBI URI > <
+in the link specification; if it
+.EM is
+specified, then it is not necessary for the URI to appear,
+in the running text of the document \(em the
+.CWI descriptive
+.CWI text
+argument exactly defines the text
+which will appear within the \(lqhot\(hyspot\(rq region,
+and this need not include the URI.
+However, if the
+.CWB -D \& \& \~\c
+.CWBI URI > <
+specification is omitted, then the
+.CWI descriptive
+.CWI text
+argument
+.EM must
+be an
+.EM exact
+representation of the URI, which
+.EM will ,
+therefore, appear as the entire content of the \(lqhot\(hyspot\(rq.
+For example, we could introduce a reference to
+.pdfhref W -D \*[GROFF-WEBSITE] -A , the groff web site
+in which the actual URI is concealed, by using mark up such as:\(en
+.DS I
+.CW
+For example, we could introduce a reference to
+\&.pdfhref W -D \*[GROFF-WEBSITE] -A , the groff web site
+in which the actual URI is concealed,
+.DE
+Alternatively,
+to refer the reader to the groff web site,
+making it obvious that the appropriate URI is
+.pdfhref W -A , \*[GROFF-WEBSITE]
+the requisite mark up might be:\(en
+.DS I
+.CW
+to refer the reader to the groff web site,
+making it obvious that the appropriate URI is
+\&.pdfhref W -A , \*[GROFF-WEBSITE]
+the requisite mark up might be:\e(en
+.DE
 .NH 3
 .XN -N set-format -- Establishing a Format for References
 .LP
