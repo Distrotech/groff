@@ -71,12 +71,13 @@ gnu.eps:
 	    $(pnmtops_nosetpage) -noturn -rle >$@ ; \
 	fi
 
-pdfroff: pdfroff.sh
+pdfroff: pdfroff.sh $(SH_DEPS_SED_SCRIPT)
 	$(RM) $@
-	sed -e "s|@VERSION@|$(version)$(revision)|" \
+	sed -f $(SH_DEPS_SED_SCRIPT) \
+	    -e "s|@VERSION@|$(version)$(revision)|" \
 	    -e "s|@GROFF_AWK_INTERPRETERS@|$(ALT_AWK_PROGS)|" \
 	    -e "s|@GROFF_GHOSTSCRIPT_INTERPRETERS@|$(ALT_GHOSTSCRIPT_PROGS)|" \
-	    -e "s|@GROFF_BIN_DIR@|$(bindir)|" $^ >$@
+	    -e "s|@GROFF_BIN_DIR@|$(bindir)|" $(srcdir)/pdfroff.sh >$@
 	chmod +x $@
 
 install_data: $(make_install_pdfdoc)

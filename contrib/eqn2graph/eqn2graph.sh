@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 #
 # eqn2graph -- compile EQN equation descriptions to bitmap images
 #

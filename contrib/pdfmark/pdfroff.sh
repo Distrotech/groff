@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 # ------------------------------------------------------------------------------
 #
 # Function: Format PDF Output from groff Markup
@@ -37,36 +37,66 @@
 #
   CMD=`exec 2>$NULLDEV; basename $0` || CMD=$0
 #
+# To ensure that prerequisite helper programs are available, and are
+# executable, a [fairly] portable method of detecting such programs is
+# provided by function `searchpath'.
+#
+  searchpath(){
+  #
+  # Usage:  searchpath progname path
+  #
+    IFS="${PATH_SEPARATOR-":"}" prog=':'
+    for dir in $2
+    do
+      for ext in '' '.exe'
+      #
+      # try `progname' with all well known extensions
+      # (e.g. Win32 may require `progname.exe')
+      #
+      do
+        try="$dir/$1$ext"
+        test -f "$try" && test -x "$try" && prog="$try" && break
+      done
+      test "$prog" = ":" || break
+    done
+    echo "$prog"
+  }
+# @PATH_SEARCH_SETUP@
+#
 # We need both 'grep' and 'sed' programs, to parse script options,
 # and we also need 'cat', to display help and some error messages,
 # so ensure they are all installed, before we continue.
-# (Again, note that we first check the status from 'type', BEFORE
-#  we attempt to use the result, because Cygwin's 'ash' uses 'stdout'
-#  instead of 'stderr', to display its 'not found' message).
 #
-  CAT=':' GREP=':' SED=':'
-  type cat >$NULLDEV 2>&1 && CAT=`set :\`type cat\` ; eval echo '$'$#`
-  type grep >$NULLDEV 2>&1 && GREP=`set :\`type grep\` ; eval echo '$'$#`
-  type sed >$NULLDEV 2>&1 && SED=`set :\`type sed\` ; eval echo '$'$#`
+  CAT=`searchpath cat "$PATH"`
+  GREP=`searchpath grep "$PATH"`
+  SED=`searchpath sed "$PATH"`
 #
 # Another fundamental requirement is the 'groff' program itself;
-# we will first perform a PATH search to locate this;  however,
-# we will prefer any version existing in a specified GROFF_BIN_DIR,
-# or, if unspecified, the installed location of 'groff' programs;
-# (this will override the result of the initial PATH search).
+# we MUST use a 'groff' program located in 'GROFF_BIN_DIR', if this
+# is specified; if not, we will search 'GROFF_BIN_PATH', only falling
+# back to a 'PATH' search, if neither of these is specified.
 #
-  GROFF=':'
-  type groff >$NULLDEV 2>&1 && GROFF=`set :\`type groff\` ; eval echo '$'$#`
-  type ${GROFF_BIN_DIR="@GROFF_BIN_DIR@"}/groff >$NULLDEV 2>&1 \
-    && GROFF=`set :\`type $GROFF_BIN_DIR/groff\` ; eval echo '$'$#`
+  if test -n "$GROFF_BIN_DIR"
+  then
+    GPATH=GROFF_BIN_DIR
+    GROFF=`searchpath groff "$GROFF_BIN_DIR"`
+#
+  elif test -n "$GROFF_BIN_PATH"
+  then
+    GPATH=GROFF_BIN_PATH
+    GROFF=`searchpath groff "$GROFF_BIN_PATH"`
+#
+  else
+    GPATH=PATH
+    GROFF=`searchpath groff "$PATH"`
+  fi
 #
 # If one or more of these is missing, diagnose and bail out.
 #
-  NO=''
-  NOPROG="$CMD: installation problem: cannot find program"
+  NO='' NOPROG="$CMD: installation problem: cannot find program"
   test "$CAT" = ":" && echo >&2 "$NOPROG 'cat' in PATH" && NO="$NO 'cat'"
   test "$GREP" = ":" && echo >&2 "$NOPROG 'grep' in PATH" && NO="$NO 'grep'"
-  test "$GROFF" = ":" && echo >&2 "$NOPROG 'groff' in $GBIN" && NO="$NO 'groff'"
+  test "$GROFF" = ":" && echo >&2 "$NOPROG 'groff' in $GPATH" && NO="$NO 'groff'"
   test "$SED" = ":" && echo >&2 "$NOPROG 'sed' in PATH" && NO="$NO 'sed'"
   if test -n "$NO"
   then
@@ -349,15 +379,19 @@
 #   In order to correctly resolve 'pdfmark' references,
 #   we need to have both the 'awk' and 'diff' programs available.
 #
-    NO='' AWK=':'
-    eval set ${GROFF_AWK_INTERPRETER-"@GROFF_AWK_INTERPRETERS@"}
-    while test $# -gt 0
-    do
-      type $1 >$NULLDEV 2>&1 && AWK=`set :\`type $1\` ; eval echo '$'$#`
-      test "$AWK" = ":" || set "$AWK"
-      shift
-    done
-    type diff >$NULLDEV 2>&1 && DIFF=`set :\`type diff\` ; eval echo '$'$#`
+    NO=''
+    if test -n "$GROFF_AWK_INTERPRETER"
+    then
+      AWK="$GROFF_AWK_INTERPRETER"
+      test -f "$AWK" && test -x "$AWK" || AWK=":"
+    else
+      for prog in @GROFF_AWK_INTERPRETERS@
+      do
+	AWK=`searchpath $prog "$PATH"`
+	test "$AWK" = ":" || break
+      done
+    fi
+    DIFF=`searchpath diff "$PATH"`
     test "$AWK" = ":" && echo >&2 "$NOPROG 'awk' in PATH" && NO="$NO 'awk'"
     test "$DIFF" = ":" && echo >&2 "$NOPROG 'diff' in PATH" && NO="$NO 'diff'"
     if test -n "$NO"
@@ -443,14 +477,17 @@
 # from which the PDF output will be compiled -- but before proceding further ...
 # let's make sure we have a GhostScript interpreter to convert them!
 #
-  GS=':'
-  eval set ${GROFF_GHOSTSCRIPT_INTERPRETER-"@GROFF_GHOSTSCRIPT_INTERPRETERS@"}
-  while test $# -gt 0
-  do
-    type $1 >$NULLDEV 2>&1 && GS=`set :\`type $1\` ; eval echo '$'$#`
-    test "$GS" = ":" || set "$GS"
-    shift
-  done
+  if test -n "$GROFF_GHOSTSCRIPT_INTERPRETER"
+  then
+    GS="$GROFF_GHOSTSCRIPT_INTERPRETER"
+    test -f "$GS" && test -x "$GS" || GS=":"
+  else
+    for prog in @GROFF_GHOSTSCRIPT_INTERPRETERS@
+    do
+      GS=`searchpath $prog "$PATH"`
+      test "$GS" = ":" || break
+    done
+  fi
 #
 # If we could not find a GhostScript interpreter, then we can do no more.
 #

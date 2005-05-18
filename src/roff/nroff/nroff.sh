@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 # Emulate nroff with groff.
 
 prog="$0"

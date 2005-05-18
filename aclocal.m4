@@ -202,7 +202,7 @@ AC_DEFUN([GROFF_CSH_HACK],
   [AC_MSG_CHECKING([for csh hash hack])
 
 cat <<EOF >conftest.sh
-#!/bin/sh
+#! /bin/sh
 true || exit 0
 export PATH || exit 0
 exit 1

@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 #
 # grap2graph -- compile graph description descriptions to bitmap images
 #

@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 
 # groffer - display groff files
 

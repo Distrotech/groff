@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 # Copyright (C) 2004, 2005 Free Software Foundation, Inc.
 # Written by Mike Bianchi <MBianchi@Foveal.com <mailto:MBianchi@Foveal.com>>
 
