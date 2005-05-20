@@ -4,7 +4,7 @@
 
 # Source file position: <groff-source>/contrib/groffer/groffer.sh
 
-# Copyright (C) 2001,2002,2003,2004 Free Software Foundation, Inc.
+# Copyright (C) 2001,2002,2003,2004,2005 Free Software Foundation, Inc.
 # Written by Bernd Warken
 
 # This file is part of groff version @VERSION@.
@@ -25,8 +25,8 @@
 # Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.12';
-_LAST_UPDATE='15 November 2004';
+_PROGRAM_VERSION='0.9.13';
+_LAST_UPDATE='17 May 2005';
 
 
 ########################################################################
@@ -264,9 +264,9 @@ export _VIEWER_DVI;		# viewer program for dvi mode
 export _VIEWER_PS;		# viewer program for ps mode
 export _VIEWER_HTML_X;		# viewer program for html mode in X
 export _VIEWER_HTML_TTY;	# viewer program for html mode in tty
-_VIEWER_DVI='xdvi,dvilx';
-_VIEWER_PDF='xpdf,acroread';
-_VIEWER_PS='gv,ghostview,gs_x11,gs';
+_VIEWER_DVI='kdvi,xdvi,dvilx';
+_VIEWER_PDF='kghostview,ggv,xpdf,acroread,kpdf';
+_VIEWER_PS='kghostview,ggv,gv,ghostview,gs_x11,gs';
 _VIEWER_HTML='konqueror,mozilla,netscape,opera,amaya,arena,lynx';
 _VIEWER_X='gxditview,xditview';
 
@@ -1040,7 +1040,7 @@ _t_e_s_t_f_u_n_c_()
 
 
 ########################################################################
-#                   Definition of normal Functions
+#       Definition of normal Functions in alphabetical order
 ########################################################################
 landmark "3: functions";
 
@@ -3203,17 +3203,18 @@ where()
 
 
 ########################################################################
-#                              main
+#                        main* Functions
 ########################################################################
 
 # The main area contains the following parts:
 # - main_init(): initialize temporary files and set exit trap
-# - parse $MANOPT
+# - main_parse_MANOPT(): parse $MANOPT
 # - main_parse_args(): argument parsing
-# - determine display mode
-# - process filespec arguments
-# - setup X resources
-# - do the displaying
+# - main_set_mode (): determine the display mode
+# - main_do_fileargs(): process filespec arguments
+# - main_set_resources(): setup X resources
+# - main_display(): do the displaying
+# - main(): the main function that calls all main_*()
 
 # These parts are implemented as functions, being defined below in the
 # sequence they are called in the main() function.
@@ -4428,6 +4429,7 @@ main_display()
             "wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
           ;;
       esac;
+      _modefile="${_modefile}".dvi;
       _groggy="$(tmp_cat | grog -Tdvi)";
       _do_display;
       ;;
@@ -4439,7 +4441,7 @@ main_display()
             "wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
           ;;
       esac;
-      _modefile="${_modefile}".html
+      _modefile="${_modefile}".html;
       _groggy="$(tmp_cat | grog -Thtml)";
       _do_display;
       ;;
@@ -4453,7 +4455,6 @@ main_display()
             "wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
           ;;
       esac;
-      _modefile="${_modefile}"
       _groggy="$(tmp_cat | grog -Tps)";
       trap_clean;
       # start a new shell program to get another process ID.
@@ -4491,6 +4492,7 @@ main_display()
             "wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
           ;;
       esac;
+      _modefile="${_modefile}".ps;
       _groggy="$(tmp_cat | grog -Tps)";
       _do_display;
       ;;

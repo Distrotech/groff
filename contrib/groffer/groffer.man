@@ -15,7 +15,7 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update : 3 June 2004
+Last update : 20 May 2005
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
@@ -23,7 +23,7 @@ Source file position: <groff-source>/contrib/groffer/groffer.man
 This file was written by Bernd Warken.
 ..
 .de copyleft
-Copyright (C) 2001,2002,2004 Free Software Foundation, Inc.
+Copyright (C) 2001,2002,2004,2005 Free Software Foundation, Inc.
 .
 .P
 This file is part of groff, a free software project.
@@ -1081,8 +1081,17 @@ Equivalent to
 .
 .
 .Opt_def -- html-viewer
-Equivalent to
-.Opt_long www-viewer .
+Set the web browser program for viewing in
+.I html
+mode.
+.
+Each program that accepts html input and allows the
+.BI file://localhost/ dir / file
+syntax on the command line is suitable as viewer program; it can be
+the path name of an executable file or a program in
+.Env_var $PATH .
+.
+In each case, arguments can be provided additionally.
 .
 .
 .Opt_def -- mode value
@@ -1200,7 +1209,7 @@ program, even when in X Window.
 .TP
 .Header_CB www
 Equivalent to
-.Opt_long www .
+.Opt_long_arg mode html .
 .
 .
 .TP
@@ -1308,21 +1317,12 @@ when in X; eqivalent to
 .
 .Opt_def -- www
 Equivalent to
-.Opt_long_arg mode www .
+.Opt_long_arg mode html .
 .
 .
 .Opt_def -- www-viewer prog
-Set the web browser program for viewing in
-.I www
-mode.
-.
-Each program that accepts html input and allows the
-.BI file://localhost/ dir / file
-syntax on the command line is suitable as viewer program; it can be
-the path name of an executable file or a program in
-.Env_var $PATH .
-.
-In each case, arguments can be provided additionally.
+Equivalent to
+.Opt_long html-viewer .
 .
 .
 .Opt_def - X -- X -- x
@@ -1687,7 +1687,7 @@ Set X resource.
 .
 .
 .\" --------------------------------------------------------------------
-.SS "Options from man"
+.SS "Options for man"
 .\" --------------------------------------------------------------------
 .
 The long options of
@@ -1703,7 +1703,7 @@ so most of them are just ignored.
 .
 .
 .P
-The following two options were added by
+The following two options were added to
 .I groffer
 for choosing whether the file name arguments are interpreted as names
 for local files or as a search pattern for man pages.
@@ -2847,7 +2847,7 @@ As an example, consider the following configuration file in
 #
 # some shell commands
 if test "$DISPLAY" = ""; then
-  DISPLAY='localhost:0.0'
+  export DISPLAY='localhost:0.0'
 fi
 date >>~/mygroffer.log
 .fi
@@ -3073,10 +3073,12 @@ shell script is compatible with both GNU and POSIX.
 POSIX compatibility refers to
 .B IEEE P1003.2/D11.2
 of September 1991, a very early version of the POSIX standard that is
-still freely available in the internet.
+still freely available in the internet at
+.URL http://\:www.funet.fi/pub/doc/posix/p1003.2/d11.2/all \
+"POSIX P1003.2 draft 11.2" .
 .
-Unfortunately, this version of the standard has `local' for shell
-function variables removed.
+Unfortunately, this version of the standard removed `local' for shell
+function variables, but later POSIX versions restored this again.
 .
 As `local' is needed for serious programming this temporary POSIX
 deprecation was ignored.
@@ -3206,6 +3208,24 @@ all of them can be used with groffer.
 .
 .
 .TP
+.BR groff (@MAN7EXT@)
+Documentation of the
+.I groff
+language.
+.
+.
+.TP
+.BR grog (@MAN1EXT@)
+Internally, groffer tries to guess the groff command line options from
+the input using this program.
+.
+.
+.TP
+.BR groff_out (@MAN5EXT@)
+Documentation on the groff intermediate output (ditroff output).
+.
+.
+.TP
 .BR man (1)
 The standard program to diplay man\~pages.
 .
@@ -3225,38 +3245,56 @@ mode.
 .
 .
 .TP
+.BR kghostview (1)
+.TP+
+.BR ggv (1)
+.TP+
 .BR gv (1)
 .TP+
 .BR ghostview (1)
+.TP+
+.BR gs (1)
 Viewers for groffer's
 .I ps
 mode.
 .
 .
+.TP
+.BR kghostview (1)
 .TP+
-.BR gs (1)
-Transformer from
-.I ps
-to
-.IR pdf ;
-and a
-.I ps
-viewer.
-.
-.
-.TP
+.BR ggv (1)
+.TP+
 .BR xpdf (1)
-Viewers for
+.TP+
+.BR acroread (1)
+.TP+
+.BR kpdf (1)
+Viewers for groffer's
 .I pdf
-files.
+mode.
 .
 .
 .TP
+.BR kdvi (1)
+.TP+
 .BR xdvi (1)
 .TP+
 .BR dvilx (1)
 Viewers for groffer's
 .I dvi
+mode.
+.
+.
+.TP
+.BR konqueror (1)
+.TP+
+.BR mozilla (1)
+.TP+
+.BR lynx (1)
+Web-browsers for groffer's
+.I html
+or
+.I www
 mode.
 .
 .
@@ -3272,24 +3310,6 @@ Standard pager program for the
 .TP+
 .BR bzip2 (1)
 The decompression programs supported by groffer.
-.
-.
-.TP
-.BR groff (@MAN7EXT@)
-Documentation of the
-.I groff
-language.
-.
-.
-.TP
-.BR grog (@MAN1EXT@)
-Internally, groffer tries to guess the groff command line options from
-the input using this program.
-.
-.
-.TP
-.BR groff_out (@MAN5EXT@)
-Documentation on the groff intermediate output (ditroff output).
 .
 .
 .\" --------------------------------------------------------------------

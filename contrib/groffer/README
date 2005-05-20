@@ -1,18 +1,60 @@
+README
+
 The `groffer' program is the easiest way to read documents written in
 some `roff' language, such as the `man pages', the manual pages in
 many operating systems.
 
-All input is sent to `grog' and then to `groff' such that no special
-`groff' arguments must be determined, but all `groff' options can be
-specified.
 
-`groffer' also has many built-in `man' functionalities to find and
-read the manual pages on UNIX and similar operating systems.  It
-accepts the information from an installed `man' program, but tries to
-find a man path by itself.
+Input
 
-So far, `groffer' is a shell script.  It should run on any POSIX or
-Bourne style shell.
+Input comes from either standard input or command line parameters that
+represent names of exisiting roff files or standardized specifications
+for searching man pages.  All of these can be compressed in a format
+that is decompressible by `gzip', including `.gz', `bz2', and `.Z'.
+
+`groffer' has many built-in `man' functionalities to find and read the
+manual pages on UNIX and similar operating systems.  It accepts the
+information from an installed `man' program, but tries to find a man
+path by itself.
+
+`groffer' bundles all filespec parameters into a single output file in
+the same way as `groff'.  The disadvantage of this is that all file
+name arguments must use the same groff language.  To change this, the
+option parsing must be revised for large parts.  It seems that this
+would create incompatibilities, so the actual option strategy is kept.
+
+
+Output
+
+All input is first sent to `grog' to determine the necessary groff
+options and then to `groff'.  So no special `groff' arguments must be
+given.  But all `groff' options can be specified when this seems to be
+appropriate.
+
+The following displaying modes for the output are available:
+- Display formatted input with
+-- the X roff viewer `gxditview',
+-- a Prostcript viewer,
+-- a PDF viewer,
+-- a DVI viewer,
+-- a web browser,
+-- a pager in a text terminal (tty).
+- Generate groff output on stdout without a viewer.
+- Generate the troff intermediate output on standard output without
+  postprocessing.
+- Output the source code without any groff processing.
+By default, the program tries to display with `gxditview' as graphical
+device in X; on non-X text terminals, the `tty' text mode with a pager
+is tried by default.
+
+
+Compatibility
+
+`groffer' is a shell script.  It should run on any POSIX or Bourne
+style shell that supports shell functions with local variables.
+
+
+Mailing lists
 
 For reporting bugs of `groffer', groff's free mailing list
 <bug-groff@gnu.org> can be used.  For a general discussion, the
@@ -23,7 +65,7 @@ these mailing lists.
 
 ####### License
 
-Copyright (C) 2003,2004 Free Software Foundation, Inc.
+Copyright (C) 2003,2004,2005 Free Software Foundation, Inc.
 Written by Bernd Warken
 
 This file is part of groffer, which is part of groff.
