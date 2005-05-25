@@ -22,29 +22,38 @@ in compiling, installing, and running groff.
 The most recent released version of groff is always available by
 anonymous ftp from ftp.gnu.org in the directory pub/gnu/groff.
 
-A CVS repository is available (http://savannah.gnu.org/cvs/?group=groff),
-containing the current development version of groff.  You can access it
-with the commands
+The current development version of groff is available from a CVS
+repository.  You can access it by first selecting a parent directory in
+which to create a working copy, (call it, say ~/cvswork), and then
+executing the commands
 
-  export CVS_RSH=ssh
+  cd ~/cvswork
+  CVS_RSH=ssh; export CVS_RSH
   cvs -d:ext:anoncvs@savannah.gnu.org/cvsroot/groff -z5 co groff
 
-This will create a subdirectory ./groff with the groff CVS tree.  Note
-that you need an SSH client for security reasons.
+(Note that you need an SSH client for security reasons).
 
-An update of a checked out repository should be done with
+This will create a subdirectory, ~/cvswork/groff, with a `checked out'
+copy of the CVS repository.  An update of this working copy may be
+achieved, at any later time by invoking the commands
 
+  cd ~/cvswork/groff
   CVS_RSH=ssh cvs -z5 update -dP
 
-in the generated ./groff subdirectory.  Please read the info pages of
-cvs for further details.
+Please read the CVS info pages for further details.
 
-Alternatively, you can download snapshots (which are updated twice a
-day) from
+Finally, it is possible to access the CVS with a web browser by
+pointing it to
+
+  http://savannah.gnu.org/cvs/?group=groff
+
+Alternatively, you can download snapshots. The complete groff source
+as a single file is available at
 
   http://groff.ffii.org/groff/devel/groff-current.tar.gz
 
-or a diff file relative to the latest official groff release as
+A diff file relative to groff-<version>, the latest official groff
+release is available at
 
   http://groff.ffii.org/groff/devel/groff-<version>-current.diff.gz
 
@@ -56,10 +65,28 @@ following to apply the diff file:
   cd groff-<version>
   gunzip -c ../groff-<version>-current.diff.gz | patch -p1
 
-Finally, it is possible to access the CVS with a browser by pointing it
-to
+Depending on your requirements, you may need at least some of the
+following tools to build groff directly from its source:
 
-  http://savannah.gnu.org/cvs/?group=groff
+  ghostscript
+  the psutils package
+  the netpbm package
+  texinfo 4.8
+  bison >= 1.875b or byacc
+
+Note that texinfo and bison or byacc are required only for building from
+CVS sources (either a checked out working copy, or a daily snapshot).
+They are not required for building from a stable release tarball.  Also
+note that the version numbers stated are the minimum supported.  No
+version of texinfo < 4.8 will work, and the original release of bison
+1.875 is known not to work; you *may* find that bison releases < 1.875
+will work, but in case of difficulty, please update to a later version
+*before* posting a bug report.
+
+For *all* sources, you need ghostscript for creation of either PDF or HTML
+output; the netpbm and psutils packages are required only for HTML output.
+If you don't intend to produce output in either of these formats, then
+these packages are unnecessary.
 
 Please report bugs using the form in the file BUG-REPORT; the idea of
 this is to make sure that FSF has all the information it needs to fix
@@ -75,16 +102,20 @@ Three mailing lists are available:
   groff-commit@gnu.org       a read-only list showing commitments
                              to the CVS repository
 
-You must be subscribed to the `groff' list to send mails.
+You can post mails directly to the `bug-groff' list, without subscribing;
+to post mails to the `groff' list you must subscribe to it.
 
 To subscribe, send a mail to <list>-request@<domain> (example:
-groff-request@gnu.org) with the word `subscribe' in either the subject
-or body of the email (don't include the quotes) or have a look at the
-groff mailing list web pages at
+groff-request@gnu.org for the `groff' list) with the word `subscribe'
+in either the subject or body of the email (don't include the quotes).
+Alternatively, you may subscribe by visiting the web pages at
 
   http://lists.gnu.org/mailman/listinfo/bug-groff
   http://lists.gnu.org/mailman/listinfo/groff
   http://lists.gnu.org/mailman/listinfo/groff-commit
+
+Each of these web pages also provides a link to a browseable archive of
+postings to the corresponding mailing list.
 
 GNU groff was written by James Clark <jjc@jclark.com>.  It is now
 maintained by Ted Harding <ted.harding@nessie.mcc.ac.uk> and Werner
