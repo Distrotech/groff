@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1994, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1994, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by Francisco Andrés Verdú <pandres@dragonet.es> with many ideas
      taken from the other groff drivers.
@@ -214,7 +214,7 @@ inline void lbp_printer::set_line_thickness(int size,const environment *env)
       /*  fprintf(stderr, "thickness: %d == %d, size %d, %d \n",
         size, line_thickness, env->size,req_linethickness); */
    return;
-}; // lbp_printer::set_line_thickness
+} // lbp_printer::set_line_thickness
 
 void lbp_printer::begin_page(int)
 {
@@ -424,9 +424,9 @@ void lbp_printer::draw(int code, int *p, int np, const environment *env)
       if (np != 1 && np != 2) {
 	error("0 or 1 argument required for thickness");
 	break;
-      };
+      }
     set_line_thickness(p[0],env);
-    };
+    }
     break;
   case 'l':	// Line
     if (np != 2) {
@@ -680,7 +680,7 @@ int main(int argc, char **argv)
 	  orientation = 1;
 	else
 	  error("unknown orientation '%1'", optarg);
-      };
+      }
       break;
     case 'c':
       {

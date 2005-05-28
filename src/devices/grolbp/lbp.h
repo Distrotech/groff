@@ -324,7 +324,7 @@ vdmpolyline(int numpoints, int *points)
   for (i = 1; i < numpoints ; i++) {
 	  vdmprintf("%s%s",vdmnum(*p,xcoord),vdmnum(*(p+1),ycoord));
 	  p += 2;
-  }; /* for */
+  } /* for */
   vdmprintf("\x1e\n");
 }
 	 
@@ -341,7 +341,7 @@ vdmpolygon(int numpoints, int *points)
   for (i = 1; i < numpoints ; i++) {
 	  vdmprintf("%s%s",vdmnum(*p,xcoord),vdmnum(*(p+1),ycoord));
 	  p += 2;
-  }; /* for */
+  } /* for */
   vdmprintf("\x1e\n");
 
 }
@@ -384,7 +384,7 @@ splinerel(double px,double py,int flush)
   char xcoord[4],ycoord[4];
   double npend ;
 
-  if (flush == -1) {lx = (int)px; ly = (int)py; return;};
+  if (flush == -1) {lx = (int)px; ly = (int)py; return;}
 
   if (flush == 0) {
   dxnew = (int)px -lx;
@@ -396,7 +396,7 @@ splinerel(double px,double py,int flush)
 	  despx = dxnew; 
 	  if ((sg == sigpend) && (dy == 0)){
 		  return;
-	  };
+	  }
 	dy = 0;
   }
   else {
@@ -407,9 +407,9 @@ splinerel(double px,double py,int flush)
   	else
   	{ sigpend = sg;
     	pend = npend;
-  	}; /* else (( npend == pend) && ... */
-  }; /* else (if (dynew == 0)) */
-  }; /* if (!flush ) */
+  	} /* else (( npend == pend) && ... */
+  } /* else (if (dynew == 0)) */
+  } /* if (!flush ) */
 
   /* if we've changed direction we must draw the line */
 /*  fprintf(stderr," (%d) %.2f,%.2f\n",flush,(float)px,(float)py);*/
@@ -420,7 +420,7 @@ splinerel(double px,double py,int flush)
   if (flush) {
   	dxnew = dy = despx = despy = 0;
 	return;
-  }; /* if (flush) */
+  } /* if (flush) */
   dxnew -= despx;
   dynew -= despy;
   if ((dxnew != 0) || (dynew != 0)) vdmprintf("%s%s",vdmnum(dxnew,xcoord),\
@@ -467,7 +467,7 @@ quadratic_spline(double a_1, double b_1, double a_2, double b_2, \
 	    quadratic_spline(x_mid, y_mid,
 			     ((a_2+3.0*a_3)/4.0), ((b_2+3.0*b_3)/4.0),
 			     ((a_3+x_4)/2.0), ((b_3+y_4)/2.0), x_4, y_4);
-	};
+	}
 }
 
 
