@@ -1,4 +1,4 @@
-# Copyright (C) 2002, 2003, 2004 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 #      Written by Werner Lemberg (wl@gnu.org)
 # 
 # This file is part of groff.
@@ -112,11 +112,11 @@ install_data: $(NORMALFILES) $(HTMLDOCFILES) \
 	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
 	for f in $(EXAMPLEFILES); do \
 	  rm -f $(exampledir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(docdir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(exampledir)/$$f; \
 	done
 	for f in $(PROCESSEDEXAMPLEFILES); do \
 	  rm -f $(exampledir)/$$f; \
-	  $(INSTALL_DATA) $$f $(docdir)/$$f; \
+	  $(INSTALL_DATA) $$f $(exampledir)/$$f; \
 	done
 
 uninstall_sub:
@@ -128,5 +128,5 @@ uninstall_sub:
 	done
 	-rmdir $(htmldocdir)/momdoc
 	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES); do \
-	  rm -f $(docdir)/$$f; \
+	  rm -f $(exampledir)/$$f; \
 	done
