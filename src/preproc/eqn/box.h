@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2004, 2005
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -62,6 +63,7 @@ public:
   friend class list_box;
 };
 
+// declarations to avoid friend name injection problems
 box *make_script_box(box *, box *, box *);
 box *make_mark_box(box *);
 box *make_lineup_box(box *);

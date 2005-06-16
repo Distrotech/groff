@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2003, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2003, 2004, 2005 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk).
 
 This file is part of groff.
@@ -83,14 +83,12 @@ pushBackBuffer::pushBackBuffer (char *filename)
 
 pushBackBuffer::~pushBackBuffer ()
 {
-  int old;
-
   if (charStack != 0) {
     free(charStack);
   }
   close(0);
   /* restore stdin in file descriptor 0 */
-  old = dup(stdIn);
+  dup(stdIn);
   close(stdIn);
 }
 
@@ -162,10 +160,8 @@ static int isWhite (char ch)
 
 void pushBackBuffer::skipToNewline (void)
 {
-  char ch;
-
   while ((putPB(getPB()) != '\n') && (! eofFound)) {
-    ch = getPB();
+    getPB();
   }
 }
 

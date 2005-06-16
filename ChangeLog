@@ -1,3 +1,63 @@
+2005-06-15  Werner LEMBERG  <wl@gnu.org>
+
+	Another try to update getopt files.  This time we add a dummy
+	gettext.h file to satisfy the dependency.
+
+	* src/include/getopt.h, src/libs/libgroff/getopt.c,
+	src/libs/libgroff/getopt1.c: Updated from GNU libc CVS.
+
+	* src/include/getopt_int.h: New file (from GNU libc CVS).
+
+	* src/include/gettext.h: Dummy file which just defines a gettext()
+	macro.
+
+	* src/include/groff-getopt.h: Updated.
+
+	* src/include/Makefile.sub (HDRS): Add getopt_int.h and gettext.h.
+
+
+	* src/libs/libdriver/input.cpp (IntArray): Remove superfluous
+	`const' keywords in return value.
+
+	* src/preproc/html/pushback.cpp (pushBackBuffer::~pushBackBuffer):
+	Remove redundant variable `old'.
+	(pushBackBuffer::skipToNewline): Remove redundant variable `ch'.
+
+	* src/preproc/tbl/main.cpp (process_table): Remove redundant
+	variable `c'.
+
+
+	Fix more friend name injection problems since modern C++ compilers
+	fail otherwise.  We simply provide (global) declarations for all
+	functions declared as friends.  This is not really necessary but
+	doesn't harm.
+
+	* src/preproc/eqn/lex.cpp: Provide declarations for get_char,
+	peek_char, and get_location.
+
+	* src/preproc/refer/ref.h: Provide declarations for
+	compare_reference, same_reference, same_year, same_date,
+	same_author_last_name, and same_author_name.
+
+	* src/roff/troff/div.h: Provide declarations for do_divert and
+	page_offset.
+
+	* src/roff/troff/env.h: Provide declarations for title_length,
+	space_size, fill, no_fill, adjust, no_adjust, center, right_justify,
+	vertical_spacing, post_vertical_spacing, line_spacing, line_length,
+	indent, temporary_indent, do_underline, do_input_trap, set_tabs,
+	margin_character, no_number, number_lines, leader_character,
+	tab_character, hyphenate_request, no_hyphenate,
+	hyphen_line_max_request, hyphenation_space_request,
+	hyphenation_margin_request, line_width, tabs_save, tabs_restore,
+	line_tabs_request, widow_control_request, and do_divert.
+
+	* src/roff/troff/input.cpp: Provide declaration for chop_macro.
+
+	* src/roff/troff/node.cpp: Provide declarations for class
+	tfont_spec.
+	Provide declaration for make_tfont.
+
 2005-05-29  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/fdl.texi: Updated to version 1.2.  Reported by Bernd Warken.

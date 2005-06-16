@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -19,7 +19,9 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
+void do_divert(int append, int boxing);
 void end_diversions();
+void page_offset();
 
 class diversion {
   friend void do_divert(int append, int boxing);

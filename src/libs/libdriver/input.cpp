@@ -8,7 +8,7 @@
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 21 Jan 2005
+   Last update: 15 Jun 2005
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -272,16 +272,15 @@ public:
   IntArray(void);
   IntArray(const size_t);
   ~IntArray(void);
-  const IntArg operator[](const size_t i) const
+  IntArg operator[](const size_t i) const
   {
     if (i >= num_stored)
       fatal("index out of range");
     return (IntArg) data[i];
   }
   void append(IntArg);
-  const IntArg * const
-    get_data(void) const { return (IntArg *)data; }
-  const size_t len(void) const { return num_stored; }
+  IntArg *get_data(void) const { return (IntArg *)data; }
+  size_t len(void) const { return num_stored; }
 };
 
 // Characters read from the input queue.

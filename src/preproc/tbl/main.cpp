@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1492,7 +1492,6 @@ table *process_data(table_input &in, format *f, options *opt)
 
 void process_table(table_input &in)
 {
-  int c;
   options *opt = 0;
   format *form = 0;
   table *tbl = 0;
@@ -1504,7 +1503,7 @@ void process_table(table_input &in)
   }
   else {
     error("giving up on this table");
-    while ((c = in.get()) != EOF)
+    while (in.get() != EOF)
       ;
   }
   delete opt;

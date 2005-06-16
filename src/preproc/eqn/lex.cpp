@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -23,6 +23,12 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include "eqn_tab.h"
 #include "stringclass.h"
 #include "ptable.h"
+
+
+// declarations to avoid friend name injection problems
+int get_char();
+int peek_char();
+int get_location(char **, int *);
 
 struct definition {
   char is_macro;

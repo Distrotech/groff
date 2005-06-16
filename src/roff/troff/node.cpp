@@ -61,6 +61,12 @@ extern int debug_state;
 
 #endif /* not _POSIX_VERSION */
 
+// declarations to avoid friend name injections
+class tfont;
+class tfont_spec;
+tfont *make_tfont(tfont_spec &);
+
+
 /*
  *  how many boundaries of images have been written? Useful for
  *  debugging grohtml
@@ -113,8 +119,6 @@ struct conditional_bold {
   hunits offset;
   conditional_bold(int, hunits, conditional_bold * = 0);
 };
-
-class tfont;
 
 class font_info {
   tfont *last_tfont;

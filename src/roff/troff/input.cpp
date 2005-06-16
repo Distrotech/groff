@@ -159,6 +159,7 @@ input_iterator *make_temp_iterator(const char *);
 const char *input_char_description(int);
 
 void process_input_stack();
+void chop_macro();		// declare to avoid friend name injection
 
 
 void set_escape_char()

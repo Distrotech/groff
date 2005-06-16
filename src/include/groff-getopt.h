@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2005 Free Software Foundation, Inc.
      Written by Werner Lemberg (wl@gnu.org)
 
 This file is part of groff.
@@ -49,17 +49,20 @@ struct option
 
 extern int getopt(int, 			// __argc
 		  char *const *,	// __argv
-		  const char *);	// __shortopts
+		  const char *)		// __shortopts
+		    throw();
 extern int getopt_long(int,			// __argc
 		       char *const *,		// __argv
 		       const char *,		// __shortopts
 		       const struct option *,	// __longopts
-		       int *);			// __longind
+		       int *)			// __longind
+			 throw();
 extern int getopt_long_only(int, 			// __argc
 			    char *const *,		// __argv
 			    const char *,		// __shortopts
 			    const struct option *,	// __longopts
-			    int *);			// __longind
+			    int *)			// __longind
+			      throw();
 
 #ifdef __cplusplus
 }

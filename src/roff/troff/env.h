@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -73,8 +73,6 @@ hunits env_sentence_space_width(environment *);
 hunits env_narrow_space_width(environment *);
 hunits env_half_narrow_space_width(environment *);
 
-void title();
-
 struct tab;
 
 enum tab_type { TAB_NONE, TAB_LEFT, TAB_CENTER, TAB_RIGHT };
@@ -103,6 +101,47 @@ struct node;
 struct breakpoint;
 class font_family;
 class pending_output_line;
+
+// declarations to avoid friend name injection problems
+void title_length();
+void space_size();
+void fill();
+void no_fill();
+void adjust();
+void no_adjust();
+void center();
+void right_justify();
+void vertical_spacing();
+void post_vertical_spacing();
+void line_spacing();
+void line_length();
+void indent();
+void temporary_indent();
+void do_underline(int);
+void do_input_trap(int);
+void set_tabs();
+void margin_character();
+void no_number();
+void number_lines();
+void leader_character();
+void tab_character();
+void hyphenate_request();
+void no_hyphenate();
+void hyphen_line_max_request();
+void hyphenation_space_request();
+void hyphenation_margin_request();
+void line_width();
+#if 0
+void tabs_save();
+void tabs_restore();
+#endif
+void line_tabs_request();
+void title();
+#ifdef WIDOW_CONTROL
+void widow_control_request();
+#endif /* WIDOW_CONTROL */
+
+void do_divert(int append, int boxing);
 
 class environment {
   int dummy;			// dummy environment used for \w
@@ -229,9 +268,9 @@ public:
   int is_empty();
   int is_composite() { return composite; }
   void set_composite() { composite = 1; }
-  vunits get_vertical_spacing(); // .v
-  vunits get_post_vertical_spacing(); // .pvs
-  int get_line_spacing();	 // .L
+  vunits get_vertical_spacing();	// .v
+  vunits get_post_vertical_spacing();	// .pvs
+  int get_line_spacing();		// .L
   vunits total_post_vertical_spacing();
   int get_point_size() { return size.to_scaled_points(); }
   font_size get_font_size() { return size; }
@@ -240,23 +279,23 @@ public:
   int get_char_height() { return char_height; }
   int get_char_slant() { return char_slant; }
   hunits get_digit_width();
-  int get_font() { return fontno; }; // .f
+  int get_font() { return fontno; };	// .f
   font_family *get_family() { return family; }
-  int get_bold();		// .b
-  int get_adjust_mode();	// .j
-  int get_fill();		// .u
-  hunits get_indent();		// .i
+  int get_bold();			// .b
+  int get_adjust_mode();		// .j
+  int get_fill();			// .u
+  hunits get_indent();			// .i
   hunits get_temporary_indent();
-  hunits get_line_length();	 // .l
-  hunits get_saved_line_length(); // .ll
-  hunits get_saved_indent();	  // .in
+  hunits get_line_length();		// .l
+  hunits get_saved_line_length();	// .ll
+  hunits get_saved_indent();		// .in
   hunits get_title_length();
-  hunits get_prev_char_width();	// .w
+  hunits get_prev_char_width();		// .w
   hunits get_prev_char_skew();
   vunits get_prev_char_height();
   vunits get_prev_char_depth();
-  hunits get_text_length();	// .k 
-  hunits get_prev_text_length(); // .n
+  hunits get_text_length();		// .k 
+  hunits get_prev_text_length();	// .n
   hunits get_space_width() { return env_space_width(this); }
   int get_space_size() { return space_size; }	// in ems/36
   int get_sentence_space_size() { return sentence_space_size; }
@@ -298,7 +337,7 @@ public:
   void final_break();
   node *make_tag(const char *name, int i);
   void newline();
-  void handle_tab(int is_leader = 0); // do a tab or leader
+  void handle_tab(int is_leader = 0);	// do a tab or leader
   void add_node(node *);
   void add_char(charinfo *);
   void add_hyphen_indicator();
