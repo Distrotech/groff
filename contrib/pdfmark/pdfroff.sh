@@ -29,7 +29,7 @@
 # MS-DOS/MS-Windows systems may require us to use "NUL".
 #
   NULLDEV="/dev/null"
-  test -c $NULLDEV || NULDEV="NUL"
+  test -c $NULLDEV || NULLDEV="NUL"
 #
 # Set up the command name to use in diagnostic messages.
 # (We can't assume we have 'basename', so use the full path if required.
@@ -166,7 +166,7 @@
            MATCH="" OPTNAME=`IFS==; set dummy $1; echo $2`
            for OPT in $LONGOPTS
            do
-             MATCH="$MATCH`echo --$OPT | $GREP "^$OPTNAME"`"
+             MATCH="$MATCH"`echo --$OPT | $GREP "^$OPTNAME"`
            done
 #
 #          For options in the form --option=value
@@ -568,4 +568,4 @@
   $SAY >&2 ". done"
 #
 # ------------------------------------------------------------------------------
-# $Source: end of file
+# $Source$: end of file
