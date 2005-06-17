@@ -25,8 +25,8 @@
 # Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 
 _PROGRAM_NAME='groffer';
-_PROGRAM_VERSION='0.9.13';
-_LAST_UPDATE='17 May 2005';
+_PROGRAM_VERSION='0.9.15';
+_LAST_UPDATE='16 Jun 2005';
 
 
 ########################################################################

@@ -2,9 +2,9 @@
 
 # File position: <groff-source>/contrib/groffer/Makefile.sub
 
-# Last update: 21 October 2002
+# Last update: 16 June 2005
 
-# Copyright (C) 2001,2002 Free Software Foundation, Inc.
+# Copyright (C) 2001,2002,2005 Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org>
 
 # This file is part of groff.
@@ -31,17 +31,18 @@ CLEANADD=groffer
 
 all: groffer
 
-groffer: groffer.sh
-	rm -f $@; \
-	sed -e "s|@BINDIR@|$(bindir)|g" \
+groffer: groffer.sh $(SH_DEPS_SED_SCRIPT)
+	$(RM) $@; \
+	sed -f $(SH_DEPS_SED_SCRIPT) \
+	    -e "s|@BINDIR@|$(bindir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/groffer.sh >$@; \
 	chmod +x $@
 
 install_data: groffer
 	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
-	-rm -f $(bindir)/groffer
+	-$(RM) $(bindir)/groffer
 	$(INSTALL_SCRIPT) groffer $(bindir)/groffer
 
 uninstall_sub:
-	-rm -f $(bindir)/groffer
+	-$(RM) $(bindir)/groffer
