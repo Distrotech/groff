@@ -76,6 +76,10 @@ PROCESSEDEXAMPLEFILES=\
   examples/sample_docs.ps \
   examples/typesetting.ps
 
+HTMLDOCFILES_=`echo $(HTMLDOCFILES) | sed 's|momdoc/||g'`
+EXAMPLEFILES_=`echo $(EXAMPLEFILES) | sed 's|examples/||g'`
+PROCESSEDEXAMPLEFILES_=`echo $(PROCESSEDEXAMPLEFILES) | sed 's|examples/||g'`
+
 CLEANADD=\
   penguin.ps \
   $(PROCESSEDEXAMPLEFILES) \
@@ -104,29 +108,30 @@ install_data: $(NORMALFILES) $(HTMLDOCFILES) \
 	  rm -f $(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(tmacdir)/$$f; \
 	done
-	-test -d $(htmldocdir)/momdoc || $(mkinstalldirs) $(htmldocdir)/momdoc
-	for f in $(HTMLDOCFILES); do \
-	  rm -f $(htmldocdir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(htmldocdir)/$$f; \
+	-test -d $(htmldocdir)/mom || $(mkinstalldirs) $(htmldocdir)/mom
+	for f in $(HTMLDOCFILES_); do \
+	  rm -f $(htmldocdir)/mom/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/momdoc/$$f $(htmldocdir)/mom/$$f; \
 	done
-	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
-	for f in $(EXAMPLEFILES); do \
-	  rm -f $(exampledir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(exampledir)/$$f; \
+	-test -d $(exampledir)/mom || $(mkinstalldirs) $(exampledir)/mom
+	for f in $(EXAMPLEFILES_); do \
+	  rm -f $(exampledir)/mom/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/examples/$$f $(exampledir)/mom/$$f; \
 	done
-	for f in $(PROCESSEDEXAMPLEFILES); do \
-	  rm -f $(exampledir)/$$f; \
-	  $(INSTALL_DATA) $$f $(exampledir)/$$f; \
+	for f in $(PROCESSEDEXAMPLEFILES_); do \
+	  rm -f $(exampledir)/mom/$$f; \
+	  $(INSTALL_DATA) examples/$$f $(exampledir)/mom/$$f; \
 	done
 
 uninstall_sub:
 	-for f in $(NORMALFILES); do \
 	  rm -f $(tmacdir)/$$f; \
 	done
-	-for f in $(HTMLDOCFILES); do \
-	  rm -f $(htmldocdir)/$$f; \
+	-for f in $(HTMLDOCFILES_); do \
+	  rm -f $(htmldocdir)/mom/$$f; \
 	done
-	-rmdir $(htmldocdir)/momdoc
-	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES); do \
-	  rm -f $(exampledir)/$$f; \
+	-rmdir $(htmldocdir)/mom
+	-for f in $(EXAMPLEFILES_) $(PROCESSEDEXAMPLEFILES_); do \
+	  rm -f $(exampledir)/mom/$$f; \
 	done
+	-rmdir $(exampledir)/mom
