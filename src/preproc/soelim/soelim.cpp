@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001, 2003, 2004
+/* Copyright (C) 1989-1992, 2000, 2001, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -159,12 +159,12 @@ int do_file(const char *filename)
 						    &file_name_in_path);
   int err = errno;
   string whole_filename(file_name_in_path ? file_name_in_path : filename);
+  whole_filename += '\0';
   a_delete file_name_in_path;
   if (fp == 0) {
     error("can't open `%1': %2", whole_filename.contents(), strerror(err));
     return 0;
   }
-  whole_filename += '\0';
   current_filename = whole_filename.contents();
   current_lineno = 1;
   set_location();
