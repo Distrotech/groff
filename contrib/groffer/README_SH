@@ -12,6 +12,11 @@ draft is available at http://www.funet.fi/pub/doc/posix/p1003.2/d11.2
 in the internet.  So `groffer' should be compatible to most actual
 Bourne style shells.
 
+Some shells are not fully POSIX compatible.  For them the following
+restrictions were done. The name of the variable in `for' is chosen as
+a single character.  The content of such a variable is regarded as
+non-local. Furthermore `then', `else', and `do' get a line of their own.
+
 The `groffer' script provides its own option parser.  It is compatible
 to the usual GNU style command line (option clusters, long option
 names with 2 `-' signs, mixing of options and non-option file names),
@@ -34,12 +39,17 @@ and error().
 
 Survey of Functions defined in groffer.sh
 
-The elements specified within paranthesis `(<>)' give hints to what
-the arguments are meant to be; the argument names are irrelevant.
-<>?     0 or 1
+Each funtion in groffer.sh has a description that starts with the
+function name and symbols for its arguments in paranthesis `()'.  Each
+`<>' construction gives an argument name that just gives a hint on
+what the argument is meant to be; these argument names are otherwise
+irrelevant.  The `>' sign can be followed by another character that
+shows how many of these arguments are possible.
+
+<>?     0 or 1 of these arguments
 <>*     arbitrarily many such arguments, incl. none
 <>+     one or more such arguments
-<>      exactly 1
+<>      exactly 1 of this argument
 
 A function that starts with an underscore `_' is an internal function
 for some function.  The internal functions are defined just after
@@ -120,10 +130,11 @@ whatis (<filename>)
 where (<program>)
 
 
-External non-groffer Environment Variables
+External Environment Variables
 
-If these variables are exported in the script the `ash' shell coughs
-when calling `groff' in `main_display()'.
+The groffer.sh script uses the following external system variables.
+It is supposed that these variables are already exported outside of
+groffer.sh; otherwise they do not have a value within the script.
 
 external system environment variables that are explicitly used
 $DISPLAY:		Presets the X display.
@@ -131,7 +142,7 @@ $LANG:			For language specific man pages.
 $LC_ALL:		For language specific man pages.
 $LC_MESSAGES:		For language specific man pages.
 $PAGER:			Paging program for tty mode.
-$PATH:			Path for the programs called (: list).
+$PATH:			Path for the programs called (`:' separated list).
 
 groffer native environment variables
 $GROFFER_OPT		preset options for groffer.
