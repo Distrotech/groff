@@ -1,3 +1,17 @@
+2005-06-20  Denis M, Wilson  dmw@oxytropis.plus.com
+
+	* font/devps/prologue.ps (EP): Dont' use `bind'.  Reason: Using
+	`bind' to define a procedure which contains `showpage' means that an
+	invocation of `showpage' may execute wrongly (the exact effect
+	depending on the interpreter).  Not usually a problem except under
+	transformations, such as combining pages.
+	(PEND): Don't call `clear'.  Reason: Using `clear' in the definition
+	of /PEND means that stack underflow will occur if the stack is
+	deliberately non-empty before document inclusion.  If included
+	files are found to be generally badly behaved, we could replace the
+	`clear' with `mark' in /PBEGIN and `cleartomark' in /PEND (I've
+	never found this necessary).
+
 2005-06-20  Jörgen Grahn  <jgrahn@algonet.se>
 
 	* src/preproc/soelim/soelim.cpp (do_file): Append trailing zero
