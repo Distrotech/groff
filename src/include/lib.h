@@ -33,14 +33,15 @@ extern "C" {
 }
 
 /* stdio.h on IRIX, OSF/1, emx, UWIN, and MinGW include getopt.h */
-/* unistd.h on CYGWIN includes getopt.h */
+/* unistd.h on CYGWIN and Mac OS X include getopt.h */
 
 #if !(defined(__sgi) \
       || (defined(__osf__) && defined(__alpha)) \
       || defined(_UWIN) \
       || defined(__EMX__) \
       || defined(__CYGWIN__) \
-      || defined(__MINGW32__))
+      || defined(__MINGW32__) \
+      || defined(__APPLE__))
 #include <groff-getopt.h>
 #else
 #include <getopt.h>
