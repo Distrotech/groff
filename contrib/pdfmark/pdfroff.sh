@@ -152,7 +152,7 @@
 # to be passed on to 'groff', enforcing the '-Tps' option.
 #
   DIFF="" STREAM="" INPUT_FILES=""
-  SHOW_VERSION="" ARGLIST="-Tps" GROFF_STYLE="$GROFF -Tps"
+  SHOW_VERSION="" GROFF_STYLE="$GROFF -Tps"
   while test $# -gt 0
   do
     case "$1" in
@@ -236,7 +236,7 @@
                ;;
 
              --version)
-	       ARGLIST="$ARGLIST \"$1\""
+	       GROFF_STYLE="$GROFF_STYLE \"$1\""
                SHOW_VERSION="GNU pdfroff (groff) version @VERSION@"
                ;;
 
@@ -291,7 +291,8 @@
 #
       - | -i*)
 	   STREAM="$CAT ${GROFF_TMPDIR}/pdf$$.in |"
-	   ARGLIST="$ARGLIST $1" INPUT_FILES="$INPUT_FILES $1"
+	   test "$1" = "-" && INPUT_FILES="$INPUT_FILES $1" \
+	     || GROFF_STYLE="$GROFF_STYLE $1" 
 	   ;;
 #
 #     Those standard options which expect an argument, but are specified with
@@ -325,14 +326,13 @@
 #     All other standard options are simply passed through to 'groff',
 #     with no validation beforehand.
 #
-      -*)  ARGLIST="$ARGLIST \"$1\"" GROFF_STYLE="$GROFF_STYLE \"$1\""
+      -*)  GROFF_STYLE="$GROFF_STYLE \"$1\""
            ;;
 #
 #     All non-option arguments are considered as possible input file names,
 #     and are passed on to 'groff', unaltered.
 #
-      *)   ARGLIST="$ARGLIST \"$1\""
-           test -f "$1" && INPUT_FILES="$INPUT_FILES \"$1\""
+      *)   INPUT_FILES="$INPUT_FILES \"$1\""
            ;;
     esac
     shift
@@ -345,7 +345,7 @@
   if test -n "$SHOW_VERSION"
   then
     echo >&2 "$SHOW_VERSION"
-    echo >&2; eval $GROFF $ARGLIST
+    echo >&2; eval $GROFF_STYLE $INPUT_FILES
     exit $?
   fi
 #
@@ -460,7 +460,7 @@
 #   filtering them into the reference dictionary; discard incomplete 'groff' output
 #   at this stage.
 #
-    eval $STREAM $GROFF -Z 1>$NULLDEV 2>$WRKFILE $REFCOPY $ARGLIST
+    eval $STREAM $GROFF_STYLE -Z 1>$NULLDEV 2>$WRKFILE $REFCOPY $INPUT_FILES
     $AWK '/^gropdf-info:href/ {$1 = ".pdfhref D -N"; print}' $WRKFILE > $REFFILE
   done
   $SAY >&2 " done"
@@ -522,8 +522,9 @@
   if test -n "$STYLESHEET"
   then
     DOT='^\.[ 	]*'
+    CS_MACRO=${CS_MACRO-"CS"} CE_MACRO=${CE_MACRO-"CE"}
     $SAY >&2 $n "Formatting document ... front cover section ..$c"
-    CS_FILTER="$STREAM $SED -n '/$DOT${CS_MACRO-"CS"}/,/$DOT${CE_MACRO-"CE"}/p'"
+    CS_FILTER="$STREAM $SED -n '/${DOT}${CS_MACRO}/,/${DOT}${CE_MACRO}/p'"
     eval $CS_FILTER $INPUT_FILES | eval $GROFF_STYLE $STYLESHEET - > $CS_DATA
     $SAY >&2 ". done"
   fi
@@ -534,14 +535,14 @@
   if test -n "$TC_DATA"
   then
     $SAY >&2 $n "Formatting document ... table of contents ..$c"
-    eval $STREAM $GROFF $TOC_FORMAT $REFCOPY $ARGLIST > $TC_DATA
+    eval $STREAM $GROFF_STYLE $TOC_FORMAT $REFCOPY $INPUT_FILES > $TC_DATA
     $SAY >&2 ". done"
   fi
 #
 # In all cases, a final 'groff' pass is required, to format the document body.
 #
   $SAY >&2 $n "Formatting document ... body section ..$c"
-  eval $STREAM $GROFF $BODY_FORMAT $REFCOPY $ARGLIST > $BD_DATA
+  eval $STREAM $GROFF_STYLE $BODY_FORMAT $REFCOPY $INPUT_FILES > $BD_DATA
   $SAY >&2 ". done"
 #
 # Finally ...
@@ -568,4 +569,4 @@
   $SAY >&2 ". done"
 #
 # ------------------------------------------------------------------------------
-# $Source$: end of file
+# $RCSfile$ $Revision$: end of file
