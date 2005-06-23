@@ -13,10 +13,13 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <getopt.h>
 #include <string.h>
 #include <fcntl.h>
 #include <limits.h>
+
+#define __GETOPT_PREFIX groff_
+#include <getopt.h>
+
 #include "XFontName.h"
 #include "DviChar.h"
 

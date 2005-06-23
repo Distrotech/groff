@@ -1,3 +1,33 @@
+2005-06-22  Werner LEMBERG  <wl@gnu.org>
+
+	Another round in fixing getopt problems.  Hopefully the last one!
+	This time we use the getopt stuff from gnulib and define a prefix
+	unconditionally so that there are no collisions with any other
+	getopt implementations.  This is a slight waste of space in case
+	we already use a GNU getopt implementation, but on
+	the other hand it really simplifies life.
+
+	* src/include/getopt.h: Use gnulib version.
+
+	* src/include/getopt_int.h: Use gnulib version.
+
+	* src/include/groff-getopt.h: Removed.  Obsolete now.
+
+	* src/include/lib.h: Regarding getopt, don't handle any platform
+	specially; just include getopt.h.
+	(__GETOPT_PREFIX): Define (before getopt.h).
+
+	* src/include/Makefile.sub (HDRS): Updated.
+
+	* src/libs/libgroff/getopt1.c, src/libs/libgroff/getopt.c: Use
+	gnulib version.
+
+	* src/libs/libgroff/Makefile.sub (EXTRA_CFLAGS): Set
+	__GETOPT_PREFIX.
+
+	* src/utils/pfbtops/pfbtops.c, src/utils/xtotroff/xtotroff.c
+	(__GETOPT_PREFIX): Define (before getopt.h).
+
 2005-06-21  Werner LEMBERG  <wl@gnu.org>
 
 	* src/include/lib.h: Provide a fix for Mac OS X to not include

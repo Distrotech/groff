@@ -1,4 +1,4 @@
-/* Copyright (C) 1992, 2001, 2003, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 1992, 2001, 2003, 2004, 2005 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -25,8 +25,10 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
 #include <limits.h>
+
+#define __GETOPT_PREFIX groff_
+#include <getopt.h>
 
 #include "nonposix.h"
 
