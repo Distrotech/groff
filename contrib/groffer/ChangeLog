@@ -1,4 +1,40 @@
 	________________________________________________________________
+	* release of groffer 0.9.17
+
+2005-06-23  Bernd Warken
+
+	* groffer.sh: get rid of `local' in functions (non-POSIX)
+	- Replace local variables by variable names with a special prefix
+	that is an abbreviation of the corresponding function name (quasi-
+	local variables).
+	- Unset the quasi-local function variables before returning.
+	- _t_e_s_t_f_u_n_c_(): Remove tests for local and global
+	variables.
+	- Add quasi-local variables for saving the content of
+	single-character variables.
+	- Remove some unused local and global variables.
+	- Several variables were forgotten to make local.  They are now
+	made quasi-local.
+
+	* groffer.sh: other corrections
+	- $return_var: New function (after `eval') for an arbitrary
+	return value.
+	- obj*(): Add return modes.
+	- Rewrite tests for `true' and `false'.
+	- Add function names to error calls where it was forgotten.
+	- for: Replace `for x in "$@"' by `for x'.
+	- set: Replace `set -- ...' by `set x ...; shift'.
+	- sed: Replace `\|.*|s|...|...|' by `s|...|...|'.
+
+	* README_SH:
+	- Add information on the removing of `local'.
+	- New section for non-POSIX shell restrictions.
+
+2005-06-20 Keith Marshall
+
+	* README-SH: Information of `Portable shells' in info autoconf.
+	
+	________________________________________________________________
 	* release of groffer 0.9.16
 
 2005-06-19  Bernd Warken

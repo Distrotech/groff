@@ -6,16 +6,32 @@ Shell Compatibility
 This shell script is compatible to both the GNU and the POSIX shell
 and utilities.  Care was taken to restrict the programming technics
 used here in order to achieve POSIX compatibility as far back as POSIX
-P1003.2 Draft 11.2 of September 1991, but including the local
-variables in functions that were eliminated only in this draft.  This
-draft is available at http://www.funet.fi/pub/doc/posix/p1003.2/d11.2
-in the internet.  So `groffer' should be compatible to most actual
-Bourne style shells.
+P1003.2 Draft 11.2 of September 1991.  This draft is available at
+http://www.funet.fi/pub/doc/posix/p1003.2/d11.2 in the internet.
+
+The POSIX draft does not include `local' variables for functions.  So
+this concept was replaced by global variables with a prefix that
+differs for each function.  The prefix is chosen from the function
+name.  These quasi-local variables are unset before each return of the
+function.
 
 Some shells are not fully POSIX compatible.  For them the following
-restrictions were done. The name of the variable in `for' is chosen as
-a single character.  The content of such a variable is regarded as
-non-local. Furthermore `then', `else', and `do' get a line of their own.
+restrictions were done.  For more information look at the
+documentation `Portable shells' in the `info' page of `autoconf'
+(look-up in Emacs-Help-Manuals).
+
+- The command parts `then', `else', and `do' are written each on a
+  line of their own.
+
+- Replace `for i in "$@"' by `for i'.
+
+- Replace `set -- ...' by `set x ...; shift'.  After the first
+  non-option argument, all arguments including those starting with `-'
+  are accepted as non-option.
+
+- The name of the variable in `for' is chosen as a single character.
+  The content of such variables is not safe.  So it is often stored in
+  an additional quasi-local variable.
 
 The `groffer' script provides its own option parser.  It is compatible
 to the usual GNU style command line (option clusters, long option
@@ -46,10 +62,11 @@ what the argument is meant to be; these argument names are otherwise
 irrelevant.  The `>' sign can be followed by another character that
 shows how many of these arguments are possible.
 
-<>?     0 or 1 of these arguments
-<>*     arbitrarily many such arguments, incl. none
-<>+     one or more such arguments
-<>      exactly 1 of this argument
+<arg>?     0 or 1 of these arguments
+<arg>*     arbitrarily many such arguments, incl. none
+<arg>+     one or more such arguments
+<arg>      exactly 1 of this argument
+[...]      optional arguments
 
 A function that starts with an underscore `_' is an internal function
 for some function.  The internal functions are defined just after
