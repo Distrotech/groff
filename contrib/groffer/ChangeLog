@@ -1,9 +1,72 @@
 	________________________________________________________________
+	* release of groffer 0.9.18
+
+2005-07-01  Bernd Warken
+
+	* groffer.sh: further shell compatibility
+	- `echo': Remove options and possible options of `echo' by
+	preceding the argument with a character `x' that is removed by
+	`sed' or replace `echo' by `cat <<EOF'.  `echo -n' seems to be not
+	portable, so it is omitted.
+	- `for': Remove `;' from within `for' (because of ksh).
+	- `ls': Old UNIX systems echoed the error message to standard
+	output.  So handle the output with `sed'.  If the output contains
+	`not found' map it to an empty string.
+	- `true': Replace `true' by command `:'.  Remove test of `true'
+	(because `ash' refuses the redefinition of builtins even in an
+	unreachable `if' branch).
+	- `false': Remove test of `false'; it isn't used any more.
+	- `test': As `test -e' does not exist in Solaris 2.5 replace it by
+	`test -f || test -d'.
+	- `unset': `unset' is said to be not portable.  As `ash' protests
+	against the definition of the function `unset()' in the test of
+	`unset' replace the test by defining `$unset' to `unset' if it
+	exists and to `:' otherwise.  Use `eval $unset' instead of the
+	direct command `unset'.
+	- _get_opt_shell(): Replace `for' loop with `shift' by `while'.
+	- man_search_section(): Replace `for f in filename*' by a test on
+	the existence of `filename*'.
+	- `zsh' interprets `$...' as `"$..."'.  So `eval' must be called;
+	This cannot be used in `for i in $f', so it must be rewritten as
+	`for i in $(eval set x $f; shift; echo "$@")'
+
+	* groffer.sh:
+	- `--X', `--x', `--mode=X', `--mode=x': Make these options
+	equivalent to chosing an X device by setting `-TX75-12'.  `-X' is
+	still equivalent to `groff -X'.
+	- main_init(): Choose the name of the temporary file by adding a
+	number using `expr' if it exists and cannot be removed.
+	- main_parse_args():Repair some options by replacing `$mpa_mode'
+	by `$_OPT_MODE'.
+	- catz(): Rename it to cat_z() to avoid problem with existing
+	programs.
+	- where(): Rename to where_is().
+	- $_CONFFILES: Rename to $_CONF_FILES.
+	- $_HAS_BZIP: export and preset it.
+
+	* groffer.man:
+	- Document the `X mode' changes.
+	- Add `@g@' to `troff'.
+
+	* README, README_SH, TODO:
+	- Add date line `Latest update:'.
+	- Add `...' quoting to essential terms.
+	- Add Emacs mode at the end.
+	
+	* README_SH:
+	- Add documentation on the above compatibility changes.
+	- Add documentation on used commands.
+	- Mention the tested shells.
+
+	* Makefile.sub:
+	Readd `@g@'.
+
+	________________________________________________________________
 	* release of groffer 0.9.17
 
 2005-06-23  Bernd Warken
 
-	* groffer.sh: get rid of `local' in functions (non-POSIX)
+	* groffer.sh: get rid of `local' in functions (it is not POSIX)
 	- Replace local variables by variable names with a special prefix
 	that is an abbreviation of the corresponding function name (quasi-
 	local variables).
@@ -22,9 +85,9 @@
 	- obj*(): Add return modes.
 	- Rewrite tests for `true' and `false'.
 	- Add function names to error calls where it was forgotten.
-	- for: Replace `for x in "$@"' by `for x'.
-	- set: Replace `set -- ...' by `set x ...; shift'.
-	- sed: Replace `\|.*|s|...|...|' by `s|...|...|'.
+	- `for': Replace `for x in "$@"' by `for x'.
+	- `set': Replace `set -- ...' by `set x ...; shift'.
+	- `sed': Replace `\|.*|s|...|...|' by `s|...|...|'.
 
 	* README_SH:
 	- Add information on the removing of `local'.
@@ -960,10 +1023,12 @@
 	* development of `groffview' shell script started
 
 2001-11-28  Bernd Warken
+
 	________________________________________________________________
 	License
 
-	Copyright (C) 2001,2002,2003,2004 Free Software Foundation, Inc.
+	Copyright (C) 2001,2002,2003,2004,2005 Free Software Foundation,
+	Inc.
 	Written by Bernd Warken
 	Copying and distribution of this file, with or without
 	modification, are permitted provided the copyright notice and this

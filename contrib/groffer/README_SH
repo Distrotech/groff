@@ -20,18 +20,80 @@ restrictions were done.  For more information look at the
 documentation `Portable shells' in the `info' page of `autoconf'
 (look-up in Emacs-Help-Manuals).
 
-- The command parts `then', `else', and `do' are written each on a
+- The command parts `then', `else', and `do' must be written each on a
   line of their own.
 
-- Replace `for i in "$@"' by `for i'.
+- Replace `for i in "$@"' by `for i' and remove internal `;' (kah).
 
 - Replace `set -- ...' by `set x ...; shift'.  After the first
   non-option argument, all arguments including those starting with `-'
   are accepted as non-option.
 
-- The name of the variable in `for' is chosen as a single character.
-  The content of such variables is not safe.  So it is often stored in
-  an additional quasi-local variable.
+- The name of the variable in `for' is chosen as a single character
+  (old ash).  The content of such variables is not safe because it can
+  also occur in other functions.  So it is often stored in an
+  additional quasi-local variable.
+
+- `echo' is not portable on options; some `echo' commands have many
+  options, others have none.  So `echo -n' cannot be used, such that
+  the output of each function has complete lines.  There are two
+  methods to avoid having `-' as the first character of any argument.
+  Either a character such as `x' can be prepended to the argument;
+  this must later on be removed by `sed'.  Otherwise, `echo' can be
+  replaced by `cat <<EOF'.
+
+- `ls' has problems.  Old UNIX systems echoed the error message to
+standard output.  So handle the output with `sed'.  If the output
+contains `not found' map it to an empty string.
+
+- As `test -e' is not available in Solaris 2.5 replace it by
+  `test -f || test -d'.
+
+- As `unset' is not supported by all shells replace ist by `eval
+  $unset' where this variable is `unset' if it exists and `:'
+  otherwise.
+
+- Replace `true' by `:', `false' isn't used.
+
+- Do not redefine builtins as functions (ash).
+
+The `groffer' script was tested under the shells `ash', `bash',
+`dash', 'ksh', `pdksh', and 'posh' without problems in Linux Debian.
+`zsh' works, but produces a minor problem (in the modes dvi, pdf, ps,
+and X, an empty page is added as first page.)
+
+The script uses the following commands:
+.
+:
+apropos
+break
+bzip2
+cat
+catz
+continue
+echo
+eval
+expr
+grep
+groff
+grog
+gs
+gzip
+ls
+man
+mkdir
+mv
+return
+rm
+rmdir
+sed
+set
+sh
+shift
+test
+trap
+umask
+unset
 
 The `groffer' script provides its own option parser.  It is compatible
 to the usual GNU style command line (option clusters, long option
@@ -82,7 +144,6 @@ dirname_chop (<path>)
 do_filearg (<filearg>)
 do_nothing ()
 echo2 (<text>*)
-echo2n (<text>*)
 error (<text>*)
 get_first_essential (<arg>*)
 is_dir (<name>)
@@ -197,6 +258,8 @@ The class `list' represents an array structure, see list_*().
 
 ####### License
 
+Last update: 1 July 2005
+
 Copyright (C) 2003,2004,2005 Free Software Foundation, Inc.
 Written by Bernd Warken
 
@@ -216,3 +279,10 @@ You should have received a copy of the GNU General Public License
 along with groff; see the files COPYING and LICENSE in the top
 directory of the groff source.  If not, write to the Free Software
 Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
+
+
+####### Emacs settings
+
+Local Variables:
+mode: text
+End:

@@ -15,12 +15,12 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update : 21 May 2005
+Last update : 29 June 2005
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
 .de author
-This file was written by Bernd Warken.
+This file was written by \m[blue]Bernd Warken\m[].
 ..
 .de copyleft
 Copyright (C) 2001,2002,2004,2005 Free Software Foundation, Inc.
@@ -669,7 +669,7 @@ Fifth Floor, Boston, MA 02110-1301, USA.
 .\" --------------------------------------------------------------------
 .
 The
-.I \%groffer
+.B \%groffer
 program is the easiest way to use
 .BR \%groff (@MAN1EXT@).
 It can display arbitrary documents written in the
@@ -681,7 +681,7 @@ languages that are compatible to the original
 language.
 .
 The
-.I \%groffer
+.B \%groffer
 program also includes many of the features for finding and displaying
 the \%UNIX manual pages
 .nh
@@ -718,20 +718,24 @@ available for
 .
 This includes the
 .I \%groff
-native X viewer
+native X\~\%viewer
 .BR \%gxditview (@MAN1EXT@),
 each Postcript or
 .I \%dvi
 display program, a web browser by generating
 .I \%html
-in www-mode, or several text modes in text terminals.
+in
+.IR \%www\~mode ,
+or several
+.I \%text\~modes
+in text terminals.
 .
 .
 .P
 Most of the options that must be named when running
-.I \%groff
+.B \%groff
 directly are determined automatically for
-.IR \%groffer ,
+.BR \%groffer ,
 due to the internal usage of the
 .BR \%grog (@MAN1EXT@)
 program.
@@ -811,13 +815,13 @@ They are transformed into a single document in the normal way of
 .Opt_[alt] - Z -- intermediate\-output -- ditroff
 .P
 All further
-.I \%groff
+.B \%groff
 short options are accepted.
 .RE
 .
 .
 .TP
-.I X Window toolkit options
+.I X\~\%Window\~\%Toolkit options
 .RS
 .P
 .Opt_[alt] -- bd pixels
@@ -830,7 +834,7 @@ short options are accepted.
 .Opt_[alt] -- resolution value
 .Opt_[alt] -- rv
 .Opt_[alt] -- title string
-.Opt_[alt] -- xrm X_resource
+.Opt_[alt] -- xrm X-resource
 .RE
 .
 .
@@ -852,7 +856,7 @@ short options are accepted.
 .Opt_[alt] -- whatis
 .P
 Further long options of GNU
-.I man
+.B man
 are accepted as well.
 .RE
 .
@@ -934,7 +938,7 @@ in the lowest man\~section.
 .\" --------------------------------------------------------------------
 .
 The
-.I \%groffer
+.B \%groffer
 program can usually be run with very few options.
 .
 But for special purposes, it supports many options.
@@ -944,12 +948,12 @@ These can be classified in 5 option classes.
 .
 .P
 All short options of
-.I \%groffer
+.B \%groffer
 are compatible with the short options of
 .BR \%groff (@MAN1EXT@).
 .
 All long options of
-.I \%groffer
+.B \%groffer
 are compatible with the long options of
 .BR \%man (1).
 .
@@ -960,7 +964,7 @@ are compatible with the long options of
 .
 As soon as one of these options is found on the command line it is
 executed, printed to standard output, and the running
-.I \%groffer
+.B \%groffer
 is terminated thereafter.
 .
 All other arguments are ignored.
@@ -1023,7 +1027,7 @@ The display mode and the viewer programs are determined by these
 options.
 .
 If none of these mode and viewer options is specified
-.I \%groffer
+.B \%groffer
 tries to find a suitable display mode automatically.
 .
 .
@@ -1043,7 +1047,7 @@ and restart option processing using only the rest of the command line.
 .
 .Opt_def -- default\-modes mode1,mode2,\*[Ellipsis]
 Set the sequence of modes for
-.I \%auto mode
+.I \%auto\~mode
 to the comma separated list given in the argument.
 .
 See
@@ -1064,7 +1068,8 @@ Equivalent to
 .
 .
 .Opt_def -- dvi\-viewer prog
-Set the viewer program for dvi mode.
+Set the viewer program for
+.IR \%dvi\~mode .
 .
 This can be a file name or a program to be searched in
 .Env_var $PATH .
@@ -1091,8 +1096,7 @@ Equivalent to
 .
 .Opt_def -- html\-viewer
 Set the web browser program for viewing in
-.I \%html
-mode.
+.I \%html\~mode .
 .
 Each program that accepts html input and allows the
 .BI \%file://localhost/ dir / file
@@ -1119,8 +1123,9 @@ The sequence of modes that are tried can be set with the
 .Opt_long default\-modes
 option.
 .
-Useful for restoring the default mode when a different mode was
-specified before.
+Useful for restoring the
+.I \%default\~mode
+when a different mode was specified before.
 .
 .
 .TP
@@ -1138,7 +1143,7 @@ program.
 .TP
 .Header_CB groff
 After the file determination, switch
-.I \%groffer
+.B \%groffer
 to process the input like
 .BR \%groff (@MAN1EXT@)
 would do.
@@ -1169,8 +1174,10 @@ Display formatted input in a
 (Portable Document Format) viewer
 program.
 .
-By default, the input is formatted by groff using the Postscript
-device, then it is transformed into the PDF file format using
+By default, the input is formatted by
+.B \%groff
+using the Postscript device, then it is transformed into the PDF file
+format using
 .BR \%gs (1),
 and finally displayed either with the
 .BR \%xpdf (1)
@@ -1182,7 +1189,8 @@ PDF has a big advantage because the text is displayed graphically and
 is searchable as well.
 .
 But as the transformation takes a considerable amount of time, this
-mode is not suitable as a default device for the auto mode.
+mode is not suitable as a default device for the
+.I \%auto\~mode .
 .
 .
 .TP
@@ -1197,9 +1205,9 @@ program.
 .TP
 .Header_CB text
 Format in a
-.I \%groff
-text mode and write the result to standard output without a pager or
-viewer program.
+.I \%groff\~text\~mode
+and write the result to standard output without a pager or viewer
+program.
 .
 The text device,
 .I \%latin1
@@ -1210,9 +1218,9 @@ by default, can be chosen with option
 .TP
 .Header_CB tty
 Format in a
-.I \%groff
-text mode and write the result to standard output using a text pager
-program, even when in X\~\%Window.
+.I \%groff\~text\~mode
+and write the result to standard output using a text pager program,
+even when in X\~\%Window.
 .
 .
 .TP
@@ -1223,13 +1231,25 @@ Equivalent to
 .
 .TP
 .Header_CB X
-Display formatted input in a native roff viewer.
+Display the formatted input in a native
+.I roff
+viewer.
 .
 By default, the formatted input is displayed with the
 .BR \%gxditview (@MAN1EXT@)
-program, being distributed together with groff, or with
-.BR \%xditview (1),
-which is distributed as a standard X tool.
+program being distributed together with
+.BR \%groff .
+But the standard X\~tool
+.BR \%xditview (1)
+can also be chosen with the option
+Opt_long x\-viewer .
+This mode chooses the
+.I groff
+device
+.BR X75\-12 ,
+generates the corresponding
+.IR "groff intermediate output" ,
+and displays the result.
 .
 .
 .TP
@@ -1275,10 +1295,9 @@ Equivalent to
 .Opt_long_arg mode pdf .
 .
 .
-.Opt_def -- pdf-viewer prog
+.Opt_def -- pdf\-viewer prog
 Set the viewer program for
-.I \%pdf
-mode.
+.IR \%pdf\~mode .
 .
 This can be a file name or a program to be searched in
 .Env_var $PATH .
@@ -1291,10 +1310,9 @@ Equivalent to
 .Opt_long_arg mode ps .
 .
 .
-.Opt_def -- ps-viewer prog
+.Opt_def -- ps\-viewer prog
 Set the viewer program for
-.I \%ps
-mode.
+.IR \%ps\~mode .
 .
 This can be a file name or a program to be searched in
 .Env_var $PATH .
@@ -1334,19 +1352,18 @@ Equivalent to
 .Opt_long html\-viewer .
 .
 .
-.Opt_def - X -- X -- x
+.Opt_def -- X -- x
 Equivalent to
 .Opt_long_arg mode X .
 .
 .
 .Opt_def -- X\-viewer -- x\-viewer prog
 Set the viewer program for
-.I x
-mode.
+.IR \%X\~mode .
 .
 Suitable viewer programs are
 .BR \%gxditview (@MAN1EXT@)
-and
+which is the default and
 .BR \%xditview (1).
 .
 But the argument can be any executable file or a program in
@@ -1365,17 +1382,20 @@ parameters.
 .
 .P
 Besides these,
-.I \%groffer
+.B \%groffer
 accepts all arguments that are valid for the
 .BR \%groff (@MAN1EXT@)
 program.
 .
-All non-groffer options are sent unmodified via
-.I \%grog
+All
+.RB \%non- groffer
+options are sent unmodified via
+.B \%grog
 to
-.IR \%groff .
+.BR \%groff .
 .
-Postprocessors, macro packages, compatibility with classical
+Postprocessors, macro packages, compatibility with
+.I classical
 .IR \%troff ,
 and much more can be manually specified.
 .
@@ -1391,7 +1411,9 @@ Actually, a function call stack is printed if an error occurs.
 .
 .
 .Opt_def -- shell "shell_program"
-Specify the shell under which the groffer script should be run.
+Specify the shell under which the
+.B \%groffer
+script should be run.
 .
 The script first tests whether this option is set (either by
 configuration, within
@@ -1410,7 +1432,7 @@ This is the equivalent
 .
 .P
 Other useful debugging options are the
-.I \%groff
+.B \%groff
 options
 .Opt_short V
 and
@@ -1424,39 +1446,40 @@ and option
 .\" --------------------------------------------------------------------
 .
 All short options of
-.I \%groffer
+.B \%groffer
 are compatible with the short options of
 .BR \%groff (@MAN1EXT@).
 .
 The following of
-.I \%groff
+.B \%groff
 options have either an additional special meaning within
-.I \%groffer
+.B \%groffer
 or make sense for normal usage.
 .
 .
 .P
 Because of the special outputting behavior of the
-.I \%groff
+.B \%groff
 options
 .Opt_short V
 and
 .Opt_short Z
-.I \%groffer
+.B \%groffer
 was designed to be switched into
-.I \%groff
-mode by these; the
+.I \%groff\~mode
+by these; the
 .I \%groffer
 viewing features are disabled there.
 .
 The other
-.I \%groff
+.B \%groff
 options do not switch the mode, but allow to customize the formatting
 process.
 .
 .
 .Opt_def - a
-This generates an ascii approximation of output in text modes.
+This generates an ascii approximation of output in
+.IR \%text\~modes .
 .
 That could be important when the text pager has problems with control
 sequences.
@@ -1476,14 +1499,14 @@ This is useful in case it cannot be recognized automatically.
 Send the argument
 .I \%opt_or_arg
 as an option or option argument to the actual
-.I \%groff
+.B \%groff
 postprocessor.
 .
 .
 .Opt_def - T -- device devname
 .
 This option determines
-.IR \%groff 's
+.BR \%groff 's
 output device.
 .
 The most important devices are the text output devices for referring
@@ -1494,15 +1517,18 @@ to the different character sets, such as
 and others.
 .
 Each of these arguments switches
-.I \%groffer
-into a text mode using this device, to
-.I mode \%tty
-if the actual mode is not a text mode.
+.B \%groffer
+into a
+.I \%text\~mode
+using this device, to
+.I \%mode\~tty
+if the actual mode is not a
+.IR \%text\~mode .
 .
 The following
 .I \%devname
 arguments are mapped to the corresponding
-.I \%groffer
+.B \%groffer
 .Opt_long_arg mode \fIdevname\fR
 option:
 .BR \%dvi ,
@@ -1511,42 +1537,50 @@ and
 .BR \%ps .
 All
 .B \%X*
-arguments are mapped to mode
-.BR \%X .
+arguments are mapped to
+.IR \%mode\~X .
 Each other
 .I \%devname
 argument switches to
-.I mode \%groff
+.I \%mode\~groff
 using this device.
 .
 .
 .Opt_def - V
 Switch into
-.I \%groff
-mode and show only the
+.I \%groff\~mode
+and show only the
 .I \%groff
 calling pipe without formatting the input.
 .
-This an advanced option from
+This is an advanced option from
 .BR \%groff (@MAN1EXT@) ,
 only useful for debugging.
 .
 .
 .Opt_def - X
-was made equivalent to
-.Opt_long_arg mode x ;
-this slightly enhances the facility of
-.IR \%groff 's
-option.
+is equivalent to
+.BR "groff \-X" .
+It displays the
+.I groff intermediate output
+with
+.BR gxditview .
+As the quality is relatively bad this option is deprecated; use
+.Opt_long X
+instead because the
+.I X mode
+uses an
+.IR X *
+device for a better display.
 .
 .
 .Opt_def - Z -- intermediate-output -- ditroff
 Switch into
-.I \%groff
-mode and format the input with
-.I \%groff
-intermediate output without postprocessing; see
-.BR \%groff_out (@MAN1EXT@).
+.I \%groff\~mode
+and format the input with the
+.I \%groff intermediate output
+without postprocessing; see
+.BR \%groff_out (@MAN5EXT@).
 This is equivalent to option
 .Opt_long ditroff
 of
@@ -1556,36 +1590,36 @@ which can be used as well.
 .
 .P
 All other
-.I \%groff
+.B \%groff
 options are supported by
-.IR \%groffer ,
+.BR \%groffer ,
 but they are just transparently transferred to
-.I \%groff
+.B \%groff
 without any intervention.
 .
 The options that are not explicitly handled by
-.I \%groffer
+.B \%groffer
 are transparently passed to
-.IR \%groff .
+.BR \%groff .
 .
 Therefore these transparent options are not documented here, but in
 .BR \%groff (@MAN1EXT@).
 Due to the automatism in
-.IR \%groffer ,
+.BR \%groffer ,
 none of these
-.I \%groff
+.B \%groff
 options should be needed, except for advanced usage.
 .
 .
 .\" --------------------------------------------------------------------
-.SS "X Window toolkit Options"
+.SS "X\~\%Window\~\%Toolkit Options"
 .\" --------------------------------------------------------------------
 .
-The following long options were adapted from the corresponding X
-Toolkit options.
+The following long options were adapted from the corresponding
+X\~\%Toolkit options.
 .
-.I \%groffer
-will pass them to the actual viewer program if it is an X Window
+.B \%groffer
+will pass them to the actual viewer program if it is an X\~\%Window
 program.
 .
 Otherwise these options are ignored.
@@ -1596,15 +1630,13 @@ Unfortunately these options use the old style of a single minus for
 long options.
 .
 For
-.I \%groffer
+.B \%groffer
 that was changed to the standard with using a double minus for long
 options, for example,
-.I \%groffer
+.B \%groffer
 uses the option
 .Opt_long font
-for the
-.I X
-option
+for the X\~\%option
 .Opt_short font .
 .
 .
@@ -1612,7 +1644,7 @@ option
 See
 .BR \%X (1),
 .BR \%X (7),
-and the documentation on the X toolkit options for more details on
+and the documentation on the X\~\%Toolkit\~\%options for more details on
 these options and their arguments.
 .
 .
@@ -1635,7 +1667,7 @@ window.
 .
 .
 .Opt_def -- display X-display
-Set the X display on which the viewer program shall be started, see the
+Set the X\~\%display on which the viewer program shall be started, see the
 .I X\~\%Window
 documentation for the syntax of the argument.
 .
@@ -1652,7 +1684,7 @@ This is equivalent to
 .Opt_def -- font font_name
 Set the font used by the viewer window.
 .
-The argument is an X font name.
+The argument is an X\~\%font\~\%name.
 .
 .
 .Opt_def -- ft font_name
@@ -1670,7 +1702,7 @@ for the syntax of the argument.
 .
 .
 .Opt_def -- resolution value
-Set X resolution in dpi (dots per inch) in some viewer programs.
+Set X\~\%resolution in dpi (dots per inch) in some viewer programs.
 .
 The only supported dpi values are
 .B 75
@@ -1678,7 +1710,7 @@ and
 .BR 100 .
 .
 Actually, the default resolution for
-.I \%groffer
+.B \%groffer
 is set to
 .BR 75 .
 .
@@ -1692,7 +1724,7 @@ Set the title for the viewer window.
 .
 .
 .Opt_def -- xrm "'resource'"
-Set X resource.
+Set X\~\%resource.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1700,22 +1732,22 @@ Set X resource.
 .\" --------------------------------------------------------------------
 .
 The long options of
-.I \%groffer
-were synchronized with the long options of
-.IR GNU man .
+.B \%groffer
+were synchronized with the long options of GNU
+.BR man .
 .
-All long options of
-.I GNU man
+All long options of GNU
+.I man
 are recognized, but not all of these options are important to
-.IR \%groffer ,
+.BR \%groffer ,
 so most of them are just ignored.
 .
 .
 .P
 The following two options were added to
-.I \%groffer
+.B \%groffer
 for choosing whether the file name arguments are interpreted as names
-for local files or as a search pattern for man pages.
+for local files or as a search pattern for man\~pages.
 .
 The default is looking up for local files.
 .
@@ -1738,27 +1770,27 @@ Do not check for man\~pages.
 .
 .Opt_long local-file
 is the corresponding
-.I man
+.B man
 option.
 .
 .
 .P
 In the following, the
-.I man
+.B man
 options that have a special meaning for
-.I \%groffer
+.B \%groffer
 are documented.
 .
 .
 .P
-The full set of long and short options of the
-.I GNU man
+The full set of long and short options of the GNU
+.B man
 program can be passed via the environment variable
 .Env_var $MANOPT ;
 see
 .BR \%man (1)
-if your system has
-.I GNU man
+if your system has GNU
+.B man
 installed.
 .
 .
@@ -1768,12 +1800,19 @@ only one.
 .
 .
 .Opt_def - 7 -- ascii
-In text modes, display ASCII translation of special characters.
+In
+.IR \%text\~modes ,
+display ASCII translation of special characters for critical environment.
+.
+This is equivalent to
+.BR "groff -mtty_char" ;
+see
+.BR groff_tmac (@MAN5EXT@).
 .
 .
 .Opt_def -- ditroff
 Eqivalent to
-.I \%groffer
+.B \%groffer
 .Opt_short Z .
 .
 .
@@ -1790,7 +1829,7 @@ the man\~page extension is
 .
 .Opt_def -- locale language
 .
-Set the language for man pages.
+Set the language for man\~pages.
 .
 This has the same effect, but overwrites
 .Env_var $LANG
@@ -1806,7 +1845,7 @@ call to
 .Opt_long location .
 .
 This was added by
-.IR \%groffer .
+.BR \%groffer .
 .
 .
 .Opt_def -- manpath "'dir1:dir2:\*[Ellipsis]'"
@@ -1818,10 +1857,12 @@ is disabled.
 .
 .
 .Opt_def -- pager
-Set the pager program in tty mode; default is
-.IR \%less .
+Set the pager program in
+.IR \%tty\~mode ;
+default is
+.BR \%less .
 This is equivalent to
-.Opt_long tty-viewer .
+.Opt_long tty\-viewer .
 .
 .
 .Opt_def -- sections "'sec1:sec2:\*[Ellipsis]'"
@@ -1831,7 +1872,7 @@ a colon-separated list.
 .
 .
 .Opt_def -- systems "'sys1,sys2,\*[Ellipsis]'"
-Search for man pages for the given operating systems; the argument
+Search for man\~pages for the given operating systems; the argument
 .I \%systems
 is a comma-separated list.
 .
@@ -1848,7 +1889,7 @@ Eqivalent to
 .
 .P
 Additionally, the following short option of
-.I \%man
+.B \%man
 is supported as well.
 .
 .
@@ -1863,12 +1904,12 @@ or template for searching man\~pages.
 .
 These input sources are collected and composed into a single output
 file such as
-.I \%groff
+.B \%groff
 does.
 .
 .
 .P
-The strange POSIX behavior that maps all arguments behind the first
+The strange \%POSIX behavior that maps all arguments behind the first
 non-option argument into
 .I \%filespec
 arguments is ignored.
@@ -1894,7 +1935,7 @@ parameters can have one of the following forms.
 No
 .I \%filespec
 parameters means that
-.I \%groffer
+.B \%groffer
 waits for standard input.
 .
 The minus option
@@ -1909,7 +1950,7 @@ Otherwise it is assumed as a searching pattern for a man\~page.
 .
 .
 .P
-On each system, the man pages are sorted according to their content
+On each system, the man\~pages are sorted according to their content
 into several sections.
 .
 The
@@ -1930,15 +1971,15 @@ means this scheme.
 .
 .P
 The internal precedence of
-.I \%man
-for searching man pages with the same name within several sections
+.B \%man
+for searching man\~pages with the same name within several sections
 goes according to the classical single-character sequence.
 .
 On some systems, this single character can be extended by a following
 string.
 .
 But the special
-.I \%groffer
+.B \%groffer
 man\~page facility is based on the classical single character sections.
 .
 .
@@ -1978,8 +2019,7 @@ mentioned above.
 Otherwise search for a man\~page named
 .IR \%name.s
 in the lowest
-.I man\~\c
-.IR section .
+.B man\~section .
 .
 .
 .P
@@ -1994,7 +2034,7 @@ document called
 The pattern
 .I \%s\~name
 originates from a strange argument parsing of the
-.I man
+.B man
 program.
 .
 If
@@ -2028,7 +2068,7 @@ in the lowest man\~section that has a document for this name.
 Several file name arguments can be supplied.
 .
 They are mixed by
-.I \%groff
+.B \%groff
 into a single document.
 .
 Note that the set of option arguments must fit to all of these file
@@ -2044,19 +2084,19 @@ language.
 .\" --------------------------------------------------------------------
 .
 By default, the
-.I \%groffer
+.B \%groffer
 program collects all input into a single file, formats it with the
-.I \%groff
+.B \%groff
 program for a certain device, and then chooses a suitable viewer
 program.
 .
 The device and viewer process in
-.I \%groffer
+.B \%groffer
 is called a
 .IR \%mode .
 .
 The mode and viewer of a running
-.I \%groffer
+.B \%groffer
 program is selected automatically, but the user can also choose it
 with options.
 .
@@ -2068,31 +2108,32 @@ its own, such as
 .Opt_long \fIanymode .
 Most of these modes have a viewer program, which can be chosen by an
 option that is constructed like
-.Opt_long \fIanymode\fR-viewer .
+.Opt_long \fIanymode\fR\-viewer .
 .
 .
 .P
-Several different modes are offered, graphical X modes, text modes,
+Several different modes are offered, graphical
+.IR \%X\~modes ,
+.IR \%text\~modes ,
 and some direct
-.I \%groff
-modes for debugging and development.
+.I \%groff\~modes
+for debugging and development.
 .
 .
 .P
 By default,
-.I \%groffer
+.B \%groffer
 first tries whether
-.B x
-mode is possible, then
-.B \%ps
-mode, and finally
-.B \%tty
-mode.
+.I \%x\~mode
+is possible, then
+.IR \%ps\~mode ,
+and finally
+.IR \%tty\~mode .
 .
 This mode testing sequence for
-.B \%auto
-mode can be changed by specifying a comma separated list of modes
-with the option
+.I \%auto\~mode
+can be changed by specifying a comma separated list of modes with the
+option
 .Opt_long default\-modes.
 .
 .
@@ -2106,57 +2147,56 @@ active in every mode.
 .\" --------------------------------------------------------------------
 .
 The graphical display modes work only in the
-.I X\~Window environment
+.I X\~\%Window environment
 (or similar implementations within other windowing environments).
 .
 The environment variable
 .Env_var $DISPLAY
 and the option
 .Opt_long display
-are used for specifying the X display to be used.
+are used for specifying the X\~\%display to be used.
 .
 If neither is given,
-.I \%groffer
-assumes that no X and changes to one text mode.
+.B \%groffer
+assumes that no X and changes to one
+.IR \%text\~mode .
 .
 You can change this automatic behavior by the option
 .Opt_long default\-modes .
 .
 .
 .P
-Known viewers for the graphical display modes and their standard X
-Window viewer progams are
+Known viewers for the graphical display modes and their standard
+X\~\%Window viewer progams are
 .
 .Topic
-X Window roff viewers such as
+X\~\%Window
+.I roff
+viewers such as
 .BR \%gxditview (@MAN1EXT@)
 or
 .BR \%xditview (1)
 (in
 .I x
 or
-.I X
-mode),
+.IR \%X\~mode ),
 .
 .Topic
 in a Postscript viewer
 .nh
-.RI ( ps
-mode),
+.RI ( \%ps\~mode ),
 .hy
 .
 .Topic
 in a dvi viewer program
 .nh
-.RI ( dvi
-mode),
+.RI ( \%dvi\~mode ),
 .hy
 .
 .Topic
 in a PDF viewer
 .nh
-.RI ( pdf
-mode),
+.RI ( \%pdf\~mode ),
 .hy
 .
 .Topic
@@ -2164,17 +2204,16 @@ in a web browser
 .nh
 .RI ( html
 or
-.I www
-mode),
+.IR \%www\~mode ),
 .hy
 .RE
 .
 .
 .P
 The
-.I \%pdf
-mode has a major advantage \[em] it is the only graphical diplay mode
-that allows to search for text within the viewer; this can be a really
+.I \%pdf\~mode
+has a major advantage \[em] it is the only graphical diplay mode that
+allows to search for text within the viewer; this can be a really
 important feature.
 .
 Unfortunately, it takes some time to transform the input into the PDF
@@ -2182,40 +2221,43 @@ format, so it was not chosen as the major mode.
 .
 .
 .P
-These graphical viewers can be customized by options of the X Window
-Toolkit.
+These graphical viewers can be customized by options of the
+X\~\%Window\~\%Toolkit.
 .
 But the
-.I \%groffer
+.B \%groffer
 options use a leading double minus instead of the single minus used by
 the
-.I X\~Window\~\c
-.IR Toolkit .
+.I X\~\%Window\~\%Toolkit .
 .
 .
 .\" --------------------------------------------------------------------
 .SS "Text mode"
 .\" --------------------------------------------------------------------
 .
-There are to modes for text output, mode
-.I \%text
-for plain output without a pager and mode
-.I \%tty
+There are two modes for text output,
+.I \%mode\~text
+for plain output without a pager and
+.I \%mode\~tty
 for a text output on a text terminal using some pager program.
 .
 .
 .P
 If the variable
-.Env_var $DISPLAY
-is not set or empty, groffer assumes that it should use
-.I \%tty
-mode.
+.Env_var \%$DISPLAY
+is not set or empty,
+.B \%groffer
+assumes that it should use
+.IR \%tty\~\%mode .
 .
 .
 .P
-In the actual implementation, the groff output device
+In the actual implementation, the
+.I groff
+output device
 .I \%latin1
-is chosen for text modes.
+is chosen for
+.IR \%text\~modes .
 .
 This can be changed by specifying option
 .Opt_short T
@@ -2227,7 +2269,7 @@ or
 The pager to be used can be specified by one of the options
 .Opt_long pager
 and
-.Opt_long tty-viewer ,
+.Opt_long tty\-viewer ,
 or by the environment variable
 .Env_var $PAGER .
 If all of this is not used the
@@ -2247,7 +2289,7 @@ These modes use the
 file determination and decompression.
 .
 This is combined into a single input file that is fed directly into
-.I \%groff
+.B \%groff
 with different strategy without the
 .I \%groffer
 viewing facilities.
@@ -2258,15 +2300,21 @@ and development purposes.
 .
 .P
 The
-.I \%source
-mode with just displays the generated input.
+.I \%source\~mode
+with option
+.Opt_short Q
+and
+.Opt_long source
+just displays the decompressed input.
 .
+.
+.P
 The
-.I \%groff
-mode passes the input to
-.I \%groff
+.I \%groff\~mode
+passes the input to
+.B \%groff
 using only some suitable options provided to
-.IR \%groffer .
+.BR \%groffer .
 .
 This enables the user to save the generated output into a file or pipe
 it into another program.
@@ -2274,8 +2322,8 @@ it into another program.
 .
 .P
 In
-.I \%groff
-mode, the option
+.IR \%groff\~\%mode ,
+the option
 .Opt_short Z
 disables post-processing, thus producing the
 .nh
@@ -2290,18 +2338,20 @@ for details.
 .
 .P
 All
-.I \%groff
+.B \%groff
 short options are supported by
-.IR \%groffer .
+.BR \%groffer .
 .
 .
 .\" --------------------------------------------------------------------
 .SH "MAN\~PAGE\~SEARCHING"
 .\" --------------------------------------------------------------------
 .
-The default behavior of groffer is to first test whether a file
-parameter represents a local file; if it is not an existing file name,
-it is assumed to represent a name of a man\~page.
+The default behavior of
+.B \%groffer
+is to first test whether a file parameter represents a local file; if
+it is not an existing file name, it is assumed to represent a name of
+a man\~page.
 .
 This behavior can be modified by the following options.
 .
@@ -2325,7 +2375,9 @@ continued.
 .
 .
 .P
-The groffer program provides a search facility for man\~pages.
+The
+.B \%groffer
+program provides a search facility for man\~pages.
 .
 All long options, all environment variables, and most of the
 functionality of the GNU
@@ -2334,7 +2386,7 @@ program were implemented.
 .
 This inludes the extended file names of man\~pages, for example,
 the man\~page of
-.I \%groff
+.B \%groff
 in man\~section 7 may be stored under
 .File_name /usr/share/man/man7/groff.7.gz ,
 where
@@ -2352,7 +2404,11 @@ shows the compression of the file.
 The
 .I cat\~pages
 (preformatted man\~pages) are intentionally excluded from the search
-because groffer is a roff program that wants to format by its own.
+because
+.B \%groffer
+is a
+.I roff
+program that wants to format by its own.
 .
 With the excellent performance of the actual computers, the
 preformatted man\~pages aren't necessary any longer.
@@ -2412,8 +2468,9 @@ environment variables and command line options.
 .
 .
 .P
-The locale (language) is determined like in GNU man, that is from
-highest to lowest precedence:
+The locale (language) is determined like in GNU
+.BR man ,
+that is from highest to lowest precedence:
 .Topic
 .Opt_long locale
 .
@@ -2434,7 +2491,7 @@ highest to lowest precedence:
 .
 .
 .P
-The language locale is usually specified in the POSIX 1003.1 based
+The language locale is usually specified in the \%POSIX 1003.1 based
 format:
 .P
 .nh
@@ -2461,7 +2518,7 @@ If still not found the corresponding man\~page in the default language
 is used instead.
 .
 As usual, this default can be specified by one of \f[CR]C\f[] or
-\f[CR]POSIX\f[].
+\f[CR]\%POSIX\f[].
 .
 The man\~pages in the default language are usually in English.
 .
@@ -2553,8 +2610,10 @@ the sequence that was specified on the command line.
 .SH "ENVIRONMENT"
 .\" --------------------------------------------------------------------
 .
-The groffer programs supports many system variables, most of them by
-courtesy of other programs.
+The
+.B \%groffer
+program supports many system variables, most of them by courtesy of
+other programs.
 .
 All environment variables of
 .BR \%groff (@MAN1EXT@)
@@ -2569,7 +2628,8 @@ and some standard system variables are honored.
 .
 .TP
 .Env_var $GROFFER_OPT
-Store options for a run of groffer.
+Store options for a run of
+.BR \%groffer .
 .
 The options specified in this variable are overridden by the options
 given on the command line.
@@ -2583,28 +2643,34 @@ be quoted.
 .SS "System Variables"
 .\" --------------------------------------------------------------------
 .
-The groffer program is a shell script that is run through
+The
+.B \%groffer
+program is a shell script that is run through
 .File_name /bin/sh ,
 which can be internally linked to programs like
 .BR \%bash (1).
 The corresponding system environment is automatically effective.
 .
-The following variables have a special meaning for groffer.
+The following variables have a special meaning for
+.BR \%groffer .
 .
 .
 .TP
 .Env_var $DISPLAY
-If this variable is set this indicates that the X Window system is
+If this variable is set this indicates that the X\~\%Window system is
 running.
 .
 Testing this variable decides on whether graphical or text output is
 generated.
 .
 This variable should not be changed by the user carelessly, but it can
-be used to start the graphical groffer on a remote X terminal.
+be used to start the graphical
+.B \%groffer
+on a remote X\~\%terminal.
 .
-For example, depending on your system, groffer can be started on the
-second monitor by the command
+For example, depending on your system,
+.B \%groffer
+can be started on the second monitor by the command
 .Shell_cmd DISPLAY=:0.1\~groffer\~ what.ever &
 .
 .
@@ -2661,21 +2727,24 @@ program
 .
 .TP
 .Env_var $PATH
-All programs within the groffer shell script are called without a
-fixed path.
+All programs within the
+.B \%groffer
+shell script are called without a fixed path.
 .
 Thus this environment variable determines the set of programs used
-within the run of groffer.
+within the run of
+.BR \%groffer .
 .
 .
 .TP
 .Env_var $POSIXLY_CORRECT
-If set to a non-empty value this chooses the POSIX mode.
+If set to a non-empty value this chooses the \%POSIX mode of the shell.
 .
-This is done internally by some shells.
+This is done internally by some shells, such as
+.IR bash .
 .
-.I \%groffer
-ignores the bad POSIX behavior for option processing, that means that
+.B \%groffer
+ignores the bad \%POSIX behavior for option processing, that means that
 option processing will be finished as soon as a non-option argument is
 found.
 .
@@ -2690,17 +2759,24 @@ Usually, you do not want to set this environment variable externally.
 .SS "Groff Variables"
 .\" --------------------------------------------------------------------
 .
-The groffer program internally calls groff, so all environment
-variables documented in
+The
+.B \%groffer
+program internally calls
+.BR \%groff ,
+so all environment variables documented in
 .BR \%groff (@MAN1EXT@)
-are internally used within groffer as well.
+are internally used within
+.B \%groffer
+as well.
 .
-The following variables have a direct meaning for the groffer program.
+The following variables have a direct meaning for the
+.B \%groffer
+program.
 .
 .TP
 .Env_var $GROFF_TMPDIR
 If the value of this variable is an existing, writable directory,
-.I \%groffer
+.B \%groffer
 uses it for storing its temporary files, just as groff does.
 .
 .
@@ -2709,13 +2785,18 @@ uses it for storing its temporary files, just as groff does.
 .\" --------------------------------------------------------------------
 .
 Parts of the functionality of the man\~program were implemented in
-groffer; support for all environment variables documented in
+.BR \%groffer ;
+support for all environment variables documented in
 .BR \%man (1)
-was added to groffer, but the meaning was slightly modified due to the
-different approach in groffer; but the user interface is the same.
+was added to
+.BR \%groffer ,
+but the meaning was slightly modified due to the different approach in
+.BR \%groffer ;
+but the user interface is the same.
 .
-The man environment variables can be overwritten by options provided
-with
+The
+.B man
+environment variables can be overwritten by options provided with
 .Env_var $MANOPT ,
 which in turn is overwritten by the command line.
 .
@@ -2733,8 +2814,9 @@ see there for details.
 .Env_var $MANOPT
 This variable contains options as a preset for
 .BR \%man (1).
-As not all of these are relevant for groffer only the essential parts
-of its value are extracted.
+As not all of these are relevant for
+.B \%groffer
+only the essential parts of its value are extracted.
 .
 The options specified in this variable overwrite the values of the
 other environment variables taht are specific to man.
@@ -2774,8 +2856,9 @@ see there for details.
 .P
 The environment variable
 .Env_var $MANROFFSEQ
-is ignored by groffer because the necessary preprocessors are
-determined automatically.
+is ignored by
+.B \%groffer
+because the necessary preprocessors are determined automatically.
 .
 .
 .\" --------------------------------------------------------------------
@@ -2783,7 +2866,7 @@ determined automatically.
 .\" --------------------------------------------------------------------
 .
 The
-.I \%groffer
+.B \%groffer
 program can be preconfigured by two configuration files.
 .
 This configuration can be overridden at each program start by command
@@ -2793,12 +2876,15 @@ line options or by the environment variable
 .
 .TP
 .File_name /etc/groff/groffer.conf
-System-wide configuration file for groffer.
+System-wide configuration file for
+.BR \%groffer .
 .
 .
 .TP
 .File_name $HOME/.groff/groffer.conf
-User-specific configuration file for groffer, where
+User-specific configuration file for
+.BR \%groffer ,
+where
 .Env_var $HOME
 denotes the user's home directory.
 .
@@ -2815,9 +2901,9 @@ The lines with the beginning minus are appended to the existing value
 of $GROFFER_OPT.
 .
 This easily allows to set general
-.I \%groffer
+.B \%groffer
 options that are used with any call of
-.IR \%groffer .
+.BR \%groffer .
 .
 .
 .P
@@ -2828,7 +2914,7 @@ configuration shell scripts are called using the `\c
 .IR filename '
 .hy
 shell syntax within
-.IR \%groffer .
+.BR \%groffer .
 .
 .
 .P
@@ -2840,7 +2926,7 @@ This is
 .Opt_long shell .
 The reason is that its argument must be retrieved at a very early
 stage of
-.IR \%groffer .
+.BR \%groffer .
 .
 .
 .P
@@ -2853,7 +2939,7 @@ minus sign.
 .
 .Topic
 Preset environment variables recognized by
-.IR \%groffer .
+.BR \%groffer .
 .
 .Topic
 Write a function for calling a viewer program for a special
@@ -2865,7 +2951,8 @@ option.
 Note that the name of such a function must coincide with some existing
 program in the system path
 .Env_var $PATH
-in order to be recognized by groffer.
+in order to be recognized by
+.BR groffer .
 .
 .
 .P
@@ -2880,10 +2967,10 @@ say.
 # groffer configuration file
 #
 # groffer options that are used in each call of groffer
---shell=/bin/bash
---resolution=100
---foreground=DarkBlue
---x-viewer='gxditview -geometry 850x800'
+\-\-shell=/bin/bash
+\-\-resolution=100
+\-\-foreground=DarkBlue
+\-\-x\-viewer='gxditview \-geometry 850x800'
 #
 # some shell commands
 if test "$DISPLAY" = ""; then
@@ -2897,8 +2984,8 @@ date >>~/mygroffer.log
 .
 .P
 This configuration sets four
-.I \%groffer
-options (the lines starting with `-') and runs two shell commands (the
+.B \%groffer
+options (the lines starting with `\-') and runs two shell commands (the
 rest of the script).
 .
 This has the following effects:
@@ -2908,7 +2995,7 @@ This has the following effects:
 Use
 .B /bin/bash
 as the shell to run the
-.I \%groffer
+.B \%groffer
 script.
 .
 .
@@ -2927,8 +3014,9 @@ in all viewers that support this.
 .Topic
 Force
 .BR \%gxditview (@MAN1EXT@)
-as the X-mode viewer using the geometry option for setting the width
-to
+as the
+.I \%X-mode
+viewer using the geometry option for setting the width to
 .B 850\~dpi
 and the height to
 .B 800\~\c
@@ -2942,14 +3030,14 @@ is empty set it to
 .IR localhost:0.0 .
 .
 That allows to start
-.I \%groffer
-in the standard X\~display, even when the program is called from a text
-console.
+.B \%groffer
+in the standard X\~\%display, even when the program is called from a
+text console.
 .
 .
 .Topic
 Just for fun, the date of each
-.I \%groffer
+.B \%groffer
 start is written to the file
 .File_name mygroffer.log
 in the home directory.
@@ -2960,13 +3048,14 @@ in the home directory.
 .\" --------------------------------------------------------------------
 .
 The usage of
-.I \%groffer
+.B \%groffer
 is very easy.
 .
 Usually, it is just called with a file name or man\~page.
 .
-The following examples, however, show that groffer has much more fancy
-capabilities.
+The following examples, however, show that
+.B \%groffer
+has much more fancy capabilities.
 .
 .
 .TP
@@ -2976,8 +3065,8 @@ Decompress, format and display the compressed file
 in the directory
 .File_name /usr/local/share/doc/groff ,
 using
-.I \%gxditview
-as graphical viewer when in X Window, or the
+.B \%gxditview
+as graphical viewer when in X\~\%Window, or the
 .BR \%less (1)
 pager program when not in X.
 .
@@ -2985,18 +3074,18 @@ pager program when not in X.
 .TP
 .Shell_cmd "groffer\~groff"
 If the file
-.I \%./groff
+.File_name \%./groff
 exists use it as input.
 .
 Otherwise interpret the argument as a search for the man\~page named
-.I \%groff
+.B \%groff
 in the smallest possible man\~section, being section 1 in this case.
 .
 .
 .TP
 .Shell_cmd "groffer\~man:groff"
 search for the man\~page of
-.I \%groff
+.B \%groff
 even when the file
 .File_name ./groff
 exists.
@@ -3007,7 +3096,7 @@ exists.
 .TP+
 .Shell_cmd "groffer\~7\~groff"
 search the man\~page of
-.I \%groff
+.B \%groff
 in man\~section
 .BR 7 .
 This section search works only for a digit or a single character from
@@ -3019,12 +3108,12 @@ a small set.
 If the file
 .File_name ./fb.modes
 does not exist interpret this as a search for the man\~page of
-.IR fb.modes .
+.BR fb.modes .
 As the extension
 .I \%modes
 is not a single character in classical section style the argument is
 not split to a search for
-.IR fb .
+.BR fb .
 .
 .
 .TP
@@ -3032,12 +3121,12 @@ not split to a search for
 .
 The arguments that are not existing files are looked-up as the
 following man\~pages:
-.I \%groff
+.B \%groff
 (automatic search, should be found in man\~section\~1),
-.I \%troff
+.B \%troff
 (in section\~1),
 and
-.I \%roff
+.B \%roff
 (in the section with the lowest number, being\~7 in this case).
 .
 The quotes around
@@ -3065,15 +3154,14 @@ program, decompress it, format it to
 .I \%html
 format
 .nh
-.RI ( www
-mode)
+.RI ( \%www\~mode )
 .hy
 and view the result in the web browser
-.IR \%galeon .
+.BR \%galeon .
 The option
 .Opt_long man
 guarantees that the man\~page is retrieved, even when a local file
-.I \%ls
+.File_name \%ls
 exists in the actual directory.
 .
 .
@@ -3090,12 +3178,15 @@ its source code.
 .Shell_cmd "cat\~file.gz\~|\~groffer\~-Z\~-mfoo"
 .
 Decompress the standard input, send this to
-.I \%groff
-intermediate mode without post-processing (groff option
+.I \%groff intermediate output mode
+without post-processing
+.RB ( groff
+option
 .Opt_short Z ),
 using macro package by
 .I \%foo
-(groff option
+.RB ( groff
+option
 .Opt_short m ) .
 .
 .
@@ -3114,38 +3205,38 @@ bold font, using color yellow on red background.
 .
 The
 .B \%groffer
-shell script is compatible with both GNU and POSIX.
+shell script is compatible with both GNU and \%POSIX.
 .
-POSIX compatibility refers to
+\%POSIX compatibility refers to
 .B IEEE P1003.2/D11.2
-of September 1991, a very early version of the POSIX standard that is
-still freely available in the internet at
+of September 1991, a very early version of the \%POSIX standard that
+is still freely available in the internet at
 .URL http://\:www.funet.fi/pub/doc/posix/p1003.2/d11.2/all \
-"POSIX P1003.2 draft 11.2" .
+"\%POSIX P1003.2 draft 11.2" .
 .
 Unfortunately, this version of the standard removed `local' for shell
-function variables, but later POSIX versions restored this again.
+function variables, but later \%POSIX versions restored this again.
 .
-As `local' is needed for serious programming this temporary POSIX
+As `local' is needed for serious programming this temporary \%POSIX
 deprecation was ignored.
 .
 .
 .P
-Most GNU shells are compatible with this interpretation of POSIX, but
-provide much more facilities.
+Most GNU shells are compatible with this interpretation of \%POSIX,
+but provide much more facilities.
 .
 Nevertheless this script uses only a restricted set of shell language
 elements and shell builtins.
 .
 The
-.I \%groffer
+.B \%groffer
 script should work on most actual free and commercial operating
 systems.
 .
 .
 .P
 The
-.I \%groffer
+.B \%groffer
 program provides its own parser for command line options; it can
 handle option arguments and file names containing white space and a
 large set of special characters.
@@ -3153,7 +3244,7 @@ large set of special characters.
 .
 .P
 The
-.I \%groffer
+.B \%groffer
 shell script was tested with the following common implementations of
 the GNU shells:
 .I \%POSIX
@@ -3174,7 +3265,7 @@ The shell can be chosen by the option
 This option can also be given to the environment variable
 .Env_var $GROFF_OPT .
 If you want to write it to one of the
-.I \%groffer
+.B \%groffer
 configuration files you must use the single option style, a line
 starting with
 .Opt_long shell .
@@ -3182,7 +3273,7 @@ starting with
 .
 .P
 The
-.I \%groffer
+.B \%groffer
 program provides its own parser for command line arguments that is
 compatible to both
 .I \%POSIX
@@ -3198,7 +3289,7 @@ The following standard types of options are supported.
 .Topic
 A single minus always refers to single character option or a
 combination thereof, for example, the
-.I \%groffer
+.B \%groffer
 short option combination
 .Opt_short Qmfoo
 is equivalent to
@@ -3236,10 +3327,10 @@ is, by default, equivalent to
 .
 .P
 This behavior can be changed by setting the environment variable
-.Env_var $POSIXLY_CORRECT
+.Env_var \%$POSIXLY_CORRECT
 to a non-empty value.
 .
-Then the strange POSIX non-option behavior is adopted, i. e. option
+Then the strange \%POSIX non-option behavior is adopted, i. e. option
 processing is stopped as soon as the first non-option argument is
 found and each following argument is taken as a file name.
 .
@@ -3249,7 +3340,7 @@ is equivalent to
 .Shell_cmd "groffer -- file1 -a -o arg file 2"
 As this leads to unwanted behavior in most cases, most people do not
 want to set
-.Env_var $POSIXLY_CORRECT .
+.Env_var \%$POSIXLY_CORRECT .
 .
 .
 .\" --------------------------------------------------------------------
@@ -3261,7 +3352,7 @@ Report bugs to the
 .
 Include a complete, self-contained example that will allow the bug to
 be reproduced, and say which version of
-.I \%groffer
+.B \%groffer
 you are using.
 .
 .
@@ -3288,10 +3379,11 @@ for information on availability.
 .TP
 .BR \%groff (@MAN1EXT@)
 .TP+
-.BR \%troff (@MAN1EXT@)
+.BR \%@g@troff (@MAN1EXT@)
 Details on the options and environment variables available in
-.IR \%groff ;
-all of them can be used with groffer.
+.BR \%groff ;
+all of them can be used with
+.BR \%groffer .
 .
 .
 .TP
@@ -3304,9 +3396,9 @@ language.
 .TP
 .BR \%grog (@MAN1EXT@)
 Internally,
-.I \%groffer
+.B \%groffer
 tries to guess the
-.I \%groff
+.B \%groff
 command line options from the input using this program.
 .
 .
@@ -3321,14 +3413,21 @@ output).
 .
 .
 .TP
+.BR groff_tmac (@MAN5EXT@)
+Documentation on the
+.I \%groff
+macro files.
+.
+.
+.TP
 .BR \%man (1)
 The standard program to diplay man\~pages.
 .
-The information there is only useful if it is the man\~page for
-.IR "GNU\~man" .
+The information there is only useful if it is the man\~page for GNU
+.BR man .
 Then it documents the options and environment variables that are
 supported by
-.IR \%groffer .
+.BR \%groffer .
 .
 .
 .TP
@@ -3336,9 +3435,8 @@ supported by
 .TP+
 .BR \%xditview (1x)
 Viewers for
-.IR \%groffer 's
-.I x
-mode.
+.BR \%groffer 's
+.IR \%x\~mode .
 .
 .
 .TP
@@ -3353,8 +3451,7 @@ mode.
 .BR \%gs (1)
 Viewers for
 .IR \%groffer 's
-.I ps
-mode.
+.IR \%ps\~mode .
 .
 .
 .TP
@@ -3369,8 +3466,7 @@ mode.
 .BR \%kpdf (1)
 Viewers for
 .IR \%groffer 's
-.I \%pdf
-mode.
+.IR \%pdf\~mode .
 .
 .
 .TP
@@ -3380,9 +3476,8 @@ mode.
 .TP+
 .BR \%dvilx (1)
 Viewers for
-.IR \%groffer 's
-.I \%dvi
-mode.
+.BR \%groffer 's
+.IR \%dvi\~mode .
 .
 .
 .TP
@@ -3392,25 +3487,24 @@ mode.
 .TP+
 .BR \%lynx (1)
 Web-browsers for
-.IR \%groffer 's
+.BR \%groffer 's
 .I \%html
 or
-.I \%www
-mode.
+.IR \%www\~mode .
 .
 .
 .TP
 .BR \%less (1)
 Standard pager program for the
-.I \%tty
-.IR mode .
+.I \%tty\~mode .
 .
 .
 .TP
 .BR \%gzip (1)
 .TP+
 .BR \%bzip2 (1)
-The decompression programs supported by groffer.
+The decompression programs supported by
+.BR \%groffer .
 .
 .
 .\" --------------------------------------------------------------------
@@ -3425,7 +3519,7 @@ The decompression programs supported by groffer.
 .copyleft
 .
 .
-\" --------------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .\" Emacs settings
 .\" --------------------------------------------------------------------
 .

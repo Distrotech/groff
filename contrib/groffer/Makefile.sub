@@ -2,7 +2,7 @@
 
 # File position: <groff-source>/contrib/groffer/Makefile.sub
 
-# Last update: 16 June 2005
+# Last update: 30 June 2005
 
 # Copyright (C) 2001,2002,2005 Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org>
@@ -37,6 +37,7 @@ all: groffer
 groffer: groffer.sh $(SH_DEPS_SED_SCRIPT)
 	$(RM) $@; \
 	sed -f $(SH_DEPS_SED_SCRIPT) \
+            -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(bindir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/groffer.sh >$@; \
