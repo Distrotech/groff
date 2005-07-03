@@ -498,7 +498,7 @@ void troff_output::set_color(char *color_fill, char *color_outlined)
     if (last_filled || last_outlined) {
       reset_color();
     }
-    // .bcolor and .fcolor emit a node in compatibility mode only,
+    // .gcolor and .fcolor emit a node in compatibility mode only,
     // but that won't work anyway
     if (color_fill) {
       printf(".fcolor %s\n", color_fill);
