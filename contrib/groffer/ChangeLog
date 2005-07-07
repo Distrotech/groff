@@ -1,4 +1,56 @@
 	________________________________________________________________
+	* release of groffer 0.9.19
+
+2005-07-07  Bernd Warken
+
+	* groffer.sh: extensions
+	- `mode x': Mode for the equivalent options `--x', `--mode x',
+	`--X' `--mode X', and the default mode.  The default assumes a
+	resolution of 75 dpi.  The default device for a resolution of 75
+	dpi is `X75-12', the default device for a resolution of 100 dpi is
+	`X100'.  The default geometry for the resolution of 100 dpi is set
+	to the width 800 dpi.
+	- `mode X': New mode for option -X only.
+	- `-V': Extent the `groff' output of -V by `groffer' specific
+	information (in main_display()).
+	- register_file(): Replace title `-' by `stdin'.
+	- $_DEBUG_KEEP_FILES: If set to `yes' the files in the temporary
+	directory are not deleted before the end trap.
+
+	* groffer.sh: get `zsh' to work as well
+	- tmp_create(): Use `: >file' for generating an empty file.
+	- rmdir: Replace `rmdir' by `rm -f -r'.
+	- eval: Add `eval' to many commands with variable arguments.
+
+	* groffer.sh: repair `debug'
+	- Print all debug output to stderr.
+	- $_FUNC_STACK: Built function call stack even when $_DEBUG is not
+	set.  Now the arguments are not added.
+	- $_DEBUG: If set to `yes' print 3 call stack events: the function
+	that is added with its arguments is printed with `+++ '
+	(func_push()); the call stack after the addition is printed with
+	`>>> ' (func_push()); the call stack after the removing is printed
+	with `<<< ' (func_pop()).
+	- error(): Always print the function call stack on errors.
+
+	* groffer.sh: Corrections
+	- $_groffer_run: Rename to $_GROFFER_RUN.
+	- $unset: Rename to $_UNSET.
+	- Repair test of `unset'.
+	- Repair test for `--shell'.  The script is now rerun under the
+	shell specified in the option argument.  This can increase the
+	speed.
+
+	* README_SH: `zsh' now works.
+
+	* groffer.man:
+	- Reformulate the information for the `groffer' specific details
+	of option `-V'.
+	- Add information on the debug process.
+	- Add information on the default devices in `x mode'.
+	- Minor corrections.
+	
+	________________________________________________________________
 	* release of groffer 0.9.18
 
 2005-07-01  Bernd Warken
@@ -26,13 +78,13 @@
 	- _get_opt_shell(): Replace `for' loop with `shift' by `while'.
 	- man_search_section(): Replace `for f in filename*' by a test on
 	the existence of `filename*'.
-	- `zsh' interprets `$...' as `"$..."'.  So `eval' must be called;
+	- `zsh' interprets `$...'  as `"$..."'.  So `eval' must be called;
 	This cannot be used in `for i in $f', so it must be rewritten as
 	`for i in $(eval set x $f; shift; echo "$@")'
 
 	* groffer.sh:
 	- `--X', `--x', `--mode=X', `--mode=x': Make these options
-	equivalent to chosing an X device by setting `-TX75-12'.  `-X' is
+	equivalent to choosing an X device by setting `-TX75-12'.  `-X' is
 	still equivalent to `groff -X'.
 	- main_init(): Choose the name of the temporary file by adding a
 	number using `expr' if it exists and cannot be removed.

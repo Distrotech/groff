@@ -15,7 +15,7 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update : 29 June 2005
+Last update : 4 July 2005
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
@@ -839,7 +839,7 @@ short options are accepted.
 .
 .
 .TP
-.I options from man
+.I options from GNU man
 .RS
 .P
 .Opt_[alt] -- all
@@ -1230,7 +1230,7 @@ Equivalent to
 .
 .
 .TP
-.Header_CB X
+.Header_CB x
 Display the formatted input in a native
 .I roff
 viewer.
@@ -1242,20 +1242,39 @@ program being distributed together with
 But the standard X\~tool
 .BR \%xditview (1)
 can also be chosen with the option
-Opt_long x\-viewer .
-This mode chooses the
+.Opt_long x\-viewer .
+The default resolution is
+.BR 75\~dpi ,
+but
+.B 100\~dpi
+are also possible.
+.
+The default
 .I groff
 device
+for the resolution of
+.B 75\~dpi
+is
 .BR X75\-12 ,
-generates the corresponding
-.IR "groff intermediate output" ,
-and displays the result.
+for
+.B 100\~dpi
+it is
+.BR X100 .
+.
+The corresponding
+.I "groff intermediate output"
+for the actual device is generated and the result is displayed.
+.
+For a resolution of
+.BR 100\~dpi ,
+the default width of the geometry of the display program is chosen to
+.BR 850\~dpi .
 .
 .
 .TP
-.Header_CB x
+.Header_CB X
 Equivalent to
-.Opt_long_arg mode X .
+.Opt_long_arg mode x .
 .
 .
 .P
@@ -1354,12 +1373,12 @@ Equivalent to
 .
 .Opt_def -- X -- x
 Equivalent to
-.Opt_long_arg mode X .
+.Opt_long_arg mode x .
 .
 .
 .Opt_def -- X\-viewer -- x\-viewer prog
 Set the viewer program for
-.IR \%X\~mode .
+.IR \%x\~mode .
 .
 Suitable viewer programs are
 .BR \%gxditview (@MAN1EXT@)
@@ -1405,9 +1424,12 @@ and much more can be manually specified.
 .\" --------------------------------------------------------------------
 .
 .Opt_def -- debug
-Print debugging information for development only.
+Enable three debugging informations.
 .
-Actually, a function call stack is printed if an error occurs.
+A function call stack is printed at each opening and closing of a
+function call; a landmark information is printed to determine how far
+the program is running, and the early deletion of the temporary
+formatting files is prohibited.
 .
 .
 .Opt_def -- shell "shell_program"
@@ -1420,6 +1442,10 @@ configuration, within
 .Env_var $GROFF_OPT
 or as a command line option); if so, the script is rerun under the
 shell program specified with the option argument.
+.
+If you want to add this option in a configuration file you must do
+this under a line starting with a minus sign `\-', such as the line
+.Opt_long shell=\fIname\fP .
 .
 .
 .Opt_def - Q -- source
@@ -1434,10 +1460,9 @@ This is the equivalent
 Other useful debugging options are the
 .B \%groff
 options
-.Opt_short V
+.Opt_short V ,
+.Opt_short Z ,
 and
-.Opt_short Z
-and option
 .Opt_long_arg mode groff .
 .
 .
@@ -1538,7 +1563,7 @@ and
 All
 .B \%X*
 arguments are mapped to
-.IR \%mode\~X .
+.IR \%mode\~x .
 Each other
 .I \%devname
 argument switches to
@@ -1547,15 +1572,14 @@ using this device.
 .
 .
 .Opt_def - V
-Switch into
-.I \%groff\~mode
-and show only the
-.I \%groff
-calling pipe without formatting the input.
+Instead of displaying the formatted input,
+.I \%groffer
+specific information is printed: the output file name , the display
+mode, the display program, and the pipeline that would be run by the
+.B \%groff
+program, but without executing it.
 .
-This is an advanced option from
-.BR \%groff (@MAN1EXT@) ,
-only useful for debugging.
+This is an advanced option for debugging only.
 .
 .
 .Opt_def - X
@@ -1568,7 +1592,7 @@ with
 As the quality is relatively bad this option is deprecated; use
 .Opt_long X
 instead because the
-.I X mode
+.I \%x\~mode
 uses an
 .IR X *
 device for a better display.
@@ -1712,7 +1736,9 @@ and
 Actually, the default resolution for
 .B \%groffer
 is set to
-.BR 75 .
+.BR 75\~dpi .
+The resolution also sets the default device in
+.IR "mode x" .
 .
 .
 .Opt_def -- rv
@@ -1737,7 +1763,7 @@ were synchronized with the long options of GNU
 .BR man .
 .
 All long options of GNU
-.I man
+.B man
 are recognized, but not all of these options are important to
 .BR \%groffer ,
 so most of them are just ignored.
@@ -1885,12 +1911,6 @@ the retrieved man\~page files \[em] or say that it is not a man\~page.
 .Opt_def -- where
 Eqivalent to
 .Opt_long location .
-.
-.
-.P
-Additionally, the following short option of
-.B \%man
-is supported as well.
 .
 .
 .\" --------------------------------------------------------------------
@@ -2112,8 +2132,8 @@ option that is constructed like
 .
 .
 .P
-Several different modes are offered, graphical
-.IR \%X\~modes ,
+Several different modes are offered, graphical modes for
+.IR \%X\~Window ,
 .IR \%text\~modes ,
 and some direct
 .I \%groff\~modes
@@ -2177,9 +2197,7 @@ viewers such as
 or
 .BR \%xditview (1)
 (in
-.I x
-or
-.IR \%X\~mode ),
+.IR \%x\~mode ),
 .
 .Topic
 in a Postscript viewer
@@ -2897,12 +2915,15 @@ Their lines either start with a minus character or are shell commands.
 .
 Arbitrary spaces are allowed at the beginning, they are just ignored.
 .
-The lines with the beginning minus are appended to the existing value
-of $GROFFER_OPT.
+The lines with the beginning minus can be all
+.B groffer
+options; they are appended to the existing value
+of
+.Env_var $GROFFER_OPT .
 .
 This easily allows to set general
 .B \%groffer
-options that are used with any call of
+options that should be used with any call of
 .BR \%groffer .
 .
 .
@@ -2927,6 +2948,13 @@ This is
 The reason is that its argument must be retrieved at a very early
 stage of
 .BR \%groffer .
+So to specify a shell to rerun the
+.B groffer
+script enter a line
+.Opt_long shell=\fIname\fP
+in a configuration file.
+.
+Some shells run faster.
 .
 .
 .P
@@ -2967,10 +2995,10 @@ say.
 # groffer configuration file
 #
 # groffer options that are used in each call of groffer
-\-\-shell=/bin/bash
-\-\-resolution=100
+\-\-shell=ash
 \-\-foreground=DarkBlue
-\-\-x\-viewer='gxditview \-geometry 850x800'
+\-\-resolution=100
+\-\-x\-viewer='gxditview \-geometry 900x1200'
 #
 # some shell commands
 if test "$DISPLAY" = ""; then
@@ -2983,6 +3011,10 @@ date >>~/mygroffer.log
 .
 .
 .P
+The lines starting with
+.B #
+are command lines.
+.
 This configuration sets four
 .B \%groffer
 options (the lines starting with `\-') and runs two shell commands (the
@@ -2993,34 +3025,43 @@ This has the following effects:
 .
 .Topic
 Use
-.B /bin/bash
+.B ash
 as the shell to run the
 .B \%groffer
-script.
-.
-.
-.Topic
-Use a resolution of
-.B 100\~dpi
-in all viewers that support this.
+script; if it works it should be faster than the usual
+.BR sh .
 .
 .
 .Topic
 Use a text color of
 .B \%DarkBlue
-in all viewers that support this.
+in all viewers that support this, such as
+.BR \%gxditview .
+.
+.
+.Topic
+Use a resolution of
+.B 100\~dpi
+in all viewers that support this, such as
+.BR \%gxditview .
+.
+By this, the default device in
+.I x mode
+is set to
+.BR X100 .
 .
 .
 .Topic
 Force
 .BR \%gxditview (@MAN1EXT@)
 as the
-.I \%X-mode
+.I \%x-mode
 viewer using the geometry option for setting the width to
-.B 850\~dpi
+.B 900\~dpi
 and the height to
-.B 800\~\c
-.BR dpi .
+.BR 1200\~dpi .
+This geometry is suitable for a resolution of
+.BR 100\~dpi .
 .
 .
 .Topic
@@ -3450,7 +3491,7 @@ Viewers for
 .TP+
 .BR \%gs (1)
 Viewers for
-.IR \%groffer 's
+.BR \%groffer 's
 .IR \%ps\~mode .
 .
 .
@@ -3465,7 +3506,7 @@ Viewers for
 .TP+
 .BR \%kpdf (1)
 Viewers for
-.IR \%groffer 's
+.BR \%groffer 's
 .IR \%pdf\~mode .
 .
 .
