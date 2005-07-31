@@ -1,13 +1,28 @@
-Additional description for groffer.sh, the shell version of groffer
+Additional description for the shell version of `groffer'
+
+
+Scripts
+
+The shell version of `groffer' contains two files, `groffer.sh' and
+`groffer2.sh'.  `groffer.sh' is a short introductory script; it is
+transformed by `make' into `groffer'; this will be installed in
+@bindir@, which is usually /usr/local/bin.
+
+`groffer2.sh' is a long main script with all functions that is called
+by `groffer.sh' and `groffer'.  It is installed unchanged into
+@libdir@/groff/groffer, which is usually /usr/local/lib/groff/groffer.
+This script can be called with a different shell, using the option
+`--shell'.  So it makes sense to split the script into two parts.
 
 
 Shell Compatibility
 
-This shell script is compatible to both the GNU and the POSIX shell
-and utilities.  Care was taken to restrict the programming technics
-used here in order to achieve POSIX compatibility as far back as POSIX
-P1003.2 Draft 11.2 of September 1991.  This draft is available at
-http://www.funet.fi/pub/doc/posix/p1003.2/d11.2 in the internet.
+The `groffer' shell scripts are compatible to both the GNU and the
+POSIX shell and utilities.  Care was taken to restrict the programming
+technics used here in order to achieve POSIX compatibility as far back
+as POSIX P1003.2 Draft 11.2 of September 1991.  This draft is
+available at http://www.funet.fi/pub/doc/posix/p1003.2/d11.2 in the
+internet.
 
 The POSIX draft does not include `local' variables for functions.  So
 this concept was replaced by global variables with a prefix that
@@ -15,12 +30,13 @@ differs for each function.  The prefix is chosen from the function
 name.  These quasi-local variables are unset before each return of the
 function.
 
-The `groffer' script was tested under the shells `ash', `bash',
+The `groffer' scripts were tested under the shells `ash', `bash',
 `dash', 'ksh', `pdksh', 'posh', and `zsh' without problems in Linux
-Debian.  A shell can be tested either by the `groffer' option
-`--shell' or by the command
+Debian.  A shell can be tested by the `groffer' option `--shell', but
+that will run only with groffer2.sh.  To start it directly from the
+beginning under this shell the following command can be used.
 
-  <shell> groffer.sh <argument>...
+  <shell-name> groffer.sh --shell=<shell-name> <argument>...
 
 
 Some shells are not fully POSIX compatible.  For them the following
@@ -35,7 +51,9 @@ documentation `Portable shells' in the `info' page of `autoconf'
 
 - Replace `set -- ...' by `set x ...; shift'.  After the first
   non-option argument, all arguments including those starting with `-'
-  are accepted as non-option.
+  are accepted as non-option.  For variables or `$()' constructs with
+  line-breaks, use `eval set' without quotes.  That transforms a
+  line-break within a variable to a space.
 
 - The name of the variable in `for' is chosen as a single character
   (old ash).  The content of such variables is not safe because it can
@@ -51,27 +69,30 @@ documentation `Portable shells' in the `info' page of `autoconf'
   replaced by `cat <<EOF'.
 
 - `ls' has problems.  Old UNIX systems echoed the error message to
-standard output.  So handle the output with `sed'.  If the output
-contains `not found' map it to an empty string.
+  standard output.  So handle the output with `sed'.  If the output
+  contains `not found' map it to an empty string.
 
 - As `test -e' is not available in Solaris 2.5 replace it by
   `test -f || test -d'.
 
-- As `unset' is not supported by all shells replace ist by `eval
-  $unset' where this variable is `unset' if it exists and `:'
+- As `unset' is not supported by all shells replace it by `eval
+  ${_UNSET}' where this variable is `unset' if it exists and `:'
   otherwise.
 
 - Replace `true' by `:', `false' isn't used.
 
 - Do not redefine builtins as functions (ash).
 
+- Avoid `[^...]' in `case' patterns (ash).
 
-The script uses the following commands:
+- `trap' does not allow error code 127.
+
+The scripts call the following commands with all options used:
 .
 :
 apropos
 break
-bzip2
+bzip2 -c -d -t
 cat
 catz
 continue
@@ -79,30 +100,36 @@ echo
 eval
 expr
 grep
-groff
-grog
-gs
-gzip
+groff -v
+grog -T -X -Z
+gs -c -d -f -q -s
+gzip -c -d -f
+less -r -R
 ls
-man
+man -k --apropos
 mkdir
 mv
 return
-rm
+rm -f -r
 rmdir
-sed
-set
-sh
+sed -e -n
+set -e
+sh -c
 shift
-test
+test -d -f -r -s -w -x
 trap
 umask
 unset
 
+
+Options
+
 The `groffer' script provides its own option parser.  It is compatible
-to the usual GNU style command line (option clusters, long option
-names with 2 `-' signs, mixing of options and non-option file names),
-except that it is not possible to abbreviate long option names.
+to the usual GNU style command line This includes long option names
+with two signs such as `--option', clusters of short options, the
+mixing of options and non-option file names, the option `--' to close
+the option handling, and it is possible to abbreviate the long option
+names.
 
 The flexible mixing of options and file names in GNU style is always
 possible, even if the environment variable `$POSIXLY_CORRECT' is set
@@ -119,97 +146,25 @@ subshells.  This was solved by sending kill signals, see $_PROCESS_ID
 and error().
 
 
-Survey of Functions defined in groffer.sh
+Function Definitions in `groffer2.sh'
 
-Each funtion in groffer.sh has a description that starts with the
+Each funtion in groffer2.sh has a description that starts with the
 function name and symbols for its arguments in paranthesis `()'.  Each
 `<>' construction gives an argument name that just gives a hint on
 what the argument is meant to be; these argument names are otherwise
 irrelevant.  The `>' sign can be followed by another character that
 shows how many of these arguments are possible.
 
+<arg>      exactly 1 of this argument
 <arg>?     0 or 1 of these arguments
 <arg>*     arbitrarily many such arguments, incl. none
 <arg>+     one or more such arguments
-<arg>      exactly 1 of this argument
+<arg>...   one or more such arguments
 [...]      optional arguments
 
 A function that starts with an underscore `_' is an internal function
-for some function.  The internal functions are defined just after
-their corresponding function; they are not mentioned in the following.
-
-abort (<text>*)
-base_name (<path>)
-catz (<file>)
-clean_up ()
-diag (<text>*)
-dirname_append (<path> [<dir...>])
-dirname_chop (<path>)
-do_filearg (<filearg>)
-do_nothing ()
-echo2 (<text>*)
-error (<text>*)
-get_first_essential (<arg>*)
-is_dir (<name>)
-is_empty (<string>)
-is_equal (<string1> <string2>)
-is_existing (<name>)
-is_file (<name>)
-is_non_empty_file (<name>)
-is_not_dir (<name>)
-is_not_empty (<string>)
-is_not_equal (<string1> <string2>)
-is_not_file (<name>)
-is_not_prog (<name>)
-is_not_writable (<name>)
-is_not_yes (<string>)
-is_prog (<name>)
-is_writable (<name>)
-is_yes (<string>)
-leave ()
-landmark (<text>)
-list_append (<list> <element>...)
-list_from_cmdline (<pre_name_of_opt_lists> [<cmdline_arg>...])
-list_from_split (<string> <separator>)
-list_get (<list>)
-list_has (<list> <element>)
-list_has_not (<list> <element>)
-main_*(), see after the functions
-man_do_filespec (<filespec>)
-man_setup ()
-man_register_file (<file> [<name> [<section>]])
-man_search_section (<name> <section>)
-man_set()
-manpath_add_lang(<path> <language>)
-manpath_add_system()
-manpath_from_path ()
-normalize_args (<shortopts> <longopts> <arg>*)
-obj (<object> <call_name> <arg>...)
-obj_data (<object>)
-obj_from_output (<object> <call_name> <arg>...)
-obj_set (<object> <data>)
-path_chop (<path>)
-path_clean (<path>)
-path_contains (<path> <dir>)
-path_not_contains (<path> <dir>)
-path_split (<path>)
-register_file (<filename>)
-register_title (<filespec>)
-res (<var_name> <function_name> <arg>...)
-reset ()
-save_stdin ()
-string_contains (<string> <part>)
-string_not_contains (<string> <part>)
-tmp_cat ()
-tmp_create (<suffix>?)
-to_tmp (<filename>)
-trap_clean ()
-trap_set (<functionname>)
-usage ()
-version ()
-warning (<string>)
-whatis (<filename>)
-where (<program>)
+for some other function.  The internal functions are defined just
+after their corresponding function.
 
 
 External Environment Variables
@@ -262,7 +217,7 @@ The class `list' represents an array structure, see list_*().
 
 ####### License
 
-Last update: 4 July 2005
+Last update: 30 July 2005
 
 Copyright (C) 2003,2004,2005 Free Software Foundation, Inc.
 Written by Bernd Warken
