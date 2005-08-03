@@ -5,32 +5,36 @@
 # Source file position: <groff-source>/contrib/groffer/groffer2.sh
 # Installed position: <prefix>/lib/groff/groffer/groffer2.sh
 
+# This file should not be run independently.  It is called by
+# `groffer.sh' in the source or by the installed `groffer' program.
+
 # Copyright (C) 2001,2002,2003,2004,2005
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 30 July 2005
+# Last update: 2 August 2005
 
-# This file is part of groffer, which is part of groff.
+# This file is part of `groffer', which is part of `groff'.
 
-# groff is free software; you can redistribute it and/or modify it
+# `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
 
-# groff is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
-# License for more details.
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with groff; see the files COPYING and LICENSE in the top
-# directory of the groff source.  If not, write to the Free Software
-# Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
+# along with `groff'; see the files COPYING and LICENSE in the top
+# directory of the `groff' source.  If not, write to the Free Software
+# Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301,
+# USA.
 
 
 ########################################################################
-# diagnostic messages
+# diagnostic messages for debugging
 #
 export _DEBUG;
 _DEBUG='no';			# disable debugging information
@@ -42,16 +46,47 @@ _DEBUG_LM='no';			# disable landmark messages
 
 export _DEBUG_KEEP_FILES;
 _DEBUG_KEEP_FILES='no'		# disable file keeping in temporary dir
-_DEBUG_KEEP_FILES='yes'		# enable file keeping in temporary dir
+#_DEBUG_KEEP_FILES='yes'	# enable file keeping in temporary dir
 
-# test of $* on --debug
-case " $* " in
-*' --debug '*)
+export _DEBUG_PRINT_PARAMS;
+_DEBUG_PRINT_PARAMS='no';	# disable printing of all parameters
+#_DEBUG_PRINT_PARAMS='yes';	# enable printing of all parameters
+
+export _DEBUG_PRINT_SHELL;
+_DEBUG_PRINT_SHELL='no';	# disable printing of the shell name
+#_DEBUG_PRINT_SHELL='yes';	# enable printing of the shell name
+
+
+# test of $GROFFER_OPT and $* on `--debug' with shortest abbreviation `--deb'
+case " ${GROFFER_OPT} $* " in
+*' --deb '*|*' --debu '*|*' --debug '*)
   _DEBUG='yes';
   _DEBUG_LM='yes';
   _DEBUG_KEEP_FILES='yes';
+  _DEBUG_PRINT_PARAMS='yes';
+  _DEBUG_PRINT_SHELL='yes';
   ;;
 esac;
+
+if test _"${_DEBUG_PRINT_PARAMS}"_ = _yes_
+then
+  echo "parameters: ${GROFFER_OPT} $@" >&2;
+fi;
+
+if test _"${_DEBUG_PRINT_SHELL}"_ = _yes_
+then
+  if test _"${_SHELL}"_ = __
+  then
+    if test _"${POSIXLY_CORRECT}"_ = _y_
+    then
+      echo 'shell: bash as /bin/sh (none specified)' >&2;
+    else
+      echo 'shell: /bin/sh (none specified)' >&2;
+    fi;
+  else
+    echo "shell: ${_SHELL}" >&2;
+  fi;
+fi;
 
 
 ########################################################################
@@ -77,16 +112,6 @@ esac;
 # read-only variables (global to this file)
 ########################################################################
 
-# characters
-
-export _SPACE;
-export _SQUOTE;
-export _TAB;
-
-_SPACE=' ';
-_SQUOTE="'";
-_TAB='	';
-
 # function return values; `0' means ok; other values are error codes
 export _ALL_EXIT;
 export _BAD;
@@ -100,7 +125,8 @@ _GOOD='0';			# return ok
 _BAD='1';			# return negatively, error code `1'
 _ERROR='7';			# for syntax errors; no `-1' in `ash'
 
-_ALL_EXIT="${_GOOD} ${_BAD} ${_ERROR}"; # all exit codes (for `trap_set')
+ # all exit codes (for `trap_set()')
+_ALL_EXIT="${_GOOD} ${_BAD} ${_ERROR}";
 
 _NO="${_BAD}";
 _YES="${_GOOD}";
@@ -138,8 +164,8 @@ export _VIEWER_PS;		# viewer program for ps mode
 export _VIEWER_HTML_X;		# viewer program for html mode in X
 export _VIEWER_HTML_TTY;	# viewer program for html mode in tty
 _VIEWER_DVI='kdvi,xdvi,dvilx';
-_VIEWER_PDF='kghostview,ggv,xpdf,acroread,kpdf';
-_VIEWER_PS='kghostview,ggv,gv,ghostview,gs_x11,gs';
+_VIEWER_PDF='kghostview --scale 1.45,ggv,xpdf,acroread,kpdf';
+_VIEWER_PS='kghostview --scale 1.45,ggv,gv,ghostview,gs_x11,gs';
 _VIEWER_HTML='konqueror,mozilla,netscape,opera,amaya,arena,lynx';
 _VIEWER_X='gxditview,xditview';
 
@@ -200,7 +226,7 @@ export _OPTS_CMDLINE_LONG_ARG;
 _OPTS_GROFFER_SHORT_NA="'h' 'Q' 'v' 'V' 'X' 'Z'";
 _OPTS_GROFFER_SHORT_ARG="'T'";
 
-_OPTS_GROFFER_LONG_NA="'auto' 'debug' 'default' 'dvi' \
+_OPTS_GROFFER_LONG_NA="'auto' 'debug' 'default' 'do-nothing' 'dvi' \
 'groff' 'help' 'intermediate-output' 'html' 'man' \
 'no-location' 'no-man' 'pdf' 'ps' 'rv' 'source' 'text' 'text-device' \
 'title' 'tty' 'tty-device' 'version' 'whatis' 'where' 'www' 'x' 'X'";
@@ -228,7 +254,7 @@ _OPTS_X_SHORT_ARG="";
 _OPTS_X_LONG_NA="'iconic' 'rv'";
 
 _OPTS_X_LONG_ARG="'background' 'bd' 'bg' 'bordercolor' 'borderwidth' \
-'bw' 'display' 'fg' 'fn' 'font' 'foreground' 'ft', 'geometry'
+'bw' 'display' 'fg' 'fn' 'font' 'foreground' 'ft' 'geometry' \
 'resolution' 'title' 'xrm'";
 
 ###### groffer options inherited from man
@@ -236,11 +262,10 @@ _OPTS_X_LONG_ARG="'background' 'bd' 'bg' 'bordercolor' 'borderwidth' \
 _OPTS_MAN_SHORT_NA="";
 _OPTS_MAN_SHORT_ARG="";
 
-_OPTS_MAN_LONG_NA="'all' 'ascii' 'catman' 'debug' 'ditroff' 'help' \
-'local-file' 'location' 'pager' 'troff' 'update' 'version' \
-'whatis' 'where'";
+_OPTS_MAN_LONG_NA="'all' 'ascii' 'catman' 'ditroff' \
+'local-file' 'location' 'troff' 'update'";
 
-_OPTS_MAN_LONG_ARG="'extension' 'locale' 'manpath' \
+_OPTS_MAN_LONG_ARG="'locale' 'manpath' \
 'pager' 'preprocessor' 'prompt' 'sections' 'systems' 'troff-device'";
 
 ###### additional options for parsing $MANOPT only
@@ -250,15 +275,15 @@ _OPTS_MANOPT_SHORT_NA="'7' 'a' 'c' 'd' 'D' 'f' 'h' 'k' 'l' 't' 'u' \
 _OPTS_MANOPT_SHORT_ARG="'e' 'L' 'm' 'M' 'p' 'P' 'r' 'S' 'T'";
 
 _OPTS_MANOPT_LONG_NA="${_OPTS_MAN_LONG_NA} \
-'apropos' 'debug' 'default' 'html' 'ignore-case' 'location-cat' \
-'match-case' 'troff' 'update' 'version' 'where-cat'";
+'apropos' 'debug' 'default' 'help' 'html' 'ignore-case' 'location-cat' \
+'match-case' 'troff' 'update' 'version' 'whatis' 'where' 'where-cat'";
 
 _OPTS_MANOPT_LONG_ARG="${_OPTS_MAN_LONG_NA} \
-'config_file' 'encoding' 'locale'";
+'config_file' 'encoding' 'extension' 'locale'";
 
 ###### collections of command line options
 
-_OPTS_CMDLINE_SHORT_NA="${_OPTS_GROFFER_SHORT_NA}\
+_OPTS_CMDLINE_SHORT_NA="${_OPTS_GROFFER_SHORT_NA} \
 ${_OPTS_GROFF_SHORT_NA} ${_OPTS_X_SHORT_NA} ${_OPTS_MAN_SHORT_NA}";
 _OPTS_CMDLINE_SHORT_ARG="${_OPTS_GROFFER_SHORT_ARG} \
 ${_OPTS_GROFF_SHORT_ARG} ${_OPTS_X_SHORT_ARG} ${_OPTS_MAN_SHORT_ARG}";
@@ -273,6 +298,7 @@ ${_OPTS_GROFF_LONG_ARG} ${_OPTS_MAN_LONG_ARG} ${_OPTS_X_LONG_ARG}";
 # read-write variables (global to this file)
 ########################################################################
 
+export _ALL_PARAMS;		# All options and file name parameters
 export _ADDOPTS_GROFF;		# Transp. options for groff (`eval').
 export _ADDOPTS_POST;		# Transp. options postproc (`eval').
 export _ADDOPTS_X;		# Transp. options X postproc (`eval').
@@ -345,7 +371,7 @@ export _OPT_VIEWER_X;		# viewer program for x mode
 export _OPT_WHATIS;		# print the one-liner man info
 export _OPT_XRM;		# specify X resource.
 export _OPT_Z;			# groff option -Z.
-# _TMP_* temporary files
+# _TMP_* temporary directory and files
 export _TMP_DIR;		# groffer directory for temporary files
 export _TMP_CAT;		# stores concatenation of everything
 export _TMP_STDIN;		# stores stdin, if any
@@ -359,21 +385,51 @@ export _TMP_STDIN;		# stores stdin, if any
 
 
 ########################################################################
+# Test of `unset'
+#
+export _UNSET;
+export _foo;
+_foo=bar;
+_res="$(unset _foo 2>&1)";
+if unset _foo >${_NULL_DEV} 2>&1 && \
+   test _"${_res}"_ = __ && test _"${_foo}"_ = __
+then
+  _UNSET='unset';
+  eval "${_UNSET}" _res;
+else
+  _UNSET=':';
+fi;
+
+
+########################################################################
 # Test of `test'.
 #
-test "a" = "a" || exit 1;
+if test a = a && test a != b && test -f "${_GROFFER_SH}"
+then
+  :;
+else
+  echo '"test" did not work.' >&2;
+  exit "${_ERROR}";
+fi;
 
 
 ########################################################################
 # Test of `echo' and the `$()' construct.
 #
-echo '' >${_NULL_DEV} || exit "${_ERROR}";
+if echo '' >${_NULL_DEV}
+then
+  :;
+else
+  echo '"echo" did not work.' >&2;
+  exit "${_ERROR}";
+fi;
 if test _"$(t1="$(echo te)" &&
             t2="$(echo '')" &&
             t3="$(echo 'st')" &&
             echo "${t1}${t2}${t3}")"_ \
-     != _test_;
+     != _test_
 then
+  echo 'The "$()" construct did not work' >&2;
   exit "${_ERROR}";
 fi;
 
@@ -386,11 +442,11 @@ _t_e_s_t_f_u_n_c_()
   return "${_OK}";
 }
 
-if _t_e_s_t_f_u_n_c_ 2>${_NULL_DEV};
+if _t_e_s_t_f_u_n_c_ 2>${_NULL_DEV}
 then
-  :
+  :;
 else
-  echo 'shell does not support function definitions.' >&2;
+  echo 'Shell '"${_SHELL}"' does not support function definitions.' >&2;
   exit "${_ERROR}";
 fi;
 
@@ -399,6 +455,9 @@ fi;
 # Preset and reset of read-write global variables
 ########################################################################
 
+
+export _START_DIR;		# directory at start time of the script
+_START_DIR="$(pwd)";
 
 # For variables that can be reset by option `--default', see reset().
 
@@ -411,6 +470,7 @@ _HAS_BZIP='';
 # _TMP_* temporary files
 _TMP_DIR='';
 _TMP_CAT='';
+_TMP_CONF='';
 _TMP_STDIN='';
 
 
@@ -421,7 +481,7 @@ _TMP_STDIN='';
 #
 reset()
 {
-  if test "$#" -ne 0;
+  if test "$#" -ne 0
   then
     error "reset() does not have arguments.";
   fi;
@@ -506,6 +566,21 @@ reset;
 
 
 ##############
+# echo1 (<text>*)
+#
+# Output to stdout.
+#
+# Arguments : arbitrary text including `-'.
+#
+echo1()
+{
+  cat <<EOF
+$*
+EOF
+}
+
+
+##############
 # echo2 (<text>*)
 #
 # Output to stderr.
@@ -529,9 +604,9 @@ EOF
 #
 landmark()
 {
-  if test _"${_DEBUG_LM}"_ = _yes_;
+  if test _"${_DEBUG_LM}"_ = _yes_
   then
-    echo2 "LM: $*" >&2;
+    echo2 "LM: $*";
   fi;
 }
 
@@ -545,9 +620,13 @@ landmark "1: debugging functions";
 #
 clean_up()
 {
-  if test -d "${_TMP_DIR}";
+  cd "${_START_DIR}" >"${_NULL_DEV}" 2>&1;
+  if test _"${_TMP_DIR}"_ != __
   then
-    eval rm -f -r "'${_TMP_DIR}'" >${_NULL_DEV} 2>&1;
+    if test -d "${_TMP_DIR}" || test -f "${_TMP_DIR}"
+    then
+      rm -f -r "${_TMP_DIR}" >${_NULL_DEV} 2>&1;
+    fi; 
   fi;
 }
 
@@ -619,7 +698,7 @@ abort()
 #
 func_check()
 {
-  if test "$#" -lt 3;
+  if test "$#" -lt 3
   then
     error 'func_check() needs at least 3 arguments.';
   fi;
@@ -670,7 +749,7 @@ func_check()
   shift;
   shift;
   shift;
-  if test "$#" "${fc_op}" "${fc_nargs}";
+  if test "$#" "${fc_op}" "${fc_nargs}"
   then
     do_nothing;
   else
@@ -678,7 +757,7 @@ func_check()
 ${fc_fname}"'() needs '"${fc_comp} ${fc_nargs}"' argument'"${fc_s}"'.';
   fi;
   func_push "${fc_fname}";
-  if test _"${_DEBUG}"_ = _yes_;
+  if test _"${_DEBUG}"_ = _yes_
   then
     echo2 '+++ '"${fc_fname} $@";
     echo2 '>>> '"${_FUNC_STACK}";
@@ -704,29 +783,26 @@ ${fc_fname}"'() needs '"${fc_comp} ${fc_nargs}"' argument'"${fc_s}"'.';
 #
 func_pop()
 {
-  if test "$#" -ne 0;
+  if test "$#" -ne 0
   then
     error 'func_pop() does not have arguments.';
   fi;
   case "${_FUNC_STACK}" in
   '')
-    if test _"${_DEBUG}"_ = _yes_;
+    if test _"${_DEBUG}"_ = _yes_
     then
       error 'func_pop(): stack is empty.';
     fi;
     ;;
   *!*)
     # split at first bang `!'.
-   _FUNC_STACK="$(echo x"${_FUNC_STACK}" | sed -e '
-s/^x//
-s/^[^!]*!//
-')";
+   _FUNC_STACK="$(echo1 "${_FUNC_STACK}" | sed -e 's/^[^!]*!//')";
     ;;
   *)
     _FUNC_STACK='';
     ;;
   esac;
-  if test _"${_DEBUG}"_ = _yes_;
+  if test _"${_DEBUG}"_ = _yes_
   then
     echo2 '<<< '"${_FUNC_STACK}";
   fi;
@@ -747,23 +823,20 @@ s/^[^!]*!//
 #
 func_push()
 {
-  if test "$#" -ne 1;
+  if test "$#" -ne 1
   then
     error 'func_push() needs 1 argument.';
   fi;
   case "$1" in
   *'!'*)
     # remove all bangs `!'.
-    fp_element="$(echo x"$1" | sed -e '
-s/^x//
-s/!//g
-')";
+    fp_element="$(echo1 "$1" | sed -e 's/!//g')";
     ;;
   *)
     fp_element="$1";
     ;;
   esac;
-  if test _"${_FUNC_STACK}"_ = __;
+  if test _"${_FUNC_STACK}"_ = __
   then
     _FUNC_STACK="${fp_element}";
   else
@@ -799,7 +872,7 @@ landmark "2: system test";
 
 if test _"$(echo xTesTx \
            | sed -e 's/^.\([Tt]e*x*sTT*\).*$/\1/' \
-           | sed -e 's|T|t|g')"_ != _test_;
+           | sed -e 's|T|t|g')"_ != _test_
 then
   error 'Test of "sed" command failed.';
 fi;
@@ -808,7 +881,7 @@ fi;
 ########################################################################
 # Test of function `cat'.
 #
-if test _"$(echo test | cat)"_ != _test_;
+if test _"$(echo test | cat)"_ != _test_
 then
   error 'Test of "cat" command failed.';
 fi;
@@ -817,13 +890,13 @@ fi;
 ########################################################################
 # Test for compression.
 #
-if test _"$(echo 'test' | gzip -c -d -f - 2>${_NULL_DEV})"_ = _test_;
+if test _"$(echo 'test' | gzip -c -d -f - 2>${_NULL_DEV})"_ = _test_
 then
   _HAS_COMPRESSION='yes';
   if echo 'test' | bzip2 -c 2>${_NULL_DEV} | bzip2 -t 2>${_NULL_DEV} \
      && test _"$(echo 'test' | bzip2 -c 2>${_NULL_DEV} \
                              | bzip2 -d -c 2>${_NULL_DEV})"_ \
-             = _test_;
+             = _test_
   then
     _HAS_BZIP='yes';
   else
@@ -855,13 +928,13 @@ landmark "3: functions";
 #
 apropos_run() {
   func_check apropos_run = 1 "$@";
-  if apropos apropos >${_NULL_DEV} 2>${_NULL_DEV};
+  if apropos apropos >${_NULL_DEV} 2>${_NULL_DEV}
   then
     apropos "$1";
-  elif man --apropos man >${_NULL_DEV} 2>${_NULL_DEV};
+  elif man --apropos man >${_NULL_DEV} 2>${_NULL_DEV}
   then
     man --apropos "$1";
-  elif man -k man >${_NULL_DEV} 2>${_NULL_DEV};
+  elif man -k man >${_NULL_DEV} 2>${_NULL_DEV}
   then
     man -k "$1";
   fi;
@@ -888,10 +961,7 @@ base_name()
   case "${bn_name}" in
     */)
       # delete all final slashes
-      bn_name="$(echo x"${bn_name}" | sed -e '
-s/^x//
-s|//*$||
-')";
+      bn_name="$(echo1 "${bn_name}" | sed -e 's|//*$||')";
       ;;
   esac;
   case "${bn_name}" in
@@ -901,15 +971,10 @@ s|//*$||
       ;;
     */*)
       # delete everything before and including the last slash `/'.
-      echo x"${bn_name}" | sed -e '
-s/^x//
-s|^.*//*\([^/]*\)$|\1|
-';
+      echo1 "${bn_name}" | sed -e 's|^.*//*\([^/]*\)$|\1|';
       ;;
     *)
-      cat <<EOF
-${bn_name}
-EOF
+      obj bn_name echo1;
       ;;
   esac;
   eval ${_UNSET} bn_name;
@@ -927,7 +992,7 @@ EOF
 # Arguments: 1, a file name.
 # Output: the content of <file>, possibly decompressed.
 #
-if test _"${_HAS_COMPRESSION}"_ = _yes_;
+if test _"${_HAS_COMPRESSION}"_ = _yes_
 then
   cat_z()
   {
@@ -940,9 +1005,9 @@ then
         error 'cat_z(): for standard input use save_stdin()';
         ;;
     esac;
-    if obj _HAS_BZIP is_yes;
+    if obj _HAS_BZIP is_yes
     then
-      if bzip2 -t "$1" 2>${_NULL_DEV};
+      if bzip2 -t "$1" 2>${_NULL_DEV}
       then
         bzip2 -c -d "$1" 2>${_NULL_DEV};
         eval "${return_ok}";
@@ -992,15 +1057,13 @@ landmark '4: dirname()*';
 dirname_append()
 {
   func_check dirname_append = 2 "$@";
-  if is_empty "$1";
+  if is_empty "$1"
   then
     error "dir_append(): first argument is empty.";
   fi;
-  if is_empty "$2";
+  if is_empty "$2"
   then
-    cat <<EOF
-$1
-EOF
+    echo1 "$1";
   else
     dirname_chop "$1"/"$2";
   fi;
@@ -1022,22 +1085,15 @@ dirname_chop()
 {
   func_check dirname_chop = 1 "$@";
   # replace all multiple slashes by a single slash `/'.
-  dc_res="$(echo x"$1" | sed -e '
-s/^x//
-s|///*|/|g
-')";
+  dc_res="$(echo1 "$1" | sed -e 's|///*|/|g')";
   case "${dc_res}" in
-    ?*/)
-      # remove trailing slash '/';
-      echo x"${dc_res}" | sed -e '
-s/^x//
-s|/$||
-';
-      ;;
-    *) cat <<EOF
-${dc_res}
-EOF
-  ;;
+  ?*/)
+    # remove trailing slash '/';
+    echo1 "${dc_res}" | sed -e 's|/$||';
+    ;;
+  *)
+    obj dc_res echo1
+    ;;
   esac;
   eval ${_UNSET} dc_res;
   eval "${return_ok}";
@@ -1086,9 +1142,9 @@ do_filearg()
       set 'File';
       ;;
     *)
-      if obj _MAN_ENABLE is_yes;
+      if obj _MAN_ENABLE is_yes
       then
-        if obj _MAN_FORCE is_yes;
+        if obj _MAN_FORCE is_yes
         then
           set 'Manpage' 'File';
         else
@@ -1103,38 +1159,53 @@ do_filearg()
   do
     case "$i" in
       File)
-        if test -f "${df_filespec}";
+        if test -f "${df_filespec}"
         then
-          if test -r "${df_filespec}";
+          if test -r "${df_filespec}"
           then
             register_file "${df_filespec}";
             eval ${_UNSET} df_filespec;
+            eval ${_UNSET} df_no_man;
             eval "${return_good}";
           else
 	    echo2 "could not read \`${df_filespec}'";
             eval ${_UNSET} df_filespec;
+            eval ${_UNSET} df_no_man;
             eval "${return_bad}";
           fi;
         else
+          if obj df_no_man is_not_empty
+          then
+            echo2 "\`${df_filespec}' is neither a file nor a man page."
+          fi;
+          df_no_file=yes;
           continue;
         fi;
         ;;
       Manpage)			# parse filespec as man page
-        if obj _MAN_IS_SETUP is_not_yes;
+        if obj _MAN_IS_SETUP is_not_yes
         then
           man_setup;
         fi;
-        if man_do_filespec "${df_filespec}";
+        if man_do_filespec "${df_filespec}"
         then
           eval ${_UNSET} df_filespec;
+          eval ${_UNSET} df_no_file;
           eval "${return_good}";
         else
+          if obj df_no_file is_not_empty
+          then
+            echo2 "\`${df_filespec}' is neither a file nor a man page."
+          fi;
+          df_no_man=yes;
           continue;
 	fi;
         ;;
     esac;
   done;
   eval ${_UNSET} df_filespec;
+  eval ${_UNSET} df_no_file;
+  eval ${_UNSET} df_no_man;
   eval "${return_bad}";
 } # do_filearg()
 
@@ -1216,18 +1287,16 @@ do_nothing()
 get_first_essential()
 {
   func_check get_first_essential '>=' 0 "$@";
-  if is_equal "$#" 0;
+  if is_equal "$#" 0
   then
     eval "${return_ok}";
   fi;
   for i
   do
     gfe_var="$i";
-    if obj gfe_var is_not_empty;
+    if obj gfe_var is_not_empty
     then
-      cat <<EOF
-${gfe_var}
-EOF
+      obj gfe_var echo1;
       eval ${_UNSET} gfe_var;
       eval "${return_ok}";
     fi;
@@ -1252,7 +1321,7 @@ landmark '5: is_*()';
 is_dir()
 {
   func_check is_dir = 1 "$@";
-  if test -d "$1" && test -r "$1";
+  if test _"$1"_ != __ && test -d "$1" && test -r "$1"
   then
     eval "${return_yes}";
   fi;
@@ -1271,7 +1340,7 @@ is_dir()
 is_empty()
 {
   func_check is_empty = 1 "$@";
-  if test _"$1"_ = __;
+  if test _"$1"_ = __
   then
     eval "${return_yes}";
   fi;
@@ -1290,7 +1359,7 @@ is_empty()
 is_equal()
 {
   func_check is_equal = 2 "$@";
-  if test _"$1"_ = _"$2"_;
+  if test _"$1"_ = _"$2"_
   then
     eval "${return_yes}";
   fi;
@@ -1310,7 +1379,11 @@ is_equal()
 is_existing()
 {
   func_check is_existing = 1 "$@";
-  if test -f "$1" || test -d "$1";
+  if test _"$1"_ = __
+  then
+    eval "${return_no}";
+  fi;
+  if test -f "$1" || test -d "$1" || test -c "$1"
   then
     eval "${return_yes}";
   fi;
@@ -1329,7 +1402,7 @@ is_existing()
 is_file()
 {
   func_check is_file = 1 "$@";
-  if test -f "$1" && test -r "$1";
+  if test _"$1"_ != __ && test -f "$1" && test -r "$1"
   then
     eval "${return_yes}";
   fi;
@@ -1350,7 +1423,7 @@ is_file()
 is_non_empty_file()
 {
   func_check is_non_empty_file = 1 "$@";
-  if is_file "$1" && test -s "$1";
+  if is_file "$1" && test -s "$1"
   then
     eval "${return_yes}";
   fi;
@@ -1369,7 +1442,7 @@ is_non_empty_file()
 is_not_dir()
 {
   func_check is_not_dir = 1 "$@";
-  if is_dir "$1";
+  if is_dir "$1"
   then
     eval "${return_no}";
   fi;
@@ -1388,7 +1461,7 @@ is_not_dir()
 is_not_empty()
 {
   func_check is_not_empty = 1 "$@";
-  if is_empty "$1";
+  if is_empty "$1"
   then
     eval "${return_no}";
   fi;
@@ -1406,7 +1479,7 @@ is_not_empty()
 is_not_equal()
 {
   func_check is_not_equal = 2 "$@";
-  if is_equal "$1" "$2";
+  if is_equal "$1" "$2"
   then
     eval "${return_no}";
   fi
@@ -1424,7 +1497,7 @@ is_not_equal()
 is_not_file()
 {
   func_check is_not_file '>=' 1 "$@";
-  if is_file "$1";
+  if is_file "$1"
   then
     eval "${return_no}";
   fi;
@@ -1443,7 +1516,7 @@ is_not_file()
 is_not_prog()
 {
   func_check is_not_prog '>=' 1 "$@";
-  if where_is "$1" >${_NULL_DEV};
+  if where_is "$1" >${_NULL_DEV}
   then
     eval "${return_no}";
   fi;
@@ -1461,7 +1534,7 @@ is_not_prog()
 is_not_writable()
 {
   func_check is_not_writable '>=' 1 "$@";
-  if is_writable "$1";
+  if is_writable "$1"
   then
     eval "${return_no}";
   fi;
@@ -1479,7 +1552,7 @@ is_not_writable()
 is_not_yes()
 {
   func_check is_not_yes = 1 "$@";
-  if is_yes "$1";
+  if is_yes "$1"
   then
     eval "${return_no}";
   fi;
@@ -1503,7 +1576,7 @@ is_prog()
     eval "${return_no}";
     ;;
   *)
-    if where_is "$1" >${_NULL_DEV};
+    if where_is "$1" >${_NULL_DEV}
     then
       eval "${return_yes}";
     fi;
@@ -1523,9 +1596,13 @@ is_prog()
 is_writable()
 {
   func_check is_writable '>=' 1 "$@";
-  if test -r "$1";
+  if test _"$1"_ = __
   then
-    if test -w "$1";
+    eval "${return_no}";
+  fi;
+  if test -r "$1"
+  then
+    if test -w "$1"
     then
       eval "${return_yes}";
     fi;
@@ -1545,7 +1622,7 @@ is_writable()
 is_yes()
 {
   func_check is_yes = 1 "$@";
-  if is_equal "$1" 'yes';
+  if is_equal "$1" 'yes'
   then
     eval "${return_yes}";
   fi;
@@ -1564,14 +1641,19 @@ is_yes()
 
 
 ########################################################################
-# leave ()
+# leave ([<code>])
 #
-# Clean exit without an error.
+# Clean exit without an error or with <code>.
 #
 leave()
 {
   clean_up;
-  exit "${_OK}";
+  if test $# = 0
+  then
+    exit "${_OK}";
+  else
+    exit "$1";
+  fi;
 }
 
 
@@ -1583,7 +1665,7 @@ landmark '6: list_*()';
 # data consists of space-separated single-quoted elements.  So a list
 # has the form "'first' 'second' '...' 'last'".  See list_append() for
 # more details on the list structure.  The array elements of `list'
-# can be get by `set x $list; shift`.
+# can be get by `eval set x "$list"; shift`.
 
 
 ########################################################################
@@ -1612,10 +1694,7 @@ list_append()
       # escape each single quote by replacing each
       # "'" (squote) by "'\''" (squote bslash squote squote);
       # note that the backslash must be doubled in the following `sed'
-      la_element="$(echo x"${la_s}" | sed -e '
-s/^x//
-s/'"${_SQUOTE}"'/&\\&&/g
-')";
+      la_element="$(echo1 "${la_s}" | sed -e 's/'"${_SQ}"'/&\\&&/g')";
       ;;
     '')
       la_element="";
@@ -1624,7 +1703,7 @@ s/'"${_SQUOTE}"'/&\\&&/g
       la_element="${la_s}";
       ;;
     esac;
-    if obj la_list is_empty;
+    if obj la_list is_empty
     then
       la_list="'${la_element}'";
     else
@@ -1687,31 +1766,27 @@ list_from_cmdline()
   lfc_short_a="$(obj_data "$1"_SHORT_ARG)"; # short options, with argument
   lfc_long_n="$(obj_data "$1"_LONG_NA)";    # long options, no argument
   lfc_long_a="$(obj_data "$1"_LONG_ARG)";   # long options, with argument
-  if obj lfc_short_n is_empty;
+  if obj lfc_short_n is_empty
   then
     error 'list_from_cmdline(): no $'"$1"'_SHORT_NA options.';
   fi;
-  if obj lfc_short_a is_empty;
+  if obj lfc_short_a is_empty
   then
     error 'list_from_cmdline(): no $'"$1"'_SHORT_ARG options.';
   fi;
-  if obj lfc_long_n is_empty;
+  if obj lfc_long_n is_empty
   then
     error 'list_from_cmdline(): no $'"$1"'_LONG_NA options.';
   fi;
-  if obj lfc_long_a is_empty;
+  if obj lfc_long_a is_empty
   then
     error 'list_from_cmdline(): no $'"$1"'_LONG_ARG options.';
   fi;
   shift;
-  lfc_fn='list_from_cmdline():';	 # for error messages
-  if is_equal "$#" 0;
+  if is_equal "$#" 0
   then
-    cat <<EOF
---
-EOF
+    echo1 --
     eval ${_UNSET} lfc_fparams;
-    eval ${_UNSET} lfc_fn;
     eval ${_UNSET} lfc_short_a;
     eval ${_UNSET} lfc_short_n;
     eval ${_UNSET} lfc_long_a;
@@ -1721,116 +1796,112 @@ EOF
   fi;
   lfc_fparams='';
   lfc_result='';
-  while test "$#" -ge 1;
+  while test "$#" -ge 1
   do
     lfc_arg="$1";
     shift;
     case "${lfc_arg}" in
-      --) break; ;;
-      --?*)
-        # delete leading '--';
-        lfc_opt="$(echo x"${lfc_arg}" | sed -e 's/^x--//')";
-        if list_has lfc_long_n "${lfc_opt}";
+    --) break; ;;
+    --?*)
+      # delete leading '--';
+      lfc_abbrev="$(echo1 "${lfc_arg}" | sed -e 's/^--//')";
+      lfc_opt="$(list_single_from_abbrev lfc_long_n "${lfc_abbrev}")";
+      if obj lfc_opt is_not_empty
+      then
+        # long option, no argument
+        list_append lfc_result "--${lfc_opt}";
+        continue;
+      fi;
+      # test on `--opt=arg'
+      if string_contains "${lfc_abbrev}" '='
+      then
+        lfc_with_equal="${lfc_abbrev}";
+        # extract option by deleting from the first '=' to the end
+        lfc_abbrev="$(echo1 "${lfc_with_equal}" | \
+                      sed -e 's/^\([^=]*\)=.*$/\1/')";
+        lfc_opt="$(list_single_from_abbrev lfc_long_a "${lfc_abbrev}")";
+        if obj lfc_opt is_not_empty
         then
-          # long option, no argument
-          list_append lfc_result "--${lfc_opt}";
+          # get the option argument by deleting up to first `='
+          lfc_optarg="$(echo1 "${lfc_with_equal}" | sed -e 's/^[^=]*=//')";
+          list_append lfc_result "--${lfc_opt}" "${lfc_optarg}";
           continue;
         fi;
-        # test on `--opt=arg'
-        if string_contains "${lfc_opt}" '=';
+      fi;
+      lfc_opt="$(list_single_from_abbrev lfc_long_a "${lfc_abbrev}")";
+      if obj lfc_opt is_not_empty
+      then
+        # long option with argument
+        if test "$#" -le 0
         then
-          # extract option by deleting from the first '=' to the end
-          lfc_lopt="$(echo x"${lfc_opt}" | sed -e '
-s/^x//
-s/=.*$//
-')";
-          if list_has lfc_long_a "${lfc_lopt}";
-          then
-            # get the option argument by deleting up to first `='
-            lfc_optarg="$(echo x"${lfc_opt}" | sed -e '
-s/^x//
-s/^[^=]*=//
-')";
-            list_append lfc_result "--${lfc_lopt}" "${lfc_optarg}";
-            continue;
-          fi;
+          error "list_from_cmdline(): no argument for option --${lfc_opt}."
         fi;
-        if list_has lfc_long_a "${lfc_opt}";
+        list_append lfc_result "--${lfc_opt}" "$1";
+        shift;
+        continue;
+      fi;
+      error "list_from_cmdline(): --${lfc_opt} is not an option."
+      ;;
+    -?*)			# short option (cluster)
+      # delete leading `-';
+      lfc_rest="$(echo1 "${lfc_arg}" | sed -e 's/^-//')";
+      while obj lfc_rest is_not_empty
+      do
+        # get next short option from cluster (first char of $lfc_rest)
+        lfc_optchar="$(echo1 "${lfc_rest}" | sed -e 's/^\(.\).*$/\1/')";
+        # remove first character from ${lfc_rest};
+        lfc_rest="$(echo1 "${lfc_rest}" | sed -e 's/^.//')";
+        if list_has lfc_short_n "${lfc_optchar}"
         then
-          # long option with argument
-          if test "$#" -le 0;
-          then
-            error "list_from_cmdline(): \
-${lfc_fn} no argument for option --${lfc_opt}."
-          fi;
-          list_append lfc_result "--${lfc_opt}" "$1";
-          shift;
+          list_append lfc_result "-${lfc_optchar}";
           continue;
-        fi;
-        error "list_from_cmdline(): ${lfc_fn} --${lfc_opt} is not an option."
-        ;;
-      -?*)			# short option (cluster)
-        # delete leading `-';
-        lfc_rest="$(echo x"${lfc_arg}" | sed -e 's/^x-//')";
-        while obj lfc_rest is_not_empty;
-        do
-          # get next short option from cluster (first char of $lfc_rest)
-          lfc_optchar="$(echo x"${lfc_rest}" | sed -e 's/^x\(.\).*$/\1/')";
-          # remove first character from ${lfc_rest};
-          lfc_rest="$(echo x"${lfc_rest}" | sed -e 's/^x.//')";
-          if list_has lfc_short_n "${lfc_optchar}";
+        elif list_has lfc_short_a "${lfc_optchar}"
+        then
+          if obj lfc_rest is_empty
           then
-            list_append lfc_result "-${lfc_optchar}";
-            continue;
-          elif list_has lfc_short_a "${lfc_optchar}";
-          then
-            if obj lfc_rest is_empty;
+            if test "$#" -ge 1
             then
-              if test "$#" -ge 1;
-              then
-                list_append lfc_result "-${lfc_optchar}" "$1";
-                shift;
-                continue;
-              else
-                error "list_from_cmdline(): \
-${lfc_fn}"' no argument for option -'"${lfc_optchar}."
-              fi;
-            else		# rest is the argument
-              list_append lfc_result "-${lfc_optchar}" "${lfc_rest}";
-              lfc_rest='';
+              list_append lfc_result "-${lfc_optchar}" "$1";
+              shift;
               continue;
+            else
+              error 'list_from_cmdline(): no argument for option -'\
+"${lfc_optchar}."
             fi;
-          else
-            error "list_from_cmdline(): \
-${lfc_fn} unknown option -${lfc_optchar}."
+          else			# rest is the argument
+            list_append lfc_result "-${lfc_optchar}" "${lfc_rest}";
+            lfc_rest='';
+            continue;
           fi;
-        done;
-        ;;
-      *)
-	# Here, $lfc_arg is not an option, so a file parameter.
-        list_append lfc_fparams "${lfc_arg}";
+        else
+          error "list_from_cmdline(): unknown option -${lfc_optchar}."
+        fi;
+      done;
+      ;;
+    *)
+      # Here, $lfc_arg is not an option, so a file parameter.
+      list_append lfc_fparams "${lfc_arg}";
 
-        # Ignore the strange option handling of $POSIXLY_CORRECT to
-        # end option parsing after the first file name argument.  To
-        # reuse it, do a `break' here if $POSIXLY_CORRECT is
-        # non-empty.
-        ;;
+      # Ignore the strange POSIX option handling to end option
+      # parsing after the first file name argument.  To reuse it, do
+      # a `break' here if $POSIXLY_CORRECT of `bash' is not empty.
+      # When `bash' is called as `sh' $POSIXLY_CORRECT is set
+      # automatically to `y'.
+      ;;
     esac;
   done;
   list_append lfc_result '--';
-  if obj lfc_fparams is_not_empty;
+  if obj lfc_fparams is_not_empty
   then
     lfc_result="${lfc_result} ${lfc_fparams}";
   fi;
-  if test "$#" -gt 0;
+  if test "$#" -gt 0
   then
     list_append lfc_result "$@";
   fi;
-  cat <<EOF
-${lfc_result}
-EOF
+  obj lfc_result echo1;
+  eval ${_UNSET} lfc_abbrev;
   eval ${_UNSET} lfc_fparams;
-  eval ${_UNSET} lfc_fn;
   eval ${_UNSET} lfc_short_a;
   eval ${_UNSET} lfc_short_n;
   eval ${_UNSET} lfc_long_a;
@@ -1840,7 +1911,7 @@ EOF
   eval ${_UNSET} lfc_opt;
   eval ${_UNSET} lfc_opt_arg;
   eval ${_UNSET} lfc_opt_char;
-  eval ${_UNSET} lfc_lopt;
+  eval ${_UNSET} lfc_with_equal;
   eval ${_UNSET} lfc_rest;
   eval "${return_ok}";
 } # list_from_cmdline()
@@ -1863,24 +1934,15 @@ list_from_split()
   func_check list_from_split = 2 "$@";
 
   # precede each space or tab by a backslash `\' (doubled for `sed')
-  lfs_s="$(echo x"$1" | sed -e '
-s/^x//
-s/\(['"${_SPACE}${_TAB}"']\)/\\\1/g
-')";
+  lfs_s="$(echo1 "$1" | sed -e 's/\(['"${_SP}${_TAB}"']\)/\\\1/g')";
 
   # replace split character of string by the list separator ` ' (space).
   case "$2" in
     /)				# cannot use normal `sed' separator
-      echo x"${lfs_s}" | sed -e '
-s/^x//
-s|'"$2"'| |g
-';
+      echo1 "${lfs_s}" | sed -e 's|'"$2"'| |g';
       ;;
     ?)				# use normal `sed' separator
-      echo x"${lfs_s}" | sed -e '
-s/^x//
-s/'"$2"'/ /g
-';
+      echo1 "${lfs_s}" | sed -e 's/'"$2"'/ /g';
       ;;
     ??*)
       error 'list_from_split(): separator must be a single character.';
@@ -1916,9 +1978,9 @@ list_get()
   func_check list_get = 1 "$@";
   eval lg_list='"${'$1'}"';
   # remove leading and final space characters
-  lg_list="$(echo x"${lg_list}" | sed -e '
-s/^x['"${_SPACE}${_TAB}"']*//
-s/['"${_SPACE}${_TAB}"']*$//
+  lg_list="$(echo1 "${lg_list}" | sed -e '
+s/^['"${_SP}${_TAB}"']*//
+s/['"${_SP}${_TAB}"']*$//
 ')";
   case "${lg_list}" in
   '')
@@ -1926,9 +1988,7 @@ s/['"${_SPACE}${_TAB}"']*$//
     eval "${return_ok}";
     ;;
   \'*\')
-    cat <<EOF
-${lg_list}
-EOF
+    obj lg_list echo1;
     eval ${_UNSET} lg_list;
     eval "${return_ok}";
     ;;
@@ -1944,30 +2004,72 @@ EOF
 ########################################################################
 # list_has (<var_name> <element>)
 #
+# Test whether the list <var_name> has the element <element>.
+#
 # Arguments: 2
 #   <var_name>: a variable name for a list of single-quoted elements
 #   <element>:  some sequence of characters.
-# Output:
-#   if <list> is empty:  "'<element>' '...'"
-#   otherwise:           "list '<element>' ..."
+#
+# Variable prefix: lh
 #
 list_has()
 {
   func_check list_has = 2 "$@";
-  eval _list='"${'$1'}"';
-  if obj _list is_empty;
+  eval lh_list='"${'$1'}"';
+  if obj lh_list is_empty
   then
+    eval "${_UNSET}" lh_list;
     eval "${return_no}";
   fi;
-  _element="$2";
   case "$2" in
-    \'*\')  _element="$2"; ;;
-    *)      _element="'$2'"; ;;
+    \'*\')  lh_element=" $2 "; ;;
+    *)      lh_element=" '$2' "; ;;
   esac;
-  if string_contains "${_list}" "${_element}";
+  if string_contains " ${lh_list} " "${lh_element}"
   then
+    eval "${_UNSET}" lh_list;
+    eval "${_UNSET}" lh_element;
     eval "${return_yes}";
   else
+    eval "${_UNSET}" lh_list;
+    eval "${_UNSET}" lh_element;
+    eval "${return_no}";
+  fi;
+}
+
+
+########################################################################
+# list_has_abbrev (<var_name> <abbrev>)
+#
+# Test whether the list <var_name> has an element starting with <abbrev>.
+#
+# Arguments: 2
+#   <var_name>: a variable name for a list of single-quoted elements
+#   <abbrev>:   some sequence of characters.
+#
+# Variable prefix: lha
+#
+list_has_abbrev()
+{
+  func_check list_has_abbrev = 2 "$@";
+  eval lha_list='"${'$1'}"';
+  if obj lha_list is_empty
+  then
+    eval "${_UNSET}" lha_list;
+    eval "${return_no}";
+  fi;
+  case "$2" in
+    \'*) lha_element=" $(echo1 "$2" | sed -e 's/'"${_SQ}"'$//')"; ;;
+    *)   lha_element=" '$2"; ;;
+  esac;
+  if string_contains " ${lha_list}" "${lha_element}"
+  then
+    eval "${_UNSET}" lha_list;
+    eval "${_UNSET}" lha_element;
+    eval "${return_yes}";
+  else
+    eval "${_UNSET}" lha_list;
+    eval "${_UNSET}" lha_element;
     eval "${return_no}";
   fi;
   eval "${return_ok}";
@@ -1977,33 +2079,100 @@ list_has()
 ########################################################################
 # list_has_not (<list> <element>)
 #
+# Test whether <list> has no <element>.
+#
 # Arguments: 2
 #   <list>:    a space-separated list of single-quoted elements.
 #   <element>: some sequence of characters.
-# Output:
-#   if <list> is empty:  "'<element>' '...'"
-#   otherwise:           "<list> '<element>' ..."
+#
+# Variable prefix: lhn
 #
 list_has_not()
 {
   func_check list_has_not = 2 "$@";
-  eval _list='"${'$1'}"';
-  if obj _list is_empty;
+  eval lhn_list='"${'$1'}"';
+  if obj lhn_list is_empty
   then
+    eval "${_UNSET}" lhn_list;
     eval "${return_yes}";
   fi;
-  _element="$2";
   case "$2" in
-    \'*\')  _element="$2"; ;;
-    *)      _element="'$2'"; ;;
+    \'*\') lhn_element=" $2 "; ;;
+    *)     lhn_element="' $2 '"; ;;
   esac;
-  if string_contains "${_list}" "${_element}";
+  if string_contains " ${lhn_list} " "${lhn_element}"
   then
+    eval "${_UNSET}" lhn_list;
+    eval "${_UNSET}" lhn_element;
     eval "${return_no}";
   else
+    eval "${_UNSET}" lhn_list;
+    eval "${_UNSET}" lhn_element;
     eval "${return_yes}";
   fi;
-  eval "${return_ok}";
+}
+
+
+########################################################################
+# list_single_from_abbrev (<list> <abbrev>)
+#
+# Check whether the list has an element starting with <abbrev>.  If
+# there are more than a single element an error is created.
+#
+# Arguments: 2
+#   <list>:   a variable name for a list of single-quoted elements
+#   <abbrev>: some sequence of characters.
+#
+# Output: the found element.
+#
+# Variable prefix: lsfa
+#
+list_single_from_abbrev()
+{
+  func_check list_single_from_abbrev = 2 "$@";
+  eval lsfa_list='"${'$1'}"';
+  if obj lsfa_list is_empty
+  then
+    eval "${_UNSET}" lsfa_list;
+    eval "${return_no}";
+  fi;
+  lsfa_abbrev="$2";
+  if list_has lsfa_list "${lsfa_abbrev}"
+  then
+    obj lsfa_abbrev echo1;
+    eval "${_UNSET}" lsfa_abbrev;
+    eval "${_UNSET}" lsfa_list;
+    eval "${return_yes}";
+  fi;
+  if list_has_abbrev lsfa_list "${lsfa_abbrev}"
+  then
+    lsfa_element='';
+    eval set x "${lsfa_list}";
+    shift;
+    for i
+    do
+      case "$i" in
+      ${lsfa_abbrev}*)
+        if obj lsfa_element is_not_empty
+        then
+          error "list_single_from_abbrev: the abbreviation ${lsfa_abbrev} \
+has multiple options: ${lsfa_element} and ${i}.";
+        fi;
+        lsfa_element="$i";
+        ;;
+      esac;
+    done;
+    obj lsfa_element echo1;
+    eval "${_UNSET}" lsfa_abbrev;
+    eval "${_UNSET}" lsfa_element;
+    eval "${_UNSET}" lsfa_list;
+    eval "${return_yes}";
+  else
+    eval "${_UNSET}" lsfa_abbrev;
+    eval "${_UNSET}" lsfa_element;
+    eval "${_UNSET}" lsfa_list;
+    eval "${return_no}";
+  fi;
 }
 
 
@@ -2025,19 +2194,19 @@ landmark '7: man_*()';
 # Output    : none.
 # Return    : `0' if man page was found, `1' else.
 #
-# Only called from do_fileargs(), checks on $MANPATH and
-# $_MAN_ENABLE are assumed.
+# Only called from do_fileargs(), checks on $MANPATH and $_MAN_ENABLE
+# are assumed (see man_setup()).
 #
 # Variable prefix: mdf
 #
 man_do_filespec()
 {
   func_check man_do_filespec = 1 "$@";
-  if obj _MAN_PATH is_empty;
+  if obj _MAN_PATH is_empty
   then
     eval "${return_bad}";
   fi;
-  if is_empty "$1";
+  if is_empty "$1"
   then
     eval "${return_bad}";
   fi;
@@ -2053,37 +2222,37 @@ man_do_filespec()
       eval "${return_bad}";
       ;;
     man:?*\(?*\))		# man:name(section)
-      mdf_name="$(echo x"${mdf_spec}" \
-               | sed -e 's/^xman:\(..*\)(\(..*\))$/\1/')";
-      mdf_section="$(echo x"${mdf_spec}" \
-               | sed -e 's/^xman:\(..*\)(\(..*\))$/\2/')";
+      mdf_name="$(echo1 "${mdf_spec}" \
+               | sed -e 's/^man:\(..*\)(\(..*\))$/\1/')";
+      mdf_section="$(echo1 "${mdf_spec}" \
+               | sed -e 's/^man:\(..*\)(\(..*\))$/\2/')";
       ;;
     man:?*.[0-9on])			# man:name.section
-      mdf_name="$(echo x"${mdf_spec}" \
-               | sed -e 's/^xman:\(..*\)\..$/\1/')";
-      mdf_section="$(echo x"${mdf_spec}" \
-               | sed -e 's/^x.*\(.\)$/\1/')";
+      mdf_name="$(echo1 "${mdf_spec}" \
+               | sed -e 's/^man:\(..*\)\..$/\1/')";
+      mdf_section="$(echo1 "${mdf_spec}" \
+               | sed -e 's/^.*\(.\)$/\1/')";
       ;;
     man:?*)			# man:name
-      mdf_name="$(echo x"${mdf_spec}" | sed -e 's/^xman://')";
+      mdf_name="$(echo1 "${mdf_spec}" | sed -e 's/^man://')";
       ;;
     ?*\(?*\))			# name(section)
-      mdf_name="$(echo x"${mdf_spec}" \
-               | sed -e 's/^x\(..*\)(\(..*\))$/\1/')";
-      mdf_section="$(echo x"${mdf_spec}" \
-               | sed -e 's/^x\(..*\)(\(..*\))$/\2/')";
+      mdf_name="$(echo1 "${mdf_spec}" \
+               | sed -e 's/^\(..*\)(\(..*\))$/\1/')";
+      mdf_section="$(echo1 "${mdf_spec}" \
+               | sed -e 's/^\(..*\)(\(..*\))$/\2/')";
       ;;
     ?*.[0-9on])			# name.section
-      mdf_name="$(echo x"${mdf_spec}" \
-               | sed -e 's/^x\(..*\)\..$/\1/')";
-      mdf_section="$(echo x"${mdf_spec}" \
-               | sed -e 's/^x.*\(.\)$/\1/')";
+      mdf_name="$(echo1 "${mdf_spec}" \
+               | sed -e 's/^\(..*\)\..$/\1/')";
+      mdf_section="$(echo1 "${mdf_spec}" \
+               | sed -e 's/^.*\(.\)$/\1/')";
       ;;
     ?*)
       mdf_name="${mdf_spec}";
       ;;
   esac;
-  if obj mdf_name is_empty;
+  if obj mdf_name is_empty
   then
     eval ${_UNSET} mdf_got_one;
     eval ${_UNSET} mdf_name;
@@ -2092,16 +2261,16 @@ man_do_filespec()
     eval "${return_bad}";
   fi;
   mdf_got_one='no';
-  if obj mdf_section is_empty;
+  if obj mdf_section is_empty
   then
     eval set x "${_MAN_AUTO_SEC}";
     shift;
     for s
     do
       mdf_s="$s";
-      if man_search_section "${mdf_name}" "${mdf_s}";
+      if man_search_section "${mdf_name}" "${mdf_s}"
       then			# found
-        if obj _MAN_ALL is_yes;
+        if obj _MAN_ALL is_yes
         then
           mdf_got_one='yes';
         else
@@ -2115,7 +2284,7 @@ man_do_filespec()
       fi;
     done;
   else
-    if man_search_section "${mdf_name}" "${mdf_section}";
+    if man_search_section "${mdf_name}" "${mdf_section}"
     then
       eval ${_UNSET} mdf_got_one;
       eval ${_UNSET} mdf_name;
@@ -2131,7 +2300,7 @@ man_do_filespec()
       eval "${return_bad}";
     fi;
   fi;
-  if obj _MAN_ALL is_yes && is_yes "${mdf_got_one}";
+  if obj _MAN_ALL is_yes && is_yes "${mdf_got_one}"
   then
     eval ${_UNSET} mdf_got_one;
     eval ${_UNSET} mdf_name;
@@ -2166,7 +2335,7 @@ man_register_file()
       error "man_register_file() expects 2 or 3 arguments.";
       ;;
   esac;
-  if is_empty "$1";
+  if is_empty "$1"
   then
     error 'man_register_file(): file name is empty';
   fi;
@@ -2199,15 +2368,15 @@ man_register_file()
 man_search_section()
 {
   func_check man_search_section = 2 "$@";
-  if obj _MAN_PATH is_empty;
+  if obj _MAN_PATH is_empty
   then
     eval "${return_bad}";
   fi;
-  if is_empty "$1";
+  if is_empty "$1"
   then
     eval "${return_bad}";
   fi;
-  if is_empty "$2";
+  if is_empty "$2"
   then
     eval "${return_bad}";
   fi;
@@ -2216,30 +2385,30 @@ man_search_section()
   eval set x "$(path_split "${_MAN_PATH}")";
   shift;
   mss_got_one='no';
-  if obj _MAN_EXT is_empty;
+  if obj _MAN_EXT is_empty
   then
     for d
     do
       mss_dir="$(dirname_append "$d" "man${mss_section}")";
-      if obj mss_dir is_dir;
+      if obj mss_dir is_dir
       then
         mss_prefix="$(\
           dirname_append "${mss_dir}" "${mss_name}.${mss_section}")";
         mss_files="$(eval ls "${mss_prefix}"'*' 2>${_NULL_DEV} |
                      sed -e '\| found|s|.*||'
                      )";
-        if obj mss_files is_not_empty;
+        if obj mss_files is_not_empty
         then
           # for f in $mss_files
           for f in $(eval set x ${mss_files}; shift; echo "$@")
           do
             mss_f="$f";
-            if obj mss_f is_file;
+            if obj mss_f is_file
             then
-              if is_yes "${mss_got_one}";
+              if is_yes "${mss_got_one}"
               then
                 register_file "${mss_f}";
-              elif obj _MAN_ALL is_yes;
+              elif obj _MAN_ALL is_yes
               then
                 man_register_file "${mss_f}" "${mss_name}";
               else
@@ -2266,25 +2435,25 @@ man_search_section()
     for d
     do
       mss_dir="$(dirname_append $d man${mss_section}${mss_ext})";
-      if obj mss_dir is_dir;
+      if obj mss_dir is_dir
       then
         mss_prefix=\
           "$(dirname_append "${mss_dir}" "${mss_name}.${mss_section}")";
         mss_files="$( eval ls "${mss_prefix}"'*' 2>${_NULL_DEV} |
                      sed -e '\|not found|s|.*||'
                      )";
-        if obj mss_files is_not_empty;
+        if obj mss_files is_not_empty
         then
           # for f in $mss_files
           for f in $(eval set x ${mss_files}; shift; echo "$@")
           do
             mss_f="$f";
-            if obj mss_f is_file;
+            if obj mss_f is_file
             then
-              if is_yes "${mss_got_one}";
+              if is_yes "${mss_got_one}"
               then
                 register_file "${mss_f}";
-              elif obj _MAN_ALL is_yes;
+              elif obj _MAN_ALL is_yes
               then
                 man_register_file "${mss_f}" "${mss_name}";
               else
@@ -2309,25 +2478,25 @@ man_search_section()
     for d
     do
       mss_dir="$(dirname_append "$d" "man${mss_section}")";
-      if obj mss_dir is_dir;
+      if obj mss_dir is_dir
       then
         mss_prefix="$(dirname_append "${mss_dir}" \
                         "${mss_name}.${mss_section}${mss_ext}")";
         mss_files="$(eval ls "${mss_prefix}"'*' 2>${_NULL_DEV} |
                      sed -e '\|not found|s|.*||'
                      )";
-        if obj mss_files is_not_empty;
+        if obj mss_files is_not_empty
         then
           # for f in $mss_files
           for f in $(eval set x ${mss_files}; shift; echo "$@")
           do
             mss_f="$f";
-            if obj mss_f is_file;
+            if obj mss_f is_file
             then
-              if is_yes "${mss_got_one}";
+              if is_yes "${mss_got_one}"
               then
                 register_file "${mss_f}";
-              elif obj _MAN_ALL is_yes;
+              elif obj _MAN_ALL is_yes
               then
                 man_register_file "${mss_f}" "${mss_name}";
               else
@@ -2349,7 +2518,7 @@ man_search_section()
       fi;
     done;
   fi;
-  if obj _MAN_ALL is_yes && is_yes "${mss_got_one}";
+  if obj _MAN_ALL is_yes && is_yes "${mss_got_one}"
   then
     eval ${_UNSET} mss_dir;
     eval ${_UNSET} mss_ext;
@@ -2401,13 +2570,13 @@ man_setup()
 {
   func_check main_man_setup = 0 "$@";
 
-  if obj _MAN_IS_SETUP is_yes;
+  if obj _MAN_IS_SETUP is_yes
   then
     eval "${return_ok}";
   fi;
   _MAN_IS_SETUP='yes';
 
-  if obj _MAN_ENABLE is_not_yes;
+  if obj _MAN_ENABLE is_not_yes
   then
     eval "${return_ok}";
   fi;
@@ -2415,27 +2584,27 @@ man_setup()
   # determine basic path for man pages
   _MAN_PATH="$(get_first_essential \
                "${_OPT_MANPATH}" "${_MANOPT_PATH}" "${MANPATH}")";
-  if obj _MAN_PATH is_empty;
+  if obj _MAN_PATH is_empty
   then
     manpath_set_from_path;
   else
     _MAN_PATH="$(path_clean "${_MAN_PATH}")";
   fi;
-  if obj _MAN_PATH is_empty;
+  if obj _MAN_PATH is_empty
   then
-    if is_prog 'manpath';
+    if is_prog 'manpath'
     then
       _MAN_PATH="$(manpath 2>${_NULL_DEV})"; # not always available
     fi;
   fi;
-  if obj _MAN_PATH is_empty;
+  if obj _MAN_PATH is_empty
   then
     _MAN_ENABLE="no";
     eval "${return_ok}";
   fi;
 
   _MAN_ALL="$(get_first_essential "${_OPT_ALL}" "${_MANOPT_ALL}")";
-  if obj _MAN_ALL is_empty;
+  if obj _MAN_ALL is_empty
   then
     _MAN_ALL='no';
   fi;
@@ -2456,7 +2625,7 @@ man_setup()
     *)
       _MAN_LANG="${ms_lang}";
       # get first two characters of $ms_lang
-      _MAN_LANG2="$(echo x"${ms_lang}" | sed -e 's/^x\(..\).*$/\1/')";
+      _MAN_LANG2="$(echo1 "${ms_lang}" | sed -e 's/^\(..\).*$/\1/')";
       ;;
   esac;
   # from now on, use only $_LANG, forget about $_OPT_LANG, $LC_*.
@@ -2465,7 +2634,7 @@ man_setup()
 
   _MAN_SEC="$(get_first_essential \
               "${_OPT_SECT}" "${_MANOPT_SEC}" "${MANSEC}")";
-  if obj _MAN_PATH is_empty;
+  if obj _MAN_PATH is_empty
   then
     _MAN_ENABLE="no";
     eval ${_UNSET} ms_lang;
@@ -2502,7 +2671,7 @@ landmark '8: manpath_*()';
 manpath_add_lang_sys()
 {
   func_check manpath_add_lang_sys = 0 "$@";
-  if obj _MAN_PATH is_empty;
+  if obj _MAN_PATH is_empty
   then
     eval "${return_ok}";
   fi;
@@ -2546,12 +2715,12 @@ _manpath_add_lang_sys_single()
   do
     _mals_dir="$(dirname_append "${_mals_parent}" "$d")";
     if obj _mals_res path_not_contains "${_mals_dir}" && \
-       obj _mals_dir is_dir;
+       obj _mals_dir is_dir
     then
       _mals_res="${_mals_res}:${_mals_dir}";
     fi;
   done;
-  if path_not_contains "${_mals_res}" "${_mals_parent}";
+  if path_not_contains "${_mals_res}" "${_mals_parent}"
   then
     _mals_res="${_mals_res}:${_mals_parent}";
   fi;
@@ -2585,21 +2754,18 @@ manpath_set_from_path()
   msfp_manpath='';
 
   # get a basic man path from $PATH
-  if obj PATH is_not_empty;
+  if obj PATH is_not_empty
   then
     eval set x "$(path_split "${PATH}")";
     shift;
     for d
     do
       # delete the final `/bin' part
-      msfp_base="$(echo x"$d" | sed -e '
-s/^x//
-s|//*bin/*$||
-')";
+      msfp_base="$(echo1 "$d" | sed -e 's|//*bin/*$||')";
       for e in /share/man /man
       do
         msfp_mandir="${msfp_base}$e";
-        if test -d "${msfp_mandir}" && test -r "${msfp_mandir}";
+        if test -d "${msfp_mandir}" && test -r "${msfp_mandir}"
         then
           msfp_manpath="${msfp_manpath}:${msfp_mandir}";
         fi;
@@ -2615,7 +2781,7 @@ s|//*bin/*$||
            /opt/gnome/man /opt/kde/man
   do
     msfp_d="$d";
-    if obj msfp_manpath path_not_contains "${msfp_d}" && obj mfsp_d is_dir;
+    if obj msfp_manpath path_not_contains "${msfp_d}" && obj mfsp_d is_dir
     then
       msfp_manpath="${msfp_manpath}:${mfsp_d}";
     fi;
@@ -2652,7 +2818,7 @@ landmark '9: obj_*()';
 obj()
 {
   func_check obj '>=' 2 "$@";
-  if is_empty "$2";
+  if is_empty "$2"
   then
     error "obj(): function name is empty."
   else
@@ -2684,14 +2850,12 @@ obj()
 obj_data()
 {
   func_check obj '=' 1 "$@";
-  if is_empty "$1";
+  if is_empty "$1"
   then
     error "obj_data(): object name is empty."
   fi;
   eval od_res='"${'$1'}"';
-  cat <<EOF
-${od_res}
-EOF
+  obj od_res echo1;
   eval ${_UNSET} od_res;
   eval "${return_ok}";
 }
@@ -2714,10 +2878,10 @@ EOF
 obj_from_output()
 {
   func_check obj_from_output '>=' 2 "$@";
-  if is_empty "$1";
+  if is_empty "$1"
   then
     error "res(): variable name is empty.";
-  elif is_empty "$2";
+  elif is_empty "$2"
   then
     error "res(): function name is empty."
   else
@@ -2742,7 +2906,7 @@ obj_from_output()
 obj_set()
 {
   func_check obj_set '=' 2 "$@";
-  if is_empty "$1";
+  if is_empty "$1"
   then
     error "obj_set(): object name is empty."
   fi;
@@ -2765,8 +2929,8 @@ path_chop()
 
   # replace multiple colons by a single colon `:'
   # remove leading and trailing colons
-  echo x"$1" | sed -e '
-s/^x:*//
+  echo1 "$1" | sed -e '
+s/^:*//
 s/:::*/:/g
 s/:*$//
 ';
@@ -2787,7 +2951,7 @@ s/:*$//
 path_clean()
 {
   func_check path_clean = 1 "$@";
-  if is_not_equal "$#" 1;
+  if is_not_equal "$#" 1
   then
     error 'path_clean() needs 1 argument.';
   fi;
@@ -2800,7 +2964,7 @@ path_clean()
     pc_i="$i";
     if obj pc_i is_not_empty \
        && obj pc_res path_not_contains "${pc_i}" \
-       && obj pc_i is_dir;
+       && obj pc_i is_dir
     then
       case "${pc_i}" in
         ?*/) pc_res="${pc_res}$(dirname_chop "${pc_i}")"; ;;
@@ -2811,7 +2975,7 @@ path_clean()
   eval ${_UNSET} pc_arg;
   eval ${_UNSET} pc_i;
   eval ${_UNSET} pc_res;
-  if path_chop "${pc_res}";
+  if path_chop "${pc_res}"
   then
     eval "${return_ok}";
   else
@@ -2853,7 +3017,7 @@ path_contains()
 path_not_contains()
 {
   func_check path_not_contains = 2 "$@";
-  if path_contains "$1" "$2";
+  if path_contains "$1" "$2"
   then
     eval "${return_no}";
   else
@@ -2894,11 +3058,11 @@ landmark '10: register_*()';
 register_file()
 {
   func_check register_file = 1 "$@";
-  if is_empty "$1";
+  if is_empty "$1"
   then
     error 'register_file(): file name is empty';
   fi;
-  if is_equal "$1" '-';
+  if is_equal "$1" '-'
   then
     to_tmp "${_TMP_STDIN}";
     register_title 'stdin';
@@ -2921,25 +3085,21 @@ register_file()
 #
 register_title()
 {
-  func_check register_title = 1 "$@";
-  if is_empty "$1";
+  func_check register_title '=' 1 "$@";
+  if is_empty "$1"
   then
     eval "${return_ok}";
   fi;
   rt_title="$(base_name "$1")";	# remove directory part
 
+  # replace space characters by `_'
+  rt_title="$(echo1 "${rt_title}" | sed -e 's/[ 	]/_/g')";
   # remove extension `.gz'
-  rt_title="$(echo x"${rt_title}" | sed -e '
-s/^x//
-s/\.gz$//
-')";
+  rt_title="$(echo1 "${rt_title}" | sed -e 's/\.gz$//')";
   # remove extension `.Z'
-  rt_title="$(echo x"${rt_title}" | sed -e '
-s/^x//
-s/\.Z$//
-')";
+  rt_title="$(echo1 "${rt_title}" | sed -e 's/\.Z$//')";
 
-  if obj rt_title is_empty;
+  if obj rt_title is_empty
   then
     eval "${return_ok}";
   fi;
@@ -2959,21 +3119,93 @@ s/\.Z$//
 
 
 ########################################################################
+# rm_file (<file_name>)
+#
+# Remove file if $_DEBUG_KEEP_FILES allows it.
+#
+# Globals: $_DEBUG_KEEP_FILES
+#
+rm_file()
+{
+  func_check rm_file '=' 1 "$@";
+  if is_file "$1"
+  then
+    rm -f "$1" >${_NULL_DEV} 2>&1;
+  fi;
+  if is_existing "$1"
+  then
+    eval "${return_bad}";
+  else
+    eval "${return_good}";
+  fi;
+}
+
+
+########################################################################
+# rm_file_with_debug (<file_name>)
+#
+# Remove file if $_DEBUG_KEEP_FILES allows it.
+#
+# Globals: $_DEBUG_KEEP_FILES
+#
+rm_file_with_debug()
+{
+  func_check rm_file_with_debug '=' 1 "$@";
+  if obj _DEBUG_KEEP_FILES is_not_yes
+  then
+    if is_file "$1"
+    then
+      rm -f "$1" >${_NULL_DEV} 2>&1;
+    fi;
+  fi;
+  if is_existing "$1"
+  then
+    eval "${return_bad}";
+  else
+    eval "${return_good}";
+  fi;
+}
+
+
+########################################################################
+# rm_tree (<dir_name>)
+#
+# Remove file if $_DEBUG_KEEP_FILES allows it.
+#
+# Globals: $_DEBUG_KEEP_FILES
+#
+rm_tree()
+{
+  func_check rm_tree '=' 1 "$@";
+  if is_existing "$1"
+  then
+    rm -f -r "$1" >${_NULL_DEV} 2>&1;
+  fi; 
+  if is_existing "$1"
+  then
+    eval "${return_bad}";
+  else
+    eval "${return_good}";
+  fi;
+}
+
+
+########################################################################
 # save_stdin ()
 #
 # Store standard input to temporary file (with decompression).
 #
 # Variable prefix: ss
 #
-if obj _HAS_COMPRESSION is_yes;
+if obj _HAS_COMPRESSION is_yes
 then
   save_stdin()
   {
-    func_check save_stdin = 0 "$@";
+    func_check save_stdin '=' 0 "$@";
     ss_f="${_TMP_DIR}"/INPUT;
     cat >"${ss_f}";
     cat_z "${ss_f}" >"${_TMP_STDIN}";
-    rm -f "${ss_f}";
+    rm_file "${ss_f}";
     eval ${_UNSET} ss_f;
     eval "${return_ok}";
   }
@@ -3001,7 +3233,7 @@ landmark '11: stack_*()';
 #
 string_contains()
 {
-  func_check string_contains = 2 "$@";
+  func_check string_contains '=' 2 "$@";
   case "$1" in
     *"$2"*)
       eval "${return_yes}";
@@ -3024,8 +3256,8 @@ string_contains()
 #
 string_not_contains()
 {
-  func_check string_not_contains = 2 "$@";
-  if string_contains "$1" "$2";
+  func_check string_not_contains '=' 2 "$@";
+  if string_contains "$1" "$2"
   then
     eval "${return_no}";
   else
@@ -3073,9 +3305,7 @@ tmp_create()
   # different names from the output file.
   tc_tmp="${_TMP_DIR}/,$1";
   : >"${tc_tmp}"
-  cat <<EOF
-${tc_tmp}
-EOF
+  obj tc_tmp echo1;
   eval ${_UNSET} tc_tmp;
   eval "${return_ok}";
 }
@@ -3089,13 +3319,13 @@ EOF
 to_tmp()
 {
   func_check to_tmp = 1 "$@";
-  if is_file "$1";
+  if is_file "$1"
   then
-    if obj _OPT_LOCATION is_yes;
+    if obj _OPT_LOCATION is_yes
     then
       echo2 "$1";
     fi;
-    if obj _OPT_WHATIS is_yes;
+    if obj _OPT_WHATIS is_yes
     then
       what_is "$1" >>"${_TMP_CAT}";
     else
@@ -3120,7 +3350,7 @@ trap_clean()
 {
   func_check trap_clean = 0 "$@";
   # for i in $_ALL_EXIT
-  for i in $(eval set x ${_ALL_EXIT}; shift; echo "$@")
+  for i in $(eval set x "${_ALL_EXIT}"; shift; echo "$@")
   do
     trap "" "$i" 2>${_NULL_DEV} || :;
   done;
@@ -3140,7 +3370,7 @@ trap_set()
 {
   func_check trap_set = 1 "$@";
   # for i in $_ALL_EXIT
-  for i in $(eval set x ${_ALL_EXIT}; shift; echo "$@")
+  for i in $(eval set x "${_ALL_EXIT}"; shift; echo "$@")
   do
     trap "$1" "$i" 2>${_NULL_DEV} || :;
   done;
@@ -3158,7 +3388,7 @@ usage()
   func_check usage = 0 "$@";
   echo;
   version;
-  echo 'Usage: '"${_PROGRAM_NAME}"' [option]... [filespec]...';
+  echo 'Usage: groffer [option]... [filespec]...';
   cat <<EOF
 
 Display roff files, standard input, and/or Unix manual pages with a X
@@ -3174,51 +3404,55 @@ on-the-fly with all formats that gzip can handle.
   "name"           man page "name" in first section found
 and some more (see groffer(1) for details).
 
--h --help        print this usage message.
--Q --source      output as roff source.
--T --device=name pass to groff using output device "name".
--v --version     print version information.
--V               display the groff execution pipe instead of formatting.
--X --X --x       display with "gxditview" using groff -X.
+-h --help         print this usage message.
+-Q --source       output as roff source.
+-T --device=name  pass to groff using output device "name".
+-v --version      print version information.
+-V                display the groff execution pipe instead of formatting.
+-X                display with "gxditview" using groff -X.
 -Z --ditroff --intermediate-output
-                 generate groff intermediate output without
-                 post-processing and viewing, like groff -Z.
+                  generate groff intermediate output without
+                  post-processing and viewing, like groff -Z.
 All other short options are interpreted as "groff" formatting options.
 
 The most important groffer long options are
 
---apropos=name   start man's "apropos" program for "name".
+--apropos=name    start man's "apropos" program for "name".
 --apropos-data=name
-                 "apropos" for "name" in man's data sections 4, 5, 7.
+                  "apropos" for "name" in man's data sections 4, 5, 7.
 --apropos-devel=name
-                 "apropos" for "name" in development sections 2, 3, 9.
+                  "apropos" for "name" in development sections 2, 3, 9.
 --apropos-progs=name
-                 "apropos" for "name" in man's program sections 1, 6, 8.
---auto           choose mode automatically from the default mode list.
---default        reset all options to the default value.
+                  "apropos" for "name" in man's program sections 1, 6, 8.
+--auto            choose mode automatically from the default mode list.
+--default         reset all options to the default value.
 --default-modes=mode1,mode2,...
-                 set sequence of automatically tried modes.
---dvi            display in a viewer for TeX device independent format.
---dvi-viewer     choose the viewer program for dvi mode.
---groff          process like groff, disable viewing features.
---help           display this helping output.
---html --www     display in a web browser.
---html-viewer    choose the web browser for www mode.
---man            check file parameters first whether they are man pages.
+                  set sequence of automatically tried modes.
+--dvi             display in a viewer for TeX device independent format.
+--dvi-viewer=prog choose the viewer program for dvi mode.
+--groff           process like groff, disable viewing features.
+--help            display this helping output.
+--html            display in a web browser.
+--html-viewer=program
+                  choose the web browser for html mode.
+--man             check file parameters first whether they are man pages.
 --mode=auto|dvi|groff|html|pdf|ps|source|text|tty|www|x|X
-                 choose display mode.
---no-man         disable man-page facility.
---pager=program  preset the paging program for tty mode.
---pdf            display in a PDF viewer.
---pdf-viewer     choose the viewer program for pdf mode.
---ps             display in a Postscript viewer.
---ps-viewer      choose the viewer program for ps mode.
---shell          specify shell under which to run this program.
---text           output in a text device without a pager.
---tty            display with a pager on text terminal even when in X.
---www-viewer     same as --html-viewer
---x-viewer       choose viewer program for x mode (X mode).
---X-viewer       same as "--xviewer".
+                  choose display mode.
+--no-man          disable man-page facility.
+--pager=program   preset the paging program for tty mode.
+--pdf             display in a PDF viewer.
+--pdf-viewer=prog choose the viewer program for pdf mode.
+--ps              display in a Postscript viewer.
+--ps-viewer=prog  choose the viewer program for ps mode.
+--shell=program   specify shell under which to run groffer2.sh.
+--text            output in a text device without a pager.
+--tty             display with a pager on text terminal even when in X.
+--tty-viewer=prog select a pager for tty mode; same as --pager.
+--www             same as --html.
+--www-viewer=prog same as --html-viewer
+--x --X           display with "gxditview" using an X* device.
+--x-viewer=prog   choose viewer program for x mode (X mode).
+--X-viewer=prog   same as "--xviewer".
 
 The usual X Windows toolkit options transformed into GNU long options
 --background=color, --bd=size, --bg=color, --bordercolor=color,
@@ -3244,7 +3478,7 @@ EOF
 version()
 {
   func_check version = 0 "$@";
-  echo2 "${_PROGRAM_NAME} ${_PROGRAM_VERSION} of ${_LAST_UPDATE}";
+  echo2 "groffer ${_PROGRAM_VERSION} of ${_LAST_UPDATE}";
   # also display groff's version, but not the called subprograms
   groff -v 2>&1 | sed -e '/^ *$/q' | sed -e '1s/^/is part of /' >&2;
   eval "${return_ok}";
@@ -3273,11 +3507,11 @@ warning()
 what_is()
 {
   func_check what_is = 1 "$@";
-  if is_not_file "$1";
+  if is_not_file "$1"
   then
     error "what_is(): argument is not a readable file."
   fi;
-  wi_dot='^\.['"${_SPACE}${_TAB}"']*';
+  wi_dot='^\.['"${_SP}${_TAB}"']*';
   cat <<EOF
 .br
   $1:
@@ -3286,7 +3520,7 @@ EOF
   # grep the line containing `.TH' macro, if any
   wi_res="$(cat_z "$1" | sed -e '/'"${wi_dot}"'TH /p
 d')";
-  if obj wi_res is_not_empty;
+  if obj wi_res is_not_empty
   then				# traditional man style
     # get the text between the first and the second `.SH' macro, by
     # - delete up to first .SH;
@@ -3303,7 +3537,7 @@ d' \
   # grep the line containing `.Dd' macro, if any
   wi_res="$(cat_z "$1" | sed -e '/'"${wi_dot}"'Dd /p
 d')";
-  if obj wi_res is_not_empty;
+  if obj wi_res is_not_empty
   then				# BSD doc style
     # get the text between the first and the second `.Nd' macro, by
     # - delete up to first .Nd;
@@ -3339,7 +3573,7 @@ where_is()
 {
   func_check where_is '>=' 1 "$@";
   w_arg="$1";
-  if obj w_arg is_empty;
+  if obj w_arg is_empty
   then
     eval ${_UNSET} w_arg;
     eval "${return_bad}";
@@ -3348,7 +3582,7 @@ where_is()
     /*)
       eval ${_UNSET} w_arg;
       eval ${_UNSET} w_file;
-      if test -f "${w_arg}" && test -x "${w_arg}";
+      if test -f "${w_arg}" && test -x "${w_arg}"
       then
         eval "${return_ok}";
       else
@@ -3364,11 +3598,9 @@ where_is()
       */) w_file=${p}${w_arg}; ;;
       *)  w_file=${p}/${w_arg}; ;;
     esac;
-    if test -f "${w_file}" && test -x "${w_file}";
+    if test -f "${w_file}" && test -x "${w_file}"
     then
-      cat <<EOF
-${w_file}
-EOF
+      obj w_file echo1;
       eval ${_UNSET} w_arg;
       eval ${_UNSET} w_file;
       eval "${return_ok}";
@@ -3398,7 +3630,6 @@ EOF
 # sequence they are called in the main() function.
 
 
-landmark '13: main_init()';
 #######################################################################
 # main_init ()
 #
@@ -3422,7 +3653,7 @@ main_init()
   do
     mi_dir="$d";
     if obj mi_dir is_empty || obj mi_dir is_not_dir || \
-       obj mi_dir is_not_writable;
+       obj mi_dir is_not_writable
     then
       continue;
     fi;
@@ -3435,52 +3666,43 @@ main_init()
       _TMP_DIR="${mi_dir}"'/';
       ;;
     esac;
-    _TMP_DIR="${_TMP_DIR}${_PROGRAM_NAME}${_PROCESS_ID}";
-    if obj _TMP_DIR is_existing;
+    _TMP_DIR="${_TMP_DIR}groffer${_PROCESS_ID}";
+    if obj _TMP_DIR rm_tree
     then
-      eval rm -f -r  "'${_TMP_DIR}'" >${_NULL_DEV} 2>&1;
-      if obj _TMP_DIR is_existing;
-      then
-        mi_tdir_="${_TMP_DIR}"_;
-        mi_n=1;
-        mi_tdir_n="${mi_tdir_}${mi_n}";
-        while obj mi_tdir_n is_existing;
-        do
-          eval rm -f -r "'${mi_tdir_n}'" >${_NULL_DEV} 2>&1;
-          if obj mi_tdir_n is_existing;
-          then
-            # directory could not be removed
-            mi_n="$(expr "${mi_n}" + 1)";
-            mi_tdir_n="${mi_tdir_}${mi_n}";
-            continue;
-          fi;
-        done;
-        _TMP_DIR="${mi_tdir_n}";
-      fi;
+      :
+    else
+      mi_tdir_="${_TMP_DIR}"_;
+      mi_n=1;
+      mi_tdir_n="${mi_tdir_}${mi_n}";
+      while obj mi_tdir_n is_existing
+      do
+        if obj mi_tdir_n rm_tree
+        then
+          # directory could not be removed
+          mi_n="$(expr "${mi_n}" + 1)";
+          mi_tdir_n="${mi_tdir_}${mi_n}";
+          continue;
+        fi;
+      done;
+      _TMP_DIR="${mi_tdir_n}";
     fi;
     eval mkdir "${_TMP_DIR}";
-    if is_not_equal "$?" 0;
+    if is_not_equal "$?" 0
     then
-      if obj _TMP_DIR is_existing;
-      then
-        eval rm -f -r "'${_TMP_DIR}'" >${_NULL_DEV} 2>&1;
-      fi;
+      obj _TMP_DIR rm_tree;
       _TMP_DIR='';
       continue;
     fi;
-    if obj _TMP_DIR is_dir && obj _TMP_DIR is_writable;
+    if obj _TMP_DIR is_dir && obj _TMP_DIR is_writable
     then
       # $_TMP_DIR can now be used as temporary directory
       break;
     fi;
-    if obj _TMP_DIR is_existing;
-    then
-      rm -f -r "'${_TMP_DIR}'" >${_NULL_DEV} 2>&1;
-    fi;
+    obj _TMP_DIR rm_tree;
     _TMP_DIR='';
     continue;
   done;
-  if obj _TMP_DIR is_empty;
+  if obj _TMP_DIR is_empty
   then
     error "main_init: \
 Couldn't create a directory for storing temporary files.";
@@ -3489,28 +3711,7 @@ Couldn't create a directory for storing temporary files.";
   _TMP_CAT="$(tmp_create groffer_cat)";
   _TMP_STDIN="$(tmp_create groffer_input)";
 
-  # groffer configuration files
-  # for f in $_CONF_FILES
-  for f in $(eval set x ${_CONF_FILES}; shift; echo "$@")
-  do
-    mi_file="$f";
-    if obj mi_file is_file;
-    then
-      echo '_groffer_opt=""' >>${_TMP_CAT};
-      # collect the lines starting with a minus
-      cat "$mi_file" | sed -e '
-/^[	 ]*#/d
-s/^[	 ]*\(-.*\)$/_groffer_opt="${_groffer_opt} \1"/
-' >>${_TMP_CAT};
-      # prepend the collected information to $GROFFER_OPT
-      echo 'GROFFER_OPT="${_groffer_opt} ${GROFFER_OPT}"' >>${_TMP_CAT};
-    fi;
-  done;
-  eval . "${_TMP_CAT}";
-  _TMP_CAT="$(tmp_create groffer_cat)";
-
   eval ${_UNSET} mi_dir;
-  eval ${_UNSET} mi_file;
   eval ${_UNSET} mi_n;
   eval ${_UNSET} mi_tdir_;
   eval ${_UNSET} mi_tdir_n;
@@ -3518,7 +3719,6 @@ s/^[	 ]*\(-.*\)$/_groffer_opt="${_groffer_opt} \1"/
 } # main_init()
 
 
-landmark '14: main_parse_MANOPT()';
 ########################################################################
 # main_parse_MANOPT ()
 #
@@ -3535,21 +3735,25 @@ landmark '14: main_parse_MANOPT()';
 main_parse_MANOPT()
 {
   func_check main_parse_MANOPT = 0 "$@";
-  mpm_list='';
-  if obj MANOPT is_not_empty;
+
+  if obj MANOPT is_not_empty
   then
-    MANOPT="$(echo x"${MANOPT}" | sed -e 's/^x'"${_SPACE}${_SPACE}"'*//')";
+    # Delete leading and final spaces
+    MANOPT="$(echo1 "${MANOPT}" | sed -e '
+s/^['"${_SP}${_TAB}"']*//
+s/['"${_SP}${_TAB}"']*$//
+')";
   fi;
-  if obj MANOPT is_empty;
+  if obj MANOPT is_empty
   then
-    eval ${_UNSET} mpm_list;
-    eval ${_UNSET} mpm_opt;
     eval "${return_ok}";
   fi;
+
+  mpm_list='';
   # add arguments in $MANOPT by mapping them to groffer options
   eval set x "$(list_from_cmdline _OPTS_MANOPT "${MANOPT}")";
   shift;
-  until test "$#" -le 0 || is_equal "$1" '--';
+  until test "$#" -le 0 || is_equal "$1" '--'
   do
     mpm_opt="$1";
     shift;
@@ -3565,7 +3769,7 @@ main_parse_MANOPT()
         shift;
         ;;
       -d|--debug)
-        list_append mpm_list '--debug';
+	do_nothing;
         ;;
       -D|--default)
         # undo all man options so far
@@ -3586,10 +3790,9 @@ main_parse_MANOPT()
       -k|--apropos)
 	# groffer's --apropos takes an argument, but man's does not, so
         do_nothing;
-        shift;
         ;;
       -l|--local-file)
-        list_append mpm_list '--local-file';
+        do_nothing;
         ;;
       -L|--locale)
         list_append mpm_list '--locale' "$1";
@@ -3607,7 +3810,7 @@ main_parse_MANOPT()
         do_nothing;
         shift;
         ;;
-      -P|--pager|--tty-viewer)
+      -P|--pager)
         list_append mpm_list '--pager' "$1";
         shift;
         ;;
@@ -3638,27 +3841,27 @@ main_parse_MANOPT()
         list_append mpm_list '--location';
         ;;
       -Z|--ditroff)
-        list_append mpm_list '-Z' "$1";
-        shift;
+        do_nothing;
         ;;
       # ignore all other options
     esac;
   done;
-  # append the 2 lists in $mpm_list and $GROFFER_OPT to $GROFFER_OPT
-  if obj GROFFER_OPT is_empty;
+
+  # prepend $mpm_list to $GROFFER_OPT
+  if obj GROFFER_OPT is_empty
   then
     GROFFER_OPT="${mpm_list}";
-  elif obj mpm_list is_not_empty;
+  elif obj mpm_list is_not_empty
   then
     GROFFER_OPT="${mpm_list} ${GROFFER_OPT}";
   fi;
+
   eval ${_UNSET} mpm_list;
   eval ${_UNSET} mpm_opt;
   eval "${return_ok}";
 } # main_parse_MANOPT()
 
 
-landmark '15: main_parse_args()';
 ########################################################################
 # main_parse_args (<command_line_args>*)
 #
@@ -3669,16 +3872,20 @@ landmark '15: main_parse_args()';
 #   in:  $_OPTS_*
 #   out: $_OPT_*, $_ADDOPTS, $_FILEARGS
 #
-#  Variable prefix: mpa
+# Variable prefix: mpa
 #
 main_parse_args()
 {
   func_check main_parse_args '>=' 0 "$@";
-
   eval set x "${GROFFER_OPT}" '"$@"';
   shift;
 
-  eval set x "$(list_from_cmdline _OPTS_CMDLINE "$@")";
+  _ALL_PARAMS="$(list_from_cmdline _OPTS_CMDLINE "$@")";
+  if obj _DEBUG_PRINT_PARAMS is_yes
+  then
+    echo2 "parameters: ${_ALL_PARAMS}";
+  fi;
+  eval set x "${_ALL_PARAMS}";
   shift;
 
   # By the call of `eval', unnecessary quoting was removed.  So the
@@ -3690,7 +3897,7 @@ main_parse_args()
   # Note, the existence of arguments to options has already been checked.
   # So a check for `$#' or `--' should not be done for arguments.
 
-  until test "$#" -le 0 || is_equal "$1" '--';
+  until test "$#" -le 0 || is_equal "$1" '--'
   do
     mpa_opt="$1";		# $mpa_opt is fed into the option handler
     shift;
@@ -3722,11 +3929,11 @@ main_parse_args()
         ;;
       -?)
         # delete leading `-'
-        mpa_optchar="$(echo x"${mpa_opt}" | sed -e 's/^x-//')";
-        if list_has _OPTS_GROFF_SHORT_NA "${mpa_optchar}";
+        mpa_optchar="$(echo1 "${mpa_opt}" | sed -e 's/^-//')";
+        if list_has _OPTS_GROFF_SHORT_NA "${mpa_optchar}"
         then
           list_append _ADDOPTS_GROFF "${mpa_opt}";
-        elif list_has _OPTS_GROFF_SHORT_ARG "${mpa_optchar}";
+        elif list_has _OPTS_GROFF_SHORT_ARG "${mpa_optchar}"
         then
           list_append _ADDOPTS_GROFF "${mpa_opt}" "$1";
           shift;
@@ -3739,31 +3946,23 @@ main_parse_args()
           ;;
       --apropos)		# run `apropos'
 	apropos_run "$1";
-        mpa_code="$?";
-        clean_up;
-        exit "${mpa_code}";
+        leave "$?";
         ;;
       --apropos-data)		# run `apropos' for data sections
 	apropos_run "$1" | grep '^[^(]*([457][^)]*)';
-        mpa_code="$?";
-        clean_up;
-        exit "${mpa_code}";
+        leave "$?";
         ;;
       --apropos-devel)		# run `apropos' for development sections
 	apropos_run "$1" | grep '^[^(]*([239][^)]*)';
-        mpa_code="$?";
-        clean_up;
-        exit "${mpa_code}";
+        leave "$?";
         ;;
       --apropos-progs)		# run `apropos' for program sections
 	apropos_run "$1" | grep '^[^(]*([168][^)]*)';
-        mpa_code="$?";
-        clean_up;
-        exit "${mpa_code}";
+        leave "$?";
         ;;
       --ascii)
         list_append _ADDOPTS_GROFF '-mtty-char';
-        if obj _OPT_MODE is_empty;
+        if obj _OPT_MODE is_empty
         then
          _OPT_MODE='text';
         fi;
@@ -3796,6 +3995,9 @@ main_parse_args()
       --display)		# set X display, arg
         _OPT_DISPLAY="$1";
         shift;
+        ;;
+      --do-nothing)
+        leave;
         ;;
       --dvi)
         _OPT_MODE='dvi';
@@ -3901,7 +4103,7 @@ main_parse_args()
         _MAN_FORCE="no";
         _MAN_ENABLE="no";
         ;;
-      --pager)			# set paging program for tty mode, arg
+      --pager|--tty-viewer)	# set paging program for tty mode, arg
         _OPT_PAGER="$1";
         shift;
         ;;
@@ -3987,33 +4189,33 @@ only resoutions of 75 or 100 dpi are supported";
     esac;
   done;
   shift;			# remove `--' argument
-
-  if obj _DEBUG is_not_yes;
+  if obj _DEBUG is_not_yes
   then
-    if obj _OPT_DEBUG is_yes;
+    if obj _OPT_DEBUG is_yes
     then
       _DEBUG='yes';
       _DEBUG_LM='yes';
       _DEBUG_KEEP_FILES='yes';
+      _DEBUG_PRINT_PARAMS='yes';
+      _DEBUG_PRINT_SHELL='yes';
     fi;
   fi;
 
   # Remaining arguments are file names (filespecs).
   # Save them to list $_FILEARGS
-  if is_equal "$#" 0;
+  if is_equal "$#" 0
   then				# use "-" for standard input
     set x '-';
     shift;
   fi;
   _FILEARGS='';
   list_append _FILEARGS "$@";
-  if list_has _FILEARGS '-';
+  if list_has _FILEARGS '-'
   then
     save_stdin;
   fi;
   # $_FILEARGS must be retrieved with `eval set x "$_FILEARGS"; shift;'
   eval ${_UNSET} mpa_arg;
-  eval ${_UNSET} mpa_code;
   eval ${_UNSET} mpa_dpi;
   eval ${_UNSET} mpa_opt;
   eval ${_UNSET} mpa_optchar;
@@ -4044,7 +4246,7 @@ _check_device_with_mode()
       eval "${return_ok}";
       ;;
     ascii|cp1047|latin1|utf8)
-      if obj _OPT_MODE is_not_equal text;
+      if obj _OPT_MODE is_not_equal text
       then
         _OPT_MODE=tty;		# default text mode
       fi;
@@ -4063,7 +4265,6 @@ _check_device_with_mode()
 } # _check_device_with_mode() of main_parse_args()
 
 
-landmark '16: main_set_mode()';
 ########################################################################
 # main_set_mode ()
 #
@@ -4080,67 +4281,57 @@ main_set_mode()
   func_check main_set_mode = 0 "$@";
 
   # handle apropos
-  if obj _OPT_APROPOS is_not_empty;
+  if obj _OPT_APROPOS is_not_empty
   then
     apropos "${_OPT_APROPOS}";
-    msm_code="$?";
-    clean_up;
-    exit "${msm_code}";
+    leave "$?";
   fi;
-  if obj _OPT_APROPOS_DATA is_not_empty;
+  if obj _OPT_APROPOS_DATA is_not_empty
   then
     apropos "$@" | grep '^[^(]*([457])';
-    msm_code="$?";
-    clean_up;
-    exit "${msm_code}";
+    leave "$?";
   fi;
-  if obj _OPT_APROPOS_DEVEL is_not_empty;
+  if obj _OPT_APROPOS_DEVEL is_not_empty
   then
     apropos "$@" | grep '^[^(]*([239])';
-    msm_code="$?";
-    clean_up;
-    exit "${msm_code}";
+    leave "$?";
   fi;
-  if obj _OPT_APROPOS_PROGS is_not_empty;
+  if obj _OPT_APROPOS_PROGS is_not_empty
   then
     apropos "$@" | grep '^[^(]*([168])';
-    msm_code="$?";
-    clean_up;
-    exit "${msm_code}";
+    leave "$?";
   fi;
 
   # set display
-  if obj _OPT_DISPLAY is_not_empty;
+  if obj _OPT_DISPLAY is_not_empty
   then
     DISPLAY="${_OPT_DISPLAY}";
   fi;
 
-  if obj _OPT_V is_yes;
+  if obj _OPT_V is_yes
   then
     list_append _ADDOPTS_GROFF '-V';
   fi;
-  if obj _OPT_Z is_yes;
+  if obj _OPT_Z is_yes
   then
     _DISPLAY_MODE='groff';
     list_append _ADDOPTS_GROFF '-Z';
   fi;
-  if obj _OPT_MODE is_equal 'groff';
+  if obj _OPT_MODE is_equal 'groff'
   then
     _DISPLAY_MODE='groff';
   fi;
-  if obj _DISPLAY_MODE is_equal 'groff';
+  if obj _DISPLAY_MODE is_equal 'groff'
   then
-    eval ${_UNSET} msm_code;
     eval ${_UNSET} msm_modes;
     eval ${_UNSET} msm_viewer;
     eval ${_UNSET} msm_viewers;
     eval "${return_ok}";
   fi;
 
-  if obj _OPT_MODE is_equal 'source';
+  if obj _OPT_MODE is_equal 'source'
   then
     _DISPLAY_MODE='source';
-    eval ${_UNSET} msm_code;
     eval ${_UNSET} msm_modes;
     eval ${_UNSET} msm_viewer;
     eval ${_UNSET} msm_viewers;
@@ -4151,41 +4342,38 @@ main_set_mode()
     '')				# automatic mode
       case "${_OPT_DEVICE}" in
         X*)
-          if obj DISPLAY is_empty;
+          if obj DISPLAY is_empty
           then
             error "main_set_mode(): \
 no X display found for device ${_OPT_DEVICE}";
           fi;
           _DISPLAY_MODE='x';
-          eval ${_UNSET} msm_code;
           eval ${_UNSET} msm_modes;
           eval ${_UNSET} msm_viewer;
           eval ${_UNSET} msm_viewers;
           eval "${return_ok}";
           ;;
         ascii|cp1047|latin1|utf8)
-          if obj _DISPLAY_MODE is_not_equal 'text';
+          if obj _DISPLAY_MODE is_not_equal 'text'
           then
             _DISPLAY_MODE='tty';
           fi;
-          eval ${_UNSET} msm_code;
           eval ${_UNSET} msm_modes;
           eval ${_UNSET} msm_viewer;
           eval ${_UNSET} msm_viewers;
           eval "${return_ok}";
           ;;
       esac;
-      if obj DISPLAY is_empty;
+      if obj DISPLAY is_empty
       then
         _DISPLAY_MODE='tty';
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
         eval "${return_ok}";
       fi;
 
-      if obj _OPT_DEFAULT_MODES is_empty;
+      if obj _OPT_DEFAULT_MODES is_empty
       then
         msm_modes="${_DEFAULT_MODES}";
       else
@@ -4194,7 +4382,6 @@ no X display found for device ${_OPT_DEVICE}";
       ;;
     text)
       _DISPLAY_MODE='text';
-      eval ${_UNSET} msm_code;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
@@ -4202,14 +4389,13 @@ no X display found for device ${_OPT_DEVICE}";
       ;;
     tty)
       _DISPLAY_MODE='tty';
-      eval ${_UNSET} msm_code;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
       eval "${return_ok}";
       ;;
     *)				# display mode was given
-      if obj DISPLAY is_empty;
+      if obj DISPLAY is_empty
       then
         error "main_set_mode(): \
 you must be in X Window for ${_OPT_MODE} mode.";
@@ -4221,14 +4407,13 @@ you must be in X Window for ${_OPT_MODE} mode.";
   # only viewer modes are left
   eval set x "$(list_from_split "${msm_modes}" ',')";
   shift;
-  while test "$#" -gt 0;
+  while test "$#" -gt 0
   do
     m="$1";
     shift;
     case "$m" in
       text)
         _DISPLAY_MODE='text';
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
@@ -4236,27 +4421,25 @@ you must be in X Window for ${_OPT_MODE} mode.";
         ;;
       tty)
         _DISPLAY_MODE='tty';
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
         eval "${return_ok}";
         ;;
       x)
-        if obj _OPT_VIEWER_X is_not_empty;
+        if obj _OPT_VIEWER_X is_not_empty
         then
           msm_viewers="${_OPT_VIEWER_X}";
         else
           msm_viewers="${_VIEWER_X}";
         fi;
         msm_viewer="$(_get_first_prog "${msm_viewers}")";
-        if is_not_equal "$?" 0;
+        if is_not_equal "$?" 0
         then
           continue;
         fi;
         _DISPLAY_PROG="${msm_viewer}";
         _DISPLAY_MODE='x';
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
@@ -4264,87 +4447,82 @@ you must be in X Window for ${_OPT_MODE} mode.";
         ;;
       X)
         _DISPLAY_MODE='X';
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
         eval "${return_ok}";
         ;;
       dvi)
-        if obj _OPT_VIEWER_DVI is_not_empty;
+        if obj _OPT_VIEWER_DVI is_not_empty
         then
           msm_viewers="${_OPT_VIEWER_DVI}";
         else
           msm_viewers="${_VIEWER_DVI}";
         fi;
         msm_viewer="$(_get_first_prog "${msm_viewers}")";
-        if is_not_equal "$?" 0;
+        if is_not_equal "$?" 0
         then
           continue;
         fi;
         _DISPLAY_PROG="${msm_viewer}";
         _DISPLAY_MODE="dvi";
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
         eval "${return_ok}";
         ;;
       pdf)
-        if obj _OPT_VIEWER_PDF is_not_empty;
+        if obj _OPT_VIEWER_PDF is_not_empty
         then
           msm_viewers="${_OPT_VIEWER_PDF}";
         else
           msm_viewers="${_VIEWER_PDF}";
         fi;
         msm_viewer="$(_get_first_prog "${msm_viewers}")";
-        if is_not_equal "$?" 0;
+        if is_not_equal "$?" 0
         then
           continue;
         fi;
         _DISPLAY_PROG="${msm_viewer}";
         _DISPLAY_MODE="pdf";
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
         eval "${return_ok}";
         ;;
       ps)
-        if obj _OPT_VIEWER_PS is_not_empty;
+        if obj _OPT_VIEWER_PS is_not_empty
         then
           msm_viewers="${_OPT_VIEWER_PS}";
         else
           msm_viewers="${_VIEWER_PS}";
         fi;
         msm_viewer="$(_get_first_prog "${msm_viewers}")";
-        if is_not_equal "$?" 0;
+        if is_not_equal "$?" 0
         then
           continue;
         fi;
         _DISPLAY_PROG="${msm_viewer}";
         _DISPLAY_MODE="ps";
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
         eval "${return_ok}";
         ;;
       html)
-        if obj _OPT_VIEWER_HTML is_not_empty;
+        if obj _OPT_VIEWER_HTML is_not_empty
         then
           msm_viewers="${_OPT_VIEWER_HTML}";
         else
           msm_viewers="${_VIEWER_HTML}";
         fi;
         msm_viewer="$(_get_first_prog "${msm_viewers}")";
-        if is_not_equal "$?" 0;
+        if is_not_equal "$?" 0
         then
           continue;
         fi;
         _DISPLAY_PROG="${msm_viewer}";
         _DISPLAY_MODE=html;
-        eval ${_UNSET} msm_code;
         eval ${_UNSET} msm_modes;
         eval ${_UNSET} msm_viewer;
         eval ${_UNSET} msm_viewers;
@@ -4352,7 +4530,6 @@ you must be in X Window for ${_OPT_MODE} mode.";
         ;;
     esac;
   done;
-  eval ${_UNSET} msm_code;
   eval ${_UNSET} msm_modes;
   eval ${_UNSET} msm_viewer;
   eval ${_UNSET} msm_viewers;
@@ -4375,11 +4552,11 @@ you must be in X Window for ${_OPT_MODE} mode.";
 #
 _get_first_prog()
 {
-  if is_equal "$#" 0;
+  if is_equal "$#" 0
   then
     error "_get_first_prog() needs 1 argument.";
   fi;
-  if is_empty "$1";
+  if is_empty "$1"
   then
     return "${_BAD}";
   fi;
@@ -4388,15 +4565,13 @@ _get_first_prog()
   for i
   do
     _gfp_i="$i";
-    if obj _gfp_i is_empty;
+    if obj _gfp_i is_empty
     then
       continue;
     fi;
-    if eval is_prog "$(get_first_essential ${_gfp_i})";
+    if eval is_prog "$(get_first_essential ${_gfp_i})"
     then
-      cat <<EOF
-${_gfp_i}
-EOF
+      obj _gfp_i echo1;
       eval ${_UNSET} _gfp_i;
       return "${_GOOD}";
     fi;
@@ -4406,7 +4581,6 @@ EOF
 } # _get_first_prog() of main_set_mode()
 
 
-landmark '17: main_do_fileargs()';
 #######################################################################
 # main_do_fileargs ()
 #
@@ -4425,7 +4599,7 @@ main_do_fileargs()
   shift;
   eval ${_UNSET} _FILEARGS;
   # temporary storage of all input to $_TMP_CAT
-  while test "$#" -ge 2;
+  while test "$#" -ge 2
   do
     # test for `s name' arguments, with `s' a 1-char standard section
     mdfa_filespec="$1";
@@ -4435,16 +4609,16 @@ main_do_fileargs()
         continue;
         ;;
       '-')
-        if register_file '-';
+        if register_file '-'
         then
           mdfa_exitcode="${_GOOD}";
         fi;
         continue;
         ;;
       ?)
-        if list_has_not _MAN_AUTO_SEC "${mdfa_filespec}";
+        if list_has_not _MAN_AUTO_SEC "${mdfa_filespec}"
         then
-          if do_filearg "${mdfa_filespec}";
+          if do_filearg "${mdfa_filespec}"
           then
             mdfa_exitcode="${_GOOD}";
           fi;
@@ -4453,20 +4627,20 @@ main_do_fileargs()
         mdfa_name="$1";
         case "${mdfa_name}" in
           */*|man:*|*\(*\)|*."${mdfa_filespec}")
-            if do_filearg "${mdfa_filespec}";
+            if do_filearg "${mdfa_filespec}"
             then
               mdfa_exitcode="${_GOOD}";
             fi;
             continue;
             ;;
         esac;
-        if do_filearg "man:${mdfa_name}(${mdfa_filespec})";
+        if do_filearg "man:${mdfa_name}(${mdfa_filespec})"
         then
           mdfa_exitcode="${_GOOD}";
           shift;
           continue;
         else
-          if do_filearg "${mdfa_filespec}";
+          if do_filearg "${mdfa_filespec}"
           then
             mdfa_exitcode="${_GOOD}";
           fi;
@@ -4474,7 +4648,7 @@ main_do_fileargs()
         fi;
         ;;
       *)
-        if do_filearg "${mdfa_filespec}";
+        if do_filearg "${mdfa_filespec}"
         then
           mdfa_exitcode="${_GOOD}";
         fi;
@@ -4482,20 +4656,17 @@ main_do_fileargs()
         ;;
     esac;
   done;				# end of `s name' test
-  while test "$#" -gt 0;
+  while test "$#" -gt 0
   do
     mdfa_filespec="$1";
     shift;
-    if do_filearg "${mdfa_filespec}";
+    if do_filearg "${mdfa_filespec}"
     then
       mdfa_exitcode="${_GOOD}";
     fi;
   done;
-  if obj _DEBUG_KEEP_FILES is_not_yes;
-  then
-    rm -f "${_TMP_STDIN}";
-  fi;
-  if is_equal "${mdfa_exitcode}" "${_BAD}";
+  obj _TMP_STDIN rm_file_with_debug;
+  if is_equal "${mdfa_exitcode}" "${_BAD}"
   then
     eval ${_UNSET} mdfa_exitcode;
     eval ${_UNSET} mdfa_filespec;
@@ -4509,7 +4680,6 @@ main_do_fileargs()
 } # main_do_fileargs()
 
 
-landmark '18: main_set_resources()';
 ########################################################################
 # main_set_resources ()
 #
@@ -4529,7 +4699,7 @@ main_set_resources()
   _OUTPUT_FILE_NAME='';
   eval set x "${msr_title}";
   shift;
-  until is_equal "$#" 0;
+  until is_equal "$#" 0
   do
     msr_n="$1";
     case "${msr_n}" in
@@ -4537,14 +4707,14 @@ main_set_resources()
       continue;
       ;;
     ,*)
-      msr_n="$(echo x"$1" | sed -e 's/^x,,*//')";
+      msr_n="$(echo1 "$1" | sed -e 's/^,,*//')";
       ;;
     esac
-    if obj msr_n is_empty;
+    if obj msr_n is_empty
     then
       continue;
     fi;
-    if obj _OUTPUT_FILE_NAME is_not_empty;
+    if obj _OUTPUT_FILE_NAME is_not_empty
     then
       _OUTPUT_FILE_NAME="${_OUTPUT_FILE_NAME}"',';
     fi;
@@ -4561,7 +4731,7 @@ main_set_resources()
   esac;
   _OUTPUT_FILE_NAME="${_TMP_DIR}/${_OUTPUT_FILE_NAME}";
 
-  if obj _DISPLAY_PROG is_empty;
+  if obj _DISPLAY_PROG is_empty
   then				# for example, for groff mode
     _DISPLAY_ARGS='';
     eval ${_UNSET} msr_n;
@@ -4574,130 +4744,152 @@ main_set_resources()
   eval set x "${_DISPLAY_PROG}";
   shift;
   msr_prog="$(base_name "$1")";
+  shift;
+  if test $# != 0
+  then
+    if obj _DISPLAY_PROG is_empty
+    then
+      _DISPLAY_ARGS="$*";
+    else
+      _DISPLAY_ARGS="$* ${_DISPLAY_ARGS}";
+    fi;
+  fi;
   msr_rl='';
-  if obj _OPT_BD is_not_empty;
+  if obj _OPT_BD is_not_empty
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
-        list_append msr_rl '-bd' "${_OPT_BD}";
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi)
+      list_append msr_rl '-bd' "${_OPT_BD}";
+      ;;
     esac;
   fi;
-  if obj _OPT_BG is_not_empty;
+  if obj _OPT_BG is_not_empty
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
-        list_append msr_rl '-bg' "${_OPT_BG}";
-        ;;
-      xpdf)
-        list_append msr_rl '-papercolor' "${_OPT_BG}";
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi)
+      list_append msr_rl '-bg' "${_OPT_BG}";
+      ;;
+    kghostview)
+      list_append msr_rl '--bg' "${_OPT_BG}";
+      ;;
+    xpdf)
+      list_append msr_rl '-papercolor' "${_OPT_BG}";
+      ;;
     esac;
   fi;
-  if obj _OPT_BW is_not_empty;
+  if obj _OPT_BW is_not_empty
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
-        _list_append msr_rl '-bw' "${_OPT_BW}";
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi)
+      _list_append msr_rl '-bw' "${_OPT_BW}";
+      ;;
     esac;
   fi;
-  if obj _OPT_FG is_not_empty;
+  if obj _OPT_FG is_not_empty
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
-        list_append msr_rl '-fg' "${_OPT_FG}";
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi)
+      list_append msr_rl '-fg' "${_OPT_FG}";
+      ;;
+    kghostview)
+      list_append msr_rl '--fg' "${_OPT_FG}";
+      ;;
     esac;
   fi;
-  if is_not_empty "${_OPT_FN}";
+  if is_not_empty "${_OPT_FN}"
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
-        list_append msr_rl '-fn' "${_OPT_FN}";
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi)
+      list_append msr_rl '-fn' "${_OPT_FN}";
+      ;;
+    kghostview)
+      list_append msr_rl '--fn' "${_OPT_FN}";
+      ;;
     esac;
   fi;
-  if is_not_empty "${_OPT_GEOMETRY}";
+  if is_not_empty "${_OPT_GEOMETRY}"
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi|xpdf)
-        list_append msr_rl '-geometry' "${_OPT_GEOMETRY}";
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi|xpdf)
+      list_append msr_rl '-geometry' "${_OPT_GEOMETRY}";
+      ;;
+    kghostview)
+      list_append msr_rl '--geometry' "${_OPT_GEOMETRY}";
+      ;;
     esac;
   fi;
-  if is_empty "${_OPT_RESOLUTION}";
+  if is_empty "${_OPT_RESOLUTION}"
   then
     _OPT_RESOLUTION="${_DEFAULT_RESOLUTION}";
     case "${msr_prog}" in
-      gxditview|xditview)
-        list_append msr_rl '-resolution' "${_DEFAULT_RESOLUTION}";
+    gxditview|xditview)
+      list_append msr_rl '-resolution' "${_DEFAULT_RESOLUTION}";
+      ;;
+    xpdf)
+      case "${_DEFAULT_RESOLUTION}" in
+      75)
+        # 72dpi is '100'
+        list_append msr_rl '-z' '104';
         ;;
-      xpdf)
-        case "${_DEFAULT_RESOLUTION}" in
-          75)
-            # 72dpi is '100'
-            list_append msr_rl '-z' '104';
-            ;;
-          100)
-            list_append msr_rl '-z' '139';
-            ;;
-        esac;
+      100)
+        list_append msr_rl '-z' '139';
         ;;
+      esac;
+      ;;
     esac;
   else
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
-        list_append msr_rl '-resolution' "${_OPT_RESOLUTION}";
+    ghostview|gv|gxditview|xditview|xdvi)
+      list_append msr_rl '-resolution' "${_OPT_RESOLUTION}";
+      ;;
+    xpdf)
+      case "${_OPT_RESOLUTION}" in
+      75)
+        list_append msr_rl '-z' '104';
+        # '100' corresponds to 72dpi
         ;;
-      xpdf)
-        case "${_OPT_RESOLUTION}" in
-          75)
-            list_append msr_rl '-z' '104';
-            # '100' corresponds to 72dpi
-            ;;
-          100)
-            list_append msr_rl '-z' '139';
-            ;;
-        esac;
+      100)
+        list_append msr_rl '-z' '139';
         ;;
+      esac;
+      ;;
     esac;
   fi;
-  if is_yes "${_OPT_ICONIC}";
+  if is_yes "${_OPT_ICONIC}"
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
-        list_append msr_rl '-iconic';
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi)
+      list_append msr_rl '-iconic';
+      ;;
     esac;
   fi;
-  if is_yes "${_OPT_RV}";
+  if is_yes "${_OPT_RV}"
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi)
-        list_append msr_rl '-rv';
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi)
+      list_append msr_rl '-rv';
+      ;;
     esac;
   fi;
-  if is_not_empty "${_OPT_XRM}";
+  if is_not_empty "${_OPT_XRM}"
   then
     case "${msr_prog}" in
-      ghostview|gv|gxditview|xditview|xdvi|xpdf)
-        eval set x "${_OPT_XRM}";
-        shift;
-        for i
-        do
-          list_append msr_rl '-xrm' "$i";
-        done;
-        ;;
+    ghostview|gv|gxditview|xditview|xdvi|xpdf)
+      eval set x "${_OPT_XRM}";
+      shift;
+      for i
+      do
+        list_append msr_rl '-xrm' "$i";
+      done;
+      ;;
     esac;
   fi;
-  if is_not_empty "${msr_title}";
+  if is_not_empty "${msr_title}"
   then
     case "${msr_prog}" in
-      gxditview|xditview)
-        list_append msr_rl '-title' "${msr_title}";
-        ;;
+    gxditview|xditview)
+      list_append msr_rl '-title' "${msr_title}";
+      ;;
     esac;
   fi;
   _DISPLAY_ARGS="${msr_rl}";
@@ -4709,7 +4901,6 @@ main_set_resources()
 } # main_set_resources
 
 
-landmark '19: main_display()';
 ########################################################################
 # main_display ()
 #
@@ -4732,50 +4923,38 @@ main_display()
   export md_groggy;
   export md_modefile;
 
-  if obj _TMP_CAT is_non_empty_file;
+  if obj _TMP_CAT is_non_empty_file
   then
     md_modefile="${_OUTPUT_FILE_NAME}";
   else
-    clean_up;
     echo2 'groffer: empty input.';
+    clean_up;
     eval ${_UNSET} md_modefile;
     eval "${return_ok}";
   fi;
+
+  # go to the temporary directory to be able to access internal data files
+  cd "${_TMP_DIR}" >"${_NULL_DEV}" 2>&1;
+
   case "${_DISPLAY_MODE}" in
     groff)
       _ADDOPTS_GROFF="${_ADDOPTS_GROFF} ${_ADDOPTS_POST}";
-      if obj _OPT_DEVICE is_not_empty;
+      if obj _OPT_DEVICE is_not_empty
       then
         _ADDOPTS_GROFF="${_ADDOPTS_GROFF} -T${_OPT_DEVICE}";
       fi;
       md_groggy="$(tmp_cat | eval grog "${md_options}")";
       trap_clean;
-      if obj _OPT_V is_yes;
-      then
-        echo "File:            ${md_modefile}";
-        echo "Mode:            ${_DISPLAY_MODE}";
-        echo "Display program: ${_DISPLAY_PROG} ${_DISPLAY_ARGS}";
+      _do_opt_V;
+
+      obj md_modefile rm_file;
+      mv "${_TMP_CAT}" "${md_modefile}";
+      cat "${md_modefile}" | \
+      {
+        trap clean_up 0 2>${_NULL_DEV} || :;
         eval "${md_groggy}" "${_ADDOPTS_GROFF}";
         clean_up;
-      else
-        # start a new shell program to get another process ID.
-        /bin/sh -c '
-          set -e;
-          test -f "${md_modefile}" && rm -f "${md_modefile}";
-          mv "${_TMP_CAT}" "${md_modefile}";
-          cat "${md_modefile}" | \
-          (
-            clean_up()
-            {
-              if test -d "${_TMP_DIR}";
-              then
-                rm -f -r "'${_TMP_DIR}'" >${_NULL_DEV} 2>&1 || :;
-              fi;
-            }
-            trap clean_up 0 2>${_NULL_DEV} || :;
-            eval "${md_groggy}" "${_ADDOPTS_GROFF}";
-          ) &'
-      fi;
+      } &
       ;;
     text|tty)
       case "${_OPT_DEVICE}" in
@@ -4793,43 +4972,29 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       esac;
       md_addopts="${_ADDOPTS_GROFF} ${_ADDOPTS_POST}";
       md_groggy="$(tmp_cat | grog -T${md_device})";
-      if obj _DISPLAY_MODE is_equal 'text';
+      if obj _DISPLAY_MODE is_equal 'text'
       then
-        if obj _OPT_V is_yes;
-        then
-          echo "File:            ${md_modefile}";
-          echo "Mode:            ${_DISPLAY_MODE}";
-          echo "Display program: ${_DISPLAY_PROG} ${_DISPLAY_ARGS}";
-          eval "${md_groggy}" "${md_addopts}";
-        else
-          tmp_cat | eval "${md_groggy}" "${md_addopts}";
-        fi;
+        _do_opt_V;
+        tmp_cat | eval "${md_groggy}" "${md_addopts}";
       else
         md_pager='';
         for p in "${_OPT_PAGER}" "${PAGER}" "${_MANOPT_PAGER}" \
                  'less -r -R' 'more' 'pager' 'cat'
         do
           md_p="$p";
-          if eval is_prog ${md_p};
+          if eval is_prog ${md_p}
           then		      # no "" for is_prog() allows args for $p
             md_pager="${md_p}";
             break;
           fi;
         done;
-        if obj md_pager is_empty;
+        if obj md_pager is_empty
         then
           error 'main_display(): no pager program found for tty mode';
         fi;
-        if obj _OPT_V is_yes;
-        then
-          echo "File:            ${md_modefile}";
-          echo "Mode:            ${_DISPLAY_MODE}";
-          echo "Display program: ${md_pager}";
-          eval "${md_groggy}" "${md_addopts}";
-        else
-          tmp_cat | eval "${md_groggy}" "${md_addopts}" | \
-                    eval "${md_pager}";
-        fi;
+        _do_opt_V;
+        tmp_cat | eval "${md_groggy}" "${md_addopts}" | \
+                  eval "${md_pager}";
       fi;
       clean_up;
       ;;
@@ -4875,42 +5040,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
           ;;
       esac;
       md_groggy="$(tmp_cat | grog -Tps)";
-      trap_clean;
-      if obj _OPT_V is_yes;
-      then
-        echo "File:            ${md_modefile}.pdf";
-        echo "Mode:            ${_DISPLAY_MODE}";
-        echo "Display program: ${_DISPLAY_PROG} ${_DISPLAY_ARGS}";
-        eval "${md_groggy}" "${_ADDOPTS_GROFF}";
-        clean_up;
-      else
-        # start a new shell program to get another process ID.
-        /bin/sh -c '
-          set -e;
-          _psfile="${md_modefile}.ps";
-          md_modefile="${md_modefile}.pdf";
-          test -f "${_psfile}" && rm -f "${_psfile}";
-          test -f "${md_modefile}" && rm -f "${md_modefile}";
-          cat "${_TMP_CAT}" | \
-            eval "${md_groggy}" "${_ADDOPTS_GROFF}" > "${_psfile}";
-          gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite \
-             -sOutputFile="${md_modefile}" -c save pop -f "${_psfile}";
-          if test _"${_DEBUG_KEEP_FILES}"_ != _yes_;
-          then
-            test -f "${_psfile}" && rm -f "${_psfile}";
-            test -f "${_TMP_CAT}" && rm -f "${_TMP_CAT}";
-          fi;
-          (
-            clean_up() {
-              if test -d "${_TMP_DIR}";
-              then
-                rm -f -r "'${_TMP_DIR}'" >${_NULL_DEV} 2>&1 || :;
-              fi;
-            }
-            trap clean_up 0 2>${_NULL_DEV} || :;
-            eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "${md_modefile}";
-          ) &'
-      fi;
+      _do_display _make_pdf;
       ;;
     ps)
       case "${_OPT_DEVICE}" in
@@ -4985,43 +5115,97 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
 } # main_display()
 
 
-# $md_modefile and $md_groggy come from main_display()
+########################
+# _do_display ([<prog>])
+#
+# Perform the generation of the output and view the result.  If an
+# argument is given interpret it as a function name that is called in
+# the midst.
+#
+# Globals: $md_modefile, $md_groggy (from main_display())
+#
 _do_display()
 {
-  func_check _do_display = 0 "$@";
+  func_check _do_display '>=' 0 "$@";
   trap_clean;
-  if obj _OPT_V is_yes;
+  _do_opt_V;
+  obj md_modefile rm_file;
+  if cat "${_TMP_CAT}" | \
+     eval "${md_groggy}" "${_ADDOPTS_GROFF}" > "${md_modefile}"
   then
-    echo "File:            ${md_modefile}";
-    echo "Mode:            ${_DISPLAY_MODE}";
-    echo "Display program: ${_DISPLAY_PROG} ${_DISPLAY_ARGS}";
-    eval "${md_groggy}" "${_ADDOPTS_GROFF}";
-    clean_up;
+    :;
   else
-    # start a new shell program for another process ID and better
-    # cleaning-up of the temporary files.
-    /bin/sh -c '
-      set -e;
-      test -f "${md_modefile}" && rm -f "${md_modefile}";
-      cat "${_TMP_CAT}" | \
-        eval "${md_groggy}" "${_ADDOPTS_GROFF}" > "${md_modefile}";
-      if test _"${_DEBUG_KEEP_FILES}"_ != _yes_;
-      then
-        rm -f "${_TMP_CAT}";
-      fi;
-      (
-        clean_up() {
-          if test -d "${_TMP_DIR}";
-          then
-            rm -f -r "'${_TMP_DIR}'" >${_NULL_DEV} 2>&1 || :;
-          fi;
-        }
-        trap clean_up 0 2>${_NULL_DEV} || :;
-        eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "${md_modefile}";
-      ) &'
+    error "_do_display: error on groff call";
   fi;
+  if is_not_empty "$1"
+  then
+    eval "$1";
+  fi;
+  obj _TMP_CAT rm_file_with_debug;
+  {
+    trap clean_up 0 2>${_NULL_DEV} || :;
+    eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "\"${md_modefile}\"";
+    clean_up;
+  } &
   eval "${return_ok}";
 } # _do_display() of main_display()
+
+
+#############
+# _do_opt_V ()
+#
+# Check on option `-V'; if set print the corresponding output and leave.
+#
+# Globals: $_ALL_PARAMS, $_ADDOPTS_GROFF, $_DISPLAY_MODE, $_DISPLAY_PROG,
+#          $_DISPLAY_ARGS, $md_groggy,  $md_modefile
+#
+# Variable prefix: _doV
+#
+_do_opt_V()
+{
+  func_check _do_opt_V '=' 0 "$@";
+  if obj _OPT_V is_yes
+  then
+    _OPT_V='no';
+    echo "Output file:    ${md_modefile}";
+    echo "Display mode:   ${_DISPLAY_MODE}";
+    echo "Display prog:   ${_DISPLAY_PROG} ${_DISPLAY_ARGS}";
+    echo "Parameters:     ${_ALL_PARAMS}";
+    echo "Output of grog: ${md_groggy} $(eval echo1 "'${_ADDOPTS_GROFF}'")";
+    _doV_res="$(eval "${md_groggy}" "${_ADDOPTS_GROFF}")";
+    echo "groff -V:       ${_doV_res}"
+    leave;
+  fi;
+  eval "${return_ok}";
+} # _do_opt_V() of main_display()
+
+
+##############
+# _make_pdf ()
+#
+# Transform to pdf format; for pdf mode in _do_display().
+#
+# Globals: $md_modefile (from main_display())
+# 
+# Variable prefix: _mp
+#
+_make_pdf()
+{
+  func_check _do_display '=' 0 "$@";
+  _mp_psfile="${md_modefile}";
+  md_modefile="${md_modefile}.pdf";
+  obj md_modefile rm_file;
+  if gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite \
+        -sOutputFile="${md_modefile}" -c save pop -f "${_mp_psfile}"
+  then
+    :;
+  else
+    error '_make_pdf: could not transform into pdf format.';
+  fi;
+  obj _mp_psfile rm_file_with_debug;
+  eval ${_UNSET} _mp_psfile;
+  eval "${return_ok}";
+} # _make_pdf() of main_display()
 
 
 ########################################################################
@@ -5035,12 +5219,19 @@ main()
 {
   func_check main '>=' 0 "$@";
   # Do not change the sequence of the following functions!
+  landmark '13: main_init()';
   main_init;
+  landmark '14: main_parse_MANOPT()';
   main_parse_MANOPT;
+  landmark '15: main_parse_args()';
   main_parse_args "$@";
+  landmark '16: main_set_mode()';
   main_set_mode;
+  landmark '17: main_do_fileargs()';
   main_do_fileargs;
+  landmark '18: main_set_resources()';
   main_set_resources;
+  landmark '19: main_display()';
   main_display;
   eval "${return_ok}";
 }

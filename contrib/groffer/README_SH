@@ -4,15 +4,20 @@ Additional description for the shell version of `groffer'
 Scripts
 
 The shell version of `groffer' contains two files, `groffer.sh' and
-`groffer2.sh'.  `groffer.sh' is a short introductory script; it is
-transformed by `make' into `groffer'; this will be installed in
+`groffer2.sh'.
+
+`groffer.sh' is a short introductory script without any functions.  I
+can be run with a very poor Bourne shell.  It just contains some basic
+variables, the reading of the configuration files, and the
+determination of the shell for `groffer2.sh'.  This script is
+transformed by `make' into `groffer' which will be installed into
 @bindir@, which is usually /usr/local/bin.
 
-`groffer2.sh' is a long main script with all functions that is called
-by `groffer.sh' and `groffer'.  It is installed unchanged into
-@libdir@/groff/groffer, which is usually /usr/local/lib/groff/groffer.
-This script can be called with a different shell, using the option
-`--shell'.  So it makes sense to split the script into two parts.
+`groffer2.sh' is a long main script with all functions; it is called
+by `groffer.sh' (`groffer' after installation).  It is installed
+unchanged into @libdir@/groff/groffer, which is usually
+/usr/local/lib/groff/groffer.  This script can be called with a
+different shell, using the `groffer' option `--shell'.
 
 
 Shell Compatibility
@@ -31,10 +36,11 @@ name.  These quasi-local variables are unset before each return of the
 function.
 
 The `groffer' scripts were tested under the shells `ash', `bash',
-`dash', 'ksh', `pdksh', 'posh', and `zsh' without problems in Linux
-Debian.  A shell can be tested by the `groffer' option `--shell', but
-that will run only with groffer2.sh.  To start it directly from the
-beginning under this shell the following command can be used.
+`dash', 'ksh', `mksh', `pdksh', 'posh', and `zsh' without problems in
+Linux Debian.  A shell can be tested by the `groffer' option
+`--shell', but that will run only with groffer2.sh.  To start it
+directly from the beginning under this shell the following command can
+be used.
 
   <shell-name> groffer.sh --shell=<shell-name> <argument>...
 
@@ -79,6 +85,11 @@ documentation `Portable shells' in the `info' page of `autoconf'
   ${_UNSET}' where this variable is `unset' if it exists and `:'
   otherwise.
 
+- Some shells have problems with options in `eval'.  So quoting must
+  be done right to hide the options from `eval'.
+
+- In backquote calls `` avoid the backquote ` in comments.
+
 - Replace `true' by `:', `false' isn't used.
 
 - Do not redefine builtins as functions (ash).
@@ -95,6 +106,7 @@ break
 bzip2 -c -d -t
 cat
 catz
+cd
 continue
 echo
 eval
@@ -109,6 +121,7 @@ ls
 man -k --apropos
 mkdir
 mv
+pwd
 return
 rm -f -r
 rmdir
@@ -116,7 +129,7 @@ sed -e -n
 set -e
 sh -c
 shift
-test -d -f -r -s -w -x
+test -c -d -f -r -s -w -x
 trap
 umask
 unset
@@ -217,26 +230,26 @@ The class `list' represents an array structure, see list_*().
 
 ####### License
 
-Last update: 30 July 2005
+Last update: 2 August 2005
 
 Copyright (C) 2003,2004,2005 Free Software Foundation, Inc.
 Written by Bernd Warken
 
-This file is part of groffer, which is part of groff.
+This file is part of `groffer', which is part of `groff'.
 
-groff is free software; you can redistribute it and/or modify it
+`groff' is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
 
-groff is distributed in the hope that it will be useful, but WITHOUT
+`groff' is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
 License for more details.
 
 You should have received a copy of the GNU General Public License
-along with groff; see the files COPYING and LICENSE in the top
-directory of the groff source.  If not, write to the Free Software
+along with `groff'; see the files COPYING and LICENSE in the top
+directory of the `groff' source.  If not, write to the Free Software
 Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 
 
