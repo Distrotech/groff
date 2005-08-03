@@ -216,7 +216,7 @@ uninstall_sub:
 	-for f in groff `ls groff-*`; do \
 	  rm -f $(infodir)/$$f; \
 	done
-	$(INSTALL_INFO) --delete --info-dir=$(infodir) $(infodir)/groff
+	$(INSTALL_INFO) --remove --info-dir=$(infodir) $(infodir)/groff
 	-for f in $(DOCFILES) $(PROCESSEDDOCFILES); do \
 	  rm -f $(docdir)/$$f; \
 	done
@@ -225,7 +225,7 @@ uninstall_sub:
 	done
 	-rm -f $(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
 	-rmdir $(htmldocimagedir)
-	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES); do \
+	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) $(HTMLEXAMPLEFILES); do \
 	  rm -f $(exampledir)/$$f; \
 	done
 	-rm -f $(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
