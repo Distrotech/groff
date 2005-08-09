@@ -338,10 +338,18 @@ www functionality.  It should work with any macro set.
 .  \}
 .  el \{\
 .    if !r ps4html .ad l
-.    ie '\\$2'' \
-.       nop \%\[la]\m[blue]\f[C]\\*[\\$0:adr]\f[]\m[]\[ra]\\$3
-.    el \
-.       nop \m[blue]\\$2\m[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
+.    ie '\\$2'' \{\
+.      ie \\n[.color] \
+.        nop \%\[la]\m[blue]\f[C]\\*[\\$0:adr]\f[]\m[]\[ra]\\$3
+.      el \
+.        nop \%\[la]\f[CB]\\*[\\$0:adr]\f[]\[ra]\\$3
+.    \}
+.    el \{\
+.      ie \\n[.color] \
+.        nop \m[blue]\\$2\m[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
+.      el \
+.        nop \f[B]\\$2\f[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
+.    \}
 .    if !r ps4html .ad
 .  \}
 .  rm \\$0:adr
@@ -376,10 +384,18 @@ www functionality.  It should work with any macro set.
 .      URL mailto:\\$1 "\\$2" "\\$3"
 .  \}
 .  el \{\
-.    ie '\\$2'' \
-.      nop \%\m[blue]\f[C]\\$1\f[]\m[]\\$3
-.    el \
-.      nop \m[blue]\\$2\m[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
+.    ie '\\$2'' \{\
+.      ie \\n[.color] \
+.        nop \%\m[blue]\f[C]\\$1\f[]\m[]\\$3
+.      el \
+.        nop \%\f[CB]\\$1\f[]\\$3
+.    \}
+.    el \{\
+.      ie \\n[.color] \
+.        nop \m[blue]\\$2\m[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
+.      el
+.        nop \f[B]\\$2\f[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
+.    \}
 .  \}
 ..
 .\" --------------------------------------------------------------------
