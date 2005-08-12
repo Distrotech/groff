@@ -322,8 +322,10 @@ www functionality.  It should work with any macro set.
 .\"     if description is absent then the url becomes the anchor text
 .\"
 .de URL
-.  ds \\$0:adr \\$1\"
-.  www:url_breaks \\$0:adr
+.  ie !'\\$1'' \{\
+.    ds \\$0:adr \\$1\"
+.    www:url_breaks \\$0:adr
+.  \}
 .  ie \\n[www-html] \{\
 .    ie '\\$3'' \
 .      ds \\$0:after \&
@@ -339,16 +341,30 @@ www functionality.  It should work with any macro set.
 .  el \{\
 .    if !r ps4html .ad l
 .    ie '\\$2'' \{\
-.      ie \\n[.color] \
-.        nop \%\[la]\m[blue]\f[C]\\*[\\$0:adr]\f[]\m[]\[ra]\\$3
-.      el \
-.        nop \%\[la]\f[CB]\\*[\\$0:adr]\f[]\[ra]\\$3
+.      ie '\\$1'' \{\
+.        ie !'\\$3'' \
+.          nop \\$3
+.      \}
+.      el \{\
+.        ie \\n[.color] \
+.          nop \%\[la]\m[blue]\f[C]\\*[\\$0:adr]\f[]\m[]\[ra]\\$3
+.        el \
+.          nop \%\[la]\f[CB]\\*[\\$0:adr]\f[]\[ra]\\$3
+.      \}
 .    \}
 .    el \{\
-.      ie \\n[.color] \
-.        nop \m[blue]\\$2\m[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
-.      el \
-.        nop \f[B]\\$2\f[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
+.      ie '\\$1'' \{\
+.        ie \\n[.color] \
+.          nop \m[blue]\\$2\m[]\\$3
+.        el \
+.          nop \f[B]\\$2\f[]\\$3
+.      \}
+.      el \{\
+.        ie \\n[.color] \
+.          nop \m[blue]\\$2\m[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
+.        el \
+.          nop \f[B]\\$2\f[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
+.      \}
 .    \}
 .    if !r ps4html .ad
 .  \}
@@ -385,16 +401,30 @@ www functionality.  It should work with any macro set.
 .  \}
 .  el \{\
 .    ie '\\$2'' \{\
-.      ie \\n[.color] \
-.        nop \%\m[blue]\f[C]\\$1\f[]\m[]\\$3
-.      el \
-.        nop \%\f[CB]\\$1\f[]\\$3
+.      ie '\\$1'' \{\
+.        ie !'\\$3'' \
+.          nop \\$3
+.      \}
+.      el \{\
+.        ie \\n[.color] \
+.          nop \%\m[blue]\f[C]\\$1\f[]\m[]\\$3
+.        el \
+.          nop \%\f[CB]\\$1\f[]\\$3
+.      \}
 .    \}
 .    el \{\
-.      ie \\n[.color] \
-.        nop \m[blue]\\$2\m[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
-.      el
-.        nop \f[B]\\$2\f[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
+.      ie '\\$1'' \{\
+.        ie \\n[.color] \
+.          nop \m[blue]\\$2\m[]\\$3
+.        el \
+.          nop \f[B]\\$2\f[]\\$3
+.      \}
+.      el \{\
+.        ie \\n[.color] \
+.          nop \m[blue]\\$2\m[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
+.        el
+.          nop \f[B]\\$2\f[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
+.      \}
 .    \}
 .  \}
 ..
