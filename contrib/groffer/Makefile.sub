@@ -5,7 +5,7 @@
 # Copyright (C) 2001,2002,2005 Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org> and Bernd Warken.
 
-# Last update: 2 August 2005
+# Last update: 15 August 2005
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -35,22 +35,22 @@ RM=rm -f
 all: groffer
 
 groffer: groffer.sh groffer2.sh $(SH_DEPS_SED_SCRIPT)
-	$(RM) $@; \
+	$(RM) $@;
 	sed -f $(SH_DEPS_SED_SCRIPT) \
             -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(bindir)|g" \
 	    -e "s|@libdir@|$(libdir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
-	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/groffer.sh >$@; \
+	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/groffer.sh >$@;
 	chmod +x $@
 
 install_data: groffer
 	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
+	-$(RM) $(bindir)/groffer
+	$(INSTALL_SCRIPT) groffer $(bindir)/groffer
 	-test -d $(libdir)/groff/groffer || \
           $(mkinstalldirs) $(libdir)/groff/groffer
-	-$(RM) $(bindir)/groffer
 	-$(RM) $(libdir)/groff/groffer/groffer2.sh
-	$(INSTALL_SCRIPT) groffer $(bindir)/groffer
 	$(INSTALL_SCRIPT) $(srcdir)/groffer2.sh \
 	  $(libdir)/groff/groffer/groffer2.sh
 

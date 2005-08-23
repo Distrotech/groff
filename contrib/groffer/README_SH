@@ -20,6 +20,99 @@ unchanged into @libdir@/groff/groffer, which is usually
 different shell, using the `groffer' option `--shell'.
 
 
+Options
+
+The `groffer' script provides its own option parser.  It is compatible
+to the usual GNU style command line This includes long option names
+with two signs such as `--option', clusters of short options, the
+mixing of options and non-option file names, the option `--' to close
+the option handling, and it is possible to abbreviate the long option
+names.
+
+The flexible mixing of options and file names in GNU style is always
+possible, even if the environment variable `$POSIXLY_CORRECT' is set
+to a non-empty value.  This disables the rather wicked POSIX behavior
+to terminate option parsing when the first non-option command line
+argument is found.
+
+
+Error Handling
+
+Error handling and exit behavior is complicated by the fact that
+`exit' can only escape from the current shell; trouble occurs in
+subshells.  This was solved by sending kill signals, see $_PROCESS_ID
+and error().
+
+
+Function Definitions in `groffer2.sh'
+
+Each funtion in groffer2.sh has a description that starts with the
+function name and symbols for its arguments in paranthesis `()'.  Each
+`<>' construction gives an argument name that just gives a hint on
+what the argument is meant to be; these argument names are otherwise
+irrelevant.  The `>' sign can be followed by another character that
+shows how many of these arguments are possible.
+
+<arg>      exactly 1 of this argument
+<arg>?     0 or 1 of these arguments
+<arg>*     arbitrarily many such arguments, incl. none
+<arg>+     one or more such arguments
+<arg>...   one or more such arguments
+[...]      optional arguments
+
+A function that starts with an underscore `_' is an internal function
+for some other function.  The internal functions are defined just
+after their corresponding function.
+
+
+External Environment Variables
+
+The groffer.sh script uses the following external system variables.
+It is supposed that these variables are already exported outside of
+groffer.sh; otherwise they do not have a value within the script.
+
+external system environment variables that are explicitly used
+$DISPLAY:		Presets the X display.
+$LANG:			For language specific man pages.
+$LC_ALL:		For language specific man pages.
+$LC_MESSAGES:		For language specific man pages.
+$PAGER:			Paging program for tty mode.
+$PATH:			Path for the programs called (`:' separated list).
+
+groffer native environment variables
+$GROFFER_OPT		preset options for groffer.
+
+all groff environment variables are used, see groff(1)
+$GROFF_BIN_PATH:	Path for all groff programs.
+$GROFF_COMMAND_PREFIX:	'' (normally) or 'g' (several troffs).
+$GROFF_FONT_PATH:	Path to non-default groff fonts.
+$GROFF_TMAC_PATH:	Path to non-default groff macro files.
+$GROFF_TMPDIR:		Directory for groff temporary files.
+$GROFF_TYPESETTER:	Preset default device.
+
+all GNU man environment variables are used, see man(1).
+$MANOPT:		Preset options for man pages.
+$MANPATH:		Search path for man pages (: list).
+$MANROFFSEQ:		Ignored because of grog guessing.
+$MANSECT:		Search man pages only in sections (:).
+$SYSTEM:		Man pages for different OS's (, list).
+
+
+Object-oriented Functions
+
+The groffer script provides an object-oriented construction (OOP).  In
+object-oriented terminology, a type of object is called a `class'; a
+function that handles objects from a class is named `method'.
+
+In the groffer script, the object is a variable name whose content is
+the object's data.  Methods are functions that have an object as first
+argument.
+
+The basic functions for object handling are obj_*().
+
+The class `list' represents an array structure, see list_*().
+
+
 Shell Compatibility
 
 The `groffer' shell scripts are compatible to both the GNU and the
@@ -36,11 +129,11 @@ name.  These quasi-local variables are unset before each return of the
 function.
 
 The `groffer' scripts were tested under the shells `ash', `bash',
-`dash', 'ksh', `mksh', `pdksh', 'posh', and `zsh' without problems in
-Linux Debian.  A shell can be tested by the `groffer' option
-`--shell', but that will run only with groffer2.sh.  To start it
-directly from the beginning under this shell the following command can
-be used.
+`bash-minimal', `dash', 'ksh', `mksh', `pdksh', 'posh', and `zsh'
+without problems in Linux Debian.  A shell can be tested by the
+`groffer' option `--shell', but that will run only with groffer2.sh.
+To start it directly from the beginning under this shell the following
+command can be used.
 
   <shell-name> groffer.sh --shell=<shell-name> <argument>...
 
@@ -135,102 +228,17 @@ umask
 unset
 
 
-Options
+Bugs
 
-The `groffer' script provides its own option parser.  It is compatible
-to the usual GNU style command line This includes long option names
-with two signs such as `--option', clusters of short options, the
-mixing of options and non-option file names, the option `--' to close
-the option handling, and it is possible to abbreviate the long option
-names.
-
-The flexible mixing of options and file names in GNU style is always
-possible, even if the environment variable `$POSIXLY_CORRECT' is set
-to a non-empty value.  This disables the rather wicked POSIX behavior
-to terminate option parsing when the first non-option command line
-argument is found.
-
-
-Error Handling
-
-Error handling and exit behavior is complicated by the fact that
-`exit' can only escape from the current shell; trouble occurs in
-subshells.  This was solved by sending kill signals, see $_PROCESS_ID
-and error().
-
-
-Function Definitions in `groffer2.sh'
-
-Each funtion in groffer2.sh has a description that starts with the
-function name and symbols for its arguments in paranthesis `()'.  Each
-`<>' construction gives an argument name that just gives a hint on
-what the argument is meant to be; these argument names are otherwise
-irrelevant.  The `>' sign can be followed by another character that
-shows how many of these arguments are possible.
-
-<arg>      exactly 1 of this argument
-<arg>?     0 or 1 of these arguments
-<arg>*     arbitrarily many such arguments, incl. none
-<arg>+     one or more such arguments
-<arg>...   one or more such arguments
-[...]      optional arguments
-
-A function that starts with an underscore `_' is an internal function
-for some other function.  The internal functions are defined just
-after their corresponding function.
-
-
-External Environment Variables
-
-The groffer.sh script uses the following external system variables.
-It is supposed that these variables are already exported outside of
-groffer.sh; otherwise they do not have a value within the script.
-
-external system environment variables that are explicitly used
-$DISPLAY:		Presets the X display.
-$LANG:			For language specific man pages.
-$LC_ALL:		For language specific man pages.
-$LC_MESSAGES:		For language specific man pages.
-$PAGER:			Paging program for tty mode.
-$PATH:			Path for the programs called (`:' separated list).
-
-groffer native environment variables
-$GROFFER_OPT		preset options for groffer.
-
-all groff environment variables are used, see groff(1)
-$GROFF_BIN_PATH:	Path for all groff programs.
-$GROFF_COMMAND_PREFIX:	'' (normally) or 'g' (several troffs).
-$GROFF_FONT_PATH:	Path to non-default groff fonts.
-$GROFF_TMAC_PATH:	Path to non-default groff macro files.
-$GROFF_TMPDIR:		Directory for groff temporary files.
-$GROFF_TYPESETTER:	Preset default device.
-
-all GNU man environment variables are used, see man(1).
-$MANOPT:		Preset options for man pages.
-$MANPATH:		Search path for man pages (: list).
-$MANROFFSEQ:		Ignored because of grog guessing.
-$MANSECT:		Search man pages only in sections (:).
-$SYSTEM:		Man pages for different OS's (, list).
-
-
-Object-oriented Functions
-
-The groffer script provides an object-oriented construction (OOP).  In
-object-oriented terminology, a type of object is called a `class'; a
-function that handles objects from a class is named `method'.
-
-In the groffer script, the object is a variable name whose content is
-the object's data.  Methods are functions that have an object as first
-argument.
-
-The basic functions for object handling are obj_*().
-
-The class `list' represents an array structure, see list_*().
+If the `groffer' run is interrupted by Crtl-C the clean up is not done
+by all shells.  The `trap' commands work for the shells `bash',
+`bash-minimal', and 'ksh'; they do not work for `ash', `dash',
+`pdksh', `posh', and `zsh'.
 
 
 ####### License
 
-Last update: 2 August 2005
+Last update: 19 August 2005
 
 Copyright (C) 2003,2004,2005 Free Software Foundation, Inc.
 Written by Bernd Warken

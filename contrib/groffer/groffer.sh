@@ -9,7 +9,7 @@
 # Written by Bernd Warken
 
 # This file is part of `groffer', which is part of `groff' version
-# 1.19.2.
+# @VERSION@.  See $_GROFF_VERSION.
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -27,14 +27,15 @@
 # Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301,
 # USA.
 
-_PROGRAM_VERSION='0.9.21';
-_LAST_UPDATE='2 August 2005';
+########################################################################
+
+_PROGRAM_VERSION='0.9.22';
+_LAST_UPDATE='22 August 2005';
 
 export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
 export GROFFER_OPT;		# option environment for groffer
-export _OUTPUT_FILE_NAME;	# output generated, see main_set_res..()
 
 export _CONF_FILE_ETC;		# configuration file in /etc
 export _CONF_FILE_HOME;		# configuration file in $HOME
@@ -55,7 +56,17 @@ _SP=' ';
 _SQ="'";
 _TAB='	';
 
+export _ERROR;
+_ERROR='7';			# for syntax errors; no `-1' in `ash'
+
 # @...@ constructs
+
+export _GROFF_VERSION
+_GROFF_VERSION='@VERSION@';
+if test _@VERSION@_ = _${_AT}VERSION${_AT}_
+then
+  _GROFF_VERSION='1.19.2';
+fi;
 
 export _AT_BINDIR_AT;
 export _AT_G_AT;
@@ -103,10 +114,19 @@ fi;
 if test _"$(echo "$(echo 'test')")"_ \
      != _test_
 then
-  echo 'The "$()" construct did not work' >&2;
+  echo 'The "$()" construct did not work.' >&2;
   exit "${_ERROR}";
 fi;
 
+# Test of sed program
+if test _"$(echo red | sed -e 's/r/s/')"_ != _sed_
+then
+  echo 'The sed program did not work.' >&2;
+  exit "${_ERROR}";
+fi;
+
+
+########################### configuration
 
 # read and transform the configuration files, execute the arising commands
 for f in "${_CONF_FILE_HOME}" "${_CONF_FILE_ETC}"
@@ -148,6 +168,14 @@ s/^\(-[^ ]*\) \(.*\)$/o="${o} \1 '"${_SQ}"'\2'"${_SQ}"'"/p
   fi;
 done;
 
+# integrate $GROFFER_OPT into the command line; it isn't needed any more
+if test _"${GROFFER_OPT}"_ != __
+then
+  eval set x "${GROFFER_OPT}" '"$@"';
+  shift;
+  GROFFER_OPT='';
+fi;
+
 
 ########################### Determine the shell
 
@@ -156,15 +184,15 @@ export _SHELL;
 # use "``" instead of "$()" for using the case ")" construct
 # do not use "" quotes because of ksh
 _SHELL=`
-  # $x means list
-  # $s means shell
+  # $x means list.
+  # $s means shell.
+  # The command line arguments are taken over.
+  # Shifting herein does not have an effect outside.
   export x;  
-  case " ${GROFFER_OPT} $*" in
+  case " $*" in
   *\ --sh*)			# abbreviation for --shell
     x='';
     s='';
-    eval set x "${GROFFER_OPT}" '"$@"';
-    shift;
     # determine all --shell arguments, store them in $x in reverse order
     while test $# != 0
     do
@@ -206,6 +234,7 @@ _SHELL=`
           if test _"$i"_ = __
           then
             # use the empty argument as the default shell
+            echo empty;
             break;
           else
             # test $i on being a shell program;
@@ -235,7 +264,27 @@ EOF
   esac;
 `
 
+########################### test fast shells for automatic run
+
+if test _"${_SHELL}"_ = __
+then
+  for s in ksh ash dash pdksh zsh posh
+  do
+    if test _"$(eval "$s -c 'echo ok'" 2>${_NULL_DEV})"_ = _ok_ >&2
+    then
+      _SHELL="$s";
+      break;
+    fi;
+  done;
+fi;
+
+
 ########################### start groffer2.sh
+
+if test _"${_SHELL}"_ = _empty_
+then
+  _SHELL='';
+fi;
 
 if test _"${_SHELL}"_ = __
 then
