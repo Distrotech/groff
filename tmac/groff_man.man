@@ -138,11 +138,39 @@ consistent indentation.
 .BI \-rLL= line-length
 Set line length.
 .
-If this option is not given, the line length defaults to 78n in
+If this option is not given,
+the line length is set to respect any value set by a prior `.ll' request,
+(which
+.I must
+be in effect when the `.TH' macro is invoked),
+if this differs from the built\-in default for the formatter;
+otherwise it defaults to 78n in
 .I nroff
 mode and 6.5i in
 .I troff
 mode.
+.
+.IP
+Note that the use of a `.ll' request to initialize the line length
+is supported for backward compatibility with some versions of the
+.B man
+program;
+direct initialization of the `LL' register should
+.I always
+be preferred to the use of such a request.
+In particular, note that a `.ll\ 65n' request will
+.I not
+preserve the normal
+.I nroff
+default line length,
+(the
+.B man
+default initialization to 78n will prevail),
+whereas,
+the `-rLL=65n' option, or an equivalent `.nr\ LL\ 65n'
+request preceding the use of the `TH' macro,
+.I will
+set a line length of 65n.
 .
 .TP
 .BI \-rLT= title-length

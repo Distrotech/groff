@@ -460,7 +460,7 @@ Software Foundation raise funds for GNU development.''
 @title groff
 @subtitle The GNU implementation of @code{troff}
 @subtitle Edition 1.19.2
-@subtitle Spring 2005
+@subtitle Summer 2005
 @author by Trent A.@tie{}Fisher
 @author and Werner Lemberg (@email{bug-groff@@gnu.org})
 
@@ -2156,8 +2156,23 @@ to get consistent indentation.
 
 @item -rLL=@var{length}
 Set line length to @var{length}.  If not specified, the line length
-defaults to 78@tie{}en in nroff mode (this is 78@tie{}characters per
-line) and 6.5@tie{}inch otherwise.
+is set to respect any value set by a prior @samp{ll} request (which
+@emph{must} be in effect when the @samp{TH} macro is invoked), if
+this differs from the built-in default for the formatter; otherwise it
+defaults to 78@dmn{n} in nroff mode (this is 78 characters per
+line) and 6.5@dmn{i} in troff mode.@footnote{Note that the use of
+a @samp{.ll @var{length}} request to initialize the line length, prior
+to use of the @samp{TH} macro, is supported for backward compatibility
+with some versions of the @code{man} program.  @emph{Always} use the
+@option{-rLL=@var{length}} option, or an equivalent @samp{.nr LL @var{length}}
+request, in preference to such a @samp{.ll @var{length}} request.
+In particular, note that in nroff mode, the request @samp{.ll 65n},
+(with any @var{length} expression which evaluates equal to 65@dmn{n},
+i.e., the formatter's default line length in nroff mode), will @emph{not}
+set the line length to 65@dmn{n} (it will be adjusted to the @code{man}
+macro package's default setting of 78@dmn{n}), whereas the use of the
+@option{-rLL=65n} option, or the @samp{.nr LL 65n}
+request @emph{will} establish a line length of 65@dmn{n}.}
 
 @item -rLT=@var{length}
 Set title length to @var{length}.  If not specified, the title length
