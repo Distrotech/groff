@@ -375,6 +375,15 @@ multiple files.
 .
 .
 .SH 2
+grotty
+
+.ULS
+.LI
+Experimental support for zero-width and double-width characters.
+.ULE
+.
+.
+.SH 2
 gxditview
 
 .ULS
