@@ -1,6 +1,7 @@
 '\" t
 .ig
-Copyright (C) 1989-1995, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2005
+  Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -888,6 +889,19 @@ prints the floating keep at the top of the new page.
 This is useful for printing large graphics or tables
 that do not need to appear exactly where specified.
 .
+.PP
+The macros
+.B B1
+and
+.B B2
+can be used to enclose a text within a box;
+.B .B1
+begins the box, and
+.B .B2
+ends it.
+Text in the box is automatically placed in a diversion
+(keep).
+.
 .
 .SS "Tables, figures, equations, and references"
 .
@@ -1281,7 +1295,7 @@ are not implemented.
 .
 .IP \(bu
 .I "Groff ms"
-does not work in compatibility mode (e.g.\& with the
+does not work in compatibility mode (e.g., with the
 .B \-C
 option).
 .
@@ -1304,12 +1318,13 @@ documentation says that the
 and
 .B GW
 number registers can be used to control the column width and
-gutter width respectively.
-These number registers are not used in groff ms.
+gutter width, respectively.
+These number registers are not used in
+.IR "groff ms" .
 .
 .IP \(bu
 Macros that cause a reset
-(paragraphs, headings, etc.)
+(paragraphs, headings, etc.\&)
 may change the indent.
 Macros that change the indent do not increment or decrement
 the indent, but rather set it absolutely.
@@ -1338,6 +1353,20 @@ they are being formatted with Unix
 or
 .I "groff ms"
 should use this number register.
+.
+.IP \(bu
+To make
+.I "groff ms"
+use the default page offset (which also specifies the left margin),
+the
+.B PO
+number register must stay undefined until the first
+.B ms
+macro is evaluated.
+This implies that
+.B PO
+should not be used early in the document, unless it is changed also:
+Remember that accessing an undefined register automatically defines it.
 .br
 .ne 23
 .
@@ -1376,6 +1405,18 @@ The
 .B \[rs]*-
 string produces an em dash \[em] like this.
 .
+.PP
+Use
+.B \[rs]*Q
+and
+.B \[rs]*U
+to get a left and right typographer's quote,
+respectively, in
+.I troff
+(and plain quotes in
+.IR nroff ).
+
+.
 .
 .SS Text Settings
 .
@@ -1396,7 +1437,7 @@ at initialization these are set to
 .BR \[rs]n(PS-2 ,
 .BR \[rs]n[FPS]+2 ,
 and
-.B \[rs]n(PD/2
+.BR \[rs]n(PD/2 ,
 respectively.
 If any of these registers are defined before initialization,
 the initialization macro does not change them.
@@ -1450,7 +1491,7 @@ Names used outside the module in which they are defined are of the form
 .
 .IP \(bu
 Names associated with a particular environment are of the form
-.IB \%environment : name;
+.IB \%environment : name\fR;
 these are used only within the
 .B par
 module.
