@@ -40,8 +40,9 @@ Error Handling
 
 Error handling and exit behavior is complicated by the fact that
 `exit' can only escape from the current shell; trouble occurs in
-subshells.  This was solved by sending kill signals, see $_PROCESS_ID
-and error().
+subshells.  This was solved by adding a temporary error file that is
+tested by function exit_test() and by replacing `var=$(...)' by
+function obj_from_output().
 
 
 Function Definitions in `groffer2.sh'
@@ -111,6 +112,18 @@ argument.
 The basic functions for object handling are obj_*().
 
 The class `list' represents an array structure, see list_*().
+
+
+Speed
+
+The major speed gain is the disabling of all debug features.  This is
+the default for the installed version of `groffer'.  Before the run of
+`make', the debug feature of $_DEBUG_FUNC_CHECK, corresponding to
+option --debug-func, is enabled by default.  The resulting heavy
+slowing down should be regarded as a temporary feature.
+
+Another increase of speed was the replacement of the many `ls' calls
+by analysing a `find' of manpath with `grep'.
 
 
 Shell Compatibility
@@ -238,7 +251,7 @@ by all shells.  The `trap' commands work for the shells `bash',
 
 ####### License
 
-Last update: 19 August 2005
+Last update: 07 Sep 2005
 
 Copyright (C) 2003,2004,2005 Free Software Foundation, Inc.
 Written by Bernd Warken

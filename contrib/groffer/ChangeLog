@@ -1,7 +1,133 @@
 	________________________________________________________________
+	* release of groffer 0.9.23
+
+2005-14-07  Bernd Warken
+
+	### Increase the speed for the search of man pages
+
+	Run `find' on all man directories and ask this with `grep' instead
+	of scanning through many `ls'.
+
+	* groffer2.sh:
+	- $_TMP_MAN: New variable with the name of the file that stores
+	the `find' of the man path.
+	- $_TMP_MANSPEC: New variable with the name of the file that
+	stores the man page file names for each filespec.
+	- man_setup(): Do the `find' of the man path with $_TMP_MAN.
+	- man_do_filespec(): Add creation of $_TMP_MANSPEC.
+	- man_search_section(): Rewrite it to use $_TMP_MANSPEC.
+
+	* TODO: The demand on the increase of speed for man pages is now
+	removed.
+
+	### Increase speed by enhancement of debug
+
+	* groffer.sh: $_BEFORE_MAKE: New variable that stores whether the
+	@...@ constructs are still available or already transformed by
+	`make'.
+
+	* groffer2.sh:
+	- $_DEBUG_FUNC_CHECK: New debug variable that regulates the check
+	calls at the beginning and end of most functions done by the
+	functions func_<name>().  By default, this is enabled before the
+	run of `make', and disabled after.  $_DEBUG_STACKS and
+	$_DEBUG_USER_WITH_STACK enable this variable automatically.
+	- --debug-func: New option for setting $_DEBUG_FUNC_CHECK.
+	- usage(), main_parse_args(): Add information for --debug-func.
+	- func_<name>(): Disable these functions if $_DEBUG_FUNC_CHECK is
+	not `yes'.
+
+	* groffer.man:
+	- Add information on --debug-func.
+	- Move the sections on options for development to the end of
+	option processing.
+
+	### Fixes of man page search
+
+	- man_search_section(): Repair it such that extensions do not
+	occur in the directory name.
+	- manpath_set_from_path(): Rewrite it.  Add `.../MAN/...'
+	subdirectories additionally to `.../man/...'.
+	- manpath_add_lang_sys(): Rewrite it to overwrite _MAN_PATH by
+	systems parameter if any.  Then _MAN_PATH is prepended by the
+	language part.
+	- _manpath_add_sys(): New subfunction of manpath_add_lang_sys() to
+	handle the sytems part.
+	- man_search_section: Fix it to handle section names that have
+	more than one character (an extension).
+	- $_MAN_PATH: Now stores man path as a list.  This is done in
+	man_setup() and manpath_set_from_path(), and used in
+	manpath_add_lang_sys().
+	- $_MAN_SYS: Now stores man systems parameter as a list.  This is
+	done in man_setup() and used in manpath_add_lang_sys().
+	- $_MAN_SEC_DONE, $_MAN_SYS_DONE, $_MAN_LANG_DONE: Remove these
+	variables.
+
+	### Reorder the beginning of groffer2.sh
+
+	* groffer2.sh:
+	- func_<name>(): Move these functions to the functions in
+	alphabetical order.
+	- main_init(): Move "Test for compression" to this function.
+	- Move the "System Test" and function landmark() to the beginning
+	"Test of rudimentary shell functionality".  Change landmarks 1 and
+	2 to new positions.
+
+	### Fix the mode when not in X
+
+	* groffer2.sh:
+	- main_parse_args(): Accept modes even when not in X, hoping for a
+	program given by option.  Add $_OPT_VIEWER_<MODE>_TTY.  Remove
+	$_VIEWER_TERMINAL.
+	- main_set_mode(): Add a section to set $_VIEWER_TERMINAL and move
+	the value of $_OPT_VIEWER_<MODE>_TTY to $_OPT_VIEWER_<MODE>.  When
+	not in X and no terminal programs are set remove $_OPT_MODE.  All
+	unknown programs are treated as terminal programs.
+	- usage(): Comment out options --<mode>-viewer-tty.  They exist
+	and are handled by `groffer', but they are no longer documented.
+	- $_OPT_VIEWER_<MODE>_TTY: New variables for option
+	--<mode>-viewer-tty.
+	- $_DEFAULT_MODE, $_VIEWER_<MODE>: Change it from , separation to
+	a list.  Rewrite _get_first_prog() of main_set_mode() to get
+	around with this.
+
+	* groffer.man: Remove information on --<mode>-viewer-tty.
+
+	### Debug
+
+	* groffer2.sh:
+	- $_DEBUG_PRINT_FILENAMES: New variable for printing the file
+	names that are displayed by `groffer'.
+	- --debug-filenames: The corresponding option.  It is used in
+	man_register_file(), register_file(), and main_parse_args().
+
+	* groffer.man: Add information on --debug-filenames.
+
+	### Other changements
+
+	* groffer2.sh:
+	- is_greater_than(): New function.  Use it where suitable.
+	- lists_combine(): New function to combine several lists to a
+	single list.
+	- list_from_split(): Rewrite it to output a list with quoted
+	elements.
+	- list_has_prog(), list_has_not_prog(): New functions to check the
+	list on an element that starts with a given word.
+	- obj_from_output(): Use this function at many places instead of
+	`var="$(...)"'; this makes the usage of exit_test() unnecessary.
+	- path_clean(): Fix assignment.
+	- path_list(): Rename path_split().
+	- tmp_create(): Add check of temporary file.
+	- usage(): Fix.
+
+	* README_SH:
+	- Fix section `Error handling'.
+	- Add section `Speed'.
+
+	________________________________________________________________
 	* release of groffer 0.9.22
 
-2005-22-04  Bernd Warken
+2005-08-22  Bernd Warken
 
 	### `--whatis'
 

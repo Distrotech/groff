@@ -29,8 +29,8 @@
 
 ########################################################################
 
-_PROGRAM_VERSION='0.9.22';
-_LAST_UPDATE='22 August 2005';
+_PROGRAM_VERSION='0.9.23';
+_LAST_UPDATE='14 Sep 2005';
 
 export _PROGRAM_VERSION;
 export _LAST_UPDATE;
@@ -61,11 +61,15 @@ _ERROR='7';			# for syntax errors; no `-1' in `ash'
 
 # @...@ constructs
 
-export _GROFF_VERSION
-_GROFF_VERSION='@VERSION@';
+export _GROFF_VERSION;
+export _BEFORE_MAKE;
 if test _@VERSION@_ = _${_AT}VERSION${_AT}_
 then
+  _BEFORE_MAKE='yes';
   _GROFF_VERSION='1.19.2';
+else
+  _BEFORE_MAKE='no';
+  _GROFF_VERSION='@VERSION@';
 fi;
 
 export _AT_BINDIR_AT;

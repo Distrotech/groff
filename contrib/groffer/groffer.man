@@ -15,7 +15,7 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update: 22 August 2005
+Last update: 07 Sep 2005
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
@@ -808,40 +808,21 @@ Long options can be abbreviated.
 .Opt_[alt] -- default\-modes mode1,mode2,\*[Ellipsis]
 .Opt_[alt] -- dvi
 .Opt_[alt] -- dvi\-viewer prog
-.Opt_[alt] -- dvi\-viewer\-tty prog
 .Opt_[alt] -- groff
 .Opt_[alt] -- html
 .Opt_[alt] -- html\-viewer prog
-.Opt_[alt] -- html\-viewer\-tty prog
 .Opt_[alt] -- mode display_mode
 .Opt_[alt] -- pdf
 .Opt_[alt] -- pdf\-viewer prog
-.Opt_[alt] -- pdf\-viewer\-tty prog
 .Opt_[alt] -- ps
 .Opt_[alt] -- ps\-viewer prog
-.Opt_[alt] -- ps\-viewer\-tty prog
 .Opt_[alt] -- text
 .Opt_[alt] -- tty
 .Opt_[alt] -- tty\-viewer prog
-.Opt_[alt] -- tty\-viewer\-tty prog
 .Opt_[alt] -- www
 .Opt_[alt] -- www\-viewer prog
-.Opt_[alt] -- www\-viewer\- prog
 .Opt_[alt] -- x -- X
 .Opt_[alt] -- x\-viewer -- X\-viewer prog
-.Opt_[alt] -- x\-viewer\-tty -- X\-viewer\-tty prog
-.RE
-.
-.
-.TP
-.I development options
-.RS
-.P
-.Opt_[alt] -- debug
-.Opt_[alt] -- do\-nothing
-.Opt_[alt] -- shell prog
-.Opt_[alt] - Q -- source
-.Opt_[alt] - V
 .RE
 .
 .
@@ -907,6 +888,28 @@ are accepted as well.
 .Opt_[alt] -- rv
 .Opt_[alt] -- title string
 .Opt_[alt] -- xrm X-resource
+.RE
+.
+.
+.TP
+.I options for development
+.RS
+.P
+.Opt_[alt] -- debug
+.Opt_[alt] -- debug\-all
+.Opt_[alt] -- debug\-filenames
+.Opt_[alt] -- debug\-func
+.Opt_[alt] -- debug\-keep
+.Opt_[alt] -- debug\-lm
+.Opt_[alt] -- debug\-params
+.Opt_[alt] -- debug\-shell
+.Opt_[alt] -- debug\-stacks
+.Opt_[alt] -- debug\-tmpdir
+.Opt_[alt] -- debug\-user
+.Opt_[alt] -- do\-nothing
+.Opt_[alt] -- shell prog
+.Opt_[alt] - Q -- source
+.Opt_[alt] - V
 .RE
 .
 .
@@ -1049,46 +1052,44 @@ with device
 .I latin1
 under
 .B less
-on a terminal.
+on a terminal; a series of other modes are tested if the programs for
+the main default mode do not exist.
 .
 .
 .P
-There are two kinds of options for viewers.
-.Opt_long \fImode\fP-viewer
-chooses the normal viewer programs that run on their own in
-\%\f[CR]X\~Window\f[], while
-.Opt_long \fImode\fP-viewer-tty
-chooses programs that run on the terminal (on tty).
+In \%\f[CR]X\~Window\f[],
+.B groffer
+can run the viewer as an independent program in the background.
 .
-Most graphical viewers are programs running in \%\f[CR]X\~Window\f[],
-so there aren't many opportunities to call the tty viewers.
+As this does not work in text mode on a terminal there must be a
+way to know which viewers are \%\f[CR]X\~Window\f[] graphical
+programs.
 .
-But they give the chance to view the output source; for example,
-.Opt_long ps\-viewer\-tty=less
-shows the content of the
+The
+.B groffer
+script has a small set of information on some viewer names.
+.
+If a viewer argument of the command\-line chooses an element that is
+kept as \%\f[CR]X\~Window\f[] program in this list it is treated as a
+viewer that can run in the background.
+.
+All other, unknown viewer calls are not run in the background.
+.
+.
+.P
+For each mode, you are free to choose whatever viewer you want.
+.
+That need not be some graphical viewer suitable for this mode.
+.
+There is a chance to view the output source; for example, the
+combination of the options
+.Opt_long mode=ps
+and
+.Opt_long ps\-viewer=less
+show the content of the
 .I Postscript
 output with the pager
 .BR less .
-.
-.
-.P
-The \%\f[CR]X\~Window\f[] viewers are not critical, you can use both
-.Opt_long *\-viewer
-and
-.Opt_long *\-viewer\-tty
-for them; with
-.Opt_long *\-viewer\-tty
-the viewer program will not become independently, it just stays
-coupled with
-.BR groffer .
-But the program will not run if you specify a terminal program with
-.Opt_long *\-viewer
-because this viewer will stay in background without a chance to reach
-it.
-.
-So you really need
-.Opt_long *\-viewer\-tty
-for viewers that run on tty.
 .
 .
 .Opt_def -- auto
@@ -1144,15 +1145,6 @@ and
 In each case, arguments can be provided additionally.
 .
 .
-.Opt_def -- dvi\-viewer\-tty prog
-Choose a program running on the terminal for viewing the output of
-.IR \%dvi\~mode .
-.
-This can be a file name or a program to be searched in
-.Env_var $PATH ;
-arguments can be provided additionally.
-.
-.
 .Opt_def -- groff
 Equivalent to
 .Opt_long_arg mode groff .
@@ -1171,15 +1163,6 @@ It can be the path name of an executable file or a program in
 .Env_var $PATH .
 .
 In each case, arguments can be provided additionally.
-.
-.
-.Opt_def -- html\-viewer\-tty
-Choose a terminal program for viewing the output of
-.I \%html\~mode .
-.
-It can be the path name of an executable file or a program in
-.Env_var $PATH ;
-arguments can be provided additionally.
 .
 .
 .Opt_def -- mode value
@@ -1398,15 +1381,6 @@ This can be a file name or a program to be searched in
 arguments can be provided additionally.
 .
 .
-.Opt_def -- pdf\-viewer\-tty prog
-Choose a terminal viewer program for
-.IR \%pdf\~mode .
-.
-This can be a file name or a program to be searched in
-.Env_var $PATH ;
-arguments can be provided additionally.
-.
-.
 .Opt_def -- ps
 Equivalent to
 .Opt_long_arg mode ps .
@@ -1426,15 +1400,6 @@ and
 .BR \%gs (1),
 .
 In each case, arguments can be provided additionally.
-.
-.
-.Opt_def -- ps\-viewer\-tty prog
-Choose a terminal viewer program for
-.IR \%ps\~mode .
-.
-This can be a file name or a program to be searched in
-.Env_var $PATH ;
-arguments can be provided additionally.
 .
 .
 .Opt_def -- text
@@ -1461,14 +1426,6 @@ The option argument can be a file name or a program to be searched in
 arguments can be provided additionally.
 .
 .
-.Opt_def -- tty\-viewer\-tty prog
-This is equivalent to
-.Opt_long tty\-viewer
-because the programs for
-.I tty
-mode run on a terminal anyway.
-.
-.
 .Opt_def -- www
 Equivalent to
 .Opt_long_arg mode html .
@@ -1477,11 +1434,6 @@ Equivalent to
 .Opt_def -- www\-viewer prog
 Equivalent to
 .Opt_long html\-viewer .
-.
-.
-.Opt_def -- www\-viewer\-tty prog
-Equivalent to
-.Opt_long html\-viewer\-tty .
 .
 .
 .Opt_def -- X -- x
@@ -1496,14 +1448,6 @@ Suitable viewer programs are
 .BR \%gxditview (@MAN1EXT@)
 which is the default and
 .BR \%xditview (1).
-The argument can be any executable file or a program in
-.Env_var $PATH ;
-arguments can be provided additionally.
-.
-.
-.Opt_def -- X\-viewer\-tty -- x\-viewer\-tty prog
-Choose a terminal viewer program for
-.IR \%x\~mode .
 The argument can be any executable file or a program in
 .Env_var $PATH ;
 arguments can be provided additionally.
@@ -1535,141 +1479,6 @@ So postprocessors, macro packages, compatibility with
 .I classical
 .IR \%troff ,
 and much more can be manually specified.
-.
-.
-.\" --------------------------------------------------------------------
-.SH "Options for Development"
-.\" --------------------------------------------------------------------
-.
-.Opt_def -- debug
-Enable five debugging informations.
-.
-The temporary files are kept and not deleted, the name of the
-temporary directory and the shell name for
-.File_name groffer2.sh
-are printed, the parameters are printed at several steps of
-development, and a function stack is output with function
-\f[CR]error_user()\f[] as well.
-.
-Neither the function call stack that is printed at each opening and
-closing of a function call nor the landmark information that is
-printed to determine how far the program is running are used.
-.
-This seems to be the most useful among all debugging options.
-.
-.
-.Opt_def -- debug\-all
-Enable all seven debugging informations including the function call
-stack and the landmark information.
-.
-.
-.Opt_def -- debug\-keep
-Enable two debugging information, the printing of the name of the
-temporary directory and the keeping of the temporary files.
-.
-.
-.Opt_def -- debug\-lm
-Enable one debugging information, the landmark information.
-.
-.
-.Opt_def -- debug\-params
-Enable one debugging information, the parameters at several steps.
-.
-.
-.Opt_def -- debug\-shell
-Enable one debugging information, the shell name for
-.File_name groffer2.sh .
-.
-.
-.Opt_def -- debug\-stacks
-Enable one debugging information, the function call stack.
-.
-.
-.Opt_def -- debug\-tmpdir
-Enable one debugging information, the name of the temporary directory.
-.
-.
-.Opt_def -- debug\-user
-Enable one debugging information, the function stack with
-\f[CR]error_user()\f[].
-.
-.
-.Opt_def -- do-nothing
-This is like
-.Opt_long version ,
-but without the output; no viewer is started.
-.
-This makes only sense in development.
-.
-.
-.Opt_def -- print=text
-Just print the argument to standard error.
-.
-This is good for parameter check.
-.
-.
-.Opt_def -- shell "shell_program"
-Specify the shell under which the
-.File_name \%groffer2.sh
-script should be run.
-.
-This option overwrites the automatic shell determination of the
-program.
-.
-If the argument
-.I shell_program
-is empty a former shell option and the automatic shell determination
-is cancelled and the default shell is restored.
-.
-Some shells run considerably faster than the standard shell.
-.
-.
-.Opt_def - Q -- source
-Output the roff source code of the input files without further
-processing.
-.
-This is the equivalent
-.Opt_long_arg mode source .
-.
-.
-.Opt_def - V
-This is an advanced option for debugging only.
-.
-Instead of displaying the formatted input, a lot of
-.I \%groffer
-specific information is printed to standard output:
-.
-.RS
-.Topic
-the output file name in the temporary directory,
-.
-.Topic
-the display mode of the actual
-.B \%groffer
-run,
-.
-.Topic
-the display program for viewing the output with its arguments,
-.
-.Topic
-the active parameters from the config files, the arguments in
-.Env_var $GROFFER_OPT ,
-and the arguments of the command line,
-.
-.Topic
-the pipeline that would be run by the
-.B \%groff
-program, but without executing it.
-.RE
-.
-.
-.P
-Other useful debugging options are the
-.B \%groff
-option
-.Opt_short Z
-and
-.Opt_long_arg mode groff .
 .
 .
 .\" --------------------------------------------------------------------
@@ -2230,6 +2039,164 @@ Set the title for the viewer window.
 .
 .Opt_def -- xrm "'resource'"
 Set \f[CR]\%X\~Window\f[] resource.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "Options for Development"
+.\" --------------------------------------------------------------------
+.
+.Opt_def -- debug
+Enable seven debugging informations.
+.
+The temporary files are kept and not deleted, the name of the
+temporary directory and the shell name for
+.File_name groffer2.sh
+are printed, the displayed file names are printed, the parameters are
+printed at several steps of development, and a function stack is
+output with function \f[CR]error_user()\f[] as well.
+.
+Neither the function call stack at the opening and closing of each
+function call nor the landmark information to determine how far the
+program is running are printed.
+.
+These seem to be the most useful parts among all debugging options.
+.
+.
+.Opt_def -- debug\-all
+Enable all nine debugging informations including the function call
+stack and the landmark information.
+.
+.
+.Opt_def -- debug\-filenames
+Print the names of the files and
+.I \%man\~pages
+that are displayed by
+.BR \&groffer .
+.
+.
+.Opt_def -- debug\-func
+Enable the basic debugging information for checking the functions on
+the beginning and end of each call.
+.
+The options
+.Opt_long debug\-stacks
+and
+.Opt_long debug\-user
+enable this option automatically.
+.
+This option is important for the development, but it decreases the
+speed of
+.B groffer
+by large amounts.
+.
+.
+.Opt_def -- debug\-keep
+Enable two debugging information, the printing of the name of the
+temporary directory and the keeping of the temporary files.
+.
+.
+.Opt_def -- debug\-lm
+Enable one debugging information, the landmark information.
+.
+.
+.Opt_def -- debug\-params
+Enable one debugging information, the parameters at several steps.
+.
+.
+.Opt_def -- debug\-shell
+Enable one debugging information, the shell name for
+.File_name groffer2.sh .
+.
+.
+.Opt_def -- debug\-stacks
+Enable one debugging information, the function call stack.
+.
+.
+.Opt_def -- debug\-tmpdir
+Enable one debugging information, the name of the temporary directory.
+.
+.
+.Opt_def -- debug\-user
+Enable one debugging information, the function stack with
+\f[CR]error_user()\f[].
+.
+.
+.Opt_def -- do-nothing
+This is like
+.Opt_long version ,
+but without the output; no viewer is started.
+.
+This makes only sense in development.
+.
+.
+.Opt_def -- print=text
+Just print the argument to standard error.
+.
+This is good for parameter check.
+.
+.
+.Opt_def -- shell "shell_program"
+Specify the shell under which the
+.File_name \%groffer2.sh
+script should be run.
+.
+This option overwrites the automatic shell determination of the
+program.
+.
+If the argument
+.I shell_program
+is empty a former shell option and the automatic shell determination
+is cancelled and the default shell is restored.
+.
+Some shells run considerably faster than the standard shell.
+.
+.
+.Opt_def - Q -- source
+Output the roff source code of the input files without further
+processing.
+.
+This is the equivalent
+.Opt_long_arg mode source .
+.
+.
+.Opt_def - V
+This is an advanced option for debugging only.
+.
+Instead of displaying the formatted input, a lot of
+.I \%groffer
+specific information is printed to standard output:
+.
+.RS
+.Topic
+the output file name in the temporary directory,
+.
+.Topic
+the display mode of the actual
+.B \%groffer
+run,
+.
+.Topic
+the display program for viewing the output with its arguments,
+.
+.Topic
+the active parameters from the config files, the arguments in
+.Env_var $GROFFER_OPT ,
+and the arguments of the command line,
+.
+.Topic
+the pipeline that would be run by the
+.B \%groff
+program, but without executing it.
+.RE
+.
+.
+.P
+Other useful debugging options are the
+.B \%groff
+option
+.Opt_short Z
+and
+.Opt_long_arg mode groff .
 .
 .
 .\" --------------------------------------------------------------------
