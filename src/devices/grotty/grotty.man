@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright (C) 1989-2000, 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -40,7 +40,9 @@ It is possible to have whitespace between the
 option and its parameter.
 .
 .
+.
 .SH DESCRIPTION
+.
 .B grotty
 translates the output of GNU
 .B troff
@@ -69,6 +71,7 @@ will also cause
 .B grotty
 to read the standard input.
 Output is written to the standard output.
+.
 .LP
 By default,
 .B grotty
@@ -77,6 +80,7 @@ to change text attributes (bold, italic, colors).
 This makes it possible to have eight different \M[green]background\M[]
 and \m[red]foreground\m[] colors; additionally, bold and italic
 attributes can be used \f[BI]at the same time\f[] (by using the BI font).
+.
 .LP
 The following colors are defined in
 .BR tty.tmac :
@@ -84,6 +88,7 @@ black, white, red, green, blue, yellow, magenta, cyan.
 Unknown colors are mapped to the default color (which is dependent on the
 settings of the terminal; in most cases, this is black for the foreground
 and white for the background).
+.
 .LP
 Use the
 .B \-c
@@ -103,6 +108,7 @@ At the same time, color output is disabled.
 The same effect can be achieved by setting either the
 .B GROFF_NO_SGR
 environment variable or using the `sgr' X command (see below).
+.
 .LP
 For SGR support, it is necessary to use the
 .B \-R
@@ -121,6 +127,7 @@ in particular, either add
 to the
 .B $PAGER
 environment variable, e.g.\&
+.
 .RS
 .LP
 .B PAGER="/usr/bin/less -R"
@@ -128,6 +135,7 @@ environment variable, e.g.\&
 .B export PAGER
 .RE
 .LP
+.
 or use the
 .B \-P
 option of
@@ -136,6 +144,12 @@ to set the pager executable and its options, or modify the configuration
 file of
 .B man
 in a similar fashion.
+Note that with some
+.BR man (1)
+versions, you have to use the
+.B $MANPAGER
+environment variable instead.
+.
 .LP
 .BR grotty 's
 old output format can be displayed on a terminal
@@ -161,11 +175,14 @@ There is no need to filter the output through
 since
 .B grotty
 never outputs reverse line feeds.
+.
 .LP
 The font description file may contain a command
+.
 .IP
 .BI internalname\  n
 .LP
+.
 where
 .I n
 is a decimal integer.
@@ -183,7 +200,9 @@ escape sequence in
 .BR troff .
 .
 .
+.
 .SH OPTIONS
+.
 .TP
 .B \-b
 Suppress the use of overstriking for bold characters.
@@ -241,6 +260,7 @@ is the name of the device, usually
 .BR utf8 ,
 or
 .BR cp1047 .
+.
 .TP
 .B \-h
 Use horizontal tabs in the output.
@@ -288,11 +308,14 @@ isn't used.
 Print the version number.
 .
 .
+.
 .SH USAGE
+.
 .B grotty
 understands a single X command produced using the
 .B \[rs]X
 escape sequence.
+.
 .TP
 .BI \[rs]X'tty:\ sgr\  n '
 If
@@ -301,7 +324,9 @@ is non-zero or missing, enable SGR output (this is the default), otherwise
 use the old drawing scheme for bold and underline.
 .
 .
+.
 .SH ENVIRONMENT
+.
 .TP
 .B GROFF_NO_SGR
 If set, the old drawing scheme for bold and underline (using the
@@ -309,7 +334,9 @@ backspace character) is active.
 Colors are disabled.
 .
 .
+.
 .SH FILES
+.
 .TP
 .B @FONTDIR@/devascii/DESC
 Device description file for
@@ -375,26 +402,33 @@ Macros for use with
 .B @MACRODIR@/tty-char.tmac
 Additional klugdey character definitions for use with
 .BR grotty .
+.
 .LP
 Note that on EBCDIC hosts, only files for the
 .B cp1047
 device will be installed.
 .
 .
+.
 .SH BUGS
+.
 .LP
 .B grotty
 is intended only for simple documents.
+.
 .LP
 There is no support for fractional horizontal or vertical motions.
+.
 .LP
 There is no support for
 .B \[rs]D
 commands
 other than horizontal and vertical lines.
+.
 .LP
 Characters above the first line (ie with a vertical position of\~0)
 cannot be printed.
+.
 .LP
 Color handling is different compared to
 .BR grops (@MAN1EXT@).
@@ -405,7 +439,9 @@ doesn't support anyway) but changes the background color of the character
 cell, affecting all subsequent operations.
 .
 .
+.
 .SH "SEE ALSO"
+.
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@),
 .BR groff_out (@MAN5EXT@),

@@ -1731,8 +1731,9 @@ Consequently, the options `\-b', `\-B', `\-u', and `\-U' work only in
 combination with `\-c' and are ignored silently otherwise.
 
 For the `man' program, it may be necessary to add the `\-R' option of
-`less' to the $PAGER environment variable; alternatively, you can use
-`man's `\-P' option (or adapt its configuration file accordingly).
+`less' to the $PAGER environment variable (or $MANPAGER, depending on the
+used version of `man'); alternatively, you can use `man's `\-P' option (or
+adapt its configuration file accordingly).
 See man(1) for more details.
 
 .TAG GROFF_NO_SGR
