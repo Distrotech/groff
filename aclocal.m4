@@ -57,6 +57,57 @@ AC_DEFUN([GROFF_PRINT],
 AC_DEFUN([GROFF_PROG_YACC],
   [AC_CHECK_PROGS([YACC], [byacc 'bison -y'], [yacc])])
 
+# We need makeinfo 4.8 or newer.
+
+AC_DEFUN([GROFF_MAKEINFO],
+  [missing=
+   AC_CHECK_PROG([MAKEINFO], [makeinfo], [makeinfo])
+   if test -z "$MAKEINFO"; then
+     missing="\`makeinfo' is missing."
+   else
+     # We need an additional level of quoting to make sed's regexps work.
+     [makeinfo_version=`$MAKEINFO --version 2>&1 \
+       | sed '1 {s/^.* \([^ ]\+\)$/\1/;q}'`]
+     # Consider only the first two numbers in version number string.
+     [makeinfo_version_major=`echo $makeinfo_version \
+       | sed 's/^\([0-9]*\).*$/\1/'`]
+     if test -z "$makeinfo_version_major"; then
+       makeinfo_version_major=0
+       makeinfo_version_minor=0
+     else
+       [makeinfo_version_minor=`echo $makeinfo_version \
+	 | sed 's/^[^.]\+\(.*\)$/\1/'`]
+       # No minor version number at all?
+       if test -z "$makeinfo_version_minor"; then
+	 makeinfo_version_minor=0
+       else
+	 [makeinfo_version_minor=`echo $makeinfo_version_minor \
+	   | sed 's/\.\([0-9]*\).*$/\1/'`]
+	 if test -z "$makeinfo_version_minor"; then
+	   makeinfo_version_minor=0
+	 fi
+       fi
+     fi
+   fi
+   makeinfo_version_numeric=`expr $makeinfo_version_major '*' 1000 \
+				  '+' $makeinfo_version_minor`
+   if test $makeinfo_version_numeric -lt 4008; then
+     missing="\`makeinfo' is too old."
+   fi
+
+   if test -n "$missing"; then
+     if test ! -f doc/groff \
+	|| test ${srcdir}/doc/groff.texinfo -nt doc/groff; then
+       AC_MSG_ERROR($missing
+[Get the `texinfo' package version 4.8 or newer.])
+     else
+       AC_MSG_WARN($missing
+[Get the `texinfo' package version 4.8 or newer if you want to convert
+`groff.texinfo' into a PDF or HTML document.])
+     fi
+   fi
+   AC_SUBST([MAKEINFO])])
+
 # The following programs are needed for grohtml.
 
 AC_DEFUN([GROFF_HTML_PROGRAMS],

@@ -540,7 +540,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS XDEVDIRS XPROGDIRS XLIBDIRS appresdir LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD GREP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR ALT_GHOSTSCRIPT_PROGS GHOSTSCRIPT ac_ct_GHOSTSCRIPT pnmcut pnmcrop pnmtopng psselect pnmtops make_html make_install_html ALT_AWK_PROGS AWK ac_ct_AWK make_pdfdoc make_install_pdfdoc pnmtops_nosetpage LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS XDEVDIRS XPROGDIRS XLIBDIRS appresdir LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC MAKEINFO RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD GREP EGREP LIBC LIBM LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR ALT_GHOSTSCRIPT_PROGS GHOSTSCRIPT ac_ct_GHOSTSCRIPT pnmcut pnmcrop pnmtopng psselect pnmtops make_html make_install_html ALT_AWK_PROGS AWK ac_ct_AWK make_pdfdoc make_install_pdfdoc pnmtops_nosetpage LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -5463,6 +5463,93 @@ fi
   test -n "$YACC" && break
 done
 test -n "$YACC" || YACC="yacc"
+
+missing=
+   # Extract the first word of "makeinfo", so it can be a program name with args.
+set dummy makeinfo; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_MAKEINFO+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$MAKEINFO"; then
+  ac_cv_prog_MAKEINFO="$MAKEINFO" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_MAKEINFO="makeinfo"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+MAKEINFO=$ac_cv_prog_MAKEINFO
+if test -n "$MAKEINFO"; then
+  echo "$as_me:$LINENO: result: $MAKEINFO" >&5
+echo "${ECHO_T}$MAKEINFO" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+   if test -z "$MAKEINFO"; then
+     missing="\`makeinfo' is missing."
+   else
+     # We need an additional level of quoting to make sed's regexps work.
+     makeinfo_version=`$MAKEINFO --version 2>&1 \
+       | sed '1 {s/^.* \([^ ]\+\)$/\1/;q}'`
+     # Consider only the first two numbers in version number string.
+     makeinfo_version_major=`echo $makeinfo_version \
+       | sed 's/^\([0-9]*\).*$/\1/'`
+     if test -z "$makeinfo_version_major"; then
+       makeinfo_version_major=0
+       makeinfo_version_minor=0
+     else
+       makeinfo_version_minor=`echo $makeinfo_version \
+	 | sed 's/^[^.]\+\(.*\)$/\1/'`
+       # No minor version number at all?
+       if test -z "$makeinfo_version_minor"; then
+	 makeinfo_version_minor=0
+       else
+	 makeinfo_version_minor=`echo $makeinfo_version_minor \
+	   | sed 's/\.\([0-9]*\).*$/\1/'`
+	 if test -z "$makeinfo_version_minor"; then
+	   makeinfo_version_minor=0
+	 fi
+       fi
+     fi
+   fi
+   makeinfo_version_numeric=`expr $makeinfo_version_major '*' 1000 \
+				  '+' $makeinfo_version_minor`
+   if test $makeinfo_version_numeric -lt 4008; then
+     missing="\`makeinfo' is too old."
+   fi
+
+   if test -n "$missing"; then
+     if test ! -f doc/groff \
+	|| test ${srcdir}/doc/groff.texinfo -nt doc/groff; then
+       { { echo "$as_me:$LINENO: error: $missing
+Get the \`texinfo' package version 4.8 or newer." >&5
+echo "$as_me: error: $missing
+Get the \`texinfo' package version 4.8 or newer." >&2;}
+   { (exit 1); exit 1; }; }
+     else
+       { echo "$as_me:$LINENO: WARNING: $missing
+Get the \`texinfo' package version 4.8 or newer if you want to convert
+\`groff.texinfo' into a PDF or HTML document." >&5
+echo "$as_me: WARNING: $missing
+Get the \`texinfo' package version 4.8 or newer if you want to convert
+\`groff.texinfo' into a PDF or HTML document." >&2;}
+     fi
+   fi
 
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -11093,6 +11180,7 @@ s,@PSPRINT@,$PSPRINT,;t t
 s,@DVIPRINT@,$DVIPRINT,;t t
 s,@PERLPATH@,$PERLPATH,;t t
 s,@YACC@,$YACC,;t t
+s,@MAKEINFO@,$MAKEINFO,;t t
 s,@RANLIB@,$RANLIB,;t t
 s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@INSTALL_INFO@,$INSTALL_INFO,;t t
