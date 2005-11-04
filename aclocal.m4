@@ -67,7 +67,7 @@ AC_DEFUN([GROFF_MAKEINFO],
    else
      # We need an additional level of quoting to make sed's regexps work.
      [makeinfo_version=`$MAKEINFO --version 2>&1 \
-       | sed '1 { s/^.* \([^ ]\+\)$/\1/;q }'`]
+       | sed 's/^.* \([^ ]\+\)$/\1/;1q'`]
      # Consider only the first two numbers in version number string.
      [makeinfo_version_major=`echo $makeinfo_version \
        | sed 's/^\([0-9]*\).*$/\1/'`]
