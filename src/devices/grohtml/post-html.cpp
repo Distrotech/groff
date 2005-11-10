@@ -2577,7 +2577,12 @@ void html_printer::do_heading (char *arg)
   determine_header_level(level);
   write_header();
 
-  // finally set the output to neutral for after the header
+  /*
+   *  finally set the output font to uninitialized, thus forcing
+   *  the new paragraph to start a new font block.
+   */
+
+  output_style.f = NULL;
   g = page_contents->glyphs.get_data();
   page_contents->glyphs.move_left();     // so that next time we use old g
 }
