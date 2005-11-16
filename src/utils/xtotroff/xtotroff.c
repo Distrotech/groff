@@ -8,6 +8,8 @@
 #include <config.h>
 #endif
 
+#define __GETOPT_PREFIX groff_
+
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -17,7 +19,6 @@
 #include <fcntl.h>
 #include <limits.h>
 
-#define __GETOPT_PREFIX groff_
 #include <getopt.h>
 
 #include "XFontName.h"

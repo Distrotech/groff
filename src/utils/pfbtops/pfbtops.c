@@ -23,11 +23,12 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include <config.h>
 #endif
 
+#define __GETOPT_PREFIX groff_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 
-#define __GETOPT_PREFIX groff_
 #include <getopt.h>
 
 #include "nonposix.h"
