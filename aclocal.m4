@@ -65,9 +65,11 @@ AC_DEFUN([GROFF_MAKEINFO],
    if test -z "$MAKEINFO"; then
      missing="\`makeinfo' is missing."
    else
+     AC_MSG_CHECKING([for makeinfo version])
      # We need an additional level of quoting to make sed's regexps work.
      [makeinfo_version=`$MAKEINFO --version 2>&1 \
        | sed 's/^.* \([^ ]\+\)$/\1/;1q'`]
+     AC_MSG_RESULT([$makeinfo_version])
      # Consider only the first two numbers in version number string.
      [makeinfo_version_major=`echo $makeinfo_version \
        | sed 's/^\([0-9]*\).*$/\1/'`]
@@ -96,8 +98,8 @@ AC_DEFUN([GROFF_MAKEINFO],
    fi
 
    if test -n "$missing"; then
-     if test ! -f doc/groff \
-	|| test ${srcdir}/doc/groff.texinfo -nt doc/groff; then
+     if test ! -f doc/groff.info \
+	|| test ${srcdir}/doc/groff.texinfo -nt doc/groff.info; then
        AC_MSG_ERROR($missing
 [Get the `texinfo' package version 4.8 or newer.])
      else

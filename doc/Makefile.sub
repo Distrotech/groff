@@ -118,7 +118,7 @@ CLEANNOTSRCDIRADD=\
 	$(GROFF) -Tps -ms -mwww >$@
 
 
-all: groff $(PROCESSEDDOCFILES) prepare_examples \
+all: groff.info $(PROCESSEDDOCFILES) prepare_examples \
      $(PROCESSEDEXAMPLEFILES) $(make_html)
 
 html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
@@ -137,7 +137,7 @@ examples.stamp: grnexmpl.g groff.css gnu.eps
 	fi
 	echo timestamp > $@
 
-groff: groff.texinfo
+groff.info: groff.texinfo
 	$(MAKEINFO) --enable-encoding -I$(srcdir) $(srcdir)/groff.texinfo
 
 gnu.eps: gnu.xpm
@@ -157,20 +157,20 @@ webpage.ps: gnu.eps
 
 grnexmpl.ps: grnexmpl.me grnexmpl.g
 
-distfiles: groff gnu.eps gnu.png
+distfiles: groff.info gnu.eps gnu.png
 
-install_data: groff $(DOCFILES) $(PROCESSEDDOCFILES) $(make_install_html) \
+install_data: groff.info $(DOCFILES) $(PROCESSEDDOCFILES) $(make_install_html) \
               $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 	-test -d $(infodir) || $(mkinstalldirs) $(infodir)
 # Prefer info files in builddir over srcdir; we test for
-# the existence of `groff'.
+# the existence of `groff.info'.
 	d=.; \
-	  test -f "groff" || d=$(srcdir); \
-	  for f in $$d/groff `ls $$d/groff-*`; do \
-	    rm -f $(infodir)/`basename $$f`; \
-	    $(INSTALL_DATA) $$f $(infodir)/`basename $$f`; \
+	  test -f "groff.info" || d=$(srcdir); \
+	  for f in $$d/groff.info `ls $$d/groff.info*`; do \
+	    rm -f $(infodir)/$$f; \
+	    $(INSTALL_DATA) $$f $(infodir)/$$f; \
 	  done
-	$(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/groff
+	$(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/groff.info
 	-test -d $(docdir) || $(mkinstalldirs) $(docdir)
 	for f in $(DOCFILES); do \
 	  rm -f $(docdir)/$$f; \
@@ -212,7 +212,7 @@ uninstall_sub:
 	-for f in groff `ls groff-*`; do \
 	  rm -f $(infodir)/$$f; \
 	done
-	$(INSTALL_INFO) --remove --info-dir=$(infodir) $(infodir)/groff
+	$(INSTALL_INFO) --remove --info-dir=$(infodir) $(infodir)/groff.info
 	-for f in $(DOCFILES) $(PROCESSEDDOCFILES); do \
 	  rm -f $(docdir)/$$f; \
 	done

@@ -601,7 +601,7 @@ dot: FORCE
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $(top_srcdir)/Makefile.sub $(do)
 
-$(LIBDIRS): FORCE
+$(LIBDIRS): FORCE $(INCDIRS) $(PROGDEPDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -617,7 +617,7 @@ $(LIBDIRS): FORCE
 	  -f $(top_srcdir)/Makefile.lib \
 	  -f Makefile.dep $(do)
 
-$(CPROGDIRS): FORCE
+$(CPROGDIRS): FORCE $(LIBDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -633,7 +633,7 @@ $(CPROGDIRS): FORCE
 	  -f $(top_srcdir)/Makefile.cpg \
 	  -f Makefile.dep $(do)
 
-$(CCPROGDIRS): FORCE
+$(CCPROGDIRS): FORCE $(LIBDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -649,7 +649,7 @@ $(CCPROGDIRS): FORCE
 	  -f $(top_srcdir)/Makefile.ccpg \
 	  -f Makefile.dep $(do)
 
-$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE
+$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE $(PROGDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -662,6 +662,8 @@ $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
 	  -f $(top_srcdir)/Makefile.dev $(do)
+
+$(OTHERDIRS): $(PROGDIRS)
 
 $(INCDIRS) $(PROGDEPDIRS) $(OTHERDIRS): FORCE
 	@$(ENVSETUP); \
