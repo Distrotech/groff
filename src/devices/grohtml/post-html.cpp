@@ -3732,6 +3732,7 @@ void html_printer::flush_page (void)
 
   flush_globs();
   current_paragraph->done_para();
+  current_paragraph->flush_text();
   
   // move onto a new page
   delete page_contents;
