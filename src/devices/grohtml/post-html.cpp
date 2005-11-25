@@ -4632,6 +4632,8 @@ void html_printer::do_file_components (void)
       freopen(split_file.contents(), "w", stdout);
       fragment_no++;
       writeHeadMetaStyle();
+      fputs(head_info.contents(), stdout);
+      fputs("</head>\n", stdout);
       write_navigation(top, prev, next, current);
     }
     if (file_list.are_links_required())
