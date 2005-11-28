@@ -127,6 +127,10 @@ pic.html: pic.ms
                  -Thtml -ms >$@
 
 webpage.html: webpage.ms gnu.png gnu.eps groff.css
+	$(GROFF) -P-j`basename $< | sed -e 's|.ms$$||'` \
+                 -P-n -P-r -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
+		 -P-D$(imagedir) -Thtml -ms >$@
+
 webpage.ps: gnu.eps
 
 grnexmpl.ps: grnexmpl.me grnexmpl.g

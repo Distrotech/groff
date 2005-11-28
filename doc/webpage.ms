@@ -14,6 +14,7 @@
 .\" .HEAD "<link rel=""icon"" type=""image/png"" href=""http://www.gnu.org/graphics/gnu-mini.png"" >"
 .
 .mso www.tmac
+.ALN "#eeeeee" 30
 .
 .de blm-macro
 .  nr tmp \\n[.i]
@@ -22,7 +23,7 @@
 ..
 .blm blm-macro
 .
-.HX 0
+.HX 1
 .
 .defcolor mydarkred rgb 0.65f 0.1f 0.2f
 .defcolor mydarkgreen rgb 0.1f 0.5f 0.2f
@@ -35,37 +36,24 @@
 .
 Home of Groff (GNU Troff).
 .
-.
 .HTML-IMAGE-LEFT
 .PSPIC -L gnu.eps 2i 2i
 .ie r ps4html \
-.  nop \v'-0.66i'\h'2.0i'\s[100]\*[GNU] Troff\s0
+.  nop \v'-0.66i'\h'2.0i'\s[80]\*[GNU] Troff\s0
 .el \
 .  nop \v'-0.66i'\h'2.0i'\s[60]\*[GNU] Troff\s0
 .HTML-IMAGE-END
 .
 .HR
-.HnS 1
-GNU Troff (\c
-.URL http://\:groff.ffii.org/ Groff )
-\[em] a
+.
+.LNS
+.
+.DC T HIS mydarkred
+is the home page for groff (\c
 .URL http://\:www.gnu.org/ GNU
-project.
-.HnE
-.HR
-.LK
+Troff).  Groff is a software typesetting package which reads plain
+text mixed with formatting commands and produces formatted output.
 .
-.LP
-.DC T HE mydarkred
-groff (GNU Troff) software
-is a typesetting package which reads plain text mixed with
-formatting commands and produces formatted output.
-Groff now supports HTML.
-.
-.
-.SH
-Download
-
 The source code of the currently released versions of groff is
 available at the 
 .URL "http://\:groff.ffii.org/\:groff/" "FFII host (Germany)" ,
@@ -74,8 +62,7 @@ and its mirrors.
 .
 The USA site also contains older, obsolete versions.
 
-The most actual pre-release, development version is available from a
-CVS repository, see below.
+The development version is available from a CVS repository, see below.
 .
 Development snapshots (produced twice a day from the CVS repository)
 can be downloaded from
@@ -84,8 +71,11 @@ can be downloaded from
 For a special version of groff on the Microsoft operating systems, see
 .URL "http://\:gnuwin32.sf.net/\:packages/\:groffl.htm" "Groff for Windows" .
 
-GNU troff is released under the
-.URL http://\:www.gnu.org/\:copyleft/\:gpl.html "GNU Copyright License" .
+Groff was originally written and maintained by James Clark, however it
+is now maintained by
+.MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
+and
+.MTO wl@\:gnu.org "Werner Lemberg" .
 
 User issues lead:
 .MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding" .
@@ -93,10 +83,28 @@ User issues lead:
 Technical issues lead:
 .MTO wl@\:gnu.org "Werner Lemberg" .
 .
+.LNE
+.
+\s[-4]\f[I]This document was produced using
+.URL http://groff.ffii.org/ groff-\n[.x].\n[.y].\n[.Y] .
+.br
+The image at the top has been contributed by Imogen Mulley (born 1991),
+based on a similar picture found on the
+.URL http://www.gnu.org "GNU server" .
+.HR
+.SH
+Licence
+.LP
+GNU troff is released under the
+.URL http://\:www.gnu.org/\:copyleft/\:gpl.html "GNU Copyright License" .
+The documentation is released under the
+.URL http://\:www.gnu.org/\:copyleft/\:fdl.html "Free Documentation License" .
+Groff is an official GNU project as defined on
+.URL http://\:savannah.gnu.org savannah .
 .
 .SH
 README
-
+.LP
 This is the GNU groff document formatting system.
 The version number is given in the file VERSION.
 
@@ -120,6 +128,9 @@ See the file COPYING for copying permission.
 The file PROBLEMS describes various problems that have been encountered in
 compiling, installing, and running groff.
 
+.SH
+CVS and FTP access
+.LP
 The most recent released version of groff is always available by
 .URL "ftp://\:ftp.gnu.org/\:gnu/\:groff" "anonymous ftp" .
 
@@ -186,7 +197,9 @@ gunzip -c ../groff-\[la]version\[ra]-current.diff.gz | patch -p1
 .ft P
 .fi
 .in
-
+.SH
+Groff dependancies
+.LP
 Depending on your requirements, you may need at least some of the
 following tools to build groff directly from its source:
 
@@ -215,6 +228,9 @@ output.
 If you don't intend to produce output in either of these formats, then
 these packages are unnecessary.
 
+.SH
+Bug reports
+.LP
 Please report bugs using the form in the file BUG-REPORT; the idea of this
 is to make sure that FSF has all the information it needs to fix the bug.
 At the very least, read the BUG-REPORT form and make sure that you supply
@@ -223,6 +239,9 @@ Even if you are not sure that something is a bug, report it using
 BUG-REPORT: this will enable us to determine whether it really is a bug or
 not.
 
+.SH
+Mailing lists
+.LP
 Three mailing lists are available:
 
 .ULS
@@ -260,17 +279,9 @@ Alternatively, you may subscribe by visiting the web pages at
 Each of these web pages also provides a link to a browseable archive of
 postings to the corresponding mailing list.
 
-GNU groff was written by
-.MTO jjc@\:jclark.com "James Clark" .
-It is now maintained by
-.MTO Ted.Harding@\:nessie.mcc.ac.uk "Ted Harding"
-and
-.MTO wl@\:gnu.org "Werner Lemberg" .
-.
-.
 .SH
 NEWS VERSION 1.19.2
-.
+.LP
 .SH 2 troff
 
 .ULS
@@ -530,7 +541,7 @@ and the latter makes troff always use unscaled character widths.
 .
 .SH
 NEWS VERSION 1.19.1
-.
+.LP
 .SH 2
 groff
 
@@ -732,7 +743,7 @@ section.
 .
 .SH
 NEWS VERSION 1.19
-.
+.LP
 .SH 2
 troff
 
@@ -1061,7 +1072,7 @@ groff -Tps -dpaper=a4l -P-pa4 -P-l -ms foo.ms > foo.ps
 .
 .SH
 NEWS VERSION 1.18.1
-.
+.LP
 .SH 2
 troff
 
@@ -1173,7 +1184,7 @@ for a PostScript font definition file FOO.
 .
 .SH
 NEWS VERSION 1.18
-
+.LP
 This section describes recent user-visible changes in groff.
 Bug fixes are not described.
 There are more details in the man pages.
@@ -1821,13 +1832,6 @@ grops, grolj4, and grolbp use it currently.
 troff completely ignores it.
 .ULE
 .
-.HR
+.LNE
 .
-\s[-2]\f[I]This document was produced using
-.URL http://groff.ffii.org/ groff-\n[.x].\n[.y].\n[.Y] .
-.br
-The image at the top has been contributed by Imogen Mulley (born 1991),
-based on a similar picture found on the
-.URL http://www.gnu.org "GNU server" .
-.HR
 .\" EOF

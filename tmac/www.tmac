@@ -1215,6 +1215,77 @@ www functionality.  It should work with any macro set.
 .ft P
 ..
 .
+.ds www-nav-colour "#eeeeee
+.nr www-nav-width-left  30
+.nr www-nav-width-right 70
+.
+.
+.\" LNS - left navigation start
+.
+.de LNS
+.   HTML</p> "<table><tr><td valign=top width=\\n[www-nav-width-left]% bgcolor=""\\*[www-nav-colour]"">"
+.   LK
+.   HTML</p> "</td><td valign=top width=\\n[www-nav-width-right]%>"
+.   nr SH-open 1
+..
+.
+.\" LNE - left navigation end
+.
+.de LNE
+.   HTML</p> </td></tr></table>
+.   HR
+..
+.nr SH-open 0
+.nr needs-begin 0
+.
+.
+.de www-SH
+.   if (0\\$1 == 0) \{\
+.      if (\\n[SH-open] == 1) .LNE
+.      nr needs-begin 1
+.      @SH-old
+.   \}
+..
+.
+.de www-NH
+.   if (0\\$1 <= 1) \{\
+.      if (\\n[SH-open] == 1) .LNE
+.      nr needs-begin 1
+.      @NH-old
+.   \}
+..
+.
+.de www-LP
+.   @LP-old
+.   if (\\n[needs-begin] == 1) \{\
+.       HR
+.       LNS
+.   \}
+.   nr needs-begin 0
+..
+.
+.\"  ALN  [colour]  [left width percentage]
+.\"       turns on automatic left navigation, this macro should only be
+.\"       called once (normally at the start of the document) as it
+.\"       indicates the all top level section headings will form a
+.\"       navigation list on the left of the main text.
+.
+.de ALN
+.   if '\*(.T'html' \{\
+.      if !'\\$1'' .ds www-nav-colour \\$1
+.      if (0\\$2 > 0) \{\
+.         nr www-nav-width-left \\$2
+.         nr www-nav-width-right (100-\\$2)
+.      \}
+.      rn @SH @SH-old
+.      rn www-SH @SH
+.      rn @NH @NH-old
+.      rn www-NH @NH
+.      rn @LP @LP-old
+.      rn www-LP @LP
+.   \}
+..
+.
 .if r ps4html .nop \O[0]
 .cp \n(_C
 .

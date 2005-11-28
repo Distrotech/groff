@@ -97,6 +97,11 @@ Here is a summary of the functions found in this macro set.
 	device driver
 \&.CDS	code example begin
 \&.CDE	code example end
+\&.ALN	place links on left of
+	main text.
+\&.LNS	start a new two column
+	table with links in the left.
+\&.LNE	end the two column table.
 .fi
 .PP
 Output of the
@@ -479,6 +484,33 @@ Start displaying a code section in constant width font.
 .TP
 .B ".CDE"
 End code display
+.
+.TP
+.B ".ALN [color] [percentage]"
+Place section heading links automatically to the left of the main
+text. The color argument is optional and if present indicates which
+HTML background color is to be used under the links.
+The optional percentage indicates the amount of width to devote to
+displaying the links. The default values are #eeeeee and 30
+for color and percentage width respectively.
+This macro should only be called once at the beginning of the document.
+Once this macro has been called each section heading will emit an
+HTML table consisting of the links in the left and the section text
+on the right.
+.
+.TP
+.B ".LNS"
+Start a new two column table with links in the left column.
+This can be called if the document has text before the first .SH
+and if .ALN is used. Typically this is called just before the
+first paragraph and after the main title as it indicates that
+text after this point should be positioned to the right of
+the left hand navigational links.
+.
+.TP
+.B ".LNE"
+End a two column table. This should be called at the end of the
+document if .ALN was used.
 .
 .SH SECTION HEADING LINKS
 By default
