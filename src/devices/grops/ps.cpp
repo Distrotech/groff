@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -679,7 +679,7 @@ char *ps_printer::get_subfont(subencoding *sub, const char *stem)
   assert(sub != 0);
   if (!sub->subfont) {
     char *tem = new char[strlen(stem) + 2 + INT_DIGITS + 1];
-    sprintf(tem, "%s@@%d", stem, next_subencoding_index);
+    sprintf(tem, "%s@@%d", stem, sub->idx);
     sub->subfont = tem;
   }
   return sub->subfont;
