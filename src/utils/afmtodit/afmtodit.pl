@@ -6246,8 +6246,8 @@ while (<MAP>) {
 	    $map{$field[0], $nmap{$field[0]}} = $field[1];
 	    $nmap{$field[0]} += 1;
 
-	    # There is more then one way to make a PS glyph name;
-	    # let us try unicode names with `uni' and `u' prefixes.
+	    # There is more than one way to make a PS glyph name;
+	    # let us try Unicode names with both `uni' and `u' prefixes.
 	    my $utmp = $AGL_to_unicode{$field[0]};
 	    if (defined $utmp && $utmp =~ /^[0-9A-F]{4}$/) {
 		foreach my $unicodepsname ("uni" . $utmp, "u" . $utmp) {
@@ -6564,3 +6564,5 @@ for (my $i = 0; $i <= $#encoding; $i++) {
 sub conv {
     $_[0]*$unitwidth*$resolution/(72*1000*$sizescale) + ($_[0] < 0 ? -.5 : .5);
 }
+
+# eof

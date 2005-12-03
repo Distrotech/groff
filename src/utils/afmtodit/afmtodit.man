@@ -57,7 +57,7 @@ afmtodit \- create font files for use with groff \-Tps
 .ad \na
 .
 .LP
-The whitespace between an command line option and its argument is optional.
+The whitespace between a command line option and its argument is optional.
 .
 .SH DESCRIPTION
 .B afmtodit
@@ -104,14 +104,11 @@ If the file isn't found in the current directory, it is searched in
 the `devps/generate' subdirectory of the default font directory.
 .
 .LP
-If a PostScript character is not named as
-.BI uni XXXX
-.RI ( XXXX
-are four uppercase hexadecimal digits), and is not mentioned in
+If a PostScript character is not mentioned in
 .IR map_file ,
 and a generic groff glyph name can't be deduced using the
 Adobe Glyph List (AGL, built into
-.BR  afmtodit ),
+.BR afmtodit ),
 then
 .B afmtodit
 puts the PostScript character into the groff font file as an unnamed
@@ -119,6 +116,8 @@ character which can only be accessed by the
 .B \eN
 escape sequence in
 .BR troff .
+In particular, this is true for glyph variants like `foo.bar'; all glyph
+names containing one or more periods are mapped to unnamed entities.
 .
 If option
 .B \-e
