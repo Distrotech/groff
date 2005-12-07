@@ -6443,7 +6443,8 @@ if ($#kern1 >= 0) {
     for (my $i = 0; $i <= $#kern1; $i++) {
 	my $c1 = $kern1[$i];
 	my $c2 = $kern2[$i];
-	if ($nmap{$c1} != 0 && $nmap{$c2} != 0) {
+	if (defined $nmap{$c1} && $nmap{$c1} != 0
+	    && defined $nmap{$c2} && $nmap{$c2} != 0) {
 	    for (my $j = 0; $j < $nmap{$c1}; $j++) {
 		for (my $k = 0; $k < $nmap{$c2}; $k++) {
 		    if ($kernx[$i] != 0) {
