@@ -68,7 +68,7 @@ AC_DEFUN([GROFF_MAKEINFO],
      AC_MSG_CHECKING([for makeinfo version])
      # We need an additional level of quoting to make sed's regexps work.
      [makeinfo_version=`$MAKEINFO --version 2>&1 \
-       | sed 's/^.* \([^ ]\+\)$/\1/;1q'`]
+       | sed -e 's/^.* \([^ ][^ ]*\)$/\1/' -e '1q'`]
      AC_MSG_RESULT([$makeinfo_version])
      # Consider only the first two numbers in version number string.
      [makeinfo_version_major=`echo $makeinfo_version \
@@ -78,7 +78,7 @@ AC_DEFUN([GROFF_MAKEINFO],
        makeinfo_version_minor=0
      else
        [makeinfo_version_minor=`echo $makeinfo_version \
-	 | sed 's/^[^.]\+\(.*\)$/\1/'`]
+	 | sed 's/^[^.][^.]*\(.*\)$/\1/'`]
        # No minor version number at all?
        if test -z "$makeinfo_version_minor"; then
 	 makeinfo_version_minor=0
