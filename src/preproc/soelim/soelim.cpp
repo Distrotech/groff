@@ -40,7 +40,7 @@ int tex_flag = 0;
 
 extern "C" const char *Version_string;
 
-int do_file(const char *filename);
+int do_file(const char *);
 
 
 void usage(FILE *stream)
@@ -60,11 +60,9 @@ int main(int argc, char **argv)
   while ((opt = getopt_long(argc, argv, "CI:rtv", long_options, NULL)) != EOF)
     switch (opt) {
     case 'v':
-      {
-	printf("GNU soelim (groff) version %s\n", Version_string);
-	exit(0);
-	break;
-      }
+      printf("GNU soelim (groff) version %s\n", Version_string);
+      exit(0);
+      break;
     case 'C':
       compatible_flag = 1;
       break;

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -279,11 +279,9 @@ int main(int argc, char **argv)
       config_macro_path.command_line_dir(optarg);
       break;
     case 'v':
-      {
-	printf("GNU eqn (groff) version %s\n", Version_string);
-	exit(0);
-	break;
-      }
+      printf("GNU eqn (groff) version %s\n", Version_string);
+      exit(0);
+      break;
     case 'd':
       if (optarg[0] == '\0' || optarg[1] == '\0')
 	error("-d requires two character argument");
