@@ -1,4 +1,4 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2002, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 /* run_pipeline can handle at most this many commands */
-#define MAX_COMMANDS 12
+#define MAX_COMMANDS 13
 
 /* Children exit with this status if execvp fails. */
 #define EXEC_FAILED_EXIT_STATUS 0xff

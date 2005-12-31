@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -51,7 +51,8 @@ extern "C" {
 #endif /* NEED_DECLARATION_PUTENV */
 
 // The number of commands must be in sync with MAX_COMMANDS in pipeline.h
-const int SOELIM_INDEX = 0;
+const int PRECONV_INDEX = 0;
+const int SOELIM_INDEX = PRECONV_INDEX + 1;
 const int REFER_INDEX = SOELIM_INDEX + 1;
 const int GRAP_INDEX = REFER_INDEX + 1;
 const int PIC_INDEX = GRAP_INDEX + 1;
@@ -110,6 +111,7 @@ int main(int argc, char **argv)
   setbuf(stderr, stderr_buf);
   assert(NCOMMANDS <= MAX_COMMANDS);
   string Pargs, Largs, Fargs;
+  int Kflag = 0;
   int vflag = 0;
   int Vflag = 0;
   int zflag = 0;
@@ -119,6 +121,7 @@ int main(int argc, char **argv)
   int safer_flag = 1;
   int opt;
   const char *command_prefix = getenv("GROFF_COMMAND_PREFIX");
+  const char *encoding = getenv("GROFF_ENCODING");
   if (!command_prefix)
     command_prefix = PROG_PREFIX;
   commands[TROFF_INDEX].set_name(command_prefix, "troff");
@@ -127,9 +130,10 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((opt = getopt_long(argc, argv,
-			    "abcCd:eEf:F:gGhiI:lL:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
-			    long_options, NULL))
+  while ((opt = getopt_long(
+		  argc, argv,
+		  "abcCd:eEf:F:gGhiI:lkK:L:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
+		  long_options, NULL))
 	 != EOF) {
     char buf[3];
     buf[0] = '-';
@@ -148,6 +152,13 @@ int main(int argc, char **argv)
       Pargs += buf;
       Pargs += optarg;
       Pargs += '\0';
+      break;
+    case 'K':
+      commands[PRECONV_INDEX].append_arg("-e", optarg);
+      Kflag = 1;
+      // fall through
+    case 'k':
+      commands[PRECONV_INDEX].set_name(command_prefix, "preconv");
       break;
     case 't':
       commands[TBL_INDEX].set_name(command_prefix, "tbl");
@@ -185,16 +196,15 @@ int main(int argc, char **argv)
       break;
     case 'v':
       vflag = 1;
-      {
-	printf("GNU groff version %s\n", Version_string);
-	printf("Copyright (C) 2004 Free Software Foundation, Inc.\n"
-	       "GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
-	       "You may redistribute copies of groff and its subprograms\n"
-	       "under the terms of the GNU General Public License.\n"
-	       "For more information about these matters, see the file named COPYING.\n");
-	printf("\ncalled subprograms:\n\n");
-        fflush(stdout);
-      }
+      printf("GNU groff version %s\n", Version_string);
+      printf(
+	"Copyright (C) 2005 Free Software Foundation, Inc.\n"
+	"GNU groff comes with ABSOLUTELY NO WARRANTY.\n"
+	"You may redistribute copies of groff and its subprograms\n"
+	"under the terms of the GNU General Public License.\n"
+	"For more information about these matters, see the file named COPYING.\n");
+      printf("\ncalled subprograms:\n\n");
+      fflush(stdout);
       commands[POST_INDEX].append_arg(buf);
       // fall through
     case 'C':
@@ -284,6 +294,11 @@ int main(int argc, char **argv)
       break;
     }
   }
+  if (encoding) {
+    commands[PRECONV_INDEX].set_name(command_prefix, "preconv");
+    if (!Kflag && *encoding)
+      commands[PRECONV_INDEX].append_arg("-e", encoding);
+  }
   if (safer_flag)
     commands[PIC_INDEX].append_arg("-S");
   else
@@ -309,7 +324,8 @@ int main(int argc, char **argv)
   }
   if (postdriver)
     commands[POST_INDEX].set_name(postdriver);
-  int gxditview_flag = postdriver && strcmp(xbasename(postdriver), GXDITVIEW) == 0;
+  int gxditview_flag = postdriver
+		       && strcmp(xbasename(postdriver), GXDITVIEW) == 0;
   if (gxditview_flag && argc - optind == 1) {
     commands[POST_INDEX].append_arg("-title");
     commands[POST_INDEX].append_arg(argv[optind]);
@@ -690,9 +706,9 @@ char **possible_command::get_argv()
 void synopsis(FILE *stream)
 {
   fprintf(stream,
-"usage: %s [-abceghilpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
+"usage: %s [-abceghiklpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
 "       [-wname] [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
-"       [-Larg] [-Idir] [files...]\n",
+"       [-Karg] [-Larg] [-Idir] [files...]\n",
 	  program_name);
 }
 
@@ -701,6 +717,7 @@ void help()
   synopsis(stdout);
   fputs("\n"
 "-h\tprint this message\n"
+"-k\tpreprocess with preconv\n"
 "-t\tpreprocess with tbl\n"
 "-p\tpreprocess with pic\n"
 "-e\tpreprocess with eqn\n"
@@ -737,6 +754,7 @@ void help()
 "-S\tenable safer mode (the default)\n"
 "-U\tenable unsafe mode\n"
 "-Idir\tsearch dir for soelim, troff, and grops.  Implies -s\n"
+"-Karg\tuse arg as input encoding.  Implies -k\n"
 "\n",
 	stdout);
   exit(0);

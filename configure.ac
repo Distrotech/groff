@@ -83,6 +83,9 @@ GROFF_TIME_T
 GROFF_TYPE_SIGNAL
 GROFF_STRUCT_EXCEPTION
 
+# check endianness
+AC_C_BIGENDIAN
+
 # checks for libraries
 GROFF_LIBC
 GROFF_LIBM
