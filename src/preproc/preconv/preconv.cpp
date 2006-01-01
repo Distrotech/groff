@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2005
+/* Copyright (C) 2005, 2006
    Free Software Foundation, Inc.
      Written by Werner Lemberg (wl@gnu.org)
 
@@ -61,8 +61,11 @@ struct conversion {
 //   http://www.iana.org/assignments/character-sets
 //
 // For encodings which don't have a MIME tag we use GNU iconv's encoding
-// names (which also work with Bruno Haible's libinconv package).  They
+// names (which also work with the portable GNU libiconv package).  They
 // are marked with `*'.
+//
+// Encodings specific to XEmacs are marked as such; no mark means that it
+// is used by Emacs.
 //
 // Encodings marked with `--' are special to Emacs or other applications and
 // shouldn't be used for data exchange.
@@ -71,21 +74,20 @@ struct conversion {
 // nor by libiconv, or just one of them has support for it.
 //
 // A special case is VIQR encoding: Despite of having a MIME tag it is
-// missing in both libiconv 1.9.1 and iconv (coming with GNU libc 2.3.3).
+// missing in both libiconv 1.10 and iconv (coming with GNU libc 2.3.6).
 //
-// Finally, we add all aliases of GNU iconv for `ascii' (handled as
-// latin-1), `latin1', and `utf8' to catch those encoding names before iconv
-// is called.
+// Finally, we add all aliases of GNU iconv for `ascii', `latin1', and
+// `utf8' to catch those encoding names before iconv is called.
 
 static const conversion
 emacs_to_mime[] = {
   {"alternativnyj",			""},		// ?
   {"arabic-iso-8bit",			"ISO-8859-6"},
-  {"ascii",				"ISO-8859-1"},
+  {"ascii",				"US-ASCII"},
   {"big5",				"Big5"},
   {"binary",				""},		// --
   {"chinese-big5",			"Big5"},
-  {"chinese-euc",			""},		// XEmacs?
+  {"chinese-euc",			"GB2312"},	// XEmacs
   {"chinese-hz",			"HZ-GB-2312"},
   {"chinese-iso-7bit",			"ISO-2022-CN"},
   {"chinese-iso-8bit",			"GB2312"},
@@ -105,31 +107,31 @@ emacs_to_mime[] = {
   {"cp1256",				"windows-1256"},
   {"cp1257",				"windows-1257"},
   {"cp1258",				"windows-1258"},
-  {"cp437",				"IBM437"},
+  {"cp437",				"cp437"},
   {"cp720",				""},		// not covered
   {"cp737",				"cp737"},	// *
-  {"cp775",				"IBM775"},
-  {"cp850",				"IBM850"},
-  {"cp851",				"IBM851"},
-  {"cp852",				"IBM852"},
-  {"cp855",				"IBM855"},
-  {"cp857",				"IBM857"},
-  {"cp860",				"IBM860"},
-  {"cp861",				"IBM861"},
-  {"cp862",				"IBM862"},
-  {"cp863",				"IBM863"},
-  {"cp864",				"IBM864"},
-  {"cp865",				"IBM865"},
-  {"cp866",				"IBM866"},
+  {"cp775",				"cp775"},
+  {"cp850",				"cp850"},
+  {"cp851",				"cp851"},
+  {"cp852",				"cp852"},
+  {"cp855",				"cp855"},
+  {"cp857",				"cp857"},
+  {"cp860",				"cp860"},
+  {"cp861",				"cp861"},
+  {"cp862",				"cp862"},
+  {"cp863",				"cp863"},
+  {"cp864",				"cp864"},
+  {"cp865",				"cp865"},
+  {"cp866",				"cp866"},
   {"cp866u",				"cp1125"},	// *
-  {"cp869",				"IBM869"},
+  {"cp869",				"cp869"},
   {"cp874",				"cp874"},	// *
   {"cp878",				"KOI8-R"},
-  {"cp932",				"SHIFT_JIS"},
-  {"cp936",				"GB2312"},
-  {"cp949",				"EUC-KR"},
-  {"cp950",				"Big5"},
-  {"csascii",				"ISO-8859-1"},	// alias
+  {"cp932",				"cp932"},	// *
+  {"cp936",				"cp936"},
+  {"cp949",				"cp949"},	// *
+  {"cp950",				"cp950"},	// *
+  {"csascii",				"US-ASCII"},	// alias
   {"csisolatin1",			"ISO-8859-1"},	// alias
   {"ctext",				""},		// --
   {"ctext-no-compositions",		""},		// --
@@ -146,7 +148,7 @@ emacs_to_mime[] = {
   {"euc-cn",				"GB2312"},
   {"euc-japan",				"EUC-JP"},
   {"euc-japan-1990",			"EUC-JP"},
-  {"euc-jisx0213",			""},		// XEmacs?
+  {"euc-jisx0213",			"EUC-JISX0213"},// *, XEmacs
   {"euc-jisx0213-with-esc",		""},		// XEmacs?
   {"euc-jp",				"EUC-JP"},
   {"euc-korea",				"EUC-KR"},
@@ -182,9 +184,9 @@ emacs_to_mime[] = {
   {"iso-2022-jp",			"ISO-2022-JP"},
   {"iso-2022-jp-1978-irv",		"ISO-2022-JP"},
   {"iso-2022-jp-2",			"ISO-2022-JP-2"},
-  {"iso-2022-jp-3",			""},		// XEmacs?
+  {"iso-2022-jp-3",			"ISO-2022-JP-3"},// *, XEmacs
   {"iso-2022-jp-3-compatible",		""},		// XEmacs?
-  {"iso-2022-jp-3-strict",		""},		// XEmacs?
+  {"iso-2022-jp-3-strict",		"ISO-2022-JP-3"}, // *, XEmacs
   {"iso-2022-kr",			"ISO-2022-KR"},
   {"iso-2022-lock",			""},		// XEmacs?
   {"iso-8859-1",			"ISO-8859-1"},
@@ -223,15 +225,15 @@ emacs_to_mime[] = {
   {"japanese-iso-7bit-1978-irv",	"ISO-2022-JP"},
   {"japanese-iso-8bit",			"EUC-JP"},
   {"japanese-iso-8bit-with-esc",	""},		// --
-  {"japanese-euc",			""},		// XEmacs?
+  {"japanese-euc",			"EUC-JP"},	// XEmacs
   {"japanese-shift-jis",		"Shift_JIS"},
   {"japanese-shift-jisx0213",		""},		// XEmacs?
   {"junet",				"ISO-2022-JP"},
-  {"koi8",				"KOI8-R"},
+  {"koi8",				"KOI8-R"},	// not KOI8!
   {"koi8-r",				"KOI8-R"},
   {"koi8-t",				"KOI8-T"},	// *
   {"koi8-u",				"KOI8-U"},
-  {"korean-euc",			""},		// XEmacs?
+  {"korean-euc",			"EUC-KR"},	// XEmacs
   {"korean-iso-7bit-lock",		"ISO-2022-KR"},
   {"korean-iso-8bit",			"EUC-KR"},
   {"korean-iso-8bit-with-esc",		""},		// --
@@ -267,7 +269,7 @@ emacs_to_mime[] = {
   {"raw-text",				""},		// --
   {"ruscii",				"cp1125"},	// *
   {"shift_jis",				"Shift_JIS"},
-  {"shift_jisx0213",			""},		// XEmacs?
+  {"shift_jisx0213",			"Shift_JISX0213"},// *, XEmacs
   {"sjis",				"Shift_JIS"},
   {"tcvn",				"TCVN"},	// *
   {"tcvn-5712",				"TCVN"},	// *
@@ -320,11 +322,14 @@ char *
 emacs2mime(char *emacs_enc)
 {
   int emacs_enc_len = strlen(emacs_enc);
-  if (!strcasecmp(emacs_enc + emacs_enc_len - 4, "-dos"))
+  if (emacs_enc_len > 4
+      && !strcasecmp(emacs_enc + emacs_enc_len - 4, "-dos"))
     emacs_enc[emacs_enc_len - 4] = 0;
-  if (!strcasecmp(emacs_enc + emacs_enc_len - 4, "-mac"))
+  if (emacs_enc_len > 4
+      && !strcasecmp(emacs_enc + emacs_enc_len - 4, "-mac"))
     emacs_enc[emacs_enc_len - 4] = 0;
-  if (!strcasecmp(emacs_enc + emacs_enc_len - 5, "-unix"))
+  if (emacs_enc_len > 5
+      && !strcasecmp(emacs_enc + emacs_enc_len - 5, "-unix"))
     emacs_enc[emacs_enc_len - 5] = 0;
   for (const conversion *table = emacs_to_mime; table->from; table++)
     if (!strcasecmp(emacs_enc, table->from))
@@ -662,6 +667,7 @@ conversion_iconv(FILE *fp, const string &data, char *enc)
     }
     read_start = inbuf + inbytes_left;
   }
+  iconv_close(handle);
   // XXX use ferror?
   limit = (char *)outbuf + BUFSIZ * sizeof (int) - outbytes_left;
   for (int *ptr = outbuf; (char *)ptr < limit; ptr++)
@@ -961,7 +967,12 @@ do_file(const char *filename)
   encoding_string[MAX_VAR_LEN - 1] = 0;
   encoding = encoding_string;
   // Translate from MIME & Emacs encoding names to locale encoding names.
-  encoding = emacs2mime(encoding);
+  encoding = emacs2mime(encoding_string);
+  if (encoding[0] == '\0') {
+    error("encoding `%1' not supported, not a portable encoding",
+          encoding_string);
+    return 0;
+  }
   if (debug)
     fprintf(stderr, "  encoding used: `%s'\n", encoding);
   data = BOM + data;

@@ -1,3 +1,14 @@
+2006-01-01  Bruno Haible  <bruno@clisp.org>
+
+	* src/preproc/preconv/preconv.cpp (emacs_to_mime): Various
+	corrections:
+	  . Don't map ascii to latin-1.
+	  . Don't use IBMxxx encodings but cpxxx for portability.
+	  . Map cp932, cp936, cp949, cp950 to itself.
+	(emacs2mime): Protect calls to strcasecmp.
+	(conversion_iconv): Add missing call to iconv_close.
+	(do_file): Emit error message in case of unsupported encoding.
+
 2005-12-31  Werner LEMBERG  <wl@gnu.org>
 
 	Integrate preconv into the groff binary.  Changes based on a patch

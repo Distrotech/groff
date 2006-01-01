@@ -99,8 +99,8 @@ int main(int argc, char **argv)
 
 void set_location()
 {
-  if(!raw_flag) {
-    if(!tex_flag)
+  if (!raw_flag) {
+    if (!tex_flag)
       printf(".lf %d %s\n", current_lineno, current_filename);
     else
       printf("%% file %s, line %d\n", current_filename, current_lineno);
