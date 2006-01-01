@@ -1006,7 +1006,7 @@ usage(FILE *stream)
   fprintf(stream, "usage: %s [ option ] [ files ]\n"
 		  "\n"
 		  "-d           show debugging messages\n"
-		  "-e encoding  specify inpput encoding\n"
+		  "-e encoding  specify input encoding\n"
 		  "-h           print this message\n"
 		  "-v           print version number\n"
 		  "\n"
