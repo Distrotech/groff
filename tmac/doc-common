@@ -478,6 +478,11 @@
 .ds doc-operating-system-FreeBSD-5.2.1   5.2.1
 .ds doc-operating-system-FreeBSD-5.3     5.3
 .
+.ds doc-operating-system-Darwin-8.0.0 8.0.0
+.ds doc-operating-system-Darwin-8.1.0 8.1.0
+.ds doc-operating-system-Darwin-8.2.0 8.2.0
+.ds doc-operating-system-Darwin-8.3.0 8.3.0
+.
 .de Os
 .  ie "\$1"" \
 .    ds doc-operating-system "\*[doc-default-operating-system]
@@ -512,11 +517,19 @@
 .      el \
 .        tm mdoc warning: .Os: Unknown NetBSD version `\$2' (#\n[.c])
 .  \}\}
+.  el \{ .ie "\$1"Darwin" \{\
+.    ds doc-operating-system Darwin
+.    if \A\$2 \{\
+.      ie d doc-operating-system-Darwin-\$2 \
+.        as doc-operating-system \~\*[doc-operating-system-Darwin-\$2]
+.      el \
+.        tm mdoc warning: .Os: Unknown Darwin version `\$2' (#\n[.c])
+.  \}\}
 .  el \{\
 .    ds doc-operating-system \$1
 .    if !"\$2"" \
 .      as doc-operating-system " \$2
-.  \}\}\}\}\}
+.  \}\}\}\}\}\}
 ..
 .
 .
