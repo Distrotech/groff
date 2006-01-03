@@ -1,3 +1,31 @@
+2006-01-03  Bruno Haible  <bruno@clisp.org>
+
+	* m4/groff.m4: Renamed from aclocal.m4.
+	* m4/codeset.m4: New file, from gnulib.
+	* m4/iconv.m4: New file, from gnulib.
+	* m4/lib-ld.m4, m4/lib-link.m4, m4/lib-prefix.m4: New files, from
+	gnulib.
+	* config.rpath: New file, from gnulib.
+	* config.guess, config.sub: New files, from gnulib.
+	* Makefile.sub (M4MACROS): New variable.
+	(configure): Fix typo.
+	(aclocal.m4): New rule.
+	(stamp-h.in): Depend on aclocal.m4.
+	* configure.ac: Invoke AM_ICONV and AM_LANGINFO_CODESET.
+	* Makefile.in (LIBICONV): New variable.
+	(MDEFINES): Pass it to recursive makes.
+	* src/preproc/preconv/preconv.cpp: Use HAVE_LANGINFO_CODESET and
+	HAVE_ICONV instead of I18N macro.
+	* src/preproc/preconv/Makefile.sub (EXTRA_LDFLAGS): New variable.
+
+	* aclocal.m4, configure, src/include/config.hin: (Re)generated.
+
+2006-01-03  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/Makefile.in (webpage.html): Simplify.
+	* doc/Makefile.sub (webpage.html): Synchronize with doc/Makefile.in.
+	* doc/webpage.ms, tmac/groff_www.man, tmac/www.tmac: Minor updates.
+
 2006-01-01  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/doc-common (Os): Add some Darwin versions.
@@ -100,21 +128,21 @@
 
 2005-11-28  Gaius Mulley  <gaius@glam.ac.uk>
 
-	* doc/Makefile.in: separate rule for webpage.html so that extra
-	  command line options can be passed to grohtml.
-	* doc/groff.css: changed all margins to 0%.
-	* doc/webpage.ms: now uses new macros ALN, LNS and LNE
-	  so that left navigation is exploited. Also updated webpage to
-	  contain new sections on licences, mailing lists, cvs/ftp
-	  access, groff dependencies and bug reports.
-	* tmac/groff_www.man: documented the new macros ALN, LNS and LNE.
-	* tmac/www.tmac: implemented the new macros ALN, LNS and LNE.
+	* doc/Makefile.in: Separate rule for webpage.html so that extra
+	command line options can be passed to grohtml.
+	* doc/groff.css: Change all margins to 0%.
+	* doc/webpage.ms: Now use new macros ALN, LNS, and LNE so that left
+	navigation is exploited.  Also update webpage to contain new
+	sections on licences, mailing lists, cvs/ftp access, groff
+	dependencies, and bug reports.
+	* tmac/groff_www.man: Document the new macros ALN, LNS, and LNE.
+	* tmac/www.tmac: Implement the new macros ALN, LNS, and LNE.
 	
 2005-11-25  Gaius Mulley  <gaius@glam.ac.uk>
 
 	* src/devices/grohtml/post-html.cpp
 	(html_printer::do_file_components): Add fputs calls to emit the
-	head contents and shutdown the head tag whenever a new file
+	head contents and shut down the head tag whenever a new file
 	component is generated.
 
 2005-11-22  Gaius Mulley  <gaius@glam.ac.uk>

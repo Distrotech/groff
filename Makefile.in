@@ -278,8 +278,10 @@ make_install_pdfdoc=@make_install_pdfdoc@
 # -DHAVE_FMOD			if you have fmod()
 # -DHAVE_GETCWD			if you have getcwd()
 # -DHAVE_GETTIMEOFDAY		if you have gettimeofday()
+# -DHAVE_ICONV			if you have iconv()
 # -DHAVE_ISATTY			if you have isatty()
 # -DHAVE_KILL			if you have kill()
+# -DHAVE_LANGINFO_CODESET	if you have nl_langinfo()
 # -DHAVE_MKSTEMP		if you have mkstemp()
 # -DHAVE_MMAP			if you have mmap()
 # -DHAVE_PUTENV			if you have putenv()
@@ -324,6 +326,7 @@ make_install_pdfdoc=@make_install_pdfdoc@
 # -DLONG_FOR_TIME_T		if localtime() takes a long * not a time_t *
 # -DHAVE_STRUCT_EXCEPTION	if <math.h> defines struct exception
 # -DRETSIGTYPE=int		if signal handlers return int not void	
+# -DICONV_CONST=const		if declaration of iconv() needs const
 # -DIS_EBCDIC_HOST		if the host's encoding is EBCDIC
 # -DPAGE=A4			if the the printer's page size is A4
 # -DGHOSTSCRIPT=gs		the name (and directory if required) of the
@@ -368,6 +371,7 @@ OBJEXT=@OBJEXT@
 LIBEXT=`case $(OBJEXT) in obj) echo lib;; *) echo a;; esac`
 LIBS=@LIBS@
 LIBM=@LIBM@
+LIBICONV=@LIBICONV@
 RANLIB=@RANLIB@
 INSTALL=@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
@@ -422,6 +426,7 @@ MDEFINES= \
   "INSTALL_SCRIPT=$(INSTALL_SCRIPT)" \
   "LDFLAGS=$(LDFLAGS)" \
   "LIBEXT=$(LIBEXT)" \
+  "LIBICONV=$(LIBICONV)" \
   "LIBM=$(LIBM)" \
   "LIBOBJS=$(LIBOBJS)" \
   "LIBS=$(LIBS)" \

@@ -12,17 +12,26 @@ DISTCLEANFILES=\
   groff.log
 CLEANADD=Makefile.cfg conftest*
 
+M4MACROS = \
+  $(srcdir)/m4/groff.m4 \
+  $(srcdir)/m4/codeset.m4 \
+  $(srcdir)/m4/iconv.m4 \
+  $(srcdir)/m4/lib-link.m4 $(srcdir)/m4/lib-ld.m4 $(srcdir)/m4/lib-prefix.m4
+
 distfiles: configure
 
-$(scrdir)/configure: configure.ac aclocal.m4
+$(srcdir)/configure: configure.ac $(srcdir)/aclocal.m4
 	cd $(srcdir) && autoconf
+
+$(srcdir)/aclocal.m4: $(M4MACROS)
+	cd $(srcdir) && aclocal -I m4
 
 config.status: configure
 	$(SHELL) config.status --recheck
 
 # autoheader might not change config.hin, so touch a stamp file.
 $(srcdir)/config.hin: stamp-h.in
-$(srcdir)/stamp-h.in: configure.ac aclocal.m4
+$(srcdir)/stamp-h.in: configure.ac $(srcdir)/aclocal.m4
 	cd $(srcdir) && autoheader
 	echo timestamp > $(srcdir)/stamp-h.in
      

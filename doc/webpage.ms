@@ -51,8 +51,10 @@ Home of Groff (GNU Troff).
 .DC T HIS mydarkred
 is the home page for groff (\c
 .URL http://\:www.gnu.org/ GNU
-Troff).  Groff is a software typesetting package which reads plain
-text mixed with formatting commands and produces formatted output.
+Troff).
+.
+Groff is a software typesetting package which reads plain text mixed with
+formatting commands and produces formatted output.
 .
 The source code of the currently released versions of groff is
 available at the 
@@ -91,7 +93,9 @@ Technical issues lead:
 The image at the top has been contributed by Imogen Mulley (born 1991),
 based on a similar picture found on the
 .URL http://www.gnu.org "GNU server" .
+.
 .HR
+.
 .SH
 Licence
 .LP
@@ -144,13 +148,13 @@ executing the commands
 .nf
 .ft C
 cd ~/cvswork
-CVS_RSH=ssh; export CVS_RSH
-cvs -d:ext:anoncvs@savannah.gnu.org/cvsroot/groff -z5 co groff
+cvs -d:pserver:anoncvs@savannah.gnu.org:/cvsroot/groff login
+cvs -d:pserver:anoncvs@savannah.gnu.org:/cvsroot/groff -z5 co groff
 .ft P
 .fi
 .in
 
-(Note that you need an SSH client for security reasons.)
+When asked for a password during the `login' call, simply press Enter.
 
 This will create a subdirectory, ~/cvswork/groff, with a `checked out'
 copy of the CVS repository.
@@ -161,7 +165,7 @@ achieved, at any later time by invoking the commands
 .nf
 .ft C
 cd ~/cvswork/groff
-CVS_RSH=ssh cvs -z5 update -dP
+cvs -z5 update -dP
 .ft P
 .fi
 .in
@@ -258,8 +262,9 @@ for general discussion of groff
 a read-only list showing commitments to the CVS repository
 .ULE
 
-You can post mails directly to the `bug-groff' list, without subscribing;
-to post mails to the `groff' list you must subscribe to it.
+You can post mails directly to the `bug-groff' list, without subscribing
+(this fact makes the list contain many spam files); to post mails to the
+`groff' list you must subscribe to it.
 
 To subscribe, send e-mail to \[la]list\[ra]-request@\[la]domain\[ra]
 (example:
@@ -282,7 +287,8 @@ postings to the corresponding mailing list.
 .SH
 NEWS VERSION 1.19.2
 .LP
-.SH 2 troff
+.SH 2
+troff
 
 .ULS
 .LI

@@ -89,6 +89,7 @@ AC_C_BIGENDIAN
 # checks for libraries
 GROFF_LIBC
 GROFF_LIBM
+AM_ICONV
 
 # checks for functions
 AC_FUNC_MMAP
@@ -102,6 +103,7 @@ LIBS="$saved_libs"
 AC_CHECK_FUNCS([gettimeofday isatty kill rename setlocale strsep])
 GROFF_MKSTEMP
 AC_CHECK_DECLS([sys_siglist])
+AM_LANGINFO_CODESET
 
 # checks for compiler characteristics
 GROFF_ARRAY_DELETE

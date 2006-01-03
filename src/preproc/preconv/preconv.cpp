@@ -19,8 +19,6 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#define I18N
-
 #include "lib.h"
 
 #include <assert.h>
@@ -31,16 +29,20 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include "nonposix.h"
 #include "stringclass.h"
 
-#ifdef I18N
-# include <locale.h>
+#include <locale.h>
+
+#if HAVE_LANGINFO_CODESET
 # include <langinfo.h>
+#endif
+
+#if HAVE_ICONV
 # include <iconv.h>
 # ifdef WORDS_BIGENDIAN
 #  define UNICODE "UTF-32BE"
 # else
 #  define UNICODE "UTF-32LE"
 # endif
-#endif /* I18N */
+#endif
 
 #define MAX_VAR_LEN 100
 
@@ -589,7 +591,7 @@ conversion_cp1047(FILE *fp, const string &data)
 }
 
 // Locale-sensible conversion.
-#ifdef I18N
+#if HAVE_ICONV
 void
 conversion_iconv(FILE *fp, const string &data, char *enc)
 {
@@ -673,7 +675,7 @@ conversion_iconv(FILE *fp, const string &data, char *enc)
   for (int *ptr = outbuf; (char *)ptr < limit; ptr++)
     unicode_entity(*ptr);
 }
-#endif /* I18N */
+#endif /* HAVE_ICONV */
 
 // ---------------------------------------------------------
 // Handle Byte Order Mark.
@@ -985,7 +987,7 @@ do_file(const char *filename)
   else if (!strcasecmp(encoding, "cp1047"))
     conversion_cp1047(fp, data);
   else {
-#ifdef I18N
+#if HAVE_ICONV
     conversion_iconv(fp, data, encoding);
 #else
     error("encoding system `%1' not supported", encoding);
@@ -1023,8 +1025,8 @@ main(int argc, char **argv)
   // Determine the default encoding.  This must be done before
   // getopt() is called since the usage message shows the default
   // encoding.
-#ifdef I18N
   setlocale(LC_ALL, "");
+#if HAVE_LANGINFO_CODESET
   char *locale = setlocale(LC_CTYPE, NULL);
   if (!locale || !strcmp(locale, "C") || !strcmp(locale, "POSIX"))
     default_encoding = "latin1";
@@ -1035,7 +1037,7 @@ main(int argc, char **argv)
   }
 #else
   default_encoding = "latin1";
-#endif /* I18N */
+#endif /* HAVE_LANGINFO_CODESET */
 
   program_name = argv[0];
   int opt;
