@@ -51,7 +51,8 @@ extern "C" const char *Version_string;
 const char *default_encoding;
 char user_encoding[MAX_VAR_LEN];
 char encoding_string[MAX_VAR_LEN];
-int debug = 0;
+int debug_flag = 0;
+int raw_flag = 0;
 
 struct conversion {
   const char *from;
@@ -559,7 +560,7 @@ utf8::add(unsigned char c)
 void
 utf8::invalid()
 {
-  if (debug && invalid_warning) {
+  if (debug_flag && invalid_warning) {
     fprintf(stderr, "  invalid byte(s) found in input stream --\n"
 		    "  each such sequence replaced with 0xFFFD\n");
     invalid_warning = 0;
@@ -571,7 +572,7 @@ utf8::invalid()
 void
 utf8::incomplete()
 {
-  if (debug && incomplete_warning) {
+  if (debug_flag && incomplete_warning) {
     fprintf(stderr, "  incomplete sequence(s) found in input stream --\n"
 		    "  each such sequence replaced with 0xFFFD\n");
     incomplete_warning = 0;
@@ -758,11 +759,11 @@ get_BOM(FILE *fp, string &BOM, string &data)
     const char *str;
     const char *name;
   } BOM_table[] = {
-    {4, "\x00\x00\xFE\xFF", "UTF-32BE"},
-    {4, "\xFF\xFE\x00\x00", "UTF-32LE"},
+    {4, "\x00\x00\xFE\xFF", "UTF-32"},
+    {4, "\xFF\xFE\x00\x00", "UTF-32"},
     {3, "\xEF\xBB\xBF", "UTF-8"},
-    {2, "\xFE\xFF", "UTF-16BE"},
-    {2, "\xFF\xFE", "UTF-16LE"},
+    {2, "\xFE\xFF", "UTF-16"},
+    {2, "\xFF\xFE", "UTF-16"},
   };
   const int BOM_table_len = sizeof (BOM_table) / sizeof (BOM_table[0]);
   char BOM_string[4];
@@ -817,7 +818,7 @@ get_tag_lines(FILE *fp, string &data)
   int emit_warning = 1;
   for (int lines = newline_count; lines < 2; lines++) {
     while ((c = getc(fp)) != EOF) {
-      if (c == '\0' && debug && emit_warning) {
+      if (c == '\0' && debug_flag && emit_warning) {
 	fprintf(stderr,
 		"  null byte(s) found in input stream --\n"
 		"  search for coding tag might return false result\n");
@@ -992,7 +993,7 @@ do_file(const char *filename)
   FILE *fp;
   string BOM, data;
   if (strcmp(filename, "-")) {
-    if (debug)
+    if (debug_flag)
       fprintf(stderr, "file `%s':\n", filename);
     fp = fopen(filename, FOPEN_RB);
     if (!fp) {
@@ -1001,7 +1002,7 @@ do_file(const char *filename)
     }
   }
   else {
-    if (debug)
+    if (debug_flag)
       fprintf(stderr, "standard input:\n");
     SET_BINARY(fileno(stdin));
     fp = stdin;
@@ -1010,7 +1011,7 @@ do_file(const char *filename)
   // Determine the encoding.
   char *encoding;
   if (user_encoding[0]) {
-    if (debug) {
+    if (debug_flag) {
       fprintf(stderr, "  user-specified encoding `%s', "
 		      "no search for coding tag\n",
 		      user_encoding);
@@ -1021,7 +1022,7 @@ do_file(const char *filename)
     encoding = (char *)user_encoding;
   }
   else if (BOM_encoding) {
-    if (debug)
+    if (debug_flag)
       fprintf(stderr, "  found BOM, no search for coding tag\n");
     encoding = (char *)BOM_encoding;
   }
@@ -1029,12 +1030,12 @@ do_file(const char *filename)
     // `check_coding_tag' returns a pointer to a static array (or NULL).
     char *file_encoding = check_coding_tag(fp, data);
     if (!file_encoding) {
-      if (debug)
+      if (debug_flag)
 	fprintf(stderr, "  no file encoding\n");
       file_encoding = (char *)default_encoding;
     }
     else
-      if (debug)
+      if (debug_flag)
 	fprintf(stderr, "  file encoding: `%s'\n", file_encoding);
     encoding = file_encoding;
   }
@@ -1048,9 +1049,11 @@ do_file(const char *filename)
           encoding_string);
     return 0;
   }
-  if (debug)
+  if (debug_flag)
     fprintf(stderr, "  encoding used: `%s'\n", encoding);
   data = BOM + data;
+  if (!raw_flag)
+    printf(".lf 1 %s\n", filename);
   int success = 1;
   // Call converter (converters write to stdout).
   if (!strcasecmp(encoding, "ISO-8859-1"))
@@ -1083,6 +1086,7 @@ usage(FILE *stream)
 		  "-d           show debugging messages\n"
 		  "-e encoding  specify input encoding\n"
 		  "-h           print this message\n"
+		  "-r           don't add .lf requests\n"
 		  "-v           print version number\n"
 		  "\n"
 		  "The default encoding is `%s'.\n",
@@ -1120,7 +1124,8 @@ main(int argc, char **argv)
     { NULL, 0, 0, 0 }
   };
   // Parse the command line options.
-  while ((opt = getopt_long(argc, argv, "de:hv", long_options, NULL)) != EOF)
+  while ((opt = getopt_long(argc, argv,
+			    "de:hrv", long_options, NULL)) != EOF)
     switch (opt) {
     case 'v':
       printf("GNU preconv (groff) version %s %s iconv support\n",
@@ -1134,7 +1139,7 @@ main(int argc, char **argv)
       exit(0);
       break;
     case 'd':
-      debug = 1;
+      debug_flag = 1;
       break;
     case 'e':
       if (optarg) {
@@ -1143,6 +1148,9 @@ main(int argc, char **argv)
       }
       else
 	user_encoding[0] = 0;
+      break;
+    case 'r':
+      raw_flag = 1;
       break;
     case CHAR_MAX + 1:	// --help
       usage(stdout);
@@ -1156,7 +1164,7 @@ main(int argc, char **argv)
       assert(0);
     }
   int nbad = 0;
-  if (debug)
+  if (debug_flag)
     fprintf(stderr, "default encoding: `%s'\n", default_encoding);
   if (optind >= argc)
     nbad += !do_file("-");
