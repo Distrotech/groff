@@ -1051,20 +1051,19 @@ do_file(const char *filename)
   }
   if (debug_flag)
     fprintf(stderr, "  encoding used: `%s'\n", encoding);
-  data = BOM + data;
   if (!raw_flag)
     printf(".lf 1 %s\n", filename);
   int success = 1;
   // Call converter (converters write to stdout).
   if (!strcasecmp(encoding, "ISO-8859-1"))
-    conversion_latin1(fp, data);
+    conversion_latin1(fp, BOM + data);
   else if (!strcasecmp(encoding, "UTF-8"))
     conversion_utf8(fp, data);
   else if (!strcasecmp(encoding, "cp1047"))
-    conversion_cp1047(fp, data);
+    conversion_cp1047(fp, BOM + data);
   else {
 #if HAVE_ICONV
-    conversion_iconv(fp, data, encoding);
+    conversion_iconv(fp, BOM + data, encoding);
 #else
     error("encoding system `%1' not supported", encoding);
     success = 0;
