@@ -1,3 +1,17 @@
+2006-01-04  Werner LEMBERG  <wl@gnu.org>
+
+	* src/preproc/preconv/preconv.cpp (emacs_to_mime): As suggested by
+	Bruno, comment out most encodings to support only a small set of
+	coding tags, thus reducing potential problems with legacy encodings
+	and character sets in the future.
+	Add many XEmacs coding tags (now commented out).
+	Add `cp1047'.
+	(check_encoding_tag): Renamed to...
+	(check_coding_tag): This.
+	(get_BOM): Return encoding as specified by BOM.
+	Test for UTF32-LE too.
+	(do_file): Don't check for coding tag if a BOM has been found.
+
 2006-01-03  Bruno Haible  <bruno@clisp.org>
 
 	* m4/groff.m4: Renamed from aclocal.m4.

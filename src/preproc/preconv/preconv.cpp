@@ -66,11 +66,11 @@ struct conversion {
 // names (which also work with the portable GNU libiconv package).  They
 // are marked with `*'.
 //
-// Encodings specific to XEmacs are marked as such; no mark means that it
-// is used by Emacs.
+// Encodings specific to XEmacs and Emacs are marked as such; no mark means
+// that they are used by both Emacs and XEmacs.
 //
-// Encodings marked with `--' are special to Emacs or other applications and
-// shouldn't be used for data exchange.
+// Encodings marked with `--' are special to Emacs, XEmacs, or other
+// applications and shouldn't be used for data exchange.
 //
 // `Not covered' means that the encoding can be handled neither by GNU iconv
 // nor by libiconv, or just one of them has support for it.
@@ -80,240 +80,292 @@ struct conversion {
 //
 // Finally, we add all aliases of GNU iconv for `ascii', `latin1', and
 // `utf8' to catch those encoding names before iconv is called.
+//
+// Note that most entries are commented out -- only a small, (rather)
+// reliable and stable subset of encodings is recognized (for coding tags)
+// which are still in greater use today (January 2006).  Most notably, all
+// Windows-specific encodings are not selected because they lack stability:
+// Microsoft has changed the mappings instead of creating new versions.
+//
+// Please contact the groff list if you find the selection inadequate.
 
 static const conversion
 emacs_to_mime[] = {
-  {"alternativnyj",			""},		// ?
-  {"arabic-iso-8bit",			"ISO-8859-6"},
-  {"ascii",				"US-ASCII"},
+  {"ascii",				"US-ASCII"},	// Emacs
   {"big5",				"Big5"},
-  {"binary",				""},		// --
-  {"chinese-big5",			"Big5"},
+  {"chinese-big5",			"Big5"},	// Emacs
   {"chinese-euc",			"GB2312"},	// XEmacs
-  {"chinese-hz",			"HZ-GB-2312"},
-  {"chinese-iso-7bit",			"ISO-2022-CN"},
-  {"chinese-iso-8bit",			"GB2312"},
-  {"chinese-iso-8bit-with-esc",		""},		// --
+  {"chinese-iso-8bit",			"GB2312"},	// Emacs
   {"cn-big5",				"Big5"},
-  {"cn-gb",				"GB2312"},
+  {"cn-gb",				"GB2312"},	// Emacs
   {"cn-gb-2312",			"GB2312"},
-  {"compound-text",			""},		// --
-  {"compound-text-with-extension",	""},		// --
-  {"cp1125",				"cp1125"},	// *
-  {"cp1250",				"windows-1250"},
-  {"cp1251",				"windows-1251"},
-  {"cp1252",				"windows-1252"},
-  {"cp1253",				"windows-1253"},
-  {"cp1254",				"windows-1254"},
-  {"cp1255",				"windows-1255"},
-  {"cp1256",				"windows-1256"},
-  {"cp1257",				"windows-1257"},
-  {"cp1258",				"windows-1258"},
-  {"cp437",				"cp437"},
-  {"cp720",				""},		// not covered
-  {"cp737",				"cp737"},	// *
-  {"cp775",				"cp775"},
-  {"cp850",				"cp850"},
-  {"cp851",				"cp851"},
-  {"cp852",				"cp852"},
-  {"cp855",				"cp855"},
-  {"cp857",				"cp857"},
-  {"cp860",				"cp860"},
-  {"cp861",				"cp861"},
-  {"cp862",				"cp862"},
-  {"cp863",				"cp863"},
-  {"cp864",				"cp864"},
-  {"cp865",				"cp865"},
-  {"cp866",				"cp866"},
-  {"cp866u",				"cp1125"},	// *
-  {"cp869",				"cp869"},
-  {"cp874",				"cp874"},	// *
-  {"cp878",				"KOI8-R"},
-  {"cp932",				"cp932"},	// *
-  {"cp936",				"cp936"},
-  {"cp949",				"cp949"},	// *
-  {"cp950",				"cp950"},	// *
+  {"cp878",				"KOI8-R"},	// Emacs
+  {"cp1047",				"CP1047"},	// EBCDIC
   {"csascii",				"US-ASCII"},	// alias
   {"csisolatin1",			"ISO-8859-1"},	// alias
-  {"ctext",				""},		// --
-  {"ctext-no-compositions",		""},		// --
-  {"ctext-with-extensions",		""},		// --
-  {"cyrillic-alternativnyj",		""},		// ?
-  {"cyrillic-iso-8bit",			"ISO-8859-5"},
-  {"cyrillic-iso-8bit-with-esc",	""},		// --
-  {"cyrillic-koi8",			"KOI8-R"},
-  {"cyrillic-koi8-t",			"KOI8-T"},	// *
-  {"devanagari",			""},		// not covered
-  {"dos",				""},		// --
-  {"emacs-mule",			""},		// --
-  {"euc-china",				"GB2312"},
-  {"euc-cn",				"GB2312"},
+  {"cyrillic-iso-8bit",			"ISO-8859-5"},	// Emacs
+  {"cyrillic-koi8",			"KOI8-R"},	// not KOI8!, Emacs
+  {"euc-china",				"GB2312"},	// Emacs
+  {"euc-cn",				"GB2312"},	// Emacs
   {"euc-japan",				"EUC-JP"},
-  {"euc-japan-1990",			"EUC-JP"},
-  {"euc-jisx0213",			"EUC-JISX0213"},// *, XEmacs
-  {"euc-jisx0213-with-esc",		""},		// XEmacs?
+  {"euc-japan-1990",			"EUC-JP"},	// Emacs
   {"euc-jp",				"EUC-JP"},
   {"euc-korea",				"EUC-KR"},
   {"euc-kr",				"EUC-KR"},
-  {"euc-taiwan",			"EUC-TW"},	// *
-  {"euc-tw",				"EUC-TW"},	// *
   {"gb2312",				"GB2312"},
-  {"georgian-ps",			"GEORGIAN-PS"},	// *
   {"greek-iso-8bit",			"ISO-8859-7"},
-  {"greek-iso-8bit-with-esc",		""},		// --
-  {"hebrew-iso-8bit",			"ISO-8859-8"},
-  {"hebrew-iso-8bit-with-esc",		""},		// --
-  {"hz",				"HZ-GB-2312"},
-  {"hz-gb-2312",			"HZ-GB-2312"},
-  {"in-is13194",			""},		// not covered
-  {"in-is13194-with-esc",		""},		// --
   {"iso-10646/utf8",			"UTF-8"},	// alias
   {"iso-10646/utf-8",			"UTF-8"},	// alias
-  {"iso-2022-7",			""},		// XEmacs?
-  {"iso-2022-7bit",			""},		// --
-  {"iso-2022-7bit-lock",		""},		// --
-  {"iso-2022-7bit-lock-ss2",		""},		// --
-  {"iso-2022-7bit-ss2",			""},		// --
-  {"iso-2022-8",			""},		// XEmacs?
-  {"iso-2022-8bit",			""},		// XEmacs?
-  {"iso-2022-8bit-lock",		""},		// XEmacs?
-  {"iso-2022-8bit-lock-ss2",		""},		// XEmacs?
-  {"iso-2022-8bit-ss2",			""},		// --
-  {"iso-2022-cjk",			""},		// --
-  {"iso-2022-cn",			"ISO-2022-CN"},
-  {"iso-2022-cn-ext",			"ISO-2022-CN-EXT"},
-  {"iso-2022-int-1",			""},		// --
-  {"iso-2022-jp",			"ISO-2022-JP"},
-  {"iso-2022-jp-1978-irv",		"ISO-2022-JP"},
-  {"iso-2022-jp-2",			"ISO-2022-JP-2"},
-  {"iso-2022-jp-3",			"ISO-2022-JP-3"},// *, XEmacs
-  {"iso-2022-jp-3-compatible",		""},		// XEmacs?
-  {"iso-2022-jp-3-strict",		"ISO-2022-JP-3"}, // *, XEmacs
-  {"iso-2022-kr",			"ISO-2022-KR"},
-  {"iso-2022-lock",			""},		// XEmacs?
   {"iso-8859-1",			"ISO-8859-1"},
-  {"iso-8859-10",			"ISO-8859-10"},
-  {"iso-8859-11",			"ISO-8859-11"},	// *
-  {"iso-8859-13",			"ISO-8859-13"},
-  {"iso-8859-14",			"ISO-8859-14"},
+  {"iso-8859-13",			"ISO-8859-13"},	// Emacs
   {"iso-8859-15",			"ISO-8859-15"},
-  {"iso-8859-16",			"ISO-8859-16"},
   {"iso-8859-2",			"ISO-8859-2"},
-  {"iso-8859-3",			"ISO-8859-3"},
-  {"iso-8859-4",			"ISO-8859-4"},
   {"iso-8859-5",			"ISO-8859-5"},
-  {"iso-8859-6",			"ISO-8859-6"},
   {"iso-8859-7",			"ISO-8859-7"},
-  {"iso-8859-8",			"ISO-8859-8"},
-  {"iso-8859-8-e",			"ISO-8859-8"},
-  {"iso-8859-8-i",			"ISO-8859-8"},
   {"iso-8859-9",			"ISO-8859-9"},
   {"iso-latin-1",			"ISO-8859-1"},
-  {"iso-latin-10",			"ISO-8859-16"},
-  {"iso-latin-1-with-esc",		""},		// --
-  {"iso-latin-2",			"ISO-8859-2"},
-  {"iso-latin-2-with-esc",		""},		// --
-  {"iso-latin-3",			"ISO-8859-3"},
-  {"iso-latin-3-with-esc",		""},		// --
-  {"iso-latin-4",			"ISO-8859-4"},
-  {"iso-latin-4-with-esc",		""},		// --
-  {"iso-latin-5",			"ISO-8859-9"},
-  {"iso-latin-5-with-esc",		""},		// --
-  {"iso-latin-6",			"ISO-8859-10"},
-  {"iso-latin-7",			"ISO-8859-13"},
-  {"iso-latin-8",			"ISO-8859-14"},
-  {"iso-latin-9",			"ISO-8859-15"},
-  {"iso-safe",				""},		// --
-  {"japanese-iso-7bit-1978-irv",	"ISO-2022-JP"},
-  {"japanese-iso-8bit",			"EUC-JP"},
-  {"japanese-iso-8bit-with-esc",	""},		// --
+  {"iso-latin-2",			"ISO-8859-2"},	// Emacs
+  {"iso-latin-5",			"ISO-8859-9"},	// Emacs
+  {"iso-latin-7",			"ISO-8859-13"},	// Emacs
+  {"iso-latin-9",			"ISO-8859-15"},	// Emacs
+  {"japanese-iso-8bit",			"EUC-JP"},	// Emacs
   {"japanese-euc",			"EUC-JP"},	// XEmacs
-  {"japanese-shift-jis",		"Shift_JIS"},
-  {"japanese-shift-jisx0213",		""},		// XEmacs?
-  {"junet",				"ISO-2022-JP"},
-  {"koi8",				"KOI8-R"},	// not KOI8!
+  {"jis8",				"EUC-JP"},	// XEmacs
+  {"koi8",				"KOI8-R"},	// not KOI8!, Emacs
   {"koi8-r",				"KOI8-R"},
-  {"koi8-t",				"KOI8-T"},	// *
-  {"koi8-u",				"KOI8-U"},
   {"korean-euc",			"EUC-KR"},	// XEmacs
-  {"korean-iso-7bit-lock",		"ISO-2022-KR"},
-  {"korean-iso-8bit",			"EUC-KR"},
-  {"korean-iso-8bit-with-esc",		""},		// --
-  {"lao",				""},		// not covered
-  {"lao-with-esc",			""},		// --
+  {"korean-iso-8bit",			"EUC-KR"},	// Emacs
   {"latin1",				"ISO-8859-1"},  // alias
-  {"latin-0",				"ISO-8859-15"},
-  {"latin-1",				"ISO-8859-1"},
-  {"latin-10",				"ISO-8859-16"},
-  {"latin-2",				"ISO-8859-2"},
-  {"latin-3",				"ISO-8859-3"},
-  {"latin-4",				"ISO-8859-4"},
-  {"latin-5",				"ISO-8859-9"},
-  {"latin-6",				"ISO-8859-10"},
-  {"latin-7",				"ISO-8859-13"},
-  {"latin-8",				"ISO-8859-14"},
-  {"latin-9",				"ISO-8859-15"},
-  {"mac",				""},		// --
-  {"mac-roman",				"MACINTOSH"},
-  {"mik",				""},		// not covered
-  {"mule-utf-16",			"UTF-16"},
-  {"mule-utf-16be",			"UTF-16BE"},
-  {"mule-utf-16-be",			"UTF-16BE"},
-  {"mule-utf-16be-with-signature",	"UTF-16"},	// not UTF-16BE
-  {"mule-utf-16le",			"UTF-16LE"},
-  {"mule-utf-16-le",			"UTF-16LE"},
-  {"mule-utf-16le-with-signature",	"UTF-16"},	// not UTF-16LE
-  {"mule-utf-8",			"UTF-8"},
-  {"next",				"NEXTSTEP"},	// *
-  {"no-conversion",			""},		// --
-  {"old-jis",				"ISO-2022-JP"},
-  {"pt154",				"PT154"},
-  {"raw-text",				""},		// --
-  {"ruscii",				"cp1125"},	// *
-  {"shift_jis",				"Shift_JIS"},
-  {"shift_jisx0213",			"Shift_JISX0213"},// *, XEmacs
-  {"sjis",				"Shift_JIS"},
-  {"tcvn",				"TCVN"},	// *
-  {"tcvn-5712",				"TCVN"},	// *
-  {"thai-tis620",			"TIS-620"},
-  {"thai-tis620-with-esc",		""},		// --
-  {"th-tis620",				"TIS-620"},
-  {"tibetan",				""},		// not covered
-  {"tibetan-iso-8bit",			""},		// not covered
-  {"tibetan-iso-8bit-with-esc",		""},		// --
-  {"tis-620",				"TIS-620"},
-  {"tis620",				"TIS-620"},
-  {"undecided",				""},		// --
-  {"unix",				""},		// --
-  {"us-ascii",				"US-ASCII"},
+  {"latin-0",				"ISO-8859-15"},	// Emacs
+  {"latin-1",				"ISO-8859-1"},	// Emacs
+  {"latin-2",				"ISO-8859-2"},	// Emacs
+  {"latin-5",				"ISO-8859-9"},	// Emacs
+  {"latin-7",				"ISO-8859-13"},	// Emacs
+  {"latin-9",				"ISO-8859-15"},	// Emacs
+  {"mule-utf-16",			"UTF-16"},	// Emacs
+  {"mule-utf-16be",			"UTF-16BE"},	// Emacs
+  {"mule-utf-16-be",			"UTF-16BE"},	// Emacs
+  {"mule-utf-16be-with-signature",	"UTF-16"},	// Emacs, not UTF-16BE
+  {"mule-utf-16le",			"UTF-16LE"},	// Emacs
+  {"mule-utf-16-le",			"UTF-16LE"},	// Emacs
+  {"mule-utf-16le-with-signature",	"UTF-16"},	// Emacs, not UTF-16LE
+  {"mule-utf-8",			"UTF-8"},	// Emacs
+  {"us-ascii",				"US-ASCII"},	// Emacs
   {"utf8",				"UTF-8"},	// alias
-  {"utf-16",				"UTF-16"},
-  {"utf-16-be",				"UTF-16BE"},
-  {"utf-16-be-with-signature",		"UTF-16"},	// not UTF-16BE
-  {"utf-16-le",				"UTF-16LE"},
-  {"utf-16-le-with-signature",		"UTF-16"},	// not UTF-16LE
-  {"utf-7",				"UTF-7"},
-  {"utf-7-safe",			""},		// XEmacs?
-  {"utf-8",				"UTF-8"},
-  {"utf-8-ws",				"UTF-8"},	// XEmacs?
-  {"vietnamese-tcvn",			"TCVN"},	// *
-  {"vietnamese-viqr",			"VIQR"},	// not covered
-  {"vietnamese-viscii",			"VISCII"},
-  {"vietnamese-vscii",			"VISCII"},
-  {"viqr",				"VIQR"},	// not covered
-  {"viscii",				"VISCII"},
-  {"vscii",				""},		// not covered
-  {"windows-1250",			"windows-1250"},
-  {"windows-1251",			"windows-1251"},
-  {"windows-1252",			"windows-1252"},
-  {"windows-1253",			"windows-1253"},
-  {"windows-1254",			"windows-1254"},
-  {"windows-1255",			"windows-1255"},
-  {"windows-1256",			"windows-1256"},
-  {"windows-1257",			"windows-1257"},
-  {"windows-1258",			"windows-1258"},
-  {"x-ctext",				""},		// --
-  {"x-ctext-with-extensions",		""},		// --
+  {"utf-16",				"UTF-16"},	// Emacs
+  {"utf-16-be",				"UTF-16BE"},	// Emacs
+  {"utf-16-be-with-signature",		"UTF-16"},	// Emacs, not UTF-16BE
+  {"utf-16-le",				"UTF-16LE"},	// Emacs
+  {"utf-16-le-with-signature",		"UTF-16"},	// Emacs, not UTF-16LE
+  {"utf-8",				"UTF-8"},	// Emacs
+
+//  {"alternativnyj",			""},		// ?
+//  {"arabic-iso-8bit",			"ISO-8859-6"},	// Emacs
+//  {"binary",				""},		// --
+//  {"chinese-hz",			"HZ-GB-2312"},	// Emacs
+//  {"chinese-iso-7bit",		"ISO-2022-CN"},	// Emacs
+//  {"chinese-iso-8bit-with-esc",	""},		// --
+//  {"compound-text",			""},		// --
+//  {"compound-text-with-extension",	""},		// --
+//  {"cp1125",				"cp1125"},	// *
+//  {"cp1250",				"windows-1250"},// Emacs
+//  {"cp1251",				"windows-1251"},// Emacs
+//  {"cp1252",				"windows-1252"},// Emacs
+//  {"cp1253",				"windows-1253"},// Emacs
+//  {"cp1254",				"windows-1254"},// Emacs
+//  {"cp1255",				"windows-1255"},// Emacs
+//  {"cp1256",				"windows-1256"},// Emacs
+//  {"cp1257",				"windows-1257"},// Emacs
+//  {"cp1258",				"windows-1258"},// Emacs
+//  {"cp437",				"cp437"},	// Emacs
+//  {"cp720",				""},		// not covered
+//  {"cp737",				"cp737"},	// *, Emacs
+//  {"cp775",				"cp775"},	// Emacs
+//  {"cp850",				"cp850"},	// Emacs
+//  {"cp851",				"cp851"},	// Emacs
+//  {"cp852",				"cp852"},	// Emacs
+//  {"cp855",				"cp855"},	// Emacs
+//  {"cp857",				"cp857"},	// Emacs
+//  {"cp860",				"cp860"},	// Emacs
+//  {"cp861",				"cp861"},	// Emacs
+//  {"cp862",				"cp862"},	// Emacs
+//  {"cp863",				"cp863"},	// Emacs
+//  {"cp864",				"cp864"},	// Emacs
+//  {"cp865",				"cp865"},	// Emacs
+//  {"cp866",				"cp866"},	// Emacs
+//  {"cp866u",				"cp1125"},	// *, Emacs
+//  {"cp869",				"cp869"},	// Emacs
+//  {"cp874",				"cp874"},	// *, Emacs
+//  {"cp932",				"cp932"},	// *, Emacs
+//  {"cp936",				"cp936"},	// Emacs
+//  {"cp949",				"cp949"},	// *, Emacs
+//  {"cp950",				"cp950"},	// *, Emacs
+//  {"ctext",				""},		// --
+//  {"ctext-no-compositions",		""},		// --
+//  {"ctext-with-extensions",		""},		// --
+//  {"cyrillic-alternativnyj",		""},		// ?, Emacs
+//  {"cyrillic-iso-8bit-with-esc",	""},		// --
+//  {"cyrillic-koi8-t",			"KOI8-T"},	// *, Emacs
+//  {"devanagari",			""},		// not covered
+//  {"dos",				""},		// --
+//  {"emacs-mule",			""},		// --
+//  {"euc-jisx0213",			"EUC-JISX0213"},// *, XEmacs?
+//  {"euc-jisx0213-with-esc",		""},		// XEmacs?
+//  {"euc-taiwan",			"EUC-TW"},	// *, Emacs
+//  {"euc-tw",				"EUC-TW"},	// *, Emacs
+//  {"georgian-ps",			"GEORGIAN-PS"},	// *, Emacs
+//  {"greek-iso-8bit-with-esc",		""},		// --
+//  {"hebrew-iso-8bit",			"ISO-8859-8"},	// Emacs
+//  {"hebrew-iso-8bit-with-esc",	""},		// --
+//  {"hz",				"HZ-GB-2312"},
+//  {"hz-gb-2312",			"HZ-GB-2312"},
+//  {"in-is13194",			""},		// not covered
+//  {"in-is13194-devanagari",		""},		// not covered
+//  {"in-is13194-with-esc",		""},		// --
+//  {"iso-2022-7",			""},		// XEmacs?
+//  {"iso-2022-7bit",			""},		// --
+//  {"iso-2022-7bit-lock",		""},		// --
+//  {"iso-2022-7bit-lock-ss2",		""},		// --
+//  {"iso-2022-7bit-ss2",		""},		// --
+//  {"iso-2022-8",			""},		// XEmacs?
+//  {"iso-2022-8bit",			""},		// XEmacs?
+//  {"iso-2022-8bit-lock",		""},		// XEmacs?
+//  {"iso-2022-8bit-lock-ss2",		""},		// XEmacs?
+//  {"iso-2022-8bit-ss2",		""},		// --
+//  {"iso-2022-cjk",			""},		// --
+//  {"iso-2022-cn",			"ISO-2022-CN"},	// Emacs
+//  {"iso-2022-cn-ext",			"ISO-2022-CN-EXT"},// Emacs
+//  {"iso-2022-int-1",			""},		// --
+//  {"iso-2022-jp",			"ISO-2022-JP"},
+//  {"iso-2022-jp-1978-irv",		"ISO-2022-JP"},
+//  {"iso-2022-jp-2",			"ISO-2022-JP-2"},
+//  {"iso-2022-jp-3",			"ISO-2022-JP-3"},// *, XEmacs?
+//  {"iso-2022-jp-3-compatible",	""},		// XEmacs?
+//  {"iso-2022-jp-3-strict",		"ISO-2022-JP-3"},// *, XEmacs?
+//  {"iso-2022-kr",			"ISO-2022-KR"},
+//  {"iso-2022-lock",			""},		// XEmacs?
+//  {"iso-8859-10",			"ISO-8859-10"},	// Emacs
+//  {"iso-8859-11",			"ISO-8859-11"},	// *, Emacs
+//  {"iso-8859-14",			"ISO-8859-14"},	// Emacs
+//  {"iso-8859-16",			"ISO-8859-16"},
+//  {"iso-8859-3",			"ISO-8859-3"},
+//  {"iso-8859-4",			"ISO-8859-4"},
+//  {"iso-8859-6",			"ISO-8859-6"},
+//  {"iso-8859-8",			"ISO-8859-8"},
+//  {"iso-8859-8-e",			"ISO-8859-8"},
+//  {"iso-8859-8-i",			"ISO-8859-8"},	// Emacs
+//  {"iso-latin-10",			"ISO-8859-16"},	// Emacs
+//  {"iso-latin-1-with-esc",		""},		// --
+//  {"iso-latin-2-with-esc",		""},		// --
+//  {"iso-latin-3",			"ISO-8859-3"},	// Emacs
+//  {"iso-latin-3-with-esc",		""},		// --
+//  {"iso-latin-4",			"ISO-8859-4"},	// Emacs
+//  {"iso-latin-4-with-esc",		""},		// --
+//  {"iso-latin-5-with-esc",		""},		// --
+//  {"iso-latin-6",			"ISO-8859-10"},	// Emacs
+//  {"iso-latin-8",			"ISO-8859-14"},	// Emacs
+//  {"iso-safe",				""},		// --
+//  {"japanese-iso-7bit-1978-irv",	"ISO-2022-JP"},	// Emacs
+//  {"japanese-iso-8bit-with-esc",	""},		// --
+//  {"japanese-shift-jis",		"Shift_JIS"},	// Emacs
+//  {"japanese-shift-jisx0213",		""},		// XEmacs?
+//  {"jis7",				"ISO-2022-JP"},	// Xemacs
+//  {"junet",				"ISO-2022-JP"},
+//  {"koi8-t",				"KOI8-T"},	// *, Emacs
+//  {"koi8-u",				"KOI8-U"},	// Emacs
+//  {"korean-iso-7bit-lock",		"ISO-2022-KR"},
+//  {"korean-iso-8bit-with-esc",	""},		// --
+//  {"lao",				""},		// not covered
+//  {"lao-with-esc",			""},		// --
+//  {"latin-10",			"ISO-8859-16"},	// Emacs
+//  {"latin-3",				"ISO-8859-3"},	// Emacs
+//  {"latin-4",				"ISO-8859-4"},	// Emacs
+//  {"latin-6",				"ISO-8859-10"},	// Emacs
+//  {"latin-8",				"ISO-8859-14"},	// Emacs
+//  {"mac",				""},		// --
+//  {"mac-roman",			"MACINTOSH"},	// Emacs
+//  {"mik",				""},		// not covered
+//  {"next",				"NEXTSTEP"},	// *, Emacs
+//  {"no-conversion",			""},		// --
+//  {"old-jis",				"ISO-2022-JP"},
+//  {"pt154",				"PT154"},	// Emacs
+//  {"raw-text",			""},		// --
+//  {"ruscii",				"cp1125"},	// *, Emacs
+//  {"shift-jis",			"Shift_JIS"},	// XEmacs
+//  {"shift_jis",			"Shift_JIS"},
+//  {"shift_jisx0213",			"Shift_JISX0213"},// *, XEmacs?
+//  {"sjis",				"Shift_JIS"},	// Emacs
+//  {"tcvn",				"TCVN"},	// *, Emacs
+//  {"tcvn-5712",			"TCVN"},	// *, Emacs
+//  {"thai-tis620",			"TIS-620"},
+//  {"thai-tis620-with-esc",		""},		// --
+//  {"th-tis620",			"TIS-620"},
+//  {"tibetan",				""},		// not covered
+//  {"tibetan-iso-8bit",		""},		// not covered
+//  {"tibetan-iso-8bit-with-esc",	""},		// --
+//  {"tis-620",				"TIS-620"},
+//  {"tis620",				"TIS-620"},
+//  {"undecided",			""},		// --
+//  {"unix",				""},		// --
+//  {"utf-7",				"UTF-7"},	// Emacs
+//  {"utf-7-safe",			""},		// XEmacs?
+//  {"utf-8-ws",			"UTF-8"},	// XEmacs?
+//  {"vietnamese-tcvn",			"TCVN"},	// *, Emacs
+//  {"vietnamese-viqr",			"VIQR"},	// not covered
+//  {"vietnamese-viscii",		"VISCII"},
+//  {"vietnamese-vscii",		""},		// not covered
+//  {"viqr",				"VIQR"},	// not covered
+//  {"viscii",				"VISCII"},
+//  {"vscii",				""},		// not covered
+//  {"windows-037",			""},		// not covered
+//  {"windows-10000",			""},		// not covered
+//  {"windows-10001",			""},		// not covered
+//  {"windows-10006",			""},		// not covered
+//  {"windows-10007",			""},		// not covered
+//  {"windows-10029",			""},		// not covered
+//  {"windows-10079",			""},		// not covered
+//  {"windows-10081",			""},		// not covered
+//  {"windows-1026",			""},		// not covered
+//  {"windows-1200",			""},		// not covered
+//  {"windows-1250",			"windows-1250"},
+//  {"windows-1251",			"windows-1251"},
+//  {"windows-1252",			"windows-1252"},
+//  {"windows-1253",			"windows-1253"},
+//  {"windows-1254",			"windows-1254"},
+//  {"windows-1255",			"windows-1255"},
+//  {"windows-1256",			"windows-1256"},
+//  {"windows-1257",			"windows-1257"},
+//  {"windows-1258",			"windows-1258"},
+//  {"windows-1361",			"cp1361"},	// *, XEmacs
+//  {"windows-437",			"cp437"},	// XEmacs
+//  {"windows-500",			""},		// not covered
+//  {"windows-708",			""},		// not covered
+//  {"windows-709",			""},		// not covered
+//  {"windows-710",			""},		// not covered
+//  {"windows-720",			""},		// not covered
+//  {"windows-737",			"cp737"},	// *, XEmacs
+//  {"windows-775",			"cp775"},	// XEmacs
+//  {"windows-850",			"cp850"},	// XEmacs
+//  {"windows-852",			"cp852"},	// XEmacs
+//  {"windows-855",			"cp855"},	// XEmacs
+//  {"windows-857",			"cp857"},	// XEmacs
+//  {"windows-860",			"cp860"},	// XEmacs
+//  {"windows-861",			"cp861"},	// XEmacs
+//  {"windows-862",			"cp862"},	// XEmacs
+//  {"windows-863",			"cp863"},	// XEmacs
+//  {"windows-864",			"cp864"},	// XEmacs
+//  {"windows-865",			"cp865"},	// XEmacs
+//  {"windows-866",			"cp866"},	// XEmacs
+//  {"windows-869",			"cp869"},	// XEmacs
+//  {"windows-874",			"cp874"},	// XEmacs
+//  {"windows-875",			""},		// not covered
+//  {"windows-932",			"cp932"},	// *, XEmacs
+//  {"windows-936",			"cp936"},	// XEmacs
+//  {"windows-949",			"cp949"},	// *, XEmacs
+//  {"windows-950",			"cp950"},	// *, XEmacs
+//  {"x-ctext",				""},		// --
+//  {"x-ctext-with-extensions",		""},		// --
+
   {NULL,				NULL},
 };
 
@@ -689,8 +741,10 @@ conversion_iconv(FILE *fp, const string &data, char *enc)
 // Return the BOM in string `BOM'; `data' then starts with
 // the byte after the BOM.  This function reads (at most)
 // four bytes from the data stream.
+//
+// Return encoding if a BOM is found, NULL otherwise.
 // ---------------------------------------------------------
-void
+const char *
 get_BOM(FILE *fp, string &BOM, string &data)
 {
   // The BOM is U+FEFF.  We have thus the following possible
@@ -702,15 +756,17 @@ get_BOM(FILE *fp, string &BOM, string &data)
   static struct {
     int len;
     const char *str;
+    const char *name;
   } BOM_table[] = {
-    {4, "\x00\x00\xFE\xFF"},
-//  {4, "\xFF\xFE\x00\x00"},
-    {3, "\xEF\xBB\xBF"},
-    {2, "\xFE\xFF"},
-    {2, "\xFF\xFE"},
+    {4, "\x00\x00\xFE\xFF", "UTF-32BE"},
+    {4, "\xFF\xFE\x00\x00", "UTF-32LE"},
+    {3, "\xEF\xBB\xBF", "UTF-8"},
+    {2, "\xFE\xFF", "UTF-16BE"},
+    {2, "\xFF\xFE", "UTF-16LE"},
   };
   const int BOM_table_len = sizeof (BOM_table) / sizeof (BOM_table[0]);
   char BOM_string[4];
+  const char *retval = NULL;
   int len;
   for (len = 0; len < 4; len++) {
     int c = getc(fp);
@@ -725,11 +781,14 @@ get_BOM(FILE *fp, string &BOM, string &data)
       break;
   }
   int j = 0;
-  if (i < BOM_table_len)
+  if (i < BOM_table_len) {
     for (; j < BOM_table[i].len; j++)
       BOM += BOM_string[j];
+    retval = BOM_table[i].name;
+  }
   for (; j < len; j++)
     data += BOM_string[j];
+  return retval;
 }
 
 // ---------------------------------------------------------
@@ -761,7 +820,7 @@ get_tag_lines(FILE *fp, string &data)
       if (c == '\0' && debug && emit_warning) {
 	fprintf(stderr,
 		"  null byte(s) found in input stream --\n"
-		"  search for encoding tag might return false result\n");
+		"  search for coding tag might return false result\n");
 	emit_warning = 0;
       }
       data += char(c);
@@ -861,7 +920,7 @@ get_variable_value_pair(char *d1, char **variable, char **value)
 }
 
 // ---------------------------------------------------------
-// Check encoding tag in the read buffer.
+// Check coding tag in the read buffer.
 //
 // We search for the following line:
 //
@@ -890,7 +949,7 @@ get_variable_value_pair(char *d1, char **variable, char **value)
 // XXX Add support for tag at the end of buffer.
 // ---------------------------------------------------------
 char *
-check_encoding_tag(FILE *fp, string &data)
+check_coding_tag(FILE *fp, string &data)
 {
   char *inbuf = get_tag_lines(fp, data);
   char *lineend;
@@ -947,14 +1006,28 @@ do_file(const char *filename)
     SET_BINARY(fileno(stdin));
     fp = stdin;
   }
-  get_BOM(fp, BOM, data);
+  const char *BOM_encoding = get_BOM(fp, BOM, data);
   // Determine the encoding.
   char *encoding;
-  if (user_encoding[0])
-    encoding = user_encoding;
+  if (user_encoding[0]) {
+    if (debug) {
+      fprintf(stderr, "  user-specified encoding `%s', "
+		      "no search for coding tag\n",
+		      user_encoding);
+      if (BOM_encoding && strcmp(BOM_encoding, user_encoding))
+	fprintf(stderr, "  but BOM in data stream implies encoding `%s'!\n",
+			BOM_encoding);
+    }
+    encoding = (char *)user_encoding;
+  }
+  else if (BOM_encoding) {
+    if (debug)
+      fprintf(stderr, "  found BOM, no search for coding tag\n");
+    encoding = (char *)BOM_encoding;
+  }
   else {
-    // `check_encoding_tag' returns a pointer to a static array (or NULL).
-    char *file_encoding = check_encoding_tag(fp, data);
+    // `check_coding_tag' returns a pointer to a static array (or NULL).
+    char *file_encoding = check_coding_tag(fp, data);
     if (!file_encoding) {
       if (debug)
 	fprintf(stderr, "  no file encoding\n");
@@ -1046,7 +1119,6 @@ main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-
   // Parse the command line options.
   while ((opt = getopt_long(argc, argv, "de:hv", long_options, NULL)) != EOF)
     switch (opt) {
