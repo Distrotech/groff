@@ -202,7 +202,7 @@ EURO: freeeuro.afm
 	$(AFMTODIT) $(RFLAG) freeeuro.afm symbolmap $@
 
 freeeuro.afm freeeuro.pfa: generate/freeeuro.sfd
-	pfaedit -script generate/sfdtopfa.pe generate/freeeuro.sfd
+	fontforge -script generate/sfdtopfa.pe generate/freeeuro.sfd
 
 symbol.afm: $(srcdir)/symbol.sed
 	-rm -f $@
