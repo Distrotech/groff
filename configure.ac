@@ -1,5 +1,5 @@
 # Autoconf configuration file for groff.
-# Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2005
+# Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2005, 2006
 # Free Software Foundation, Inc.
 #
 # This file is part of groff.
@@ -51,7 +51,7 @@ GROFF_CSH_HACK([SH_SCRIPT_SED_CMD='1s/.*/:/'], [SH_SCRIPT_SED_CMD='1s/a/a/'])
 AC_SUBST([SH_SCRIPT_SED_CMD])
 
 # checks for headers
-AC_CHECK_HEADERS([stdlib.h unistd.h dirent.h limits.h sys/dir.h \
+AC_CHECK_HEADERS([stddef.h stdlib.h unistd.h dirent.h limits.h sys/dir.h \
                   string.h strings.h math.h sys/time.h direct.h process.h])
 GROFF_ISC_SYSV3
 GROFF_POSIX
@@ -121,6 +121,7 @@ GROFF_TARGET_PATH_SEPARATOR
 GROFF_HTML_PROGRAMS
 GROFF_PDFDOC_PROGRAMS
 GROFF_PNMTOPS_NOSETPAGE
+jm_GLIBC21
 
 AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
 AC_CONFIG_FILES([Makefile doc/Makefile src/utils/xtotroff/Makefile])

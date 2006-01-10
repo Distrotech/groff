@@ -540,7 +540,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS XDEVDIRS XPROGDIRS XLIBDIRS appresdir LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC MAKEINFO RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD GREP EGREP LIBC LIBM build build_cpu build_vendor build_os host host_cpu host_vendor host_os LIBICONV LTLIBICONV LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR ALT_GHOSTSCRIPT_PROGS GHOSTSCRIPT ac_ct_GHOSTSCRIPT pnmcut pnmcrop pnmtopng psselect pnmtops make_html make_install_html ALT_AWK_PROGS AWK ac_ct_AWK make_pdfdoc make_install_pdfdoc pnmtops_nosetpage LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX TTYDEVDIRS OTHERDEVDIRS CPP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS XDEVDIRS XPROGDIRS XLIBDIRS appresdir LPR LP LPQ PSPRINT DVIPRINT PERLPATH YACC MAKEINFO RANLIB ac_ct_RANLIB INSTALL_INFO INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SH_SCRIPT_SED_CMD GREP EGREP LIBC LIBM build build_cpu build_vendor build_os host host_cpu host_vendor host_os LIBICONV LTLIBICONV LIBOBJS BROKEN_SPOOLER_FLAGS PAGE g sys_tmac_prefix tmac_wrap GROFF_PATH_SEPARATOR ALT_GHOSTSCRIPT_PROGS GHOSTSCRIPT ac_ct_GHOSTSCRIPT pnmcut pnmcrop pnmtopng psselect pnmtops make_html make_install_html ALT_AWK_PROGS AWK ac_ct_AWK make_pdfdoc make_install_pdfdoc pnmtops_nosetpage GLIBC21 LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -6296,7 +6296,8 @@ done
 
 
 
-for ac_header in stdlib.h unistd.h dirent.h limits.h sys/dir.h \
+
+for ac_header in stddef.h stdlib.h unistd.h dirent.h limits.h sys/dir.h \
                   string.h strings.h math.h sys/time.h direct.h process.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -11721,6 +11722,44 @@ echo "${ECHO_T}no" >&6
    fi
 
 
+    echo "$as_me:$LINENO: checking whether we are using the GNU C Library 2.1 or newer" >&5
+echo $ECHO_N "checking whether we are using the GNU C Library 2.1 or newer... $ECHO_C" >&6
+if test "${ac_cv_gnu_library_2_1+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#include <features.h>
+#ifdef __GNU_LIBRARY__
+ #if (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1) || (__GLIBC__ > 2)
+  Lucky GNU user
+ #endif
+#endif
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "Lucky GNU user" >/dev/null 2>&1; then
+  ac_cv_gnu_library_2_1=yes
+else
+  ac_cv_gnu_library_2_1=no
+fi
+rm -f conftest*
+
+
+
+fi
+echo "$as_me:$LINENO: result: $ac_cv_gnu_library_2_1" >&5
+echo "${ECHO_T}$ac_cv_gnu_library_2_1" >&6
+
+    GLIBC21="$ac_cv_gnu_library_2_1"
+
+
+
           ac_config_files="$ac_config_files stamp-h"
 
                               ac_config_files="$ac_config_files Makefile doc/Makefile src/utils/xtotroff/Makefile"
@@ -12406,6 +12445,7 @@ s,@ac_ct_AWK@,$ac_ct_AWK,;t t
 s,@make_pdfdoc@,$make_pdfdoc,;t t
 s,@make_install_pdfdoc@,$make_install_pdfdoc,;t t
 s,@pnmtops_nosetpage@,$pnmtops_nosetpage,;t t
+s,@GLIBC21@,$GLIBC21,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
 

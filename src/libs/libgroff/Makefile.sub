@@ -1,5 +1,5 @@
 LIB=groff
-EXTRA_CFLAGS=-D__GETOPT_PREFIX=groff_
+EXTRA_CFLAGS=-D__GETOPT_PREFIX=groff_ -DLIBDIR=\"$(libdir)\"
 OBJS=\
   assert.$(OBJEXT) \
   change_lf.$(OBJEXT) \
@@ -24,6 +24,7 @@ OBJS=\
   itoa.$(OBJEXT) \
   lf.$(OBJEXT) \
   lineno.$(OBJEXT) \
+  localcharset.$(OBJEXT) \
   macropath.$(OBJEXT) \
   matherr.$(OBJEXT) \
   maxfilename.$(OBJEXT) \
@@ -97,6 +98,7 @@ CSRCS=\
   $(srcdir)/getopt1.c \
   $(srcdir)/iftoa.c \
   $(srcdir)/itoa.c \
+  $(srcdir)/localcharset.c \
   $(srcdir)/matherr.c \
   $(srcdir)/progname.c \
   $(srcdir)/putenv.c \
@@ -124,3 +126,63 @@ version.cpp: $(top_srcdir)/VERSION $(top_srcdir)/REVISION
 snprintf.$(OBJEXT): $(srcdir)/../snprintf/snprintf.c
 	$(CC) -c $(CDEFINES) $(CFLAGS) $(CPPFLAGS) \
 	  $(srcdir)/../snprintf/snprintf.c
+
+# Data for localcharset.c.  Taken from libiconv/libcharset.
+
+all: charset.alias ref-add.sed ref-del.sed
+
+charset.alias: $(srcdir)/config.charset
+	$(SHELL) $(srcdir)/config.charset '$(HOST)' > t-$@
+	mv t-$@ $@
+
+PACKAGE=groff
+
+ref-add.sed : $(srcdir)/ref-add.sin
+	sed -e '/^#/d' \
+	    -e 's/@''PACKAGE''@/$(PACKAGE)/g' $(srcdir)/ref-add.sin > t-$@
+	mv t-$@ $@
+
+ref-del.sed : $(srcdir)/ref-del.sin
+	sed -e '/^#/d' \
+	    -e 's/@''PACKAGE''@/$(PACKAGE)/g' $(srcdir)/ref-del.sin > t-$@
+	mv t-$@ $@
+
+MKINSTALLDIRS = $(SHELL) $(top_srcdir)/mkinstalldirs
+
+install_data: install_charset_data
+install_charset_data:
+	test $(GLIBC21) != no || $(MKINSTALLDIRS) $(DESTDIR)$(libdir)
+	if test -f $(DESTDIR)$(libdir)/charset.alias; then \
+	  sed -f ref-add.sed $(DESTDIR)$(libdir)/charset.alias \
+	      > $(DESTDIR)$(libdir)/t-charset.alias; \
+	  $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
+	                  $(DESTDIR)$(libdir)/charset.alias; \
+	  rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
+	else \
+	  if test $(GLIBC21) = no; then \
+	    sed -f ref-add.sed charset.alias \
+	        > $(DESTDIR)$(libdir)/t-charset.alias; \
+	    $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
+	                    $(DESTDIR)$(libdir)/charset.alias; \
+	    rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
+	  fi; \
+	fi
+
+uninstall_sub: uninstall_charset_data
+uninstall_charset_data:
+	if test -f $(DESTDIR)$(libdir)/charset.alias; then \
+	  sed -f ref-del.sed $(DESTDIR)$(libdir)/charset.alias \
+	      > $(DESTDIR)$(libdir)/t-charset.alias; \
+	  if grep '^# Packages using this file: $$' \
+	          $(DESTDIR)$(libdir)/t-charset.alias > /dev/null; then \
+	    rm -f $(DESTDIR)$(libdir)/charset.alias; \
+	  else \
+	    $(INSTALL_DATA) $(DESTDIR)$(libdir)/t-charset.alias \
+	                    $(DESTDIR)$(libdir)/charset.alias; \
+	  fi; \
+	  rm -f $(DESTDIR)$(libdir)/t-charset.alias; \
+	fi
+
+clean: clean_charset
+clean_charset:
+	rm -f charset.alias ref-add.sed ref-del.sed

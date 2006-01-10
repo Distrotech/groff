@@ -25,6 +25,12 @@ top_srcdir=@abs_top_srcdir@
 VPATH=@srcdir@
 top_builddir=@abs_top_builddir@
 
+# `HOST' is the canonical host specification,
+#    CPU_TYPE-MANUFACTURER-OPERATING_SYSTEM
+# or
+#    CPU_TYPE-MANUFACTURER-KERNEL-OPERATING_SYSTEM
+HOST=@host@
+
 # `RT_SEP' is the operating system's native PATH SEPARATOR CHAR, which
 # is to be used in runtime PATHs compiled into groff executables.
 RT_SEP=@GROFF_PATH_SEPARATOR@
@@ -33,6 +39,10 @@ RT_SEP=@GROFF_PATH_SEPARATOR@
 # scripts and makefile rules; it may be the same as `RT_SEP', but,
 # particularly in some Microsoft environments, it may differ.
 SH_SEP=@PATH_SEPARATOR@
+
+# `GLIBC21' is yes if the host operating system uses GNU libc 2.1 or newer,
+# otherwise no.
+GLIBC21=@GLIBC21@
 
 version=`cat $(top_srcdir)/VERSION`
 # No additional number if revision is zero.
@@ -253,26 +263,30 @@ make_install_pdfdoc=@make_install_pdfdoc@
 # DEFINES should include the following:
 #
 # -DWORDS_BIGENDIAN		if your target platform is big-endian
+# -DIS_EBCDIC_HOST		if the host's encoding is EBCDIC
 #
-# -DHAVE_MMAP			if you have mmap() and <sys/mman.h>
-# -DARRAY_DELETE_NEEDS_SIZE	if your C++ doesn't understand `delete []'
-# -DSYS_SIGLIST_DECLARED	if you have sys_siglist[]
+# -DHAVE_DECL_SYS_SIGLIST	if you have sys_siglist[]
 # -DWCOREFLAG=0200		if the 0200 bit of the status returned by
 #				wait() indicates whether a core image was
 #				produced for a process that was terminated
 #				by a signal
 #
+# -DHAVE_DIRECT_H		if you have <direct.h>
 # -DHAVE_DIRENT_H		if you have <dirent.h>
+# -DHAVE_CC_INTTYPES_H		if you have a C++ <inttypes.h>
+# -DHAVE_PROCESS_H		if you have <process.h>
 # -DHAVE_LIMITS_H		if you have <limits.h>
 # -DHAVE_CC_LIMITS_H		if you have a C++ <limits.h>
 # -DHAVE_MATH_H			if you have <math.h>
 # -DHAVE_CC_OSFCN_H		if you have a C++ <osfcn.h>
-# -DHAVE_CC_INTTYPES_H		if you have a C++ <inttypes.h>
+# -DHAVE_STDDEF_H		if you have <stddef.h>
 # -DHAVE_STDLIB_H		if you have <stdlib.h>
 # -DHAVE_STRING_H		if you have <string.h>
 # -DHAVE_STRINGS_H		if you have <strings.h>
 # -DHAVE_SYS_DIR_H		if you have <sys/dir.h>
+# -DHAVE_SYS_STAT_H		if you have <sys/stat.h>
 # -DHAVE_SYS_TIME_H		if you have <sys/time.h>
+# -DHAVE_SYS_TYPES_H		if you have <sys/types.h>
 # -DHAVE_UNISTD_H		if you have <unistd.h>
 #
 # -DHAVE_FMOD			if you have fmod()
@@ -307,7 +321,7 @@ make_install_pdfdoc=@make_install_pdfdoc@
 # -DNEED_DECLARATION_SNPRINTF	if your C++ <stdio.h> doesn't declare
 # 				snprintf()
 # -DNEED_DECLARATION_SRAND	if your C++ <stdlib.h> doesn't declare srand()
-# -DNEED_DECLARATION_STRCASECMP if your C++ <string.h> doesn't declare
+# -DNEED_DECLARATION_STRCASECMP	if your C++ <string.h> doesn't declare
 #				strcasecmp()
 # -DNEED_DECLARATION_STRNCASECMP
 #				if your C++ <string.h> doesn't declare
@@ -317,20 +331,26 @@ make_install_pdfdoc=@make_install_pdfdoc@
 # -DNEED_DECLARATION_VSNPRINTF	if your C++ <stdio.h> doesn't declare
 #				vsnprintf()
 #
-# -DRET_TYPE_SRAND_IS_VOID	if srand() returns void not int
+# -DHAVE_STRUCT_EXCEPTION	if <math.h> defines struct exception
 # -DHAVE_SYS_NERR		if you have sysnerr in <errno.h> or <stdio.h>
 # -DHAVE_SYS_ERRLIST		if you have sys_errlist in <errno.h> or
 #				<stdio.h>
+# -DICONV_CONST=const		if declaration of iconv() needs const
+# -DLONG_FOR_TIME_T		if localtime() takes a long * not a time_t *
+# -DRETSIGTYPE=int		if signal handlers return int not void	
+# -DRET_TYPE_SRAND_IS_VOID	if srand() returns void not int
+#
+# -Duintmax_t=<value>		define to `unsigned long' or `unsigned long
+#				long' if <inttypes.h> does not exist
+#
 # -DTRADITIONAL_CPP		if your C++ compiler uses a traditional
 #				(Reiser) preprocessor
-# -DLONG_FOR_TIME_T		if localtime() takes a long * not a time_t *
-# -DHAVE_STRUCT_EXCEPTION	if <math.h> defines struct exception
-# -DRETSIGTYPE=int		if signal handlers return int not void	
-# -DICONV_CONST=const		if declaration of iconv() needs const
-# -DIS_EBCDIC_HOST		if the host's encoding is EBCDIC
+# -DARRAY_DELETE_NEEDS_SIZE	if your C++ doesn't understand `delete []'
+#
 # -DPAGE=A4			if the the printer's page size is A4
 # -DGHOSTSCRIPT=gs		the name (and directory if required) of the
 #				ghostscript program
+#
 DEFINES=@DEFS@
 
 # Include
@@ -420,6 +440,8 @@ MDEFINES= \
   "ETAGSCCFLAG=$(ETAGSCCFLAG)" \
   "ETAGSFLAGS=$(ETAGSFLAGS)" \
   "EXEEXT=$(EXEEXT)" \
+  "GLIBC21=$(GLIBC21)" \
+  "HOST=$(HOST)" \
   "INSTALL_DATA=$(INSTALL_DATA)" \
   "INSTALL_INFO=$(INSTALL_INFO)" \
   "INSTALL_PROGRAM=$(INSTALL_PROGRAM)" \

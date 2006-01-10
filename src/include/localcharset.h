@@ -1,5 +1,6 @@
-/* Provide relocation for macro and font files.
-   Copyright (C) 2005-2006 Free Software Foundation, Inc.
+/* Determine a canonical name for the current locale's character encoding.
+   Copyright (C) 2000-2003 Free Software Foundation, Inc.
+   This file is part of the GNU CHARSET Library.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU Library General Public License as published
@@ -13,25 +14,29 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301,
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
    USA.  */
 
-#ifdef __cplusplus
-extern char *curr_prefix;
-extern size_t curr_prefix_len;
+#ifndef _LOCALCHARSET_H
+#define _LOCALCHARSET_H
 
-void set_current_prefix ();
-char *xdirname (char *s);
-char *searchpath (const char *name, const char *pathp);
-#endif
-
-/* This function has C linkage.  */
-extern
-#ifdef __cplusplus
-"C"
-#endif
-char *relocatep (const char *path);
 
 #ifdef __cplusplus
-char *relocate (const char *path);
+extern "C" {
 #endif
+
+
+/* Determine the current locale's character encoding, and canonicalize it
+   into one of the canonical names listed in config.charset.
+   The result must not be freed; it is statically allocated.
+   If the canonical name cannot be determined, the result is a non-canonical
+   name.  */
+extern const char * locale_charset (void);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* _LOCALCHARSET_H */

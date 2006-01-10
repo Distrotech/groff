@@ -1,3 +1,40 @@
+2006-01-10  Bruno Haible  <bruno@clisp.org>
+
+	Work around unportability of nl_langinfo(CODESET).
+
+	* m4/glibc21.m4: New file, from gnulib.
+	* Makefile.sub (M4MACROS): Add m4/glibc21.m4.
+	* configure.ac: Also test for stddef.h, and invoke jm_GLIBC21.
+	* Makefile.in (HOST, GLIBC21): New variables.
+	(MDEFINES): Pass them to subdirectories.
+	* src/include/relocate.h (relocatep): Define with C linkage.
+	* src/include/localcharset.h: New file, from gnulib.
+	* src/libs/libgroff/localcharset.c: New file, from gnulib with a
+	modification for relocate().
+	* src/libs/libgroff/config.charset: New file, from gnulib.
+	* src/libs/libgroff/ref-add.sin: New file, from gnulib.
+	* src/libs/libgroff/ref-del.sin: New file, from gnulib.
+	* src/libs/libgroff/Makefile.sub (EXTRA_CFLAGS): Also define LIBDIR.
+	(OBJS): Add localcharset.o.
+	(CSRCS): Add localcharset.c.
+	(all): Add dependencies to charset.alias, ref-add.sed, ref-del.sed.
+	(charset.alias): New rule.
+	(PACKAGE): New variable.
+	(ref-add.sed, ref-del.sed): New rules.
+	(MKINSTALLDIRS): New variable.
+	(install_data): Depend on install_charset_data.
+	(install_charset_data): New rule for creating or updating
+	charset.alias.
+	(uninstall_sub): Depend on uninstall_charset_data.
+	(uninstall_charset_data): New rule for uninstalling or updating
+	charset.alias.
+	* src/preproc/preconv/preconv.cpp: Include localcharset.h instead
+	of <langinfo.h>.
+	(main): Initialize default_encoding from locale_charset() instead of
+	nl_langinfo(CODESET).
+
+	* aclocal.m4, configure, src/include/config.hin: Regenerated.
+
 2006-01-10  Werner LEMBERG  <wl@gnu.org>
 
 	* src/preproc/preconv/preconv.cpp (conversion_iconv): Use

@@ -26,14 +26,11 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include <errno.h>
 #include "errarg.h"
 #include "error.h"
+#include "localcharset.h"
 #include "nonposix.h"
 #include "stringclass.h"
 
 #include <locale.h>
-
-#if HAVE_LANGINFO_CODESET
-# include <langinfo.h>
-#endif
 
 #if HAVE_ICONV
 # include <iconv.h>
@@ -1104,18 +1101,11 @@ main(int argc, char **argv)
   // getopt() is called since the usage message shows the default
   // encoding.
   setlocale(LC_ALL, "");
-#if HAVE_LANGINFO_CODESET
   char *locale = setlocale(LC_CTYPE, NULL);
   if (!locale || !strcmp(locale, "C") || !strcmp(locale, "POSIX"))
     default_encoding = "latin1";
-  else {
-    default_encoding = nl_langinfo(CODESET);
-    if (!default_encoding)
-      default_encoding = "latin1";
-  }
-#else
-  default_encoding = "latin1";
-#endif /* HAVE_LANGINFO_CODESET */
+  else
+    default_encoding = locale_charset();
 
   program_name = argv[0];
   int opt;
