@@ -665,7 +665,8 @@ conversion_iconv(FILE *fp, const string &data, char *enc)
   size_t inbytes_left = data.length();
   char *limit;
   while (inbytes_left > 0) {
-    size_t status = iconv(handle, &inptr, &inbytes_left,
+    size_t status = iconv(handle,
+			  (ICONV_CONST char **)&inptr, &inbytes_left,
 			  &outptr, &outbytes_left);
     if (status == (size_t)-1) {
       if (errno == EILSEQ) {
@@ -696,7 +697,8 @@ conversion_iconv(FILE *fp, const string &data, char *enc)
     inptr = inbuf;
     inbytes_left += read_bytes;
     while (inbytes_left > 0) {
-      size_t status = iconv(handle, &inptr, &inbytes_left,
+      size_t status = iconv(handle,
+			    (ICONV_CONST char **)&inptr, &inbytes_left,
 			    &outptr, &outbytes_left);
       if (status == (size_t)-1) {
 	if (errno == EILSEQ) {
