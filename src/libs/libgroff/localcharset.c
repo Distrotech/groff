@@ -1,21 +1,20 @@
 /* Determine a canonical name for the current locale's character encoding.
 
-   Copyright (C) 2000-2005 Free Software Foundation, Inc.
+   Copyright (C) 2000-2006 Free Software Foundation, Inc.
 
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU Library General Public License as published
-   by the Free Software Foundation; either version 2, or (at your option)
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
-   USA.  */
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation,
+   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 /* Written by Bruno Haible <bruno@clisp.org>.  */
 
@@ -67,10 +66,11 @@
 # include <os2.h>
 #endif
 
-/* BEGIN GROFF-LOCAL SECTION */
-#include "relocate.h"
-#define relocate(path) relocatep(path)
-/* END GROFF-LOCAL SECTION */
+#if ENABLE_RELOCATABLE
+# include "relocatable.h"
+#else
+# define relocate(pathname) (pathname)
+#endif
 
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__ || defined __EMX__ || defined __DJGPP__
   /* Win32, Cygwin, OS/2, DOS */
@@ -106,7 +106,7 @@ static const char * volatile charset_aliases;
 
 /* Return a pointer to the contents of the charset.alias file.  */
 static const char *
-get_charset_aliases ()
+get_charset_aliases (void)
 {
   const char *cp;
 
@@ -286,7 +286,7 @@ get_charset_aliases ()
 STATIC
 #endif
 const char *
-locale_charset ()
+locale_charset (void)
 {
   const char *codeset;
   const char *aliases;

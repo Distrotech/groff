@@ -102,7 +102,7 @@ AC_CHECK_FUNCS([vsnprintf], [], [AC_LIBOBJ([snprintf])])
 LIBS="$saved_libs"
 AC_CHECK_FUNCS([gettimeofday isatty kill rename setlocale strsep])
 GROFF_MKSTEMP
-AC_CHECK_DECLS([sys_siglist])
+AC_CHECK_DECLS([sys_siglist, getc_unlocked])
 AM_LANGINFO_CODESET
 
 # checks for compiler characteristics
