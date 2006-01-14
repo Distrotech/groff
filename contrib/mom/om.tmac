@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.3-b
+Version 1.3-c
 -------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
@@ -47,12 +47,12 @@ to a macro means that any argument turns the feature off.
 \#
 \# Check which version of groff is being run
 .if (\n[.x]\n[.y] < 118) \
-.  ab You need GNU troff version 1.18 or higher to run this version of mom.
+.   ab [mom]: You need GNU troff version 1.18 or higher to run this version of mom.
 \# Check that GNU troff is being run
 .if !\n[.g]=1 \
-.  ab The mom macros require that you be running GNU troff.
+.   ab [mom]: The mom macros require that you be running GNU troff.
 .if \n(.C \
-.   ab The groff mom macros do not work in compatibility mode.
+.   ab [mom]: The groff mom macros do not work in compatibility mode.
 \# Add supplementary styles
 .sty \n[.fp] L       \"  Light Roman
 .sty \n[.fp] LI      \"  Light Italic
@@ -3487,13 +3487,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          nr #BOLDER_UNITS 0
 .          nr #CONDENSE 0
 .          nr #EXTEND 0
-.          rm IT
+.          if !\\n[#ITALIC_MEANS_ITALIC]  \{ .rm IT \}
 .          rm BD
 .          rm BDI
-.          rm PREV
-.          UNDERLINE_SLANT
-.          UNDERLINE_ITALIC
-.          UNDERLINE_QUOTES
+.          if !\\n[#ITALIC_MEANS_ITALIC] \{ .rm PREV          \}
+.          if !\\n[#SLANT_MEANS_SLANT]   \{ .UNDERLINE_SLANT  \}
+.          if !\\n[#ITALIC_MEANS_ITALIC] \{ .UNDERLINE_ITALIC \}
+.          if !\\n[#UNDERLINE_QUOTES]    \{ .UNDERLINE_QUOTES \}
 .          nr #IGNORE_COLUMNS 1
 .          char \(em --
 .          tr `'
@@ -7954,7 +7954,7 @@ Default is OFF.
 .          nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
 .          po \\n[#Q_OFFSET]u
 .       \}
-.       ALD \\n[#Q_LEAD_DIFF]u
+.       if \\n[#PRINTSTYLE]=2 \{ .ALD \\n[#Q_LEAD_DIFF]u \}
 .    \}
 .    if \\n[#EPIGRAPH] \{\
 .       ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
@@ -8011,6 +8011,7 @@ Default is OFF.
 .       if \\n[#SLANT_ON] \{\
 .          if \\n[#UNDERLINE_SLANT] \{ .UNDERLINE \}
 .       \}
+.       if \\n[#UNDERLINE_ITALIC]   \{ .UNDERLINE \}
 .    \}
 .    rr #FROM_HEADER
 .    rr #DEFER_SPACE_ADDED
@@ -9367,6 +9368,12 @@ Default is OFF.
 \E*[EXT]\c
 .       \}
 .    nr #Q_PP +1
+.    \}
+\# This takes care of multi-paragraph dialogue, where each para
+\# is introduced by an open quote whereas the previous para has
+\# no close quote.
+.    if \\n[#OPEN_CLOSE]=1 \{\
+.       nr #OPEN_CLOSE 0
 .    \}
 .    nr #PP_ACTIVE 1
 .END
@@ -14246,7 +14253,7 @@ Arguments, Function and Notes.
 .       nr #SPACE_REMAINING 0
 .       nr #FN_DEPTH 0
 .       nr #VARIABLE_FOOTER_POS 0-\\n[#B_MARGIN]u
-.       wh 20i FOOTER
+.       wh \\n(.pu FOOTER
 .       wh -(\\n[#FN_OVERFLOW_TRAP_POS]u) FN_OVERFLOW_TRAP
 .       ch FOOTER -\\n[#B_MARGIN]u
 .    \}
@@ -15550,15 +15557,23 @@ o Fifth argument is a string to add after the punctuation character
 \#
 .MAC MN_INIT END
 .    if !'\\$1'rerun' \{\
-.    ds $MN-arg1 \\$1
-.    ds $MN-arg2 \\$2
-.    ds $MN-arg3 \\$3
-.    ds $MN-arg4 \\$4
-.    ds $MN-arg5 \\$5
-.    ds $MN-arg6 \\$6
-.    ds $MN-arg7 \\$7
-.    ds $MN-arg8 \\$8
-.    ds $MN-arg9 \\$9
+.       ds $MN-arg1 \\$1
+.       ie '\\$2'' .ds $MN-arg2 @
+.       el .ds $MN-arg2 \\$2
+.       ie '\\$3'' .ds $MN-arg3 @
+.       el .ds $MN-arg3 \\$3
+.       ie '\\$4'' .ds $MN-arg4 @
+.       el .ds $MN-arg4 \\$4
+.       ie '\\$5'' .ds $MN-arg5 @
+.       el .ds $MN-arg5 \\$5
+.       ie '\\$6'' .ds $MN-arg6 @
+.       el .ds $MN-arg6 \\$6
+.       ie '\\$7'' .ds $MN-arg7 @
+.       el .ds $MN-arg7 \\$7
+.       ie '\\$8'' .ds $MN-arg8 @
+.       el .ds $MN-arg8 \\$8
+.       ie '\\$9'' .ds $MN-arg9 @
+.       el .ds $MN-arg9 \\$9
 .    \}
 .    ie \\n[#START_FOR_MNinit]=0 \{\
 .       nr #MNinit_DEFERRED 1
@@ -15636,7 +15651,6 @@ from Werner Lemberg's MN.tmac.
 .    ab MN: Left margin too small for requested margin notes settings.
 .  if (\\n[MN-left-width] < 1n) \
 .    ab MN: Left margin notes width too small (<1n).
-.
 .  ie \B'\\$2' \{\
 .    nr MN-right-width (n;\\$2)
 .    nr MN-right-start (\\n[.o] + \\n[.l] + \\n[MN-sep])
@@ -15738,9 +15752,15 @@ from Werner Lemberg's MN.tmac.
 \#
 .de MN
 .ds MN-dir \\$1
+.if !'\\$1'LEFT' \{\
+.  if !'\\$1'RIGHT' \{\ 
+.    MN_QUIT
+.    return
+.  \}
+.\}
 .if \\n[#COLUMNS]=1 \{\
 .  if \\n[#NUM_COLS]>2 \{\
-.    tm MN: More than two columns.  Ignoring margin notes.
+.    tm [mom]: Macro MN: More than two columns.  Ignoring margin notes.
 .    return
 .  \}
 .  if !\\n[#NUM_COLS]=1 \{\
@@ -15749,12 +15769,12 @@ from Werner Lemberg's MN.tmac.
 .  \}
 .\}
 .  if !\\n[#MNinit]=1 \{\
-.    tm MN: You must set parameters with MN_INIT before using MN. 
+.    tm [mom]: Macro MN: You must set parameters with MN_INIT before using MN. 
 .    ab Aborting
 .  \}
 .  ie !'\\$1'' \{\
 .    if \\n[MN-active] \{\
-.      tm MN: Can't handle nested margin notes.
+.      tm [mom]: Macro MN: Can't handle nested margin notes.
 .      return
 .    \}
 .    nr MN-active 1
@@ -15773,6 +15793,15 @@ from Werner Lemberg's MN.tmac.
 .    di MN-div-\\*[MN-curr]
 .  \}
 .  el \{\
+.    MN_QUIT
+.  \}
+..
+\#
+\# MN_QUIT
+\# -------
+\# Utility macro to handle .MN OFF | QUIT | X etc
+\#
+.de MN_QUIT
 .    if \\n[MN-active] \{\
 .      br
 .      di
@@ -15780,7 +15809,6 @@ from Werner Lemberg's MN.tmac.
 .      ev
 .    \}
 .    nr MN-active 0
-.  \}
 ..
 \#
 \# MNtop
@@ -15790,6 +15818,8 @@ from Werner Lemberg's MN.tmac.
 .  nr MN-left 0
 .  nr MN-right 0
 .  nr MN-active 0
+.  rr MN-shifted
+.  ch FOOTER -\\n[#B_MARGIN]u
 ..
 \#
 \# MNbottom-left
@@ -15804,7 +15834,7 @@ from Werner Lemberg's MN.tmac.
 .  mk MN-curr-pos
 .  if \\n[MN-active] \{\
 .    di
-.    tm MN: Margin note finished by new page.  Ignored.
+.    tm [mom]: Macro MN: Margin note finished by new page.  Ignored.
 .  \}
 .  po \\n[MN-left-start]u
 .  ev MNbottom-left-env
@@ -15818,23 +15848,31 @@ from Werner Lemberg's MN.tmac.
 .      sp 1v
 .      SHIM
 .      if \\n[#SHIM]u>\\n[MN-spacing] .sp -(1v+\\n[MN-lead-adj]u)
-.      tm MN: Warning: Left margin note #\\n[MN-curr] on page \\n[#P] shifted down.
+.      tm [mom]: Macro MN: Warning: Left margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    \}
 .\" If last margin note doesn't fit
-.    if ( (\\n(nl+\\n[MN-div-l-\\n[MN-curr]-depth]) > (\\n(.p+\\n[#VARIABLE_FOOTER_POS]) ) \{\
+.    if ( (\\n(nl+\\n[MN-div-l-\\n[MN-curr]-depth]) > (\\n(.p+\\n[#VARIABLE_FOOTER_POS]-1) ) \{\
 .      if \\n[MN-shifted]=1 \{\
 .        sp -(1v+\\n[#SHIM]u)
 .        rm MN-div-l-\\n[MN-curr]
-.        tm1 "[mom]: No room to start left margin note #\\n[MN-curr] on page \\n[#P] on page \\n[#P].
+.        tm1 "[mom]: No room to start left margin note #\\n[MN-curr] on page \\n[#P].
 .        tm1 "       Ignoring margin note.
 .        rr MN-shifted
 .      \}
 .      nr #no-repeat-MN-left 1
 .      nr #OVERFLOW_LEFT 1
-.      wh \\n[.p]u+\\n[#VARIABLE_FOOTER_POS]u-1u MN_OVERFLOW_TRAP
+.      ie \\n[#FN_COUNT]=0 \{\
+.        ch FOOTER \\n(.pu
+.        wh \\n[#VARIABLE_FOOTER_POS]u+\\n[MN-lead-adj]u+1u MN_OVERFLOW_TRAP
+.      \}
+.      el \{\
+.        wh \\n[.p]u+\\n[#VARIABLE_FOOTER_POS]u-1u MN_OVERFLOW_TRAP
+.      \}
 .      vpt 1
 .    \}
+.    nf
 .    MN-div-l-\\n[MN-curr]
+.    fi
 .    br
 .    nr MN-last-pos \\n[nl]
 .\}
@@ -15865,7 +15903,7 @@ from Werner Lemberg's MN.tmac.
 .      nr MN-shifted 1
 .      sp 1v
 .      SHIM
-.      tm MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
+.      tm [mom]: Macro MN: Warning: Right margin note #\\n[MN-curr] on page \\n[#P] shifted down.
 .    \}
 .\" If last margin note doesn't fit
 .    if ( (\\n(nl+\\n[MN-div-r-\\n[MN-curr]-depth]) > (\\n(.p+\\n[#VARIABLE_FOOTER_POS]) ) \{\
@@ -15878,10 +15916,18 @@ from Werner Lemberg's MN.tmac.
 .      \}
 .      nr #no-repeat-MN-right 1
 .      nr #OVERFLOW_RIGHT 1
-.      wh \\n[.p]u+\\n[#VARIABLE_FOOTER_POS]u-1u MN_OVERFLOW_TRAP
+.      ie \\n[#FN_COUNT]=0 \{\
+.        ch FOOTER \\n(.pu
+.        wh \\n[#VARIABLE_FOOTER_POS]u+\\n[MN-lead-adj]u+1u MN_OVERFLOW_TRAP
+.      \}
+.      el \{\
+.        wh \\n[.p]u+\\n[#VARIABLE_FOOTER_POS]u-1u MN_OVERFLOW_TRAP
+.      \}
 .      vpt 1
 .    \}
+.    nf
 .    MN-div-r-\\n[MN-curr]
+.    fi
 .    br
 .    nr MN-last-pos \\n[nl]
 .\}
