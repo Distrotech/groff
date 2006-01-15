@@ -358,23 +358,23 @@ www functionality.  It should work with any macro set.
 .      \}
 .      el \{\
 .        ie \\n[.color] \
-.          nop \%\[la]\m[blue]\f[C]\\*[\\$0:adr]\f[]\m[]\[ra]\\$3
+.          nop \%\\*[www:open]\m[\\*[www:color]]\f[\\*[www:fontstyle]]\\*[\\$0:adr]\f[]\m[]\\*[www:close]\\$3
 .        el \
-.          nop \%\[la]\f[CB]\\*[\\$0:adr]\f[]\[ra]\\$3
+.          nop \%\\*[www:open]\f[\\*[www:fontstyle]]\\*[\\$0:adr]\f[]\\*[www:close]\\$3
 .      \}
 .    \}
 .    el \{\
 .      ie '\\$1'' \{\
 .        ie \\n[.color] \
-.          nop \m[blue]\\$2\m[]\\$3
+.          nop \m[\\*[www:color]]\\$2\m[]\\$3
 .        el \
-.          nop \f[B]\\$2\f[]\\$3
+.          nop \f[\\*[www:fontstyle]]\\$2\f[]\\$3
 .      \}
 .      el \{\
 .        ie \\n[.color] \
-.          nop \m[blue]\\$2\m[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
+.          nop \m[\\*[www:color]]\\$2\m[] \%\\*[www:open]\f[\\*[www:fontstyle]]\\*[\\$0:adr]\f[]\\*[www:close]\\$3
 .        el \
-.          nop \f[B]\\$2\f[] \%\[la]\f[C]\\*[\\$0:adr]\f[]\[ra]\\$3
+.          nop \f[\\*[www:fontstyle]]\\$2\f[] \%\\*[www:open]\f[\\*[www:fontstyle]]\\*[\\$0:adr]\f[]\\*[www:close]\\$3
 .      \}
 .    \}
 .    if !r ps4html .ad
@@ -420,23 +420,23 @@ www functionality.  It should work with any macro set.
 .      \}
 .      el \{\
 .        ie \\n[.color] \
-.          nop \%\m[blue]\f[C]\\$1\f[]\m[]\\$3
+.          nop \%\m[\\*[www:color]]\f[\\*[www:fontstyle]]\\$1\f[]\m[]\\$3
 .        el \
-.          nop \%\f[CB]\\$1\f[]\\$3
+.          nop \%\f[\\*[www:fontstyle]]\\$1\f[]\\$3
 .      \}
 .    \}
 .    el \{\
 .      ie '\\$1'' \{\
 .        ie \\n[.color] \
-.          nop \m[blue]\\$2\m[]\\$3
+.          nop \m[\\*[www:color]]\\$2\m[]\\$3
 .        el \
-.          nop \f[B]\\$2\f[]\\$3
+.          nop \f[\\*[www:fontstyle]]\\$2\f[]\\$3
 .      \}
 .      el \{\
 .        ie \\n[.color] \
-.          nop \m[blue]\\$2\m[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
+.          nop \m[\\*[www:color]]\\$2\m[] \%\\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]\\$3
 .        el
-.          nop \f[B]\\$2\f[] \%\[la]\f[C]\\$1\f[]\[ra]\\$3
+.          nop \f[\\*[www:fontstyle]]\\$2\f[] \%\\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]\\$3
 .      \}
 .    \}
 .  \}
@@ -480,7 +480,7 @@ www functionality.  It should work with any macro set.
            width=\\n[www-width] height=\\n[www-height]>
 .  \}
 .  el \
-.    nop \[la]\f[C]\\$1\f[]\[ra]
+.    nop \\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]
 ..
 .
 .\" --------------------------------------------------------------------
@@ -1324,10 +1324,34 @@ www functionality.  It should work with any macro set.
 .  \}
 ..
 .
+.\" --------------------------------------------------------------------
+.\"  LINKSTYLE color [ fontstyle [ openglyph closeglyph ] ]
+.\"
+.\"    Initializes www.tmac so that when this macro set is used with
+.\"    non html devices the urls are rendered the user defined attributes.
+.\"    For example:
+.\"
+.\"    LINKSTYLE blue CR < >
+.\"
+.de LINKSTYLE
+.  if (\\n[.$] < 1) \
+.    www:error .\\$0 expects at least 1 argument.
+.  ds www:color \\$1
+.  shift
+.  if (\\n[.$] < 1) .return
+.  ds www:fontstyle \\$1
+.  shift
+.  if (\\n[.$] < 1) \
+.    www:error .\\$0 expects that both the open and close glyph is specified
+.  ds www:open \\$1
+.  ds www:close \\$2
+..
 .
 .\" --------------------------------------------------------------------
 .\" Final Setup
 .\" --------------------------------------------------------------------
+.
+.LINKSTYLE blue C \[la] \[ra]
 .
 .if \n[www-html] \{\
 .  nh
