@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005
+Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -1050,12 +1050,11 @@ groff -P-b16 foo > foo.ps
 gs -dNOPAUSE -sDEVICE=bbox -- foo.ps 2> foo.bbox
 .br
 .B
-cat foo.ps | sed \-e '/%%Orientation/rfoo.bbx' > foo.eps
+cat foo.ps | sed \-e '/^%%Orientation/rfoo.bbox' > foo.eps
 .br
 .B
-rm foo.bbx
+rm foo.bbox
 .br
-.
 .
 .
 .SS TrueType fonts
