@@ -530,6 +530,8 @@ MDEFINES= \
   "top_srcdir=$(top_srcdir)" \
   "version=$(version)"
 
+MAKE_K_FLAG=`case "$(MAKEFLAGS)" in *k*) echo ' -k ';; esac`
+
 INCDIRS=src/include
 LIBDIRS=\
   src/libs/libgroff \
@@ -560,10 +562,9 @@ CCPROGDIRS=\
   src/utils/lkbib \
   src/utils/addftinfo
 CPROGDIRS=\
-  src/utils/pfbtops \
-  $(XPROGDIRS)
+  src/utils/pfbtops
 PROGDEPDIRS=arch/misc
-PROGDIRS=$(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
+PROGDIRS=$(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS) $(XPROGDIRS)
 DEVDIRS=\
   font/devps \
   font/devdvi \
@@ -626,11 +627,11 @@ subdir=src/roff/troff
 
 
 $(TARGETS):
-	@$(ENVSETUP); $(MAKE) $(MDEFINES) do=$@ $(dodirs)
+	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) $(MDEFINES) do=$@ $(dodirs)
 
 dot: FORCE
 	@$(ENVSETUP); \
-	$(MAKE) $(MDEFINES) srcdir=$(srcdir) VPATH=$(srcdir) \
+	$(MAKE) $(MAKE_K_FLAG) $(MDEFINES) srcdir=$(srcdir) VPATH=$(srcdir) \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $(top_srcdir)/Makefile.sub $(do)
 
@@ -644,13 +645,13 @@ $(LIBDIRS): FORCE $(INCDIRS) $(PROGDEPDIRS)
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
 	test -f Makefile.dep || touch Makefile.dep; \
-	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
+	$(MAKE) $(MAKE_K_FLAG) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
 	  -f $(top_srcdir)/Makefile.lib \
 	  -f Makefile.dep $(do)
 
-$(CPROGDIRS): FORCE $(LIBDIRS)
+$(CPROGDIRS) $(XPROGDIRS): FORCE $(LIBDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -660,7 +661,7 @@ $(CPROGDIRS): FORCE $(LIBDIRS)
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
 	test -f Makefile.dep || touch Makefile.dep; \
-	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
+	$(MAKE) $(MAKE_K_FLAG) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
 	  -f $(top_srcdir)/Makefile.cpg \
@@ -676,13 +677,13 @@ $(CCPROGDIRS): FORCE $(LIBDIRS)
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
 	test -f Makefile.dep || touch Makefile.dep; \
-	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
+	$(MAKE) $(MAKE_K_FLAG) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
 	  -f $(top_srcdir)/Makefile.ccpg \
 	  -f Makefile.dep $(do)
 
-$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE $(PROGDIRS)
+$(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
 	@$(ENVSETUP); \
 	if test $(srcdir) = .; then \
 	  srcdir=.; \
@@ -691,12 +692,12 @@ $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS): FORCE $(PROGDIRS)
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
-	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
+	$(MAKE) $(MAKE_K_FLAG) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
 	  -f $(top_srcdir)/Makefile.dev $(do)
 
-$(OTHERDIRS): $(PROGDIRS)
+$(OTHERDIRS): $(PROGDEPDIRS) $(CCPROGDIRS) $(CPROGDIRS)
 
 $(INCDIRS) $(PROGDEPDIRS) $(OTHERDIRS): FORCE
 	@$(ENVSETUP); \
@@ -707,7 +708,7 @@ $(INCDIRS) $(PROGDEPDIRS) $(OTHERDIRS): FORCE
 	fi; \
 	test -d $@ || $(mkinstalldirs) $@; \
 	cd $@; \
-	$(MAKE) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
+	$(MAKE) $(MAKE_K_FLAG) $(MDEFINES) srcdir=$$srcdir VPATH=$$srcdir \
 	  -f $(top_srcdir)/Makefile.comm \
 	  -f $$srcdir/Makefile.sub \
 	  -f $(top_srcdir)/Makefile.man $(do)

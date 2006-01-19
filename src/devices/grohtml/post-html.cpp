@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006
  * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cpp
@@ -4305,14 +4305,10 @@ char *get_html_translation (font *f, const string &name)
     return NULL;
   else {
     idx = f->name_to_index((char *)(name + '\0').contents());
-    if (idx == 0) {
-      error("character `%s' not found", (name + '\0').contents());
+    if (f->contains(idx))
+      return (char *)f->get_special_device_encoding(idx);
+    else
       return NULL;
-    } else
-      if (f->contains(idx))
-	return (char *)f->get_special_device_encoding(idx);
-      else
-	return NULL;
   }
 }
 

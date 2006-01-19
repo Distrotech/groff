@@ -1,3 +1,19 @@
+2006-01-19  Bruno Haible  <bruno@clisp.org>
+
+	Let `make -k install' install more files.
+
+	* Makefile.in (MAKE_K_FLAG): New variable.  Use it everywhere where
+	$(MAKE) and $(MDEFINES) are used.
+	(CPROGDIRS): Remove $(XPROGDIRS).  Treat $(XPROGDIRS) like
+	$(CPROGDIRS) everywhere.
+	($(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) $(TTYDEVDIRS)): Don't depend
+	on $(XPROGDIRS).
+	($(OTHERDIRS)): Likewise.
+
+
+	* src/devices/grohtml/post-html.cpp (get_html_translation): Remove
+	failure test for font::name_to_index -- it can never fail.
+
 2006-01-19  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grops/grops.man: Fix section on creating EPS files.
