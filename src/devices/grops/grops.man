@@ -34,7 +34,7 @@ the original English.
 .de TQ
 .  br
 .  ns
-.  TP \$1
+.  TP \\$1
 ..
 .
 .de FT
@@ -96,11 +96,11 @@ option.
 .
 If no files are given,
 .B grops
-will read the standard input.
+reads the standard input.
 .
 A filename of
 .B \-
-will also cause
+also causes
 .B grops
 to read the standard input.
 .
@@ -145,7 +145,7 @@ controls what
 .B grops
 does to make its output acceptable to such programs.
 .
-A value of\~0 will cause grops not to employ any workarounds.
+A value of\~0 causes grops not to employ any workarounds.
 .
 .IP
 Add\~1 if no
@@ -235,7 +235,7 @@ Guess the page length.
 .
 This generates PostScript code that guesses the page length.
 .
-The guess will be correct only if the imageable area is vertically
+The guess is correct only if the imageable area is vertically
 centered on the page.
 .
 This option allows you to generate documents that can be printed
@@ -251,7 +251,7 @@ and
 escapes.
 The current directory is always searched first.
 This option may be specified more than once;
-the directories will be searched in the order specified.
+the directories are searched in the order specified.
 No directory search is performed for files specified using an absolute path.
 .
 .TP
@@ -566,7 +566,7 @@ understands various X\~commands produced using the
 .B \[rs]X
 escape sequence;
 .B grops
-will only interpret commands that begin with a
+only interprets commands that begin with a
 .B ps:
 tag.
 .
@@ -575,17 +575,17 @@ tag.
 This executes the arbitrary PostScript commands in
 .IR code .
 .
-The PostScript currentpoint will be set to the position of the
+The PostScript currentpoint is set to the position of the
 .B \[rs]X
 command before executing
 .IR code .
 .
-The origin will be at the top left corner of the page,
-and y\~coordinates will increase down the page.
+The origin is at the top left corner of the page,
+and y\~coordinates increase down the page.
 .
 A procedure\~\c
 .B u
-will be defined that converts groff units
+is defined that converts groff units
 to the coordinate system in effect.
 .
 For example, 
@@ -601,24 +601,23 @@ For example,
 .RE
 .
 .IP
-will draw a horizontal line one inch long.
+draws a horizontal line one inch long.
 .
 .I code
 may make changes to the graphics state,
-but any changes will persist only to the
-end of the page.
+but any changes persist only to the end of the page.
 .
 A dictionary containing the definitions specified by the
 .B def
 and
 .B mdef
-will be on top of the dictionary stack.
+is on top of the dictionary stack.
 .
 If your code adds definitions to this dictionary,
 you should allocate space for them using
 .BI \[rs]X'ps\ mdef \ n '\fR.
 .
-Any definitions will persist only until the end of the page.
+Any definitions persist only until the end of the page.
 .
 If you use the
 .B \[rs]Y
@@ -639,8 +638,8 @@ For example,
 \&stroke
 \&..
 \&\[rs]Yy
-.fi
 .ft R
+.fi
 .
 .LP
 is another way to draw a horizontal line one inch long.
@@ -726,13 +725,13 @@ and
 are integers that give the desired width and height in groff
 units of the graphic.
 .
-The graphic will be scaled so that it has this width and height
+The graphic is scaled so that it has this width and height
 and translated so that the lower left corner of the graphic is
 located at the position associated with
 .B \[rs]X
 command.
 .
-If the height argument is omitted it will be scaled uniformly in the
+If the height argument is omitted it is scaled uniformly in the
 x and y\~directions so that it has the specified width.
 .
 Note that the contents of the
@@ -766,14 +765,14 @@ PostScript graphics.
 .B \[rs]X'ps:\ invis'
 .TQ
 .B \[rs]X'ps:\ endinvis'
-No output will be generated for text and drawing commands
+No output is generated for text and drawing commands
 that are bracketed with these
 .B \[rs]X
 commands.
 .
 These commands are intended for use when output from
 .B troff
-will be previewed before being processed with
+is previewed before being processed with
 .BR grops ;
 if the previewer is unable to display certain characters
 or other constructs, then other substitute characters or constructs
@@ -803,17 +802,17 @@ request
 .LP
 In this case,
 .B \%gxditview
-will be unable to display the
+is unable to display the
 .B \[rs](em
-character and will draw the line,
+character and draws the line,
 whereas
 .B grops
-will print the
+prints the
 .B \[rs](em
 character
 and ignore the line (this code is already in file
 .B Xps.tmac
-which will be loaded if a document intended for
+which is loaded if a document intended for
 .B grops
 is previewed with
 .BR \%gxditview ).
@@ -899,7 +898,7 @@ the widths given in the font file must match the widths used
 in the PostScript font.
 .
 .B grops
-will assume that a character with a groff name of
+assumes that a character with a groff name of
 .B space
 is blank (makes no marks on the page);
 it can make use of such a character to generate more efficient and
@@ -946,12 +945,12 @@ lines beginning with
 and blank lines are ignored;
 fields may be separated by tabs or spaces;
 .I filename
-will be searched for using the same mechanism that is used
+is searched for using the same mechanism that is used
 for groff font metric files.
 .
 The
 .B download
-file itself will also be searched for using this mechanism;
+file itself is also searched for using this mechanism;
 currently, only the first found file in the font path is used.
 .
 .LP
@@ -959,10 +958,10 @@ If the file containing a downloadable font or imported document
 conforms to the Adobe Document Structuring Conventions,
 then
 .B grops
-will interpret any comments in the files sufficiently to ensure that its
+interprets any comments in the files sufficiently to ensure that its
 own output is conforming.
 .
-It will also supply any needed font resources that are listed in the
+It also supplies any needed font resources that are listed in the
 .B download
 file
 as well as any needed file resources.
@@ -978,7 +977,7 @@ then it is necessary for Garamond to appear before Garamond-Outline
 in the PostScript document.
 .
 .B grops
-will handle this automatically
+handles this automatically
 provided that the downloadable font file for Garamond-Outline
 indicates its dependence on Garamond by means of
 the Document Structuring Conventions,
@@ -1009,7 +1008,7 @@ comment.
 .
 .LP
 .B grops
-will not interpret 
+does not interpret 
 .B %%Document\%Fonts
 comments.
 .
@@ -1036,25 +1035,37 @@ should be used.
 .B grops
 itself doesn't emit bounding box information.
 .
-With the help of GhostScript the following commands will produce an
-encapsulated PS file
-.B foo.eps
-from input file
-.BR foo :
+With the help of GhostScript the following simple script
+.B groff2eps
+produces an encapsulated PS file.
+.
+.RS
+.LP
+.nf
+.ft B
+#! /bin/sh
+groff -P-b16 $1 > $1.ps
+gs -dNOPAUSE -sDEVICE=bbox -- $1.ps 2> $1.bbox
+cat $1.ps \[rs]
+| sed \-e "/^%%Orientation/r$1.bbox" \[rs]
+      \-e "/^%!PS-Adobe-3.0/s/$/ EPSF-3.0/" > $1.eps
+rm $1.ps $1.bbox
+.ft R
+.fi
+.RE
+.
+.LP
+Just say
 .
 .IP
 .B
-groff -P-b16 foo > foo.ps
-.br
-.B
-gs -dNOPAUSE -sDEVICE=bbox -- foo.ps 2> foo.bbox
-.br
-.B
-cat foo.ps | sed \-e '/^%%Orientation/rfoo.bbox' > foo.eps
-.br
-.B
-rm foo.bbox
-.br
+groff2eps foo
+.
+.LP
+to convert file
+.B foo
+to
+.BR foo.eps .
 .
 .
 .SS TrueType fonts
@@ -1095,7 +1106,7 @@ If this is set to
 .IR foo ,
 then
 .B grops
-will use the file
+uses the file
 .I foo
 (in the font path) instead of the default prologue file
 .BR prologue .
