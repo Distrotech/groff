@@ -1295,8 +1295,8 @@ it also implies @code{groff}'s @option{-s} option.
 @w{@code{\X'ps: import}} and @w{@code{\X'ps: file}} escapes.
 @end itemize
 
-The current directory is always searched first. This option may be specified
-more than once; the directories will be searched in the order specified. No
+The current directory is always searched first.  This option may be specified
+more than once; the directories are searched in the order specified.  No
 directory search is performed for files specified using an absolute path.
 @end table
 
@@ -1455,7 +1455,7 @@ are @samp{TR}, @samp{TB}, @samp{TI}, and @samp{TBI}.
 @cindex font path
 @cindex path, for font files
 All font files are kept in the @dfn{font directories} which constitute
-the @dfn{font path}.  The file search functions will always append the
+the @dfn{font path}.  The file search functions always append the
 directory @code{dev}@var{name}, where @var{name} is the name of the
 output device.  Assuming, say, DVI output, and @file{/foo/bar} as a
 font directory, the font files for @code{grodvi} must be in
@@ -2203,11 +2203,11 @@ with some versions of the @code{man} program.  @emph{Always} use the
 request, in preference to such a @samp{.ll @var{length}} request.
 In particular, note that in nroff mode, the request @samp{.ll 65n},
 (with any @var{length} expression which evaluates equal to 65@dmn{n},
-i.e., the formatter's default line length in nroff mode), will @emph{not}
-set the line length to 65@dmn{n} (it will be adjusted to the @code{man}
+i.e., the formatter's default line length in nroff mode), does @emph{not}
+set the line length to 65@dmn{n} (it is adjusted to the @code{man}
 macro package's default setting of 78@dmn{n}), whereas the use of the
 @option{-rLL=65n} option, or the @samp{.nr LL 65n}
-request @emph{will} establish a line length of 65@dmn{n}.}
+request @emph{does} establish a line length of 65@dmn{n}.}
 
 @item -rLT=@var{length}
 Set title length to @var{length}.  If not specified, the title length
@@ -2949,7 +2949,7 @@ Default: 12@dmn{p}.
 @endDefmpreg
 
 @Defmpreg {PSINCR, ms}
-Defines an increment in point size, which will be applied to section
+Defines an increment in point size, which is applied to section
 headings at nesting levels below the value specified in @code{GROWPS}.
 The value of @code{PSINCR} should be specified in points, with the
 @dmn{p} scaling factor, and may include a fractional component; for
@@ -2964,9 +2964,9 @@ Default: 1@dmn{p}.
 @Defmpreg {GROWPS, ms}
 Defines the heading level below which the point size increment set by
 @code{PSINCR} becomes effective.  Section headings at and above the
-level specified by @code{GROWPS} will be printed at the point size set
+level specified by @code{GROWPS} are printed at the point size set
 by @code{PS}; for each level below the value of @code{GROWPS}, the
-point size will be increased in steps equal to the value of
+point size is increased in steps equal to the value of
 @code{PSINCR}.  Setting @code{GROWPS} to any value less than@tie{}2
 disables the incremental heading size feature.
 
@@ -3025,7 +3025,7 @@ Defines the minimum number of initial lines of any paragraph which
 should be kept together, to avoid orphan lines at the bottom of a
 page.  If a new paragraph is started close to the bottom of a page,
 and there is insufficient space to accommodate @code{PORPHANS} lines
-before an automatic page break, then the page break will be forced,
+before an automatic page break, then the page break is forced,
 before the start of the paragraph.
 
 Effective: next paragraph.
@@ -3040,7 +3040,7 @@ should be kept together with any section heading introduced by the
 to the bottom of a page, and there is insufficient space to
 accommodate both the heading and at least @code{HORPHANS} lines of the
 following paragraph, before an automatic page break, then the page
-break will be forced before the heading.
+break is forced before the heading.
 
 Effective: next paragraph.
 
@@ -4010,7 +4010,7 @@ Document Control Registers}, for details.
 @cindex @code{ms} macros, multiple columns
 @cindex multiple columns [@code{ms}]
 
-The @file{ms} macros can set text in as many columns as will
+The @file{ms} macros can set text in as many columns as do
 reasonably fit on the page.  The following macros are available; all
 of them force a page break if a multi-column mode is already set.
 However, if the current mode is single-column, starting a multi-column
@@ -4848,7 +4848,7 @@ groff -Tlatin1 -mlatin9 ...
 @endExample
 
 @noindent
-will fail if you use the Euro character in the input.  Usually, this
+fails if you use the Euro character in the input.  Usually, this
 limitation is present only for devices which have a limited set of
 output glyphs (e.g.@: @option{-Tascii} and @option{-Tlatin1}); for other
 devices it is usually sufficient to install proper fonts which contain
@@ -6139,7 +6139,7 @@ Decimal arabic numbers.  This is the default format: 0, 1, 2,
 Decimal numbers with as many digits as specified.  So, @samp{00} would
 result in printing numbers as 01, 02, 03,@tie{}@enddots{}
 
-In fact, any digit instead of zero will do; @code{gtroff} only counts
+In fact, any digit instead of zero does work; @code{gtroff} only counts
 how many digits are specified.  As a consequence, @code{af}'s default
 format @samp{1} could be specified as @samp{0} also (and exactly this is
 returned by the @code{\g} escape, see below).
@@ -6933,7 +6933,7 @@ invoked by the @file{troffrc} or @file{troffrc-end} file; by default,
 @file{troffrc} loads hyphenation patterns and exceptions for American
 English (in files @file{hyphen.us} and @file{hyphenex.us}).
 
-A second call to @code{hpf} (for the same language) will replace the
+A second call to @code{hpf} (for the same language) replaces the
 hyphenation patterns with the new ones.
 
 Invoking @code{hpf} causes an error if there is no current hyphenation
@@ -7621,7 +7621,7 @@ Set the escape character to@tie{}@var{c}.  With no argument the default
 escape character @samp{\} is restored.  It can be also used to
 re-enable the escape mechanism after an @code{eo} request.
 
-Note that changing the escape character globally will likely break
+Note that changing the escape character globally likely breaks
 macro packages since @code{gtroff} has no mechanism to `intern' macros,
 i.e., to convert a macro definition into an internal form which is
 independent of its representation (@TeX{} has this mechanism).
@@ -8220,7 +8220,7 @@ The @samp{|} operator is also affected.
 @cindex @code{\R}, after @code{\c}
 @code{\c} works on the output level.  Anything after this escape on the
 same line is ignored, except @code{\R} which works as usual.  Anything
-before @code{\c} on the same line will be appended to the current partial
+before @code{\c} on the same line is appended to the current partial
 output line.  The next non-command line after an interrupted line counts
 as a new input line.
 
@@ -8232,7 +8232,7 @@ The visual results depend on whether no-fill mode is active.
 @cindex no-fill mode, and @code{\c}
 @cindex mode, no-fill, and @code{\c}
 If no-fill mode is active (using the @code{nf} request), the next input
-text line after @code{\c} will be handled as a continuation of the same
+text line after @code{\c} is handled as a continuation of the same
 input text line.
 
 @Example
@@ -8247,7 +8247,7 @@ test.
 @cindex fill mode, and @code{\c}
 @cindex mode, fill, and @code{\c}
 If fill mode is active (using the @code{fi} request), a word interrupted
-with @code{\c} will be continued with the text on the next input text line,
+with @code{\c} is continued with the text on the next input text line,
 without an intervening space.
 
 @Example
@@ -8459,7 +8459,7 @@ do the following before each paragraph:
 text text text
 @endExample
 
-@code{ne} will then automatically cause a page break if there is space
+@code{ne} then automatically causes a page break if there is space
 for one line only.
 @endDefreq
 
@@ -8477,7 +8477,7 @@ if no argument is given; the default scaling indicator is @samp{v}.
 @cindex @code{sv} request, and no-space mode
 @cindex @code{os} request, and no-space mode
 Both @code{sv} and @code{os} ignore no-space mode.  While the @code{sv}
-request allows negative values for @var{space}, @code{os} will ignore
+request allows negative values for @var{space}, @code{os} ignores
 them.
 @endDefreq
 
@@ -8735,10 +8735,10 @@ which name is the concatenation of the name of the current
 family and the name of the current style.  For example, if the current
 font is@tie{}1 and font position@tie{}1 is associated with style
 @samp{R} and the current font family is @samp{T}, then font
-@samp{TR} will be used.  If the current font is not a style, then the
+@samp{TR} is used.  If the current font is not a style, then the
 current family is ignored.  If the requests @code{cs}, @code{bd},
 @code{tkf}, @code{uf}, or @code{fspecial} are applied to a style,
-they will instead be applied to the member of the current family
+they are instead applied to the member of the current family
 corresponding to that style.
 
 @var{n}@tie{}must be a non-negative integer value.
@@ -9040,7 +9040,7 @@ is called @dfn{groff glyph list (GGL)}.
 @itemize @bullet
 @item
 A glyph for Unicode character U+@var{XXXX}[@var{X}[@var{X}]] which is
-not a composite character will be named
+not a composite character is named
 @code{u@var{XXXX}@r{[}@var{X}@r{[}@var{X}@r{]]}}.  @var{X} must be an
 uppercase hexadecimal digit.  Examples: @code{u1234}, @code{u008E},
 @code{u12DB8}.  The largest Unicode value is 0x10FFFF.  There must be at
@@ -9051,7 +9051,7 @@ represented with character codes from the surrogate area U+D800-U+DFFF)
 are not allowed too.
 
 @item
-A glyph representing more than a single input character will be named
+A glyph representing more than a single input character is named
 
 @display
 @samp{u} @var{component1} @samp{_} @var{component2} @samp{_} @var{component3} @dots{}
@@ -9072,10 +9072,10 @@ acute}.
 @item
 groff maintains a table to decompose all algorithmically derived glyph
 names which are composites itself.  For example, @code{u0100} (@sc{latin
-letter a with macron}) will be automatically decomposed into
+letter a with macron}) is automatically decomposed into
 @code{u0041_0304}.  Additionally, a glyph name of the GGL is preferred
 to an algorithmically derived glyph name; groff also automatically does
-the mapping.  Example: The glyph @code{u0045_0302} will be mapped to
+the mapping.  Example: The glyph @code{u0045_0302} is mapped to
 @code{^E}.
 
 @item
@@ -9108,12 +9108,12 @@ follows:
 
 @itemize @bullet
 @item
-Any component which is found in the GGL will be converted to the
+Any component which is found in the GGL is converted to the
 @code{u@var{XXXX}} form.
 
 @item
 Any component @code{u@var{XXXX}} which is found in the list of
-decomposable glyphs will be decomposed.
+decomposable glyphs is decomposed.
 
 @item
 The resulting elements are then concatenated with @samp{_} inbetween,
@@ -9121,7 +9121,7 @@ dropping the leading @samp{u} in all elements but the first.
 @end itemize
 
 No check for the existence of any component (similar to @code{tr}
-request) will be done.
+request) is done.
 
 Examples:
 
@@ -11582,7 +11582,7 @@ Despite of being silly, the current point is moved horizontally to the
 right by@tie{}@var{n}.
 
 @cindex @w{@code{\D'f @dots{}'}} and horizontal resolution
-Don't use this command!  It has the serious drawback that it will be
+Don't use this command!  It has the serious drawback that it is
 always rounded to the next integer multiple of the horizontal resolution
 (the value of the @code{hor} keyword in the @file{DESC} file).  Use
 @code{\M} (@pxref{Colors}) or @w{@code{\D'Fg @dots{}'}} instead.
@@ -11921,7 +11921,7 @@ Another line.
 An important fact to consider while designing macros is that diversions and
 traps do not interact normally.  For example, if a trap invokes a header
 macro (while outputting a diversion) which tries to change the font on the
-current page, the effect will not be visible before the diversion has
+current page, the effect is not visible before the diversion has
 completely been printed (except for input protected with @code{\!} or
 @code{\?}) since the data in the diversion is already formatted.  In most
 cases, this is not the expected behaviour.
@@ -12544,7 +12544,7 @@ This escape is @code{grohtml} specific.  Provided that this escape
 occurs at the outer nesting level write the @code{filename} to
 @code{stderr}.  The position of the image, @var{P}, must be specified
 and must be one of @code{l}, @code{r}, @code{c}, or@tie{}@code{i} (left,
-right, centered, inline).  @var{filename} will be associated with the
+right, centered, inline).  @var{filename} is associated with the
 production of the next inline image.
 @end table
 @endDefesc
@@ -13470,7 +13470,7 @@ To activate these statements say
 groff -rDB=1 file
 @endExample
 
-If it is known in advance that there will be many errors and no useful
+If it is known in advance that there are many errors and no useful
 output, @code{gtroff} can be forced to suppress formatted output with
 the @option{-z} flag.
 
@@ -13581,7 +13581,7 @@ For example,
 @endExample
 
 @noindent
-will cause a warning if @code{gtroff} must add 0.2@dmn{m} or more for each
+causes a warning if @code{gtroff} must add 0.2@dmn{m} or more for each
 interword space in a line.
 
 This request is active only if text is justified to both margins (using
@@ -13943,7 +13943,7 @@ diversion; it also works in both GNU @code{troff} and @acronym{UNIX}
 @code{troff}.@footnote{To be completely independent of the current
 escape character, use @code{\(rs} which represents a reverse solidus
 (backslash) glyph.}  To store, for some reason, an escape sequence in a
-diversion that will be interpreted when the diversion is reread, either
+diversion that is interpreted when the diversion is reread, either
 use the traditional @code{\!} transparent output facility, or, if this
 is unsuitable, the new @code{\?} escape sequence.
 
@@ -14522,7 +14522,7 @@ while others, such as the color commands, expect plain integers.
 Note that single characters can have the eighth bit set, as can the
 names of fonts and special characters.  The names of characters and
 fonts can be of arbitrary length.  A character that is to be printed
-will always be in the current font.
+is always in the current font.
 
 A string argument is always terminated by the next whitespace
 character (space, tab, or newline); an embedded @samp{#} character is
@@ -15581,7 +15581,7 @@ character set.  For example, the glyph @samp{\[Po]} is
 represented as @samp{&pound;} in @acronym{HTML} 4.0.
 
 Anything on the line after the @var{entity-name} field resp.@: after
-@samp{--} will be ignored.
+@samp{--} is ignored.
 
 The @var{metrics} field has the form:
 

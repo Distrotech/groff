@@ -137,7 +137,7 @@ or, if you want to be portable to older troff versions, as follows:
 
 Read the section on incompatibilities in groff_diff(7).  Try using
 the -C option.  Alternatively there's the sed script
-`tmac/fixmacros.sed' which will attempt to edit a file of macros so
+`tmac/fixmacros.sed' which attempts to edit a file of macros so
 that it can be used with groff without the -C flag.
 
 ----------------------------------------------------------------------
@@ -159,7 +159,7 @@ arguments.  The use of compatibility mode is strongly discouraged.
 
 Yes, it does.  You may need to compile fonts with Metafont at these
 magnifications.  The CompileFonts script in the devdvi/generate
-directory may help you to do this.  (It will take a *long* time on
+directory may help you to do this.  (It takes a *long* time on
 slow computers.)
 
 ----------------------------------------------------------------------
@@ -203,8 +203,8 @@ line and the name of a macro or request).  For example, in Unix troff
 
   .ps	\" restore the previous point size
 
-(with a tab after the .ps) will NOT restore the previous point-size;
-instead it will be silently ignored.  Since this is very likely to be
+(with a tab after the .ps) does NOT restore the previous point-size;
+instead it is silently ignored.  Since this is very likely to be
 an error, gtroff can give a warning about it.  If you want to align
 comments, you can do it like this:
 
@@ -215,7 +215,7 @@ comments, you can do it like this:
 * I don't like the page headers and footers produced by groff -man.
 
 There seem to be many different styles of page header and footer
-produced by different versions of the -man macros.  You will need to
+produced by different versions of the -man macros.  You need to
 put modified macros from tmac/an-old.tmac into man.local.  More
 information is available in groff_man(7).
 
@@ -235,8 +235,8 @@ Ted Faber <faber@lunabase.org> has written a freely available grap:
 
 \n(st and \n(sb aren't supposed to give the height and depth of the
 string rather they give the minimum and maximum vertical displacement
-of the baseline.  For example for \v'2u'\v'-3u', \n(st will be 1 and
-\n(sb will be -2.  The height and depth of the string is available in
+of the baseline.  For example for \v'2u'\v'-3u', \n(st is 1 and
+\n(sb is -2.  The height and depth of the string is available in
 the \n[rst] and \n[rsb] registers: these are groff extensions.
 
 ----------------------------------------------------------------------
@@ -247,13 +247,13 @@ the \n[rst] and \n[rsb] registers: these are groff extensions.
 
 The -man documentation says that the default scale indicator for TP
 macro is `n'.  The groff -man macros implement this correctly, so that
-the argument will be evaluated as if it were
+the argument is evaluated as if it were
 
   \w'label'n+2n
 
 The Unix -man macros don't implement this correctly (probably because
 it's hard to do in Unix troff); they just append `n' to the entire
-argument, so that it will be evaluated as if it were
+argument, so that it is evaluated as if it were
 
   \w'label'u+2n
 
@@ -412,7 +412,7 @@ format.  (This is available from the Adobe file server; send a message
 with a body of `help' to ps-file-server@adobe.com.)
 
 If an EPS file to be included via \X'ps: import' does not start with
-`%!PS-Adobe-...', gtroff will still include the file, but grops will
+`%!PS-Adobe-...', gtroff still includes the file, but grops does
 not add any fonts to the generated output file that are listed in the
 EPS file, even though the files are listed in the `download' file and
 are available in the devps directory.
@@ -550,7 +550,7 @@ Yes.  Configure and compile groff as usual, but install it with
 
   make install tmac_wrap=""
 
-Then no wrapper files are produced, and `-ms' will use groff's `ms'
+Then no wrapper files are produced, and `-ms' uses groff's `ms'
 macros.
 
 ----------------------------------------------------------------------
@@ -744,13 +744,13 @@ before starting the configure script.
 [This has been fixed in z/OS V1R3 (aka OS/390 R13).]
 
 There is a bug in the Language Environment (LE) whereby the test
-program for static destructors fails.  You will see the message
-`configure: error: a working C++ compiler is required'
+program for static destructors fails.  You see the message
+`configure: error: a working C++ compiler is required'.
 
 Applying PTF UQ42006 is supposed to fix this, but the test program is
 still returning the wrong value (1).  To work around this problem, you
 can comment out the following in the configure script (near line 2029).
-This will effectively bypass the test (static constructors and
+This effectively bypasses the test (static constructors and
 destructors do actually work properly):
 
 #if { (eval echo "$as_me:2029: \"$ac_link\"") >&5

@@ -77,7 +77,7 @@ Where differences between Documenter's Work Bench (1991) \fBpic\fP and GNU
 \[lq]DWB pic\[rq].  Details on the history of the program are given at the
 end of this document.
 .PP
-In this document, the \fIgpic\/\fP(1) extensions will be marked as such.
+In this document, the \fIgpic\/\fP(1) extensions are marked as such.
 .
 .
 .NH 1
@@ -97,7 +97,7 @@ on the page.
 .NH 2
 PIC Error Messages
 .PP
-If you make a \fBpic\fP syntax error, \fIgpic\/\fP(1) will issue an
+If you make a \fBpic\fP syntax error, \fIgpic\/\fP(1) issues an
 error message in the standard \fIgcc\/\fP(1)-like syntax.  A typical
 error message looks like this,
 .KS
@@ -195,7 +195,7 @@ purposes.  We'll describe both of these later on.
 .PP
 The box, ellipse, circle, and block composite objects are \fIclosed\/\fR;
 lines, arrows, arcs and splines are \fIopen\fP.  This distinction
-will often be important in explaining command modifiers.
+is often important in explaining command modifiers.
 .PP
 Figure \n[H1]-2 was produced by the following \fBpic\fP program,
 which introduces some more basic concepts:
@@ -315,8 +315,8 @@ Sizes and Spacing
 .PP
 Sizes are specified in inches.  If you don't like inches, it's
 possible to set a global style variable \fBscale\fP that changes the
-unit.  Setting \fBscale = 2.54\fP will effectively change the internal
-unit to centimeters (all other size variable values will be scaled
+unit.  Setting \fBscale = 2.54\fP effectively changes the internal
+unit to centimeters (all other size variable values are scaled
 correspondingly).
 .
 .NH 2
@@ -373,7 +373,7 @@ box width 3 "this text is far too long for a default box"
 .CE "2: Result of \fBbox width 3 \"text far too long\"\fP"
 .PP
 This modifier takes a dimension in inches.  There is also a \[lq]height\[rq]
-modifier that will change a box's height.  The \fBwidth\fP keyword may
+modifier that changes a box's height.  The \fBwidth\fP keyword may
 be abbreviated to \fBwid\fP; the \fBheight\fP keyword to \fBht\fP.
 .
 .NH 2
@@ -627,9 +627,9 @@ and a \fBheight\fP attribute, the length of the arrowhead along the shaft.
 Arrowhead style is controlled by the style variable \fBarrowhead\fP.
 The DWB and GNU versions interpret it differently.  DWB defaults to
 open arrowheads and an \fBarrowhead\fP value of\~2; the Kernighan
-paper says a value of\~7 will make solid arrowheads.  GNU \fBgpic\fP
+paper says a value of\~7 makes solid arrowheads.  GNU \fBgpic\fP
 defaults to solid arrowheads and an \fBarrowhead\fP value of\~1; a
-value of\~0 will produce open arrowheads.  Note that solid arrowheads are
+value of\~0 produces open arrowheads.  Note that solid arrowheads are
 always filled with the current outline color.
 .
 .NH 2
@@ -685,11 +685,11 @@ circle fill; move; circle fill 0.4; move; circle fill 0.9;
 .PP
 GNU \fBgpic\fP makes some additional guarantees.  A fill value greater
 than 1 can also be used: this means fill with the shade of gray that
-is currently being used for text and lines.  Normally this will be
+is currently being used for text and lines.  Normally this is
 black, but output devices may provide a mechanism for changing this.
 The invisible attribute does not affect the filling of objects.  Any
-text associated with a filled object will be added after the object
-has been filled, so that the text will not be obscured by the filling.
+text associated with a filled object is added after the object
+has been filled, so that the text is not obscured by the filling.
 .PP
 The closed-object modifier \fBsolid\fP is equivalent to \fBfill\fP
 with the darkest fill value (DWB \fBpic\fP had this capability but
@@ -752,14 +752,14 @@ about \fI[tg]roff\/\fP(1)'s default point size).
 In GNU \fBgpic\fR, objects can have an
 .B aligned
 attribute.
-This will only work when the postprocessor is
+This only works if the postprocessor is
 \fBgrops\fP.
 Any text associated with an object having the
 .B aligned
-attribute will be rotated about the center of the object
+attribute is rotated about the center of the object
 so that it is aligned in the direction from the start point
 to the end point of the object.
-Note that this attribute will have no effect for objects whose start and
+Note that this attribute has no effect for objects whose start and
 end points are coincident.
 .
 .
@@ -930,13 +930,13 @@ arrow right at A .r;
 .PE
 .CE "1: Example of label use"
 The \fBat\fP statement in the fourth line uses the label \fBA\fP (the
-behavior of \fBat\fP will be explained in the next section).  We'll
+behavior of \fBat\fP is explained in the next section).  We'll
 see later on that labels are most useful for referring to block composite
 objects.  
 .PP
 Labels are not constants but variables (you can view colon as a sort
 of assignment).  You can say something like \fBA: A + (1,0);\fP
-and the effect will be to reassign the label \fBA\fR to designate a
+and the effect is to reassign the label \fBA\fR to designate a
 position one inch to the right of its old value. 
 .
 .
@@ -1257,7 +1257,7 @@ you can change the amount of chopping.
 If you say \fBline .\|.\|.\& chop \fIr1\fP chop \fIr2\fP\fR with \fIr1\fP
 and \fIr2\fP both numbers, you can vary the amount of chopping at both
 ends.  You can use this in combination with trigonometric functions
-to write code that will deal with more complex intersections.
+to write code that deals with more complex intersections.
 .
 .
 .NH 1
@@ -1389,7 +1389,7 @@ arrow from 2nd last [];
 .DE
 .KE
 .LP
-the arrow in the last line will be attached to object \fBP\fP, not 
+the arrow in the last line is attached to object \fBP\fP, not 
 object \fBQ\fP.
 .PP
 In DWB \fBpic\fP, only references one level deep into enclosed blocks
@@ -1469,7 +1469,7 @@ internally as floating-point).  Decimal-point notation is acceptable;
 in GNU \fBgpic\fR, scientific notation in C's `e' format (like
 \f(CW5e-2\fP) is accepted.
 .PP
-Anywhere a number is expected, the language will also accept a
+Anywhere a number is expected, the language also accepts a
 variable.  Variables may be the built-in style variable described in
 the last section, or new variables created by assignment.
 .PP
@@ -1482,7 +1482,7 @@ variable within a block shadows a variable with the same name outside of
 the block.
 .PP
 GNU \fBgpic\fP supports an alternate form of assignment using \fB:=\fP.
-The variable must already be defined, and the value will be assigned to
+The variable must already be defined, and the value is assigned to
 that variable without creating a variable local to the current block.
 For example, this
 .KS
@@ -1566,7 +1566,7 @@ text (not including the braces).  The macro may be called as
 .R
 .DE
 .LP
-The arguments (if any) will be substituted for tokens \fB$1\fP, \fB$2\fP
+The arguments (if any) are substituted for tokens \fB$1\fP, \fB$2\fP
 \&.\|.\|.\& \fB$n\fP
 appearing in the replacement text.
 .PP
@@ -1605,7 +1605,7 @@ define jumperblock {
     box with .nw at 6th last [].nw wid 6*jwidth ht jheight;
 
     # Use {} to avoid changing position from last box draw.
-    # This is necessary so move in any direction will work as expected
+    # This is necessary so move in any direction works as expected
     {"Jumpers in state $1$2$3$4$5$6" at last box .s + (0,-0.2);}
 }
 
@@ -1651,7 +1651,7 @@ define jumperblock {
     box with .nw at 6th last [].nw wid 6*jwidth ht jheight;
 
     # Use {} to avoid changing position from last box draw.
-    # This is necessary so move in any direction will work as expected
+    # This is necessary so move in any direction works as expected
     {"Jumpers in state $1$2$3$4$5$6" at last box .s + (0,-0.2);}
 }
 
@@ -1667,7 +1667,7 @@ and variable assignment to write true functions.
 .PP
 One detail the example above does not illustrate is the fact that
 macro argument parsing is not token-oriented.  If you call
-\fBjumper(\ 1\ )\fP, the value of $1 will be \fB"\ 1\ "\fP.  You could
+\fBjumper(\ 1\ )\fP, the value of $1 is \fB"\ 1\ "\fP.  You could
 even call \fBjumper(big\ string)\fP to give $1 the value
 \fB"big\ string"\fP.
 .PP
@@ -1699,7 +1699,7 @@ The statement
 .DE
 .LP
 inserts the contents of \fIfilename\fR in the \fBpic\fP input stream.
-Any \fB.PS\fP/\fB.PE\fP pair in the file will be ignored.  You
+Any \fB.PS\fP/\fB.PE\fP pair in the file is ignored.  You
 can use this to include pre-generated images.
 .PP
 A variant of this statement replicates the \fBcopy thru\fP feature of
@@ -1884,7 +1884,7 @@ is prefixed by\~\c
 .B *
 then
 .I variable
-will instead be multiplied by
+is multiplied instead by
 \fIexpr3\fR.
 The value of
 .I expr3
@@ -1926,7 +1926,7 @@ or
 pairs may instead be balanced pairs of
 braces ({ and\~}) as in the \fBsh\fR command.  In either case, the
 \fIif-true\fR may contain balanced pairs of braces.  None of these
-delimiters will be seen inside strings.
+delimiters are seen inside strings.
 .PP
 All the usual relational operators my be used in conditional expressions;
 \fB!\&\fP (logical negation, not factorial), \fB&&\fP, \fB|\||\fP, \fB==\fP,
@@ -1947,16 +1947,16 @@ present in \fIgroff\/\fP(1) that are not present in \fItroff\/\fP(1).
 .NH 2
 Scaling Arguments
 .PP
-The DWB \fIpic\/\fP(1) program will accept one or two arguments to
+The DWB \fIpic\/\fP(1) program accepts one or two arguments to
 \&\fB.PS\fP, which is interpreted as a width and height in inches to
 which the results of \fIpic\/\fP(1) should be scaled (width and height
 scale independently).  If there is only one argument, it is
-interpreted as a width to scale the picture to, and height will be
+interpreted as a width to scale the picture to, and height is
 scaled by the same proportion.
 .PP
-GNU \fBgpic\fP is less general; it will accept a single width to scale
+GNU \fBgpic\fP is less general; it accepts a single width to scale
 to, or a zero width and a maximum height to scale to.  With
-two non-zero arguments, it will scale to the maximum height.
+two non-zero arguments, it scales to the maximum height.
 .
 .NH 2
 How Scaling is Handled
@@ -1993,7 +1993,7 @@ the following definitions:
 .vs
 .KE
 .LP
-Equivalent definition will be supplied by GNU \fIpic\/\fP(1) if you use
+Equivalent definition is supplied by GNU \fIpic\/\fP(1) if you use
 the \-mpic option; this should make it usable with macro pages other
 than \fIms\/\fR(1).
 .PP
@@ -2015,7 +2015,7 @@ PIC and [gt]roff commands
 By default, input lines that begin with a period are passed to the
 postprocessor, embedded at the corresponding point in the output.
 Messing with horizontal or vertical spacing is an obvious recipe for
-bugs, but point size and font changes will usually be safe.
+bugs, but point size and font changes are usually safe.
 .PP
 Point sizes and font changes are also safe within text strings, as
 long as they are undone before the end of string.
@@ -2069,7 +2069,7 @@ Interface to TeX
 \*[tx] mode is enabled by the
 .B \-t
 option.
-In \*[tx] mode, pic will define a vbox called
+In \*[tx] mode, pic defines a vbox called
 .B \egraph
 for each picture; the name can be changed with the pseudo-variable
 .B figname
@@ -2082,7 +2082,7 @@ You must yourself print that vbox using, for example, the command
 .RE
 .LP
 Actually, since the vbox has a height of zero (it is defined with \evtop)
-this will produce slightly more vertical space above the picture than
+this produces slightly more vertical space above the picture than
 below it;
 .RS
 .LP
@@ -2122,7 +2122,7 @@ change the value of \fB\ebaselineskip\fP.
 Anything else may well produce undesirable results; use at your own risk.
 Lines beginning with a period are not given any special treatment.
 .PP
-The \*[tx] mode of \fIpic\/\fP(1) will \fInot\fP translate \fBtroff\fP
+The \*[tx] mode of \fIpic\/\fP(1) does \fInot\fP translate \fBtroff\fP
 font and size changes included in text strings!
 .PP
 Here an example how to use \fBfigname\fP.
@@ -2441,7 +2441,7 @@ A line starting with a command character (`.' in groff mode, `\e' in
 A string either enclosed by `{' and `}' or with \fIX\fP and \fIX\fP,
 where \fIX\fP doesn't occur in the string.
 .IP \s[-1]BALANCED-BODY\s[0]
-Delimiters as in \s[-1]BALANCED-TEXT\s[0]; the body will be interpreted as
+Delimiters as in \s[-1]BALANCED-TEXT\s[0]; the body is interpreted as
 `\fB\[la]command\[ra].\|.\|.\fP'.
 .IP \s[-1]FILENAME\s[0]
 The name of a file.  This has the same semantics as \s[-1]TEXT\s[0].
@@ -2480,7 +2480,7 @@ The top-level \fBpic\fP object is a picture.
 .PP
 The arguments, if present, represent the width and height of the picture,
 causing \fBpic\fR to attempt to scale it to the given dimensions in
-inches.  In no case, however, will the X and Y\~dimensions of the
+inches.  In no case, however, the X and Y\~dimensions of the
 picture exceed the values of the style variables \fBmaxpswid\fP and
 \fBmaxpsheight\fP (which default to the normal 8.5\^i by 11\^i page size).
 .PP
@@ -2546,7 +2546,7 @@ else
 .R
 .DE
 .PP
-will fail.  You have to use the braces on the same line as the keywords:
+fails.  You have to use the braces on the same line as the keywords:
 .DS
 .CW
 if {
@@ -2925,7 +2925,7 @@ text (not including the braces).  The macro may be called as
 .R
 .DE
 .LP
-The arguments (if any) will be substituted for tokens $1, $2 .\|.\|.\& $n
+The arguments (if any) are substituted for tokens $1, $2 .\|.\|.\& $n
 appearing in the replacement text.  To undefine a macro, say \fBundef\fP
 \fIname\fR, specifying the name to be undefined.
 .\"%%POSTLUDE%%

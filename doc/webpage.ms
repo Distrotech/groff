@@ -122,7 +122,7 @@ macros contributed by
 .MTO jh@\:axis.se "J\[:o]rgen H\[:a]gg" .
 
 See the file INSTALL for installation instructions.
-You will require a C++ compiler.
+You require a C++ compiler.
 
 The file NEWS describes recent user-visible changes to groff.
 
@@ -156,7 +156,7 @@ cvs -d:pserver:anoncvs@savannah.gnu.org:/cvsroot/groff -z5 co groff
 
 When asked for a password during the `login' call, simply press Enter.
 
-This will create a subdirectory, ~/cvswork/groff, with a `checked out'
+This creates a subdirectory, ~/cvswork/groff, with a `checked out'
 copy of the CVS repository.
 An update of this working copy may be
 achieved, at any later time by invoking the commands
@@ -221,9 +221,9 @@ Note that texinfo and bison or byacc are required only for building from
 CVS sources (either a checked out working copy, or a daily snapshot).
 They are not required for building from a stable release tarball.
 Also note that the version numbers stated are the minimum supported.
-No version of texinfo < 4.8 will work, and the original release of bison
+No version of texinfo < 4.8 work, and the original release of bison
 1.875 is known not to work; you \fImay\fP find that bison releases < 1.875
-will work, but in case of difficulty, please update to a later version
+do work, but in case of difficulty, please update to a later version
 \fIbefore\fP posting a bug report.
 
 For \fIall\fP sources, you need ghostscript for creation of either PDF or
@@ -240,7 +240,7 @@ is to make sure that FSF has all the information it needs to fix the bug.
 At the very least, read the BUG-REPORT form and make sure that you supply
 all the information that it asks for.
 Even if you are not sure that something is a bug, report it using
-BUG-REPORT: this will enable us to determine whether it really is a bug or
+BUG-REPORT: this enables us to determine whether it really is a bug or
 not.
 
 .SH
@@ -482,15 +482,15 @@ Sets number of lines of following paragraph which must be kept with a
 heading, defined by `NH' or `SH', before any automatic page break.
 
 .IP GROWPS
-Sets the first level of heading (set with `NH') which will keep the
+Sets the first level of heading (set with `NH') which keeps the
 same point size as body text.
 
 .IP PSINCR
 Sets the point size increment for each level of heading (set with
 `NH'), below the threshold level set by `GROWPS'; e.g., if
 \en[PS]\~=\~10, \en[GROWPS]\~=\~3 and \en[PSINCR]\~=\~2.0p, then `.NH\~1'
-will produce 14pt headings, `.NH\~2' will produce 12pt, and all other levels
-will remain at 10pt (because \en[PS]\~=\~10).
+produces 14pt headings, `.NH\~2' produces 12pt, and all other levels
+remain at 10pt (because \en[PS]\~=\~10).
 
 .LI
 The `SH' macro now accepts a numeric argument, to make heading size
@@ -559,7 +559,7 @@ files named in `so' and `psbb' requests, and files named in \eX'ps:\~file'
 and \eX'ps:\~import' escapes.
 
 .LI
-If option `\-V' is used more than once, the commands will be both printed
+If option `\-V' is used more than once, the commands are both printed
 on standard error and run.
 .ULE
 .
@@ -802,7 +802,7 @@ The new request
 .ft R
 .in
 
-will change the mapping while a composite glyph name is constructed.
+changes the mapping while a composite glyph name is constructed.
 To make \e[A\~ho] yield the expected result,
 
 .in 2m
@@ -1377,7 +1377,7 @@ final `0' can be omitted.
 
 .LI
 `trin' (translate input) is a new request which is similar to `tr' with
-the exception that the `asciify' request will use the character code (if
+the exception that the `asciify' request uses the character code (if
 any) before the character translation.
 Example:
 
@@ -1557,12 +1557,12 @@ The image position parameter names in `IMG' have been changed to `\-L',
 `\-R', and `\-C'.
 
 .LI
-New macro `PIMG' for inclusion of a PNG image (it will automatically
-convert it into an EPS file if not \-Thtml is used).
+New macro `PIMG' for inclusion of a PNG image (it automatically
+converts it into an EPS file if not \-Thtml is used).
 
 .LI
 New macro `MPIMG' for putting a PNG image into the left or right margin
-(it will automatically convert it into an EPS file if not \-Thtml is used).
+(it automatically converts it into an EPS file if not \-Thtml is used).
 
 .LI
 New macros `HnS', `HnE' to start and end a header line block.
@@ -1813,7 +1813,7 @@ Miscellaneous
 A new manual page `ditroff.7' is available.
 
 .LI
-The groff texinfo manual will now be installed, together with a bunch
+The groff texinfo manual is now installed, together with a bunch
 of examples.
 
 .LI
