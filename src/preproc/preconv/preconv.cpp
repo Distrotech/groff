@@ -1097,6 +1097,7 @@ usage(FILE *stream)
 int
 main(int argc, char **argv)
 {
+  program_name = argv[0];
   // Determine the default encoding.  This must be done before
   // getopt() is called since the usage message shows the default
   // encoding.
