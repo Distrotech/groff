@@ -61,17 +61,19 @@ public:
   int get_height(int, int);	// A rectangle represents the shape of the
 			// glyph with the given index (arg1) at the given
 			// point size (arg2).  Return the distance between
-			// the base line and the top of this rectangle.  If
-			// the top is above the base line, this value is
-			// positive.
+			// the base line and the top of this rectangle.
+			// This is often also called the `ascent' of the
+			// glyph.  If the top is above the base line, this
+			// value is positive.
   int get_depth(int, int);	// A rectangle represents the shape of the
 			// glyph with the given index (arg1) at the given
 			// point size (arg2).  Return the distance between
 			// the base line and the bottom of this rectangle. 
-			// If the bottom is below the base line, this value
-			// is positive.
+			// This is often also called the `descent' of the
+			// glyph.  If the bottom is below the base line,
+			// this value is positive.
   int get_space_width(int);	// Return the normal width of a space at the
-  			// given point size.
+			// given point size.
   int get_character_type(int);	// Return a bit mask describing the shape of
 			// the glyph with the given index.  Bit 0 is set if
 			// the character has a descender.  Bit 1 is set if
