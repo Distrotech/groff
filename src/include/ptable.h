@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2003, 2004, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -22,20 +22,36 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include <assert.h>
 #include <string.h>
 
+// name2(a,b) concatenates two C identifiers.
 #ifdef TRADITIONAL_CPP
-#define name2(a,b) a/**/b
+# define name2(a,b) a/**/b
 #else /* not TRADITIONAL_CPP */
-#define name2(a,b) name2x(a,b)
-#define name2x(a,b) a ## b
+# define name2(a,b) name2x(a,b)
+# define name2x(a,b) a ## b
 #endif /* not TRADITIONAL_CPP */
 
+// `class PTABLE(T)' is the type of a hash table mapping a string
+// (const char *) to an object of type T.
+// `struct PASSOC(T)' is the type of a association (pair) between a
+// string (const char *) and an object of type T.
+// `class PTABLE_ITERATOR(T)' is the type of an iterator iterating through a
+// `class PTABLE(T)'.
+//
+// Nowadays one would use templates for this; this code predates the addition
+// of templates to C++.
 #define PTABLE(T) name2(T,_ptable)
 #define PASSOC(T) name2(T,_passoc)
 #define PTABLE_ITERATOR(T) name2(T,_ptable_iterator)
 
-extern unsigned next_ptable_size(unsigned);
-extern unsigned long hash_string(const char *);
+extern unsigned next_ptable_size(unsigned);	// Return the first suitable
+				// hash table size greater than the given
+				// value.
+extern unsigned long hash_string(const char *);	// Return a hash code of the
+				// given string.  The hash function is
+				// platform dependent.  */
 
+// Declare the types `class PTABLE(T)', `struct PASSOC(T)', and `class
+// PTABLE_ITERATOR(T)' for the type `T'.
 #define declare_ptable(T)						      \
 									      \
 struct PASSOC(T) {							      \
@@ -50,20 +66,33 @@ class PTABLE_ITERATOR(T) {						      \
   PTABLE(T) *p;								      \
   unsigned i;								      \
 public:									      \
-  PTABLE_ITERATOR(T)(PTABLE(T) *);					      \
-  int next(const char **, T **);					      \
+  PTABLE_ITERATOR(T)(PTABLE(T) *);	/* Initialize an iterator running     \
+					   through the given table.  */	      \
+  int next(const char **, T **);	/* Fetch the next pair, store the key \
+					   and value in arg1 and arg2,	      \
+					   respectively, and return 1.  If    \
+					   there is no more pair in the	      \
+					   table, return 0.  */		      \
 };									      \
 									      \
 class PTABLE(T) {							      \
   PASSOC(T) *v;								      \
   unsigned size;							      \
   unsigned used;							      \
-  enum { FULL_NUM = 2, FULL_DEN = 3, INITIAL_SIZE = 17 };		      \
+  enum {								      \
+    FULL_NUM = 2,							      \
+    FULL_DEN = 3,							      \
+    INITIAL_SIZE = 17							      \
+  };									      \
 public:									      \
-  PTABLE(T)();								      \
-  ~PTABLE(T)();								      \
-  void define(const char *, T *);					      \
-  T *lookup(const char *);						      \
+  PTABLE(T)();				/* Create an empty table.  */	      \
+  ~PTABLE(T)();				/* Delete a table, including its      \
+					   values.  */			      \
+  void define(const char *, T *);	/* Define the value (arg2) for a key  \
+					   (arg1).  */			      \
+  T *lookup(const char *);		/* Return a pointer to the value of   \
+					   the given key, if found in the     \
+					   table, or NULL otherwise.  */      \
   friend class PTABLE_ITERATOR(T);					      \
 };
 
@@ -72,6 +101,8 @@ public:									      \
 // Values must be allocated by the caller (always using new[], not new)
 // and are freed by PTABLE.
 
+// Define the implementations of the members of the types `class PTABLE(T)',
+// `struct PASSOC(T)', `class PTABLE_ITERATOR(T)' for the type `T'.
 #define implement_ptable(T)						      \
 									      \
 PASSOC(T)::PASSOC(T)()							      \
@@ -170,3 +201,5 @@ int PTABLE_ITERATOR(T)::next(const char **keyp, T **valp)		      \
     }									      \
   return 0;								      \
 }
+
+// end of ptable.h

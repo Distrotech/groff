@@ -1,4 +1,5 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
+                 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -168,7 +169,7 @@ const char *system_shell_dash_c(void)
 
   shell_name = system_shell_name();
 
-  /* Assume that if the shell name ends in "sh", it's Unixy */
+  /* Assume that if the shell name ends in `sh', it's Unixy */
   if (strcasecmp(shell_name + strlen(shell_name) - strlen("sh"), "sh") == 0)
     dash_c = "-c";
   else

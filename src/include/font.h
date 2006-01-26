@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -19,106 +19,274 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
-typedef void (*FONT_COMMAND_HANDLER)(const char *, const char *,
-				     const char *, int);
+// A function of this type can be registered to define the semantics of
+// arbitrary commands in a font DESC file.
+typedef void (*FONT_COMMAND_HANDLER)(const char *,	// command
+				     const char *,	// arg
+				     const char *,	// file
+				     int);		// lineno
 
+// Types used in non-public members of `class font'.
 struct font_kern_list;
 struct font_char_metric;
 struct font_widths_cache;
 
+// A `class font' instance represents the relevant information of a font of
+// the given device.  This includes the set of glyphs represented by the
+// font, and metrics for each glyph.
+//
+// In the member functions a glyph is represented by a font-independent
+// integer value called an `index'; the functions font::name_to_index and
+// font::number_to_index return such an index.
 class font {
 public:
-  enum {
+  enum {		// The valid argument values of `has_ligature'.
     LIG_ff = 1,
     LIG_fi = 2,
     LIG_fl = 4,
     LIG_ffi = 8,
     LIG_ffl = 16
-    };
+  };
 
-  virtual ~font();
-  int contains(int index);
-  int is_special();
-  int get_width(int index, int point_size);
-  int get_height(int index, int point_size);
-  int get_depth(int index, int point_size);
-  int get_space_width(int point_size);
-  int get_character_type(int index);
-  int get_kern(int index1, int index2, int point_size);
-  int get_skew(int index, int point_size, int slant);
-  int has_ligature(int);
-  int get_italic_correction(int index, int point_size);
-  int get_left_italic_correction(int index, int point_size);
-  int get_subscript_correction(int index, int point_size);
-  int get_code(int i);
-  const char *get_special_device_encoding(int index);
-  const char *get_name();
-  const char *get_internal_name();
-  const char *get_image_generator();
-
-  static int scan_papersize(const char *, const char **, double *, double *);
-
-  static font *load_font(const char *, int * = 0, int = 0);
-  static void command_line_font_dir(const char *path);
-  static FILE *open_file(const char *name, char **pathp);
-  static int load_desc();
-  static int name_to_index(const char *);
-  static int number_to_index(int);
+  virtual ~font();	// Destructor.
+  int contains(int);	// Return 1 if this font contains the glyph with the
+			// given index, 0 otherwise.
+  int is_special();	// Return 1 if this font is special, 0 otherwise. 
+			// See section `Special Fonts' in the info file of
+			// groff.  Used by make_glyph_node().
+  int get_width(int, int);	// A rectangle represents the shape of the
+			// glyph with the given index (arg1) at the given
+			// point size (arg2).  Return the horizontal
+			// dimension of this rectangle.
+  int get_height(int, int);	// A rectangle represents the shape of the
+			// glyph with the given index (arg1) at the given
+			// point size (arg2).  Return the distance between
+			// the base line and the top of this rectangle.  If
+			// the top is above the base line, this value is
+			// positive.
+  int get_depth(int, int);	// A rectangle represents the shape of the
+			// glyph with the given index (arg1) at the given
+			// point size (arg2).  Return the distance between
+			// the base line and the bottom of this rectangle. 
+			// If the bottom is below the base line, this value
+			// is positive.
+  int get_space_width(int);	// Return the normal width of a space at the
+  			// given point size.
+  int get_character_type(int);	// Return a bit mask describing the shape of
+			// the glyph with the given index.  Bit 0 is set if
+			// the character has a descender.  Bit 1 is set if
+			// the character has a tall glyph.  See groff
+			// manual, description of \w and the `ct' register.
+  int get_kern(int, int, int);	// Return the kerning between the glyphs
+			// with given indices (arg1 and the arg2), both at
+			// the given point size (arg3).
+  int get_skew(int, int, int);	// A rectangle represents the shape of the
+			// glyph with the given index (arg1) at the given
+			// point size (arg2).  For slanted fonts like
+			// Times-Italic, the optical vertical axis is
+			// naturally slanted.  The natural slant value
+			// (measured in degrees; positive values mean a
+			// slant to the right) is specified in the font's
+			// description file (see member variable SLANT
+			// below).  In addition to this, any font can be
+			// artificially slanted.  This artificial slant
+			// value (arg3, measured in degrees; positive values
+			// mean a slant to the right) is specified with the
+			// \S escape.
+			//
+			// Return the skew value which is the horizontal
+			// distance between the upper left corner of the
+			// glyph box and the upper left corner of the glyph
+			// box thought to be slanted by the sum of the
+			// natural and artificial slant.  It basically means
+			// how much an accent must be shifted horizontally
+			// to put it on the optical axis of the glyph.
+  int has_ligature(int);	// Return a non-zero value if this font has
+			// the given ligature type (one of LIG_ff, LIG_fi,
+			// etc.), 0 otherwise.
+  int get_italic_correction(int, int);	// If the glyph with the given index
+			// (arg1) at the given point size (arg2) is followed
+			// by an unslanted glyph, some horizontal white
+			// space may need to be inserted in between.  See
+			// the groff manual, description of \/.  Return the
+			// amount (width) of this white space.
+  int get_left_italic_correction(int, int);	// If the glyph with the
+			// given index (arg1) at the given point size (arg2)
+			// is preceded by an unslanted roman glyph, some
+			// horizontal white space may need to be inserted in
+			// between.  See the groff manual, description of
+			// \,.  Return the amount (width) of this white
+			// space.
+  int get_subscript_correction(int, int);	// If the glyph with the
+			// given index (arg1) at the given point size (arg2)
+			// is followed by a subscript glyph, the horizontal
+			// position may need to be advanced by some
+			// (possibly negative) amount.  See groff manual,
+			// description of \w and the `ssc' register.  Return
+			// this amount.
+  int get_code(int);	// Return the code point in the physical font of the
+			// glyph with the given index.
+  const char *get_special_device_encoding(int);	// Return special device
+			// dependent information about the glyph with the
+			// given index.  Return NULL if there is no special
+			// information.
+  const char *get_name();	// Return the name of this font.
+  const char *get_internal_name();	// Return the `internalname'
+			// attribute of this font.  Return NULL if it has
+			// none.
+  const char *get_image_generator();	// Return the `image_generator'
+			// attribute of this font.  Return NULL if it has
+			// none.
+  static int scan_papersize(const char *, const char **,
+			    double *, double *);	// Parse the
+			// `papersize' attribute in a DESC file (given in
+			// arg1).  Return the name of the size (in arg2),
+			// and the length and width (in arg3 and arg4). 
+			// Return 1 in case of success, 0 otherwise.
+  static font *load_font(const char *, int * = 0, int = 0);	// Load the
+			// font description file with the given name (arg1)
+			// and return it as a `font' class.  If arg2 points
+			// to an integer variable, set it to 1 if the file
+			// is not found, without emitting an error message. 
+			// If arg2 is NULL, print an error message if the
+			// file is not found.  If arg3 is nonzero, only the
+			// part of the font description file before the
+			// `charset' and `kernpairs' sections is loaded. 
+			// Return NULL in case of failure.
+  static void command_line_font_dir(const char *);	// Prepend given
+			// path (arg1) to the list of directories in which
+			// to look up fonts.
+  static FILE *open_file(const char *, char **);	// Open a font file
+			// with the given name (arg1), searching along the
+			// current font path.  If arg2 points to a string
+			// pointer, set it to the found file name (this
+			// depends on the device also).  Return the opened
+			// file.  If not found, arg2 is unchanged, and NULL
+			// is returned.
+  static int load_desc();	// Open the DESC file (depending on the
+			// device) and initialize some static variables with
+			// info from there.
+  static int name_to_index(const char *);	// Convert the glyph with
+			// the given name (arg1) to a glyph index.  This has
+			// the same semantics as the groff escape sequence
+			// \C'name'.  If such an index does not yet exist, a
+			// new one is allocated.
+  static int number_to_index(int);	// Convert the font-dependent glyph
+			// with the given number (in the font) to a glyph
+			// index.  This has the same semantics as the groff
+			// escape sequence \N'number'.  If such an index
+			// does not yet exist, a new one is allocated.
   static FONT_COMMAND_HANDLER
-    set_unknown_desc_command_handler(FONT_COMMAND_HANDLER);
-
-  static int res;
-  static int hor;
-  static int vert;
-  static int unitwidth;
-  static int paperwidth;
-  static int paperlength;
+    set_unknown_desc_command_handler(FONT_COMMAND_HANDLER);	// Register
+			// a function which defines the semantics of
+			// arbitrary commands in the font DESC file.
+  static int res;	// The `res' attribute given in the DESC file.
+  static int hor;	// The `hor' attribute given in the DESC file.
+  static int vert;	// The `vert' attribute given in the DESC file.
+  static int unitwidth;	// The `unitwidth' attribute given in the DESC file.
+  static int paperwidth;	// The `paperwidth' attribute given in the
+			// DESC file, or derived from the `papersize'
+			// attribute given in the DESC file.
+  static int paperlength;	// The `paperlength' attribute given in the
+			// DESC file, or derived from the `papersize'
+			// attribute given in the DESC file.
   static const char *papersize;
-  static int biggestfont;
+  static int biggestfont;	// The `biggestfont' attribute given in the
+			// DESC file.
   static int spare2;
-  static int sizescale;
-  static int tcommand;
-  static int unscaled_charwidths;
-  static int pass_filenames;
-  static int use_charnames_in_special;
-  static const char *image_generator;
+  static int sizescale;	// The `sizescale' attribute given in the DESC file.
+  static int tcommand;  // Nonzero if the DESC file has the `tcommand'
+			// attribute.
+  static int unscaled_charwidths;	// Nonzero if the DESC file has the
+			// `unscaled_charwidths' attribute.
+  static int pass_filenames;	// Nonzero if the DESC file has the
+			// `pass_filenames' attribute.
+  static int use_charnames_in_special;	// Nonzero if the DESC file has the
+			// `use_charnames_in_special' attribute.
+  static const char *image_generator;	// The `image_generator' attribute
+			// given in the DESC file.
+  static const char **font_name_table;	// The `fonts' attribute given in
+			// the DESC file, as a NULL-terminated array of
+			// strings.
+  static const char **style_table;	// The `styles' attribute given in
+			// the DESC file, as a NULL-terminated array of
+			// strings.
+  static const char *family;	// The `family' attribute given in the DESC
+			// file.
+  static int *sizes;	// The `sizes' attribute given in the DESC file, as
+			// an array of intervals of the form { lower1,
+			// upper1, ... lowerN, upperN, 0 }.
 
-  static const char **font_name_table;
-  static const char **style_table;
-  static const char *family;
-  static int *sizes;
 private:
-  unsigned ligatures;
-  font_kern_list **kern_hash_table;
-  int space_width;
-  int *ch_index;
+  unsigned ligatures;	// Bit mask of available ligatures.  Used by
+			// has_ligature().
+  font_kern_list **kern_hash_table;	// Hash table of kerning pairs. 
+			// Used by get_kern().
+  int space_width;	// The normal width of a space.  Used by
+			// get_space_width().
+  int *ch_index;	// Conversion table from font-independent character
+			// indices to indices for this particular font.
   int nindices;
-  font_char_metric *ch;
+  font_char_metric *ch;	// Metrics information for every character in this
+			// font.  The indices of this array are
+			// font-specific, found as values in ch_index[].
   int ch_used;
   int ch_size;
-  int special;
-  char *name;
-  char *internalname;
-  double slant;
-  font_widths_cache *widths_cache;
-  static FONT_COMMAND_HANDLER unknown_desc_command_handler;
+  int special;		// 1 if this font is special, 0 otherwise.  Used by
+			// is_special().
+  char *name;		// The name of this font.  Used by get_name().
+  char *internalname;	// The `internalname' attribute of this font, or
+			// NULL.  Used by get_internal_name().
+  double slant;		// The natural slant angle (in degrees) of this font.
+  font_widths_cache *widths_cache;	// A cache of scaled character
+			// widths.  Used by the get_width() function.
+  static FONT_COMMAND_HANDLER unknown_desc_command_handler;	// A
+			// function defining the semantics of arbitrary
+			// commands in the DESC file.
+  enum { KERN_HASH_TABLE_SIZE = 503 };	// Size of the hash table of kerning
+			// pairs.
 
-  enum { KERN_HASH_TABLE_SIZE = 503 };
-
-  void add_entry(int index, const font_char_metric &);
-  void copy_entry(int new_index, int old_index);
-  void add_kern(int index1, int index2, int amount);
-  static int hash_kern(int i1, int i2);
-  void alloc_ch_index(int);
+  // These methods add new characters to the ch_index[] and ch[] arrays.
+  void add_entry(int,				// index
+		 const font_char_metric &);	// metric
+  void copy_entry(int,				// new_index
+		  int);				// old_index
+  void alloc_ch_index(int);			// index
   void extend_ch();
   void compact();
 
+  void add_kern(int, int, int);	// Add to the kerning table a kerning amount
+			// (arg3) between two glyphs with given indices
+			// (arg1 and arg2).
+  static int hash_kern(int, int);	// Return a hash code for the pair
+			// of glyph indices (arg1 and arg2).
+
+  /* Returns w * pointsize / unitwidth, rounded to the nearest integer.  */
   static int scale(int w, int pointsize);
-  static int unit_scale(double *value, char unit);
-  virtual void handle_unknown_font_command(const char *command,
-					   const char *arg,
-					   const char *file, int lineno);
+  static int unit_scale(double *, char); // Convert value in arg1 from the
+			// given unit (arg2; possible values are `i', `c',
+			// `p', and `P' as documented in the info file of
+			// groff, section `Measurements') to inches.  Store
+			// the result in arg1 and return 1.  If the unit is
+			// invalid, return 0.
+  virtual void handle_unknown_font_command(const char *,	// command
+					   const char *,	// arg
+					   const char *,	// file
+					   int);		// lineno
+
 protected:
-  font(const char *);
-  int load(int * = 0, int = 0);
+  font(const char *);	// Initialize a font with the given name.
+
+  int load(int * = 0, int = 0);	// Load the font description file with the
+			// given name (in member variable NAME) into this
+			// object.  If arg1 points to an integer variable,
+			// set it to 1 if the file is not found, without
+			// emitting an error message.  If arg1 is NULL,
+			// print an error message if the file is not found. 
+			// If arg2 is nonzero, only the part of the font
+			// description file before the `charset' and
+			// `kernpairs' sections is loaded.  Return NULL in
+			// case of failure.
 };
+
+// end of font.h

@@ -219,9 +219,9 @@ int linenum = 0;		/* line number of input file */
 char inputline[MAXINLINE];	/* spot to filter through the file */
 char *c1 = inputline;		/* c1, c2, and c3 will be used to */
 char *c2 = inputline + 1;	/* hunt for lines that begin with */
-char *c3 = inputline + 2;	/* ".GS" by looking individually */
+char *c3 = inputline + 2;	/* `.GS' by looking individually */
 char *c4 = inputline + 3;	/* needed for compatibility mode */
-char GScommand[MAXINLINE];	/* put user's ".GS" command line here */
+char GScommand[MAXINLINE];	/* put user's `.GS' command line here */
 char gremlinfile[MAXINLINE];	/* filename to use for a picture */
 int SUNFILE = FALSE;		/* TRUE if SUN gremlin file */
 int compatibility_flag = FALSE;	/* TRUE if in compatibility mode */

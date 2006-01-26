@@ -132,7 +132,7 @@ typedef struct {
 	XFontStruct	*default_font;
 	FILE		*file;
 	Boolean		noPolyText;
-	Boolean		seek;		/* file is "seekable" */
+	Boolean		seek;		/* file is `seekable' */
 	int		default_resolution;
 	/*
  	 * private state

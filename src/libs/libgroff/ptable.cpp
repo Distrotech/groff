@@ -1,4 +1,4 @@
-/* Copyright (C) 1989, 1990, 1991, 1992 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2006 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -23,6 +23,8 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 unsigned long hash_string(const char *s)
 {
+  // This is the mythical Aho-Hopcroft-Ullman hash function.
+  // TODO: Improve.  See http://www.haible.de/bruno/hashfunc.html
   assert(s != 0);
   unsigned long h = 0, g;
   while (*s != 0) {
@@ -37,9 +39,9 @@ unsigned long hash_string(const char *s)
 }
 
 static const unsigned table_sizes[] = { 
-101, 503, 1009, 2003, 3001, 4001, 5003, 10007, 20011, 40009,
-80021, 160001, 500009, 1000003, 2000003, 4000037, 8000009,
-16000057, 32000011, 64000031, 128000003, 0 
+  101, 503, 1009, 2003, 3001, 4001, 5003, 10007, 20011, 40009,
+  80021, 160001, 500009, 1000003, 2000003, 4000037, 8000009,
+  16000057, 32000011, 64000031, 128000003, 0 
 };
 
 unsigned next_ptable_size(unsigned n)
@@ -50,3 +52,5 @@ unsigned next_ptable_size(unsigned n)
       fatal("cannot expand table");
   return *p;
 }
+
+// end of ptable.cpp
