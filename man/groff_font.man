@@ -1,5 +1,6 @@
 .ig
-Copyright (C) 1989-1995, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2006
+  Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -85,7 +86,7 @@ The default font family is
 .BI fonts\  n\ F1\ F2\ F3\|.\|.\|.\|Fn
 Fonts
 .I F1\|.\|.\|.\|Fn
-will be mounted in the font positions 
+are mounted in the font positions 
 .IR m +1,\|.\|.\|., m + n
 where
 .I m
@@ -95,7 +96,7 @@ This command may extend over more than one line.
 .
 A font name of
 .B 0
-will cause no font to be mounted on the corresponding font position.
+causes no font to be mounted on the corresponding font position.
 .
 .TP
 .BI hor\  n
@@ -106,7 +107,7 @@ machine units.
 .TP
 .BI image_generator\  string
 Needed for
-.B grohtml
+.B \%grohtml
 only.
 It specifies the program to generate PNG images from
 PostScript input.
@@ -269,7 +270,7 @@ commands are given in scaled points.
 .BI styles\  S1\ S2\|.\|.\|.\|Sm
 The first
 .I m
-font positions will be associated with styles
+font positions are associated with styles
 .IR S1\|.\|.\|.\|Sm .
 .
 .TP
@@ -291,7 +292,7 @@ scaled points.
 .B unscaled_charwidths
 Make the font handling module always return unscaled character widths.
 Needed for the
-.B grohtml
+.B \%grohtml
 device.
 .
 .TP
@@ -378,8 +379,7 @@ The normal width of a space is
 The font is
 .IR special ;
 this means that when a character is requested that is not present in
-the current font, it will be searched for in any special fonts that
-are mounted.
+the current font, it is searched for in any special fonts that are mounted.
 .
 .LP
 Other commands are ignored by
@@ -507,12 +507,12 @@ The code can be any integer.
 .
 If it starts with a
 .B 0
-it will be interpreted as octal;
+it is interpreted as octal;
 if it starts with
 .B 0x
 or
 .B 0X
-it will be intepreted as hexadecimal.
+it is intepreted as hexadecimal.
 .
 Note, however, that the
 .B \[rs]N
@@ -524,15 +524,17 @@ The
 field gives an ascii string identifying the glyph which the postprocessor
 uses to print the character.
 .
-This field is optional and has been introduced so that the html device driver
-can encode its character set.
-.
-For example, the character `\[rs][Po]' is represented as `&pound;' in
-html\~4.0.
+This field is optional and is currently used by
+.B grops
+to build sub-encoding arrays for PS fonts containing more than 256 glyphs.
+(It has also been used for
+.BR \%grohtml 's
+entity names but for efficiency reasons this data is now compiled directly
+into
+.BR \%grohtml .)
 .
 .LP
-Anything on the line after the encoding field resp. after `-\&-' will
-be ignored.
+Anything on the line after the encoding field or `-\&-' are ignored.
 .
 .LP
 The
@@ -629,7 +631,7 @@ appears next to character
 the space between them should be increased by
 .IR n .
 .
-Most entries in kernpairs section will have a negative value for
+Most entries in kernpairs section have a negative value for
 .IR n .
 .
 .

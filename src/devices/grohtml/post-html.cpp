@@ -67,7 +67,8 @@ typedef enum {col_tag, tab_tag, tab0_tag, none} colType;
  *  prototypes
  */
 
-char *get_html_translation (font *f, const string &name);
+const char *get_html_translation (font *f, const string &name);
+static const char *get_html_entity(unsigned int code);
 int char_translate_to_html (font *f, char *buf, int buflen, unsigned char ch, int b, int and_single);
 
 
@@ -1392,7 +1393,7 @@ void page::add_and_encode (style *s, const string &str,
 			   int is_tag)
 {
   string html_string;
-  char *html_glyph;
+  const char *html_glyph;
   int i=0;
 
   if (s->f == NULL)
@@ -4239,12 +4240,12 @@ void html_printer::add_to_sbuf (int idx, const string &s)
   if (sbuf_style.f == NULL)
     return;
 
-  char *html_glyph = NULL;
+  const char *html_glyph = NULL;
   unsigned int code = sbuf_style.f->get_code(idx);
 
   if (s.empty()) {
     if (sbuf_style.f->contains(idx))
-      html_glyph = (char *)sbuf_style.f->get_special_device_encoding(idx);
+      html_glyph = get_html_entity(sbuf_style.f->get_code(idx));
     else
       html_glyph = NULL;
     
@@ -4297,7 +4298,7 @@ int html_printer::sbuf_continuation (int idx, const char *name,
  *                         return the device encoding for such character.
  */
 
-char *get_html_translation (font *f, const string &name)
+const char *get_html_translation (font *f, const string &name)
 {
   int idx;
 
@@ -4306,12 +4307,271 @@ char *get_html_translation (font *f, const string &name)
   else {
     idx = f->name_to_index((char *)(name + '\0').contents());
     if (f->contains(idx))
-      return (char *)f->get_special_device_encoding(idx);
+      return get_html_entity(f->get_code(idx));
     else
       return NULL;
   }
 }
 
+/*
+ * get_html_entity - given a Unicode character's code point, return a
+ *                   HTML entity that represents the character, if the
+ *                   character cannot represent itself in all contexts.
+ * The return value, if non-NULL, is allocated in a static buffer and is
+ * only valid until the next call of this function.
+ */
+static const char *get_html_entity (unsigned int code)
+{
+  if (code < UNICODE_DESC_START) {
+    switch (code) {
+      case 0x0022: return "&quot;";
+      case 0x0026: return "&amp;";
+      case 0x003C: return "&lt;";
+      case 0x003E: return "&gt;";
+      default: return NULL;
+    }
+  } else {
+    switch (code) {
+      case 0x00A0: return "&nbsp;";
+      case 0x00A1: return "&iexcl;";
+      case 0x00A2: return "&cent;";
+      case 0x00A3: return "&pound;";
+      case 0x00A4: return "&curren;";
+      case 0x00A5: return "&yen;";
+      case 0x00A6: return "&brvbar;";
+      case 0x00A7: return "&sect;";
+      case 0x00A8: return "&uml;";
+      case 0x00A9: return "&copy;";
+      case 0x00AA: return "&ordf;";
+      case 0x00AB: return "&laquo;";
+      case 0x00AC: return "&not;";
+      case 0x00AE: return "&reg;";
+      case 0x00AF: return "&macr;";
+      case 0x00B0: return "&deg;";
+      case 0x00B1: return "&plusmn;";
+      case 0x00B2: return "&sup2;";
+      case 0x00B3: return "&sup3;";
+      case 0x00B4: return "&acute;";
+      case 0x00B5: return "&micro;";
+      case 0x00B6: return "&para;";
+      case 0x00B7: return "&middot;";
+      case 0x00B8: return "&cedil;";
+      case 0x00B9: return "&sup1;";
+      case 0x00BA: return "&ordm;";
+      case 0x00BB: return "&raquo;";
+      case 0x00BC: return "&frac14;";
+      case 0x00BD: return "&frac12;";
+      case 0x00BE: return "&frac34;";
+      case 0x00BF: return "&iquest;";
+      case 0x00C0: return "&Agrave;";
+      case 0x00C1: return "&Aacute;";
+      case 0x00C2: return "&Acirc;";
+      case 0x00C3: return "&Atilde;";
+      case 0x00C4: return "&Auml;";
+      case 0x00C5: return "&Aring;";
+      case 0x00C6: return "&AElig;";
+      case 0x00C7: return "&Ccedil;";
+      case 0x00C8: return "&Egrave;";
+      case 0x00C9: return "&Eacute;";
+      case 0x00CA: return "&Ecirc;";
+      case 0x00CB: return "&Euml;";
+      case 0x00CC: return "&Igrave;";
+      case 0x00CD: return "&Iacute;";
+      case 0x00CE: return "&Icirc;";
+      case 0x00CF: return "&Iuml;";
+      case 0x00D0: return "&ETH;";
+      case 0x00D1: return "&Ntilde;";
+      case 0x00D2: return "&Ograve;";
+      case 0x00D3: return "&Oacute;";
+      case 0x00D4: return "&Ocirc;";
+      case 0x00D5: return "&Otilde;";
+      case 0x00D6: return "&Ouml;";
+      case 0x00D7: return "&times;";
+      case 0x00D8: return "&Oslash;";
+      case 0x00D9: return "&Ugrave;";
+      case 0x00DA: return "&Uacute;";
+      case 0x00DB: return "&Ucirc;";
+      case 0x00DC: return "&Uuml;";
+      case 0x00DD: return "&Yacute;";
+      case 0x00DE: return "&THORN;";
+      case 0x00DF: return "&szlig;";
+      case 0x00E0: return "&agrave;";
+      case 0x00E1: return "&aacute;";
+      case 0x00E2: return "&acirc;";
+      case 0x00E3: return "&atilde;";
+      case 0x00E4: return "&auml;";
+      case 0x00E5: return "&aring;";
+      case 0x00E6: return "&aelig;";
+      case 0x00E7: return "&ccedil;";
+      case 0x00E8: return "&egrave;";
+      case 0x00E9: return "&eacute;";
+      case 0x00EA: return "&ecirc;";
+      case 0x00EB: return "&euml;";
+      case 0x00EC: return "&igrave;";
+      case 0x00ED: return "&iacute;";
+      case 0x00EE: return "&icirc;";
+      case 0x00EF: return "&iuml;";
+      case 0x00F0: return "&eth;";
+      case 0x00F1: return "&ntilde;";
+      case 0x00F2: return "&ograve;";
+      case 0x00F3: return "&oacute;";
+      case 0x00F4: return "&ocirc;";
+      case 0x00F5: return "&otilde;";
+      case 0x00F6: return "&ouml;";
+      case 0x00F7: return "&divide;";
+      case 0x00F8: return "&oslash;";
+      case 0x00F9: return "&ugrave;";
+      case 0x00FA: return "&uacute;";
+      case 0x00FB: return "&ucirc;";
+      case 0x00FC: return "&uuml;";
+      case 0x00FD: return "&yacute;";
+      case 0x00FE: return "&thorn;";
+      case 0x00FF: return "&yuml;";
+      case 0x0152: return "&OElig;";
+      case 0x0153: return "&oelig;";
+      case 0x0160: return "&Scaron;";
+      case 0x0161: return "&scaron;";
+      case 0x0178: return "&Yuml;";
+      case 0x0192: return "&fnof;";
+      case 0x0391: return "&Alpha;";
+      case 0x0392: return "&Beta;";
+      case 0x0393: return "&Gamma;";
+      case 0x0394: return "&Delta;";
+      case 0x0395: return "&Epsilon;";
+      case 0x0396: return "&Zeta;";
+      case 0x0397: return "&Eta;";
+      case 0x0398: return "&Theta;";
+      case 0x0399: return "&Iota;";
+      case 0x039A: return "&Kappa;";
+      case 0x039B: return "&Lambda;";
+      case 0x039C: return "&Mu;";
+      case 0x039D: return "&Nu;";
+      case 0x039E: return "&Xi;";
+      case 0x039F: return "&Omicron;";
+      case 0x03A0: return "&Pi;";
+      case 0x03A1: return "&Rho;";
+      case 0x03A3: return "&Sigma;";
+      case 0x03A4: return "&Tau;";
+      case 0x03A5: return "&Upsilon;";
+      case 0x03A6: return "&Phi;";
+      case 0x03A7: return "&Chi;";
+      case 0x03A8: return "&Psi;";
+      case 0x03A9: return "&Omega;";
+      case 0x03B1: return "&alpha;";
+      case 0x03B2: return "&beta;";
+      case 0x03B3: return "&gamma;";
+      case 0x03B4: return "&delta;";
+      case 0x03B5: return "&epsilon;";
+      case 0x03B6: return "&zeta;";
+      case 0x03B7: return "&eta;";
+      case 0x03B8: return "&theta;";
+      case 0x03B9: return "&iota;";
+      case 0x03BA: return "&kappa;";
+      case 0x03BB: return "&lambda;";
+      case 0x03BC: return "&mu;";
+      case 0x03BD: return "&nu;";
+      case 0x03BE: return "&xi;";
+      case 0x03BF: return "&omicron;";
+      case 0x03C0: return "&pi;";
+      case 0x03C1: return "&rho;";
+      case 0x03C2: return "&sigmaf;";
+      case 0x03C3: return "&sigma;";
+      case 0x03C4: return "&tau;";
+      case 0x03C5: return "&upsilon;";
+      case 0x03C6: return "&phi;";
+      case 0x03C7: return "&chi;";
+      case 0x03C8: return "&psi;";
+      case 0x03C9: return "&omega;";
+      case 0x03D1: return "&thetasym;";
+      case 0x03D6: return "&piv;";
+      case 0x2013: return "&ndash;";
+      case 0x2014: return "&mdash;";
+      case 0x2018: return "&lsquo;";
+      case 0x2019: return "&rsquo;";
+      case 0x201A: return "&sbquo;";
+      case 0x201C: return "&ldquo;";
+      case 0x201D: return "&rdquo;";
+      case 0x201E: return "&bdquo;";
+      case 0x2020: return "&dagger;";
+      case 0x2021: return "&Dagger;";
+      case 0x2022: return "&bull;";
+      case 0x2030: return "&permil;";
+      case 0x2032: return "&prime;";
+      case 0x2033: return "&Prime;";
+      case 0x2039: return "&lsaquo;";
+      case 0x203A: return "&rsaquo;";
+      case 0x203E: return "&oline;";
+      case 0x2044: return "&frasl;";
+      case 0x20AC: return "&euro;";
+      case 0x2111: return "&image;";
+      case 0x2118: return "&weierp;";
+      case 0x211C: return "&real;";
+      case 0x2122: return "&trade;";
+      case 0x2135: return "&alefsym;";
+      case 0x2190: return "&larr;";
+      case 0x2191: return "&uarr;";
+      case 0x2192: return "&rarr;";
+      case 0x2193: return "&darr;";
+      case 0x2194: return "&harr;";
+      case 0x21D0: return "&lArr;";
+      case 0x21D1: return "&uArr;";
+      case 0x21D2: return "&rArr;";
+      case 0x21D3: return "&dArr;";
+      case 0x21D4: return "&hArr;";
+      case 0x2200: return "&forall;";
+      case 0x2202: return "&part;";
+      case 0x2203: return "&exist;";
+      case 0x2205: return "&empty;";
+      case 0x2207: return "&nabla;";
+      case 0x2208: return "&isin;";
+      case 0x2209: return "&notin;";
+      case 0x220B: return "&ni;";
+      case 0x220F: return "&prod;";
+      case 0x2211: return "&sum;";
+      case 0x2212: return "&minus;";
+      case 0x2217: return "&lowast;";
+      case 0x221A: return "&radic;";
+      case 0x221D: return "&prop;";
+      case 0x221E: return "&infin;";
+      case 0x2220: return "&ang;";
+      case 0x2227: return "&and;";
+      case 0x2228: return "&or;";
+      case 0x2229: return "&cap;";
+      case 0x222A: return "&cup;";
+      case 0x222B: return "&int;";
+      case 0x2234: return "&there4;";
+      case 0x223C: return "&sim;";
+      case 0x2245: return "&cong;";
+      case 0x2248: return "&asymp;";
+      case 0x2260: return "&ne;";
+      case 0x2261: return "&equiv;";
+      case 0x2264: return "&le;";
+      case 0x2265: return "&ge;";
+      case 0x2282: return "&sub;";
+      case 0x2283: return "&sup;";
+      case 0x2284: return "&nsub;";
+      case 0x2286: return "&sube;";
+      case 0x2287: return "&supe;";
+      case 0x2295: return "&oplus;";
+      case 0x2297: return "&otimes;";
+      case 0x22A5: return "&perp;";
+      case 0x22C5: return "&sdot;";
+      case 0x2308: return "&lceil;";
+      case 0x2309: return "&rceil;";
+      case 0x230A: return "&lfloor;";
+      case 0x230B: return "&rfloor;";
+      case 0x2329: return "&lang;";
+      case 0x232A: return "&rang;";
+      case 0x25CA: return "&loz;";
+      case 0x2660: return "&spades;";
+      case 0x2663: return "&clubs;";
+      case 0x2665: return "&hearts;";
+      case 0x2666: return "&diams;";
+      default: return to_unicode(code);
+    }
+  }
+}
+ 
 /*
  *  overstrike - returns TRUE if the glyph (i, name) is going to overstrike
  *               a previous glyph in sbuf.
