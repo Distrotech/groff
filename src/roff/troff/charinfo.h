@@ -24,7 +24,7 @@ class macro;
 class charinfo {
   static int next_index;
   charinfo *translation;
-  glyph_t index;
+  glyph index;
   int number;
   macro *mac;
   unsigned char special_translation;
@@ -57,7 +57,7 @@ public:
   };
   symbol nm;
   charinfo(symbol s);
-  glyph_t get_index();
+  glyph get_index();
   int ends_sentence();
   int overlaps_vertically();
   int overlaps_horizontally();
@@ -171,7 +171,7 @@ inline void charinfo::set_flags(unsigned char c)
   flags = c;
 }
 
-inline glyph_t charinfo::get_index()
+inline glyph charinfo::get_index()
 {
   return index;
 }

@@ -63,7 +63,7 @@ class lbp_printer : public printer {
 public:
   lbp_printer(int, double, double);
   ~lbp_printer();
-  void set_char(glyph_t, font *, const environment *, int, const char *name);
+  void set_char(glyph, font *, const environment *, int, const char *name);
   void draw(int code, int *p, int np, const environment *env);
   void begin_page(int);
   void end_page(int page_length);
@@ -277,10 +277,10 @@ char *lbp_printer::font_name(const lbp_font *f, const int siz)
   return bfont_name;
 }
 
-void lbp_printer::set_char(glyph_t glyph, font *f, const environment *env,
+void lbp_printer::set_char(glyph g, font *f, const environment *env,
 			   int w, const char *)
 {
-  int code = f->get_code(glyph);
+  int code = f->get_code(g);
   unsigned char ch = code & 0xff;
   unsigned short symbol_set = code >> 8;
   if (f != cur_font) {

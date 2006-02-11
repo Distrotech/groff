@@ -7,7 +7,7 @@
 
    Written by James Clark (jjc@jclark.com)
 
-   Last update: 15 Dec 2004
+   Last update: 11 Feb 2006
 
    This file is part of groff.
 
@@ -62,29 +62,23 @@ class printer {
 public:
   printer();
   virtual ~printer();
-  void load_font(int i, const char *name);
-  void set_ascii_char(unsigned char c, const environment *env,
-		      int *widthp = 0);
-  void set_special_char(const char *nm, const environment *env,
-			int *widthp = 0);
-  virtual void set_numbered_char(int n, const environment *env,
-				 int *widthp = 0);
-  glyph_t set_char_and_width(const char *nm, const environment *env,
-			     int *widthp, font **f);
-  font *get_font_from_index(int fontno);
-  virtual void draw(int code, int *p, int np, const environment *env);
+  void load_font(int, const char *);
+  void set_ascii_char(unsigned char, const environment *, int * = 0);
+  void set_special_char(const char *, const environment *, int * = 0);
+  virtual void set_numbered_char(int, const environment *, int * = 0);
+  glyph set_char_and_width(const char *, const environment *, int *, font **);
+  font *get_font_from_index(int);
+  virtual void draw(int, int *, int, const environment *);
   // perform change of line color (text, outline) in the print-out 
-  virtual void change_color(const environment * const env);
+  virtual void change_color(const environment * const);
   // perform change of fill color in the print-out 
-  virtual void change_fill_color(const environment * const env);
+  virtual void change_fill_color(const environment * const);
   virtual void begin_page(int) = 0;
-  virtual void end_page(int page_length) = 0;
-  virtual font *make_font(const char *nm);
+  virtual void end_page(int) = 0;
+  virtual font *make_font(const char *);
   virtual void end_of_line();
-  virtual void special(char *arg, const environment *env,
-		       char type = 'p');
-  virtual void devtag(char *arg, const environment *env,
-		      char type = 'p');
+  virtual void special(char *, const environment *, char = 'p');
+  virtual void devtag(char *, const environment *, char = 'p');
 
 protected:
   font_pointer_list *font_list;
@@ -100,8 +94,8 @@ protected:
 
 private:
   font *find_font(const char *);
-  virtual void set_char(glyph_t glyph, font *f, const environment *env,
-			int w, const char *name) = 0;
+  virtual void set_char(glyph, font *, const environment *, int,
+			const char *) = 0;
 };
 
 printer *make_printer();

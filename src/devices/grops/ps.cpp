@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
+                 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -523,7 +524,7 @@ class ps_printer : public printer {
   FILE *tempfp;
   ps_output out;
   int res;
-  glyph_t space_glyph;
+  glyph space_glyph;
   int pages_output;
   int paper_length;
   int equalise_spaces;
@@ -560,9 +561,9 @@ class ps_printer : public printer {
 
   void flush_sbuf();
   void set_style(const style &);
-  void set_space_code(unsigned char c);
+  void set_space_code(unsigned char);
   int set_encoding_index(ps_font *);
-  subencoding *set_subencoding(font *, glyph_t, unsigned char *);
+  subencoding *set_subencoding(font *, glyph, unsigned char *);
   char *get_subfont(subencoding *, const char *);
   void do_exec(char *, const environment *);
   void do_import(char *, const environment *);
@@ -577,7 +578,7 @@ class ps_printer : public printer {
   void encode_subfont(subencoding *);
   void define_encoding(const char *, int);
   void reencode_font(ps_font *);
-  void set_color(color *c, int fill = 0);
+  void set_color(color *, int = 0);
 
   const char *media_name();
   int media_width();
@@ -587,12 +588,11 @@ class ps_printer : public printer {
 public:
   ps_printer(double);
   ~ps_printer();
-  void set_char(glyph_t glyph, font *f, const environment *env, int w,
-		const char *name);
-  void draw(int code, int *p, int np, const environment *env);
+  void set_char(glyph, font *, const environment *, int, const char *);
+  void draw(int, int *, int, const environment *);
   void begin_page(int);
   void end_page(int);
-  void special(char *arg, const environment *env, char type);
+  void special(char *, const environment *, char);
   font *make_font(const char *);
   void end_of_line();
 };
@@ -656,9 +656,10 @@ int ps_printer::set_encoding_index(ps_font *f)
   return f->encoding_index = next_encoding_index++;
 }
 
-subencoding *ps_printer::set_subencoding(font *f, glyph_t glyph, unsigned char *codep)
+subencoding *ps_printer::set_subencoding(font *f, glyph g,
+					 unsigned char *codep)
 {
-  unsigned int idx = f->get_code(glyph);
+  unsigned int idx = f->get_code(g);
   *codep = idx % 256;
   unsigned int num = idx >> 8;
   if (num == 0)
@@ -670,7 +671,7 @@ subencoding *ps_printer::set_subencoding(font *f, glyph_t glyph, unsigned char *
   if (p == 0)
     p = subencodings = new subencoding(f, num, next_subencoding_index++,
 				       subencodings);
-  p->glyphs[*codep] = f->get_special_device_encoding(glyph);
+  p->glyphs[*codep] = f->get_special_device_encoding(g);
   return p;
 }
 
@@ -685,13 +686,13 @@ char *ps_printer::get_subfont(subencoding *sub, const char *stem)
   return sub->subfont;
 }
 
-void ps_printer::set_char(glyph_t glyph, font *f, const environment *env, int w,
+void ps_printer::set_char(glyph g, font *f, const environment *env, int w,
 			  const char *)
 {
-  if (glyph == space_glyph || invis_count > 0)
+  if (g == space_glyph || invis_count > 0)
     return;
   unsigned char code;
-  subencoding *sub = set_subencoding(f, glyph, &code);
+  subencoding *sub = set_subencoding(f, g, &code);
   style sty(f, sub, env->size, env->height, env->slant);
   if (sty.slant != 0) {
     if (sty.slant > 80 || sty.slant < -80) {

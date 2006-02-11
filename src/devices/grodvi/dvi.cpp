@@ -175,10 +175,10 @@ public:
   font *make_font(const char *);
   void begin_page(int);
   void end_page(int);
-  void set_char(glyph_t, font *, const environment *, int w, const char *name);
-  void special(char *arg, const environment *env, char type);
+  void set_char(glyph, font *, const environment *, int, const char *);
+  void special(char *, const environment *, char);
   void end_of_line();
-  void draw(int code, int *p, int np, const environment *env);
+  void draw(int, int *, int, const environment *);
 };
 
 
@@ -340,12 +340,12 @@ void dvi_printer::set_color(color *col)
   do_special(buf);
 }
 
-void dvi_printer::set_char(glyph_t glyph, font *f, const environment *env,
+void dvi_printer::set_char(glyph g, font *f, const environment *env,
 			   int w, const char *)
 {
   if (*env->col != cur_color)
     set_color(env->col);
-  int code = f->get_code(glyph);
+  int code = f->get_code(g);
   if (env->size != cur_point_size || f != cur_font) {
     cur_font = f;
     cur_point_size = env->size;
@@ -384,8 +384,8 @@ void dvi_printer::set_char(glyph_t glyph, font *f, const environment *env,
   }
   possibly_begin_line();
   end_h = env->hpos + w;
-  cur_h += scale(f->get_width(glyph, UNITWIDTH)/MULTIPLIER,
-		 cur_point_size*RES_7227);
+  cur_h += scale(f->get_width(g, UNITWIDTH) / MULTIPLIER,
+		 cur_point_size * RES_7227);
   if (cur_h > max_h)
     max_h = cur_h;
   if (cur_v > max_v)

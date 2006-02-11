@@ -163,7 +163,7 @@ class lj4_printer : public printer {
 public:
   lj4_printer(int);
   ~lj4_printer();
-  void set_char(glyph_t, font *, const environment *, int, const char *name);
+  void set_char(glyph, font *, const environment *, int, const char *name);
   void draw(int code, int *p, int np, const environment *env);
   void begin_page(int);
   void end_page(int page_length);
@@ -278,10 +278,10 @@ int is_unprintable(unsigned char c)
   return c < 32 && (c == 0 || (7 <= c && c <= 15) || c == 27);
 }
 
-void lj4_printer::set_char(glyph_t glyph, font *f, const environment *env,
+void lj4_printer::set_char(glyph g, font *f, const environment *env,
 			   int w, const char *)
 {
-  int code = f->get_code(glyph);
+  int code = f->get_code(g);
 
   unsigned char ch = code & 0xff;
   unsigned short symbol_set = code >> 8;

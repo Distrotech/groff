@@ -8094,7 +8094,7 @@ charinfo::charinfo(symbol s)
   not_found(0), transparent_translate(1), translate_input(0),
   mode(CHAR_NORMAL), nm(s)
 {
-  index = glyph_t(next_index++, s.contents());
+  index = glyph(next_index++, s.contents());
 }
 
 void charinfo::set_hyphenation_code(unsigned char c)
@@ -8194,7 +8194,7 @@ charinfo *get_charinfo_by_number(int n)
   }
 }
 
-glyph_t font::name_to_index(const char *nm)
+glyph font::name_to_index(const char *nm)
 {
   charinfo *ci;
   if (nm[1] == 0)
@@ -8209,7 +8209,7 @@ glyph_t font::name_to_index(const char *nm)
     return ci->get_index();
 }
 
-glyph_t font::number_to_index(int n)
+glyph font::number_to_index(int n)
 {
   return get_charinfo_by_number(n)->get_index();
 }

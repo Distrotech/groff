@@ -26,64 +26,67 @@ typedef void (*FONT_COMMAND_HANDLER)(const char *,	// command
 				     const char *,	// file
 				     int);		// lineno
 
-// A glyph is represented by a font-independent glyph_t object.
+// A glyph is represented by a font-independent `glyph' object.
 // The functions font::name_to_index and font::number_to_index return such
 // an object.
+//
 // There are two types of glyphs:
+//
 //   - those with a name, and among these in particular:
-//     "charNNN" denoting a single 'char' in the input character set,
-//     "uXXXX" denoting a Unicode character,
+//     `charNNN' denoting a single `char' in the input character set,
+//     `uXXXX' denoting a Unicode character,
+//
 //   - those with a number, referring to the the font-dependent glyph with
 //     the given number.
-struct glyph_t {
+struct glyph {
 private:
-  int index;		// A font-independent integer value.
-  const char *name;	// Glyph name, statically allocated.
+  int index;			// A font-independent integer value.
+  const char *name;		// Glyph name, statically allocated.
   friend class font;
   friend class character_indexer;
   friend class charinfo;
-  glyph_t(int, const char *);	// Glyph with given index and name.
+  glyph(int, const char *);	// Glyph with given index and name.
 public:
-  glyph_t();		// Uninitialized glyph.
-  static glyph_t undefined_glyph(); // Undefined glyph.
+  glyph();			// Uninitialized glyph.
+  static glyph undefined_glyph();	// Undefined glyph.
   int glyph_index();
   const char *glyph_name();
-  int operator==(const glyph_t&) const;
-  int operator!=(const glyph_t&) const;
+  int operator==(const glyph &) const;
+  int operator!=(const glyph &) const;
 };
 
-inline glyph_t::glyph_t(int idx, const char *nm)
+inline glyph::glyph(int idx, const char *nm)
 : index (idx), name (nm)
 {
 }
 
-inline glyph_t::glyph_t()
+inline glyph::glyph()
 : index (0xdeadbeef), name (NULL)
 {
 }
 
-inline glyph_t glyph_t::undefined_glyph()
+inline glyph glyph::undefined_glyph()
 {
-  return glyph_t(-1, NULL);
+  return glyph(-1, NULL);
 }
-#define UNDEFINED_GLYPH glyph_t::undefined_glyph()
+#define UNDEFINED_GLYPH glyph::undefined_glyph()
 
-inline int glyph_t::glyph_index()
+inline int glyph::glyph_index()
 {
   return index;
 }
 
-inline const char *glyph_t::glyph_name()
+inline const char *glyph::glyph_name()
 {
   return name;
 }
 
-inline int glyph_t::operator==(const glyph_t &other) const
+inline int glyph::operator==(const glyph &other) const
 {
   return index == other.index;
 }
 
-inline int glyph_t::operator!=(const glyph_t &other) const
+inline int glyph::operator!=(const glyph &other) const
 {
   return index != other.index;
 }
@@ -107,23 +110,23 @@ public:
   };
 
   virtual ~font();	// Destructor.
-  int contains(glyph_t);	// Return 1 if this font contains the given
+  int contains(glyph);	// Return 1 if this font contains the given
 			// glyph, 0 otherwise.
   int is_special();	// Return 1 if this font is special, 0 otherwise. 
 			// See section `Special Fonts' in the info file of
 			// groff.  Used by make_glyph_node().
-  int get_width(glyph_t, int);	// A rectangle represents the shape of the
+  int get_width(glyph, int);	// A rectangle represents the shape of the
 			// given glyph (arg1) at the given point size
 			// (arg2).  Return the horizontal dimension of this
 			// rectangle.
-  int get_height(glyph_t, int);	// A rectangle represents the shape of the
+  int get_height(glyph, int);	// A rectangle represents the shape of the
 			// given glyph (arg1) at the given point size
 			// (arg2).  Return the distance between the base
 			// line and the top of this rectangle.
 			// This is often also called the `ascent' of the
 			// glyph.  If the top is above the base line, this
 			// value is positive.
-  int get_depth(glyph_t, int);	// A rectangle represents the shape of the
+  int get_depth(glyph, int);	// A rectangle represents the shape of the
 			// given glyph (arg1) at the given point size
 			// (arg2).  Return the distance between the base
 			// line and the bottom of this rectangle. 
@@ -132,15 +135,15 @@ public:
 			// this value is positive.
   int get_space_width(int);	// Return the normal width of a space at the
 			// given point size.
-  int get_character_type(glyph_t);	// Return a bit mask describing the
+  int get_character_type(glyph);	// Return a bit mask describing the
 			// shape of the given glyph.  Bit 0 is set if the
-			// haracter has a descender.  Bit 1 is set if the
+			// character has a descender.  Bit 1 is set if the
 			// character has a tall glyph.  See groff manual,
 			// description of \w and the `ct' register.
-  int get_kern(glyph_t, glyph_t, int);	// Return the kerning between the
+  int get_kern(glyph, glyph, int);	// Return the kerning between the
 			// given glyphs (arg1 and arg2), both at the given
 			// point size (arg3).
-  int get_skew(glyph_t, int, int);	// A rectangle represents the shape
+  int get_skew(glyph, int, int);	// A rectangle represents the shape
 			// of the given glyph (arg1) at the given point size
 			// (arg2).  For slanted fonts like Times-Italic, the
 			// optical vertical axis is naturally slanted.  The
@@ -163,27 +166,27 @@ public:
   int has_ligature(int);	// Return a non-zero value if this font has
 			// the given ligature type (one of LIG_ff, LIG_fi,
 			// etc.), 0 otherwise.
-  int get_italic_correction(glyph_t, int);	// If the given glyph (arg1)
+  int get_italic_correction(glyph, int);	// If the given glyph (arg1)
 			// at the given point size (arg2) is followed by an
 			// unslanted glyph, some horizontal white space may
 			// need to be inserted in between.  See the groff
 			// manual, description of \/.  Return the amount
 			// (width) of this white space.
-  int get_left_italic_correction(glyph_t, int);	// If the given glyph (arg1)
+  int get_left_italic_correction(glyph, int);	// If the given glyph (arg1)
 			// at the given point size (arg2) is preceded by an
 			// unslanted roman glyph, some horizontal white
 			// space may need to be inserted in between.  See
 			// the groff manual, description of \,.  Return the
 			// amount (width) of this white space.
-  int get_subscript_correction(glyph_t, int);	// If the given glyph (arg1)
+  int get_subscript_correction(glyph, int);	// If the given glyph (arg1)
 			// at the given point size (arg2)is followed by a
 			// subscript glyph, the horizontal position may need
 			// to be advanced by some (possibly negative)
 			// amount.  See groff manual, description of \w and
 			// the `ssc' register.  Return this amount.
-  int get_code(glyph_t);	// Return the code point in the physical
+  int get_code(glyph);	// Return the code point in the physical
 			// font of the given glyph.
-  const char *get_special_device_encoding(glyph_t);	// Return special
+  const char *get_special_device_encoding(glyph);	// Return special
 			// device dependent information about the given
 			// glyph.  Return NULL if there is no special
 			// information.
@@ -224,19 +227,20 @@ public:
 			// device) and initialize some static variables with
 			// info from there.
 
-  // The next two functions exist in two versions: one in roff/troff/input.cpp
-  // for troff, and one for libs/libgroff/nametoindex.cpp for the preprocessors
-  // and the postprocessors.
-  static glyph_t name_to_index(const char *);	// Convert the glyph with
-			// the given name (arg1) to a glyph_t.  This has
-			// the same semantics as the groff escape sequence
-			// \C'name'.  If such a glyph_t does not yet exist, a
-			// new one is allocated.
-  static glyph_t number_to_index(int);	// Convert the font-dependent glyph
-			// with the given number (in the font) to a glyph_t.
-			// This has the same semantics as the groff escape
-			// sequence \N'number'.  If such a glyph_t does not
-			// yet exist, a new one is allocated.
+  // The next two functions exist in two versions: one in
+  // roff/troff/input.cpp for troff, and one for
+  // libs/libgroff/nametoindex.cpp for the preprocessors and the
+  // postprocessors.
+  static glyph name_to_index(const char *);	// Convert the glyph with
+			// the given name (arg1) to a `glyph' object.  This
+			// has the same semantics as the groff escape sequence
+			// \C'name'.  If such a `glyph' object does not yet
+			// exist, a new one is allocated.
+  static glyph number_to_index(int);	// Convert the font-dependent glyph
+			// with the given number (in the font) to a `glyph'
+			// object.  This has the same semantics as the groff
+			// escape sequence \N'number'.  If such a `glyph'
+			// object does not yet exist, a new one is allocated.
 
   static FONT_COMMAND_HANDLER
     set_unknown_desc_command_handler(FONT_COMMAND_HANDLER);	// Register
@@ -309,18 +313,18 @@ private:
 			// pairs.
 
   // These methods add new characters to the ch_index[] and ch[] arrays.
-  void add_entry(glyph_t,			// glyph
+  void add_entry(glyph,				// glyph
 		 const font_char_metric &);	// metric
-  void copy_entry(glyph_t,			// new_glyph
-		  glyph_t);			// old_glyph
+  void copy_entry(glyph,			// new_glyph
+		  glyph);			// old_glyph
   void alloc_ch_index(int);			// index
   void extend_ch();
   void compact();
 
-  void add_kern(glyph_t, glyph_t, int);	// Add to the kerning table a
+  void add_kern(glyph, glyph, int);	// Add to the kerning table a
 			// kerning amount (arg3) between two given glyphs
 			// (arg1 and arg2).
-  static int hash_kern(glyph_t, glyph_t);	// Return a hash code for
+  static int hash_kern(glyph, glyph);	// Return a hash code for
 			// the pair of glyphs (arg1 and arg2).
 
   /* Returns w * pointsize / unitwidth, rounded to the nearest integer.  */

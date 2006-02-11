@@ -47,12 +47,12 @@ struct font_char_metric {
 };
 
 struct font_kern_list {
-  glyph_t glyph1;
-  glyph_t glyph2;
+  glyph glyph1;
+  glyph glyph2;
   int amount;
   font_kern_list *next;
 
-  font_kern_list(glyph_t, glyph_t, int, font_kern_list * = 0);
+  font_kern_list(glyph, glyph, int, font_kern_list * = 0);
 };
 
 struct font_widths_cache {
@@ -239,15 +239,15 @@ int font::unit_scale(double *value, char unit)
   return 0;
 }
 
-int font::get_skew(glyph_t c, int point_size, int sl)
+int font::get_skew(glyph g, int point_size, int sl)
 {
-  int h = get_height(c, point_size);
-  return int(h*tan((slant+sl)*PI/180.0) + .5);
+  int h = get_height(g, point_size);
+  return int(h * tan((slant + sl) * PI / 180.0) + .5);
 }
 
-int font::contains(glyph_t c)
+int font::contains(glyph g)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0);
   return idx < nindices && ch_index[idx] >= 0;
 }
@@ -271,9 +271,9 @@ font_widths_cache::~font_widths_cache()
   a_delete width;
 }
 
-int font::get_width(glyph_t c, int point_size)
+int font::get_width(glyph g, int point_size)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices);
   int i = ch_index[idx];
   assert(i >= 0);
@@ -303,37 +303,37 @@ int font::get_width(glyph_t c, int point_size)
   return w;
 }
 
-int font::get_height(glyph_t c, int point_size)
+int font::get_height(glyph g, int point_size)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
   return scale(ch[ch_index[idx]].height, point_size);
 }
 
-int font::get_depth(glyph_t c, int point_size)
+int font::get_depth(glyph g, int point_size)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
   return scale(ch[ch_index[idx]].depth, point_size);
 }
 
-int font::get_italic_correction(glyph_t c, int point_size)
+int font::get_italic_correction(glyph g, int point_size)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
   return scale(ch[ch_index[idx]].italic_correction, point_size);
 }
 
-int font::get_left_italic_correction(glyph_t c, int point_size)
+int font::get_left_italic_correction(glyph g, int point_size)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
   return scale(ch[ch_index[idx]].pre_math_space, point_size);
 }
 
-int font::get_subscript_correction(glyph_t c, int point_size)
+int font::get_subscript_correction(glyph g, int point_size)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
   return scale(ch[ch_index[idx]].subscript_correction, point_size);
 }
@@ -343,33 +343,35 @@ int font::get_space_width(int point_size)
   return scale(space_width, point_size);
 }
 
-font_kern_list::font_kern_list(glyph_t c1, glyph_t c2, int n, font_kern_list *p)
-: glyph1(c1), glyph2(c2), amount(n), next(p)
+font_kern_list::font_kern_list(glyph g1, glyph g2, int n, font_kern_list *p)
+: glyph1(g1), glyph2(g2), amount(n), next(p)
 {
 }
 
-inline int font::hash_kern(glyph_t glyph1, glyph_t glyph2)
+inline int font::hash_kern(glyph g1, glyph g2)
 {
-  int n = ((glyph1.glyph_index() << 10) + glyph2.glyph_index()) % KERN_HASH_TABLE_SIZE;
+  int n = ((g1.glyph_index() << 10) + g2.glyph_index())
+	  % KERN_HASH_TABLE_SIZE;
   return n < 0 ? -n : n;
 }
 
-void font::add_kern(glyph_t glyph1, glyph_t glyph2, int amount)
+void font::add_kern(glyph g1, glyph g2, int amount)
 {
   if (!kern_hash_table) {
     kern_hash_table = new font_kern_list *[int(KERN_HASH_TABLE_SIZE)];
     for (int i = 0; i < KERN_HASH_TABLE_SIZE; i++)
       kern_hash_table[i] = 0;
   }
-  font_kern_list **p = kern_hash_table + hash_kern(glyph1, glyph2);
-  *p = new font_kern_list(glyph1, glyph2, amount, *p);
+  font_kern_list **p = kern_hash_table + hash_kern(g1, g2);
+  *p = new font_kern_list(g1, g2, amount, *p);
 }
 
-int font::get_kern(glyph_t glyph1, glyph_t glyph2, int point_size)
+int font::get_kern(glyph g1, glyph g2, int point_size)
 {
   if (kern_hash_table) {
-    for (font_kern_list *p = kern_hash_table[hash_kern(glyph1, glyph2)]; p; p = p->next)
-      if (glyph1 == p->glyph1 && glyph2 == p->glyph2)
+    for (font_kern_list *p = kern_hash_table[hash_kern(g1, g2)]; p;
+	 p = p->next)
+      if (g1 == p->glyph1 && g2 == p->glyph2)
 	return scale(p->amount, point_size);
   }
   return 0;
@@ -380,16 +382,16 @@ int font::has_ligature(int mask)
   return mask & ligatures;
 }
 
-int font::get_character_type(glyph_t c)
+int font::get_character_type(glyph g)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
   return ch[ch_index[idx]].type;
 }
 
-int font::get_code(glyph_t c)
+int font::get_code(glyph g)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
   return ch[ch_index[idx]].code;
 }
@@ -404,9 +406,9 @@ const char *font::get_internal_name()
   return internalname;
 }
 
-const char *font::get_special_device_encoding(glyph_t c)
+const char *font::get_special_device_encoding(glyph g)
 {
-  int idx = c.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
   return ch[ch_index[idx]].special_device_coding;
 }
@@ -477,9 +479,9 @@ void font::compact()
   }
 }
 
-void font::add_entry(glyph_t glyph, const font_char_metric &metric)
+void font::add_entry(glyph g, const font_char_metric &metric)
 {
-  int idx = glyph.glyph_index();
+  int idx = g.glyph_index();
   assert(idx >= 0);
   if (idx >= nindices)
     alloc_ch_index(idx);
@@ -491,7 +493,7 @@ void font::add_entry(glyph_t glyph, const font_char_metric &metric)
   ch[ch_used++] = metric;
 }
 
-void font::copy_entry(glyph_t new_glyph, glyph_t old_glyph)
+void font::copy_entry(glyph new_glyph, glyph old_glyph)
 {
   int new_index = new_glyph.glyph_index();
   int old_index = old_glyph.glyph_index();
@@ -691,14 +693,14 @@ int font::load(int *not_found, int head_only)
 	  t.error("bad kern amount `%1'", p);
 	  return 0;
 	}
-	glyph_t glyph1 = name_to_index(c1);
-	glyph_t glyph2 = name_to_index(c2);
-	add_kern(glyph1, glyph2, n);
+	glyph g1 = name_to_index(c1);
+	glyph g2 = name_to_index(c2);
+	add_kern(g1, g2, n);
       }
     }
     else if (strcmp(command, "charset") == 0) {
       had_charset = 1;
-      glyph_t last_glyph;
+      glyph last_glyph;
       int got_last_glyph = 0;
       for (;;) {
 	if (!t.next()) {
@@ -722,8 +724,8 @@ int font::load(int *not_found, int head_only)
 	    t.error("unnamed character cannot be duplicate");
 	    return 0;
 	  }
-	  glyph_t glyph = name_to_index(nm);
-	  copy_entry(glyph, last_glyph);
+	  glyph g = name_to_index(nm);
+	  copy_entry(g, last_glyph);
 	}
 	else {
 	  font_char_metric metric;
@@ -794,7 +796,8 @@ int font::load(int *not_found, int head_only)
       }
     }
     else {
-      t.error("unrecognised command `%1' after `kernpairs' or `charset' command", command);
+      t.error("unrecognised command `%1' after `kernpairs' or `charset' command",
+	      command);
       return 0;
     }
   }

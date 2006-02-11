@@ -32,8 +32,10 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 // `class PTABLE(T)' is the type of a hash table mapping a string
 // (const char *) to an object of type T.
+//
 // `struct PASSOC(T)' is the type of a association (pair) between a
 // string (const char *) and an object of type T.
+//
 // `class PTABLE_ITERATOR(T)' is the type of an iterator iterating through a
 // `class PTABLE(T)'.
 //
