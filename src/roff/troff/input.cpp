@@ -8094,7 +8094,7 @@ charinfo::charinfo(symbol s)
   not_found(0), transparent_translate(1), translate_input(0),
   mode(CHAR_NORMAL), nm(s)
 {
-  index = glyph_t(next_index++);
+  index = glyph_t(next_index++, s.contents());
 }
 
 void charinfo::set_hyphenation_code(unsigned char c)

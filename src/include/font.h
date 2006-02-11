@@ -29,39 +29,53 @@ typedef void (*FONT_COMMAND_HANDLER)(const char *,	// command
 // A glyph is represented by a font-independent glyph_t object.
 // The functions font::name_to_index and font::number_to_index return such
 // an object.
+// There are two types of glyphs:
+//   - those with a name, and among these in particular:
+//     "charNNN" denoting a single 'char' in the input character set,
+//     "uXXXX" denoting a Unicode character,
+//   - those with a number, referring to the the font-dependent glyph with
+//     the given number.
 struct glyph_t {
 private:
   int index;		// A font-independent integer value.
+  const char *name;	// Glyph name, statically allocated.
   friend class font;
+  friend class character_indexer;
   friend class charinfo;
-  glyph_t(int);		// Glyph with given index.
+  glyph_t(int, const char *);	// Glyph with given index and name.
 public:
   glyph_t();		// Uninitialized glyph.
   static glyph_t undefined_glyph(); // Undefined glyph.
   int glyph_index();
+  const char *glyph_name();
   int operator==(const glyph_t&) const;
   int operator!=(const glyph_t&) const;
 };
 
-inline glyph_t::glyph_t(int idx)
-: index (idx)
+inline glyph_t::glyph_t(int idx, const char *nm)
+: index (idx), name (nm)
 {
 }
 
 inline glyph_t::glyph_t()
-: index (0xdeadbeef)
+: index (0xdeadbeef), name (NULL)
 {
 }
 
 inline glyph_t glyph_t::undefined_glyph()
 {
-  return glyph_t(-1);
+  return glyph_t(-1, NULL);
 }
 #define UNDEFINED_GLYPH glyph_t::undefined_glyph()
 
 inline int glyph_t::glyph_index()
 {
   return index;
+}
+
+inline const char *glyph_t::glyph_name()
+{
+  return name;
 }
 
 inline int glyph_t::operator==(const glyph_t &other) const

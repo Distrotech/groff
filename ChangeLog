@@ -1,5 +1,27 @@
 2006-02-11  Bruno Haible  <bruno@clisp.org>
 
+	New accessor method glyph_t::glyph_name().
+	* src/include/ptable.h (declare_ptable): Add a return value to the
+	'define' method, and declare a 'lookupassoc' method.
+	(implement_ptable): Return the stored key in 'define'. Implement
+	lookupassoc.
+	* src/include/font.h (glyph_t): Add 'name' field. Add an argument to
+	the constructor.
+	(glyph_t::glyph_name): New method.
+	* src/libs/libgroff/nametoindex.cpp (character_indexer): Change
+	return type of methods and field member type to glyph_t.
+	(character_indexer::character_indexer): Update.
+	(character_indexer::ascii_char_index): Allocate a name for the glyph.
+	Return a glyph_t with name.
+	(character_indexer::numbered_char_index): Return a glyph_t without a
+	name.
+	(character_indexer::named_char_index): Return a glyph_t with a name.
+	(font::number_to_index, font::name_to_index): Update.
+	* src/roff/troff/input.cpp (charinfo::charinfo): Use the symbol as
+	the glyph's name.
+
+2006-02-11  Bruno Haible  <bruno@clisp.org>
+
 	* src/devices/grotty/tty.cpp (output_character_t): New type.
 	(tty_printer::make_bold, tty_printer::add_char, tty_printer::put_char):
 	Change argument type to output_character_t.

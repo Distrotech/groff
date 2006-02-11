@@ -36,14 +36,14 @@ class character_indexer {
 public:
   character_indexer();
   ~character_indexer();
-  int ascii_char_index(unsigned char);
-  int named_char_index(const char *);
-  int numbered_char_index(int);
+  glyph_t ascii_char_index(unsigned char);
+  glyph_t named_char_index(const char *);
+  glyph_t numbered_char_index(int);
 private:
   enum { NSMALL = 256 };
   int next_index;
-  int ascii_index[256];
-  int small_number_index[NSMALL];
+  glyph_t ascii_index[256];
+  glyph_t small_number_index[NSMALL];
   PTABLE(int) table;
 };
 
@@ -52,45 +52,55 @@ character_indexer::character_indexer()
 {
   int i;
   for (i = 0; i < 256; i++)
-    ascii_index[i] = -1;
+    ascii_index[i] = glyph_t(-1, NULL);
   for (i = 0; i < NSMALL; i++)
-    small_number_index[i] = -1;
+    small_number_index[i] = glyph_t(-1, NULL);
 }
 
 character_indexer::~character_indexer()
 {
 }
 
-int character_indexer::ascii_char_index(unsigned char c)
+glyph_t character_indexer::ascii_char_index(unsigned char c)
 {
-  if (ascii_index[c] < 0)
-    ascii_index[c] = next_index++;
+  if (ascii_index[c].index < 0) {
+    char buf[4+3+1];
+    memcpy(buf, "char", 4);
+    strcpy(buf + 4, i_to_a(c));
+    ascii_index[c] = glyph_t(next_index++, strsave(buf));
+  }
   return ascii_index[c];
 }
 
-int character_indexer::numbered_char_index(int n)
+glyph_t character_indexer::numbered_char_index(int n)
 {
   if (n >= 0 && n < NSMALL) {
-    if (small_number_index[n] < 0)
-      small_number_index[n] = next_index++;
+    if (small_number_index[n].index < 0)
+      small_number_index[n] = glyph_t(next_index++, NULL);
     return small_number_index[n];
   }
   // Not the most efficient possible implementation.
-  char buf[INT_DIGITS + 3];
+  char buf[1 + 1 + INT_DIGITS + 1];
   buf[0] = ' ';
   strcpy(buf + 1, i_to_a(n));
-  return named_char_index(buf);
-}
-
-int character_indexer::named_char_index(const char *s)
-{
-  int *np = table.lookup(s);
+  int *np = table.lookup(buf);
   if (!np) {
     np = new int[1];
     *np = next_index++;
-    table.define(s, np);
+    table.define(buf, np);
   }
-  return *np;
+  return glyph_t(*np, NULL);
+}
+
+glyph_t character_indexer::named_char_index(const char *s)
+{
+  int *np = table.lookupassoc(&s);
+  if (!np) {
+    np = new int[1];
+    *np = next_index++;
+    s = table.define(s, np);
+  }
+  return glyph_t(*np, s);
 }
 
 static character_indexer indexer;

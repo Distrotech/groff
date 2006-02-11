@@ -88,11 +88,20 @@ public:									      \
   PTABLE(T)();				/* Create an empty table.  */	      \
   ~PTABLE(T)();				/* Delete a table, including its      \
 					   values.  */			      \
-  void define(const char *, T *);	/* Define the value (arg2) for a key  \
-					   (arg1).  */			      \
+  const char *define(const char *, T *);/* Define the value (arg2) for a key  \
+					   (arg1).  Return the copy in the    \
+					   table of the key (arg1), or	      \
+					   possibly NULL if the value (arg2)  \
+					   is NULL.  */			      \
   T *lookup(const char *);		/* Return a pointer to the value of   \
 					   the given key, if found in the     \
 					   table, or NULL otherwise.  */      \
+  T *lookupassoc(const char **);	/* Return a pointer to the value of   \
+					   the given key, passed by reference,\
+					   and replace the key argument with  \
+					   the copy found in the table, if    \
+					   the key is found in the table.     \
+					   Return NULL otherwise.  */	      \
   friend class PTABLE_ITERATOR(T);					      \
 };
 
@@ -125,7 +134,7 @@ PTABLE(T)::~PTABLE(T)()							      \
   a_delete v;								      \
 }									      \
 									      \
-void PTABLE(T)::define(const char *key, T *val)				      \
+const char *PTABLE(T)::define(const char *key, T *val)			      \
 {									      \
   assert(key != 0);							      \
   unsigned long h = hash_string(key);					      \
@@ -136,10 +145,10 @@ void PTABLE(T)::define(const char *key, T *val)				      \
     if (strcmp(v[n].key, key) == 0) {					      \
       a_delete v[n].val;						      \
       v[n].val = val;							      \
-      return;								      \
+      return v[n].key;							      \
     }									      \
   if (val == 0)								      \
-    return;								      \
+    return 0;								      \
   if (used*FULL_DEN >= size*FULL_NUM) {					      \
     PASSOC(T) *oldv = v;						      \
     unsigned old_size = size;						      \
@@ -170,6 +179,7 @@ void PTABLE(T)::define(const char *key, T *val)				      \
   v[n].key = temp;							      \
   v[n].val = val;							      \
   used++;								      \
+  return temp;								      \
 }									      \
 									      \
 T *PTABLE(T)::lookup(const char *key)					      \
@@ -180,6 +190,20 @@ T *PTABLE(T)::lookup(const char *key)					      \
        n = (n == 0 ? size - 1 : n - 1))					      \
     if (strcmp(v[n].key, key) == 0)					      \
       return v[n].val;							      \
+  return 0;								      \
+}									      \
+									      \
+T *PTABLE(T)::lookupassoc(const char **keyptr)				      \
+{									      \
+  const char *key = *keyptr;						      \
+  assert(key != 0);							      \
+  for (unsigned n = unsigned(hash_string(key) % size);			      \
+       v[n].key != 0;							      \
+       n = (n == 0 ? size - 1 : n - 1))					      \
+    if (strcmp(v[n].key, key) == 0) {					      \
+      *keyptr = v[n].key;						      \
+      return v[n].val;							      \
+    }									      \
   return 0;								      \
 }									      \
 									      \
