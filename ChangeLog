@@ -1,5 +1,64 @@
 2006-02-11  Bruno Haible  <bruno@clisp.org>
 
+	Make the glyph data type abstract.
+	* src/include/font.h (glyph_t): New class.
+	(name_to_index, number_to_index): Change return type to glyph_t.
+	(font::contains, font::get_width, font::get_height, font::get_depth,
+	font::get_character_type, font::get_kern, font::get_skew,
+	font::get_italic_correction, font::get_left_italic_correction,
+	font::get_subscript_correction, font::get_code,
+	font::get_special_device_encoding, font::add_entry, font::copy_entry,
+	font::add_kern, font::hash_kern): Change argument type to glyph_t.
+	* src/libs/libgroff/font.cpp (struct font_kern_list): Change members
+	type and constructor argument types to glyph_t.
+	(font::contains, font::get_width, font::get_height, font::get_depth,
+	font::get_character_type, font::get_kern, font::get_skew,
+	font::get_italic_correction, font::get_left_italic_correction,
+	font::get_subscript_correction, font::get_code,
+	font::get_special_device_encoding, font::add_entry, font::copy_entry,
+	font::add_kern, font::hash_kern): Change argument type to glyph_t.
+	(font::load): Use glyph_t variables.
+	* src/libs/libgroff/nametoindex.cpp (name_to_index, number_to_index):
+	Change return type to glyph_t.
+	* src/roff/troff/charinfo.h (charinfo::index): Change type to glyph_t.
+	(charinfo::get_index): Change return type to glyph_t.
+	* src/roff/troff/env.cpp: Include font.h.
+	* src/roff/troff/node.cpp: Include font.h before charinfo.h.
+	* src/roff/troff/input.cpp: Include font.h before charinfo.h.
+	(charinfo::charinfo): Update.
+	(name_to_index, number_to_index): Change return type to glyph_t.
+	* src/include/printer.h (printer::set_char_and_width): Change return
+	type to glyph_t.
+	* src/libs/libdriver/printer.cpp (printer::set_char_and_width): Change
+	return type to glyph_t.
+	* src/devices/grodvi/dvi.cpp (dvi_printer::set_char): Change argument
+	type to glyph_t.
+	* src/devices/grohtml/post-html.cpp (page::add_and_encode): Update.
+	(html_printer::space_glyph): Renamed from space_char_index.
+	(html_printer::add_to_sbuf, html_printer::sbuf_continuation,
+	html_printer::overstrike, html_printer::set_char): Change argument type
+	to glyph_t.
+	(html_printer::set_char_and_width): Change return type to glyph_t.
+	* src/devices/grolbp/lbp.cpp (lbp_printer::set_char): Change argument
+	type to glyph_t.
+	* src/devices/grolj4/lj4.cpp (lj4_printer::set_char): Change argument
+	type to glyph_t.
+	* src/devices/grops/ps.cpp (ps_printer::space_glyph): Renamed from
+	space_char_index.
+	(ps_printer::set_subencoding, ps_printer::set_char): Change argument
+	type to glyph_t.
+	* src/devices/grotty/tty.cpp (tty_printer::set_char): Change argument
+	type to glyph_t.
+
+2006-02-11  Bruno Haible  <bruno@clisp.org>
+
+	* src/roff/troff/input.cpp (font::name_to_index): Never return a
+	negative value.
+	* src/libs/libgroff/font.cpp (font::load): Remove failure tests for
+	font::name_to_index.
+
+2006-02-11  Bruno Haible  <bruno@clisp.org>
+
 	* src/roff/troff/input.cpp (font::name_to_index): Never return a
 	negative value.
 	* src/libs/libgroff/font.cpp (font::load): Remove failure tests for

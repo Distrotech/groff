@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -215,7 +215,7 @@ class tty_printer : public printer {
 public:
   tty_printer(const char *device);
   ~tty_printer();
-  void set_char(int, font *, const environment *, int, const char *name);
+  void set_char(glyph_t, font *, const environment *, int, const char *name);
   void draw(int code, int *p, int np, const environment *env);
   void special(char *arg, const environment *env, char type);
   void change_color(const environment * const env);
@@ -360,12 +360,12 @@ schar tty_printer::color_to_idx(color *col)
   return idx;
 }
 
-void tty_printer::set_char(int i, font *f, const environment *env,
+void tty_printer::set_char(glyph_t gly, font *f, const environment *env,
 			   int w, const char *)
 {
   if (w % font::hor != 0)
     fatal("width of character not a multiple of horizontal resolution");
-  add_char(f->get_code(i), w,
+  add_char(f->get_code(gly), w,
 	   env->hpos, env->vpos,
 	   env->col, env->fill,
 	   ((tty_font *)f)->get_mode());

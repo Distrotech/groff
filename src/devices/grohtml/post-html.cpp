@@ -1417,10 +1417,9 @@ void page::add_and_encode (style *s, const string &str,
 	if (html_glyph)
 	  html_string += html_glyph;
 	else {
-	  int idx=s->f->name_to_index((troff_charname + '\0').contents());
-	  
-	  if (s->f->contains(idx) && (idx != 0))
-	    html_string += s->f->get_code(idx);
+	  glyph_t glyph = s->f->name_to_index((troff_charname + '\0').contents());
+	  if (s->f->contains(glyph))
+	    html_string += s->f->get_code(glyph);
 	}
       }
     } else
@@ -1939,7 +1938,7 @@ class html_printer : public printer {
   files                file_list;
   simple_output        html;
   int                  res;
-  int                  space_char_index;
+  glyph_t              space_glyph;
   int                  space_width;
   int                  no_of_printed_pages;
   int                  paper_length;
@@ -2010,9 +2009,9 @@ class html_printer : public printer {
   void  set_line_thickness            (const environment *);
   void  terminate_current_font        (void);
   void  flush_font                    (void);
-  void  add_to_sbuf                   (int index, const string &s);
+  void  add_to_sbuf                   (glyph_t glyph, const string &s);
   void  write_title                   (int in_head);
-  int   sbuf_continuation             (int index, const char *name, const environment *env, int w);
+  int   sbuf_continuation             (glyph_t glyph, const char *name, const environment *env, int w);
   void  flush_page                    (void);
   void  troff_tag                     (text_glob *g);
   void  flush_globs                   (void);
@@ -2063,7 +2062,7 @@ class html_printer : public printer {
   void  outstanding_eol               (int n);
   int   is_bold                       (font *f);
   font *make_bold                     (font *f);
-  int   overstrike                    (int index, const char *name, const environment *env, int w);
+  int   overstrike                    (glyph_t glyph, const char *name, const environment *env, int w);
   void  do_body                       (void);
   int   next_horiz_pos                (text_glob *g, int nf);
   void  lookahead_for_tables          (void);
@@ -2101,9 +2100,9 @@ class html_printer : public printer {
 public:
   html_printer          ();
   ~html_printer         ();
-  void set_char         (int i, font *f, const environment *env, int w, const char *name);
+  void set_char         (glyph_t glyph, font *f, const environment *env, int w, const char *name);
   void set_numbered_char(int num, const environment *env, int *widthp);
-  int set_char_and_width(const char *nm, const environment *env,
+  glyph_t set_char_and_width(const char *nm, const environment *env,
 			 int *widthp, font **f);
   void draw             (int code, int *p, int np, const environment *env);
   void begin_page       (int);
@@ -4221,7 +4220,7 @@ html_printer::html_printer()
   }
   res               = r;
   html.set_fixed_point(point);
-  space_char_index  = font::name_to_index("space");
+  space_glyph       = font::name_to_index("space");
   space_width       = font::hor;
   paper_length      = font::paperlength;
   linelength        = font::res*13/2;
@@ -4235,17 +4234,17 @@ html_printer::html_printer()
  *  add_to_sbuf - adds character code or name to the sbuf.
  */
 
-void html_printer::add_to_sbuf (int idx, const string &s)
+void html_printer::add_to_sbuf (glyph_t glyph, const string &s)
 {
   if (sbuf_style.f == NULL)
     return;
 
   const char *html_glyph = NULL;
-  unsigned int code = sbuf_style.f->get_code(idx);
+  unsigned int code = sbuf_style.f->get_code(glyph);
 
   if (s.empty()) {
-    if (sbuf_style.f->contains(idx))
-      html_glyph = get_html_entity(sbuf_style.f->get_code(idx));
+    if (sbuf_style.f->contains(glyph))
+      html_glyph = get_html_entity(sbuf_style.f->get_code(glyph));
     else
       html_glyph = NULL;
     
@@ -4261,7 +4260,7 @@ void html_printer::add_to_sbuf (int idx, const string &s)
     sbuf += html_glyph;
 }
 
-int html_printer::sbuf_continuation (int idx, const char *name,
+int html_printer::sbuf_continuation (glyph_t glyph, const char *name,
 				     const environment *env, int w)
 {
   /*
@@ -4271,7 +4270,7 @@ int html_printer::sbuf_continuation (int idx, const char *name,
       || ((sbuf_prev_hpos < sbuf_end_hpos)
 	  && (env->hpos < sbuf_end_hpos)
 	  && ((sbuf_end_hpos-env->hpos < env->hpos-sbuf_prev_hpos)))) {
-    add_to_sbuf(idx, name);
+    add_to_sbuf(glyph, name);
     sbuf_prev_hpos = sbuf_end_hpos;
     sbuf_end_hpos += w + sbuf_kern;
     return TRUE;
@@ -4283,7 +4282,7 @@ int html_printer::sbuf_continuation (int idx, const char *name,
        */
 
       if (env->hpos-sbuf_end_hpos < space_width) {
-	add_to_sbuf(idx, name);
+	add_to_sbuf(glyph, name);
 	sbuf_prev_hpos = sbuf_end_hpos;
 	sbuf_end_hpos = env->hpos + w;
 	return TRUE;
@@ -4300,14 +4299,12 @@ int html_printer::sbuf_continuation (int idx, const char *name,
 
 const char *get_html_translation (font *f, const string &name)
 {
-  int idx;
-
   if ((f == 0) || name.empty())
     return NULL;
   else {
-    idx = f->name_to_index((char *)(name + '\0').contents());
-    if (f->contains(idx))
-      return get_html_entity(f->get_code(idx));
+    glyph_t glyph = f->name_to_index((char *)(name + '\0').contents());
+    if (f->contains(glyph))
+      return get_html_entity(f->get_code(glyph));
     else
       return NULL;
   }
@@ -4579,7 +4576,7 @@ static const char *get_html_entity (unsigned int code)
  *               is flushed.
  */
 
-int html_printer::overstrike(int idx, const char *name, const environment *env, int w)
+int html_printer::overstrike(glyph_t glyph, const char *name, const environment *env, int w)
 {
   if ((env->hpos < sbuf_end_hpos)
       || ((sbuf_kern != 0) && (sbuf_end_hpos - sbuf_kern < env->hpos))) {
@@ -4589,7 +4586,7 @@ int html_printer::overstrike(int idx, const char *name, const environment *env, 
     if (overstrike_detected) {
       /* already detected, remove previous glyph and use this glyph */
       sbuf.set_length(last_sbuf_length);
-      add_to_sbuf(idx, name);
+      add_to_sbuf(glyph, name);
       sbuf_end_hpos = env->hpos + w;
       return TRUE;
     } else {
@@ -4598,7 +4595,7 @@ int html_printer::overstrike(int idx, const char *name, const environment *env, 
       if (! is_bold(sbuf_style.f))
 	flush_sbuf();
       overstrike_detected = TRUE;
-      add_to_sbuf(idx, name);
+      add_to_sbuf(glyph, name);
       sbuf_end_hpos = env->hpos + w;
       return TRUE;
     }
@@ -4612,7 +4609,7 @@ int html_printer::overstrike(int idx, const char *name, const environment *env, 
  *             and add character anew.
  */
 
-void html_printer::set_char(int i, font *f, const environment *env,
+void html_printer::set_char(glyph_t glyph, font *f, const environment *env,
 			    int w, const char *name)
 {
   style sty(f, env->size, env->height, env->slant, env->fontno, *env->col);
@@ -4623,13 +4620,14 @@ void html_printer::set_char(int i, font *f, const environment *env,
     }
   }
   if (((! sbuf.empty()) && (sty == sbuf_style) && (sbuf_vpos == env->vpos))
-      && (sbuf_continuation(i, name, env, w) || overstrike(i, name, env, w)))
+      && (sbuf_continuation(glyph, name, env, w)
+	  || overstrike(glyph, name, env, w)))
     return;
   
   flush_sbuf();
   if (sbuf_style.f == NULL)
     sbuf_style = sty;
-  add_to_sbuf(i, name);
+  add_to_sbuf(glyph, name);
   sbuf_end_hpos = env->hpos + w;
   sbuf_start_hpos = env->hpos;
   sbuf_prev_hpos = env->hpos;
@@ -4652,7 +4650,7 @@ void html_printer::set_numbered_char(int num, const environment *env,
     nbsp_width = -num;
     num = 160;		// &nbsp;
   }
-  int i = font::number_to_index(num);
+  glyph_t glyph = font::number_to_index(num);
   int fn = env->fontno;
   if (fn < 0 || fn >= nfonts) {
     error("bad font position `%1'", fn);
@@ -4663,7 +4661,7 @@ void html_printer::set_numbered_char(int num, const environment *env,
     error("no font mounted at `%1'", fn);
     return;
   }
-  if (!f->contains(i)) {
+  if (!f->contains(glyph)) {
     error("font `%1' does not contain numbered character %2",
 	  f->get_name(),
 	  num);
@@ -4673,28 +4671,28 @@ void html_printer::set_numbered_char(int num, const environment *env,
   if (nbsp_width)
     w = nbsp_width;
   else
-    w = f->get_width(i, env->size);
+    w = f->get_width(glyph, env->size);
   w = round_width(w);
   if (widthp)
     *widthp = w;
-  set_char(i, f, env, w, 0);
+  set_char(glyph, f, env, w, 0);
 }
 
-int html_printer::set_char_and_width(const char *nm, const environment *env,
-				     int *widthp, font **f)
+glyph_t html_printer::set_char_and_width(const char *nm, const environment *env,
+					 int *widthp, font **f)
 {
-  int i = font::name_to_index(nm);
+  glyph_t glyph = font::name_to_index(nm);
   int fn = env->fontno;
   if (fn < 0 || fn >= nfonts) {
     error("bad font position `%1'", fn);
-    return -1;
+    return UNDEFINED_GLYPH;
   }
   *f = font_table[fn];
   if (*f == 0) {
     error("no font mounted at `%1'", fn);
-    return -1;
+    return UNDEFINED_GLYPH;
   }
-  if (!(*f)->contains(i)) {
+  if (!(*f)->contains(glyph)) {
     if (nm[0] != '\0' && nm[1] == '\0')
       error("font `%1' does not contain ascii character `%2'",
 	    (*f)->get_name(),
@@ -4703,13 +4701,13 @@ int html_printer::set_char_and_width(const char *nm, const environment *env,
       error("font `%1' does not contain special character `%2'",
 	    (*f)->get_name(),
 	    nm);
-    return -1;
+    return UNDEFINED_GLYPH;
   }
-  int w = (*f)->get_width(i, env->size);
+  int w = (*f)->get_width(glyph, env->size);
   w = round_width(w);
   if (widthp)
     *widthp = w;
-  return i;
+  return glyph;
 }
 
 /*

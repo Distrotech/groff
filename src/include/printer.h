@@ -2,7 +2,7 @@
 
 // <groff_src_dir>/src/include/printer.h
 
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2006
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
@@ -69,8 +69,8 @@ public:
 			int *widthp = 0);
   virtual void set_numbered_char(int n, const environment *env,
 				 int *widthp = 0);
-  int set_char_and_width(const char *nm, const environment *env,
-			 int *widthp, font **f);
+  glyph_t set_char_and_width(const char *nm, const environment *env,
+			     int *widthp, font **f);
   font *get_font_from_index(int fontno);
   virtual void draw(int code, int *p, int np, const environment *env);
   // perform change of line color (text, outline) in the print-out 
@@ -100,7 +100,7 @@ protected:
 
 private:
   font *find_font(const char *);
-  virtual void set_char(int index, font *f, const environment *env,
+  virtual void set_char(glyph_t glyph, font *f, const environment *env,
 			int w, const char *name) = 0;
 };
 

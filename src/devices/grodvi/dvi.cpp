@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -175,7 +175,7 @@ public:
   font *make_font(const char *);
   void begin_page(int);
   void end_page(int);
-  void set_char(int, font *, const environment *, int w, const char *name);
+  void set_char(glyph_t, font *, const environment *, int w, const char *name);
   void special(char *arg, const environment *env, char type);
   void end_of_line();
   void draw(int code, int *p, int np, const environment *env);
@@ -340,12 +340,12 @@ void dvi_printer::set_color(color *col)
   do_special(buf);
 }
 
-void dvi_printer::set_char(int idx, font *f, const environment *env,
+void dvi_printer::set_char(glyph_t glyph, font *f, const environment *env,
 			   int w, const char *)
 {
   if (*env->col != cur_color)
     set_color(env->col);
-  int code = f->get_code(idx);
+  int code = f->get_code(glyph);
   if (env->size != cur_point_size || f != cur_font) {
     cur_font = f;
     cur_point_size = env->size;
@@ -384,7 +384,7 @@ void dvi_printer::set_char(int idx, font *f, const environment *env,
   }
   possibly_begin_line();
   end_h = env->hpos + w;
-  cur_h += scale(f->get_width(idx, UNITWIDTH)/MULTIPLIER,
+  cur_h += scale(f->get_width(glyph, UNITWIDTH)/MULTIPLIER,
 		 cur_point_size*RES_7227);
   if (cur_h > max_h)
     max_h = cur_h;

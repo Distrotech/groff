@@ -33,11 +33,11 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include "token.h"
 #include "div.h"
 #include "reg.h"
+#include "font.h"
 #include "charinfo.h"
 #include "macropath.h"
 #include "input.h"
 #include "defs.h"
-#include "font.h"
 #include "unicode.h"
 
 // Needed for getpid() and isatty()
@@ -8094,7 +8094,7 @@ charinfo::charinfo(symbol s)
   not_found(0), transparent_translate(1), translate_input(0),
   mode(CHAR_NORMAL), nm(s)
 {
-  index = next_index++;
+  index = glyph_t(next_index++);
 }
 
 void charinfo::set_hyphenation_code(unsigned char c)
@@ -8194,7 +8194,7 @@ charinfo *get_charinfo_by_number(int n)
   }
 }
 
-int font::name_to_index(const char *nm)
+glyph_t font::name_to_index(const char *nm)
 {
   charinfo *ci;
   if (nm[1] == 0)
@@ -8209,7 +8209,7 @@ int font::name_to_index(const char *nm)
     return ci->get_index();
 }
 
-int font::number_to_index(int n)
+glyph_t font::number_to_index(int n)
 {
   return get_charinfo_by_number(n)->get_index();
 }

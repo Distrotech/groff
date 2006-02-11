@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -24,7 +24,7 @@ class macro;
 class charinfo {
   static int next_index;
   charinfo *translation;
-  int index;
+  glyph_t index;
   int number;
   macro *mac;
   unsigned char special_translation;
@@ -57,7 +57,7 @@ public:
   };
   symbol nm;
   charinfo(symbol s);
-  int get_index();
+  glyph_t get_index();
   int ends_sentence();
   int overlaps_vertically();
   int overlaps_horizontally();
@@ -171,7 +171,7 @@ inline void charinfo::set_flags(unsigned char c)
   flags = c;
 }
 
-inline int charinfo::get_index()
+inline glyph_t charinfo::get_index()
 {
   return index;
 }
