@@ -26,7 +26,7 @@
 @copying
 This manual documents GNU @code{troff} version 1.19.2.
 
-Copyright @copyright{} 1994-2000, 2001, 2002, 2003, 2004, 2005
+Copyright @copyright{} 1994-2000, 2001, 2002, 2003, 2004, 2005, 2006
 Free Software Foundation, Inc.
 
 @quotation
@@ -78,9 +78,9 @@ Software Foundation raise funds for GNU development.''
 
 @c To assure correct HTML translation, some ugly hacks are necessary.
 @c While processing a @def... request, the HTML translator looks at the
-@c next line to decide whether it should start indentation or not.  If
-@c it is something starting with @def... (e.g. @deffnx), it doesn't.
-@c So we must assure during macro expansion that a @def... is seen.
+@c next line to decide whether to start indentation, and if the line starts
+@c with @def... (e.g. @deffnx), indentation is started.  We must therefore
+@c ensure that a @def... is seen, during macro expansion.
 @c
 @c The following macros have to be used:
 @c
@@ -372,7 +372,7 @@ Software Foundation raise funds for GNU development.''
 @end macro
 
 
-@c We need special parentheses, brackets, and braces:
+@c Special care is required with parentheses, brackets, and braces:
 @c
 @c . Real parentheses in @deffn produce an error while compiling with
 @c   TeX.
@@ -471,8 +471,8 @@ Software Foundation raise funds for GNU development.''
 @titlepage
 @title groff
 @subtitle The GNU implementation of @code{troff}
-@subtitle Edition 1.19.2
-@subtitle Summer 2005
+@subtitle Edition 1.19.3
+@subtitle Spring 2006
 @author by Trent A.@tie{}Fisher
 @author and Werner Lemberg (@email{bug-groff@@gnu.org})
 
@@ -553,10 +553,9 @@ Software Foundation raise funds for GNU development.''
 @chapter Introduction
 @cindex introduction
 
-GNU @code{troff} (or @code{groff}) is a system for typesetting
-documents.  @code{troff} is very flexible and has been in existence (and
-use) for about 3@tie{}decades.  It is quite widespread and firmly
-entrenched in the @acronym{UNIX} community.
+GNU @code{troff} (or @code{groff}) is a system for typesetting documents. 
+@code{troff} is very flexible and has been used extensively for some thirty
+years.  It is well entrenched in the @acronym{UNIX} community.
 
 @menu
 * What Is groff?::
@@ -585,10 +584,9 @@ normal text files with embedded formatting commands.  These files can
 then be processed by @code{groff} to produce a typeset document on a
 variety of devices.
 
-Likewise, @code{groff} should not be confused with a @dfn{word
-processor}, since that term connotes an integrated system that includes
-an editor and a text formatter.  Also, many word processors follow the
-@acronym{WYSIWYG} paradigm discussed earlier.
+@code{groff} should not be confused with a @dfn{word processor}, an
+integrated system of editor and text formatter.  Also, many word
+processors follow the acronym{WYSIWYG} paradigm discussed earlier.
 
 Although @acronym{WYSIWYG} systems may be easier to use, they have a
 number of disadvantages compared to @code{troff}:
@@ -605,8 +603,8 @@ very portable.
 @code{troff} is firmly entrenched in all @acronym{UNIX} systems.
 
 @item
-It is difficult to have a wide range of capabilities available within
-the confines of a GUI/window system.
+It is difficult to have a wide range of capabilities within the confines of
+a GUI/window system.
 
 @item
 It is more difficult to make global changes to a document.
@@ -629,9 +627,9 @@ impossible to accomplish complex actions.''  --Doug Gwyn (22/Jun/91 in
 @cindex @code{rf}, the program
 @code{troff} can trace its origins back to a formatting program called
 @code{runoff}, written by J.@tie{}E.@tie{}Saltzer, which ran on MIT's CTSS
-operating system in the mid-sixties.  This name came from the common
-phrase of the time ``I'll run off a document.''  Bob Morris ported it to
-the 635 architecture and called the program @code{roff} (an abbreviation
+operating system in the mid-sixties.  The name came from the use of the
+phrase ``run off a document'', meaning to print it out.  Bob Morris ported it
+to the 635 architecture and called the program @code{roff} (an abbreviation
 of @code{runoff}).  It was rewritten as @code{rf} for the @w{PDP-7}
 (before having @acronym{UNIX}), and at the same time (1969), Doug
 McIllroy rewrote an extended and simplified version of @code{roff} in
@@ -639,12 +637,12 @@ the @acronym{BCPL} programming language.
 
 @cindex @code{roff}, the program
 The first version of @acronym{UNIX} was developed on a @w{PDP-7} which
-was sitting around Bell Labs.  In 1971 the developers wanted to get a
-@w{PDP-11} for further work on the operating system.  In order to
-justify the cost for this system, they proposed that they would
-implement a document formatting system for the @acronym{AT&T} patents
-division.  This first formatting program was a reimplementation of
-McIllroy's @code{roff}, written by J.@tie{}F.@tie{}Ossanna.
+was sitting around Bell Labs.  In 1971, the developers wanted to get a
+@w{PDP-11} for further work on the operating system, and to justify the
+cost, proposed the development of a document formatting system for the
+@acronym{AT&T} patents division.  This first formatting program was a
+reimplementation of McIllroy's @code{roff}, written by
+J.@tie{}F.@tie{}Ossanna.
 
 @cindex @code{nroff}, the program
 When they needed a more flexible language, a new version of @code{roff}
@@ -6118,8 +6116,7 @@ To change the increment value without changing the value of a register
 @cindex assigning formats (@code{af})
 @cindex formats, assigning (@code{af})
 
-When a register is used in the text of an input file (as opposed to
-part of an expression), it is textually replaced (or interpolated)
+When a register is used, it is always textually replaced (or interpolated)
 with a representation of that number.  This output format can be
 changed to a variety of formats (numbers, Roman numerals, etc.).  This
 is done using the @code{af} request.
