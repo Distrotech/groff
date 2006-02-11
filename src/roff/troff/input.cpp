@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
+                 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -8203,7 +8204,7 @@ int font::name_to_index(const char *nm)
   else
     ci = get_charinfo(symbol(nm));
   if (ci == 0)
-    return -1;
+    abort();
   else
     return ci->get_index();
 }
