@@ -42,6 +42,9 @@ extern "C" const char *Version_string;
 
 #define TAB_WIDTH 8
 
+// A character of the output device fits in a 32-bit word.
+typedef unsigned int output_character_t;
+
 static int horizontal_tab_flag = 0;
 static int form_feed_flag = 0;
 static int bold_flag_option = 1;
@@ -206,9 +209,9 @@ class tty_printer : public printer {
   int cu_flag;
   PTABLE(schar) tty_colors;
   void make_underline(int);
-  void make_bold(unsigned int, int);
+  void make_bold(output_character_t, int);
   schar color_to_idx(color *col);
-  void add_char(unsigned int, int, int, int, color *, color *, unsigned char);
+  void add_char(output_character_t, int, int, int, color *, color *, unsigned char);
   char *make_rgb_string(unsigned int, unsigned int, unsigned int);
   int tty_color(unsigned int, unsigned int, unsigned int, schar *,
 		schar = DEFAULT_COLOR_IDX);
@@ -220,7 +223,7 @@ public:
   void special(char *arg, const environment *env, char type);
   void change_color(const environment * const env);
   void change_fill_color(const environment * const env);
-  void put_char(unsigned int);
+  void put_char(output_character_t);
   void put_color(schar, int);
   void begin_page(int) { }
   void end_page(int page_length);
@@ -326,7 +329,7 @@ void tty_printer::make_underline(int w)
   }
 }
 
-void tty_printer::make_bold(unsigned int c, int w)
+void tty_printer::make_bold(output_character_t c, int w)
 {
   if (old_drawing_scheme) {
     if (!w)
@@ -371,7 +374,7 @@ void tty_printer::set_char(glyph_t gly, font *f, const environment *env,
 	   ((tty_font *)f)->get_mode());
 }
 
-void tty_printer::add_char(unsigned int c, int w,
+void tty_printer::add_char(output_character_t c, int w,
 			   int h, int v,
 			   color *fore, color *back,
 			   unsigned char mode)
@@ -546,7 +549,7 @@ void tty_printer::draw(int code, int *p, int np, const environment *env)
   }
 }
 
-void tty_printer::put_char(unsigned int wc)
+void tty_printer::put_char(output_character_t wc)
 {
   if (is_utf8 && wc >= 0x80) {
     char buf[6 + 1];
@@ -610,7 +613,7 @@ void tty_printer::put_color(schar color_index, int back)
 // `  ' = 0, ` ' = 1, `|' = 2, `|' = 3
 //            |                 |
 
-static int crossings[4*4] = {
+static output_character_t crossings[4*4] = {
   0x0000, 0x2577, 0x2575, 0x2502,
   0x2576, 0x250C, 0x2514, 0x251C,
   0x2574, 0x2510, 0x2518, 0x2524,
@@ -658,7 +661,7 @@ void tty_printer::end_page(int page_length)
     for (p = g; p; delete p, p = nextp) {
       nextp = p->next;
       if (p->mode & CU_MODE) {
-	cu_flag = p->code;
+	cu_flag = (p->code != 0);
 	continue;
       }
       if (nextp && p->hpos == nextp->hpos) {
