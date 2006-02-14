@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003, 2004
+/* Copyright (C) 2002, 2003, 2004, 2006
    Free Software Foundation, Inc.
      Written by Werner Lemberg <wl@gnu.org>
 
@@ -394,6 +394,7 @@ struct S {
   { "mi", "2212" },
   { "-+", "2213" },
   { "**", "2217" },
+//{ "sqrt", "221A" },
   { "sr", "221A" },
   { "pt", "221D" },
   { "if", "221E" },
