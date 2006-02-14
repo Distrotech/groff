@@ -188,7 +188,10 @@
 	findfont
 	dup maxlength 1 index /FontName known not { 1 add } if dict begin
 	{
-		1 index /FID ne { def } { pop pop } ifelse
+		1 index /FID ne
+		2 index /UniqueID ne
+		and
+		{ def } { pop pop } ifelse
 	} forall
 	/Encoding exch def
 	dup /FontName exch def
