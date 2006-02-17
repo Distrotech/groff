@@ -38,57 +38,70 @@ typedef void (*FONT_COMMAND_HANDLER)(const char *,	// command
 //
 //   - those with a number, referring to the the font-dependent glyph with
 //     the given number.
+
+// The statically allocated information about a glyph.
+//
+// This is an abstract class; only its subclass `charinfo' is instantiated.
+// `charinfo' exists in two versions: one in roff/troff/input.cpp for troff,
+// and one in libs/libgroff/nametoindex.cpp for the preprocessors and the
+// postprocessors.
+struct glyphinfo {
+  int index;			// A font-independent integer value.
+  int number;			// Glyph number or -1.
+  friend class character_indexer;
+};
+
 struct glyph {
 private:
-  int index;			// A font-independent integer value.
-  const char *name;		// Glyph name, statically allocated.
+  glyphinfo *ptr;		// Pointer to the complete information.
   friend class font;
   friend class character_indexer;
   friend class charinfo;
-  glyph(int, const char *);	// Glyph with given index and name.
+  glyph(glyphinfo *);		// Glyph with given complete information.
 public:
   glyph();			// Uninitialized glyph.
   static glyph undefined_glyph();	// Undefined glyph.
   int glyph_index();
-  const char *glyph_name();
+  const char *glyph_name();	// Return the glyph name or NULL.
+  int glyph_number();		// Return the glyph number or -1.
   int operator==(const glyph &) const;
   int operator!=(const glyph &) const;
 };
 
-inline glyph::glyph(int idx, const char *nm)
-: index (idx), name (nm)
+inline glyph::glyph(glyphinfo *p)
+: ptr (p)
 {
 }
 
 inline glyph::glyph()
-: index (0xdeadbeef), name (NULL)
+: ptr ((glyphinfo *) 0xdeadbeef)
 {
 }
 
 inline glyph glyph::undefined_glyph()
 {
-  return glyph(-1, NULL);
+  return glyph(NULL);
 }
 #define UNDEFINED_GLYPH glyph::undefined_glyph()
 
 inline int glyph::glyph_index()
 {
-  return index;
+  return ptr->index;
 }
 
-inline const char *glyph::glyph_name()
+inline int glyph::glyph_number()
 {
-  return name;
+  return ptr->number;
 }
 
 inline int glyph::operator==(const glyph &other) const
 {
-  return index == other.index;
+  return ptr == other.ptr;
 }
 
 inline int glyph::operator!=(const glyph &other) const
 {
-  return index != other.index;
+  return ptr != other.ptr;
 }
 
 // Types used in non-public members of `class font'.
@@ -228,7 +241,7 @@ public:
 			// info from there.
 
   // The next two functions exist in two versions: one in
-  // roff/troff/input.cpp for troff, and one for
+  // roff/troff/input.cpp for troff, and one in
   // libs/libgroff/nametoindex.cpp for the preprocessors and the
   // postprocessors.
   static glyph name_to_index(const char *);	// Convert the glyph with
@@ -241,6 +254,12 @@ public:
 			// object.  This has the same semantics as the groff
 			// escape sequence \N'number'.  If such a `glyph'
 			// object does not yet exist, a new one is allocated.
+  static const char *index_to_name(glyph);	// Convert the given glyph
+			// back to its name.  Return NULL if the glyph
+			// doesn't have a name.
+  static int index_to_number(glyph);	// Convert the given glyph back to
+			// its number.  Return -1 if it does not designate
+			// a numbered character.
 
   static FONT_COMMAND_HANDLER
     set_unknown_desc_command_handler(FONT_COMMAND_HANDLER);	// Register
@@ -354,5 +373,15 @@ protected:
 			// `kernpairs' sections is loaded.  Return NULL in
 			// case of failure.
 };
+
+inline const char *font::index_to_name(glyph g)
+{
+  return g.glyph_name();
+}
+
+inline int font::index_to_number(glyph g)
+{
+  return g.glyph_number();
+}
 
 // end of font.h

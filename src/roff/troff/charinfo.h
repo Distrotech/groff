@@ -21,11 +21,9 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 class macro;
 
-class charinfo {
+class charinfo : glyphinfo {
   static int next_index;
   charinfo *translation;
-  glyph index;
-  int number;
   macro *mac;
   unsigned char special_translation;
   unsigned char hyphenation_code;
@@ -39,14 +37,14 @@ class charinfo {
 				// active for .asciify (set by .trin)
   char_mode mode;
 public:
-  enum { 
+  enum {		// Values for the flags bitmask.  See groff
+			// manual, description of the `.cflags' request.
     ENDS_SENTENCE = 1,
     BREAK_BEFORE = 2,
     BREAK_AFTER = 4,
     OVERLAPS_HORIZONTALLY = 8,
     OVERLAPS_VERTICALLY = 16,
-    TRANSPARENT = 32,
-    NUMBERED = 64
+    TRANSPARENT = 32
   };
   enum {
     TRANSLATE_NONE,
@@ -126,7 +124,7 @@ inline int charinfo::transparent()
 
 inline int charinfo::numbered()
 {
-  return flags & NUMBERED;
+  return number >= 0;
 }
 
 inline int charinfo::is_normal()
@@ -173,7 +171,7 @@ inline void charinfo::set_flags(unsigned char c)
 
 inline glyph charinfo::get_index()
 {
-  return index;
+  return glyph(this);
 }
 
 inline void charinfo::set_translation_input()

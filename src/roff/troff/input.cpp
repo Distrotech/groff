@@ -8094,7 +8094,8 @@ charinfo::charinfo(symbol s)
   not_found(0), transparent_translate(1), translate_input(0),
   mode(CHAR_NORMAL), nm(s)
 {
-  index = glyph(next_index++, s.contents());
+  index = next_index++;
+  number = -1;
 }
 
 void charinfo::set_hyphenation_code(unsigned char c)
@@ -8152,13 +8153,13 @@ macro *charinfo::setx_macro(macro *m, char_mode cm)
 
 void charinfo::set_number(int n)
 {
+  assert(n >= 0);
   number = n;
-  flags |= NUMBERED;
 }
 
 int charinfo::get_number()
 {
-  assert(flags & NUMBERED);
+  assert(number >= 0);
   return number;
 }
 
@@ -8212,4 +8213,10 @@ glyph font::name_to_index(const char *nm)
 glyph font::number_to_index(int n)
 {
   return get_charinfo_by_number(n)->get_index();
+}
+
+const char *glyph::glyph_name()
+{
+  charinfo *ci = (charinfo *)ptr; // Every glyphinfo is actually a charinfo.
+  return (ci->nm != UNNAMED_SYMBOL ? ci->nm.contents() : NULL);
 }

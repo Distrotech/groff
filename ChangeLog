@@ -1,3 +1,36 @@
+2006-02-15  Bruno Haible  <bruno@clisp.org>
+
+	* src/include/font.h (struct glyphinfo): New class.
+	(struct glyph): Change internal representation.
+	Change constructor signature.
+	New method glyph::glyph_number().
+	(glyph::glyph, glyph glyph::undefined_glyph, glyph::glyph_index,
+	glyph::operator==, glyph::operator!=): Update.
+	(font::index_to_name, font::index_to_number): New functions.
+
+	* src/include/itable.h: New file, based on src/include/ptable.h.
+
+	* src/libs/libgroff/nametoindex.cpp: Include itable.h.
+	(class charinfo): New class.
+	(class character_indexer): Change table result type from `int' to
+	`class charinfo'.
+	Add table with integer key.
+	(character_indexer::character_indexer): Update.
+	(character_indexer::ascii_char_index): Update.
+	(character_indexer::numbered_char_index): Use NULL as name, not a
+	string starting with a space.
+	(character_indexer::named_char_index): Update.
+	(font::number_to_index, font::name_to_index): Remove no-op cast.
+	(glyph::glyph_name): New method.
+	* src/roff/troff/charinfo.h (class charinfo): Inherit from class
+	glyphinfo.
+	(NUMBERED): Remove flag bit.
+	(charinfo::numbered, charinfo::get_index): Update.
+
+	* src/roff/troff/input.cpp (charinfo::charinfo): Update.
+	(charinfo::set_number, charinfo::get_number): Update.
+	(glyph::glyph_name): New method.
+
 2006-02-15  Werner LEMBERG  <wl@gnu.org>
 
 	* src/libs/libgroff/glyphuni.cpp (glyph_to_unicode_list): Fix
