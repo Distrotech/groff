@@ -45,9 +45,14 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #define PASSOC(T) name2(T,_passoc)
 #define PTABLE_ITERATOR(T) name2(T,_ptable_iterator)
 
+// itable.h declares this too
+#ifndef NEXT_PTABLE_SIZE_DEFINED
+# define NEXT_PTABLE_SIZE_DEFINED
 extern unsigned next_ptable_size(unsigned);	// Return the first suitable
 				// hash table size greater than the given
 				// value.
+#endif
+
 extern unsigned long hash_string(const char *);	// Return a hash code of the
 				// given string.  The hash function is
 				// platform dependent.  */
