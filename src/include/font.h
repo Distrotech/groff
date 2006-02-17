@@ -27,8 +27,7 @@ typedef void (*FONT_COMMAND_HANDLER)(const char *,	// command
 				     int);		// lineno
 
 // A glyph is represented by a font-independent `glyph' object.
-// The functions font::name_to_index and font::number_to_index return such
-// an object.
+// The functions name_to_glyph and number_to_glyph return such an object.
 //
 // There are two types of glyphs:
 //
@@ -54,7 +53,6 @@ struct glyphinfo {
 struct glyph {
 private:
   glyphinfo *ptr;		// Pointer to the complete information.
-  friend class font;
   friend class character_indexer;
   friend class charinfo;
   glyph(glyphinfo *);		// Glyph with given complete information.
@@ -102,6 +100,37 @@ inline int glyph::operator==(const glyph &other) const
 inline int glyph::operator!=(const glyph &other) const
 {
   return ptr != other.ptr;
+}
+
+// The next two functions and glyph::glyph_name() exist in two versions: one in
+// roff/troff/input.cpp for troff, and one in
+// libs/libgroff/nametoindex.cpp for the preprocessors and the
+// postprocessors.
+extern glyph name_to_glyph(const char *);	// Convert the glyph with
+			// the given name (arg1) to a `glyph' object.  This
+			// has the same semantics as the groff escape sequence
+			// \C'name'.  If such a `glyph' object does not yet
+			// exist, a new one is allocated.
+extern glyph number_to_glyph(int);	// Convert the font-dependent glyph
+			// with the given number (in the font) to a `glyph'
+			// object.  This has the same semantics as the groff
+			// escape sequence \N'number'.  If such a `glyph'
+			// object does not yet exist, a new one is allocated.
+inline const char *glyph_to_name(glyph);	// Convert the given glyph
+			// back to its name.  Return NULL if the glyph
+			// doesn't have a name.
+inline int glyph_to_number(glyph);	// Convert the given glyph back to
+			// its number.  Return -1 if it does not designate
+			// a numbered character.
+
+inline const char *glyph_to_name(glyph g)
+{
+  return g.glyph_name();
+}
+
+inline int glyph_to_number(glyph g)
+{
+  return g.glyph_number();
 }
 
 // Types used in non-public members of `class font'.
@@ -240,27 +269,6 @@ public:
 			// device) and initialize some static variables with
 			// info from there.
 
-  // The next two functions exist in two versions: one in
-  // roff/troff/input.cpp for troff, and one in
-  // libs/libgroff/nametoindex.cpp for the preprocessors and the
-  // postprocessors.
-  static glyph name_to_index(const char *);	// Convert the glyph with
-			// the given name (arg1) to a `glyph' object.  This
-			// has the same semantics as the groff escape sequence
-			// \C'name'.  If such a `glyph' object does not yet
-			// exist, a new one is allocated.
-  static glyph number_to_index(int);	// Convert the font-dependent glyph
-			// with the given number (in the font) to a `glyph'
-			// object.  This has the same semantics as the groff
-			// escape sequence \N'number'.  If such a `glyph'
-			// object does not yet exist, a new one is allocated.
-  static const char *index_to_name(glyph);	// Convert the given glyph
-			// back to its name.  Return NULL if the glyph
-			// doesn't have a name.
-  static int index_to_number(glyph);	// Convert the given glyph back to
-			// its number.  Return -1 if it does not designate
-			// a numbered character.
-
   static FONT_COMMAND_HANDLER
     set_unknown_desc_command_handler(FONT_COMMAND_HANDLER);	// Register
 			// a function which defines the semantics of
@@ -373,15 +381,5 @@ protected:
 			// `kernpairs' sections is loaded.  Return NULL in
 			// case of failure.
 };
-
-inline const char *font::index_to_name(glyph g)
-{
-  return g.glyph_name();
-}
-
-inline int font::index_to_number(glyph g)
-{
-  return g.glyph_number();
-}
 
 // end of font.h

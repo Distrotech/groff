@@ -127,12 +127,12 @@ glyph character_indexer::named_char_index(const char *s)
 
 static character_indexer indexer;
 
-glyph font::number_to_index(int n)
+glyph number_to_glyph(int n)
 {
   return indexer.numbered_char_index(n);
 }
 
-glyph font::name_to_index(const char *s)
+glyph name_to_glyph(const char *s)
 {
   assert(s != 0 && s[0] != '\0' && s[0] != ' ');
   if (s[1] == '\0')

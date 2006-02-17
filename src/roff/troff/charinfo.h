@@ -55,7 +55,7 @@ public:
   };
   symbol nm;
   charinfo(symbol s);
-  glyph get_index();
+  glyph as_glyph();
   int ends_sentence();
   int overlaps_vertically();
   int overlaps_horizontally();
@@ -169,7 +169,7 @@ inline void charinfo::set_flags(unsigned char c)
   flags = c;
 }
 
-inline glyph charinfo::get_index()
+inline glyph charinfo::as_glyph()
 {
   return glyph(this);
 }

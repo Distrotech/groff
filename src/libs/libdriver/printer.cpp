@@ -205,7 +205,7 @@ void printer::set_special_char(const char *nm, const environment *env,
 glyph printer::set_char_and_width(const char *nm, const environment *env,
 				  int *widthp, font **f)
 {
-  glyph g = font::name_to_index(nm);
+  glyph g = name_to_glyph(nm);
   int fn = env->fontno;
   if (fn < 0 || fn >= nfonts) {
     error("bad font position `%1'", fn);
@@ -235,7 +235,7 @@ glyph printer::set_char_and_width(const char *nm, const environment *env,
 
 void printer::set_numbered_char(int num, const environment *env, int *widthp)
 {
-  glyph g = font::number_to_index(num);
+  glyph g = number_to_glyph(num);
   int fn = env->fontno;
   if (fn < 0 || fn >= nfonts) {
     error("bad font position `%1'", fn);

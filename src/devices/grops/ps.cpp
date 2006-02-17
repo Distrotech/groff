@@ -630,7 +630,7 @@ ps_printer::ps_printer(double pl)
   }
   res = r;
   out.set_fixed_point(point);
-  space_glyph = font::name_to_index("space");
+  space_glyph = name_to_glyph("space");
   if (pl == 0)
     paper_length = font::paperlength;
   else

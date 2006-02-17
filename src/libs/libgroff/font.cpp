@@ -693,8 +693,8 @@ int font::load(int *not_found, int head_only)
 	  t.error("bad kern amount `%1'", p);
 	  return 0;
 	}
-	glyph g1 = name_to_index(c1);
-	glyph g2 = name_to_index(c2);
+	glyph g1 = name_to_glyph(c1);
+	glyph g2 = name_to_glyph(c2);
 	add_kern(g1, g2, n);
       }
     }
@@ -724,7 +724,7 @@ int font::load(int *not_found, int head_only)
 	    t.error("unnamed character cannot be duplicate");
 	    return 0;
 	  }
-	  glyph g = name_to_index(nm);
+	  glyph g = name_to_glyph(nm);
 	  copy_entry(g, last_glyph);
 	}
 	else {
@@ -779,13 +779,13 @@ int font::load(int *not_found, int head_only)
 	    metric.special_device_coding = nam;
 	  }
 	  if (strcmp(nm, "---") == 0) {
-	    last_glyph = number_to_index(metric.code);
+	    last_glyph = number_to_glyph(metric.code);
 	    add_entry(last_glyph, metric);
 	  }
 	  else {
-	    last_glyph = name_to_index(nm);
+	    last_glyph = name_to_glyph(nm);
 	    add_entry(last_glyph, metric);
-	    copy_entry(number_to_index(metric.code), last_glyph);
+	    copy_entry(number_to_glyph(metric.code), last_glyph);
 	  }
 	  got_last_glyph = 1;
 	}

@@ -234,7 +234,7 @@ font_info::font_info(symbol nm, int n, symbol enm, font *f)
 
 inline int font_info::contains(charinfo *ci)
 {
-  return fm != 0 && fm->contains(ci->get_index());
+  return fm != 0 && fm->contains(ci->as_glyph());
 }
 
 inline int font_info::is_special()
@@ -431,8 +431,8 @@ hunits font_info::get_space_width(font_size fs, int space_sz)
 hunits font_info::get_narrow_space_width(font_size fs)
 {
   charinfo *ci = get_charinfo(symbol("|"));
-  if (fm->contains(ci->get_index()))
-    return hunits(fm->get_width(ci->get_index(), fs.to_scaled_points()));
+  if (fm->contains(ci->as_glyph()))
+    return hunits(fm->get_width(ci->as_glyph(), fs.to_scaled_points()));
   else
     return hunits(fs.to_units()/6);
 }
@@ -440,8 +440,8 @@ hunits font_info::get_narrow_space_width(font_size fs)
 hunits font_info::get_half_narrow_space_width(font_size fs)
 {
   charinfo *ci = get_charinfo(symbol("^"));
-  if (fm->contains(ci->get_index()))
-    return hunits(fm->get_width(ci->get_index(), fs.to_scaled_points()));
+  if (fm->contains(ci->as_glyph()))
+    return hunits(fm->get_width(ci->as_glyph(), fs.to_scaled_points()));
   else
     return hunits(fs.to_units()/12);
 }
@@ -491,16 +491,16 @@ hunits tfont::get_width(charinfo *c)
   if (is_constant_spaced)
     return constant_space_width;
   else if (is_bold)
-    return (hunits(fm->get_width(c->get_index(), size.to_scaled_points()))
+    return (hunits(fm->get_width(c->as_glyph(), size.to_scaled_points()))
 	    + track_kern + bold_offset);
   else
-    return (hunits(fm->get_width(c->get_index(), size.to_scaled_points()))
+    return (hunits(fm->get_width(c->as_glyph(), size.to_scaled_points()))
 	    + track_kern);
 }
 
 vunits tfont::get_char_height(charinfo *c)
 {
-  vunits v = fm->get_height(c->get_index(), size.to_scaled_points());
+  vunits v = fm->get_height(c->as_glyph(), size.to_scaled_points());
   if (height != 0 && height != size.to_scaled_points())
     return scale(v, height, size.to_scaled_points());
   else
@@ -509,7 +509,7 @@ vunits tfont::get_char_height(charinfo *c)
 
 vunits tfont::get_char_depth(charinfo *c)
 {
-  vunits v = fm->get_depth(c->get_index(), size.to_scaled_points());
+  vunits v = fm->get_depth(c->as_glyph(), size.to_scaled_points());
   if (height != 0 && height != size.to_scaled_points())
     return scale(v, height, size.to_scaled_points());
   else
@@ -518,23 +518,23 @@ vunits tfont::get_char_depth(charinfo *c)
 
 hunits tfont::get_char_skew(charinfo *c)
 {
-  return hunits(fm->get_skew(c->get_index(), size.to_scaled_points(), slant));
+  return hunits(fm->get_skew(c->as_glyph(), size.to_scaled_points(), slant));
 }
 
 hunits tfont::get_italic_correction(charinfo *c)
 {
-  return hunits(fm->get_italic_correction(c->get_index(), size.to_scaled_points()));
+  return hunits(fm->get_italic_correction(c->as_glyph(), size.to_scaled_points()));
 }
 
 hunits tfont::get_left_italic_correction(charinfo *c)
 {
-  return hunits(fm->get_left_italic_correction(c->get_index(),
+  return hunits(fm->get_left_italic_correction(c->as_glyph(),
 					       size.to_scaled_points()));
 }
 
 hunits tfont::get_subscript_correction(charinfo *c)
 {
-  return hunits(fm->get_subscript_correction(c->get_index(),
+  return hunits(fm->get_subscript_correction(c->as_glyph(),
 					     size.to_scaled_points()));
 }
 
@@ -545,12 +545,12 @@ inline int tfont::get_input_position()
 
 inline int tfont::contains(charinfo *ci)
 {
-  return fm->contains(ci->get_index());
+  return fm->contains(ci->as_glyph());
 }
 
 inline int tfont::get_character_type(charinfo *ci)
 {
-  return fm->get_character_type(ci->get_index());
+  return fm->get_character_type(ci->as_glyph());
 }
 
 inline int tfont::get_bold(hunits *res)
@@ -642,7 +642,7 @@ charinfo *tfont::get_lig(charinfo *c1, charinfo *c2)
       break;
     }
   }
-  if (ci != 0 && fm->contains(ci->get_index()))
+  if (ci != 0 && fm->contains(ci->as_glyph()))
     return ci;
   return 0;
 }
@@ -652,8 +652,8 @@ inline int tfont::get_kern(charinfo *c1, charinfo *c2, hunits *res)
   if (kern_mode == 0)
     return 0;
   else {
-    int n = fm->get_kern(c1->get_index(),
-			 c2->get_index(),
+    int n = fm->get_kern(c1->as_glyph(),
+			 c2->as_glyph(),
 			 size.to_scaled_points());
     if (n) {
       *res = hunits(n);

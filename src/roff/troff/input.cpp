@@ -8195,7 +8195,7 @@ charinfo *get_charinfo_by_number(int n)
   }
 }
 
-glyph font::name_to_index(const char *nm)
+glyph name_to_glyph(const char *nm)
 {
   charinfo *ci;
   if (nm[1] == 0)
@@ -8204,15 +8204,12 @@ glyph font::name_to_index(const char *nm)
     ci = get_charinfo(symbol(nm + 1));
   else
     ci = get_charinfo(symbol(nm));
-  if (ci == 0)
-    abort();
-  else
-    return ci->get_index();
+  return ci->as_glyph();
 }
 
-glyph font::number_to_index(int n)
+glyph number_to_glyph(int n)
 {
-  return get_charinfo_by_number(n)->get_index();
+  return get_charinfo_by_number(n)->as_glyph();
 }
 
 const char *glyph::glyph_name()

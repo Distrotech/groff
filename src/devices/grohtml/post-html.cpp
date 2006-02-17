@@ -1417,7 +1417,7 @@ void page::add_and_encode (style *s, const string &str,
 	if (html_glyph)
 	  html_string += html_glyph;
 	else {
-	  glyph g = s->f->name_to_index((troff_charname + '\0').contents());
+	  glyph g = name_to_glyph((troff_charname + '\0').contents());
 	  if (s->f->contains(g))
 	    html_string += s->f->get_code(g);
 	}
@@ -4220,7 +4220,7 @@ html_printer::html_printer()
   }
   res               = r;
   html.set_fixed_point(point);
-  space_glyph       = font::name_to_index("space");
+  space_glyph       = name_to_glyph("space");
   space_width       = font::hor;
   paper_length      = font::paperlength;
   linelength        = font::res*13/2;
@@ -4302,7 +4302,7 @@ const char *get_html_translation (font *f, const string &name)
   if ((f == 0) || name.empty())
     return NULL;
   else {
-    glyph g = f->name_to_index((char *)(name + '\0').contents());
+    glyph g = name_to_glyph((char *)(name + '\0').contents());
     if (f->contains(g))
       return get_html_entity(f->get_code(g));
     else
@@ -4650,7 +4650,7 @@ void html_printer::set_numbered_char(int num, const environment *env,
     nbsp_width = -num;
     num = 160;		// &nbsp;
   }
-  glyph g = font::number_to_index(num);
+  glyph g = number_to_glyph(num);
   int fn = env->fontno;
   if (fn < 0 || fn >= nfonts) {
     error("bad font position `%1'", fn);
@@ -4681,7 +4681,7 @@ void html_printer::set_numbered_char(int num, const environment *env,
 glyph html_printer::set_char_and_width(const char *nm, const environment *env,
 				       int *widthp, font **f)
 {
-  glyph g = font::name_to_index(nm);
+  glyph g = name_to_glyph(nm);
   int fn = env->fontno;
   if (fn < 0 || fn >= nfonts) {
     error("bad font position `%1'", fn);
