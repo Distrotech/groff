@@ -34,6 +34,9 @@ implement_ptable(glyph_to_unicode)
 
 PTABLE(glyph_to_unicode) glyph_to_unicode_table;
 
+// The commented out entries in the table below can't be used in glyph
+// names.
+
 struct S {
   const char *key;
   const char *value;
