@@ -1,3 +1,39 @@
+2006-02-22  Bruno Haible  <bruno@clisp.org>
+
+	Concretize the glyph datatype.
+
+	* src/include/font.h (struct glyph): Remove class.
+	(struct glyph): Renamed from struct glyphinfo.
+	(glyph_to_index): New inline function.
+	(glyph_to_name): Make extern, not inline.
+	(glyph_to_number): Update.
+	(font): Use `glyph *' instead of `glyph'.
+
+	* src/libs/libgroff/nametoindex.cpp (charinfo): Inherit from class
+	`glyph'.  Make `name' field public.
+	(character_indexer, number_to_glyph, name_to_glyph): Use `glyph *'
+	instead of `glyph'.
+	(glyph_to_name): Renamed from `glyph::glyph_name'.
+
+	* src/roff/troff/charinfo.h (charinfo): Inherit from class `glyph'.
+	Use `glyph *' instead of `glyph'.
+
+	* src/roff/troff/input.cpp (name_to_glyph, number_to_glyph): Use
+	`glyph *' instead of `glyph'.
+	(glyph_to_name): Renamed from `glyph::glyph_name'.
+
+	* src/libs/libgroff/font.cpp: Use `glyph *' instead of `glyph',
+	and `glyph_to_index' instead of `glyph::glyph_index'.
+
+	* src/include/printer.h (printer): Use `glyph *' instead of `glyph'.
+	* src/libs/libdriver/printer.cpp: Likewise.
+	* src/devices/grodvi/dvi.cpp: Likewise.
+	* src/devices/grohtml/post-html.cpp: Likewise.
+	* src/devices/grolbp/lbp.cpp: Likewise.
+	* src/devices/grolj4/lj4.cpp: Likewise.
+	* src/devices/grops/ps.cpp: Likewise.
+	* src/devices/grotty/tty.cpp: Likewise.
+
 2006-02-22  Werner LEMBERG  <wl@gnu.org>
 
 	* font/devdvi/generate/tc.map: Add `sr' glyph.

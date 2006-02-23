@@ -8195,7 +8195,7 @@ charinfo *get_charinfo_by_number(int n)
   }
 }
 
-glyph name_to_glyph(const char *nm)
+glyph *name_to_glyph(const char *nm)
 {
   charinfo *ci;
   if (nm[1] == 0)
@@ -8207,13 +8207,13 @@ glyph name_to_glyph(const char *nm)
   return ci->as_glyph();
 }
 
-glyph number_to_glyph(int n)
+glyph *number_to_glyph(int n)
 {
   return get_charinfo_by_number(n)->as_glyph();
 }
 
-const char *glyph::glyph_name()
+const char *glyph_to_name(glyph *g)
 {
-  charinfo *ci = (charinfo *)ptr; // Every glyphinfo is actually a charinfo.
+  charinfo *ci = (charinfo *)g; // Every glyph is actually a charinfo.
   return (ci->nm != UNNAMED_SYMBOL ? ci->nm.contents() : NULL);
 }

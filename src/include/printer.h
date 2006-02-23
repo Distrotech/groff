@@ -66,7 +66,8 @@ public:
   void set_ascii_char(unsigned char, const environment *, int * = 0);
   void set_special_char(const char *, const environment *, int * = 0);
   virtual void set_numbered_char(int, const environment *, int * = 0);
-  glyph set_char_and_width(const char *, const environment *, int *, font **);
+  glyph *set_char_and_width(const char *, const environment *,
+			    int *, font **);
   font *get_font_from_index(int);
   virtual void draw(int, int *, int, const environment *);
   // perform change of line color (text, outline) in the print-out 
@@ -94,7 +95,7 @@ protected:
 
 private:
   font *find_font(const char *);
-  virtual void set_char(glyph, font *, const environment *, int,
+  virtual void set_char(glyph *, font *, const environment *, int,
 			const char *) = 0;
 };
 

@@ -1417,7 +1417,7 @@ void page::add_and_encode (style *s, const string &str,
 	if (html_glyph)
 	  html_string += html_glyph;
 	else {
-	  glyph g = name_to_glyph((troff_charname + '\0').contents());
+	  glyph *g = name_to_glyph((troff_charname + '\0').contents());
 	  if (s->f->contains(g))
 	    html_string += s->f->get_code(g);
 	}
@@ -1938,7 +1938,7 @@ class html_printer : public printer {
   files                file_list;
   simple_output        html;
   int                  res;
-  glyph                space_glyph;
+  glyph               *space_glyph;
   int                  space_width;
   int                  no_of_printed_pages;
   int                  paper_length;
@@ -2009,9 +2009,9 @@ class html_printer : public printer {
   void  set_line_thickness            (const environment *);
   void  terminate_current_font        (void);
   void  flush_font                    (void);
-  void  add_to_sbuf                   (glyph g, const string &s);
+  void  add_to_sbuf                   (glyph *g, const string &s);
   void  write_title                   (int in_head);
-  int   sbuf_continuation             (glyph g, const char *name, const environment *env, int w);
+  int   sbuf_continuation             (glyph *g, const char *name, const environment *env, int w);
   void  flush_page                    (void);
   void  troff_tag                     (text_glob *g);
   void  flush_globs                   (void);
@@ -2062,7 +2062,7 @@ class html_printer : public printer {
   void  outstanding_eol               (int n);
   int   is_bold                       (font *f);
   font *make_bold                     (font *f);
-  int   overstrike                    (glyph g, const char *name, const environment *env, int w);
+  int   overstrike                    (glyph *g, const char *name, const environment *env, int w);
   void  do_body                       (void);
   int   next_horiz_pos                (text_glob *g, int nf);
   void  lookahead_for_tables          (void);
@@ -2100,9 +2100,9 @@ class html_printer : public printer {
 public:
   html_printer          ();
   ~html_printer         ();
-  void set_char         (glyph g, font *f, const environment *env, int w, const char *name);
+  void set_char         (glyph *g, font *f, const environment *env, int w, const char *name);
   void set_numbered_char(int num, const environment *env, int *widthp);
-  glyph set_char_and_width(const char *nm, const environment *env,
+  glyph *set_char_and_width(const char *nm, const environment *env,
 			 int *widthp, font **f);
   void draw             (int code, int *p, int np, const environment *env);
   void begin_page       (int);
@@ -4234,7 +4234,7 @@ html_printer::html_printer()
  *  add_to_sbuf - adds character code or name to the sbuf.
  */
 
-void html_printer::add_to_sbuf (glyph g, const string &s)
+void html_printer::add_to_sbuf (glyph *g, const string &s)
 {
   if (sbuf_style.f == NULL)
     return;
@@ -4260,7 +4260,7 @@ void html_printer::add_to_sbuf (glyph g, const string &s)
     sbuf += html_glyph;
 }
 
-int html_printer::sbuf_continuation (glyph g, const char *name,
+int html_printer::sbuf_continuation (glyph *g, const char *name,
 				     const environment *env, int w)
 {
   /*
@@ -4302,7 +4302,7 @@ const char *get_html_translation (font *f, const string &name)
   if ((f == 0) || name.empty())
     return NULL;
   else {
-    glyph g = name_to_glyph((char *)(name + '\0').contents());
+    glyph *g = name_to_glyph((char *)(name + '\0').contents());
     if (f->contains(g))
       return get_html_entity(f->get_code(g));
     else
@@ -4576,7 +4576,7 @@ static const char *get_html_entity (unsigned int code)
  *               is flushed.
  */
 
-int html_printer::overstrike(glyph g, const char *name, const environment *env, int w)
+int html_printer::overstrike(glyph *g, const char *name, const environment *env, int w)
 {
   if ((env->hpos < sbuf_end_hpos)
       || ((sbuf_kern != 0) && (sbuf_end_hpos - sbuf_kern < env->hpos))) {
@@ -4609,7 +4609,7 @@ int html_printer::overstrike(glyph g, const char *name, const environment *env, 
  *             and add character anew.
  */
 
-void html_printer::set_char(glyph g, font *f, const environment *env,
+void html_printer::set_char(glyph *g, font *f, const environment *env,
 			    int w, const char *name)
 {
   style sty(f, env->size, env->height, env->slant, env->fontno, *env->col);
@@ -4650,7 +4650,7 @@ void html_printer::set_numbered_char(int num, const environment *env,
     nbsp_width = -num;
     num = 160;		// &nbsp;
   }
-  glyph g = number_to_glyph(num);
+  glyph *g = number_to_glyph(num);
   int fn = env->fontno;
   if (fn < 0 || fn >= nfonts) {
     error("bad font position `%1'", fn);
@@ -4678,10 +4678,10 @@ void html_printer::set_numbered_char(int num, const environment *env,
   set_char(g, f, env, w, 0);
 }
 
-glyph html_printer::set_char_and_width(const char *nm, const environment *env,
-				       int *widthp, font **f)
+glyph *html_printer::set_char_and_width(const char *nm, const environment *env,
+					int *widthp, font **f)
 {
-  glyph g = name_to_glyph(nm);
+  glyph *g = name_to_glyph(nm);
   int fn = env->fontno;
   if (fn < 0 || fn >= nfonts) {
     error("bad font position `%1'", fn);

@@ -21,7 +21,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 class macro;
 
-class charinfo : glyphinfo {
+class charinfo : glyph {
   static int next_index;
   charinfo *translation;
   macro *mac;
@@ -55,7 +55,7 @@ public:
   };
   symbol nm;
   charinfo(symbol s);
-  glyph as_glyph();
+  glyph *as_glyph();
   int ends_sentence();
   int overlaps_vertically();
   int overlaps_horizontally();
@@ -169,9 +169,9 @@ inline void charinfo::set_flags(unsigned char c)
   flags = c;
 }
 
-inline glyph charinfo::as_glyph()
+inline glyph *charinfo::as_glyph()
 {
-  return glyph(this);
+  return this;
 }
 
 inline void charinfo::set_translation_input()

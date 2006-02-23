@@ -524,7 +524,7 @@ class ps_printer : public printer {
   FILE *tempfp;
   ps_output out;
   int res;
-  glyph space_glyph;
+  glyph *space_glyph;
   int pages_output;
   int paper_length;
   int equalise_spaces;
@@ -563,7 +563,7 @@ class ps_printer : public printer {
   void set_style(const style &);
   void set_space_code(unsigned char);
   int set_encoding_index(ps_font *);
-  subencoding *set_subencoding(font *, glyph, unsigned char *);
+  subencoding *set_subencoding(font *, glyph *, unsigned char *);
   char *get_subfont(subencoding *, const char *);
   void do_exec(char *, const environment *);
   void do_import(char *, const environment *);
@@ -588,7 +588,7 @@ class ps_printer : public printer {
 public:
   ps_printer(double);
   ~ps_printer();
-  void set_char(glyph, font *, const environment *, int, const char *);
+  void set_char(glyph *, font *, const environment *, int, const char *);
   void draw(int, int *, int, const environment *);
   void begin_page(int);
   void end_page(int);
@@ -656,7 +656,7 @@ int ps_printer::set_encoding_index(ps_font *f)
   return f->encoding_index = next_encoding_index++;
 }
 
-subencoding *ps_printer::set_subencoding(font *f, glyph g,
+subencoding *ps_printer::set_subencoding(font *f, glyph *g,
 					 unsigned char *codep)
 {
   unsigned int idx = f->get_code(g);
@@ -686,7 +686,7 @@ char *ps_printer::get_subfont(subencoding *sub, const char *stem)
   return sub->subfont;
 }
 
-void ps_printer::set_char(glyph g, font *f, const environment *env, int w,
+void ps_printer::set_char(glyph *g, font *f, const environment *env, int w,
 			  const char *)
 {
   if (g == space_glyph || invis_count > 0)

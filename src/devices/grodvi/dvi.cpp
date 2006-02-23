@@ -175,7 +175,7 @@ public:
   font *make_font(const char *);
   void begin_page(int);
   void end_page(int);
-  void set_char(glyph, font *, const environment *, int, const char *);
+  void set_char(glyph *, font *, const environment *, int, const char *);
   void special(char *, const environment *, char);
   void end_of_line();
   void draw(int, int *, int, const environment *);
@@ -340,7 +340,7 @@ void dvi_printer::set_color(color *col)
   do_special(buf);
 }
 
-void dvi_printer::set_char(glyph g, font *f, const environment *env,
+void dvi_printer::set_char(glyph *g, font *f, const environment *env,
 			   int w, const char *)
 {
   if (*env->col != cur_color)

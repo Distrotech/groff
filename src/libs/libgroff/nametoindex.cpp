@@ -31,12 +31,10 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include "itable.h"
 
 // Every glyphinfo is actually a charinfo.
-class charinfo : glyphinfo {
-private:
-  const char *name;	// The glyph name, or NULL.
+class charinfo : glyph {
 public:
+  const char *name;	// The glyph name, or NULL.
   friend class character_indexer;
-  friend class glyph;
 };
 
 // PTABLE(charinfo) is a hash table mapping `const char *' to `charinfo *'.
@@ -54,17 +52,17 @@ public:
   character_indexer();
   ~character_indexer();
   // --------------------- Lookup or creation of a glyph.
-  glyph ascii_char_glyph(unsigned char);
-  glyph named_char_glyph(const char *);
-  glyph numbered_char_glyph(int);
+  glyph *ascii_char_glyph(unsigned char);
+  glyph *named_char_glyph(const char *);
+  glyph *numbered_char_glyph(int);
 private:
   int next_index;		// Number of glyphs already allocated.
   PTABLE(charinfo) table;	// Table mapping name to glyph.
-  glyph ascii_glyph[256];	// Shorthand table for looking up "charNNN"
+  glyph *ascii_glyph[256];	// Shorthand table for looking up "charNNN"
 				// glyphs.
   ITABLE(charinfo) ntable;	// Table mapping number to glyph.
   enum { NSMALL = 256 };
-  glyph small_number_glyph[NSMALL]; // Shorthand table for looking up
+  glyph *small_number_glyph[NSMALL]; // Shorthand table for looking up
 				// numbered glyphs with small numbers.
 };
 
@@ -82,7 +80,7 @@ character_indexer::~character_indexer()
 {
 }
 
-glyph character_indexer::ascii_char_glyph(unsigned char c)
+glyph *character_indexer::ascii_char_glyph(unsigned char c)
 {
   if (ascii_glyph[c] == UNDEFINED_GLYPH) {
     char buf[4+3+1];
@@ -92,12 +90,12 @@ glyph character_indexer::ascii_char_glyph(unsigned char c)
     ci->index = next_index++;
     ci->number = -1;
     ci->name = strsave(buf);
-    ascii_glyph[c] = glyph(ci);
+    ascii_glyph[c] = ci;
   }
   return ascii_glyph[c];
 }
 
-inline glyph character_indexer::named_char_glyph(const char *s)
+inline glyph *character_indexer::named_char_glyph(const char *s)
 {
   // Glyphs with name `charNNN' are only stored in ascii_glyph[], not
   // in the table.  Therefore treat them specially here.
@@ -114,10 +112,10 @@ inline glyph character_indexer::named_char_glyph(const char *s)
     ci->number = -1;
     ci->name = table.define(s, ci);
   }
-  return glyph(ci);
+  return ci;
 }
 
-inline glyph character_indexer::numbered_char_glyph(int n)
+inline glyph *character_indexer::numbered_char_glyph(int n)
 {
   if (n >= 0 && n < NSMALL) {
     if (small_number_glyph[n] == UNDEFINED_GLYPH) {
@@ -125,7 +123,7 @@ inline glyph character_indexer::numbered_char_glyph(int n)
       ci->index = next_index++;
       ci->number = n;
       ci->name = NULL;
-      small_number_glyph[n] = glyph(ci);
+      small_number_glyph[n] = ci;
     }
     return small_number_glyph[n];
   }
@@ -137,17 +135,17 @@ inline glyph character_indexer::numbered_char_glyph(int n)
     ci->name = NULL;
     ntable.define(n, ci);
   }
-  return glyph(ci);
+  return ci;
 }
 
 static character_indexer indexer;
 
-glyph number_to_glyph(int n)
+glyph *number_to_glyph(int n)
 {
   return indexer.numbered_char_glyph(n);
 }
 
-glyph name_to_glyph(const char *s)
+glyph *name_to_glyph(const char *s)
 {
   assert(s != 0 && s[0] != '\0' && s[0] != ' ');
   if (s[1] == '\0')
@@ -156,8 +154,8 @@ glyph name_to_glyph(const char *s)
   return indexer.named_char_glyph(s);
 }
 
-const char *glyph::glyph_name()
+const char *glyph_to_name(glyph *g)
 {
-  charinfo *ci = (charinfo *)ptr; // Every glyphinfo is actually a charinfo.
+  charinfo *ci = (charinfo *)g; // Every glyph is actually a charinfo.
   return ci->name;
 }

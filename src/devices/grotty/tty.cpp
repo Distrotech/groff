@@ -219,7 +219,7 @@ class tty_printer : public printer {
 public:
   tty_printer(const char *);
   ~tty_printer();
-  void set_char(glyph, font *, const environment *, int, const char *);
+  void set_char(glyph *, font *, const environment *, int, const char *);
   void draw(int, int *, int, const environment *);
   void special(char *, const environment *, char);
   void change_color(const environment * const);
@@ -364,7 +364,7 @@ schar tty_printer::color_to_idx(color *col)
   return idx;
 }
 
-void tty_printer::set_char(glyph g, font *f, const environment *env,
+void tty_printer::set_char(glyph *g, font *f, const environment *env,
 			   int w, const char *)
 {
   if (w % font::hor != 0)
