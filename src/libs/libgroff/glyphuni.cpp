@@ -337,6 +337,10 @@ struct S {
   { "*f", "03D5" },
   { "+p", "03D6" },
   { "+e", "03F5" },
+  // `-' and `hy' denote a HYPHEN, usually a glyph with a smaller width than
+  // the MINUS sign.  Users who are viewing broken man pages that assume
+  // that `-' denotes a U+002D character can either fix the broken man pages
+  // or apply the workaround described in the PROBLEMS file.
   { "-", "2010" },
   { "hy", "2010" },
   { "en", "2013" },
@@ -396,6 +400,10 @@ struct S {
   { "product", "220F" },
   { "coproduct", "2210" },
   { "sum", "2211" },
+  // `mi' (and `\-') denotes a MINUS sign.  But it is used in many man pages
+  // to denote the U+002D character that introduces a command-line option. 
+  // For devices that support copy&paste, such as devhtml and devutf8, the
+  // user can apply the workaround described in the PROBLEMS file.
 //{ "\\-", "2212" },
   { "mi", "2212" },
   { "-+", "2213" },
