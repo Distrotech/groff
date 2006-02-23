@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003, 2004
+/* Copyright (C) 2002, 2003, 2004, 2006
    Free Software Foundation, Inc.
      Written by Werner Lemberg <wl@gnu.org>
 
@@ -231,7 +231,8 @@ struct S {
   { "00AB", "Fo" },
   { "00AC", "no" },
 //{ "00AC", "tno" },
-  { "00AD", "shc" },
+  // In groff, U+00AD is an input character only; it is not mapped to
+  // a glyph but to `\%'.
   { "00AE", "rg" },
   { "00AF", "a-" },
   { "00B0", "de" },

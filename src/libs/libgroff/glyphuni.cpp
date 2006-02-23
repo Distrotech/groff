@@ -173,7 +173,8 @@ struct S {
   { "Fo", "00AB" },
   { "no", "00AC" },
   { "tno", "00AC" },
-  { "shc", "00AD" },
+// The soft hypen U+00AD is meaningful only in the input file,
+// not in the output.
   { "rg", "00AE" },
   { "a-", "00AF" },
   { "de", "00B0" },
