@@ -485,6 +485,18 @@ struct S {
   { "HE", "2665" },
   { "DI", "2666" },
   { "OK", "2713" },
+  // The `left angle bracket' and `right angle bracket' could be mapped to
+  // either U+2329,U+232A or U+3008,U+3009 or U+27E8,U+27E9.  But the first
+  // and second possibility are double-width characters (see Unicode's
+  // `DerivedEastAsianWidth.txt' file) and are therefore not suitable for
+  // general use, whereas the third possibility is single-width.
+  //
+  // The devhtml device overrides this mapping, because
+  //
+  //   http://www.w3.org/TR/html401/sgml/entities.html
+  //
+  // says that in HTML, `&lang;' and `&rang;' are U+2329,U+232A,
+  // respectively.
   { "la", "27E8" },
   { "ra", "27E9" },
 };
