@@ -1397,7 +1397,7 @@ even if they would otherwise be interpreted as such.
 It is also useful when the argument list to
 .CW pdfhref
 contains special characters \(em any special character,
-which is not legal in a
+which is not valid in a
 .CW groff
 macro name, will cause a parsing error, if
 .CW pdfhref

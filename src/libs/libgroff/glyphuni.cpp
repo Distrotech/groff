@@ -34,7 +34,7 @@ implement_ptable(glyph_to_unicode)
 
 PTABLE(glyph_to_unicode) glyph_to_unicode_table;
 
-// The commented out entries in the table below can't be used in glyph
+// The entries commented out in the table below can't be used in glyph
 // names.
 
 struct S {
@@ -117,7 +117,6 @@ struct S {
   { "_", "005F" },
   { "ru", "005F" },
   { "ul", "005F" },
-//{ "\\`", "0060" },
   { "ga", "0060" },
   { "a", "0061" },
   { "b", "0062" },
@@ -173,8 +172,8 @@ struct S {
   { "Fo", "00AB" },
   { "no", "00AC" },
   { "tno", "00AC" },
-// The soft hypen U+00AD is meaningful only in the input file,
-// not in the output.
+  // The soft hypen U+00AD is meaningful only in the input file,
+  // not in the output.
   { "rg", "00AE" },
   { "a-", "00AF" },
   { "de", "00B0" },
@@ -183,7 +182,6 @@ struct S {
   { "S2", "00B2" },
   { "S3", "00B3" },
   { "aa", "00B4" },
-//{ "\\'", "00B4" },
   { "mc", "00B5" },
   { "ps", "00B6" },
   { "pc", "00B7" },
@@ -400,11 +398,11 @@ struct S {
   { "product", "220F" },
   { "coproduct", "2210" },
   { "sum", "2211" },
-  // `mi' (and `\-') denotes a MINUS sign.  But it is used in many man pages
+  // `mi' and `\-' represent a MINUS sign.  But it is used in many man pages
   // to denote the U+002D character that introduces a command-line option. 
   // For devices that support copy&paste, such as devhtml and devutf8, the
   // user can apply the workaround described in the PROBLEMS file.
-//{ "\\-", "2212" },
+  { "\\-", "2212" },
   { "mi", "2212" },
   { "-+", "2213" },
   { "**", "2217" },

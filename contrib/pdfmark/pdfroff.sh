@@ -3,7 +3,7 @@
 #
 # Function: Format PDF Output from groff Markup
 #
-# Copyright (C) 2005, Free Software Foundation, Inc.
+# Copyright (C) 2005, 2006, Free Software Foundation, Inc.
 # Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 # 
 # This file is part of groff.
@@ -297,7 +297,7 @@
 #
 #     Those standard options which expect an argument, but are specified with
 #     an intervening space, between flag and argument, must be reparsed, so we
-#     can trap illegal use of '-T dev', or missing input files.
+#     can trap invalid use of '-T dev', or missing input files.
 #
       -[dfFILmMnoPrTwW])
            OPTNAME="$1"

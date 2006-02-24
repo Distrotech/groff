@@ -2761,7 +2761,7 @@ void html_printer::do_pointsize (char *arg)
       t = page_contents->glyphs.get_data();
     }
     /*
-     *  collect legal pointsize
+     *  collect valid pointsize
      */
     pointsize = atoi(arg);
   }
