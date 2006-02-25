@@ -21,8 +21,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.3-c_1
----------------
+Version 1.3-d
+-------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -108,6 +108,7 @@ to a macro means that any argument turns the feature off.
 .ALIAS    SPREAD          brp
 .ALIAS    ESC_CHAR        ec
 .ALIAS    STRING          ds
+.ALIAS    INCLUDE         so
 \#
 \# ALIASES FOR NUMBER REGISTERS
 \# ----------------------------
@@ -488,7 +489,7 @@ described).
 .    ds $FONT \\$1
 .    ft 0
 .    ft \\*[$FONT]
-.    if if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
+.    if (\\n[.x]\\n[.y]\\n[.Y] >= 1192) \{\
 .       if '\\n[.sty]'' \{\
 .          if !F\\n[.fn] \{\
 .             if !S\\*[$FONT] \{\
@@ -6538,23 +6539,23 @@ the macro whose style is to be changed.
 \# First, a little convenience macro
 \#
 .MAC PROCESS_SHIM END
-.    while \\n+[#LEGAL_BASELINE]<\\n[#CURRENT_V_POS] \{\
+.    while \\n+[#VALID_BASELINE]<\\n[#CURRENT_V_POS] \{\
 .
 .\}
-.    nr #SHIM \\n[#LEGAL_BASELINE]-\\n[#CURRENT_V_POS]
+.    nr #SHIM \\n[#VALID_BASELINE]-\\n[#CURRENT_V_POS]
 .END
 \#
 \#
 .MAC SHIM END
-.    nr #LEGAL_BASELINE \\n[#T_MARGIN]-1v \\n[#DOC_LEAD]
+.    nr #VALID_BASELINE \\n[#T_MARGIN]-1v \\n[#DOC_LEAD]
 .    if !r#CURRENT_V_POS \{ .nr #CURRENT_V_POS \\n(.d \}
 .    ie r#ADVANCE_FROM_TOP \{\
 .       ie \\n[#CURRENT_V_POS]<(\\n[#T_MARGIN]-1v) \{\
-.          while \\n-[#LEGAL_BASELINE]>\\n[#CURRENT_V_POS] \{\
+.          while \\n-[#VALID_BASELINE]>\\n[#CURRENT_V_POS] \{\
 .
 .\}
-.          nr #LEGAL_BASELINE +\\n[#DOC_LEAD]
-.          nr #SHIM \\n[#LEGAL_BASELINE]-\\n[#CURRENT_V_POS]
+.          nr #VALID_BASELINE +\\n[#DOC_LEAD]
+.          nr #SHIM \\n[#VALID_BASELINE]-\\n[#CURRENT_V_POS]
 .       \}
 .       el \{\
 .          PROCESS_SHIM
@@ -10556,7 +10557,6 @@ The macros are heavily commented.
 \#   for each footnote the user wants indented.
 \#
 .MAC FOOTNOTE END
-.    if !\\n(.u \{ .nr #ADD_BREAK 1 \}
 .    ie '\\$1'' \{\
 .       if \\n[#FN_MARKER_STYLE]=3 \{\
 .          if !\\n[#LINENUMBERS] \{\
@@ -11235,9 +11235,9 @@ The macros are heavily commented.
 .       \}
 .       nr #NO_FN_MARKER 0
 .    \}
-.    if \\n[#ADD_BREAK] \{\
-.       br
-.       rr #ADD_BREAK
+.    if \\n[#NUM_ARGS]=2 \{\
+.       if '\\$2'BREAK' \{ .BR \}
+.       if '\\$2'BR' \{ .BR \}
 .    \}
 .END
 \#
@@ -12046,7 +12046,6 @@ document, or to output them at the end of the entire document.
 \#   when ENDNOTE_MARKER_STYLE is NUMBER.
 \#
 .MAC ENDNOTE END
-.    if !\\n(.u \{ .nr #ADD_BREAK 1 \}
 .    ie '\\$1'' \{\
 .       nr #ENDNOTE 1
 .       if \\n[#EN_MARKER_STYLE]=1 \{\
@@ -12063,7 +12062,9 @@ document, or to output them at the end of the entire document.
 .             \}
 .             PRINT "\s-2\v'-\\n[#DOC_LEAD]u/5u'\\n+[#EN_NUMBER]\v'+\\n[#DOC_LEAD]u/5u'\s+2\c"
 .          \}
-.          if \\n[#PRINT_STYLE]=2 \{ .PRINT "\*[SUP]\\n+[#EN_NUMBER]\*[SUPX]\c" \}
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             PRINT \*[SUP]\\n+[#EN_NUMBER]\*[SUPX]\c
+.          \}
 .       \}
 .       if \\n[#EN_MARKER_STYLE]=2 \{\
 .          if !\\n[#LINENUMBERS] \{\
@@ -12250,9 +12251,9 @@ document, or to output them at the end of the entire document.
 \*[SLANT]\c
 .       \}
 .    \}
-.    if \\n[#ADD_BREAK] \{\
-.       br
-.       rr #ADD_BREAK
+.    if \\n[#NUM_ARGS]=2 \{\
+.       if '\\$2'BREAK' \{ .BR \}
+.       if '\\$2'BR' \{ .BR \}
 .    \}
 .END
 \#

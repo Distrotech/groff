@@ -1621,8 +1621,83 @@ change require that you invoke <strong>LEFT</strong>,
 every invocation of the tag.
 <p>
 
+<!---INCLUDE--->
+<a name="INCLUDE"><h2><u>Including (sourcing) style sheets and files</u></h2></a>
+<br>
+If you routinely make the same changes to <strong>mom</strong>'s
+defaults in order to create similar documents in a similar
+style--in other words, you need a template--, you can create
+style-sheet files and include, or "source", them into your
+<strong>mom</strong> documents with the macro,
+<strong>INCLUDE</strong>.  The right place for such style sheets is
+after 
+<a href="#PRINTSTYLE">PRINTSTYLE</a>
+and before
+<a href="#START">START</a>
+<p>
+Say, for example, in a particular kind of document, you
+always want main heads set in Helvetica Bold Italic, flush
+left, with no underscore.  You'd create a file, let's call
+it <kbd>head_template</kbd>, in which you'd place the pertinent
+HEAD control macros.
+
+<pre>
+	.HEAD_FAMILY    H
+	.HEAD_FONT      BI
+	.HEAD_QUAD      L
+	.HEAD_UNDERLINE OFF
+</pre>
+
+Then, in the preliminary document set-up section of your main file,
+you'd include the style sheet, or template, like this:
+
+<pre>
+	.TITLE      "Sample Document
+	.AUTHOR     "Joe Blow
+	.PRINTSTYLE TYPESET
+	\#
+	.INCLUDE    head_template
+	\#
+	.START
+</pre>
+
+The blank comment lines (<strong>\#</strong>) aren't required, but
+they do make your file(s) easier to read.
+
+<p>
+If the file to be included is in the same directory as the file
+you're working, you simply enter the filename after
+<kbd>.INCLUDE</kbd>.  If the file's in another directory, you must
+provide a full path name to it.  For example, if you're working in
+a directory called <kbd>/home/joe/stories</kbd> and your
+style-sheet is in <kbd>/home/joe/style_sheets</kbd>, the above
+example would have to look like this:
+
+<pre>
+	.TITLE      "Sample Document
+	.AUTHOR     "Joe Blow
+	.PRINTSTYLE TYPESET
+	\#
+	.INCLUDE    /home/joe/style_sheets/head_template
+	\#
+	.START
+</pre>
+
+<strong>INCLUDE</strong> is not restricted to style sheets
+or templates.  You can include any file at any point into a
+document, provided the file contains only text and valid groff or
+<strong>mom</strong> formatting commands.  Neither is
+<strong>INCLUDE</strong> restricted to use with
+<strong>mom</strong>'s document processing macros.  You can use it
+in plain typeset documents as well.
+<p>
+<strong>EXPERTS: INCLUDE</strong> is an alias for the groff
+request, <kbd>.so</kbd>.  Mix 'n' match <strong>.INCLUDE</strong>
+and <strong>.so</strong> with impunity.
+<p>
+
 <!---COLOR--->
-<a name="COLOR"><h2><u>Colour</u></h2></a>
+<a name="COLOR"><h2><u>Using colours</u></h2></a>
 <br>
 Although it doesn't really matter where you define/initialize
 colours for use in document processing (see

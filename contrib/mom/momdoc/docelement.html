@@ -2580,38 +2580,16 @@ with
 <a href="#FOOTNOTE_MARKERS">.FOOTNOTE_MARKERS</a>
 <strong>OFF</strong>.)
 <p>
-<strong>***Version 1.3 change***</strong>
+<strong>***Version 1.3-d change***</strong>
 <p>
-As of version 1.3, the manner of entering the line
+As of version 1.3-d, the manner of entering the line
 <em>after</em> <strong>.FOOTNOTE OFF</strong> has changed
 to accommodate users' differing wishes with respect to
-the order of punctuation and footnote markers.  The
-correct way to enter the line after <strong>.FOOTNOTE
-OFF</strong>--<strong><em><u>ONLY</u></em></strong> if your
-<a href="#FOOTNOTE_MARKER_STYLE">FOOTNOTE_MARKER_STYLE</a> is
-<strong>STAR</strong> or <strong>NUMBER</strong>--is to input
-it as if it's literally a continuation of the line before
-<strong>.FOOTNOTE</strong>, and therefore begins with either a space
-or a punctuation mark, as in the two following examples.
+the order of punctuation and footnote markers. Please see
+<a href="#FN_AND_PUNCT">Footnote markers and punctuation in the running text</a>
+for more information.
 <p>
-<pre>
-	   Example 1					  Example 2
-	   ---------                      ---------
-
-	A line of text,\c				A line of text\c
-	.FOOTNOTE						.FOOTNOTE
-	A footnote line.				A footnote line.
-	.FOOTNOTE OFF					.FOOTNOTE OFF
-	 broken up with a comma.		, broken up with a comma.
-
-	(last line begins with			(last line begins with
-	 a literal space)				 the comma and a space)
-</pre>
-
-If your <strong>FOOTNOTE_MARKER_STYLE</strong> is line, none of
-this is a concern.
-<p>
-<strong>***End of version 1.3 change***</strong>
+<strong>***End of version 1.3-d change***</strong>
 <p>
 After you invoke <strong>FOOTNOTE</strong>, <strong>mom</strong>
 takes care of everything: putting footnote markers in the body of
@@ -2720,32 +2698,49 @@ for a solution.
 <h3><u><a name="FN_AND_PUNCT">Footnote markers and punctuation in the running text</a></u></h3>
 
 <p>
-As of version 1.3, the manner of entering the line <em>after</em>
-<strong>.FOOTNOTE OFF</strong> has changed.  The correct way to
-enter the line after <strong>.FOOTNOTE OFF</strong> now is to
-input it as if it's literally a continuation of the line before
-<strong>.FOOTNOTE</strong>, and therefore begins with either a space
-or a punctuation mark, as in the two following examples.
-<p>
+As of version 1.3-d, the manner of entering the line <em>after</em>
+<strong>.FOOTNOTE OFF</strong> has changed.
+<br>
+
+<a name="FN_AND_PUNCT_FILL"><h4>"Fill" modes -- JUSTIFY, or QUAD LEFT | CENTER | RIGHT</h4></a>
+
+In fill modes, the correct way to enter the line after
+<strong>.FOOTNOTE OFF</strong> is to input it as if it's literally a
+continuation of the input line you were entering before you invoked
+<strong>.FOOTNOTE</strong>.  Therefore, if necessary, the input line
+may have to begin with space(s) or a punctuation mark, as in the two
+following examples.
 <pre>
-	   Example 1					  Example 2
-	   ---------                      ---------
+	   Example 1
+	   ---------
+	A line of text,\c
+	.FOOTNOTE
+	A footnote line.
+	.FOOTNOTE OFF
+	 broken up with a comma.
+	^
+	(last line begins with a literal space)
 
-	A line of text,\c				A line of text\c
-	.FOOTNOTE						.FOOTNOTE
-	A footnote line.				A footnote line.
-	.FOOTNOTE OFF					.FOOTNOTE OFF
-	 broken up with a comma.		, broken up with a comma.
+	   Example 2
+	   ---------
+	A line of text\c
+	.FOOTNOTE
+	A footnote line.
+	.FOOTNOTE OFF
+	, broken up with a comma.
+	^
+	(last line begins with a comma and a space)
+</pre>
 
-	(last line begins with			(last line begins with
-	 a literal space)				 the comma and a space)
+Both produce, on output
+<pre>
+	A line of text*, broken up with a comma.
 </pre>
 
 Care must be taken, though, if the punctuation mark that begins the
 line after <strong>FOOTNOTE OFF</strong> is a period (dot).  You
 <strong><em><u>must</u></em></strong> begin such lines with
 <strong>\&.</strong>, like this:
-<p>
 <pre>
 	end of a sentence\c
 	.FOOTNOTE
@@ -2755,15 +2750,100 @@ line after <strong>FOOTNOTE OFF</strong> is a period (dot).  You
 </pre>
 
 If you omit the <strong>\&.</strong>, the line will vanish!
-<p>
 
+<p>
+<strong>NOTE:</strong> The document element tag,
+<strong>BLOCKQUOTE</strong>, implies a "fill" mode, therefore these
+instructions also apply when you're inputting blockquote text.
+<br>
+
+<a name="FN_AND_PUNCT_NOFILL"><h4>"No-fill" modes -- LEFT, CENTER, RIGHT</h4></a>
+
+In no-fill modes, you must decide a) whether text on the
+<em>input</em> line after <strong>FOOTNOTE OFF</strong> is
+to be joined to the <em>output</em> line before
+<strong>FOOTNOTE</strong> was invoked, or b) whether you want the
+<em>output</em> text to begin on a new line.
+<p>
+In the first instance, simply follow the instructions,
+<a href="#FN_AND_PUNCT_FILL">above</a>,
+for fill modes.
+<p>
+In the second instance, you must explicitly tell <strong>mom</strong>
+that you want input text after <strong>FOOTNOTE OFF</strong> to
+begin on a new output line.  This is accomplished by passing
+<strong>.FOOTNOTE OFF</strong> (or <strong>QUIT, END, X,</strong>
+etc) an additional argument: <strong>BREAK</strong> or
+<strong>BR</strong>.
+
+<p>
+Study the two examples below to understand the difference.
+<pre>
+	Example 1 -- No-fill mode, FOOTNOTE OFF with no BREAK
+	-----------------------------------------------------
+	.LEFT
+	A line of text\c
+	.FOOTNOTE
+	A footnote line
+	.FOOTNOTE OFF
+	that carries on after the footnote.
+</pre>
+
+produces, on output
+<pre>
+	A line of text* that carries on after the footnote.
+</pre>
+
+whereas
+<pre>
+	Example 2 -- No-fill mode, FOOTNOTE OFF with BREAK
+	--------------------------------------------------
+	.LEFT
+	A line of text\c
+	.FOOTNOTE
+	A footnote line
+	.FOOTNOTE OFF BREAK
+	that doesn't carry on after the footnote.
+</pre>
+
+produces the following on output:
+<pre>
+	A line of text*
+	that doesn't carry on after the footnote.
+</pre>
+
+<p>
+The distinction becomes particularly important if you like to see
+punctuation marks come <em>after</em> footnote markers.  In no-fill
+modes, that's accomplished like this:
+<pre>
+	.LEFT
+	A line of text\c
+	.FOOTNOTE
+	A footnote line
+	.FOOTNOTE OFF
+	,
+	broken up with a comma.
+</pre>
+
+The output of the above looks like this:
+<pre>
+	A line of text*,
+	broken up with a comma.
+</pre>
+
+<p>
+<strong>NOTE:</strong> The document element tag,
+<strong>QUOTE</strong>, implies a "no-fill" mode, therefore these
+instructions also apply when you're inputting quote text.
+<p>
 
 <!---FOOTNOTE--->
 
 <hr width="66%" align="left">
 <p>
 <a name="FOOTNOTE">
-	<nobr>Tag: <strong>FOOTNOTE</strong> &lt;toggle&gt; | INDENT LEFT | RIGHT | BOTH &lt;indent value&gt;</nobr>
+	<nobr>Tag: <strong>FOOTNOTE</strong> &lt;toggle&gt; [ BREAK | BR ] | INDENT LEFT | RIGHT | BOTH &lt;indent value&gt;</nobr>
 	<br>
 	<em>*See <a href="#FOOTNOTE_NOTE">HYPER-IMPORTANT NOTE</a>!!!</em>
 	<br>
@@ -2812,17 +2892,27 @@ See the
 <a href="#FOOTNOTE_EXAMPLE">footnote example</a>
 above.
 <p>
-Additionally, the line <em>after</em> a <strong>FOOTNOTE
-OFF</strong> should be entered as if there were no interruption in
-the input text, i.e. the line should begin with a literal space or
-punctuation mark.  See
-<a href="#FN_AND_PUNCT">above</a>.
+Additionally, in "fill" modes (<strong>JUSTIFY</strong>
+or <strong>QUAD LEFT | CENTER | RIGHT</strong>), the line
+<em>after</em> a <strong>FOOTNOTE OFF</strong> should be entered
+as if there were no interruption in the input text, i.e. the line
+should begin with a literal space or punctuation mark (see explanation
+and examples
+<a href="#FN_AND_PUNCT">here</a>).
+<p>
+In "no-fill" modes, the optional argument <strong>BREAK</strong> or
+<strong>BR</strong> may be used after the <strong>OFF</strong> (or
+<strong>QUIT, END, X,</strong> etc.) argument to instruct
+<strong>mom</strong> NOT to join the next input line to the
+previous output.  See
+<a href="#FN_AND_PUNCT_NOFILL">here</a>
+for a more complete explanation, with examples.
 <p>
 Do NOT use the <strong>\c</strong> inline escape if your
 <strong>FOOTNOTE_MARKER_STYLE</strong> is <strong>LINE</strong>, or
 if you have disabled footnote markers with
 <a href="#FOOTNOTE_MARKERS">.FOOTNOTE_MARKERS</a>
-<strong>OFF</strong>.  As well, the line after
+<strong>OFF</strong>.  In these instances, the line after
 <strong>FOOTNOTE&nbsp;OFF</strong> should be entered normally.
 
 <p>
@@ -3111,37 +3201,21 @@ is <strong>NUMBER</strong> (which marks endnotes references in
 with superscript numbers).  When the marker style is
 <strong>LINE</strong>, you must <em>not</em> use the
 <strong>\c</strong> escape.
+
 <p>
-<strong>***Version 1.3 change***</strong>
+<strong>***Version 1.3-d change***</strong>
 <p>
-As of version 1.3, the manner of entering the line <em>after</em>
+As of version 1.3-d, the manner of entering the line <em>after</em>
 <strong>.ENDNOTE OFF</strong> has changed to accommodate users'
 differing wishes with respect to the order of punctuation and
-endnote markers.  The correct way to enter the line after
-<strong>.ENDNOTE OFF</strong>--but <strong><em><u>NOT</u></em></strong>
-if your
-<a href="#ENDNOTE_MARKER_STYLE">ENDNOTE_MARKER_STYLE</a>
-is <strong>LINE</strong>--is to input it as if it's literally
-a continuation of the line before <strong>.ENDNOTE</strong>, and
-therefore begins with either a space or a punctuation mark, as in
-the two following examples.
+endnote markers. <strong>Mom</strong> handles endnotes and
+footnotes identically in this regard, so please read the footnote
+section,
+<a href="#FN_AND_PUNCT">Footnote markers and punctuation in the running text</a>,
+for an explanation.
 <p>
-<a name="EN_PUNCT"></a>
-<pre>
-	   Example 1					  Example 2
-	   ---------                      ---------
-
-	A line of text,\c				A line of text\c
-	.ENDNOTE						.ENDNOTE
-	A footnote line.				A footnote line.
-	.ENDNOTE OFF					.ENDNOTE OFF
-	 broken up with a comma.		, broken up with a comma.
-
-	(last line begins with			(last line begins with
-	 a literal space)				 the comma and a space)
-</pre>
-
 <strong>***End version 1.3 change***</strong>
+
 <p>
 Endnotes differ from footnotes in two ways (other than the fact that
 endnotes come at the end of a document whereas footnotes appear in the
@@ -3253,7 +3327,7 @@ you may now do so.  See
 
 <p>
 <a name="ENDNOTE">
-	<nobr>Macro: <strong>ENDNOTE</strong> &lt;toggle&gt;</nobr>
+	<nobr>Macro: <strong>ENDNOTE</strong> &lt;toggle&gt; [ BREAK | BR ]</nobr>
 	<br>
 	<em>*See <a href="#ENDNOTE_NOTE">HYPER-IMPORTANT NOTE</a>!!!</em>
 </a>
@@ -3283,12 +3357,21 @@ inline escape.  See the
 <a href="#ENDNOTE_EXAMPLE">endnote example</a>
 above.
 <p>
-Additionally, the line <em>after</em>
-<strong>.ENDNOTE&nbsp;OFF</strong> should be entered as if there
-were no interruption in the input text, i.e. the line should begin
-with a literal space or punctuation mark.  See the two
-<a href="#EN_PUNCT">examples</a>, 
-above.
+Additionally, in "fill" modes (<strong>JUSTIFY</strong>
+or <strong>QUAD LEFT | CENTER | RIGHT</strong>), the line
+<em>after</em> a <strong>ENDNOTE OFF</strong> should be entered
+as if there were no interruption in the input text, i.e. the line
+should begin with a literal space or punctuation mark (see explanation
+and examples
+<a href="#FN_AND_PUNCT">here</a>).
+<p>
+In "no-fill" modes, the optional argument <strong>BREAK</strong> or
+<strong>BR</strong> may be used after the <strong>OFF</strong> (or
+<strong>QUIT, END, X,</strong> etc.) argument to instruct
+<strong>mom</strong> NOT to join the next input line to the
+previous output.  See
+<a href="#FN_AND_PUNCT_NOFILL">here</a>
+for a more complete explanation, with examples.
 <p>
 If your <strong>ENDNOTE_MARKER_STYLE</strong> is
 <strong>LINE</strong>, do NOT use the <strong>\c</strong> escape,
