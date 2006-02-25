@@ -2397,7 +2397,7 @@ Caution is required, however, when explicitly flushing the
 subsequently extended, then the first outline entry after flushing
 .EM must
 be specified at level 1.
-Nevertheless, such explict flushing may occasionally be necessary;
+Nevertheless, such explicit flushing may occasionally be necessary;
 for example, the
 .CW TC
 macro in the
