@@ -30,6 +30,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include "error.h"
 #include "cset.h"
 #include "font.h"
+#include "unicode.h"
 #include "paper.h"
 
 const char *const WS = " \t\n\r";
@@ -151,8 +152,8 @@ void text_file::error(const char *format,
 /* font functions */
 
 font::font(const char *s)
-: ligatures(0), kern_hash_table(0), space_width(0), ch_index(0), nindices(0),
-  ch(0), ch_used(0), ch_size(0), special(0), widths_cache(0)
+: ligatures(0), kern_hash_table(0), space_width(0), special(0),
+  ch_index(0), nindices(0), ch(0), ch_used(0), ch_size(0), widths_cache(0)
 {
   name = new char[strlen(s) + 1];
   strcpy(name, s);
@@ -249,7 +250,44 @@ int font::contains(glyph *g)
 {
   int idx = glyph_to_index(g);
   assert(idx >= 0);
-  return idx < nindices && ch_index[idx] >= 0;
+  // Explicitly enumerated glyph?
+  if (idx < nindices && ch_index[idx] >= 0)
+    return 1;
+  if (is_unicode) {
+    // Unicode font
+    const char *nm = glyph_to_name(g);
+    if (nm != NULL) {
+      // ASCII character?
+      if (nm[0] == 'c' && nm[1] == 'h' && nm[2] == 'a' && nm[3] == 'r'
+          && (nm[4] >= '0' && nm[4] <= '9')) {
+	int n = (nm[4] - '0');
+	if (nm[5] == '\0')
+	  return 1;
+	if (n > 0 && (nm[5] >= '0' && nm[5] <= '9')) {
+	  n = 10*n + (nm[5] - '0');
+	  if (nm[6] == '\0')
+	    return 1;
+	  if (nm[6] >= '0' && nm[6] <= '9') {
+	    n = 10*n + (nm[6] - '0');
+	    if (nm[7] == '\0' && n < 128)
+	      return 1;
+	  }
+	}
+      }
+      // Unicode character?
+      if (check_unicode_name(nm))
+	return 1;
+      // groff glyph name that maps to Unicode?
+      const char *unicode = glyph_name_to_unicode(nm);
+      if (unicode != NULL && strchr(unicode, '_') == NULL)
+	return 1;
+    }
+    // Numbered character?
+    int n = glyph_to_number(g);
+    if (n >= 0)
+      return 1;
+  }
+  return 0;
 }
 
 int font::is_special()
@@ -274,68 +312,132 @@ font_widths_cache::~font_widths_cache()
 int font::get_width(glyph *g, int point_size)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices);
-  int i = ch_index[idx];
-  assert(i >= 0);
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    int i = ch_index[idx];
 
-  if (point_size == unitwidth || font::unscaled_charwidths)
-    return ch[i].width;
+    if (point_size == unitwidth || font::unscaled_charwidths)
+      return ch[i].width;
 
-  if (!widths_cache)
-    widths_cache = new font_widths_cache(point_size, ch_size);
-  else if (widths_cache->point_size != point_size) {
-    font_widths_cache **p;
-    for (p = &widths_cache; *p; p = &(*p)->next)
-      if ((*p)->point_size == point_size)
-	break;
-    if (*p) {
-      font_widths_cache *tem = *p;
-      *p = (*p)->next;
-      tem->next = widths_cache;
-      widths_cache = tem;
+    if (!widths_cache)
+      widths_cache = new font_widths_cache(point_size, ch_size);
+    else if (widths_cache->point_size != point_size) {
+      font_widths_cache **p;
+      for (p = &widths_cache; *p; p = &(*p)->next)
+	if ((*p)->point_size == point_size)
+	  break;
+      if (*p) {
+	font_widths_cache *tem = *p;
+	*p = (*p)->next;
+	tem->next = widths_cache;
+	widths_cache = tem;
+      }
+      else
+	widths_cache = new font_widths_cache(point_size, ch_size,
+					     widths_cache);
     }
-    else
-      widths_cache = new font_widths_cache(point_size, ch_size, widths_cache);
+    int &w = widths_cache->width[i];
+    if (w < 0)
+      w = scale(ch[i].width, point_size);
+    return w;
   }
-  int &w = widths_cache->width[i];
-  if (w < 0)
-    w = scale(ch[i].width, point_size);
-  return w;
+  if (is_unicode) {
+    // Unicode font
+    int width = 24;	// value found in the original font files
+			// XXX: this must be eventually moved back to the
+			//      font description file!
+    if (point_size == unitwidth || font::unscaled_charwidths)
+      return width;
+    else
+      return scale(width, point_size);
+  }
+  abort();
 }
 
 int font::get_height(glyph *g, int point_size)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
-  return scale(ch[ch_index[idx]].height, point_size);
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    return scale(ch[ch_index[idx]].height, point_size);
+  }
+  if (is_unicode) {
+    // Unicode font
+    return 0;	// value found in the original font files
+		// XXX: this must be eventually moved back to the
+		//      font description file!
+  }
+  abort();
 }
 
 int font::get_depth(glyph *g, int point_size)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
-  return scale(ch[ch_index[idx]].depth, point_size);
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    return scale(ch[ch_index[idx]].depth, point_size);
+  }
+  if (is_unicode) {
+    // Unicode font
+    return 0;	// value found in the original font files
+		// XXX: this must be eventually moved back to the
+		//      font description file!
+  }
+  abort();
 }
 
 int font::get_italic_correction(glyph *g, int point_size)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
-  return scale(ch[ch_index[idx]].italic_correction, point_size);
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    return scale(ch[ch_index[idx]].italic_correction, point_size);
+  }
+  if (is_unicode) {
+    // Unicode font
+    return 0;	// value found in the original font files
+		// XXX: this must be eventually moved back to the
+		//      font description file!
+  }
+  abort();
 }
 
 int font::get_left_italic_correction(glyph *g, int point_size)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
-  return scale(ch[ch_index[idx]].pre_math_space, point_size);
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    return scale(ch[ch_index[idx]].pre_math_space, point_size);
+  }
+  if (is_unicode) {
+    // Unicode font
+    return 0;	// value found in the original font files
+		// XXX: this must be eventually moved back to the
+		//      font description file!
+  }
+  abort();
 }
 
 int font::get_subscript_correction(glyph *g, int point_size)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
-  return scale(ch[ch_index[idx]].subscript_correction, point_size);
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    return scale(ch[ch_index[idx]].subscript_correction, point_size);
+  }
+  if (is_unicode) {
+    // Unicode font
+    return 0;	// value found in the original font files
+		// XXX: this must be eventually moved back to the
+		//      font description file!
+  }
+  abort();
 }
 
 int font::get_space_width(int point_size)
@@ -385,15 +487,68 @@ int font::has_ligature(int mask)
 int font::get_character_type(glyph *g)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
-  return ch[ch_index[idx]].type;
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    return ch[ch_index[idx]].type;
+  }
+  if (is_unicode) {
+    // Unicode font
+    return 0;	// value found in the original font files
+		// XXX: this must be eventually moved back to the
+		//      font description file!
+  }
+  abort();
 }
 
 int font::get_code(glyph *g)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
-  return ch[ch_index[idx]].code;
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    return ch[ch_index[idx]].code;
+  }
+  if (is_unicode) {
+    // Unicode font
+    const char *nm = glyph_to_name(g);
+    if (nm != NULL) {
+      // ASCII character?
+      if (nm[0] == 'c' && nm[1] == 'h' && nm[2] == 'a' && nm[3] == 'r'
+          && (nm[4] >= '0' && nm[4] <= '9')) {
+	int n = (nm[4] - '0');
+	if (nm[5] == '\0')
+	  return n;
+	if (n > 0 && (nm[5] >= '0' && nm[5] <= '9')) {
+	  n = 10*n + (nm[5] - '0');
+	  if (nm[6] == '\0')
+	    return n;
+	  if (nm[6] >= '0' && nm[6] <= '9') {
+	    n = 10*n + (nm[6] - '0');
+	    if (nm[7] == '\0' && n < 128)
+	      return n;
+	  }
+	}
+      }
+      // Unicode character?
+      if (check_unicode_name(nm)) {
+	char *ignore;
+	return (int)strtol(nm + 1, &ignore, 16);
+      }
+      // groff glyphs that map to Unicode?
+      const char *unicode = glyph_name_to_unicode(nm);
+      if (unicode != NULL && strchr(unicode, '_') == NULL) {
+	char *ignore;
+	return (int)strtol(unicode, &ignore, 16);
+      }
+    }
+    // Numbered character?
+    int n = glyph_to_number(g);
+    if (n >= 0)
+      return n;
+  }
+  // The caller must check `contains(g)' before calling get_code(g).
+  abort();
 }
 
 const char *font::get_name()
@@ -409,8 +564,16 @@ const char *font::get_internal_name()
 const char *font::get_special_device_encoding(glyph *g)
 {
   int idx = glyph_to_index(g);
-  assert(idx >= 0 && idx < nindices && ch_index[idx] >= 0);
-  return ch[ch_index[idx]].special_device_coding;
+  assert(idx >= 0);
+  if (idx < nindices && ch_index[idx] >= 0) {
+    // Explicitly enumerated glyph
+    return ch[ch_index[idx]].special_device_coding;
+  }
+  if (is_unicode) {
+    // Unicode font
+    return NULL;
+  }
+  abort();
 }
 
 const char *font::get_image_generator()
@@ -598,8 +761,8 @@ int font::load(int *not_found, int head_only)
   char *p;
   for (;;) {
     if (!t.next()) {
-      t.error("missing charset command");
-      return 0;
+      p = 0;
+      break;
     }
     p = strtok(t.buf, WS);
     if (strcmp(p, "name") == 0) {
@@ -665,147 +828,154 @@ int font::load(int *not_found, int head_only)
   }
   if (head_only)
     return 1;
-  char *command = p;
   int had_charset = 0;
-  t.skip_comments = 0;
-  while (command) {
-    if (strcmp(command, "kernpairs") == 0) {
-      for (;;) {
-	if (!t.next()) {
-	  command = 0;
-	  break;
-	}
-	char *c1 = strtok(t.buf, WS);
-	if (c1 == 0)
-	  continue;
-	char *c2 = strtok(0, WS);
-	if (c2 == 0) {
-	  command = c1;
-	  break;
-	}
-	p = strtok(0, WS);
-	if (p == 0) {
-	  t.error("missing kern amount");
-	  return 0;
-	}
-	int n;
-	if (sscanf(p, "%d", &n) != 1) {
-	  t.error("bad kern amount `%1'", p);
-	  return 0;
-	}
-	glyph *g1 = name_to_glyph(c1);
-	glyph *g2 = name_to_glyph(c2);
-	add_kern(g1, g2, n);
-      }
+  if (p == 0) {
+    if (!is_unicode) {
+      t.error("missing charset command");
+      return 0;
     }
-    else if (strcmp(command, "charset") == 0) {
-      had_charset = 1;
-      glyph *last_glyph = NULL;
-      for (;;) {
-	if (!t.next()) {
-	  command = 0;
-	  break;
-	}
-	char *nm = strtok(t.buf, WS);
-	if (nm == 0)
-	  continue;			// I dont think this should happen
-	p = strtok(0, WS);
-	if (p == 0) {
-	  command = nm;
-	  break;
-	}
-	if (p[0] == '"') {
-	  if (last_glyph == NULL) {
-	    t.error("first charset entry is duplicate");
-	    return 0;
+  } else {
+    char *command = p;
+    t.skip_comments = 0;
+    while (command) {
+      if (strcmp(command, "kernpairs") == 0) {
+	for (;;) {
+	  if (!t.next()) {
+	    command = 0;
+	    break;
 	  }
-	  if (strcmp(nm, "---") == 0) {
-	    t.error("unnamed character cannot be duplicate");
-	    return 0;
-	  }
-	  glyph *g = name_to_glyph(nm);
-	  copy_entry(g, last_glyph);
-	}
-	else {
-	  font_char_metric metric;
-	  metric.height = 0;
-	  metric.depth = 0;
-	  metric.pre_math_space = 0;
-	  metric.italic_correction = 0;
-	  metric.subscript_correction = 0;
-	  int nparms = sscanf(p, "%d,%d,%d,%d,%d,%d",
-			      &metric.width, &metric.height, &metric.depth,
-			      &metric.italic_correction,
-			      &metric.pre_math_space,
-			      &metric.subscript_correction);
-	  if (nparms < 1) {
-	    t.error("bad width for `%1'", nm);
-	    return 0;
+	  char *c1 = strtok(t.buf, WS);
+	  if (c1 == 0)
+	    continue;
+	  char *c2 = strtok(0, WS);
+	  if (c2 == 0) {
+	    command = c1;
+	    break;
 	  }
 	  p = strtok(0, WS);
 	  if (p == 0) {
-	    t.error("missing character type for `%1'", nm);
+	    t.error("missing kern amount");
 	    return 0;
 	  }
-	  int type;
-	  if (sscanf(p, "%d", &type) != 1) {
-	    t.error("bad character type for `%1'", nm);
+	  int n;
+	  if (sscanf(p, "%d", &n) != 1) {
+	    t.error("bad kern amount `%1'", p);
 	    return 0;
 	  }
-	  if (type < 0 || type > 255) {
-	    t.error("character type `%1' out of range", type);
-	    return 0;
-	  }
-	  metric.type = type;
-	  p = strtok(0, WS);
-	  if (p == 0) {
-	    t.error("missing code for `%1'", nm);
-	    return 0;
-	  }
-	  char *ptr;
-	  metric.code = (int)strtol(p, &ptr, 0);
-	  if (metric.code == 0 && ptr == p) {
-	    t.error("bad code `%1' for character `%2'", p, nm);
-	    return 0;
-	  }
-	  p = strtok(0, WS);
-	  if ((p == NULL) || (strcmp(p, "--") == 0)) {
-	    metric.special_device_coding = NULL;
-	  }
-	  else {
-	    char *nam = new char[strlen(p) + 1];
-	    strcpy(nam, p);
-	    metric.special_device_coding = nam;
-	  }
-	  if (strcmp(nm, "---") == 0) {
-	    last_glyph = number_to_glyph(metric.code);
-	    add_entry(last_glyph, metric);
-	  }
-	  else {
-	    last_glyph = name_to_glyph(nm);
-	    add_entry(last_glyph, metric);
-	    copy_entry(number_to_glyph(metric.code), last_glyph);
-	  }
+	  glyph *g1 = name_to_glyph(c1);
+	  glyph *g2 = name_to_glyph(c2);
+	  add_kern(g1, g2, n);
 	}
       }
-      if (last_glyph == NULL) {
-	t.error("I didn't seem to find any characters");
+      else if (strcmp(command, "charset") == 0) {
+	had_charset = 1;
+	glyph *last_glyph = NULL;
+	for (;;) {
+	  if (!t.next()) {
+	    command = 0;
+	    break;
+	  }
+	  char *nm = strtok(t.buf, WS);
+	  if (nm == 0)
+	    continue;			// I dont think this should happen
+	  p = strtok(0, WS);
+	  if (p == 0) {
+	    command = nm;
+	    break;
+	  }
+	  if (p[0] == '"') {
+	    if (last_glyph == NULL) {
+	      t.error("first charset entry is duplicate");
+	      return 0;
+	    }
+	    if (strcmp(nm, "---") == 0) {
+	      t.error("unnamed character cannot be duplicate");
+	      return 0;
+	    }
+	    glyph *g = name_to_glyph(nm);
+	    copy_entry(g, last_glyph);
+	  }
+	  else {
+	    font_char_metric metric;
+	    metric.height = 0;
+	    metric.depth = 0;
+	    metric.pre_math_space = 0;
+	    metric.italic_correction = 0;
+	    metric.subscript_correction = 0;
+	    int nparms = sscanf(p, "%d,%d,%d,%d,%d,%d",
+				&metric.width, &metric.height, &metric.depth,
+				&metric.italic_correction,
+				&metric.pre_math_space,
+				&metric.subscript_correction);
+	    if (nparms < 1) {
+	      t.error("bad width for `%1'", nm);
+	      return 0;
+	    }
+	    p = strtok(0, WS);
+	    if (p == 0) {
+	      t.error("missing character type for `%1'", nm);
+	      return 0;
+	    }
+	    int type;
+	    if (sscanf(p, "%d", &type) != 1) {
+	      t.error("bad character type for `%1'", nm);
+	      return 0;
+	    }
+	    if (type < 0 || type > 255) {
+	      t.error("character type `%1' out of range", type);
+	      return 0;
+	    }
+	    metric.type = type;
+	    p = strtok(0, WS);
+	    if (p == 0) {
+	      t.error("missing code for `%1'", nm);
+	      return 0;
+	    }
+	    char *ptr;
+	    metric.code = (int)strtol(p, &ptr, 0);
+	    if (metric.code == 0 && ptr == p) {
+	      t.error("bad code `%1' for character `%2'", p, nm);
+	      return 0;
+	    }
+	    p = strtok(0, WS);
+	    if ((p == NULL) || (strcmp(p, "--") == 0)) {
+	      metric.special_device_coding = NULL;
+	    }
+	    else {
+	      char *nam = new char[strlen(p) + 1];
+	      strcpy(nam, p);
+	      metric.special_device_coding = nam;
+	    }
+	    if (strcmp(nm, "---") == 0) {
+	      last_glyph = number_to_glyph(metric.code);
+	      add_entry(last_glyph, metric);
+	    }
+	    else {
+	      last_glyph = name_to_glyph(nm);
+	      add_entry(last_glyph, metric);
+	      copy_entry(number_to_glyph(metric.code), last_glyph);
+	    }
+	  }
+	}
+	if (last_glyph == NULL) {
+	  t.error("I didn't seem to find any characters");
+	  return 0;
+	}
+      }
+      else {
+	t.error("unrecognised command `%1' after `kernpairs' or `charset' command",
+		command);
 	return 0;
       }
     }
-    else {
-      t.error("unrecognised command `%1' after `kernpairs' or `charset' command",
-	      command);
-      return 0;
-    }
+    compact();
   }
-  if (!had_charset) {
+  if (!is_unicode && !had_charset) {
     t.error("missing charset command");
     return 0;
   }
   if (space_width == 0)
     space_width = scale_round(unitwidth, res, 72*3*sizescale);
-  compact();
   return 1;
 }
 
@@ -995,6 +1165,8 @@ int font::load_desc()
       tcommand = 1;
     else if (strcmp("use_charnames_in_special", p) == 0)
       use_charnames_in_special = 1;
+    else if (strcmp("unicode", p) == 0)
+      is_unicode = 1;
     else if (strcmp("image_generator", p) == 0) {
       p = strtok(0, WS);
       if (!p) {

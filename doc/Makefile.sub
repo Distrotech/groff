@@ -77,6 +77,9 @@ PROCESSEDEXAMPLEFILES=\
 HTMLEXAMPLEFILES=\
   webpage.html
 
+HTMLEXAMPLEFILESALL=\
+  webpage*.html
+
 HTMLEXAMPLEIMAGEFILES=\
   webpage*
 
@@ -87,7 +90,7 @@ exampleimagedir=$(exampledir)/$(imagedir)
 CLEANADD=\
   $(PROCESSEDDOCFILES) \
   $(PROCESSEDEXAMPLEFILES) \
-  $(HTMLEXAMPLEFILES) \
+  $(HTMLEXAMPLEFILESALL) \
   $(HTMLDOCFILESALL) \
   groff.aux groff.cp* groff.dvi groff.es* groff.fn* groff.html groff.ky* \
   groff.log groff.ma* groff.op* groff.pdf groff.pg* groff.ps groff.rq* \
@@ -210,7 +213,7 @@ install_html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
 	  $(DESTDIR)$(htmldocimagedir)
 	-test -d $(DESTDIR)$(exampledir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)
-	for f in $(HTMLEXAMPLEFILES); do \
+	for f in `ls $(HTMLEXAMPLEFILESALL)`; do \
 	  rm -f $(DESTDIR)$(exampledir)/$$f; \
 	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
 	done
@@ -235,7 +238,7 @@ uninstall_sub:
 	-rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
 	-rmdir $(DESTDIR)$(htmldocimagedir)
 	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
-	          $(HTMLEXAMPLEFILES); do \
+	          `ls $(HTMLEXAMPLEFILESALL)`; do \
 	  rm -f $(DESTDIR)$(exampledir)/$$f; \
 	done
 	-rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)

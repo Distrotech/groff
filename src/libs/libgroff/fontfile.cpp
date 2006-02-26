@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -47,6 +47,7 @@ int font::tcommand = 0;
 int font::pass_filenames = 0;
 int font::unscaled_charwidths = 0;
 int font::use_charnames_in_special = 0;
+int font::is_unicode = 0;
 const char *font::image_generator = NULL;
 const char **font::font_name_table = 0;
 int *font::sizes = 0;

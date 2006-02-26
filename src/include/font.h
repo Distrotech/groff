@@ -248,6 +248,8 @@ public:
 			// `pass_filenames' attribute.
   static int use_charnames_in_special;	// Nonzero if the DESC file has the
 			// `use_charnames_in_special' attribute.
+  static int is_unicode; // Nonzero if the DESC file has the `unicode'
+			// attribute.
   static const char *image_generator;	// The `image_generator' attribute
 			// given in the DESC file.
   static const char **font_name_table;	// The `fonts' attribute given in
@@ -269,22 +271,24 @@ private:
 			// Used by get_kern().
   int space_width;	// The normal width of a space.  Used by
 			// get_space_width().
-  int *ch_index;	// Conversion table from font-independent character
-			// indices to indices for this particular font.
-  int nindices;
-  font_char_metric *ch;	// Metrics information for every character in this
-			// font.  The indices of this array are
-			// font-specific, found as values in ch_index[].
-  int ch_used;
-  int ch_size;
   int special;		// 1 if this font is special, 0 otherwise.  Used by
 			// is_special().
   char *name;		// The name of this font.  Used by get_name().
   char *internalname;	// The `internalname' attribute of this font, or
 			// NULL.  Used by get_internal_name().
   double slant;		// The natural slant angle (in degrees) of this font.
+  int *ch_index;	// Conversion table from font-independent character
+			// indices to indices for this particular font.
+  int nindices;
+  font_char_metric *ch;	// Metrics information for every character in this
+			// font (if !is_unicode) or for just some characters
+			// (if is_unicode).  The indices of this array are
+			// font-specific, found as values in ch_index[].
+  int ch_used;
+  int ch_size;
   font_widths_cache *widths_cache;	// A cache of scaled character
 			// widths.  Used by the get_width() function.
+
   static FONT_COMMAND_HANDLER unknown_desc_command_handler;	// A
 			// function defining the semantics of arbitrary
 			// commands in the DESC file.

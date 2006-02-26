@@ -1,3 +1,32 @@
+2006-02-26  Werner LEMBERG  <wl@gnu.org>
+
+	* doc/Makefile.sub (HTMLEXAMPLEFILESALL): New variable.
+	(CLEANADD): Use it.
+	(install_html, uninstall_sub): Updated.
+
+2006-02-26  Bruno Haible  <bruno@clisp.org>
+
+	Introduce Unicode fonts.
+
+	* font/devhtml/DESC.proto: Mark as unicode.
+	* font/devhtml/R.proto: Remove all charset entries that are already
+	in glyphuni.cpp.
+	* font/devutf8/DESC.proto: Mark as unicode.
+	* font/devutf8/R.proto: Remove all charset entries.
+	* src/include/font.h (font): New static field `is_unicode'.
+	Change order of fields.
+	* src/libs/libgroff/font.cpp: Include unicode.h.
+	(font::font): Update for changed order of fields.
+	(font::contains, font::get_width, font::get_height, font::get_depth,
+	font::get_italic_correction, font::get_left_italic_correction,
+	font::get_subscript_correction, font::get_character_type,
+	font::get_code, font::get_special_device_encoding): Handle both the
+	explicitly enumerated glyphs and use general code for Unicode fonts.
+	(font::load): Make the charset section optional when the font is
+	declared unicode.
+	(font::load_desc): Recognize the `unicode' attribute.
+	* src/libs/libgroff/fontfile.cpp (font::is_unicode): New variable.
+
 2006-02-26  Claudio Fontana  <claudio@gnu.org>
 
 	* Makefile.in: Add comment about DESTDIR.
