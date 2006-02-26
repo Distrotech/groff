@@ -1,4 +1,5 @@
-# Copyright (C) 1989-2000, 2002, 2003, 2004 Free Software Foundation, Inc.
+# Copyright (C) 1989-2000, 2002, 2003, 2004, 2006
+#   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
 # This file is part of groff.
@@ -63,11 +64,8 @@ pure:
 .PHONY: pure
 
 prefix_must_exist:
-	@test -d $(prefix) \
-	  || (echo ; \
-	      echo The prefix directory \`$(prefix)\' doesn\'t exist; \
-	      echo ; \
-	      exit 1)
+	@test -d $(DESTDIR)$(prefix) \
+	  || $(mkinstalldirs) $(DESTDIR)$(prefix)
 
 mostlyclean:
 	-rm -f $(MOSTLYCLEANFILES)
@@ -170,28 +168,28 @@ extraclean: distclean
 
 .PHONY: install_man
 install_man:
-	-test -d $(manroot) || $(mkinstalldirs) $(manroot)
-	-test -d $(man1dir) || $(mkinstalldirs) $(man1dir)
+	-test -d $(DESTDIR)$(manroot) || $(mkinstalldirs) $(DESTDIR)$(manroot)
+	-test -d $(DESTDIR)$(man1dir) || $(mkinstalldirs) $(DESTDIR)$(man1dir)
 	@-pages="$(MAN1)"; \
 	for p in $$pages; do \
 	 prog=`basename $$p .n`; \
-	 target=$(man1dir)/$(NAMEPREFIX)$$prog.$(man1ext); \
+	 target=$(DESTDIR)$(man1dir)/$(NAMEPREFIX)$$prog.$(man1ext); \
 	 rm -f $$target; \
 	 echo $(INSTALL_DATA) $$p $$target; \
 	 $(INSTALL_DATA) $$p $$target; \
 	done
-	-test -d $(man5dir) || $(mkinstalldirs) $(man5dir)
+	-test -d $(DESTDIR)$(man5dir) || $(mkinstalldirs) $(DESTDIR)$(man5dir)
 	@-pages="$(MAN5)"; \
 	for p in $$pages; do \
-	 target=$(man5dir)/`basename $$p .n`.$(man5ext); \
+	 target=$(DESTDIR)$(man5dir)/`basename $$p .n`.$(man5ext); \
 	 rm -f $$target; \
 	 echo $(INSTALL_DATA) $$p $$target; \
 	 $(INSTALL_DATA) $$p $$target; \
 	done
-	-test -d $(man7dir) || $(mkinstalldirs) $(man7dir)
+	-test -d $(DESTDIR)$(man7dir) || $(mkinstalldirs) $(DESTDIR)$(man7dir)
 	@-pages="$(MAN7)"; \
 	for p in $$pages; do \
-	 target=$(man7dir)/`basename $$p .n`.$(man7ext); \
+	 target=$(DESTDIR)$(man7dir)/`basename $$p .n`.$(man7ext); \
 	 rm -f $$target; \
 	 echo $(INSTALL_DATA) $$p $$target; \
 	 $(INSTALL_DATA) $$p $$target; \
@@ -201,60 +199,65 @@ install_man:
 uninstall_man:
 	@-pages="$(MAN1)"; \
 	for p in $$pages; do \
-	 target=$(man1dir)/$(NAMEPREFIX)`basename $$p .n`.$(man1ext); \
+	 target=$(DESTDIR)$(man1dir)/$(NAMEPREFIX)`basename $$p .n`.$(man1ext); \
 	 echo rm -f $$target; \
 	 rm -f $$target; \
 	done
 	@-pages="$(MAN5)"; \
 	for p in $$pages; do \
-	 target=$(man5dir)/`basename $$p .n`.$(man5ext); \
+	 target=$(DESTDIR)$(man5dir)/`basename $$p .n`.$(man5ext); \
 	 echo rm -f $$target; \
 	 rm -f $$target; \
 	done
 	@-pages="$(MAN7)"; \
 	for p in $$pages; do \
-	 target=$(man7dir)/`basename $$p .n`.$(man7ext); \
+	 target=$(DESTDIR)$(man7dir)/`basename $$p .n`.$(man7ext); \
 	 echo rm -f $$target; \
 	 rm -f $$target; \
 	done
 
 .PHONY: install_prog
 install_prog:
-	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
-	rm -f $(bindir)/$(NAMEPREFIX)$(PROG)
-	$(INSTALL_PROGRAM) $(PROG) $(bindir)/$(NAMEPREFIX)$(PROG)
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)$(PROG)
+	$(INSTALL_PROGRAM) $(PROG) $(DESTDIR)$(bindir)/$(NAMEPREFIX)$(PROG)
 
 .PHONY: uninstall_prog
 uninstall_prog:
-	-rm -f $(bindir)/$(NAMEPREFIX)$(PROG)	
+	-rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)$(PROG)	
 
 .PHONY: install_dev
 install_dev:
-	-test -d $(datadir) || $(mkinstalldirs) $(datadir)
-	-test -d $(dataprogramdir) || $(mkinstalldirs) $(dataprogramdir)
-	-test -d $(datasubdir) || $(mkinstalldirs) $(datasubdir)
-	-test -d $(fontdir) || $(mkinstalldirs) $(fontdir)
-	-test -d $(fontsubdir) || $(mkinstalldirs) $(fontsubdir)
+	-test -d $(DESTDIR)$(datadir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(datadir)
+	-test -d $(DESTDIR)$(dataprogramdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(dataprogramdir)
+	-test -d $(DESTDIR)$(datasubdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(datasubdir)
+	-test -d $(DESTDIR)$(fontdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(fontdir)
+	-test -d $(DESTDIR)$(fontsubdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)
 	-if test -d $(srcdir)/generate; then \
-	  test -d $(fontsubdir)/generate \
-	    || $(mkinstalldirs) $(fontsubdir)/generate; \
+	  test -d $(DESTDIR)$(fontsubdir)/generate \
+	    || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/generate; \
 	fi
 	-test -z "$(DEVFILES)" \
 	  || for f in ""$(DEVFILES); do \
-	       rm -f $(fontsubdir)/$$f; \
+	       rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	       if test -f $$f; then \
-		 $(INSTALL_DATA) $$f $(fontsubdir)/$$f; \
+		 $(INSTALL_DATA) $$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       else \
-		 $(INSTALL_DATA) $(srcdir)/$$f $(fontsubdir)/$$f; \
+		 $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       fi; \
 	     done
 	-test -z "$(DEVSCRIPTS)" \
 	  || for f in ""$(DEVSCRIPTS); do \
-	       rm -f $(fontsubdir)/$$f; \
+	       rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	       if test -f $$f; then \
-		 $(INSTALL_SCRIPT) $$f $(fontsubdir)/$$f; \
+		 $(INSTALL_SCRIPT) $$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       else \
-		 $(INSTALL_SCRIPT) $(srcdir)/$$f $(fontsubdir)/$$f; \
+		 $(INSTALL_SCRIPT) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       fi; \
 	     done
 
@@ -262,10 +265,11 @@ install_dev:
 uninstall_dev:
 	-test -z "$(DEVFILES)$(DEVSCRIPTS)" \
 	  || for f in ""$(DEVFILES) $(DEVSCRIPTS); do \
-	       rm -f $(fontsubdir)/$$f; \
+	       rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	     done
-	-test -d $(fontsubdir)/generate && rmdir $(fontsubdir)/generate
-	-rmdir $(fontsubdir)
+	-test -d $(DESTDIR)$(fontsubdir)/generate \
+	  && rmdir $(DESTDIR)$(fontsubdir)/generate
+	-rmdir $(DESTDIR)$(fontsubdir)
 
 .PHONY: depend_src
 depend_src: depend.temp

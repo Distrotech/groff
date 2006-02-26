@@ -12,9 +12,9 @@ nroff: nroff.sh $(SH_DEPS_SED_SCRIPT)
 	chmod +x $@
 
 install_data: nroff
-	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
-	-rm -f $(bindir)/$(NAMEPREFIX)nroff
-	$(INSTALL_SCRIPT) nroff $(bindir)/$(NAMEPREFIX)nroff
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	-rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)nroff
+	$(INSTALL_SCRIPT) nroff $(DESTDIR)$(bindir)/$(NAMEPREFIX)nroff
 
 uninstall_sub:
-	-rm -f $(bindir)/$(NAMEPREFIX)nroff
+	-rm -f $(DESTDIR)$(bindir)/$(NAMEPREFIX)nroff

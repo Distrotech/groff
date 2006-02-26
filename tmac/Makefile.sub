@@ -48,41 +48,47 @@ all: stamp-strip stamp-wrap stamp-sed
 
 install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
               stamp-strip stamp-wrap stamp-sed
-	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
-	-test -d $(systemtmacdir) || $(mkinstalldirs) $(systemtmacdir)
-	-test -d $(localtmacdir) || $(mkinstalldirs) $(localtmacdir)
+	-test -d $(DESTDIR)$(tmacdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
+	-test -d $(DESTDIR)$(systemtmacdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(systemtmacdir)
+	-test -d $(DESTDIR)$(localtmacdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(localtmacdir)
 	if test -n "$(tmac_wrap)"; then \
 	  for m in ""$(tmac_wrap); do \
-	    $(INSTALL_DATA) $$m-wrap $(systemtmacdir)/$$m.tmac; \
+	    $(INSTALL_DATA) $$m-wrap $(DESTDIR)$(systemtmacdir)/$$m.tmac; \
 	  done; \
 	fi
 	for f in $(NORMALFILES); do \
-	  rm -f $(tmacdir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(tmacdir)/$$f; \
+	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
-	-rm -f $(tmacdir)/$(tmac_s_prefix)s.tmac
-	$(INSTALL_DATA) $(srcdir)/s.tmac $(tmacdir)/$(tmac_s_prefix)s.tmac
-	-rm -f $(tmacdir)/ms.tmac
-	$(INSTALL_DATA) ms.tmac-sed $(tmacdir)/ms.tmac
-	-rm -f $(tmacdir)/$(tmac_an_prefix)an.tmac
-	$(INSTALL_DATA) $(srcdir)/an.tmac $(tmacdir)/$(tmac_an_prefix)an.tmac
-	-rm -f $(tmacdir)/man.tmac
-	$(INSTALL_DATA) man.tmac-sed $(tmacdir)/man.tmac
-	-rm -f $(tmacdir)/www.tmac
-	$(INSTALL_DATA) www.tmac-sed $(tmacdir)/www.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
+	$(INSTALL_DATA) $(srcdir)/s.tmac \
+	  $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/ms.tmac
+	$(INSTALL_DATA) ms.tmac-sed $(DESTDIR)$(tmacdir)/ms.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
+	$(INSTALL_DATA) $(srcdir)/an.tmac \
+	  $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/man.tmac
+	$(INSTALL_DATA) man.tmac-sed $(DESTDIR)$(tmacdir)/man.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/www.tmac
+	$(INSTALL_DATA) www.tmac-sed $(DESTDIR)$(tmacdir)/www.tmac
 	for f in $(STRIPFILES); do \
-	  rm -f $(tmacdir)/$$f; \
-	  $(INSTALL_DATA) $$f-s $(tmacdir)/$$f; \
+	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(INSTALL_DATA) $$f-s $(DESTDIR)$(tmacdir)/$$f; \
 	done
-	-test -d $(mdocdir) || $(mkinstalldirs) $(mdocdir)
+	-test -d $(DESTDIR)$(mdocdir) || $(mkinstalldirs) $(DESTDIR)$(mdocdir)
 	for f in $(MDOCFILES); do \
-	  rm -f $(mdocdir)/$$f; \
-	  $(INSTALL_DATA) $$f-s $(mdocdir)/$$f; \
+	  rm -f $(DESTDIR)$(mdocdir)/$$f; \
+	  $(INSTALL_DATA) $$f-s $(DESTDIR)$(mdocdir)/$$f; \
 	done
-	-test -f $(localtmacdir)/man.local || \
-	  $(INSTALL_DATA) $(srcdir)/man.local $(localtmacdir)/man.local
-	-test -f $(localtmacdir)/mdoc.local || \
-	  $(INSTALL_DATA) mdoc.local-s $(localtmacdir)/mdoc.local
+	-test -f $(DESTDIR)$(localtmacdir)/man.local || \
+	  $(INSTALL_DATA) $(srcdir)/man.local \
+	    $(DESTDIR)$(localtmacdir)/man.local
+	-test -f $(DESTDIR)$(localtmacdir)/mdoc.local || \
+	  $(INSTALL_DATA) mdoc.local-s $(DESTDIR)$(localtmacdir)/mdoc.local
 
 stamp-strip: $(STRIPFILES) $(MDOCFILES) mdoc.local
 	for f in $(STRIPFILES) $(MDOCFILES) mdoc.local; do \
@@ -117,21 +123,23 @@ stamp-sed: man.tmac ms.tmac www.tmac
 uninstall_sub:
 	-if test -n "$(tmac_wrap)"; then \
 	  for m in ""$(tmac_wrap); do \
-	    rm -f $(systemtmacdir)/$$m.tmac; \
+	    rm -f $(DESTDIR)$(systemtmacdir)/$$m.tmac; \
 	  done; \
 	fi
 	-for f in $(NORMALFILES) $(STRIPFILES); do \
-	  rm -f $(tmacdir)/$$f; \
+	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	done
-	-rm -f $(tmacdir)/$(tmac_s_prefix)s.tmac
-	-rm -f $(tmacdir)/$(tmac_an_prefix)an.tmac
-	-rm -f $(tmacdir)/man.tmac $(tmacdir)/ms.tmac
-	-rm -f $(tmacdir)/www.tmac
-	-if cmp -s $(localtmacdir)/man.local $(srcdir)/man.local; then \
-	  rm -f $(localtmacdir)/man.local; \
+	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/man.tmac $(DESTDIR)$(tmacdir)/ms.tmac
+	-rm -f $(DESTDIR)$(tmacdir)/www.tmac
+	-if cmp -s $(DESTDIR)$(localtmacdir)/man.local \
+	           $(srcdir)/man.local; then \
+	  rm -f $(DESTDIR)$(localtmacdir)/man.local; \
 	fi
-	-if cmp -s $(localtmacdir)/mdoc.local $(srcdir)/mdoc.local; then \
-	  rm -f $(localtmacdir)/mdoc.local; \
+	-if cmp -s $(DESTDIR)$(localtmacdir)/mdoc.local \
+	           $(srcdir)/mdoc.local; then \
+	  rm -f $(DESTDIR)$(localtmacdir)/mdoc.local; \
 	fi
-	-for f in $(MDOCFILES); do rm -f $(mdocdir)/$$f; done
-	-rmdir $(mdocdir)
+	-for f in $(MDOCFILES); do rm -f $(DESTDIR)$(mdocdir)/$$f; done
+	-rmdir $(DESTDIR)$(mdocdir)

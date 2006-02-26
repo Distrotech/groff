@@ -37,11 +37,14 @@ GXditview-ad.h: $(srcdir)/GXditview.ad
 	$(SHELL) $(srcdir)/ad2c $(srcdir)/GXditview.ad >GXditview-ad.h
 
 install_data: $(srcdir)/GXditview.ad
-	-test -d $(appresdir) || $(mkinstalldirs) $(appresdir)
-	if test -f $(appresdir)/GXditview; then \
-	  mv $(appresdir)/GXditview $(appresdir)/GXditview.old; \
+	-test -d $(DESTDIR)$(appresdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(appresdir)
+	if test -f $(DESTDIR)$(appresdir)/GXditview; then \
+	  mv $(DESTDIR)$(appresdir)/GXditview \
+	    $(DESTDIR)$(appresdir)/GXditview.old; \
 	fi
-	$(INSTALL_DATA) $(srcdir)/GXditview.ad $(appresdir)/GXditview
+	$(INSTALL_DATA) $(srcdir)/GXditview.ad \
+	  $(DESTDIR)$(appresdir)/GXditview
 
 uninstall_sub:
-	-rm -f $(appresdir)/GXditview
+	-rm -f $(DESTDIR)$(appresdir)/GXditview

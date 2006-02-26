@@ -165,68 +165,78 @@ distfiles: groff.info gnu.eps gnu.png
 
 install_data: groff.info $(DOCFILES) $(PROCESSEDDOCFILES) $(make_install_html) \
               $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
-	-test -d $(infodir) || $(mkinstalldirs) $(infodir)
+	-test -d $(DESTDIR)$(infodir) || $(mkinstalldirs) $(DESTDIR)$(infodir)
 # Prefer info files in builddir over srcdir; we test for
 # the existence of `groff.info'.
 	d=.; \
 	  test -f "groff.info" || d=$(srcdir); \
 	  for f in $$d/groff.info `ls $$d/groff.info*`; do \
-	    rm -f $(infodir)/$$f; \
-	    $(INSTALL_DATA) $$f $(infodir)/$$f; \
+	    rm -f $(DESTDIR)$(infodir)/$$f; \
+	    $(INSTALL_DATA) $$f $(DESTDIR)$(infodir)/$$f; \
 	  done
-	$(INSTALL_INFO) --info-dir=$(infodir) $(infodir)/groff.info
-	-test -d $(docdir) || $(mkinstalldirs) $(docdir)
+	$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(infodir)/groff.info
+	-test -d $(DESTDIR)$(docdir) || $(mkinstalldirs) $(DESTDIR)$(docdir)
 	for f in $(DOCFILES); do \
-	  rm -f $(docdir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(docdir)/$$f; \
+	  rm -f $(DESTDIR)$(docdir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(docdir)/$$f; \
 	done
 	for f in $(PROCESSEDDOCFILES); do \
-	  rm -f $(docdir)/$$f; \
-	  $(INSTALL_DATA) $$f $(docdir)/$$f; \
+	  rm -f $(DESTDIR)$(docdir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(docdir)/$$f; \
 	done
-	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
+	-test -d $(DESTDIR)$(exampledir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)
 	for f in $(EXAMPLEFILES); do \
-	  rm -f $(exampledir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(exampledir)/$$f; \
+	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(exampledir)/$$f; \
 	done
 	for f in $(PROCESSEDEXAMPLEFILES); do \
-	  rm -f $(exampledir)/$$f; \
-	  $(INSTALL_DATA) $$f $(exampledir)/$$f; \
+	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
 	done
 
 install_html: $(HTMLDOCFILES) $(HTMLEXAMPLEFILES)
-	-test -d $(htmldocdir) || $(mkinstalldirs) $(htmldocdir)
+	-test -d $(DESTDIR)$(htmldocdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)
 	for f in `ls $(HTMLDOCFILESALL)`; do \
-	  rm -f $(htmldocdir)/$$f; \
-	  $(INSTALL_DATA) $$f $(htmldocdir)/$$f; \
+	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(htmldocdir)/$$f; \
 	done
-	-test -d $(htmldocimagedir) || $(mkinstalldirs) $(htmldocimagedir)
-	rm -f $(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
-	$(INSTALL_DATA) $(imagedir)/$(HTMLDOCIMAGEFILES) $(htmldocimagedir)
-	-test -d $(exampledir) || $(mkinstalldirs) $(exampledir)
+	-test -d $(DESTDIR)$(htmldocimagedir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(htmldocimagedir)
+	rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
+	$(INSTALL_DATA) $(imagedir)/$(HTMLDOCIMAGEFILES) \
+	  $(DESTDIR)$(htmldocimagedir)
+	-test -d $(DESTDIR)$(exampledir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(exampledir)
 	for f in $(HTMLEXAMPLEFILES); do \
-	  rm -f $(exampledir)/$$f; \
-	  $(INSTALL_DATA) $$f $(exampledir)/$$f; \
+	  rm -f $(DESTDIR)$(exampledir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(exampledir)/$$f; \
 	done
-	-test -d $(exampleimagedir) || $(mkinstalldirs) $(exampleimagedir)
-	rm -f $(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
-	$(INSTALL_DATA) $(imagedir)/$(HTMLEXAMPLEIMAGEFILES) $(exampleimagedir)
+	-test -d $(DESTDIR)$(exampleimagedir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(exampleimagedir)
+	rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
+	$(INSTALL_DATA) $(imagedir)/$(HTMLEXAMPLEIMAGEFILES) \
+	  $(DESTDIR)$(exampleimagedir)
 
 uninstall_sub:
 	-for f in groff `ls groff-*`; do \
-	  rm -f $(infodir)/$$f; \
+	  rm -f $(DESTDIR)$(infodir)/$$f; \
 	done
-	$(INSTALL_INFO) --remove --info-dir=$(infodir) $(infodir)/groff.info
+	$(INSTALL_INFO) --remove --info-dir=$(DESTDIR)$(infodir) \
+	  $(DESTDIR)$(infodir)/groff.info
 	-for f in $(DOCFILES) $(PROCESSEDDOCFILES); do \
-	  rm -f $(docdir)/$$f; \
+	  rm -f $(DESTDIR)$(docdir)/$$f; \
 	done
 	-for f in `ls $(HTMLDOCFILESALL)`; do \
-	  rm -f $(htmldocdir)/$$f; \
+	  rm -f $(DESTDIR)$(htmldocdir)/$$f; \
 	done
-	-rm -f $(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
-	-rmdir $(htmldocimagedir)
-	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) $(HTMLEXAMPLEFILES); do \
-	  rm -f $(exampledir)/$$f; \
+	-rm -f $(DESTDIR)$(htmldocimagedir)/$(HTMLDOCIMAGEFILES)
+	-rmdir $(DESTDIR)$(htmldocimagedir)
+	-for f in $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
+	          $(HTMLEXAMPLEFILES); do \
+	  rm -f $(DESTDIR)$(exampledir)/$$f; \
 	done
-	-rm -f $(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
-	-rmdir $(exampleimagedir)
+	-rm -f $(DESTDIR)$(exampleimagedir)/$(HTMLEXAMPLEIMAGEFILES)
+	-rmdir $(DESTDIR)$(exampleimagedir)
