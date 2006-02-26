@@ -1,4 +1,4 @@
-# Copyright (C) 2005, Free Software Foundation, Inc.
+# Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 #      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 # 
 # This file is part of groff.
@@ -84,31 +84,32 @@ pdfroff: pdfroff.sh $(SH_DEPS_SED_SCRIPT)
 	chmod +x $@
 
 install_data: $(make_install_pdfdoc)
-	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	for f in $(CMDFILES); do \
-	  $(RM) $(bindir)/$$f; \
-	  $(INSTALL_SCRIPT) $$f $(bindir)/$$f; \
+	  $(RM) $(DESTDIR)$(bindir)/$$f; \
+	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(bindir)/$$f; \
 	done
-	-test -d $(tmacdir) || $(mkinstalldirs) $(tmacdir)
+	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(TMACFILES); do \
-	  $(RM) $(tmacdir)/$$f; \
-	  $(INSTALL_DATA) $(srcdir)/$$f $(tmacdir)/$$f; \
+	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
+	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
 	done
 
 install_pdfdoc:
-	-test -d $(pdfdocdir) || $(mkinstalldirs) $(pdfdocdir)
+	-test -d $(DESTDIR)$(pdfdocdir) \
+	  || $(mkinstalldirs) $(DESTDIR)$(pdfdocdir)
 	for f in $(PDFDOCFILES); do \
-	  $(RM) $(pdfdocdir)/$$f; \
-	  $(INSTALL_DATA) $$f $(pdfdocdir)/$$f; \
+	  $(RM) $(DESTDIR)$(pdfdocdir)/$$f; \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(pdfdocdir)/$$f; \
 	done
 
 uninstall_sub:
 	for f in $(CMDFILES); do \
-	  $(RM) $(bindir)/$$f; \
+	  $(RM) $(DESTDIR)$(bindir)/$$f; \
 	done
 	for f in $(TMACFILES); do \
-	  $(RM) $(tmacdir)/$$f; \
+	  $(RM) $(DESTDIR)$(tmacdir)/$$f; \
 	done
 	for f in $(PDFDOCFILES); do \
-	  $(RM) $(pdfdocdir)/$$f; \
+	  $(RM) $(DESTDIR)$(pdfdocdir)/$$f; \
 	done

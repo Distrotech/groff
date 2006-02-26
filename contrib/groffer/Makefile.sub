@@ -2,10 +2,10 @@
 
 # File position: <groff-source>/contrib/groffer/Makefile.sub
 
-# Copyright (C) 2001,2002,2005 Free Software Foundation, Inc.
+# Copyright (C) 2001,2002,2005,2006 Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org> and Bernd Warken.
 
-# Last update: 01 Sep 2005
+# Last update: 25 Feb 2006
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -45,16 +45,16 @@ groffer: groffer.sh groffer2.sh $(SH_DEPS_SED_SCRIPT)
 	chmod +x $@
 
 install_data: groffer
-	-test -d $(bindir) || $(mkinstalldirs) $(bindir)
-	-$(RM) $(bindir)/groffer
-	$(INSTALL_SCRIPT) groffer $(bindir)/groffer
-	-test -d $(libdir)/groff/groffer || \
-          $(mkinstalldirs) $(libdir)/groff/groffer
-	-$(RM) $(libdir)/groff/groffer/groffer2.sh
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	-$(RM) $(DESTDIR)$(bindir)/groffer
+	$(INSTALL_SCRIPT) groffer $(DESTDIR)$(bindir)/groffer
+	-test -d $(DESTDIR)$(libdir)/groff/groffer || \
+          $(mkinstalldirs) $(DESTDIR)$(libdir)/groff/groffer
+	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
 	$(INSTALL_SCRIPT) $(srcdir)/groffer2.sh \
-	  $(libdir)/groff/groffer/groffer2.sh
+	  $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
 
 uninstall_sub:
-	-$(RM) $(bindir)/groffer
-	-$(RM) $(libdir)/groff/groffer/groffer2.sh
-	-rmdir $(libdir)/groff/groffer
+	-$(RM) $(DESTDIR)$(bindir)/groffer
+	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
+	-rmdir $(DESTDIR)$(libdir)/groff/groffer
