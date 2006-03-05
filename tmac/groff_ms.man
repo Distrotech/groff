@@ -1,6 +1,6 @@
 '\" t
 .ig
-Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2005
+Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2005, 2006
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -1054,7 +1054,7 @@ are in the same order as the corresponding occurrences of
 .
 .SS "Headers and footers"
 .
-There are two ways to define headers and footers:
+There are three ways to define headers and footers:
 .
 .IP \(bu 3n
 Use the strings
@@ -1092,6 +1092,21 @@ The syntax for these macros is as follows:
 .IP
 You can replace the quote (') marks with any character not
 appearing in the header or footer text.
+.
+.PP
+You can also redefine the
+.B PT
+and
+.B BT
+macros to change the behavior of
+the header and footer, respectively.
+The header process also calls the (undefined)
+.B HD
+macro after
+.B PT ;
+you can define this macro if you need additional processing
+after printing the header
+(for example, to draw a line below the header).
 .
 .
 .SS Margins

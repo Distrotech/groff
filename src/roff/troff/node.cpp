@@ -4906,9 +4906,12 @@ node *make_glyph_node(charinfo *s, environment *env, int no_error_message = 0)
 	    warning(WARN_CHAR, "can't find character with input code %1",
 		    int(input_code));
 	}
-	else if (s->nm.contents())
-	  warning(WARN_CHAR, "can't find special character `%1'",
-		  s->nm.contents());
+	else if (s->nm.contents()) {
+	  const char *nm = s->nm.contents();
+	  const char *backslash = (nm[1] == 0) ? "\\" : "";
+	  warning(WARN_CHAR, "can't find special character `%1%2'",
+		  backslash, nm);
+	}
       }
       return 0;
     }
