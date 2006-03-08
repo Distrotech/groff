@@ -23,7 +23,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 /*
  * PostScript documentation:
  *   http://www.adobe.com/products/postscript/pdfs/PLRM.pdf
- *   http://partners.adobe.com/asn/developer/pdfs/tn/5001.DSC_Spec.pdf
+ *   http://partners.adobe.com/public/developer/en/ps/5001.DSC_Spec.pdf
  */
 
 #include "driver.h"

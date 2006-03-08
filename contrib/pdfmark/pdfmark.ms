@@ -150,7 +150,7 @@ possible to exploit these PDF features, which are described in the Adobe\*(rg
 .\" preceding it with "--", to avoid "invalid character in name" type
 .\" error messages from groff (caused by the use of "\~").
 .\"
-.pdfhref W -D http://partners.adobe.com/asn/acrobat/docs/pdfmark.pdf \
+.pdfhref W -D http://partners.adobe.com/public/developer/en/acrobat/sdk/pdf/pdf_creation_apis_and_specs/pdfmarkReference.pdf \
     -P \(lq -A \(rq\\$1 -- pdfmark\~Reference\~Manual
 ..
 .pdfmark-manual ,
