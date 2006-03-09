@@ -1591,10 +1591,9 @@ void ps_printer::do_exec(char *arg, const environment *env)
     error("missing argument to X exec command");
     return;
   }
-  if (!check_line_lengths(arg)) {
-    error("lines in X exec command must not be more than 255 characters long");
-    return;
-  }
+  if (!check_line_lengths(arg))
+    warning("lines in X exec command must"
+	    " not be more than 255 characters long");
   out.put_fix_number(env->hpos)
      .put_fix_number(env->vpos)
      .put_symbol("EBEGIN")
@@ -1641,10 +1640,9 @@ void ps_printer::do_def(char *arg, const environment *)
   flush_sbuf();
   while (csspace(*arg))
     arg++;
-  if (!check_line_lengths(arg)) {
-    error("lines in X def command must not be more than 255 characters long");
-    return;
-  }
+  if (!check_line_lengths(arg))
+    warning("lines in X def command must"
+	    " not be more than 255 characters long");
   defs += arg;
   if (*arg != '\0' && strchr(arg, '\0')[-1] != '\n')
     defs += '\n';
@@ -1669,10 +1667,9 @@ void ps_printer::do_mdef(char *arg, const environment *)
   arg = p;
   while (csspace(*arg))
     arg++;
-  if (!check_line_lengths(arg)) {
-    error("lines in X mdef command must not be more than 255 characters long");
-    return;
-  }
+  if (!check_line_lengths(arg))
+    warning("lines in X mdef command must"
+	    " not be more than 255 characters long");
   defs += arg;
   if (*arg != '\0' && strchr(arg, '\0')[-1] != '\n')
     defs += '\n';
