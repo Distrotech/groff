@@ -33,7 +33,8 @@ PDFDOCFILES=\
 CLEANADD=\
   gnu.eps \
   $(PDFDOCFILES) \
-  $(CMDFILES)
+  $(CMDFILES) \
+  pdf[0-9]*
 
 # Some `makes' don't predefine RM...
 RM=rm -f
@@ -50,10 +51,11 @@ MFLAG=-M$(srcdir) -M$(top_builddir)/tmac -M$(top_srcdir)/tmac
 PFLAG=-dpaper=$(PAGE) -P-p$(PAGE)
 
 PDFROFF=\
+  export GROFF_TMPDIR; GROFF_TMPDIR='.'; \
   export GROFF_COMMAND_PREFIX; GROFF_COMMAND_PREFIX=''; \
   export GROFF_BIN_DIR; GROFF_BIN_DIR=$(GROFF_BIN_DIR); \
   export GROFF_BIN_PATH; GROFF_BIN_PATH=$(GROFF_BIN_PATH); \
-  ./pdfroff $(FFLAG) $(MFLAG) $(PFLAG)
+  ./pdfroff --keep-temporary-files $(FFLAG) $(MFLAG) $(PFLAG)
 
 .SUFFIXES: .ms .pdf
 .ms.pdf:

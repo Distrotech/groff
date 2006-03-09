@@ -1,3 +1,27 @@
+2006-03-09  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	Incorporate portability recommendations by Ralf Wildenhues
+	<ralf.wildenhues@gmx.de>
+
+	* pdfroff.sh: Avoid unsafe quoting in variable substitutions of
+	the form "${VAR+"set"}"; remove outer quotes everywhere; prefix
+	with `x' on each side of comparisons.
+	($NULLCMD): Define when `$ZSH_VERSION' is set, i.e. when host
+	has `/bin/sh -> zsh'; also...
+	(emulate sh): Invoke, for this case.
+
+	Enhancement/bug fix requested by Werner LEMBERG <wl@gnu.org>
+
+	* pdfroff.sh (--help): Direct output to `stdout', not `stderr'.
+	(--keep-temporary-files): New option; implement it.
+
+	* pdfroff.man (OPTIONS): Document `--keep-temporary-files' option.
+	(FILES): Note names and purpose of files it affects.
+
+	* Makefile.sub (PDFROFF): Add `--keep-temporary-files' option;
+	retain them in `GROFF_TMPDIR=.'.
+	(CLEANADD): Include temporary files matching `pdf[0-9]*'.
+
 2006-02-26  Claudio Fontana  <claudio@gnu.org>
 
 	* Makefile.sub: Add DESTDIR to install and uninstall targets
@@ -7,7 +31,7 @@
 
 	pdfroff.sh portability enhancement.
 
-	* pdfroff.sh: (ARGLIST): Variable removed.
+	* pdfroff.sh (ARGLIST): Variable removed.
 	(GROFF_STYLE): Use it for all groff invocations.
 	(INPUT_FILES): Pass to all groff invocations, instead of ARGLIST.
 	(CS_MACRO, CE_MACRO): Initialize independently.
@@ -17,7 +41,7 @@
 
 2005-06-17  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
-	* pdfroff.sh: (MATCH): Correct quoting.
+	* pdfroff.sh (MATCH): Correct quoting.
 	(Source): Add terminating `$' on CVS keyword.
 
 2005-06-17  Zvezdan Petkovic  <zpetkovic@acm.org>
@@ -27,7 +51,7 @@
 
 2005-06-16  Bernd Warken
 
-	* pdfroff.sh: (NULLDEV): Correct misspelled instance of NULDEV.
+	* pdfroff.sh (NULLDEV): Correct misspelled instance of NULDEV.
 
 2005-05-28  Werner LEMBERG  <wl@gnu.org>
 
@@ -45,7 +69,7 @@
 	* pdfroff.man: Document influence of `OSTYPE' and `PATH_SEPARATOR'
 	environment variables.
 
-	* Makefile.sub: (pdfroff): Make it depend on SH_DEPS_SED_SCRIPT,
+	* Makefile.sub (pdfroff): Make it depend on SH_DEPS_SED_SCRIPT,
 	from arch/misc/shdeps.sh; use it to customize PATH_SEPARATOR
 	initialization code for `searchpath' function in pdfroff.sh.
 
@@ -53,7 +77,7 @@
 
 	Interim documentation update.
 
-	* pdfmark.ms: (GROFF-WEBSITE): New string; use it in references and
+	* pdfmark.ms (GROFF-WEBSITE): New string; use it in references and
 	examples.
 	(Section 2.5): Add definitions of D and Z operators, for use with
 	pdfhref macro.
@@ -69,7 +93,7 @@
 
 	Handle parsing anomalies in Cygwin's `ash', and similar, shells.
 
-	* pdfroff.sh: ($CAT, $GREP, $SED, $GROFF, $DIFF): Avoid interpreting
+	* pdfroff.sh ($CAT, $GREP, $SED, $GROFF, $DIFF): Avoid interpreting
 	misdirected error messages, which `type' sends to `stdout' in some
 	shells, as a successful program file match.
 

@@ -45,7 +45,7 @@
   #
   # Usage:  searchpath progname path
   #
-    IFS="${PATH_SEPARATOR-":"}" prog=':'
+    IFS=${PATH_SEPARATOR-":"} prog=':'
     for dir in $2
     do
       for ext in '' '.exe'
@@ -62,6 +62,12 @@
     echo "$prog"
   }
 # @PATH_SEARCH_SETUP@
+#
+# If the system maps '/bin/sh' to some 'zsh' implementation,
+# then we may need this hack, adapted from autoconf code.
+#
+  test x${ZSH_VERSION+"set"} = x"set" && NULLCMD=":" \
+    && (emulate sh) >$NULLDEV 2>&1 && emulate sh
 #
 # We need both 'grep' and 'sed' programs, to parse script options,
 # and we also need 'cat', to display help and some error messages,
@@ -142,7 +148,7 @@
   TOC_FORMAT="-rPHASE=1"
   BODY_FORMAT="-rPHASE=2"
 #
-  LONGOPTS="
+  LONGOPTS="	keep-temporary-files
     help	reference-dictionary	no-reference-dictionary
     stylesheet	pdf-output		no-pdf-output
     version	report-progress		no-toc-relocation
@@ -179,7 +185,7 @@
            case "$MATCH" in
 
              --help)
-               $CAT >&2 <<-ETX
+               $CAT <<-ETX
 		Usage: $CMD [-option ...] [--long-option ...] [file ...]
 
 		Options:
@@ -231,6 +237,10 @@
 		 	normally required to position the table of contents at the
 		 	start of a PDF document.
 
+		  --keep-temporary-files
+		 	Suppress the normal clean up of temporary files, which is
+		 	scheduled when 'pdfroff' completes.
+
 		ETX
                exit 0
                ;;
@@ -242,6 +252,10 @@
 
              --report-progress)
                SHOW_PROGRESS=echo
+               ;;
+
+             --keep-temporary-files)
+               trap "" 0
                ;;
 
              --pdf-output)
@@ -374,7 +388,7 @@
   then
     >> $REFFILE
     echo kickstart > $REFCOPY
-    test "${SHOW_PROGRESS+"set"}" = "set" && SAY=echo
+    test x${SHOW_PROGRESS+"set"} = x"set" && SAY=echo
 #
 #   In order to correctly resolve 'pdfmark' references,
 #   we need to have both the 'awk' and 'diff' programs available.
@@ -514,7 +528,7 @@
 # (Missing 'awk' or 'diff' may have disabled it, to avoid display
 #  of spurious messages associated with reference resolution).
 #
-  test "${SHOW_PROGRESS+"set"}" = "set" && SAY=echo
+  test x${SHOW_PROGRESS+"set"} = x"set" && SAY=echo
 #
 # If a document cover style sheet is specified ...
 # then we run a special formatting pass, to create a cover section file.

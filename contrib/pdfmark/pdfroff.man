@@ -101,6 +101,7 @@ pdfroff \- create PDF documents using
 .optx -pdf-output name
 .optx -reference-dictionary name
 .opt  -report-progress
+.opt  -keep-temporary-files
 .B file
 .I ...
 .ll
@@ -284,6 +285,19 @@ Causes
 .B pdfroff
 to display a summary of the its usage syntax, and supported options,
 and then exit.
+.TP
+.B \-\-keep\-temporary\-files
+Suppresses the deletion of temporary files,
+which normally occurs after
+.B pdfroff
+has completed PDF document formatting;
+this may be useful,
+when debugging formatting problems.
+.IP
+See section
+.BR FILES ,
+for a description of the temporary files used by
+.BR pdfroff .
 .TP
 .B \-\-no\-pdf\-output
 May be used with the
@@ -481,9 +495,90 @@ is the standard shell variable representing the process ID of the
 .B pdfroff
 process itself, and
 .I *
-represents any of a number of extensions used by
+represents any of the extensions used by
 .B pdfroff
-for temporary and intermediate files.
+to identify the following temporary and intermediate files:\(em
+.RS
+.TP
+.BI pdf $$ .tmp
+A scratch pad file,
+used to capture reference data emitted by
+.BR groff ,
+during the
+.I reference dictionary
+compilation phase.
+.TP
+.BI pdf $$ .ref
+The
+.IR "reference dictionary" ,
+as compiled in the last but one pass of the
+.I reference dictionary
+compilation phase;
+(at the start of the first pass,
+this file is created empty;
+in successive passes,
+it contains the
+.I reference dictionary
+entries,
+as collected in the preceding pass).
+.IP
+If the
+.BR \-\-reference\-dictionary =\c
+.I name
+option is specified,
+this intermediate file becomes permanent,
+and is named
+.IR name ,
+rather than
+.BI pdf $$ .ref\c
+\&.
+.TP
+.BI pdf $$ .cmp
+Used to collect
+.I reference dictionary
+entries during the active pass of the
+.I reference dictionary
+compilation phase.
+At the end of any pass,
+when the content of
+.BI pdf $$ .cmp
+compares as identical to
+.BI pdf $$ .ref\c
+\&,
+(or the corresponding file named by the
+.BR \-\-reference\-dictionary =\c
+.I name
+option),
+then
+.I reference dictionary
+compilation is terminated,
+and the
+.I document reference map
+is appended to this intermediate file,
+for inclusion in the final formatting passes.
+.TP
+.BI pdf $$ .tc
+An intermediate
+.I PostScript
+file,
+in which \*(lqTable of Contents\*(rq entries are collected,
+to facilitate relocation before the body text,
+on ultimate output to the
+.I GhostScript
+postprocessor.
+.TP
+.BI pdf $$ .ps
+An intermediate
+.I PostScript
+file,
+in which the body text is collected prior to ultimate output to the
+.I GhostScript
+postprocessor,
+in the proper sequence,
+.I after
+.BI pdf $$ .tc\c
+\&.
+.RE
 .
 .\" --------------------------------------------------------------------
 .
