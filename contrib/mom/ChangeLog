@@ -1,3 +1,39 @@
+*Wed Mar 15 2006
+
+o Added a .SHIM after .sp \\n[#DC_LINES]v in .DROPCAP.  Fixes
+  problem of dropcaps in initial paragraphs after COLLATE being set
+  slightly too high.
+
+o Added .rr #DOC_LEAD_ADJUST_OFF to .ie clause of DOC_LEAD_ADJUST
+  and removed .rr #DOC_LEAD_ADJUST_OFF from DEFAULTS (after TRAPS)
+  so that document leading adjustment (or lack thereof) is
+  maintained from doc to doc when COLLATE is being used.
+
+o Added new register, #PRE_COLLATE.  The .FAMILY macro is called
+  several times during initial COLLATE processing, and contained a
+  stanza that allowed FAMILY, after a collate, to invoke DOC_FAMILY
+  if #COLLATE=1.  This allowed users to use FAMILY after a COLLATE
+  but before START in a way consistent with the behaviour described
+  in the docs (namely, FAMILY before START sets the DOC_FAMILY).
+  Since that functionality is still needed, #PRE_COLLATE instructs
+  FAMILY not to reset DOC_FAMILY until COLLATE is complete (i.e.
+  after the break to a new page).  #PRE_COLLATE, if set to 1, is
+  removed at the end of HEADER.
+
+*Thu, Mar 2 2006
+
+o Added control macros for linenumbering family, font, point size
+  and color
+
+o Added a NO_SHIM macro
+
+*Sun Feb 26 2006
+
+o Changed .PRINT "\h'\\n[#LIST_INDENT\\n[#DEPTH]]u' in the
+  "ROMAN I, padded" and "roman i, padded" clauses of ITEM to
+  .PRINT "\h'\\n[#HL_INDENT\\n[#DEPTH]]u' to fix bug associated
+  with using both PAD_LIST_DIGITS LEFT and SHIFT_LIST.
+
 *Sun Feb 26 2006
 
 o Makefile.sub: Add DESTDIR to install and uninstall targets to support

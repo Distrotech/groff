@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.3-d
+Version 1.3-e
 -------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
@@ -457,8 +457,13 @@ described).
 .          ft 0
 .       \}
 .    \}
-.    if \\n[#COLLATE]=1 \{\
-.       if !r#START \{ .DOC_FAM \\*[$FAMILY] \}
+.    ie \\n[#PRE_COLLATE]=1 \{\
+.       nop
+.    \}
+.    el \{\
+.       if \\n[#COLLATE]=1 \{\
+.          if !r#START \{ .DOC_FAM \\*[$FAMILY] \}
+.       \}
 .    \}
 .END
 \#
@@ -2621,6 +2626,7 @@ get their length from the tab line length.
 .    if d$DC_ADJUST \{ .ps \\*[$DC_ADJUST]p \}
 .    mk x
 .    sp \\n[#DC_LINES]v
+.    SHIM
 .    ie \\n[#DC_COLOR]=1 \{\
 .       ie !'\\$3'' \{\
 .          ie '\\$3'COND' \{ .PRINT \m[\\*[$DC_COLOR]]\\*[COND]\\*[$DROPCAP]\\*[CONDX]\m[] \}
@@ -4182,6 +4188,7 @@ the macro whose style is to be changed.
 .    if '\\$0'HDRFTR_LEFT_FAMILY'             .ds $HDRFTR_LEFT_FAM \\$1
 .    if '\\$0'HDRFTR_RIGHT_FAMILY'            .ds $HDRFTR_RIGHT_FAM \\$1
 .    if '\\$0'HEAD_FAMILY'                    .ds $HEAD_FAM \\$1
+.    if '\\$0'LINENUMBER_FAMILY'              .ds $LN_FAM \\$1
 .    if '\\$0'PAGENUM_FAMILY'                 .ds $PAGE_NUM_FAM \\$1
 .    if '\\$0'PARAHEAD_FAMILY'                .ds $PH_FAM \\$1
 .    if '\\$0'QUOTE_FAMILY'                   .ds $QUOTE_FAM \\$1
@@ -4231,6 +4238,7 @@ the macro whose style is to be changed.
 .    if '\\$0'HDRFTR_LEFT_FONT'             .ds $HDRFTR_LEFT_FT \\$1
 .    if '\\$0'HDRFTR_RIGHT_FONT'            .ds $HDRFTR_RIGHT_FT \\$1
 .    if '\\$0'HEAD_FONT'                    .ds $HEAD_FT \\$1
+.    if '\\$0'LINENUMBER_FONT'              .ds $LN_FT \\$1
 .    if '\\$0'PAGENUM_FONT'                 .ds $PAGE_NUM_FT \\$1
 .    if '\\$0'PARAHEAD_FONT'                .ds $PH_FT \\$1
 .    if '\\$0'QUOTE_FONT'                   .ds $QUOTE_FT \\$1
@@ -4277,6 +4285,7 @@ the macro whose style is to be changed.
 .    if '\\$0'HDRFTR_RIGHT_SIZE'            .ds $HDRFTR_RIGHT_SIZE_CHANGE \\$1
 .    if '\\$0'HDRFTR_SIZE'                  .ds $HDRFTR_SIZE_CHANGE \\$1
 .    if '\\$0'HEAD_SIZE'                    .ds $HEAD_SIZE_CHANGE \\$1
+.    if '\\$0'LINENUMBER_SIZE'              .ds $LN_SIZE_CHANGE \\$1
 .    if '\\$0'PAGENUM_SIZE'                 .ds $PAGE_NUM_SIZE_CHANGE \\$1
 .    if '\\$0'PARAHEAD_SIZE'                .ds $PH_SIZE_CHANGE \\$1
 .    if '\\$0'QUOTE_SIZE'                   .ds $QUOTE_SIZE_CHANGE \\$1
@@ -4437,6 +4446,10 @@ the macro whose style is to be changed.
 .    if '\\$0'LINEBREAK_COLOR' \{\
 .       nr #LINEBREAK_COLOR 1
 .       ds $LINEBREAK_COLOR \\$1
+.    \}
+.    if '\\$0'LINENUMBER_COLOR' \{\
+.       nr #LINENUMBER_COLOR 1
+.       ds $LN_COLOR \\$1
 .    \}
 .    if '\\$0'PAGENUM_COLOR' \{\
 .       nr #PAGE_NUM_COLOR 1
@@ -4990,7 +5003,6 @@ the macro whose style is to be changed.
 .    ie !\\n[#COLLATE] \{\
 .\" DOC_LEAD adjusted (or not) here
 .       TRAPS
-.       rr #DOC_LEAD_ADJUST_OFF
 .\" Endnote, bibliography and toc leading
 .       nr #OK_PROCESS_LEAD 1
 .       nr #RESTORE_DOC_LEAD \\n(.v
@@ -6516,6 +6528,7 @@ the macro whose style is to be changed.
 .MAC DOC_LEAD_ADJUST END
 .    ie '\\$1'' \{\
 .       nr #ADJ_DOC_LEAD 1
+.       rr #DOC_LEAD_ADJUST_OFF
 .    \}
 .    el \{\
 .       nr #ADJ_DOC_LEAD 0
@@ -6545,27 +6558,37 @@ the macro whose style is to be changed.
 .    nr #SHIM \\n[#VALID_BASELINE]-\\n[#CURRENT_V_POS]
 .END
 \#
+\# And a macro to disable SHIM (useful sometimes with QUOTE and
+\# BLOCKQUOTE)
+\#
+.MAC NO_SHIM END
+.    ie '\\$1'' \{ .nr #NO_SHIM 1 \}
+.    el         \{ .rr #NO_SHIM   \}
+.END
 \#
 .MAC SHIM END
-.    nr #VALID_BASELINE \\n[#T_MARGIN]-1v \\n[#DOC_LEAD]
-.    if !r#CURRENT_V_POS \{ .nr #CURRENT_V_POS \\n(.d \}
-.    ie r#ADVANCE_FROM_TOP \{\
-.       ie \\n[#CURRENT_V_POS]<(\\n[#T_MARGIN]-1v) \{\
-.          while \\n-[#VALID_BASELINE]>\\n[#CURRENT_V_POS] \{\
+.    ie r#NO_SHIM \{ .return \}
+.    el \{\
+.       nr #VALID_BASELINE \\n[#T_MARGIN]-1v \\n[#DOC_LEAD]
+.       if !r#CURRENT_V_POS \{ .nr #CURRENT_V_POS \\n(.d \}
+.       ie r#ADVANCE_FROM_TOP \{\
+.          ie \\n[#CURRENT_V_POS]<(\\n[#T_MARGIN]-1v) \{\
+.             while \\n-[#VALID_BASELINE]>\\n[#CURRENT_V_POS] \{\
 .
 .\}
-.          nr #VALID_BASELINE +\\n[#DOC_LEAD]
-.          nr #SHIM \\n[#VALID_BASELINE]-\\n[#CURRENT_V_POS]
+.             nr #VALID_BASELINE +\\n[#DOC_LEAD]
+.             nr #SHIM \\n[#VALID_BASELINE]-\\n[#CURRENT_V_POS]
+.          \}
+.          el \{\
+.             PROCESS_SHIM
+.          \}
 .       \}
 .       el \{\
 .          PROCESS_SHIM
 .       \}
+.       ALD \\n[#SHIM]u
+.       rr #CURRENT_V_POS
 .    \}
-.    el \{\
-.       PROCESS_SHIM
-.    \}
-.    ALD \\n[#SHIM]u
-.    rr #CURRENT_V_POS
 .END
 \#
 \#
@@ -7576,10 +7599,10 @@ Default is OFF.
 .          el \{ .PRINT \& \}
 .       \}
 .       if \\n[#HDRFTR_CENTER_CAPS] \{ .CAPS OFF \}
-.       if o                       \{ .LEFT  \}
-.       if e                       \{ .RIGHT \}
-.       if \\n[#RECTO_VERSO]=0     \{ .RIGHT \}
-.       if \\n[#HDRFTR_RIGHT_CAPS] \{ .CAPS  \}
+.       if o                        \{ .LEFT  \}
+.       if e                        \{ .RIGHT \}
+.       if \\n[#RECTO_VERSO]=0      \{ .RIGHT \}
+.       if \\n[#HDRFTR_RIGHT_CAPS]  \{ .CAPS  \}
 .       rt \\nyu
 .       ie '\\*[$HDRFTR_RIGHT]'#' \{\
 .           PRINT \\n[#PAGENUMBER]
@@ -8039,6 +8062,7 @@ Default is OFF.
 .    rm MN_OVERFLOW_RIGHT
 .    rr #MN_OVERFLOW_RIGHT
 .    rr #no-repeat-MN-right
+.    if \\n[#PRE_COLLATE]=1 \{ .rr #PRE_COLLATE \}
 .END
 \#
 \# ====================================================================
@@ -13585,22 +13609,20 @@ Arguments, Function and Notes.
 .             \}
 .          \}
 .       \}
-.    \}
-.    el \{\
 .       if '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'roman' \{\
 .          ie \\n[#PAD_LIST_DIGITS\\n[#DEPTH]]=1 \{\
 .\" ROMAN I, padded
 .             ie '\\g[#ENUMERATOR\\n[#DEPTH]]'I' \{\
 .                ie \\n[#SEP_TYPE]=1 \{\
-.                   PRINT "\h'\\n[#LIST_INDENT\\n[#DEPTH]]u'\h'-\w'\\*[$PREFIX\\n[#DEPTH]]\\n+[#ENUMERATOR\\n[#DEPTH]]\\n[#SEPARATOR\\n[#DEPTH]]\ 'u'\v'-.085m'\\*[$PREFIX\\n[#DEPTH]]\v'.085m'\\n[#ENUMERATOR\\n[#DEPTH]]\v'-.085m'\\*[$SEPARATOR\\n[#DEPTH]]\v'.085m'
+.                   PRINT "\h'\\n[#HL_INDENT\\n[#DEPTH]]u'\h'-\w'\\*[$PREFIX\\n[#DEPTH]]\\n+[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]\0'u'\v'-.085m'\\*[$PREFIX\\n[#DEPTH]]\v'.085m'\\n[#ENUMERATOR\\n[#DEPTH]]\v'-.085m'\\*[$SEPARATOR\\n[#DEPTH]]\v'.085m'
 .                \}
 .                el \{\
-.                   PRINT "\h'\\n[#LIST_INDENT\\n[#DEPTH]]u'\h'-\w'\\*[$PREFIX\\n[#DEPTH]]\\n+[#ENUMERATOR\\n[#DEPTH]]\\n[#SEPARATOR\\n[#DEPTH]]\ 'u'\\*[$PREFIX\\n[#DEPTH]]\\n[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
+.                   PRINT "\h'\\n[#HL_INDENT\\n[#DEPTH]]u'\h'-\w'\\*[$PREFIX\\n[#DEPTH]]\\n+[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]\0'u'\\*[$PREFIX\\n[#DEPTH]]\\n[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
 .                \}
 .             \}
 .\" roman i, padded
 .             el \{\
-.                PRINT "\h'\\n[#LIST_INDENT\\n[#DEPTH]]u'\h'-\w'\\*[$PREFIX\\n[#DEPTH]]\\n+[#ENUMERATOR\\n[#DEPTH]]\\n[#SEPARATOR\\n[#DEPTH]]\ 'u'\\*[$PREFIX\\n[#DEPTH]]\\n[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
+.                PRINT "\h'\\n[#HL_INDENT\\n[#DEPTH]]u'\h'-\w'\\*[$PREFIX\\n[#DEPTH]]\\n+[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]\0'u'\\*[$PREFIX\\n[#DEPTH]]\\n[#ENUMERATOR\\n[#DEPTH]]\\*[$SEPARATOR\\n[#DEPTH]]
 .             \}
 .          \}
 .\" No pad
@@ -13919,7 +13941,7 @@ Arguments, Function and Notes.
 .      rr #LIST_INDENT\\n[#REMOVE]
 .      rr #ENUMERATOR\\n[#REMOVE]
 .      rm $ENUMERATOR\\n[#REMOVE]
-.      rr #SEPARATOR\\n[#REMOVE]
+.      rm $SEPARATOR\\n[#REMOVE]
 .      rm $ENUMERATOR_TYPE\\n[#REMOVE]
 .      rr #PAD_LIST_DIGITS\\n[#REMOVE]
 .\}
@@ -13974,7 +13996,7 @@ Arguments, Function and Notes.
 \#   macros that alter mom's behaviour).
 \#
 .MAC COLLATE END
-.    nr #COLLATE 1
+.    nr #PRE_COLLATE 1
 .    nr #HEADER_STATE \\n[#HEADERS_ON]
 .    HEADERS OFF
 .    if \\n[#PAGE_NUM_V_POS]=1 \{\
@@ -14074,18 +14096,57 @@ Arguments, Function and Notes.
 .\" In other words, the first arg was not a digit.
 .       rr #LN
 .       ie '\\$1'RESUME' \{\
+.          LN_PARAMS
 .          nm +0
+.          fam
+.          ft
+.          ps
+.          gcolor
 .       \}
 .       el \{\
+.          LN_PARAMS
 .          nm
+.          fam
+.          ft
+.          ps
+.          gcolor
 .          if !\\n[#LINENUMBERS]=2 \{ .rr #LINENUMBERS \}
 .       \}
 .    \}
 .    el \{\
+.       LN_PARAMS
 .       nm \\*[$LN_NUM] \\*[$LN_INC] \\*[$LN_GUTTER] -3-\\*[$LN_GUTTER]
+.       fam
+.       ft
+.       ps
+.       gcolor
 .       if !'\\n(.z'' \{ .nr #DIVER_LN_OFF 1 \}
 .    \}
 .    rr #LN
+.END
+\#
+\#
+\# LINENUMBER STYLE PARAMETERS
+\# ---------------------------
+\# *Arguments:
+\#   none
+\# *Function:
+\#   Checks if any line numbering parameters have been set, and
+\#   passes the args, if any, to the appropriate request.  If a linenumber
+\#   parameter is missing, passes the current value of the register
+\#   associated with the request to the request.  (Ensures that the
+\#   same requests, called in NUMBER_LINES to reset the registers
+\#   to their former values, stay at those values.)
+\#
+.MAC LN_PARAMS END
+.    ie d$LN_FAM          \{ .fam \\*[$LN_FAM] \}
+.    el                   \{ .fam \\n[.fam]    \}
+.    ie d$LN_FT           \{ .ft \\*[$LN_FT]   \}
+.    el                   \{ .ft \\n[.sty]     \}
+.    ie d$LN_SIZE_CHANGE  \{ .ps \\*[$LN_SIZE_CHANGE] \}
+.    el                   \{ .ps \\n[.s] \}
+.    ie d$LN_COLOR        \{ .gcolor \\*[$LN_COLOR] \}
+.    el                   \{ .gcolor \\n[.m] \}
 .END
 \#
 \#
@@ -14830,6 +14891,7 @@ Arguments, Function and Notes.
 .ALIAS   HDRFTR_LEFT_FAMILY               _FAMILY
 .ALIAS   HDRFTR_RIGHT_FAMILY              _FAMILY
 .ALIAS   HEAD_FAMILY                      _FAMILY
+.ALIAS   LINENUMBER_FAMILY                _FAMILY
 .ALIAS   PAGENUM_FAMILY                   _FAMILY
 .ALIAS   PARAHEAD_FAMILY                  _FAMILY
 .ALIAS   QUOTE_FAMILY                     _FAMILY
@@ -14874,6 +14936,7 @@ Arguments, Function and Notes.
 .ALIAS   HDRFTR_LEFT_FONT               _FONT
 .ALIAS   HDRFTR_RIGHT_FONT              _FONT
 .ALIAS   HEAD_FONT                      _FONT
+.ALIAS   LINENUMBER_FONT                _FONT
 .ALIAS   PAGENUM_FONT                   _FONT
 .ALIAS   PARAHEAD_FONT                  _FONT
 .ALIAS   QUOTE_FONT                     _FONT
@@ -14915,6 +14978,7 @@ Arguments, Function and Notes.
 .ALIAS   HDRFTR_RIGHT_SIZE              _SIZE
 .ALIAS   HDRFTR_SIZE                    _SIZE
 .ALIAS   HEAD_SIZE                      _SIZE
+.ALIAS   LINENUMBER_SIZE                _SIZE
 .ALIAS   PAGENUM_SIZE                   _SIZE
 .ALIAS   PARAHEAD_SIZE                  _SIZE
 .ALIAS   QUOTE_SIZE                     _SIZE
@@ -14962,6 +15026,7 @@ Arguments, Function and Notes.
 .ALIAS   HDRFTR_RULE_COLOR               _COLOR
 .ALIAS   HEAD_COLOR                      _COLOR
 .ALIAS   LINEBREAK_COLOR                 _COLOR
+.ALIAS   LINENUMBER_COLOR                _COLOR
 .ALIAS   PAGENUM_COLOR                   _COLOR
 .ALIAS   PARAHEAD_COLOR                  _COLOR
 .ALIAS   QUOTE_COLOR                     _COLOR

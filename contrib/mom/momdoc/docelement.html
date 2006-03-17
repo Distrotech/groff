@@ -1378,16 +1378,17 @@ and
 as does the control macro
 <a href="#QUOTE_INDENT">QUOTE_INDENT</a>.
 <p>
-<strong>Version 1.3: mom</strong>'s handling of the vertical
-whitespace around quotes has changed slightly.  In versions prior
-to 1.3, it was not possible to alter the
-<a href="definitions.html#TERMS_LEADING">leading</a>
-of quotes and blockquotes (which was the same as the document
-leading), ensuring that the vertical whitespace remained consistent,
-as described above.  In 1.3 and later, it is possible to change the
-leading of quotes and blockquote via
-the <strong>QUOTE_AUTOLEAD</strong> and
-<strong>BLOCKQUOTE_AUTOLEAD</strong>macro.  Now, if your quote
+<strong>Version 1.3: mom</strong>'s handling of the
+vertical whitespace around quotes has changed slightly.  In
+versions prior to 1.3, it was not possible to alter the <a
+href="definitions.html#TERMS_LEADING">leading</a> of quotes and
+blockquotes (which was the same as the document leading), ensuring
+that the vertical whitespace remained consistent, as described
+above.
+<p>
+In 1.3 and later, it is possible to change the leading of quotes
+and blockquote via the <strong>QUOTE_AUTOLEAD</strong> and
+<strong>BLOCKQUOTE_AUTOLEAD</strong> macro.  Now, if your quote
 (or blockquote) leading differs from the document leading,
 <strong>mom</strong> attempts to observe the same rules for vertical
 whitespace outlined above; however, she will also insert a small,
@@ -1400,7 +1401,19 @@ slightly, although each will be balanced between lines of normal
 <a href="definitions.html#TERMS_RUNNING">running text</a>,
 top and bottom.  (The inability to scan an entire page and insert
 equalized whitespace at marked places is a limitation of groff,
-which, by and large, works in a linear, line by line fashion.)
+which, by and large, works in a line-per-line fashion.)
+<p>
+<a name="NO_SHIM"></a>
+If you don't want the behaviour described above (i.e.
+you don't want <strong>mom</strong> shimming [possibly
+irregularly linespaced] quotes or blockquotes), issue the macro
+<strong>.NO_SHIM</strong> prior to invoking <strong>QUOTE</strong>
+or <strong>BLOCKQUOTE</strong>.  If you've disabled shimming of
+quotes and blockquotes with <strong>.NO_SHIM</strong> and you want
+<strong>mom</strong> to return to her default behaviour in this
+matter, invoke <strong>.NO_SHIM OFF</strong> (or <strong>QUIT, END,
+X</strong>, etc).
+<p>
 If you don't provide <strong>mom</strong> with a
 <strong>QUOTE_AUTOLEAD</strong>, quotes are leaded at the default
 for normal running text, meaning that multiple quotes on the same
@@ -2144,7 +2157,7 @@ order to ensure that the text of items lines up properly.
 If you'd like the roman numerals to line up flush right (i.e. be
 padded "left"), simply invoke <strong>PAD_LIST_DIGITS</strong>
 <kbd>LEFT</kbd> after <strong>LIST</strong> <kbd>ROMAN&lt;n&gt;</kbd>
-or <strong>LIST</strong> <kbd>roman&lt;n&gt;</kbd> amd before
+or <strong>LIST</strong> <kbd>roman&lt;n&gt;</kbd> and before
 <strong>ITEM</strong>.
 <p>
 <hr>
@@ -2154,7 +2167,10 @@ or <strong>LIST</strong> <kbd>roman&lt;n&gt;</kbd> amd before
 <a name="NUMBER_LINES_INTRO"><h2><u>Line numbering</u></h2></a>
 <ul>
 	<li><a href="#NUMBER_LINES">Macro: NUMBER_LINES</a>
-	<li><a href="#NUMBER_LINES_CONTROL">Control macros</a> (for quotes and blockquotes)
+	<li><a href="#NUMBER_LINES_CONTROL">Control macros</a>
+	<ul>
+		<li><a href="#NUMBER_LINES_CONTROL_QUOTE">Control macros for quotes and blockquotes</a>
+	</ul>
 </ul>
 
 <p>
@@ -2202,7 +2218,7 @@ Line numbering may be enabled and disabled for
 and/or
 <a href="#BLOCKQUOTE">BLOCKQUOTE</a>
 in one of three styles.  See
-<a href="#NUMBER_LINES_CONTROL">Line numbering control macros for quotes and blockquotes</a>.
+<a href="#NUMBER_LINES_CONTROL_QUOTE">Line numbering control macros for quotes and blockquotes</a>.
 <p>
 The first time you invoke
 <a href="#NUMBER_LINES">NUMBER_LINES</a>
@@ -2392,7 +2408,18 @@ are needed for the desired result.
 </ol>
 <hr width="33%" align="left">
 
-<a name="NUMBER_LINES_CONTROL"><h3><u>Line numbering control macros for QUOTE and BLOCKQUOTE</u></h3></a>
+<a name="NUMBER_LINES_CONTROL"><h3><u>Line numbering control macros</u></h3></a>
+See
+<a href="#CONTROL_MACRO_ARGS">Arguments to the control macros</a>.
+<p>
+<pre>
+.LINENUMBER_FAMILY default = prevailing family or document family; default is Times Roman
+.LINENUMBER_FONT   default = prevailing font
+.LINENUMBER_SIZE   default = +0
+.LINENUMBER_COLOR  default = black
+</pre>
+
+<a name="NUMBER_LINES_CONTROL_QUOTE"><h3><u>Line numbering control macros for QUOTE and BLOCKQUOTE</u></h3></a>
 <ol>
 	<li><a href="#NUMBER_QUOTE_LINES">NUMBER_QUOTE_LINES</a>
 	<li><a href="#NUMBER_BLOCKQUOTE_LINES">NUMBER_BLOCKQUOTE_LINES</a>
@@ -2732,7 +2759,12 @@ following examples.
 	(last line begins with a comma and a space)
 </pre>
 
-Both produce, on output
+Example 1 produces, on output
+<pre>
+	A line of text,* broken up with a comma.
+</pre>
+
+Example 2 produces
 <pre>
 	A line of text*, broken up with a comma.
 </pre>
