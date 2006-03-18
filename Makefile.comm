@@ -116,7 +116,9 @@ extraclean: distclean
 	fi
 	-test -f y.tab.h && mv y.tab.h y_tab.h
 	-test -f y.tab.c && mv y.tab.c y_tab.c
-	mv y_tab.c $(YTABC)
+	sed "s/^#line \(.*\) \"y.tab.c\"/#line \1 \"$(YTABC)\"/" \
+	  < y_tab.c > $(YTABC)
+	-rm -f y_tab.c
 	test -z "$(YTABH)" || mv y_tab.h $(YTABH)
 
 # The next rule is needed for make of Solaris 2.5.1 to override its
