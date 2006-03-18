@@ -58,8 +58,8 @@ grops \- PostScript driver for groff
 .B grops
 .
 .de OP
-.ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\%\\$2" "\ ]"
-.el .RB "[\ " "\\$1" "\ ]"
+.  ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\%\\$2" "\ ]"
+.  el .RB "[\ " "\\$1" "\ ]"
 ..
 .
 .OP \-glmv
@@ -112,8 +112,8 @@ is run by
 .B groff
 options can be passed to
 .B grops
-using the
-.B groff
+using
+.BR groff 's
 .B \-P
 option.
 .
@@ -125,6 +125,11 @@ Structuring Convention) if called with multiple file arguments.
 .
 To print such concatenated output it is necessary to deactivate DSC
 handling in the printing program or previewer.
+.
+See section
+.B FONT INSTALLATION
+below for a guide how to install fonts for
+.BR grops .
 .
 .
 .SH OPTIONS
@@ -249,9 +254,12 @@ files on the command line and files named in
 and
 .B \eX'ps: file'
 escapes.
+.
 The current directory is always searched first.
+.
 This option may be specified more than once;
 the directories are searched in the order specified.
+.
 No directory search is performed for files specified using an absolute path.
 .
 .TP
@@ -296,6 +304,7 @@ This option overrides the environment variable
 Lines should be drawn using a thickness of
 .IR n \~\c
 thousandths of an em.
+.
 If this option is not given, the line thickness defaults to 0.04\~em.
 .
 .TP
@@ -555,6 +564,7 @@ is used, for `cmy' and `cmyk'
 .BR setcmykcolor ,
 and for `gray'
 .BR setgray .
+.
 Note that
 .B setcmykcolor
 is a PostScript LanguageLevel\~2 command and thus not available on some
@@ -810,7 +820,7 @@ whereas
 prints the
 .B \[rs](em
 character
-and ignore the line (this code is already in file
+and ignores the line (this code is already in file
 .B Xps.tmac
 which is loaded if a document intended for
 .B grops
@@ -829,14 +839,7 @@ This is described in
 .
 .LP
 In addition, the device and font description files for the device used
-must meet certain requirements.
-.
-The device and font description files supplied for
-.B ps
-device meet all these requirements.
-.
-.BR afmtodit (@MAN1EXT@)
-can be used to create font files from AFM files.
+must meet certain requirements:
 .
 The resolution must be an integer multiple of\~72 times the
 .BR sizescale .
@@ -919,10 +922,13 @@ produces on the fly.
 .B grops
 can automatically include the downloadable fonts necessary
 to print the document.
+.
 Such fonts must be in PFA format.
+.
 Use
-.BR pfbtops (@MAN1EXT@)
+.BR \%pfbtops (@MAN1EXT@)
 to convert a Type\~1 font in PFB format.
+.
 Any downloadable fonts which should, when required, be included by
 .B grops
 must be listed in the file
@@ -1035,8 +1041,8 @@ should be used.
 .B grops
 itself doesn't emit bounding box information.
 .
-With the help of GhostScript the following simple script
-.B groff2eps
+With the help of GhostScript the following simple script,
+.BR groff2eps ,
 produces an encapsulated PS file.
 .
 .RS
@@ -1068,27 +1074,32 @@ to
 .BR foo.eps .
 .
 .
-.SS TrueType fonts
+.SS TrueType and other font formats
 TrueType fonts can be used with 
 .B grops 
 if converted first to 
-.B "Type 42"
+.B "Type\~42"
 format, an especial PostScript wrapper equivalent to the
 PFA format mentioned in
-.BR pfbtops (@MAN1EXT@).
+.BR \%pfbtops (@MAN1EXT@).
+.
 There are several different methods to generate a type42 
 wrapper and most of them involve the use of a PostScript
 interpreter such as Ghostscript \(em see
 .BR gs (1).
+.
+.LP
 Yet, the easiest method involves the use of the application 
-.BR ttftot42 .
+.BR ttftot42 (1).
+.
 This program uses
 .BR freetype (3)
 (version 1.3.1) to generate type42
 font wrappers and well-formed AFM files that can be fed to
 the
-.BR afmtodit (@MAN1EXT@)
+.BR \%afmtodit (@MAN1EXT@)
 script to create appropriate metric files.
+.
 The resulting font wrappers should be added to the
 .B download
 file.
@@ -1096,6 +1107,136 @@ file.
 source code can be downloaded from
 .URL ftp://\:www.giga.or.at/\:pub/\:nih/\:ttftot42/ \
      ftp://\:www.giga.or.at/\:pub/\:nih/\:ttftot42/ .
+.
+.LP
+Another solution for creating type42 wrappers is to use FontForge,
+available from
+.URL http://\:fontforge.sf.net \
+     http://\:fontforge.sf.net .
+This font editor can convert most outline font formats.
+.
+.
+.SH FONT INSTALLATION
+.
+This section gives a summary of the above explanations; it can serve
+as a step-by-step font installation guide for
+.BR grops .
+.
+.IP \(bu 4
+Convert your font to something groff understands.
+.
+This is either a PostScript Type\~1 font in PFA format or a
+PostScript Type\~42 font, together with an AFM file.
+.
+.IP
+The very first characters in a PFA file look like this:
+.
+.RS
+.IP
+.B %!PS-AdobeFont-1.0:
+.RE
+.
+.IP
+A PFB file has this also in the first line, but the string is
+preceded with some binary bytes.
+.
+.IP
+The very first characters in a Type\~42 font file look like this:
+.
+.RS
+.IP
+.B %!PS-TrueTypeFont
+.RE
+.
+.IP
+This is a wrapper format for TrueType fonts.
+.
+Old PS printers might not support it (this is, they don't have a
+built-in TrueType font interpreter).
+.
+.IP
+If your font is in PFB format (such fonts normally have `.pfb' as
+the file extension), you might use groff's
+.BR \%pfbtops (@MAN1EXT@)
+program to convert it to PFA.
+.
+For TrueType fonts, try
+.B ttftot42
+or
+.BR fontforge .
+For all other font formats use
+.B fontforge
+which can convert most outline font formats.
+.
+.IP \(bu 4
+Convert the AFM file to a groff font description file with the
+.BR \%afmtodit (@MAN1EXT@)
+program.
+.
+An example call is
+.
+.RS
+.IP
+afmtodit Foo-Bar-Bold.afm textmap FBB
+.RE
+.
+.IP
+which converts the metric file `Foo-Bar-Bold.afm' to the groff
+font `FBB'.
+.
+If you have a font family which comes with normal, bold, italic,
+and bold italic faces, it is recommended to use the letters
+.BR R ,
+.BR B ,
+.BR I ,
+and
+.BR BI ,
+respectively, as postfixes in the groff font names to make groff's
+`.fam' request work.
+.
+An example is groff's built-in Times-Roman font: The font family name
+is
+.BR T ,
+and the groff font names are
+.BR TR ,
+.BR TB ,
+.BR TI ,
+and
+.BR TBI .
+.
+.IP \(bu 4
+Install both the groff font description files and the fonts in a
+`devps' subdirectory of the font path which groff finds.
+.
+See the
+.B ENVIRONMENT
+section in the
+.BR troff (@MAN1EXT@)
+man page which lists the actual value of the font path.
+.
+Note that groff doesn't use the AFM files (but it is a good idea to
+store them anyway).
+.
+.IP \(bu 4
+Register all fonts which must be downloaded to the printer in the
+`devps/download' file.
+.
+Only the first occurrence of this file in the font path is read.
+.
+This means that you should copy the default `download' file to the
+first directory in your font path and add your fonts there.
+.
+To continue the above example we assume that the PS font name for
+Foo-Bar-Bold.pfa is `XYFoo-Bar-Bold' (the PS font name is stored in the
+.B internalname
+field in the `FBB' file), thus the following line should be added to
+`download'.
+.
+.RS
+.IP
+.B XY-Foo-Bar-Bold Foo-Bar-Bold.pfa
+.
+.RE
 .
 .
 .SH ENVIRONMENT
@@ -1152,7 +1293,7 @@ automatically loaded by
 .TP
 .B @MACRODIR@/psold.tmac
 Macros to disable use of characters not present in older
-PostScript printers (e.g. `eth' or `thorn').
+PostScript printers (e.g., `eth' or `thorn').
 .
 .TP
 .BI /tmp/grops XXXXXX
@@ -1160,14 +1301,14 @@ Temporary file.
 .
 .
 .SH "SEE ALSO"
-.BR afmtodit (@MAN1EXT@),
+.BR \%afmtodit (@MAN1EXT@),
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@),
-.BR pfbtops (@MAN1EXT@),
-.BR groff_out (@MAN5EXT@),
-.BR groff_font (@MAN5EXT@),
-.BR groff_char (@MAN7EXT@),
-.BR groff_tmac (@MAN5EXT@)
+.BR \%pfbtops (@MAN1EXT@),
+.BR \%groff_out (@MAN5EXT@),
+.BR \%groff_font (@MAN5EXT@),
+.BR \%groff_char (@MAN7EXT@),
+.BR \%groff_tmac (@MAN5EXT@)
 .
 .PP
 .URL "http://\:partners.adobe.com/\:public/\:developer/\:en/\:ps/\:5001.DSC_Spec.pdf" \
