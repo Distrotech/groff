@@ -1150,7 +1150,7 @@ dot(last box .nw); "A" ljust at last circle + (-0.1, 0.1)
 Using Locations
 .PP
 There are four ways to use locations; \fBat\fP, \fBfrom\fP, \fBto\fP,
-and \fBwith\fP.  All three are object modifiers; that is, you use them
+and \fBwith\fP.  All four are object modifiers; that is, you use them
 as suffixes to a drawing command.
 .PP
 The \fBat\fP modifier says to draw a closed object or arc with its

@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005,
+                 2006
      Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1418,8 +1419,16 @@ linear_object *object_spec::make_line(position *curpos, direction *dirp)
   static position last_line;
   static int have_last_line = 0;
   *dirp = dir;
-  // No need to look at at since `at' attribute sets `from' attribute.
-  position startpos = (flags & HAS_FROM) ? from : *curpos;
+  // We handle `at' only in conjunction with `with', otherwise it is
+  // the same as the `from' attribute.
+  position startpos;
+  if ((flags & HAS_AT) && (flags & HAS_WITH))
+    // handled later -- we need the end position
+    startpos = *curpos;
+  else if (flags & HAS_FROM)
+    startpos = from;
+  else
+    startpos = *curpos;
   if (!(flags & HAS_SEGMENT)) {
     if ((flags & IS_SAME) && (type == LINE_OBJECT || type == ARROW_OBJECT)
 	&& have_last_line)
@@ -1464,6 +1473,21 @@ linear_object *object_spec::make_line(position *curpos, direction *dirp)
       s->pos = endpos;
       s->is_absolute = 1;	// to avoid confusion
     }
+  if ((flags & HAS_AT) && (flags & HAS_WITH)) {
+    // `tmpobj' works for arrows and splines too -- we only need positions
+    line_object tmpobj(startpos, endpos, 0, 0);
+    position pos = at;
+    place offset;
+    place here;
+    here.obj = &tmpobj;
+    if (!with->follow(here, &offset))
+      return 0;
+    pos -= offset;
+    for (s = segment_list; s; s = s->next)
+      s->pos += pos;
+    startpos += pos;
+    endpos += pos;
+  }
   // handle chop
   line_object *p = 0;
   position *v = new position[nsegments];
