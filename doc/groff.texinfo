@@ -7091,7 +7091,27 @@ Space downwards @var{distance}.  With no argument it advances
 1@tie{}line.  A negative argument causes @code{gtroff} to move up the page
 the specified distance.  If the argument is preceded by a @samp{|}
 then @code{gtroff} moves that distance from the top of the page.  This
-request causes a line break.  The default scaling indicator is @samp{v}.
+request causes a line break, and that adds the current line spacing to
+the space you have just specified.  The default scaling indicator is
+@samp{v}.
+
+For convenience you may wish to use the following macros to set the height
+of the next line at a given distance from the top or the bottom of the
+page:
+
+@Example
+.de y-from-top-down
+.  sp |\\$1-\\n[.v]u
+..
+.
+.de y-from_bot-up
+.  sp |\\n[.p]u-\\$1-\\n[.v]u
+..
+@endExample
+
+@noindent
+A call to @samp{.y-from-bot-up 10c} means that the bottom of the next line 
+will be at 10@dmn{cm} from the paper edge at the bottom.
 
 If a vertical trap is sprung during execution of @code{sp}, the amount of
 vertical space after the trap is discarded.  For example, this
