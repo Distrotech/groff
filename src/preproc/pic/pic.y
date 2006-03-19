@@ -1,4 +1,5 @@
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
+                 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -1604,7 +1605,7 @@ expr:
 	| K_MIN '(' any_expr ',' any_expr ')'
 		{ $$ = $3 < $5 ? $3 : $5; }
 	| INT '(' any_expr ')'
-		{ $$ = floor($3); }
+		{ $$ = $3 < 0 ? floor($3) + 1 : floor($3); }
 	| RAND '(' any_expr ')'
 		{ $$ = 1.0 + floor(((rand()&0x7fff)/double(0x7fff))*$3); }
 	| RAND '(' ')'
