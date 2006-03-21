@@ -515,6 +515,9 @@ define zigzag { $1 right 1 then down .5 left 1 then right 1 }
 zigzag(line); 
 .PE
 .CE "2: \fBline right 1 then down .5 left 1 then right 1\fP"
+.PP
+If a path starts with \fBthen\fP, the first segment is assumed to be into
+the current direction, using the default length.
 .
 .NH 2
 Spline Objects

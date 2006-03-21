@@ -878,14 +878,27 @@ object_spec:
 	| object_spec THEN
   		{
 		  $$ = $1;
-		  if ($$->flags & HAS_SEGMENT) {
-		    $$->segment_list = new segment($$->segment_pos,
-						   $$->segment_is_absolute,
-						   $$->segment_list);
-		    $$->flags &= ~HAS_SEGMENT;
-		    $$->segment_pos.x = $$->segment_pos.y = 0.0;
-		    $$->segment_is_absolute = 0;
-		  }
+		  if (!($$->flags & HAS_SEGMENT))
+		    switch ($$->dir) {
+		    case UP_DIRECTION:
+		      $$->segment_pos.y += $$->segment_width;
+		      break;
+		    case DOWN_DIRECTION:
+		      $$->segment_pos.y -= $$->segment_width;
+		      break;
+		    case RIGHT_DIRECTION:
+		      $$->segment_pos.x += $$->segment_width;
+		      break;
+		    case LEFT_DIRECTION:
+		      $$->segment_pos.x -= $$->segment_width;
+		      break;
+		    }
+		  $$->segment_list = new segment($$->segment_pos,
+						 $$->segment_is_absolute,
+						 $$->segment_list);
+		  $$->flags &= ~HAS_SEGMENT;
+		  $$->segment_pos.x = $$->segment_pos.y = 0.0;
+		  $$->segment_is_absolute = 0;
 		}
 	| object_spec SOLID
 		{
