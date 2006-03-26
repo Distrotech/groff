@@ -5448,6 +5448,9 @@ character prevents this.
 @cindex macro arguments
 @cindex arguments to requests and macros
 
+@cindex tabs, and macro arguments
+@cindex macro arguments, and tabs
+@cindex arguments to macros, and tabs
 Arguments to requests and macros are processed much like the shell:
 The line is split into arguments according to
 spaces.@footnote{Plan@tie{}9's @code{troff} implementation also allows
@@ -10841,7 +10844,23 @@ encounters the line @samp{..} (two dots).  The optional second
 argument to @code{de} changes this to a macro to @samp{.@var{end}}.
 
 There can be whitespace after the first dot in the line containing the
-ending token (either @samp{.} or macro @samp{@var{end}}).
+ending token (either @samp{.} or macro @samp{@var{end}}).  Don't insert
+a tab character immediately after the @samp{..}, otherwise it isn't
+recognized as the end-of-macro symbol.@footnote{While it is possible to
+define and call a macro @samp{.} with
+
+@Example
+.de .
+.  tm foo
+..
+.
+..    \" This calls macro `.'!
+@endExample
+
+@noindent
+you can't use this as the end-of-macro macro: during a macro definition,
+@samp{..} is never handled as a call to @samp{.}, even if you say
+@samp{.de foo .} explicitly.}
 
 Here a small example macro called @samp{P} which causes a break and
 inserts some vertical space.  It could be used to separate paragraphs.
@@ -12109,6 +12128,11 @@ request, it takes an argument of a macro name to divert subsequent text
 into.  The @code{da} macro appends to an existing diversion.
 
 @code{di} or @code{da} without an argument ends the diversion.
+
+The current partially-filled line is included into the diversion.  See
+the @code{box} request below for an example.  Note that switching to
+another (empty) environment (with the @code{ev} request) avoids the
+inclusion of the current partially-filled line.
 @endDefreq
 
 @DefreqList {box, macro}
