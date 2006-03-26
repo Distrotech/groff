@@ -546,7 +546,7 @@ for the PS Symbol font, and
 containing slanted lowercase Greek letters taken from PS Symbol.
 .
 Zapf Dingbats is available as
-.BR ZD
+.BR ZD ,
 and a reversed version of ZapfDingbats (with symbols pointing in the opposite
 direction) is available as
 .BR ZDR ;
@@ -558,7 +558,7 @@ The default color for
 .B \[rs]m
 and
 .B \[rs]M
-is black; for colors defined in the `rgb' color space,
+is black; for colors defined in the `rgb' color space
 .B setrgbcolor
 is used, for `cmy' and `cmyk'
 .BR setcmykcolor ,
@@ -596,7 +596,8 @@ and y\~coordinates increase down the page.
 A procedure\~\c
 .B u
 is defined that converts groff units
-to the coordinate system in effect.
+to the coordinate system in effect (provided the user doesn't change the
+scale).
 .
 For example, 
 .
@@ -653,6 +654,26 @@ For example,
 .
 .LP
 is another way to draw a horizontal line one inch long.
+.
+Note the single backslash before `nx' \[en] the only reason to use a number
+register while defining the macro `y' is to convert a user-specified
+dimension `1i' to internal groff units which are in turn converted to PS
+units with the
+.B u
+procedure.
+.
+.LP
+.B grops
+wraps user-specified PostScript code into a dictionary, nothing more.
+.
+In particular, it doesn't start and end the inserted code with
+.B save
+and
+.BR restore ,
+respectively.
+.
+This must be supplied by the user, if necessary.
+.
 .RE
 .
 .TP
