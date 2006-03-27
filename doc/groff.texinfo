@@ -13088,7 +13088,8 @@ There are two escapes which give information directly to the
 postprocessor.  This is particularly useful for embedding
 @sc{PostScript} into the final document.
 
-@Defesc {\\X, ', xxx, '}
+@DefreqList {device, xxx}
+@DefescListEnd {\\X, ', xxx, '}
 Embeds its argument into the @code{gtroff}
 output preceded with @w{@samp{x X}}.
 
@@ -13106,6 +13107,9 @@ within @code{\X}, @w{@samp{\ }} and @code{\~} are converted to single
 space characters.  All other escapes (except @code{\\} which produces a
 backslash) cause an error.
 
+Contrary to @code{\X}, the @code{device} request simply processes its
+argument in copy mode (@pxref{Copy-in Mode}).
+
 @kindex use_charnames_in_special
 @pindex DESC@r{, and @code{use_charnames_in_special}}
 @cindex @code{\X}, and special characters
@@ -13116,7 +13120,8 @@ verbatim.  Additionally, the backslash is represented as @code{\\}.
 @samp{use_charnames_in_special} is currently used by @code{grohtml} only.
 @endDefesc
 
-@DefescList {\\Y, , n, }
+@DefreqList {devicem, xx}
+@DefescItem {\\Y, , n, }
 @DefescItem {\\Y, @Lparen{}, nm, }
 @DefescListEnd {\\Y, @Lbrack{}, name, @Rbrack{}}
 This is approximately equivalent to @samp{\X'\*[@var{name}]'}

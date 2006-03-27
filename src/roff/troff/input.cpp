@@ -5248,6 +5248,41 @@ node *do_special()
   return new special_node(mac);
 }
 
+void device_request()
+{
+  if (!tok.newline() && !tok.eof()) {
+    int c;
+    macro mac;
+    for (;;) {
+      c = get_copy(0);
+      if (c == '"') {
+	c = get_copy(0);
+	break;
+      }
+      if (c != ' ' && c != '\t')
+	break;
+    }
+    for (; c != '\n' && c != EOF; c = get_copy(0))
+      mac.append(c);
+    curenv->add_node(new special_node(mac));
+  }
+  tok.next();
+}
+
+void device_macro_request()
+{
+  symbol s = get_name(1);
+  if (!(s.is_null() || s.is_empty())) {
+    request_or_macro *p = lookup_request(s);
+    macro *m = p->to_macro();
+    if (m)
+      curenv->add_node(new special_node(*m));
+    else 
+      error("can't transparently throughput a request");
+  }
+  skip_line();
+}
+
 void output_request()
 {
   if (!tok.newline() && !tok.eof()) {
@@ -7565,6 +7600,8 @@ void init_input_requests()
   init_request("defcolor", define_color);
   init_request("dei", define_indirect_macro);
   init_request("dei1", define_indirect_nocomp_macro);
+  init_request("device", device_request);
+  init_request("devicem", device_macro_request);
   init_request("do", do_request);
   init_request("ds", define_string);
   init_request("ds1", define_nocomp_string);
