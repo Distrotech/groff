@@ -1379,9 +1379,9 @@ static char *to_unicode (unsigned int ch)
  *  add_and_encode - adds a special string to the page, it translates the string
  *                   into html glyphs. The special string will have come from x X html:
  *                   and can contain troff character encodings which appear as
- *                   \(char\). A sequence of \\ represents \.
+ *                   \[char]. A sequence of \\ represents \.
  *                   So for example we can write:
- *                      "cost = \(Po\)3.00 file = \\foo\\bar"
+ *                      "cost = \[Po]3.00 file = \\foo\\bar"
  *                   which is translated into:
  *                      "cost = &pound;3.00 file = \foo\bar"
  */
@@ -1399,15 +1399,15 @@ void page::add_and_encode (style *s, const string &str,
   if (s->f == NULL)
     return;
   while (i < str.length()) {
-    if ((i+1<str.length()) && (str.substring(i, 2) == string("\\("))) {
+    if ((i+1<str.length()) && (str.substring(i, 2) == string("\\["))) {
       // start of escape
-      i += 2; // move over \(
+      i += 2; // move over \[
       int a = i;
-      while ((i+1<str.length()) && (str.substring(i, 2) != string("\\)"))) {
+      while ((i<str.length()) && (str.substring(i, 1) != string("]"))) {
 	i++;
       }
       int n = i;
-      if ((i+1<str.length()) && (str.substring(i, 2) == string("\\)")))
+      if ((i<str.length()) && (str.substring(i, 1) == string("]")))
 	i++;
       else
 	n = -1;

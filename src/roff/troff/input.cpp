@@ -5185,14 +5185,13 @@ static void encode_char(macro *mac, char c)
       const char *s = ci->get_symbol()->contents();
       if (s[0] != (char)0) {
 	mac->append('\\');
-	mac->append('(');
+	mac->append('[');
 	int i = 0;
 	while (s[i] != (char)0) {
 	  mac->append(s[i]);
 	  i++;
 	}
-	mac->append('\\');
-	mac->append(')');
+	mac->append(']');
       }
     }
     else if (tok.stretchable_space()
