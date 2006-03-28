@@ -6,6 +6,7 @@ all: grog
 grog: grog.sh
 	rm -f $@
 	sed -e "s|@g@|$(g)|g" \
+	  -e "s|@EGREP@|$(EGREP)|g" \
 	  -e "s|@VERSION@|$(version)$(revision)|" \
 	  -e $(SH_SCRIPT_SED_CMD) $(srcdir)/grog.sh >$@
 	chmod +x $@
@@ -18,6 +19,7 @@ grog.old: grog.pl grog.sh
 	else \
 	  rm -f $@; \
 	  sed -e "s|@g@|$(g)|g" \
+	      -e "s|@EGREP@|$(EGREP)|g" \
 	      -e "s|@VERSION@|$(version)$(revision)|" \
 	      -e $(SH_SCRIPT_SED_CMD) $(srcdir)/grog.sh >$@; \
 	fi

@@ -29,16 +29,19 @@ do
 	esac
 done
 
-egrep -h "^\.(\[|\])|((P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|.* Oo|Oc|.* Oc|TS|EQ|TH|SH|so|\[|R1|GS|G1|PH|SA)$sp)" $* \
+@EGREP@ -h \
+  "^\.(\[|\])|((P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|.* Oo|Oc|.* Oc|TS|TE|EQ|TH|SH|so|\[|R1|GS|G1|PH|SA)$sp)" $* \
 | sed -e '/^\.so/s/^.*$/.SO_START\
 &\
 .SO_END/' \
 | $soelim \
-| egrep '^\.(P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|.* Oo|Oc|.* Oc|TS|EQ|TH|SH|\[|\]|R1|GS|G1|PH|SA|SO_START|SO_END)' \
+| @EGREP@ \
+    '^\.(P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|.* Oo|Oc|.* Oc|TS|TE|EQ|TH|SH|\[|\]|R1|GS|G1|PH|SA|SO_START|SO_END)' \
 | awk '
 /^\.SO_START$/ { so = 1 }
 /^\.SO_END$/ { so = 0 }
-/^\.TS/ { tbl++; if (so > 0) soelim++ }
+/^\.TS/ { tbl++; in_tbl = 1; if (so > 0) soelim++; }
+/^\.TE/ { in_tbl = 0 }
 /^\.PS([ 0-9.<].*)?$/ { pic++; if (so > 0) soelim++ }
 /^\.EQ/ { eqn++; if (so > 0) soelim++ }
 /^\.R1/ { refer++; if (so > 0) soelim++ }
@@ -46,7 +49,7 @@ egrep -h "^\.(\[|\])|((P|PS|[PLI]P|[pnil]p|sh|Dd|Tp|Dp|De|Cx|Cl|Oo|.* Oo|Oc|.* O
 /^\.\]/ {refer_end++; if (so > 0) soelim++ }
 /^\.GS/ { grn++; if (so > 0) soelim++ }
 /^\.G1/ { grap++; pic++; if (so > 0) soelim++ }
-/^\.TH/ { TH++ }
+/^\.TH/ { if (in_tbl != 1) TH++ }
 /^\.[PLI]P/ { PP++ }
 /^\.P$/ { P++ }
 /^\.SH/ { SH++ }
