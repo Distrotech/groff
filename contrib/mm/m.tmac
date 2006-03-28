@@ -7,7 +7,7 @@
 .@revision $Revision$
 .ig
 
-Copyright (C) 1991-2000, 2001, 2002, 2003, 2004, 2005
+Copyright (C) 1991-2000, 2001, 2002, 2003, 2004, 2005, 2006
   Free Software Foundation, Inc.
 mgm is written by Jörgen Hägg <jh@axis.com>
 
@@ -150,7 +150,7 @@ Index		array!index
 .\"	Internal global variables
 .\"
 .\" This is for cover macro .MT
-.\" .ds @language
+.\" .ds @country
 .\"
 .nr @copy_type 0
 .if r C .nr @copy_type \n[C]
@@ -361,7 +361,7 @@ Index		array!index
 .\"
 .\"---------------------------------------------
 .\" set local variables.
-.ie d @language .mso mm/\*[@language]_locale
+.ie d @country .mso mm/\*[@country]_locale
 .el .mso mm/locale
 .\"---------------------------------------------
 .if \n[D] .tm Groff mm, version \*[RE].
@@ -1233,7 +1233,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .		ie d TP .TP
 .		el \{\
 '			sp 3
-.			ie ((\\n[%]=1)&((\\n[N]=1):(\\n[N]=2))) .sp
+.			ie ((\\n[P]=1)&((\\n[N]=1):(\\n[N]=2))) .sp
 .			el .tl \\*[pg*header]
 .			ie o .tl \\*[pg*odd-header]
 .			el .tl \\*[pg*even-header]
@@ -1307,7 +1307,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .el \{\
 .	ie o .tl \\*[pg*odd-footer]
 .	el .tl \\*[pg*even-footer]
-.	ie (\\n[%]=1)&(\\n[N]=1) .tl \\*[pg*header]
+.	ie (\\n[P]=1)&(\\n[N]=1) .tl \\*[pg*header]
 .	el .tl \\*[pg*footer]
 .	tl ''\\*[Pg_type!\\n[@copy_type]]''
 .\}
@@ -2593,7 +2593,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .	ti 0
 .\}
 .el .ce 1
-\fB\\$1\fP\\$2
+\f3\\$1\fP\\$2
 .br
 .ev
 .\" save line for LIST OF XXX, wth is the width of the label
@@ -2616,11 +2616,11 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 \!.ie (\w@\\$1\\$2@)>(\\\\n[.l]-\\\\n[.i]) \{\
 .	in +\w@\\$1@u
 \!.	ti 0
-\!\fB\\$1\fP\\$2
+\!\f3\\$1\fP\\$2
 \!.\}
 \!.el \{\
 .	ce 1
-\!\fB\\$1\fP\\$2
+\!\f3\\$1\fP\\$2
 \!.\}
 \!.br
 \!.ev
@@ -2680,7 +2680,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"########################### module fnt ############################
 .\" some font macros.
 .de R
-.ft R
+.ft 1
 .ul 0
 ..
 .\"-----------
@@ -2699,30 +2699,30 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 ..
 .\"-----------
 .de B
-.ie \\n[.$] .fnt@switch \fB \f[\\n[.f]] \\$@
-.el .ft B
+.ie \\n[.$] .fnt@switch \f3 \f[\\n[.f]] \\$@
+.el .ft 3
 ..
 .de I
-.ie \\n[.$] .fnt@switch \fI \f[\\n[.f]] \\$@
-.el .ft I
+.ie \\n[.$] .fnt@switch \f2 \f[\\n[.f]] \\$@
+.el .ft 2
 ..
 .de IB
-.if \\n[.$] .fnt@switch \fI \fB \\$@
+.if \\n[.$] .fnt@switch \f2 \f3 \\$@
 ..
 .de BI
-.if \\n[.$] .fnt@switch \fB \fI \\$@
+.if \\n[.$] .fnt@switch \f3 \f2 \\$@
 ..
 .de IR
-.if \\n[.$] .fnt@switch \fI \fR \\$@
+.if \\n[.$] .fnt@switch \f2 \f1 \\$@
 ..
 .de RI
-.if \\n[.$] .fnt@switch \fR \fI \\$@
+.if \\n[.$] .fnt@switch \f1 \f2 \\$@
 ..
 .de RB
-.if \\n[.$] .fnt@switch \fR \fB \\$@
+.if \\n[.$] .fnt@switch \f1 \f3 \\$@
 ..
 .de BR
-.if \\n[.$] .fnt@switch \fB \fR \\$@
+.if \\n[.$] .fnt@switch \f3 \f1 \\$@
 ..
 .\"########################### module box ############################
 .\" draw a box around some text. Text will be kept on the same page.
@@ -2846,7 +2846,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .de ref@print-refs
 .toc@save 1 "" "\\*[Rp]" \\n[%]
 .ce
-\fI\\*[Rp]\fP
+\f2\\*[Rp]\fP
 .sp
 .nr ref*ll \\n[.l]
 .misc@ev-keep ref*ev
@@ -2916,15 +2916,15 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .toc@save 1 "" "\\*[App] \\$1: \\$2" \\n[%]
 ..
 .\"------------
-.\" app@heaer name text
+.\" app@header name text
 .de app@header
 .bp
 .SP (u;\\n[Lsp]*4)
 .ce 1
-\s+4\fB\\*[App]\ \\$1\fP\s0
+\s+4\f3\\*[App]\ \\$1\fP\s0
 .SP (u;\\n[Lsp]*2)
 .if \w@\\$2@<\\n[.l] .ce 1
-\fB\s+2\\$2\s0\fP
+\f3\s+2\\$2\s0\fP
 .SP (u;\\n[Lsp]*4)
 ..
 .als APPX app@header
@@ -3052,7 +3052,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .el .ds cov*mt-type 1
 .ds cov*mt-addresse "\\$2
 .ds cov*mt-type-text "\\$1
-.ie d @language .ds cov*str mm/\\*[@language]_
+.ie d @country .ds cov*str mm/\\*[@country]_
 .el .ds cov*str mm/
 .mso \\*[cov*str]\\*[cov*mt-file!\\*[cov*mt-type]]
 ..
@@ -3060,7 +3060,7 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .ie !\\n[.$] .ds cov*cov-type ms
 .el .ds cov*cov-type \\$1
 .pg@disable-top-trap
-.ie d @language .ds cov*str mm/\\*[@language]_\\*[cov*cov-type].cov
+.ie d @country .ds cov*str mm/\\*[@country]_\\*[cov*cov-type].cov
 .el .ds cov*str mm/\\*[cov*cov-type].cov
 .mso \\*[cov*str]
 ..

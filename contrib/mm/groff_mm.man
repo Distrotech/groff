@@ -73,7 +73,7 @@ which is the ISO 3166 two-letter code for the
 A file called
 .B locale
 or
-.IB lang _locale
+.IB country _locale
 is read after the initialization of the global variables.
 It is therefore possible to localize the macros with a different company
 name and so on.
@@ -165,6 +165,36 @@ Set the format with
 .T2 A
 0, A, B, C, .\|.\|., Z, AA, AB, .\|.\|.
 .RE
+.
+.
+.SS Fonts
+.
+In
+.BR m@TMAC_M_PREFIX@m ,
+the fonts (or rather, font styles)
+.B R\c
+\~(normal),
+.B I\c
+\~(italic), and
+.B B\c
+\~(bold) are hardwired to font positions
+.BR 1 ,
+.BR 2 ,
+and\~\c
+.BR 3 ,
+respectively.
+Internally, font positions are used for backwards compatibility.
+From a practical point of view it doesn't make a big difference \[en]
+a different font family can still be selected with a call to the
+.B .fam
+request or using
+.BR groff 's
+.B \-f
+command line option.
+On the other hand, if you want to replace just, say, font
+.BR B ,
+you have to replace the font at position\~2 (with a call to
+`.fp\~2\~.\|.\|.').
 .
 .
 .SS Macros

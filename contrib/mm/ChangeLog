@@ -1,3 +1,33 @@
+Tue Mar 28 14:00:06 2006  Werner LEMBERG  <wl@gnu.org>
+
+	. Hardwire first four font positions with R, I, B, and BI -- the
+	  documentation explicitly refers to this feature (cf. the `HF'
+	  string register).
+
+	. Don't use `%' register in numeric calculations because it is
+	  affected by `.af'.
+
+	Patches for both problems have been contributed by Nick Stoughton
+	<nick@usenix.org>.
+
+	* m.tmac: s/@language/@country/.
+	s/\n[%]/\n[P]/ where appropriate.
+	s/\fR/\f1/.
+	s/.ft R/.ft 1/.
+	s/\fI/\f2/.
+	s/.ft I/.ft 2/.
+	s/\fB/\f3/.
+	s/.ft B/.ft 3/.
+
+	* mse.tmac: s/@language/@country/.
+
+	* groff_mm.man (Fonts): New subsection.
+
+	* groff_mmse.man: Load `sv.tmac'.
+	Reformatted.
+
+	examples/README: Cleanups and updates.
+
 Mon Mar 27 15:44:24 2006  Werner LEMBERG  <wl@gnu.org>
 
 	* groff_mm.man: Completely revised and reformatted to use as many
