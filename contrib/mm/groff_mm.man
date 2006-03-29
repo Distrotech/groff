@@ -774,18 +774,30 @@ are the delimiters for equations written for
 .BR @g@eqn (@MAN1EXT@).
 .BR EQ / EN
 must be inside of a
-.BR DS / DE -pair,
+.BR DS / DE
+pair,
 except if
 .B EQ
-is only used to set options for
-.BR @g@eqn .
+is used to set options for
+.B @g@eqn
+only.
 The
 .I label
 argument appears at the right margin of the equation,
+centered vertically within the
+.BR DS / DE
+block,
 unless number register
 .B Eq
 is\~1.
 Then the label appears at the left margin.
+.IP
+If there are multiple
+.BR EQ / EN
+blocks within a single
+.BR DS / DE
+pair,
+only the last equation label (if any) is printed.
 .
 .TP
 .BI EX\  "\fR[\fPtitle \fR[\fPoverride \fR[\fPflag \fR[\fPrefname\fR]]]]\fP"
@@ -2893,7 +2905,7 @@ Default is\~0.
 .TP
 .B Dsp
 If defined, it controls the space output before and after static displays.
-Otherwise is the value of
+Otherwise the value of
 .B Lsp
 is used.
 .

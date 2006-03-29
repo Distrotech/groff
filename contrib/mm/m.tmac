@@ -2078,6 +2078,11 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .\"	there are less than half of the page left.
 .if \\n[ds*need] .ne \\n[ds*need]u
 .\"
+.\"	Print static display
+.nr ds*i \\n[Lsp]
+.if r Dsp .nr ds*i \\n[Dsp]
+.\"
+.if \\n[Ds] .sp \\n[ds*i]u
 .\" check if pending equation label
 .eq@check \\n[ds*need]
 'in \\n[ds*old-in]u
@@ -2089,11 +2094,6 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if \\n[ds*format]=5 'in (u;\\n[.l]-\\n[ds*width])
 .\" **********
 .\"
-.\"	Print static display
-.nr ds*i \\n[Lsp]
-.if r Dsp .nr ds*i \\n[Dsp]
-.\"
-.if \\n[Ds] .sp \\n[ds*i]u
 .ds*div!\\n[ds*snr]
 .if \\n[Ds] .sp \\n[ds*i]u
 .\"
@@ -2371,14 +2371,14 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if !'\\*[eq*label]'' \{\
 .	mk
 .	\" space down to middle of equation
-'	sp (u;\\$1/2)
+'	sp (u;(\\$1-1v)/2)
 .	ie (\\n[Eq]%2) \{\
 .		\"	label to the left
 \h'|0'\\*[eq*label]
 .	\}
 .	el \{\
 .		\"	label to the right
-\h'|\\n[.l]u'\\*[eq*label]
+\h'|\\n[.l]u-\w'\\*[eq*label]'u'\\*[eq*label]
 .	\}
 .	rt
 .\}
