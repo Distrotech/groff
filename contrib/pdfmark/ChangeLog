@@ -1,3 +1,27 @@
+2006-03-31  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
+	Split `pdfmark' output as required, to avoid excessively long
+	`ps:exec' intermediate output records.
+
+	* pdfmark.tmac (pdfmark): Macro extended to deploy ...
+	(pdf*pdfmark.limit): New macro; use it to define ...
+	(PDFMARK.FOLDWIDTH, PDFMARK.FOLDWIDTH.MAX): New registers.
+	(pdf*compose.first, pdf*compose.next, pdf*compose.literal): New
+	macros; each will be aliased as required to ...
+	(pdf*compose): ... this, to dynamically construct ...
+	(pdf:composed.line, pdf:composed.literal): ... these new strings.
+	(pdf:compose.test): New dynamically constructed string; use it to
+	detect parenthesised literals in pdfmark content, so folding can be
+	avoided within them, subject to honouring of `PDFMARK.FOLDWIDTH'.
+	(pdf*length.increment): New macro; it triggers output folding when ...
+	(pdf:length): ... this new register exceeds `PDFMARK.FOLDWIDTH.MAX'.
+	(pdf*pdfmark.post.first, pdf*pdfmark.post.next): New macros; each will
+	be aliased as required to ...
+	(pdf*pdfmark.post): ... this, and invoked by ...
+	(pdf*pdfmark.dispatch): ... this new macro; use it to define ...
+	(pdf:composed): ... this dynamically constructed macro; use ...
+	(pdf*end): ... this new macro to terminate it.
+
 2006-03-09  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
 	Incorporate portability recommendations by Ralf Wildenhues
@@ -22,10 +46,22 @@
 	retain them in `GROFF_TMPDIR=.'.
 	(CLEANADD): Include temporary files matching `pdf[0-9]*'.
 
+2006-03-08  Werner LEMBERG  <wl@gnu.org>
+
+	* pdfmark.ms: Update URL for Adobe Reference Manual.
+
 2006-02-26  Claudio Fontana  <claudio@gnu.org>
 
 	* Makefile.sub: Add DESTDIR to install and uninstall targets
 	to support staged installations.
+
+2006-02-25  Werner LEMBERG  <wl@gnu.org>
+
+	* pdfmark.ms: Correct typo; reported by Thomas Klausner.
+
+2006-02-24  Werner LEMBERG  <wl@gnu.org>
+
+	* pdfmark.ms, pdfroff.sh: Replace legal/illegal with valid/invalid.
 
 2005-06-22  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
@@ -56,6 +92,11 @@
 2005-05-28  Werner LEMBERG  <wl@gnu.org>
 
 	* Makefile.sub (.ms.pdf): Use `--stylesheet', not `--style'.
+
+2005-05-26  Werner LEMBERG  <wl@gnu.org>
+
+	* Makefile.sub, pdfmark.tmac, pdfroff.sh, spdf.tmac: Update postal
+	address for Free Software Foundation.
 
 2005-05-17  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
