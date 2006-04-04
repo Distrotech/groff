@@ -5438,6 +5438,29 @@ In most cases the period is used as a control character.  Several
 requests cause a break implicitly; using the single quote control
 character prevents this.
 
+@Defreg {.br}
+A read-only number register which is set to@tie{}1 if a macro is called
+with the normal control character (as defined with the @code{cc}
+request), and set to@tie{}0 otherwise.
+
+@cindex modifying requests
+@cindex requests, modifying
+This allows to reliably modify requests.
+
+@Example
+.als bp*orig bp
+.de bp
+.  tm before bp
+.  ie \\n[.br] .bp*orig
+.  el 'bp*orig
+.  tm after bp
+..
+@endExample
+
+Using this register outside of a macro makes no sense (it always returns
+zero in such cases).
+@endDefreg
+
 @menu
 * Request and Macro Arguments::
 @end menu
@@ -7619,6 +7642,8 @@ default control character @samp{'} is restored.  The value of the
 no-break control character is associated with the current environment
 (@pxref{Environments}).
 @endDefreq
+
+@xref{Requests}.
 
 @Defreq {eo, }
 @cindex disabling @code{\} (@code{eo})

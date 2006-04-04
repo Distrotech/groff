@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 27 Mar 2006
+Last update : 04 Apr 2006
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -2605,6 +2605,31 @@ sets tabs every half an inch.
 .\" --------------------------------------------------------------------
 .
 The following read-only registers are available:
+.
+.TP
+.B \[rs]n[.br]
+Within a macro call, it is set to\~1 if the macro is called with the
+`normal' control character (`.' by default), and set to\~0 otherwise.
+This allows to reliably modify requests.
+.
+.RS
+.IP
+.ne 6v+\n(.Vu
+.ft CB
+.nf
+.Text .als bp*orig bp
+.Text .de bp
+.Text .tm before bp
+.Text .ie \[rs]\[rs]n[.br] .bp*orig
+.Text .el 'bp*orig
+.Text .tm after bp
+.Text ..
+.fi
+.RE
+.
+.IP
+Using this register outside of a macro makes no sense (it always returns
+zero in such cases).
 .
 .TP
 .B \[rs]n[.C]

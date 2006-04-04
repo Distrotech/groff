@@ -22,6 +22,18 @@ o Swedish macro localization has been added also.
 o Two new requests `device' and `devicem' have been added which are
   equivalents to the \X and \Y escapes, respectively.
 
+o A new read-only number register `.br' is available which is set to 1
+  if a macro is called as .foo and to 0 if called as 'foo.  This allows to
+  reliably modify requests.
+
+    .als bp@orig bp
+    .de bp
+    .  tm before bp
+    .  ie \\n[.br] .bp@orig
+    .  el 'bp@orig
+    .  tm after bp
+    ..
+
 Pic
 ---
 
@@ -33,6 +45,8 @@ Macro Packages
 --------------
 
 o A new macro `Dx' has been added which identifies the DragonFly OS.
+
+o -mtrace now shows whether a macro has been called as .foo or as 'foo.
 
 
 VERSION 1.19.2

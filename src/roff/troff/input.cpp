@@ -217,6 +217,7 @@ private:
   virtual int has_args() { return 0; }
   virtual int nargs() { return 0; }
   virtual input_iterator *get_arg(int) { return 0; }
+  virtual int get_break_flag() { return 0; }
   virtual int get_location(int, const char **, int *) { return 0; }
   virtual void backtrace() {}
   virtual int set_location(const char *, int) { return 0; }
@@ -416,6 +417,7 @@ public:
   static int peek();
   static void push(input_iterator *);
   static input_iterator *get_arg(int);
+  static int get_break_flag();
   static int nargs();
   static int get_location(int, const char **, int *);
   static int set_location(const char *, int);
@@ -497,10 +499,10 @@ int input_stack::finish_get(node **np)
     input_iterator *tem = top;
     check_end_diversion(tem);
 #if defined(DEBUGGING)
-  if (debug_state)
-    if (tem->is_diversion)
-      fprintf(stderr,
-	      "in diversion level = %d\n", input_stack::get_div_level());
+    if (debug_state)
+      if (tem->is_diversion)
+	fprintf(stderr,
+		"in diversion level = %d\n", input_stack::get_div_level());
 #endif
     top = top->next;
     level--;
@@ -620,6 +622,11 @@ input_iterator *input_stack::get_arg(int i)
     if (p->has_args())
       return p->get_arg(i);
   return 0;
+}
+
+int input_stack::get_break_flag()
+{
+  return top->get_break_flag();
 }
 
 void input_stack::shift(int n)
@@ -3584,12 +3591,14 @@ arg_list::~arg_list()
 class macro_iterator : public string_iterator {
   arg_list *args;
   int argc;
+  int with_break;		// whether called as .foo or 'foo
 public:
   macro_iterator(symbol, macro &, const char *how_invoked = "macro");
   macro_iterator();
   ~macro_iterator();
   int has_args() { return 1; }
   input_iterator *get_arg(int i);
+  int get_break_flag() { return with_break; }
   int nargs() { return argc; }
   void add_arg(const macro &m);
   void shift(int n);
@@ -3823,11 +3832,11 @@ int macro::empty()
 }
 
 macro_iterator::macro_iterator(symbol s, macro &m, const char *how_called)
-: string_iterator(m, how_called, s), args(0), argc(0)
+: string_iterator(m, how_called, s), args(0), argc(0), with_break(break_flag)
 {
 }
 
-macro_iterator::macro_iterator() : args(0), argc(0)
+macro_iterator::macro_iterator() : args(0), argc(0), with_break(break_flag)
 {
 }
 
@@ -6806,6 +6815,16 @@ const char *filename_reg::get_string()
     return 0;
 }
 
+class break_flag_reg : public reg {
+public:
+  const char *get_string();
+};
+
+const char *break_flag_reg::get_string()
+{
+  return i_to_a(input_stack::get_break_flag());
+}
+
 class constant_reg : public reg {
   const char *s;
 public:
@@ -7669,6 +7688,7 @@ void init_input_requests()
   init_request("writec", write_request_continue);
   init_request("writem", write_macro_request);
   number_reg_dictionary.define(".$", new nargs_reg);
+  number_reg_dictionary.define(".br", new break_flag_reg);
   number_reg_dictionary.define(".C", new constant_int_reg(&compatible_flag));
   number_reg_dictionary.define(".c", new lineno_reg);
   number_reg_dictionary.define(".color", new constant_int_reg(&color_flag));

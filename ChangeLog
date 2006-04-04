@@ -1,3 +1,26 @@
+2006-04-04  Werner LEMBERG  <wl@gnu.org>
+
+	Implement new number register `.br' which is set to 1 if a macro has
+	been called as .foo and to 0 if called as 'bar.  This is useful for
+	-mtrace so that requests can be reliably traced too.
+
+	* src/roff/troff/input.cpp (input_iterator): Add virtual function
+	`get_break_flag'.
+	(macro_iterator): Add `with_break' member and `get_break_flag'
+	function.
+	Update constructors.
+	(input_stack): Add function `get_break_flag'.
+	(break_flag_reg): New number register class.
+	(input_init_requests): Register `.br'.
+
+	* src/roff/troff/TODO: Updated.
+
+	* tmac/trace.tmac: s/!!sp/!!!sp/.
+	Modify definitions of `de', `de1', `am', and `am1' to use \n[.br].
+
+	* docs/groff.texinfo, man/groff.man, man/groff_diff.man, NEWS:
+	Document it.
+
 2006-03-29  Werner LEMBERG  <wl@gnu.org>
 
 	* src/devices/grops/ps.cpp: s/must not/should not/ in warning
