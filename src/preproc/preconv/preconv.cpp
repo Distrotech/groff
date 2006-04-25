@@ -1074,7 +1074,7 @@ do_file(const char *filename)
 #else
     error("encoding system `%1' not supported", encoding);
     success = 0;
-#endif /* I18N */
+#endif /* HAVE_ICONV */
   }
   if (fp != stdin)
     fclose(fp);
@@ -1119,7 +1119,7 @@ main(int argc, char **argv)
   program_name = argv[0];
   int opt;
   static const struct option long_options[] = {
-    { "help", no_argument, 0, CHAR_MAX + 1 },
+    { "help", no_argument, 0, 'h' },
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
@@ -1130,11 +1130,11 @@ main(int argc, char **argv)
     case 'v':
       printf("GNU preconv (groff) version %s %s iconv support\n",
 	     Version_string,
-#ifdef I18N
+#ifdef HAVE_ICONV
 	     "with"
 #else
 	     "without"
-#endif /* I18N */
+#endif /* HAVE_ICONV */
 	    );
       exit(0);
       break;
@@ -1152,7 +1152,7 @@ main(int argc, char **argv)
     case 'r':
       raw_flag = 1;
       break;
-    case CHAR_MAX + 1:	// --help
+    case 'h':
       usage(stdout);
       exit(0);
       break;
