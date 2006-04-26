@@ -4932,7 +4932,8 @@ html_printer::~html_printer()
   time_t t;
 #endif
 
-  current_paragraph->flush_text();
+  if (current_paragraph)
+    current_paragraph->flush_text();
   html.end_line();
   html.set_file(stdout);
   html.begin_comment("Creator     : ")
