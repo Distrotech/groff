@@ -294,7 +294,7 @@ file_iterator::file_iterator(FILE *f, const char *fn, int po)
   if ((font::use_charnames_in_special) && (fn != 0)) {
     if (!the_output)
       init_output();
-    the_output->put_filename(fn);
+    the_output->put_filename(fn, po);
   }
 }
 
@@ -403,7 +403,7 @@ int file_iterator::set_location(const char *f, int ln)
     filename = f;
     if (!the_output)
       init_output();
-    the_output->put_filename(f);
+    the_output->put_filename(f, 0);
   }
   lineno = ln;
   return 1;

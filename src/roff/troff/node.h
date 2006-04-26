@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -642,7 +642,7 @@ public:
   virtual void begin_page(int pageno, vunits page_length) = 0;
   virtual void copy_file(hunits x, vunits y, const char *filename) = 0;
   virtual int is_printing() = 0;
-  virtual void put_filename(const char *);
+  virtual void put_filename(const char *, int);
   virtual void on();
   virtual void off();
 #ifdef COLUMN

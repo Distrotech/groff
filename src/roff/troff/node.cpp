@@ -694,7 +694,7 @@ class real_output_file : public output_file {
 				 vunits before, vunits after, hunits width) = 0;
   virtual void really_begin_page(int pageno, vunits page_length) = 0;
   virtual void really_copy_file(hunits x, vunits y, const char *filename);
-  virtual void really_put_filename(const char *filename);
+  virtual void really_put_filename(const char *, int);
   virtual void really_on();
   virtual void really_off();
 public:
@@ -705,7 +705,7 @@ public:
   void transparent_char(unsigned char);
   void print_line(hunits x, vunits y, node *n, vunits before, vunits after, hunits width);
   void begin_page(int pageno, vunits page_length);
-  void put_filename(const char *filename);
+  void put_filename(const char *, int);
   void on();
   void off();
   int is_on();
@@ -794,7 +794,7 @@ public:
   void really_print_line(hunits x, vunits y, node *n, vunits before, vunits after, hunits width);
   void really_begin_page(int pageno, vunits page_length);
   void really_copy_file(hunits x, vunits y, const char *filename);
-  void really_put_filename(const char *filename);
+  void really_put_filename(const char *, int);
   void really_on();
   void really_off();
   void draw(char, hvpair *, int, font_size, color *, color *);
@@ -1470,11 +1470,15 @@ void troff_output_file::really_off()
   flush_tbuf();
 }
 
-void troff_output_file::really_put_filename(const char *filename)
+void troff_output_file::really_put_filename(const char *filename, int po)
 {
   flush_tbuf();
   put("F ");
+  if (po)
+    put("<");
   put(filename);
+  if (po)
+    put(">");
   put('\n');
 }
 
@@ -1588,7 +1592,7 @@ void output_file::trailer(vunits)
 {
 }
 
-void output_file::put_filename(const char *)
+void output_file::put_filename(const char *, int)
 {
 }
 
@@ -1694,12 +1698,12 @@ void real_output_file::really_copy_file(hunits, vunits, const char *)
   // do nothing
 }
 
-void real_output_file::put_filename(const char *filename)
+void real_output_file::put_filename(const char *filename, int po)
 {
-  really_put_filename(filename);
+  really_put_filename(filename, po);
 }
 
-void real_output_file::really_put_filename(const char *)
+void real_output_file::really_put_filename(const char *, int)
 {
 }
 

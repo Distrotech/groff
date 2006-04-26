@@ -3,6 +3,19 @@
 	* src/devices/grohtml/post-html.cpp (html_printer::~html_printer):
 	Handle current_paragraph only if it is non-NULL.
 
+
+	Surround the (pseudo) file name for the .pso request with `<' and
+	`>'.
+
+	* src/roff/troff/node.cpp (real_output_file, troff_output_file): Add
+	second parameter to `really_put_filename' and `put_filename'.
+	(troff_output_file::really_put_filename): Emit `<' and `>' around
+	filename if second argument is set.
+	* src/roff/troff/node.h: Updated.
+
+	* src/roff/troff/input.cpp (file_iterator::file_iterator,
+	file_iterator::set_location): Update to changes in node.cpp.
+
 2006-04-25  Tetsurou Okazaki  <okazaki@FreeBSD.org>
 
 	* src/preproc/preconv/preconv.cpp (do_file): Fix conditional
