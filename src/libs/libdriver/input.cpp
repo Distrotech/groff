@@ -2,7 +2,7 @@
 
 // <groff_src_dir>/src/libs/libdriver/input.cpp
 
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
@@ -1466,7 +1466,7 @@ parse_x_command(void)
     }
   case 'F':			// x Filename: set filename for errors
     {
-      char *str_arg = get_string_arg();
+      char *str_arg = get_extended_arg();
       if (str_arg == 0)
 	warning("empty argument for `x F' command");
       else {
@@ -1733,7 +1733,7 @@ do_file(const char *filename)
       break;
     case 'F':			// F: obsolete, replaced by `x F'
       {
-	char *str_arg = get_string_arg();
+	char *str_arg = get_extended_arg();
 	remember_source_filename(str_arg);
 	a_delete str_arg;
 	break;
