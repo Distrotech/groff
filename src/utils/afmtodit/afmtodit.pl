@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 # -*- Perl -*-
-# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005
+# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006
 # Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
@@ -30,9 +30,10 @@ $prog =~ s@.*/@@;
 my $groff_sys_fontdir = "@FONTDIR@";
 
 use Getopt::Std;
-getopts('a:d:e:i:mnsvx');
+getopts('a:cd:e:i:mnsvx');
 
-our ($opt_a, $opt_d, $opt_e, $opt_i, $opt_m, $opt_n, $opt_s, $opt_v, $opt_x);
+our ($opt_a, $opt_c, $opt_d, $opt_e, $opt_i,
+     $opt_m, $opt_n, $opt_s, $opt_v, $opt_x);
 
 if ($opt_v) {
     print "GNU afmtodit (groff) version @VERSION@\n";
@@ -40,7 +41,7 @@ if ($opt_v) {
 }
 
 if ($#ARGV != 2) {
-    die "usage: $prog [-mnsvx] [-a angle] [-d DESC] [-e encoding]\n" .
+    die "usage: $prog [-cmnsvx] [-a angle] [-d DESC] [-e encoding]\n" .
 	"       [-i n] afmfile mapfile font\n";
 }
 
@@ -54,6 +55,7 @@ my $sys_desc = $groff_sys_fontdir . "/devps/" . $desc;
 # read the afm file
 
 my $psname;
+my ($notice, $version, $fullname, $familyname, @comments); 
 my $italic_angle = 0;
 my (@kern1, @kern2, @kernx);
 my (%italic_correction, %left_italic_correction);
@@ -67,11 +69,27 @@ my (%left_side_bearing, %right_side_bearing);
 open(AFM, $afm) || die "$prog: can't open \`$ARGV[0]': $!\n";
 
 while (<AFM>) {
-    chop;
+    chomp;
+    s/\x0D$//;
     my @field = split(' ');
     next if $#field < 0;
     if ($field[0] eq "FontName") {
 	$psname = $field[1];
+    }
+    elsif($field[0] eq "Notice") {
+	$notice = $_;
+    }
+    elsif($field[0] eq "Version") {
+	$version = $_;
+    }
+    elsif($field[0] eq "FullName") {
+	$fullname = $_;
+    }
+    elsif($field[0] eq "FamilyName") {
+	$familyname = $_;
+    }
+    elsif($field[0] eq "Comment") {
+	push(@comments, $_);
     }
     elsif($field[0] eq "ItalicAngle") {
 	$italic_angle = -$field[1];
@@ -286,7 +304,8 @@ if (!$opt_x) {
 	    #   computation of a character sequence.  It can be used by font
 	    #   designers to indicate some characteristics of the glyph.  The
 	    #   suffix may contain periods or any other permitted characters.
-	    #   Small cap A, for example, could be named `uni0041.sc' or `A.sc'.
+	    #   Small cap A, for example, could be named `uni0041.sc' or
+	    #   `A.sc'.
 
 	    next if $ch =~ /\./;
 
@@ -407,6 +426,16 @@ if ($opt_e) {
     my $e = $opt_e;
     $e =~ s@.*/@@;
     print("encoding $e\n");
+}
+
+if ($opt_c) {
+    print("# $fullname\n") if defined $fullname;
+    print("# $version\n") if defined $version;
+    print("# $familyname\n") if defined $familyname;
+    print("# $notice\n") if defined $notice;
+    foreach my $comment (@comments) {
+	print("# $comment\n");
+    }
 }
 
 if (!$opt_n && %ligatures) {
