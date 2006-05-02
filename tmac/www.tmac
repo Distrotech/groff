@@ -496,21 +496,25 @@ www functionality.  It should work with any macro set.
 .\"       is then converted to the EPS format using netpbm utilities.
 .\"
 .de PIMG
-.  ie \\n[www-html] \{\
-.    ie '\\$1'-R' \
-.      DEVTAG ".right-image"
-.      ds www-pic-align -R
+.  ds www-pic-align "
+.  ie '\\$1'-R' \{\
+.    ds www-pic-align -R
+.    shift
+.  \}
+.  el \{\
+.    ie '\\$1'-L' \{\
+.      ds www-pic-align -L
 .      shift
-.    el \{\
-.      ie '\\$1'-L' \
-.        DEVTAG ".left-image"
-.        ds www-pic-align -L
-.        shift
-.      el \
-.        DEVTAG ".centered-image"
-.        ds www-pic-align -C
 .    \}
-.    if '\\$1'-C' shift
+.  \}
+.  if '\\$1'-C' .shift
+.
+.  tm options are \\$* and align is \\*[www-pic-align]
+.
+.  ie \\n[www-html] \{\
+.    if '\\*[www-pic-align]'-R'  .ds www-htmlalign align=right
+.    if '\\*[www-pic-align]'-L'  .ds www-htmlalign align=left
+.    if '\\*[www-pic-align]''    .ds www-htmlalign align=center
 .    nr www-width 0
 .    nr www-height 0
 .    if !'\\$2'' \
@@ -519,16 +523,19 @@ www functionality.  It should work with any macro set.
 .      nr www-height (\\$4 * 100 / 240)
 .    ie (\\n[www-width] == 0) \{\
 .      ie (\\n[www-height] == 0) \
-.        HTML <img src="\\$1" alt="Image \\$1">
+.        HTML</p> "<p \\*[www-htmlalign]><img src="\\$1" \
+                   alt="Image \\$1"></p>
 .      el \
-.        HTML <img src="\\$1" alt="Image \\$1" height=\\n[www-height]>
+.        HTML</p> "<p \\*[www-htmlalign]><img src="\\$1" \
+                   alt="Image \\$1" height=\\n[www-height]></p>
 .    \}
 .    el \{\
 .      ie (\\n[www-height] == 0) \
-.        HTML <img src="\\$1" alt="Image \\$1" width=\\n[www-width]>
+.        HTML</p> <p \\*[www-htmlalign]><img src="\\$1" \
+                   alt="Image \\$1" width=\\n[www-width]></p>
 .      el \
-.        HTML <img src="\\$1" alt="Image \\$1" width=\\n[www-width] \
-               height=\\n[www-height]>
+.        HTML</p> <p \\*[www-htmlalign]> <img src="\\$1" alt="Image \\$1" \
+                   width=\\n[www-width] height=\\n[www-height]></p>
 .    \}
 .  \}
 .  el \{\
