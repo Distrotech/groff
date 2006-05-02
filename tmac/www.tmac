@@ -499,40 +499,44 @@ www functionality.  It should work with any macro set.
 .  ie \\n[www-html] \{\
 .    ie '\\$1'-R' \
 .      DEVTAG ".right-image"
+.      ds www-pic-align -R
+.      shift
 .    el \{\
 .      ie '\\$1'-L' \
 .        DEVTAG ".left-image"
+.        ds www-pic-align -L
+.        shift
 .      el \
 .        DEVTAG ".centered-image"
+.        ds www-pic-align -C
 .    \}
+.    if '\\$1'-C' shift
 .    nr www-width 0
 .    nr www-height 0
-.    if !'\\$3'' \
+.    if !'\\$2'' \
 .      nr www-width (\\$3 * 100 / 240)
-.    if !'\\$4'' \
+.    if !'\\$3'' \
 .      nr www-height (\\$4 * 100 / 240)
 .    ie (\\n[www-width] == 0) \{\
 .      ie (\\n[www-height] == 0) \
-.        HTML <img src="\\$2" alt="Image \\$2">
+.        HTML <img src="\\$1" alt="Image \\$1">
 .      el \
-.        HTML <img src="\\$1" alt="Image \\$2" height=\\n[www-height]>
+.        HTML <img src="\\$1" alt="Image \\$1" height=\\n[www-height]>
 .    \}
 .    el \{\
 .      ie (\\n[www-height] == 0) \
-.        HTML <img src="\\$2" alt="Image \\$2" width=\\n[www-width]>
+.        HTML <img src="\\$1" alt="Image \\$1" width=\\n[www-width]>
 .      el \
-.        HTML <img src="\\$2" alt="Image \\$2" width=\\n[www-width] \
+.        HTML <img src="\\$1" alt="Image \\$1" width=\\n[www-width] \
                height=\\n[www-height]>
 .    \}
 .  \}
 .  el \{\
 .    if !r ps4html \{\
 .      www-make-unique-name
-.      sy pngtopnm \\$2 | pnmcrop -white | @PNMTOPS_NOSETPAGE@ -noturn > \\*[www-unique-name].eps
-.      ie '\\$1'-C' \
-.        PSPIC \\*[www-unique-name].eps \\$3 \\$4
-.      el \
-.        PSPIC \\$1 \\*[www-unique-name].eps \\$3 \\$4
+.      sy pngtopnm \\$1 | pnmcrop -white | @PNMTOPS_NOSETPAGE@ -noturn > \\*[www-unique-name].eps
+.      shift
+.      PSPIC \\*[www-pic-align] \\*[www-unique-name].eps \\$*
 .    \}
 .  \}
 ..
