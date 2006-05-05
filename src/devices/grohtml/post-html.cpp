@@ -1394,25 +1394,20 @@ void page::add_and_encode (style *s, const string &str,
 {
   string html_string;
   const char *html_glyph;
-  int i=0;
+  int i = 0;
+  const int len = str.length();
 
   if (s->f == NULL)
     return;
-  while (i < str.length()) {
-    if ((i+1<str.length()) && (str.substring(i, 2) == string("\\["))) {
+  while (i < len) {
+    if ((i + 1 < len) && (str.substring(i, 2) == string("\\["))) {
       // start of escape
       i += 2; // move over \[
       int a = i;
-      while ((i<str.length()) && (str.substring(i, 1) != string("]"))) {
+      while ((i < len) && (str[i] != ']'))
 	i++;
-      }
-      int n = i;
-      if ((i<str.length()) && (str.substring(i, 1) == string("]")))
-	i++;
-      else
-	n = -1;
-      if (n > 0) {
-	string troff_charname = str.substring(a, n-a);
+      if (i > 0) {
+	string troff_charname = str.substring(a, i - a);
 	html_glyph = get_html_translation(s->f, troff_charname);
 	if (html_glyph)
 	  html_string += html_glyph;
@@ -1422,7 +1417,8 @@ void page::add_and_encode (style *s, const string &str,
 	    html_string += s->f->get_code(g);
 	}
       }
-    } else
+    }
+    else
       html_string += str[i];
     i++;
   }
