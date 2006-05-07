@@ -97,7 +97,7 @@ based on a similar picture found on the
 .HR
 .
 .SH
-Licence
+License
 .LP
 GNU troff is released under the
 .URL http://\:www.gnu.org/\:copyleft/\:gpl.html "GNU Copyright License" .
@@ -202,7 +202,7 @@ gunzip -c ../groff-\[la]version\[ra]-current.diff.gz | patch -p1
 .fi
 .in
 .SH
-Groff dependancies
+Groff dependencies
 .LP
 Depending on your requirements, you may need at least some of the
 following tools to build groff directly from its source:

@@ -176,7 +176,7 @@ www functionality.  It should work with any macro set.
 .  \}
 .  if !'\\*[\\$0:s]'' \
 .    substring \\$0:s 1 -1 
-.  ds \\$1 \\*[\\$0:s]
+.  ds \\$1 \\*[\\$0:s]\"
 .  rm \\$0:c
 .  rr \\$0:n
 .  rm \\$0:r
@@ -319,7 +319,11 @@ www functionality.  It should work with any macro set.
 .\" BCL foreground background active not-visited visited
 .\"
 .de BCL
-.  HTML <body text=\\$1 bgcolor=\\$2 link=\\$3 alink=\\$4 vlink=\\$5>
+.  HTML <body text=\\$1 \
+              bgcolor=\\$2 \
+              link=\\$3 \
+              alink=\\$4 \
+              vlink=\\$5>
 ..
 .
 .\" --------------------------------------------------------------------
@@ -340,13 +344,13 @@ www functionality.  It should work with any macro set.
 .  \}
 .  ie \\n[www-html] \{\
 .    ie '\\$3'' \
-.      ds \\$0:after \&
+.      ds \\$0:after \&\"
 .    el \
-.      ds \\$0:after \&\\$3
+.      ds \\$0:after \&\\$3\"
 .    ie '\\$2'' \
-.       HTML-NS <a href="\\$1">\\$1</a>
+.       HTML-NS <a "href=""\\$1"">\\$1</a>"
 .    el \
-.       HTML-NS <a href="\\$1">\\$2</a>
+.       HTML-NS <a "href=""\\$1"">\\$2</a>"
 .    nop \\*[\\$0:after]
 .    rm \\$0:after
 .  \}
@@ -372,10 +376,14 @@ www functionality.  It should work with any macro set.
 .          nop \f[\\*[www:fontstyle]]\\$2\f[]\\$3
 .      \}
 .      el \{\
-.        ie \\n[.color] \
-.          nop \m[\\*[www:color]]\\$2\m[] \%\\*[www:open]\f[\\*[www:fontstyle]]\\*[\\$0:adr]\f[]\\*[www:close]\\$3
-.        el \
-.          nop \f[\\*[www:fontstyle]]\\$2\f[] \%\\*[www:open]\f[\\*[www:fontstyle]]\\*[\\$0:adr]\f[]\\*[www:close]\\$3
+.        ie \\n[.color] \{\
+.          nop \m[\\*[www:color]]\\$2\m[]
+.          nop \%\\*[www:open]\f[\\*[www:fontstyle]]\\*[\\$0:adr]\f[]\\*[www:close]\\$3
+.        \}
+.        el \{\
+.          nop \f[\\*[www:fontstyle]]\\$2\f[]
+.          nop \%\\*[www:open]\f[\\*[www:fontstyle]]\\*[\\$0:adr]\f[]\\*[www:close]\\$3
+.        \}
 .      \}
 .    \}
 .    if !r ps4html .ad
@@ -434,10 +442,14 @@ www functionality.  It should work with any macro set.
 .          nop \f[\\*[www:fontstyle]]\\$2\f[]\\$3
 .      \}
 .      el \{\
-.        ie \\n[.color] \
-.          nop \m[\\*[www:color]]\\$2\m[] \%\\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]\\$3
-.        el
-.          nop \f[\\*[www:fontstyle]]\\$2\f[] \%\\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]\\$3
+.        ie \\n[.color] \{\
+.          nop \m[\\*[www:color]]\\$2\m[]
+.          nop \%\\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]\\$3
+.        \}
+.        el \{\
+.          nop \f[\\*[www:fontstyle]]\\$2\f[]
+.          nop \%\\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]\\$3
+.        \}
 .      \}
 .    \}
 .  \}
@@ -449,13 +461,13 @@ www functionality.  It should work with any macro set.
 .\"   Generate an html name NAME.
 .\"
 .de TAG
-.  HTML <a name="\\$1"></a>
+.  HTML <a "name=""\\$1""></a>"
 ..
 .
 .\" --------------------------------------------------------------------
 .\" IMG [-R|-L|-C] filename [width] [height]
 .\"
-.\"   Include an image of any type (will only work for -Thtml).
+.\"   Include an image of any type (only works for -Thtml).
 .\"
 .\"   Alignment is centered by default (-C).
 .\"   Default value for WIDTH is 1i.
@@ -464,12 +476,12 @@ www functionality.  It should work with any macro set.
 .de IMG
 .  ie \\n[www-html] \{\
 .    ie '\\$2'-R' \
-.      DEVTAG ".right-image"
+.      DEVTAG .right-image
 .    el \{\
 .      ie '\\$2'-L' \
-.        DEVTAG ".left-image"
+.        DEVTAG .left-image
 .      el \
-.        DEVTAG ".centered-image"
+.        DEVTAG .centered-image
 .    \}
 .    nr www-width 100
 .    if !'\\$3'' \
@@ -487,7 +499,7 @@ www functionality.  It should work with any macro set.
 .\" --------------------------------------------------------------------
 .\" PIMG  [-R|-L|-C] filename [width] [height]
 .\"
-.\"   Include a png image.  It will work for -Tps and -Thtml.
+.\"   Include a png image.  It works for -Tps and -Thtml.
 .\"   The default value for WIDTH and HEIGHT is zero; the default
 .\"   alignment is centering (-C).
 .\"
@@ -496,25 +508,26 @@ www functionality.  It should work with any macro set.
 .\"       is then converted to the EPS format using netpbm utilities.
 .\"
 .de PIMG
-.  ds www-pic-align "
+.  ds www-pic-align -C\"
 .  ie '\\$1'-R' \{\
-.    ds www-pic-align -R
+.    ds www-pic-align -R\"
 .    shift
 .  \}
 .  el \{\
 .    ie '\\$1'-L' \{\
-.      ds www-pic-align -L
+.      ds www-pic-align -L\"
 .      shift
 .    \}
 .  \}
-.  if '\\$1'-C' .shift
-.
-.  tm options are \\$* and align is \\*[www-pic-align]
+.  if '\\$1'-C' \
+.    shift
 .
 .  ie \\n[www-html] \{\
-.    if '\\*[www-pic-align]'-R'  .ds www-htmlalign align=right
-.    if '\\*[www-pic-align]'-L'  .ds www-htmlalign align=left
-.    if '\\*[www-pic-align]''    .ds www-htmlalign align=center
+.    ds www-htmlalign align=center\"
+.    if '\\*[www-pic-align]'-R' \
+.      ds www-htmlalign align=right\"
+.    if '\\*[www-pic-align]'-L' \
+.      ds www-htmlalign align=left\"
 .    nr www-width 0
 .    nr www-height 0
 .    if !'\\$2'' \
@@ -523,25 +536,32 @@ www functionality.  It should work with any macro set.
 .      nr www-height (\\$4 * 100 / 240)
 .    ie (\\n[www-width] == 0) \{\
 .      ie (\\n[www-height] == 0) \
-.        HTML</p> "<p \\*[www-htmlalign]><img src="\\$1" \
-                   alt="Image \\$1"></p>
+.        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
+                                             "alt=""Image \\$1""></p>"
 .      el \
-.        HTML</p> "<p \\*[www-htmlalign]><img src="\\$1" \
-                   alt="Image \\$1" height=\\n[www-height]></p>
+.        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
+                                             "alt=""Image \\$1""" \
+                                             height=\\n[www-height]></p>
 .    \}
 .    el \{\
 .      ie (\\n[www-height] == 0) \
-.        HTML</p> <p \\*[www-htmlalign]><img src="\\$1" \
-                   alt="Image \\$1" width=\\n[www-width]></p>
+.        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
+                                             "alt=""Image \\$1""" \
+                                             width=\\n[www-width]></p>
 .      el \
-.        HTML</p> <p \\*[www-htmlalign]> <img src="\\$1" alt="Image \\$1" \
-                   width=\\n[www-width] height=\\n[www-height]></p>
+.        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
+                                             "alt=""Image \\$1""" \
+                                             width=\\n[www-width] \
+                                             height=\\n[www-height]></p>
 .    \}
 .  \}
 .  el \{\
 .    if !r ps4html \{\
 .      www-make-unique-name
-.      sy pngtopnm \\$1 | pnmcrop -white | @PNMTOPS_NOSETPAGE@ -noturn > \\*[www-unique-name].eps
+.      sy pngtopnm \\$1 \
+          | pnmcrop -white \
+          | @PNMTOPS_NOSETPAGE@ -noturn \
+          > \\*[www-unique-name].eps
 .      shift
 .      PSPIC \\*[www-pic-align] \\*[www-unique-name].eps \\$*
 .    \}
@@ -627,7 +647,7 @@ www functionality.  It should work with any macro set.
 .\" --------------------------------------------------------------------
 .\" MPIMG [-R|-L] [-G gap] filename [width [height]]
 .\"
-.\"   Include a png image and wrap text around it.  It will work for
+.\"   Include a png image and wrap text around it.  It works for
 .\"   -Tps and -Thtml.  The default value for WIDTH is 1i; default value
 .\"   for HEIGHT is WIDTH; the default alignment is left (-L).
 .\"   -G is used to insert a gap between the text and the image.
@@ -667,7 +687,7 @@ www functionality.  It should work with any macro set.
 .
 .  nr www-width 1i
 .  nr www-height 1i
-.  ds www-size-specs "width=\\n[www-width] height=\\n[www-height]\"
+.  ds www-size-specs width=\\n[www-width] height=\\n[www-height]\"
 .  ie !'\\$2'' \{\
 .    nr www-is-absolute 0
 .    nr www-absolute 0
@@ -678,13 +698,13 @@ www functionality.  It should work with any macro set.
 .      nr www-width (\\n[www-absolute] * \\n[.l] / 100)
 .      if \\n[www-html] \
 .        nr www-width (\\n[www-width] * 100 / 240)
-.      ds www-size-specs "width=\\*[www-percentage]\"
+.      ds www-size-specs width=\\*[www-percentage]\"
 .    \}
 .    el \{\
 .      nr www-width \\n[www-absolute]
 .      if \\n[www-html] \
 .        nr www-width (\\n[www-width] * 100 / 240)
-.      ds www-size-specs "width=\\n[www-width]\"
+.      ds www-size-specs width=\\n[www-width]\"
 .    \}
 .
 .    nr www-height \\n[www-width]
@@ -698,13 +718,13 @@ www functionality.  It should work with any macro set.
 .        nr www-height (\\n[www-absolute] * \\n[.p] / 100)
 .        if \\n[www-html] \
 .           nr www-height (\\n[www-height] * 100 / 240)
-.        ds www-size-specs "\\*[www-size-specs] height=\\*[www-percentage]\"
+.        ds www-size-specs \\*[www-size-specs] height=\\*[www-percentage]\"
 .      \}
 .      el \{\
 .        nr www-height \\n[www-absolute]
 .        if \\n[www-html] \
 .           nr www-height (\\n[www-height] * 100 / 240)
-.        ds www-size-specs "\\*[www-size-specs] height=\\*[www-height]\"
+.        ds www-size-specs \\*[www-size-specs] height=\\*[www-height]\"
 .      \}
 .    \}
 .  \}
@@ -712,29 +732,36 @@ www functionality.  It should work with any macro set.
 .    \" height not specified; use width value
 .    ie !\\n[www-is-absolute] \{\
 .       \" percentage value
-.       ds www-size-specs "\\*[www-size-specs] height=\\*[www-percentage]\"
+.       ds www-size-specs \\*[www-size-specs] height=\\*[www-percentage]\"
 .       nr www-height \\n[www-width]
 .    \}
 .    el \{\
-.       ds www-size-specs "\\*[www-size-specs] height=\\*[www-width]\"
+.       ds www-size-specs \\*[www-size-specs] height=\\*[www-width]\"
 .       nr www-height \\n[www-width]
 .    \}
 .  \}
 .
 .  ie \\n[www-html] \{\
 .    ie !\\n[www-image-just] \
-.      HTML <img src="\\$1" alt="Image \\$1" hspace=\\n[www-htmlimage-gap] \
-             align=right \\*[www-size-specs]>
+.      HTML <img "src=""\\$1""" \
+                 "alt=""Image \\$1""" \
+                 hspace=\\n[www-htmlimage-gap] \
+                 align=right \\*[www-size-specs]>
 .    el \
-.      HTML <img src="\\$1" alt="Image \\$1" hspace=\\n[www-htmlimage-gap] \
-             align=left \\*[www-size-specs]>
+.      HTML <img "src=""\\$1""" \
+                 "alt=""Image \\$1""" \
+                 hspace=\\n[www-htmlimage-gap] \
+                 align=left \\*[www-size-specs]>
 .  \}
 .  el \{\
 .    tm www-width is \\n[www-width]
 .    tm www-height is \\n[www-height]
 .    if !r ps4html \{\
 .      www-make-unique-name
-.      sy pngtopnm \\$1 | pnmcrop -white | @PNMTOPS_NOSETPAGE@ -noturn > \\*[www-unique-name].eps
+.      sy pngtopnm \\$1 \
+          | pnmcrop -white \
+          | @PNMTOPS_NOSETPAGE@ -noturn \
+          > \\*[www-unique-name].eps
 .      ie !\\n[www-image-just] \{\
 .        \" we must now disable a possible left image trap
 .        sp -1
@@ -804,7 +831,7 @@ www functionality.  It should work with any macro set.
 .
 .de HnE
 .  if (\\n[www-heading-no] == -1) \
-.    www-error "HnE found without a corresponding HnS"
+.    www-error HnE found without a corresponding HnS
 .  DEVTAG-EO-H
 ..
 .
@@ -815,7 +842,7 @@ www functionality.  It should work with any macro set.
 .\"   section/numbered headings at this position.
 .\"
 .de LK
-.  DEVTAG ".links"
+.  DEVTAG .links
 ..
 .
 .\" --------------------------------------------------------------------
@@ -824,7 +851,7 @@ www functionality.  It should work with any macro set.
 .\"   Produce a horizontal line.
 .\"
 .de HR
-.  HTML</p> "<hr>"
+.  HTML</p> <hr>
 ..
 .
 .\" --------------------------------------------------------------------
@@ -834,7 +861,7 @@ www functionality.  It should work with any macro set.
 .\"  emits by default.
 .\"
 .de NHR
-.  DEVTAG ".no-auto-rule"
+.  DEVTAG .no-auto-rule
 ..
 .
 .\"
@@ -858,7 +885,7 @@ www functionality.  It should work with any macro set.
 .\"   The macro terminates when a space or break is seen (.sp, .br).
 .\"
 .de HTL
-.  DEVTAG ".html-tl"
+.  DEVTAG .html-tl
 .  if !\\n[www-html] \
 .    di www-nowhere
 .  it 2 www-end-nowhere
@@ -920,14 +947,14 @@ www functionality.  It should work with any macro set.
 .de www-push-ul-level
 .  nr www-ul-level +1
 .  if (\\n[www-ul-level] > 3) \
-.    www-error "ULS: too many levels of indentation (\\n[www-ul-level])"
+.    www-error ULS: too many levels of indentation (\\n[www-ul-level])
 ..
 .\"
 .\" Auxiliary macro for ULE.
 .\"
 .de www-pop-ul-level
 .  if !\\n[www-ul-level] \
-.    www-error "ULE: trying to terminate a list which does not exist"
+.    www-error ULE: trying to terminate a list which does not exist
 .  nr www-ul-level -1
 ..
 .
@@ -937,7 +964,7 @@ www functionality.  It should work with any macro set.
 .de www-push-ol-level
 .  nr www-ol-level +1
 .  if (\\n[www-ol-level] > 3) \
-.    www-error "OLS: too many levels of indentation (\\n[www-ol-level])"
+.    www-error OLS: too many levels of indentation (\\n[www-ol-level])
 ..
 .
 .\"
@@ -945,7 +972,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de www-pop-ol-level
 .  if !\\n[www-ol-level] \
-.    www-error "OLE: trying to terminate a list which does not exist"
+.    www-error OLE: trying to terminate a list which does not exist
 .  nr www-ol-level -1
 ..
 .
@@ -958,7 +985,7 @@ www functionality.  It should work with any macro set.
 .  www-push-li www-li-ul
 .  www-push-ul-level
 .  ie \\n[www-html] \
-.    HTML</p> "<ul>"
+.    HTML</p> <ul>
 .  el \{\
 .    nr www-li-indent +\w'\\*[www-ul-level\\n[www-ul-level]]'u
 .  \}
@@ -971,7 +998,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de ULE
 .  ie \\n[www-html] \
-.    HTML "</ul>"
+.    HTML </ul>
 .  el \{\
 .    nr www-li-indent -\w'\\*[www-ul-level\\n[www-ul-level]]'u
 .    in \\n[www-li-indent]u
@@ -989,7 +1016,8 @@ www functionality.  It should work with any macro set.
 .  www-push-li www-li-ol
 .  www-push-ol-level
 .  ie \\n[www-html] \
-.    HTML</p> "<ol style='list-style-type: \\*[www-ol-level\\n[www-ol-level]]'>"
+.    HTML</p> <ol "style=""list-style-type:" \
+                           "\\*[www-ol-level\\n[www-ol-level]]"">"
 .  el \
 .    nr www-li-indent +\w'\\*[www-ol-tmp]'u
 ..
@@ -1001,7 +1029,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de OLE
 .  ie \\n[www-html] \
-.    HTML "</ol>"
+.    HTML </ol>
 .  el \{\
 .    nr www-li-indent -\w'\\*[www-ol-tmp]'u
 .    in \\n[www-li-indent]u
@@ -1020,7 +1048,7 @@ www functionality.  It should work with any macro set.
 .  www-push-li www-li-dl
 .  nr www-dl-level +1
 .  ie \\n[www-html] \
-.    HTML</p> "<dl>"
+.    HTML</p> <dl>
 .  el \{\
 .    nr www-li-indent +\\n[www-dl-shift]u
 .    in \\n[www-li-indent]u
@@ -1034,7 +1062,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de DLE
 .  ie \\n[www-html] \
-.    HTML "</dl>"
+.    HTML </dl>
 .  el \{\
 .    nr www-li-indent -\\n[www-dl-shift]u
 .    in \\n[www-li-indent]u
@@ -1053,7 +1081,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de www-li-ul
 .  ie \\n[www-html] \
-.    HTML-NS "<li>"
+.    HTML-NS <li>
 .  el \{\
 .    www:paraspace
 .    in \\n[www-li-indent]u
@@ -1067,7 +1095,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de www-li-ol
 .  ie \\n[www-html] \
-.    HTML-NS "<li>"
+.    HTML-NS <li>
 .  el \{\
 .    www:paraspace
 .    in \\n[www-li-indent]u
@@ -1081,8 +1109,8 @@ www functionality.  It should work with any macro set.
 .\"
 .de www-li-dl
 .  ie \\n[www-html] \{\
-.    HTML "<dt>\\$1</dt>"
-.    HTML-NS "<dd>"
+.    HTML <dt>\\$1</dt>
+.    HTML-NS <dd>
 .  \}
 .  el \{\
 .    www:paraspace
@@ -1104,13 +1132,13 @@ www functionality.  It should work with any macro set.
 .\"   COLOR is the optional color of the dropped letter (default black).
 .\"
 .de DC
-.  ds www-dropcolor black
+.  ds www-dropcolor black\"
 .  if !'\\$3'' \
-.    ds www-dropcolor \\$3
+.    ds www-dropcolor \\$3\"
 .  ie '\*[.T]'html' \{\
 .    www-make-unique-name
 .    nr www-drop-width (100u * \\n[.v]u * 3u / \\n[.l]u)
-.    MPIMG -L \\*[www-unique-name].png "\\n[www-drop-width]%"
+.    MPIMG -L \\*[www-unique-name].png \\n[www-drop-width]%
 .  \}
 .  el \{\
 .    ie r ps4html \{\
@@ -1149,10 +1177,10 @@ www functionality.  It should work with any macro set.
 .\"
 .\" now set up TS, TE, EQ, EN default macros
 .\"
-.do if !d TS .do ds TS HTML-IMAGE
-.do if !d TE .do ds TE HTML-IMAGE-END
-.do if !d EQ .do ds EQ HTML-IMAGE
-.do if !d EN .do ds EN HTML-IMAGE-END
+.do if !d TS .do ds TS HTML-IMAGE\"
+.do if !d TE .do ds TE HTML-IMAGE-END\"
+.do if !d EQ .do ds EQ HTML-IMAGE\"
+.do if !d EN .do ds EN HTML-IMAGE-END\"
 .
 .\"
 .\" supplementary macros used by other macro sets
@@ -1189,7 +1217,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de www-make-unique-name
 .  nr www-png-no +1
-.  ds www-unique-name \\*[www-image-template]\\n[www-png-no]
+.  ds www-unique-name \\*[www-image-template]\\n[www-png-no]\"
 ..
 .
 .\" --------------------------------------------------------------------
@@ -1254,19 +1282,20 @@ www functionality.  It should work with any macro set.
 .  ft P
 ..
 .
-.ds www-nav-colour "#eeeeee
-.nr www-nav-width-left  30
+.ds www-nav-colour #eeeeee\"
+.nr www-nav-width-left 30
 .nr www-nav-width-right 70
 .
 .\" --------------------------------------------------------------------
 .\" LNS - left navigation start
 .\"
 .de LNS
-.  HTML</p> "<table><tr><td valign=top \
-                            width=\\n[www-nav-width-left]% \
-                            bgcolor=""\\*[www-nav-colour]"">"
+.  HTML</p> <table><tr><td valign=top \
+                           width=\\n[www-nav-width-left]% \
+                           "bgcolor=""\\*[www-nav-colour]"">"
 .  LK
-.  HTML</p> "</td><td valign=top width=\\n[www-nav-width-right]%>"
+.  HTML</p> </td><td valign=top \
+                     width=\\n[www-nav-width-right]%>
 .  nr SH-open 1
 ..
 .
@@ -1322,7 +1351,7 @@ www functionality.  It should work with any macro set.
 .de ALN
 .  if '\*[.T]'html' \{\
 .    if !'\\$1'' \
-.      ds www-nav-colour \\$1
+.      ds www-nav-colour \\$1\"
 .    if (0\\$2 > 0) \{\
 .      nr www-nav-width-left \\$2
 .      nr www-nav-width-right (100 - \\$2)
@@ -1348,16 +1377,16 @@ www functionality.  It should work with any macro set.
 .de LINKSTYLE
 .  if (\\n[.$] < 1) \
 .    www:error .\\$0 expects at least 1 argument.
-.  ds www:color \\$1
+.  ds www:color \\$1\"
 .  shift
 .  if (\\n[.$] < 1) \
 .    return
-.  ds www:fontstyle \\$1
+.  ds www:fontstyle \\$1\"
 .  shift
 .  if (\\n[.$] < 1) \
 .    www:error .\\$0 expects that both the open and close glyph is specified
-.  ds www:open \\$1
-.  ds www:close \\$2
+.  ds www:open \\$1\"
+.  ds www:close \\$2\"
 ..
 .
 .\" --------------------------------------------------------------------
