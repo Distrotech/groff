@@ -1,7 +1,63 @@
-*Tue Mar 28 2006
+*Wed Apr 26 2006
 
-o Fix an endless loop which prevented compilation of
-  examples/typesetting.mom.
+o Corrected doc entry that stated TOC control macros can be entered
+  anywhere in a file prior to invoking TOC (TOC control macros must
+  come before START).
+
+o Removed spurious .nop from .ie \\n[#PRE_COLLATE]=1 clause in
+  FAMILY (fixes bug that was causing page numbers on pages before
+  COLLATE or TOC to be printed too low).
+
+o Added a test at top of COLLATE to set register #NO_BREAK to 1
+  if the distance to the next trap is less than one linespace; used
+  in NEWPAGE to determine whether to do a 'br or .br. (fixes BUG
+  that was causing COLLATE, NEWPAGE, and TOC to spit out a blank
+  page when the last line of text before them happened to fall on
+  the last legal baseline of the page).
+
+o Changed pad marker used to format TOC entries to permit use of
+  the pound/number sign (#) in head elements.
+
+o New macro, PREFIX_CHAPTER_NUMBER, to allow users to prepend
+  chapter numbers to the numbering scheme used in head element
+  numbering.
+
+o Added missing periods at the ends of head, subhead, parahead
+  numbers.
+
+o CHAPTER, with a numeric argument, can now be used to identify any
+  document as a "chapter" for the purposes of prefixing the
+  argument to CHAPTER to the numbering scheme of head elements.
+
+o Fixed alignment of TOC entries.
+
+o Removed .rr #DOC_HEADER and replaced with
+
+    .if \\n[#DOC_HEADER]=1 \{ .nr #DOC_HEADER 2 \}
+
+  near the end of START.  I.e., #DOC_HEADER becomes "2"  if
+  docheaders were on in the previous document.  COLLATE tests for 2
+  in order to reset #DOC_HEADER to 1 for use in the user-invoked START
+  that comes after a COLLATE.
+
+o Added register, #CHAPTER_CALLED, to CHAPTER; tested for in
+  PREFIX_CHAPTER_NUMBER to determine whether the argument to CHAPTER
+  can be used to establish a chapter number for chapter number
+  prefixes in head element numbering.
+
+*Mon Apr 17 2006
+
+o Fixed bug that was causing shifted lists, when returned to, to
+  revert to the left margin instead of observing the correct
+  indent+shift for the list.
+
+o Added a check in LIST so that if user invokes LIST with RETURN,
+  mom doesn't get confused by the initial `R' (which she was using
+  to check if the arg to LIST was ROMAN or roman).
+
+o Replaced an incorrectly copied code block in SUBHEAD that was
+  preventing SUBHEAD from processing subheads properly when
+  PARA_SPACE was on.
 
 *Wed Mar 15 2006
 
@@ -38,11 +94,6 @@ o Changed .PRINT "\h'\\n[#LIST_INDENT\\n[#DEPTH]]u' in the
   "ROMAN I, padded" and "roman i, padded" clauses of ITEM to
   .PRINT "\h'\\n[#HL_INDENT\\n[#DEPTH]]u' to fix bug associated
   with using both PAD_LIST_DIGITS LEFT and SHIFT_LIST.
-
-*Sun Feb 26 2006
-
-o Makefile.sub: Add DESTDIR to install and uninstall targets to support
-  staged installations.
 
 *Fri Feb 24 2006
 
@@ -82,32 +133,6 @@ o Fixed MN_INIT macro routine that reads MN_INIT args into strings
   if the corresponding arg is blank.  Since MN-init tests for \A
   and \B (correctly, I hope) for each of its args, the @ character
   should be safe.
-
-*Thu Sep 15 2005
-
-o First baseline of type isn't going where it's supposed to when the
-  docheader is turned off.
-
-*Thu Aug 11 2005
-
-o Makefile.sub (HTMLDOCFILES): Add `refer.html'
-
-*Mon Jun 20 2005
-
-o Makefile.sub (HTMLDOCFILES_, EXAMPLEFILES_, PROCESSEDEXAMPLEFILES_): New
-  variables.
-  (install_data): Install files in `mom' subdirectories.
-  Make it work actually.
-  (uninstall_sub): Updated.
-
-*Thu Jun 16 2005
-
-o Makefile.sub (install_data, uninstall_sub): Use $(exampledir) for example
-files.  Reported by Keith Marshall.
-
-*Mon May 16 2005
-
-o Update groff_mom.man.
 
 *Thu May 12 2005
 
@@ -267,7 +292,7 @@ o Addtion of font "styles" to om.tmac, plus changes to the FAMILY
   and FT macros to manage them.  New section in the doc appendices
   on adding fonts and managing the new font styles.
 
-o Mom now uses a "fallback font" whenever there's an invalid call
+o Mom now uses a "fallback font" whenever there's an illegal call
   to FAMILY.
 
 o RW and EW now affect only the font in effect.  A change of family
@@ -311,11 +336,7 @@ o Fairly extensive list of .sty's added to om.tmac.  Hopefully,
 o Altered kerning slightly for footnote markers in text.  Daggers
   and double-daggers were getting a bit jammed 
 
-*Fri Jun 4 2004
-
-o Makefile.sub (HTMLDOCFILES, EXAMPLEFILES, PROCESSEDEXAMPLEFILES): Updated.
-
-*Thu Jun 3 2004
+*Jun 3 2004
 
 o Rewrote the routines dealing with _FAMILY, _FONT, _SIZE, _COLOR
   and _QUAD.  A single macro for each checks for the calling alias
@@ -425,6 +446,17 @@ o Added a .bp after .if \\n[#START]=1 in FOOTER.  Without it,
 *Fri Jun 6 2003
 
 o Changed register #DOCHEADER_LEAD_ADJ to string
+  $DOCHEADER_LEAD_ADJ.  This means that .DOCHEADER_LEAD no longer
+  requires a unit of measure; points is assumed.
+
+*Tue Jun 3 2003
+
+o Added SHIM macro, which, when invoked, calculates and moves to
+  the next "legal" baseline in document processing.
+
+o Corrected handling of DOCHEADER OFF <distance> so that the first
+  line of running text falls on a "legal" baseline when <distance>
+  is given.
 
 *Wed May 21 2003
 

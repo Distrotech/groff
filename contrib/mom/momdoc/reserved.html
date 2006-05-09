@@ -281,6 +281,7 @@ p                       Output line horiz position at end of
 #RESTORE_PREV_INDENT    Tells LIST OFF what kind of indent was active
                         prior to first invocation of LIST
 #RLD                    RLD value
+#SHIFT_LIST&lt;n&gt;          Value to add to #LIST_INDENT&lt;n&gt; for shifted lists
 #SILENT                 Is silent on? (toggle)
 #SIZE_FOR_PAD           Used to ensure that the size in effect prior
                         to PAD is restored at the start of every
@@ -755,6 +756,12 @@ NUMBER_PARAHEADS         Print parahead numbers
 PARAHEAD_INDENT          How much to indent paraheads
 RESET_PARAHEAD_NUMBER    Reset parahead number
 
+PREFIX_CH_NUM_WARNING    Macro to abort PREFIX_CHAPTER_NUMBER
+                         with a warning if the arg to CHAPTER isn't
+                         a digit, and user hasn't supplied a digit
+                         to PREFIX_CHAPTER_NUMBER
+PREFIX_CHAPTER_NUMBER    Prefix the chapter number to numbered
+                         heads, subheads and paraheads
 ***Paragraphs***
 
 INDENT_FIRST_PARAS       Indent 1st paras? (doc default=not indented) 
@@ -999,6 +1006,11 @@ TOC_ENTRIES       TOC entries
                            (toggle)
 #CENTER_CAP_HEIGHT         Cap height of CENTER string in
                            headers/footers
+#CH_NUM                    The chapter number obtained by PREFIX_CHAPTER_NUMBER
+#CHAPTER_CALLED            Has CHAPTER been invoked? (toggle); used
+                           by PREFIX_CHAPTER_NUMBER to see whether
+                           to try to get the chapter number from
+                           the arg passed to CHAPTER
 #CHAPTER_TITLE_COLOR       Colored chapter title? (toggle)
 #CLOSING                   Is there a closing (for letters)? 1=yes
 #COL_L_LENGTH              Line length of columns
@@ -1322,6 +1334,10 @@ dc                         "mark" register for document columns
                            subtract 1 line of footnote lead from
                            FN_OVERFLOW in a PREV_FN_DEFERRED
                            situation.
+#NO_BREAK                  Set to 1 in COLLATE if last line of
+                           text before COLLATE falls at the bottom
+                           of the page; instructs NEWPAGE to use
+                           'br instead of .br
 #NO_SHIM                   Should SHIM shim? (toggle)
 #NO_SPACE                  When para spacing is active, instructs
                            PP not to add space after a quote or blockquote.
@@ -1333,6 +1349,9 @@ dc                         "mark" register for document columns
 #NUMBER_PH                 Are paraheads numbered? (toggle)
 #NUMBER_SH                 Are subheads numbered? (toggle)
 #NUM_COLS                  Number of columns per page
+#NUMBERED                  If set to 1, lets PARAHEAD know that
+                           main- and subhead numbers have already been prefixed
+                           to the parahead string
 #NUM_FIELDS                Incrementing register used to match
                            #TOTAL_FIELDS
 #OK_PROCESS_LEAD           Initial processing of TOC and endnote
@@ -1380,6 +1399,10 @@ dc                         "mark" register for document columns
 #PP_STYLE_PREV             In footnotes, stores PP style in effect
                            prior to invoking FOOTNOTE
 #PP_STYLE                  Regular para=1; quote or epi para=2
+#PRE_COLLATE               Set to 1 in COLLATE; prevents FAMILY
+                           from clobbering a user-set DOC_FAMILY
+#PREFIX_CH_NUM             Prefix the chapter number to numbered
+                           heads, subheads and/or paraheads? (toggle)
 #PRINT_PAGENUM_ON_PAGE_1   Should we print the page number on first
                            page of doc when footers are on? (toggle)
 #PRINT_STYLE               Typewrite=1, typeset=2
@@ -1601,6 +1624,7 @@ $BQUOTE_QUAD                     Quad value for blockquotes
 $BQUOTE_SIZE_CHANGE              ps in/decrease of blockquotes*
 $CENTER_TITLE                    What to put in the middle of header
                                  title
+$CH_NUM                          Register #CH_NUM with a period added.
 $CHAPTER                         The chapter number
 $CHAPTER_STRING                  What to print whenever the word
                                  "chapter" is required

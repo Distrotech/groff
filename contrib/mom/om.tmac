@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.3-e_2
+Version 1.3-e_3
 ---------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
@@ -337,7 +337,13 @@ described).
 \#   breaks to a new page.
 \#
 .MAC NEWPAGE END
-.    br
+.    ie \\n[#NO_BREAK] \{\
+'       br
+.       rr #NO_BREAK
+.    \}
+.    el \{\
+.       br
+.    \}
 .    nr #NEWPAGE 1
 .    ie \\n[#B_MARGIN_SET]=1 \{\
 .       ie !\\n[#DOCS]=1 \{\
@@ -457,9 +463,7 @@ described).
 .          ft 0
 .       \}
 .    \}
-.    ie \\n[#PRE_COLLATE]=1 \{\
-.       nop
-.    \}
+.    ie \\n[#PRE_COLLATE]=1 \{ . \}
 .    el \{\
 .       if \\n[#COLLATE]=1 \{\
 .          if !r#START \{ .DOC_FAM \\*[$FAMILY] \}
@@ -1426,7 +1430,7 @@ text to groff fill mode.
 .    ce 0
 .    nf
 .    nr #PSEUDO_FILL 1
-.\" Fix for a little conflict with DOCTYPE LETTER 
+.\" Fix for a little conflict with DOCTYPE LETTER
 .    if '\\n(.z'LETTERHEAD1' \{ .rr #DATE_FIRST \}
 .END
 \#
@@ -3774,26 +3778,26 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                         ie '\\*[$DRAFT]'' \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_TITLE], \
-                             \\*[$REVISION_STRING] \\*[$REVISION] 
+                             \\*[$REVISION_STRING] \\*[$REVISION]
 .                         \}
 .                         el \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_TITLE], \
                              \\*[$DRAFT_STRING]\\*[$DRAFT], \
-                             \\*[$REVISION_STRING] \\*[$REVISION] 
+                             \\*[$REVISION_STRING] \\*[$REVISION]
 .                         \}
 .                      \}
 .                      el \{\
 .                         ie '\\*[$DRAFT]'' \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_STRING], \
-                             \\*[$REVISION_STRING] \\*[$REVISION] 
+                             \\*[$REVISION_STRING] \\*[$REVISION]
 .                         \}
 .                         el \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_STRING], \
                              \\*[$DRAFT_STRING]\\*[$DRAFT], \
-                             \\*[$REVISION_STRING] \\*[$REVISION] 
+                             \\*[$REVISION_STRING] \\*[$REVISION]
 .                         \}
 .                      \}
 .                   \}
@@ -3802,26 +3806,26 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                         ie '\\*[$DRAFT]'' \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_TITLE], \
-                             \\*[$REVISION_STRING] \\*[$REVISION] 
+                             \\*[$REVISION_STRING] \\*[$REVISION]
 .                         \}
 .                         el \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_TITLE], \
                              \\*[$DRAFT_STRING]\\*[$DRAFT], \
-                             \\*[$REVISION_STRING] \\*[$REVISION] 
+                             \\*[$REVISION_STRING] \\*[$REVISION]
 .                         \}
 .                      \}
 .                      el \{\
 .                         ie '\\*[$DRAFT]'' \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
-                             \\*[$REVISION_STRING] \\*[$REVISION] 
+                             \\*[$REVISION_STRING] \\*[$REVISION]
 .                         \}
 .                         el \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_STRING] \\*[$CHAPTER], \
                              \\*[$DRAFT_STRING]\\*[$DRAFT], \
-                             \\*[$REVISION_STRING] \\*[$REVISION] 
+                             \\*[$REVISION_STRING] \\*[$REVISION]
 .                         \}
 .                      \}
 .                   \}
@@ -3926,7 +3930,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC CHAPTER END \"If document is a chapter, the chapter number
+.    nr #CHAPTER_CALLED 1
 .    ds $CHAPTER \\$1
+.    if r#CH_NUM \{\
+.       if \B'\\*[$CHAPTER]' \{\
+.          nr #CH_NUM \\*[$CHAPTER]
+.       \}
+.    \}
 .END
 \#
 \#
@@ -4277,7 +4287,7 @@ the macro whose style is to be changed.
 .    if '\\$0'ENDNOTE_NUMBER_SIZE'          .ds $EN_NUMBER_SIZE_CHANGE \\$1
 .    if '\\$0'ENDNOTE_LINENUMBER_SIZE'      .ds $EN_LN_SIZE_CHANGE \\$1
 .    if '\\$0'ENDNOTE_STRING_SIZE'          .ds $EN_STRING_SIZE_CHANGE \\$1
-.    if '\\$0'ENDNOTE_TITLE_SIZE'           .ds $EN_TITLE_SIZE_CHANGE \\$1 
+.    if '\\$0'ENDNOTE_TITLE_SIZE'           .ds $EN_TITLE_SIZE_CHANGE \\$1
 .    if '\\$0'EPIGRAPH_SIZE'                .ds $EPI_SIZE_CHANGE \\$1
 .    if '\\$0'FOOTNOTE_SIZE'                .ds $FN_SIZE_CHANGE \\$1
 .    if '\\$0'HDRFTR_CENTER_SIZE'           .ds $HDRFTR_CENTER_SIZE_CHANGE \\$1
@@ -4673,9 +4683,6 @@ the macro whose style is to be changed.
 .    if !d$TOC_PN_STYLE          \{ .TOC_PAGENUM_STYLE roman       \}
 .    if !r#TOC_PN_PADDING        \{ .TOC_PADDING   3               \}
 .    if !r#TOC_TITLE_INDENT      \{ .TOC_TITLE_INDENT    0         \}
-.    if !r#TOC_HEAD_INDENT       \{ .TOC_HEAD_INDENT     18p       \}
-.    if !r#TOC_SH_INDENT         \{ .TOC_SUBHEAD_INDENT  30p       \}
-.    if !r#TOC_PH_INDENT         \{ .TOC_PARAHEAD_INDENT 42p       \}
 .\" String defaults for both PRINTSTYLEs
 .    ie \\n[#DOC_TYPE]=1 \{\
 .       ie '\\*[$DOC_TITLE]'' \{\
@@ -4929,7 +4936,7 @@ the macro whose style is to be changed.
 .       if !d$FN_SIZE_CHANGE            \{ .FOOTNOTE_SIZE      -2               \}
 .       if !r#FN_AUTOLEAD               \{ .FOOTNOTE_AUTOLEAD  2                \}
 .\" +Endnotes
-.       if !r#EN_PS                     \{ .ENDNOTE_PT_SIZE \\n[#DOC_PT_SIZE]u  \}
+.       if !r#EN_PS                     \{ .ENDNOTE_PT_SIZE (\\n[#DOC_PT_SIZE]u)\}
 .       if !d$EN_STRING_FT              \{ .ENDNOTE_STRING_FONT B               \}
 .       if !d$EN_STRING_SIZE_CHANGE     \{ .ENDNOTE_STRING_SIZE +1              \}
 .       if !d$EN_TITLE_FT               \{ .ENDNOTE_TITLE_FONT  B               \}
@@ -4938,13 +4945,13 @@ the macro whose style is to be changed.
 .       if !d$EN_NUMBER_SIZE_CHANGE     \{ .ENDNOTE_NUMBER_SIZE +0              \}
 .       if !r#EN_PP_INDENT              \{ .ENDNOTE_PARA_INDENT 1.5m            \}
 .\" +Bibliography
-.       if !r#BIB_LIST                  \{ .BIBLIOGRAPHY_TYPE LIST .                \}
-.       if !r#BIB_PS                    \{ .BIBLIOGRAPHY_PT_SIZE \\n[#DOC_PT_SIZE]u \}
-.       if !d$BIB_STRING_FT             \{ .BIBLIOGRAPHY_STRING_FONT B              \}
-.       if !d$BIB_STRING_SIZE_CHANGE    \{ .BIBLIOGRAPHY_STRING_SIZE +1             \}
+.       if !r#BIB_LIST                  \{ .BIBLIOGRAPHY_TYPE LIST .                  \}
+.       if !r#BIB_PS                    \{ .BIBLIOGRAPHY_PT_SIZE (\\n[#DOC_PT_SIZE]u) \}
+.       if !d$BIB_STRING_FT             \{ .BIBLIOGRAPHY_STRING_FONT B                \}
+.       if !d$BIB_STRING_SIZE_CHANGE    \{ .BIBLIOGRAPHY_STRING_SIZE +1               \}
 .\" +Table of contents
 .       if !d$TOC_FAM                   \{ .TOC_FAMILY  \\*[$DOC_FAM]           \}
-.       if !r#TOC_PS                    \{ .TOC_PT_SIZE \\n[#DOC_PT_SIZE]u      \}
+.       if !r#TOC_PS                    \{ .TOC_PT_SIZE (\\n[#DOC_PT_SIZE]u)    \}
 .       if !r#TOC_LEAD                  \{ .TOC_LEAD    \\n[#DOC_LEAD]u ADJUST  \}
 .       if !d$TOC_HEADER_FAM            \{ .TOC_HEADER_FAMILY \\*[$TOC_FAM]     \}
 .       if !d$TOC_HEADER_SIZE_CHANGE    \{ .TOC_HEADER_SIZE +4                  \}
@@ -4964,9 +4971,18 @@ the macro whose style is to be changed.
 .       if !d$TOC_HEAD_SIZE_CHANGE      \{ .TOC_HEAD_SIZE     +.5               \}
 .       if !d$TOC_SH_SIZE_CHANGE        \{ .TOC_SUBHEAD_SIZE  +0                \}
 .       if !d$TOC_PH_SIZE_CHANGE        \{ .TOC_PARAHEAD_SIZE +0                \}
+.       ps \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE_CHANGE]
+.       if !r#TOC_HEAD_INDENT           \{ .TOC_HEAD_INDENT \w'\0\0.'           \}
+.       ps
+.       ps \\n[#TOC_PS]u\\*[$TOC_HEAD_SIZE_CHANGE]
+.       if !r#TOC_SH_INDENT             \{ .TOC_SUBHEAD_INDENT \\n[#TOC_HEAD_INDENT]+\w'\0\0.'       \}
+.       ps
+.       ps \\n[#TOC_PS]u\\*[$TOC_SH_SIZE_CHANGE]
+.       if !r#TOC_PH_INDENT             \{ .TOC_PARAHEAD_INDENT \\n[#TOC_SH_INDENT]+\w'\0\0.'       \}
+.       ps
 .    \}
 .\" +Refer support
-.    if !r#ENDNOTE_REFS \{ .nr #FN_REFS 1 \} 
+.    if !r#ENDNOTE_REFS \{ .nr #FN_REFS 1 \}
 .    if '\\*[$REF_FN_INDENT]'' \{\
 .       if \\n[#PRINT_STYLE]=1 \{ .INDENT_REFS FOOTNOTE 2m   \}
 .       if \\n[#PRINT_STYLE]=2 \{ .INDENT_REFS FOOTNOTE 1.5m \}
@@ -5872,7 +5888,7 @@ the macro whose style is to be changed.
 .       CENTER
 .       PRINT "You neglected to enter a PRINTSTYLE"
 .       fl
-.       ab PRINTSTYLE missing
+.       ab [mom]: PRINTSTYLE missing.  Aborting.
 .    \}
 .    nr #DOCS 1
 .    if \\n[#LINENUMBERS]=1 \{\
@@ -5975,12 +5991,14 @@ the macro whose style is to be changed.
 \!.        PT_SIZE \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE_CHANGE]
 .       \}
 \!.     TRAP OFF
+\!.     PAD_MARKER ^
 .       ie \\n[#PRINT_STYLE]=1 \{\
-\!.        PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]" 
+\!.        PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .       \}
 .       el \{\
 \!.        PAD "\\h'\\n[#TOC_TITLE_INDENT]u'\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN]"
 .       \}
+\!.     PAD_MARKER #
 \!.    EOL
 \!.    ST 100 L
 \!.    ST 101 R
@@ -5995,7 +6013,7 @@ the macro whose style is to be changed.
 \!.    TRAP
 \!.    PRINT \\n[#TOC_ENTRY_PN]
 \!.    TQ
-.      di       
+.      di
 .      ev
 .    \}
 .    el \{\
@@ -6327,7 +6345,8 @@ the macro whose style is to be changed.
 .    rr #DEPTH_1
 .    rr #DEPTH_2
 .    rr #DOC_COVER_LEAD
-.    rr #DOC_HEADER
+\#.    rr #DOC_HEADER
+.    if \\n[#DOC_HEADER]=1 \{ .nr #DOC_HEADER 2 \}
 .    rr #DOCHEADER_ADVANCE
 .    rr #DOCHEADER_EXTRA_SPACE
 .    rr #DOCHEADER_LEAD
@@ -6664,7 +6683,6 @@ the macro whose style is to be changed.
 \#   Default is "END".
 \#
 .MAC FINIS_STRING END
-.    nr #FINIS 1
 .    CAPS
 .    ds $FINIS_STRING \\$1
 .    CAPS OFF
@@ -8447,7 +8465,61 @@ Default is OFF.
 \#
 .MAC RESET_PARAHEAD_NUMBER END
 .    ie '\\$1'' \{ .nr #PH_NUM 0 1 \}
-.    el \{ nr #SH_NUM \\$1-1 1 \}
+.    el \{ .nr #SH_NUM \\$1-1 1 \}
+.END
+\#
+\#
+\# PREFIX CHAPTER NUMBERS TO NUMBERED HEADS, SUBHEADS AND PARAHEADS
+\# ----------------------------------------------------------------
+\# *Arguments:
+\#   <none> | <chapter number> | <anything>
+\# *Function:
+\#   Toggles register #PREFIX_CH_NUM. Sets register #CH_NUM from
+\#   string $CHAPTER if $CHAPTER is a digit; if <chapter number> arg
+\#   given, sets #CH_NUM to arg.
+\# *Notes:
+\#   Default is OFF.
+\#
+.MAC PREFIX_CHAPTER_NUMBER END
+.    ie '\\$1'' \{\
+.       ie r#CH_NUM \{\
+.          nr #PREFIX_CH_NUM 1
+.          if \\n[#CHAPTER_CALLED] \{\
+.             ie \B'\\*[$CHAPTER]' \{\
+.                nr #CH_NUM \\*[$CHAPTER]
+.             \}
+.             el \{\
+.                PREFIX_CH_NUM_WARNING
+.             \}
+.             rr #CHAPTER_CALLED
+.          \}
+.       \}
+.       el \{\
+.          ie \B'\\*[$CHAPTER]' \{\
+.             nr #PREFIX_CH_NUM 1
+.             nr #CH_NUM \\*[$CHAPTER]
+.          \}
+.          el \{\
+.             PREFIX_CH_NUM_WARNING
+.          \}
+.       \}
+.    \}
+.    el \{\
+.       ie \B'\\$1' \{\
+.          nr #CH_NUM \\$1
+.          nr #PREFIX_CH_NUM 1
+.       \}
+.       el \{\
+.          rr #PREFIX_CH_NUM
+.       \}
+.    \}
+.END
+\#
+.MAC PREFIX_CH_NUM_WARNING END
+.    tm1 "[mom]: PREFIX_CHAPTER_NUMBER cannot determine a chapter number.
+.    tm1 "       Please enter the current chapter number as a digit after
+.    tm1 "       PREFIX_CHAPTER_NUMBER.
+.    ab Aborting on PREFIX_CHAPTER_NUMBER at line \\n(.c.
 .END
 \#
 \#
@@ -8527,15 +8599,15 @@ Default is OFF.
 .\" space after it.
 .          ie \\n[#NUMBER_HEAD] \{\
 .             ie \\n[#ARG_NUM]=0 \{\
-.                as $TOC_HEAD_ITEM \\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]\ 
+.                as $TOC_HEAD_ITEM \\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]\ \"
 .                nr #HEAD_NUM \\n-[#HEAD_NUM]
 .             \}
 .             el \{\
-.                as $TOC_HEAD_ITEM \\$[\\n+[#ARG_NUM]]\ 
+.                as $TOC_HEAD_ITEM \\$[\\n+[#ARG_NUM]]\ \"
 .             \}
 .          \}
 .          el \{\
-.             as $TOC_HEAD_ITEM \\$[\\n+[#ARG_NUM]]\ 
+.             as $TOC_HEAD_ITEM \\$[\\n+[#ARG_NUM]]\ \"
 .          \}
 .       \}
 .\}
@@ -8555,12 +8627,14 @@ Default is OFF.
 \!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_HEAD_SIZE_CHANGE]
 .    \}
 \!.  TRAP OFF
+\!.  PAD_MARKER ^
 .    ie \\n[#PRINT_STYLE]=1 \{\
 \!.     PAD "\\h'2m'\\*[$TOC_HEAD_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_HEAD_INDENT]u'\\*[$TOC_HEAD_ITEM]\\*[$TOC_PN]"
 .    \}
+\!.  PAD_MARKER #
 \!.  EOL
 \!.  ST 100 L
 \!.  ST 101 R
@@ -8575,7 +8649,7 @@ Default is OFF.
 \!.  TRAP
 \!.  PRINT \\n[#TOC_ENTRY_PN]
 \!.  TQ
-.    di       
+.    di
 .    ev
 .\" End collection of head for TOC
 .\" Process head
@@ -8659,9 +8733,15 @@ Default is OFF.
 .    while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
 .       ie \\n[#NUMBER_HEAD] \{\
 .          ie \\n[#ARG_NUM]=0 \{\
+.             ie \\n[#PREFIX_CH_NUM]=1 \{\
+.                ds $CH_NUM \\n[#CH_NUM].
+.             \}
+.             el \{\
+.                rm $CH_NUM
+.             \}
 .             br
-.             ie \\n[#HEAD_UNDERLINE]=0 \{ .PRINT "\\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]\}
-.             el \{ .UNDERSCORE "\\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]\}
+.             ie \\n[#HEAD_UNDERLINE]=0 \{ .PRINT "\\*[$CH_NUM]\\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]\}
+.             el \{ .UNDERSCORE "\\*[$CH_NUM]\\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]\}
 .             br
 .          \}
 .          el \{\
@@ -8682,8 +8762,8 @@ Default is OFF.
 .    CAPS OFF
 .    ev
 .    ALD \\n[#DOC_LEAD]u
-.    RESET_SUBHEAD_NUMBER
-.    RESET_PARAHEAD_NUMBER
+.    if \\n[#NUMBER_HEAD] \{ .RESET_SUBHEAD_NUMBER  \}
+.    if \\n[#NUMBER_SH]   \{ .RESET_PARAHEAD_NUMBER \}
 .    if r#START      \{ .rr #START     \}
 .    if r#EPIGRAPH   \{ .rr #EPIGRAPH  \}
 .    if r#QUOTE      \{ .rr #QUOTE     \}
@@ -8728,15 +8808,15 @@ Default is OFF.
 .\" space after it.
 .          ie \\n[#NUMBER_SH] \{\
 .             ie \\n[#ARG_NUM]=0 \{\
-.                as $TOC_SH_ITEM \\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]\ 
+.                as $TOC_SH_ITEM \\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]\ \"
 .                nr #SH_NUM \\n-[#SH_NUM]
 .             \}
 .             el \{\
-.                as $TOC_SH_ITEM \\$[\\n+[#ARG_NUM]]\ 
+.                as $TOC_SH_ITEM \\$[\\n+[#ARG_NUM]]\ \"
 .             \}
 .          \}
 .          el \{\
-.             as $TOC_SH_ITEM \\$[\\n+[#ARG_NUM]]\ 
+.             as $TOC_SH_ITEM \\$[\\n+[#ARG_NUM]]\ \"
 .          \}
 .       \}
 .\}
@@ -8756,12 +8836,14 @@ Default is OFF.
 \!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_SH_SIZE_CHANGE]
 .    \}
 \!.  TRAP OFF
+\!.  PAD_MARKER ^
 .    ie \\n[#PRINT_STYLE]=1 \{\
 \!.     PAD "\\h'4m'\\*[$TOC_SH_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_SH_INDENT]u'\\*[$TOC_SH_ITEM]\\*[$TOC_PN]"
 .    \}
+\!.  PAD_MARKER #
 \!.  EOL
 \!.  ST 100 L
 \!.  ST 101 R
@@ -8776,7 +8858,7 @@ Default is OFF.
 \!.  TRAP
 \!.  PRINT \\n[#TOC_ENTRY_PN]
 \!.  TQ
-.    di       
+.    di
 .    ev
 .\" End collection of head for TOC
 .\" Process subhead
@@ -8835,21 +8917,26 @@ Default is OFF.
 .       while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
 .          ie \\n[#NUMBER_SH] \{\
 .             ie \\n[#ARG_NUM]=0 \{\
+.                ie \\n[#PREFIX_CH_NUM]=1 \{\
+.                   ds $CH_NUM \\n[#CH_NUM].
+.                \}
+.                el \{\
+.                   rm $CH_NUM
+.                \}
 .                ie \\n[#NUMBER_HEAD] \{\
 .                   br
-.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\n[#HEAD_NUM].\\n+[#SH_NUM]\0\\$[\\n+[#ARG_NUM]]
+.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
 .                   br
 .                \}
 .                el \{\
 .                   br
-.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
 .                   br
 .                \}
 .             \}
 .             el \{\
 .                br
-.                ie \\n[#HEAD_UNDERLINE]=0 \{ .PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]\}
-.                el \{ .UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]\}
+.                UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
 .                br
 .             \}
 .          \}
@@ -8869,26 +8956,32 @@ Default is OFF.
 .          while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
 .             ie \\n[#NUMBER_SH] \{\
 .                ie \\n[#ARG_NUM]=0 \{\
+.                   ie \\n[#PREFIX_CH_NUM]=1 \{\
+.                      ds $CH_NUM \\n[#CH_NUM].
+.                   \}
+.                   el \{\
+.                      rm $CH_NUM
+.                   \}
 .                   ie \\n[#NUMBER_HEAD] \{\
 .                      br
-.                      PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\n[#HEAD_NUM].\\n+[#SH_NUM]\0\\$[\\n+[#ARG_NUM]]
+.                      PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
 .                      br
 .                   \}
 .                   el \{\
 .                      br
-.                      PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                      PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
 .                      br
 .                   \}
 .                \}
 .                el \{\
 .                   br
-.                   PRINT "\\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                   PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
 .                   br
 .                \}
 .             \}
 .             el \{\
 .                br
-.                PRINT "\\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
 .                br
 .             \}
 .\}
@@ -8899,14 +8992,43 @@ Default is OFF.
 .          if \\n[#END_QUOTE]   \{ .RLD \\n[#DOC_LEAD]u \}
 .          if \\n[#EPIGRAPH]    \{ .RLD \\n[#DOC_LEAD]u \}
 .          while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
-.             PRINT "\\$[\\n+[#ARG_NUM]]
+.             ie \\n[#NUMBER_SH] \{\
+.                ie \\n[#ARG_NUM]=0 \{\
+.                   ie \\n[#PREFIX_CH_NUM]=1 \{\
+.                      ds $CH_NUM \\n[#CH_NUM].
+.                   \}
+.                   el \{\
+.                      rm $CH_NUM
+.                   \}
+.                   ie \\n[#NUMBER_HEAD] \{\
+.                      br
+.                      PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM]\0\\$[\\n+[#ARG_NUM]]
+.                      br
+.                   \}
+.                   el \{\
+.                      br
+.                      PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                      br
+.                   \}
+.                \}
+.                el \{\
+.                   br
+.                   PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                   br
+.                \}
+.             \}
+.             el \{\
+.                br
+.                PRINT "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                br
+.             \}
 .\}
 .          ALD \\n[#DOC_LEAD]u
 .       \}
 .    \}
 .    REMOVE_INDENT
 .    ev
-.    RESET_PARAHEAD_NUMBER
+.    if \\n[#NUMBER_SH] \{ .RESET_PARAHEAD_NUMBER \}
 .    if r#START     \{ .rr #START     \}
 .    if r#EPIGRAPH  \{ .rr #EPIGRAPH  \}
 .    if r#Q_FITS    \{ .rr #Q_FITS    \}
@@ -8966,12 +9088,14 @@ Default is OFF.
 \!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_PH_SIZE_CHANGE]
 .    \}
 \!.  TRAP OFF
+\!.  PAD_MARKER ^
 .    ie \\n[#PRINT_STYLE]=1 \{\
-\!.     PAD "\\h'6m'\\*[$TOC_PH_ITEM]\\*[$TOC_PN_TYPEWRITE]" 
+\!.     PAD "\\h'6m'\\*[$TOC_PH_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_PH_INDENT]u'\\*[$TOC_PH_ITEM]\\*[$TOC_PN]"
 .    \}
+\!.  PAD_MARKER #
 \!.  EOL
 \!.  ST 100 L
 \!.  ST 101 R
@@ -8986,7 +9110,7 @@ Default is OFF.
 \!.  TRAP
 \!.  PRINT \\n[#TOC_ENTRY_PN]
 \!.  TQ
-.    di       
+.    di
 .    ev
 .\" End collection of parahead for TOC
 .\" Process parahead
@@ -9000,29 +9124,35 @@ Default is OFF.
 .       \}
 .    \}
 .    el \{ .ti \\n[#PH_INDENT]u \}
+.    ie \\n[#PREFIX_CH_NUM]=1 \{\
+.       ds $CH_NUM \\n[#CH_NUM].
+.    \}
+.    el \{\
+.       rm $CH_NUM
+.    \}
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       TYPEWRITER
 .       UNDERLINE OFF
 .       ie \\n[#NUMBER_PH] \{\
 .          if \\n[#NUMBER_HEAD] \{\
 .             ie \\n[#NUMBER_SH] \{\
-.                UNDERSCORE "\R'#NUMBERED 1'\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\\ \\$1"
+.                UNDERSCORE "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\\ \\$1"
 \0
 .             \}
 .             el \{\
-.                UNDERSCORE "\R'#NUMBERED 1'\\n[#HEAD_NUM].\\n+[#PH_NUM].\\ \\$1
+.                UNDERSCORE "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#PH_NUM].\\ \\$1
 \0
 .             \}
 .          \}
 .          ie \\n[#NUMBER_SH] \{\
 .             if !\\n[#NUMBERED] \{\
-.                UNDERSCORE "\\n[#SH_NUM].\\n+[#PH_NUM].\\ \\$1
+.                UNDERSCORE "\\*[$CH_NUM]\\n[#SH_NUM].\\n+[#PH_NUM].\\ \\$1
 \0
 .             \}
 .          \}
 .          el \{\
 .             if !\\n[#NUMBERED] \{\
-.                UNDERSCORE "\\n+[#PH_NUM].\\ \\$1
+.                UNDERSCORE "\\*[$CH_NUM]\\n+[#PH_NUM].\\ \\$1
 \0
 .             \}
 .          \}
@@ -9045,22 +9175,28 @@ Default is OFF.
 .       PT_SIZE \\*[$PH_SIZE_CHANGE]
 .       if \\n[#PH_COLOR]=1 \{ .COLOR \\*[$PH_COLOR] \}
 .          ie \\n[#NUMBER_PH] \{\
+.             ie \\n[#PREFIX_CH_NUM]=1 \{\
+.                ds $CH_NUM \\n[#CH_NUM].
+.             \}
+.             el \{\
+.                rm $CH_NUM
+.             \}
 .             if \\n[#NUMBER_HEAD] \{\
 .                ie \\n[#NUMBER_SH] \{\
-.                   PRINT "\R'#NUMBERED 1'\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
 .                \}
 .                el \{\
-.                   PRINT "\R'#NUMBERED 1'\\n[#HEAD_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                   PRINT "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
 .                \}
 .             \}
 .             ie \\n[#NUMBER_SH] \{\
 .                if !\\n[#NUMBERED] \{\
-.                   PRINT "\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                   PRINT "\\*[$CH_NUM]\\n[#SH_NUM].\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
 .                \}
 .             \}
 .             el \{\
 .                if !\\n[#NUMBERED] \{\
-.                   PRINT "\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
+.                   PRINT "\\*[$CH_NUM]\\n+[#PH_NUM].\0\\$1\h'.6m'\c"
 .                \}
 .             \}
 .          \}
@@ -10309,7 +10445,7 @@ The macros are heavily commented.
 .    if '\\$1'STAR' \{\
 .       if \\n[#FN_MARKER_STYLE]=3 \{\
 .          if !\\n[#NEWPAGE]=1 \{\
-.             tm1 "[mom]: Your current FOOTNOTE_MARKER STYLE is LINE.  
+.             tm1 "[mom]: Your current FOOTNOTE_MARKER STYLE is LINE.
 .             tm1 "       You cannot change footnote marker style without
 .             tm1 "       first breaking to a new page with NEWPAGE.
 .             tm1 "       Ignoring request FOOTNOTE_MARKER_STYLE STAR at line \\n(.c.
@@ -10328,7 +10464,7 @@ The macros are heavily commented.
 .    if '\\$1'NUMBER' \{\
 .       if \\n[#FN_MARKER_STYLE]=3 \{\
 .          if !\\n[#NEWPAGE]=1 \{\
-.             tm1 "[mom]: Your current FOOTNOTE_MARKER STYLE is NUMBER.  
+.             tm1 "[mom]: Your current FOOTNOTE_MARKER STYLE is NUMBER.
 .             tm1 "       You cannot change footnote marker style without
 .             tm1 "       first breaking to a new page with NEWPAGE.
 .             tm1 "       Ignoring request FOOTNOTE_MARKER_STYLE NUMBER at line \\n(.c.
@@ -10419,7 +10555,7 @@ The macros are heavily commented.
 .    \}
 .END
 \#
-\#   
+\#
 \# RESET FOOTNOTE NUMBER
 \# ---------------------
 \# *Arguments:
@@ -11010,7 +11146,7 @@ The macros are heavily commented.
 .             \}
 .          \}
 .          if \\n[#REF]=1 \{\
-\!.           in 
+\!.           in
 .          \}
 .\" Terminate FOOTNOTES or FN_IN_DIVER diversion
 .          di
@@ -11229,7 +11365,7 @@ The macros are heavily commented.
 .                      if \\n[#DIVERTED] \{\
 .                         if !\\n[#FN_DEPTH]=\\n[#SAVED_FN_DEPTH_1] \{\
 .                            nr #FN_DEPTH +\\n[#FN_LEAD]
-.                            nr #VARIABLE_FOOTER_POS -\\n[#FN_LEAD] 
+.                            nr #VARIABLE_FOOTER_POS -\\n[#FN_LEAD]
 .                            rr #PREV_FN_DEFERRED
 .                         \}
 .                      \}
@@ -11278,7 +11414,7 @@ manipulation of them.
 \#
 \# a) A footnote inside a diversion will be moved entirely (marker
 \# in running text and text of footnote) to the next page/column.
-\# 
+\#
 .MAC DIVER_FN_1_PRE END
 .    nr #RESET_FN_COUNTERS 1
 .    nr #COUNTERS_RESET 1
@@ -11419,7 +11555,7 @@ FOOTER outputs the diversion, FOOTNOTES, before PROCESS_FN_LEFTOVER
 is run (either in HEADER, or in FOOTER if moving col to col).
 ..
 \#
-.MAC FN_OVERFLOW_TRAP END 
+.MAC FN_OVERFLOW_TRAP END
 .    if \\n[#FN_COUNT] \{\
 .       di FN_OVERFLOW
 .       ie !\\n[#NO_BACK_UP]=1 \{\
@@ -11529,7 +11665,7 @@ to the next).
 .    FOOTNOTE OFF
 .    if \\n[#PREV_FN_DEFERRED] \{\
 .       nr #FN_DEPTH -\\n[#FN_LEAD]
-.       nr #VARIABLE_FOOTER_POS +\\n[#FN_LEAD]  
+.       nr #VARIABLE_FOOTER_POS +\\n[#FN_LEAD]
 .       ch FOOTER \\n[#VARIABLE_FOOTER_POS]u
 .       if \\n[#PREV_FN_DEFERRED]=2 \{\
 .          nr #PREV_FN_DEFERRED 1
@@ -11666,7 +11802,7 @@ document, or to output them at the end of the entire document.
 .END
 \#
 \#
-\# ENDNOTE STRING 
+\# ENDNOTE STRING
 \# --------------
 \# *Argument:
 \#   <title for endnotes page>
@@ -11855,7 +11991,7 @@ document, or to output them at the end of the entire document.
 .    ds $EN_LN_GAP \\$1
 .END
 \#
-\#   
+\#
 \# ENDNOTE NUMBERS ALIGN RIGHT
 \# ---------------------------
 \# *Argument:
@@ -12363,7 +12499,7 @@ document, or to output them at the end of the entire document.
 .    \}
 \!.  TRAP OFF
 .    ie \\n[#PRINT_STYLE]=1 \{\
-\!.     PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]" 
+\!.     PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_TITLE_INDENT]u'\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN]"
@@ -12382,7 +12518,7 @@ document, or to output them at the end of the entire document.
 \!.  TRAP
 \!.  PRINT \\n[#TOC_ENTRY_PN]
 \!.  TQ
-.    di       
+.    di
 .    ev
 .\" End collection of endnotes title string for TOC
 .\" Process endnotes
@@ -12756,7 +12892,7 @@ Arguments, Function and Notes.
 .    \}
 \!.  TRAP OFF
 .    ie \\n[#PRINT_STYLE]=1 \{\
-\!.     PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]" 
+\!.     PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_TITLE_INDENT]u'\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN]"
@@ -12775,7 +12911,7 @@ Arguments, Function and Notes.
 \!.  TRAP
 \!.  PRINT \\n[#TOC_ENTRY_PN]
 \!.  TQ
-.    di       
+.    di
 .    ev
 .\" End collection of bibliography title string for TOC
 .\" Process bibliography
@@ -12891,8 +13027,8 @@ Arguments, Function and Notes.
 \#
 \# Strings to allocate space for leaders and entry page numbers
 \#
-.ds $TOC_PN \\*[ST100]\\F[\\*[$TOC_PN_FAM]]\\f[\\*[$TOC_PN_FT]]\\s[\\n[#TOC_PS]u]#\\*[ST100X]\\*[ST101]\\s[\\*[$TOC_PN_SIZE_CHANGE]]\\|\\h'\\w'0'u*\\n[#TOC_PN_PADDING]u'\*[ST101X]
-.ds $TOC_PN_TYPEWRITE \\*[ST100]#\\*[ST100X]\\*[ST101]\\|\\h'\\w'0'u*\\n[#TOC_PN_PADDING]u'\\*[ST101X]
+.ds $TOC_PN \\*[ST100]\\F[\\*[$TOC_PN_FAM]]\\f[\\*[$TOC_PN_FT]]\\s[\\n[#TOC_PS]u]^\\*[ST100X]\\*[ST101]\\s[\\*[$TOC_PN_SIZE_CHANGE]]\\|\\h'\\w'0'u*\\n[#TOC_PN_PADDING]u'\*[ST101X]
+.ds $TOC_PN_TYPEWRITE \\*[ST100]^\\*[ST100X]\\*[ST101]\\|\\h'\\w'0'u*\\n[#TOC_PN_PADDING]u'\\*[ST101X]
 \#
 \# TOC ENTRIES PAGE NUMBERS PADDING
 \# --------------------------------
@@ -12938,7 +13074,7 @@ Arguments, Function and Notes.
 \#   See notes for ENDNOTE_PT_SIZE for explanation.  No unit of
 \#   measure required.
 \#
-\#   No unit of measure required (points assumed).  Default is 11.5
+\#   No unit of measure required (points assumed).  Default is 12.5
 \#   for TYPESET.
 \#
 .MAC TOC_PT_SIZE END
@@ -12993,7 +13129,7 @@ Arguments, Function and Notes.
 \#   Creates or modifies string $TOC_PN_STYLE
 \# *Notes:
 \#   Page numbering style for page numbers that appear in the
-\#   headers/footers of toc pages.  See notes for PAGENUM_STYLE.  
+\#   headers/footers of toc pages.  See notes for PAGENUM_STYLE.
 \#
 \#   Default is roman.
 \#
@@ -13034,7 +13170,7 @@ Arguments, Function and Notes.
 \#
 \# - for TOC entries page number numerals
 \#
-\# Control macros for toc doc titles, heads, subheads and paraheads 
+\# Control macros for toc doc titles, heads, subheads and paraheads
 \# ----------------------------------------------------------------
 \#
 \# All these control macros behave the same way, setting the family,
@@ -13043,7 +13179,7 @@ Arguments, Function and Notes.
 \# operate is identical to all other _FAMILY, _FONT and _SIZE
 \# control macros.  _INDENT takes an absolute value.
 \# TOC_APPENDS_AUTHORS is unique in this section.
-\# 
+\#
 \# - for title entries
 \#
 .MAC TOC_TITLE_INDENT END
@@ -13194,12 +13330,14 @@ Arguments, Function and Notes.
 .          FT      \\*[$TOC_TITLE_FT]
 .          PT_SIZE \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE_CHANGE]
 .       \}
+.       PAD_MARKER ^
 .       ie \\n[#PRINT_STYLE]=1 \{\
-.          PAD "\\*[$FIRST_DOC_TITLE]\\*[$TOC_PN_TYPEWRITE]" 
+.          PAD "\\*[$FIRST_DOC_TITLE]\\*[$TOC_PN_TYPEWRITE]"
 .       \}
 .       el \{\
 .          PAD "\\h'\\n[#TOC_TITLE_INDENT]u'\\*[$FIRST_DOC_TITLE]\\*[$TOC_PN]"
 .       \}
+.       PAD_MARKER #
 .       EOL
 .       ST 100 L
 .       ST 101 R
@@ -13313,6 +13451,14 @@ Arguments, Function and Notes.
 .       ds $LAST_CHAR \\$1
 .       substring $LAST_CHAR -1
 .       if !\B'\\*[$LAST_CHAR]' \{\
+.          if !'\\$1'ROMAN' \{\
+.             LIST OFF
+.             return
+.          \}
+.          if !'\\$1'roman' \{\
+.             LIST OFF
+.             return
+.          \}
 .          tm1 "[mom]: You must append a number to the \\$1 argument to LIST at line \\n(.c.
 .          tm1 "       The number should be the total number of items in this list.
 .          tm1 "       See the documentation.
@@ -13463,7 +13609,7 @@ Arguments, Function and Notes.
 .                el \{\
 .                   QUIT_LISTS
 .                   return
-.                \} 
+.                \}
 .             \}
 .             el \{\
 .                SET_LIST_INDENT
@@ -13537,7 +13683,7 @@ Arguments, Function and Notes.
 .       nr #KERN_WAS_ON 1
 .       KERN OFF
 .    \}
-.    IL 
+.    IL
 .    ll \\n[#CURRENT_L_LENGTH]u \" Set ll again because IL turns IB off.
 .    TRAP OFF
 .    HI \\n[#HL_INDENT\\n[#DEPTH]]u
@@ -13845,15 +13991,9 @@ Arguments, Function and Notes.
 \#   Requires a unit of measure.
 \#
 .MAC SHIFT_LIST END
-.    ie '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'roman' \{\
 .       nr #SHIFT_LIST\\n[#DEPTH] (\\$1)
-.       nr #LIST_INDENT\\n[#DEPTH] \\n(.i+\\n[#L_INDENT]+\\n[#SHIFT_LIST\\n[#DEPTH]]
+.       nr #LIST_INDENT\\n[#DEPTH] \\n[#L_INDENT]+\\n[#SHIFT_LIST\\n[#DEPTH]]
 .       nr #L_INDENT \\n[#LIST_INDENT\\n[#DEPTH]]
-.    \}
-.    el \{\
-.       nr #LIST_INDENT\\n[#DEPTH] \\n[#L_INDENT]+(\\$1)
-.       nr #L_INDENT \\n[#LIST_INDENT\\n[#DEPTH]]
-.    \}
 .END
 \#
 \#
@@ -13971,8 +14111,8 @@ Arguments, Function and Notes.
 .       nr #QUIT 1
 .       return
 .    \}
-.    nr #L_INDENT -\\n[#LIST_INDENT\\n[#DEPTH]]
-.    nr #HL_INDENT \\n[#HL_INDENT\\n-[#DEPTH]]
+.    nr #L_INDENT \\n[#LIST_INDENT\\n-[#DEPTH]]
+.    nr #HL_INDENT \\n[#HL_INDENT\\n[#DEPTH]]
 .END
 \#
 \# ====================================================================
@@ -13996,10 +14136,12 @@ Arguments, Function and Notes.
 \#   macros that alter mom's behaviour).
 \#
 .MAC COLLATE END
+.    if ( \\n[.t] < \\n[.v] ) \{ .nr #NO_BREAK 1 \}
 .    nr #COLLATE 1
 .    nr #PRE_COLLATE 1
 .    nr #HEADER_STATE \\n[#HEADERS_ON]
 .    HEADERS OFF
+.    if \\n[#DOC_HEADER]=2 \{ .nr #DOC_HEADER 1 \}
 .    if \\n[#PAGE_NUM_V_POS]=1 \{\
 .       nr #PAGINATION_STATE \\n[#PAGINATE]
 .       PAGINATION OFF
@@ -14056,6 +14198,7 @@ Arguments, Function and Notes.
 .       PAGENUM_STYLE \\*[$RESTORE_PAGENUM_STYLE]
 .       rm $RESTORE_PAGENUM_STYLE
 .    \}
+.    if \\n[#CH_NUM] \{ .nr #CH_NUM +1 \}
 .    rm $EN_TITLE
 .    rr #PAGENUM_STYLE_SET
 .END
@@ -14284,7 +14427,7 @@ Arguments, Function and Notes.
 .
 .\}
 .       nr #LINES_PER_PAGE -1
-.\" Add machine units, 1 at a time, increasing the leading until the 
+.\" Add machine units, 1 at a time, increasing the leading until the
 .\" new leading fills the page properly
 .       while \\n[#T_MARGIN]+(\\n[#DOC_LEAD]+\\n+[#DOC_LEAD_ADJ]*\\n[#LINES_PER_PAGE])<\\n[#DEPTH_TO_B_MARGIN] \{\
 .
@@ -15055,7 +15198,7 @@ Arguments, Function and Notes.
 \# Support aliases
 \#
 .ALIAS   COL_BREAK             COL_NEXT
-.ALIAS   DOC_COVER_ADVANCE     COVER_ADVANCE 
+.ALIAS   DOC_COVER_ADVANCE     COVER_ADVANCE
 .ALIAS   DOC_COVER             COVER
 .ALIAS   DOC_COVERS            COVERS
 .ALIAS   DOC_COVER_LEAD        COVER_LEAD
@@ -15812,7 +15955,7 @@ from Werner Lemberg's MN.tmac.
 \# MN
 \# --
 \# Usage:
-\# 
+\#
 \#   MN LEFT|RIGHT
 \#   margin note text
 \#   MN
@@ -15824,7 +15967,7 @@ from Werner Lemberg's MN.tmac.
 .de MN
 .ds MN-dir \\$1
 .if !'\\$1'LEFT' \{\
-.  if !'\\$1'RIGHT' \{\ 
+.  if !'\\$1'RIGHT' \{\
 .    MN_QUIT
 .    return
 .  \}
@@ -15840,7 +15983,7 @@ from Werner Lemberg's MN.tmac.
 .  \}
 .\}
 .  if !\\n[#MNinit]=1 \{\
-.    tm [mom]: Macro MN: You must set parameters with MN_INIT before using MN. 
+.    tm [mom]: Macro MN: You must set parameters with MN_INIT before using MN.
 .    ab Aborting
 .  \}
 .  ie !'\\$1'' \{\
@@ -16007,3 +16150,6 @@ from Werner Lemberg's MN.tmac.
 '  sp |\\n[MN-curr-pos]u
 .  if !\\n[#no-repeat-MN-right]=1 .vpt 1
 ..
+\#
+\#
+\# vim: ft=groff:

@@ -916,6 +916,9 @@ Should you wish to stop head numbering, invoke
 END, X</strong>...).  Head numbering will cease, and the head number
 will not be included in the numbering of subheads and/or paraheads.
 <p>
+See also
+<a href="#PREFIX_CHAPTER_NUMBER">PREFIX_CHAPTER_NUMBER</a>
+if you'd like chapter numbers prepended to the head numbers.
 
 <a name="RESET_HEAD_NUMBER"><h3><u>6. Reset head numbering -- RESET_HEAD_NUMBER</u></h3></a>
 <p>
@@ -1057,8 +1060,11 @@ Should you wish to stop subhead numbering, invoke
 END, X</strong>...).  Subhead numbering will cease, and the subhead
 number will not be included in the numbering of paraheads.
 <p>
+See also
+<a href="#PREFIX_CHAPTER_NUMBER">PREFIX_CHAPTER_NUMBER</a>
+if you'd like chapter numbers prepended to the subhead numbers.
 
-<a name="RESET_SUBHEAD_NUMBER"><h3><u>3. Reset head numbering -- RESET_SUBHEAD_NUMBER</u></h3></a>
+<a name="RESET_SUBHEAD_NUMBER"><h3><u>3. Reset subhead numbering -- RESET_SUBHEAD_NUMBER</u></h3></a>
 <p>
 Should you wish to reset the subhead number to &quot;1&quot;, invoke
 <strong>RESET_SUBHEAD_NUMBER</strong> with no argument.  If, for some
@@ -1206,8 +1212,12 @@ Should you wish to stop parahead numbering, invoke
 <strong>NUMBER_PARAHEADS</strong> with any argument (<strong>OFF,
 QUIT, END, X</strong>...).  Parahead numbering will cease.
 <p>
+See also
+<a href="#PREFIX_CHAPTER_NUMBER">PREFIX_CHAPTER_NUMBER</a>
+if you'd like chapter numbers prepended to the paragraph head
+numbers.
 
-<a name="RESET_PARAHEAD_NUMBER"><h3><u>4. Reset head numbering -- RESET_PARAHEAD_NUMBER</u></h3></a>
+<a name="RESET_PARAHEAD_NUMBER"><h3><u>4. Reset paragraph head numbering -- RESET_PARAHEAD_NUMBER</u></h3></a>
 <p>
 Should you wish to reset the parahead number to &quot;1&quot;, invoke
 <strong>RESET_PARAHEAD_NUMBER</strong> with no argument.  If, for some
@@ -1221,6 +1231,95 @@ the next in ascending order (i.e. the last parahead number + 1), invoke
 
 Your next parahead will be numbered &quot;7&quot; and subsequent
 paraheads will be numbered in ascending order from &quot;7&quot;.
+<p>
+
+<!====================================================================>
+
+<hr width="66%" align="left">
+<p>
+<a name="PREFIX_CHAPTER_NUMBER">
+	<nobr>Macro: <strong>PREFIX_CHAPTER_NUMBER</strong> &lt;none&gt; | &lt;chapter number as digit&gt; | &lt;anything&gt;
+</a>
+
+<p>
+If you've requested numbering of heads, subheads and/or paragraph
+heads (with
+<a href="#NUMBER_HEADS">NUMBER_HEADS</a>,
+<a href="#NUMBER_SUBHEADS">NUMBER_SUBHEADS</a>
+and/or
+<a href="#NUMBER_PARAHEADS">NUMBER_PARAHEADS</a>)
+and you'd like <strong>mom</strong>, in addition, to prefix
+a chapter number to the numbering scheme, you can do so with
+<strong>PREFIX_CHAPTER_NUMBERS</strong>.
+After you invoke <strong>PREFIX_CHAPTER_NUMBERS</strong>,
+<strong>mom</strong> will prepend the current chapter number to
+all subsequent head elements (main heads, subheads or paragraph heads)
+for which you have requested numbering.  Thus, assuming chapter
+number twelve (12),
+<p>
+<pre>
+        1. FIRST MAIN HEAD
+        ------------------
+
+1.1. First Subhead Under Main Head
+</pre>
+
+becomes
+<p>
+<pre>
+        12.1. FIRST MAIN HEAD
+        ---------------------
+
+12.1.1. First Subhead Under Main Head
+</pre>
+
+When you invoke <strong>PREFIX_CHAPTER_NUMBERS</strong> without an
+argument, <strong>mom</strong> checks to see whether the argument
+you passed to
+<a href="docprocessing.html#CHAPTER">CHAPTER</a>
+is a digit.  If it is, she immediately starts pre-pending the
+current chapter number to numbered head elements.  If it isn't (say
+you've called your chapter &quot;One&quot; instead of
+&quot;1&quot;), <strong>mom</strong> will abort with a request that
+you pass <strong>PREFIX_CHAPTER_NUMBER</strong> a digit
+representing the current chapter number.
+<p>
+In collated documents, <strong>mom</strong> automatically increments
+the digit used by <strong>PREFIX_CHAPTER_NUMBER</strong> by one
+(current chapter digit + 1) every time you invoke
+<a href="rectoverso.html#COLLATE">COLLATE</a>,
+even if you've (temporarily) turned off the prefixing of chapter
+numbers.  Thus, even if you call your chapters &quot;One&quot;,
+&quot;Two&quot;, &quot;Three&quot; instead of &quot;1&quot;,
+&quot;2&quot;, &quot;3&quot;, <strong>mom</strong> will Do
+The Right Thing with respect to numbering head elements in
+all collated chapters following the first invocation of
+<strong>PREFIX_CHAPTER_NUMBER</strong> (assuming, of course, that
+the collated chapters are in incrementing order; if not, you
+<em>must</em> must put
+<kbd>.PREFIX_CHAPTER_NUMBER &lt;chapter number&gt;</kbd>
+somewhere after the invocation of <strong>COLLATE</strong> and before
+the first numbered head element of each collated document).
+<p>
+<strong>PREFIX_CHAPTER_NUMBER</strong> can be disabled by passing it
+any argument other than a digit (e.g. <strong>OFF, QUIT, END,
+X</strong>, etc), although, as noted above, <strong>mom</strong>
+will keep, and--in the case of collated documents--increment the
+chapter number, allowing you to turn prefixing of chapter numbers
+to numbered head elements off and on according to your needs or whims.
+<p>
+<strong>NOTE:</strong> Because <strong>PREFIX_CHAPTER_NUMBER</strong>
+takes an (optional) digit representing the chapter number, it's use
+need not be restricted to
+<a href="docprocessing.html#DOCTYPE">DOCTYPE CHAPTER</a>.
+You can use it with any document type.  Furthermore, even if your
+doctype isn't &quot;CHAPTER&quot;, you can identify the document as
+a chapter <em>for the purposes of numbering head elements</em> by
+invoking the macro,
+<a href="docprocessing.html#CHAPTER">CHAPTER</a>,
+with a
+<a href="definitions.html#TERMS_NUMERICARGUMENT">numeric argument</a>
+in your document setup. 
 <p>
 <hr>
 
@@ -2179,7 +2278,8 @@ as most of her other document processing macros.  The reason is
 that groff's underlying line-numbering
 <a href="definitions.html#TERMS_PRIMITIVES">primitive</a>,
 <kbd>.nm</kbd>, is, well...primtive.  It is not possible, for
-example, to set the
+example, to select a particular family or font for use exclusively
+with line numbers.  Nor is it possible to set the
 <a href="definitions.html#TERMS_GUTTER">gutter</a>
 using any
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
@@ -4624,11 +4724,14 @@ in a document.  <strong>Mom</strong> takes care of the rest.
 
 <a name="TOC_CONTROL"><h3><u>TOC control macros</u></h3></a>
 <p>
-Toc entries are not actually processed when <strong>mom</strong>
-collects them, so you can put any toc control macros anywhere you
-like in your document.  Some may prefer to place them at the top of
-the file.  Others may prefer to place them just before outputting
-the toc.  The choice is yours.
+TOC control macros must be placed prior to invoking
+<a href="docprocessing.html#START">START</a>.
+<p>
+<strong>ERRATUM:</strong> In versions of <strong>mom</strong> prior to
+1.3-e_3, the documentation stated that TOC control macros could go
+anywhere in a <strong>mom</strong> file prior to invoking
+<strong>.TOC</strong>.
+That convenience has been removed for Very Good Reasons.
 <br>
 <ol>
 	<li><a href="#TOC_GENERAL"><strong>General toc page style control</strong></a>
