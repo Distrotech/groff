@@ -21,8 +21,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.3-e_3
----------------
+Version 1.4
+-----------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -1197,75 +1197,94 @@ and \*[DOWN <n><unit>].
 \#
 .MAC SMARTQUOTES END
 .    rr #ARGS_TO_SQ
+.    if \\n[#RESTORE_SQ]=1 \{\
+.       rr #RESTORE_SQ
+.       SMARTQUOTES \\*[$RESTORE_SQ]
+.       return
+.    \}
 .    ie '\\$1'' \{\
 .       nr #OPEN_CLOSE 0
 .       ds $QUOTE0 \\[lq]
 .       ds $QUOTE1 \\[rq]
+.       ds $RESTORE_SQ \\$1
 .    \}
 .    el \{\
 .       if '\\$1',,' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Bq]
 .          ds $QUOTE1 \\[lq]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'<<' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Fo]
 .          ds $QUOTE1 \\[Fc]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'>>' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Fc]
 .          ds $QUOTE1 \\[Fo]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'DA' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Fc]
 .          ds $QUOTE1 \\[Fo]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'DE' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Bq]
 .          ds $QUOTE1 \\[lq]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'ES' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[lq]
 .          ds $QUOTE1 \\[rq]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'FR' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Fo]\\|
 .          ds $QUOTE1 \\|\\[Fc]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'IT' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Fo]\\|
 .          ds $QUOTE1 \\|\\[Fc]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'NL' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[rq]
 .          ds $QUOTE1 \\[rq]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'NO' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Fo]
 .          ds $QUOTE1 \\[Fc]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'PT' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Fo]
 .          ds $QUOTE1 \\[Fc]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if '\\$1'SV' \{\
 .          nr #ARGS_TO_SQ 1
 .          ds $QUOTE0 \\[Fc]
 .          ds $QUOTE1 \\[Fc]
+.          ds $RESTORE_SQ \\$1
 .       \}
 .       if !r#ARGS_TO_SQ \{\
 .          ds $QUOTE0 \\[dq]
 .          ds $QUOTE1 \\[dq]
+.          nr #RESTORE_SQ 1
 .       \}
 .    \}
 .END
@@ -3360,6 +3379,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .ALIAS    CONDENSE        CONDENSE_OR_EXTEND
 .ALIAS    EXTEND          CONDENSE_OR_EXTEND
 .ALIAS    FAM             FAMILY
+.ALIAS    FONT            FT
 .ALIAS    HYPHENATE       HY
 .ALIAS    HYPHENATION     HY
 .ALIAS    HYSET           HY_SET
@@ -3711,13 +3731,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if \\n[#USER_DEF_HDRFTR_CENTER]=0 \{\
 .             ie \\n[#DRAFT_WITH_PAGENUM] \{\
 .                ie '\\*[$CHAPTER]'' \{\
-.                   ie !'\\*[$CHAPTER_TITLE]'' \{\
+.                   ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .                      ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                   \}
 .                   el .ds $HDRFTR_CENTER \\*[$CHAPTER_STRING]
 .                \}
 .                el \{\
-.                   ie !'\\*[$CHAPTER_TITLE]'' \{\
+.                   ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .                      ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                   \}
 .                   el .ds $HDRFTR_CENTER \\*[$CHAPTER_STRING] \\*[$CHAPTER]
@@ -3726,7 +3746,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             el \{\
 .                ie '\\*[$REVISION]'' \{\
 .                   ie '\\*[$CHAPTER]'' \{\
-.                      ie !'\\*[$CHAPTER_TITLE]'' \{\
+.                      ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .                         ie '\\*[$DRAFT]'' \{\
 .                            ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                         \}
@@ -3749,13 +3769,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                      \}
 .                   \}
 .                   el \{\
-.                      ie !'\\*[$CHAPTER_TITLE]'' \{\
+.                      ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .                         ie '\\*[$DRAFT]'' \{\
 .                            ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                         \}
 .                         el \{\
 .                            ds $HDRFTR_CENTER \
-                             \\*[$CHAPTER_TITLE], \
+                             \\*[$CHAPTER_TITLE_1], \
                              \\*[$DRAFT_STRING]\\*[$DRAFT]
 .                         \}
 .                      \}
@@ -3774,7 +3794,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .                el \{\
 .                   ie '\\*[$CHAPTER]'' \{\
-.                      ie !'\\*[$CHAPTER_TITLE]'' \{\
+.                      ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .                         ie '\\*[$DRAFT]'' \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_TITLE], \
@@ -3802,7 +3822,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                      \}
 .                   \}
 .                   el \{\
-.                      ie !'\\*[$CHAPTER_TITLE]'' \{\
+.                      ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .                         ie '\\*[$DRAFT]'' \{\
 .                            ds $HDRFTR_CENTER \
                              \\*[$CHAPTER_TITLE], \
@@ -3840,7 +3860,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             ie \\n[#PAGENUM_STYLE_SET] \{ .PAGENUM_STYLE \\*[$PAGENUM_STYLE] \}
 .             el \{ .PAGENUM_STYLE DIGIT \}
 .             ie '\\*[$CHAPTER]'' \{\
-.                ie !'\\*[$CHAPTER_TITLE]'' \{\
+.                ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .                   ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                \}
 .                el \{\
@@ -3848,7 +3868,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .             \}
 .             el \{\
-.                ie !'\\*[$CHAPTER_TITLE]'' \{\
+.                ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .                   ds $HDRFTR_CENTER \\*[$CHAPTER_TITLE]
 .                \}
 .                el \{\
@@ -3916,16 +3936,31 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC DOCTITLE END
-.    ds $DOC_TITLE \\$1
+.    rr #DOCTITLE_NUM
+.    nr #DOCTITLE_NUM -1 1
+.    while \\n[#NUM_ARGS]>\\n[#DOCTITLE_NUM] \{\
+.       ds $DOC_TITLE_\\n+[#DOCTITLE_NUM] \\$\\n[#DOCTITLE_NUM]
+.\}
+.    ds $DOC_TITLE \\$*
 .END
 \#
 .MAC TITLE END \"Document title
-.    ds $TITLE \\$1
+.    rr #TITLE_NUM
+.    nr #TITLE_NUM -1 1
+.    while \\n[#NUM_ARGS]>\\n[#TITLE_NUM] \{\
+.       ds $TITLE_\\n+[#TITLE_NUM] \\$\\n[#TITLE_NUM]
+.\}
+.    ds $TITLE \\$*
 .END
 \#
 \#
 .MAC SUBTITLE END \"Document sub-title
-.    ds $SUBTITLE \\$1
+.    rr #SUBTITLE_NUM
+.    nr #SUBTITLE_NUM -1 1
+.    while \\n[#NUM_ARGS]>\\n[#SUBTITLE_NUM] \{\
+.       ds $SUBTITLE_\\n+[#SUBTITLE_NUM] \\$\\n[#SUBTITLE_NUM]
+.\}
+.    ds $SUBTITLE \\$*
 .END
 \#
 \#
@@ -3941,7 +3976,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC CHAPTER_TITLE END \" This defines what comes after Chapter #
-.    ds $CHAPTER_TITLE \\$1
+.    rr #CHAPTER_TITLE_NUM
+.    nr #CHAPTER_TITLE_NUM -1 1
+.    while \\n[#NUM_ARGS]>\\n[#CHAPTER_TITLE_NUM] \{\
+.       ds $CHAPTER_TITLE_\\n+[#CHAPTER_TITLE_NUM] \\$\\n[#CHAPTER_TITLE_NUM]
+.\}
+.    ds $CHAPTER_TITLE \\$*
 .END
 \#
 \#
@@ -3966,9 +4006,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    while \\n[#NUM_ARGS]>\\n[#AUTHOR_NUM] \{\
 .       ds $AUTHOR_\\n+[#AUTHOR_NUM] \\$\\n[#AUTHOR_NUM]
 .\}
-.    nr #NUM_AUTHORS \\n[#NUM_ARGS]%2 \"Use mod 2 to test if odd or even # of authors
-.    ie \\n[#NUM_AUTHORS]=1 \{ .nr #AUTHOR_LINES 0  \}
-.    el \{ .nr #AUTHOR_LINES 1 \}
 .END
 \#
 \#
@@ -4605,8 +4642,14 @@ the macro whose style is to be changed.
 .          DOC_LEAD_ADJUST
 .       \}
 .    \}
-.    ds $DOC_QUAD     \\*[$QUAD_VALUE]
-.    ds $PP_FT        \\*[$FONT]
+.    ds $DOC_QUAD      \\*[$QUAD_VALUE]
+.    if '\\*[$FONT]''  \{ .FT R \}
+.    if '\\*[$PP_FT]'' \{\
+.       ds $PP_FT \\*[$FONT]
+.    \}
+.    if !'\\*[$PP_FT]'' \{\
+.       ds $PP_FT \\*[$FONT]
+.    \}
 .\" Counters
 .    nr #PP 0
 .    nr #FN_NUMBER 0 1
@@ -4656,9 +4699,15 @@ the macro whose style is to be changed.
 .    if !r#EN_STRING_CAPS       \{ .ENDNOTE_STRING_CAPS                \}
 .    if !d$EN_TITLE \{\
 .       ie \\n[#DOC_TYPE]=2 \{\
-.          ie '\\*[$CHAPTER]'' \{ .ENDNOTE_TITLE "\\*[$CHAPTER_STRING]" \}
-.          el \{ .ENDNOTE_TITLE "\\*[$CHAPTER_STRING] \\*[$CHAPTER]"    \}
-.       \}
+.          ie !'\\*[$CHAPTER_TITLE_1]'' \{\
+.             ie '\\*[$CHAPTER]'' \{ .ENDNOTE_TITLE "\\*[$CHAPTER_TITLE]" \}
+.             el \{ .ENDNOTE_TITLE "\\*[$CHAPTER_STRING] \\*[$CHAPTER]: \\*[$CHAPTER_TITLE]" \}
+.          \}
+.             el \{\
+.                ie '\\*[$CHAPTER]'' \{ .ENDNOTE_TITLE "\\*[$CHAPTER_STRING]" \}
+.                el \{ .ENDNOTE_TITLE "\\*[$CHAPTER_STRING] \\*[$CHAPTER]"    \}
+.             \}
+.          \}
 .       el \{ .ENDNOTE_TITLE "\\*[$TITLE]" \}
 .    \}
 .    if !d$EN_TITLE_FAM          \{ .ENDNOTE_TITLE_FAMILY \\*[$EN_FAM]  \}
@@ -4668,7 +4717,8 @@ the macro whose style is to be changed.
 .    if !r#EN_NUMBERS_ALIGN_LEFT \{\
 .       if !r#EN_NUMBERS_ALIGN_RIGHT \{ .ENDNOTE_NUMBERS_ALIGN_RIGHT 2  \}
 .    \}
-.    if !d$EN_LN_GAP             \{ .ENDNOTE_LINENUMBER_GAP 1.5n              \}
+.    if !d$EN_LN_GAP             \{ .ENDNOTE_LINENUMBER_GAP 1.5n        \}
+.    if !r#EN_ALLOWS_HEADERS     \{ .ENDNOTES_ALLOWS_HEADERS            \}
 .    if !d$BIB_PN_STYLE          \{ .BIBLIOGRAPHY_PAGENUM_STYLE digit         \}
 .    if !d$BIB_FAM               \{ .BIBLIOGRAPHY_FAMILY \\*[$DOC_FAM]        \}
 .    if !d$BIB_FT                \{ .BIBLIOGRAPHY_FONT R                      \}
@@ -4743,15 +4793,7 @@ the macro whose style is to be changed.
 .    \}
 .\" Defaults for printstyle TYPESET
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       if !d$DOCHEADER_LEAD_ADJ \{\
-.          ie !'\\*[$CHAPTER_TITLE]'' \{\
-.             ie !'\\*[$CHAPTER_STRING]'' \{\
-.                DOCHEADER_LEAD +4
-.             \}
-.             el \{ .DOCHEADER_LEAD +0 \}
-.          \}
-.          el \{ .DOCHEADER_LEAD +0 \}
-.       \}
+.       if !d$DOCHEADER_LEAD_ADJ \{ .DOCHEADER_LEAD +0 \}
 .\" +Cover
 .       if !d$COVER_LEAD_ADJ \{ .COVER_LEAD +0 \}
 .       if !d$COVER_FAM \{ .COVER_FAMILY \\*[$DOC_FAM] \}
@@ -5146,23 +5188,35 @@ the macro whose style is to be changed.
 .END
 \#
 .MAC DEFAULT_DOCHEADER END
-.    CENTER
-.    FAMILY  \\*[$TITLE_FAM]
-.    FT      \\*[$TITLE_FT]
-.    PT_SIZE \\*[$TITLE_PT_SIZE]
-.    LS      \\n[#DOCHEADER_LEAD]u
-.    ie \\n[#TITLE_COLOR]=1 \{\
-.       PRINT \m[\\*[$TITLE_COLOR]]\\*[$TITLE]\m[]
+.    if !'\\*[$TITLE_1]'' \{\
+.       CENTER
+.       FAMILY  \\*[$TITLE_FAM]
+.       FT      \\*[$TITLE_FT]
+.       PT_SIZE \\*[$TITLE_PT_SIZE]
+.       LS      \\n[#DOCHEADER_LEAD]u
+.       nr #ARG_NUM 0 1
+.       while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.          ie \\n[#TITLE_COLOR]=1 \{\
+.             PRINT "\m[\\*[$TITLE_COLOR]]\\*[$TITLE_\\n[#ARG_NUM]]\m[]
+.          \}
+.          el \{\
+.             PRINT "\\*[$TITLE_\\n[#ARG_NUM]]
+.          \}
+.\}
 .    \}
-.    el \{ .PRINT \\*[$TITLE] \}
-.    if !'\\*[$SUBTITLE]'' \{\
+.    if !'\\*[$SUBTITLE_1]'' \{\
 .       FAMILY  \\*[$SUBTITLE_FAM]
 .       FT      \\*[$SUBTITLE_FT]
 .       PT_SIZE \\*[$SUBTITLE_PT_SIZE]
-.       ie \\n[#SUBTITLE_COLOR]=1 \{\
-.          PRINT \m[\\*[$SUBTITLE_COLOR]]\\*[$TITLE]\m[]
-.       \}
-.       el \{ .PRINT \\*[$SUBTITLE] \}
+.       nr #ARG_NUM 0 1
+.       while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.          ie \\n[#SUBTITLE_COLOR]=1 \{\
+.             PRINT "\m[\\*[$SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n[#ARG_NUM]]\m[]
+.          \}
+.          el \{\
+.             PRINT "\\*[$SUBTITLE_\\n[#ARG_NUM]]
+.          \}
+.\}
 .    \}
 .    if !'\\*[$AUTHOR_1]'' \{\
 .       FAMILY  \\*[$AUTHOR_FAM]
@@ -5187,17 +5241,20 @@ the macro whose style is to be changed.
 .    LS      \\n[#DOCHEADER_LEAD]u
 .\" Chapter title only
 .    ie '\\*[$CHAPTER]'' \{\
-.       ie !'\\*[$CHAPTER_TITLE]'' \{\
+.       ie !'\\*[$CHAPTER_TITLE_1]'' \{\
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             FAMILY  \\*[$CHAPTER_TITLE_FAM]
 .             FT      \\*[$CHAPTER_TITLE_FT]
 .             PT_SIZE \\*[$CHAPTER_TITLE_PT_SIZE]
 .             LS      \\n[#DOCHEADER_LEAD]u
 .          \}
-.          ie \\n[#TITLE_COLOR]=1 \{\
-.             PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_TITLE]\m[]
-.          \}
-.          el \{ .PRINT \\*[$CHAPTER_TITLE] \}
+.          nr #ARG_NUM 0 1
+.          while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.             ie \\n[#TITLE_COLOR]=1 \{\
+.                PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.             \}
+.             el \{ .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .       \}
 .       el \{\
 .          ie \\n[#TITLE_COLOR]=1 \{\
@@ -5212,17 +5269,23 @@ the macro whose style is to be changed.
 .          PRINT \m[\\*[$TITLE_COLOR]]\\*[$CHAPTER_STRING] \\*[$CHAPTER]\m[]
 .       \}
 .       el \{ .PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER] \}
-.       if !'\\*[$CHAPTER_TITLE]'' \{\
-.          if \\n[#PRINT_STYLE]=1 \{ .PRINT \\*[$CHAPTER_TITLE] \}
+.       if !'\\*[$CHAPTER_TITLE_1]'' \{\
+.          if \\n[#PRINT_STYLE]=1 \{\
+.             PRINT \\*[$CHAPTER_TITLE]
+.          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             FAMILY  \\*[$CHAPTER_TITLE_FAM]
 .             FT      \\*[$CHAPTER_TITLE_FT]
 .             PT_SIZE \\*[$CHAPTER_TITLE_PT_SIZE]
 .             LS      \\n[#DOCHEADER_LEAD]u
-.             ie \\n[#CHAPTER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$CHAPTER_TITLE_COLOR]]\\*[$CHAPTER_TITLE]\m[]
-.             \}
-.             el \{ .PRINT \\*[$CHAPTER_TITLE] \}
+.             ALD \\n[.v]u/4u \"Put a little space before the chapter title
+.             nr #ARG_NUM 0 1
+.             while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                ie \\n[#CHAPTER_TITLE_COLOR]=1 \{\
+.                   PRINT \m[\\*[$CHAPTER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.                \}
+.             el \{ .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .             RLD \\n[#DOC_LEAD]u \" Just looks better this way
 .          \}
 .       \}
@@ -5236,18 +5299,30 @@ the macro whose style is to be changed.
 .    FT      \\*[$TITLE_FT]
 .    PT_SIZE \\*[$TITLE_PT_SIZE]
 .    LS      \\n[#DOCHEADER_LEAD]u
-.    ie \\n[#TITLE_COLOR]=1 \{\
-.       PRINT \m[\\*[$TITLE_COLOR]]\\*[$TITLE]\m[]
+.    if !'\\*[$TITLE_1]'' \{\
+.       nr #ARG_NUM 0 1
+.       while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.          ie \\n[#TITLE_COLOR]=1 \{\
+.             PRINT "\m[\\*[$TITLE_COLOR]]\\*[$TITLE_\\n[#ARG_NUM]]\m[]
+.          \}
+.          el \{\
+.             PRINT "\\*[$TITLE_\\n[#ARG_NUM]]
+.          \}
+.\}
 .    \}
-.    el \{ .PRINT \\*[$TITLE] \}
 .    if !'\\*[$SUBTITLE]'' \{\
 .       FAMILY  \\*[$SUBTITLE_FAM]
 .       FT      \\*[$SUBTITLE_FT]
 .       PT_SIZE \\*[$SUBTITLE_PT_SIZE]
-.       ie \\n[#SUBTITLE_COLOR]=1 \{\
-.          PRINT \m[\\*[$SUBTITLE_COLOR]]\\*[$TITLE]\m[]
-.       \}
-.       el \{ .PRINT \\*[$SUBTITLE] \}
+.       nr #ARG_NUM 0 1
+.       while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.          ie \\n[#SUBTITLE_COLOR]=1 \{\
+.             PRINT "\m[\\*[$SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n[#ARG_NUM]]\m[]
+.          \}
+.          el \{\
+.             PRINT "\\*[$SUBTITLE_\\n[#ARG_NUM]]
+.          \}
+.\}
 .    \}
 .    if !'\\*[$AUTHOR_1]'' \{\
 .       FAMILY  \\*[$AUTHOR_FAM]
@@ -5344,8 +5419,22 @@ the macro whose style is to be changed.
 \#
 \#
 .MAC COVERTITLE END
-.    ie '\\$0'DOC_COVERTITLE' .ds $DOC_COVER_TITLE \\$1
-.    el .ds $COVER_TITLE \\$1
+.    ie '\\$0'DOC_COVERTITLE' \{\ 
+.       rr #DOC_COVER_TITLE_NUM
+.       nr #DOC_COVER_TITLE_NUM -1 1
+.       while \\n[#NUM_ARGS]>\\n[#DOC_COVER_TITLE_NUM] \{\
+.          ds $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
+.\}
+.       ds $DOC_COVER_TITLE \\$*
+.    \}
+.    el \{\
+.       rr #COVER_TITLE_NUM
+.       nr #COVER_TITLE_NUM -1 1
+.       while \\n[#NUM_ARGS]>\\n[#COVER_TITLE_NUM] \{\
+.          ds $COVER_TITLE_\\n+[#COVER_TITLE_NUM] \\$\\n[#COVER_TITLE_NUM]
+.\}
+.       ds $COVER_TITLE \\$*
+.    \}
 .END
 \#
 \#
@@ -5477,27 +5566,41 @@ the macro whose style is to be changed.
 .       if \\n[#DOC_COVER_TITLE]=1 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
 .             CAPS
-.             UNDERSCORE "\\*[$TITLE]"
+.             nr #ARG_NUM 0 1
+.             while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]
+.\}
 .             CAPS OFF
 .          \}
 .          el \{\
+.          nr #ARG_NUM 0 1
+.          while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
 .             ie \\n[#DOC_COVER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$TITLE]\m[]
+.                PRINT "\m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$TITLE_\\n[#ARG_NUM]]\m[]
 .             \}
-.             el \{ .PRINT \\*[$TITLE] \}
+.             el \{\
+.                PRINT "\\*[$TITLE_\\n[#ARG_NUM]]
+.             \}
+.\}
 .          \}
 .       \}
 .       if \\n[#DOC_COVER_TITLE]=2 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
 .             CAPS
-.             UNDERSCORE "\\*[$DOC_TITLE]"
+.             nr #ARG_NUM 0 1
+.             while \\n[#DOCTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                UNDERSCORE "\\*[$DOC_TITLE_\\n[#ARG_NUM]]"
+.\}
 .             CAPS OFF
 .          \}
 .          el \{\
+.          nr #ARG_NUM 0 1
+.          while \\n[#DOCTITLE_NUM]>=\\n+[#ARG_NUM] \{\
 .             ie \\n[#DOC_COVER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$DOC_TITLE]\m[]
+.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$DOC_TITLE_\\n[#ARG_NUM]]\m[]
 .             \}
-.             el \{ .PRINT \\*[$DOC_TITLE] \}
+.             el \{ .PRINT \\*[$DOC_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .          \}
 .       \}
 .       if \\n[#DOC_COVER_TITLE]=3 \{\
@@ -5516,14 +5619,28 @@ the macro whose style is to be changed.
 .       if \\n[#DOC_COVER_TITLE]=4 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
 .             CAPS
-.             UNDERSCORE "\\*[$CHAPTER_TITLE]"
+.             nr #ARG_NUM 0 1
+.                ie \\n[#SINGLE_SPACE]=0 \{\
+.                   vs \\n[#DOC_LEAD]u/2u
+.                \}
+.                el \{\
+.                   vs \\n[#DOC_LEAD]u
+.                \}
+.                sp
+.             while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                UNDERSCORE "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.\}
 .             CAPS OFF
+.             if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u \}
 .          \}
 .          el \{\
+.          nr #ARG_NUM 0 1
+.          while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
 .             ie \\n[#DOC_COVER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$CHAPTER_TITLE]\m[]
+.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
 .             \}
-.             el \{ .PRINT \\*[$CHAPTER_TITLE] \}
+.             el \{ .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .          \}
 .       \}
 .       if \\n[#DOC_COVER_TITLE]=5 \{\
@@ -5538,46 +5655,80 @@ the macro whose style is to be changed.
 .             \}
 .             el \{ .PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER] \}
 .          \}
-.          if !'\\*[$CHAPTER_TITLE]'' \{\
+.          if !'\\*[$CHAPTER_TITLE_1]'' \{\
 .             ie \\n[#PRINT_STYLE]=1 \{\
-.                UNDERSCORE "\\*[$CHAPTER_TITLE]"
+.                ie \\n[#SINGLE_SPACE]=0 \{\
+.                   vs \\n[#DOC_LEAD]u/2u
+.                \}
+.                el \{\
+.                   vs \\n[#DOC_LEAD]u
+.                \}
+.                sp
+.                nr #ARG_NUM 0 1
+.                while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                   UNDERSCORE "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.\}
+.                if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u \}
 .             \}
 .             el \{\
 .                FAMILY  \\*[$DOC_COVER_CHAPTER_TITLE_FAM]
 .                FT      \\*[$DOC_COVER_CHAPTER_TITLE_FT]
 .                PT_SIZE \\*[$DOC_COVER_CHAPTER_TITLE_PT_SIZE]
-.                ie \\n[#DOC_COVER_CHAPTER_TITLE_COLOR]=1 \{\
-.                   PRINT \m[\\*[$DOC_COVER_CHAPTER_TITLE_COLOR]]\\*[$CHAPTER_TITLE]\m[]
-.                \}
-.                el \{ .PRINT \\*[$CHAPTER_TITLE] \}
+.                nr #ARG_NUM 0 1
+.                ALD \\n[.v]u/4u \"Put a little space before the chapter title
+.                while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                   ie \\n[#DOC_COVER_TITLE_COLOR]=1 \{\
+.                      PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.                   \}
+.                   el \{ .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .             \}
 .          \}
 .       \}
 .       if \\n[#DOC_COVER_TITLE]=6 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
 .             CAPS
-.             UNDERSCORE "\\*[$DOC_COVER_TITLE]"
+.             nr #ARG_NUM 0 1
+.             while \\n[#DOC_COVER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                UNDERSCORE "\\*[$DOC_COVER_TITLE_\\n[#ARG_NUM]]"
+.\}
 .             CAPS OFF
 .          \}
 .          el \{\
+.             nr #ARG_NUM 0 1
+.             while \\n[#DOC_COVER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
 .             ie \\n[#DOC_COVER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$DOC_COVER_TITLE]\m[]
+.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$DOC_COVER_TITLE_\\n[#ARG_NUM]]\m[]
 .             \}
-.             el \{ .PRINT \\*[$DOC_COVER_TITLE] \}
+.             el \{ .PRINT \\*[$DOC_COVER_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .          \}
 .       \}
-.       if \\n[#DOC_COVER_SUBTITLE]=1 \{\
-.          FAMILY  \\*[$DOC_COVER_SUBTITLE_FAM]
-.          FT      \\*[$DOC_COVER_SUBTITLE_FT]
-.          PT_SIZE \\*[$DOC_COVER_SUBTITLE_PT_SIZE]
-.          if \\n[#PRINT_STYLE]=1 \{ .TYPEWRITER \}
-.          ie \\n[#DOC_COVER_SUBTITLE_COLOR]=1 \{\
-.             PRINT \m[\\*[$DOC_COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE]\m[]
+.       if !\\n[#DOC_TYPE]=2 \{\
+.          if \\n[#DOC_COVER_SUBTITLE]=1 \{\
+.             FAMILY  \\*[$DOC_COVER_SUBTITLE_FAM]
+.             FT      \\*[$DOC_COVER_SUBTITLE_FT]
+.             PT_SIZE \\*[$DOC_COVER_SUBTITLE_PT_SIZE]
+.             if \\n[#PRINT_STYLE]=1 \{\
+.                TYPEWRITER
+.                ie \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u/2u \}
+.                el \{ .vs \\n[#DOC_LEAD]u \}
+.                sp
+.             \}
+.             nr #ARG_NUM 0 1
+.             while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                ie \\n[#DOC_COVER_SUBTITLE_COLOR]=1 \{\
+.                   PRINT \m[\\*[$DOC_COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n[#ARG_NUM]]\m[]
+.                \}
+.                el \{ .PRINT \\*[$SUBTITLE_\\n[#ARG_NUM]] \}
+.\}
+.             if \\n[#PRINT_STYLE]=1 \{\
+.                if \\n[#SINGLE_SPACE]=0 \{ .vs \}
+.             \}
 .          \}
-.          el \{ .PRINT \\*[$SUBTITLE] \}
-.       \}
-.       if \\n[#PRINT_STYLE]=1 \{\
-.          if !r#DOC_COVER_SUBTITLE \{ .SP \}
+.          if \\n[#PRINT_STYLE]=1 \{\
+.             if !r#DOC_COVER_SUBTITLE \{ .sp \}
+.          \}
 .       \}
 .       if \\n[#DOC_COVER_AUTHOR]=1 \{\
 .          FAMILY  \\*[$DOC_COVER_AUTHOR_FAM]
@@ -5585,7 +5736,9 @@ the macro whose style is to be changed.
 .          PT_SIZE \\*[$DOC_COVER_AUTHOR_PT_SIZE]
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             TYPEWRITER
-.             vs \\n[#DOC_LEAD]u/2u
+.             ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#DOC_LEAD]u \}
+.             el \{ .vs \\n[#DOC_LEAD]u/2u \}
+.             sp
 .          \}
 .          if !'\\*[$ATTRIBUTE_STRING]'' \{\
 .             ie \\n[#DOC_COVER_ATTRIBUTE_COLOR]=1 \{\
@@ -5599,18 +5752,20 @@ the macro whose style is to be changed.
 .       FT      \\*[$DOC_COVER_DOCTYPE_FT]
 .       PT_SIZE \\*[$DOC_COVER_DOCTYPE_PT_SIZE]
 .       SP
-.       if \\n[#DOC_COVER_DOCTYPE]=1 \{\
-.          ie \\n[#PRINT_STYLE]=1 \{\
-.             TYPEWRITER
-.             vs \\n[#DOC_LEAD]u
-.             UNDERSCORE2 "\\*[$DOC_TYPE]
-.          \}
-.          el \{\
-.             ie \\n[#DOC_COVER_DOCTYPE_COLOR]=1 \{\
-.                COLOR \\*[$DOC_COVER_DOCTYPE_COLOR]
-.                UNDERSCORE "\\*[$DOC_TYPE]
+.       if \\n[#DOC_TYPE]=3 \{\
+.          if \\n[#DOC_COVER_DOCTYPE]=1 \{\
+.             ie \\n[#PRINT_STYLE]=1 \{\
+.                TYPEWRITER
+.                vs \\n[#DOC_LEAD]u
+.                UNDERSCORE2 "\\*[$DOC_TYPE]
 .             \}
-.             el .UNDERSCORE "\\*[$DOC_TYPE]
+.             el \{\
+.                ie \\n[#DOC_COVER_DOCTYPE_COLOR]=1 \{\
+.                   COLOR \\*[$DOC_COVER_DOCTYPE_COLOR]
+.                   UNDERSCORE "\\*[$DOC_TYPE]
+.                \}
+.                el .UNDERSCORE "\\*[$DOC_TYPE]
+.             \}
 .          \}
 .       \}
 .       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
@@ -5679,27 +5834,41 @@ the macro whose style is to be changed.
 .       if \\n[#COVER_TITLE]=1 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
 .             CAPS
-.             UNDERSCORE "\\*[$TITLE]"
+.             nr #ARG_NUM 0 1
+.             while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]
+.\}
 .             CAPS OFF
 .          \}
 .          el \{\
+.          nr #ARG_NUM 0 1
+.          while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
 .             ie \\n[#COVER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$COVER_TITLE_COLOR]]\\*[$TITLE]\m[]
+.                PRINT "\m[\\*[$COVER_TITLE_COLOR]]\\*[$TITLE_\\n[#ARG_NUM]]\m[]
 .             \}
-.             el \{ .PRINT \\*[$TITLE] \}
+.             el \{\
+.                PRINT "\\*[$TITLE_\\n[#ARG_NUM]]
+.             \}
+.\}
 .          \}
 .       \}
 .       if \\n[#COVER_TITLE]=2 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
 .             CAPS
-.             UNDERSCORE "\\*[$DOC_TITLE]"
+.             nr #ARG_NUM 0 1
+.             while \\n[#DOCTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                UNDERSCORE "\\*[$DOC_TITLE_\\n[#ARG_NUM]]"
+.\}
 .             CAPS OFF
 .          \}
 .          el \{\
-.             ie \\n[#COVER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$COVER_TITLE_COLOR]]\\*[$DOC_TITLE]\m[]
+.          nr #ARG_NUM 0 1
+.          while \\n[#DOCTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.             ie \\n[#DOC_COVER_TITLE_COLOR]=1 \{\
+.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$DOC_TITLE_\\n[#ARG_NUM]]\m[]
 .             \}
-.             el \{ .PRINT \\*[$DOC_TITLE] \}
+.             el \{ .PRINT \\*[$DOC_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .          \}
 .       \}
 .       if \\n[#COVER_TITLE]=3 \{\
@@ -5717,15 +5886,29 @@ the macro whose style is to be changed.
 .       \}
 .       if \\n[#COVER_TITLE]=4 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
+.                ie \\n[#SINGLE_SPACE]=0 \{\
+.                   vs \\n[#DOC_LEAD]u/2u
+.                \}
+.                el \{\
+.                   vs \\n[#DOC_LEAD]u
+.                \}
+.                sp
 .             CAPS
-.             UNDERSCORE "\\*[$CHAPTER_TITLE]"
+.             nr #ARG_NUM 0 1
+.             while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                UNDERSCORE "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.\}
 .             CAPS OFF
+.             if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u \}
 .          \}
 .          el \{\
-.             ie \\n[#COVER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$COVER_TITLE_COLOR]]\\*[$CHAPTER_TITLE]\m[]
+.          nr #ARG_NUM 0 1
+.          while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.             ie \\n[#DOC_COVER_TITLE_COLOR]=1 \{\
+.                PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
 .             \}
-.             el \{ .PRINT \\*[$CHAPTER_TITLE] \}
+.             el \{ .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .          \}
 .       \}
 .       if \\n[#COVER_TITLE]=5 \{\
@@ -5740,46 +5923,83 @@ the macro whose style is to be changed.
 .             \}
 .             el \{ .PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER] \}
 .          \}
-.          if !'\\*[$CHAPTER_TITLE]'' \{\
+.          if !'\\*[$CHAPTER_TITLE_1]'' \{\
 .             ie \\n[#PRINT_STYLE]=1 \{\
-.                UNDERSCORE "\\*[$CHAPTER_TITLE]"
+.                ie \\n[#SINGLE_SPACE]=0 \{\
+.                   vs \\n[#DOC_LEAD]u/2u
+.                \}
+.                el \{\
+.                   vs \\n[#DOC_LEAD]u
+.                \}
+.                sp
+.                nr #ARG_NUM 0 1
+.                while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                   UNDERSCORE "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.\}
+.                if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u \}
 .             \}
 .             el \{\
 .                FAMILY  \\*[$COVER_CHAPTER_TITLE_FAM]
 .                FT      \\*[$COVER_CHAPTER_TITLE_FT]
 .                PT_SIZE \\*[$COVER_CHAPTER_TITLE_PT_SIZE]
-.                ie \\n[#COVER_CHAPTER_TITLE_COLOR]=1 \{\
-.                   PRINT \m[\\*[$COVER_CHAPTER_TITLE_COLOR]]\\*[$CHAPTER_TITLE]\m[]
-.                \}
-.                el \{ .PRINT \\*[$CHAPTER_TITLE] \}
+.                ALD \\n[.v]u/4u \"Put a little space before the chapter title
+.                nr #ARG_NUM 0 1
+.                while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                   ie \\n[#DOC_COVER_TITLE_COLOR]=1 \{\
+.                      PRINT \m[\\*[$DOC_COVER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.                   \}
+.                   el \{ .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .             \}
 .          \}
 .       \}
 .       if \\n[#COVER_TITLE]=6 \{\
 .          ie \\n[#PRINT_STYLE]=1 \{\
 .             CAPS
-.             UNDERSCORE "\\*[$COVER_TITLE]"
+.             nr #ARG_NUM 0 1
+.             while \\n[#COVER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                UNDERSCORE "\\*[$COVER_TITLE_\\n[#ARG_NUM]]"
+.\}
 .             CAPS OFF
 .          \}
 .          el \{\
+.             nr #ARG_NUM 0 1
+.             while \\n[#COVER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
 .             ie \\n[#COVER_TITLE_COLOR]=1 \{\
-.                PRINT \m[\\*[$COVER_TITLE_COLOR]]\\*[$COVER_TITLE]\m[]
+.                PRINT \m[\\*[$COVER_TITLE_COLOR]]\\*[$COVER_TITLE_\\n[#ARG_NUM]]\m[]
 .             \}
-.             el \{ .PRINT \\*[$COVER_TITLE] \}
+.             el \{ .PRINT \\*[$COVER_TITLE_\\n[#ARG_NUM]] \}
+.\}
 .          \}
 .       \}
-.       if \\n[#COVER_SUBTITLE]=1 \{\
-.          FAMILY  \\*[$COVER_SUBTITLE_FAM]
-.          FT      \\*[$COVER_SUBTITLE_FT]
-.          PT_SIZE \\*[$COVER_SUBTITLE_PT_SIZE]
-.          if \\n[#PRINT_STYLE]=1 \{ .TYPEWRITER \}
-.          ie \\n[#COVER_SUBTITLE_COLOR]=1 \{\
-.             PRINT \m[\\*[$COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE]\m[]
+.       if !\\n[#DOC_TYPE]=2 \{\
+.          if \\n[#COVER_SUBTITLE]=1 \{\
+.             FAMILY  \\*[$COVER_SUBTITLE_FAM]
+.             FT      \\*[$COVER_SUBTITLE_FT]
+.             PT_SIZE \\*[$COVER_SUBTITLE_PT_SIZE]
+.             if \\n[#PRINT_STYLE]=1 \{\
+.                TYPEWRITER
+.                if \\n[#PRINT_STYLE]=1 \{\
+.                   TYPEWRITER
+.                   ie \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u/2u \}
+.                   el \{ .vs \\n[#DOC_LEAD]u \}
+.                   sp
+.                \}
+.             \}
+.             nr #ARG_NUM 0 1
+.             while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                ie \\n[#COVER_SUBTITLE_COLOR]=1 \{\
+.                   PRINT \m[\\*[$COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n[#ARG_NUM]]\m[]
+.                \}
+.                el \{ .PRINT \\*[$SUBTITLE_\\n[#ARG_NUM]] \}
+.\}
+.             if \\n[#PRINT_STYLE]=1 \{\
+.                if \\n[#SINGLE_SPACE]=0 \{ .vs \}
+.             \}
 .          \}
-.          el \{ .PRINT \\*[$SUBTITLE] \}
-.       \}
-.       if \\n[#PRINT_STYLE]=1 \{\
-.          if !r#COVER_SUBTITLE \{ .SP \}
+.          if \\n[#PRINT_STYLE]=1 \{\
+.             if !r#COVER_SUBTITLE \{ .sp \}
+.          \}
 .       \}
 .       if \\n[#COVER_AUTHOR]=1 \{\
 .          FAMILY  \\*[$COVER_AUTHOR_FAM]
@@ -5787,7 +6007,9 @@ the macro whose style is to be changed.
 .          PT_SIZE \\*[$COVER_AUTHOR_PT_SIZE]
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             TYPEWRITER
-.             vs \\n[#DOC_LEAD]u/2u
+.             ie \\n[#SINGLE_SPACE]=1 \{ .vs \\n[#DOC_LEAD]u \}
+.             el \{ .vs \\n[#DOC_LEAD]u/2u \}
+.             sp
 .          \}
 .          if !'\\*[$ATTRIBUTE_STRING]'' \{\
 .             ie \\n[#COVER_ATTRIBUTE_COLOR]=1 \{\
@@ -5801,18 +6023,20 @@ the macro whose style is to be changed.
 .       FT      \\*[$COVER_DOCTYPE_FT]
 .       PT_SIZE \\*[$COVER_DOCTYPE_PT_SIZE]
 .       SP
-.       if \\n[#COVER_DOCTYPE]=1 \{\
-.          ie \\n[#PRINT_STYLE]=1 \{\
-.             TYPEWRITER
-.             vs \\n[#DOC_LEAD]u
-.             UNDERSCORE2 "\\*[$DOC_TYPE]
-.          \}
-.          el \{\
-.             ie \\n[#COVER_DOCTYPE_COLOR]=1 \{\
-.                COLOR \\*[$COVER_DOCTYPE_COLOR]
-.                UNDERSCORE "\\*[$DOC_TYPE]
+.       if \\n[#DOC_TYPE]=3 \{\
+.          if \\n[#COVER_DOCTYPE]=1 \{\
+.             ie \\n[#PRINT_STYLE]=1 \{\
+.                TYPEWRITER
+.                vs \\n[#DOC_LEAD]u
+.                UNDERSCORE2 "\\*[$DOC_TYPE]
 .             \}
-.             el .UNDERSCORE "\\*[$DOC_TYPE]
+.             el \{\
+.                ie \\n[#COVER_DOCTYPE_COLOR]=1 \{\
+.                   COLOR \\*[$COVER_DOCTYPE_COLOR]
+.                   UNDERSCORE "\\*[$DOC_TYPE]
+.                \}
+.                el .UNDERSCORE "\\*[$DOC_TYPE]
+.             \}
 .          \}
 .       \}
 .       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
@@ -6072,58 +6296,34 @@ the macro whose style is to be changed.
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             CENTER
 .             TYPEWRITER
-.             ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u*2u \}
-.             el \{ .vs \\n[#DOC_LEAD]u \}
-.             CAPS
-.             if !'\\*[$TITLE]'' \{ .UNDERSCORE "\\*[$TITLE]\}
-.             CAPS OFF
+.             if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u/2u \}
+.             if !'\\*[$TITLE_1]'' \{\
+.                CAPS
+.                nr #ARG_NUM 0 1
+.                while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                   UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]
+.\}
+.                CAPS OFF
+.             \}
 .             if !'\\*[$SUBTITLE]'' \{\
-.                ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u*2u \}
-.                el \{ .vs \\n[#DOC_LEAD]u \}
-.             PRINT \\*[$SUBTITLE]
+.                sp
+.                nr #ARG_NUM 0 1
+.                while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                   UNDERSCORE "\\*[$SUBTITLE_\\n[#ARG_NUM]]
+.\}
 .             \}
-.             if '\\*[$SUBTITLE]'' \{\
-.                ALD \\n[#DOC_LEAD]u
-.             \}
-.             ie !'\\*[$AUTHOR_1]'' \{\
-.                ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u \}
-.                el \{ .vs \\n[#DOC_LEAD]u/2u \}
-.                if !d$SUBTITLE \{\
-.                   ie \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
-.                   el \{ .ALD \\n[#DOC_LEAD]u*2u \}
-.                \}
+.             if !'\\*[$AUTHOR_1]'' \{\
+.                sp
 .                PRINT \\*[$ATTRIBUTE_STRING]
 .                nr #AUTHORS \\n[#AUTHOR_NUM]
 .                nr #NEXT_AUTHOR 0 1
 .                while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
 .                   PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]
 .\}
-.                if \\n[#AUTHOR_LINES]=1 \{\
-.                    ie \\n[#SINGLE_SPACE] \{ .RLD \\n[#DOC_LEAD]u \}
-.                    el \{ .ALD \\n[#DOC_LEAD]u/2u \}
-.                \}
-.             \}
-.             el \{\
-.                ie !d$SUBTITLE \{\
-.                   ie \\n[#SINGLE_SPACE] \{ .RLD \\n[#DOC_LEAD]u*2u \}
-.                   el \{ .RLD \\n[#DOC_LEAD]u \}
-.                \}
-.                el \{\
-.                   ie \\n[#SINGLE_SPACE] \{ .RLD \\n[#DOC_LEAD]u*2u \}
-.                   el \{ .ALD \\n[#DOC_LEAD]u \}
-.                \}
 .             \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             DEFAULT_DOCHEADER
-.             di DOCHEADER_DIVERSION \" This diversion is only
-.             br                     \" necessary to find the depth of the
-.             DEFAULT_DOCHEADER      \" docheader
-.             br
-.             di
-.             nr #DOCHEADER_DEPTH \\n(dn-\\n[#DOCHEADER_LEAD] \"Storing the depth (height) of the diversion
-.                                                             \"in #DOCHEADER_DEPTH
-.             rm DOCHEADER_DIVERSION                          \" Removing the diversion macro
 .          \}
 .          ev
 .       \}
@@ -6144,27 +6344,36 @@ the macro whose style is to be changed.
 .             CENTER
 .             TYPEWRITER
 .             vs \\n[#DOC_LEAD]u
+.             if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u/2u \}
 .             ie '\\*[$CHAPTER]'' \{\
 .                CAPS
 .                ie !'\\*[$CHAPTER_TITLE]'' \{\
-.                   PRINT \\*[$CHAPTER_TITLE]
+.                   nr #ARG_NUM 0 1
+.                   while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                      UNDERSCORE "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.\}
 .                \}
 .                el \{\
 .                   CAPS
-.                   PRINT \\*[$CHAPTER_STRING]
+.                   UNDERSCORE \\*[$CHAPTER_STRING]
 .                \}
 .                CAPS OFF
+.                RLD 1v
 .             \}
 .             el \{\
 .                CAPS
 .                PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER]
 .                CAPS OFF
 .                if !'\\*[$CHAPTER_TITLE]'' \{\
-.                   if \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
-.                   UNDERSCORE "\\*[$CHAPTER_TITLE]
+.                   sp
+.                   nr #ARG_NUM 0 1
+.                   while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                      UNDERSCORE "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.\}
 .                \}
+.                RLD 1v
 .             \}
-.             if \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
+.             if \\n[#SINGLE_SPACE] \{ .ALD 2v \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             CHAPTER_DOCHEADER
@@ -6195,72 +6404,46 @@ the macro whose style is to be changed.
 .          if \\n[#PRINT_STYLE]=1 \{\
 .             CENTER
 .             TYPEWRITER
-.             ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u*2u \}
-.             el \{ .vs \\n[#DOC_LEAD]u \}
+.             if \\n[#SINGLE_SPACE]=0 \{ .vs \\n[#DOC_LEAD]u/2u \}
 .             CAPS
-.             if !'\\*[$TITLE]'' \{ .UNDERSCORE "\\*[$TITLE]\}
+.             if !'\\*[$TITLE]'' \{\
+.                nr #ARG_NUM 0 1
+.                while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                   UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]
+.\}
+.             \}
 .             CAPS OFF
 .             if !'\\*[$SUBTITLE]'' \{\
-.                ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u*2u \}
-.                el \{ .vs \\n[#DOC_LEAD]u \}
-.                PRINT \\*[$SUBTITLE]
+.                sp
+.                nr #ARG_NUM 0 1
+.                while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.                   UNDERSCORE "\\*[$SUBTITLE_\\n[#ARG_NUM]]
+.\}
 .             \}
-.             if '\\*[$SUBTITLE]'' \{\
-.                ALD \\n[#DOC_LEAD]u
-.             \}
-.             ie !'\\*[$AUTHOR_1]'' \{\
-.                ie \\n[#SINGLE_SPACE] \{ .vs \\n[#DOC_LEAD]u \}
-.                el \{ .vs \\n[#DOC_LEAD]u/2u \}
-.                if !d$SUBTITLE \{\
-.                   ie \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
-.                   el \{ .ALD \\n[#DOC_LEAD]u*2u \}
-.                \}
+.             if !'\\*[$AUTHOR_1]'' \{\
+.                sp
 .                PRINT \\*[$ATTRIBUTE_STRING]
 .                nr #AUTHORS \\n[#AUTHOR_NUM]
 .                nr #NEXT_AUTHOR 0 1
 .                while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
 .                   PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]
 .\}
-.                if \\n[#AUTHOR_LINES]=1 \{\
-.                    ie \\n[#SINGLE_SPACE] \{ .RLD \\n[#DOC_LEAD]u \}
-.                    el \{ .ALD \\n[#DOC_LEAD]u/2u \}
-.                 \}
-.             vs  \\n[#DOC_LEAD]u
 .             \}
-.             el \{\
-.                ie !d$SUBTITLE \{\
-.                   ie \\n[#SINGLE_SPACE] \{ .RLD \\n[#DOC_LEAD]u*2u \}
-.                   el \{ .RLD \\n[#DOC_LEAD]u \}
-.                \}
-.                el \{\
-.                   ie \\n[#SINGLE_SPACE] \{ . \}
-.                   el \{ .RLD \\n[#DOC_LEAD]u \}
-.                \}
-.             \}
-.             ie \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u*2u \}
-.             el \{ .ALD \\n[#DOC_LEAD]u \}
+.             ie \\n[#SINGLE_SPACE]=0 \{ .sp 2 \}
+.             el \{ .sp \}
 .             UNDERSCORE2 "\\*[$DOC_TYPE]
-.             if \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
+.             if \\n[#SINGLE_SPACE]=1 \{ .sp \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             NAMED_DOCHEADER
-.             di DOCHEADER_DIVERSION \" This diversion is only
-.             br                     \" necessary to find the depth of the
-.             NAMED_DOCHEADER        \" docheader
-.             br
-.             di
-.             nr #DOCHEADER_DEPTH \\n(dn-\\n[#DOCHEADER_LEAD] \"Storing the depth (height) of the diversion
-.                                                             \"in #DOCHEADER_DEPTH
-.             rm DOCHEADER_DIVERSION                          \" Removing the diversion macro
 .          \}
 .          ev
 .       \}
 .       if !\\n[#DOC_TYPE]=4 \{\
-.          if \\n[#PRINT_STYLE]=1 \{ .ALD \\n[#DOC_LEAD]u \}
-.          nr #DOCHEADER_SPACE_ADJ \\n[#DOCHEADER_DEPTH]%\\n[#DOC_LEAD]
-.          ie !\\n[#DOCHEADER_SPACE_ADJ]=0 \{ .nr #DOCHEADER_EXTRA_SPACE \\n[#DOC_LEAD]-\\n[#DOCHEADER_SPACE_ADJ] \}
-.          el \{ .nr #DOCHEADER_EXTRA_SPACE 0 \}
-.          if \\n[#PRINT_STYLE]=2 \{ .ALD (\\n[#DOC_LEAD]u*2u)+\\n[#DOCHEADER_EXTRA_SPACE]u \}
+.          if \\n[#PRINT_STYLE]=1 \{\
+.             sp
+.          \}
+.          if \\n[#PRINT_STYLE]=2 \{ .ALD \\n[#DOC_LEAD]u*2u \}
 .          if \\n[#COLUMNS] \{\
 .             nr #COL_NUM 0 1
 .             nr #L_LENGTH_FOR_EPI \\n[#L_LENGTH]
@@ -6339,13 +6522,10 @@ the macro whose style is to be changed.
 .\" Various registers
 .    rr #ADJ_DOC_LEAD
 .    rr #ADVANCE_FROM_TOP
-.    rr #AUTHOR_NUM
-.    rr #AUTHORS
 .    rr #COVER_LEAD
 .    rr #DEPTH_1
 .    rr #DEPTH_2
 .    rr #DOC_COVER_LEAD
-\#.    rr #DOC_HEADER
 .    if \\n[#DOC_HEADER]=1 \{ .nr #DOC_HEADER 2 \}
 .    rr #DOCHEADER_ADVANCE
 .    rr #DOCHEADER_EXTRA_SPACE
@@ -6355,7 +6535,6 @@ the macro whose style is to be changed.
 .    rr #MISCS
 .    rr #NEXT_AUTHOR
 .    rr #NEXT_MISC
-.    rr #NUM_AUTHORS
 .END
 \#
 \# ====================================================================
@@ -6987,11 +7166,6 @@ the macro whose style is to be changed.
 .    br
 .    ie \\n[#START] \{\
 .       if \\n[#PRINT_STYLE]=1 \{\
-.          ie \\n[#SINGLE_SPACE] \{ .ALD \\n[#DOC_LEAD]u \}
-.          el \{\
-.             ie \\n[#EPI_LINES]%2=1 \{ .ALD \\n[#DOC_LEAD]u \}
-.             el \{ .ALD \\n[#DOC_LEAD]u/2u \}
-.          \}
 .          SHIM
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
@@ -7635,7 +7809,6 @@ Default is OFF.
 .       if \\n[#HDRFTR_COLOR]=1 \{\
 .          nf
 \m[\\*[$HDRFTR_COLOR]]
-.          EOL
 .       \}
 .       fam     \\*[$HDRFTR_LEFT_FAM]
 .       ft      \\*[$HDRFTR_LEFT_FT]
@@ -8655,6 +8828,11 @@ Default is OFF.
 .\" Process head
 .    nr #HEAD 1
 .    ev HEAD
+.    if \\n[#PRINT_STYLE]=1 \{ .ne \\n[#NUM_ARGS]+1 \}
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       ie \\n[#HEAD_SPACE] \{ .ne \\n[#NUM_ARGS]+2 \}
+.       el \{ .ne \\n[#NUM_ARGS]+1 \}
+.    \}
 .    ll \\n[#L_LENGTH]u
 .    ta \\n(.lu
 .    if \\n[#COLUMNS] \{\
@@ -8676,11 +8854,6 @@ Default is OFF.
 .    \}
 .    if r#QUOTE             \{ .rr #QUOTE \}
 .    if r#EPIGRAPH          \{ .rr #EPIGRAPH \}
-.    if \\n[#PRINT_STYLE]=1 \{ .ne \\n[#NUM_ARGS]+2 \}
-.    if \\n[#PRINT_STYLE]=2 \{\
-.       ie \\n[#HEAD_SPACE] \{ .ne \\n[#NUM_ARGS]+3 \}
-.       el \{ .ne \\n[#NUM_ARGS]+2 \}
-.    \}
 .    ie \\n[#START] \{\
 .       if \\n[#DOC_HEADER]=0 \{ .RLD 1v \}
 .    \}
@@ -8866,6 +9039,7 @@ Default is OFF.
 .    if r#QUOTE    \{ .rr #QUOTE    \}
 .    if r#Q_AT_TOP \{ .rr #Q_AT_TOP \}
 .    ev SUBHEAD
+.    ne \\n[#NUM_ARGS]
 .    ll \\n[#L_LENGTH]u
 .    ta \\n(.lu
 .    if \\n[#COLUMNS] \{\
@@ -8890,24 +9064,18 @@ Default is OFF.
 .    if \\n[#PRINT_STYLE]=2 \{ .nr #SH_LEAD_ADJUST \\n[#LEAD]/8 \}
 .    ie \\n[#START] \{ .RLD 1v \}
 .    el \{\
-.       ie ( \\n[#TRAP_DISTANCE] < (\\n[#DOC_LEAD]*(\\n[#NUM_ARGS]+1)) ) \{\
-.          ie \\n[#COLUMNS] \{ .COL_NEXT \}
-.          el \{ .bp \}
-.       \}
+.       ie \\n[#HEAD]=1 \{ . \}
 .       el \{\
-.          ie \\n[#HEAD]=1 \{ . \}
-.          el \{\
-.             if \\n[#PRINT_STYLE]=1 \{\
-.                if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.          if \\n[#PRINT_STYLE]=1 \{\
+.             if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.          \}
+.          if \\n[#PRINT_STYLE]=2 \{\
+.             ie \\n[#PP_SPACE]=1 \{\
+.                ie !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
+.                el \{ .RLD \\n[#DOC_LEAD]u \}
 .             \}
-.             if \\n[#PRINT_STYLE]=2 \{\
-.                ie \\n[#PP_SPACE]=1 \{\
-.                   ie !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
-.                   el \{ .RLD \\n[#DOC_LEAD]u \}
-.                \}
-.                el \{\
-.                   if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
-.                \}
+.             el \{\
+.                if !\\n[#LINEBREAK] \{ .ALD \\n[#DOC_LEAD]u \}
 .             \}
 .          \}
 .       \}
@@ -9435,7 +9603,11 @@ Default is OFF.
 .          \}
 .          el \{\
 .             FAMILY  \\*[$DOC_FAM]
-.             FT      \\*[$PP_FT]
+.             ie !'\\*[$SAVED_PP_FT]'' \{\
+.                ds $PP_FT \\*[$SAVED_PP_FT]
+.                rm $SAVED_PP_FT
+.             \}
+.             el \{ .FT \\*[$PP_FT] \}
 .             PT_SIZE \\n[#DOC_PT_SIZE]u
 .             LS      \\n[#DOC_LEAD]u
 .             QUAD    \\*[$DOC_QUAD]
@@ -9562,7 +9734,7 @@ Default is OFF.
 \#
 .MAC UNDERLINE_QUOTES END
 .    ie '\\$1'' \{ .nr #UNDERLINE_QUOTES 1 \}
-.    el \{ .rr #UNDERLINE_QUOTES   \}
+.    el \{ .rr #UNDERLINE_QUOTES \}
 .END
 \#
 \#
@@ -9698,6 +9870,48 @@ Default is OFF.
 .       \}
 .    \}
 .    el \{ .DO_QUOTE \}
+.END
+\#
+\#
+\# CODE
+\# ----
+\# *Arguments:
+\#   <none> | <anything>
+\# *Function:
+\#   Takes care of admistrivia associated with setting code snippets.
+\#
+.MAC CODE END
+.    ie '\\$1'' \{\
+.        ds $PRE_CODE_FT \\n[.fam]\\n[.sty]
+.        ft CR
+.        if \\n[#UNDERLINE_QUOTES]=1 \{\
+.            nr #RESTORE_UNDERLINE 1
+.            UNDERLINE_QUOTES OFF
+.            FT R
+.        \}
+.       if \\n[#PRINT_STYLE]=2 \{\
+.          tr `'
+.       \}
+.       if \\n[#RESTORE_SQ]=1 \{\
+.          nr #SQ_WAS_ON 1
+.          SMARTQUOTES OFF
+.       \}
+.    \}
+.    el \{\
+.       ft \\*[$PRE_CODE_FT]
+.       rr $RESTORE_FT
+.       if \\n[#RESTORE_UNDERLINE]=1 \{\
+.          rr #RESTORE_UNDERLINE
+.          UNDERLINE_QUOTES
+.       \}
+.       if \\n[#SQ_WAS_ON]=1 \{\
+.          rr #SQ_WAS_ON
+.          SMARTQUOTES
+.       \}
+.       if \\n[#PRINT_STYLE]=2 \{\
+.          tr ``
+.       \}
+.    \}
 .END
 \#
 \# ---Blockquotes---
@@ -12097,8 +12311,8 @@ document, or to output them at the end of the entire document.
 .          nr #EN_ALLOWS_HEADERS_ALL 1
 .       \}
 .       el \{\
-.          rr #EN_ALLOWS_HEADERS
-.          rr #EN_ALLOWS_HEADERS_ALL
+.          nr #EN_ALLOWS_HEADERS 0
+.          nr #EN_ALLOWS_HEADERS_ALL 0
 .       \}
 .    \}
 .END
@@ -12280,14 +12494,16 @@ document, or to output them at the end of the entire document.
 .             \}
 .          \}
 .       \}
-.       ie \\n[#EN_NUMBER]=1 \{\
-.          if !'\\*[$EN_TITLE]'' \{ .sp \}
-.       \}
-.       el \{ .sp \}
 .       if \\n[#PRINT_STYLE]=1 \{\
 .          TYPEWRITER
+.          if \\n[#EN_NUMBER]=1 \{\
+.             if \\n[#SINGLE_SPACE]=1 \{ .sp \}
+.          \}
 .       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
+.          if \\n[#EN_NUMBER]=1 \{\
+.             if !'\\*[$EN_TITLE]'' \{ .sp \}
+.          \}
 .          if \\n[#EN_MARKER_STYLE]=1 \{\
 .             FAMILY  \\*[$EN_NUMBER_FAM]
 .             FT      \\*[$EN_NUMBER_FT]
@@ -12498,12 +12714,14 @@ document, or to output them at the end of the entire document.
 \!.     PT_SIZE \\n[#TOC_PS]u\\*[$TOC_TITLE_SIZE_CHANGE]
 .    \}
 \!.  TRAP OFF
+\!.  PAD_MARKER ^
 .    ie \\n[#PRINT_STYLE]=1 \{\
 \!.     PAD "\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN_TYPEWRITE]"
 .    \}
 .    el \{\
 \!.     PAD "\\h'\\n[#TOC_TITLE_INDENT]u'\\*[$TOC_TITLE_ITEM]\\*[$TOC_PN]"
 .    \}
+\!.  PAD_MARKER #
 \!.  EOL
 \!.  ST 100 L
 \!.  ST 101 R
@@ -14137,6 +14355,7 @@ Arguments, Function and Notes.
 \#
 .MAC COLLATE END
 .    if ( \\n[.t] < \\n[.v] ) \{ .nr #NO_BREAK 1 \}
+.    ds $SAVED_PP_FT \\*[$PP_FT]
 .    nr #COLLATE 1
 .    nr #PRE_COLLATE 1
 .    nr #HEADER_STATE \\n[#HEADERS_ON]
@@ -14200,6 +14419,9 @@ Arguments, Function and Notes.
 .    \}
 .    if \\n[#CH_NUM] \{ .nr #CH_NUM +1 \}
 .    rm $EN_TITLE
+.    rm $SUBTITLE
+.    rm $CHAPTER
+.    rm $CHAPTER_TITLE_1
 .    rr #PAGENUM_STYLE_SET
 .END
 \#

@@ -678,9 +678,9 @@ document processing macros.
 <hr width="66%" align="left">
 <p>
 <a name="TITLE"></a>
-<nobr>Macro: <strong>TITLE</strong> &quot;&lt;title&gt;&quot;</nobr>
+<nobr>Macro: <strong>TITLE</strong> &quot;&lt;title string&gt;&quot; [&quot;&lt;2nd line&gt;&quot; [&quot;&lt;3rd line&gt;&quot; ... ] ]</nobr> 
 <br>
-<em>*Argument must be enclosed in double-quotes</em>
+<em>*Arguments must be enclosed in double-quotes</em>
 
 <p>
 The title string can be caps or caps/lower-case; it's up to you.
@@ -696,6 +696,10 @@ unless you turn that feature off (see
 <a href="#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
 the title always gets converted to caps.
 <p>
+<strong>TITLE</strong> accepts multiple arguments, each surrounded
+by double-quotes.  Each argument is printed on a separate line,
+permitting you to create multi-line titles in your docheaders.
+<p>
 <strong>NOTE:</strong> If your
 <a href="#DOCTYPE">DOCTYPE</a>
 is <strong>CHAPTER</strong>, <strong>TITLE</strong> should be the
@@ -706,16 +710,20 @@ title of the opus, not &quot;CHAPTER whatever&quot;.
 
 <hr width="66%" align="left">
 <p>
-<a name="DOCTITLE"></a>
-<nobr>Macro: <strong>DOCTITLE</strong> &quot;&lt;overall document title&gt;&quot;</nobr>
+<a name="DOC_TITLE"></a>
+<nobr>Macro: <strong>DOCTITLE</strong> &quot;&lt;overall document title&gt;&quot; [&quot;&lt;2nd line&gt;&quot; [&quot;&lt;3rd line&gt;&quot; ... ] ]</nobr> 
 <br>
-<em>*Argument must be enclosed in double-quotes</em>
+<em>*Arguments must be enclosed in double-quotes</em>
 
 <p>
 <strong>NOTE:</strong> This macro should be used only if your
 <a href="#DOCTYPE">DOCTYPE</a>
 is <strong>DEFAULT</strong> (which is <strong>mom</strong>'s
-default).
+default).  If your <strong>DOCTYPE</strong> is
+<strong>CHAPTER</strong>, use
+<a href="#TITLE">TITLE</a>
+to set the overall document title for cover pages, document cover
+pages, and page headers or footers.
 <p>
 When you're creating a single document, say, an essay or a short
 story, you have no need of this macro.
@@ -725,8 +733,8 @@ takes care of all your title needs.
 However if you're 
 <a href="rectoverso.html#COLLATE">collating</a>
 a bunch of documents together, say, to print out a report containing
-many articles with different titles, or a book of short stories, you
-need <strong>DOCTITLE</strong>.
+many articles with different titles, or a book of short stories with
+different authors, you need <strong>DOCTITLE</strong>.
 <p>
 <strong>DOCTITLE</strong> tells <strong>mom</strong> the title
 of the complete document (as opposed to the title of each article
@@ -742,6 +750,13 @@ all in caps unless you turn that feature off (see
 <a href="#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
 the doctitle always gets converted to caps.
 <p>
+<strong>DOCTITLE</strong> accepts multiple arguments, each surrounded
+by double-quotes.  Each argument is printed on a separate line,
+permitting you to create multi-line document titles for use on
+<a href="cover.html#COVER">Covers</a>
+and/or
+<a href="cover.html#DOC_COVER">Doc covers</a>.
+<p>
 <strong>NOTE:</strong> If your
 <a href="#DOCTYPE">DOCTYPE</a>
 is <strong>CHAPTER</strong>, you don't need
@@ -754,9 +769,9 @@ everything.
 <hr width="66%" align="left">
 <p>
 <a name="SUBTITLE"></a>
-<nobr>Macro: <strong>SUBTITLE</strong> &quot;&lt;subtitle&gt;&quot;</nobr>
+<nobr>Macro: <strong>SUBTITLE</strong> &quot;&lt;subtitle&gt;&quot; [&quot;&lt;2nd line&gt;&quot; [&quot;&lt;3rd line&gt;&quot; ... ] ]</nobr> 
 <br>
-<em>*Argument must be enclosed in double-quotes</em>
+<em>*Arguments must be enclosed in double-quotes</em>
 
 <p>
 The subtitle string can be caps or caps/lower-case.  Since a
@@ -764,15 +779,19 @@ document's subtitle appears only in the
 <a href="definitions.html#TERMS_DOCHEADER">docheader</a>,
 and the title is most likely in caps, I recommend caps/lower case.
 <p>
+<strong>SUBTITLE</strong> accepts multiple arguments, each surrounded
+by double-quotes.  Each argument is printed on a separate line,
+permitting you to create multi-line subtitles in your docheaders.
+<p>
 
 <!---AUTHOR--->
 
 <hr width="66%" align="left">
 <p>
 <a name="AUTHOR"></a>
-<nobr>Macro: <strong>AUTHOR</strong> &quot;&lt;author string&gt;&quot; [ &quot;&lt;author2 string&gt;&quot; &quot;&lt;author3 string&gt;&quot; ... ]</nobr>
+<nobr>Macro: <strong>AUTHOR</strong> &quot;&lt;author&gt;&quot; [ &quot;&lt;author2&gt;&quot; [&quot;&lt;author3&gt;&quot; ... ] ]</nobr>
 <br>
-<em>*Multiple arguments must all be enclosed in double-quotes</em>
+<em>*Arguments must be enclosed in double-quotes</em>
 
 <p>
 Each author string can hold as many names as you like, e.g.
@@ -849,9 +868,9 @@ page-headers.
 <hr width="66%" align="left">
 <p>
 <a name="CHAPTER_TITLE"></a>
-<nobr>Macro: <strong>CHAPTER_TITLE</strong> &quot;&lt;chapter title&gt;&quot;</nobr>
+<nobr>Macro: <strong>CHAPTER_TITLE</strong> &quot;&lt;chapter title&gt;&quot; [&quot;&lt;2nd line&gt;&quot; [&quot;&lt;3rd line&gt;&quot; ... ] ]</nobr> 
 <br>
-<em>*Argument must be enclosed in double-quotes</em>
+<em>*Arguments must be enclosed in double-quotes</em>
 
 <p>
 If, either in addition to or instead of &quot;Chapter #&quot; appearing
@@ -863,6 +882,12 @@ double-quotes, like this:
 	.CHAPTER_TITLE "The DMCA Nazis"
 </pre>
 
+<p>
+<strong>CHAPTER_TITLE</strong> accepts multiple arguments, each
+surrounded by double-quotes.  Each argument is printed on a separate
+line, permitting you to create multi-line chapter titles in your
+docheaders.
+<p>
 If you've used
 <a href="#CHAPTER">CHAPTER</a> to give the chapter a number,
 both &quot;Chapter #&quot; and the chapter title will appear at the
@@ -1091,15 +1116,16 @@ and the information would appear on the essay's cover page.
 <hr width="66%" align="left">
 <p>
 <a name="COVERTITLE"></a>
-<nobr>Macro: <strong>COVERTITLE</strong> &quot;&lt;user defined cover page title&gt;&quot;</nobr>
+<nobr>Macro: <strong>COVERTITLE</strong> &quot;&lt;user defined cover page title&gt;&quot; [&quot;&lt;2nd line&gt;&quot; [&quot;&lt;3rd line&gt;&quot; ... ] ]</nobr> 
 <br>
-<nobr>Macro: <strong>DOC_COVERTITLE</strong> &quot;&lt;user defined document cover page title&gt;&quot;</nobr>
+<a name="DOC_COVERTITLE"></a>
+<nobr>Macro: <strong>DOC_COVERTITLE</strong> &quot;&lt;user defined document cover page title&gt;&quot; [&quot;&lt;2nd line&gt;&quot; [&quot;&lt;3rd line&gt;&quot; ... ] ]</nobr> 
 <br>
-<em>*Argument must be enclosed in double-quotes</em>
+<em>*Arguments must be enclosed in double-quotes</em>
 
 <p>
-The argument passed to <strong>COVERTITLE</strong> or
-<strong>DOC_COVERTITLE</strong> is only used on cover or doc cover
+The arguments passed to <strong>COVERTITLE</strong> or
+<strong>DOC_COVERTITLE</strong> are only used on cover or doc cover
 pages, and then only if the argument COVERTITLE is passed to
 <a href="cover.html#COVER">COVER</a>
 or
@@ -1110,6 +1136,11 @@ The only time you require a <strong>COVERTITLE</strong> or
 arguments to <strong>COVER</strong> or <strong>DOC_COVER</strong>
 fits your needs for the title you want to appear on cover (or doc
 cover) pages.
+<p>
+<strong>COVERTITLE</strong> and <strong>DOC_COVERTITLE</strong>
+accept multiple arguments, each surrounded by double-quotes.  Each
+argument is printed on a separate line, permitting you to create
+multi-line titles on your cover and/or doc cover pages.
 
 <p>
 <hr>
@@ -1927,20 +1958,23 @@ is the prevailing family of the whole document.
 <p>
 <strong>NOTE:</strong> If your <strong>DOCTYPE</strong> is
 <strong>CHAPTER</strong> and you have both &quot;Chapter #&quot;
-and a &quot;Chapter Title&quot; (as above), you may find the
+and a &quot;Chapter Title&quot; (as above), <strong>mom</strong>
+inserts a small amount of whitespace between them, equal to
+one-quarter of the
 <a href="definitions.html#TERMS_LEADING">leading</a>
-a bit cramped (owing to <strong>mom</strong>'s default docheader
-leading).  If this is the case, you can adjust the leading either
-with
-<a href="#ADJUST_LEADING">DOCHEADER_LEAD</a>
-or by including the
-<a name="definitions.html#TERMS_INLINES">inline escape</a>,
+in effect.  If this doesn't suit you, you can alter the space
+by including the
+<a name="definitions.html#TERMS_INLINES">inline escapes</a>,
+<a href="inlines.html#UP">\*[UP]</a>
+or
 <a href="inlines.html#DOWN">\*[DOWN]</a>,
 in the argument you pass to
 <a href="#CHAPTER_TITLE">CHAPTER_TITLE</a>, like this:
 <p>
 <pre>
 	.CHAPTER_TITLE "\*[DOWN 2p]Why Not Patent Calculus?"
+		or
+	.CHAPTER_TITLE "\*[UP 2p]Why Not Patent Calculus?"
 </pre>
 
 
@@ -2021,14 +2055,9 @@ with the macros listed
 <p>
 The
 <a href="definitions.html#TERMS_LEADING">leading</a>
-of docheaders is the same as running text (except when
-<a href="#DOCTYPE">DOCTYPE</a>
-is <strong>CHAPTER</strong> <em>and</em> both a chapter number and a
-chapter title have been supplied, in which case the default is 4 points
-more than running text.)
-<p>
-If you'd like your docheaders to have a different leading, say, 2
-points more than the lead of running text, use:
+of docheaders is the same as running text.  If you'd like your
+docheaders to have a different leading, say, 2 points more than the
+lead of running text, use:
 <p>
 <pre>
 	.DOCHEADER_LEAD +2

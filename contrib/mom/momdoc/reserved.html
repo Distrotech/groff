@@ -280,6 +280,8 @@ p                       Output line horiz position at end of
 #R_MARGIN               Right margin
 #RESTORE_PREV_INDENT    Tells LIST OFF what kind of indent was active
                         prior to first invocation of LIST
+#RESTORE_SQ             Instructs SMARTQUOTES to restore smartquotes if
+                        SMARTQUOTES invoked without an arg
 #RLD                    RLD value
 #SHIFT_LIST&lt;n&gt;          Value to add to #LIST_INDENT&lt;n&gt; for shifted lists
 #SILENT                 Is silent on? (toggle)
@@ -287,8 +289,9 @@ p                       Output line horiz position at end of
                         to PAD is restored at the start of every
                         iteration of $PAD_STRING
 #SLANT_ON               Is SLANT on? (toggle)
-#SMART_QUOTES           Smartquotes on? (toggle)
 #SPACE_TO_END           Whitespace at end of string passed to PAD
+#SQ_WAS_ON              Instructs CODE OFF to restore smartquotes if they
+                        were on prior to CODE
 #ST&lt;#&gt;_LENGTH           Length of ST&lt;#&gt;; calculated during ST &lt;#&gt;
 #ST&lt;#&gt;_MARK             Page offset of autotab &lt;#&gt; at ST&lt;#&gt;X
 #ST_NUM                 Incrementing counter for autotab identification
@@ -344,6 +347,7 @@ $FONT_FOR_PAD        Used to ensure that the font in effect prior
                      iteration of $PAD_STRING
 $PAD_MARKER          Character to mark off padding in PAD
 $PAD_STRING          Arg passed to PAD
+$PRE_CODE_FT         Font family+style in effect prior to CODE being invoked
 $QUAD_VALUE          Quad value (left, right, centre, justify)
 $QUOTE0              Open quotation marks
 $QUOTE1              Close quotation marks
@@ -359,6 +363,7 @@ $RESTORE_PT_SIZE     Used to restore the point size of normal
                      running text after a dropcap
 $RESTORE_QUAD_VALUE  Quad value for use in restoring L, R, C, J
                      (after tabs)
+$RESTORE_SQ          The smartquoting string last passed to SMARTQUOTES
 $SAVED_STYLE         Current style, if there is one (used in FAMILY)
 $SEPARATOR&lt;n&gt;        Separator for depth &lt;n&gt; in lists
 $SS_VAR              Holds + or - sentence space value
@@ -962,8 +967,6 @@ TOC_ENTRIES       TOC entries
                            macro
 #ARGS_TO_LIST              Was LIST passed some args? (toggle)
 #AUTHOR_[n]                Strings passed to AUTHOR
-#AUTHOR_LINES              # of lines of authors in doc header; odd=0
-                           even=1
 #AUTHOR_NUM                Keeps track of user-defined string
                            AUTHOR_&lt;#&gt; in AUTHOR
 #AUTHORS                   Equals final value of AUTHOR_NUM;
@@ -1071,8 +1074,6 @@ dc                         "mark" register for document columns
 #DOCHEADER_COLOR           Colored docheader? (toggle)
 #DOCHEADER_LEAD            Lead of doc header
                            (#DOC_LEAD + #DOCHEADER_LEAD_ADJ)
-#DOCHEADER_SPACE_ADJ       Lead difference between #DEPTH_1 and
-                           #DEPTH_2
 #DOC_COVER_START_POS       Vertical starting pos of doc cover material
 #DOC_COVERS                Print doc covers? (toggle)
 #DOC_COVER_COLOR           Colored cover? (toggle)
@@ -1458,6 +1459,8 @@ dc                         "mark" register for document columns
                            not currently used
 #RESTORE_TOC_PN_PADDING    Saves #TOC_PN_PADDING in TOC prior to
                            processing $FIRST_DOC_TITLE
+#RESTORE_UNDERLINE         Instructs CODE OFF to restore underlining of italics
+                           (TYPEWRITE) if underlining was formerly on 
 #RIGHT_CAP_HEIGHT          Cap height of right string in
                            headers/footers
 #RULED                     Tells FOOTNOTE if a rule (or space has been
@@ -1628,7 +1631,7 @@ $CH_NUM                          Register #CH_NUM with a period added.
 $CHAPTER                         The chapter number
 $CHAPTER_STRING                  What to print whenever the word
                                  "chapter" is required
-$CHAPTER_TITLE                   Chapter title (if there is one)
+$CHAPTER_TITLE                   Concatenated args passed to CHAPTER_TITLE
 $CHAPTER_TITLE_FAM               Family of chapter title
 $CHAPTER_TITLE_FT                Font of chapter title
 $CHAPTER_TITLE_SIZE_CHANGE       ps in/decrease of chapter title*
@@ -1701,10 +1704,7 @@ $DOC_FAM                         Predominant font family used in the
                                  document
 $DOC_QUAD                        Quad used for body text (justified or
                                  left) 
-$DOC_TITLE                       Overall doc title that gets printed in
-                                 headers/footers (mostly for use with
-                                 collated docs where each doc is an
-                                 article with a different title)
+$DOC_TITLE                       Concatenated args passed to DOCTITLE
 $DOC_TYPE                        Document type (default, chapter, named,
                                  letter)
 $DOCHEADER_COLOR                 Color of docheader
@@ -1868,18 +1868,21 @@ $RESTORE_SS_VAR                  Saves \*[$SS_VAR] for use with ref*build
 #REVISION                        The revision number (string valued)
 $REVISION_STRING                 What to print whenever the word
                                  "revision" is required
+$SAVED_PP_FT                     $PP_FT in effect at start of
+                                 .COLLATE; tested for and removed
+                                 in .PP
 $SH_FAM                          Family to use in subheads
 $SH_FT                           Font to use in subheads
 $SH_SIZE_CHANGE                  ps in/decrease of subheads*
 $SH_COLOR                        Subhead color
-$SUBTITLE                        Document subtitle
+$SUBTITLE                        Concatenated args passed to SUBTITLE
 $SUBTITLE_FAM                    Family to use for subtitle in doc
                                  header
 $SUBTITLE_FT                     Font to use for subtitle in doc header
 $SUBTITLE_SIZE_CHANGE            ps in/decrease of subtitle*
 $SUBTITLE_PT_SIZE                Absolute ps of subtitle
 $SUITE                           The #SUITE number register
-$TITLE                           Document title
+$TITLE                           Concatenated args pass to TITLE
 $TITLE_FAM                       Family to use for title in doc header
 $TITLE_FT                        Font to use for title in doc header
 $TITLE_PT_SIZE                   Absolute point size of title in docheader

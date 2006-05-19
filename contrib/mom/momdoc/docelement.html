@@ -1518,48 +1518,6 @@ If you don't provide <strong>mom</strong> with a
 for normal running text, meaning that multiple quotes on the same
 page are all spaced identically.
 <p>
-<a name="QUOTE_TIP"><strong>TIP:</strong></a>
-If you want to include snippets of programming code in
-<strong>mom</strong> documents, you may come acropper of the fact
-that groff (and <strong>mom</strong>'s) escape character is the
-backslash.  In order for <strong>mom</strong> not to interpret
-backslashes that occur in code snippets as escapes, you have to
-tell <strong>mom</strong> that the backslash character is
-(temporarily) no longer the escape character.  The easiest way
-to do this is to set the escape character to something else for
-the duration of the code snippet.  You accomplish this with
-<strong>ESC_CHAR</strong>, like this:
-<p>
-<pre>
-	.ESC_CHAR c
-</pre>
-
-where &quot;c&quot;, above, is the alternate escape character
-(which should be a character that does not appear in the code).  To
-set the escape character back to the backslash, simply invoke
-<strong>.ESC_CHAR</strong> by itself (i.e. with no argument).
-<p>
-Because <strong>mom</strong>, by default, sets the text after
-<strong>.QUOTE</strong> in italic (for <strong>PRINTSTYLE
-TYPESET</strong>) or underlined (for <strong>PRINTSTYLE
-TYPEWRITE</strong>), you'll want to change that behaviour as
-well.  Therefore, a recipe for setting verbatim code snippets using
-<strong>QUOTE</strong> could be (assuming you want a fixed width
-font like Courier):
-<p>
-<pre>
-	\# You only need the first two lines before the first invocation
-	\# of QUOTE.  They stay in effect for all subsequent invocations.
-	\#
-	.QUOTE_FONT       CR    \" Set quote font to Courier roman
-	.UNDERLINE_QUOTES OFF   \" Don't underline quotes in TYPEWRITE
-	.QUOTE
-	.ESC_CHAR ^             \" Change escape character to ^
-	&lt;code snippet&gt;
-	.ESC_CHAR               \" Restore escape character to \
-	.QUOTE OFF
-
-</pre>
 
 <!---QUOTE--->
 
@@ -1779,6 +1737,40 @@ spacing policy for
 <p>
 <hr>
 
+<!====================================================================>
+
+<a name="CODE"><h2><u>Inserting code snippets into documents</u></h2></a>
+	<nobr>Macro: <strong>CODE</strong> toggle</nobr>
+</a>
+
+<p>
+<strong>CODE</strong> is a little convenience macro that
+facilitates entering code snippets into documents.  Its use is not
+restricted to documents created using <strong>mom</strong>'s
+document processing macros; in other words, it can be used for
+&quot;manually&quot; typeset documents as well.
+<p>
+When you invoke <strong>CODE</strong>, <strong>mom</strong> changes
+the font to Courier Roman and turns
+<a href="goodies.html#SMARTQUOTES">SMARTQUOTES</a>
+off.  Additionally, if you invoke <strong>CODE</strong> inside
+<a href="docelement.html#QUOTE">QUOTE</a>
+while using
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>
+with the default underlining of quotes turned on, it disables
+the underlining for the duration of <strong>CODE</strong>.
+<p>
+<strong>NOTE</strong>: If your code snippet includes the backslash
+character, which is <strong>groff</strong>'s escape character, you
+will have to change the escape character temporarily to something
+else with the macro,
+<a href="goodies.html#ESC_CHAR">ESC_CHAR</a>.
+<strong>Mom</strong> has no way of knowing what special characters
+you're going to use in code snippets, therefore she cannot
+automatically replace the escape character with something else.
+
+<p>
+<hr>
 <!====================================================================>
 
 <a name="LIST_INTRO"><h2><u>Nested lists</u></h2></a>
@@ -3345,7 +3337,7 @@ section,
 <a href="#FN_AND_PUNCT">Footnote markers and punctuation in the running text</a>,
 for an explanation.
 <p>
-<strong>***End version 1.3 change***</strong>
+<strong>***End version 1.3-d change***</strong>
 
 <p>
 Endnotes differ from footnotes in two ways (other than the fact that
