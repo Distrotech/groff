@@ -9882,8 +9882,10 @@ Default is OFF.
 \#
 .MAC CODE END
 .    ie '\\$1'' \{\
-.        ds $PRE_CODE_FT \\n[.fam]\\n[.sty]
-.        ft CR
+.        ds $PRE_CODE_FAM \\n[.fam]
+.        ds $PRE_CODE_FT \\n[.sty]
+.        fam C
+.        ft  R
 .        if \\n[#UNDERLINE_QUOTES]=1 \{\
 .            nr #RESTORE_UNDERLINE 1
 .            UNDERLINE_QUOTES OFF
@@ -9898,7 +9900,8 @@ Default is OFF.
 .       \}
 .    \}
 .    el \{\
-.       ft \\*[$PRE_CODE_FT]
+.       fam \\*[$PRE_CODE_FAM]
+.       ft  \\*[$PRE_CODE_FT]
 .       rr $RESTORE_FT
 .       if \\n[#RESTORE_UNDERLINE]=1 \{\
 .          rr #RESTORE_UNDERLINE
@@ -13893,6 +13896,7 @@ Arguments, Function and Notes.
 \#   receive the text of an item.
 \#
 .MAC ITEM END
+.    if !r#DEPTH \{ .return \}
 .    if \\n[#LINENUMBERS]=1 \{\
 .       NUMBER_LINES OFF
 .       nr #LINENUMBERS 2
