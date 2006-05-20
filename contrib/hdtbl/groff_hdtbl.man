@@ -1,12 +1,10 @@
-.\" Time-stamp: <groff_hdtbl.7: 28.12.2005 14:03:43 x01 - JWalsdorff@compuserve.de>
 .ig
-groff_hdtbl.7
-
-This file is part of groff, the GNU roff type-setting system.
-
-Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
+Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006
   Free Software Foundation, Inc.
-written by Joachim Walsdorff <Joachim.Walsdorff@urz.uni-heidelberg.de>
+
+Written by Joachim Walsdorff <Joachim.Walsdorff@urz.uni-heidelberg.de>
+
+This file is part of groff, the groff.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -17,404 +15,681 @@ Front-Cover Texts, and with no Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 ..
+.
+.
 .mso www.tmac
-.xgcolor navy
-.BCL #800000 #f5f5dc
-.nr S 12
-.TH groff_hdtbl 7 "December 2005" HDgroff "Version 0.91"
-.nr IN 3n	\"	doesn't work before TH!
+.
+.
+.TH GROFF_HDTBL @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
+.
+.SH NAME
+groff_hdtbl \- groff `hdtbl' macros for generation of tables
+.
+.
 .\"
 .\"			some simple formatting macros
 .\"
-.ie FCR \{ .
-.fp 5 CR
-.fp 6 CI
-.fp 7 CB
-.fp 8 CBI
+.ie F CR \{\
+.  fp 5 CR
+.  fp 6 CI
+.  fp 7 CB
+.  fp 8 CBI
 .\}
-.el \{ .
-.fp 5 R
-.fp 6 I
-.fp 7 B
-.fp 8 BI
+.el \{\
+.  fp 5 R
+.  fp 6 I
+.  fp 7 B
+.  fp 8 BI
 .\}
 .
-.de A
-.PP
-.xin 2u*\\n(INu
-.ta 4u*\\n(INu
-\&\s+1\f7\\$1\fP\0\f8\\$2\fP\s-1\t\c
-.shift
-.shift
-\\$*
+.
+.de TQ
+.  br
+.  ns
+.  TP \\$1
 ..
 .
-.de B
-.in 3u*\\n(INu
-.sp .2
-.ds * \\$1
-.ie !"\*(.T"html" .ta 5u*\\n(INu
-.el .ta 7u*\\n(INu
-.shift
-\&\fB\\**\fP\t\f5\\$*\fP
-.. 
-.de AA
-.sp .2
-.ne 2
-.in 3u*\\n(INu  
-.ds * \\n[.f]
-\&\f5\\$1\f6\\$2\f\\**
-.ie "\\*(.T"html" .in 4u*\\n(INu
-.el  \{ 'in 4u*\\n(INu
-\(em\ 
-.\}
+.
+.de XB
+.  nop \fB\\$1\fP
+.  shift
+.  nop \f5\\$1\fP\c
+.  shift
+.  while \\n[.$] \{\
+.    nop , \f5\\$1\fP\c
+.    shift
+.  \}
+.  br
 ..
 .
-.de DEF
-.br
-.ds * \\n[.f]
-\fBDefault:\fP 
-.if !\\n(.$ .return
-\&\f5\\$1\fP\f6\\$2\f\\**
+.
+.de XAA
+.  TQ
+.  nop \f5\\$1\fP\f6\\$2\fP
 ..
 .
-.SH NAME
-\fBhdtbl\fP \(em seven \fBgroff\fP-macros for simple but mighty table
-processing
+.
+.de XDEF
+.  br
+.  ds * \\n[.f]
+.  B Default:
+.  if !\\n[.$] \
+.    return
+.  nop \&\f5\\$1\fP\f6\\$2\f\\*[*]
+..
+.
+.
 .SH DESCRIPTION
-\fBhdtbl\fP is a set of four base and three optional macros,
-controlled by about twenty arguments. The syntax is simple and similar
-to the \fBHTML\fP table model and nearly as free: you can write
-sequences of tokens (macro calls with their arguments and content
-data), seperated with blancs and beginning with a macro call, into the
-same line to get compact and clearly arrranged input. Since the
-\fBhdtbl\fP-macros are pure \fBgroff\fP, \fBhdtbl\fP works without a
-preprocessor, and the user doesn't need to learn the peculiar
-\fBtbl\fP-syntax. On the other hand table processing with \fBhdtbl\fP
-is slower as with the classical \fBroff\fP tableprocessor
-\fBtbl\fP. Because of its relationship \fBhdtbl\fP could be easily
-translated into the \fBHTML\fP table format. So for some users who
-would like the new features of \fBhdtbl\fP and especially for new
-ones, \fBhdtbl\fP could be an alternative to the tableprocessing with
-\fBtbl\fP.
+.
+The
+.B hdtbl
+macros consist of four base and three optional macros, controlled by about
+twenty arguments.
+.
+The syntax is simple and similar to the
+.B HTML
+table model and nearly as flexible: You can write sequences of tokens (macro
+calls with their arguments and content data), separated by blanks and
+beginning with a macro call, into the same line to get compact and cleanly
+arrranged input.
+.
+An advantage of
+.B hdtbl
+is that the tables are constructed without calling a preprocessor; this
+means that
+.BR groff 's
+full macro capabilities are available.
+.
+On the other hand, table processing with
+.B hdtbl
+is much slower than using the
+.BR tbl (@MAN1EXT)
+preprocessor.
+.
+A further advantage is that the HTML-like syntax of
+.B hdtbl
+will be easily converted to HTML; this is not implemented yet.
+.
+.
 .SH USAGE
-The simpliest wellformed table consists of just one call to the four
-base table macros in the right order \(em the table with only one
-cell:
+.
+The simplest well-formed table consists of just single calls to the four
+base table macros in the right order.
+.
+Here we construct a table with only one cell.
+.
 .PP
+.RS
 .nf
-.in +\n(INu
-\&\f5.TBL
-\&.TR
-\&.TD\fP
-\f6content of the table cell\fP
+\&\f5.TBL\fP
+\&\f5.TR\fP
+\&\f5.TD\fP
+\&\f6contents of the table cell\fP
 \&\f5.ETB\fP
 .fi
-.PP
-Equivalent is the notaion:
-.PP
-.in +\n(INu
-\&\f5.TBL .TR .TD\fP \f6content of the table cell\fP \f5.ETB\fP
-.PP
-By default and if the remaining place on the page is sufficient, the
-formatted table is inserted in the surrounding text at the place of
-its definition, else at the top of the next page. Tables can also be
-held and inserted delayed at a place of the users choice.
-.PP
-A table with two columns and two rows (cellcontents in this example
-are \f6rownumber*columnnumber\fP) is written as:
-.PP
-.in +\n(INu
-\&\f5.TBL cols=2 .TR .TD\fP \f61*1\fP \f5.TD\fP \f61*2\fP \f5.TR .TD\fP \f62*1\fP \f5.TD\fP \f62*2\fP \f5.ETB\fP
-.PP
-Here we see a difference with \fBHTML\fP tables: at the time the
-number of columns must be specified explicitly via \f5cols=\fP\f6m\fP (or
-indirectly via the \f5width\fP-argument, see later).
-.PP
-The content of a tablecell is arbitrary, and can be again a table and
-so on, without restriction in the nesting depth. To get a special
-table layout you have, like with \fBHTML\fP tables, the choice between
-suitable nested tables or by using the arguments for column- and/or
-rowspanning (see these arguments for \f5\&.TD/.TH\fP). The following
-tables
-.PP
-.in +\n(INu
-.nf
-\&\fC.TBL .TR .TD\fP \f61*1 1*2\fP 
-\fC.     TR .TD ".TBL cols=2" .TR .TD\fP \f62*1\fP \fC.TD\fP \f62*2\fP \fC.ETB .ETB\fP
-.fi
-.PP
-and
-.PP
-.in +\n(INu
-.nf
-\&\fC.TBL cols=2 .TR ".TD colspan=2"\fP \f61*1 1*2\fP
-\fC.            TR .TD\fP \f62*1\fP \fC.TD\fP \f62*2\fP        \fC.ETB\fP
-.fi
-.PP
-are \fIsimilar\fP. But tables with column- and/or rowspanning can
-never look \fIidentically\fP like nested tables. 
-.PP
-If a macro with argument(s) is not the first one in a line, it must be
-enclosed in double quotes.
-.SH MACROS and ARGUMENTS
-The order of macro calls and other tokens must agree with the
-\fBHTML\fP content model. In the following is listed, which tokens may
-precede or succeed each other legally.
-.PP
-Macro arguments are seperated with blancs. The order of arguments is
-arbitrary. They are of the form \f5key=\fP\f6value\fP or
-\f5key='\fP\f6value1 value2 ...\fP\f5'\fP, with the only exception of
-the \f5.ETB\fP-argument \f5hold\fP, which is the value
-itself. Optionally you can write \f5"key=\fP\f6value1 value2 ...\fP\f5"\fP, 
-but only if the macro is the first one in the line and not already 
-enclosed in double quotes. Argument values specified
-as \f6c\fP are predefined \fBgroff\fP-colors or colors defined by the
-user with the \fBgroff\fP request \f5.defcolor\fP. Argument values
-\f6d\fP are decimal numbers with or without decimal point. Argument
-values \f6m\fP are natural numbers. Argument values \f6n\fP are
-numerical with the usual \fBgroff\fP scaling indicators. Some of the
-arguments are specific to one or two macros, but most of them can be
-specified with the \f5.TBL\fP-, \f5.TR\fP- and
-\f5.TD/.TH\fP-macro. These common arguments are explained after the
-following macro descriptions. Most of the argument default values can
-be changed by the user by setting corresponding default registers or
-strings, see below.
-.\" TBL
-.A .TBL [args] Begin a new table.
-.B predecessor: .TD/.TH, .ETB 
-or \f6cellcontent\fP
-.B successor: .CPTN 
-or \f5\&.TR\fP
-.B arguments:
-.AA border= [n]
-thickness of the surrounding boxborder. \f5border=\fP (no value)
-means no surrounding boxborder nor any horizontal or vertical
-seperator lines between the table rows/cells. \f5border=\fP\f60\fP:
-no surrounding boxborder, but possibly seperator lines between cells
-and rows.
-.DEF border= .1n 
-(register \f5t*b\fP) 
-.AA bc= c
-color of the border. 
-.DEF bc= red4 
-(string \f5t*bc\fP) 
-.AA cols= m
-the number of tablecolumns. Necessary if more then one column, or the
-\f5width\fP-argument must have explicit width-settings for every
-column.
-.DEF cols= 1 
-(register \f5t*cols\fP)
-.AA cpd= n
-cellpadding, i.e. extra space between the cellspace border and
-the cellcontent. 
-.DEF cpd= .5n 
-(register \f5t*cpd\fP)
-.AA csp= n
-cellspacing, i.e. extra space between the table border or
-vertical or horizontal lines between cells and the cellspace. 
-.DEF csp= .5n 
-(register \f5t*csp\fP)
-.AA tal= l|c|r
-horizontal alignment of the table, if it is smaller then the
-linewidth. \f5tal=\fP\f6l\fP: left alignment. \f5tal=\fP\f6c\fP:
-centered alignment. \f5tal=\fP\f6r\fP: right alignment.
-.DEF tal= l 
-(register \f5t*tal\fP)
-.AA width= "'w1 w2 ...'"
-widths of the tablecells. The \f6w\fP are numbers like the \f6n\fP
-and/or natural numbers with the scaling indicator \f6%\fP with the
-meaning \(lqpercent of the actual linelengt (resp. columnlength for
-inner tables)\(rq. If there are less \f6w\fP then tablecols, the last
-\f6w\fP is used for the remaining cells. \f5width=\fP'\f61.5i
-10%\fP' for example means, the first column is 1.5\0inch wide and
-the remaining columns 1/10 of the columnlength.
-.DEF
-the table width equals the outer linelength/columnlength; the columns
-are equal width.
-.AA height= n
-height of the table. If the table with its content is lower then
-\f6n\fP, the table (resp. the last row) is stretched to this value.
-.\"	CPTN
-.ad l
-.A .CPTN "[args] text of caption"
-'in 2u*\n(INu+\n[.tabs]u
-The (optional numbered) table caption. \f5.CPTN\fP is optional.
-.in
-.ad
-.B predecessor: .TBL
-.B successor: .TR
-.B arguments:
-.AA val= t|b
-vertical alignment of the table caption. \f5val=\fP\f6t\fP: caption
-above the table. \f5val=\fP\f6b\fP: caption beneath the table.
-.DEF val= t
-.br
-For CPTN-default settings see the string
-\f5t*cptn\fP.
-.\"	TR
-.A .TR [args] Begin a new table row.
-.B predecessor: .TBL, .CPTN, 
-.TD/.TH, .ETB
-or \f6cellcontent\fP
-.B successor: .TD/.TH
-.B arguments:
-.AA height= n
-the height of the row. If a cell in the row is higher then \f6n\fP,
-this value is ignored; otherwise the row height is stretched to
-\f6n\fP.
-.\"	TH, TD
-.A .TD "[args cellcontent]"  \0\0Begin a table data cell. 
-.sp -.4
-.A .TH "[args cellcontent]"  \0\0Begin a table header cell. 
-.in 3u*\n(INu
-Arguments and cellcontent can be mixed. \fC\&.TH\fP is not really
-necessary and differs from \fC.TD\fP only in three default settings
-(like the HTML-\fC<TH>\fP-tag from the \fC<TD>\fP-tag): The content of
-\fC.TH\fP is horizontally and vertically centered and bolded.
-.in
-.B predecessor: .TR, .TD/.TH, .ETB
-or \f6cellcontent\fP
-.B successor: .TD/.TH, .TR, .ETB 
-or \f6cellcontent\fP
-.B arguments:
-.AA colspan= m
-the width of this cell is the sum of widths of the \f6m\fP cells above
-or below this row.
-.AA rowspan= m
-the height of this cell is the sum of heights of the \f6m\fP cells
-beside this column.
-.br
-\fBRemark:\fP overlapping of col- and rowspanning, as in the following
-table fragment (overlap at position \f62*2\fP) is illegal and the
-result incorrect:
-.in +\n(INu
-.nf
-\fC.TR .TD\fP \f61*1\fP "\fC.TD\fP \f61*2\fP \fCrowspan=2" .TD\fP \f61*3\fP
-\fC.TR ".TD\fP \f62*1\fP \fCcolspan=2"        .TD\fP \f62*3\fP
-.in 	 	
-.fi
-.\"	ETB
-.A .ETB [hold] End of the table. 
-'in 2u*\n(INu+\n[.tabs]
-Finishs the table; one of the following happens: 
-.RS 3u*\n(INu
-.IP \(bu 3
-if the \f5hold\fP-argument (see below) is given, the table is held,
-until it is freed by calling the macro \f5.t*free\fP (see below), and
-is then printed immediately or, if it's higher then the remaining
-place on the page, at the top of the next page.
-.IP \(bu 
-else if the table is higher then the remaining place on the page,
-it is printed at the top of the next page.
-.IP \(bu 
-else the table is printed immediately at the place of its definition.
 .RE
-.PP
-.B predecessor: .TD/.TH, .ETB
-or \f6cellcontent\fP
-.B successor: .TBL, .TR, .TD/.TH, .ETB 
-or \f6cellcontent\fP
-.B arguments:
-.AA hold
-prevent the table from beeing printed until it is freed by calling the
-macro \f5\&.t*free\fP. This argument is ignored for inner (nested)
-tables.
-.\"	.t*free
-.A .t*free [n] Free the next or \f5n\fP held table(s).
-'in 2u*\n(INu+\n[.tabs]
-Call this utility macro to print tables held by the
-\f5hold\fP-argument of \f5.ETB\fP.
 .
-.in \n[IN]u
-.SS Arguments common to \f7.TBL\fP, \f7.TR\fP and \f7.TD/.TH\fP 
-Though these arguments can be specified with the \f5.TBL\fP- and
-\f5.TR\fP-macros, they work lastly on the table cells. If not
-specified the defaults take place, which the user can change by
-setting the corresponding default registers or strings, see below. Setting
-an argument with the \f5\&.TBL\fP-macro has the same effect as setting
-it for all rows in the table. Setting an argument with a
-\f5\&.TR\fP-macro has the same effect as setting it for all the
-\f5.TH/.TD\fPs in this row.
-.AA bgc= [c]
-the background color of the tablecells, i.e. the area inside
-\fCcsp\fP. \f5bgc=\fP (no value): no background color,
-i.e. transparent background.
-.DEF bgc= bisque 
-(string \f5t*bgc\fP)
-.AA fgc= c
-the foreground color of the cellcontent. 
-.DEF fgc= red4
-(string \f5t*fgc\fP)
-.AA ff= name
-font family for the table. \f6name\fP is one of the groff font
-families, for example \f6A\fP for the AvantGarde fonts or \f6HN\fP for
-Helvetica-Narrow.
-.DEF
-the font family found before the table (string \f5t*ff\fP)
-.AA fst= style
-the font style for the table. One of \f6R\fP, \f6I\fP, \f6B\fP or
-\f6BI\fP for roman, \fBbold\fP, \fIitalic\fP or \f(BIbold italic\fP.
-As with the roff \f5.ft\fP-request you can specify with the
-\f5fst\fP-argument the font family and font style together, for
-example \f5fst=\fP\f6HNBI\fP instead of \f5ff=\fP\f6HN\fP and
-\f5fst=\fP\f6BI\fP\c \&.
-.DEF 
-the font style found before the table (string \f5t*fst\fP)
-.AA fsz= "'d1 [d2]'"
-a decimal (optional fractional) multiplier \f6d1\fP\, by which the
-pointsize for the table is changed, and \f6d2\fP\, by which the
-vertical linespacing is changed. If \f6d2\fP\ is omitted, value
-\f6d1\fP\ is taken for both.
-.DEF fsz= "'1.0 1.0'"
-(string \f5t*fsz\fP)
-.AA hal= l|c|b|r
-horizontal alignment of the cellcontents in the table.
-\f5hal=\fP\f6l\fP: left alignment. \f5hal=\fP\f6c\fP: centered
-alignment. \f5hal=\fP\f6b\fP: both (left \fIand\fP right) alignment.
-\f5hal=\fP\f6r\fP: right alignment.
-.DEF hal= b
-(string \f5t*hal\fP)
-.AA val= t|m|b
-vertical alignment of the cellcontents in the table for cells lower
-then the row. \f5val=\fP\f6t\fP: alignment beneath the top of the
-cell. \f5val=\fP\f6m\fP: alignment in the middle of the cell.
-\f5val=\fP\f6b\fP: alignment above the cellbottom.
-.DEF val= t
-(string \f5t*val\fP)
-.AA hl= [s|d]
-horizontal line between the rows. (If specified with \f5.TD/.TH\fP a
-seperator line to the cell below.) \f5hl=\fP (no value): no seperator
-line. \f5hl=\fP\f6s\fP: a single seperator line between the
-rows. \f5hl=\fP\f6d\fP: a double seperator line.
+.PP
+Equivalent to the above is the following notation.
+.
+.PP
+.RS
+\&\f5.TBL .TR .TD\fP \f6contents of the table cell\fP \f5.ETB\fP
+.RE
+.
+.PP
+By default, the formatted table is inserted into the surrounding text at the
+place of its definition.
+.
+If the vertical space isn't sufficient, it is placed at the top of the next
+page.
+.
+Tables can also be stored for later insertion.
+.
+.PP
+Using `\f6row_number*column_number\fP' as the data for the table cells, a
+table with two rows and two columns can be written as
+.
+.PP
+.RS
+.nf
+\&\f5.TBL cols=2\fP
+\&\f5.  TR .TD\fP \f61*1\fP \f5.TD\fP \f61*2\fP
+\&\f5.  TR .TD\fP \f62*1\fP \f5.TD\fP \f62*2\fP
+\&\f5.ETB\fP
+.fi
+.RE
+.
+.PP
+Here we see a difference to HTML tables: The number of columns must be
+explicitly specified using the `\f5cols=\fP\f6m\fP' argument (or indirectly
+via the \f5width\fP argument, see below).
+.
+.PP
+The contents of a table cell is arbitrary; for example, it can be another
+table, without restriction to the nesting depth.
+.
+A given table layout can be either constructed with suitably nested tables
+or with proper arguments to \f5\&.TD\fP and \f5.TH\fP, controlling column
+and row spanning.
+.
+Note, however, that this table
+.
+.PP
+.RS
+.nf
+\&\f5.TBL\fP
+\&\f5.  TR\fP
+\&\f5.    TD\fP
+\&\f5.      nop \fP\f61*1 1*2\fP
+\&\f5.  TR\fP
+\&\f5.    TD\fP
+\&\f5.      TBL cols=2 border=\fP
+\&\f5.        TR\fP
+\&\f5.          TD\fP
+\&\f5.            nop \fP\f62*1\fP
+\&\f5.          TD\fP
+\&\f5.            nop \fP\f62*2\fP
+\&\f5.      ETB\fP
+\&\f5.ETB\fP
+.fi
+.RE
+.
+.PP
+and this table
+.
+.PP
+.RS
+.nf
+\&\f5.TBL cols=2\fP
+\&\f5.  TR\fP
+\&\f5.    TD colspan=2\fP
+\&\f5.      nop \fP\f61*1 1*2\fP
+\&\f5.  TR\fP
+\&\f5.    TD\fP
+\&\f5.      nop \fP\f62*1\fP
+\&\f5.    TD\fP
+\&\f5.      nop \fP\f62*2\fP
+\&\f5.ETB\fP
+.fi
+.RE
+.
+.PP
+are similar but not identical.
+.
+.PP
+Here the latter table in a more compact form.
+.
+.PP
+.RS
+.nf
+\&\f5.TBL cols=2 .TR ".TD colspan=2"\fP \f61*1 1*2\fP
+\&\f5.            TR .TD\fP \f62*1\fP \f5.TD\fP \f62*2\fP \f5.ETB\fP
+.fi
+.RE
+.
+.PP
+If a macro has one or more argument(s), and it is not starting a line, it
+must be enclosed in double quotes.
+.
+.
+.SH MACROS and ARGUMENTS
+.
+The order of macro calls and other tokens follows the HTML model.
+.
+In the following list, valid predecessors and successors of all
+.B hdtbl
+macros are given, together with the possible arguments.
+.
+.PP
+Macro arguments are separated by blanks.
+.
+The order of arguments is arbitrary; they are of the form
+.
+.PP
+.RS
+\f5key=\fP\f6value\fP
+.RE
+.
+.PP
+or
+.
+.PP
+.RS
+\f5key='\fP\f6value1 value2 ...\fP\f5'\fP
+.RE
+.
+.PP
+with the only exception of the optional argument of the macro
+\f5.ETB\fP, which is the string `\f5hold\fP'.
+.
+Another possible form is
+.
+.PP
+.RS
+\f5"key=\fP\f6value1 value2 ...\fP\f5"\fP
+.RE
+.
+.PP
+However, this is limited to the case where the macro is the first one in the
+line and not already enclosed in double quotes.
+.
+.PP
+Argument values specified below as `\f6c\fP' are colors predefined by
+.B groff
+or colors defined by the user with the request `\f5.defcolor\fP'.
+.
+Argument values `\f6d\fP' are decimal numbers with or without decimal point.
+.
+Argument values `\f6m\fP' are natural numbers.
+.
+Argument values `\f6n\fP' are numerical values with the usual
+.B groff
+scaling indicators.
+.
+Some of the arguments are specific to one or two macros, but most of them
+can be specified with \f5.TBL\fP, \f5.TR\fP, \f5.TD\fP, and \f5.TH\fP.
+.
+These common arguments are explained in the next section.
+.
+.PP
+Most of the argument default values can be changed by the user by setting
+corresponding default registers or strings, as listed below.
+.
+.TP
+\f7.TBL\fP \f8[args]\fP
+Begin a new table.
+.
+.IP
+.RS
+.XB predecessor: .TD .TH .ETB "cell contents"
+.XB successor: .CPTN .TR
+.XB arguments:
+.
+.RS
+.XAA border= [n]
+Thickness of the surrounding box border.
+.
+`\f5border=\fP' (no value) means neither a surrounding box border nor any
+horizontal or vertical separator lines between the table rows andcells.
+.
+`\f5border=\fP\f60\fP' suppresses the surrounding box border, but still
+allows separator lines between cells and rows.
+.
+.XDEF border= .1n
+(register \f5t*b\fP).
+.
+.XAA bc= c
+Border color.
+.
+.XDEF bc= red4
+(string \f5t*bc\fP).
+.
+.XAA cols= m
+Number of table columns.
+.
+This argument is necessary if more than one column is in the table and no
+`\f5width\fP' arguments are present.
+.
+.XDEF cols= 1
+(register \f5t*cols\fP).
+.
+.XAA cpd= n
+Cell padding, i.e., the extra space between the cell space border and
+the cell contents.
+.
+.XDEF cpd= .5n
+(register \f5t*cpd\fP).
+.
+.XAA csp= n
+Cell spacing, i.e., the extra space between the table border or
+vertical or horizontal lines between cells and the cellspace.
+.
+.XDEF csp= .5n
+(register \f5t*csp\fP).
+.
+.XAA tal= l|c|r
+Horizontal alignment of the table, if it is smaller then the linewidth.
+.
+\f5tal=\fP\f6l\fP: left alignment.
+.
+\f5tal=\fP\f6c\fP: centered alignment.
+.
+\f5tal=\fP\f6r\fP: right alignment.
+.
+.XDEF tal= l
+(register \f5t*tal\fP).
+.
+.XAA width= "'w1 w2 ...'"
+Widths of table cells.
+.
+\f6w1\fP, \f6w2\fP, \f6...\fP are either numbers of type `\f6n\fP' or
+natural numbers with the scaling indicator `\f6%\fP', with the meaning
+\[lq]percent of the actual line length (or column length for inner
+tables, respectively)\[rq].
+.
+If there are less width values than table columns, the last
+width value is used for the remaining cells.
+.
+The argument
+.
+.RS
+.IP
+\f5width=\fP'\f61.5i 10%\fP'
+.RE
+.
+.IP
+for example indicates that the first column is 1.5\0inches wide; the
+remaining columns take 1/10 of the column length each.
+.
+.XDEF
+The table width equals the outer line length or column length; the columns
+have equal width.
+.
+.XAA height= n
+Height of the table.
+.
+If the table with its contents is lower than
+`\f6n\fP', the the last row is stretched to this value.
+.RE
+.RE
+.
+.TP
+\f7.CPTN\fP \f8[args]\fP
+Text of caption.
+.
+.IP
+The (optionally numbered) table caption.
+.
+\f5.CPTN\fP is optional.
+.
+.IP
+.RS
+.XB predecessor: .TBL
+.XB successor: .TR
+.XB arguments:
+.
+.RS
+.XAA val= t|b
+Vertical alignment of the table caption.
+.
+\f5val=\fP\f6t\fP: The caption is placed above the table.
+.
+\f5val=\fP\f6b\fP: The caption is placed below the table.
+.
+.XDEF val= t
 .br
-The thickness of the seperator lines is half the borderthickness, but
-at least \f60.1n\fP. The distance between the double lines is equal
-the line thickness. \fBRemark:\fP Together with \f5border=\fP\f60\fP
-for proper formatting the value of \f5csp\fP must be at least
-\f6.05n\fP for single seperator lines and \f6.15n\fP for double seperator 
-lines.
-.DEF hl= s
-(string \f5t*hl\fP)
-.AA vl= [s|d] 
-vertical seperator line between the cells. (If specified with
-\f5.TD/.TH\fP a seperator line to the cell on the right.)
-\f5vl=\fP\f6s\fP: a single seperator line between the cells.
-\f5vl=\fP\f6d\fP: a double seperator line. \f5vl=\fP (no value): no
-vertical cellseperator lines. For further description see at \f5hl\fP
-above.
-.DEF vl= s
-(string \f5t*vl\fP)
+For the default settings of \f5.CPTN see the string \f5t*cptn\fP.
+.RE
+.RE
+.
+.TP
+\f7.TR\fP \f8[args]\f8\fP
+Begin a new table row.
+.
+.IP
+.RS
+.XB predecessor: .TBL .CPTN .TD .TH .ETB "cell contents"
+.XB successor: .TD .TH
+.XB arguments:
+.
+.RS
+.XAA height= n
+The height of the row.
+.
+If a cell in the row is higher than `\f6n\fP' this value is ignored;
+otherwise the row height is stretched to `\f6n\fP'.
+.RE
+.RE
+.
+.TP
+\f7.TD\fP \f8[args [cell contents]]\fP
+Begin a table data cell.
+.TQ
+\f7.TH\fP \f8[args [cell contents]]\fP
+Begin a table header cell.
+.
+.IP
+Arguments and cell contents can be mixed.
+.
+The macro \f5.TH\fP is not really necessary and differs from \f5.TD\fP only
+in three default settings, similar to the \f5<TH>\fP and \f5<TD>\fP HTML
+tags: The contents of \f5.TH\fP is horizontally and vertically centered and typeset
+in boldface.
+.
+.IP
+.RS
+.XB predecessor: .TR .TD .TH .ETB "cell contents"
+.XB successor: .TD .TH .TR .ETB "cell contents"
+.XB arguments:
+.
+.RS
+.XAA colspan= m
+The width of this cell is the sum of the widths of the `\f6m\fP' cells above
+and below this row.
+.
+.XAA rowspan= m
+The height of this cell is the sum of the heights of the `\f6m\fP' cells
+left and right of this column.
+.
+.IP
+\fBRemark:\fP Overlapping of column and row spanning, as in the following
+table fragment (the overlappping happens at position \f62*2\fP) is invalid
+and causes an incorrect result.
+.
+.RS
+.IP
+.nf
+\f5.TR .TD\fP \f61*1\fP "\f5.TD\fP \f61*2\fP \f5rowspan=2" .TD\fP \f61*3\fP
+\f5.TR ".TD\fP \f62*1\fP \f5colspan=2"         .TD\fP \f62*3\fP
+.fi
+.RE
+.RE
+.RE
+.
+.TP
+\f7.ETB [hold]\fP
+End of the table.
+.
+.IP
+This macro finishes a table.
+.
+It causes one of the following actions.
+.
+.RS
+.IP \[bu] 3
+If the argument \f5hold\fP is given, the table is held until it is freed by
+calling the macro \f5.t*free\fP, which in turn prints the table immediately,
+either at the current position or at the top of the next page if its height
+is larger than the remaining space on the page.
+.
+.IP \[bu] 3
+Otherwise, if the table is higher than the remaining space on the page,
+it is printed at the top of the next page.
+.
+.IP \[bu] 3
+If none of the two above constraints hold, the table is printed immediately
+at the place of its definition.
+.RE
+.
+.IP
+.RS
+.XB predecessor: .TD .TH .ETB "cell contents"
+.XB successor: .TBL .TR .TD .TH .ETB "cell contents"
+.XB arguments:
+.
+.RS
+.XAA hold
+Prevent the table from being printed until it is freed by calling the
+macro `\f5.t*free\fP'.
+.
+This argument is ignored for inner (nested) tables.
+.RE
+.RE
+.
+.TP
+\f7.t*free\fP \f8[n]\fP
+Free the next held table or \f5n\fP held tables.
+.
+Call this utility macro to print tables which are held by using the
+`\f5hold\fP' argument of `\f5.ETB\fP'.
+.
+.
+.SS Arguments common to \f7.TBL\fP, \f7.TR\fP, \f7.TD\fP, and \f7.TH\fP
+.
+The arguments described in this section can be specified with the \f5.TBL\fP
+and \f5.TR\fP macros, but they are eventually passed on to the table cells.
+.
+If omitted, the defaults take place, which the user can change by setting
+the corresponding default registers or strings, as documented below.
+.
+Setting an argument with the \f5\&.TBL\fP macro has the same effect as
+setting it for all rows in the table.
+.
+Setting an argument with a \f5\&.TR\fP-macro has the same effect as setting
+it for all the \f5.TH\fP or \f5.TD\fP macro in this row.
+.
+.IP
+.XAA bgc= [c]
+The background color of the table cells.
+.
+This includes the area specified with the \f5csp\fP argument.
+.
+The argument `\f5bgc=\fP' (no value) suppresses a background color;
+this makes the background transparent.
+.
+.XDEF bgc= bisque
+(string \f5t*bgc\fP).
+.
+.XAA fgc= c
+The foreground color of the cell contents.
+.
+.XDEF fgc= red4
+(string \f5t*fgc\fP).
+.
+.XAA ff= name
+The font family for the table.
+.
+\f6name\fP is one of the groff font families, for example \f6A\fP for the
+AvantGarde fonts or \f6HN\fP for Helvetica-Narrow.
+.
+.XDEF
+The font family found before the table (string \f5t*ff\fP).
+.
+.XAA fst= style
+The font style for the table.
+.
+One of \f6R\fP, \f6I\fP, \f6B\fP, or \f6BI\fP for roman, \fBbold\fP,
+\fIitalic\fP, or \f(BIbold italic\fP, respectively.
+.
+As with 
+.BR roff 's
+\f5.ft\fP request the \f5fst\fP argument can be used to specify the
+font family and font style together, for example `\f5fst=\fP\f6HNBI\fP'
+instead of `\f5ff=\fP\f6HN\fP' and `\f5fst=\fP\f6BI\fP'.
+.
+.XDEF
+The font style in use right before the table (string \f5t*fst\fP).
+.
+.XAA fsz= "'d1 [d2]'"
+A decimal or fractional multiplier \f6d1\fP\, by which the point size for
+the table is changed, and \f6d2\fP\, by which the vertical line spacing is
+changed.
+.
+If \f6d2\fP\ is omitted, value \f6d1\fP\ is taken for both.
+.
+.XDEF fsz= "'1.0 1.0'"
+(string \f5t*fsz\fP).
+.
+.XAA hal= l|c|b|r
+Horizontal alignment of the cell contents in the table.
+.
+\f5hal=\fP\f6l\fP: left alignment.
+.
+\f5hal=\fP\f6c\fP: centered
+alignment.
+.
+\f5hal=\fP\f6b\fP: both (left \fIand\fP right) alignment.
+.
+\f5hal=\fP\f6r\fP: right alignment.
+.
+.XDEF hal= b
+(string \f5t*hal\fP).
+.
+.XAA val= t|m|b
+Vertical alignment of the cell contents in the table for cells lower
+then the current row.
+.
+\f5val=\fP\f6t\fP: alignment below the top of the
+cell.
+.
+\f5val=\fP\f6m\fP: alignment in the middle of the cell.
+.
+\f5val=\fP\f6b\fP: alignment above the cell bottom.
+.
+.XDEF val= t
+(string \f5t*val\fP).
+.
+.XAA hl= [s|d]
+Horizontal line between the rows.
+.
+If specified with \f5.TD\fP or \f5.TH\fP this is a separator line to the
+cell below.
+.
+`\f5hl=\fP' (no value): no separator line.
+.
+\f5hl=\fP\f6s\fP: a single separator line between the rows.
+.
+\f5hl=\fP\f6d\fP: a double separator line.
+.
+.IP
+The thickness of the separator lines is the half of the border thickness,
+but at least \f60.1n\fP.
+.
+The distance between the double lines is equal to the line thickness.
+.
+.IP
+\fBRemark:\fP Together with \f5border=\fP\f60\fP for proper formatting the
+value of `\f5csp\fP' must be at least \f6.05n\fP for single separator lines
+and \f6.15n\fP for double separator lines.
+.
+.XDEF hl= s
+(string \f5t*hl\fP).
+.
+.XAA vl= [s|d]
+Vertical separator line between the cells.
+.
+If specified with \f5.TD\fP or \f5.TH\fP this is a separator line to the
+cell on the right.
+.
+\f5vl=\fP\f6s\fP: a single separator line between the cells.
+.
+\f5vl=\fP\f6d\fP: a double separator line.
+.
+`\f5vl=\fP' (no value): no vertical cell separator lines.
+.
+For more information see the documentation of the `\f5hl\fP' argument above.
+.
+.XDEF vl= s
+(string \f5t*vl\fP).
+.
 .
 .SH AUTHOR
-.ie "\*(.T"html" .MTO Joachim.Walsdorff@urz.uni-heidelberg.de "Joachim Walsdorff" .
-.el Joachim Walsdorff <Joachim.Walsdorff@urz.uni-heidelberg.de>. 
-.SH BUGS and SUGGESTIONS 
+.
+.ie "\*[.T]"html" \
+.  MTO Joachim.Walsdorff@urz.uni-heidelberg.de "Joachim Walsdorff" .
+.el \
+.  nop Joachim Walsdorff <Joachim.Walsdorff@urz.uni-heidelberg.de>.
+.
+.
+.SH BUGS and SUGGESTIONS
+.
 Please send your commments to the
-.ie "\*(.T"html" .MTO groff@gnu.org "groff-list"
-.el groff-list <groff@gnu.org>
+.ie "\*[.T]"html" \
+.  MTO groff@gnu.org "groff-list"
+.el \
+.  nop groff-list <groff@gnu.org>
 or directly to the Author.
-.xSH SEE ALSO
-.xBR hdgroff (1),
-.xBR groff_hdd (7),
-.xBR groff_hdmacros (7)
+.
+.\" EOF
