@@ -1,0 +1,83 @@
+.\"	-*- roff -*-
+.\"	Time-stamp: <FontdumpsN.roff: 17.02.2006 14:25:41 x01 - JWalsdorff@compuserve.de>
+.\"	******************************************************************
+.\"	**		Groff-Fontglyphs vs Charactercode:		**
+.\"	**	.fontdump [font1 font2 ... ]				**
+.\"	**		Print glyphs of font1 font2 ... versus		**
+.\"	**		charactercode.					**
+.\"	**		`all´ as fontname prints all fonts in the	**
+.\"	**		specified fontpath `*fontpath´.			**
+.\"	**		without arg: glyps/codes of active font.	**
+.\"	******************************************************************
+.time start
+.ds *fontpath /usr/local/share/groff/1.19.3/font
+.\"ds *fontpath /usr/share/groff/1.18.1/font
+.
+.de fontdump
+.ie \\n(.$ .ds *args \\$*
+.el .ds *args \\n[.fn]
+.pso bash -c \
+"echo -n .ds *f\ ;ls --color=never \\*[*fontpath]/dev\*(.T | tr [:cntrl:] ' '"
+.\"	this dummy-line is necessary while eaten by the preceding line
+.while !"\\*[*args]"" \{ .
+.   pops *$1 *args
+.   if "\\*[*$1]"all" \{ .
+.      ds *args \\*(*f \\*[*args]
+.      pops *$1 *args
+.      nr *all 1 
+.   \}
+.   if \\n[*all] \{ .
+.      if "\\*[*$1]"." .nr *all 0
+.      if !F \\*[*$1] .continue 
+.   \}
+.   index "\\*(*f" \\*[*$1]
+.   ie \\n(.y>18 .if !F \\*[*$1] \{ .
+.      tm \\n(.F:\\n(.c: Font \\*[*$1] not found.
+.      continue 
+.   \}
+.   el \{ .
+.      if !\\n[index] \{ .
+.         tm \\n(.F:\\n(.c: Font \\*[*$1] not found.
+.         continue 
+.      \}
+.      nr * \\n(.f
+.      ft \\*[*$1]
+.      nr ** \\n(.f
+.      ft
+.      if \\n(**=\\n* .continue 
+.   \}
+.   if \\n[t*cptn] .bp
+.   TBL border=.1n bc=red cpd=0 csp=.1n bgc=
+.   CPTN Groff-Font \\*[*$1] .br val=b ".pso grep -e internalname \
+         \\*[*fontpath]/dev\*(.T/\\*[*$1]"
+.   TR 
+.   TD
+.   TBL cols=12 border=.1n bc=red csp=.1n cpd=.2n fgc=red4 bgc=beige hal=c \
+        "fsz=1.2 1.2" fst=\\*[*$1]
+.   nr c# 0-1 1
+.   nr y# 0-1 1
+.   TR fst=HB fgc=blue 
+.   TD 
+.   nr x# 0-1 1
+.	\"	following 4 `PN´s instead of 4 while-loops as in FontdumpX.roff;
+.	\"		  short and easy to write, but a little bit slower.
+.   PN 10 .TD \&..\\\\n+[x#]
+.   TD
+.   PN 27 .TR ".TD fgc=blue fst=HB \\\\n+[y#]." ".PN 10 .TD \N'\En+(c#'" \
+         ".TD fgc=blue fst=HB \\\\n[y#]."
+.   TR fst=HB fgc=blue 
+.   TD 
+.   nr x# 0-1 1
+.   PN 10 .TD \&..\\\\n+[x#]
+.   TD 
+.   ETB 
+.   ETB 
+.\}
+..
+.fontdump all
+.time
+.date
+.\"	466MHz Celeron CPU, 384MB RAM 
+.\"	WindowsXP/cygwin groff18.1:	115s
+.\"	WindowsXP/cygwin groff19.2:	450s
+.\"	Suse Linux 9.3 groff19.2:	 76s

@@ -1,0 +1,23 @@
+.\" Time-stamp: <ColoredBoxes.roff: 17.02.2006 14:13:39 x01 - JWalsdorff@compuserve.de>
+.time start
+.H Horizontal Rules and Boxes .br with Random Colored Border and Background
+.PN 25 Text before horizontal rule.
+.TBL border=.5n bc=green bgc=red width=7c tal=c csp=.2n cpd=.3n .TR .TD .ETB
+.PN 10 Text after horizontal rule and before Table.
+.de ctab
+.nr ? 0 1
+.PN 5 .random# ".defcolor color\En+? rgb \E*[#random]" 
+.TD ".TBL border=1c bc=color1 csp=0 cpd=0 height=3c bgc=color2" .TR .TD .ETB
+..
+.
+.TBL tal=c border= csp=0 cpd=0 cols=5 width=3c
+.PN 2 .TR ".PN 5 .ctab"
+.ETB 
+.PN 15 Text behind table.
+.TBL border=.5n bc=color1 bgc=color2 width=15c tal=c csp=.2n cpd=.3n .TR .TD .ETB
+.PN 25 Text behind horizontal rule.
+.time
+.\"	466MHz Celeron CPU, 384MB RAM 
+.\"	WindowsXP/cygwin groff18.1:	 10s
+.\"	WindowsXP/cygwin groff19.2:	 14s
+.\"	Suse Linux 9.3 groff19.2:	  1s

@@ -1,0 +1,23 @@
+.\" Time-stamp: <ColoredTableCells.roff: 24.03.2006 21:53:32 x01 - JWalsdorff@compuserve.de>
+.time start
+.H Horizontal Rules and Random Colored Tablecells
+.PN 15 Text before HR.
+.TBL border=.5n bc=green bgc=red width=7c tal=c csp=.2n cpd=.3n .TR .TD .ETB
+.PN 10 Text after HR and before Table.
+.
+.nr ? 0 1
+.de ctab
+.TR height=\nl/10
+.PN 8 .random# ".defcolor c\\\\n+? rgb \E*[#random]" ".TD bgc=c\\\\n?" 
+..
+.TBL tal=c border= csp=0 cpd=0 cols=8 width=\nl/10
+.PN 8 .ctab
+.ETB 
+.PN 10 Text behind table.
+.TBL border=.5n bc=c1 bgc=c2 width=15c tal=c csp=.2n cpd=.3n .TR .TD .ETB
+.PN 15 Text behind HR.
+.time
+.\"	466MHz Celeron CPU, 384MB RAM 
+.\"	WindowsXP/cygwin groff18.1:	 14s
+.\"	WindowsXP/cygwin groff19.2:	 18s
+.\"	Suse Linux 9.3 groff19.2:	  1s
