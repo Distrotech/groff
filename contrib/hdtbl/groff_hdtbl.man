@@ -28,36 +28,123 @@ groff_hdtbl \- groff `hdtbl' macros for generation of tables
 .
 .
 .\"
-.\"			some simple formatting macros
+.\" some simple formatting macros
 .\"
+.
+.char \[lB] \F[\n[.fam]]\f[R][
+.char \[rB] \F[\n[.fam]]\f[R]]
+.
+.char \[or] \F[\n[.fam]]\f[R]\||\|
+.char \[ell] \F[\n[.fam]]\f[R].\|.\|.
+.
+.char \[oq] \F[\n[.fam]]\f[R]\[oq]
+.char \[cq] \F[\n[.fam]]\f[R]\[cq]
+.
+.
 .ie F CR \{\
-.  fp 5 CR
-.  fp 6 CI
-.  fp 7 CB
-.  fp 8 CBI
+.
+.  \" We have to solve the following problem.  In the following code
+.  \"
+.  \"   foo
+.  \"   .CR bar
+.  \"   foo
+.  \"
+.  \" the space immediately after `bar' should not be taken from the `C'
+.  \" family.  At the same time, this
+.  \"
+.  \"   foo
+.  \"   .CR bar\c
+.  \"   foo
+.  \"
+.  \" should work also.  To make both constraints work with a single macro
+.  \" we need a means to test whether there is a `\c' in the arguments. 
+.  \" The only solution I'm aware of is to switch to an environment with
+.  \" an empty `current partial line' and emitting the arguments, then
+.  \" testing the \n[.int] register.  Since it is not possible currently
+.  \" to remove environments we use a counter to guarantee empty
+.  \" environments.
+.
+.  nr env-count 0 1
+.
+.  de make-C-macro
+.    de C\\$1
+.      ev e-\\\\n+[env-count]
+.      nop \&\\\\$*
+.      nr have-int \\\\n[.int]
+.      ev
+.      fam C
+.      ie \\\\n[have-int] \{\
+.        \\$2 \&\\\\$*
+.        fam
+.      \}
+.      el \
+.        \\$2 \&\\\\$*\F[]
+\\..
+.  .
+.
+.  make-C-macro R nop
+.  make-C-macro B B
+.  make-C-macro I I
+.
+.  de make-C-macro
+.    de C\\$1
+.      ev e-\\\\n+[env-count]
+.      nop \&\\\\$*
+.      nr have-int \\\\n[.int]
+.      ev
+.      fam C
+.      ie \\\\n[have-int] \{\
+.        \\$1 \\\\$@
+.        fam
+.      \}
+.      el \
+.        \\$1 \\\\$@ \F[]
+\\..
+.  .
+.
+.  make-C-macro BI
+.  make-C-macro IB
+.  make-C-macro RI
+.  make-C-macro IR
+.  make-C-macro BR
+.  make-C-macro RB
 .\}
 .el \{\
-.  fp 5 R
-.  fp 6 I
-.  fp 7 B
-.  fp 8 BI
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.  ftr CBI BI
+.
+.  de CR
+.    nop \&\\$*
+.  .
+.  als CB B
+.  als CI I
+.
+.  als CBI BI
+.  als CIB IB
+.  als CRI RI
+.  als CIR IR
+.  als CBR BR
+.  als CRB RB
 .\}
 .
 .
 .de TQ
 .  br
 .  ns
-.  TP \\$1
+.  TP
 ..
 .
 .
 .de XB
-.  nop \fB\\$1\fP
+.  B "\\$1"
 .  shift
-.  nop \f5\\$1\fP\c
+.  CR "\\$1\c"
 .  shift
 .  while \\n[.$] \{\
-.    nop , \f5\\$1\fP\c
+.    nop ,
+.    CR "\\$1\c"
 .    shift
 .  \}
 .  br
@@ -66,18 +153,38 @@ groff_hdtbl \- groff `hdtbl' macros for generation of tables
 .
 .de XAA
 .  TQ
-.  nop \f5\\$1\fP\f6\\$2\fP
+.  CRI \\$@
 ..
 .
 .
 .de XDEF
 .  br
-.  ds * \\n[.f]
 .  B Default:
 .  if !\\n[.$] \
 .    return
-.  nop \&\f5\\$1\fP\f6\\$2\f\\*[*]
+.  CRI "\\$1" "\\$2"
 ..
+.
+.
+.de XDEFR
+.  br
+.  B Default:
+.  CR "\[oq]\\$1\[cq]"
+.  nop (register
+.  CR "\[oq]\\$2\[cq]\c"
+.  nop ).
+..
+.
+.
+.de XDEFS
+.  br
+.  B Default:
+.  CR "\[oq]\\$1\[cq]"
+.  nop (string
+.  CR "\[oq]\\$2\[cq]\c"
+.  nop ).
+..
+.
 .
 .
 .SH DESCRIPTION
@@ -122,11 +229,11 @@ Here we construct a table with only one cell.
 .PP
 .RS
 .nf
-\&\f5.TBL\fP
-\&\f5.TR\fP
-\&\f5.TD\fP
-\&\f6contents of the table cell\fP
-\&\f5.ETB\fP
+.CR .TBL
+.CR .TR
+.CR .TD
+.CI contents of the table cell
+.CR .ETB
 .fi
 .RE
 .
@@ -135,7 +242,7 @@ Equivalent to the above is the following notation.
 .
 .PP
 .RS
-\&\f5.TBL .TR .TD\fP \f6contents of the table cell\fP \f5.ETB\fP
+.CRI ".TBL .TR .TD " "contents of the table cell" " .ETB"
 .RE
 .
 .PP
@@ -148,51 +255,59 @@ page.
 Tables can also be stored for later insertion.
 .
 .PP
-Using `\f6row_number*column_number\fP' as the data for the table cells, a
-table with two rows and two columns can be written as
+Using
+.CIR \[oq]row-number * column-number\[cq]
+as the data for the table cells, a table with two rows and two columns can
+be written as
 .
 .PP
 .RS
 .nf
-\&\f5.TBL cols=2\fP
-\&\f5.  TR .TD\fP \f61*1\fP \f5.TD\fP \f61*2\fP
-\&\f5.  TR .TD\fP \f62*1\fP \f5.TD\fP \f62*2\fP
-\&\f5.ETB\fP
+.CR ".TBL cols=2"
+.CR ".  TR .TD 1*1 .TD 1*2"
+.CR ".  TR .TD 2*1 .TD 2*2"
+.CR ".ETB"
 .fi
 .RE
 .
 .PP
 Here we see a difference to HTML tables: The number of columns must be
-explicitly specified using the `\f5cols=\fP\f6m\fP' argument (or indirectly
-via the \f5width\fP argument, see below).
+explicitly specified using the
+.CRI \[oq]cols= m\[cq]
+argument (or indirectly via the
+.CR \[oq]width\[cq]
+argument, see below).
 .
 .PP
 The contents of a table cell is arbitrary; for example, it can be another
 table, without restriction to the nesting depth.
 .
 A given table layout can be either constructed with suitably nested tables
-or with proper arguments to \f5\&.TD\fP and \f5.TH\fP, controlling column
-and row spanning.
+or with proper arguments to
+.CR .TD
+and
+.CR .TH\c
+, controlling column and row spanning.
 .
 Note, however, that this table
 .
 .PP
 .RS
 .nf
-\&\f5.TBL\fP
-\&\f5.  TR\fP
-\&\f5.    TD\fP
-\&\f5.      nop \fP\f61*1 1*2\fP
-\&\f5.  TR\fP
-\&\f5.    TD\fP
-\&\f5.      TBL cols=2 border=\fP
-\&\f5.        TR\fP
-\&\f5.          TD\fP
-\&\f5.            nop \fP\f62*1\fP
-\&\f5.          TD\fP
-\&\f5.            nop \fP\f62*2\fP
-\&\f5.      ETB\fP
-\&\f5.ETB\fP
+.CR ".TBL"
+.CR ".  TR"
+.CR ".    TD"
+.CR ".      nop 1*1 1*2"
+.CR ".  TR"
+.CR ".    TD"
+.CR ".      TBL cols=2 border="
+.CR ".        TR"
+.CR ".          TD"
+.CR ".            nop 2*1"
+.CR ".          TD"
+.CR ".            nop 2*2"
+.CR ".      ETB"
+.CR ".ETB"
 .fi
 .RE
 .
@@ -202,16 +317,16 @@ and this table
 .PP
 .RS
 .nf
-\&\f5.TBL cols=2\fP
-\&\f5.  TR\fP
-\&\f5.    TD colspan=2\fP
-\&\f5.      nop \fP\f61*1 1*2\fP
-\&\f5.  TR\fP
-\&\f5.    TD\fP
-\&\f5.      nop \fP\f62*1\fP
-\&\f5.    TD\fP
-\&\f5.      nop \fP\f62*2\fP
-\&\f5.ETB\fP
+.CR ".TBL cols=2"
+.CR ".  TR"
+.CR ".    TD colspan=2"
+.CR ".      nop 1*1 1*2"
+.CR ".  TR"
+.CR ".    TD"
+.CR ".      nop 2*1"
+.CR ".    TD"
+.CR ".      nop 2*2"
+.CR ".ETB"
 .fi
 .RE
 .
@@ -224,17 +339,17 @@ Here the latter table in a more compact form.
 .PP
 .RS
 .nf
-\&\f5.TBL cols=2 .TR ".TD colspan=2"\fP \f61*1 1*2\fP
-\&\f5.            TR .TD\fP \f62*1\fP \f5.TD\fP \f62*2\fP \f5.ETB\fP
+.CR ".TBL cols=2 .TR \[dq].TD colspan=2\[dq] 1*1 1*2"
+.CR ".            TR .TD 2*1 .TD 2*2 .ETB"
 .fi
 .RE
 .
 .PP
-If a macro has one or more argument(s), and it is not starting a line, it
-must be enclosed in double quotes.
+If a macro has one or more arguments, and it is not starting a line, it must
+be enclosed in double quotes.
 .
 .
-.SH MACROS and ARGUMENTS
+.SH MACROS AND ARGUMENTS
 .
 The order of macro calls and other tokens follows the HTML model.
 .
@@ -249,7 +364,7 @@ The order of arguments is arbitrary; they are of the form
 .
 .PP
 .RS
-\f5key=\fP\f6value\fP
+.CRI key= value
 .RE
 .
 .PP
@@ -257,18 +372,21 @@ or
 .
 .PP
 .RS
-\f5key='\fP\f6value1 value2 ...\fP\f5'\fP
+.CRI key=\[aq] "value1 \[lB]value2 \[lB]\[ell]\[rB]\[rB]" \[aq]
 .RE
 .
 .PP
 with the only exception of the optional argument of the macro
-\f5.ETB\fP, which is the string `\f5hold\fP'.
+.CR .ETB\c
+, which is the string
+.CR \[oq]hold\[cq]\c
+\&.
 .
 Another possible form is
 .
 .PP
 .RS
-\f5"key=\fP\f6value1 value2 ...\fP\f5"\fP
+.CRI \[dq]key= "value1 \[lB]value2 \[lB]\[ell]\[rB]\[rB]" \[dq]
 .RE
 .
 .PP
@@ -276,29 +394,49 @@ However, this is limited to the case where the macro is the first one in the
 line and not already enclosed in double quotes.
 .
 .PP
-Argument values specified below as `\f6c\fP' are colors predefined by
+Argument values specified below as\~\c
+.CI c
+are colors predefined by
 .B groff
-or colors defined by the user with the request `\f5.defcolor\fP'.
+or colors defined by the user with the
+.CR .defcolor
+request.
 .
-Argument values `\f6d\fP' are decimal numbers with or without decimal point.
+Argument values\~\c
+.CI d
+are decimal numbers with or without decimal point.
 .
-Argument values `\f6m\fP' are natural numbers.
+Argument values\~\c
+.CI m
+are natural numbers.
 .
-Argument values `\f6n\fP' are numerical values with the usual
+Argument values\~\c
+.CI n
+are numerical values with the usual
 .B groff
 scaling indicators.
 .
 Some of the arguments are specific to one or two macros, but most of them
-can be specified with \f5.TBL\fP, \f5.TR\fP, \f5.TD\fP, and \f5.TH\fP.
+can be specified with
+.CR .TBL\c
+,
+.CR .TR\c
+,
+.CR .TD\c
+, and
+.CR .TH\
+\&.
 .
-These common arguments are explained in the next section.
+These common arguments are explained in the next subsection.
 .
 .PP
 Most of the argument default values can be changed by the user by setting
 corresponding default registers or strings, as listed below.
 .
+.\"------------------------------------------------------------------
+.
 .TP
-\f7.TBL\fP \f8[args]\fP
+.CBI ".TBL " \[lB]args\[rB]
 Begin a new table.
 .
 .IP
@@ -308,101 +446,110 @@ Begin a new table.
 .XB arguments:
 .
 .RS
-.XAA border= [n]
+.XAA border= \[lB]n\[rB]
 Thickness of the surrounding box border.
 .
-`\f5border=\fP' (no value) means neither a surrounding box border nor any
-horizontal or vertical separator lines between the table rows andcells.
+.CR \%\[oq]border=\[cq]
+(no value) means neither a surrounding box border nor any horizontal or
+vertical separator lines between the table rows and cells.
 .
-`\f5border=\fP\f60\fP' suppresses the surrounding box border, but still
-allows separator lines between cells and rows.
+.CR \%\[oq]border=0\[cq]
+suppresses the surrounding box border, but still allows separator lines
+between cells and rows.
 .
-.XDEF border= .1n
-(register \f5t*b\fP).
+.XDEFR border=.1n t*b
 .
 .XAA bc= c
 Border color.
 .
-.XDEF bc= red4
-(string \f5t*bc\fP).
+.XDEFS bc=red4 t*bc
 .
 .XAA cols= m
 Number of table columns.
 .
 This argument is necessary if more than one column is in the table and no
-`\f5width\fP' arguments are present.
+.CR \[oq]width\[cq]
+arguments are present.
 .
-.XDEF cols= 1
-(register \f5t*cols\fP).
+.XDEFR cols=1 t*cols
 .
 .XAA cpd= n
 Cell padding, i.e., the extra space between the cell space border and
 the cell contents.
 .
-.XDEF cpd= .5n
-(register \f5t*cpd\fP).
+.XDEFR cpd=.5n t*cpd
 .
 .XAA csp= n
 Cell spacing, i.e., the extra space between the table border or
 vertical or horizontal lines between cells and the cellspace.
 .
-.XDEF csp= .5n
-(register \f5t*csp\fP).
+.XDEFR csp=.5n t*csp
 .
-.XAA tal= l|c|r
-Horizontal alignment of the table, if it is smaller then the linewidth.
+.XAA tal=l\[or]c\[or]r
+Horizontal alignment of the table, if it is smaller than the line width.
 .
-\f5tal=\fP\f6l\fP: left alignment.
+.CR \[oq]tal=l\[cq]\c
+: left alignment.
 .
-\f5tal=\fP\f6c\fP: centered alignment.
+.CR \[oq]tal=c\[cq]\c
+: centered alignment.
 .
-\f5tal=\fP\f6r\fP: right alignment.
+.CR \[oq]tal=r\[cq]\c
+: right alignment.
 .
-.XDEF tal= l
-(register \f5t*tal\fP).
+.XDEFR tal=l t*tal
 .
-.XAA width= "'w1 w2 ...'"
+.XAA "width=\[aq]" "w1 \[lB]w2 \[lB]\[ell]\[rB]\[rB]" \[aq]
 Widths of table cells.
 .
-\f6w1\fP, \f6w2\fP, \f6...\fP are either numbers of type `\f6n\fP' or
-natural numbers with the scaling indicator `\f6%\fP', with the meaning
-\[lq]percent of the actual line length (or column length for inner
-tables, respectively)\[rq].
+.CI w1\c
+,
+.CI w2\c
+, \[ell] are either numbers of type\~\c
+.CI n
+or natural numbers with the pseudo-scaling indicator
+.CR \[oq]%\[cq]\c
+, with the meaning \[lq]percent of the actual line length (or column length
+for inner tables, respectively)\[rq].
 .
-If there are less width values than table columns, the last
-width value is used for the remaining cells.
+If there are less width values than table columns, the last width value is
+used for the remaining cells.
 .
 The argument
 .
 .RS
 .IP
-\f5width=\fP'\f61.5i 10%\fP'
+.CR width=\[aq]1.5i 10%\[aq]
 .RE
 .
 .IP
-for example indicates that the first column is 1.5\0inches wide; the
+for example indicates that the first column is 1.5\|inches wide; the
 remaining columns take 1/10 of the column length each.
 .
 .XDEF
 The table width equals the outer line length or column length; the columns
-have equal width.
+have equal widths.
 .
 .XAA height= n
 Height of the table.
 .
-If the table with its contents is lower than
-`\f6n\fP', the the last row is stretched to this value.
+If the table with its contents is lower than\~\c
+.CI n\c
+, the last row is stretched to this value.
 .RE
 .RE
 .
+.\"------------------------------------------------------------------
+.
 .TP
-\f7.CPTN\fP \f8[args]\fP
+.CBI ".CPTN " \[lB]args\[rB]
 Text of caption.
 .
 .IP
 The (optionally numbered) table caption.
 .
-\f5.CPTN\fP is optional.
+.CR .CPTN
+is optional.
 .
 .IP
 .RS
@@ -411,21 +558,23 @@ The (optionally numbered) table caption.
 .XB arguments:
 .
 .RS
-.XAA val= t|b
+.XAA val=t\[or]b
 Vertical alignment of the table caption.
 .
-\f5val=\fP\f6t\fP: The caption is placed above the table.
+.CR \[oq]val=t\[cq]\c
+: The caption is placed above the table.
 .
-\f5val=\fP\f6b\fP: The caption is placed below the table.
+.CR \[oq]val=b\[cq]\c
+: The caption is placed below the table.
 .
-.XDEF val= t
-.br
-For the default settings of \f5.CPTN see the string \f5t*cptn\fP.
+.XDEFS val=t t*cptn
 .RE
 .RE
+.
+.\"------------------------------------------------------------------
 .
 .TP
-\f7.TR\fP \f8[args]\f8\fP
+.CBI ".TR " \[lB]args\[rB]
 Begin a new table row.
 .
 .IP
@@ -438,25 +587,37 @@ Begin a new table row.
 .XAA height= n
 The height of the row.
 .
-If a cell in the row is higher than `\f6n\fP' this value is ignored;
-otherwise the row height is stretched to `\f6n\fP'.
+If a cell in the row is higher than\~\c
+.CI n
+this value is ignored; otherwise the row height is stretched to\~\c
+.CI n\c
+\&.
 .RE
 .RE
 .
+.\"------------------------------------------------------------------
+.
 .TP
-\f7.TD\fP \f8[args [cell contents]]\fP
+.CBI ".TD " "\[lB]args \[lB]cell contents\[rB]\[rB]"
 Begin a table data cell.
 .TQ
-\f7.TH\fP \f8[args [cell contents]]\fP
+.CBI ".TH " "\[lB]args \[lB]cell contents\[rB]\[rB]"
 Begin a table header cell.
 .
 .IP
 Arguments and cell contents can be mixed.
 .
-The macro \f5.TH\fP is not really necessary and differs from \f5.TD\fP only
-in three default settings, similar to the \f5<TH>\fP and \f5<TD>\fP HTML
-tags: The contents of \f5.TH\fP is horizontally and vertically centered and typeset
-in boldface.
+The macro
+.CR .TH
+is not really necessary and differs from
+.CR .TD
+only in three default settings, similar to the
+.CR <TH>
+and
+.CR <TD>
+HTML tags: The contents of
+.CR .TH
+is horizontally and vertically centered and typeset in boldface.
 .
 .IP
 .RS
@@ -466,30 +627,35 @@ in boldface.
 .
 .RS
 .XAA colspan= m
-The width of this cell is the sum of the widths of the `\f6m\fP' cells above
-and below this row.
+The width of this cell is the sum of the widths of the\~\c
+.CI m
+cells above and below this row.
 .
 .XAA rowspan= m
-The height of this cell is the sum of the heights of the `\f6m\fP' cells
-left and right of this column.
+The height of this cell is the sum of the heights of the
+.CI m
+cells left and right of this column.
 .
 .IP
-\fBRemark:\fP Overlapping of column and row spanning, as in the following
-table fragment (the overlappping happens at position \f62*2\fP) is invalid
-and causes an incorrect result.
+.B Remark:
+Overlapping of column and row spanning, as in the following table fragment
+(the overlapping happens in the second cell in the second row), is invalid
+and causes incorrect results.
 .
 .RS
 .IP
 .nf
-\f5.TR .TD\fP \f61*1\fP "\f5.TD\fP \f61*2\fP \f5rowspan=2" .TD\fP \f61*3\fP
-\f5.TR ".TD\fP \f62*1\fP \f5colspan=2"         .TD\fP \f62*3\fP
+.CR ".TR .TD 1*1 \[dq].TD 1*2 rowspan=2\[dq] .TD 1*3"
+.CR ".TR \[dq].TD 2*1 colspan=2\[dq]         .TD 2*3"
 .fi
 .RE
 .RE
 .RE
 .
+.\"------------------------------------------------------------------
+.
 .TP
-\f7.ETB [hold]\fP
+.CB ".ETB \[lB]hold\[rB]"
 End of the table.
 .
 .IP
@@ -499,10 +665,13 @@ It causes one of the following actions.
 .
 .RS
 .IP \[bu] 3
-If the argument \f5hold\fP is given, the table is held until it is freed by
-calling the macro \f5.t*free\fP, which in turn prints the table immediately,
-either at the current position or at the top of the next page if its height
-is larger than the remaining space on the page.
+If the argument
+.CR \[oq]hold\[cq]
+is given, the table is held until it is freed by calling the macro
+.CR .t*free\c
+, which in turn prints the table immediately, either at the current position
+or at the top of the next page if its height is larger than the remaining
+space on the page.
 .
 .IP \[bu] 3
 Otherwise, if the table is higher than the remaining space on the page,
@@ -522,157 +691,227 @@ at the place of its definition.
 .RS
 .XAA hold
 Prevent the table from being printed until it is freed by calling the
-macro `\f5.t*free\fP'.
+macro
+.CR .t*free\c
+\&.
 .
 This argument is ignored for inner (nested) tables.
 .RE
 .RE
 .
+.\"------------------------------------------------------------------
+.
 .TP
-\f7.t*free\fP \f8[n]\fP
-Free the next held table or \f5n\fP held tables.
+.CBI ".t*free " \[lB]n\[rB]
+Free the next held table or
+.CI n\c
+\~held tables.
 .
 Call this utility macro to print tables which are held by using the
-`\f5hold\fP' argument of `\f5.ETB\fP'.
+.CR \[oq]hold\[cq]
+argument of the
+.CR .ETB
+macro.
 .
 .
-.SS Arguments common to \f7.TBL\fP, \f7.TR\fP, \f7.TD\fP, and \f7.TH\fP
+.SS Arguments common to \f[CB].TBL\f[], \f[CB].TR\f[], \f[CB].TD\f[], and \f[CB].TH\f[]
 .
-The arguments described in this section can be specified with the \f5.TBL\fP
-and \f5.TR\fP macros, but they are eventually passed on to the table cells.
+The arguments described in this section can be specified with the
+.CR .TBL
+and
+.CR .TR
+macros, but they are eventually passed on to the table cells.
 .
 If omitted, the defaults take place, which the user can change by setting
 the corresponding default registers or strings, as documented below.
 .
-Setting an argument with the \f5\&.TBL\fP macro has the same effect as
-setting it for all rows in the table.
+Setting an argument with the
+.CR .TBL
+macro has the same effect as setting it for all rows in the table.
 .
-Setting an argument with a \f5\&.TR\fP-macro has the same effect as setting
-it for all the \f5.TH\fP or \f5.TD\fP macro in this row.
+Setting an argument with a
+.CR .TR
+macro has the same effect as setting it for all the
+.CR .TH
+or
+.CR .TD
+macro in this row.
 .
 .IP
-.XAA bgc= [c]
+.XAA bgc= \[lB]c\[rB]
 The background color of the table cells.
 .
-This includes the area specified with the \f5csp\fP argument.
+This includes the area specified with the
+.CR \[oq]csp\[cq]
+argument.
 .
-The argument `\f5bgc=\fP' (no value) suppresses a background color;
-this makes the background transparent.
+The argument
+.CR \[oq]bgc=\[cq]
+(no value) suppresses a background color; this makes the background
+transparent.
 .
-.XDEF bgc= bisque
-(string \f5t*bgc\fP).
+.XDEFS bgc=bisque t*bgc
 .
 .XAA fgc= c
 The foreground color of the cell contents.
 .
-.XDEF fgc= red4
-(string \f5t*fgc\fP).
+.XDEFS fgc=red4 t*fgc
 .
 .XAA ff= name
 The font family for the table.
 .
-\f6name\fP is one of the groff font families, for example \f6A\fP for the
-AvantGarde fonts or \f6HN\fP for Helvetica-Narrow.
+.CI name
+is one of the groff font families, for example
+.CR A
+for the AvantGarde fonts or
+.CR HN
+for Helvetica-Narrow.
 .
 .XDEF
-The font family found before the table (string \f5t*ff\fP).
+The font family found before the table (string
+.CR \[oq]t*ff\[cq]\c
+).
 .
 .XAA fst= style
 The font style for the table.
 .
-One of \f6R\fP, \f6I\fP, \f6B\fP, or \f6BI\fP for roman, \fBbold\fP,
-\fIitalic\fP, or \f(BIbold italic\fP, respectively.
+One of
+.CR R\c
+,
+.CR I\c
+,
+.CR B\c
+, or
+.CR BI
+for roman,
+.BR bold ,
+.IR italic ,
+or \f[BI]bold italic\f[], respectively.
 .
 As with 
 .BR roff 's
-\f5.ft\fP request the \f5fst\fP argument can be used to specify the
-font family and font style together, for example `\f5fst=\fP\f6HNBI\fP'
-instead of `\f5ff=\fP\f6HN\fP' and `\f5fst=\fP\f6BI\fP'.
+.CR .ft
+request the
+.CR \[oq]fst\[cq]
+argument can be used to specify the font family and font style together, for
+example
+.CR \[oq]fst=HNBI\[cq]
+instead of
+.CR \[oq]ff=HN\[cq]
+and
+.CR \[oq]fst=BI\[cq]\c
+\&.
 .
 .XDEF
-The font style in use right before the table (string \f5t*fst\fP).
+The font style in use right before the table (string
+.CR \[oq]t*fst\[cq]\c
+).
 .
-.XAA fsz= "'d1 [d2]'"
-A decimal or fractional multiplier \f6d1\fP\, by which the point size for
-the table is changed, and \f6d2\fP\, by which the vertical line spacing is
-changed.
+.XAA "fsz=\[aq]" "d1 \[lB]d2\[rB]" \[aq]
+A decimal or fractional factor
+.CI d1\c
+, by which the point size for the table is changed, and
+.CI d2\c
+, by which the vertical line spacing is changed.
 .
-If \f6d2\fP\ is omitted, value \f6d1\fP\ is taken for both.
+If
+.CI d2
+is omitted, value
+.CI d1
+is taken for both.
 .
-.XDEF fsz= "'1.0 1.0'"
-(string \f5t*fsz\fP).
+.XDEFS "fsz=\[aq]1.0 1.0\[aq]" t*fsz
 .
-.XAA hal= l|c|b|r
+.XAA hal=l\[or]c\[or]b\[or]r
 Horizontal alignment of the cell contents in the table.
 .
-\f5hal=\fP\f6l\fP: left alignment.
+.CR \[oq]hal=l\[cq]\c
+: left alignment.
 .
-\f5hal=\fP\f6c\fP: centered
-alignment.
+.CR \[oq]hal=c\[cq]\c
+: centered alignment.
 .
-\f5hal=\fP\f6b\fP: both (left \fIand\fP right) alignment.
+.CR \[oq]hal=b\[cq]\c
+: both (left and right) alignment.
 .
-\f5hal=\fP\f6r\fP: right alignment.
+.CR \[oq]hal=r\[cq]\c
+: right alignment.
 .
-.XDEF hal= b
-(string \f5t*hal\fP).
+.XDEFS hal=b t*hal
 .
-.XAA val= t|m|b
+.XAA val=t\[or]m\[or]b
 Vertical alignment of the cell contents in the table for cells lower
-then the current row.
+than the current row.
 .
-\f5val=\fP\f6t\fP: alignment below the top of the
-cell.
+.CR \[oq]val=t\[cq]\c
+: alignment below the top of the cell.
 .
-\f5val=\fP\f6m\fP: alignment in the middle of the cell.
+.CR \[oq]val=m\[cq]\c
+: alignment in the middle of the cell.
 .
-\f5val=\fP\f6b\fP: alignment above the cell bottom.
+.CR \[oq]val=b\[cq]\c
+: alignment above the cell bottom.
 .
-.XDEF val= t
-(string \f5t*val\fP).
+.XDEFS val=t t*val
 .
-.XAA hl= [s|d]
+.XAA hl=\[lB]s\[or]d\[rB]
 Horizontal line between the rows.
 .
-If specified with \f5.TD\fP or \f5.TH\fP this is a separator line to the
-cell below.
+If specified with
+.CR .TD
+or
+.CR .TH
+this is a separator line to the cell below.
 .
-`\f5hl=\fP' (no value): no separator line.
+.CR \[oq]hl=\[cq]
+(no value): no separator line.
 .
-\f5hl=\fP\f6s\fP: a single separator line between the rows.
+.CR \[oq]hl=s\[cq]\c
+: a single separator line between the rows.
 .
-\f5hl=\fP\f6d\fP: a double separator line.
+.CR \[oq]hl=d\[cq]\c
+: a double separator line.
 .
 .IP
 The thickness of the separator lines is the half of the border thickness,
-but at least \f60.1n\fP.
+but at least 0.1n.
 .
 The distance between the double lines is equal to the line thickness.
 .
 .IP
-\fBRemark:\fP Together with \f5border=\fP\f60\fP for proper formatting the
-value of `\f5csp\fP' must be at least \f6.05n\fP for single separator lines
-and \f6.15n\fP for double separator lines.
+.B Remark:
+Together with
+.CR \[oq]border=0\[cq]
+for proper formatting the value of
+.CR \[oq]csp\[cq]
+must be at least .05n for single separator lines and .15n for double
+separator lines.
 .
-.XDEF hl= s
-(string \f5t*hl\fP).
+.XDEFS hl=s t*hl
 .
-.XAA vl= [s|d]
+.XAA vl=\[lB]s\[or]d\[rB]
 Vertical separator line between the cells.
 .
-If specified with \f5.TD\fP or \f5.TH\fP this is a separator line to the
-cell on the right.
+If specified with
+.CR .TD
+or
+.CR .TH
+this is a separator line to the cell on the right.
 .
-\f5vl=\fP\f6s\fP: a single separator line between the cells.
+.CR \[oq]vl=s\[cq]\c
+: a single separator line between the cells.
 .
-\f5vl=\fP\f6d\fP: a double separator line.
+.CR \[oq]vl=d\[cq]\c
+: a double separator line.
 .
-`\f5vl=\fP' (no value): no vertical cell separator lines.
+.CR \[oq]vl=\[cq]
+(no value): no vertical cell separator lines.
 .
-For more information see the documentation of the `\f5hl\fP' argument above.
+For more information see the documentation of the
+.CR \[oq]hl\[cq]
+argument above.
 .
-.XDEF vl= s
-(string \f5t*vl\fP).
+.XDEFS vl=s t*vl
 .
 .
 .SH AUTHOR
@@ -683,13 +922,13 @@ For more information see the documentation of the `\f5hl\fP' argument above.
 .  nop Joachim Walsdorff <Joachim.Walsdorff@urz.uni-heidelberg.de>.
 .
 .
-.SH BUGS and SUGGESTIONS
+.SH BUGS AND SUGGESTIONS
 .
 Please send your commments to the
 .ie "\*[.T]"html" \
-.  MTO groff@gnu.org "groff-list"
+.  MTO groff@gnu.org "groff mailing list"
 .el \
-.  nop groff-list <groff@gnu.org>
-or directly to the Author.
+.  nop groff mailing list <groff@gnu.org>
+or directly to the author.
 .
 .\" EOF
