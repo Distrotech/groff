@@ -43,7 +43,7 @@ groff_hdtbl \- groff `hdtbl' macros for generation of tables
 .
 .ie F CR \{\
 .
-.  \" We have to solve the following problem.  In the following code
+.  \" We have to solve the following problem.  In this code
 .  \"
 .  \"   foo
 .  \"   .CR bar
@@ -56,29 +56,15 @@ groff_hdtbl \- groff `hdtbl' macros for generation of tables
 .  \"   .CR bar\c
 .  \"   foo
 .  \"
-.  \" should work also.  To make both constraints work with a single macro
-.  \" we need a means to test whether there is a `\c' in the arguments. 
-.  \" The only solution I'm aware of is to switch to an environment with
-.  \" an empty `current partial line' and emitting the arguments, then
-.  \" testing the \n[.int] register.  Since it is not possible currently
-.  \" to remove environments we use a counter to guarantee empty
-.  \" environments.
-.
-.  nr env-count 0 1
+.  \" should work also.  To fulfill both constraints we emit the
+.  \" family changing commands both as escapes and macro calls.
 .
 .  de make-C-macro
 .    de C\\$1
-.      ev e-\\\\n+[env-count]
-.      nop \&\\\\$*
-.      nr have-int \\\\n[.int]
-.      ev
+.      ds old-fam \\\\n[.fam]
 .      fam C
-.      ie \\\\n[have-int] \{\
-.        \\$2 \&\\\\$*
-.        fam
-.      \}
-.      el \
-.        \\$2 \&\\\\$*\F[]
+.      \\$2 \&\\\\$*\F[]\F[\\\\*[old-fam]]
+.      fam
 \\..
 .  .
 .
@@ -88,17 +74,10 @@ groff_hdtbl \- groff `hdtbl' macros for generation of tables
 .
 .  de make-C-macro
 .    de C\\$1
-.      ev e-\\\\n+[env-count]
-.      nop \&\\\\$*
-.      nr have-int \\\\n[.int]
-.      ev
+.      ds old-fam \\\\n[.fam]
 .      fam C
-.      ie \\\\n[have-int] \{\
-.        \\$1 \\\\$@
-.        fam
-.      \}
-.      el \
-.        \\$1 \\\\$@ \F[]
+.      \\$1 \\\\$@ \F[]\F[\\\\*[old-fam]]
+.      fam
 \\..
 .  .
 .
@@ -874,7 +853,7 @@ this is a separator line to the cell below.
 .
 .IP
 The thickness of the separator lines is the half of the border thickness,
-but at least 0.1n.
+but at least 0.1\|inches.
 .
 The distance between the double lines is equal to the line thickness.
 .
@@ -884,8 +863,8 @@ Together with
 .CR \[oq]border=0\[cq]
 for proper formatting the value of
 .CR \[oq]csp\[cq]
-must be at least .05n for single separator lines and .15n for double
-separator lines.
+must be at least .05\|inches for single separator lines and .15\|inches for
+double separator lines.
 .
 .XDEFS hl=s t*hl
 .
