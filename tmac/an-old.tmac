@@ -419,27 +419,21 @@
 .  ll
 .  \" We must emit the diversion in a separate environment to
 .  \" assure that a possible margin character is printed correctly.
+.  ev an-2
+.  evc 0
+.  mc
+.  nf
+.  in \\n[an-margin]u
 .  ie (\\n[dl] + \\n[an-tag-sep] > \\n[an-prevailing-indent]) \{\
-.    ev an-2
-.    evc 0
-.    mc
-.    nf
-.    in \\n[an-margin]u
 .    ne (2v + 1u)
 .    an-div
 .    ev
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .  \}
 .  el \{\
-.    \" In nroff mode, if the indentation value is not an integer multiple
-.    \" of the character cell, it is possible that the following combination
-.    \" of .in and .ti yields a different result as the .in request in
+.    \" In nroff mode, the indentation value should be an integer multiple
+.    \" of the character cell, to avoid different results compared to the
 .    \" the .ie part above.
-.    ev an-2
-.    evc 0
-.    mc
-.    nf
-.    in \\n[an-margin]u
 .    ne (1v + 1u)
 .    DEVTAG-COL 1
 .    an-div
