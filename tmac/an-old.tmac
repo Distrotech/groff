@@ -417,10 +417,17 @@
 .  di
 .  nr an-div? 0
 .  ll
+.  \" We must emit the diversion in a separate environment to
+.  \" assure that a possible margin character is printed correctly.
 .  ie (\\n[dl] + \\n[an-tag-sep] > \\n[an-prevailing-indent]) \{\
+.    ev 2
+.    evc 0
+.    mc
+.    nf
 .    in \\n[an-margin]u
 .    ne (2v + 1u)
 .    an-div
+.    ev
 .    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .  \}
 .  el \{\
@@ -428,12 +435,17 @@
 .    \" of the character cell, it is possible that the following combination
 .    \" of .in and .ti yields a different result as the .in request in
 .    \" the .ie part above.
-.    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
-.    ti -\\n[an-prevailing-indent]u
-.    chop an-div
+.    ev 2
+.    evc 0
+.    mc
+.    nf
+.    in \\n[an-margin]u
 .    ne (1v + 1u)
 .    DEVTAG-COL 1
-\\*[an-div]\\h'|\\n[an-prevailing-indent]u'\c
+.    an-div
+.    sp -1
+.    ev
+.    in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .    DEVTAG-COL-NEXT 2
 .  \}
 ..

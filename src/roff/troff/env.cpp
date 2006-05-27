@@ -837,7 +837,8 @@ void environment::copy(const environment *e)
   current_tab = TAB_NONE;
   current_field = 0;
   margin_character_flags = e->margin_character_flags;
-  margin_character_node = e->margin_character_node;
+  if (e->margin_character_node)
+    margin_character_node = e->margin_character_node->copy();
   margin_character_distance = e->margin_character_distance;
   numbering_nodes = 0;
   number_text_separation = e->number_text_separation;
