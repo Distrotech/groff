@@ -746,6 +746,13 @@ again:
 
 int font::load(int *not_found, int head_only)
 {
+  if (strcmp(name, "DESC") == 0) {
+    if (not_found)
+      *not_found = 1;
+    else
+      error("`DESC' is not a valid font file name");
+    return 0;
+  }
   char *path;
   FILE *fp;
   if ((fp = open_file(name, &path)) == NULL) {
@@ -771,7 +778,7 @@ int font::load(int *not_found, int head_only)
       p = strtok(0, WS);
       int n;
       if (p == 0 || sscanf(p, "%d", &n) != 1 || n <= 0) {
-	t.error("bad argument for spacewidth command");
+	t.error("bad argument for `spacewidth' command");
 	return 0;
       }
       space_width = n;
@@ -780,7 +787,7 @@ int font::load(int *not_found, int head_only)
       p = strtok(0, WS);
       double n;
       if (p == 0 || sscanf(p, "%lf", &n) != 1 || n >= 90.0 || n <= -90.0) {
-	t.error("bad argument for slant command", p);
+	t.error("bad argument for `slant' command", p);
 	return 0;
       }
       slant = n;
@@ -809,7 +816,7 @@ int font::load(int *not_found, int head_only)
     else if (strcmp(p, "internalname") == 0) {
       p = strtok(0, WS);
       if (!p) {
-	t.error("`internalname command requires argument");
+	t.error("`internalname' command requires argument");
 	return 0;
       }
       internalname = new char[strlen(p) + 1];
@@ -826,8 +833,6 @@ int font::load(int *not_found, int head_only)
     else
       break;
   }
-  if (head_only)
-    return 1;
   int had_charset = 0;
   if (p == 0) {
     if (!is_unicode) {
@@ -839,6 +844,8 @@ int font::load(int *not_found, int head_only)
     t.skip_comments = 0;
     while (command) {
       if (strcmp(command, "kernpairs") == 0) {
+	if (head_only)
+	  return 1;
 	for (;;) {
 	  if (!t.next()) {
 	    command = 0;
@@ -868,6 +875,8 @@ int font::load(int *not_found, int head_only)
 	}
       }
       else if (strcmp(command, "charset") == 0) {
+	if (head_only)
+	  return 1;
 	had_charset = 1;
 	glyph *last_glyph = NULL;
 	for (;;) {
@@ -963,15 +972,16 @@ int font::load(int *not_found, int head_only)
 	}
       }
       else {
-	t.error("unrecognised command `%1' after `kernpairs' or `charset' command",
-		command);
+	t.error("unrecognised command `%1' "
+		"after `kernpairs' or `charset' command",
+		  command);
 	return 0;
       }
     }
     compact();
   }
   if (!is_unicode && !had_charset) {
-    t.error("missing charset command");
+    t.error("missing `charset' command");
     return 0;
   }
   if (space_width == 0)

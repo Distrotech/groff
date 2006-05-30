@@ -2023,13 +2023,11 @@ void token::next()
       case 'H':
 	// don't take height increments relative to previous height if
 	// in compatibility mode
-	if (!compatible_flag && curenv->get_char_height())
-	{
+	if (!compatible_flag && curenv->get_char_height()) {
 	  if (get_delim_number(&x, 'z', curenv->get_char_height()))
 	    curenv->set_char_height(x);
 	}
-	else
-	{
+	else {
 	  if (get_delim_number(&x, 'z', curenv->get_requested_point_size()))
 	    curenv->set_char_height(x);
 	}

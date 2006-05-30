@@ -1,3 +1,23 @@
+# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006
+#   Free Software Foundation, Inc.
+#      Written by James Clark (jjc@jclark.com)
+# 
+# This file is part of groff.
+# 
+# groff is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2, or (at your option) any later
+# version.
+# 
+# groff is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with groff; see the file COPYING.  If not, write to the Free Software
+# Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
+
 MAN7=\
   groff_ms.n \
   groff_man.n \
@@ -7,7 +27,8 @@ MAN7=\
   groff_www.n
 
 NORMALFILES=\
-  mandoc.tmac andoc.tmac an-old.tmac \
+  man.tmac mandoc.tmac andoc.tmac an-old.tmac \
+  ms.tmac \
   me.tmac \
   mdoc.tmac \
   pic.tmac \
@@ -33,12 +54,17 @@ NORMALFILES=\
   hyphen.us hyphenex.us \
   fr.tmac hyphen.fr \
   sv.tmac hyphen.sv
-SPECIALFILES=an.tmac man.tmac s.tmac ms.tmac www.tmac
+
+# These files are handled specially during installation and deinstallation.
+SPECIALFILES=an.tmac s.tmac www.tmac
+
+# These files are processed with `strip.sed'.
 STRIPFILES=e.tmac doc.tmac doc-old.tmac
 MDOCFILES=doc-common doc-ditroff doc-nroff doc-syms
 mdocdir=$(tmacdir)/mdoc
+
 CLEANADD=\
-  stamp-wrap stamp-sed *-wrap man.tmac-sed ms.tmac-sed www.tmac-sed \
+  stamp-wrap stamp-sed *-wrap www.tmac-sed \
   stamp-strip e.tmac-s doc.tmac-s doc-old.tmac-s \
   doc-common-s doc-ditroff-s doc-nroff-s doc-syms-s mdoc.local-s
 tmac_s_prefix=
@@ -69,13 +95,9 @@ install_data: $(NORMALFILES) $(SPECIALFILES) man.local \
 	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
 	$(INSTALL_DATA) $(srcdir)/s.tmac \
 	  $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
-	-rm -f $(DESTDIR)$(tmacdir)/ms.tmac
-	$(INSTALL_DATA) ms.tmac-sed $(DESTDIR)$(tmacdir)/ms.tmac
 	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
 	$(INSTALL_DATA) $(srcdir)/an.tmac \
 	  $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
-	-rm -f $(DESTDIR)$(tmacdir)/man.tmac
-	$(INSTALL_DATA) man.tmac-sed $(DESTDIR)$(tmacdir)/man.tmac
 	-rm -f $(DESTDIR)$(tmacdir)/www.tmac
 	$(INSTALL_DATA) www.tmac-sed $(DESTDIR)$(tmacdir)/www.tmac
 	for f in $(STRIPFILES); do \
@@ -113,14 +135,10 @@ stamp-wrap:
 	fi
 	touch $@
 
-stamp-sed: man.tmac ms.tmac www.tmac
-	for f in man.tmac ms.tmac www.tmac; do \
-	  rm -f $$f-sed; \
-	  sed -e "s;@TMAC_AN_PREFIX@;$(tmac_an_prefix);g" \
-	  -e "s;@TMAC_S_PREFIX@;$(tmac_s_prefix);g" \
-	  -e "s;@PNMTOPS_NOSETPAGE@;$(pnmtops_nosetpage);g" \
-	  $(srcdir)/$$f > $$f-sed; \
-	done
+stamp-sed: www.tmac
+	rm -f www.tmac-sed; \
+	sed -e "s;@PNMTOPS_NOSETPAGE@;$(pnmtops_nosetpage);g" \
+	  $(srcdir)/www.tmac > www.tmac-sed;
 	touch $@
 
 uninstall_sub:
@@ -134,7 +152,6 @@ uninstall_sub:
 	done
 	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_s_prefix)s.tmac
 	-rm -f $(DESTDIR)$(tmacdir)/$(tmac_an_prefix)an.tmac
-	-rm -f $(DESTDIR)$(tmacdir)/man.tmac $(DESTDIR)$(tmacdir)/ms.tmac
 	-rm -f $(DESTDIR)$(tmacdir)/www.tmac
 	-if cmp -s $(DESTDIR)$(localtmacdir)/man.local \
 	           $(srcdir)/man.local; then \

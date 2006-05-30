@@ -398,7 +398,7 @@ public:
 
   friend void do_divert(int append, int boxing);
 };
-	
+
 extern environment *curenv;
 extern void pop_env();
 extern void push_env(int);
