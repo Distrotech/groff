@@ -2077,6 +2077,10 @@ void token::next()
       case 'N':
 	if (!get_delim_number(&val, 0))
 	  break;
+	if (val < 0) {
+	  warning(WARN_CHAR, "invalid numbered character %1", val);
+	  break;
+	}
 	type = TOKEN_NUMBERED_CHAR;
 	return;
       case 'o':
