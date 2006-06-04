@@ -32,7 +32,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"	*****************************************************************
 .
 .if (\n[?] == 1) \
-.  tm HDroff: loading table macros file \n[.F].
+.  tm HDroff: Loading table macros file \n[.F].
 .
 .nr *hdtbl 1
 .
@@ -83,6 +83,11 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .
 .\" %beginstrip%
+.
+.\" for better error messages
+.ds nth-1 st
+.ds nth-2 nd
+.ds nth-3 rd
 .
 .nr t*numb 0 1	\"	held table diversion #
 .
@@ -152,7 +157,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      ie "\\*[bc]"=" \
 .        ds t*bc\\n[t*#] =\"
 .      el \
-.        tm \\n[.F]:\\n[.c]: invalid border color `\\*[bc]'.
+.        tm \\n[.F]:\\n[.c]: Invalid border color `\\*[bc]'.
 .  \}\}
 .  ie "\\*[bc]"=" \
 .    ds t*bc\\n[t*#]
@@ -187,9 +192,10 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    el \{\
 .      ie "\\*[tal]"r" \
 .        nr in\\n[t*#] \\n[.l]-\\n[ll\\n[t*#]]+\\n[.i]
-.      el \
-.        tm \\n[.F]:\\n[.c]: invalid tal-value `\\*[tal]': must be l, c or r
-.  \}\}
+.      el \{\
+.        tmc \\n[.F]:\\n[.c]: Invalid `tal' value `\\*[tal]':
+.        tm1 " must be `l', `c' or `r'.
+.  \}\}\}
 .
 .  nr t*r#\\n[t*#] 0 1		      \"	rowindex in TBL
 .  mk toptbl\\n[t*#]
@@ -253,7 +259,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .de TR
 .  ft 1
 .  if !\\n[t*#] \
-.    tm \\n[.F]:\\n[.c]: table row (.TR) without preceding table start (.TBL).
+.    tm \\n[.F]:\\n[.c]: Table row (.TR) without preceding table start (.TBL).
 .
 .  if \\n[t*r#\\n[t*#]] \
 .    t*dntr 1 \\n[c#\\*[#t#r]] \\n[t*cols\\n[t*#]] \\*[*#trc*]
@@ -334,8 +340,19 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  \}
 .
 .  if (\\n[c#\\n[t*#]*\\n[t*r#\\n[t*#]]] > \\n[t*cols\\n[t*#]]) \{\
-.    tmc \\n[.F]:\\n[.c]: \\n[c#\\*[#t#r]] table cols (.TD);
-.    tm1 " only \\n[t*cols\\n[t*#]] were defined.
+.    ds * are
+.    ds ** columns
+.    if (\\n[c#\\*[#t#r]] == 1) \{\
+.      ds * is
+.      ds ** column
+.    \}
+.    tmc \\n[.F]:\\n[.c]: There \\*[*] \\n[c#\\*[#t#r]] table \\*[**] (.TD)
+.
+.    ds * are
+.    if (\\n[t*cols\\n[t*#]] == 1) \
+.      ds * is
+.    tm1 " but only \\n[t*cols\\n[t*#]] \\*[*] expected.
+.
 .    ds *
 .    length * \\n[.F]:\\n[.c]:
 .
@@ -369,11 +386,11 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .de ETB
 .  ie \\n[t*#] \
 .    if !\\n[t*r#\\n[t*#]] \{\
-.      tmc \\n[.F]:\\n[.c]: each table (.TBL)
+.      tmc \\n[.F]:\\n[.c]: Each table (.TBL)
 .      tm1 " should contain at least one table row (.TR)!
 .    \}
 .  el \{\
-.    tmc \\n[.F]:\\n[.c]: table end (.ETB)
+.    tmc \\n[.F]:\\n[.c]: Table end (.ETB)
 .    tm1 " without corresponding tablestart (.TBL)!
 .  \}
 .
@@ -405,7 +422,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    \}
 .    el \{\
 .      rn t*tbl0 t*hold\\n+[t*numb]
-.      tm \\n[.F]:\\n[.c]: table t*hold\\n[t*numb] held.
+.      tm \\n[.F]:\\n[.c]: Table t*hold\\n[t*numb] held.
 .      ds t*held \\*[t*held] t*hold\\n[t*numb] \\n[dn]\"
 .    \}
 .
@@ -438,7 +455,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    \}
 .
 .  if "\\*[t*held]"" \{\
-.    tm \\n[.F]:\\n[.c]: no held tables
+.    tm \\n[.F]:\\n[.c]: No held tables.
 .    return
 .  \}
 .
@@ -677,7 +694,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  \}
 .
 .  if (\\n[ll\\n[t*#]] > \\n[.l]) \
-.    tm \\n[.F]:\\n[.c]: table width larger than column width.
+.    tm \\n[.F]:\\n[.c]: Table width larger than column width.
 .
 .  nr ** (0 >? \\n[t*b\\n[t*#]])
 .  nr * 0 1
@@ -703,7 +720,11 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
                * (2 * \\n[cscp\\n[t*#]] + \\n[b/2\\n[t*#]]) \
                / 1000 \
                + 50) / 10 * 10)
-.      tmc \\n[.F]:\\n[.c]: the \\n[*]th width value (\\$\\n[*]) is too small.
+.      ds * \\n[*]th
+.      nr *** (\\n[*] % 10)
+.      if d nth-\\n[***] \
+.        ds * \\n[*]\\*[nth-\\n[***]]
+.      tmc \\n[.F]:\\n[.c]: The \\*[*] width value (\\$\\n[*]) is too small.
 .      tm1 " It should be greater than \\n[*h].
 .    \}
 .
@@ -746,8 +767,25 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  ds #trc \\*[#t#r]*\\n[c#\\*[#t#r]]\"
 .
 .  if (\\$1 & (\\n[c#\\*[#t#r]] <= \\n[t*cols\\n[t*#]])) \{\
-.    tmc \\n[.F]:\\n[.c]: only \\n-[c#\\*[#t#r]] cols in the \\n[t*r#\\n[t*#]]th row;
-.    tm1 \\n[t*cols\\n[t*#]] were defined.
+.    ds * are
+.    ds ** columns
+.    if (\\n-[c#\\*[#t#r]] == 1) \{\
+.      ds * is
+.      ds ** column
+.    \}
+.    tmc \\n[.F]:\\n[.c]: There \\*[*] only \\n[c#\\*[#t#r]] \\*[**]
+.
+.    nr * \\n[t*r#\\n[t*#]]
+.    ds * \\n[*]th
+.    nr *** (\\n[*] % 10)
+.    if d nth-\\n[***] \
+.      ds * \\n[*]\\*[nth-\\n[***]]
+.    tmc " in the \\*[*] row
+.
+.    ds * are
+.    if (\\n[t*cols\\n[t*#]] == 1) \
+.      ds * is
+.    tm1 " but \\n[t*cols\\n[t*#]] \\*[*] expected.
 .  \}
 ..
 .
@@ -775,7 +813,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      ie "\\*[bgc]"=" \
 .        ds t*bgc\\$1 =\"
 .      el \
-.  tm \\n[.F]:\\n[.c]: invalid background color `\\*[bgc]'.
+.  tm \\n[.F]:\\n[.c]: Invalid background color `\\*[bgc]'.
 .
 .  if "\\*[args]"" \
 .    return
@@ -788,7 +826,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      ie "\\*[fgc]"=" \
 .        ds t*fgc\\$1 =\"
 .      el \
-.      tm \\n[.F]:\\n[.c]: invalid foreground color `\\*[fgc]'.
+.      tm \\n[.F]:\\n[.c]: Invalid foreground color `\\*[fgc]'.
 .
 .      if "\\*[args]"" \
 .        return
@@ -811,8 +849,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    ie \\n[index] \
 .      ds t*hal\\$1 \\*[hal]\"
 .    el \{\
-.      tmc \\n[.F]:\\n[.c]: invalid hal-value `\\*[t*hal\\$1]':
-.      tm1 " must be b, c, l or r.
+.      tmc \\n[.F]:\\n[.c]: Invalid `hal' value `\\*[t*hal\\$1]':
+.      tm1 " must be `b', `c', `l' or `r'.
 .  \}\}
 .
 .  if "\\*[args]"" \
@@ -824,8 +862,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    ie \\n[index] \
 .      ds t*val\\$1 \\*[val]\"
 .    el \{\
-.      tmc \\n[.F]:\\n[.c]: invalid val-value `\\*[t*val]':
-.      tm1 must be t, m or b.
+.      tmc \\n[.F]:\\n[.c]: Invalid `val' value `\\*[t*val]':
+.      tm1 " must be `t', `m' or `b'.
 .  \}\}
 .
 .  if "\\*[args]"" \
@@ -856,14 +894,14 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    pops * t*kept
 .    popr * t*kept
 .    if (\\n[*] - \\n[**]) \{\
-.      tm \\n[.F]:\\n[.c]: table \\*[*] higher than page -- ignored!
+.      tm \\n[.F]:\\n[.c]: Table \\*[*] higher than page -- ignored!
 .      break
 .    \}
 .
 .    if (\\n[*] - \\n[.t]) \{\
 .      ds t*kept \\n[*] \\*[t*kept]
 .      ds t*kept \\*[*] \\*[t*kept]
-.      tmc \\n[.F]:\\n[.c]: remaining table(s),
+.      tmc \\n[.F]:\\n[.c]: Remaining table(s),
 .      tm1 " because not all fit onto this page.
 .      break
 .    \}
