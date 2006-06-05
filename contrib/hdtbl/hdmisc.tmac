@@ -141,7 +141,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  while (\\n+[*] < \\n[**]) \{\
 .    ds * \\$1\"
 .    substring * \\n[*] (\\n[*] + \\n[$2] - 1)
-.    if "\\*[*]"\\$2" \
+.    \" The surrounding \? escapes emulate string comparison.
+.    if "\?\\*[*]\?"\?\\$2\?" \
 .      break
 .  \}
 .
