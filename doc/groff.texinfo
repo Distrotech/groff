@@ -5909,6 +5909,11 @@ text text text@dots{}  More text text text@dots{}
 Note that the commented-out block of text does not
 cause a break.
 
+@cindex @code{ig} request, and copy-in mode
+@cindex copy-in mode, and @code{ig} request
+@cindex mode, copy-in, and @code{ig} request
+@cindex @code{ig} request, and auto-increment
+@cindex auto-increment, and @code{ig} request
 The input is read in copy-mode; auto-incremented registers @emph{are}
 affected (@pxref{Auto-increment}).
 @endDefreq
@@ -7293,6 +7298,9 @@ like it did on a typewriter).
 @Defesc {\\t, , , }
 @cindex tab character, non-interpreted (@code{\t})
 @cindex character, tab, non-interpreted (@code{\t})
+@cindex @code{\t}, and copy-in mode
+@cindex copy-in mode, and @code{\t}
+@cindex mode, copy-in, and @code{\t}
 This escape is a non-interpreted tab character.  In copy mode
 (@pxref{Copy-in Mode}), @code{\t} is the same as a real tab character.
 @endDefesc
@@ -7525,6 +7533,9 @@ not to space.
 @Defesc {\\a, , , }
 @cindex leader character, non-interpreted (@code{\a})
 @cindex character, leader, non-interpreted (@code{\a})
+@cindex @code{\a}, and copy-in mode
+@cindex copy-in mode, and @code{\a}
+@cindex mode, copy-in, and @code{\a}
 This escape is a non-interpreted leader character.  In copy mode
 (@pxref{Copy-in Mode}), @code{\a} is the same as a real leader
 character.
@@ -7715,6 +7726,9 @@ sequence in the usual sense!  In any unknown escape sequence
 But if @var{X} is equal to the current escape character, no warning is
 emitted.
 
+@cindex @code{\E}, and copy-in mode
+@cindex copy-in mode, and @code{\E}
+@cindex mode, copy-in, and @code{\E}
 As a consequence, only at top-level or in a diversion a backslash glyph is
 printed; in copy-in mode, it expands to a single backslash which then
 combines with the following character to an escape sequence.
@@ -8642,6 +8656,10 @@ If @var{font} is a style name (as set with the @code{sty} request or
 with the @code{styles} command in the @file{DESC} file), use it within
 the current font family (as set with the @code{fam} request, @code{\F}
 escape, or with the @code{family} command in the @file{DESC} file).
+
+It is not possible to switch to a font with the name @samp{DESC}
+(whereas this name could be used as a style name; however, this is not
+recommended).
 
 @cindex previous font (@code{ft}, @code{\f[]}, @code{\fP})
 @cindex font, previous (@code{ft}, @code{\f[]}, @code{\fP})
@@ -10481,6 +10499,9 @@ character before the last character has index@tie{}@minus{}2, etc.
 @Defreq {length, reg str}
 @cindex length of a string (@code{length})
 @cindex string, length of (@code{length})
+@cindex @code{length} request, and copy-in mode
+@cindex copy-in mode, and @code{length} request
+@cindex mode, copy-in, and @code{length} request
 Compute the number of characters of @var{str} and return it in the
 number register @var{reg}.  If @var{reg} doesn't exist, it is created.
 @code{str} is read in copy mode.
@@ -11041,7 +11062,9 @@ macro one level higher.  This is used to define a wrapper macro for
 
 @node Copy-in Mode, Parameters, Writing Macros, Writing Macros
 @subsection Copy-in Mode
+@cindex copy mode
 @cindex copy-in mode
+@cindex mode, copy
 @cindex mode, copy-in
 
 @cindex @code{\n}, when reading text for a macro
@@ -11098,6 +11121,7 @@ escapes:
 @DefescItem {\\$, @Lparen{}, nn, }
 @DefescListEnd {\\$, @Lbrack{}, nnn, @Rbrack{}}
 @cindex copy-in mode, and macro arguments
+@cindex mode, copy-in, and macro arguments
 @cindex macro, arguments (@code{\$})
 @cindex arguments, macro (@code{\$})
 Retrieve the @var{n}@dmn{th}, @var{nn}@dmn{th} or @var{nnn}@dmn{th}
@@ -12316,6 +12340,12 @@ occurrence of the @code{\?} escape.  Example:
 \?@var{anything}\?
 @endExample
 
+@cindex @code{\?}, and copy-in mode
+@cindex copy-in mode, and @code{\?}
+@cindex mode, copy-in, and @code{\?}
+@cindex @code{\!}, and copy-in mode
+@cindex copy-in mode, and @code{\!}
+@cindex mode, copy-in, and @code{\!}
 @noindent
 @var{anything} may not contain newlines; use @code{\!}  to embed
 newlines in a diversion.  The escape sequence @code{\?} is also
@@ -12358,11 +12388,14 @@ The @code{\?} escape used in the top-level diversion produces no output
 at all; its argument is simply ignored.
 @endDefesc
 
-@cindex @code{\!}, and @code{output}
+@cindex @code{\!}, and @code{output} request
 @cindex @code{output} request, and @code{\!}
+@cindex @code{output} request, and copy-in mode
+@cindex copy-in mode, and @code{output} request
+@cindex mode, copy-in, and @code{output} request
 @Defreq {output, string}
 Emit @var{string} directly to the @code{gtroff} intermediate output
-(subject to copy-mode interpretation); this is similar to @code{\!} used
+(subject to copy mode interpretation); this is similar to @code{\!} used
 at the top level.  An initial double quote in @var{string} is stripped off
 to allow initial blanks.
 
@@ -12828,11 +12861,18 @@ to include @file{tmac.@var{name}} and vice versa.
 @DefreqListEnd {cf, file}
 @cindex transparent output (@code{cf}, @code{trf})
 @cindex output, transparent (@code{cf}, @code{trf})
+@cindex @code{cf} request, and copy-in mode
+@cindex copy-in mode, and @code{cf} request
+@cindex mode, copy-in, and @code{cf} request
+@cindex @code{trf} request, and copy-in mode
+@cindex copy-in mode, and @code{trf} request
+@cindex mode, copy-in, and @code{trf} request
 Transparently output the contents of @var{file}.  Each line is output
-as if it were preceded by @code{\!}; however, the lines are not subject
-to copy mode interpretation.  If the file does not end with a newline,
-then a newline is added (@code{trf} only).  For example, to define a
-macro@tie{}@code{x} containing the contents of file@tie{}@file{f}, use
+as if it were preceded by @code{\!}; however, the lines are @emph{not}
+subject to copy mode interpretation.  If the file does not end with a
+newline, then a newline is added (@code{trf} only).  For example, to
+define a macro@tie{}@code{x} containing the contents of
+file@tie{}@file{f}, use
 
 @Example
 .ev 1
@@ -13047,10 +13087,14 @@ option to activate unsafe mode.
 
 @DefreqList {write, stream data}
 @DefreqListEnd {writec, stream data}
-@cindex copy-in mode, and @code{write} requests
-@cindex mode, copy-in, and @code{write} requests
-@cindex writing to file (@code{write})
-@cindex file, writing to (@code{write})
+@cindex copy-in mode, and @code{write} request
+@cindex @code{write} request, and copy-in mode
+@cindex mode, copy-in, and @code{write} request
+@cindex copy-in mode, and @code{writec} request
+@cindex @code{writec} request, and copy-in mode
+@cindex mode, copy-in, and @code{writec} request
+@cindex writing to file (@code{write}, @code{writec})
+@cindex file, writing to (@code{write}, @code{writec})
 Write to the file associated with the specified @var{stream}.
 The stream must previously have
 been the subject of an open request.  The remainder of the line is
@@ -13066,6 +13110,9 @@ The @code{writec} request is like @code{write}, but only
 Write the contents of the macro or string @var{xx}
 to the file associated with the specified @var{stream}.
 
+@cindex @code{writem} request, and copy-in mode
+@cindex copy-in mode, and @code{writem} request
+@cindex mode, copy-in, and @code{writem} request
 @var{xx} is read in copy mode, i.e., already formatted elements are
 ignored.  Consequently, diversions must be unformatted with the
 @code{asciify} request before calling @code{writem}.  Usually, this
@@ -13097,6 +13144,9 @@ Here a simple macro to write an index entry.
 @DefescList {\\V, , e, }
 @DefescItem {\\V, @Lparen{}, ev, }
 @DefescListEnd {\\V, @Lbrack{}, env, @Rbrack{}}
+@cindex @code{\V}, and copy-in mode
+@cindex copy-in mode, and @code{\V}
+@cindex mode, copy-in, and @code{\V}
 Interpolate the contents of the specified environment variable
 @var{env} (one-character name@tie{}@var{e}, two-character name @var{ev})
 as returned by the function @code{getenv}.  @code{\V} is interpreted
@@ -13134,6 +13184,9 @@ within @code{\X}, @w{@samp{\ }} and @code{\~} are converted to single
 space characters.  All other escapes (except @code{\\} which produces a
 backslash) cause an error.
 
+@cindex @code{device} request, and copy-in mode
+@cindex copy-in mode, and @code{device} request
+@cindex mode, copy-in, and @code{device} request
 Contrary to @code{\X}, the @code{device} request simply processes its
 argument in copy mode (@pxref{Copy-in Mode}).
 
@@ -13525,6 +13578,15 @@ Note that other @code{troff} implementations (including the original
 Send @var{string} to the standard error output;
 this is very useful for printing debugging messages among other things.
 
+@cindex @code{tm} request, and copy-in mode
+@cindex copy-in mode, and @code{tm} request
+@cindex mode, copy-in, and @code{tm} request
+@cindex @code{tm1} request, and copy-in mode
+@cindex copy-in mode, and @code{tm1} request
+@cindex mode, copy-in, and @code{tm1} request
+@cindex @code{tmc} request, and copy-in mode
+@cindex copy-in mode, and @code{tmc} request
+@cindex mode, copy-in, and @code{tmc} request
 @var{string} is read in copy mode.
 
 The @code{tm} request ignores leading spaces of @var{string}; @code{tm1}
