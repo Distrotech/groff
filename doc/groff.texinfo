@@ -10586,8 +10586,9 @@ nodes inserted additionally by @code{gtroff}.
 @subsection Operators in Conditionals
 
 @cindex @code{if} request, operators to use with
+@cindex @code{ie} request, operators to use with
 @cindex @code{while} request, operators to use with
-In @code{if} and @code{while} requests, there are several more
+In @code{if}, @code{ie}, and @code{while} requests, there are several more
 operators available:
 
 @table @code
@@ -10608,10 +10609,12 @@ Always false.  This condition is for compatibility with other
 @code{troff} versions only (identifying a @code{-Tversatec} device).
 
 @item '@var{xxx}'@var{yyy}'
-True if the string @var{xxx} is equal to the string @var{yyy}.  Other
-characters can be used in place of the single quotes; the same set of
-delimiters as for the @code{\D} escape is used (@pxref{Escapes}).
-@code{gtroff} formats the strings before being compared:
+True if the output produced by @var{xxx} is equal to the output
+produced by @var{yyy}.  Other characters can be used in place of the
+single quotes; the same set of delimiters as for the @code{\D} escape
+is used (@pxref{Escapes}).  @code{gtroff} formats @var{xxx} and @var{yyy}
+in separate environments; after the comparison the resulting data is
+discarded.
 
 @Example
 .ie "|"\fR|\fP" \
@@ -10631,6 +10634,36 @@ at the same location on the page, so the strings are equal.  If
 @samp{.ft@tie{}I} had been added before the @samp{.ie}, the result
 would be ``false'' because (the first) @samp{|} produces an italic
 @samp{|} rather than a roman one.
+
+@cindex string comparison
+@cindex comparison of strings
+To compare strings without processing, surround the data with
+@code{\?}.
+
+@Example
+.ie "\?|\?"\?\fR|\fP\?" \
+true
+.el \
+false
+    @result{} false
+@endExample
+
+@cindex @code{\?}, and copy-in mode
+@cindex copy-in mode, and @code{\?}
+@cindex mode, copy-in, and @code{\?}
+@noindent
+Since data protected with @code{\?} is read in copy-in mode it is even
+possible to use incomplete input without causing an error.
+
+@Example
+.ds a \[
+.ds b \[
+.ie '\?\*a\?'\?\*b\?' \
+true
+.el \
+false
+    @result{} true
+@endExample
 
 @item r @var{xxx}
 True if there is a number register named @var{xxx}.
