@@ -1,3 +1,54 @@
+* Thu Jun 8 2006
+
+o Changed distance of the underscores used in docheaders when
+  PRINTSTYLE is TYPEWRITE from the default 2p to 4p.  This is to
+  leave room for the descenders if the strings are caps/lowercase.
+
+* Wed Jun 7 2006
+
+o Added strings $AUTHOR and $AUTHORS.  $AUTHOR = $AUTHOR_1 (i.e.
+  the first arg passed to .AUTHOR); $AUTHORS = a comma-separated
+  concatenated string of all the args passed to .AUTHOR.
+
+* Tue Jun 6 2006
+
+o Updated docs.
+
+o Converted all .ig blocks in om.tmac to comment lines beginning
+  with \#.  This so that the comments will be stripped from om.tmac
+  during make.  The groff sources still contain the commented
+  version of om.tmac, as do the tarballs posted on mom's homepage.
+
+o Added new macro, HEADERS_AND_FOOTERS, to allow having both
+  headers and footers on a page.
+
+o Fixed whitespace around epigraphs after .DOCTYPE CHAPTER
+  docheaders.
+
+o Added test in .PP_FONT for existence of $SAVED_PP_FT; if it's
+  there, remove it (fixes bug that was causing .PP to ignore
+  .PP_FONT after .COLLATE).  Also fixed .PP so that it properly
+  passes $PP_FT to .FT if $PP_FT has been re-defined to
+  $SAVED_PP_FT.
+
+* Sun Jun 4 2006
+
+o Added a note about colorizing underscored text in the docs.
+
+* Wed May 24 2006
+
+o Adjusted the .ne value for heads and subheads (again)
+
+* Sun May 21 2006
+
+o In the documentation, removed the section stating that setting
+  the family, font, pointsize and colour of line numbers wasn't
+  possible. 
+
+o Updated documentation entry for TOCs to include instructions for
+  using psselect.
+
+------------------------------------------------------------------------
 * Sat May 20 2006
 
 o Added string $PRE_CODE_FAM to CODE; fixes bug that kept
@@ -5,8 +56,6 @@ o Added string $PRE_CODE_FAM to CODE; fixes bug that kept
 
 o Added a test for existence of register #DEPTH to .ITEM; if it
   doesn't exist, ignore ITEM
-
-------------------------------------------------------------------------
 *Fri May 19 2006
 
 o Updated docs

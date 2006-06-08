@@ -394,6 +394,27 @@ produces, on output
 	ALL WORK AND NO PLAY MAKES JACK A DULL BOY.
 </pre>
 
+<p>
+<strong>CAPS</strong> can also be invoked as an
+<a href="definitions.html#TERMS_INLINES">inline escape</a>,
+like this: <kbd>\*[CAPS]...\*[CAPS OFF]</kbd>.  Thus,
+<p>
+<pre>
+	All work \*[CAPS]and\*[CAPS OFF] no play makes Jack a dull boy.
+</pre>
+
+produces, on output
+<p>
+<pre>
+	All work AND no play makes Jack a dull boy.
+</pre>
+
+The inline escape mechanism for <strong>CAPS</strong> is especially
+useful for capitalizing <strong>mom</strong>'s
+<a href="headfootpage.html#RESERVED_STRINGS">reserved strings</a>
+(document title, author(s), etc).
+<p>
+
 <!---STRING--->
 
 <hr width="66%" align="left">
@@ -498,7 +519,7 @@ The above places the underscore 3 points below the baseline.
 <p>
 <a name="NOTES_UNDERSCORE"></a>
 <strong>NOTES:</strong>
-<br>
+<p>
 <strong>UNDERSCORE</strong> does not work across line breaks in output
 copy, which is to say that you can't underscore a multi-line passage
 simply by putting the text of the whole thing in the string you pass
@@ -532,6 +553,26 @@ no solution to the occasional problems with justified copy.
 printed, looks fine.  Generally, I recommend using <strong>gv</strong>
 to preview files anyway.  See the section on
 <a href="#PREVIEWING">previewing</a>.
+<p>
+<a name="UNDERSCORE_COLOR"><strong>Colorizing underscored text:</strong></a>
+If you want underscored text to be in a different colour from the
+text around it, use the
+<a href="color.html#COLOR">COLOR</a>
+macro, rather than the
+<a href="color.html#COLOR_INLINE">inline escape for change color</a>.
+In other words, assuming your prevailing text color is black and
+you want underscored text in red
+<p>
+<pre>
+	.COLOR <red>
+	.UNDERSCORE "text to underscore"
+	.COLOR <black>
+</pre>
+rather than
+<p>
+<pre>
+	.UNDERSCORE "\*[red]text to underscore\*[black]"
+</pre>
 <p>
 
 <!---UNDERSCORE2--->

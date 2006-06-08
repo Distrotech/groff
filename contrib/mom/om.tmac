@@ -2,7 +2,7 @@
 .ig
 Mom -- a typesetting/document-processing macro set for groff.
 
-Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
      Written by Peter Schaffter (peter@faustus.dyn.ca)
 
 This file is part of groff.
@@ -21,8 +21,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.4
------------
+Version 1.4-a
+-------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -42,6 +42,7 @@ may find other conventions preferable (e.g. NO, X, END, QUIT, etc.).
 "<anything>" in the description of arguments that can be passed
 to a macro means that any argument turns the feature off.
 ..
+.\" %beginstrip%
 \#
 \# ====================================================================
 \#
@@ -130,30 +131,28 @@ to a macro means that any argument turns the feature off.
 .cflags 4 /\(en      \" So slash and en-dashes get broken
 .warn 8192
 \#
-.ig
-About the warn level
---------------------
-
-There's a lot of testing for the presence of number registers and
-strings in this macro file.  Many of the registers and strings
-pop into and out of existence on the fly.  For convenience, I
-often use
-
-    .if \\n[whatever]    and    .if !\\n[whatever]
-
-to test "if the register exists and is (not) empty."  Groff,
-encountering such tests when called with the -ww options, emits
-
-    warning: number register whatever not defined.
-
-Groff also warns about strings similarly tested for.
-
-The warn level, above, is high in order to shut off those
-warnings.  If you're futzing in this file and need more verbose
-warnings, either comment out ".warn 8192" or set the warnlevel
-to the one you need (but be ready for lots of what I've just
-described).
-..
+\# About the warn level
+\# --------------------
+\# 
+\# There's a lot of testing for the presence of number registers and
+\# strings in this macro file.  Many of the registers and strings
+\# pop into and out of existence on the fly.  For convenience, I
+\# often use
+\# 
+\#     .if \\n[whatever]    and    .if !\\n[whatever]
+\# 
+\# to test "if the register exists and is (not) empty."  Groff,
+\# encountering such tests when called with the -ww options, emits
+\# 
+\#     warning: number register whatever not defined.
+\# 
+\# Groff also warns about strings similarly tested for.
+\# 
+\# The warn level, above, is high in order to shut off those
+\# warnings.  If you're futzing in this file and need more verbose
+\# warnings, either comment out ".warn 8192" or set the warnlevel
+\# to the one you need (but be ready for lots of what I've just
+\# described).
 \#
 \# ====================================================================
 \#
@@ -665,35 +664,33 @@ described).
 .END
 \#
 \#
-.ig
-INLINE KERNING AND HORIZONTAL MOVEMENT
---------------------------------------
-Kerning
-
-Inline kerning provides a simple method for users to adjust the
-amount of space between any two letters.  It's predicated on a
-unit of measure "U", which is 1/36 of the current point size as
-returned by \n[.ps].  E.g., if the current point size is 18,
-\n[.ps] returns 18000u, therefore U=500u.  Since U remains
-proportional relative to the current point size, the amount
-of kerning between two letters as expressed in Us remains
-visually similar regardless of changes in point size.
-
-N.B.--the amount of inline kerning supplied by \*[BU<n>] or
-\*[FU<n>] is added to or subtracted from any kerning that already
-takes place between two characters when automatic kerning is
-turned on.
-
-In groff v. 1.17.2, it was not possible to pass arguments to macros that
-were called with inline escapes, nor thence to evaluate conditional
-expressions.  Consequently, each pseudo-escape \[BU<n>] had to be defined
-separately with ".char".
-
-As of v. 1.18, one can pass arguments to inline strings/macros,
-hence it is now possible to do \*[BU n] where n, inline, is the desired
-number of kern units.  The original .char definitions have been left in
-for backward compatibility with documents created prior to mom-1.1.3c.
-..
+\# INLINE KERNING AND HORIZONTAL MOVEMENT
+\# --------------------------------------
+\# Kerning
+\# 
+\# Inline kerning provides a simple method for users to adjust the
+\# amount of space between any two letters.  It's predicated on a
+\# unit of measure "U", which is 1/36 of the current point size as
+\# returned by \n[.ps].  E.g., if the current point size is 18,
+\# \n[.ps] returns 18000u, therefore U=500u.  Since U remains
+\# proportional relative to the current point size, the amount
+\# of kerning between two letters as expressed in Us remains
+\# visually similar regardless of changes in point size.
+\# 
+\# N.B.--the amount of inline kerning supplied by \*[BU<n>] or
+\# \*[FU<n>] is added to or subtracted from any kerning that already
+\# takes place between two characters when automatic kerning is
+\# turned on.
+\# 
+\# In groff v. 1.17.2, it was not possible to pass arguments to macros that
+\# were called with inline escapes, nor thence to evaluate conditional
+\# expressions.  Consequently, each pseudo-escape \[BU<n>] had to be defined
+\# separately with ".char".
+\# 
+\# As of v. 1.18, one can pass arguments to inline strings/macros,
+\# hence it is now possible to do \*[BU n] where n, inline, is the desired
+\# number of kern units.  The original .char definitions have been left in
+\# for backward compatibility with documents created prior to mom-1.1.3c.
 \#
 .nr #KERN_UNIT 36
 .ds BU   \h'-(\En[#PT_SIZE]u/\n[#KERN_UNIT]u*\\$1u)'
@@ -712,15 +709,14 @@ for backward compatibility with documents created prior to mom-1.1.3c.
 .\}
 .rr #LOOP
 \#
-.ig
-Horizontal movements
-
-BP1...12.75 and FP1...12.75 move backwards or forwards inline by the
-specified number of points.
-Left in for backward compatibility with mom-1.1.3c, the
-preferred methods for inline horizontal movements are now
-\*[BCK <n><unit>] and \*[FWD <n><unit>].
-..
+\# Horizontal movements
+\# --------------------
+\# BP1...12.75 and FP1...12.75 move backwards or forwards inline by the
+\# specified number of points.
+\#
+\# Left in for backward compatibility with mom-1.1.3c, the
+\# preferred methods for inline horizontal movements are now
+\# \*[BCK <n><unit>] and \*[FWD <n><unit>].
 \#
 .ds BCK  \h'-\\$1'
 .ds FWD  \h'\\$1'
@@ -832,13 +828,10 @@ preferred methods for inline horizontal movements are now
 \#
 \# WHOLE LINE KERNING (RW and EW)
 \# -----------------------------
-\#
-.ig
-The line kerning macros are special instances of track kerning,
-used where a complete line needs to be tightened (or relaxed) in
-order to accomodate or remove one or two more characters
-than the default justification permits.
-..
+\# The line kerning macros are special instances of track kerning,
+\# used where a complete line needs to be tightened (or relaxed) in
+\# order to accomodate or remove one or two more characters
+\# than the default justification permits.
 \#
 \# *Argument:
 \#   <amount of overall "kerning" (letter spacing) to apply to the line>
@@ -852,24 +845,22 @@ than the default justification permits.
 \# *Notes:
 \#   Decimal values are acceptable.
 \#
-.ig
-The groff documentation is a tad confusing about what unit of
-measure is used in track kerning, only that the width of each
-character is increased or decreased by the amount(s) passed as
-arguments to .tkf, and something about linear function of point
-size.  In fact, with the way I've put this macro together, it
-doesn't matter.  All the user needs to know is that a value of
-one will produce an unacceptably tight or loose line at most text
-point sizes; therefore, effective use of RW and EW is in the
-fractional range below 1 (e.g. .25, .5).  Given that RW and EW
-are for massaging type, a certain amount of experimentation and
-previewing is expected and necessary.
-
-\n(.f holds the current font number, which is acceptable to .tkf.
-
-RW and EW must be reset to 0 to cancel their effect on subsequent
-output lines.
-..
+\# The groff documentation is a tad confusing about what unit of
+\# measure is used in track kerning, only that the width of each
+\# character is increased or decreased by the amount(s) passed as
+\# arguments to .tkf, and something about linear function of point
+\# size.  In fact, with the way I've put this macro together, it
+\# doesn't matter.  All the user needs to know is that a value of
+\# one will produce an unacceptably tight or loose line at most text
+\# point sizes; therefore, effective use of RW and EW is in the
+\# fractional range below 1 (e.g. .25, .5).  Given that RW and EW
+\# are for massaging type, a certain amount of experimentation and
+\# previewing is expected and necessary.
+\# 
+\# \n(.f holds the current font number, which is acceptable to .tkf.
+\# 
+\# RW and EW must be reset to 0 to cancel their effect on subsequent
+\# output lines.
 \#
 .MAC RW END
 .    if \\n[#BR_AT_LINE_KERN] \{\
@@ -1037,13 +1028,11 @@ output lines.
 \#
 \# ALD/RLD STRINGS
 \# ---------------
-.ig
-The strings \*[ALD.25]...\*[ALD12.75] and their corresponding
-\*[RLD] forms have been left in for backward compatibility with
-documents created using mom-1.1.3c or earlier.  The prefered methods
-of advancing and reversing on the page inline are \*[UP <n><unit>]
-and \*[DOWN <n><unit>].
-..
+\# The strings \*[ALD.25]...\*[ALD12.75] and their corresponding
+\# \*[RLD] forms have been left in for backward compatibility with
+\# documents created using mom-1.1.3c or earlier.  The prefered methods
+\# of advancing and reversing on the page inline are \*[UP <n><unit>]
+\# and \*[DOWN <n><unit>].
 \#
 .ds DOWN      \v'\\$1'
 .ds UP        \v'-\\$1'
@@ -1417,16 +1406,13 @@ and \*[DOWN <n><unit>].
 \#
 \# LEFT, RIGHT, AND CENTER
 \# -----------------------
-\#
-.ig
-The purpose of these macros is to allow the user to enter lines of
-text that will be quadded LRC *without* the user having to enter .BR
-or .br between lines.  For the sake of consistency, all three appear
-to behave similarly (from the point of view of the user), although
-the underlying primitives don't.  For this reason, LEFT, RIGHT, and
-CENTER must be followed by .QUAD [L R C J] or .JUSTIFY to restore
-text to groff fill mode.
-..
+\# The purpose of these macros is to allow the user to enter lines of
+\# text that will be quadded LRC *without* the user having to enter .BR
+\# or .br between lines.  For the sake of consistency, all three appear
+\# to behave similarly (from the point of view of the user), although
+\# the underlying primitives don't.  For this reason, LEFT, RIGHT, and
+\# CENTER must be followed by .QUAD [L R C J] or .JUSTIFY to restore
+\# text to groff fill mode.
 \#
 \# LEFT
 \# ----
@@ -1501,39 +1487,36 @@ text to groff fill mode.
 \#
 \# +++TABS+++
 \#
-.ig
-There are two different kinds of tabs available: typesetting tabs
-and string tabs.
-
-Typesetting tabs are set with TAB_SET, which requires a tab number,
-an indent (offset) from the left margin and a length (optionally
-with a quad direction and an instruction to fill lines).  After tabs
-are set with TAB_SET, they are called with .TAB n, where "n"
-corresponds to the number passed to TAB_SET as a valid tab number.
-
-String tabs allow the user to mark off tab positions inline.  Tab
-indents and lengths are calculated from the beginning and end
-positions of the marks.  Up to 19 string tabs may be created,
-numbered 1-19.  Once created, they are called with .TAB n,
-just like typesetting tabs.
-
-Setting up string tabs is a two-step procedure.  First, the user
-enters an input line in which s/he wants to mark off string tabs.
-The beginning of a tab is marked with \*[STn], where "n" is
-the desired number of the tab.  The end of the the tab is marked
-with \*[STnX].  All ST's must have a matching STX.  String tabs
-may be nested.
-
-Next, the user invokes .ST n for every string tab defined, and
-optionally passes quad information to it.  That done, string tabs
-can be called just like typesetting tabs.
-
-String tabs don't preview properly with gxditview.  Use gv instead.
-..
+\# There are two different kinds of tabs available: typesetting tabs
+\# and string tabs.
+\# 
+\# Typesetting tabs are set with TAB_SET, which requires a tab number,
+\# an indent (offset) from the left margin and a length (optionally
+\# with a quad direction and an instruction to fill lines).  After tabs
+\# are set with TAB_SET, they are called with .TAB n, where "n"
+\# corresponds to the number passed to TAB_SET as a valid tab number.
+\# 
+\# String tabs allow the user to mark off tab positions inline.  Tab
+\# indents and lengths are calculated from the beginning and end
+\# positions of the marks.  Up to 19 string tabs may be created,
+\# numbered 1-19.  Once created, they are called with .TAB n,
+\# just like typesetting tabs.
+\# 
+\# Setting up string tabs is a two-step procedure.  First, the user
+\# enters an input line in which s/he wants to mark off string tabs.
+\# The beginning of a tab is marked with \*[STn], where "n" is
+\# the desired number of the tab.  The end of the the tab is marked
+\# with \*[STnX].  All ST's must have a matching STX.  String tabs
+\# may be nested.
+\# 
+\# Next, the user invokes .ST n for every string tab defined, and
+\# optionally passes quad information to it.  That done, string tabs
+\# can be called just like typesetting tabs.
+\# 
+\# String tabs don't preview properly with gxditview.  Use gv instead.
 \#
 \# Strings for string tab inlines
 \# ------------------------------
-\#
 \# Initialize string tab markers numbered 1 to 19.
 \#
 .nr #LOOP 0 1
@@ -1606,43 +1589,41 @@ String tabs don't preview properly with gxditview.  Use gv instead.
 \#
 \#   N.B. -- indents *must* be turned off before setting tabs
 \#
-.ig
-Examples:
---------
-
-.TAB_SET 1 2P+6p 12P C
-
-means "create a tab numbered 1 that starts 2 picas and 6 points from
-the left margin, is 12 picas long, and centre each input line."
-
-.TAB_SET 1 2P+6P 12P C QUAD
-
-means exactly the same thing, except that input lines are joined and
-the area delimted by the tab filled with centered text.
-
-TAB n can be called at any time after being set.
-
-Tabs are NOT columnar in behaviour.  If the text inside a
-tab runs to several lines, when you call the next tab a break
-occurs, meaning that the new tab starts one line below the last
-line in the previous tab.  For columnar behaviour, you must
-use the multi-column macros in addition to tabs.
-
-If you want tabs to line up bottom-line to bottom-line (most likely
-single line tabs), use .TN (provided the tabs are numbered sequentially).
-Otherwise, you must use .EL then .TAB <n> if you want them to align.
-
-If you want to reset tabs, you must use .TQ before .TAB_SET.
-
-Note that indents are turned off automatically whenever a new
-tab is called with TAB <n>.
-
-Tabs themselves are user-invoked using the TAB macro with a numeric
-argument, e.g. TAB 1.
-
-Generally, in order not to get confused, it's a good idea
-to make sure all indents are off before setting tabs.
-..
+\# Examples:
+\# --------
+\# 
+\# .TAB_SET 1 2P+6p 12P C
+\# 
+\# means "create a tab numbered 1 that starts 2 picas and 6 points from
+\# the left margin, is 12 picas long, and centre each input line."
+\# 
+\# .TAB_SET 1 2P+6P 12P C QUAD
+\# 
+\# means exactly the same thing, except that input lines are joined and
+\# the area delimted by the tab filled with centered text.
+\# 
+\# TAB n can be called at any time after being set.
+\# 
+\# Tabs are NOT columnar in behaviour.  If the text inside a
+\# tab runs to several lines, when you call the next tab a break
+\# occurs, meaning that the new tab starts one line below the last
+\# line in the previous tab.  For columnar behaviour, you must
+\# use the multi-column macros in addition to tabs.
+\# 
+\# If you want tabs to line up bottom-line to bottom-line (most likely
+\# single line tabs), use .TN (provided the tabs are numbered sequentially).
+\# Otherwise, you must use .EL then .TAB <n> if you want them to align.
+\# 
+\# If you want to reset tabs, you must use .TQ before .TAB_SET.
+\# 
+\# Note that indents are turned off automatically whenever a new
+\# tab is called with TAB <n>.
+\# 
+\# Tabs themselves are user-invoked using the TAB macro with a numeric
+\# argument, e.g. TAB 1.
+\# 
+\# Generally, in order not to get confused, it's a good idea
+\# to make sure all indents are off before setting tabs.
 \#
 .MAC TAB_SET END
 .    br
@@ -2483,15 +2464,13 @@ to make sure all indents are off before setting tabs.
 \#
 \# +++LEADERS+++
 \#
-.ig
-The leader mechanism is primitive, but it works.  Basically, every
-macro in this set that includes a line length also sets a single
-groff tab stop at the right hand end of the line.  That way,
-whenever Ctrl-A is invoked (always at the end of an input line),
-leader of the correct length gets deposited.  Ctrl-A is accessed by
-the string LEADER (i.e. inline, as \*[LEADER]).  Leaders within tabs
-get their length from the tab line length.
-..
+\# The leader mechanism is primitive, but it works.  Basically, every
+\# macro in this set that includes a line length also sets a single
+\# groff tab stop at the right hand end of the line.  That way,
+\# whenever Ctrl-A is invoked (always at the end of an input line),
+\# leader of the correct length gets deposited.  Ctrl-A is accessed by
+\# the string LEADER (i.e. inline, as \*[LEADER]).  Leaders within tabs
+\# get their length from the tab line length.
 \#
 \# SET LEADER CHARACTER
 \# --------------------
@@ -2810,88 +2789,86 @@ get their length from the tab line length.
 \#
 \# +++INDENTS+++
 \#
-.ig
-There are five styles of indents: left, right, both, temporary,
-and hanging.  Each is set/invoked with a different macro.
-Indent macros begin with the letter "I", hence .IL means "indent left,"
-.IR means "indent right," and so on.
-
-The first time any of the indent macros is used, it requires an
-argument--the size of the indent (with a unit of measure).  The
-size may also be entered using the \w escape--very useful
-for numbered lists using HI.  The unit of measure is required.
-Subsequent invocations don't require the argument; the indent
-measure remains the same until it's changed by invoking the macro
-with an argument again.
-
-If no indents are in effect, the arguments passed to indent macros are
-measured from the left and right margins of the page.  If a left indent
-or a right indent is already in effect, the arguments passed to
-the indent macros are calculated from the current values; in other words,
-the arguments are additive.  If you quit an indent and later return
-to it, its value will be the value last in effect, unless you pass
-it an argument.  If you do pass an argument, it is added to the last
-value in effect, unless you cleared the indent with one of
-.I<LRB>X/Q macros.
-
-Example
--------
-
-.IL 2P
-...some text...
-.IL 2P
-...some text...
-.IQ
-...some text...
-.IL
-...some text...
-
-The first .IL 2P indents text 2P from the left margin.  The second
-.IL 2P indents text by an additional 2P, i.e. 4P from the left margin.
-.IQ turns the indent off.  The last .IL (which has no argument)
-takes its value from the total of all arguments passed to .IL (in
-this case, 2P and 2P), therefore it indents 2P+2P from the left
-margin, i.e. 4P.  If you wanted the last .IL to indent just 2P,
-you'd either have to reset the .IL prior to .IQ (.IL -2P), or pass
-the last .IL the argument 2P.
-
-To reverse the sense of an indent added to an indent, you may use
-negative values.
-
-Indents can be turned off individually with ILX, IRX, and IBX.
-LEFT and RIGHT indents may be combined and manipulated
-separately, (e.g. you can have an IL of 2P and an IR of 4P
-operative at the same time, and then change, say, the IL to
-4P--thereby left indenting 6P--while the IR remains at 4P.
-
-IB automatically turns off IL and IR.  They have to be reinvoked
-again when needed. IL and IR automatically turn IB off; it, too,
-has to be reinvoked with needed.
-
-All indents can be turned off at once with IQ.  The ILX, IRX, IBX,
-and IQ macros simply turn the indents off; the values stored in
-the respective indent macros (IL, IR, IB) remain in effect.  If
-the user wishes to clear the values, the I<LRB>X macros should be
-invoked with the single argument CLEAR.  IQ CLEAR clears out
-the values stored for all indent styles.
-
-Indents *must* be turned off before settting string tabs
-inside PAD.  Generally, in order not to get confused, it's a
-good idea to turn all indents off before setting any tabs.
-
-TI and HI are special cases.  There's no need to turn them off,
-since they affect only one line--the first after their
-invocation.  Like the other indent styles, the first time
-they're invoked, they require a value in iPpcm; each subsequent
-invocation without an argument will use the same value.  To
-change the value, simply pass a new value.  Values for TI and HI
-are *not* additive.
-
-HI presupposes that you already have a left or both indent on.
-HI will never hang a line outside the left margin of a document
-or column.  In other words, you must have IL or IB on before you
-can use HI.
-..
+\# There are five styles of indents: left, right, both, temporary,
+\# and hanging.  Each is set/invoked with a different macro.
+\# Indent macros begin with the letter "I", hence .IL means "indent left,"
+\# .IR means "indent right," and so on.
+\# 
+\# The first time any of the indent macros is used, it requires an
+\# argument--the size of the indent (with a unit of measure).  The
+\# size may also be entered using the \w escape--very useful
+\# for numbered lists using HI.  The unit of measure is required.
+\# Subsequent invocations don't require the argument; the indent
+\# measure remains the same until it's changed by invoking the macro
+\# with an argument again.
+\# 
+\# If no indents are in effect, the arguments passed to indent macros are
+\# measured from the left and right margins of the page.  If a left indent
+\# or a right indent is already in effect, the arguments passed to
+\# the indent macros are calculated from the current values; in other words,
+\# the arguments are additive.  If you quit an indent and later return
+\# to it, its value will be the value last in effect, unless you pass
+\# it an argument.  If you do pass an argument, it is added to the last
+\# value in effect, unless you cleared the indent with one of
+\# .I<LRB>X/Q macros.
+\# 
+\# Example
+\# -------
+\# 
+\# .IL 2P
+\# ...some text...
+\# .IL 2P
+\# ...some text...
+\# .IQ
+\# ...some text...
+\# .IL
+\# ...some text...
+\# 
+\# The first .IL 2P indents text 2P from the left margin.  The second
+\# .IL 2P indents text by an additional 2P, i.e. 4P from the left margin.
+\# .IQ turns the indent off.  The last .IL (which has no argument)
+\# takes its value from the total of all arguments passed to .IL (in
+\# this case, 2P and 2P), therefore it indents 2P+2P from the left
+\# margin, i.e. 4P.  If you wanted the last .IL to indent just 2P,
+\# you'd either have to reset the .IL prior to .IQ (.IL -2P), or pass
+\# the last .IL the argument 2P.
+\# 
+\# To reverse the sense of an indent added to an indent, you may use
+\# negative values.
+\# 
+\# Indents can be turned off individually with ILX, IRX, and IBX.
+\# LEFT and RIGHT indents may be combined and manipulated
+\# separately, (e.g. you can have an IL of 2P and an IR of 4P
+\# operative at the same time, and then change, say, the IL to
+\# 4P--thereby left indenting 6P--while the IR remains at 4P.
+\# 
+\# IB automatically turns off IL and IR.  They have to be reinvoked
+\# again when needed. IL and IR automatically turn IB off; it, too,
+\# has to be reinvoked with needed.
+\# 
+\# All indents can be turned off at once with IQ.  The ILX, IRX, IBX,
+\# and IQ macros simply turn the indents off; the values stored in
+\# the respective indent macros (IL, IR, IB) remain in effect.  If
+\# the user wishes to clear the values, the I<LRB>X macros should be
+\# invoked with the single argument CLEAR.  IQ CLEAR clears out
+\# the values stored for all indent styles.
+\# 
+\# Indents *must* be turned off before settting string tabs
+\# inside PAD.  Generally, in order not to get confused, it's a
+\# good idea to turn all indents off before setting any tabs.
+\# 
+\# TI and HI are special cases.  There's no need to turn them off,
+\# since they affect only one line--the first after their
+\# invocation.  Like the other indent styles, the first time
+\# they're invoked, they require a value in iPpcm; each subsequent
+\# invocation without an argument will use the same value.  To
+\# change the value, simply pass a new value.  Values for TI and HI
+\# are *not* additive.
+\# 
+\# HI presupposes that you already have a left or both indent on.
+\# HI will never hang a line outside the left margin of a document
+\# or column.  In other words, you must have IL or IB on before you
+\# can use HI.
 \#
 \# INDENT LEFT
 \# -----------
@@ -3937,7 +3914,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC DOCTITLE END
 .    rr #DOCTITLE_NUM
-.    nr #DOCTITLE_NUM -1 1
+.    nr #DOCTITLE_NUM 0 1
 .    while \\n[#NUM_ARGS]>\\n[#DOCTITLE_NUM] \{\
 .       ds $DOC_TITLE_\\n+[#DOCTITLE_NUM] \\$\\n[#DOCTITLE_NUM]
 .\}
@@ -3946,7 +3923,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC TITLE END \"Document title
 .    rr #TITLE_NUM
-.    nr #TITLE_NUM -1 1
+.    nr #TITLE_NUM 0 1
 .    while \\n[#NUM_ARGS]>\\n[#TITLE_NUM] \{\
 .       ds $TITLE_\\n+[#TITLE_NUM] \\$\\n[#TITLE_NUM]
 .\}
@@ -3956,7 +3933,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC SUBTITLE END \"Document sub-title
 .    rr #SUBTITLE_NUM
-.    nr #SUBTITLE_NUM -1 1
+.    nr #SUBTITLE_NUM 0 1
 .    while \\n[#NUM_ARGS]>\\n[#SUBTITLE_NUM] \{\
 .       ds $SUBTITLE_\\n+[#SUBTITLE_NUM] \\$\\n[#SUBTITLE_NUM]
 .\}
@@ -3977,7 +3954,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC CHAPTER_TITLE END \" This defines what comes after Chapter #
 .    rr #CHAPTER_TITLE_NUM
-.    nr #CHAPTER_TITLE_NUM -1 1
+.    nr #CHAPTER_TITLE_NUM 0 1
 .    while \\n[#NUM_ARGS]>\\n[#CHAPTER_TITLE_NUM] \{\
 .       ds $CHAPTER_TITLE_\\n+[#CHAPTER_TITLE_NUM] \\$\\n[#CHAPTER_TITLE_NUM]
 .\}
@@ -4002,10 +3979,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC AUTHOR END \"Author.  Enclose all args fully in double quotes.
-.    nr #AUTHOR_NUM -1 1
+.    nr #AUTHOR_NUM 0 1
 .    while \\n[#NUM_ARGS]>\\n[#AUTHOR_NUM] \{\
 .       ds $AUTHOR_\\n+[#AUTHOR_NUM] \\$\\n[#AUTHOR_NUM]
+.       as $AUTHORS \\*[$AUTHOR_\\n[#AUTHOR_NUM]], \"
 .\}
+.    substring $AUTHORS 0 -3
+.    ds $AUTHOR \\*[$AUTHOR_1]
 .END
 \#
 \#
@@ -4015,7 +3995,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC MISC END \"For use on cover page only; enclose all args in double quotes
-.    nr #MISC_NUM -1 1
+.    nr #MISC_NUM 0 1
 .    while \\n[#NUM_ARGS]>\\n[#MISC_NUM] \{\
 .       ds $MISC_\\n+[#MISC_NUM] \\$\\n[#MISC_NUM]
 .\}
@@ -4184,15 +4164,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# TYPE-STYLE CONTROL MACROS
 \# -------------------------
-\#
-.ig
-The control macros for family, font, size, quad and color are here
-grouped together.  Each (e.g. _FAMILY or _FONT) tests for a calling
-alias before performing the action(s) appropriate to the calling
-macro.  Defaults for all these guys are set in DEFAULTS, and listed
-in the "Control Macros" section of the documentation pertinent to
-the macro whose style is to be changed.
-..
+\# The control macros for family, font, size, quad and color are here
+\# grouped together.  Each (e.g. _FAMILY or _FONT) tests for a calling
+\# alias before performing the action(s) appropriate to the calling
+\# macro.  Defaults for all these guys are set in DEFAULTS, and listed
+\# in the "Control Macros" section of the documentation pertinent to
+\# the macro whose style is to be changed.
 \#
 .MAC _FAMILY END
 .    if '\\$0'AUTHOR_FAMILY'                  .ds $AUTHOR_FAM \\$1
@@ -5270,24 +5247,21 @@ the macro whose style is to be changed.
 .       \}
 .       el \{ .PRINT \\*[$CHAPTER_STRING] \\*[$CHAPTER] \}
 .       if !'\\*[$CHAPTER_TITLE_1]'' \{\
-.          if \\n[#PRINT_STYLE]=1 \{\
-.             PRINT \\*[$CHAPTER_TITLE]
-.          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
 .             FAMILY  \\*[$CHAPTER_TITLE_FAM]
 .             FT      \\*[$CHAPTER_TITLE_FT]
 .             PT_SIZE \\*[$CHAPTER_TITLE_PT_SIZE]
 .             LS      \\n[#DOCHEADER_LEAD]u
 .             ALD \\n[.v]u/4u \"Put a little space before the chapter title
-.             nr #ARG_NUM 0 1
-.             while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                ie \\n[#CHAPTER_TITLE_COLOR]=1 \{\
-.                   PRINT \m[\\*[$CHAPTER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
-.                \}
-.             el \{ .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]] \}
-.\}
-.             RLD \\n[#DOC_LEAD]u \" Just looks better this way
 .          \}
+.          nr #ARG_NUM 0 1
+.          while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.             ie \\n[#CHAPTER_TITLE_COLOR]=1 \{\
+.                PRINT \m[\\*[$CHAPTER_TITLE_COLOR]]\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]\m[]
+.             \}
+.          el \{ .PRINT \\*[$CHAPTER_TITLE_\\n[#ARG_NUM]] \}
+.\}
+.          RLD \\n[#DOC_LEAD]u \" Just looks better this way
 .       \}
 .    \}
 .END
@@ -5421,7 +5395,7 @@ the macro whose style is to be changed.
 .MAC COVERTITLE END
 .    ie '\\$0'DOC_COVERTITLE' \{\ 
 .       rr #DOC_COVER_TITLE_NUM
-.       nr #DOC_COVER_TITLE_NUM -1 1
+.       nr #DOC_COVER_TITLE_NUM 0 1
 .       while \\n[#NUM_ARGS]>\\n[#DOC_COVER_TITLE_NUM] \{\
 .          ds $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
 .\}
@@ -5429,7 +5403,7 @@ the macro whose style is to be changed.
 .    \}
 .    el \{\
 .       rr #COVER_TITLE_NUM
-.       nr #COVER_TITLE_NUM -1 1
+.       nr #COVER_TITLE_NUM 0 1
 .       while \\n[#NUM_ARGS]>\\n[#COVER_TITLE_NUM] \{\
 .          ds $COVER_TITLE_\\n+[#COVER_TITLE_NUM] \\$\\n[#COVER_TITLE_NUM]
 .\}
@@ -6301,7 +6275,7 @@ the macro whose style is to be changed.
 .                CAPS
 .                nr #ARG_NUM 0 1
 .                while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]
+.                   UNDERSCORE 4p "\\*[$TITLE_\\n[#ARG_NUM]]
 .\}
 .                CAPS OFF
 .             \}
@@ -6309,7 +6283,7 @@ the macro whose style is to be changed.
 .                sp
 .                nr #ARG_NUM 0 1
 .                while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE "\\*[$SUBTITLE_\\n[#ARG_NUM]]
+.                   UNDERSCORE 4p "\\*[$SUBTITLE_\\n[#ARG_NUM]]
 .\}
 .             \}
 .             if !'\\*[$AUTHOR_1]'' \{\
@@ -6350,12 +6324,12 @@ the macro whose style is to be changed.
 .                ie !'\\*[$CHAPTER_TITLE]'' \{\
 .                   nr #ARG_NUM 0 1
 .                   while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                      UNDERSCORE "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.                      UNDERSCORE 4p "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
 .\}
 .                \}
 .                el \{\
 .                   CAPS
-.                   UNDERSCORE \\*[$CHAPTER_STRING]
+.                   UNDERSCORE 4p \\*[$CHAPTER_STRING]
 .                \}
 .                CAPS OFF
 .                RLD 1v
@@ -6368,7 +6342,7 @@ the macro whose style is to be changed.
 .                   sp
 .                   nr #ARG_NUM 0 1
 .                   while \\n[#CHAPTER_TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                      UNDERSCORE "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
+.                      UNDERSCORE 4p "\\*[$CHAPTER_TITLE_\\n[#ARG_NUM]]"
 .\}
 .                \}
 .                RLD 1v
@@ -6409,7 +6383,7 @@ the macro whose style is to be changed.
 .             if !'\\*[$TITLE]'' \{\
 .                nr #ARG_NUM 0 1
 .                while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]
+.                   UNDERSCORE 4p "\\*[$TITLE_\\n[#ARG_NUM]]
 .\}
 .             \}
 .             CAPS OFF
@@ -6417,7 +6391,7 @@ the macro whose style is to be changed.
 .                sp
 .                nr #ARG_NUM 0 1
 .                while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE "\\*[$SUBTITLE_\\n[#ARG_NUM]]
+.                   UNDERSCORE 4p "\\*[$SUBTITLE_\\n[#ARG_NUM]]
 .\}
 .             \}
 .             if !'\\*[$AUTHOR_1]'' \{\
@@ -6431,7 +6405,7 @@ the macro whose style is to be changed.
 .             \}
 .             ie \\n[#SINGLE_SPACE]=0 \{ .sp 2 \}
 .             el \{ .sp \}
-.             UNDERSCORE2 "\\*[$DOC_TYPE]
+.             UNDERSCORE2 4p "\\*[$DOC_TYPE]
 .             if \\n[#SINGLE_SPACE]=1 \{ .sp \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
@@ -7103,8 +7077,17 @@ the macro whose style is to be changed.
 .       while \\n[#EPI_WHITESPACE]>\\n[#DOC_LEAD] \{\
 .             nr #EPI_WHITESPACE -\\n[#DOC_LEAD]
 .\}
+.       if \\n[#PRINT_STYLE]=1 \{\
+.          if !\\n[#SINGLE_SPACE]=1 \{ .ALD \\n[#DOC_LEAD]u \}
+.       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          RLD \\n[#DOC_LEAD]u
+.          ie !\\n[#DOC_TYPE]=2 \{ .RLD \\n[#DOC_LEAD]u \}
+.          el \{\
+.             ie '\\*[$CHAPTER_TITLE]'' \{ .RLD \\n[#DOC_LEAD]u \}
+.             el \{\
+.                if '\\*[$CHAPTER]'' \{ .RLD \\n[#DOC_LEAD]u \}
+.             \}
+.          \}
 .          if \\n[#EPI_WHITESPACE]<\\n[#DOC_LEAD] \{\
 .             ALD \\n[#EPI_LEAD_DIFF]u+(\\n[#EPI_WHITESPACE]u/2u)
 .          \}
@@ -7507,10 +7490,10 @@ the macro whose style is to be changed.
 \# *Function:
 \#   If invoked via the alias HDRFTR_RULE_INTERNAL in HDRFTR, prints a rule
 \#   under the header/over the footer.  Otherwise, turns HDRFTR_RULE
-\#    on or off.
+\#   on or off.
 \#
 .MAC HDRFTR_RULE END   \"To print rule under header/over footer.
-.    ie '\\$0'HDRFTR_RULE_INTERNAL' \{\
+.    if '\\$0'HDRFTR_RULE_INTERNAL' \{\
 .       ie \\n[#USERDEF_HDRFTR] \{\
 .          nr #CAP_HEIGHT_ADJUST \\n[#HDRFTR_HEIGHT]
 .          ps 12
@@ -7562,7 +7545,27 @@ the macro whose style is to be changed.
 .          br
 .       \}
 .    \}
-.    el \{\
+.    if '\\$0'HEADER_RULE' \{\
+.       ie '\\$1'' \{\
+.          nr #HEADER_RULE 1
+.          nr #HDRFTR_RULE 1
+.       \}
+.       el \{\
+.          nr #HEADER_RULE 0
+.          nr #HDRFTR_RULE 0
+.       \}
+.    \}
+.    if '\\$0'FOOTER_RULE' \{\
+.       ie '\\$1'' \{\
+.          nr #FOOTER_RULE 1
+.          nr #HDRFTR_RULE 1
+.       \}
+.       el \{\
+.          nr #FOOTER_RULE 0
+.          nr #HDRFTR_RULE 0
+.       \}
+.    \}
+.    if '\\$0'HDRFTR_RULE' \{\
 .       ie '\\$1'' \{ .nr #HDRFTR_RULE 1 \}
 .       el \{ .nr #HDRFTR_RULE 0 \}
 .    \}
@@ -7607,24 +7610,21 @@ the macro whose style is to be changed.
 \#   Creates or modifies register #SWITCH_HDRFTR, used to switch
 \#   default location of HDRFTR_LEFT and HDRFTR_RIGHT.
 \# *Notes:
+\#   Default is OFF.
 \#
-.ig
-Typically, the author string appears at the left of header/footers,
-and the title string appears at the right.  This switches the
-location of the two.  Useful in conjuction with RECTO_VERSO to tweak
-switches on alternate pages to come out as the user wishes.  The
-assumption of RECTO_VERSO is that the first page of the document
-(recto) is odd, and even though it has no header/footer, if it did
-have one, it would print as AUTHOR...CENTER...TITLE (or whatever
-strings the user has supplied for HDRFTR_LEFT/RIGHT), meaning that
-the next page, which does have a header/footer, will come out as
-TITLE...CENTER...AUTHOR (or whatever strings the user has supplied
-for HDRFTR_LEFT/RIGHT).  SWITCH_HDRFTRS allows the user to get the
-desired string in the desired place on the desired recto/verso page.
-
-Default is OFF.
-..
-\#
+\# Typically, the author string appears at the left of header/footers,
+\# and the title string appears at the right.  This switches the
+\# location of the two.  Useful in conjuction with RECTO_VERSO to tweak
+\# switches on alternate pages to come out as the user wishes.  The
+\# assumption of RECTO_VERSO is that the first page of the document
+\# (recto) is odd, and even though it has no header/footer, if it did
+\# have one, it would print as AUTHOR...CENTER...TITLE (or whatever
+\# strings the user has supplied for HDRFTR_LEFT/RIGHT), meaning that
+\# the next page, which does have a header/footer, will come out as
+\# TITLE...CENTER...AUTHOR (or whatever strings the user has supplied
+\# for HDRFTR_LEFT/RIGHT).  SWITCH_HDRFTRS allows the user to get the
+\# desired string in the desired place on the desired recto/verso page.
+\# 
 .MAC SWITCH_HDRFTR END
 .    ie '\\$1'' \{ .nr #SWITCH_HDRFTR 1 \}
 .    el \{ .nr #SWITCH_HDRFTR 0 \}
@@ -7733,7 +7733,17 @@ Default is OFF.
 .    if \\n[#FOOTERS_ON] \{\
 .       if \\n[#START_FOR_FOOTERS] \{\
 .          rr #START_FOR_FOOTERS
-.          if !\\n[#PRINT_FOOTER_ON_PAGE_1] \{ .return \}
+.          if !\\n[#PRINT_FOOTER_ON_PAGE_1] \{\
+.             ie !\\n[#HDRFTR_BOTH] \{ .return \}
+.             el \{\
+.                rr #FOOTERS_ON
+.                nr #HEADERS_ON 1
+.                ie \\n[#HEADER_RULE]=1 \{ .HEADER_RULE \}
+.                el \{ .HEADER_RULE OFF \}
+.                HEADER_RECTO \\*[$HDR_RECTO_QUAD] "\\*[$HDR_RECTO_STRING]"
+.                return
+.             \}
+.          \}
 .       \}
 .    \}
 .    if \\n[#USERDEF_HDRFTR] \{\
@@ -8273,8 +8283,9 @@ Default is OFF.
 \#
 .MAC FOOTERS END
 .    ie '\\$1''   \{\
+.       rr #HEADERS_ON
 .       nr #FOOTERS_ON 1
-.       PAGE_NUM_POS TOP CENTER
+.       PAGENUM_POS TOP CENTER
 .    \}
 .    el \{ .nr #FOOTERS_ON 0 \}
 .END
@@ -8517,6 +8528,109 @@ Default is OFF.
 .\" This ev pops the PAGE_TRANSITION environment still active at the
 .\" end of HEADER
 .    ev
+.END
+\#
+\# ====================================================================
+\#
+\# +++HEADERS AND FOOTERS+++
+\#
+\# HEADERS_AND_FOOTERS
+\# -------------------
+\# *Arguments:
+\#   HEADER_RECTO_QUAD \
+\#   HEADER_RECTO_STRING \
+\#   FOOTER_RECTO_QUAD \
+\#   FOOTER_RECTO_STRING \
+\#   HEADER_VERSO_QUAD \
+\#   HEADER_VERSO_STRING \
+\#   FOOTER_VERSO_QUAD \
+\#   FOOTER_VERSO_STRING
+\#   | <anything>
+\# *Function:
+\#   Allows having both headers and footers.  Sets register
+\#   #HDRFTR_BOTH to 1; collects HEADER/FOOTER_RECTO/VERSO
+\#   information; appends FOOTER_RECTO and FOOTER_VERSO to
+\#   START and turns off pagination; appends to macros
+\#   PRINT_USERDEF_HDRFTR and HEADER the necessary number
+\#   register manipulations and redefinitions of the
+\#   HEADER/FOOTER_RECTO/VERSO strings so that both
+\#   headers and footers get printed, with the appropriate
+\#   strings for each
+\# *Notes:
+\#   Works in conjunction with HDRFTR_RECTO and HDRFTR_VERSO (qqv.),
+\#   ergo all style changes must be done inline in the strings
+\#   passed as arguments.
+\#
+.MAC HEADERS_AND_FOOTERS END
+.    ie \\n[#NUM_ARGS]>1 \{\
+.    nr #HDRFTR_BOTH 1
+.    nr #FOOTERS_ON  1
+.    if !r#HEADER_RULE .nr #HEADER_RULE 1
+.    if !r#FOOTER_RULE .nr #FOOTER_RULE 1
+.    ds $HDR_RECTO_QUAD   \\$1
+.    ds $HDR_RECTO_STRING \\$2
+.    ds $FTR_RECTO_QUAD   \\$3
+.    ds $FTR_RECTO_STRING \\$4
+.    ds $HDR_VERSO_QUAD   \\$5
+.    ds $HDR_VERSO_STRING \\$6
+.    ds $FTR_VERSO_QUAD   \\$7
+.    ds $FTR_VERSO_STRING \\$8
+.am START DONE
+.   if \\\\n[#HDRFTR_BOTH]=1 \{\
+.      FOOTER_RECTO \\*[$FTR_RECTO_QUAD] "\\*[$FTR_RECTO_STRING]"
+.      FOOTER_VERSO \\*[$FTR_VERSO_QUAD] "\\*[$FTR_VERSO_STRING]"
+.      if \\\\n[#HEADER_RULE]=1 \{ .HEADER_RULE \}
+.      ie \\\\n[#FOOTER_RULE]=1 \{ .FOOTER_RULE \}
+.      el \{ .FOOTER_RULE OFF \}
+.      if r#PAGINATE .rr #PAGINATE
+.      if r#PAGE_NUM_V_POS .rr #PAGE_NUM_V_POS
+.\}
+.DONE
+.am PRINT_USERDEF_HDRFTR DONE
+.   if \\\\n[#HDRFTR_BOTH]=1 \{\
+.      if \\n[#FOOTERS_ON]=1 \{\
+.         if !\\\\n[#COLLATE]=1 \{\
+.         HEADER_RECTO \\*[$HDR_RECTO_QUAD] "\\*[$HDR_RECTO_STRING]"
+.         HEADER_VERSO \\*[$HDR_VERSO_QUAD] "\\*[$HDR_VERSO_STRING]"
+.         rr #FOOTERS_ON
+.         nr #HEADERS_ON 1
+.         ie \\\\n[#HEADER_RULE]=1 \{ .HEADER_RULE \}
+.         el \{ .HEADER_RULE OFF \}
+.      \}
+.      \}
+.      if \\n[#HEADERS_ON]=1 \{\
+.         FOOTER_RECTO \\*[$FTR_RECTO_QUAD] "\\*[$FTR_RECTO_STRING]"
+.         FOOTER_VERSO \\*[$FTR_VERSO_QUAD] "\\*[$FTR_VERSO_STRING]"
+.      \}
+.   \}
+.DONE
+.am HEADER DONE
+.   if \\\\n[#HDRFTR_BOTH]=1 \{\
+.      if r#START_FOR_FOOTERS .rr #START_FOR_FOOTERS
+.      rr #HEADERS_ON
+.      nr #FOOTERS_ON 1
+.      FOOTER_RECTO \\*[$FTR_RECTO_QUAD] "\\*[$FTR_RECTO_STRING]"
+.      FOOTER_VERSO \\*[$FTR_VERSO_QUAD] "\\*[$FTR_VERSO_STRING]"
+.      ie \\\\n[#FOOTER_RULE]=1 \{ .FOOTER_RULE \}
+.      el \{ .FOOTER_RULE OFF \}
+.   \}
+.DONE
+.    \}
+.    el \{\
+.       rr #HDRFTR_BOTH
+.       rr #USERDEF_HDRFTR
+.       rm $USERDEF_HDRFTR_RECTO
+.       rm $USERDEF_HDRFTR_VERSO
+.       FOOTERS OFF
+.       HEADERS
+.       if \\n[#COLLATE]=1 \{\
+.          nr #HEADER_STATE 1
+.          nr #PAGINATION_STATE 1
+.       \}
+.       PAGINATE
+.       PAGENUM_POS BOTTOM CENTER
+.       nr #HF_OFF 1
+.    \}
 .END
 \#
 \# ====================================================================
@@ -8828,10 +8942,10 @@ Default is OFF.
 .\" Process head
 .    nr #HEAD 1
 .    ev HEAD
-.    if \\n[#PRINT_STYLE]=1 \{ .ne \\n[#NUM_ARGS]+1 \}
+.    if \\n[#PRINT_STYLE]=1 \{ .ne \\n[#NUM_ARGS]+2 \}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       ie \\n[#HEAD_SPACE] \{ .ne \\n[#NUM_ARGS]+2 \}
-.       el \{ .ne \\n[#NUM_ARGS]+1 \}
+.       ie \\n[#HEAD_SPACE] \{ .ne \\n[#NUM_ARGS]+3 \}
+.       el \{ .ne \\n[#NUM_ARGS]+2 \}
 .    \}
 .    ll \\n[#L_LENGTH]u
 .    ta \\n(.lu
@@ -9039,7 +9153,7 @@ Default is OFF.
 .    if r#QUOTE    \{ .rr #QUOTE    \}
 .    if r#Q_AT_TOP \{ .rr #Q_AT_TOP \}
 .    ev SUBHEAD
-.    ne \\n[#NUM_ARGS]
+.    ne \\n[#NUM_ARGS]+2
 .    ll \\n[#L_LENGTH]u
 .    ta \\n(.lu
 .    if \\n[#COLUMNS] \{\
@@ -9470,6 +9584,9 @@ Default is OFF.
 .MAC PP_FONT END
 .    if \\n[#IGNORE] \{ .return \}
 .    br
+.    if \\n[#COLLATE]=1 \{\
+.       if !'\\*[$SAVED_PP_FT]'' \{ .rm $SAVED_PP_FT \}
+.    \}
 .    ds $PP_FT \\$1
 .    FT \\*[$PP_FT]
 .END
@@ -9603,11 +9720,11 @@ Default is OFF.
 .          \}
 .          el \{\
 .             FAMILY  \\*[$DOC_FAM]
-.             ie !'\\*[$SAVED_PP_FT]'' \{\
+.             if !'\\*[$SAVED_PP_FT]'' \{\
 .                ds $PP_FT \\*[$SAVED_PP_FT]
 .                rm $SAVED_PP_FT
 .             \}
-.             el \{ .FT \\*[$PP_FT] \}
+.             FT \\*[$PP_FT]
 .             PT_SIZE \\n[#DOC_PT_SIZE]u
 .             LS      \\n[#DOC_LEAD]u
 .             QUAD    \\*[$DOC_QUAD]
@@ -10401,6 +10518,10 @@ Default is OFF.
 .MAC PAGINATE END
 .    ie '\\$1'' \{ .nr #PAGINATE 1 \}
 .    el \{ .nr #PAGINATE 0 \}
+.    if \\n[#HF_OFF]=1 \{\
+.       rr #PAGINATION_STATE
+.       rr #HF_OFF
+.    \}
 .END
 \#
 \#
@@ -10609,14 +10730,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 \# +++FOOTNOTES+++
 \#
-.ig
-Mom's footnote handling is baroque, to say the least.  There are
-redundancies in a number of the macros involved, as well as some
-registers that probably don't get used anymore.  The baggage is left
-in in case some new footnote oddity/challenge gets thrown my way.
-
-The macros are heavily commented.
-..
+\# Mom's footnote handling is baroque, to say the least.  There are
+\# redundancies in a number of the macros involved, as well as some
+\# registers that probably don't get used anymore.  The baggage is left
+\# in in case some new footnote oddity/challenge gets thrown my way.
+\# 
+\# The macros are heavily commented.
 \#
 \# FOOTNOTE AUTOLEAD
 \# -----------------
@@ -11621,11 +11740,9 @@ The macros are heavily commented.
 \# Utility macros to manage footnotes that occur inside diversions
 \# ---------------------------------------------------------------
 \#
-.ig
-There are some redundancies here; they're left in in case unforeseen
-footnote situations crop up in the future that might require
-manipulation of them.
-..
+\# There are some redundancies here; they're left in in case unforeseen
+\# footnote situations crop up in the future that might require
+\# manipulation of them.
 \#
 \# 1. Pre-footnote processing for footnotes in diversions
 \#
@@ -11716,21 +11833,18 @@ manipulation of them.
 \#
 \# The main macros that handle footnote processing.
 \# -----------------------------------------------
-\#
-.ig
-Sometimes, #VARIABLE_FOOTER_POS sets FOOTER at a location that gives
-the impression another line of running text could fit on the page.
-VFP_CHECK is always set to the line just above the one where FOOTER
-will be sprung, and checks for this condition.  If it exists, FOOTER
-is set one line lower on the page, thus squeezing in an extra line
-of running text.  This is a judgment call on my part, but seems to
-work well.  If there are problems (e.g. footnotes really do look
-jammed), the user should probably adjust FOOTNOTE_AUTOLEAD and/or
-FOOTNOTE_RULE_ADJ.
-
-The macro has to be run in its own environment, otherwise the first
-word of the last line before the footnotes gets chopped.
-..
+\# Sometimes, #VARIABLE_FOOTER_POS sets FOOTER at a location that gives
+\# the impression another line of running text could fit on the page.
+\# VFP_CHECK is always set to the line just above the one where FOOTER
+\# will be sprung, and checks for this condition.  If it exists, FOOTER
+\# is set one line lower on the page, thus squeezing in an extra line
+\# of running text.  This is a judgment call on my part, but seems to
+\# work well.  If there are problems (e.g. footnotes really do look
+\# jammed), the user should probably adjust FOOTNOTE_AUTOLEAD and/or
+\# FOOTNOTE_RULE_ADJ.
+\# 
+\# The macro has to be run in its own environment, otherwise the first
+\# word of the last line before the footnotes gets chopped.
 \#
 .MAC VFP_CHECK END
 .    ev VFP_CHECK
@@ -11763,14 +11877,12 @@ word of the last line before the footnotes gets chopped.
 .    ev
 .END
 \#
-.ig
-FN_OVERFLOW_TRAP starts off "underneath" FOOTER, but is revealed
-as #VARIABLE_FOOTER_POSITION changes the position of FOOTER.
-FN_OVERFLOW_TRAP simply starts diversion FN_OVERFLOW to "catch"
-the overflow.  The diversion is ended in FOOTER, immediately after
-FOOTER outputs the diversion, FOOTNOTES, before PROCESS_FN_LEFTOVER
-is run (either in HEADER, or in FOOTER if moving col to col).
-..
+\# FN_OVERFLOW_TRAP starts off "underneath" FOOTER, but is revealed
+\# as #VARIABLE_FOOTER_POSITION changes the position of FOOTER.
+\# FN_OVERFLOW_TRAP simply starts diversion FN_OVERFLOW to "catch"
+\# the overflow.  The diversion is ended in FOOTER, immediately after
+\# FOOTER outputs the diversion, FOOTNOTES, before PROCESS_FN_LEFTOVER
+\# is run (either in HEADER, or in FOOTER if moving col to col).
 \#
 .MAC FN_OVERFLOW_TRAP END
 .    if \\n[#FN_COUNT] \{\
@@ -11809,14 +11921,12 @@ is run (either in HEADER, or in FOOTER if moving col to col).
 .    nr #FROM_DIVERT_FN 1
 .END
 \#
-.ig
-PROCESS_FN_LEFTOVER is called at the top of HEADER, and in
-FOOTER if we're moving from one column to the next (i.e. after
-outputting FOOTNOTES).  It checks for whether we have a "deferred
-footnote" situation, and resets counters and number registers
-accordingly.  Lastly, if we have some footnote overflow, it calls
-DIVERT_FN_OVERFLOW.
-..
+\# PROCESS_FN_LEFTOVER is called at the top of HEADER, and in
+\# FOOTER if we're moving from one column to the next (i.e. after
+\# outputting FOOTNOTES).  It checks for whether we have a "deferred
+\# footnote" situation, and resets counters and number registers
+\# accordingly.  Lastly, if we have some footnote overflow, it calls
+\# DIVERT_FN_OVERFLOW.
 \#
 .MAC PROCESS_FN_LEFTOVER END
 .    if \\n[#PREV_FN_DEFERRED]=2 \{\
@@ -11867,11 +11977,9 @@ DIVERT_FN_OVERFLOW.
 .    rr #FROM_DIVERT_FN
 .END
 \#
-.ig
-DIVERT_FN_LEFTOVER is called in PROCESS_FN_LEFTOVER (at
-the top of HEADER, and in FOOTER if we're moving from one column
-to the next).
-..
+\# DIVERT_FN_LEFTOVER is called in PROCESS_FN_LEFTOVER (at
+\# the top of HEADER, and in FOOTER if we're moving from one column
+\# to the next).
 \#
 .MAC DIVERT_FN_LEFTOVER END
 .    nr #NO_FN_MARKER 1
@@ -11892,12 +12000,10 @@ to the next).
 .    rr #FN_OVERFLOW_DEPTH
 .END
 \#
-.ig
-This is a special macro to deal with footnotes that are set inside
-diversions (QUOTE, BLOCKQUOTE and EPIGRAPH).  It's called in HEADER
-(and in FOOTER, if we're moving from column to column), and comes
-after PROCESS_FOOTNOTE_LEFTOVER in those two macros.
-..
+\# This is a special macro to deal with footnotes that are set inside
+\# diversions (QUOTE, BLOCKQUOTE and EPIGRAPH).  It's called in HEADER
+\# (and in FOOTER, if we're moving from column to column), and comes
+\# after PROCESS_FOOTNOTE_LEFTOVER in those two macros.
 \#
 .MAC PROCESS_FN_IN_DIVER END
 .    nr #SPACE_REMAINING 0
@@ -11924,20 +12030,19 @@ after PROCESS_FOOTNOTE_LEFTOVER in those two macros.
 \#
 \# +++ENDNOTES+++
 \#
-.ig
-When endnotes are output, the spacing between the notes is always
-1 extra linespace.  This can have bottom margin consequences.  If
-this doesn't bother you, don't worry about it.  If it does bother
-you, and you want to adjust the spacing between any two endnotes (as
-they're output), make the spacing adjustments (.ALD/.RLD) at the
-*end* of endnotes (i.e. just before .ENDNOTE OFF), not at the top.
-
-Endnotes must be output manually with .ENDNOTES. This allows user
-the flexibility to output endnotes at the end of each collated
-document, or to output them at the end of the entire document.
-..
+\# When endnotes are output, the spacing between the notes is always
+\# 1 extra linespace.  This can have bottom margin consequences.  If
+\# this doesn't bother you, don't worry about it.  If it does bother
+\# you, and you want to adjust the spacing between any two endnotes (as
+\# they're output), make the spacing adjustments (.ALD/.RLD) at the
+\# *end* of endnotes (i.e. just before .ENDNOTE OFF), not at the top.
+\# 
+\# Endnotes must be output manually with .ENDNOTES. This allows user
+\# the flexibility to output endnotes at the end of each collated
+\# document, or to output them at the end of the entire document.
 \#
 \# Control macros
+\# --------------
 \#
 \# ENDNOTE POINT SIZE
 \# ------------------
@@ -12844,25 +12949,23 @@ document, or to output them at the end of the entire document.
 \#
 \# +++BIBLIOGRAPHY+++
 \#
-.ig
-Mom treats bibliographies and endnotes very similarly.  The chief
-difference is that endnotes are collected and formatted inside a
-diversion, while bibliographies are built "by hand."  ENDNOTES sets
-up the endnotes page and outputs the formatted diversion.
-BIBLIOGRAPHY sets up the bibliography page, then awaits refer
-commands.
-
-All of the bibliography control macros have their exact
-counterparts in the endnotes control macros.  It was tempting to do
-fancy stuff with aliases to avoid the repetition, but for reasons
-of my own sanity, and for the benefit of anyone wanting to play
-around with the bibliography control macros, I decided to keep them
-separate.
-
-Because the bibliography control macros all have endnotes
-equivalents, refer to the appropriate, similar endnote macro for
-Arguments, Function and Notes.
-..
+\# Mom treats bibliographies and endnotes very similarly.  The chief
+\# difference is that endnotes are collected and formatted inside a
+\# diversion, while bibliographies are built "by hand."  ENDNOTES sets
+\# up the endnotes page and outputs the formatted diversion.
+\# BIBLIOGRAPHY sets up the bibliography page, then awaits refer
+\# commands.
+\# 
+\# All of the bibliography control macros have their exact
+\# counterparts in the endnotes control macros.  It was tempting to do
+\# fancy stuff with aliases to avoid the repetition, but for reasons
+\# of my own sanity, and for the benefit of anyone wanting to play
+\# around with the bibliography control macros, I decided to keep them
+\# separate.
+\# 
+\# Because the bibliography control macros all have endnotes
+\# equivalents, refer to the appropriate, similar endnote macro for
+\# Arguments, Function and Notes.
 \# Bibliography control macros
 \#
 .MAC BIBLIOGRAPHY_PT_SIZE END
@@ -14423,9 +14526,13 @@ Arguments, Function and Notes.
 .    \}
 .    if \\n[#CH_NUM] \{ .nr #CH_NUM +1 \}
 .    rm $EN_TITLE
-.    rm $SUBTITLE
-.    rm $CHAPTER
-.    rm $CHAPTER_TITLE_1
+.    COVERTITLE
+.    DOCCOVERTITLE
+.    MISC
+.    TITLE
+.    SUBTITLE
+.    CHAPTER
+.    CHAPTER_TITLE
 .    rr #PAGENUM_STYLE_SET
 .END
 \#
@@ -15573,23 +15680,21 @@ Arguments, Function and Notes.
 .    \}
 .END
 \#
-.ig
-The remainder of the definitions in this section are modified
-versions of the definitions found in the refer module of s.tmac.
-..
+\# The remainder of the definitions in this section are modified
+\# versions of the definitions found in the refer module of s.tmac.
 \#
 \# This one is directly from s.tmac.
+\#
 .de @error
 .tm \\n(.F:\\n(.c: macro error: \\$*
 ..
 \#
-.ig
-The following strings define the order of entries for different
-types of references.  Each letter in the string refers to a database
-field (A for author, T1/T2 for article and book titles, etc).
-Mom is set up for MLA-style bibliographies.  Other styles can be
-implemented here by re-ordering the fields.
-..
+\# The following strings define the order of entries for different
+\# types of references.  Each letter in the string refers to a database
+\# field (A for author, T1/T2 for article and book titles, etc).
+\# Mom is set up for MLA-style bibliographies.  Other styles can be
+\# implemented here by re-ordering the fields.
+\#
 \# Book - type 2
 .ds ref*spec!2 Q A T1 d t l r E S e V a C I D P O
 \# Article within book - type 3
@@ -15699,14 +15804,12 @@ implemented here by re-ordering the fields.
 \#
 \# Build up the ref*string
 \#
-.ig
-Correct MLA "typewritten" style (printstyle TYPEWRITE) demands
-two spaces after each period.  The spaces are hardwired into the
-string definitions (ref*add-<x>), so we have to make sure that there
-aren't two spaces when the printstyle is TYPESET.  Since I find that
-references look a bit crowded with 0 sentence space, I've bumped it
-up to +4.  User's sentence spacing is reset in FOOTNOTES and ENDNOTES.
-..
+\# Correct MLA "typewritten" style (printstyle TYPEWRITE) demands
+\# two spaces after each period.  The spaces are hardwired into the
+\# string definitions (ref*add-<x>), so we have to make sure that there
+\# aren't two spaces when the printstyle is TYPESET.  Since I find that
+\# references look a bit crowded with 0 sentence space, I've bumped it
+\# up to +4.  User's sentence spacing is reset in FOOTNOTES and ENDNOTES.
 \#
 .de ref*build
 .if \\n[#PRINT_STYLE]=2 \{\
@@ -15736,15 +15839,13 @@ up to +4.  User's sentence spacing is reset in FOOTNOTES and ENDNOTES.
 \# The following macros determine how entries are formatted WRT
 \# punctuation, type style, additional strings, etc.
 \#
-.ig
-o First argument is the database field letter.
-o Second argument is the punctuation character to use to separate this
-  field from the previous field.
-o Third argument is a string with which to prefix this field.
-o Fourth argument is a string with which to postfix this field.
-o Fifth argument is a string to add after the punctuation character
-  supplied by the next field.
-..
+\# o First argument is the database field letter.
+\# o Second argument is the punctuation character to use to separate this
+\#   field from the previous field.
+\# o Third argument is a string with which to prefix this field.
+\# o Fourth argument is a string with which to postfix this field.
+\# o Fifth argument is a string to add after the punctuation character
+\#   supplied by the next field.
 \#
 \# %A Author(s)
 .de ref*add-A
@@ -16038,10 +16139,8 @@ o Fifth argument is a string to add after the punctuation character
 .    rr #OVERFLOW_RIGHT
 .END
 \#
-.ig
-The remainder of the margin notes macros and routines are adapted
-from Werner Lemberg's MN.tmac.
-..
+\# The remainder of the margin notes macros and routines are adapted
+\# from Werner Lemberg's MN.tmac.
 \#
 \# MNinit
 \# ------
@@ -16376,6 +16475,5 @@ from Werner Lemberg's MN.tmac.
 '  sp |\\n[MN-curr-pos]u
 .  if !\\n[#no-repeat-MN-right]=1 .vpt 1
 ..
-\#
 \#
 \# vim: ft=groff:

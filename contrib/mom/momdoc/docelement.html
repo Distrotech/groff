@@ -288,6 +288,7 @@ arguments as
 		<li><a href="#FINIS_STRING">Changing the FINIS string</a>
 		<li><a href="#FINIS_COLOR">Changing the FINIS colour</a>
 	</ul>
+	<li><a href="#PSPIC">Inserting images into a document -- the PSPIC macro</a>
 </ul>
 <hr>
 
@@ -1328,7 +1329,7 @@ in your document setup.
 <a name="LINEBREAK_INTRO"><h2><u>Author linebreaks</u></h2></a>
 <ul>
 	<li><a href="#LINEBREAK">Tag: LINEBREAK</a>
-	<li><a href="#LINEBREAK_CHAR">Linebreak character control macro</a>
+	<li><a href="#LINEBREAK_CHAR">Linebreak character control macros</a>
 </ul>
 <p>
 By default, <strong>mom</strong> marks
@@ -1449,9 +1450,9 @@ indented from the left margin.  Obviously, she's thinking
 you can change her defaults so <strong>QUOTE</strong> serves other
 needs, e.g. entering verbatim snippets of programming code, command
 line instructions, and so on.  (See the
-<a href="#QUOTE_TIP">tip</a>
-below for suggestions about including programming code snippets in
-documents.)
+<a href="#CODE">CODE</a>
+for a convenience macro to assist in including programming code
+snippets in documents.)
 <p>
 <a name="QUOTE_SPACING"></a>
 Besides indenting quotes, <strong>mom</strong> further sets them
@@ -2265,21 +2266,8 @@ or <strong>LIST</strong> <kbd>roman&lt;n&gt;</kbd> and before
 </ul>
 
 <p>
-<strong>Mom</strong>'s line-numbering capabilities are not as flexible
-as most of her other document processing macros.  The reason is
-that groff's underlying line-numbering
-<a href="definitions.html#TERMS_PRIMITIVES">primitive</a>,
-<kbd>.nm</kbd>, is, well...primtive.  It is not possible, for
-example, to select a particular family or font for use exclusively
-with line numbers.  Nor is it possible to set the
-<a href="definitions.html#TERMS_GUTTER">gutter</a>
-using any
-<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
-other than the
-<a href="definitions.html#TERMS_FIGURESPACE">figure space</a>.
 <p>
-That said, when you turn line-numbering on, <strong>mom</strong>,
-by default
+When you turn line-numbering on, <strong>mom</strong>, by default
 <br>
 <a name="NUMBER_LINES_DEFAULTS"></a>
 <ul>
@@ -4149,7 +4137,7 @@ endnote looks approximately like this:
 <p>
 <pre>
 	[1-2]   Notwithstanding, Frye later asserts that Christianity
-	is "a ghost  with the chains of a foul historical record of
+	is "a ghost with the chains of a foul historical record of
 	cruelty clanking behind it."
 </pre>
 
@@ -4615,6 +4603,80 @@ If you're writing in a language other than English, you can
 change what <strong>mom</strong> prints for END with
 the control macro <strong>FINIS_STRING</strong>.
 <p>
+
+<!---FINIS--->
+
+<hr width="66%" align="left">
+<p>
+<a name="FINIS">
+	Macro: <strong>FINIS</strong>
+</a>
+
+<p>
+The use of <strong>FINIS</strong> is optional, but if you use
+it, it should be the last macro you invoke in a document (before
+<a href="#ENDNOTES">ENDNOTES</a>
+or
+<a href="#TOC">TOC</a>).
+See
+<a href="#FINIS_INTRO">above</a>
+for a description of how <strong>FINIS</strong> behaves.
+<p>
+<strong>NOTE:</strong> If you don't use <strong>FINIS</strong>,
+and you don't want
+<a href="definitions.html#TERMS_FOOTER">footers</a>
+(if they're on) or a page number at the bottom of the last page of
+a document, you have to turn them off manually, as the last two
+lines of your document file, like this:
+<p>
+<pre>
+	.FOOTERS OFF
+	.PAGINATE OFF
+</pre>
+
+<a name="FINIS_STRING"><h3><u>Changing the FINIS string</u></h3></a>
+
+<p>
+By default, <strong>FINIS</strong> prints the word
+END between
+<a href="definitions.html#TERMS_EM">em-dashes</a>.
+If you'd like <strong>mom</strong> to print something else
+between the dashes, use the <strong>FINIS_STRING</strong> macro
+(anywhere in the document prior to <strong>FINIS</strong>).
+<p>
+For example, if your document's in French, you'd do
+<p>
+<pre>
+	.FINIS_STRING "FIN"
+</pre>
+
+Double-quotes must enclose the macro's argument.
+<p>
+<strong>NOTE:</strong> If you pass <strong>FINIS_STRING</strong>
+a blank string, i.e.
+<p>
+<pre>
+	.FINIS_STRING ""
+</pre>
+
+<strong>mom</strong> will still print the em-dashes if you
+invoke <strong>FINIS</strong>.  This, in effect, produces a
+short, centred horizontal rule that terminates the document.
+(In
+<a href="docprocessing.html.#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
+it's a short, dashed line composed of four hyphens.)
+
+<a name="FINIS_COLOR"><h3><u>Changing the FINIS colour</u></h3></a>
+<p>
+Invoking <strong>FINIS_COLOR</strong> with a pre-defined (or
+&quot;initalized&quot;) color changes the colour of both the FINIS
+string and the em-dashes that surround it.  If you use the
+<a href="definitions.html#TERMS_INLINE">inline escape</a>,
+<a href="color.html#COLOR_INLINE">\*[&lt;colorname&gt;]</a>,
+in the argument passed to <strong>FINIS</strong>, only the text
+will be in the new colour; the em-dashes will be in the default
+document colour (usually black).
+<p>
 <hr>
 
 <!====================================================================>
@@ -4622,6 +4684,9 @@ the control macro <strong>FINIS_STRING</strong>.
 <a name="TOC_INTRO"><h2><u>Table of contents</u></h2></a>
 <ul>
 	<li><a href="#TOC_BEHAVIOUR">TOC behaviour</a>
+	<ul>
+	     <li><a href="#PSSELECT">Using psselect to put the table of contents where you want</a>
+	</ul>
 	<li><a href="#TOC">Macro: TOC</a> -- tell <strong>mom</strong> to output a table of contents
 	<li><a href="#TOC_CONTROL">TOC control macros</a>
 </ul>
@@ -4700,6 +4765,60 @@ point size and indent of each type of toc entry (i.e. title, head,
 subhead, paragraph head).  Furthermore, the page numbering style
 can be changed, as can the amount of visual space reserved for toc
 entry page numbers.
+<p>
+<a name="PSSELECT"><h4>Using psselect to put the table of contents where you want</h4></a>
+<p>
+<strong>Mom</strong> always outputs tables of contents as the last
+pages of any document.  While this is desirable for some language
+conventions -- French, for example -- it is not desirable for
+others.
+<p>
+If you'd like your tables of contents to be placed somewhere else,
+you have two options: re-arrange the pages by hand (okay for one or
+two hard copies of your document), or use the <strong>psselect</strong>
+programme provided by the <strong>psutils</strong> suite of tools
+(which you may have to install as a package from your distribution
+if it is not already on your system).
+<p>
+The procedure for using <strong>psselect</strong> begins by you
+determining how many pages comprise the table of contents.  You
+can do this by previewing the document with a PostScript viewer,
+say, <strong>gv</strong>.  Once you know the number of pages in the
+table of contents, use <strong>psselect</strong> to re-arrange them
+appropriately.
+<p>
+Say, for example, the table of contents runs to just one page.  The
+command to place the one-page table of contents at the start of the
+document is:
+<p>
+<pre>
+	 psselect -p _1,1-_2 &lt;PostScript file&gt; &gt; &lt;new PostScript file&gt;
+</pre>
+
+The <kbd>-p</kbd> option instructs <strong>psselect</strong> that
+what follows is a comma-separated list of the order in which
+to re-arrange pages.  The underscore character means "counting
+backwards from the end of the document".  Thus, the above says
+"put the last page first (i.e. the table of contents), followed by
+all pages from the original first page up to the second to last."
+<strong>psselect</strong> outputs to stdout, so you have to redirect
+the output to a new file.
+<p>
+If your table of contents runs to two pages, the command would look
+like this:
+<p>
+<pre>
+	 psselect -p _1-_2,1-_3 &lt;PostScript file&gt; &gt; &lt;new PostScript file&gt;
+</pre>
+
+If your table of contents runs to two pages and you have a cover
+page that you would like to appear before the toc, the command would look
+like this:
+<p>
+<pre>
+	 psselect -p 1,_1-_2,2-_3 &lt;PostScript file&gt; &gt; &lt;new PostScript file&gt;
+</pre>
+
 <p>
 
 <!---TOC--->
@@ -5177,80 +5296,66 @@ placeholders, say 2, do
 <pre>
 	.TOC_PADDING 2
 </pre>
+<hr>
 
-<!---FINIS--->
+<!---PSPIC--->
 
-<hr width="66%" align="left">
+<h2><u>Inserting images into a document -- the PSPIC macro</u></h2>
+
 <p>
-<a name="FINIS">
-	Macro: <strong>FINIS</strong>
+<a name="PSPIC">
+	<nobr>Macro: <strong>PSPIC</strong> [ -L | -R | -I &lt;n&gt; ] &lt;file&gt; [ width [ height ] ]</nobr>
 </a>
-
 <p>
-The use of <strong>FINIS</strong> is optional, but if you use
-it, it should be the last macro you invoke in a document (before
-<a href="#ENDNOTES">ENDNOTES</a>
-or
-<a href="#TOC">TOC</a>).
-See
-<a href="#FINIS_INTRO">above</a>
-for a description of how <strong>FINIS</strong> behaves.
+You can insert images into a document by using the
+<strong>PSPIC</strong> macro. <strong>PSPIC</strong> isn't
+actually part of <strong>mom</strong>; it comes packaged with
+<strong>groff</strong> itself.  Use it whenever you want to insert
+images into a <strong>mom</strong> document.  The image must be
+in PostScript format, either straight .ps or .eps (Encapsulated
+PostScript).  There have been reports of trouble with PostScript
+level 2 images, so don't save your images in this format.
 <p>
-<strong>NOTE:</strong> If you don't use <strong>FINIS</strong>,
-and you don't want
-<a href="definitions.html#TERMS_FOOTER">footers</a>
-(if they're on) or a page number at the bottom of the last page of
-a document, you have to turn them off manually, as the last two
-lines of your document file, like this:
+<kbd>man groff_tmac</kbd> contains the documentation for
+<strong>PSPIC</strong>, but I'll repeat it here with a few
+modifications.
 <p>
-<pre>
-	.FOOTERS OFF
-	.PAGINATE OFF
-</pre>
-
-<a name="FINIS_STRING"><h3><u>Changing the FINIS string</u></h3></a>
-
+<em>---From man groff_tmac---</em>
+<br>
+<kbd>&lt;file&gt;</kbd> is the name of the file containing the
+illustration; width and height give the desired width and height
+of the graphic.  The width and height arguments may have
+<a href="definitions.html#TERMS_UNITOFMEASURE">units of measure</a>
+attached; the default unit of measure is i. This macro will scale
+the graphic uniformly in the x and y directions so that it is no
+more than width wide and height high.  By default, the graphic will
+be horizontally centered.  The -L and -R options cause the graphic
+to be left-aligned and right-aligned, respectively.  The -I option
+causes the graphic to be indented by &lt;n&gt; (default unit of
+measure is &quot;m&quot;).
+<br>
+<em>-------------------------</em>
 <p>
-By default, <strong>FINIS</strong> prints the word
-END between
-<a href="definitions.html#TERMS_EM">em-dashes</a>.
-If you'd like <strong>mom</strong> to print something else
-between the dashes, use the <strong>FINIS_STRING</strong> macro
-(anywhere in the document prior to <strong>FINIS</strong>).
+Unless you're a PostScript whiz and have futzed around with
+bounding boxes and whatnot, it's unlikely that your image will
+occupy an easily predictable and precise amount of space on the
+page.  This is particularly significant when it comes to the amount
+of vertical space occupied by the image.  A certain amount of
+manual tweaking of the vertical placement of the image will
+probably be required, via the
+<a href="typesetting.html#ALD">ALD</a>
+and
+<a href="typesetting.html#RLD">RLD</a>
+macros.
 <p>
-For example, if your document's in French, you'd do
-<p>
-<pre>
-	.FINIS_STRING "FIN"
-</pre>
-
-Double-quotes must enclose the macro's argument.
-<p>
-<strong>NOTE:</strong> If you pass <strong>FINIS_STRING</strong>
-a blank string, i.e.
-<p>
-<pre>
-	.FINIS_STRING ""
-</pre>
-
-<strong>mom</strong> will still print the em-dashes if you
-invoke <strong>FINIS</strong>.  This, in effect, produces a
-short, centred horizontal rule that terminates the document.
-(In
-<a href="docprocessing.html.#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>,
-it's a short, dashed line composed of four hyphens.)
-
-<a name="FINIS_COLOR"><h3><u>Changing the FINIS colour</u></h3></a>
-<p>
-Invoking <strong>FINIS_COLOR</strong> with a pre-defined (or
-&quot;initalized&quot;) color changes the colour of both the FINIS
-string and the em-dashes that surround it.  If you use the
-<a href="definitions.html#TERMS_INLINE">inline escape</a>,
-<a href="color.html#COLOR_INLINE">\*[&lt;colorname&gt;]</a>,
-in the argument passed to <strong>FINIS</strong>, only the text
-will be in the new colour; the em-dashes will be in the default
-document colour (usually black).
-
+Additionally, images inserted into
+<a href="definitions.html#TERMS_RUNNING">running text</a>
+will almost certainly disrupt the baseline placement of running
+text.  In order to get <strong>mom</strong> back on track after
+invoking <strong>PSPIC</strong>, I strongly recommend using the
+<a href="docprocessing.html#SHIM">SHIM</a>
+macro so that the bottom margin of running text falls where it
+should.
 <p>
 <hr>
 <a href="headfootpage.html#TOP">Next</a>&nbsp;&nbsp;

@@ -722,6 +722,9 @@ HDRFTR_RULE              Turns header/footer rule on or off
 HDRFTR_VERSO             User-defined, single string verso
                          header/footer
 HEADERS                  Turns headers on or off
+HEADERS_AND_FOOTERS      Enables and permits the creation of
+                         headers and footers that appear on the
+                         same page
 SWITCH_HDRFTR            Switch HDRFTR_LEFT and HDRFTR_RIGHT
 
 ***Page numbering***
@@ -1259,6 +1262,7 @@ dc                         "mark" register for document columns
                            where the footnote is to be deferred to
                            the next page or column
 #GUTTER                    Width of gutter between columns
+#HDRFTR_BOTH               Are we setting both headers and footers?  (toggle)
 #HDRFTR_CENTER_CAPS        CENTER part of header/footer in caps?
                            (toggle; default=off)
 #HDRFTR_COLOR              Colored headers/footers? (toggle)
@@ -1290,6 +1294,7 @@ dc                         "mark" register for document columns
 #HEAD_NUM                  Head number
 #HEAD_SPACE                2 line spaces before heads?
                            (toggle; 1=yes, 0=no)
+#HF_OFF                    Has HEADERS_AND_FOOTERS been turned off? (toggle)
 #HORIZ_MARK                Horizontal 
 #HOW_MANY                  Number of blank pages to output
 #IGNORE                    Should we ignore this macro? Set to 1 in
@@ -1600,10 +1605,14 @@ $ADJUST_BIB_LEAD                 2nd arg to BIBLIOGRAPHY_LEAD; if not blank
                                  adjust bib leading
 $ATTRIBUTE_STRING               "by" line in doc header
 $AUTHOR_1...9                    Document author(s)
+$AUTHOR                          The author, or the first argument
+                                 passed to .AUTHOR ($AUTHOR_1)
 $AUTHOR_FAM                      Family to use for author in doc header
 $AUTHOR_FT                       Font to use for author in doc header
 $AUTHOR_SIZE_CHANGE              ps in/decrease of author in doc header*
 $AUTHOR_PT_SIZE                  Absolute ps of authors
+$AUTHORS                         Comma-separated concatenated
+                                 string of all args passed to .AUTHOR
 $BIB_FAM                         Bibliography page family
 $BIB_FT                          Bibliography page font
 $BIB_LEAD                        Base leading for bibliographies

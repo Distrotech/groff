@@ -35,14 +35,19 @@
 		<ul>
 			<li><a href="#USERDEF_HDRFTR_INTRO">Introduction</a>
 			<li><a href="#HDRFTR_RECTOVERSO">HEADER_RECTO, HEADER_VERSO</a>
+			<li><a href="#RESERVED_STRINGS">Using mom's &quot;reserved&quot; strings in header/footer definitions</a>
+			    <br>(title, author, etc.)
 		</ul>
+		<li><a href="#HEADERS_AND_FOOTERS">HEADERS_AND_FOOTERS</a> --
+			putting both headers and footers on document pages
 	</ul>
 	<a name="HEADFOOT_TOC"></a>
 	<li><a href="#HEADFOOT_CONTROL">Control macros for headers/footers</a>
 	<ul>
 		<li><a href="#HDRFTR_STRINGS">Header/footer strings</a>
 		<ul>
-			<li><a href="#RESERVED_STRINGS">Using mom's &quot;reserved&quot; strings in header/footer definitions</a>
+			<li><a href="#RESERVED_STRINGS">Using mom's &quot;reserved&quot; strings in header/footer definitions<br>(title, author, etc.)
+</a>
 		</ul>
 		<li><a href="#HDRFTR_STYLE">Header/footer style</a>
 		<ul>
@@ -140,9 +145,9 @@ Normally, <strong>mom</strong> fills headers with strings appropriate
 to the document type selected with
 <a href="docprocessing.html#DOCTYPE">DOCTYPE</a>.
 You can, however, supply whatever strings you like -- including page
-numbers -- to go in any part of headers.  What's more, you can set the
-family, font, size and capitalization style (caps or caps/lower-case)
-for each header part individually.
+numbers --to go in any part of headers.  What's more, you can set
+the family, font, size, colour and capitalization style (caps or
+caps/lower-case) for each header part individually.
 <p>
 By default, <strong>mom</strong> prints a horizontal rule beneath
 headers to separate them visually from running text.  In the case of
@@ -261,6 +266,23 @@ by the same macros.  See
 	<h2><u>Managing headers/footers</u></h2>
 </a>
 
+<h3>Macro list</h3>
+<ul>
+	<li><a href="#HEADERS">HEADERS</a> -- on or off
+	<li><a href="#FOOTERS">FOOTERS</a> -- on or off
+	<li><a href="#FOOTER_ON_FIRST_PAGE">FOOTER_ON_FIRST_PAGE</a>
+	<li><a href="#USERDEF_HDRFTR">User-defined, single string recto/verso headers/footers</a>
+	<ul>
+		<li><a href="#USERDEF_HDRFTR_INTRO">Introduction</a>
+		<li><a href="#HDRFTR_RECTOVERSO">HEADER_RECTO, HEADER_VERSO</a>
+		<li><a href="#RESERVED_STRINGS">Using mom's &quot;reserved&quot; strings in header/footer definitions</a>
+		    <br>(title, author, etc.)
+	</ul>
+	<li><a href="#HEADERS_AND_FOOTERS">HEADERS_AND_FOOTERS</a> --
+		putting both headers and footers on document pages
+	<li><a href="#HEADFOOT_CONTROL">Header and footer control macros</a>
+</ul>
+
 <p>
 The following are the basic macros for turning
 <a href="definitions.html#TERMS_HEADER">headers</a>
@@ -279,13 +301,21 @@ unless you have requested a different top margin (with
 prior to
 <a href="docprocessing.html#START">START</a>.
 <p>
-Please note that headers and footers are mutually exclusive.  If
+Please note that
+<a href="#HEADERS">HEADERS</a>
+and
+<a href="#FOOTERS">FOOTERS</a>
+are mutually exclusive.  If
 headers are on, footers (but NOT bottom-of-page numbering) are
 automatically turned off.  Equally, if footers are on, headers
 (but NOT top-of-page numbering) are automatically turned off.  Thus, if
 you'd prefer footers in a document, you need only invoke
 <a href="#FOOTERS">FOOTERS</a>;
 there's no need to turn headers off first.
+<p>
+If you need both headers and footers, there's a special macro,
+<a href="#HEADERS_AND_FOOTERS">HEADERS_AND_FOOTERS</a>,
+that allows you to set this up.
 <p>
 
 <!---HEADERS--->
@@ -491,7 +521,7 @@ To include the current page number in the string, use the
 <strong>\*[PAGE#]</strong> inline.
 <br>
 
-<h3><u>*Padding the HEADER_RECTO/HEADER_VERSO string</u></h3>
+<a name="PADDING_HDRFTR"><h3><u>*Padding the HEADER_RECTO/HEADER_VERSO string</u></h3></a>
 You can &quot;pad&quot; the header-recto string, a convenience you'll
 appreciate in circumstances such as the following.
 <p>
@@ -529,8 +559,8 @@ margins.
 The situation depicted above is accomplished like this:
 <p>
 <pre>
-	.HEADER_RECTO LEFT "^\*[PAGE#]#Title^"
-	.HEADER_VERSO LEFT "^Author#\*[PAGE#]^"
+	.HEADER_RECTO LEFT "^\*[PAGE#]#\E*[$TITLE]^"
+	.HEADER_VERSO LEFT "^\E*[$AUTHOR]#\*[PAGE#]^"
 </pre>
 
 Note that <strong>mom</strong> does not interpret the <kbd>#</kbd>
@@ -557,6 +587,169 @@ have a literal pound sign in your <strong>HEADER_RECTO</strong>
 string, use the escape sequence for the pound sign
 (<kbd>\[sh]</kbd>) where you want the pound sign to go.
 <p>
+
+<!---HDRFTR_RECTOVERSO--->
+
+<hr width="66%" align="left">
+<p>
+<a name="HEADERS_AND_FOOTERS"></a>
+Macro: <strong>HEADERS_AND_FOOTERS </strong>
+<br>
+Invocation:
+<pre>
+	.HEADERS_AND_FOOTERS \
+	&lt;L | C | R&gt; "&lt;recto header string&gt;" \
+	&lt;L | C | R&gt; "&lt;recto footer string&gt;" \
+	&lt;L | C | R&gt; "&lt;verso header string&gt;" \
+	&lt;L | C | R&gt; "&lt;verso footer string&gt;"
+
+or
+
+	.HEADERS_AND_FOOTERS &lt;anything&gt;
+</pre>
+
+<p>
+<strong>HEADERS_AND_FOOTERS</strong> allows you to have both
+headers and footers on the same page.
+<p>
+Unlike the macros,
+<a href="#HEADERS">HEADERS</a>
+and
+<a href="#FOOTERS">FOOTERS</a>,
+<strong>HEADERS_AND_FOOTERS</strong> requires that you supply
+the information you want in the headers and footers yourself.
+<strong>Mom</strong> does no automatic generation of things like
+the title and the author in headers and footers when you're using
+<strong>HEADERS_AND_FOOTERS</strong>.  Furthermore, style
+changes--family, font, pointsize, colour, capitalization, etc--are
+entirely your responsibility and must be made with
+<a href="definitions.html#TERMS_INLINES">inline escapes</a>
+in the arguments passed to <kbd>&quot;&lt;recto
+header string&gt;&quot;</kbd>, <kbd>&quot;&lt;recto
+footer string&gt;&quot;</kbd>, etc.  By default,
+<strong>mom</strong> sets the headers and footers created with
+<strong>HEADERS_AND_FOOTERS</strong> in the same family, font,
+point size, capitalization style and colour as
+<a href="definitions.html#TERMS_RUNNING">running text</a>.
+<p>
+The manner of entering what you want is identical to the way you
+input
+<a href="#USERDEF_HDRFTR">single string headers and footers</a>.
+I suggest reading up on them, as well as looking at the entries,
+<a href="#HDRFTR_RECTOVERSO">HEADER_RECTO</a>
+and
+<a href="#RESERVED_STRINGS">Using mom's &quot;reserved&quot; strings in header/footer definitions</a>.
+<p>
+The same
+<a href="#PADDING_HDRFTR">padding mechanism</a>
+used in <strong>HEADER_RECTO</strong> and
+<strong>HEADER_VERSO</strong> is available in the
+<a href="definitions.html#TERMS_STRINGARGUMENT">string arguments</a>
+passed to
+<strong>HEADERS_AND_FOOTERS</strong>, allowing you to simulate
+two- and three-part headers and footers.
+<p>
+<strong>L | C | R</strong> in the arguments to
+<strong>HEADERS_AND_FOOTERS</strong> refers to whether you want
+the specific header or footer set flush left, centered, or flush
+right.  (You can also use the longer forms, <strong>LEFT</strong>,
+<strong>CENTER</strong> and <strong>RIGHT</strong>.)  The
+string you give afterwards is whatever text you want, including
+<strong>mom</strong>'s
+<a href="#RESERVED_STRINGS">&quot;reserved&quot; strings</a>,
+and whatever
+<a href="definitions.html#TERMS_INLINES">inline escapes</a>
+you need to change things like family and font, pointsize, colour,
+etc. as you go along.
+<p>
+Note the backslashes in the invocation, above.  Every set of
+arguments given this way to <strong>HEADERS_AND_FOOTERS</strong>
+<strong><em>except the last one</em></strong> requires a backslash
+after it.  The use of backslashes isn't required if you want to put
+the entire argument list on the same (very long!) line as the
+macro itself; I recommend sticking to the style shown above to keep
+things manageable.
+<p>
+If you want to disable having both headers and footers on
+the same page, invoke <strong>HEADERS_AND_FOOTERS</strong>
+with any argument you want (e.g. <strong>OFF, QUIT, END,
+X...</strong>). <strong>Mom</strong> will restore her default
+behaviour of setting automatically generated page headers,
+with the page number, centered, at the bottom of the page.  If
+you would prefer footers instead of headers after turning
+<strong>HEADERS_AND_FOOTERS</strong> off, just invoke
+<a href="#FOOTERS">FOOTERS</a>
+afterwards.
+<br>
+<h3>Some examples</h3>
+<h4>Example 1</h4>
+<br>
+If you want the same header and footer on every page,
+here's how you'd do it.
+<p>
+<pre>
+	.HEADERS_AND_FOOTERS \          +-----------------------+
+	C "\E*[$TITLE]" \               |         Title         |
+	L "^\E*[$AUTHOR]#\*[PAGE#]^"    |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                |                       |
+	                                | Author          Pg. # |
+	                                +-----------------------+
+</pre>
+
+<kbd>\E*[$TITLE]</kbd> and <kbd>\E*[$AUTHOR]</kbd> will print the
+strings you pass to
+<a href="docprocessing.html#TITLE">TITLE</a>
+and
+<a href="docprocessing.html#AUTHOR">AUTHOR</a>;
+<kbd>\*[PAGE#]</kbd> is how you include the page number in a header
+or footer string.  (For a list of special strings you can use in headers
+and footers, see
+<a href="#RESERVED_STRINGS">here</a>.)
+<p>
+You don't have to use these special strings.  You can type in
+anything you like.  I've only used them here to show that they're
+available.
+<br>
+<h4>Example 2</h4>
+<p>
+If you want different headers and footers on recto/verso pages,
+here's a recipe:
+<p>
+<pre>
+	.HEADERS_AND_FOOTERS \
+	C "BOOK TITLE" \
+	L "^\*[PAGE#]#\E*[$AUTHOR]^" \
+	C "Story Title" \
+	L "^\E*[$AUTHOR]#\*[PAGE#]^"
+
+	+-----------------------+     +------------------------+
+	|      BOOK TITLE       |     |       Story Title      |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	|                       |     |                        |
+	| Pg. #          Author |     | Author            Pg.# |
+	+-----------------------+     +------------------------+
+</pre>
+<br>
 <hr>
 
 <a name="HEADFOOT_CONTROL">
@@ -579,9 +772,12 @@ can be designed to your own specifications.
 		<li><a href="#HDRFTR_LEFT">HEADER_LEFT</a>
 		<li><a href="#HDRFTR_CENTER">HEADER_CENTER</a>
 		<ul>
-			<li><a href="#HDRFTR_CENTER_PAD">HEADER_CENTER_PAD</a> -- stick some space left of right of the centre string
+			<li><a href="#HDRFTR_CENTER_PAD">HEADER_CENTER_PAD</a> -- stick some space left or right of the centre string
 		</ul>
 		<li><a href="#HDRFTR_RIGHT">HEADER_RIGHT</a>
+		<li><a href="RESERVED_STRINGS">Using mom's &quot;reserved&quot; strings in header/footer definitions</a>
+		    <br>(e.g. \E*[$TITLE] when you want the title, \E*[$AUTHOR]
+		    when you want the author, etc.)
 		<li><a href="#PAGE_NUMBER_SYMBOL">Replacing header left, centre or right with the page number</a>
 		<li><a href="#PAGE_NUMBER_INCL">Including the  page number in header left, centre or right</a>
 	</ul>
@@ -722,16 +918,19 @@ In scenarios like the above, <strong>mom</strong> has a number of
 &quot;reserved&quot; strings that you can plug into the
 <strong>HEADER_LEFT, _CENTER</strong> and <strong>_RIGHT</strong>
 macros.  They are:
-<p>
 <pre>
-	\*[$TITLE]          -- the argument passed to .TITLE
-	\*[$DOCTITLE]       -- the argument passed to .DOCTITLE
-	\*[$AUTHOR_1]       -- the first argument passed to .AUTHOR
-	\*[$CHAPTER_STRING] -- the argument passed to .CHAPTER_STRING,
-	                       if invoked, otherwise, "Chapter"
-	\*[$CHAPTER]        -- the argument (typically a number) passed
-	                       to .CHAPTER
-	\*[$CHAPTER_TITLE]  -- the argument passed to .CHAPTER_TITLE
+	\E*[$TITLE]          -- the current argument passed to .TITLE
+	\E*[$DOCTITLE]       -- the current argument passed to .DOCTITLE
+	\E*[$AUTHOR]         -- the current first argument passed to .AUTHOR
+	\E*[$AUTHOR_1...9]   -- the current arguments passed to .AUTHOR
+	\E*[$AUTHORS]        -- a comma-separated concatenated string
+	                        of all the current arguments passed to .AUTHOR
+	                        (i.e. a list of authors)
+	\E*[$CHAPTER_STRING] -- the current argument passed to .CHAPTER_STRING,
+	                        if invoked, otherwise, "Chapter"
+	\E*[$CHAPTER]        -- the current argument (typically a number) passed
+	                        to .CHAPTER
+	\E*[$CHAPTER_TITLE]  -- the current argument passed to .CHAPTER_TITLE
 </pre>
 
 Returning to the scenario above, first, you'd define a centre
@@ -756,10 +955,10 @@ Then, you'd prepare <strong>mom</strong> for the next document:
 </pre>
 
 Then, you'd redefine the header centre string using the reserved
-string \*[$TITLE], like this:
+string <kbd>\E*[$TITLE]</kbd>, like this:
 <p>
 <pre>
-	.HEADER_CENTER "\*[$TITLE]"
+	.HEADER_CENTER "\E*[$TITLE]"
 </pre>
 
 And last, you'd do:
@@ -778,7 +977,7 @@ position.  Here's the whole routine again:
 	.COLLATE
 	.TITLE         "New Doc Title"
 	.AUTHOR        "Josephine Blough"
-	.HEADER_CENTER "\*[$TITLE]"
+	.HEADER_CENTER "\E*[$TITLE]"
 	.START
 </pre>
 
@@ -786,7 +985,7 @@ If need be, you can concatenate the strings, as in the following
 example.
 <p>
 <pre>
-	.HEADER_CENTER "\*[$CHAPTER_STRING] \*[$CHAPTER]"
+	.HEADER_CENTER "\E*[$CHAPTER_STRING] \E*[$CHAPTER]"
 </pre>
 
 which, assuming a <strong>.CHAPTER_STRING</strong> of
