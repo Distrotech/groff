@@ -39,7 +39,10 @@ MAN7=\
   groff_mom.n
 
 NORMALFILES=\
-  mom.tmac \
+  mom.tmac
+
+# These files are processed with `strip.sed'.
+STRIPFILES=\
   om.tmac
 
 HTMLDOCFILES=\
@@ -82,6 +85,7 @@ EXAMPLEFILES_=`echo $(EXAMPLEFILES) | sed 's|examples/||g'`
 PROCESSEDEXAMPLEFILES_=`echo $(PROCESSEDEXAMPLEFILES) | sed 's|examples/||g'`
 
 CLEANADD=\
+  stamp-strip \
   penguin.ps \
   $(PROCESSEDEXAMPLEFILES) \
   examples/stamp
@@ -91,7 +95,7 @@ CLEANADD=\
 	$(GROFF) -Tps -mom $< >$@
 
 
-all: $(PROCESSEDEXAMPLEFILES)
+all: stamp-strip $(PROCESSEDEXAMPLEFILES)
 
 $(PROCESSEDEXAMPLEFILES): penguin.ps examples/stamp
 
@@ -102,12 +106,16 @@ examples/stamp:
 	test -d examples || $(mkinstalldirs) examples
 	touch $@
 
-install_data: $(NORMALFILES) $(HTMLDOCFILES) \
+install_data: stamp-strip $(NORMALFILES) $(HTMLDOCFILES) \
               $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES)
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(NORMALFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	  $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(tmacdir)/$$f; \
+	done
+	for f in $(STRIPFILES); do \
+	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
+	  $(INSTALL_DATA) $$f-s $(DESTDIR)$(tmacdir)/$$f; \
 	done
 	-test -d $(DESTDIR)$(htmldocdir)/mom \
 	  || $(mkinstalldirs) $(DESTDIR)$(htmldocdir)/mom
@@ -128,8 +136,15 @@ install_data: $(NORMALFILES) $(HTMLDOCFILES) \
 	  $(INSTALL_DATA) examples/$$f $(DESTDIR)$(exampledir)/mom/$$f; \
 	done
 
+stamp-strip: $(STRIPFILES)
+	for f in $(STRIPFILES); do \
+	  rm -f $$f-s; \
+	  sed -f $(top_srcdir)/tmac/strip.sed $(srcdir)/$$f >$$f-s; \
+	done
+	touch $@
+
 uninstall_sub:
-	-for f in $(NORMALFILES); do \
+	-for f in $(NORMALFILES) $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	done
 	-for f in $(HTMLDOCFILES_); do \
