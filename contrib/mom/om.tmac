@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.4-a
+Version 1.4-b
 -------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
@@ -4687,10 +4687,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       el \{ .ENDNOTE_TITLE "\\*[$TITLE]" \}
 .    \}
-.    if !d$EN_TITLE_FAM          \{ .ENDNOTE_TITLE_FAMILY \\*[$EN_FAM]  \}
-.    if !d$EN_TITLE_QUAD         \{ .ENDNOTE_TITLE_QUAD LEFT            \}
-.    if !r#EN_TITLE_UNDERSCORE   \{ .ENDNOTE_TITLE_UNDERSCORE           \}
-.    if !d$EN_NUMBER_FAM         \{ .ENDNOTE_NUMBER_FAMILY \\*[$EN_FAM] \}
+.    if !d$EN_TITLE_FAM          \{ .ENDNOTE_TITLE_FAMILY \\*[$EN_FAM]      \}
+.    if !d$EN_TITLE_QUAD         \{ .ENDNOTE_TITLE_QUAD LEFT                \}
+.    if !r#EN_TITLE_UNDERSCORE   \{ .ENDNOTE_TITLE_UNDERSCORE               \}
+.    if !d$EN_NUMBER_FAM         \{ .ENDNOTE_NUMBER_FAMILY \\*[$EN_FAM]     \}
+.    if !d$EN_LN_FAM             \{ .ENDNOTE_LINENUMBER_FAMILY \\*[$EN_FAM] \}
 .    if !r#EN_NUMBERS_ALIGN_LEFT \{\
 .       if !r#EN_NUMBERS_ALIGN_RIGHT \{ .ENDNOTE_NUMBERS_ALIGN_RIGHT 2  \}
 .    \}
@@ -4748,9 +4749,13 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if \\n[#UNDERLINE_QUOTES]=1 \{ .UNDERLINE_QUOTES         \}
 .       if \\n[#UNDERLINE_QUOTES]=0 \{ .UNDERLINE_QUOTES OFF     \}
 .\" +Quotes and blockquotes
-.       if !r#Q_OFFSET_VALUE        \{ .QUOTE_INDENT      2      \}
+.       if !r#Q_OFFSET_VALUE \{\
+.          if '\\*[$Q_OFFSET_VALUE]'' \{ .QUOTE_INDENT 2 \}
+.       \}
 .\" +Epigraphs
-.       if !r#EPI_OFFSET_VALUE      \{ .EPIGRAPH_INDENT   2      \}
+.       if !r#EPI_OFFSET_VALUE \{\
+.          if '\\*[$EPI_OFFSET_VALUE]'' \{ .EPIGRAPH_INDENT 2 \}
+.       \}
 .\" +Linebreaks
 .       if !d$LINEBREAK_CHAR        \{ .LINEBREAK_CHAR    * 3 2p \}
 .\" +Footnotes
@@ -4933,7 +4938,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d$QUOTE_FAM                 \{ .QUOTE_FAMILY       \\*[$DOC_FAM]    \}
 .       if !d$QUOTE_FT                  \{ .QUOTE_FONT         I                \}
 .       if !d$QUOTE_SIZE_CHANGE         \{ .QUOTE_SIZE         +0               \}
-.       if !r#Q_OFFSET_VALUE            \{ .QUOTE_INDENT       3                \}
+.       if !r#Q_OFFSET_VALUE \{\
+.          if '\\*[$Q_OFFSET_VALUE]'' \{ .QUOTE_INDENT 3 \}
+.       \}
 .\" +Blockquotes
 .\"  Note: the leading for quotes and blockquotes is set after .DEFAULTS in START
 .       if !d$BQUOTE_FAM                \{ .BLOCKQUOTE_FAMILY  \\*[$DOC_FAM]    \}
@@ -4946,7 +4953,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d$EPI_SIZE_CHANGE           \{ .EPIGRAPH_SIZE      -1.5             \}
 .       if !r#EPI_AUTOLEAD              \{ .EPIGRAPH_AUTOLEAD  2                \}
 .       if !d$EPI_QUAD                  \{ .EPIGRAPH_QUAD      \\*[$DOC_QUAD]   \}
-.       if !r#EPI_OFFSET_VALUE          \{ .EPIGRAPH_INDENT    3                \}
+.       if !r#EPI_OFFSET_VALUE \{\
+.          if '\\*[$EPI_OFFSET_VALUE]'' \{ .EPIGRAPH_INDENT 3 \}
+.       \}
 .\" +Linebreaks
 .       if !d$LINEBREAK_CHAR            \{ .LINEBREAK_CHAR     * 3 3p           \}
 .\" +Footnotes
@@ -4961,6 +4970,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if !d$EN_TITLE_FT               \{ .ENDNOTE_TITLE_FONT  B               \}
 .       if !d$EN_TITLE_SIZE_CHANGE      \{ .ENDNOTE_TITLE_SIZE  +0              \}
 .       if !d$EN_NUMBER_FT              \{ .ENDNOTE_NUMBER_FONT B               \}
+.       if !d$EN_LN_FT                  \{ .ENDNOTE_LINENUMBER_FONT R           \}
 .       if !d$EN_NUMBER_SIZE_CHANGE     \{ .ENDNOTE_NUMBER_SIZE +0              \}
 .       if !r#EN_PP_INDENT              \{ .ENDNOTE_PARA_INDENT 1.5m            \}
 .\" +Bibliography
@@ -6630,17 +6640,20 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    br
 .    ds $DOC_FAM       \\$1
 .    ds $FAMILY        \\*[$DOC_FAM]
-.    TITLE_FAMILY      \\*[$DOC_FAM]
-.    SUBTITLE_FAMILY   \\*[$DOC_FAM]
 .    AUTHOR_FAMILY     \\*[$DOC_FAM]
-.    DOCTYPE_FAMILY    \\*[$DOC_FAM]
-.    HEAD_FAMILY       \\*[$DOC_FAM]
-.    SUBHEAD_FAMILY    \\*[$DOC_FAM]
-.    QUOTE_FAMILY      \\*[$DOC_FAM]
 .    BLOCKQUOTE_FAMILY \\*[$DOC_FAM]
+.    DOCHEADER_FAMILY  \\*[$DOC_FAM]
+.    DOCTYPE_FAMILY    \\*[$DOC_FAM]
 .    EPIGRAPH_FAMILY   \\*[$DOC_FAM]
-.    HDRFTR_FAMILY     \\*[$DOC_FAM]
 .    FOOTNOTE_FAMILY   \\*[$DOC_FAM]
+.    HDRFTR_FAMILY     \\*[$DOC_FAM]
+.    HEAD_FAMILY       \\*[$DOC_FAM]
+.    LINENUMBER_FAMILY \\*[$DOC_FAM]
+.    PARAHEAD_FAMILY   \\*[$DOC_FAM]
+.    QUOTE_FAMILY      \\*[$DOC_FAM]
+.    SUBHEAD_FAMILY    \\*[$DOC_FAM]
+.    SUBTITLE_FAMILY   \\*[$DOC_FAM]
+.    TITLE_FAMILY      \\*[$DOC_FAM]
 .END
 \#
 \#
@@ -6877,7 +6890,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Default is 2 for TYPEWRITE, 3 for TYPESET.
 \#
 .MAC EPIGRAPH_INDENT END
-.    nr #EPI_OFFSET_VALUE \\$1
+.    if r#EPI_OFFSET_VALUE        \{ .rr #EPI_OFFSET_VALUE \}
+.    if !'\\*[$EPI_OFFSET_VALUE]'' \{ .rm $EPI_OFFSET_VALUE \}
+.    ds $EVAL_EI_ARG \\$1
+.    substring $EVAL_EI_ARG -1
+.    ie \B'\\*[$EVAL_EI_ARG]' \{\
+.       nr #EPI_OFFSET_VALUE \\$1
+.    \}
+.    el \{\
+.       ds $EPI_OFFSET_VALUE \\$1
+.    \}
+.    rm $EVAL_EI_ARG
 .END
 \#
 \#
@@ -6980,19 +7003,39 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ev EPIGRAPH
 .          ie \\n[#START] \{\
 .             ie \\n[#COLUMNS] \{\
-.                ll \\n[#L_LENGTH_FOR_EPI]u-(\\n[#PP_INDENT]u*(\\n[#EPI_OFFSET_VALUE]u*2u))
+.                ie r#EPI_OFFSET_VALUE \{\
+.                   ll \\n[#L_LENGTH_FOR_EPI]u-(\\n[#PP_INDENT]u*(\\n[#EPI_OFFSET_VALUE]u*2u))
+.                \}
+.                el \{\
+.                   ll \\n[#L_LENGTH_FOR_EPI]u-(\\*[$EPI_OFFSET_VALUE]u*2u)
+.                \}
 .                ta \\n(.lu
 .             \}
 .             el \{\
-.                ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#EPI_OFFSET_VALUE]u*2u))
+.                ie r#EPI_OFFSET_VALUE \{\
+.                   ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#EPI_OFFSET_VALUE]u*2u))
+.                \}
+.                el \{\
+.                   ll \\n[#L_LENGTH]u-(\\*[$EPI_OFFSET_VALUE]*2u)
+.                \}
 .                ta \\n(.lu
 .             \}
 .          \}
 .          el \{\
-.             ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#EPI_OFFSET_VALUE]u*2u))
+.             ie r#EPI_OFFSET_VALUE \{\
+.                ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#EPI_OFFSET_VALUE]u*2u))
+.             \}
+.             el \{\
+.                ll \\n[#L_LENGTH]u-(\\*[$EPI_OFFSET_VALUE]*2u)
+.             \}
 .             ta \\n(.lu
 .             if \\n[#COLUMNS] \{\
-.                ll \\n[#COL_L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#EPI_OFFSET_VALUE]u*2u))
+.                ie r#EPI_OFFSET_VALUE \{\
+.                   ll \\n[#COL_L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#EPI_OFFSET_VALUE]u*2u))
+.                \}
+.                el \{\
+.                   ll \\n[#COL_L_LENGTH]u-(\\*[$EPI_OFFSET_VALUE]*2u)
+.                \}
 .                ta \\n(.lu
 .             \}
 .             CHECK_INDENT
@@ -7138,9 +7181,15 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if \\n[#EPIGRAPH]=2 \{\
-.       nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.       ie r#EPI_OFFSET_VALUE \{\
+.          nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.       \}
+.       el \{ .nr #EPI_OFFSET \\n[#L_MARGIN]+\\*[$EPI_OFFSET_VALUE] \}
 .       if \\n[#COLUMNS] \{\
-.          nr #EPI_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.          ie r#EPI_OFFSET_VALUE \{\
+.             nr #EPI_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.          \}
+.          el \{ .nr #EPI_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+\\*[$EPI_OFFSET_VALUE] \}
 .       \}
 .       po \\n[#EPI_OFFSET]u
 .    \}
@@ -7944,9 +7993,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    nr #PAGENUMBER \\n%+\\n[#PAGE_NUM_ADJ]
 .    fc ^ #
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       FAMILY  \\*[$HDRFTR_FAM]
-.       FT      R
-.       PT_SIZE \\n[#HDRFTR_PT_SIZE]u
+.       fam  \\*[$HDRFTR_FAM]
+.       ft      R
+.       ps \\n[#HDRFTR_PT_SIZE]u
 .       if \\n[#HDRFTR_COLOR]=1 \{\
 .          nf
 .          COLOR \\*[$HDRFTR_COLOR]
@@ -8176,7 +8225,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#QUOTE] \{\
 .       ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .       el \{\
-.          nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.          ie r#Q_OFFSET_VALUE \{\
+.             nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.          \}
+.          el \{\
+.             nr #Q_OFFSET \\n[#L_MARGIN]+\\*[$Q_OFFSET_VALUE]
+.          \}
 .          po \\n[#Q_OFFSET]u
 .       \}
 .       if \\n[#PRINTSTYLE]=2 \{ .ALD \\n[#Q_LEAD_DIFF]u \}
@@ -8184,7 +8238,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if \\n[#EPIGRAPH] \{\
 .       ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .       el \{\
-.          nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.          ie r#EPI_OFFSET_VALUE \{\
+.             nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.          \}
+.          el \{\
+.             nr #EPI_OFFSET \\n[#L_MARGIN]+\\*[$EPI_OFFSET_VALUE]
+.          \}
 .          po \\n[#EPI_OFFSET]u
 .       \}
 .    \}
@@ -8212,14 +8271,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ll \\n[#COL_L_LENGTH]u
 .       ta \\n(.lu
 .       if \\n[#QUOTE] \{\
-.          po +(\\n[#PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u)
+.          ie r#Q_OFFSET_VALUE \{\
+.             po +(\\n[#PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u)
+.          \}
+.          el \{\
+.             po +\\*[$Q_OFFSET_VALUE]
+.          \}
 .       \}
 .       if \\n[#EPIGRAPH] \{\
 .          if \\n[#EPI_ACTIVE] \{\
 .             ie \\n[#EPI_FITS] \{ . \}
 .             el \{ .nr dc -\\n[#EPI_LEAD_DIFF] \}
 .          \}
-.          po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u+(\\n[#PP_INDENT]u*\\n[#EPI_OFFSET_VALUE]u)
+.          ie r#EPI_OFFSET_VALUE \{\
+.             po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u+(\\n[#PP_INDENT]u*\\n[#EPI_OFFSET_VALUE]u)
+.          \}
+.          el \{\
+.             po \\n[#COL_\\n[#COL_NUM]_L_MARGIN]u+\\*[$EPI_OFFSET_VALUE]
+.          \}
 .       \}
 .    \}
 .    if \\n[#RESET_FN_COUNTERS]=1 \{\
@@ -8425,16 +8494,40 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if \\n[#QUOTE] \{\
 .             ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .             el \{\
-.                nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
-.                if \\n[#COLUMNS] \{ .nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE]) \}
+.                ie r#Q_OFFSET_VALUE \{\
+.                   nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.                \}
+.                el \{\
+.                   nr #Q_OFFSET \\n[#L_MARGIN]+\\*[$Q_OFFSET_VALUE]
+.                \}
+.                if \\n[#COLUMNS] \{\
+.                   ie r#Q_OFFSET_VALUE \{\
+.                      nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.                   \}
+.                   el \{\
+.                      nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+\\*[$Q_OFFSET_VALUE]
+.                   \}
+.                \}
 .                po \\n[#Q_OFFSET]u
 .             \}
 .          \}
 .          if \\n[#EPIGRAPH] \{\
 .             ie \\n[#TAB_ACTIVE] \{ .TAB \\n[#CURRENT_TAB] \}
 .             el \{\
-.                nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
-.                if \\n[#COLUMNS] \{ .nr #EPI_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE]) \}
+.                ie r#EPI_OFFSET_VALUE \{\
+.                   nr #EPI_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.                \}
+.                el \{\
+.                   nr #EPI_OFFSET \\n[#L_MARGIN]+\\*[$EPI_OFFSET_VALUE]
+.                \}
+.                if \\n[#COLUMNS] \{\
+.                   ie r#EPI_OFFSET_VALUE \{\
+.                      nr #EPI_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#EPI_OFFSET_VALUE])
+.                   \}
+.                   el \{\
+.                      nr #EPI_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+\\*[$EPI_OFFSET_VALUE]
+.                   \}
+.                \}
 .                po \\n[#EPI_OFFSET]u
 .             \}
 .          \}
@@ -8489,11 +8582,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       TYPEWRITER
 .    \}
 .    if \\n[#PRINT_STYLE]=2 \{\
-.       FAMILY  \\*[$HDRFTR_FAM]
-.       FT      R
-.       PT_SIZE \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
+.       fam  \\*[$HDRFTR_FAM]
+.       ft      R
+.       ps \\n[#DOC_PT_SIZE]u\\*[$HDRFTR_SIZE_CHANGE]
 .    \}
-.    LS \\n[#SAVED_LEAD]u
+.    vs \\n[#SAVED_LEAD]u
 .    nr #HDRFTR_PT_SIZE \\n[#PT_SIZE]
 .    if \\n[#CAPS_ON] \{\
 .       nr #CAPS_WAS_ON 1
@@ -9858,14 +9951,28 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# QUOTE INDENT
 \# ------------
 \# *Argument:
-\#   <value by which to multiply PP_INDENT for indented quoted text>
+\#   <integer> | <integer with unit of measure appended>
 \# *Function:
 \#   Creates or modifies register #Q_OFFSET_VALUE.
 \# *Notes:
-\#   Default is 3 for typeset; 2 for typewrite
+\#   If just an integer given, value by which to multiply PARA_INDENT
+\#   to get quote indent.  If integer with a unit of measure appended,
+\#   absolute value of quote indent.
+\#
+\#  Default is 3 for typeset; 2 for typewrite.
 \#
 .MAC QUOTE_INDENT END
-.    nr #Q_OFFSET_VALUE \\$1
+.    if r#Q_OFFSET_VALUE         \{ .rr #Q_OFFSET_VALUE \}
+.    if !'\\*[$Q_OFFSET_VALUE]'' \{ .rm $Q_OFFSET_VALUE \}
+.    ds $EVAL_QI_ARG \\$1
+.    substring $EVAL_QI_ARG -1
+.    ie \B'\\*[$EVAL_QI_ARG]' \{\
+.       nr #Q_OFFSET_VALUE \\$1
+.    \}
+.    el \{\
+.       ds $Q_OFFSET_VALUE \\$1
+.    \}
+.    rm $EVAL_QI_ARG
 .END
 \#
 \#
@@ -9914,6 +10021,17 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   diverted so its depth can be measured (in DO_QUOTE) for determining
 \#   how much space to put before and after.
 \#
+\# QUOTE
+\# -----
+\# *Arguments:
+\#   <none> | <anything>
+\# *Function:
+\#   Indents quoted text on a line for line basis, or turns QUOTE off.
+\# *Notes:
+\#   Owing to the need to bottom align TYPESET pages, quoted text gets
+\#   diverted so its depth can be measured (in DO_QUOTE) for determining
+\#   how much space to put before and after.
+\#
 .MAC QUOTE END
 .    br
 .    if \\n[#LINENUMBERS]=1 \{\
@@ -9929,7 +10047,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #IN_DIVER 1
 .       nr #QUOTE 1
 .       di P_QUOTE
-.       ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u)
+.       ie r#Q_OFFSET_VALUE \{\
+.          ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u)
+.       \}
+.       el \{ .ll \\n[#L_LENGTH]u-\\*[$Q_OFFSET_VALUE] \}
 .       if \\n[#LINENUMBERS]=2 \{\
 .          if \\n[#QUOTE_LN]=1 \{\
 .             nm \\n(ln "" \\*[$Q_LN_GUTTER] -3-\\*[$Q_LN_GUTTER]
@@ -9937,7 +10058,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       ta \\n(.lu
 .       if \\n[#COLUMNS] \{\
-.          ll \\n[#COL_L_LENGTH]u-(\\n[#PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u)
+.          ie r#Q_OFFSET_VALUE \{\
+.             ll \\n[#COL_L_LENGTH]u-(\\n[#PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u)
+.          \}
+.          el \{\
+.             ll \\n[#COL_L_LENGTH]u-\\*[$Q_OFFSET_VALUE]
+.          \}
 .          ta \\n(.lu
 .       \}
 .       if \\n[#PRINT_STYLE]=1 \{\
@@ -10068,25 +10194,53 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       nr #PP_STYLE 2
 .       nr #Q_PP     0
 .       di B_QUOTE
-.       ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.       ie r#Q_OFFSET_VALUE \{\
+.          ll \\n[#L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.       \}
+.       el \{ .ll \\n[#L_LENGTH]u-(\\*[$Q_OFFSET_VALUE]*2u) \}
 .       if \\n[#ENDNOTE] \{\
 .          if \\n[#EN_NUMBERS_ALIGN_RIGHT] \{\
-.             ll \\n[#RESET_L_LENGTH]u-\\n[#EN_TEXT_INDENT]u-(\\n[#EN_PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.             ie r#Q_OFFSET_VALUE \{\
+.                ll \\n[#RESET_L_LENGTH]u-\\n[#EN_TEXT_INDENT]u-(\\n[#EN_PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.             \}
+.             el \{\
+.                ll \\n[#RESET_L_LENGTH]u-\\n[#EN_TEXT_INDENT]u-(\\*[$Q_OFFSET_VALUE]*2u)
+.             \}
 .          \}
 .          if \\n[#EN_NUMBERS_ALIGN_LEFT] \{\
-.             ll \\n[#L_LENGTH]u-(\\n[#EN_PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.             ie r#Q_OFFSET_VALUE \{\
+.                ll \\n[#L_LENGTH]u-(\\n[#EN_PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.             \}
+.             el \{\
+.                ll \\n[#L_LENGTH]u-(\\*[$Q_OFFSET_VALUE]u*2u)
+.             \}
 .          \}
 .       \}
 .       ta \\n(.lu
 .       CHECK_INDENT
 .       if \\n[#COLUMNS] \{\
-.          ll \\n[#COL_L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.          ie r#Q_OFFSET_VALUE \{\
+.             ll \\n[#COL_L_LENGTH]u-(\\n[#PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.          \}
+.          el \{\
+.             ll \\n[#COL_L_LENGTH]u-(\\*[$Q_OFFSET_VALUE]*2u)
+.          \}
 .          if \\n[#ENDNOTE] \{\
 .             if \\n[#EN_NUMBERS_ALIGN_RIGHT] \{\
-.                ll \\n[#RESET_L_LENGTH]u-\\n[#EN_TEXT_INDENT]u-(\\n[#EN_PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.                ie r#Q_OFFSET_VALUE \{\
+.                   ll \\n[#RESET_L_LENGTH]u-\\n[#EN_TEXT_INDENT]u-(\\n[#EN_PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.                \}
+.                el \{\
+.                   ll \\n[#RESET_L_LENGTH]u-\\n[#EN_TEXT_INDENT]u-(\\*[$Q_OFFSET_VALUE]*2u)
+.                \}
 .             \}
 .             if \\n[#EN_NUMBERS_ALIGN_LEFT] \{\
-.                ll \\n[#COL_L_LENGTH]u-(\\n[#EN_PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.                ie r#Q_OFFSET_VALUE \{\
+.                   ll \\n[#COL_L_LENGTH]u-(\\n[#EN_PP_INDENT]u*(\\n[#Q_OFFSET_VALUE]u*2u))
+.                \}
+.                el \{\
+.                   ll \\n[#COL_L_LENGTH]u-(\\*[$Q_OFFSET_VALUE]*2u)
+.                \}
 .             \}
 .          \}
 .          ta \\n(.lu
@@ -10230,13 +10384,20 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       \}
 .    \}
-.    nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.    ie r#Q_OFFSET_VALUE \{\
+.       nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.    \}
+.    el \{ .nr #Q_OFFSET \\n[#L_MARGIN]+\\*[$Q_OFFSET_VALUE] \}
 .    if \\n[#COLUMNS] \{\
-.       nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.       ie r#Q_OFFSET_VALUE \{\
+.          nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.       \}
+.       el \{ .nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+\\*[$Q_OFFSET_VALUE] \}
 .    \}
 .    if !\\n[#ENDNOTE] \{ .po \\n[#Q_OFFSET]u \}
 .    if \\n[#ENDNOTE] \{\
-.       in +\\n[#EN_PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u
+.       ie r#Q_OFFSET_VALUE \{ .in +\\n[#EN_PP_INDENT]u*\\n[#Q_OFFSET_VALUE]u \}
+.       el \{ .in +\\*[$Q_OFFSET_VALUE] \}
 .    \}
 .    ie \\n[#START]=1 \{\
 .       ie !\\n[#Q_LEAD_DIFF]<0 \{ .ALD \\n[#Q_SPACE_ADJ]u \}
@@ -10304,8 +10465,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if \\n[#LINENUMBERS]=2 \{\
 .       nr #LINENUMBERS 1
-.       ie \\n[#RESTORE_LN_NUM]=1 \{ .nm \\n[#NEXT_LN] \}
-.       el \{ .nm +0 \}
+.       if !\\n[#ENDNOTE] \{\
+.          ie \\n[#RESTORE_LN_NUM]=1 \{ .nm \\n[#NEXT_LN] \}
+.          el \{ .nm +0 \}
+.       \}
 .    \}
 .    if \\n[#ENDNOTE] \{ .nr #FULLSPACE_QUOTES \\n[#RESET_QUOTE_SPACING] \}
 .    if r#HEAD        \{ .rr #HEAD     \}
@@ -10470,8 +10633,20 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          el \{ .ALD \\n[#DOC_LEAD]u \}
 .       \}
 .    \}
-.    nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
-.    if \\n[#COLUMNS] \{ .nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE]) \}
+.    ie r#Q_OFFSET_VALUE \{\
+.       nr #Q_OFFSET \\n[#L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.    \}
+.    el \{\
+.       nr #Q_OFFSET \\n[#L_MARGIN]+\\*[$Q_OFFSET_VALUE]
+.    \}
+.    if \\n[#COLUMNS] \{\
+.       ie r#Q_OFFSET_VALUE \{\
+.          nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+(\\n[#PP_INDENT]*\\n[#Q_OFFSET_VALUE])
+.       \}
+.       el \{\
+.          nr #Q_OFFSET \\n[#COL_\\n[#COL_NUM]_L_MARGIN]+\\*[$Q_OFFSET_VALUE]
+.       \}
+.    \}
 .    po \\n[#Q_OFFSET]u
 .    if \\n[#QUOTE]=1 \{\
 .       nf
@@ -12549,6 +12724,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .          \}
 .       \}
 .       if \\n[#EN_MARKER_STYLE]=2 \{\
+.           ie r#EN_NUMBER \{ \\n+[#EN_NUMBER] \}
+.           el \{ .nr #EN_NUMBER 1 1 \}
 .          if !\\n[#LINENUMBERS] \{\
 .             tm1 "[mom]: Line numbering must be enabled with NUMBER_LINES when
 .             tm1 "       ENDNOTE_MARKER_STYLE is LINE.
@@ -12708,8 +12885,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 .    \}
 .    el \{\
-.       br
-.          in 0
+.       sp
+.       in 0
 .       if \\n[#EN_MARKER_STYLE]=2 \{\
 \!.        in 0
 .       \}

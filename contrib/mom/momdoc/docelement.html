@@ -178,14 +178,21 @@ one point greater than the footnote's point size), do
 </pre>
 
 <h3><a name="CONTROL_INDENTS">Indents</a></h3>
-Except for <strong>PARA_INDENT</strong>, the argument to the control
-macros that end
-in <strong>_INDENT</strong> is always a single digit (whole numbers
-only; no decimal fractions) with no
+Except for
+<a href="docelement.html#PARA_INDENT">PARA_INDENT</a>,
+the argument to the control
+macros that end in <strong>_INDENT</strong> can take either a single
+digit (whole numbers only; no decimal fractions) with <em>no</em>
 <a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
-appended to it.  The digit represents by how much you want the
-size of the paragraph first-line indent multiplied to achieve the
-correct indent for a particular tag.
+appended to it, or a digit <em>with</em> a unit of measure appended.
+<p>
+A digit with <em>no</em> unit of measure appended represents by
+how much you want your paragraph first-line indents (set with
+<strong>PARA_INDENT</strong>) multiplied to achieve the correct
+indent for a particular tag.
+<p>
+A digit <em>with</em> a unit of measure appended defines an
+absolute indent, relative to nothing.
 
 <h3>Quad/justification style</h3>
 Control macros that end in <strong>_QUAD</strong> take the same
@@ -373,11 +380,45 @@ See
 (The next two apply to &quot;block&quot; style epigraphs only)
 
 .EPIGRAPH_QUAD      default = same as paragraphs
-.EPIGRAPH_INDENT*   default = para indent x 3 (for typeset), x 2 (for typewrite)
+.EPIGRAPH_INDENT*   (see below)
 
 *Indent here refers to the indent from both the left and right margins
  that centres the block style epigraph on the page.
 </pre>
+
+<a name="EPIGRAPH_INDENT"><h3><u>Epigraph indent</u></h3></a>
+<p>
+Prior to version 1.4-b, <strong>mom</strong> allowed
+only the passing of an integer to the macro,
+<strong>.EPIGRAPH_INDENT</strong>.  The integer represented the
+amount by which to multiply the argument passed to
+<a href="#PARA_INDENT">PARA_INDENT</a>
+to arrive at an indent for block style epigraphs.
+<p>
+As of version 1.4-b, you can now append a
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
+to the argument passed to <strong>.EPIGRAPH_INDENT</strong>, thus
+setting an absolute indent, relative to nothing.  The old behaviour
+is still respected, though; in other words, if you pass
+<strong>.EPIGRAPH_INDENT</strong> an integer with no unit of measure
+appended, the integer represents the amount by which to multiply
+<strong>.PARA_INDENT</strong> to arrive at an indent for block
+style epigraphs.
+<p>
+Please note that if your <strong>PARA_INDENT</strong>
+is 0 (i.e. no indenting of the first line of
+paragraphs), you <em><strong>must</strong></em> set an
+<strong>EPIGRAPH_INDENT</strong> yourself, with a unit of measure
+appended to the argument. <strong>Mom</strong> has no default for
+<strong>EPIGRAPH_INDENT</strong> if paragraph first lines are not being
+indented.
+<p>
+The default value for <strong>.EPIGRAPH_INDENT</strong> is 3 (for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>)
+and 2 (for PRINTSTYLE
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>).
+<p>
+
 <hr>
 
 <!====================================================================>
@@ -679,10 +720,13 @@ paragraphs, <strong>PARA_INDENT</strong> also affects
 and
 <a href="#BLOCKQUOTE_INTRO">blockquotes</a>,
 whose overall indenting from the left and (where applicable) right
-margins is relative to <strong>PARA_INDENT</strong>.  Furthermore, the
-first-line indent of paragraphs within these document elements (as well
-as footnotes) is also relative to <strong>PARA_INDENT</strong> (always
-1/2 of <strong>PARA_INDENT)</strong>), hence they are also affected.
+margins is relative to <strong>PARA_INDENT</strong> if the
+<strong>_INDENT</strong> control macro for these tags has no
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
+appended to it.  Furthermore, the first-line indent of paragraphs
+within these document elements (as well as footnotes) is
+also relative to <strong>PARA_INDENT</strong> (always 1/2 of
+<strong>PARA_INDENT)</strong>), hence they are also affected.
 <p>
 <strong>Mom</strong>'s default <strong>PARA_INDENT</strong> is 2
 ems for
@@ -1563,10 +1607,44 @@ See
 .QUOTE_SIZE     default = +0 (i.e. same size as paragraph text)
 .QUOTE_AUTOLEAD default = none; leading of quotes is the same as paragraphs
 .QUOTE_COLOR    default = black
-<a name="QUOTE_INDENT">.QUOTE_INDENT   default = paragraph indent x 3 (typeset); x 2 (typewrite)</a>
-               (note that this macro also sets the indents (left and right)
-                for blockquotes)
+.QUOTE_INDENT   (see below)
 </pre>
+
+<a name="QUOTE_INDENT"><h3><u>Quote indent</u></h3></a>
+<p>
+Prior to version 1.4-b, <strong>mom</strong> allowed only the
+passing of an integer to the macro, <strong>.QUOTE_INDENT</strong>.
+The integer represented the amount by which to multiply the
+argument passed to
+<a href="#PARA_INDENT">PARA_INDENT</a>
+to arrive at an indent for quotes (and blockquotes).
+<p>
+As of version 1.4-b, you can now append a
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
+to the argument passed to <strong>.QUOTE_INDENT</strong>, thus 
+setting an absolute indent, relative to nothing.  The old behaviour
+is still respected, though; in other words, if you pass
+<strong>.QUOTE_INDENT</strong> an integer with no unit of measure
+appended, the integer represents the amount by which to multiply
+<strong>.PARA_INDENT</strong> to arrive at an indent for quotes (and
+blockquotes).
+<p>
+Please note that if your <strong>PARA_INDENT</strong> is 0
+(i.e. no indenting of the first line of paragraphs), you
+<em><strong>must</strong></em> set a <strong>QUOTE_INDENT</strong>
+yourself, with a unit of measure appended to the
+argument. <strong>Mom</strong> has no default for
+<strong>QUOTE_INDENT</strong> if paragraph first lines are not being
+indented.
+<p>
+The default value for <strong>.QUOTE_INDENT</strong> is 3 (for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>)
+and 2 (for PRINTSTYLE
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>).
+<p>
+<strong>NOTE: QUOTE_INDENT</strong> also sets the indent for
+<a href="#BLOCKQUOTE">BLOCKQUOTES</a>.
+<p>
 
 <a name="ALWAYS_FULLSPACE_QUOTES"><h3><u>2. Spacing above and below -- ALWAYS_FULLSPACE_QUOTES (typeset only)</u></h3></a>
 <p>
@@ -1718,9 +1796,44 @@ See
 .BLOCKQUOTE_AUTOLEAD default = none; leading of blockquotes is the same as paragraphs
 .BLOCKQUOTE_COLOR    default = black
 .BLOCKQUOTE_QUAD     default = left
-.BLOCKQUOTE_INDENT   default = paragraph indent x 3 (typeset); x 2 (typewrite)</a>
-                    (note that this macro also sets the left indent for quotes)
+.BLOCKQUOTE_INDENT   (see below)
 </pre>
+
+<a name="BLOCKQUOTE_INDENT"><h3><u>Blockquote indent</u></h3></a>
+<p>
+Prior to version 1.4-b, <strong>mom</strong> allowed
+only the passing of an integer to the macro,
+<strong>.BLOCKQUOTE_INDENT</strong>.  The integer represented the
+amount by which to multiply the argument passed to
+<a href="#PARA_INDENT">PARA_INDENT</a>
+to arrive at an indent for blockquotes (and quotes).
+<p>
+As of version 1.4-b, you can now append a
+<a href="definitions.html#TERMS_UNITOFMEASURE">unit of measure</a>
+to the argument passed to <strong>.BLOCKQUOTE_INDENT</strong>, thus 
+setting an absolute indent, relative to nothing.  The old behaviour
+is still respected, though; in other words, if you pass
+<strong>.BLOCKQUOTE_INDENT</strong> an integer with no unit of measure
+appended, the integer represents the amount by which to multiply
+<strong>.PARA_INDENT</strong> to arrive at an indent for blockquotes
+(and quotes).
+<p>
+The default value for <strong>.BLOCKQUOTE_INDENT</strong> is 3 (for
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPESET</a>)
+and 2 (for PRINTSTYLE
+<a href="docprocessing.html#PRINTSTYLE">PRINTSTYLE TYPEWRITE</a>).
+<p>
+Please note that if your <strong>PARA_INDENT</strong>
+is 0 (i.e. no indenting of the first line of
+paragraphs), you <em><strong>must</strong></em> set a
+<strong>BLOCKQUOTE_INDENT</strong> yourself, with a unit of measure
+appended to the argument. <strong>Mom</strong> has no default for
+<strong>BLOCKQUOTE_INDENT</strong> if paragraph first lines are not
+being indented.
+<p>
+<strong>NOTE: BLOCKQUOTE_INDENT</strong> also sets the indent for
+<a href="#QUOTE">QUOTES</a>.
+<p>
 
 <a name="ALWAYS_FULLSPACE_QUOTES"><h3><u>2. Spacing above and below -- ALWAYS_FULLSPACE_QUOTES (typeset only)</u></h3></a>
 <p>
@@ -3260,7 +3373,7 @@ is 2
 <a href="definitions.html#TERMS_PICASPOINTS">points</a>
 or less (e.g your
 <a href="definitions.html#TERMS_PS">point size</a>
-is 10 and your linespacing is 10, 11, or 12, lowering
+is 10 and your linespacing is 10, 11, or 12), lowering
 <strong>mom</strong>'s default footnote rule adjustment will
 almost certainly give you nicer looking results than leaving
 the adjustment at the default.  Furthermore, you can invoke
