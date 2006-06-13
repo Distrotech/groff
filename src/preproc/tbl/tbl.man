@@ -425,6 +425,39 @@ you should avoid using any names beginning with a\~\c
 .BR 3 .
 .
 .
+.SH "GNU TBL WITHIN MACROS"
+Since
+.B @g@tbl
+defines its own macros (right before each table) it is necessary to use
+an `end-of-macro' macro.  Additionally, the escape character has to be switched
+off.  Here an example.
+.IP
+.B .eo
+.br
+.B .de ATABLE ..
+.br
+.B .TS
+.br
+.B allbox tab(;);
+.br
+.B cl.
+.br
+.B \[rs]$1;\[rs]$2
+.br
+.B .TE
+.br
+.B ...
+.br
+.B .ec
+.br
+.B .ATABLE A table
+.br
+.B .ATABLE Another table
+.br
+.B .ATABLE And \[dq]another one\[dq]
+.LP
+.
+.
 .SH BUGS
 You should use
 .BR .TS\ H / .TH
