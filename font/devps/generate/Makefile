@@ -247,7 +247,7 @@ symbolmap: $(TEXTMAP) $(srcdir)/symbolchars
 	cat $(TEXTMAP) $(srcdir)/symbolchars >>$@
 
 clean:
-	-rm -f symbolmap symbol.afm symbolsl.afm zapfdr.afm
+	-rm -f symbolmap symbol.afm
 
 realclean: clean
 	-rm -f $(FONTS)
