@@ -456,6 +456,18 @@ off.  Here an example.
 .br
 .B .ATABLE And \[dq]another one\[dq]
 .LP
+Note, however, that not all features of
+.B @g@tbl
+can be wrapped into a macro because
+.B @g@tbl
+sees the input earlier than 
+.BR @g@troff .
+For example, number formatting with vertically aligned decimal points
+fails if those numbers are passed on as macro parameters because
+decimal point alignment is handled by
+.B @g@tbl
+itself: It only sees `\[rs]$1', `\[rs]$2', etc., and therefore can't
+recognize the decimal point.
 .
 .
 .SH BUGS
