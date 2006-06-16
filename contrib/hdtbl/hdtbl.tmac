@@ -31,12 +31,12 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"	*			Vers. 0.91 December 2005		*
 .\"	*****************************************************************
 .
-.if (\n[?] == 1) \
+.if r ? \
 .  tm HDroff: Loading table macros file \n[.F].
 .
 .nr *hdtbl 1
 .
-.if !\n[*miscs] \
+.if !r *miscs \
 .  mso hdmisc.tmac
 .
 .wh 0 HM	\"	comment this, if a page header macro exists
@@ -188,10 +188,10 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    nr in\\n[t*#] \\n[.i]
 .  el \{\
 .    ie "\\*[tal]"c" \
-.      nr in\\n[t*#] \\n[.l]-\\n[ll\\n[t*#]]/2+\\n[.i]
+.      nr in\\n[t*#] (\\n[.l] - \\n[ll\\n[t*#]]/2 + \\n[.i])
 .    el \{\
 .      ie "\\*[tal]"r" \
-.        nr in\\n[t*#] \\n[.l]-\\n[ll\\n[t*#]]+\\n[.i]
+.        nr in\\n[t*#] (\\n[.l] - \\n[ll\\n[t*#]] + \\n[.i])
 .      el \{\
 .        tmc \\n[.F]:\\n[.c]: Invalid `tal' value `\\*[tal]':
 .        tm1 " must be `l', `c' or `r'.
@@ -413,7 +413,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    di
 .    in \\n[t*i]u
 .    ie "\\*[hold]"" \{\
-.      ie \\n[.t]-\\n[dn] \
+.      ie (\\n[.t] - \\n[dn]) \
 .        DI t*tbl0
 .      el \{\
 .        rn t*tbl0 t*tbl\\n[t*numb]
@@ -495,7 +495,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .  nr b/2 \\n[b/2\\n[t*#]]		\"	some abbrevs.
 .  nr cscp \\n[cscp\\n[t*#]]
-.  nr cscpb \\n[b/2]+\\n[cscp]
+.  nr cscpb (\\n[b/2] + \\n[cscp])
 .
 .  nr topdiv (\\n[.d] + \\n[b/2] - \\n[cscp]) \"	top of cell diversion
 .  nr cscpb2 (\\n[b/2] / 2 + \\n[cscp])
@@ -699,7 +699,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  nr ** (0 >? \\n[t*b\\n[t*#]])
 .  nr * 0 1
 .
-.  \" second-while loop: calculate
+.  \" second while loop: calculate
 .  while (\\n[t*cols\\n[t*#]] >= \\n+[*]) \{\
 .    \" net cellwidths and indents.
 .    if \\n[t*b\\n[t*#]] \{\
