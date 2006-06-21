@@ -28,17 +28,18 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .\"	******************************************************************
 .\"	**		groff glyphs vs. character codes:		**
-.\"	**	.fontdump [font1 font2 ... ]				**
+.\"	**	.fontdump [font1 font2 ...]				**
 .\"	**		Print glyphs of font1, font2, ..., versus	**
 .\"	**		character code.					**
 .\"	**		`all' as fontname prints all fonts in the	**
-.\"	**		specified fontpath `*fontpath'.			**
+.\"	**		specified string `fontpath'.			**
 .\"	**		without arg: glyphs and codes of active font.	**
 .\"	******************************************************************
 .
 .time start
 .
-.ds *fontpath /usr/local/share/groff/1.19.3/font
+.if !d fontpath \
+.  ds fontpath @fontdir@
 .
 .de fontdump
 .  ie \\n[.$] \
@@ -48,7 +49,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .  pso bash -c \
        "echo -n .ds *f\ ; \
-        ls --color=never \\*[*fontpath]/dev\*[.T] \
+        ls --color=never \\*[fontpath]/dev\*[.T] \
         | tr '[:cntrl:]' ' '"
 .  \"	This dummy line is necessary; the preceding line eats it.
 .
@@ -98,7 +99,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    TBL border=.1n bc=red cpd=0 csp=.1n bgc=
 .      CPTN groff font \\*[*$1] \
             .br \
-            val=b ".pso grep -e internalname \\*[*fontpath]/dev\*[.T]/\\*[*$1]"
+            val=b ".pso grep -e internalname \\*[fontpath]/dev\*[.T]/\\*[*$1]"
 .      TR 
 .        TD
 .          TBL cols=12 border=.1n bc=red csp=.1n cpd=.2n fgc=red4 bgc=beige \

@@ -47,6 +47,11 @@ STRIPFILES=\
   hdtbl.tmac \
   hdmisc.tmac
 
+# These files are handled by the `.in.roff' rule.
+GENFILES=\
+  examples/fontdumps_n.roff \
+  examples/fontdumps_x.roff
+
 EXAMPLEFILES=\
   examples/chess_board.roff \
   examples/colored_boxes.roff \
@@ -54,8 +59,6 @@ EXAMPLEFILES=\
   examples/colored_table_cells.roff \
   examples/color_transitions.roff \
   examples/col_rowspan_colors.roff \
-  examples/fontdumps_n.roff \
-  examples/fontdumps_x.roff \
   examples/mixed_pickles.roff \
   examples/rainbow.roff \
   examples/short_reference.roff
@@ -74,17 +77,23 @@ PROCESSEDEXAMPLEFILES=\
   examples/short_reference.ps
 
 EXAMPLEFILES_=`echo $(EXAMPLEFILES) | sed 's|examples/||g'`
+GENFILES_=`echo $(GENFILES) | sed 's|examples/||g'`
 PROCESSEDEXAMPLEFILES_=`echo $(PROCESSEDEXAMPLEFILES) | sed 's|examples/||g'`
 
 CLEANADD=\
   gnu.eps \
   $(PROCESSEDEXAMPLEFILES) \
+  $(GENFILES) \
   examples/stamp \
   stamp-strip
 
-.SUFFIXES: .roff .ps
+.SUFFIXES: .roff .in .ps
+
 .roff.ps:
-	$(GROFF) -Tps -mhdtbl $< >$@
+	$(GROFF) -Tps -dfontpath=$(top_srcdir)/font -mhdtbl $< >$@
+
+.in.roff:
+	sed -e "s|@fontdir@|$(fontdir)|" $< >$@
 
 
 all: $(PROCESSEDEXAMPLEFILES) stamp-strip
@@ -112,8 +121,8 @@ stamp-strip: $(STRIPFILES)
 	done
 	touch $@
 
-install_data: $(STRIPFILES) $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
-              stamp-strip
+install_data: $(STRIPFILES) $(EXAMPLEFILES) $(GENFILES) \
+              $(PROCESSEDEXAMPLEFILES) stamp-strip
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
@@ -126,7 +135,7 @@ install_data: $(STRIPFILES) $(EXAMPLEFILES) $(PROCESSEDEXAMPLEFILES) \
 	  $(INSTALL_DATA) $(srcdir)/examples/$$f \
 	    $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	done
-	for f in $(PROCESSEDEXAMPLEFILES_); do \
+	for f in $(PROCESSEDEXAMPLEFILES_) $(GENFILES_); do \
 	  rm -f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	  $(INSTALL_DATA) examples/$$f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	done
@@ -136,7 +145,8 @@ uninstall_sub:
 	-for f in $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
 	done
-	-for f in $(EXAMPLEFILES_) $(PROCESSEDEXAMPLEFILES_); do \
+	-for f in $(EXAMPLEFILES_) $(PROCESSEDEXAMPLEFILES_) \
+                  $(GENFILES_); do \
 	  rm -f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	done
 	-rmdir $(DESTDIR)$(exampledir)/hdtbl
