@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2004, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -409,6 +409,7 @@ static void no_default_database_command(int, argument *)
 
 static void bibliography_command(int argc, argument *argv)
 {
+  have_bibliography = 1;
   const char *saved_filename = current_filename;
   int saved_lineno = current_lineno;
   int saved_label_in_text = label_in_text;

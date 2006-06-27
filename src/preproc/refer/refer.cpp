@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2004
+/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2004, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -51,6 +51,7 @@ string discard_fields = "XYZ";
 string pre_label = "\\*([.";
 string post_label = "\\*(.]";
 string sep_label = ", ";
+int have_bibliography = 0;
 int accumulate = 0;
 int move_punctuation = 0;
 int abbreviate_label_ranges = 0;
@@ -940,7 +941,8 @@ void output_references()
 {
   assert(accumulate);
   if (!hash_table_size) {
-    error("nothing to reference (probably `bibliography' before `sort')");
+    if (have_bibliography)
+      error("nothing to reference (probably `bibliography' before `sort')");
     accumulate = 0;
     nreferences = 0;
     return;
