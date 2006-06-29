@@ -216,6 +216,9 @@ class tty_printer : public printer {
   char *make_rgb_string(unsigned int, unsigned int, unsigned int);
   int tty_color(unsigned int, unsigned int, unsigned int, schar *,
 		schar = DEFAULT_COLOR_IDX);
+  void line(int, int, int, int, color *, color *);
+  void draw_line(int *, int, const environment *);
+  void draw_polygon(int *, int, const environment *);
 public:
   tty_printer(const char *);
   ~tty_printer();
@@ -490,61 +493,110 @@ void tty_printer::change_fill_color(const environment * const env)
 
 void tty_printer::draw(int code, int *p, int np, const environment *env)
 {
-  if (code != 'l' || !draw_flag)
+  if (!draw_flag)
     return;
+  if (code == 'l')
+    draw_line(p, np, env);
+  if (code == 'p')
+    draw_polygon(p, np, env);
+}
+
+void tty_printer::draw_polygon(int *p, int np, const environment *env)
+{
+  if (np & 1) {
+    error("even number of arguments required for polygon");
+    return;
+  }
+  if (np == 0) {
+    error("no arguments for polygon");
+    return;
+  }
+  // We only draw polygons which consist entirely of horizontal and
+  // vertical lines.
+  int hpos = 0;
+  int vpos = 0;
+  for (int i = 0; i < np; i += 2) {
+    if (!(p[i] == 0 || p[i + 1] == 0))
+      return;
+    hpos += p[i];
+    vpos += p[i + 1];
+  }
+  if (!(hpos == 0 || vpos == 0))
+    return;
+  int start_hpos = env->hpos;
+  int start_vpos = env->vpos;
+  hpos = start_hpos;
+  vpos = start_vpos;
+  for (int i = 0; i < np; i += 2) {
+    line(hpos, vpos, p[i], p[i + 1], env->col, env->fill);
+    hpos += p[i];
+    vpos += p[i + 1];
+  }
+  line(hpos, vpos, start_hpos - hpos, start_vpos - vpos,
+       env->col, env->fill);
+}
+
+void tty_printer::draw_line(int *p, int np, const environment *env)
+{
   if (np != 2) {
     error("2 arguments required for line");
     return;
   }
-  if (p[0] == 0) {
+  line(env->hpos, env->vpos, p[0], p[1], env->col, env->fill);
+}
+
+void tty_printer::line(int hpos, int vpos, int dx, int dy,
+		       color *col, color *fill)
+{
+  if (dx == 0) {
     // vertical line
-    int v = env->vpos;
-    int len = p[1];
+    int v = vpos;
+    int len = dy;
     if (len < 0) {
       v += len;
       len = -len;
     }
     if (len >= 0 && len <= font::vert)
-      add_char(vline_char, font::hor, env->hpos, v, env->col, env->fill,
+      add_char(vline_char, font::hor, hpos, v, col, fill,
 	       VDRAW_MODE|START_LINE|END_LINE);
     else {
-      add_char(vline_char, font::hor, env->hpos, v, env->col, env->fill,
+      add_char(vline_char, font::hor, hpos, v, col, fill,
 	       VDRAW_MODE|START_LINE);
       len -= font::vert;
       v += font::vert;
       while (len > 0) {
-	add_char(vline_char, font::hor, env->hpos, v, env->col, env->fill,
+	add_char(vline_char, font::hor, hpos, v, col, fill,
 		 VDRAW_MODE|START_LINE|END_LINE);
 	len -= font::vert;
 	v += font::vert;
       }
-      add_char(vline_char, font::hor, env->hpos, v, env->col, env->fill,
+      add_char(vline_char, font::hor, hpos, v, col, fill,
 	       VDRAW_MODE|END_LINE);
     }
   }
-  if (p[1] == 0) {
+  if (dy == 0) {
     // horizontal line
-    int h = env->hpos;
-    int len = p[0];
+    int h = hpos;
+    int len = dx;
     if (len < 0) {
       h += len;
       len = -len;
     }
     if (len >= 0 && len <= font::hor)
-      add_char(hline_char, font::hor, h, env->vpos, env->col, env->fill,
+      add_char(hline_char, font::hor, h, vpos, col, fill,
 	       HDRAW_MODE|START_LINE|END_LINE);
     else {
-      add_char(hline_char, font::hor, h, env->vpos, env->col, env->fill,
+      add_char(hline_char, font::hor, h, vpos, col, fill,
 	       HDRAW_MODE|START_LINE);
       len -= font::hor;
       h += font::hor;
       while (len > 0) {
-	add_char(hline_char, font::hor, h, env->vpos, env->col, env->fill,
+	add_char(hline_char, font::hor, h, vpos, col, fill,
 		 HDRAW_MODE|START_LINE|END_LINE);
 	len -= font::hor;
 	h += font::hor;
       }
-      add_char(hline_char, font::hor, h, env->vpos, env->col, env->fill,
+      add_char(hline_char, font::hor, h, vpos, col, fill,
 	       HDRAW_MODE|END_LINE);
     }
   }

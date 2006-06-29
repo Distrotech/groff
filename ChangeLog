@@ -1,3 +1,16 @@
+2006-06-28  Werner LEMBERG  <wl@gnu.org>
+
+	Add support for \D'p...' to grotty.
+
+	* src/devices/grotty/grotty.cpp (tty_printer::draw): Move most of
+	its code to...
+	(tty_printer::line): This function.
+	(tty_printer::draw): Rewritten; just call either draw_line or
+	draw_polygon.
+	(tty_printer::draw_line, tty_printer::draw_polygon): New functions.
+
+	* src/devices/grotty/grotty.man, NEWS: Document it.
+
 2006-06-27  Werner LEMBERG  <wl@gnu.org>
 
 	* src/preproc/refer/command.h (have_bibliography): New variable
@@ -198,7 +211,7 @@
 
 2006-03-27  Werner LEMBERG  <wl@gnu.org>
 
-	Add two request `.device' and `.devicem' which are equivalent to
+	Add two requests `.device' and `.devicem' which are equivalent to
 	`\X' and `\Y', respectively.
 
 	* src/roff/troff/input.cpp (device_request, device_macro_request):
