@@ -3698,7 +3698,7 @@ static void interpolate_macro(symbol nm)
 	if (!m || !m->empty())
 	  warned = warning(WARN_SPACE,
 			   "macro `%1' not defined "
-			   "(probably missing space after `%2')",
+			   "(possibly missing space after `%2')",
 			   nm.contents(), buf);
       }
     }
