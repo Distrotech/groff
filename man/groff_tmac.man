@@ -14,7 +14,7 @@ groff_tmac.5
 
 File position: <groff-source>/man/groff_tmac.man
 
-Last update: 07 Feb 2006
+Last update: 01 Jul 2006
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -330,7 +330,7 @@ or
 .Shell_cmd "groff \-m man foo \-m ms bar"
 .
 .P
-will fail.
+fails.
 .
 .
 .\" --------------------------------------------------------------------
@@ -482,7 +482,7 @@ needed for the
 .BR @g@pic (@MAN1EXT@)
 preprocessor.
 .
-They will center each picture.
+They center each picture.
 .
 Use it only if your macro package doesn't provide proper definitions
 for those two macros (actually, most of them already have).
@@ -494,27 +494,41 @@ A single macro is provided in this file,
 .BR PSPIC ,
 to include a PostScript graphic in a document.
 .
-It makes only sense for output devices which support inclusion of PS
-images:
+The following output devices support inclusion of PS images:
 .BR \-Tps ,
 .BR \-Tdvi ,
 and
 .BR \-Thtml ;
-the file is then loaded automatically.
+for all other devices the image is replaced with a hollow rectangle
+of the same size.
 .
+This macro file is already loaded at start-up by
+.B @g@troff
+so it isn't necessary to call it explicitly.
+.
+.IP
 Syntax:
 .RS
 .IP
-\&\fB.PSPIC\fP [\fB\-L\fP|\fB-R\fP|\fB\-I\fP \fIn\fP]\ \fI\|file\fP [\fIwidth\fP [\fIheight\fP]]
+\&\fB.PSPIC\fP [\fB\-L\fP\||\|\fB-R\fP\||\|\fB\-I\fP\ \fIn\fP] \
+\fI\|file\fP [\fIwidth\fP [\fIheight\fP]]
 .RE
 .
 .IP
 .I file
-is the name of the file containing the illustration;
+is the name of the PostScript file;
 .I width
 and
 .I height
-give the desired width and height of the graphic.
+give the desired width and height of the image.
+.
+If neither a
+.I width
+nor a
+.I height
+argument is specified, the image's natural width (as given in
+the file's bounding box) or the current line length is used
+as the width, whatever is smaller.
 .
 The
 .I width
@@ -524,7 +538,7 @@ arguments may have scaling indicators attached;
 the default scaling indicator is\~\c
 .BR i .
 .
-This macro will scale the graphic uniformly
+This macro scales the graphic uniformly
 in the x and y\~directions so that it is no more than
 .I width
 wide
@@ -532,7 +546,7 @@ and
 .I height
 high.
 .
-By default, the graphic will be horizontally centered.
+By default, the graphic is horizontally centered.
 .
 The
 .BI \-L
@@ -721,7 +735,7 @@ In groff, the file
 .IB name .tmac
 is searched within the tmac path; if not found,
 .BI tmac. name
-will be searched for instead.
+is searched for instead.
 .
 .
 .P
@@ -981,7 +995,7 @@ arg1 arg2
 .P
 Let's analyze each backslash in the macro definition.
 .
-As the positional parameters and the number of arguments will change
+As the positional parameters and the number of arguments change
 with each call of the macro their leading backslash must be doubled,
 which results in
 .I \[rs]\[rs]$*
@@ -995,14 +1009,14 @@ alias name, so
 .P
 On the other hand,
 .I midpart
-is a constant string, it will not change, so no doubling for
+is a constant string, it does not change, so no doubling for
 .IR \[rs]*[midpart] .
 The
 .I \[rs]f
 escape sequences are predefined groff elements for setting the font
 within the text.
 .
-Of course, this behavior will not change, so no doubling with
+Of course, this behavior does not change, so no doubling with
 .I \[rs]f[I]
 and
 .IR \[rs]f[] .
@@ -1049,7 +1063,7 @@ For example, the code above can be written in a simpler way by
 Unfortunately, draft mode cannot be used universally.
 .
 Although it is good enough for defining normal macros, draft mode
-will fail with advanced applications, such as indirectly defined
+fails with advanced applications, such as indirectly defined
 strings, registers, etc.
 .
 An optimal way is to define and test all macros in draft mode and then
