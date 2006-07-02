@@ -14,7 +14,7 @@ groff_tmac.5
 
 File position: <groff-source>/man/groff_tmac.man
 
-Last update: 01 Jul 2006
+Last update: 02 Jul 2006
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -150,14 +150,14 @@ FDL in the main directory of the groff source package.
 .c     result: `sh#  groffer --dpi 100 file'
 .c             with 'sh#' in font I, the rest in CR
 .c
-.c   .Shell_cmd groffer\~--dpi\~100\~file
+.c   .Shell_cmd groffer\ --dpi\ 100\ file
 .c     result: the same as above
 .c
 .c   .Shell_cmd "groffer --dpi=" value " file"
 .c     result: sh#  groffer --dpi=value file
 .c             with `groffer --dpi=' and `file' in CR; `value' in CI
 .c
-.c   .Shell_cmd groffer\~--dpi= value \~file
+.c   .Shell_cmd groffer\ --dpi= value \ file
 .c     result: the same as the previous example
 .c
 .de Shell_cmd
@@ -562,6 +562,25 @@ option causes the graphic to be indented by\~\c
 (default scaling indicator is\~\c
 .BR m ).
 .
+.IP
+For use of
+.B .PSPIC
+within a diversion it is recommended to extend it with
+the following code, assuring that the diversion's width completely
+covers the image's width.
+.
+.RS
+.IP
+.Example
+.  Text .am PSPIC
+.  Text .\ \ vpt 0
+.  Text \[rs]h'(\[rs]\[rs]n[ps-offset]u + \[rs]\[rs]n[ps-deswid]u)'
+.  Text .\ \ sp -1
+.  Text .\ \ vpt 1
+.  Text ..
+./Example
+.RE
+.
 .
 .TP
 .B trace
@@ -655,10 +674,10 @@ the
 macro package may be specified as on of the following four methods:
 .
 .IP
-.Shell_cmd "groff\~\-m\~man"
-.Shell_cmd "groff\~\-man"
-.Shell_cmd "groff\~\-mman"
-.Shell_cmd "groff\~\-m\~an"
+.Shell_cmd "groff\ \-m\ man"
+.Shell_cmd "groff\ \-man"
+.Shell_cmd "groff\ \-mman"
+.Shell_cmd "groff\ \-m\ an"
 .
 .
 .P
@@ -673,8 +692,8 @@ For example, the
 macro package may be specified only as one of the two methods:
 .
 .IP
-.Shell_cmd "groff\~\-m\~www"
-.Shell_cmd "groff\~\-mwww"
+.Shell_cmd "groff\ \-m\ www"
+.Shell_cmd "groff\ \-mwww"
 .
 .
 .P
@@ -782,7 +801,7 @@ and is used in some document called
 At run-time, the formatter call for this is
 .
 .IP
-.Shell_cmd "groff\~\-m\~" "macrofile\~document.roff"
+.Shell_cmd "groff\ \-m\ " "macrofile\ document.roff"
 .
 .
 .P
@@ -805,7 +824,7 @@ is used or
 .P
 In both cases, the formatter is called with
 .IP
-.Shell_cmd "groff\~\-s\~" docu.roff
+.Shell_cmd "groff\ \-s\ " docu.roff
 .
 .
 .P
@@ -966,8 +985,8 @@ say.
 .Example
 .  Text .ds midpart was called with
 .  Text .de print_args
-.  Text .\~\~tm\~\*[@1]\~\[rs]\[rs]*[midpart]\~\[rs]\[rs]n[.$]\~\*[@2]
-.  Text .\~\~tm\~\[rs]\[rs]$*
+.  Text .\ \ tm\ \*[@1]\ \[rs]\[rs]*[midpart]\ \[rs]\[rs]n[.$]\ \*[@2]
+.  Text .\ \ tm\ \[rs]\[rs]$*
 .  Text ..
 ./Example
 .rm @1
@@ -1050,8 +1069,8 @@ For example, the code above can be written in a simpler way by
 .  Text .eo
 .  Text .ds midpart was called with
 .  Text .de print_args
-.  Text .\~\~tm\~\*[@1]\~\[rs]*[midpart]\~\[rs]n[.$]\~\*[@2]
-.  Text .\~\~tm\~\[rs]$*
+.  Text .\ \ tm\ \*[@1]\ \[rs]*[midpart]\ \[rs]n[.$]\ \*[@2]
+.  Text .\ \ tm\ \[rs]$*
 .  Text ..
 .  Text .ec
 ./Example
@@ -1085,9 +1104,9 @@ with a leading dot.
 .IP
 .Example
 .  Text .de Text
-.  Text .\~\~if (\[rs]\[rs]n[.$] == 0)\~\[rs]
-.  Text .\~\~\~\~return
-.  Text .\~nop\~\[rs])\[rs]\[rs]$*[rs]\)
+.  Text .\ \ if (\[rs]\[rs]n[.$] == 0)\ \[rs]
+.  Text .\ \ \ \ return
+.  Text .\ nop\ \[rs])\[rs]\[rs]$*[rs]\)
 .  Text ..
 ./Example
 .
@@ -1101,9 +1120,9 @@ acts like a comment line:
 .
 .IP
 .Example
-.  Text .de\~c
+.  Text .de\ c
 .  Text ..
-.  Text .c\~This\~is\~like\~a\~comment\~line.
+.  Text .c\ This\ is\ like\ a\ comment\ line.
 ./Example
 .
 .Topic
