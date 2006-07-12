@@ -1,3 +1,39 @@
+2006-07-11  Werner LEMBERG  <wl@gnu.org>
+
+	Add a request `.fzoom' and a number register `.zoom' to magnify
+	fonts.
+
+	* src/include/font.h (font): Add member variable `zoom'.
+	Add member functions `set_zoom' and `get_zoom'.
+	Remove `static' attribute from `scale' member function.
+
+	* src/libs/libgroff/font.cpp (font::font): Updated.
+	(scale_round): New version with three parameters to handle zoom
+	factor.
+	(font::scale, font::get_width): Handle zoom factor.
+	(font::set_zoom, font::get_zoom): New functions.
+	(font::load): Handle `zoom' while computing `space_width'.
+
+	* src/roff/troff/env.h: Declare `env_get_zoom'.
+	(environment): Add member function `get_zoom'.
+
+	* src/roff/troff/env.cpp (environment::get_zoom): New function.
+	(init_env_requests): Initialize `.zoom' register.
+
+	* src/roff/troff/node.cpp (font_info): New member functions
+	`set_zoom' and `get_zoom'.
+	(tfont): New member function `get_zoom'.
+	(env_get_zoom): New function.
+	(troff_output_file::set_font): Handle zoom factor.
+	(font_zoom_request): New function.
+	(init_node_requests): Initialize `fzoom' request.
+
+	* docs/groff.texinfo (Changing Fonts), man/groff.man,
+	man/groff_diff.man, NEWS: Document `fzoom' request and `.zoom'
+	register.
+
+	* src/roff/troff/TODO: Updated.
+
 2006-07-10  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/groff.texinfo (Drawing Requests): Improve documentation of
@@ -221,8 +257,8 @@
 	* tmac/trace.tmac: s/!!sp/!!!sp/.
 	Modify definitions of `de', `de1', `am', and `am1' to use \n[.br].
 
-	* docs/groff.texinfo, man/groff.man, man/groff_diff.man, NEWS:
-	Document it.
+	* docs/groff.texinfo (Requests), man/groff.man, man/groff_diff.man,
+	NEWS: Document it.
 
 2006-03-29  Werner LEMBERG  <wl@gnu.org>
 
@@ -252,8 +288,8 @@
 	New functions.
 	(init_input_requests): Register them.
 
-	* doc/groff.texinfo, man/groff_diff.man, man/groff.man, NEWS:
-	Document them.
+	* doc/groff.texinfo (Postprocessor Access), man/groff_diff.man,
+	man/groff.man, NEWS: Document them.
 
 2006-03-27  Gaius Mulley  <gaius@glam.ac.uk>
 
@@ -261,7 +297,7 @@
 	for -Thtml as `\[...]'.
 	* src/devices/grohtml/post-html.cpp (page::add_and_encode): Updated.
 
-	* doc/groff.texinfo (\X): Updated.
+	* doc/groff.texinfo (Postprocessor Access) <\X>: Updated.
 
 2006-03-27  Werner LEMBERG  <wl@gnu.org>
 
@@ -270,9 +306,9 @@
 
 2006-03-26  Werner LEMBERG  <wl@gnu.org>
 
-	* doc/groff.texinfo: More documentation on end-of-macro symbol of
-	`.de'.
-	Minor addition to `.di' description.
+	* doc/groff.texinfo (Writing Macros): More documentation on
+	end-of-macro symbol of `.de'.
+	(Diversions): Minor addition to `.di' description.
 
 	* src/devices/grops/grops.man: Some clarifications regarding
 	insertion of PostScript snippets.
@@ -349,7 +385,8 @@
 
 2006-03-19  Miklos Somogyi  <msom@netspace.net.au>
 
-	* doc/groff.texinfo: Improve documentation of `.sp'.
+	* doc/groff.texinfo (Manipulating Spacing): Improve documentation of
+	`.sp'.
 
 2006-03-18  Werner LEMBERG  <wl@gnu.org>
 
@@ -1181,8 +1218,8 @@ Version 1.19.2 released
 	assignment, prior `.ll' request and then package defaults, in this
 	specified order of decreasing priority.
 
-	* tmac/groff_man.man, doc/groff.texinfo: Document altered `LL'
-	register initialization priorities.
+	* tmac/groff_man.man, doc/groff.texinfo (Man options): Document
+	altered `LL' register initialization priorities.
 
 2005-08-29  Gary W. Swearingen  <garys@opusnet.com>
 
@@ -2616,8 +2653,8 @@ Version 1.19.2 released
 
 2004-09-23  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
-	* tmac/groff_ms.man, doc/groff.texinfo: Document changes from
-	2004-09-19.
+	* tmac/groff_ms.man, doc/groff.texinfo (ms Document Control
+	Registers): Document changes from 2004-09-19.
 
 2004-09-23  Werner LEMBERG  <wl@gnu.org>
 
@@ -2682,8 +2719,8 @@ Version 1.19.2 released
 
 2004-09-19  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
-	* NEWS, doc/groff.texinfo, tmac/groff_ms.man: Document the deletion
-	of `Ds' and `De' macros.
+	* NEWS, doc/groff.texinfo (ms Display and Keeps), tmac/groff_ms.man:
+	Document the deletion of `Ds' and `De' macros.
 
 2004-09-10  Werner LEMBERG  <wl@gnu.org>
 
@@ -2775,8 +2812,8 @@ Version 1.19.2 released
 
 	* src/roff/troff/input.h: Export do_glyph_color and do_fill_color.
 
-	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo:
-	Document new requests.
+	* NEWS, man/groff_diff.man, man/groff.man, doc/groff.texinfo
+	(Colors): Document new requests.
 
 2004-07-24  Werner LEMBERG  <wl@gnu.org>
 
@@ -2787,7 +2824,8 @@ Version 1.19.2 released
 	* tmac/s.tmac (@AU, @AI, par@load-init, par@init, par@reset, NL,
 	PX): Handle fractional point sizes for PS, VS, FPS, and FVS.
 
-	* tmac/groff_ms.man, docs/groff.texinfo, NEWS: Document it.
+	* tmac/groff_ms.man, docs/groff.texinfo (ms Document Control
+	Registers), NEWS: Document it.
 
 2004-07-19  Werner LEMBERG  <wl@gnu.org>
 
@@ -2803,7 +2841,8 @@ Version 1.19.2 released
 
 2004-07-05  Werner LEMBERG  <wl@gnu.org>
 
-	* doc/groff.texinfo: Further improve documentation of `hcode'.
+	* doc/groff.texinfo (Manipulating Hyphenation): Further improve
+	documentation of `hcode'.
 
 2004-07-04  Sang Dae Yu  <sdyu@bh.knu.ac.kr>
 

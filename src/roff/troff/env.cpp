@@ -3132,6 +3132,11 @@ void horizontal_place_reg::set_value(units n)
   curenv->set_input_line_position(hunits(n));
 }
 
+int environment::get_zoom()
+{
+  return env_get_zoom(this);
+}
+
 const char *environment::get_font_family_string()
 {
   return family->nm.contents();
@@ -3328,6 +3333,7 @@ void init_env_requests()
   init_int_env_reg(".u", get_fill);
   init_vunits_env_reg(".v", get_vertical_spacing);
   init_hunits_env_reg(".w", get_prev_char_width);
+  init_int_env_reg(".zoom", get_zoom);
   number_reg_dictionary.define("ct", new variable_reg(&ct_reg_contents));
   number_reg_dictionary.define("hp", new horizontal_place_reg);
   number_reg_dictionary.define("ln", new variable_reg(&next_line_number));

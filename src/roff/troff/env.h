@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004, 2005
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004, 2005, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -72,6 +72,7 @@ hunits env_space_width(environment *);
 hunits env_sentence_space_width(environment *);
 hunits env_narrow_space_width(environment *);
 hunits env_half_narrow_space_width(environment *);
+int env_get_zoom(environment *);
 
 struct tab;
 
@@ -280,6 +281,7 @@ public:
   int get_char_slant() { return char_slant; }
   hunits get_digit_width();
   int get_font() { return fontno; };	// .f
+  int get_zoom();			// .zoom
   font_family *get_family() { return family; }
   int get_bold();			// .b
   int get_adjust_mode();		// .j

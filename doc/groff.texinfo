@@ -8703,6 +8703,7 @@ the current environment.
 @endDefreq
 
 @Defreq {ftr, f [@Var{g}]}
+@cindex font translation (@code{ftr})
 @cindex @code{ft} request, and font translations
 @cindex @code{ul} request, and font translations
 @cindex @code{bd} request, and font translations
@@ -8723,6 +8724,41 @@ in the @code{F} and @code{S} conditional operators, or in the
 @code{special}, @code{fspecial}, @code{fp}, or @code{sty} requests,
 font@tie{}@var{g} is used.  If @var{g} is missing or equal to@tie{}@var{f}
 the translation is undone.
+@endDefreq
+
+@DefreqList {fzoom, f [@Var{zoom}]}
+@DefregListEnd {.zoom}
+@cindex magnification of a font (@code{fzoom})
+@cindex font, magnification (@code{fzoom})
+@cindex zoom factor of a font (@code{fzoom})
+@cindex factor, zoom, of a font (@code{fzoom})
+@cindex font, zoom factor (@code{fzoom})
+@cindex optical size of a font
+@cindex font, optical size
+@cindex size, optical, of a font
+Set magnification of font@tie{}@var{f} to factor @var{zoom}, which must be a
+non-negative integer multiple of 1/1000th.  This request is useful to adjust
+the optical size of a font in relation to the others.  In the example below,
+font @code{CR} is magnified by 10% (the zoom factor is thus 1.1).
+
+@Example
+.fam P
+.fzoom CR 1100
+.ps 12
+Palatino and \f[CR]Courier\f[]
+@endExample
+
+A missing or zero value of @var{zoom} is the same as a value of 1000, which
+means no magnification.  @var{f}@tie{}must be a real font name, not a style.
+
+Note that the magnification of a font is completely transparent to troff; a
+change of the zoom factor doesn't cause any effect except that the
+dimensions of glyphs, (word) spaces, kerns, etc., of the affected font are
+adjusted accordingly.
+
+The zoom factor of the current font is available in the read-only number
+register @samp{.zoom}, in multiples of 1/1000th.  It returns zero if there
+is no magnification.
 @endDefreq
 
 @c ---------------------------------------------------------------------

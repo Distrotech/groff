@@ -178,6 +178,9 @@ public:
 			// to be advanced by some (possibly negative)
 			// amount.  See groff manual, description of \w and
 			// the `ssc' register.  Return this amount.
+  void set_zoom(int);	// Set the font's zoom factor * 1000.  Must be a
+  			// non-negative value.
+  int get_zoom();	// Return the font's zoom factor * 1000.
   int get_code(glyph *);	// Return the code point in the physical
 			// font of the given glyph.
   const char *get_special_device_encoding(glyph *);	// Return special
@@ -220,11 +223,11 @@ public:
   static int load_desc();	// Open the DESC file (depending on the
 			// device) and initialize some static variables with
 			// info from there.
-
   static FONT_COMMAND_HANDLER
     set_unknown_desc_command_handler(FONT_COMMAND_HANDLER);	// Register
 			// a function which defines the semantics of
 			// arbitrary commands in the font DESC file.
+  // Now the variables from the DESC file, shared by all fonts.
   static int res;	// The `res' attribute given in the DESC file.
   static int hor;	// The `hor' attribute given in the DESC file.
   static int vert;	// The `vert' attribute given in the DESC file.
@@ -277,6 +280,8 @@ private:
   char *internalname;	// The `internalname' attribute of this font, or
 			// NULL.  Used by get_internal_name().
   double slant;		// The natural slant angle (in degrees) of this font.
+  int zoom;		// The font's magnification, multiplied by 1000.
+  			// Used by scale().  A zero value means `no zoom'.
   int *ch_index;	// Conversion table from font-independent character
 			// indices to indices for this particular font.
   int nindices;
@@ -311,7 +316,7 @@ private:
 			// the pair of glyphs (arg1 and arg2).
 
   /* Returns w * pointsize / unitwidth, rounded to the nearest integer.  */
-  static int scale(int w, int pointsize);
+  int scale(int w, int pointsize);
   static int unit_scale(double *, char); // Convert value in arg1 from the
 			// given unit (arg2; possible values are `i', `c',
 			// `p', and `P' as documented in the info file of

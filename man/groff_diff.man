@@ -3,7 +3,7 @@
 .ig
 groff_diff.man
 
-Last update : 04 Apr 2006
+Last update : 11 Jul 2006
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -1494,6 +1494,19 @@ then font
 is not translated.
 .
 .TP
+.BI .fzoom\  f\ zoom
+Set zoom factor
+.I zoom
+for font\~\c
+.IR f .
+.I zoom
+must a non-negative integer multiple of 1/1000th.
+If it is missing or is equal to zero, it means the same as 1000, namely no
+magnification.
+.I f\c
+\~must be a real font name, not a style.
+.
+.TP
 .BI .gcolor\  c
 Set the glyph color to
 .IR c .
@@ -2920,6 +2933,11 @@ contains\~03.
 .TP
 .B \[rs]n[.Y]
 The revision number of groff.
+.
+.TP
+.B \[rs]n[.zoom]
+The zoom value of the current font, in multiples of 1/1000th.
+Zero if no magnification.
 .
 .TP
 .B \[rs]n[llx]

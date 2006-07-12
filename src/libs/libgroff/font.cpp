@@ -159,6 +159,7 @@ font::font(const char *s)
   strcpy(name, s);
   internalname = 0;
   slant = 0.0;
+  zoom = 0;
   // load();			// for testing
 }
 
@@ -196,20 +197,34 @@ static int scale_round(int n, int x, int y)
   if (x == 0)
     return 0;
   if (n >= 0) {
-    if (n <= (INT_MAX - y2)/x)
-      return (n*x + y2)/y;
-    return int(n*double(x)/double(y) + .5);
+    if (n <= (INT_MAX - y2) / x)
+      return (n * x + y2) / y;
+    return int(n * double(x) / double(y) + .5);
   }
   else {
-    if (-(unsigned)n <= (-(unsigned)INT_MIN - y2)/x)
-      return (n*x - y2)/y;
-    return int(n*double(x)/double(y) - .5);
+    if (-(unsigned)n <= (-(unsigned)INT_MIN - y2) / x)
+      return (n * x - y2) / y;
+    return int(n * double(x) / double(y) - .5);
   }
+}
+
+static int scale_round(int n, int x, int y, int z)
+{
+  assert(x >= 0 && y > 0 && z > 0);
+  if (x == 0)
+    return 0;
+  if (n >= 0)
+    return int((n * double(x) / double(y)) * (double(z) / 1000.0) + .5);
+  else
+    return int((n * double(x) / double(y)) * (double(z) / 1000.0) - .5);
 }
 
 inline int font::scale(int w, int sz)
 {
-  return sz == unitwidth ? w : scale_round(w, sz, unitwidth);
+  if (zoom)
+    return scale_round(w, sz, unitwidth, zoom);
+  else
+    return sz == unitwidth ? w : scale_round(w, sz, unitwidth);
 }
 
 int font::unit_scale(double *value, char unit)
@@ -313,19 +328,28 @@ int font::get_width(glyph *g, int point_size)
 {
   int idx = glyph_to_index(g);
   assert(idx >= 0);
+  int real_size;
+  if (!zoom)
+    real_size = point_size;
+  else
+  {
+    if (point_size <= (INT_MAX - 500) / zoom)
+      real_size = (point_size * zoom + 500) / 1000;
+    else
+      real_size = int(point_size * double(zoom) / 1000.0 + .5);
+  }
   if (idx < nindices && ch_index[idx] >= 0) {
     // Explicitly enumerated glyph
     int i = ch_index[idx];
-
-    if (point_size == unitwidth || font::unscaled_charwidths)
+    if (real_size == unitwidth || font::unscaled_charwidths)
       return ch[i].width;
 
     if (!widths_cache)
-      widths_cache = new font_widths_cache(point_size, ch_size);
-    else if (widths_cache->point_size != point_size) {
+      widths_cache = new font_widths_cache(real_size, ch_size);
+    else if (widths_cache->point_size != real_size) {
       font_widths_cache **p;
       for (p = &widths_cache; *p; p = &(*p)->next)
-	if ((*p)->point_size == point_size)
+	if ((*p)->point_size == real_size)
 	  break;
       if (*p) {
 	font_widths_cache *tem = *p;
@@ -334,7 +358,7 @@ int font::get_width(glyph *g, int point_size)
 	widths_cache = tem;
       }
       else
-	widths_cache = new font_widths_cache(point_size, ch_size,
+	widths_cache = new font_widths_cache(real_size, ch_size,
 					     widths_cache);
     }
     int &w = widths_cache->width[i];
@@ -347,7 +371,7 @@ int font::get_width(glyph *g, int point_size)
     int width = 24;	// value found in the original font files
 			// XXX: this must be eventually moved back to the
 			//      font description file!
-    if (point_size == unitwidth || font::unscaled_charwidths)
+    if (real_size == unitwidth || font::unscaled_charwidths)
       return width;
     else
       return scale(width, point_size);
@@ -438,6 +462,20 @@ int font::get_subscript_correction(glyph *g, int point_size)
 		//      font description file!
   }
   abort();
+}
+
+void font::set_zoom(int factor)
+{
+  assert(factor >= 0);
+  if (factor == 1000)
+    zoom = 0;
+  else
+    zoom = factor;
+}
+
+int font::get_zoom()
+{
+  return zoom;
 }
 
 int font::get_space_width(int point_size)
@@ -984,8 +1022,12 @@ int font::load(int *not_found, int head_only)
     t.error("missing `charset' command");
     return 0;
   }
-  if (space_width == 0)
-    space_width = scale_round(unitwidth, res, 72*3*sizescale);
+  if (space_width == 0) {
+    if (zoom)
+      space_width = scale_round(unitwidth, res, 72 * 3 * sizescale, zoom);
+    else
+      space_width = scale_round(unitwidth, res, 72 * 3 * sizescale);
+  }
   return 1;
 }
 

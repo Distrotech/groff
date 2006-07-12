@@ -158,6 +158,8 @@ public:
   int get_bold(hunits *);
   int is_special();
   int is_style();
+  void set_zoom(int);
+  int get_zoom();
   friend symbol get_font_name(int, environment *);
   friend symbol get_style_name(int);
 };
@@ -198,6 +200,7 @@ public:
   hunits get_track_kern();
   tfont *get_plain();
   font_size get_size();
+  int get_zoom();
   symbol get_name();
   charinfo *get_lig(charinfo *c1, charinfo *c2);
   int get_kern(charinfo *c1, charinfo *c2, hunits *res);
@@ -247,12 +250,31 @@ inline int font_info::is_style()
   return fm == 0;
 }
 
+void font_info::set_zoom(int zoom)
+{
+  assert(fm != 0);
+  fm->set_zoom(zoom);
+}
+
+inline int font_info::get_zoom()
+{
+  if (is_style())
+    return 0;
+  return fm->get_zoom();
+}
+
 tfont *make_tfont(tfont_spec &spec)
 {
   for (tfont *p = tfont::tfont_list; p; p = p->next)
     if (*p == spec)
       return p;
   return new tfont(spec);
+}
+
+int env_get_zoom(environment *env)
+{
+  int fontno = env->get_family()->make_definite(env->get_font());
+  return font_table[fontno]->get_zoom();
 }
 
 // this is the current_font, fontno is where we found the character,
@@ -299,7 +321,9 @@ tfont *font_info::get_tfont(font_size fs, int height, int slant, int fontno)
 	}
 	if (fontno != number)
 	  return make_tfont(spec);
+	// save font for comparison purposes
 	last_tfont = make_tfont(spec);
+	// save font related values not contained in tfont
 	last_size = fs;
 	last_height = height;
 	last_slant = slant;
@@ -588,6 +612,11 @@ inline font_size tfont::get_size()
   return size;
 }
 
+inline int tfont::get_zoom()
+{
+  return fm->get_zoom();
+}
+
 inline symbol tfont::get_name()
 {
   return name;
@@ -687,8 +716,8 @@ class real_output_file : public output_file {
 #ifndef POPEN_MISSING
   int piped;
 #endif
-  int printing;        // decision via optional page list
-  int output_on;       // \O[0] or \O[1] escape calls
+  int printing;		// decision via optional page list
+  int output_on;	// \O[0] or \O[1] escape calls
   virtual void really_transparent_char(unsigned char) = 0;
   virtual void really_print_line(hunits x, vunits y, node *n,
 				 vunits before, vunits after, hunits width) = 0;
@@ -1185,7 +1214,13 @@ void troff_output_file::set_font(tfont *tf)
     put('\n');
     current_font_number = n;
   }
-  int size = tf->get_size().to_scaled_points();
+  int zoom = tf->get_zoom();
+  int size;
+  if (zoom)
+    size = scale(tf->get_size().to_scaled_points(),
+		 zoom, 1000);
+  else
+    size = tf->get_size().to_scaled_points();
   if (current_size != size) {
     put('s');
     put(size);
@@ -4116,7 +4151,7 @@ void suppress_node::tprint(troff_output_file *out)
 	// postscript (or other device)
 	if (suppress_start_page > 0 && current_page != suppress_start_page)
 	  error("suppression limit registers span more than one page;\n"
-	        "image description %1 will be wrong", image_no);
+		"image description %1 will be wrong", image_no);
 	// if (topdiv->get_page_number() != suppress_start_page)
 	//  fprintf(stderr, "end of image and topdiv page = %d   and  suppress_start_page = %d\n",
 	//	  topdiv->get_page_number(), suppress_start_page);
@@ -6193,6 +6228,27 @@ void special_request()
   skip_line();
 }
 
+void font_zoom_request()
+{
+  int n = get_fontno();
+  if (n >= 0) {
+    if (font_table[n]->is_style())
+      warning(WARN_FONT, "can't set zoom factor for a style");
+    else {
+      int zoom;
+      if (has_arg() && get_integer(&zoom)) {
+	if (zoom < 0)
+	  warning(WARN_FONT, "can't use negative zoom factor");
+	else
+	  font_table[n]->set_zoom(zoom);
+      }
+      else
+        font_table[n]->set_zoom(0);
+    }
+  }
+  skip_line();
+}
+
 int next_available_font_position()
 {
   int i;
@@ -6471,6 +6527,7 @@ void init_node_requests()
   init_request("fp", font_position);
   init_request("fschar", define_font_special_character);
   init_request("fspecial", font_special_request);
+  init_request("fzoom", font_zoom_request);
   init_request("ftr", font_translate);
   init_request("kern", kern_request);
   init_request("lg", ligature);

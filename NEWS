@@ -17,7 +17,7 @@ o Fabrice Ménard contributed locales support.  In particular, it is now
   Note that latin-9 input encoding is used for French (to support the `oe'
   ligature).
 
-o Swedish macro localization has been added also.
+o Swedish macro localization (with `-msv') has been added also.
 
 o Two new requests `device' and `devicem' have been added which are
   equivalents to the \X and \Y escapes, respectively.
@@ -33,6 +33,19 @@ o A new read-only number register `.br' is available which is set to 1
     .  el 'bp@orig
     .  tm after bp
     ..
+
+o A new request `fzoom' has been added to adjust the optical size of a
+  font in relation to the others.  The zoom factor is given in integer
+  multiples of 1/1000th.  In the following example, the CR font is
+  magnified by 10% (the zoom factor is 1.1).
+
+    .fam P
+    .fzoom CR 1100
+    .ps 12
+    Palatino and \f[CR]Courier\f[]
+
+  The new number register `.zoom' holds the zoom value of the current font,
+  in multiples of 1/1000th.
 
 Pic
 ---
