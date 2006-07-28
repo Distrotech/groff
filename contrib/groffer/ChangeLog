@@ -1,12 +1,150 @@
+	________________________________________________________________
+	* release of groffer 0.9.24
+
+2006-07-28  Bernd Warken
+
+	### Extent long option abbreviation to abbreviations before each `-'.
+
+	* groffer2.sh:
+	- list_from_cmdline_with_minus(): New function, the same as
+	list_from_cmdline() with multiple abbreviations around `-'.
+	- _search_abbrev(): Subfunction of list_from_cmdline_with_minus().
+	- main_parse_args(): Use list_from_cmdline_with_minus() for
+	getting the double abbreviation, but keep main_parse_MANOPT()
+	to list_from_cmdline() for simple abbreviation of long options.
+	- For the debug test at the beginning, add the double abbreviation
+	functionality.
+
+	* README_SH, groffer.man: Document the multiple set of
+	abbreviations by `-'.
+
+	### Fix handling of `--apropos*' and `--whatis'
+
+	* groffer2.sh:
+	- apropos_filespec(): Fix handling of `/' and `.' in sed; add `\&'
+	at the beginning of each non-macro groff line in sed.
+	- main_parse_args(): Set $_MAN_OPT to `yes' if --whatis is called.
+	- main_do_fileargs(): Fix dealing with `apropos' for several
+	cases.
+	- apropos_*(), special_*(), whatis_*(): Add two different return
+	values.
+	- $_SPECIAL_SETUP: New variable to test whether apropos_setup() or
+	whatis_header() had been run.
+	- Add language locale to --whatis, the `whatis' program does not
+	support this.
+
+	### Handle several macro packages
+
+	* groffer2.sh:
+	- $_MACROS: New variable to store the actual macro package.
+	- $_MACRO_PACKAGES: New variable for the full macro packages of
+	groff (man, mdoc, me, mm, mom, ms).
+	- to_tmp(): Add test for different macro packages.  Ignore files
+	with a different one.
+	- main_do_fileargs(): Add different macro check before doing man
+	pages.
+
+	### Rewrite the man page search
+
+	* groffer2.sh:
+	- $_MAN_SEC_CHARS, $_MAN_SEC_LIST: New variables from $_MAN_SEC.
+	Add these to man_setup().
+	- man_get(): New function that finally gets the man page or man
+	pages for a filespec.  Avoid double files.
+	- man_is_man(): New function that checks whether a name goes as
+	man page.
+	- manpath_add_lang_sys(): Fix handling of language addition for
+	short language names.
+	- main_parse_args(): Move handling of `-' to main_do_fileargs().
+	- do_filearg(), man_do_filespec(), man_register_file(),
+	man_search_section(): Remove these functions.
+	- main_do_fileargs(): Rewrite this function together with
+	the removed functions.
+	- list_uniq(): New function to remove the multiple elements from a
+	list.
+
+	### Version handling.
+
+	* version.sh: New file for $_PROGRAM_VERSION, $_LAST_UPDATE, and
+	$_GROFF_VERSION_PRESET.
+
+	* groffer.sh:
+	- Add running of version.sh with `.'.
+	- Remove $_PROGRAM_VERSION and $_LAST_UPDATE.
+	- Run groffer2.sh with `.' instead of `exec'.  This allows to have
+	groffer2.sh without executive access permission.
+	- Determine $_BEFORE_MAKE by @VERSION@, use this variable on more
+	places.
+
+	* groffer2.sh:
+	- Remove executive access permission.
+	- version(): Write a version information without calling groff.
+
+	* Makefile.sub:
+	- Add version.sh.  Use $(INSTALL_DATA) instead of
+	$(INSTALL_SCRIPT) for version.sh and groffer2.sh.
+	- Add $(DESTDIR) to some elements of `sed' call in `groffer:'.
+
+	### viewers for different modes
+
+	* groffer2.sh:
+	- $_VIEWER_HTML_X: Add `epiphany' as browser.
+	- $_VIEWER_PDF_X: Add `kpdf' and `evince' as pdf viewer for X.
+	Make `kpdf', `acroread', `evince', and `xpdf' the first automatic
+	pdf viewers for X because they support searching.  Add `gpdf'.
+	- $_VIEWER_PS_X: Add `kpdf' and `evince' as ps viewer for X; make
+	`kpdf' the first automatic ps viewer for X because it supports
+	searching even for Postscript.
+
+	### pdf mode
+	
+	* groffer2.sh:
+	- _make_pdf() of main_display(): add `ps2pdf' as secondary
+	transformer.
+	- main_set_resources(): Allow setting of resolution for `xpdf'
+	only if option -z is not set for `xpdf'.
+
+	### Revise $_VIEWER_*
+
+	* groffer2.sh:
+	- $_VIEWER_<mode>_TTY: Add this variable to each mode even if it
+	is only empty.
+	- $_VIEWER_<mode>_X: Rename $_VIEWER_<mode> to this for each
+	mode.
+
+	### Other fixes
+
+	* groffer2.sh:
+	- is_empty_file(): New function.
+	- obj_from_output(): Quote arguments by building a list.
+	- path_list(): Output path list with unique elements.
+	- where_is_prog(): Rename where_is().  Handle all file names
+	having a slash somewhere instead of only those that start with a
+	slash.
+	- $_REG_TITLE_LIST: Replace $_REGISTERED_TITLE and make it a
+	list.
+	- $_OPT_TITLE: Make it a list with at most 1 element.
+	- Remove double quotes in case patterns.
+	- _func_test(): For the function test at the beginning, add this
+	function for output check with $() construct.
+	- usage(): Add --shell.
+	- $_VIEWER_HTML_X: Add `firefox' and `mosaic'.
+	- list_get(): Remove this unused function.
+	- Fix func_check() calls in all functions.
+
+	* groffer.sh: Adjust groff version to 19.3.
+
+	* README: Add information list of the source files.
+	
 2006-02-26  Claudio Fontana  <claudio@gnu.org>
 
-	* Makefile.sub: Add DESTDIR to install and uninstall targets
-	to support staged installations.
+        * Makefile.sub: Add DESTDIR to install and uninstall targets
+        to support staged installations.
 
 	________________________________________________________________
 	* release of groffer 0.9.23
 
-2005-14-07  Bernd Warken
+2005-09-14  Bernd Warken
 
 	### Increase the speed for the search of man pages
 
@@ -1665,7 +1803,7 @@
 	________________________________________________________________
 	License
 
-	Copyright (C) 2001,2002,2003,2004,2005,2006
+	Copyright (C) 2001,2002,2003,2004,2005
 	Free Software Foundation, Inc.
 	Written by Bernd Warken
 

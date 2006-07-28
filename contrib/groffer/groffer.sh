@@ -4,12 +4,13 @@
 
 # Source file position: <groff-source>/contrib/groffer/groffer.sh
 
-# Copyright (C) 2001,2002,2003,2004,2005
+# Copyright (C) 2001,2002,2003,2004,2005,2006
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# This file is part of `groffer', which is part of `groff' version
-# @VERSION@.  See $_GROFF_VERSION.
+# Last update: 28 Jul 2006
+
+# This file is part of `groffer', which is part of `groff'.
 
 # `groff' is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -28,12 +29,6 @@
 # USA.
 
 ########################################################################
-
-_PROGRAM_VERSION='0.9.23';
-_LAST_UPDATE='14 Sep 2005';
-
-export _PROGRAM_VERSION;
-export _LAST_UPDATE;
 
 export GROFFER_OPT;		# option environment for groffer
 
@@ -61,34 +56,51 @@ _ERROR='7';			# for syntax errors; no `-1' in `ash'
 
 # @...@ constructs
 
-export _GROFF_VERSION;
 export _BEFORE_MAKE;
 if test _@VERSION@_ = _${_AT}VERSION${_AT}_
 then
+  # script before `make'
   _BEFORE_MAKE='yes';
-  _GROFF_VERSION='1.19.2';
 else
   _BEFORE_MAKE='no';
-  _GROFF_VERSION='@VERSION@';
 fi;
 
 export _AT_BINDIR_AT;
 export _AT_G_AT;
 export _AT_LIBDIR_AT;
 export _GROFFER_LIBDIR;
-if test _@BINDIR@_ = _${_AT}BINDIR${_AT}_
-then
-  # script before `make'
+case "${_BEFORE_MAKE}" in
+yes)
   _AT_BINDIR_AT='.';
   _AT_G_AT='';
   _AT_LIBDIR_AT='';
   _GROFFER_LIBDIR='.';
-else
+  ;;
+no)
   _AT_BINDIR_AT='@BINDIR@';
   _AT_G_AT='@g@';
   _AT_LIBDIR_AT='@libdir@';
   _GROFFER_LIBDIR="${_AT_LIBDIR_AT}"'/groff/groffer';
+  ;;
+esac;
+
+if test -f "${_GROFFER_LIBDIR}"/version.sh
+then
+  . "${_GROFFER_LIBDIR}"/version.sh;
 fi;
+
+export _GROFF_VERSION;
+case "${_BEFORE_MAKE}" in
+yes)
+  _GROFF_VERSION="${_GROFF_VERSION_PRESET}";
+  ;;
+no)
+  _GROFF_VERSION='@VERSION@';
+  ;;
+esac;
+
+export _GROFFER2_SH;		# file name of the script that follows up
+_GROFFER2_SH="${_GROFFER_LIBDIR}"/groffer2.sh;
 
 export _GROFFER_SH;		# file name of this shell script
 case "$0" in
@@ -101,9 +113,6 @@ case "$0" in
   exit 1;
   ;;
 esac;
-
-export _GROFFER2_SH;		# file name of the script that follows up
-_GROFFER2_SH="${_GROFFER_LIBDIR}"/groffer2.sh;
 
 export _NULL_DEV;
 if test -c /dev/null
@@ -293,7 +302,7 @@ fi;
 if test _"${_SHELL}"_ = __
 then
   # no shell found, so start groffer2.sh normally
-  eval exec "'${_GROFFER2_SH}'" '"$@"';
+  eval . "'${_GROFFER2_SH}'" '"$@"';
   exit;
 else
   # start groffer2.sh with the found $_SHELL

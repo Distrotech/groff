@@ -5,7 +5,7 @@
 # Copyright (C) 2001,2002,2005,2006 Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org> and Bernd Warken.
 
-# Last update: 25 Feb 2006
+# Last update: 28 Jul 2006
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -34,12 +34,12 @@ RM=rm -f
 
 all: groffer
 
-groffer: groffer.sh groffer2.sh $(SH_DEPS_SED_SCRIPT)
+groffer: groffer.sh groffer2.sh version.sh $(SH_DEPS_SED_SCRIPT)
 	$(RM) $@;
 	sed -f $(SH_DEPS_SED_SCRIPT) \
             -e "s|@g@|$(g)|g" \
-	    -e "s|@BINDIR@|$(bindir)|g" \
-	    -e "s|@libdir@|$(libdir)|g" \
+	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/groffer.sh >$@;
 	chmod +x $@
@@ -53,8 +53,12 @@ install_data: groffer
 	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
 	$(INSTALL_SCRIPT) $(srcdir)/groffer2.sh \
 	  $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
+	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/version.sh
+	$(INSTALL_DATA) $(srcdir)/version.sh \
+	$(DESTDIR)$(libdir)/groff/groffer/version.sh
 
 uninstall_sub:
 	-$(RM) $(DESTDIR)$(bindir)/groffer
 	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
+	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/version.sh
 	-rmdir $(DESTDIR)$(libdir)/groff/groffer

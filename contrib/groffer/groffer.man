@@ -15,7 +15,7 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update: 07 Sep 2005
+Last update: 28 Jul 2006
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
@@ -24,7 +24,7 @@ This file was written by
 .MTO "" "Bernd Warken" .
 ..
 .de copyleft
-Copyright (C) 2001,2002,2004,2005 Free Software Foundation, Inc.
+Copyright (C) 2001,2002,2004,2005,2006 Free Software Foundation, Inc.
 .
 .P
 This file is part of
@@ -783,7 +783,7 @@ The option
 closes the option handling, all following arguments are treated as
 file names.
 .
-Long options can be abbreviated.
+Long options can be abbreviated in several ways.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1008,6 +1008,29 @@ All long options of
 .B \%groffer
 are compatible with the long options of
 .BR \%man (1).
+.
+.
+.P
+Arguments for long option names can be abbreviated in several ways.
+.
+First, the argument is checked whether it can be prolonged as is.
+.
+Furthermore, each minus sign
+.Opt_short
+is considered as a starting point for a new abbreviation.
+.
+This leads to a set of multiple abbreviations for a single argument.
+.
+For example,
+.Opt_long de\-n\-f
+can be used as an abbreviation for
+.Opt_long debug\-not\-func ,
+but
+.Opt_long de\-n
+works as well.
+.
+If the abbreviation of the argument leads to several resulting options
+an error is raised.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1238,12 +1261,14 @@ using the Postscript device, then it is transformed into the PDF file
 format using
 .BR \%gs (1),
 and finally displayed either with the
-.BR \%xpdf (1)
-or the
-.BR \%acroread (1)
-program.
+BR \%acroread (1),
+.BR \%xpdf (1),
+or some other
+.I \%pdf
+viewer program.
 .
-PDF has a big advantage because the text is displayed graphically and
+.I \%pdf
+has a big advantage because the text is displayed graphically and
 is searchable as well.
 .
 But as the transformation takes a considerable amount of time, this
@@ -1667,6 +1692,13 @@ with a large result; for the
 .B groff.7
 nothing will be found.
 .
+The language locale is handled only when the called programs do support
+this; the GNU
+.B apropos
+and
+.B man \-k
+do not.
+.
 The display differs from the
 .B \%apropos
 program by the following concepts:
@@ -1674,7 +1706,9 @@ program by the following concepts:
 .Topic
 construct a
 .I \%groff
-frame to the output of
+frame similar to a
+.I \%man\~page
+to the output of
 .BR \%apropos ,
 .Topic
 each
@@ -1726,7 +1760,7 @@ argument search all
 .I \%man\~pages
 and display their description \[em] or say that it is not a
 .IR \%man\~page .
-This differs from
+This is written from anew, so it differs from
 .IR man 's
 .B whatis
 output by the following concepts
@@ -1736,9 +1770,12 @@ each retrieved file name is added,
 .Topic
 local files are handled as well,
 .Topic
+the language and system locale is supported,
+.Topic
 the display is framed by a
 .I groff
-output format,
+output format similar to a
+.IR \%man\~page ,
 .Topic
 wildcard characters are allowed without a further option.
 .RE
@@ -2289,7 +2326,14 @@ waits for standard input.
 .
 The minus option
 .Opt_short ""
-stands for standard input, too; it can occur several times.
+always stands for standard input; it can occur several times.
+.
+If you want to look up a
+.I \%man\~page
+called
+.Opt_short ""
+use the argument
+.BR "man:\-" .
 .
 .
 .Topic
@@ -3598,15 +3642,25 @@ content, its source code.
 .
 .
 .TP
+.Shell_cmd "groffer\~--de-p\~--in\~--ap"
+This is a set of abbreviated arguments, it is determined as
+.br
+.Shell_cmd "groffer\~--debug-params\~--intermediate-output\~--apropos"
+.
+.
+.TP
 .Shell_cmd "cat\~file.gz\~|\~groffer\~-Z\~-mfoo"
 .
-Decompress the standard input, send this to
+The file
+.File_name file.gz
+is sent to standard input, this is decompressed, and then this is
+transported to the
 .I \%groff intermediate output mode
 without post-processing
 .RB ( groff
 option
 .Opt_short Z ),
-using macro package by
+using macro package
 .I \%foo
 .RB ( groff
 option
@@ -3913,10 +3967,11 @@ Viewers for
 .
 .
 .P
+.BR \%acroread (1),
+.BR \%xpdf (1),
+.BR \%gpdf (1),
 .BR \%kghostview (1),
 .BR \%ggv (1),
-.BR \%xpdf (1),
-.BR \%acroread (1),
 .BR \%kpdf (1)
 .RS
 Viewers for
