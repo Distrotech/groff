@@ -618,7 +618,7 @@
       b
     :finish
       N
-      /^%%Page:.*0 *Cg *EP/d
+      /^%%Page:.*\n0 Cg EP$/d
     '} $TC_DATA $BD_DATA | $PDFROFF_POSTPROCESSOR_COMMAND $CS_DATA -
   $SAY >&2 ". done"
 #
