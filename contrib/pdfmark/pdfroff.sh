@@ -609,6 +609,11 @@
 # (This 'sed' script is a hack, to eliminate redundant blank pages).
 #
   ${PDFROFF_COLLATE-"$SED"} ${PDFROFF_KILL_NULL_PAGES-'
+      /%%Page:/{
+	N
+	/%%BeginPageSetup/b again
+      }
+      b
     :again
       /%%EndPageSetup/b finish
       /%%Page:/{
