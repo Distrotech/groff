@@ -655,7 +655,7 @@ grohtml
 
 .ULS
 .LI
-New option `\-j' to emit output splitted into multiple files.
+New option `\-j' to emit output split into multiple files.
 .ULE
 .
 .
