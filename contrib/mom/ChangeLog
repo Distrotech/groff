@@ -1,6 +1,105 @@
+* Mon Jul 31 2006
+
+o Changed all .LLs in LIST to .ll requests.
+
+o Added new macro, FINIS_STRING_CAPS, to control capitalization of
+  the finis string.
+
+o Amended doc section on page set up to include directions for
+  telling groff about the physical dimensions of printer sheets.
+
+o Added new arg to BLANKPAGE: NULL.  If given, BLANKPAGE does not
+  increment the page number when outputting a blank page.
+
+o Added new control macros, COVERS_COUNT_PAGES and
+  DOC_COVERS_COUNT_PAGES in case user wants covers counted in the
+  pagination scheme.
+
+o Added new final arg to COVER and DOC_COVER: BLANKPAGE.  Instructs
+  COVER or DOC_COVER to print a blank page after the cover.
+
+o Added new optional args to CODE: BR, BREAK, SPREAD.  CODE can
+  now be called inline; if called as a macro and the user wants a
+  break or spread, s/he has to supply one of the args.
+
+o Added new macro, CODE_FAMILY, to set fixed-width family used by
+  .CODE
+
+o Made EDITOR an alias of AUTHOR
+
+o Added optional arguments, COVER or DOC_COVER, to reference
+  macros that may be used on covers and doc covers, allowing users
+  greater flexibility in determining exactly what goes on covers
+  and doc covers without screwing up the doc header or the default
+  page headers/footers
+
+o Added macros to control the weight and placement of all
+  underscore/underline rules used in typesetting and document
+  processing
+
+o Added macros for drawing of rules, boxes and circles (ellipses)
+
+o Added macro, RULE_WEIGHT, to control weight of rules drawn with
+  \*[RULE]
+
+o General doc updates, additions, amendations and corrections
+
+o Reformatted entirety of documentation to be xhtml clean
+
+o Added inlines \*[UC] and \*[LC] to handle inline caps; corrected
+  doc entry stating that you can use \*[CAPS] and \*[CAPS OFF]; chief
+  reason is to allow inline capitalization in strings passed to
+  header/footer definitions.
+
+* Fri Jul 7 2006
+
+o Changed inline, \*[RULE], so that it always draws the rule one
+  linespace beneath the last output line.  Formerly, \*[RULE] drew
+  the rule on the baseline of the current output line.
+
+* Sun Jul 2 2006
+
+o Changed UNDERSCORE and UNDERSCORE2 to use groff's \D'l <n> <n>'
+  line drawing function.
+
+o Changed RULE to use groff's \D'l <n> <n>' line drawing function.
+
+o Added RULE_WEIGHT macro, to allow controlling weight of \*[RULE],
+  expressed in points (including fractional points).
+
+o Added two new inlines, \*[UC] (all caps) and \*[LC] (caps/lowercase).
+  These can be used in user-defined header/footer strings (if \E is
+  used instead of just the backslash by itself) as well as in
+  normal copy.
+
+* Sat Jul 1 2006
+
+o Added .FAMILY \\*[$DOC_FAMILY] and .FT R to the end of
+  .DEFAULT_DOCHEADER, .CHAPTER_DOCHEADER and .NAMED_DOCHEADER.
+  Fixes bug that was causing type which was set after .START when no
+  docelement tag given to be set in the last family and font used in
+  the docheader, instead of the expected $DOC_FAMILY and roman font
+  (R).
+
+* Fri Jun 30 2006
+
+o Updated copyright file
+
+o Massive documentation cleanup to make docs well-formed xhtml
+
+* Thu Jun 22 2006
+
+o Rewrote portions of TITLE, COVERTITLE, DOCCOVERTITLE,
+  CHAPTER_TITLE, SUBTITLE and MISC so that when they're called from
+  .COLLATE, they properly clean out all associated strings and
+  registers.  Fixes the "vanishing $TITLE" bug.
+
+o Added missing .rm $AUTHORS to .AUTHOR.  .as $AUTHORS now always
+  starts with a clean slate.
+
 * Wed Jun 14 2006
 
-Added a missing </nobr> tag to docelement.html.
+o Added a missing </nobr> tag to docelement.html.
 
 ------------------------------------------------------------------------
 * Sat Jun 10 2006

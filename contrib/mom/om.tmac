@@ -3,7 +3,7 @@
 Mom -- a typesetting/document-processing macro set for groff.
 
 Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
-     Written by Peter Schaffter (peter@faustus.dyn.ca)
+     Written by Peter Schaffter (pschaffter@magma.ca)
 
 This file is part of groff.
 
@@ -21,8 +21,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.4-b
--------------
+Version 1.5
+-----------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -85,6 +85,11 @@ to a macro means that any argument turns the feature off.
 .sty \n[.fp] BLEXI   \"  Black Extended Italic
 .sty \n[.fp] UBL     \"  Ultra-Black Roman
 .sty \n[.fp] UBLI    \"  Ultra-Black Italic
+\#
+\# Instruct grops to use square linecaps and joins.
+\# This instruction is also executed in DO_B_MARGIN, NEWPAGE, and HEADER
+\#
+\X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
 \#
 \# ====================================================================
 \#
@@ -321,6 +326,7 @@ to a macro means that any argument turns the feature off.
 .    nr #T_MARGIN_LEAD_ADJ \\n[#LEAD]-12000
 .    ev B_MARGIN
 .    bp
+.    nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
 .    ev
 .END
 \#
@@ -348,6 +354,7 @@ to a macro means that any argument turns the feature off.
 .       ie !\\n[#DOCS]=1 \{\
 .          ev NP
 .          bp
+.          nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
 .          ev
 .       \}
 .       el \{\
@@ -1003,10 +1010,10 @@ to a macro means that any argument turns the feature off.
 .       sp \\n[#ALD]u
 .    \}
 .    if '\\$0'SPACE' \{\
-.       sp \\$1u
+.       sp \\$1
 .    \}
 .    if '\\$0'SP' \{\
-.       sp \\$1u
+.       sp \\$1
 .    \}
 .END
 \#
@@ -1316,7 +1323,7 @@ to a macro means that any argument turns the feature off.
 \# preferable, since it works with filled and non-filled copy and
 \# doesn't require the user to remember to use (or not use) the \c.
 \#
-.ds B \h'|0'\c
+.ds B \h'|0'\R'#NO_ADVANCE 1'\c
 \#
 \# =====================================================================
 \#
@@ -1456,7 +1463,7 @@ to a macro means that any argument turns the feature off.
 .       rr #QUAD
 .       ds $RESTORE_QUAD_VALUE RIGHT
 .    \}
-.    fi
+.    nf
 .    rj 100000
 .    nr #PSEUDO_FILL 1
 .END
@@ -1478,7 +1485,7 @@ to a macro means that any argument turns the feature off.
 .       rr #QUAD
 .       ds $RESTORE_QUAD_VALUE CENTER
 .    \}
-.    fi
+.    nf
 .    ce 100000
 .    nr #PSEUDO_FILL 1
 .END
@@ -1813,7 +1820,10 @@ to a macro means that any argument turns the feature off.
 \#
 .MAC XCOLOR END
 .    ds \\$1 \m[\\$1]
-.    if \\n[#NUM_ARGS]=2 .ds \\$2 \m[\\$1]
+.    if \\n[#NUM_ARGS]=2 \{\
+.       ds \\$2 \m[\\$1]
+.       ds $\\$2_FILL \\$1
+.    \}
 .END
 \#
 \# Pre-define xcolors black and white
@@ -1993,7 +2003,7 @@ to a macro means that any argument turns the feature off.
 \# *Notes:
 \#   Intended to be called with inline escapes \*[UL] (underline
 \#   on) and \*[ULX] (underline off).  Only works when the font family
-\#   is COURIER, to simulate typewriter-style underlining of italic
+\#   is fixed width, to simulate typewriter-style underlining of italic
 \#   passages.
 \#
 .MAC UL END
@@ -2144,7 +2154,7 @@ to a macro means that any argument turns the feature off.
 \# UNDERSCORE
 \# ----------
 \# *Arguments:
-\#   [points below baseline] "text"
+\#   [<points below baseline>] "text"
 \# *Function:
 \#   Places an underscore 2 points under the string if no lead given,
 \#   otherwise places underscore under string by user specified amount.
@@ -2158,8 +2168,9 @@ to a macro means that any argument turns the feature off.
 \#      .UNDERSCORE 2p "Text to be underscored
 \#
 \#   All text is underscored (including punctuation and spaces).
-\#   This is the primary difference between UNDERLINE and UNDERSCORE,
-\#   aside from the fact the UNDERLINE only works with Courier.
+\#   This is the primary difference between UNDERLINE and
+\#   UNDERSCORE, aside from the fact the UNDERLINE only works with
+\#   fixed width fonts.
 \#
 \#   UNDERSCORE does not work across line breaks.  Each line of
 \#   text must be entered separately with UNDERSCORE.  If the
@@ -2168,10 +2179,72 @@ to a macro means that any argument turns the feature off.
 \#   UNDERSCORE, as must the portion that comes after the break.
 \#
 .MAC UNDERSCORE END
-.    nr #RESTORE_PT_SIZE \\n[#PT_SIZE]
-.    ie \\n[#NUM_ARGS]=1 \{ \\$1\\s(12\\v'+2p'\\l'|0'\\v'-2p'\\s[\\n[#RESTORE_PT_SIZE]u] \}
-.    el                  \{ \\$2\\s(12\\v'+(\\$1)'\\l'|0'\\v'-(\\$1)'\\s[\\n[#RESTORE_PT_SIZE]u] \}
-.    rr #RESTORE_PT_SIZE
+.    nr #SAVED_UNDERSCORE_WEIGHT     \\n[#UNDERSCORE_WEIGHT]
+.    nr #SAVED_UNDERSCORE_WEIGHT_ADJ \\n[#UNDERSCORE_WEIGHT_ADJ]
+.    ds $SAVED_UNDERSCORE_GAP        \\*[$UNDERSCORE_GAP]
+.    if \\n[#FROM_BIB_STRING]=1 \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#BIB_STRING_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#BIB_STRING_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$BIB_STRING_UNDERLINE_GAP]
+.    \}
+.    if \\n[#FROM_COVER]=1 \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#COVER_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#COVER_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$COVER_UNDERLINE_GAP]
+.    \}
+.    if \\n[#FROM_DOC_COVER]=1 \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#DOCCOVER_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#DOCCOVER_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$DOCCOVER_UNDERLINE_GAP]
+.    \}
+.    if \\n[#FROM_DOCTYPE]=1 \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#DOCTYPE_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#DOCTYPE_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$DOCTYPE_UNDERLINE_GAP]
+.    \}
+.    if \\n[#FROM_HEAD]=1 \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#HEAD_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#HEAD_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$HEAD_UNDERLINE_GAP]
+.    \}
+.    if \\n[#FROM_EN_STRING]=1 \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#EN_STRING_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#EN_STRING_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$EN_STRING_UNDERLINE_GAP]
+.    \}
+.    if \\n[#FROM_EN_TITLE]=1 \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#EN_TITLE_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#EN_TITLE_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$EN_TITLE_UNDERLINE_GAP]
+.    \}
+.    ie \\n[#NUM_ARGS]=1 \{\
+.       nr #TEXT_WIDTH \w'\\$1'
+\\$1\
+\D't \\n[#UNDERSCORE_WEIGHT]'\
+\h'-\\n[#TEXT_WIDTH]u-\\n[#UNDERSCORE_WEIGHT]u'\
+\v'+(\\*[$UNDERSCORE_GAP])+\\n[#UNDERSCORE_WEIGHT_ADJ]u'\
+\D'l \\n[#TEXT_WIDTH]u 0'\
+\D't \\n[#RULE_WEIGHT]'\
+\h'-\\n[#RULE_WEIGHT]u'\
+\v'-(\\*[$UNDERSCORE_GAP])-\\n[#UNDERSCORE_WEIGHT_ADJ]u'
+.    \}
+.    el \{\
+.       nr #TEXT_WIDTH \w'\\$2'
+\\$2\
+\h'-\\n[#TEXT_WIDTH]u-\\n[#UNDERSCORE_WEIGHT]u'\
+\v'+(\\$1)+\\n[#UNDERSCORE_WEIGHT_ADJ]u'\
+\D't \\n[#UNDERSCORE_WEIGHT]'\
+\D'l \\n[#TEXT_WIDTH]u 0'\
+\D't \\n[#RULE_WEIGHT]'\
+\h'-\\n[#RULE_WEIGHT]u'\
+\v'-(\\$1)-\\n[#UNDERSCORE_WEIGHT_ADJ]u'
+.    \}
+.    nr #UNDERSCORE_WEIGHT     \\n[#SAVED_UNDERSCORE_WEIGHT]
+.    nr #UNDERSCORE_WEIGHT_ADJ \\n[#SAVED_UNDERSCORE_WEIGHT_ADJ]
+.    ds $UNDERSCORE_GAP        \\*[$SAVED_UNDERSCORE_GAP]
+.    rr #SAVED_UNDERSCORE_WEIGHT
+.    rr #SAVED_UNDERSCORE_WEIGHT_ADJ
+.    rm $SAVED_UNDERSCORE_GAP
 .END
 \#
 \#
@@ -2185,19 +2258,95 @@ to a macro means that any argument turns the feature off.
 \# *Notes:
 \#   The same double-quote requirement as UNDERSCORE.
 \#
+\#
 .MAC UNDERSCORE2 END
-.    nr #RESTORE_PT_SIZE \\n[#PT_SIZE]
-.    if \\n[#NUM_ARGS]=1 \{\
-.       PRINT \\$1\\s(12\\v'+2p'\\l'|0'\\v'+2p'\\l'|0'\\v'-4p'\\s[\\n[#RESTORE_PT_SIZE]u]
-.    \}
+.    nr #SAVED_UNDERSCORE_WEIGHT     \\n[#UNDERSCORE_WEIGHT]
+.    nr #SAVED_UNDERSCORE_WEIGHT_ADJ \\n[#UNDERSCORE_WEIGHT_ADJ]
+.    ds $SAVED_UNDERSCORE_GAP        \\*[$UNDERSCORE_GAP]
+.    ds $SAVED_RULE_GAP              \\*[$RULE_GAP]
 .    if \\n[#NUM_ARGS]=2 \{\
-.       PRINT \\$2\\s(12\\v'+\\$1'\\l'|0'\\v'+2p'\\l'|0'\\v'-(2p+\\$1)'\\s[\\n[#RESTORE_PT_SIZE]u]
+.       ds $UNDERSCORE_GAP \\$1
 .    \}
 .    if \\n[#NUM_ARGS]=3 \{\
-.       PRINT \\$3\\s(12\\v'+\\$1'\\l'|0'\\v'+\\$2'\\l'|0'\\v'-(\\$2+\\$1)'\\s[\\n[#RESTORE_PT_SIZE]u]
+.       ds $UNDERSCORE_GAP \\$1
+.       ds $RULE_GAP \\$2
 .    \}
-.    rr #RESTORE_PT_SIZE
+.    if \\n[#FROM_BIB_STRING] \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#BIB_STRING_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#BIB_STRING_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$BIB_STRING_UNDERLINE_GAP]
+.       ds $RULE_GAP              \\*[$BIB_STRING_RULE_GAP]
+.    \}
+.    if \\n[#FROM_EN_STRING] \{\
+.       nr #UNDERSCORE_WEIGHT     \\n[#EN_STRING_UNDERLINE_WEIGHT]
+.       nr #UNDERSCORE_WEIGHT_ADJ \\n[#EN_STRING_UNDERLINE_WEIGHT_ADJ]
+.       ds $UNDERSCORE_GAP        \\*[$EN_STRING_UNDERLINE_GAP]
+.       ds $RULE_GAP              \\*[$EN_STRING_RULE_GAP]
+.    \}
+.    if \\n[#NUM_ARGS]=1 \{\
+.       nr #TEXT_WIDTH \w'\\$1'
+\\$1\
+\D't \\n[#UNDERSCORE_WEIGHT]'\
+\v'+\\*[$UNDERSCORE_GAP]+\\n[#UNDERSCORE_WEIGHT_ADJ]u'\
+\h'-\\n[#TEXT_WIDTH]u-\\n[#UNDERSCORE_WEIGHT]u'\
+\D'l \\n[#TEXT_WIDTH]u 0'\
+\v'+\\*[$RULE_GAP]+\\n[#UNDERSCORE_WEIGHT]u'\
+\h'-\\n[#TEXT_WIDTH]u'\
+\D'l \\n[#TEXT_WIDTH]u 0'\
+\D't \\n[#RULE_WEIGHT]'\
+\h'-\\n[#RULE_WEIGHT]u'\
+\v'-(\\*[$UNDERSCORE_GAP]+\\*[$RULE_GAP])-(\\n[#UNDERSCORE_WEIGHT]u*2u)'
+.    \}
+.    if \\n[#NUM_ARGS]=2 \{\
+.       nr #TEXT_WIDTH \w'\\$2'
+\\$2\
+\D't \\n[#UNDERSCORE_WEIGHT]'\
+\v'+\\*[$UNDERSCORE_GAP]+\\n[#UNDERSCORE_WEIGHT_ADJ]u'\
+\h'-\\n[#TEXT_WIDTH]u-\\n[#UNDERSCORE_WEIGHT]u'\
+\D'l \\n[#TEXT_WIDTH]u 0'\
+\v'+(\\*[$RULE_GAP])+\\n[#UNDERSCORE_WEIGHT]u'\
+\h'-\\n[#TEXT_WIDTH]u'\
+\D'l \\n[#TEXT_WIDTH]u 0'\
+\D't \\n[#RULE_WEIGHT]'\
+\h'-\\n[#RULE_WEIGHT]u'\
+\v'-(\\*[$UNDERSCORE_GAP]+\\*[$RULE_GAP])+(\\n[#UNDERSCORE_WEIGHT]u*2u)'
+.    \}
+.    if \\n[#NUM_ARGS]=3 \{\
+.       nr #TEXT_WIDTH \w'\\$3'
+\\$3\
+\D't \\n[#UNDERSCORE_WEIGHT]'\
+\v'+\\*[$UNDERSCORE_GAP]+\\n[#UNDERSCORE_WEIGHT_ADJ]u'\
+\h'-\\n[#TEXT_WIDTH]u-\\n[#UNDERSCORE_WEIGHT]u'\
+\D'l \\n[#TEXT_WIDTH]u 0'\
+\v'+\\*[$RULE_GAP]+\\n[#UNDERSCORE_WEIGHT]u'\
+\h'-\\n[#TEXT_WIDTH]u'\
+\D'l \\n[#TEXT_WIDTH]u 0'\
+\D't \\n[#RULE_WEIGHT]'\
+\h'-\\n[#RULE_WEIGHT]u'\
+\v'-(\\*[$UNDERSCORE_GAP]+\\*[$RULE_GAP])-(\\n[#UNDERSCORE_WEIGHT]u*2u)'
+.    \}
+.    nr #UNDERSCORE_WEIGHT     \\n[#SAVED_UNDERSCORE_WEIGHT]
+.    nr #UNDERSCORE_WEIGHT_ADJ \\n[#SAVED_UNDERSCORE_WEIGHT_ADJ]
+.    ds $UNDERSCORE_GAP        \\*[$SAVED_UNDERSCORE_GAP]
+.    rr #SAVED_UNDERSCORE_WEIGHT
+.    rr #SAVED_UNDERSCORE_WEIGHT_ADJ
+.    rm $SAVED_UNDERSCORE_GAP
+.    rm $SAVED_RULE_GAP
 .END
+\#
+\# Default underscoring rule gaps
+\#
+.ds $BIB_STRING_UNDERLINE_GAP 2p
+.ds $BIB_STRING_RULE_GAP      2p
+.ds $COVER_UNDERLINE_GAP      2p
+.ds $DOCCOVER_UNDERLINE_GAP   2p
+.ds $DOCTYPE_UNDERLINE_GAP    2p
+.ds $EN_STRING_UNDERLINE_GAP  2p
+.ds $EN_STRING_RULE_GAP       2p
+.ds $EN_TITLE_UNDERLINE_GAP   2p
+.ds $HEAD_UNDERLINE_GAP       2p
+.ds $RULE_GAP                 2p
+.ds $UNDERSCORE_GAP           2p
 \#
 \#
 \# SUPERSCRIPT INLINES
@@ -2682,6 +2831,109 @@ to a macro means that any argument turns the feature off.
 '    in \\n[#RESTORE_INDENT]u
 .END
 \#
+\# =====================================================================
+\#
+\# +++GRAPHICAL OBJECTS+++
+\#
+\# HORIZONTAL RULE - DRH
+\# ---------------------
+\# *Arguments:
+\#   <none> | <rule weight> <indent> <length> [ <color> ]
+\# *Function:
+\#   With no arg, draws a full measure rule.  With args, draws
+\#   described horizontal rule.
+\# *Notes:
+\#   Rules are drawn left-to-right, from the baseline down, and
+\#   return to their point of origin.  Color must be set in the
+\#   macro; otherwise the color will be black, regardless of current
+\#   .gcolor.  If no arg given, the rule weight is the one set by
+\#   RULE_WEIGHT.
+\#
+.MAC DRH END
+.    vpt 0
+.    ie !\\n[#NO_ADVANCE]=1 \{ .br \}
+.    el \{\
+.       sp -1v
+.       rr #NO_ADVANCE
+.    \}
+.    ie \\n(.u=1 \{\
+.       nr #FILLED 1
+.       nr #FILL_MODE \\n(.j
+.    \}
+.    el \{\
+.       nr #NOFILL 1
+.       if \\n[.ce]>0 \{ .nr #NOFILL_MODE 3 \}
+.       if \\n[.rj]>0 \{ .nr #NOFILL_MODE 5 \}
+.       ce 0
+.       rj 0
+.    \}
+.    nf
+.    ds $RL_WEIGHT \\$1
+.    ds $RL_INDENT \\$2
+.    ds $RL_LENGTH \\$3
+.    ie !'\\$4'' \{\
+.       ds $RL_COLOR  \\$4
+.    \}
+.    el \{\
+.       ds $RL_COLOR default
+.    \}
+.    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
+.    nr #SAVED_WEIGHT_ADJ \\n[#RULE_WEIGHT_ADJ]
+.    di NULL
+.       if \\n[#NUM_ARGS]>=1 \{ .RULE_WEIGHT \\*[$RL_WEIGHT] \}
+.    di
+.    gcolor \\*[$RL_COLOR]
+.    ie \\n[#NUM_ARGS]=0 \{\
+.       ie \\n[#INDENT_ACTIVE] \{\
+.          nr #RESTORE_L_LENGTH \\n(.l
+.          if \\n[#INDENT_BOTH_ACTIVE] \{ .ll \\n(.lu-\\n[#BL_INDENT]u \}
+.          if \\n[#INDENT_LEFT_ACTIVE] \{ .ll \\n(.lu-\\n[#L_INDENT]u \}
+\D't \\n[#RULE_WEIGHT]'\
+\h'\\*[$RL_INDENT]-\\n[#RULE_WEIGHT]u'\
+\v'\\n[#RULE_WEIGHT_ADJ]u'\
+\D'l \En(.lu 0'\v'-\\n[#RULE_WEIGHT_ADJ]u'\
+\v'-\\n[#RULE_WEIGHT_ADJ]u'\
+\D't \\n[#SAVED_RULE_WEIGHT]'
+.          ll \\n[#RESTORE_L_LENGTH]u
+.          rr #RESTORE_L_LENGTH
+.       \}
+.       el \{\
+\D't \\n[#RULE_WEIGHT]'\
+\h'\\*[$RL_INDENT]-\\n[#RULE_WEIGHT]u'\
+\v'\\n[#RULE_WEIGHT_ADJ]u'\
+\D'l \En(.lu 0'\v'-\\n[#RULE_WEIGHT_ADJ]u'\
+\v'-\\n[#RULE_WEIGHT_ADJ]u'\
+\D't \\n[#SAVED_RULE_WEIGHT]'
+.       \}
+.    \}
+.    el \{\
+\D't \\n[#RULE_WEIGHT]'\
+\h'\\*[$RL_INDENT]-\\n[#RULE_WEIGHT]u'\
+\v'\\n[#RULE_WEIGHT_ADJ]u'\
+\D'l \\*[$RL_LENGTH] 0'\
+\v'-\\n[#RULE_WEIGHT_ADJ]u'\
+\D't \\n[#SAVED_RULE_WEIGHT]'
+.    \}
+.    if \\n[#FILLED]=1 \{\
+.       if \\n[#FILL_MODE]=0 \{ .QUAD LEFT   \}
+.       if \\n[#FILL_MODE]=1 \{ .JUSTIFY     \}
+.       if \\n[#FILL_MODE]=3 \{ .QUAD CENTER \}
+.       if \\n[#FILL_MODE]=5 \{ .QUAD RIGHT  \}
+.       rr #FILLED
+.    \}
+.    sp -1v
+.    if \\n[#NOFILL]=1 \{\
+.       if \\n[#NOFILL_MODE]=3 \{ .CENTER \}
+.       if \\n[#NOFILL_MODE]=5 \{ .RIGHT  \}
+.    \}
+.    gcolor
+.    nr #RULE_WEIGHT     \\n[#SAVED_WEIGHT]
+.    nr #RULE_WEIGHT_ADJ \\n[#SAVED_WEIGHT_ADJ]
+.    rr #SAVED_WEIGHT
+.    rr #SAVED_WEIGHT_ADJ
+.    vpt 1
+.END
+\#
 \#
 \# RULE
 \# ----
@@ -2690,34 +2942,473 @@ to a macro means that any argument turns the feature off.
 \# *Function:
 \#   Draws a rule the length of the current measure.
 \# *Notes:
+\#   A convenience macro.  DRV does the same thing.  Kept in for
+\#   backward compatibility.
 \#
 .MAC RULE END
-\c
-.    EL
 .    if \\n(.u=1 \{\
-.       nr #FILL_WAS_ON 1
+.       nr #FILLED 1
 .       ds $CURRENT_QUAD \\*[$QUAD_VALUE]
 .       nf
 .    \}
 .    ie \\n[#INDENT_ACTIVE] \{\
-.       nr #RESTORE_L_LENGTH \\n(.l
 .       if \\n[#INDENT_BOTH_ACTIVE] \{ .ll \\n(.lu-\\n[#BL_INDENT]u \}
 .       if \\n[#INDENT_LEFT_ACTIVE] \{ .ll \\n(.lu-\\n[#L_INDENT]u \}
-.       PRINT \El'\En(.lu'\c
-.       ll \\n[#RESTORE_L_LENGTH]u
+.       PRINT \D't \\n[#RULE_WEIGHT]'\v'\\n[#RULE_WEIGHT_ADJ]u'\D'l \En(.lu 0'\v'-\\n[#RULE_WEIGHT_ADJ]u'\h'|0'\c
+.       ll
 .       rr #RESTORE_L_LENGTH
 .    \}
 .    el \{\
-.       PRINT \El'\En(.lu'\c
+.       PRINT \D't \\n[#RULE_WEIGHT]'\v'\\n[#RULE_WEIGHT_ADJ]u'\D'l \En(.lu 0'\v'-\\n[#RULE_WEIGHT_ADJ]u'\h'|0'\c
 .    \}
-.    if r#FILL_WAS_ON \{\
+.    if r#FILLED \{\
 .       fi
-.       rr #FILL_WAS_ON
+.       rr #FILLED
 .       QUAD \\*[$CURRENT_QUAD]
 .       rm $CURRENT_QUAD
 .    \}
-.    EL
+.    EOL
 .END
+\#
+\#
+\# VERTICAL RULE - DRV
+\# -------------------
+\# *Arguments:
+\#   <rule weight> <indent> <depth> [ <color> ]
+\# *Function:
+\#   Draws described vertical rule.
+\# *Notes:
+\#   Rules are drawn left-to-right, from the baseline down, and
+\#   return to their point of origin.  Color must be set in the
+\#   macro; otherwise the color will be black, regardless of current
+\#   .gcolor.
+\#
+.MAC DRV END
+.    vpt 0
+.    ie !\\n[#NO_ADVANCE]=1 \{ .br \}
+.    el \{\
+.       sp -1v
+.       rr #NO_ADVANCE
+.    \}
+.    ie \\n(.u=1 \{\
+.       nr #FILLED 1
+.       nr #FILL_MODE \\n(.j
+.    \}
+.    el \{\
+.       nr #NOFILL 1
+.       if \\n[.ce]>0 \{ .nr #NOFILL_MODE 3 \}
+.       if \\n[.rj]>0 \{ .nr #NOFILL_MODE 5 \}
+.       ce 0
+.       rj 0
+.    \}
+.    nf
+.    ds $RL_WEIGHT \\$1
+.    ds $RL_INDENT \\$2
+.    ds $RL_DEPTH  \\$3
+.    ie !'\\$4'' \{\
+.       ds $RL_COLOR  \\$4
+.    \}
+.    el \{\
+.       ds $RL_COLOR default
+.    \}
+.    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
+.    nr #SAVED_WEIGHT_ADJ \\n[#RULE_WEIGHT_ADJ]
+.    di NULL
+.       RULE_WEIGHT \\*[$RL_WEIGHT]
+.    di
+.    gcolor \\*[$RL_COLOR]
+\D't \\n[#RULE_WEIGHT]'\
+\h'\\*[$RL_INDENT]-\\n[#RULE_WEIGHT_ADJ]u'\
+\D'l 0 \\*[$RL_DEPTH]'\
+\D't \\n[#SAVED_RULE_WEIGHT]'
+.    if \\n[#FILLED]=1 \{\
+.       if \\n[#FILL_MODE]=0 \{ .QUAD LEFT   \}
+.       if \\n[#FILL_MODE]=1 \{ .JUSTIFY     \}
+.       if \\n[#FILL_MODE]=3 \{ .QUAD CENTER \}
+.       if \\n[#FILL_MODE]=5 \{ .QUAD RIGHT  \}
+.       rr #FILLED
+.    \}
+.    sp -1v
+.    if \\n[#NOFILL]=1 \{\
+.       if \\n[#NOFILL_MODE]=3 \{ .CENTER \}
+.       if \\n[#NOFILL_MODE]=5 \{ .RIGHT  \}
+.    \}
+.    gcolor
+.    nr #RULE_WEIGHT     \\n[#SAVED_WEIGHT]
+.    nr #RULE_WEIGHT_ADJ \\n[#SAVED_WEIGHT_ADJ]
+.    vpt 1
+.END
+\#
+\# BOXES - DBX
+\# -----------
+\# *Arguments:
+\#   <rule weight | SOLID> <indent> <length> <depth> [ <color> ]
+\# *Function:
+\#   Draws described box.
+\# *Notes:
+\#   Boxes are drawn left-to-right, from the baseline down, and
+\#   return to their point of origin.  Box rules are drawn from the
+\#   perimeter inwards.  Color must be set in the macro; otherwise
+\#   the color will be black, regardless of current .gcolor.  If no
+\#   arg given, the rule weight is the one set by RULE_WEIGHT.
+\#
+.MAC DBX END
+.    vpt 0
+.    ie !\\n[#NO_ADVANCE]=1 \{ .br \}
+.    el \{\
+.       sp -1v
+.       rr #NO_ADVANCE
+.    \}
+.    ie \\n(.u=1 \{\
+.       nr #FILLED 1
+.       nr #FILL_MODE \\n(.j
+.    \}
+.    el \{\
+.       nr #NOFILL 1
+.       if \\n[.ce]>0 \{ .nr #NOFILL_MODE 3 \}
+.       if \\n[.rj]>0 \{ .nr #NOFILL_MODE 5 \}
+.       ce 0
+.       rj 0
+.    \}
+.    nf
+.    ie '\\$1'SOLID' \{\
+.       nr #BX_SOLID 1
+.    \}
+.    el \{\
+.       ds $BX_WEIGHT \\$1
+.    \}
+.    ds $BX_INDENT \\$2
+.    ds $BX_WIDTH \\$3
+.    ds $BX_DEPTH  \\$4
+.    ie !'\\$5'' \{\
+.       ie d$\\$5_FILL \{\
+.          ds $BX_COLOR \\*[$\\$5_FILL]
+.       \}
+.       el \{\
+.          ds $BX_COLOR \\$5
+.       \}
+.    \}
+.    el \{\
+.       ds $BX_COLOR default
+.    \}
+.    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
+.    nr #SAVED_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.    if !'\\$1'SOLID' \{\
+.       di NULL
+.          RULE_WEIGHT \\*[$BX_WEIGHT]
+.       di
+.    \}
+.    ds $BX_INDENT \\*[$BX_INDENT]-\\n[#WEIGHT_ADJ]u
+.    ie \\n[#BX_SOLID]=1 \{\
+.       fcolor \\*[$BX_COLOR]
+\h'\\*[$BX_INDENT]'\
+\D'P \\*[$BX_WIDTH] 0 0 \\*[$BX_DEPTH] -\\*[$BX_WIDTH] 0 0 -\\*[$BX_DEPTH]'
+.       fcolor
+.       rr #BX_SOLID
+.    \}
+.    el \{\
+.       gcolor \\*[$BX_COLOR]
+\D't \\n[#RULE_WEIGHT]'\
+\h'\\*[$BX_INDENT]'\
+\v'\\n[#WEIGHT_ADJ]u'\
+\D'p \\*[$BX_WIDTH]-\\n[#RULE_WEIGHT]u 0 0 \\*[$BX_DEPTH]-\\n[#RULE_WEIGHT]u -\\*[$BX_WIDTH]+\\n[#RULE_WEIGHT]u 0 0 -\\*[$BX_DEPTH]+\\n[#RULE_WEIGHT]u'\
+\v'-\\n[#WEIGHT_ADJ]u'\
+\D't \\n[#SAVED_RULE_WEIGHT]'
+.       gcolor
+.    \}
+.    sp -1v
+.    if \\n[#FILLED]=1 \{\
+.       if \\n[#FILL_MODE]=0 \{ .QUAD LEFT   \}
+.       if \\n[#FILL_MODE]=1 \{ .JUSTIFY     \}
+.       if \\n[#FILL_MODE]=3 \{ .QUAD CENTER \}
+.       if \\n[#FILL_MODE]=5 \{ .QUAD RIGHT  \}
+.       rr #FILLED
+.    \}
+.    if \\n[#NOFILL]=1 \{\
+.       if \\n[#NOFILL_MODE]=3 \{ .CENTER \}
+.       if \\n[#NOFILL_MODE]=5 \{ .RIGHT  \}
+.    \}
+.    nr #RULE_WEIGHT \\n[#SAVED_WEIGHT]
+.    nr #WEIGHT_ADJ  \\n[#SAVED_WEIGHT_ADJ]
+.    rr #SAVED_WEIGHT
+.    rr #SAVED_WEIGHT_ADJ
+.    vpt 1
+.END
+\#
+\#
+\# ELLIPSES - DCL
+\# --------------
+\# *Arguments:
+\#   <rule weight | SOLID> <indent> <width> <depth> [ <color> ]
+\# *Function:
+\#   Draws described ellipses.
+\# *Notes:
+\#   Ellipses (circles) are drawn left-to-right, from the baseline
+\#   down, and return to their point of origin.  Ellipse rules are
+\#   drawn from the perimeter inwards.  Color must be set in the
+\#   macro; otherwise the color will be black, regardless of current
+\#   .gcolor.  If no arg given, the rule weight is the one set by
+\#   RULE_WEIGHT.
+\#
+.MAC DCL END
+.    vpt 0
+.    ie !\\n[#NO_ADVANCE]=1 \{ .br \}
+.    el \{\
+.       sp -1v
+.       rr #NO_ADVANCE
+.    \}
+.    ie \\n(.u=1 \{\
+.       nr #FILLED 1
+.       nr #FILL_MODE \\n(.j
+.    \}
+.    el \{\
+.       nr #NOFILL 1
+.       if \\n[.ce]>0 \{ .nr #NOFILL_MODE 3 \}
+.       if \\n[.rj]>0 \{ .nr #NOFILL_MODE 5 \}
+.       ce 0
+.       rj 0
+.    \}
+.    nf
+.    ie '\\$1'SOLID' \{\
+.       nr #CL_SOLID 1
+.    \}
+.    el \{\
+.       ds $CL_WEIGHT \\$1
+.    \}
+.    ds $CL_INDENT \\$2
+.    ds $CL_WIDTH  \\$3
+.    ds $CL_DEPTH  \\$4
+.    ie !'\\$5'' \{\
+.       ie d$\\$5_FILL \{\
+.          ds $CL_COLOR \\*[$\\$5_FILL]
+.       \}
+.       el \{\
+.          ds $CL_COLOR \\$5
+.       \}
+.    \}
+.    el \{\
+.       ds $CL_COLOR default
+.    \}
+.    nr #SAVED_WEIGHT     \\n[#RULE_WEIGHT]
+.    nr #SAVED_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.    if !'\\$1'SOLID' \{\
+.       di NULL
+.          RULE_WEIGHT \\*[$CL_WEIGHT]
+.       di
+.    \}
+.    ds $CL_INDENT \\*[$CL_INDENT]-\\n[#WEIGHT_ADJ]u
+.    ie \\n[#CL_SOLID]=1 \{\
+.       fcolor \\*[$CL_COLOR]
+\h'\\*[$CL_INDENT]'\
+\v'\\*[$CL_DEPTH]/2u'\
+\D'E \\*[$CL_WIDTH]-\\n[#RULE_WEIGHT]u \\*[$CL_DEPTH]-\\n[#RULE_WEIGHT]u'\
+\v'-\\*[$CL_DEPTH]/2u'
+.       fcolor
+.       rr #CL_SOLID
+.    \}
+.    el \{\
+.       gcolor \\*[$CL_COLOR]
+\D't \\n[#RULE_WEIGHT]'\
+\h'\\*[$CL_INDENT]'\
+\v'\\*[$CL_DEPTH]/2u'\
+\D'e \\*[$CL_WIDTH]-\\n[#RULE_WEIGHT]u \\*[$CL_DEPTH]-\\n[#RULE_WEIGHT]u'\
+\v'-(\\*[$CL_DEPTH]/2u)'\
+\D't \\n[#SAVED_RULE_WEIGHT]'
+.       gcolor
+.    \}
+.    sp -1v
+.    if \\n[#FILLED]=1 \{\
+.       if \\n[#FILL_MODE]=0 \{ .QUAD LEFT   \}
+.       if \\n[#FILL_MODE]=1 \{ .JUSTIFY     \}
+.       if \\n[#FILL_MODE]=3 \{ .QUAD CENTER \}
+.       if \\n[#FILL_MODE]=5 \{ .QUAD RIGHT  \}
+.       rr #FILLED
+.    \}
+.    if \\n[#NOFILL]=1 \{\
+.       if \\n[#NOFILL_MODE]=3 \{ .CENTER \}
+.       if \\n[#NOFILL_MODE]=5 \{ .RIGHT  \}
+.    \}
+.    nr #RULE_WEIGHT \\n[#SAVED_WEIGHT]
+.    nr #WEIGHT_ADJ  \\n[#SAVED_WEIGHT_ADJ]
+.    rr #SAVED_WEIGHT
+.    rr #SAVED_WEIGHT_ADJ
+.    vpt 1
+.END
+\#
+\#
+\# RULE WEIGHT
+\# -----------
+\# *Argument:
+\#   <weight of rules in points>
+\# *Function:
+\#   Sets \D't <n>' to the correct number of machine units for the
+\#   argument given in points.
+\# *Notes:
+\#   Decimal fractions are allowed.  Rule weight must be > 100.
+\#
+.MAC RULE_WEIGHT END
+.    di NULL \" Diverted so there's no problem with breaks, spacing, etc.
+.       ds $ARG \\$1
+.       substring $ARG -1
+.       if !\B'\\*[$ARG]' \{\
+.             tm1 "[mom]: The argument to \\$0 must not have a unit of measure appended.
+.             ab Aborting at \\$0, line \\n[.c].
+.       \}
+.       length #STR_LENGTH \\$1
+.       ds $ARG \\$1
+.       substring $ARG 0 0
+.       ie '\\*[$ARG]'.' \{\
+.          ds $ARG \\$1
+.          substring $ARG 1 \\n[#STR_LENGTH]-1
+.          nr #WEIGHT \\*[$ARG]*100
+.          if (\\n[#WEIGHT]>=1000) \{\
+.              while (\\n[#WEIGHT]>=1000) \{\
+.                  nr #WEIGHT \\n[#WEIGHT]/10
+.   \}
+        \}
+.       \}
+.       el \{\
+.          ds $ARG \\$1
+.          substring $ARG 1 1
+.          ie '\\*[$ARG]'.' \{\
+.             ds $LHS \\$1
+.             substring $LHS 0 0
+.             ds $RHS \\$1
+.             substring $RHS 2
+.             nr #WEIGHT \\*[$LHS]\\*[$RHS]*100
+.             if (\\n[#WEIGHT]>=10000) \{\
+.                while (\\n[#WEIGHT]>=10000) \{\
+.                   nr #WEIGHT \\n[#WEIGHT]/10
+.   \}
+.             \}
+.          \}
+.          el \{\
+.             ie \\n[#STR_LENGTH]<=2 \{\
+.                nr #WEIGHT \\$1*1000
+.             \}
+.             el \{\
+.                ds $ARG \\$1
+.                substring $ARG 2 2
+.                ie !'\\*[$ARG]'.' \{\
+.                   tm1 "[mom]: Illegal argument given to macro \\$0 at line \\n[.c].
+.                   tm1 "       Rule weight must be > 100 points.
+.                   tm1 "       Falling back to default weight .5 points.
+.                   nr #WEIGHT 500
+.                \}
+.                el \{\
+.                   ds $LHS \\$1
+.                   substring $LHS 0 1
+.                   ds $RHS \\$1
+.                   substring $RHS 3
+.                   nr #WEIGHT \\*[$LHS]\\*[$RHS]*1000
+.                   if (\\n[#WEIGHT]>=100000) \{\
+.                      while (\\n[#WEIGHT]>=100000) \{\
+.                         nr #WEIGHT \\n[#WEIGHT]/10
+.   \}
+.                   \}
+.                \}
+.             \}
+.          \}
+.       \}
+.       nr #WEIGHT_ADJ \\n[#WEIGHT]/2
+.       if '\\$0'BIBLIOGRAPHY_STRING_UNDERLINE_WEIGHT' \{\
+.          nr #BIB_STRING_UNDERLINE_WEIGHT     \\n[#WEIGHT]
+.          nr #BIB_STRING_UNDERLINE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'COVER_UNDERLINE_WEIGHT' \{\
+.          nr #COVER_UNDERLINE_WEIGHT     \\n[#WEIGHT]
+.          nr #COVER_UNDERLINE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'DOCCOVER_UNDERLINE_WEIGHT' \{\
+.          nr #DOCCOVER_UNDERLINE_WEIGHT     \\n[#WEIGHT]
+.          nr #DOCCOVER_UNDERLINE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'DOCTYPE_UNDERLINE_WEIGHT' \{\
+.          nr #DOCTYPE_UNDERLINE_WEIGHT     \\n[#WEIGHT]
+.          nr #DOCTYPE_UNDERLINE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'ENDNOTE_STRING_UNDERLINE_WEIGHT' \{\
+.          nr #EN_STRING_UNDERLINE_WEIGHT     \\n[#WEIGHT]
+.          nr #EN_STRING_UNDERLINE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'ENDNOTE_TITLE_UNDERLINE_WEIGHT' \{\
+.          nr #EN_TITLE_UNDERLINE_WEIGHT     \\n[#WEIGHT]
+.          nr #EN_TITLE_UNDERLINE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'FOOTER_RULE_WEIGHT' \{\
+.          nr #FOOTER_RULE_WEIGHT     \\n[#WEIGHT]
+.          nr #FOOTER_RULE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'FOOTNOTE_RULE_WEIGHT' \{\
+.          nr #FN_RULE_WEIGHT     \\n[#WEIGHT]
+.          nr #FN_RULE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'HEAD_UNDERLINE_WEIGHT' \{\
+.          nr #HEAD_UNDERLINE_WEIGHT     \\n[#WEIGHT]
+.          nr #HEAD_UNDERLINE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'HEADER_RULE_WEIGHT' \{\
+.          nr #HEADER_RULE_WEIGHT     \\n[#WEIGHT]
+.          nr #HEADER_RULE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'RULE_WEIGHT' \{\
+.          nr #RULE_WEIGHT     \\n[#WEIGHT]
+.          nr #RULE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.       if '\\$0'UNDERSCORE_WEIGHT' \{\
+.          nr #UNDERSCORE_WEIGHT     \\n[#WEIGHT]
+.          nr #UNDERSCORE_WEIGHT_ADJ \\n[#WEIGHT_ADJ]
+.       \}
+.    di
+.END
+\#
+\# Aliases
+\# ~~~~~~~
+.ALIAS BIBLIOGRAPHY_STRING_UNDERLINE_WEIGHT RULE_WEIGHT
+.ALIAS COVER_UNDERLINE_WEIGHT               RULE_WEIGHT
+.ALIAS DOCCOVER_UNDERLINE_WEIGHT            RULE_WEIGHT
+.ALIAS DOCTYPE_UNDERLINE_WEIGHT             RULE_WEIGHT
+.ALIAS ENDNOTE_STRING_UNDERLINE_WEIGHT      RULE_WEIGHT
+.ALIAS ENDNOTE_TITLE_UNDERLINE_WEIGHT       RULE_WEIGHT
+.ALIAS FOOTER_RULE_WEIGHT                   RULE_WEIGHT
+.ALIAS FOOTNOTE_RULE_WEIGHT                 RULE_WEIGHT
+.ALIAS HEAD_UNDERLINE_WEIGHT                RULE_WEIGHT
+.ALIAS HEADER_RULE_WEIGHT                   RULE_WEIGHT
+.ALIAS UNDERSCORE_WEIGHT                    RULE_WEIGHT
+\#
+\# Default rule weights
+\# ~~~~~~~~~~~~~~~~~~~~
+.nr #BIB_STRING_UNDERLINE_WEIGHT 500
+.nr #COVER_UNDERLINE_WEIGHT      500
+.nr #DOCCOVER_UNDERLINE_WEIGHT   500
+.nr #DOCTYPE_UNDERLINE_WEIGHT    500
+.nr #EN_STRING_UNDERLINE_WEIGHT  500
+.nr #EN_TITLE_UNDERLINE_WEIGHT   500
+.nr #FN_RULE_WEIGHT              500
+.nr #FOOTER_RULE_WEIGHT          500
+.nr #HEAD_UNDERLINE_WEIGHT       500
+.nr #HEADER_RULE_WEIGHT          500
+.nr #RULE_WEIGHT                 500
+.nr #UNDERSCORE_WEIGHT           500
+\#
+.nr #BIB_STRING_UNDERLINE_WEIGHT_ADJ \\n[#BIB_STRING_UNDERLINE_WEIGHT]/2
+.nr #COVER_UNDERLINE_WEIGHT_ADJ      \\n[#DOCTYPE_UNDERLINE_WEIGHT]/2
+.nr #DOCCOVER_UNDERLINE_WEIGHT_ADJ   \\n[#DOCTYPE_RULE_WEIGHT]/2
+.nr #DOCTYPE_UNDERLINE_WEIGHT_ADJ    \\n[#DOCTYPE_RULE_WEIGHT]/2
+.nr #EN_STRING_UNDERLINE_WEIGHT_ADJ  \\n[#EN_STRING_UNDERLINE_WEIGHT]/2
+.nr #EN_TITLE_UNDERLINE_WEIGHT_ADJ   \\n[#EN_STRING_UNDERLINE_WEIGHT]/2
+.nr #FOOTER_RULE_WEIGHT_ADJ          \\n[#FOOTER_RULE_WEIGHT]/2
+.nr #FN_RULE_WEIGHT_ADJ              \\n[#FN_RULE_WEIGHT]/2
+.nr #HEAD_UNDERLINE_WEIGHT_ADJ       \\n[#HEAD_UNDERLINE_WEIGHT]/2
+.nr #HEADER_RULE_WEIGHT_ADJ          \\n[#HEADER_RULE_WEIGHT]/2
+.nr #RULE_WEIGHT_ADJ                 \\n[#RULE_WEIGHT]/2
+.nr #UNDERSCORE_WEIGHT_ADJ           \\n[#UNDERSCORE_WEIGHT]/2
+\#
+\# Set default rule weight
+\#
+.di NULL
+\D't 500'
+.di
 \#
 \# =====================================================================
 \#
@@ -3174,6 +3865,7 @@ to a macro means that any argument turns the feature off.
 \#   is zero, advances to the baseline of the deepest column.
 \#
 .MAC MCX END
+.    TRAP OFF
 .    ie '\\$1'' \{\
 .       TQ
 .       sp |\\n(.hu
@@ -3185,6 +3877,7 @@ to a macro means that any argument turns the feature off.
 .       el \{ .sp |\\n(.hu+\\n[#MCX_ALD]u \}
 .       rr #MCX_ALD
 .    \}
+.    TRAP
 .END
 \#
 \# =====================================================================
@@ -3252,6 +3945,9 @@ to a macro means that any argument turns the feature off.
 \#   <none> | <anything>
 \# *Function:
 \#   Converts text to caps, or, if OFF, reverts to normal caps/lc.
+\# *Notes:
+\#   For inline control of capitalization style, use \*[UC] and
+\#   \*[LC].
 \#
 .MAC CAPS END
 .    ie '\\$1'' \{\
@@ -3324,6 +4020,80 @@ to a macro means that any argument turns the feature off.
 .       tr ÿ\[:y]
 .       rr #CAPS_ON
 .    \}
+.END
+\#
+.MAC UC END
+\c
+.    tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+.    tr à\[`A]
+.    tr â\[^A]
+.    tr á\['A]
+.    tr ä\[:A]
+.    tr å\[oA]
+.    tr ã\[~A]
+.    tr æ\[AE]
+.    tr è\[`E]
+.    tr ê\[^E]
+.    tr é\['E]
+.    tr ë\[:E]
+.    tr ì\[`I]
+.    tr î\[^I]
+.    tr í\['I]
+.    tr ï\[:I]
+.    tr ò\[`O]
+.    tr ô\[^O]
+.    tr ó\['O]
+.    tr ö\[:O]
+.    tr õ\[~O]
+.    tr ø\[/O]
+.    tr ù\[`U]
+.    tr û\[^U]
+.    tr ú\['U]
+.    tr ü\[:U]
+.    tr ç\[,C]
+.    tr ð\[-D]
+.    tr ñ\[~N]
+.    tr þ\[TP]
+.    tr ý\['Y]
+.    tr ÿ\[:Y]
+.    nr #CAPS_ON 1
+.END
+\#
+.MAC LC END
+\c
+.    tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+.    tr à\[`a]
+.    tr â\[^a]
+.    tr á\['a]
+.    tr ä\[:a]
+.    tr å\[oa]
+.    tr ã\[~a]
+.    tr æ\[ae]
+.    tr è\[`e]
+.    tr ê\[^e]
+.    tr é\['e]
+.    tr ë\[:e]
+.    tr ì\[`i]
+.    tr î\[^i]
+.    tr í\['i]
+.    tr ï\[:i]
+.    tr ò\[`o]
+.    tr ô\[^o]
+.    tr ó\['o]
+.    tr ö\[:o]
+.    tr õ\[~o]
+.    tr ø\[/o]
+.    tr ù\[`u]
+.    tr û\[^u]
+.    tr ú\['u]
+.    tr ü\[:u]
+.    tr ç\[,c]
+.    tr ð\[Sd]
+.    tr ñ\[~n]
+.    tr þ\[Tp]
+.    tr ý\['y]
+.    tr ÿ\[:y]
+.    rr #CAPS_ON
 .END
 \#
 \# SIZESPECS
@@ -3503,6 +4273,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if !\\n[#ITALIC_MEANS_ITALIC] \{ .UNDERLINE_ITALIC \}
 .          if !\\n[#UNDERLINE_QUOTES]    \{ .UNDERLINE_QUOTES \}
 .          nr #IGNORE_COLUMNS 1
+.          nr #RULE_WEIGHT 500
+.          nr #HEAD_UNDERLINE_WEIGHT 500
 .          char \(em --
 .          tr `'
 .       \}
@@ -3922,22 +4694,59 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 .MAC TITLE END \"Document title
-.    rr #TITLE_NUM
-.    nr #TITLE_NUM 0 1
-.    while \\n[#NUM_ARGS]>\\n[#TITLE_NUM] \{\
-.       ds $TITLE_\\n+[#TITLE_NUM] \\$\\n[#TITLE_NUM]
+.    ie \\n[#NUM_ARGS]=0 \{\
+.       if \\n[#TITLE_NUM] \{\
+.          nr #ITEM 0 1
+.          while \\n[#TITLE_NUM]>\\n[#ITEM] \{\
+.             rm $TITLE_\\n+[#ITEM]
 .\}
-.    ds $TITLE \\$*
+.          rr #TITLE_NUM
+.       \}
+.    \}
+.    el \{\
+.       nr #TITLE_NUM 0 1
+.       while \\n[#NUM_ARGS]>\\n[#TITLE_NUM] \{\
+.          ds $TITLE_\\n+[#TITLE_NUM] \\$\\n[#TITLE_NUM]
+.\}
+.       ds $TITLE \\$*
+.    \}
 .END
 \#
 \#
 .MAC SUBTITLE END \"Document sub-title
-.    rr #SUBTITLE_NUM
-.    nr #SUBTITLE_NUM 0 1
-.    while \\n[#NUM_ARGS]>\\n[#SUBTITLE_NUM] \{\
-.       ds $SUBTITLE_\\n+[#SUBTITLE_NUM] \\$\\n[#SUBTITLE_NUM]
+.    ie \\n[#NUM_ARGS]=0 \{\
+.       if \\n[#SUBTITLE_NUM] \{\
+.          nr #ITEM 0 1
+.          while \\n[#SUBTITLE_NUM]>\\n[#ITEM] \{\
+.             rm $SUBTITLE_\\n+[#ITEM]
 .\}
-.    ds $SUBTITLE \\$*
+.          rr #SUBTITLE_NUM
+.          rm $SUBTITLE
+.       \}
+.    \}
+.    el \{\
+.    if '\\$1'DOC_COVER' \{\
+.       shift
+.       nr #SUBTITLE_DOCCOVER_NUM 0 1
+.       while \\n[#NUM_ARGS]>\\n[#SUBTITLE_DOCCOVER_NUM] \{\
+.           ds $SUBTITLE_DOCCOVER_\\n+[#SUBTITLE_DOCCOVER_NUM] \\$\\n[#SUBTITLE_DOCCOVER_NUM]
+.\}
+.       return
+.    \}
+.    if '\\$1'COVER' \{\
+.       shift
+.       nr #SUBTITLE_COVER_NUM 0 1
+.       while \\n[#NUM_ARGS]>\\n[#SUBTITLE_COVER_NUM] \{\
+.           ds $SUBTITLE_COVER_\\n+[#SUBTITLE_COVER_NUM] \\$\\n[#SUBTITLE_COVER_NUM]
+.\}
+.       return
+.    \}
+.       nr #SUBTITLE_NUM 0 1
+.       while \\n[#NUM_ARGS]>\\n[#SUBTITLE_NUM] \{\
+.          ds $SUBTITLE_\\n+[#SUBTITLE_NUM] \\$\\n[#SUBTITLE_NUM]
+.\}
+.       ds $SUBTITLE \\$*
+.    \}
 .END
 \#
 \#
@@ -3953,12 +4762,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC CHAPTER_TITLE END \" This defines what comes after Chapter #
-.    rr #CHAPTER_TITLE_NUM
-.    nr #CHAPTER_TITLE_NUM 0 1
-.    while \\n[#NUM_ARGS]>\\n[#CHAPTER_TITLE_NUM] \{\
-.       ds $CHAPTER_TITLE_\\n+[#CHAPTER_TITLE_NUM] \\$\\n[#CHAPTER_TITLE_NUM]
+.    ie \\n[#NUM_ARGS]=0 \{\
+.       if \\n[#CHAPTER_TITLE_NUM] \{\
+.          nr #ITEM 0 1
+.          while \\n[#CHAPTER_TITLE_NUM]>\\n[#ITEM] \{\
+.             rm $CHAPTER_TITLE_\\n+[#ITEM]
 .\}
-.    ds $CHAPTER_TITLE \\$*
+.          rr #CHAPTER_TITLE_NUM
+.          rm $CHAPTER_TITLE
+.       \}
+.    \}
+.    el \{\
+.       rr #CHAPTER_TITLE_NUM
+.       nr #CHAPTER_TITLE_NUM 0 1
+.       while \\n[#NUM_ARGS]>\\n[#CHAPTER_TITLE_NUM] \{\
+.          ds $CHAPTER_TITLE_\\n+[#CHAPTER_TITLE_NUM] \\$\\n[#CHAPTER_TITLE_NUM]
+.\}
+.       ds $CHAPTER_TITLE \\$*
+.    \}
 .END
 \#
 \#
@@ -3979,7 +4800,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \#
 .MAC AUTHOR END \"Author.  Enclose all args fully in double quotes.
+.    if '\\$1'DOC_COVER' \{\
+.       shift
+.       nr #AUTHOR_DOCCOVER_NUM 0 1
+.       while \\n[#NUM_ARGS]>\\n[#AUTHOR_DOCCOVER_NUM] \{\
+.           ds $AUTHOR_DOCCOVER_\\n+[#AUTHOR_DOCCOVER_NUM] \\$\\n[#AUTHOR_DOCCOVER_NUM]
+.\}
+.       return
+.    \}
+.    if '\\$1'COVER' \{\
+.       shift
+.       nr #AUTHOR_COVER_NUM 0 1
+.           while \\n[#NUM_ARGS]>\\n[#AUTHOR_COVER_NUM] \{\
+.       ds $AUTHOR_COVER_\\n+[#AUTHOR_COVER_NUM] \\$\\n[#AUTHOR_COVER_NUM]
+.\}
+.       return
+.    \}
 .    nr #AUTHOR_NUM 0 1
+.    rm $AUTHORS
 .    while \\n[#NUM_ARGS]>\\n[#AUTHOR_NUM] \{\
 .       ds $AUTHOR_\\n+[#AUTHOR_NUM] \\$\\n[#AUTHOR_NUM]
 .       as $AUTHORS \\*[$AUTHOR_\\n[#AUTHOR_NUM]], \"
@@ -3988,18 +4826,84 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ds $AUTHOR \\*[$AUTHOR_1]
 .END
 \#
+.ALIAS EDITOR AUTHOR
 \#
-.MAC COPYRIGHT END \"For use on cover page only
-.   ds $COPYRIGHT \[co]\\$1
+.MAC COPYRIGHT END \"For use on cover pages only
+.   ie \\n[#NUM_ARGS]=1 \{\
+.       ds $COPYRIGHT \[co]\\$1
+.       rm $COPYRIGHT_DOCCOVER
+.       rm $COPYRIGHT_COVER
+.    \}
+.    el \{\
+.       if '\\$1'DOC_COVER' \{\
+.          ds $COPYRIGHT_DOCCOVER \[co]\\$2
+.       \}
+.       if '\\$1'COVER' \{\
+.          ds $COPYRIGHT_COVER \[co]\\$2
+.       \}
+.    \}
 .END
 \#
 \#
-.MAC MISC END \"For use on cover page only; enclose all args in double quotes
-.    nr #MISC_NUM 0 1
-.    while \\n[#NUM_ARGS]>\\n[#MISC_NUM] \{\
-.       ds $MISC_\\n+[#MISC_NUM] \\$\\n[#MISC_NUM]
+.MAC MISC END \"For use on cover pages only; enclose all args in double quotes
+.    ie \\n[#NUM_ARGS]=0 \{\
+.       if \\n[#MISC_NUM] \{\
+.          nr #ITEM 0 1
+.          while \\n[#MISC_NUM]>\\n[#ITEM] \{\
+.             rm $MISC_\\n+[#ITEM]
 .\}
-.    nr #NUM_MISCS \\n[#NUM_ARGS]
+.          rr #MISC_NUM
+.          rr #NUM_MISCS
+.       \}
+.       if \\n[#MISC_DOCCOVER_NUM] \{\
+.          nr #ITEM 0 1
+.          while \\n[#MISC_DOCCOVER_NUM]>\\n[#ITEM] \{\
+.             rm $MISC_DOCCOVER_\\n+[#ITEM]
+.\}
+.          rr #MISC_DOCCOVER_NUM
+.          rr #NUM_MISCS
+.       \}
+.       if \\n[#MISC_COVER_NUM] \{\
+.          nr #ITEM 0 1
+.          while \\n[#MISC_COVER_NUM]>\\n[#ITEM] \{\
+.             rm $MISC_COVER_\\n+[#ITEM]
+.\}
+.          rr #MISC_COVER_NUM
+.          rr #NUM_MISCS
+.       \}
+.    \}
+.    el \{\
+.       if !'\\$1'DOC_COVER' \{\
+.         if !'\\$1'COVER' \{ .nr #NEITHER 1 \}
+.       \}
+.       if !'\\$1'COVER' \{\
+.          if !'\\$1'DOC_COVER'\{ .nr #NEITHER 1 \}
+.       \}
+.       if '\\$1'DOC_COVER' \{\
+.          shift
+.          nr #MISC_DOCCOVER_NUM 0 1
+.          while \\n[#NUM_ARGS]>\\n[#MISC_DOCCOVER_NUM] \{\
+.          ds $MISC_DOCCOVER_\\n+[#MISC_DOCCOVER_NUM] \\$\\n[#MISC_DOCCOVER_NUM]
+.\}
+.          nr #NUM_MISCS_DOCCOVER \\n[#NUM_ARGS]
+.       \}
+.       if '\\$1'COVER' \{\
+.          shift
+.          nr #MISC_COVER_NUM 0 1
+.          while \\n[#NUM_ARGS]>\\n[#MISC_COVER_NUM] \{\
+.          ds $MISC_COVER_\\n+[#MISC_COVER_NUM] \\$\\n[#MISC_COVER_NUM]
+.\}
+.          nr #NUM_MISCS_COVER \\n[#NUM_ARGS]
+.       \}
+.       if \\n[#NEITHER]=1 \{\
+.          nr #MISC_NUM 0 1
+.          while \\n[#NUM_ARGS]>\\n[#MISC_NUM] \{\
+.             ds $MISC_\\n+[#MISC_NUM] \\$\\n[#MISC_NUM]
+.\}
+.          nr #NUM_MISCS \\n[#NUM_ARGS]
+.          rr #NEITHER
+.       \}
+.   \}
 .END
 \#
 \#
@@ -4596,10 +5500,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       tm1 "       If no footers or bottom-of-page page numbers are required,
 .       tm1 "       type in .FOOTER_MARGIN 0 before .START
 .    \}
-.    if !r#HDRFTR_RULE_GAP   \{\
-.       if \\n[#HEADERS_ON]  \{ .HDRFTR_RULE_GAP 4p \}
-.       if \\n[#FOOTERS_ON]  \{ .HDRFTR_RULE_GAP 4p \}
-.    \}
+.    if !r#HEADER_RULE_GAP   \{ .HEADER_RULE_GAP 4p \}
+.    if !r#FOOTER_RULE_GAP   \{ .FOOTER_RULE_GAP 4p \}
 .    if !r#HDRFTR_RULE       \{ .HDRFTR_RULE        \}
 .    if !r#PAGE_NUM_SET      \{ .PAGENUMBER 1       \}
 .\" Read in number registers and strings for type parameters
@@ -4672,7 +5574,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !d$EN_STRING            \{ .ENDNOTE_STRING "Endnotes"          \}
 .    if !d$EN_STRING_FAM        \{ .ENDNOTE_STRING_FAMILY \\*[$EN_FAM] \}
 .    if !d$EN_STRING_QUAD       \{ .ENDNOTE_STRING_QUAD CENTER         \}
-.    if !r#EN_STRING_UNDERSCORE \{ .ENDNOTE_STRING_UNDERSCORE 2        \}
+.    if !r#EN_STRING_UNDERLINE  \{ .nr #EN_STRING_UNDERLINE 2          \}
 .    if !r#EN_STRING_CAPS       \{ .ENDNOTE_STRING_CAPS                \}
 .    if !d$EN_TITLE \{\
 .       ie \\n[#DOC_TYPE]=2 \{\
@@ -4689,7 +5591,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if !d$EN_TITLE_FAM          \{ .ENDNOTE_TITLE_FAMILY \\*[$EN_FAM]      \}
 .    if !d$EN_TITLE_QUAD         \{ .ENDNOTE_TITLE_QUAD LEFT                \}
-.    if !r#EN_TITLE_UNDERSCORE   \{ .ENDNOTE_TITLE_UNDERSCORE               \}
+.    if !r#EN_TITLE_UNDERLINE    \{ .nr #EN_TITLE_UNDERLINE 1               \}
 .    if !d$EN_NUMBER_FAM         \{ .ENDNOTE_NUMBER_FAMILY \\*[$EN_FAM]     \}
 .    if !d$EN_LN_FAM             \{ .ENDNOTE_LINENUMBER_FAMILY \\*[$EN_FAM] \}
 .    if !r#EN_NUMBERS_ALIGN_LEFT \{\
@@ -4704,7 +5606,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !d$BIB_STRING            \{ .BIBLIOGRAPHY_STRING "Bibliography"       \}
 .    if !d$BIB_STRING_FAM        \{ .BIBLIOGRAPHY_STRING_FAMILY \\*[$BIB_FAM] \}
 .    if !d$BIB_STRING_QUAD       \{ .BIBLIOGRAPHY_STRING_QUAD CENTER          \}
-.    if !r#BIB_STRING_UNDERSCORE \{ .BIBLIOGRAPHY_STRING_UNDERSCORE 2         \}
+.    if !r#BIB_STRING_UNDERLINE  \{ .nr #BIB_STRING_UNDERLINE 2               \}
 .    if !r#BIB_STRING_CAPS       \{ .BIBLIOGRAPHY_STRING_CAPS                 \}
 .    if !d$TOC_HEADER_STRING     \{ .TOC_HEADER_STRING "Contents"  \}
 .    if !d$TOC_HEADER_QUAD       \{ .TOC_HEADER_QUAD LEFT          \}
@@ -4715,28 +5617,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    ie \\n[#DOC_TYPE]=1 \{\
 .       ie '\\*[$DOC_TITLE]'' \{\
 .          if \\n[#USER_DEF_HDRFTR_LEFT]=0  .ds $HDRFTR_LEFT \\*[$AUTHOR_1]
-.          rr #USER_DEF_HDRFTR_LEFT
 .          if \\n[#USER_DEF_HDRFTR_RIGHT]=0 .ds $HDRFTR_RIGHT \\*[$TITLE]
-.          rr #USER_DEF_HDRFTR_RIGHT
 .       \}
 .       el \{\
 .          if \\n[#COPY_STYLE]=1 \{ .DRAFT_WITH_PAGENUMBER \}
 .          if \\n[#USER_DEF_HDRFTR_LEFT]=0   .ds $HDRFTR_LEFT \\*[$AUTHOR_1]
-.          rr #USER_DEF_HDRFTR_LEFT
 .          if \\n[#USER_DEF_HDRFTR_CENTER]=0 .ds $HDRFTR_CENTER \\*[$TITLE]
-.          rr #USER_DEF_HDRFTR_CENTER
 .          if \\n[#USER_DEF_HDRFTR_RIGHT]=0  .ds $HDRFTR_RIGHT \\*[$DOC_TITLE]
-.          rr #USER_DEF_HDRFTR_RIGHT
 .       \}
 .    \}
 .    el \{\
 .       if \\n[#USER_DEF_HDRFTR_LEFT]=0  .ds $HDRFTR_LEFT \\*[$AUTHOR_1]
-.       rr #USER_DEF_HDRFTR_LEFT
 .       if \\n[#USER_DEF_HDRFTR_RIGHT]=0 .ds $HDRFTR_RIGHT \\*[$TITLE]
-.       rr #USER_DEF_HDRFTR_RIGHT
 .    \}
-.    if !d$ATTRIBUTE_STRING         \{ .ATTRIBUTE_STRING "by" \}
-.    if !d$FINIS_STRING             \{ .FINIS_STRING "END"    \}
+.    if !d$ATTRIBUTE_STRING .ds $ATTRIBUTE_STRING by
+.    if !d$FINIS_STRING      \{ .FINIS_STRING "End"       \}
+.    if !r#FINIS_STRING_CAPS \{ .nr #FINIS_STRING_CAPS 1  \}
 .\" Covers
 .    if !r#DOC_COVERS_OFF           \{ .nr #DOC_COVERS 1           \}
 .    if !r#COVERS_OFF               \{ .nr #COVERS 1               \}
@@ -4744,6 +5640,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if !d$COVER_MISC_QUAD          \{ .COVER_MISC_QUAD L          \}
 .    if !d$DOC_COVER_COPYRIGHT_QUAD \{ .DOC_COVER_COPYRIGHT_QUAD R \}
 .    if !d$DOC_COVER_MISC_QUAD      \{ .DOC_COVER_MISC_QUAD L      \}
+.    if !r#DOCCOVER_UNDERLINE       \{ .DOC_COVER_UNDERLINE        \}
+.    if !r#COVER_UNDERLINE          \{ .COVER_UNDERLINE            \}
 .\" Defaults for printstyle TYPEWRITE
 .    if \\n[#PRINT_STYLE]=1 \{\
 .       if \\n[#UNDERLINE_QUOTES]=1 \{ .UNDERLINE_QUOTES         \}
@@ -4899,8 +5797,9 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          ie !d$DOCHEADER_FAM \{ .DOCTYPE_FAMILY \\*[$DOC_FAM]       \}
 .          el                  \{ .DOCTYPE_FAMILY \\*[$DOCHEADER_FAM] \}
 .       \}
-.       if !d$DOCTYPE_FT           \{ .DOCTYPE_FONT       BI \}
-.       if !d$DOCTYPE_SIZE_CHANGE  \{ .DOCTYPE_SIZE       +3 \}
+.       if !d$DOCTYPE_FT           \{ .DOCTYPE_FONT      BI \}
+.       if !d$DOCTYPE_SIZE_CHANGE  \{ .DOCTYPE_SIZE      +3 \}
+.       if !r#DOCTYPE_UNDERLINE    \{ .DOCTYPE_UNDERLINE    \}
 .\" +Headers and footers
 .       if !d$HDRFTR_LEFT_FAM      \{ .HDRFTR_LEFT_FAMILY \\*[$DOC_FAM] \}
 .       if !d$HDRFTR_LEFT_FT       \{ .HDRFTR_LEFT_FONT R               \}
@@ -5011,7 +5910,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       ps
 .    \}
 .\" +Refer support
-.    if !r#ENDNOTE_REFS \{ .nr #FN_REFS 1 \}
+.    if !r#EN_REF \{ .nr #FN_REF 1 \}
 .    if '\\*[$REF_FN_INDENT]'' \{\
 .       if \\n[#PRINT_STYLE]=1 \{ .INDENT_REFS FOOTNOTE 2m   \}
 .       if \\n[#PRINT_STYLE]=2 \{ .INDENT_REFS FOOTNOTE 1.5m \}
@@ -5143,28 +6042,76 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 \# Next, some utility macros for various routines to prevent repetition
 \#
+.    if '\\$1'DOC_COVER' \{\
+.       shift
+.       nr #AUTHOR_DOCCOVER_NUM 0 1
+.       while \\n[#NUM_ARGS]>\\n[#AUTHOR_DOCCOVER_NUM] \{\
+.       ds $AUTHOR_DOCCOVER_\\n+[#AUTHOR_DOCCOVER_NUM] \\$\\n[#AUTHOR_DOCCOVER_NUM]
+.\}
+.       return
+.    \}
+.    if '\\$1'COVER' \{\
+.       shift
+.       nr #AUTHOR_COVER_NUM 0 1
+.       while \\n[#NUM_ARGS]>\\n[#AUTHOR_COVER_NUM] \{\
+.       ds $AUTHOR_COVER_\\n+[#AUTHOR_COVER_NUM] \\$\\n[#AUTHOR_COVER_NUM]
+.\}
+.       return
+.    \}
+\#
 .MAC PRINT_AUTHORS END
-.    nr #AUTHORS \\n[#AUTHOR_NUM]
-.    nr #NEXT_AUTHOR 0 1
 .    ie r#DOING_COVER \{\
-.       if \\n[#COVER]=1 \{\
-.          while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
-.             ie \\n[#COVER_AUTHOR_COLOR]=1 \{\
-.                PRINT \m[\\*[$COVER_AUTHOR_COLOR]]\\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]\m[]
-.             \}
-.             el \{ .PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]] \}
-.\}
-.       \}
 .       if \\n[#DOC_COVER]=1 \{\
-.          while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
-.             ie \\n[#DOC_COVER_AUTHOR_COLOR]=1 \{\
-.                PRINT \m[\\*[$DOC_COVER_AUTHOR_COLOR]]\\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]\m[]
-.             \}
-.             el \{ .PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]] \}
+.          ie !'\\*[$AUTHOR_DOCCOVER_1]'' \{\
+.             nr #AUTHORS \\n[#AUTHOR_DOCCOVER_NUM]
+.             nr #NEXT_AUTHOR 0 1
+.             while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
+.                ie \\n[#DOC_COVER_AUTHOR_COLOR]=1 \{\
+.                   PRINT \m[\\*[$DOC_COVER_AUTHOR_COLOR]]\\*[$AUTHOR_DOCCOVER_\\n+[#NEXT_AUTHOR]]\m[]
+.                \}
+.                el \{ .PRINT \\*[$AUTHOR_DOCCOVER_\\n+[#NEXT_AUTHOR]] \}
 .\}
+.          \}
+.          el \{\
+.             nr #AUTHORS \\n[#AUTHOR_NUM]
+.             nr #NEXT_AUTHOR 0 1
+.             while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
+.                ie \\n[#DOC_COVER_AUTHOR_COLOR]=1 \{\
+.                   PRINT \m[\\*[$DOC_COVER_AUTHOR_COLOR]]\\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]\m[]
+.                \}
+.                el \{ .PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]] \}
+.\}
+.          \}
+.          return
+.       \}
+.       if \\n[#COVER]=1 \{\
+.          ie !'\\*[$AUTHOR_COVER_1]'' \{\
+.ab \\*[$AUTHOR_COVER_1] \\*[$AUTHOR_COVER_2] 
+.             nr #AUTHORS \\n[#AUTHOR_COVER_NUM]
+.             nr #NEXT_AUTHOR 0 1
+.             while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
+.                ie \\n[#COVER_AUTHOR_COLOR]=1 \{\
+.                   PRINT \m[\\*[$COVER_AUTHOR_COLOR]]\\*[$AUTHOR_COVER_\\n+[#NEXT_AUTHOR]]\m[]
+.                \}
+.                el \{ .PRINT \\*[$AUTHOR_COVER_\\n+[#NEXT_AUTHOR]] \}
+.\}
+.          \}
+.          el \{\
+.             nr #AUTHORS \\n[#AUTHOR_NUM]
+.             nr #NEXT_AUTHOR 0 1
+.             while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
+.                ie \\n[#COVER_AUTHOR_COLOR]=1 \{\
+.                   PRINT \m[\\*[$COVER_AUTHOR_COLOR]]\\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]\m[]
+.                \}
+.                el \{ .PRINT \\*[$AUTHOR_\\n+[#NEXT_AUTHOR]] \}
+.\}
+.          \}
+.          return
 .       \}
 .    \}
 .    el \{\
+.       nr #AUTHORS \\n[#AUTHOR_NUM]
+.       nr #NEXT_AUTHOR 0 1
 .       while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
 .          ie \\n[#AUTHOR_COLOR]=1 \{\
 .             PRINT \m[\\*[$AUTHOR_COLOR]]\\*[$AUTHOR_\\n+[#NEXT_AUTHOR]]\m[]
@@ -5209,14 +6156,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       FAMILY  \\*[$AUTHOR_FAM]
 .       FT      \\*[$AUTHOR_FT]
 .       PT_SIZE \\*[$AUTHOR_PT_SIZE]
-.       if !'\\*[$ATTRIBUTE_STRING]'' \{\
-.          ie \\n[#ATTRIBUTE_COLOR]=1 \{\
-.             PRINT \m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
-.          \}
-.          el \{ .PRINT \\*[$ATTRIBUTE_STRING] \}
+.       ie \\n[#ATTRIBUTE_COLOR]=1 \{\
+.          PRINT \&\m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
 .       \}
+.       el \{ .PRINT \&\\*[$ATTRIBUTE_STRING] \}
 .       PRINT_AUTHORS
 .    \}
+.    FAMILY \\*[$DOC_FAM]
+.    FT R
 .END
 \#
 \#
@@ -5274,6 +6221,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          RLD \\n[#DOC_LEAD]u \" Just looks better this way
 .       \}
 .    \}
+.    FAMILY \\*[$DOC_FAM]
+.    FT R
 .END
 \#
 \#
@@ -5312,12 +6261,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       FAMILY  \\*[$AUTHOR_FAM]
 .       FT      \\*[$AUTHOR_FT]
 .       PT_SIZE \\*[$AUTHOR_PT_SIZE]
-.       if !'\\*[$ATTRIBUTE_STRING]'' \{\
-.          ie \\n[#ATTRIBUTE_COLOR]=1 \{\
-.             PRINT \m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
-.          \}
-.          el \{ .PRINT \\*[$ATTRIBUTE_STRING] \}
+.       ie \\n[#ATTRIBUTE_COLOR]=1 \{\
+.          PRINT \&\m[\\*[$ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
 .       \}
+.       el \{ .PRINT \&\\*[$ATTRIBUTE_STRING] \}
 .       PRINT_AUTHORS
 .    \}
 .    FAMILY  \\*[$DOCTYPE_FAM]
@@ -5325,11 +6272,20 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    PT_SIZE \\*[$DOCTYPE_PT_SIZE]
 .    LS      \\n[#DOCHEADER_LEAD]u
 .    ALD     \\n[#DOCHEADER_LEAD]u
-.    ie \\n[#DOCTYPE_COLOR]=1 \{\
+.    nr #FROM_DOCTYPE 1
+.    if \\n[#DOCTYPE_COLOR]=1 \{\
 .       COLOR \\*[$DOCTYPE_COLOR]
-.       UNDERSCORE "\\*[$DOC_TYPE]
 .    \}
-.    el .UNDERSCORE "\\*[$DOC_TYPE]
+.    ie \\n[#DOCTYPE_UNDERLINE]=1 \{\
+.       UNDERSCORE \\*[$DOCTYPE_UNDERLINE_GAP] "\\*[$DOC_TYPE]"
+.     \}
+.    el \{\
+.       PRINT "\\*[$DOC_TYPE]"
+.    \}
+.    COLOR black
+.    FAMILY \\*[$DOC_FAM]
+.    FT R
+.    rr #FROM_DOCTYPE
 .END
 \#
 \#
@@ -5337,7 +6293,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# ----------
 \# *Arguments:
 \#   TITLE | DOCTITLE | CHAPTER | CHAPTER_TITLE | CHAPTER+TITLE | COVERTITLE ...
-\#   ... [ SUBTITLE AUTHOR DOCTYPE COPYRIGHT MISC ]
+\#   ... [ SUBTITLE AUTHOR DOCTYPE COPYRIGHT MISC BLANKPAGE ]
 \# *Function:
 \#   Toggles the number register for each cover page element
 \#   passed as an argument.
@@ -5345,13 +6301,15 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   TITLE, DOCTITLE, CHAPTER, CHAPTER_TITLE or CHAPTER+TITLE must
 \#   be supplied.  After that, users may enter as many or as few of
 \#   the arguments as they like; however, the arguments must appear
-\#   in the order given above.
+\#   in the order given above.  BLANKPAGE, as the final argument,
+\#   inserts a blank page after the cover.
 \#
 \#   If called as DOC_COVER, performs the same operations, but
 \#   applies everything to a doc cover.
 \#
 .MAC COVER END
 .    ie '\\$0'DOC_COVER' \{\
+.       if '\\$\\n[#NUM_ARGS]'BLANKPAGE' \{ .nr #DOCCOVER_BLANKPAGE 1 \}
 .       nr #DOC_COVER 1
 .       if '\\$1'TITLE'         \{ .nr #DOC_COVER_TITLE     1 \}
 .       if '\\$1'DOCTITLE'      \{ .nr #DOC_COVER_TITLE     2 \}
@@ -5376,6 +6334,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       if '\\$6'MISC'          \{ .nr #DOC_COVER_MISC      1 \}
 .    \}
 .    el \{\
+.       if '\\$\\n[#NUM_ARGS]'BLANKPAGE' \{ .nr #COVER_BLANKPAGE 1 \}
 .       nr #COVER 1
 .       if '\\$1'TITLE'         \{ .nr #COVER_TITLE     1 \}
 .       if '\\$1'DOCTITLE'      \{ .nr #COVER_TITLE     2 \}
@@ -5404,20 +6363,42 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC COVERTITLE END
 .    ie '\\$0'DOC_COVERTITLE' \{\ 
-.       rr #DOC_COVER_TITLE_NUM
-.       nr #DOC_COVER_TITLE_NUM 0 1
-.       while \\n[#NUM_ARGS]>\\n[#DOC_COVER_TITLE_NUM] \{\
-.          ds $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
+.       ie \\n[#NUM_ARGS]=0 \{\
+.          if \\n[#DOC_COVER_TITLE_NUM] \{\
+.             nr #ITEM 0 1
+.             while \\n[#DOC_COVER_TITLE_NUM]>\\n[#ITEM] \{\
+.                rm $DOC_COVER_TITLE_\\n+[#ITEM]
 .\}
-.       ds $DOC_COVER_TITLE \\$*
+.             rr #DOC_COVER_TITLE_NUM
+.             rm $DOC_COVER_TITLE
+.          \}
+.       \}
+.       el \{\
+.          nr #DOC_COVER_TITLE_NUM 0 1
+.          while \\n[#NUM_ARGS]>\\n[#DOC_COVER_TITLE_NUM] \{\
+.             ds $DOC_COVER_TITLE_\\n+[#DOC_COVER_TITLE_NUM] \\$\\n[#DOC_COVER_TITLE_NUM]
+.\}
+.          ds $DOC_COVER_TITLE \\$*
+.       \}
 .    \}
 .    el \{\
-.       rr #COVER_TITLE_NUM
-.       nr #COVER_TITLE_NUM 0 1
-.       while \\n[#NUM_ARGS]>\\n[#COVER_TITLE_NUM] \{\
-.          ds $COVER_TITLE_\\n+[#COVER_TITLE_NUM] \\$\\n[#COVER_TITLE_NUM]
+.       ie \\n[#NUM_ARGS]=0 \{\
+.          if \\n[#COVER_TITLE_NUM] \{\
+.             nr #ITEM 0 1
+.             while \\n[#COVER_TITLE_NUM]>\\n[#ITEM] \{\
+.                rm $COVER_TITLE_\\n+[#ITEM]
 .\}
-.       ds $COVER_TITLE \\$*
+.             rr #COVER_TITLE_NUM
+.             rm $COVER_TITLE
+.          \}
+.       \}
+.       el \{\
+.          nr #COVER_TITLE_NUM 0 1
+.          while \\n[#NUM_ARGS]>\\n[#COVER_TITLE_NUM] \{\
+.             ds $COVER_TITLE_\\n+[#COVER_TITLE_NUM] \\$\\n[#COVER_TITLE_NUM]
+.\}
+.          ds $COVER_TITLE \\$*
+.       \}
 .    \}
 .END
 \#
@@ -5468,6 +6449,181 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
+\# UNDERLINE CONTROL
+\# -----------------
+\# *Arguments:
+\#   [ DOUBLE ] [ <underline weight> [<underline gap>] ] | <none> | <anything>
+\# *Function:
+\#   Toggles underlining of the element indicated by the calling alias
+\#   on or off.  Uses #<element>_UNDERLINE_WEIGHT to set the weight,
+\#   and defines string $<element>_UNDERLINE_GAP.
+\# *Notes:
+\#   Calling aliases COVER_ and DOCCOVER_ only apply if DOCTYPE is
+\#   NAMED and the DOCTYPE arg is passed to COVER or DOC_COVER.
+\#
+.MAC _UNDERLINE END
+.    ie '\\$1'' \{\
+.       if '\\$0'BIBLIOGRAPHY_STRING_UNDERLINE'  \{ .nr #BIB_STRING_UNDERLINE 1 \}
+.       if '\\$0'BIBLIOGRAPHY_STRING_UNDERSCORE' \{ .nr #BIB_STRING_UNDERLINE 1 \}
+.       if '\\$0'COVER_UNDERLINE'                \{ .nr #COVER_UNDERLINE      1 \}
+.       if '\\$0'DOC_COVER_UNDERLINE'            \{ .nr #DOCCOVER_UNDERLINE   1 \}
+.       if '\\$0'DOCTYPE_UNDERLINE'              \{ .nr #DOCTYPE_UNDERLINE    1 \}
+.       if '\\$0'HEAD_UNDERLINE'                 \{ .nr #HEAD_UNDERLINE       1 \}
+.       if '\\$0'ENDNOTE_STRING_UNDERLINE'       \{ .nr #EN_STRING_UNDERLINE  1 \}
+.       if '\\$0'ENDNOTE_STRING_UNDERSCORE'      \{ .nr #EN_STRING_UNDERLINE  1 \}
+.       if '\\$0'ENDNOTE_TITLE_UNDERLINE'        \{ .nr #EN_TITLE_UNDERLINE   1 \}
+.       if '\\$0'ENDNOTE_TITLE_UNDERSCORE'       \{ .nr #EN_TITLE_UNDERLINE   1 \}
+.    \}
+.    el \{\
+.       ie \\n[#NUM_ARGS]=1 \{\
+.          ds $ARG \\$1
+.          substring $ARG -1
+.          ie \B'\\*[$ARG]' \{\
+.             if !\\n[#PRINT_STYLE]=1 \{\
+.                if '\\$0'BIBLIOGRAPHY_STRING_UNDERLINE'  \{ .BIBLIOGRAPHY_STRING_UNDERLINE_WEIGHT \\$1 \}
+.                if '\\$0'BIBLIOGRAPHY_STRING_UNDERSCORE' \{ .BIBLIOGRAPHY_STRING_UNDERLINE_WEIGHT \\$1 \}
+.                if '\\$0'COVER_UNDERLINE'                \{ .COVER_UNDERLINE_WEIGHT               \\$1 \}
+.                if '\\$0'DOC_COVER_UNDERLINE'            \{ .DOCCOVER_UNDERLINE_WEIGHT            \\$1 \}
+.                if '\\$0'DOCTYPE_UNDERLINE'              \{ .DOCTYPE_UNDERLINE_WEIGHT             \\$1 \}
+.                if '\\$0'HEAD_UNDERLINE'                 \{ .HEAD_UNDERLINE_WEIGHT                \\$1 \}
+.                if '\\$0'ENDNOTE_STRING_UNDERLINE'       \{ .ENDNOTE_STRING_UNDERLINE_WEIGHT      \\$1 \}
+.                if '\\$0'ENDNOTE_STRING_UNDERSCORE'      \{ .ENDNOTE_STRING_UNDERLINE_WEIGHT      \\$1 \}
+.                if '\\$0'ENDNOTE_TITLE_UNDERLINE'        \{ .ENDNOTE_TITLE_UNDERLINE_WEIGHT       \\$1 \}
+.                if '\\$0'ENDNOTE_TITLE_UNDERSCORE'       \{ .ENDNOTE_TITLE_UNDERLINE_WEIGHT       \\$1 \}
+.             \}
+.          \}
+.          el \{\
+.             if '\\$0'BIBLIOGRAPHY_STRING_UNDERLINE' \{\
+.                ie '\\$1'DOUBLE' \{ .nr #BIB_STRING_UNDERLINE 2 \}
+.                el \{ .nr #BIB_STRING_UNDERLINE 0 \}
+.             \}
+.             if '\\$0'BIBLIOGRAPHY_STRING_UNDERSCORE' \{\
+.                ie '\\$1'DOUBLE' \{ .nr #BIB_STRING_UNDERLINE 2 \}
+.                el \{ .nr #BIB_STRING_UNDERLINE 0 \}
+.             \}
+.             if '\\$0'COVER_UNDERLINE'          \{ .nr #COVER_UNDERLINE     0 \}
+.             if '\\$0'DOC_COVER_UNDERLINE'      \{ .nr #DOCCOVER_UNDERLINE  0 \}
+.             if '\\$0'DOCTYPE_UNDERLINE'        \{ .nr #DOCTYPE_UNDERLINE   0 \}
+.             if '\\$0'HEAD_UNDERLINE'           \{ .nr #HEAD_UNDERLINE      0 \}
+.             if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
+.                ie '\\$1'DOUBLE' \{ .nr #EN_STRING_UNDERLINE 2 \}
+.                el \{ .nr #EN_STRING_UNDERLINE 0 \}
+.             \}
+.             if '\\$0'ENDNOTE_STRING_UNDERSCORE' \{\
+.                ie '\\$1'DOUBLE' \{ .nr #EN_STRING_UNDERLINE 2 \}
+.                el \{ .nr #EN_STRING_UNDERLINE 0 \}
+.             \}
+.          \}
+.       \}
+.       el \{\
+.          if !\\n[#PRINT_STYLE]=1 \{\
+.             if '\\$0'BIBLIOGRAPHY_STRING_UNDERLINE' \{\
+.                nr #BIB_STRING_UNDERLINE 1
+.                if '\\$1'DOUBLE' \{\
+.                   nr #BIB_STRING_UNDERLINE 2
+.                   shift
+.                \}
+.                BIBLIOGRAPHY_STRING_UNDERLINE_WEIGHT \\$1
+.                if !'\\$2'' \{\
+.                   ds $BIB_STRING_UNDERLINE_GAP \\$2
+.                \}
+.                if !'\\$3'' \{\
+.                   ds $BIB_STRING_RULE_GAP \\$3
+.                \}
+.             \}
+.             if '\\$0'BIBLIOGRAPHY_STRING_UNDERSCORE' \{\ 
+.                nr #BIB_STRING_UNDERLINE 1
+.                if '\\$1'DOUBLE' \{\
+.                   nr #BIB_STRING_UNDERLINE 2
+.                   shift
+.                \}
+.                BIBLIOGRAPHY_STRING_UNDERLINE_WEIGHT \\$1
+.                if !'\\$2'' \{\
+.                   ds $BIB_STRING_UNDERLINE_GAP \\$2
+.                \}
+.                if !'\\$3'' \{\
+.                   ds $BIB_STRING_RULE_GAP \\$3
+.                \}
+.             \}
+.             if '\\$0'COVER_UNDERLINE' \{\
+.                nr #COVER_UNDERLINE 1
+.                COVER_UNDERLINE_WEIGHT  \\$1
+.                ds $COVER_UNDERLINE_GAP \\$2
+.             \}
+.             if '\\$0'DOC_COVER_UNDERLINE' \{\
+.                nr #DOCCOVER_UNDERLINE 1
+.                DOCCOVER_UNDERLINE_WEIGHT  \\$1
+.                ds $DOCCOVER_UNDERLINE_GAP \\$2
+.             \}
+.             if '\\$0'DOCTYPE_UNDERLINE' \{\
+.                nr #DOCTYPE_UNDERLINE 1
+.                DOCTYPE_UNDERLINE_WEIGHT  \\$1
+.                ds $DOCTYPE_UNDERLINE_GAP \\$2
+.             \}
+.             if '\\$0'HEAD_UNDERLINE' \{\
+.                nr #HEAD_UNDERLINE 1
+.                HEAD_UNDERLINE_WEIGHT  \\$1
+.                ds $HEAD_UNDERLINE_GAP \\$2
+.             \}
+\# ENDNOTE_STRING_UNDERLINE and ENDNOTE_STRING_UNDERSCORE are identical;
+\# the _UNDERSCORE version is left in for backward compatibility.
+.             if '\\$0'ENDNOTE_STRING_UNDERLINE' \{\
+.                nr #EN_STRING_UNDERLINE 1
+.                if '\\$1'DOUBLE' \{\
+.                   nr #EN_STRING_UNDERLINE 2
+.                   shift
+.                \}
+.                ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
+.                if !'\\$2'' \{\
+.                   ds $EN_STRING_UNDERLINE_GAP \\$2
+.                \}
+.                if !'\\$3'' \{\
+.                   ds $EN_STRING_RULE_GAP \\$3
+.                \}
+.             \}
+.             if '\\$0'ENDNOTE_STRING_UNDERSCORE' \{\ 
+.                nr #EN_STRING_UNDERLINE 1
+.                if '\\$1'DOUBLE' \{\
+.                   nr #EN_STRING_UNDERLINE 2
+.                   shift
+.                \}
+.                ENDNOTE_STRING_UNDERLINE_WEIGHT \\$1
+.                if !'\\$2'' \{\
+.                   ds $EN_STRING_UNDERLINE_GAP \\$2
+.                \}
+.                if !'\\$3'' \{\
+.                   ds $EN_STRING_RULE_GAP \\$3
+.                \}
+.             \}
+\# ENDNOTE_TITLE_UNDERLINE and ENDNOTE_TITLE_UNDERSCORE are identical;
+\# the _UNDERSCORE version is left in for backward compatibility.
+.             if '\\$0'ENDNOTE_TITLE_UNDERLINE' \{\
+.                nr #ENDNOTE_TITLE_UNDERLINE 1
+.                ENDNOTE_TITLE_UNDERLINE_WEIGHT  \\$1
+.                ds $EN_TITLE_UNDERLINE_GAP \\$2
+.             \}
+.             if '\\$0'ENDNOTE_TITLE_UNDERSCORE' \{\
+.                nr #ENDNOTE_TITLE_UNDERLINE 1
+.                ENDNOTE_TITLE_UNDERLINE_WEIGHT  \\$1
+.                ds $EN_TITLE_UNDERLINE_GAP \\$2
+.             \}
+.          \}
+.       \}
+.    \}
+.END
+\#
+.ALIAS BIBLIOGRAPHY_STRING_UNDERSCORE _UNDERLINE
+.ALIAS BIBLIOGRAPHY_STRING_UNDERLINE  _UNDERLINE
+.ALIAS COVER_UNDERLINE                _UNDERLINE
+.ALIAS DOC_COVER_UNDERLINE            _UNDERLINE
+.ALIAS DOCTYPE_UNDERLINE              _UNDERLINE
+.ALIAS HEAD_UNDERLINE                 _UNDERLINE
+.ALIAS ENDNOTE_STRING_UNDERLINE       _UNDERLINE
+.ALIAS ENDNOTE_STRING_UNDERSCORE      _UNDERLINE
+.ALIAS ENDNOTE_TITLE_UNDERLINE        _UNDERLINE
+.ALIAS ENDNOTE_TITLE_UNDERSCORE       _UNDERLINE
+\#
+\#
 \# COVERS - WHETHER TO PRINT
 \# -------------------------
 \# *Arguments:
@@ -5496,6 +6652,29 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          rr #COVERS
 .          nr #COVERS_OFF 1
 .       \}
+.    \}
+.END
+\#
+\#
+\# COVER_COUNTS_PAGES
+\# ------------------
+\# *Arguments:
+\#   <none> | <anything>
+\# *Function:
+\#   Creates or removes registers #COVERS_COUNT or #DOCCOVERS_COUNT,
+\#   used in END_COVER to determine whether to increment the page
+\#   number silently when doc covers or covers are output.
+\#
+.MAC COVER_COUNTS_PAGES END
+.    if '\\$0'DOC_COVER_COUNTS_PAGES' \{\
+.       ie '\\$1'' \{ .nr #DOCCOVERS_COUNT 1 \}
+.       el \{ .rr #DOCCOVERS_COUNT \}
+.       return
+.    \}
+.    if '\\$0'COVER_COUNTS_PAGES' \{\
+.       ie '\\$1'' \{ .nr #COVERS_COUNT 1 \}
+.       el \{ .rr #COVERS_COUNT \}
+.       return
 .    \}
 .END
 \#
@@ -5552,7 +6731,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             CAPS
 .             nr #ARG_NUM 0 1
 .             while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]
+.                UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]"
 .\}
 .             CAPS OFF
 .          \}
@@ -5699,13 +6878,28 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                el \{ .vs \\n[#DOC_LEAD]u \}
 .                sp
 .             \}
-.             nr #ARG_NUM 0 1
-.             while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.       if \\n[#DOC_COVER]=1 \{\
+.          ie !'\\*[$SUBTITLE_DOCCOVER_1]'' \{\
+.             nr #SUBTITLES \\n[#SUBTITLE_DOCCOVER_NUM]
+.             nr #NEXT_SUBTITLE 0 1
+.             while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
 .                ie \\n[#DOC_COVER_SUBTITLE_COLOR]=1 \{\
-.                   PRINT \m[\\*[$DOC_COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n[#ARG_NUM]]\m[]
+.                   PRINT \m[\\*[$DOC_COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_DOCCOVER_\\n+[#NEXT_SUBTITLE]]\m[]
 .                \}
-.                el \{ .PRINT \\*[$SUBTITLE_\\n[#ARG_NUM]] \}
+.                el \{ .PRINT \\*[$SUBTITLE_DOCCOVER_\\n+[#NEXT_SUBTITLE]] \}
 .\}
+.          \}
+.          el \{\
+.             nr #SUBTITLES \\n[#SUBTITLE_NUM]
+.             nr #NEXT_SUBTITLE 0 1
+.             while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
+.                ie \\n[#DOC_COVER_SUBTITLE_COLOR]=1 \{\
+.                   PRINT \m[\\*[$DOC_COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]]\m[]
+.                \}
+.                el \{ .PRINT \\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]] \}
+.\}
+.          \}
+.       \}
 .             if \\n[#PRINT_STYLE]=1 \{\
 .                if \\n[#SINGLE_SPACE]=0 \{ .vs \}
 .             \}
@@ -5724,11 +6918,19 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             el \{ .vs \\n[#DOC_LEAD]u/2u \}
 .             sp
 .          \}
-.          if !'\\*[$ATTRIBUTE_STRING]'' \{\
+.          ie d$ATTRIBUTE_STRING_DOCCOVER \{\
 .             ie \\n[#DOC_COVER_ATTRIBUTE_COLOR]=1 \{\
-.                PRINT \m[\\*[$DOC_COVER_ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.                PRINT \&\m[\\*[$DOC_COVER_ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING_DOCCOVER]\m[]
 .             \}
-.             el \{ .PRINT \\*[$ATTRIBUTE_STRING] \}
+.             el \{ .PRINT \&\\*[$ATTRIBUTE_STRING_DOCCOVER] \}
+.          \}
+.          el \{\
+.             if d$ATTRIBUTE_STRING \{\
+.                ie \\n[#DOC_COVER_ATTRIBUTE_COLOR]=1 \{\
+.                   PRINT \&\m[\\*[$DOC_COVER_ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.                \}
+.                el \{ .PRINT \&\\*[$ATTRIBUTE_STRING] \}
+.             \}
 .          \}
 .          PRINT_AUTHORS
 .       \}
@@ -5741,14 +6943,20 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             ie \\n[#PRINT_STYLE]=1 \{\
 .                TYPEWRITER
 .                vs \\n[#DOC_LEAD]u
-.                UNDERSCORE2 "\\*[$DOC_TYPE]
+.                UNDERSCORE2 "\\*[$DOC_TYPE]"
 .             \}
 .             el \{\
+.                nr #FROM_DOC_COVER 1
 .                ie \\n[#DOC_COVER_DOCTYPE_COLOR]=1 \{\
 .                   COLOR \\*[$DOC_COVER_DOCTYPE_COLOR]
-.                   UNDERSCORE "\\*[$DOC_TYPE]
+.                   ie \\n[#DOCCOVER_UNDERLINE]= 1 \{ .UNDERSCORE \\*[$DOCCOVER_UNDERLINE_GAP] "\\*[$DOC_TYPE]" \}
+.                   el \{ .PRINT "\\*[$DOC_TYPE]" \}
 .                \}
-.                el .UNDERSCORE "\\*[$DOC_TYPE]
+.                el \{\
+.                   ie \\n[#DOCCOVER_UNDERLINE]=1 \{ .UNDERSCORE \\*[$DOCCOVER_UNDERLINE_GAP] "\\*[$DOC_TYPE]" \}
+.                   el \{ .PRINT "\\*[$DOC_TYPE]" \}
+.                \}
+.                rr #FROM_DOC_COVER
 .             \}
 .          \}
 .       \}
@@ -5765,29 +6973,59 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          PT_SIZE \\*[$DOC_COVER_COPYRIGHT_PT_SIZE]
 .       \}
 .       if \\n[#DOC_COVER_COPYRIGHT]=1 \{\
+.          if !'\\*[$COPYRIGHT_DOCCOVER]'' \{\
+.             ds $SAVED_COPYRIGHT \\*[$COPYRIGHT]
+.             ds $COPYRIGHT \\*[$COPYRIGHT_DOCCOVER]
+.          \}
 .          QUAD \\*[$DOC_COVER_COPYRIGHT_QUAD]
 .          ie \\n[#DOC_COVER_COPYRIGHT_COLOR]=1 \{\
 .             PRINT \m[\\*[$DOC_COVER_COPYRIGHT_COLOR]]\\*[$COPYRIGHT]\m[]
 .          \}
 .          el \{ .PRINT \\*[$COPYRIGHT] \}
+.          ds $COPYRIGHT \\*[$SAVED_COPYRIGHT]
 .       \}
 .       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
 .       if \\n[#DOC_COVER_MISC]=1 \{\
 .          QUAD \\*[$DOC_COVER_MISC_QUAD]
-.          nr #MISCS \\n[#MISC_NUM]
-.          sp -\\n[#MISCS]+1
-.          nr #NEXT_MISC 0 1
-.          while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
-.             ie \\n[#DOC_COVER_MISC_COLOR]=1 \{\
-.                PRINT \m[\\*[$DOC_COVER_MISC_COLOR]]\\*[$MISC_\\n+[#NEXT_MISC]]\m[]
-.                br
-.             \}
-.             el \{\
-.                PRINT \\*[$MISC_\\n+[#NEXT_MISC]]
-.                br
-.             \}
+.          ie !'\\*[$MISC_DOCCOVER_1]'' \{\
+.             nr #MISCS \\n[#MISC_DOCCOVER_NUM]
+.             sp -\\n[#MISCS]+1
+.             nr #NEXT_MISC 0 1
+.             while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
+.                ie \\n[#DOC_COVER_MISC_COLOR]=1 \{\
+.                   PRINT \m[\\*[$DOC_COVER_MISC_COLOR]]\\*[$MISC_DOCCOVER_\\n+[#NEXT_MISC]]\m[]
+.                   rm $MISC_DOCCOVER_\\n[#NEXT_MISC]
+.                   rm $MISC_\\n[#NEXT_MISC]
+.                   br
+.                \}
+.                el \{\
+.                   PRINT \\*[$MISC_DOCCOVER_\\n+[#NEXT_MISC]]
+.                   rm $MISC_DOCCOVER_\\n[#NEXT_MISC]
+.                   rm $MISC_\\n[#NEXT_MISC]
+.                   br
+.                \}
 .\}
+.                rm $MISC_\\n+[#NEXT_MISC]
+.          \}
+.          el \{\
+.             nr #MISCS \\n[#MISC_NUM]
+.             sp -\\n[#MISCS]+1
+.             nr #NEXT_MISC 0 1
+.             while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
+.                ie \\n[#DOC_COVER_MISC_COLOR]=1 \{\
+.                   PRINT \m[\\*[$DOC_COVER_MISC_COLOR]]\\*[$MISC_\\n+[#NEXT_MISC]]\m[]
+.                   br
+.                \}
+.                el \{\
+.                   PRINT \\*[$MISC_\\n+[#NEXT_MISC]]
+.                   br
+.                \}
+.\}
+.          \}
 .       \}
+.       if \\n[#DOCCOVERS_COUNT]=1 \{ .nr #PAGE_NUM_ADJ +1 \}
+.       nr #DOCCOVER_END 1
+.       END_COVER
 .    \}
 .\" Cover
 .    el \{\
@@ -5820,7 +7058,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             CAPS
 .             nr #ARG_NUM 0 1
 .             while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]
+.                UNDERSCORE "\\*[$TITLE_\\n[#ARG_NUM]]"
 .\}
 .             CAPS OFF
 .          \}
@@ -5970,13 +7208,28 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                   sp
 .                \}
 .             \}
-.             nr #ARG_NUM 0 1
-.             while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
+.       if \\n[#COVER]=1 \{\
+.          ie !'\\*[$SUBTITLE_COVER_1]'' \{\
+.             nr #SUBTITLES \\n[#SUBTITLE_COVER_NUM]
+.             nr #NEXT_SUBTITLE 0 1
+.             while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
 .                ie \\n[#COVER_SUBTITLE_COLOR]=1 \{\
-.                   PRINT \m[\\*[$COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n[#ARG_NUM]]\m[]
+.                   PRINT \m[\\*[$COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_COVER_\\n+[#NEXT_SUBTITLE]]\m[]
 .                \}
-.                el \{ .PRINT \\*[$SUBTITLE_\\n[#ARG_NUM]] \}
+.                el \{ .PRINT \\*[$SUBTITLE_COVER_\\n+[#NEXT_SUBTITLE]] \}
 .\}
+.          \}
+.          el \{\
+.             nr #SUBTITLES \\n[#SUBTITLE_NUM]
+.             nr #NEXT_SUBTITLE 0 1
+.             while \\n[#SUBTITLES]>\\n[#NEXT_SUBTITLE] \{\
+.                ie \\n[#COVER_SUBTITLE_COLOR]=1 \{\
+.                   PRINT \m[\\*[$COVER_SUBTITLE_COLOR]]\\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]]\m[]
+.                \}
+.                el \{ .PRINT \\*[$SUBTITLE_\\n+[#NEXT_SUBTITLE]] \}
+.\}
+.          \}
+.       \}
 .             if \\n[#PRINT_STYLE]=1 \{\
 .                if \\n[#SINGLE_SPACE]=0 \{ .vs \}
 .             \}
@@ -5995,11 +7248,19 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             el \{ .vs \\n[#DOC_LEAD]u/2u \}
 .             sp
 .          \}
-.          if !'\\*[$ATTRIBUTE_STRING]'' \{\
+.          ie d$ATTRIBUTE_STRING_COVER \{\
 .             ie \\n[#COVER_ATTRIBUTE_COLOR]=1 \{\
-.                PRINT \m[\\*[$COVER_ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.                PRINT \&\m[\\*[$COVER_ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING_COVER]\m[]
 .             \}
-.             el \{ .PRINT \\*[$ATTRIBUTE_STRING] \}
+.             el \{ .PRINT \&\\*[$ATTRIBUTE_STRING_COVER] \}
+.          \}
+.          el \{\
+.             if d$ATTRIBUTE_STRING \{\
+.                ie \\n[#COVER_ATTRIBUTE_COLOR]=1 \{\
+.                   PRINT \&\m[\\*[$COVER_ATTRIBUTE_COLOR]]\\*[$ATTRIBUTE_STRING]\m[]
+.                \}
+.                el \{ .PRINT \&\\*[$ATTRIBUTE_STRING] \}
+.             \}
 .          \}
 .          PRINT_AUTHORS
 .       \}
@@ -6012,14 +7273,20 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             ie \\n[#PRINT_STYLE]=1 \{\
 .                TYPEWRITER
 .                vs \\n[#DOC_LEAD]u
-.                UNDERSCORE2 "\\*[$DOC_TYPE]
+.                UNDERSCORE2 "\\*[$DOC_TYPE]"
 .             \}
 .             el \{\
+.                nr #FROM_COVER 1
 .                ie \\n[#COVER_DOCTYPE_COLOR]=1 \{\
 .                   COLOR \\*[$COVER_DOCTYPE_COLOR]
-.                   UNDERSCORE "\\*[$DOC_TYPE]
+.                   ie \\n[#COVER_UNDERLINE]= 1 \{ .UNDERSCORE \\*[$COVER_UNDERLINE_GAP] "\\*[$DOC_TYPE]" \}
+.                   el \{ .PRINT "\\*[$DOC_TYPE] \}
 .                \}
-.                el .UNDERSCORE "\\*[$DOC_TYPE]
+.                el \{\
+.                   ie \\n[#COVER_UNDERLINE]=1 \{ .UNDERSCORE \\*[$COVER_UNDERLINE_GAP] "\\*[$DOC_TYPE]" \}
+.                   el \{ .PRINT "\\*[$DOC_TYPE]" \}
+.                \}
+.                rr #FROM_COVER
 .             \}
 .          \}
 .       \}
@@ -6036,33 +7303,81 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          PT_SIZE \\*[$COVER_COPYRIGHT_PT_SIZE]
 .       \}
 .       if \\n[#COVER_COPYRIGHT]=1 \{\
+.          if !'\\*[$COPYRIGHT_COVER]'' \{\
+.             ds $SAVED_COPYRIGHT \\*[$COPYRIGHT]
+.             ds $COPYRIGHT \\*[$COPYRIGHT_COVER]
+.          \}
 .          QUAD \\*[$COVER_COPYRIGHT_QUAD]
 .          ie \\n[#COVER_COPYRIGHT_COLOR]=1 \{\
 .             PRINT \m[\\*[$COVER_COPYRIGHT_COLOR]]\\*[$COPYRIGHT]\m[]
 .          \}
 .          el \{ .PRINT \\*[$COPYRIGHT] \}
+.          ds $COPYRIGHT \\*[$SAVED_COPYRIGHT]
 .       \}
 .       sp |\\n[#VISUAL_B_MARGIN]u+\\n[#DOC_LEAD]u
 .       if \\n[#COVER_MISC]=1 \{\
 .          QUAD \\*[$COVER_MISC_QUAD]
-.          nr #MISCS \\n[#MISC_NUM]
-.          sp -\\n[#MISCS]+1
-.          nr #NEXT_MISC 0 1
-.          while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
-.             ie \\n[#COVER_MISC_COLOR]=1 \{\
-.                PRINT \m[\\*[$COVER_MISC_COLOR]]\\*[$MISC_\\n+[#NEXT_MISC]]\m[]
-.                br
-.             \}
-.             el \{\
-.                PRINT \\*[$MISC_\\n+[#NEXT_MISC]]
-.                br
-.             \}
+.          ie !'\\*[$MISC_COVER_1]'' \{\
+.             nr #MISCS \\n[#MISC_COVER_NUM]
+.             sp -\\n[#MISCS]+1
+.             nr #NEXT_MISC 0 1
+.             while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
+.                ie \\n[#COVER_MISC_COLOR]=1 \{\
+.                   PRINT \m[\\*[$COVER_MISC_COLOR]]\\*[$MISC_COVER_\\n+[#NEXT_MISC]]\m[]
+.                   br
+.                \}
+.                el \{\
+.                   PRINT \\*[$MISC_COVER_\\n+[#NEXT_MISC]]
+.                   br
+.                \}
 .\}
+.          \}
+.          el \{\
+.             nr #MISCS \\n[#MISC_NUM]
+.             sp -\\n[#MISCS]+1
+.             nr #NEXT_MISC 0 1
+.             while \\n[#MISCS]>\\n[#NEXT_MISC] \{\
+.                ie \\n[#COVER_MISC_COLOR]=1 \{\
+.                   PRINT \m[\\*[$COVER_MISC_COLOR]]\\*[$MISC_\\n+[#NEXT_MISC]]\m[]
+.                   br
+.                \}
+.                el \{\
+.                   PRINT \\*[$MISC_\\n+[#NEXT_MISC]]
+.                   br
+.                \}
+.\}
+.          \}
 .       \}
+.       if \\n[#COVERS_COUNT]=1 \{ .nr #PAGE_NUM_ADJ +1 \}
+.       nr #COVER_END 1
+.       END_COVER
 .    \}
+.END
+\#
+\# Macro to terminate (doc)cover processing
+\#
+.MAC END_COVER END
 .    EOL
 .    TRAP
 .    NEWPAGE
+.    if \\n[#DOCCOVER_END]=1 \{\
+.       ie \\n[#DOCCOVER_BLANKPAGE]=1 \{\
+.          NEWPAGE
+.          rr #DOCCOVER_BLANKPAGE
+.          if !\\n[#DOCCOVERS_COUNT]=1 \{ .nr #PAGE_NUM_ADJ -1 \}
+.       \}
+.       el \{ . \}
+.       rr #DOCCOVER_END
+.    \}
+.    if \\n[#COVER_END]=1 \{\
+.       ie \\n[#COVER_BLANKPAGE]=1 \{\
+.          NEWPAGE
+.          rr #COVER_BLANKPAGE
+.          if !\\n[#COVERS_COUNT]=1 \{ .nr #PAGE_NUM_ADJ -1 \}
+.       \}
+.       el \{ . \}
+.       rr #COVER_END
+.    \}
 .    ev
 .    if \\n[#PAGINATION_WAS_ON] \{\
 .       rr #PAGINATION_WAS_ON
@@ -6084,8 +7399,10 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    rr #DOING_COVER
 .END
 \#
+\# Macro to begin document processing
 \#
 .MAC START END
+.    nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
 .    if !\\n[#PRINT_STYLE] \{\
 .       PRINTSTYLE TYPEWRITE
 .       PRINT \&
@@ -6285,7 +7602,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                CAPS
 .                nr #ARG_NUM 0 1
 .                while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE 4p "\\*[$TITLE_\\n[#ARG_NUM]]
+.                   UNDERSCORE 4p "\\*[$TITLE_\\n[#ARG_NUM]]"
 .\}
 .                CAPS OFF
 .             \}
@@ -6293,12 +7610,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                sp
 .                nr #ARG_NUM 0 1
 .                while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE 4p "\\*[$SUBTITLE_\\n[#ARG_NUM]]
+.                   UNDERSCORE 4p "\\*[$SUBTITLE_\\n[#ARG_NUM]]"
 .\}
 .             \}
 .             if !'\\*[$AUTHOR_1]'' \{\
 .                sp
-.                PRINT \\*[$ATTRIBUTE_STRING]
+.                PRINT \&\\*[$ATTRIBUTE_STRING]
 .                nr #AUTHORS \\n[#AUTHOR_NUM]
 .                nr #NEXT_AUTHOR 0 1
 .                while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
@@ -6339,7 +7656,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .                el \{\
 .                   CAPS
-.                   UNDERSCORE 4p \\*[$CHAPTER_STRING]
+.                   UNDERSCORE 4p "\\*[$CHAPTER_STRING]"
 .                \}
 .                CAPS OFF
 .                RLD 1v
@@ -6393,7 +7710,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             if !'\\*[$TITLE]'' \{\
 .                nr #ARG_NUM 0 1
 .                while \\n[#TITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE 4p "\\*[$TITLE_\\n[#ARG_NUM]]
+.                   UNDERSCORE 4p "\\*[$TITLE_\\n[#ARG_NUM]]"
 .\}
 .             \}
 .             CAPS OFF
@@ -6401,12 +7718,12 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                sp
 .                nr #ARG_NUM 0 1
 .                while \\n[#SUBTITLE_NUM]>=\\n+[#ARG_NUM] \{\
-.                   UNDERSCORE 4p "\\*[$SUBTITLE_\\n[#ARG_NUM]]
+.                   UNDERSCORE 4p "\\*[$SUBTITLE_\\n[#ARG_NUM]]"
 .\}
 .             \}
 .             if !'\\*[$AUTHOR_1]'' \{\
 .                sp
-.                PRINT \\*[$ATTRIBUTE_STRING]
+.                PRINT \&\\*[$ATTRIBUTE_STRING]
 .                nr #AUTHORS \\n[#AUTHOR_NUM]
 .                nr #NEXT_AUTHOR 0 1
 .                while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
@@ -6415,7 +7732,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             \}
 .             ie \\n[#SINGLE_SPACE]=0 \{ .sp 2 \}
 .             el \{ .sp \}
-.             UNDERSCORE2 4p "\\*[$DOC_TYPE]
+.             UNDERSCORE2 4p "\\*[$DOC_TYPE]"
 .             if \\n[#SINGLE_SPACE]=1 \{ .sp \}
 .          \}
 .          if \\n[#PRINT_STYLE]=2 \{\
@@ -6793,7 +8110,22 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   attribution is desired.
 \#
 .MAC ATTRIBUTE_STRING END
-.    ds $ATTRIBUTE_STRING \\$1
+.    if !'\\$1'DOC_COVER' \{\
+.       if !'\\$1'COVER' \{ .nr #NEITHER 1 \}
+.    \}
+.    if !'\\$1'COVER' \{\
+.       if !'\\$1'DOC_COVER' \{ .nr #NEITHER 1 \}
+.    \}
+.    if '\\$1'DOC_COVER' \{\
+.       ds $ATTRIBUTE_STRING_DOCCOVER \\$2
+.    \}
+.    if '\\$1'COVER' \{\
+.       ds $ATTRIBUTE_STRING_COVER \\$2
+.    \}
+.    if \\n[#NEITHER]=1 \{\
+.       ds $ATTRIBUTE_STRING \\$1
+.       rr #NEITHER
+.    \}
 .END
 \#
 \#
@@ -6849,11 +8181,15 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   Default is "END".
 \#
 .MAC FINIS_STRING END
-.    CAPS
+\#.    if \\n[#FINIS_STRING_CAPS]=1 \{ .CAPS \}
 .    ds $FINIS_STRING \\$1
-.    CAPS OFF
+\#.    if \\n[#FINIS_STRING_CAPS]=1 \{ .CAPS OFF \}
 .END
 \#
+.MAC FINIS_STRING_CAPS END
+.    ie '\\$1'' \{ .nr #FINIS_STRING_CAPS 1 \}
+.    el \{ .nr #FINIS_STRING_CAPS 0 \}
+.END
 \#
 \# ====================================================================
 \#
@@ -7300,6 +8636,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    ALD \\n[#DOC_LEAD]u
 .    CENTER
+.    if \\n[#FINIS_STRING_CAPS]=1 \{ .CAPS \}
 .    if \\n[#PRINT_STYLE]=1 \{ .PRINT "--\\*[$FINIS_STRING]--\}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       ie \\n[#FINIS_COLOR] \{\
@@ -7307,6 +8644,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       el \{ .PRINT \v'-\\n[#EM_ADJUST]u'\(em\v'+\\n[#EM_ADJUST]u'\\*[$FINIS_STRING]\v'-\\n[#EM_ADJUST]u'\*[FU1]\(em\m[] \}
 .    \}
+.    if \\n[#FINIS_STRING_CAPS]=1 \{ .CAPS OFF \}
 .    ev
 .END
 \#
@@ -7333,6 +8671,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC HDRFTR_RULE_GAP END
 .    nr #HDRFTR_RULE_GAP (\\$1)
+.    if '\\$0'HEADER_RULE_GAP' \{\
+.       nr #HEADER_RULE_GAP \\n[#HDRFTR_RULE_GAP]
+.       if r#FOOTER_RULE_GAP \{ .nr #FOOTER_RULE_GAP \\n[#FOOTER_RULE_GAP] \}
+.    \}
+.    if '\\$0'FOOTER_RULE_GAP' \{\
+.       nr #FOOTER_RULE_GAP \\n[#HDRFTR_RULE_GAP]
+.       if r#HEADER_RULE_GAP \{ .nr #HEADER_RULE_GAP \\n[#HEADER_RULE_GAP] \}
+.    \}
 .END
 \#
 \#
@@ -7542,23 +8888,40 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#   on or off.
 \#
 .MAC HDRFTR_RULE END   \"To print rule under header/over footer.
+.    if \\n[#HEADERS_ON] \{ .nr #HDRFTR_RULE_GAP \\n[#HEADER_RULE_GAP] \}
+.    if \\n[#FOOTERS_ON] \{ .nr #HDRFTR_RULE_GAP \\n[#FOOTER_RULE_GAP] \}
 .    if '\\$0'HDRFTR_RULE_INTERNAL' \{\
 .       ie \\n[#USERDEF_HDRFTR] \{\
 .          nr #CAP_HEIGHT_ADJUST \\n[#HDRFTR_HEIGHT]
-.          ps 12
 .          if \\n[#HEADERS_ON] \{\
 .             rt \\nyu
 .             ALD \\n[#HDRFTR_RULE_GAP]u
+.             nr #HDRFTR_RULE_WEIGHT     \\n[#HEADER_RULE_WEIGHT]
+.             nr #HDRFTR_RULE_WEIGHT_ADJ \\n[#HEADER_RULE_WEIGHT_ADJ]
 .          \}
 .          if \\n[#FOOTERS_ON] \{\
-.              rt \\nyu
-.              RLD \\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
+.             rt \\nyu
+.             RLD \\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+\\n[#FOOTER_RULE_WEIGHT]u
+.             nr #HDRFTR_RULE_WEIGHT     \\n[#FOOTER_RULE_WEIGHT]
+.             nr #HDRFTR_RULE_WEIGHT_ADJ \\n[#FOOTER_RULE_WEIGHT_ADJ]
 .          \}
 .          ie \\n[#HDRFTR_RULE_COLOR]=1 \{\
-.             PRINT \m[\\*[$HDRFTR_RULE_COLOR]]\\l'\\n[#DOC_L_LENGTH]u'\m[]
+\m[\\*[$HDRFTR_RULE_COLOR]]\
+\D't \\n[#HDRFTR_RULE_WEIGHT]u'\
+\h'|0'\
+\v'+\\n[#HDRFTR_RULE_WEIGHT_ADJ]u'\
+\D'l \\n[#DOC_L_LENGTH]u 0'\
+\D't \\n[#RULE_WEIGHT]u'\
+\h'-\\n[#RULE_WEIGHT]u'\
+\m[]
 .          \}
 .          el \{\
-.             PRINT \\l'\\n[#DOC_L_LENGTH]u'
+\D't \\n[#HDRFTR_RULE_WEIGHT]u'\
+\h'|0'\
+\v'+\\n[#HDRFTR_RULE_WEIGHT_ADJ]u'\
+\D'l \\n[#DOC_L_LENGTH]u 0'\
+\D't \\n[#RULE_WEIGHT]u'\
+\h'-\\n[#RULE_WEIGHT]u'
 .          \}
 .          br
 .       \}
@@ -7576,20 +8939,35 @@ y\\R'#DESCENDER \\n[.cdp]'
 .             \}
 .             el \{ .nr #CAP_HEIGHT_ADJUST \\n[#RIGHT_CAP_HEIGHT] \}
 .          \}
-.          ps 12
 .          if \\n[#HEADERS_ON] \{\
 .             rt \\nyu
 .             ALD \\n[#HDRFTR_RULE_GAP]u
+.             nr #HDRFTR_RULE_WEIGHT     \\n[#HEADER_RULE_WEIGHT]
+.             nr #HDRFTR_RULE_WEIGHT_ADJ \\n[#HEADER_RULE_WEIGHT_ADJ]
 .          \}
 .          if \\n[#FOOTERS_ON] \{\
 .             rt \\nyu
-.             RLD \\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+1p
+.             RLD \\n[#HDRFTR_RULE_GAP]u+\\n[#CAP_HEIGHT_ADJUST]u+\\n[#FOOTER_RULE_WEIGHT]u
+.             nr #HDRFTR_RULE_WEIGHT     \\n[#FOOTER_RULE_WEIGHT]
+.             nr #HDRFTR_RULE_WEIGHT_ADJ \\n[#FOOTER_RULE_WEIGHT_ADJ]
 .          \}
 .          ie \\n[#HDRFTR_RULE_COLOR]=1 \{\
-.             PRINT \m[\\*[$HDRFTR_RULE_COLOR]]\\l'\\n[#DOC_L_LENGTH]u'\m[]
+\m[\\*[$HDRFTR_RULE_COLOR]]\
+\D't \\n[#HDRFTR_RULE_WEIGHT]u'\
+\h'|0'\
+\v'+\\n[#HDRFTR_RULE_WEIGHT_ADJ]u'\
+\D'l \\n[#DOC_L_LENGTH]u 0'\
+\D't \\n[#RULE_WEIGHT]u'\
+\h'-\\n[#RULE_WEIGHT]u'\
+\m[]
 .          \}
 .          el \{\
-.             PRINT \\l'\\n[#DOC_L_LENGTH]u'
+\D't \\n[#HDRFTR_RULE_WEIGHT]u'\
+\h'|0'\
+\v'+\\n[#HDRFTR_RULE_WEIGHT_ADJ]u'\
+\D'l \\n[#DOC_L_LENGTH]u 0'\
+\D't \\n[#RULE_WEIGHT]u'\
+\h'-\\n[#RULE_WEIGHT]u'
 .          \}
 .          br
 .       \}
@@ -7616,7 +8994,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .    if '\\$0'HDRFTR_RULE' \{\
 .       ie '\\$1'' \{ .nr #HDRFTR_RULE 1 \}
-.       el \{ .nr #HDRFTR_RULE 0 \}
+.       el         \{ .nr #HDRFTR_RULE 0 \}
 .    \}
 .END
 \#
@@ -8185,6 +9563,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          \}
 .       \}
 .    \}
+.    nop \X'ps: exec 0 setlinejoin'\X'ps: exec 0 setlinecap'
+.    RLD 1v
 .    ie \\n[#HEADERS_ON] \{\
 .       PRINT_HDRFTR
 .       sp |\\n[#T_MARGIN]u-\\n[#DOC_LEAD]u
@@ -8937,21 +10317,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .END
 \#
 \#
-\# HEAD UNDERLINE
-\# --------------
-\# *Arguments:
-\#   <none> | <anything>
-\# *Function:
-\#   Creates or modifies register #HEAD_UNDERLINE.
-\# *Notes:
-\#   Default is on.
-\#
-.MAC HEAD_UNDERLINE END
-.    ie '\\$1'' \{ .nr #HEAD_UNDERLINE 1 \}
-.    el \{ .nr #HEAD_UNDERLINE 0 \}
-.END
-\#
-\#
 \# MAIN HEAD
 \# ---------
 \# *Arguments:
@@ -9101,6 +10466,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    \}
 .\" Print head
 .    nr #ARG_NUM 0 1
+.    nr #FROM_HEAD 1
 .    if \\n[#HEAD_CAPS] \{ .CAPS \}
 .    if \\n[#PRINT_STYLE]=2 \{\
 .       if \\n[#HEAD_COLOR]=1 \{\
@@ -9108,6 +10474,14 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          COLOR \\*[$HEAD_COLOR]
 .          EOL
 .          TRAP
+.       \}
+.    \}
+.    if \\n[#PRINT_STYLE]=1 \{\
+.       ie \\n[#HEAD_CAPS]=1 \{\
+.          ds $HEAD_UNDERLINE_GAP 2p
+.       \}
+.       el \{\
+.          ds $HEAD_UNDERLINE_GAP 4p
 .       \}
 .    \}
 .    while \\n[#ARG_NUM]<\\n[#NUM_ARGS] \{\
@@ -9120,21 +10494,33 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                rm $CH_NUM
 .             \}
 .             br
-.             ie \\n[#HEAD_UNDERLINE]=0 \{ .PRINT "\\*[$CH_NUM]\\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]\}
-.             el \{ .UNDERSCORE "\\*[$CH_NUM]\\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]\}
+.             ie \\n[#HEAD_UNDERLINE]=0 \{\
+.                PRINT "\\*[$CH_NUM]\\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]"
+.             \}
+.             el \{\
+.                UNDERSCORE \\*[$HEAD_UNDERLINE_GAP] "\\*[$CH_NUM]\\n+[#HEAD_NUM].\0\\$[\\n+[#ARG_NUM]]"
+.             \}
 .             br
 .          \}
 .          el \{\
 .             br
-.             ie \\n[#HEAD_UNDERLINE]=0 \{ .PRINT "\\$[\\n+[#ARG_NUM]]\}
-.             el \{ .UNDERSCORE "\\$[\\n+[#ARG_NUM]]\}
+.             ie \\n[#HEAD_UNDERLINE]=0 \{\
+.                PRINT "\\$[\\n+[#ARG_NUM]]"
+.             \}
+.             el \{\
+.                UNDERSCORE \\*[$HEAD_UNDERLINE_GAP] "\\$[\\n+[#ARG_NUM]]"
+.             \}
 .             br
 .          \}
 .       \}
 .       el \{\
 .          br
-.          ie \\n[#HEAD_UNDERLINE]=0 \{ .PRINT "\\$[\\n+[#ARG_NUM]]\}
-.          el \{ .UNDERSCORE "\\$[\\n+[#ARG_NUM]]\}
+.          ie \\n[#HEAD_UNDERLINE]=0 \{\
+.             PRINT "\\$[\\n+[#ARG_NUM]]"
+.          \}
+.          el \{\
+.             UNDERSCORE \\*[$HEAD_UNDERLINE_GAP] "\\$[\\n+[#ARG_NUM]]"
+.          \}
 .          br
 .       \}
 .\}
@@ -9153,6 +10539,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if r#Q_AT_TOP   \{ .rr #Q_AT_TOP  \}
 .    if r#PP_ACTIVE  \{ .rr #PP_ACTIVE \}
 .    rr #ARG_NUM
+.    rr #FROM_HEAD
 .    rm $TOC_HEAD_ITEM
 .    nr #PP 0
 .END
@@ -9300,24 +10687,24 @@ y\\R'#DESCENDER \\n[.cdp]'
 .                \}
 .                ie \\n[#NUMBER_HEAD] \{\
 .                   br
-.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]"
 .                   br
 .                \}
 .                el \{\
 .                   br
-.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]
+.                   UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\*[$CH_NUM]\\n+[#SH_NUM].\0\\$[\\n+[#ARG_NUM]]"
 .                   br
 .                \}
 .             \}
 .             el \{\
 .                br
-.                UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.                UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]"
 .                br
 .             \}
 .          \}
 .          el \{\
 .             br
-.             UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]
+.             UNDERSCORE "\v'-\\n[#SH_LEAD_ADJUST]u'\\$[\\n+[#ARG_NUM]]"
 .             br
 .          \}
 .\}
@@ -9515,25 +10902,25 @@ y\\R'#DESCENDER \\n[.cdp]'
 \0
 .             \}
 .             el \{\
-.                UNDERSCORE "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#PH_NUM].\\ \\$1
+.                UNDERSCORE "\R'#NUMBERED 1'\\*[$CH_NUM]\\n[#HEAD_NUM].\\n+[#PH_NUM].\\ \\$1"
 \0
 .             \}
 .          \}
 .          ie \\n[#NUMBER_SH] \{\
 .             if !\\n[#NUMBERED] \{\
-.                UNDERSCORE "\\*[$CH_NUM]\\n[#SH_NUM].\\n+[#PH_NUM].\\ \\$1
+.                UNDERSCORE "\\*[$CH_NUM]\\n[#SH_NUM].\\n+[#PH_NUM].\\ \\$1"
 \0
 .             \}
 .          \}
 .          el \{\
 .             if !\\n[#NUMBERED] \{\
-.                UNDERSCORE "\\*[$CH_NUM]\\n+[#PH_NUM].\\ \\$1
+.                UNDERSCORE "\\*[$CH_NUM]\\n+[#PH_NUM].\\ \\$1"
 \0
 .             \}
 .          \}
 .       \}
 .       el \{\
-.          UNDERSCORE "\\$1
+.          UNDERSCORE "\\$1"
 \0
 .       \}
 .       if \\n[#SLANT_WAS_ON] \{\
@@ -10119,21 +11506,37 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# CODE
 \# ----
 \# *Arguments:
-\#   <none> | <anything>
+\#   <none [ BR | BREAK | SPREAD ]> | <anything [ BR | BREAK | SPREAD ]>
 \# *Function:
 \#   Takes care of admistrivia associated with setting code snippets.
 \#
 .MAC CODE END
+\c
+.    if '\\$1'BR' \{\
+.       br
+.       shift
+.     \}
+.    if '\\$1'BREAK' \{\
+.       br
+.       shift
+.     \}
+.    if '\\$1'SPREAD' \{\
+.       brp
+.       shift
+.     \}
 .    ie '\\$1'' \{\
-.        ds $PRE_CODE_FAM \\n[.fam]
-.        ds $PRE_CODE_FT \\n[.sty]
-.        fam C
-.        ft  R
-.        if \\n[#UNDERLINE_QUOTES]=1 \{\
-.            nr #RESTORE_UNDERLINE 1
-.            UNDERLINE_QUOTES OFF
-.            FT R
-.        \}
+.       ds $PRE_CODE_FAM \\n[.fam]
+.       ds $PRE_CODE_FT \\n[.sty]
+.       if !\\n[#PRINT_STYLE]=1 \{\
+.          ie \\n[#CODE_FAM]=1 \{ .fam \\*[$CODE_FAM] \}
+.          el \{ .fam C \}
+.       \}
+.       ft  R
+.       if \\n[#UNDERLINE_QUOTES]=1 \{\
+.           nr #RESTORE_UNDERLINE 1
+.           UNDERLINE_QUOTES OFF
+.           FT R
+.       \}
 .       if \\n[#PRINT_STYLE]=2 \{\
 .          tr `'
 .       \}
@@ -10158,7 +11561,25 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          tr ``
 .       \}
 .    \}
+.    if \\n[#NUM_ARGS]=2 \{\
+.       if '\\$2'BR'     \{ .br  \}
+.       if '\\$2'BREAK'  \{ .br  \}
+.       if '\\$2'SPREAK' \{ .brp \}
+.    \}
 .END
+\#
+\# CODE_FAMILY
+\# -----------
+\# *Arguments:
+\#   <family>
+\# *Function:
+\#   Creates register #CODE_FAM and string $CODE_FAM for use by CODE.
+\#
+.MAC CODE_FAMILY END
+.    nr #CODE_FAM 1
+.    ds $CODE_FAM \\$1
+.END
+\#
 \#
 \# ---Blockquotes---
 \#
@@ -11129,10 +12550,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .MAC FOOTNOTE_RULE END
 .    ie '\\$0'PRINT_FOOTNOTE_RULE' \{\
 .       if \\n[#FN_RULE]=0 \{ .RLD 1v \}
-\!.     PT_SIZE 12
 .       RLD 1v
 .       LEFT
-.       PRINT \v'-\\n[#FN_RULE_ADJ]u'\l'\\n[#FN_RULE_LENGTH]u'\v'+\\n[#FN_RULE_ADJ]u'
+\v'-\\n[#FN_RULE_ADJ]u-\\n[#FN_RULE_WEIGHT_ADJ]u'\
+\D't \\n[#FN_RULE_WEIGHT]'\
+\h'-\\n[#FN_RULE_WEIGHT]u'\
+\D'l \\n[#FN_RULE_LENGTH]u 0'\
+\v'+\\n[#FN_RULE_ADJ]u+\\n[#FN_RULE_WEIGHT_ADJ]u'
 \!.     PT_SIZE \\n[#DOC_PT_SIZE]u\\*$[FN_SIZE_CHANGE]
 .       QUAD \\*[$FN_QUAD]
 .    \}
@@ -11731,7 +13155,11 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .                   di FOOTNOTES
 .                   ie \\n[#FN_RULE]=0 \{ .RLD 1v \}
 .                   el \{\
-.                      PRINT \v'-\\n[#FN_RULE_ADJ]u'\l'\\n[#FN_RULE_LENGTH]u'\v'+\\n[#FN_RULE_ADJ]u'
+\v'-\\n[#FN_RULE_ADJ]u-\\n[#FN_RULE_WEIGHT_ADJ]u'\
+\D't \\n[#FN_RULE_WEIGHT]'\
+\h'-\\n[#FN_RULE_WEIGHT]u'\
+\D'l \\n[#FN_RULE_LENGTH]u 0'\
+\v'+\\n[#FN_RULE_ADJ]u+\\n[#FN_RULE_WEIGHT_ADJ]u'
 .                   \}
 .                   br
 .                   if \\n[#RUNON_FOOTNOTES] \{\
@@ -12313,22 +13741,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .END
 \#
 \#
-\# ENDNOTE STRING UNDERSCORE
-\# -------------------------
-\# *Arguments:
-\#   toggle | 2
-\# *Function:
-\#   Turns underscoring of endnote main title on or off.  If the argument
-\#   is the digit "2", turns on double-underscoring.
-\# *Notes:
-\#   Default is double-underscored.
-\#
-.MAC ENDNOTE_STRING_UNDERSCORE END
-.    ie '\\$1'' \{ .nr #EN_STRING_UNDERSCORE 1 \}
-.    el \{\
-.       ie '\\$1'2' \{ .nr #EN_STRING_UNDERSCORE 2 \}
-.       el \{ .nr #EN_STRING_UNDERSCORE 0 \}
-.    \}
+.MAC ENDNOTE_STRING_ADVANCE END
+.    nr #EN_STRING_ADVANCE (\\$1)
 .END
 \#
 \#
@@ -12358,32 +13772,12 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# *Argument:
 \#   <string that appears before the first endnote pertaining to any document>
 \# *Function:
-\#   Creates string $EN_TITLE_STRING.
+\#   Creates string $EN_TITLE.
 \# *Notes:
 \#   Default is the document title, or, if doc is a chapter, "Chapter #"
 \#
 .MAC ENDNOTE_TITLE END
 .    ds $EN_TITLE \\$1
-.END
-\#
-\#
-.MAC ENDNOTE_TITLE_SPACE END
-.    nr #EN_TITLE_SPACE (\\$1)
-.END
-\#
-\#
-\# ENDNOTE TITLE UNDERSCORE
-\# ------------------------
-\# *Argument:
-\#   toggle
-\# *Function:
-\#   Creates or removes register #EN_TITLE_UNDERSCORE.
-\# *Notes:
-\#   Default is to underscore the endnote titles.
-\#
-.MAC ENDNOTE_TITLE_UNDERSCORE END
-.    ie '\\$1'' \{ .nr #EN_TITLE_UNDERSCORE 1 \}
-.    el \{ .rr #EN_TITLE_UNDERSCORE \}
 .END
 \#
 \#
@@ -12771,11 +14165,13 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .             if '\\*[$EN_TITLE_QUAD]'CENTRE' \{ .CENTER \}
 .             if '\\*[$EN_TITLE_QUAD]'R'      \{ .RIGHT  \}
 .             if '\\*[$EN_TITLE_QUAD]'RIGHT'  \{ .RIGHT  \}
-.             ie \\n[#EN_TITLE_UNDERSCORE] \{\
-.                UNDERSCORE "\\*[$EN_TITLE]
+.             ie \\n[#EN_TITLE_UNDERLINE] \{\
+.                nr #FROM_EN_TITLE 1
+.                UNDERSCORE "\\*[$EN_TITLE]"
+.                rr #FROM_EN_TITLE
 .             \}
 .             el \{\
-.                PRINT "\\*[$EN_TITLE]
+.                PRINT "\\*[$EN_TITLE]"
 .             \}
 .          \}
 .       \}
@@ -13038,7 +14434,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       el \{ .DOC_LEAD \\n[#EN_LEAD]u \}
 .    \}
 .    PRINT \&
-.    ie r#EN_TITLE_SPACE \{ .sp |\\n[#EN_TITLE_SPACE]u \}
+.    ie r#EN_STRING_ADVANCE \{ .sp |\\n[#EN_STRING_ADVANCE]u \}
 .    el \{ .sp |\\n[#T_MARGIN]u \}
 .    mk ec
 .    if \\n[#SLANT_ON] \{\
@@ -13072,13 +14468,15 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       if '\\*[$EN_STRING_QUAD]'RIGHT'  \{ .RIGHT  \}
 .       EOL
 .       if \\n[#EN_STRING_CAPS] \{ .CAPS \}
-.       ie \\n[#EN_STRING_UNDERSCORE] \{\
-.          ie \\n[#EN_STRING_UNDERSCORE]=2 \{\
-.             UNDERSCORE2 "\\*[$EN_STRING]
+.       ie \\n[#EN_STRING_UNDERLINE] \{\
+.          nr #FROM_EN_STRING 1
+.          ie \\n[#EN_STRING_UNDERLINE]=2 \{\
+.             UNDERSCORE2 \\*[$EN_UNDERLINE_GAP] \\*[$EN_RULE_GAP] "\\*[$EN_STRING]"
 .          \}
 .          el \{\
-.             UNDERSCORE "\\*[$EN_STRING]
+.             UNDERSCORE "\\*[$EN_STRING]"
 .          \}
+.          rr #FROM_EN_STRING
 .       \}
 .       el \{\
 .          PRINT "\\*[$EN_STRING]
@@ -13181,14 +14579,6 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC BIBLIOGRAPHY_STRING END
 .    ds $BIB_STRING \\$1
-.END
-\#
-.MAC BIBLIOGRAPHY_STRING_UNDERSCORE END
-.    ie '\\$1'' \{ .nr #BIB_STRING_UNDERSCORE 1 \}
-.    el \{\
-.       ie '\\$1'2' \{ .nr #BIB_STRING_UNDERSCORE 2 \}
-.       el \{ .nr #BIB_STRING_UNDERSCORE 0 \}
-.    \}
 .END
 \#
 .MAC BIBLIOGRAPHY_STRING_CAPS END
@@ -13455,23 +14845,25 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       \}
 .       if '\\*[$BIB_STRING_QUAD]'L'      \{ .LEFT   \}
 .       if '\\*[$BIB_STRING_QUAD]'LEFT'   \{ .LEFT   \}
-.       if '\\*[$EN_STRING_QUAD]'C'       \{ .CENTER \}
+.       if '\\*[$BIB_STRING_QUAD]'C'      \{ .CENTER \}
 .       if '\\*[$BIB_STRING_QUAD]'CENTER' \{ .CENTER \}
 .       if '\\*[$BIB_STRING_QUAD]'CENTRE' \{ .CENTER \}
 .       if '\\*[$BIB_STRING_QUAD]'R'      \{ .RIGHT  \}
 .       if '\\*[$BIB_STRING_QUAD]'RIGHT'  \{ .RIGHT  \}
 .       EOL
 .       if \\n[#BIB_STRING_CAPS] \{ .CAPS \}
-.       ie \\n[#BIB_STRING_UNDERSCORE] \{\
-.          ie \\n[#BIB_STRING_UNDERSCORE]=2 \{\
-.             UNDERSCORE2 "\\*[$BIB_STRING]
+.       ie \\n[#BIB_STRING_UNDERLINE] \{\
+.          nr #FROM_BIB_STRING 1
+.          ie \\n[#BIB_STRING_UNDERLINE]=2 \{\
+.             UNDERSCORE2 "\\*[$BIB_STRING]"
 .          \}
 .          el \{\
-.             UNDERSCORE "\\*[$BIB_STRING]
+.             UNDERSCORE "\\*[$BIB_STRING]"
 .          \}
+.          rr #FROM_BIB_STRING
 .       \}
 .       el \{\
-.          PRINT "\\*[$BIB_STRING]
+.          PRINT "\\*[$BIB_STRING]"
 .       \}
 .    \}
 .    CAPS OFF
@@ -14132,7 +15524,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if '\\*[$ENUMERATOR_TYPE\\n[#DEPTH]]'other' \{\
 .       nr #LIST_INDENT\\n[#DEPTH] \w'\\*[$ENUMERATOR\\n[#DEPTH]]\0'
 .    \}
-.    LL \\n[#CURRENT_L_LENGTH]u
+.    ll \\n[#CURRENT_L_LENGTH]u
 .    ie \\n[#DEPTH]=1 \{\
 .       ie \\n[#INDENT_ACTIVE]=1 \{\
 .          if \\n[#INDENT_LEFT_ACTIVE]=1 \{\
@@ -14557,21 +15949,21 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .   if \\n[#RESTORE_PREV_INDENT]=2 \{\
 .      nr #BL_INDENT \\n[#STORED_BL_INDENT]
 .      nr #BR_INDENT \\n[#STORED_BR_INDENT]
-.      LL \\n[#ORIG_L_LENGTH]u
+.      ll \\n[#ORIG_L_LENGTH]u
 .      IB
 .      rr #STORED_BL_INDENT
 .      rr #STORED_BR_INDENT
 .   \}
 .   if \\n[#RESTORE_PREV_INDENT]=3 \{\
 .      nr #R_INDENT \\n[#STORED_R_INDENT]
-.      LL \\n[#ORIG_L_LENGTH]u
+.      ll \\n[#ORIG_L_LENGTH]u
 .      IR
 .      rr #STORED_R_INDENT
 .   \}
 .   if \\n[#RESTORE_PREV_INDENT]=4 \{\
 .      nr #R_INDENT \\n[#STORED_R_INDENT]
 .      nr #L_INDENT \\n[#STORED_L_INDENT]
-.      LL \\n[#ORIG_L_LENGTH]u
+.      ll \\n[#ORIG_L_LENGTH]u
 .      IR
 .      IL
 .      rr #STORED_R_INDENT
@@ -14711,6 +16103,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    CHAPTER
 .    CHAPTER_TITLE
 .    rr #PAGENUM_STYLE_SET
+.    rr #DOC_COVER
+.    rr #COVER
 .END
 \#
 \#
@@ -14855,7 +16249,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# OUTPUT BLANK PAGES
 \# ------------------
 \# *Argument:
-\#   <number of blank pages to output>
+\#   <number of blank pages to output> [ NULL ]
 \# *Function:
 \#   Outputs blank pages.
 \# *Notes:
@@ -14896,6 +16290,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .    if \\n[#PAGE_NUM_V_POS]=2 \{\
 .       if \\n[#PAGINATE_WAS_ON] \{ .PAGINATE \}
 .    \}
+.    if \\n[#PAGINATE]=1 \{\
+.       if '\\$2'NULL' \{ .nr #PAGE_NUM_ADJ -\\n[#HOW_MANY] \}
+.    \}
+.    rr #HOW_MANY
 .    rr #HEADERS_WERE_ON
 .    rr #FOOTERS_WERE_ON
 .    rr #PAGINATE_WAS_ON
@@ -15729,8 +17127,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# EOL is the "old" EL, for the personal use of om.tmac
 \#
 .MAC EOL END
+.    TRAP OFF
 .    br
 .    sp -1v
+.    TRAP
 .END
 \#
 \# REFER SUPPORT
@@ -15848,10 +17248,10 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \# *Argument:
 \#   <none> | <anything>
 \# *Function:
-\#   Sets register #REF_HYPHENATE
+\#   Sets register #REF_HY
 \#
 .MAC HYPHENATE_REFS END
-.    ie '\\$1'' \{ .nr #REF_HYPHENATE 1 \}
+.    ie '\\$1'' \{ .nr #REF_HY 1 \}
 .    el \{\
 .       if r#REF_HY \{ .rr #REF_HY \}
 .    \}
@@ -15993,7 +17393,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .   ds $RESTORE_SS_VAR \\*[$SS_VAR]
 .   SS +4
 .\}
-.rm ref*string ref*post-punct
+\#.rm ref*string ref*post-punct
+.rm ref*string
 .nr ref*suppress-period 1
 .while \\n[.$] \{\
 .   if d [\\$1 \{\
