@@ -472,7 +472,7 @@ Software Foundation raise funds for GNU development.''
 @title groff
 @subtitle The GNU implementation of @code{troff}
 @subtitle Edition 1.19.3
-@subtitle Spring 2006
+@subtitle Summer 2006
 @author by Trent A.@tie{}Fisher
 @author and Werner Lemberg (@email{bug-groff@@gnu.org})
 
@@ -2176,7 +2176,7 @@ relative to the bottom.  The default is @minus{}0.5@dmn{i}.
 
 @item -rHY=@var{flags}
 Set hyphenation flags.  Possible values are 1@tie{}to hyphenate without
-restrictions, 2@tie{} to not hyphenate the last word on a page,
+restrictions, 2@tie{}to not hyphenate the last word on a page,
 4@tie{}to not hyphenate the last two characters of a word, and
 8@tie{}to not hyphenate the first two characters of a word.  These
 values are additive; the default is@tie{}14.
@@ -9362,14 +9362,19 @@ property).
 @item 2
 @cindex hyphenating characters
 @cindex characters, hyphenation
-Lines can be broken before the character (initially no characters have
-this property).
+Lines can be broken before the character (initially no characters have this
+property).  This only works if both the characters before and after have
+non-zero hyphenation codes (as set with the @code{hcode} request).  Use
+value@tie{}64 to override this behaviour.
 
 @item 4
 @cindex @code{hy} glyph, and @code{cflags}
 @cindex @code{em} glyph, and @code{cflags}
-Lines can be broken after the character (initially the character
-@samp{-} and the symbols @samp{\[hy]} and @samp{\[em]} have this property).
+Lines can be broken after the character (initially the character @samp{-}
+and the symbols @samp{\[hy]} and @samp{\[em]} have this property).  This
+only works if both the characters before and after have non-zero hyphenation
+codes (as set with the @code{hcode} request).  Use value@tie{}64 to override
+this behaviour.
 
 @item 8
 @cindex overlapping characters
@@ -9405,6 +9410,22 @@ newline or two spaces; in other words the character is
 this is the same as having a zero space factor in @TeX{} (initially
 characters @samp{"')]*} and the symbols @samp{\[dg]} and @samp{\[rq]} have
 this property).
+
+@item 64
+Ignore hyphenation code values of the surrounding characters.  Use this in
+combination with values 2 and@tie{}4 (initially no characters have this
+property).  For example, if you need an automatic break point after the
+hyphen in number ranges like `3000-5000', insert
+
+@Example
+.cflags 68 -
+@endExample
+
+@noindent
+into your document.  Note, however, that this can lead to bad layout if done
+without thinking; in most situations, a better solution instead of changing
+the @code{cflags} value is to insert @code{\:} right after the hyphen at the
+places which really need a break point.
 @end table
 @endDefreq
 

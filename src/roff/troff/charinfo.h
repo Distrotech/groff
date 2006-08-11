@@ -44,7 +44,8 @@ public:
     BREAK_AFTER = 4,
     OVERLAPS_HORIZONTALLY = 8,
     OVERLAPS_VERTICALLY = 16,
-    TRANSPARENT = 32
+    TRANSPARENT = 32,
+    IGNORE_HCODES = 64
   };
   enum {
     TRANSLATE_NONE,
@@ -54,7 +55,7 @@ public:
     TRANSLATE_HYPHEN_INDICATOR
   };
   symbol nm;
-  charinfo(symbol s);
+  charinfo(symbol);
   glyph *as_glyph();
   int ends_sentence();
   int overlaps_vertically();
@@ -62,6 +63,7 @@ public:
   int can_break_before();
   int can_break_after();
   int transparent();
+  int ignore_hcodes();
   unsigned char get_hyphenation_code();
   unsigned char get_ascii_code();
   unsigned char get_asciify_code();
@@ -120,6 +122,11 @@ inline int charinfo::ends_sentence()
 inline int charinfo::transparent()
 {
   return flags & TRANSPARENT;
+}
+
+inline int charinfo::ignore_hcodes()
+{
+  return flags & IGNORE_HCODES;
 }
 
 inline int charinfo::numbered()

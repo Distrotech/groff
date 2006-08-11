@@ -2839,15 +2839,19 @@ int break_char_node::ends_sentence()
 node *break_char_node::add_self(node *n, hyphen_list **p)
 {
   assert((*p)->hyphenation_code == 0);
-  if ((*p)->breakable && (break_code & 1)) {
-    n = new space_node(H0, col, n);
-    n->freeze_space();
+  if (break_code & 1) {
+    if ((*p)->breakable || break_code & 4) {
+      n = new space_node(H0, col, n);
+      n->freeze_space();
+    }
   }
   next = n;
   n = this;
-  if ((*p)->breakable && (break_code & 2)) {
-    n = new space_node(H0, col, n);
-    n->freeze_space();
+  if (break_code & 2) {
+    if ((*p)->breakable || break_code & 4) {
+      n = new space_node(H0, col, n);
+      n->freeze_space();
+    }
   }
   hyphen_list *pp = *p;
   *p = (*p)->next;
@@ -5073,6 +5077,8 @@ node *node::add_char(charinfo *ci, environment *env,
     break_code = 1;
   if (ci->can_break_after())
     break_code |= 2;
+  if (ci->ignore_hcodes())
+    break_code |= 4;
   if (break_code) {
     node *next1 = res->next;
     res->next = 0;
