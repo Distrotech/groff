@@ -434,9 +434,9 @@ in=\\n[.i] fi=\\n[.u] .d=\\n[.d] nl=\\n[nl] pg=\\n[%]
 .if !((\\n[nl]=\\n[hd*last-pos]):(\\n[hd*last-hsize]=\\n[.k])) \{\
 .	if \\n[D]>2 .tm Paragraph set ind-flag=1
 .	nr par@ind-flag 1
+.	\" any collected unprinted text?
+.	par@doit \\$*
 .\}
-.\" any collected unprinted text?
-.par@doit \\$*
 .if \\n[Np] \\n[H1].\\n+[par*number]\ \ \c
 ..
 .\"------------
