@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2005
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2005, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -37,9 +37,13 @@ extern "C" {
 
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
-#else
-#define setlocale(category, locale) do {} while(0)
-#endif
+#define getlocale(category) setlocale(category, NULL)
+#else /* !HAVE_SETLOCALE */
+#define LC_ALL 0
+#define LC_CTYPE 0
+#define setlocale(category, locale) (void)(category, locale)
+#define getlocale(category) ((void)(category), (char *)"C")
+#endif /* !HAVE_SETLOCALE */
 
 char *strsave(const char *s);
 int is_prime(unsigned);
@@ -106,7 +110,7 @@ inline int invalid_input_char(int c)
 // Ultrix4.3's string.h fails to declare this.
 extern "C" { int strcasecmp(const char *, const char *); }
 #endif /* NEED_DECLARATION_STRCASECMP */
-#else /* not HAVE_STRCASECMP */
+#else /* !HAVE_STRCASECMP */
 extern "C" { int strcasecmp(const char *, const char *); }
 #endif /* HAVE_STRCASECMP */
 
@@ -116,16 +120,16 @@ extern "C" { int strcasecmp(const char *, const char *); }
 // SunOS's string.h fails to declare this.
 extern "C" { int strncasecmp(const char *, const char *, int); }
 #endif /* NEED_DECLARATION_STRNCASECMP */
-#else /* not HAVE_STRNCASECMP */
+#else /* !HAVE_STRNCASECMP */
 extern "C" { int strncasecmp(const char *, const char *, size_t); }
 #endif /* HAVE_STRNCASECMP */
 #endif /* !_AIX && !sinix && !__sinix__ */
 
 #ifdef HAVE_CC_LIMITS_H
 #include <limits.h>
-#else /* not HAVE_CC_LIMITS_H */
+#else /* !HAVE_CC_LIMITS_H */
 #define INT_MAX 2147483647
-#endif /* not HAVE_CC_LIMITS_H */
+#endif /* !HAVE_CC_LIMITS_H */
 
 /* It's not safe to rely on people getting INT_MIN right (ie signed). */
 
@@ -139,14 +143,14 @@ extern "C" { int strncasecmp(const char *, const char *, size_t); }
 
 #define INT_MIN ((long)(-INT_MAX-1))
 
-#else /* not CFRONT_ANSI_BUG */
+#else /* !CFRONT_ANSI_BUG */
 
 #define INT_MIN (-INT_MAX-1)
 
-#endif /* not CFRONT_ANSI_BUG */
+#endif /* !CFRONT_ANSI_BUG */
 
 /* Maximum number of digits in the decimal representation of an int
-(not including the -). */
+   (not including the -). */
 
 #define INT_DIGITS 10
 
@@ -157,14 +161,14 @@ extern "C" { int strncasecmp(const char *, const char *, size_t); }
 const double PI = 3.14159265358979323846;
 
 /* ad_delete deletes an array of objects with destructors;
-a_delete deletes an array of objects without destructors */
+   a_delete deletes an array of objects without destructors */
 
 #ifdef ARRAY_DELETE_NEEDS_SIZE
 /* for 2.0 systems */
 #define ad_delete(size) delete [size]
 #define a_delete delete
-#else /* not ARRAY_DELETE_NEEDS_SIZE */
+#else /* !ARRAY_DELETE_NEEDS_SIZE */
 /* for ARM systems */
 #define ad_delete(size) delete []
 #define a_delete delete []
-#endif /* not ARRAY_DELETE_NEEDS_SIZE */
+#endif /* !ARRAY_DELETE_NEEDS_SIZE */

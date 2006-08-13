@@ -1110,7 +1110,7 @@ main(int argc, char **argv)
   // getopt() is called since the usage message shows the default
   // encoding.
   setlocale(LC_ALL, "");
-  char *locale = setlocale(LC_CTYPE, NULL);
+  char *locale = getlocale(LC_CTYPE);
   if (!locale || !strcmp(locale, "C") || !strcmp(locale, "POSIX"))
     default_encoding = "latin1";
   else
