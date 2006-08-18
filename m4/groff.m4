@@ -71,35 +71,20 @@ AC_DEFUN([GROFF_MAKEINFO],
        | sed -e 's/^.* \([^ ][^ ]*\)$/\1/' -e '1q'`]
      AC_MSG_RESULT([$makeinfo_version])
      # Consider only the first two numbers in version number string.
-     [makeinfo_version_major=`echo $makeinfo_version \
-       | sed 's/^\([0-9]*\).*$/\1/'`]
-     if test -z "$makeinfo_version_major"; then
-       makeinfo_version_major=0
-       makeinfo_version_minor=0
-     else
-       [makeinfo_version_minor=`echo $makeinfo_version \
-	 | sed 's/^[^.][^.]*\(.*\)$/\1/'`]
-       # No minor version number at all?
-       if test -z "$makeinfo_version_minor"; then
-	 makeinfo_version_minor=0
-       else
-	 [makeinfo_version_minor=`echo $makeinfo_version_minor \
-	   | sed 's/\.\([0-9]*\).*$/\1/'`]
-	 if test -z "$makeinfo_version_minor"; then
-	   makeinfo_version_minor=0
-	 fi
-       fi
+     makeinfo_version_major=`IFS=.; set x $makeinfo_version; echo 0${2}`
+     makeinfo_version_minor=`IFS=.; set x $makeinfo_version; echo 0${3}`
+     makeinfo_version_numeric=`
+       expr ${makeinfo_version_major}000 \+ ${makeinfo_version_minor}`
+     if test $makeinfo_version_numeric -lt 4008; then
+       missing="\`makeinfo' is too old."
      fi
-   fi
-   makeinfo_version_numeric=`expr $makeinfo_version_major '*' 1000 \
-				  '+' $makeinfo_version_minor`
-   if test $makeinfo_version_numeric -lt 4008; then
-     missing="\`makeinfo' is too old."
    fi
 
    if test -n "$missing"; then
-     if test ! -f doc/groff.info \
-	|| test ${srcdir}/doc/groff.texinfo -nt doc/groff.info; then
+     infofile=doc/groff.info
+     test -f ${infofile} || infofile=${srcdir}/${infofile}
+     if test ! -f ${infofile} \
+	|| test ${srcdir}/doc/groff.texinfo -nt ${infofile}; then
        AC_MSG_ERROR($missing
 [Get the `texinfo' package version 4.8 or newer.])
      else
