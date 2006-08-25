@@ -3816,7 +3816,7 @@ void hyphenate(hyphen_list *h, unsigned flags)
     while (h && h->hyphenation_code == 0)
       h = h->next;
     int len = 0;
-    char hbuf[WORD_MAX+2];
+    char hbuf[WORD_MAX + 2];
     char *buf = hbuf + 1;
     hyphen_list *tem;
     for (tem = h; tem && len < WORD_MAX; tem = tem->next) {
@@ -3840,14 +3840,14 @@ void hyphenate(hyphen_list *h, unsigned flags)
 	  }
       }
       else {
-	hbuf[0] = hbuf[len+1] = '.';
-	int num[WORD_MAX+3];
-	current_language->patterns.hyphenate(hbuf, len+2, num);
+	hbuf[0] = hbuf[len + 1] = '.';
+	int num[WORD_MAX + 3];
+	current_language->patterns.hyphenate(hbuf, len + 2, num);
 	int i;
 	num[2] = 0;
-	if (flags & 8)
+	if (flags & HYPHEN_FIRST_CHARS)
 	  num[3] = 0;
-	if (flags & 4)
+	if (flags & HYPHEN_LAST_CHARS)
 	  --len;
 	for (i = 2, tem = h; i < len && tem; tem = tem->next, i++)
 	  if (num[i] & 1)
