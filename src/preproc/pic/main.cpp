@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2003
+/* Copyright (C) 1989-1992, 2000, 2001, 2002, 2003, 2006
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -473,9 +473,9 @@ void do_whole_file(const char *filename)
 
 void usage(FILE *stream)
 {
-  fprintf(stream, "usage: %s [ -nvC ] [ filename ... ]\n", program_name);
+  fprintf(stream, "usage: %s [ -nvCSU ] [ filename ... ]\n", program_name);
 #ifdef TEX_SUPPORT
-  fprintf(stream, "       %s -t [ -cvzC ] [ filename ... ]\n", program_name);
+  fprintf(stream, "       %s -t [ -cvzCSU ] [ filename ... ]\n", program_name);
 #endif
 #ifdef FIG_SUPPORT
   fprintf(stream, "       %s -f [ -v ] [ filename ]\n", program_name);
