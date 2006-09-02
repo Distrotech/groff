@@ -264,6 +264,7 @@ public:
   environment(const environment *);	// for temporary environment
   ~environment();
   statem *construct_state(int only_eol);
+  void print_env();
   void copy(const environment *);
   int is_dummy() { return dummy; }
   int is_empty();
