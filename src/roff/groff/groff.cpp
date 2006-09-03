@@ -299,10 +299,10 @@ int main(int argc, char **argv)
     if (!Kflag && *encoding)
       commands[PRECONV_INDEX].append_arg("-e", encoding);
   }
-  if (safer_flag)
-    commands[PIC_INDEX].append_arg("-S");
-  else
+  if (!safer_flag) {
     commands[TROFF_INDEX].insert_arg("-U");
+    commands[PIC_INDEX].append_arg("-U");
+  }
   font::set_unknown_desc_command_handler(handle_unknown_desc_command);
   if (!font::load_desc())
     fatal("invalid device `%1'", device);
