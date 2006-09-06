@@ -2336,8 +2336,10 @@ void environment::do_break(int do_spread)
     wrap_up_tab();
   if (line) {
     // this is so that hyphenation works
-    line = new space_node(H0, get_fill_color(), line);
-    space_total++;
+    if (line->nspaces() == 0) {
+      line = new space_node(H0, get_fill_color(), line);
+      space_total++;
+    }
     possibly_break_line(0, do_spread);
   }
   while (line != 0 && line->discardable()) {
