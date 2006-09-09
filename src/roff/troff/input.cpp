@@ -4902,9 +4902,19 @@ static int read_size(int *x)
   else {
     token start(tok);
     tok.next();
-    if (!(inc
-	  ? get_number(&val, 'z')
-	  : get_number(&val, 'z', curenv->get_requested_point_size())))
+    // catch `\s-[-...]' and friends
+    c = tok.ch();
+    if (c == '-' || c == '+') {
+      if (inc) {
+	error("two relative changes not allowed in \\s escape");
+	return 0;
+      }
+      else {
+        inc = c == '+' ? 1 : -1;
+	tok.next();
+      }
+    }
+    if (!get_number(&val, 'z'))
       return 0;
     if (!(start.ch() == '[' && tok.ch() == ']') && start != tok) {
       if (start.ch() == '[')
@@ -4935,7 +4945,7 @@ static int read_size(int *x)
     }
     if (*x <= 0) {
       warning(WARN_RANGE,
-	      "\\s request results in non-positive point size; set to 1");
+	      "\\s escape results in non-positive point size; set to 1");
       *x = 1;
     }
     return 1;

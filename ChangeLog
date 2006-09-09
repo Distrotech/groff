@@ -1,3 +1,10 @@
+2006-09-09  Werner LEMBERG  <wl@gnu.org>
+
+	* src/roff/troff/input.cpp (read_size): Fix `\s[-\n[.s]]' so that it
+	behave the same as `\s-[\n[.s]]' (this is, emit a warning and set
+	point size to 1).  Reported by Gunnar Ritter.
+	Also catch `\s-[-...]' and friends (causing an error).
+
 2006-09-06  Werner LEMBERG  <wl@gnu.org>
 
 	* src/roff/troff/env.cpp (environment::do_break): Insert zero-width
