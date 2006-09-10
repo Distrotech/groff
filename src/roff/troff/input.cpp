@@ -4902,17 +4902,10 @@ static int read_size(int *x)
   else {
     token start(tok);
     tok.next();
-    // catch `\s-[-...]' and friends
     c = tok.ch();
-    if (c == '-' || c == '+') {
-      if (inc) {
-	error("two relative changes not allowed in \\s escape");
-	return 0;
-      }
-      else {
-        inc = c == '+' ? 1 : -1;
-	tok.next();
-      }
+    if (!inc && (c == '-' || c == '+')) {
+      inc = c == '+' ? 1 : -1;
+      tok.next();
     }
     if (!get_number(&val, 'z'))
       return 0;
