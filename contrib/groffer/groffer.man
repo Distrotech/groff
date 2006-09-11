@@ -15,7 +15,7 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update: 28 Jul 2006
+Last update: 05 Sep 2006
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
@@ -727,7 +727,7 @@ behaviors.
 .
 This can be done either in configuration files, with the shell
 environment variable
-.BR \%$GROFFER_OPT ,
+.Env_var \%$GROFFER_OPT ,
 or on the command line.
 .
 .
@@ -877,12 +877,12 @@ are accepted as well.
 .I X Window Toolkit options
 .RS
 .P
-.Opt_[alt] -- bd pixels
+.Opt_[alt] -- bd -- bordercolor pixels
 .Opt_[alt] -- bg -- background color
-.Opt_[alt] -- bw pixels
+.Opt_[alt] -- bw -- borderwidth pixels
 .Opt_[alt] -- display X-display
 .Opt_[alt] -- fg -- foreground color
-.Opt_[alt] -- ft -- font font_name
+.Opt_[alt] -- fn -- ft -- font font_name
 .Opt_[alt] -- geometry size_pos
 .Opt_[alt] -- resolution value
 .Opt_[alt] -- rv
@@ -907,6 +907,7 @@ are accepted as well.
 .Opt_[alt] -- debug\-tmpdir
 .Opt_[alt] -- debug\-user
 .Opt_[alt] -- do\-nothing
+.Opt_[alt] -- print text
 .Opt_[alt] -- shell prog
 .Opt_[alt] - Q -- source
 .Opt_[alt] - V
@@ -1066,30 +1067,34 @@ If none of these mode and viewer options is specified
 tries to find a suitable display mode automatically.
 .
 The default modes are
-.I mode x
-with
-.B gxditview
-in \%\f[CR]X\~Window\f[] and
+.IR "mode pdf" ,
+.IR "mode ps" ,
+.IR "mode html" ,
+.IR "mode x" ,
+and
+.I "mode dvi"
+in \%\f[CR]X\~Window\f[] with different viewers and
 .I mode tty
 with device
 .I latin1
 under
 .B less
-on a terminal; a series of other modes are tested if the programs for
-the main default mode do not exist.
+on a terminal; other modes are tested if the programs for the main
+default mode do not exist.
 .
 .
 .P
 In \%\f[CR]X\~Window\f[],
-.B groffer
-can run the viewer as an independent program in the background.
+many programs create their own window when called.
+.B \%groffer
+can run these viewers as an independent program in the background.
 .
-As this does not work in text mode on a terminal there must be a
+As this does not work in text mode on a terminal (tty) there must be a
 way to know which viewers are \%\f[CR]X\~Window\f[] graphical
 programs.
 .
 The
-.B groffer
+.B \%groffer
 script has a small set of information on some viewer names.
 .
 If a viewer argument of the command\-line chooses an element that is
@@ -1109,9 +1114,9 @@ combination of the options
 .Opt_long mode=ps
 and
 .Opt_long ps\-viewer=less
-show the content of the
+shows the content of the
 .I Postscript
-output with the pager
+output, the source code, with the pager
 .BR less .
 .
 .
@@ -1125,7 +1130,7 @@ Reset all configuration from previously processed command line options
 to the default values.
 .
 This is useful to wipe out all former options of the configuration, in
-.Env_var $GROFFER_OPT ,
+.Env_var \%$GROFFER_OPT ,
 and restart option processing using only the rest of the command line.
 .
 .
@@ -1152,7 +1157,7 @@ Equivalent to
 .
 .
 .Opt_def -- dvi\-viewer prog
-Choose an \%\f[CR]X\~Window\f[] viewer program for
+Choose a viewer program for
 .IR \%dvi\~mode .
 .
 This can be a file name or a program to be searched in
@@ -1179,8 +1184,8 @@ Equivalent to
 .
 .
 .Opt_def -- html\-viewer
-Choose an \%\f[CR]X\~Window\f[] web browser program for viewing in
-.I \%html\~mode .
+Choose a web browser program for viewing in
+.IR \%html\~mode .
 .
 It can be the path name of an executable file or a program in
 .Env_var $PATH .
@@ -1260,29 +1265,25 @@ By default, the input is formatted by
 using the Postscript device, then it is transformed into the PDF file
 format using
 .BR \%gs (1),
-and finally displayed either with the
-BR \%acroread (1),
-.BR \%xpdf (1),
-or some other
-.I \%pdf
-viewer program.
+or
+.BR ps2pdf (1).
+If that's not possible, the
+.I Postscript mode (ps)
+is used instead.
+.
+Finally it is displayed using different viewer programs.
 .
 .I \%pdf
 has a big advantage because the text is displayed graphically and
 is searchable as well.
-.
-But as the transformation takes a considerable amount of time, this
-mode is not suitable as a default device for the
-.I \%auto\~mode .
 .
 .
 .TP
 .Header_CB ps
 Display formatted input in a Postscript viewer program.
 .
-By default, the formatted input is displayed with the
-.BR \%ghostview (@MAN1EXT@)
-program.
+By default, the formatted input is displayed in one of many viewer
+programs.
 .
 .
 .TP
@@ -1398,7 +1399,7 @@ Equivalent to
 .
 .
 .Opt_def -- pdf\-viewer prog
-Choose an \%\f[CR]X\~Window\f[] viewer program for
+Choose a viewer program for
 .IR \%pdf\~mode .
 .
 This can be a file name or a program to be searched in
@@ -1412,7 +1413,7 @@ Equivalent to
 .
 .
 .Opt_def -- ps\-viewer prog
-Choose an \%\f[CR]X\~Window\f[] viewer program for
+Choose a viewer program for
 .IR \%ps\~mode .
 .
 This can be a file name or a program to be searched in
@@ -1467,7 +1468,7 @@ Equivalent to
 .
 .
 .Opt_def -- X\-viewer -- x\-viewer prog
-Choose an \%\f[CR]X\~Window\f[] viewer program for
+Choose a viewer program for
 .IR \%x\~mode .
 Suitable viewer programs are
 .BR \%gxditview (@MAN1EXT@)
@@ -1851,7 +1852,7 @@ are documented.
 The full set of long and short options of the \f[CR]GNU\f[]
 .B man
 program can be passed via the environment variable
-.Env_var $MANOPT ;
+.Env_var \%$MANOPT ;
 see
 .BR \%man (1)
 if your system has \f[CR]GNU\f[]
@@ -2001,7 +2002,8 @@ Set the background color of the viewer window.
 .
 .
 .Opt_def -- bd pixels
-Specifies the color of the border surrounding the viewer window.
+This is equivalent to
+.Opt_long bordercolor .
 .
 .
 .Opt_def -- bg color
@@ -2010,6 +2012,15 @@ This is equivalent to
 .
 .
 .Opt_def -- bw pixels
+This is equivalent to
+.Opt_long borderwidth .
+.
+.
+.Opt_def -- bordercolor pixels
+Specifies the color of the border surrounding the viewer window.
+.
+.
+.Opt_def -- borderwidth pixels
 Specifies the width in pixels of the border surrounding the viewer
 window.
 .
@@ -2029,6 +2040,11 @@ This is equivalent to
 .Opt_short foreground .
 .
 .
+.Opt_def -- fn font_name
+This is equivalent to
+.Opt_long font .
+.
+.
 .Opt_def -- font font_name
 Set the font used by the viewer window.
 .
@@ -2037,7 +2053,7 @@ The argument is an \%\f[CR]X\~Window\f[] font name.
 .
 .Opt_def -- ft font_name
 This is equivalent to
-.Opt_long ft .
+.Opt_long font .
 .
 .
 .Opt_def -- geometry size_pos
@@ -2128,7 +2144,7 @@ by large amounts.
 .
 .
 .Opt_def -- debug\-keep
-Enable two debugging information, the printing of the name of the
+Enable two debugging informations, the printing of the name of the
 temporary directory and the keeping of the temporary files.
 .
 .
@@ -2217,7 +2233,7 @@ the display program for viewing the output with its arguments,
 .
 .Topic
 the active parameters from the config files, the arguments in
-.Env_var $GROFFER_OPT ,
+.Env_var \%$GROFFER_OPT ,
 and the arguments of the command line,
 .
 .Topic
@@ -2535,7 +2551,7 @@ environment (or similar implementations within other windowing
 environments).
 .
 The environment variable
-.Env_var $DISPLAY
+.Env_var \%$DISPLAY
 and the option
 .Opt_long display
 are used for specifying the \%\f[CR]X\~Window\f[] display to be used.
@@ -2652,7 +2668,7 @@ The pager to be used can be specified by one of the options
 and
 .Opt_long tty\-viewer ,
 or by the environment variable
-.Env_var $PAGER .
+.Env_var \%$PAGER .
 If all of this is not used the
 .BR \%less (1)
 program with the option
@@ -2828,14 +2844,14 @@ This overwrites the other methods.
 .
 .Topic
 If this is not available the environment variable
-.Env_var $MANPATH
+.Env_var \%$MANPATH
 is searched.
 .
 .
 .Topic
 If this is empty, the program tries to read it from the environment
 variable
-.Env_var $MANOPT .
+.Env_var \%$MANOPT .
 .
 .
 .Topic
@@ -2881,16 +2897,16 @@ that is from highest to lowest precedence:
 .Opt_long locale
 .
 .Topic
-.Env_var $GROFFER_OPT
+.Env_var \%$GROFFER_OPT
 .
 .Topic
-.Env_var $MANOPT
+.Env_var \%$MANOPT
 .
 .Topic
 .Env_var $LCALL
 .
 .Topic
-.Env_var $LC_MESSAGES
+.Env_var \%$LC_MESSAGES
 .
 .Topic
 .Env_var $LANG .
@@ -2938,7 +2954,7 @@ Several operating systems can be given by appending their names,
 separated by a comma.
 .
 This is then specified by the environment variable
-.Env_var $SYSTEM
+.Env_var \%$SYSTEM
 or by the command line option
 .Opt_long systems .
 The precedence is similar to the locale case above from highest to
@@ -2948,13 +2964,13 @@ Topic
 .Opt_long systems
 .
 .Topic
-.Env_var $GROFFER_OPT
+.Env_var \%$GROFFER_OPT
 .
 .Topic
-.Env_var $MANOPT
+.Env_var \%$MANOPT
 .
 .Topic
-.Env_var $SYSTEM .
+.Env_var \%$SYSTEM .
 .
 .
 .P
@@ -2975,7 +2991,7 @@ argument, several sections as a colon-separated list in command line
 option
 .Opt_long sections
 or environment variable
-.Env_var $MANSECT .
+.Env_var \%$MANSECT .
 .
 When no section was specified a set of standard sections is searched
 until a suitable
@@ -2991,7 +3007,7 @@ This is a postfix that acts like a subsection.
 It can be specified by
 .Opt_long extension
 or environment variable
-.Env_var $EXTENSION .
+.Env_var \%$EXTENSION .
 .
 .
 .P
@@ -3046,7 +3062,7 @@ and some standard system variables are honored.
 .\" --------------------------------------------------------------------
 .
 .TP
-.Env_var $GROFFER_OPT
+.Env_var \%$GROFFER_OPT
 Store options for a run of
 .BR \%groffer .
 .
@@ -3079,7 +3095,7 @@ The following variables have a special meaning for
 .
 .
 .TP
-.Env_var $DISPLAY
+.Env_var \%$DISPLAY
 If this variable is set this indicates that the \%\f[CR]X\~Window\f[]
 system is running.
 .
@@ -3098,9 +3114,9 @@ can be started on the second monitor by the command
 .
 .
 .TP
-.Env_var $LC_ALL
+.Env_var \%$LC_ALL
 .TP+
-.Env_var $LC_MESSAGES
+.Env_var \%$LC_MESSAGES
 .TP+
 .Env_var $LANG
 If one of these variables is set (in the above sequence), its content
@@ -3137,7 +3153,7 @@ This is the same behavior as when all 3\~variables are unset.
 .
 .
 .TP
-.Env_var $PAGER
+.Env_var \%$PAGER
 This variable can be used to set the pager for the tty output.
 .
 For example, to disable the use of a pager completely set this
@@ -3177,7 +3193,7 @@ The following variable has a direct meaning for the
 program.
 .
 .TP
-.Env_var $GROFF_TMPDIR
+.Env_var \%$GROFF_TMPDIR
 If the value of this variable is an existing, writable directory,
 .B \%groffer
 uses it for storing its temporary files, just as
@@ -3204,12 +3220,12 @@ but the user interface is the same.
 The
 .B man
 environment variables can be overwritten by options provided with
-.Env_var $MANOPT ,
+.Env_var \%$MANOPT ,
 which in turn is overwritten by the command line.
 .
 .
 .TP
-.Env_var $EXTENSION
+.Env_var \%$EXTENSION
 Restrict the search for
 .I \%man\~pages
 to files having this extension.
@@ -3220,7 +3236,7 @@ see there for details.
 .
 .
 .TP
-.Env_var $MANOPT
+.Env_var \%$MANOPT
 This variable contains options as a preset for
 .BR \%man (1).
 As not all of these are relevant for
@@ -3236,7 +3252,7 @@ given on the command line.
 .
 .
 .TP
-.Env_var $MANPATH
+.Env_var \%$MANPATH
 If set, this variable contains the directories in which the
 .I \%man\~page
 trees are stored.
@@ -3246,7 +3262,7 @@ This is overridden by option
 .
 .
 .TP
-.Env_var $MANSECT
+.Env_var \%$MANSECT
 If this is a colon separated list of section names, the search for
 .I \%man\~pages
 is restricted to those manual sections in that order.
@@ -3256,7 +3272,7 @@ This is overridden by option
 .
 .
 .TP
-.Env_var $SYSTEM
+.Env_var \%$SYSTEM
 If this is set to a comma separated list of names these are interpreted
 as
 .I \%man\~page
@@ -3269,7 +3285,7 @@ see there for details.
 .
 .P
 The environment variable
-.Env_var $MANROFFSEQ
+.Env_var \%$MANROFFSEQ
 is ignored by
 .B \%groffer
 because the necessary preprocessors are determined automatically.
@@ -3285,17 +3301,17 @@ program can be preconfigured by two configuration files.
 .
 .
 .TP
-.File_name /etc/groff/groffer.conf
+.File_name \%/etc/groff/groffer.conf
 System-wide configuration file for
 .BR \%groffer .
 .
 .
 .TP
-.File_name $HOME/.groff/groffer.conf
+.File_name \%$HOME/.groff/groffer.conf
 User-specific configuration file for
 .BR \%groffer ,
 where
-.Env_var $HOME
+.Env_var \%$HOME
 denotes the user's home directory.
 .
 This file is called after the system-wide configuration file to enable
@@ -3303,15 +3319,14 @@ overriding by the user.
 .
 .
 .P
-The precedence of option delivery is given in the following.
-.
-The configuration file in
+Both files are handled for the configuration, but the configuration
+file in
 .File_name /etc
-has the lowest precedence; it is overwritten by the configuration file
-in the home directory; both configuration files are overwritten by the
-environment variable
-.Env_var $GROFFER_OPT ;
-everything is overwritten by the command line.
+comes first; it is overwritten by the configuration file in the home
+directory; both configuration files are overwritten by the environment
+variable
+.Env_var \%$GROFFER_OPT ;
+everything is overwritten by the command line arguments.
 .
 .
 .P
@@ -3333,28 +3348,30 @@ This easily allows to set general
 options that should be used with any call of
 .BR \%groffer .
 .
-Each line can represent a single short option, a short option cluster,
-or a long option with two minus signs, eventually with an argument.
 .
-The argument can be appended either after a space character or an
-equal sign
-.RB ` = '.
-The argument can be surrounded by quotes, but this is not necessary.
+.P
+If a lines starts with a double minus it represents a
+.B \%groffer
+long option; everything behind the first equal sign
+.RB ` = '
+or space character up to the end of the line is interpreted as its
+argument.
 .
-The options from these lines are collected and prepended to the
-existing value of
-.Env_var $GROFFER_OPT
-at the end of each configuration file.
+A line starting with a single minus represents a short options cluster
+with or without a final argument.
+.
+It is not necessary to use quotes in these lines; quotes are just
+ignored.
 .
 .
 .P
-After the transformation of the minus lines, the configuration files
-have been transferred into a shell script that is called within
-.B \%groffer
-using the `\c
-.CB \.\~\c
-.IR \%filename '
-shell syntax.
+The lines starting with a minus are changed into a prepend to the
+existing value of
+.Env_var \%$GROFFER_OPT .
+.
+So the configuration files will be transferred into a shell script
+that is called within
+.BR \%groffer .
 .
 .
 .P
@@ -3392,7 +3409,7 @@ Some shells run much faster than the standard shell.
 .
 .P
 As an example, consider the following configuration file in
-.File_name ~/.groff/groffer.conf ,
+.File_name \%~/.groff/groffer.conf ,
 say.
 .
 .P
@@ -3405,7 +3422,7 @@ say.
 \-\-shell=ksh
 \-\-foreground=DarkBlue
 \-\-resolution=100
-\-\-x\-viewer='gxditview \-geometry 900x1200'
+\-\-x\-viewer=gxditview \-geometry 900x1200
 #
 # some shell commands
 if test "$DISPLAY" = ""; then
@@ -3473,7 +3490,7 @@ This geometry is suitable for a resolution of
 .
 .Topic
 If the environment variable
-.Env_var $DISPLAY
+.Env_var \%$DISPLAY
 is empty set it to
 .IR localhost:0.0 .
 .
@@ -3954,7 +3971,9 @@ Viewers for
 .
 .
 .P
+.BR \%kpdf (1),
 .BR \%kghostview (1),
+.BR \%evince (1),
 .BR \%ggv (1),
 .BR \%gv (1),
 .BR \%ghostview (1),
@@ -3967,12 +3986,13 @@ Viewers for
 .
 .
 .P
+.BR \%kpdf (1),
 .BR \%acroread (1),
+.BR \%evince (1),
 .BR \%xpdf (1),
 .BR \%gpdf (1),
 .BR \%kghostview (1),
-.BR \%ggv (1),
-.BR \%kpdf (1)
+.BR \%ggv (1)
 .RS
 Viewers for
 .BR \%groffer 's
@@ -3993,7 +4013,10 @@ Viewers for
 .
 .P
 .BR \%konqueror (1),
+.BR \%epiphany (1),
+.BR \%firefox (1),
 .BR \%mozilla (1),
+.BR \%netscape (1),
 .BR \%lynx (1)
 .RS
 Web-browsers for

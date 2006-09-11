@@ -12,7 +12,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 28 Jul 2006
+# Last update: 11 Sep 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -182,7 +182,7 @@ then
 else
   _DEBUG_FUNC_CHECK='no';
 fi;
-#_DEBUG_FUNC_CHECK='no';	# disable function checking
+_DEBUG_FUNC_CHECK='no';	# disable function checking
 #_DEBUG_FUNC_CHECK='yes';	# enable function checking
 
 export _DEBUG_STACKS;
@@ -408,7 +408,7 @@ return_var="func_pop; return";	# add number, e.g. `eval "${return_var} $n'
 
 
 export _DEFAULT_MODES;
-_DEFAULT_MODES="'x' 'ps' 'tty'";
+_DEFAULT_MODES="'pdf' 'html' 'ps' 'x' 'dvi' 'tty'";
 export _DEFAULT_RESOLUTION;
 _DEFAULT_RESOLUTION='75';
 
@@ -424,6 +424,8 @@ export _VIEWER_PDF_TTY;		# viewer program for pdf mode in tty
 export _VIEWER_PDF_X;		# viewer program for pdf mode in X
 export _VIEWER_PS_TTY;		# viewer program for ps mode in tty
 export _VIEWER_PS_X;		# viewer program for ps mode in X
+export _VIEWER_TTY_TTY;		# viewer program for X/x mode in tty
+export _VIEWER_TTY_X;		# viewer program for X/x mode in X
 export _VIEWER_X_TTY;		# viewer program for X/x mode in tty
 export _VIEWER_X_X;		# viewer program for X/x mode in X
 _VIEWER_DVI_TTY="";
@@ -437,6 +439,8 @@ _VIEWER_PDF_X="'kpdf' 'acroread' 'evince' 'xpdf -z 150' 'gpdf' \
 _VIEWER_PS_TTY="";
 _VIEWER_PS_X="'kpdf' 'kghostview --scale 1.45' 'evince' 'ggv' 'gv' \
 'ghostview' 'gs_x11,gs'";
+_VIEWER_TTY_TTY="'less -r -R' 'more' 'pager'";
+_VIEWER_TTY_X="'xless'";
 _VIEWER_X_TTY="";
 _VIEWER_X_X="'gxditview' 'xditview'";
 
@@ -527,7 +531,7 @@ _OPTS_GROFFER_LONG_ARG="\
 
 ##### groffer options inhereted from groff
 
-_OPTS_GROFF_SHORT_NA="'a' 'b' 'c' 'C' 'e' 'E' 'g' 'G' 'i' 'l' 'N' 'p' \
+_OPTS_GROFF_SHORT_NA="'a' 'b' 'c' 'C' 'e' 'E' 'g' 'G' 'i' 'k' 'l' 'N' 'p' \
 'R' 's' 'S' 't' 'U' 'z'";
 _OPTS_GROFF_SHORT_ARG="'d' 'f' 'F' 'I' 'L' 'm' 'M' 'n' 'o' 'P' 'r' \
 'w' 'W'";
@@ -597,6 +601,7 @@ export _DISPLAY_PROG;		# Viewer program to be used for display.
 export _DISPLAY_ARGS;		# X resources for the viewer program.
 export _FILEARGS;		# Stores filespec parameters.
 export _FILESPEC_ARG;		# Stores the actual filespec parameter.
+export _FILESPEC_IS_MAN;	# filespec is for searching a man page
 export _FUNC_STACK;		# Store debugging information.
 export _MACRO_PACKAGES;		# groff's macro packages.
 export _MACRO_PKG;		# Macro package for each found file.
@@ -626,6 +631,10 @@ export _MANOPT_PATH;		# $MANOPT --manpath
 export _MANOPT_PAGER;		# $MANOPT --pager
 export _MANOPT_SEC;		# $MANOPT --sections
 export _MANOPT_SYS;		# $MANOPT --systems
+# variables for mode pdf
+export _PDF_DID_NOT_WORK;
+export _PDF_HAS_GS;
+export _PDF_HAS_PS2PDF;
 # _OPT_* as parsed from groffer command line
 export _OPT_ALL;		# display all suitable man pages.
 export _OPT_APROPOS;		# call `apropos' program.
@@ -642,7 +651,6 @@ export _OPT_FN;			# set font in some modes.
 export _OPT_GEOMETRY;		# set size and position of viewer in X.
 export _OPT_ICONIC;		# -iconic option for X viewers.
 export _OPT_LANG;		# set language for man pages
-export _OPT_LOCATION;		# print processed file names to stderr
 export _OPT_MODE;		# values: X, tty, Q, Z, ""
 export _OPT_MANPATH;		# manual setting of path for man-pages
 export _OPT_PAGER;		# specify paging program for tty mode
@@ -667,7 +675,7 @@ export _OPT_WHATIS;		# print the man description
 export _OPT_XRM;		# specify X resource.
 export _OPT_Z;			# groff option -Z.
 export _OUTPUT_FILE_NAME;	# output generated, see main_set_res..()
-export _VIEWER_TERMINAL;	# viewer options for terminal (--*-viewer-tty)
+export _VIEWER_BACKGROUND;	# viewer shall be run in the background or not
 # _TMP_* temporary directory and files
 export _TMP_DIR;		# groffer directory for temporary files
 export _TMP_CAT;		# stores concatenation of everything
@@ -696,6 +704,10 @@ _TMP_MAN='';
 _TMP_CONF='';
 _TMP_STDIN='';
 
+# variables for mode pdf
+_PDF_DID_NOT_WORK='no';
+_PDF_HAS_GS='no';
+_PDF_HAS_PS2PDF='no';
 
 ########################################################################
 # reset ()
@@ -761,7 +773,6 @@ reset()
   _OPT_GEOMETRY='';
   _OPT_ICONIC='no';
   _OPT_LANG='';
-  _OPT_LOCATION='no';
   _OPT_MODE='';
   _OPT_MANPATH='';
   _OPT_PAGER='';
@@ -785,7 +796,7 @@ reset()
   _OPT_WHATIS='no';
   _OPT_XRM='';
   _OPT_Z='no';
-  _VIEWER_TERMINAL='no';
+  _VIEWER_BACKGROUND='yes';
 }
 
 reset;
@@ -837,21 +848,28 @@ EOF
 #
 # Clean up at exit.
 #
+cu_already='no';
 clean_up()
 {
   cd "${_START_DIR}" >"${_NULL_DEV}" 2>&1;
   if test _${_DEBUG_KEEP_FILES}_ = _yes_
   then
+    if test _"$cu_already"_ = _yes_
+    then
+      eval "${return_ok}";
+    fi;
+    cu_already=yes;
     echo2 "Kept temporary directory ${_TMP_DIR}."
   else
     if test _"${_TMP_DIR}"_ != __
     then
-      if test -d "${_TMP_DIR}" || test -f "${_TMP_DIR}"
+      if test -e "${_TMP_DIR}"
       then
         rm -f -r "${_TMP_DIR}" >${_NULL_DEV} 2>&1;
       fi; 
     fi;
   fi;
+  eval "${return_ok}";
 } # clean_up()
 
 
@@ -1070,9 +1088,13 @@ base_name()
       ;;
   esac;
   case "${bn_name}" in
-    /|'')
+    '')
       eval ${_UNSET} bn_name;
       eval "${return_bad}";
+      ;;
+    /)
+      # this is like `basename' does
+      echo1 '/';
       ;;
     */*)
       # delete everything before and including the last slash `/'.
@@ -1148,36 +1170,67 @@ fi;
 
 
 ########################################################################
-landmark '4: dirname()*';
+landmark '4: dir_name()*';
 ########################################################################
 
 #######################################################################
-# dirname_append (<dir> <name>)
+# dir_name (<name>)
+#
+# Get the directory name of <name>
+#
+# Arguments : 1
+# Output    : the directory part of <name>
+#
+# Variable prefix: dn
+#
+dir_name()
+{
+  func_check dir_name = 1 "$@";
+  obj_from_output dn_name dir_name_chop "$1";
+  case "${dn_name}" in
+  ''|.)
+    echo1 '.';
+    ;;
+  /)
+    echo1 '/';
+    ;;
+  */*)
+    echo1 "$(echo1 "${dn_name}" | sed 's#/*[^/][^/]*$##')";
+    ;;
+  *)
+    echo1 "${dn_name}";
+    ;;
+  esac;
+  eval "${return_ok}";
+} # dir_name()
+
+
+#######################################################################
+# dir_name_append (<dir> <name>)
 #
 # Append `name' to `dir' with clean handling of `/'.
 #
 # Arguments : 2
 # Output    : the generated new directory name <dir>/<name>
 #
-dirname_append()
+dir_name_append()
 {
-  func_check dirname_append = 2 "$@";
+  func_check dir_name_append = 2 "$@";
   if is_empty "$1"
   then
-    error "dirname_append(): first argument is empty.";
-  fi;
-  if is_empty "$2"
+    echo1 "$2";
+  elif is_empty "$2"
   then
     echo1 "$1";
   else
-    dirname_chop "$1"/"$2";
+    dir_name_chop "$1"/"$2";
   fi;
   eval "${return_ok}";
 }
 
 
 ########################################################################
-# dirname_chop (<name>)
+# dir_name_chop (<name>)
 #
 # Remove unnecessary slashes from directory name.
 #
@@ -1186,9 +1239,9 @@ dirname_append()
 #
 # Variable prefix: dc
 #
-dirname_chop()
+dir_name_chop()
 {
-  func_check dirname_chop = 1 "$@";
+  func_check dir_name_chop = 1 "$@";
   # replace all multiple slashes by a single slash `/'.
   dc_res="$(echo1 "$1" | sed -e 's|///*|/|g')";
   exit_test;
@@ -1634,7 +1687,7 @@ s/^[-+][0-9][0-9]*$/ok/p
 
 
 ########################################################################
-# is_non_empty_file (<file_name>)
+# is_not_empty_file (<file_name>)
 #
 # Test whether `file_name' is a non-empty existing file.
 #
@@ -1643,15 +1696,15 @@ s/^[-+][0-9][0-9]*$/ok/p
 #   `0' if arg1 is a non-empty existing file
 #   `1' otherwise
 #
-is_non_empty_file()
+is_not_empty_file()
 {
-  func_check is_non_empty_file '=' 1 "$@";
+  func_check is_not_empty_file '=' 1 "$@";
   if is_file "$1" && test -s "$1"
   then
     eval "${return_yes}";
   fi;
   eval "${return_no}";
-} # is_non_empty_file()
+} # is_not_empty_file()
 
 
 ########################################################################
@@ -1729,27 +1782,19 @@ is_not_file()
 
 
 ########################################################################
-# is_not_prog ([<name> [<arg>*]])
+# is_not_prog (<progrm>)
 #
-# Verify that arg is a not program in $PATH.
+# Verify that <program> is not a program in $PATH.
 #
-# Arguments : >=0 (empty allowed)
-#   more args are ignored, this allows to specify progs with arguments
+# Arguments : 1,  <program> can have spaces and arguments.
 #
 is_not_prog()
 {
-  func_check is_not_prog '>=' 0 "$@";
-  case "$#" in
-  0)
-    eval "${return_yes}";
-    ;;
-  *)
-    if where_is_prog "$1" >${_NULL_DEV}
-    then
-      eval "${return_no}";
-    fi;
-    ;;
-  esac
+  func_check is_not_prog '=' 1 "$@";
+  if where_is_prog "$1" >${_NULL_DEV}
+  then
+    eval "${return_no}";
+  fi;
   eval "${return_yes}";
 } # is_not_prog()
 
@@ -1807,21 +1852,15 @@ is_not_yes()
 
 
 ########################################################################
-# is_prog ([<name> [<arg>*]])
+# is_prog (<program>)
 #
 # Determine whether <name> is a program in $PATH
 #
-# Arguments : >=0 (empty allowed)
-#   <arg>* are ignored, this allows to specify progs with arguments.
+# Arguments : 1,  <program> can have spaces and arguments.
 #
 is_prog()
 {
-  func_check is_prog '>=' 0 "$@";
-  case "$#" in
-  0)
-    eval "${return_no}";
-    ;;
-  esac;
+  func_check is_prog '=' 1 "$@";
   if where_is_prog "$1" >${_NULL_DEV}
   then
     eval "${return_yes}";
@@ -2532,6 +2571,44 @@ _search_abbrev()
 
 
 ########################################################################
+# list_from_file (<list_name> <file_name>)
+#
+# Extrect the lines from <file_name> and store them as elements to list
+# <list_name>.
+#
+# Arguments: 2
+#   <list_name>: a variable name for output, a list of single-quoted elts
+#   <file_name>: the name of an existing file
+#
+# Variable prefix: lff
+#
+list_from_file()
+{
+  func_check list_from_file '=' 2 "$@";
+  if is_not_file "$2"
+  then
+    eval "${return_bad}";
+  fi;
+  lff_n="$(wc -l "$2" | eval sed -e "'s/^[ ${_TAB}]*\([0-9]\+\).*$/\1/'")";
+  eval "$1"="''";
+  if obj lff_n is_equal 0
+  then
+    eval "${return_good}";
+  fi;
+  lff_i=0;
+  while obj lff_i is_not_equal "${lff_n}" 
+  do
+    lff_i="$(expr "${lff_i}" + 1)";
+    list_append "$1" "$(eval sed -n -e "'${lff_i}p
+${lff_i}q'" "'$2'")";
+  done;
+  eval "${_UNSET}" lff_i;
+  eval "${_UNSET}" lff_n;
+  eval "${return_good}";
+} # list_from_file()
+
+
+########################################################################
 # list_from_split (<string> <separator>)
 #
 # In <string>, escape all white space characters and replace each
@@ -2719,52 +2796,6 @@ list_has_not()
 
 
 ########################################################################
-# list_has_not_prog (<list_name> <prog> [<arg>...])
-#
-# Test whether the list <list_name> has neither an element <prog> nor an
-# element that starts with the word <prog>.
-#
-# Arguments: >=2
-#   <list_name>: a variable name for a list of single-quoted elements
-#   <prog>:      some sequence of characters.
-#   <arg>:       ignored
-#
-list_has_not_prog()
-{
-  func_check list_has_not_prog '>=' 2 "$@";
-  if list_has "$1" "$2" || list_has_abbrev "$1" "$2"' '
-  then
-    eval "${return_no}";
-  else
-    eval "${return_yes}";
-  fi;
-}
-
-
-########################################################################
-# list_has_prog (<list_name> <prog> [<arg>...])
-#
-# Test whether the list <list_name> has an element <prog> or an element
-# that starts with the word <prog>.
-#
-# Arguments: >=2
-#   <list_name>: a variable name for a list of single-quoted elements
-#   <prog>:      some sequence of characters.
-#   <arg>:       ignored
-#
-list_has_prog()
-{
-  func_check list_has_prog '>=' 2 "$@";
-  if list_has "$1" "$2" || list_has_abbrev "$1" "$2"' '
-  then
-    eval "${return_yes}";
-  else
-    eval "${return_no}";
-  fi;
-}
-
-
-########################################################################
 # list_single_from_abbrev (<list-var> <abbrev>)
 #
 # Check whether the list has an element starting with <abbrev>.  If
@@ -2813,6 +2844,7 @@ has multiple options: --${lsfa_element} and --${i}.";
         ;;
       esac;
     done;
+# list_single_from_abbrev()
     obj lsfa_element echo1;
     eval "${_UNSET}" lsfa_abbrev;
     eval "${_UNSET}" lsfa_element;
@@ -2941,10 +2973,12 @@ man_get()
   then
     error 'man_get(): $_TMP_MANSPEC does not suit to the arguments '"$*".;
   fi;
+### man_get()
 
   if obj _MAN_ALL is_yes
   then
-    eval set x $(cat "${_TMP_MANSPEC}");
+    list_from_file mg_list "${_TMP_MANSPEC}";
+    eval set x ${mg_list};
     shift;
     mg_ok='no';
     mg_list='';
@@ -2982,17 +3016,41 @@ man_get()
       else
         m="${_MAN_SEC_LIST}";	# from --sections
       fi;
+### man_get()
       for s in $(eval set x $m; shift; echo1 "$@")
       do
         mg_s="$s";
-        eval set x $(cat "${_TMP_MANSPEC}");
+        list_from_file mg_list "${_TMP_MANSPEC}";
+        eval set x ${mg_list};
         shift;
+        if obj mg_ext is_empty
+        then
+          for f
+          do
+            mg_f="$f";
+            case "${mg_f}" in
+*/man"${mg_s}"/"${mg_name}"."${mg_s}"|*/man"${mg_s}"/"${mg_name}"."${mg_s}".*)
+              if obj mg_f is_file
+              then
+                to_tmp "${mg_f}" && register_title "${mg_name}(${mg_s})";
+                eval ${_UNSET} mg_ext;
+                eval ${_UNSET} mg_f;
+                eval ${_UNSET} mg_list;
+                eval ${_UNSET} mg_name;
+                eval ${_UNSET} mg_s;
+                eval ${_UNSET} mg_sec;
+                eval "${return_ok}";
+              fi;
+              ;;
+             esac;		# "$mg_f"
+          done;			# for f
+        fi;			# mg_ext is_empty
 ### man_get()
         for f
         do
           mg_f="$f";
           case "${mg_f}" in
-          */man$s/${mg_name}.${mg_s}${mg_ext}*)
+          */man"${mg_s}"/"${mg_name}"."${mg_s}""${mg_ext}"*)
             if obj mg_f is_file
             then
               to_tmp "${mg_f}" && register_title "${mg_name}(${mg_s})";
@@ -3005,33 +3063,82 @@ man_get()
               eval "${return_ok}";
             fi;
             ;;
-           esac;		# "$f"
+           esac;		# "$mg_f"
         done;			# for f
       done;			# for s
     else			# $mg_sec is not empty, do with section
-      eval set x $(cat "${_TMP_MANSPEC}");
+      list_from_file mg_list "${_TMP_MANSPEC}";
+      eval set x ${mg_list};
       shift;
-      for f
-      do
-        mg_f="$f";
+      if obj mg_ext is_empty
+      then
+        for f
+        do
+          mg_f="$f";
 ### man_get()
-        case "$f" in
-        */man${mg_sec}/${mg_name}.${mg_sec}${mg_ext}*)
-          if obj mg_f is_file
-          then
-            obj mg_f to_tmp && \
-              register_title "${mg_name}(${mg_sec}${mg_ext})";
-            eval ${_UNSET} mg_ext;
-            eval ${_UNSET} mg_f;
-            eval ${_UNSET} mg_list;
-            eval ${_UNSET} mg_name;
-            eval ${_UNSET} mg_s;
-            eval ${_UNSET} mg_sec;
-            eval "${return_ok}";
-          fi;
-          ;;
-        esac;
-      done;			# for f
+          case "${mg_f}" in
+*/man"${mg_sec}"/"${mg_name}"."${mg_sec}"|\
+*/man"${mg_sec}"/"${mg_name}"."${mg_sec}".*)
+            if obj mg_f is_file
+            then
+              obj mg_f to_tmp && \
+                register_title "${mg_name}(${mg_sec})";
+              eval ${_UNSET} mg_ext;
+              eval ${_UNSET} mg_f;
+              eval ${_UNSET} mg_list;
+              eval ${_UNSET} mg_name;
+              eval ${_UNSET} mg_s;
+              eval ${_UNSET} mg_sec;
+              eval "${return_ok}";
+            fi;
+            ;;
+          esac;
+        done;			# for f
+      else			# mg_ext is not empty
+        for f
+        do
+          mg_f="$f";
+### man_get()
+          case "${mg_f}" in
+*/man"${mg_sec}"/"${mg_name}"."${mg_sec}""${mg_ext}"|\
+*/man"${mg_sec}"/"${mg_name}"."${mg_sec}""${mg_ext}".*)
+            if obj mg_f is_file
+            then
+              obj mg_f to_tmp && \
+                register_title "${mg_name}(${mg_sec}${mg_ext})";
+              eval ${_UNSET} mg_ext;
+              eval ${_UNSET} mg_f;
+              eval ${_UNSET} mg_list;
+              eval ${_UNSET} mg_name;
+              eval ${_UNSET} mg_s;
+              eval ${_UNSET} mg_sec;
+              eval "${return_ok}";
+            fi;
+            ;;
+          esac;
+        done;			# for f
+        for f
+        do
+          mg_f="$f";
+### man_get()
+          case "${mg_f}" in
+          */man"${mg_sec}"/"${mg_name}"."${mg_sec}""${mg_ext}"*)
+            if obj mg_f is_file
+            then
+              obj mg_f to_tmp && \
+                register_title "${mg_name}(${mg_sec}${mg_ext})";
+              eval ${_UNSET} mg_ext;
+              eval ${_UNSET} mg_f;
+              eval ${_UNSET} mg_list;
+              eval ${_UNSET} mg_name;
+              eval ${_UNSET} mg_s;
+              eval ${_UNSET} mg_sec;
+              eval "${return_ok}";
+            fi;
+            ;;
+          esac;
+        done;			# for f
+      fi;
     fi;				# $mg_sec
   fi;				# $_MAN_ALL
 
@@ -3048,7 +3155,7 @@ man_get()
 ########################################################################
 # man_is_man (<man-name> [<section> [<extension>]])
 #
-# Test whether <man-name> exits as man page.
+# Test whether <man-name> exists as man page.
 #
 # Globals: in: $_TMP_MAN, $_MAN_SEC_CHARS, $_TMP_DIR, $_MAN_EXT,
 #              $_MAN_AUTO_SEC_CHARS
@@ -3090,10 +3197,10 @@ man_is_man()
     if obj mim_sec is_empty
     then
       m="${_MAN_AUTO_SEC_CHARS}";
-      grep '/man'"$m/$1"'\.'"$m${mim_ext}" \
+      eval grep "'/man$m/$1\.$m${mim_ext}'" \
            "${_TMP_MAN}" > "${_TMP_MANSPEC}";
     else
-      grep '/man'"${mim_sec}/$1"'\.'"${mim_sec}${mim_ext}" \
+      eval grep "'/man${mim_sec}/$1\.${mim_sec}${mim_ext}'" \
            "${_TMP_MAN}" > "${_TMP_MANSPEC}";
     fi;
   fi;
@@ -3134,7 +3241,7 @@ man_is_man()
 #
 man_setup()
 {
-  func_check main_man_setup '=' 0 "$@";
+  func_check man_setup '=' 0 "$@";
 
   if obj _MAN_IS_SETUP is_yes
   then
@@ -3332,7 +3439,7 @@ manpath_add_lang_sys()
       shift;
       for p
       do
-        obj_from_output mals_dir dirname_append "${p}" "${mals_lang}";
+        obj_from_output mals_dir dir_name_append "${p}" "${mals_lang}";
         if obj mals_dir is_dir
         then
           list_append mals_lang_path "${mals_dir}";
@@ -3374,7 +3481,7 @@ _manpath_add_sys()
     shift;
     for p
     do
-      obj_from_output _mas_dir dirname_append "${p}" "${_mas_sys}";
+      obj_from_output _mas_dir dir_name_append "${p}" "${_mas_sys}";
       if obj _mas_dir is_dir
       then
         list_append mals_mp "${_mas_dir}";
@@ -3519,7 +3626,7 @@ obj_data()
 # obj_from_output (<object> <call_name> <arg>...)
 #
 # Run '$<object>="$(<call_name> <arg>...)"' to set the result of a
-# function call to a global variable.
+# function call to a global variable.  Variables are not stored.
 #
 # Arguments: >=2
 #            <object>: a variable name
@@ -3535,13 +3642,14 @@ obj_from_output()
   if is_empty "$1"
   then
     error "obj_from_output(): variable name is empty.";
-  elif is_empty "$2"
+  fi;
+  if is_empty "$2"
   then
     error "obj_from_output(): function name is empty."
-  else
-    ofo_result_name="$1";
   fi;
+  ofo_result_name="$1";
   shift;
+  ofo_return=0;
   if is_equal "$#" 0
   then
     eval "${ofo_result_name}"'=""';
@@ -3552,12 +3660,15 @@ obj_from_output()
       list_append ofo_list "$i";
     done;
     eval "${ofo_result_name}"'="$('"${ofo_list}"')"';
+    ofo_return="$?";
     exit_test;
   fi;
+  r="${ofo_return}";
   eval ${_UNSET} ofo_list;
+  eval ${_UNSET} ofo_return;
   eval ${_UNSET} ofo_result_name;
-  eval "${return_ok}";
-}
+  eval "${return_var} $r";
+} # obj_from_output()
 
 
 ########################################################################
@@ -3636,7 +3747,7 @@ path_clean()
     then
       case "${pc_i}" in
       ?*/)
-        pc_res="${pc_res}:$(dirname_chop "${pc_i}")";
+        pc_res="${pc_res}:$(dir_name_chop "${pc_i}")";
         exit_test;
         ;;
       *)
@@ -3751,17 +3862,10 @@ register_file()
   if is_equal "$1" '-'
   then
     to_tmp "${_TMP_STDIN}" && register_title 'stdin';
-    if obj _DEBUG_PRINT_FILENAMES is_yes
-    then
-      echo2 "file: standard input";
-    fi;
   else
-    to_tmp "$1" && register_title "$(base_name "$1")";
+#    to_tmp "$1" && register_title "$(base_name "$1")";
+    to_tmp "$1" && register_title "$1";
     exit_test;
-    if obj _DEBUG_PRINT_FILENAMES is_yes
-    then
-      echo2 "file: $1";
-    fi;
   fi;
   eval "${return_ok}";
 } # register_file()
@@ -3782,6 +3886,21 @@ register_title()
   if is_empty "$1"
   then
     eval "${return_ok}";
+  fi;
+
+  if obj _DEBUG_PRINT_FILENAMES is_yes
+  then
+    if is_equal "$1" 'stdin'
+    then
+      echo2 "file: standard input";
+    else
+      if obj _FILESPEC_IS_MAN is_yes
+      then
+        echo2 "file title: $1";
+      else
+        echo2 "file: $1";
+      fi;
+    fi;
   fi;
 
   case "${_REG_TITLE_LIST}" in
@@ -3824,9 +3943,7 @@ register_title()
 ########################################################################
 # rm_file (<file_name>)
 #
-# Remove file if $_DEBUG_KEEP_FILES allows it.
-#
-# Globals: $_DEBUG_KEEP_FILES
+# Remove file.
 #
 rm_file()
 {
@@ -4087,21 +4204,44 @@ to_tmp()
   func_check to_tmp '=' 1 "$@";
   if obj _TMP_CAT is_empty
   then
-    error 'to_tmp_line(): $_TMP_CAT is not yet set';
+    error 'to_tmp(): $_TMP_CAT is not yet set';
   fi;
   tt_1="$1";
   if is_file "${tt_1}"
   then
-    if obj _OPT_LOCATION is_yes
-    then
-      echo2 "${tt_1}";
-    fi;
+    tt_dir="$(dir_name "${tt_1}")";
     if obj _OPT_WHATIS is_yes
     then
       whatis_filename "${tt_1}" >>"${_TMP_CAT}";
     else
       tt_file="${_TMP_DIR}/,file";
-      cat_z "${tt_1}" >"${tt_file}";
+      if obj _FILESPEC_IS_MAN is_yes
+      then
+        if obj _DEBUG_PRINT_FILENAMES is_yes
+        then
+          echo2 "file: ${tt_1}";
+        fi;
+        tt_tmp="${_TMP_DIR}/,tmp";
+        cat_z "${tt_1}" >"${tt_file}";
+        tt_sofile="${_TMP_DIR}/,so:";
+        grep '^\.[ 	]*so[ 	]' "${tt_file}" |
+	  sed -e 's/^\.[ 	]*so[ 	]*//' >"${tt_tmp}";
+        list_from_file tt_list "${tt_tmp}";
+        eval set x ${tt_list};
+        shift;
+        for i in "$@"
+        do
+          tt_i="$i";
+          tt_sofile="${tt_sofile}"'x';
+          _do_man_so "${tt_i}";
+        done;
+        rm_file "${tt_tmp}";
+        mv "${tt_file}" "${tt_tmp}";
+        cat "${tt_tmp}" | soelim -I "${tt_dir}" >"${tt_file}";
+        rm_file "${tt_tmp}";
+      else			# $_FILESPEC_IS_MAN ist not yes
+        cat_z "${tt_1}" | soelim -I "${tt_dir}" >"${tt_file}";
+      fi;
       obj_from_output tt_grog grog "${tt_file}";
       case " ${tt_grog} " in
       *\ -m*)
@@ -4132,9 +4272,13 @@ s/ -mm\([^ ]\)/ -m\1/g
 "of ${_MACRO_PKG}."
                 rm_file_with_debug "${tt_file}";
                 eval ${_UNSET} tt_1;
+                eval ${_UNSET} tt_dir;
                 eval ${_UNSET} tt_file;
                 eval ${_UNSET} tt_grog;
                 eval ${_UNSET} tt_i;
+                eval ${_UNSET} tt_sofound;
+                eval ${_UNSET} tt_list;
+                eval ${_UNSET} tt_tmp;
                 eval "${return_bad}";
                 ;;
 ### to_tmp()
@@ -4156,11 +4300,112 @@ s/ -mm\([^ ]\)/ -m\1/g
     error "to_tmp(): could not read file \`${tt_1}'.";
   fi;
   eval ${_UNSET} tt_1;
+  eval ${_UNSET} tt_dir;
   eval ${_UNSET} tt_file;
   eval ${_UNSET} tt_grog;
   eval ${_UNSET} tt_i;
+  eval ${_UNSET} tt_sofound;
+  eval ${_UNSET} tt_list;
+  eval ${_UNSET} tt_tmp;
   eval "${return_ok}";
 } # to_tmp()
+
+
+#############
+# _do_man_so (<so_arg>)
+#
+# Handle single .so file name for man pages
+#
+# Globals from to_tmp(): $tt_tmp, $tt_sofile, $tt_file
+# Globals: $_TMP_MAN
+#
+# Variable prefix: dms
+#
+_do_man_so() {
+  func_check _do_man_so '=' 1 "$@";
+  _dms_so="$1";			# evt. with `\ '
+  _dms_soname="$(echo ${tt_i} | sed -e 's/\\[ 	]/ /g')"; # without `\ '
+  case "${_dms_soname}" in
+  /*)				# absolute path
+    if test -f "${_dms_soname}"
+    then
+      eval "${return_ok}";
+    fi;
+    if test -f "${_dms_soname}"'.gz'
+    then
+      _dms_sofound="${_dms_soname}"'.gz';
+    elif test -f "${_dms_soname}"'.Z'
+    then
+      _dms_sofound="${_dms_soname}"'.Z';
+    elif test -f "${_dms_soname}"'.bz2'
+    then
+      _dms_sofound="${_dms_soname}"'.bz2';
+    else
+      eval ${_UNSET} _dms_sofound;
+      eval "${return_ok}";
+    fi;
+    ;;
+# _do_man_so() of to_tmp()
+  *)				# relative to man path
+    eval grep "'/${_dms_soname}\$'" "${_TMP_MAN}" >"${tt_tmp}";
+    if is_empty_file "${tt_tmp}"
+    then
+      eval grep "'/${_dms_soname}.gz\$'" "${_TMP_MAN}" >"${tt_tmp}";
+      if is_empty_file "${tt_tmp}"
+      then
+        eval grep "'/${_dms_soname}.Z\$'" "${_TMP_MAN}" >"${tt_tmp}";
+        if is_empty_file "${tt_tmp}"
+        then
+          eval grep "'/${_dms_soname}.bz2\$'" "${_TMP_MAN}" >"${tt_tmp}";
+        fi;
+      fi;
+    fi;
+    if is_empty_file "${tt_tmp}"
+    then
+      eval "${return_ok}";
+    fi;
+    _dms_done='no';
+    list_from_file _dms_list "${tt_tmp}";
+    eval set x ${_dms_list};
+    shift;
+    for i
+    do
+      _dms_sofound="$i";
+      if obj _dms_sofound is_empty
+      then
+        continue;
+      fi;
+      _dms_done='yes';
+      break;
+    done;
+# _do_man_so() of to_tmp()
+    if obj _dms_done is_not_yes
+    then
+      eval ${_UNSET} _dms_done;
+      eval ${_UNSET} _dms_sofound;
+      eval "${return_ok}";
+    fi;
+    ;;
+  esac;
+  if obj _DEBUG_PRINT_FILENAMES is_yes
+  then
+    echo2 "file from .so: ${tt_1}";
+  fi;
+  cat_z "${_dms_sofound}" >"${tt_sofile}";
+  _dms_esc="$(echo ${_dms_so} | sed -e 's/\\/\\\\/')";
+  cat "${tt_file}" | eval sed -e \
+"'s#^\\.[ 	]*so[ 	]*\(${_dms_so}\|${_dms_esc}\|${_dms_soname}\)[ 	]*\$'"\
+"'#.so ${tt_sofile}#'" \
+    >"${tt_tmp}";
+  rm_file "${tt_file}";
+  mv "${tt_tmp}" "${tt_file}";
+  eval "${return_ok}";
+  eval ${_UNSET} _dms_done;
+  eval ${_UNSET} _dms_esc;
+  eval ${_UNSET} _dms_so;
+  eval ${_UNSET} _dms_sofound;
+  eval ${_UNSET} _dms_soname;
+} # _do_man_so() of to_tmp()
 
 
 ########################################################################
@@ -4195,7 +4440,7 @@ trap_set()
 
 ########################################################################
 # trap_unset ()
-#
+
 # disable trap on signal 0.
 #
 trap_unset()
@@ -4216,8 +4461,9 @@ usage()
   func_check usage = 0 "$@";
   echo;
   version;
-  echo1 'Usage: groffer [option]... [filespec]...';
   cat <<EOF
+
+Usage: groffer [option]... [filespec]...
 
 Display roff files, standard input, and/or Unix manual pages with a X
 Window viewer or in several text modes.  All input is decompressed
@@ -4262,7 +4508,7 @@ The most important groffer long options are
 --help            display this helping output.
 --html            display in a web browser.
 --html-viewer=program
-                  choose the web browser for html mode.
+                  choose a web browser for html mode.
 --man             check file parameters first whether they are man pages.
 --mode=auto|dvi|groff|html|pdf|ps|source|text|tty|www|x|X
                   choose display mode.
@@ -4296,16 +4542,11 @@ Long options of GNU "man":
 --sections=s1:s2:..., --systems=s1,s2,..., --where, ...
 
 Development options that are not useful for normal usage:
---debug, --debug-all, --debug-func, --debug-not-func, --debug-keep,
---debug-lm, --debug-params, --debug-shell, --debug-stacks,
+--debug, --debug-all, --debug-filenames, --debug-func, --debug-not-func,
+--debug-keep, --debug-lm, --debug-params, --debug-shell, --debug-stacks,
 --debug-tmpdir, --debug-user, --do-nothing, --print=text, --shell=prog
 
 EOF
-
-#Viewer programs for the different modes that run on the terminal:
-#--dvi-viewer-tty=prog, --html-viewer-tty=prog, --pdf-viewer-tty=prog,
-#--ps-viewer-tty=prog, --tty-viewer-tty=prog, --X-viewer-tty=prog,
-#--x-viewer-tty=prog, --www-viewer-tty=prog
 
   eval "${return_ok}";
 }
@@ -4325,12 +4566,10 @@ version()
   y="$(echo "${_LAST_UPDATE}" | sed -e 's/^.* //')";
   echo1 "Copyright (C) $y Free Software Foundation, Inc."
   cat <<EOF
-GNU groff comes with ABSOLUTELY NO WARRANTY.
+GNU groff and groffer come with ABSOLUTELY NO WARRANTY.
 You may redistribute copies of groff and its subprograms
 under the terms of the GNU General Public License.
 EOF
-  # also display groff's version, but not the called subprograms
-  # groff -v 2>&1 | sed -e '/^ *$/q' | sed -e '1s/^/is part of /';
   eval "${return_ok}";
 }
 
@@ -4539,7 +4778,7 @@ whatis_header()
   else
     eval "${return_bad}";
   fi;
-}
+} # whatis_header()
 
 
 ########################################################################
@@ -4547,54 +4786,202 @@ whatis_header()
 #
 # Output path of a program if in $PATH.
 #
-# Arguments : >=1 (empty allowed)
-#   more args are ignored, this allows to specify progs with arguments
+# Arguments : 1, <program> can have spaces and arguments.
+# Output    : list of 2 elements: prog name (with directory) and arguments
 # Return    : `0' if arg1 is a program in $PATH, `1' otherwise.
 #
-# Variable prefix: w
+# Variable prefix: wip
 #
 where_is_prog()
 {
-  func_check where_is_prog '>=' 1 "$@";
-  w_arg="$1";
-  if obj w_arg is_empty
+  func_check where_is_prog '=' 1 "$@";
+  if is_empty "$1"
   then
-    eval ${_UNSET} w_arg;
     eval "${return_bad}";
   fi;
-  case "${w_arg}" in
-    */*)
-      eval ${_UNSET} w_arg;
-      eval ${_UNSET} w_file;
-      if test -f "${w_arg}" && test -x "${w_arg}"
-      then
-        eval "${return_ok}";
-      else
-        eval "${return_bad}";
-      fi;
-      ;;
+
+  # Remove disturbing multiple spaces and tabs
+  wip_1="$(echo1 "$1" | sed -e 's/[ 	][ 	]*/ /g' | \
+           sed -e 's/\(\\\)* / /g' | sed -e 's/^ //' | sed -e 's/ $//')";
+  wip_noarg="$(echo1 "${wip_1}" | sed -e 's/ -.*$//')";
+  exit_test;
+
+  if obj wip_noarg is_empty
+  then
+    eval ${_UNSET} wip_1;
+    eval ${_UNSET} wip_noarg;
+    eval "${return_bad}";
+  fi;
+
+  case "${wip_1}" in
+  *\ -*)
+    wip_args="$(echo1 "${wip_1}" |
+                eval sed -e "'s#^${wip_noarg} ##'")";
+    exit_test;
+    ;;
+  *)
+    wip_args='';
+    ;;
   esac;
+
+  wip_result='';
+# where_is_prog()
+
+  # test whether $wip_noarg has directory, so it is not tested with $PATH
+  case "${wip_noarg}" in
+  */*)
+    if test -f "${wip_noarg}" && test -x "${wip_noarg}"
+    then
+      list_append wip_result "${wip_noarg}" "${wip_args}"; 
+      exit_test;
+      obj wip_result echo1;
+      exit_test;
+      eval ${_UNSET} wip_1;
+      eval ${_UNSET} wip_args;
+      eval ${_UNSET} wip_noarg;
+      eval ${_UNSET} wip_result;
+      eval "${return_ok}";
+    fi;
+
+    # now $wip_noarg (with /) is not an executable file
+
+    # test name with space
+    obj_from_output wip_name base_name "${wip_noarg}";
+    obj_from_output wip_dir dir_name "${wip_noarg}";
+    case "${wip_name}" in
+    *\ *)
+      wip_base="$(echo1 "${wip_name}" | sed -e 's/ .*$//')";
+      exit_test;
+      obj_from_output wip_file dir_name_append "${wip_dir}" "${wip_base}";
+      exit_test;
+# where_is_prog()
+      if test -f "${wip_file}" && test -x "${wip_file}"
+      then
+        wip_baseargs="$(echo1 "${wip_name}" |
+                        eval sed -e "'s#^${wip_base} ##'")";
+        exit_test;
+        if obj wip_args is_empty
+        then
+          wip_args="${wip_baseargs}";
+        else
+          wip_args="${wip_baseargs} ${wip_args}";
+        fi;
+
+        list_append wip_result "${wip_file}" "${wip_args}"; 
+        exit_test;
+        obj wip_result echo1;
+        exit_test;	
+        eval ${_UNSET} wip_1;
+        eval ${_UNSET} wip_args;
+        eval ${_UNSET} wip_base;
+        eval ${_UNSET} wip_baseargs;
+        eval ${_UNSET} wip_dir;
+        eval ${_UNSET} wip_file;
+        eval ${_UNSET} wip_name;
+        eval ${_UNSET} wip_noarg;
+        eval ${_UNSET} wip_result;
+        eval "${return_ok}";
+      fi; # test ${wip_file}
+      ;;
+    esac; # end of test name with space
+
+# where_is_prog()
+    eval ${_UNSET} wip_1;
+    eval ${_UNSET} wip_args;
+    eval ${_UNSET} wip_base;
+    eval ${_UNSET} wip_dir;
+    eval ${_UNSET} wip_name;
+    eval ${_UNSET} wip_noarg;
+    eval ${_UNSET} wip_result;
+    eval "${return_bad}";
+    ;;
+  esac; # test of $wip_noarg on path with directory
+
+
+  # now $wip_noarg does not have a /, so it is checked with $PATH.
+
   eval set x "$(path_list "${PATH}")";
   exit_test;
   shift;
-  for p
+
+  # test path with $win_noarg, evt. with spaces
+  for d
   do
-    case "$p" in
-      */) w_file=${p}${w_arg}; ;;
-      *)  w_file=${p}/${w_arg}; ;;
-    esac;
-    if test -f "${w_file}" && test -x "${w_file}"
+    wip_dir="$d";
+    obj_from_output wip_file dir_name_append "${wip_dir}" "${wip_noarg}";
+# where_is_prog()
+
+    # test $win_file on executable file
+    if test -f "${wip_file}" && test -x "${wip_file}"
     then
-      obj w_file echo1;
-      eval ${_UNSET} w_arg;
-      eval ${_UNSET} w_file;
+      list_append wip_result "${wip_file}" "${wip_args}"; 
+      exit_test;
+      obj wip_result echo1;
+      exit_test;
+      eval ${_UNSET} wip_1;
+      eval ${_UNSET} wip_dir;
+      eval ${_UNSET} wip_file;
+      eval ${_UNSET} wip_noarg;
+      eval ${_UNSET} wip_result;
       eval "${return_ok}";
-    fi;
-  done;
-  eval ${_UNSET} w_arg;
-  eval ${_UNSET} w_file;
+    fi; # test $win_file on executable file
+  done; # test path with $win_prog with spaces
+
+  case "${wip_noarg}" in
+  *\ *)
+    # test on path with base name without space
+    wip_base="$(echo1 "${wip_noarg}" | sed -e 's/^\([^ ]*\) .*$/\1/')";
+    exit_test;
+    for d
+    do
+      wip_dir="$d";
+      obj_from_output wip_file dir_name_append "${wip_dir}" "${wip_base}";
+      exit_test;
+# where_is_prog()
+
+      # test $win_file on executable file
+      if test -f "${wip_file}" && test -x "${wip_file}"
+      then
+        wip_baseargs="$(echo1 "${wip_noarg}" |
+                        sed -e 's/[^ ]* \(.*\)$/\1/')";
+        exit_test;
+        if obj wip_args is_empty
+        then
+          wip_args="${wip_baseargs}";
+        else
+          wip_args="${wip_args} ${wip_baseargs}";
+        fi;
+        list_append wip_result "${wip_file}" "${wip_args}"; 
+        exit_test;
+        obj wip_result echo1;
+        exit_test;
+        eval ${_UNSET} wip_1;
+        eval ${_UNSET} wip_args;
+        eval ${_UNSET} wip_base;
+        eval ${_UNSET} wip_baseargs;
+        eval ${_UNSET} wip_dir;
+        eval ${_UNSET} wip_file;
+        eval ${_UNSET} wip_name;
+        eval ${_UNSET} wip_noarg;
+        eval ${_UNSET} wip_result;
+        eval "${return_ok}";
+      fi; # test of $wip_file on executable file
+    done; # test path with base name without space
+# where_is_prog()
+    ;;
+  esac; # test of $wip_noarg on space
+
+  eval ${_UNSET} wip_1;
+  eval ${_UNSET} wip_args;
+  eval ${_UNSET} wip_base;
+  eval ${_UNSET} wip_baseargs;
+  eval ${_UNSET} wip_dir;
+  eval ${_UNSET} wip_file;
+  eval ${_UNSET} wip_name;
+  eval ${_UNSET} wip_noarg;
+  eval ${_UNSET} wip_result;
   eval "${return_bad}";
-}
+} # where_is_prog()
 
 
 ########################################################################
@@ -4730,7 +5117,7 @@ main_parse_MANOPT()
 s/^'"${_SPACE_SED}"'*//
 s/'"${_SPACE_SED}"'*$//
 ')";
-  exit_test;
+    exit_test;
   fi;
   if obj MANOPT is_empty
   then
@@ -4775,7 +5162,6 @@ s/'"${_SPACE_SED}"'*$//
       ;;
     -h|--help)
       do_nothing;
-      shift;
       ;;
     -k|--apropos)
       # groffer's --apropos takes an argument, but man's does not, so
@@ -4815,7 +5201,6 @@ s/'"${_SPACE_SED}"'*$//
       ;;
     -t|--troff)
       do_nothing;
-      shift;
       ;;
     -T|--device)
       list_append mpm_list '-T' "$1";
@@ -4824,7 +5209,6 @@ s/'"${_SPACE_SED}"'*$//
 ### main_parse_MANOPT()
     -u|--update)
       do_nothing;
-      shift;
       ;;
     -V|--version)
       do_nothing;
@@ -4965,7 +5349,7 @@ main_parse_args()
     --auto)			# the default automatic mode
       _OPT_MODE='';
       ;;
-    --bd)			# border color for viewers, arg;
+    --bd|--bordercolor)		# border color for viewers, arg;
       _OPT_BD="$1";
       shift;
       ;;
@@ -4973,7 +5357,7 @@ main_parse_args()
       _OPT_BG="$1";
       shift;
       ;;
-    --bw)			# border width for viewers, arg;
+    --bw|--borderwidth)		# border width for viewers, arg;
       _OPT_BW="$1";
       shift;
       ;;
@@ -5020,7 +5404,7 @@ main_parse_args()
       _OPT_FG="$1";
       shift;
       ;;
-    --fn|--font)		# set font for viewers, arg;
+    --fn|--ft|--font)		# set font for viewers, arg;
       _OPT_FN="$1";
       shift;
       ;;
@@ -5058,7 +5442,7 @@ main_parse_args()
       _MAN_ENABLE='no';
       ;;
     --location|--where)		# print file locations to stderr
-      _OPT_LOCATION='yes';
+      _DEBUG_PRINT_FILENAMES='yes';
       ;;
     --man)		       # force all file params to be man pages
       _MAN_ENABLE='yes';
@@ -5111,7 +5495,7 @@ main_parse_args()
       esac;
       ;;
     --no-location)		# disable former call to `--location'
-      _OPT_LOCATION='yes';
+      _DEBUG_PRINT_FILENAMES='no';
       ;;
     --no-man)			# disable search for man pages
       # the same as --local-file
@@ -5132,12 +5516,12 @@ main_parse_args()
       _OPT_MODE='pdf';
       ;;
 ### main_parse_args()
-    --pdf-viewer)		# viewer program for ps mode; arg
-      _OPT_VIEWER_PDF_TTY="";
+    --pdf-viewer)		# viewer program for pdf mode; arg
       _OPT_VIEWER_PDF="$1";
+      _OPT_VIEWER_PDF_TTY="";
       shift;
       ;;
-    --pdf-viewer-tty)		# viewer program for ps mode in tty; arg
+    --pdf-viewer-tty)		# viewer program for pdf mode in tty; arg
       _OPT_VIEWER_PDF="";
       _OPT_VIEWER_PDF_TTY="$1";
       shift;
@@ -5386,7 +5770,7 @@ main_set_mode()
 ### main_set_mode()
   if is_not_X
   then
-    _VIEWER_TERMINAL='yes';
+    _VIEWER_BACKGROUND='no';
   fi;
 
   case "${_OPT_MODE}" in
@@ -5467,41 +5851,54 @@ main_set_mode()
   esac;
 
   # only viewer modes are left
+
   eval set x "${msm_modes}";
   shift;
   while is_greater_than "$#" 0
   do
-    m="$1";
+    msm_1="$1";
     shift;
-    case "$m" in
+
+    if is_X
+    then
+      _VIEWER_BACKGROUND='yes';
+    else
+      _VIEWER_BACKGROUND='no';
+    fi;
+
+    case "${msm_1}" in
     dvi)
-      if obj _OPT_VIEWER_DVI is_not_empty
+      if obj _OPT_VIEWER_DVI is_empty
       then
-        msm_viewer="${_OPT_VIEWER_DVI}";
-      else
         obj_from_output msm_viewer _get_first_prog _VIEWER_DVI_X;
+      else
+        obj_from_output msm_viewer _check_X_prog _OPT_VIEWER_DVI _VIEWER_DVI_X;
       fi;
-      if obj msm_viewer is_empty
-      then
-        error 'main_set_mode(): No viewer for dvi mode available.';
-      fi;
-### main_set_mode()
       if is_not_equal "$?" 0
       then
         continue;
       fi;
-      _DISPLAY_PROG="${msm_viewer}";
+      if obj msm_viewer is_empty
+      then
+        if is_equal "$#" 0
+        then
+          error 'main_set_mode(): No viewer for dvi mode available.';
+        else
+          continue;
+        fi;
+      fi;
+### main_set_mode()
+      _obj_set_vars msm_viewer;
       _DISPLAY_MODE="dvi";
+      eval ${_UNSET} msm_1;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
       eval "${return_ok}";
       ;;
     html)
-      if obj _OPT_VIEWER_HTML is_not_empty
+      if obj _OPT_VIEWER_HTML is_empty
       then
-        msm_viewer="${_OPT_VIEWER_HTML}";
-      else
         if is_X
         then
           msm_viewers="${_VIEWER_HTML_X}";
@@ -5509,40 +5906,74 @@ main_set_mode()
           msm_viewers="${_VIEWER_HTML_TTY}";
         fi;
         obj_from_output msm_viewer _get_first_prog msm_viewers;
-      fi;
-      if obj msm_viewer is_empty
-      then
-        error 'main_set_mode(): No viewer for html mode available.';
+      else
+        obj_from_output msm_viewer \
+         _check_X_prog _OPT_VIEWER_HTML _VIEWER_HTML_X;
       fi;
       if is_not_equal "$?" 0
       then
         continue;
       fi;
+      if obj msm_viewer is_empty
+      then
+        if is_equal "$#" 0
+        then
+          error 'main_set_mode(): No viewer for html mode available.';
+        else
+          continue;
+        fi;
+      fi;
 ### main_set_mode()
-      _DISPLAY_PROG="${msm_viewer}";
+      _obj_set_vars msm_viewer;
       _DISPLAY_MODE=html;
+      eval ${_UNSET} msm_1;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
       eval "${return_ok}";
       ;;
     pdf)
-      if obj _OPT_VIEWER_PDF is_not_empty
+      if obj _PDF_DID_NOT_WORK is_yes
       then
-        msm_viewer="${_OPT_VIEWER_PDF}";
-      else
-        obj_from_output msm_viewer _get_first_prog _VIEWER_PDF_X;
+        if is_equal "$#" 0
+        then
+          error 'main_set_mode(): pdf mode did not work.';
+        else
+          continue;
+        fi;
       fi;
-      if obj msm_viewer is_empty
+      if is_prog ps2pdf
       then
-        error 'main_set_mode(): No viewer for pdf mode available.';
+        _PDF_HAS_PS2PDF='yes';
+      fi;
+      if is_prog gs
+      then
+        _PDF_HAS_GS='yes';
+      fi;
+      if obj _OPT_VIEWER_PDF is_empty
+      then
+        obj_from_output msm_viewer _get_first_prog _VIEWER_PDF_X;
+      else
+        obj_from_output msm_viewer _check_X_prog _OPT_VIEWER_PDF _VIEWER_PDF_X;
       fi;
       if is_not_equal "$?" 0
       then
+        _PDF_DID_NOT_WORK='yes';
         continue;
       fi;
-      _DISPLAY_PROG="${msm_viewer}";
+      if obj msm_viewer is_empty
+      then
+        _PDF_DID_NOT_WORK='yes';
+        if is_equal "$#" 0
+        then
+          error 'main_set_mode(): No viewer for pdf mode available.';
+        else
+          continue;
+        fi;
+      fi;
+      _obj_set_vars msm_viewer;
       _DISPLAY_MODE="pdf";
+      eval ${_UNSET} msm_1;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
@@ -5550,22 +5981,28 @@ main_set_mode()
       ;;
 ### main_set_mode()
     ps)
-      if obj _OPT_VIEWER_PS is_not_empty
+      if obj _OPT_VIEWER_PS is_empty
       then
-        msm_viewer="${_OPT_VIEWER_PS}";
-      else
         obj_from_output msm_viewer _get_first_prog _VIEWER_PS_X;
-      fi;
-      if obj msm_viewer is_empty
-      then
-        error 'main_set_mode(): No viewer for ps mode available.';
+      else
+        obj_from_output msm_viewer _check_X_prog _OPT_VIEWER_PS _VIEWER_PS_X;
       fi;
       if is_not_equal "$?" 0
       then
         continue;
       fi;
-      _DISPLAY_PROG="${msm_viewer}";
+      if obj msm_viewer is_empty
+      then
+        if is_equal "$#" 0
+        then
+          error 'main_set_mode(): No viewer for ps mode available.';
+        else
+          continue;
+        fi;
+      fi;
+      _obj_set_vars msm_viewer;
       _DISPLAY_MODE="ps";
+      eval ${_UNSET} msm_1;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
@@ -5573,6 +6010,7 @@ main_set_mode()
       ;;
     text)
       _DISPLAY_MODE='text';
+      eval ${_UNSET} msm_1;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
@@ -5581,28 +6019,35 @@ main_set_mode()
 ### main_set_mode()
     tty)
       _DISPLAY_MODE='tty';
+      eval ${_UNSET} msm_1;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
       eval "${return_ok}";
       ;;
     x)
-      if obj _OPT_VIEWER_X is_not_empty
+      if obj _OPT_VIEWER_X is_empty
       then
-        msm_viewer="${_OPT_VIEWER_X}";
-      else
         obj_from_output msm_viewer _get_first_prog _VIEWER_X_X;
-      fi;
-      if obj msm_viewer is_empty
-      then
-        error 'main_set_mode(): No viewer for x mode available.';
+      else
+        obj_from_output msm_viewer _check_X_prog _OPT_VIEWER_X _VIEWER_X_X;
       fi;
       if is_not_equal "$?" 0
       then
         continue;
       fi;
-      _DISPLAY_PROG="${msm_viewer}";
+      if obj msm_viewer is_empty
+      then
+        if is_equal "$#" 0
+        then
+          error 'main_set_mode(): No viewer for x mode available.';
+        else
+          continue;
+        fi;
+      fi;
+      _obj_set_vars msm_viewer;
       _DISPLAY_MODE='x';
+      eval ${_UNSET} msm_1;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
@@ -5611,6 +6056,7 @@ main_set_mode()
 ### main_set_mode()
     X)
       _DISPLAY_MODE='X';
+      eval ${_UNSET} msm_1;
       eval ${_UNSET} msm_modes;
       eval ${_UNSET} msm_viewer;
       eval ${_UNSET} msm_viewers;
@@ -5618,6 +6064,7 @@ main_set_mode()
       ;;
     esac;
   done;
+  eval ${_UNSET} msm_1;
   eval ${_UNSET} msm_modes;
   eval ${_UNSET} msm_viewer;
   eval ${_UNSET} msm_viewers;
@@ -5625,45 +6072,92 @@ main_set_mode()
 } # main_set_mode()
 
 
-# _process_mode (<MODE>)
-_process_mode()
+# _obj_set_vars (<3-list-obj>)
+#
+# Set $_DISPLAY_PROG and $_DISPLAY_ARGS with the list elements.
+#
+# Argument: 1, expect list with 3 elements from _get_first_prog() or
+#           _check_X_prog()
+#
+_obj_set_vars()
 {
-  if eval obj _OPT_VIEWER_"$1"_TTY is_not_empty
+  func_check _set_vars '=' 1 "$@";
+  eval a='"${'"$1"'}"';
+  eval set x "$a";
+  shift;
+  if is_not_equal "$#" 3
   then
-    _VIEWER_TERMINAL='yes';
-    eval _OPT_VIEWER_"$1"='"${_OPT_VIEWER_'"$1"'_TTY}"';
-  elif eval obj _OPT_VIEWER_"$1" is_not_empty
+    error "_set_vars(): argument is not a list with 3 elements: $a";
+  fi;
+
+  if is_empty "$1"
   then
-    if eval list_has_not_prog _VIEWER_"$1"_X '"${_OPT_VIEWER_'"$1"'}"'
+    error "_set_vars(): program name is empty in the list: $1";
+  fi;
+  _DISPLAY_PROG="$1";
+
+  if is_not_empty "$2"
+  then
+    if obj _DISPLAY_ARGS is_empty
     then
-      _VIEWER_TERMINAL='yes';
+      _DISPLAY_ARGS="$2";
+    else
+      _DISPLAY_ARGS="${_DISPLAY_ARGS} $2";
     fi;
   fi;
+  case "$3" in
+  yes|no)
+    _VIEWER_BACKGROUND="$3";
+    ;;
+  *)
+    error "_set_vars(): wrong value for $_VIEWER_BACKGROUND in the list: $3";
+    ;;
+  esac;
+} # _obj_set_vars() of main_set_mode()
+
+
+# _process_mode (<MODE>)
+#
+# Do some things for a given mode.  This is used by several modes.
+#
+# Argument: 1, a mode name in upper-case
+#
+_process_mode()
+{
+  func_check _process_mode '=' 1 "$@";
+  if eval obj _OPT_VIEWER_"$1"_TTY is_not_empty
+  then
+    exit_test;
+    _VIEWER_BACKGROUND='no';
+    eval _OPT_VIEWER_"$1"='"${_OPT_VIEWER_'"$1"'_TTY}"';
+  fi;
+  exit_test;
   if is_not_X && \
      eval obj _OPT_VIEWER_"$1" is_empty && \
      eval obj _VIEWER_"$1"_TTY is_empty
   then
+    exit_test;
     _OPT_MODE='';
   fi;
+  exit_test;
 } # _process_mode() of main_set_mode()
 
 
-# _get_first_prog (<prog> ...)
+# _get_first_prog (<prog_list_name>)
 #
-# Retrieve from arguments the first existing program in $PATH.
+# Retrieve from the elements of the list in the argument the first
+# existing program in $PATH.
 # Local function for main_set_mode().
 #
 # Return  : `1' if none found, `0' if found.
-# Output  : the argument that succeded.
+# Output  : the argument that succeeded, under where_is_prog(), and
+#           the value of $_VIEWER_BACKGROUND.
 #
 # Variable prefix: _gfp
 #
 _get_first_prog()
 {
-  if is_equal "$#" 0
-  then
-    return "${_BAD}";
-  fi;
+  func_check _get_first_prog '=' 1 "$@";
   eval x='"${'"$1"'}"';
   eval set x "$x";
   shift;
@@ -5674,17 +6168,139 @@ _get_first_prog()
     then
       continue;
     fi;
-    if eval is_prog "${_gfp_i}"
+    obj_from_output _gfp_result where_is_prog "${_gfp_i}";
+    exit_test;
+    if is_equal "$?" 0 && obj _gfp_result is_not_empty
     then
+      list_append _gfp_result "${_VIEWER_BACKGROUND}";
+      obj _gfp_result echo1;
       exit_test;
-      obj _gfp_i echo1;
       eval ${_UNSET} _gfp_i;
-      return "${_GOOD}";
+      eval ${_UNSET} _gfp_result;
+      eval "${return_good}";
     fi;
   done;
   eval ${_UNSET} _gfp_i;
-  return "${_BAD}";
+  eval ${_UNSET} _gfp_result;
+  eval "${return_bad}";
 } # _get_first_prog() of main_set_mode()
+
+
+# _check_X_prog (<prog_name> <X_prog_list_name>)
+#
+# Check whether the content of <prog_name> without its arguments is
+# in the list <X_prog_list_name>.  If so the option is output with the
+# arguments of the list element, its corresponding arguments, and the
+# value yes/no of $_VIEWER_BACKGROUND.
+# Local function for main_set_mode().
+#
+# Return  : `1' if not a part of the list, `0' if found in the list.
+# Output  : 3-element list, the option with arguments changed by
+#           where_is_prog(), and the value of $_VIEWER_BACKGROUND.
+#
+# Globals: $_VIEWER_BACKGROUND
+#
+# Variable prefix: _cXp
+#
+_check_X_prog()
+{
+  func_check _check_X_prog '=' 2 "$@";
+  eval _cXp_1='"${'"$1"'}"';
+  eval _cXp_2='"${'"$2"'}"';
+
+  obj_from_output _cXp_list1 where_is_prog "${_cXp_1}";
+  if is_not_equal "$?" 0 || obj _cXp_list1 is_empty
+  then
+    exit_test;
+    echo2 "_check_X_prog(): '${_cXp_1}' is not an existing program.";
+    eval ${_UNSET} _cXp_1;
+    eval ${_UNSET} _cXp_2;
+    eval ${_UNSET} _cXp_list1;
+    eval "${return_bad}";
+  fi;
+  exit_test;
+
+  if obj _VIEWER_BACKGROUND is_not_yes
+  then				# no mode for X Window, so do not check it
+    list_append _cXp_list1 "${_VIEWER_BACKGROUND}";
+    obj _cXp_list1 echo1;
+    eval ${_UNSET} _cXp_1;
+    eval ${_UNSET} _cXp_2;
+    eval ${_UNSET} _cXp_list1;
+    eval "${return_good}";
+  fi;
+
+  eval set x ${_cXp_list1};
+  _cXp_prog1="$2";
+  _cXp_args1="$3";
+
+# _check_X_prog() of main_set_mode()
+  eval set x "${_cXp_2}";
+  shift;
+  for i
+  do
+    _cXp_i="$i";
+    obj_from_output _cXp_list2 where_is_prog "${_cXp_i}";
+    if is_not_equal "$?" 0 || obj _cXp_list2 is_empty
+    then
+      exit_test;
+      continue;
+    fi;
+    exit_test;
+    _cXp_prog2="$(eval set x ${_cXp_list2}; echo1 "$2")";
+
+    if is_not_equal "${_cXp_prog1}" "${_cXp_prog2}"
+    then
+      exit_test;
+      continue;
+    fi;
+    exit_test;
+
+    # equal, prog found
+
+    _cXp_args2="$(eval set x ${_cXp_list2}; echo1 "$3")";
+    if obj _cXp_args2 is_not_empty
+    then
+      if obj _cXp_args1 is_empty
+      then
+        _cXp_args1="${_cXp_args2}";
+      else
+        _cXp_args1="${_cXp_args2} ${_cXp_args1}";
+      fi;
+    fi;
+# _check_X_prog() of main_set_mode()
+
+    _cXp_list1='';
+    list_append _cXp_list1 \
+      "${_cXp_prog1}" "${_cXp_args1}" "${_VIEWER_BACKGROUND}";
+    exit_test;
+    echo1 "${_cXp_list1}";
+    eval ${_UNSET} _cXp_1;
+    eval ${_UNSET} _cXp_2;
+    eval ${_UNSET} _cXp_i;
+    eval ${_UNSET} _cXp_args1;
+    eval ${_UNSET} _cXp_list1;
+    eval ${_UNSET} _cXp_prog1;
+    eval ${_UNSET} _cXp_args2;
+    eval ${_UNSET} _cXp_list2;
+    eval ${_UNSET} _cXp_prog2;
+    eval "${return_good}";
+  done; # for vars in list
+
+  _VIEWER_BACKGROUND='no';
+  list_append _cXp_list1 "${_VIEWER_BACKGROUND}";
+  echo1 "${_cXp_list1}";
+  eval ${_UNSET} _cXp_1;
+  eval ${_UNSET} _cXp_2;
+  eval ${_UNSET} _cXp_i;
+  eval ${_UNSET} _cXp_args1;
+  eval ${_UNSET} _cXp_list1;
+  eval ${_UNSET} _cXp_prog1;
+  eval ${_UNSET} _cXp_args2;
+  eval ${_UNSET} _cXp_list2;
+  eval ${_UNSET} _cXp_prog2;
+  eval "${return_good}";
+} # _check_X_prog() of main_set_mode()
 
 
 #######################################################################
@@ -5717,11 +6333,13 @@ main_do_fileargs()
   eval set x "${_FILEARGS}";
   shift;
   eval ${_UNSET} _FILEARGS;
+### main_do_fileargs()
   while is_greater_than "$#" 0
   do
     mdfa_filespec="$1";
     _FILESPEC_ARG="$1";
     shift;
+    _FILESPEC_IS_MAN='no';
     _TMP_MANSPEC='';
     _SPECIAL_FILESPEC='no';
 
@@ -5773,6 +6391,7 @@ main_do_fileargs()
       ;;
       # now it must be a man page pattern
     esac;
+### main_do_fileargs()
     if obj _MACRO_PKG is_not_empty && obj _MACRO_PKG is_not_equal '-man'
     then
       echo2 "${mdfa_filespec} is not a file, man pages are ignored "\
@@ -5794,6 +6413,8 @@ main_do_fileargs()
     fi;
 ### main_do_fileargs()
     man_setup;
+    _FILESPEC_IS_MAN='yes';
+
     # check whether filespec is a man page
     if obj mdfa_filespec man_is_man
     then
@@ -5866,6 +6487,7 @@ main_do_fileargs()
       fi;
       ;;
     esac;
+### main_do_fileargs()
 
     # check on "s name", where "s" is a section with or without an extension
     if is_not_empty "$1"
@@ -5897,6 +6519,7 @@ main_do_fileargs()
       fi;
     fi;
 
+### main_do_fileargs()
     echo2 "${mdfa_filespec} ${mdfa_errmsg}";
     continue;
   done;
@@ -5949,8 +6572,9 @@ main_set_resources()
     fi;
     _OUTPUT_FILE_NAME="${_OUTPUT_FILE_NAME}${msr_n}";
     shift;
-  done;
+  done; # until $# is 0
 ### main_set_resources()
+
   case "${_OUTPUT_FILE_NAME}" in
   '')
     _OUTPUT_FILE_NAME='-';
@@ -6171,14 +6795,14 @@ main_display()
   export md_groggy;
   export md_modefile;
 
-  if obj _TMP_CAT is_non_empty_file
+  if obj _TMP_CAT is_empty_file
   then
-    md_modefile="${_OUTPUT_FILE_NAME}";
-  else
     echo2 'groffer: empty input.';
     clean_up;
     eval ${_UNSET} md_modefile;
     eval "${return_ok}";
+  else
+    md_modefile="${_OUTPUT_FILE_NAME}";
   fi;
 
   # go to the temporary directory to be able to access internal data files
@@ -6226,19 +6850,64 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     then
       _do_opt_V;
       tmp_cat | eval "${md_groggy}" "${md_addopts}";
-    else
-      md_pager='';
+    else			# $_DISPLAY_MODE is 'tty'
 ### main_display()
-      for p in "${_OPT_PAGER}" "${PAGER}" "${_MANOPT_PAGER}" \
-               'less -r -R' 'more' 'pager' 'cat'
+      md_pager='';
+      for p in "${_OPT_PAGER}" "${PAGER}" "${_MANOPT_PAGER}"
       do
-        md_p="$p";
-        if eval is_prog ${md_p}
-        then		      # no "" for is_prog() allows args for $p
-          md_pager="${md_p}";
-          break;
+        if obj p is_empty
+        then
+          continue;
         fi;
+        obj_from_output md_pager where_is_prog "$p";
+        if is_not_equal "$?" 0 || obj md_pager is_empty
+        then
+          md_pager='';
+          continue;
+        fi;
+        eval set x $md_pager;
+        shift;
+        case "$1" in
+        */less)
+          if is_empty "$2"
+          then
+            md_pager="$1"' -r -R';
+          else
+            md_pager="$1"' -r -R '"$2";
+          fi;
+          ;;
+### main_display()
+        *)
+          if is_empty "$2"
+          then
+            md_pager="$1";
+          else
+            md_pager="$1 $2";
+          fi;
+          ;;
+        esac;
+        break;
       done;
+      if obj md_pager is_empty
+      then
+        eval set x ${_VIEWER_TTY_TTY} ${_VIEWER_TTY_X} 'cat';
+        shift;
+        # that is: 'less -r -R' 'more' 'pager' 'xless' 'cat'
+        for p
+        do
+          if obj p is_empty
+          then
+            continue;
+          fi;
+          md_p="$p";
+          if is_prog "${md_p}"
+          then
+            md_pager="${md_p}";
+            break;
+          fi;
+        done;
+      fi;
+### main_display()
       if obj md_pager is_empty
       then
         error 'main_display(): no pager program found for tty mode';
@@ -6246,9 +6915,9 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       _do_opt_V;
       tmp_cat | eval "${md_groggy}" "${md_addopts}" | \
                 eval "${md_pager}";
-    fi;
+    fi;				# $_DISPLAY_MODE
     clean_up;
-    ;;
+    ;;				# text|tty)
   source)
     tmp_cat;
     clean_up;
@@ -6407,22 +7076,15 @@ _do_display()
       eval "$1";
     fi;
     obj _TMP_CAT rm_file_with_debug;
-    if obj _VIEWER_TERMINAL is_yes # for programs that run on tty
+    if obj _VIEWER_BACKGROUND is_not_yes # for programs that run on tty
     then
-      eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "\"${md_modefile}\"";
+      eval "'${_DISPLAY_PROG}'" ${_DISPLAY_ARGS} "\"${md_modefile}\"";
     else
-      case "${_DISPLAY_PROG}" in
-#      lynx\ *|less\ *|more\ *) # programs known to run on the terminal
-#        eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "\"${md_modefile}\"";
-#        ;;
-      *)
-        trap_unset;
-        {
-          trap_set;
-          eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "\"${md_modefile}\"";
-        } &
-        ;;
-      esac;
+      trap_unset;
+      {
+        trap_set;
+        eval "${_DISPLAY_PROG}" ${_DISPLAY_ARGS} "\"${md_modefile}\"";
+      } &
     fi;
   fi;
   eval "${return_ok}";
@@ -6476,15 +7138,22 @@ _make_pdf()
   _mp_psfile="${md_modefile}";
   md_modefile="${md_modefile}.pdf";
   obj md_modefile rm_file;
-  if gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite \
-        -sOutputFile="${md_modefile}" -c save pop -f "${_mp_psfile}"
+  if obj _PDF_HAS_PS2PDF is_yes && ps2pdf "${_mp_psfile}" "${md_modefile}";
   then
     :;
-  elif ps2pdf "${_mp_psfile}" "${md_modefile}"
+  elif obj _PDF_HAS_GS && gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite \
+       -sOutputFile="${md_modefile}" -c save pop -f "${_mp_psfile}";
   then
     :;
   else
-    error '_make_pdf(): could not transform into pdf format.';
+    _PDF_DID_NOT_WORK='yes';
+    echo2 '_make_pdf(): Could not transform into pdf format. '\
+'The Postscript mode (ps) is used instead.';
+    _OPT_MODE='ps';
+    main_set_mode;
+    main_set_resources;
+    main_display;
+    exit;
   fi;
   obj _mp_psfile rm_file_with_debug;
   eval ${_UNSET} _mp_psfile;

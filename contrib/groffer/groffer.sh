@@ -3,12 +3,13 @@
 # groffer - display groff files
 
 # Source file position: <groff-source>/contrib/groffer/groffer.sh
+# Installed position: <prefix>/bin/groffer
 
 # Copyright (C) 2001,2002,2003,2004,2005,2006
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 28 Jul 2006
+# Last update: 14 Aug 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -154,21 +155,22 @@ do
 # Delete leading and final space
 s/^['"${_SP}${_TAB}"']*//
 s/['"${_SP}${_TAB}"']*$//
-# Print all shell commands
+# Print all lines with shell commands, those not starting with -
 /^[^-]/p
+# Remove all single and double quotes
+s/['"${_SQ}"'"]//g
 # Replace empty arguments
 s/^\(-[^ ]*\)=$/o="${o} \1 '"${_SQ}${_SQ}"'"/p
 # Replace division between option and argument by single space
 s/[='"${_SP}${_TAB}"']['"${_SP}${_TAB}"']*/'"${_SP}"'/
 # Handle lines without spaces
 s/^\(-[^'"${_SP}"']*\)$/o="${o} \1"/p
-# Print options that have their argument encircled with single quotes
-/^-[^ ]* '"${_SQ}"'.*'"${_SQ}"'$/s/^.*$/o="${o} &"/p
-# Replace encircled double quotes by single quotes and print the result
-s/^\(-[^ ]*\) "\(.*\)"$/o="${o} \1 '"${_SQ}"'\2'"${_SQ}"'"/p
 # Encircle the remaining arguments with single quotes
 s/^\(-[^ ]*\) \(.*\)$/o="${o} \1 '"${_SQ}"'\2'"${_SQ}"'"/p
 ')"
+
+    # Remove leading space
+    o="$(echo "$o" | sed -e 's/^ *//')";
     if test _"${o}"_ != __
     then
       if test _"{GROFFER_OPT}"_ = __

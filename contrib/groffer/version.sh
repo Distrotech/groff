@@ -2,7 +2,8 @@
 
 # groffer - display groff files
 
-# Source file position: <groff-source>/contrib/groffer/groffer.sh
+# Source file position: <groff-source>/contrib/groffer/version.sh
+# Installed position: <prefix>/lib/groff/groffer/version.sh
 
 # Copyright (C) 2001,2002,2003,2004,2005,2006
 # Free Software Foundation, Inc.
@@ -31,8 +32,8 @@
 export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
-_PROGRAM_VERSION='0.9.24';
-_LAST_UPDATE='28 Jul 2006';
+_PROGRAM_VERSION='0.9.25';
+_LAST_UPDATE='11 Sep 2006';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it, see groffer.sh.
