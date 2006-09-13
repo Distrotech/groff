@@ -1,7 +1,7 @@
 .\"	-*-	mode: roff	-*-
 .ig
 
-fontdumps_x.roff
+font_n.roff
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -59,14 +59,14 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    if "\\*[*$1]"all" \{\
 .      ds *args \\*[*f] \\*[*args]
 .      pops *$1 *args
-.      nr *all 1
+.      nr *all 1 
 .    \}
 .
 .    if \\n[*all] \{\
 .      if "\\*[*$1]"." \
 .        nr *all 0
 .      if !F \\*[*$1] \
-.        continue
+.        continue 
 .    \}
 .
 .    index "\\*[*f]" \\*[*$1]
@@ -74,12 +74,12 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    ie (\\n[.y] > 18) \
 .      if !F \\*[*$1] \{\
 .        tm \\n[.F]:\\n[.c]: Font \\*[*$1] not found.
-.        continue
+.        continue 
 .      \}
 .    el \{\
 .      if !\\n[index] \{\
 .        tm \\n[.F]:\\n[.c]: Font \\*[*$1] not found.
-.        continue
+.        continue 
 .      \}
 .
 .      nr * \\n[.f]
@@ -88,7 +88,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      ft
 .
 .      if (\\n[**] == \\n[*]) \
-.        continue
+.        continue 
 .    \}
 .
 .    if \\n[t*cptn] \
@@ -100,50 +100,39 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      CPTN groff font \\*[*$1] \
             .br \
             val=b ".pso grep -e internalname \\*[fontpath]/dev\*[.T]/\\*[*$1]"
-.      TR
+.      TR 
 .        TD
-.          TBL cols=18 border=.1n bc=red csp=.1n cpd=.2n fgc=red4 bgc=beige \
-               hal=c fsz='1.2 1.7' fst=\\*[*$1]
+.          TBL cols=12 border=.1n bc=red csp=.1n cpd=.2n fgc=red4 bgc=beige \
+               hal=c fsz='1.2 1.2' fst=\\*[*$1]
 .            nr c# 0-1 1
-.            nr y# 0 1
-.            TR fst=HB fgc=blue
-.              TD
-.              nr x# 0-1 1
-.              while (\\n+[x#] < 16) \{\
-.                d2x \\n[x#]
-.                  TD
-.                    nop \&.\\*[hex#]
-.              \}
-.              TD
-.
-.            nr y# -1
-.            while (\\n+[y#] < 17) \{\
-.              TR
-.                TD fgc=blue fst=HB
-.                d2x \\n[y#]
-.                  nop \\*[hex#].
+.            nr y# 0-1 1
+.            TR fst=HB fgc=blue 
+.              TD 
 .                nr x# 0-1 1
-.                while (\\n+[x#] < 16) \{\
-.                  TD
-.                    if c \N'\\n+[c#]' \
-.                      nop \N'\\n[c#]'
-.                \}
-.                TD fgc=blue fst=HB
-.                d2x \\n[y#]
-.                  nop \\*[hex#].
-.            \}
+.                \" following 4 `PN's instead of 4 while-loops as in
+.                \" font_x.roff; short and easy to write, but a little
+.                \" bit slower.
+.              PN 10 .TD \
+                 \&..\\\\n+[x#]
+.              TD
 .
-.            TR fst=HB fgc=blue
-.              TD
-.              nr x# 0-1 1
-.              while (\\n+[x#] < 16) \{\
-.                d2x \\n[x#]
-.                TD
-.                  nop \&..\\*[hex#]
-.              \}
-.              TD
-.          ETB
-.    ETB
+.            PN 27 .TR \
+               ".TD fgc=blue fst=HB" \
+                 \\\\n+[y#]. \
+               ".PN 10 .TD \
+                 "".if c \N'\En+[c#]' \
+                   \N'\En[c#]'""" \
+               ".TD fgc=blue fst=HB" \
+                 \\\\n[y#].
+.
+.            TR fst=HB fgc=blue 
+.              TD 
+.                nr x# 0-1 1
+.              PN 10 .TD \
+                 \&..\\\\n+[x#]
+.              TD 
+.          ETB 
+.    ETB 
 .  \}
 ..
 .
@@ -152,7 +141,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .time
 .date
 .
-.\"	466MHz Celeron CPU, 384MB RAM
-.\"	WindowsXP/cygwin groff18.1:	107s
-.\"	WindowsXP/cygwin groff19.2:	390s
-.\"	Suse Linux 9.3 groff19.2:	 66s
+.\"	466MHz Celeron CPU, 384MB RAM 
+.\"	WindowsXP/cygwin groff18.1:	115s
+.\"	WindowsXP/cygwin groff19.2:	450s
+.\"	Suse Linux 9.3 groff19.2:	 76s
