@@ -15,7 +15,7 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update: 05 Sep 2006
+Last update: 16 Sep 2006
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
@@ -845,10 +845,10 @@ short options are accepted.
 .Opt_[alt] -- apropos\-data
 .Opt_[alt] -- apropos\-devel
 .Opt_[alt] -- apropos\-progs
-.Opt_[alt] -- whatis
 .Opt_[alt] -- man
 .Opt_[alt] -- no-man
 .Opt_[alt] -- no-special
+.Opt_[alt] -- whatis
 .
 .
 .TP
@@ -861,7 +861,9 @@ short options are accepted.
 .Opt_[alt] -- extension suffix
 .Opt_[alt] -- locale language
 .Opt_[alt] -- local-file
+.Opt_[alt] -- location -- where
 .Opt_[alt] -- manpath dir1:dir2:\*[Ellipsis]
+.Opt_[alt] -- no-location
 .Opt_[alt] -- pager program
 .Opt_[alt] -- sections sec1:sec2:\*[Ellipsis]
 .Opt_[alt] -- systems sys1,sys2,\*[Ellipsis]
@@ -1508,7 +1510,7 @@ and much more can be manually specified.
 .
 .
 .\" --------------------------------------------------------------------
-.SH "Options related to groff"
+.SS "Options related to groff"
 .\" --------------------------------------------------------------------
 .
 All short options of
@@ -1681,20 +1683,23 @@ descriptions.
 .
 Each
 .I \%filespec
-argument is taken for search as it is; section specific parts are not
-handled, such that
+argument is taken for search as it is;
+.I section
+specific parts are not handled, such that
 .B 7 groff
 searches for the two arguments
 .B 7
 and
-.B groff
+.BR groff ,
 with a large result; for the
 .I \%filespec
 .B groff.7
 nothing will be found.
 .
-The language locale is handled only when the called programs do support
-this; the GNU
+The
+.I language
+locale is handled only when the called programs do support this; the
+GNU
 .B apropos
 and
 .B man \-k
@@ -1705,7 +1710,7 @@ The display differs from the
 program by the following concepts:
 .RS
 .Topic
-construct a
+Construct a
 .I \%groff
 frame similar to a
 .I \%man\~page
@@ -1716,7 +1721,7 @@ each
 .I \%filespec
 argument is searched on its own.
 .Topic
-the restriction by
+The restriction by
 .Opt_long sections
 is handled as well,
 .Topic
@@ -1729,9 +1734,11 @@ Show only the
 .B \%apropos
 descriptions for data documents, these are the
 .BR \%man (7)
-sections 4, 5, and 7.
+.IR sections\~4 ", " 5 ", and " 7 .
 .
-Direct section declarations are ignored, wildcards are accepted.
+Direct
+.I section
+declarations are ignored, wildcards are accepted.
 .
 .
 .Opt_def -- apropos\-devel
@@ -1739,9 +1746,11 @@ Show only the
 .B \%apropos
 descriptions for development documents, these are the
 .BR man (7)
-sections 2, 3, and 9.
+.IR sections\~2 ", " 3 ", and " 9 .
 .
-Direct section declarations are ignored, wildcards are accepted.
+Direct
+.I section
+declarations are ignored, wildcards are accepted.
 .
 .
 .Opt_def -- apropos\-progs
@@ -1749,9 +1758,11 @@ Show only the
 .B \%apropos
 descriptions for documents on programs, these are the
 .BR \%man (7)
-sections 1, 6, and 8.
+.IR sections\~1 ", " 6 ", and " 8 .
 .
-Direct section declarations are ignored, wildcards are accepted.
+Direct
+.I section
+declarations are ignored, wildcards are accepted.
 .
 .
 .Opt_def -- whatis
@@ -1771,7 +1782,7 @@ each retrieved file name is added,
 .Topic
 local files are handled as well,
 .Topic
-the language and system locale is supported,
+the \fIlanguage\fP and \fIsystem\fP locale is supported,
 .Topic
 the display is framed by a
 .I groff
@@ -1783,7 +1794,7 @@ wildcard characters are allowed without a further option.
 .
 .
 .P
-The following two options were added to
+The following options were added to
 .B \%groffer
 for choosing whether the file name arguments are interpreted as names
 for local files or as a search pattern for
@@ -1839,6 +1850,14 @@ are recognized, but not all of these options are important to
 .BR \%groffer ,
 so most of them are just ignored.
 .
+These ignored
+.B man
+options are
+.Opt_long catman ,
+.Opt_long troff ,
+and
+.Opt_long update .
+.
 .
 .P
 In the following, the
@@ -1849,15 +1868,14 @@ are documented.
 .
 .
 .P
-The full set of long and short options of the \f[CR]GNU\f[]
+If your system has \f[CR]GNU\f[]
+.B man
+installed the full set of long and short options of the \f[CR]GNU\f[]
 .B man
 program can be passed via the environment variable
 .Env_var \%$MANOPT ;
 see
-.BR \%man (1)
-if your system has \f[CR]GNU\f[]
-.B man
-installed.
+.BR \%man (1).
 .
 .
 .Opt_def -- all
@@ -1878,7 +1896,9 @@ see
 .
 .
 .Opt_def -- ditroff
-Eqivalent to
+Produce
+.IR "groff intermediate output" .
+This is equivalent to
 .B \%groffer
 .Opt_short Z .
 .
@@ -2095,7 +2115,7 @@ Set \f[CR]\%X\~Window\f[] resource.
 .
 .
 .\" --------------------------------------------------------------------
-.SH "Options for Development"
+.SS "Options for Development"
 .\" --------------------------------------------------------------------
 .
 .Opt_def -- debug
@@ -2747,12 +2767,13 @@ short options are supported by
 The default behavior of
 .B \%groffer
 is to first test whether a file parameter represents a local file; if
-it is not an existing file name, it is assumed to represent a name of
-a
+it is not an existing file name, it is assumed to represent the name
+of a
 .IR \%man\~page .
-.
-This behavior can be modified by the following options.
-.
+The following options can be used to determine whether the arguments
+should be handled as file name or
+.I \%man\~page
+arguments.
 .
 .TP
 .Opt_long man
@@ -2777,148 +2798,230 @@ was retrieved for some file parameter a warning is issued on standard
 error, but processing is continued.
 .
 .
-.P
+.\" --------------------------------------------------------------------
+.SS "Search Algoritm"
+.\" --------------------------------------------------------------------
+.
+Let us now assume that a
+.I \%man\~page
+should be searched.
+.
 The
 .B \%groffer
 program provides a search facility for
 .IR \%man\~pages .
 .
 All long options, all environment variables, and most of the
-functionality of the \f[CR]GNU\f[]
+functionality of the \f[CR]GNU\fP
 .BR \%man (1)
 program were implemented.
 .
-This inludes the extended file names of
-.IR \%man\~pages ,
-for example, the
-.I \%man\~page
-of
-.B \%groff
-in man\~section 7 may be stored under
-.File_name /usr/share/man/man7/groff.7.gz ,
-where
-.File_name /usr/share/man/
-is part of the man\~path, the subdirectory
-.I \%man7
-and the file extension
-.I .7
-refer to the man\~section 7;
-.I \%.gz
-shows the compression of the file.
+The search algorithm shall determine which file is displayed for a given
+.IR \%man\~page .
+The process can be modified by options and environment variables.
 .
 .
 .P
-The
-.I cat\~pages
-(preformatted
-.IR \%man\~pages )
-are intentionally excluded from the search because
+The only
+.I man
+action that is omitted in
 .B \%groffer
-is a
-.I roff
-program that wants to format by its own.
+are the preformatted
+.IR \%man\~pages ,
+also called
+.IR cat\~pages .
 .
 With the excellent performance of the actual computers, the
 preformatted
 .I \%man\~pages
 aren't necessary any longer.
 .
+Additionally,
+.B \%groffer
+is a
+.I roff
+program; it wants to read
+.I roff
+source files and format them itself.
+.
 .
 .P
-The algorithm for retrieving
-\I \%man\~pages
-uses five search methods.
+The algorithm for retrieving the file for a
+.I \%man\~page
+needs first a set of directories.
 .
-They are successively tried until a method works.
+This set starts with the so-called
+.I man\~path
+that is modified later on by adding names of
+.I operating system
+and
+.IR language .
 .
+This arising set is used for adding the section directories which
+contain the
+.I \%man\~page
+files.
+.
+.
+.P
+The
+.I man\~path
+is a list of directories that are separated by colon.
+.
+It is generated by the following methods.
 .
 .Topic
-The search path can be manually specified by using the option
+The environment variable
+.Env_var \%$MANPATH
+can be set.
+.
+.Topic
+It can be read from the arguments of the environment variable
+.Env_var \%$MANOPT .
+.
+.Topic
+The
+.I man\~path
+can be manually specified by using the option
 .Opt_long manpath .
 An empty argument disables the
 .I \%man\~page
 searching.
 .
-This overwrites the other methods.
-.
-.
 .Topic
-If this is not available the environment variable
-.Env_var \%$MANPATH
-is searched.
-.
-.
-.Topic
-If this is empty, the program tries to read it from the environment
-variable
-.Env_var \%$MANOPT .
-.
+When no
+.I man\~path
+was set the
+.BR \%manpath (1)
+program is tried to determine one.
 .
 .Topic
 If this does not work a reasonable default path from
 .Env_var $PATH
-is searched for
-.IR \%man\~pages .
-.
-.
-.Topic
-If this does not work, the
-.BR \%manpath (1)
-program for determining a path of
-.I man
-directories is tried.
+is determined.
 .
 .
 .P
-After this, the path elements for the language (locale) and operating
-system specific
-.I \%man\~pages
-are added to the
-.IR man\~path ;
-their sequence is determined automatically.
+We now have a starting set of directories.
 .
-For example, both
-.File_name /usr/share/man/linux/fr
-and
-.File_name /usr/share/man/fr/linux
-for french linux
-.I \%man\~pages
-are found.
+The first way to change this set is by adding names of
+.I operating
+.IR systems .
 .
-The language and operating system names are determined from both
-environment variables and command line options.
+This assumes that
+.I \%man\~pages
+for several
+.I operating systems
+are installed.
+.
+This is not always true.
+.
+The names of such
+.I operating systems
+can be provided by 3 methods.
+.
+.Topic
+The environment variable
+.Env_var \%$SYSTEM
+has the lowest precedence.
+.
+.Topic
+This can be overridden by an option in
+.Env_var \%$MANOPT .
+.
+.Topic
+This again is overridden by the command line option
+.Opt_long systems .
 .
 .
 .P
-The locale (language) is determined like in \f[CR]GNU\f[]
-.BR man ,
-that is from highest to lowest precedence:
-.Topic
-.Opt_long locale
+Several names of
+.I operating systems
+can be given by appending their names, separated by a comma.
+.
+.
+.P
+The
+.I man\~path
+is changed by appending each
+.I system
+name as subdirectory at the end of each directory of the set.
+.
+No directory of the
+.I man\~path
+set is kept.
+.
+But if no
+.I system
+name is specified the
+.I man\~path
+is left unchanged.
+.
+.
+.P
+After this, the actual set of directories can be changed by
+.I language
+information.
+.
+This assumes that there exist
+.I man\~pages
+in different languages.
+.
+The wanted
+.I language
+can be chosen by several methods.
 .
 .Topic
-.Env_var \%$GROFFER_OPT
-.
-.Topic
-.Env_var \%$MANOPT
-.
-.Topic
-.Env_var $LCALL
-.
-.Topic
-.Env_var \%$LC_MESSAGES
-.
-.Topic
+Enviroment variable
 .Env_var $LANG .
 .
+.Topic
+This is overridden by
+.Env_var \%$LC_MESSAGES .
+.
+.Topic
+This is overridden by
+.Env_var $LC_ALL .
+.
+.Topic
+This can be overridden by providing an option in
+.Env_var \%$MANOPT .
+.
+.Topic
+All these environment variables are overridden by the command line
+option
+.Opt_long locale .
+.
 .
 .P
-The language locale is usually specified in the
-\%\f[CR]POSIX\~1003.1\f[] based format:
+The
+.I default language
+can be specified by specifying one of the pseudo-language parameters
+\f[CR]C\fP or \f[CR]\%POSIX\fP.
+.
+This is like deleting a formerly given
+.I language
+information.
+.
+The
+.I \%man\~pages
+in the
+.I default language
+are usually in English.
+.
+.
+.P
+Of course, the
+.I language
+name is determined by
+.BR man .
+In \f[CR]GNU\fP
+.BR man ,
+it is specified in the \%\f[CR]POSIX\~1003.1\fP based format:
 .P
 .nh
-\f[I]<language>\f[][\f[CB]_\f[]\f[I]<territory>\f[][\f[CB].\f[]\
-\f[I]<character-set>\f[][\f[CB],\f[]\f[I]<version>\f[]]]],
+\f[I]<language>\f[][\f[CB]_\f[]\f[I]<territory>\f[][\f[CB].\fP\
+\f[I]<character-set>\f[][\f[CB],\fP\f[I]<version>\fP]]],
 .hy
 .P
 but the two-letter code in
@@ -2927,87 +3030,197 @@ but the two-letter code in
 .hy
 is sufficient for most purposes.
 .
+If for a complicated
+.I language
+formulation no
+.I \%man\~pages
+are found
+.B \%groffer
+searches the country part consisting of these first two characters as
+well.
+.
+.
+.P
+The actual directory set is copied thrice.
+.
+The
+.I language
+name is appended as subdirectory to each directory in the first copy
+of the actual directory set (this is only done when a language
+information is given).
+.
+Then the 2-letter abbreviation of the
+.I language
+name is appended as subdirectories to the second copy of the directory
+set (this is only done when the given language name has more than 2
+letters).
+.
+The third copy of the directory set is kept unchanged (if no
+.I language
+information is given this is the kept directory set).
+.
+These maximally 3 copies are appended to get the new directory set.
+.
+.
+.P
+We now have a complete set of directories to work with.
+.
+In each of these directories, the
+.I man
+files are separated in
+.IR sections .
+.
+The name of a
+.I section
+is represented by a single character, a digit between
+.I 1
+and
+.IR 9 ,
+or the character
+.I o
+or
+.IR n ,
+in this order.
+.
+.
+.P
+For each available
+.IR section ,
+a subdirectory
+.File_name man \fI<section>\fP
+exists containing all
+.I man
+files for this
+.IR section ,
+where
+.I <section>
+is a single character as described before.
+.
+Each
+.I man
+file in a
+.I section
+directory has the form
+.IR \%\f[CB]man\fP<section>\f[CB]/\fP<name>\f[CB].\fP<section>\
+[<extension>][\f[CB].\fP<compression>] ,
+where
+.I \%<extension>
+and
+.I \%<compression>
+are optional.
+.
+.I \%<name>
+is the name of the
+.I \%man\~page
+that is also specified as filespec argument on the command line.
+.
+.
+.P
+The
+.I extension
+is an addition to the section.
+.
+This postfix acts like a subsection.
+.
+An
+.I extension
+occurs only in the file name, not in name of the
+.I section
+subdirectory.
+.
+It can be specified on the command line.
+.
+.
+.P
+On the other hand, the
+.I compression
+is just an information on how the file is compressed.
+.
+This is not important for the user, such that it cannot be specified
+on the command line.
+.
+.
+.P
+There are 4 methods to specify a
+.I section
+on the command line:
+.
+.Topic
+Environment variable
+.Env_var \%$MANSECT
+.
+.Topic
+Command line option
+.Opt_long sections
+.
+.Topic
+Appendix to the
+.I name
+argument in the form
+.I <name>.<section>
+.
+.Topic
+Preargument before the
+.I name
+argument in the form
+.I <section> <name>
+.
+.
+.P
+It is also possible to specify several
+.I sections
+by appending the single characters separated by colons.
+.
+One can imagine that this means to restrict the
+.I \%man\~page
+search to only some
+.IR sections .
+.
+The multiple
+.I sections
+are only possible for
+.Env_var \%$MANSECT
+and
+.Opt_long sections .
+.
 .
 .P
 If no
-.I \%man\~pages
-for a complicated locale are found the country part consisting of the
-first two characters (without the `\f[CB]_\f[]', `\f[CB].\f[]', and
-`\f[CB],\f[]' parts) of the locale is searched as well.
+.I section
+is specified all
+.I sections
+are searched one after the other in the given order, starting with
+.IR section\~1 ,
+until a suitable file is found.
 .
 .
 .P
-If still not found the corresponding
-.I \%man\~page
-in the default language is used instead.
+There are 4 methods to specify an
+.I extension
+on the command line.
 .
-As usual, this default can be specified by one of \f[CR]C\f[] or
-\f[CR]\%POSIX\f[].
-.
-The
-.I \%man\~pages
-in the default language are usually in English.
-.
-.
-.P
-Several operating systems can be given by appending their names,
-separated by a comma.
-.
-This is then specified by the environment variable
-.Env_var \%$SYSTEM
-or by the command line option
-.Opt_long systems .
-The precedence is similar to the locale case above from highest to
-lowest precedence:
-.
-Topic
-.Opt_long systems
+But it is not necessary to provide the whole extension name, some
+abbreviation is good enough in most cases.
 .
 .Topic
-.Env_var \%$GROFFER_OPT
+Environment variable
+.Env_var \%$EXTENSION
 .
 .Topic
-.Env_var \%$MANOPT
-.
-.Topic
-.Env_var \%$SYSTEM .
-.
-.
-.P
-When searching for
-.I \%man\~pages
-this
-.I man\~path
-with the additional language and system specific directories is used.
-.
-.
-.P
-The search can further be restricted by limiting it to certain
-sections.
-.
-A single section can be specified within each
-.I \%filespec
-argument, several sections as a colon-separated list in command line
-option
-.Opt_long sections
-or environment variable
-.Env_var \%$MANSECT .
-.
-When no section was specified a set of standard sections is searched
-until a suitable
-.I \%man\~page
-was found.
-.
-.
-.P
-Finally, the search can be restricted to a so-called
-.IR extension .
-This is a postfix that acts like a subsection.
-.
-It can be specified by
+Command line option
 .Opt_long extension
-or environment variable
-.Env_var \%$EXTENSION .
+.
+.Topic
+Appendix to the
+.I <name>.<section>
+argument in the form
+.I <name>.<section><extension>
+.
+.Topic
+Preargument before the
+.I name
+argument in the form
+.I <section><extension> <name>
 .
 .
 .P
@@ -3015,6 +3228,152 @@ For further details on
 .I \%man\~page
 searching, see
 .BR \%man (1).
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Examples of man files"
+.\" --------------------------------------------------------------------
+.
+.TP
+.File_name /usr/share/man/man1/groff.1
+This is an uncompressed file for the
+.I \%man\~page
+\f[CR]groff\fP in
+.IR section\~1 .
+.
+It can be called by
+.Shell_cmd "groffer\~groff"
+No
+.I section
+is specified here, so all
+.I sections
+should be searched, but as
+.I section\~1
+is searched first this file will be found first.
+.
+The file name is composed of the following components.
+.File_name /usr/share/man
+must be part of the
+.IR \%man\~path ;
+the subdirectory
+.File_name man1/
+and the part
+.File_name .1
+stand for the
+.IR section ;
+.File_name groff
+is the name of the
+.IR \%man\~page .
+.
+.
+.TP
+.File_name /usr/local/share/man/man7/groff.7.gz
+The file name is composed of the following components.
+.File_name /usr/local/share/man
+must be part of the
+.IR \%man\~path ;
+the subdirectory
+.File_name man7/
+and the part
+.File_name .7
+stand for the
+.IR section ;
+.File_name groff
+is the name of the
+.IR \%man\~page ;
+the final part
+.File_name .gz
+stands for a compression with
+.BR gzip (1).
+As the
+.I section
+is not the first one it must be specified as well.
+.
+This can be done by one of the following commands.
+.Shell_cmd "groffer\~groff.7"
+.Shell_cmd "groffer\~7\~groff"
+.Shell_cmd "groffer\~\-\-sections=7\~groff"
+.
+.
+.TP
+.File_name /usr/local/man/man1/ctags.1emacs21.bz2
+Here
+.File_name /usr/local/man
+must be in
+.IR \%man\~path ;
+the subdirectory
+.File_name man1/
+and the file name part
+.File_name .1
+stand for
+.IR section\~1 ;
+the name of the
+.I \%man\~page
+is
+.File_name ctags ;
+the section has an extension
+.File_name emacs21 ;
+and the file is compressed as
+.File_name .bz2
+with
+.BR bzip2 (1).
+The file can be viewed with one of the following commands
+.Shell_cmd "groffer\~ctags.1e"
+.Shell_cmd "groffer\~1e\~ctags"
+.Shell_cmd "groffer\~\-\-extension=e\~\-\-sections=1\~ctags"
+where \f[CR]e\fP works as an abbreviation for the extension
+\f[CR]emacs21\fP.
+.
+.
+.TP
+.File_name /usr/man/linux/de/man7/man.7.Z
+The directory
+.File_name /usr/man
+is now part of the
+.IR \%man\~path ;
+then there is a subdirectory for an
+.I operating system
+name
+.File_name linux/ ;
+next comes  a subdirectory
+.File_name de/
+for the German
+.IR language ;
+the
+.I section
+names
+.File_name man7
+and
+.File_name .7
+are known so far;
+.File_name man
+is the name of the
+.IR \%man\~page ;
+and
+.File_name .Z
+signifies the compression that can be handled by
+.BR gzip (1).
+We want now show how to provide several values for some options.
+.
+That is possible for
+.I sections
+and
+.I operating system
+names.
+.
+So we use as
+.I sections\~5
+and
+.I 7
+and as
+.I system
+names
+.I linux
+and
+.IR aix .
+The command is then
+.Shell_cmd groffer\~\-\-locale=de\~\-\-sections=5:7\~\-\-systems=linux,aix\~man
+.Shell_cmd LANG=de\~MANSECT=5:7\~SYSTEM=linux,aix\~groffer\~man
 .
 .
 .\" --------------------------------------------------------------------
@@ -3030,7 +3389,7 @@ or
 .BR \%bzip2 (1)
 it is decompressed on-the-fly.
 .
-This includes the \f[CR]GNU\f[]
+This includes the \f[CR]GNU\fP
 .BR \%.gz ,
 .BR \%.bz2 ,
 and the traditional
@@ -3052,7 +3411,7 @@ other programs.
 .
 All environment variables of
 .BR \%groff (@MAN1EXT@)
-and \f[CR]GNU\f[]
+and \f[CR]GNU\fP
 .BR \%man (1)
 and some standard system variables are honored.
 .
@@ -3096,7 +3455,7 @@ The following variables have a special meaning for
 .
 .TP
 .Env_var \%$DISPLAY
-If this variable is set this indicates that the \%\f[CR]X\~Window\f[]
+If this variable is set this indicates that the \%\f[CR]X\~Window\fP
 system is running.
 .
 Testing this variable decides on whether graphical or text output is
@@ -3105,7 +3464,7 @@ generated.
 This variable should not be changed by the user carelessly, but it can
 be used to start the graphical
 .B \%groffer
-on a remote \%\f[CR]X\~Window\f[] terminal.
+on a remote \%\f[CR]X\~Window\fP terminal.
 .
 For example, depending on your system,
 .B \%groffer
@@ -3144,7 +3503,7 @@ is a character set or encoding identifier like ISO-8859-1 or UTF-8;
 see
 .BR \%setlocale (3).
 .
-The locale values \f[CR]C\f[] and \%\f[CR]POSIX\f[]
+The locale values \f[CR]C\fP and \%\f[CR]POSIX\fP
 stand for the default, i.e. the
 .I \%man\~page
 directories without a language prefix.
@@ -3396,7 +3755,7 @@ You can also write a shell function for calling, for example a viewer
 program for some
 .IR \%mode .
 Such a function can be fed into a corresponding
-.Opt_long \f[I]mode\f[]\-viewer
+.Opt_long \f[I]mode\fP\-viewer
 option.
 .
 .Topic
@@ -3496,7 +3855,7 @@ is empty set it to
 .
 That allows to start
 .B \%groffer
-in the standard \%\f[CR]X\~Window\f[] display, even when the program
+in the standard \%\f[CR]X\~Window\fP display, even when the program
 is called from a text console.
 .
 .
@@ -3532,9 +3891,9 @@ in the directory
 .File_name /usr/local/share/doc/groff ,
 using the standard viewer
 .B \%gxditview
-as graphical viewer when in \%\f[CR]X\~Window\f[], or the
+as graphical viewer when in \%\f[CR]X\~Window\fP, or the
 .BR \%less (1)
-pager program when not in \%\f[CR]X\~Window\f[].
+pager program when not in \%\f[CR]X\~Window\fP.
 .
 .
 .TP
@@ -3689,7 +4048,7 @@ option
 .TP+
 .Shell_cmd+ "groffer --x --bg red --fg yellow --geometry 200x100 -"
 .
-Display the word \f[CB]WOW!\f[] in a small window in constant-width
+Display the word \f[CB]WOW!\fP in a small window in constant-width
 bold font, using color yellow on red background.
 .
 .
@@ -3733,11 +4092,11 @@ option
 .
 .P
 Both scripts are compatible with both
-\f[CR]GNU\f[] and \%\f[CR]POSIX\f[].
+\f[CR]GNU\fP and \%\f[CR]POSIX\fP.
 .
-\%\f[CR]POSIX\f[] compatibility refers to
-\%\f[CR]IEEE\~P1003.2/D11.2\f[] of September 1991, a very early
-version of the \%\f[CR]POSIX\f[] standard that is still freely
+\%\f[CR]POSIX\fP compatibility refers to
+\%\f[CR]IEEE\~P1003.2/D11.2\fP of September 1991, a very early
+version of the \%\f[CR]POSIX\fP standard that is still freely
 available in the internet at
 .URL http://\:www.funet.fi/\:pub/\:doc/\:posix/\:p1003.2/\:d11.2/\:all \
 "\%POSIX\~P1003.2\~draft\~11.2" .
@@ -3746,7 +4105,7 @@ available in the internet at
 .P
 Only a restricted set of shell language elements and shell builtins is
 used to achieve even compatibility with some Bourne shells that are
-not fully \%\f[CR]POSIX\f[] compatible.
+not fully \%\f[CR]POSIX\fP compatible.
 .
 The
 .B \%groffer
@@ -3781,9 +4140,9 @@ configuration files you must write a line starting with
 The
 .B \%groffer
 program provides its own parser for command line arguments that is
-compatible to both \%\f[CR]POSIX\f[]
+compatible to both \%\f[CR]POSIX\fP
 .BR \%getopts (1)
-and \%\f[CR]GNU\f[]
+and \%\f[CR]GNU\fP
 .BR \%getopt (1).
 It can handle option arguments and file names containing white space
 and a large set of special characters.
@@ -3845,7 +4204,7 @@ The free mixing of options and
 .I \%filespec
 parameters follows the GNU principle.
 .
-That does not fulfill the strange option behavior of \%\f[CR]POSIX\f[]
+That does not fulfill the strange option behavior of \%\f[CR]POSIX\fP
 that ends option processing as soon as the first non-option argument
 has been reached.
 .

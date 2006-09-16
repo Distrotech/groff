@@ -1,4 +1,67 @@
-2006-11-08  Bernd Warken
+2006-09-16  Bernd Warken
+	________________________________________________________________
+	* release of groffer 0.9.26
+
+	### Simplification of main_set_mode()
+
+	* groffer2.sh:
+	- _get_first_prog() of main_set_mode(): Rewrite this function
+	such that it does not have an output, but set the variables
+	$_DISPLAY_PROG and $_DISPLAY_ARGS.
+	- _check_prog_on_list() of main_set_mode(): Rename and rewrite
+	_check_X_prog().  Suitable for being called for $_VIEWER_<mode>_X
+	and $_VIEWER_<mode>_TTY.  No output, but set the variables
+	$_DISPLAY_PROG and $_DISPLAY_ARGS.
+	- _obj_set_vars() of main_set_mode(): Remove this function.  It is
+	no longer necessary because its variables are set by the other
+	functions.
+	- _get_prog_args() of main_set_mode(): New function that
+	simplifies the loop in main_set_mode() and handles both
+	$_VIEWER_<mode>_X and $_VIEWER_<mode>_TTY.
+	- _process_mode() of main_set_mode(): Remove this function.
+	- main_set_mode(): Remove case for calling _process_mode().  In
+	the loop, use _get_prog_args() for simplification.
+	- main_parse_args(): Make --<mode>-viewer equivalent to
+	--<mode>-viewer-tty to make _process_mode() unnecessary.
+	- $_VIEWER_BACKGROUND: Start with `no'.
+
+	### Extend the documentation
+
+	* groffer2.sh:
+	- Environment Variables: Add information on the naming of
+	variables in functions.
+	- $_ADDOPTS_POST, $_ADDOPTS_X: Remove these unused variables.
+	- apropos_setup(), apropos_setup (), base_name(), dir_name(),
+	echo1(), echo2(), func_check(), func_pop(), func_push(),
+	is_greater_than(), list_append(), list_from_split(),
+	_manpath_add_sys() of manpath_add_lang_sys(), rm_tree(),
+	special_filespec(), special_setup(), tmp_create(), to_tmp_line(),
+	usage(), version(), where_is_prog(), main_set_mode():
+	Fix and extend the description.  Many other function descriptions
+	were just fixed without being mentioned.
+	- landmark 7: man_*(): Add information on the search of `man'
+	pages.
+
+	* groffer.man:
+	- GNU `man' option overview: Add --location, --no-location, and
+	--where.
+	- GNU `man' options: Add the GNU `man' long options that are
+	accepted by `groffer', but just ignored.
+	- MAN PAGE SEARCHING: Correct and extend this section.
+	
+	* TODO:
+	- Remove entry on function headers.
+	- Remove entry on GNU `man' options.
+	- Remove entry on search algorithm for `man' pages.
+
+	### Other fixes
+
+	* groffer2.sh:
+	- man_get(): On `man' page search with given name and section
+	handle also files with extension when no files without extension
+	are found.
+
+2006-09-11  Bernd Warken
 	________________________________________________________________
 	* release of groffer 0.9.25
 
@@ -1933,7 +1996,7 @@
 	________________________________________________________________
 	License
 
-	Copyright (C) 2001,2002,2003,2004,2005
+	Copyright (C) 2001,2002,2003,2004,2005,2006
 	Free Software Foundation, Inc.
 	Written by Bernd Warken
 
