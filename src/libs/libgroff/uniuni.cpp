@@ -2084,7 +2084,8 @@ static struct unicode_decompose_init {
   unicode_decompose_init();
 } _unicode_decompose_init;
 
-unicode_decompose_init::unicode_decompose_init() {
+unicode_decompose_init::unicode_decompose_init()
+{
   for (unsigned int i = 0;
        i < sizeof(unicode_decompose_list)/sizeof(unicode_decompose_list[0]);
        i++) {

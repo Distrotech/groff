@@ -512,7 +512,8 @@ static struct glyph_to_unicode_init {
   glyph_to_unicode_init();
 } _glyph_to_unicode_init;
 
-glyph_to_unicode_init::glyph_to_unicode_init() {
+glyph_to_unicode_init::glyph_to_unicode_init()
+{
   for (unsigned int i = 0;
        i < sizeof(glyph_to_unicode_list)/sizeof(glyph_to_unicode_list[0]);
        i++) {
