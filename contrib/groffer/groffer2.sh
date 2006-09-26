@@ -12,7 +12,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 14 Sep 2006
+# Last update: 26 Sep 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -382,7 +382,6 @@ landmark "1: environment variables";
 ########################################################################
 
 # function return values; `0' means ok; other values are error codes
-export _ALL_EXIT;
 export _BAD;
 export _GOOD;
 export _NO;
@@ -614,7 +613,6 @@ export _NO_FILESPECS;		# Yes, if there are no filespec arguments.
 export _REG_TITLE_LIST;		# Processed file names.
 export _SPECIAL_FILESPEC;	# Filespec ran for apropos or whatis.
 export _SPECIAL_SETUP;		# Test on setup for apropos or whatis.
-export _TITLE_ELT;		# The actual element for the title.
 # _MAN_* finally used configuration of man searching
 export _MAN_ALL;		# search all man pages per filespec
 export _MAN_ENABLE;		# enable search for man pages
@@ -730,7 +728,6 @@ reset()
   _MACRO_PKG='';
   _NO_FILESPECS='';
   _REG_TITLE_LIST='';
-  _TITLE_ELT='';
 
   # _MAN_* finally used configuration of man searching
   _MAN_ALL='no';
@@ -960,7 +957,8 @@ landmark "3: functions";
 #
 # Compose temporary file for filspec.
 #
-# Globals:  in: $_OPT_APROPOS, $_SPECIAL_SETUP
+# Globals:  in: $_OPT_APROPOS, $_SPECIAL_SETUP, $_FILESPEC_ARG,
+#               $_APROPOS_PROG, $_APROPOS_SECTIONS, $_OPT_SECTIONS
 #          out: $_SPECIAL_FILESPEC
 #
 # Variable prefix: af
@@ -989,7 +987,7 @@ apropos_filespec()
     then
       if obj _OPT_SECTIONS is_empty
       then
-        s='^.*(.*).*$';
+        s='^.*(..*).*$';
       else
         s='^.*(['"$(echo1 "${_OPT_SECTIONS}" | sed -e 's/://g')"']';
       fi;
@@ -1008,7 +1006,7 @@ s/\./\\./g
 ' | \
       sort |\
       sed -e '
-s/^\(.* (..*)\)  *-  *\(.*\)$/\.br\n\.TP 15\n\.BR \1\n\\\&\2/
+s/^\(.*(..*).*\)  *-  *\(.*\)$/\.br\n\.TP 15\n\.BR \"\1\"\n\\\&\2/
 ' >>"${_TMP_CAT}";
     eval ${_UNSET} af_filespec;
     eval "${return_ok}";
@@ -1050,6 +1048,10 @@ apropos_setup()
     fi;
     to_tmp_line '.TH GROFFER APROPOS';
     _SPECIAL_SETUP='yes';
+    if obj _OPT_TITLE is_empty
+    then
+      _OPT_TITLE='apropos';
+    fi;
     eval "${return_ok}";
   else
     eval "${return_bad}";
@@ -1112,38 +1114,47 @@ base_name()
 # Arguments: 1, a file name.
 # Output: the content of <file>, possibly decompressed.
 #
-if test _"${_HAS_COMPRESSION}"_ = _yes_
-then
-  cat_z()
-  {
-    func_check cat_z = 1 "$@";
-    case "$1" in
-      '')
-        error 'cat_z(): empty file name';
-        ;;
-      '-')
-        error 'cat_z(): for standard input use save_stdin()';
-        ;;
-    esac;
+cat_z()
+{
+  func_check cat_z = 1 "$@";
+  case "$1" in
+  '')
+    error 'cat_z(): empty file name.';
+    ;;
+  '-')
+    error 'cat_z(): for standard input use save_stdin().';
+    ;;
+  esac;
+  if is_file "$1"
+  then
+    :;
+  else
+    error 'cat_z(): argument $1 is not a file.';
+  fi;
+  if test -s "$1"
+  then
+    :;
+  else
+    eval "${return_ok}";
+  fi;
+  if obj _HAS_COMPRESSION is_yes
+  then
     if obj _HAS_BZIP is_yes
     then
+      # test whether being compressed with bz2
       if bzip2 -t "$1" 2>${_NULL_DEV}
       then
         bzip2 -c -d "$1" 2>${_NULL_DEV};
         eval "${return_ok}";
       fi;
     fi;
+    # if not compressed gzip acts like `cat'
     gzip -c -d -f "$1" 2>${_NULL_DEV};
-    eval "${return_ok}";
-  } # cat_z()
-else				# no compression
-  cat_z()
-  {
-    func_check cat_z = 1 "$@";
+  else
     cat "$1";
-    eval "${return_ok}";
-  } # cat_z()
-fi;
+  fi;
+  eval "${return_ok}";
+} # cat_z()
 
 
 ########################################################################
@@ -3276,7 +3287,7 @@ man_is_man()
   then
     error 'man_is_man(): main_init() must be run first.';
   fi;
-  if obj _TMP_MAN is_empty
+  if obj _MAN_IS_SETUP is_not_yes
   then
     error 'man_is_man(): man_setup() must be run first.';
   fi;
@@ -3323,9 +3334,9 @@ man_is_man()
 #
 # Globals:
 #   in:     $_OPT_*, $_MANOPT_*, $LANG, $LC_MESSAGES, $LC_ALL,
-#           $MANPATH, $MANROFFSEQ, $MANSEC, $PAGER, $SYSTEM, $MANOPT.
+#           $MANPATH, $MANSEC, $PAGER, $SYSTEM, $MANOPT.
 #   out:    $_MAN_PATH, $_MAN_LANG, $_MAN_SYS, $_MAN_LANG, $_MAN_LANG2,
-#           $_MAN_SEC, $_MAN_ALL
+#           $_MAN_SEC, $_MAN_ALL, $_TMP_MAN
 #   in/out: $_MAN_ENABLE
 #
 # The precedence for the variables related to `man' is that of GNU
@@ -3334,9 +3345,11 @@ man_is_man()
 # $LANG; overridden by
 # $LC_MESSAGES; overridden by
 # $LC_ALL; this has the same precedence as
-# $MANPATH, $MANROFFSEQ, $MANSEC, $PAGER, $SYSTEM; overridden by
+# $MANPATH, $MANSEC, $PAGER, $SYSTEM; overridden by
 # $MANOPT; overridden by
 # the groffer command line options.
+#
+# $MANROFFSEQ is ignored because grog determines the preprocessors.
 #
 # Variable prefix: ms
 #
@@ -3455,7 +3468,7 @@ man_setup()
 
 ### man_setup()
   obj_from_output _MAN_EXT get_first_essential \
-    "${_OPT_EXTENSION}" "${_MANOPT_EXTENSION}";
+    "${_OPT_EXTENSION}" "${_MANOPT_EXTENSION}" "${EXTENSION}";
 
   _TMP_MAN="$(tmp_create man)";
 
@@ -3973,7 +3986,6 @@ register_file()
   then
     to_tmp "${_TMP_STDIN}" && register_title 'stdin';
   else
-#    to_tmp "$1" && register_title "$(base_name "$1")";
     to_tmp "$1" && register_title "$1";
     exit_test;
   fi;
@@ -3984,7 +3996,8 @@ register_file()
 ########################################################################
 # register_title (<filespec>)
 #
-# Create title element from <filespec> and append to $_REG_TITLE_LIST
+# Create title element from <filespec> and append to $_REG_TITLE_LIST.
+# Basename is created.
 #
 # Globals: $_REG_TITLE_LIST (rw)
 #
@@ -4197,7 +4210,7 @@ special_setup()
     error \
       'special_setup(): $_OPT_APROPOS and $_OPT_WHATIS are both "yes"';
   fi;
-  if apropos_setup || whatis_header
+  if apropos_setup || whatis_setup
   then
     eval "${return_ok}";
   else
@@ -4438,7 +4451,7 @@ s/ -mm\([^ ]\)/ -m\1/g
 _do_man_so() {
   func_check _do_man_so '=' 1 "$@";
   _dms_so="$1";			# evt. with `\ '
-  _dms_soname="$(echo ${tt_i} | sed -e 's/\\[ 	]/ /g')"; # without `\ '
+  _dms_soname="$(echo $1 | sed -e 's/\\[ 	]/ /g')"; # without `\ '
   case "${_dms_soname}" in
   /*)				# absolute path
     if test -f "${_dms_soname}"
@@ -4455,7 +4468,8 @@ _do_man_so() {
     then
       _dms_sofound="${_dms_soname}"'.bz2';
     else
-      eval ${_UNSET} _dms_sofound;
+      eval ${_UNSET} _dms_so;
+      eval ${_UNSET} _dms_soname;
       eval "${return_ok}";
     fi;
     ;;
@@ -4503,22 +4517,22 @@ _do_man_so() {
   esac;
   if obj _DEBUG_PRINT_FILENAMES is_yes
   then
-    echo2 "file from .so: ${tt_1}";
+    echo2 "file from .so: ${_dms_so}";
   fi;
   cat_z "${_dms_sofound}" >"${tt_sofile}";
-  _dms_esc="$(echo ${_dms_so} | sed -e 's/\\/\\\\/')";
+  _dms_esc="$(echo ${_dms_so} | sed -e 's/\\/\\\\/g')";
   cat "${tt_file}" | eval sed -e \
 "'s#^\\.[ 	]*so[ 	]*\(${_dms_so}\|${_dms_esc}\|${_dms_soname}\)[ 	]*\$'"\
 "'#.so ${tt_sofile}#'" \
     >"${tt_tmp}";
   rm_file "${tt_file}";
   mv "${tt_tmp}" "${tt_file}";
-  eval "${return_ok}";
   eval ${_UNSET} _dms_done;
   eval ${_UNSET} _dms_esc;
   eval ${_UNSET} _dms_so;
   eval ${_UNSET} _dms_sofound;
   eval ${_UNSET} _dms_soname;
+  eval "${return_ok}";
 } # _do_man_so() of to_tmp()
 
 
@@ -4705,7 +4719,8 @@ warning()
 # Interpret <filename> as a man page and display its `whatis'
 # information as a fragment written in the groff language.
 #
-# Globals:  in: $_OPT_WHATIS, $_SPECIAL_SETUP, $_SPECIAL_FILESPEC
+# Globals:  in: $_OPT_WHATIS, $_SPECIAL_SETUP, $_SPECIAL_FILESPEC,
+#               $_FILESPEC_ARG
 #
 # Variable prefix: wf
 #
@@ -4719,7 +4734,7 @@ whatis_filename()
   if obj _SPECIAL_SETUP is_not_yes
   then
     error \
-      'whatis_filename(): setup for whatis whatis_header() must be run first.';
+      'whatis_filename(): setup for whatis whatis_setup() must be run first.';
   fi;
   if obj _SPECIAL_FILESPEC is_not_yes
   then
@@ -4860,7 +4875,7 @@ whatis_filespec()
   then
     if obj _SPECIAL_SETUP is_not_yes
     then
-      error 'whatis_filespec(): whatis_header() must be run first.';
+      error 'whatis_filespec(): whatis_setup() must be run first.';
     fi;
     _SPECIAL_FILESPEC='yes';
     eval to_tmp_line \
@@ -4874,7 +4889,7 @@ whatis_filespec()
 
 
 ########################################################################
-# whatis_header ()
+# whatis_setup ()
 #
 # Print the whatis header to the temporary cat file; this is the setup
 # for whatis. 
@@ -4882,18 +4897,22 @@ whatis_filespec()
 # Globals:  in: $_OPT_WHATIS
 #          out: $_SPECIAL_SETUP
 #
-whatis_header()
+whatis_setup()
 {
-  func_check whatis_header '=' 0 "$@";
+  func_check whatis_setup '=' 0 "$@";
   if obj _OPT_WHATIS is_yes
   then
     to_tmp_line '.TH GROFFER WHATIS';
     _SPECIAL_SETUP='yes';
+    if obj _OPT_TITLE is_empty
+    then
+      _OPT_TITLE='whatis';
+    fi;
     eval "${return_ok}";
   else
     eval "${return_bad}";
   fi;
-} # whatis_header()
+} # whatis_setup()
 
 
 ########################################################################
@@ -4942,22 +4961,22 @@ where_is_prog()
   wip_result='';
 ### where_is_prog()
 
+  if test -f "${wip_noarg}" && test -x "${wip_noarg}"
+  then
+    list_append wip_result "${wip_noarg}" "${wip_args}"; 
+    exit_test;
+    obj wip_result echo1;
+    exit_test;
+    eval ${_UNSET} wip_1;
+    eval ${_UNSET} wip_args;
+    eval ${_UNSET} wip_noarg;
+    eval ${_UNSET} wip_result;
+    eval "${return_ok}";
+  fi;
+
   # test whether $wip_noarg has directory, so it is not tested with $PATH
   case "${wip_noarg}" in
   */*)
-    if test -f "${wip_noarg}" && test -x "${wip_noarg}"
-    then
-      list_append wip_result "${wip_noarg}" "${wip_args}"; 
-      exit_test;
-      obj wip_result echo1;
-      exit_test;
-      eval ${_UNSET} wip_1;
-      eval ${_UNSET} wip_args;
-      eval ${_UNSET} wip_noarg;
-      eval ${_UNSET} wip_result;
-      eval "${return_ok}";
-    fi;
-
     # now $wip_noarg (with /) is not an executable file
 
     # test name with space
@@ -5900,15 +5919,9 @@ main_set_mode()
     msm_modes="${_OPT_MODE}";
     ;;
   *)				# display mode was given
-    if is_not_X
-    then
-      error_user "You must be in X Window for ${_OPT_MODE} mode.";
-    fi;
     msm_modes="${_OPT_MODE}";
     ;;
   esac;
-
-  # only viewer modes are left
 
   eval set x "${msm_modes}";
   shift;
@@ -5974,13 +5987,19 @@ main_set_mode()
           continue;
         fi;
       fi;
-      if is_prog ps2pdf
+      if obj _PDF_HAS_PS2PDF is_not_yes
       then
-        _PDF_HAS_PS2PDF='yes';
+        if is_prog ps2pdf
+        then
+          _PDF_HAS_PS2PDF='yes';
+        fi;
       fi;
-      if is_prog gs
+      if obj _PDF_HAS_GS is_not_yes
       then
-        _PDF_HAS_GS='yes';
+        if is_prog gs
+        then
+          _PDF_HAS_GS='yes';
+        fi;
       fi;
       _get_prog_args PDF;
       if is_not_equal "$?" 0
@@ -6118,7 +6137,7 @@ _get_prog_args()
     eval ${_UNSET} _gpa_xlist;
     eval "${return_var} $x";
 ### _get_prog_args() of main_set_mode()
-  else				# $_gpa_opt is set
+  else				# $_gpa_opt is not empty
     obj_from_output _gpa_prog where_is_prog "${_gpa_opt}";
     if is_not_equal "$?" 0 || obj _gpa_prog is_empty
     then
@@ -6154,7 +6173,7 @@ _get_prog_args()
   eval ${_UNSET} _gpa_prog;
   eval ${_UNSET} _gpa_ttylist;
   eval ${_UNSET} _gpa_xlist;
-  eval "${return_god}";
+  eval "${return_good}";
 } # _get_prog_args() of main_set_mode()
 
 
@@ -6184,9 +6203,9 @@ _get_first_prog()
       continue;
     fi;
     obj_from_output _gfp_result where_is_prog "${_gfp_i}";
-    exit_test;
     if is_equal "$?" 0 && obj _gfp_result is_not_empty
     then
+      exit_test;
       eval set x ${_gfp_result};
       shift;
       _DISPLAY_PROG="$1";
@@ -6195,6 +6214,7 @@ _get_first_prog()
       eval ${_UNSET} _gfp_result;
       eval "${return_good}";
     fi;
+    exit_test;
   done;
   eval ${_UNSET} _gfp_i;
   eval ${_UNSET} _gfp_result;
@@ -6577,7 +6597,7 @@ main_set_resources()
   shift;
   if is_greater_than $# 0
   then
-    if obj _DISPLAY_PROG is_empty
+    if obj _DISPLAY_ARGS is_empty
     then
       _DISPLAY_ARGS="$*";
     else
@@ -6741,7 +6761,12 @@ main_set_resources()
       ;;
     esac;
   fi;
-  _DISPLAY_ARGS="${msr_rl}";
+  if obj _DISPLAY_ARGS is_empty
+  then
+    _DISPLAY_ARGS="${msr_rl}";
+  else
+    _DISPLAY_ARGS="${msr_l} ${_DISPLAY_ARGS}";
+  fi;
   eval ${_UNSET} msr_n;
   eval ${_UNSET} msr_prog;
   eval ${_UNSET} msr_rl;
@@ -6757,8 +6782,7 @@ main_set_resources()
 #
 # Globals:
 #   in: $_DISPLAY_MODE, $_OPT_DEVICE, $_ADDOPTS_GROFF,
-#       $_TMP_CAT, $_OPT_PAGER, $PAGER, $_MANOPT_PAGER,
-#       $_OUTPUT_FILE_NAME
+#       $_TMP_CAT, $_OPT_PAGER, $_MANOPT_PAGER, $_OUTPUT_FILE_NAME
 #
 # Variable prefix: md
 #
@@ -6774,11 +6798,10 @@ main_display()
   then
     echo2 'groffer: empty input.';
     clean_up;
-    eval ${_UNSET} md_modefile;
     eval "${return_ok}";
-  else
-    md_modefile="${_OUTPUT_FILE_NAME}";
   fi;
+
+  md_modefile="${_OUTPUT_FILE_NAME}";
 
   # go to the temporary directory to be able to access internal data files
   cd "${_TMP_DIR}" >"${_NULL_DEV}" 2>&1;
@@ -6789,7 +6812,7 @@ main_display()
     then
       _ADDOPTS_GROFF="${_ADDOPTS_GROFF} -T${_OPT_DEVICE}";
     fi;
-    md_groggy="$(tmp_cat | eval grog "${md_options}")";
+    md_groggy="$(tmp_cat | eval grog)";
     exit_test;
     _do_opt_V;
 
@@ -6827,7 +6850,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     else			# $_DISPLAY_MODE is 'tty'
 ### main_display()
       md_pager='';
-      for p in "${_OPT_PAGER}" "${PAGER}" "${_MANOPT_PAGER}"
+      for p in "${_OPT_PAGER}" "${_MANOPT_PAGER}" "${PAGER}"
       do
         if obj p is_empty
         then
@@ -6993,7 +7016,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       exit_test;
       ;;
     X*|dvi|html|lbp|lj4|ps)
-      # these devices work with 
+      # these devices work with
       md_groggy="$(tmp_cat | grog -T"${_OPT_DEVICE}" -X)";
       exit_test;
       ;;
@@ -7014,7 +7037,6 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
   eval ${_UNSET} md_device;
   eval ${_UNSET} md_groggy;
   eval ${_UNSET} md_modefile;
-  eval ${_UNSET} md_options;
   eval ${_UNSET} md_p;
   eval ${_UNSET} md_pager;
   eval "${return_ok}";
