@@ -9,7 +9,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 14 Aug 2006
+# Last update: 1 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -72,22 +72,50 @@ export _AT_LIBDIR_AT;
 export _GROFFER_LIBDIR;
 case "${_BEFORE_MAKE}" in
 yes)
-  _AT_BINDIR_AT='.';
+  self="$0";
+  case "${self}" in
+  /*) :; ;;
+  *)
+    curdir="$(pwd)";
+    case "${curdir}" in
+    */)
+      self="${curdir}${self}";
+      ;;
+    *)
+      self="${curdir}/${self}";
+      ;;
+    esac;
+    ;;
+  esac;
+  groffer_shell_dir="$(dirname ${self})";
+  case "${groffer_shell_dir}" in
+  */) :; ;;
+  *) groffer_shell_dir="${groffer_shell_dir}/";
+  esac;
   _AT_G_AT='';
-  _AT_LIBDIR_AT='';
-  _GROFFER_LIBDIR='.';
+  _AT_BINDIR_AT="${groffer_shell_dir}";
+  _AT_LIBDIR_AT="${groffer_shell_dir}";
+  _GROFFER_LIBDIR="${_AT_LIBDIR_AT}";
   ;;
 no)
-  _AT_BINDIR_AT='@BINDIR@';
   _AT_G_AT='@g@';
+  _AT_BINDIR_AT='@BINDIR@';
+  case "${_AT_BINDIR_AT}" in
+  */) :; ;;
+  *) _AT_BINDIR_AT="${_AT_BINDIR_AT}/";
+  esac;
   _AT_LIBDIR_AT='@libdir@';
-  _GROFFER_LIBDIR="${_AT_LIBDIR_AT}"'/groff/groffer';
+  case "${_AT_LIBDIR_AT}" in
+  */) :; ;;
+  *) _AT_LIBDIR_AT="${_AT_LIBDIR_AT}/";
+  esac;
+  _GROFFER_LIBDIR="${_AT_LIBDIR_AT}"'groff/groffer/';
   ;;
 esac;
 
-if test -f "${_GROFFER_LIBDIR}"/version.sh
+if test -f "${_GROFFER_LIBDIR}"'version.sh'
 then
-  . "${_GROFFER_LIBDIR}"/version.sh;
+  . "${_GROFFER_LIBDIR}"'version.sh';
 fi;
 
 export _GROFF_VERSION;
@@ -101,13 +129,12 @@ no)
 esac;
 
 export _GROFFER2_SH;		# file name of the script that follows up
-_GROFFER2_SH="${_GROFFER_LIBDIR}"/groffer2.sh;
+_GROFFER2_SH="${_GROFFER_LIBDIR}"'groffer2.sh';
 
 export _GROFFER_SH;		# file name of this shell script
 case "$0" in
 *groffer*)
   _GROFFER_SH="$0";
-  # was: _GROFFER_SH="${_AT_BINDIR_AT}/groffer";
   ;;
 *)
   echo 'The groffer script should be started directly.' >&2

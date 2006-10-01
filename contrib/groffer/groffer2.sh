@@ -12,7 +12,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 26 Sep 2006
+# Last update: 1 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -4600,11 +4600,15 @@ on-the-fly with all formats that gzip can handle.
 "filespec" is one of
   "filename"       name of a readable file
   "-"              for standard input
+  "man:name(n)"    man page "name" in section "n"
   "man:name.n"     man page "name" in section "n"
   "man:name"       man page "name" in first section found
+  "name(n)"        man page "name" in section "n"
   "name.n"         man page "name" in section "n"
+  "n name"         man page "name" in section "n"
   "name"           man page "name" in first section found
-and some more (see groffer(1) for details).
+where `section' is a single character out of [1-9on], optionally followed
+by some more letters that are called the `extension'.
 
 -h --help         print this usage message.
 -Q --source       output as roff source.
@@ -4689,11 +4693,11 @@ EOF
 version()
 {
   func_check version = 0 "$@";
-  echo1 "groffer ${_PROGRAM_VERSION} of ${_LAST_UPDATE}";
-  echo1 "is part of groff version ${_GROFF_VERSION}";
   y="$(echo "${_LAST_UPDATE}" | sed -e 's/^.* //')";
-  echo1 "Copyright (C) $y Free Software Foundation, Inc."
   cat <<EOF
+groffer ${_PROGRAM_VERSION} of ${_LAST_UPDATE} (shell version)
+is part of groff version ${_GROFF_VERSION}.
+Copyright (C) $y Free Software Foundation, Inc.
 GNU groff and groffer come with ABSOLUTELY NO WARRANTY.
 You may redistribute copies of groff and its subprograms
 under the terms of the GNU General Public License.
@@ -5149,7 +5153,7 @@ main_init()
   trap_set;
 
   # create temporary directory
-  umask 0022;
+  umask 0077;
   _TMP_DIR='';
   for d in "${GROFF_TMPDIR}" "${TMPDIR}" "${TMP}" "${TEMP}" \
            "${TEMPDIR}" "${HOME}"'/tmp' '/tmp' "${HOME}" '.'
@@ -6385,9 +6389,11 @@ main_do_fileargs()
         fi;
       fi;
       ;;
-      # now it must be a man page pattern
     esac;
 ### main_do_fileargs()
+
+    # now it must be a man page pattern
+
     if obj _MACRO_PKG is_not_empty && obj _MACRO_PKG is_not_equal '-man'
     then
       echo2 "${mdfa_filespec} is not a file, man pages are ignored "\
@@ -6411,80 +6417,64 @@ main_do_fileargs()
     man_setup;
     _FILESPEC_IS_MAN='yes';
 
-    # check whether filespec is a man page
-    if obj mdfa_filespec man_is_man
-    then
-      obj mdfa_filespec man_get;
-      continue;
-    fi;
-
     # test filespec with `man:...' or `...(...)' on man page
     mdfa_name='';
     mdfa_section='';
     mdfa_ext='';
+
+    mdfa_names="${mdfa_filespec}";
     case "${mdfa_filespec}" in
-    *\(*\))
-      mdfa_section="$(obj mdfa_filespec echo1 | \
-        sed -e 's/^[^(]*(\(.\).*)$/\1/')";
-      if list_has_not _MAN_AUTO_SEC_LIST "${mdfa_section}"
+    man:*)
+        mdfa_names="${mdfa_names} "\
+"$(obj mdfa_filespec echo1 | sed -e 's/^man://')";
+        ;;
+    esac;
+
+    mdfa_continue='no';
+    for i in ${mdfa_names}
+    do
+      mdfa_i=$i;
+      if obj mdfa_i man_is_man
       then
-        echo2 "${mdfa_section} in ${mdfa_filespec} is not a man page section."
-        continue;
+        obj mdfa_i man_get;
+        mdfa_continue='yes';
+        break;
       fi;
-      mdfa_name="$(obj mdfa_filespec echo1 | \
-        sed -e 's/^\([^(]*\)(.*)$/\1/')";
-      if obj mdfa_name is_empty
-      then
-        echo2 "${mdfa_filespec} ${mdfa_errmsg}";
-        continue;
-      fi;
-      mdfa_ext="$(obj mdfa_filespec echo1 | \
-        sed -e 's/^[^(]*(.\(.*\))$/\1/')";
-      if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
-      then
-        man_get "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}";
-        continue;
-      fi;
-### main_do_fileargs()
-      case "${mdfa_name}" in
-      man:*)
-        mdfa_name="$(obj mdfa_name echo1 | sed -e 's/^man://')";
+      case "${mdfa_i}" in
+      *\(${_MAN_AUTO_SEC_CHARS}*\))
+        mdfa_section="$(obj mdfa_i echo1 | sed -e 's/^[^(]*(\(.\).*)$/\1/')";
+        mdfa_name="$(obj mdfa_i echo1 | sed -e 's/^\([^(]*\)(.*)$/\1/')";
+        mdfa_ext="$(obj mdfa_i echo1 | sed -e 's/^[^(]*(.\(.*\))$/\1/')";
         if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
         then
           man_get "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}";
-          continue;
+          mdfa_continue='yes';
+          break;
         fi;
         ;;
+      *.${_MAN_AUTO_SEC_CHARS}*)
+        mdfa_name="$(obj mdfa_i echo1 | \
+          sed -e 's/^\(.*\)\.'"${_MAN_AUTO_SEC_CHARS}"'.*$/\1/')";
+        mdfa_section="$(obj mdfa_i echo1 | \
+          sed -e 's/^.*\.\('"${_MAN_AUTO_SEC_CHARS}"'\).*$/\1/')";
+        mdfa_ext="$(obj mdfa_i echo1 | \
+          sed -e 's/^.*\.'"${_MAN_AUTO_SEC_CHARS}"'\(.*\)$/\1/')";
+        if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
+        then
+          man_get "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}";
+          mdfa_continue='yes';
+          break;
+        fi;
+      ;;
       esac;
-      echo2 "${mdfa_filespec} ${mdfa_errmsg}";
-      continue;
-      ;;
-    man:*)
-      mdfa_name="$(obj mdfa_filespec echo1 | sed -e 's/^man://')";
-      if man_is_man "${mdfa_name}"
-      then
-        man_get "${mdfa_name}";
-        continue;
-      fi;
-      echo2 "${mdfa_name} ${mdfa_errmsg}";
-      continue;
-      ;;
-    *.${_MAN_AUTO_SEC_CHARS}*)
-      mdfa_name="$(obj mdfa_filespec echo1 | \
-        sed -e 's/^\(.*\)\.'"${_MAN_AUTO_SEC_CHARS}"'.*$/\1/')";
-      mdfa_section="$(obj mdfa_filespec echo1 | \
-        sed -e 's/^.*\.\('"${_MAN_AUTO_SEC_CHARS}"'\).*$/\1/')";
-      mdfa_ext="$(obj mdfa_filespec echo1 | \
-        sed -e 's/^.*\.'"${_MAN_AUTO_SEC_CHARS}"'\(.*\)$/\1/')";
-      if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
-      then
-        man_get "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}";
-        continue;
-      fi;
-      ;;
-    esac;
-### main_do_fileargs()
+    done;
 
+    if obj mdfa_continue is_yes
+    then
+      continue;
+    fi;
+
+### main_do_fileargs()
     # check on "s name", where "s" is a section with or without an extension
     if is_not_empty "$1"
     then
@@ -6522,7 +6512,9 @@ main_do_fileargs()
 
   obj _TMP_STDIN rm_file_with_debug;
   eval ${_UNSET} mdfa_filespec;
+  eval ${_UNSET} mdfa_i;
   eval ${_UNSET} mdfa_name;
+  eval ${_UNSET} mdfa_names;
   eval "${return_ok}";
 } # main_do_fileargs()
 
