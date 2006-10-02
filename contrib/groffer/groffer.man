@@ -15,7 +15,7 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update: 16 Sep 2006
+Last update: 3 Oct 2006
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
@@ -816,7 +816,9 @@ Long options can be abbreviated in several ways.
 .Opt_[alt] -- pdf\-viewer prog
 .Opt_[alt] -- ps
 .Opt_[alt] -- ps\-viewer prog
+.Opt_[alt] -- source
 .Opt_[alt] -- text
+.Opt_[alt] -- to\-stdout
 .Opt_[alt] -- tty
 .Opt_[alt] -- tty\-viewer prog
 .Opt_[alt] -- www
@@ -911,7 +913,6 @@ are accepted as well.
 .Opt_[alt] -- do\-nothing
 .Opt_[alt] -- print text
 .Opt_[alt] -- shell prog
-.Opt_[alt] - Q -- source
 .Opt_[alt] - V
 .RE
 .
@@ -919,6 +920,40 @@ are accepted as well.
 .TP
 .I \%filespec arguments
 .RS
+.P
+The
+.I \%filespec
+parameters are all arguments that are neither an option nor an option
+argument.
+.
+They usually mean a file name or a
+.I man page
+searching scheme.
+.
+.
+.P
+In the following, the term
+.I section_extension
+is used.
+.
+It means a word that consists of a
+.I man section
+that is optionally followed by an
+.IR extension .
+.
+The name of a
+.I man section
+is a single character from
+.BR \%[1-9on] ,
+the
+.I extension
+is some word.
+.
+The
+.I extension
+is mostly lacking.
+.
+.
 .P
 No
 .I \%filespec
@@ -936,45 +971,27 @@ the path name of an existing file.
 .
 .
 .TP
-.BI man: name ( section )
+.BI man: name ( section_extension )
 .TP+
-.IB name ( section )
+.BI man: name . section_extension
+.TP+
+.IB name ( section_extension )
+.TP+
+.IB name . section_extension
+.TP+
+.I "section_extension name"
 search the \%man\~page
 .I \%name
-in \%man\~section
-.IR section .
-.
-.
-.TP
-.BI man: name . s
-.TP+
-.IB name . s
-if
-.I s
-is a character in
-.BR \%[1-9on] ,
-search for a \%man\~page
-.I \%name
-in \%man\~section
-.IR s .
+in the section with optional extension
+.IR section_extension .
 .
 .
 .TP
 .BI man: name
-\%man\~page in the lowest \%man\~section that has
+\%man\~page in the lowest
+.I \%man\~section
+that has
 .IR \%name .
-.
-.
-.TP
-.I "s name"
-if
-.I s
-is a character in
-.BR \%[1-9on] ,
-search for a \%man\~page
-.I \%name
-in \%man\~section
-.IR s .
 .
 .
 .TP
@@ -1388,8 +1405,8 @@ is assumed.
 .
 .TP
 .Header_CB source
-Display the source code of the input without formatting; equivalent to
-.Opt_short Q .
+Output the roff source code of the input files without further
+processing.
 .
 .
 .RE
@@ -1430,9 +1447,21 @@ and
 In each case, arguments can be provided additionally.
 .
 .
+.Opt_def -- source
+Equivalent
+.Opt_long_arg mode source .
+.
+.
 .Opt_def -- text
 Equivalent to
 .Opt_long_arg mode text .
+.
+.
+.Opt_def -- to\-stdout
+The file for the chosen mode is generated and its content is printed
+to standard output.
+.
+It will not be displayed in graphical mode.
 .
 .
 .Opt_def -- tty
@@ -2224,14 +2253,6 @@ is cancelled and the default shell is restored.
 Some shells run considerably faster than the standard shell.
 .
 .
-.Opt_def - Q -- source
-Output the roff source code of the input files without further
-processing.
-.
-This is the equivalent
-.Opt_long_arg mode source .
-.
-.
 .Opt_def - V
 This is an advanced option for debugging only.
 .
@@ -2280,8 +2301,6 @@ A
 .I \%filespec
 parameter is an argument that is not an option or option argument.
 .
-It means an input source.
-.
 In
 .BR \%groffer ,
 .I \%filespec
@@ -2327,27 +2346,35 @@ or one of the characters
 or
 .BR o .
 .
-In the following, a stand-alone character
-.I s
-stands for a
-.IR "classical man section" .
-The internal precedence of
-.B \%man
-for searching
-.I \%man\~pages
-with the same name within several sections goes according to the
-classical single-character sequence.
 .
-On some systems, this single character can be extended by a following
-string.
+.P
+This can optionally be followed by a string, the so-called
+.IR extension .
+The
+.I extension
+allows to store several
+.I man\~pages
+with the same name in the same
+.IR section .
+But the
+.I extension
+is only rarely used, usually it is omitted.
 .
-But the special
-.B \%groffer
-.I \%man\~page
-facility is based on the classical single character sections.
+Then the
+.I extensions
+are searched automatically by alphabet.
 .
 .
 .P
+In the following, we use the name
+.I section_extension
+for a word that consists of a single character
+.I section
+name or a
+.I section
+character that is followed by an
+.IR extension .
+.
 Each
 .I \%filespec
 parameter can have one of the following forms in decreasing sequence.
@@ -2382,44 +2409,15 @@ Otherwise it is assumed to be a searching pattern for a
 .
 .
 .Topic
-.BI \%man: name ( section )
-and
-.IB \%name ( section )
+.BI \%man: name ( section_extension ) ,
+.BI \%man: name . section_extension,
+.IB \%name ( section_extension ) ,
+or
+.IB \%name . section_extension
 search the \%man\~page
 .I \%name
-in \%man\~section\~\c
-.IR \%section ,
-where
-.I \%section
-can be any string, but it must exist in the
-.I \%man
-system.
-.
-.
-.Topic
-Next some patterns based on the
-.I classical man sections
-are checked.
-.
-.BI \%man: name . s
-and
-.IB \%name . s
-search for a \%man\~page
-.I \%name
-in \%man\~section
-.I s
-if
-.I s
-is a
-.I classical man section
-mentioned above.
-.
-Otherwise a
-.I \%man\~page
-named
-.IR \%name.s
-is searched in the lowest
-.B man\~section .
+in \%man\~section and possibly extension of
+.IR \%section_extension .
 .
 .
 .Topic
@@ -2434,29 +2432,20 @@ that has a document called
 .
 .
 .Topic
-The pattern
-.I \%s\~name
-originates from a strange argument parsing of the
+.I \%section_extension\~name
+is a pattern of 2 arguments that originates from a strange argument
+parsing of the
 .B man
 program.
 .
-If
-.I s
-is a
-.I classical man section
-interpret it as a search for a
-.I \%man\~page
-called
-.I \%name
-in man\~section
-.IR s ,
-otherwise interpret both
-.I s
-and
-.I \%name
-as two independent
-.I \%filespec
-arguments.
+Again, this searches the man page
+.I name
+with 
+.IR \%section_extension ,
+a combination of a
+.I section
+character optionally followed by an
+.IR extension .
 .
 .
 .Topic
@@ -2471,16 +2460,6 @@ called
 in the lowest
 .I \%man\~section
 that has a document for this name.
-.
-.
-.P
-Wildcards in
-.I \%filespec
-arguments are only accepted for
-.Opt_long apropos*
-and
-.Opt_long whatis ;
-for normal display, they are interpreted as characters.
 .
 .
 .P
@@ -2590,28 +2569,6 @@ Known viewers for the graphical display modes and their standard
 \%\f[CR]X\~Window\f[] viewer progams are
 .
 .Topic
-\%\f[CR]X\~Window\f[]
-.I roff
-viewers such as
-.BR \%gxditview (@MAN1EXT@)
-or
-.BR \%xditview (1)
-(in
-.IR \%x\~mode ),
-.
-.Topic
-in a Postscript viewer
-.nh
-.RI ( \%ps\~mode ),
-.hy
-.
-.Topic
-in a dvi viewer program
-.nh
-.RI ( \%dvi\~mode ),
-.hy
-.
-.Topic
 in a PDF viewer
 .nh
 .RI ( \%pdf\~mode ),
@@ -2625,6 +2582,28 @@ or
 .IR \%www\~mode ).
 .hy
 .RE
+.
+.Topic
+in a Postscript viewer
+.nh
+.RI ( \%ps\~mode ),
+.hy
+.
+.Topic
+\%\f[CR]X\~Window\f[]
+.I roff
+viewers such as
+.BR \%gxditview (@MAN1EXT@)
+or
+.BR \%xditview (1)
+(in
+.IR \%x\~mode ),
+.
+.Topic
+in a dvi viewer program
+.nh
+.RI ( \%dvi\~mode ),
+.hy
 .
 .
 .P
@@ -2719,10 +2698,17 @@ and development purposes.
 The
 .I \%source\~mode
 with option
-.Opt_short Q
-and
 .Opt_long source
 just displays the decompressed input.
+.
+.
+.P
+Otion
+.Opt_long to\-stdout
+does not display in a graphical mode.
+.
+It just generates the file for the chosen mode and then prints its
+content to standard output.
 .
 .
 .P

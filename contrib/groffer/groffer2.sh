@@ -12,7 +12,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 1 Oct 2006
+# Last update: 3 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -525,7 +525,7 @@ _OPTS_GROFFER_LONG_NA="'auto' \
 'debug-params' 'debug-shell' 'debug-stacks' 'debug-tmpdir' 'debug-user' \
 'default' 'do-nothing' 'dvi' 'groff' 'help' 'intermediate-output' 'html' \
 'man' 'no-location' 'no-man' 'no-special' 'pdf' 'ps' 'rv' 'source' \
-'text' 'text-device' 'tty' 'tty-device' \
+'text' 'to-stdout' 'text-device' 'tty' 'tty-device' \
 'version' 'whatis' 'www' 'x' 'X'";
 
 _OPTS_GROFFER_LONG_ARG="\
@@ -639,39 +639,40 @@ export _PDF_DID_NOT_WORK;
 export _PDF_HAS_GS;
 export _PDF_HAS_PS2PDF;
 # _OPT_* as parsed from groffer command line
-export _OPT_ALL;		# display all suitable man pages.
-export _OPT_APROPOS;		# call `apropos' program.
-export _OPT_BD;			# set border color in some modes.
-export _OPT_BG;			# set background color in some modes.
-export _OPT_BW;			# set border width in some modes.
-export _OPT_DEFAULT_MODES;	# `,'-list of modes when no mode given.
-export _OPT_DEVICE;		# device option.
-export _OPT_DO_NOTHING;		# do nothing in main_display().
-export _OPT_DISPLAY;		# set X display.
-export _OPT_EXTENSION;		# set extension for man page search.
-export _OPT_FG;			# set foreground color in some modes.
-export _OPT_FN;			# set font in some modes.
-export _OPT_GEOMETRY;		# set size and position of viewer in X.
-export _OPT_ICONIC;		# -iconic option for X viewers.
+export _OPT_ALL;		# display all suitable man pages
+export _OPT_APROPOS;		# call `apropos' program
+export _OPT_BD;			# set border color in some modes
+export _OPT_BG;			# set background color in some modes
+export _OPT_BW;			# set border width in some modes
+export _OPT_DEFAULT_MODES;	# `,'-list of modes when no mode given
+export _OPT_DEVICE;		# device option
+export _OPT_DO_NOTHING;		# do nothing in main_display()
+export _OPT_DISPLAY;		# set X display
+export _OPT_EXTENSION;		# set extension for man page search
+export _OPT_FG;			# set foreground color in some modes
+export _OPT_FN;			# set font in some modes
+export _OPT_GEOMETRY;		# set size and position of viewer in X
+export _OPT_ICONIC;		# -iconic option for X viewers
 export _OPT_LANG;		# set language for man pages
 export _OPT_MODE;		# values: X, tty, Q, Z, ""
 export _OPT_MANPATH;		# manual setting of path for man-pages
 export _OPT_PAGER;		# specify paging program for tty mode
 export _OPT_RESOLUTION;		# set X resolution in dpi
-export _OPT_RV;			# reverse fore- and background colors.
+export _OPT_RV;			# reverse fore- and background colors
 export _OPT_SECTIONS;		# sections for man page search
+export _OPT_STDOUT;		# print mode file to standard output
 export _OPT_SYSTEMS;		# man pages of different OS's
 export _OPT_TITLE;		# title for gxditview window
-export _OPT_TEXT_DEVICE;	# set device for tty mode.
-export _OPT_V;			# groff option -V.
+   export _OPT_TEXT_DEVICE;	# set device for tty mode
+export _OPT_V;			# groff option -V
 export _OPT_VIEWER_DVI;		# viewer program for dvi mode
 export _OPT_VIEWER_HTML;	# viewer program for html mode
 export _OPT_VIEWER_PDF;		# viewer program for pdf mode
 export _OPT_VIEWER_PS;		# viewer program for ps mode
 export _OPT_VIEWER_X;		# viewer program for x mode
 export _OPT_WHATIS;		# print the man description
-export _OPT_XRM;		# specify X resource.
-export _OPT_Z;			# groff option -Z.
+export _OPT_XRM;		# specify X resource
+export _OPT_Z;			# groff option -Z
 export _OUTPUT_FILE_NAME;	# output generated, see main_set_res..()
 export _VIEWER_BACKGROUND;	# viewer shall be run in the background or not
 # _TMP_* temporary directory and files
@@ -775,6 +776,7 @@ reset()
   _OPT_RV='no';
   _OPT_SECTIONS='';
   _OPT_SYSTEMS='';
+  _OPT_STDOUT='no';
   _OPT_TITLE='';
   _OPT_TEXT_DEVICE='';
   _OPT_V='no';
@@ -4611,7 +4613,6 @@ where `section' is a single character out of [1-9on], optionally followed
 by some more letters that are called the `extension'.
 
 -h --help         print this usage message.
--Q --source       output as roff source.
 -T --device=name  pass to groff using output device "name".
 -v --version      print version information.
 -V                display the groff execution pipe instead of formatting.
@@ -4652,7 +4653,9 @@ The most important groffer long options are
 --ps              display in a Postscript viewer.
 --ps-viewer=prog  choose the viewer program for ps mode.
 --shell=program   specify a shell under which to run groffer2.sh.
+--source          output as roff source.
 --text            output in a text device without a pager.
+--to-stdout       output the content of the mode file without display.
 --tty             display with a pager on text terminal even when in X.
 --tty-viewer=prog select a pager for tty mode; same as --pager.
 --whatis          display the file name and description of man pages
@@ -5704,7 +5707,10 @@ only resoutions of 75 or 100 dpi are supported";
       fi;
       shift;
       ;;
-    --tty)			# tty mode, text with pager
+     --to-stdout)		# print mode file without display
+      _OPT_STDOUT='yes';
+      ;;
+     --tty)			# tty mode, text with pager
       _OPT_MODE=tty;
       ;;
     --text-device|--tty-device) # device for tty mode; arg
@@ -6115,9 +6121,10 @@ _get_prog_args()
 {
   func_check _get_prog_args '=' 1 "$@";
 
-  eval _gpa_opt='"${_OPT_VIEWER_'"$1"'}"';
-  _gpa_xlist=_VIEWER_"$1"_X;
-  _gpa_ttylist=_VIEWER_"$1"_TTY;
+  x="$(echo1 $1 | tr [a-z] [A-Z])";
+  eval _gpa_opt='"${_OPT_VIEWER_'"$x"'}"';
+  _gpa_xlist=_VIEWER_"$x"_X;
+  _gpa_ttylist=_VIEWER_"$x"_TTY;
 
   if obj _gpa_opt is_empty
   then
@@ -7064,6 +7071,11 @@ _do_display()
       eval "$1";
     fi;
     obj _TMP_CAT rm_file_with_debug;
+    if obj _OPT_STDOUT is_yes
+    then
+      cat "${md_modefile}";
+      eval "${return_ok}";
+    fi;
     if obj _VIEWER_BACKGROUND is_not_yes # for programs that run on tty
     then
       eval "'${_DISPLAY_PROG}'" ${_DISPLAY_ARGS} "\"${md_modefile}\"";
