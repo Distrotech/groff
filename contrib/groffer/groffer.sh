@@ -9,7 +9,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 1 Oct 2006
+# Last update: 3 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
