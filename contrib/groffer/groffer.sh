@@ -230,7 +230,7 @@ _SHELL=`
   # $s means shell.
   # The command line arguments are taken over.
   # Shifting herein does not have an effect outside.
-  export x;  
+  export x;
   case " $*" in
   *\ --sh*)			# abbreviation for --shell
     x='';

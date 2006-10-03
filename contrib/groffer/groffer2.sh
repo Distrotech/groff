@@ -858,7 +858,7 @@ clean_up()
       if test -e "${_TMP_DIR}"
       then
         rm -f -r "${_TMP_DIR}" >${_NULL_DEV} 2>&1;
-      fi; 
+      fi;
     fi;
   fi;
   eval "${return_ok}";
@@ -964,7 +964,7 @@ landmark "3: functions";
 #          out: $_SPECIAL_FILESPEC
 #
 # Variable prefix: af
-# 
+#
 apropos_filespec()
 {
 
@@ -2625,7 +2625,7 @@ list_from_file()
     eval "${return_good}";
   fi;
   lff_i=0;
-  while obj lff_i is_not_equal "${lff_n}" 
+  while obj lff_i is_not_equal "${lff_n}"
   do
     lff_i="$(expr "${lff_i}" + 1)";
     list_append "$1" "$(eval sed -n -e "'${lff_i}p
@@ -3589,7 +3589,7 @@ manpath_add_lang_sys()
 # Globals in/out: $mals_mp
 #
 # Variable prefix: _mas
-# 
+#
 _manpath_add_sys()
 {
   func_check _manpath_add_sys '=' 1 "$@";
@@ -4125,7 +4125,7 @@ rm_tree()
   if is_existing "$1"
   then
     rm -f -r "$1" >${_NULL_DEV} 2>&1;
-  fi; 
+  fi;
   if is_existing "$1"
   then
     eval "${return_bad}";
@@ -4899,7 +4899,7 @@ whatis_filespec()
 # whatis_setup ()
 #
 # Print the whatis header to the temporary cat file; this is the setup
-# for whatis. 
+# for whatis.
 #
 # Globals:  in: $_OPT_WHATIS
 #          out: $_SPECIAL_SETUP
@@ -4970,7 +4970,7 @@ where_is_prog()
 
   if test -f "${wip_noarg}" && test -x "${wip_noarg}"
   then
-    list_append wip_result "${wip_noarg}" "${wip_args}"; 
+    list_append wip_result "${wip_noarg}" "${wip_args}";
     exit_test;
     obj wip_result echo1;
     exit_test;
@@ -5008,10 +5008,10 @@ where_is_prog()
           wip_args="${wip_baseargs} ${wip_args}";
         fi;
 
-        list_append wip_result "${wip_file}" "${wip_args}"; 
+        list_append wip_result "${wip_file}" "${wip_args}";
         exit_test;
         obj wip_result echo1;
-        exit_test;	
+        exit_test;
         eval ${_UNSET} wip_1;
         eval ${_UNSET} wip_args;
         eval ${_UNSET} wip_base;
@@ -5055,7 +5055,7 @@ where_is_prog()
     # test $win_file on executable file
     if test -f "${wip_file}" && test -x "${wip_file}"
     then
-      list_append wip_result "${wip_file}" "${wip_args}"; 
+      list_append wip_result "${wip_file}" "${wip_args}";
       exit_test;
       obj wip_result echo1;
       exit_test;
@@ -5092,7 +5092,7 @@ where_is_prog()
         else
           wip_args="${wip_args} ${wip_baseargs}";
         fi;
-        list_append wip_result "${wip_file}" "${wip_args}"; 
+        list_append wip_result "${wip_file}" "${wip_args}";
         exit_test;
         obj wip_result echo1;
         exit_test;
@@ -7138,7 +7138,7 @@ _do_opt_V()
 # Transform to pdf format; for pdf mode in _do_display().
 #
 # Globals: $md_modefile (from main_display())
-# 
+#
 # Variable prefix: _mp
 #
 _make_pdf()
