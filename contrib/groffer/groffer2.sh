@@ -663,7 +663,7 @@ export _OPT_SECTIONS;		# sections for man page search
 export _OPT_STDOUT;		# print mode file to standard output
 export _OPT_SYSTEMS;		# man pages of different OS's
 export _OPT_TITLE;		# title for gxditview window
-   export _OPT_TEXT_DEVICE;	# set device for tty mode
+export _OPT_TEXT_DEVICE;	# set device for tty mode
 export _OPT_V;			# groff option -V
 export _OPT_VIEWER_DVI;		# viewer program for dvi mode
 export _OPT_VIEWER_HTML;	# viewer program for html mode
@@ -6355,11 +6355,11 @@ main_do_fileargs()
       continue;
       ;;
     esac;
-    special_filespec;
 
     # check for file
     case "${mdfa_filespec}" in
     '-')
+      special_filespec;
       if obj _OPT_APROPOS is_yes
       then
         continue;
@@ -6369,6 +6369,7 @@ main_do_fileargs()
       ;;
 ### main_do_fileargs()
     */*)
+      special_filespec;
       if obj _OPT_APROPOS is_yes
       then
         continue;
@@ -6384,6 +6385,7 @@ main_do_fileargs()
     *)
       if obj _OPT_APROPOS is_yes
       then
+        special_filespec;
         continue;
       fi;
       # check whether filespec is an existing file
@@ -6391,6 +6393,7 @@ main_do_fileargs()
       then
         if obj mdfa_filespec is_file
         then
+          special_filespec;
           obj mdfa_filespec register_file;
           continue;
         fi;
@@ -6443,6 +6446,7 @@ main_do_fileargs()
       mdfa_i=$i;
       if obj mdfa_i man_is_man
       then
+        special_filespec;
         obj mdfa_i man_get;
         mdfa_continue='yes';
         break;
@@ -6454,6 +6458,7 @@ main_do_fileargs()
         mdfa_ext="$(obj mdfa_i echo1 | sed -e 's/^[^(]*(.\(.*\))$/\1/')";
         if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
         then
+          special_filespec;
           man_get "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}";
           mdfa_continue='yes';
           break;
@@ -6468,6 +6473,7 @@ main_do_fileargs()
           sed -e 's/^.*\.'"${_MAN_AUTO_SEC_CHARS}"'\(.*\)$/\1/')";
         if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
         then
+          special_filespec;
           man_get "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}";
           mdfa_continue='yes';
           break;
@@ -6489,6 +6495,7 @@ main_do_fileargs()
       case "${mdfa_filespec}" in
       ${_MAN_AUTO_SEC_CHARS})
         mdfa_section="${mdfa_filespec}";
+        mdfa_ext='';
         ;;
       ${_MAN_AUTO_SEC_CHARS}*)
         mdfa_section="$(echo1 "${mdfa_filespec}" | \
@@ -6504,6 +6511,8 @@ main_do_fileargs()
       shift;
       if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
       then
+        _FILESPEC_ARG="${mdfa_filespec} ${mdfa_name}";
+        special_filespec;
         man_get "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}";
         continue;
       else
