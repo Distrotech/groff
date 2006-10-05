@@ -15,7 +15,7 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update: 3 Oct 2006
+Last update: 5 Oct 2006
 
 Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
@@ -2331,7 +2331,46 @@ arguments; so the \%\f[CR]POSIX\f[] behavior can be easily adopted.
 .
 .
 .P
-For the following, it is necessary to know that on each system the
+The options
+.Long_opt apropos*
+have a special handling of
+.I filespec
+arguments.
+.
+Each argument is taken as a search scheme of its own.
+.
+Also a regexp (regular expression) can be used in the filespec.
+.
+For example,
+.B groffer --apropos '^gro.f$'
+searches
+.B groff
+in the
+.I man\~page
+name, while
+.B groffer --apropos groff
+searches
+.B groff
+somewhere in the name or description of the
+.IR man\~pages .
+.
+.
+.P
+All other parts of
+.IR groffer ,
+such as the normal display or the output with
+.Long_opt whatis
+have a different scheme for
+.IR filespecs .
+No regular expressions are used for the arguments.
+.
+The
+.I filespec
+arguments are handled by the following scheme.
+.
+.
+.P
+It is necessary to know that on each system the
 .I \%man\~pages
 are sorted according to their content into several sections.
 .

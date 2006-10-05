@@ -12,7 +12,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 3 Oct 2006
+# Last update: 5 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -603,6 +603,7 @@ export _APROPOS_SECTIONS;	# Sections for different --apropos-*.
 export _DISPLAY_MODE;		# Display mode.
 export _DISPLAY_PROG;		# Viewer program to be used for display.
 export _DISPLAY_ARGS;		# X resources for the viewer program.
+export _FILE_NR;		# number for temporary `,file,*'
 export _FILEARGS;		# Stores filespec parameters.
 export _FILESPEC_ARG;		# Stores the actual filespec parameter.
 export _FILESPEC_IS_MAN;	# filespec is for searching a man page
@@ -610,9 +611,12 @@ export _FUNC_STACK;		# Store debugging information.
 export _MACRO_PACKAGES;		# groff's macro packages.
 export _MACRO_PKG;		# Macro package for each found file.
 export _NO_FILESPECS;		# Yes, if there are no filespec arguments.
+export _OUTPUT_FILE_NAME;	# output generated, see main_set_res..()
 export _REG_TITLE_LIST;		# Processed file names.
+export _SOELIM_R;		# option -r for soelim
 export _SPECIAL_FILESPEC;	# Filespec ran for apropos or whatis.
 export _SPECIAL_SETUP;		# Test on setup for apropos or whatis.
+export _VIEWER_BACKGROUND;	# viewer shall be run in the background or not
 # _MAN_* finally used configuration of man searching
 export _MAN_ALL;		# search all man pages per filespec
 export _MAN_ENABLE;		# enable search for man pages
@@ -673,8 +677,6 @@ export _OPT_VIEWER_X;		# viewer program for x mode
 export _OPT_WHATIS;		# print the man description
 export _OPT_XRM;		# specify X resource
 export _OPT_Z;			# groff option -Z
-export _OUTPUT_FILE_NAME;	# output generated, see main_set_res..()
-export _VIEWER_BACKGROUND;	# viewer shall be run in the background or not
 # _TMP_* temporary directory and files
 export _TMP_DIR;		# groffer directory for temporary files
 export _TMP_CAT;		# stores concatenation of everything
@@ -691,6 +693,7 @@ export _TMP_STDIN;		# stores stdin, if any
 
 # For variables that can be reset by option `--default', see reset().
 
+_FILE_NR=0;
 _FILEARGS='';
 _MACRO_PACKAGES="'-man' '-mdoc' '-me' '-mm' '-mom' '-ms'";
 _SPECIAL_FILESPEC='no';
@@ -707,6 +710,14 @@ _TMP_STDIN='';
 _PDF_DID_NOT_WORK='no';
 _PDF_HAS_GS='no';
 _PDF_HAS_PS2PDF='no';
+
+# option -r for soelim
+if echo -n '' | soelim -r 2>${_NULL_DEV} >${_NULL_DEV}
+then
+  _SOELIM_R='-r';
+else
+  _SOELIM_R='';
+fi;
 
 ########################################################################
 # reset ()
@@ -3060,7 +3071,7 @@ man_get()
   then
     mg_ext="${_MAN_EXT}";
   fi;
-  if obj _TMP_MANSPEC is_not_equal "${_TMP_DIR}/,man.${mg_sec}${mg_ext}:$1"
+  if obj _TMP_MANSPEC is_not_equal "${_TMP_DIR}/,man:$1:${mg_sec}${mg_ext}"
   then
     error 'man_get(): $_TMP_MANSPEC does not suit to the arguments '"$*".;
   fi;
@@ -3304,7 +3315,7 @@ man_is_man()
   else
     mim_ext="$3";
   fi;
-  _TMP_MANSPEC="${_TMP_DIR}/,man.${mim_sec}${mim_ext}:$1";
+  _TMP_MANSPEC="${_TMP_DIR}/,man:$1:${mim_sec}${mim_ext}";
 ### man_is_man()
   if obj _TMP_MANSPEC is_not_file
   then
@@ -3322,6 +3333,7 @@ man_is_man()
   eval ${_UNSET} mim_sec;
   if obj _TMP_MANSPEC is_empty_file
   then
+    rm_file_with_debug "${_TMP_MANSPEC}";
     eval "${return_no}";
   else
     eval "${return_yes}";
@@ -4334,6 +4346,7 @@ to_tmp()
     error 'to_tmp(): $_TMP_CAT is not yet set';
   fi;
   tt_1="$1";
+  tt_so_nr=0;			# number for temporary `,so,*,*'
   if is_file "${tt_1}"
   then
     tt_dir="$(dir_name "${tt_1}")";
@@ -4341,7 +4354,8 @@ to_tmp()
     then
       whatis_filename "${tt_1}" >>"${_TMP_CAT}";
     else
-      tt_file="${_TMP_DIR}/,file";
+      _FILE_NR="$(expr ${_FILE_NR} + 1)";
+      tt_file="${_TMP_DIR}/,file${_FILE_NR}";
       if obj _FILESPEC_IS_MAN is_yes
       then
         if obj _DEBUG_PRINT_FILENAMES is_yes
@@ -4350,7 +4364,6 @@ to_tmp()
         fi;
         tt_tmp="${_TMP_DIR}/,tmp";
         cat_z "${tt_1}" >"${tt_file}";
-        tt_sofile="${_TMP_DIR}/,so:";
         grep '^\.[ 	]*so[ 	]' "${tt_file}" |
 	  sed -e 's/^\.[ 	]*so[ 	]*//' >"${tt_tmp}";
         list_from_file tt_list "${tt_tmp}";
@@ -4359,15 +4372,21 @@ to_tmp()
         for i in "$@"
         do
           tt_i="$i";
-          tt_sofile="${tt_sofile}"'x';
+          tt_so_nr="$(expr ${tt_so_nr} + 1)";
+          tt_sofile="${_TMP_DIR}/,so${_FILE_NR}_${tt_so_nr}";
+          tt_sofiles="${tt_sofiles} ${tt_sofile}";
           _do_man_so "${tt_i}";
         done;
         rm_file "${tt_tmp}";
         mv "${tt_file}" "${tt_tmp}";
-        cat "${tt_tmp}" | soelim -I "${tt_dir}" >"${tt_file}";
+        cat "${tt_tmp}" | soelim -I "${tt_dir}" ${_SOELIM_R} >"${tt_file}";
+        for f in ${tt_sofiles}
+        do
+          rm_file_with_debug $f;
+        done;
         rm_file "${tt_tmp}";
       else			# $_FILESPEC_IS_MAN ist not yes
-        cat_z "${tt_1}" | soelim -I "${tt_dir}" >"${tt_file}";
+        cat_z "${tt_1}" | soelim -I "${tt_dir}" ${_SOELIM_R} >"${tt_file}";
       fi;
 ### to_tmp()
       obj_from_output tt_grog grog "${tt_file}";
@@ -4403,6 +4422,9 @@ s/ -mm\([^ ]\)/ -m\1/g
                 eval ${_UNSET} tt_file;
                 eval ${_UNSET} tt_grog;
                 eval ${_UNSET} tt_i;
+                eval ${_UNSET} tt_so_nr;
+                eval ${_UNSET} tt_sofile;
+                eval ${_UNSET} tt_sofiles;
                 eval ${_UNSET} tt_sofound;
                 eval ${_UNSET} tt_list;
                 eval ${_UNSET} tt_tmp;
@@ -4431,6 +4453,9 @@ s/ -mm\([^ ]\)/ -m\1/g
   eval ${_UNSET} tt_file;
   eval ${_UNSET} tt_grog;
   eval ${_UNSET} tt_i;
+  eval ${_UNSET} tt_so_nr;
+  eval ${_UNSET} tt_sofile;
+  eval ${_UNSET} tt_sofiles;
   eval ${_UNSET} tt_sofound;
   eval ${_UNSET} tt_list;
   eval ${_UNSET} tt_tmp;
@@ -6549,6 +6574,10 @@ main_set_resources()
   func_check main_set_resources = 0 "$@";
   # $msr_prog   viewer program
   # $msr_rl     resource list
+  for f in ${_TMP_DIR}/,man*
+  do
+    rm_file_with_debug $f;
+  done;
   obj_from_output msr_title \
     get_first_essential "${_OPT_TITLE}" "${_REG_TITLE_LIST}";
   _OUTPUT_FILE_NAME='';
@@ -7075,15 +7104,23 @@ _do_display()
     obj md_modefile rm_file;
     cat "${_TMP_CAT}" | \
       eval "${md_groggy}" "${_ADDOPTS_GROFF}" > "${md_modefile}";
+    if obj md_modefile is_empty_file
+    then
+      echo2 '_do_display(): empty output.';
+      clean_up;
+      exit;
+    fi;
     if is_not_empty "$1"
     then
       eval "$1";
     fi;
+### _do_display() of main_display()
     obj _TMP_CAT rm_file_with_debug;
     if obj _OPT_STDOUT is_yes
     then
       cat "${md_modefile}";
-      eval "${return_ok}";
+      clean_up;
+      exit;
     fi;
     if obj _VIEWER_BACKGROUND is_not_yes # for programs that run on tty
     then
@@ -7150,7 +7187,7 @@ _make_pdf()
   if obj _PDF_HAS_PS2PDF is_yes && ps2pdf "${_mp_psfile}" "${md_modefile}";
   then
     :;
-  elif obj _PDF_HAS_GS && gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite \
+  elif obj _PDF_HAS_GS is_yes && gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite \
        -sOutputFile="${md_modefile}" -c save pop -f "${_mp_psfile}";
   then
     :;
