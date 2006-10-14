@@ -2,12 +2,13 @@
 
 # groffer - display groff files
 
-# Source file position: <groff-source>/contrib/groffer/version.sh
-# Installed position: <prefix>/lib/groff/groffer/version.sh
+# Source file position: <groff-source>/contrib/groffer/perl/split_env.sh
+# Installed position: <prefix>/lib/groff/groffer/split_env.sh
 
-# Copyright (C) 2001,2002,2003,2004,2005,2006
-# Free Software Foundation, Inc.
-# Written by Bernd Warken
+# Copyright (C) 2006 Free Software Foundation, Inc.
+# Written by Bernd Warken.
+
+# Last update: 1 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -29,13 +30,22 @@
 
 ########################################################################
 
-export _PROGRAM_VERSION;
-export _LAST_UPDATE;
+# This file is called from groffer.pl.  The environment variable
+# of the name in $1 will be split at output.  The corresponding variable
+# must be exported before the call of groffer.pl.
 
-_PROGRAM_VERSION='1.0.0';
-_LAST_UPDATE='12 Oct 2006';
-
-# this setting of the groff version is only used before make is run,
-# otherwise @VERSION@ will set it, see groffer.sh.
-export _GROFF_VERSION_PRESET;
-_GROFF_VERSION_PRESET='1.19.3preset';
+if test $# = 0
+then
+    echo 'split_env.sh was called without an argument.' >&2;
+else
+    eval v='"$'"$1"'"';
+    if test _"$v"_ != __
+    then
+	eval set x $v;
+	shift;
+	for i in "$@";
+	  do
+	  echo $i;
+	done;
+    fi;
+fi;

@@ -9,7 +9,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 3 Oct 2006
+# Last update: 5 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -92,10 +92,12 @@ yes)
   */) :; ;;
   *) groffer_shell_dir="${groffer_shell_dir}/";
   esac;
+  groffer_top_dir="${groffer_shell_dir}../";
   _AT_G_AT='';
   _AT_BINDIR_AT="${groffer_shell_dir}";
   _AT_LIBDIR_AT="${groffer_shell_dir}";
   _GROFFER_LIBDIR="${_AT_LIBDIR_AT}";
+  _VERSION_SH="${groffer_top_dir}version.sh";
   ;;
 no)
   _AT_G_AT='@g@';
@@ -110,12 +112,13 @@ no)
   *) _AT_LIBDIR_AT="${_AT_LIBDIR_AT}/";
   esac;
   _GROFFER_LIBDIR="${_AT_LIBDIR_AT}"'groff/groffer/';
+  _VERSION_SH="${_GROFFER_LIBDIR}"'version.sh';
   ;;
 esac;
 
-if test -f "${_GROFFER_LIBDIR}"'version.sh'
+if test -f "${_VERSION_SH}"
 then
-  . "${_GROFFER_LIBDIR}"'version.sh';
+  . "${_VERSION_SH}";
 fi;
 
 export _GROFF_VERSION;

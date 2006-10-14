@@ -1,13 +1,14 @@
-#! /bin/sh
+#! /usr/bin/env perl
 
 # groffer - display groff files
 
-# Source file position: <groff-source>/contrib/groffer/version.sh
-# Installed position: <prefix>/lib/groff/groffer/version.sh
+# Source file position: <groff-source>/contrib/groffer/perl/perl_test.sh
+# Installed position: <prefix>/lib/groff/groffer/perl_test.sh
 
-# Copyright (C) 2001,2002,2003,2004,2005,2006
-# Free Software Foundation, Inc.
-# Written by Bernd Warken
+# Copyright (C) 2006 Free Software Foundation, Inc.
+# Written by Bernd Warken.
+
+# Last update: 02 Sep 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -29,13 +30,8 @@
 
 ########################################################################
 
-export _PROGRAM_VERSION;
-export _LAST_UPDATE;
+# This file tests whether perl has a suitable version.  It is used by
+# groffer.pl and Makefile.sub.
 
-_PROGRAM_VERSION='1.0.0';
-_LAST_UPDATE='12 Oct 2006';
-
-# this setting of the groff version is only used before make is run,
-# otherwise @VERSION@ will set it, see groffer.sh.
-export _GROFF_VERSION_PRESET;
-_GROFF_VERSION_PRESET='1.19.3preset';
+# require 5.004_05;
+require v5.6.1;

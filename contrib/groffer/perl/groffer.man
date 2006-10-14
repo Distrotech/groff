@@ -12,12 +12,10 @@ groffer \- display groff files and man\~pages on X and tty
 .ig
 groffer.1 - man page for groffer (section 1).
 
-Source file position:  <groff_source_top>/contrib/groffer/groffer.man
+Source file position:  <groff_source_top>/contrib/groffer/perl/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
 Last update: 5 Oct 2006
-
-Source file position: <groff-source>/contrib/groffer/groffer.man
 ..
 .de author
 This file was written by
@@ -900,19 +898,12 @@ are accepted as well.
 .RS
 .P
 .Opt_[alt] -- debug
-.Opt_[alt] -- debug\-all
 .Opt_[alt] -- debug\-filenames
-.Opt_[alt] -- debug\-func
 .Opt_[alt] -- debug\-keep
-.Opt_[alt] -- debug\-lm
 .Opt_[alt] -- debug\-params
-.Opt_[alt] -- debug\-shell
-.Opt_[alt] -- debug\-stacks
 .Opt_[alt] -- debug\-tmpdir
-.Opt_[alt] -- debug\-user
 .Opt_[alt] -- do\-nothing
 .Opt_[alt] -- print text
-.Opt_[alt] -- shell prog
 .Opt_[alt] - V
 .RE
 .
@@ -1051,6 +1042,14 @@ works as well.
 .
 If the abbreviation of the argument leads to several resulting options
 an error is raised.
+.
+.
+.P
+These abbreviations are only allowed in the environment variable
+.Env_var \%$GROFFER_OPT ,
+but not in the configuration files.
+.
+In configuration, all long options must be exact.
 .
 .
 .\" --------------------------------------------------------------------
@@ -2148,25 +2147,12 @@ Set \f[CR]\%X\~Window\f[] resource.
 .\" --------------------------------------------------------------------
 .
 .Opt_def -- debug
-Enable seven debugging informations.
+Enable all debugging options
+.Opt_long debug\-\fItype\fP .
 .
 The temporary files are kept and not deleted, the name of the
-temporary directory and the shell name for
-.File_name groffer2.sh
-are printed, the displayed file names are printed, the parameters are
-printed at several steps of development, and a function stack is
-output with function \f[CR]error_user()\f[] as well.
-.
-Neither the function call stack at the opening and closing of each
-function call nor the landmark information to determine how far the
-program is running are printed.
-.
-These seem to be the most useful parts among all debugging options.
-.
-.
-.Opt_def -- debug\-all
-Enable all nine debugging informations including the function call
-stack and the landmark information.
+temporary directory is printed, the displayed file names are printed,
+and the parameters are printed.
 .
 .
 .Opt_def -- debug\-filenames
@@ -2176,51 +2162,22 @@ that are displayed by
 .BR \&groffer .
 .
 .
-.Opt_def -- debug\-func
-Enable the basic debugging information for checking the functions on
-the beginning and end of each call.
-.
-The options
-.Opt_long debug\-stacks
-and
-.Opt_long debug\-user
-enable this option automatically.
-.
-This option is important for the development, but it decreases the
-speed of
-.B groffer
-by large amounts.
-.
-.
 .Opt_def -- debug\-keep
-Enable two debugging informations, the printing of the name of the
-temporary directory and the keeping of the temporary files.
+Enable two debugging informations.
 .
-.
-.Opt_def -- debug\-lm
-Enable one debugging information, the landmark information.
+Print the name of the temporary directory and keep the temporary
+files, do not delete them during the run of
+.BR \% groffer .
 .
 .
 .Opt_def -- debug\-params
-Enable one debugging information, the parameters at several steps.
-.
-.
-.Opt_def -- debug\-shell
-Enable one debugging information, the shell name for
-.File_name groffer2.sh .
-.
-.
-.Opt_def -- debug\-stacks
-Enable one debugging information, the function call stack.
+Print the parameters, as obtained from the configuration files, from
+.Env_var \%GROFFER_OPT ,
+and the command line arguments.
 .
 .
 .Opt_def -- debug\-tmpdir
-Enable one debugging information, the name of the temporary directory.
-.
-.
-.Opt_def -- debug\-user
-Enable one debugging information, the function stack with
-\f[CR]error_user()\f[].
+Print the name of the temporary directory.
 .
 .
 .Opt_def -- do-nothing
@@ -2235,22 +2192,6 @@ This makes only sense in development.
 Just print the argument to standard error.
 .
 This is good for parameter check.
-.
-.
-.Opt_def -- shell "shell_program"
-Specify the shell under which the
-.File_name \%groffer2.sh
-script should be run.
-.
-This option overwrites the automatic shell determination of the
-program.
-.
-If the argument
-.I shell_program
-is empty a former shell option and the automatic shell determination
-is cancelled and the default shell is restored.
-.
-Some shells run considerably faster than the standard shell.
 .
 .
 .Opt_def - V
@@ -3414,7 +3355,7 @@ or
 .BR \%bzip2 (1)
 it is decompressed on-the-fly.
 .
-This includes the \f[CR]GNU\fP
+This includes the \f[CR]GNU\f[]
 .BR \%.gz ,
 .BR \%.bz2 ,
 and the traditional
@@ -3436,7 +3377,7 @@ other programs.
 .
 All environment variables of
 .BR \%groff (@MAN1EXT@)
-and \f[CR]GNU\fP
+and \f[CR]GNU\f[]
 .BR \%man (1)
 and some standard system variables are honored.
 .
@@ -3466,21 +3407,13 @@ during the run of
 .SS "System Variables"
 .\" --------------------------------------------------------------------
 .
-The
-.B \%groffer
-program is a shell script that is run through
-.File_name /bin/sh ,
-which can be internally linked to programs like
-.BR \%bash (1).
-The corresponding system environment is automatically effective.
-.
 The following variables have a special meaning for
 .BR \%groffer .
 .
 .
 .TP
 .Env_var \%$DISPLAY
-If this variable is set this indicates that the \%\f[CR]X\~Window\fP
+If this variable is set this indicates that the \%\f[CR]X\~Window\f[]
 system is running.
 .
 Testing this variable decides on whether graphical or text output is
@@ -3489,7 +3422,7 @@ generated.
 This variable should not be changed by the user carelessly, but it can
 be used to start the graphical
 .B \%groffer
-on a remote \%\f[CR]X\~Window\fP terminal.
+on a remote \%\f[CR]X\~Window\f[] terminal.
 .
 For example, depending on your system,
 .B \%groffer
@@ -3528,7 +3461,7 @@ is a character set or encoding identifier like ISO-8859-1 or UTF-8;
 see
 .BR \%setlocale (3).
 .
-The locale values \f[CR]C\fP and \%\f[CR]POSIX\fP
+The locale values \f[CR]C\f[] and \%\f[CR]POSIX\f[]
 stand for the default, i.e. the
 .I \%man\~page
 directories without a language prefix.
@@ -3551,7 +3484,7 @@ program
 .Env_var $PATH
 All programs within the
 .B \%groffer
-shell script are called without a fixed path.
+script are called without a fixed path.
 .
 Thus this environment variable determines the set of programs used
 within the run of
@@ -3714,87 +3647,85 @@ everything is overwritten by the command line arguments.
 .
 .
 .P
-In the configuration files, arbitrary spaces are allowed at the
-beginning of each line, they are just ignored.
+The configuration files contain options that should be called as
+default for every
+.B \%groffer
+run.
 .
-Apart from that, the lines of the configuration lines either start
-with a minus character, all other lines are interpreted as shell
-commands.
+These options are written in lines such that each contains either a
+long option, a short option, or a short option cluster; each with or
+without an argument.
+.
+So each line with configuration information starts with a minus
+character
+.RB ` \- ';
+a line with a long option starts with two minus characters
+.RB ` \-\- ',
+a line with a short option or short option cluster starts with a
+single minus
+.RB ` \- '.
 .
 .
 .P
-The lines with the beginning minus are interpreted as
-.B groffer
-options.
-.
-This easily allows to set general
-.B \%groffer
-options that should be used with any call of
-.BR \%groffer .
+The option names in the configuration files may not be abbreviated,
+they must be exact.
 .
 .
 .P
-If a lines starts with a double minus it represents a
-.B \%groffer
-long option; everything behind the first equal sign
+The argument for a long option can be separated from the option name
+either by an equal sign
 .RB ` = '
-or space character up to the end of the line is interpreted as its
-argument.
+or by whitespace, i.e. one or several space or tab characters.
 .
-A line starting with a single minus represents a short options cluster
-with or without a final argument.
+An argument for a short option or short option cluster can be directly
+appended to the option name or separated by whitespace.
 .
-It is not necessary to use quotes in these lines; quotes are just
-ignored.
+The end of an argument is the end of the line.
 .
-.
-.P
-The lines starting with a minus are changed into a prepend to the
-existing value of
-.Env_var \%$GROFFER_OPT .
-.
-So the configuration files will be transferred into a shell script
-that is called within
-.BR \%groffer .
+It is not allowed to use a shell environment variable in an option
+name or argument.
 .
 .
 .P
-It makes sense to use these configuration files for the following
-tasks:
+It is not necessary to use quotes in an option or argument, except for
+empty arguments.
 .
-.Topic
-Preset command line options, such as choosing a
-.I \%mode
-or a viewer.
+An empty argument can be provided by appending a pair of quotes to the
+separating equal sign or whitespace; with a short option, the
+separator can be omitted as well.
 .
-These are written into lines starting with a single or double minus
-sign, followed by the option name.
+For a long option with a separating equal sign
+.RB ` = ',
+the pair of quotes can be omitted, thus ending the line with the
+separating equal sign.
 .
-.Topic
-Preset environment variables recognized by
-.BR \%groffer ;
-but do not forget to export them.
-.
-.Topic
-You can also write a shell function for calling, for example a viewer
-program for some
-.IR \%mode .
-Such a function can be fed into a corresponding
-.Opt_long \f[I]mode\fP\-viewer
-option.
-.
-.Topic
-Enter
-.Opt_long shell
-to specify a shell for the run of
-.File_name groffer2.sh .
-Some shells run much faster than the standard shell.
+All other quote characters are cancelled internally.
 .
 .
 .P
-As an example, consider the following configuration file in
-.File_name \%~/.groff/groffer.conf ,
-say.
+In the configuration files, arbitrary whitespace is allowed at the
+beginning of each line, it is just ignored.
+.
+Each whitespace within a line is replaced by a single space character
+` ' internally.
+.
+.
+.P
+All lines of the configuration lines that do not start
+with a minus character are ignored, such that comments starting with
+.RB ` # '
+are possible.
+.
+So there are no shell commands in the configuration files.
+.
+.
+.P
+As an example, consider the following configuration file that can be
+used either in
+.File_name \%/etc/groff/groffer.conf
+or
+.File_name \%~/.groff/groffer.conf .
+.
 .
 .P
 .ft CR
@@ -3803,16 +3734,10 @@ say.
 # groffer configuration file
 #
 # groffer options that are used in each call of groffer
-\-\-shell=ksh
 \-\-foreground=DarkBlue
-\-\-resolution=100
+\-\-resolution 100
 \-\-x\-viewer=gxditview \-geometry 900x1200
-#
-# some shell commands
-if test "$DISPLAY" = ""; then
-  export DISPLAY='localhost:0.0'
-fi
-date >>~/mygroffer.log
+\-\-pdf\-viewer xpdf \-z 150
 .fi
 .hy
 .ft
@@ -3821,23 +3746,13 @@ date >>~/mygroffer.log
 .P
 The lines starting with
 .B #
-are command lines.
+are just ignored, so they act as command lines.
 .
 This configuration sets four
 .B \%groffer
-options (the lines starting with `\-') and runs two shell commands (the
-rest of the script).
-.
+options (the lines starting with
+.RB ` \- ').
 This has the following effects:
-.
-.
-.Topic
-Use
-.B ksh
-as the shell to run the
-.B \%groffer
-script; if it works it should be faster than the usual
-.BR sh .
 .
 .
 .Topic
@@ -3873,23 +3788,13 @@ This geometry is suitable for a resolution of
 .
 .
 .Topic
-If the environment variable
-.Env_var \%$DISPLAY
-is empty set it to
-.IR localhost:0.0 .
-.
-That allows to start
-.B \%groffer
-in the standard \%\f[CR]X\~Window\fP display, even when the program
-is called from a text console.
-.
-.
-.Topic
-Just for fun, the date of each
-.B \%groffer
-start is written to the file
-.File_name mygroffer.log
-in the home directory.
+Use
+.BR \%xpdf (@MAN1EXT@)
+as the
+.I \%pdf-mode
+viewer with the argument
+.B \-Z
+.BR 150 .
 .
 .
 .\" --------------------------------------------------------------------
@@ -3916,9 +3821,9 @@ in the directory
 .File_name /usr/local/share/doc/groff ,
 using the standard viewer
 .B \%gxditview
-as graphical viewer when in \%\f[CR]X\~Window\fP, or the
+as graphical viewer when in \%\f[CR]X\~Window\f[], or the
 .BR \%less (1)
-pager program when not in \%\f[CR]X\~Window\fP.
+pager program when not in \%\f[CR]X\~Window\f[].
 .
 .
 .TP
@@ -4073,7 +3978,7 @@ option
 .TP+
 .Shell_cmd+ "groffer --x --bg red --fg yellow --geometry 200x100 -"
 .
-Display the word \f[CB]WOW!\fP in a small window in constant-width
+Display the word \f[CB]WOW!\f[] in a small window in constant-width
 bold font, using color yellow on red background.
 .
 .
@@ -4083,91 +3988,15 @@ bold font, using color yellow on red background.
 .
 The
 .B \%groffer
-program consists of two shell scripts.
+program is written in Perl, the Perl version during writing was v5.8.8.
 .
 .
 .P
-The starting script is the file
-.File_name \%groffer
-that is installed in a
-.File_name bin
-directory.
-.
-It is generated from the source file
-.File_name \%groffer.sh .
-.
-It is just a short starting script without any functions such that it
-can run on very poor shells.
-.
-.
-.P
-The main part of the
 .B \%groffer
-program is the file
-.File_name groffer2.sh
-that is installed in the
-.I groff
-library directory.
-.
-This script can be run under a different shell by using the
-.B \%groffer
-option
-.Opt_long shell .
-.
-.
-.P
-Both scripts are compatible with both
-\f[CR]GNU\fP and \%\f[CR]POSIX\fP.
-.
-\%\f[CR]POSIX\fP compatibility refers to
-\%\f[CR]IEEE\~P1003.2/D11.2\fP of September 1991, a very early
-version of the \%\f[CR]POSIX\fP standard that is still freely
-available in the internet at
-.URL http://\:www.funet.fi/\:pub/\:doc/\:posix/\:p1003.2/\:d11.2/\:all \
-"\%POSIX\~P1003.2\~draft\~11.2" .
-.
-.
-.P
-Only a restricted set of shell language elements and shell builtins is
-used to achieve even compatibility with some Bourne shells that are
-not fully \%\f[CR]POSIX\fP compatible.
-.
-The
-.B \%groffer
-shell scripts were tested on many shells, including the following
-Bourne shells:
-.BR \%ash (1),
-.BR \%bash (1),
-.BR \%dash (1),
-.BR \%ksh (1),
-.BR \%pdksh (1),
-.BR \%posh (1),
-and
-.BR \%zsh (1).
-So it should work on most actual free and commercial operating
-systems.
-.
-.
-.P
-The shell for the run of
-.File_name groffer2.sh
-can be chosen by the option
-.Opt_long shell
-on the command line or the environment variable
-.Env_var $GROFF_OPT .
-If you want to add it to one of the
-.B \%groffer
-configuration files you must write a line starting with
-.Opt_long shell .
-.
-.
-.P
-The
-.B \%groffer
-program provides its own parser for command line arguments that is
-compatible to both \%\f[CR]POSIX\fP
+provides its own parser for command line arguments that is compatible
+to both \%\f[CR]POSIX\f[]
 .BR \%getopts (1)
-and \%\f[CR]GNU\fP
+and \%\f[CR]GNU\f[]
 .BR \%getopt (1).
 It can handle option arguments and file names containing white space
 and a large set of special characters.
@@ -4176,7 +4005,7 @@ The following standard types of options are supported.
 .
 .
 .Topic
-The option consisiting of a single minus
+The option consisting of a single minus
 .Opt_short
 refers to standard input.
 .
@@ -4229,7 +4058,7 @@ The free mixing of options and
 .I \%filespec
 parameters follows the GNU principle.
 .
-That does not fulfill the strange option behavior of \%\f[CR]POSIX\fP
+That does not fulfill the strange option behavior of \%\f[CR]POSIX\f[]
 that ends option processing as soon as the first non-option argument
 has been reached.
 .
@@ -4327,21 +4156,6 @@ for GNU
 Then it documents the options and environment variables that are
 supported by
 .BR \%groffer .
-.
-.
-.P
-.BR \%ash (1),
-.BR \%bash (1),
-.BR \%dash (1),
-.BR \%ksh (1),
-.BR \%pdksh (1),
-.BR \%posh (1),
-.BR \%sh (1),
-.BR \%zsh (1)
-.RS
-Bourne shells that were tested with
-.BR \%groffer .
-.RE
 .
 .
 .P

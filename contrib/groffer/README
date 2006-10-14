@@ -5,17 +5,15 @@ some `roff' language, such as the `man pages', the manual pages in
 many operating systems.
 
 
-Source files
+Source files in this directory
 
-ChangeLog	information on all changements
-Makefile.sub	groff make file
+ChangeLog	information on all changements for groffer versions 1.*
+Makefile.sub	make file used by groff
 README		this file, general description of the program
-README_SH	description of the shell version of the program
-TODO		information on what is left to be done
-groffer2.sh	main script of groffer
-groffer.man	manual page of groffer
-groffer.sh	starting script of groffer
-version.sh	script that handles the version information
+version.sh	information on version number and last update
+perl_test.pl	test whether perl has a suitable version
+perl/		subdirectory for the Perl version, see perl/README_PERL
+shell/		subdirectory for the shell version, see shell/README_SH
 
 
 Input
@@ -23,7 +21,8 @@ Input
 Input comes from either standard input or command line parameters that
 represent names of exisiting roff files or standardized specifications
 for searching man pages.  All of these can be compressed in a format
-that is decompressible by `gzip', including `.gz', `bz2', and `.Z'.
+that is decompressible by `gzip' or `bzip2', including `.gz', `bz2',
+and `.Z'.
 
 `groffer' has many built-in `man' functionalities to find and read the
 manual pages on UNIX and similar operating systems.  It accepts the
@@ -46,11 +45,11 @@ appropriate.
 
 The following displaying modes for the output are available:
 - Display formatted input with
--- the X `roff' viewer `gxditview',
--- a Postcript viewer,
 -- a PDF viewer,
--- a DVI viewer,
+-- a Postcript viewer,
 -- a web browser,
+-- the X `roff' viewer `gxditview',
+-- a DVI viewer,
 -- a pager in a text terminal (tty).
 - Generate `groff' output on stdout without a viewer.
 - Generate the `groff intermediate output' on standard output without
@@ -65,11 +64,14 @@ device in X; on non-X text terminals, the `tty' text mode with a pager
 is tried by default.
 
 
-Compatibility
+File access
 
-`groffer' consists of two shell scripts.  It should run on any POSIX
-or Bourne style shell that supports shell functions.  See file
-`README_SH' for more information.
+The shell and the Perl version of groffer now use umask of 077.  This
+is a very strict security issue.  It allows only access of the
+temporary files by the file owner.
+
+
+Compatibility
 
 `groffer' is compatible with the `man' program.  It supports .so
 requests based on the man path and compressed files.  That's more than
@@ -91,7 +93,7 @@ package for more details on these mailing lists.
 
 ####### License
 
-Last update: 04 Sep 2006
+Last update: 12 Oct 2006
 
 Copyright (C) 2003,2004,2005,2006 Free Software Foundation, Inc.
 Written by Bernd Warken.

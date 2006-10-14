@@ -5,7 +5,7 @@
 # Copyright (C) 2001,2002,2005,2006 Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org> and Bernd Warken.
 
-# Last update: 5 Oct 2006
+# Last update: 11 Oct 2006
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -27,38 +27,82 @@
 ########################################################################
 
 MAN1=groffer.n
-CLEANADD=groffer groffer.n
+CLEANADD=groffer PERL SHELL groffer.man groffer.n
 
 # not all make programs have $(RM) predefined.
 RM=rm -f
 
 all: groffer
 
-groffer: groffer.sh groffer2.sh version.sh $(SH_DEPS_SED_SCRIPT)
-	$(RM) $@;
-	sed -f $(SH_DEPS_SED_SCRIPT) \
+GROFFER_TOP=perl_test.pl version.sh
+GROFFER_PERL=perl/groffer.pl perl/split_env.sh perl/func.pl perl/man.pl \
+perl/groffer.man
+GROFFER_SHELL=shell/groffer.sh shell/groffer2.sh shell/groffer.man
+
+groffer: $(GROFFER_TOP) $(GROFFER_PERL) $(GROFFER_SHELL) $(SH_DEPS_SED_SCRIPT)
+	-@$(RM) $@
+	-@$(RM) groffer.man groffer.n
+	-@$(RM) PERL SHELL
+	-@chmod a+x perl/groffer.pl shell/groffer.sh
+	if perl perl_test.pl 2>&1 >/dev/null; then \
+	  : >PERL; \
+	  echo "Use groffer Perl version."; \
+	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
             -e "s|@g@|$(g)|g" \
 	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
 	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
-	    -e $(SH_SCRIPT_SED_CMD) $(srcdir)/groffer.sh >$@;
-	chmod +x $@
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+	    $(srcdir)/perl/groffer.pl >$@; \
+	  cp perl/groffer.man groffer.man; \
+	else \
+	  : >SHELL; \
+	  echo "Use groffer shell version."; \
+	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
+            -e "s|@g@|$(g)|g" \
+	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+	    -e "s|@VERSION@|$(version)$(revision)|g" \
+	    -e "$(SH_SCRIPT_SED_CMD)" \
+            $(srcdir)/shell/groffer.sh >$@; \
+	  cp shell/groffer.man groffer.man; \
+	fi
+	chmod a+x $@
 
 install_data: groffer
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	-$(RM) $(DESTDIR)$(bindir)/groffer
-	$(INSTALL_SCRIPT) groffer $(DESTDIR)$(bindir)/groffer
-	-test -d $(DESTDIR)$(libdir)/groff/groffer || \
+	-@test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	-@test -d $(DESTDIR)$(libdir)/groff/groffer || \
           $(mkinstalldirs) $(DESTDIR)$(libdir)/groff/groffer
-	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
-	$(INSTALL_SCRIPT) $(srcdir)/groffer2.sh \
-	  $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
-	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/version.sh
+	-@$(RM) $(DESTDIR)$(bindir)/groffer
+	-@$(RM) $(DESTDIR)$(libdir)/groff/groffer/func.sh
+	-@$(RM) $(DESTDIR)$(libdir)/groff/groffer/man.sh
+	-@$(RM) $(DESTDIR)$(libdir)/groff/groffer/split_env.sh
+	-@$(RM) $(DESTDIR)$(libdir)/groff/groffer/perl_test.pl
+	-@$(RM) $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
+	-@$(RM) $(DESTDIR)$(libdir)/groff/groffer/version.sh
+	$(INSTALL_SCRIPT) groffer $(DESTDIR)$(bindir)/groffer
 	$(INSTALL_DATA) $(srcdir)/version.sh \
-	$(DESTDIR)$(libdir)/groff/groffer/version.sh
+	  $(DESTDIR)$(libdir)/groff/groffer/version.sh; \
+	if test -f PERL; then \
+	  $(INSTALL_SCRIPT) $(srcdir)/perl_test.pl \
+	    $(DESTDIR)$(libdir)/groff/groffer/perl_test.pl; \
+	  $(INSTALL_SCRIPT) $(srcdir)/perl/split_env.sh \
+	    $(DESTDIR)$(libdir)/groff/groffer/split_env.sh; \
+	  $(INSTALL_SCRIPT) $(srcdir)/perl/func.pl \
+	    $(DESTDIR)$(libdir)/groff/groffer/func.pl; \
+	  $(INSTALL_SCRIPT) $(srcdir)/perl/man.pl \
+	    $(DESTDIR)$(libdir)/groff/groffer/man.pl; \
+	elif test -f SHELL; then \
+	  $(INSTALL_SCRIPT) $(srcdir)/shell/groffer2.sh \
+	    $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh; \
+	fi;
 
 uninstall_sub:
 	-$(RM) $(DESTDIR)$(bindir)/groffer
+	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/func.sh
+	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/man.sh
+	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/split_env.sh
+	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/perl_test.pl
 	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/groffer2.sh
 	-$(RM) $(DESTDIR)$(libdir)/groff/groffer/version.sh
 	-rmdir $(DESTDIR)$(libdir)/groff/groffer
