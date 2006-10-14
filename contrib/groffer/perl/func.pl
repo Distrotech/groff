@@ -512,7 +512,7 @@ sub version {
   my $last_update = '';
   my $groff_version_preset = '';
 
-  die "$main::File_version_sh does not exist.\n"
+  die "$main::File_version_sh does not exist;"
     unless -f "$main::File_version_sh";
   my $fh;
   open $fh, "<$main::File_version_sh";

@@ -8,7 +8,7 @@
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 12 Oct 2006
+# Last update: 14 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -114,7 +114,7 @@ BEGIN {
     }
 
     my %at_at;
-    my $File_perl_test_pl;
+    my $file_perl_test_pl;
     my $groffer_libdir;
 
     if ($before_make) {
@@ -125,7 +125,8 @@ BEGIN {
       $at_at{'G'} = '';
       $at_at{'LIBDIR'} = '';
       $groffer_libdir = $groffer_perl_dir;
-      $perl_test_pl = File::Spec->catfile($groffer_top_dir, 'perl_test.pl');
+      $file_perl_test_pl = File::Spec->catfile($groffer_top_dir,
+					       'perl_test.pl');
       $File_version_sh = File::Spec->catfile($groffer_top_dir, 'version.sh');
       $Groff_Version = '';
     } else {
@@ -135,21 +136,22 @@ BEGIN {
       $at_at{'LIBDIR'} = '@libdir@';
       $groffer_libdir =
 	File::Spec->catdir($at_at{'LIBDIR'}, 'groff', 'groffer');
-      $File_perl_test_pl = File::Spec->catfile($groffer_libdir, 'perl_test.pl');
+      $file_perl_test_pl = File::Spec->catfile($groffer_libdir,
+					       'perl_test.pl');
       $File_version_sh = File::Spec->catfile($groffer_libdir, 'version.sh');
     }
 
-    die "$groffer_libdir is not an existing directory.\n"
+    die "$groffer_libdir is not an existing directory;"
       unless -d $groffer_libdir;
 
     unshift(@INC, $groffer_libdir);
 
     $File_split_env_sh = File::Spec->catfile($groffer_libdir, 'split_env.sh');
-    die "$File_split_env_sh does not exist.\n" unless -f "$File_split_env_sh";
+    die "$File_split_env_sh does not exist;" unless -f "$File_split_env_sh";
 
     # test perl on suitable version
-    die "$perl_test_pl does not exist.\n" unless -f "$perl_test_pl";
-    do "$perl_test_pl" or die "Perl test: $@";
+    die "$file_perl_test_pl does not exist;" unless -f "$file_perl_test_pl";
+    do "$file_perl_test_pl" or die "Perl test: $@";
 
     require 'func.pl';
     require 'man.pl';
@@ -1128,7 +1130,7 @@ sub main_parse_params {
 
 sub _get_arg {
   if ($i > $n) {
-    die 'No argument left for last option.\n';
+    die '_get_arg(): No argument left for last option;';
   }
   my $arg = $Options[$i];
   ++$i;
