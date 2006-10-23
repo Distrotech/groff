@@ -39,8 +39,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .if !r *miscs \
 .  mso hdmisc.tmac
 .
-.wh 0 HM	\"	comment this, if a page header macro exists
-.wh -1i BM	\"	comment this, if a bottom margin macro exists
+.wh 0 HM	\"	comment this out if a page header macro exists
+.wh -1i BM	\"	comment this out if a bottom margin macro exists
 .
 .\" replace `HM' with the name of your pageheader macro, e.g., `pg@top' for MS
 .am HM
@@ -89,6 +89,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .ds nth-2 nd
 .ds nth-3 rd
 .
+.\" initialization of various registers
+.nr t*# 0	\"	table nesting level
 .nr t*numb 0 1	\"	held table diversion #
 .
 .
@@ -108,45 +110,55 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    ev t*tbl
 .    evc \\*[*]
 .    di t*tbl0
-.    sp .4
+.    sp .4				\" XXX: hard-coded value
 .    nr t*i \\n[.i]
 .    ll -\\n[.i]u
 .    in 0
 .  \}
 .  nr t*# +1
 .
-.  ds width
-.  nr t*height\\n[t*#] 0
-.
 .  getarg cols \\$@\"	from here string `args' contains the rest of \\$@
 .  ie "\\*[cols]"" \
 .    nr t*cols\\n[t*#] \\n[t*cols]
-.  el \
-.    nr t*cols\\n[t*#] \\*[cols]
+.  el \{\
+.    ie \B\\*[cols] \
+.      nr t*cols\\n[t*#] \\*[cols]
+.    el \
+.      tm \\n[.F]:\\n[.c]: Invalid number of columns value `\\*[cols]'.
+.  \}
 .
-.  getarg cpd \\*[args]               \"	cellpadding
+.  getarg cpd \\*[args]               \"	cell padding
 .  ie "\\*[cpd]"" \
 .    nr t*cpd\\n[t*#] \\n[t*cpd]
-.  el \
-.    nr t*cpd\\n[t*#] \\*[cpd]
+.  el \{\
+.    ie \B\\*[cpd] \
+.      nr t*cpd\\n[t*#] \\*[cpd]
+.    el \
+.      tm \\n[.F]:\\n[.c]: Invalid cell padding value `\\*[cpd]'.
+.  \}
 .
-.  getarg csp \\*[args]               \"	cellspacing
+.  getarg csp \\*[args]               \"	cell spacing
 .  ie "\\*[csp]"" \
 .    nr t*csp\\n[t*#] \\n[t*csp]
-.  el \
-.    nr t*csp\\n[t*#] \\*[csp]
+.  el \{\
+.    ie \B\\*[csp] \
+.      nr t*csp\\n[t*#] \\*[csp]
+.    el \
+.      tm \\n[.F]:\\n[.c]: Invalid cell spacing value `\\*[csp]'.
+.  \}
 .
-.  getarg border \\*[args]            \"	border
+.  getarg border \\*[args]            \"	border thickness
 .  ie "\\*[border]"=" \
 .    nr t*b\\n[t*#] 0-1
 .  el \{\
 .    ie "\\*[border]"" \
 .      nr t*b\\n[t*#] \\n[t*b]
-.    el \
-.      nr t*b\\n[t*#] \\*[border]
-.  \}
-.
-.  nr b/2\\n[t*#] (\\n[t*b\\n[t*#]] / 2)\"	shortcut
+.    el \{\
+.      ie \B\\*[border] \
+.        nr t*b\\n[t*#] \\*[border]
+.      el \
+.        tm \\n[.F]:\\n[.c]: Invalid border thickness value `\\*[border]'.
+.  \}\}
 .
 .  getarg bc \\*[args]                \"	border color
 .  ds t*bc\\n[t*#] \\*[t*bc]\"
@@ -172,13 +184,22 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  if "\\*[width]"=" \
 .    ds width
 .
+.  nr b/2\\n[t*#] (\\n[t*b\\n[t*#]] / 2)\"	shortcut
 .  nr cscp\\n[t*#] (\\n[t*csp\\n[t*#]] + \\n[t*cpd\\n[t*#]])\"  aux. register
 .
 .  getarg height \\*[args]            \"	table outline height
-.  if !"\\*[height]"" \
-.    nr t*height\\n[t*#] (\\*[height] - \
-                          ((2 * \\n[cscp\\n[t*#]]) + (3 * \\n[b/2\\n[t*#]])))
-.  t*cl \\*[width]                    \"	calculate cellwidths and indents
+.  ie "\\*[height]"" \
+.    nr t*height\\n[t*#] 0
+.  el \{\
+.    ie \B\\*[height] \
+.      nr t*height\\n[t*#] (\\*[height] \
+                            - ((2 * \\n[cscp\\n[t*#]]) \
+                                + (3 * \\n[b/2\\n[t*#]])))
+.    el \
+.      tm \\n[.F]:\\n[.c]: Invalid height value `\\*[height]'.
+.  \}
+.
+.  t*cl \\*[width]                    \"	get cell widths and indents
 .  t*args \\n[t*#]                    \"	look for common arguments
 .
 .  getarg tal \\*[args]               \"	table horizontal alignment
@@ -305,10 +326,22 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  ds *#trc* \\*[#t#r]*\\n[c#\\*[#t#r]]\"
 .
 .  getarg rowspan \\$@
-.  nr rowspan (\\*[rowspan] >? 1)
+.  nr rowspan 1
+.  if !"\\*[rowspan]"" \{\
+.    ie \B\\*[rowspan] \
+.      nr rowspan (\\*[rowspan] >? 1)
+.    el \
+.      tm \\n[.F]:\\n[.c]: Invalid value of `rowspan' keyword.
+.  \}
 .
 .  getarg colspan \\*[args]
-.  nr colspan (\\*[colspan] >? 1)
+.  nr colspan 1
+.  if !"\\*[colspan]"" \{\
+.    ie \B\\*[colspan] \
+.      nr colspan (\\*[colspan] >? 1)
+.    el \
+.      tm \\n[.F]:\\n[.c]: Invalid value of `colspan' keyword.
+.  \}
 .
 .  t*args \\*[#trc] \\*[#t#r]     \"  look for common arguments
 .
@@ -546,7 +579,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      \}
 .
 .      \"	paint cell background
-.      nr * (2 * \\n[t*cpd\\n[t*#]] + \\n[cll\\*[#trc]])	\"	backgrond width
+.      nr * (2 * \\n[t*cpd\\n[t*#]] + \\n[cll\\*[#trc]])	\"	background width
 .      nr $1 (\\n[$1] >? \\n[dn\\*[#trc]])	\"	cell height
 .
 .      if !"\\*[t*bgc\\*[#trc]]"=" \{\
@@ -667,29 +700,36 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 ..
 .
 .
-.\"	Utility macro:	calculate cellwidths, tablewidth and indents
+.\"	Utility macro:	Calculate cell widths, table width, and cell offsets.
 .de t*cl
 .  nr t*cols\\n[t*#] (\\n[.$] >? \\n[t*cols\\n[t*#]])
-.  nr ll\\n[t*#] 0 1
-.  nr ** (\\n[.l] / \\n[t*cols\\n[t*#]])
-.  nr * 0 1
+.  nr ll\\n[t*#] 0		\"	accumulated cell widths
+.  nr ** (\\n[.l] / \\n[t*cols\\n[t*#]])\"	width for remaining cells
+.  nr * 0 1			\"	counter
 .
-.  \" while-loop: calculate
+.  \" while-loop: Parse user arguments to get each cell's width.
 .  while (\\n[t*cols\\n[t*#]] >= \\n+[*]) \{\
-.    ie "\\$[\\n[*]]"" \
-.      nr $\\n[*] \\n[**]	\"	gross width of cells $\n[*] and
-.    el \{\
-.      ds * \\$\\n[*]\"			accumulate table width ll\n[t*#]
+.    nr $\\n[*] \\n[**]
+.    if !"\\$[\\n[*]]"" \{\
+.      \" check for `%' pseudo scaling indicator
+.      ds * \\$\\n[*]\"
 .      substring * -1 -1
-.      ds ** \\$[\\n[*]]\"
-.      substring ** 0 -2
-.      ie "\\*[*]"%" \
-.        nr $\\n[*] (\\*[**] * \\n[.l] / 100)
-.      el \
-.        nr $\\n[*] \\$[\\n[*]]
-.    \}
+.      ie "\\*[*]"%" \{\
+.        ds ** \\$[\\n[*]]\"
+.        substring ** 0 -2
+.        ie \B\\*[**] \
+.          nr $\\n[*] (\\*[**] * \\n[.l] / 100)
+.        el \
+.          tm \\n[.F]:\\n[.c]: Invalid relative cell width `\\*[**]%'.
+.      \}
+.      el \{\
+.        ie \B\\$[\\n[*]] \
+.          nr $\\n[*] \\$[\\n[*]]
+.        el \
+.          tm \\n[.F]:\\n[.c]: Invalid cell width `\\$[\\n[*]]'.
+.    \}\}
 .
-.    nr ll\\n[t*#] +\\n[$\\n[*]]	\"	accumulated tablewidth
+.    nr ll\\n[t*#] +\\n[$\\n[*]]
 .    nr ** \\n[$\\n[*]]
 .  \}
 .
@@ -699,20 +739,22 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  nr ** (0 >? \\n[t*b\\n[t*#]])
 .  nr * 0 1
 .
-.  \" second while loop: calculate
+.  \" second while loop: Compute final cell widths.
 .  while (\\n[t*cols\\n[t*#]] >= \\n+[*]) \{\
-.    \" net cellwidths and indents.
+.    \" Remove border width, if any.
 .    if \\n[t*b\\n[t*#]] \{\
+.      \" cell_width := cell_width * (length - 1.5*border) / length
 .      \" avoid multiplication overflow
 .      nr #* (1000 * \\n[ll\\n[t*#]] / \\n[t*b\\n[t*#]])
 .      nr $\\n[*] (\\n[$\\n[*]] - (1500 * \\n[$\\n[*]] / \\n[#*]))
 .    \}
 .
-.    \"   VVV cellwidth
+.    \" Get cell widths without padding, spacing, and separator line.
 .    nr cll\\n[t*#]*\\n[*] (\\n[$\\n[*]] \
                             - (2 * \\n[cscp\\n[t*#]]) \
                             - \\n[b/2\\n[t*#]])
 .
+.    \" Check whether value is non-positive.
 .    if !\\n[cll\\n[t*#]*\\n[*]] \{\
 .      nr *h ((1000 \
                * \\n[ll\\n[t*#]] \
@@ -728,14 +770,14 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      tm1 " It should be greater than \\n[*h].
 .    \}
 .
-.    nr in\\n[t*#]*\\n[*] \\n[**]		\"	cell indent
+.    nr in\\n[t*#]*\\n[*] \\n[**]		\"	cell offset
 .    nr ** +\\n[$\\n[*]]
 .  \}
 ..
 .
 .
-.\"	Utility macro:	close TD-diversion, make some calculations and set
-.\"			some help strings and registers
+.\"	Utility macro:	Close TD-diversion, make some calculations, and set
+.\"			some help strings and registers.
 .de t*dntr
 .  nr dn 0				\"	dn must be reset!
 .  br					\"	finish last div
@@ -790,7 +832,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 ..
 .
 .
-.\"	Utility-macro:	get the arguments common for TBL, TR and TD
+.\"	Utility-macro:	Get the arguments common to TBL, TR, and TD.
 .de t*args
 .  ds t*bgc\\$1 \\*[t*bgc\\$2]\"
 .  ds t*fgc\\$1 \\*[t*fgc\\$2]\"
@@ -806,82 +848,80 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    return
 .
 .  getarg bgc \\*[args]         \"	background color
-.  if !"\\*[bgc]"" \
+.  if !"\\*[bgc]"" \{\
 .    ie m\\*[bgc] \
-.      ds t*bgc\\$1 \\*[bgc]
-.    el \
+.      ds t*bgc\\$1 \\*[bgc]\"
+.    el \{\
 .      ie "\\*[bgc]"=" \
 .        ds t*bgc\\$1 =\"
 .      el \
-.  tm \\n[.F]:\\n[.c]: Invalid background color `\\*[bgc]'.
-.
+.        tm \\n[.F]:\\n[.c]: Invalid background color `\\*[bgc]'.
+.  \}\}
 .  if "\\*[args]"" \
 .    return
 .
 .  getarg fgc \\*[args]         \"	foreground color
-.  if !"\\*[fgc]"" \
+.  if !"\\*[fgc]"" \{\
 .    ie m\\*[fgc] \
 .      ds t*fgc\\$1 \\*[fgc]\"
-.    el \
+.    el \{\
 .      ie "\\*[fgc]"=" \
 .        ds t*fgc\\$1 =\"
 .      el \
-.      tm \\n[.F]:\\n[.c]: Invalid foreground color `\\*[fgc]'.
+.        tm \\n[.F]:\\n[.c]: Invalid foreground color `\\*[fgc]'.
+.  \}\}
+.  if "\\*[args]"" \
+.    return
 .
-.      if "\\*[args]"" \
-.        return
-.
-.  getarg hl \\*[args]           \" horizontal line between cells ...
+.  getarg hl \\*[args]          \"	horizontal line between cells
 .  if !"\\*[hl]"" \
 .    ds t*hl\\$1 \\*[hl]\"
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg vl \\*[args]           \" vertical line between cells ...
+.  getarg vl \\*[args]          \"	vertical line between cells
 .  if !"\\*[vl]"" \
 .    ds t*vl\\$1 \\*[vl]\"
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg hal \\*[args]
+.  getarg hal \\*[args]         \"	horizontal table cell alignment
 .  if !"\\*[hal]"" \{\
 .    index bcrl \\*[hal]
 .    ie \\n[index] \
 .      ds t*hal\\$1 \\*[hal]\"
 .    el \{\
-.      tmc \\n[.F]:\\n[.c]: Invalid `hal' value `\\*[t*hal\\$1]':
+.      tmc \\n[.F]:\\n[.c]: Invalid horizontal alignment `\\*[hal]':
 .      tm1 " must be `b', `c', `l' or `r'.
 .  \}\}
-.
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg val \\*[args]         \" vertical table cell alignment
+.  getarg val \\*[args]         \"	vertical table cell alignment
 .  if !"\\*[val]"" \{\
 .    index tmb \\*[val]
 .    ie \\n[index] \
 .      ds t*val\\$1 \\*[val]\"
 .    el \{\
-.      tmc \\n[.F]:\\n[.c]: Invalid `val' value `\\*[t*val]':
+.      tmc \\n[.F]:\\n[.c]: Invalid vertical alignment `\\*[val]':
 .      tm1 " must be `t', `m' or `b'.
 .  \}\}
-.
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg ff \\*[args]
+.  getarg ff \\*[args]          \"	font family
 .  if !"\\*[ff]"" \
 .    ds t*ff\\$1 \\*[ff]\"
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg fst \\*[args]
+.  getarg fst \\*[args]         \"	font style
 .  if !"\\*[fst]"" \
 .    ds t*fst\\$1 \\*[fst]\"
 .  if "\\*[args]"" \
 .    return
 .
-.  getarg fsz \\*[args]
+.  getarg fsz \\*[args]         \"	font size and spacing factor
 .  if !"\\*[fsz]"" \
 .    ds t*fsz\\$1 \\*[fsz]\"
 ..
