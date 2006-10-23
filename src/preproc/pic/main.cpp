@@ -34,7 +34,7 @@ int driver_extension_flag = 1;
 int compatible_flag = 0;
 int safer_flag = 1;
 int command_char = '.';		// the character that introduces lines
-				// that should be passed through tranparently
+				// that should be passed through transparently
 static int lf_flag = 1;		// non-zero if we should attempt to understand
 				// lines beginning with `.lf'
 
