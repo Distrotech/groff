@@ -8,7 +8,7 @@
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 11 Oct 2006
+# Last update: 17 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -502,12 +502,112 @@ sub to_tmp_line {
 
 
 ##########
+# usage()
+#
+# Print usage information for --help.
+#
+sub usage {
+  print "\n";
+  &version();
+  print <<EOF;
+
+Usage: groffer [option]... [filespec]...
+
+Display roff files, standard input, and/or Unix manual pages with an X
+Window viewer or in several text modes.  All input is decompressed
+on-the-fly with all formats that gzip can handle.
+
+"filespec" is one of
+  "filename"       name of a readable file
+  "-"              for standard input
+  "man:name(n)"    man page "name" in section "n"
+  "man:name.n"     man page "name" in section "n"
+  "man:name"       man page "name" in first section found
+  "name(n)"        man page "name" in section "n"
+  "name.n"         man page "name" in section "n"
+  "n name"         man page "name" in section "n"
+  "name"           man page "name" in first section found
+where `section' is a single character out of [1-9on], optionally followed
+by some more letters that are called the `extension'.
+
+-h --help         print this usage message.
+-T --device=name  pass to groff using output device "name".
+-v --version      print version information.
+-V                display the groff execution pipe instead of formatting.
+-X                display with "gxditview" using groff -X.
+-Z --ditroff --intermediate-output
+                  generate groff intermediate output without
+                  post-processing and viewing, like groff -Z.
+All other short options are interpreted as "groff" formatting options.
+
+The most important groffer long options are
+
+--apropos=name    start man's "apropos" program for "name".
+--apropos-data=name
+                  "apropos" for "name" in man's data sections 4, 5, 7.
+--apropos-devel=name
+                  "apropos" for "name" in development sections 2, 3, 9.
+--apropos-progs=name
+                  "apropos" for "name" in man's program sections 1, 6, 8.
+--auto            choose mode automatically from the default mode list.
+--default         reset all options to the default value.
+--default-modes=mode1,mode2,...
+                  set sequence of automatically tried modes.
+--dvi             display in a viewer for TeX device independent format.
+--dvi-viewer=prog choose the viewer program for dvi mode.
+--groff           process like groff, disable viewing features.
+--help            display this helping output.
+--html            display in a web browser.
+--html-viewer=program
+                  choose the web browser for html mode.
+--man             check file parameters first whether they are man pages.
+--mode=auto|dvi|groff|html|pdf|ps|source|text|tty|www|x|X
+                  choose display mode.
+--no-man          disable man-page facility.
+--no-special      disable --all, --apropos*, and --whatis
+--pager=program   preset the paging program for tty mode.
+--pdf             display in a PDF viewer.
+--pdf-viewer=prog choose the viewer program for pdf mode.
+--ps              display in a Postscript viewer.
+--ps-viewer=prog  choose the viewer program for ps mode.
+--source          output as roff source.
+--text            output in a text device without a pager.
+--to-stdout       output the content of the mode file without display.
+--tty             display with a pager on text terminal even when in X.
+--tty-viewer=prog select a pager for tty mode; same as --pager.
+--whatis          display the file name and description of man pages
+--www             same as --html.
+--www-viewer=prog same as --html-viewer
+--x --X           display with "gxditview" using an X* device.
+--x-viewer=prog   choose viewer program for x mode (X mode).
+--X-viewer=prog   same as "--xviewer".
+
+The usual X Windows toolkit options transformed into GNU long options:
+--background=color, --bd=size, --bg=color, --bordercolor=color,
+--borderwidth=size, --bw=size, --display=Xdisplay, --fg=color,
+--fn=font, --font=font, --foreground=color, --geometry=geom, --iconic,
+--resolution=dpi, --rv, --title=text, --xrm=resource
+
+Long options of GNU "man":
+--all, --ascii, --ditroff, --extension=suffix, --locale=language,
+--local-file=name, --location, --manpath=dir1:dir2:...,
+--sections=s1:s2:..., --systems=s1,s2,..., --where, ...
+
+Development options that are not useful for normal usage:
+--debug, --debug-filenames, --debug-keep, --debug-params,
+--debug-tmpdir, --do-nothing, --print=text
+
+EOF
+} # usage()
+
+
+##########
 # version()
 #
 # Get version information from version.sh and print a text with this.
 #
 sub version {
-  my $Groff_Version;
+  my $groff_version;
   my $program_version = '';
   my $last_update = '';
   my $groff_version_preset = '';
@@ -535,12 +635,16 @@ sub version {
   }
   close $fh;
 
-  $Groff_Version = "$groff_version_preset" unless $Groff_Version;
+  if ($main::Groff_Version) {
+    $groff_version = $main::Groff_Version;
+  } else {
+    $groff_version = $groff_version_preset;
+  }
   my $year = $last_update;
   $year =~ s/^.* //;
   print <<EOF;
 groffer $program_version of $last_update (Perl version)
-is part of groff version $Groff_Version.
+is part of groff version $groff_version.
 Copyright (C) $year Free Software Foundation, Inc.
 GNU groff and groffer come with ABSOLUTELY NO WARRANTY.
 You may redistribute copies of groff and its subprograms
@@ -670,106 +774,6 @@ sub where_is_prog {
   }				# test $name on space
   return ();
 } # where_is_prog()
-
-
-##########
-# usage()
-#
-# Print usage information for --help.
-#
-sub usage {
-  print "\n";
-  &version();
-  print <<EOF;
-
-Usage: groffer [option]... [filespec]...
-
-Display roff files, standard input, and/or Unix manual pages with a X
-Window viewer or in several text modes.  All input is decompressed
-on-the-fly with all formats that gzip can handle.
-
-"filespec" is one of
-  "filename"       name of a readable file
-  "-"              for standard input
-  "man:name(n)"    man page "name" in section "n"
-  "man:name.n"     man page "name" in section "n"
-  "man:name"       man page "name" in first section found
-  "name(n)"        man page "name" in section "n"
-  "name.n"         man page "name" in section "n"
-  "n name"         man page "name" in section "n"
-  "name"           man page "name" in first section found
-where `section' is a single character out of [1-9on], optionally followed
-by some more letters that are called the `extension'.
-
--h --help         print this usage message.
--T --device=name  pass to groff using output device "name".
--v --version      print version information.
--V                display the groff execution pipe instead of formatting.
--X                display with "gxditview" using groff -X.
--Z --ditroff --intermediate-output
-                  generate groff intermediate output without
-                  post-processing and viewing, like groff -Z.
-All other short options are interpreted as "groff" formatting options.
-
-The most important groffer long options are
-
---apropos=name    start man's "apropos" program for "name".
---apropos-data=name
-                  "apropos" for "name" in man's data sections 4, 5, 7.
---apropos-devel=name
-                  "apropos" for "name" in development sections 2, 3, 9.
---apropos-progs=name
-                  "apropos" for "name" in man's program sections 1, 6, 8.
---auto            choose mode automatically from the default mode list.
---default         reset all options to the default value.
---default-modes=mode1,mode2,...
-                  set sequence of automatically tried modes.
---dvi             display in a viewer for TeX device independent format.
---dvi-viewer=prog choose the viewer program for dvi mode.
---groff           process like groff, disable viewing features.
---help            display this helping output.
---html            display in a web browser.
---html-viewer=program
-                  choose the web browser for html mode.
---man             check file parameters first whether they are man pages.
---mode=auto|dvi|groff|html|pdf|ps|source|text|tty|www|x|X
-                  choose display mode.
---no-man          disable man-page facility.
---no-special      disable --all, --apropos*, and --whatis
---pager=program   preset the paging program for tty mode.
---pdf             display in a PDF viewer.
---pdf-viewer=prog choose the viewer program for pdf mode.
---ps              display in a Postscript viewer.
---ps-viewer=prog  choose the viewer program for ps mode.
---source          output as roff source.
---text            output in a text device without a pager.
---to-stdout       output the content of the mode file without display.
---tty             display with a pager on text terminal even when in X.
---tty-viewer=prog select a pager for tty mode; same as --pager.
---whatis          display the file name and description of man pages
---www             same as --html.
---www-viewer=prog same as --html-viewer
---x --X           display with "gxditview" using an X* device.
---x-viewer=prog   choose viewer program for x mode (X mode).
---X-viewer=prog   same as "--xviewer".
-
-The usual X Windows toolkit options transformed into GNU long options:
---background=color, --bd=size, --bg=color, --bordercolor=color,
---borderwidth=size, --bw=size, --display=Xdisplay, --fg=color,
---fn=font, --font=font, --foreground=color, --geometry=geom, --iconic,
---resolution=dpi, --rv, --title=text, --xrm=resource
-
-Long options of GNU "man":
---all, --ascii, --ditroff, --extension=suffix, --locale=language,
---local-file=name, --location, --manpath=dir1:dir2:...,
---sections=s1:s2:..., --systems=s1,s2,..., --where, ...
-
-Development options that are not useful for normal usage:
---debug, --debug-filenames, --debug-keep, --debug-params,
---debug-tmpdir, --do-nothing, --print=text
-
-EOF
-} # usage()
 
 
 ##########

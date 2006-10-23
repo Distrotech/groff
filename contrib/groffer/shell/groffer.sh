@@ -9,7 +9,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 5 Oct 2006
+# Last update: 22 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -163,11 +163,22 @@ then
 fi;
 
 # Test of sed program
-if test _"$(echo red | sed -e 's/r/s/')"_ != _sed_
+if test _"$(echo red | sed 's/r/s/')"_ != _sed_
 then
   echo 'The sed program did not work.' >&2;
   exit "${_ERROR}";
 fi;
+
+# for some systems it is necessary to set some unset variables to `C'
+# according to Autobook, ch. 22
+for var in LANG LC_ALL LC_MESSAGES LC_CTYPES LANGUAGES
+do
+  if eval test _"\${$var+set}"_ = _set_
+  then
+    eval ${var}='C';
+    eval export ${var};
+  fi;
+done;
 
 
 ########################### configuration
@@ -179,7 +190,7 @@ do
   then
     o="";			# $o means groffer option
     # use "" quotes because of ksh and posh
-    eval "$(cat "$f" | sed -n -e '
+    eval "$(cat "$f" | sed -n '
 # Ignore comments
 /^['"${_SP}${_TAB}"']*#/d
 # Delete leading and final space
@@ -200,7 +211,7 @@ s/^\(-[^ ]*\) \(.*\)$/o="${o} \1 '"${_SQ}"'\2'"${_SQ}"'"/p
 ')"
 
     # Remove leading space
-    o="$(echo "$o" | sed -e 's/^ *//')";
+    o="$(echo "$o" | sed 's/^ *//')";
     if test _"${o}"_ != __
     then
       if test _"{GROFFER_OPT}"_ = __
@@ -225,6 +236,13 @@ fi;
 ########################### Determine the shell
 
 export _SHELL;
+
+supports_func=no;
+foo() { echo bar; } 2>${_NULL_DEV};
+if test _"$(foo)"_ = _bar_
+then
+  supports_func=yes;
+fi;
 
 # use "``" instead of "$()" for using the case ")" construct
 # do not use "" quotes because of ksh
@@ -251,7 +269,7 @@ _SHELL=`
         ;;
       --shell=*|--sh=*|--she=*|--shel=*)
         # delete up to first "=" character
-        s="$(echo x"$1" | sed -e 's/^x[^=]*=//')";
+        s="$(echo x"$1" | sed 's/^x[^=]*=//')";
         ;;
       *)
         shift;
@@ -278,21 +296,37 @@ _SHELL=`
         do
           if test _"$i"_ = __
           then
-            # use the empty argument as the default shell
-            echo empty;
-            break;
+            if test _"${supports_func}"_ = _yes_
+            then
+              # use the empty argument as the default shell
+              echo 'standard shell';
+              break;
+            else
+              echo groffer: standard shell does not support functions. >&2;
+              continue;
+            fi;
           else
             # test $i on being a shell program;
             # use this kind of quoting for posh
             if test _"$(eval "$i -c 'echo ok'" 2>${_NULL_DEV})"_ = _ok_ >&2
             then
-              # shell found
-              cat <<EOF
+              # test whether shell supports functions
+              if eval "$i -c 'foo () { exit 0; }; foo'" 2>${_NULL_DEV}
+              then
+                # shell with function support found
+                cat <<EOF
 ${i}
 EOF
-              break;
+                break;
+              else
+                # if not being a shell with function support go on searching
+                echo groffer: argument $i is not a shell \
+with function support. >&2
+                continue;
+              fi;
             else
               # if not being a shell go on searching
+              echo groffer: argument $i is not a shell. >&2
               continue;
             fi;
           fi;
@@ -313,9 +347,11 @@ EOF
 
 if test _"${_SHELL}"_ = __
 then
-  for s in ksh ash dash pdksh zsh posh
+  # shell sorted by speed, bash is very slow
+  for s in ksh ash dash pdksh zsh posh sh bash
   do
-    if test _"$(eval "$s -c 'echo ok'" 2>${_NULL_DEV})"_ = _ok_ >&2
+    # test on shell with function support
+    if eval "$s -c 'foo () { exit 0; }; foo'" 2>${_NULL_DEV}
     then
       _SHELL="$s";
       break;
@@ -326,7 +362,7 @@ fi;
 
 ########################### start groffer2.sh
 
-if test _"${_SHELL}"_ = _empty_
+if test _"${_SHELL}"_ = _'standard shell'_
 then
   _SHELL='';
 fi;
@@ -334,8 +370,15 @@ fi;
 if test _"${_SHELL}"_ = __
 then
   # no shell found, so start groffer2.sh normally
-  eval . "'${_GROFFER2_SH}'" '"$@"';
-  exit;
+  if test _${supports_func}_ = _yes_
+  then
+    eval . "'${_GROFFER2_SH}'" '"$@"';
+    exit;
+  else
+    echo groffer: standard shell does not support functions; no shell works.\
+Get some free working shell such as bash. >&2
+    exit "${_ERROR}";
+  fi;
 else
   # start groffer2.sh with the found $_SHELL
   # do not quote $_SHELL to allow arguments

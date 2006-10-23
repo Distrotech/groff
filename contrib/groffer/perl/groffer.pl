@@ -2,13 +2,13 @@
 
 # groffer - display groff files
 
-# Source file position: <groff-source>/contrib/groffer/perl/groffer.sh
+# Source file position: <groff-source>/contrib/groffer/perl/groffer.pl
 # Installed position: <prefix>/bin/groffer
 
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 14 Oct 2006
+# Last update: 23 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -30,70 +30,71 @@
 
 ########################################################################
 
-BEGIN {
-  use strict;
-  use warnings;
-  #use diagnostics;
+use strict;
+use warnings;
+#use diagnostics;
 
-  # temporary dir and files
-  use File::Temp qw/ tempfile tempdir /;
+# temporary dir and files
+use File::Temp qw/ tempfile tempdir /;
 
-  # needed for temporary dir
-  use File::Spec;
+# needed for temporary dir
+use File::Spec;
 
-  # for `copy' and `move'
-  use File::Copy;
+# for `copy' and `move'
+use File::Copy;
 
-  # for fileparse, dirname and basename
-  use File::Basename;
+# for fileparse, dirname and basename
+use File::Basename;
 
-  # current working directory
-  use Cwd;
+# current working directory
+use Cwd;
 
-  # $Bin is the directory where this script is located
-  use FindBin;
-}
+# $Bin is the directory where this script is located
+use FindBin;
 
 
 ########################################################################
 # system variables and exported variables
 ########################################################################
 
+our $Dev_Null;
+our $Umask;
+our @Path;
+our $Start_Dir;
+
+our $tmpdir = '';
+our ($fh_cat, $tmp_cat);
+our ($fh_stdin, $tmp_stdin);
+
+our @Addopts_Groff;
+our %Debug;
+our %Opt;
+
+our $Has_Compression;
+our $Has_bzip;
+
+our $Output_File_Name;
+
+our $Apropos_Prog;
+our $Filespec_Arg;
+our $Filespec_Is_Man;
+our $Macro_Pkg;
+our $Manspec;
+our $No_Filespecs;
+our $Special_Filespec;
+our $Special_Setup;
+
+our %Man;
+
 BEGIN {
-  our $Dev_Null = File::Spec->devnull();
+  $Dev_Null = File::Spec->devnull();
 
-  our $Umask = umask 077;
+  $Umask = umask 077;
 
-  our @Path = File::Spec->path();
-
-  our $Start_Dir = getcwd;
+  $Start_Dir = getcwd;
 
   # flush after each print or write command
   $| = 1;
-
-  our $tmpdir = '';
-  our ($fh_cat, $tmp_cat);
-  our ($fh_stdin, $tmp_stdin);
-
-  our @Addopts_Groff;
-  our %Debug;
-  our %Opt;
-
-  our $Has_Compression;
-  our $Has_bzip;
-
-  our $Output_File_Name;
-
-  our $Apropos_Prog;
-  our $Filespec_Arg;
-  our $Filespec_Is_Man;
-  our $Macro_Pkg;
-  our $Manspec;
-  our $No_Filespecs;
-  our $Special_Filespec;
-  our $Special_Setup;
-
-  our %Man;
 }
 
 
@@ -101,11 +102,11 @@ BEGIN {
 # read-only variables with double-@ construct
 ########################################################################
 
+our $File_split_env_sh;
+our $File_version_sh;
+our $Groff_Version;
 
 BEGIN {
-  our $File_split_env_sh;
-  our $File_version_sh;
-
   {
     my $before_make;		# script before run of `make'
     {
@@ -125,7 +126,7 @@ BEGIN {
       $at_at{'G'} = '';
       $at_at{'LIBDIR'} = '';
       $groffer_libdir = $groffer_perl_dir;
-      $file_perl_test_pl = File::Spec->catfile($groffer_top_dir,
+      $file_perl_test_pl = File::Spec->catfile($groffer_perl_dir,
 					       'perl_test.pl');
       $File_version_sh = File::Spec->catfile($groffer_top_dir, 'version.sh');
       $Groff_Version = '';
@@ -156,7 +157,7 @@ BEGIN {
     require 'func.pl';
     require 'man.pl';
 
-    @Path = &path_uniq(@Path);
+    @Path = &path_uniq( File::Spec->path() );
 
     if ( &where_is_prog('gzip') ) {
       $Has_Compression = 1;

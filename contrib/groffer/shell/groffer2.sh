@@ -12,7 +12,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 5 Oct 2006
+# Last update: 22 Oct 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -36,6 +36,12 @@
 ########################################################################
 #             Test of rudimentary shell functionality
 ########################################################################
+
+# Zsh is not Bourne compatible without the following:
+if test -n "$ZSH_VERSION"; then
+  emulate sh
+  NULLCMD=:
+fi
 
 
 ########################################################################
@@ -93,8 +99,8 @@ fi;
 # Test of sed program; test in groffer.sh is not valid here.
 #
 if test _"$(echo xTesTx \
-           | sed -n -e 's/^.\([Tt]e*x*sTT*\).*$/\1/p' \
-           | sed -e 's|T|t|g')"_ != _test_
+           | sed -n 's/^.\([Tt]e*x*sTT*\).*$/\1/p' \
+           | sed 's|T|t|g')"_ != _test_
 then
   echo 'The sed program did not work.' >&2;
   exit "${_ERROR}";
@@ -244,9 +250,9 @@ case " $*" in
       ;;
     --d*-*)
       # before `-'
-      b="$(echo x"$i" | sed -e 's/^x--\([^-]*\)-.*$/\1/')";
+      b="$(echo x"$i" | sed 's/^x--\([^-]*\)-.*$/\1/')";
       # after `-'
-      a="$(echo x"$i" | sed -e 's/^x--[^-]*-\(.*\)$/\1/')";
+      a="$(echo x"$i" | sed 's/^x--[^-]*-\(.*\)$/\1/')";
       ;;
     *)
       continue;
@@ -265,7 +271,7 @@ case " $*" in
         ;;
       esac;
       # extract whole word of double abbreviation
-      s="$(cat <<EOF | sed -n -e 's/^.* \(--'"$b"'[^ -]*-'"$a"'[^ ]*\) .*/\1/p'
+      s="$(cat <<EOF | sed -n 's/^.* \(--'"$b"'[^ -]*-'"$a"'[^ ]*\) .*/\1/p'
 $d
 EOF
 )"
@@ -712,7 +718,7 @@ _PDF_HAS_GS='no';
 _PDF_HAS_PS2PDF='no';
 
 # option -r for soelim
-if echo -n '' | soelim -r 2>${_NULL_DEV} >${_NULL_DEV}
+if : | soelim -r 2>${_NULL_DEV} >${_NULL_DEV}
 then
   _SOELIM_R='-r';
 else
@@ -990,7 +996,7 @@ apropos_filespec()
     if obj _NO_FILESPECS is_yes
     then
       to_tmp_line '.SH no filespec';
-      eval "${_APROPOS_PROG}" | sed -e 's/^/\\\&/' >>"${_TMP_CAT}";
+      eval "${_APROPOS_PROG}" | sed 's/^/\\\&/' >>"${_TMP_CAT}";
       eval "${return_ok}";
     fi;
     eval to_tmp_line \
@@ -1002,23 +1008,23 @@ apropos_filespec()
       then
         s='^.*(..*).*$';
       else
-        s='^.*(['"$(echo1 "${_OPT_SECTIONS}" | sed -e 's/://g')"']';
+        s='^.*(['"$(echo1 "${_OPT_SECTIONS}" | sed 's/://g')"']';
       fi;
     else
       s='^.*(['"${_APROPOS_SECTIONS}"']';
     fi;
 ### apropos_filespec()
-    af_filespec="$(echo1 "${_FILESPEC_ARG}" | sed -e '
+    af_filespec="$(echo1 "${_FILESPEC_ARG}" | sed '
 s,/,\\/,g
 s/\./\\./g
 ')";
     eval "${_APROPOS_PROG}" "'${_FILESPEC_ARG}'" | \
-      sed -n -e '
+      sed -n '
 /^'"${af_filespec}"': /s/^\(.*\)$/\\\&\1/p
 /'"$s"'/p
 ' | \
       sort |\
-      sed -e '
+      sed '
 s/^\(.*(..*).*\)  *-  *\(.*\)$/\.br\n\.TP 15\n\.BR \"\1\"\n\\\&\2/
 ' >>"${_TMP_CAT}";
     eval ${_UNSET} af_filespec;
@@ -1092,7 +1098,7 @@ base_name()
   case "${bn_name}" in
     */)
       # delete all final slashes
-      bn_name="$(echo1 "${bn_name}" | sed -e 's|//*$||')";
+      bn_name="$(echo1 "${bn_name}" | sed 's|//*$||')";
       exit_test;
       ;;
   esac;
@@ -1107,7 +1113,7 @@ base_name()
       ;;
     */*)
       # delete everything before and including the last slash `/'.
-      echo1 "${bn_name}" | sed -e 's|^.*//*\([^/]*\)$|\1|';
+      echo1 "${bn_name}" | sed 's|^.*//*\([^/]*\)$|\1|';
       ;;
     *)
       obj bn_name echo1;
@@ -1261,12 +1267,12 @@ dir_name_chop()
 {
   func_check dir_name_chop = 1 "$@";
   # replace all multiple slashes by a single slash `/'.
-  dc_res="$(echo1 "$1" | sed -e 's|///*|/|g')";
+  dc_res="$(echo1 "$1" | sed 's|///*|/|g')";
   exit_test;
   case "${dc_res}" in
   ?*/)
     # remove trailing slash '/';
-    echo1 "${dc_res}" | sed -e 's|/$||';
+    echo1 "${dc_res}" | sed 's|/$||';
     ;;
   *)
     obj dc_res echo1
@@ -1442,7 +1448,7 @@ ${fc_fname}"'() needs '"${fc_comp} ${fc_nargs}"' argument'"${fc_s}"'.';
       ;;
     *!*)
       # split at first bang `!'.
-      _FUNC_STACK="$(echo1 "${_FUNC_STACK}" | sed -e 's/^[^!]*!//')";
+      _FUNC_STACK="$(echo1 "${_FUNC_STACK}" | sed 's/^[^!]*!//')";
       exit_test;
       ;;
     *)
@@ -1478,7 +1484,7 @@ ${fc_fname}"'() needs '"${fc_comp} ${fc_nargs}"' argument'"${fc_s}"'.';
     case "$1" in
     *'!'*)
       # remove all bangs `!'.
-      fp_element="$(echo1 "$1" | sed -e 's/!//g')";
+      fp_element="$(echo1 "$1" | sed 's/!//g')";
       exit_test;
       ;;
     *)
@@ -1708,7 +1714,7 @@ is_greater_than()
 is_integer()
 {
   func_check is_integer '=' 1 "$@";
-  if is_equal "$(echo1 "$1" | sed -n -e '
+  if is_equal "$(echo1 "$1" | sed -n '
 s/^[0-9][0-9]*$/ok/p
 s/^[-+][0-9][0-9]*$/ok/p
 ')" 'ok'
@@ -2028,7 +2034,7 @@ list_append()
       # escape each single quote by replacing each
       # "'" (squote) by "'\''" (squote bslash squote squote);
       # note that the backslash must be doubled in the following `sed'
-      la_element="$(echo1 "${la_s}" | sed -e 's/'"${_SQ}"'/&\\&&/g')";
+      la_element="$(echo1 "${la_s}" | sed 's/'"${_SQ}"'/&\\&&/g')";
       exit_test;
       ;;
     '')
@@ -2150,10 +2156,10 @@ list_from_cmdline()
     --) break; ;;
     --*=*)
       # delete leading '--';
-      lfc_with_equal="$(echo1 "${lfc_arg}" | sed -e 's/^--//')";
+      lfc_with_equal="$(echo1 "${lfc_arg}" | sed 's/^--//')";
       # extract option by deleting from the first '=' to the end
       lfc_abbrev="$(echo1 "${lfc_with_equal}" | \
-                    sed -e 's/^\([^=]*\)=.*$/\1/')";
+                    sed 's/^\([^=]*\)=.*$/\1/')";
       obj_from_output lfc_opt \
         list_single_from_abbrev lfc_long_a "${lfc_abbrev}";
       if obj lfc_opt is_empty
@@ -2161,7 +2167,7 @@ list_from_cmdline()
         error_user "--${lfc_abbrev} is not an option.";
       else
         # get the option argument by deleting up to first `='
-        lfc_optarg="$(echo1 "${lfc_with_equal}" | sed -e 's/^[^=]*=//')";
+        lfc_optarg="$(echo1 "${lfc_with_equal}" | sed 's/^[^=]*=//')";
         exit_test;
         list_append lfc_result "--${lfc_opt}" "${lfc_optarg}";
         continue;
@@ -2170,7 +2176,7 @@ list_from_cmdline()
       ;;
     --*)
       # delete leading '--';
-      lfc_abbrev="$(echo1 "${lfc_arg}" | sed -e 's/^--//')";
+      lfc_abbrev="$(echo1 "${lfc_arg}" | sed 's/^--//')";
       if list_has lfc_long_n "${lfc_abbrev}"
       then
         lfc_opt="${lfc_abbrev}";
@@ -2212,14 +2218,14 @@ has multiple options: --${lfc_opt} and --${a}.";
       ;;
     -?*)			# short option (cluster)
       # delete leading `-';
-      lfc_rest="$(echo1 "${lfc_arg}" | sed -e 's/^-//')";
+      lfc_rest="$(echo1 "${lfc_arg}" | sed 's/^-//')";
       exit_test;
       while obj lfc_rest is_not_empty
       do
         # get next short option from cluster (first char of $lfc_rest)
-        lfc_optchar="$(echo1 "${lfc_rest}" | sed -e 's/^\(.\).*$/\1/')";
+        lfc_optchar="$(echo1 "${lfc_rest}" | sed 's/^\(.\).*$/\1/')";
         # remove first character from ${lfc_rest};
-        lfc_rest="$(echo1 "${lfc_rest}" | sed -e 's/^.//')";
+        lfc_rest="$(echo1 "${lfc_rest}" | sed 's/^.//')";
         exit_test;
         if list_has lfc_short_n "${lfc_optchar}"
         then
@@ -2386,13 +2392,13 @@ list_from_cmdline_with_minus()
       ;;
     --*=*)
       # delete leading '--';
-      lfcwm_with_equal="$(echo1 "${lfcwm_arg}" | sed -e 's/^--//')";
+      lfcwm_with_equal="$(echo1 "${lfcwm_arg}" | sed 's/^--//')";
       # extract option by deleting from the first '=' to the end
       lfcwm_abbrev="$(echo1 "${lfcwm_with_equal}" | \
-                    sed -e 's/^\([^=]*\)=.*$/\1/')";
+                    sed 's/^\([^=]*\)=.*$/\1/')";
       # extract option argument by deleting up to the first '='
       lfcwm_optarg="$(echo1 "${lfcwm_with_equal}" | \
-                    sed -e 's/^[^=]*=\(.*\)$/\1/')";
+                    sed 's/^[^=]*=\(.*\)$/\1/')";
 ### list_from_cmdline_with_minus()
       if list_has lfcwm_long_a "${lfcwm_abbrev}"
       then
@@ -2406,7 +2412,7 @@ list_from_cmdline_with_minus()
       ;;
     --*)
       # delete leading '--';
-      lfcwm_abbrev="$(echo1 "${lfcwm_arg}" | sed -e 's/^--//')";
+      lfcwm_abbrev="$(echo1 "${lfcwm_arg}" | sed 's/^--//')";
       if list_has lfcwm_long_both "${lfcwm_abbrev}"
       then
         lfcwm_opt="${lfcwm_abbrev}";
@@ -2431,13 +2437,13 @@ list_from_cmdline_with_minus()
       ;;
     -?*)			# short option (cluster)
       # delete leading '-';
-      lfcwm_rest="$(echo1 "${lfcwm_arg}" | sed -e 's/^-//')";
+      lfcwm_rest="$(echo1 "${lfcwm_arg}" | sed 's/^-//')";
       while obj lfcwm_rest is_not_empty
       do
         # get next short option from cluster (first char of $lfcwm_rest)
-        lfcwm_optchar="$(echo1 "${lfcwm_rest}" | sed -e 's/^\(.\).*$/\1/')";
+        lfcwm_optchar="$(echo1 "${lfcwm_rest}" | sed 's/^\(.\).*$/\1/')";
         # remove first character from ${lfcwm_rest};
-        lfcwm_rest="$(echo1 "${lfcwm_rest}" | sed -e 's/^.//')";
+        lfcwm_rest="$(echo1 "${lfcwm_rest}" | sed 's/^.//')";
         if list_has lfcwm_short_n "${lfcwm_optchar}"
         then
           list_append lfcwm_result "-${lfcwm_optchar}";
@@ -2542,7 +2548,7 @@ _search_abbrev()
     error "_search_abbrev(): abbreviation argument is empty.";
   fi;
 
-  _sa_case="$(echo1 "${_sa_abbrev}" | sed -e 's/-/\*-/g')";
+  _sa_case="$(echo1 "${_sa_abbrev}" | sed 's/-/\*-/g')";
   _sa_opt='';
   case " ${_sa_list}" in
   *\ \'${_sa_case}*)		# list has the abbreviation
@@ -2629,7 +2635,7 @@ list_from_file()
   then
     eval "${return_bad}";
   fi;
-  lff_n="$(wc -l "$2" | eval sed -e "'s/^[ ${_TAB}]*\([0-9]\+\).*$/\1/'")";
+  lff_n="$(wc -l "$2" | eval sed "'s/^[ ${_TAB}]*\([0-9]\+\).*$/\1/'")";
   eval "$1"="''";
   if obj lff_n is_equal 0
   then
@@ -2639,7 +2645,7 @@ list_from_file()
   while obj lff_i is_not_equal "${lff_n}"
   do
     lff_i="$(expr "${lff_i}" + 1)";
-    list_append "$1" "$(eval sed -n -e "'${lff_i}p
+    list_append "$1" "$(eval sed -n "'${lff_i}p
 ${lff_i}q'" "'$2'")";
   done;
   eval "${_UNSET}" lff_i;
@@ -2685,16 +2691,16 @@ list_from_split()
     *${lfs_splitter}*)
       case "${lfs_splitter}" in
       /)
-        lfs_elt="$(echo1 ${lfs_rest} | sed -e \
+        lfs_elt="$(echo1 ${lfs_rest} | sed \
           's|^\([^'"${lfs_splitter}"']*\)'"${lfs_splitter}"'.*|\1|')";
-        lfs_rest="$(echo1 ${lfs_rest} | sed -e \
+        lfs_rest="$(echo1 ${lfs_rest} | sed \
           's|^[^'"${lfs_splitter}"']*'"${lfs_splitter}"'\(.*\)$|\1|')";
         ;;
       *)
 ### list_from_split()
-        lfs_elt="$(echo1 ${lfs_rest} | sed -e \
+        lfs_elt="$(echo1 ${lfs_rest} | sed \
           's/^\([^'"${lfs_splitter}"']*\)'"${lfs_splitter}"'.*/\1/')";
-        lfs_rest="$(echo1 ${lfs_rest} | sed -e \
+        lfs_rest="$(echo1 ${lfs_rest} | sed \
           's/^[^'"${lfs_splitter}"']*'"${lfs_splitter}"'\(.*\)$/\1/')";
         ;;
       esac;
@@ -2777,7 +2783,7 @@ list_has_abbrev()
   fi;
   case "$2" in
   \'*)
-    lha_element="$(echo1 "$2" | sed -e 's/'"${_SQ}"'$//')";
+    lha_element="$(echo1 "$2" | sed 's/'"${_SQ}"'$//')";
     ;;
   *)
     lha_element="'$2";
@@ -3441,7 +3447,7 @@ man_setup()
     *)
       _MAN_LANG="${ms_lang}";
       # get first two characters of $ms_lang
-      _MAN_LANG2="$(echo1 "${ms_lang}" | sed -e 's/^\(..\).*$/\1/')";
+      _MAN_LANG2="$(echo1 "${ms_lang}" | sed 's/^\(..\).*$/\1/')";
       exit_test;
       ;;
   esac;
@@ -3494,7 +3500,10 @@ man_setup()
     do
       for j in "$i"/man*
       do
-        find "$j" >>"${_TMP_MAN}";
+        if obj j is_dir
+	then
+          find "$j" >>"${_TMP_MAN}";
+        fi;
       done
     done;
   fi;
@@ -3655,7 +3664,7 @@ manpath_set_from_path()
   if obj PATH is_not_empty
   then
     # delete the final `/bin' part
-    p="$(echo1 "${PATH}" | sed -e 's|//*bin/*:|:|g')";
+    p="$(echo1 "${PATH}" | sed 's|//*bin/*:|:|g')";
     obj_from_output msfp_list path_list "$p";
     # append some default directories
     for b in /usr/local /usr/local /usr /usr \
@@ -3844,7 +3853,7 @@ path_chop()
 
   # replace multiple colons by a single colon `:'
   # remove leading and trailing colons
-  echo1 "$1" | sed -e '
+  echo1 "$1" | sed '
 s/^:*//
 s/:::*/:/g
 s/:*$//
@@ -4049,13 +4058,13 @@ register_title()
   # remove directory part
   obj_from_output rt_title base_name "$1";
   # replace space characters by `_'
-  rt_title="$(echo1 "${rt_title}" | sed -e 's/[ 	]/_/g')";
+  rt_title="$(echo1 "${rt_title}" | sed 's/[ 	]/_/g')";
   # remove extension `.bz2'
-  rt_title="$(echo1 "${rt_title}" | sed -e 's/\.bz2$//')";
+  rt_title="$(echo1 "${rt_title}" | sed 's/\.bz2$//')";
   # remove extension `.gz'
-  rt_title="$(echo1 "${rt_title}" | sed -e 's/\.gz$//')";
+  rt_title="$(echo1 "${rt_title}" | sed 's/\.gz$//')";
   # remove extension `.Z'
-  rt_title="$(echo1 "${rt_title}" | sed -e 's/\.Z$//')";
+  rt_title="$(echo1 "${rt_title}" | sed 's/\.Z$//')";
 
   if obj rt_title is_empty
   then
@@ -4365,11 +4374,11 @@ to_tmp()
         tt_tmp="${_TMP_DIR}/,tmp";
         cat_z "${tt_1}" >"${tt_file}";
         grep '^\.[ 	]*so[ 	]' "${tt_file}" |
-	  sed -e 's/^\.[ 	]*so[ 	]*//' >"${tt_tmp}";
+	  sed 's/^\.[ 	]*so[ 	]*//' >"${tt_tmp}";
         list_from_file tt_list "${tt_tmp}";
         eval set x ${tt_list};
         shift;
-        for i in "$@"
+        for i
         do
           tt_i="$i";
           tt_so_nr="$(expr ${tt_so_nr} + 1)";
@@ -4392,7 +4401,7 @@ to_tmp()
       obj_from_output tt_grog grog "${tt_file}";
       case " ${tt_grog} " in
       *\ -m*)
-        eval set x "$(echo1 " ${tt_grog} " | sed -e '
+        eval set x "$(echo1 " ${tt_grog} " | sed '
 s/'"${_TAB}"'/ /g
 s/  */ /g
 s/ -m / -m/g
@@ -4478,7 +4487,7 @@ s/ -mm\([^ ]\)/ -m\1/g
 _do_man_so() {
   func_check _do_man_so '=' 1 "$@";
   _dms_so="$1";			# evt. with `\ '
-  _dms_soname="$(echo $1 | sed -e 's/\\[ 	]/ /g')"; # without `\ '
+  _dms_soname="$(echo $1 | sed 's/\\[ 	]/ /g')"; # without `\ '
   case "${_dms_soname}" in
   /*)				# absolute path
     if test -f "${_dms_soname}"
@@ -4547,8 +4556,8 @@ _do_man_so() {
     echo2 "file from .so: ${_dms_so}";
   fi;
   cat_z "${_dms_sofound}" >"${tt_sofile}";
-  _dms_esc="$(echo ${_dms_so} | sed -e 's/\\/\\\\/g')";
-  cat "${tt_file}" | eval sed -e \
+  _dms_esc="$(echo ${_dms_so} | sed 's/\\/\\\\/g')";
+  cat "${tt_file}" | eval sed \
 "'s#^\\.[ 	]*so[ 	]*\(${_dms_so}\|${_dms_esc}\|${_dms_soname}\)[ 	]*\$'"\
 "'#.so ${tt_sofile}#'" \
     >"${tt_tmp}";
@@ -4721,7 +4730,7 @@ EOF
 version()
 {
   func_check version = 0 "$@";
-  y="$(echo "${_LAST_UPDATE}" | sed -e 's/^.* //')";
+  y="$(echo "${_LAST_UPDATE}" | sed 's/^.* //')";
   cat <<EOF
 groffer ${_PROGRAM_VERSION} of ${_LAST_UPDATE} (shell version)
 is part of groff version ${_GROFF_VERSION}.
@@ -4790,7 +4799,7 @@ EOF
 
   # get the parts of the file name
   wf_name="$(base_name $1)";
-  wf_section="$(echo1 $1 | sed -n -e '
+  wf_section="$(echo1 $1 | sed -n '
 s|^.*/man\('"${_MAN_AUTO_SEC_CHARS}"'\).*$|\1|p
 ')";
   if obj wf_section is_not_empty
@@ -4807,14 +4816,14 @@ s|^.*/man\('"${_MAN_AUTO_SEC_CHARS}"'\).*$|\1|p
     esac
     if obj s is_yes
     then
-      wf_name="$(echo1 ${wf_name} | sed -e '
+      wf_name="$(echo1 ${wf_name} | sed '
 s/^\(.*\)\.'${wf_section}'.*$/\1/
 ')";
     fi;
   fi;
 
   # traditional man style; grep the line containing `.TH' macro, if any
-  wf_res="$(cat_z "$1" | sed -e '
+  wf_res="$(cat_z "$1" | sed '
 /'"${wf_dot}"'TH /p
 d
 ')";
@@ -4825,7 +4834,7 @@ d
     # - delete up to first .SH;
     # - print all lines before the next .SH;
     # - quit.
-    wf_res="$(cat_z "$1" | sed -n -e '
+    wf_res="$(cat_z "$1" | sed -n '
 1,/'"${wf_dot}"'SH/d
 /'"${wf_dot}"'SH/q
 p
@@ -4844,7 +4853,7 @@ p
       esac;
       if obj s is_yes
       then
-        wf_res="$(obj wf_res echo1 | sed -e '
+        wf_res="$(obj wf_res echo1 | sed '
 s/^'"${wf_name}${_SPACE_SED}"'[^-]*-'"${_SPACE_SED}"'*\(.*\)$/'"${wf_name}"' ('"${wf_section}"') \\[em] \1/
 ')";
       fi;
@@ -4860,13 +4869,13 @@ s/^'"${wf_name}${_SPACE_SED}"'[^-]*-'"${_SPACE_SED}"'*\(.*\)$/'"${wf_name}"' ('"
   fi;
 
   # mdoc style (BSD doc); grep the line containing `.Nd' macro, if any
-  wf_res="$(cat_z "$1" | sed -n -e '/'"${wf_dot}"'Nd /s///p')";
+  wf_res="$(cat_z "$1" | sed -n '/'"${wf_dot}"'Nd /s///p')";
   exit_test;
   if obj wf_res is_not_empty
   then				# BSD doc style
     if obj wf_section is_not_empty
     then
-      wf_res="$(obj wf_res echo1 | sed -n -e '
+      wf_res="$(obj wf_res echo1 | sed -n '
 s/^\(.*\)$/'"${wf_name}"' ('"${wf_section}"') \\[em] \1/p
 ')";
     fi;
@@ -4967,9 +4976,9 @@ where_is_prog()
   fi;
 
   # Remove disturbing multiple spaces and tabs
-  wip_1="$(echo1 "$1" | sed -e 's/[ 	][ 	]*/ /g' | \
-           sed -e 's/\(\\\)* / /g' | sed -e 's/^ //' | sed -e 's/ $//')";
-  wip_noarg="$(echo1 "${wip_1}" | sed -e 's/ -.*$//')";
+  wip_1="$(echo1 "$1" | sed 's/[ 	][ 	]*/ /g' | \
+           sed 's/\(\\\)* / /g' | sed 's/^ //' | sed 's/ $//')";
+  wip_noarg="$(echo1 "${wip_1}" | sed 's/ -.*$//')";
   exit_test;
 
   if obj wip_noarg is_empty
@@ -4982,7 +4991,7 @@ where_is_prog()
   case "${wip_1}" in
   *\ -*)
     wip_args="$(echo1 "${wip_1}" |
-                eval sed -e "'s#^${wip_noarg} ##'")";
+                eval sed "'s#^${wip_noarg} ##'")";
     exit_test;
     ;;
   *)
@@ -5016,7 +5025,7 @@ where_is_prog()
     obj_from_output wip_dir dir_name "${wip_noarg}";
     case "${wip_name}" in
     *\ *)
-      wip_base="$(echo1 "${wip_name}" | sed -e 's/ .*$//')";
+      wip_base="$(echo1 "${wip_name}" | sed 's/ .*$//')";
       exit_test;
       obj_from_output wip_file dir_name_append "${wip_dir}" "${wip_base}";
       exit_test;
@@ -5024,7 +5033,7 @@ where_is_prog()
       if test -f "${wip_file}" && test -x "${wip_file}"
       then
         wip_baseargs="$(echo1 "${wip_name}" |
-                        eval sed -e "'s#^${wip_base} ##'")";
+                        eval sed "'s#^${wip_base} ##'")";
         exit_test;
         if obj wip_args is_empty
         then
@@ -5096,7 +5105,7 @@ where_is_prog()
   case "${wip_noarg}" in
   *\ *)
     # test on path with base name without space
-    wip_base="$(echo1 "${wip_noarg}" | sed -e 's/^\([^ ]*\) .*$/\1/')";
+    wip_base="$(echo1 "${wip_noarg}" | sed 's/^\([^ ]*\) .*$/\1/')";
     exit_test;
     for d
     do
@@ -5109,7 +5118,7 @@ where_is_prog()
       if test -f "${wip_file}" && test -x "${wip_file}"
       then
         wip_baseargs="$(echo1 "${wip_noarg}" |
-                        sed -e 's/[^ ]* \(.*\)$/\1/')";
+                        sed 's/[^ ]* \(.*\)$/\1/')";
         exit_test;
         if obj wip_args is_empty
         then
@@ -5279,7 +5288,7 @@ main_parse_MANOPT()
   if obj MANOPT is_not_empty
   then
     # Delete leading and final spaces
-    MANOPT="$(echo1 "${MANOPT}" | sed -e '
+    MANOPT="$(echo1 "${MANOPT}" | sed '
 s/^'"${_SPACE_SED}"'*//
 s/'"${_SPACE_SED}"'*$//
 ')";
@@ -5467,7 +5476,7 @@ main_parse_args()
       ;;
     -?)
       # delete leading `-'
-      mpa_optchar="$(echo1 "${mpa_opt}" | sed -e 's/^-//')";
+      mpa_optchar="$(echo1 "${mpa_opt}" | sed 's/^-//')";
       exit_test;
       if list_has _OPTS_GROFF_SHORT_NA "${mpa_optchar}"
       then
@@ -6461,7 +6470,7 @@ main_do_fileargs()
     case "${mdfa_filespec}" in
     man:*)
         mdfa_names="${mdfa_names} "\
-"$(obj mdfa_filespec echo1 | sed -e 's/^man://')";
+"$(obj mdfa_filespec echo1 | sed 's/^man://')";
         ;;
     esac;
 
@@ -6478,9 +6487,9 @@ main_do_fileargs()
       fi;
       case "${mdfa_i}" in
       *\(${_MAN_AUTO_SEC_CHARS}*\))
-        mdfa_section="$(obj mdfa_i echo1 | sed -e 's/^[^(]*(\(.\).*)$/\1/')";
-        mdfa_name="$(obj mdfa_i echo1 | sed -e 's/^\([^(]*\)(.*)$/\1/')";
-        mdfa_ext="$(obj mdfa_i echo1 | sed -e 's/^[^(]*(.\(.*\))$/\1/')";
+        mdfa_section="$(obj mdfa_i echo1 | sed 's/^[^(]*(\(.\).*)$/\1/')";
+        mdfa_name="$(obj mdfa_i echo1 | sed 's/^\([^(]*\)(.*)$/\1/')";
+        mdfa_ext="$(obj mdfa_i echo1 | sed 's/^[^(]*(.\(.*\))$/\1/')";
         if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
         then
           special_filespec;
@@ -6491,11 +6500,11 @@ main_do_fileargs()
         ;;
       *.${_MAN_AUTO_SEC_CHARS}*)
         mdfa_name="$(obj mdfa_i echo1 | \
-          sed -e 's/^\(.*\)\.'"${_MAN_AUTO_SEC_CHARS}"'.*$/\1/')";
+          sed 's/^\(.*\)\.'"${_MAN_AUTO_SEC_CHARS}"'.*$/\1/')";
         mdfa_section="$(obj mdfa_i echo1 | \
-          sed -e 's/^.*\.\('"${_MAN_AUTO_SEC_CHARS}"'\).*$/\1/')";
+          sed 's/^.*\.\('"${_MAN_AUTO_SEC_CHARS}"'\).*$/\1/')";
         mdfa_ext="$(obj mdfa_i echo1 | \
-          sed -e 's/^.*\.'"${_MAN_AUTO_SEC_CHARS}"'\(.*\)$/\1/')";
+          sed 's/^.*\.'"${_MAN_AUTO_SEC_CHARS}"'\(.*\)$/\1/')";
         if man_is_man "${mdfa_name}" "${mdfa_section}" "${mdfa_ext}"
         then
           special_filespec;
@@ -6524,9 +6533,9 @@ main_do_fileargs()
         ;;
       ${_MAN_AUTO_SEC_CHARS}*)
         mdfa_section="$(echo1 "${mdfa_filespec}" | \
-                        sed -e 's/^\(.\).*$/\1/')";
+                        sed 's/^\(.\).*$/\1/')";
         mdfa_ext="$(echo1 "${mdfa_filespec}" | \
-                    sed -e 's/^.\(.*\)$/\1/')";
+                    sed 's/^.\(.*\)$/\1/')";
         ;;
       *)
         echo2 "${mdfa_filespec} ${mdfa_errmsg}";
@@ -6591,7 +6600,7 @@ main_set_resources()
       continue;
       ;;
     ,*)
-      msr_n="$(echo1 "$1" | sed -e 's/^,,*//')";
+      msr_n="$(echo1 "$1" | sed 's/^,,*//')";
       exit_test;
       ;;
     esac;
