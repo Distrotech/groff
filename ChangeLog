@@ -1,3 +1,26 @@
+2006-10-26  Werner LEMBERG  <wl@gnu.org>
+
+	Add `\%^' escape to handle the parameters to a macro as a string
+	argument.
+
+	* src/roff/troff/input.h (DOUBLE_QUOTE): New special character.
+
+	* src/roff/troff/input.cpp (input_iterator, input_stack,
+	macro_iterator): Add `space_follows_arg' member function.
+	(macro_iterator::add_arg): Add parameter to set the `space_follows'
+	flag.
+	(arg_list): Add member `space_follows'.
+	Update constructor and all callers.
+	(decode_args): Store discarded double quotes.
+	(interpolate_args): Handle DOUBLE_QUOTE.
+	Add `\%^' escape.
+	(get_copy, token::next, composite_glyph_name): Handle DOUBLE_QUOTE.
+
+	* tmac/trace.tmac: Trace .nr, .ds, .ds1, .as, .as1.
+
+	* docs/groff.texinfo (Parameters), man/groff.man,
+	man/groff_diff.man, NEWS: Document it.
+
 2006-10-24  Bernd Warken
 
 	* Makefile.in (NOMAKEDIRS): Add groffer subdirectories.

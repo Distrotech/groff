@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2001, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 2001, 2004, 2006 Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -59,6 +59,7 @@ const int PUSH_COMP_MODE = 0212;
 const int POP_GROFFCOMP_MODE = 0213;
 const int BEGIN_QUOTE = 0214;
 const int END_QUOTE = 0215;
+const int DOUBLE_QUOTE = 0216;
 
 #else /* IS_EBCDIC_HOST */
 
@@ -98,6 +99,7 @@ const int PUSH_COMP_MODE = 072;
 const int POP_GROFFCOMP_MODE = 073;
 const int BEGIN_QUOTE = 074;
 const int END_QUOTE = 075;
+const int DOUBLE_QUOTE = 076;
 
 #endif /* IS_EBCDIC_HOST */
 

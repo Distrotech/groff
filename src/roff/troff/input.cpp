@@ -217,6 +217,7 @@ private:
   virtual int has_args() { return 0; }
   virtual int nargs() { return 0; }
   virtual input_iterator *get_arg(int) { return 0; }
+  virtual int space_follows_arg(int) { return 0; }
   virtual int get_break_flag() { return 0; }
   virtual int get_location(int, const char **, int *) { return 0; }
   virtual void backtrace() {}
@@ -417,6 +418,7 @@ public:
   static int peek();
   static void push(input_iterator *);
   static input_iterator *get_arg(int);
+  static int space_follows_arg(int);
   static int get_break_flag();
   static int nargs();
   static int get_location(int, const char **, int *);
@@ -621,6 +623,15 @@ input_iterator *input_stack::get_arg(int i)
   for (p = top; p != 0; p = p->next)
     if (p->has_args())
       return p->get_arg(i);
+  return 0;
+}
+
+int input_stack::space_follows_arg(int i)
+{
+  input_iterator *p;
+  for (p = top; p != 0; p = p->next)
+    if (p->has_args())
+      return p->space_follows_arg(i);
   return 0;
 }
 
@@ -872,7 +883,7 @@ static symbol read_long_escape_name(read_mode mode)
   if (buf == abuf) {
     if (i == 0) {
       if (mode != ALLOW_EMPTY)
-        copy_mode_error("empty escape name");
+	copy_mode_error("empty escape name");
       return EMPTY_SYMBOL;
     }
     return symbol(abuf);
@@ -955,6 +966,8 @@ static int get_copy(node **nd, int defining)
       input_stack::decrease_level();
       continue;
     }
+    if (c == DOUBLE_QUOTE)
+      continue;
     if (c == ESCAPE_NEWLINE) {
       if (defining)
 	return c;
@@ -1706,6 +1719,8 @@ void token::next()
 	continue;
       case END_QUOTE:
 	input_stack::decrease_level();
+	continue;
+      case DOUBLE_QUOTE:
 	continue;
       case EOF:
 	type = TOKEN_EOF;
@@ -3577,12 +3592,13 @@ input_iterator *make_temp_iterator(const char *s)
 
 struct arg_list {
   macro mac;
+  int space_follows;
   arg_list *next;
-  arg_list(const macro &);
+  arg_list(const macro &, int);
   ~arg_list();
 };
 
-arg_list::arg_list(const macro &m) : mac(m), next(0)
+arg_list::arg_list(const macro &m, int s) : mac(m), space_follows(s), next(0)
 {
 }
 
@@ -3599,11 +3615,12 @@ public:
   macro_iterator();
   ~macro_iterator();
   int has_args() { return 1; }
-  input_iterator *get_arg(int i);
+  input_iterator *get_arg(int);
+  int space_follows_arg(int);
   int get_break_flag() { return with_break; }
   int nargs() { return argc; }
-  void add_arg(const macro &m);
-  void shift(int n);
+  void add_arg(const macro &, int);
+  void shift(int);
   int is_macro() { return 1; }
   int is_diversion();
 };
@@ -3624,12 +3641,26 @@ input_iterator *macro_iterator::get_arg(int i)
     return 0;
 }
 
-void macro_iterator::add_arg(const macro &m)
+int macro_iterator::space_follows_arg(int i)
+{
+  if (i > 0 && i <= argc) {
+    arg_list *p = args;
+    for (int j = 1; j < i; j++) {
+      assert(p != 0);
+      p = p->next;
+    }
+    return p->space_follows;
+  }
+  else
+    return 0;
+}
+
+void macro_iterator::add_arg(const macro &m, int s)
 {
   arg_list **p;
   for (p = &args; *p; p = &((*p)->next))
     ;
-  *p = new arg_list(m);
+  *p = new arg_list(m, s);
   ++argc;
 }
 
@@ -3729,15 +3760,18 @@ static void decode_args(macro_iterator *mi)
       macro arg;
       int quote_input_level = 0;
       int done_tab_warning = 0;
+      arg.append(compatible_flag ? PUSH_COMP_MODE : PUSH_GROFF_MODE);
+      // we store discarded double quotes for \$^
       if (c == '"') {
+	arg.append(DOUBLE_QUOTE);
 	quote_input_level = input_stack::get_level();
 	c = get_copy(&n);
       }
-      arg.append(compatible_flag ? PUSH_COMP_MODE : PUSH_GROFF_MODE);
       while (c != EOF && c != '\n' && !(c == ' ' && quote_input_level == 0)) {
 	if (quote_input_level > 0 && c == '"'
 	    && (compatible_flag
 		|| input_stack::get_level() == quote_input_level)) {
+	  arg.append(DOUBLE_QUOTE);
 	  c = get_copy(&n);
 	  if (c == '"') {
 	    arg.append(c);
@@ -3760,7 +3794,7 @@ static void decode_args(macro_iterator *mi)
 	}
       }
       arg.append(POP_GROFFCOMP_MODE);
-      mi->add_arg(arg);
+      mi->add_arg(arg, (c == ' '));
     }
   }
 }
@@ -3811,7 +3845,7 @@ static void decode_string_args(macro_iterator *mi)
 	c = get_copy(&n);
       }
     }
-    mi->add_arg(arg);
+    mi->add_arg(arg, (c == ' '));
   }
 }
 
@@ -3917,7 +3951,8 @@ static symbol composite_glyph_name(symbol nm)
     gl.clear();
     int c;
     while ((c = p->get(0)) != EOF)
-      gl += c;
+      if (c != DOUBLE_QUOTE)
+	gl += c;
     gl += '\0';
     const char *u = glyph_name_to_unicode(gl.contents());
     if (!u) {
@@ -4233,7 +4268,8 @@ static void interpolate_arg(symbol nm)
       input_iterator *p = input_stack::get_arg(i);
       int c;
       while ((c = p->get(0)) != EOF)
-	args += c;
+	if (c != DOUBLE_QUOTE)
+	  args += c;
       if (i != limit)
 	args += ' ';
     }
@@ -4251,10 +4287,30 @@ static void interpolate_arg(symbol nm)
       input_iterator *p = input_stack::get_arg(i);
       int c;
       while ((c = p->get(0)) != EOF)
-	args += c;
+	if (c != DOUBLE_QUOTE)
+	  args += c;
       args += END_QUOTE;
       args += '"';
       if (i != limit)
+	args += ' ';
+    }
+    if (limit > 0) {
+      args += '\0';
+      input_stack::push(make_temp_iterator(args.contents()));
+    }
+  }
+  else if (s[0] == '^' && s[1] == '\0') {
+    int limit = input_stack::nargs();
+    string args;
+    int c = input_stack::peek();
+    for (int i = 1; i <= limit; i++) {
+      input_iterator *p = input_stack::get_arg(i);
+      while ((c = p->get(0)) != EOF) {
+	if (c == DOUBLE_QUOTE)
+	  c = '"';
+	args += c;
+      }
+      if (input_stack::space_follows_arg(i))
 	args += ' ';
     }
     if (limit > 0) {
@@ -4555,12 +4611,12 @@ void chop_macro()
       // there due to empty am1 requests.
       for (;;) {
 	if (m->get(m->len - 1) != POP_GROFFCOMP_MODE)
-          break;
+	  break;
 	have_restore = 1;
 	m->len -= 1;
 	if (m->get(m->len - 1) != PUSH_GROFF_MODE
 	    && m->get(m->len - 1) != PUSH_COMP_MODE)
-          break;
+	  break;
 	have_restore = 0;
 	m->len -= 1;
 	if (m->len == 0)
@@ -6935,7 +6991,7 @@ void pipe_output()
 	pipe_command = s;
       }
       else
-        pipe_command = pc;
+	pipe_command = pc;
     }
 #endif /* not POPEN_MISSING */
   }

@@ -11248,6 +11248,30 @@ spaces.  If not in compatibility mode, the input level of double quotes
 is preserved (see @ref{Request and Macro Arguments}).
 @endDefesc
 
+@Defesc {\\$^, , , }
+Handle the parameters of a macro as if they were an argument to the
+@code{ds} or similar requests.
+
+@Example
+.de foo
+.  tm $1=`\\$1'
+.  tm $2=`\\$2'
+.  tm $*=`\\$*'
+.  tm $@@=`\\$@@'
+.  tm $^=`\\$^'
+..
+.foo " This is a "test"
+    @result{} $1=` This is a '
+    @result{} $2=`test"'
+    @result{} $*=` This is a  test"'
+    @result{} $@@=`" This is a " "test""'
+    @result{} $^=`" This is a "test"'
+@endExample
+
+This escape is useful mainly for macro packages like @file{trace.tmac} which
+redefines some requests and macros for debugging purposes.
+@endDefesc
+
 @Defesc {\\$0, , , }
 @cindex macro name register (@code{\$0})
 @cindex @code{als} request, and @code{\$0}
