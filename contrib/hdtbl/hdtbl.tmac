@@ -93,6 +93,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .nr t*# 0	\"	table nesting level
 .nr t*numb 0 1	\"	held table diversion #
 .
+.ds *#trc*
+.
 .
 .\"	*****************************************************************
 .\"	*	The four base macros and the two optional macros	*
@@ -127,7 +129,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      tm \\n[.F]:\\n[.c]: Invalid number of columns value `\\*[cols]'.
 .  \}
 .
-.  getarg cpd \\*[args]               \"	cell padding
+.  getarg cpd \\*[args]                 \"	cell padding
 .  ie "\\*[cpd]"" \
 .    nr t*cpd\\n[t*#] \\n[t*cpd]
 .  el \{\
@@ -137,7 +139,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      tm \\n[.F]:\\n[.c]: Invalid cell padding value `\\*[cpd]'.
 .  \}
 .
-.  getarg csp \\*[args]               \"	cell spacing
+.  getarg csp \\*[args]                 \"	cell spacing
 .  ie "\\*[csp]"" \
 .    nr t*csp\\n[t*#] \\n[t*csp]
 .  el \{\
@@ -147,7 +149,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      tm \\n[.F]:\\n[.c]: Invalid cell spacing value `\\*[csp]'.
 .  \}
 .
-.  getarg border \\*[args]            \"	border thickness
+.  getarg border \\*[args]              \"	border thickness
 .  ie "\\*[border]"=" \
 .    nr t*b\\n[t*#] 0-1
 .  el \{\
@@ -160,7 +162,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .        tm \\n[.F]:\\n[.c]: Invalid border thickness value `\\*[border]'.
 .  \}\}
 .
-.  getarg bc \\*[args]                \"	border color
+.  getarg bc \\*[args]                  \"	border color
 .  ds t*bc\\n[t*#] \\*[t*bc]\"
 .  if !"\\*[bc]"" \{\
 .    ie m\\*[bc] \
@@ -180,14 +182,14 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      ds t*bc\\n[t*#] \\*[bc]\"
 .  \}
 .
-.  getarg width \\*[args]             \"	table/col widths
+.  getarg width \\*[args]               \"	table/col widths
 .  if "\\*[width]"=" \
 .    ds width
 .
 .  nr b/2\\n[t*#] (\\n[t*b\\n[t*#]] / 2)\"	shortcut
 .  nr cscp\\n[t*#] (\\n[t*csp\\n[t*#]] + \\n[t*cpd\\n[t*#]])\"  aux. register
 .
-.  getarg height \\*[args]            \"	table outline height
+.  getarg height \\*[args]              \"	table outline height
 .  ie "\\*[height]"" \
 .    nr t*height\\n[t*#] 0
 .  el \{\
@@ -199,10 +201,10 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      tm \\n[.F]:\\n[.c]: Invalid height value `\\*[height]'.
 .  \}
 .
-.  t*cl \\*[width]                    \"	get cell widths and indents
-.  t*args \\n[t*#]                    \"	look for common arguments
+.  t*cl \\*[width]                      \"	get cell widths and offsets
+.  t*args \\n[t*#]                      \"	look for common arguments
 .
-.  getarg tal \\*[args]               \"	table horizontal alignment
+.  getarg tal \\*[args]                 \"	table horizontal alignment
 .  if "\\*[tal]"" \
 .    ds tal \\*[t*tal]\"
 .  ie "\\*[tal]"l" \
@@ -214,15 +216,14 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      ie "\\*[tal]"r" \
 .        nr in\\n[t*#] (\\n[.l] - \\n[ll\\n[t*#]] + \\n[.i])
 .      el \{\
-.        tmc \\n[.F]:\\n[.c]: Invalid `tal' value `\\*[tal]':
+.        tmc \\n[.F]:\\n[.c]: Invalid horizontal table alignment `\\*[tal]':
 .        tm1 " must be `l', `c' or `r'.
 .  \}\}\}
 .
-.  nr t*r#\\n[t*#] 0 1		      \"	rowindex in TBL
+.  nr t*r#\\n[t*#] 0		        \"	initialize row index
 .  mk toptbl\\n[t*#]
 .
 .  P1 \\*[args]
-.\" \\..                              \"	XXX
 ..
 .
 .
@@ -279,26 +280,34 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"		successor:	TD
 .de TR
 .  ft 1
-.  if !\\n[t*#] \
+.  if !\\n[t*#] \{\
 .    tm \\n[.F]:\\n[.c]: Table row (.TR) without preceding table start (.TBL).
+.    return
+.  \}
 .
+.  \" finish previous data cell, if any
 .  if \\n[t*r#\\n[t*#]] \
 .    t*dntr 1 \\n[c#\\*[#t#r]] \\n[t*cols\\n[t*#]] \\*[*#trc*]
 .
-.  nr t*r#\\n[t*#] +1			\"	row# of this table
-.  ds #t#r \\n[t*#]*\\n[t*r#\\n[t*#]]\"
-.  nr c#\\*[#t#r] 0 1			\"	clear cellcounter
-.  nr dntr\\*[#t#r] 0 1			\"	clear accumulated row height1
+.  nr t*r#\\n[t*#] +1			\"	row number of this table
+.  ds #t#r \\n[t*#]*\\n[t*r#\\n[t*#]]\"		table row identifier
+.					\"	(<level>*<row>)
+.  nr c#\\*[#t#r] 0 1			\"	clear cell counter
+.  nr dntr\\*[#t#r] 0 1			\"	clear accumulated row height
 .
 .  getarg height \\$@
 .  ie "\\*[height]"" \
 .    nr t*height\\*[#t#r] 0
-.  el \
-.    nr t*height\\*[#t#r] \\*[height]
+.  el \{\
+.    ie \B\\*[height] \
+.      nr t*height\\*[#t#r] \\*[height]
+.    el \
+.      tm \\n[.F]:\\n[.c]: Invalid table row height `\\*[height]'.
+.  \}
 .
 .  \"	If there is a TR with height `height', the total height of the table
-.  \"	is too high by 3/2 b, independent of the numer of TR with `height'.
-.  t*args \\*[#t#r] \\n[t*#]
+.  \"	is too high by 3/2 b, independent of the number of TR with `height'.
+.  t*args \\*[#t#r] \\n[t*#]            \"	look for common arguments
 .
 .  P1 \\*[args]
 ..
@@ -321,9 +330,11 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"		successor:	text, TD, TR, TBL or ETB
 .de TD
 .  ft 1
-.  t*dntr 0 \\n[c#\\*[#t#r]]-1 \\\\n[c#\\*[#t#r]] \\*[*#trc*]\"	four backslashes!
+.  \" finish previous data cell -- note the use of \E
+.  t*dntr 0 \\n[c#\\*[#t#r]]-1 \En[c#\\*[#t#r]] \\*[*#trc*]
 .
-.  ds *#trc* \\*[#t#r]*\\n[c#\\*[#t#r]]\"
+.  ds *#trc* \\*[#t#r]*\\n[c#\\*[#t#r]]\"	table cell identifier
+.					\"	(<level>*<row>*<column>)
 .
 .  getarg rowspan \\$@
 .  nr rowspan 1
@@ -361,7 +372,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  nr *c \\n[c#\\*[#t#r]]
 .
 .  if (\\n[colspan] - 1) \{\
-.    nr vl\\*[*#trc*] 0-1	\"	no vl flag
+.    nr vl\\*[*#trc*] 0-1		\"	no vl flag
 .
 .    while (\\n+[*] <= \\n[colspan]) \{\
 .      nr *c +1
@@ -427,7 +438,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    tm1 " without corresponding tablestart (.TBL)!
 .  \}
 .
-.  ds #t#r \\n[t*#]*\\n[t*r#\\n[t*#]]\"	refresh #t#r
+.  ds #t#r \\n[t*#]*\\n[t*r#\\n[t*#]]\"		refresh table row identifier
 .  t*dntr 2 \\n[c#\\*[#t#r]] \\n[t*cols\\n[t*#]] \\*[*#trc*]
 .
 .  t*divs                        \"	print this table
@@ -700,12 +711,14 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 ..
 .
 .
-.\"	Utility macro:	Calculate cell widths, table width, and cell offsets.
+.\"	Utility macro:	.t*cl [width1 [width2 [...]]]
+.\"
+.\"		Calculate cell widths, table width, and cell offsets.
 .de t*cl
 .  nr t*cols\\n[t*#] (\\n[.$] >? \\n[t*cols\\n[t*#]])
-.  nr ll\\n[t*#] 0		\"	accumulated cell widths
+.  nr ll\\n[t*#] 0			\"	accumulated cell widths
 .  nr ** (\\n[.l] / \\n[t*cols\\n[t*#]])\"	width for remaining cells
-.  nr * 0 1			\"	counter
+.  nr * 0 1				\"	counter
 .
 .  \" while-loop: Parse user arguments to get each cell's width.
 .  while (\\n[t*cols\\n[t*#]] >= \\n+[*]) \{\
@@ -770,27 +783,32 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .      tm1 " It should be greater than \\n[*h].
 .    \}
 .
-.    nr in\\n[t*#]*\\n[*] \\n[**]		\"	cell offset
+.    nr in\\n[t*#]*\\n[*] \\n[**]	\"	cell offset
 .    nr ** +\\n[$\\n[*]]
 .  \}
 ..
 .
 .
-.\"	Utility macro:	Close TD-diversion, make some calculations, and set
-.\"			some help strings and registers.
+.\"	Utility macro:	.t*dntr <origin> <cell position> ? <cell ID>
+.\"
+.\"		Close TD diversion, make some calculations, and set
+.\"		some help strings and registers.  Argument 1 is 0,
+.\"		1, or 2 if the call of .t*dntr occurs in .TD, .TR, or
+.\"		.ETB, respectively.
 .de t*dntr
-.  nr dn 0				\"	dn must be reset!
-.  br					\"	finish last div
+.  nr dn 0				\"	reset diversion height
+.  br					\"	finish cell data
 .
 .  if "\\n[.z]"*t*dummy*" \
 .    return
 .
-.  ds #t#r \\n[t*#]*\\n[t*r#\\n[t*#]]\"		refresh #t#r
+.  ds #t#r \\n[t*#]*\\n[t*r#\\n[t*#]]\"		refresh table row identifier
 .
 .  if \\n[c#\\*[#t#r]] \{\
-.    di
-.    nr dn\\$4 \\n[dn]			\"	height of this cell
+.    di					\"	close diversion
+.    nr dn\\$4 \\n[dn]			\"	save height of this cell
 .    if !\\n[rsp\\*[#trc]] \{\
+.      \" update row height if not in a row span
 .      nr dntr\\*[#t#r] (\\n[dntr\\*[#t#r]] >? \\n[dn])
 .      if \\$2 \
 .        nr dntr\\*[#t#r] ((\\n[t*height\\*[#t#r]] \
@@ -801,13 +819,16 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  nr c#\\*[#t#r] +1
 .  nr * \\$2
 .
+.  \" update column span registers
 .  while (\\n+[*] <= \\$3) \{\
-.    nr c#\\*[#t#r] +\\n[csp\\*[#t#r]*\\n[*]]
+.    if r csp\\*[#t#r]*\\n[*] \
+.      nr c#\\*[#t#r] +\\n[csp\\*[#t#r]*\\n[*]]
 .    nr csp\\*[#t#r]*\\n[*] 0
 .  \}
 .
 .  ds #trc \\*[#t#r]*\\n[c#\\*[#t#r]]\"
 .
+.  \" only check for cell underflow if called by .TR or .ETB
 .  if (\\$1 & (\\n[c#\\*[#t#r]] <= \\n[t*cols\\n[t*#]])) \{\
 .    ds * are
 .    ds ** columns
@@ -832,7 +853,13 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 ..
 .
 .
-.\"	Utility-macro:	Get the arguments common to TBL, TR, and TD.
+.\"	Utility-macro:	.t*args level_1 [level_2]
+.\"
+.\"		Get the arguments common to TBL, TR, and TD for the level
+.\"		in argument 1, using default values from the level in
+.\"		argument 2.  If argument 2 is missing, use the global
+.\"		default values.
+.\"
 .de t*args
 .  ds t*bgc\\$1 \\*[t*bgc\\$2]\"
 .  ds t*fgc\\$1 \\*[t*fgc\\$2]\"

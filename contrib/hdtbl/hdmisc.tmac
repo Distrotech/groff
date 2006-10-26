@@ -37,87 +37,111 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"	******************************************************************
 .\"	**	Some macros and default settings needed by hdtbl	**
 .\"	******************************************************************
+.
+.
+.\"	Utility macro:	.getarg <key> ...
 .\"
-.\"	******************************************************************
-.\"	**	Macro getarg: process macro arguments			**
-.\"	**								**
-.\"	**	getarg argname targetname a1=v1 key1		 	**
-.\"	**				  a2=v2 key2 ..., mixed		**
-.\"	**	returns value of arg as string in target.		**
-.\"     **      arg without value returns the argname.		 	**
-.\"	**	`arg=' returns `='.				 	**
-.\"	**	after return string `args' contains the remaining args.	**
-.\"	******************************************************************
+.\"		Get macro argument.  This macro searches <key> in the
+.\"		remaining arguments and assigns its value to a string
+.\"		register named <key>.  The following syntax forms are
+.\"		recognized.
+.\"
+.\"			<key>=<val>	Assign <val> to string <key>.
+.\"					<val> must not contain spaces.
+.\"			<key>='<val>'	Assign <val> to string <key>.
+.\"					<val> can contain spaces.
+.\"			<key>=		Assign `=' to string <key>.
+.\"			<key>		Assign `key' to string <key>.
+.\"
+.\"		After return, the string `args' contains the remaining
+.\"		arguments.
+.\"
+.\"		Example: With the definition of string `foo' as
+.\"
+.\"			.ds foo aaa=xxx bbb ccc='yyy zzz' ddd= eee
+.\"
+.\"		a call to `getarg' with
+.\"
+.\"			.getarg ccc \*[foo]
+.\"
+.\"		sets string `ccc' to value `yyy zzz'.  The string `args'
+.\"		now contains `aaa=xxx bbb ddd= eee'.  An additional call
+.\"		like
+.\"
+.\"			.getarg ddd \*[args]
+.\"
+.\"		sets string `ddd' to value `=', and `args' contains
+.\"		`aaa=xxx bbb eee'.
 .de getarg
 .  ds \\$1
 .  ds args
 .
 .  if (\\n[.$] < 2) \
-.    return				\"	speeds up significantly
+.    return
 .
-.  ds $1 \\$1
+.  ds $1 \\$1\"
 .  shift
 .
 .  length * \\*[$1]
-.  \" Change escape char to avoid conflicts with escapes in args.
-.  \" Note that it is expected that trailing comments are stripped
-.  \" before executing the HDtbl macros.
-.  ec 
-.  while n[.$] {
-.    ds * "$1\"
-.    ds ** "$1\"
+.  while \\n[.$] \{\
+.    ds * "\\$1\"
+.    ds ** "\\$1\"
+.    length ** \\*[**]
 .    shift
-.    substring * 0 (n[*] - 1)
-.    ie !"*[$1]"*[*]" {
-.      as args " "*[**]"\"		arg not found, repeat
+.    if (\\n[*] > \\n[**]) \{\
+.      as args " "\\*[**]"\"			argument too short, repeat
 .      continue
-.    }
-.    el {
-.      ie "*[**]"*[$1]" 
-.        ds *[$1] *[$1]\"		return bare arg name as string
-.      el {
-.        ie "*[**]"*[$1]=" 
-.          ds *[$1] =\"		return value `=' as string
-.        el {
-.          substring ** (n[*] + 1) -1
-.          ds * *[**]\"
+.    \}
+.    substring * 0 (\\n[*] - 1)
+.    \" string comparison
+.    ie !"\?\\*[$1]\?"\?\\*[*]\?" \{\
+.      as args " "\\*[**]"\"			argument not found, repeat
+.      continue
+.    \}
+.    el \{\
+.      ie "\?\\*[**]\?"\?\\*[$1]\?" \
+.        ds \\*[$1] \\*[$1]\"		return bare arg name as string
+.      el \{\
+.        ie "\?\\*[**]\?"\?\\*[$1]=\?" \
+.          ds \\*[$1] =\"		return value `=' as string
+.        el \{\
+.          substring ** (\\n[*] + 1) -1
+.          ds * \\*[**]\"
 .          substring * 0 0
 .
-.          if "*[*]"'" {
+.          if "\?\\*[*]\?"\?'\?" \{\
 .            substring ** 1 -1		\" remove 1st char from arg (')
-.            ds * *[**]\"
-.            substring * -1 -1    	\" remove 2nd char also (')
+.            ds * \\*[**]\"
+.            substring * -1 -1    	\" remove 2nd char also ('\)
 .
-.            ie "*[*]"'" 
+.            ie "\?\\*[*]\?"\?'\?" \
 .              substring ** 0 -2	\" yes, skip next clause
-.            el {
-.              as *[$1] *[**] \" 	   no, append this arg
+.            el \{\
+.              as \\*[$1] \\*[**] \" 	   no, append this arg
 .
-.              while 1 {
-.                ds ** $1\"		   get next arg
-.                ds * $1\"
+.              while 1 \{\
+.                ds ** \\$1\"		   get next arg
+.                ds * \\$1\"
 .                shift
 .                substring * -1 -1
 .
-.                if "*[*]"'" {
+.                if "\?\\*[*]\?"\?'\?" \{\
 .                  substring ** 0 -2
 .                  break		\" leave loop if last char isn't '
-.                }
+.                \}
 .
-.                as *[$1] *[**] \" 	   otherwise append arg and repeat
-.              }
-.          }}
+.                as \\*[$1] \\*[**] \" 	   otherwise append arg and repeat
+.              \}
+.          \}\}
 .
-.          as *[$1] *[**]
-.        }
+.          as \\*[$1] \\*[**]\"
+.        \}
 .
-.        as args " $@
-.    }}
+.        as args " \\$@\"
+.    \}\}
 .
-.    ec
 .    return
 .  \}					\" end of while
-.  ec
 ..
 .
 .
@@ -291,9 +315,9 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"	******************************************************************
 .
 .ie n \
-.  ds g tty:
+.  ds g tty:\"
 .el \
-.  ds g ps: exec
+.  ds g ps: exec\"
 .
 .
 .\"	******************************************************************
@@ -373,7 +397,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  nr * (\\$1 + 1) 1
 .  while \\n-[*] \
 .    shift
-.  as hex# \\$1
+.  as hex# \\$1\"
 ..
 .
 .
