@@ -30,8 +30,8 @@
 # settings
 ########################################################################
 
-my $Program_Version = '0.1.0';
-my $Last_Update = '26 Oct 2006';
+my $Program_Version = '0.1.1';
+my $Last_Update = '27 Oct 2006';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it.
@@ -460,10 +460,18 @@ my $File_Name = '';
 
     if ($Words[0] =~ /^[A-Z].*:$/) {
       # label;  falls thru after shifting left
-      $Last_Name = $Words[0];
+      my $w0 = $Words[0];
+      $Last_Name = $w0;
       $Last_Name =~ s/:$//;
-      print "$Words[0]\n";
+      print "$w0";
       shift @Words;
+      if (@Words) {
+	print " ";
+	$line =~ s/^\s*$w0\s*//;
+      } else {
+	print "\n";
+	return 1;
+      }
     }
 
     if ($Words[0] =~ /^"/) {
@@ -480,7 +488,8 @@ my $File_Name = '';
     if ($#Words >= 1) {
       if ($Words[0] =~ /^(double|triple|front|back)$/ &&
 	  $Words[1] eq 'bond') {
-	@Words = ($Words[0] . $Words[1], @Words[2..$#Words]);
+	my $w = shift @Words;
+	$Words[0] = $w . $Words[0];
 	&bond($Words[0]);
 	return 1;
       }
@@ -520,7 +529,11 @@ my $File_Name = '';
       &label();
       return 1;
     }
-    if (/./) {
+    if ($Words[0] =~ '[\[\]]') {
+      print $line, "\n";
+      return 1;
+    }
+    if ($line) {
       print 'Last: ', $line, "\n";
       $Last = $OTHER;
     }
