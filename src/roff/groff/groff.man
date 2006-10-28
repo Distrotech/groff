@@ -277,7 +277,8 @@ groff \- front-end for the groff document formatting system
 .EndSynopsis
 .
 .P
-The command line is parsed according to the usual GNU convention.
+The command line is parsed according to the usual \f[CR]GNU\f[]
+convention.
 .
 The whitespace between a command line option and its argument is
 optional.
@@ -482,8 +483,9 @@ sign(s)
 .Quoted \*[@-]
 or
 .Quoted \*[@--]
-because groff does not prepend any dashes before passing it to the
-postprocessor.
+because
+.B groff
+does not prepend any dashes before passing it to the postprocessor.
 .
 For example, to pass a title to the \%gxditview postprocessor, the shell
 command
@@ -597,7 +599,7 @@ selects the output encoding:
 .RS
 .RS
 .IP ascii
-7bit ASCII.
+7bit \f[CR]ASCII\f[].
 .IP cp1047
 \%Latin-1 character set for EBCDIC hosts.
 .IP latin1
@@ -720,7 +722,9 @@ replacing the usual postprocessor output; see
 The following options are transparently handed over to the formatter
 program
 .B @g@troff
-that is called by groff subsequently.
+that is called by
+.B groff
+subsequently.
 .
 These options are described in more detail in
 .BR @g@troff (@MAN1EXT@).
@@ -796,22 +800,31 @@ The
 .I groff system
 implements the infrastructure of classical roff; see
 .BR roff (@MAN7EXT@)
-for a survey on how a roff system works in general.
+for a survey on how a
+.I roff
+system works in general.
 .
-Due to the front-end programs available within the groff system, using
+Due to the front-end programs available within the
+.I groff
+system, using
 .I groff
 is much easier than
 .IR "classical roff" .
 .
-This section gives an overview of the parts that constitute the groff
+This section gives an overview of the parts that constitute the
+.I groff
 system.
 .
 It complements
 .BR roff (@MAN7EXT@)
-with groff-specific features.
+with
+.IR groff -specific
+features.
 .
 This section can be regarded as a guide to the documentation around
-the groff system.
+the
+.I groff
+system.
 .
 .
 .\" --------------------------------------------------------------------
@@ -877,21 +890,26 @@ can be avoided.
 .P
 The
 .BR grog (@MAN1EXT@)
-program can be used for guessing the correct groff command line to
-format a file.
+program can be used for guessing the correct
+.I groff
+command line to format a file.
 .
 .P
 The
 .BR \%groffer (@MAN1EXT@)
-program is an allround-viewer for groff files and man pages.
+program is an allround-viewer for
+.I groff
+files and man pages.
 .
 .
 .\" --------------------------------------------------------------------
 .SS Preprocessors
 .\" --------------------------------------------------------------------
 .
-The groff preprocessors are reimplementations of the classical
-preprocessors with moderate extensions.
+The
+.I groff
+preprocessors are reimplementations of the classical preprocessors
+with moderate extensions.
 .
 The standard preprocessors distributed with the
 .I groff
@@ -912,6 +930,10 @@ pictures,
 for drawing diagrams,
 .
 .TP
+.BR @g@chem (@MAN1EXT@)
+for chemical structure diagrams,
+.
+.TP
 .BR \%@g@refer (@MAN1EXT@)
 for bibliographic references,
 .
@@ -927,9 +949,13 @@ and
 for tables.
 .
 .P
-A new preprocessor not available in classical troff is
+A new preprocessor not available in classical
+.I troff
+is
 .BR \%preconv (@MAN1EXT@)
-which converts various input encodings to something groff can understand.
+which converts various input encodings to something
+.B groff
+can understand.
 .
 It is always run first before any other preprocessor.
 .
@@ -947,8 +973,10 @@ These aren't visible to the user.
 Macro packages can be included by option
 .ShortOpt m .
 .
-The groff system implements and extends all classical macro packages
-in a compatible way and adds some packages of its own.
+The
+.I groff
+system implements and extends all classical macro packages in a
+compatible way and adds some packages of its own.
 .
 Actually, the following macro packages come with
 .IR groff :
@@ -980,7 +1008,7 @@ or
 .
 .TP
 .B mdoc
-The BSD-style man page format; see
+The \f[CR]BSD\f[]-style man page format; see
 .BR \%groff_mdoc (@MAN7EXT@).
 It can be specified on the command line as
 .ShortOpt mdoc
@@ -1026,7 +1054,9 @@ or
 .
 .TP
 .B www
-HTML-like macros for inclusion in arbitrary groff documents; see
+HTML-like macros for inclusion in arbitrary
+.I groff
+documents; see
 .BR \%groff_www (@MAN7EXT@).
 .
 .P
@@ -1041,16 +1071,23 @@ not mentioned here.
 .SS "Programming Language"
 .\" --------------------------------------------------------------------
 .
-General concepts common to all roff programming languages are
-described in
+General concepts common to all
+.I roff
+programming languages are described in
 .BR roff (@MAN7EXT@).
 .
 .P
-The groff extensions to the classical troff language are documented in
+The
+.I groff
+extensions to the classical
+.I troff
+language are documented in
 .BR \%groff_diff (@MAN7EXT@).
 .
 .P
-The groff language as a whole is described in the (still incomplete)
+The
+.I groff
+language as a whole is described in the (still incomplete)
 .IR "groff info file" ;
 a short (but complete) reference can be found in
 .BR groff (@MAN7EXT@).
@@ -1060,10 +1097,19 @@ a short (but complete) reference can be found in
 .SS Formatters
 .\" --------------------------------------------------------------------
 .
-The central roff formatter within the groff system is
+The central
+.I roff
+formatter within the
+.I groff
+system is
 .BR @g@troff (@MAN1EXT@).
-It provides the features of both the classical troff and nroff, as
-well as the groff extensions.
+It provides the features of both the classical
+.I troff
+and
+.IR nroff ,
+as well as the
+.I groff
+extensions.
 .
 The command line option
 .ShortOpt C
@@ -1071,12 +1117,15 @@ switches
 .B @g@troff
 into
 .I "compatibility mode"
-which tries to emulate classical roff as much as possible.
+which tries to emulate classical
+.I roff
+as much as possible.
 .
 .P
 There is a shell script
 .BR @g@nroff (@MAN1EXT@)
-that emulates the behavior of classical nroff.
+that emulates the behavior of classical
+.BR nroff .
 .
 It tries to automatically select the proper output encoding, according to
 the current locale.
@@ -1092,14 +1141,18 @@ see
 .SS Devices
 .\" --------------------------------------------------------------------
 .
-In roff, the output targets are called
+In
+.IR roff ,
+the output targets are called
 .IR devices .
 A device can be a piece of hardware, e.g., a printer, or a software
 file format.
 .
 A device is specified by the option
 .ShortOpt T .
-The groff devices are as follows.
+The
+.I groff
+devices are as follows.
 .
 .TP
 .B ascii
@@ -1182,7 +1235,8 @@ The default device is
 .SS Postprocessors
 .\" --------------------------------------------------------------------
 .
-groff provides 3\~hardware postprocessors:
+.I groff
+provides 3\~hardware postprocessors:
 .
 .TP
 .BR \%grolbp (@MAN1EXT@)
@@ -1206,8 +1260,9 @@ Consequently, there isn't an urgent need for more hardware device
 postprocessors.
 .
 .P
-The groff software devices for conversion into other document file
-formats are
+The
+.I groff
+software devices for conversion into other document file formats are
 .
 .TP
 .BR \%grodvi (@MAN1EXT@)
@@ -1223,19 +1278,25 @@ for PostScript.
 .
 .P
 Combined with the many existing free conversion tools this should
-be sufficient to convert a troff document into virtually any existing
-data format.
+be sufficient to convert a
+.I troff
+document into virtually any existing data format.
 .
 .
 .\" --------------------------------------------------------------------
 .SS Utilities
 .\" --------------------------------------------------------------------
 .
-The following utility programs around groff are available.
+The following utility programs around
+.I groff
+are available.
 .
 .TP
 .BR \%addftinfo (@MAN1EXT@)
-Add information to troff font description files for use with groff.
+Add information to
+.I troff
+font description files for use with
+.IR groff .
 .
 .TP
 .BR \%afmtodit (@MAN1EXT@)
@@ -1249,7 +1310,12 @@ image into a cropped image.
 .
 .TP
 .BR \%gdiffmk (@MAN1EXT@)
-Mark differences between groff, nroff, or troff files.
+Mark differences between
+.IR groff ,
+.IR nroff ,
+or
+.I troff
+files.
 .
 .TP
 .BR \%grap2graph (@MAN1EXT@)
@@ -1259,11 +1325,16 @@ diagram into a cropped bitmap image.
 .
 .TP
 .BR \%groffer (@MAN1EXT@)
-General viewer program for groff files and man pages.
+General viewer program for
+.I groff
+files and man pages.
 .
 .TP
 .BR \%gxditview (@MAN1EXT@)
-The groff X viewer, the GNU version of xditview.
+The
+.I groff
+X viewer, the \f[CR]GNU\f[] version of
+.BR xditview .
 .
 .TP
 .BR \%hpftodit (@MAN1EXT@)
@@ -1288,7 +1359,7 @@ Create PDF documents using
 .
 .TP
 .BR \%pfbtops (@MAN1EXT@)
-Translate a PostScript font in .pfb format to ASCII.
+Translate a PostScript font in .pfb format to \f[CR]ASCII\f[].
 .
 .TP
 .BR \%pic2graph (@MAN1EXT@)
@@ -1302,11 +1373,14 @@ Create font description files for TeX DVI device.
 .
 .TP
 .BR \%xditview (1x)
-roff viewer distributed with X window.
+.I roff
+viewer distributed with X window.
 .
 .TP
 .BR \%xtotroff (@MAN1EXT@)
-Convert X font metrics into GNU troff font metrics.
+Convert X font metrics into \f[CR]GNU\f[]
+.I troff
+font metrics.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1326,15 +1400,17 @@ This search path, followed by
 is used for commands that are executed by
 .BR groff .
 .
-If it is not set then the directory where the groff binaries were
-installed is prepended to
+If it is not set then the directory where the
+.I groff
+binaries were installed is prepended to
 .EnvVar PATH .
 .
 .
 .TP
 .EnvVar GROFF_COMMAND_PREFIX
-When there is a need to run different roff implementations at the same
-time
+When there is a need to run different
+.I roff
+implementations at the same time
 .I groff
 provides the facility to prepend a prefix to most of its programs that
 could provoke name clashings at run time (default is to have none).
@@ -1356,8 +1432,9 @@ version of
 .
 By setting
 .EnvVar GROFF_COMMAND_PREFIX
-to different values, the different roff installations can be
-addressed.
+to different values, the different
+.I roff
+installations can be addressed.
 .
 More exactly, if it is set to prefix
 .I xxx
@@ -1382,7 +1459,9 @@ and
 This feature does not apply to any programs different from the ones
 above (most notably
 .B groff
-itself) since they are unique to the groff package.
+itself) since they are unique to the
+.I groff
+package.
 .
 .
 .TP
@@ -1504,8 +1583,9 @@ Note that more than a single directory is searched for those files
 as documented in
 .BR \%groff_tmac (@MAN5EXT@).
 .
-For the groff installation corresponding to this document, it is
-located at
+For the
+.I groff
+installation corresponding to this document, it is located at
 .IR @MACRODIR@ .
 .
 The following files contained in the
@@ -1515,7 +1595,8 @@ have a special meaning:
 .
 .TP
 .B troffrc
-Initialization file for troff.
+Initialization file for
+.IR troff .
 .
 This is interpreted by
 .B @g@troff
@@ -1524,7 +1605,8 @@ before reading the macro sets and any input.
 .
 .TP
 .B troffrc-end
-Final startup file for troff.
+Final startup file for
+.IR troff .
 .
 It is parsed after all macro sets have been read.
 .
@@ -1546,8 +1628,9 @@ This contains all information related to output devices.
 Note that more than a single directory is searched for those files; see
 .BR @g@troff (@MAN1EXT@).
 .
-For the groff installation corresponding to this document, it is
-located at
+For the
+.I groff
+installation corresponding to this document, it is located at
 .IR @FONTDIR@ .
 .
 The following files contained in the
@@ -1581,13 +1664,17 @@ program as a wrapper around
 .BR @g@troff .
 .
 .P
-To process a roff file using the preprocessors
+To process a
+.I roff
+file using the preprocessors
 .B tbl
 and
 .B pic
 and the
 .B me
-macro set, classical troff had to be called by
+macro set, classical
+.I troff
+had to be called by
 .
 .P
 .ShellCommand pic foo.me | tbl | troff \*[@-]me \*[@-]Tlatin1 | grotty
@@ -1620,44 +1707,53 @@ calling
 .\" --------------------------------------------------------------------
 .
 .P
-On EBCDIC hosts (e.g., OS/390 Unix), output devices
+On \f[CR]EBCDIC\f[] hosts (e.g., \f[CR]OS/390 Unix\f[]), output
+devices
 .B ascii
 and
 .B latin1
 aren't available.
 .
-Similarly, output for EBCDIC code page
+Similarly, output for \f[CR]EBCDIC\f[] code page
 .B cp1047
-is not available on ASCII based operating systems.
+is not available on \f[CR]ASCII\f[] based operating systems.
 .
 .P
-Report bugs to bug-groff@gnu.org.
+Report bugs to
+.MTO bug-groff@gnu.org "" .
 .
 Include a complete, self-contained example that allows the bug to
-be reproduced, and say which version of groff you are using.
+be reproduced, and say which version of
+.I groff
+you are using.
 .
 .
 .\" --------------------------------------------------------------------
 .SH AVAILABILITY
 .\" --------------------------------------------------------------------
 .
-Information on how to get groff and related information is available
-at the
-.URL http://\:www.gnu.org/\:software/\:groff "GNU website" .
-The most recent released version of groff is available for anonymous
-ftp at the
-.URL ftp://ftp.ffii.org/\:pub/\:groff/\:devel/\:groff-current.tar.gz \
+Information on how to get
+.I groff
+and related information is available at the
+.URL http://\:www.gnu.org/\:software/\:groff "groff GNU website" .
+The most recent released version of
+.I groff
+is available at the
+.URL http://groff.ffii.org/\:groff/\:devel/\:groff-current.tar.gz \
      "groff development site" .
 .
 .P
-Three groff mailing lists are available:
+Three
+.I groff
+mailing lists are available:
 .TP
 .MTO bug-groff@gnu.org
 for reporting bugs,
 .
 .TP
 .MTO groff@gnu.org
-for general discussion of groff,
+for general discussion of
+.IR groff ,
 .
 .TP
 .MTO groff-commit@ffii.org
@@ -1666,7 +1762,9 @@ a read-only list showing logs of commitments to the CVS repository.
 .P
 Details on CVS access and much more can be found in the file
 .B README
-at the top directory of the groff source package.
+at the top directory of the
+.I groff
+source package.
 .
 .P
 There is a free implementation of the
@@ -1678,25 +1776,29 @@ The actual version can be found at the
 .
 .URL http://\:www.lunabase.org/\:~faber/\:Vault/\:software/\:grap/ \
      "grap website" .
-This is the only grap version supported by groff.
+This is the only grap version supported by
+.IR groff .
 .
 .
 .\" --------------------------------------------------------------------
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright \(co 1989, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+Copyright \(co 1989, 2002, 2003, 2004, 2005, 2006
+Free Software Foundation, Inc.
 .
 .P
-This document is distributed under the terms of the FDL (GNU Free
-Documentation License) version 1.1 or later.
+This document is distributed under the terms of the \f[CR]FDL\f[]
+(\f[CR]GNU Free Documentation License\f[]) version 1.1 or later.
 .
-You should have received a copy of the FDL on your system, it is also
-available on-line at the
+You should have received a copy of the \f[CR]FDL\f[] on your system,
+it is also available on-line at the
 .URL http://\:www.gnu.org/\:copyleft/\:fdl.html "GNU copyleft site" .
 .
 .P
-This document is based on the original groff man page written by
+This document is based on the original
+.I groff
+man page written by
 .MTO jjc@jclark.com "James Clark" .
 .
 It was rewritten, enhanced, and put under the FDL license by
@@ -1707,15 +1809,16 @@ It is maintained by
 .
 .P
 .I groff
-is a GNU free software project.
+is a \f[CR]GNU\f[] free software project.
 .
 All parts of the
 .I groff package
-are protected by GNU copyleft licenses.
+are protected by \f[CR]GNU copyleft licenses\f[].
 .
-The software files are distributed under the terms of the GNU General
-Public License (GPL), while the documentation files mostly use the GNU
-Free Documentation License (FDL).
+The software files are distributed under the terms of the \f[CR]GNU
+General Public License\f[] (\f[CR]GPL\f[]), while the documentation
+files mostly use the \f[CR]GNU Free Documentation License\f[]
+(\f[CR]FDL\f[]).
 .
 .
 .\" --------------------------------------------------------------------
@@ -1723,16 +1826,20 @@ Free Documentation License (FDL).
 .\" --------------------------------------------------------------------
 .
 The
-.IR "groff info file"
-contains all information on the groff system within a single document,
-providing many examples and background information.
+.I groff info file
+contains all information on the
+.I groff
+system within a single document, providing many examples and
+background information.
 .
 See
 .BR info (1)
 on how to read it.
 .
 .P
-Due to its complex structure, the groff system has many man pages.
+Due to its complex structure, the
+.I groff
+system has many man pages.
 .
 They can be read with
 .BR man (1)
@@ -1759,6 +1866,7 @@ Roff preprocessors:
 .BR \%@g@eqn (@MAN1EXT@),
 .BR \%@g@grn (@MAN1EXT@),
 .BR \%@g@pic (@MAN1EXT@),
+.BR \%@g@chem (@MAN1EXT@),
 .BR \%preconv (@MAN1EXT@),
 .BR \%@g@refer (@MAN1EXT@),
 .BR \%@g@soelim (@MAN1EXT@),
