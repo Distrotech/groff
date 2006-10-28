@@ -289,7 +289,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  if \\n[t*r#\\n[t*#]] \
 .    t*dntr 1 \\n[c#\\*[#t#r]] \\n[t*cols\\n[t*#]] \\*[*#trc*]
 .
-.  nr t*r#\\n[t*#] +1			\"	row number of this table
+.  nr t*r#\\n[t*#] +1			\"	row number in this table
 .  ds #t#r \\n[t*#]*\\n[t*r#\\n[t*#]]\"		table row identifier
 .					\"	(<level>*<row>)
 .  nr c#\\*[#t#r] 0 1			\"	clear cell counter
@@ -361,12 +361,13 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  nr * 0 1
 .  nr *r \\n[t*r#\\n[t*#]]
 .
-.  while ((\\n[rowspan] - 1) & (\\n+[*] <= \\n[rowspan])) \{\
-.    nr rsp\\n[t*#]*\\n[*r]*\\n[c#\\*[#t#r]] \\n[colspan]
-.    if (\\n[*] > 1) \
-.      nr csp\\n[t*#]*\\n[*r]*\\n[c#\\*[#t#r]] \\n[colspan]
-.    nr *r +1
-.  \}
+.  if (\\n[rowspan] - 1) \
+.    while (\\n+[*] <= \\n[rowspan]) \{\
+.      nr rsp\\n[t*#]*\\n[*r]*\\n[c#\\*[#t#r]] \\n[colspan]
+.      if (\\n[*] > 1) \
+.        nr csp\\n[t*#]*\\n[*r]*\\n[c#\\*[#t#r]] \\n[colspan]
+.      nr *r +1
+.    \}
 .
 .  nr * 1 1
 .  nr *c \\n[c#\\*[#t#r]]
@@ -792,8 +793,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"	Utility macro:	.t*dntr <origin> <cell position> ? <cell ID>
 .\"
 .\"		Close TD diversion, make some calculations, and set
-.\"		some help strings and registers.  Argument 1 is 0,
-.\"		1, or 2 if the call of .t*dntr occurs in .TD, .TR, or
+.\"		some help strings and registers.  <origin> is 0, 1,
+.\"		or 2 if the call of .t*dntr occurs in .TD, .TR, or
 .\"		.ETB, respectively.
 .de t*dntr
 .  nr dn 0				\"	reset diversion height

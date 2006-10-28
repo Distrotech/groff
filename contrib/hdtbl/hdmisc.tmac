@@ -89,48 +89,50 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    length ** \\*[**]
 .    shift
 .    if (\\n[*] > \\n[**]) \{\
-.      as args " "\\*[**]"\"			argument too short, repeat
+.      as args " "\\*[**]"\"			value too short, repeat
 .      continue
 .    \}
 .    substring * 0 (\\n[*] - 1)
-.    \" string comparison
+.    \" The surrounding \? escapes emulate string comparison.
 .    ie !"\?\\*[$1]\?"\?\\*[*]\?" \{\
-.      as args " "\\*[**]"\"			argument not found, repeat
+.      as args " "\\*[**]"\"			key not found, repeat
 .      continue
 .    \}
 .    el \{\
 .      ie "\?\\*[**]\?"\?\\*[$1]\?" \
-.        ds \\*[$1] \\*[$1]\"		return bare arg name as string
+.        ds \\*[$1] \\*[$1]\"			return key as string
 .      el \{\
 .        ie "\?\\*[**]\?"\?\\*[$1]=\?" \
-.          ds \\*[$1] =\"		return value `=' as string
+.          ds \\*[$1] =\"			return `='
 .        el \{\
 .          substring ** (\\n[*] + 1) -1
 .          ds * \\*[**]\"
 .          substring * 0 0
 .
+.          \" check whether value starts with quote
 .          if "\?\\*[*]\?"\?'\?" \{\
-.            substring ** 1 -1		\" remove 1st char from arg (')
+.            substring ** 1 -1
 .            ds * \\*[**]\"
-.            substring * -1 -1    	\" remove 2nd char also ('\)
+.            substring * -1 -1
 .
+.            \" search final quote
 .            ie "\?\\*[*]\?"\?'\?" \
-.              substring ** 0 -2	\" yes, skip next clause
+.              substring ** 0 -2
 .            el \{\
-.              as \\*[$1] \\*[**] \" 	   no, append this arg
+.              as \\*[$1] \\*[**] \"		not found, append argument
 .
 .              while 1 \{\
-.                ds ** \\$1\"		   get next arg
+.                ds ** \\$1\"			get next argument
 .                ds * \\$1\"
 .                shift
 .                substring * -1 -1
 .
 .                if "\?\\*[*]\?"\?'\?" \{\
 .                  substring ** 0 -2
-.                  break		\" leave loop if last char isn't '
+.                  break		\"	break if no final quote
 .                \}
 .
-.                as \\*[$1] \\*[**] \" 	   otherwise append arg and repeat
+.                as \\*[$1] \\*[**] \"		otherwise append and repeat
 .              \}
 .          \}\}
 .
@@ -141,17 +143,16 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    \}\}
 .
 .    return
-.  \}					\" end of while
+.  \}
 ..
 .
 .
+.\"	Utility macro:	.index <string1> <string2>
 .\"
-.\"	******************************************************************
-.\"	**		.index string1 string2				**
-.\"	**			returns in reg `index' the index	**
-.\"	**			of string2 in string1 or 0		**
-.\"	**			without string2 reg `index' is -999	**
-.\"	******************************************************************
+.\"		Check whether <string2> is a substring of <string2> and
+.\"		return its position in number register `index', starting
+.\"		with 1.  If not found, return 0.  If <string2> is empty,
+.\"		set `index' to -999.
 .de index
 .  if "\\$2"" \{\
 .    nr index -999
@@ -499,17 +500,18 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"	******************************************************************
 .\"	**			minimal Page setup			**
 .\"	******************************************************************
+.
 .nr s \n[.ps]
 .nr v \n[.v]
 .pv 1.2 1.2 "" X
-.nr l 6.6i
+.nr l 6.6i				\"	set text width
 .ll \n[l]u
-.nr o 2c
+.nr o 2c				\"	set offset
 .po \n[o]u
-.nr p 29.7c	\"	pagelength A4
+.nr p 29.7c				\"	set paper length (A4)
 .pl \n[p]u
-.nr tH 1i
-.sp |\n[tH]u	\"	text start on the first page
+.nr tH 1i				\"	set top margin
+.sp |\n[tH]u
 .
 .ev 99
 .lt \n[l]u
@@ -517,7 +519,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .
 .de HM
-.  sp |.5i
+.  sp |.5i				\"	print header in top margin
 .  tl \\*[t*HM]
 .  sp |\\n[tH]u
 .  ev
@@ -526,7 +528,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .de BM
 .  ev 99
-.  sp |(\\n[p]u - .5i)
+.  sp |(\\n[p]u - .5i)			\"	print footer in bottom margin
 .  tl \\*[t*BM]
 .  bp
 ..
@@ -535,12 +537,16 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .de EM
 .  rm BM			\"	no page number at bottom of last page
 .
-.  if !""\\*[t*kept]" \
-.    tm HDroff: kept table left over; add `.bp' at the end of your document.
-.  if !""\\*[t*held]" \
-.    tm HDroff: held table left over; add `.t*free' at the end of your document.
+.  if !"\\*[t*kept]"" \{\
+.    tm1 "hdtbl: Not all tables have been printed.
+.    tm1 "       Add `.bp' at the end of your document.
+.  \}
+.  if !"\\*[t*held]"" \{\
+.    tm1 "hdtbl: There are held tables which haven't been printed.
+.    tm1 "       Add `.t*free' at the end of your document.
+.  \}
 .  if \\n[t*#] \
-.    tm  HDrofff: unclosed table (TBL).
+.    tm hdtbl: Missing `.ETB' macro at end of document.
 ..
 .
 .
@@ -551,6 +557,6 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .if "\n[.M]"" \
 .  fcolor white
 .if !\n[*hdtbl] \
-.  mso hdtbl.tmac\"	load table macros
+.  mso hdtbl.tmac\"				load table macros
 .
 .\" EOF
