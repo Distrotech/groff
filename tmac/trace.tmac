@@ -12,8 +12,15 @@
 .rn nr !!nr
 .
 .de nr
-.  do tm1 "\*[!!!sp]*** .nr \$*
-.  !!nr \$*
+.  do !!ds !!!inc \$2
+.  do !!substring !!!inc 0 0
+.  do !!nr \$*
+.  do ie "\?\*[!!!inc]\?"\?-\?" \
+.    do tm1 "\*[!!!sp]*** .nr \$* (-> \n[\$1])
+.  el .do ie "\?\*[!!!inc]\?"\?+\?" \
+.    do tm1 "\*[!!!sp]*** .nr \$* (-> \n[\$1])
+.  el \
+.    do tm1 "\*[!!!sp]*** .nr \$*
 ..
 .
 .rn ds !!ds
@@ -55,7 +62,7 @@
 .    do !!as !!!sp " \"
 .    do ie \\n[.br] .do !!\$1 \\$@
 .    el 'do !!\$1 \\$@
-.    do substring !!!sp 1
+.    do !!substring !!!sp 1
 .    do ie \\n[.br] .!!ds !!!br .\"
 .    el .do !!ds !!!br '\"
 .    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
@@ -80,7 +87,7 @@
 .    do !!as !!!sp " \"
 .    do ie \\n[.br] .do !!\$1 \\$@
 .    el 'do !!\$1 \\$@
-.    do substring !!!sp 1
+.    do !!substring !!!sp 1
 .    do ie \\n[.br] .!!ds !!!br .\"
 .    el .do !!ds !!!br '\"
 .    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
@@ -108,7 +115,7 @@
 .    do !!as !!!sp " \"
 .    do ie \\n[.br] .do !!\$1 \\$@
 .    el 'do !!\$1 \\$@
-.    do substring !!!sp 1
+.    do !!substring !!!sp 1
 .    do ie \\n[.br] .!!ds !!!br .\"
 .    el .do !!ds !!!br '\"
 .    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
@@ -133,7 +140,7 @@
 .    do !!as !!!sp " \"
 .    do ie \\n[.br] .do !!\$1 \\$@
 .    el 'do !!\$1 \\$@
-.    do substring !!!sp 1
+.    do !!substring !!!sp 1
 .    do ie \\n[.br] .!!ds !!!br .\"
 .    el .do !!ds !!!br '\"
 .    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
@@ -152,6 +159,13 @@
 .!!de1 return
 .  tm1 "\*[!!!sp]*** return
 .  !!return twice
+..
+.
+.rn substring !!substring
+.
+.!!de1 substring
+.  !!substring \$*
+.  tm1 "\*[!!!sp]*** .substring \$* (-> `\*[\$1]')
 ..
 .
 .ec
