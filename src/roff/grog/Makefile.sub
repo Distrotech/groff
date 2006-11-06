@@ -1,33 +1,58 @@
+# Makefile.sub for `grog' (integration into the `groff' source tree)
+
+# File position: <groff-source>/src/roff/grog/Makefile.sub
+
+# Copyright (C) 1993, 2006 Free Software Foundation, Inc.
+
+# Last update: 4 Nov 2006
+
+# This file is part of `grog' which is part of `groff'.
+
+# `groff' is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# `groff' is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with `groff'; see the files COPYING and LICENSE in the top
+# directory of the `groff' source.  If not, write to the Free Software
+# Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
+
+########################################################################
+
 MAN1=grog.n
 CLEANADD=grog
 
-all: grog
+all: grog $(MAN1)
 
-grog: grog.sh
-	rm -f $@
-	sed -e "s|@g@|$(g)|g" \
-	  -e "s|@EGREP@|$(EGREP)|g" \
-	  -e "s|@VERSION@|$(version)$(revision)|" \
-	  -e $(SH_SCRIPT_SED_CMD) $(srcdir)/grog.sh >$@
-	chmod +x $@
-
-grog.old: grog.pl grog.sh
-	if test -n "$(PERLPATH)" && test -f "$(PERLPATH)"; then \
-	  rm -f $@; \
-	  sed -e "s|/usr/bin/perl|$(PERLPATH)|" \
-	      -e "s|@VERSION@|$(version)$(revision)|" $(srcdir)/grog.pl >$@; \
+grog: grog.pl grog.sh $(SH_DEPS_SED_SCRIPT)
+	-@rm -f $@;
+	if test -n "$(PERLPATH)" && test -f "$(PERLPATH)" && \
+	  "$(PERLPATH)" -e 'require v5.6'; then \
+	  echo 'Using the Perl version for grog.'; \
+	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	      -e "s|@VERSION@|$(version)$(revision)|" \
+	      -e "$(SH_SCRIPT_SED_CMD)" \
+              $(srcdir)/grog.pl >$@; \
 	else \
-	  rm -f $@; \
-	  sed -e "s|@g@|$(g)|g" \
+	  echo 'Using the shell version for grog.'; \
+	  sed -f "$(SH_DEPS_SED_SCRIPT)" \
+	      -e "s|@g@|$(g)|g" \
 	      -e "s|@EGREP@|$(EGREP)|g" \
 	      -e "s|@VERSION@|$(version)$(revision)|" \
-	      -e $(SH_SCRIPT_SED_CMD) $(srcdir)/grog.sh >$@; \
+	      -e "$(SH_SCRIPT_SED_CMD)" \
+              $(srcdir)/grog.sh >$@; \
 	fi
 	chmod +x $@
 
 install_data: grog
-	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
-	-rm -f $(DESTDIR)$(bindir)/grog
+	-@test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	-@rm -f $(DESTDIR)$(bindir)/grog
 	$(INSTALL_SCRIPT) grog $(DESTDIR)$(bindir)/grog
 
 uninstall_sub:

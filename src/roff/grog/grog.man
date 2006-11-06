@@ -1,40 +1,453 @@
-.ig
-Copyright (C) 1989-2000, 2001, 2002, 2003 Free Software Foundation, Inc.
-
-Permission is granted to make and distribute verbatim copies of
-this manual provided the copyright notice and this permission notice
-are preserved on all copies.
-
-Permission is granted to copy and distribute modified versions of this
-manual under the conditions for verbatim copying, provided that the
-entire resulting derived work is distributed under the terms of a
-permission notice identical to this one.
-
-Permission is granted to copy and distribute translations of this
-manual into another language, under the above conditions for modified
-versions, except that this permission notice may be included in
-translations approved by the Free Software Foundation instead of in
-the original English.
-..
 .TH GROG @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
 grog \- guess options for groff command
 .SH SYNOPSIS
-.B grog
-[
-.BI \- option
-\|.\|.\|.\&
-]
-[
-.IR files\  \|.\|.\|.\&
-]
+.\" The .SH was moved to this place in order to appease `apropos'.
+.
+.\" --------------------------------------------------------------------
+.\" Legalize
+.\" --------------------------------------------------------------------
+.
+.ig
+grog.1 - man page for grog (section 1)
+
+Source file position:  <groff_source_top>/src/roff/grog/grog.man
+Installed position:    $prefix/share/man/man1/grog.1
+
+Last Update: 6 Nov 2006
+..
+.de copyleft
+Copyright (C) 1989-2000,2001,2002,2003,2006
+Free Software Foundation, Inc.
+.
+Written by
+.MTO "" "James Clark" .
+Maintained by
+.MTO "wl@gnu.org" "Werner Lemberg" .
+Rewritten and put under GPL by
+.MTO "" "Bernd Warken" .
+.
+.
+.P
+This file is part of
+.IR \%grog ,
+which is part of
+.IR \%groff ,
+a free software project.
+.
+You can redistribute it and/or modify it under the terms of the
+.nh
+.B GNU General Public License
+.hy
+(\f[CR]GPL\f[]) as published by the
+.nh
+.BR "Free Software Foundation" ,
+.hy
+either version 2, or (at your option) any later version.
+.
+.P
+You should have received a copy of the \f[CR]GNU General Public
+License\f[] along with
+.IR groff ,
+see the files \%\f[CB]COPYING\f[] and \%\f[CB]LICENSE\f[] in the top
+directory of the
+.I groff
+source package.
+.
+Or read the
+.I man\~page
+.BR gpl (1).
+You can also write to the
+.nh
+.B Free Software Foundation, 51 Franklin St - Fifth Floor, Boston,
+.BR "MA 02110-1301, USA" .
+.hy
+..
+.
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.
+.mso www.tmac
+.
+.if n \{\
+.  mso tty-char.tmac
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.\}
+.
+.if '\*[.T]'dvi' \{\
+.  ftr CB CW
+.\}
+.
+.ds Ellipsis "\&.\|.\|.\""
+.
+.\" --------------------------------------------------------------------
+.\" configuration of prompt for `.Shell_cmd'* macros
+.ds grog:Shell_cmd.prompt_text sh#\"    prompt for shell commands
+.ds grog:Shell_cmd_base.prompt_font I\" font for prompts
+.
+.\" automatically determine setup from the configuration above
+.als @f grog:Shell_cmd_base.prompt_font\"
+.als @t grog:Shell_cmd.prompt_text\"
+.ds grog:Shell_cmd.prompt \f[\*[@f]]\*[@t]\f[]\"            needed
+.nr @w \w'\*[grog:Shell_cmd.prompt]'\"
+.ft \*[@f]
+.\" Full prompt width is maximum of texts plus 1m
+.nr grog:Shell_cmd_base.prompt_width (\n[@w]>?\n[@w+]+1m)\" needed
+.ft
+.rm @f
+.rm @t
+.rr @w
+.
+.
+.\" --------------------------------------------------------------------
+.\" static register for inter-macro communication in `.Synopsis'*
+.nr grog:Synopsis.level 0
+.
+.\" --------------------------------------------------------------------
+.\" Macro definitions
+.
+.\" Ignore all arguments like a comment, even after a .eo call.
+.de c
+..
+.c --------------------------------------------------------------------
+.c .Synopsis  ()
+.c
+.c Begin a synopsis section, to be ended by a ./Synopsis macro.
+.c
+.de Synopsis
+.  if (\\n[grog:Synopsis.level] > 0) \
+.    Error .\\$0: previous .Synopsis was not closed by ./Synopsis.
+.  nh
+.  ds @1 \\$1\"
+.  nr @old_indent \\n(.i
+.  ad l
+.  in +\w'\fB\\*[@1]\0'u
+.  ti \\n[@old_indent]u
+.  B \\*[@1]\0\c
+.  rr @old_indent
+.  rm @1
+.  nr grog:Synopsis.level +1\"        marker for ./Synopsis
+..
+.c  --------------------------------------------------------------------
+.c ./Synopsis  ()
+.c
+.c Close a synopsis section opened by the previous .Synopsis macro.
+.c
+.de /Synopsis
+.  if (\\n[grog:Synopsis.level] <= 0) \
+.    Error .\\$0: no previous call of .Synopsis
+.  br
+.  ad
+.  in
+.  hy
+.  nr grog:Synopsis.level -1
+..
+.c --------------------------------------------------------------------
+.c .Opt_alt  ([<minus> <opt>]... [<arg> [<punct>]])
+.c
+.c Alternate options separated by a vertical bar.
+.c
+.c Arguments:
+.c   minus: either `-' or `--' (font CB).
+.c   opt: a name for an option, empty allowed (font CB).
+.c   arg: optionally, the argument to the option (font I).
+.c   punct: optional punctuation (in the starting font).
+.c Result:
+.c   The minus/opt argument pairs, each
+.c   separated by a vertical bar `|', optionally add 'arg', separated
+.c   a space character ` '.
+.c
+.c Example:
+.c  .Opt_alt - T -- device -- device-troff device .
+.c  results in
+.c  -T|--device|--device-troff device.
+.c
+.de Opt_alt
+.  Opt_alt_base "" | "" \\$@
+..
+.c --------------------------------------------------------------------
+.c .Opt_alt_base  (<pre> <sep> <post> [<minus> <opt>]... [arg [punct]])
+.c
+.c Alternating options; base macro for many others; do not use directly.
+.c
+.c Arguments:
+.c   <pre>: prefix, result is preceded by this.
+.c   <sep>: separator between minus/opt pairs.
+.c   <post>: postfix, is appended to the result.
+.c   <minus>: either `-' or `--' (font CB).
+.c   <opt>: a name for an option, empty allowed (font CB).
+.c   <arg>: optionally, the argument to the option (font I).
+.c   <punct>: optional punctuation (in the starting font).
+.c Result:
+.c   String `<pre>' followed by the <minus>/<opt> argument pairs, each
+.c   separated by string `<sep>', optionally add '<arg>', separated by
+.c   a single space ` ', followed by the string `<post>'.  Terminated
+.c   by the optional punctuation <punct>.
+.c
+.de Opt_alt_base
+.  nr @font \\n[.f]\"
+.  if (\\n[.$] < 3) \
+.    Error .\\0: not enough arguments.
+.  ds @pre \)\\$1\)\"                   prefix
+.  ds @sep \)\\$2\)\"                   separator
+.  ds @post \)\\$3\)\"                  postfix
+.  shift 3
+.  nr @count 0
+.  ds @res \f[CR]\\*[@pre]\"
+.  while (\\n[.$] >= 2) \{\
+.    c                                  do the pairs, break on no `-'
+.    if !'\\$1'-' \{\
+.      if !'\\$1'--' \
+.        break
+.    \}
+.    c                                  separator
+.    if (\\n[@count] > 0) \
+.      as @res \f[CR]\\*[@sep]\:\"
+.    nr @count +1
+.    c                                  combine minus with option name
+.    as @res \f[CB]\\-\"
+.    if '\\$1'--' \
+.      as @res \\-\"
+.    as @res \\$2\"
+.    shift 2
+.  \}
+.  if (\\n[.$] >= 3) \
+.    Error .\\0: wrong arguments: \\$@
+.  c                                    all pairs are done
+.  ie (\\n[.$] == 0) \
+.    as @res \f[CR]\\*[@post]\"
+.  el \{\
+.    c                                  optional option argument
+.    if !'\\$1'' \
+.      as @res \f[CR] \,\f[I]\\$1\"
+.    shift
+.    c                                  postfix
+.    as @res \\f[CR]\\*[@post]\"
+.    if (\\n[.$] >= 1) \{\
+.      c                                add punctuation
+.      as @res \f[\\n[@font]]\\$1\"
+.    \}
+.  \}
+.  nh
+.  Text \\*[@res]
+.  hy
+.  ft \\n[@font]
+.  rr @count
+.  rr @font
+.  rm @pre
+.  rm @post
+.  rm @sep
+.  rm @res
+..
+.c  --------------------------------------------------------------------
+.c .Text  (<text>...)
+.c
+.c Treat the arguments as text, no matter how they look.
+.c
+.de Text
+.  if (\\n[.$] == 0) \
+.    return
+.  nh
+.  nop \)\\$*\)
+.  hy
+..
+.c --------------------------------------------------------------------
+.c .File_name  (<path_name>)
+.c
+.c Display a file or directory name in CB font.
+.c
+.de File_name
+.  Header_CB \\$@
+..
+.c --------------------------------------------------------------------
+.c .Header_CB  (<path_name>)
+.c
+.c Display a line in CB font, for example after .TP
+.c
+.de Header_CB
+.  nh
+.  Text \f[CB]\\$1\f[]\\$2
+.  hy
+..
+.c --------------------------------------------------------------------
+.c .Topic  ([<indent>])
+.c
+.c A bulleted paragraph
+.c
+.de Topic
+.  ie (\\n[.$] = 0) \
+.    ds @indent 2m\"
+.  el \
+.    ds @indent \\$1\"
+.  TP \\*[@indent]
+.  Text \[bu]
+.  rm @indent
+..
+.c --------------------------------------------------------------------
+.c .Shell_cmd  (<CR> [<CI>] ...)
+.c
+.c A shell command line; display args alternating in fonts CR and CI.
+.c
+.de Shell_cmd
+.  grog:Shell_cmd_base "\*[grog:Shell_cmd.prompt]" \\$@
+..
+.c --------------------------------------------------------------------
+.c .Shell_cmd_base  (<prompt> [<CR> [<CI>] ...])
+.c
+.c A shell command line; display args alternating in fonts CR and CI.
+.c Internal, do not use directly.
+.c
+.c Globals: read-only register @.Shell_cmd_width
+.c
+.de grog:Shell_cmd_base
+.  if (\\n[.$] <= 0) \
+.    return
+.  nr @+font \\n[.f]\"
+.  ds @prompt \\$1\"
+.  ft CR
+.  c gap between prompt and command
+.  nr @+gap \\n[grog:Shell_cmd_base.prompt_width]-\\w'\\*[@prompt]'\"
+.  ds @res \\*[@prompt]\h'\\n[@+gap]u'\"
+.  shift
+.  ds @cf CR\"
+.  while (\\n[.$] > 0) \{\
+.    as @res \\f[\\*[@cf]]\\$1\"
+.    shift
+.    ie '\\*[@cf]'CR' \
+.      ds @cf I\"
+.    el \
+.      ds @cf CR\"
+.  \}
+.  br
+.  ad l
+.  nh
+.  nf
+.  Text \\*[@res]\"
+.  fi
+.  hy
+.  ad
+.  br
+.  ft \\n[@+font]
+.  rr @+font
+.  rr @+gap
+.  rm @cf
+.  rm @res
+..
+.
+.\" End of macro definitions
+.
+.
+.\" --------------------------------------------------------------------
+.\" SH "SYNOPSIS"
+.\" --------------------------------------------------------------------
+.
+.ad l
+.Synopsis grog
+.RB [ \-C ]
+.RI [ groff\-option \*[Ellipsis]]
+.RB [ \-\- ]
+.RI [ \%filespec \*[Ellipsis]]
+./Synopsis
+.
+.Synopsis grog
+.Opt_alt - h -- help
+./Synopsis
+.
+.Synopsis grog
+.Opt_alt - v -- version
+./Synopsis
+.
+.
+.\" --------------------------------------------------------------------
 .SH DESCRIPTION
+.\" --------------------------------------------------------------------
+.
 .B grog
-reads
-.I files
-and guesses which of the
+reads the input (file names or standard input) and guesses which of
+the
 .BR groff  (@MAN1EXT@)
-options
+options are needed to perform the input with the
+.B groff
+program.
+.
+The corresponding
+.B groff
+command is output.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "OPTIONS"
+.\" --------------------------------------------------------------------
+.
+The only
+.B grog
+options recognized are
+.B \-C
+(which is also passed on) to enable compatibility mode;
+.B \-v
+and
+.B \-\-version
+print information on the version number; and
+.B \-h
+and
+.B \-\-help
+print usage information.
+.
+.BR \-v ,
+.BR \-\-version ,
+.BR \-h ,
+and
+.B \-\-help
+stop the program directly without printing a
+.B groff
+command to standard output.
+.
+.
+.P
+All other specified short options (words starting with one minus
+character
+.BR \- )
+are interpreted as
+.B groff
+options or option clusters with or without argument.
+.
+No space is allowed between options and their argument.
+.
+Except from the
+.BI \-m arg
+options, all options will be passed on, i.e. they are included
+unchanged in the command for the output without effecting the work of
+.BR grog .
+.
+.
+.P
+A
+.I filespec
+argument can either be the name of an existing file or a single minus
+.B \-
+to mean standard input.
+.
+If no
+.I filespec
+is specified standard input is read automatically.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "DETAILS"
+.\" --------------------------------------------------------------------
+.
+.B grog
+reads all
+.I filespec
+parameters as a whole.
+.
+It tries to guess which of the following
+.B groff
+options are required for running the input under
+.BR groff :
 .BR \-e ,
 .BR \-man ,
 .BR \-me ,
@@ -49,33 +462,246 @@ options
 .BR \-G ,
 .BR \-s ,
 and
-.BR \-t
-are required for printing
-.IR files ,
-and prints the groff command including those options on the standard output.
-A filename of
-.B \-
-is taken to refer to the standard input.
-If no files are specified the standard input will be read.
-Any specified options will be included in the printed command.
-No space is allowed between options and their arguments.
-The only options recognized are
-.B \-C
-(which is also passed on) to enable compatibility mode, and
-.B \-v
-to print the version number.
-.LP
-For example,
-.IP
-.B \`grog \-Tdvi paper.ms\`
-.LP
-will guess the appropriate command to print
-.B paper.ms
-and then run it after adding the
-.B \-Tdvi
+.BR \-t .
+The guessed
+.B groff
+command including those options and the found
+.I filespec
+parameters is put on the standard output.
+.
+.
+.P
+It is possible to specify arbitrary
+.B groff
+options on the command line.
+.
+These are passed on the output without change, except for the
+.BI \-m arg
+options.
+.
+.
+.P
+The
+.B groff
+program has trouble when the wrong
+.BI \-m arg
+option or several of these options are specified.
+.
+In these cases,
+.B grog
+will print an error message and exit with an error code.
+.
+It is better to specify no
+.BI \-m arg
 option.
+.
+Because such an option is only accepted and passed when
+.B grog
+does not find any of these options or the same option is found.
+.
+.
+.P
+If several different
+.BI \-m arg
+options are found by
+.B grog
+an error message is produced and the program is terminated with an
+error code.
+.
+But the output is written with the wrong options nevertheless.
+.
+.
+.P
+Remember that it is not necessary to determine a macro package.
+.
+A
+.I roff
+file can also be written in the
+.I groff
+language without any macro package.
+.
+.B grog
+will produce an output without an
+.BI \-m arg
+option.
+.
+.
+.P
+As
+.B groff
+also works with pure text files without any
+.I roff
+requests,
+.B grog
+cannot be used to identify a file to be a
+.I roff
+file.
+.
+.
+.P
+The
+.BR groffer  (@MAN1EXT@)
+program heavily depends on a working
+.BR grog .
+.
+.
+.P
+The
+.B grog
+source contains two files written in different programming languages:
+.
+.ft CB
+grog.pl
+.ft R
+is the
+.I Perl
+version, while
+.ft CB
+grog.sh
+.ft R
+is a shell script using
+BR awk (1).
+During the run of
+.BR make (1),
+it is determined whether the system contains a suitable version of
+.BR perl (1).
+If so,
+.ft CB
+grog.pl
+.ft R
+is transformed into
+.BR grog ;
+otherwise
+.ft CB
+grog.sh
+.ft R
+is used instead.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "EXAMPLES"
+.\" --------------------------------------------------------------------
+.
+.Topic
+Calling
+.RS
+.IP
+.Shell_cmd "grog meintro.me"
+.P
+results in
+.IP
+.ft CR
+groff \-me meintro.me
+.ft
+.P
+So
+.B grog
+recognized that the file
+.File_name meintro.me
+is written with the
+.B \-me
+macro package.
+.RE
+.
+.
+.Topic
+On the other hand,
+.RS
+.IP
+.Shell_cmd "grog pic.ms"
+.P
+outputs
+.IP
+.ft CR
+groff \-pte \-ms pic.ms
+.ft
+.P
+Besides determining the macro package
+.BR \-ms ,
+.B grog
+recognized that the file
+.File_name pic.ms
+additionally needs
+.BR \-pte ,
+the combination of
+.B \-p
+for
+.IR pic ,
+.B \-t
+for
+.IR tbl ,
+and
+.B \-e
+for
+.IR eqn .
+.RE
+.
+.
+.Topic
+If both files are combined by the command
+.RS
+.IP
+.Shell_cmd "grog meintro.me pic.ms"
+.P
+an error message is sent to standard error because
+.B groff
+cannot work with two different macro packages:
+.IP
+.ft CR
+grog: error: there are several macro packages: -me -ms
+.ft
+.P
+Additionally the corresponding output with the wrong options is printed
+to standard output:
+.IP
+.ft CR
+groff -pte -me -ms meintro.me pic.ms
+.ft
+.P
+But the program is terminated with an error code.
+.RE
+.
+.
+.Topic
+The call of
+.RS
+.IP
+.Shell_cmd "grog \-ksS \-Tdvi grnexmpl.g"
+.P
+contains several
+.B groff
+options that are just passed on the output without any interface to
+.BR grog .
+These are the option cluster
+.B \-ksS
+consisting of
+.BR \-k ,
+.BR \-s ,
+and
+.BR \-S ;
+and the option
+.B \-T
+with argument
+.BR dvi .
+The output is
+.IP
+.ft CR
+groff \-ksS \-Tdvi grnexmpl.g
+.ft
+.P
+so no additional option was added by
+.BR grog .
+As no option
+.BI \-m arg
+was found by
+.B grog
+this file does not use a macro package.
+.RE
+.
+.
+.\" --------------------------------------------------------------------
 .SH "SEE ALSO"
-.BR doctype (1),
+.\" --------------------------------------------------------------------
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@),
 .BR @g@tbl (@MAN1EXT@),
@@ -84,7 +710,24 @@ option.
 .BR @g@refer (@MAN1EXT@),
 .BR @g@grn (@MAN1EXT@),
 .BR grap (1),
-.BR @g@soelim (@MAN1EXT@)
+.BR @g@soelim (@MAN1EXT@),
+.BR groff_me (@MAN7EXT@),
+.BR groff_ms (@MAN7EXT@),
+.BR groff_mm (@MAN7EXT@),
+.BR groff_mom (@MAN7EXT@),
+.BR groff_man (@MAN7EXT@),
+.BR groffer (@MAN1EXT@)
+.
+.
+.\" --------------------------------------------------------------------
+.SH "COPYING"
+.\" --------------------------------------------------------------------
+.copyleft
+.
+.
+.\" --------------------------------------------------------------------
+.\" Emacs settings
+.\" --------------------------------------------------------------------
 .
 .\" Local Variables:
 .\" mode: nroff
