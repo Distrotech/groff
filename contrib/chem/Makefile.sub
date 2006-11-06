@@ -40,7 +40,7 @@ README: $(srcdir)/README.txt
 	sed -e "s|@g@|$(g)|g" $< >$@
 
 examples/README: $(srcdir)/examples/README.txt
-	if test -d examples || $(mkinstalldirs) examples
+	-test -d examples || $(mkinstalldirs) examples
 	sed -e "s|@g@|$(g)|g" $< >$@
 
 chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
