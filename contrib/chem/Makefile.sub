@@ -36,65 +36,62 @@ chem_libdir=$(libdir)/groff/chem
 
 all: README examples/README chem $(MAN1)
 
-README: README.txt
-	sed -e "s|@g@|$(g)|g" $(srcdir)/README.txt >$@
+README: $(srcdir)/README.txt
+	sed -e "s|@g@|$(g)|g" $< >$@
 
-examples/README: examples/README.txt
-	if test -d examples; then :; else \
-	  $(mkinstalldirs) examples; \
-	fi
-	sed -e "s|@g@|$(g)|g" $(srcdir)/examples/README.txt >$@
+examples/README: $(srcdir)/examples/README.txt
+	if test -d examples || $(mkinstalldirs) examples
+	sed -e "s|@g@|$(g)|g" $< >$@
 
-chem: chem.pl $(SH_DEPS_SED_SCRIPT)
+chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
-	    -e "s|@g@|$(g)|g" \
-	    -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-	    -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
-	    -e "s|@VERSION@|$(version)$(revision)|g" \
-	    -e "$(SH_SCRIPT_SED_CMD)" \
-	    $(srcdir)/chem.pl >$@
-	chmod a+x $@
+	  -e "s|@g@|$(g)|g" \
+	  -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
+	  -e "s|@libdir@|$(DESTDIR)$(libdir)|g" \
+	  -e "s|@VERSION@|$(version)$(revision)|g" \
+	  -e "$(SH_SCRIPT_SED_CMD)" \
+	  $(srcdir)/chem.pl >$@
+	chmod +x $@
 
-install_data: chem macros.pic pic.tmac $(MAN1) README \
-	examples/*.chem examples/README examples/122/*
-	-@test -d $(DESTDIR)$(bindir) || \
-	  $(mkinstalldirs) $(DESTDIR)$(bindir)
-	-@$(RM) $(DESTDIR)$(bindir)/$(g)chem
+install_data: chem \
+              README examples/README \
+              $(srcdir)/macros.pic $(srcdir)/pic.tmac \
+              $(srcdir)/examples/*.chem $(srcdir)/examples/122/*
+	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
+	$(RM) $(DESTDIR)$(bindir)/$(g)chem
 	$(INSTALL_SCRIPT) chem $(DESTDIR)$(bindir)/$(g)chem
-	-@test -d $(DESTDIR)$(chem_libdir) || \
-          $(mkinstalldirs) $(DESTDIR)$(chem_libdir)
-	-@$(RM) $(DESTDIR)$(chem_libdir)/macros.pic
+	-test -d $(DESTDIR)$(chem_libdir) \
+          || $(mkinstalldirs) $(DESTDIR)$(chem_libdir)
+	$(RM) $(DESTDIR)$(chem_libdir)/macros.pic
 	$(INSTALL_DATA) $(srcdir)/macros.pic \
-	  $(DESTDIR)$(chem_libdir)/macros.pic
-	-@$(RM) $(DESTDIR)$(chem_libdir)/pic.tmac
+          $(DESTDIR)$(chem_libdir)/macros.pic
+	$(RM) $(DESTDIR)$(chem_libdir)/pic.tmac
 	$(INSTALL_DATA) $(srcdir)/pic.tmac \
-	  $(DESTDIR)$(chem_libdir)/pic.tmac
-	-@test -d $(DESTDIR)$(exampledir)/chem || \
-          $(mkinstalldirs) $(DESTDIR)$(exampledir)/chem/122
-	-@test -d $(DESTDIR)$(exampledir)/chem/122 || \
-          $(mkinstalldirs) $(DESTDIR)$(exampledir)/chem/122
-	-@$(RM) $(DESTDIR)$(exampledir)/chem/*
+          $(DESTDIR)$(chem_libdir)/pic.tmac
+	-test -d $(DESTDIR)$(exampledir)/chem \
+          || $(mkinstalldirs) $(DESTDIR)$(exampledir)/chem/122
+	-test -d $(DESTDIR)$(exampledir)/chem/122 \
+          || $(mkinstalldirs) $(DESTDIR)$(exampledir)/chem/122
+	-$(RM) $(DESTDIR)$(exampledir)/chem/*
 	$(INSTALL_DATA) examples/README \
-	  $(DESTDIR)$(exampledir)/chem/README
-	for i in examples/*.chem; do \
-	  n=`echo $$i | sed 's|examples/||g'`; \
-	  $(INSTALL_DATA) $(srcdir)/$$i \
-	    $(DESTDIR)$(exampledir)/chem/$$n; \
-	done
-	-@$(RM) $(DESTDIR)$(exampledir)/chem/122/*
-	for i in examples/122/*; do \
-	  n=`echo $$i | sed 's|examples/122/||g'`; \
-	  $(INSTALL_DATA) $(srcdir)/$$i \
-	    $(DESTDIR)$(exampledir)/chem/122/$$n; \
-	done
+          $(DESTDIR)$(exampledir)/chem/README
+	for i in $(srcdir)/examples/*.chem; do \
+          n=`echo $$i | sed 's|$(srcdir)/examples/||g'`; \
+          $(INSTALL_DATA) $$i $(DESTDIR)$(exampledir)/chem/$$n; \
+        done
+	-$(RM) $(DESTDIR)$(exampledir)/chem/122/*
+	for i in $(srcdir)/examples/122/*; do \
+          n=`echo $$i | sed 's|$(srcdir)/examples/122/||g'`; \
+          $(INSTALL_DATA) $$i $(DESTDIR)$(exampledir)/chem/122/$$n; \
+        done
 
 uninstall_sub:
-	-$(RM) $(DESTDIR)$(bindir)/chem
-	-$(RM) $(DESTDIR)$(libdir)/groff/chem/macros.pic
+	$(RM) $(DESTDIR)$(bindir)/chem
+	$(RM) $(DESTDIR)$(libdir)/groff/chem/macros.pic
 	-rmdir $(DESTDIR)$(libdir)/groff/chem
-	-$(RM) $(DESTDIR)$(exampledir)/chem/122/*
+	$(RM) $(DESTDIR)$(exampledir)/chem/122/*
 	-rmdir $(DESTDIR)$(exampledir)/chem/122
-	-$(RM) $(DESTDIR)$(exampledir)/chem/*
+	$(RM) $(DESTDIR)$(exampledir)/chem/*
 	-rmdir $(DESTDIR)$(exampledir)/chem
 	-rmdir $(DESTDIR)$(exampledir)
 
