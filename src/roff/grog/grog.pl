@@ -44,7 +44,8 @@ my $Prog = $0;
   $Prog = $f;
 }
 
-my $Sp = "[\\s\\n]";
+#my $Sp = "[\\s\\n]";
+my $Sp = qr([\s\n]);
 
 my @Command;			# stores the final output
 my @Mparams;			# stores the options -m*
@@ -123,8 +124,10 @@ sub process {
     return;
   }
   while (<FILE>) {
+    chomp;
     s/^[.']\s*/./;
     s/^\s+|\s+$//g;
+    s/$/\n/;
 
     if (/^(.cstart)|(begin\s+chem)$/) {
       $Groff{'chem'}++;
