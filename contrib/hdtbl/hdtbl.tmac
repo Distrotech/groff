@@ -100,6 +100,11 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"	*	The four base macros and the two optional macros	*
 .\"	*****************************************************************
 .
+.ie n \
+.  ds g tty:\"
+.el \
+.  ds g ps: exec\"
+.
 .\"	TBL:	table start
 .\"		predecessor: 	text, TD or ETB
 .\"		successor:	CPTN or TR
@@ -321,7 +326,19 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"		else like .TD
 .de TH
 .  ft 1
-.  TD val=m hal=c fst=B \\$@
+.  getarg hal \\$@
+.  if "\\*[hal]"" \
+.    ds hal c\"
+.
+.  getarg val \\*[args]
+.  if "\\*[val]"" \
+.    ds val m\"
+.
+.  getarg fst \\*[args]
+.  if "\\*[fst]"" \
+.    ds fst B\"
+.
+.  TD hal=\\*[hal] val=\\*[val] fst=\\*[fst] \\*[args]
 ..
 .
 .
@@ -339,8 +356,10 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  getarg rowspan \\$@
 .  nr rowspan 1
 .  if !"\\*[rowspan]"" \{\
-.    ie \B\\*[rowspan] \
+.    ie \B\\*[rowspan] \{\
 .      nr rowspan (\\*[rowspan] >? 1)
+.      nr *rsp*\\*[*#trc*] (\\n[rowspan] - 1)
+.    \}
 .    el \
 .      tm \\n[.F]:\\n[.c]: Invalid value of `rowspan' keyword.
 .  \}
@@ -572,14 +591,15 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .      \" if we have spanned rows, calculate resulting row height
 .      \" and position of lower horizontal line
-.      if \\n[rspan\\*[#trc]] \{\
+.      if \\n[*rsp*\\*[#trc]] \{\
 .        nr * \\n[#r] 1
 .        nr rspan\\*[#trc] 0-1		\"	set `no hl' flag
 .        nr corr (\\n[dn\\*[#trc]] - \\n[dntr\\n[t*#]*\\n[#r]])
 .
 .        \" clear row span flags in following rows and update row height
-.        while \\n[rspan\\n[t*#]*\\n+[*]*\\n[#c]] \{\
-.          nr rspan\\n[t*#]*\\n[*]*\\n[#c] 0
+.        while \\n[*rsp*\\*[#trc]] \{\
+.          nr *rsp*\\*[#trc] -1
+.          nr rspan\\n[t*#]*\\n+[*]*\\n[#c] 0
 .          nr ** (\\n[dntr\\n[t*#]*\\n[*]] + \\n[cscp] + \\n[cscpb])
 .          nr corr -\\n[**]
 .          nr $1 +\\n[**]
