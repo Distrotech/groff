@@ -17,7 +17,7 @@
 Source file position:  <groff_source_top>/contrib/chem/chem.man
 Installed position:    $prefix/share/man/man1/@g@chem.1
 
-Last update: 23 Oct 2006
+Last update: 2 Nov 2006
 ..
 .de author
 This file was written by
@@ -243,6 +243,11 @@ automatically.
 .SH DESCRIPTION
 .\" --------------------------------------------------------------------
 .
+.I chem
+produces chemical structure diagrams.
+.
+Today's version is best suited for organic chemistry (bonds, rings).
+.
 The
 .B @g@chem
 program is a
@@ -253,9 +258,13 @@ preprocessor like
 .BR @g@tbl ,
 etc.
 .
-It produces chemical structure diagrams.
-.
-Today's version is best suited for organic chemistry (bonds, rings).
+It generates
+.I pic
+output such that all
+.I chem
+parts are translated into diagrams of the
+.I pic
+language.
 .
 .
 .P
@@ -266,11 +275,31 @@ originates from the Perl source file
 It tells
 .B @g@pic
 to include a copy of
-.File_name chem.macros
+.File_name macros.pic
 that is installed in the
-.B groff
+.I groff
 lib directory
-.BR @libdir@/groff/chem .
+.File_name @libdir@/groff/chem .
+.
+This file contains macros written in the
+.I pic
+language.
+.
+Moreover the
+.I groff
+source file
+.File_name pic.tmac
+is loaded.
+.
+This redefines the
+.I pic
+initialization requests
+.B .PS
+and
+.B .PE
+such that all
+.I pic
+diagrams are centered in the display.
 .
 .
 .P
@@ -278,22 +307,35 @@ In a style reminiscent of
 .I eqn
 and
 .IR pic ,
+the
+.I chem
 diagrams are written in a special language.
 .
+.
+.P
 A set of
 .I chem
-lines must be written between the lines
+lines must be written between the initialization lines
 .B .cstart
 before and
 .B .cend
 after.
 .
-Anything outside
-these is copied through intact;  whatever is between
-.B .cstart
-and
-.B .cend
-is converted into
+In
+.I pic
+context, i.e. after the call of
+.BR .PS ,
+.I chem
+input can optionally be started by the line
+.B \%begin\~chem
+and ended by the line with the single word
+.B end
+instead.
+.
+.
+.P
+Anything outside these initialization lines is copied through intact;
+whatever is between the initialization lines is converted into
 .I pic
 commands to draw the diagram.
 .
@@ -348,23 +390,68 @@ for the activation of
 .
 The
 .I chem
-input language is rather small.  It provides bonds of several styles,
+input language is rather small.  It provides rings of several styles
+and a way to glue them together as desired, bonds of several styles,
 moieties (e.g.,
 .BR C ,
 .BR NH3 ,
-\*[Ellipsis]), rings of several styles, and a way to glue them together
-as desired.
+\*[Ellipsis]) and strings.
 .
-In addition, since
-.B @g@chem
-is a
-.B @g@pic
-preprocessor, it's possible to include
-.I pic
-statements in the middle of a diagram to draw things not provided for
-by
-.I chem
-itself.
+.
+.\" --------------------------------------------------------------------
+.SS Setting Variables:
+.\" --------------------------------------------------------------------
+.
+There are some variables that can be set by commands.
+.
+Such commands have 2 possible forms, either
+.br
+.RS
+.I "variable value"
+.RE
+.br
+or
+.br
+.RS
+.IB "variable " = " value"
+.RE
+.
+.
+.P
+This sets the given
+.I variable
+to the argument
+.IR value .
+If more arguments are given only the last argument is taken, all other
+arguments are ignored.
+.
+.
+.P
+There are only a few variables to be set by these commands:
+.
+.TP
+.BI textht " arg"
+this sets the height of the text to
+.IR arg ;
+default is 0.16.
+.
+.TP
+.BI cwid " arg"
+this sets the character widht to
+.IR arg ;
+default is 0.12.
+.
+.TP
+.BI db " arg"
+this sets the bond length to
+.IR arg ;
+default is 0.2.
+.
+.TP
+.BI size " arg"
+scales the diagram so it looks plausible at point size
+.IR arg ;
+default is 10 point.
 .
 .
 .\" --------------------------------------------------------------------
@@ -444,75 +531,6 @@ commands can be tacked on to the end of a bond command, to created
 dotted or dashed bonds or to specify a
 .B to
 place.
-.
-.
-.\" --------------------------------------------------------------------
-.SS Names:
-.\" --------------------------------------------------------------------
-.
-In the alkyl chain above, notice that the carbon atom
-.B C
-was used both to draw something and as the name for a place.
-.
-A moiety always defines a name for a place;  you can use
-your own names for places instead, and indeed, for rings
-you will have to.
-.
-A name is just
-.
-.IP
-.IB Name :
-\*[Ellipsis]
-.
-.
-.P
-.I Name
-is often the name of a moiety like
-.BR CH3 ,
-but it needn't be.
-.
-Any name that begins with a capital letter and contains only letters
-and numbers is ok:
-.
-.RS
-.TP
-.B First:
-.B bond
-.TP+
-\&
-.B bond 30 from First
-.RE
-.
-.
-.\" --------------------------------------------------------------------
-.SS Moieties:
-.\" --------------------------------------------------------------------
-.
-A moiety is a string of characters beginning with a capital letter,
-such as N(C2H5)2.
-.
-Numbers are converted to subscripts (unless they appear to be
-fractional values, as in N2.5H).  The moiety names itself after
-special characters have been stripped out: N(C2H5)2) has the name
-NC2H52.
-
-.B BP
-is a special
-.I branch point
-(i.e., line crossing) that doesn't print.
-.
-Normally a moiety is placed right after the last thing mentioned, but
-it may be positioned by
-.IR pic -like
-commands, e.g.,
-.
-.IP
-.B CH3 at C + (0.5,0.5)
-.
-.
-.P
-Text within quotes "\*[Ellipsis]" is treated more or less like a
-moiety except that no changes are made to the quoted part.
 .
 .
 .\" --------------------------------------------------------------------
@@ -649,6 +667,139 @@ The description of a ring has to fit on a single line.
 .
 .
 .\" --------------------------------------------------------------------
+.SS Moieties and Strings:
+.\" --------------------------------------------------------------------
+.
+A moiety is a string of characters beginning with a capital letter,
+such as N(C2H5)2.
+.
+Numbers are converted to subscripts (unless they appear to be
+fractional values, as in N2.5H).
+.
+The name of a moiety is determined from the moiety after special
+characters have been stripped out: e.g., N(C2H5)2) has the name NC2H52.
+.
+.
+.P
+Moieties can be specified in 2 kinds.
+.
+Normally a moiety is placed right after the last thing mentioned,
+separated by a semicolon surrounded by spaces, e.g.,
+.
+.IP
+.B B1: bond ; OH
+.
+.P
+Here the moiety is
+.BR OH ;
+it is set after a bond.
+.
+.
+.P
+As the second kind a moiety can be positioned as the first word in a
+.IR pic -like
+command, e.g.,
+.
+.IP
+.B CH3 at C + (0.5,0.5)
+.
+.P
+Here the moiety is
+.BR CH3 .
+It is placed at a position relative to
+.BR C ,
+a former used moiety.
+.
+.
+.P
+So moiety names can be specified as
+.I chem
+positions everywhere in the
+.I chem
+code.
+.
+Beneath their printing moieties are names for places.
+.
+.
+.P
+The moiety
+.P
+.B BP
+is special.
+.
+It is not printed, but just serves as a mark to be referred to in later
+.I chem
+commands.
+.
+For example,
+.
+.IP
+.B bond ; BP
+.
+.P
+sets a mark at the end of the bond.
+.
+This can be used later on for specifying a place.
+.
+The name
+.BP BP
+is derived from
+.I branch point
+(i.e., line crossing).
+.
+.
+.P
+A string within double quotes
+.B \[dq]
+is interpreted as a part of a
+.I chem
+command.
+.
+It is a string that should be printed (without the quotes).
+.
+Text within quotes "\*[Ellipsis]" is treated more or less like a
+moiety except that no changes are made to the quoted part.
+.
+.
+.\" --------------------------------------------------------------------
+.SS Names:
+.\" --------------------------------------------------------------------
+.
+In the alkyl chain above, notice that the carbon atom
+.B C
+was used both to draw something and as the name for a place.
+.
+A moiety always defines a name for a place;  you can use
+your own names for places instead, and indeed, for rings
+you will have to.
+.
+A name is just
+.
+.IP
+.IB Name :
+\*[Ellipsis]
+.
+.
+.P
+.I Name
+is often the name of a moiety like
+.BR CH3 ,
+but it needn't be.
+.
+Any name that begins with a capital letter and contains only letters
+and numbers is ok:
+.
+.RS
+.TP
+.B First:
+.B bond
+.TP+
+\&
+.B bond 30 from First
+.RE
+.
+.
+.\" --------------------------------------------------------------------
 .SS Miscellaneous:
 .\" --------------------------------------------------------------------
 .
@@ -711,6 +862,103 @@ and is copied through with a label.
 .
 .
 .\" --------------------------------------------------------------------
+.SS Non-chem Commands:
+.\" --------------------------------------------------------------------
+.
+All
+.I roff
+requests are passed through witout change.
+.
+These are lines starting with a dot
+.B .
+or a single quote
+.BR ' .
+.
+.
+.P
+All lines starting with
+.B #
+as first non-space character are interpreted as comments and are
+ignored just like in
+.IR pic .
+When a word in a line starts with
+.B #
+it is regarded as the beginning of a comment.
+.
+So this part is ignored in the line.
+.
+But
+.B #
+characters within words are kept.
+.
+.
+.P
+Since
+.B @g@chem
+is a
+.B @g@pic
+preprocessor, it's possible to include
+.I pic
+statements in the middle of a diagram to draw things not provided for
+by
+.I chem
+itself.
+.
+Such
+.I pic
+statements should be included in
+.I chem
+code by adding
+.B pic
+as the first word of this line.
+.
+But nevertheless, all lines that are not handled by
+.I chem
+are transferred to
+.IR pic .
+.
+.
+.P
+The following
+.I pic
+commands are accepted as
+.I chem
+commands, so no
+.B pic
+command word is needed:
+.
+.TP
+.B define
+the definition of
+.I pic
+macros within
+.IR chem .
+.
+.TP
+.B [
+the beginning of a block composite.
+.
+.TP
+.B ]
+the end of a block composite.
+.
+.TP
+.B {
+the beginning of a macro definition.
+.
+.TP
+.B }
+the end of a macro definition.
+.
+.P
+The macro names from
+,B define
+statements are stored and their call is accepted as
+.I chem
+command as well.
+.
+.
+.\" --------------------------------------------------------------------
 .SS WISH LIST
 .\" --------------------------------------------------------------------
 .
@@ -765,8 +1013,13 @@ Report bugs to the
 .
 Include a complete, self-contained example that will allow the bug to
 be reproduced, and say which version of
-.B @g@chem
+.I groff
+and
+.I chem
 you are using.
+.
+You can get both version numbers by calling
+.BR "@g@chem --version" .
 .
 .
 .P

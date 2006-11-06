@@ -15,17 +15,16 @@ In comparison to the original `awk' version of `chem', the Perl
 version does the following changements:
 - the options -h, --help, -v, --version to output usage and version
 information are added.
-- remove the functions `inline', `shiftfields', and `set'.
-- remove some variables that are used only once.
+- remove some functions `inline', `shiftfields', and `set' and some
+variables that are used only once.
 
 The subdirectory `examples/' contains example files for chem.  They
-are written in the `chem' language.  The file names end with .p
-because `pic' code is created by chem.
+are written in the `chem' language.  The file names end with .chem.
 
 
 ####### License
 
-Last update: 19 Oct 2006
+Last update: 6 Nov 2006
 
 Copyright (C) 2006 Free Software Foundation, Inc.
 Written by Bernd Warken.

@@ -30,8 +30,8 @@
 # settings
 ########################################################################
 
-my $Program_Version = '0.1.1';
-my $Last_Update = '27 Oct 2006';
+my $Program_Version = '0.1.2';
+my $Last_Update = '7 Nov 2006';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it.
@@ -115,7 +115,7 @@ if (@ARGV) {
     }
     if ($dbl_minus) {
       if (-f $_) {
-	push @filespec, $_;
+	push @filespec, $_ if -s $_;
       } else {
 	warn "chem: argument $_ is not an existing file.\n";
 	$wrong = 1;
@@ -139,7 +139,7 @@ if (@ARGV) {
       exit 0;
     }
     if (-f $_) {
-      push @filespec, $_;
+      push @filespec, $_ if -s $_;
     } else {
       $wrong = 1;
       if (/^-/) {
@@ -164,7 +164,7 @@ if (@ARGV) {
 # main process
 ########################################################################
 
-my %dc = ( 'up' => 0, 'right' => 90, 'down' => 180, 'left' => 270,
+my %Dc = ( 'up' => 0, 'right' => 90, 'down' => 180, 'left' => 270,
 	   'ne' => 45, 'se' => 135, 'sw' => 225, 'nw' => 315,
 	   0 => 'n', 90 => 'e', 180 => 's', 270 => 'w',
 	   30 => 'ne', 45 => 'ne', 60 => 'ne',
@@ -172,7 +172,6 @@ my %dc = ( 'up' => 0, 'right' => 90, 'down' => 180, 'left' => 270,
 	   210 => 'sw', 225 => 'sw', 240 => 'sw',
 	   300 => 'nw', 315 => 'nw', 330 => 'nw',
 	 );
-my $RSTART;
 
 my $Word_Count;
 my @Words;
@@ -182,36 +181,29 @@ my $Last_Name = '';
 
 # from init()
 my $First_Time = 1;
-my $RING;
-my $MOL;
-my $BOND;
-my $OTHER;
-my $Last;
+my $Last_Type;
 my $Dir;			# direction
+my %Types = (
+	     'RING' => 'R',
+	     'MOL' => 'M',
+	     'BOND' => 'B',
+	     'OTHER' => 'O'	# manifests
+	    );
 
 # from setparams()
-my $lineht;
-my $linewid;
-my $textht;
-my $db;
-my $cwid;
-my $cr;
-my $crh;
-my $crw;
-my $dav;
-my $dew;
-my $ringside;
-my $dbrack;
+my %Params;
 
 # from ring()
-my $nput;
-my $aromatic;
-my %put;
-my %dbl;
+my $Nput;
+my $Aromatic;
+my %Put;
+my %Dbl;
 
-my %labtype;
+my %Labtype;
+my %Define = ();
 
 my $File_Name = '';
+my $Line = '';
 
 &main();
 
@@ -227,19 +219,22 @@ my $File_Name = '';
     my $count_minus = 0;
     my @stdin = ();
     my $stdin = 0;
+
+    # for centralizing the pic code
+    open TMAC, "<$File_pic_tmac";
+    print <TMAC>;
+    close TMAC;
+
     foreach (@ARGV) {
       $count_minus++ if /^-$/;
     }
+
     foreach my $arg (@ARGV) {
       &setparams(1.0);
       next unless $arg;
       $Line_No = 0;
       $is_pic = '';
       $is_chem = '';
-      # for centralizing the pic code
-      open TMAC, "<$File_pic_tmac";
-      print <TMAC>;
-      close TMAC;
       if ($arg eq '-') {
 	$File_Name = 'standard input';
 	if ($stdin) {
@@ -277,6 +272,8 @@ my $File_Name = '';
   #
   sub main_line {
     my $line = $_[0];
+#    $Last_Type = $Types{'OTHER'};
+#    $Last_Type = '';
     my $stack;
     $Line_No++;
     chomp $line;
@@ -288,21 +285,46 @@ my $File_Name = '';
     } else {
       $former_line = '';
     }
+    $Line = $line;
 
     {
+      @Words = ();
       my $s = $line;
-      $s =~ s/^\s+//;
+      $s =~ s/^\s*//;
       $s =~ s/\s+$//;
       return 1 unless $s;
-      @Words = split(/\s+/, $s);
-      return 1 unless @Words;
-      foreach my $i (0..$#Words) {
-	if ($Words[$i] =~ /^\s*#/) {
-	  $#Words = $i - 1;
-	  last;
+      $s = " $s";
+      $s =~ s/\s+#.*$// if $is_pic;
+      return 1 unless $s;
+      $line = $s;
+      $line =~ s/^\s*|\s*$//g;
+      my $bool = 1;
+      while ($bool) {
+	$s =~ /^([^"]*)\s("[^"]*"?\S*)(.*)$/;
+	if (defined $1) {
+	  my $s1 = $1;
+	  my $s2 = $2;
+	  $s = $3;
+	  $s1 =~ s/^\s*|\s*$//g;
+	  push @Words, split(/\s+/, $s1) if $s1;
+	  push @Words, $s2;
+	}
+	if ($s !~ /\s"/) {
+	  $s =~ s/^\s*|\s*$//g;
+	  push @Words, split(/\s+/, $s) if $s;
+	  $bool = 0;
 	}
       }
+
+#      @Words = split(/\s+/, $s);
       return 1 unless @Words;
+#      foreach my $i (0..$#Words) {
+#	if ($Words[$i] =~ /^\s*#/) {
+#	  $#Words = $i - 1;
+#	  last;
+#	}
+#      }
+#      return 1 unless @Words;
     }
 
     if ($line =~ /^([\.']\s*PS\s*)|([\.']\s*PS\s.+)$/) {
@@ -393,6 +415,7 @@ my $File_Name = '';
       print "$line\n";
       return 1;
     }
+
     if ($Words[0] eq 'pic') {
       # pic pass-thru
       return 1 if $#Words == 0;
@@ -400,8 +423,11 @@ my $File_Name = '';
       $s =~ /^\s*pic\s*(.*)$/;
       $s = $1;
       print "$s\n" if $s;
+      $Last_Type = $Types{'OTHER'};
+      $Define{ $Words[2] } = 1 if $#Words >= 2 && $Words[1] eq 'define';
       return 1;
     }
+
     if ($Words[0] eq 'textht') {
       if ($#Words == 0) {
 	&error("`textht' needs a single argument.");
@@ -410,11 +436,11 @@ my $File_Name = '';
       &error("only the last argument is taken for `textht', " .
 	     "all others are ignored.")
 	unless $#Words <= 1 or ($#Words == 2 && $Words[1] =~ /^=/);
-      $textht = $Words[$#Words];
+      $Params{'textht'} = $Words[$#Words];
       return 1;
     }
 ### main_line()
-    if ($Words[0] eq 'cwid') {
+    if ($Words[0] eq 'cwid') {	# character width
       if ($#Words == 0) {
 	&error("`cwid' needs a single argument.");
 	return 0;
@@ -422,10 +448,10 @@ my $File_Name = '';
       &error("only the last argument is taken for `cwid', " .
 	     "all others are ignored.")
 	unless $#Words <= 1 or ($#Words == 2 && $Words[1] =~ /^=/);
-      $cwid = $Words[$#Words];
+      $Params{'cwid'} = $Words[$#Words];
       return 1;
     }
-    if ($Words[0] eq 'db') {
+    if ($Words[0] eq 'db') {	# bond length
       if ($#Words == 0) {
 	&error("`db' needs a single argument.");
 	return 0;
@@ -433,10 +459,10 @@ my $File_Name = '';
       &error("only the last argument is taken for `db', " .
 	     "all others are ignored.")
 	unless $#Words <= 1 or ($#Words == 2 && $Words[1] =~ /^=/);
-      $db = $Words[$#Words];
+      $Params{'db'} = $Words[$#Words];
       return 1;
     }
-    if ($Words[0] eq 'size') {
+    if ($Words[0] eq 'size') {	# size for all parts of the whole diagram
       my $size;
       if ($#Words == 0) {
 	&error("`size' needs a single argument.");
@@ -455,28 +481,42 @@ my $File_Name = '';
     }
 
 ### main_line()
-    print "\n#", $line, "\n";  		      # debugging, etc.
+    print "\n#", $Line, "\n";  		      # debugging, etc.
     $Last_Name = '';
+#    $Last_Type = $Types{'OTHER'};
+#    $Last_Type = '';
 
     if ($Words[0] =~ /^[A-Z].*:$/) {
       # label;  falls thru after shifting left
-      my $w0 = $Words[0];
-      $Last_Name = $w0;
+      my $w = $Words[0];
+      $Last_Name = $w;
       $Last_Name =~ s/:$//;
-      print "$w0";
+      print "$w";
       shift @Words;
       if (@Words) {
 	print " ";
-	$line =~ s/^\s*$w0\s*//;
+	$line =~ s/^\s*$w\s*//;
       } else {
 	print "\n";
 	return 1;
       }
     }
 
+    if ($Words[0] eq 'define') {
+      print "$line\n";
+      $Define{ $Words[1] } = 1 if $#Words >= 1;
+      $Last_Type = $Types{'OTHER'};
+      return 1;
+    }
+    if ($Words[0] =~ /^[\[\]{}]/) {
+      print "$line\n";
+      $Last_Type = $Types{'OTHER'};
+      return 1;
+    }
+
     if ($Words[0] =~ /^"/) {
       print 'Last: ', $line, "\n";
-      $Last = $OTHER;
+      $Last_Type = $Types{'OTHER'};
       return 1;
     }
 
@@ -493,7 +533,6 @@ my $File_Name = '';
 	&bond($Words[0]);
 	return 1;
       }
-
       if ($Words[0] eq 'aromatic') {
 	my $temp = $Words[0];
 	$Words[0] = $Words[1] ? $Words[1] : '';
@@ -525,18 +564,32 @@ my $File_Name = '';
       $stack--;
       return 1;
     }
-    if ($Words[0] eq 'label') {
-      &label();
+    if ($Words[0] eq 'label') {	# prints the vertex numbers in a ring
+      if ( exists $Labtype{$Words[1]} and
+	   $Labtype{$Words[1]} =~ /^$Types{'RING'}/ ) {
+	my $v = substr($Labtype{$Words[1]}, 1, 1);
+	$Words[1] = '' unless $Words[1];
+	foreach my $i ( 1..$v ) {
+	  printf "\"\\s-3%d\\s0\" at 0.%d<%s.C,%s.V%d>\n", $i, $v + 2,
+	    $Words[1], $Words[1], $i;
+	}
+      } else {
+	&error("$Words[1] is not a ring.");
+      }
       return 1;
     }
-    if ($Words[0] =~ '[\[\]]') {
+
+    if ( exists $Define{ $Words[0] } ) {
       print $line, "\n";
+      $Last_Type = $Types{'OTHER'};
       return 1;
     }
-    if ($line) {
-      print 'Last: ', $line, "\n";
-      $Last = $OTHER;
-    }
+    return 1 unless $line;
+#    print STDERR "# $Line\n";
+#    &error('This is not a chem command.  To include a command for pic, ' .
+#	   "add `pic' as the first word to the command.");
+    print $line, "\n";
+    $Last_Type = $Types{'OTHER'};
     1;
   } # main_line()
 
@@ -576,8 +629,9 @@ sub atom {
     $s =~ s/\./\\v#-.3m#.\\v#.3m#/g;
   }
   sprintf( "atom(\"%s\", %g, %g, %g, %g, %g, %g)",
-	   $s, ($n - $nsub / 2) * $cwid, $textht,
-	   ($cloc - $nsubc / 2 + 0.5) * $cwid, $crh, $crw, $dav
+	   $s, ($n - $nsub / 2) * $Params{'cwid'}, $Params{'textht'},
+	   ($cloc - $nsubc / 2 + 0.5) * $Params{'cwid'}, $Params{'crh'},
+	   $Params{'crw'}, $Params{'dav'}
 	 );
 } # atom()
 
@@ -587,22 +641,22 @@ sub atom {
 #
 sub bond {
   my ($type) = @_;
-  my ($i, $goes, $from, $leng);
-  $goes = '';
+  my ($i, $moiety, $from, $leng);
+  $moiety = '';
   for ($i = 1; $i <= $#Words; $i++) {
     if ($Words[$i] eq ';') {
       &error("a colon `;' must be followed by a space and a single word.")
        if $i != $#Words - 1;
-      $goes = $Words[$i + 1] if $#Words > $i;
+      $moiety = $Words[$i + 1] if $#Words > $i;
       $#Words = $i - 1;
       last;
     }
   }
-  $leng = $db;
+  $leng = $Params{'db'};	# bond length
   $from = '';
   for ($Word_Count = 1; $Word_Count <= $#Words; ) {
     if ($Words[$Word_Count] =~
-	/(\+|-)?[0-9]+|up|down|right|left|ne|se|nw|sw/) {
+	/(\+|-)?\d+|up|down|right|left|ne|se|nw|sw/) {
       $Dir = &cvtdir($Dir);
     } elsif ($Words[$Word_Count] =~ /^leng/) {
       $leng = $Words[$Word_Count + 1] if $#Words > $Word_Count;
@@ -626,16 +680,14 @@ sub bond {
   if ($from =~ /( to )|^to/) {	# said "from ... to ...", so zap length
     $leng = 0;
   } elsif (! $from) {		# no from given at all
-    $from = 'from Last.' . &leave($Last, $Dir) . ' ' .
+    $from = 'from Last.' . &leave($Last_Type, $Dir) . ' ' .
       &fields($Word_Count, $#Words);
   }
   printf "Last: %s(%g, %g, %s)\n", $type, $leng, $Dir, $from;
-  $Last = $BOND;
-  if ($Last_Name) {
-    &labsave($Last_Name, $Last, $Dir);
-  }
-  if ($goes) {
-    @Words = ($goes);
+  $Last_Type = $Types{'BOND'};
+  $Labtype{$Last_Name} = $Last_Type if $Last_Name;
+  if ($moiety) {
+    @Words = ($moiety);
     &molecule();
   }
 } # bond()
@@ -653,9 +705,9 @@ sub bracket {
     $t = 'line';
   }
   printf "%s from last [].sw+(%g,0) to last [].sw to last [].nw to last " .
-    "[].nw+(%g,0)\n", $t, $dbrack, $dbrack;
+    "[].nw+(%g,0)\n", $t, $Params{'dbrack'}, $Params{'dbrack'};
   printf "%s from last [].se-(%g,0) to last [].se to last [].ne to last " .
-    "[].ne-(%g,0)\n", $t, $dbrack, $dbrack;
+    "[].ne-(%g,0)\n", $t, $Params{'dbrack'}, $Params{'dbrack'};
   if ($Words[2] && $Words[2] eq 'sub') {
     printf "\" %s\" ljust at last [].se\n", &fields(3, $#Words);
   }
@@ -665,25 +717,28 @@ sub bracket {
 ##########
 # corner(<dir>)
 #
+# Return the corner name next to the given angle.
+#
 sub corner {
   my ($d) = @_;
-  $dc{&reduce(45 * int(($d + 22.5) / 45))};
+  $Dc{ (45 * int(($d + 22.5) / 45)) % 360 };
 } # corner()
 
 
 ##########
 # cvtdir(<dir>)
 #
+# Maps "[pointing] somewhere" to degrees.
+#
 sub cvtdir {
   my ($d) = @_;
-  # maps "[pointing] somewhere" to degrees
   if ($Words[$Word_Count] eq 'pointing') {
     $Word_Count++;
   }
-  if ($Words[$Word_Count] =~ /^[+\\-]?[0-9]+/) {
-    return &reduce($Words[$Word_Count++]);
+  if ($Words[$Word_Count] =~ /^[+\\-]?\d+/) {
+    return ( $Words[$Word_Count++] % 360 );
   } elsif ($Words[$Word_Count] =~ /left|right|up|down|ne|nw|se|sw/) {
-    return &reduce($dc{$Words[$Word_Count++]});
+    return ( $Dc{$Words[$Word_Count++]} % 360 );
   } else {
     $Word_Count++;
     return $d;
@@ -704,9 +759,9 @@ sub dblring {
     $v1 = substr($Words[$Word_Count], 0, 1);
     $v2 = substr($Words[$Word_Count], 2, 1);
     if ($v2 == $v1 + 1 || $v1 == $v && $v2 == 1) { # e.g., 2,3 or 5,1
-      $dbl{$v1} = $d;
+      $Dbl{$v1} = $d;
     } elsif ($v1 == $v2 + 1 || $v2 == $v && $v1 == 1) {	# e.g., 3,2 or 1,5
-      $dbl{$v2} = $d;
+      $Dbl{$v2} = $d;
     } else {
       &error(sprintf("weird %s bond in\n\t%s", $d, $_));
     }
@@ -721,8 +776,8 @@ sub dofrom {
   my $n;
   $Word_Count++;			# skip "from"
   $n = $Words[$Word_Count];
-  if (defined $labtype{$n}) {	# "from Thing" => "from Thing.V.s"
-    return 'from ' . $n . '.' . &leave($labtype{$n}, $Dir);
+  if (defined $Labtype{$n}) {	# "from Thing" => "from Thing.V.s"
+    return 'from ' . $n . '.' . &leave($Labtype{$n}, $Dir);
   }
   if ($n =~ /^\.[A-Z]/) {	# "from .V" => "from Last.V.s"
     return 'from Last' . $n . '.' . &corner($Dir);
@@ -749,12 +804,11 @@ sub error {
 #
 sub fields {
   my ($n1, $n2) = @_;
-  my ($i, $s);
   if ($n1 > $n2) {
     return '';
   }
-  $s = '';
-  for ($i = $n1; $i <= $n2; $i++) {
+  my $s = '';
+  foreach my $i ($n1..$n2) {
     if ($Words[$i] =~ /^#/) {
       last;
     }
@@ -770,65 +824,16 @@ sub fields {
 sub init {
   if ($First_Time) {
     printf "copy \"%s\"\n", $File_macros_pic;
-    printf "\ttextht = %g; textwid = .1; cwid = %g\n", $textht, $cwid;
-    printf "\tlineht = %g; linewid = %g\n", $lineht, $linewid;
+    printf "\ttextht = %g; textwid = .1; cwid = %g\n",
+      $Params{'textht'}, $Params{'cwid'};
+    printf "\tlineht = %g; linewid = %g\n",
+      $Params{'lineht'}, $Params{'linewid'};
     $First_Time = 0;
   }
   printf "Last: 0,0\n";
-  $RING = 'R';
-  $MOL = 'M';
-  $BOND = 'B';
-  $OTHER = 'O';			# manifests
-  $Last = $OTHER;
+  $Last_Type = $Types{'OTHER'};
   $Dir = 90;
 } # init()
-
-
-##########
-# joinring(<type>, <dir>, <last>)
-#
-sub joinring {
-  my ($type, $d, $last) = @_;
-  # join a ring to something
-  if (substr($last, 0, 1) eq $RING) {
-    # ring to ring
-    if (substr($type, 2) eq substr($last, 2)) {	# fails if not 6-sided
-      return 'with .V6 at Last.V2';
-    }
-  }
-  # if all else fails
-  sprintf('with .%s at Last.%s',
-	  &leave($type, $d + 180), &leave($last, $d));
-} # joinring()
-
-
-##########
-# label()
-#
-sub label {
-  my ($i, $v);
-  if (! exists $labtype{$Words[1]} or ! $RING or
-      substr($labtype{$Words[1]}, 0, 1) ne $RING) {
-    &error(sprintf('%s is not a ring', $Words[1]));
-  } else {
-    $v = substr($labtype{$Words[1]}, 1, 1);
-    $Words[1] = '' unless $Words[1];
-    for ($i = 1; $i <= $v; $i++) {
-      printf "\"\\s-3%d\\s0\" at 0.%d<%s.C,%s.V%d>\n", $i, $v + 2,
-	$Words[1], $Words[1], $i;
-    }
-  }
-} # label()
-
-
-##########
-# labsave(<name>, <type>, <dir>)
-#
-sub labsave {
-  my ($name, $type, $d) = @_;
-  $labtype{$name} = $type;
-#  $labdir{$name} = $d;
-} # labsave()
 
 
 ##########
@@ -837,15 +842,15 @@ sub labsave {
 sub leave {
   my ($last, $d) = @_;
   my ($c, $c1);
-  # return vertex of last in dir d
-  if ($last eq $BOND) {
+  # return vertex of $last in direction $d
+  if ( $last eq $Types{'BOND'} ) {
     return 'end';
   }
-  $d = &reduce($d);
-  if (substr($last, 0, 1) eq $RING) {
+  $d %= 360;
+  if ( $last =~ /^$Types{'RING'}/ ) {
     return &ringleave($last, $d);
   }
-  if ($last eq $MOL) {
+  if ( $last eq $Types{'MOL'} ) {
     if ($d == 0 || $d == 180) {
       $c = 'C';
     } elsif ($d > 0 && $d < 180) {
@@ -853,14 +858,14 @@ sub leave {
     } else {
       $c = 'L';
     }
-    if (defined $dc{$d}) {
-      $c1 = $dc{$d};
+    if (defined $Dc{$d}) {
+      $c1 = $Dc{$d};
     } else {
       $c1 = &corner($d);
     }
     return sprintf('%s.%s', $c, $c1);
   }
-  if ($last eq $OTHER) {
+  if ( $last eq $Types{'OTHER'} ) {
     return &corner($d);
   }
   'c';
@@ -878,7 +883,7 @@ sub makering {
     # vertices
     ;
   }
-  $r = $ringside / (2 * sin(pi / $v));
+  $r = $Params{'ringside'} / (2 * sin(pi / $v));
   printf "\tC: 0,0\n";
   for ($i = 0; $i <= $v + 1; $i++) {
     $a = (($i - 1) / $v * 360 + $pt) / 57.29578; # 57. is $deg
@@ -889,26 +894,26 @@ sub makering {
     $v = 5;
   }
   # sides
-  if ($nput > 0) {
+  if ($Nput > 0) {
     # hetero ...
     for ($i = 1; $i <= $v; $i++) {
       $c1 = $c2 = 0;
-      if ($put{$i} ne '') {
+      if ($Put{$i} ne '') {
 	printf "\tV%d: ellipse invis ht %g wid %g at V%d\n",
-	  $i, $crh, $crw, $i;
-	printf "\t%s at V%d\n", $put{$i}, $i;
-	$c1 = $cr;
+	  $i, $Params{'crh'}, $Params{'crw'}, $i;
+	printf "\t%s at V%d\n", $Put{$i}, $i;
+	$c1 = $Params{'cr'};
       }
       $j = $i + 1;
       if ($j > $v) {
 	$j = 1;
       }
 ### makering()
-      if ($put{$j} ne '') {
-	$c2 = $cr;
+      if ($Put{$j} ne '') {
+	$c2 = $Params{'cr'};
       }
       printf "\tline from V%d to V%d chop %g chop %g\n", $i, $j, $c1, $c2;
-      if ($dbl{$i} ne '') {
+      if ($Dbl{$i} ne '') {
 	# should check i<j
 	if ($type =~ /flat/ && $i == 3) {
 	  $rat = 0.75;
@@ -917,19 +922,19 @@ sub makering {
 	  $rat = 0.85;
 	  $fix = 1.5;
 	}
-	if ($put{$i} eq '') {
+	if ($Put{$i} eq '') {
 	  $c1 = 0;
 	} else {
-	  $c1 = $cr / $fix;
+	  $c1 = $Params{'cr'} / $fix;
 	}
-	if ($put{$j} eq '') {
+	if ($Put{$j} eq '') {
 	  $c2 = 0;
 	} else {
-	  $c2 = $cr / $fix;
+	  $c2 = $Params{'cr'} / $fix;
 	}
 	printf "\tline from %g<C,V%d> to %g<C,V%d> chop %g chop %g\n",
 	  $rat, $i, $rat, $j, $c1, $c2;
-	if ($dbl{$i} eq 'triple') {
+	if ($Dbl{$i} eq 'triple') {
 	  printf "\tline from %g<C,V%d> to %g<C,V%d> chop %g chop %g\n",
 	    2 - $rat, $i, 2 - $rat, $j, $c1, $c2;
 	}
@@ -944,7 +949,7 @@ sub makering {
 	$j = 1;
       }
       printf "\tline from V%d to V%d\n", $i, $j;
-      if ($dbl{$i} ne '') {
+      if ($Dbl{$i} ne '') {
 	# should check i<j
 	if ($type =~ /flat/ && $i == 3) {
 	  $rat = 0.75;
@@ -953,7 +958,7 @@ sub makering {
 	}
 	printf "\tline from %g<C,V%d> to %g<C,V%d>\n",
 	  $rat, $i, $rat, $j;
-	if ($dbl{$i} eq 'triple') {
+	if ($Dbl{$i} eq 'triple') {
 	  printf "\tline from %g<C,V%d> to %g<C,V%d>\n",
 	    2 - $rat, $i, 2 - $rat, $j;
 	}
@@ -963,7 +968,7 @@ sub makering {
 ### makering()
   # punt on triple temporarily
   # circle
-  if ($type =~ /benz/ || $aromatic > 0) {
+  if ($type =~ /benz/ || $Aromatic > 0) {
     if ($type =~ /flat/) {
       $r *= .4;
     } else {
@@ -983,21 +988,23 @@ sub molecule {
     $n = $Words[0];
     if ($n eq 'BP') {
       $Words[0] = "\"\" ht 0 wid 0";
-      $type = $OTHER;
+      $type = $Types{'OTHER'};
     } else {
       $Words[0] = &atom($n);
-      $type = $MOL;
+      $type = $Types{'MOL'};
     }
   }
   $n =~ s/[^A-Za-z0-9]//g;	# for stuff like C(OH3): zap non-alnum
   if ($#Words < 1) {
     printf "Last: %s: %s with .%s at Last.%s\n",
-      $n, join(' ', @Words), &leave($type, $Dir + 180), &leave($Last, $Dir);
+      $n, join(' ', @Words), &leave($type, $Dir + 180),
+	&leave($Last_Type, $Dir);
 ### molecule()
   } else {
     if (! $Words[1]) {
       printf "Last: %s: %s with .%s at Last.%s\n",
-	$n, join(' ', @Words), &leave($type, $Dir + 180), &leave($Last, $Dir);
+	$n, join(' ', @Words), &leave($type, $Dir + 180),
+	  &leave($Last_Type, $Dir);
     } elsif ($#Words >= 1 and $Words[1] eq 'below') {
       $Words[2] = '' if ! $Words[2];
       printf "Last: %s: %s with .n at %s.s\n", $n, $Words[0], $Words[2];
@@ -1007,21 +1014,22 @@ sub molecule {
     } elsif ($#Words >= 2 and $Words[1] eq 'left' && $Words[2] eq 'of') {
       $Words[3] = '' if ! $Words[3];
       printf "Last: %s: %s with .e at %s.w+(%g,0)\n",
-	$n, $Words[0], $Words[3], $dew;
+	$n, $Words[0], $Words[3], $Params{'dew'};
     } elsif ($#Words >= 2 and $Words[1] eq 'right' && $Words[2] eq 'of') {
       $Words[3] = '' if ! $Words[3];
       printf "Last: %s: %s with .w at %s.e-(%g,0)\n",
-	$n, $Words[0], $Words[3], $dew;
+	$n, $Words[0], $Words[3], $Params{'dew'};
     } else {
       printf "Last: %s: %s\n", $n, join(' ', @Words);
     }
   }
 
-  $Last = $type;
+  $Last_Type = $type;
   if ($Last_Name) {
-    &labsave($Last_Name, $Last, $Dir);
+    #    $Last_Type = '';
+    $Labtype{$Last_Name} = $Last_Type;
   }
-  &labsave($n, $Last, $Dir);
+ $Labtype{$n} = $Last_Type;
 } # molecule()
 
 
@@ -1110,7 +1118,7 @@ sub putring {
   if ($n >= 1 && $n <= $v) {
     $m = $mol;
     $m =~ s/[^A-Za-z0-9]//g;
-    $put{$n} = $m . ':' . &atom($mol);
+    $Put{$n} = $m . ':' . &atom($mol);
   } elsif ($n == 0) {
     error('argument of "put at" must be a single digit');
   } else {
@@ -1118,22 +1126,6 @@ sub putring {
   }
   $Word_Count++;
 } # putring()
-
-
-##########
-# reduce(<d>)
-#
-sub reduce {
-  my ($d) = @_;
-  # reduces d to 0 <= d < 360
-  while ($d >= 360) {
-    $d -= 360;
-  }
-  while ($d < 0) {
-    $d += 360;
-  }
-  $d;
-} # reduce()
 
 
 ##########
@@ -1152,9 +1144,9 @@ sub ring {
   }
   $fused = $other = '';
   for ($i = 1; $i <= $verts; $i++) {
-    $put{$i} = $dbl{$i} = '';
+    $Put{$i} = $Dbl{$i} = '';
   }
-  $nput = $aromatic = $withat = 0;
+  $Nput = $Aromatic = $withat = 0;
   for ($Word_Count = 1; $Word_Count <= $#Words; ) {
     if ($Words[$Word_Count] eq 'pointing') {
       $pt = &cvtdir(0);
@@ -1162,12 +1154,12 @@ sub ring {
 	     $Words[$Word_Count] eq 'triple') {
       &dblring($verts);
     } elsif ($Words[$Word_Count] =~ /arom/) {
-      $aromatic++;
+      $Aromatic++;
       $Word_Count++;		# handled later
 ### ring()
     } elsif ($Words[$Word_Count] eq 'put') {
       &putring($verts);
-      $nput++;
+      $Nput++;
     } elsif ($Words[$Word_Count] =~ /^#/) {
       $Word_Count = $#Words + 1;
       last;
@@ -1179,17 +1171,25 @@ sub ring {
       $Word_Count++;
     }
   }
-  $typeint = $RING . $verts . $pt; # RING | verts | dir
+  $typeint = $Types{'RING'} . $verts . $pt; # RING | verts | dir
   if ($withat == 0) {
-    $fused = &joinring($typeint, $Dir, $Last);
+    # join a ring to something
+    if ( $Last_Type =~ /^$Types{'RING'}/ ) {
+      # ring to ring
+      if (substr($typeint, 2) eq substr($Last_Type, 2)) {
+	# fails if not 6-sided
+	$fused = 'with .V6 at Last.V2';
+      }
+    }
+    # if all else fails
+    $fused = sprintf('with .%s at Last.%s',
+	  &leave($typeint, $Dir + 180), &leave($Last_Type, $Dir));
   }
   printf "Last: [\n";
   &makering($type, $pt, $verts);
   printf "] %s %s\n", $fused, $other;
-  $Last = $typeint;
-  if ($Last_Name) {
-    &labsave($Last_Name, $Last, $Dir);
-  }
+  $Last_Type = $typeint;
+  $Labtype{$Last_Name} = $Last_Type if $Last_Name;
 } # ring()
 
 
@@ -1199,10 +1199,11 @@ sub ring {
 sub ringleave {
   my ($last, $d) = @_;
   my ($rd, $verts);
-  # return vertex of ring in dir d
+  # return vertex of ring in direction d
   $verts = substr($last, 1, 1);
   $rd = substr($last, 2);
-  sprintf('V%d.%s', int(&reduce($d - $rd) / (360 / $verts)) + 1, &corner($d));
+  sprintf('V%d.%s', int( (($d - $rd) % 360) / (360 / $verts)) + 1,
+	  &corner($d));
 } # ringleave()
 
 
@@ -1211,18 +1212,18 @@ sub ringleave {
 #
 sub setparams {
   my ($scale) = @_;
-  $lineht = $scale * 0.2;
-  $linewid = $scale * 0.2;
-  $textht = $scale * 0.16;
-  $db = $scale * 0.2;		# bond length
-  $cwid = $scale * 0.12;	# character width
-  $cr = $scale * 0.08;		# rad of invis circles at ring vertices
-  $crh = $scale * 0.16;		# ht of invis ellipse at ring vertices
-  $crw = $scale * 0.12;		# wid	
-  $dav = $scale * 0.015;	# vertical shift up for atoms in atom macro
-  $dew = $scale * 0.02;		# east-west shift for left of/right of
-  $ringside = $scale * 0.3;	# side of all rings
-  $dbrack = $scale * 0.1;	# length of bottom of bracket
+  $Params{'lineht'} = $scale * 0.2;
+  $Params{'linewid'} = $scale * 0.2;
+  $Params{'textht'} = $scale * 0.16;
+  $Params{'db'} = $scale * 0.2;	# bond length
+  $Params{'cwid'} = $scale * 0.12;	# character width
+  $Params{'cr'} = $scale * 0.08; # rad of invis circles at ring vertices
+  $Params{'crh'} = $scale * 0.16; # ht of invis ellipse at ring vertices
+  $Params{'crw'} = $scale * 0.12; # wid	
+  $Params{'dav'} = $scale * 0.015; # vertical shift up for atoms in atom macro
+  $Params{'dew'} = $scale * 0.02; # east-west shift for left of/right of
+  $Params{'ringside'} = $scale * 0.3; # side of all rings
+  $Params{'dbrack'} = $scale * 0.1; # length of bottom of bracket
 } # setparams()
 
 
@@ -1273,7 +1274,7 @@ under the terms of the GNU General Public License.
 EOF
 } # version()
 
-
+1;
 ### Emacs settings
 # Local Variables:
 # mode: CPerl

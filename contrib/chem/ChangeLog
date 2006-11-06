@@ -1,3 +1,55 @@
+2006-11-07  Bernd Warken
+       ________________________________________________________________
+        * release of chem 0.1.2
+
+	### `chem' works now with all example files (examples/*.chem and
+	examples/122/*.chem).
+	
+	* examples/122/README: Add some information on the example files.
+	
+	* examples/122/chAi_poly_vinyl_chloride.chem: Use .ps with
+	argument `-2' and recall `.ps +2' at the end of the file.  This
+	stops the size shift in the following files.
+
+	* examples/122/ch6b_dna.chem: Make the file runnable, it works
+	now.
+
+	* examples/reserpine.chem: Change access to `begin chem'.
+
+	* chem.man:
+	- Fix the BUGS section.
+	- Correct the name of the macro file to `macros.pic'.
+	- Extent section DESCRIPTION and LANGUAGE.
+	- Moieties and Strings: Rewritten section about moieties and
+	double quoted strings.
+
+	* chem.pl:
+	- parameter check: Add filespecs only when non-empty file.
+	- Set $Last_Type to $OTHER for the `pic' command.
+	- joinring(), label(), labsave(), reduce(): Remove these functions.
+	- `[', `]', `{', `}', `define': Make these and the defined
+	functions commands for `chem' without using the `pic' word.
+	- @Words: Fix it such that all double quoted strings are
+	completely in an element.
+	- `Last: ': Remove this prefix from all commands that are related
+	to `pic'.
+
+	### global variables
+	
+	* chem.pl:
+	- $Line: Add this variable to store the unchanged input line.
+	- %Params: Add the variables from setparams() to this hash.
+	- %Types: Add BOND, MOL, RING, OTHER from init() to this hash.
+	- %Put: Move %put to this.
+	- %Dbl: Move %dbl to this.
+	- %Labtype: Move %labtype to this.
+	- %Aromatic: Move $aromatic to this.
+	- %Dc: Move %dc to this.
+	- %Nput: Move $nput to this.
+	- %Define: New hash for storing the names of the `define'
+	constructs during `chem'.  Use the elements in `%Define' as `chem'
+	commands.
+
 2006-10-27  Bernd Warken
        ________________________________________________________________
         * release of chem 0.1.1

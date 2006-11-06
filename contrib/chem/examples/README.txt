@@ -2,9 +2,10 @@ This directory contains examples for the `chem' language.
 
 You can view the graphical display of the examples by calling
 
-    @g@chem <file> | groffer
+    groffer <file>
 
-or get a suitable `groff' output by running
+`groffer' calls `chem' automatically.  Or get a suitable `groff'
+output by running
 
     @g@chem <file> | groff -p ...
 
@@ -24,7 +25,7 @@ chemically.
 
 ####### License
 
-Last update: 25 Oct 2006
+Last update: 6 Nov 2006
 
 Copyright (C) 2006 Free Software Foundation, Inc.
 Written by Bernd Warken.
