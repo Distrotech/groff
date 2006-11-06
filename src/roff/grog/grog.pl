@@ -157,17 +157,23 @@ sub process {
 	$Groff{'pic'}++;
 	$Groff{'soelim'}++ if $level;
       }
-    } elsif (/^\.PS$Sp([ 0-9.<].*)?$/) {
+#    } elsif (/^\.PS\Sp([ 0-9.<].*)?$/) {
+#      if (/^\.PS\s*<\s*(\S+)/) {
+#	$Groff{'pic'}++;
+#	$Groff{'soelim'}++ if $level;
+#	&process($1, $level);
+#      } else {
+#	$_ = <FILE>;
+#	if (!/^\./ || /^\.ps/) {
+#	  $Groff{'pic'}++;
+#	  $Groff{'soelim'}++ if $level;
+#	}
+#      }
+    } elsif (/^\.PS[\s\n<]/) {
+      $Groff{'pic'}++;
+      $Groff{'soelim'}++ if $level;
       if (/^\.PS\s*<\s*(\S+)/) {
-	$Groff{'pic'}++;
-	$Groff{'soelim'}++ if $level;
 	&process($1, $level);
-      } else {
-	$_ = <FILE>;
-	if (!/^\./ || /^\.ps/) {
-	  $Groff{'pic'}++;
-	  $Groff{'soelim'}++ if $level;
-	}
       }
     } elsif (/^\.R1$Sp/) {
       $Groff{'refer'}++;
