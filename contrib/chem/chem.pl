@@ -30,8 +30,8 @@
 # settings
 ########################################################################
 
-my $Program_Version = '0.1.2';
-my $Last_Update = '7 Nov 2006';
+my $Program_Version = '0.2.0';
+my $Last_Update = '8 Nov 2006';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it.
@@ -69,27 +69,24 @@ BEGIN {
     }
 
     my %at_at;
-    my $chem_libdir;
 
     if ($before_make) {
       my $chem_dir = $FindBin::Bin;
       $at_at{'BINDIR'} = $chem_dir;
       $at_at{'G'} = '';
-      $at_at{'LIBDIR'} = '';
-      $chem_libdir = $chem_dir;
       $File_macros_pic = File::Spec->catfile($chem_dir, 'macros.pic');
-      $File_pic_tmac = File::Spec->catfile($chem_dir, 'pic.tmac');
+      $File_pic_tmac = File::Spec->catfile($chem_dir, '..', 'pic.tmac');
       $Groff_Version = '';
       $Chem_Name = 'chem';
     } else {
       $Groff_Version = '@VERSION@';
       $at_at{'BINDIR'} = '@BINDIR@';
       $at_at{'G'} = '@g@';
-      $at_at{'LIBDIR'} = '@libdir@';
-      $chem_libdir =
-	File::Spec->catdir($at_at{'LIBDIR'}, 'groff', 'chem');
-      $File_macros_pic = File::Spec->catfile($chem_libdir, 'macros.pic');
-      $File_pic_tmac = File::Spec->catfile($chem_libdir, 'pic.tmac');
+      $at_at{'PICDIR'} = '@picdir@';
+      $at_at{'TMACDIR'} = '@tmacdir@';
+      $File_macros_pic =
+	File::Spec->catfile($at_at{'PICDIR'}, 'chem.pic');
+      $File_pic_tmac = File::Spec->catfile($at_at{'TMACDIR'}, 'pic.tmac');
       $Chem_Name = $at_at{'G'} . 'chem';
     }
   }
