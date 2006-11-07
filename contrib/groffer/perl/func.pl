@@ -433,6 +433,7 @@ sub split_path {
 
     ### to_tmp()
     my $grog = `grog $tmp_file`;
+    die "to_tmp(): grog error on $tmp_file;" if $?;
     chomp $grog;
     if ($grog =~ /^.*\s-m.*$/) {
       $grog =~ s/\s+/ /g;

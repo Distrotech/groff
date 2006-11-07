@@ -97,10 +97,9 @@ You can also write to the
 .ds groffer:Shell_cmd.prompt \f[\*[@f]]\*[@t]\f[]\"            needed
 .ds groffer:Shell_cmd+.prompt \f[\*[@f]]\*[@t+]\f[]\"          needed
 .nr @w \w'\*[groffer:Shell_cmd.prompt]'\"
-.nr @w+ \w'\*[groffer:Shell_cmd+.prompt]'\"
 .ft \*[@f]
 .\" Full prompt width is maximum of texts plus 1m
-.nr groffer:Shell_cmd_base.prompt_width (\n[@w]>?\n[@w+]+1m)\" needed
+.nr grog:Shell_cmd_base.prompt_width (\n[@w]>?\n[@w+]+1m)\" needed
 .ft
 .rm @f
 .rm @f+
@@ -697,6 +696,13 @@ that are compatible to the original
 .I \%troff
 language.
 .
+It finds and runs all necessary
+.I groff
+preprocessors, such as
+.BR @g@chem .
+.
+.
+.P
 The
 .B \%groffer
 program also includes many of the features for finding and displaying
@@ -4125,6 +4131,13 @@ Internally,
 tries to guess the
 .B \%groff
 command line options from the input using this program.
+.
+.
+.TP
+.BR \%@g@chem (@MAN1EXT@)
+Preprocessor of
+.I groff
+that is run automatically.
 .
 .
 .TP

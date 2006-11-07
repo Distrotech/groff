@@ -32,8 +32,8 @@
 export _PROGRAM_VERSION;
 export _LAST_UPDATE;
 
-_PROGRAM_VERSION='1.0.2';
-_LAST_UPDATE='23 Oct 2006';
+_PROGRAM_VERSION='1.0.3';
+_LAST_UPDATE='24 Oct 2006';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it, see groffer.sh.

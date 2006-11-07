@@ -12,7 +12,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 22 Oct 2006
+# Last update: 4 Nov 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -545,7 +545,7 @@ _OPTS_GROFFER_LONG_ARG="\
 
 _OPTS_GROFF_SHORT_NA="'a' 'b' 'c' 'C' 'e' 'E' 'g' 'G' 'i' 'k' 'l' 'N' 'p' \
 'R' 's' 'S' 't' 'U' 'z'";
-_OPTS_GROFF_SHORT_ARG="'d' 'f' 'F' 'I' 'L' 'm' 'M' 'n' 'o' 'P' 'r' \
+_OPTS_GROFF_SHORT_ARG="'d' 'f' 'F' 'I' 'K' 'L' 'm' 'M' 'n' 'o' 'P' 'r' \
 'w' 'W'";
 _OPTS_GROFF_LONG_NA="";
 _OPTS_GROFF_LONG_ARG="";
@@ -4399,6 +4399,10 @@ to_tmp()
       fi;
 ### to_tmp()
       obj_from_output tt_grog grog "${tt_file}";
+      if is_not_equal "$?" 0
+      then
+        exit "${_ERROR}";
+      fi;
       case " ${tt_grog} " in
       *\ -m*)
         eval set x "$(echo1 " ${tt_grog} " | sed '
@@ -6859,6 +6863,10 @@ main_display()
       _ADDOPTS_GROFF="${_ADDOPTS_GROFF} -T${_OPT_DEVICE}";
     fi;
     md_groggy="$(tmp_cat | eval grog)";
+    if is_not_equal "$?" 0
+    then
+      exit "${_ERROR}";
+    fi;
     exit_test;
     _do_opt_V;
 
@@ -6888,6 +6896,10 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     esac;
     md_addopts="${_ADDOPTS_GROFF}";
     md_groggy="$(tmp_cat | grog -T${md_device})";
+    if is_not_equal "$?" 0
+    then
+      exit "${_ERROR}";
+    fi;
     exit_test;
     if obj _DISPLAY_MODE is_equal 'text'
     then
@@ -6979,6 +6991,10 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}"
     esac;
     md_modefile="${md_modefile}".dvi;
     md_groggy="$(tmp_cat | grog -Tdvi)";
+    if is_not_equal "$?" 0
+    then
+      exit "${_ERROR}";
+    fi;
     exit_test;
     _do_display;
     ;;
@@ -6992,6 +7008,10 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     esac;
     md_modefile="${md_modefile}".html;
     md_groggy="$(tmp_cat | grog -Thtml)";
+    if is_not_equal "$?" 0
+    then
+      exit "${_ERROR}";
+    fi;
     exit_test;
     _do_display;
     ;;
@@ -7007,6 +7027,10 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       ;;
     esac;
     md_groggy="$(tmp_cat | grog -Tps)";
+    if is_not_equal "$?" 0
+    then
+      exit "${_ERROR}";
+    fi;
     exit_test;
     _do_display _make_pdf;
     ;;
@@ -7022,6 +7046,10 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     esac;
     md_modefile="${md_modefile}".ps;
     md_groggy="$(tmp_cat | grog -Tps)";
+    if is_not_equal "$?" 0
+    then
+      exit "${_ERROR}";
+    fi;
     exit_test;
     _do_display;
     ;;
@@ -7051,6 +7079,10 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       esac
     esac;
     md_groggy="$(tmp_cat | grog -T${md_device} -Z)";
+    if is_not_equal "$?" 0
+    then
+      exit "${_ERROR}";
+    fi;
     exit_test;
     _do_display;
     ;;
@@ -7059,17 +7091,29 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     case "${_OPT_DEVICE}" in
     '')
       md_groggy="$(tmp_cat | grog -X)";
+      if is_not_equal "$?" 0
+      then
+        exit "${_ERROR}";
+      fi;
       exit_test;
       ;;
     X*|dvi|html|lbp|lj4|ps)
       # these devices work with
       md_groggy="$(tmp_cat | grog -T"${_OPT_DEVICE}" -X)";
+      if is_not_equal "$?" 0
+      then
+        exit "${_ERROR}";
+      fi;
       exit_test;
       ;;
     *)
       warning "main_display(): \
 wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       md_groggy="$(tmp_cat | grog -Z)";
+      if is_not_equal "$?" 0
+      then
+        exit "${_ERROR}";
+      fi;
       exit_test;
       ;;
     esac;

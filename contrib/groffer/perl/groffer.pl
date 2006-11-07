@@ -273,7 +273,7 @@ sub main_set_options {
   my @opts_groff_short_na = ('a', 'b', 'c', 'C', 'e', 'E', 'g', 'G',
   'i', 'k', 'l', 'N', 'p', 'R', 's', 'S', 't', 'U', 'z');
 
-  my @opts_groff_short_arg = ('d', 'f', 'F', 'I', 'L', 'm', 'M', 'n',
+  my @opts_groff_short_arg = ('d', 'f', 'F', 'I', 'K', 'L', 'm', 'M', 'n',
   'o', 'P', 'r', 'w', 'W');
 
   my @opts_groff_long_na = ();
@@ -1884,6 +1884,7 @@ sub main_display {
       push @Addopts_Groff, "-T$Opt{'DEVICE'}" if $Opt{'DEVICE'};
       $addopts = join ' ', @Addopts_Groff;
       $groggy = `cat $tmp_cat | grog`;
+      die "main_display(): grog error;" if $?;
       chomp $groggy;
       &_do_opt_V();
       unlink $modefile;
@@ -1905,6 +1906,7 @@ sub main_display {
 	  "$Opt{'DEVICE'}";
       }
       $groggy = `cat $tmp_cat | grog -T$device`;
+      die "main_display(): grog error;" if $?;
       chomp $groggy;
       if ($Display{'MODE'} eq 'text') {
 	&_do_opt_V();
@@ -1964,6 +1966,7 @@ sub main_display {
       }
       $modefile .= '.dvi';
       $groggy = `cat $tmp_cat | grog -Tdvi`;
+      die "main_display(): grog error;" if $?;
       chomp $groggy;
       &_do_display();
       next SWITCH;
@@ -1976,6 +1979,7 @@ sub main_display {
       }
       $modefile .= '.html';
       $groggy = `cat $tmp_cat | grog -Thtml`;
+      die "main_display(): grog error;" if $?;
       chomp $groggy;
       &_do_display();
       next SWITCH;
@@ -1988,6 +1992,7 @@ sub main_display {
       }
       $modefile .= '.ps';
       $groggy = `cat $tmp_cat | grog -Tps`;
+      die "main_display(): grog error;" if $?;
       chomp $groggy;
       &_do_display(\&_make_pdf);
       next SWITCH;
@@ -2001,6 +2006,7 @@ sub main_display {
       }
       $modefile .= '.ps';
       $groggy = `cat $tmp_cat | grog -Tps`;
+      die "main_display(): grog error;" if $?;
       chomp $groggy;
       &_do_display();
       next SWITCH;
@@ -2022,6 +2028,7 @@ sub main_display {
 	}			# if RESOLUTIOM
       }				# if DEVICE
       $groggy = `cat $tmp_cat | grog -T$device -Z`;
+      die "main_display(): grog error;" if $?;
       chomp $groggy;
       &_do_display();
       next SWITCH;
@@ -2031,13 +2038,16 @@ sub main_display {
     /^X$/ and do {
       if (! $Opt{'DEVICE'}) {
 	$groggy = `cat $tmp_cat | grog -X`;
+	die "main_display(): grog error;" if $?;
       } elsif ($Opt{'DEVICE'} =~ /^(X.*|dvi|html|lbp|lj4|ps)$/) {
 	# these devices work with
 	$groggy = `cat $tmp_cat | grog -T$Opt{'DEVICE'} -X`;
+	die "main_display(): grog error;" if $?;
       } else {
 	warn "main_display(): wrong device for " .
 	  "$Display{'MODE'} mode: $Opt{'DEVICE'};";
 	$groggy = `cat $tmp_cat | grog -Z`;
+	die "main_display(): grog error;" if $?;
       }				# if DEVICE
       chomp $groggy;
       &_do_display();
@@ -2178,5 +2188,8 @@ sub _make_pdf {
 &clean_up();
 
 1;
-
 ########################################################################
+### Emacs settings
+# Local Variables:
+# mode: CPerl
+# End:
