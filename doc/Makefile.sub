@@ -174,9 +174,10 @@ install_data: groff.info $(DOCFILES) $(PROCESSEDDOCFILES) $(make_install_html) \
 # the existence of `groff.info'.
 	d=.; \
 	  test -f "groff.info" || d=$(srcdir); \
-	  for f in $$d/groff.info `ls $$d/groff.info*`; do \
+	  for p in $$d/groff.info `ls $$d/groff.info*`; do \
+	    f=`basename $$p`; \
 	    rm -f $(DESTDIR)$(infodir)/$$f; \
-	    $(INSTALL_DATA) $$f $(DESTDIR)$(infodir)/$$f; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(infodir)/$$f; \
 	  done
 	$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) \
 	  $(DESTDIR)$(infodir)/groff.info
