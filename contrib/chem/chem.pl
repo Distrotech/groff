@@ -30,8 +30,8 @@
 # settings
 ########################################################################
 
-my $Program_Version = '0.2.0';
-my $Last_Update = '8 Nov 2006';
+my $Program_Version = '0.3.0';
+my $Last_Update = '10 Nov 2006';
 
 # this setting of the groff version is only used before make is run,
 # otherwise @VERSION@ will set it.
@@ -57,7 +57,7 @@ use FindBin;
 
 my $Chem_Name;
 my $Groff_Version;
-my $File_macros_pic;
+my $File_chem_pic;
 my $File_pic_tmac;
 
 BEGIN {
@@ -74,7 +74,7 @@ BEGIN {
       my $chem_dir = $FindBin::Bin;
       $at_at{'BINDIR'} = $chem_dir;
       $at_at{'G'} = '';
-      $File_macros_pic = File::Spec->catfile($chem_dir, 'macros.pic');
+      $File_chem_pic = File::Spec->catfile($chem_dir, 'chem.pic');
       $File_pic_tmac = File::Spec->catfile($chem_dir, '..', 'pic.tmac');
       $Groff_Version = '';
       $Chem_Name = 'chem';
@@ -84,7 +84,7 @@ BEGIN {
       $at_at{'G'} = '@g@';
       $at_at{'PICDIR'} = '@picdir@';
       $at_at{'TMACDIR'} = '@tmacdir@';
-      $File_macros_pic =
+      $File_chem_pic =
 	File::Spec->catfile($at_at{'PICDIR'}, 'chem.pic');
       $File_pic_tmac = File::Spec->catfile($at_at{'TMACDIR'}, 'pic.tmac');
       $Chem_Name = $at_at{'G'} . 'chem';
@@ -820,7 +820,7 @@ sub fields {
 #
 sub init {
   if ($First_Time) {
-    printf "copy \"%s\"\n", $File_macros_pic;
+    printf "copy \"%s\"\n", $File_chem_pic;
     printf "\ttextht = %g; textwid = .1; cwid = %g\n",
       $Params{'textht'}, $Params{'cwid'};
     printf "\tlineht = %g; linewid = %g\n",

@@ -5,7 +5,7 @@
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 8 Nov 2006
+# Last update: 9 Nov 2006
 
 # This file is part of `chem' which is part of `groff'.
 
@@ -27,12 +27,18 @@
 ########################################################################
 
 MAN1=chem.n
-CLEANADD=chem chem.n README examples/README
+CLEANADD=chem chem.n chem.man README examples/README
 
 # not all make programs have $(RM) predefined.
 RM=rm -f
 
-all: README examples/README chem $(MAN1)
+all: README examples/README chem chem.man
+
+chem.man: $(srcdir)/chem.man1
+	sed \
+	  -e "s|@tmacdir@|$(DESTDIR)$(tmacdir)|g" \
+	  -e "s|@picdir@|$(DESTDIR)$(datasubdir)/pic|g" \
+	  $< >$@
 
 README: $(srcdir)/README.txt
 	sed -e "s|@g@|$(g)|g" $< >$@
@@ -54,7 +60,7 @@ chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
 
 install_data: chem \
               README examples/README \
-              $(srcdir)/macros.pic \
+              $(srcdir)/chem.pic \
               $(srcdir)/examples/*.chem $(srcdir)/examples/122/*
 	-test -d $(DESTDIR)$(bindir) || $(mkinstalldirs) $(DESTDIR)$(bindir)
 	$(RM) $(DESTDIR)$(bindir)/$(g)chem
@@ -62,7 +68,7 @@ install_data: chem \
 	-test -d $(DESTDIR)$(datasubdir)/pic \
           || $(mkinstalldirs) $(DESTDIR)$(datasubdir)/pic
 	$(RM) $(DESTDIR)$(datasubdir)/pic/chem.pic
-	$(INSTALL_DATA) $(srcdir)/macros.pic \
+	$(INSTALL_DATA) $(srcdir)/chem.pic \
           $(DESTDIR)$(datasubdir)/pic/chem.pic
 	-test -d $(DESTDIR)$(exampledir)/chem \
           || $(mkinstalldirs) $(DESTDIR)$(exampledir)/chem/122

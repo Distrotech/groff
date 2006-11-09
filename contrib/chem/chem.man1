@@ -102,39 +102,6 @@ You can also write to the
 ..
 .
 .c --------------------------------------------------------------------
-.c .CB  (<text>...)
-.c
-.c Print in constant-width bold font.
-.c
-.de CB
-.  ft CB
-.  Text \\$*
-.  ft
-..
-.
-.c --------------------------------------------------------------------
-.c .CI  (<text>...)
-.c
-.c Print in constant-width italic font.
-.c
-.de CI
-.  ft CI
-.  Text \\$*
-.  ft
-..
-.
-.c --------------------------------------------------------------------
-.c .CR  (<text>...)
-.c
-.c Print in constant-width roman font.
-.c
-.de CR
-.  ft CR
-.  Text \\$*
-.  ft
-..
-.
-.c --------------------------------------------------------------------
 .c .TP+  ()
 .c
 .c Continuation line for .TP header.
@@ -242,9 +209,9 @@ You can also write to the
 .
 .
 .P
-There are no other options than \f[CB]\-\-help\f[] and
-\%\f[CB]\-\-version\f[]; these options provoke the printing
-of a version or usage information, respectively, and all
+There are no other options than \f[CB]\-h\f[], \f[CB]\-\-help\f[],
+\f[CB]\-v\f[] and \%\f[CB]\-\-version\f[]; these options provoke the
+printing of a version or usage information, respectively, and all
 .I filespec
 arguments are ignored.
 .
@@ -294,8 +261,8 @@ originates from the Perl source file
 .File_name chem.pl .
 It tells
 .B @g@pic
-to include a copy of
-.File_name macros.pic .
+to include a copy of the macro file
+.File_name chem.pic .
 .
 Moreover the
 .I groff
@@ -827,7 +794,7 @@ only letters and numbers is valid:
 The specific construction
 .RS
 .TP
-.BR bond\  \*[Ellipsis] "; moiety"
+.BR bond\  \*[Ellipsis] " ; moiety"
 .RE
 .P
 is equivalent to
@@ -851,8 +818,9 @@ A period character
 .B .\&
 or a single quote
 .B '
-in the first column of a line signals a troff command,
-which is copied through as-is.
+in the first column of a line signals a
+.I troff
+command, which is copied through as-is.
 .
 .
 .P
@@ -985,7 +953,6 @@ construct of eqn).
 .P
 There is no way to control entry point for bonds on groups.
 .
-.
 Normally a bond connects to the carbon atom if entering from
 the top or bottom and otherwise to the nearest corner.
 .
@@ -1013,9 +980,9 @@ A squiggle bond is needed.
 .\" --------------------------------------------------------------------
 .
 .TP
-.File_name @libdir@/groff/chem/macros.pic
+.File_name @picdir@/chem.pic
 A collection of
-.B @g@pic
+.I pic
 macros needed by
 .BR @g@chem .
 .
@@ -1070,7 +1037,7 @@ for information on availability.
 .
 .BR \%groff (@MAN1EXT@),
 .BR \%@g@pic (@MAN1EXT@),
-.B \%groffer (@MAN1EXT@)
+.B \%groffer (@MAN1EXT@).
 .
 .
 .P
