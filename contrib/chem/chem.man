@@ -2,6 +2,7 @@
 .SH NAME
 @g@chem \- groff preprocessor for producing chemical structure diagrams
 .
+.
 .SH "SYNOPSIS"
 .\" The .SH was moved to this place in order to appease `apropos'.
 .
@@ -17,26 +18,31 @@
 Source file position:  <groff_source_top>/contrib/chem/chem.man
 Installed position:    $prefix/share/man/man1/@g@chem.1
 
-Last update: 7 Nov 2006
+Last update: 9 Nov 2006
 ..
+.
+.
 .de author
 This file was written by
 .MTO "" "Bernd Warken" .
 It is based on the documentation of
-.URL http://cm.bell-labs.com/cm/cs/who/bwk/index.html "Brian Kernighan" 's
+.URL http://cm.bell-labs.com/cm/cs/who/bwk/index.html "Brian Kernighan\f[R]'s\f[]"
 original
 .I awk
 version of
 .IR chem .
 ..
+.
+.
 .de copyleft
 Copyright (C) 2006 Free Software Foundation, Inc.
+.
 .
 .P
 This file is part of
 .IR chem ,
 which is part of
-.IR \%groff ,
+.IR groff ,
 a free software project.
 .
 You can redistribute it and/or modify it under the terms of the
@@ -47,7 +53,8 @@ as published by the
 .nh
 .BR "Free Software Foundation" ,
 .hy
-either version 2, or (at your option) any later version.
+either version\~2, or (at your option) any later version.
+.
 .
 .P
 You should have received a copy of the \f[CR]GNU General Public
@@ -59,7 +66,7 @@ directory of the
 source package.
 .
 Or read the
-.I man\~page
+.I man page
 .BR gpl (1).
 You can also write to the
 .nh
@@ -67,6 +74,7 @@ You can also write to the
 .BR "MA 02110-1301, USA" .
 .hy
 ..
+.
 .
 .\" --------------------------------------------------------------------
 .\" Setup
@@ -83,8 +91,7 @@ You can also write to the
 .  ftr CB CW
 .\}
 .
-.ds Ellipsis "\&.\|.\|.\""
-.
+.ds Ellipsis "\&.\|.\|.\&\""
 .
 .
 .\" --------------------------------------------------------------------
@@ -93,6 +100,7 @@ You can also write to the
 .\" Ignore all arguments like a comment, even after a .eo call.
 .de c
 ..
+.
 .c --------------------------------------------------------------------
 .c .CB  (<text>...)
 .c
@@ -103,6 +111,7 @@ You can also write to the
 .  Text \\$*
 .  ft
 ..
+.
 .c --------------------------------------------------------------------
 .c .CI  (<text>...)
 .c
@@ -113,6 +122,7 @@ You can also write to the
 .  Text \\$*
 .  ft
 ..
+.
 .c --------------------------------------------------------------------
 .c .CR  (<text>...)
 .c
@@ -123,6 +133,7 @@ You can also write to the
 .  Text \\$*
 .  ft
 ..
+.
 .c --------------------------------------------------------------------
 .c .TP+  ()
 .c
@@ -133,6 +144,7 @@ You can also write to the
 .  ns
 .  TP \\$1
 ..
+.
 .c --------------------------------------------------------------------
 .c .File_name  (<path_name>)
 .c
@@ -141,6 +153,7 @@ You can also write to the
 .de File_name
 .  Header_CB \\$@
 ..
+.
 .c --------------------------------------------------------------------
 .c .Header_CB  (<path_name>)
 .c
@@ -151,8 +164,10 @@ You can also write to the
 .  Text \f[CB]\\$1\f[]\\$2
 .  hy
 ..
+.
 .c --------------------------------------------------------------------
-.c static register for inter-macro communication in `.Synopsis'*
+.c Static register for inter-macro communication in `.Synopsis'.
+.c
 .nr chem:Synopsis.level 0
 .
 .c --------------------------------------------------------------------
@@ -165,7 +180,7 @@ You can also write to the
 .    Error .\\$0: previous .Synopsis was not closed by ./Synopsis.
 .  nh
 .  ds @1 \\$1\"
-.  nr @old_indent \\n(.i
+.  nr @old_indent \\n[.i]
 .  ad l
 .  in +\w'\fB\\*[@1]\0'u
 .  ti \\n[@old_indent]u
@@ -174,6 +189,7 @@ You can also write to the
 .  rm @1
 .  nr chem:Synopsis.level +1\"        marker for ./Synopsis
 ..
+.
 .c  --------------------------------------------------------------------
 .c ./Synopsis  ()
 .c
@@ -188,10 +204,11 @@ You can also write to the
 .  hy
 .  nr chem:Synopsis.level -1
 ..
+.
 .c  --------------------------------------------------------------------
 .c .Text  (<text>...)
 .c
-.c Treat the arguments as text, no matter how they look.
+.c Treat the arguments as text, no matter how they look like.
 .c
 .de Text
 .  if (\\n[.$] == 0) \
@@ -210,9 +227,9 @@ You can also write to the
 .
 .ad l
 .Synopsis @g@chem
-.RI [ option\*[Ellipsis]] ]
-[\f[CB]\-\-\fP]
-.RI [ "\%filespec" "\*[Ellipsis]]"
+.RI [ "\%option" \*[Ellipsis]]
+.RB [ \-\- ]
+.RI [ "\%filespec" \*[Ellipsis]]
 ./Synopsis
 .
 .Synopsis @g@chem
@@ -225,10 +242,9 @@ You can also write to the
 .
 .
 .P
-The options provoke the printing of a version or usage information;
-there aren't any more options.
-.
-When one of these options is specified all
+There are no other options than \f[CB]\-\-help\f[] and
+\%\f[CB]\-\-version\f[]; these options provoke the printing
+of a version or usage information, respectively, and all
 .I filespec
 arguments are ignored.
 .
@@ -279,31 +295,13 @@ originates from the Perl source file
 It tells
 .B @g@pic
 to include a copy of
-.File_name macros.pic
-that is installed in the
-.I groff
-lib directory
-.File_name @libdir@/groff/chem .
-.
-This file contains macros written in the
-.I pic
-language.
+.File_name macros.pic .
 .
 Moreover the
 .I groff
 source file
 .File_name pic.tmac
 is loaded.
-.
-This redefines the
-.I pic
-initialization requests
-.B .PS
-and
-.B .PE
-such that all
-.I pic
-diagrams are centered in the display.
 .
 .
 .P
@@ -319,15 +317,31 @@ diagrams are written in a special language.
 .P
 A set of
 .I chem
-lines must be written between the initialization lines
+lines looks like this
+.
+.
+.IP
+.nf
+.ft B
+\&.cstart
+\f[I]chem data\f[]
+\&.cend
+.ft
+.fi
+.
+.
+.P
+Lines containing the keywords
 .B .cstart
-before and
+and
 .B .cend
-after.
+start and end the input for
+.BR @g@chem ,
+respectively.
 .
 In
 .I pic
-context, i.e. after the call of
+context, i.e., after the call of
 .BR .PS ,
 .I chem
 input can optionally be started by the line
@@ -338,14 +352,15 @@ instead.
 .
 .
 .P
-Anything outside these initialization lines is copied through intact;
-whatever is between the initialization lines is converted into
+Anything outside these initialization lines is copied through
+without modification;
+all data between the initialization lines is converted into
 .I pic
 commands to draw the diagram.
 .
 .
 .P
-So as a bare minimum,
+As an example,
 .
 .IP
 .nf
@@ -357,6 +372,7 @@ CH3
 \&.cend
 .ft
 .fi
+.
 .
 .P
 prints two
@@ -371,7 +387,7 @@ followed by
 .BR groffer :
 .
 .IP
-.B @g@chem [file...] | groffer
+.B @g@chem [file\*[Ellipsis]] | groffer
 .
 .P
 If you want to create just
@@ -381,11 +397,11 @@ output, you must run
 followed by
 .B groff
 with the option
-.B -p
+.B \-p
 for the activation of
 .BR @g@pic :
 .IP
-.B @g@chem [file...] | groff -p ...
+.B @g@chem [file\*[Ellipsis]] | groff -p \*[Ellipsis]
 .
 .
 .\" --------------------------------------------------------------------
@@ -403,12 +419,12 @@ moieties (e.g.,
 .
 .
 .\" --------------------------------------------------------------------
-.SS Setting Variables:
+.SS Setting Variables
 .\" --------------------------------------------------------------------
 .
 There are some variables that can be set by commands.
 .
-Such commands have 2 possible forms, either
+Such commands have two possible forms, either
 .br
 .RS
 .I "variable value"
@@ -435,37 +451,37 @@ There are only a few variables to be set by these commands:
 .
 .TP
 .BI textht " arg"
-this sets the height of the text to
+Set the height of the text to
 .IR arg ;
 default is 0.16.
 .
 .TP
 .BI cwid " arg"
-this sets the character widht to
+Set the character width to
 .IR arg ;
 default is 0.12.
 .
 .TP
 .BI db " arg"
-this sets the bond length to
+Set the bond length to
 .IR arg ;
 default is 0.2.
 .
 .TP
 .BI size " arg"
-scales the diagram so it looks plausible at point size
+Scale the diagram to make it look plausible at point size
 .IR arg ;
 default is 10 point.
 .
 .
 .\" --------------------------------------------------------------------
-.SS Bonds:
+.SS Bonds
 .\" --------------------------------------------------------------------
 .
 .IP
 .B bond
 .RI [ direction ]
-.RI [ "length n" ]
+.RI [ length\~n ]
 .RB [ from
 .IR Name | picstuff ]
 .
@@ -479,19 +495,19 @@ can also be
 .BR "back bond" ,
 etc.
 .
-(We'll get back to
+(We will get back to
 .I Name
-in a minute.)
+soon.)
 .
 .
 .P
 .I direction
-is the angle in degrees (0 up, positive clockwise)
+is the angle in degrees (0\~up, positive clockwise)
 or a direction word like
 .BR up ,
 .BR down ,
 .B sw
-(= southwest), etc.
+(=\~southwest), etc.
 .
 If no direction is specified, the bond goes in the current direction
 (usually that of the last bond).
@@ -504,6 +520,7 @@ can be changed by naming a
 place.
 .
 For instance, to make a simple alkyl chain:
+.
 .RS
 .TP 10m
 .B CH3
@@ -538,7 +555,7 @@ place.
 .
 .
 .\" --------------------------------------------------------------------
-.SS Rings:
+.SS Rings
 .\" --------------------------------------------------------------------
 .
 There are lots of rings, but only 5 and 6-sided rings get
@@ -553,10 +570,10 @@ puts a circle into any kind of ring.
 .
 .IP
 .B ring
-.RB [ pointing up | right | left | down ]
-.RB [ aromatic ] 
-.RI "[put Mol at" n ]
-.RB [ double
+.RB [ \%pointing\  ( up | right | left | down )]
+.RB [ \%aromatic ]
+.RB [ put\ Mol\ at\ \f[I]n\f[] ]
+.RB [ \%double
 .IR i , j
 .IR k , l
 \*[Ellipsis]]
@@ -564,11 +581,12 @@ puts a circle into any kind of ring.
 .
 .
 .P
-The vertices of a ring are numbered 1,2,\*[Ellipsis] from the vertex
-that points in the natural compass direction.
+The vertices of a ring are numbered 1, 2, \*[Ellipsis] from the
+vertex that points in the natural compass direction.
 .
-So for a hexagonal ring with the point at the top, the top vertex is
-1, while if the ring has a point at the east side, that is vertex 1.
+So for a hexagonal ring with the point at the top, the top vertex
+is\~1, while if the ring has a point at the east side, that is
+vertex\~1.
 .
 This is expressed as
 .
@@ -583,9 +601,9 @@ R2: ring pointing right
 .
 .P
 The ring vertices are named
-.B .V1
-\..
-.BI .V n\fR,
+.BR .V1 ,
+\*[Ellipsis],
+.BI .V n\f[R],\f[]
 with
 .B .V1
 in the pointing direction.
@@ -609,7 +627,7 @@ is the rightmost vertex and
 the leftmost.
 .
 These vertex names are used for connecting bonds or other rings.  For
-example:
+example,
 .
 .IP
 .ft B
@@ -624,7 +642,7 @@ creates two benzene rings connected along a side.
 .
 .P
 Interior double bonds are specified as
-.BR double n1,n2 n3,n4 \*[Ellipsis];
+.BI \%double\  n1 , n2\ n3 , n4\ \f[R]\*[Ellipsis];\f[]
 each number pair adds an interior bond.
 .
 So the alternate form of a benzene ring is
@@ -636,7 +654,7 @@ So the alternate form of a benzene ring is
 .P
 Heterocycles (rings with something other than carbon at a vertex) are
 written as
-.BR "put X at V",
+.BI put\  X\  at\  V\f[R],\f[]
 as in
 .
 .IP
@@ -661,7 +679,7 @@ is pentagonal with a side that matches the 6-sided ring; it has four
 natural directions.
 .
 A
-.B flatring
+.B \%flatring
 is a 5-sided ring created by chopping one corner of a 6-sided ring so
 that it exactly matches the 6-sided rings.
 .
@@ -671,7 +689,7 @@ The description of a ring has to fit on a single line.
 .
 .
 .\" --------------------------------------------------------------------
-.SS Moieties and Strings:
+.SS Moieties and Strings
 .\" --------------------------------------------------------------------
 .
 A moiety is a string of characters beginning with a capital letter,
@@ -685,7 +703,7 @@ characters have been stripped out: e.g., N(C2H5)2) has the name NC2H52.
 .
 .
 .P
-Moieties can be specified in 2 kinds.
+Moieties can be specified in two kinds.
 .
 Normally a moiety is placed right after the last thing mentioned,
 separated by a semicolon surrounded by spaces, e.g.,
@@ -712,7 +730,7 @@ Here the moiety is
 .BR CH3 .
 It is placed at a position relative to
 .BR C ,
-a former used moiety.
+a moiety used earlier in the chemical structure.
 .
 .
 .P
@@ -727,11 +745,10 @@ Beneath their printing moieties are names for places.
 .
 .P
 The moiety
-.P
 .B BP
 is special.
 .
-It is not printed, but just serves as a mark to be referred to in later
+It is not printed but just serves as a mark to be referred to in later
 .I chem
 commands.
 .
@@ -743,7 +760,7 @@ For example,
 .P
 sets a mark at the end of the bond.
 .
-This can be used later on for specifying a place.
+This can be used then for specifying a place.
 .
 The name
 .BP BP
@@ -759,14 +776,14 @@ is interpreted as a part of a
 .I chem
 command.
 .
-It is a string that should be printed (without the quotes).
+It represents a string that should be printed (without the quotes).
 .
-Text within quotes "\*[Ellipsis]" is treated more or less like a
-moiety except that no changes are made to the quoted part.
+Text within quotes \[dq]\*[Ellipsis]\[dq] is treated more or less
+like a moiety except that no changes are made to the quoted part.
 .
 .
 .\" --------------------------------------------------------------------
-.SS Names:
+.SS Names
 .\" --------------------------------------------------------------------
 .
 In the alkyl chain above, notice that the carbon atom
@@ -788,10 +805,10 @@ A name is just
 .I Name
 is often the name of a moiety like
 .BR CH3 ,
-but it needn't be.
+but it need not to be.
 .
-Any name that begins with a capital letter and contains only letters
-and numbers is ok:
+Any name that begins with a capital letter and which contains
+only letters and numbers is valid:
 .
 .RS
 .TP
@@ -804,14 +821,13 @@ and numbers is ok:
 .
 .
 .\" --------------------------------------------------------------------
-.SS Miscellaneous:
+.SS Miscellaneous
 .\" --------------------------------------------------------------------
 .
 The specific construction
 .RS
 .TP
-.BR bond \*[Ellipsis] "; moiety"
-(spaces matter!)
+.BR bond\  \*[Ellipsis] "; moiety"
 .RE
 .P
 is equivalent to
@@ -825,25 +841,32 @@ moiety
 .
 .
 .P
-Otherwise, each item has to be on a separate line (and only one line).	
+Otherwise, each item has to be on a separate line (and only one line).
+Note that there must be whitespace after the semicolon which separates
+the commands.
 .
 .
 .P
-A period
-.B .
-in column 1 signals a troff command, which is copied through as is.
+A period character
+.B .\&
+or a single quote
+.B '
+in the first column of a line signals a troff command,
+which is copied through as-is.
 .
 .
 .P
-A line whose first non-blank character is a
-.B #
-is treated as a comment.
+A line whose first non-blank character is a hash character
+.RB ( # )
+is treated as a comment and thus ignored.
+.
+However, hash characters within a word are kept.
 .
 .
 .P
 A line whose first word is
 .B pic
-is copied through as is after the
+is copied through as-is after the word
 .B pic
 has been removed.
 .
@@ -854,46 +877,15 @@ The command
 .B size
 .I n
 .P
-scales the diagram so it looks plausible at point size
+scales the diagram to make it look plausible at point size\~\c
 .I n
-(default is 10 point).
+(default is 10\~point).
 .
 .
 .P
 Anything else is assumed to be
 .I pic
-and is copied through with a label.
-.
-.
-.\" --------------------------------------------------------------------
-.SS Non-chem Commands:
-.\" --------------------------------------------------------------------
-.
-All
-.I roff
-requests are passed through witout change.
-.
-These are lines starting with a dot
-.B .
-or a single quote
-.BR ' .
-.
-.
-.P
-All lines starting with
-.B #
-as first non-space character are interpreted as comments and are
-ignored just like in
-.IR pic .
-When a word in a line starts with
-.B #
-it is regarded as the beginning of a comment.
-.
-So this part is ignored in the line.
-.
-But
-.B #
-characters within words are kept.
+code, which is copied through with a label.
 .
 .
 .P
@@ -901,7 +893,7 @@ Since
 .B @g@chem
 is a
 .B @g@pic
-preprocessor, it's possible to include
+preprocessor, it is possible to include
 .I pic
 statements in the middle of a diagram to draw things not provided for
 by
@@ -914,12 +906,7 @@ statements should be included in
 .I chem
 code by adding
 .B pic
-as the first word of this line.
-.
-But nevertheless, all lines that are not handled by
-.I chem
-are transferred to
-.IR pic .
+as the first word of this line for clarity.
 .
 .
 .P
@@ -931,33 +918,35 @@ commands, so no
 .B pic
 command word is needed:
 .
-.TP
+.IP
 .B define
-the definition of
+Start the definition of
 .I pic
-macros within
+macro within
 .IR chem .
 .
+.RS
 .TP
 .B [
-the beginning of a block composite.
+Start a block composite.
 .
 .TP
 .B ]
-the end of a block composite.
+End a block composite.
 .
 .TP
 .B {
-the beginning of a macro definition.
+Start a macro definition block.
 .
 .TP
 .B }
-the end of a macro definition.
+End a macro definition block.
+.RE
 .
 .P
 The macro names from
-,B define
-statements are stored and their call is accepted as
+.B define
+statements are stored and their call is accepted as a
 .I chem
 command as well.
 .
@@ -969,14 +958,17 @@ command as well.
 .P
 This TODO list was collected by Brian Kernighan.
 .
+.
 .P
 Error checking is minimal; errors are usually detected and reported in
 an oblique fashion by
 .IR pic .
 .
+.
 .P
-There's no library or file inclusion mechanism, and there's no
+There is no library or file inclusion mechanism, and there is no
 shorthand for repetitive structures.
+.
 .
 .P
 The extension mechanism is to create
@@ -984,28 +976,58 @@ The extension mechanism is to create
 macros, but these are tricky to get right and don't have all the
 properties of built-in objects.
 .
-.P
-There's no in-line chemistry yet (e.g., analogous to the $...$
-construct of eqn).
 .
 .P
-There is no way to control entry point for bonds on groups.  Normally
-a bond connects to the carbon atom if entering from the top or bottom
-and otherwise to the nearest corner.
+There is no in-line chemistry yet (e.g., analogous to the $...$
+construct of eqn).
+.
+.
+.P
+There is no way to control entry point for bonds on groups.
+.
+.
+Normally a bond connects to the carbon atom if entering from
+the top or bottom and otherwise to the nearest corner.
+.
 .
 .P
 Bonds from substituted atoms on heterocycles do not join at the proper
 place without adding a bit of
 .IR pic .
 .
+.
 .P
 There is no decent primitive for brackets.
+.
 .
 .P
 Text (quoted strings) doesn't work very well.
 .
+.
 .P
 A squiggle bond is needed.
+.
+.
+.\" --------------------------------------------------------------------
+.SH "FILES"
+.\" --------------------------------------------------------------------
+.
+.TP
+.File_name @libdir@/groff/chem/macros.pic
+A collection of
+.B @g@pic
+macros needed by
+.BR @g@chem .
+.
+.TP
+.File_name @tmacdir@/pic.tmac
+A macro file which redefines
+.B .PS
+and
+.BR .PE
+to center
+.I pic
+diagrams.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1058,8 +1080,7 @@ You can still get the original
 .
 Its
 .File_name README
-file was used for this
-.IR man\~page .
+file was used for this manual page.
 .
 .
 .P
