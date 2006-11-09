@@ -8,7 +8,7 @@
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 17 Oct 2006
+# Last update: 7 Nov 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -435,6 +435,7 @@ sub split_path {
     my $grog = `grog $tmp_file`;
     die "to_tmp(): grog error on $tmp_file;" if $?;
     chomp $grog;
+    print STDERR "grog output: $grog\n" if $main::Debug{'GROG'};
     if ($grog =~ /^.*\s-m.*$/) {
       $grog =~ s/\s+/ /g;
       $grog =~ s/ -m / -m/g;
@@ -595,7 +596,7 @@ Long options of GNU "man":
 --sections=s1:s2:..., --systems=s1,s2,..., --where, ...
 
 Development options that are not useful for normal usage:
---debug, --debug-filenames, --debug-keep, --debug-params,
+--debug, --debug-filenames, --debug-grog, --debug-keep, --debug-params,
 --debug-tmpdir, --do-nothing, --print=text
 
 EOF

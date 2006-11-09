@@ -2,7 +2,7 @@
 
 # groffer - display groff files
 
-# Source file position: <groff-source>/contrib/groffer/groffer2.sh
+# Source file position: <groff-source>/contrib/groffer/shell/groffer2.sh
 # Installed position: <prefix>/lib/groff/groffer/groffer2.sh
 
 # This file should not be run independently.  It is called by
@@ -12,7 +12,7 @@
 # Free Software Foundation, Inc.
 # Written by Bernd Warken
 
-# Last update: 4 Nov 2006
+# Last update: 7 Nov 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -204,6 +204,10 @@ export _DEBUG_LM;
 _DEBUG_LM='no';			# disable landmark messages
 #_DEBUG_LM='yes';		# enable landmark messages
 
+export _DEBUG_GROG;
+_DEBUG_GROG='no';		# disable grog output
+#_DEBUG_GROG='yes';		# enable grog output
+
 export _DEBUG_KEEP_FILES;
 _DEBUG_KEEP_FILES='no'		# disable file keeping in temporary dir
 #_DEBUG_KEEP_FILES='yes'	# enable file keeping in temporary dir
@@ -228,9 +232,9 @@ _DEBUG_PRINT_FILENAMES='no';	# disable printing of the found file names
 case " $*" in
 *\ --deb*|*\ --d*-*)
   # --debug-* options
-  d=' --debug-all --debug-filenames --debug-func --debug-not-func '\
-'--debug-keep --debug-lm --debug-params --debug-shell --debug-stacks '\
-'--debug-tmpdir --debug-user ';
+  d=' --debug-all --debug-filenames --debug-func --debug-grog '\
+'--debug-not-func --debug-keep --debug-lm --debug-params '\
+'--debug-shell --debug-stacks --debug-tmpdir --debug-user ';
   # non-debug options with scheme --d*-*
   n=' --do-nothing --default-modes --dvi-viewer --dvi-viewer-tty ';
   for i
@@ -241,6 +245,7 @@ case " $*" in
       # _DEBUG_STACKS='yes';
       _DEBUG_USER_WITH_STACK='yes';
       # _DEBUG_LM='yes';
+      _DEBUG_GROG='yes';
       _DEBUG_KEEP_FILES='yes';
       _DEBUG_PRINT_PARAMS='yes';
       _DEBUG_PRINT_SHELL='yes';
@@ -281,6 +286,7 @@ EOF
         _DEBUG_FUNC_CHECK='yes';
         _DEBUG_STACKS='yes';
         _DEBUG_USER_WITH_STACK='yes';
+        _DEBUG_GROG='yes';
         _DEBUG_LM='yes';
         _DEBUG_KEEP_FILES='yes';
         _DEBUG_PRINT_PARAMS='yes';
@@ -299,6 +305,9 @@ EOF
         _DEBUG_FUNC_CHECK='no';
         _DEBUG_STACKS='no';
         _DEBUG_USER_WITH_STACK='no';
+	;;
+      --debug-grog)
+        _DEBUG_GROG='yes';
 	;;
       --debug-keep)
         _DEBUG_PRINT_TMPDIR='yes';
@@ -527,7 +536,7 @@ _OPTS_GROFFER_SHORT_ARG="'T'";
 _OPTS_GROFFER_LONG_NA="'auto' \
 'apropos' 'apropos-data' 'apropos-devel' 'apropos-progs' \
 'debug' 'debug-all' 'debug-filenames' \
-'debug-func' 'debug-not-func' 'debug-keep' 'debug-lm' \
+'debug-func' 'debug-not-func' 'debug-grog' 'debug-keep' 'debug-lm' \
 'debug-params' 'debug-shell' 'debug-stacks' 'debug-tmpdir' 'debug-user' \
 'default' 'do-nothing' 'dvi' 'groff' 'help' 'intermediate-output' 'html' \
 'man' 'no-location' 'no-man' 'no-special' 'pdf' 'ps' 'rv' 'source' \
@@ -4403,6 +4412,7 @@ to_tmp()
       then
         exit "${_ERROR}";
       fi;
+      echo2 "grog output: ${tt_grog}";
       case " ${tt_grog} " in
       *\ -m*)
         eval set x "$(echo1 " ${tt_grog} " | sed '
@@ -4715,9 +4725,10 @@ Long options of GNU "man":
 --sections=s1:s2:..., --systems=s1,s2,..., --where, ...
 
 Development options that are not useful for normal usage:
---debug, --debug-all, --debug-filenames, --debug-func, --debug-not-func,
---debug-keep, --debug-lm, --debug-params, --debug-shell, --debug-stacks,
---debug-tmpdir, --debug-user, --do-nothing, --print=text, --shell=prog
+--debug, --debug-all, --debug-filenames, --debug-func,
+--debug-not-func, --debug-grog, --debug-keep, --debug-lm,
+--debug-params, --debug-shell, --debug-stacks, --debug-tmpdir,
+--debug-user, --do-nothing, --print=text, --shell=prog
 
 EOF
 
@@ -5541,8 +5552,8 @@ main_parse_args()
       shift;
       ;;
     --debug|--debug-all|--debug-filenames|--debug-func|--debug-not-func|\
---debug-keep|--debug-lm|--debug-params|--debug-shell|--debug-stacks|\
---debug-tmpdir|--debug-user)
+--debug-grog|--debug-keep|--debug-lm|--debug-params|--debug-shell|\
+--debug-stacks|--debug-tmpdir|--debug-user)
       # debug is handled at the beginning
       :;
       ;;
@@ -6867,6 +6878,7 @@ main_display()
     then
       exit "${_ERROR}";
     fi;
+    echo2 "grog output: ${md_groggy}";
     exit_test;
     _do_opt_V;
 
@@ -6900,6 +6912,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     then
       exit "${_ERROR}";
     fi;
+    echo2 "grog output: ${md_groggy}";
     exit_test;
     if obj _DISPLAY_MODE is_equal 'text'
     then
@@ -6995,6 +7008,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}"
     then
       exit "${_ERROR}";
     fi;
+    echo2 "grog output: ${md_groggy}";
     exit_test;
     _do_display;
     ;;
@@ -7012,6 +7026,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     then
       exit "${_ERROR}";
     fi;
+    echo2 "grog output: ${md_groggy}";
     exit_test;
     _do_display;
     ;;
@@ -7031,6 +7046,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     then
       exit "${_ERROR}";
     fi;
+    echo2 "grog output: ${md_groggy}";
     exit_test;
     _do_display _make_pdf;
     ;;
@@ -7050,6 +7066,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     then
       exit "${_ERROR}";
     fi;
+    echo2 "grog output: ${md_groggy}";
     exit_test;
     _do_display;
     ;;
@@ -7083,6 +7100,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
     then
       exit "${_ERROR}";
     fi;
+    echo2 "grog output: ${md_groggy}";
     exit_test;
     _do_display;
     ;;
@@ -7095,6 +7113,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       then
         exit "${_ERROR}";
       fi;
+      echo2 "grog output: ${md_groggy}";
       exit_test;
       ;;
     X*|dvi|html|lbp|lj4|ps)
@@ -7104,6 +7123,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       then
         exit "${_ERROR}";
       fi;
+      echo2 "grog output: ${md_groggy}";
       exit_test;
       ;;
     *)
@@ -7114,6 +7134,7 @@ wrong device for ${_DISPLAY_MODE} mode: ${_OPT_DEVICE}";
       then
         exit "${_ERROR}";
       fi;
+      echo2 "grog output: ${md_groggy}";
       exit_test;
       ;;
     esac;

@@ -1,0 +1,329 @@
+.TH roff2@ROFF2MODE@ @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+roff2@ROFF2MODE@ \- transform roff code into @ROFF2MODE@ mode
+.
+.SH "SYNOPSIS"
+.\" The .SH was moved to this place in order to appease `apropos'.
+.
+.\" --------------------------------------------------------------------
+.\" Legalize
+.\" --------------------------------------------------------------------
+.
+.ig
+roff2@ROFF2MODE@.1 - man page for roff2@ROFF2MODE@ (section 1).
+
+Source file position:  <groff_source_top>/contrib/groffer/roff2.man
+Installed position:    $prefix/share/man/man1/roff2@ROFF2MODE@.1
+
+Last update: 8 Nov 2006
+..
+.de author
+This file was written by
+.MTO "" "Bernd Warken" .
+..
+.de copyleft
+Copyright (C) 2006 Free Software Foundation, Inc.
+.
+.P
+This file is part of
+.IR \%groffer ,
+which is part of
+.IR \%groff ,
+a free software project.
+.
+You can redistribute it and/or modify it under the terms of the
+.nh
+.B GNU General Public License
+.hy
+as published by the
+.nh
+.BR "Free Software Foundation" ,
+.hy
+either version 2, or (at your option) any later version.
+.
+.P
+You should have received a copy of the \f[CR]GNU General Public
+License\f[] along with
+.IR groff ,
+see the files \%\f[CB]COPYING\f[] and \%\f[CB]LICENSE\f[] in the top
+directory of the
+.I groff
+source package.
+.
+Or read the
+.I man\~page
+.BR gpl (1).
+You can also write to the
+.nh
+.B Free Software Foundation, 51 Franklin St - Fifth Floor, Boston,
+.BR "MA 02110-1301, USA" .
+.hy
+..
+.
+.
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.
+.mso www.tmac
+.
+.if n \{\
+.  mso tty-char.tmac
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.\}
+.
+.if '\*[.T]'dvi' \{\
+.  ftr CB CW
+.\}
+.
+.ds Ellipsis "\&.\|.\|.\""
+.
+.
+.\" --------------------------------------------------------------------
+.\" Macro definitions
+.
+.\" Ignore all arguments like a comment, even after a .eo call.
+.de c
+..
+.c --------------------------------------------------------------------
+.c .File_name  (<path_name>)
+.c
+.c Display a file or directory name in CB font.
+.c
+.de File_name
+.  Header_CB \\$@
+..
+.c --------------------------------------------------------------------
+.c .Header_CB  (<path_name>)
+.c
+.c Display a line in CB font, for example after .TP
+.c
+.de Header_CB
+.  nh
+.  Text \f[CB]\\$1\f[]\\$2
+.  hy
+..
+.c --------------------------------------------------------------------
+.c static register for inter-macro communication in `.Synopsis'*
+.nr roff2:Synopsis.level 0
+.
+.c --------------------------------------------------------------------
+.c .Synopsis  ()
+.c
+.c Begin a synopsis section, to be ended by a ./Synopsis macro.
+.c
+.de Synopsis
+.  if (\\n[roff2:Synopsis.level] > 0) \
+.    Error .\\$0: previous .Synopsis was not closed by ./Synopsis.
+.  nh
+.  ds @1 \\$1\"
+.  nr @old_indent \\n(.i
+.  ad l
+.  in +\w'\fB\\*[@1]\0'u
+.  ti \\n[@old_indent]u
+.  B \\*[@1]\0\c
+.  rr @old_indent
+.  rm @1
+.  nr roff2:Synopsis.level +1\"        marker for ./Synopsis
+..
+.c  --------------------------------------------------------------------
+.c ./Synopsis  ()
+.c
+.c Close a synopsis section opened by the previous .Synopsis macro.
+.c
+.de /Synopsis
+.  if (\\n[roff2:Synopsis.level] <= 0) \
+.    Error .\\$0: no previous call of .Synopsis
+.  br
+.  ad
+.  in
+.  hy
+.  nr roff2:Synopsis.level -1
+..
+.c  --------------------------------------------------------------------
+.c .Text  (<text>...)
+.c
+.c Treat the arguments as text, no matter how they look.
+.c
+.de Text
+.  if (\\n[.$] == 0) \
+.    return
+.  nh
+.  nop \)\\$*\)
+.  hy
+..
+.
+.\" End of macro definitions
+.
+.
+.\" --------------------------------------------------------------------
+.\" SH "SYNOPSIS"
+.\" --------------------------------------------------------------------
+.
+.ad l
+.Synopsis roff2@ROFF2MODE@
+.RI [ groffer_option \*[Ellipsis]]
+[\f[CB]\-\-\fP]
+.RI [ \%filespec \*[Ellipsis]]
+./Synopsis
+.
+.Synopsis roff2@ROFF2MODE@
+\f[CB]\-h\fP\f[CR]|\fP\f[CB]\-\-help\fP
+./Synopsis
+.
+.Synopsis roff2@ROFF2MODE@
+\f[CB]\-v\fP\f[CR]|\fP\f[CB]\-\-version\fP
+./Synopsis
+.
+.
+.P
+The options
+.B \-v
+and
+.B \%\-\-version
+print a version information of the program to standard output and stop
+the program instantly.
+.
+The options
+.B \-h
+and
+.B \%\-\-help
+print a usage information of the program to standard output and stop
+the program instantly.
+.
+.
+.P
+All other options are assumed to be
+.B \%groffer
+options.
+.
+They are internally passed to
+.BR \%groffer .
+They override the behavior of the program.
+.
+The options are optional, they can be omitted.
+.
+.
+.P
+The
+.I \%filespec
+arguments correspond to the
+.I \%filespec
+arguments of
+.BR \%groffer .
+So they are either the names of existing, readable files or
+.B \-
+for standard input or the name of a man page or a
+.BR \%groffer (@MAN1EXT@)
+man page search pattern.
+.
+If no
+.I \%filespec
+is specified standard input is assumed automatically.
+.
+.
+.\" --------------------------------------------------------------------
+.SH DESCRIPTION
+.\" --------------------------------------------------------------------
+.
+.B \%roff2@ROFF2MODE@
+transforms
+.I roff
+code into
+.ie '@ROFF2MODE@'x' \{\
+.I X
+mode corresponding to the
+.I groff
+devices
+.BR X *;
+this mode is suitable for
+.BR \%gxditview (@MAN1EXT@).
+.\}
+.el \fI\%@ROFF2MODE@\fP mode.
+.
+Print the result to standard output.
+.
+.
+.P
+There are more of these programs for generating other formats of
+.I \%roff
+input.
+.
+.TP
+.BR \%roff2dvi (@MAN1EXT@)
+is for
+.I dvi
+mode.
+.
+.TP
+.BR \%roff2html (@MAN1EXT@)
+generates
+.I html
+output.
+.
+.TP
+.BR \%roff2pdf (@MAN1EXT@)
+outputs
+.I pdf
+mode.
+.
+.TP
+.BR \%roff2ps (@MAN1EXT@)
+prints
+.I \%PostScript
+format to standard output.
+.TP
+.BR \%roff2text (@MAN1EXT@)
+generates text output in the
+.B groff
+device
+.IR latin1 .
+.
+.TP
+.BR \%roff2x (@MAN1EXT@)
+prints the output in the
+.B groff
+device
+.B X
+that is suitable for programs like
+.BR \%gxditview (@MAN1EXT@)
+or
+.BR \%xditview (1).
+.
+.
+.\" --------------------------------------------------------------------
+.SH "SEE ALSO"
+.\" --------------------------------------------------------------------
+.
+.BR \%groff (@MAN1EXT@),
+.BR \%groffer (@MAN1EXT@),
+.BR \%roff2dvi (@MAN1EXT@),
+.BR \%roff2html (@MAN1EXT@),
+.BR \%roff2pdf (@MAN1EXT@),
+.BR \%roff2ps (@MAN1EXT@),
+.BR \%roff2text (@MAN1EXT@),
+.BR \%roff2x (@MAN1EXT@),
+.BR \%gxditview (@MAN1EXT@).
+.
+.
+.\" --------------------------------------------------------------------
+.SH "AUTHOR"
+.\" --------------------------------------------------------------------
+.author
+.
+.
+.\" --------------------------------------------------------------------
+.SH "COPYING"
+.\" --------------------------------------------------------------------
+.copyleft
+.
+.
+.\" --------------------------------------------------------------------
+.\" Emacs settings
+.\" --------------------------------------------------------------------
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:

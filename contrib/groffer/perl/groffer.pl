@@ -8,7 +8,7 @@
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 23 Oct 2006
+# Last update: 7 Nov 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -251,13 +251,13 @@ sub main_set_options {
 
   my @opts_groffer_long_na = ('auto', 'apropos', 'apropos-data',
   'apropos-devel', 'apropos-progs', 'debug', 'debug-all',
-  'debug-filenames', 'debug-func', 'debug-not-func', 'debug-keep',
-  'debug-lm', 'debug-params', 'debug-stacks', 'debug-tmpdir',
-  'debug-user', 'default', 'do-nothing', 'dvi', 'groff', 'help',
-  'intermediate-output', 'html', 'man', 'no-location', 'no-man',
-  'no-special', 'pdf', 'ps', 'rv', 'source', 'text', 'to-stdout',
-  'text-device', 'tty', 'tty-device', 'version', 'whatis', 'where',
-  'www', 'x', 'X');
+  'debug-filenames', 'debug-func', 'debug-grog', 'debug-not-func',
+  'debug-keep', 'debug-lm', 'debug-params', 'debug-stacks',
+  'debug-tmpdir', 'debug-user', 'default', 'do-nothing', 'dvi',
+  'groff', 'help', 'intermediate-output', 'html', 'man',
+  'no-location', 'no-man', 'no-special', 'pdf', 'ps', 'rv', 'source',
+  'text', 'to-stdout', 'text-device', 'tty', 'tty-device', 'version',
+  'whatis', 'where', 'www', 'x', 'X');
 
 ### main_set_options()
   my @opts_groffer_long_arg = ('default-modes', 'device',
@@ -823,8 +823,9 @@ sub main_parse_params {
   my %long_opts =
     (
      '--debug' =>
-     sub { $Debug{$_} = 1 foreach (qw/FILENAMES KEEP PARAMS TMPDIR/); },
+     sub { $Debug{$_} = 1 foreach (qw/FILENAMES GROG KEEP PARAMS TMPDIR/); },
      '--debug-filenames' => sub { $Debug{'FILENAMES'} = 1; },
+     '--debug-grog' => sub { $Debug{'GROG'} = 1; },
      '--debug-keep' => sub { $Debug{'KEEP'} = 1; $Debug{'PARAMS'} = 1; },
      '--debug-params' => sub { $Debug{'PARAMS'} = 1; },
      '--debug-tmpdir' => sub { $Debug{'TMPDIR'} = 1; },
@@ -1886,6 +1887,7 @@ sub main_display {
       $groggy = `cat $tmp_cat | grog`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
+      print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       &_do_opt_V();
       unlink $modefile;
       rename $tmp_cat, $modefile;
@@ -1908,6 +1910,7 @@ sub main_display {
       $groggy = `cat $tmp_cat | grog -T$device`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
+      print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       if ($Display{'MODE'} eq 'text') {
 	&_do_opt_V();
 	system("cat $tmp_cat | $groggy $addopts");
@@ -1968,6 +1971,7 @@ sub main_display {
       $groggy = `cat $tmp_cat | grog -Tdvi`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
+      print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       &_do_display();
       next SWITCH;
     };
@@ -1981,6 +1985,7 @@ sub main_display {
       $groggy = `cat $tmp_cat | grog -Thtml`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
+      print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       &_do_display();
       next SWITCH;
     };
@@ -1994,6 +1999,7 @@ sub main_display {
       $groggy = `cat $tmp_cat | grog -Tps`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
+      print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       &_do_display(\&_make_pdf);
       next SWITCH;
     };
@@ -2008,6 +2014,7 @@ sub main_display {
       $groggy = `cat $tmp_cat | grog -Tps`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
+      print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       &_do_display();
       next SWITCH;
     };
@@ -2030,6 +2037,7 @@ sub main_display {
       $groggy = `cat $tmp_cat | grog -T$device -Z`;
       die "main_display(): grog error;" if $?;
       chomp $groggy;
+      print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       &_do_display();
       next SWITCH;
     };
@@ -2039,17 +2047,22 @@ sub main_display {
       if (! $Opt{'DEVICE'}) {
 	$groggy = `cat $tmp_cat | grog -X`;
 	die "main_display(): grog error;" if $?;
+	chomp $groggy;
+	print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       } elsif ($Opt{'DEVICE'} =~ /^(X.*|dvi|html|lbp|lj4|ps)$/) {
 	# these devices work with
 	$groggy = `cat $tmp_cat | grog -T$Opt{'DEVICE'} -X`;
 	die "main_display(): grog error;" if $?;
+	chomp $groggy;
+	print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       } else {
 	warn "main_display(): wrong device for " .
 	  "$Display{'MODE'} mode: $Opt{'DEVICE'};";
 	$groggy = `cat $tmp_cat | grog -Z`;
 	die "main_display(): grog error;" if $?;
+	chomp $groggy;
+	print STDERR "grog output: $groggy\n" if $Debug{'GROG'};
       }				# if DEVICE
-      chomp $groggy;
       &_do_display();
       next SWITCH;
     };
