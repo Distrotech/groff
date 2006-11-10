@@ -82,8 +82,8 @@ BEGIN {
       $Groff_Version = '@VERSION@';
       $at_at{'BINDIR'} = '@BINDIR@';
       $at_at{'G'} = '@g@';
-      $at_at{'PICDIR'} = '@picdir@';
-      $at_at{'TMACDIR'} = '@tmacdir@';
+      $at_at{'PICDIR'} = '@PICDIR@';
+      $at_at{'TMACDIR'} = '@MACRODIR@';
       $File_chem_pic =
 	File::Spec->catfile($at_at{'PICDIR'}, 'chem.pic');
       $File_pic_tmac = File::Spec->catfile($at_at{'TMACDIR'}, 'pic.tmac');

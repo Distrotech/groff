@@ -27,18 +27,12 @@
 ########################################################################
 
 MAN1=chem.n
-CLEANADD=chem chem.n chem.man README examples/README
+CLEANADD=chem chem.n README examples/README
 
 # not all make programs have $(RM) predefined.
 RM=rm -f
 
-all: README examples/README chem chem.man
-
-chem.man: $(srcdir)/chem.man1
-	sed \
-	  -e "s|@tmacdir@|$(DESTDIR)$(tmacdir)|g" \
-	  -e "s|@picdir@|$(DESTDIR)$(datasubdir)/pic|g" \
-	  $< >$@
+all: README examples/README chem $(MAN1)
 
 README: $(srcdir)/README.txt
 	sed -e "s|@g@|$(g)|g" $< >$@
@@ -51,8 +45,8 @@ chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
 	  -e "s|@g@|$(g)|g" \
 	  -e "s|@BINDIR@|$(DESTDIR)$(bindir)|g" \
-	  -e "s|@tmacdir@|$(DESTDIR)$(tmacdir)|g" \
-	  -e "s|@picdir@|$(DESTDIR)$(datasubdir)/pic|g" \
+	  -e "s|@MACRODIR@|$(DESTDIR)$(tmacdir)|g" \
+	  -e "s|@PICDIR@|$(DESTDIR)$(datasubdir)/pic|g" \
 	  -e "s|@VERSION@|$(version)$(revision)|g" \
 	  -e "$(SH_SCRIPT_SED_CMD)" \
 	  $(srcdir)/chem.pl >$@
