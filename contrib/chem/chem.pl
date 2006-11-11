@@ -218,8 +218,7 @@ my $Line = '';
     my $stdin = 0;
 
     # for centralizing the pic code
-    open TMAC, "<$File_pic_tmac";
-    print <TMAC>;
+    open TMAC, "<$File_pic_tmac" and print <TMAC>;
     close TMAC;
 
     foreach (@ARGV) {
