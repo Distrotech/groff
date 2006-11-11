@@ -8,7 +8,7 @@
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # Written by Bernd Warken.
 
-# Last update: 7 Nov 2006
+# Last update: 11 Nov 2006
 
 # This file is part of `groffer', which is part of `groff'.
 
@@ -1386,7 +1386,7 @@ sub main_temp {
   my $template = 'groffer_' . "$$" . '_XXXX';
   foreach ($ENV{'GROFF_TMPDIR'}, $ENV{'TMPDIR'}, $ENV{'TMP'}, $ENV{'TEMP'},
 	   $ENV{'TEMPDIR'}, File::Spec->catfile($ENV{'HOME'}, 'tmp')) {
-    if ($_) {
+    if ($_ && -d $_ && -w $_) {
       if ($Debug{'KEEP'}) {
 	eval { $tmpdir = tempdir( $template, DIR => "$_" ); };
       } else {

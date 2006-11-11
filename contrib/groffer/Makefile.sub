@@ -73,8 +73,10 @@ groffer: $(GROFFER_PERL) $(GROFFER_SHELL) \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
 	    $(srcdir)/perl/groffer.pl >$@; \
-	  cp $(srcdir)/perl/groffer.man groffer.man; \
-	  for f in $(ROFF2PROGS); do cp $(srcdir)/perl/roff2.pl $$f; done; \
+	  $(INSTALL_SCRIPT) $(srcdir)/perl/groffer.man groffer.man; \
+	  for f in $(ROFF2PROGS); do \
+	    $(INSTALL_SCRIPT) $(srcdir)/perl/roff2.pl $$f; \
+	  done; \
 	else \
 	  : >HAVE_SHELL; \
 	  echo "Using shell version of groffer."; \
@@ -85,8 +87,10 @@ groffer: $(GROFFER_PERL) $(GROFFER_SHELL) \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
             $(srcdir)/shell/groffer.sh >$@; \
-	  cp $(srcdir)/shell/groffer.man groffer.man; \
-	  for f in $(ROFF2PROGS); do cp $(srcdir)/shell/roff2.sh $$f; done; \
+	  $(INSTALL_SCRIPT) $(srcdir)/shell/groffer.man groffer.man; \
+	  for f in $(ROFF2PROGS); do \
+	    $(INSTALL_SCRIPT) $(srcdir)/shell/roff2.sh $$f; \
+	  done; \
 	fi
 	chmod +x $@
 	chmod +x $(ROFF2PROGS)
