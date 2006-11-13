@@ -12029,6 +12029,19 @@ A trap at or below the bottom of the page is ignored; it can be made
 active by either moving it up or increasing the page length so that the
 trap is on the page.
 
+Negative trap values always use the @emph{current} page length; they are
+not converted to an absolute vertical position:
+
+@Example
+.pl 5i
+.wh -1i xx
+.ptr
+    @result{} xx      -240
+.pl 100i
+.ptr
+    @result{} xx      -240
+@endExample
+
 It is possible to have more than one trap at the same location; to do so,
 the traps must be defined at different locations, then moved together with
 the @code{ch} request; otherwise the second trap would replace the first

@@ -348,14 +348,16 @@ trap *top_level_diversion::find_next_trap(vunits *next_trap_pos)
 	if (pt->position > vertical_position 
 	    && pt->position < page_length
 	    && (next_trap == 0 || pt->position < *next_trap_pos)) {
-	      next_trap = pt;
-	      *next_trap_pos = pt->position;
-	    }
+	  next_trap = pt;
+	  *next_trap_pos = pt->position;
+	}
       }
       else {
 	vunits pos = pt->position;
 	pos += page_length;
-	if (pos > 0 && pos > vertical_position && (next_trap == 0 || pos < *next_trap_pos)) {
+	if (pos > 0
+	    && pos > vertical_position
+	    && (next_trap == 0 || pos < *next_trap_pos)) {
 	  next_trap = pt;
 	  *next_trap_pos = pos;
 	}
