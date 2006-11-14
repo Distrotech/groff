@@ -5,6 +5,7 @@ roff2@ROFF2MODE@ \- transform roff code into @ROFF2MODE@ mode
 .SH "SYNOPSIS"
 .\" The .SH was moved to this place in order to appease `apropos'.
 .
+.
 .\" --------------------------------------------------------------------
 .\" Legalize
 .\" --------------------------------------------------------------------
@@ -12,15 +13,19 @@ roff2@ROFF2MODE@ \- transform roff code into @ROFF2MODE@ mode
 .ig
 roff2@ROFF2MODE@.1 - man page for roff2@ROFF2MODE@ (section 1).
 
-Source file position:  <groff_source_top>/contrib/groffer/roff2.man
-Installed position:    $prefix/share/man/man1/roff2@ROFF2MODE@.1
+Source file position: <groff_source_top>/contrib/groffer/roff2.man
+Installed position:   $prefix/share/man/man1/roff2@ROFF2MODE@.1
 
-Last update: 8 Nov 2006
+Last update: 14 Nov 2006
 ..
+.
+.
 .de author
 This file was written by
 .MTO "" "Bernd Warken" .
 ..
+.
+.
 .de copyleft
 Copyright (C) 2006 Free Software Foundation, Inc.
 .
@@ -39,7 +44,7 @@ as published by the
 .nh
 .BR "Free Software Foundation" ,
 .hy
-either version 2, or (at your option) any later version.
+either version\~2, or (at your option) any later version.
 .
 .P
 You should have received a copy of the \f[CR]GNU General Public
@@ -78,7 +83,7 @@ You can also write to the
 .  ftr CB CW
 .\}
 .
-.ds Ellipsis "\&.\|.\|.\""
+.ds Ellipsis "\&.\|.\|.\&\""
 .
 .
 .\" --------------------------------------------------------------------
@@ -87,6 +92,8 @@ You can also write to the
 .\" Ignore all arguments like a comment, even after a .eo call.
 .de c
 ..
+.
+.
 .c --------------------------------------------------------------------
 .c .File_name  (<path_name>)
 .c
@@ -95,6 +102,8 @@ You can also write to the
 .de File_name
 .  Header_CB \\$@
 ..
+.
+.
 .c --------------------------------------------------------------------
 .c .Header_CB  (<path_name>)
 .c
@@ -105,9 +114,12 @@ You can also write to the
 .  Text \f[CB]\\$1\f[]\\$2
 .  hy
 ..
+.
+.
 .c --------------------------------------------------------------------
-.c static register for inter-macro communication in `.Synopsis'*
+.c static register for inter-macro communication in `.Synopsis'.
 .nr roff2:Synopsis.level 0
+.
 .
 .c --------------------------------------------------------------------
 .c .Synopsis  ()
@@ -128,6 +140,8 @@ You can also write to the
 .  rm @1
 .  nr roff2:Synopsis.level +1\"        marker for ./Synopsis
 ..
+.
+.
 .c  --------------------------------------------------------------------
 .c ./Synopsis  ()
 .c
@@ -142,6 +156,8 @@ You can also write to the
 .  hy
 .  nr roff2:Synopsis.level -1
 ..
+.
+.
 .c  --------------------------------------------------------------------
 .c .Text  (<text>...)
 .c
@@ -215,7 +231,7 @@ arguments of
 .BR \%groffer .
 So they are either the names of existing, readable files or
 .B \-
-for standard input or the name of a man page or a
+for standard input, or the name of a man page or a
 .BR \%groffer (@MAN1EXT@)
 man page search pattern.
 .
@@ -251,46 +267,59 @@ There are more of these programs for generating other formats of
 .I \%roff
 input.
 .
-.TP
-.BR \%roff2dvi (@MAN1EXT@)
+.if !'@ROFF2MODE@'dvi' \{\
+.  TP
+.  BR \%roff2dvi (@MAN1EXT@)
 is for
-.I dvi
+.  I dvi
 mode.
+.\}
 .
-.TP
-.BR \%roff2html (@MAN1EXT@)
+.if !'@ROFF2MODE@'html' \{\
+.  TP
+.  BR \%roff2html (@MAN1EXT@)
 generates
-.I html
+.  I html
 output.
+.\}
 .
-.TP
-.BR \%roff2pdf (@MAN1EXT@)
+.if !'@ROFF2MODE@'pdf' \{\
+.  TP
+.  BR \%roff2pdf (@MAN1EXT@)
 outputs
-.I pdf
+.  I pdf
 mode.
+.\}
 .
-.TP
-.BR \%roff2ps (@MAN1EXT@)
+.if !'@ROFF2MODE@'ps' \{\
+.  TP
+.  BR \%roff2ps (@MAN1EXT@)
 prints
-.I \%PostScript
+.  I \%PostScript
 format to standard output.
-.TP
-.BR \%roff2text (@MAN1EXT@)
-generates text output in the
-.B groff
-device
-.IR latin1 .
+.\}
 .
-.TP
-.BR \%roff2x (@MAN1EXT@)
-prints the output in the
-.B groff
+.if !'@ROFF2MODE@'text' \{\
+.  TP
+.  BR \%roff2text (@MAN1EXT@)
+generates text output in the
+.  B groff
 device
-.B X
+.  IR latin1 .
+.\}
+.
+.if !'@ROFF2MODE@'x' \{\
+.  TP
+.  BR \%roff2x (@MAN1EXT@)
+prints the output in the
+.  B groff
+device
+.  B X
 that is suitable for programs like
-.BR \%gxditview (@MAN1EXT@)
+.  BR \%gxditview (@MAN1EXT@)
 or
-.BR \%xditview (1).
+.  BR \%xditview (1).
+.\}
 .
 .
 .\" --------------------------------------------------------------------
@@ -299,12 +328,18 @@ or
 .
 .BR \%groff (@MAN1EXT@),
 .BR \%groffer (@MAN1EXT@),
-.BR \%roff2dvi (@MAN1EXT@),
-.BR \%roff2html (@MAN1EXT@),
-.BR \%roff2pdf (@MAN1EXT@),
-.BR \%roff2ps (@MAN1EXT@),
-.BR \%roff2text (@MAN1EXT@),
-.BR \%roff2x (@MAN1EXT@),
+.if !'@ROFF2MODE@'dvi' \
+.  BR \%roff2dvi (@MAN1EXT@),
+.if !'@ROFF2MODE@'html' \
+.  BR \%roff2html (@MAN1EXT@),
+.if !'@ROFF2MODE@'pdf' \
+.  BR \%roff2pdf (@MAN1EXT@),
+.if !'@ROFF2MODE@'ps' \
+.  BR \%roff2ps (@MAN1EXT@),
+.if !'@ROFF2MODE@'text' \
+.  BR \%roff2text (@MAN1EXT@),
+.if !'@ROFF2MODE@'x' \
+.  BR \%roff2x (@MAN1EXT@),
 .BR \%gxditview (@MAN1EXT@).
 .
 .

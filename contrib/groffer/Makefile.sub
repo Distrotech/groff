@@ -5,7 +5,7 @@
 # Copyright (C) 2001,2002,2005,2006 Free Software Foundation, Inc.
 # Written by Werner Lemberg <wl@gnu.org> and Bernd Warken.
 
-# Last update: 8 Nov 2006
+# Last update: 14 Nov 2006
 
 # This file is part of `groffer' which is part of `groff'.
 
@@ -32,10 +32,15 @@ ROFF2MAN=`echo $(ROFF2MODES) | sed 's/[a-z][a-z]*/roff2&.man/g'`
 ROFF2MANN=`echo $(ROFF2MODES) | sed 's/[a-z][a-z]*/roff2&.n/g'`
 
 MAN1=groffer.n \
-roff2dvi.n roff2html.n roff2pdf.n roff2ps.n roff2text.n roff2x.n
+     roff2dvi.n \
+     roff2html.n \
+     roff2pdf.n \
+     roff2ps.n \
+     roff2text.n \
+     roff2x.n
 
 CLEANADD=groffer HAVE_PERL HAVE_SHELL groffer.man \
-$(MAN1) $(ROFF2MAN) $(ROFF2PROGS)
+         $(MAN1) $(ROFF2MAN) $(ROFF2PROGS)
 
 # not all make programs have $(RM) predefined.
 RM=rm -f
@@ -47,7 +52,8 @@ GROFFER_PERL=$(srcdir)/perl/func.pl \
              $(srcdir)/perl/perl_test.pl \
              $(srcdir)/perl/split_env.sh
 GROFFER_SHELL=$(srcdir)/shell/groffer2.sh
-GROFFER_REST=$(srcdir)/version.sh \
+GROFFER_REST=$(srcdir)/roff2.man \
+             $(srcdir)/version.sh \
              $(srcdir)/perl/groffer.man \
              $(srcdir)/perl/groffer.pl \
              $(srcdir)/perl/roff2.pl \
@@ -73,7 +79,7 @@ groffer: $(GROFFER_PERL) $(GROFFER_SHELL) \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
 	    $(srcdir)/perl/groffer.pl >$@; \
-	  $(INSTALL_SCRIPT) $(srcdir)/perl/groffer.man groffer.man; \
+	  $(INSTALL_DATA) $(srcdir)/perl/groffer.man groffer.man; \
 	  for f in $(ROFF2PROGS); do \
 	    $(INSTALL_SCRIPT) $(srcdir)/perl/roff2.pl $$f; \
 	  done; \
@@ -87,13 +93,12 @@ groffer: $(GROFFER_PERL) $(GROFFER_SHELL) \
 	    -e "s|@VERSION@|$(version)$(revision)|g" \
 	    -e "$(SH_SCRIPT_SED_CMD)" \
             $(srcdir)/shell/groffer.sh >$@; \
-	  $(INSTALL_SCRIPT) $(srcdir)/shell/groffer.man groffer.man; \
+	  $(INSTALL_DATA) $(srcdir)/shell/groffer.man groffer.man; \
 	  for f in $(ROFF2PROGS); do \
 	    $(INSTALL_SCRIPT) $(srcdir)/shell/roff2.sh $$f; \
 	  done; \
 	fi
 	chmod +x $@
-	chmod +x $(ROFF2PROGS)
 	for m in $(ROFF2MODES); do \
 	  cat $(srcdir)/roff2.man \
 	  | sed 's/@ROFF2MODE@/'"$$m"'/g' > roff2$${m}.man; \
