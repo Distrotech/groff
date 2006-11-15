@@ -388,25 +388,39 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 ..
 .
 .
-.de dzx 		\"	help macro for d2x - adds next hex item
-.  nr * (\\$1 + 1) 1
-.  while \\n-[*] \
-.    shift
-.  as hex# \\$1\"
-..
+.\"	Utility macro:	.d2x decimal_number [base [string_name]]
+.\"
+.\"		Convert `decimal_number' to another base `base' (in the
+.\"		range 1..16) and store the result in string `string_name'.
+.\"		If `base' is missing or empty, convert to a hexadecimal
+.\"		number.  If `string_name' is missing or empty, return value
+.\"		in string `hex#', otherwise return the value in both
+.\"		`string_name' and `hex#'.
+.\"
+.\"		The base value 1 is handled specially: The returned
+.\"		string contains the character `|' `decimal_number' times
+.\"		(for example, input value 4 yields `||||').
+.ds d2x-0 0\"
+.ds d2x-1 1\"
+.ds d2x-2 2\"
+.ds d2x-3 3\"
+.ds d2x-4 4\"
+.ds d2x-5 5\"
+.ds d2x-6 6\"
+.ds d2x-7 7\"
+.ds d2x-8 8\"
+.ds d2x-9 9\"
+.ds d2x-10 A\"
+.ds d2x-11 B\"
+.ds d2x-12 C\"
+.ds d2x-13 D\"
+.ds d2x-14 E\"
+.ds d2x-15 F\"
 .
 .
-.\"	******************************************************************
-.\"	**	Utility macro; converts decimal number to another base	**
-.\"	**		and puts result into a string.			**
-.\"	**	usage:	.d2x decimal_number [base [string name]]	**
-.\"	**			second arg: base; default: 16		**
-.\"	**			third arg: name of the string,		**
-.\"	**				default name: hex#		**
-.\"	******************************************************************
 .de d2x
-.  if "\\$1"" \{\
-.    tm \\n[.F]:\\n[.c]: missing argument.
+.  if !\B\\$1 \{\
+.    tm \\n[.F]:\\n[.c]: invalid or missing first argument
 .    tm1 "     usage: `.d2x decimal_number [base [string_name]]'
 .    return
 .  \}
@@ -419,16 +433,25 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  if !\\$1 \
 .    nr dec# (-\\n[dec#])
 .
-.  ie !"\\$2"" \
-.    nr b# \\$2
+.  ie !"\\$2"" \{\
+.    ie !\B\\$2 \
+.      tm \\n[.F]:\\n[.c]: invalid base `\\$2'
+.    el \
+.      ie ((\\$2 < 1) : (\\$2 > 16)) \
+.        tm \\n[.F]:\\n[.c]: invalid base `\\$2'
+.      el \
+.        nr b# \\$2
+.  \}\}
 .  el \
 .    nr b# 16
 .
 .  nr xb# 1
 .
-.  ie ((\\n[b#] - 1) == 0) \
-.    while (\\n-[dec#] + 1) \
-.      as hex# |\"	bei base=1 Strichliste
+.  ie (\\n[b#] == 1) \{\
+.    nr dec# +1
+.    while \\n-[dec#] \
+.      as hex# |\"
+.  \}
 .  el \{\
 .    while (\\n[dec#] - \\n[xb#]) \{\
 .      nr xb# (\\n[xb#] * \\n[b#])
@@ -437,14 +460,14 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .    while (\\n+[i#] < \\n[j#]) \{\
 .      nr ** (\\n[dec#] / \\n[xb#])
-.      dzx \\n[**] 1 2 3 4 5 6 7 8 9 A B C D E F
+.      as hex# \\*[d2x-\\n[**]]\"
 .      nr dec# (\\n[dec#] - (\\n[xb#] * \\n[**]))
 .      nr xb# (\\n[xb#] / \\n[b#])
 .    \}
 .  \}
 .
-.  \"					leading 0 before 1 is suppressed! Why?
-.  ds * \\*[hex#]\"			if leading zero, strip it
+.  \" strip leading zero, if any
+.  ds * \\*[hex#]\"
 .  substring * 0 0
 .  if "\\*[*]"0" \
 .    substring hex# 1 -1
@@ -452,42 +475,85 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  if (\\$1 < 0) \
 .    ds hex# -\\*[hex#]\"
 .
-.  if !"\\$3"" \
-.    ds \\$3 \\*[hex#]\"
+.  if !"\\$3"" \{\
+.    ie !\A\\$3 \
+.      tm \\n[.F]:\\n[.c]: invalid string name `\\$3'
+.    el \
+.      ds \\$3 \\*[hex#]\"
+.  \}
 ..
 .
 .
-.\"	******************************************************************
-.\"	**	random#: (uses the BASH-variable $RANDOM)		**
-.\"	**		 after completion: _string_ #random contains	**
-.\"	**			a triple of two-digit-hexnumbers	**
-.\"	**			(three random numbers 0...255)		**
-.\"	******************************************************************
+.\"	Utility macro:	.random#
+.\"			.random-seed seed1 seed2
+.\"
+.\"		Return pseudo-random numbers in the range 0..0xFFFFFF,
+.\"		represented as the concatenation of `#' and six
+.\"		hexadecimal digits, in the string `#random'.  The
+.\"		macro `random-seed' can be used to set seed values,
+.\"		which should be integers in the range 1..2147483562 and
+.\"		1..2147483398 for `seed1' and `seed2', respectively
+.\"		(the macro applies a modulo operation to assure this
+.\"		range).  If `random-seed' isn't called the registers
+.\"		`seconds', `minutes', `hours', `dy', `mo', `year', and
+.\"		`$$' are used to compute it.
+.\"
+.\"		The used generator is presented in L'Ecuyer's 1988 paper
+.\"		`Efficient and Portable Combined Random Number
+.\"		Generators', which combines two Multiplicative Linear
+.\"		Congruential Generators (MLCGs) to achieve a period of
+.\"		2.3*10^18.
+.af hours 00
+.af minutes 00
+.af seconds 00
+.af year 0000
+.af mo 00
+.af dy 00
+.
+.ds random-s1 \n[minutes]\n[seconds]\n[$$]\n[hours]\"
+.\" prevent overflow
+.substring random-s1 0 9
+.
+.nr random-s1 (\*[random-s1] % 2147483562)
+.nr random-s2 \n[dy]\n[year]\n[mo]
+.
+.
+.de random-seed
+.  if !(\\n[.$] == 2) \{\
+.    tm1 "random-seed: Invalid number of arguments.
+.    tm1 "             usage: `.random-seed seed1 seed2'
+.    return
+.  \}
+.
+.  nr random-s1 (\\$1 % 2147483562)
+.  nr random-s2 (\\$2 % 2147483398)
+..
+.
+.
 .de random#
-.  pso bash -c "echo -e .ds ss \\\\$RANDOM \\\\$RANDOM \\\\$RANDOM"
+.  nr * (\\n[random-s1] / 53668)
+.  nr random-s1 (40014 * (\\n[random-s1] - (\\n[*] * 53668)) \
+                - (\\n[*] * 12211))
+.  if !\\n[random-s1] \
+.    nr random-s1 +2147483563
 .
-.  popr *1 ss
-.  nr * (\\n[*1] / 128)
-.  d2x \\n[*] 16 $1
-.  length * \\*[$1]
-.  if (2 - \\n[*]) \
-.    ds $1 0\\*[$1]\"
+.  nr * (\\n[random-s2] / 52774)
+.  nr random-s2 (40692 * (\\n[random-s2] - (\\n[*] * 52774)) \
+                - (\\n[*] * 3791))
+.  if !\\n[random-s2] \
+.    nr random-s2 +2147483399
 .
-.  popr *2 ss
-.  nr * (\\n[*2] / 128)
-.  d2x \\n[*] 16 $2
-.  length * \\*[$2]
-.  if (2 - \\n[*]) \
-.    ds $2 0\\*[$2]\"
+.  nr * (\\n[random-s1] - \\n[random-s2])
+.  if (\\n[*] < 1) \
+.    nr * +2147483562
 .
-.  popr *3 ss
-.  nr * (\\n[*3] / 128)
-.  d2x \\n[*] 16 $3
-.  length * \\*[$3]
-.  if (2 - \\n[*]) \
-.    ds $3 0\\*[$3]\"
+.  \" reduce the result to the leftmost 24 bits
+.  nr * (\\n[*] / 128)
 .
-.  ds #random #\\*[$1]\\*[$2]\\*[$3]\"
+.  d2x \\n[*]
+.  ds hex# 000000\\*[hex#]\"
+.  substring hex# -6
+.  ds #random #\\*[hex#]\"
 ..
 .
 .
