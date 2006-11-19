@@ -28,10 +28,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .\" %beginstrip%
 .
-.if r ? \
-.  tm HDroff: loading misc. macros file \n[.F].
-.
-.nr *miscs 1
+.if d getarg \
+.  nx
 .
 .
 .\"	******************************************************************
@@ -512,7 +510,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .ds random-s1 \n[minutes]\n[seconds]\n[$$]\n[hours]\"
 .\" prevent overflow
-.substring random-s1 0 9
+.substring random-s1 0 8
 .
 .nr random-s1 (\*[random-s1] % 2147483562)
 .nr random-s2 \n[dy]\n[year]\n[mo]
@@ -616,7 +614,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  gcolor black
 .if "\n[.M]"" \
 .  fcolor white
-.if !\n[*hdtbl] \
-.  mso hdtbl.tmac\"				load table macros
+.
+.mso hdtbl.tmac\"			load table macros
 .
 .\" EOF

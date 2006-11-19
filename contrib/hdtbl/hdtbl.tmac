@@ -31,13 +31,11 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\"	*			Vers. 0.91 December 2005		*
 .\"	*****************************************************************
 .
-.if r ? \
-.  tm HDroff: Loading table macros file \n[.F].
+.if d TBL \
+.  nx
 .
-.nr *hdtbl 1
-.
-.if !r *miscs \
-.  mso hdmisc.tmac
+.mso hdmisc.tmac
+.mso 62bit.tmac
 .
 .wh 0 HM	\"	comment this out if a page header macro exists
 .wh -1i BM	\"	comment this out if a bottom margin macro exists
@@ -85,9 +83,9 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .\" %beginstrip%
 .
 .\" for better error messages
-.ds nth-1 st
-.ds nth-2 nd
-.ds nth-3 rd
+.ds nth-1 st\"
+.ds nth-2 nd\"
+.ds nth-3 rd\"
 .
 .\" initialization of various registers
 .nr t*# 0	\"	table nesting level
@@ -250,7 +248,7 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .  index "\\*[args]" .TR
 .  ie \\n[index] \{\
-.    ds *a\\n[t*#] "\\*[args]
+.    ds *a\\n[t*#] "\\*[args]\"
 .    substring args\\n[t*#] 0 \\n[index]
 .    substring *a\\n[t*#] \\n[index]-2 -1
 .  \}
@@ -404,17 +402,17 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .  \}
 .
 .  if (\\n[c#\\n[t*#]*\\n[t*r#\\n[t*#]]] > \\n[t*cols\\n[t*#]]) \{\
-.    ds * are
-.    ds ** columns
+.    ds * are\"
+.    ds ** columns\"
 .    if (\\n[c#\\*[#t#r]] == 1) \{\
-.      ds * is
-.      ds ** column
+.      ds * is\"
+.      ds ** column\"
 .    \}
 .    tmc \\n[.F]:\\n[.c]: There \\*[*] \\n[c#\\*[#t#r]] table \\*[**] (.TD)
 .
-.    ds * are
+.    ds * are\"
 .    if (\\n[t*cols\\n[t*#]] == 1) \
-.      ds * is
+.      ds * is\"
 .    tm1 " but only \\n[t*cols\\n[t*#]] \\*[*] expected.
 .
 .    ds *
@@ -783,9 +781,12 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    \" Remove border width, if any.
 .    if \\n[t*b\\n[t*#]] \{\
 .      \" cell_width := cell_width * (length - 1.5*border) / length
+.      nr #* (\\n[ll\\n[t*#]] - (3 * \\n[t*b\\n[t*#]] / 2))
+.      nr *** (\\n[ll\\n[t*#]] / 2)
 .      \" avoid multiplication overflow
-.      nr #* (1000 * \\n[ll\\n[t*#]] / \\n[t*b\\n[t*#]])
-.      nr $\\n[*] (\\n[$\\n[*]] - (1500 * \\n[$\\n[*]] / \\n[#*]))
+.      mult31by31 $\\n[*] #* ****
+.      add31to62 *** **** ****
+.      div62by31 **** ll\\n[t*#] $\\n[*]
 .    \}
 .
 .    \" Get cell widths without padding, spacing, and separator line.
@@ -795,16 +796,16 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .    \" Check whether value is non-positive.
 .    if !\\n[cll\\n[t*#]*\\n[*]] \{\
-.      nr *h ((1000 \
-               * \\n[ll\\n[t*#]] \
-               / (\\n[ll\\n[t*#]] - (3 * \\n[t*b\\n[t*#]] / 2)) \
-               * (2 * \\n[cscp\\n[t*#]] + \\n[b/2\\n[t*#]]) \
-               / 1000 \
-               + 50) / 10 * 10)
-.      ds * \\n[*]th
+.      nr #* (\\n[ll\\n[t*#]] - (3 * \\n[t*b\\n[t*#]] / 2))
+.      nr *** (\\n[#*] / 2)
+.      nr *h (2 * \\n[cscp\\n[t*#]] + \\n[b/2\\n[t*#]])
+.      mult31by31 *h ll\\n[t*#] ****
+.      add31to62 *** **** ****
+.      div62by31 **** #* *h
+.      ds * \\n[*]th\"
 .      nr *** (\\n[*] % 10)
 .      if d nth-\\n[***] \
-.        ds * \\n[*]\\*[nth-\\n[***]]
+.        ds * \\n[*]\\*[nth-\\n[***]]\"
 .      tmc \\n[.F]:\\n[.c]: The \\*[*] width value (\\$\\n[*]) is too small.
 .      tm1 " It should be greater than \\n[*h].
 .    \}
@@ -856,24 +857,24 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .
 .  \" only check for cell underflow if called by .TR or .ETB
 .  if (\\$1 & (\\n[c#\\*[#t#r]] <= \\n[t*cols\\n[t*#]])) \{\
-.    ds * are
-.    ds ** columns
+.    ds * are\"
+.    ds ** columns\"
 .    if (\\n-[c#\\*[#t#r]] == 1) \{\
-.      ds * is
-.      ds ** column
+.      ds * is\"
+.      ds ** column\"
 .    \}
 .    tmc \\n[.F]:\\n[.c]: There \\*[*] only \\n[c#\\*[#t#r]] \\*[**]
 .
 .    nr * \\n[t*r#\\n[t*#]]
-.    ds * \\n[*]th
+.    ds * \\n[*]th\"
 .    nr *** (\\n[*] % 10)
 .    if d nth-\\n[***] \
-.      ds * \\n[*]\\*[nth-\\n[***]]
+.      ds * \\n[*]\\*[nth-\\n[***]]\"
 .    tmc " in the \\*[*] row
 .
-.    ds * are
+.    ds * are\"
 .    if (\\n[t*cols\\n[t*#]] == 1) \
-.      ds * is
+.      ds * is\"
 .    tm1 " but \\n[t*cols\\n[t*#]] \\*[*] expected.
 .  \}
 ..
@@ -992,8 +993,8 @@ Software Foundation, 51 Franklin St - Fifth Floor, Boston, MA
 .    \}
 .
 .    if (\\n[*] - \\n[.t]) \{\
-.      ds t*kept \\n[*] \\*[t*kept]
-.      ds t*kept \\*[*] \\*[t*kept]
+.      ds t*kept \\n[*] \\*[t*kept]\"
+.      ds t*kept \\*[*] \\*[t*kept]\"
 .      tmc \\n[.F]:\\n[.c]: Remaining table(s),
 .      tm1 " because not all fit onto this page.
 .      break
