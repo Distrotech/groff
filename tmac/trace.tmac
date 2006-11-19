@@ -2,6 +2,8 @@
 .\"
 .\" Load this before a macro package that you want to trace.
 .
+.do if d !!!sp .nx
+.
 .nr _C \n(.C
 .cp 0
 .
@@ -15,12 +17,7 @@
 .  do !!ds !!!inc \$2
 .  do !!substring !!!inc 0 0
 .  do !!nr \$*
-.  do ie "\?\*[!!!inc]\?"\?-\?" \
-.    do tm1 "\*[!!!sp]*** .nr \$* (-> \n[\$1])
-.  el .do ie "\?\*[!!!inc]\?"\?+\?" \
-.    do tm1 "\*[!!!sp]*** .nr \$* (-> \n[\$1])
-.  el \
-.    do tm1 "\*[!!!sp]*** .nr \$*
+.  do tm1 "\*[!!!sp]*** .nr \$* (-> \n[\$1])
 ..
 .
 .rn ds !!ds

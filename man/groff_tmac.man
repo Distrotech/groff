@@ -14,7 +14,7 @@ groff_tmac.5
 
 File position: <groff-source>/man/groff_tmac.man
 
-Last update: 02 Jul 2006
+Last update: 16 Nov 2006
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -404,6 +404,97 @@ macro package; see
 .
 .
 .\" --------------------------------------------------------------------
+.SS "Language-specific Packages"
+.\" --------------------------------------------------------------------
+.
+.
+.TP
+.B fr
+This file adds support for French localization of the main macro packages
+(me, mom, mm, and ms).
+.
+.
+Example:
+.RS
+.IP
+.Shell_cmd "groff -ms -mfr foo.ms > foo.ps"
+.RE
+.
+.IP
+Note that
+.BR fr.tmac
+sets the input encoding to latin-9 to get proper support of the `oe'
+ligature.
+.
+.
+.TP
+.B sv
+Swedish localization support for the me, mom, and ms macro packages.
+.
+Note that Swedish for the mm macros is handled separately; see
+.BR groff_mmse (@MAN7EXT@).
+.
+It should be used as the last macro package on the command line.
+.
+.
+.\" --------------------------------------------------------------------
+.SS "Input Encodings"
+.\" --------------------------------------------------------------------
+.
+.
+.TP
+.B latin1
+.TP+
+.B latin2
+.TP+
+.B latin5
+.TP+
+.B latin9
+Various input encodings supported directly by groff.
+.
+Normally, this macro is loaded at the very beginning of a document or
+specified as the first macro argument on the command line.
+.
+.B @g@roff
+loads latin1 by default at start-up.
+.
+Note that these macro packages don't work on EBCDIC hosts.
+.
+.
+.TP
+.B cp1047
+Encoding support for EBCDIC.
+.
+On those platforms it is loaded automatically at start-up.
+.
+Due to different character ranges used in
+.B @g@roff
+it doesn't work on architectures which are based on ASCII.
+.
+.
+.P
+Note that it can happen that some input encoding characters are not
+available for a particular output device.
+.
+For example, saying
+.
+.P
+.Example
+.  Text groff -Tlatin1 -mlatin9 ...
+./Example
+.
+.P
+fails if you use the Euro character in the input.
+.
+Usually, this limitation is present only for devices which have a
+limited set of output glyphs
+.RB ( \-Tascii ,
+.BR \-Tlatin1 );
+for other devices it is usually sufficient to install proper
+fonts which contain the necessary glyphs.
+.
+.
+.\" --------------------------------------------------------------------
 .SS "Special Packages"
 .\" --------------------------------------------------------------------
 .
@@ -413,21 +504,16 @@ macro package or to plain groff.
 .
 .
 .TP
-.B fr
-This file adds support for French localization of the main macro packages
-(me, mom, mm, and ms).
+.B 60bit
+Provide some macros for addition, multiplication, and division of 60bit
+integers (allowing safe multiplication of 30bit integers, for example).
 .
-It should be used as the last macro package on the command line.
 .
-Example:
-.IP
-.Shell_cmd "groff -ms -mfr foo.ms > foo.ps"
-.
-.IP
-Note that
-.BR fr.tmac
-sets the input encoding to latin-9 to get proper support of the `oe'
-ligature.
+.TP
+.B ec
+Switch to the EC and TC font families.  To be used with
+.BR \%grodvi (@MAN1EXT@)
+\[en] this man page also gives more details how to use it.	
 .
 .
 .TP
@@ -1101,6 +1187,7 @@ Start every line with a dot, for example, by using the groff request
 for text lines, or write your own macro that handles also text lines
 with a leading dot.
 .
+.RS
 .IP
 .Example
 .  Text .de Text
@@ -1109,6 +1196,7 @@ with a leading dot.
 .  Text .\ nop\ \[rs])\[rs]\[rs]$*[rs]\)
 .  Text ..
 ./Example
+.RE
 .
 .Topic
 Write a comment macro that works both for copy-in and draft mode; for
@@ -1118,12 +1206,14 @@ comments are used.
 For example, the following macro just ignores its arguments, so it
 acts like a comment line:
 .
+.RS
 .IP
 .Example
 .  Text .de\ c
 .  Text ..
 .  Text .c\ This\ is\ like\ a\ comment\ line.
 ./Example
+.RE
 .
 .Topic
 In long macro definitions, make ample use of comment lines or empty

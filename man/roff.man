@@ -1,7 +1,7 @@
 .ig
 roff.man
 
-Last update: 27 Oct 2006
+Last update: 18 Nov 2006
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -195,13 +195,6 @@ implementations are referred to as
 implements the look-and-feel and functionality of its classical
 ancestors, but has many extensions.
 .
-As
-.I groff
-is the only
-.I roff
-system that is available for every (or almost every) computer system
-it is the de-facto roff standard today.
-.
 .P
 In some ancient Unix systems, there was a binary called
 .B roff
@@ -209,7 +202,7 @@ that implemented the even more ancient
 .B runoff
 of the
 .I Multics
-operating system, cf. section
+operating system, cf.\& section
 .BR HISTORY .
 The functionality of this program was very restricted even in
 comparison to ancient
@@ -242,7 +235,7 @@ than some of the commercial systems.
 The most popular application of
 .I roff
 is the concept of
-.I manual pages
+.IR "manual pages" ,
 or shortly
 .IR "man pages" ;
 this is the standard documentation system on many operating systems.
@@ -257,7 +250,7 @@ versions, details on the
 .I roff
 pipeline, which is usually hidden behind front-ends like
 .BR groff (@MAN1EXT@);
-an general overview of the formatting language; some tips for editing
+a general overview of the formatting language; some tips for editing
 .I roff
 files; and many pointers to further readings.
 .
@@ -279,7 +272,7 @@ Multics.
 .
 .
 .\" --------------------------------------------------------------------
-.SS "The Predecessor runoff"
+.SS "The Predecessor RUNOFF"
 .\" --------------------------------------------------------------------
 .
 .P
@@ -288,20 +281,26 @@ The evolution of
 is intimately related to the history of the operating systems.
 .
 Its predecessor
-.B runoff
+.B RUNOFF
 was written by
 .I Jerry Saltzer
-on the
+for the
 .I CTSS
 operating system
 .RI ( "Compatible Time Sharing System" )
-as early as 1961.
+as early as 1964 \[en] note that CTSS commands were all uppercase.
 .
 When CTSS was further developed into the operating system
 .URL http://\:www.multicians.org "Multics" ,
 the famous predecessor of Unix from 1963,
 .I runoff
-became the main format for documentation and text processing.
+has been improved further by people from the Massachusetts Institute of
+Technology (MIT) and the Bell Technical Laboratory (BTL), including Dennis
+Ritchie and Joe Ossanna.
+.
+.BR "Multics runoff" ,
+for example, was now able to do two-pass operations; it became the main
+format for documentation and text processing.
 .
 Both operating systems could only be run on very expensive computers
 at that time, so they were mostly used in research and for official
@@ -326,7 +325,7 @@ perform the typesetting manually later on.
 .
 .P
 The runoff program was written in the
-.I PL/1
+.I MAD
 language first, later on in
 .IR BCPL ,
 the grandmother of the
@@ -338,8 +337,12 @@ runoff, similar to
 .IR roff 's
 task to manage the Unix manual pages.
 .
-There are still documents written in the runoff language; for examples
-see Saltzer's home page, cf. section
+On the other hand, BCPL and runoff were ported to the GCOS system
+at Bell Labs since BTL left the development of Multics.
+.
+.P
+There are still documents written in the RUNOFF language; for examples
+see Saltzer's home page, cf.\& section
 .BR "SEE ALSO" .
 .
 .
@@ -347,12 +350,7 @@ see Saltzer's home page, cf. section
 .SS "The Classical nroff/troff System"
 .\" --------------------------------------------------------------------
 .
-In the 1970s, the Multics off-spring
-.I Unix
-became more and more popular because it could be run on affordable
-machines and was easily available for universities at that time.
-.
-At MIT (the Massachusetts Institute of Technology), there was a need to
+At the Bell Labs, there was a need to
 drive the Wang
 .I Graphic Systems CAT
 typesetter, a graphical output device from a PDP-11 computer running
@@ -361,8 +359,7 @@ Unix.
 As runoff was too limited for this task it was further developed into
 a more powerful text formatting system by
 .IR "Josef F. Osanna" ,
-a main developer of the Multics operating system and programmer of
-several runoff ports.
+who already programmed several runoff ports.
 .
 .P
 The name
@@ -411,7 +408,7 @@ is used to refer to a
 sytem as a whole.
 .
 .P
-Osanna first version was written in the PDP-11 assembly language and
+Osanna's first version was written in the PDP-11 assembly language and
 released in 1973.
 .
 .I Brian Kernighan
@@ -506,46 +503,11 @@ on-line for non-commercial use, cf. section
 .SS "Free roff"
 .\" --------------------------------------------------------------------
 .
-None of the commercial
-.I roff
-systems could attain the status of a successor for the general
-.I roff
-development.
-.
-Everyone was only interested in their own stuff.
-.
-This led to a steep downfall of the once excellent
-Unix operating system during the 1980s.
-.
-.P
-As a counter-measure to the galopping commercialization, AT&T Bell
-Labs tried to launch a rescue project with their
-.I Plan\~9
-operating system.
-.
-It is freely available for non-commercial use, even the source code,
-but has a proprietary license that impedes the free development.
-.
-This concept is outdated, so Plan\~9 was not accepted as a platform to
-bundle the main-stream development.
-.
-.P
-The only remedy came from the emerging free operatings systems
-(\f[CR]386BSD\f[], \f[CR]GNU/\:Linux\f[], etc.) and software projects
-during the 1980s and 1990s.
-.
-These implemented the ancient Unix features and many extensions, such
-that the old experience is not lost.
-.
-In the 21st century, Unix-like systems are again a major factor in
-computer industry \[em] thanks to free software.
-.
-.P
 The most important free
 .I roff
-project was the \f[CR]GNU\f[] port of
+project was the \f[CR]GNU\f[] implementation of
 .IR troff ,
-created by James Clark and put under the
+written from scratch by James Clark and put under the
 .URL http://\:www.gnu.org/\:copyleft "GNU Public License" .
 .
 It was called
@@ -575,6 +537,13 @@ This makes
 the de-facto
 .I roff
 standard today.
+.
+.P
+An alternative is Gunnar Ritter's
+.URL http://\:heirloom.sf.net "Heirloom Documentation Tools"
+project, started in 2005, which provides enhanced versions of the various
+roff tools found in the OpenSolaris and Plan\~9 operating systems, now
+available under free licenses.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1319,7 +1288,7 @@ runoff
 .URL http://web.mit.edu/\:Saltzer/\:www/\:publications/\:pubs.html \
 "Jerry Saltzer's home page"
 .
-stores some documents using the ancient runoff formatting language.
+stores some documents using the ancient RUNOFF formatting language.
 .
 .TP
 CSTR Papers
@@ -1434,7 +1403,8 @@ might be a good starting point.
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006
+Free Software Foundation, Inc.
 .
 .P
 This document is distributed under the terms of the \f[CR]FDL\f[]
