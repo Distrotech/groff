@@ -122,7 +122,7 @@ stamp-strip: $(STRIPFILES)
 	touch $@
 
 install_data: $(STRIPFILES) $(EXAMPLEFILES) $(GENFILES) \
-              $(PROCESSEDEXAMPLEFILES) stamp-strip
+              $(PROCESSEDEXAMPLEFILES) gnu.eps stamp-strip
 	-test -d $(DESTDIR)$(tmacdir) || $(mkinstalldirs) $(DESTDIR)$(tmacdir)
 	for f in $(STRIPFILES); do \
 	  rm -f $(DESTDIR)$(tmacdir)/$$f; \
@@ -149,4 +149,5 @@ uninstall_sub:
                   $(GENFILES_); do \
 	  rm -f $(DESTDIR)$(exampledir)/hdtbl/$$f; \
 	done
+	-rm $(DESTDIR)$(exampledir)/hdtbl/gnu.eps
 	-rmdir $(DESTDIR)$(exampledir)/hdtbl
