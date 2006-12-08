@@ -521,10 +521,10 @@ MDEFINES= \
   "man7ext=$(man7ext)" \
   "manroot=$(manroot)" \
   "mkinstalldirs=$(mkinstalldirs)" \
+  "pnmtops_nosetpage=$(pnmtops_nosetpage)" \
   "prefix=$(prefix)" \
   "revision=$(revision)" \
   "sys_tmac_prefix=$(sys_tmac_prefix)" \
-  "pnmtops_nosetpage=$(pnmtops_nosetpage)" \
   "systemtmacdir=$(systemtmacdir)" \
   "tmac_an_prefix=$(tmac_an_prefix)" \
   "tmac_m_prefix=$(tmac_m_prefix)" \
@@ -621,7 +621,7 @@ NOMAKEDIRS=\
 DISTDIRS=\
   $(INCDIRS) $(LIBDIRS) $(PROGDIRS) $(DEVDIRS) $(XDEVDIRS) $(OTHERDEVDIRS) \
   $(ALLTTYDEVDIRS) $(OTHERDIRS) $(EXTRADIRS) $(NOMAKEDIRS)
-TARGETS=all install install_bin install_data clean distclean mostlyclean \
+TARGETS=all install_bin install_data clean distclean mostlyclean \
   realclean extraclean distfiles TAGS depend uninstall_sub
 
 # This ENVSETUP gork is required by the DJGPP build on Windows 9X,
@@ -781,6 +781,16 @@ Makefile.cfg: Makefile
 
 Makefile: Makefile.in
 	$(SHELL) config.status
+
+.PHONY: install
+install:
+	-test -d $(DESTDIR)$(prefix) \
+	  || $(mkinstalldirs) $(DESTDIR)$(prefix)
+	@$(ENVSETUP); $(MAKE) $(MAKE_K_FLAG) $(MDEFINES) \
+	  do=do_install $(dodirs)
+	cd $(DESTDIR)$(dataprogramdir); \
+	rm -f current; \
+	$(LN_S) $(version)$(revision) current
 
 .PHONY: uninstall
 uninstall: uninstall_sub uninstall_dirs

@@ -1,3 +1,18 @@
+2006-12-08  Werner LEMBERG  <wl@gnu.org>
+
+	During installation, create soft link from <version> to `current' in
+	<datadir>/groff.
+
+	* Makefile.comm (install): Renamed to...
+	(do_install): This.
+	(prefix_must_exist): Removed.  Code moved to Makefile.in.
+
+	* Makefile.in (TARGETS): Remove `install'.
+
+	(install): New target which first creates the directory given by
+	--prefix, then calling `make' to do the installation, and finishing
+	with the creation of the soft link.
+
 2006-11-21  Werner LEMBERG  <wl@gnu.org>
 
 	* doc/Makefile.sub (uninstall_sub): Fix names for info files.
@@ -39,7 +54,7 @@
 
 2006-11-09  Bernd Warken
 
-	* INSTALL.gen: Extent the file by information on `external
+	* INSTALL.gen: Extend the file by information on `external
 	installation'.  Reorder the installation instruction as `normal
 	installation'. 
 

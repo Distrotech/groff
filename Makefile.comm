@@ -52,20 +52,16 @@ MANPAGES=$(MAN1) $(MAN5) $(MAN7)
 MANCLEAN=$(MANPAGES)
 fontsubdir=$(fontdir)/dev$(DEV)
 
-all install install_bin install_data TAGS depend distfiles uninstall_sub:
+all do_install install_bin install_data TAGS depend distfiles uninstall_sub:
 
-install: prefix_must_exist install_bin install_data
+do_install: install_bin install_data
 uninstall: uninstall_sub
 pure:
 
 .PHONY: all clean distclean mostlyclean realclean extraclean depend distfiles
-.PHONY: install install_bin install_data prefix_must_exist
+.PHONY: install install_bin install_data
 .PHONY: uninstall uninstall_sub
 .PHONY: pure
-
-prefix_must_exist:
-	@test -d $(DESTDIR)$(prefix) \
-	  || $(mkinstalldirs) $(DESTDIR)$(prefix)
 
 mostlyclean:
 	-rm -f $(MOSTLYCLEANFILES)
