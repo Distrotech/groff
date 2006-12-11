@@ -1,3 +1,24 @@
+2006-12-11  Werner LEMBERG  <wl@gnu.org>
+
+	Support up to 32 macro arguments in pic (and up to 16 on EBCDIC
+	hosts).
+
+	* src/preproc/pic/lex.cpp (ARG1): Redefine.  Update all users.
+	(MAX_ARG): New macro.  Use it everywhere to replace hard-coded
+	limit of 9 arguments.
+	(process_body): Handle argument numbers with more than a single
+	digit.
+	(interpolate_macro_with_args): Protect against exceeding number of
+	arguments.
+
+	* NEWS, src/preproc/pic/pic.man, doc/pic.ms: Document it.
+
+2006-12-10  Werner LEMBERG  <wl@gnu.org>
+
+	* Makefile.in (site.exp, docheck): Commented out.  Not working
+	currently.
+	(check): Just emit dummy message.
+
 2006-12-08  Werner LEMBERG  <wl@gnu.org>
 
 	During installation, create soft link from <version> to `current' in

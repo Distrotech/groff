@@ -1576,7 +1576,8 @@ function that only takes %, %e, %f, and %g format strings.
 .NH 1
 Macros
 .PP
-You can define macros in \fBpic\fP.  This is useful for diagrams with
+You can define macros in \fBpic\fP, with up to 32 arguments (up to 16
+on EBCDIC platforms).  This is useful for diagrams with
 repetitive parts.  In conjunction with the scope rules for block
 composites, it effectively gives you the ability to write functions.
 .PP
