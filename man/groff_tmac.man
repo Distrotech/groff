@@ -14,7 +14,7 @@ groff_tmac.5
 
 File position: <groff-source>/man/groff_tmac.man
 
-Last update: 16 Nov 2006
+Last update: 18 Dec 2006
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -409,9 +409,25 @@ macro package; see
 .
 .
 .TP
+.B de
+.TP+
+.B den
+German localization support, including the main macro packages (me, mom, mm,
+and ms).
+.
+.IP
+.B de.tmac
+selects hyphenation patterns for traditional orthography, and
+.B den.tmac
+does the same for the new orthography (`Rechtschreibreform').
+.
+It should be used as the last macro package on the command line.
+.
+.
+.TP
 .B fr
-This file adds support for French localization of the main macro packages
-(me, mom, mm, and ms).
+This file adds support for French localization, including the main macro
+packages (me, mom, mm, and ms).
 .
 .
 Example:
@@ -422,14 +438,14 @@ Example:
 .
 .IP
 Note that
-.BR fr.tmac
+.B fr.tmac
 sets the input encoding to latin-9 to get proper support of the `oe'
 ligature.
 .
 .
 .TP
 .B sv
-Swedish localization support for the me, mom, and ms macro packages.
+Swedish localization support, including the me, mom, and ms macro packages.
 .
 Note that Swedish for the mm macros is handled separately; see
 .BR groff_mmse (@MAN7EXT@).
@@ -573,7 +589,7 @@ preprocessor.
 They center each picture.
 .
 Use it only if your macro package doesn't provide proper definitions
-for those two macros (actually, most of them already have).
+for those two macros (actually, most of them already do).
 .
 .
 .TP
@@ -1195,7 +1211,7 @@ with a leading dot.
 .  Text .de Text
 .  Text .\ \ if (\[rs]\[rs]n[.$] == 0)\ \[rs]
 .  Text .\ \ \ \ return
-.  Text .\ nop\ \[rs])\[rs]\[rs]$*[rs]\)
+.  Text .\ \ nop\ \[rs])\[rs]\[rs]$*[rs]\)
 .  Text ..
 ./Example
 .RE
