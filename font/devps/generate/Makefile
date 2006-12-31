@@ -218,10 +218,10 @@ symbol.afm: $(srcdir)/symbol.sed
 	-rm -f $@
 	sed -f $(srcdir)/symbol.sed `$(AFMNAME) $(afmdir)/Symbol.afm` >$@
 
-symbolsl.afm: $(srcdir)/symbolsl.awk symbolsl.ps
+symbolsl.afm: $(srcdir)/symbolsl.awk $(srcdir)/../symbolsl.ps
 	-rm -f $@
 	-rm -f Fontmap
-	echo "/Symbol-Slanted (./symbolsl.ps) ;"  > Fontmap
+	echo "/Symbol-Slanted ($(srcdir)/../symbolsl.ps) ;"  > Fontmap
 	echo "/Symbol         ($(symbolfont)) ;" >> Fontmap
 	$(PRINTAFM) Symbol-Slanted > tmp.afm
 	awk -f $(srcdir)/symbolsl.awk -v SYMAFM=`$(AFMNAME) \
