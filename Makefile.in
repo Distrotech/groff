@@ -159,6 +159,9 @@ pdfdocdir=$(docdir)/pdf
 # `fontdir' says where to install dev*/*.
 fontdir=$(datasubdir)/font
 
+# `oldfontdir' says where to install old font sets (as dev*/*).
+oldfontdir=$(datasubdir)/oldfont
+
 # `localfontdir' says where local fonts will be installed (as dev*/*).
 localfontdir=$(dataprogramdir)/site-font
 
@@ -521,6 +524,7 @@ MDEFINES= \
   "man7ext=$(man7ext)" \
   "manroot=$(manroot)" \
   "mkinstalldirs=$(mkinstalldirs)" \
+  "oldfontdir=$(oldfontdir)" \
   "pnmtops_nosetpage=$(pnmtops_nosetpage)" \
   "prefix=$(prefix)" \
   "revision=$(revision)" \
@@ -796,11 +800,12 @@ install:
 uninstall: uninstall_sub uninstall_dirs
 
 .PHONY: uninstall_dirs
-uninstall_dirs:
 # Use `rmdir' here so that the directories are only removed if they are empty.
+uninstall_dirs:
+	-rm -f $(dataprogramdir)/current
 	-rmdir $(man1dir) $(man5dir) $(man7dir) $(manroot) \
 	  $(tmacdir) $(systemtmacdir) $(localtmacdir) \
-	  $(fontdir) $(localfontdir) $(bindir) \
+	  $(fontdir) $(localfontdir) $(oldfontdir) $(bindir) \
 	  $(datasubdir) $(dataprogramdir) $(infodir) \
 	  $(exampledir) $(htmldocdir) $(pdfdocdir) $(docdir) \
 	  $(libprogramdir) $(libdir) \

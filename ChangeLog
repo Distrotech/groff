@@ -1,5 +1,37 @@
 2006-12-31  Werner LEMBERG  <wl@gnu.org>
 
+	* Makefile.in (oldfontdir): New variable.
+	(MDEFINES): Add $(oldfontdir).
+	(uninstall_dirs): Remove `current' link.
+	Remove $(oldfontdir).
+
+	* Makefile.comm (oldfontsubdir): New variable.
+	(install_dev): Install files collected in $(OLDDEVFILES) into
+	$(oldfontsubdir).
+	(uninstall_dev): Remove data in $(oldfontsubdir).
+	(.man.n): Handle @OLDFONTDIR@.
+
+	* src/devices/grodvi/grodvi.man, src/devices/grohtml/grohtml.man,
+	src/devices/grolbp/grolbp.man, src/devices/grolj4/grolj4.man,
+	src/devices/grotty/grotty.man, src/devices/xditview/gxditview.man:
+	Document GROFF_FONT_PATH.
+
+	* src/devices/grops/grops.man: Document GROFF_FONT_PATH and
+	old font description files.
+
+	* font/devps/Makefile.sub (OLDDISTFILES, OLDDEVFILES): New
+	variables.
+
+	* font/devps/old/*: New directory, holding the previous version
+	of the 35 Adobe core font description files.
+
+	* font/devps/*: Regenerated the 35 Adobe core fonts, using the
+	Adobe-Core35_AFMs-229.tar.bz2 bundle from ftp.dante.de.
+
+	* NEWS: Document font update.
+
+2006-12-31  Werner LEMBERG  <wl@gnu.org>
+
 	* font/devps/generate/Makefile (symbolsl.afm): Use $(srcdir).
 
 	* Makefile.comm (fonts): New (empty) target.

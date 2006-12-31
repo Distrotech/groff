@@ -1,15 +1,36 @@
 DEV=ps
-DISTFILES=text.enc download \
-  S ZD ZDR SS AB ABI AI AR BMB BMBI BMI BMR \
-  CB CBI CI CR HB HBI HI HR HNB HNBI HNI HNR \
-  NB NBI NI NR PB PBI PI PR TB TBI TI TR ZCMI \
-  EURO freeeuro.pfa freeeuro.afm
+DISTFILES=\
+  S SS \
+  ZD ZDR ZCMI \
+  AB ABI AI AR \
+  BMB BMBI BMI BMR \
+  CB CBI CI CR \
+  HB HBI HI HR \
+  HNB HNBI HNI HNR \
+  NB NBI NI NR \
+  PB PBI PI PR \
+  TB TBI TI TR \
+  EURO freeeuro.pfa freeeuro.afm \
+  text.enc download
+# these files must be in a subdirectory called `old'
+OLDDISTFILES=\
+  S SS \
+  CB CBI CI CR \
+  HB HBI HI HR \
+  HNB HNBI HNI HNR \
+  NB NBI NI NR \
+  PB PBI PI PR \
+  TB TBI TI TR \
+  symbol.afm symbolsl.afm \
+  zapfdr.afm zapfdr.ps
+
 PSFILES=prologue symbolsl.pfa zapfdr.pfa
 DEVGENFILES=generate/Makefile generate/dingbats.map \
   generate/dingbats.rmap generate/lgreekmap \
   generate/symbolchars generate/symbolsl.afm generate/textmap
 DEVGENSCRIPTS=generate/afmname generate/symbol.sed
 DEVFILES=DESC $(PSFILES) $(DISTFILES) $(DEVGENFILES)
+OLDDEVFILES=$(OLDDISTFILES)
 DEVSCRIPTS=$(DEVGENSCRIPTS)
 
 CLEANADD=DESC $(PSFILES)

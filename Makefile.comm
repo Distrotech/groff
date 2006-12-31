@@ -51,6 +51,7 @@ HDRS=
 MANPAGES=$(MAN1) $(MAN5) $(MAN7)
 MANCLEAN=$(MANPAGES)
 fontsubdir=$(fontdir)/dev$(DEV)
+oldfontsubdir=$(oldfontdir)/dev$(DEV)
 
 all do_install install_bin install_data TAGS depend distfiles uninstall_sub:
 
@@ -139,6 +140,7 @@ extraclean: distclean
 	-e "s|@FONTDIR@|$(fontdir)|g" \
 	-e "s|@LOCALFONTDIR@|$(localfontdir)|g" \
 	-e "s|@LEGACYFONTDIR@|$(legacyfontdir)|g" \
+	-e "s|@OLDFONTDIR@|$(oldfontdir)|g" \
 	-e "s|@MACRODIR@|$(tmacdir)|g" \
 	-e "s|@DATASUBDIR@|$(datasubdir)|g" \
 	-e "s|@SYSTEMMACRODIR@|$(systemtmacdir)|g" \
@@ -242,6 +244,12 @@ install_dev:
 	  test -d $(DESTDIR)$(fontsubdir)/generate \
 	    || $(mkinstalldirs) $(DESTDIR)$(fontsubdir)/generate; \
 	fi
+	-if test -d $(srcdir)/old; then \
+	  test -d $(DESTDIR)$(oldfontdir) \
+	    || $(mkinstalldirs) $(DESTDIR)$(oldfontdir); \
+	  test -d $(DESTDIR)$(oldfontsubdir) \
+	    || $(mkinstalldirs) $(DESTDIR)$(oldfontsubdir); \
+	fi
 	-test -z "$(DEVFILES)" \
 	  || for f in ""$(DEVFILES); do \
 	       rm -f $(DESTDIR)$(fontsubdir)/$$f; \
@@ -250,6 +258,11 @@ install_dev:
 	       else \
 		 $(INSTALL_DATA) $(srcdir)/$$f $(DESTDIR)$(fontsubdir)/$$f; \
 	       fi; \
+	     done
+	-test -z "$(OLDDEVFILES)" \
+	  || for f in ""$(OLDDEVFILES); do \
+	       rm -f $(DESTDIR)$(oldfontsubdir)/$$f; \
+	       $(INSTALL_DATA) $(srcdir)/old/$$f $(DESTDIR)$(oldfontsubdir)/$$f; \
 	     done
 	-test -z "$(DEVSCRIPTS)" \
 	  || for f in ""$(DEVSCRIPTS); do \
@@ -267,9 +280,14 @@ uninstall_dev:
 	  || for f in ""$(DEVFILES) $(DEVSCRIPTS); do \
 	       rm -f $(DESTDIR)$(fontsubdir)/$$f; \
 	     done
+	-test -z "$(OLDDEVFILES)" \
+	  || for f in ""$(OLDDEVFILES); do \
+	       rm -f $(DESTDIR)$(oldfontsubdir)/$$f; \
+	     done
 	-test -d $(DESTDIR)$(fontsubdir)/generate \
 	  && rmdir $(DESTDIR)$(fontsubdir)/generate
 	-rmdir $(DESTDIR)$(fontsubdir)
+	-rmdir $(DESTDIR)$(oldfontsubdir)
 
 .PHONY: depend_src
 depend_src: depend.temp

@@ -22,6 +22,7 @@ the original English.
 .cp 0
 .
 .TH GROTTY @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
 .SH NAME
 grotty \- groff driver for typewriter-like devices
 .
@@ -39,7 +40,6 @@ grotty \- groff driver for typewriter-like devices
 It is possible to have whitespace between the
 .B \-F
 option and its parameter.
-.
 .
 .
 .SH DESCRIPTION
@@ -201,7 +201,6 @@ escape sequence in
 .BR troff .
 .
 .
-.
 .SH OPTIONS
 .
 .TP
@@ -315,7 +314,6 @@ isn't used.
 Print the version number.
 .
 .
-.
 .SH USAGE
 .
 .B grotty
@@ -331,15 +329,28 @@ is non-zero or missing, enable SGR output (this is the default), otherwise
 use the old drawing scheme for bold and underline.
 .
 .
-.
 .SH ENVIRONMENT
 .
 .TP
+.SM
 .B GROFF_NO_SGR
 If set, the old drawing scheme for bold and underline (using the
 backspace character) is active.
 Colors are disabled.
 .
+.
+.TP
+.SM
+.B GROFF_FONT_PATH
+A list of directories in which to search for the
+.BI dev name
+directory in addition to the default ones.
+.
+See
+.BR @g@troff (@MAN1EXT@)
+and
+.BR \%groff_font (@MAN5EXT@)
+for more details.
 .
 .
 .SH FILES
@@ -416,7 +427,6 @@ Note that on EBCDIC hosts, only files for the
 device is installed.
 .
 .
-.
 .SH BUGS
 .
 .LP
@@ -444,7 +454,6 @@ doesn't set the fill color for closed graphic objects (which
 .B grotty
 doesn't support anyway) but changes the background color of the character
 cell, affecting all subsequent operations.
-.
 .
 .
 .SH "SEE ALSO"

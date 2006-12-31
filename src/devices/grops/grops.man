@@ -1194,7 +1194,6 @@ This font editor can convert most outline font formats.
 .
 .
 .SH FONT INSTALLATION
-.
 This section gives a summary of the above explanations; it can serve
 as a step-by-step font installation guide for
 .BR grops .
@@ -1309,7 +1308,7 @@ This means that you should copy the default `download' file to the
 first directory in your font path and add your fonts there.
 .
 To continue the above example we assume that the PS font name for
-Foo-Bar-Bold.pfa is `XYFoo-Bar-Bold' (the PS font name is stored in the
+Foo-Bar-Bold.pfa is `XY-Foo-Bar-Bold' (the PS font name is stored in the
 .B internalname
 field in the `FBB' file), thus the following line should be added to
 `download'.
@@ -1319,6 +1318,34 @@ field in the `FBB' file), thus the following line should be added to
 .B XY-Foo-Bar-Bold Foo-Bar-Bold.pfa
 .
 .RE
+.
+.
+.SH OLD FONTS
+groff versions 1.19.2 and earlier contain a slightly different set of
+the 35 Adobe core fonts; the difference is mainly the lack of the `Euro'
+glyph and a reduced set of kerning pairs.
+.
+For backwards compatibility, these old fonts are installed also in the
+directory
+.BR @OLDFONTDIR@/devps .
+.
+.LP
+To use them, make sure that
+.B grops
+finds the fonts before the default system fonts (with the same names):
+Either add command line option
+.B \-F
+to
+.B grops
+.
+.IP
+.B groff \-Tps \-P\-F -P@OLDFONTDIR@ .\|.\|.
+.
+.LP
+or add the directory to groff's font path environment variable
+.
+.IP
+.B GROFF_FONT_PATH=@OLDFONTDIR@
 .
 .
 .SH ENVIRONMENT
@@ -1337,6 +1364,20 @@ uses the file
 The option
 .B \-P
 overrides this environment variable.
+.
+.
+.TP
+.SM
+.B GROFF_FONT_PATH
+A list of directories in which to search for the
+.BI dev name
+directory in addition to the default ones.
+.
+See
+.BR @g@troff (@MAN1EXT@)
+and
+.BR \%groff_font (@MAN5EXT@)
+for more details.
 .
 .
 .SH FILES
