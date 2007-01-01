@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 # -*- Perl -*-
-# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006
+# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
 # Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
@@ -363,7 +363,7 @@ if (!$opt_x) {
 		elsif ($component =~ /^u([0-9A-F]{4,6})$/) {
 		    $nv = hex("0x" . $1);
 		    if ($nv <= 0xD7FF || ($nv >= 0xE000 && $nv <= 0x10FFFF)) {
-			$utmp .= "U+" . $1;
+			$utmp = "U+" . $1;
 		    }
 		}
 
@@ -416,6 +416,30 @@ while (my ($lig, $components) = each %default_ligatures) {
 open(FONT, ">$font") || die "$prog: can't open \`$font' for output: $!\n";
 select(FONT);
 
+print("# This file has been generated with " .
+      "GNU afmtodit (groff) version @VERSION@\n");
+print("#\n");
+print("#   $fullname\n") if defined $fullname;
+print("#   $version\n") if defined $version;
+print("#   $familyname\n") if defined $familyname;
+
+if ($opt_c) {
+    print("#\n");
+    if (defined $notice || @comments) {
+	print("# The original AFM file contains the following comments:\n");
+	print("#\n");
+	print("#   $notice\n") if defined $notice;
+	foreach my $comment (@comments) {
+	    print("#   $comment\n");
+	}
+    }
+    else {
+	print("# The original AFM file contains no comments.\n");
+    }
+}
+
+print("\n");
+
 print("name $font\n");
 print("internalname $psname\n") if $psname;
 print("special\n") if $opt_s;
@@ -428,16 +452,6 @@ if ($opt_e) {
     print("encoding $e\n");
 }
 
-if ($opt_c) {
-    print("# $fullname\n") if defined $fullname;
-    print("# $version\n") if defined $version;
-    print("# $familyname\n") if defined $familyname;
-    print("# $notice\n") if defined $notice;
-    foreach my $comment (@comments) {
-	print("# $comment\n");
-    }
-}
-
 if (!$opt_n && %ligatures) {
     print("ligatures");
     while (my $lig = each %ligatures) {
@@ -447,6 +461,7 @@ if (!$opt_n && %ligatures) {
 }
 
 if ($#kern1 >= 0) {
+    print("\n");
     print("kernpairs\n");
 
     for (my $i = 0; $i <= $#kern1; $i++) {
@@ -500,6 +515,7 @@ $italic_angle = $italic_angle*3.14159265358979323846/180.0;
 $slant = sin($italic_angle)/cos($italic_angle);
 $slant = 0 if $slant < 0;
 
+print("\n");
 print("charset\n");
 for (my $i = 0; $i <= $#encoding; $i++) {
     my $ch = $encoding[$i];

@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2006
+Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2006, 2007
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -71,6 +71,9 @@ The DESC file can contain the following types of line as shown below.
 .
 Later entries in the file override previous values.
 .
+.LP
+Empty lines are ignored.
+.
 .TP
 .B charset
 This line and everything following in the file are ignored.
@@ -83,11 +86,11 @@ The default font family is
 .IR fam .
 .
 .TP
-.BI fonts\  n\ F1\ F2\ F3\|.\|.\|.\|Fn
+.BI fonts\  n\ F1\ F2\ F3\ \|.\|.\|.\|\ Fn
 Fonts
-.I F1\|.\|.\|.\|Fn
+.IR F1 ,\ \|.\|.\|.,\  Fn
 are mounted in the font positions 
-.IR m +1,\|.\|.\|., m + n
+.IR m +1,\ \|.\|.\|.,\  m + n
 where
 .I m
 is the number of styles.
@@ -109,8 +112,10 @@ machine units.
 Needed for
 .B \%grohtml
 only.
+.
 It specifies the program to generate PNG images from
 PostScript input.
+.
 Under GNU/Linux this is usually
 .I gs
 but under other systems (notably cygwin) it might be set to another name.
@@ -231,10 +236,10 @@ There are
 machine units per inch.
 .
 .TP
-.BI sizes\  s1\ s2\|.\|.\|.\|sn\  0
+.BI sizes\  s1\ s2\ \|.\|.\|.\|\  sn\  0
 This means that the device has fonts at
 .IR s1 ,
-.IR s2 ,\|.\|.\|.\| sn
+.IR s2 ,\ \|.\|.\|.,\  sn
 scaled points.
 .
 The list of sizes must be terminated by a
@@ -267,11 +272,11 @@ and
 commands are given in scaled points.
 .
 .TP
-.BI styles\  S1\ S2\|.\|.\|.\|Sm
+.BI styles\  S1\ S2\ \|.\|.\|.\|\ Sm
 The first
 .I m
 font positions are associated with styles
-.IR S1\|.\|.\|.\|Sm .
+.IR S1 ,\ \|.\|.\|.,\  Sm .
 .
 .TP
 .B tcommand
@@ -291,6 +296,7 @@ scaled points.
 .TP
 .B unscaled_charwidths
 Make the font handling module always return unscaled character widths.
+.
 Needed for the
 .B \%grohtml
 device.
@@ -331,17 +337,20 @@ but completely ignored:
 .
 .SS Font file format
 .
-A font file has two sections.
+A font file has two sections;
+empty lines are ignored in both of them.
+.
+.LP
 The first section is a sequence
 of lines each containing a sequence of blank delimited
 words; the first word in the line is a key, and subsequent
 words give a value for that key.
 .
 .TP
-.BI ligatures\  lig1\ lig2\|.\|.\|.\|lign\ \fR[ 0 \fR]
+.BI ligatures\  lig1\ lig2\ \|.\|.\|.\|\ lign\ \fR[ 0 \fR]
 Characters
 .IR lig1 ,
-.IR lig2 ,\ \|.\|.\|.,\ lign
+.IR lig2 ,\ \|.\|.\|.,\  lign
 are ligatures; possible ligatures are
 .BR ff ,
 .BR fi ,
@@ -527,6 +536,7 @@ uses to print the character.
 This field is optional and is currently used by
 .B grops
 to build sub-encoding arrays for PS fonts containing more than 256 glyphs.
+.
 (It has also been used for
 .BR \%grohtml 's
 entity names but for efficiency reasons this data is now compiled directly
