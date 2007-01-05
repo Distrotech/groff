@@ -14,9 +14,9 @@ CLEANADD=temp
 
 all: mmroff
 
-install: install_mm
+install_bin: install_mmroff
 
-install_mm: install_mmroff install_m
+install_data: install_m
 	-test -d $(DESTDIR)$(tmacdir)/mm \
 	  || $(mkinstalldirs) $(DESTDIR)$(tmacdir)/mm
 	-for f in $(FILES); do \
@@ -53,7 +53,9 @@ mmroff: mmroff.pl
 	-chmod +x $@
 
 uninstall_sub:
-	-for f in $(FILES); do rm -f $(DESTDIR)$(tmacdir)/mm/$$f; done
+	-for f in $(FILES); do \
+		rm -f $(DESTDIR)$(tmacdir)/mm/$$f; \
+	done
 	-for f in $(LOCALE); do \
 		test -s $(DESTDIR)$(tmacdir)/mm/$$f \
 		  || rm -f $(DESTDIR)$(tmacdir)/mm/$$f; \
