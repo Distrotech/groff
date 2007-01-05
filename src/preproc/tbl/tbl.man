@@ -411,6 +411,32 @@ the
 .B .TS
 request.
 .
+.LP
+The number register
+.B \[rs]n[TW]
+holds the table width; it can't be used within the table itself but is defined
+right before calling
+.B .TE
+so that this macro can make use of it.
+.
+.LP
+.B tbl
+also defines a macro
+.B .T#
+which produces the bottom and side lines of a boxed table.
+While
+.B tbl
+does call this macro itself at the end of the table, it can be used by
+macro packages to create boxes for multi-page tables by calling it within the
+page footer.
+An example of this is shown by the
+.B \-ms
+macros which provide this functionality if a table starts with
+.B .TS\ H
+instead of the standard call to the
+.B .TS
+macro.
+.
 .
 .SH "INTERACTION WITH @G@EQN"
 .BR @g@tbl (@MAN1EXT@)
@@ -443,11 +469,6 @@ When using
 .B @g@tbl
 you should avoid using any names beginning with a\~\c
 .BR 3 .
-.
-.LP
-The number register
-.B \[rs]n[TW]
-holds the table width of the previous table.
 .
 .
 .SH "GNU TBL WITHIN MACROS"
