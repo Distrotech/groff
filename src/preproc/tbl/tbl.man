@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2006
+Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2006, 2007
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -17,7 +17,11 @@ versions, except that this permission notice may be included in
 translations approved by the Free Software Foundation instead of in
 the original English.
 ..
+.
+.
 .TH @G@TBL @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
+.
 .SH NAME
 @g@tbl \- format tables for troff
 .
@@ -70,6 +74,7 @@ and
 .B .TE
 even when followed by a character other than space or newline.
 Leader characters (\[rs]a) are handled as interpreted.
+.
 .TP
 .B \-v
 Print the version number.
@@ -163,6 +168,7 @@ Ignore leading and trailing spaces in data items (GNU tbl only).
 .LP
 The global options must end with a semicolon.
 There might be whitespace after an option and its argument in parentheses.
+.
 .LP
 After global options come lines describing the format of each line of
 the table.
@@ -172,15 +178,18 @@ remaining lines of the table.
 A single key character describes each column of each line of the table.
 You may run format specs for multiple lines together on the same line by
 separating them with commas.
+.
 .LP
 You may follow each key character with specifiers that determine the font
 and point size of the corresponding item, that determine column width,
 inter-column spacing, etc.
+.
 .LP
 The longest format line defines the number of columns in the table; missing
 format descriptors at the end of format lines are assumed to be `L'.
 Extra columns in the data (which have no corresponding format entry) are
 ignored.
+.
 .LP
 The available key characters are:
 .
@@ -231,6 +240,7 @@ adjacent, a double vertical rule).
 .LP
 A vertical bar to the left of the first key-letter or to the right of the
 last one produces a line at the edge of the table.
+.
 .LP
 Here are the specifiers that can appear in suffixes to column key letters:
 .
@@ -334,6 +344,7 @@ separation in ens (multiplied in proportion if the
 .B expand
 option is on).
 Default separation is 3n.
+.
 .LP
 The format lines are followed by lines containing the actual data for the
 table, followed finally by
@@ -343,26 +354,31 @@ the character specified with the
 .B tab
 option).
 Long input lines can be broken across multiple lines if the last character
-on the line is `\e' (which vanishes after concatenation).
+on the line is `\[rs]' (which vanishes after concatenation).
+.
 .LP
 A dot starting a line, followed by anything but a digit is handled as a
 troff command, passed through without changes.
 The table position is unchanged in this case.
+.
 .LP
 If a data line consists of only `_' or `=', a single or double line,
 respectively, is drawn across the table at that point; if a single item in a
 data line consists of only `_' or `=', then that item is replaced by a
 single or double line, joining its neighbours.
-If a data item consists only of `\e_' or `\e=', a single or double line,
+If a data item consists only of `\[rs]_' or `\[rs]=', a single or double line,
 respectively, is drawn across the field at that point which does not join
 its neighbours.
+.
 .LP
-A data item consisting only of `\eRx' (`x' any character) is replaced by
+A data item consisting only of `\[rs]Rx' (`x' any character) is replaced by
 repetitions of character `x' as wide as the column (not joining its
 neighbours).
+.
 .LP
-A data item consisting only of `\e^' indicates that the field immediately
+A data item consisting only of `\[rs]^' indicates that the field immediately
 above spans downward over this row.
+.
 .LP
 A text block can be used to enter data as a single entry which would be
 too long as a simple string between tabs.
@@ -385,6 +401,7 @@ after the table).
 The default length of a text block is given by L\[tmu]C/(N+1),
 where `L' is the current line length, `C' the number of columns spanned
 by the text block, and `N' the total number of columns in the table.
+.
 .LP
 To change the data format within a table, use the
 .B .T&
@@ -411,10 +428,13 @@ the first 200.
 Table continuation
 .RB ( .T& )
 lines are not restricted to the first 200 lines.
+.
 .LP
 Numeric and alphabetic items may appear in the same column.
+.
 .LP
 Numeric and alphabetic items may span horizontally.
+.
 .LP
 .B @g@tbl
 uses register, string, macro and diversion names beginning with the digit\~\c
@@ -423,6 +443,11 @@ When using
 .B @g@tbl
 you should avoid using any names beginning with a\~\c
 .BR 3 .
+.
+.LP
+The number register
+.B \[rs]n[TW]
+holds the table width of the previous table.
 .
 .
 .SH "GNU TBL WITHIN MACROS"
@@ -455,6 +480,7 @@ off.  Here an example.
 .B .ATABLE Another table
 .br
 .B .ATABLE And \[dq]another one\[dq]
+.
 .LP
 Note, however, that not all features of
 .B @g@tbl
@@ -482,8 +508,10 @@ of the table, place the
 line immediately after the format section.
 Do not enclose a multi-page table within keep/release macros,
 or divert it in any other way.
+.
 .LP
 A text block within a table must be able to fit on one page.
+.
 .LP
 The
 .B bp
@@ -494,21 +522,23 @@ as follows
 .IP
 .B .de BP
 .br
-.B .ie '\e\en(.z'' .bp \e\e$1
+.B .ie '\[rs]\[rs]n(.z'' .bp \[rs]\[rs]$1
 .br
-.B .el \e!.BP \e\e$1
+.B .el \[rs]!.BP \[rs]\[rs]$1
 .br
 .B ..
 .br
+.
 .LP
 and use
 .B BP
 instead of
 .BR bp .
+.
 .LP
-Using \ea directly in a table to get leaders will not work (except in
+Using \[rs]a directly in a table to get leaders will not work (except in
 compatibility mode).
-This is correct behaviour: \ea is an
+This is correct behaviour: \[rs]a is an
 .B uninterpreted
 leader.
 To get leaders use a real leader, either by using a control A or like
@@ -516,11 +546,11 @@ this:
 .IP
 .nf
 .ft B
-\&.ds a \ea
+\&.ds a \[rs]a
 \&.TS
 tab(;);
 lw(1i) l.
-A\e*a;B
+A\[rs]*a;B
 \&.TE
 .ft
 .fi
