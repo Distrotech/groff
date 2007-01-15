@@ -1,0 +1,124 @@
+.\" an-ext.tmac
+.\"
+.\" Written by Eric S. Raymond <esr@thyrsus.com>
+.\"            Werner Lemberg <wl@gnu.org>
+.\"
+.\" Version 2006-Jan-14
+.\"
+.\" This file is explicitly placed into the public domain.
+.\"
+.\"
+.\" The code below provides extension macros for the `man' macro package.
+.\" It is written without any groff extensions so that other `man'
+.\" implementations can use it without changes.
+.\"
+.\" With groff, this file is sourced by the `man' macro package itself.
+.\" Man page authors who are concerned about portability might add the
+.\" used macros directly to the prologue of the man page(s).
+.
+.
+.if n \{\
+.  do ftr CR R
+.  do ftr CI I
+.  do ftr CB B
+.\}
+.
+.if '\(.T'dvi' \
+.  do ftr CB CW
+.
+.ie \n(.g \{\
+.  ds la \[la]\"
+.  ds ra \[ra]\"
+.\}
+.el \{\
+.  ds la <\"
+.  ds ra >\"
+.  nr HY 1
+.\}
+.
+.nr SY 0
+.
+.
+.\" Declare start of command synopsis.  Sets up hanging indentation.
+.de SY
+.  if !\\n(SY \{\
+.    nh
+.    nr SY 1
+.    nr a \\n(.j
+.    ad l
+.    nr i \\n(.i
+.  \}
+.
+.  HP \w'\fB\\$1\fP 'u
+.  B "\\$1"
+..
+.
+.
+.\" End of command synopsis.  Restores adjustment.
+.de YS
+.  in \\niu
+.  ad \\na
+.  hy \\n(HY
+.  nr SY 0
+..
+.
+.
+.\" Declare optional option.
+.de OP
+.  ie \\n(.$-1 \
+.    RI "[\fB\\$1\fP" "\ \\$2" "]"
+.  el \
+.    RB "[" "\\$1" "]"
+..
+.
+.
+.\" Universal resource locator.
+.\" XXX to be modified
+.de URL
+.  nh
+.  if \\n(.$-1 \
+\\$2 \*(laURL:\\$1\*(ra\"
+.  el \
+\*(la\\$1\*(ra\"
+.  hy \n(HY
+..
+.
+.
+.\" Continuation line for .TP header.
+.de TQ
+.  br
+.  ns
+.  TP "\\$1"
+..
+.
+.
+.\" Start example.
+.de EX
+.  sp 0.5
+.  nf
+.  nh
+.  ft CW
+..
+.
+.
+.\" End example.
+.de EE
+.  ft
+.  fi
+.  hy \n(HY
+.  sp 0.5
+..
+.
+.
+.\" Start display.
+.de DS
+.  \" XXX to be written
+..
+.
+.
+.\" End display.
+.de DE
+.  \" XXX to be written
+..
+.
+.\" EOF
