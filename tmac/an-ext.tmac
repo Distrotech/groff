@@ -3,7 +3,7 @@
 .\" Written by Eric S. Raymond <esr@thyrsus.com>
 .\"            Werner Lemberg <wl@gnu.org>
 .\"
-.\" Version 2006-Jan-14
+.\" Version 2006-Jan-16
 .\"
 .\" This file is explicitly placed into the public domain.
 .\"
@@ -17,18 +17,17 @@
 .\" used macros directly to the prologue of the man page(s).
 .
 .
+.\" Map mono-width fonts to standard fonts for groff's TTY device
 .if n \{\
 .  do ftr CR R
 .  do ftr CI I
 .  do ftr CB B
 .\}
 .
-.if '\(.T'dvi' \
-.  do ftr CB CW
-.
+.\" groff has glyph entities for angle brackets.
 .ie \n(.g \{\
-.  ds la \[la]\"
-.  ds ra \[ra]\"
+.  ds la \(la\"
+.  ds ra \(ra\"
 .\}
 .el \{\
 .  ds la <\"
@@ -41,15 +40,19 @@
 .
 .\" Declare start of command synopsis.  Sets up hanging indentation.
 .de SY
-.  if !\\n(SY \{\
+.  ie !\\n(SY \{\
 .    nh
 .    nr SY 1
 .    nr a \\n(.j
 .    ad l
 .    nr i \\n(.i
 .  \}
+.  el \{\
+.    br
+.    ns
+.  \}
 .
-.  HP \w'\fB\\$1\fP 'u
+.  HP \w'\fB\\$1\fP\ 'u
 .  B "\\$1"
 ..
 .
@@ -76,7 +79,7 @@
 .\" XXX to be modified
 .de URL
 .  nh
-.  if \\n(.$-1 \
+.  ie \\n(.$-1 \
 \\$2 \*(laURL:\\$1\*(ra\"
 .  el \
 \*(la\\$1\*(ra\"
@@ -88,7 +91,7 @@
 .de TQ
 .  br
 .  ns
-.  TP "\\$1"
+.  TP \\$1\" no doublequotes around argument!
 ..
 .
 .
