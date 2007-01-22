@@ -3,7 +3,7 @@
 .\" Written by Eric S. Raymond <esr@thyrsus.com>
 .\"            Werner Lemberg <wl@gnu.org>
 .\"
-.\" Version 2006-Jan-16
+.\" Version 2006-Jan-22
 .\"
 .\" This file is explicitly placed into the public domain.
 .\"
@@ -15,6 +15,12 @@
 .\" With groff, this file is sourced by the `man' macro package itself.
 .\" Man page authors who are concerned about portability might add the
 .\" used macros directly to the prologue of the man page(s).
+.
+.
+.\" Protect against being sourced twice.
+.nr EX +1
+.if \n(EX>1 \
+.  nx
 .
 .
 .\" Map mono-width fonts to standard fonts for groff's TTY device
@@ -80,10 +86,22 @@
 .de URL
 .  nh
 .  ie \\n(.$-1 \
-\\$2 \*(laURL:\\$1\*(ra\"
+\\$2 \\*(laURL:\\$1\\*(ra\"
 .  el \
-\*(la\\$1\*(ra\"
-.  hy \n(HY
+\\*(la\\$1\\*(ra\"
+.  hy \\n(HY
+..
+.
+.
+.\" Email address.
+.\" XXX to be modified
+.de MTO
+.  nh
+.  ie \\n(.$-1 \
+\\$2 \\*(la\\$1\\*(ra\"
+.  el \
+\\*(la\\$1\\*(ra\"
+.  hy \\n(HY
 ..
 .
 .
@@ -108,7 +126,7 @@
 .de EE
 .  ft
 .  fi
-.  hy \n(HY
+.  hy \\n(HY
 .  sp 0.5
 ..
 .
