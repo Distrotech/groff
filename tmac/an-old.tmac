@@ -61,6 +61,7 @@
 .\}
 .
 .nr need_eo_h 0
+.nr need_col2 0
 .
 .\" set up the line length...
 .\" giving precedence to any prior assignment to the \n[LL] register.
@@ -398,6 +399,8 @@
 .de1 an-trap
 .  if \\n[need_eo_h]>0 .DEVTAG-EO-H
 .  nr need_eo_h 0
+.  if \\n[need_col2]>0 .DEVTAG-COL 2
+.  nr need_col2 0
 .  ft R
 .  ps \\n[PS]u
 .  vs \\n[VS]u
@@ -481,6 +484,8 @@
 .  if \\n[.$] .nr an-prevailing-indent (n;\\$1)
 .  in (\\n[an-margin]u + \\n[an-prevailing-indent]u)
 .  ti \\n[an-margin]u
+.  DEVTAG-COL 1
+.  nr need_col2 1
 ..
 .
 .ds an-empty \" this is referenced to avoid looping on eg .RB ( \\ )
