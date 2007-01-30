@@ -3,9 +3,10 @@
 .\" Written by Eric S. Raymond <esr@thyrsus.com>
 .\"            Werner Lemberg <wl@gnu.org>
 .\"
-.\" Version 2006-Jan-22
+.\" Version 2007-Jan-26
 .\"
-.\" This file is explicitly placed into the public domain.
+.\" Copyright (C) 2007 Free Software Foundation, Inc.
+.\" You may freely use, modify and/or distribute this file.
 .\"
 .\"
 .\" The code below provides extension macros for the `man' macro package.
@@ -17,13 +18,23 @@
 .\" used macros directly to the prologue of the man page(s).
 .
 .
+.\" Convention: Auxiliary macros and registers start with `m' followed
+.\"             by an uppercase letter or digit.
+.
+.
 .\" Protect against being sourced twice.
-.nr EX +1
-.if \n(EX>1 \
+.nr mX +1
+.if \n(mX>1 \
 .  nx
 .
+.\" Check whether we are using grohtml.
+.nr mH 0
+.if \n(.g \
+.  if '\*(.T'html' \
+.    nr mH 1
 .
-.\" Map mono-width fonts to standard fonts for groff's TTY device
+.
+.\" Map mono-width fonts to standard fonts for groff's TTY device.
 .if n \{\
 .  do ftr CR R
 .  do ftr CI I
@@ -38,20 +49,21 @@
 .el \{\
 .  ds la <\"
 .  ds ra >\"
+.  \" groff's man macros control hyphenation with this register.
 .  nr HY 1
 .\}
 .
-.nr SY 0
+.nr mS 0
 .
 .
 .\" Declare start of command synopsis.  Sets up hanging indentation.
 .de SY
-.  ie !\\n(SY \{\
+.  ie !\\n(mS \{\
 .    nh
-.    nr SY 1
-.    nr a \\n(.j
+.    nr mS 1
+.    nr mA \\n(.j
 .    ad l
-.    nr i \\n(.i
+.    nr mI \\n(.i
 .  \}
 .  el \{\
 .    br
@@ -65,10 +77,10 @@
 .
 .\" End of command synopsis.  Restores adjustment.
 .de YS
-.  in \\niu
-.  ad \\na
+.  in \\n(mIu
+.  ad \\n(mA
 .  hy \\n(HY
-.  nr SY 0
+.  nr mS 0
 ..
 .
 .
@@ -81,26 +93,82 @@
 ..
 .
 .
-.\" Universal resource locator.
-.\" XXX to be modified
-.de URL
+.\" Start URL.
+.de UR
+.  ds m1 \\$1\"
+.  ds m2 \\$2\"
 .  nh
-.  ie \\n(.$-1 \
-\\$2 \\*(laURL:\\$1\\*(ra\"
+.  if \\n(mH \{\
+.    \" Start diversion in a new environment.
+.    do ev URL-div
+.    do di URL-div
+.  \}
+..
+.
+.
+.\" End URL.
+.de UE
+.  ie \\n(mH \{\
+.    br
+.    di
+.    ev
+.
+.    \" Has there been one or more input lines for the link text?
+.    ie \\n(dn \{\
+.      do HTML-NS "<a href=""\\*(m1"">"
+.      \" Yes, strip off final newline of diversion and emit it.
+.      do chop URL-div
+.      do URL-div
+\c
+.      do HTML-NS </a>
+.    \}
+.    el \
+.      do HTML-NS "<a href=""\\*(m1"">\\*(m1</a>"
+\&\\*(m2\"
+.  \}
 .  el \
-\\*(la\\$1\\*(ra\"
+\\*(la\\*(m1\\*(ra\\*(m2\"
+.
 .  hy \\n(HY
 ..
 .
 .
-.\" Email address.
-.\" XXX to be modified
-.de MTO
+.\" Start email address.
+.de MT
+.  ds m1 \\$1\"
+.  ds m2 \\$2\"
 .  nh
-.  ie \\n(.$-1 \
-\\$2 \\*(la\\$1\\*(ra\"
+.  if \\n(mH \{\
+.    \" Start diversion in a new environment.
+.    do ev URL-div
+.    do di URL-div
+.  \}
+..
+.
+.
+.\" End email address.
+.de ME
+.  ie \\n(mH \{\
+.    br
+.    di
+.    ev
+.
+.    \" Has there been one or more input lines for the link text?
+.    ie \\n(dn \{\
+.      do HTML-NS "<a href=""mailto:\:\\*(m1"">"
+.      \" Yes, strip off final newline of diversion and emit it.
+.      do chop URL-div
+.      do URL-div
+\c
+.      do HTML-NS </a>
+.    \}
+.    el \
+.      do HTML-NS "<a href=""mailto:\:\\*(m1"">\\*(m1</a>"
+\&\\*(m2\"
+.  \}
 .  el \
-\\*(la\\$1\\*(ra\"
+\\*(la\\*(m1\\*(ra\\*(m2\"
+.
 .  hy \\n(HY
 ..
 .
@@ -115,7 +183,7 @@
 .
 .\" Start example.
 .de EX
-.  sp 0.5
+.  nr mE \\n(.f
 .  nf
 .  nh
 .  ft CW
@@ -124,10 +192,9 @@
 .
 .\" End example.
 .de EE
-.  ft
+.  ft \\n(mE
 .  fi
 .  hy \\n(HY
-.  sp 0.5
 ..
 .
 .

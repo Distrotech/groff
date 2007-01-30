@@ -3,12 +3,13 @@
 .ig
 groff_diff.man
 
-Last update : 26 Oct 2006
+Last update:
+24 Jan 2007 -- macro simplification by ESR.
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
 
-Copyright (C) 1989, 2001, 2002, 2003, 2004, 2006
+Copyright (C) 1989, 2001, 2002, 2003, 2004, 2006, 2007
   Free Software Foundation, Inc.
 written by James Clark
 
@@ -25,24 +26,10 @@ A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 ..
 .
+.
 .\" --------------------------------------------------------------------
-.\" Setup
+.\" Local definitions
 .\" --------------------------------------------------------------------
-.
-.do nr groff_diff_C \n[.C]
-.cp 0
-.
-.mso www.tmac
-.
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
-.
-.if '\*[.T]'dvi' \
-.  ftr CB CW
 .
 .\" define a string tx for the TeX logo
 .ie t .ds tx T\h'-.1667m'\v'.224m'E\v'-.224m'\h'-.125m'X
@@ -52,55 +39,45 @@ FDL in the main directory of the groff source package.
 .\" --------------------------------------------------------------------
 .\" start of macro definitions
 .
-.eo
-.
-.de c
-..
-.
-.de TQ
-.  br
-.  ns
-.  TP \$1
-..
 .de Text
-.  RI "\$*"
+.  RI "\\$*"
 ..
+.
+.
 .de Topic
 .  TP 2m
 .  Text \[bu]
+.  RI "\\$*"
 ..
+.
+.
 .de squoted
-.  ds @arg1 \$1
-.  shift
-.\"  Text \[oq]\f[CB]\*[@arg1]\f[]\[cq]\$*
-.  Text \[oq]\f[B]\*[@arg1]\f[]\[cq]\$*
+.  ds @arg1 \\$1
+.  shift 1
+.  Text \[oq]\\fB\\*[@arg1]\\fP\[cq]\\$*
 .  rm @arg1
 ..
-.c A shell command line
-.de ShellCommand
-.  br
-.  IR "shell#" "\h'1m'\f[CB]\$*\f[]\/"
-..
-.c reference of a request or macro
+.
+.
+.\" reference of a request or macro
 .de request
-.  ds @arg1 \$1
+.  ds @arg1 \\$1
 .  shift 1
-.\"  Text \f[CB]\*[@arg1]\f[]\$*
-.  Text \f[B]\*[@arg1]\f[]\$*
+.  Text \\fB\\*[@arg1]\\fP\\$*
 .  rm @arg1
 ..
 .als option request
 .
-.c representation of an escape sequence
+.
+.\" representation of an escape sequence
 .de esc
-.  ds @arg1 \$1
-.  shift
-.\"  Text \f[CB]\[rs]\*[@arg1]\f[]\$*
-.  Text \f[B]\[rs]\*[@arg1]\&\f[]\$*
+.  ds @arg1 \\$1
+.  shift 1
+.  Text \\fB\[rs]\\*[@arg1]\\fP\\$*
 .  rm @arg1
 ..
-.ec
 .\" end of macro definitions
+.
 .
 .\" from old groff_out.man
 .ie \n(.g \
@@ -413,13 +390,13 @@ like this
 .
 .RS
 .IP
-.ft CB
-.Text .ds { \[rs]v'\-.3m'\[rs]s'\[rs]En[.s]*6u/10u'
-.br
-.Text .ds } \[rs]s0\[rs]v'.3m'
-.ft
+.EX
+\&.ds { \[rs]v'\-.3m'\[rs]s'\[rs]En[.s]*6u/10u'
+\&.ds } \[rs]s0\[rs]v'.3m'
+.EE
+.RE
 .
-.P
+.IP
 The use of
 .B \[rs]E
 ensures that these definitions work even if
@@ -1166,7 +1143,7 @@ Map glyph name
 to glyph name
 .I glyph2
 if it is used in
-.BI \[rs][ ... ]
+.BI \[rs][ .\|.\|. ]
 with more than one component.
 .
 .TP
@@ -1822,7 +1799,7 @@ a         b                   c
 .IP
 Line-tabs mode is associated with the current environment; the
 read-only number register
-.B \\[rs]n[.linetabs]
+.B \[rs]n[.linetabs]
 is set to\~1 if in line-tabs mode, and 0 otherwise.
 .
 .TP
@@ -3840,7 +3817,7 @@ classical "device-independent" troff did.
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 1989, 2001, 2002, 2003, 2004, 2006
+Copyright (C) 1989, 2001, 2002, 2003, 2004, 2006, 2007
 Free Software Foundation, Inc.
 .
 .P
@@ -3849,12 +3826,18 @@ Documentation License) version 1.1 or later.
 .
 You should have received a copy of the FDL on your system, it is also
 available on-line at the
-.URL http://\:www.gnu.org/\:copyleft/\:fdl.html "GNU copyleft site" .
+.UR http://\:www.gnu.org/\:copyleft/\:fdl.html .
+GNU copyleft site
+.UE
 .
 This document was written by James Clark, with modifications by
-.MTO wl@gnu.org "Werner Lemberg"
+.MT wl@gnu.org
+Werner Lemberg
+.ME
 and
-.MTO bwarken@mayn.de "Bernd Warken" .
+.MT bwarken@mayn.de .
+Bernd Warken
+.ME
 .
 .P
 This document is part of
@@ -3898,8 +3881,12 @@ requests, registers, and escapes of plain
 .IR groff .
 From the command line, this is called using
 .
+.RS
 .IP
-.ShellCommand man\~7\~groff
+.EX
+man 7 groff
+.EE
+.RE
 .
 .TP
 .BR roff (@MAN7EXT@)
@@ -3916,10 +3903,9 @@ by
 of 1976 in the revision of
 .I Brian Kernighan
 of 1992, being the
-.URL http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr/\:54.ps.gz \
-     "classical troff documentation" .
-.
-.cp \n[groff_diff_C]
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr/\:54.ps.gz .
+classical troff documentation
+.UE
 .
 .\" --------------------------------------------------------------------
 .\" Emacs variables

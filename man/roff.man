@@ -1,11 +1,12 @@
+.\" t
 .ig
 roff.man
 
-Last update: 18 Nov 2006
+Last update: 30 Jan 2007
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006
+Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006, 2007
 Free Software Foundation, Inc.
 written by Bernd Warken <bwarken@mayn.de>
 maintained by Werner Lemberg <wl@gnu.org>
@@ -20,129 +21,24 @@ A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 ..
 .
-.\" --------------------------------------------------------------------
-.\" Setup
-.\" --------------------------------------------------------------------
-.
-.do nr roff_C \n[.C]
-.cp 0
-.
-.mso www.tmac
-.
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
-.
-.if '\*[.T]'dvi' \{\
-.  ftr CB CW
-.\}
-.
 .
 .\" --------------------------------------------------------------------
-.\" String definitions
-.
-.\" Final `\""' comments are used to make Emacs happy, sic \""
-.
-.\" The `-' sign for options.
-.ie t \{\
-.  ds @- \-\"
-.  ds @-- \-\-\"
-.\}
-.el \{\
-.  ds @- -\"
-.  ds @-- --\"
-.\}
-.
-.ds Comment \.\[rs]\[dq]\"
-.ds Ellipsis \.\|.\|.\&\"
-.
-.
-.\" --------------------------------------------------------------------
-.\" Begin of macro definitions
-.
-.de c
-.\" this is like a comment request when escape mechanism is off
-..
-.
-.eo
-.
-.c ---------------------------------------------------------------------
-.
-.de Text
-.  nop \)\$*
-..
-.
-.de CodeSkip
-.  ie t \
-.    sp 0.2v
-.  el \
-.    sp
-..
+.\" Local macros
 .
 .de Esc
-.  ds @1 \$1\"
+.  ds @1 \\$1
 .  shift
-.  Text \f[B]\[rs]\*[@1]\f[]\$*
+.  nop \f[B]\[rs]\\*[@1]\f[]\\$*
 .  rm @1
 ..
+.
 .
 .de QuotedChar
-.  ds @1 \$1
+.  ds @1 \\$1
 .  shift
-.  nop `\f[B]\*[@1]\f[]'\$*
+.  nop `\f[B]\\*[@1]\f[]'\\$*
 .  rm @1
 ..
-.
-.c --------------------------------------------------------------------
-.
-.c a shell command line
-.de ShellCommand
-.  br
-.  ad l
-.  nh
-.  Text \f[I]sh#\h'1m'\f[]\f[CR]\$*\f[]\&\"
-.  ft R
-.  ft P
-.  hy
-.  ad
-..
-.
-.c --------------------------------------------------------------------
-.
-.c ShortOpt ([c [punct]])
-.c
-.c `-c' somewhere in the text.
-.c The second argument is some trailing punctuation.
-.c
-.de ShortOpt
-.  ds @1 \$1\"
-.  shift
-.  nh
-.  Text \f[CB]\*[@-]\f[]\f[B]\*[@1]\f[]\/\$*
-.  hy
-.  rm @1
-..
-.
-.de TP+
-.  br
-.  ns
-.  TP \$1
-..
-.
-.c --------------------------------------------------------------------
-.
-.c Topic
-.c
-.de Topic
-.  TP 2m
-.  Text \[bu]
-..
-.
-.ec
-.\" End of macro definitions
 .
 .
 .\" --------------------------------------------------------------------
@@ -291,7 +187,9 @@ operating system
 as early as 1964 \[en] note that CTSS commands were all uppercase.
 .
 When CTSS was further developed into the operating system
-.URL http://\:www.multicians.org "Multics" ,
+.UR http://\:www.multicians.org ,
+Multics
+.UE
 the famous predecessor of Unix from 1963,
 .I runoff
 has been improved further by people from the Massachusetts Institute of
@@ -484,7 +382,7 @@ Luckily, the incompatibilities did not fight the original
 All of the different commercial
 .I roff
 systems made heavy use of Osanna/\:Kernighan's open source code and
-documentation, but sold them as \[lq]their\[rq] system \[em] with only
+documentation, but sold them as \[lq]their\[rq] system \[en] with only
 minor additions.
 .
 .P
@@ -508,7 +406,9 @@ The most important free
 project was the \f[CR]GNU\f[] implementation of
 .IR troff ,
 written from scratch by James Clark and put under the
-.URL http://\:www.gnu.org/\:copyleft "GNU Public License" .
+.UR http://\:www.gnu.org/\:copyleft .
+GNU Public License
+.UE
 .
 It was called
 .I groff
@@ -529,7 +429,7 @@ but many extensions were added.
 .
 It is the first
 .I roff
-system that is available on almost all operating systems \[em] and it
+system that is available on almost all operating systems \[en] and it
 is free.
 .
 This makes
@@ -540,7 +440,9 @@ standard today.
 .
 .P
 An alternative is Gunnar Ritter's
-.URL http://\:heirloom.sf.net "Heirloom Documentation Tools"
+.UR http://\:heirloom.sf.net
+Heirloom Documentation Tools
+.UE
 project, started in 2005, which provides enhanced versions of the various
 roff tools found in the OpenSolaris and Plan\~9 operating systems, now
 available under free licenses.
@@ -609,23 +511,22 @@ mechanism, that is, a series of programs is called one after the other,
 where the output of each program in the queue is taken as the input
 for the next program.
 .
-.CodeSkip
+.RS
+.P
+cat \f[I]file\f[P] \
+| .\|.\|. \
+| \f[I]preproc\f[P] \
+| .\|.\|. \
+| troff \f[I]options\f[P] \
+| \f[I]postproc\f[P]
+.RE
 .
-.ds @1 "cat \f[I]file\f[P] |\""
-.ds @2 "\*[Ellipsis] | \f[I]preproc\f[P] | \*[Ellipsis] |\""
-.ds @3 "troff \f[I]options\f[P] | \f[I]postproc\f[P]\""
-.
-.ShellCommand "\*[@1] \*[@2] \*[@3]"
-.
-.rm @1
-.rm @2
-.rm @3
 .P
 The preprocessors generate
 .I roff
 code that is fed into a
 .I roff
-formatter (e.g.
+formatter (e.g.\&
 .BR troff ),
 which in turn generates
 .I intermediate output
@@ -699,54 +600,31 @@ system.
 .
 The classical preprocessors are
 .
-
-.de @TP
-.\" local indent for .TP
-.TP \\w'\\f[B]soelim\\f[P]'u+2n
-..
-.P
 .RS
-.PD 0
-.@TP
-.B tbl
-for tables.
-.@TP
-.B eqn
-for mathematical formul\[ae].
-.@TP
-.B pic
-for drawing diagrams.
-.@TP
-.B refer
-for bibliographic references.
-.@TP
-.B soelim
-for including macro files from standard locations.
-.@TP
-.B chem
-for drawing chemical formul\[ae].
-.PD
+.TS
+tab (@);
+lb l.
+tbl@for tables.
+eqn@for mathematical formul\[ae].
+pic@for drawing diagrams.
+refer@for bibliographic references.
+soelim@for including macro files from standard locations.
+chem@for drawing chemical formul\[ae].
+.TE
 .RE
 .
 .P
 Other known preprocessors that are not available on all systems
 include
 .
-.P
 .RS
-.PD 0
-.@TP
-.B grap
-for constructing graphical elements.
-.@TP
-.B grn
-for including
-.BR gremlin (1)
-pictures.
-.PD
+.TS
+tab (@);
+lb l.
+grap@for constructing graphical elements.
+grn@for including \fBgremlin\fR(1) pictures.
+.TE
 .RE
-.
-.rm @TP
 .
 .\" --------------------------------------------------------------------
 .SS "Formatter Programs"
@@ -917,7 +795,7 @@ in
 .P
 A macro package that is to be used in a document can be announced to
 the formatter by the command line option
-.ShortOpt m ,
+.BR \-m ,
 see
 .BR troff (@MAN1EXT@),
 or it can be specified within a document using the file inclusion
@@ -1029,7 +907,7 @@ i.e., it is kept in section\~7
 of the man pages.
 .
 .P
-The classical macro packages take the package name as an extension, e.g.
+The classical macro packages take the package name as an extension, e.g.\&
 .IB file. me
 for a document using the
 .I me
@@ -1069,10 +947,14 @@ that is specified in the shell environment variable
 .BR LESSOPEN .
 This process is not well documented, so here an example:
 .
-.CodeSkip
-.ShellCommand LESSOPEN='|lesspipe %s'
-.CodeSkip
+.RS
+.P
+.EX
+LESSOPEN='|lesspipe %s'
+.EE
+.RE
 .
+.P
 where
 .B lesspipe
 is either a system supplied command or a shell script of your own.
@@ -1111,28 +993,36 @@ at the same time.
 But it is also possible to have the mode automatically selected when
 the file is loaded into the editor.
 .
-.Topic
+.IP \(bu
 The most general method is to include the following 3 comment lines at
 the end of the file.
 .
-.CodeSkip
-.nf
-.B \*[Comment] Local Variables:
-.B \*[Comment] mode: nroff
-.B \*[Comment] End:
-.fi
+.RS
+.IP
+.EX
+\&.\[rs]" Local Variables:
+\&.\[rs]" mode: nroff
+\&.\[rs]" End:
+.EE
+.RE
 .
-.Topic
-There is a set of file name extensions, e.g. the man pages that
+.IP \(bu
+There is a set of file name extensions, e.g.\& the man pages that
 trigger the automatic activation of the
 .I nroff
 mode.
 .
-.Topic
+.IP \(bu
 Theoretically, it is possible to write the sequence
-.CodeSkip
-.B \*[Comment] \%-*-\ nroff\ -*-
-.CodeSkip
+.
+.RS
+.IP
+.EX
+\&.\[rs]" \%-*-\ nroff\ -*-
+.EE
+.RE
+.
+.IP
 as the first line of a file to have it started in
 .I nroff
 mode when loaded.
@@ -1149,17 +1039,17 @@ spacing.
 .
 In order to not disturb this, the following tips can be helpful.
 .
-.Topic
+.IP \(bu
 Never include empty or blank lines in a
 .I roff
 document.
 .
 Instead, use the empty request (a line consisting of a dot only) or a
 line comment
-.B \*[Comment]
+.B .\e"
 if a structuring element is needed.
 .
-.Topic
+.IP \(bu
 Never start a line with whitespace because this can lead to
 unexpected behavior.
 .
@@ -1167,14 +1057,14 @@ Indented paragraphs can be constructed in a controlled way by
 .I roff
 requests.
 .
-.Topic
+.IP \(bu
 Start each sentence on a line of its own, for the spacing after a dot
 is handled differently depending on whether it terminates an
 abbreviation or a sentence.
 .
 To distinguish both cases, do a line break after each sentence.
 .
-.Topic
+.IP \(bu
 To additionally use the auto-fill mode in Emacs, it is best to insert
 an empty
 .I roff
@@ -1185,22 +1075,24 @@ The following example shows how optimal
 .I roff
 editing could look.
 .
-.IP
-.nf
+.RS
+.P
+.EX
 This is an example for a
-.I roff
+\&.I roff
 document.
-.Text .
+\&.
 This is the next sentence in the same paragraph.
-.Text .
+\&.
 This is a longer sentence stretching over several
 lines; abbreviations like `cf.' are easily
 identified because the dot is not followed by a
 line break.
-.Text .
+\&.
 In the output, this will still go to the same
 paragraph.
-.fi
+.EE
+.RE
 .
 .P
 Besides Emacs, some other editors provide
@@ -1243,13 +1135,17 @@ are documented in great detail.
 .
 .TP
 troff.org
-.URL http://\:www.troff.org "The historical troff site"
+.UR http://\:www.troff.org
+The historical troff site
+.UE
 provides an overview and pointers to all historical aspects of
 .IR roff .
 .
 .TP
 Multics
-.URL http://\:www.multicians.org "The Multics site"
+.UR http://\:www.multicians.org
+The Multics site
+.UE
 contains a lot of information on the MIT projects, CTSS, Multics,
 early Unix, including
 .IR  runoff ;
@@ -1258,42 +1154,49 @@ documents.
 .
 .TP
 Unix Archive
-.URL http://\:www.tuhs.org/\:Archive/ \
-     "The Ancient Unixes Archive"
+.UR http://\:www.tuhs.org/\:Archive/
+The Ancient Unixes Archive
+.UE
 .
 provides the source code and some binaries of the ancient Unixes
 (including the source code of
 .I troff
 and its documentation) that were made public by Caldera since 2001,
-e.g. of the famous Unix version\~7 for PDP-11 at the
-.URL http://\:www.tuhs.org/\:Archive/\:PDP-11/\:Trees/\:V7 \
-     "Unix V7 site" .
+e.g.\& of the famous Unix version\~7 for PDP-11 at the
+.UR http://\:www.tuhs.org/\:Archive/\:PDP-11/\:Trees/\:V7 .
+Unix V7 site
+.UE
 .
 .TP
 Developers at AT&T Bell Labs
-.URL http://\:cm.bell-labs.com/\:cm/\:index.html \
-     "Bell Labs Computing and Mathematical Sciences Research"
+.UR http://\:www.bell-labs.com/
+Bell Labs Computing and Mathematical Sciences Research
+.UE
 .
 provides a search facility for tracking information on the early
 developers.
 .
 .TP
 Plan 9
-.URL http://\:plan9.bell-labs.com "The Plan\~9 operating system"
+.UR http://\:plan9.bell-labs.com
+The Plan\~9 operating system
+.UE
 .
 by AT&T Bell Labs.
 .
 .TP
 runoff
-.URL http://web.mit.edu/\:Saltzer/\:www/\:publications/\:pubs.html \
-"Jerry Saltzer's home page"
+.UR http://web.mit.edu/\:Saltzer/\:www/\:publications/\:pubs.html
+Jerry Saltzer's home page
+.UE
 .
 stores some documents using the ancient RUNOFF formatting language.
 .
 .TP
 CSTR Papers
-.URL http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr.html \
-     "The Bell Labs CSTR site"
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr.html
+The Bell Labs CSTR site
+.UE
 .
 stores the original
 .I troff
@@ -1302,7 +1205,9 @@ documents on programming.
 .
 .TP
 \f[CR]GNU\f[] \f[I]roff\f[]
-.URL http://\:www.gnu.org/\:software/\:groff "The groff web site"
+.UR http://\:www.gnu.org/\:software/\:groff
+The groff web site
+.UE
 provides the free
 .I roff
 implementation
@@ -1326,47 +1231,51 @@ language are
 .TP
 [CSTR\~#54]
 J. F. Osanna,
-.URL http://\:cm.bell-labs.com/\:cm/\:cs/\:54.ps \
-     "\fINroff/\:Troff User's Manual\fP" ;
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr/\:54.ps.gz ;
+.I "Nroff/\:Troff User's Manual"
+.UE
 .
 Bell Labs, 1976; revised by Brian Kernighan, 1992.
-
 .
 .TP
 [CSTR\~#97]
 Brian Kernighan,
-.URL http://\:cm.bell-labs.com/\:cm/\:cs/\:97.ps \
-     "\fIA Typesetter-independent TROFF\fP" ,
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr/\:97.ps.gz ,
+.I "A Typesetter-independent TROFF"
+.UE
 .
 Bell Labs, 1981, revised March 1982.
 .
 .P
-The "little language"
+The \[lq]little language\[rq]
 .I roff
 papers are
 .
 .TP
 [CSTR\~#114]
 Jon L. Bentley and Brian W. Kernighan,
-.URL http://\:cm.bell-labs.com/\:cm/\:cs/\:114.ps \
-     "\fIGRAP \(em A Language for Typesetting Graphs\fP" ;
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr/\:114.ps.gz ;
+.I "GRAP \[en] A Language for Typesetting Graphs"
+.UE
 .
 Bell Labs, August 1984.
 .
 .TP
 [CSTR\~#116]
 Brian W. Kernighan,
-.URL http://\:cm.bell-labs.com/\:cm/\:cs/\:116.ps \
-     "\fIPIC -- A Graphics Language for Typesetting\fP" ;
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr/\:116.ps.gz ;
+.I "PIC \[en] A Graphics Language for Typesetting"
+.UE
 .
 Bell Labs, December 1984.
 .
 .TP
 [CSTR\~#122]
 J. L. Bentley, L. W. Jelinski, and B. W. Kernighan,
-.URL http://\:cm.bell-labs.com/\:cm/\:cs/\:122.ps \
-"\fICHEM \(em A Program for Typesetting Chemical Structure Diagrams, \
-Computers and Chemistry\fP" ;
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:cstr/\:122.ps.gz ;
+.I "CHEM \[en] A Program for Typesetting Chemical Structure Diagrams,"
+.I "Computers and Chemistry"
+.UE
 .
 Bell Labs, April 1986.
 .
@@ -1403,7 +1312,7 @@ might be a good starting point.
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006
+Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006, 2007
 Free Software Foundation, Inc.
 .
 .P
@@ -1412,7 +1321,9 @@ This document is distributed under the terms of the \f[CR]FDL\f[]
 .
 You should have received a copy of the \f[CR]FDL\f[] on your system,
 it is also available on-line at the
-.URL http://\:www.gnu.org/\:copyleft/\:fdl.html "GNU copyleft site" .
+.UR http://\:www.gnu.org/\:copyleft/\:fdl.html .
+GNU copyleft site
+.UE
 .
 .P
 This document is part of
@@ -1422,11 +1333,13 @@ the \f[CR]GNU\f[]
 distribution.
 .
 It was written by
-.MTO bwarken@mayn.de "Bernd Warken" ;
+.MT bwarken@mayn.de ;
+Bernd Warken
+.ME
 it is maintained by
-.MTO wl@gnu.org "Werner Lemberg".
-.
-.cp \n[roff_C]
+.MT wl@gnu.org .
+Werner Lemberg
+.ME
 .
 .\" --------------------------------------------------------------------
 .\" Emacs setup
