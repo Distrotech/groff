@@ -4369,6 +4369,23 @@ Documents that need to determine whether they are being formatted with
 number register.
 @endDefmpreg
 
+Emulations of a few ancient Bell Labs macros can be re-enabled by calling
+the otherwise undocumented @code{SC} section-header macro.  Calling @code{SC}
+enables @code{UC} for marking up a product or application name, and the pair 
+@code{P1}/@code{P2} for surrounding code example displays.
+
+These are not enabled by default because (a)@tie{}they were not documented,
+in the original @code{ms} manual, and (b)@tie{}the @code{P1} and @code{UC}
+macros collide with different macros with the same names in the
+Berkeley version of @code{ms}.
+
+These @code{groff} emulations are sufficient to give back the
+1976 Kernighan@tie{}& Cherry paper @cite{Typsetting Mathematics -- User's
+Guide} its section headings, and restore some text that had gone
+missing as arguments of undefined macros.  No warranty express or
+implied is given as to how well the typographic details these produce
+match the original Bell Labs macros.
+
 @menu
 * Missing ms Macros::
 * Additional ms Macros::
@@ -4410,22 +4427,6 @@ Cover sheet information
 @item .MH
 A cover sheet macro
 @end table
-
-Emulations of a few ancient Bell Labs macros can be re-enabled with
-the @code{groff} command-line option @w{@samp{-r bell=1}}.  They are
-@code{SC}, @code{UC}, @code{P1}, and @code{P2}.
-
-These are not enabled by default because (a)@tie{}they were not documented,
-in the original @code{ms} manual, and (b)@tie{}the @code{P1} and @code{UC}
-macros collide with different macros with the same names in the
-Berkeley version of @code{ms}.
-
-These @code{groff} emulations are sufficient to give back the
-1976 Kernighan@tie{}& Cherry paper @cite{Typsetting Mathematics -- User's
-Guide} its section headings, and restore some text that had gone
-missing as arguments of undefined macros.  No warranty express or
-implied is given as to how well the typographic details these produce
-match the original Bell Labs macros.
 
 @c ---------------------------------------------------------------------
 

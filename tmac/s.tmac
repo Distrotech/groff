@@ -470,7 +470,11 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 ..
 .nr pg*P1 0
 .de P1
-.nr pg*P1 1
+.ie r bell_localisms \{\
+.	DS L
+.	ft CW
+.\}
+.el .nr pg*P1 1
 ..
 .wh -\n[FM]u pg@bottom
 .wh -\n[FM]u/2u pg*footer
@@ -2076,28 +2080,30 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .\" ****************************
 .\" ******** module bell ********
 .\" ****************************
-.\" Emulate Bell Labs localisms by setting `-r bell=1' on the command line.
-.\" They're not enabled by default because (a) they're not documented, and
-.\" (b) the .P1 and .UC macros collides with different ones in Berkeley ms. 
+.\" Emulate Bell Labs localisms. Note, (a) they're not documented, and
+.\" (b) the .P1 and .UC macros collide with different ones in Berkeley ms.
+.\" We hack around this by conditionalizing the behavior of P1; UC was
+.\" not defined by groff and will be a no-op if called Berkeley style
+.\" with no arguments, so there is no problem with hijacking it here.
+.\"
 .\" What's done here is sufficient to give back the Guide to EQN (1976) its
 .\" section headings and restore some text that had gone missing as macro
 .\" arguments; no warranty express or implied is given as to how well the
 .\" typographic details these produce match the original Bell Labs macros.
-.if r bell \{\
+.\"
+.\" P1 is now defined in module pg.
 .de SC
+.nr bell_localisms 1
 .NH 
 \\$*
 ..
 .de UC
-\f(CW\\$*\fP
-..
-.de P1
-.DS L
-ft CW
+.if r bell_localisms \f(CW\\$*\fP
 ..
 .de P2
-.ft
-.DE
-..
+.if r bell_localisms \{\
+.	ft
+.	DE
 .\}
+..
 .\" Make sure that no blank lines creep in at the end of this file.
