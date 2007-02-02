@@ -1,32 +1,21 @@
-.TH @G@CHEM @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.SH NAME
-@g@chem \- groff preprocessor for producing chemical structure diagrams
-.
-.
-.SH "SYNOPSIS"
-.\" The .SH was moved to this place in order to appease `apropos'.
-.
-.mso www.tmac
-.
-.\" --------------------------------------------------------------------
-.\" Legalize
-.\" --------------------------------------------------------------------
-.
 .ig
 @g@chem.1 - man page for @g@chem (section 1).
 
 Source file position:  <groff_source_top>/contrib/chem/chem.man
 Installed position:    $prefix/share/man/man1/@g@chem.1
 
-Last update: 11 Nov 2006
+Last update: 
+10 Jan 2007 -- simpilified to use .SY/.OP./.YS
 ..
 .
 .
-.de author
+.de au
 This file was written by
-.MTO "" "Bernd Warken" .
+Bernd Warken.
 It is based on the documentation of
-.URL http://cm.bell-labs.com/cm/cs/who/bwk/index.html "Brian Kernighan\f[R]'s\f[]"
+.UR http://cm.bell-labs.com/cm/cs/who/bwk/index.html 
+Brian Kernighan's
+.UE
 original
 .I awk
 version of
@@ -34,7 +23,7 @@ version of
 ..
 .
 .
-.de copyleft
+.de co
 Copyright (C) 2006 Free Software Foundation, Inc.
 .
 .
@@ -57,10 +46,10 @@ either version\~2, or (at your option) any later version.
 .
 .
 .P
-You should have received a copy of the \f[CR]GNU General Public
-License\f[] along with
+You should have received a copy of the \f(CRGNU General Public
+License\fP along with
 .IR groff ,
-see the files \%\f[CB]COPYING\f[] and \%\f[CB]LICENSE\f[] in the top
+see the files \%\f(CBCOPYING\fP and \%\f(CBLICENSE\fP in the top
 directory of the
 .I groff
 source package.
@@ -75,142 +64,59 @@ You can also write to the
 .hy
 ..
 .
-.
 .\" --------------------------------------------------------------------
-.\" Setup
-.\" --------------------------------------------------------------------
+.\" Local macro definitions
 .
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
+.ds El \&...\&
 .
-.if '\*[.T]'dvi' \{\
-.  ftr CB CW
-.\}
-.
-.ds Ellipsis "\&.\|.\|.\&\""
-.
-.
-.\" --------------------------------------------------------------------
-.\" Macro definitions
-.
-.\" Ignore all arguments like a comment, even after a .eo call.
-.de c
+.\" .File_name  (<path_name>)
+.\"
+.\" Display a file or directory name in CB font.
+.\"
+.de FN
+.  CB \\$@
 ..
 .
-.c --------------------------------------------------------------------
-.c .TP+  ()
-.c
-.c Continuation line for .TP header.
-.c
-.de TP+
-.  br
-.  ns
-.  TP \\$1
-..
-.
-.c --------------------------------------------------------------------
-.c .File_name  (<path_name>)
-.c
-.c Display a file or directory name in CB font.
-.c
-.de File_name
-.  Header_CB \\$@
-..
-.
-.c --------------------------------------------------------------------
-.c .Header_CB  (<path_name>)
-.c
-.c Display a line in CB font, for example after .TP
-.c
-.de Header_CB
-.  nh
-.  Text \f[CB]\\$1\f[]\\$2
-.  hy
-..
-.
-.c --------------------------------------------------------------------
-.c Static register for inter-macro communication in `.Synopsis'.
-.c
-.nr chem:Synopsis.level 0
-.
-.c --------------------------------------------------------------------
-.c .Synopsis  ()
-.c
-.c Begin a synopsis section, to be ended by a ./Synopsis macro.
-.c
-.de Synopsis
-.  if (\\n[chem:Synopsis.level] > 0) \
-.    Error .\\$0: previous .Synopsis was not closed by ./Synopsis.
-.  nh
-.  ds @1 \\$1\"
-.  nr @old_indent \\n[.i]
-.  ad l
-.  in +\w'\fB\\*[@1]\0'u
-.  ti \\n[@old_indent]u
-.  B \\*[@1]\0\c
-.  rr @old_indent
-.  rm @1
-.  nr chem:Synopsis.level +1\"        marker for ./Synopsis
-..
-.
-.c  --------------------------------------------------------------------
-.c ./Synopsis  ()
-.c
-.c Close a synopsis section opened by the previous .Synopsis macro.
-.c
-.de /Synopsis
-.  if (\\n[chem:Synopsis.level] <= 0) \
-.    Error .\\$0: no previous call of .Synopsis
-.  br
-.  ad
-.  in
-.  hy
-.  nr chem:Synopsis.level -1
-..
-.
-.c  --------------------------------------------------------------------
-.c .Text  (<text>...)
-.c
-.c Treat the arguments as text, no matter how they look like.
-.c
-.de Text
-.  if (\\n[.$] == 0) \
-.    return
-.  nh
-.  nop \)\\$*\)
-.  hy
+.\" .CB  (<path_name>)
+.\"
+.\" Display a line in CB font, for example after .TP
+.\"
+.de CB
+.nh
+\\&\\f(CB\\$1\\fP\\$2
+.hy
 ..
 .
 .\" End of macro definitions
+.TH @G@CHEM @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+@g@chem \- groff preprocessor for producing chemical structure diagrams
 .
 .
+.SH "SYNOPSIS"
 .\" --------------------------------------------------------------------
 .\" SH "SYNOPSIS"
 .\" --------------------------------------------------------------------
 .
-.ad l
-.Synopsis @g@chem
-.RI [ "\%option" \*[Ellipsis]]
+.SY @g@chem
+.RI [ "\%option" \*(El]
 .RB [ \-\- ]
-.RI [ "\%filespec" \*[Ellipsis]]
-./Synopsis
+.RI [ "\%filespec" \*(El]
 .
-.Synopsis @g@chem
-\f[CB]\-h\fP\f[CR]|\fP\f[CB]\-\-help\fP
-./Synopsis
+.SY @g@chem
+\f(CB\-h\fP\f(CR|\fP\f(CB\-\-help\fP
 .
-.Synopsis @g@chem
-\f[CB]\-v\fP\f[CR]|\fP\f[CB]\-\-version\fP
-./Synopsis
+.SY @g@chem
+\f(CB\-v\fP\f(CR|\fP\f(CB\-\-version\fP
+.YS
 .
+.\" --------------------------------------------------------------------
+.SH OPTION USAGE
+.\" --------------------------------------------------------------------
 .
 .P
-There are no other options than \f[CB]\-h\f[], \f[CB]\-\-help\f[],
-\f[CB]\-v\f[] and \%\f[CB]\-\-version\f[]; these options provoke the
+There are no other options than \f(CB\-h\fP, \f(CB\-\-help\fP,
+\f(CB\-v\fP and \%\f(CB\-\-version\fP; these options provoke the
 printing of a version or usage information, respectively, and all
 .I filespec
 arguments are ignored.
@@ -258,16 +164,16 @@ language.
 The program
 .B @g@chem
 originates from the Perl source file
-.File_name chem.pl .
+.FN chem.pl .
 It tells
 .B @g@pic
 to include a copy of the macro file
-.File_name chem.pic .
+.FN chem.pic .
 .
 Moreover the
 .I groff
 source file
-.File_name pic.tmac
+.FN pic.tmac
 is loaded.
 .
 .
@@ -291,7 +197,7 @@ lines looks like this
 .nf
 .ft B
 \&.cstart
-\f[I]chem data\f[]
+\fIchem data\fP
 \&.cend
 .ft
 .fi
@@ -354,7 +260,7 @@ followed by
 .BR groffer :
 .
 .IP
-.B @g@chem [file\*[Ellipsis]] | groffer
+.B @g@chem [file\*(El] | groffer
 .
 .P
 If you want to create just
@@ -368,7 +274,7 @@ with the option
 for the activation of
 .BR @g@pic :
 .IP
-.B @g@chem [file\*[Ellipsis]] | groff -p \*[Ellipsis]
+.B @g@chem [file\*(El] | groff -p \*(El
 .
 .
 .\" --------------------------------------------------------------------
@@ -382,7 +288,7 @@ and a way to glue them together as desired, bonds of several styles,
 moieties (e.g.,
 .BR C ,
 .BR NH3 ,
-\*[Ellipsis]) and strings.
+\*(El) and strings.
 .
 .
 .\" --------------------------------------------------------------------
@@ -489,24 +395,16 @@ place.
 For instance, to make a simple alkyl chain:
 .
 .RS
-.TP 10m
-.B CH3
-.TP+
-.B bond
-(this one goes right from the CH3)
-.TP+
-.B C
-(at the right end of the bond)
-.TP+
-.B double bond up
-(from the C)
-.TP+
-.B O
-(at the end of the double bond)
-.TP+
-.B bond right from C
-.TP+
-.B CH3
+.TS 
+lb l.
+CH3
+bond    	(this one goes right from the CH3)
+C       	(at the right end of the bond)
+double bond up	(from the C)
+O       	(at the end of the double bond)
+bond right from C
+CH3
+.TE
 .RE
 .
 .
@@ -539,16 +437,16 @@ puts a circle into any kind of ring.
 .B ring
 .RB [ \%pointing\  ( up | right | left | down )]
 .RB [ \%aromatic ]
-.RB [ put\ Mol\ at\ \f[I]n\f[] ]
+.RB [ put\ Mol\ at\ \fIn\fP ]
 .RB [ \%double
 .IR i , j
 .IR k , l
-\*[Ellipsis]]
+\*(El]
 .RI [ picstuff ]
 .
 .
 .P
-The vertices of a ring are numbered 1, 2, \*[Ellipsis] from the
+The vertices of a ring are numbered 1, 2, \*(El from the
 vertex that points in the natural compass direction.
 .
 So for a hexagonal ring with the point at the top, the top vertex
@@ -569,8 +467,8 @@ R2: ring pointing right
 .P
 The ring vertices are named
 .BR .V1 ,
-\*[Ellipsis],
-.BI .V n\f[R],\f[]
+\*(El,
+.BI .V n\fR,\fP
 with
 .B .V1
 in the pointing direction.
@@ -609,7 +507,7 @@ creates two benzene rings connected along a side.
 .
 .P
 Interior double bonds are specified as
-.BI \%double\  n1 , n2\ n3 , n4\ \f[R]\*[Ellipsis];\f[]
+.BI \%double\  n1 , n2\ n3 , n4\ \fR\*(El;\fP
 each number pair adds an interior bond.
 .
 So the alternate form of a benzene ring is
@@ -621,7 +519,7 @@ So the alternate form of a benzene ring is
 .P
 Heterocycles (rings with something other than carbon at a vertex) are
 written as
-.BI put\  X\  at\  V\f[R],\f[]
+.BI put\  X\  at\  V\fR,\fP
 as in
 .
 .IP
@@ -730,7 +628,7 @@ sets a mark at the end of the bond.
 This can be used then for specifying a place.
 .
 The name
-.BP BP
+.B BP
 is derived from
 .I branch point
 (i.e., line crossing).
@@ -738,14 +636,14 @@ is derived from
 .
 .P
 A string within double quotes
-.B \[dq]
+.B \(dq
 is interpreted as a part of a
 .I chem
 command.
 .
 It represents a string that should be printed (without the quotes).
 .
-Text within quotes \[dq]\*[Ellipsis]\[dq] is treated more or less
+Text within quotes \(dq\*(El\(dq is treated more or less
 like a moiety except that no changes are made to the quoted part.
 .
 .
@@ -765,7 +663,7 @@ A name is just
 .
 .IP
 .IB Name :
-\*[Ellipsis]
+\*(El
 .
 .
 .P
@@ -781,7 +679,7 @@ only letters and numbers is valid:
 .TP
 .B First:
 .B bond
-.TP+
+.TQ
 \&
 .B bond 30 from First
 .RE
@@ -794,7 +692,7 @@ only letters and numbers is valid:
 The specific construction
 .RS
 .TP
-.BR bond\  \*[Ellipsis] " ; moiety"
+.BR bond\  \*(El " ; moiety"
 .RE
 .P
 is equivalent to
@@ -946,7 +844,7 @@ properties of built-in objects.
 .
 .
 .P
-There is no in-line chemistry yet (e.g., analogous to the $...$
+There is no in-line chemistry yet (e.g., analogous to the $\*(El$
 construct of eqn).
 .
 .
@@ -980,14 +878,14 @@ A squiggle bond is needed.
 .\" --------------------------------------------------------------------
 .
 .TP
-.File_name @DATASUBDIR@/pic/chem.pic
+.FN @DATASUBDIR@/pic/chem.pic
 A collection of
 .I pic
 macros needed by
 .BR @g@chem .
 .
 .TP
-.File_name @MACRODIR@/pic.tmac
+.FN @MACRODIR@/pic.tmac
 A macro file which redefines
 .B .PS
 and
@@ -997,12 +895,12 @@ to center
 diagrams.
 .
 .TP
-.File_name @DOCDIR@/examples/chem/*.chem
+.FN @DOCDIR@/examples/chem/*.chem
 Example files for
 .IR chem .
 .
 .TP
-.File_name @DOCDIR@/examples/chem/122/*.chem
+.FN @DOCDIR@/examples/chem/122/*.chem
 Example files from the classical
 .I chem
 book
@@ -1014,7 +912,9 @@ book
 .\" --------------------------------------------------------------------
 .
 Report bugs to the
-.MTO bug-groff@gnu.org "bug-groff mailing list" .
+.MT bug-groff@gnu.org .
+bug-groff mailing list
+.ME
 .
 Include a complete, self-contained example that will allow the bug to
 be reproduced, and say which version of
@@ -1029,12 +929,15 @@ You can get both version numbers by calling
 .
 .P
 You can also use the
-.MTO groff@gnu.org "groff mailing list" ,
+.MT groff@gnu.org ,
+groff mailing list
+.ME
 but you must first subscribe to this list.
 .
 You can do that by visiting the
-.URL http://\:lists.gnu.org/\:mailman/\:listinfo/\:groff \
-"groff mailing list web page" .
+.UR http://\:lists.gnu.org/\:mailman/\:listinfo/\:groff .
+groff mailing list web page 
+.UE
 .
 .
 .P
@@ -1054,11 +957,12 @@ for information on availability.
 .
 .P
 You can still get the original
-.URL http://cm.bell-labs.com/netlib/typesetting/chem.gz \
-"chem awk source" .
+.UR http://cm.bell-labs.com/netlib/typesetting/chem.gz .
+chem awk source
+.UE
 .
 Its
-.File_name README
+.FN README
 file was used for this manual page.
 .
 .
@@ -1066,19 +970,21 @@ file was used for this manual page.
 The other classical document on
 .I chem
 is
-.URL http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz 122.ps .
+.UR http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz .
+122.ps
+.UE
 .
 .
 .\" --------------------------------------------------------------------
 .SH "AUTHOR"
 .\" --------------------------------------------------------------------
-.author
+.au
 .
 .
 .\" --------------------------------------------------------------------
 .SH "COPYING"
 .\" --------------------------------------------------------------------
-.copyleft
+.co
 .
 .
 .\" --------------------------------------------------------------------

@@ -1,9 +1,4 @@
 .TH GROG @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.SH NAME
-grog \- guess options for groff command
-.SH SYNOPSIS
-.\" The .SH was moved to this place in order to appease `apropos'.
-.
 .\" --------------------------------------------------------------------
 .\" Legalize
 .\" --------------------------------------------------------------------
@@ -16,16 +11,16 @@ Installed position:    $prefix/share/man/man1/grog.1
 
 Last Update: 6 Nov 2006
 ..
-.de copyleft
+.de co
 Copyright (C) 1989-2000,2001,2002,2003,2006
 Free Software Foundation, Inc.
 .
-Written by
-.MTO "" "James Clark" .
+Written by James Clark.
 Maintained by
-.MTO "wl@gnu.org" "Werner Lemberg" .
-Rewritten and put under GPL by
-.MTO "" "Bernd Warken" .
+.MT wl@gnu.org . 
+Werner Lemberg
+.ME
+Rewritten and put under GPL by Bernd Warken.
 .
 .
 .P
@@ -65,300 +60,43 @@ You can also write to the
 ..
 .
 .\" --------------------------------------------------------------------
-.\" Setup
+.\" Local macros
+.de FN
+.I \\$1
+..
+
 .\" --------------------------------------------------------------------
 .
-.mso www.tmac
-.
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
-.
-.if '\*[.T]'dvi' \{\
-.  ftr CB CW
-.\}
-.
-.ds Ellipsis "\&.\|.\|.\""
-.
-.\" --------------------------------------------------------------------
-.\" configuration of prompt for `.Shell_cmd'* macros
-.ds grog:Shell_cmd.prompt_text sh#\"    prompt for shell commands
-.ds grog:Shell_cmd_base.prompt_font I\" font for prompts
-.
-.\" automatically determine setup from the configuration above
-.als @f grog:Shell_cmd_base.prompt_font\"
-.als @t grog:Shell_cmd.prompt_text\"
-.ds grog:Shell_cmd.prompt \f[\*[@f]]\*[@t]\f[]\"            needed
-.nr @w \w'\*[grog:Shell_cmd.prompt]'\"
-.ft \*[@f]
-.\" Full prompt width is maximum of texts plus 1m
-.nr grog:Shell_cmd_base.prompt_width (\n[@w]>?\n[@w+]+1m)\" needed
-.ft
-.rm @f
-.rm @t
-.rr @w
-.
-.
-.\" --------------------------------------------------------------------
-.\" static register for inter-macro communication in `.Synopsis'*
-.nr grog:Synopsis.level 0
-.
-.\" --------------------------------------------------------------------
-.\" Macro definitions
-.
-.\" Ignore all arguments like a comment, even after a .eo call.
-.de c
-..
-.c --------------------------------------------------------------------
-.c .Synopsis  ()
-.c
-.c Begin a synopsis section, to be ended by a ./Synopsis macro.
-.c
-.de Synopsis
-.  if (\\n[grog:Synopsis.level] > 0) \
-.    Error .\\$0: previous .Synopsis was not closed by ./Synopsis.
-.  nh
-.  ds @1 \\$1\"
-.  nr @old_indent \\n(.i
-.  ad l
-.  in +\w'\fB\\*[@1]\0'u
-.  ti \\n[@old_indent]u
-.  B \\*[@1]\0\c
-.  rr @old_indent
-.  rm @1
-.  nr grog:Synopsis.level +1\"        marker for ./Synopsis
-..
-.c  --------------------------------------------------------------------
-.c ./Synopsis  ()
-.c
-.c Close a synopsis section opened by the previous .Synopsis macro.
-.c
-.de /Synopsis
-.  if (\\n[grog:Synopsis.level] <= 0) \
-.    Error .\\$0: no previous call of .Synopsis
-.  br
-.  ad
-.  in
-.  hy
-.  nr grog:Synopsis.level -1
-..
-.c --------------------------------------------------------------------
-.c .Opt_alt  ([<minus> <opt>]... [<arg> [<punct>]])
-.c
-.c Alternate options separated by a vertical bar.
-.c
-.c Arguments:
-.c   minus: either `-' or `--' (font CB).
-.c   opt: a name for an option, empty allowed (font CB).
-.c   arg: optionally, the argument to the option (font I).
-.c   punct: optional punctuation (in the starting font).
-.c Result:
-.c   The minus/opt argument pairs, each
-.c   separated by a vertical bar `|', optionally add 'arg', separated
-.c   a space character ` '.
-.c
-.c Example:
-.c  .Opt_alt - T -- device -- device-troff device .
-.c  results in
-.c  -T|--device|--device-troff device.
-.c
-.de Opt_alt
-.  Opt_alt_base "" | "" \\$@
-..
-.c --------------------------------------------------------------------
-.c .Opt_alt_base  (<pre> <sep> <post> [<minus> <opt>]... [arg [punct]])
-.c
-.c Alternating options; base macro for many others; do not use directly.
-.c
-.c Arguments:
-.c   <pre>: prefix, result is preceded by this.
-.c   <sep>: separator between minus/opt pairs.
-.c   <post>: postfix, is appended to the result.
-.c   <minus>: either `-' or `--' (font CB).
-.c   <opt>: a name for an option, empty allowed (font CB).
-.c   <arg>: optionally, the argument to the option (font I).
-.c   <punct>: optional punctuation (in the starting font).
-.c Result:
-.c   String `<pre>' followed by the <minus>/<opt> argument pairs, each
-.c   separated by string `<sep>', optionally add '<arg>', separated by
-.c   a single space ` ', followed by the string `<post>'.  Terminated
-.c   by the optional punctuation <punct>.
-.c
-.de Opt_alt_base
-.  nr @font \\n[.f]\"
-.  if (\\n[.$] < 3) \
-.    Error .\\0: not enough arguments.
-.  ds @pre \)\\$1\)\"                   prefix
-.  ds @sep \)\\$2\)\"                   separator
-.  ds @post \)\\$3\)\"                  postfix
-.  shift 3
-.  nr @count 0
-.  ds @res \f[CR]\\*[@pre]\"
-.  while (\\n[.$] >= 2) \{\
-.    c                                  do the pairs, break on no `-'
-.    if !'\\$1'-' \{\
-.      if !'\\$1'--' \
-.        break
-.    \}
-.    c                                  separator
-.    if (\\n[@count] > 0) \
-.      as @res \f[CR]\\*[@sep]\:\"
-.    nr @count +1
-.    c                                  combine minus with option name
-.    as @res \f[CB]\\-\"
-.    if '\\$1'--' \
-.      as @res \\-\"
-.    as @res \\$2\"
-.    shift 2
-.  \}
-.  if (\\n[.$] >= 3) \
-.    Error .\\0: wrong arguments: \\$@
-.  c                                    all pairs are done
-.  ie (\\n[.$] == 0) \
-.    as @res \f[CR]\\*[@post]\"
-.  el \{\
-.    c                                  optional option argument
-.    if !'\\$1'' \
-.      as @res \f[CR] \,\f[I]\\$1\"
-.    shift
-.    c                                  postfix
-.    as @res \\f[CR]\\*[@post]\"
-.    if (\\n[.$] >= 1) \{\
-.      c                                add punctuation
-.      as @res \f[\\n[@font]]\\$1\"
-.    \}
-.  \}
-.  nh
-.  Text \\*[@res]
-.  hy
-.  ft \\n[@font]
-.  rr @count
-.  rr @font
-.  rm @pre
-.  rm @post
-.  rm @sep
-.  rm @res
-..
-.c  --------------------------------------------------------------------
-.c .Text  (<text>...)
-.c
-.c Treat the arguments as text, no matter how they look.
-.c
-.de Text
-.  if (\\n[.$] == 0) \
-.    return
-.  nh
-.  nop \)\\$*\)
-.  hy
-..
-.c --------------------------------------------------------------------
-.c .File_name  (<path_name>)
-.c
-.c Display a file or directory name in CB font.
-.c
-.de File_name
-.  Header_CB \\$@
-..
-.c --------------------------------------------------------------------
-.c .Header_CB  (<path_name>)
-.c
-.c Display a line in CB font, for example after .TP
-.c
-.de Header_CB
-.  nh
-.  Text \f[CB]\\$1\f[]\\$2
-.  hy
-..
-.c --------------------------------------------------------------------
-.c .Topic  ([<indent>])
-.c
-.c A bulleted paragraph
-.c
-.de Topic
-.  ie (\\n[.$] = 0) \
-.    ds @indent 2m\"
-.  el \
-.    ds @indent \\$1\"
-.  TP \\*[@indent]
-.  Text \[bu]
-.  rm @indent
-..
-.c --------------------------------------------------------------------
-.c .Shell_cmd  (<CR> [<CI>] ...)
-.c
-.c A shell command line; display args alternating in fonts CR and CI.
-.c
-.de Shell_cmd
-.  grog:Shell_cmd_base "\*[grog:Shell_cmd.prompt]" \\$@
-..
-.c --------------------------------------------------------------------
-.c .Shell_cmd_base  (<prompt> [<CR> [<CI>] ...])
-.c
-.c A shell command line; display args alternating in fonts CR and CI.
-.c Internal, do not use directly.
-.c
-.c Globals: read-only register @.Shell_cmd_width
-.c
-.de grog:Shell_cmd_base
-.  if (\\n[.$] <= 0) \
-.    return
-.  nr @+font \\n[.f]\"
-.  ds @prompt \\$1\"
-.  ft CR
-.  c gap between prompt and command
-.  nr @+gap \\n[grog:Shell_cmd_base.prompt_width]-\\w'\\*[@prompt]'\"
-.  ds @res \\*[@prompt]\h'\\n[@+gap]u'\"
-.  shift
-.  ds @cf CR\"
-.  while (\\n[.$] > 0) \{\
-.    as @res \\f[\\*[@cf]]\\$1\"
-.    shift
-.    ie '\\*[@cf]'CR' \
-.      ds @cf I\"
-.    el \
-.      ds @cf CR\"
-.  \}
-.  br
-.  ad l
-.  nh
-.  nf
-.  Text \\*[@res]\"
-.  fi
-.  hy
-.  ad
-.  br
-.  ft \\n[@+font]
-.  rr @+font
-.  rr @+gap
-.  rm @cf
-.  rm @res
-..
-.
-.\" End of macro definitions
-.
+.SH NAME
+grog \- guess options for groff command
+
+.SH SYNOPSIS
 .
 .\" --------------------------------------------------------------------
 .\" SH "SYNOPSIS"
 .\" --------------------------------------------------------------------
 .
-.ad l
-.Synopsis grog
-.RB [ \-C ]
-.RI [ groff\-option \*[Ellipsis]]
-.RB [ \-\- ]
-.RI [ \%filespec \*[Ellipsis]]
-./Synopsis
+.SY grog
+.OP \-C
+.OP groff\-option ...
+.OP \-\-
+.OP filespec ...
+.YS
 .
-.Synopsis grog
-.Opt_alt - h -- help
-./Synopsis
+.SY groff
+[ 
+.B -h
+|
+.B --help
+]
 .
-.Synopsis grog
-.Opt_alt - v -- version
-./Synopsis
+.SY groff
+[
+.B -v
+|
+--version
+]
+.YS
 .
 .
 .\" --------------------------------------------------------------------
@@ -582,34 +320,33 @@ is used instead.
 .SH "EXAMPLES"
 .\" --------------------------------------------------------------------
 .
-.Topic
+.IP \(bu
 Calling
 .RS
-.IP
-.Shell_cmd "grog meintro.me"
-.P
+.EX
+grog meintro.me
+.EE
 results in
-.IP
-.ft CR
+.EX
 groff \-me meintro.me
-.ft
+.EE
 .P
 So
 .B grog
 recognized that the file
-.File_name meintro.me
+.FN meintro.me
 is written with the
 .B \-me
 macro package.
 .RE
 .
 .
-.Topic
+.IP \(bu
 On the other hand,
 .RS
-.IP
-.Shell_cmd "grog pic.ms"
-.P
+.EX
+grog pic.ms
+.EE
 outputs
 .IP
 .ft CR
@@ -620,7 +357,7 @@ Besides determining the macro package
 .BR \-ms ,
 .B grog
 recognized that the file
-.File_name pic.ms
+.FN pic.ms
 additionally needs
 .BR \-pte ,
 the combination of
@@ -637,12 +374,12 @@ for
 .RE
 .
 .
-.Topic
+.IP \(bu
 If both files are combined by the command
 .RS
-.IP
-.Shell_cmd "grog meintro.me pic.ms"
-.P
+.EX
+grog meintro.me pic.ms
+.EE
 an error message is sent to standard error because
 .B groff
 cannot work with two different macro packages:
@@ -662,12 +399,12 @@ But the program is terminated with an error code.
 .RE
 .
 .
-.Topic
+.IP \(bu
 The call of
 .RS
-.IP
-.Shell_cmd "grog \-ksS \-Tdvi grnexmpl.g"
-.P
+.EX
+grog \-ksS \-Tdvi grnexmpl.g
+.EE
 contains several
 .B groff
 options that are just passed on the output without any interface to
@@ -684,11 +421,9 @@ and the option
 with argument
 .BR dvi .
 The output is
-.IP
-.ft CR
+.EX
 groff \-ksS \-Tdvi grnexmpl.g
-.ft
-.P
+.EE
 so no additional option was added by
 .BR grog .
 As no option
@@ -699,7 +434,7 @@ this file does not use a macro package.
 .RE
 .
 .
-.Topic
+.IP \(bu
 .B grog
 can also handle files using the
 .I chem
@@ -707,14 +442,13 @@ language.
 .
 The example
 .RS
-.IP
-.Shell_cmd "grog chAh_brackets.chem"
-.P
+.EX
+grog chAh_brackets.chem
+.EE
 outputs
-.IP
-.ft CR
+.EX
 chem chAh_brackets.chem | groff \-pe
-.ft
+.EE
 .P
 So
 .B chem
@@ -757,7 +491,7 @@ with
 .\" --------------------------------------------------------------------
 .SH "COPYING"
 .\" --------------------------------------------------------------------
-.copyleft
+.co
 .
 .
 .\" --------------------------------------------------------------------

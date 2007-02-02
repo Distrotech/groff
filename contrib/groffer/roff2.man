@@ -1,32 +1,20 @@
-.TH roff2@ROFF2MODE@ @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
-.SH NAME
-roff2@ROFF2MODE@ \- transform roff code into @ROFF2MODE@ mode
-.
-.SH "SYNOPSIS"
-.\" The .SH was moved to this place in order to appease `apropos'.
-.
-.
-.\" --------------------------------------------------------------------
-.\" Legalize
-.\" --------------------------------------------------------------------
-.
 .ig
 roff2@ROFF2MODE@.1 - man page for roff2@ROFF2MODE@ (section 1).
 
 Source file position: <groff_source_top>/contrib/groffer/roff2.man
 Installed position:   $prefix/share/man/man1/roff2@ROFF2MODE@.1
 
-Last update: 14 Nov 2006
+Last update: 1 Feb 2007
+Simplified to use .SY/.OP/.YS
 ..
 .
 .
-.de author
-This file was written by
-.MTO "" "Bernd Warken" .
+.de au
+This file was written by Bernd Warken.
 ..
 .
 .
-.de copyleft
+.de co
 Copyright (C) 2006 Free Software Foundation, Inc.
 .
 .P
@@ -65,133 +53,29 @@ You can also write to the
 .hy
 ..
 .
-.
-.\" --------------------------------------------------------------------
-.\" Setup
-.\" --------------------------------------------------------------------
-.
-.mso www.tmac
-.
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
-.
-.if '\*[.T]'dvi' \{\
-.  ftr CB CW
-.\}
-.
-.ds Ellipsis "\&.\|.\|.\&\""
-.
-.
-.\" --------------------------------------------------------------------
-.\" Macro definitions
-.
-.\" Ignore all arguments like a comment, even after a .eo call.
-.de c
-..
-.
-.
-.c --------------------------------------------------------------------
-.c .File_name  (<path_name>)
-.c
-.c Display a file or directory name in CB font.
-.c
-.de File_name
-.  Header_CB \\$@
-..
-.
-.
-.c --------------------------------------------------------------------
-.c .Header_CB  (<path_name>)
-.c
-.c Display a line in CB font, for example after .TP
-.c
-.de Header_CB
-.  nh
-.  Text \f[CB]\\$1\f[]\\$2
-.  hy
-..
-.
-.
-.c --------------------------------------------------------------------
-.c static register for inter-macro communication in `.Synopsis'.
-.nr roff2:Synopsis.level 0
-.
-.
-.c --------------------------------------------------------------------
-.c .Synopsis  ()
-.c
-.c Begin a synopsis section, to be ended by a ./Synopsis macro.
-.c
-.de Synopsis
-.  if (\\n[roff2:Synopsis.level] > 0) \
-.    Error .\\$0: previous .Synopsis was not closed by ./Synopsis.
-.  nh
-.  ds @1 \\$1\"
-.  nr @old_indent \\n(.i
-.  ad l
-.  in +\w'\fB\\*[@1]\0'u
-.  ti \\n[@old_indent]u
-.  B \\*[@1]\0\c
-.  rr @old_indent
-.  rm @1
-.  nr roff2:Synopsis.level +1\"        marker for ./Synopsis
-..
-.
-.
-.c  --------------------------------------------------------------------
-.c ./Synopsis  ()
-.c
-.c Close a synopsis section opened by the previous .Synopsis macro.
-.c
-.de /Synopsis
-.  if (\\n[roff2:Synopsis.level] <= 0) \
-.    Error .\\$0: no previous call of .Synopsis
-.  br
-.  ad
-.  in
-.  hy
-.  nr roff2:Synopsis.level -1
-..
-.
-.
-.c  --------------------------------------------------------------------
-.c .Text  (<text>...)
-.c
-.c Treat the arguments as text, no matter how they look.
-.c
-.de Text
-.  if (\\n[.$] == 0) \
-.    return
-.  nh
-.  nop \)\\$*\)
-.  hy
-..
-.
-.\" End of macro definitions
-.
+.TH roff2@ROFF2MODE@ @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.SH NAME
+roff2@ROFF2MODE@ \- transform roff code into @ROFF2MODE@ mode
 .
 .\" --------------------------------------------------------------------
 .\" SH "SYNOPSIS"
 .\" --------------------------------------------------------------------
 .
+.SH "SYNOPSIS"
 .ad l
-.Synopsis roff2@ROFF2MODE@
-.RI [ groffer_option \*[Ellipsis]]
-[\f[CB]\-\-\fP]
-.RI [ \%filespec \*[Ellipsis]]
-./Synopsis
+.SY roff2@ROFF2MODE@
+.OP groffer_option "\&.\|.\|.\&\"
+.OP \f[CB]\-\-\fP
+.OP \%filespec "\&.\|.\|.\&\"
+.YS
 .
-.Synopsis roff2@ROFF2MODE@
+.SY roff2@ROFF2MODE@
 \f[CB]\-h\fP\f[CR]|\fP\f[CB]\-\-help\fP
-./Synopsis
+.YS
 .
-.Synopsis roff2@ROFF2MODE@
+.SY roff2@ROFF2MODE@
 \f[CB]\-v\fP\f[CR]|\fP\f[CB]\-\-version\fP
-./Synopsis
+.YS
 .
 .
 .P
@@ -199,8 +83,7 @@ The options
 .B \-v
 and
 .B \%\-\-version
-print a version information of the program to standard output and stop
-the program instantly.
+print the version information of the program to standard output and exit.
 .
 The options
 .B \-h
@@ -346,13 +229,13 @@ or
 .\" --------------------------------------------------------------------
 .SH "AUTHOR"
 .\" --------------------------------------------------------------------
-.author
+.au
 .
 .
 .\" --------------------------------------------------------------------
 .SH "COPYING"
 .\" --------------------------------------------------------------------
-.copyleft
+.co
 .
 .
 .\" --------------------------------------------------------------------
