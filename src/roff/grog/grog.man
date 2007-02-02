@@ -1,4 +1,5 @@
 .TH GROG @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
 .\" --------------------------------------------------------------------
 .\" Legalize
 .\" --------------------------------------------------------------------
@@ -9,10 +10,10 @@ grog.1 - man page for grog (section 1)
 Source file position:  <groff_source_top>/src/roff/grog/grog.man
 Installed position:    $prefix/share/man/man1/grog.1
 
-Last Update: 6 Nov 2006
+Last Update: 2 Feb 2007
 ..
 .de co
-Copyright (C) 1989-2000,2001,2002,2003,2006
+Copyright (C) 1989-2000,2001,2002,2003,2006,2007
 Free Software Foundation, Inc.
 .
 Written by James Clark.
@@ -22,23 +23,22 @@ Werner Lemberg
 .ME
 Rewritten and put under GPL by Bernd Warken.
 .
-.
 .P
 This file is part of
-.IR \%grog ,
+.IR grog ,
 which is part of
-.IR \%groff ,
+.IR groff ,
 a free software project.
 .
 You can redistribute it and/or modify it under the terms of the
 .nh
-.B GNU General Public License
+.B "GNU General Public License"
 .hy
 (\f[CR]GPL\f[]) as published by the
 .nh
 .BR "Free Software Foundation" ,
 .hy
-either version 2, or (at your option) any later version.
+either version\~2, or (at your option) any later version.
 .
 .P
 You should have received a copy of the \f[CR]GNU General Public
@@ -54,54 +54,48 @@ Or read the
 .BR gpl (1).
 You can also write to the
 .nh
-.B Free Software Foundation, 51 Franklin St - Fifth Floor, Boston,
+.B "Free Software Foundation, 51 Franklin St - Fifth Floor, Boston,"
 .BR "MA 02110-1301, USA" .
 .hy
 ..
+.
 .
 .\" --------------------------------------------------------------------
 .\" Local macros
 .de FN
 .I \\$1
 ..
-
-.\" --------------------------------------------------------------------
 .
+.
+.\" --------------------------------------------------------------------
 .SH NAME
+.
 grog \- guess options for groff command
-
-.SH SYNOPSIS
+.
 .
 .\" --------------------------------------------------------------------
-.\" SH "SYNOPSIS"
-.\" --------------------------------------------------------------------
+.SH SYNOPSIS
 .
 .SY grog
 .OP \-C
-.OP groff\-option ...
+.RI [ \%groff\-option\  .\|.\|.\&]
 .OP \-\-
-.OP filespec ...
-.YS
+.RI [ \%filespec\  .\|.\|.]
 .
-.SY groff
-[ 
-.B -h
+.SY grog
+.B \-h
 |
-.B --help
-]
+.B \-\-help
 .
-.SY groff
-[
-.B -v
+.SY grog
+.B \-v
 |
---version
-]
+.B \-\-version
 .YS
 .
 .
 .\" --------------------------------------------------------------------
 .SH DESCRIPTION
-.\" --------------------------------------------------------------------
 .
 .B grog
 reads the input (file names or standard input) and guesses which of
@@ -117,8 +111,7 @@ command is output.
 .
 .
 .\" --------------------------------------------------------------------
-.SH "OPTIONS"
-.\" --------------------------------------------------------------------
+.SH OPTIONS
 .
 The only
 .B grog
@@ -174,8 +167,7 @@ is specified standard input is read automatically.
 .
 .
 .\" --------------------------------------------------------------------
-.SH "DETAILS"
-.\" --------------------------------------------------------------------
+.SH DETAILS
 .
 .B grog
 reads all
@@ -317,20 +309,29 @@ is used instead.
 .
 .
 .\" --------------------------------------------------------------------
-.SH "EXAMPLES"
-.\" --------------------------------------------------------------------
+.SH EXAMPLES
 .
 .IP \(bu
 Calling
+.
 .RS
+.IP
 .EX
 grog meintro.me
 .EE
+.RE
+.
+.IP
 results in
+.
+.RS
+.IP
 .EX
 groff \-me meintro.me
 .EE
-.P
+.RE
+.
+.IP
 So
 .B grog
 recognized that the file
@@ -343,16 +344,25 @@ macro package.
 .
 .IP \(bu
 On the other hand,
+.
 .RS
+.IP
 .EX
 grog pic.ms
 .EE
-outputs
+.RE
+.
 .IP
-.ft CR
+outputs
+.
+.RS
+.IP
+.EX
 groff \-pte \-ms pic.ms
-.ft
-.P
+.EE
+.RE
+.
+.IP
 Besides determining the macro package
 .BR \-ms ,
 .B grog
@@ -376,35 +386,52 @@ for
 .
 .IP \(bu
 If both files are combined by the command
+.
 .RS
+.IP
 .EX
 grog meintro.me pic.ms
 .EE
+.RE
+.
+.IP
 an error message is sent to standard error because
 .B groff
 cannot work with two different macro packages:
+.
+.RS
 .IP
 .ft CR
 grog: error: there are several macro packages: -me -ms
 .ft
-.P
+.RE
+.
+.IP
 Additionally the corresponding output with the wrong options is printed
 to standard output:
+.
+.RS
 .IP
-.ft CR
+.EX
 groff -pte -me -ms meintro.me pic.ms
-.ft
-.P
-But the program is terminated with an error code.
+.EE
 .RE
+.
+.IP
+But the program is terminated with an error code.
 .
 .
 .IP \(bu
 The call of
+.
 .RS
+.IP
 .EX
 grog \-ksS \-Tdvi grnexmpl.g
 .EE
+.RE
+.
+.IP
 contains several
 .B groff
 options that are just passed on the output without any interface to
@@ -421,9 +448,15 @@ and the option
 with argument
 .BR dvi .
 The output is
+.
+.RS
+.IP
 .EX
 groff \-ksS \-Tdvi grnexmpl.g
 .EE
+.RE
+.
+.IP
 so no additional option was added by
 .BR grog .
 As no option
@@ -431,7 +464,6 @@ As no option
 was found by
 .B grog
 this file does not use a macro package.
-.RE
 .
 .
 .IP \(bu
@@ -441,15 +473,25 @@ can also handle files using the
 language.
 .
 The example
+.
 .RS
+.IP
 .EX
 grog chAh_brackets.chem
 .EE
+.RE
+.
+.IP
 outputs
+.
+.RS
+.IP
 .EX
 chem chAh_brackets.chem | groff \-pe
 .EE
-.P
+.RE
+.
+.IP
 So
 .B chem
 is run first and
@@ -470,7 +512,7 @@ with
 .
 .\" --------------------------------------------------------------------
 .SH "SEE ALSO"
-.\" --------------------------------------------------------------------
+.
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@),
 .BR @g@tbl (@MAN1EXT@),
@@ -490,7 +532,7 @@ with
 .
 .\" --------------------------------------------------------------------
 .SH "COPYING"
-.\" --------------------------------------------------------------------
+.
 .co
 .
 .

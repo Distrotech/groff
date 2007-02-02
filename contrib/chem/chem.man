@@ -4,17 +4,16 @@
 Source file position:  <groff_source_top>/contrib/chem/chem.man
 Installed position:    $prefix/share/man/man1/@g@chem.1
 
-Last update: 
-10 Jan 2007 -- simpilified to use .SY/.OP./.YS
+Last update:
+02 Feb 2007 -- simpilified to use .SY/.OP./.YS
 ..
 .
 .
 .de au
-This file was written by
-Bernd Warken.
+This file was written by Bernd Warken.
 It is based on the documentation of
-.UR http://cm.bell-labs.com/cm/cs/who/bwk/index.html 
-Brian Kernighan's
+.UR http://\:cm.bell-labs.com/\:cm/\:cs/\:who/\:bwk/\:index.html 's
+Brian Kernighan
 .UE
 original
 .I awk
@@ -24,7 +23,7 @@ version of
 .
 .
 .de co
-Copyright (C) 2006 Free Software Foundation, Inc.
+Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 .
 .
 .P
@@ -36,7 +35,7 @@ a free software project.
 .
 You can redistribute it and/or modify it under the terms of the
 .nh
-.B GNU General Public License
+.B "GNU General Public License"
 .hy
 as published by the
 .nh
@@ -59,15 +58,16 @@ Or read the
 .BR gpl (1).
 You can also write to the
 .nh
-.B Free Software Foundation, 51 Franklin St - Fifth Floor, Boston,
+.B "Free Software Foundation, 51 Franklin St - Fifth Floor, Boston,"
 .BR "MA 02110-1301, USA" .
 .hy
 ..
 .
+.
 .\" --------------------------------------------------------------------
 .\" Local macro definitions
 .
-.ds El \&...\&
+.ds El \&.\|.\|.\&
 .
 .\" .File_name  (<path_name>)
 .\"
@@ -88,6 +88,8 @@ You can also write to the
 ..
 .
 .\" End of macro definitions
+.
+.
 .TH @G@CHEM @MAN1EXT@ "@MDATE@" "Groff Version @VERSION@"
 .SH NAME
 @g@chem \- groff preprocessor for producing chemical structure diagrams
@@ -100,24 +102,34 @@ You can also write to the
 .
 .SY @g@chem
 .RI [ "\%option" \*(El]
-.RB [ \-\- ]
+.OP \-\-
 .RI [ "\%filespec" \*(El]
 .
 .SY @g@chem
-\f(CB\-h\fP\f(CR|\fP\f(CB\-\-help\fP
+.B \-h
+|
+.B \-\-help
 .
 .SY @g@chem
-\f(CB\-v\fP\f(CR|\fP\f(CB\-\-version\fP
+.B \-v
+|
+.B \-\-version
 .YS
+.
 .
 .\" --------------------------------------------------------------------
 .SH OPTION USAGE
 .\" --------------------------------------------------------------------
 .
 .P
-There are no other options than \f(CB\-h\fP, \f(CB\-\-help\fP,
-\f(CB\-v\fP and \%\f(CB\-\-version\fP; these options provoke the
-printing of a version or usage information, respectively, and all
+There are no other options than
+.BR \-h ,
+.BR \-\-help ,
+.BR \-v ,
+and
+.BR \%\-\-version ;
+these options provoke the printing of a version or usage information,
+respectively, and all
 .I filespec
 arguments are ignored.
 .
@@ -260,7 +272,7 @@ followed by
 .BR groffer :
 .
 .IP
-.B @g@chem [file\*(El] | groffer
+.B "@g@chem [file\*(El] | groffer"
 .
 .P
 If you want to create just
@@ -274,7 +286,7 @@ with the option
 for the activation of
 .BR @g@pic :
 .IP
-.B @g@chem [file\*(El] | groff -p \*(El
+.B "@g@chem [file\*(El] | groff -p \*(El"
 .
 .
 .\" --------------------------------------------------------------------
@@ -288,7 +300,7 @@ and a way to glue them together as desired, bonds of several styles,
 moieties (e.g.,
 .BR C ,
 .BR NH3 ,
-\*(El) and strings.
+\*(El), and strings.
 .
 .
 .\" --------------------------------------------------------------------
@@ -298,17 +310,19 @@ moieties (e.g.,
 There are some variables that can be set by commands.
 .
 Such commands have two possible forms, either
-.br
+.
 .RS
+.P
 .I "variable value"
 .RE
-.br
+.
+.P
 or
-.br
+.
 .RS
+.P
 .IB "variable " = " value"
 .RE
-.
 .
 .P
 This sets the given
@@ -351,12 +365,16 @@ default is 10 point.
 .SS Bonds
 .\" --------------------------------------------------------------------
 .
-.IP
-.B bond
+This
+.
+.RS
+.SY bond
 .RI [ direction ]
-.RI [ length\~n ]
-.RB [ from
+.RI [ length\ n ]
+.RB [ from\ \c
 .IR Name | picstuff ]
+.YS
+.RE
 .
 .P
 draws a single bond in direction from nearest corner of
@@ -395,13 +413,14 @@ place.
 For instance, to make a simple alkyl chain:
 .
 .RS
-.TS 
+.TS
+tab (@);
 lb l.
 CH3
-bond    	(this one goes right from the CH3)
-C       	(at the right end of the bond)
-double bond up	(from the C)
-O       	(at the end of the double bond)
+bond@(this one goes right from the CH3)
+C@(at the right end of the bond)
+double bond up@(from the C)
+O@(at the end of the double bond)
 bond right from C
 CH3
 .TE
@@ -433,16 +452,18 @@ is the benzene ring with a circle inside.
 .B aromatic
 puts a circle into any kind of ring.
 .
-.IP
-.B ring
+.RS
+.SY ring
 .RB [ \%pointing\  ( up | right | left | down )]
 .RB [ \%aromatic ]
 .RB [ put\ Mol\ at\ \fIn\fP ]
-.RB [ \%double
-.IR i , j
-.IR k , l
+.RB [ \%double\ \c
+.IR i , j\ \c
+.IR k , l\ \c
 \*(El]
 .RI [ picstuff ]
+.YS
+.RE
 .
 .
 .P
@@ -513,7 +534,7 @@ each number pair adds an interior bond.
 So the alternate form of a benzene ring is
 .
 .IP
-.B ring double 1,2 3,4 5,6
+.B "ring double 1,2 3,4 5,6"
 .
 .
 .P
@@ -523,7 +544,7 @@ written as
 as in
 .
 .IP
-.B R: ring put N at 1 put O at 2
+.B "R: ring put N at 1 put O at 2"
 .
 .
 .P
@@ -532,7 +553,8 @@ In this heterocycle,
 and
 .B R.O
 become synonyms for
-.B R.V1 and
+.B R.V1
+and
 .BR R.V2 .
 .
 .
@@ -574,7 +596,7 @@ Normally a moiety is placed right after the last thing mentioned,
 separated by a semicolon surrounded by spaces, e.g.,
 .
 .IP
-.B B1: bond ; OH
+.B "B1: bond ; OH"
 .
 .P
 Here the moiety is
@@ -588,7 +610,7 @@ As the second kind a moiety can be positioned as the first word in a
 command, e.g.,
 .
 .IP
-.B CH3 at C + (0.5,0.5)
+.B "CH3 at C + (0.5,0.5)"
 .
 .P
 Here the moiety is
@@ -620,7 +642,7 @@ commands.
 For example,
 .
 .IP
-.B bond ; BP
+.B "bond ; BP"
 .
 .P
 sets a mark at the end of the bond.
@@ -681,7 +703,7 @@ only letters and numbers is valid:
 .B bond
 .TQ
 \&
-.B bond 30 from First
+.B "bond 30 from First"
 .RE
 .
 .
@@ -912,7 +934,7 @@ book
 .\" --------------------------------------------------------------------
 .
 Report bugs to the
-.MT bug-groff@gnu.org .
+.MT bug-groff@\:gnu.org .
 bug-groff mailing list
 .ME
 .
@@ -929,14 +951,14 @@ You can get both version numbers by calling
 .
 .P
 You can also use the
-.MT groff@gnu.org ,
+.MT groff@\:gnu.org ,
 groff mailing list
 .ME
 but you must first subscribe to this list.
 .
 You can do that by visiting the
 .UR http://\:lists.gnu.org/\:mailman/\:listinfo/\:groff .
-groff mailing list web page 
+groff mailing list web page
 .UE
 .
 .
@@ -952,12 +974,12 @@ for information on availability.
 .
 .BR \%groff (@MAN1EXT@),
 .BR \%@g@pic (@MAN1EXT@),
-.B \%groffer (@MAN1EXT@).
+.BR \%groffer (@MAN1EXT@).
 .
 .
 .P
 You can still get the original
-.UR http://cm.bell-labs.com/netlib/typesetting/chem.gz .
+.UR http://cm.bell-labs.com/\:netlib/\:typesetting/\:chem.gz .
 chem awk source
 .UE
 .
@@ -970,7 +992,7 @@ file was used for this manual page.
 The other classical document on
 .I chem
 is
-.UR http://cm.bell-labs.com/cm/cs/cstr/122.ps.gz .
+.UR http://cm.bell-labs.com/\:cm/\:cs/\:cstr/\:122.ps.gz .
 122.ps
 .UE
 .
