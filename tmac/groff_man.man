@@ -453,6 +453,13 @@ macro.
 As you can see, it produces a paragraph where all lines but the first
 are indented.
 .RE
+.IP
+Use of this presentation-level macro is deprecated.  While it is
+universally portable to legacy Unix systems, a hanging indent cannot
+be expressed naturally under HTML and many HTML-based manual viewers
+simply interpret it as a starter for a normal paragraph.  Thus, any
+information or distinction you tried to express with the indentation 
+may be lost.
 .
 .TP
 .BI ".RS [" nnn ]
@@ -499,9 +506,9 @@ The
 .B EE 
 macro restores the previous font.
 .sp
-This macro is defined on many (but not all) legacy Unix systems
+These macros are defined on many (but not all) legacy Unix systems
 running classic troff. To be certain your page will be portable to
-those systems, copy its definition from the
+those systems, copy their definitions from the
 .B an-ext.tmac
 file of a 
 .BR groff 
@@ -625,7 +632,8 @@ running classic troff. To be certain your page will be portable to
 those systems, copy their definitions from the
 .B an-ext.tmac
 file of a 
-.BR groff installation.
+.BR groff 
+installation.
 
 Using these macros helps ensure that you will get hyperlinks when your
 manual page is rendered in a browser or other program that is Web-enabled.
@@ -682,7 +690,8 @@ running classic troff. To be certain your page will be portable to
 those systems, copy their definitions from the
 .B an-ext.tmac
 file of a 
-.BR groff installation.
+.BR groff 
+installation.
 
 These macros are a convenience for authors.  They will also assist 
 automated translation tools and help browsers in recognizing 
@@ -779,6 +788,15 @@ Since this macro is always called during a
 .B TH
 request, it makes sense to call it only if the tab positions have been
 changed.
+.sp
+Use of this presentation-level macro is deprecated.  It translates
+poorly to HTML, under which exact whitespace control and tabbing are not 
+readily available.  Thus, information or distinctions that you use
+.B DT 
+to express are likely to be lost.  If you feel tempted to use it,
+you should probably be writing table markup using
+.BR tbl (1)
+markup instead.
 .
 .TP
 .BI ".PD [" nnn ]
@@ -800,6 +818,12 @@ and
 .BR IP ,
 and
 .BR HP .
+.sp
+Use of this presentation-level macro is deprecated.  It translates
+poorly to HTML, under which exact control of inter-paragraphb spacing 
+is not readily available.  Thus, information or distinctions that you use
+.B PD 
+to express are likely to be lost.
 .
 .TP
 .BI ".AT [" system " [" release ]]
@@ -890,6 +914,49 @@ preprocessor(s).
 .
 .\" -----------------------------------------------------------------
 .
+.SH "PORTABILITY AND TROFF REQUESTS"
+.
+Since the
+.B man
+macros consist of groups of
+.I groff
+requests, one can, in principle, supplement the functionality of the
+.B man
+macros with individual
+.I groff
+requests where necessary.  See the
+.I groff
+info pages for a complete reference of all requests.
+.LP
+Note, however, that using raw troff requests is likely to make your page
+render poorly on the (increasingly common) class of viewers that
+render it to HTML.  Troff requests make implicit assumptions about
+things like character and page sizes that may break in an HTML
+environment; also, many of these viewers don't interpret the full
+troff vocabulary, a problem which can lead to portions of your
+text being silently dropped.  
+.LP
+For portability to modern viewers, it is best to write your page
+entirely in the requests described on this page. Further, it is best
+to completely avoid those we have described as 'presentation-level'
+.RB ( HP ,
+.BR PD ,
+and
+.BR DT ).
+.LP
+The macros we have described as extensions
+.RB ( EX/EE ,
+.BR SY/OP/YS ,
+.BR UR/UE ,
+and
+.BR MT/ME )
+should be used with caution, as they may not yet be built in to
+some viewer that is important to your audience. If in doubt, copy
+the implementation onto your page.
+. 
+
+.\" -----------------------------------------------------------------
+.
 .SH FILES
 .TP
 .B man.tmac
@@ -934,20 +1001,6 @@ Local changes and customizations should be put into this file.
 .
 .SH "SEE ALSO"
 .
-Since the
-.B man
-macros consist of groups of
-.I groff
-requests, one can, in principle, supplement the functionality of the
-.B man
-macros with individual
-.I groff
-requests where necessary.
-.
-See the
-.I groff
-info pages for a complete reference of all requests.
-.
 .PP
 .BR @g@tbl (@MAN1EXT@),
 .BR @g@eqn (@MAN1EXT@),
@@ -971,7 +1024,7 @@ Werner Lemberg
 .ME
 The extension macros were documented (and partly designed) by
 .MT esr@thyrsus.com .
-Eric S. Raymond
+Eric S. Raymond; he also wrote the portability advice.
 .
 .\" Local Variables:
 .\" mode: nroff
