@@ -111,10 +111,13 @@ void do_file(FILE *fp, const char *filename)
       inline_flag = 0;
       yyparse();
       restore_compatibility();
-      if (output_format == troff && non_empty_flag) {
-	printf(".lf %d\n", current_lineno - 1);
-	output_string();
-      }
+      if (non_empty_flag) 
+	if (output_format == mathml)
+	  putchar('\n');
+        else {
+	  printf(".lf %d\n", current_lineno - 1);
+	  output_string();
+	}
       if (output_format == troff)
 	printf(".lf %d\n", current_lineno);
       put_string(linebuf, stdout);
