@@ -1,16 +1,6 @@
 .\"
 .\" $Id$
 .\"
-.de T2
-.  vpt 0
-.  if t .ne 2v
-.  ti -.5i
-\\$1
-.  sp -1
-.  vpt 1
-..
-.
-.
 .TH GROFF_MM @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
 .
 .
@@ -150,20 +140,18 @@ Set the format with
 .
 .RS
 .LP
-.T2 \fBForm\fP
-\fBSequence\fP
-.T2 1
-0, 1, 2, 3, .\|.\|.
-.T2 001
-000, 001, 002, 003, .\|.\|.
-.T2 i
-0, i, ii, iii, iv, .\|.\|.
-.T2 I
-0, I, II, III, IV, .\|.\|.
-.T2 a
-0, a, b, c, .\|.\|., z, aa, ab, .\|.\|.
-.T2 A
-0, A, B, C, .\|.\|., Z, AA, AB, .\|.\|.
+.TS 
+tab(@);
+lb lb
+l l.
+Form@Sequence
+1@0, 1, 2, 3, .\|.\|.
+001@000, 001, 002, 003, .\|.\|.
+i@0, i, ii, iii, iv, .\|.\|.
+I@0, I, II, III, IV, .\|.\|.
+a@0, a, b, c, .\|.\|., z, aa, ab, .\|.\|.
+A@0, A, B, C, .\|.\|., Z, AA, AB, .\|.\|.
+.TE
 .RE
 .
 .
@@ -251,18 +239,17 @@ argument controls the format of numbers.
 .
 .RS
 .IP
-.T2 \fBArg
-Description\fP
-.T2 1
-Arabic (the default)
-.T2 A
-Upper-case letters (A-Z)
-.T2 a
-Lower-case letters (a-z)
-.T2 I
-Upper-case roman
-.T2 i
-Lower-case roman
+.TS
+tab(@);
+lb lb
+l l.
+Arg@Description
+1@Arabic (the default)
+A@Upper-case letters (A-Z)
+a@Lower-case letters (a-z)
+I@Upper-case roman
+i@Lower-case roman
+.TE
 .RE
 .
 .IP
@@ -315,18 +302,22 @@ Argument
 controls where the abstract is printed.
 .
 .RS
-.IP
-.T2 \fBArg
-Placement\fP
-.T2 0
+.TS
+tab(@);
+lb lb
+l l.
+\fBArg@Placement\fP
+0@T{
 Abstract is printed on page\~1 and on the cover sheet if used in the
 released-paper style (\fBMT 4\fP),
 otherwise it is printed on page\~1 without a cover sheet.
-.T2 1
-Abstract is only printed on the cover sheet (\fBMT 4\fP only).
-.T2 2
+T}
+1@Abstract is only printed on the cover sheet (\fBMT 4\fP only).
+2@T{
 Abstract is printed only on the cover sheet (other than \fBMT 4\fP only).
 The cover sheet is printed without a need for \fBCS\fP.
+T}
+.TE
 .RE
 .
 .IP
@@ -521,11 +512,15 @@ and
 .
 .RS
 .IP
-.T2 0
-Nothing special, this is the default.
-.T2 1
+.TS
+tab(@);
+l l.
+0@Nothing special, this is the default.
+1@T{
 A page eject occurs after each printed display,
 giving only one display per page and no text following it.
+T}
+.TE
 .RE
 .
 .IP
@@ -533,29 +528,38 @@ giving only one display per page and no text following it.
 .
 .RS
 .IP
-.T2 0
+.TS
+tab(@);
+l l.
+0@T{
 Displays are printed at the end of each section (when section-page
 numbering is active) or at the end of the document.
-.T2 1
+T}
+1@T{
 A new display is printed on the current page if there is enough space,
-otherwise it is printed at the end of the document.
-.T2 2
+otherwise it is printed at the end of the document.T}
+2@T{
 One display is printed at the top of each page or column
 (in multi-column mode).
-.T2 3
+T}
+3@T{
 Print one display if there is enough space for it,
 otherwise it is printed at the top of the next page or column.
-.T2 4
+T}
+4@T{
 Print as many displays as possible in a new page or column.
 A page break occurs between each display if
 .B De
 is not zero.
-.T2 5
+T}
+5@T{
 Fill the current page with displays and the rest beginning at a new page
 or column.
 (This is the default.)
 A page break occurs between each display
 if \fBDe\fP is not zero.
+T}
+.TE
 .RE
 .RE
 .
@@ -587,23 +591,21 @@ can be nested arbitrarily.
 .
 .RS
 .IP
-.T2 \[dq]\[dq]
-No indentation.
-.T2 none
-No indentation.
-.T2 L
-No indentation.
-.T2 I
+.TS
+tab(@);
+l l.
+\[dq]\[dq]@No indentation.
+none@No indentation.
+L@No indentation.
+I@T{
 Indent text with the value of number register
 .BR Si .
-.T2 C
-Center each line.
-.T2 CB
-Center the whole display as a block.
-.T2 R
-Right-adjust the lines.
-.T2 RB
-Right-adjust the whole display as a block.
+T}
+C@Center each line.
+CB@Center the whole display as a block.
+R@Right-adjust the lines.
+RB@Right-adjust the whole display as a block.
+.TE
 .RE
 .
 .IP
@@ -616,14 +618,14 @@ for compatibility reasons.
 .
 .RS
 .IP
-.T2 \[dq]\[dq]
-Line-filling turned off.
-.T2 none
-Line-filling turned off.
-.T2 N
-Line-filling turned off.
-.T2 F
-Line-filling turned on.
+.TS
+tab(@);
+l l.
+\[dq]\[dq]@Line-filling turned off.
+none@Line-filling turned off.
+N@Line-filling turned off.
+F@Line-filling turned on.
+.TE
 .RE
 .
 .IP
@@ -650,18 +652,26 @@ argument changes the numbering.
 .
 .RS
 .IP
-.T2 none
+.TS
+tab(@);
+l l.
+none@T{
 .I override
 is a prefix to the number.
-.T2 0
+T}
+0@T{
 .I override
 is a prefix to the number.
-.T2 1
+T}
+1@T{
 .I override
 is a suffix to the number.
-.T2 2
+T}
+2@T{
 .I override
 replaces the number.
+T}
+.TE
 .RE
 .
 .IP
@@ -743,16 +753,14 @@ See
 .
 .IP
 .B strings available to EOP
-.
 .RS
-.IP
-.ta 1i
-.nf
-EOPf	argument of \fBPF\fP
-EOPef	argument of \fBEF\fP
-EOPof	argument of \fBOF\fP
-.fi
-.DT
+.TS
+tab(@);
+l l.
+EOPf@argument of \fBPF\fP
+EOPef@argument of \fBEF\fP
+EOPof@argument of \fBOF\fP
+.TE
 .RE
 .
 .TP
@@ -859,24 +867,24 @@ It can also change the label justification (ljust).
 .
 .RS
 .IP
-.if t .ne 14v
-.ta .5i +.8i +.8i +.8i +.8i
-.nf
-\fBarg	hyphen	adjust	indent	ljust\fP
-0	no	yes	yes	left
-1	yes	yes	yes	left
-2	no	no	yes	left
-3	yes	no	yes	left
-4	no	yes	no	left
-5	yes	yes	no	left
-6	no	no	no	left
-7	yes	no	no	left
-8	no	yes	yes	right
-9	yes	yes	yes	right
-10	no	no	yes	right
-11	yes	no	yes	right
-.fi
-.DT
+.TS
+tab(@);
+lb lb lb lb lb
+l l l l l.
+arg@hyphen@adjust@indent@ljust
+0@no@yes@yes@left
+1@yes@yes@yes@left
+2@no@no@yes@left
+3@yes@no@yes@left
+4@no@yes@no@left
+5@yes@yes@no@left
+6@no@no@no@left
+7@yes@no@no@left
+8@no@yes@yes@right
+9@yes@yes@yes@right
+10@no@no@yes@right
+11@yes@no@yes@right
+.TE
 .RE
 .
 .IP
@@ -1102,20 +1110,19 @@ Default value is\~0.
 .
 .IP
 .B Hi
-.
-.RS
-.IP
-.T2 0
-The text is left-justified.
-.T2 1
-Indentation of the text follows the value of number register
-.BR Pt ,
-see\~\c
+.TS
+tab(@);
+l l.
+0@The text is left-justified.
+1@T{
+Indentation of the text follows the value of number 
+register
+.B Pt ,
+see
 .BR P .
-.T2 2
-The text is lined up with the first word of the heading.
-.RE
-.RE
+T}
+2@The text is lined up with the first word of the heading.
+.TE
 .
 .IP
 .B Centered section headings
@@ -1334,24 +1341,17 @@ Default is\~1 for all levels.
 .IP
 .B Argument
 .
-.RS
-.IP
-.T2 1
-Arabic numerals.
-.T2 0001
-Arabic numerals with leading zeroes,
-one or more.
-.T2 A
-upper-case alphabetic
-.T2 a
-lower-case alphabetic
-.T2 I
-upper-case roman numerals
-.T2 i
-lower-case roman numerals
-.T2 \[dq]\[dq]
-Arabic numerals.
-.RE
+.TS
+tab(@);
+l l.
+1@Arabic numerals.
+0001@Arabic numerals with leading zeroes, one or more.
+A@upper-case alphabetic
+a@lower-case alphabetic
+I@upper-case roman numerals
+i@lower-case roman numerals
+\[dq]\[dq]@Arabic numerals.
+.TE
 .
 .TP
 .BI HU\  heading-text
@@ -1437,15 +1437,17 @@ The macro is then called with the index as argument(s).
 .IP
 .B type
 .
-.RS
 .IP
-.T2 N
-Page numbers
-.T2 H
-Header marks
-.T2 B
-Both page numbers and header marks, separated with a tab character.
-.RE
+.TS
+tab(@);
+l l.
+N@Page numbers
+H@Header marks
+B@T{
+Both page numbers and header marks, 
+separated with a tab character.
+T}
+.TE
 .
 .TP
 .BI INITR\  filename
@@ -1609,18 +1611,16 @@ selects one of six possible ways to display the mark.
 .RS
 .IP
 .br
-.T2 1
-x.
-.T2 2
-x)
-.T2 3
-(x)
-.T2 4
-[x]
-.T2 5
-<x>
-.T2 6
-{x}
+.TS
+tab(@);
+l l.
+1@x.
+2@x)
+3@(x)
+4@[x]
+5@<x>
+6@{x}
+.TE
 .RE
 .
 .IP
@@ -1700,20 +1700,17 @@ with different default values.
 .
 .RS
 .IP
-.T2 \fBAL\fP
-Automatically Incremented List
-.T2 \fBML\fP
-Marked List
-.T2 \fBVL\fP
-Variable-Item List
-.T2 \fBBL\fP
-Bullet List
-.T2 \fBDL\fP
-Dash List
-.T2 \fBRL\fP
-Reference List
-.T2 \fBBVL\fP
-Broken Varable List.
+.TS
+tab(@);
+l l.
+\fBAL\fP@Automatically Incremented List
+\fBML\fP@Marked List
+\fBVL\fP@Variable-Item List
+\fBBL\fP@Bullet List
+\fBDL\fP@Dash List
+\fBRL\fP@Reference List
+\fBBVL\fP@Broken Variable List.
+.TE
 .RE
 .
 .IP
@@ -1730,24 +1727,32 @@ See also section
 .
 .RS
 .IP
-.T2 \fBArg
-Style\fP
-.T2 BL
+.TS
+tab(@);
+lb lb
+l l.
+Arg@Style
+BL@T{
 Blocked.
 Date line, return address, writer's address and closing
 begins at the center of the line.
 All other lines begin at the left margin.
-.T2 SB
+T}
+SB@T{
 Semi-blocked.
 Same as blocked,
 except that the first line in every paragraph is indented five spaces.
-.T2 FB
+T}
+FB@T{
 Full-blocked.
 All lines begin at the left margin.
-.T2 SP
+T}
+SP@T{
 Simplified.
 Almost the same as the full-blocked style.
 Subject and the writer's identification are printed in all-capital.
+T}
+.TE
 .RE
 .
 .TP
@@ -1758,29 +1763,36 @@ This is a list of the standard options:
 .
 .RS
 .IP
-.T2 CN
+.TS
+tab(@);
+l l.
+CN@T{
 Confidential notation.
 Prints `CONFIDENTIAL' on the second line below the date line.
 Any argument replaces `CONFIDENTIAL'.
 See also string variable
 .BR LetCN .
-.T2 RN
+T}
+RN@T{
 Reference notation.
 Prints `In reference to:' and the argument two lines below the date line.
 See also string variable
 .BR LetRN .
-.T2 AT
+T}
+AT@T{
 Attention.
 Prints `ATTENTION:' and the argument below the inside address.
 See also string variable
 .BR LetAT .
-.T2 SA
+T}
+SA@T{
 Salutation.
 Prints `To Whom It May Concern:' or the argument if it was present.
 The salutation is printed two lines below the inside address.
 See also string variable
 .BR LetSA .
-.T2 SJ
+T}
+SJ@T{
 Subject line.
 Prints the argument as subject prefixed with `SUBJECT:'
 two lines below the inside address,
@@ -1788,6 +1800,8 @@ except in letter type `SP',
 where the subject is printed in all-capital without any prefix.
 See also string variable
 .BR LetSJ .
+T}
+.TE
 .RE
 .
 .TP
@@ -1834,18 +1848,16 @@ just sets a variable, used in the AT&T macros.
 .
 .RS
 .IP
-.T2 0
-Normal memorandum, no type printed.
-.T2 1
-Memorandum with `MEMORANDUM FOR FILE' printed.
-.T2 2
-Memorandum with `PROGRAMMER'S NOTES' printed.
-.T2 3
-Memorandum with `ENGINEER'S NOTES' printed.
-.T2 4
-Released paper style.
-.T2 5
-External letter style.
+.TS
+tab(@);
+l l.
+0@Normal memorandum, no type printed.
+1@Memorandum with `MEMORANDUM FOR FILE' printed.
+2@Memorandum with `PROGRAMMER'S NOTES' printed.
+3@Memorandum with `ENGINEER'S NOTES' printed.
+4@Released paper style.
+5@External letter style.
+.TE
 .RE
 .
 .IP
@@ -1921,40 +1933,27 @@ and
 .
 .RS
 .IP
-.T2 \fBArg
-Notation\fP
-.T2 \fInone\fP
-Copy To
-.T2 \[dq]\[dq]
-Copy To
-.T2 1
-Copy To (with att.\&) to
-.T2 2
-Copy To (without att.\&) to
-.T2 3
-Att.
-.T2 4
-Atts.
-.T2 5
-Enc.
-.T2 6
-Encs.
-.T2 7
-Under separate cover
-.T2 8
-Letter to
-.T2 9
-Memorandum to
-.T2 10
-Copy (with atts.\&) to
-.T2 11
-Copy (without atts.\&) to
-.T2 12
-Abstract Only to
-.T2 13
-Complete Memorandum to
-.T2 14
-CC
+.TS
+tab(@);
+l l.
+\fBArg@Notation\fP
+\fInone\fP@Copy To
+\[dq]\[dq]@Copy To
+1@Copy To (with att.\&) to
+2@Copy To (without att.\&) to
+3@Att.
+4@Atts.
+5@Enc.
+6@Encs.
+7@Under separate cover
+8@Letter to
+9@Memorandum to
+10@Copy (with atts.\&) to
+11@Copy (without atts.\&) to
+12@Abstract Only to
+13@Complete Memorandum to
+14@CC
+.TE
 .RE
 .
 .TP
@@ -2218,15 +2217,17 @@ whether to eject a page or not.
 .
 .RS
 .IP
-.T2 0
+.TS
+tab(@);
+l l.
+0@T{
 The reference page is printed on a separate page.
 This is the default.
-.T2 1
-Do not eject page after the list.
-.T2 2
-Do not eject page before the list.
-.T2 3
-Do not eject page before and after the list.
+T}
+1@Do not eject page after the list.
+2@Do not eject page before the list.
+3@Do not eject page before and after the list.
+.TE
 .RE
 .
 .IP
@@ -2516,16 +2517,14 @@ See
 .
 .IP
 .B strings available to TP
-.
 .RS
-.IP
-.ta 1i
-.nf
-TPh	argument of \fBPH\fP
-TPeh	argument of \fBEH\fP
-TPoh	argument of \fBOH\fP
-.fi
-.DT
+.TS
+tab(@)
+l l.
+TPh@argument of \fBPH\fP
+TPeh@argument of \fBEH\fP
+TPoh@argument of \fBOH\fP
+.TE
 .RE
 .
 .TP
@@ -2572,16 +2571,18 @@ Its value is the sum of all wanted features.
 .
 .RS
 .IP
-.T2 \fBArg
-Description\fP
-.T2 1
+.TS
+tab(@);
+lb lb
+l l.
+Arg@Description
+1@T{
 Disable the escape character (\[rs]).
 This is normally turned on during verbose output.
-.T2 2
-Add an empty line before the verbose text.
-.T2 4
-Add an empty line after the verbose text.
-.T2 8
+T}
+2@Add an empty line before the verbose text.
+4@Add an empty line after the verbose text.
+8@T{
 Print the verbose text with numbered lines.
 This adds four digit-sized spaces in the beginning of each line.
 Finer control is available with the string variable
@@ -2591,11 +2592,14 @@ It contains all arguments to the
 command
 .BR .nm ,
 normally `1'.
-.T2 16
+T}
+16@T{
 Indent the verbose text by `5n'.
 This is controlled by the number-variable
 .B Verbin
 (in units).
+T}
+.TE
 .RE
 .
 .TP
@@ -2653,30 +2657,41 @@ End the address specification after
 Footnote and display width control.
 .
 .RS
-.IP
-.T2 N
+.TS
+tab(@);
+l l.
+N@T{
 Set default mode which is equal to using the options
 .BR \-WF ,
 .BR \-FF ,
 .BR \-WD ,
 and
 .BR FB .
-.T2 WF
+T}
+WF@T{
 Wide footnotes, wide also in two-column mode.
-.T2 -WF
-Normal footnote width, follow column mode.
-.T2 FF
+T}
+-WF@Normal footnote width, follow column mode.
+FF@T{
 All footnotes gets the same width as the first footnote encountered.
-.T2 -FF
+T}
+-FF@T{
 Normal footnotes, width follows \fBWF\fP and \fB-WF\fP.
-.T2 WD
+T}
+WD@T{
 Wide displays, wide also in two-column mode.
-.T2 -WD
+T}
+-WD@T{
 Normal display width, follow column mode.
-.T2 FB
-Floating displays generates a line break when printed on the current page.
-.T2 -FB
+T}
+FB@T{
+Floating displays generates a line break when printed on the current
+page.
+T}
+-FB@T{
 Floating displays does not generate line break.
+T}
+.TE
 .RE
 .
 .
@@ -2825,28 +2840,29 @@ Observe the space after `Copy' and before `to'.
 .
 .RS
 .IP
-.ta 1.5i
-.nf
-\fBName	Value\fP
-Letns!0	Copy to
-Letns!1	Copy (with att.\&) to
-Letns!2	Copy (without att.\&) to
-Letns!3	Att.
-Letns!4	Atts.
-Letns!5	Enc.
-Letns!6	Encs.
-Letns!7	Under separate cover
-Letns!8	Letter to
-Letns!9	Memorandum to
-Letns!10	Copy (with atts.\&) to
-Letns!11	Copy (without atts.\&) to
-Letns!12	Abstract Only to
-Letns!13	Complete Memorandum to
-Letns!14	CC
-Letns!copy	Copy \[rs]"
-Letns!to	" to
-.fi
-.DT
+.TS
+tab(@);
+lb lb
+l l,
+Name@Value
+Letns!0@Copy to
+Letns!1@Copy (with att.\&) to
+Letns!2@Copy (without att.\&) to
+Letns!3@Att.
+Letns!4@Atts.
+Letns!5@Enc.
+Letns!6@Encs.
+Letns!7@Under separate cover
+Letns!8@Letter to
+Letns!9@Memorandum to
+Letns!10@Copy (with atts.\&) to
+Letns!11@Copy (without atts.\&) to
+Letns!12@Abstract Only to
+Letns!13@Complete Memorandum to
+Letns!14@CC
+Letns!copy@Copy \[rs]"
+Letns!to@" to
+.TE
 .RE
 .
 .TP
@@ -2878,17 +2894,18 @@ Useful in user-defined macros like
 .
 .RS
 .IP
-.ta 1.5i
-.nf
-\fBValue	Meaning\fP
-co	Table of contents
-fg	List of figures
-tb	List of tables
-ec	List of equations
-ex	List of exhibits
-ap	Appendix
-.fi
-.DT
+.TS
+tab(@)
+lb lb
+l l.
+Value@Meaning
+co@Table of contents
+fg@List of figures
+tb@List of tables
+ec@List of equations
+ex@List of exhibits
+ap@Appendix
+.TE
 .RE
 .
 .TP
@@ -3020,13 +3037,16 @@ with a default value of\~1.
 .
 .RS
 .IP
-.T2 0
-no indentation, left margin
-.T2 1
+.TS
+tab(@);
+l l.
+0@no indentation, left margin
+1@T{
 indent to the right, similar to
 .RB ` ".P 1" '
-.T2 2
-indent to line up with text part of preceding heading
+T}
+2@indent to line up with text part of preceding heading
+.TE
 .RE
 .
 .TP
@@ -3079,11 +3099,12 @@ Heading numbering type.
 .
 .RS
 .IP
-.T2 0
-multiple levels (1.1.1, 1.1.2, etc.)
-.T2 1
-single level
-.
+.TS
+tab(@);
+l l.
+0@multiple levels (1.1.1, 1.1.2, etc.)
+1@single level
+.TE
 .RE
 .IP
 Default is\~0.
@@ -3099,10 +3120,12 @@ Hyphenation status of text body.
 .
 .RS
 .IP
-.T2 0
-no hyphenation
-.T2 1
-hyphenation on, set to value\~14
+.TS
+tab(@);
+l l.
+0@no hyphenation
+1@hyphenation on, set to value\~14
+.TE
 .RE
 .
 .IP
@@ -3144,10 +3167,12 @@ automatic lists
 .
 .RS
 .IP
-.T2 0
-no space
-.T2 1
-emit space
+.TS
+tab(@);
+l l.
+0@no space
+1@emit space
+.TE
 .RE
 .
 .TP
@@ -3169,18 +3194,16 @@ Page numbering style.
 .
 .RS
 .IP
-.T2 0
-normal header for all pages.
-.T2 1
-header replaces footer on first page, header is empty.
-.T2 2
-page header is removed on the first page.
-.T2 3
-`section-page' numbering style enabled.
-.T2 4
-page header is removed on the first page.
-.T2 5
-`section-page' and `section-figure' numbering style enabled.
+.TS
+tab(@);
+l l.
+0@normal header for all pages.
+1@header replaces footer on first page, header is empty.
+2@page header is removed on the first page.
+3@`section-page' numbering style enabled.
+4@page header is removed on the first page.
+5@`section-page' and `section-figure' numbering style enabled.
+.TE
 .RE
 .
 .IP
@@ -3196,10 +3219,12 @@ A flag to control whether paragraphs are numbered.
 .
 .RS
 .IP
-.T2 0
-not numbered
-.T2 1
-numbered in first-level headings.
+.TS
+tab(@);
+l l.
+0@not numbered
+1@numbered in first-level headings.
+.TE
 .RE
 .
 .IP
@@ -3215,10 +3240,12 @@ Format of figure, table, exhibit, and equation titles.
 .
 .RS
 .IP
-.T2 0
-\[dq]. \[dq]
-.T2 1
-\[dq] - \[dq]
+.TS
+tab(@);
+l l.
+0@\[dq]. \[dq]
+1@\[dq] - \[dq]
+.TE
 .RE
 .
 .IP
@@ -3241,7 +3268,10 @@ the current settings or just change when the header and footer are defined.
 .
 .RS
 .IP
-.T2 0
+.TS
+tab(@);
+l l.
+0@T{
 Point size only changes to the current setting when
 .BR .PH ,
 .BR .PF ,
@@ -3251,10 +3281,13 @@ Point size only changes to the current setting when
 or
 .B .OE
 is executed.
-.T2 1
+T}
+1@T{
 Point size changes after every
 .BR .S .
 This is the default.
+T}
+.TE
 .RE
 .
 .TP
@@ -3268,16 +3301,19 @@ Paragraph type.
 .
 .RS
 .IP
-.T2 0
-left-justified
-.T2 1
-indented paragraphs
-.T2 2
+.TS
+tab(@);
+l l.
+0@left-justified
+1@indented paragraphs
+2@T{
 indented paragraphs except after
 .BR .H ,
 .BR .DE ,
 or
 .BR .LE .
+T}
+.TE
 .RE
 .
 .IP
