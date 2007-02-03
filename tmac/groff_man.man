@@ -18,17 +18,11 @@ translations approved by the Free Software Foundation instead of in
 the original English.
 ..
 .
-.de TQ
-.  br
-.  ns
-.  TP \\$1
-..
-.
 .
 .TH GROFF_MAN @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
 .
 .
-.\" -----------------------------------------------------------------
+.\" ----------------------------------------------------------------
 .
 .SH NAME
 .
@@ -344,6 +338,22 @@ The
 macro is the macro used for the explanations you are just reading.
 .
 .TP
+.B .TQ
+The 
+.B TQ
+macro sets up header continuation for a .TP macro.  With it, you can
+stack up any number of labels (such as in a glossary, or list of
+commands) before beginning the indented paragraph.  For an example, 
+look just past the next paragraph.
+.IP
+This macro is not defined on legacy Unix systems running classic
+troff. To be certain your page will be portable to those systems, 
+copy its definition from the
+.B an-ext.tmac
+file of a 
+.BR groff 
+installation.
+.TP
 .B .LP
 .TQ
 .B .PP
@@ -477,6 +487,22 @@ yet) has number\ 1, and each call to
 .B RS
 increases the level by\ 1.
 .
+.TP
+.B .EX/.EE
+Example/End Example. Between this pair of macros, filling is
+disabled and the font is set to constant-width.  This is useful for
+formatting code, command, and configuration-file examples.  The
+.B EE 
+macro restores the previous font.
+.sp
+This macro is defined on many (but not all) legacy Unix systems
+running classic troff. To be certain your page will be portable to
+those systems, copy its definition from the
+.B an-ext.tmac
+file of a 
+.BR groff 
+installation.
+.
 .PP
 To summarize, the following macros cause a line break with the
 insertion of vertical space (which amount can be changed with the
@@ -485,6 +511,7 @@ macro):
 .BR SH ,
 .BR SS ,
 .BR TP ,
+.BR TQ ,
 .B LP
 .RB ( PP ,
 .BR P ),
@@ -492,9 +519,11 @@ macro):
 and
 .BR HP .
 The macros
-.B RS
-and
-.B RE
+.BR RS ,
+.BR RE ,
+.BR EX ,
+and 
+.BR EE
 also cause a break but no insertion of vertical space.
 .
 .
@@ -582,6 +611,148 @@ to appear in italic.
 If no text is present on the line where the macro is called the text
 of the next input line appears in italic.
 .
+.
+.\" -----------------------------------------------------------------
+.
+.SH "MACROS TO DESCRIBE HYPERLINKS AND EMAIL ADDRESSES"
+
+The following macros are not defined on legacy Unix systems
+running classic troff. To be certain your page will be portable to
+those systems, copy their definitions from the
+.B an-ext.tmac
+file of a 
+.BR groff installation.
+
+Using these macros helps ensure that you will get hyperlinks when your
+manual page is rendered in a browser or other program that is Web-enabled.
+
+.TP
+.B UR/UE
+Wrap a World Wide Web hyperlink.  The argument to the
+.B UR
+is the URL; thereafter, lines until 
+.B UE
+are collected and used as the link text.  On a device that is not 
+a browser, 
+
+.EX
+this is a link to
+\&.UR http:\&//randomsite,org/fubar
+some random site
+\&.UE
+given as an example
+.EE
+
+will usually display like this: "this is a link to some random 
+site <http:\&//randomsite,org/fubar> given as an example".
+
+.TP
+.B MT/ME
+Wrap an email address.  The argument of MT is the address; text
+following, until
+.BR ME ,
+is a name to be associated with the address.  On a device that is not 
+a browser, 
+
+.EX
+contact
+\&.UR fred.foonly@fubar,net
+Fred Foonly
+\&.UE
+for more information
+.EE
+
+will usually display like this: "contact Fred Foonly
+<fred.foonly@fubar.net> for more information".
+
+.\" -----------------------------------------------------------------
+.
+.SH "MACROS TO DESCRIBE COMMAND SYNOPSES"
+.
+The following macros are not defined on legacy Unix systems
+running classic troff. To be certain your page will be portable to
+those systems, copy their definitions from the
+.B an-ext.tmac
+file of a 
+.BR groff installation.
+
+These macros are a convenience for authors.  They will also assist 
+automated translation tools and help broswers in recognizing 
+command synopses and treating them differently from running text.
+.
+.TP 
+.B SY
+Begin synopsis. Takes a single argument, the name of a command.  Text
+following, until closed by
+.BR YS ,
+will be set with a hanging indent with the width of the command name 
+plus a space.  This produces the traditional look of a Unix command
+synopsis.
+.TP
+.B OP
+Describe an optional command argument.  The arguments of this macro
+will be set surrounded by option braces in the default Roman font. 
+.TP
+.B YS
+This macro restores normal indentation at the end of a command synopsis. 
+.LP
+Here is a real example:
+
+.EX
+\&.SY groff
+\&.OP -abcegiklpstzCEGNRSUVXZ
+\&.OP -d cs
+\&.OP -f fam
+\&.OP -F dir
+\&.OP -I dir
+\&.br
+\&.OP -K arg
+\&.OP -L arg
+\&.OP -m name
+\&.OP -M dir
+\&.OP -n num
+\&.OP -o list
+\&.OP -P arg
+\&.br
+\&.OP -r cn
+\&.OP -T dev
+\&.OP -w name
+\&.OP -W name
+\&.RI [ file
+\&.IR ... ]
+\&.YS
+.EE
+
+produces the following output:
+
+.SY groff
+.OP -abcegiklpstzCEGNRSUVXZ
+.OP -d cs
+.OP -f fam
+.OP -F dir
+.OP -I dir
+.br
+.OP -K arg
+.OP -L arg
+.OP -m name
+.OP -M dir
+.OP -n num
+.OP -o list
+.OP -P arg
+.br
+.OP -r cn
+.OP -T dev
+.OP -w name
+.OP -W name
+.RI [ file
+.IR ... ]
+.YS
+
+Note the use of 
+.B br
+requests to control line breaking.  You can insert plain text as
+well; this will look like the traditional (unornamnted) syntax 
+for a required command argument or filename.
 .
 .\" -----------------------------------------------------------------
 .
@@ -727,9 +898,25 @@ macros or the
 package should be used.
 .TP
 .B an-old.tmac
-All
+Most
 .B man
 macros are contained in this file.
+.TP
+.B an-ext.tmac
+The extension macro definitions forx
+.BR \&.SY , 
+.BR \&.OP , 
+.BR .YS , 
+.BR .TQ , 
+.BR .EX/.EE ,
+.BR .UR/.UE ,
+and
+.BR .MT/.ME 
+are contained in this file.  It is written in classic troff,
+and released for free re-use, and not copylefted; manual page authors
+concerned about portability to legacy Unix systems are encouraged to
+copy these definitions into their pages, and maintainers of troff
+or its workalikes are encouraged to re-use them.
 .TP
 .B man.local
 Local changes and customizations should be put into this file.
@@ -763,12 +950,20 @@ info pages for a complete reference of all requests.
 .
 .\" -----------------------------------------------------------------
 .
-.SH AUTHOR
+.SH AUTHORS
 .
 This manual page was originally written for the Debian GNU/Linux
-system by Susan G. Kleinmann <sgk@debian.org>, corrected and updated
-by Werner Lemberg <wl@gnu.org>, and is now part of the GNU troff
-distribution.
+system by 
+.MT sgk@debian.org .
+Susan G. Kleinmann
+.ME
+It was corrected and updated by
+.MT wl@gnu.org .
+Werner Lemberg
+.ME
+The extension macros were documented (and partly designed) by
+.MT esr@thyrsus.com .
+Eric S. Raymond
 .
 .\" Local Variables:
 .\" mode: nroff
