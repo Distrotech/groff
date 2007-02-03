@@ -120,10 +120,12 @@ static struct {
   { "special", SPECIAL },
 };
 
-static struct {
+struct  builtin_def {
   const char *name;
   const char *def;
-} def_table[] = {
+};
+
+static struct builtin_def common_defs[] = {
   { "ALPHA", "\\(*A" },
   { "BETA", "\\(*B" },
   { "CHI", "\\(*X" },
@@ -215,11 +217,6 @@ static struct {
   { "and", "{roman \"and\"}" },
   { "if", "{roman \"if\"}" },
   { "for", "{roman \"for\"}" },
-  { "sum", "{type \"operator\" vcenter size +5 \\(*S}" },
-  { "prod", "{type \"operator\" vcenter size +5 \\(*P}" },
-  { "int", "{type \"operator\" vcenter size +8 \\(is}" },
-  { "union", "{type \"operator\" vcenter size +5 \\(cu}" },
-  { "inter", "{type \"operator\" vcenter size +5 \\(ca}" },
   { "times", "type \"binary\" \\(mu" },
   { "ldots", "type \"inner\" { . . . }" },
   { "inf", "\\(if" },
@@ -228,33 +225,57 @@ static struct {
   { "half", "{1 smallover 2}" },
   { "hat_def", "roman \"^\"" },
   { "hat", "accent { hat_def }" },
-  { "dot_def", "back 15 \"\\v'-52M'.\\v'52M'\"" },
-  { "dot", "accent { dot_def }" },
-  { "dotdot_def", "back 25 \"\\v'-52M'..\\v'52M'\"" },
-  { "dotdot", "accent { dotdot_def }" },
   { "tilde_def", "\"~\"" },
   { "tilde", "accent { tilde_def }" },
-  { "utilde_def", "\"\\v'75M'~\\v'-75M'\"" },
-  { "utilde", "uaccent { utilde_def }" },
-  { "vec_def", "up 52 size -5 \\(->" },
-  { "vec", "accent { vec_def }" },
-  { "dyad_def", "up 52 size -5 {\\(<- back 60 \\(->}" },
-  { "dyad", "accent { dyad_def }" },
   { "==", "type \"relation\" \\(==" },
   { "!=", "type \"relation\" \\(!=" },
   { "+-", "type \"binary\" \\(+-" },
   { "->", "type \"relation\" \\(->" },
   { "<-", "type \"relation\" \\(<-" },
-  { "<<", "{ < back 20 < }" },
-  { ">>", "{ > back 20 > }" },
-  { "...", "type \"inner\" vcenter { . . . }" },
+  { "<<", "type \"relation\" \\(<<" },
+  { ">>", "type \"relation\" \\(>>" },
   { "prime", "'" },
   { "approx", "type \"relation\" \"\\(~=\"" },
   { "grad", "\\(gr" },
   { "del", "\\(gr" },
-  { "cdot", "type \"binary\" vcenter ." },
+  { "cdot", "type \"binary\" \\(md" },
   { "dollar", "$" },
 };  
+
+/* composite definitions that require troff size and motion operators */
+static struct builtin_def troff_defs[] = {
+  { "sum", "{type \"operator\" vcenter size +5 \\(*S}" },
+  { "prod", "{type \"operator\" vcenter size +5 \\(*P}" },
+  { "int", "{type \"operator\" vcenter size +8 \\(is}" },
+  { "union", "{type \"operator\" vcenter size +5 \\(cu}" },
+  { "inter", "{type \"operator\" vcenter size +5 \\(ca}" },
+  { "dot_def", "up 52 back 15 \".\"" },
+  { "dot", "accent { dot_def }" },
+  { "dotdot_def", "up 52 back 25 \"..\"" },
+  { "dotdot", "accent { dotdot_def }" },
+  { "utilde_def", "down 75 \"~\"" },
+  { "utilde", "uaccent { utilde_def }" },
+  { "vec_def", "up 52 size -5 \\(->" },
+  { "vec", "accent { vec_def }" },
+  { "dyad_def", "up 52 size -5 { \\(<> }" },
+  { "dyad", "accent { dyad_def }" },
+  { "...", "type \"inner\" vcenter { . . . }" },
+};
+
+/* equivalent definitions for MathML mode */
+static struct builtin_def mathml_defs[] = {
+  { "sum", "{type \"operator\" size big \\(*S}" },
+  { "prod", "{type \"operator\" size big \\(*P}" },
+  { "int", "{type \"operator\" size big \\(is}" },
+  { "union", "{type \"operator\" size big \\(cu}" },
+  { "inter", "{type \"operator\" size big \\(ca}" },
+  { "dot", "accent { \".\" }" },
+  { "dotdot", "accent { \"..\" }" },
+  { "utilde", "uaccent { \"~\" }" },
+  { "vec", "accent { \\(-> }" },
+  { "dyad", "accent { \\(<> }" },
+  { "...", "type \"inner\" { . . . }" },
+};
 
 void init_table(const char *device)
 {
@@ -265,12 +286,29 @@ void init_table(const char *device)
     def->tok = token_table[i].token;
     macro_table.define(token_table[i].name, def);
   }
-  for (i = 0; i < sizeof(def_table)/sizeof(def_table[0]); i++) {
+  for (i = 0; i < sizeof(common_defs)/sizeof(common_defs[0]); i++) {
     definition *def = new definition[1];
     def->is_macro = 1;
-    def->contents = strsave(def_table[i].def);
+    def->contents = strsave(common_defs[i].def);
     def->is_simple = 1;
-    macro_table.define(def_table[i].name, def);
+    macro_table.define(common_defs[i].name, def);
+  }
+  if (output_format == troff) {
+    for (i = 0; i < sizeof(troff_defs)/sizeof(troff_defs[0]); i++) {
+      definition *def = new definition[1];
+      def->is_macro = 1;
+      def->contents = strsave(troff_defs[i].def);
+      def->is_simple = 1;
+      macro_table.define(troff_defs[i].name, def);
+    }
+  } else if (output_format == mathml) {
+    for (i = 0; i < sizeof(mathml_defs)/sizeof(mathml_defs[0]); i++) {
+      definition *def = new definition[1];
+      def->is_macro = 1;
+      def->contents = strsave(mathml_defs[i].def);
+      def->is_simple = 1;
+      macro_table.define(mathml_defs[i].name, def);
+    }
   }
   definition *def = new definition[1];
   def->is_macro = 1;

@@ -168,26 +168,47 @@ int script_box::compute_metrics(int style)
 
 void script_box::output()
 {
-  p->output();
-  if (sup != 0) {
-    printf("\\Z" DELIMITER_CHAR);
-    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
-    printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
-    sup->output();
-    printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
-    printf(DELIMITER_CHAR);
+  if (output_format == troff) {
+    p->output();
+    if (sup != 0) {
+      printf("\\Z" DELIMITER_CHAR);
+      printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
+      printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
+      sup->output();
+      printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
+      printf(DELIMITER_CHAR);
+    }
+    if (sub != 0) {
+      printf("\\Z" DELIMITER_CHAR);
+      printf("\\v'\\n[" SUB_LOWER_FORMAT "]u'", uid);
+      printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
+      printf("\\h'-\\n[" SUB_KERN_FORMAT "]u'", p->uid);
+      sub->output();
+      printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
+      printf(DELIMITER_CHAR);
+    }
+    printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
+	   uid, p->uid);
+  } else if (output_format == mathml) {
+    if (sup != 0 and sub != 0) {
+      printf("<msubsup>");
+      p->output();
+      sub->output();
+      sup->output();
+      printf("</msubsup>");
+    } else if (sup != 0) {
+      printf("<msup>");
+      p->output();
+      sup->output();
+      printf("</msup>");
+  } else if (sub != 0) {
+      printf("<msub>");
+      p->output();
+      sub->output();
+      printf("</msub>");
+    }
+
   }
-  if (sub != 0) {
-    printf("\\Z" DELIMITER_CHAR);
-    printf("\\v'\\n[" SUB_LOWER_FORMAT "]u'", uid);
-    printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
-    printf("\\h'-\\n[" SUB_KERN_FORMAT "]u'", p->uid);
-    sub->output();
-    printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
-    printf(DELIMITER_CHAR);
-  }
-  printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
-	 uid, p->uid);
 }
 
 void script_box::hint(unsigned flags)

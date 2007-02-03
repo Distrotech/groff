@@ -45,7 +45,7 @@ int one_size_reduction_flag = 0;
 int compatible_flag = 0;
 int no_newline_in_delim_flag = 0;
 int html = 0;
-                      
+eqnmode_t output_format;
 
 int read_line(FILE *fp, string *p)
 {
@@ -67,7 +67,8 @@ void do_file(FILE *fp, const char *filename)
 {
   string linebuf;
   string str;
-  printf(".lf 1 %s\n", filename);
+  if (output_format == troff)
+    printf(".lf 1 %s\n", filename);
   current_filename = filename;
   current_lineno = 0;
   while (read_line(fp, &linebuf)) {
@@ -110,11 +111,12 @@ void do_file(FILE *fp, const char *filename)
       inline_flag = 0;
       yyparse();
       restore_compatibility();
-      if (non_empty_flag) {
+      if (output_format == troff && non_empty_flag) {
 	printf(".lf %d\n", current_lineno - 1);
 	output_string();
       }
-      printf(".lf %d\n", current_lineno);
+      if (output_format == troff)
+	printf(".lf %d\n", current_lineno);
       put_string(linebuf, stdout);
     }
     else if (start_delim != '\0' && linebuf.search(start_delim) >= 0
@@ -171,14 +173,14 @@ static int inline_equation(FILE *fp, string &linebuf, string &str)
       ptr = &linebuf[0];
     }
     str += '\0';
-    if (html) {
+    if (output_format == troff && html) {
       printf(".as1 %s ", LINE_STRING);
       html_begin_suppress();
       printf("\n");
     }
     init_lex(str.contents(), current_filename, start_lineno);
     yyparse();
-    if (html) {
+    if (output_format == troff && html) {
       printf(".as1 %s ", LINE_STRING);
       html_end_suppress();
       printf("\n");
@@ -193,9 +195,11 @@ static int inline_equation(FILE *fp, string &linebuf, string &str)
     }
   }
   restore_compatibility();
-  printf(".lf %d\n", current_lineno);
+  if (output_format == troff)
+    printf(".lf %d\n", current_lineno);
   output_string();
-  printf(".lf %d\n", current_lineno + 1);
+  if (output_format == troff)
+    printf(".lf %d\n", current_lineno + 1);
   return 1;
 }
 
@@ -302,6 +306,9 @@ int main(int argc, char **argv)
       if (strcmp(device, "ps:html") == 0) {
 	device = "ps";
 	html = 1;
+      } else if (strcmp(device, "MathML") == 0) {
+	output_format = mathml;
+	load_startup_file = 0;
       }
       break;
     case 's':
@@ -349,19 +356,21 @@ int main(int argc, char **argv)
     }
   init_table(device);
   init_char_table();
-  printf(".if !'\\*(.T'%s' "
-	 ".if !'\\*(.T'html' "	// the html device uses `-Tps' to render
-				// equations as images
-	 ".tm warning: %s should have been given a `-T\\*(.T' option\n",
-	 device, program_name);
-  printf(".if '\\*(.T'html' "
-	 ".if !'%s'ps' "
-	 ".tm warning: %s should have been given a `-Tps' option\n",
-	 device, program_name);
-  printf(".if '\\*(.T'html' "
-	 ".if !'%s'ps' "
-	 ".tm warning: (it is advisable to invoke groff via: groff -Thtml -e)\n",
-	 device);
+  if (output_format == troff) {
+    printf(".if !'\\*(.T'%s' "
+	   ".if !'\\*(.T'html' "	// the html device uses `-Tps' to render
+				  // equations as images
+	   ".tm warning: %s should have been given a `-T\\*(.T' option\n",
+	   device, program_name);
+    printf(".if '\\*(.T'html' "
+	   ".if !'%s'ps' "
+	   ".tm warning: %s should have been given a `-Tps' option\n",
+	   device, program_name);
+    printf(".if '\\*(.T'html' "
+	   ".if !'%s'ps' "
+	   ".tm warning: (it is advisable to invoke groff via: groff -Thtml -e)\n",
+	   device);
+  }
   if (load_startup_file) {
     char *path;
     FILE *fp = config_macro_path.open_file(STARTUP_FILE, &path);

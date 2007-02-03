@@ -29,6 +29,8 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include "box.h"
 
+typedef enum {troff, mathml} eqnmode_t;
+
 extern char start_delim;
 extern char end_delim;
 extern int non_empty_flag;
@@ -37,6 +39,7 @@ extern int draw_flag;
 extern int one_size_reduction_flag;
 extern int compatible_flag;
 extern int nroff;
+extern eqnmode_t output_format;
 
 void init_lex(const char *str, const char *filename, int lineno);
 void lex_error(const char *message,

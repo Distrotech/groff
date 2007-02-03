@@ -176,13 +176,16 @@ a smaller size than\~\c
 .BI \-T name
 The output is for device
 .IR name .
-The only effect of this is to define a macro
+Normally, the only effect of this is to define a macro
 .I name
 with a value of\~\c
-.BR 1 .
-Typically
+.BR 1 ;
 .B eqnrc
 will use this to provide definitions appropriate for the output device.
+However, if the specified device is "MathML", the output will be
+MathML markup rather than troff commands, and 
+.B eqnrc
+will not be loaded at all.
 The default output device is
 .BR @DEVICE@ .
 .
@@ -232,10 +235,16 @@ Only the differences between GNU
 .B eqn
 and Unix eqn are described here.
 .
-.LP
-Most of the new features of GNU
+GNU
 .B eqn
-are based on \*(tx.
+emits Presentation MathML output when invoked with the 
+,B -T MathML
+option.
+.
+.LP
+Most of the new features of the GNU
+.B eqn
+input language are based on \*(tx.
 There are some references to the differences between \*(tx and GNU
 .B eqn
 below;
@@ -349,6 +358,11 @@ subsection.
 .
 .SS New primitives
 .TP
+.IB big\ e1
+Enlarges the expression it modifies; intended to have semantics like 
+CSS 'large'.  In troff output, the point size is increased by 5; in 
+MathML output, the expression is wrapped in an <mstyle mathsize='big'>
+pair.
 .IB e1\  smallover\  e2
 This is similar to
 .BR over ;
@@ -389,6 +403,8 @@ is defined as
 .B
 { type "operator" vcenter size +5 \e(*S }
 .RE
+.
+(Note that vcenter is silently ignored when generating MathML.)
 .
 .TP
 .IB e1\  accent\  e2
@@ -726,6 +742,8 @@ The
 primitive emboldens an equation
 by overprinting two copies of the equation
 horizontally offset by this amount.
+(This parameter is not used in MathML mode; instead, fat text is
+wrapped in an <mstyle mathvariant='bold'> tag pair.)
 .
 .TP
 .B over_hang
@@ -1142,10 +1160,62 @@ will cause a character to be set in roman type.
 .B @MACRODIR@/eqnrc
 Initialization file.
 .
+.SH MATHML MODE LIMITATIONS
+MathML is designed on the assumption that it cannot know the exact
+physical characteristics of the media and devices on which it will
+be rendered.  It does not support fine control of motions and sizes
+to the same degree troff does. Thus:
+.IP * 
+.B eqn
+parameters have no effect on the generated MathML.
+.LP
+.IP *
+The 
+.BR special,
+.BR up ,
+.BR down ,
+.BR fwd ,
+and
+.BR back ,
+operations cannot be implemented, and will yield a
+MathML <merror> message instead.  
+.IP *
+The
+.B vcenter
+keyword is silently ignored, as centering on the math axis is the
+MathML default.
+.IP *
+Characters that eqn over troff sets extra large - notably the integral
+sign - may appear too small and need to have their <mstyle> wrappers 
+adjusted by hand.
+.LP
+As in its troff mode,
+.B eqn
+in MathML mode leaves the .EQ and .EN delimiters in place for 
+displayed equations, but emits no explicit delimiters around
+inline equations.  They can, however, be recognized as strings
+that begin with <math> and end with </math> and do not cross
+line boundaries.
+.LP
+See the 
+.B BUGS
+section for translation limits specific to 
+.BR eqn .
 .
 .SH BUGS
 Inline equations will be set at the point size that is current at the
 beginning of the input line.
+.
+In MathML mode, the
+.BR mark,
+and
+.B lineup
+features don't work.  These could, in theory, be implemented with 
+<maligngroup> elements.
+.
+In MathML mode, each digit of a numeric literal gets a separate
+<mn></mn> pair and decimal points get an <mo></mo>.  This is
+allowed by the specification, but inefficient.
 .
 .
 .SH "SEE ALSO"

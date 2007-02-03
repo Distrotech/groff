@@ -378,11 +378,17 @@ int delim_box::compute_metrics(int style)
 
 void delim_box::output()
 {
-  if (left)
-    printf("\\*[" LEFT_DELIM_STRING_FORMAT "]", uid);
-  p->output();
-  if (right)
-    printf("\\*[" RIGHT_DELIM_STRING_FORMAT "]", uid);
+  if (output_format == troff) {
+    if (left)
+      printf("\\*[" LEFT_DELIM_STRING_FORMAT "]", uid);
+    p->output();
+    if (right)
+      printf("\\*[" RIGHT_DELIM_STRING_FORMAT "]", uid);
+  } else if (output_format == mathml) {
+    printf("<mrow><mo>%s</mo>", left);
+    p->output();
+    printf("<mo>%s</mo></mrow>", right);
+  }
 }
 
 void delim_box::check_tabs(int level)

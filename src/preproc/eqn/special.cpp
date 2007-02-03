@@ -104,7 +104,10 @@ void special_box::compute_skew()
 
 void special_box::output()
 {
-  printf("\\*[" STRING_FORMAT "]", uid);
+  if (output_format == troff)
+    printf("\\*[" STRING_FORMAT "]", uid);
+  else if (output_format == mathml)
+    printf("<merror>eqn specials cannot be expressed in MathML</merror>");
 }
 
 void special_box::debug_print()

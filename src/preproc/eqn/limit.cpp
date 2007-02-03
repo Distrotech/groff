@@ -139,33 +139,53 @@ int limit_box::compute_metrics(int style)
 
 void limit_box::output()
 {
-  printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
-  if (to != 0) {
+  if (output_format == troff) {
+    printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
+    if (to != 0) {
+      printf("\\Z" DELIMITER_CHAR);
+      printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
+      printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u"
+	     "+(-\\n[" WIDTH_FORMAT "]u+\\n[" SUB_KERN_FORMAT "]u/2u)'",
+	     uid, to->uid, p->uid);
+      to->output();
+      printf(DELIMITER_CHAR);
+    }
+    if (from != 0) {
+      printf("\\Z" DELIMITER_CHAR);
+      printf("\\v'\\n[" SUB_LOWER_FORMAT "]u'", uid);
+      printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u"
+	     "+(-\\n[" SUB_KERN_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u)'",
+	     uid, p->uid, from->uid);
+      from->output();
+      printf(DELIMITER_CHAR);
+    }
+    printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
     printf("\\Z" DELIMITER_CHAR);
-    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
     printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u"
-	   "+(-\\n[" WIDTH_FORMAT "]u+\\n[" SUB_KERN_FORMAT "]u/2u)'",
-	   uid, to->uid, p->uid);
-    to->output();
+	   "-(\\n[" WIDTH_FORMAT "]u/2u)'",
+	   uid, p->uid);
+    p->output();
     printf(DELIMITER_CHAR);
+    printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
+  } else if (output_format == mathml) {
+    if (from != 0 && to != 0) {
+      printf("<munderover>");
+      p->output();
+      from->output();
+      to->output();
+      printf("</munderover>");
+    } else if (from != 0) {
+      printf("<munder>");
+      p->output();
+      from->output();
+      printf("</munder>");
+    }  else if (to != 0) {
+      printf("<mover>");
+      p->output();
+      to->output();
+      printf("</mover>");
+    }
   }
-  if (from != 0) {
-    printf("\\Z" DELIMITER_CHAR);
-    printf("\\v'\\n[" SUB_LOWER_FORMAT "]u'", uid);
-    printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u"
-	   "+(-\\n[" SUB_KERN_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u)'",
-	   uid, p->uid, from->uid);
-    from->output();
-    printf(DELIMITER_CHAR);
-  }
-  printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u"
-	 "-(\\n[" WIDTH_FORMAT "]u/2u)'",
-	 uid, p->uid);
-  p->output();
-  printf(DELIMITER_CHAR);
-  printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
 }
 
 void limit_box::debug_print()

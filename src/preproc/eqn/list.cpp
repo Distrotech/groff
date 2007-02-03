@@ -208,8 +208,10 @@ void list_box::compute_subscript_kern()
 
 void list_box::output()
 {
+  if (output_format == mathml)
+    printf("<mrow>");
   for (int i = 0; i < list.len; i++) {
-    if (i > 0) {
+    if (output_format == troff && i > 0) {
       int n = compute_spacing(is_script,
 			      list.p[i-1]->spacing_type,
 			      list.p[i]->spacing_type);
@@ -218,6 +220,8 @@ void list_box::output()
     }
     list.p[i]->output();
   }
+  if (output_format == mathml)
+    printf("</mrow>");
 }
 
 void list_box::handle_char_type(int st, int ft)

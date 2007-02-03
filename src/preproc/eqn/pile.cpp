@@ -56,45 +56,62 @@ int pile_box::compute_metrics(int style)
 
 void pile_box::output()
 {
-  int i;
-  printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
-  for (i = 0; i < col.len; i++) {
-    switch (col.align) {
-    case LEFT_ALIGN:
-      break;
-    case CENTER_ALIGN:
-      printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
-	     uid, col.p[i]->uid);
-      break;
-    case RIGHT_ALIGN:
-      printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
-	     uid, col.p[i]->uid);
-      break;
-    default:
-      assert(0);
+  if (output_format == troff) {
+    int i;
+    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
+    for (i = 0; i < col.len; i++) {
+      switch (col.align) {
+      case LEFT_ALIGN:
+	break;
+      case CENTER_ALIGN:
+	printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
+	       uid, col.p[i]->uid);
+	break;
+      case RIGHT_ALIGN:
+	printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
+	       uid, col.p[i]->uid);
+	break;
+      default:
+	assert(0);
+      }
+      col.p[i]->output();
+      printf("\\h'-\\n[" WIDTH_FORMAT "]u'", col.p[i]->uid);
+      switch (col.align) {
+      case LEFT_ALIGN:
+	break;
+      case CENTER_ALIGN:
+	printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
+	       col.p[i]->uid, uid);
+	break;
+      case RIGHT_ALIGN:
+	printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
+	       col.p[i]->uid, uid);
+	break;
+      default:
+	assert(0);
+      }
+      if (i != col.len - 1)
+	printf("\\v'\\n[" BASELINE_SEP_FORMAT "]u'", uid);
     }
-    col.p[i]->output();
-    printf("\\h'-\\n[" WIDTH_FORMAT "]u'", col.p[i]->uid);
+    printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
+    printf("\\v'-(%du*\\n[" BASELINE_SEP_FORMAT "]u)'", col.len - 1, uid);
+    printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
+  } else if (output_format == mathml) {
+    char *av;
     switch (col.align) {
-    case LEFT_ALIGN:
-      break;
-    case CENTER_ALIGN:
-      printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
-	     col.p[i]->uid, uid);
-      break;
-    case RIGHT_ALIGN:
-      printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
-	     col.p[i]->uid, uid);
-      break;
-    default:
-      assert(0);
+      case LEFT_ALIGN: av = "left"; break;
+      case RIGHT_ALIGN: av = "right"; break;
+      case CENTER_ALIGN: av = "center"; break;
+      default: assert(0);
     }
-    if (i != col.len - 1)
-      printf("\\v'\\n[" BASELINE_SEP_FORMAT "]u'", uid);
+    printf("<mtable columnalign='%s'>", av);
+    for (int i = 0; i < col.len; i++) {
+      printf("<mtr><mtd>");
+      col.p[i]->output();
+      printf("</mtd></mtr>");
+    }
+    printf("</mtable>");
   }
-  printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
-  printf("\\v'-(%du*\\n[" BASELINE_SEP_FORMAT "]u)'", col.len - 1, uid);
-  printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
 }
 
 pile_box::pile_box(box *pp) : col(pp)
@@ -163,51 +180,73 @@ int matrix_box::compute_metrics(int style)
 
 void matrix_box::output()
 {
-  printf("\\h'%dM'", matrix_side_sep);
-  for (int i = 0; i < len; i++) {
-    int j;
-    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
-    for (j = 0; j < p[i]->len; j++) {
-      switch (p[i]->align) {
-      case LEFT_ALIGN:
-	break;
-      case CENTER_ALIGN:
-	printf("\\h'\\n[" COLUMN_WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
-	       uid, i, p[i]->p[j]->uid);
-	break;
-      case RIGHT_ALIGN:
-	printf("\\h'\\n[" COLUMN_WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
-	       uid, i, p[i]->p[j]->uid);
-	break;
-      default:
-	assert(0);
+  if (output_format == troff) {
+    printf("\\h'%dM'", matrix_side_sep);
+    for (int i = 0; i < len; i++) {
+      int j;
+      printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
+      for (j = 0; j < p[i]->len; j++) {
+	switch (p[i]->align) {
+	case LEFT_ALIGN:
+	  break;
+	case CENTER_ALIGN:
+	  printf("\\h'\\n[" COLUMN_WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
+		 uid, i, p[i]->p[j]->uid);
+	  break;
+	case RIGHT_ALIGN:
+	  printf("\\h'\\n[" COLUMN_WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
+		 uid, i, p[i]->p[j]->uid);
+	  break;
+	default:
+	  assert(0);
+	}
+	p[i]->p[j]->output();
+	printf("\\h'-\\n[" WIDTH_FORMAT "]u'", p[i]->p[j]->uid);
+	switch (p[i]->align) {
+	case LEFT_ALIGN:
+	  break;
+	case CENTER_ALIGN:
+	  printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" COLUMN_WIDTH_FORMAT "]u/2u'",
+		 p[i]->p[j]->uid, uid, i);
+	  break;
+	case RIGHT_ALIGN:
+	  printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" COLUMN_WIDTH_FORMAT "]u'",
+		 p[i]->p[j]->uid, uid, i);
+	  break;
+	default:
+	  assert(0);
+	}
+	if (j != p[i]->len - 1)
+	  printf("\\v'\\n[" BASELINE_SEP_FORMAT "]u'", uid);
       }
-      p[i]->p[j]->output();
-      printf("\\h'-\\n[" WIDTH_FORMAT "]u'", p[i]->p[j]->uid);
-      switch (p[i]->align) {
-      case LEFT_ALIGN:
-	break;
-      case CENTER_ALIGN:
-	printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" COLUMN_WIDTH_FORMAT "]u/2u'",
-	       p[i]->p[j]->uid, uid, i);
-	break;
-      case RIGHT_ALIGN:
-	printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" COLUMN_WIDTH_FORMAT "]u'",
-	       p[i]->p[j]->uid, uid, i);
-	break;
-      default:
-	assert(0);
-      }
-      if (j != p[i]->len - 1)
-	printf("\\v'\\n[" BASELINE_SEP_FORMAT "]u'", uid);
+      printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
+      printf("\\v'-(%du*\\n[" BASELINE_SEP_FORMAT "]u)'", p[i]->len - 1, uid);
+      printf("\\h'\\n[" COLUMN_WIDTH_FORMAT "]u'", uid, i);
+      if (i != len - 1)
+	printf("\\h'%dM'", column_sep);
     }
-    printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
-    printf("\\v'-(%du*\\n[" BASELINE_SEP_FORMAT "]u)'", p[i]->len - 1, uid);
-    printf("\\h'\\n[" COLUMN_WIDTH_FORMAT "]u'", uid, i);
-    if (i != len - 1)
-      printf("\\h'%dM'", column_sep);
+    printf("\\h'%dM'", matrix_side_sep);
+  } else if (output_format == mathml) {
+    int n = p[0]->len;	// Each column must have the same number of rows in it
+    printf("<mtable>");
+    for (int i = 0; i < n; i++) {
+      printf("<mtr>");
+      for (int j = 0; j < len; j++) {
+	char *av;
+	switch (p[j]->align) {
+	case LEFT_ALIGN: av = "left"; break;
+	case RIGHT_ALIGN: av = "right"; break;
+	case CENTER_ALIGN: av = "center"; break;
+	default: assert(0);
+	}
+	printf("<mtd columnalign='%s'>", av);
+	p[j]->p[i]->output();
+	printf("</mtd>");
+      }
+      printf("</mtr>");
+    }
+    printf("</mtable>");
   }
-  printf("\\h'%dM'", matrix_side_sep);
 }
 
 matrix_box::matrix_box(column *pp)

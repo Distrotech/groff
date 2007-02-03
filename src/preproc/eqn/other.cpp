@@ -65,17 +65,24 @@ int accent_box::compute_metrics(int style)
 
 void accent_box::output()
 {
-  printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u+\\n["
-	 SKEW_FORMAT "]u'",
-	 p->uid, ab->uid, p->uid);
-  printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid); 
-  ab->output();
-  printf("\\h'-\\n[" WIDTH_FORMAT "]u'", ab->uid);
-  printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
-  printf("\\h'-(\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u+\\n["
-	 SKEW_FORMAT "]u)'",
-	 p->uid, ab->uid, p->uid);
-  p->output();
+  if (output_format == troff) {
+    printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u+\\n["
+	   SKEW_FORMAT "]u'",
+	   p->uid, ab->uid, p->uid);
+    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid); 
+    ab->output();
+    printf("\\h'-\\n[" WIDTH_FORMAT "]u'", ab->uid);
+    printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
+    printf("\\h'-(\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u+\\n["
+	   SKEW_FORMAT "]u)'",
+	   p->uid, ab->uid, p->uid);
+    p->output();
+  } else if (output_format == mathml) {
+    printf("<mover accent='true'>");
+    p->output();
+    ab->output();
+    printf("</mover>")
+  }
 }
 #endif
 
@@ -110,19 +117,26 @@ int accent_box::compute_metrics(int style)
 
 void accent_box::output()
 {
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u+\\n[" SKEW_FORMAT "]u"
-	 "-(\\n[" WIDTH_FORMAT "]u/2u)'",
-	 uid, p->uid, ab->uid);
-  printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid); 
-  ab->output();
-  printf(DELIMITER_CHAR);
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u-(\\n[" WIDTH_FORMAT "]u/2u)'",
-	 uid, p->uid);
-  p->output();
-  printf(DELIMITER_CHAR);
-  printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
+  if (output_format == troff) {
+    printf("\\Z" DELIMITER_CHAR);
+    printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u+\\n[" SKEW_FORMAT "]u"
+	   "-(\\n[" WIDTH_FORMAT "]u/2u)'",
+	   uid, p->uid, ab->uid);
+    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid); 
+    ab->output();
+    printf(DELIMITER_CHAR);
+    printf("\\Z" DELIMITER_CHAR);
+    printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u-(\\n[" WIDTH_FORMAT "]u/2u)'",
+	   uid, p->uid);
+    p->output();
+    printf(DELIMITER_CHAR);
+    printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
+  } else if (output_format == mathml) {
+    printf("<mover accent='true'>");
+    p->output();
+    ab->output();
+    printf("</mover>");
+  }
 }
 
 void accent_box::check_tabs(int level)
@@ -153,10 +167,14 @@ overline_char_box::overline_char_box()
 
 void overline_char_box::output()
 {
-  printf("\\v'-%dM/2u-%dM'", 7*default_rule_thickness, x_height);
-  printf((draw_flag ? "\\D'l%dM 0'" : "\\l'%dM\\&\\(ru'"),
-	 accent_width);
-  printf("\\v'%dM/2u+%dM'", 7*default_rule_thickness, x_height);
+  if (output_format == troff) {
+    printf("\\v'-%dM/2u-%dM'", 7*default_rule_thickness, x_height);
+    printf((draw_flag ? "\\D'l%dM 0'" : "\\l'%dM\\&\\(ru'"),
+	   accent_width);
+    printf("\\v'%dM/2u+%dM'", 7*default_rule_thickness, x_height);
+  } else if (output_format == mathml) {
+    printf("<mo>&macr;</mo>");
+  }
 }
 
 void overline_char_box::debug_print()
@@ -197,16 +215,22 @@ int overline_box::compute_metrics(int style)
 
 void overline_box::output()
 {
-  // 9
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\v'-\\n[" HEIGHT_FORMAT "]u-(%dM/2u)'",
-	 p->uid, 7*default_rule_thickness);
-  if (draw_flag)
-    printf("\\D'l\\n[" WIDTH_FORMAT "]u 0'", p->uid);
-  else
-    printf("\\l'\\n[" WIDTH_FORMAT "]u\\&\\(ru'", p->uid);
-  printf(DELIMITER_CHAR);
-  p->output();
+  if (output_format == troff) {
+    // 9
+    printf("\\Z" DELIMITER_CHAR);
+    printf("\\v'-\\n[" HEIGHT_FORMAT "]u-(%dM/2u)'",
+	   p->uid, 7*default_rule_thickness);
+    if (draw_flag)
+      printf("\\D'l\\n[" WIDTH_FORMAT "]u 0'", p->uid);
+    else
+      printf("\\l'\\n[" WIDTH_FORMAT "]u\\&\\(ru'", p->uid);
+    printf(DELIMITER_CHAR);
+    p->output();
+  } else if (output_format == mathml) {
+    printf("<mover accent='false'>");
+    p->output();
+    printf("<mo>&macr;</mo></mover>");
+  }
 }
 
 void overline_box::debug_print()
@@ -267,18 +291,25 @@ int uaccent_box::compute_metrics(int style)
 
 void uaccent_box::output()
 {
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u-(\\n[" WIDTH_FORMAT "]u/2u)'",
-	 uid, ab->uid);
-  printf("\\v'\\n[" DEPTH_FORMAT "]u'", p->uid); 
-  ab->output();
-  printf(DELIMITER_CHAR);
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u-(\\n[" WIDTH_FORMAT "]u/2u)'",
-	 uid, p->uid);
-  p->output();
-  printf(DELIMITER_CHAR);
-  printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
+  if (output_format == troff) {
+    printf("\\Z" DELIMITER_CHAR);
+    printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u-(\\n[" WIDTH_FORMAT "]u/2u)'",
+	   uid, ab->uid);
+    printf("\\v'\\n[" DEPTH_FORMAT "]u'", p->uid); 
+    ab->output();
+    printf(DELIMITER_CHAR);
+    printf("\\Z" DELIMITER_CHAR);
+    printf("\\h'\\n[" LEFT_WIDTH_FORMAT "]u-(\\n[" WIDTH_FORMAT "]u/2u)'",
+	   uid, p->uid);
+    p->output();
+    printf(DELIMITER_CHAR);
+    printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
+  } else if (output_format == mathml) {
+    printf("<munder accent='true'>");
+    p->output();
+    ab->output();
+    printf("</munder>");
+  }
 }
 
 void uaccent_box::check_tabs(int level)
@@ -314,10 +345,14 @@ underline_char_box::underline_char_box()
 
 void underline_char_box::output()
 {
-  printf("\\v'%dM/2u'", 7*default_rule_thickness);
-  printf((draw_flag ? "\\D'l%dM 0'" : "\\l'%dM\\&\\(ru'"),
-	 accent_width);
-  printf("\\v'-%dM/2u'", 7*default_rule_thickness);
+  if (output_format == troff) {
+    printf("\\v'%dM/2u'", 7*default_rule_thickness);
+    printf((draw_flag ? "\\D'l%dM 0'" : "\\l'%dM\\&\\(ru'"),
+	   accent_width);
+    printf("\\v'-%dM/2u'", 7*default_rule_thickness);
+  } else if (output_format == mathml) {
+    printf("<mo>&lowbar;</mo>");
+  }
 }
 
 void underline_char_box::debug_print()
@@ -360,16 +395,22 @@ int underline_box::compute_metrics(int style)
 
 void underline_box::output()
 {
-  // 10
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\v'\\n[" DEPTH_FORMAT "]u+(%dM/2u)'",
-	 p->uid, 7*default_rule_thickness);
-  if (draw_flag)
-    printf("\\D'l\\n[" WIDTH_FORMAT "]u 0'", p->uid);
-  else
-    printf("\\l'\\n[" WIDTH_FORMAT "]u\\&\\(ru'", p->uid);
-  printf(DELIMITER_CHAR);
-  p->output();
+  if (output_format == troff) {
+    // 10
+    printf("\\Z" DELIMITER_CHAR);
+    printf("\\v'\\n[" DEPTH_FORMAT "]u+(%dM/2u)'",
+	   p->uid, 7*default_rule_thickness);
+    if (draw_flag)
+      printf("\\D'l\\n[" WIDTH_FORMAT "]u 0'", p->uid);
+    else
+      printf("\\l'\\n[" WIDTH_FORMAT "]u\\&\\(ru'", p->uid);
+    printf(DELIMITER_CHAR);
+    p->output();
+  } else if (output_format == mathml) {
+    printf("<munder accent='true'>");
+    p->output();
+    printf("<mo>&macr;</mo></munder>");
+  }
 }
 
 // we want an underline box to have 0 subscript kern
@@ -405,9 +446,15 @@ int size_box::compute_metrics(int style)
 
 void size_box::output()
 {
-  printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
-  p->output();
-  printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
+  if (output_format == troff) {
+    printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
+    p->output();
+    printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
+  } else if (output_format == mathml) {
+    printf("<mstyle mathsize='%s'>", size);
+    p->output();
+    printf("</mstyle>");
+  }
 }
 
 size_box::~size_box()
@@ -449,12 +496,32 @@ int font_box::compute_metrics(int style)
 
 void font_box::output()
 {
-  printf("\\f[%s]", f);
-  const char *old_roman_font = current_roman_font;
-  current_roman_font = f;
-  p->output();
-  current_roman_font = old_roman_font;
-  printf("\\f[\\n[" FONT_FORMAT "]]", uid);
+  if (output_format == troff) {
+    printf("\\f[%s]", f);
+    const char *old_roman_font = current_roman_font;
+    current_roman_font = f;
+    p->output();
+    current_roman_font = old_roman_font;
+    printf("\\f[\\n[" FONT_FORMAT "]]", uid);
+  } else if (output_format == mathml) {
+    char *mlfont = f;
+    // bold and italic are already in MathML; translate eqn roman here
+    switch (f[0]) {
+    case 'I': case 'i':
+      mlfont = "italic";
+      break;
+    case 'B': case 'b':
+      mlfont = "bold";
+      break;
+    case 'R': case 'r':
+    default:
+      mlfont = "normal";
+      break;
+    }
+    printf("<mstyle mathvariant='%s'>", mlfont);
+    p->output();
+    printf("</mstyle>");
+  }
 }
 
 void font_box::debug_print()
@@ -480,10 +547,16 @@ int fat_box::compute_metrics(int style)
 
 void fat_box::output()
 {
-  p->output();
-  printf("\\h'-\\n[" WIDTH_FORMAT "]u'", p->uid);
-  printf("\\h'%dM'", fat_offset);
-  p->output();
+  if (output_format == troff) {
+    p->output();
+    printf("\\h'-\\n[" WIDTH_FORMAT "]u'", p->uid);
+    printf("\\h'%dM'", fat_offset);
+    p->output();
+  } else if (output_format == mathml) {
+    printf("<mstyle mathvariant='double-struck'>");
+    p->output();
+    printf("</mstyle>");
+  }
 }
 
 
@@ -519,9 +592,14 @@ int vmotion_box::compute_metrics(int style)
 
 void vmotion_box::output()
 {
-  printf("\\v'%dM'", -n);
-  p->output();
-  printf("\\v'%dM'", n);
+  if (output_format == troff) {
+    printf("\\v'%dM'", -n);
+    p->output();
+    printf("\\v'%dM'", n);
+  } else if (output_format == mathml) {
+    printf("<merror>eqn vertical motion cannot be expressed in MathML</merror>");
+    p->output();
+  }
 }
 
 void vmotion_box::debug_print()
@@ -552,8 +630,13 @@ int hmotion_box::compute_metrics(int style)
 
 void hmotion_box::output()
 {
-  printf("\\h'%dM'", n);
-  p->output();
+  if (output_format == troff) {
+    printf("\\h'%dM'", n);
+    p->output();
+  } else if (output_format == mathml) {
+    printf("<merror>eqn horizontal motion cannot be expessed in MathML</merror>");
+    p->output();
+  }
 }
 
 void hmotion_box::debug_print()
@@ -587,9 +670,11 @@ int vcenter_box::compute_metrics(int style)
 
 void vcenter_box::output()
 {
-  printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
+  if (output_format == troff)
+    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
   p->output();
-  printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
+  if (output_format == troff)
+    printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
 }
 
 void vcenter_box::debug_print()

@@ -118,64 +118,72 @@ int over_box::compute_metrics(int style)
 
 void over_box::output()
 {
-  if (reduce_size)
-    printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
-#ifdef USE_Z
-  printf("\\Z" DELIMITER_CHAR);
-#endif
-  // move up to the numerator baseline
-  printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
-  // move across so that it's centered
-  printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
-	 uid, num->uid);
+  if (output_format == troff) {
+    if (reduce_size)
+      printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
+  #ifdef USE_Z
+    printf("\\Z" DELIMITER_CHAR);
+  #endif
+    // move up to the numerator baseline
+    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
+    // move across so that it's centered
+    printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
+	   uid, num->uid);
 
-  // print the numerator
-  num->output();
+    // print the numerator
+    num->output();
 
-#ifdef USE_Z
-  printf(DELIMITER_CHAR);
-#else
-  // back again
-  printf("\\h'-\\n[" WIDTH_FORMAT "]u'", num->uid);
-  printf("\\h'-(\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u)'",
-	 uid, num->uid);
-  // down again
-  printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
-#endif
-#ifdef USE_Z
-  printf("\\Z" DELIMITER_CHAR);
-#endif
-  // move down to the denominator baseline
-  printf("\\v'\\n[" SUB_LOWER_FORMAT "]u'", uid);
+  #ifdef USE_Z
+    printf(DELIMITER_CHAR);
+  #else
+    // back again
+    printf("\\h'-\\n[" WIDTH_FORMAT "]u'", num->uid);
+    printf("\\h'-(\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u)'",
+	   uid, num->uid);
+    // down again
+    printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
+  #endif
+  #ifdef USE_Z
+    printf("\\Z" DELIMITER_CHAR);
+  #endif
+    // move down to the denominator baseline
+    printf("\\v'\\n[" SUB_LOWER_FORMAT "]u'", uid);
 
-  // move across so that it's centered
-  printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
-	 uid, den->uid);
+    // move across so that it's centered
+    printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u'",
+	   uid, den->uid);
 
-  // print the the denominator
-  den->output();
+    // print the the denominator
+    den->output();
 
-#ifdef USE_Z
-  printf(DELIMITER_CHAR);
-#else
-  // back again
-  printf("\\h'-\\n[" WIDTH_FORMAT "]u'", den->uid);
-  printf("\\h'-(\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u)'",
-	 uid, den->uid);
-  // up again
-  printf("\\v'-\\n[" SUB_LOWER_FORMAT "]u'", uid);
-#endif
-  if (reduce_size)
-    printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
-  // draw the line
-  printf("\\h'%dM'", null_delimiter_space);
-  printf("\\v'-%dM'", axis_height);
-  fputs(draw_flag ? "\\D'l" : "\\l'", stdout);
-  printf("\\n[" WIDTH_FORMAT "]u-%dM",
-	 uid, 2*null_delimiter_space);
-  fputs(draw_flag ? " 0'" : "\\&\\(ru'", stdout);
-  printf("\\v'%dM'", axis_height);
-  printf("\\h'%dM'", null_delimiter_space);
+  #ifdef USE_Z
+    printf(DELIMITER_CHAR);
+  #else
+    // back again
+    printf("\\h'-\\n[" WIDTH_FORMAT "]u'", den->uid);
+    printf("\\h'-(\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u/2u)'",
+	   uid, den->uid);
+    // up again
+    printf("\\v'-\\n[" SUB_LOWER_FORMAT "]u'", uid);
+  #endif
+    if (reduce_size)
+      printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
+    // draw the line
+    printf("\\h'%dM'", null_delimiter_space);
+    printf("\\v'-%dM'", axis_height);
+    fputs(draw_flag ? "\\D'l" : "\\l'", stdout);
+    printf("\\n[" WIDTH_FORMAT "]u-%dM",
+	   uid, 2*null_delimiter_space);
+    fputs(draw_flag ? " 0'" : "\\&\\(ru'", stdout);
+    printf("\\v'%dM'", axis_height);
+    printf("\\h'%dM'", null_delimiter_space);
+  } else if (output_format == mathml) {
+    // FIXME: passing a displaystyle attribute doesn't validate.
+    printf("<mfrac>");
+    num->output();
+    den->output();
+    printf("</mfrac>");
+  }
 }
 
 void over_box::debug_print()

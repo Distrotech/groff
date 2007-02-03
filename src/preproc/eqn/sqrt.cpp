@@ -150,21 +150,27 @@ int sqrt_box::compute_metrics(int style)
 
 void sqrt_box::output()
 {
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
-  printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
-  printf("\\*[" SQRT_STRING_FORMAT "]", uid);
-  printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
-  printf(DELIMITER_CHAR);
+  if (output_format == troff) {
+    printf("\\Z" DELIMITER_CHAR);
+    printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
+    printf("\\v'-\\n[" SUP_RAISE_FORMAT "]u'", uid);
+    printf("\\*[" SQRT_STRING_FORMAT "]", uid);
+    printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
+    printf(DELIMITER_CHAR);
 
-  printf("\\Z" DELIMITER_CHAR);
-  printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u"
-	 "+\\n[" SQRT_WIDTH_FORMAT "]u/2u'",
-	 uid, p->uid, uid);
-  p->output();
-  printf(DELIMITER_CHAR);
+    printf("\\Z" DELIMITER_CHAR);
+    printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u"
+	   "+\\n[" SQRT_WIDTH_FORMAT "]u/2u'",
+	   uid, p->uid, uid);
+    p->output();
+    printf(DELIMITER_CHAR);
 
-  printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
+    printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
+  } else if (output_format == mathml) {
+    printf("<msqrt>");
+    p->output();
+    printf("</msqrt>");
+  }
 }
 
 void sqrt_box::debug_print()
