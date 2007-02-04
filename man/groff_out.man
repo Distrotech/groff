@@ -30,16 +30,6 @@ FDL in the main directory of the groff source package.
 .
 .mso www.tmac
 .
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
-.
-.if '\*[.T]'dvi' \
-.  ftr CB CW
-.
 .if t \{\
 .EQ
 delim $$
@@ -70,12 +60,6 @@ after these commands, otherwise the position is not changed.
 .
 .de Text
 .  nop \)\$*
-..
-.c follow-up line for a .TP header
-.de TP+
-.  br
-.  ns
-.  TP \$1
 ..
 .c a bulleted paragraph
 .de Topic
@@ -178,7 +162,7 @@ after these commands, otherwise the position is not changed.
 .  ds @arg1 \$1\"
 .  ds @arg2 \$2\"
 .  shift 2
-.  TP+
+.  TQ
 .  Text "\f[B]\*[@arg1]\f[]\ \f[I]\,\*[@arg2]\/\f[]\$*"
 .  rm @arg1
 .  rm @arg2
@@ -195,7 +179,7 @@ after these commands, otherwise the position is not changed.
 .de D-command+
 .  ds @sub \$1\"
 .  shift 1
-.  TP+
+.  TQ
 .  Text "\f[B]D\*[@sub]\f[]\ \f[I]\,\$*\/\f[]\*[@linebreak]"
 .  rm @sub
 ..
@@ -2099,7 +2083,7 @@ described only parts of the
 .I groff
 extensions of the output language.
 .
-It has been rewritten 2002 by \m[blue]Bernd Warken\m[] and is
+It was rewritten in 2002 by Bernd Warken and is
 maintained by
 .MT wl@gnu.org .
 Werner Lemberg
