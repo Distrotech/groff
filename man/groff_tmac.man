@@ -280,7 +280,7 @@ Switch to the EC and TC font families.
 .
 To be used with
 .BR \%grodvi (@MAN1EXT@)
-\[en] this man page also gives more details how to use it.	
+\[en] this man page also gives more details of how to use it.	
 .
 .
 .TP
@@ -458,7 +458,7 @@ normal tty formatting to allow processing with critical equipment.
 .
 .TP
 .B www
-Additions of elements known from the html format, as being used in the
+Additions of elements known from the html format, as used in the
 internet (World Wide Web) pages; this includes URL links and mail
 addresses; see
 .BR groff_www (@MAN7EXT@).
@@ -468,17 +468,17 @@ addresses; see
 .SH NAMING
 .\" --------------------------------------------------------------------
 .
-In classical roff systems, there was a funny naming scheme for macro
-packages, due to a simplistic design in option parsing.
-.
-Macro packages were always included by option
+Classical roff systems were designed before the conventions of the
+modern C 
+.BR getopt (3)
+call evolved, and used a naming scheme for macro packages that looks
+odd to modern eyes. Macro packages were always included with the option
 .BR -m ;
 when this option was directly followed by its argument without an
 intervening space, this looked like a long option preceded by a single
 minus \[em] a sensation in the computer stone age.
-.
-To make this optically working for macro package names, all classical
-macro packages choose a name that started with the letter `m',
+To make this invocation form work, classical troff
+macro packages used names that started with the letter `m',
 which was omitted in the naming of the macro file.
 .
 .
@@ -499,7 +499,7 @@ for short.
 .P
 For similar reasons, macro packages that did not start with an `m'
 had a leading `m'
-added in the documentation and in talking; for example, the package
+added in the documentation and in speech; for example, the package
 corresponding to
 .I tmac.doc
 was called
@@ -795,7 +795,7 @@ and
 the name under which the macro was called is in
 .BR $0 ,
 and the number of arguments is in register
-.BR \n[.$] ;
+.BR \en[.$] ;
 see
 .BR groff (@MAN7EXT@).
 .
@@ -994,7 +994,7 @@ and macro calls (arbitrary whitespace after the leading dot).
 .SS "Diversions"
 .\" --------------------------------------------------------------------
 .
-Diversions can be used to realize quite advanced programming
+Diversions can be used to implement quite advanced programming
 constructs.
 .
 They are comparable to pointers to large data structures in the
@@ -1010,11 +1010,10 @@ diversion just like a macro.
 .
 .
 .P
-Most of the problems arising with diversions can be avoided if you are
-conscious about the fact that diversions always deal with complete
-lines.
+Most of the problems arising with diversions can be avoided if you remain
+aware of the fact that diversions always store complete lines.
 .
-If diversions are used when the line buffer has not been flashed,
+If diversions are used when the line buffer has not been flushed,
 strange results are produced; not knowing this, many people get
 desperate about diversions.
 .
@@ -1022,7 +1021,7 @@ To ensure that a diversion works, line breaks should be added at the
 right places.
 .
 To be on the secure side, enclose everything that has to do with
-diversions into a pair of line breaks; for example, by amply using
+diversions into a pair of line breaks; for example, by explicitly using
 .B .br
 requests.
 .
