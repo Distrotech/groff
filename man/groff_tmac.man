@@ -14,7 +14,7 @@ groff_tmac.5
 
 File position: <groff-source>/man/groff_tmac.man
 
-Last update: 18 Dec 2006
+Last update: 4 Feb 2007
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -40,19 +40,8 @@ FDL in the main directory of the groff source package.
 .do nr groff_tmac_C \n[.C]
 .cp 0
 .
-.mso www.tmac
-.
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
 .
 .ds Ellipsis \&.\|.\|.\&\"
-.
-.\" Global static variables for inter-macro communication
-.rr @+Example_font
 .
 .\" --------------------------------------------------------------------
 .\" setup for the macro definitions below
@@ -119,27 +108,6 @@ FDL in the main directory of the groff source package.
 .  tm \\$*
 .  ab
 ..
-.c --------------------------------------------------------------------
-.de Example
-.  if r@+Example_font \
-.    Error previous .Example was not terminated by a ./Example
-.  nr @+Example_font \\n[.f]
-.  nh
-.  nf
-.  RS
-.  ft CR
-..
-.c --------------------------------------------------------------------
-.de /Example
-.  if !r@+Example_font \
-.    Error no previous call to .Example
-.  ft \\n[@+Example_font]
-.  RE
-.  fi
-.  hy
-.  rr @+Example_font
-..
-.
 .c --------------------------------------------------------------------
 .c .Shell_cmd  (<CR> [<CI>] ...)
 .c
@@ -236,16 +204,6 @@ FDL in the main directory of the groff source package.
 .  TP \\*[@indent]
 .  Text \[bu]
 .  rm @indent
-..
-.c --------------------------------------------------------------------
-.c .TP+  ()
-.c
-.c Continuation line for .TP header.
-.c
-.de TP+
-.  br
-.  ns
-.  TP \\$1
 ..
 .c --------------------------------------------------------------------
 .de 'char
@@ -346,7 +304,7 @@ This is the classical macro package for UNIX manual pages
 .
 .TP
 .B doc
-.TP+
+.TQ
 .B mdoc
 An alternative macro package for man\~pages mainly used in BSD
 systems; it provides many new features, but it is not the standard for
@@ -410,7 +368,7 @@ macro package; see
 .
 .TP
 .B de
-.TP+
+.TQ
 .B den
 German localization support, including the main macro packages (me, mom, mm,
 and ms).
@@ -460,11 +418,11 @@ It should be used as the last macro package on the command line.
 .
 .TP
 .B latin1
-.TP+
+.TQ
 .B latin2
-.TP+
+.TQ
 .B latin5
-.TP+
+.TQ
 .B latin9
 Various input encodings supported directly by groff.
 .
@@ -495,9 +453,9 @@ available for a particular output device.
 For example, saying
 .
 .P
-.Example
-.  Text groff -Tlatin1 -mlatin9 ...
-./Example
+.EX
+groff -Tlatin1 -mlatin9 ...
+.EE
 .
 .P
 fails if you use the Euro character in the input.
@@ -675,14 +633,14 @@ covers the image's width.
 .
 .RS
 .IP
-.Example
+.EX
 .  Text .am PSPIC
 .  Text .\ \ vpt 0
 .  Text \[rs]h'(\[rs]\[rs]n[ps-offset]u + \[rs]\[rs]n[ps-deswid]u)'
 .  Text .\ \ sp -1
 .  Text .\ \ vpt 1
 .  Text ..
-./Example
+.EE
 .RE
 .
 .
@@ -912,17 +870,17 @@ At run-time, the formatter call for this is
 To include the macro file directly in the document either
 .
 .IP
-.Example
-.  Text .mso macrofile.tmac
-./Example
+.EX
+\&.mso macrofile.tmac
+.EE
 .
 .P
 is used or
 .
 .IP
-.Example
-.  Text .so @MACRODIR@/macros.tmac
-./Example
+.EX
+\&.so @MACRODIR@/macros.tmac
+.EE
 .
 .
 .P
@@ -1086,13 +1044,13 @@ say.
 .P
 .ds @1 \[rs]f[I]\[rs]\[rs]$0\[rs]f[]\"
 .ds @2 arguments:\"
-.Example
-.  Text .ds midpart was called with
-.  Text .de print_args
-.  Text .\ \ tm\ \*[@1]\ \[rs]\[rs]*[midpart]\ \[rs]\[rs]n[.$]\ \*[@2]
-.  Text .\ \ tm\ \[rs]\[rs]$*
-.  Text ..
-./Example
+.EX
+\&.ds midpart was called with
+\&.de print_args
+\&.\ \ tm\ \*[@1]\ \[rs]\[rs]*[midpart]\ \[rs]\[rs]n[.$]\ \*[@2]
+\&.\ \ tm\ \[rs]\[rs]$*
+\&..
+.EE
 .rm @1
 .rm @2
 .
@@ -1101,18 +1059,18 @@ say.
 When calling this macro by
 .
 .P
-.Example
-.  Text .print_args arg1 arg2
-./Example
+.EX
+\&.print_args arg1 arg2
+.EE
 .
 .P
 the following text is printed to the terminal:
 .
 .P
-.Example
-.  Text \f[CI]print_args\f[] was called with the following 2 arguments:
+.EX
+\&\f[CI]print_args\f[] was called with the following 2 arguments:
 arg1 arg2
-./Example
+.EE
 .
 .
 .P
@@ -1169,15 +1127,15 @@ For example, the code above can be written in a simpler way by
 .P
 .ds @1 \[rs]f[I]\[rs]$0\[rs]f[]\"
 .ds @2 arguments:\"
-.Example
-.  Text .eo
-.  Text .ds midpart was called with
-.  Text .de print_args
-.  Text .\ \ tm\ \*[@1]\ \[rs]*[midpart]\ \[rs]n[.$]\ \*[@2]
-.  Text .\ \ tm\ \[rs]$*
-.  Text ..
-.  Text .ec
-./Example
+.EX
+\&.eo
+\&.ds midpart was called with
+\&.de print_args
+\&.\ \ tm\ \*[@1]\ \[rs]*[midpart]\ \[rs]n[.$]\ \*[@2]
+\&.\ \ tm\ \[rs]$*
+\&..
+\&.ec
+.EE
 .rm @1
 .rm @2
 .
@@ -1207,13 +1165,13 @@ with a leading dot.
 .
 .RS
 .IP
-.Example
-.  Text .de Text
-.  Text .\ \ if (\[rs]\[rs]n[.$] == 0)\ \[rs]
-.  Text .\ \ \ \ return
-.  Text .\ \ nop\ \[rs])\[rs]\[rs]$*[rs]\)
-.  Text ..
-./Example
+.EX
+\&.de Text
+\&.\ \ if (\[rs]\[rs]n[.$] == 0)\ \[rs]
+\&.\ \ \ \ return
+\&.\ \ nop\ \[rs])\[rs]\[rs]$*[rs]\)
+\&..
+.EE
 .RE
 .
 .Topic
@@ -1226,11 +1184,11 @@ acts like a comment line:
 .
 .RS
 .IP
-.Example
-.  Text .de\ c
-.  Text ..
-.  Text .c\ This\ is\ like\ a\ comment\ line.
-./Example
+.EX
+\&.de\ c
+\&..
+\&.c\ This\ is\ like\ a\ comment\ line.
+.EE
 .RE
 .
 .Topic
@@ -1380,7 +1338,9 @@ Documentation License) version 1.1 or later.
 .
 You should have received a copy of the FDL on your system, it is also
 available on-line at the
-.URL http://\:www.gnu.org/\:copyleft/\:fdl.html "GNU copyleft site" .
+.UR http://www.gnu.org/copyleft/fdl.html .
+GNU copyleft site
+.UE
 .
 .P
 This document is part of
@@ -1388,9 +1348,13 @@ This document is part of
 the GNU roff distribution.
 .
 It was written by
-.MTO bwarken@mayn.de "Bernd Warken" ;
+.MT bwarken@mayn.de ; 
+Bernd Warken
+.ME
 it is maintained by
-.MTO wl@gnu.org "Werner Lemberg" .
+.MT wl@gnu.org .
+Werner Lemberg 
+.ME
 .
 .
 .\" --------------------------------------------------------------------
@@ -1410,19 +1374,19 @@ an overview of the groff system.
 .
 .TP
 .BR groff_man (@MAN7EXT@),
-.TP+
+.TQ
 .BR groff_mdoc (@MAN7EXT@),
-.TP+
+.TQ
 .BR groff_me (@MAN7EXT@),
-.TP+
+.TQ
 .BR groff_mm (@MAN7EXT@),
-.TP+
+.TQ
 .BR groff_mom (@MAN7EXT@),
-.TP+
+.TQ
 .BR groff_ms (@MAN7EXT@),
-.TP+
+.TQ
 .BR groff_trace (@MAN7EXT@),
-.TP+
+.TQ
 .BR groff_www (@MAN7EXT@).
 the groff tmac macro packages.
 .
@@ -1434,7 +1398,9 @@ the groff language.
 .
 .P
 The Filesystem Hierarchy Standard is available at the
-.URL http://\:www.pathname.com/\:fhs/ "FHS web site" .
+.UR http://www.pathname.com/fhs/ .
+FHS web site
+.UE
 .
 .cp \n[groff_tmac_C]
 .
