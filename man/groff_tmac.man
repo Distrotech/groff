@@ -37,43 +37,8 @@ FDL in the main directory of the groff source package.
 .\" Setup
 .\" --------------------------------------------------------------------
 .
-.do nr groff_tmac_C \n[.C]
-.cp 0
-.
-.
 .ds Ellipsis \&.\|.\|.\&\"
 .
-.\"--------------------------------------------------------------------
-.\" .Text  (<text>...)
-.\"
-.\" Treat the arguments as text, no matter how they look.
-.\"
-.de Text
-.  if \\n[.$]=0 \
-.    return
-.  nop \)\\$*\)
-..
-.\" --------------------------------------------------------------------
-.de option
-.  ds @tmp@ \f(CB\\$1\f[]
-.  shift 1
-.  Text \\*[@tmp@]\\$*
-.  rm @tmp@
-..
-.\" --------------------------------------------------------------------
-.de argument
-.  ds @tmp@ \f(CI\\$1\f[]
-.  shift 1
-.  Text \\*[@tmp@]\\$*
-.  rm @tmp@
-..
-.\" --------------------------------------------------------------------
-.de request
-.  ds @tmp@ \f(CB\\$1\f[]
-.  shift 1
-.  Text .\\*[@tmp@]\\$*
-.  rm @tmp@
-..
 .\" --------------------------------------------------------------------
 .\" SH DESCRIPTION
 .\" --------------------------------------------------------------------
@@ -475,12 +440,12 @@ covers the image's width.
 .RS
 .IP
 .EX
-.  Text .am PSPIC
-.  Text .\ \ vpt 0
-.  Text \[rs]h'(\[rs]\[rs]n[ps-offset]u + \[rs]\[rs]n[ps-deswid]u)'
-.  Text .\ \ sp -1
-.  Text .\ \ vpt 1
-.  Text ..
+\&.am PSPIC
+\&.\ \ vpt 0
+\&\eh'(\e\en[ps-offset]u + \e\en[ps-deswid]u)'
+\&.\ \ sp -1
+\&.\ \ vpt 1
+\&..
 .EE
 .RE
 .
@@ -520,7 +485,7 @@ In classical roff systems, there was a funny naming scheme for macro
 packages, due to a simplistic design in option parsing.
 .
 Macro packages were always included by option
-.option -m;
+.BR -m ;
 when this option was directly followed by its argument without an
 intervening space, this looked like a long option preceded by a single
 minus \[em] a sensation in the computer stone age.
@@ -538,9 +503,9 @@ while its macro file
 So it could be activated by the argument
 .I an
 to option
-.option -m ,
+.BR -m ,
 or
-.option -man
+.BR -man
 for short.
 .
 .
@@ -556,7 +521,7 @@ in the documentation, although a more suitable name would be
 .IR doc .
 For, when omitting the space between the option and its argument, the
 command line option for activating this package reads
-.option "-mdoc" .
+.BR -mdoc .
 .
 .
 .P
@@ -643,8 +608,8 @@ for the classical packages.
 There are several ways to use a macro package in a document.
 .
 The classical way is to specify the troff/groff option
-.option \-m
-.argument name
+.BR \-m
+.I name
 at run-time; this makes the contents of the macro package
 .I name
 available.
@@ -659,31 +624,31 @@ is searched for instead.
 .P
 Alternatively, it is also possible to include a macro file by adding
 the request
-.request so
+.B \&.so
 .I filename
 into the document; the argument must be the full file name of an
 existing file, possibly with the directory where it is kept.
 .
 In groff, this was improved by the similar request
-.request mso
+.B \&.mso
 .IR package ,
 which added searching in the tmac path, just like option
-.option -m
+.BR -m
 does.
 .
 .
 .P
 Note that in order to resolve the
-.request so
+.B \&.so
 and
-.request mso
+.B \&.mso
 requests, the roff preprocessor
 .BR soelim (@MAN1EXT@)
 must be called if the files to be included need preprocessing.
 .
 This can be done either directly by a pipeline on the command line or
 by using the troff/groff option
-.option \-s .
+.BR \-s .
 .
 .I man
 calls soelim automatically.
@@ -736,9 +701,9 @@ If you want to write your own groff macro file, call it
 and put it in some directory of the tmac path, see section
 .BR FILES .
 Then documents can include it with the
-.request mso
+.B \&.mso
 request or the option
-.option -m .
+.BR -m .
 .
 .
 .ig
@@ -880,13 +845,13 @@ say.
 .
 .
 .P
-.ds @1 \[rs]f[I]\[rs]\[rs]$0\[rs]f[]\"
+.ds @1 \ef[I]\e\e$0\ef[]\"
 .ds @2 arguments:\"
 .EX
 \&.ds midpart was called with
 \&.de print_args
-\&.\ \ tm\ \*[@1]\ \[rs]\[rs]*[midpart]\ \[rs]\[rs]n[.$]\ \*[@2]
-\&.\ \ tm\ \[rs]\[rs]$*
+\&.\ \ tm\ \*[@1]\ \e\e*[midpart]\ \e\en[.$]\ \*[@2]
+\&.\ \ tm\ \e\e$*
 \&..
 .EE
 .rm @1
@@ -917,28 +882,28 @@ Let's analyze each backslash in the macro definition.
 As the positional parameters and the number of arguments change
 with each call of the macro their leading backslash must be doubled,
 which results in
-.I \[rs]\[rs]$*
+.I \e\e$*
 and
-.IR \[rs]\[rs][.$] .
+.IR \e\e[.$] .
 The same applies to the macro name because it could be called with an
 alias name, so
-.IR \[rs]\[rs]$0 .
+.IR \e\e$0 .
 .
 .
 .P
 On the other hand,
 .I midpart
 is a constant string, it does not change, so no doubling for
-.IR \[rs]*[midpart] .
+.IR \e*[midpart] .
 The
-.I \[rs]f
+.I \ef
 escape sequences are predefined groff elements for setting the font
 within the text.
 .
 Of course, this behavior does not change, so no doubling with
-.I \[rs]f[I]
+.I \ef[I]
 and
-.IR \[rs]f[] .
+.IR \ef[] .
 .
 .
 .\" --------------------------------------------------------------------
@@ -963,14 +928,14 @@ For example, the code above can be written in a simpler way by
 .
 .
 .P
-.ds @1 \[rs]f[I]\[rs]$0\[rs]f[]\"
+.ds @1 \ef[I]\e$0\ef[]\"
 .ds @2 arguments:\"
 .EX
 \&.eo
 \&.ds midpart was called with
 \&.de print_args
-\&.\ \ tm\ \*[@1]\ \[rs]*[midpart]\ \[rs]n[.$]\ \*[@2]
-\&.\ \ tm\ \[rs]$*
+\&.\ \ tm\ \*[@1]\ \e*[midpart]\ \en[.$]\ \*[@2]
+\&.\ \ tm\ \e$*
 \&..
 \&.ec
 .EE
@@ -1005,9 +970,9 @@ with a leading dot.
 .IP
 .EX
 \&.de Text
-\&.\ \ if (\[rs]\[rs]n[.$] == 0)\ \[rs]
+\&.\ \ if (\e\en[.$] == 0)\ \e
 \&.\ \ \ \ return
-\&.\ \ nop\ \[rs])\[rs]\[rs]$*[rs]\)
+\&.\ \ nop\ \e)\e\e$*[rs]\)
 \&..
 .EE
 .RE
@@ -1239,8 +1204,6 @@ The Filesystem Hierarchy Standard is available at the
 .UR http://www.pathname.com/fhs/ .
 FHS web site
 .UE
-.
-.cp \n[groff_tmac_C]
 .
 .\" Local Variables:
 .\" mode: nroff
