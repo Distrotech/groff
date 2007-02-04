@@ -43,36 +43,9 @@ FDL in the main directory of the groff source package.
 .
 .ds Ellipsis \&.\|.\|.\&\"
 .
-.\" --------------------------------------------------------------------
-.\" setup for the macro definitions below
-.\"
-.\" naming:  namespace:cathegory_macro.variable_name  (experimental)
-.
 .\"--------------------------------------------------------------------
 .\" Ignore all arguments like a comment, even after a .eo call.
 .de c
-..
-.c --------------------------------------------------------------------
-.de BIR
-.  ie \\n[.$]<3 \
-.    BI \\$@
-.  el \{\
-.    ds @tmp@ \fB\\$1\f[]\fI\\$2\f[]
-.    shift 2
-.    Text \\*[@tmp@]\fR\\$*\f[]
-.    rm @tmp@
-.  \}
-..
-.c --------------------------------------------------------------------
-.c .Env_var  (<env_var_name> [<punct>])
-.c
-.c Display an environment variable, with optional punctuation.
-.c
-.de Env_var
-.  nh
-.  SM
-.  Text \f[CB]\\$1\f[]\\$2
-.  hy
 ..
 .c --------------------------------------------------------------------
 .c .Text  (<text>...)
@@ -83,20 +56,6 @@ FDL in the main directory of the groff source package.
 .  if \\n[.$]=0 \
 .    return
 .  nop \)\\$*\)
-..
-.c --------------------------------------------------------------------
-.c .Topic  ([<indent>])
-.c
-.c A bulleted paragraph
-.c
-.de Topic
-.  ie \\n[.$]=0 \
-.    ds @indent 2m\"
-.  el \
-.    ds @indent \\$1\"
-.  TP \\*[@indent]
-.  Text \[bu]
-.  rm @indent
 ..
 .c --------------------------------------------------------------------
 .de 'char
@@ -663,9 +622,8 @@ would not make much sense.
 .
 .P
 A second strange feature of classical troff was to name macro files
-according to
-.BIR tmac. name .
-In modern operating systems, the type of a file is specified as
+in the form \fBtmac.\fIname\fR.
+In modern operating systems, the type of a file is specified as a
 postfix, the file name extension.
 .
 Again, groff copes with this situation by searching both
@@ -1058,7 +1016,7 @@ request.
 .SS "Tips for Macro Definitions"
 .\" --------------------------------------------------------------------
 .
-.Topic
+.IP \(bu
 Start every line with a dot, for example, by using the groff request
 .B .nop
 for text lines, or write your own macro that handles also text lines
@@ -1075,7 +1033,7 @@ with a leading dot.
 .EE
 .RE
 .
-.Topic
+.IP \(bu
 Write a comment macro that works both for copy-in and draft mode; for
 as escaping is off in draft mode, trouble might occur when normal
 comments are used.
@@ -1092,11 +1050,11 @@ acts like a comment line:
 .EE
 .RE
 .
-.Topic
+.IP \(bu
 In long macro definitions, make ample use of comment lines or empty
 lines for a better structuring.
 .
-.Topic
+.IP \(bu
 To increase readability, use groff's indentation facility for requests
 and macro calls (arbitrary whitespace after the leading dot).
 .
@@ -1180,35 +1138,35 @@ a colon separated list of these constitutes the
 .P
 The search sequence for macro files is (in that order):
 .
-.Topic
+.IP \(bu
 the directories specified with troff/groff's
 .B \-M
 command line option
 .
-.Topic
+.IP \(bu
 the directories given in the
-.Env_var $GROFF_TMAC_PATH
+.B $GROFF_TMAC_PATH
 environment variable
 .
-.Topic
+.IP \(bu
 the current directory (only if in unsafe mode, which is enabled by the
 .B \-U
 command line switch)
 .
-.Topic
+.IP \(bu
 the home directory
 .
-.Topic
+.IP \(bu
 a platform-specific directory, being
 .B @SYSTEMMACRODIR@
 in this installation
 .
-.Topic
+.IP \(bu
 a site-specific (platform-independent) directory, being
 .B @LOCALMACRODIR@
 in this installation
 .
-.Topic
+.IP \(bu
 the main tmac directory, being
 .B @MACRODIR@
 in this installation
@@ -1219,7 +1177,7 @@ in this installation
 .\" --------------------------------------------------------------------
 .
 .TP
-.Env_var $GROFF_TMAC_PATH
+.B $GROFF_TMAC_PATH
 A colon separated list of additional tmac directories in which to search
 for macro files.
 .
