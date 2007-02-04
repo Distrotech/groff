@@ -48,31 +48,6 @@ FDL in the main directory of the groff source package.
 .\"
 .\" naming:  namespace:cathegory_macro.variable_name  (experimental)
 .
-.\" --------------------------------------------------------------------
-.\" configuration of prompt for `.Shell_cmd'* macros
-.ds groffer:Shell_cmd.prompt_text sh#\"    prompt for shell commands
-.ds groffer:Shell_cmd+.prompt_text >\"     prompt on continuation lines
-.ds groffer:Shell_cmd_base.prompt_font I\" font for prompts
-.
-.\" automatically determine setup from the configuration above
-.als @f groffer:Shell_cmd_base.prompt_font\"
-.als @t groffer:Shell_cmd.prompt_text\"
-.als @t+ groffer:Shell_cmd+.prompt_text\"
-.ds groffer:Shell_cmd.prompt \f[\*[@f]]\*[@t]\f[]\"            needed
-.ds groffer:Shell_cmd+.prompt \f[\*[@f]]\*[@t+]\f[]\"          needed
-.nr @w \w'\*[groffer:Shell_cmd.prompt]'\"
-.nr @w+ \w'\*[groffer:Shell_cmd+.prompt]'\"
-.ft \*[@f]
-.\" Full prompt width is maximum of texts plus 1m
-.nr groffer:Shell_cmd_base.prompt_width (\n[@w]>?\n[@w+]+1m)\" needed
-.ft
-.rm @f
-.rm @f+
-.rm @t
-.rm @t+
-.rr @w
-.rr @w+
-.
 .\"--------------------------------------------------------------------
 .\" Ignore all arguments like a comment, even after a .eo call.
 .de c
@@ -107,79 +82,6 @@ FDL in the main directory of the groff source package.
 .de Error
 .  tm \\$*
 .  ab
-..
-.c --------------------------------------------------------------------
-.c .Shell_cmd  (<CR> [<CI>] ...)
-.c
-.c A shell command line; display args alternating in fonts CR and CI.
-.c
-.c Examples:
-.c   .Shell_cmd "groffer --dpi 100 file"
-.c     result: `sh#  groffer --dpi 100 file'
-.c             with 'sh#' in font I, the rest in CR
-.c
-.c   .Shell_cmd groffer\ --dpi\ 100\ file
-.c     result: the same as above
-.c
-.c   .Shell_cmd "groffer --dpi=" value " file"
-.c     result: sh#  groffer --dpi=value file
-.c             with `groffer --dpi=' and `file' in CR; `value' in CI
-.c
-.c   .Shell_cmd groffer\ --dpi= value \ file
-.c     result: the same as the previous example
-.c
-.de Shell_cmd
-.  groffer:Shell_cmd_base "\*[groffer:Shell_cmd.prompt]" \\$@
-..
-.c --------------------------------------------------------------------
-.c .Shell_cmd+  (<CR> [<CI>] ...)
-.c
-.c A continuation line for .Shell_cmd.
-.c
-.de Shell_cmd+
-.  groffer:Shell_cmd_base "\*[groffer:Shell_cmd+.prompt]" \\$@
-..
-.c --------------------------------------------------------------------
-.c .Shell_cmd_base  (<prompt> [<CR> [<CI>] ...])
-.c
-.c A shell command line; display args alternating in fonts CR and CI.
-.c Internal, do not use directly.
-.c
-.c Globals: read-only register @.Shell_cmd_width
-.c
-.de groffer:Shell_cmd_base
-.  if (\\n[.$] <= 0) \
-.    return
-.  nr @+font \\n[.f]\"
-.  ds @prompt \\$1\"
-.  ft CR
-.  c gap between prompt and command
-.  nr @+gap \\n[groffer:Shell_cmd_base.prompt_width]-\\w'\\*[@prompt]'\"
-.  ds @res \\*[@prompt]\h'\\n[@+gap]u'\"
-.  shift
-.  ds @cf CR\"
-.  while (\\n[.$] > 0) \{\
-.    as @res \\f[\\*[@cf]]\\$1\"
-.    shift
-.    ie '\\*[@cf]'CR' \
-.      ds @cf I\"
-.    el \
-.      ds @cf CR\"
-.  \}
-.  br
-.  ad l
-.  nh
-.  nf
-.  Text \\*[@res]\"
-.  fi
-.  hy
-.  ad
-.  br
-.  ft \\n[@+font]
-.  rr @+font
-.  rr @+gap
-.  rm @cf
-.  rm @res
 ..
 .c --------------------------------------------------------------------
 .c .Text  (<text>...)
@@ -279,13 +181,17 @@ Note that it is not possible to use multiple primary macro packages at the
 same time; saying e.g.\&
 .
 .IP
-.Shell_cmd "groff \-m man \-m ms foo"
+.EX
+\fIsh#\fP groff \-m man \-m ms foo
+.EE
 .
 .P
 or
 .
 .IP
-.Shell_cmd "groff \-m man foo \-m ms bar"
+.EX
+\fIsh#\fP groff \-m man foo \-m ms bar
+.EE
 .
 .P
 fails.
@@ -391,8 +297,9 @@ packages (me, mom, mm, and ms).
 Example:
 .RS
 .IP
-.Shell_cmd "groff -ms -mfr foo.ms > foo.ps"
-.RE
+.EX
+\fIsh#\fP groff -ms -mfr foo.ms > foo.ps
+.EE
 .
 .IP
 Note that
@@ -531,7 +438,9 @@ For example, use the following for PS output on A4 paper in landscape
 orientation:
 .
 .IP
-.Shell_cmd "groff \-Tps \-dpaper=a4l \-P\-pa4 \-P\-l \-ms foo.ms > foo.ps"
+.EX
+\fIsh#\fP groff \-Tps \-dpaper=a4l \-P\-pa4 \-P\-l \-ms foo.ms > foo.ps
+.EE
 .
 .
 .TP
@@ -736,10 +645,12 @@ the
 macro package may be specified as on of the following four methods:
 .
 .IP
-.Shell_cmd "groff\ \-m\ man"
-.Shell_cmd "groff\ \-man"
-.Shell_cmd "groff\ \-mman"
-.Shell_cmd "groff\ \-m\ an"
+.EX
+\fIsh#\fP groff\ \-m\ man
+\fIsh#\fP groff\ \-man
+\fIsh#\fP groff\ \-mman
+\fIsh#\fP groff\ \-m\ an
+.EE
 .
 .
 .P
@@ -754,8 +665,10 @@ For example, the
 macro package may be specified only as one of the two methods:
 .
 .IP
-.Shell_cmd "groff\ \-m\ www"
-.Shell_cmd "groff\ \-mwww"
+.EX
+\fIsh#\fP groff\ \-m\ www
+\fIsh#\fP groff\ \-mwww
+.EE
 .
 .
 .P
@@ -863,7 +776,9 @@ and is used in some document called
 At run-time, the formatter call for this is
 .
 .IP
-.Shell_cmd "groff\ \-m\ " "macrofile\ document.roff"
+.EX
+\fIsh#\fP groff\ \-m\ \fImacrofile\ document.roff\fP
+.EE
 .
 .
 .P
@@ -886,7 +801,9 @@ is used or
 .P
 In both cases, the formatter is called with
 .IP
-.Shell_cmd "groff\ \-s\ " docu.roff
+.EX
+\fIsh#\fP groff\ \-s\ \fIdocu.roff\fP
+.EE
 .
 .
 .P
