@@ -60,9 +60,6 @@ after these commands, otherwise the position is not changed.
 .\" Begin of macro definitions
 .eo
 .
-.de Text
-.  nop \)\$*
-..
 .c comma separated list of indexed variables
 .de list1..n
 .  ds @arg1 \$1\"
@@ -134,7 +131,7 @@ after these commands, otherwise the position is not changed.
 .  ds @arg2 \$2\"
 .  shift 2
 .  TQ
-.  Text "\f[B]\*[@arg1]\f[]\ \f[I]\,\*[@arg2]\/\f[]\$*"
+.  nop \f[B]\*[@arg1]\f[]\ \f[I]\,\*[@arg2]\/\f[]\$*
 .  rm @arg1
 .  rm @arg2
 ..
@@ -151,7 +148,7 @@ after these commands, otherwise the position is not changed.
 .  ds @sub \$1\"
 .  shift 1
 .  TQ
-.  Text "\f[B]D\*[@sub]\f[]\ \f[I]\,\$*\/\f[]\*[@linebreak]"
+.  nop \f[B]D\*[@sub]\f[]\ \f[I]\,\$*\/\f[]\*[@linebreak]
 .  rm @sub
 ..
 .de Da-command
