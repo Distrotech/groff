@@ -259,7 +259,7 @@ static struct builtin_def troff_defs[] = {
   { "vec", "accent { vec_def }" },
   { "dyad_def", "up 52 size -5 { \\(<> }" },
   { "dyad", "accent { dyad_def }" },
-  { "...", "type \"inner\" vcenter { . . . }" },
+  { "...", "type \"inner\" vcenter { \(md \(md \(md }" },
 };
 
 /* equivalent definitions for MathML mode */
@@ -274,7 +274,7 @@ static struct builtin_def mathml_defs[] = {
   { "utilde", "uaccent { \"~\" }" },
   { "vec", "accent { \\(-> }" },
   { "dyad", "accent { \\(<> }" },
-  { "...", "type \"inner\" { . . . }" },
+  { "...", "type \"inner\" { \(md \(md \(md }" },
 };
 
 void init_table(const char *device)
