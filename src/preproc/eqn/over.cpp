@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -177,7 +177,8 @@ void over_box::output()
     fputs(draw_flag ? " 0'" : "\\&\\(ru'", stdout);
     printf("\\v'%dM'", axis_height);
     printf("\\h'%dM'", null_delimiter_space);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     // FIXME: passing a displaystyle attribute doesn't validate.
     printf("<mfrac>");
     num->output();

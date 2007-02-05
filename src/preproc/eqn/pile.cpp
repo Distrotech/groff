@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2004 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2004, 2007
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -96,13 +97,21 @@ void pile_box::output()
     printf("\\v'\\n[" SUP_RAISE_FORMAT "]u'", uid);
     printf("\\v'-(%du*\\n[" BASELINE_SEP_FORMAT "]u)'", col.len - 1, uid);
     printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     char *av;
     switch (col.align) {
-      case LEFT_ALIGN: av = "left"; break;
-      case RIGHT_ALIGN: av = "right"; break;
-      case CENTER_ALIGN: av = "center"; break;
-      default: assert(0);
+    case LEFT_ALIGN:
+      av = "left";
+      break;
+    case RIGHT_ALIGN:
+      av = "right";
+      break;
+    case CENTER_ALIGN:
+      av = "center";
+      break;
+    default:
+      assert(0);
     }
     printf("<mtable columnalign='%s'>", av);
     for (int i = 0; i < col.len; i++) {
@@ -226,7 +235,8 @@ void matrix_box::output()
 	printf("\\h'%dM'", column_sep);
     }
     printf("\\h'%dM'", matrix_side_sep);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     int n = p[0]->len;	// Each column must have the same number of rows in it
     printf("<mtable>");
     for (int i = 0; i < n; i++) {
@@ -234,10 +244,17 @@ void matrix_box::output()
       for (int j = 0; j < len; j++) {
 	char *av;
 	switch (p[j]->align) {
-	case LEFT_ALIGN: av = "left"; break;
-	case RIGHT_ALIGN: av = "right"; break;
-	case CENTER_ALIGN: av = "center"; break;
-	default: assert(0);
+	case LEFT_ALIGN:
+	  av = "left";
+	  break;
+	case RIGHT_ALIGN:
+	  av = "right";
+	  break;
+	case CENTER_ALIGN:
+	  av = "center";
+	  break;
+	default:
+	  assert(0);
 	}
 	printf("<mtd columnalign='%s'>", av);
 	p[j]->p[i]->output();

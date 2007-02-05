@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2003, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -166,7 +166,8 @@ void sqrt_box::output()
     printf(DELIMITER_CHAR);
 
     printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<msqrt>");
     p->output();
     printf("</msqrt>");

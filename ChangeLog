@@ -1,3 +1,14 @@
+2007-02-05  Werner LEMBERG  <wl@gnu.org>
+
+	* src/preproc/eqn/eqn.man: Revised.
+
+	* src/preproc/eqn/text.cpp (map, special_char_boc::output): Use
+	`const'.
+	(spacing_type): Fix typo.
+	(special_to_entity): Use `const'.
+	Remove unused variable.
+	* src/preproc/eqn/other.cpp (font_box::output): Use `const'.
+
 2007-02-05  Eric S. Raymond  <esr@snark.thyrsus.com>
 
 	* src/devices/grotty/grotty.man: \m[] and \M[] aren't portable,
@@ -23,6 +34,79 @@
 
 	* MORE.STUFF: More-stuff entries for doclifter and pic2plot.
 
+
+	Add support for MathML output to eqn.  
+
+	The strategy used is very simple and relies on the fact that the box
+	models of eqn and Presentation MathML differ in only trivial ways. 
+	It leaves the grammar and existing internal object structures
+	unchanged.  A new global, `output_format', is defined as an
+	enumerated type with values {troff, mathml}.  Most of the functions
+	and methods that emit actual output acquire a top-level conditional,
+	dispatching on this global, which has one arm for troff mode and one
+	for MathML mode.  In most cases the MathML arm is drastically
+	simpler.
+
+	(This strategy could be easily generalized to support other output
+	formats.  TeX is a possibility that leaps to mind.)
+
+	The only even moderately tricky changes are in the lexer.  Some of
+	the predefined macros used constructs like `up', `down', `fwd',
+	`back', and `vcenter' that have no equivalents in MathML.  I
+	attacked this problem in these ways:
+
+	1. I eliminated three uses of `back' to compose characters in favor
+	   of using equivalent groff specials `\(<<', `\(>>', and `\(<>'
+	   that did not exist when these macros were written.  (This will be
+	   a quality improvement for troff users.)
+
+	2. I eliminated one use of `vcenter' by using \\(md.  (Likewise...)
+
+	3. I then split the table of pre-definitions in three; one large
+	   common table and two small troff-specific and MathML-specific
+	   tables.  Use of troff-only operations (up, down, back, fwd,
+	   vcenter) is now confined to the former.  The latter now uses
+	   `size big' and drops out the explicit positioning operations,
+	   counting on MathML processors to do them.
+
+	POTENTIAL TROUBLE SPOTS:
+
+	Here are notes for reviewers on places I'm not 100% sure I've done
+	the right thing:
+
+	* In the process of preparing the troff table, I translated three
+	  definitions (dot_def, dotdot_def, and utilde def) that previously
+	  used explicit \v escapes to use `up' and `down' instead.  I
+	  modeled the new definitions on the way `vec' and `dyad' work, but
+	  it's possible I got something subtle wrong.
+
+	* I'm not certain the MathML implementation of font_box::output() is
+	  right, because I don't quite get what the switcheroo between
+	  `current_roman_font' and `old_roman_font' is supposed to
+	  accomplish.  It does seem to generare good MathML, though.
+
+	Finally, I made one purely cosmetic change in `text.cpp'; I replaced
+	with an enum some magic numbers for spacing types that I thought
+	were too ugly to live.
+
+	REMAINING ISSUES:
+
+	The entirety of eqn is translated when `-TMathML' is specified, 
+	with the following exceptions...
+
+	Limitations that cannot be fixed include non-support for special,
+	up/down/fwd/back, and vcenter.
+
+	Limitations that might be fixable include non-support for mark and
+	lineup.  I will investigate further, but if these can be implemented
+	at all it's going to be in a very complicated and nasty way.
+
+	The way character boxes are output means that each digit of a
+	multi-digit number gets its own <mn></mn> tag pair in the MathHTML. 
+	While this is not technically wrong for Presentation MathML, it is
+	ugly and inefficient.  Fixing this will require implementing a
+	little state machine in the `text.cpp' output method.
+
 	* src/preproc/eqn/box.cpp, src/preproc/eqn/delim.cpp, 
 	src/preproc/eqn/eqn.h, src/preproc/eqn/eqn.man, 
 	src/preproc/eqn/lex.cpp, src/preproc/eqn/limit.cpp,
@@ -31,6 +115,8 @@
 	src/preproc/eqn/pile.cpp, src/preproc/eqn/script.cpp,
 	src/preproc/eqn/sqrt.cpp, src/preproc/eqn/text.cpp,
 	src/preproc/eqn/eqn.man: MathML output mode.
+
+	* NEWS: Document it.
 
 2007-02-02  Eric S. Raymond  <esr@snark.thyrsus.com>
 

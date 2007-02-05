@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2007
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -77,7 +78,8 @@ void accent_box::output()
 	   SKEW_FORMAT "]u)'",
 	   p->uid, ab->uid, p->uid);
     p->output();
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<mover accent='true'>");
     p->output();
     ab->output();
@@ -131,7 +133,8 @@ void accent_box::output()
     p->output();
     printf(DELIMITER_CHAR);
     printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<mover accent='true'>");
     p->output();
     ab->output();
@@ -172,9 +175,9 @@ void overline_char_box::output()
     printf((draw_flag ? "\\D'l%dM 0'" : "\\l'%dM\\&\\(ru'"),
 	   accent_width);
     printf("\\v'%dM/2u+%dM'", 7*default_rule_thickness, x_height);
-  } else if (output_format == mathml) {
-    printf("<mo>&macr;</mo>");
   }
+  else if (output_format == mathml)
+    printf("<mo>&macr;</mo>");
 }
 
 void overline_char_box::debug_print()
@@ -226,7 +229,8 @@ void overline_box::output()
       printf("\\l'\\n[" WIDTH_FORMAT "]u\\&\\(ru'", p->uid);
     printf(DELIMITER_CHAR);
     p->output();
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<mover accent='false'>");
     p->output();
     printf("<mo>&macr;</mo></mover>");
@@ -304,7 +308,8 @@ void uaccent_box::output()
     p->output();
     printf(DELIMITER_CHAR);
     printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<munder accent='true'>");
     p->output();
     ab->output();
@@ -350,9 +355,9 @@ void underline_char_box::output()
     printf((draw_flag ? "\\D'l%dM 0'" : "\\l'%dM\\&\\(ru'"),
 	   accent_width);
     printf("\\v'-%dM/2u'", 7*default_rule_thickness);
-  } else if (output_format == mathml) {
-    printf("<mo>&lowbar;</mo>");
   }
+  else if (output_format == mathml)
+    printf("<mo>&lowbar;</mo>");
 }
 
 void underline_char_box::debug_print()
@@ -406,7 +411,8 @@ void underline_box::output()
       printf("\\l'\\n[" WIDTH_FORMAT "]u\\&\\(ru'", p->uid);
     printf(DELIMITER_CHAR);
     p->output();
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<munder accent='true'>");
     p->output();
     printf("<mo>&macr;</mo></munder>");
@@ -450,7 +456,8 @@ void size_box::output()
     printf("\\s[\\n[" SMALL_SIZE_FORMAT "]u]", uid);
     p->output();
     printf("\\s[\\n[" SIZE_FORMAT "]u]", uid);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<mstyle mathsize='%s'>", size);
     p->output();
     printf("</mstyle>");
@@ -503,17 +510,21 @@ void font_box::output()
     p->output();
     current_roman_font = old_roman_font;
     printf("\\f[\\n[" FONT_FORMAT "]]", uid);
-  } else if (output_format == mathml) {
-    char *mlfont = f;
+  }
+  else if (output_format == mathml) {
+    const char *mlfont = f;
     // bold and italic are already in MathML; translate eqn roman here
     switch (f[0]) {
-    case 'I': case 'i':
+    case 'I':
+    case 'i':
       mlfont = "italic";
       break;
-    case 'B': case 'b':
+    case 'B':
+    case 'b':
       mlfont = "bold";
       break;
-    case 'R': case 'r':
+    case 'R':
+    case 'r':
     default:
       mlfont = "normal";
       break;
@@ -552,7 +563,8 @@ void fat_box::output()
     printf("\\h'-\\n[" WIDTH_FORMAT "]u'", p->uid);
     printf("\\h'%dM'", fat_offset);
     p->output();
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<mstyle mathvariant='double-struck'>");
     p->output();
     printf("</mstyle>");
@@ -596,8 +608,10 @@ void vmotion_box::output()
     printf("\\v'%dM'", -n);
     p->output();
     printf("\\v'%dM'", n);
-  } else if (output_format == mathml) {
-    printf("<merror>eqn vertical motion cannot be expressed in MathML</merror>");
+  }
+  else if (output_format == mathml) {
+    printf("<merror>eqn vertical motion cannot be expressed "
+	   "in MathML</merror>");
     p->output();
   }
 }
@@ -633,8 +647,10 @@ void hmotion_box::output()
   if (output_format == troff) {
     printf("\\h'%dM'", n);
     p->output();
-  } else if (output_format == mathml) {
-    printf("<merror>eqn horizontal motion cannot be expessed in MathML</merror>");
+  }
+  else if (output_format == mathml) {
+    printf("<merror>eqn horizontal motion cannot be expessed "
+	   "in MathML</merror>");
     p->output();
   }
 }

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2005
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2005, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -309,7 +309,8 @@ int main(int argc, char **argv)
       if (strcmp(device, "ps:html") == 0) {
 	device = "ps";
 	html = 1;
-      } else if (strcmp(device, "MathML") == 0) {
+      }
+      else if (strcmp(device, "MathML") == 0) {
 	output_format = mathml;
 	load_startup_file = 0;
       }

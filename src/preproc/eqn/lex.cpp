@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2005
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2005, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -120,7 +120,7 @@ static struct {
   { "special", SPECIAL },
 };
 
-struct  builtin_def {
+struct builtin_def {
   const char *name;
   const char *def;
 };
@@ -301,7 +301,8 @@ void init_table(const char *device)
       def->is_simple = 1;
       macro_table.define(troff_defs[i].name, def);
     }
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     for (i = 0; i < sizeof(mathml_defs)/sizeof(mathml_defs[0]); i++) {
       definition *def = new definition[1];
       def->is_macro = 1;

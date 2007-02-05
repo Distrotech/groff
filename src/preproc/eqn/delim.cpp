@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2003, 2007
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -384,7 +385,8 @@ void delim_box::output()
     p->output();
     if (right)
       printf("\\*[" RIGHT_DELIM_STRING_FORMAT "]", uid);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<mrow><mo>%s</mo>", left);
     p->output();
     printf("<mo>%s</mo></mrow>", right);

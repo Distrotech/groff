@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -189,25 +189,27 @@ void script_box::output()
     }
     printf("\\h'\\n[" WIDTH_FORMAT "]u-\\n[" WIDTH_FORMAT "]u'",
 	   uid, p->uid);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     if (sup != 0 and sub != 0) {
       printf("<msubsup>");
       p->output();
       sub->output();
       sup->output();
       printf("</msubsup>");
-    } else if (sup != 0) {
+    }
+    else if (sup != 0) {
       printf("<msup>");
       p->output();
       sup->output();
       printf("</msup>");
-  } else if (sub != 0) {
+  }
+  else if (sub != 0) {
       printf("<msub>");
       p->output();
       sub->output();
       printf("</msub>");
     }
-
   }
 }
 

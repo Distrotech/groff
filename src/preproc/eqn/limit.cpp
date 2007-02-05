@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2007
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -167,19 +168,22 @@ void limit_box::output()
     p->output();
     printf(DELIMITER_CHAR);
     printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     if (from != 0 && to != 0) {
       printf("<munderover>");
       p->output();
       from->output();
       to->output();
       printf("</munderover>");
-    } else if (from != 0) {
+    }
+    else if (from != 0) {
       printf("<munder>");
       p->output();
       from->output();
       printf("</munder>");
-    }  else if (to != 0) {
+    }
+    else if (to != 0) {
       printf("<mover>");
       p->output();
       to->output();

@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -253,9 +253,9 @@ void do_text(const char *s)
     printf(".eo\n");
     printf(".as " LINE_STRING " \"%s\n", s);
     printf(".ec\n");
-  } else if (output_format == mathml) {
-    fputs(s, stdout);
   }
+  else if (output_format == mathml)
+    fputs(s, stdout);
 }
 
 void set_minimum_size(int n)
@@ -349,7 +349,8 @@ void box::top_level()
       printf(".ne \\n[" HEIGHT_FORMAT "]u-%dM>?0+(\\n["
 	     DEPTH_FORMAT "]u-%dM>?0)\n",
 	     b->uid, body_height, b->uid, body_depth);
-  } else if (output_format == mathml) {
+  }
+  else if (output_format == mathml) {
     printf("<math>");
     b->output();
     printf("</math>");
