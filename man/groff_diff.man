@@ -36,49 +36,6 @@ FDL in the main directory of the groff source package.
 .el   .ds tx TeX
 .
 .
-.\" --------------------------------------------------------------------
-.\" start of macro definitions
-.
-.de Text
-.  RI "\\$*"
-..
-.
-.
-.de Topic
-.  TP 2m
-.  Text \[bu]
-.  RI "\\$*"
-..
-.
-.
-.de squoted
-.  ds @arg1 \\$1
-.  shift 1
-.  Text \[oq]\\fB\\*[@arg1]\\fP\[cq]\\$*
-.  rm @arg1
-..
-.
-.
-.\" reference of a request or macro
-.de request
-.  ds @arg1 \\$1
-.  shift 1
-.  Text \\fB\\*[@arg1]\\fP\\$*
-.  rm @arg1
-..
-.als option request
-.
-.
-.\" representation of an escape sequence
-.de esc
-.  ds @arg1 \\$1
-.  shift 1
-.  Text \\fB\[rs]\\*[@arg1]\\fP\\$*
-.  rm @arg1
-..
-.\" end of macro definitions
-.
-.
 .\" from old groff_out.man
 .ie \n(.g \
 .  ds ic \/
@@ -468,7 +425,7 @@ request, for example
 .RS
 .ft CB
 .IP
-.Text .char \[rs][phone] \[rs]f(ZD\[rs]N'37'
+\&.char \[rs][phone] \[rs]f(ZD\[rs]N'37'
 .ft
 .RE
 .
@@ -720,22 +677,22 @@ Thus
 .ne 14v+\n(.Vu
 .ft CB
 .nf
-.Text .nr x 1
-.Text .nf
-.Text .di d
-.Text \[rs]?\[rs]\[rs]?\[rs]\[rs]\[rs]\[rs]?\[rs]\[rs]\[rs]\[rs]\[rs]\[rs]\[rs]\c
-.Text \[rs]nx\[rs]\[rs]\[rs]\[rs]?\[rs]\[rs]?\[rs]?
-.Text .di
-.Text .nr x 2
-.Text .di e
-.Text .d
-.Text .di
-.Text .nr x 3
-.Text .di f
-.Text .e
-.Text .di
-.Text .nr x 4
-.Text .f
+\&.nr x 1
+\&.nf
+\&.di d
+\&\[rs]?\[rs]\[rs]?\[rs]\[rs]\[rs]\[rs]?\[rs]\[rs]\[rs]\[rs]\[rs]\[rs]\[rs]\c
+\&\[rs]nx\[rs]\[rs]\[rs]\[rs]?\[rs]\[rs]?\[rs]?
+\&.di
+\&.nr x 2
+\&.di e
+\&.d
+\&.di
+\&.nr x 3
+\&.di f
+\&.e
+\&.di
+\&.nr x 4
+\&.f
 .fi
 .ft
 .RE
@@ -945,14 +902,14 @@ It can be also used for gross hacks; for example, this
 .ne 7v+\n(.Vu
 .ft CB
 .nf
-.Text .tr @.
-.Text .di x
-.Text @nr n 1
-.Text .br
-.Text .di
-.Text .tr @@
-.Text .asciify x
-.Text .x
+\&.tr @.
+\&.di x
+\&@nr n 1
+\&.br
+\&.di
+\&.tr @@
+\&.asciify x
+\&.x
 .fi
 .ft
 .RE
@@ -1213,7 +1170,7 @@ Example:
 .RS
 .IP
 .ft CB
-.Text .defcolor darkgreen rgb 0.1f 0.5f 0.2f
+\&.defcolor darkgreen rgb 0.1f 0.5f 0.2f
 .br
 .ft
 .RE
@@ -1228,7 +1185,7 @@ request, thus the above statement is equivalent to
 .RS
 .IP
 .ft CB
-.Text .defcolor darkgreen rgb 0.1 0.5 0.2
+\&.defcolor darkgreen rgb 0.1 0.5 0.2
 .br
 .ft
 .RE
@@ -1239,9 +1196,9 @@ The color named
 (which is device-specific) can't be redefined.
 .
 It is possible that the default color for
-.esc M
+.B \&\[rs]M
 and
-.esc m
+.B \&\[rs]m
 is not the same.
 .
 .TP
@@ -1263,9 +1220,9 @@ The following example
 .ne 2v+\n(.Vu
 .ft CB
 .nf
-.Text .ds xx aa
-.Text .ds yy bb
-.Text .dei xx yy
+\&.ds xx aa
+\&.ds yy bb
+\&.dei xx yy
 .fi
 .ft
 .RE
@@ -1276,7 +1233,7 @@ is equivalent to
 .RS
 .IP
 .ft CB
-.Text .de aa bb
+\&.de aa bb
 .br
 .ft
 .RE
@@ -1316,7 +1273,7 @@ For example,
 .
 .IP
 .ft CB
-.Text .do fam T
+\&.do fam T
 .br
 .ft
 .
@@ -1325,7 +1282,7 @@ would have the same effect as
 .
 .IP
 .ft CB
-.Text .fam T
+\&.fam T
 .br
 .ft
 .
@@ -1769,13 +1726,13 @@ For example, the following
 .ne 6v+\n(.Vu
 .ft CB
 .nf
-.Text .ds x a\[rs]t\[rs]c
-.Text .ds y b\[rs]t\[rs]c
-.Text .ds z c
-.Text .ta 1i 3i
-.Text \[rs]*x
-.Text \[rs]*y
-.Text \[rs]*z
+\&.ds x a\[rs]t\[rs]c
+\&.ds y b\[rs]t\[rs]c
+\&.ds z c
+\&.ta 1i 3i
+\&\[rs]*x
+\&\[rs]*y
+\&\[rs]*z
 .fi
 .ft
 .RE
@@ -2247,9 +2204,9 @@ using
 .ne 2v+\n(.Vu
 .ft CB
 .nf
-.Text .di x
-.Text .trf f
-.Text .di
+\&.di x
+\&.trf f
+\&.di
 .fi
 .ft
 .RE
@@ -2276,15 +2233,15 @@ Example:
 .IP
 .nf
 .ft CB
-.Text .trin ax
-.Text .di xxx
-.Text a
-.Text .br
-.Text .di
-.Text .xxx
-.Text .trin aa
-.Text .asciify xxx
-.Text .xxx
+\&.trin ax
+\&.di xxx
+\&a
+\&.br
+\&.di
+\&.xxx
+\&.trin aa
+\&.asciify xxx
+\&.xxx
 .fi
 .ft
 .RE
@@ -2311,11 +2268,11 @@ For example,
 .IP
 .nf
 .ft CB
-.Text .tr ab
-.Text .di x
-.Text \[rs]!.tm a
-.Text .di
-.Text .x
+\&.tr ab
+\&.di x
+\&\[rs]!.tm a
+\&.di
+\&.x
 .fi
 .ft
 .RE
@@ -2600,7 +2557,7 @@ For example,
 .RS
 .IP
 .ft CB
-.Text .ta T .5i
+\&.ta T .5i
 .br
 .ft
 .
@@ -2626,13 +2583,13 @@ This allows to reliably modify requests.
 .ne 6v+\n(.Vu
 .ft CB
 .nf
-.Text .als bp*orig bp
-.Text .de bp
-.Text .tm before bp
-.Text .ie \[rs]\[rs]n[.br] .bp*orig
-.Text .el 'bp*orig
-.Text .tm after bp
-.Text ..
+\&.als bp*orig bp
+\&.de bp
+\&.tm before bp
+\&.ie \[rs]\[rs]n[.br] .bp*orig
+\&.el 'bp*orig
+\&.tm after bp
+\&..
 .fi
 .RE
 .
@@ -3213,11 +3170,11 @@ Example:
 .ne 6v+\n(.Vu
 .ft CB
 .nf
-.Text .if t \[rs]{\[rs]
-.Text .  de bar
-.Text .    nop Hello, I'm `bar'.
-.Text .  .
-.Text .\[rs]}
+\&.if t \[rs]{\[rs]
+\&.  de bar
+\&.    nop Hello, I'm `bar'.
+\&.  .
+\&.\[rs]}
 .fi
 .
 .
@@ -3311,15 +3268,15 @@ search special fonts to find a glyph.
 For color support, some new commands have been added:
 .
 .TP
-.Text \f[B]mc \f[I]cyan magenta yellow\f[R]
+\&\f[B]mc \f[I]cyan magenta yellow\f[R]
 .TQ
-.Text \f[B]md\f[R]
+\&\f[B]md\f[R]
 .TQ
-.Text \f[B]mg \f[I]gray\f[R]
+\&\f[B]mg \f[I]gray\f[R]
 .TQ
-.Text \f[B]mk \f[I]cyan magenta yellow black\f[R]
+\&\f[B]mk \f[I]cyan magenta yellow black\f[R]
 .TQ
-.Text \f[B]mr \f[I]red green blue\f[R]
+\&\f[B]mr \f[I]red green blue\f[R]
 Set the color components of the current drawing color, using various
 color schemes.
 .
@@ -3334,7 +3291,7 @@ The
 device control command has been extended.
 .
 .TP
-.Text \f[B]x u \f[I]n\f[R]
+\&\f[B]x u \f[I]n\f[R]
 If
 .I n
 is\~1, start underlining of spaces.
@@ -3361,7 +3318,7 @@ These extensions are not used by GNU pic if the
 option is given.
 .
 .TP
-.Text \f[B]Df \f[I]n\f[R]\*[ic]\[rs]n
+\&\f[B]Df \f[I]n\f[R]\*[ic]\[rs]n
 Set the shade of gray to be used for filling solid objects to
 .IR n ;
 .I n
@@ -3392,13 +3349,13 @@ integer multiple of the horizontal resolution which can lead to
 surprising results.
 .
 .TP
-.Text \f[B]DC \f[I]d\f[R]\*[ic]\[rs]n
+\&\f[B]DC \f[I]d\f[R]\*[ic]\[rs]n
 Draw a solid circle with a diameter of
 .I d
 with the leftmost point at the current position.
 .
 .TP
-.Text \f[B]DE \f[I]dx dy\f[R]\*[ic]\[rs]n
+\&\f[B]DE \f[I]dx dy\f[R]\*[ic]\[rs]n
 Draw a solid ellipse with a horizontal diameter of
 .I dx
 and a vertical diameter of
@@ -3409,7 +3366,7 @@ delim $$
 .EN
 .
 .TP
-.Text \f[B]Dp\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
+\&\f[B]Dp\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
 Draw a polygon with, for $i = 1 ,..., n+1$, the
 .IR i -th
 vertex at the current position 
@@ -3420,14 +3377,14 @@ At the moment, GNU pic only uses this command to generate triangles
 and rectangles.
 .
 .TP
-.Text \f[B]DP\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
+\&\f[B]DP\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
 .
 Like
 .B Dp
 but draw a solid rather than outlined polygon.
 .
 .TP
-.Text \f[B]Dt \f[I]n\f[R]\*[ic]\[rs]n
+\&\f[B]Dt \f[I]n\f[R]\*[ic]\[rs]n
 Set the current line thickness to
 .I n
 machine units.
@@ -3493,8 +3450,7 @@ Thus after executing a
 .B D
 command of the form
 .IP
-\f[B]D\f[I]c\f[R] $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$ \c
-$x sub n$ $y sub n$\[rs]n
+\f[B]D\f[I]c\f[R] $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$x sub n$ $y sub n$\[rs]n
 .
 .P
 the current position should be increased by
@@ -3505,15 +3461,15 @@ $( sum from i=1 to n x sub i , sum from i=1 to n y sub i )$.
 Another set of extensions is
 .
 .TP
-.Text \f[B]DFc \f[I]cyan magenta yellow\f[R]\*[ic]\[rs]n
+\&\f[B]DFc \f[I]cyan magenta yellow\f[R]\*[ic]\[rs]n
 .TQ
-.Text \f[B]DFd\f[R]\*[ic]\[rs]n
+\&\f[B]DFd\f[R]\*[ic]\[rs]n
 .TQ
-.Text \f[B]DFg \f[I]gray\f[R]\*[ic]\[rs]n
+\&\f[B]DFg \f[I]gray\f[R]\*[ic]\[rs]n
 .TQ
-.Text \f[B]DFk \f[I]cyan magenta yellow black\f[R]\*[ic]\[rs]n
+\&\f[B]DFk \f[I]cyan magenta yellow black\f[R]\*[ic]\[rs]n
 .TQ
-.Text \f[B]DFr \f[I]red green blue\f[R]\*[ic]\[rs]n
+\&\f[B]DFr \f[I]red green blue\f[R]\*[ic]\[rs]n
 Set the color components of the filling color similar to the
 .B m
 commands above.
@@ -3585,13 +3541,13 @@ or for other implementations of roff in a consistent way.
 .
 .P
 Compatibility mode can be turned on with the
-.option \-C
+.B \-C
 command line option, and turned on or off with the
-.request .cp
+.B \&.cp
 request.
 .
 The number register
-.esc n(.C
+.B \&\[rs]n(.C
 is\~1 if compatibility mode is on, 0\~otherwise.
 .
 .P
@@ -3600,7 +3556,7 @@ some incompatibilities.
 .I Classical troff
 interprets
 .IP
-.request .dsabcd
+.B \&.dsabcd
 .
 .P
 as defining a string
@@ -3610,17 +3566,17 @@ with contents
 In
 .IR groff
 mode, this is considered as a call of a macro named
-.request dsabcd .
+.B \&dsabcd .
 .
 .P
 Also
 .I classical troff
 interprets
-.esc *[
+.B \&\[rs]*[
 or
-.esc n[
+.B \&\[rs]n[
 as references to a string or number register called
-.request [
+.B [
 while
 .I groff
 takes this as the start of a long name.
@@ -3635,34 +3591,34 @@ names are not recognized.
 On the other hand, groff in
 .I GNU native mode
 does not allow to use the single-character escapes
-.esc \[rs]
+.B \&\[rs]\[rs]
 (backslash),
-.esc |
+.B \&\[rs]|
 (vertical bar),
-.esc ^
+.B \&\[rs]^
 (caret),
-.esc &
+.B \&\[rs]&
 (ampersand),
-.esc {
+.B \&\[rs]{
 (opening brace),
-.esc }
+.B \&\[rs]}
 (closing brace),
-.squoted "\[rs]\ "
+\&'\[rs] '
 (space),
-.esc '
+.B \&\[rs]'
 (single quote),
-.esc `
+.B \&\[rs]`
 (backquote),
-.esc \-
+.B \&\[rs]\-
 (minus),
-.esc _
+.B \&\[rs]_
 (underline),
-.esc !
+.B \&\[rs]!
 (bang),
-.esc %
+.B \&\[rs]%
 (percent),
 and
-.esc c
+.B \&\[rs]c
 (character c) in names of strings, macros, diversions, number
 registers, fonts or environments, whereas
 .I classical troff
@@ -3670,7 +3626,7 @@ does.
 .
 .P
 The
-.esc A
+.B \&\[rs]A
 escape sequence can be helpful in avoiding these escape sequences in
 names.
 .
@@ -3681,7 +3637,7 @@ In
 .I classical
 .IR troff ,
 the
-.request ps
+.B ps
 request ignores scale indicators and so
 .RS
 .P
@@ -3702,12 +3658,12 @@ Everything that affects how a glyph is output is
 stored with the glyph; once a glyph has been
 constructed it is unaffected by any subsequent requests that are
 executed, including the
-.request bd ,
-.request cs ,
-.request tkf ,
-.request tr ,
+BR bd ,
+BR cs ,
+BR tkf ,
+BR tr ,
 or
-.request fp
+B fp
 requests.
 .
 .P
@@ -3735,11 +3691,11 @@ The following example makes things clearer.
 .RS
 .nf
 .ft CB
-.Text .di x
-.Text \[rs]\[rs]\[rs]\[rs]
-.Text .br
-.Text .di
-.Text .x
+\&.di x
+.B \&\[rs]\[rs]\[rs]\[rs]
+\&.br
+\&.di
+\&.x
 .ft
 .fi
 .RE
@@ -3748,32 +3704,30 @@ The following example makes things clearer.
 With
 .I GNU troff
 this is printed as
-.esc \[rs] .
+.B \&\[rs]\[rs] .
 So each pair of input backslashes
-.squoted \[rs]\[rs]
+\&'\[rs]\[rs]'
 is turned into a single output backslash glyph
-.squoted \[rs]
+\&'\[rs]'
 and the resulting output backslashes are not interpreted as escape
 characters when they are reread.
 .
 .P
 .I Classical troff
 would interpret them as escape characters when they were reread and
-would end up printing a single backslash
-.squoted \[rs] .
+would end up printing a single backslash '\[rs]'.
 .
 .P
 In GNU, the correct way to get a printable version of the backslash
-character
-.squoted \[rs]
+character '\[rs]'
 is the
-.esc (rs
+.B \&\[rs](rs
 escape sequence, but classical troff does not provide a clean feature
 for getting a non-syntactical backslash.
 .
 A close method is the printable version of the current escape
 character using the
-.esc e
+\[rs]e
 escape sequence; this works if the current escape character is not
 redefined.
 .
@@ -3786,10 +3740,10 @@ backslashes.
 .P
 To store an escape sequence in a diversion that is interpreted
 when the diversion is reread, either the traditional
-.esc !
+.B \&\[rs]!
 transparent output facility or the
 new
-.esc ?
+.B \&\[rs]?
 escape sequence can be used.
 .
 .
@@ -3804,11 +3758,11 @@ a full compatibility to the classical troff output format.
 .
 Actually the following incompatibilities exist:
 .
-.Topic
+.IP \[bu] 2m
 The positioning after the drawing of the polygons conflicts with the
 classical definition.
 .
-.Topic
+.IP \[bu] 2m
 The intermediate output cannot be rescaled to other devices as
 classical "device-independent" troff did.
 .
