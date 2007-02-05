@@ -63,16 +63,6 @@ after these commands, otherwise the position is not changed.
 .de Text
 .  nop \)\$*
 ..
-.c format: .unit <letter> <punctuation>
-.de unit
-.  BR \$@
-..
-.c argument in italic with punctuation
-.de argument
-.  if (\n[.$] == 0) \
-.    return
-.  IR \$@
-..
 .c comma separated list of indexed variables
 .de list1..n
 .  ds @arg1 \$1\"
@@ -453,9 +443,9 @@ and the
 for more on this topic.
 .
 Most commands assume the scale indicator\~\c
-.unit u ,
+.BR u ,
 the basic unit of the device, some use\~\c
-.unit z , 
+.BR z , 
 the
 .I scaled point unit
 of the device, while others, such as the color commands expect plain
@@ -644,7 +634,7 @@ stack as the actual device configuration data.
 .
 .command C xxx \[la]white_space\[ra]
 Print a special groff character named
-.argument xxx .
+.IR xxx .
 .
 The trailing
 .I syntactical space
@@ -660,7 +650,7 @@ The print position is not changed.
 .
 .command c c
 Print character\~\c
-.argument c
+.IR c
 at the current print position;
 the character's size is read from the font file.
 .
@@ -669,23 +659,23 @@ The print position is not changed.
 .
 .command f n
 Set font to font number\~\c
-.argument n
+.IR n
 (a non-negative integer).
 .
 .
 .command H n
 Move right to the absolute vertical position\~\c
-.argument n
+.IR n
 (a non-negative integer in basic units\~\c
-.unit u )
+.BR u )
 relative to left edge of current page.
 .
 .
 .command h n
 Move
-.argument n
+.IR n
 (a non-negative integer) basic units\~\c
-.unit u
+.BR u
 horizontally to the right.
 .
 .I [CSTR\~#54]
@@ -752,7 +742,7 @@ red, green, and blue.
 .
 .command N n
 Print character with index\~\c
-.argument n
+.IR n
 (an integer, normally non-negative) of the current font.
 .
 The print position is not changed.
@@ -779,9 +769,9 @@ In
 .I classical
 .IR troff ,
 the integer arguments
-.argument b
+.IR b
 and\~\c
-.argument a
+.IR a
 informed about the space before and after the current line to
 make the
 .I intermediate output
@@ -797,7 +787,7 @@ reasons.
 Begin a new page in the outprint.
 .
 The page number is set to\~\c
-.argument n .
+.IR n .
 .
 This page is completely independent of pages formerly processed even
 if those have the same page number.
@@ -812,10 +802,10 @@ must be issued before any of these commands.
 .
 .command s n
 Set point size to
-.argument n
+.IR n
 scaled points
 (this is unit\~\c
-.unit z
+.BR z
 in GNU
 .BR @g@troff ).
 .
@@ -823,7 +813,7 @@ in GNU
 used the unit
 .I points
 (\c
-.unit p )
+.BR p )
 instead; see section
 .BR COMPATIBILITY .
 .
@@ -831,7 +821,7 @@ instead; see section
 .command t xxx \[la]white_space\[ra]
 .command+ t "xxx dummy_arg" \[la]white_space\[ra]
 Print a word, i.e., a sequence of characters
-.argument xxx
+.IR xxx
 terminated by a space character or a line break; an optional second
 integer argument is ignored (this allows the formatter to generate
 an even number of arguments).
@@ -866,10 +856,10 @@ This is the same as the
 command except that after printing each character, the current
 horizontal position is increased by the sum of the width of that
 character and\~\c
-.argument n
+.IR n
 (an integer in
 basic units\~\c
-.unit u ).
+.BR u ).
 This command is a
 .I groff
 extension; it is only used for devices whose
@@ -882,17 +872,17 @@ keyword; see
 .
 .command V n
 Move down to the absolute vertical position\~\c
-.argument n
+.IR n
 (a non-negative integer in basic units\~\c
-.unit u )
+.BR u )
 relative to upper edge of current page.
 .
 .
 .command v n
 Move
-.argument n
+.IR n
 basic units\~\c
-.unit u
+.BR u
 down
 .RI ( n
 is a non-negative integer).
@@ -950,7 +940,7 @@ Some graphics commands can take a variable number of arguments.
 .
 In this case, they are integers representing a size measured in basic
 units\~\c
-.unit u .
+.BR u .
 .
 The arguments called
 .list1..n h
@@ -1014,9 +1004,9 @@ then move the current position to the final point of the arc.
 .D-command C d
 .D-command+ C d dummy_arg
 Draw a solid circle using the current fill color with diameter\~\c
-.argument d
+.IR d
 (integer in basic units\~\c
-.unit u )
+.BR u )
 with leftmost point at the current position; then move the current
 position to the rightmost point of the circle.
 .
@@ -1030,9 +1020,9 @@ extension.
 .
 .D-command c d
 Draw circle line with diameter\~\c
-.argument d
+.IR d
 (integer in basic units\~\c
-.unit u )
+.BR u )
 with leftmost point at the current position; then move the current
 position to the rightmost point of the circle.
 .
@@ -1040,11 +1030,11 @@ position to the rightmost point of the circle.
 .D-command E "h v"
 Draw a solid ellipse in the current fill color with a horizontal
 diameter of\~\c
-.argument h
+.IR h
 and a vertical diameter of\~\c
-.argument v
+.IR v
 (both integers in basic units\~\c
-.unit u )
+.BR u )
 with the leftmost point at the current position; then move to the
 rightmost point of the ellipse.
 .
@@ -1055,11 +1045,11 @@ extension.
 .
 .D-command e "h v"
 Draw an outlined ellipse with a horizontal diameter of\~\c
-.argument h
+.IR h
 and a vertical diameter of\~\c
-.argument v
+.IR v
 (both integers in basic units\~\c
-.unit u )
+.BR u )
 with the leftmost point at current position; then move to the
 rightmost point of the ellipse.
 .
@@ -1123,7 +1113,7 @@ having the 3\~color components red, green, and blue.
 .
 .D-command f n
 The argument
-.argument n
+.IR n
 must be an integer in the range -32767 to 32767.
 .
 .RS
@@ -1170,7 +1160,7 @@ extension.
 Draw line from current position to offset
 .offset h v
 (integers in basic units\~\c
-.unit u );
+.BR u );
 then set current position to the end of the drawn line.
 .
 .
@@ -1221,15 +1211,15 @@ extension.
 .
 .D-command t n
 Set the current line thickness to\~\c
-.argument n
+.IR n
 (an integer in basic units\~\c
-.unit u )
+.BR u )
 if
-.argument n >0;
+.IR n >0;
 if
-.argument n =0
+.IR n =0
 select the smallest available line thickness; if
-.argument n <0
+.IR n <0
 set the line thickness proportional to the point size (this is the
 default before the first
 .B Dt
@@ -1306,7 +1296,7 @@ as defined in section
 .x-command F name
 .xsub Filename
 Use
-.argument name
+.IR name
 as the intended name for the current file in error reports.
 .
 This is useful for remembering the original file name when
@@ -1323,9 +1313,9 @@ extension.
 .x-command f "n\ s"
 .xsub font
 Mount font position\~\c
-.argument n
+.IR n
 (a non-negative integer) with font named\~\c
-.argument s
+.IR s
 (a text word),
 cf.
 .BR groff_font (@MAN5EXT@).
@@ -1334,13 +1324,13 @@ cf.
 .x-command H n
 .xsub Height
 Set character height to\~\c
-.argument n
+.IR n
 (a positive integer in scaled points\~\c
-.unit z ).
+.BR z ).
 .
 .I Classical troff
 used the unit points (\c
-.unit p )
+.BR p )
 instead; see section
 .BR COMPATIBILITY .
 .
@@ -1365,14 +1355,14 @@ The classical documentation reads
 .x-command r "n\ h\ v"
 .xsub resolution
 Resolution is\~\c
-.argument n ,
+.IR n ,
 while
-.argument h
+.IR h
 is the minimal horizontal motion, and
-.argument v
+.IR v
 the minimal vertical motion possible with this device; all arguments
 are positive integers in basic units\~\c
-.unit u
+.BR u
 per inch.
 .
 This is the second command of the
@@ -1382,9 +1372,9 @@ This is the second command of the
 .x-command S n
 .xsub Slant
 Set slant to\~\c
-.argument n
+.IR n
 degrees (an integer in basic units\~\c
-.unit u ).
+.BR u ).
 .
 .
 .x-command s
@@ -1407,7 +1397,7 @@ this is actually just ignored.
 .x-command T xxx
 .xsub Typesetter
 Set name of device to word
-.argument xxx ,
+.IR xxx ,
 a sequence of characters ended by the next whitespace character.
 .
 The possible device names coincide with those from the groff
@@ -1423,10 +1413,10 @@ This is the first command of the
 Configure underlining of spaces.
 .
 If
-.argument n
+.IR n
 is\~1, start underlining of spaces;
 if
-.argument n
+.IR n
 is\~0, stop underlining of spaces.
 .
 This is needed for the
@@ -1443,7 +1433,7 @@ extension.
 .x-command X anything
 .xsub X-escape
 Send string
-.argument anything
+.IR anything
 uninterpreted to the device.
 .
 If the line following this command starts with a
@@ -1485,13 +1475,13 @@ It didn't have a command code, but is represented by a 3-character
 argument consisting of exactly 2\~digits and a character.
 .
 .TP
-.argument ddc
+.IR ddc
 Move right
-.argument dd
+.IR dd
 (exactly two decimal digits) basic units\~\c
-.unit u ,
+.BR u ,
 then print character\~\c
-.argument c .
+.IR c .
 .
 .
 .RS
@@ -1810,13 +1800,13 @@ The argument of the commands
 and
 .B x H
 has the implicit unit scaled point\~\c
-.unit z
+.BR z
 in
 .IR groff ,
 while
 .I classical troff
 had point (\c
-.unit p ).
+.BR p ).
 .
 This isn't an incompatibility, but a compatible extension, for both
 units coincide for all devices without a
