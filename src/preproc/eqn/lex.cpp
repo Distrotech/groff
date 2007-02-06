@@ -239,6 +239,7 @@ static struct builtin_def common_defs[] = {
   { "grad", "\\(gr" },
   { "del", "\\(gr" },
   { "cdot", "type \"binary\" \\(md" },
+  { "cdots", "type \"inner\" { \\(md \\(md \\(md }" },
   { "dollar", "$" },
 };  
 
@@ -259,7 +260,7 @@ static struct builtin_def troff_defs[] = {
   { "vec", "accent { vec_def }" },
   { "dyad_def", "up 52 size -5 { \\(<> }" },
   { "dyad", "accent { dyad_def }" },
-  { "...", "type \"inner\" vcenter { \(md \(md \(md }" },
+  { "...", "type \"inner\" vcenter { . . , }" },
 };
 
 /* equivalent definitions for MathML mode */
@@ -274,7 +275,7 @@ static struct builtin_def mathml_defs[] = {
   { "utilde", "uaccent { \"~\" }" },
   { "vec", "accent { \\(-> }" },
   { "dyad", "accent { \\(<> }" },
-  { "...", "type \"inner\" { \(md \(md \(md }" },
+  { "...", "type \"inner\" { . . . }" },
 };
 
 void init_table(const char *device)
