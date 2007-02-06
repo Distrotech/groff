@@ -2,7 +2,7 @@
 .ig
 troff.man
 
-Last update : 12 Oct 2003
+Last update : 06 Jan 2007
 
 This file is part of groff, the GNU roff type-setting system.
 
@@ -23,40 +23,6 @@ A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 ..
 .
-.
-.\" --------------------------------------------------------------------
-.\" Setup
-.\" --------------------------------------------------------------------
-.
-.do nr troff_C \n[.C]
-.cp 0
-.
-.mso www.tmac
-.
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
-.
-.if '\*[.T]'dvi' \
-.  ftr CB CW
-.
-.de TQ
-.br
-.ns
-.TP \\$1
-..
-.
-.\" Like TP, but if specified indent is more than half
-.\" the current line-length - indent, use the default indent.
-.de Tp
-.ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
-.el .TP "\\$1"
-..
-.
-.
 .\" --------------------------------------------------------------------
 .\" Title
 .\" --------------------------------------------------------------------
@@ -70,16 +36,7 @@ FDL in the main directory of the groff source package.
 .SH SYNOPSIS
 .\" --------------------------------------------------------------------
 .
-.nr a \n(.j
-.ad l
-.nr i \n(.i
-.in +\w'\fB@g@troff 'u
-.ti \niu
-.B @g@troff
-.de OP
-.ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\\$2" "\ ]"
-.el .RB "[\ " "\\$1" "\ ]"
-..
+.SY @g@troff
 .OP \-abcivzCERU
 .OP \-d cs
 .OP \-f fam
@@ -94,11 +51,7 @@ FDL in the main directory of the groff source package.
 .OP \-w name
 .OP \-W name
 .RI "[\ " files\|.\|.\|. "\ ]"
-.br
-.ad \na
-.P
-It is possible to have whitespace between a command line option and
-its parameter.
+.YS
 .
 .
 .\" --------------------------------------------------------------------
@@ -121,6 +74,8 @@ appropriate order and with the appropriate options.
 .\" --------------------------------------------------------------------
 .SH OPTIONS
 .\" --------------------------------------------------------------------
+It is possible to have whitespace between a command line option and
+its parameter.
 .
 .TP \w'\-dname=s'u+2n
 .B \-a
@@ -693,8 +648,6 @@ The
 cf.\&
 .BR info (@MAN1EXT@),
 presents all groff documentation within a single document.
-.
-.cp \n[troff_C]
 .
 .\" --------------------------------------------------------------------
 .\" Emacs variables
