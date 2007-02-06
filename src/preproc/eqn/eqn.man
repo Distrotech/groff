@@ -689,15 +689,20 @@ The integer value\~\c
 using
 .BR groff 's
 .B \ex
-escape.
+escape (the value has no effect in MathML mode).
 Negative values are possible but have no effect.
 If there is more than a single value given in a matrix, the biggest one
 is used.
 .
 .SS Customization
-The appearance of equations is controlled by a large number of parameters.
-These can be set using
-the
+When 
+.B eqn
+is generating troff markup, the appearance of equations is controlled
+by a large number of parameters.  They have no effect when generating 
+MathML mode, which pushes typesetting and fine motions downstream to
+a MathML rendering engine. 
+These parameters can be set using the
+
 .B set
 command.
 .
@@ -750,7 +755,7 @@ This parameter is not used in MathML mode; instead, fat text uses
 .RS
 .IP
 .EX
-<mstyle mathvariant='bold'>
+<mstyle mathvariant='double-struck'>
 .EE
 .RE
 .
@@ -1227,14 +1232,14 @@ section for translation limits specific to
 .SH BUGS
 Inline equations are set at the point size that is current at the
 beginning of the input line.
-.
+.LP
 In MathML mode, the
 .B mark
 and
 .B lineup
 features don't work.
 These could, in theory, be implemented with `<maligngroup>' elements.
-.
+.LP
 In MathML mode, each digit of a numeric literal gets a separate
 `<mn>\:</mn>' pair, and decimal points are tagged with `<mo>\:</mo>'.
 This is allowed by the specification, but inefficient.
