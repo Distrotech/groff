@@ -55,7 +55,7 @@ after these commands, otherwise the position is not changed.
 .
 .nr @maxcolor 65536
 .ds @backslash \[rs]\"
-.ds @linebreak \f[R]\[la]line_break\[ra]\f[]\"
+.ds @linebreak \fR\[la]line_break\[ra]\fP\"
 .
 .\" Begin of macro definitions
 .eo
@@ -68,47 +68,31 @@ after these commands, otherwise the position is not changed.
 ..
 .c format: .command <name> "<arguments>" <punctuation>
 .de command
-.  ds @arg1 \$1\"
-.  ds @arg2 \$2\"
-.  shift 2
-.  IP "\f[B]\*[@arg1]\f[]\ \f[I]\,\*[@arg2]\/\f[]\$*"
-.  rm @arg1
-.  rm @arg2
+.IP "\fB\$1\fP\ \fI\,\$2\/\fP\$3"
 ..
 .c format: .command+ <name> "<arguments>" <punctuation>
 .c continue previous .command heading
 .de command+
-.  ds @arg1 \$1\"
-.  ds @arg2 \$2\"
-.  shift 2
-.  TQ
-.  nop \f[B]\*[@arg1]\f[]\ \f[I]\,\*[@arg2]\/\f[]\$*
-.  rm @arg1
-.  rm @arg2
+.TQ
+\fB\$1\fP\ \fI\,\$2\/\fP\$3
 ..
 .c format: .D-command <subcommand> "<arguments>"
 .de D-command
-.  ds @sub \$1\"
-.  shift 1
-.  IP "\f[B]D\*[@sub]\f[]\ \f[I]\,\$*\/\f[]\|\*[@linebreak]"
-.  rm @sub
+.IP "\fBD\$1\fP\ \fI\,\$2\/\fP\|\*[@linebreak]"
 ..
 .c format: .D-command+ <subcommand> "<arguments>"
 .c continue previous .D-command heading
 .de D-command+
-.  ds @sub \$1\"
-.  shift 1
-.  TQ
-.  nop \f[B]D\*[@sub]\f[]\ \f[I]\,\$*\/\f[]\*[@linebreak]
-.  rm @sub
+.TQ
+.\fBD\$1\fP\ \fI\,\$2\/\fP\*[@linebreak]
 ..
 .de Da-command
 .  shift 1
 .  ie t \
 .    ds @args $h sub 1$\~$v sub 1$ $h sub 2$\~$v sub 2$\"
 .  el \
-.    ds @args \f[I]h1\~v1 h2\~v2\f[]\"
-.  IP "\f[B]Da\f[]\ \*[@args]\|\*[@linebreak]"
+.    ds @args \fIh1\~v1 h2\~v2\fP\"
+.  IP "\fBDa\fP\ \*[@args]\|\*[@linebreak]"
 .  rm @args
 ..
 .c graphics command .D with a variable number of arguments
@@ -121,8 +105,8 @@ after these commands, otherwise the position is not changed.
 .    as @args "$h sub n$\~$v sub n$\"
 .  \}
 .  el \
-.    ds @args \f[I]h1\~v1 h2\~v2\f[] ... \f[I]\,hn\~vn\f[]\"
-.  IP "\f[B]D\*[@sub]\f[]\ \*[@args]\|\*[@linebreak]"
+.    ds @args \fIh1\~v1 h2\~v2\fP ... \fI\,hn\~vn\fP\"
+.  IP "\fBD\*[@sub]\fP\ \*[@args]\|\*[@linebreak]"
 .  rm @args
 .  rm @sub
 ..
@@ -132,8 +116,8 @@ after these commands, otherwise the position is not changed.
 .  shift 1
 .  ds @args
 .  if (\n[.$] > 0) \
-.    ds @args \ \f[I]\,\$*\/\f[]\"
-.  IP "\f[B]x\*[@sub]\f[]\*[@args]\f[]\|\*[@linebreak]"
+.    ds @args \ \fI\,\$*\/\fP\"
+.  IP "\fBx\*[@sub]\fP\*[@args]\fP\|\*[@linebreak]"
 .  rm @sub
 .  rm @args
 ..
@@ -634,7 +618,7 @@ also, but
 doesn't use this.
 .
 .
-.command m "color_scheme \f[R][\f[]component .\|.\|.\f[R]]\f[]"
+.command m "color_scheme \fR[\fPcomponent .\|.\|.\fR]\fP"
 Set the color for text (glyphs), line drawing, and the outline of
 graphic objects using different color schemes; the analoguous command
 for the filling color of graphic objects is
@@ -1004,7 +988,7 @@ with the leftmost point at current position; then move to the
 rightmost point of the ellipse.
 .
 .
-.D-command F "color_scheme \f[R][\f[]component .\|.\|.\f[R]]\f[]"
+.D-command F "color_scheme \fR[\fPcomponent .\|.\|.\fR]\fP"
 Set fill color for solid drawing objects using different color
 schemes; the analoguous command for setting the color of text, line
 graphics, and the outline of graphic objects is
