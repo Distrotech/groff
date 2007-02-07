@@ -84,16 +84,10 @@ after these commands, otherwise the position is not changed.
 .c continue previous .D-command heading
 .de D-command+
 .TQ
-.\fBD\$1\fP\ \fI\,\$2\/\fP\*[@linebreak]
+\fBD\$1\fP\ \fI\,\$2\/\fP\|\*[@linebreak]
 ..
 .de Da-command
-.  shift 1
-.  ie t \
-.    ds @args $h sub 1$\~$v sub 1$ $h sub 2$\~$v sub 2$\"
-.  el \
-.    ds @args \fIh1\~v1 h2\~v2\fP\"
-.  IP "\fBDa\fP\ \*[@args]\|\*[@linebreak]"
-.  rm @args
+.IP "\fBDa\fP\ \fIh1\~v1 h2\~v2\fP\|\*[@linebreak]"
 ..
 .c graphics command .D with a variable number of arguments
 .c format: .D-multiarg <subcommand>
@@ -936,7 +930,7 @@ then move the current position to the final point of the arc.
 .
 .
 .D-command C d
-.D-command+ C d dummy_arg
+.D-command+ C "d dummy_arg"
 Draw a solid circle using the current fill color with diameter\~\c
 .IR d
 (integer in basic units\~\c
