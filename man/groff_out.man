@@ -28,12 +28,6 @@ FDL in the main directory of the groff source package.
 .do nr groff_out_C \n[.C]
 .cp 0
 .
-.if t \{\
-.EQ
-delim $$
-.EN
-.\}
-.
 .\" ----------------- Document configuration
 .
 .\" Number register to decide whether the commands `{' and `}' are used
@@ -86,23 +80,21 @@ after these commands, otherwise the position is not changed.
 .TQ
 \fBD\$1\fP\ \fI\,\$2\/\fP\|\*[@linebreak]
 ..
+.
+.c We set these as troff micromotions rather than eqn because \d and \u 
+.c can be lifted to XML subscript/superscript tags.  Don't change
+.c these to a parameterized string, man2html won't handle that.
+.ds hv1 \fIh\d\s-3\&1\s+3\u\~v\d\s-3\&1\s+3\u\fP 
+.ds hv2 \fIh\d\s-3\&2\s+3\u\~v\d\s-3\&2\s+3\u\fP
+.ds hvn \fIh\d\s-3\&n\s+3\u\~v\d\s-3\&n\s+3\u\fP
+.
 .de Da-command
-.IP "\fBDa\fP\ \fIh1\~v1 h2\~v2\fP\|\*[@linebreak]"
+.IP "\fBDa\fP\ \*[hv1] \*[hv2]\|\*[@linebreak]"
 ..
 .c graphics command .D with a variable number of arguments
 .c format: .D-multiarg <subcommand>
 .de D-multiarg
-.  ds @sub \$1\"
-.  shift 1
-.  ie t \{\
-.    ds @args "$h sub 1$\~$v sub 1$ $h sub 2$\~$v sub 2$ .\|.\|. \"
-.    as @args "$h sub n$\~$v sub n$\"
-.  \}
-.  el \
-.    ds @args \fIh1\~v1 h2\~v2\fP ... \fI\,hn\~vn\fP\"
-.  IP "\fBD\*[@sub]\fP\ \*[@args]\|\*[@linebreak]"
-.  rm @args
-.  rm @sub
+.IP "\fBD\$1\fP\ \*[hv1] \*[hv2] ... \*[hvn]\|\*[@linebreak]"
 ..
 .c format: .x-command <subname> "<arguments>"
 .de x-command
