@@ -51,26 +51,14 @@ after these commands, otherwise the position is not changed.
 (\fI\,\\$1\/\fP,\ \fI\,\\$2\/\fP)\\$3
 ..
 .de indexed_offset
-.offset \\$1\d\s-3\fR\\$2\fP\s+3\u \\$3\d\s-3\fR\\$4\fP\s+3\u \\$5
+.offset \fI\\$1\fP\d\s-3\fR\\$2\fP\s+3\u \fI\\$3\fP\d\s-3\fR\\$4\fP\s+3\u \\$5
 ..
 .\" format: .command <name> "<arguments>" <punctuation>
 .de command
-.IP "\fB\\$1\fP\ \fI\,\\$2\/\fP\\$3"
-..
-.\" format: .command+ <name> "<arguments>" <punctuation>
-.\" continue previous .command heading
-.de command+
-.TQ
 \fB\\$1\fP\ \fI\,\\$2\/\fP\\$3
 ..
 .\" format: .D-command <subcommand> "<arguments>"
 .de D-command
-.IP "\fBD\\$1\fP\ \fI\,\\$2\/\fP\|\*[@linebreak]"
-..
-.\" format: .D-command+ <subcommand> "<arguments>"
-.\" continue previous .D-command heading
-.de D-command+
-.TQ
 \fBD\\$1\fP\ \fI\,\\$2\/\fP\|\*[@linebreak]
 ..
 .
@@ -82,16 +70,16 @@ after these commands, otherwise the position is not changed.
 .ds hvn \fIh\d\s-3\&n\s+3\u\~v\d\s-3\&n\s+3\u\fP
 .
 .de Da-command
-.IP "\fBDa\fP\ \*[hv1] \*[hv2]\|\*[@linebreak]"
+\fBDa\fP\ \*[hv1] \*[hv2]\|\*[@linebreak]
 ..
 .\" graphics command .D with a variable number of arguments
 .\" format: .D-multiarg <subcommand>
 .de D-multiarg
-.IP "\fBD\\$1\fP\ \*[hv1] \*[hv2] ... \*[hvn]\|\*[@linebreak]"
+\fBD\\$1\fP\ \*[hv1] \*[hv2] ... \*[hvn]\|\*[@linebreak]
 ..
 .\" format: .x-command <subname> "<arguments>"
 .de x-command
-.IP "\fBx\\$1\fP\ \fI\\$2\fP\|\*[@linebreak]"
+\fBx\\$1\fP\ \fI\\$2\fP\|\*[@linebreak]
 ..
 .de xsub
 .RI "(" "\\$1" " control command)"
@@ -518,6 +506,7 @@ preceding argument ends with a string argument.
 .
 .
 .if \n[@USE_ENV_STACK]=1 \{\
+.TP
 .command {
 Open a new environment by copying the actual device configuration data
 to the environment stack.
@@ -526,15 +515,17 @@ The current environment is setup by the device specification and
 manipulated by the setting commands.
 .
 .
+.TP
 .command }
 Close the actual environment (opened by a preceding
 .BR { \~command)
 and restore the previous environment from the environment
 stack as the actual device configuration data.
 .
-\}              \" endif @USE_ENV_STACK
+.\}              \" endif @USE_ENV_STACK
 .
 .
+.TP
 .command C xxx \[la]white_space\[ra]
 Print a special groff character named
 .IR xxx .
@@ -551,6 +542,7 @@ character's size is read from the font file.
 The print position is not changed.
 .
 .
+.TP
 .command c c
 Print character\~\c
 .IR c
@@ -560,12 +552,14 @@ the character's size is read from the font file.
 The print position is not changed.
 .
 .
+.TP
 .command f n
 Set font to font number\~\c
 .IR n
 (a non-negative integer).
 .
 .
+.TP
 .command H n
 Move right to the absolute vertical position\~\c
 .IR n
@@ -574,6 +568,7 @@ Move right to the absolute vertical position\~\c
 relative to left edge of current page.
 .
 .
+.TP
 .command h n
 Move
 .IR n
@@ -589,6 +584,7 @@ also, but
 doesn't use this.
 .
 .
+.TP
 .command m "color_scheme \fR[\fPcomponent .\|.\|.\fR]\fP"
 Set the color for text (glyphs), line drawing, and the outline of
 graphic objects using different color schemes; the analoguous command
@@ -615,11 +611,13 @@ extension.
 .
 .RS
 .
+.TP
 .command mc "cyan magenta yellow"
 Set color using the CMY color scheme, having the 3\~color components
 cyan, magenta, and yellow.
 .
 .
+.TP
 .command md
 Set color to the default color value
 (black in most cases).
@@ -627,15 +625,18 @@ Set color to the default color value
 No component arguments.
 .
 .
+.TP
 .command mg "gray"
 Set color to the shade of gray given by the argument, an integer
 between 0 (black) and \n[@maxcolor] (white).
 .
 .
+.TP
 .command mk "cyan magenta yellow black"
 Set color using the CMYK color scheme, having the 4\~color components
 cyan, magenta, yellow, and black.
 .
+.TP
 .command mr "red green blue"
 Set color using the RGB color scheme, having the 3\~color components
 red, green, and blue.
@@ -643,6 +644,7 @@ red, green, and blue.
 .RE
 .
 .
+.TP
 .command N n
 Print character with index\~\c
 .IR n
@@ -664,6 +666,7 @@ This command is a
 extension.
 .
 .
+.TP
 .command n b\ a
 Inform the device about a line break, but no positioning is done by
 this command.
@@ -686,6 +689,7 @@ they are just ignored, but they must be provided for compatibility
 reasons.
 .
 .
+.TP
 .command p n
 Begin a new page in the outprint.
 .
@@ -703,6 +707,7 @@ page, so a
 must be issued before any of these commands.
 .
 .
+.TP
 .command s n
 Set point size to
 .IR n
@@ -721,8 +726,10 @@ instead; see section
 .BR COMPATIBILITY .
 .
 .
+.TP
 .command t xxx \[la]white_space\[ra]
-.command+ t "xxx dummy_arg" \[la]white_space\[ra]
+.TQ
+.command t "xxx dummy_arg" \[la]white_space\[ra]
 Print a word, i.e., a sequence of characters
 .IR xxx
 terminated by a space character or a line break; an optional second
@@ -751,6 +758,7 @@ keyword; see
 .BR groff_font (@MAN5EXT@).
 .
 .
+.TP
 .command u "n xxx" \[la]white_space\[ra]
 Print word with track kerning.
 .
@@ -773,6 +781,7 @@ keyword; see
 .BR groff_font (@MAN5EXT@).
 .
 .
+.TP
 .command V n
 Move down to the absolute vertical position\~\c
 .IR n
@@ -781,6 +790,7 @@ Move down to the absolute vertical position\~\c
 relative to upper edge of current page.
 .
 .
+.TP
 .command v n
 Move
 .IR n
@@ -798,6 +808,7 @@ also, but
 doesn't use this.
 .
 .
+.TP
 .command w
 Informs about a paddable whitespace to increase readability.
 .
@@ -886,6 +897,7 @@ as defined in section
 .BR Separation .
 .
 .
+.TP
 .D-multiarg ~
 Draw B-spline from current position to offset
 .indexed_offset h 1 v 1 ,
@@ -897,6 +909,7 @@ This command takes a variable number of argument pairs; the current
 position is moved to the terminal point of the drawn curve.
 .
 .
+.TP
 .Da-command
 Draw arc from current position to
 .indexed_offset h 1 v 1 \|+\|\c
@@ -906,8 +919,10 @@ with center at
 then move the current position to the final point of the arc.
 .
 .
+.TP
 .D-command C d
-.D-command+ C "d dummy_arg"
+.TQ
+.D-command C "d dummy_arg"
 Draw a solid circle using the current fill color with diameter\~\c
 .IR d
 (integer in basic units\~\c
@@ -923,6 +938,7 @@ This command is a
 extension.
 .
 .
+.TP
 .D-command c d
 Draw circle line with diameter\~\c
 .IR d
@@ -932,6 +948,7 @@ with leftmost point at the current position; then move the current
 position to the rightmost point of the circle.
 .
 .
+.TP
 .D-command E "h v"
 Draw a solid ellipse in the current fill color with a horizontal
 diameter of\~\c
@@ -948,6 +965,7 @@ This command is a
 extension.
 .
 .
+.TP
 .D-command e "h v"
 Draw an outlined ellipse with a horizontal diameter of\~\c
 .IR h
@@ -959,6 +977,7 @@ with the leftmost point at current position; then move to the
 rightmost point of the ellipse.
 .
 .
+.TP
 .D-command F "color_scheme \fR[\fPcomponent .\|.\|.\fR]\fP"
 Set fill color for solid drawing objects using different color
 schemes; the analoguous command for setting the color of text, line
@@ -988,11 +1007,13 @@ extension.
 .
 .RS
 .
+.TP
 .D-command Fc "cyan magenta yellow"
 Set fill color for solid drawing objects using the CMY color scheme,
 having the 3\~color components cyan, magenta, and yellow.
 .
 .
+.TP
 .D-command Fd
 Set fill color for solid drawing objects to the default fill color value
 (black in most cases).
@@ -1000,15 +1021,18 @@ Set fill color for solid drawing objects to the default fill color value
 No component arguments.
 .
 .
+.TP
 .D-command Fg "gray"
 Set fill color for solid drawing objects to the shade of gray given by
 the argument, an integer between 0 (black) and \n[@maxcolor] (white).
 .
 .
+.TP
 .D-command Fk "cyan magenta yellow black"
 Set fill color for solid drawing objects using the CMYK color scheme,
 having the 4\~color components cyan, magenta, yellow, and black.
 .
+.TP
 .D-command Fr "red green blue"
 Set fill color for solid drawing objects using the RGB color scheme,
 having the 3\~color components red, green, and blue.
@@ -1016,6 +1040,7 @@ having the 3\~color components red, green, and blue.
 .RE
 .
 .
+.TP
 .D-command f n
 The argument
 .IR n
@@ -1061,6 +1086,7 @@ extension.
 .RE
 .
 .
+.TP
 .D-command l "h v"
 Draw line from current position to offset
 .offset h v
@@ -1069,6 +1095,7 @@ Draw line from current position to offset
 then set current position to the end of the drawn line.
 .
 .
+.TP
 .D-multiarg p
 Draw a polygon line from current position to offset
 .offset h1 v1 ,
@@ -1085,17 +1112,18 @@ even ones to the vertical position.
 .
 Although this doesn't make sense it is kept for compatibility.
 .
-\}
+.\}
 .el \{\
 As the polygon is closed, the end of drawing is the starting point, so
 the position doesn't change.
-\}
+.\}
 .
 This command is a
 .I groff
 extension.
 .
 .
+.TP
 .D-multiarg P
 The same macro as the corresponding
 .B Dp
@@ -1105,7 +1133,7 @@ current fill color rather than an outlined polygon.
 .ie \n[@STUPID_DRAWING_POSITIONING]=1 \{\
 The position is changed in the same way as with
 .BR Dp .
-\}
+.\}
 .el \
 No position changing.
 .
@@ -1114,6 +1142,7 @@ This command is a
 extension.
 .
 .
+.TP
 .D-command t n
 Set the current line thickness to\~\c
 .IR n
@@ -1137,7 +1166,7 @@ position is not changed.
 .
 Although this doesn't make sense it is kept for compatibility.
 .
-\}
+.\}
 .el \
 No position changing.
 .
@@ -1198,6 +1227,7 @@ means a
 as defined in section
 .BR Separation .
 .
+.TP
 .x-command F name
 .xsub Filename
 Use
@@ -1215,6 +1245,7 @@ This command is a
 extension.
 .
 .
+.TP
 .x-command f "n\ s"
 .xsub font
 Mount font position\~\c
@@ -1226,6 +1257,7 @@ cf.
 .BR groff_font (@MAN5EXT@).
 .
 .
+.TP
 .x-command H n
 .xsub Height
 Set character height to\~\c
@@ -1240,6 +1272,7 @@ instead; see section
 .BR COMPATIBILITY .
 .
 .
+.TP
 .x-command i
 .xsub init
 Initialize device.
@@ -1248,6 +1281,7 @@ This is the third command of the
 .IR prologue .
 .
 .
+.TP
 .x-command p
 .xsub pause
 Parsed but ignored.
@@ -1257,6 +1291,7 @@ The classical documentation reads
 .IR restarted .
 .
 .
+.TP
 .x-command r "n\ h\ v"
 .xsub resolution
 Resolution is\~\c
@@ -1274,6 +1309,7 @@ This is the second command of the
 .IR prologue .
 .
 .
+.TP
 .x-command S n
 .xsub Slant
 Set slant to\~\c
@@ -1282,6 +1318,7 @@ degrees (an integer in basic units\~\c
 .BR u ).
 .
 .
+.TP
 .x-command s
 .xsub stop
 Terminates the processing of the current file; issued as the last
@@ -1290,6 +1327,7 @@ command of any
 .IR output .
 .
 .
+.TP
 .x-command t
 .xsub trailer
 Generate trailer information, if any.
@@ -1299,6 +1337,7 @@ In
 this is actually just ignored.
 .
 .
+.TP
 .x-command T xxx
 .xsub Typesetter
 Set name of device to word
@@ -1313,6 +1352,7 @@ This is the first command of the
 .IR prologue .
 .
 .
+.TP
 .x-command u n
 .xsub underline
 Configure underlining of spaces.
@@ -1335,6 +1375,7 @@ This command is a
 extension.
 .
 .
+.TP
 .x-command X anything
 .xsub X-escape
 Send string
