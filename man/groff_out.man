@@ -52,33 +52,32 @@ after these commands, otherwise the position is not changed.
 .ds @linebreak \fR\[la]line_break\[ra]\fP\"
 .
 .\" Begin of macro definitions
-.eo
 .
 .de offset
-(\fI\,\$1\/\fP,\ \fI\,\$2\/\fP)\$3
+(\fI\,\\$1\/\fP,\ \fI\,\\$2\/\fP)\\$3
 ..
 .de indexed_offset
-.offset \$1\d\s-3\fR\$2\fP\s+3\u \$3\d\s-3\fR\$4\fP\s+3\u \$5
+.offset \\$1\d\s-3\fR\\$2\fP\s+3\u \\$3\d\s-3\fR\\$4\fP\s+3\u \\$5
 ..
 .c format: .command <name> "<arguments>" <punctuation>
 .de command
-.IP "\fB\$1\fP\ \fI\,\$2\/\fP\$3"
+.IP "\fB\\$1\fP\ \fI\,\\$2\/\fP\\$3"
 ..
 .c format: .command+ <name> "<arguments>" <punctuation>
 .c continue previous .command heading
 .de command+
 .TQ
-\fB\$1\fP\ \fI\,\$2\/\fP\$3
+\fB\\$1\fP\ \fI\,\\$2\/\fP\\$3
 ..
 .c format: .D-command <subcommand> "<arguments>"
 .de D-command
-.IP "\fBD\$1\fP\ \fI\,\$2\/\fP\|\*[@linebreak]"
+.IP "\fBD\\$1\fP\ \fI\,\\$2\/\fP\|\*[@linebreak]"
 ..
 .c format: .D-command+ <subcommand> "<arguments>"
 .c continue previous .D-command heading
 .de D-command+
 .TQ
-\fBD\$1\fP\ \fI\,\$2\/\fP\|\*[@linebreak]
+\fBD\\$1\fP\ \fI\,\\$2\/\fP\|\*[@linebreak]
 ..
 .
 .c We set these as troff micromotions rather than eqn because \d and \u 
@@ -94,24 +93,16 @@ after these commands, otherwise the position is not changed.
 .c graphics command .D with a variable number of arguments
 .c format: .D-multiarg <subcommand>
 .de D-multiarg
-.IP "\fBD\$1\fP\ \*[hv1] \*[hv2] ... \*[hvn]\|\*[@linebreak]"
+.IP "\fBD\\$1\fP\ \*[hv1] \*[hv2] ... \*[hvn]\|\*[@linebreak]"
 ..
 .c format: .x-command <subname> "<arguments>"
 .de x-command
-.  ds @sub \$1\"
-.  shift 1
-.  ds @args
-.  if (\n[.$] > 0) \
-.    ds @args \ \fI\,\$*\/\fP\"
-.  IP "\fBx\*[@sub]\fP\*[@args]\fP\|\*[@linebreak]"
-.  rm @sub
-.  rm @args
+.IP "\fBx\\$1\fP\ \fI\\$2\fP\|\*[@linebreak]"
 ..
 .de xsub
-.  RI "(" "\$1" " control command)"
-.  br
+.RI "(" "\\$1" " control command)"
+.br
 ..
-.ec
 .\" End of macro definitions 
 .
 .
@@ -532,7 +523,7 @@ is only necessary when two integer arguments would clash or if the
 preceding argument ends with a string argument.
 .
 .
-.if (\n[@USE_ENV_STACK] == 1) \{\
+.if \n[@USE_ENV_STACK]=1 \{\
 .command {
 Open a new environment by copying the actual device configuration data
 to the environment stack.
@@ -1093,7 +1084,7 @@ etc.\& up to offset
 .offset hn vn ,
 and from there back to the starting position.
 .
-.ie (\n[@STUPID_DRAWING_POSITIONING] == 1) \{\
+.ie \n[@STUPID_DRAWING_POSITIONING]=1 \{\
 For historical reasons, the position is changed by adding the sum of
 all arguments with odd index to the actual horizontal position and the
 even ones to the vertical position.
@@ -1117,7 +1108,7 @@ The same macro as the corresponding
 command with the same arguments, but draws a solid polygon in the
 current fill color rather than an outlined polygon.
 .
-.ie (\n[@STUPID_DRAWING_POSITIONING] == 1) \{\
+.ie \n[@STUPID_DRAWING_POSITIONING]=1 \{\
 The position is changed in the same way as with
 .BR Dp .
 \}
@@ -1145,7 +1136,7 @@ default before the first
 .B Dt
 command was specified).
 .
-.ie (\n[@STUPID_DRAWING_POSITIONING] == 1) \{\
+.ie \n[@STUPID_DRAWING_POSITIONING]=1 \{\
 For historical reasons, the horizontal position is changed by adding
 the argument to the actual horizontal position, while the vertical
 position is not changed.
@@ -1743,7 +1734,7 @@ different name, or seem to have had a different resolution.
 So conflicts with classical devices are very unlikely.
 .
 .
-.ie (\n[@STUPID_DRAWING_POSITIONING] == 1) \{\
+.ie \n[@STUPID_DRAWING_POSITIONING]=1 \{\
 .IP \[bu] 2m 
 The position changing after the commands
 .BR Dp ,
