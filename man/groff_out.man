@@ -25,9 +25,6 @@ FDL in the main directory of the groff source package.
 .\" Setup
 .\" --------------------------------------------------------------------
 .
-.do nr groff_out_C \n[.C]
-.cp 0
-.
 .\" ----------------- Document configuration
 .
 .\" Number register to decide whether the commands `{' and `}' are used
@@ -42,10 +39,7 @@ after these commands, otherwise the position is not changed.
 ..
 .nr @STUPID_DRAWING_POSITIONING 1
 .
-.de c
-..
-.
-.c ----------------- Semantical definitions
+.\" ----------------- Semantical definitions
 .
 .nr @maxcolor 65536
 .ds @backslash \[rs]\"
@@ -59,30 +53,30 @@ after these commands, otherwise the position is not changed.
 .de indexed_offset
 .offset \\$1\d\s-3\fR\\$2\fP\s+3\u \\$3\d\s-3\fR\\$4\fP\s+3\u \\$5
 ..
-.c format: .command <name> "<arguments>" <punctuation>
+.\" format: .command <name> "<arguments>" <punctuation>
 .de command
 .IP "\fB\\$1\fP\ \fI\,\\$2\/\fP\\$3"
 ..
-.c format: .command+ <name> "<arguments>" <punctuation>
-.c continue previous .command heading
+.\" format: .command+ <name> "<arguments>" <punctuation>
+.\" continue previous .command heading
 .de command+
 .TQ
 \fB\\$1\fP\ \fI\,\\$2\/\fP\\$3
 ..
-.c format: .D-command <subcommand> "<arguments>"
+.\" format: .D-command <subcommand> "<arguments>"
 .de D-command
 .IP "\fBD\\$1\fP\ \fI\,\\$2\/\fP\|\*[@linebreak]"
 ..
-.c format: .D-command+ <subcommand> "<arguments>"
-.c continue previous .D-command heading
+.\" format: .D-command+ <subcommand> "<arguments>"
+.\" continue previous .D-command heading
 .de D-command+
 .TQ
 \fBD\\$1\fP\ \fI\,\\$2\/\fP\|\*[@linebreak]
 ..
 .
-.c We set these as troff micromotions rather than eqn because \d and \u 
-.c can be lifted to XML subscript/superscript tags.  Don't change
-.c these to a parameterized string, man2html won't handle that.
+.\" We set these as troff micromotions rather than eqn because \d and \u 
+.\" can be lifted to XML subscript/superscript tags.  Don't change
+.\" these to a parameterized string, man2html won't handle that.
 .ds hv1 \fIh\d\s-3\&1\s+3\u\~v\d\s-3\&1\s+3\u\fP 
 .ds hv2 \fIh\d\s-3\&2\s+3\u\~v\d\s-3\&2\s+3\u\fP
 .ds hvn \fIh\d\s-3\&n\s+3\u\~v\d\s-3\&n\s+3\u\fP
@@ -90,12 +84,12 @@ after these commands, otherwise the position is not changed.
 .de Da-command
 .IP "\fBDa\fP\ \*[hv1] \*[hv2]\|\*[@linebreak]"
 ..
-.c graphics command .D with a variable number of arguments
-.c format: .D-multiarg <subcommand>
+.\" graphics command .D with a variable number of arguments
+.\" format: .D-multiarg <subcommand>
 .de D-multiarg
 .IP "\fBD\\$1\fP\ \*[hv1] \*[hv2] ... \*[hvn]\|\*[@linebreak]"
 ..
-.c format: .x-command <subname> "<arguments>"
+.\" format: .x-command <subname> "<arguments>"
 .de x-command
 .IP "\fBx\\$1\fP\ \fI\\$2\fP\|\*[@linebreak]"
 ..
@@ -1980,8 +1974,6 @@ maintained by
 .MT wl@gnu.org
 Werner Lemberg
 .ME .
-.
-.cp \n[groff_out_C]
 .
 .\" --------------------------------------------------------------------
 .\" Emacs settings
