@@ -60,60 +60,11 @@ after these commands, otherwise the position is not changed.
 .\" Begin of macro definitions
 .eo
 .
-.c comma separated list of indexed variables
-.de list1..n
-.  ds @arg1 \$1\"
-.  nop \c
-.  ie t \
-.    nop $\*[@arg1] sub 1$, $\*[@arg1] sub 2$, .\|.\|., $\*[@arg1] sub n$ \c
-.  el \{\
-.    IR \*[@arg1]1 ,
-.    IR \*[@arg1]2 ,
-.    nop \&...,
-.    I \*[@arg1]n
-.  \}
-.  rm @arg1
-..
 .de offset
-.  if (\n[.$] < 2) \
-.    ab `.offset' needs at least 2 arguments
-.  ds @arg1 \$1\"
-.  ds @arg2 \$2\"
-.  shift 2
-.  nop (\f[I]\,\*[@arg1]\/\f[],\ \f[I]\,\*[@arg2]\/\f[])\$*
-.  rm @arg1
-.  rm @arg2
+(\fI\,\$1\/\fP,\ \fI\,\$2\/\fP)\$3
 ..
 .de indexed_offset
-.  if (\n[.$] < 4) \
-.    ab `.indexed_offset' needs at least 4 arguments
-.  ds @arg1 \$1\"
-.  ds @index1 \$2\"
-.  ds @arg2 \$3\"
-.  ds @index2 \$4\"
-.  shift 4
-.  ie t \{\
-.    ie \B'\*[@index1]' \{\
-.      nop ($\*[@arg1] sub roman \*[@index1]$,\ \c
-.    \}
-.    el \{\
-.      nop ($\*[@arg1] sub \*[@index1]$,\ \c
-.    \}
-.    ie \B'\*[@index2]' \{\
-.      nop $\*[@arg2] sub roman \*[@index2]$)\$* \c
-.    \}
-.    el \{\
-.      nop $\*[@arg2] sub \*[@index2]$)\$* \c
-.    \}
-.  \}
-.  el \{\
-.    nop (\f[I]\*[@arg1]\*[@index1]\f[],\ \c
-.    nop \f[I]\*[@arg2]\*[@index2]\f[])\$* \c
-.  \}
-.  rm @arg1
-.  rm @arg2
-.  rm @index1
-.  rm @index2
+.offset \$1\d\s-3\fR\$2\fP\s+3\u \$3\d\s-3\fR\$4\fP\s+3\u \$5
 ..
 .c format: .command <name> "<arguments>" <punctuation>
 .de command
@@ -939,13 +890,15 @@ In this case, they are integers representing a size measured in basic
 units\~\c
 .BR u .
 .
-The arguments called
-.list1..n h
+The 
+.I h 
+arguments
 stand for horizontal distances where positive means right, negative
 left.
 .
-The arguments called
-.list1..n v
+The 
+.I v 
+arguments
 stand for vertical distances where positive means down, negative up.
 .
 All these distances are offsets relative to the current location.
