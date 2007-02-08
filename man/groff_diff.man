@@ -4,7 +4,7 @@
 groff_diff.man
 
 Last update:
-24 Jan 2007 -- macro simplification by ESR.
+08 Feb 2007 -- macro simplification by ESR.
 
 This file is part of groff, the GNU roff type-setting system.
 It is the source of the man-page groff_diff(7).
@@ -1196,9 +1196,9 @@ The color named
 (which is device-specific) can't be redefined.
 .
 It is possible that the default color for
-.B \&\[rs]M
+.B \[rs]M
 and
-.B \&\[rs]m
+.B \[rs]m
 is not the same.
 .
 .TP
@@ -3268,15 +3268,15 @@ search special fonts to find a glyph.
 For color support, some new commands have been added:
 .
 .TP
-\&\f[B]mc \f[I]cyan magenta yellow\f[R]
+\f[B]mc \f[I]cyan magenta yellow\f[R]
 .TQ
-\&\f[B]md\f[R]
+\f[B]md\f[R]
 .TQ
-\&\f[B]mg \f[I]gray\f[R]
+\f[B]mg \f[I]gray\f[R]
 .TQ
-\&\f[B]mk \f[I]cyan magenta yellow black\f[R]
+\f[B]mk \f[I]cyan magenta yellow black\f[R]
 .TQ
-\&\f[B]mr \f[I]red green blue\f[R]
+\f[B]mr \f[I]red green blue\f[R]
 Set the color components of the current drawing color, using various
 color schemes.
 .
@@ -3291,7 +3291,7 @@ The
 device control command has been extended.
 .
 .TP
-\&\f[B]x u \f[I]n\f[R]
+\f[B]x u \f[I]n\f[R]
 If
 .I n
 is\~1, start underlining of spaces.
@@ -3318,7 +3318,7 @@ These extensions are not used by GNU pic if the
 option is given.
 .
 .TP
-\&\f[B]Df \f[I]n\f[R]\*[ic]\[rs]n
+\f[B]Df \f[I]n\f[R]\*[ic]\[rs]n
 Set the shade of gray to be used for filling solid objects to
 .IR n ;
 .I n
@@ -3349,13 +3349,13 @@ integer multiple of the horizontal resolution which can lead to
 surprising results.
 .
 .TP
-\&\f[B]DC \f[I]d\f[R]\*[ic]\[rs]n
+\f[B]DC \f[I]d\f[R]\*[ic]\[rs]n
 Draw a solid circle with a diameter of
 .I d
 with the leftmost point at the current position.
 .
 .TP
-\&\f[B]DE \f[I]dx dy\f[R]\*[ic]\[rs]n
+\f[B]DE \f[I]dx dy\f[R]\*[ic]\[rs]n
 Draw a solid ellipse with a horizontal diameter of
 .I dx
 and a vertical diameter of
@@ -3366,7 +3366,7 @@ delim $$
 .EN
 .
 .TP
-\&\f[B]Dp\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
+\f[B]Dp\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
 Draw a polygon with, for $i = 1 ,..., n+1$, the
 .IR i -th
 vertex at the current position 
@@ -3377,14 +3377,14 @@ At the moment, GNU pic only uses this command to generate triangles
 and rectangles.
 .
 .TP
-\&\f[B]DP\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
+\f[B]DP\f[R] $dx sub 1$ $dy sub 1$ $dx sub 2$ $dy sub 2$ $...$ $dx sub n$ $dy sub n$\[rs]n
 .
 Like
 .B Dp
 but draw a solid rather than outlined polygon.
 .
 .TP
-\&\f[B]Dt \f[I]n\f[R]\*[ic]\[rs]n
+\f[B]Dt \f[I]n\f[R]\*[ic]\[rs]n
 Set the current line thickness to
 .I n
 machine units.
@@ -3409,7 +3409,7 @@ does not depend on this.
 .
 Given a drawing command of the form
 .IP
-\f[B]\[rs]D\[fm]\f[I]c\f[R] $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$ $x sub n$ $y sub n$\[fm]
+\f[B]\[rs]D'\f[I]c\f[R] $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$ $x sub n$ $y sub n$\f[B]'\f[R]
 .
 .P
 where
@@ -3450,7 +3450,7 @@ Thus after executing a
 .B D
 command of the form
 .IP
-\f[B]D\f[I]c\f[R] $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ $...$x sub n$ $y sub n$\[rs]n
+\f[B]D\f[I]c\f[R] $x sub 1$ $y sub 1$ $x sub 2$ $y sub 2$ .\|.\|. $x sub n$ $y sub n$\[rs]n
 .
 .P
 the current position should be increased by
@@ -3461,15 +3461,15 @@ $( sum from i=1 to n x sub i , sum from i=1 to n y sub i )$.
 Another set of extensions is
 .
 .TP
-\&\f[B]DFc \f[I]cyan magenta yellow\f[R]\*[ic]\[rs]n
+\f[B]DFc \f[I]cyan magenta yellow\f[R]\*[ic]\[rs]n
 .TQ
-\&\f[B]DFd\f[R]\*[ic]\[rs]n
+\f[B]DFd\f[R]\*[ic]\[rs]n
 .TQ
-\&\f[B]DFg \f[I]gray\f[R]\*[ic]\[rs]n
+\f[B]DFg \f[I]gray\f[R]\*[ic]\[rs]n
 .TQ
-\&\f[B]DFk \f[I]cyan magenta yellow black\f[R]\*[ic]\[rs]n
+\f[B]DFk \f[I]cyan magenta yellow black\f[R]\*[ic]\[rs]n
 .TQ
-\&\f[B]DFr \f[I]red green blue\f[R]\*[ic]\[rs]n
+\f[B]DFr \f[I]red green blue\f[R]\*[ic]\[rs]n
 Set the color components of the filling color similar to the
 .B m
 commands above.
@@ -3543,11 +3543,11 @@ or for other implementations of roff in a consistent way.
 Compatibility mode can be turned on with the
 .B \-C
 command line option, and turned on or off with the
-.B \&.cp
+.B .cp
 request.
 .
 The number register
-.B \&\[rs]n(.C
+.B \[rs]n(.C
 is\~1 if compatibility mode is on, 0\~otherwise.
 .
 .P
@@ -3556,7 +3556,7 @@ some incompatibilities.
 .I Classical troff
 interprets
 .IP
-.B \&.dsabcd
+.B .dsabcd
 .
 .P
 as defining a string
@@ -3566,15 +3566,15 @@ with contents
 In
 .IR groff
 mode, this is considered as a call of a macro named
-.B \&dsabcd .
+.B dsabcd .
 .
 .P
 Also
 .I classical troff
 interprets
-.B \&\[rs]*[
+.B \[rs]*[
 or
-.B \&\[rs]n[
+.B \[rs]n[
 as references to a string or number register called
 .B [
 while
@@ -3591,34 +3591,34 @@ names are not recognized.
 On the other hand, groff in
 .I GNU native mode
 does not allow to use the single-character escapes
-.B \&\[rs]\[rs]
+.B \[rs]\[rs]
 (backslash),
-.B \&\[rs]|
+.B \[rs]|
 (vertical bar),
-.B \&\[rs]^
+.B \[rs]^
 (caret),
-.B \&\[rs]&
+.B \[rs]&
 (ampersand),
-.B \&\[rs]{
+.B \[rs]{
 (opening brace),
-.B \&\[rs]}
+.B \[rs]}
 (closing brace),
-\&'\[rs] '
+`\[rs]\ '
 (space),
-.B \&\[rs]'
+.B \[rs]'
 (single quote),
-.B \&\[rs]`
+.B \[rs]`
 (backquote),
-.B \&\[rs]\-
+.B \[rs]\-
 (minus),
-.B \&\[rs]_
+.B \[rs]_
 (underline),
-.B \&\[rs]!
+.B \[rs]!
 (bang),
-.B \&\[rs]%
+.B \[rs]%
 (percent),
 and
-.B \&\[rs]c
+.B \[rs]c
 (character c) in names of strings, macros, diversions, number
 registers, fonts or environments, whereas
 .I classical troff
@@ -3626,7 +3626,7 @@ does.
 .
 .P
 The
-.B \&\[rs]A
+.B \[rs]A
 escape sequence can be helpful in avoiding these escape sequences in
 names.
 .
@@ -3658,12 +3658,12 @@ Everything that affects how a glyph is output is
 stored with the glyph; once a glyph has been
 constructed it is unaffected by any subsequent requests that are
 executed, including the
-BR bd ,
-BR cs ,
-BR tkf ,
-BR tr ,
+.BR bd ,
+.BR cs ,
+.BR tkf ,
+.BR tr ,
 or
-B fp
+.B fp
 requests.
 .
 .P
@@ -3692,7 +3692,7 @@ The following example makes things clearer.
 .nf
 .ft CB
 \&.di x
-.B \&\[rs]\[rs]\[rs]\[rs]
+.B \[rs]\[rs]\[rs]\[rs]
 \&.br
 \&.di
 \&.x
@@ -3704,7 +3704,7 @@ The following example makes things clearer.
 With
 .I GNU troff
 this is printed as
-.B \&\[rs]\[rs] .
+.B \[rs]\[rs] .
 So each pair of input backslashes
 \&'\[rs]\[rs]'
 is turned into a single output backslash glyph
@@ -3715,13 +3715,13 @@ characters when they are reread.
 .P
 .I Classical troff
 would interpret them as escape characters when they were reread and
-would end up printing a single backslash '\[rs]'.
+would end up printing a single backslash `\[rs]'.
 .
 .P
 In GNU, the correct way to get a printable version of the backslash
-character '\[rs]'
+character `\[rs]'
 is the
-.B \&\[rs](rs
+.B \[rs](rs
 escape sequence, but classical troff does not provide a clean feature
 for getting a non-syntactical backslash.
 .
@@ -3740,10 +3740,10 @@ backslashes.
 .P
 To store an escape sequence in a diversion that is interpreted
 when the diversion is reread, either the traditional
-.B \&\[rs]!
+.B \[rs]!
 transparent output facility or the
 new
-.B \&\[rs]?
+.B \[rs]?
 escape sequence can be used.
 .
 .
