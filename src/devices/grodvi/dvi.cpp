@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2006
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2006,
+                 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -752,6 +753,8 @@ void draw_dvi_printer::draw(int code, int *p, int np, const environment *env)
     moveto(env->hpos+p[0]/2, env->vpos);
     if (fill_flag)
       fill_next(env);
+    else
+      set_line_thickness(env);
     sprintf(buf, "%s 0 0 %d %d 0 6.28319",
 	    (fill_flag ? "ia" : "ar"),
 	    milliinches(p[0]/2),
