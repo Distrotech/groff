@@ -29,7 +29,7 @@ FDL in the main directory of the groff source package.
 .\" `char or string'
 .de Quoted
 .  ft CR
-   \[oq]\\$*\[cq]
+\[oq]\\$*\[cq]
 .  ft
 ..
 .
@@ -47,44 +47,36 @@ groff \- front-end for the groff document formatting system
 .\" --------------------------------------------------------------------
 .
 .SY groff
-.OP -abcegiklpstzCEGNRSUVXZ
-.OP -d cs
-.OP -f fam
-.OP -F dir
-.OP -I dir
-.br
-.OP -K arg
-.OP -L arg
-.OP -m name
-.OP -M dir
-.OP -n num
-.OP -o list
-.OP -P arg
-.br
-.OP -r cn
-.OP -T dev
-.OP -w name
-.OP -W name
+.OP \-abcegiklpstzCEGNRSUVXZ
+.OP \-d cs
+.OP \-f fam
+.OP \-F dir
+.OP \-I dir
+.OP \-K arg
+.OP \-L arg
+.OP \-m name
+.OP \-M dir
+.OP \-n num
+.OP \-o list
+.OP \-P arg
+.OP \-r cn
+.OP \-T dev
+.OP \-w name
+.OP \-W name
 .RI [ file
-.IR ... ]
-.YS
+.IR .\|.\|. ]
 .
 .SY groff
-[ 
-.B -h
+.B \-h
 |
-.B --help
-]
-.YS
+.B \-\-help
 .
 .SY groff
-[
-.B -v
+.B \-v
 |
---version
-]
+.B \-\-version
 .RI [ option
-.IR ...]
+.IR .\|.\|. ]
 .YS
 .
 .
@@ -134,9 +126,11 @@ convention.
 The whitespace between a command line option and its argument is
 optional.
 .
-Options can be grouped behind a single \- (minus character).
+Options can be grouped behind a single `\-' (minus character).
 .
-A filename of \- (minus character) denotes the standard input.
+A filename of
+.B \-
+(minus character) denotes the standard input.
 .
 .P
 .
@@ -170,35 +164,37 @@ or are differently interpreted by
 .
 .
 .TP
--e
+.B \-e
 Preprocess with
 .BR @g@eqn .
 .
 .
 .TP
--g
+.B \-g
 Preprocess with
 .BR @g@grn .
 .
 .
 .TP
--G
+.B \-G
 Preprocess with
 .BR grap .
 .
 .
 .TP
--h help
+.B \-h
+.TQ
+.B \-\-help
 Print a help message.
 .
 .
 .TP
--I dir
+.BI \-I\  dir
 This option may be used to specify a directory to search for
 files (both those on the command line and those named in
-.B \&.psbb
+.B .psbb
 and
-.B \&.so
+.B .so
 requests, and
 .B \eX'ps: import'
 and
@@ -209,12 +205,12 @@ This option may be specified more than once;
 the directories are searched in the order specified.
 No directory search is performed for files specified using an absolute path.
 This option implies the
--s
+.B \-s
 option.
 .
 .
 .TP
--k
+.B \-k
 Preprocess with
 .BR preconv .
 This is run before any other preprocessor.
@@ -222,23 +218,23 @@ This is run before any other preprocessor.
 Please refer to
 .BR preconv 's
 manual page for its behaviour if no
--K
+.B \-K
 option is specified.
 .
 .
 .TP
--K arg
+.BI \-K\  arg
 Set input encoding used by
 .B preconv
 to
 .IR arg .
 .
 Implies
--k .
+.BR \-k .
 .
 .
 .TP
--l
+.B \-l
 Send the output to a spooler program for printing.
 .
 The command that should be used for this is specified by the
@@ -250,13 +246,13 @@ If this command is not present, the output is piped into the
 program by default.
 .
 See options
--L
+.B \-L
 and
--X .
+.BR \-X .
 .
 .
 .TP
--L arg
+.BI \-L\  arg
 Pass
 .I arg
 to the spooler program.
@@ -267,38 +263,38 @@ option each.
 Note that
 .B groff
 does not prepend
--
+`-'
 (a minus sign) to
 .I arg
 before passing it to the spooler program.
 .
 .
 .TP
--N
+.B \-N
 Don't allow newlines within
 .I eqn
 delimiters.
 .
 This is the same as the
--N
+.B \-N
 option in
 .BR @g@eqn .
 .
 .
 .TP
--p
+.B \-p
 Preprocess with
 .BR @g@pic .
 .
 .
 .TP
--P "-option"
+.BI \-P\  \-option
 .TQ
--P "-option \f[CB]-P\f[] arg"
+.BI \-P\  \-option \ \-P\  arg
 Pass
-.I -option
+.I \-option
 or
-.I -option arg
+.I "\-option\~arg"
 to the postprocessor.
 .
 The option must be specified with the necessary preceding minus
@@ -310,20 +306,31 @@ because
 .B groff
 does not prepend any dashes before passing it to the postprocessor.
 .
-For example, to pass a title to the \%gxditview postprocessor, the shell
-command
+For example, to pass a title to the
+.B \%gxditview
+postprocessor, the shell command
+.
+.RS
+.IP
 .EX
 groff -X -P -title -P 'groff it' \f[I]foo\f[]
 .EE
+.RE
+.
+.IP
 is equivalent to
+.
+.RS
+.IP
 .EX
 groff -X -Z \f[I]foo\f[] | \
 gxditview -title 'groff it' -
 .EE
+.RE
 .
 .
 .TP
--R
+.B \-R
 Preprocess with
 .BR @g@refer .
 .
@@ -340,17 +347,17 @@ for more details.
 .
 .
 .TP
--s
+.B \-s
 Preprocess with
 .BR @g@soelim .
 .
 .
 .TP
--S
+.B \-S
 Safer mode.
 .
 Pass the
--S
+.B \-S
 option to
 .B @g@pic
 and disable the following
@@ -366,13 +373,13 @@ For security reasons, safer mode is enabled by default.
 .
 .
 .TP
--t
+.B \-t
 Preprocess with
 .BR @g@tbl .
 .
 .
 .TP
--T  dev
+.BI \-T\  dev
 Set output device to
 .IR dev .
 For this device,
@@ -396,47 +403,66 @@ are
 .
 .RS
 .RS
-.IP dvi
+.TP
+dvi
 TeX DVI format (postprocessor is
 .BR grodvi ).
-.IP html
+.
+.TP
+html
 HTML output (preprocessors are
 .B @g@soelim
 and
 .BR \%pre-grohtml ,
 postprocessor is
 .BR \%post-grohtml ).
-.IP lbp
+.
+.TP
+lbp
 Canon CAPSL printers (\%LBP-4 and \%LBP-8 series laser printers;
 postprocessor is
 .BR grolbp ).
-.IP lj4
+.
+.TP
+lj4
 HP LaserJet4 compatible (or other PCL5 compatible) printers (postprocessor
 is
 .BR grolj4 ).
-.IP ps
+.
+.TP
+ps
 PostScript output (postprocessor is
 .BR grops ).
 .RE
 .RE
 .
+.
 .IP
 For the following TTY output devices (postprocessor is always
 .BR grotty ),
--T
+.B \-T
 selects the output encoding:
+.
 .RS
 .RS
-.IP ascii
+.TP
+ascii
 7bit \f[CR]ASCII\f[].
-.IP cp1047
+.
+.TP
+cp1047
 \%Latin-1 character set for EBCDIC hosts.
-.IP latin1
+.
+.TP
+latin1
 ISO \%8859-1.
-.IP utf8
+.
+.TP
+utf8
 Unicode character set in \%UTF-8 encoding.
 .RE
 .RE
+.
 .
 .IP
 The following arguments select
@@ -445,14 +471,18 @@ as the `postprocessor' (it is rather a viewing program):
 .
 .RS
 .RS
-.IP X75
-75dpi resolution, 10pt document base font.
-.IP X75-12
-75dpi resolution, 12pt document base font.
-.IP X100
-100dpi resolution, 10pt document base font.
-.IP X100-12
-100dpi resolution, 12pt document base font.
+.TP
+X75
+75\|dpi resolution, 10\|pt document base font.
+.TP
+X75-12
+75\|dpi resolution, 12\|pt document base font.
+.TP
+X100
+100\|dpi resolution, 10\|pt document base font.
+.TP
+X100-12
+100\|dpi resolution, 12\|pt document base font.
 .RE
 .RE
 .
@@ -462,25 +492,27 @@ The default device is
 .
 .
 .TP
--U
+.B \-U
 Unsafe mode.
 .
 Reverts to the (old) unsafe behaviour; see option
--S .
+.BR \-S .
 .
 .
 .TP
--v version
+.B \-v
+.TQ
+.B \-\-version
 Output version information of
 .B groff
 and of all programs that are run by it; that is, the given command line
 is parsed in the usual way, passing
--v
+.B \-v
 to all subprograms.
 .
 .
 .TP
--V
+.B \-V
 Output the pipeline that would be run by
 .BR groff
 (as a wrapper program) on the standard output, but do not execute it.
@@ -489,19 +521,19 @@ the commands are both printed on the standard error and run.
 .
 .
 .TP
--X
+.B \-X
 Use
 .B \%gxditview
 instead of using the usual postprocessor to (pre)view a document.
 .
 The printing spooler behavior as outlined with options
--l
+.B \-l
 and
--L 
+.B \-L 
 is carried over to 
 .BR \%gxditview (@MAN1EXT@)
 by determining an argument for the
-.B -printCommand
+.B \-printCommand
 option of
 .BR \%gxditview (@MAN1EXT@).
 .
@@ -509,37 +541,40 @@ This sets the default
 .B Print
 action and the corresponding menu entry to that value.
 .
--X
+.B \-X
 only produces good results with
--Tps ,
--TX75 ,
--TX75-12 ,
--TX100 ,
+.BR \-Tps ,
+.BR \-TX75 ,
+.BR \-TX75-12 ,
+.BR \-TX100 ,
 and
--TX100-12 .
+.BR \-TX100-12 .
 .
 The default resolution for previewing
--Tps
+.B \-Tps
 output is 75\|dpi; this can be changed by passing the
--resolution
+.B \-resolution
 option to
 .BR \%gxditview ,
 for example
 .
+.RS
+.IP
 .EX
 groff -X -P-resolution -P100 -man foo.1
 .EE
+.RE
 .
 .
 .TP
--z
+.B \-z
 Suppress output generated by
 .BR @g@troff .
 Only error messages are printed.
 .
 .
 .TP
--Z
+.B \-Z
 Do not automatically postprocess
 .I groff intermediate output
 in the usual manner.
@@ -566,82 +601,85 @@ These options are described in more detail in
 .BR @g@troff (@MAN1EXT@).
 .
 .TP
--a
-ascii approximation of output.
+.B \-a
+\f[CR]ASCII\f[] approximation of output.
 .
 .TP
--b
-backtrace on error or warning.
+.B \-b
+Backtrace on error or warning.
 .
 .TP
--c
-disable color output.
+.B \-c
+Disable color output.
 .
 Please consult the
 .BR \%grotty (@MAN1EXT@)
 man page for more details.
 .
 .TP
--C
-enable compatibility mode.
+.B \-C
+Enable compatibility mode.
 .
 .TP
--d cs
+.BI \-d\  cs
 .TQ
--d name=s
-define string.
+.BI \-d\  name = s
+Define string.
 .
 .TP
--E
-disable
+.B \-E
+Disable
 .B @g@troff
 error messages.
 .
 .TP
--f fam
-set default font family.
+.BI \-f\  fam
+Set default font family.
 .
 .TP
--F dir
-set path for font DESC files.
+.BI \-F\  dir
+Set path for font DESC files.
 .
 .TP
--i
-process standard input after the specified input files.
+.B \-i
+Process standard input after the specified input files.
 .
 .TP
--m name
-include macro file \f[I]name\f[]\f[B].tmac\f[] (or
-\f[B]tmac.\f[]\f[I]name\f[]); see also
+.BI \-m\  name
+Include macro file
+.IB name .tmac
+(or
+.BI tmac. name\c
+); see also
 .BR \%groff_tmac (@MAN5EXT@).
 .
 .TP
--M dir
-path for macro files.
+.BI \-M\  dir
+Path for macro files.
 .
 .TP
--n num
-number the first page
+.BI \-n\  num
+Number the first page
 .IR num .
 .
 .TP
--o list
-output only pages in
+.BI \-o\  list
+Output only pages in
 .IR list .
 .
 .TP
--r cn
+.BI \-r\  cn
 .TQ
--r name=n
-set number register.
+.BI \-r\  name = n
+Set number register.
 .
 .TP
--w name
-enable warning
+.BI \-w\  name
+Enable warning
 .IR name .
 .
 .TP
--W name
+.BI \-W\  name
 disable warning
 .IR name .
 .
@@ -717,10 +755,10 @@ uses the command line option
 to pass options to output devices; for example, the following selects
 A4 paper in landscape orientation for the PS device:
 .
-.RS
-.P
-groff -Tps -P-pa4 -P-l .\|.\|.
-.RE
+.IP
+.EX
+groff -Tps -P-pa4 -P-l ...
+.EE
 .
 .
 .\" --------------------------------------------------------------------
@@ -825,7 +863,7 @@ These aren't visible to the user.
 .\" --------------------------------------------------------------------
 .
 Macro packages can be included by option
--m .
+.BR \-m .
 .
 The
 .I groff
@@ -840,10 +878,9 @@ Actually, the following macro packages come with
 The traditional man page format; see
 .BR \%groff_man (@MAN7EXT@).
 It can be specified on the command line as
--man
+.B \-man
 or
--m
-.BR man .
+.BR \-m\~man .
 .
 .TP
 .B mandoc
@@ -855,20 +892,18 @@ or the
 format and branches to the corresponding macro package.
 .
 It can be specified on the command line as
--mandoc
+.B \%\-mandoc
 or
--m
-.BR mandoc .
+.BR \-m\~\%mandoc .
 .
 .TP
 .B mdoc
 The \f[CR]BSD\f[]-style man page format; see
 .BR \%groff_mdoc (@MAN7EXT@).
 It can be specified on the command line as
--mdoc
+.B \-mdoc
 or
--m
-.BR mdoc .
+.BR \-m\~mdoc .
 .
 .TP
 .B me
@@ -877,10 +912,9 @@ The classical
 document format; see
 .BR \%groff_me (@MAN7EXT@).
 It can be specified on the command line as
--me
+.B \-me
 or
--m
-.BR me .
+.BR \-m\~me .
 .
 .TP
 .B mm
@@ -889,10 +923,9 @@ The classical
 document format; see
 .BR \%groff_mm (@MAN7EXT@).
 It can be specified on the command line as
--mm
+.B \-mm
 or
--m
-.BR mm .
+.BR \-m\~mm .
 .
 .TP
 .B ms
@@ -901,10 +934,9 @@ The classical
 document format; see
 .BR \%groff_ms (@MAN7EXT@).
 It can be specified on the command line as
--ms
+.B \-ms
 or
--m
-.BR ms .
+.BR \-m\~ms .
 .
 .TP
 .B www
@@ -966,7 +998,7 @@ as well as the
 extensions.
 .
 The command line option
--C
+.B \-C
 switches
 .B @g@troff
 into
@@ -1003,7 +1035,7 @@ A device can be a piece of hardware, e.g., a printer, or a software
 file format.
 .
 A device is specified by the option
--T .
+.BR \-T .
 The
 .I groff
 devices are as follows.
@@ -1299,11 +1331,11 @@ as a wrapper program internally calls
 instead of
 .BR troff .
 This also applies to the preprocessors
-.BR \%eqn ,
-.BR \%grn ,
-.BR \%pic ,
+.BR eqn ,
+.BR grn ,
+.BR pic ,
 .BR \%refer ,
-.BR \%tbl ,
+.BR tbl ,
 .BR \%soelim ,
 and to the utilities
 .B \%@g@indxbib
@@ -1327,7 +1359,7 @@ preprocessor to select the encoding of input files.
 Setting this option implies
 .BR groff 's
 command line option
--k
+.B \-k
 (this is,
 .B groff
 actually always calls
@@ -1340,7 +1372,7 @@ calls
 without arguments.
 .
 An explicit
--K
+.B \-K
 command line option overrides the value of 
 .EnvVar GROFF_ENCODING .
 .
@@ -1382,7 +1414,7 @@ If this is not set but the environment variable
 .EnvVar TMPDIR
 instead, temporary files are created in the directory
 .EnvVar $TMPDIR .
-On MS-DOS and Windows\ 32 platforms, the environment variables
+On MS-DOS and Windows\~32 platforms, the environment variables
 .EnvVar TMP
 and
 .EnvVar TEMP
@@ -1411,7 +1443,7 @@ If this is not set the
 device is used as default.
 .
 This device name is overwritten by the option
--T .
+.BR \-T .
 .
 .
 .\" --------------------------------------------------------------------
@@ -1488,7 +1520,7 @@ installation corresponding to this document, it is located at
 .IR @FONTDIR@ .
 .
 The following files contained in the
-.I groff font directory
+.I "groff font directory"
 have a special meaning:
 .
 .
@@ -1530,31 +1562,41 @@ macro set, classical
 .I troff
 had to be called by
 .
+.IP
 .EX
 pic foo.me | tbl | troff -me -Tlatin1 | grotty
-.EX
+.EE
+.
 .P
 Using
 .BR groff ,
 this pipe can be shortened to the equivalent command
+.
+.IP
 .EX
 groff -p -t -me -T latin1 foo.me
 .EE
+.
 .P
 An even easier way to call this is to use
 .BR grog (@MAN1EXT@)
 to guess the preprocessor and macro options and execute the generated
 command (by using backquotes to specify shell command substitution)
+.
+.IP
 .EX
 \`grog -Tlatin1 foo.me\`
 .EE
+.
 .P
 The simplest way is to view the contents in an automated way by
 calling
 .
+.IP
 .EX
 groffer foo.me
 .EE
+.
 .
 .\" --------------------------------------------------------------------
 .SH BUGS
@@ -1594,6 +1636,7 @@ and related information is available at the
 .UR http://www.gnu.org/software/groff
 groff GNU website
 .UE .
+.
 The most recent released version of
 .I groff
 is available at the
@@ -1649,7 +1692,7 @@ This is the only grap version supported by
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright \(co 1989, 2002, 2003, 2004, 2005, 2006
+Copyright \(co 1989, 2002, 2003, 2004, 2005, 2006, 2007
 Free Software Foundation, Inc.
 .
 .P
