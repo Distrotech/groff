@@ -508,6 +508,9 @@ options *process_options(table_input &in)
 	  opt->decimal_point_char = arg[0];
       }
     }
+    else if (strieq(p, "experimental")) {
+      opt->flags |= table::EXPERIMENTAL;
+    }
     else {
       error("unrecognised global option `%1'", p);
       // delete opt;

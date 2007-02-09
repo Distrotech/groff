@@ -1,5 +1,14 @@
 2007-02-09  Eric S. Raymond  <esr@snark.thyrsus.com>
 
+	* src/preproc/tbl/table.cpp, src/preproc/tbl/table.h: A try at the
+	new rule for block column allocation is now enabled by the new
+	"experimental" flag.  It doesn't work right as yet; there appears
+	to be some error in the computation of 3avail, the available line
+	length.  The purpose of this patch is (a) to make experimenting
+	with other formulas easy, and (b) leave the infrastructure for
+	flag 'experimental' in place for future experiments.  Do not
+	document any behavior associated with this flag!
+
 	* src/preproc/tbl/table.cpp: New table::count_block_colums()
 	method counts columns in the table that have T{ T} entries.
 	Requires the new parent field in the table_entry class.  Not
@@ -26,7 +35,7 @@
 	likely to do something surprising.
 	
 	* man/groff_out.man: We can simplify the command macros still
-	further if we stop trying to hide structural requesrs inside them. 
+	further if we stop trying to hide structural requests inside them. 
 	Also, fix some instances of \} at start of line without a dot, and
 	make some font changes explicit in strings.
 	

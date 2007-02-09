@@ -63,6 +63,9 @@ const int DEFAULT_COLUMN_SEPARATION = 3;
 // this must be one character
 #define COMPATIBLE_REG PREFIX "c"
 
+#define AVAILABLE_REG PREFIX "avail"
+#define COLCOUNT_REG PREFIX "ccount"
+
 #define LEADER_REG PREFIX LEADER
 
 #define BLOCK_WIDTH_PREFIX PREFIX "tbw"
@@ -681,10 +684,21 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
     printfs(">?\\n[%1]u", span_width_reg(start_col, end_col));
   }
   else
-    printfs("(u;\\n[%1]>?(\\n[.l]*%2/%3))", 
+    if (parent->flags & table::EXPERIMENTAL)
+      // Each column containing a block entry gets 1/n of the remaining
+      // available line width, where n is the number of columns with block
+      // entries.
+      printfs("(u;\\n[%1]+(\\[%2]/\\[%3]))", 
 	    span_width_reg(start_col, end_col), 
-	    as_string(end_col - start_col + 1),
-	    as_string(ncols + 1));
+	    AVAILABLE_REG,
+	    COLCOUNT_REG);
+    else
+      // Assign each column with a block entry 1/(n+1) of the line
+      // width, where n is the column count.
+      printfs("(u;\\n[%1]>?(\\n[.l]*%2/%3))", 
+	      span_width_reg(start_col, end_col), 
+	      as_string(end_col - start_col + 1),
+	      as_string(ncols + 1));
   if (alphabetic)
     prints("-2n");
   prints("\n");
@@ -1928,6 +1942,8 @@ void compute_span_width(int start_col, int end_col)
 	  span_left_numeric_width_reg(start_col, end_col),
 	  span_right_numeric_width_reg(start_col, end_col),
 	  span_alphabetic_width_reg(start_col, end_col));
+  printfs(".nr %1 -%2\n", 
+	  AVAILABLE_REG, span_width_reg(start_col, end_col));
 }
 
 // Increase the widths of columns so that the width of any spanning entry
@@ -2122,10 +2138,13 @@ void table::compute_widths()
   for (q = entry_list; q; q = q->next)
     if (!q->mod->zero_width)
       q->do_width();
+  printfs(".nr %1 %2\n", COLCOUNT_REG, as_string(count_block_columns()));
+  printfs(".nr %1 \\n[.ll]-\\n[.in]\n", AVAILABLE_REG);
   for (i = 0; i < ncolumns; i++)
     compute_span_width(i, i);
   for (p = span_list; p; p = p->next)
     compute_span_width(p->start_col, p->end_col);
+  printfs(".nr %1 0>?\\n[%1]\n", AVAILABLE_REG);
   make_columns_equal();
   // Note that divide_span keeps equal width columns equal.
   for (p = span_list; p; p = p->next)

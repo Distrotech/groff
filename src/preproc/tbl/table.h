@@ -85,7 +85,6 @@ struct stuff;
 struct vertical_rule;
 
 class table {
-  unsigned flags;
   int nrows;
   int ncolumns;
   int linesize;
@@ -133,15 +132,16 @@ class table {
   int count_block_columns();
 public:
   bool *blockflag;
-  /* used by flags */
+  unsigned flags;
   enum {
-    CENTER = 01,
-    EXPAND = 02,
-    BOX = 04,
-    ALLBOX = 010,
-    DOUBLEBOX = 020,
-    NOKEEP = 040,
-    NOSPACES = 0100
+    CENTER       = 0x00000001,
+    EXPAND       = 0x00000002,
+    BOX          = 0x00000004,
+    ALLBOX       = 0x00000008,
+    DOUBLEBOX    = 0x00000010,
+    NOKEEP       = 0x00000020,
+    NOSPACES     = 0x00000040,
+    EXPERIMENTAL = 0x80000000,	// undocumented; use as a hook for experiments
     };
   table(int nc, unsigned flags, int linesize, char decimal_point_char);
   ~table();
