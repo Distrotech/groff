@@ -148,10 +148,11 @@ protected:
   int end_row;
   int start_col;
   int end_col;
+  const table *parent;
   const entry_modifier *mod;
 public:
   void set_location();
-  table_entry(const entry_modifier *);
+  table_entry(const table *parent, const entry_modifier *);
   virtual ~table_entry();
   virtual int divert(int ncols, const string *mw, int *sep);
   virtual void do_width();
@@ -168,7 +169,7 @@ public:
 
 class simple_entry : public table_entry {
 public:
-  simple_entry(const entry_modifier *);
+  simple_entry(const table *parent, const entry_modifier *);
   void print();
   void position_vertically();
   simple_entry *to_simple_entry();
@@ -178,7 +179,7 @@ public:
 
 class empty_entry : public simple_entry {
 public:
-  empty_entry(const entry_modifier *);
+  empty_entry(const table *, const entry_modifier *);
   int line_type();
 };
 
@@ -187,7 +188,7 @@ protected:
   char *contents;
   void print_contents();
 public:
-  text_entry(char *, const entry_modifier *);
+  text_entry(const table *, const entry_modifier *, char *);
   ~text_entry();
 };
 
@@ -200,33 +201,33 @@ void text_entry::print_contents()
 
 class repeated_char_entry : public text_entry {
 public:
-  repeated_char_entry(char *s, const entry_modifier *m);
+  repeated_char_entry(const table *, const entry_modifier *, char *);
   void simple_print(int);
 };
 
 class simple_text_entry : public text_entry {
 public:
-  simple_text_entry(char *s, const entry_modifier *m);
+  simple_text_entry(const table *, const entry_modifier *, char *);
   void do_width();
 };
 
 class left_text_entry : public simple_text_entry {
 public:
-  left_text_entry(char *s, const entry_modifier *m);
+  left_text_entry(const table *, const entry_modifier *, char *);
   void simple_print(int);
   void add_tab();
 };
 
 class right_text_entry : public simple_text_entry {
 public:
-  right_text_entry(char *s, const entry_modifier *m);
+  right_text_entry(const table *, const entry_modifier *, char *);
   void simple_print(int);
   void add_tab();
 };
 
 class center_text_entry : public simple_text_entry {
 public:
-  center_text_entry(char *s, const entry_modifier *m);
+  center_text_entry(const table *, const entry_modifier *, char *);
   void simple_print(int);
   void add_tab();
 };
@@ -234,14 +235,14 @@ public:
 class numeric_text_entry : public text_entry {
   int dot_pos;
 public:
-  numeric_text_entry(char *s, const entry_modifier *m, int pos);
+  numeric_text_entry(const table *, const entry_modifier *, char *, int pos);
   void do_width();
   void simple_print(int);
 };
 
 class alphabetic_text_entry : public text_entry {
 public:
-  alphabetic_text_entry(char *s, const entry_modifier *m);
+  alphabetic_text_entry(const table *, const entry_modifier *, char *);
   void do_width();
   void simple_print(int);
   void add_tab();
@@ -252,7 +253,7 @@ protected:
   char double_vrule_on_right;
   char double_vrule_on_left;
 public:
-  line_entry(const entry_modifier *);
+  line_entry(const table *, const entry_modifier *);
   void note_double_vrule_on_right(int);
   void note_double_vrule_on_left(int);
   void simple_print(int) = 0;
@@ -260,7 +261,7 @@ public:
 
 class single_line_entry : public line_entry {
 public:
-  single_line_entry(const entry_modifier *m);
+  single_line_entry(const table *, const entry_modifier *);
   void simple_print(int);
   single_line_entry *to_single_line_entry();
   int line_type();
@@ -268,7 +269,7 @@ public:
 
 class double_line_entry : public line_entry {
 public:
-  double_line_entry(const entry_modifier *m);
+  double_line_entry(const table *, const entry_modifier *);
   void simple_print(int);
   double_line_entry *to_double_line_entry();
   int line_type();
@@ -276,14 +277,14 @@ public:
 
 class short_line_entry : public simple_entry {
 public:
-  short_line_entry(const entry_modifier *m);
+  short_line_entry(const table *, const entry_modifier *);
   void simple_print(int);
   int line_type();
 };
 
 class short_double_line_entry : public simple_entry {
 public:
-  short_double_line_entry(const entry_modifier *m);
+  short_double_line_entry(const table *, const entry_modifier *);
   void simple_print(int);
   int line_type();
 };
@@ -293,7 +294,7 @@ class block_entry : public table_entry {
 protected:
   void do_divert(int alphabetic, int ncols, const string *mw, int *sep);
 public:
-  block_entry(char *s, const entry_modifier *m);
+  block_entry(const table *, const entry_modifier *, char *);
   ~block_entry();
   int divert(int ncols, const string *mw, int *sep);
   void do_width();
@@ -304,32 +305,32 @@ public:
 
 class left_block_entry : public block_entry {
 public:
-  left_block_entry(char *s, const entry_modifier *m);
+  left_block_entry(const table *, const entry_modifier *, char *);
   void print();
 };
 
 class right_block_entry : public block_entry {
 public:
-  right_block_entry(char *s, const entry_modifier *m);
+  right_block_entry(const table *, const entry_modifier *, char *);
   void print();
 };
 
 class center_block_entry : public block_entry {
 public:
-  center_block_entry(char *s, const entry_modifier *m);
+  center_block_entry(const table *, const entry_modifier *, char *);
   void print();
 };
 
 class alphabetic_block_entry : public block_entry {
 public:
-  alphabetic_block_entry(char *s, const entry_modifier *m);
+  alphabetic_block_entry(const table *, const entry_modifier *, char *);
   void print();
   int divert(int ncols, const string *mw, int *sep);
 };
 
-table_entry::table_entry(const entry_modifier *m)
+table_entry::table_entry(const table *p, const entry_modifier *m)
 : next(0), input_lineno(-1), input_filename(0),
-  start_row(-1), end_row(-1), start_col(-1), end_col(-1), mod(m)
+  start_row(-1), end_row(-1), start_col(-1), end_col(-1), parent(p), mod(m)
 {
 }
 
@@ -383,7 +384,7 @@ void table_entry::note_double_vrule_on_left(int)
 {
 }
 
-simple_entry::simple_entry(const entry_modifier *m) : table_entry(m)
+simple_entry::simple_entry(const table *p, const entry_modifier *m) : table_entry(p, m)
 {
 }
 
@@ -436,8 +437,8 @@ simple_entry *simple_entry::to_simple_entry()
   return this;
 }
 
-empty_entry::empty_entry(const entry_modifier *m)
-: simple_entry(m)
+empty_entry::empty_entry(const table *p, const entry_modifier *m)
+  : simple_entry(p, m)
 {
 }
 
@@ -446,8 +447,8 @@ int empty_entry::line_type()
   return 0;
 }
 
-text_entry::text_entry(char *s, const entry_modifier *m)
-: simple_entry(m), contents(s)
+text_entry::text_entry(const table *p, const entry_modifier *m, char *s)
+  : simple_entry(p, m), contents(s)
 {
 }
 
@@ -456,8 +457,8 @@ text_entry::~text_entry()
   a_delete contents;
 }
 
-repeated_char_entry::repeated_char_entry(char *s, const entry_modifier *m)
-: text_entry(s, m)
+repeated_char_entry::repeated_char_entry(const table *p, const entry_modifier *m, char *s)
+  : text_entry(p, m, s)
 {
 }
 
@@ -472,8 +473,8 @@ void repeated_char_entry::simple_print(int)
   restore_inline_modifier(mod);
 }
 
-simple_text_entry::simple_text_entry(char *s, const entry_modifier *m)
-: text_entry(s, m)
+simple_text_entry::simple_text_entry(const table *p, const entry_modifier *m, char *s)
+  : text_entry(p, m, s)
 {
 }
 
@@ -486,8 +487,8 @@ void simple_text_entry::do_width()
   prints(DELIMITER_CHAR "\n");
 }
 
-left_text_entry::left_text_entry(char *s, const entry_modifier *m)
-: simple_text_entry(s, m)
+left_text_entry::left_text_entry(const table *p, const entry_modifier *m, char *s)
+  : simple_text_entry(p, m, s)
 {
 }
 
@@ -504,8 +505,8 @@ void left_text_entry::add_tab()
   printfs(" \\n[%1]u", column_end_reg(end_col));
 }
 
-right_text_entry::right_text_entry(char *s, const entry_modifier *m)
-: simple_text_entry(s, m)
+right_text_entry::right_text_entry(const table *p, const entry_modifier *m, char *s)
+  : simple_text_entry(p, m, s)
 {
 }
 
@@ -522,8 +523,8 @@ void right_text_entry::add_tab()
   printfs(" \\n[%1]u", column_end_reg(end_col));
 }
 
-center_text_entry::center_text_entry(char *s, const entry_modifier *m)
-: simple_text_entry(s, m)
+center_text_entry::center_text_entry(const table *p, const entry_modifier *m, char *s)
+  : simple_text_entry(p, m, s)
 {
 }
 
@@ -540,8 +541,8 @@ void center_text_entry::add_tab()
   printfs(" \\n[%1]u", column_end_reg(end_col));
 }
 
-numeric_text_entry::numeric_text_entry(char *s, const entry_modifier *m, int pos)
-: text_entry(s, m), dot_pos(pos)
+numeric_text_entry::numeric_text_entry(const table *p, const entry_modifier *m, char *s, int pos)
+  : text_entry(p, m, s), dot_pos(pos)
 {
 }
 
@@ -584,8 +585,8 @@ void numeric_text_entry::simple_print(int)
   print_contents();
 }
 
-alphabetic_text_entry::alphabetic_text_entry(char *s, const entry_modifier *m)
-: text_entry(s, m)
+alphabetic_text_entry::alphabetic_text_entry(const table *p, const entry_modifier *m, char *s)
+  : text_entry(p, m, s)
 {
 }
 
@@ -614,8 +615,7 @@ void alphabetic_text_entry::add_tab()
   printfs(" \\n[%1]u", column_end_reg(end_col));
 }
 
-block_entry::block_entry(char *s, const entry_modifier *m)
-: table_entry(m), contents(s)
+block_entry::block_entry(const table *p, const entry_modifier *m, char *s) : table_entry(p, m), contents(s)
 {
 }
 
@@ -724,8 +724,8 @@ void block_entry::do_depth()
 	  block_height_reg(start_row, start_col));
 }
 
-left_block_entry::left_block_entry(char *s, const entry_modifier *m)
-: block_entry(s, m)
+left_block_entry::left_block_entry(const table *p, const entry_modifier *m, char *s)
+  : block_entry(p, m, s)
 {
 }
 
@@ -736,8 +736,8 @@ void left_block_entry::print()
   prints(".in\n");
 }
 
-right_block_entry::right_block_entry(char *s, const entry_modifier *m)
-: block_entry(s, m)
+right_block_entry::right_block_entry(const table *p, const entry_modifier *m, char *s)
+  : block_entry(p, m, s)
 {
 }
 
@@ -751,8 +751,8 @@ void right_block_entry::print()
   prints(".in\n");
 }
 
-center_block_entry::center_block_entry(char *s, const entry_modifier *m)
-: block_entry(s, m)
+center_block_entry::center_block_entry(const table *p, const entry_modifier *m, char *s)
+  : block_entry(p, m, s)
 {
 }
 
@@ -766,9 +766,10 @@ void center_block_entry::print()
   prints(".in\n");
 }
 
-alphabetic_block_entry::alphabetic_block_entry(char *s,
-					       const entry_modifier *m)
-: block_entry(s, m)
+alphabetic_block_entry::alphabetic_block_entry(const table *p,
+					       const entry_modifier *m,
+					       char *s)
+  : block_entry(p, m, s)
 {
 }
 
@@ -788,8 +789,8 @@ void alphabetic_block_entry::print()
   prints(".in\n");
 }
 
-line_entry::line_entry(const entry_modifier *m)
-: simple_entry(m), double_vrule_on_right(0), double_vrule_on_left(0)
+line_entry::line_entry(const table *p, const entry_modifier *m)
+  : simple_entry(p, m), double_vrule_on_right(0), double_vrule_on_left(0)
 {
 }
 
@@ -803,8 +804,8 @@ void line_entry::note_double_vrule_on_left(int is_corner)
   double_vrule_on_left = is_corner ? 1 : 2;
 }
 
-single_line_entry::single_line_entry(const entry_modifier *m)
-: line_entry(m)
+single_line_entry::single_line_entry(const table *p, const entry_modifier *m)
+  : line_entry(p, m)
 {
 }
 
@@ -840,8 +841,8 @@ single_line_entry *single_line_entry::to_single_line_entry()
   return this;
 }
 
-double_line_entry::double_line_entry(const entry_modifier *m)
-: line_entry(m)
+double_line_entry::double_line_entry(const table *p, const entry_modifier *m)
+  : line_entry(p, m)
 {
 }
 
@@ -887,8 +888,8 @@ double_line_entry *double_line_entry::to_double_line_entry()
   return this;
 }
 
-short_line_entry::short_line_entry(const entry_modifier *m)
-: simple_entry(m)
+short_line_entry::short_line_entry(const table *p, const entry_modifier *m)
+  : simple_entry(p, m)
 {
 }
 
@@ -914,8 +915,8 @@ void short_line_entry::simple_print(int dont_move)
     prints("\\v'.5v'");
 }
 
-short_double_line_entry::short_double_line_entry(const entry_modifier *m)
-: simple_entry(m)
+short_double_line_entry::short_double_line_entry(const table *p, const entry_modifier *m)
+  : simple_entry(p, m)
 {
 }
 
@@ -1449,10 +1450,10 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
   allocate(r);
   table_entry *e = 0;
   if (str == "\\_") {
-    e = new short_line_entry(f);
+    e = new short_line_entry(this, f);
   }
   else if (str == "\\=") {
-    e = new short_double_line_entry(f);
+    e = new short_double_line_entry(this, f);
   }
   else if (str == "_") {
     single_line_entry *lefte;
@@ -1464,7 +1465,7 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       entry[r][c] = lefte;
     }
     else
-      e = new single_line_entry(f);
+      e = new single_line_entry(this, f);
   }
   else if (str == "=") {
     double_line_entry *lefte;
@@ -1476,7 +1477,7 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       entry[r][c] = lefte;
     }
     else
-      e = new double_line_entry(f);
+      e = new double_line_entry(this, f);
   }
   else if (str == "\\^") {
     do_vspan(r, c);
@@ -1486,7 +1487,7 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       error_with_file_and_line(fn, ln, "bad repeated character");
     else {
       char *s = str.substring(2, str.length() - 2).extract();
-      e = new repeated_char_entry(s, f);
+      e = new repeated_char_entry(this, f, s);
     }
   }
   else {
@@ -1501,63 +1502,63 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block)
-	  e = new left_block_entry(s, f);
+	  e = new left_block_entry(this, f, s);
 	else
-	  e = new left_text_entry(s, f);
+	  e = new left_text_entry(this, f, s);
       }
       else
-	e = new empty_entry(f);
+	e = new empty_entry(this, f);
       break;
     case FORMAT_CENTER:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block)
-	  e = new center_block_entry(s, f);
+	  e = new center_block_entry(this, f, s);
 	else
-	  e = new center_text_entry(s, f);
+	  e = new center_text_entry(this, f, s);
       }
       else
-	e = new empty_entry(f);
+	e = new empty_entry(this, f);
       break;
     case FORMAT_RIGHT:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block)
-	  e = new right_block_entry(s, f);
+	  e = new right_block_entry(this, f, s);
 	else
-	  e = new right_text_entry(s, f);
+	  e = new right_text_entry(this, f, s);
       }
       else
-	e = new empty_entry(f);
+	e = new empty_entry(this, f);
       break;
     case FORMAT_NUMERIC:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block) {
 	  error_with_file_and_line(fn, ln, "can't have numeric text block");
-	  e = new left_block_entry(s, f);
+	  e = new left_block_entry(this, f, s);
 	}
 	else {
 	  int pos = find_decimal_point(s, decimal_point_char, delim);
 	  if (pos < 0)
-	    e = new center_text_entry(s, f);
+	    e = new center_text_entry(this, f, s);
 	  else
-	    e = new numeric_text_entry(s, f, pos);
+	    e = new numeric_text_entry(this, f, s, pos);
 	}
       }
       else
-	e = new empty_entry(f);
+	e = new empty_entry(this, f);
       break;
     case FORMAT_ALPHABETIC:
       if (!str.empty()) {
 	s = str.extract();
 	if (is_block)
-	  e = new alphabetic_block_entry(s, f);
+	  e = new alphabetic_block_entry(this, f, s);
 	else
-	  e = new alphabetic_text_entry(s, f);
+	  e = new alphabetic_text_entry(this, f, s);
       }
       else
-	e = new empty_entry(f);
+	e = new empty_entry(this, f);
       break;
     case FORMAT_VSPAN:
       do_vspan(r, c);
@@ -1566,13 +1567,13 @@ void table::add_entry(int r, int c, const string &str, const entry_format *f,
       if (str.length() != 0)
 	error_with_file_and_line(fn, ln,
 				 "non-empty data entry for `_' format ignored");
-      e = new single_line_entry(f);
+      e = new single_line_entry(this, f);
       break;
     case FORMAT_DOUBLE_HLINE:
       if (str.length() != 0)
 	error_with_file_and_line(fn, ln,
 				 "non-empty data entry for `=' format ignored");
-      e = new double_line_entry(f);
+      e = new double_line_entry(this, f);
       break;
     default:
       assert(0);
