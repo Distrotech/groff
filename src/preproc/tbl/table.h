@@ -25,6 +25,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <stdbool.h>
 
 #include "cset.h"
 #include "cmap.h"
@@ -129,7 +130,9 @@ class table {
   void compute_vrule_top_adjust(int, int, string &);
   void compute_vrule_bot_adjust(int, int, string &);
   void determine_row_type();
+  int count_block_columns();
 public:
+  bool *blockflag;
   /* used by flags */
   enum {
     CENTER = 01,

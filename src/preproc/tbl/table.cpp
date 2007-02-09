@@ -714,7 +714,8 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
 
 void block_entry::do_width()
 {
-  // do nothing; the action happens in divert
+  for (int i=start_col; i <= end_col; i++)
+    parent->blockflag[i] = true;
 }
 
 void block_entry::do_depth()
@@ -1202,7 +1203,7 @@ table::table(int nc, unsigned f, int ls, char dpc)
   vrule_list(0), stuff_list(0), span_list(0),
   entry_list(0), entry_list_tailp(&entry_list), entry(0),
   vline(0), row_is_all_lines(0), left_separation(0), right_separation(0),
-  allocated_rows(0)
+  allocated_rows(0), blockflag(0)
 {
   minimum_width = new string[ncolumns];
   column_separation = ncolumns > 1 ? new int[ncolumns - 1] : 0;
@@ -1307,6 +1308,7 @@ void table::allocate(int r)
 	  allocated_rows = r + 1;
 	entry = new PPtable_entry[allocated_rows];
 	vline = new char*[allocated_rows];
+	blockflag = new bool[allocated_rows];
       }
       else {
 	table_entry ***old_entry = entry;
@@ -1321,6 +1323,10 @@ void table::allocate(int r)
 	vline = new char*[allocated_rows];
 	memcpy(vline, old_vline, sizeof(char*)*old_allocated_rows);
 	a_delete old_vline;
+	bool *old_blockflag = blockflag;
+	blockflag = new bool[allocated_rows];
+	memcpy(blockflag, old_blockflag, sizeof(bool)*old_allocated_rows);
+	a_delete old_blockflag;
       }
     }
     assert(allocated_rows > r);
@@ -1685,6 +1691,15 @@ void table::determine_row_type()
     else
       row_is_all_lines[i] = 0;
   }
+}
+
+int table::count_block_columns()
+{
+  int count = 0;
+  for (int i = 0; i < ncolumns; i++)
+    if (blockflag[i])
+      count++;
+  return count;
 }
 
 void table::init_output()
