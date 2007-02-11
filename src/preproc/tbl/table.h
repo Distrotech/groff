@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -141,7 +141,7 @@ public:
     DOUBLEBOX    = 0x00000010,
     NOKEEP       = 0x00000020,
     NOSPACES     = 0x00000040,
-    EXPERIMENTAL = 0x80000000,	// undocumented; use as a hook for experiments
+    EXPERIMENTAL = 0x80000000	// undocumented; use as a hook for experiments
     };
   table(int nc, unsigned flags, int linesize, char decimal_point_char);
   ~table();
