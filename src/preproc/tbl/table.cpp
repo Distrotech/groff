@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -82,25 +82,24 @@ const int DEFAULT_COLUMN_SEPARATION = 3;
 #define COLUMN_DIVIDE_PREFIX PREFIX "cd"
 #define ROW_TOP_PREFIX PREFIX "rt"
 
-string block_width_reg(int r, int c);
-string block_diversion_name(int r, int c);
-string block_height_reg(int r, int c);
-string span_width_reg(int start_col, int end_col);
-string span_left_numeric_width_reg(int start_col, int end_col);
-string span_right_numeric_width_reg(int start_col, int end_col);
-string span_alphabetic_width_reg(int start_col, int end_col);
-string column_separation_reg(int col);
-string row_start_reg(int r);
-string column_start_reg(int c);
-string column_end_reg(int c);
-string column_divide_reg(int c);
-string row_top_reg(int r);
+string block_width_reg(int, int);
+string block_diversion_name(int, int);
+string block_height_reg(int, int);
+string span_width_reg(int, int);
+string span_left_numeric_width_reg(int, int);
+string span_right_numeric_width_reg(int, int);
+string span_alphabetic_width_reg(int, int);
+string column_separation_reg(int);
+string row_start_reg(int);
+string column_start_reg(int);
+string column_end_reg(int);
+string column_divide_reg(int);
+string row_top_reg(int);
 
 void set_inline_modifier(const entry_modifier *);
-void restore_inline_modifier(const entry_modifier *m);
+void restore_inline_modifier(const entry_modifier *);
 void set_modifier(const entry_modifier *);
-int find_decimal_point(const char *s, char decimal_point_char,
-		       const char *delim);
+int find_decimal_point(const char *, char, const char *);
 
 string an_empty_string;
 int location_force_filename = 0;
@@ -155,9 +154,9 @@ protected:
   const entry_modifier *mod;
 public:
   void set_location();
-  table_entry(const table *parent, const entry_modifier *);
+  table_entry(const table *, const entry_modifier *);
   virtual ~table_entry();
-  virtual int divert(int ncols, const string *mw, int *sep);
+  virtual int divert(int, const string *, int *);
   virtual void do_width();
   virtual void do_depth();
   virtual void print() = 0;
@@ -172,7 +171,7 @@ public:
 
 class simple_entry : public table_entry {
 public:
-  simple_entry(const table *parent, const entry_modifier *);
+  simple_entry(const table *, const entry_modifier *);
   void print();
   void position_vertically();
   simple_entry *to_simple_entry();
@@ -238,7 +237,7 @@ public:
 class numeric_text_entry : public text_entry {
   int dot_pos;
 public:
-  numeric_text_entry(const table *, const entry_modifier *, char *, int pos);
+  numeric_text_entry(const table *, const entry_modifier *, char *, int);
   void do_width();
   void simple_print(int);
 };
@@ -295,11 +294,11 @@ public:
 class block_entry : public table_entry {
   char *contents;
 protected:
-  void do_divert(int alphabetic, int ncols, const string *mw, int *sep);
+  void do_divert(int, int, const string *, int *);
 public:
   block_entry(const table *, const entry_modifier *, char *);
   ~block_entry();
-  int divert(int ncols, const string *mw, int *sep);
+  int divert(int, const string *, int *);
   void do_width();
   void do_depth();
   void position_vertically();
@@ -328,7 +327,7 @@ class alphabetic_block_entry : public block_entry {
 public:
   alphabetic_block_entry(const table *, const entry_modifier *, char *);
   void print();
-  int divert(int ncols, const string *mw, int *sep);
+  int divert(int, const string *, int *);
 };
 
 table_entry::table_entry(const table *p, const entry_modifier *m)
@@ -387,7 +386,8 @@ void table_entry::note_double_vrule_on_left(int)
 {
 }
 
-simple_entry::simple_entry(const table *p, const entry_modifier *m) : table_entry(p, m)
+simple_entry::simple_entry(const table *p, const entry_modifier *m)
+: table_entry(p, m)
 {
 }
 
@@ -441,7 +441,7 @@ simple_entry *simple_entry::to_simple_entry()
 }
 
 empty_entry::empty_entry(const table *p, const entry_modifier *m)
-  : simple_entry(p, m)
+: simple_entry(p, m)
 {
 }
 
@@ -451,7 +451,7 @@ int empty_entry::line_type()
 }
 
 text_entry::text_entry(const table *p, const entry_modifier *m, char *s)
-  : simple_entry(p, m), contents(s)
+: simple_entry(p, m), contents(s)
 {
 }
 
@@ -460,8 +460,9 @@ text_entry::~text_entry()
   a_delete contents;
 }
 
-repeated_char_entry::repeated_char_entry(const table *p, const entry_modifier *m, char *s)
-  : text_entry(p, m, s)
+repeated_char_entry::repeated_char_entry(const table *p,
+					 const entry_modifier *m, char *s)
+: text_entry(p, m, s)
 {
 }
 
@@ -476,8 +477,9 @@ void repeated_char_entry::simple_print(int)
   restore_inline_modifier(mod);
 }
 
-simple_text_entry::simple_text_entry(const table *p, const entry_modifier *m, char *s)
-  : text_entry(p, m, s)
+simple_text_entry::simple_text_entry(const table *p,
+				     const entry_modifier *m, char *s)
+: text_entry(p, m, s)
 {
 }
 
@@ -490,8 +492,9 @@ void simple_text_entry::do_width()
   prints(DELIMITER_CHAR "\n");
 }
 
-left_text_entry::left_text_entry(const table *p, const entry_modifier *m, char *s)
-  : simple_text_entry(p, m, s)
+left_text_entry::left_text_entry(const table *p,
+				 const entry_modifier *m, char *s)
+: simple_text_entry(p, m, s)
 {
 }
 
@@ -508,8 +511,9 @@ void left_text_entry::add_tab()
   printfs(" \\n[%1]u", column_end_reg(end_col));
 }
 
-right_text_entry::right_text_entry(const table *p, const entry_modifier *m, char *s)
-  : simple_text_entry(p, m, s)
+right_text_entry::right_text_entry(const table *p,
+				   const entry_modifier *m, char *s)
+: simple_text_entry(p, m, s)
 {
 }
 
@@ -526,8 +530,9 @@ void right_text_entry::add_tab()
   printfs(" \\n[%1]u", column_end_reg(end_col));
 }
 
-center_text_entry::center_text_entry(const table *p, const entry_modifier *m, char *s)
-  : simple_text_entry(p, m, s)
+center_text_entry::center_text_entry(const table *p,
+				     const entry_modifier *m, char *s)
+: simple_text_entry(p, m, s)
 {
 }
 
@@ -544,8 +549,10 @@ void center_text_entry::add_tab()
   printfs(" \\n[%1]u", column_end_reg(end_col));
 }
 
-numeric_text_entry::numeric_text_entry(const table *p, const entry_modifier *m, char *s, int pos)
-  : text_entry(p, m, s), dot_pos(pos)
+numeric_text_entry::numeric_text_entry(const table *p,
+				       const entry_modifier *m,
+				       char *s, int pos)
+: text_entry(p, m, s), dot_pos(pos)
 {
 }
 
@@ -588,8 +595,10 @@ void numeric_text_entry::simple_print(int)
   print_contents();
 }
 
-alphabetic_text_entry::alphabetic_text_entry(const table *p, const entry_modifier *m, char *s)
-  : text_entry(p, m, s)
+alphabetic_text_entry::alphabetic_text_entry(const table *p,
+					     const entry_modifier *m,
+					     char *s)
+: text_entry(p, m, s)
 {
 }
 
@@ -618,7 +627,8 @@ void alphabetic_text_entry::add_tab()
   printfs(" \\n[%1]u", column_end_reg(end_col));
 }
 
-block_entry::block_entry(const table *p, const entry_modifier *m, char *s) : table_entry(p, m), contents(s)
+block_entry::block_entry(const table *p, const entry_modifier *m, char *s)
+: table_entry(p, m), contents(s)
 {
 }
 
@@ -688,10 +698,10 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
       // Each column containing a block entry gets 1/n of the remaining
       // available line width, where n is the number of columns with block
       // entries.
-      printfs("(u;\\n[%1]+(\\[%2]/\\[%3]))", 
-	    span_width_reg(start_col, end_col), 
-	    AVAILABLE_REG,
-	    COLCOUNT_REG);
+      printfs("(u;\\n[%1]+(\\[%2]/\\[%3]))",
+	      span_width_reg(start_col, end_col), 
+	      AVAILABLE_REG,
+	      COLCOUNT_REG);
     else
       // Assign each column with a block entry 1/(n+1) of the line
       // width, where n is the column count.
@@ -715,7 +725,8 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
 	      span_alphabetic_width_reg(start_col, end_col));
     }
     else
-      printfs(".nr %1 \\n[%1]>?\\n[dl]\n", span_width_reg(start_col, end_col));
+      printfs(".nr %1 \\n[%1]>?\\n[dl]\n",
+	      span_width_reg(start_col, end_col));
   }
   printfs(".nr %1 \\n[dn]\n", block_height_reg(start_row, start_col));
   printfs(".nr %1 \\n[dl]\n", block_width_reg(start_row, start_col));
@@ -739,8 +750,9 @@ void block_entry::do_depth()
 	  block_height_reg(start_row, start_col));
 }
 
-left_block_entry::left_block_entry(const table *p, const entry_modifier *m, char *s)
-  : block_entry(p, m, s)
+left_block_entry::left_block_entry(const table *p,
+				   const entry_modifier *m, char *s)
+: block_entry(p, m, s)
 {
 }
 
@@ -751,8 +763,9 @@ void left_block_entry::print()
   prints(".in\n");
 }
 
-right_block_entry::right_block_entry(const table *p, const entry_modifier *m, char *s)
-  : block_entry(p, m, s)
+right_block_entry::right_block_entry(const table *p,
+				     const entry_modifier *m, char *s)
+: block_entry(p, m, s)
 {
 }
 
@@ -766,8 +779,9 @@ void right_block_entry::print()
   prints(".in\n");
 }
 
-center_block_entry::center_block_entry(const table *p, const entry_modifier *m, char *s)
-  : block_entry(p, m, s)
+center_block_entry::center_block_entry(const table *p,
+				       const entry_modifier *m, char *s)
+: block_entry(p, m, s)
 {
 }
 
@@ -784,7 +798,7 @@ void center_block_entry::print()
 alphabetic_block_entry::alphabetic_block_entry(const table *p,
 					       const entry_modifier *m,
 					       char *s)
-  : block_entry(p, m, s)
+: block_entry(p, m, s)
 {
 }
 
@@ -805,7 +819,7 @@ void alphabetic_block_entry::print()
 }
 
 line_entry::line_entry(const table *p, const entry_modifier *m)
-  : simple_entry(p, m), double_vrule_on_right(0), double_vrule_on_left(0)
+: simple_entry(p, m), double_vrule_on_right(0), double_vrule_on_left(0)
 {
 }
 
@@ -820,7 +834,7 @@ void line_entry::note_double_vrule_on_left(int is_corner)
 }
 
 single_line_entry::single_line_entry(const table *p, const entry_modifier *m)
-  : line_entry(p, m)
+: line_entry(p, m)
 {
 }
 
@@ -857,7 +871,7 @@ single_line_entry *single_line_entry::to_single_line_entry()
 }
 
 double_line_entry::double_line_entry(const table *p, const entry_modifier *m)
-  : line_entry(p, m)
+: line_entry(p, m)
 {
 }
 
@@ -904,7 +918,7 @@ double_line_entry *double_line_entry::to_double_line_entry()
 }
 
 short_line_entry::short_line_entry(const table *p, const entry_modifier *m)
-  : simple_entry(p, m)
+: simple_entry(p, m)
 {
 }
 
@@ -930,8 +944,9 @@ void short_line_entry::simple_print(int dont_move)
     prints("\\v'.5v'");
 }
 
-short_double_line_entry::short_double_line_entry(const table *p, const entry_modifier *m)
-  : simple_entry(p, m)
+short_double_line_entry::short_double_line_entry(const table *p,
+						 const entry_modifier *m)
+: simple_entry(p, m)
 {
 }
 
@@ -1037,7 +1052,7 @@ struct text_stuff : public stuff {
   const char *filename;
   int lineno;
 
-  text_stuff(const string &, int r, const char *fn, int ln);
+  text_stuff(const string &, int, const char *, int);
   ~text_stuff();
   void print(table *);
 };
@@ -1062,7 +1077,7 @@ void text_stuff::print(table *)
 }
 
 struct single_hline_stuff : public stuff {
-  single_hline_stuff(int r);
+  single_hline_stuff(int);
   void print(table *);
   int is_single_line();
 };
@@ -1083,7 +1098,7 @@ int single_hline_stuff::is_single_line()
 }
 
 struct double_hline_stuff : stuff {
-  double_hline_stuff(int r);
+  double_hline_stuff(int);
   void print(table *);
   int is_double_line();
 };
@@ -1112,13 +1127,14 @@ struct vertical_rule {
   string top_adjust;
   string bot_adjust;
 
-  vertical_rule(int sr, int er, int c, int dbl, vertical_rule *);
+  vertical_rule(int, int, int, int, vertical_rule *);
   ~vertical_rule();
   void contribute_to_bottom_macro(table *);
   void print();
 };
 
-vertical_rule::vertical_rule(int sr, int er, int c, int dbl, vertical_rule *p)
+vertical_rule::vertical_rule(int sr, int er, int c, int dbl,
+			     vertical_rule *p)
 : next(p), start_row(sr), end_row(er), col(c), is_double(dbl)
 {
 }
@@ -1296,7 +1312,8 @@ void table::add_stuff(stuff *p)
   *pp = p;
 }
 
-void table::add_text_line(int r, const string &s, const char *filename, int lineno)
+void table::add_text_line(int r, const string &s, const char *filename,
+			  int lineno)
 {
   add_stuff(new text_stuff(s, r, filename, lineno));
 }
@@ -2402,7 +2419,8 @@ void table::compute_vrule_bot_adjust(int end_row, int col, string &result)
   }
 }
 
-void table::add_vertical_rule(int start_row, int end_row, int col, int is_double)
+void table::add_vertical_rule(int start_row, int end_row,
+			      int col, int is_double)
 {
   vrule_list = new vertical_rule(start_row, end_row, col, is_double,
 				 vrule_list);
@@ -2559,7 +2577,7 @@ void table::do_row(int r)
 	had_line = 1;
       }
     }
-  // Change the row *after* printing the stuff list (which might contain .TH).
+  // change the row *after* printing the stuff list (which might contain .TH)
   printfs("\\*[" TRANSPARENT_STRING_NAME "].nr " CURRENT_ROW_REG " %1\n",
 	  as_string(r));
   if (!had_line && row_is_all_lines[r])
