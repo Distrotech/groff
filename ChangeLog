@@ -1,24 +1,36 @@
 2007-02-09  Eric S. Raymond  <esr@snark.thyrsus.com>
 
-	* src/preproc/tbl/table.cpp, src/preproc/tbl/table.h: A try at the
-	new rule for block column allocation is now enabled by the new
-	"experimental" flag.  It doesn't work right as yet; there appears
-	to be some error in the computation of 3avail, the available line
-	length.  The purpose of this patch is (a) to make experimenting
-	with other formulas easy, and (b) leave the infrastructure for
-	flag 'experimental' in place for future experiments.  Do not
-	document any behavior associated with this flag!
+	A try at the new rule for block column allocation is now enabled by
+	the new `experimental' global option: The horizontal space up to the
+	right margin which is not used by columns without text blocks is
+	evenly distributed to the columns with text blocks.
 
-	* src/preproc/tbl/table.cpp: New table::count_block_colums()
-	method counts columns in the table that have T{ T} entries.
-	Requires the new parent field in the table_entry class.  Not
-	yet used for anything.
-	
-	* src/preproc/tbl/table.cpp: Initializers for table_entry()
-	and all its subclasses now receive a pointer to their parent
-	table and use it to set a parent field in the instance.  This 
-	changes no behavior in itself, because the parent field 
-	is not yet used for anything.  But there are plans.
+	It doesn't work right as yet; there appears to be some error in the
+	computation of `3avail', the available line length.  The purpose of
+	this patch is (a) to make experimenting with other formulas easy,
+	and (b) leave the infrastructure for flag `experimental' in place
+	for future experiments.  Do not document any behavior associated
+	with this flag!
+
+	* src/preproc/tbl/table.h: Include `stdbool.h'.
+	(table): Make `flags' public.
+	Add `count_block_columns' function.
+	Add `blockflag' array.
+	Add `EXPERIMENTAL' enumeration value.
+
+	* src/preproc/tbl/table.cpp (AVAILABLE_REG, COLCOUNT_REG): New
+	macros.
+	(table_entry): New member `parent' so that class and subclass
+	members can set a parent field.  Update all users.
+	(block_entry::do_divert): Handle `EXPERIMENTAL' flag.
+	(block_entry::do_width): Set the parent's `blockflag'.
+	(table::allocate): Handle `blockflag'.
+	(table::count_block_columns): New function.
+	(compute_span_width): Adjust AVAILABLE_REG.
+	(table::compute_widths): Handle COLCOUNT_REG and AVAILABLE_REG.
+
+	* src/preproc/tbl/main.cpp (process_options): Handle `experimental'
+	option.
 
 2007-02-08  Zhao, Yu (William)  <yzhao2@alcatel-lucent.com>
 
