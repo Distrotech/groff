@@ -25,7 +25,6 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
-#include <stdbool.h>
 
 #include "cset.h"
 #include "cmap.h"
@@ -131,7 +130,7 @@ class table {
   void determine_row_type();
   int count_block_columns();
 public:
-  bool *blockflag;
+  char *blockflag;
   unsigned flags;
   enum {
     CENTER       = 0x00000001,

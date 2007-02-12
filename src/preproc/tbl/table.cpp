@@ -698,10 +698,8 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
       // Each column containing a block entry gets 1/n of the remaining
       // available line width, where n is the number of columns with block
       // entries.
-      printfs("(u;\\n[%1]+(\\[%2]/\\[%3]))",
-	      span_width_reg(start_col, end_col), 
-	      AVAILABLE_REG,
-	      COLCOUNT_REG);
+      printfs("(u;\\n[%1]+(\\n[" AVAILABLE_REG "]/\\n[" COLCOUNT_REG "]))",
+	      span_width_reg(start_col, end_col));
     else
       // Assign each column with a block entry 1/(n+1) of the line
       // width, where n is the column count.
@@ -740,7 +738,7 @@ void block_entry::do_divert(int alphabetic, int ncols, const string *mw,
 void block_entry::do_width()
 {
   for (int i=start_col; i <= end_col; i++)
-    parent->blockflag[i] = true;
+    parent->blockflag[i] = (char)1;
 }
 
 void block_entry::do_depth()
@@ -1229,11 +1227,11 @@ void vertical_rule::print()
 }
 
 table::table(int nc, unsigned f, int ls, char dpc)
-: flags(f), nrows(0), ncolumns(nc), linesize(ls), decimal_point_char(dpc),
+: nrows(0), ncolumns(nc), linesize(ls), decimal_point_char(dpc),
   vrule_list(0), stuff_list(0), span_list(0),
   entry_list(0), entry_list_tailp(&entry_list), entry(0),
   vline(0), row_is_all_lines(0), left_separation(0), right_separation(0),
-  allocated_rows(0), blockflag(0)
+  allocated_rows(0), blockflag(0), flags(f)
 {
   minimum_width = new string[ncolumns];
   column_separation = ncolumns > 1 ? new int[ncolumns - 1] : 0;
@@ -1254,6 +1252,7 @@ table::~table()
   }
   a_delete entry;
   a_delete vline;
+  a_delete blockflag;
   while (entry_list) {
     table_entry *tem = entry_list;
     entry_list = entry_list->next;
@@ -1339,7 +1338,7 @@ void table::allocate(int r)
 	  allocated_rows = r + 1;
 	entry = new PPtable_entry[allocated_rows];
 	vline = new char*[allocated_rows];
-	blockflag = new bool[allocated_rows];
+	blockflag = new char[allocated_rows];
       }
       else {
 	table_entry ***old_entry = entry;
@@ -1354,9 +1353,9 @@ void table::allocate(int r)
 	vline = new char*[allocated_rows];
 	memcpy(vline, old_vline, sizeof(char*)*old_allocated_rows);
 	a_delete old_vline;
-	bool *old_blockflag = blockflag;
-	blockflag = new bool[allocated_rows];
-	memcpy(blockflag, old_blockflag, sizeof(bool)*old_allocated_rows);
+	char *old_blockflag = blockflag;
+	blockflag = new char[allocated_rows];
+	memcpy(blockflag, old_blockflag, sizeof(char)*old_allocated_rows);
 	a_delete old_blockflag;
       }
     }
