@@ -1958,8 +1958,8 @@ void compute_span_width(int start_col, int end_col)
 	  span_left_numeric_width_reg(start_col, end_col),
 	  span_right_numeric_width_reg(start_col, end_col),
 	  span_alphabetic_width_reg(start_col, end_col));
-  printfs(".nr %1 -%2\n", 
-	  AVAILABLE_REG, span_width_reg(start_col, end_col));
+  printfs(".nr " AVAILABLE_REG " -\\n[%1]\n",
+	  span_width_reg(start_col, end_col));
 }
 
 // Increase the widths of columns so that the width of any spanning entry
@@ -2154,13 +2154,13 @@ void table::compute_widths()
   for (q = entry_list; q; q = q->next)
     if (!q->mod->zero_width)
       q->do_width();
-  printfs(".nr %1 %2\n", COLCOUNT_REG, as_string(count_block_columns()));
-  printfs(".nr %1 \\n[.ll]-\\n[.in]\n", AVAILABLE_REG);
+  printfs(".nr " COLCOUNT_REG " %1\n", as_string(count_block_columns()));
+  prints(".nr " AVAILABLE_REG " \\n[.ll]-\\n[.in]\n");
   for (i = 0; i < ncolumns; i++)
     compute_span_width(i, i);
   for (p = span_list; p; p = p->next)
     compute_span_width(p->start_col, p->end_col);
-  printfs(".nr %1 0>?\\n[%1]\n", AVAILABLE_REG);
+  prints(".nr " AVAILABLE_REG " 0>?\\n[" AVAILABLE_REG "]\n");
   make_columns_equal();
   // Note that divide_span keeps equal width columns equal.
   for (p = span_list; p; p = p->next)
