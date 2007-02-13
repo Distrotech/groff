@@ -15,11 +15,10 @@ groffer.1 - man page for groffer (section 1).
 Source file position:  <groff_source_top>/contrib/groffer/shell/groffer.man
 Installed position:    $prefix/share/man/man1/groffer.1
 
-Last update: 23 Dec 2006
+Last update: 13 Feb 2007
 ..
 .de author
-This file was written by
-.MTO "" "Bernd Warken" .
+This file was written by Bernd Warken.
 ..
 .de copyleft
 Copyright (C) 2001,2002,2004,2005,2006 Free Software Foundation, Inc.
@@ -63,19 +62,6 @@ You can also write to the
 .\" --------------------------------------------------------------------
 .\" Setup
 .\" --------------------------------------------------------------------
-.
-.mso www.tmac
-.
-.if n \{\
-.  mso tty-char.tmac
-.  ftr CR R
-.  ftr CI I
-.  ftr CB B
-.\}
-.
-.if '\*[.T]'dvi' \{\
-.  ftr CB CW
-.\}
 .
 .ds Ellipsis "\&.\|.\|.\""
 .
@@ -124,189 +110,186 @@ You can also write to the
 .\" --------------------------------------------------------------------
 .\" Macro definitions
 .
-.\" Ignore all arguments like a comment, even after a .eo call.
-.de c
-..
-.c --------------------------------------------------------------------
-.c .CB  (<text>...)
-.c
-.c Print in constant-width bold font.
-.c
+.\" --------------------------------------------------------------------
+.\" .CB  (<text>...)
+.\"
+.\" Print in constant-width bold font.
+.\"
 .de CB
 .  ft CB
 .  Text \\$*
 .  ft
 ..
-.c --------------------------------------------------------------------
-.c .CI  (<text>...)
-.c
-.c Print in constant-width italic font.
-.c
+.\" --------------------------------------------------------------------
+.\" .CI  (<text>...)
+.\"
+.\" Print in constant-width italic font.
+.\"
 .de CI
 .  ft CI
 .  Text \\$*
 .  ft
 ..
-.c --------------------------------------------------------------------
-.c .CR  (<text>...)
-.c
-.c Print in constant-width roman font.
-.c
+.\" --------------------------------------------------------------------
+.\" .CR  (<text>...)
+.\"
+.\" Print in constant-width roman font.
+.\"
 .de CR
 .  ft CR
 .  Text \\$*
 .  ft
 ..
-.c --------------------------------------------------------------------
-.c .Error  (<text>...)
-.c
-.c Print error message to terminal and abort.
-.c
+.\" --------------------------------------------------------------------
+.\" .Error  (<text>...)
+.\"
+.\" Print error message to terminal and abort.
+.\"
 .de Error
 .  tm \\$*
 .  ab
 ..
-.c --------------------------------------------------------------------
-.c .Env_var  (<env_var_name> [<punct>])
-.c
-.c Display an environment variable, with optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Env_var  (<env_var_name> [<punct>])
+.\"
+.\" Display an environment variable, with optional punctuation.
+.\"
 .de Env_var
 .  nh
 .  SM
 .  Text \f[CB]\\$1\f[]\\$2
 .  hy
 ..
-.c --------------------------------------------------------------------
-.c .File_name  (<path_name>)
-.c
-.c Display a file or directory name in CB font.
-.c
+.\" --------------------------------------------------------------------
+.\" .File_name  (<path_name>)
+.\"
+.\" Display a file or directory name in CB font.
+.\"
 .de File_name
 .  Header_CB \\$@
 ..
-.c --------------------------------------------------------------------
-.c .Header_CB  (<path_name>)
-.c
-.c Display a line in CB font, for example after .TP
-.c
+.\" --------------------------------------------------------------------
+.\" .Header_CB  (<path_name>)
+.\"
+.\" Display a line in CB font, for example after .TP
+.\"
 .de Header_CB
 .  nh
 .  Text \f[CB]\\$1\f[]\\$2
 .  hy
 ..
-.c --------------------------------------------------------------------
-.c .Opt_-  ([<punct>])
-.c
-.c Print `-' (minus sign); optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_-  ([<punct>])
+.\"
+.\" Print `-' (minus sign); optional punctuation.
+.\"
 .de Opt_-
 .  ie (\\n[.$] == 0) \
 .    Opt_alt - ""
 .  el \
 .    Opt_alt - "" "\\$1"
 ..
-.c --------------------------------------------------------------------
-.c .Opt_[-]  ([<punct>])
-.c
-.c Print `Opt_[-]' (minus sign in brackets); optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_[-]  ([<punct>])
+.\"
+.\" Print `Opt_[-]' (minus sign in brackets); optional punctuation.
+.\"
 .de Opt_[-]
 .  ie (\\n[.$] == 0) \
 .    Opt_[alt] - ""
 .  el \
 .    Opt_[alt] - "" "\\$1"
 ..
-.c --------------------------------------------------------------------
-.c .Opt_--  ([<punct>])
-.c
-.c Print `--' (double minus); optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_--  ([<punct>])
+.\"
+.\" Print `--' (double minus); optional punctuation.
+.\"
 .de Opt_--
 .  ie (\\n[.$] == 0) \
 .    Opt_alt -- ""
 .  el \
 .    Opt_alt -- "" "\\$1"
 ..
-.c --------------------------------------------------------------------
-.c .Opt_[--]  ([<punct>])
-.c
-.c Print `Opt_[--]' (double minus in brackets); optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_[--]  ([<punct>])
+.\"
+.\" Print `Opt_[--]' (double minus in brackets); optional punctuation.
+.\"
 .de Opt_[--]
 .  ie (\\n[.$] == 0) \
 .    Opt_[alt] -- ""
 .  el \
 .    Opt_[alt] -- "" "\\$1"
 ..
-.c --------------------------------------------------------------------
-.c .Opt_alt  ([<minus> <opt>]... [<arg> [<punct>]])
-.c
-.c Alternate options separated by a vertical bar.
-.c
-.c Arguments:
-.c   minus: either `-' or `--' (font CB).
-.c   opt: a name for an option, empty allowed (font CB).
-.c   arg: optionally, the argument to the option (font I).
-.c   punct: optional punctuation (in the starting font).
-.c Result:
-.c   The minus/opt argument pairs, each
-.c   separated by a vertical bar `|', optionally add 'arg', separated
-.c   a space character ` '.
-.c
-.c Example:
-.c  .Opt_alt - T -- device -- device-troff device .
-.c  results in
-.c  -T|--device|--device-troff device.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_alt  ([<minus> <opt>]... [<arg> [<punct>]])
+.\"
+.\" Alternate options separated by a vertical bar.
+.\"
+.\" Arguments:
+.\"   minus: either `-' or `--' (font CB).
+.\"   opt: a name for an option, empty allowed (font CB).
+.\"   arg: optionally, the argument to the option (font I).
+.\"   punct: optional punctuation (in the starting font).
+.\" Result:
+.\"   The minus/opt argument pairs, each
+.\"   separated by a vertical bar `|', optionally add 'arg', separated
+.\"   a space character ` '.
+.\"
+.\" Example:
+.\"  .Opt_alt - T -- device -- device-troff device .
+.\"  results in
+.\"  -T|--device|--device-troff device.
+.\"
 .de Opt_alt
 .  Opt_alt_base "" | "" \\$@
 ..
-.c --------------------------------------------------------------------
-.c .Opt_[alt]  ([<minus> <opt>]... [<arg> [<punct>]])
-.c
-.c Alternate options in brackets for section SYNOPSIS.
-.c
-.c Arguments:
-.c   minus: either `-' or `--' (font CB).
-.c   opt: a name for an option, empty allowed (font CB).
-.c   arg: optionally, the argument to the option (font I).
-.c   punct: optional punctuation (in the starting font).
-.c Global strings written to:
-.c   `@oa_prefix': left enclosing character (`[')
-.c   `@oa_sep': separator (`|')
-.c   `@oa_postfix': right enclosing character (`]')
-.c Result:
-.c   The minus/opt argument pairs, each separated by a vertical
-.c   bar `|', optionally add 'arg', separated by a space character ` '.
-.c
-.c Example:
-.c  .Opt_[alt] - T -- device -- device-troff device .
-.c  results in
-.c  [-T|--device|--device-troff device].
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_[alt]  ([<minus> <opt>]... [<arg> [<punct>]])
+.\"
+.\" Alternate options in brackets for section SYNOPSIS.
+.\"
+.\" Arguments:
+.\"   minus: either `-' or `--' (font CB).
+.\"   opt: a name for an option, empty allowed (font CB).
+.\"   arg: optionally, the argument to the option (font I).
+.\"   punct: optional punctuation (in the starting font).
+.\" Global strings written to:
+.\"   `@oa_prefix': left enclosing character (`[')
+.\"   `@oa_sep': separator (`|')
+.\"   `@oa_postfix': right enclosing character (`]')
+.\" Result:
+.\"   The minus/opt argument pairs, each separated by a vertical
+.\"   bar `|', optionally add 'arg', separated by a space character ` '.
+.\"
+.\" Example:
+.\"  .Opt_[alt] - T -- device -- device-troff device .
+.\"  results in
+.\"  [-T|--device|--device-troff device].
+.\"
 .de Opt_[alt]
 .  Opt_alt_base [ | ] \\$@
 ..
-.c --------------------------------------------------------------------
-.c .Opt_alt_base  (<pre> <sep> <post> [<minus> <opt>]... [arg [punct]])
-.c
-.c Alternating options; base macro for many others; do not use directly.
-.c
-.c Arguments:
-.c   <pre>: prefix, result is preceded by this.
-.c   <sep>: separator between minus/opt pairs.
-.c   <post>: postfix, is appended to the result.
-.c   <minus>: either `-' or `--' (font CB).
-.c   <opt>: a name for an option, empty allowed (font CB).
-.c   <arg>: optionally, the argument to the option (font I).
-.c   <punct>: optional punctuation (in the starting font).
-.c Result:
-.c   String `<pre>' followed by the <minus>/<opt> argument pairs, each
-.c   separated by string `<sep>', optionally add '<arg>', separated by
-.c   a single space ` ', followed by the string `<post>'.  Terminated
-.c   by the optional punctuation <punct>.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_alt_base  (<pre> <sep> <post> [<minus> <opt>]... [arg [punct]])
+.\"
+.\" Alternating options; base macro for many others; do not use directly.
+.\"
+.\" Arguments:
+.\"   <pre>: prefix, result is preceded by this.
+.\"   <sep>: separator between minus/opt pairs.
+.\"   <post>: postfix, is appended to the result.
+.\"   <minus>: either `-' or `--' (font CB).
+.\"   <opt>: a name for an option, empty allowed (font CB).
+.\"   <arg>: optionally, the argument to the option (font I).
+.\"   <punct>: optional punctuation (in the starting font).
+.\" Result:
+.\"   String `<pre>' followed by the <minus>/<opt> argument pairs, each
+.\"   separated by string `<sep>', optionally add '<arg>', separated by
+.\"   a single space ` ', followed by the string `<post>'.  Terminated
+.\"   by the optional punctuation <punct>.
+.\"
 .de Opt_alt_base
 .  nr @font \\n[.f]\"
 .  if (\\n[.$] < 3) \
@@ -318,16 +301,16 @@ You can also write to the
 .  nr @count 0
 .  ds @res \f[CR]\\*[@pre]\"
 .  while (\\n[.$] >= 2) \{\
-.    c                                  do the pairs, break on no `-'
+.    \"                                  do the pairs, break on no `-'
 .    if !'\\$1'-' \{\
 .      if !'\\$1'--' \
 .        break
 .    \}
-.    c                                  separator
+.    \"                                  separator
 .    if (\\n[@count] > 0) \
 .      as @res \f[CR]\\*[@sep]\:\"
 .    nr @count +1
-.    c                                  combine minus with option name
+.    \"                                  combine minus with option name
 .    as @res \f[CB]\\-\"
 .    if '\\$1'--' \
 .      as @res \\-\"
@@ -336,18 +319,18 @@ You can also write to the
 .  \}
 .  if (\\n[.$] >= 3) \
 .    Error .\\0: wrong arguments: \\$@
-.  c                                    all pairs are done
+.  \"                                    all pairs are done
 .  ie (\\n[.$] == 0) \
 .    as @res \f[CR]\\*[@post]\"
 .  el \{\
-.    c                                  optional option argument
+.    \"                                  optional option argument
 .    if !'\\$1'' \
 .      as @res \f[CR] \,\f[I]\\$1\"
 .    shift
-.    c                                  postfix
+.    \"                                  postfix
 .    as @res \\f[CR]\\*[@post]\"
 .    if (\\n[.$] >= 1) \{\
-.      c                                add punctuation
+.      \"                                add punctuation
 .      as @res \f[\\n[@font]]\\$1\"
 .    \}
 .  \}
@@ -362,144 +345,144 @@ You can also write to the
 .  rm @sep
 .  rm @res
 ..
-.c --------------------------------------------------------------------
-.c .Opt_def  ([<minus> <opt>]... [<arg> [<punct>]])
-.c
-.c Definitions of options in section OPTIONS.
-.c
-.c Arguments:
-.c   minus: either `-' or `--' (font CB).
-.c   opt: a name for an option, empty allowed (font CB).
-.c   arg: optionally, the argument to the option (font I).
-.c   punct: optional punctuation (in the starting font).
-.c Result:
-.c   The header for an indented paragraph, consisting of
-.c   minus/opt argument pairs, each, separated by a space
-.c   character ` ', optionally add 'arg', separated a space
-.c   character ` '.
-.c
-.c Example:
-.c  .Opt_def - T -- device -- device-troff device .
-.c  results in
-.c  -T --device --device-troff device.
-.c  as the header of for indented paragraph.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_def  ([<minus> <opt>]... [<arg> [<punct>]])
+.\"
+.\" Definitions of options in section OPTIONS.
+.\"
+.\" Arguments:
+.\"   minus: either `-' or `--' (font CB).
+.\"   opt: a name for an option, empty allowed (font CB).
+.\"   arg: optionally, the argument to the option (font I).
+.\"   punct: optional punctuation (in the starting font).
+.\" Result:
+.\"   The header for an indented paragraph, consisting of
+.\"   minus/opt argument pairs, each, separated by a space
+.\"   character ` ', optionally add 'arg', separated a space
+.\"   character ` '.
+.\"
+.\" Example:
+.\"  .Opt_def - T -- device -- device-troff device .
+.\"  results in
+.\"  -T --device --device-troff device.
+.\"  as the header of for indented paragraph.
+.\"
 .de Opt_def
 .  TP
 .    Opt_alt_base "" "\~|\~" "" \\$@
 ..
-.c --------------------------------------------------------------------
-.c .Opt_element  ([<minus> <opt>]... [<arg> [<punct>]])
-.c
-.c Definitions of options in section OPTIONS.
-.c
-.c Arguments:
-.c   minus: either `-' or `--' (font CB).
-.c   opt: a name for an option, empty allowed (font CB).
-.c   arg: optionally, the argument to the option (font I).
-.c   punct: optional punctuation (in the starting font).
-.c Result:
-.c   The minus/opt argument pairs, each, separated by a space
-.c   character ` ', optionally add 'arg', separated a space
-.c   character ` '.
-.c
-.c Example:
-.c  .Opt_element - T -- device -- device-troff device .
-.c  results in
-.c  -T --device --device-troff device.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_element  ([<minus> <opt>]... [<arg> [<punct>]])
+.\"
+.\" Definitions of options in section OPTIONS.
+.\"
+.\" Arguments:
+.\"   minus: either `-' or `--' (font CB).
+.\"   opt: a name for an option, empty allowed (font CB).
+.\"   arg: optionally, the argument to the option (font I).
+.\"   punct: optional punctuation (in the starting font).
+.\" Result:
+.\"   The minus/opt argument pairs, each, separated by a space
+.\"   character ` ', optionally add 'arg', separated a space
+.\"   character ` '.
+.\"
+.\" Example:
+.\"  .Opt_element - T -- device -- device-troff device .
+.\"  results in
+.\"  -T --device --device-troff device.
+.\"
 .de Opt_element
 .  Opt_alt_base "" "\~" "" \\$@
 ..
-.c --------------------------------------------------------------------
+.\" --------------------------------------------------------------------
 .als Opt_list Opt_element
 .
-.c --------------------------------------------------------------------
-.c .Opt_long  ([<name> [<punct>]])
-.c
-.c Print `--name' somewhere in the text; optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_long  ([<name> [<punct>]])
+.\"
+.\" Print `--name' somewhere in the text; optional punctuation.
+.\"
 .de Opt_long
 .  Opt_alt -- "\\$1" "" "\\$2"
 ..
-.c --------------------------------------------------------------------
-.c .Opt_long_arg  ([<name> <arg> [<punct>]])
-.c
-.c Print `--name=arg' somewhere in the text; optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_long_arg  ([<name> <arg> [<punct>]])
+.\"
+.\" Print `--name=arg' somewhere in the text; optional punctuation.
+.\"
 .de Opt_long_arg
 .  Opt_alt -- "\\$1=\\$2" "" "\\$3"
 ..
-.c --------------------------------------------------------------------
-.c .Opt_[long]  ([<name> [<punct>]])
-.c
-.c Print `--name' somewhere in the text; optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_[long]  ([<name> [<punct>]])
+.\"
+.\" Print `--name' somewhere in the text; optional punctuation.
+.\"
 .de Opt_[long]
 .  Opt_[alt] -- "\\$1" "" "\\$2"
 ..
-.c --------------------------------------------------------------------
-.c .Opt_short  ([<name> [<punct>]])
-.c
-.c Print `-name' somewhere in the Text; optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_short  ([<name> [<punct>]])
+.\"
+.\" Print `-name' somewhere in the Text; optional punctuation.
+.\"
 .de Opt_short
 .  Opt_alt - "\\$1" "" "\\$2"
 ..
-.c --------------------------------------------------------------------
-.c .Opt_[short]  ([name [punct]])
-.c
-.c Print `[-name]' somewhere in the Text; optional punctuation.
-.c
+.\" --------------------------------------------------------------------
+.\" .Opt_[short]  ([name [punct]])
+.\"
+.\" Print `[-name]' somewhere in the Text; optional punctuation.
+.\"
 .de Opt_[short]
 .  Opt_[alt] - "\\$1" "" "\\$2"
 ..
-.c --------------------------------------------------------------------
-.c .Shell_cmd  (<CR> [<CI>] ...)
-.c
-.c A shell command line; display args alternating in fonts CR and CI.
-.c
-.c Examples:
-.c   .Shell_cmd "groffer --dpi 100 file"
-.c     result: `sh#  groffer --dpi 100 file'
-.c             with 'sh#' in font I, the rest in CR
-.c
-.c   .Shell_cmd groffer\~--dpi\~100\~file
-.c     result: the same as above
-.c
-.c   .Shell_cmd "groffer --dpi=" value " file"
-.c     result: sh#  groffer --dpi=value file
-.c             with `groffer --dpi=' and `file' in CR; `value' in CI
-.c
-.c   .Shell_cmd groffer\~--dpi= value \~file
-.c     result: the same as the previous example
-.c
+.\" --------------------------------------------------------------------
+.\" .Shell_cmd  (<CR> [<CI>] ...)
+.\"
+.\" A shell command line; display args alternating in fonts CR and CI.
+.\"
+.\" Examples:
+.\"   .Shell_cmd "groffer --dpi 100 file"
+.\"     result: `sh#  groffer --dpi 100 file'
+.\"             with 'sh#' in font I, the rest in CR
+.\"
+.\"   .Shell_cmd groffer\~--dpi\~100\~file
+.\"     result: the same as above
+.\"
+.\"   .Shell_cmd "groffer --dpi=" value " file"
+.\"     result: sh#  groffer --dpi=value file
+.\"             with `groffer --dpi=' and `file' in CR; `value' in CI
+.\"
+.\"   .Shell_cmd groffer\~--dpi= value \~file
+.\"     result: the same as the previous example
+.\"
 .de Shell_cmd
 .  groffer:Shell_cmd_base "\*[groffer:Shell_cmd.prompt]" \\$@
 ..
-.c --------------------------------------------------------------------
-.c .Shell_cmd+  (<CR> [<CI>] ...)
-.c
-.c A continuation line for .Shell_cmd.
-.c
+.\" --------------------------------------------------------------------
+.\" .Shell_cmd+  (<CR> [<CI>] ...)
+.\"
+.\" A continuation line for .Shell_cmd.
+.\"
 .de Shell_cmd+
 .  groffer:Shell_cmd_base "\*[groffer:Shell_cmd+.prompt]" \\$@
 ..
-.c --------------------------------------------------------------------
-.c .Shell_cmd_base  (<prompt> [<CR> [<CI>] ...])
-.c
-.c A shell command line; display args alternating in fonts CR and CI.
-.c Internal, do not use directly.
-.c
-.c Globals: read-only register @.Shell_cmd_width
-.c
+.\" --------------------------------------------------------------------
+.\" .Shell_cmd_base  (<prompt> [<CR> [<CI>] ...])
+.\"
+.\" A shell command line; display args alternating in fonts CR and CI.
+.\" Internal, do not use directly.
+.\"
+.\" Globals: read-only register @.Shell_cmd_width
+.\"
 .de groffer:Shell_cmd_base
 .  if (\\n[.$] <= 0) \
 .    return
 .  nr @+font \\n[.f]\"
 .  ds @prompt \\$1\"
 .  ft CR
-.  c gap between prompt and command
+.  \" gap between prompt and command
 .  nr @+gap \\n[groffer:Shell_cmd_base.prompt_width]-\\w'\\*[@prompt]'\"
 .  ds @res \\*[@prompt]\h'\\n[@+gap]u'\"
 .  shift
@@ -527,11 +510,11 @@ You can also write to the
 .  rm @cf
 .  rm @res
 ..
-.c --------------------------------------------------------------------
-.c .Synopsis  ()
-.c
-.c Begin a synopsis section, to be ended by a ./Synopsis macro.
-.c
+.\" --------------------------------------------------------------------
+.\" .Synopsis  ()
+.\"
+.\" Begin a synopsis section, to be ended by a ./Synopsis macro.
+.\"
 .de Synopsis
 .  if (\\n[groffer:Synopsis.level] > 0) \
 .    Error .\\$0: previous .Synopsis was not closed by ./Synopsis.
@@ -546,11 +529,11 @@ You can also write to the
 .  rm @1
 .  nr groffer:Synopsis.level +1\"        marker for ./Synopsis
 ..
-.c  --------------------------------------------------------------------
-.c ./Synopsis  ()
-.c
-.c Close a synopsis section opened by the previous .Synopsis macro.
-.c
+.\"  --------------------------------------------------------------------
+.\" ./Synopsis  ()
+.\"
+.\" Close a synopsis section opened by the previous .Synopsis macro.
+.\"
 .de /Synopsis
 .  if (\\n[groffer:Synopsis.level] <= 0) \
 .    Error .\\$0: no previous call of .Synopsis
@@ -560,11 +543,11 @@ You can also write to the
 .  hy
 .  nr groffer:Synopsis.level -1
 ..
-.c  --------------------------------------------------------------------
-.c .Text  (<text>...)
-.c
-.c Treat the arguments as text, no matter how they look.
-.c
+.\"  --------------------------------------------------------------------
+.\" .Text  (<text>...)
+.\"
+.\" Treat the arguments as text, no matter how they look.
+.\"
 .de Text
 .  if (\\n[.$] == 0) \
 .    return
@@ -572,11 +555,11 @@ You can also write to the
 .  nop \)\\$*\)
 .  hy
 ..
-.c --------------------------------------------------------------------
-.c .Topic  ([<indent>])
-.c
-.c A bulleted paragraph
-.c
+.\" --------------------------------------------------------------------
+.\" .Topic  ([<indent>])
+.\"
+.\" A bulleted paragraph
+.\"
 .de Topic
 .  ie (\\n[.$] = 0) \
 .    ds @indent 2m\"
@@ -586,74 +569,6 @@ You can also write to the
 .  Text \[bu]
 .  rm @indent
 ..
-.c --------------------------------------------------------------------
-.c .TP+  ()
-.c
-.c Continuation line for .TP header.
-.c
-.de TP+
-.  br
-.  ns
-.  TP \\$1
-..
-.c --------------------------------------------------------------------
-.c .TP_header  ([<indent>])
-.c
-.c Start a multi-line header for a .TP-like paragraph
-.c
-.de TP_header
-.  if (\\n[groffer:TP.level] < 0) \
-.    Error .\\$0: wrong level.
-.  nr groffer:TP.level +1
-.  P
-.  ie (\\n[.$] == 0) \
-.    rr groffer:TP.indent
-.  el \
-.    nr groffer:TP.indent \\$1
-.  nr groffer:TP_header.flag 1
-..
-.c --------------------------------------------------------------------
-.c .TP_body  ([<indent>])
-.c
-.c End a previous .TP-header and beging the body of the paragraph.
-.c
-.de TP_body
-.  if !rgroffer:TP_header.flag \
-.    Error .\\$0: no previous call of .TP_header
-.  if (\\n[groffer:TP.level] <= 0) \
-.    Error .\\$0: wrong level.
-.  br
-.  ie (\\n[.$] == 0) \{\
-.    ie rgroffer:TP.indent \{\
-.      RS \\n[groffer:TP.indent]u
-.    \}
-.    el \
-.      RS
-.  \}
-.  el \
-.    RS \\$1u
-.  rr groffer:TP.indent
-.  rr groffer:TP_header.flag
-.  nr groffer:TP_body.flag 1
-..
-.c --------------------------------------------------------------------
-.c TP_end  ()
-.c
-.c End of former .TP_body paragraph.
-.c
-.de TP_end
-.  if !rgroffer:TP_body.flag \
-.    Error .\\$0: no previous .TP_body.
-.  if (\\n[groffer:TP.level] <= 0) \
-.    Error TP_end: wrong level.
-.  nr groffer:TP.level -1
-.  rr grogger:TP.indent
-.  rr groffer:TP_header.flag
-.  rr groffer:TP_body.flag
-.  br
-.  RE
-..
-.
 .\" End of macro definitions
 .
 .
@@ -978,13 +893,13 @@ the path name of an existing file.
 .
 .TP
 .BI man: name ( section_extension )
-.TP+
+.TQ
 .BI man: name . section_extension
-.TP+
+.TQ
 .IB name ( section_extension )
-.TP+
+.TQ
 .IB name . section_extension
-.TP+
+.TQ
 .I "section_extension name"
 search the \%man\~page
 .I \%name
@@ -2823,7 +2738,7 @@ for searching
 .
 .TP
 .Opt_long no\-man
-.TP+
+.TQ
 .Opt_long local\-file
 disable the
 .I man
@@ -3513,9 +3428,9 @@ can be started on the second monitor by the command
 .
 .TP
 .Env_var \%$LC_ALL
-.TP+
+.TQ
 .Env_var \%$LC_MESSAGES
-.TP+
+.TQ
 .Env_var $LANG
 If one of these variables is set (in the above sequence), its content
 is interpreted as the locale, the language to be used, especially when
@@ -3965,7 +3880,7 @@ exists.
 .
 .TP
 .Shell_cmd "groffer\~groff.7"
-.TP+
+.TQ
 .Shell_cmd "groffer\~7\~groff"
 search the
 .I \%man\~page
@@ -4086,7 +4001,7 @@ option
 .
 .TP
 .Shell_cmd "echo\~'\[rs]f[CB]WOW!'\~|"
-.TP+
+.TQ
 .Shell_cmd+ "groffer --x --bg red --fg yellow --geometry 200x100 -"
 .
 Display the word \f[CB]WOW!\fP in a small window in constant-width
@@ -4259,7 +4174,9 @@ anyway.
 .\" --------------------------------------------------------------------
 .
 Report bugs to the
-.MTO bug-groff@gnu.org "bug-groff mailing list" .
+.MT bug-groff@gnu.org
+bug-groff mailing list 
+.ME .
 .
 Include a complete, self-contained example that will allow the bug to
 be reproduced, and say which version of
@@ -4269,12 +4186,15 @@ you are using.
 .
 .P
 You can also use the
-.MTO groff@gnu.org "groff mailing list" ,
+.MT groff@gnu.org
+groff mailing list
+.ME ,
 but you must first subscribe to this list.
 .
 You can do that by visiting the
-.URL http://\:lists.gnu.org/\:mailman/\:listinfo/\:groff \
-"groff mailing list web page" .
+.UR http://lists.gnu.org/mailman/listinfo/groff
+groff mailing list web page
+.UE .
 .
 .
 .P
