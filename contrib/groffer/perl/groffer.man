@@ -66,47 +66,6 @@ You can also write to the
 .ds Ellipsis "\&.\|.\|.\""
 .
 .\" --------------------------------------------------------------------
-.\" setup for the macro definitions below
-.\"
-.\" naming:  namespace:cathegory_macro.variable_name  (experimental)
-.
-.\" --------------------------------------------------------------------
-.\" configuration of prompt for `.Shell_cmd'* macros
-.ds groffer:Shell_cmd.prompt_text sh#\"    prompt for shell commands
-.ds groffer:Shell_cmd+.prompt_text >\"     prompt on continuation lines
-.ds groffer:Shell_cmd_base.prompt_font I\" font for prompts
-.
-.\" automatically determine setup from the configuration above
-.als @f groffer:Shell_cmd_base.prompt_font\"
-.als @t groffer:Shell_cmd.prompt_text\"
-.als @t+ groffer:Shell_cmd+.prompt_text\"
-.ds groffer:Shell_cmd.prompt \f[\*[@f]]\*[@t]\f[]\"            needed
-.ds groffer:Shell_cmd+.prompt \f[\*[@f]]\*[@t+]\f[]\"          needed
-.nr @w \w'\*[groffer:Shell_cmd.prompt]'\"
-.ft \*[@f]
-.\" Full prompt width is maximum of texts plus 1m
-.nr groffer:Shell_cmd_base.prompt_width (\n[@w]>?\n[@w+]+1m)\" needed
-.ft
-.rm @f
-.rm @f+
-.rm @t
-.rm @t+
-.rr @w
-.rr @w+
-.
-.\" --------------------------------------------------------------------
-.\" static register for inter-macro communication in `.Synopsis'*
-.nr groffer:Synopsis.level 0
-.
-.\" --------------------------------------------------------------------
-.\" static registers for inter-macro communication in `.TP'*
-.nr groffer:TP.level 0
-.rr groffer:TP_header.flag
-.rr groffer:TP_body.flag
-.rr groffer:TP.indent
-.
-.
-.\" --------------------------------------------------------------------
 .\" Macro definitions
 .
 .\" --------------------------------------------------------------------
@@ -177,371 +136,6 @@ You can also write to the
 .  Text \f[CB]\\$1\f[]\\$2
 .  hy
 ..
-.\" --------------------------------------------------------------------
-.\" .Opt_-  ([<punct>])
-.\"
-.\" Print `-' (minus sign); optional punctuation.
-.\"
-.de Opt_-
-.  ie (\\n[.$] == 0) \
-.    Opt_alt - ""
-.  el \
-.    Opt_alt - "" "\\$1"
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_[-]  ([<punct>])
-.\"
-.\" Print `Opt_[-]' (minus sign in brackets); optional punctuation.
-.\"
-.de Opt_[-]
-.  ie (\\n[.$] == 0) \
-.    Opt_[alt] - ""
-.  el \
-.    Opt_[alt] - "" "\\$1"
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_--  ([<punct>])
-.\"
-.\" Print `--' (double minus); optional punctuation.
-.\"
-.de Opt_--
-.  ie (\\n[.$] == 0) \
-.    Opt_alt -- ""
-.  el \
-.    Opt_alt -- "" "\\$1"
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_[--]  ([<punct>])
-.\"
-.\" Print `Opt_[--]' (double minus in brackets); optional punctuation.
-.\"
-.de Opt_[--]
-.  ie (\\n[.$] == 0) \
-.    Opt_[alt] -- ""
-.  el \
-.    Opt_[alt] -- "" "\\$1"
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_alt  ([<minus> <opt>]... [<arg> [<punct>]])
-.\"
-.\" Alternate options separated by a vertical bar.
-.\"
-.\" Arguments:
-.\"   minus: either `-' or `--' (font CB).
-.\"   opt: a name for an option, empty allowed (font CB).
-.\"   arg: optionally, the argument to the option (font I).
-.\"   punct: optional punctuation (in the starting font).
-.\" Result:
-.\"   The minus/opt argument pairs, each
-.\"   separated by a vertical bar `|', optionally add 'arg', separated
-.\"   a space character ` '.
-.\"
-.\" Example:
-.\"  .Opt_alt - T -- device -- device-troff device .
-.\"  results in
-.\"  -T|--device|--device-troff device.
-.\"
-.de Opt_alt
-.  Opt_alt_base "" | "" \\$@
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_[alt]  ([<minus> <opt>]... [<arg> [<punct>]])
-.\"
-.\" Alternate options in brackets for section SYNOPSIS.
-.\"
-.\" Arguments:
-.\"   minus: either `-' or `--' (font CB).
-.\"   opt: a name for an option, empty allowed (font CB).
-.\"   arg: optionally, the argument to the option (font I).
-.\"   punct: optional punctuation (in the starting font).
-.\" Global strings written to:
-.\"   `@oa_prefix': left enclosing character (`[')
-.\"   `@oa_sep': separator (`|')
-.\"   `@oa_postfix': right enclosing character (`]')
-.\" Result:
-.\"   The minus/opt argument pairs, each separated by a vertical
-.\"   bar `|', optionally add 'arg', separated by a space character ` '.
-.\"
-.\" Example:
-.\"  .Opt_[alt] - T -- device -- device-troff device .
-.\"  results in
-.\"  [-T|--device|--device-troff device].
-.\"
-.de Opt_[alt]
-.  Opt_alt_base [ | ] \\$@
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_alt_base  (<pre> <sep> <post> [<minus> <opt>]... [arg [punct]])
-.\"
-.\" Alternating options; base macro for many others; do not use directly.
-.\"
-.\" Arguments:
-.\"   <pre>: prefix, result is preceded by this.
-.\"   <sep>: separator between minus/opt pairs.
-.\"   <post>: postfix, is appended to the result.
-.\"   <minus>: either `-' or `--' (font CB).
-.\"   <opt>: a name for an option, empty allowed (font CB).
-.\"   <arg>: optionally, the argument to the option (font I).
-.\"   <punct>: optional punctuation (in the starting font).
-.\" Result:
-.\"   String `<pre>' followed by the <minus>/<opt> argument pairs, each
-.\"   separated by string `<sep>', optionally add '<arg>', separated by
-.\"   a single space ` ', followed by the string `<post>'.  Terminated
-.\"   by the optional punctuation <punct>.
-.\"
-.de Opt_alt_base
-.  nr @font \\n[.f]\"
-.  if (\\n[.$] < 3) \
-.    Error .\\0: not enough arguments.
-.  ds @pre \)\\$1\)\"                   prefix
-.  ds @sep \)\\$2\)\"                   separator
-.  ds @post \)\\$3\)\"                  postfix
-.  shift 3
-.  nr @count 0
-.  ds @res \f[CR]\\*[@pre]\"
-.  while (\\n[.$] >= 2) \{\
-.    \"                                  do the pairs, break on no `-'
-.    if !'\\$1'-' \{\
-.      if !'\\$1'--' \
-.        break
-.    \}
-.    \"                                  separator
-.    if (\\n[@count] > 0) \
-.      as @res \f[CR]\\*[@sep]\:\"
-.    nr @count +1
-.    \"                                  combine minus with option name
-.    as @res \f[CB]\\-\"
-.    if '\\$1'--' \
-.      as @res \\-\"
-.    as @res \\$2\"
-.    shift 2
-.  \}
-.  if (\\n[.$] >= 3) \
-.    Error .\\0: wrong arguments: \\$@
-.  \"                                    all pairs are done
-.  ie (\\n[.$] == 0) \
-.    as @res \f[CR]\\*[@post]\"
-.  el \{\
-.    \"                                  optional option argument
-.    if !'\\$1'' \
-.      as @res \f[CR] \,\f[I]\\$1\"
-.    shift
-.    \"                                  postfix
-.    as @res \\f[CR]\\*[@post]\"
-.    if (\\n[.$] >= 1) \{\
-.      \"                                add punctuation
-.      as @res \f[\\n[@font]]\\$1\"
-.    \}
-.  \}
-.  nh
-.  Text \\*[@res]
-.  hy
-.  ft \\n[@font]
-.  rr @count
-.  rr @font
-.  rm @pre
-.  rm @post
-.  rm @sep
-.  rm @res
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_def  ([<minus> <opt>]... [<arg> [<punct>]])
-.\"
-.\" Definitions of options in section OPTIONS.
-.\"
-.\" Arguments:
-.\"   minus: either `-' or `--' (font CB).
-.\"   opt: a name for an option, empty allowed (font CB).
-.\"   arg: optionally, the argument to the option (font I).
-.\"   punct: optional punctuation (in the starting font).
-.\" Result:
-.\"   The header for an indented paragraph, consisting of
-.\"   minus/opt argument pairs, each, separated by a space
-.\"   character ` ', optionally add 'arg', separated a space
-.\"   character ` '.
-.\"
-.\" Example:
-.\"  .Opt_def - T -- device -- device-troff device .
-.\"  results in
-.\"  -T --device --device-troff device.
-.\"  as the header of for indented paragraph.
-.\"
-.de Opt_def
-.  TP
-.    Opt_alt_base "" "\~|\~" "" \\$@
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_element  ([<minus> <opt>]... [<arg> [<punct>]])
-.\"
-.\" Definitions of options in section OPTIONS.
-.\"
-.\" Arguments:
-.\"   minus: either `-' or `--' (font CB).
-.\"   opt: a name for an option, empty allowed (font CB).
-.\"   arg: optionally, the argument to the option (font I).
-.\"   punct: optional punctuation (in the starting font).
-.\" Result:
-.\"   The minus/opt argument pairs, each, separated by a space
-.\"   character ` ', optionally add 'arg', separated a space
-.\"   character ` '.
-.\"
-.\" Example:
-.\"  .Opt_element - T -- device -- device-troff device .
-.\"  results in
-.\"  -T --device --device-troff device.
-.\"
-.de Opt_element
-.  Opt_alt_base "" "\~" "" \\$@
-..
-.\" --------------------------------------------------------------------
-.als Opt_list Opt_element
-.
-.\" --------------------------------------------------------------------
-.\" .Opt_long  ([<name> [<punct>]])
-.\"
-.\" Print `--name' somewhere in the text; optional punctuation.
-.\"
-.de Opt_long
-.  Opt_alt -- "\\$1" "" "\\$2"
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_long_arg  ([<name> <arg> [<punct>]])
-.\"
-.\" Print `--name=arg' somewhere in the text; optional punctuation.
-.\"
-.de Opt_long_arg
-.  Opt_alt -- "\\$1=\\$2" "" "\\$3"
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_[long]  ([<name> [<punct>]])
-.\"
-.\" Print `--name' somewhere in the text; optional punctuation.
-.\"
-.de Opt_[long]
-.  Opt_[alt] -- "\\$1" "" "\\$2"
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_short  ([<name> [<punct>]])
-.\"
-.\" Print `-name' somewhere in the Text; optional punctuation.
-.\"
-.de Opt_short
-.  Opt_alt - "\\$1" "" "\\$2"
-..
-.\" --------------------------------------------------------------------
-.\" .Opt_[short]  ([name [punct]])
-.\"
-.\" Print `[-name]' somewhere in the Text; optional punctuation.
-.\"
-.de Opt_[short]
-.  Opt_[alt] - "\\$1" "" "\\$2"
-..
-.\" --------------------------------------------------------------------
-.\" .Shell_cmd  (<CR> [<CI>] ...)
-.\"
-.\" A shell command line; display args alternating in fonts CR and CI.
-.\"
-.\" Examples:
-.\"   .Shell_cmd "groffer --dpi 100 file"
-.\"     result: `sh#  groffer --dpi 100 file'
-.\"             with 'sh#' in font I, the rest in CR
-.\"
-.\"   .Shell_cmd groffer\~--dpi\~100\~file
-.\"     result: the same as above
-.\"
-.\"   .Shell_cmd "groffer --dpi=" value " file"
-.\"     result: sh#  groffer --dpi=value file
-.\"             with `groffer --dpi=' and `file' in CR; `value' in CI
-.\"
-.\"   .Shell_cmd groffer\~--dpi= value \~file
-.\"     result: the same as the previous example
-.\"
-.de Shell_cmd
-.  groffer:Shell_cmd_base "\*[groffer:Shell_cmd.prompt]" \\$@
-..
-.\" --------------------------------------------------------------------
-.\" .Shell_cmd+  (<CR> [<CI>] ...)
-.\"
-.\" A continuation line for .Shell_cmd.
-.\"
-.de Shell_cmd+
-.  groffer:Shell_cmd_base "\*[groffer:Shell_cmd+.prompt]" \\$@
-..
-.\" --------------------------------------------------------------------
-.\" .Shell_cmd_base  (<prompt> [<CR> [<CI>] ...])
-.\"
-.\" A shell command line; display args alternating in fonts CR and CI.
-.\" Internal, do not use directly.
-.\"
-.\" Globals: read-only register @.Shell_cmd_width
-.\"
-.de groffer:Shell_cmd_base
-.  if (\\n[.$] <= 0) \
-.    return
-.  nr @+font \\n[.f]\"
-.  ds @prompt \\$1\"
-.  ft CR
-.  \" gap between prompt and command
-.  nr @+gap \\n[groffer:Shell_cmd_base.prompt_width]-\\w'\\*[@prompt]'\"
-.  ds @res \\*[@prompt]\h'\\n[@+gap]u'\"
-.  shift
-.  ds @cf CR\"
-.  while (\\n[.$] > 0) \{\
-.    as @res \\f[\\*[@cf]]\\$1\"
-.    shift
-.    ie '\\*[@cf]'CR' \
-.      ds @cf I\"
-.    el \
-.      ds @cf CR\"
-.  \}
-.  br
-.  ad l
-.  nh
-.  nf
-.  Text \\*[@res]\"
-.  fi
-.  hy
-.  ad
-.  br
-.  ft \\n[@+font]
-.  rr @+font
-.  rr @+gap
-.  rm @cf
-.  rm @res
-..
-.\" --------------------------------------------------------------------
-.\" .Synopsis  ()
-.\"
-.\" Begin a synopsis section, to be ended by a ./Synopsis macro.
-.\"
-.de Synopsis
-.  if (\\n[groffer:Synopsis.level] > 0) \
-.    Error .\\$0: previous .Synopsis was not closed by ./Synopsis.
-.  nh
-.  ds @1 \\$1\"
-.  nr @old_indent \\n(.i
-.  ad l
-.  in +\w'\fB\\*[@1]\0'u
-.  ti \\n[@old_indent]u
-.  B \\*[@1]\0\c
-.  rr @old_indent
-.  rm @1
-.  nr groffer:Synopsis.level +1\"        marker for ./Synopsis
-..
-.\"  --------------------------------------------------------------------
-.\" ./Synopsis  ()
-.\"
-.\" Close a synopsis section opened by the previous .Synopsis macro.
-.\"
-.de /Synopsis
-.  if (\\n[groffer:Synopsis.level] <= 0) \
-.    Error .\\$0: no previous call of .Synopsis
-.  br
-.  ad
-.  in
-.  hy
-.  nr groffer:Synopsis.level -1
-..
 .\"  --------------------------------------------------------------------
 .\" .Text  (<text>...)
 .\"
@@ -568,6 +162,7 @@ You can also write to the
 .  Text \[bu]
 .  rm @indent
 ..
+
 .\" End of macro definitions
 .
 .
@@ -575,20 +170,19 @@ You can also write to the
 .\" SH "SYNOPSIS"
 .\" --------------------------------------------------------------------
 .
-.ad l
-.Synopsis groffer
-.RI [ option \*[Ellipsis]]
-.Opt_[--]
-.RI [ \%filespec \*[Ellipsis]]
-./Synopsis
+.SY groffer
+.OP option \*[Ellipsis]
+.OP --
+.OP \%filespec \*[Ellipsis]
+.YS
 .
-.Synopsis groffer
-.Opt_alt - h -- help
-./Synopsis
+.SY groffer
+.BR -h | --help
+.YS
 .
-.Synopsis groffer
-.Opt_alt - v -- version
-./Synopsis
+.SY groffer
+.BR -v | --version
+.YS
 .
 .
 .\" --------------------------------------------------------------------
@@ -713,8 +307,10 @@ Long options can be abbreviated in several ways.
 .I breaking options
 .RS
 .P
-.Opt_[alt] - h -- help
-.Opt_[alt] - v -- version
+.SY
+.OP "-h~\fR|\fB\~--help"
+.OP "-v~\fR|\fB\~--version"
+.YS
 .RE
 .
 .
@@ -722,28 +318,30 @@ Long options can be abbreviated in several ways.
 .I \%groffer mode options
 .RS
 .P
-.Opt_[alt] -- auto
-.Opt_[alt] -- default
-.Opt_[alt] -- default\-modes mode1,mode2,\*[Ellipsis]
-.Opt_[alt] -- dvi
-.Opt_[alt] -- dvi\-viewer prog
-.Opt_[alt] -- groff
-.Opt_[alt] -- html
-.Opt_[alt] -- html\-viewer prog
-.Opt_[alt] -- mode display_mode
-.Opt_[alt] -- pdf
-.Opt_[alt] -- pdf\-viewer prog
-.Opt_[alt] -- ps
-.Opt_[alt] -- ps\-viewer prog
-.Opt_[alt] -- source
-.Opt_[alt] -- text
-.Opt_[alt] -- to\-stdout
-.Opt_[alt] -- tty
-.Opt_[alt] -- tty\-viewer prog
-.Opt_[alt] -- www
-.Opt_[alt] -- www\-viewer prog
-.Opt_[alt] -- x -- X
-.Opt_[alt] -- x\-viewer -- X\-viewer prog
+.SY
+.OP --auto
+.OP --default
+.OP --default\-modes mode1,mode2,\*[Ellipsis]
+.OP --dvi
+.OP --dvi\-viewer prog
+.OP --groff
+.OP --html
+.OP --html\-viewer prog
+.OP --mode display_mode
+.OP --pdf
+.OP --pdf\-viewer prog
+.OP --ps
+.OP --ps\-viewer prog
+.OP --source
+.OP --text
+.OP --to\-stdout
+.OP --tty
+.OP --tty\-viewer prog
+.OP --www
+.OP --www\-viewer prog
+.OP --x --X
+.OP --x\-viewer --X\-viewer prog
+.YS
 .RE
 .
 .
@@ -751,8 +349,8 @@ Long options can be abbreviated in several ways.
 .I options related to \%groff
 .RS
 .P
-.Opt_[alt] - T -- device device
-.Opt_[alt] - Z -- intermediate\-output -- ditroff
+.OP -T~\fR|\fB\~--device device
+.OP -Z~\fR|\fB\~--intermediate\-output~\fR|\fB\~--ditroff
 .P
 All further
 .B \%groff
@@ -762,33 +360,37 @@ short options are accepted.
 .
 .TP
 .I options for man\~pages
-.Opt_[alt] -- apropos
-.Opt_[alt] -- apropos\-data
-.Opt_[alt] -- apropos\-devel
-.Opt_[alt] -- apropos\-progs
-.Opt_[alt] -- man
-.Opt_[alt] -- no-man
-.Opt_[alt] -- no-special
-.Opt_[alt] -- whatis
+.SY
+.OP --apropos
+.OP --apropos\-data
+.OP --apropos\-devel
+.OP --apropos\-progs
+.OP --man
+.OP --no-man
+.OP --no-special
+.OP --whatis
+.YS
 .
 .
 .TP
 .I long options taken over from GNU man
 .RS
 .P
-.Opt_[alt] -- all
-.Opt_[alt] -- ascii
-.Opt_[alt] -- ditroff
-.Opt_[alt] -- extension suffix
-.Opt_[alt] -- locale language
-.Opt_[alt] -- local-file
-.Opt_[alt] -- location -- where
-.Opt_[alt] -- manpath dir1:dir2:\*[Ellipsis]
-.Opt_[alt] -- no-location
-.Opt_[alt] -- pager program
-.Opt_[alt] -- sections sec1:sec2:\*[Ellipsis]
-.Opt_[alt] -- systems sys1,sys2,\*[Ellipsis]
-.Opt_[alt] -- troff-device device
+.SY
+.OP --all
+.OP --ascii
+.OP --ditroff
+.OP --extension suffix
+.OP --locale language
+.OP --local-file
+.OP "--location~\fR|\fB\~--where"
+.OP --manpath dir1:dir2:\*[Ellipsis]
+.OP --no-location
+.OP --pager program
+.OP --sections sec1:sec2:\*[Ellipsis]
+.OP --systems sys1,sys2,\*[Ellipsis]
+.OP --troff-device device
+.YS
 .P
 Further long options of \f[CR]GNU\f[]
 .B man
@@ -800,17 +402,19 @@ are accepted as well.
 .I X Window Toolkit options
 .RS
 .P
-.Opt_[alt] -- bd -- bordercolor pixels
-.Opt_[alt] -- bg -- background color
-.Opt_[alt] -- bw -- borderwidth pixels
-.Opt_[alt] -- display X-display
-.Opt_[alt] -- fg -- foreground color
-.Opt_[alt] -- fn -- ft -- font font_name
-.Opt_[alt] -- geometry size_pos
-.Opt_[alt] -- resolution value
-.Opt_[alt] -- rv
-.Opt_[alt] -- title string
-.Opt_[alt] -- xrm X-resource
+.SY
+.OP --bd~\fR|\fB\~--bordercolor pixels
+.OP --bg~\fR|\fB\~--background color
+.OP --bw~\fR|\fB\~--borderwidth pixels
+.OP --display X-display
+.OP --fg~\fR|\fB\~--foreground color
+.OP --fn~\fR|\fB\~--ft~\fR|\fB\~--font font_name
+.OP --geometry size_pos
+.OP --resolution value
+.OP --rv
+.OP --title string
+.OP --xrm X-resource
+.YS
 .RE
 .
 .
@@ -818,15 +422,17 @@ are accepted as well.
 .I options for development
 .RS
 .P
-.Opt_[alt] -- debug
-.Opt_[alt] -- debug\-filenames
-.Opt_[alt] -- debug\-grog
-.Opt_[alt] -- debug\-keep
-.Opt_[alt] -- debug\-params
-.Opt_[alt] -- debug\-tmpdir
-.Opt_[alt] -- do\-nothing
-.Opt_[alt] -- print text
-.Opt_[alt] - V
+.SY
+.OP --debug
+.OP --debug\-filenames
+.OP --debug\-grog
+.OP --debug\-keep
+.OP --debug\-params
+.OP --debug\-tmpdir
+.OP --do\-nothing
+.OP --print text
+.OP -V
+.YS
 .RE
 .
 .
@@ -874,7 +480,7 @@ parameters means standard input.
 .
 .
 .TP 10m
-.Opt_short ""
+.B -
 stands for standard input (can occur several times).
 .
 .
@@ -949,17 +555,17 @@ Arguments for long option names can be abbreviated in several ways.
 First, the argument is checked whether it can be prolonged as is.
 .
 Furthermore, each minus sign
-.Opt_short
+.B -
 is considered as a starting point for a new abbreviation.
 .
 This leads to a set of multiple abbreviations for a single argument.
 .
 For example,
-.Opt_long de\-n\-f
+.B --de\-n\-f
 can be used as an abbreviation for
-.Opt_long debug\-not\-func ,
+.BR --debug\-not\-func ,
 but
-.Opt_long de\-n
+.B --de\-n
 works as well.
 .
 If the abbreviation of the argument leads to several resulting options
@@ -986,12 +592,14 @@ is terminated thereafter.
 All other arguments are ignored.
 .
 .
-.Opt_def - h -- help
+.TP
+.OP -h\fR|\fR--help
 Print a helping information with a short explanation of option sto
 standard output.
 .
 .
-.Opt_def - v -- version
+.TP
+.OP -v\fR\fB--version
 Print version information to standard output.
 .
 .
@@ -1051,21 +659,23 @@ That need not be some graphical viewer suitable for this mode.
 .
 There is a chance to view the output source; for example, the
 combination of the options
-.Opt_long mode=ps
+.B --mode=ps
 and
-.Opt_long ps\-viewer=less
+.B --ps\-viewer=less
 shows the content of the
 .I Postscript
 output, the source code, with the pager
 .BR less .
 .
 .
-.Opt_def -- auto
+.TP
+.B --auto
 Equivalent to
-.Opt_long_arg mode auto .
+.BR --mode=auto .
 .
 .
-.Opt_def -- default
+.TP
+.B --default
 Reset all configuration from previously processed command line options
 to the default values.
 .
@@ -1074,13 +684,14 @@ This is useful to wipe out all former options of the configuration, in
 and restart option processing using only the rest of the command line.
 .
 .
-.Opt_def -- default\-modes mode1,mode2,\*[Ellipsis]
+.TP
+.B --default\-modes mode1,mode2,\*[Ellipsis]
 Set the sequence of modes for
 .I \%auto\~mode
 to the comma separated list given in the argument.
 .
 See
-.Opt_long mode
+.B --mode
 for details on modes.  Display in the default manner; actually, this
 means to try the modes
 .IR x ,
@@ -1091,12 +702,14 @@ in this sequence.
 .
 .
 .
-.Opt_def -- dvi
+.TP
+.B --dvi
 Equivalent to
-.Opt_long_arg mode \%dvi .
+.BR --mode=\%dvi .
 .
 .
-.Opt_def -- dvi\-viewer prog
+.TP
+.B --dvi\-viewer prog
 Choose a viewer program for
 .IR \%dvi\~mode .
 .
@@ -1113,17 +726,20 @@ and
 In each case, arguments can be provided additionally.
 .
 .
-.Opt_def -- groff
+.TP
+.B --groff
 Equivalent to
-.Opt_long_arg mode groff .
+.BR --mode=groff .
 .
 .
-.Opt_def -- html
+.TP
+.B --html
 Equivalent to
-.Opt_long_arg mode html .
+.BR --mode=html .
 .
 .
-.Opt_def -- html\-viewer
+.TP
+.B --html\-viewer
 Choose a web browser program for viewing in
 .IR \%html\~mode .
 .
@@ -1133,7 +749,8 @@ It can be the path name of an executable file or a program in
 In each case, arguments can be provided additionally.
 .
 .
-.Opt_def -- mode value
+.TP
+.BI --mode value
 .
 Set the display mode.
 .
@@ -1146,7 +763,7 @@ The following mode values are recognized:
 Select the automatic determination of the display mode.
 .
 The sequence of modes that are tried can be set with the
-.Opt_long default\-modes
+.B --default\-modes
 option.
 .
 Useful for restoring the
@@ -1163,7 +780,7 @@ viewer program.
 By default, the formatted input is displayed with the
 .BR \%xdvi (1)
 program.
-.Opt_long dvi .
+.BR --dvi .
 .
 .
 .TP
@@ -1236,7 +853,7 @@ program.
 The text device,
 .I \%latin1
 by default, can be chosen with option
-.Opt_short T .
+.BR -T .
 .
 .
 .TP
@@ -1250,7 +867,7 @@ even when in \%\f[CR]X\~Window\f[].
 .TP
 .Header_CB www
 Equivalent to
-.Opt_long_arg mode html .
+.BR --mode=html .
 .
 .
 .TP
@@ -1266,7 +883,7 @@ program being distributed together with
 But the standard \%\f[CR]X\~Window\f[] tool
 .BR \%xditview (1)
 can also be chosen with the option
-.Opt_long x\-viewer .
+.B --x\-viewer .
 The default resolution is
 .BR 75\~dpi ,
 but
@@ -1298,7 +915,7 @@ the default width of the geometry of the display program is chosen to
 .TP
 .Header_CB X
 Equivalent to
-.Opt_long_arg mode x .
+.BR --mode=x .
 .
 .
 .P
@@ -1316,7 +933,7 @@ Generate device output with plain
 without using the special viewing features of
 .IR \%groffer .
 If no device was specified by option
-.Opt_short T
+.B -T
 the
 .I \%groff
 default
@@ -1333,12 +950,14 @@ processing.
 .RE
 .
 .
-.Opt_def -- pdf
+.TP
+.B --pdf
 Equivalent to
-.Opt_long_arg mode pdf .
+.BR --mode=pdf .
 .
 .
-.Opt_def -- pdf\-viewer prog
+.TP
+.B --pdf\-viewer prog
 Choose a viewer program for
 .IR \%pdf\~mode .
 .
@@ -1347,12 +966,14 @@ This can be a file name or a program to be searched in
 arguments can be provided additionally.
 .
 .
-.Opt_def -- ps
+.TP
+.B --ps
 Equivalent to
-.Opt_long_arg mode ps .
+.BR --mode=ps .
 .
 .
-.Opt_def -- ps\-viewer prog
+.TP
+.B --ps\-viewer prog
 Choose a viewer program for
 .IR \%ps\~mode .
 .
@@ -1368,29 +989,34 @@ and
 In each case, arguments can be provided additionally.
 .
 .
-.Opt_def -- source
+.TP
+.B --source
 Equivalent
-.Opt_long_arg mode source .
+.BR --mode=source .
 .
 .
-.Opt_def -- text
+.TP
+.B --text
 Equivalent to
-.Opt_long_arg mode text .
+.BR --mode=text .
 .
 .
-.Opt_def -- to\-stdout
+.TP
+.B --to\-stdout
 The file for the chosen mode is generated and its content is printed
 to standard output.
 .
 It will not be displayed in graphical mode.
 .
 .
-.Opt_def -- tty
+.TP
+.B --tty
 Equivalent to
-.Opt_long_arg mode tty .
+.BR --mode=tty .
 .
 .
-.Opt_def -- tty\-viewer prog
+.TP
+.B --tty\-viewer prog
 Choose a text pager for mode
 .IR tty .
 The standard pager is
@@ -1398,28 +1024,32 @@ The standard pager is
 This option is eqivalent to
 .I man
 option
-.Opt_long_arg pager prog .
+.BR --pager=prog .
 The option argument can be a file name or a program to be searched in
 .Env_var $PATH ;
 arguments can be provided additionally.
 .
 .
-.Opt_def -- www
+.TP
+.B --www
 Equivalent to
-.Opt_long_arg mode html .
+.BR --mode=html .
 .
 .
-.Opt_def -- www\-viewer prog
+.TP
+.B --www\-viewer prog
 Equivalent to
-.Opt_long html\-viewer .
+.B --html\-viewer .
 .
 .
-.Opt_def -- X -- x
+.TP
+.B --X~\fR|\fB\~--x
 Equivalent to
-.Opt_long_arg mode x .
+.BR --mode=x .
 .
 .
-.Opt_def -- X\-viewer -- x\-viewer prog
+.TP
+.B --X\-viewer -- x\-viewer prog
 Choose a viewer program for
 .IR \%x\~mode .
 Suitable viewer programs are
@@ -1432,7 +1062,7 @@ arguments can be provided additionally.
 .
 .
 .TP
-.Opt_--
+.B --
 Signals the end of option processing; all remaining arguments are
 interpreted as
 .I \%filespec
@@ -1479,7 +1109,7 @@ or make sense for normal usage.
 Because of the special outputting behavior of the
 .B \%groff
 option
-.Opt_short Z
+.B -Z
 .B \%groffer
 was designed to be switched into
 .I \%groff\~mode ;
@@ -1493,7 +1123,8 @@ options do not switch the mode, but allow to customize the formatting
 process.
 .
 .
-.Opt_def - a
+.TP
+.B --a
 This generates an ascii approximation of output in the
 .IR \%text\~modes .
 .
@@ -1502,7 +1133,8 @@ sequences in
 .IR "tty mode" .
 .
 .
-.Opt_def - m file
+.TP
+.BI --m file
 Add
 .I \%file
 as a
@@ -1512,7 +1144,8 @@ macro file.
 This is useful in case it cannot be recognized automatically.
 .
 .
-.Opt_def - P opt_or_arg
+.TP
+.BI --P opt_or_arg
 Send the argument
 .I \%opt_or_arg
 as an option or option argument to the actual
@@ -1520,7 +1153,8 @@ as an option or option argument to the actual
 postprocessor.
 .
 .
-.Opt_def - T -- device devname
+.TP
+.B --T \fIdevname\fR ~\fR|\fB\~ --device \fIdevname\fR
 .
 This option determines
 .BR \%groff 's
@@ -1546,7 +1180,7 @@ The following
 .I \%devname
 arguments are mapped to the corresponding
 .B \%groffer
-.Opt_long_arg mode \fIdevname\fR
+.B --mode=\fIdevname\fR
 option:
 .BR \%dvi ,
 .BR \%html ,
@@ -1563,7 +1197,8 @@ argument switches to
 using this device.
 .
 .
-.Opt_def - X
+.TP
+.B --X
 is equivalent to
 .BR "groff \-X" .
 It displays the
@@ -1571,7 +1206,7 @@ It displays the
 with
 .BR gxditview .
 As the quality is relatively bad this option is deprecated; use
-.Opt_long X
+.B --X
 instead because the
 .I \%x\~mode
 uses an
@@ -1579,7 +1214,8 @@ uses an
 device for a better display.
 .
 .
-.Opt_def - Z -- intermediate-output -- ditroff
+.TP
+.B -Z~\fR|\fB\~--intermediate-output~\fR|\fB\~--ditroff
 Switch into
 .I \%groff\~mode
 and format the input with the
@@ -1587,7 +1223,7 @@ and format the input with the
 without postprocessing; see
 .BR \%groff_out (@MAN5EXT@).
 This is equivalent to option
-.Opt_long ditroff
+.B --ditroff
 of
 .IR \%man ,
 which can be used as well.
@@ -1620,7 +1256,8 @@ options should be needed, except for advanced usage.
 .SS "Options for man\~pages"
 .\" --------------------------------------------------------------------
 .
-.Opt_def -- apropos
+.TP
+.B --apropos
 Start the
 .BR \%apropos (1)
 command or facility of
@@ -1672,14 +1309,15 @@ each
 argument is searched on its own.
 .Topic
 The restriction by
-.Opt_long sections
+.B --sections
 is handled as well,
 .Topic
 wildcard characters are allowed and handled without a further option.
 .RE
 .
 .
-.Opt_def -- apropos\-data
+.TP
+.B --apropos\-data
 Show only the
 .B \%apropos
 descriptions for data documents, these are the
@@ -1691,7 +1329,8 @@ Direct
 declarations are ignored, wildcards are accepted.
 .
 .
-.Opt_def -- apropos\-devel
+.TP
+.B --apropos\-devel
 Show only the
 .B \%apropos
 descriptions for development documents, these are the
@@ -1703,7 +1342,8 @@ Direct
 declarations are ignored, wildcards are accepted.
 .
 .
-.Opt_def -- apropos\-progs
+.TP
+.B --apropos\-progs
 Show only the
 .B \%apropos
 descriptions for documents on programs, these are the
@@ -1715,7 +1355,8 @@ Direct
 declarations are ignored, wildcards are accepted.
 .
 .
-.Opt_def -- whatis
+.TP
+.B --whatis
 For each
 .I \%filespec
 argument search all
@@ -1753,7 +1394,8 @@ for local files or as a search pattern for
 The default is looking up for local files.
 .
 .
-.Opt_def -- man
+.TP
+.B --man
 Check the non-option command line arguments
 .nh
 .RI ( filespecs )
@@ -1767,22 +1409,24 @@ By default, a
 is first tested whether it is an existing file.
 .
 .
-.Opt_def -- no-man -- local-file
+.TP
+.B --no-man~\fR|\fB\~--local-file
 Do not check for
 .IR \%man\~pages .
 .
-.Opt_long local-file
+.B --local-file
 is the corresponding
 .B man
 option.
 .
 .
-.Opt_def -- no-special
+.TP
+.B --no-special
 Disable former calls of
-.Opt_long all ,
-.Opt_long apropos* ,
+.B --all ,
+.B --apropos* ,
 and
-.Opt_long whatis .
+.B --whatis .
 .
 .
 .\" --------------------------------------------------------------------
@@ -1803,10 +1447,10 @@ so most of them are just ignored.
 These ignored
 .B man
 options are
-.Opt_long catman ,
-.Opt_long troff ,
+.B --catman ,
+.B --troff ,
 and
-.Opt_long update .
+.B --update .
 .
 .
 .P
@@ -1828,13 +1472,15 @@ see
 .BR \%man (1).
 .
 .
-.Opt_def -- all
+.TP
+.B --all
 In searching
 .IR \%man\~pages ,
 retrieve all suitable documents instead of only one.
 .
 .
-.Opt_def - 7 -- ascii
+.TP
+.B -7\fR\fB--ascii
 In
 .IR \%text\~modes ,
 display ASCII translation of special characters for critical environment.
@@ -1845,15 +1491,17 @@ see
 .BR groff_tmac (@MAN5EXT@).
 .
 .
-.Opt_def -- ditroff
+.TP
+.B --ditroff
 Produce
 .IR "groff intermediate output" .
 This is equivalent to
 .B \%groffer
-.Opt_short Z .
+.B -Z .
 .
 .
-.Opt_def -- extension suffix
+.TP
+.BI --extension suffix
 Restrict
 .I \%man\~page
 search to file names that have
@@ -1868,7 +1516,8 @@ extension is
 .IR \%ncurses .
 .
 .
-.Opt_def -- locale language
+.TP
+.BI --locale language
 .
 Set the language for
 .IR \%man\~pages .
@@ -1877,20 +1526,23 @@ This has the same effect, but overwrites
 .Env_var $LANG
 .
 .
-.Opt_def -- location
+.TP
+.B --location
 Print the location of the retrieved files to standard error.
 .
 .
-.Opt_def -- no-location
+.TP
+.B --no-location
 Do not display the location of retrieved files; this resets a former
 call to
-.Opt_long location .
+.B --location .
 .
 This was added by
 .BR \%groffer .
 .
 .
-.Opt_def -- manpath "'dir1:dir2:\*[Ellipsis]'"
+.TP
+.BI --manpath "'dir1:dir2:\*[Ellipsis]'"
 Use the specified search path for retrieving
 .I \%man\~pages
 instead of the program defaults.
@@ -1900,16 +1552,18 @@ If the argument is set to the empty string "" the search for
 is disabled.
 .
 .
-.Opt_def -- pager
+.TP
+.B --pager
 Set the pager program in
 .IR \%tty\~mode ;
 default is
 .BR \%less .
 This is equivalent to
-.Opt_long tty\-viewer .
+.B --tty\-viewer .
 .
 .
-.Opt_def -- sections "'sec1:sec2:\*[Ellipsis]'"
+.TP
+.BI --sections "'sec1:sec2:\*[Ellipsis]'"
 Restrict searching for
 .I \%man\~pages
 to the given
@@ -1917,7 +1571,8 @@ to the given
 a colon-separated list.
 .
 .
-.Opt_def -- systems "'sys1,sys2,\*[Ellipsis]'"
+.TP
+.BI --systems "'sys1,sys2,\*[Ellipsis]'"
 Search for
 .I \%man\~pages
 for the given operating systems; the argument
@@ -1925,9 +1580,10 @@ for the given operating systems; the argument
 is a comma-separated list.
 .
 .
-.Opt_def -- where
+.TP
+.B --where
 Eqivalent to
-.Opt_long location .
+.B --location .
 .
 .
 .\" --------------------------------------------------------------------
@@ -1954,9 +1610,9 @@ that was changed to the standard with using a double minus for long
 options, for example,
 .B \%groffer
 uses the option
-.Opt_long font
+.B --font
 for the \%\f[CR]X\~Window\f[] option
-.Opt_short font .
+.B -font .
 .
 .
 .P
@@ -1967,66 +1623,79 @@ and the documentation on the \%\f[CR]X\~Window\~Toolkit\f[] options
 for more details on these options and their arguments.
 .
 .
-.Opt_def -- background color
+.TP
+.BI --background color
 Set the background color of the viewer window.
 .
 .
-.Opt_def -- bd pixels
+.TP
+.BI --bd pixels
 This is equivalent to
-.Opt_long bordercolor .
+.B --bordercolor .
 .
 .
-.Opt_def -- bg color
+.TP
+.BI --bg color
 This is equivalent to
-.Opt_long background .
+.B --background .
 .
 .
-.Opt_def -- bw pixels
+.TP
+.B --bw pixels
 This is equivalent to
-.Opt_long borderwidth .
+.B --borderwidth .
 .
 .
-.Opt_def -- bordercolor pixels
+.TP
+.BI --bordercolor pixels
 Specifies the color of the border surrounding the viewer window.
 .
 .
-.Opt_def -- borderwidth pixels
+.TP
+.BI --borderwidth pixels
 Specifies the width in pixels of the border surrounding the viewer
 window.
 .
 .
-.Opt_def -- display X-display
+.TP
+.BI --display X-display
 Set the \%\f[CR]X\~Window\f[] display on which the viewer program
 shall be started, see the \%\f[CR]X\~Window\f[] documentation for the
 syntax of the argument.
 .
 .
-.Opt_def -- foreground color
+.TP
+.BI --foreground color
 Set the foreground color of the viewer window.
 .
 .
-.Opt_def -- fg color
+.TP
+.BI --fg color
 This is equivalent to
-.Opt_short foreground .
+.B -foreground .
 .
 .
-.Opt_def -- fn font_name
+.TP
+.B --fn font_name
 This is equivalent to
-.Opt_long font .
+.B --font .
 .
 .
-.Opt_def -- font font_name
+.TP
+.BI --font font_name
 Set the font used by the viewer window.
 .
 The argument is an \%\f[CR]X\~Window\f[] font name.
 .
 .
-.Opt_def -- ft font_name
+.TP
+.BI --ft font_name
 This is equivalent to
-.Opt_long font .
+.B --font .
 .
 .
-.Opt_def -- geometry size_pos
+.TP
+.BI --geometry size_pos
 Set the geometry of the display window, that means its size and its
 starting position.
 .
@@ -2035,7 +1704,8 @@ See
 for the syntax of the argument.
 .
 .
-.Opt_def -- resolution value
+.TP
+.BI --resolution value
 Set \%\f[CR]X\~Window\f[] resolution in dpi (dots per inch) in some
 viewer programs.
 .
@@ -2052,15 +1722,18 @@ The resolution also sets the default device in
 .IR "mode x" .
 .
 .
-.Opt_def -- rv
+.TP
+.B --rv
 Reverse foreground and background color of the viewer window.
 .
 .
-.Opt_def -- title "'some text'"
+.TP
+.BI --title "'some text'"
 Set the title for the viewer window.
 .
 .
-.Opt_def -- xrm "'resource'"
+.TP
+.BI --xrm "'resource'"
 Set \f[CR]\%X\~Window\f[] resource.
 .
 .
@@ -2068,9 +1741,10 @@ Set \f[CR]\%X\~Window\f[] resource.
 .SS "Options for Development"
 .\" --------------------------------------------------------------------
 .
-.Opt_def -- debug
+.TP
+.B --debug
 Enable all debugging options
-.Opt_long debug\-\fItype\fP .
+.B --debug\-\fItype\fP .
 .
 The temporary files are kept and not deleted, the
 .B grog
@@ -2078,20 +1752,23 @@ output is printed, the name of the temporary directory is printed, the
 displayed file names are printed, and the parameters are printed.
 .
 .
-.Opt_def -- debug\-filenames
+.TP
+.B --debug\-filenames
 Print the names of the files and
 .I \%man\~pages
 that are displayed by
 .BR \&groffer .
 .
 .
-.Opt_def -- debug\-grog
+.TP
+.B --debug\-grog
 Print the output of all
 .B grog
 commands.
 .
 .
-.Opt_def -- debug\-keep
+.TP
+.B --debug\-keep
 Enable two debugging informations.
 .
 Print the name of the temporary directory and keep the temporary
@@ -2099,31 +1776,36 @@ files, do not delete them during the run of
 .BR \% groffer .
 .
 .
-.Opt_def -- debug\-params
+.TP
+.B --debug\-params
 Print the parameters, as obtained from the configuration files, from
 .Env_var \%GROFFER_OPT ,
 and the command line arguments.
 .
 .
-.Opt_def -- debug\-tmpdir
+.TP
+.B --debug\-tmpdir
 Print the name of the temporary directory.
 .
 .
-.Opt_def -- do-nothing
+.TP
+.B --do-nothing
 This is like
-.Opt_long version ,
+.B --version ,
 but without the output; no viewer is started.
 .
 This makes only sense in development.
 .
 .
-.Opt_def -- print=text
+.TP
+.B --print=\fItext\fR
 Just print the argument to standard error.
 .
 This is good for parameter check.
 .
 .
-.Opt_def - V
+.TP 
+.B -V
 This is an advanced option for debugging only.
 .
 Instead of displaying the formatted input, a lot of
@@ -2158,9 +1840,9 @@ program, but without executing it.
 Other useful debugging options are the
 .B \%groff
 option
-.Opt_short Z
+.B -Z
 and
-.Opt_long_arg mode groff .
+.BR --mode=groff .
 .
 .
 .\" --------------------------------------------------------------------
@@ -2194,7 +1876,7 @@ The \f[CR]GNU\f[] behavior to recognize options even when mixed with
 arguments is used througout.
 .
 But, as usual, the double minus argument
-.Opt_long
+.B --
 ends the option handling and interprets all following arguments as
 .I \%filespec
 arguments; so the \%\f[CR]POSIX\f[] behavior can be easily adopted.
@@ -2202,7 +1884,7 @@ arguments; so the \%\f[CR]POSIX\f[] behavior can be easily adopted.
 .
 .P
 The options
-.Opt_long apropos*
+.B --apropos*
 have a special handling of
 .I filespec
 arguments.
@@ -2229,7 +1911,7 @@ somewhere in the name or description of the
 All other parts of
 .IR groffer ,
 such as the normal display or the output with
-.Opt_long whatis
+.B --whatis
 have a different scheme for
 .IR filespecs .
 No regular expressions are used for the arguments.
@@ -2297,13 +1979,13 @@ parameters means that
 waits for standard input.
 .
 The minus option
-.Opt_short ""
+.B -
 always stands for standard input; it can occur several times.
 .
 If you want to look up a
 .I \%man\~page
 called
-.Opt_short ""
+.B -
 use the argument
 .BR "man:\-" .
 .
@@ -2409,13 +2091,13 @@ with options.
 .
 .
 The modes are selected by option the arguments of
-.Opt_long_arg mode \fIanymode .
+.BR --mode=\fIanymode .
 Additionally, each of this argument can be specified as an option of
 its own, such as
-.Opt_long \fIanymode .
+.BR anymode .
 Most of these modes have a viewer program, which can be chosen by an
 option that is constructed like
-.Opt_long \fIanymode\fR\-viewer .
+.BR --\fIanymode\fR\-viewer .
 .
 .
 .P
@@ -2441,7 +2123,7 @@ This mode testing sequence for
 .I \%auto\~mode
 can be changed by specifying a comma separated list of modes with the
 option
-.Opt_long default\-modes.
+.B --default\-modes.
 .
 .
 .P
@@ -2461,7 +2143,7 @@ environments).
 The environment variable
 .Env_var \%$DISPLAY
 and the option
-.Opt_long display
+.B --display
 are used for specifying the \%\f[CR]X\~Window\f[] display to be used.
 .
 If this environment variable is empty
@@ -2470,7 +2152,7 @@ assumes that no \%\f[CR]X\~Window\f[] is running and changes to a
 .IR \%text\~mode .
 .
 You can change this automatic behavior by the option
-.Opt_long default\-modes .
+.BR --default\-modes .
 .
 .
 .P
@@ -2565,22 +2247,22 @@ is chosen for
 .IR \%text\~modes .
 .
 This can be changed by specifying option
-.Opt_short T
+.B -T
 or
-.Opt_long device .
+.BR --device .
 .
 .
 .P
 The pager to be used can be specified by one of the options
-.Opt_long pager
+.B --pager
 and
-.Opt_long tty\-viewer ,
+.BR --tty\-viewer ,
 or by the environment variable
 .Env_var \%$PAGER .
 If all of this is not used the
 .BR \%less (1)
 program with the option
-.Opt_short r
+.B -r
 for correctly displaying control sequences is used as the default
 pager.
 .
@@ -2607,13 +2289,13 @@ and development purposes.
 The
 .I \%source\~mode
 with option
-.Opt_long source
+.B --source
 just displays the decompressed input.
 .
 .
 .P
 Otion
-.Opt_long to\-stdout
+.B --to\-stdout
 does not display in a graphical mode.
 .
 It just generates the file for the chosen mode and then prints its
@@ -2636,7 +2318,7 @@ it into another program.
 In
 .IR \%groff\~\%mode ,
 the option
-.Opt_short Z
+.B -Z
 disables post-processing, thus producing the
 .nh
 .I groff intermediate
@@ -2671,16 +2353,16 @@ should be handled as file name or
 arguments.
 .
 .TP
-.Opt_long man
+.B --man
 forces to interpret all file parameters as
 .I \%filespecs
 for searching
 .IR \%man\~pages .
 .
 .TP
-.Opt_long no\-man
+.B --no\-man
 .TQ
-.Opt_long local\-file
+.B --local\-file
 disable the
 .I man
 searching; so only local files are displayed.
@@ -2778,7 +2460,7 @@ It can be read from the arguments of the environment variable
 The
 .I man\~path
 can be manually specified by using the option
-.Opt_long manpath .
+.BR --manpath .
 An empty argument disables the
 .I \%man\~page
 searching.
@@ -2826,7 +2508,7 @@ This can be overridden by an option in
 .
 .Topic
 This again is overridden by the command line option
-.Opt_long systems .
+.BR --systems .
 .
 .
 .P
@@ -2885,7 +2567,7 @@ This can be overridden by providing an option in
 .Topic
 All these environment variables are overridden by the command line
 option
-.Opt_long locale .
+.BR --locale .
 .
 .
 .P
@@ -3046,7 +2728,7 @@ Environment variable
 .
 .Topic
 Command line option
-.Opt_long sections
+.B --sections
 .
 .Topic
 Appendix to the
@@ -3076,7 +2758,7 @@ The multiple
 are only possible for
 .Env_var \%$MANSECT
 and
-.Opt_long sections .
+.BR --sections .
 .
 .
 .P
@@ -3103,7 +2785,7 @@ Environment variable
 .
 .Topic
 Command line option
-.Opt_long extension
+.B --extension
 .
 .Topic
 Appendix to the
@@ -3137,7 +2819,9 @@ This is an uncompressed file for the
 .IR section\~1 .
 .
 It can be called by
-.Shell_cmd "groffer\~groff"
+.EX
+\fIsh#\fR groffer\~groff
+.EE
 No
 .I section
 is specified here, so all
@@ -3185,10 +2869,11 @@ As the
 is not the first one it must be specified as well.
 .
 This can be done by one of the following commands.
-.Shell_cmd "groffer\~groff.7"
-.Shell_cmd "groffer\~7\~groff"
-.Shell_cmd "groffer\~\-\-sections=7\~groff"
-.
+.EX
+\fIsh#\fR\~groffer\~groff.7
+\fIsh#\fR\~groffer\~7\~groff
+\fIsh#\fR\~groffer\~\-\-sections=7\~groff
+.EE
 .
 .TP
 .File_name /usr/local/man/man1/ctags.1emacs21.bz2
@@ -3213,9 +2898,11 @@ and the file is compressed as
 with
 .BR bzip2 (1).
 The file can be viewed with one of the following commands
-.Shell_cmd "groffer\~ctags.1e"
-.Shell_cmd "groffer\~1e\~ctags"
-.Shell_cmd "groffer\~\-\-extension=e\~\-\-sections=1\~ctags"
+.EX
+\fIsh#\fR\~groffer\~ctags.1e
+\fIsh#\fR\~groffer\~1e\~ctags
+\fIsh#\fR\~groffer\~\-\-extension=e\~\-\-sections=1\~ctags
+.EE
 where \f[CR]e\fP works as an abbreviation for the extension
 \f[CR]emacs21\fP.
 .
@@ -3267,8 +2954,11 @@ names
 and
 .IR aix .
 The command is then
-.Shell_cmd groffer\~\-\-locale=de\~\-\-sections=5:7\~\-\-systems=linux,aix\~man
-.Shell_cmd LANG=de\~MANSECT=5:7\~SYSTEM=linux,aix\~groffer\~man
+.sp
+.EX
+\fIsh#\fR groffer\~\-\-locale=de\~\-\-sections=5:7\~\-\-systems=linux,aix\~man
+\fIsh#\fR LANG=de\~MANSECT=5:7\~SYSTEM=linux,aix\~groffer\~man
+.EE
 .
 .
 .\" --------------------------------------------------------------------
@@ -3356,7 +3046,10 @@ on a remote \%\f[CR]X\~Window\f[] terminal.
 For example, depending on your system,
 .B \%groffer
 can be started on the second monitor by the command
-.Shell_cmd DISPLAY=:0.1\~groffer\~ what.ever &
+.sp
+.EX
+\fIsh#\fR DISPLAY=:0.1\~groffer\~ what.ever &
+.EE
 .
 .
 .TP
@@ -3406,8 +3099,11 @@ For example, to disable the use of a pager completely set this
 variable to the
 .BR \%cat (1)
 program
-.Shell_cmd PAGER=cat\~groffer\~ anything
-.
+.sp
+.EX
+\fIsh#\fR PAGER=cat\~groffer\~ anything
+.EE
+.sp
 .
 .TP
 .Env_var $PATH
@@ -3477,7 +3173,7 @@ Restrict the search for
 to files having this extension.
 .
 This is overridden by option
-.Opt_long extension ;
+.BR --extension ;
 see there for details.
 .
 .
@@ -3504,7 +3200,7 @@ If set, this variable contains the directories in which the
 trees are stored.
 .
 This is overridden by option
-.Opt_long manpath .
+.BR --manpath .
 .
 .
 .TP
@@ -3514,7 +3210,7 @@ If this is a colon separated list of section names, the search for
 is restricted to those manual sections in that order.
 .
 This is overridden by option
-.Opt_long sections .
+.BR --sections .
 .
 .
 .TP
@@ -3525,7 +3221,7 @@ as
 trees for different operating systems.
 .
 This variable can be overwritten by option
-.Opt_long systems ;
+.BR --systems ;
 see there for details.
 .
 .
@@ -3742,8 +3438,9 @@ The following examples, however, show that
 has much more fancy capabilities.
 .
 .
-.TP
-.Shell_cmd "groffer\~/usr/local/share/doc/groff/meintro.ms.gz"
+.EX
+\fIsh#\fR\~groffer\~/usr/local/share/doc/groff/meintro.ms.gz
+.EE
 Decompress, format and display the compressed file
 .File_name meintro.ms.gz
 in the directory
@@ -3754,9 +3451,11 @@ as graphical viewer when in \%\f[CR]X\~Window\f[], or the
 .BR \%less (1)
 pager program when not in \%\f[CR]X\~Window\f[].
 .
-.
-.TP
-.Shell_cmd "groffer\~groff"
+.sp
+.EX
+\fIsh#\fR\~groffer\~groff
+.EE
+.sp
 If the file
 .File_name \%./groff
 exists use it as input.
@@ -3769,9 +3468,11 @@ in the smallest possible
 .IR \%man\~section ,
 being section 1 in this case.
 .
-.
-.TP
-.Shell_cmd "groffer\~man:groff"
+.sp
+.EX
+\fIsh#\fR\~groffer\~man:groff
+.EE
+.sp
 search for the
 .I \%man\~page
 of
@@ -3780,11 +3481,12 @@ even when the file
 .File_name ./groff
 exists.
 .
-.
-.TP
-.Shell_cmd "groffer\~groff.7"
-.TQ
-.Shell_cmd "groffer\~7\~groff"
+.sp
+.EX
+\fIsh#\fR\~groffer\~groff.7
+\fIsh#\fR\~groffer\~7\~groff
+.EE
+.sp
 search the
 .I \%man\~page
 of
@@ -3795,9 +3497,11 @@ in
 This section search works only for a digit or a single character from
 a small set.
 .
-.
-.TP
-.Shell_cmd "groffer\~fb.modes"
+.sp
+.EX
+\fIsh#\fR\~groffer\~fb.modes
+.EE
+.sp
 If the file
 .File_name ./fb.modes
 does not exist interpret this as a search for the
@@ -3810,10 +3514,11 @@ is not a single character in classical section style the argument is
 not split to a search for
 .BR fb .
 .
-.
-.TP
-.Shell_cmd "groffer\~groff\~\[cq]troff(1)\[cq]\~man:roff"
-.
+.sp
+.EX
+\fIsh#\fR\~groffer\~groff\~\[cq]troff(1)\[cq]\~man:roff
+.EE
+.sp
 The arguments that are not existing files are looked-up as the
 following
 .IR \%man\~pages :
@@ -3838,10 +3543,11 @@ would be possible, too.
 .
 The formatted files are concatenated and displayed in one piece.
 .
-.
-.TP
-.Shell_cmd "LANG=de\~groffer\~--man\~--www\~--www-viever=galeon\~ls"
-.
+.sp
+.EX
+\fIsh#\fR\~LANG=de\~groffer\~--man\~--www\~--www-viever=galeon\~ls
+.EE
+.sp
 Retrieve the German
 .I \%man\~page
 (language
@@ -3857,7 +3563,7 @@ format
 and view the result in the web browser
 .BR \%galeon .
 The option
-.Opt_long man
+.B --man
 guarantees that the
 .I \%man\~page
 is retrieved, even when a local file
@@ -3865,9 +3571,11 @@ is retrieved, even when a local file
 exists in the actual directory.
 .
 .
-.TP
-.Shell_cmd "groffer\~--source\~'man:roff(7)'"
-.
+.sp
+.EX
+\fIsh#\fR\~groffer\~--source\~'man:roff(7)'
+.EE
+.sp
 Get the
 .I \%man\~page
 called
@@ -3876,15 +3584,24 @@ in \fIman\fP\~section 7, decompress it, and print its unformatted
 content, its source code.
 .
 .
-.TP
-.Shell_cmd "groffer\~--de-p\~--in\~--ap"
+.sp
+.EX
+\fIsh#\fR\~groffer\~--de-p\~--in\~--ap
+.EE
+.sp
 This is a set of abbreviated arguments, it is determined as
 .br
-.Shell_cmd "groffer\~--debug-params\~--intermediate-output\~--apropos"
+.sp
+.EX
+\fIsh#\fR\~groffer\~--debug-params\~--intermediate-output\~--apropos
+.EE
+.sp
 .
-.
-.TP
-.Shell_cmd "cat\~file.gz\~|\~groffer\~-Z\~-mfoo"
+.sp
+.EX
+\fIsh#\fR\~cat\~file.gz\~|\~groffer\~-Z\~-mfoo"
+.EE
+.sp
 .
 The file
 .File_name file.gz
@@ -3894,18 +3611,20 @@ transported to the
 without post-processing
 .RB ( groff
 option
-.Opt_short Z ),
+.B -Z ),
 using macro package
 .I \%foo
 .RB ( groff
 option
-.Opt_short m ) .
+.B -m ) .
 .
 .
-.TP
-.Shell_cmd "echo\~'\[rs]f[CB]WOW!'\~|"
-.TQ
-.Shell_cmd+ "groffer --x --bg red --fg yellow --geometry 200x100 -"
+.sp
+.EX
+\fIsh#\fR\~echo\~'\[rs]f[CB]WOW!'\~|
+> groffer --x --bg red --fg yellow --geometry 200x100 -
+.EX
+.sp
 .
 Display the word \f[CB]WOW!\f[] in a small window in constant-width
 bold font, using color yellow on red background.
@@ -3935,7 +3654,7 @@ The following standard types of options are supported.
 .
 .Topic
 The option consisting of a single minus
-.Opt_short
+.B -
 refers to standard input.
 .
 .
@@ -3944,9 +3663,9 @@ A single minus followed by characters refers to a single character
 option or a combination thereof; for example, the
 .B \%groffer
 short option combination
-.Opt_short Qmfoo
+.B -Qmfoo
 is equivalent to
-.Opt_short Q\~\-m\~foo .
+.B -Q\~\-m\~foo .
 .
 .
 .Topic
@@ -3955,14 +3674,14 @@ are always preceded by a double minus.
 .
 An option argument can either go to the next command line argument or
 be appended with an equal sign to the argument; for example,
-.Opt_alt -- long=arg
+.B --long=arg
 is equivalent to
-.Opt_alt -- long\~arg .
+.BR --long\~arg .
 .
 .
 .Topic
 An argument of
-.Opt_--
+.B --
 ends option parsing; all further command line arguments are
 interpreted as
 .I \%filespec
@@ -3977,10 +3696,17 @@ arguments are interpreted as
 parameters and stored until option parsing has finished.
 .
 For example, the command line
-.Shell_cmd "groffer file1 -a -o arg file2"
+.sp
+.EX
+\fIsh#\fR\~groffer file1 -a -o arg file2
+.EE
+.sp
 is equivalent to
-.Shell_cmd "groffer -a -o arg -- file1 file2"
-.
+.sp
+.EX
+\fIsh#\fR\~groffer -a -o arg -- file1 file2
+.EE
+.sp
 .
 .P
 The free mixing of options and
