@@ -31,29 +31,26 @@ FDL in the main directory of the groff source package.
 .\" --------------------------------------------------------------------
 .\" start of macro definitions
 .
-.de c
-..
-.
 .de TPx
 .  TP 10n
 ..
-.c ---------------------------------------------------------------------
-.c .Text anything ...
+.\" ---------------------------------------------------------------------
+.\" .Text anything ...
 .c
-.c All arguments are printed as text.
+.\" All arguments are printed as text.
 .c
 .de Text
 .  nop \)\\$*
 ..
 .
-.c --------- command line option ---------
+.\" --------- command line option ---------
 .
 .de option
 .  Text \f[CB]\\$*
 .  ft P
 ..
 .
-.c --------- characters ---------
+.\" --------- characters ---------
 .
 .de squoted_char
 .  Text \[oq]\f[CB]\\$1\f[]\[cq]\\$2
@@ -61,53 +58,46 @@ FDL in the main directory of the groff source package.
 .de dquoted_char
 .  Text \[lq]\f[CB]\\$1\f[]\[rq]\\$2
 ..
-.c --------- requests ---------
+.\" --------- requests ---------
 .
-.eo
-.
-.c synopsis of a request
+.\" synopsis of a request
 .de REQ
-.  if (\n[.$] = 0) \
-.    return
-.  ds @1 \$1\"
-.  shift 1
-.  ie (\n[.$] = 0) \{\
-.    Text \f[CB]\*[@1]\f[]
+.  ie (\n[.$] = 1) \{\
+.    Text \f[CB]\\$\f[]
 .  \}
 .  el \{\
-.    Text \f[CB]\*[@1]\~\f[]\f[I]\$*\f[]
+.    Text \f[CB]\\$1\~\f[]\f[I]\\$2\f[]
 .  \}
-.  rm @1
 ..
 .
-.ec
-.
-.c reference of a request
+.\" reference of a request
 .de request
 .  BR \\$*
 ..
 .
-.c --------- numerical elements ---------
+.\" --------- numerical elements ---------
 .
-.c number with a trailing unit
+.\" number with a trailing unit
 .de scalednumber
 .  Text \\$1\^\f[CB]\\$2\f[]\\$3\f[R]
 .  ft P
 ..
 .
-.c representation of units within the text
+.\" representation of units within the text
 .de scaleindicator
 .  Text \f[CB]\\$1\f[]\\$2\f[R]
 .  ft P
 ..
 .
-.c representation of mathematical operators within the text
+.\" representation of mathematical operators within the text
 .de operator
 .  squoted_char \\$@
 ..
 .
 .eo
 .
+.de c
+..
 .c --------- escape sequences ---------
 .
 .c ---------------------------------------------------------------------
