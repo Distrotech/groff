@@ -30,7 +30,6 @@ FDL in the main directory of the groff source package.
 .
 .\" --------------------------------------------------------------------
 .\" start of macro definitions
-.eo
 .
 .de c
 ..
@@ -44,24 +43,27 @@ FDL in the main directory of the groff source package.
 .c All arguments are printed as text.
 .c
 .de Text
-.  nop \)\$*
+.  nop \)\\$*
 ..
+.
 .c --------- command line option ---------
 .
 .de option
-.  Text \f[CB]\$*
+.  Text \f[CB]\\$*
 .  ft P
 ..
 .
 .c --------- characters ---------
 .
 .de squoted_char
-.  Text \[oq]\f[CB]\$1\f[]\[cq]\$2
+.  Text \[oq]\f[CB]\\$1\f[]\[cq]\\$2
 ..
 .de dquoted_char
-.  Text \[lq]\f[CB]\$1\f[]\[rq]\$2
+.  Text \[lq]\f[CB]\\$1\f[]\[rq]\\$2
 ..
 .c --------- requests ---------
+.
+.eo
 .
 .c synopsis of a request
 .de REQ
@@ -70,39 +72,41 @@ FDL in the main directory of the groff source package.
 .  ds @1 \$1\"
 .  shift 1
 .  ie (\n[.$] = 0) \{\
-.    TP 10n
 .    Text \f[CB]\*[@1]\f[]
 .  \}
 .  el \{\
-.    TP 10n
 .    Text \f[CB]\*[@1]\~\f[]\f[I]\$*\f[]
 .  \}
 .  rm @1
 ..
+.
+.ec
+.
 .c reference of a request
 .de request
-.  BR \$*
+.  BR \\$*
 ..
 .
 .c --------- numerical elements ---------
 .
 .c number with a trailing unit
 .de scalednumber
-.  Text \$1\^\f[CB]\$2\f[]\$3\f[R]
+.  Text \\$1\^\f[CB]\\$2\f[]\$3\f[R]
 .  ft P
 ..
 .
 .c representation of units within the text
 .de scaleindicator
-.  Text \f[CB]\$1\f[]\$2\f[R]
+.  Text \f[CB]\\$1\f[]\\$2\f[R]
 .  ft P
 ..
 .
 .c representation of mathematical operators within the text
 .de operator
-.  squoted_char \$@
+.  squoted_char \\$@
 ..
 .
+.eo
 .
 .c --------- escape sequences ---------
 .
@@ -220,33 +224,33 @@ FDL in the main directory of the groff source package.
 .  Text \f[B]\[rs]\$1\[cq]\f[]\f[I]\$2\f[]\f[B]\[cq]\f[]\$3
 ..
 .
+.ec
+.
 .c --------- strings ---------
 .
 .c synopsis for string, with \*[]
 .de STRING
-.  Text \[rs]*[\f[CB]\$1\f[]] \$2
+.  Text \[rs]*[\f[CB]\\$1\f[]] \\$2
 ..
 .c synopsis for a long string
 .de string
 .  if (\n[.$] = 0) \
 .    return
-.  Text \f[CB]\[rs]*\[lB]\$1\[rB]\f[]\$2
+.  Text \f[CB]\[rs]*\[lB]\\$1\[rB]\f[]\\$2
 ..
-.
 .
 .c --------- registers ---------
 .
 .c synopsis for registers, with \n[]
 .de REG
-.  Text \[rs]n[\f[CB]\$1\f[]]
+.  Text \[rs]n[\f[CB]\\$1\f[]]
 ..
 .c reference of a register, without decoration
 .de register
 .  Text register
-.  BR \$*
+.  BR \\$*
 ..
 .
-.ec
 .\" end of macro definitions
 .
 .
@@ -1063,27 +1067,33 @@ number in parentheses.
 .
 .PD 0
 .
+.TPx
 .REQ .
 Empty line, ignored.
 .
 Useful for structuring documents.
 .
+.TPx
 .REQ .\[rs]\[dq] anything
 Complete line is a comment.
 .
+.TPx
 .REQ .ab string
 Print
 .I string
 on standard error, exit program.
 .
+.TPx
 .REQ .ad
 Begin line adjustment for output lines in current adjust mode.
 .
+.TPx
 .REQ .ad c
 Start line adjustment in mode
 .I c
 (\f[CI]c\f[]\f[CR]\|\^\[eq]\|l,r,b,n\f[]).
 .
+.TPx
 .REQ .af register c
 Assign format
 .I c
@@ -1091,14 +1101,17 @@ to
 .I register
 (\f[CI]c\f[]\f[CR]\|\^\[eq]\|l,i,I,a,A\f[]).
 .
+.TPx
 .REQ .aln alias register
 Create alias name for
 .IR register .
 .
+.TPx
 .REQ .als alias object
 Create alias name for request, string, macro, or diversion
 .IR object .
 .
+.TPx
 .REQ .am macro
 Append to
 .I macro
@@ -1106,6 +1119,7 @@ until
 .B ..\&
 is encountered.
 .
+.TPx
 .REQ .am macro end
 Append to
 .I macro
@@ -1113,16 +1127,19 @@ until
 .request .end
 is called.
 .
+.TPx
 .REQ .am1 macro
 Same as
 .request .am
 but with compatibility mode switched off during macro expansion.
 .
+.TPx
 .REQ .am1 macro end
 Same as
 .request .am
 but with compatibility mode switched off during macro expansion.
 .
+.TPx
 .REQ .ami macro
 Append to a macro whose name is contained in the string register
 .I macro
@@ -1130,6 +1147,7 @@ until
 .B ..\&
 is encountered.
 .
+.TPx
 .REQ .ami macro end
 Append to a macro indirectly.
 .I macro
@@ -1138,34 +1156,41 @@ and
 are string registers whose contents are interpolated for the macro name
 and the end macro, respectively.
 .
+.TPx
 .REQ .ami1 macro
 Same as
 .request .ami
 but with compatibility mode switched off during macro expansion.
 .
+.TPx
 .REQ .ami1 macro end
 Same as
 .request .ami
 but with compatibility mode switched off during macro expansion.
 .
+.TPx
 .REQ .as stringvar anything
 Append
 .I anything
 to
 .IR stringvar .
 .
+.TPx
 .REQ .as1 stringvar anything
 Same as
 .request .as
 but with compatibility mode switched off during string expansion.
 .
+.TPx
 .REQ .asciify diversion
 Unformat ASCII characters, spaces, and some escape sequences in
 .IR diversion .
 .
+.TPx
 .REQ .backtrace
 Print a backtrace of the input on stderr.
 .
+.TPx
 .REQ .bd font N
 Embolden
 .I font
@@ -1173,82 +1198,102 @@ by
 .IR N -1
 units.
 .
+.TPx
 .REQ .bd S font N
 Embolden Special Font
 .I S
 when current font is
 .IR font .
 .
+.TPx
 .REQ .blm
 Unset the blank line macro.
 .
+.TPx
 .REQ .blm macro
 Set the blank line macro to
 .IR macro .
 .
+.TPx
 .REQ .box
 End current diversion.
 .
+.TPx
 .REQ .box macro
 Divert to
 .IR macro ,
 omitting a partially filled line.
 .
+.TPx
 .REQ .boxa
 End current diversion.
 .
+.TPx
 .REQ .boxa macro
 Divert and append to
 .IR macro ,
 omitting a partially filled line.
 .
+.TPx
 .REQ .bp
 Eject current page and begin new page.
 .
+.TPx
 .REQ .bp \[+-]N
 Eject current page; next page number
 .IR \[+-]N .
 .
+.TPx
 .REQ .br
 Line break.
 .
+.TPx
 .REQ .brp
 Break and spread output line.
 Same as
 .esc p .
 .
+.TPx
 .REQ .break
 Break out of a while loop.
 .
+.TPx
 .REQ .c2
 Reset no-break control character to
 .dquoted_char ' .
 .
+.TPx
 .REQ .c2 c
 Set no-break control character to
 .IR c .
 .
+.TPx
 .REQ .cc
 Reset control character to
 .squoted_char . .
 .
+.TPx
 .REQ .cc c
 Set control character to
 .IR c .
 .
+.TPx
 .REQ .ce
 Center the next input line.
 .
+.TPx
 .REQ .ce N
 Center following
 .I N
 input lines.
 .
+.TPx
 .REQ .cf filename
 Copy contents of file
 .I filename
 unprocessed to stdout or to the diversion.
 .
+.TPx
 .REQ .cflags mode c1 c2 .\|.\|.\&
 Treat characters
 .IR c1 ,
@@ -1258,6 +1303,7 @@ according to
 .I mode
 number.
 .
+.TPx
 .REQ .ch trap N
 Change
 .I trap
@@ -1265,28 +1311,34 @@ location
 to
 .IR N .
 .
+.TPx
 .REQ .char c anything
 Define character
 .I c
 as string
 .IR anything .
 .
+.TPx
 .REQ .chop object
 Chop the last character off macro, string, or diversion
 .IR object .
 .
+.TPx
 .REQ .close stream
 Close the
 .IR stream .
 .
+.TPx
 .REQ .color
 Enable colors.
 .
+.TPx
 .REQ .color N
 If
 .I N
 is zero disable colors, otherwise enable them.
 .
+.TPx
 .REQ .composite from to
 Map glyph name
 .I from
@@ -1294,17 +1346,21 @@ to glyph name
 .I to
 while constructing a composite glyph name.
 .
+.TPx
 .REQ .continue
 Finish the current iteration of a while loop.
 .
+.TPx
 .REQ .cp
 Enable compatibility mode.
 .
+.TPx
 .REQ .cp N
 If
 .I N
 is zero disable compatibility mode, otherwise enable it.
 .
+.TPx
 .REQ .cs font N M
 Set constant character width mode for
 .I font
@@ -1313,18 +1369,22 @@ to
 ems with em
 .IR M .
 .
+.TPx
 .REQ .cu N
 Continuous underline in nroff, like
 .request .ul
 in troff.
 .
+.TPx
 .REQ .da
 End current diversion.
 .
+.TPx
 .REQ .da macro
 Divert and append to
 .IR macro .
 .
+.TPx
 .REQ .de macro
 Define or redefine
 .I macro
@@ -1332,6 +1392,7 @@ until
 .B ..\&
 is encountered.
 .
+.TPx
 .REQ .de macro end
 Define or redefine
 .I macro
@@ -1339,16 +1400,19 @@ until
 .request .end
 is called.
 .
+.TPx
 .REQ .de1 macro
 Same as
 .request .de
 but with compatibility mode switched off during macro expansion.
 .
+.TPx
 .REQ .de1 macro end
 Same as
 .request .de
 but with compatibility mode switched off during macro expansion.
 .
+.TPx
 .REQ .defcolor color scheme component
 Define or redefine a color with name
 .IR color .
@@ -1372,6 +1436,7 @@ The color
 .B default
 can't be redefined.
 .
+.TPx
 .REQ .dei macro
 Define or redefine a macro whose name is contained in the string register
 .I macro
@@ -1379,6 +1444,7 @@ until
 .B ..\&
 is encountered.
 .
+.TPx
 .REQ .dei macro end
 Define or redefine a macro indirectly.
 .I macro
@@ -1387,146 +1453,179 @@ and
 are string registers whose contents are interpolated for the macro name
 and the end macro, respectively.
 .
+.TPx
 .REQ .dei1 macro
 Same as
 .request .dei
 but with compatibility mode switched off during macro expansion.
 .
+.TPx
 .REQ .dei1 macro end
 Same as
 .request .dei
 but with compatibility mode switched off during macro expansion.
 .
+.TPx
 .REQ .device anything
 Write
 .I anything
 to the intermediate output as a device control function.
 .
+.TPx
 .REQ .devicem name
 Write contents of macro or string
 .I name
 uninterpreted to the intermediate output as a device control function.
 .
+.TPx
 .REQ .di
 End current diversion.
 .
+.TPx
 .REQ .di macro
 Divert to
 .IR macro .
 .
+.TPx
 .REQ .do name
 Interpret
 .request .name
 with compatibility mode disabled.
 .
+.TPx
 .REQ .ds stringvar anything
 Set
 .I stringvar
 to
 .IR anything .
 .
+.TPx
 .REQ .ds1 stringvar anything
 Same as
 .request .ds
 but with compatibility mode switched off during string expansion.
 .
+.TPx
 .REQ .dt N trap
 Set diversion trap to position
 .I N
 (default scaling indicator\~\c
 .scaleindicator v ).
 .
+.TPx
 .REQ .ec
 Reset escape character to
 .squoted_char \[rs] .
 .
+.TPx
 .REQ .ec c
 Set escape character to
 .IR c .
 .
+.TPx
 .REQ .ecr
 Restore escape character saved with
 .request .ecs .
 .
+.TPx
 .REQ .ecs
 Save current escape character.
 .
+.TPx
 .REQ .el anything
 Else part for if-else (\c
 .request ie )
 request.
 .
+.TPx
 .REQ .em macro
 The
 .I macro
 is run after the end of input.
 .
+.TPx
 .REQ .eo
 Turn off escape character mechanism.
 .
+.TPx
 .REQ .ev
 Switch to previous environment.
 .
+.TPx
 .REQ .ev env
 Push down environment number or name
 .I env
 and switch to it.
 .
+.TPx
 .REQ .evc env
 Copy the contents of environment
 .I env
 to the current environment.
 No pushing or popping.
 .
+.TPx
 .REQ .ex
 Exit from roff processing.
 .
+.TPx
 .REQ .fam
 Return to previous font family.
 .
+.TPx
 .REQ .fam name
 Set the current font family to
 .IR name .
 .
+.TPx
 .REQ .fc
 Disable field mechanism.
 .
+.TPx
 .REQ .fc a
 Set field delimiter to
 .I a
 and pad character to space.
 .
+.TPx
 .REQ .fc a b
 Set field delimiter to
 .I a
 and pad character to
 .IR b .
 .
+.TPx
 .REQ .fchar c anything
 Define fallback character
 .I c
 as string
 .IR anything .
 .
+.TPx
 .REQ .fcolor
 Set fill color to previous fill color.
 .
+.TPx
 .REQ .fcolor c
 Set fill color to
 .IR c .
 .
+.TPx
 .REQ .fi
 Fill output lines.
 .
+.TPx
 .REQ .fl
 Flush output buffer.
 .
+.TPx
 .REQ .fp n font
 Mount
 .I font
 on position
 .IR n .
 .
+.TPx
 .REQ .fp n internal external
 Mount font with long
 .I external
@@ -1535,6 +1634,7 @@ name to short
 name on position
 .IR n .
 .
+.TPx
 .REQ .fschar f c anything
 Define fallback character
 .I c
@@ -1543,11 +1643,13 @@ for font
 as string
 .IR anything .
 .
+.TPx
 .REQ .fspecial font
 Reset list of special fonts for
 .I font
 to be empty.
 .
+.TPx
 .REQ .fspecial font s1 s2 .\|.\|.\&
 When the current font is
 .IR font ,
@@ -1557,6 +1659,7 @@ then the fonts
 .I .\|.\|.\&
 are special.
 .
+.TPx
 .REQ .ft
 Return to previous font.
 Same as
@@ -1564,6 +1667,7 @@ Same as
 or
 .request \[rs]fP .
 .
+.TPx
 .REQ .ft font
 Change to font name or number
 .IR font ;
@@ -1571,35 +1675,43 @@ same as
 .esc[] f font
 escape sequence.
 .
+.TPx
 .REQ .ftr font1 font2
 Translate
 .I font1
 to
 .IR font2 .
 .
+.TPx
 .REQ .fzoom font
 Don't magnify
 .IR font .
 .
+.TPx
 .REQ .fzoom font zoom
 Set zoom factor for
 .I font
 (in multiples of 1/1000th).
 .
+.TPx
 .REQ .gcolor
 Set glyph color to previous glyph color.
 .
+.TPx
 .REQ .gcolor c
 Set glyph color to
 .IR c .
 .
+.TPx
 .REQ .hc
 Remove additional hyphenation indicator character.
 .
+.TPx
 .REQ .hc c
 Set up additional hyphenation indicator character\~\c
 .IR c .
 .
+.TPx
 .REQ .hcode c1 code1 c2 code2 .\|.\|.\&
 Set the hyphenation code of character
 .I c1
@@ -1611,45 +1723,55 @@ to
 .IR code2 ,
 etc.
 .
+.TPx
 .REQ .hla lang
 Set the current hyphenation language to
 .IR lang .
 .
+.TPx
 .REQ .hlm n
 Set the maximum number of consecutive hyphenated lines to
 .IR n .
 .
+.TPx
 .REQ .hpf file
 Read hyphenation patterns from
 .IR file .
 .
+.TPx
 .REQ .hpfa file
 Append hyphenation patterns from
 .IR file .
 .
+.TPx
 .REQ .hpfcode a b c d .\|.\|.\&
 Set input mapping for
 .request .hpf .
 .
+.TPx
 .REQ .hw words
 List of
 .I words
 with exceptional hyphenation.
 .
+.TPx
 .REQ .hy N
 Switch to hyphenation mode
 .IR N .
 .
+.TPx
 .REQ .hym n
 Set the hyphenation margin to
 .I n
 (default scaling indicator\~\c
 .scaleindicator m ).
 .
+.TPx
 .REQ .hys n
 Set the hyphenation space to
 .IR n .
 .
+.TPx
 .REQ .ie cond anything
 If
 .I cond
@@ -1658,6 +1780,7 @@ then
 else goto
 .request .el .
 .
+.TPx
 .REQ .if cond anything
 If
 .I cond
@@ -1665,29 +1788,35 @@ then
 .IR anything ;
 otherwise do nothing.
 .
+.TPx
 .REQ .ig
 Ignore text until
 .B ..\&
 is encountered.
 .
+.TPx
 .REQ .ig end
 Ignore text until
 .request .end .
 .
+.TPx
 .REQ .in
 Change to previous indent value.
 .
+.TPx
 .REQ .in \[+-]N
 Change indent according to
 .I \[+-]N
 (default scaling indicator\~\c
 .scaleindicator m ).
 .
+.TPx
 .REQ .it N trap
 Set an input-line count trap for the next
 .I N
 lines.
 .
+.TPx
 .REQ .itc N trap
 Same as
 .request .it
@@ -1695,53 +1824,65 @@ but count lines interrupted with
 .esc c
 as one line.
 .
+.TPx
 .REQ .kern
 Enable pairwise kerning.
 .
+.TPx
 .REQ .kern n
 If
 .I n
 is zero, disable pairwise kerning, otherwise enable it.
 .
+.TPx
 .REQ .lc
 Remove leader repetition character.
 .
+.TPx
 .REQ .lc c
 Set leader repetition character to\~\c
 .IR c .
 .
+.TPx
 .REQ .length register anything
 Write the length of the string
 .I anything
 in
 .IR register .
 .
+.TPx
 .REQ .linetabs
 Enable line-tabs mode (i.e., calculate tab positions relative to output
 line).
 .
+.TPx
 .REQ .linetabs n
 If
 .I n
 is zero, disable line-tabs mode, otherwise enable it.
 .
+.TPx
 .REQ .lf N
 Set input line number to
 .IR N .
 .
+.TPx
 .REQ .lf N file
 Set input line number to
 .I N
 and filename to
 .IR file .
 .
+.TPx
 .REQ .lg N
 Ligature mode on if
 .IR N >0.
 .
+.TPx
 .REQ .ll
 Change to previous line length.
 .
+.TPx
 .REQ .ll \[+-]N
 Set line length according to
 .I \[+-]N
@@ -1750,9 +1891,11 @@ Set line length according to
 default scaling indicator\~\c
 .scaleindicator m ).
 .
+.TPx
 .REQ .ls
 Change to the previous value of additional intra-line skip.
 .
+.TPx
 .REQ .ls N
 Set additional intra-line skip value to
 .IR N ,
@@ -1760,18 +1903,22 @@ i.e.,
 .IR N -1
 blank lines are inserted after each text output line.
 .
+.TPx
 .REQ .lt \[+-]N
 Length of title (default scaling indicator\~\c
 .scaleindicator m ).
 .
+.TPx
 .REQ .mc
 Margin character off.
 .
+.TPx
 .REQ .mc c
 Print character
 .I c
 after each text line at actual distance from right margin.
 .
+.TPx
 .REQ .mc c N
 Set margin character to
 .I c
@@ -1780,51 +1927,64 @@ and distance to
 from right margin (default scaling indicator\~\c
 .scaleindicator m ).
 .
+.TPx
 .REQ .mk register
 Mark current vertical position in
 .IR register .
 .
+.TPx
 .REQ .mso file
 The same as the .so request except that
 .I file
 is searched in the tmac directories.
 .
+.TPx
 .REQ .na
 No output-line adjusting.
 .
+.TPx
 .REQ .ne
 Need a one-line vertical space.
 .
+.TPx
 .REQ .ne N
 Need
 .I N
 vertical space (default scaling indicator\~\c
 .scaleindicator v ).
 .
+.TPx
 .REQ .nf
 No filling or adjusting of output-lines.
 .
+.TPx
 .REQ .nh
 No hyphenation.
 .
+.TPx
 .REQ .nm
 Number mode off.
 .
+.TPx
 .REQ .nm \[+-]N \fR[\fPM \fR[\fPS \fR[\fPI\fR]]]\fP
 In line number mode, set number, multiple, spacing, and indent.
 .
+.TPx
 .REQ .nn
 Do not number next line.
 .
+.TPx
 .REQ .nn N
 Do not number next
 .I N
 lines.
 .
+.TPx
 .REQ .nop anything
 Always execute
 .IR anything .
 .
+.TPx
 .REQ .nr register \[+-]N M
 Define or modify
 .I register
@@ -1833,6 +1993,7 @@ using
 with auto-increment
 .IR M .
 .
+.TPx
 .REQ .nroff
 Make the built-in condition
 .B n
@@ -1840,15 +2001,19 @@ true and
 .B t
 false.
 .
+.TPx
 .REQ .ns
 Turn no-space mode on.
 .
+.TPx
 .REQ .nx
 Immediately jump to end of current file.
 .
+.TPx
 .REQ .nx filename
 Next file.
 .
+.TPx
 .REQ .open stream filename
 Open
 .register filename
@@ -1856,16 +2021,19 @@ for writing and associate the stream named
 .register stream
 with it.
 .
+.TPx
 .REQ .opena stream filename
 Like
 .request .open
 but append to it.
 .
+.TPx
 .REQ .os
 Output vertical distance that was saved by the
 .request sv
 request.
 .
+.TPx
 .REQ .output string
 Emit
 .I string
@@ -1875,103 +2043,127 @@ starts with
 \&\f[CB]\[dq]\f[]
 (which is stripped off).
 .
+.TPx
 .REQ .pc
 Reset page number character to\~\c
 .squoted_char % .
 .
+.TPx
 .REQ .pc c
 Page number character.
 .
+.TPx
 .REQ .pev
 Print the current environment and each defined environment
 state to stderr.
 .
+.TPx
 .REQ .pi program
 Pipe output to
 .I program
 (nroff only).
 .
+.TPx
 .REQ .pl
 Set page length to default
 .scalednumber 11 i .
 The current page length is stored in
 .register .p .
 .
+.TPx
 .REQ .pl \[+-]N
 Change page length to
 .I \[+-]N
 (default scaling indicator\~\c
 .scaleindicator v ).
 .
+.TPx
 .REQ .pm
 Print macro names and sizes (number of blocks of 128 bytes).
 .
+.TPx
 .REQ ".pm t"
 Print only total of sizes of macros (number of 128 bytes blocks).
 .
+.TPx
 .REQ .pn \[+-]N
 Next page number
 .IR N .
 .
+.TPx
 .REQ .pnr
 Print the names and contents of all currently defined number registers
 on stderr.
 .
+.TPx
 .REQ .po
 Change to previous page offset.
 .
 The current page offset is available in
 .register .o .
 .
+.TPx
 .REQ .po \[+-]N
 Page offset
 .IR N .
 .
+.TPx
 .REQ .ps
 Return to previous point-size.
+.TPx
 .REQ .ps \[+-]N
 Point size; same as
 .esc[] s \[+-]N .
 .
+.TPx
 .REQ .psbb filename
 Get the bounding box of a PostScript image
 .IR filename .
 .
+.TPx
 .REQ .pso command
 This behaves like the
 .request so
 request except that input comes from the standard output of
 .IR command .
 .
+.TPx
 .REQ .ptr
 Print the names and positions of all traps (not including input line
 traps and diversion traps) on stderr.
 .
+.TPx
 .REQ .pvs
 Change to previous post-vertical line spacing.
 .
+.TPx
 .REQ .pvs \[+-]N
 Change post-vertical line spacing according to
 .I \[+-]N
 (default scaling indicator\~\c
 .scaleindicator p ).
 .
+.TPx
 .REQ .rchar c1 c2 .\|.\|.\&
 Remove the definitions of characters
 .IR c1 ,
 .IR c2 ,
 .I .\|.\|.\&
 .
+.TPx
 .REQ .rd prompt
 Read insertion.
 .
+.TPx
 .REQ .return
 Return from a macro.
 .
+.TPx
 .REQ .return anything
 Return twice, namely from the macro at the current level and from the macro
 one level higher.
 .
+.TPx
 .REQ .rfschar f c1 c2 .\|.\|.\&
 Remove the definitions of characters
 .IR c1 ,
@@ -1980,59 +2172,71 @@ Remove the definitions of characters
 for font
 .IR f .
 .
+.TPx
 .REQ .rj n
 Right justify the next
 .I n
 input lines.
 .
+.TPx
 .REQ .rm name
 Remove request, macro, or string
 .IR name .
 .
+.TPx
 .REQ .rn old new
 Rename request, macro, or string
 .I old
 to
 .IR new .
 .
+.TPx
 .REQ .rnn reg1 reg2
 Rename register
 .I reg1
 to
 .IR reg2 .
 .
+.TPx
 .REQ .rr register
 Remove
 .IR register .
 .
+.TPx
 .REQ .rs
 Restore spacing; turn no-space mode off.
 .
+.TPx
 .REQ .rt \[+-]N
 Return
 .I (upward only)
 to marked vertical place (default scaling indicator\~\c
 .scaleindicator v ).
 .
+.TPx
 .REQ .schar c anything
 Define global fallback character
 .I c
 as string
 .IR anything .
 .
+.TPx
 .REQ .shc
 Reset soft hyphen character to
 .esc (hy .
 .
+.TPx
 .REQ .shc c
 Set the soft hyphen character to
 .IR c .
 .
+.TPx
 .REQ .shift n
 In a macro, shift the arguments by
 .IR n \~\c
 positions.
 .
+.TPx
 .REQ .sizes s1 s2 .\|.\|.\& sn \fB[0]\fP
 Set available font sizes similar to the
 .B sizes
@@ -2040,12 +2244,15 @@ command in a
 .B DESC
 file.
 .
+.TPx
 .REQ .so filename
 Include source file.
 .
+.TPx
 .REQ .sp
 Skip one line vertically.
 .
+.TPx
 .REQ .sp N
 Space vertical distance
 .I N
@@ -2054,9 +2261,11 @@ up or down according to sign of
 (default scaling indicator\~\c
 .scaleindicator v ).
 .
+.TPx
 .REQ .special
 Reset global list of special fonts to be empty.
 .
+.TPx
 .REQ .special s1 s2 .\|.\|.\&
 Fonts
 .IR s1 ,
@@ -2064,20 +2273,24 @@ Fonts
 etc.\& are special and are searched for characters not in the
 current font.
 .
+.TPx
 .REQ .spreadwarn
 Toggle the spread warning on and off without changing its value.
 .
+.TPx
 .REQ .spreadwarn limit
 Emit a warning if each space in an output line is widened by
 .I limit
 or more (default scaling indicator\~\c
 .scaleindicator m ).
 .
+.TPx
 .REQ .ss N
 Space-character size set to
 .IR N /12
 of the spacewidth in the current font.
 .
+.TPx
 .REQ .ss N M
 Space-character size set to
 .IR N /12
@@ -2085,12 +2298,14 @@ and sentence space size set to
 .IR M /12
 of the spacewidth in the current font (\f[CR]\[eq]1/3 em\f[]).
 .
+.TPx
 .REQ .sty n style
 Associate
 .I style
 with font position
 .IR n .
 .
+.TPx
 .REQ .substring xx n1 n2
 Replace the string named
 .I xx
@@ -2099,11 +2314,13 @@ with the substring defined by the indices
 and
 .IR n2 .
 .
+.TPx
 .REQ .sv
 Save
 .scalednumber 1 v
 of vertical space.
 .
+.TPx
 .REQ .sv N
 Save the vertical distance
 .I N
@@ -2111,15 +2328,18 @@ for later output with
 .request os
 request.
 .
+.TPx
 .REQ .sy command-line
 Execute program
 .IR command-line .
 .
+.TPx
 .REQ ".ta T" N
 Set tabs after every position that is a multiple of
 .I N
 (default scaling indicator\~\c
 .scaleindicator m ).
+.TPx
 .REQ .ta n1 n2 .\|.\|.\& nn \f[CB]T\f[] r1 r2 .\|.\|.\& rn
 Set tabs at positions
 .IR n1 ,
@@ -2138,34 +2358,43 @@ then at
 .IR nn + rn + rn ,
 and so on.
 .
-.\".REQ .tar
+.\".TPx
+.REQ .tar
 .\"Restore internally saved tab positions.
 .\".
-.\".REQ .tas
+.\".TPx
+.REQ .tas
 .\"Save tab positions internally.
 .
+.TPx
 .REQ .tc
 Remove tab repetition character.
+.TPx
 .REQ .tc c
 Set tab repetition character to\~\c
 .IR c .
 .
+.TPx
 .REQ .ti \[+-]N
 Temporary indent next line (default scaling indicator\~\c
 .scaleindicator m ).
 .
+.TPx
 .REQ .tkf font s1 n1 s2 n2
 Enable track kerning for
 .IR font .
 .
+.TPx
 .REQ .tl \f[CB]\[cq]\f[]left\f[CB]\[cq]\f[]center\f[CB]\[cq]\f[]right\f[CB]\[cq]\f[]
 Three-part title.
 .
+.TPx
 .REQ .tm anything
 Print
 .I anything
 on terminal (UNIX standard message output).
 .
+.TPx
 .REQ .tm1 anything
 Print
 .I anything
@@ -2176,11 +2405,13 @@ starts with
 \&\f[CB]\[dq]\f[]
 (which is stripped off).
 .
+.TPx
 .REQ .tmc anything
 Similar to
 .request .tm1
 without emitting a final newline.
 .
+.TPx
 .REQ .tr abcd.\|.\|.\&
 Translate
 .I a
@@ -2191,10 +2422,12 @@ to
 .IR d ,
 etc.\& on output.
 .
+.TPx
 .REQ .trf filename
 Transparently output the contents of file
 .IR filename .
 .
+.TPx
 .REQ .trin abcd.\|.\|.\&
 This is the same as the
 .request tr
@@ -2203,6 +2436,7 @@ request except that the
 request uses the character code (if any) before the character
 translation.
 .
+.TPx
 .REQ .trnt abcd.\|.\|.\&
 This is the same as the
 .request tr
@@ -2210,6 +2444,7 @@ request except that the translations do not apply to text that is
 transparently throughput into a diversion with
 .esc ! .
 .
+.TPx
 .REQ .troff
 Make the built-in condition
 .B t
@@ -2217,28 +2452,34 @@ true and
 .B n
 false.
 .
+.TPx
 .REQ .uf font
 Underline font set to
 .I font
 (to be switched to by
 .request .ul ).
 .
+.TPx
 .REQ .ul N
 Underline (italicize in troff)
 .I N
 input lines.
 .
+.TPx
 .REQ .unformat diversion
 Unformat space characters and tabs, preserving font information in
 .IR diversion .
+.TPx
 .REQ .vpt n
 Enable vertical position traps if
 .I n
 is non-zero, disable them otherwise.
 .
+.TPx
 .REQ .vs
 Change to previous vertical base line spacing.
 .
+.TPx
 .REQ .vs \[+-]N
 Set vertical base line spacing according to
 .I \[+-]N
@@ -2247,21 +2488,26 @@ Set vertical base line spacing according to
 Default value is
 .scalednumber 12 p .
 .
+.TPx
 .REQ .warn n
 Set warnings code to
 .IR n .
 .
+.TPx
 .REQ .warnscale si
 Set scaling indicator used in warnings to
 .IR si .
 .
+.TPx
 .REQ .wh N
 Remove (first) trap at position
 .IR N .
 .
+.TPx
 .REQ .wh N trap
 Set location trap; negative means from page bottom.
 .
+.TPx
 .REQ .while cond anything
 While condition
 .I cond
@@ -2269,17 +2515,20 @@ is true, accept
 .I anything
 as input.
 .
+.TPx
 .REQ .write stream anything
 Write
 .I anything
 to the stream named
 .IR stream .
 .
+.TPx
 .REQ .writec stream anything
 Similar to
 .request .write
 without emitting a final newline.
 .
+.TPx
 .REQ .writem stream xx
 Write contents of macro or string
 .I xx
@@ -3066,7 +3315,7 @@ leads to unpredictable results.
 .
 The following strings are predefined in groff.
 .
-.TP 10n
+.TPx
 .STRING .T
 The name of the current output device as specified by the
 .option -T
@@ -3121,16 +3370,16 @@ results from request calls.
 .P
 .PD 0
 .
-.TP 10n
+.TPx
 .REG .$
 Number of arguments in the current macro or string.
 .
-.TP 10n
+.TPx
 .REG .a
 Post-line extra line-space most recently utilized using
 .escq x N .
 .
-.TP 10n
+.TPx
 .REG .A
 Set to\~1 in
 .B troff
@@ -3139,180 +3388,180 @@ if option
 is used; always\~1 in
 .BR nroff .
 .
-.TP 10n
+.TPx
 .REG .br
 Within a macro, set to\~1 if macro called with the `normal' control
 character, and to\~0 otherwise.
 .
-.TP 10n
+.TPx
 .REG .c
 Current input line number.
 .
-.TP 10n
+.TPx
 .REG .C
 1\~if compatibility mode is in effect, 0\~otherwise.
 .
-.TP 10n
+.TPx
 .REG .cdp
 The depth of the last character added to the current environment.
 It is positive if the character extends below the baseline.
 .
-.TP 10n
+.TPx
 .REG .ce
 The number of lines remaining to be centered, as set by the
 .request ce
 request.
 .
-.TP 10n
+.TPx
 .REG .cht
 The height of the last character added to the current environment.
 It is positive if the character extends above the baseline.
 .
-.TP 10n
+.TPx
 .REG .color
 1\~if colors are enabled, 0\~otherwise.
 .
-.TP 10n
+.TPx
 .REG .csk
 The skew of the last character added to the current environment.
 The skew of a character is how far to the right of the center of a character
 the center of an accent over that character should be placed.
 .
-.TP 10n
+.TPx
 .REG .d
 Current vertical place in current diversion; equal to
 .register nl .
 .
-.TP 10n
+.TPx
 .REG .ev
 The name or number of the current environment (string-valued).
 .
-.TP 10n
+.TPx
 .REG .f
 Current font number.
 .
-.TP 10n
+.TPx
 .REG .fam
 The current font family (string-valued).
 .
-.TP 10n
+.TPx
 .REG .fn
 The current (internal) real font name (string-valued).
 .
-.TP 10n
+.TPx
 .REG .fp
 The number of the next free font position.
 .
-.TP 10n
+.TPx
 .REG .g
 Always 1 in GNU troff.
 .
 Macros should use it to test if running under groff.
 .
-.TP 10n
+.TPx
 .REG .h
 Text base-line high-water mark on current page or diversion.
 .
-.TP 10n
+.TPx
 .REG .H
 Available horizontal resolution in basic units.
 .
-.TP 10n
+.TPx
 .REG .height
 The current font height as set with
 .request \[rs]H .
 .
-.TP 10n
+.TPx
 .REG .hla
 The current hyphenation language as set by the
 .B .hla
 request.
 .
-.TP 10n
+.TPx
 .REG .hlc
 The number of immediately preceding consecutive hyphenated lines.
 .
-.TP 10n
+.TPx
 .REG .hlm
 The maximum allowed number of consecutive hyphenated lines, as set by
 the
 .request hlm
 request.
 .
-.TP 10n
+.TPx
 .REG .hy
 The current hyphenation flags (as set by the
 .request hy
 request).
 .
-.TP 10n
+.TPx
 .REG .hym
 The current hyphenation margin (as set by the
 .request hym
 request).
 .
-.TP 10n
+.TPx
 .REG .hys
 The current hyphenation space (as set by the
 .request hys
 request).
 .
-.TP 10n
+.TPx
 .REG .i
 Current ident.
 .
-.TP 10n
+.TPx
 .REG .in
 The indent that applies to the current output line.
 .
-.TP 10n
+.TPx
 .REG .int
 Positive if last output line contains
 .esc c .
 .
-.TP 10n
+.TPx
 .REG .kern
 1\~if pairwise kerning is enabled, 0\~otherwise.
 .
-.TP 10n
+.TPx
 .REG .l
 Current line length.
 .
-.TP 10n
+.TPx
 .REG .lg
 The current ligature mode (as set by the
 .request lg
 request).
 .
-.TP 10n
+.TPx
 .REG .linetabs
 The current line-tabs mode (as set by the
 .request linetabs
 request).
 .
-.TP 10n
+.TPx
 .REG .ll
 The line length that applies to the current output line.
 .
-.TP 10n
+.TPx
 .REG .lt
 The title length (as set by the
 .request lt
 request).
 .
-.TP 10n
+.TPx
 .REG .m
 The current drawing color (string-valued).
 .
-.TP 10n
+.TPx
 .REG .M
 The current background color (string-valued).
 .
-.TP 10n
+.TPx
 .REG .n
 Length of text portion on previous output line.
 .
-.TP 10n
+.TPx
 .REG .ne
 The amount of space that was needed in the last
 .request ne
@@ -3321,93 +3570,93 @@ request that caused a trap to be sprung.
 Useful in conjunction with
 .register .trunc .
 .
-.TP 10n
+.TPx
 .REG .ns
 1\~if in no-space mode, 0\~otherwise.
 .
-.TP 10n
+.TPx
 .REG .o
 Current page offset.
 .
-.TP 10n
+.TPx
 .REG .p
 Current page length.
 .
-.TP 10n
+.TPx
 .REG .pe
 1\~during page ejection, 0\~otherwise.
 .
-.TP 10n
+.TPx
 .REG .pn
 The number of the next page: either the value set by a
 .request pn
 request, or the number of the current page plus\ 1.
 .
-.TP 10n
+.TPx
 .REG .ps
 The current pointsize in scaled points.
 .
-.TP 10n
+.TPx
 .REG .psr
 The last-requested pointsize in scaled points.
 .
-.TP 10n
+.TPx
 .REG .pvs
 The current post-vertical line spacing.
 .
-.TP 10n
+.TPx
 .REG .rj
 The number of lines to be right-justified as set by the rj request.
 .
-.TP 10n
+.TPx
 .REG .s
 Current point size as a decimal fraction.
 .
-.TP 10n
+.TPx
 .REG .slant
 The slant of the current font as set with
 .request \[rs]S .
 .
-.TP 10n
+.TPx
 .REG .sr
 The last requested pointsize in points as a decimal fraction
 (string-valued).
 .
-.TP 10n
+.TPx
 .REG .ss
 The value of the parameters set by the first argument of the
 .request ss
 request.
 .
-.TP 10n
+.TPx
 .REG .sss
 The value of the parameters set by the second argument of the
 .request ss
 request.
 .
-.TP 10n
+.TPx
 .REG .sty
 The current font style (string-valued).
 .
-.TP 10n
+.TPx
 .REG .t
 Distance to the next trap.
 .
-.TP 10n
+.TPx
 .REG .T
 Set to\~1
 if option
 .B \-T
 is used.
 .
-.TP 10n
+.TPx
 .REG .tabs
 A string representation of the current tab settings suitable for use
 as an argument to the
 .request ta
 request.
 .
-.TP 10n
+.TPx
 .REG .trunc
 The amount of vertical space truncated by the most recently sprung
 vertical position trap, or, if the trap was sprung by a
@@ -3422,52 +3671,52 @@ the trap, and what the vertical position actually is.
 Useful in conjunction with the
 .register .ne .
 .
-.TP 10n
+.TPx
 .REG .u
 Equal to 1 in fill mode and 0 in nofill mode.
 .
-.TP 10n
+.TPx
 .REG .U
 Equal to 1 in safer mode and 0 in unsafe mode.
 .
-.TP 10n
+.TPx
 .REG .v
 Current vertical line spacing.
 .
-.TP 10n
+.TPx
 .REG .V
 Available vertical resolution in basic units.
 .
-.TP 10n
+.TPx
 .REG .vpt
 1\~if vertical position traps are enabled, 0\~otherwise.
 .
-.TP 10n
+.TPx
 .REG .w
 Width of previous character.
 .
-.TP 10n
+.TPx
 .REG .warn
 The sum of the number codes of the currently enabled warnings.
 .
-.TP 10n
+.TPx
 .REG .x
 The major version number.
 .
-.TP 10n
+.TPx
 .REG .y
 The minor version number.
 .
-.TP 10n
+.TPx
 .REG .Y
 The revision number of groff.
 .
-.TP 10n
+.TPx
 .REG .z
 Name of current diversion.
 .PD
 .
-.TP 10n
+.TPx
 .REG .zoom
 Zoom factor for current font (in multiples of 1/1000th; zero if no
 magnification).
@@ -3483,124 +3732,124 @@ customizing a document.
 .
 .P
 .PD 0
-.TP 10n
+.TPx
 .REG %
 Current page number.
 .
-.TP 10n
+.TPx
 .REG c.
 Current input line number.
 .
-.TP 10n
+.TPx
 .REG ct
 Character type (set by width function
 .esc w ).
 .
-.TP 10n
+.TPx
 .REG dl
 Maximal width of last completed diversion.
 .
-.TP 10n
+.TPx
 .REG dn
 Height of last completed diversion.
 .
-.TP 10n
+.TPx
 .REG dw
 Current day of week (1-7).
 .
-.TP 10n
+.TPx
 .REG dy
 Current day of month (1-31).
 .
-.TP 10n
+.TPx
 .REG hours
 The number of hours past midnight.
 .
 Initialized at start-up.
 .
-.TP 10n
+.TPx
 .REG hp
 Current horizontal position at input line.
 .
-.TP 10n
+.TPx
 .REG llx
 Lower left x-coordinate (in PostScript units) of a given PostScript
 image (set by
 .request .psbb ).
 .
-.TP 10n
+.TPx
 .REG lly
 Lower left y-coordinate (in PostScript units) of a given PostScript
 image (set by
 .request .psbb ).
 .
-.TP 10n
+.TPx
 .REG ln
 Output line number.
 .
-.TP 10n
+.TPx
 .REG minutes
 The number of minutes after the hour.
 .
 Initialized at start-up.
 .
-.TP 10n
+.TPx
 .REG mo
 Current month (1-12).
 .
-.TP 10n
+.TPx
 .REG nl
 Vertical position of last printed text base-line.
 .
-.TP 10n
+.TPx
 .REG rsb
 Like
 .register sb ,
 but takes account of the heights and depths of characters.
 .
-.TP 10n
+.TPx
 .REG rst
 Like
 .register st ,
 but takes account of the heights and depths of characters.
 .
-.TP 10n
+.TPx
 .REG sb
 Depth of string below base line (generated by width function
 .esc w ).
 .
-.TP 10n
+.TPx
 .REG seconds
 The number of seconds after the minute.
 .
 Initialized at start-up.
 .
-.TP 10n
+.TPx
 .REG skw
 Right skip width from the center of the last character in the
 .esc w
 argument.
 .
-.TP 10n
+.TPx
 .REG slimit
 If greater than 0, the maximum number of objects on the input stack.
 .
 If \[<=]0 there is no limit, i.e., recursion can continue until virtual
 memory is exhausted.
 .
-.TP 10n
+.TPx
 .REG ssc
 The amount of horizontal space (possibly negative) that should be
 added to the last character before a subscript (generated by width
 function
 .esc w ).
 .
-.TP 10n
+.TPx
 .REG st
 Height of string above base line (generated by width function
 .esc w ).
 .
-.TP 10n
+.TPx
 .REG systat
 The return value of the
 .I system()
@@ -3608,23 +3857,23 @@ function executed by the last
 .request sy
 request.
 .
-.TP 10n
+.TPx
 .REG urx
 Upper right x-coordinate (in PostScript units) of a given PostScript
 image (set by
 .request .psbb ).
 .
-.TP 10n
+.TPx
 .REG ury
 Upper right y-coordinate (in PostScript units) of a given PostScript
 image (set by
 .request .psbb ).
 .
-.TP 10n
+.TPx
 .REG year
 The current year (year 2000 compliant).
 .
-.TP 10n
+.TPx
 .REG yr
 Current year minus 1900.
 .
