@@ -36,9 +36,9 @@ FDL in the main directory of the groff source package.
 ..
 .\" ---------------------------------------------------------------------
 .\" .Text anything ...
-.c
+.\"
 .\" All arguments are printed as text.
-.c
+.\"
 .de Text
 .  nop \)\\$*
 ..
@@ -94,148 +94,127 @@ FDL in the main directory of the groff source package.
 .  squoted_char \\$@
 ..
 .
-.eo
 .
-.de c
-..
-.c --------- escape sequences ---------
+.\" --------- escape sequences ---------
 .
-.c ---------------------------------------------------------------------
-.c .ESC name [arg]
-.c
-.c Synopsis of an escape sequence, optionally with argument
-.c Args   : 1 or 2; `name' obligatory, `arg' optional
-.c   name : suitable name for an escape sequence (c, (xy, [long])
-.c   arg  : arbitrary word
-.c Result : prints \namearg, where `name' is in CB, `arg' in I
-.c
+.\" ---------------------------------------------------------------------
+.\" .ESC name [arg]
+.\"
+.\" Synopsis of an escape sequence, optionally with argument
+.\" Args   : 1 or 2; `name' obligatory, `arg' optional
+.\"   name : suitable name for an escape sequence (c, (xy, [long])
+.\"   arg  : arbitrary word
+.\" Result : prints \namearg, where `name' is in CB, `arg' in I
+.\"
 .de ESC
-.  if (\n[.$] < 1)
-.    ab .ESC needs 1 or 2 arguments.
-.  Text "\f[CB]\[rs]\$1\,\f[I]\$2\/\fR"
+.  Text "\f[CB]\[rs]\\$1\,\f[I]\\$2\/\fR"
 ..
-.c ---------------------------------------------------------------------
-.c .ESC[] name arg
-.c
-.c Synopsis for escape sequence with a bracketed long argument
-.c Args   : 2 obligatory
-.c   name : suitable name for an escape sequence (c, (xy, [long])
-.c   arg  : arbitrary text
-.c Result : prints \name[arg], where `name' is in CB, `arg' in I
-.c
+.\" ---------------------------------------------------------------------
+.\" .ESC[] name arg
+.\"
+.\" Synopsis for escape sequence with a bracketed long argument
+.\" Args   : 2 obligatory
+.\"   name : suitable name for an escape sequence (c, (xy, [long])
+.\"   arg  : arbitrary text
+.\" Result : prints \name[arg], where `name' is in CB, `arg' in I
+.\"
 .de ESC[]
-.  if !(\n[.$] = 2) \
-.    ab .ESC[] needs exactly 2 arguments.
-.  Text "\f[CB]\[rs]\$1\[lB]\f[]\h'-0.2m'\f[I]\$2\f[]\h'-0.15m'\[rB]"
+.  Text "\f[CB]\[rs]\\$1\[lB]\f[]\h'-0.2m'\f[I]\\$2\f[]\h'-0.15m'\[rB]"
 ..
-.c ---------------------------------------------------------------------
-.c .ESCq name arg
-.c
-.c Synopsis for escape sequence with a bracketed long argument
-.c Args   : 2 obligatory
-.c   name : suitable name for an escape sequence (c, (xy, [long])
-.c   arg  : arbitrary text
-.c Result : prints \name'arg', where `name' is in CB, `arg' in I
-.c
+.\" ---------------------------------------------------------------------
+.\" .ESCq name arg
+.\"
+.\" Synopsis for escape sequence with a bracketed long argument
+.\" Args   : 2 obligatory
+.\"   name : suitable name for an escape sequence (c, (xy, [long])
+.\"   arg  : arbitrary text
+.\" Result : prints \name'arg', where `name' is in CB, `arg' in I
+.\"
 .de ESCq
-.  if !(\n[.$] = 2) \
-.    ab .ESCq needs exactly 2 argument.
-.  Text "\f[CB]\[rs]\$1\[cq]\f[]\h'-0.3m'\f[I]\$2\f[]\[cq]"
+.  Text "\f[CB]\[rs]\\$1\[cq]\f[]\h'-0.3m'\f[I]\\$2\f[]\[cq]"
 ..
-.c ---------------------------------------------------------------------
-.c .ESC? arg
-.c
-.c Synopsis for escape sequence with a bracketed long argument
-.c Args   : 1 obligatory
-.c   arg  : arbitrary text
-.c Result : prints `\?arg?', where the `?' are in CB, `arg' in I
-.c
+.\" ---------------------------------------------------------------------
+.\" .ESC? arg
+.\"
+.\" Synopsis for escape sequence with a bracketed long argument
+.\" Args   : 1 obligatory
+.\"   arg  : arbitrary text
+.\" Result : prints `\?arg?', where the `?' are in CB, `arg' in I
+.\"
 .de ESC?
-.  if !(\n[.$] = 1) \
-.    ab .ESC? needs exactly 1 arguments.
-.  Text "\f[CB]\[rs]?\f[I]\$1\f[CB]?\f[R]"
+.  Text "\f[CB]\[rs]?\f[I]\\$1\f[CB]?\f[R]"
 ..
-.c ---------------------------------------------------------------------
-.c .esc name [punct]
-.c
-.c Reference of an escape sequence (no args), possibly punctuation
-.c Args    : 1 obligatory
-.c   name  : suitable name for an escape sequence (c, (xy, [long])
-.c   punct : arbitrary
-.c Result  : prints \name, where `name' is in B, `punct' in R
-.c
+.\" ---------------------------------------------------------------------
+.\" .esc name [punct]
+.\"
+.\" Reference of an escape sequence (no args), possibly punctuation
+.\" Args    : 1 obligatory
+.\"   name  : suitable name for an escape sequence (c, (xy, [long])
+.\"   punct : arbitrary
+.\" Result  : prints \name, where `name' is in B, `punct' in R
+.\"
 .de esc
-.  if (\n[.$] < 1) \
-.    ab .esc needs 1 or 2 arguments.
-.  BR "\[rs]\$1" \$2
+.  BR "\[rs]\\$1" \\$2
 ..
-.c ---------------------------------------------------------------------
-.c .escarg name arg [punct]
-.c
-.c Reference of an escape sequence (no args)
-.c Args    : 1 obligatory, 1 optional
-.c   name  : suitable name for an escape sequence (c, (xy, [long])
-.c   arg   : arbitrary word
-.c Result  : prints \namearg, where
-.c           `name' is in B, `arg' in I
-.c
+.\" ---------------------------------------------------------------------
+.\" .escarg name arg [punct]
+.\"
+.\" Reference of an escape sequence (no args)
+.\" Args    : 1 obligatory, 1 optional
+.\"   name  : suitable name for an escape sequence (c, (xy, [long])
+.\"   arg   : arbitrary word
+.\" Result  : prints \namearg, where
+.\"           `name' is in B, `arg' in I
+.\"
 .de escarg
-.  if (\n[.$] < 2) \
-.    ab .esc needs 2 or 3 arguments.
-.  Text \f[B]\[rs]\$1\f[]\f[I]\$2\f[]\$3
+.  Text \f[B]\[rs]\\$1\f[]\f[I]\\$2\f[]\\$3
 ..
-.c ---------------------------------------------------------------------
-.c .esc[] name arg [punct]
-.c
-.c Reference for escape sequence with a bracketed long argument
-.c Args   : 2 obligatory
-.c   name : suitable name for an escape sequence (c, (xy, [long])
-.c   arg  : arbitrary text
-.c Result : prints \name[arg], where `name' is in CB, `arg' in CI
-.c
+.\" ---------------------------------------------------------------------
+.\" .esc[] name arg [punct]
+.\"
+.\" Reference for escape sequence with a bracketed long argument
+.\" Args   : 2 obligatory
+.\"   name : suitable name for an escape sequence (c, (xy, [long])
+.\"   arg  : arbitrary text
+.\" Result : prints \name[arg], where `name' is in CB, `arg' in CI
+.\"
 .de esc[]
-.  if (\n[.$] < 2) \
-.    ab .esc[] needs 2 or 3 arguments.
-.  Text \f[B]\[rs]\$1\[lB]\f[]\f[I]\$2\f[]\f[B]\[rB]\f[]\$3
+.  Text \f[B]\[rs]\\$1\[lB]\f[]\f[I]\\$2\f[]\f[B]\[rB]\f[]\\$3
 ..
 .
-.c ---------------------------------------------------------------------
-.c .escq name arg
-.c
-.c Reference for escape sequence with a bracketed long argument
-.c Args   : 2 obligatory
-.c   name : suitable name for an escape sequence (c, (xy, [long])
-.c   arg  : arbitrary text
-.c Result : prints \name'arg', where `name' is in CB, `arg' in CI
-.c
+.\" ---------------------------------------------------------------------
+.\" .escq name arg
+.\"
+.\" Reference for escape sequence with a bracketed long argument
+.\" Args   : 2 obligatory
+.\"   name : suitable name for an escape sequence (c, (xy, [long])
+.\"   arg  : arbitrary text
+.\" Result : prints \name'arg', where `name' is in CB, `arg' in CI
+.\"
 .de escq
-.  if (\n[.$] < 2) \
-.    ab .escq needs 2 arguments.
-.  Text \f[B]\[rs]\$1\[cq]\f[]\f[I]\$2\f[]\f[B]\[cq]\f[]\$3
+.  Text \f[B]\[rs]\\$1\[cq]\f[]\f[I]\\$2\f[]\f[B]\[cq]\f[]\\$3
 ..
 .
-.ec
+.\" --------- strings ---------
 .
-.c --------- strings ---------
-.
-.c synopsis for string, with \*[]
+.\" synopsis for string, with \*[]
 .de STRING
 .  Text \[rs]*[\f[CB]\\$1\f[]] \\$2
 ..
-.c synopsis for a long string
+.\" synopsis for a long string
 .de string
 .  if (\n[.$] = 0) \
 .    return
 .  Text \f[CB]\[rs]*\[lB]\\$1\[rB]\f[]\\$2
 ..
 .
-.c --------- registers ---------
+.\" --------- registers ---------
 .
-.c synopsis for registers, with \n[]
+.\" synopsis for registers, with \n[]
 .de REG
 .  Text \[rs]n[\f[CB]\\$1\f[]]
 ..
-.c reference of a register, without decoration
+.\" reference of a register, without decoration
 .de register
 .  Text register
 .  BR \\$*
