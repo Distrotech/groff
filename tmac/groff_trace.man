@@ -3,12 +3,12 @@ groff_trace.7
 
 File position: <groff-source>/tmac/groff_trace.man
 
-Last update: 23 Oct 2006
+Last update: 20 Feb 2007
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2002, 2006 Free Software Foundation, Inc.
-written by Bernd Warken <bwarken@mayn.de>
+Copyright (C) 2002, 2006, 2007 Free Software Foundation, Inc.
+written by Bernd Warken.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -19,20 +19,24 @@ Front-Cover Texts, and with no Back-Cover Texts.
 A copy of the Free Documentation License is included as a file called
 FDL in the main directory of the groff source package.
 ..
+.
 .ds Ellipsis .\|.\|.\&\"
 .
 .TH GROFF_TRACE @MAN7EXT@ "@MDATE@" "Groff Version @VERSION@"
+.
 .SH NAME
 groff_trace \- groff macro package trace.tmac
+.
 .\" --------------------------------------------------------------------
 .\" SH SYNOPSIS
 .\" --------------------------------------------------------------------
 .SH SYNOPSIS
 .
-.SY groff 
-.B -m trace
-.OP options\*[Ellipsis]
-.OP files\*[Ellipsis]
+.SY "groff \-m trace"
+.RI [ options
+.IR \*[Ellipsis] ]
+.RI [ files
+.IR \*[Ellipsis] ]
 .YS
 .
 .\" --------------------------------------------------------------------
@@ -55,21 +59,21 @@ This greatly eases to track down an error in some macro.
 .P
 This tracing process is activated by specifying the groff or troff
 command line option
-.BR "-m\~trace" .
+.BR \-m\ trace .
 This works also with the
 .BR groffer (@MAN1EXT@)
 viewer program.
 .
 A finer control can be obtained by including the macro file within the
 document by the groff macro call
-.BR ".mso\~trace.tmac" .
+.BR .mso\ trace.tmac .
 Only macros that are defined after this line are traced.
 .
 .
 .P
 If some other macro package should be traced as well it must be specified
 after
-.BR "-m\~trace"
+.B \-m\ trace
 on the command line.
 .
 .
@@ -87,7 +91,6 @@ modified such that they display diagnostic messages.
 .SH EXAMPLES
 .\" --------------------------------------------------------------------
 .
-.P
 In the following examples, a roff fragment is fed into groff via
 standard input.
 .
@@ -101,7 +104,10 @@ corresponding example.
 .
 .\" --------------------------------------------------------------------
 .SS "Command line option"
+Example:
 .
+.RS
+.P
 .EX
 \fIsh#\fP echo '.
 > .de test_macro
@@ -115,6 +121,7 @@ corresponding example.
 *** de trace enter: test_macro "some" "dummy" "arguments"
 *** trace exit: test_macro "some" "dummy" "arguments"
 .EE
+.RE
 .
 .P
 The entry and the exit of each macro call is displayed on the terminal
@@ -123,7 +130,10 @@ The entry and the exit of each macro call is displayed on the terminal
 .
 .\" --------------------------------------------------------------------
 .SS "Nested macro calls"
+Example:
 .
+.RS
+.P
 .EX
 \fIsh#\fP echo '.
 > .de child
@@ -139,6 +149,7 @@ The entry and the exit of each macro call is displayed on the terminal
 *** trace exit: child
 *** trace exit: parent
 .EE
+.RE
 .
 .P
 This shows that macro calls can be nested.
@@ -148,7 +159,10 @@ This powerful feature can help to tack down quite complex call stacks.
 .
 .\" --------------------------------------------------------------------
 .SS "Activating with .mso"
+Example:
 .
+.RS
+.P
 .EX
 \fIsh#\fP echo '.
 > .de before
@@ -164,6 +178,7 @@ This powerful feature can help to tack down quite complex call stacks.
 *** de trace enter: after
 *** trace exit: after
 .EE
+.RE
 .
 .P
 Here, the tracing is activated within the document, not by a command
@@ -191,7 +206,7 @@ This causes problems if an argument contains four backslashes or more
 to prevent too early expansion of the backslash.  For example, this
 macro call
 .
-.P
+.IP
 .EX
 \&.foo \e\e\e\en[bar]
 .EE
@@ -207,7 +222,7 @@ The solution to this problem is to use groff's
 escape which is an escape character not interpreted in copy mode, for
 example
 .
-.P
+.IP
 .EX
 \&.foo \eEn[bar]
 .EE
@@ -244,7 +259,7 @@ for details.
 .SH AUTHOR
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2002 Free Software Foundation, Inc.
+Copyright (C) 2002, 2006, 2007 Free Software Foundation, Inc.
 .
 .P
 This document is distributed under the terms of the FDL (GNU Free
@@ -261,10 +276,7 @@ This document is part of
 .IR groff ,
 the GNU roff distribution.
 .
-It was written by
-.MT bwarken@mayn.de
-Bernd Warken
-.ME .
+It was written by Bernd Warken.
 .
 .
 .\" --------------------------------------------------------------------
@@ -275,27 +287,22 @@ Bernd Warken
 .BR groff (@MAN1EXT@)
 An overview of the groff system.
 .
-.
 .TP
 .BR troff (@MAN1EXT@)
 For details on option
-.BR -m .
-.
+.BR \-m .
 .
 .TP
 .BR groffer (@MAN1EXT@)
 A viewer program for all kinds of roff documents.
 .
-.
 .TP
 .BR groff_tmac (@MAN5EXT@)
 A general description of groff macro packages.
 .
-.
 .TP
 .BR groff (@MAN7EXT@)
 A short reference for the groff formatting language.
-.
 .
 .P
 A complete reference for all parts of the groff system is found in the
