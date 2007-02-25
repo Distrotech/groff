@@ -51,11 +51,11 @@ The
 is different for all devices.
 .
 .B \%gxditview
-can view it for all devices, but the quality is not always good.
+can view it for all devices, but the quality is device dependent.
 .
 .
 .PP
-The best result is achieved with the
+The best results are achieved with the
 .BR X *
 devices for
 .BR groff 's
@@ -82,20 +82,39 @@ for this device and calls
 .B \%gxditview
 automatically for viewing.
 .
+For example, to view this man page with a base resolution of 12pt, say
+.
+.IP
+.B groff \-TX100\-12 \-man \-rS12 gxditview.@MAN1EXT@
+.
+.PP
+(option
+.BI \-rS XX
+is documented in the
+.BR groff_man (@MAN7EXT@)
+man page).
 .
 .PP
 .BR groff 's
 option
 .B \-X
-should be considered obsolete today; it produces
+produces
 .I intermediate output
-for
+for the
 .I Postscript
-and uses
+device and subsequently uses
 .B \%gxditview
-as a viewer for it, but with a bad quality.
+as a viewer for it.
 .
-Simply don't use it.
+The quality of the result depends mainly on the chosen point size and
+display resolution; for rapid previewing, however, something like
+.
+.IP
+.BI "groff \-X \-P\-resolution \-P100 " document
+.
+.PP
+yields acceptable results.
+.
 .
 .
 .PP
@@ -378,6 +397,22 @@ See
 and
 .BR \%groff_font (@MAN5EXT@)
 for more details.
+.
+.
+.SH FILES
+.TP
+.B @APPRESDIR@/GXditview
+The default resource file of
+.BR \%gxditview .
+Users should override these values in the
+.B .Xdefaults
+file, normally located in the user's home directory.
+.
+See
+.BR xrdb (1)
+and
+.BR appres (1)
+for more.
 .
 .
 .SH "SEE ALSO"

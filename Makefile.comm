@@ -1,4 +1,4 @@
-# Copyright (C) 1989-2000, 2002, 2003, 2004, 2006
+# Copyright (C) 1989-2000, 2002, 2003, 2004, 2006, 2007
 #   Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 # 
@@ -136,36 +136,37 @@ extraclean: distclean
 .man.n:
 	@echo Making $@ from $<
 	@-rm -f $@
-	@sed -e "s|@BINDIR@|$(bindir)|g" \
-	-e "s|@FONTDIR@|$(fontdir)|g" \
-	-e "s|@LOCALFONTDIR@|$(localfontdir)|g" \
-	-e "s|@LEGACYFONTDIR@|$(legacyfontdir)|g" \
-	-e "s|@OLDFONTDIR@|$(oldfontdir)|g" \
-	-e "s|@MACRODIR@|$(tmacdir)|g" \
+	@sed -e "s|@APPRESDIR@|$(appresdir)|g" \
+	-e "s|@BINDIR@|$(bindir)|g" \
+	-e "s|@BROKEN_SPOOLER_FLAGS@|$(BROKEN_SPOOLER_FLAGS)|g" \
+	-e "s|@COMMON_WORDS_FILE@|$(common_words_file)|g" \
 	-e "s|@DATASUBDIR@|$(datasubdir)|g" \
-	-e "s|@SYSTEMMACRODIR@|$(systemtmacdir)|g" \
-	-e "s|@LOCALMACRODIR@|$(localtmacdir)|g" \
-	-e "s|@DOCDIR@|$(docdir)|g" \
-	-e "s|@EXAMPLEDIR@|$(exampledir)|g" \
-	-e "s|@HTMLDOCDIR@|$(htmldocdir)|g" \
-	-e "s|@PDFDOCDIR@|$(pdfdocdir)|g" \
-	-e "s|@DEVICE@|$(DEVICE)|g" \
 	-e "s|@DEFAULT_INDEX@|$(indexdir)/$(indexname)|g" \
 	-e "s|@DEFAULT_INDEX_NAME@|$(indexname)|g" \
+	-e "s|@DEVICE@|$(DEVICE)|g" \
+	-e "s|@DOCDIR@|$(docdir)|g" \
+	-e "s|@EXAMPLEDIR@|$(exampledir)|g" \
+	-e "s|@FONTDIR@|$(fontdir)|g" \
+	-e "s|@g@|$(g)|g" \
+	-e "s!@G@!`echo $(g) | tr [a-z] [A-Z]`!g" \
+	-e "s|@HTMLDOCDIR@|$(htmldocdir)|g" \
 	-e "s|@INDEX_SUFFIX@|$(indexext)|g" \
-	-e "s|@COMMON_WORDS_FILE@|$(common_words_file)|g" \
+	-e "s|@LEGACYFONTDIR@|$(legacyfontdir)|g" \
+	-e "s|@LOCALFONTDIR@|$(localfontdir)|g" \
+	-e "s|@LOCALMACRODIR@|$(localtmacdir)|g" \
+	-e "s|@MACRODIR@|$(tmacdir)|g" \
 	-e "s|@MAN1EXT@|$(man1ext)|g" \
 	-e "s|@MAN5EXT@|$(man5ext)|g" \
 	-e "s|@MAN7EXT@|$(man7ext)|g" \
-	-e "s|@TMAC_S_PREFIX@|$(tmac_s_prefix)|g" \
-	-e "s|@TMAC_M_PREFIX@|$(tmac_m_prefix)|g" \
-	-e "s|@TMAC_AN_PREFIX@|$(tmac_an_prefix)|g" \
-	-e "s|@TMAC_MDIR@|$(tmacdir)/mm|g" \
-	-e "s|@BROKEN_SPOOLER_FLAGS@|$(BROKEN_SPOOLER_FLAGS)|g" \
-	-e "s|@VERSION@|$(version)$(revision)|g" \
 	-e "s|@MDATE@|`$(SHELL) $(top_srcdir)/mdate.sh $<`|g" \
-	-e "s|@g@|$(g)|g" \
-	-e "s!@G@!`echo $(g) | tr [a-z] [A-Z]`!g" \
+	-e "s|@OLDFONTDIR@|$(oldfontdir)|g" \
+	-e "s|@PDFDOCDIR@|$(pdfdocdir)|g" \
+	-e "s|@SYSTEMMACRODIR@|$(systemtmacdir)|g" \
+	-e "s|@TMAC_AN_PREFIX@|$(tmac_an_prefix)|g" \
+	-e "s|@TMAC_M_PREFIX@|$(tmac_m_prefix)|g" \
+	-e "s|@TMAC_MDIR@|$(tmacdir)/mm|g" \
+	-e "s|@TMAC_S_PREFIX@|$(tmac_s_prefix)|g" \
+	-e "s|@VERSION@|$(version)$(revision)|g" \
 	$< >$@
 
 .PHONY: install_man
