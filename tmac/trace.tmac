@@ -57,8 +57,8 @@
 .    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** de trace enter: \\*[!!!br]\\$0 \\$@
 .    el .do tm1 "\\*[!!!sp]*** de trace enter \$1: \\*[!!!br]\\$0 \\$@
 .    do !!as !!!sp " \"
-.    do ie \\n[.br] .do !!\$1 \\$@
-.    el 'do !!\$1 \\$@
+.    do ie \\n[.br] .do !!\\$0 \\$@
+.    el 'do !!\\$0 \\$@
 .    do !!substring !!!sp 1
 .    do ie \\n[.br] .!!ds !!!br .\"
 .    el .do !!ds !!!br '\"
@@ -82,8 +82,8 @@
 .    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** de1 trace enter: \\*[!!!br]\\$0 \\$@
 .    el .do tm1 "\\*[!!!sp]*** de1 trace enter \$1: \\*[!!!br]\\$0 \\$@
 .    do !!as !!!sp " \"
-.    do ie \\n[.br] .do !!\$1 \\$@
-.    el 'do !!\$1 \\$@
+.    do ie \\n[.br] .do !!\\$0 \\$@
+.    el 'do !!\\$0 \\$@
 .    do !!substring !!!sp 1
 .    do ie \\n[.br] .!!ds !!!br .\"
 .    el .do !!ds !!!br '\"
@@ -110,8 +110,8 @@
 .    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** am trace enter: \\*[!!!br]\\$0 \\$@
 .    el .do tm1 "\\*[!!!sp]*** am trace enter \$1: \\*[!!!br]\\$0 \\$@
 .    do !!as !!!sp " \"
-.    do ie \\n[.br] .do !!\$1 \\$@
-.    el 'do !!\$1 \\$@
+.    do ie \\n[.br] .do !!\\$0 \\$@
+.    el 'do !!\\$0 \\$@
 .    do !!substring !!!sp 1
 .    do ie \\n[.br] .!!ds !!!br .\"
 .    el .do !!ds !!!br '\"
@@ -135,8 +135,8 @@
 .    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** am1 trace enter: \\*[!!!br]\\$0 \\$@
 .    el .do tm1 "\\*[!!!sp]*** am1 trace enter \$1: \\*[!!!br]\\$0 \\$@
 .    do !!as !!!sp " \"
-.    do ie \\n[.br] .do !!\$1 \\$@
-.    el 'do !!\$1 \\$@
+.    do ie \\n[.br] .do !!\\$0 \\$@
+.    el 'do !!\\$0 \\$@
 .    do !!substring !!!sp 1
 .    do ie \\n[.br] .!!ds !!!br .\"
 .    el .do !!ds !!!br '\"
@@ -163,6 +163,15 @@
 .!!de1 substring
 .  !!substring \$*
 .  tm1 "\*[!!!sp]*** .substring \$* (-> `\*[\$1]')
+..
+.
+.rn als !!als
+.
+.!!de1 als
+.  !!als \$1 \$2
+.  if d !!\$2 \
+.    !!als !!\$1 !!\$2
+.  tm1 "\*[!!!sp]*** .als \$1 \$2
 ..
 .
 .ec
