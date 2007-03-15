@@ -77,7 +77,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .ds MONTH10 October
 .ds MONTH11 November
 .ds MONTH12 December
-.ds MO \\*[MONTH\n[mo]]
+.ds MO \E*[MONTH\n[mo]]
 .ds DY \n[dy] \*[MO] \n[year]
 .de ND
 .if \\n[.$] .ds DY "\\$*
@@ -445,12 +445,12 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .ds CF
 .ds RF
 .ds LH
-.ds CH -\\n[PN]-
+.ds CH -\En[PN]-
 .ds RH
-.ds pg*OH '\\*[LH]'\\*[CH]'\\*[RH]'
-.ds pg*EH '\\*[LH]'\\*[CH]'\\*[RH]'
-.ds pg*OF '\\*[LF]'\\*[CF]'\\*[RF]'
-.ds pg*EF '\\*[LF]'\\*[CF]'\\*[RF]'
+.ds pg*OH '\E*[LH]'\E*[CH]'\E*[RH]'
+.ds pg*EH '\E*[LH]'\E*[CH]'\E*[RH]'
+.ds pg*OF '\E*[LF]'\E*[CF]'\E*[RF]'
+.ds pg*EF '\E*[LF]'\E*[CF]'\E*[RF]'
 .de OH
 .ds pg*\\$0 "\\$*
 ..
@@ -636,7 +636,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .ev
 .nr fn*text-num 0 1
 .nr fn*note-num 0 1
-.ds * \\*[par@sup-start]\En+[fn*text-num]\\*[par@sup-end]
+.ds * \E*[par@sup-start]\En+[fn*text-num]\E*[par@sup-end]
 .nr fn*open 0
 .\" normal FS
 .de @FS
@@ -1452,9 +1452,9 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .\" par*define-font-macro macro font
 .de par*define-font-macro
 .de \\$1
-.ie \\\\n[.$] \{\
-.	nr par*prev-font \\\\n[.f]
-\&\\\\$3\f[\\$2]\\\\$1\f[\\\\n[par*prev-font]]\\\\$2
+.ie \En[.$] \{\
+.	nr par*prev-font \En[.f]
+\&\E$3\f[\\$2]\E$1\f[\En[par*prev-font]]\E$2
 .\}
 .el .ft \\$2
 \\..
@@ -1865,9 +1865,9 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .rm [F [T1 [T2
 ..
 .\" start of reference number
-.ds [. \\*[par@sup-start]
+.ds [. \E*[par@sup-start]
 .\" end of reference number
-.ds .] \\*[par@sup-end]
+.ds .] \E*[par@sup-end]
 .\" period before reference
 .ds <. .
 .\" period after reference
@@ -1921,67 +1921,69 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .el .ds ref*string
 ..
 .de ref*add-T1
-.ref*field T , "\fI" "" "\fP"
+.ref*field T , " " "\fI" "" "\fP"
 .if r [T .nr ref*suppress-period \\n([T
 ..
 .de ref*add-T2
-.ref*field T , "\\*Q" "" "\\*U"
+.ref*field T , " " "\\*Q" "" "\\*U"
 .if r [T .nr ref*suppress-period \\n([T
 ..
 .de ref*add-P
-.ie \\n([P>0 .ref*field P , "pp. "
-.el .ref*field P , "p. "
+.ie \\n([P>0 .ref*field P , " " "pp. "
+.el .ref*field P , " " "p. "
 ..
 .de ref*add-J
-.ref*field J , \fI "" \fP
+.ref*field J , " " \fI "" \fP
 ..
 .de ref*add-D
-.ref*field D "" ( )
+.ref*field D "" " " ( )
 ..
 .de ref*add-E
-.ref*field E , "ed. "
+.ref*field E , " " "ed. "
 ..
 .de ref*add-G
-.ref*field G "" ( )
+.ref*field G "" " " ( )
 ..
 .de ref*add-B
-.ref*field B "" "in \fI" "" \fP
+.ref*field B "" " " "in \fI" "" \fP
 ..
 .de ref*add-O
-.ref*field O .
+.ref*field O . " "
 .ie r [O .nr ref*suppress-period \\n([O
 .el .nr ref*suppress-period 1
 ..
 .de ref*add-A
-.ref*field A ,
+.ref*field A , " "
 .if r [A .nr ref*suppress-period \\n([A
 ..
 .de ref*add-V
-.ref*field V "" \fB \fR
+.ref*field V "" " " \fB \fR
 ..
 .de ref*add-N
-.ref*field N \z( "" ")"
+.ref*field N "" ( "" ")"
 ..
 .de ref*add-dflt
-.ref*field \\$1 ,
+.ref*field \\$1 , " "
 ..
 .\" First argument is the field letter.
 .\" Second argument is the punctuation character to use to separate this field
 .\" from the previous field.
-.\" Third argument is a string with which to prefix this field.
-.\" Fourth argument is a string with which to postfix this field.
-.\" Fifth argument is a string to add after the punctuation character supplied
+.\" Third argument is a string to insert after the punctuation character of
+.\" the previous field (normally a space)
+.\" Fourth argument is a string with which to prefix this field.
+.\" Fifth argument is a string with which to postfix this field.
+.\" Sixth argument is a string to add after the punctuation character supplied
 .\" by the next field.
 .de ref*field
 .if d ref*string \{\
 .	ie d ref*post-punct \{\
-.		as ref*string "\\$2\\*[ref*post-punct] \"
+.		as ref*string "\\$2\\*[ref*post-punct]\\$3\"
 .		rm ref*post-punct
 .	\}
-.	el .as ref*string "\\$2 \"
+.	el .as ref*string "\\$2\\$3\"
 .\}
-.as ref*string "\\$3\\*([\\$1\\$4
-.if \\n[.$]>4 .ds ref*post-punct "\\$5
+.as ref*string "\\$4\\*([\\$1\\$5
+.if \\n[.$]>5 .ds ref*post-punct "\\$6
 .nr ref*suppress-period 0
 ..
 .\" ****************************
@@ -2030,7 +2032,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .acc*under-def . \s[\En[.s]*8u/10u]\v'.2m'.\v'-.2m'\s0
 .acc*under-def hook \(ho
 .acc*slash-def / /
-.char \[hooko] o\\\\*[hook]
+.char \[hooko] o\E*[hook]
 .ds q \[hooko]
 .ds 3 \[yogh]
 .ds D- \(-D\"			Icelandic uppercase eth
