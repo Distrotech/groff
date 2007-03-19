@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006
+                 2006, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -128,15 +128,15 @@ search_path *mac_path = &safer_macro_path;
 // Defaults to the current directory.
 search_path include_search_path(0, 0, 0, 1);
 
-static int get_copy(node**, int = 0);
+static int get_copy(node**, int = 0, int = 0);
 static void copy_mode_error(const char *,
 			    const errarg & = empty_errarg,
 			    const errarg & = empty_errarg,
 			    const errarg & = empty_errarg);
 
 enum read_mode { ALLOW_EMPTY, WITH_ARGS, NO_ARGS };
-static symbol read_escape_name(read_mode mode = NO_ARGS);
-static symbol read_long_escape_name(read_mode mode = NO_ARGS);
+static symbol read_escape_name(read_mode = NO_ARGS);
+static symbol read_long_escape_name(read_mode = NO_ARGS);
 static void interpolate_string(symbol);
 static void interpolate_string_with_args(symbol);
 static void interpolate_macro(symbol);
@@ -799,7 +799,7 @@ void shift()
 
 static char get_char_for_escape_name(int allow_space = 0)
 {
-  int c = get_copy(0);
+  int c = get_copy(0, 0, 1);
   switch (c) {
   case EOF:
     copy_mode_error("end of input in escape name");
@@ -940,7 +940,7 @@ static symbol read_increment_and_escape_name(int *incp)
   return symbol(buf);
 }
 
-static int get_copy(node **nd, int defining)
+static int get_copy(node **nd, int defining, int handle_escape_E)
 {
   for (;;) {
     int c = input_stack::get(nd);
@@ -968,6 +968,8 @@ static int get_copy(node **nd, int defining)
     }
     if (c == DOUBLE_QUOTE)
       continue;
+    if (c == ESCAPE_E && handle_escape_E)
+      c = escape_char;
     if (c == ESCAPE_NEWLINE) {
       if (defining)
 	return c;
@@ -977,6 +979,7 @@ static int get_copy(node **nd, int defining)
     }
     if (c != escape_char || escape_char <= 0)
       return c;
+  again:
     c = input_stack::peek();
     switch(c) {
     case 0:
@@ -1022,6 +1025,8 @@ static int get_copy(node **nd, int defining)
       return ESCAPE_e;
     case 'E':
       (void)input_stack::get(0);
+      if (handle_escape_E)
+	goto again;
       return ESCAPE_E;
     case 'n':
       {
