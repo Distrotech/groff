@@ -315,23 +315,21 @@ void box::top_level()
 	     SAVED_MARK_REG "]u-\\n[" MARK_REG "]u'\n");
     else
       assert(r == FOUND_NOTHING);
-    // The problem here is that the argument to \f is read in copy mode,
-    // so we cannot use \E there; so we hide it in a string instead.
-    // Another problem is that if we use \R directly, then the space will
-    // prevent it working in a macro argument.
+    // If we use \R directly, the space will prevent it working in a
+    // macro argument; so we hide it in a string instead.
     printf(".ds " SAVE_FONT_STRING " "
-	   "\\R'" SAVED_INLINE_FONT_REG " \\\\n[.f]'"
+	   "\\R'" SAVED_INLINE_FONT_REG " \\En[.f]'"
 	   "\\fP"
-	   "\\R'" SAVED_INLINE_PREV_FONT_REG " \\\\n[.f]'"
-	   "\\R'" SAVED_INLINE_SIZE_REG " \\\\n[.ps]'"
+	   "\\R'" SAVED_INLINE_PREV_FONT_REG " \\En[.f]'"
+	   "\\R'" SAVED_INLINE_SIZE_REG " \\En[.ps]'"
 	   "\\s0"
-	   "\\R'" SAVED_INLINE_PREV_SIZE_REG " \\\\n[.ps]'"
+	   "\\R'" SAVED_INLINE_PREV_SIZE_REG " \\En[.ps]'"
 	   "\n"
 	   ".ds " RESTORE_FONT_STRING " "
-	   "\\f[\\\\n[" SAVED_INLINE_PREV_FONT_REG "]]"
-	   "\\f[\\\\n[" SAVED_INLINE_FONT_REG "]]"
-	   "\\s'\\\\n[" SAVED_INLINE_PREV_SIZE_REG "]u'"
-	   "\\s'\\\\n[" SAVED_INLINE_SIZE_REG "]u'"
+	   "\\f[\\En[" SAVED_INLINE_PREV_FONT_REG "]]"
+	   "\\f[\\En[" SAVED_INLINE_FONT_REG "]]"
+	   "\\s'\\En[" SAVED_INLINE_PREV_SIZE_REG "]u'"
+	   "\\s'\\En[" SAVED_INLINE_SIZE_REG "]u'"
 	   "\n");
     printf(".as1 " LINE_STRING " \\&\\E*[" SAVE_FONT_STRING "]");
     printf("\\f[%s]", get_gfont());

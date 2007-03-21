@@ -1,4 +1,4 @@
-.\" Copyright (C) 2006
+.\" Copyright (C) 2006, 2007
 .\"   Free Software Foundation, Inc.
 .\"      Written by Eric S. Raymond <esr@thyrsus.com>
 .\" 
@@ -701,7 +701,7 @@ Filled Objects
 .PP
 It is possible to fill boxes, circles, and ellipses.  The
 modifier \fBfill[ed]\fP accomplishes this.  You can suffix it with a fill
-value; the default is given by the stule variable \fBfillval\fP.
+value; the default is given by the style variable \fBfillval\fP.
 .PP
 DWB \fBpic\fP and \fBgpic\fP have opposite conventions for fill values
 and different defaults.  DWB \fBfillval\fP defaults to 0.3 and smaller

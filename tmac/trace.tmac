@@ -14,10 +14,11 @@
 .rn nr !!nr
 .
 .de nr
-.  do !!ds !!!inc \$2
-.  do !!substring !!!inc 0 0
+.  do ecs
+.  ec
 .  do !!nr \$*
 .  do tm1 "\*[!!!sp]*** .nr \$* (-> \n[\$1])
+.  do ecr
 ..
 .
 .rn ds !!ds
@@ -26,23 +27,35 @@
 .rn as1 !!as1
 .
 .de ds
+.  do ecs
+.  ec
 .  do tm1 "\*[!!!sp]*** .ds \$^
 .  do !!ds \$^\"
+.  do ecr
 ..
 .
 .de ds1
+.  do ecs
+.  ec
 .  do tm1 "\*[!!!sp]*** .ds1 \$^
 .  do !!ds1 \$^\"
+.  do ecr
 ..
 .
 .de as
+.  do ecs
+.  ec
 .  do tm1 "\*[!!!sp]*** .as \$^
 .  do !!as \$^\"
+.  do ecr
 ..
 .
 .de as1
+.  do ecs
+.  ec
 .  do tm1 "\*[!!!sp]*** .as1 \$^
 .  do !!as1 \$^\"
+.  do ecr
 ..
 .
 .rn de !!de
@@ -161,8 +174,11 @@
 .rn substring !!substring
 .
 .!!de1 substring
+.  do ecs
+.  ec
 .  !!substring \$*
 .  tm1 "\*[!!!sp]*** .substring \$* (-> `\*[\$1]')
+.  do ecr
 ..
 .
 .rn als !!als
@@ -172,6 +188,15 @@
 .  if d !!\$2 \
 .    !!als !!\$1 !!\$2
 .  tm1 "\*[!!!sp]*** .als \$1 \$2
+..
+.
+.rn rn !!rn
+.
+.!!de1 rn
+.  !!rn \$1 \$2
+.  if d !!\$1 \
+.    !!rn !!\$1 !!\$2
+.  tm1 "\*[!!!sp]*** .rn \$1 \$2
 ..
 .
 .ec
