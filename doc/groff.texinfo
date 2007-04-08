@@ -3352,26 +3352,41 @@ standard error.
 @DefstrItem {SN-DOT, ms}
 @DefstrListEnd {SN-NO-DOT, ms}
 After invocation of @code{NH}, the assigned section number is made
-available in the strings @code{SN-DOT} (exactly as it appears in the
-printed section heading) and @code{SN-NO-DOT} (with the final period
-omitted).  The string @code{SN} is also defined, as an alias for
-@code{SN-DOT}; if preferred, you may redefine it as an alias for
-@code{SN-NO-DOT}, by including the initialization
-
-@Example
-.ds SN-NO-DOT
-.als SN SN-NO-DOT
-@endExample
-
-@noindent
-@strong{before} your first use of @code{NH}, or simply
-
+available in the strings @code{SN-DOT} (as it appears in a printed
+section heading with default formatting, followed by a terminating
+period), and @code{SN-NO-DOT} (with the terminating period omitted).
+The string @code{SN} is also defined, as an alias for @code{SN-DOT};
+if preferred, you may redefine it as an alias for @code{SN-NO-DOT},
+by including the initialization
 @Example
 .als SN SN-NO-DOT
 @endExample
 
 @noindent
-@strong{after} your first use of @code{NH}.
+at any time @strong{before} you would like the change to take effect.
+@endDefstr
+
+@Defstr {SN-STYLE, ms}
+You may control the style used to print section numbers, within
+numbered section headings, by defining an appropriate alias for the
+string @code{SN-STYLE}.  The default style, in which the printed
+section number is followed by a terminating period, is obtained
+by defining the alias
+@Example
+.als SN-STYLE SN-DOT
+@endExample
+
+@noindent
+If you prefer to omit the terminating period, from section numbers
+appearing in numbered section headings, you may define the alias
+@Example
+.als SN-STYLE SN-NO-DOT
+@endExample
+
+@noindent
+Any such change in section numbering style becomes effective from
+the next use of @code{.NH}, following redefinition of the alias for
+@code{SN-STYLE}.
 @endDefstr
 
 @Defmac {SH, [@Var{match-level}], ms}

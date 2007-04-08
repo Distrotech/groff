@@ -1534,6 +1534,16 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .\" Numbered headings.
 .\" nh*hl is the level of the last heading
 .nr nh*hl 0
+.\" SN-DOT and SN-NO-DOT represent the section number of
+.\" the current heading, with and without a terminating dot.
+.ds SN-DOT
+.ds SN-NO-DOT
+.\" SN-STYLE sets the statement numbering style used in headings
+.\" (either SN-DOT or SN-NO-DOT); for backward compatibility with
+.\" earlier ms versions, the default is SN-DOT
+.als SN-STYLE SN-DOT
+.\" Also for backward compatibility, let SN represent SN-DOT.
+.als SN SN-DOT
 .\" numbered heading
 .de @NH
 .ie '\\$1'S' \{\
@@ -1577,12 +1587,11 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .	as SN-NO-DOT .\\n[H\\n[nh*i]]
 .\}
 .ds SN-DOT \\*[SN-NO-DOT].
-.if !dSN .als SN SN-DOT
 .nr sh*psincr (\\n[GROWPS]-\\n[nh*hl])*\\n[PSINCR]
 .SH-NO-TAG
 .DEVTAG-NH "\\$1"
 .  if '\*(.T'html' .nr need_eo_h 1
-\\*[SN-DOT]
+\\*[SN-STYLE]
 ..
 .\" ****************************
 .\" ******** module toc ********

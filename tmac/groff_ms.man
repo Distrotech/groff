@@ -528,14 +528,57 @@ scaling factor should be employed,
 when assigning a value specified in points.
 .
 .IP
+The style used to represent the section number,
+within a numbered heading,
+is controlled by the
+.B SN-STYLE
+string;
+this may be set to either the
+.B SN-DOT
+or the
+.B SN-NO-DOT
+style,
+(described below),
+by aliasing
+.B SN-STYLE
+accordingly.
+By default,
+.B SN-STYLE
+is initialised by defining the alias
+.RS
+.nf
+.IP
+\&.als SN-STYLE SN-DOT
+.fi
+.RE
+.IP
+it may be changed to the
+.B SN-NO-DOT
+style,
+if preferred,
+by defining the alternative alias
+.RS
+.nf
+.IP
+\&.als SN-STYLE SN-NO-DOT
+.fi
+.RE
+.IP
+Any such change becomes effective with the first use of
+.BR .NH ,
+.I after
+the new alias is defined.
+.
+.IP
 After invoking
 .BR .NH ,
 the assigned heading number is available in the strings
 .B SN-DOT
-(exactly as it appears in the formatted heading),
+(as it appears in the default formatting style for numbered headings,
+with a terminating period following the number),
 and
 .B SN-NO-DOT
-(with its final period omitted).
+(with this terminating period omitted).
 The string
 .B SN
 is also defined,
@@ -550,28 +593,16 @@ by including the initialisation:
 .RS
 .nf
 .IP
-\&.ds SN-NO-DOT
 \&.als SN SN-NO-DOT
 .fi
 .RE
 .
 .IP
-.I before
-the first use of
+at any time;
+the change becomes effective with the next use of
 .BR .NH ,
-or simply:
-.
-.RS
-.nf
-.IP
-\&.als SN SN-NO-DOT
-.fi
-.RE
-.
-.IP
 .I after
-the first use of
-.BR .NH .
+the new alias is defined.
 .
 .TP
 .BI .SH\ [ xx ]
