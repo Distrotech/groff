@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2007
+     Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -54,7 +55,7 @@ public:
   virtual void ellipse(const position &, const distance &,
 		       const line_type &, double) = 0;
   virtual void rounded_box(const position &, const distance &, double,
-			   const line_type &, double) = 0;
+			   const line_type &, double, char *) = 0;
   virtual void command(const char *, const char *, int) = 0;
   virtual void set_location(const char *, int) {}
   virtual void set_color(char *, char *) = 0;

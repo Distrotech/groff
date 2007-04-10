@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2003 Free Software Foundation, Inc.
+/* Copyright (C) 1989, 1990, 1991, 1992, 2003, 2007
+   Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
 This file is part of groff.
@@ -319,9 +320,10 @@ void common_output::solid_arc(const position &cent, double rad,
 
 
 void common_output::rounded_box(const position &cent, const distance &dim,
-				double rad, const line_type &lt, double fill)
+				double rad, const line_type &lt,
+			        double fill, char *color_fill)
 {
-  if (fill >= 0.0)
+  if (fill >= 0.0 || color_fill)
     filled_rounded_box(cent, dim, rad, fill);
   switch (lt.type) {
   case line_type::invisible:

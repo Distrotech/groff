@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 1993, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 1993, 2003, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -53,7 +53,8 @@ protected:
 			  const line_type &);
   void solid_rounded_box(const position &, const distance &, double,
 			 const line_type &);
-  void filled_rounded_box(const position &, const distance &, double, double);
+  void filled_rounded_box(const position &, const distance &, double,
+			  double);
 public:
   void start_picture(double sc, const position &ll, const position &ur) = 0;
   void finish_picture() = 0;
@@ -68,7 +69,7 @@ public:
   void ellipse(const position &, const distance &,
 	       const line_type &, double) = 0;
   void rounded_box(const position &, const distance &, double,
-		   const line_type &, double);
+		   const line_type &, double, char *);
   void set_color(char *, char *) = 0;
   void reset_color() = 0;
   char *get_last_filled() = 0;

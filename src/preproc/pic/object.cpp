@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005,
-                 2006
+                 2006, 2007
      Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -783,7 +783,7 @@ void box_object::print()
   }
   else {
     distance abs_dim(fabs(dim.x), fabs(dim.y));
-    out->rounded_box(cent, abs_dim, fabs(xrad), lt, fill);
+    out->rounded_box(cent, abs_dim, fabs(xrad), lt, fill, color_fill);
   }
   out->reset_color();
 }
