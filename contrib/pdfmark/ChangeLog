@@ -1,5 +1,16 @@
 2007-04-11  Keith Marshall  <keith.d.marshall@ntlworld.com>
 
+	Avoid stray newlines in folded pdfmark literal content.
+
+	* pdfmark.tmac (pdf*pdfmark.dispatch.wrapped): New string; define it
+	when accumulating long literal content; make it undefined otherwise.
+	(PDFMARK.FOLDWIDTH, PDFMARK.FOLDWIDTH.MAX): Reserve space for two
+	extra characters, to accommodate a space and an escaped newline,
+	while accumulating literal content, in case folding is required.
+	(pdf*pdfmark.dispatch) [pdf*pdfmark.dispatch.wrapped]: Add them.
+
+2007-04-11  Keith Marshall  <keith.d.marshall@ntlworld.com>
+
 	* pdfmark.tmac (pdfbookmark): Don't evaluate within diversions; defer
 	placement until diversion is copied out at top level.
 

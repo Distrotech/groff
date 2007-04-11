@@ -286,20 +286,23 @@ inspiration has come from discussion on the groff mailing list
 .\" allowed literal token length.
 .\"
 .length pdf:length "\\*[pdf:composed.literal] \\$*\"
-.ie (\\n[pdf:length] > \\n[PDFMARK.FOLDWIDTH]) \{\
+.ie (\\n[pdf:length] > (\\n[PDFMARK.FOLDWIDTH] - 2)) \{\
 .\"
 .\" If it has grown too long, then it must be folded across two
 .\" physical PDFMARK output records, so check if we can accommodate
 .\" the portion collected so far within the current output record.
 .\"
 .   pdf*length.increment "\\*[pdf:composed.literal]\"
-.   if (\\n[pdf:length] > \\n[PDFMARK.FOLDWIDTH.MAX]) \{\
+.   if (\\n[pdf:length] > (\\n[PDFMARK.FOLDWIDTH.MAX] - 2)) \{\
 .   \"
 .   \" The current output record CAN'T accommodate the currently
 .   \" composed portion of the literal, so flush out the current
-.   \" record, to make way for the accumulated literal.
+.   \" record, to make way for the accumulated literal, and mark
+.   \" the dispatch mode as "wrapped", for the fragments of the
+.   \" folded literal string, which are to follow.
 .   \"
 .      pdf*pdfmark.dispatch
+.      ds pdf*pdfmark.dispatch.wrapped
 .      \}
 .   ie d pdf:composed.line \{\
 .   \"
@@ -381,10 +384,12 @@ inspiration has come from discussion on the groff mailing list
 .         \}
 .      \}
 .\"
-.\" Finally, since we have completed the accumulation of the literal,
-.\" we revert to the normal "pdf*compose" action, for collection of
-.\" the next token (if any).
+.\" Finally, since we have completed the accumulation of the literal, we
+.\" revert to the "unwrapped" mode of operation for "pdf*pdfmark.dispatch",
+.\" and restore the normal "pdf*compose" action, for collection of the next
+.\" token (if any).
 .\"
+.   rm pdf*pdfmark.dispatch.wrapped
 .   als pdf*compose pdf*compose.next
 .   \}
 ..
@@ -406,6 +411,15 @@ inspiration has come from discussion on the groff mailing list
 .\" before attempting to post it; it then cleans up after posting, to
 .\" ensure that each collected record is posted only once.
 .\"
+.   if d pdf*pdfmark.dispatch.wrapped \{\
+.   \"
+.   \" When dispatching an excessively long literal string, which
+.   \" must be wrapped over multiple records, this mode is active
+.   \" for all but the closing record; we must escape the newline
+.   \" at the end of each such unclosed literal record.
+.   \"
+.      as pdf:composed.line " \\\\\\\\\"
+.   \}
 .   pdf*pdfmark.post
 .   rm pdf:composed.line
 .   \}
