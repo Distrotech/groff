@@ -3,7 +3,7 @@
 
 pdfmark.tmac
 
-Copyright (C) 2004, 2005, 2006
+Copyright (C) 2004, 2005, 2006, 2007
   Free Software Foundation, Inc.
      Written by Keith Marshall (keith.d.marshall@ntlworld.com)
 
@@ -661,41 +661,56 @@ ps:exec \\*[pdf:composed.line]
 .\"   $3 = suffix for PDF internal bookmark name (optional)
 .\" ------------------------------------------------------------------
 .\"
-.if \\n[PDFOPMODE] \{\
+.ie '\\n(.z'' \{\
 .\"
-.\" Make the bookmark name "untagged" by default,
-.\" then parse any specified options, to set a "tag", if required
+.\" When we are at the top diversion level, i.e. actually emitting text
+.\" to the output device stream, then we compute the location of, and
+.\" plant this bookmark immediately.
 .\"
-.   ds pdf:href-T
-.   while dpdf:href.opt\\$1 \{\
-.      pdf:href.opt\\$1 \\$@
-.      shift \\n[pdf:href.argc]
+.   if \\n[PDFOPMODE] \{\
+.   \"
+.   \" Make the bookmark name "untagged" by default,
+.   \" then parse any specified options, to set a "tag", if required
+.   \"
+.      ds pdf:href-T
+.      while dpdf:href.opt\\$1 \{\
+.         pdf:href.opt\\$1 \\$@
+.         shift \\n[pdf:href.argc]
+.         \}
+.      rr pdf:href.argc
+.   \"
+.   \" If we found "--" to mark the end of the options, discard it
+.   \"
+.      if '\\$1'--' .shift
+.   \"
+.   \" Synchronise the bookmark cache
+.   \" to the requested bookmark nesting level
+.   \"
+.      pdf:bm.sync \\$1
+.      shift
+.   \"
+.   \" Increment the bookmark serialisation index
+.   \" in order to generate a uniquely serialised bookmark name,
+.   \" ( which we return in the string "PDFBOOKMARK.NAME" ),
+.   \" and insert this bookmark into the cache
+.   \"
+.      pdf:href.sety
+.      nr pdf:bm.nr +1
+.      ds PDFBOOKMARK.NAME pdf:bm\\n[pdf:bm.nr]\\*[pdf:href-T]
+.      ds pdf:bm\\n[pdf:bm.nr] /Dest /\\*[PDFBOOKMARK.NAME]
+.      pdfmark \\*[pdf:bm\\n[pdf:bm.nr]] /View [\\*[PDFBOOKMARK.VIEW]] /DEST
+.      as pdf:bm\\n[pdf:bm.nr] " /Title (\\$*)
+.      pdf:href.options.clear
+.      rr PDFPAGE.Y
 .      \}
-.   rr pdf:href.argc
+.   \}
+.el \{\
 .\"
-.\" If we found "--" to mark the end of the options, discard it
+.\" But when we are collecting a diversion which will be written out later,
+.\" then we must defer bookmark placement, until we emit the diversion.
+.\" (don't rely on $0 == pdfbookmark here; it may be a volatile alias).
 .\"
-.   if '\\$1'--' .shift
-.\"
-.\" Synchronise the bookmark cache
-.\" to the requested bookmark nesting level
-.\"
-.   pdf:bm.sync \\$1
-.   shift
-.\"
-.\" Increment the bookmark serialisation index
-.\" in order to generate a uniquely serialised bookmark name,
-.\" ( which we return in the string "PDFBOOKMARK.NAME" ),
-.\" and insert this bookmark into the cache
-.\"
-.   pdf:href.sety
-.   nr pdf:bm.nr +1
-.   ds PDFBOOKMARK.NAME pdf:bm\\n[pdf:bm.nr]\\*[pdf:href-T]
-.   ds pdf:bm\\n[pdf:bm.nr] /Dest /\\*[PDFBOOKMARK.NAME]
-.   pdfmark \\*[pdf:bm\\n[pdf:bm.nr]] /View [\\*[PDFBOOKMARK.VIEW]] /DEST
-.   as pdf:bm\\n[pdf:bm.nr] " /Title (\\$*)
-.   pdf:href.options.clear
-.   rr PDFPAGE.Y
+.   nop \!.pdfbookmark \\$@
 .   \}
 ..
 .\"
