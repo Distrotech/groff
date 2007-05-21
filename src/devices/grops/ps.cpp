@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006
+                 2006, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -721,7 +721,7 @@ void ps_printer::set_char(glyph *g, font *f, const environment *env, int w,
       if (sbuf_len < SBUF_SIZE - 1 && env->hpos >= sbuf_end_hpos
 	  && (sbuf_kern == 0 || sbuf_end_hpos - sbuf_kern != env->hpos)) {
 	if (sbuf_space_code < 0) {
-	  if (f->contains(space_glyph)) {
+	  if (f->contains(space_glyph) && !sub) {
 	    sbuf_space_code = f->get_code(space_glyph);
 	    sbuf_space_width = env->hpos - sbuf_end_hpos;
 	    sbuf_end_hpos = env->hpos + w + sbuf_kern;
