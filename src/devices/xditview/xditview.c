@@ -262,6 +262,7 @@ int main(int argc, char **argv)
     XtRealizeWidget (toplevel);
     if (file_name)
 	SetPageNumber (page_number);
+    XtInstallAllAccelerators(paned,paned);
     XtAppMainLoop(xtcontext);
     return 0;
 }
