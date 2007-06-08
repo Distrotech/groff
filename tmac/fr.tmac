@@ -2,7 +2,7 @@
 .\"
 .\" French localization for groff
 .\"
-.\" Copyright (C) 2006 Free Software Foundation, Inc.
+.\" Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 .\"   Written by Fabrice Ménard (menard.fabrice@wanadoo.fr)
 .\"
 .\" This file is part of groff.
@@ -139,6 +139,27 @@
 .if d @R \{\
 .	\" date update
 .	ds td \n(dy \*(mo \n(y4
+.	\" Redefinition for the chapter system
+.	de $c
+.	sz 12
+.	ft 3
+.	ce 1000
+.	if \\n(_M<3 \
+.	nr ch +1
+.	ie \\n(_M=1 CHAPITRE\ \ \\n(ch
+.	el .if \\n(_M=2 ANNEXE\ \ \\n(ch
+.	if \w"\\$1" .sp 3-\\n(.L
+.	if \w"\\$1" \\$1
+.	if (\\n(_M<3):(\w"\\$1") \
+.	sp 4-\\n(.L
+.	ce 0
+.	ft
+.	sz
+.	ie \\n(_M=1 \
+.	$C Chapitre \\n(ch "\\$1"
+.	el .if \\n(_M=2 \
+.	$C Annexe \\n(ch "\\$1"
+..
 .\}
 .
 .
