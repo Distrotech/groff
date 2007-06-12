@@ -36,15 +36,22 @@ GXditview-ad.h: $(srcdir)/GXditview.ad
 	@-rm -f $@
 	$(SHELL) $(srcdir)/ad2c $(srcdir)/GXditview.ad >GXditview-ad.h
 
-install_data: $(srcdir)/GXditview.ad
+install_data: $(srcdir)/GXditview.ad $(srcdir)/GXditview-color.ad
 	-test -d $(DESTDIR)$(appresdir) \
 	  || $(mkinstalldirs) $(DESTDIR)$(appresdir)
 	if test -f $(DESTDIR)$(appresdir)/GXditview; then \
 	  mv $(DESTDIR)$(appresdir)/GXditview \
 	    $(DESTDIR)$(appresdir)/GXditview.old; \
 	fi
+	if test -f $(DESTDIR)$(appresdir)/GXditview-color; then \
+	  mv $(DESTDIR)$(appresdir)/GXditview-color \
+	    $(DESTDIR)$(appresdir)/GXditview-color.old; \
+	fi
 	$(INSTALL_DATA) $(srcdir)/GXditview.ad \
 	  $(DESTDIR)$(appresdir)/GXditview
+	$(INSTALL_DATA) $(srcdir)/GXditview-color.ad \
+	  $(DESTDIR)$(appresdir)/GXditview-color
 
 uninstall_sub:
 	-rm -f $(DESTDIR)$(appresdir)/GXditview
+	-rm -f $(DESTDIR)$(appresdir)/GXditview-color

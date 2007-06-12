@@ -1,5 +1,5 @@
 # Autoconf configuration file for groff.
-# Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2005, 2006
+# Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2005, 2006, 2007
 # Free Software Foundation, Inc.
 #
 # This file is part of groff.
@@ -122,7 +122,7 @@ GROFF_TARGET_PATH_SEPARATOR
 GROFF_HTML_PROGRAMS
 GROFF_PDFDOC_PROGRAMS
 GROFF_PNMTOPS_NOSETPAGE
-jm_GLIBC21
+gl_GLIBC21
 
 AC_CONFIG_FILES([stamp-h], [echo timestamp > stamp-h])
 AC_CONFIG_FILES([Makefile doc/Makefile src/utils/xtotroff/Makefile])
