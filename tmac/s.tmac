@@ -134,6 +134,10 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .als AI cov*err-not-before-tl
 .als AB cov*err-not-before-tl
 .de cov*first-page-init
+.\" Invoked by `.wh 0' trap on first page.
+.\" We should not come here again, but at short page length,
+.\" recursion may occur; remove trap and macro to avoid it.
+.ch cov*first-page-init
 .rm cov*first-page-init
 .if !'\\n[.ev]'0' \{\
 .	@error must be in top-level environment, not `\\n[.ev]',
