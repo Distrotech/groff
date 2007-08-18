@@ -1,4 +1,29 @@
 .\" vim: ft=groff
+.ig
+pdfmark.ms
+
+File position: <groff-source>/contrib/pdfmark/pdfmark.ms
+
+This file is part of groff, the GNU roff type-setting system.
+
+Copyright (C) 2004, 2005, 2006 Free Software Foundation, Inc.
+written by Keith Marshall <keith.d.marshall@ntlworld.com>
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with no
+Front-Cover Texts, no Back-Cover Texts, and the following Invariant
+Sections:--
+
+    a)  This "Legal Matters" section, extending from the start of
+        the document, to the end of the enclosing ".ig" section.
+
+    b)  The two lines below starting with `.AU' and `.AI'.
+
+A copy of the Free Documentation License is included as a file called
+FDL in the main directory of the groff source package.
+..
+.
 .CS
 Portable Document Format
 Publishing with GNU Troff

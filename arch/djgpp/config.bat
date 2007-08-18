@@ -1,3 +1,8 @@
+Rem Copyright (C) 2000 Free Software Foundation, Inc.
+Rem
+Rem This configure script is free software; the Free Software Foundation
+Rem gives unlimited permission to copy, distribute and modify it.
+
 @echo off
 echo Configuring GNU Groff for DJGPP v2.x...
 

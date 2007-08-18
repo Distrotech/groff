@@ -368,6 +368,11 @@ o Fixed MN_INIT macro routine that reads MN_INIT args into strings
   and \B (correctly, I hope) for each of its args, the @ character
   should be safe.
 
+*Tue May 16 2005
+
+o momdoc/appendices.html: Add space in shebang, conforming to
+  portability recommendation in autoconf docs.
+
 *Thu May 12 2005
 
 o Added margin notes capability
@@ -602,7 +607,6 @@ o Made BREAKQUOTE obsolete; rewrote sections of footnote handling,
 o Added a TERMINATE .em to docprocessing (except letters) to ensure
   that deferred footnotes print on the last page of a doc.
 
-
 *Mar 15 2004
 
 o Added color support
@@ -614,6 +618,11 @@ o Adjusted vertical placement of hyphens around page numbering
 o Re-wrote portions of the document processing macros so that tabs
   behave in a consistent and intuitive manner.  Tab structures are
   now properly preserved from page to page and column to column.
+
+*Mar 05 2004
+
+o Makefile.sub (GROFF_BIN_PATH): Use SH_SEP.
+
 
 *Feb 20 2004
 
@@ -657,6 +666,10 @@ o Updated reserved words in docs.
 
 o Fixed a few more typos in docs.
 
+*Mon Dec 29 2003
+
+o Makefile.sub (GROFF_BIN_PATH): Use $(SEP).
+
 *Tue Oct 21 2003
 
 o Changed \n[#DRAFT] and \n[#REVISION] to strings \*[$DRAFT] and
@@ -669,6 +682,22 @@ o Extended handling of draft and revision numbers and strings in
   have just about any combo of DRAFT_STRING, DRAFT, REVISION_STRING
   and REVISION, and have them come out in headers/footers as one
   intuitively expects/wants.
+
+Mon Oct 13 2003
+
+o Finally fix change 2003-08-26, based on ideas from Chuck Silvers
+  <chuq@chuq.com>.
+
+ Makefile.sub: Use a stamp file in the `examples' directory.
+
+Sun Aug 31 2003
+
+o Makefile.sub: Fix last change to make it really work.
+
+Tue Aug 26 2003-08-26
+
+o Makefile.sub (prepare_make_examples): Make it work with parallel
+  runs of `make'.  Patch from Chuck Silvers <chuq@chuq.com>.
 
 *Fri Jul 25 2003
 
@@ -737,6 +766,14 @@ o Extensive changes to DEFAULTS, START, COLLATE, HEAD, SUBHEAD and
   page design
 
 o Fixed DOCHEADER OFF (distance), FINIS
+
+Sat Apr 05 2003
+
+o Makefile.sub (GROFFBIN): New variable for groff binary path.
+  (groff_bin_path): Rename to GROFF_BIN_PATH.
+  (GROFF): Use GROFFBIN and GROFF_BIN_PATH.
+
+  Patch from Maciej W. Rozycki <macro@ds2.pg.gda.pl>.
 
 -----------------------------------------------------------------------
 
@@ -1166,3 +1203,16 @@ o Cleaned up html errors in the docs.
 o Added "Next," "Prev" and "Top" links to top and bottom of doc files.
 
 o Fixed some typos in the docs.
+
+
+Copyright 2004, 2005, 2006
+  Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Local Variables:
+version-control: never
+coding: latin-1
+End:

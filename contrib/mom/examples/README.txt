@@ -1,3 +1,10 @@
+    Copyright 2004, 2005, 2006
+      Free Software Foundation, Inc.
+
+    Copying and distribution of this file, with or without modification,
+    are permitted in any medium without royalty provided the copyright
+    notice and this notice are preserved.
+
 The files in this directory show mom in action.
 
 If you have downloaded and untarrred a version of mom from her
