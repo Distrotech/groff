@@ -1339,6 +1339,8 @@ void table::allocate(int r)
 	entry = new PPtable_entry[allocated_rows];
 	vline = new char*[allocated_rows];
 	blockflag = new char[allocated_rows];
+	for (int i = 0; i < allocated_rows; i++)
+	  blockflag[i] = 0;
       }
       else {
 	table_entry ***old_entry = entry;
@@ -1356,6 +1358,8 @@ void table::allocate(int r)
 	char *old_blockflag = blockflag;
 	blockflag = new char[allocated_rows];
 	memcpy(blockflag, old_blockflag, sizeof(char)*old_allocated_rows);
+	for (int i = old_allocated_rows; i < allocated_rows; i++)
+	  blockflag[i] = 0;
 	a_delete old_blockflag;
       }
     }

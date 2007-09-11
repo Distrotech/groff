@@ -309,7 +309,7 @@ void string::remove_spaces()
   if (len - 1 != l) {
     if (l >= 0) {
       len = l + 1;
-      char *tmp = new char[len];
+      char *tmp = new char[sz];
       memcpy(tmp, p, len);
       a_delete ptr;
       ptr = tmp;
