@@ -21,8 +21,8 @@ You should have received a copy of the GNU General Public License along
 with groff; see the file COPYING.  If not, write to the Free Software
 Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-Version 1.5
------------
+Version 1.5-a
+-------------
 Antoine de St-Exupéry asserted that elegance in engineering is
 achieved not when there is nothing left to add, but when there is
 nothing left to take away.
@@ -2734,13 +2734,29 @@ to a macro means that any argument turns the feature off.
 \#   EXT has no effect on running type.
 \#
 .MAC DROPCAP END
-.    if #IGNORE \{ .return \}
+.    if \\n[#IGNORE]=1 \{\
+.       PRINT \\$1\c
+.       return
+.    \}
 .    br
+.    if n \{\
+.       PRINT \\$1\c
+.       return
+.    \}
 .    if \\n[#DOCS] \{\
-.       if \\n[#PRINT_STYLE]=1 \{ .return \}
+.       if \\n[#PRINT_STYLE]=1 \{\
+.       PRINT \\$1\c
+.       return
+.    \}
 .       if \\n[#PRINT_STYLE]=2 \{\
-.          if \\n[#PP_STYLE]=2 \{ .return \}
-.          if \\n[#PP]>1 \{ .return \}
+.          if \\n[#PP_STYLE]=2 \{\
+.             PRINT \\$1\c
+.             return
+.          \}
+.          if \\n[#PP]>1 \{\
+.             PRINT \\$1\c
+.             return
+.          \}
 .          ti 0
 .       \}
 .    \}
@@ -2850,7 +2866,10 @@ to a macro means that any argument turns the feature off.
 \#   RULE_WEIGHT.
 \#
 .MAC DRH END
-.    vpt 0
+.    if \\n[.vpt]=1 \{\
+.       vpt 0
+.       nr #RESTORE_TRAP 1
+.    \}
 .    ie !\\n[#NO_ADVANCE]=1 \{ .br \}
 .    el \{\
 .       sp -1v
@@ -2931,7 +2950,10 @@ to a macro means that any argument turns the feature off.
 .    nr #RULE_WEIGHT_ADJ \\n[#SAVED_WEIGHT_ADJ]
 .    rr #SAVED_WEIGHT
 .    rr #SAVED_WEIGHT_ADJ
-.    vpt 1
+.    if \\n[#RESTORE_TRAP]=1 \{\
+.       vpt 1
+.       rr #RESTORE_TRAP
+.    \}
 .END
 \#
 \#
@@ -2984,7 +3006,10 @@ to a macro means that any argument turns the feature off.
 \#   .gcolor.
 \#
 .MAC DRV END
-.    vpt 0
+.    if \\n[.vpt]=1 \{\
+.       vpt 0
+.       nr #RESTORE_TRAP 1
+.    \}
 .    ie !\\n[#NO_ADVANCE]=1 \{ .br \}
 .    el \{\
 .       sp -1v
@@ -3036,7 +3061,10 @@ to a macro means that any argument turns the feature off.
 .    gcolor
 .    nr #RULE_WEIGHT     \\n[#SAVED_WEIGHT]
 .    nr #RULE_WEIGHT_ADJ \\n[#SAVED_WEIGHT_ADJ]
-.    vpt 1
+.    if \\n[#RESTORE_TRAP]=1 \{\
+.       vpt 1
+.       rr #RESTORE_TRAP
+.    \}
 .END
 \#
 \# BOXES - DBX
@@ -3053,7 +3081,10 @@ to a macro means that any argument turns the feature off.
 \#   arg given, the rule weight is the one set by RULE_WEIGHT.
 \#
 .MAC DBX END
-.    vpt 0
+.    if \\n[.vpt]=1 \{\
+.       vpt 0
+.       nr #RESTORE_TRAP 1
+.    \}
 .    ie !\\n[#NO_ADVANCE]=1 \{ .br \}
 .    el \{\
 .       sp -1v
@@ -3132,7 +3163,10 @@ to a macro means that any argument turns the feature off.
 .    nr #WEIGHT_ADJ  \\n[#SAVED_WEIGHT_ADJ]
 .    rr #SAVED_WEIGHT
 .    rr #SAVED_WEIGHT_ADJ
-.    vpt 1
+.    if \\n[#RESTORE_TRAP]=1 \{\
+.       vpt 1
+.       rr #RESTORE_TRAP
+.    \}
 .END
 \#
 \#
@@ -3151,7 +3185,10 @@ to a macro means that any argument turns the feature off.
 \#   RULE_WEIGHT.
 \#
 .MAC DCL END
-.    vpt 0
+.    if \\n[.vpt]=1 \{\
+.       vpt 0
+.       nr #RESTORE_TRAP 1
+.    \}
 .    ie !\\n[#NO_ADVANCE]=1 \{ .br \}
 .    el \{\
 .       sp -1v
@@ -3232,7 +3269,10 @@ to a macro means that any argument turns the feature off.
 .    nr #WEIGHT_ADJ  \\n[#SAVED_WEIGHT_ADJ]
 .    rr #SAVED_WEIGHT
 .    rr #SAVED_WEIGHT_ADJ
-.    vpt 1
+.    if \\n[#RESTORE_TRAP]=1 \{\
+.       vpt 1
+.       rr #RESTORE_TRAP
+.    \}
 .END
 \#
 \#
@@ -5076,7 +5116,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \# the macro whose style is to be changed.
 \#
 .MAC _FAMILY END
-.    if '\\$0'AUTHOR_FAMILY'                  .ds $AUTHOR_FAM \\$1
+.    if '\\$0'AUTHOR_FAMILY'                  
 .    if '\\$0'BIBLIOGRAPHY_FAMILY'            .ds $BIB_FAM \\$1
 .    if '\\$0'BIBLIOGRAPHY_STRING_FAMILY'     .ds $BIB_STRING_FAM \\$1
 .    if '\\$0'BLOCKQUOTE_FAMILY'              .ds $BQUOTE_FAM \\$1
@@ -5856,7 +5896,8 @@ y\\R'#DESCENDER \\n[.cdp]'
 .          if '\\*[$EPI_OFFSET_VALUE]'' \{ .EPIGRAPH_INDENT 3 \}
 .       \}
 .\" +Linebreaks
-.       if !d$LINEBREAK_CHAR            \{ .LINEBREAK_CHAR     * 3 3p           \}
+.       if !d$LINEBREAK_CHAR            \{ .LINEBREAK_CHAR * 3 3p               \}
+.       if !d$LINEBREAK_COLOR           \{ .LINEBREAK_COLOR black               \}
 .\" +Footnotes
 .       if !r#FN_RULE_LENGTH            \{ .FOOTNOTE_RULE_LENGTH 4P             \}
 .       if !r#FN_RULE_ADJ               \{ .FOOTNOTE_RULE_ADJ  3p               \}
@@ -6086,7 +6127,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .       if \\n[#COVER]=1 \{\
 .          ie !'\\*[$AUTHOR_COVER_1]'' \{\
-.ab \\*[$AUTHOR_COVER_1] \\*[$AUTHOR_COVER_2] 
 .             nr #AUTHORS \\n[#AUTHOR_COVER_NUM]
 .             nr #NEXT_AUTHOR 0 1
 .             while \\n[#AUTHORS]>\\n[#NEXT_AUTHOR] \{\
@@ -8973,6 +9013,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if '\\$0'HEADER_RULE' \{\
+.       nr #HEADERS_ON  1
 .       ie '\\$1'' \{\
 .          nr #HEADER_RULE 1
 .          nr #HDRFTR_RULE 1
@@ -8983,6 +9024,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 .       \}
 .    \}
 .    if '\\$0'FOOTER_RULE' \{\
+.       nr #FOOTERS_ON  1
 .       ie '\\$1'' \{\
 .          nr #FOOTER_RULE 1
 .          nr #HDRFTR_RULE 1
@@ -10331,6 +10373,11 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC HEAD END
 .    br
+.    if \\n[#PRINT_STYLE]=1 \{ .ne \\n[#NUM_ARGS]+2 \}
+.    if \\n[#PRINT_STYLE]=2 \{\
+.       ie \\n[#HEAD_SPACE] \{ .ne \\n[#NUM_ARGS]+3 \}
+.       el \{ .ne \\n[#NUM_ARGS]+2 \}
+.    \}
 .\" Collect head for TOC.
 .    nr #ARG_NUM 0 1
 .    nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
@@ -10400,11 +10447,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .\" Process head
 .    nr #HEAD 1
 .    ev HEAD
-.    if \\n[#PRINT_STYLE]=1 \{ .ne \\n[#NUM_ARGS]+2 \}
-.    if \\n[#PRINT_STYLE]=2 \{\
-.       ie \\n[#HEAD_SPACE] \{ .ne \\n[#NUM_ARGS]+3 \}
-.       el \{ .ne \\n[#NUM_ARGS]+2 \}
-.    \}
 .    ll \\n[#L_LENGTH]u
 .    ta \\n(.lu
 .    if \\n[#COLUMNS] \{\
@@ -10563,6 +10605,7 @@ y\\R'#DESCENDER \\n[.cdp]'
 \#
 .MAC SUBHEAD END
 .    br
+.    ne \\n[#NUM_ARGS]+2
 .\" Collect subhead for TOC.
 .    nr #ARG_NUM 0 1
 .    nr #TOC_ENTRY_PN \\n%+\\n[#PAGE_NUM_ADJ]
@@ -10633,7 +10676,6 @@ y\\R'#DESCENDER \\n[.cdp]'
 .    if r#QUOTE    \{ .rr #QUOTE    \}
 .    if r#Q_AT_TOP \{ .rr #Q_AT_TOP \}
 .    ev SUBHEAD
-.    ne \\n[#NUM_ARGS]+2
 .    ll \\n[#L_LENGTH]u
 .    ta \\n(.lu
 .    if \\n[#COLUMNS] \{\
@@ -15886,8 +15928,7 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 \#
 .MAC SHIFT_LIST END
 .       nr #SHIFT_LIST\\n[#DEPTH] (\\$1)
-.       nr #LIST_INDENT\\n[#DEPTH] \\n[#L_INDENT]+\\n[#SHIFT_LIST\\n[#DEPTH]]
-.       nr #L_INDENT \\n[#LIST_INDENT\\n[#DEPTH]]
+.       nr #L_INDENT +\\n[#SHIFT_LIST\\n[#DEPTH]]
 .END
 \#
 \#
@@ -16005,8 +16046,8 @@ E\\R'#CAP_HEIGHT \\n[.cht]'
 .       nr #QUIT 1
 .       return
 .    \}
-.    nr #L_INDENT \\n[#LIST_INDENT\\n-[#DEPTH]]
-.    nr #HL_INDENT \\n[#HL_INDENT\\n[#DEPTH]]
+.    nr #L_INDENT -\\n[#LIST_INDENT\\n[#DEPTH]]+\\n[#SHIFT_LIST\\n[#DEPTH]]
+.    nr #HL_INDENT \\n[#HL_INDENT\\n-[#DEPTH]]
 .END
 \#
 \# ====================================================================
