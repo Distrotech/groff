@@ -6450,6 +6450,7 @@ static void init_charset_table()
   get_charinfo(symbol("dg"))->set_flags(charinfo::TRANSPARENT);
   get_charinfo(symbol("rq"))->set_flags(charinfo::TRANSPARENT);
   get_charinfo(symbol("em"))->set_flags(charinfo::BREAK_AFTER);
+  get_charinfo(symbol("hy"))->set_flags(charinfo::BREAK_AFTER);
   get_charinfo(symbol("ul"))->set_flags(charinfo::OVERLAPS_HORIZONTALLY);
   get_charinfo(symbol("rn"))->set_flags(charinfo::OVERLAPS_HORIZONTALLY);
   get_charinfo(symbol("radicalex"))->set_flags(charinfo::OVERLAPS_HORIZONTALLY);
