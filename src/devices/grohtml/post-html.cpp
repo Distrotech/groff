@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
  * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote post-html.cpp
@@ -90,6 +90,10 @@ static int base_point_size = 0;                      /* which troff font size ma
 static int split_level = 2;                          /* what heading level to split at?          */
 static string head_info;                             /* user supplied information to be placed   */
                                                      /* into <head> </head>                      */
+static int valid_flag = FALSE;                       /* has user requested a valid flag at the   */
+                                                     /* end of each page?                        */
+static int groff_sig = FALSE;                        /* "This document was produced using"       */
+html_dialect dialect = html4;                        /* which html dialect should grohtml output */
 
 
 /*
@@ -1570,6 +1574,8 @@ void header_desc::write_headings (FILE *f, int force)
 
       headers.start_from_head();
       header_filename.start_from_head();
+      if (dialect == xhtml)
+	fputs("<p>", f);
       do {
 	g = headers.get_data();
 	fputs("<a href=\"", f);
@@ -1589,12 +1595,18 @@ void header_desc::write_headings (FILE *f, int force)
 	h++;
 	fputs("\">", f);
 	fputs(g->text_string, f);
-        fputs("</a><br>\n", f);
+        fputs("</a>", f);
+	if (dialect == xhtml)
+	  fputs("<br/>\n", f);
+	else
+	  fputs("<br>\n", f);
 	headers.move_right();
 	if (multiple_files && (! header_filename.is_empty()))
 	  header_filename.move_right();
       } while (! headers.is_equal_to_head());
       fputs("\n", f);
+      if (dialect == xhtml)
+	fputs("</p>\n", f);
     }
   }
 }
@@ -2091,6 +2103,10 @@ class html_printer : public printer {
   int  round_width                    (int x);
   void handle_tag_within_title        (text_glob *g);
   void writeHeadMetaStyle             (void);
+  void handle_valid_flag              (void);
+  void do_math                        (text_glob *g);
+  void write_html_anchor              (text_glob *h);
+  void write_xhtml_anchor             (text_glob *h);
   // ADD HERE
 
 public:
@@ -2167,7 +2183,10 @@ void html_printer::end_of_line()
 void html_printer::emit_line (text_glob *)
 {
   // --fixme-- needs to know the length in percentage
-  html.put_string("<hr>");
+  if (dialect == xhtml)
+    html.put_string("<hr/>");
+  else
+    html.put_string("<hr>");
 }
 
 /*
@@ -2206,13 +2225,22 @@ void html_printer::emit_raw (text_glob *g)
     switch (next_tag) {
 
     case CENTERED:
-      current_paragraph->do_para("align=center", space);
+      if (dialect == html4)
+	current_paragraph->do_para("align=\"center\"", space);
+      else
+	current_paragraph->do_para("class=\"center\"", space);
       break;
     case LEFT:
-      current_paragraph->do_para(&html, "align=left", get_troff_indent(), pageoffset, linelength, space);
+      if (dialect == html4)
+	current_paragraph->do_para(&html, "align=\"left\"", get_troff_indent(), pageoffset, linelength, space);
+      else
+	current_paragraph->do_para(&html, "class=\"left\"", get_troff_indent(), pageoffset, linelength, space);
       break;
     case RIGHT:
-      current_paragraph->do_para(&html, "align=right", get_troff_indent(), pageoffset, linelength, space);
+      if (dialect == html4)
+	current_paragraph->do_para(&html, "align=\"right\"", get_troff_indent(), pageoffset, linelength, space);
+      else
+	current_paragraph->do_para(&html, "class=\"right\"", get_troff_indent(), pageoffset, linelength, space);
       break;
     default:
       fatal("unknown enumeration");
@@ -2308,9 +2336,12 @@ static string &generate_img_src (const char *filename)
   while (filename && (filename[0] == ' ')) {
     filename++;
   }
-  if (exists(filename))
+  if (exists(filename)) {
     *s += string("<img src=\"") + filename + "\" "
 	  + "alt=\"Image " + filename + "\">";
+    if (dialect == xhtml)
+      *s += "</img>";
+  }
   return *s;
 }
 
@@ -2409,14 +2440,60 @@ void html_printer::do_title (void)
   }
 }
 
+/*
+ *  write_html_anchor - writes out an anchor.  The style of the anchor
+ *                      dependent upon simple_anchor.
+ */
+
+void html_printer::write_html_anchor (text_glob *h)
+{
+  if (dialect == html4) {
+    if (h != NULL) {
+      html.put_string("<a name=\"");
+      if (simple_anchors) {
+	string buffer(ANCHOR_TEMPLATE);
+
+	buffer += as_string(header.no_of_headings);
+	buffer += '\0';
+	html.put_string(buffer.contents());
+      } else
+	html.put_string(header.header_buffer);
+      html.put_string("\"></a>").nl();
+    }
+  }
+}
+
+/*
+ *  write_xhtml_anchor - writes out an anchor.  The style of the anchor
+ *                       dependent upon simple_anchor.
+ */
+
+void html_printer::write_xhtml_anchor (text_glob *h)
+{
+  if (dialect == xhtml) {
+    if (h != NULL) {
+      html.put_string(" id=\"");
+      if (simple_anchors) {
+	string buffer(ANCHOR_TEMPLATE);
+
+	buffer += as_string(header.no_of_headings);
+	buffer += '\0';
+	html.put_string(buffer.contents());
+      } else
+	html.put_string(header.header_buffer);
+      html.put_string("\"");
+    }
+  }
+}
+
 void html_printer::write_header (void)
 {
   if (! header.header_buffer.empty()) {
+    text_glob *a = NULL;
     int space = current_paragraph->retrieve_para_space() || seen_space;
 
-    if (header.header_level > 7) {
+    if (header.header_level > 7)
       header.header_level = 7;
-    }
 
     // firstly we must terminate any font and type faces
     current_paragraph->done_para();
@@ -2427,32 +2504,21 @@ void html_printer::write_header (void)
       header.no_of_headings++;
       style st;
 
-      text_glob *h=new text_glob();
-      h->text_glob_html(&st,
+      a = new text_glob();
+      a->text_glob_html(&st,
 			header.headings.add_string(header.header_buffer),
 			header.header_buffer.length(),
 			header.no_of_headings, header.header_level,
 			header.no_of_headings, header.header_level);
 
-      header.headers.add(h,
+      // and add this header to the header list
+      header.headers.add(a,
 			 header.no_of_headings,
 			 header.no_of_headings, header.no_of_headings,
-			 header.no_of_headings, header.no_of_headings);   // and add this header to the header list
-
-      // lastly we generate a tag
-
-      html.nl().nl().put_string("<a name=\"");
-      if (simple_anchors) {
-	string buffer(ANCHOR_TEMPLATE);
-
-	buffer += as_string(header.no_of_headings);
-	buffer += '\0';
-	html.put_string(buffer.contents());
-      } else {
-	html.put_string(header.header_buffer);
-      }
-      html.put_string("\"></a>").nl();
+			 header.no_of_headings, header.no_of_headings);
     }
+
+    html.nl().nl();
 
     if (manufacture_headings) {
       // line break before a header
@@ -2462,11 +2528,14 @@ void html_printer::write_header (void)
       if (header.header_level<4) {
 	html.put_string("<b><font size=\"+1\">");
 	html.put_string(header.header_buffer);
-	html.put_string("</font></b>").nl();
+	html.put_string("</font>").nl();
+	write_html_anchor(a);
+        html.put_string("</b>").nl();
       }
       else {
 	html.put_string("<b>");
-	html.put_string(header.header_buffer);
+	html.put_string(header.header_buffer).nl();
+	write_html_anchor(a);
 	html.put_string("</b>").nl();
       }
     }
@@ -2474,8 +2543,10 @@ void html_printer::write_header (void)
       // and now we issue the real header
       html.put_string("<h");
       html.put_number(header.header_level);
+      write_xhtml_anchor(a);
       html.put_string(">");
-      html.put_string(header.header_buffer);
+      html.put_string(header.header_buffer).nl();
+      write_html_anchor(a);
       html.put_string("</h");
       html.put_number(header.header_level);
       html.put_string(">").nl();
@@ -2810,10 +2881,15 @@ void html_printer::do_check_center(void)
 	int space = current_paragraph->retrieve_para_space() || seen_space;
 	current_paragraph->done_para();
 	supress_sub_sup = TRUE;
-	current_paragraph->do_para("align=center", space);
+	if (dialect == html4)
+	  current_paragraph->do_para("align=\"center\"", space);
+	else
+	  current_paragraph->do_para("class=\"center\"", space);
       } else
-	if (strcmp("align=center",
-		   current_paragraph->get_alignment()) != 0) {
+	if ((strcmp("align=\"center\"",
+		    current_paragraph->get_alignment()) != 0) &&
+	    (strcmp("class=\"center\"",
+		    current_paragraph->get_alignment()) != 0)) {
 	  /*
 	   *  different alignment, so shutdown paragraph and open
 	   *  a new one.
@@ -2821,7 +2897,10 @@ void html_printer::do_check_center(void)
 	  int space = current_paragraph->retrieve_para_space() || seen_space;
 	  current_paragraph->done_para();
 	  supress_sub_sup = TRUE;
-	  current_paragraph->do_para("align=center", space);
+	  if (dialect == html4)
+	    current_paragraph->do_para("align=\"center\"", space);
+	  else
+	    current_paragraph->do_para("class=\"center\"", space);
 	} else
 	  /*
 	   *  same alignment, if we have emitted text then issue a break.
@@ -2898,7 +2977,10 @@ void html_printer::insert_split_file (void)
 
     split_file += string("-");
     split_file += as_string(header.no_of_level_one_headings);
-    split_file += string(".html");
+    if (dialect == xhtml)
+      split_file += string(".xhtml");
+    else
+      split_file += string(".html");
     split_file += '\0';
 
     file_list.set_file_name(split_file);
@@ -3092,9 +3174,15 @@ void html_printer::troff_tag (text_glob *g)
    *  firstly skip over devtag:
    */
   char *t=(char *)g->text_string+strlen("devtag:");
-
   if (strncmp(g->text_string, "html</p>:", strlen("html</p>:")) == 0) {
     do_end_para(g);
+  } else if (strncmp(g->text_string, "html<?p>:", strlen("html<?p>:")) == 0) {
+    if (current_paragraph->emitted_text())
+      html.put_string(g->text_string+9);
+    else
+      do_end_para(g);
+  } else if (strncmp(g->text_string, "math<?p>:", strlen("math<?p>:")) == 0) {
+    do_math(g);
   } else if (g->is_eol()) {
     do_eol();
   } else if (g->is_eol_ce()) {
@@ -3174,6 +3262,19 @@ void html_printer::troff_tag (text_glob *g)
   } else if (strncmp(t, "tab0", 4) == 0) {
     do_tab0();
   }
+}
+
+/*
+ *  do_math - prints out the equation
+ */
+
+void html_printer::do_math (text_glob *g)
+{
+  do_font(g);
+  if (current_paragraph->emitted_text())
+    html.put_string(g->text_string+9);
+  else
+    do_end_para(g);
 }
 
 /*
@@ -4720,7 +4821,10 @@ void html_printer::write_title (int in_head)
     } else {
       title.has_been_written = TRUE;
       if (title.with_h1) {
-	html.put_string("<h1 align=center>");
+	if (dialect == xhtml)
+	  html.put_string("<h1>");
+	else
+	  html.put_string("<h1 align=\"center\">");
 	html.put_string(title.text);
 	html.put_string("</h1>").nl().nl();
       }
@@ -4737,8 +4841,12 @@ void html_printer::write_title (int in_head)
 
 static void write_rule (void)
 {
-  if (auto_rule)
-    fputs("<hr>\n", stdout);
+  if (auto_rule) {
+    if (dialect == xhtml)
+      fputs("<hr/>\n", stdout);
+    else
+      fputs("<hr>\n", stdout);
+  }
 }
 
 void html_printer::begin_page(int n)
@@ -4757,7 +4865,7 @@ void html_printer::begin_page(int n)
   output_hpos            = -1;
   output_vpos            = -1;
   output_vpos_max        = -1;
-  current_paragraph      = new html_text(&html);
+  current_paragraph      = new html_text(&html, dialect);
   do_indent(get_troff_indent(), pageoffset, linelength);
   current_paragraph->do_para("", FALSE);
 }
@@ -4815,7 +4923,13 @@ void html_printer::write_navigation (const string &top, const string &prev,
   int need_bar = FALSE;
 
   if (multiple_files) {
+    current_paragraph->done_para();
     write_rule();
+    if (groff_sig)
+      fputs("\n\n<table width=\"100%\" border=\"0\" rules=\"none\"\n"
+	    "frame=\"void\" cellspacing=\"1\" cellpadding=\"0\">\n"
+	    "<colgroup><col class=\"left\"></col><col class=\"right\"></col></colgroup>\n"
+	    "<tr><td class=\"left\">", stdout);
     fputs("[ ", stdout);
     if ((strcmp(prev.contents(), "") != 0) && prev != top && prev != current) {
       emit_link(prev, "prev");
@@ -4833,6 +4947,16 @@ void html_printer::write_navigation (const string &top, const string &prev,
       emit_link(top, "top");
     }
     fputs(" ]\n", stdout);
+    handle_valid_flag();
+
+    if (groff_sig) {
+      fputs("</td><td class=\"right\"><i><small>"
+	    "This document was produced using "
+	    "<a href=\"http://www.gnu.org/software/groff/\">"
+	    "groff-", stdout);
+      fputs(Version_string, stdout);
+      fputs("</a>.</small></i></td></tr></table>\n", stdout);
+    }
     write_rule();
   }
 }
@@ -4857,7 +4981,10 @@ void html_printer::do_file_components (void)
 
   file_list.start_of_list();
   top = string(job_name);
-  top += string(".html");
+  if (dialect == xhtml)
+    top += string(".xhtml");
+  else
+    top += string(".html");
   top += '\0';
   next = file_list.next_file_name();
   next += '\0';
@@ -4870,6 +4997,12 @@ void html_printer::do_file_components (void)
     
     file_list.move_next();
     if (file_list.is_new_output_file()) {
+#ifdef LONG_FOR_TIME_T
+      long t;
+#else
+      time_t t;
+#endif
+
       if (fragment_no > 1)
 	write_navigation(top, prev, next, current);
       prev = current;
@@ -4881,7 +5014,27 @@ void html_printer::do_file_components (void)
       fflush(stdout);
       freopen(split_file.contents(), "w", stdout);
       fragment_no++;
-      writeHeadMetaStyle();
+      if (dialect == xhtml)
+	writeHeadMetaStyle();
+
+      html.begin_comment("Creator     : ")
+	.put_string("groff ")
+	.put_string("version ")
+	.put_string(Version_string)
+	.end_comment();
+
+      t = time(0);
+      html.begin_comment("CreationDate: ")
+	.put_string(ctime(&t), strlen(ctime(&t))-1)
+	.end_comment();
+
+      if (dialect == html4)
+	writeHeadMetaStyle();
+
+      html.put_string("<title>");
+      html.put_string(split_file.contents());
+      html.put_string("</title>").nl().nl();
+
       fputs(head_info.contents(), stdout);
       fputs("</head>\n", stdout);
       write_navigation(top, prev, next, current);
@@ -4891,8 +5044,27 @@ void html_printer::do_file_components (void)
   }
   if (fragment_no > 1)
     write_navigation(top, prev, next, current);
-  else
+  else {
+    current_paragraph->done_para();
     write_rule();
+    if (valid_flag && dialect == xhtml) {
+      if (groff_sig)
+	fputs("\n\n<table width=\"100%\" border=\"0\" rules=\"none\"\n"
+	      "frame=\"void\" cellspacing=\"1\" cellpadding=\"0\">\n"
+	      "<colgroup><col class=\"left\"></col><col class=\"right\"></col></colgroup>\n"
+	      "<tr><td class=\"left\">", stdout);
+      handle_valid_flag();
+      if (groff_sig) {
+	fputs("</td><td class=\"right\"><i><small>"
+	      "This document was produced using "
+	      "<a href=\"http://www.gnu.org/software/groff/\">"
+	      "groff-", stdout);
+	fputs(Version_string, stdout);
+	fputs("</a>.</small></i></td></tr></table>\n", stdout);
+      }
+      write_rule();
+    }
+  }
 }
 
 /*
@@ -4902,21 +5074,43 @@ void html_printer::do_file_components (void)
 
 void html_printer::writeHeadMetaStyle (void)
 {
-  fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n", stdout);
-  fputs("\"http://www.w3.org/TR/html4/loose.dtd\">\n", stdout);
+  if (dialect == html4) {
+    fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n", stdout);
+    fputs("\"http://www.w3.org/TR/html4/loose.dtd\">\n", stdout);
+    fputs("<html>\n", stdout);
+    fputs("<head>\n", stdout);
+    fputs("<meta name=\"generator\" "
+	  "content=\"groff -Thtml, see www.gnu.org\">\n", stdout);
+    fputs("<meta http-equiv=\"Content-Type\" "
+	  "content=\"text/html; charset=US-ASCII\">\n", stdout);
+    fputs("<meta name=\"Content-Style\" content=\"text/css\">\n", stdout);
+    fputs("<style type=\"text/css\">\n", stdout);
+  }
+  else {
+    fputs("<?xml version=\"1.0\" encoding=\"us-ascii\"?>\n", stdout);
+    fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN\"\n", stdout);
+    fputs(" \"http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd\"\n", stdout);
+    fputs(" [<!ENTITY mathml \"http://www.w3.org/1998/Math/MathML\">]>\n", stdout);
 
-  fputs("<html>\n", stdout);
-  fputs("<head>\n", stdout);
-  fputs("<meta name=\"generator\" "
-	      "content=\"groff -Thtml, see www.gnu.org\">\n", stdout);
-  fputs("<meta http-equiv=\"Content-Type\" "
-	      "content=\"text/html; charset=US-ASCII\">\n", stdout);
-  fputs("<meta name=\"Content-Style\" content=\"text/css\">\n", stdout);
-
-  fputs("<style type=\"text/css\">\n", stdout);
-  fputs("       p     { margin-top: 0; margin-bottom: 0; }\n", stdout);
-  fputs("       pre   { margin-top: 0; margin-bottom: 0; }\n", stdout);
-  fputs("       table { margin-top: 0; margin-bottom: 0; }\n", stdout);
+    fputs("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n",
+	  stdout);
+    fputs("<head>\n", stdout);
+    fputs("<meta name=\"generator\" "
+	  "content=\"groff -Txhtml, see www.gnu.org\"/>\n", stdout);
+    fputs("<meta http-equiv=\"Content-Type\" "
+	  "content=\"text/html; charset=US-ASCII\"/>\n", stdout);
+    fputs("<meta name=\"Content-Style\" content=\"text/css\"/>\n", stdout);
+    fputs("<style type=\"text/css\">\n", stdout);
+    fputs("       .center { text-align: center }\n", stdout);
+    fputs("       .right  { text-align: right }\n", stdout);
+  }
+  fputs("       p       { margin-top: 0; margin-bottom: 0; "
+	"vertical-align=\"top\" }\n", stdout);
+  fputs("       pre     { margin-top: 0; margin-bottom: 0; "
+	"vertical-align=\"top\" }\n", stdout);
+  fputs("       table   { margin-top: 0; margin-bottom: 0; "
+	"vertical-align=\"top\" }\n", stdout);
+  fputs("       h1      { text-align: center }\n", stdout);
   fputs("</style>\n", stdout);
 }
 
@@ -4932,6 +5126,10 @@ html_printer::~html_printer()
     current_paragraph->flush_text();
   html.end_line();
   html.set_file(stdout);
+
+  if (dialect == xhtml)
+    writeHeadMetaStyle();
+
   html.begin_comment("Creator     : ")
     .put_string("groff ")
     .put_string("version ")
@@ -4943,7 +5141,8 @@ html_printer::~html_printer()
     .put_string(ctime(&t), strlen(ctime(&t))-1)
     .end_comment();
 
-  writeHeadMetaStyle();
+  if (dialect == html4)
+    writeHeadMetaStyle();
 
   write_title(TRUE);
   head_info += '\0';
@@ -5123,14 +5322,28 @@ void html_printer::special(char *s, const environment *env, char type)
        * requesting that the formatting move right by the appropriate
        * amount.
        */
-    } else if (strncmp(s, "html</p>:", 9) == 0) {
+    } else if ((strncmp(s, "html</p>:", 9) == 0) ||
+	       (strncmp(s, "html<?p>:", 9) == 0) ||
+	       (strncmp(s, "math<?p>:", 9) == 0)) {
       int r=font::res;   /* resolution of the device */
       font *f=sbuf_style.f;
+      string t;
 
       if (f == NULL) {
 	int found=FALSE;
 
 	f = font::load_font("TR", &found);
+      }
+
+      if (strncmp(s, "math<?p>:", 9) == 0) {
+	if (strncmp((char *)&s[9], "<math>", 6) == 0) {
+	  s[9] = '\0';
+	  t = s;
+	  t += "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">";
+	  t += (char *)&s[15];
+	  t += '\0';
+	  s = (char *)&t[0];
+	}
       }
 
       /*
@@ -5148,6 +5361,7 @@ void html_printer::special(char *s, const environment *env, char type)
        * requesting that the formatting move right by the appropriate
        * amount.
        */
+
     } else if (strncmp(s, "index:", 6) == 0) {
       cutoff_heading = atoi(&s[6]);
     } else if (strncmp(s, "assertion:[", 11) == 0) {
@@ -5211,6 +5425,21 @@ int html_printer::round_width(int x)
   return n * r;
 }
 
+/*
+ *  handle_valid_flag - emits a valid xhtml 1.1 button, provided -V and -x
+ *                      were supplied on the command line.
+ */
+
+void html_printer::handle_valid_flag (void)
+{
+  if (valid_flag && dialect == xhtml)
+    fputs("<p>"
+	  "<a href=\"http://validator.w3.org/check?uri=referer\"><img "
+	  "src=\"http://www.w3.org/Icons/valid-xhtml11\" "
+	  "alt=\"Valid XHTML 1.1 Transitional\" height=\"31\" width=\"88\" /></a>\n"
+	  "</p>\n", stdout);
+}
+
 int main(int argc, char **argv)
 {
   program_name = argv[0];
@@ -5222,7 +5451,7 @@ int main(int argc, char **argv)
     { "version", no_argument, 0, 'v' },
     { NULL, 0, 0, 0 }
   };
-  while ((c = getopt_long(argc, argv, "a:bdD:F:g:hi:I:j:lno:prs:S:v",
+  while ((c = getopt_long(argc, argv, "a:bdD:eF:g:hi:I:j:lno:prs:S:vVx:y",
 			  long_options, NULL))
 	 != EOF)
     switch(c) {
@@ -5238,6 +5467,9 @@ int main(int argc, char **argv)
       /* handled by pre-html */
       break;
     case 'D':
+      /* handled by pre-html */
+      break;
+    case 'e':
       /* handled by pre-html */
       break;
     case 'F':
@@ -5285,6 +5517,21 @@ int main(int argc, char **argv)
       printf("GNU post-grohtml (groff) version %s\n", Version_string);
       exit(0);
       break;
+    case 'V':
+      valid_flag = TRUE;
+      break;
+    case 'x':
+      if (strcmp(optarg, "x") == 0) {
+	dialect = xhtml;
+	simple_anchors = TRUE;
+      } else if (strcmp(optarg, "4") == 0)
+	dialect = html4;
+      else
+	printf("unsupported html dialect %s (defaulting to html4)\n", optarg);
+      break;
+    case 'y':
+      groff_sig = TRUE;
+      break;
     case CHAR_MAX + 1: // --help
       usage(stdout);
       exit(0);
@@ -5307,6 +5554,6 @@ int main(int argc, char **argv)
 
 static void usage(FILE *stream)
 {
-  fprintf(stream, "usage: %s [-vblnh] [-D dir] [-I image_stem] [-F dir] [files ...]\n",
+  fprintf(stream, "usage: %s [-vbelnhVy] [-D dir] [-I image_stem] [-F dir] [-x x] [files ...]\n",
 	  program_name);
 }

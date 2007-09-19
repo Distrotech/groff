@@ -26,7 +26,8 @@
 @copying
 This manual documents GNU @code{troff} version 1.19.2.
 
-Copyright @copyright{} 1994-2000, 2001, 2002, 2003, 2004, 2005, 2006
+Copyright @copyright{} 1994-2000, 2001, 2002, 2003, 2004, 2005, 2006,
+2007
 Free Software Foundation, Inc.
 
 @quotation
@@ -472,7 +473,7 @@ Software Foundation raise funds for GNU development.''
 @title groff
 @subtitle The GNU implementation of @code{troff}
 @subtitle Edition 1.19.3
-@subtitle Summer 2006
+@subtitle Autumn 2007
 @author by Trent A.@tie{}Fisher
 @author and Werner Lemberg (@email{bug-groff@@gnu.org})
 
@@ -553,7 +554,7 @@ Software Foundation raise funds for GNU development.''
 @chapter Introduction
 @cindex introduction
 
-GNU @code{troff} (or @code{groff}) is a system for typesetting documents. 
+GNU @code{troff} (or @code{groff}) is a system for typesetting documents.
 @code{troff} is very flexible and has been used extensively for some thirty
 years.  It is well entrenched in the @acronym{UNIX} community.
 
@@ -4019,7 +4020,7 @@ The @code{PT} macro defines a custom header;
 the @code{BT} macro defines a custom footer.  These macros must
 handle odd/even/first page differences if necessary.
 
-The @code{HD} macro defines additional header processing 
+The @code{HD} macro defines additional header processing
 to take place after executing the @code{PT} macro.
 @endDefmac
 
@@ -4386,7 +4387,7 @@ number register.
 
 Emulations of a few ancient Bell Labs macros can be re-enabled by calling
 the otherwise undocumented @code{SC} section-header macro.  Calling @code{SC}
-enables @code{UC} for marking up a product or application name, and the pair 
+enables @code{UC} for marking up a product or application name, and the pair
 @code{P1}/@code{P2} for surrounding code example displays.
 
 These are not enabled by default because (a)@tie{}they were not documented,
@@ -6472,6 +6473,11 @@ If the command line option @option{-a} is used to produce an
 @acronym{ASCII} approximation of the output, this is set to@tie{}1, zero
 otherwise.  @xref{Groff Options}.
 
+@item \n[.O]
+@vindex .O
+This read-only register is set to the suppression nesting level (see
+escapes @code{\O}).  @xref{Suppressing output}.
+
 @item \n[.P]
 @vindex .P
 This register is set to@tie{}1 (and to@tie{}0 otherwise) if the current
@@ -7187,7 +7193,7 @@ page:
 @endExample
 
 @noindent
-A call to @samp{.y-from-bot-up 10c} means that the bottom of the next line 
+A call to @samp{.y-from-bot-up 10c} means that the bottom of the next line
 will be at 10@dmn{cm} from the paper edge at the bottom.
 
 If a vertical trap is sprung during execution of @code{sp}, the amount of
@@ -12854,9 +12860,13 @@ to @code{\O}.
 
 @item \O3
 Begin a nesting level.  At start-up, @code{gtroff} is at outer level.
+The current level is contained within the read-only register @code{.O}.
+@xref{Built-in Registers}.
 
 @item \O4
 End a nesting level.
+The current level is contained within the read-only register @code{.O}.
+@xref{Built-in Registers}.
 
 @item \O[5@var{P}@var{filename}]
 This escape is @code{grohtml} specific.  Provided that this escape
@@ -15670,74 +15680,18 @@ called@tie{}@file{@var{f}}.
 
 The @file{DESC} file can contain the following types of line.  Except
 for the @code{charset} keyword which must comes last (if at all), the
-order of the lines is not important.
+order of the lines is not important.  Later entries in the file, however,
+override previous values.
 
 @table @code
-@item res @var{n}
-@kindex res
-@cindex device resolution
-@cindex resolution, device
-There are @var{n}@tie{}machine units per inch.
+@item charset
+@kindex charset
+This line and everything following in the file are ignored.  It is
+allowed for the sake of backwards compatibility.
 
-@item hor @var{n}
-@kindex hor
-@cindex horizontal resolution
-@cindex resolution, horizontal
-The horizontal resolution is @var{n}@tie{}machine units.  All horizontal
-quantities are rounded to be multiples of this value.
-
-@item vert @var{n}
-@kindex vert
-@cindex vertical resolution
-@cindex resolution, vertical
-The vertical resolution is @var{n}@tie{}machine units.  All vertical
-quantities are rounded to be multiples of this value.
-
-@item sizescale @var{n}
-@kindex sizescale
-The scale factor for point sizes.  By default this has a value of@tie{}1.
-One scaled point is equal to one point/@var{n}.  The arguments to the
-@code{unitwidth} and @code{sizes} commands are given in scaled points.
-@xref{Fractional Type Sizes}, for more information.
-
-@item unitwidth @var{n}
-@kindex unitwidth
-Quantities in the font files are given in machine units for fonts whose
-point size is @var{n}@tie{}scaled points.
-
-@item prepro @var{program}
-@kindex prepro
-Call @var{program} as a preprocessor.  Currently, this keyword is used
-by @code{groff} with option @option{-Thtml} only.
-
-@item postpro @var{program}
-@kindex postpro
-Call @var{program} as a postprocessor.  For example, the line
-
-@Example
-postpro grodvi
-@endExample
-
-@noindent
-in the file @file{devdvi/DESC} makes @code{groff} call @code{grodvi}
-if option @option{-Tdvi} is given (and @option{-Z} isn't used).
-
-@item tcommand
-@kindex tcommand
-This means that the postprocessor can handle the @samp{t} and @samp{u}
-intermediate output commands.
-
-@item sizes @var{s1} @var{s2} @dots{} @var{sn} 0
-@kindex sizes
-This means that the device has fonts at @var{s1}, @var{s2}, @dots{}
-@var{sn} scaled points.  The list of sizes must be terminated by@tie{}0
-(this is digit zero).  Each @var{si} can also be a range of sizes
-@var{m}-@var{n}.  The list can extend over more than one line.
-
-@item styles @var{S1} @var{S2} @dots{} @var{Sm}
-@kindex styles
-The first @var{m}@tie{}font positions are associated with styles
-@var{S1} @dots{} @var{Sm}.
+@item family @var{fam}
+@kindex family
+The default font family is @var{fam}.
 
 @item fonts @var{n} @var{F1} @var{F2} @var{F3} @dots{} @var{Fn}
 @kindex fonts
@@ -15746,15 +15700,27 @@ Fonts @var{F1} @dots{} @var{Fn} are mounted in the font positions
 styles.  This command may extend over more than one line.  A font name
 of@tie{}0 means no font is mounted on the corresponding font position.
 
-@item family @var{fam}
-@kindex family
-The default font family is @var{fam}.
+@item hor @var{n}
+@kindex hor
+@cindex horizontal resolution
+@cindex resolution, horizontal
+The horizontal resolution is @var{n}@tie{}machine units.  All horizontal
+quantities are rounded to be multiples of this value.
 
-@item use_charnames_in_special
-@kindex use_charnames_in_special
-This command indicates that @code{gtroff} should encode special
-characters inside special commands.  Currently, this is only used
-by the @acronym{HTML} output device.  @xref{Postprocessor Access}.
+@item image_generator @var{string}
+@kindex image_generator
+@cindex PostScript, PNG image generation
+@cindex PNG image generation from PostScript
+Needed for @code{grohtml} only.  It specifies the program to generate
+PNG images from PostScript input.  Under GNU/Linux this is usually
+@code{gs} but under other systems (notably cygwin) it might be set to
+another name.
+
+@item paperlength @var{n}
+@kindex paperlength
+The physical vertical dimension of the output medium in machine units.
+This isn't used by @code{troff} itself but by output devices.
+Deprecated.  Use @code{papersize} instead.
 
 @item papersize @var{string} @dots{}
 @kindex papersize
@@ -15777,6 +15743,12 @@ sets both the vertical and horizontal dimension of the output medium.
 More than one argument can be specified; @code{groff} scans from left to
 right and uses the first valid paper specification.
 
+@item paperwidth @var{n}
+@kindex paperwidth
+The physical horizontal dimension of the output medium in machine units.
+This isn't used by @code{troff} itself but by output devices.
+Deprecated.  Use @code{papersize} instead.
+
 @item pass_filenames
 @kindex pass_filenames
 Tell @code{gtroff} to emit the name of the source file currently
@@ -15784,15 +15756,94 @@ being processed.  This is achieved by the intermediate output command
 @samp{F}.  Currently, this is only used by the @acronym{HTML} output
 device.
 
+@item postpro @var{program}
+@kindex postpro
+Call @var{program} as a postprocessor.  For example, the line
+
+@Example
+postpro grodvi
+@endExample
+
+@noindent
+in the file @file{devdvi/DESC} makes @code{groff} call @code{grodvi}
+if option @option{-Tdvi} is given (and @option{-Z} isn't used).
+
+@item prepro @var{program}
+@kindex prepro
+Call @var{program} as a preprocessor.  Currently, this keyword is used
+by @code{groff} with option @option{-Thtml} only.
+
 @item print @var{program}
 @kindex print
 Use @var{program} as a spooler program for printing.  If omitted,
 the @option{-l} and @option{-L} options of @code{groff} are ignored.
 
-@item charset
-@kindex charset
-This line and everything following in the file are ignored.  It is
-allowed for the sake of backwards compatibility.
+@item res @var{n}
+@kindex res
+@cindex device resolution
+@cindex resolution, device
+There are @var{n}@tie{}machine units per inch.
+
+@item sizes @var{s1} @var{s2} @dots{} @var{sn} 0
+@kindex sizes
+This means that the device has fonts at @var{s1}, @var{s2}, @dots{}
+@var{sn} scaled points.  The list of sizes must be terminated by@tie{}0
+(this is digit zero).  Each @var{si} can also be a range of sizes
+@var{m}-@var{n}.  The list can extend over more than one line.
+
+@item sizescale @var{n}
+@kindex sizescale
+The scale factor for point sizes.  By default this has a value of@tie{}1.
+One scaled point is equal to one point/@var{n}.  The arguments to the
+@code{unitwidth} and @code{sizes} commands are given in scaled points.
+@xref{Fractional Type Sizes}, for more information.
+
+@item styles @var{S1} @var{S2} @dots{} @var{Sm}
+@kindex styles
+The first @var{m}@tie{}font positions are associated with styles
+@var{S1} @dots{} @var{Sm}.
+
+@item tcommand
+@kindex tcommand
+This means that the postprocessor can handle the @samp{t} and @samp{u}
+intermediate output commands.
+
+@item unicode
+@kindex unicode
+Indicate that the output device supports the complete Unicode
+repertoire.  Useful only for devices which produce @emph{character
+entities} instead of glyphs.
+
+If @code{unicode} is present, no @code{charset} section is required
+in the font description files since the Unicode handling built into
+@code{groff} is used.  However, if there are entries in a
+@code{charset} section, they either override the default mappings for
+those particular characters or add new mappings (normally for composite
+characters).
+
+This is used for @option{-Tutf8} and @option{-Thtml}.
+
+@item unitwidth @var{n}
+@kindex unitwidth
+Quantities in the font files are given in machine units for fonts whose
+point size is @var{n}@tie{}scaled points.
+
+@item unscaled_charwidths
+@kindex unscaled_charwidths
+Make the font handling module always return unscaled character widths.
+Needed for the @code{grohtml} device.
+@item use_charnames_in_special
+@kindex use_charnames_in_special
+This command indicates that @code{gtroff} should encode special
+characters inside special commands.  Currently, this is only used
+by the @acronym{HTML} output device.  @xref{Postprocessor Access}.
+
+@item vert @var{n}
+@kindex vert
+@cindex vertical resolution
+@cindex resolution, vertical
+The vertical resolution is @var{n}@tie{}machine units.  All vertical
+quantities are rounded to be multiples of this value.
 @end table
 
 The @code{res}, @code{unitwidth}, @code{fonts}, and @code{sizes} lines

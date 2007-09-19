@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2007
  * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.h
@@ -32,6 +32,12 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #define STYLE_VERTICAL_SPACE "1em"
 
 /*
+ *  supported html dialects.
+ */
+
+typedef enum {xhtml, html4} html_dialect;
+
+/*
  *  html tags
  */
 
@@ -56,7 +62,7 @@ typedef struct tag_definition {
 
 class html_text {
 public:
-         html_text         (simple_output *op);
+         html_text         (simple_output *op, html_dialect d);
         ~html_text         (void);
   void   flush_text        (void);
   void   do_emittext       (const char *s, int length);
@@ -105,6 +111,7 @@ private:
   tag_definition   *stackptr;    /* the current paragraph state */
   tag_definition   *lastptr;     /* the end of the stack        */
   simple_output    *out;
+  html_dialect      dialect;     /* which dialect of html?      */
   int               space_emitted;   /* just emitted a space?   */
   int               current_indentation;   /* current .in value */
   int               pageoffset;            /* .po value         */

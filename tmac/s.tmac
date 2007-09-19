@@ -221,6 +221,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .		ps \\n[PS]
 .\}
 ..
+.
 .de LP
 .if !'\\n[.z]'' \{\
 .	br
@@ -229,8 +230,9 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .br
 .cov*ab-init
 .cov*print
-\\*[\\$0]\\
+.nop \\*[\\$0]\\
 ..
+.
 .als IP LP
 .als PP LP
 .als XP LP
@@ -241,6 +243,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .als MC LP
 .als RT LP
 .als XS LP
+.
 .de cov*ab-init
 .als cov*ab-init @nop
 .als LP @LP
@@ -265,6 +268,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .als AI par@AI
 .als TL par@TL
 ..
+.
 .de @AB
 .if !'\\n(.z'' \{\
 .	br
@@ -342,7 +346,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .cov*tl-au-print
 .sp 3
 .if d cov*ab-div \{\
-.  if !'\*(.T'html'  .	nf
+.  if !'\*(.T'html'  .nf
 .       cov*ab-div
 .\}
 .sp 3
@@ -1691,12 +1695,12 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .\}
 .di eqn*div
 .in 0
-.if \\n[eqn*type]=0 .HTML-IMAGE-LEFT
+.if \\n[eqn*type]=0 .EQN-HTML-IMAGE-LEFT
 .if \\n[eqn*type]=1 \{\
 .   if '\*(.T'html' .RS
-.   HTML-IMAGE-INLINE
+.EQN-HTML-IMAGE-INLINE
 .\}
-.if \\n[eqn*type]=2 .HTML-IMAGE
+.if \\n[eqn*type]=2 .EQN-HTML-IMAGE
 .nf
 ..
 .de @div-end!eqn*div
@@ -1744,20 +1748,21 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .	\}
 .	el \{
 .\" must terminate empty equations in html and ps4html as they contain
-.\" the HTML-IMAGE-END suppression nodes
+.\" the EQN-HTML-IMAGE-END suppression nodes
 .		if \\n[dl] .chop eqn*div
 .		if '\*(.T'html' \\*[eqn*div]
 .		if r ps4html    \\*[eqn*div]
 .	\}
 .       if !'\*(.T'html' .fi
-.	if \\n[eqn*type]=0 .HTML-IMAGE-END
+.	if \\n[eqn*type]=0 .EQN-HTML-IMAGE-END
 .	if \\n[eqn*type]=1 \{\
-.		HTML-IMAGE-END
+.		EQN-HTML-IMAGE-END
 .		if '\*(.T'html' .RE
 .	\}
-.	if \\n[eqn*type]=2 .HTML-IMAGE-END
+.	if \\n[eqn*type]=2 .EQN-HTML-IMAGE-END
 .\}
 ..
+.
 .\" ****************************
 .\" ******** module tbl ********
 .\" ****************************
@@ -2065,35 +2070,21 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
 .ds ! \(r!\"			upside down !
 ..
 .de CHECK-FOOTER-AND-KEEP
-.\" it might be better to als FS -> B1 and FE -> B2
-.\" however this produced wierd results, so I've moved back to a more reliable
-.\" but less interesting solution --fixme--
-.   if '\*(.T'html' \{\
-.	rm KF
-.	als KF KS
-.	rm FS
-.	de FS
-.		br
-.		HTML-IMAGE
+.if '\*(.T'html' \{\
+.   rm KF
+.   als KF KS
+.
+.   rm FS
+.   de FS
+.      sp
+.      HTML-NS <cite>
 \\..
-.	rm FE
-.	de FE
-.		br
-.		HTML-IMAGE-END
+.   rm FE
+.   de FE
+.      HTML-NS </cite>
+.      sp
 \\..
-.   \}
-.   if r ps4html \{\
-.	rm FS
-.	de FS
-.		br
-.		HTML-IMAGE
-\\..
-.	rm FE
-.	de FE
-.		br
-.		HTML-IMAGE-END
-\\..
-.   \}
+.\}
 ..
 .par@load-init
 .\" ****************************

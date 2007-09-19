@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -74,6 +74,7 @@ class possible_command {
 public:
   possible_command();
   ~possible_command();
+  void clear_name();
   void set_name(const char *);
   void set_name(const char *, const char *);
   const char *get_name();
@@ -119,6 +120,8 @@ int main(int argc, char **argv)
   int Xflag = 0;
   int oflag = 0;
   int safer_flag = 1;
+  int is_xhtml = 0;
+  int eflag = 0;
   int opt;
   const char *command_prefix = getenv("GROFF_COMMAND_PREFIX");
   const char *encoding = getenv("GROFF_ENCODING");
@@ -173,6 +176,7 @@ int main(int argc, char **argv)
       commands[GRAP_INDEX].set_name(command_prefix, "grap");
       break;
     case 'e':
+      eflag = 1;
       commands[EQN_INDEX].set_name(command_prefix, "eqn");
       break;
     case 's':
@@ -237,10 +241,21 @@ int main(int argc, char **argv)
       safer_flag = 0;
       break;
     case 'T':
-      if (strcmp(optarg, "html") == 0) {
+      if (strcmp(optarg, "xhtml") == 0) {
 	// force soelim to aid the html preprocessor
 	commands[SOELIM_INDEX].set_name(command_prefix, "soelim");
+	Pargs += "-x";
+	Pargs += '\0';
+	Pargs += 'x';
+	Pargs += '\0';
+	is_xhtml = 1;
+	device = "html";
+	break;
       }
+      if (strcmp(optarg, "html") == 0)
+	// force soelim to aid the html preprocessor
+	commands[SOELIM_INDEX].set_name(command_prefix, "soelim");
+      
       if (strcmp(optarg, "Xps") == 0) {
 	warning("-TXps option is obsolete: use -X -Tps instead");
 	device = "ps";
@@ -313,6 +328,8 @@ int main(int argc, char **argv)
     commands[TROFF_INDEX].set_name(predriver);
     // pass the device arguments to the predrivers as well
     commands[TROFF_INDEX].insert_args(Pargs);
+    if (eflag && is_xhtml)
+      commands[TROFF_INDEX].insert_arg("-e");
     if (vflag)
       commands[TROFF_INDEX].insert_arg("-v");
   }
@@ -371,11 +388,21 @@ int main(int argc, char **argv)
     commands[SPOOL_INDEX].set_name(0);
   }
   commands[TROFF_INDEX].append_arg("-T", device);
-  // html renders equations as images via ps
   if (strcmp(device, "html") == 0) {
-    if (oflag)
-      fatal("`-o' option is invalid with device `html'");
-    commands[EQN_INDEX].append_arg("-Tps:html");
+    if (is_xhtml) {
+      if (oflag)
+	fatal("`-o' option is invalid with device `xhtml'");
+      if (zflag)
+	commands[EQN_INDEX].append_arg("-Tmathml:xhtml");
+      else if (eflag)
+	commands[EQN_INDEX].clear_name();
+    }
+    else {
+      if (oflag)
+	fatal("`-o' option is invalid with device `html'");
+      // html renders equations as images via ps
+      commands[EQN_INDEX].append_arg("-Tps:html");
+    }
   }
   else
     commands[EQN_INDEX].append_arg("-T", device);
@@ -540,6 +567,14 @@ void possible_command::set_name(const char *s)
 {
   a_delete name;
   name = strsave(s);
+}
+
+void possible_command::clear_name()
+{
+  a_delete name;
+  a_delete argv;
+  name = NULL;
+  argv = NULL;
 }
 
 void possible_command::set_name(const char *s1, const char *s2)

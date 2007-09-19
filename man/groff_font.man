@@ -287,6 +287,37 @@ and
 output commands.
 .
 .TP
+.B unicode
+Indicate that the output device supports the complete Unicode
+repertoire.
+.
+Useful only for devices which produce
+.I character entities
+instead of glyphs.
+.
+.IP
+If
+.B unicode
+is present, no
+.B charset
+section is required in the font description files since the Unicode
+handling built into
+.B groff
+is used.
+.
+However, if there are entries in a
+.B charset
+section, they either override the default mappings for those
+particular characters or add new mappings (normally for composite
+characters).
+.
+.IP
+This is used for
+.B \-Tutf8
+and
+.BR \-Thtml .
+.
+.TP
 .BI unitwidth\  n
 Quantities in the font files are given in machine units
 for fonts whose point size is

@@ -301,6 +301,26 @@ www functionality.  It should work with any macro set.
 .  \}
 ..
 .
+.\"
+.\" emit an HTML tag.  If text has been written in the paragraph
+.\"                    then do not shut the paragraph down.
+.\"                    If text was not written, remove the empty
+.\"                    paragraph tag and emit the desired html tag.
+.\"
+.de HTML<?p>
+.  if \\n[www-html] .nop \&\X^html<?p>:\\$*^
+..
+.
+.\"
+.\" emit a MATH tag.  If text has been written in the paragraph
+.\"                   then do not shut the paragraph down.
+.\"                   If text was not written, remove the empty
+.\"                   paragraph tag and emit the desired math tag.
+.\"
+.de MATH<?p>
+.  if \\n[www-html] .nop \&\X^math<?p>:\\$*^
+..
+.
 .\" --------------------------------------------------------------------
 .\" HX n
 .\"
@@ -490,7 +510,8 @@ www functionality.  It should work with any macro set.
 .    if !'\\$4'' \
 .      nr www-height \\$4
 .    HTML <img src="\\$1" alt="Image \\$1" \
-           width=\\n[www-width] height=\\n[www-height]>
+           "width=""\\n[www-width]""" \
+           "height=""\\n[www-height]"""></img>
 .  \}
 .  el \
 .    nop \\*[www:open]\f[\\*[www:fontstyle]]\\$1\f[]\\*[www:close]
@@ -537,22 +558,22 @@ www functionality.  It should work with any macro set.
 .    ie (\\n[www-width] == 0) \{\
 .      ie (\\n[www-height] == 0) \
 .        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
-                                             "alt=""Image \\$1""></p>"
+                                             "alt=""Image \\$1"""></img></p>"
 .      el \
 .        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
                                              "alt=""Image \\$1""" \
-                                             height=\\n[www-height]></p>
+                                             "height=""\\n[www-height]"""></img></p>
 .    \}
 .    el \{\
 .      ie (\\n[www-height] == 0) \
 .        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
                                              "alt=""Image \\$1""" \
-                                             width=\\n[www-width]></p>
+                                             "width=""\\n[www-width]"""></img></p>
 .      el \
 .        HTML</p> <p \\*[www-htmlalign]><img "src=""\\$1""" \
                                              "alt=""Image \\$1""" \
-                                             width=\\n[www-width] \
-                                             height=\\n[www-height]></p>
+                                             "width=""\\n[www-width]""" \
+                                             "height=""\\n[www-height]"""></img></p>
 .    \}
 .  \}
 .  el \{\
@@ -687,7 +708,7 @@ www functionality.  It should work with any macro set.
 .
 .  nr www-width 1i
 .  nr www-height 1i
-.  ds www-size-specs width=\\n[www-width] height=\\n[www-height]\"
+.  ds www-size-specs width=""\\n[www-width]" height="\\n[www-height]"
 .  ie !'\\$2'' \{\
 .    nr www-is-absolute 0
 .    nr www-absolute 0
@@ -698,13 +719,13 @@ www functionality.  It should work with any macro set.
 .      nr www-width (\\n[www-absolute] * \\n[.l] / 100)
 .      if \\n[www-html] \
 .        nr www-width (\\n[www-width] * 100 / 240)
-.      ds www-size-specs width=\\*[www-percentage]\"
+.      ds www-size-specs width=\"\\*[www-percentage]"
 .    \}
 .    el \{\
 .      nr www-width \\n[www-absolute]
 .      if \\n[www-html] \
 .        nr www-width (\\n[www-width] * 100 / 240)
-.      ds www-size-specs width=\\n[www-width]\"
+.      ds www-size-specs width=\"\\n[www-width]"
 .    \}
 .
 .    nr www-height \\n[www-width]
@@ -718,13 +739,13 @@ www functionality.  It should work with any macro set.
 .        nr www-height (\\n[www-absolute] * \\n[.p] / 100)
 .        if \\n[www-html] \
 .           nr www-height (\\n[www-height] * 100 / 240)
-.        ds www-size-specs \\*[www-size-specs] height=\\*[www-percentage]\"
+.        ds www-size-specs "\\*[www-size-specs] height="\\*[www-percentage]"
 .      \}
 .      el \{\
 .        nr www-height \\n[www-absolute]
 .        if \\n[www-html] \
 .           nr www-height (\\n[www-height] * 100 / 240)
-.        ds www-size-specs \\*[www-size-specs] height=\\*[www-height]\"
+.        ds www-size-specs "\\*[www-size-specs] "height="\\*[www-height]"
 .      \}
 .    \}
 .  \}
@@ -732,11 +753,11 @@ www functionality.  It should work with any macro set.
 .    \" height not specified; use width value
 .    ie !\\n[www-is-absolute] \{\
 .       \" percentage value
-.       ds www-size-specs \\*[www-size-specs] height=\\*[www-percentage]\"
+.       ds www-size-specs "\\*[www-size-specs] "height="\\*[www-percentage]"
 .       nr www-height \\n[www-width]
 .    \}
 .    el \{\
-.       ds www-size-specs \\*[www-size-specs] height=\\*[www-width]\"
+.       ds www-size-specs "\\*[www-size-specs] "height="\\*[www-width]"
 .       nr www-height \\n[www-width]
 .    \}
 .  \}
@@ -745,13 +766,13 @@ www functionality.  It should work with any macro set.
 .    ie !\\n[www-image-just] \
 .      HTML <img "src=""\\$1""" \
                  "alt=""Image \\$1""" \
-                 hspace=\\n[www-htmlimage-gap] \
-                 align=right \\*[www-size-specs]>
+                 "hspace=""\\n[www-htmlimage-gap]""" \
+                 "align=""right"" \\*[www-size-specs]"""></img>
 .    el \
 .      HTML <img "src=""\\$1""" \
                  "alt=""Image \\$1""" \
-                 hspace=\\n[www-htmlimage-gap] \
-                 align=left \\*[www-size-specs]>
+                 "hspace=""\\n[www-htmlimage-gap]""" \
+                 "align=""left"" \\*[www-size-specs]"""></img>
 .  \}
 .  el \{\
 .    tm www-width is \\n[www-width]
@@ -851,7 +872,7 @@ www functionality.  It should work with any macro set.
 .\"   Produce a horizontal line.
 .\"
 .de HR
-.  HTML</p> <hr>
+.  HTML</p> <hr></hr>
 ..
 .
 .\" --------------------------------------------------------------------
@@ -933,12 +954,25 @@ www functionality.  It should work with any macro set.
 .de www-push-li
 .  nr www-depth +1
 .  ds www-level\\n[www-depth] \\$1\"
+.  ds www-ltag\\n[www-depth]
 .  als LI \\$1
 ..
 .
 .de www-pop-li
 .  nr www-depth -1
 .  als LI \\*[www-level\\n[www-depth]]
+..
+.
+.\" www-emit-ltag - shuts down a previous open list tag
+.\"                 before issuing a new tag \\$1.
+.\"                 It then records tag \\$1 is open.
+.
+.de www-emit-ltag
+.  if !'\\*[www-ltag\\n[www-depth]]'' \
+.    HTML-NS </\\*[www-ltag\\n[www-depth]]>
+.  if !'\\$1'' \
+.    HTML-NS <\\$1>
+.  ds www-ltag\\n[www-depth] \\$1
 ..
 .
 .\"
@@ -984,11 +1018,12 @@ www functionality.  It should work with any macro set.
 .de ULS
 .  www-push-li www-li-ul
 .  www-push-ul-level
-.  ie \\n[www-html] \
+.  ie \\n[www-html] \{\
+.    www-emit-ltag
 .    HTML</p> <ul>
-.  el \{\
-.    nr www-li-indent +\w'\\*[www-ul-level\\n[www-ul-level]]'u
 .  \}
+.  el \
+.    nr www-li-indent +\w'\\*[www-ul-level\\n[www-ul-level]]'u
 ..
 .
 .\" --------------------------------------------------------------------
@@ -997,8 +1032,10 @@ www functionality.  It should work with any macro set.
 .\"   End an unordered list.
 .\"
 .de ULE
-.  ie \\n[www-html] \
-.    HTML </ul>
+.  ie \\n[www-html] \{\
+.    www-emit-ltag
+.    HTML</p> </ul>
+.  \}
 .  el \{\
 .    nr www-li-indent -\w'\\*[www-ul-level\\n[www-ul-level]]'u
 .    in \\n[www-li-indent]u
@@ -1015,9 +1052,11 @@ www functionality.  It should work with any macro set.
 .de OLS
 .  www-push-li www-li-ol
 .  www-push-ol-level
-.  ie \\n[www-html] \
+.  ie \\n[www-html] \{\
+.    www-emit-ltag
 .    HTML</p> <ol "style=""list-style-type:" \
                            "\\*[www-ol-level\\n[www-ol-level]]"">"
+.  \}
 .  el \
 .    nr www-li-indent +\w'\\*[www-ol-tmp]'u
 ..
@@ -1028,8 +1067,10 @@ www functionality.  It should work with any macro set.
 .\"   End an ordered list.
 .\"
 .de OLE
-.  ie \\n[www-html] \
+.  ie \\n[www-html] \{\
+.    www-emit-ltag
 .    HTML </ol>
+.  \}
 .  el \{\
 .    nr www-li-indent -\w'\\*[www-ol-tmp]'u
 .    in \\n[www-li-indent]u
@@ -1047,8 +1088,10 @@ www functionality.  It should work with any macro set.
 .de DLS
 .  www-push-li www-li-dl
 .  nr www-dl-level +1
-.  ie \\n[www-html] \
+.  ie \\n[www-html] \{\
+.    www-emit-ltag
 .    HTML</p> <dl>
+.  \}
 .  el \{\
 .    nr www-li-indent +\\n[www-dl-shift]u
 .    in \\n[www-li-indent]u
@@ -1061,8 +1104,10 @@ www functionality.  It should work with any macro set.
 .\"   End a definition list.
 .\"
 .de DLE
-.  ie \\n[www-html] \
+.  ie \\n[www-html] \{\
+.    www-emit-ltag
 .    HTML </dl>
+.  \}
 .  el \{\
 .    nr www-li-indent -\\n[www-dl-shift]u
 .    in \\n[www-li-indent]u
@@ -1081,7 +1126,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de www-li-ul
 .  ie \\n[www-html] \
-.    HTML-NS <li>
+.    www-emit-ltag li
 .  el \{\
 .    www:paraspace
 .    in \\n[www-li-indent]u
@@ -1095,7 +1140,7 @@ www functionality.  It should work with any macro set.
 .\"
 .de www-li-ol
 .  ie \\n[www-html] \
-.    HTML-NS <li>
+.    www-emit-ltag li
 .  el \{\
 .    www:paraspace
 .    in \\n[www-li-indent]u
@@ -1110,7 +1155,7 @@ www functionality.  It should work with any macro set.
 .de www-li-dl
 .  ie \\n[www-html] \{\
 .    HTML <dt>\\$1</dt>
-.    HTML-NS <dd>
+.    www-emit-ltag dd
 .  \}
 .  el \{\
 .    www:paraspace
@@ -1179,8 +1224,8 @@ www functionality.  It should work with any macro set.
 .\"
 .do if !d TS .do ds TS HTML-IMAGE\"
 .do if !d TE .do ds TE HTML-IMAGE-END\"
-.do if !d EQ .do ds EQ HTML-IMAGE\"
-.do if !d EN .do ds EN HTML-IMAGE-END\"
+.do if !d EQ .do ds EQ EQN-HTML-IMAGE\"
+.do if !d EN .do ds EN EQN-HTML-IMAGE-END\"
 .
 .\"
 .\" supplementary macros used by other macro sets
@@ -1243,6 +1288,61 @@ www functionality.  It should work with any macro set.
 .de HTML-IMAGE-INLINE
 .  www-make-unique-name
 .  HTML-DO-IMAGE \\*[www-unique-name] i
+..
+.
+.\"  EQN-HTML-IMAGE and friends check to see whether the equation is
+.\"                 not in an image, in which case it allows html
+.\"                 (mathml) to be generated (if -Txhtml was specified).
+.
+.de EQN-HTML-IMAGE
+.  \" generates a centered image
+.  www-make-unique-name
+.  EQN-HTML-DO-IMAGE \\*[www-unique-name] c
+..
+.
+.de EQN-HTML-IMAGE-RIGHT
+.  www-make-unique-name
+.  EQN-HTML-DO-IMAGE \\*[www-unique-name] r
+..
+.
+.de EQN-HTML-IMAGE-LEFT
+.  www-make-unique-name
+.  EQN-HTML-DO-IMAGE \\*[www-unique-name] l
+..
+.
+.de EQN-HTML-IMAGE-INLINE
+.  www-make-unique-name
+.  EQN-HTML-DO-IMAGE \\*[www-unique-name] i
+..
+.\" --------------------------------------------------------------------
+.\" EQN-HTML-DO-IMAGE - tells troff to issue an image marker which can be
+.\"                     read back by pre-html
+.\"
+.de EQN-HTML-DO-IMAGE
+.  ie r xhtml \{\
+.    if !(\\n[.O] == 0) \{\
+.      if r ps4html \
+.        nop \O[5\\$2\\$1.png]\O[1]\O[3]
+.      if \\n[www-html] \
+.        nop \O[5\\$2\\$1.png]\O[0]\O[3]
+.    \}
+.  \}
+.  el .HTML-DO-IMAGE \\$*
+..
+.
+.\" --------------------------------------------------------------------
+.\" EQN-HTML-IMAGE-END - terminates an image for html
+.\"
+.de EQN-HTML-IMAGE-END
+.  ie r xhtml \{\
+.    if !(\\n[.O] == 0) \{\
+.      if r ps4html \
+.        nop \O[4]\O[2]\O[0]
+.      if \\n[www-html] \
+.        nop \O[4]\O[2]\O[1]
+.    \}
+.  \}
+.  el .HTML-IMAGE-END
 ..
 .
 .\" --------------------------------------------------------------------
@@ -1387,6 +1487,13 @@ www functionality.  It should work with any macro set.
 .    www:error .\\$0 expects that both the open and close glyph is specified
 .  ds www:open \\$1\"
 .  ds www:close \\$2\"
+..
+.
+.\" MATHML - enable eqn mathml output to pass through to the device
+.\"          driver
+.
+.de MATHML
+.  if (\\n[.O] == 0) .MATH<?p> \\$*
 ..
 .
 .\" --------------------------------------------------------------------

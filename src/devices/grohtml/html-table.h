@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* Copyright (C) 2002, 2003, 2004, 2005, 2007 Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-table.h
  *
@@ -93,6 +93,8 @@ public:
   void  finish_row        (void);
   int   get_effective_linelength (void);
   void  set_space         (int space);
+  void  emit_colspan      (void);
+  void  emit_td           (int percentage, const char *s = ">");
 
   tabs          *tab_stops;    /* tab stop positions */
   simple_output *out;
@@ -121,7 +123,7 @@ public:
   // the indent is shutdown when it is deleted
 
 private:
-  void end     (void);
+  void end    (void);
   int         is_used;
   int         pg;        // values of the registers as passed via initialization
   int         ll;

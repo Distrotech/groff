@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2007
  * Free Software Foundation, Inc.
  *
  *  Gaius Mulley (gaius@glam.ac.uk) wrote html-text.cpp
@@ -44,10 +44,11 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 #undef DEBUGGING
 // #define DEBUGGING
 
-html_text::html_text (simple_output *op) :
-  stackptr(NULL), lastptr(NULL), out(op), space_emitted(TRUE),
-  current_indentation(-1), pageoffset(-1), linelength(-1),
-  blank_para(TRUE), start_space(FALSE)
+html_text::html_text (simple_output *op, html_dialect d) :
+  stackptr(NULL), lastptr(NULL), out(op), dialect(d),
+  space_emitted(TRUE), current_indentation(-1),
+  pageoffset(-1), linelength(-1), blank_para(TRUE),
+  start_space(FALSE)
 {
 }
 
@@ -165,8 +166,12 @@ void html_text::end_tag (tag_definition *t)
 		     delete t->indent;
 		   t->indent = NULL;
                    break;
-  case SMALL_TAG:  out->put_string("</small>"); break;
-  case BIG_TAG:    out->put_string("</big>"); break;
+  case SMALL_TAG:  if (dialect != xhtml || (! is_in_pre ()))
+                     out->put_string("</small>");
+                   break;
+  case BIG_TAG:    if (dialect != xhtml || (! is_in_pre ()))
+                     out->put_string("</big>");
+                   break;
   case COLOR_TAG:  out->put_string("</font>"); break;
 
   default:
@@ -196,8 +201,10 @@ void html_text::issue_tag (const char *tagname, const char *arg,
     out->put_string(STYLE_VERTICAL_SPACE);
     out->put_string("\"");
   }
+#if 0
   if (space == TRUE || space == FALSE)
     out->put_string(" valign=\"top\"");
+#endif
   out->put_string(">");
 }
 
@@ -258,8 +265,12 @@ void html_text::start_tag (tag_definition *t)
 		     issue_tag("", (char *)t->arg1);
 		   }
                    out->enable_newlines(FALSE); break;
-  case SMALL_TAG:  issue_tag("<small", (char *)t->arg1); break;
-  case BIG_TAG:    issue_tag("<big", (char *)t->arg1); break;
+  case SMALL_TAG:  if (dialect != xhtml || (! is_in_pre ()))
+                     issue_tag("<small", (char *)t->arg1);
+                   break;
+  case BIG_TAG:    if (dialect != xhtml || (! is_in_pre ()))
+                     issue_tag("<big", (char *)t->arg1);
+                   break;
   case BREAK_TAG:  break;
   case COLOR_TAG:  issue_color_begin(&t->col); break;
 
@@ -652,9 +663,11 @@ void html_text::do_emittext (const char *s, int length)
     int text = remove_break();
     check_emit_text(stackptr);
     if (text) {
-      if (is_present(PRE_TAG)) {
+      if (is_present(PRE_TAG))
 	out->nl();
-      } else
+      else if (dialect == xhtml)
+	out->put_string("<br/>").nl();
+      else
 	out->put_string("<br>").nl();
     }
   } else

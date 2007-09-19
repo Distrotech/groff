@@ -7757,6 +7757,7 @@ void init_input_requests()
   number_reg_dictionary.define(".$", new nargs_reg);
   number_reg_dictionary.define(".br", new break_flag_reg);
   number_reg_dictionary.define(".C", new constant_int_reg(&compatible_flag));
+  number_reg_dictionary.define(".O", new variable_reg(&begin_level));
   number_reg_dictionary.define(".c", new lineno_reg);
   number_reg_dictionary.define(".color", new constant_int_reg(&color_flag));
   number_reg_dictionary.define(".F", new filename_reg);

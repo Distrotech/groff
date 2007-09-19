@@ -1,3 +1,132 @@
+2007-09-19  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* doc/groff.texinfo: Document new .O register and add cross
+	reference entries.
+
+	* NEWS: Updated.
+
+	* src/devices/grohtml/grohtml.man: Document new -V and -y options.
+
+	* src/devices/grohtml/html-table.cpp: Add support for XHTML 1.1.
+	(html_table:: emit_colspan, html_table::emit_td): New methods.
+	(html_table::emit_col):  Use html_table::emit_td.
+	(html_table::emit_table_header): Use html_table::emit_colspan if
+	dialect xhtml is specified.
+	(html_table::finish_row): Updated.
+
+	* src/devices/grohtml/html-table.h (html_table): Declare
+	emit_colspan, emit_td.
+
+	* src/devices/grohtml/html-text.cpp: Modified tags to comply with
+	xhtml if this dialect was requested.
+
+	* src/devices/grohtml/html-text.h (html_dialect): New enumeration.
+	(html_text): Add new variable `dialect'.
+
+	* src/devices/grohtml/post-html.cpp: Modify header tags to be XHTML
+	compliant.
+	(valid_flag, groff_sig, dialect): New global variables. 
+	(html_printer::handle_valid_flag, html_printer::do_math,
+	html_printer::write_html_anchor, html_printer::write_xhtml_anchor,
+	html_printer::do_math, html_printer::handle_valid_flag): New
+	methods.
+	(html_printer::emit_line, html_printer::emit_raw,
+	html_printer::do_check_center, html_printer::write_title,
+	write_rule, html_printer::writeHeadMetaStyle, generate_img_src,
+	html_printer::begin_page): Altered to be XHTML compliant.
+	(html_printer::write_header): Updated.
+	(html_printer::troff_tag): Call do_math.
+	(html_printer::insert_split_file, html_printer::do_file_components,
+	html_printer::write_navigation): Create XHTML file components if
+	necessary and also produces a groff signature if requested.
+	(~html_printer): Call writeHeadMetaStyle at appropriate places
+	depending upon html_dialect.
+	(html_printer::special): Handle new tags `html<?p>' and `math<?p>'.
+	(main): Added options -x, -V, and -y.
+	(usage): Updated.
+
+	* src/preproc/eqn/box.cpp: Create a distinction between
+	the MathML device and the XHTML device.
+	(do_text): Issue a newline at the end of the equation if XHTML was
+	specified.
+	(box::top_level): Prefix the output of an equation by the .MATHML
+	macro.
+	(output_string): Suppress \n if XHTML was specified.
+
+	* src/preproc/eqn/main.cpp (xhtml): New global flag.
+	(inline_equation): Skip leading spaces after inline equation for
+	XHTML device.
+	(main): Set `xhtml' flag if `-Tmathml:xhtml' is specified.
+
+	* src/preproc/eqn/eqn.h (xhtml): New external flag.
+
+	* src/preproc/eqn/text.cpp (entity_table): Fix typo.
+
+	* src/preproc/html/pre-html.cpp (html_dialect): New enumeration.
+	(dialect, eqn_flag): New global variables.
+	(html_system): Improve debugging support.
+	(alterDeviceTo): Test for -Txhtml when altering device to the image
+	device and reset to -Txhtml.
+	(addZ): Renamed to...
+	(addArg): This.
+	Introducea a general parameter.
+	(print_args): New debugging function.
+	(char_buffer::run_output_filter): Use print_args and addArg rather
+	than addZ.
+	(char_buffer::do_html, char_buffer::do_image): Add -rxhtml=1 command
+	line parameter as an argument to the html generation of text when
+	xhtml is needed.  Include -e on the command line if mathml is
+	required.
+	(scanArguments): Allow -e, -V, -y and -x options.
+	-V, -y are handled by the back end.  -e sets `eqn_flag'.
+	-x determines HTML dialect.
+
+	* src/roff/groff/groff.cpp (possible_command): New method
+	`clear_name'.
+	(main):  Set eflag if -e is present on command line.
+	Set is_xhtml if -Txhtml is present.
+	Pass `-x x' to the HTML pre and post processors.
+	Pass `-e' to the HTML pre processor if required.
+	Pass `-Tmathml:xhtml' to eqn if XHTML is requested.
+
+	* src/roff/troff/input.cpp (init_input_requests): Introduce new
+	number register `\n[.O]'.
+
+	* tmac/s.tmac: (LP): Use .nop for semantic sugar.
+	(cov*ab-init) reformat.
+	(@EQ): Use EQN-HTML-IMAGE and friends rather than HTML-IMAGE.
+	(CHECK-FOOTER-AND-KEEP): Define FS, FE such that they use
+	<cite></cite> for the html device rather than generate images for
+	footnotes.
+
+	* tmac/troffrc-end: Define EQN-HTML-IMAGE,
+	EQN-HTML-IMAGE-END, EQN-HTML-IMAGE-RIGHT,
+	EQN-HTML-IMAGE-LEFT, EQN-HTML-IMAGE-INLINE,
+	EQN-HTML-DO-IMAGE, EQN-HTML-IMAGE-END as null strings.
+
+	* tmac/www.tmac: (HTML<?p>): New macro.
+	(MATH<?p>): New macro.
+	(IMG, PIMG, MPIMG, HR): Use XHTML compliant syntax.
+	(www-emit-ltag): New macro.
+	(www-push-li): Updated.
+	(ULS): Ensure that tags are balanced in order by use of
+	www-emit-ltag.
+	(ULE): Likewise: Use www-emit-ltag and shut down paragraphs in
+	order.
+	(OLS, OLE, DLS, DLE): Ditto.
+	<global>: Define EQ and EN to EQN-HTML-IMAGE and EQN-HTML-IMAGE-END
+	respectively.
+	(www-li-ul, www-li-ol, www-li-dl): Updated.
+	(EQN-HTML-IMAGE, EQN-HTML-IMAGE-RIGHT, EQN-HTML-IMAGE-LEFT,
+	EQN-HTML-IMAGE-INLINE, EQN-HTML-DO-IMAGE, EQN-HTML-IMAGE-END,
+	MATHML): New macros.
+
+2007-09-17  Werner LEMBERG  <wl@gnu.org>
+
+	* man/groff_font.man: Document `unicode' keyword.
+	* doc/groff.texinfo (DESC File Format): Synchronize with
+	groff_font.man.
+
 2007-09-15  Werner LEMBERG  <wl@nu.org>
 
 	* man/groff.man: Document `\_'.

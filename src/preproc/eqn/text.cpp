@@ -57,7 +57,7 @@ struct map entity_table[] = {
   {"*L", "&Lambda;"},	// ISOgrk3
   {"*m", "&mu;"},	// ISOgrk3
   {"*M", "M"},
-  {"*n", "&nu"},	// ISOgrk3
+  {"*n", "&nu;"},	// ISOgrk3
   {"*N", "N"},
   {"*o", "o"},
   {"*O", "O"},

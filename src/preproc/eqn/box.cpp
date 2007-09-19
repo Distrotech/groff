@@ -237,7 +237,7 @@ void output_string()
 {
   if (output_format == troff)
     printf("\\*(" LINE_STRING "\n");
-  else if (output_format == mathml)
+  else if (output_format == mathml && !xhtml)
     putchar('\n');
 }
 
@@ -254,8 +254,11 @@ void do_text(const char *s)
     printf(".as " LINE_STRING " \"%s\n", s);
     printf(".ec\n");
   }
-  else if (output_format == mathml)
+  else if (output_format == mathml) {
     fputs(s, stdout);
+    if (xhtml && strlen(s) > 0)
+      printf("\n");
+  }
 }
 
 void set_minimum_size(int n)
@@ -349,6 +352,8 @@ void box::top_level()
 	     b->uid, body_height, b->uid, body_depth);
   }
   else if (output_format == mathml) {
+    if (xhtml)
+      printf(".MATHML ");
     printf("<math>");
     b->output();
     printf("</math>");

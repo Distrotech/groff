@@ -41,6 +41,7 @@ extern int one_size_reduction_flag;
 extern int compatible_flag;
 extern int nroff;
 extern eqnmode_t output_format;
+extern int xhtml;
 
 void init_lex(const char *str, const char *filename, int lineno);
 void lex_error(const char *message,

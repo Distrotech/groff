@@ -45,6 +45,7 @@ int one_size_reduction_flag = 0;
 int compatible_flag = 0;
 int no_newline_in_delim_flag = 0;
 int html = 0;
+int xhtml = 0;
 eqnmode_t output_format;
 
 int read_line(FILE *fp, string *p)
@@ -188,6 +189,13 @@ static int inline_equation(FILE *fp, string &linebuf, string &str)
       html_end_suppress();
       printf("\n");
     }
+    if (output_format == mathml)
+      printf("\n");
+    if (xhtml) {
+      /* skip leading spaces */
+      while ((*ptr != '\0') && (*ptr == ' '))
+	ptr++;
+    }
     start = delim_search(ptr, start_delim);
     if (start == 0) {
       char *nl = strchr(ptr, '\n');
@@ -313,6 +321,12 @@ int main(int argc, char **argv)
       else if (strcmp(device, "MathML") == 0) {
 	output_format = mathml;
 	load_startup_file = 0;
+      }
+      else if (strcmp(device, "mathml:xhtml") == 0) {
+	device = "MathML";
+	output_format = mathml;
+	load_startup_file = 0;
+	xhtml = 1;
       }
       break;
     case 's':
