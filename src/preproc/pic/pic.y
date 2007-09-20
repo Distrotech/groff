@@ -1,5 +1,5 @@
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006
+                 2006, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -94,10 +94,6 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token RIGHT_ARROW_HEAD
 %token DOUBLE_ARROW_HEAD
 %token LAST
-%token UP
-%token DOWN
-%token LEFT
-%token RIGHT
 %token BOX
 %token CIRCLE
 %token ELLIPSE

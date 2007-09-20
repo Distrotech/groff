@@ -1,5 +1,5 @@
 /* -*- C++ -*-
-   Copyright (C) 1989, 1990, 1991, 1992, 2000, 2004
+   Copyright (C) 1989, 1990, 1991, 1992, 2000, 2004, 2007
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -28,7 +28,6 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 int yylex();
 void yyerror(const char *);
-int yyparse();
 
 static const char *format_serial(char c, int n);
 

@@ -99,7 +99,7 @@ void pile_box::output()
     printf("\\h'\\n[" WIDTH_FORMAT "]u'", uid);
   }
   else if (output_format == mathml) {
-    char *av;
+    const char *av;
     switch (col.align) {
     case LEFT_ALIGN:
       av = "left";
@@ -242,7 +242,7 @@ void matrix_box::output()
     for (int i = 0; i < n; i++) {
       printf("<mtr>");
       for (int j = 0; j < len; j++) {
-	char *av;
+	const char *av;
 	switch (p[j]->align) {
 	case LEFT_ALIGN:
 	  av = "left";

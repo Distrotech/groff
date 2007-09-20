@@ -4288,13 +4288,13 @@ static void interpolate_arg(symbol nm)
     string args;
     for (int i = 1; i <= limit; i++) {
       args += '"';
-      args += BEGIN_QUOTE;
+      args += char(BEGIN_QUOTE);
       input_iterator *p = input_stack::get_arg(i);
       int c;
       while ((c = p->get(0)) != EOF)
 	if (c != DOUBLE_QUOTE)
 	  args += c;
-      args += END_QUOTE;
+      args += char(END_QUOTE);
       args += '"';
       if (i != limit)
 	args += ' ';
