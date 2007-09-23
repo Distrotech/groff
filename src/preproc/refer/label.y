@@ -28,6 +28,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 int yylex();
 void yyerror(const char *);
+int yyparse();
 
 static const char *format_serial(char c, int n);
 
