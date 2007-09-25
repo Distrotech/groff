@@ -166,13 +166,15 @@ void html_text::end_tag (tag_definition *t)
 		     delete t->indent;
 		   t->indent = NULL;
                    break;
-  case SMALL_TAG:  if (dialect != xhtml || (! is_in_pre ()))
+  case SMALL_TAG:  if (! is_in_pre ())
                      out->put_string("</small>");
                    break;
-  case BIG_TAG:    if (dialect != xhtml || (! is_in_pre ()))
+  case BIG_TAG:    if (! is_in_pre ())
                      out->put_string("</big>");
                    break;
-  case COLOR_TAG:  out->put_string("</font>"); break;
+  case COLOR_TAG:  if (! is_in_pre ())
+                     out->put_string("</font>");
+                   break;
 
   default:
     error("unrecognised tag");
@@ -265,14 +267,16 @@ void html_text::start_tag (tag_definition *t)
 		     issue_tag("", (char *)t->arg1);
 		   }
                    out->enable_newlines(FALSE); break;
-  case SMALL_TAG:  if (dialect != xhtml || (! is_in_pre ()))
+  case SMALL_TAG:  if (! is_in_pre ())
                      issue_tag("<small", (char *)t->arg1);
                    break;
-  case BIG_TAG:    if (dialect != xhtml || (! is_in_pre ()))
+  case BIG_TAG:    if (! is_in_pre ())
                      issue_tag("<big", (char *)t->arg1);
                    break;
   case BREAK_TAG:  break;
-  case COLOR_TAG:  issue_color_begin(&t->col); break;
+  case COLOR_TAG:  if (! is_in_pre ())
+                     issue_color_begin(&t->col);
+                   break;
 
   default:
     error("unrecognised tag");

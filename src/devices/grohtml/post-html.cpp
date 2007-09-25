@@ -2103,7 +2103,7 @@ class html_printer : public printer {
   int  round_width                    (int x);
   void handle_tag_within_title        (text_glob *g);
   void writeHeadMetaStyle             (void);
-  void handle_valid_flag              (void);
+  void handle_valid_flag              (int needs_para);
   void do_math                        (text_glob *g);
   void write_html_anchor              (text_glob *h);
   void write_xhtml_anchor             (text_glob *h);
@@ -4930,6 +4930,7 @@ void html_printer::write_navigation (const string &top, const string &prev,
 	    "frame=\"void\" cellspacing=\"1\" cellpadding=\"0\">\n"
 	    "<colgroup><col class=\"left\"></col><col class=\"right\"></col></colgroup>\n"
 	    "<tr><td class=\"left\">", stdout);
+    handle_valid_flag(FALSE);
     fputs("[ ", stdout);
     if ((strcmp(prev.contents(), "") != 0) && prev != top && prev != current) {
       emit_link(prev, "prev");
@@ -4947,7 +4948,6 @@ void html_printer::write_navigation (const string &top, const string &prev,
       emit_link(top, "top");
     }
     fputs(" ]\n", stdout);
-    handle_valid_flag();
 
     if (groff_sig) {
       fputs("</td><td class=\"right\"><i><small>"
@@ -5047,13 +5047,13 @@ void html_printer::do_file_components (void)
   else {
     current_paragraph->done_para();
     write_rule();
-    if (valid_flag && dialect == xhtml) {
+    if (valid_flag) {
       if (groff_sig)
 	fputs("\n\n<table width=\"100%\" border=\"0\" rules=\"none\"\n"
 	      "frame=\"void\" cellspacing=\"1\" cellpadding=\"0\">\n"
 	      "<colgroup><col class=\"left\"></col><col class=\"right\"></col></colgroup>\n"
 	      "<tr><td class=\"left\">", stdout);
-      handle_valid_flag();
+      handle_valid_flag(TRUE);
       if (groff_sig) {
 	fputs("</td><td class=\"right\"><i><small>"
 	      "This document was produced using "
@@ -5426,18 +5426,28 @@ int html_printer::round_width(int x)
 }
 
 /*
- *  handle_valid_flag - emits a valid xhtml 1.1 button, provided -V and -x
- *                      were supplied on the command line.
+ *  handle_valid_flag - emits a valid xhtml 1.1 or html-4.01 button, provided -V
+ *                      was supplied on the command line.
  */
 
-void html_printer::handle_valid_flag (void)
+void html_printer::handle_valid_flag (int needs_para)
 {
-  if (valid_flag && dialect == xhtml)
-    fputs("<p>"
-	  "<a href=\"http://validator.w3.org/check?uri=referer\"><img "
-	  "src=\"http://www.w3.org/Icons/valid-xhtml11\" "
-	  "alt=\"Valid XHTML 1.1 Transitional\" height=\"31\" width=\"88\" /></a>\n"
-	  "</p>\n", stdout);
+  if (valid_flag) {
+    if (needs_para)
+      fputs("<p>", stdout);
+    if (dialect == xhtml)
+      fputs("<a href=\"http://validator.w3.org/check?uri=referer\"><img "
+	    "src=\"http://www.w3.org/Icons/valid-xhtml11-blue\" "
+	    "alt=\"Valid XHTML 1.1 Transitional\" height=\"31\" width=\"88\" /></a>\n",
+	    stdout);
+    else
+      fputs("<a href=\"http://validator.w3.org/check?uri=referer\"><img "
+	    "src=\"http://www.w3.org/Icons/valid-html401-blue\" "
+	    "alt=\"Valid HTML 4.01 Transitional\" height=\"31\" width=\"88\"></a>\n",
+	    stdout);
+    if (needs_para)
+      fputs("</p>", stdout);
+  }
 }
 
 int main(int argc, char **argv)

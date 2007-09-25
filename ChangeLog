@@ -1,3 +1,25 @@
+2007-09-25  Gaius Mulley  <gaius@glam.ac.uk>
+
+	* doc/Makefile.in, doc/Makefile.sub (.ms.html): Add -P-V switch to
+	the production of html files.
+	(pic.html): Ditto.
+	Remove background colour switch.
+	(.SUFFIXES, clean): Handle *.xhtml files.
+
+	* src/devices/grohtml/grohtml.man: Document that -V option now
+	generates an HTML-4.01 validator or XHTML validator.
+
+	* src/devices/grohtml/html-text.cpp (html_text::end_tag,
+	html_text::start_tag): Suppress <small>, <big>, and <color> tags if
+	we are inside a <pre> block.
+
+	* src/devices/grohtml/post-html.cpp
+	(html_printer::handle_valid_flag): Add a parameter to indicate
+	whether it needs to generate a paragraph block.
+	(html_printer::write_navigation): Updated.
+	(html_printer::do_file_components): Generate an HTML-4.01 blue
+	validator button also.
+
 2007-09-23  Axel Kielhorn  <A.Kielhorn@web.de>
 
 	* man/groff.man: Fix URL of CSTR 54.

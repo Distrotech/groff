@@ -1,4 +1,5 @@
-# Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007
+#   Free Software Foundation, Inc.
 #      Written by Werner Lemberg <wl@gnu.org>
 # 
 # This file is part of groff.
@@ -81,7 +82,7 @@ GROFF=GROFF_COMMAND_PREFIX=''; \
 
 imagedir=img
 
-.SUFFIXES: .me .ms .ps .html .txt .texinfo .dvi .pdf
+.SUFFIXES: .me .ms .ps .html .txt .texinfo .dvi .pdf .xhtml
 .PHONY: all prepare_examples clean distclean realclean extraclean
 
 # For simplicity, we always call grn and eqn.
@@ -92,7 +93,7 @@ imagedir=img
 
 .ms.html:
 	$(GROFF) -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
-		 -P-D$(imagedir) -Thtml -ms >$@
+		 -P-D$(imagedir) -P-V -Thtml -ms >$@
 .ms.txt:
 	$(GROFF) -Tascii -ms -mwww >$@
 .ms.ps:
@@ -122,9 +123,9 @@ gnu.png: gnu.xpm
 	xpmtoppm $(srcdir)/gnu.xpm | pnmdepth 15 | pnmtopng >$@
 
 pic.html: pic.ms
-	$(GROFF) -P-p -P-b -P-I`basename $< | sed -e 's|.ms$$||'` \
+	$(GROFF) -P-p -P-I`basename $< | sed -e 's|.ms$$||'` \
                  -P-D$(imagedir) -P-j`basename $< | sed -e 's|.ms$$||'` \
-                 -Thtml -ms >$@
+                 -Thtml -P-V -ms >$@
 
 webpage.html: webpage.ms gnu.png gnu.eps groff.css
 	$(GROFF) -P-j`basename $< | sed -e 's|.ms$$||'` \
@@ -141,7 +142,7 @@ clean:
 	-rm -f *.aux *.dvi *.pdf *.log *.toc texput.log
 	-rm -f *.cp *.cps *.cv *.cn *.es *.ess *.fn *.fns *.ky *.kys \
                *.ma *.mas *.op *.ops *.pg *.pgs *.rq *.rqs *.st *.sts \
-               *.tp *.tps *.tr *.vr *.vrs
+               *.tp *.tps *.tr *.vr *.vrs *.xhtml
 	-rm -rf img
 
 distclean: clean
