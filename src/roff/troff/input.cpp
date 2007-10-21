@@ -5965,10 +5965,17 @@ void do_ps_file(FILE *fp, const char* filename)
     return;
   }
   while (ps_get_line(buf, fp, filename) != 0) {
-    if (buf[0] != '%' || buf[1] != '%'
-	|| strncmp(buf + 2, "EndComments", 11) == 0)
+    // in header comments, `%X' (`X' any printable character except
+    // whitespace) is possible too
+    if (buf[0] == '%') {
+      if (strncmp(buf + 1, "%EndComments", 12) == 0)
+	break;
+      if (white_space(buf[1]))
+	break;
+    }
+    else
       break;
-    if (strncmp(buf + 2, "BoundingBox:", 12) == 0) {
+    if (strncmp(buf + 1, "%BoundingBox:", 13) == 0) {
       int res = parse_bounding_box(buf + 14, &bb);
       if (res == 1) {
 	assign_registers(bb.llx, bb.lly, bb.urx, bb.ury);
@@ -5988,7 +5995,7 @@ void do_ps_file(FILE *fp, const char* filename)
   if (bb_at_end) {
     long offset;
     int last_try = 0;
-    /* in the trailer, the last BoundingBox comment is significant */
+    // in the trailer, the last BoundingBox comment is significant
     for (offset = 512; !last_try; offset *= 2) {
       int had_trailer = 0;
       int got_bb = 0;
