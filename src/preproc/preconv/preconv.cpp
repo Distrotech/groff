@@ -151,9 +151,13 @@ emacs_to_mime[] = {
   {"us-ascii",				"US-ASCII"},	// Emacs
   {"utf8",				"UTF-8"},	// alias
   {"utf-16",				"UTF-16"},	// Emacs
+  {"utf-16be",				"UTF-16BE"},	// Emacs
   {"utf-16-be",				"UTF-16BE"},	// Emacs
+  {"utf-16be-with-signature",		"UTF-16"},	// Emacs, not UTF-16BE
   {"utf-16-be-with-signature",		"UTF-16"},	// Emacs, not UTF-16BE
+  {"utf-16le",				"UTF-16LE"},	// Emacs
   {"utf-16-le",				"UTF-16LE"},	// Emacs
+  {"utf-16le-with-signature",		"UTF-16"},	// Emacs, not UTF-16LE
   {"utf-16-le-with-signature",		"UTF-16"},	// Emacs, not UTF-16LE
   {"utf-8",				"UTF-8"},	// Emacs
 
@@ -857,7 +861,7 @@ is_comment_line(char *s)
 {
   if (!s || !*s)
     return 0;
-  if (*s == '.')
+  if (*s == '.' || *s == '\'')
   {
     s++;
     while (*s == ' ' || *s == '\t')
@@ -932,11 +936,16 @@ get_variable_value_pair(char *d1, char **variable, char **value)
 //
 // We search for the following line:
 //
-//   .\"...-*-<local variables list>-*-
+//   <comment> ... -*-<local variables list>-*-
 //
-// (`...' might be anything).  There can be blanks after
-// the leading `.'; additionally, you might use `\#' starting
-// a line instead of `.\"'.
+// (`...' might be anything).
+//
+// <comment> can be one of the following syntax forms at the
+// beginning of the line:
+//
+//   .\"   .\#   '\"   '\#   \#
+//
+// There can be whitespace after the leading `.' or "'".
 //
 // The local variables list must occur within the first
 // comment block at the very beginning of the data stream.
@@ -1053,7 +1062,7 @@ do_file(const char *filename)
   encoding = emacs2mime(encoding_string);
   if (encoding[0] == '\0') {
     error("encoding `%1' not supported, not a portable encoding",
-          encoding_string);
+	  encoding_string);
     return 0;
   }
   if (debug_flag)

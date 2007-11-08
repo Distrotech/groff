@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 2006 Free Software Foundation, Inc.
+Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -25,16 +25,22 @@ preconv \- convert encoding of input files to something GNU troff understands
 .
 .
 .SH SYNOPSIS
-.B preconv
-[
-.B \-dhrv
-]
-[
-.BI \-e encoding
-]
-[
-.IR files \|.\|.\|.\|
-]
+.SY preconv
+.OP \-dr
+.OP \-e encoding
+.RI [ files
+.IR .\|.\|. ]
+.
+.SY preconv
+.B \-h
+|
+.B \-\-help
+.
+.SY preconv
+.B \-v
+|
+.B \-\-version
+.YS
 .
 .PP
 It is possible to have whitespace between the
@@ -79,6 +85,8 @@ Without this switch,
 uses the algorithm described below to select the input encoding.
 .
 .TP
+.B \-\-help
+.TQ
 .B \-h
 Print help message.
 .
@@ -87,6 +95,8 @@ Print help message.
 Do not add .lf requests.
 .
 .TP
+.B \-\-version
+.TQ
 .B \-v
 Print version number.
 .
@@ -125,15 +135,15 @@ environment variable which is eventually expanded to option
 .BR \-k .
 .
 .SS "Byte Order Mark"
-The Unicode Standard defines character U+FEFF as the the Byte Order Mark
+The Unicode Standard defines character U+FEFF as the Byte Order Mark
 (BOM).
 On the other hand, value U+FFFE is guaranteed not be a Unicode character at
 all.
 This allows to detect the byte order within the data stream (either
-big-endian or lower-endian), and the MIME encodings `UTF-16' and `UTF-32'
-mandate that the data stream starts with U+FEFF.
-Similarly, the data stream encoded as `UTF-8' might start with a BOM (to
-ease the conversion from and to UTF-16 and UTF-32).
+big-endian or lower-endian), and the MIME encodings \%`UTF-16' and
+\%`UTF-32' mandate that the data stream starts with U+FEFF.
+Similarly, the data stream encoded as \%`UTF-8' might start with a BOM (to
+ease the conversion from and to \%UTF-16 and \%UTF-32).
 In all cases, the byte order mark is
 .I not
 part of the data but part of the encoding protocol; with other words,
@@ -147,14 +157,136 @@ something not needed normally in
 .BR groff .
 .
 .SS "Coding Tags"
-To be written.
+Editors which support more than a single character encoding need tags
+within the input files to mark the file's encoding.
+While it is possible to guess the right input encoding with the help of
+heuristic algorithms for data which represents a greater amount of a natural
+language, it is still just a guess.
+Additionally, all algorithms fail easily for input which is either too short
+or doesn't represent a natural language.
+.
+.PP
+For these reasons,
+.B preconv
+supports the coding tag convention (with some restrictions) as used by
+.B "GNU Emacs"
+and
+.B XEmacs
+(and probably other programs too).
+.
+.PP
+Coding tags in
+.B "GNU Emacs"
+and
+.B XEmacs
+are stored in so-called
+.IR "File Variables" .
+.B preconv
+recognizes the following syntax form which must be put into a troff comment
+in the first or second line.
+.
+.RS
+.PP
+\-*\-
+.IR tag1 :
+.IR value1 ;
+.IR tag2 :
+.IR value2 ;
+\&.\|.\|.\& \-*\-
+.RE
+.
+.PP
+The only relevant tag for
+.B preconv
+is `coding' which can take the values listed below.
+Here an example line which tells
+.B Emacs
+to edit a file in troff mode, and to use \%latin2 as its encoding.
+.
+.RS
+.PP
+.EX
+\&.\[rs]" \-*\- mode: troff; coding: latin-2 \-*\-
+.EE
+.RE
+.
+.PP
+The following list gives all MIME coding tags (either lowercase or
+uppercase) supported by
+.BR preconv ;
+this list is hard-coded in the source.
+.
+.RS
+.PP
+.ad l
+\%big5, \%cp1047, \%euc-jp, \%euc-kr, \%gb2312, \%iso-8859-1, \%iso-8859-2,
+\%iso-8859-5, \%iso-8859-7, \%iso-8859-9, \%iso-8859-13, \%iso-8859-15,
+\%koi8-r, \%us-ascii, \%utf-8, \%utf-16, \%utf-16be, \%utf-16le
+.ad
+.RE
+.
+.PP
+In addition, the following hard-coded list of other tags is recognized which
+eventually map to values from the list above.
+.
+.RS
+.PP
+.ad l
+\%ascii, \%chinese-big5, \%chinese-euc, \%chinese-iso-8bit, \%cn-big5,
+\%\%cn-gb, \%cn-gb-2312, \%cp878, \%csascii, \%csisolatin1,
+\%cyrillic-iso-8bit, \%cyrillic-koi8, \%euc-china, \%euc-cn, \%euc-japan,
+\%euc-japan-1990, \%euc-korea, \%greek-iso-8bit, \%iso-10646/utf8,
+\%iso-10646/utf-8, \%iso-latin-1, \%iso-latin-2, \%iso-latin-5,
+\%iso-latin-7, \%iso-latin-9, \%japanese-euc, \%japanese-iso-8bit, \%jis8,
+\%koi8, \%korean-euc, \%korean-iso-8bit, \%latin-0, \%latin1, \%latin-1,
+\%latin-2, \%latin-5, \%latin-7, \%latin-9, \%mule-utf-8, \%mule-utf-16,
+\%mule-utf-16be, \%mule-utf-16-be, \%mule-utf-16be-with-signature,
+\%mule-utf-16le, \%mule-utf-16-le, \%mule-utf-16le-with-signature, \%utf8,
+\%utf-16-be, \%utf-16-be-with-signature, \%utf-16be-with-signature,
+\%utf-16-le, \%utf-16-le-with-signature, \%utf-16le-with-signature
+.ad
+.RE
+.
+.PP
+Those tags are taken from
+.B "GNU Emacs"
+and 
+.BR XEmacs ,
+together with some aliases.
+Trailing \%`-dos', \%`-unix', and \%`-mac' suffixes of coding tags (which
+give the end-of-line convention used in the file) are stripped off before
+the comparison with the above tags happens.
 .
 .SS "Iconv Issues"
-To be written.
+.B preconv
+by itself only supports three encodings: \%latin-1, cp1047, and \%UTF-8;
+all other encodings are passed to the
+.B iconv
+library functions.
+At compile time it is searched and checked for a valid
+.B iconv
+implementation; a call to `preconv \-\-version' shows whether
+.B iconv
+is used.
+.
+.
+.SH BUGS
+.B preconv
+doesn't support
+.I "local variable lists"
+yet.
+This is a different syntax form to specify local variables at the end of a
+file.
 .
 .
 .SH "SEE ALSO"
 .BR groff (@MAN1EXT@)
+.br
+the
+.B "GNU Emacs"
+and
+.B XEmacs
+info pages
 .
 .\" Local Variables:
 .\" mode: nroff
