@@ -2,7 +2,7 @@
 # Emulate nroff with groff.
 #
 # Copyright (C) 1992, 1993, 1994, 1999, 2000, 2001, 2002, 2003,
-#               2004, 2005
+#               2004, 2005, 2007
 #   Free Software Foundation, Inc.
 #
 # Written by James Clark, maintained by Werner Lemberg.
@@ -26,42 +26,48 @@
 # USA.
 
 prog="$0"
+
 # Default device.
-# First try the "locale charmap" command, because it's most reliable.
+
+# Check the GROFF_TYPESETTER environment variable.
+Tenv=$GROFF_TYPESETTER
+
+# Try the `locale charmap' command first because it is most reliable.
 # On systems where it doesn't exist, look at the environment variables.
 case "`exec 2>/dev/null ; locale charmap`" in
   UTF-8)
-    T=-Tutf8 ;;
+    Tloc=utf8 ;;
   ISO-8859-1 | ISO-8859-15)
-    T=-Tlatin1 ;;
+    Tloc=latin1 ;;
   IBM-1047)
-    T=-Tcp1047 ;;
+    Tloc=cp1047 ;;
   *)
     case "${LC_ALL-${LC_CTYPE-${LANG}}}" in
       *.UTF-8)
-        T=-Tutf8 ;;
+        Tloc=utf8 ;;
       iso_8859_1 | *.ISO-8859-1 | *.ISO8859-1 | \
       iso_8859_15 | *.ISO-8859-15 | *.ISO8859-15)
-        T=-Tlatin1 ;;
+        Tloc=latin1 ;;
       *.IBM-1047)
-        T=-Tcp1047 ;;
+        Tloc=cp1047 ;;
       *)
         case "$LESSCHARSET" in
           utf-8)
-            T=-Tutf8 ;;
+            Tloc=utf8 ;;
           latin1)
-            T=-Tlatin1 ;;
+            Tloc=latin1 ;;
           cp1047)
-            T=-Tcp1047 ;;
+            Tloc=cp1047 ;;
           *)
-            T=-Tascii ;;
-          esac ;;
-     esac ;;
+            Tloc=ascii ;;
+        esac ;;
+    esac ;;
 esac
-opts=
 
 # `for i; do' doesn't work with some versions of sh
 
+Topt=
+opts=
 for i
   do
   case $1 in
@@ -77,11 +83,8 @@ for i
       exit 1 ;;
     -[iptSUC] | -[dMmrno]*)
       opts="$opts $1" ;;
-    -Tascii | -Tlatin1 | -Tutf8 | -Tcp1047)
-      T=$1 ;;
     -T*)
-      # ignore other devices
-      ;;
+      Topt=$1 ;;
     -u*)
       # Solaris 2.2 through at least Solaris 9 `man' invokes
       # `nroff -u0 ... | col -x'.  Ignore the -u0,
@@ -108,6 +111,22 @@ for i
   esac
   shift
 done
+
+if test "x$Topt" != x ; then
+  T=$Topt
+else
+  if test "x$Tenv" != x ; then
+    T=-T$Tenv
+  fi
+fi
+
+case $T in
+  -Tascii | -Tlatin1 | -Tutf8 | -Tcp1047)
+    ;;
+  *)
+    # ignore other devices and use locale fallback
+    T=-T$Tloc ;;
+esac
 
 # Set up the `GROFF_BIN_PATH' variable
 # to be exported in the current `GROFF_RUNTIME' environment.
