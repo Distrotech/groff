@@ -635,6 +635,24 @@ Radius values higher than half the minimum box dimension are silently
 truncated to that value.
 .
 .NH 2
+Slanted Boxes
+.PP
+GNU \fBgpic\fP supports slanted boxes:
+.KS
+.PS
+box wid 1.2 xslanted 0.1 "xslanted 0.1";
+move;
+box wid 1.2 yslanted -0.1 "yslanted -0.1";
+move;
+box wid 1.2 xslanted -0.2 yslanted 0.1 "xslanted -0.2" "yslanted 0.1";
+.PE
+.CE "4: Various slanted boxes.
+.PP
+The \fBxslanted\fP and \fByslanted\fP attributes specify the x and
+y\~offset, respectively, of the box's upper right corner from its default
+position.
+.
+.NH 2
 Arrowheads
 .PP
 Lines and arcs can be decorated as well.  Any line or arc (and any
@@ -644,7 +662,7 @@ as modifiers:
 .PS
 line <- ->
 .PE
-.CE "4: Double-headed line made with  \fBline <- ->\fP"
+.CE "5: Double-headed line made with  \fBline <- ->\fP"
 .PP
 In fact, the \fBarrow\fP command is just shorthand for \fBline ->\fP.  And
 there is a double-head modifier <->, so the figure above could have been made
@@ -710,7 +728,7 @@ values are darker; GNU \fBfillval\fP uses 0 for white and 1 for black.
 .PS
 circle fill; move; circle fill 0.4; move; circle fill 0.9;
 .PE
-.CE "5: \fBcircle fill; move; circle fill 0.4; move; circle fill 0.9;\fR"
+.CE "6: \fBcircle fill; move; circle fill 0.4; move; circle fill 0.9;\fR"
 .PP
 GNU \fBgpic\fP makes some additional guarantees.  A fill value greater
 than 1 can also be used: this means fill with the shade of gray that
@@ -735,7 +753,7 @@ suffix specifying the color.  Example:
 .PS
 box color "yellow"; arrow color "cyan"; circle shaded "green" outline "black";
 .PE
-.CE "6: \fBbox color ""yellow""; arrow color ""cyan""; \
+.CE "7: \fBbox color ""yellow""; arrow color ""cyan""; \
 circle shaded ""green"" outline ""black"";\fR"
 .PP
 Alternative spellings are \fBcolour\fP, \fBcolored\fP, \fBcoloured\fP,
@@ -2673,6 +2691,8 @@ direction on the block's bounding box.
   invis[ible]           \fR# make primitive invisible\fP
   solid                 \fR# make closed figure solid\fP
   fill[ed] [<expr>]     \fR# set fill density for figure\fP
+  xscaled <expr>        \fR# slant box into x direction\fP
+  yscaled <expr>        \fR# slant box into y direction\fP
   colo[u]r[ed] TEXT     \fR# set fill and outline color for figure\fP
   outline[d] TEXT       \fR# set outline color for figure\fP
   shaded TEXT           \fR# set fill color for figure\fP

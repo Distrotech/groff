@@ -413,6 +413,8 @@ object_spec::object_spec(object_type t) : type(t)
   segment_is_absolute = 0;
   text = 0;
   shaded = 0;
+  xslanted = 0;
+  yslanted = 0;
   outlined = 0;
   with = 0;
   dir = RIGHT_DIRECTION;
@@ -565,6 +567,8 @@ public:
   void set_outline_color(char *);
   char *get_outline_color();
   virtual void set_fill(double);
+  virtual void set_xslanted(double);
+  virtual void set_yslanted(double);
   virtual void set_fill_color(char *);
 };
 
@@ -591,6 +595,14 @@ void graphic_object::set_thickness(double th)
 }
 
 void graphic_object::set_fill(double)
+{
+}
+
+void graphic_object::set_xslanted(double)
+{
+}
+
+void graphic_object::set_yslanted(double)
 {
 }
 
@@ -701,14 +713,18 @@ public:
   closed_object(const position &);
   object_type type() = 0;
   void set_fill(double);
+  void set_xslanted(double);
+  void set_yslanted(double);
   void set_fill_color(char *fill);
 protected:
   double fill;			// < 0 if not filled
+  double xslanted;		// !=0 if x is slanted
+  double yslanted;		// !=0 if y is slanted
   char *color_fill;		// = 0 if not colored
 };
 
 closed_object::closed_object(const position &pos)
-: rectangle_object(pos), fill(-1.0), color_fill(0)
+: rectangle_object(pos), fill(-1.0), xslanted(0), yslanted(0), color_fill(0)
 {
 }
 
@@ -716,6 +732,19 @@ void closed_object::set_fill(double f)
 {
   assert(f >= 0.0);
   fill = f;
+}
+
+/* accept positive and negative values */ 
+void closed_object::set_xslanted(double s)
+{
+  //assert(s >= 0.0);
+  xslanted = s;
+}
+/* accept positive and negative values */ 
+void closed_object::set_yslanted(double s)
+{
+  //assert(s >= 0.0);
+  yslanted = s;
 }
 
 void closed_object::set_fill_color(char *f)
@@ -775,10 +804,12 @@ void box_object::print()
   if (xrad == 0.0) {
     distance dim2 = dim/2.0;
     position vec[4];
-    vec[0] = cent + position(dim2.x, -dim2.y);
-    vec[1] = cent + position(dim2.x, dim2.y);
-    vec[2] = cent + position(-dim2.x, dim2.y);
-    vec[3] = cent + position(-dim2.x, -dim2.y);
+    /* error("x slanted %1", xslanted); */
+    /* error("y slanted %1", yslanted); */
+    vec[0] = cent + position(dim2.x, -(dim2.y - yslanted));	     /* lr */
+    vec[1] = cent + position(dim2.x + xslanted, dim2.y + yslanted);  /* ur */
+    vec[2] = cent + position(-(dim2.x - xslanted), dim2.y);	     /* ul */
+    vec[3] = cent + position(-(dim2.x), -dim2.y);		     /* ll */
     out->polygon(vec, 4, lt, fill);
   }
   else {
@@ -1896,6 +1927,10 @@ object *object_spec::make_object(position *curpos, direction *dirp)
     obj->set_thickness(th);
     if (flags & IS_OUTLINED)
       obj->set_outline_color(outlined);
+    if (flags & IS_XSLANTED)
+      obj->set_xslanted(xslanted);
+    if (flags & IS_YSLANTED)
+      obj->set_yslanted(yslanted);
     if (flags & (IS_DEFAULT_FILLED | IS_FILLED)) {
       if (flags & IS_SHADED)
 	obj->set_fill_color(shaded);

@@ -197,6 +197,8 @@ char *do_sprintf(const char *form, const double *v, int nv);
 %token COLORED
 %token OUTLINED
 %token SHADED
+%token XSLANTED
+%token YSLANTED
 %token ALIGNED
 %token SPRINTF
 %token COMMAND
@@ -221,6 +223,7 @@ box "foo" above ljust == box ("foo" above ljust)
 precedence than left and right, so that eg `line chop left'
 parses properly. */
 %left CHOP SOLID DASHED DOTTED UP DOWN FILL COLORED OUTLINED
+%left XSLANTED YSLANTED
 %left LABEL
 
 %left VARIABLE NUMBER '(' SIN COS ATAN2 LOG EXP SQRT K_MAX K_MIN INT RAND SRAND LAST 
@@ -934,6 +937,18 @@ object_spec:
 		  $$ = $1;
 		  $$->flags |= IS_FILLED;
 		  $$->fill = $3;
+		}
+	| object_spec XSLANTED expr
+		{
+		  $$ = $1;
+		  $$->flags |= IS_XSLANTED;
+		  $$->xslanted = $3;
+		}
+	| object_spec YSLANTED expr
+		{
+		  $$ = $1;
+		  $$->flags |= IS_YSLANTED;
+		  $$->yslanted = $3;
 		}
 	| object_spec SHADED text
 		{
