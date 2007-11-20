@@ -47,7 +47,7 @@
 .\" Centered caption for figure.  Assumes previous .KS
 .de CE
 .  ce 1
-Figure \\n(H1-\\$1
+Figure \\n[H1]-\\$1
 .  sp 1
 .  KE
 ..
@@ -2433,8 +2433,66 @@ arrow from Top.D.end to Anchor.ne
 }
 .PE
 .CE "2: Hypothetical production flow for dual-mode publishing"
-.LP
-.\"%%REFERENCE%%
+.PP
+.KS
+.PS
+# a three-dimensional block
+#
+# tblock(<width>, <height>, <text>)
+
+define tblock { [
+  box ht $2 wid $1 \
+      color "gold" outlined "black" \
+      xslanted 0 yslanted 0 \
+      $3;
+  box ht .1 wid $1 \
+      color "yellow" outlined "black" \
+      xslanted .1 yslanted 0 \
+      with .sw at last box .nw;
+  box ht $2 wid .1 \
+      color "goldenrod" outlined "black" \
+      xslanted 0 yslanted .1 \
+      with .nw at 2nd last box .ne;
+] }
+
+tblock(1, .5, "Master" "1");
+move -.1
+tblock(.5, 1, "Slave");
+.PE
+.CE "3: Three-dimensional Boxes"
+.PP
+Here the source code for figure \n[H1]-3:
+.KS
+.DS
+.CW
+\&.PS
+# a three-dimensional block
+#
+# tblock(<width>, <height>, <text>)
+
+define tblock { [
+  box ht $2 wid $1 \e
+      color "gold" outlined "black" \e
+      xslanted 0 yslanted 0 \e
+      $3;
+  box ht .1 wid $1 \e
+      color "yellow" outlined "black" \e
+      xslanted .1 yslanted 0 \e
+      with .sw at last box .nw;
+  box ht $2 wid .1 \e
+      color "goldenrod" outlined "black" \e
+      xslanted 0 yslanted .1 \e
+      with .nw at 2nd last box .ne;
+] }
+
+tblock(1, .5, "Master" "1");
+move -.1
+tblock(.5, 1, "Slave");
+\&.PE
+.DE
+.ft R
+.KE
+.
 .
 .
 .NH 1
