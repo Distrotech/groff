@@ -556,7 +556,7 @@ void tty_printer::line(int hpos, int vpos, int dx, int dy,
       v += len;
       len = -len;
     }
-    if (len >= 0 && len <= font::vert)
+    if (len == 0)
       add_char(vline_char, font::hor, hpos, v, col, fill,
 	       VDRAW_MODE|START_LINE|END_LINE);
     else {
@@ -582,7 +582,7 @@ void tty_printer::line(int hpos, int vpos, int dx, int dy,
       h += len;
       len = -len;
     }
-    if (len >= 0 && len <= font::hor)
+    if (len == 0)
       add_char(hline_char, font::hor, h, vpos, col, fill,
 	       HDRAW_MODE|START_LINE|END_LINE);
     else {
