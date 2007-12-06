@@ -78,10 +78,10 @@ for i
     -[eq] | -s*)
       # ignore these options
       ;;
-    -[dMmrnoT])
+    -[dMmrnoTwW])
       echo "$prog: option $1 requires an argument" >&2
       exit 1 ;;
-    -[iptSUC] | -[dMmrno]*)
+    -[iptSUC] | -[dMmrnowW]*)
       opts="$opts $1" ;;
     -T*)
       Topt=$1 ;;
@@ -96,7 +96,7 @@ for i
       exit 0 ;;
     --help)
       echo "usage: nroff [-CchipStUv] [-dCS] [-MDIR] [-mNAME] [-nNUM] [-oLIST]"
-      echo "             [-rCN] [-Tname] [FILE...]"
+      echo "             [-rCN] [-Tname] [-WNAME] [-wNAME] [FILE...]"
       exit 0 ;;
     --)
       shift
@@ -134,8 +134,7 @@ esac
 @GROFF_BIN_PATH_SETUP@
 export GROFF_BIN_PATH
 
-# This shell script is intended for use with man, so warnings are
-# probably not wanted.  Also load nroff-style character definitions.
+# Load nroff-style character definitions too.
 
 PATH="$GROFF_RUNTIME$PATH" groff -mtty-char $T $opts ${1+"$@"}
 
