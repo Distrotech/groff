@@ -5105,11 +5105,11 @@ void html_printer::writeHeadMetaStyle (void)
     fputs("       .right  { text-align: right }\n", stdout);
   }
   fputs("       p       { margin-top: 0; margin-bottom: 0; "
-	"vertical-align=\"top\" }\n", stdout);
+	"vertical-align: top }\n", stdout);
   fputs("       pre     { margin-top: 0; margin-bottom: 0; "
-	"vertical-align=\"top\" }\n", stdout);
+	"vertical-align: top }\n", stdout);
   fputs("       table   { margin-top: 0; margin-bottom: 0; "
-	"vertical-align=\"top\" }\n", stdout);
+	"vertical-align: top }\n", stdout);
   fputs("       h1      { text-align: center }\n", stdout);
   fputs("</style>\n", stdout);
 }
