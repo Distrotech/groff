@@ -2,13 +2,14 @@
 
 // <groff_src_dir>/src/libs/libdriver/input.cpp
 
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005, 2006
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2002, 2003, 2004, 2005,
+                 2006, 2008
    Free Software Foundation, Inc.
 
    Written by James Clark (jjc@jclark.com)
    Major rewrite 2001 by Bernd Warken (bwarken@mayn.de)
 
-   Last update: 15 Jun 2005
+   Last update: 04 Jan 2008
 
    This file is part of groff, the GNU roff text processing system.
 
@@ -165,7 +166,7 @@
 
   There was some confusion about the positioning of the graphical
   pointer at the printout after having executed a `D' command.
-  The classical troff manual of Osanna & Kernighan specified,
+  The classical troff manual of Ossanna & Kernighan specified,
 
     `The position after a graphical object has been drawn is
      at its end; for circles and ellipses, the "end" is at the
