@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2005, 2007
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2005, 2007,
+                 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -260,7 +261,7 @@ static struct builtin_def troff_defs[] = {
   { "vec", "accent { vec_def }" },
   { "dyad_def", "up 52 size -5 { \\(<> }" },
   { "dyad", "accent { dyad_def }" },
-  { "...", "type \"inner\" vcenter { . . , }" },
+  { "...", "type \"inner\" vcenter { . . . }" },
 };
 
 /* equivalent definitions for MathML mode */

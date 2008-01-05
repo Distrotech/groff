@@ -392,19 +392,11 @@ Note that some of the input characters are reserved by
 either for internal use or for special input purposes.
 .
 On EBCDIC platforms, only code page
-.B cp1047
+.I cp1047
 is supported (which contains the same characters as \%latin1; the
 input encoding file is called \f(CWcp1047.tmac\fP).
 .
 Again, some input characters are reserved for internal and special purposes.
-.
-It is rather straightforward (for the experienced user) to set up other
-\%8-bit encodings like
-.IR \%latin2 ;
-since
-.B groff
-uses Unicode in the next major version, no additional encodings
-are provided.
 .
 .
 .P
@@ -483,7 +475,7 @@ These are the basic glyphs having 7-bit ASCII code values assigned.
 .
 They are identical to the printable characters of the
 character standards \%ISO-8859-1 (\%latin1) and Unicode (range
-.IR "C0 Controls and Basic Latin" ).
+.IR "Basic Latin" ).
 .
 The glyph names used in composite glyph names are `u0020' up to `u007E'.
 .
@@ -604,7 +596,7 @@ They are interpreted as printable characters according to the
 .I latin1
 .RI ( ISO-8859-1 )
 code set, being identical to the Unicode range
-.IR "C1 Controls and Latin1 Supplement" .
+.IR "Latin-1 Supplement" .
 .
 .
 .P
@@ -753,12 +745,6 @@ ASCII or \%latin1 code set, not only alphanumeric characters.
 Here some examples:
 .
 .TP
-\f(CW\e\fP\fIc\fP
-A glyph having the name
-.IR c ,
-which consists of a single character (length\ 1).
-.
-.TP
 \f(CW\e(\fP\fIch\fP
 A glyph having the 2-character name
 .IR ch .
@@ -768,6 +754,14 @@ A glyph having the 2-character name
 A glyph having the name
 .I char_name
 (having length 1, 2, 3, .\|.\|.).
+.
+Note that `\fIc\fP' is not the same as
+`\f(CW\e[\fP\fIc\fP\f(CW]\fP' (\fIc\fP\ a single character):
+The latter is internally mapped to glyph name `\e\fIc\fP'.
+.
+By default, groff defines a single glyph name starting with a backslash,
+namely \%`\e-', which can be either accessed as `\f(CW\e\-\fP' or
+`\f(CW\e[-]\fP'.
 .
 .TP
 \f(CW\e[\fP\fIbase_glyph composite_1 composite_2 .\|.\|.\fP\f(CW]\fP
