@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006
+                 2006, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -5540,8 +5540,12 @@ node *left_italic_corrected_node::add_self(node *nd, hyphen_list **p)
     nd = n->add_self(nd, p);
     n = 0;
     delete this;
+    return nd;
   }
-  return nd;
+  else {
+    next = nd;
+    return this;
+  }
 }
 
 int left_italic_corrected_node::character_type()
