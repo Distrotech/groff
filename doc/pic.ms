@@ -1,4 +1,4 @@
-.\" Copyright (C) 2006, 2007
+.\" Copyright (C) 2006, 2007, 2008
 .\"   Free Software Foundation, Inc.
 .\"      Written by Eric S. Raymond <esr@thyrsus.com>
 .\" 
@@ -1087,6 +1087,10 @@ obvious meaning.
 .PP
 Arc objects also have compass point; they are the compass points of
 the implied circle.
+.PP
+Non-closed objects (line, arrow, or spline) have compass points too, but
+the locations of them are completely arbitrary.  In particular, different
+\fBpic\fP implementations return different locations.
 .NH 3
 Locations Relative to Open Objects
 .PP
