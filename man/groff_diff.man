@@ -98,7 +98,7 @@ The names of number registers, fonts, strings/\:macros/\:diversions,
 special characters (glyphs), and colors can be of any length.
 .
 In escape sequences, additionally to the classical `\fB(\fP\fIxx\fP'
-construction for a two-character name, you can use
+construction for a two-character glyph name, you can use
 `\fB[\fP\fIxxx\fP\fB]\fP' for a name of arbitrary length.
 .
 .TP
@@ -743,7 +743,7 @@ intervening space.
 .B \[rs])
 Like
 .B \[rs]&
-except that it behaves like a glyph declared with the
+except that it behaves like a character declared with the
 .B cflags
 request to be transparent for the purposes of end-of-sentence
 recognition.
@@ -965,7 +965,7 @@ This is the same as
 .
 .TP
 .BI .cflags\  n\ c1\ c2\|.\|.\|.\&
-Glyphs
+Characters
 .IR c1 ,
 .IR c2 ,\|.\|.\|.\&
 have properties determined by
@@ -974,57 +974,59 @@ which is ORed from the following:
 .
 .RS
 .IP 1
-The glyph ends sentences (initially glyphs
+The character ends sentences (initially characters
 .B .?!\&
 have this property).
 .
 .IP 2
-Lines can be broken before the glyph (initially no glyphs have
-this property); a line is not broken at a glyph with this
-property unless the input characters associated with those glyphs
-on each side both have non-zero hyphenation codes.
+Lines can be broken before the character (initially no characters have
+this property); a line is not broken at a character with this property
+unless the characters on each side both have non-zero hyphenation
+codes.
 This can be overridden with value 64.
 .
 .IP 4
-Lines can be broken after the glyph (initially glyphs
+Lines can be broken after the character (initially characters
 .B \-\[rs][hy]\[rs][em]
-have this property); a line is not broken at a glyph with
-this property unless the input characters associated with those
-glyphs on each side both have non-zero hyphenation codes.
+have this property); a line is not broken at a character with this
+property unless the characters on each side both have non-zero
+hyphenation codes.
+
 This can be overridden with value 64.
 .
 .IP 8
-The glyph overlaps horizontally (initially glyphs
+The glyph associated with this character overlaps horizontally
+(initially characters
 .B \[rs][ul]\[rs][rn]\[rs][ru]\[rs][radicalex]\[rs][sqrtex]
 have this property).
 .
 .IP 16
-The glyph overlaps vertically (initially glyph
+The glyph associated with this character overlaps vertically
+(initially glyph
 .B \[rs][br]
 has this property).
 .
 .IP 32
-An end-of-sentence glyph followed by any number of glyphs with
-this property is treated as the end of a sentence if followed by
-a newline or two spaces; in other words the glyph is transparent
-for the purposes of end-of-sentence recognition; this is the same as
-having a zero space factor in \*[tx] (initially glyphs
+An end-of-sentence character followed by any number of characters with
+this property is treated as the end of a sentence if followed by a
+newline or two spaces; in other words the character is transparent for
+the purposes of end-of-sentence recognition; this is the same as having
+a zero space factor in \*[tx] (initially characters
 .B \[dq]')]*\[rs][dg]\[rs][rq]
 have this property).
 .
 .IP 64
 Ignore hyphenation code values of the surrounding characters.
-Use this in combination with values 2 and\~4 (initially no glyphs have
-this property).
+Use this in combination with values 2 and\~4 (initially no characters
+have this property).
 .RE
 .
 .TP
 .BI .char\  c\ string
-[This request's name is a misnomer since it constructs output objects
-(glyphs) not input objects (characters).]
+[This request can both define characters and glyphs.]
 .
 .IP
-Define glyph\~\c
+Define entity\~\c
 .I c
 to be
 .IR string .
@@ -1346,7 +1348,7 @@ request for more information on font families.
 .
 .TP
 .BI .fchar\  c\ string
-Define fallback glyph\~\c
+Define fallback character (or glyph)\~\c
 .I c
 to be
 .IR string .
@@ -1373,7 +1375,7 @@ switch to the previous fill color.
 .
 .TP
 .BI .fschar\  f\ c\ string
-Define fallback glyph\~\c
+Define fallback character (or glyph)\~\c
 .I c
 for font\~\c
 .I f
@@ -1960,7 +1962,7 @@ to
 .
 .TP
 .BI .schar\  c\ string
-Define global fallback glyph\~\c
+Define global fallback character (or glyph)\~\c
 .I c
 to be
 .IR string .
@@ -3115,7 +3117,7 @@ True if there is a color named
 .
 .TP
 .BI .if\ c ch
-True if there is a glyph
+True if there is a character (or glyph)
 .IR ch
 available;
 .I ch
