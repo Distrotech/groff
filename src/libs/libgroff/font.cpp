@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006
+                 2006, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -292,6 +292,12 @@ int font::contains(glyph *g)
       // Unicode character?
       if (check_unicode_name(nm))
 	return 1;
+      // If `nm' is a single letter `x', the glyph name is `\x'.
+      char buf[] = { '\\', '\0', '\0' };
+      if (nm[1] == '\0') {
+	buf[1] = nm[0];
+        nm = buf;
+      }
       // groff glyph name that maps to Unicode?
       const char *unicode = glyph_name_to_unicode(nm);
       if (unicode != NULL && strchr(unicode, '_') == NULL)
@@ -572,6 +578,12 @@ int font::get_code(glyph *g)
       if (check_unicode_name(nm)) {
 	char *ignore;
 	return (int)strtol(nm + 1, &ignore, 16);
+      }
+      // If `nm' is a single letter `x', the glyph name is `\x'.
+      char buf[] = { '\\', '\0', '\0' };
+      if (nm[1] == '\0') {
+	buf[1] = nm[0];
+        nm = buf;
       }
       // groff glyphs that map to Unicode?
       const char *unicode = glyph_name_to_unicode(nm);
