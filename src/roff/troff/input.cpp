@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2003, 2004, 2005,
-                 2006, 2007
+                 2006, 2007, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -8325,6 +8325,11 @@ charinfo *get_charinfo_by_number(int n)
     return ci;
   }
 }
+
+// This overrides the same function from libgroff; while reading font
+// definition files it puts single-letter glyph names into `charset_table'
+// and converts glyph names of the form `\x' (`x' a single letter) into `x'. 
+// Consequently, symbol("x") refers to glyph name `\x', not `x'.
 
 glyph *name_to_glyph(const char *nm)
 {
