@@ -98,6 +98,7 @@ of the
 .I Multics
 operating system, cf.\& section
 .BR HISTORY .
+.
 The functionality of this program was very restricted even in
 comparison to ancient
 .IR troff ;
@@ -223,7 +224,9 @@ perform the typesetting manually later on.
 The runoff program was written in the
 .I MAD
 language first, later on in
-.IR BCPL ,
+.I BCPL
+(by
+.IR "Doug McIlroy" ),
 the grandmother of the
 .IR C \~\c
 programming language.
@@ -251,17 +254,24 @@ drive the Wang
 .I Graphic Systems CAT
 typesetter, a graphical output device from a PDP-11 computer running
 Unix.
-.
-As runoff was too limited for this task it was further developed into
-a more powerful text formatting system by
-.IR "Josef F. Ossanna" ,
+.I Ken Thompson
+rewrote runoff for the PDP-11; however, as runoff was too limited for
+the CAT it was further developed into the more powerful
+.I nroff and
+.I troff
+programs by
+.IR "Joseph F.\& Ossanna" ,
 who already programmed several runoff ports.
+.
+On the hardware side, Ossanna wired the nominal paper-tape reader of
+the CAT straight into the PDP-11.
 .
 .P
 The name
 .I runoff
 was shortened to
 .IR roff .
+.
 The greatly enlarged language of Ossanna's concept included already all
 elements of a full
 .IR "roff system" .
@@ -324,6 +334,7 @@ Kernighan.
 .
 This document is the specification of the
 .IR "classical troff" .
+.
 All later
 .I roff
 systems tried to establish compatibility with this specification.
@@ -345,6 +356,7 @@ as it is still in use today; see section
 .
 In 1979, these novelties were described in the paper
 .IR "[CSTR\~#97]" .
+.
 This new
 .I troff
 version is the basis for all existing newer
@@ -386,12 +398,10 @@ minor additions.
 .P
 The source code of both the ancient Unix and classical
 .I troff
-weren't available for two decades.
+wasn't available for two decades.
 .
-Fortunately, Caldera bought SCO UNIX in 2001.
-.
-In the following, Caldera made the ancient source code accessible
-on-line for non-commercial use, cf. section
+Meanwhile, it is accessible again (on-line) for non-commercial use,
+cf.\& section
 .BR "SEE ALSO" .
 .
 .
@@ -412,6 +422,7 @@ It was called
 .I groff
 (\f[CR]GNU\f[]
 .IR roff ).
+.
 See
 .BR groff (@MAN1EXT@)
 for an overview.
@@ -651,6 +662,7 @@ formatter is represented in yet another language, the
 .IR "intermediate output format"
 or
 .IR "troff output" .
+.
 This language was first specified in
 .IR "[CSTR\~#97]" ;
 its \f[CR]GNU\f[] extension is documented in
@@ -729,7 +741,7 @@ For example, the Postscript device
 .I post
 in classical
 .I troff
-had a resolution of 720, while
+had a resolution of 720 units per inch, while
 .IR groff 's
 .I ps
 device has 72000, a refinement of factor 100.
@@ -859,6 +871,7 @@ are
 .I roff
 elements starting with a backslash
 .QuotedChar \[rs] .
+.
 They can be inserted anywhere, also in the midst of text in a line.
 .
 They are used to implement various features, including the insertion of
@@ -943,6 +956,7 @@ pager.
 It provides the possibility to feed all input into a command-line pipe
 that is specified in the shell environment variable
 .BR LESSOPEN .
+.
 This process is not well documented, so here an example:
 .
 .RS
@@ -966,6 +980,7 @@ The best program for editing a
 .I roff
 document is Emacs (or Xemacs), see
 .BR emacs (1).
+.
 It provides an
 .I nroff
 mode that is suitable for all kinds of
@@ -1044,7 +1059,7 @@ document.
 .
 Instead, use the empty request (a line consisting of a dot only) or a
 line comment
-.B .\e"
+.B .\[rs]"
 if a structuring element is needed.
 .
 .IP \(bu
@@ -1100,17 +1115,6 @@ style files too, e.g.\&
 an extension of the
 .BR vi (1)
 program.
-.
-.
-.\" --------------------------------------------------------------------
-.SH BUGS
-.\" --------------------------------------------------------------------
-.
-.I UNIX\[rg]
-is a registered trademark of the Open Group.
-.
-But things have improved considerably after Caldera had bought SCO
-UNIX in 2001.
 .
 .
 .\" --------------------------------------------------------------------
@@ -1310,7 +1314,7 @@ might be a good starting point.
 .SH AUTHORS
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006, 2007
+Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008
 Free Software Foundation, Inc.
 .
 .P

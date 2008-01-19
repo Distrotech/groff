@@ -1,4 +1,4 @@
-/* Copyright (C) 2000, 2001, 2002 Free Software Foundation, Inc.
+/* Copyright (C) 2000, 2001, 2002, 2008 Free Software Foundation, Inc.
      Written by Gaius Mulley (gaius@glam.ac.uk)
 
 This file is part of groff.
@@ -33,11 +33,13 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
  *  This string is intercepted by pre-grohtml and substituted for
  *  the image name and suppression escapes.
  *
- *  pre-html runs troff twice, once with -Thtml and once with -Tps.
- *  troff -Thtml device driver emits a <src='image'.png> tag
- *  and the postscript device driver works out the min/max limits
- *  of the graphic region.  These region limits are read by pre-html
- *  and an image is generated via troff -Tps -> gs -> png
+ *  pre-html runs troff twice, once with -Thtml (or -Txhtml) and once
+ *  with -Tps.  `troff -Thtml' (and `troff -Txhtml') emits a
+ *  <src='image'.png> tag and the postscript device driver works out
+ *  the min/max limits of the graphic region.  These region limits are
+ *  read by pre-html and an image is generated via
+ *
+ *    troff -Tps -> gs -> png
  */
 
 /*

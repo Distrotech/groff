@@ -334,6 +334,7 @@ orientation:
 .
 .IP
 .EX
+.SM
 \fIsh#\fP groff \-Tps \-dpaper=a4l \-P\-pa4 \-P\-l \-ms foo.ms > foo.ps
 .EE
 .
@@ -363,8 +364,9 @@ to include a PostScript graphic in a document.
 The following output devices support inclusion of PS images:
 .BR \-Tps ,
 .BR \-Tdvi ,
+.BR \-Thtml ,
 and
-.BR \-Thtml ;
+.BR \-Txhtml ;
 for all other devices the image is replaced with a hollow rectangle
 of the same size.
 .
@@ -376,7 +378,7 @@ so it isn't necessary to call it explicitly.
 Syntax:
 .RS
 .IP
-\&\fB.PSPIC\fP [\fB\-L\fP\||\|\fB-R\fP\||\|\fB\-I\fP\ \fIn\fP] \
+\&\fB.PSPIC\fP [\fB\-L\fP\||\|\fB\-R\fP\||\|\fB\-I\fP\ \fIn\fP] \
 \fI\|file\fP [\fIwidth\fP [\fIheight\fP]]
 .RE
 .
@@ -440,7 +442,7 @@ covers the image's width.
 .EX
 \&.am PSPIC
 \&.\ \ vpt 0
-\&\eh'(\e\en[ps-offset]u + \e\en[ps-deswid]u)'
+\&\[rs]h'(\[rs]\[rs]n[ps-offset]u + \[rs]\[rs]n[ps-deswid]u)'
 \&.\ \ sp -1
 \&.\ \ vpt 1
 \&..
@@ -461,15 +463,15 @@ See
 .TP
 .B tty-char
 Overrides the definition of standard troff characters and some groff
-characters for tty devices.
+characters for TTY devices.
 .
 The optical appearance is intentionally inferior compared to that of
-normal tty formatting to allow processing with critical equipment.
+normal TTY formatting to allow processing with critical equipment.
 .
 .
 .TP
 .B www
-Additions of elements known from the html format, as used in the
+Additions of elements known from the HTML format, as used in the
 internet (World Wide Web) pages; this includes URL links and mail
 addresses; see
 .BR groff_www (@MAN7EXT@).
@@ -568,7 +570,7 @@ would not make much sense.
 .
 .P
 A second strange feature of classical troff was to name macro files
-in the form \fBtmac.\fIname\fR.
+in the form \f[B]tmac.\f[]\f[I]name\f[].
 In modern operating systems, the type of a file is specified as a
 postfix, the file name extension.
 .
@@ -654,7 +656,11 @@ calls soelim automatically.
 .
 .P
 For example, suppose a macro file is stored as
+.
+.IP
 .I @MACRODIR@/macros.tmac
+.
+.P
 and is used in some document called
 .IR docu.roff .
 .
@@ -664,7 +670,7 @@ At run-time, the formatter call for this is
 .
 .IP
 .EX
-\fIsh#\fP groff\ \-m\ \fImacrofile\ document.roff\fP
+\fIsh#\fP groff \-m macros docu.roff
 .EE
 .
 .
@@ -673,7 +679,7 @@ To include the macro file directly in the document either
 .
 .IP
 .EX
-\&.mso macrofile.tmac
+\&.mso macros.tmac
 .EE
 .
 .P
@@ -686,10 +692,13 @@ is used or
 .
 .
 .P
-In both cases, the formatter is called with
+In both cases, the formatter should be called with option
+.B \-s
+to invoke
+.BR soelim .
 .IP
 .EX
-\fIsh#\fP groff\ \-s\ \fIdocu.roff\fP
+\fIsh#\fP groff \-s docu.roff
 .EE
 .
 .
@@ -796,17 +805,17 @@ macro call.
 .
 Within the macro definition, the arguments are available as the escape
 sequences
-.BR $1 ,
+.BR \[rs]$1 ,
 \*[Ellipsis],
-.BR $9 ,
-.BR $[ \*[Ellipsis] ] ,
-.BR $* ,
+.BR \[rs]$9 ,
+.BR \[rs]$[ \*[Ellipsis] ] ,
+.BR \[rs]$* ,
 and
-.BR $@ ,
+.BR \[rs]$@ ,
 the name under which the macro was called is in
-.BR $0 ,
+.BR \[rs]$0 ,
 and the number of arguments is in register
-.BR \en[.$] ;
+.BR \[rs]n[.$] ;
 see
 .BR groff (@MAN7EXT@).
 .
@@ -817,6 +826,8 @@ see
 .
 The phase when groff reads a macro is called
 .I "copy-in mode"
+or
+.I "copy mode"
 in roff-talk.
 .
 This is comparable to the C\~preprocessing phase during the development
@@ -828,7 +839,7 @@ In this phase, groff interprets all backslashes; that means that all
 escape sequences in the macro body are interpreted and replaced by
 their value.
 .
-For constant expression, this is wanted, but strings and registers
+For constant expressions, this is wanted, but strings and registers
 that might change between calls of the macro must be protected from
 being evaluated.
 .
@@ -843,13 +854,13 @@ say.
 .
 .
 .IP
-.ds @1 \ef[I]\e\e$0\ef[]\"
+.ds @1 \[rs]f[I]\[rs]\[rs]$0\[rs]f[]\"
 .ds @2 arguments:\"
 .EX
 \&.ds midpart was called with
 \&.de print_args
-\&.\ \ tm\ \*[@1]\ \e\e*[midpart]\ \e\en[.$]\ \*[@2]
-\&.\ \ tm\ \e\e$*
+\&.\ \ tm\ \*[@1]\ \[rs]*[midpart]\ \[rs]\[rs]n[.$]\ \*[@2]
+\&.\ \ tm\ \[rs]\[rs]$*
 \&..
 .EE
 .rm @1
@@ -880,28 +891,28 @@ Let's analyze each backslash in the macro definition.
 As the positional parameters and the number of arguments change
 with each call of the macro their leading backslash must be doubled,
 which results in
-.I \e\e$*
+.I \[rs]\[rs]$*
 and
-.IR \e\e[.$] .
+.IR \[rs]\[rs][.$] .
 The same applies to the macro name because it could be called with an
 alias name, so
-.IR \e\e$0 .
+.IR \[rs]\[rs]$0 .
 .
 .
 .P
 On the other hand,
 .I midpart
 is a constant string, it does not change, so no doubling for
-.IR \e*[midpart] .
+.IR \[rs]*[midpart] .
 The
-.I \ef
+.I \[rs]f
 escape sequences are predefined groff elements for setting the font
 within the text.
 .
 Of course, this behavior does not change, so no doubling with
-.I \ef[I]
+.I \[rs]f[I]
 and
-.IR \ef[] .
+.IR \[rs]f[] .
 .
 .
 .\" --------------------------------------------------------------------
@@ -926,14 +937,14 @@ For example, the code above can be written in a simpler way by
 .
 .
 .IP
-.ds @1 \ef[I]\e$0\ef[]\"
+.ds @1 \[rs]f[I]\[rs]$0\[rs]f[]\"
 .ds @2 arguments:\"
 .EX
 \&.eo
 \&.ds midpart was called with
 \&.de print_args
-\&.\ \ tm\ \*[@1]\ \e*[midpart]\ \en[.$]\ \*[@2]
-\&.\ \ tm\ \e$*
+\&.\ \ tm\ \*[@1]\ \[rs]*[midpart]\ \[rs]n[.$]\ \*[@2]
+\&.\ \ tm\ \[rs]$*
 \&..
 \&.ec
 .EE
@@ -968,9 +979,9 @@ with a leading dot.
 .IP
 .EX
 \&.de Text
-\&.\ \ if (\e\en[.$] == 0)\ \e
+\&.\ \ if (\[rs]\[rs]n[.$] == 0)\ \[rs]
 \&.\ \ \ \ return
-\&.\ \ nop\ \e)\e\e$*[rs]\)
+\&.\ \ nop\ \[rs])\[rs]\[rs]$*\[rs])
 \&..
 .EE
 .RE
@@ -993,8 +1004,9 @@ acts like a comment line:
 .RE
 .
 .IP \(bu
-In long macro definitions, make ample use of comment lines or empty
-lines for a better structuring.
+In long macro definitions, make ample use of comment lines or
+almost-empty lines (this is, lines which have a leading dot
+and nothing else) for a better structuring.
 .
 .IP \(bu
 To increase readability, use groff's indentation facility for requests
@@ -1016,8 +1028,8 @@ C\~programming language, but their usage is quite different.
 In their simplest form, diversions are multi-line strings, but
 they get their power when diversions are used dynamically within macros.
 .
-The information stored in a diversion can be retrieved by calling the
-diversion just like a macro.
+The (formatted) information stored in a diversion can be retrieved by
+calling the diversion just like a macro.
 .
 .
 .P
@@ -1099,17 +1111,35 @@ the home directory
 .
 .IP \(bu
 a platform-specific directory, being
+.
+.RS
+.IP
 .B @SYSTEMMACRODIR@
+.RE
+.
+.IP
 in this installation
 .
 .IP \(bu
 a site-specific (platform-independent) directory, being
+.
+.RS
+.IP
 .B @LOCALMACRODIR@
+.RE
+.
+.IP
 in this installation
 .
 .IP \(bu
 the main tmac directory, being
+.
+.RS
+.IP
 .B @MACRODIR@
+.RE
+.
+.IP
 in this installation
 .
 .
@@ -1129,7 +1159,7 @@ See the previous section for a detailed description.
 .SH AUTHOR
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006, 2007
+Copyright (C) 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008
 Free Software Foundation, Inc.
 .
 .P

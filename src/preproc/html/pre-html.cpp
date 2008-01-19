@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2007
+/* Copyright (C) 2000, 2001, 2002, 2003, 2004, 2007, 2008
  * 	Free Software Foundation, Inc.
  * Written by Gaius Mulley (gaius@glam.ac.uk).
  *
@@ -1552,21 +1552,14 @@ static char_buffer inputFile;
 static void usage(FILE *stream)
 {
   fprintf(stream,
-	  "usage: %s troffname [-Iimage_name] [-Dimage_directory]\n"
-	  "       [-P-o vertical_image_offset] [-P-i image_resolution]\n"
-	  "       [troff flags]\n",
-	  program_name);
-  fprintf(stream,
-	  "    vertical_image_offset (default %d/72 of an inch)\n",
-	  vertical_offset);
-  fprintf(stream,
-	  "    image_resolution (default %d) pixels per inch\n",
-	  image_res);
-  fprintf(stream,
-	  "    image_name is the name of the stem for all images\n"
-	  "    (default is grohtml-<pid>)\n");
-  fprintf(stream,
-	  "    place all png files into image_directory\n");
+    "\n"
+    "This program is not intended to be called stand-alone;\n"
+    "it is part of the groff pipeline to produce HTML output.\n"
+    "\n"
+    "If there is ever the need to call it manually (e.g., for\n"
+    "debugging purposes), add command line option `-V' while calling\n"
+    "the `groff' program to see which arguments are passed to it.\n"
+    "\n");
 }
 
 /*

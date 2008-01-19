@@ -706,7 +706,7 @@ version@tie{}1.04 around November@tie{}1991.
 Beginning in@tie{}1999, @code{groff} has new maintainers (the package was
 an orphan for a few years).  As a result, new features and programs like
 @code{grn}, a preprocessor for gremlin images, and an output device to
-produce @acronym{HTML} output have been added.
+produce @acronym{HTML} and @acronym{XHTML} have been added.
 
 
 @c =====================================================================
@@ -847,7 +847,7 @@ fed into a postprocessor to produce output for a particular device.
 Currently, @code{groff} has postprocessors for @sc{PostScript}
 devices, character terminals, X@tie{}Windows (for previewing), @TeX{}
 DVI format, HP LaserJet@tie{}4 and Canon LBP printers (which use
-@acronym{CAPSL}), and @acronym{HTML}.
+@acronym{CAPSL}), @acronym{HTML}, and @acronym{XHTML}.
 
 
 @c =====================================================================
@@ -1108,9 +1108,10 @@ printers).
 @pindex post-grohtml
 @cindex @code{grohtml}, the program
 @item html
-To produce @acronym{HTML} output.  Note that the @acronym{HTML} driver
-consists of two parts, a preprocessor (@code{pre-grohtml}) and a
-postprocessor (@code{post-grohtml}).
+@itemx xhtml
+To produce @acronym{HTML} and @acronym{XHTML} output, respectively. 
+Note that this driver consists of two parts, a preprocessor
+(@code{pre-grohtml}) and a postprocessor (@code{post-grohtml}).
 @end table
 
 @cindex output device name string register (@code{.T})
@@ -2229,7 +2230,8 @@ line (or at the left on even pages and at the right on odd pages if
 double-sided printing is active).  @var{extra3} is centered in the
 header line.
 
-For @acronym{HTML} output, headers and footers are completely suppressed.
+For @acronym{HTML} and @acronym{XHTML} output, headers and footers are
+completely suppressed.
 
 Additionally, this macro starts a new page; the new line number is@tie{}1
 again (except if the @option{-rC1} option is given on the command line)
@@ -14698,9 +14700,19 @@ and secondly to
 troff -Thtml
 @endExample
 
-The PostScript device is used to create all the image files, and the
-register @code{ps4html} enables the macro sets to ignore floating
-keeps, footers, and headings.
+@noindent
+or
+
+@Example
+troff -Txhtml
+@endExample
+
+@cindex MathML
+The PostScript device is used to create all the image files (for
+@option{-Thtml}; if @option{-Txhtml} is used, all equations are passed
+to @code{geqn} to produce @acronym{MathML}, and the register
+@code{ps4html} enables the macro sets to ignore floating keeps,
+footers, and headings.
 
 The register @code{www-image-template} is set to the user specified
 template name or the default name.
@@ -15732,7 +15744,7 @@ Deprecated.  Use @code{papersize} instead.
 @kindex pass_filenames
 Tell @code{gtroff} to emit the name of the source file currently
 being processed.  This is achieved by the intermediate output command
-@samp{F}.  Currently, this is only used by the @acronym{HTML} output
+@samp{F}.  Currently, this is only used by the @code{grohtml} output
 device.
 
 @item postpro @var{program}
@@ -15750,7 +15762,7 @@ if option @option{-Tdvi} is given (and @option{-Z} isn't used).
 @item prepro @var{program}
 @kindex prepro
 Call @var{program} as a preprocessor.  Currently, this keyword is used
-by @code{groff} with option @option{-Thtml} only.
+by @code{groff} with option @option{-Thtml} or @option{-Txhtml} only.
 
 @item print @var{program}
 @kindex print
@@ -15800,7 +15812,8 @@ in the font description files since the Unicode handling built into
 those particular characters or add new mappings (normally for composite
 characters).
 
-This is used for @option{-Tutf8} and @option{-Thtml}.
+This is used for @option{-Tutf8}, @option{-Thtml}, and
+@option{-Txhtml}.
 
 @item unitwidth @var{n}
 @kindex unitwidth
@@ -15815,7 +15828,7 @@ Needed for the @code{grohtml} device.
 @kindex use_charnames_in_special
 This command indicates that @code{gtroff} should encode special
 characters inside special commands.  Currently, this is only used
-by the @acronym{HTML} output device.  @xref{Postprocessor Access}.
+by the @code{grohtml} output device.  @xref{Postprocessor Access}.
 
 @item vert @var{n}
 @kindex vert
@@ -15971,7 +15984,7 @@ accepts a decimal integer.
 The @var{entity-name} field gives an @acronym{ASCII} string
 identifying the glyph which the postprocessor uses to print the
 @code{gtroff} glyph @var{name}.  This field is optional and has been
-introduced so that the @acronym{HTML} device driver can encode its
+introduced so that the @code{grohtml} device driver can encode its
 character set.  For example, the glyph @samp{\[Po]} is
 represented as @samp{&pound;} in @acronym{HTML} 4.0.
 
