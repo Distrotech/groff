@@ -13091,9 +13091,14 @@ considered a bug.
 @cindex @code{trf} request, and invalid characters
 @cindex characters, invalid for @code{trf} request
 @cindex invalid characters for @code{trf} request
+
 While @code{cf} copies the contents of @var{file} completely unprocessed,
 @code{trf} disallows characters such as NUL that are not valid
 @code{gtroff} input characters (@pxref{Identifiers}).
+
+For @code{cf}, within a diversion, `completely unprocessed' means that
+each line of a file to be inserted is handled as if it were preceded by
+@code{\!\\!}.
 
 Both requests cause a line break.
 @endDefreq
