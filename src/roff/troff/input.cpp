@@ -113,7 +113,7 @@ int have_input = 0;		// whether \f, \F, \D'F...', \H, \m, \M,
 				// token::next()
 int old_have_input = 0;		// value of have_input right before \n
 int tcommand_flag = 0;
-int safer_flag = 1;		// safer by default
+int unsafe_flag = 0;		// safer by default
 
 int have_string_arg = 0;	// whether we have \*[foo bar...]
 
@@ -5815,7 +5815,7 @@ void source()
 
 void pipe_source()
 {
-  if (safer_flag) {
+  if (!unsafe_flag) {
     error(".pso request not allowed in safer mode");
     skip_line();
   }
@@ -6289,7 +6289,7 @@ void do_open(int append)
 
 void open_request()
 {
-  if (safer_flag) {
+  if (!unsafe_flag) {
     error(".open request not allowed in safer mode");
     skip_line();
   }
@@ -6299,7 +6299,7 @@ void open_request()
 
 void opena_request()
 {
-  if (safer_flag) {
+  if (!unsafe_flag) {
     error(".opena request not allowed in safer mode");
     skip_line();
   }
@@ -6977,7 +6977,7 @@ char *read_string()
 
 void pipe_output()
 {
-  if (safer_flag) {
+  if (!unsafe_flag) {
     error(".pi request not allowed in safer mode");
     skip_line();
   }
@@ -7014,7 +7014,7 @@ static int system_status;
 
 void system_request()
 {
-  if (safer_flag) {
+  if (!unsafe_flag) {
     error(".sy request not allowed in safer mode");
     skip_line();
   }
@@ -7497,7 +7497,7 @@ int main(int argc, char **argv)
       // silently ignore these
       break;
     case 'U':
-      safer_flag = 0;	// unsafe behaviour
+      unsafe_flag = 1;	// unsafe behaviour
       break;
 #if defined(DEBUGGING)
     case 'D':
@@ -7515,7 +7515,7 @@ int main(int argc, char **argv)
     default:
       assert(0);
     }
-  if (!safer_flag)
+  if (unsafe_flag)
     mac_path = &macro_path;
   set_string(".T", device);
   init_charset_table();
@@ -7771,7 +7771,7 @@ void init_input_requests()
   number_reg_dictionary.define(".g", new constant_reg("1"));
   number_reg_dictionary.define(".H", new constant_int_reg(&hresolution));
   number_reg_dictionary.define(".R", new constant_reg("10000"));
-  number_reg_dictionary.define(".U", new constant_int_reg(&safer_flag));
+  number_reg_dictionary.define(".U", new constant_int_reg(&unsafe_flag));
   number_reg_dictionary.define(".V", new constant_int_reg(&vresolution));
   number_reg_dictionary.define(".warn", new constant_int_reg(&warning_mask));
   extern const char *major_version;
