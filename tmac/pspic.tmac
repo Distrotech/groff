@@ -7,7 +7,7 @@
 .\"
 .\" Usage:
 .\"
-.\"   .PSPIC [-L|-R|-I <indent>] <file> [<width> [<height>]]
+.\"   .PSPIC [-L|-R|-C|-I <indent>] <file> [<width> [<height>]]
 .
 .do if d PSPIC .nx
 .
@@ -37,8 +37,12 @@
 .        shift 2
 .        HTML-DO-IMAGE \\$1 i
 .      \}
-.      el \
+.      el \{\
+.        \" centered is the default
+.        if '\\$1'-C' \
+.          shift
 .        HTML-DO-IMAGE \\$1 c
+.      \}
 .    \}
 .  \}
 .
