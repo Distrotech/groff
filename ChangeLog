@@ -1,3 +1,17 @@
+2008-04-05  Dorai Sitaram  <ds26gte@yahoo.com>
+
+	Add better support for `.TAG #<label>' in non-HTML documents: In
+	case of a forward reference in a call to .URL, write `(see below)'. 
+	In case of a backwards reference use the page number instead.  The
+	reference gets stored in a string `TAG_<label>' and can be
+	overridden while calling `.TAG' with its new optional argument --
+	this is useful for a second-pass system which resolves forward
+	references.
+
+	* tmac/www.tmac (www:url_check_tag): New function.
+	(URL): Use it.
+	(TAG): Add optional argument to define string `TAG_<label>.
+
 2008-03-24  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/trace.tmac (so, mso): Added.

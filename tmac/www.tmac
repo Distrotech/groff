@@ -354,14 +354,34 @@ HTML always denotes XHTML also.
 .  HTML <body background=\\$1>
 ..
 .
+.\" www:url_check_tag str
+.\"    If url named by \*[str] is internal (starts with #), 
+.\"    redefine \*[str] to be the value of the string TAG_url.
+.
+.de www:url_check_tag
+.  ds \\$0:tmp \\*[\\$1]\"
+.  substring \\$0:tmp 0 0
+.  if '\\*[\\$0:tmp]'#' \{\
+.    ds \\$0:tmp \\*[\\$1]\"
+.    substring \\$0:tmp 1
+.    ds \\$0:tmp TAG_\\*[\\$0:tmp]\"
+.    ie !'\\*[\\*[\\$0:tmp]]'' \
+.      ds \\$1 \\*[\\*[\\$0:tmp]]\"
+.    el \
+.      ds \\$1 see below\"
+.  \} 
+.  rm \\$0:tmp
+..
+.
 .\" --------------------------------------------------------------------
 .\" URL url [description] [after]
 .\"     if description is absent then the url becomes the anchor text
 .\"
 .de URL
-.  ie !'\\$1'' \{\
+.  if !'\\$1'' \{\
 .    ds \\$0:adr \\$1\"
-.    www:url_breaks \\$0:adr
+.    www:url_check_tag \\$0:adr
+.    if !\\n[www-html] .www:url_breaks \\$0:adr
 .  \}
 .  ie \\n[www-html] \{\
 .    ie '\\$3'' \
@@ -369,7 +389,7 @@ HTML always denotes XHTML also.
 .    el \
 .      ds \\$0:after \&\\$3\"
 .    ie '\\$2'' \
-.       HTML-NS <a "href=""\\$1"">\\$1</a>"
+.       HTML-NS <a "href=""\\$1"">\\*[\\$0:adr]</a>"
 .    el \
 .       HTML-NS <a "href=""\\$1"">\\$2</a>"
 .    nop \\*[\\$0:after]
@@ -477,12 +497,19 @@ HTML always denotes XHTML also.
 ..
 .
 .\" --------------------------------------------------------------------
-.\" TAG name
+.\" TAG name [text]
 .\"
 .\"   Generate an html name NAME.
+.\"   Define string TAG_NAME to TEXT, if present,
+.\"      otherwise to \n[PN].
+.\"
 .\"
 .de TAG
 .  HTML <a "name=""\\$1""></a>"
+.  ie '\\$2'' \
+.    ds TAG_\\$1 \\n[PN]
+.  el \
+.    ds TAG_\\$1 \\$2\"
 ..
 .
 .\" --------------------------------------------------------------------
