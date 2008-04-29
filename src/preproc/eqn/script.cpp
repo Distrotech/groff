@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004, 2007
+/* Copyright (C) 1989, 1990, 1991, 1992, 2002, 2004, 2007, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -191,7 +191,7 @@ void script_box::output()
 	   uid, p->uid);
   }
   else if (output_format == mathml) {
-    if (sup != 0 and sub != 0) {
+    if (sup != 0 && sub != 0) {
       printf("<msubsup>");
       p->output();
       sub->output();
