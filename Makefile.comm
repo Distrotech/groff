@@ -302,9 +302,9 @@ depend.temp: FORCE
 	  ytabc="$(YTABC)"; \
 	fi; \
 	test -z "$(CCSRCS)$(YTABC)" \
-	  || $(CCC) $(ALL_CCFLAGS) -MM $(CCSRCS) $$ytabc >>depend.temp
+	  || $(CCC) $(ALL_CCFLAGS) $(EXTRA_CCFLAGS) -MM $(CCSRCS) $$ytabc >>depend.temp
 	test -z "$(CSRCS)" \
-	  || $(CC) $(ALL_CFLAGS) -MM $(CSRCS) >>depend.temp
+	  || $(CC) $(ALL_CFLAGS) $(EXTRA_CFLAGS) -MM $(CSRCS) >>depend.temp
 	test -z "$(YTABH)" \
 	  || (sed -e 's|$(YTABH)|$(YTABC)|g' depend.temp >depend1.temp; \
 	      mv depend1.temp depend.temp)
