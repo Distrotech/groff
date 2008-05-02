@@ -35,11 +35,11 @@ RM=rm -f
 all: README examples/README chem $(MAN1)
 
 README: $(srcdir)/README.txt
-	sed -e "s|@g@|$(g)|g" $< >$@
+	sed -e "s|@g@|$(g)|g" $? >$@
 
 examples/README: $(srcdir)/examples/README.txt
 	-test -d examples || $(mkinstalldirs) examples
-	sed -e "s|@g@|$(g)|g" $< >$@
+	sed -e "s|@g@|$(g)|g" $? >$@
 
 chem: $(srcdir)/chem.pl $(SH_DEPS_SED_SCRIPT)
 	sed -f "$(SH_DEPS_SED_SCRIPT)" \
