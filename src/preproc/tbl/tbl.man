@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2006, 2007
+Copyright (C) 1989-1995, 2001, 2002, 2003, 2004, 2006, 2007, 2008
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -89,9 +89,9 @@ expects to find table descriptions wrapped in the
 (table end) macros.
 The line immediately following the
 .B .TS
-macro may contain any of the following global options (ignoring the case
-of characters -- Unix tbl only accepts options with all characters lowercase
-or all characters uppercase):
+macro may contain any of the following global options (ignoring the case of
+characters \[en] Unix tbl only accepts options with all characters lowercase
+or all characters uppercase), separated by spaces, tabs, or commas:
 .
 .TP
 .B center
@@ -111,7 +111,11 @@ as start and end delimiters for
 .
 .TP
 .B expand
-Makes the table as wide as the current line length.
+Makes the table as wide as the current line length (providing a column
+separation factor).
+In case the sum of the column widths is larger than the current line length,
+the column separation factor is set to zero; such tables extend into the
+right margin, and there is no column separation at all.
 .
 .TP
 .B box
@@ -167,7 +171,7 @@ Ignore leading and trailing spaces in data items (GNU tbl only).
 .
 .LP
 The global options must end with a semicolon.
-There might be whitespace after an option and its argument in parentheses.
+There might be whitespace between an option and its argument in parentheses.
 .
 .LP
 After global options come lines describing the format of each line of
@@ -176,6 +180,7 @@ Each such format line describes one line of the table itself, except that
 the last format line (which you must end with a period) describes all
 remaining lines of the table.
 A single key character describes each column of each line of the table.
+Key characters can be separated by spaces or tabs.
 You may run format specs for multiple lines together on the same line by
 separating them with commas.
 .
@@ -340,9 +345,9 @@ Ignore the corresponding column for width-calculation purposes.
 .
 .LP
 A number suffix on a key character is interpreted as a column
-separation in ens (multiplied in proportion if the
+separation in en units (multiplied in proportion if the
 .B expand
-option is on).
+option is on \[en] in case of overfull tables this might be zero).
 Default separation is 3n.
 .
 .LP
@@ -578,7 +583,7 @@ A\[rs]*a;B
 .
 .
 .SH REFERENCE
-Lesk, M.E.: "TBL -- A Program to Format Tables".
+Lesk, M.E.: "TBL \[en] A Program to Format Tables".
 For copyright reasons it cannot be included in the groff distribution,
 but copies can be found with a title search on the World Wide Web.
 .

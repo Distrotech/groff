@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004, 2007
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2003, 2004, 2007, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -2078,7 +2078,13 @@ void table::compute_separation_factor()
       prints(".nr " SEPARATION_FACTOR_REG " \\n[.l]-\\n[.i]");
       for (i = 0; i < ncolumns; i++)
 	printfs("-\\n[%1]", span_width_reg(i, i));
-      printfs("/%1>?0\n", as_string(total_sep));
+      printfs("/%1\n", as_string(total_sep));
+      prints(".ie \\n[" SEPARATION_FACTOR_REG "]<=0 \\{"
+	     ".tm warning: page \\n%: column separation set to zero\n"
+	     ".nr " SEPARATION_FACTOR_REG " 0\n"
+	     ".\\}\n"
+	     ".el .if \\n[" SEPARATION_FACTOR_REG "]<1n "
+	     ".tm warning: page \\n%: table squeezed horizontally to fit line length\n");
     }
   }
 }
@@ -2158,13 +2164,19 @@ void table::compute_widths()
   for (q = entry_list; q; q = q->next)
     if (!q->mod->zero_width)
       q->do_width();
-  printfs(".nr " COLCOUNT_REG " %1\n", as_string(count_block_columns()));
-  prints(".nr " AVAILABLE_REG " \\n[.ll]-\\n[.in]\n");
   for (i = 0; i < ncolumns; i++)
     compute_span_width(i, i);
   for (p = span_list; p; p = p->next)
     compute_span_width(p->start_col, p->end_col);
-  prints(".nr " AVAILABLE_REG " 0>?\\n[" AVAILABLE_REG "]\n");
+  printfs(".nr " COLCOUNT_REG " %1\n", as_string(count_block_columns()));
+  prints(".nr " AVAILABLE_REG " \\n[.l]-\\n[.i]");
+  for (i = 0; i < ncolumns; i++)
+    printfs("-\\n[%1]", span_width_reg(i, i));
+  prints("\n");
+  prints(".if \\n[" AVAILABLE_REG "]<0 \\{"
+	 ".tm warning: page \\n%: table wider than line width\n"
+	 ".nr " AVAILABLE_REG " 0\n"
+	 ".\\}\n");
   make_columns_equal();
   // Note that divide_span keeps equal width columns equal.
   for (p = span_list; p; p = p->next)
