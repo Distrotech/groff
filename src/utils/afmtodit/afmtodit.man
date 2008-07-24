@@ -1,5 +1,5 @@
 .ig
-Copyright (C) 1989-2000, 2001, 2002, 2003, 2005, 2006
+Copyright (C) 1989-2000, 2001, 2002, 2003, 2005, 2006, 2008
   Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -46,10 +46,11 @@ afmtodit \- create font files for use with groff \-Tps
 .in +\w'\fBafmtodit 'u
 .ti \niu
 .B afmtodit
-.OP \-cmnsvx
+.OP \-ckmnsvx
 .OP \-a n
 .OP \-d desc_file
 .OP \-e enc_file
+.OP \-f internal_name
 .OP \-i n
 .I afm_file
 .I map_file
@@ -230,6 +231,11 @@ If not found in the current directory, the `devps' subdirectory of the
 default font directory is searched.
 .
 .TP
+.BI \-f name
+The internal name of the groff font is set to
+.IR name .
+.
+.TP
 .BI \-i n
 Generate an italic correction for each character so that 
 the character's width plus the character's italic correction
@@ -269,6 +275,11 @@ This option is normally needed only with italic (or oblique) fonts.
 The font files distributed with groff were created using an option of
 .B \-i50
 for italic fonts.
+.
+.TP
+.B \-k
+Omit any kerning data from the groff font.
+This should be used only for mono-spaced fonts.
 .
 .TP
 .B \-m

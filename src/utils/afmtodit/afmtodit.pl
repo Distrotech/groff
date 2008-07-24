@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 # -*- Perl -*-
-# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
+# Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 # Free Software Foundation, Inc.
 #      Written by James Clark (jjc@jclark.com)
 #
@@ -30,10 +30,10 @@ $prog =~ s@.*/@@;
 my $groff_sys_fontdir = "@FONTDIR@";
 
 use Getopt::Std;
-getopts('a:cd:e:i:mnsvx');
+getopts('a:cd:e:f:i:kmnsvx');
 
-our ($opt_a, $opt_c, $opt_d, $opt_e, $opt_i,
-     $opt_m, $opt_n, $opt_s, $opt_v, $opt_x);
+our ($opt_a, $opt_c, $opt_d, $opt_e, $opt_f, $opt_i,
+     $opt_k, $opt_m, $opt_n, $opt_s, $opt_v, $opt_x);
 
 if ($opt_v) {
     print "GNU afmtodit (groff) version @VERSION@\n";
@@ -41,8 +41,8 @@ if ($opt_v) {
 }
 
 if ($#ARGV != 2) {
-    die "usage: $prog [-cmnsvx] [-a angle] [-d DESC] [-e encoding]\n" .
-	"       [-i n] afmfile mapfile font\n";
+    die "usage: $prog [-ckmnsvx] [-a angle] [-d DESC] [-e encoding]\n" .
+	"       [-f name] [-i n] afmfile mapfile font\n";
 }
 
 my $afm = $ARGV[0];
@@ -75,6 +75,9 @@ while (<AFM>) {
     next if $#field < 0;
     if ($field[0] eq "FontName") {
 	$psname = $field[1];
+	if($opt_f) {
+	    $psname = $opt_f;
+	}
     }
     elsif($field[0] eq "Notice") {
 	$notice = $_;
@@ -460,7 +463,7 @@ if (!$opt_n && %ligatures) {
     print(" 0\n");
 }
 
-if ($#kern1 >= 0) {
+if (!$opt_k && $#kern1 >= 0) {
     print("\n");
     print("kernpairs\n");
 
