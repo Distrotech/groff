@@ -1245,16 +1245,6 @@ HTML always denotes XHTML also.
 .  nop \\$2
 ..
 .
-.\" --------------------------------------------------------------------
-.\" Setup around HTML-IMAGE and friends
-.\"
-.\" now set up TS, TE, EQ, EN default macros
-.\"
-.do if !d TS .do ds TS HTML-IMAGE\"
-.do if !d TE .do ds TE HTML-IMAGE-END\"
-.do if !d EQ .do ds EQ EQN-HTML-IMAGE\"
-.do if !d EN .do ds EN EQN-HTML-IMAGE-END\"
-.
 .\"
 .\" supplementary macros used by other macro sets
 .\"
@@ -1342,6 +1332,7 @@ HTML always denotes XHTML also.
 .  www-make-unique-name
 .  EQN-HTML-DO-IMAGE \\*[www-unique-name] i
 ..
+.
 .\" --------------------------------------------------------------------
 .\" EQN-HTML-DO-IMAGE - tells troff to issue an image marker which can be
 .\"                     read back by pre-html
@@ -1372,6 +1363,16 @@ HTML always denotes XHTML also.
 .  \}
 .  el .HTML-IMAGE-END
 ..
+.
+.\" --------------------------------------------------------------------
+.\" Setup around HTML-IMAGE and friends
+.\"
+.\" now set up TS, TE, EQ, EN default macros
+.\"
+.do if !d TS .do als TS HTML-IMAGE\"
+.do if !d TE .do als TE HTML-IMAGE-END\"
+.do if !d EQ .do als EQ EQN-HTML-IMAGE\"
+.do if !d EN .do als EN EQN-HTML-IMAGE-END\"
 .
 .\" --------------------------------------------------------------------
 .\" JOBNAME
