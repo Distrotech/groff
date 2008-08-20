@@ -362,6 +362,51 @@ Long input lines can be broken across multiple lines if the last character
 on the line is `\[rs]' (which vanishes after concatenation).
 .
 .LP
+Note that
+.B @g@tbl
+computes the column widths line by line, applying \[rs]w on each entry.
+As a consequence, constructions like
+.IP
+.B .TS
+.br
+.B c,l.
+.br
+.B \[rs]s[20]MM
+.br
+.B MMMM
+.br
+.B .TE
+.br
+.
+.LP
+fail; you must either say
+.IP
+.B .TS
+.br
+.B cp20,lp20.
+.br
+.B MM
+.br
+.B MMMM
+.br
+.B .TE
+.br
+.
+.LP
+or
+.IP
+.B .TS
+.br
+.B c,l.
+.br
+.B \[rs]s[20]MM
+.br
+.B \[rs]s[20]MMMM
+.br
+.B .TE
+.br
+.
+.LP
 A dot starting a line, followed by anything but a digit is handled as a
 troff command, passed through without changes.
 The table position is unchanged in this case.
