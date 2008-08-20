@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 2005, 2006
+/* Copyright (C) 2005, 2006, 2008
    Free Software Foundation, Inc.
      Written by Werner Lemberg (wl@gnu.org)
 
@@ -45,7 +45,7 @@ Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 extern "C" const char *Version_string;
 
-const char *default_encoding;
+char default_encoding[MAX_VAR_LEN];
 char user_encoding[MAX_VAR_LEN];
 char encoding_string[MAX_VAR_LEN];
 int debug_flag = 0;
@@ -1048,7 +1048,7 @@ do_file(const char *filename)
     if (!file_encoding) {
       if (debug_flag)
 	fprintf(stderr, "  no file encoding\n");
-      file_encoding = (char *)default_encoding;
+      file_encoding = default_encoding;
     }
     else
       if (debug_flag)
@@ -1099,6 +1099,7 @@ usage(FILE *stream)
   fprintf(stream, "usage: %s [ option ] [ files ]\n"
 		  "\n"
 		  "-d           show debugging messages\n"
+		  "-D encoding  specify default encoding\n"
 		  "-e encoding  specify input encoding\n"
 		  "-h           print this message\n"
 		  "-r           don't add .lf requests\n"
@@ -1121,9 +1122,11 @@ main(int argc, char **argv)
   setlocale(LC_ALL, "");
   char *locale = getlocale(LC_CTYPE);
   if (!locale || !strcmp(locale, "C") || !strcmp(locale, "POSIX"))
-    default_encoding = "latin1";
-  else
-    default_encoding = locale_charset();
+    strcpy(default_encoding, "latin1");
+  else {
+    strncpy(default_encoding, locale_charset(), MAX_VAR_LEN - 1);
+    default_encoding[MAX_VAR_LEN - 1] = 0;
+  }
 
   program_name = argv[0];
   int opt;
@@ -1134,7 +1137,7 @@ main(int argc, char **argv)
   };
   // Parse the command line options.
   while ((opt = getopt_long(argc, argv,
-			    "de:hrv", long_options, NULL)) != EOF)
+			    "dD:e:hrv", long_options, NULL)) != EOF)
     switch (opt) {
     case 'v':
       printf("GNU preconv (groff) version %s %s iconv support\n",
@@ -1157,6 +1160,12 @@ main(int argc, char **argv)
       }
       else
 	user_encoding[0] = 0;
+      break;
+    case 'D':
+      if (optarg) {
+	strncpy(default_encoding, optarg, MAX_VAR_LEN - 1);
+	default_encoding[MAX_VAR_LEN - 1] = 0;
+      }
       break;
     case 'r':
       raw_flag = 1;

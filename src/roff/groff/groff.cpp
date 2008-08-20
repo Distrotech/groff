@@ -1,5 +1,6 @@
 // -*- C++ -*-
-/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
+/* Copyright (C) 1989-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
+                 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -135,7 +136,7 @@ int main(int argc, char **argv)
   };
   while ((opt = getopt_long(
 		  argc, argv,
-		  "abcCd:eEf:F:gGhiI:lkK:L:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
+		  "abcCd:D:eEf:F:gGhiI:lkK:L:m:M:n:No:pP:r:RsStT:UvVw:W:XzZ",
 		  long_options, NULL))
 	 != EOF) {
     char buf[3];
@@ -155,6 +156,10 @@ int main(int argc, char **argv)
       Pargs += buf;
       Pargs += optarg;
       Pargs += '\0';
+      break;
+    case 'D':
+      commands[PRECONV_INDEX].set_name(command_prefix, "preconv");
+      commands[PRECONV_INDEX].append_arg("-D", optarg);
       break;
     case 'K':
       commands[PRECONV_INDEX].append_arg("-e", optarg);
@@ -743,7 +748,7 @@ void synopsis(FILE *stream)
   fprintf(stream,
 "usage: %s [-abceghiklpstvzCENRSUVXZ] [-Fdir] [-mname] [-Tdev] [-ffam]\n"
 "       [-wname] [-Wname] [-Mdir] [-dcs] [-rcn] [-nnum] [-olist] [-Parg]\n"
-"       [-Karg] [-Larg] [-Idir] [files...]\n",
+"       [-Darg] [-Karg] [-Larg] [-Idir] [files...]\n",
 	  program_name);
 }
 
@@ -790,6 +795,7 @@ void help()
 "-U\tenable unsafe mode\n"
 "-Idir\tsearch dir for soelim, troff, and grops.  Implies -s\n"
 "-Karg\tuse arg as input encoding.  Implies -k\n"
+"-Darg\tuse arg as default input encoding.  Implies -k\n"
 "\n",
 	stdout);
   exit(0);
