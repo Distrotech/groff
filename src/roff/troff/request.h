@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004
+/* Copyright (C) 1989, 1990, 1991, 1992, 2000, 2001, 2002, 2004, 2008
    Free Software Foundation, Inc.
      Written by James Clark (jjc@jclark.com)
 
@@ -26,14 +26,14 @@ class macro;
 class request_or_macro : public object {
 public:
   request_or_macro();
-  virtual void invoke(symbol s) = 0;
+  virtual void invoke(symbol, int) = 0;
   virtual macro *to_macro();
 };
 
 class request : public request_or_macro {
   REQUEST_FUNCP p;
 public:
-  void invoke(symbol);
+  void invoke(symbol, int);
   request(REQUEST_FUNCP);
 };
 
@@ -59,13 +59,13 @@ public:
   macro &operator=(const macro &);
   void append(unsigned char);
   void append(node *);
-  void append_unsigned(unsigned int i);
-  void append_int(int i);
+  void append_unsigned(unsigned int);
+  void append_int(int);
   void append_str(const char *);
   void set(unsigned char, int);
   unsigned char get(int);
   int length();
-  void invoke(symbol);
+  void invoke(symbol, int);
   macro *to_macro();
   void print_size();
   int empty();
@@ -83,7 +83,7 @@ extern void init_node_requests();
 extern void init_reg_requests();
 extern void init_env_requests();
 extern void init_hyphen_requests();
-extern void init_request(const char *s, REQUEST_FUNCP f);
+extern void init_request(const char *, REQUEST_FUNCP);
 
 class charinfo;
 class environment;

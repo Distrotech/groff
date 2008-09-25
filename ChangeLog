@@ -1,3 +1,27 @@
+2008-09-24  Werner LEMBERG  <wl@gnu.org>
+
+	Fix incompatibility between `.de1' and `.do'.  Without this change,
+	the following snippet
+
+	  .de1 xx
+	  .  tm \\n(.C
+	  ..
+	  .cp 1
+	  .do xx
+
+	prints 1 instead of 0.
+
+	* src/roff/troff/input.cc (do_request): If a macro gets processed,
+	call tok.next().
+	(interpolate_macro): Add optional argument.  Update callers.
+	(request::invoke): Add optional argument.
+	(macro::invoke): Add optional argument to delay call of tok.next().
+
+	* src/roff/troff/request.h (request_or_macro): Add argument to
+	`invoke' member.  Update all derived classes.
+
+	* doc/groff.texinfo: Improve documentation of .do request.
+
 2008-09-09  Werner LEMBERG  <wl@gnu.org>
 
 	* tmac/an-old.tmac (FT): Initialize properly.  Reported by Tadziu
