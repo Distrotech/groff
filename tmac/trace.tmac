@@ -1,50 +1,59 @@
 .\" trace.tmac
 .\"
 .\" Load this before a macro package that you want to trace.
+.\"
+.\"
+.\" Copyright (C) 1989, 1990, 1991, 1992, 2000, 2002, 2003, 2004, 2006,
+.\"               2007, 2008
+.\"   Free Software Foundation, Inc.
+.\"      Written by James Clark (jjc@jclark.com)
+.\"
+.\" This file is part of groff.
+.\"
+.\" groff is free software; you can redistribute it and/or modify it under
+.\" the terms of the GNU General Public License as published by the Free
+.\" Software Foundation; either version 2, or (at your option) any later
+.\" version.
+.\"
+.\" groff is distributed in the hope that it will be useful, but WITHOUT ANY
+.\" WARRANTY; without even the implied warranty of MERCHANTABILITY or
+.\" FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+.\" for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License along
+.\" with groff; see the file COPYING.  If not, write to the Free Software
+.\" Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
+.\"
 .
-.do if d !!!sp .nx
+.
+.\" Regarding the usage of `.do': All lines of macros which should
+.\" work in compatibility mode must be protected if they contain
+.\" GNU troff extensions and are defined with `.de'.  Example: `.ds',
+.\" but not `.ds1', since the latter can't be called in compatibility
+.\" mode.
+.
+.
+.do if d !!!sp \
+.  nx
 .
 .nr _C \n(.C
 .cp 0
 .
-.do ds !!!sp " \"
+.ds !!!sp " \"
+.
+.de !!c
+..
 .
 .eo
 .
-.rn so !!so
-.
-.de so
-.  do ecs
-.  ec
-.  do tm1 "\*[!!!sp]*** .so \$* {
-.  do !!as !!!sp " \"
-.  do !!so \$*
-.  do !!substring !!!sp 1
-.  do tm1 "\*[!!!sp]*** }
-.  do ecr
-..
-.
-.rn mso !!mso
-.
-.de mso
-.  do ecs
-.  ec
-.  do tm1 "\*[!!!sp]*** .mso \$* {
-.  do !!as !!!sp " \"
-.  do !!mso \$*
-.  do !!substring !!!sp 1
-.  do tm1 "\*[!!!sp]*** }
-.  do ecr
-..
-.
 .rn nr !!nr
 .
-.de nr
-.  do ecs
+.de1 nr
+.  ecs
 .  ec
-.  do !!nr \$*
-.  do tm1 "\*[!!!sp]*** .nr \$* (-> \n[\$1])
-.  do ecr
+.  !!nr \$*
+.  tm1 "\*[!!!sp]*** .nr \$* (-> \n[\$1])
+.  ecr
 ..
 .
 .rn ds !!ds
@@ -60,12 +69,12 @@
 .  do ecr
 ..
 .
-.de ds1
-.  do ecs
+.de1 ds1
+.  ecs
 .  ec
-.  do tm1 "\*[!!!sp]*** .ds1 \$^
-.  do !!ds1 \$^\"
-.  do ecr
+.  tm1 "\*[!!!sp]*** .ds1 \$^
+.  !!ds1 \$^\"
+.  ecr
 ..
 .
 .de as
@@ -76,13 +85,46 @@
 .  do ecr
 ..
 .
-.de as1
-.  do ecs
+.de1 as1
+.  ecs
 .  ec
-.  do tm1 "\*[!!!sp]*** .as1 \$^
-.  do !!as1 \$^\"
-.  do ecr
+.  tm1 "\*[!!!sp]*** .as1 \$^
+.  !!as1 \$^\"
+.  ecr
 ..
+.
+.rn substring !!substring
+.
+.de1 substring
+.  ecs
+.  ec
+.  !!substring \$*
+.  tm1 "\*[!!!sp]*** .substring \$* (-> `\*[\$1]')
+.  ecr
+..
+.
+.rn als !!als
+.
+.de1 als
+.  ecs
+.  ec
+.  !!als \$1 \$2
+.  if d !!\$2 \
+.    !!als !!\$1 !!\$2
+.  tm1 "\*[!!!sp]*** .als \$1 \$2
+.  ecr
+..
+.
+.!!c Now the central tracing macros.  The redefined `de' macros
+.!!c create wrapper macros `foo' which emit tracing messages
+.!!c before and after the call to the traced macro `!!foo'.
+.!!c
+.!!c Note that we define `!!foo' in advance so that an alias to
+.!!c `!!!!foo' is possible.  The latter occurs if `foo' is
+.!!c called as \\[foo].
+.!!c
+.!!c The call to `dei' must be the last instruction in the macro
+.!!c (since it continues the definition of the macro to trace).
 .
 .rn de !!de
 .rn de1 !!de1
@@ -91,50 +133,78 @@
 .  do ecs
 .  ec
 .  do !!de \$1
-.    do ie \\n[.br] .!!ds !!!br .\"
-.    el .do !!ds !!!br '\"
-.    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** de trace enter: \\*[!!!br]\\$0 \\$@
-.    el .do tm1 "\\*[!!!sp]*** de trace enter \$1: \\*[!!!br]\\$0 \\$@
+.    do ie \\n[.br] \
+.      !!ds !!!br .\"
+.    el \
+.      do !!ds !!!br '\"
+.    ie "\$1"\\$0" \
+.      do tm1 "\\*[!!!sp]*** de trace enter: \\*[!!!br]\\$0 \\$@
+.    el \
+.      do tm1 "\\*[!!!sp]*** de trace enter \$1: \\*[!!!br]\\$0 \\$@
 .    do !!as !!!sp " \"
-.    do ie \\n[.br] .do !!\\$0 \\$@
-.    el 'do !!\\$0 \\$@
+.    do ie \\n[.br] \
+.      !!\\$0 \\$@
+.    el \
+'      do !!\\$0 \\$@
 .    do !!substring !!!sp 1
-.    do ie \\n[.br] .!!ds !!!br .\"
-.    el .do !!ds !!!br '\"
-.    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
-.    el .do tm1 "\\*[!!!sp]*** trace exit \$1: \\*[!!!br]\\$0 \\$@
+.    do ie \\n[.br] \
+.      !!ds !!!br .\"
+.    el \
+.      do !!ds !!!br '\"
+.    ie "\$1"\\$0" \
+.      do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
+.    el \
+.      do tm1 "\\*[!!!sp]*** trace exit \$1: \\*[!!!br]\\$0 \\$@
 \..
 .
 .  do !!ds !!d1 !!\$1
 .  do !!ds !!d2 \$2
+.
+.  do !!de !!\$1
+\..
+.  do !!als !!!!\$1 !!\$1
 .
 .  do ecr
 .  do dei !!d1 !!d2
 ..
 .
-.!!de de1
-.  do ecs
+.!!de1 de1
+.  ecs
 .  ec
-.  do !!de \$1
-.    do ie \\n[.br] .!!ds !!!br .\"
-.    el .do !!ds !!!br '\"
-.    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** de1 trace enter: \\*[!!!br]\\$0 \\$@
-.    el .do tm1 "\\*[!!!sp]*** de1 trace enter \$1: \\*[!!!br]\\$0 \\$@
-.    do !!as !!!sp " \"
-.    do ie \\n[.br] .do !!\\$0 \\$@
-.    el 'do !!\\$0 \\$@
-.    do !!substring !!!sp 1
-.    do ie \\n[.br] .!!ds !!!br .\"
-.    el .do !!ds !!!br '\"
-.    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
-.    el .do tm1 "\\*[!!!sp]*** trace exit \$1: \\*[!!!br]\\$0 \\$@
+.  !!de1 \$1
+.    ie \\n[.br] \
+.      !!ds !!!br .\"
+.    el \
+.      !!ds !!!br '\"
+.    ie "\$1"\\$0" \
+.      tm1 "\\*[!!!sp]*** de1 trace enter: \\*[!!!br]\\$0 \\$@
+.    el \
+.      tm1 "\\*[!!!sp]*** de1 trace enter \$1: \\*[!!!br]\\$0 \\$@
+.    !!as !!!sp " \"
+.    ie \\n[.br] \
+.      !!\\$0 \\$@
+.    el \
+'      !!\\$0 \\$@
+.    !!substring !!!sp 1
+.    ie \\n[.br] \
+.      !!ds !!!br .\"
+.    el \
+.      !!ds !!!br '\"
+.    ie "\$1"\\$0" \
+.      tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
+.    el \
+.      tm1 "\\*[!!!sp]*** trace exit \$1: \\*[!!!br]\\$0 \\$@
 \..
 .
-.  do !!ds !!d1 !!\$1
-.  do !!ds !!d2 \$2
+.  !!ds !!d1 !!\$1
+.  !!ds !!d2 \$2
 .
-.  do ecr
-.  do dei1 !!d1 !!d2
+.  !!de1 !!\$1
+\..
+.  !!als !!!!\$1 !!\$1
+.
+.  ecr
+.  dei1 !!d1 !!d2
 ..
 .
 .rn am !!am
@@ -144,50 +214,78 @@
 .  do ecs
 .  ec
 .  do !!de \$1
-.    do ie \\n[.br] .!!ds !!!br .\"
-.    el .do !!ds !!!br '\"
-.    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** am trace enter: \\*[!!!br]\\$0 \\$@
-.    el .do tm1 "\\*[!!!sp]*** am trace enter \$1: \\*[!!!br]\\$0 \\$@
+.    do ie \\n[.br] \
+.      !!ds !!!br .\"
+.    el \
+.      do !!ds !!!br '\"
+.    ie "\$1"\\$0" \
+.      do tm1 "\\*[!!!sp]*** am trace enter: \\*[!!!br]\\$0 \\$@
+.    el \
+.      do tm1 "\\*[!!!sp]*** am trace enter \$1: \\*[!!!br]\\$0 \\$@
 .    do !!as !!!sp " \"
-.    do ie \\n[.br] .do !!\\$0 \\$@
-.    el 'do !!\\$0 \\$@
+.    do ie \\n[.br] \
+.      do !!\\$0 \\$@
+.    el \
+'      do !!\\$0 \\$@
 .    do !!substring !!!sp 1
-.    do ie \\n[.br] .!!ds !!!br .\"
-.    el .do !!ds !!!br '\"
-.    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
-.    el .do tm1 "\\*[!!!sp]*** trace exit \$1: \\*[!!!br]\\$0 \\$@
+.    do ie \\n[.br] \
+.      !!ds !!!br .\"
+.    el \
+.      do !!ds !!!br '\"
+.    ie "\$1"\\$0" \
+.      do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
+.    el \
+.      do tm1 "\\*[!!!sp]*** trace exit \$1: \\*[!!!br]\\$0 \\$@
 \..
 .
 .  do !!ds !!a1 !!\$1
 .  do !!ds !!a2 \$2
+.
+.  do !!de !!\$1
+\..
+.  do !!als !!!!\$1 !!\$1
 .
 .  do ecr
 .  do ami !!a1 !!a2
 ..
 .
-.!!de am1
-.  do ecs
+.!!de1 am1
+.  ecs
 .  ec
-.  do !!de \$1
-.    do ie \\n[.br] .!!ds !!!br .\"
-.    el .do !!ds !!!br '\"
-.    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** am1 trace enter: \\*[!!!br]\\$0 \\$@
-.    el .do tm1 "\\*[!!!sp]*** am1 trace enter \$1: \\*[!!!br]\\$0 \\$@
-.    do !!as !!!sp " \"
-.    do ie \\n[.br] .do !!\\$0 \\$@
-.    el 'do !!\\$0 \\$@
-.    do !!substring !!!sp 1
-.    do ie \\n[.br] .!!ds !!!br .\"
-.    el .do !!ds !!!br '\"
-.    ie "\$1"\\$0" .do tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
-.    el .do tm1 "\\*[!!!sp]*** trace exit \$1: \\*[!!!br]\\$0 \\$@
+.  !!de1 \$1
+.    ie \\n[.br] \
+.      !!ds !!!br .\"
+.    el \
+.      !!ds !!!br '\"
+.    ie "\$1"\\$0" \
+.      tm1 "\\*[!!!sp]*** am1 trace enter: \\*[!!!br]\\$0 \\$@
+.    el \
+.      tm1 "\\*[!!!sp]*** am1 trace enter \$1: \\*[!!!br]\\$0 \\$@
+.    !!as !!!sp " \"
+.    ie \\n[.br] \
+.      !!\\$0 \\$@
+.    el \
+'      !!\\$0 \\$@
+.    !!substring !!!sp 1
+.    ie \\n[.br] \
+.      !!ds !!!br .\"
+.    el \
+.      !!ds !!!br '\"
+.    ie "\$1"\\$0" \
+.      tm1 "\\*[!!!sp]*** trace exit: \\*[!!!br]\\$0 \\$@
+.    el \
+.      tm1 "\\*[!!!sp]*** trace exit \$1: \\*[!!!br]\\$0 \\$@
 \..
 .
-.  do !!ds !!a1 !!\$1
-.  do !!ds !!a2 \$2
+.  !!ds !!a1 !!\$1
+.  !!ds !!a2 \$2
 .
-.  do ecr
-.  do ami1 !!a1 !!a2
+.  !!de1 !!\$1
+\..
+.  !!als !!!!\$1 !!\$1
+.
+.  ecr
+.  ami1 !!a1 !!a2
 ..
 .
 .rn return !!return
@@ -197,32 +295,53 @@
 .  !!return twice
 ..
 .
-.rn substring !!substring
+.rn so !!so
 .
-.!!de1 substring
+.!!de so
 .  do ecs
 .  ec
-.  !!substring \$*
-.  tm1 "\*[!!!sp]*** .substring \$* (-> `\*[\$1]')
+.  do tm1 "\*[!!!sp]*** .so \$* {
+.  do !!as !!!sp " \"
+.  do ecr
+.  do !!so \$*
+.  do ecs
+.  ec
+.  do !!substring !!!sp 1
+.  do tm1 "\*[!!!sp]*** }
 .  do ecr
 ..
 .
-.rn als !!als
+.!!c We must use `.de' for the redefinition of .mso to avoid
+.!!c side effects; for example, it might be called with
+.!!c `.do mso ...'.
 .
-.!!de1 als
-.  !!als \$1 \$2
-.  if d !!\$2 \
-.    !!als !!\$1 !!\$2
-.  tm1 "\*[!!!sp]*** .als \$1 \$2
+.rn mso !!mso
+.
+.!!de mso
+.  do ecs
+.  ec
+.  do tm1 "\*[!!!sp]*** .mso \$* {
+.  do !!as !!!sp " \"
+.  do ecr
+.  do !!mso \$*
+.  do ecs
+.  ec
+.  do !!substring !!!sp 1
+.  do tm1 "\*[!!!sp]*** }
+.  do ecr
 ..
+.
 .
 .rn rn !!rn
 .
 .!!de1 rn
+.  ecs
+.  ec
 .  !!rn \$1 \$2
 .  if d !!\$1 \
 .    !!rn !!\$1 !!\$2
 .  tm1 "\*[!!!sp]*** .rn \$1 \$2
+.  ecr
 ..
 .
 .ec
