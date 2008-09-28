@@ -5447,6 +5447,9 @@ This allows to reliably modify requests.
 
 Using this register outside of a macro makes no sense (it always returns
 zero in such cases).
+
+If a macro is called as a string (this is, using @code{\*}), the value
+of the @code{.br} register is inherited from the calling macro.
 @endDefreg
 
 @menu
@@ -5549,7 +5552,7 @@ Use the double quote glyph @code{\(dq}.  This works with and without
 compatibility mode enabled since @code{gtroff} doesn't convert
 @code{\(dq} back to a double quote input character.
 
-Not that this method won't work with @acronym{UNIX} @code{troff} in
+Note that this method won't work with @acronym{UNIX} @code{troff} in
 general since the glyph `dq' isn't defined normally.
 @end itemize
 
@@ -10419,6 +10422,24 @@ This is
     @result{} This is a funny test.
 @endExample
 
+In particular, interpolating a string does not hide existing macro
+arguments.  Thus in a macro, a more efficient way of doing
+
+@Example
+.xx \\$@@
+@endExample
+
+@noindent
+is
+
+@Example
+\\*[xx]\\
+@endExample
+
+@noindent
+Note that the latter calling syntax doesn't change the value of
+@code{\$0}, which is then inherited from the calling macro.
+
 Diversions and boxes can be also called with string syntax.
 
 Another consequence is that you can copy one-line diversions or boxes to
@@ -10947,6 +10968,7 @@ restarting the next iteration.
 
 A @dfn{macro} is a collection of text and embedded commands which can be
 invoked multiple times.  Use macros to define common operations.
+@xref{Strings}, for a (limited) alternative syntax to call macros.
 
 @DefreqList {de, name [@Var{end}]}
 @DefreqItem {de1, name [@Var{end}]}
@@ -11251,17 +11273,40 @@ which redefines some requests and macros for debugging purposes.
 The name used to invoke the current macro.  The @code{als} request can
 make a macro have more than one name.
 
+If a macro is called as a string (within another macro), the value of
+@code{\$0} isn't changed.
+
 @Example
-.de generic-macro
-.  ...
-.  if \\n[error] \@{\
-.    tm \\$0: Houston, we have a problem.
-.    return
-.  \@}
+.de foo
+.  tm \\$0
+..
+.als foo bar
+.
+@endExample
+@Example
+.de aaa
+.  foo
+..
+.de bbb
+.  bar
+..
+.de ccc
+\\*[foo]\\
+..
+.de ddd
+\\*[bar]\\
 ..
 .
-.als foo generic-macro
-.als bar generic-macro
+@endExample
+@Example
+.aaa
+    @result{} foo
+.bbb
+    @result{} bar
+.ccc
+    @result{} ccc
+.ddd
+    @result{} ddd
 @endExample
 @endDefesc
 

@@ -3373,15 +3373,17 @@ class string_iterator : public input_iterator {
   int count;			// of characters remaining
   node *nd;
   int saved_compatible_flag;
+  int with_break;		// inherited from the caller
 protected:
   symbol nm;
   string_iterator();
 public:
-  string_iterator(const macro &m, const char *p = 0, symbol s = NULL_SYMBOL);
+  string_iterator(const macro &, const char * = 0, symbol = NULL_SYMBOL);
   int fill(node **);
   int peek();
   int get_location(int, const char **, int *);
   void backtrace();
+  int get_break_flag() { return with_break; }
   void save_compatible_flag(int f) { saved_compatible_flag = f; }
   int get_compatible_flag() { return saved_compatible_flag; }
   int is_diversion();
@@ -3402,6 +3404,7 @@ string_iterator::string_iterator(const macro &m, const char *p, symbol s)
     nd = 0;
     ptr = eptr = 0;
   }
+  with_break = input_stack::get_break_flag();
 }
 
 string_iterator::string_iterator()
@@ -3413,6 +3416,7 @@ string_iterator::string_iterator()
   how_invoked = 0;
   lineno = 1;
   count = 0;
+  with_break = input_stack::get_break_flag();
 }
 
 int string_iterator::is_diversion()
