@@ -85,7 +85,7 @@ trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0 2 15
 read equation
 (echo ".EQ"; echo 'delim $$'; echo ".EN"; echo '$'"$equation"'$') | \
 	groff -e $groff_opts -Tps -P-pletter > $tmp/eqn2graph.ps \
-	&& convert -trim -crop 0x0 $convert_opts $tmp/eqn2graph.ps $tmp/eqn2graph.$format \
+	&& convert -trim $convert_opts $tmp/eqn2graph.ps $tmp/eqn2graph.$format \
 	&& cat $tmp/eqn2graph.$format
 
 # End

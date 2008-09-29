@@ -37,11 +37,14 @@ that normally precedes it within
 macros; nor do you need to have dollar-sign or other delimiters
 around the equation.
 .P
-The output image will be a black-on-white graphic clipped to the
-smallest possible bounding box that contains all the black pixels.
+The output image will be clipped to the smallest possible bounding box
+that contains all the black pixels.  Older versions of
+.BR convert (1)
+will produce a black-on-white graphic; newer ones may produce a
+black-on-transparent graphic.
 By specifying command-line options to be passed to 
 .BR convert (1)
-you can give it a border, set the background transparent, set the
+you can give it a border, force the background transparent, set the
 image's pixel density, or perform other useful transformations.
 .P
 This program uses 
@@ -96,6 +99,24 @@ and
 (in that order).
 Otherwise, temporary files will be created in
 .BR /tmp .
+.
+.
+.SH BUGS
+Due to changes in the behavior of ImageMagick
+.BR convert (1)
+that are both forward and backward-incompatible,
+mismatches between your
+.B eqn2graph
+and 
+.BR convert (1)
+versions may produce zero-sized or untrimmed output images.
+For this version of 
+.B eqn2graph
+you will need a version of
+.BR convert (1)
+that supports the \fB-trim\fR option; older versions of 
+.B eqn2graph
+used \fB-crop 0x0\fR, which no longer has trimming behavior.
 .
 .
 .SH "SEE ALSO"

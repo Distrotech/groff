@@ -95,7 +95,7 @@ trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0 2 15
 # 4. Use convert(1) to crop the PostScript and turn it into a bitmap.
 (echo ".EQ"; echo $eqndelim; echo ".EN"; echo ".PS"; cat; echo ".PE") | \
     groff -e -p $groffpic_opts -Tps -P-pletter > $tmp/pic2graph.ps \
-    && convert -trim -crop 0x0 $convert_opts $tmp/pic2graph.ps $tmp/pic2graph.$format \
+    && convert -trim $convert_opts $tmp/pic2graph.ps $tmp/pic2graph.$format \
     && cat $tmp/pic2graph.$format
 
 # End
