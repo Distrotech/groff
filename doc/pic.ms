@@ -1481,7 +1481,7 @@ move from last [].e 2
 	"\fB[box wid -0.5 ht 0.5]; box wid 0.75 ht 0.75\fP"
 ]
 .PE
-.CE "3: Composite block objects always have positive width and height
+.CE "3: Composite block objects always have positive width and height"
 .PP
 Blocks may be nested.  This means you can use block attachment points
 to build up complex diagrams hierarchically, from the inside out.
@@ -1549,8 +1549,8 @@ arrowht@0.1@Length of arrowhead along shaft
 arrowwid@0.05@Width of rear of arrowhead
 arrowhead@1@Enable/disable arrowhead filling
 dashwid@0.05@Interval for dashed lines
-maxpswid@11@Maximum width of picture
-maxpsht@8.5@Maximum height of picture
+maxpswid@8.5@Maximum width of picture
+maxpsht@11@Maximum height of picture
 scale@1@Unit scale factor
 fillval@0.5@Default fill value
 .sp 5p
