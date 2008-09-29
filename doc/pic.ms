@@ -66,7 +66,8 @@ The \fBpic\fP language is a \fBtroff\fP extension that makes it easy
 to create and alter box-and-arrow diagrams of the kind frequently used
 in technical papers and textbooks.  This paper is both an introduction
 to and reference for \fIgpic\/\fP(1), the implementation distributed by
-the Free Software Foundation for use with \fIgroff\/\fP(1).
+the Free Software Foundation for use with \fIgroff\/\fP(1).  It also
+catalogs other implementations and explains the differences among them.
 .AE
 .\"%%TUTORIAL%%
 .
@@ -85,11 +86,14 @@ layouts, and other kinds of illustration involving repetitive uses of
 simple geometric forms and splines.  Because these descriptions are
 procedural and object-based, they are both compact and easy to modify.
 .PP
-The \fIgpic\/\fP(1) implementation of \fBpic\fP is distributed by the
-Free Software Foundation for use with their \fIgroff\/\fP(1)
-implementation of \fBtroff\fP.  Because both implementations are
-widely available in source form for free, they are good bets for
-writing very portable documentation.
+The phrase "GNU pic" may refer to either of two \fBpic\fP
+implementations distributed by the Free Software Foundation and
+intended to accept the same input language.  The \fIgpic\/\fP(1)
+implementation is for use with the \fIgroff\/\fP(1) implementation of
+\fBtroff\fP.  The \fIpic2plot\/\fP(1) implementation runs standalone
+and is part of the \fBplotutils\fR package. Because both
+implementations are widely available in source form for free, they are
+good bets for writing very portable documentation.
 .
 .NH 2
 PIC Versions
@@ -103,16 +107,32 @@ Where differences between Documenter's Work Bench (1991) \fBpic\fP and GNU
 \[lq]DWB pic\[rq].  Details on the history of the program are given at the
 end of this document.
 .PP
-In this document, the \fIgpic\/\fP(1) extensions are marked as such.
+The \fBpic2plot\fR program does not require the rest of the
+\fIgroff\/\fP(1) toolchain to render graphics.  It can display
+\fBpic\fR diagrams in a X window, or generate output plots in a large
+number of different formats not supported by GNU \fB\fR.  These
+formats include: PNG, PBM, PGM, PPM, GIF, SVG, Adobe Illustrator
+format, idraw-editable Postscript, the WebCGM format for Web-based
+vector graphics, the format used by the `xfig' drawing editor, the
+Hewlett-Packard PCL 5 printer language, the Hewlett-Packard Graphics
+Language (by default, HP-GL/2), the ReGIS (remote graphics instruction
+set) format developed by DEC, Tektronix format, and device-independent
+GNU graphics metafile format.
+.PP
+In this document, \fIgpic\/\fP(1) and \fIpic2plot\fP(1) extensions are
+marked as such.
 .
 .
 .NH 1
 Invoking PIC
 .PP
-Every \fBpic\fP description is a little program, which gets compiled
-by \fIpic\/\fP(1) into \fIgtroff\/\fP(1) macros.  Programs that process or
-display \fIgtroff\/\fP(1) output need not know or care that parts of the
-image began life as \fBpic\fP descriptions.
+Every \fBpic\fP description is a little program describing drawing
+actions.  The \fB[gtn]roff\fP-dependent versions compile the program into
+by \fIpic\/\fP(1) into \fIgtroff\/\fP(1) macros; the
+\fIpic32plot\fP(1) implementation uses a plotting library to draw the
+picture directly.).  Programs that process or display
+\fIgtroff\/\fP(1) output need not know or care that parts of the image
+began life as \fBpic\fP descriptions.
 .PP
 The \fIpic\/\fP(1) program tries to translate anything between \fB.PS\fP
 and \fB.PE\fP markers, and passes through everything else.  The normal
@@ -371,6 +391,15 @@ _
 .PP
 The simplest way to think about these defaults is that they make the
 other basic objects fit snugly into a default-sized box.
+.PP
+\fIpic2plot\fP(1) does not necessarily emit a physical inch for
+each virtual inch in its drawing coordinate system.  Instead it draws
+on a canvas 8 virtual inches by 8 virtual inches wide.  If its
+output page size is "letter", these virtual inches will map to
+real ones.  Specifying a different page size (such as, say, "a4") 
+will scale virtual inches so they are output as one eighth
+of the page width.  Also, \fIpic2plot\fP(1) centers all images 
+by default, though the -n option can be used to prevent this. 
 .
 .NH 2
 Objects Do Not Stretch!
@@ -567,6 +596,34 @@ section.
 Decorating Objects
 .
 .NH 2
+Text Special Effects
+.PP
+All \fBpic\fP implementations support the following font-styling
+escapes within text objects:
+.IP "\efR, \ef1"
+Set Roman style (the default)
+.IP "\efI, \ef2"
+Set Italic style
+.IP "\efB, \ef3"
+Set Bold style
+.IP "\efP\ \ \ \ \ \ "
+Revert to previous style; only works one level deep, does not stack.
+.PP
+In the \fBpic\fP implementations that are preprocessors for a
+toolchain that include \fB[gtn]roff\fP, text objects may also contain
+\fB[gtn]roff\fP vertical- and horizontal-motion escapes such as \efI, \efB,
+\efR, \efP.  Troff special glyphs are also available.  All \e-escapes will be
+passed through to the postprocessing stage and have their normal
+effects.  The base font family is set by the \fB[gtn]roff\fP
+environment at the time the picture is rendered.
+.PP
+\fBpic2plot\fP replaces \fB[gtn]roff\fP horizontal- and vertical-motion
+escapes with \e-escapes of its own.  Troff special glyphs are not
+available, but in most back ends Latin-1 special characters and a s
+square-root radical will be. See the \fBpic2plot\fP documentation for 
+full details.
+.
+.NH 2
 Dashed Objects
 .PP
 We've already seen that the modifier \fBdashed\fP can change the line
@@ -646,7 +703,7 @@ box wid 1.2 yslanted -0.1 "yslanted -0.1";
 move;
 box wid 1.2 xslanted -0.2 yslanted 0.1 "xslanted -0.2" "yslanted 0.1";
 .PE
-.CE "4: Various slanted boxes.
+.CE "4: Various slanted boxes."
 .PP
 The \fBxslanted\fP and \fByslanted\fP attributes specify the x and
 y\~offset, respectively, of the box's upper right corner from its default
@@ -759,10 +816,16 @@ circle shaded ""green"" outline ""black"";\fR"
 Alternative spellings are \fBcolour\fP, \fBcolored\fP, \fBcoloured\fP,
 and \fBoutlined\fP.
 .PP
-Currently, color support is not available in \*[tx] mode.  Predefined color
-names for \fIgroff\/\fP(1) are in the device macro files, for example
-\f(CWps.tmac\fP; additional colors can be defined with the \fB.defcolor\fP
-request (see the manual page of GNU \fItroff\/\fP(1) for more details).
+Predefined color names for \fI[gtn]roff\/\fP-based \fBpic\fP
+implementations are defined in the device macro files, for example
+\f(CWps.tmac\fP; additional colors can be defined with the
+\fB.defcolor\fP request (see the manual page of GNU \fItroff\/\fP(1)
+for more details).  Currently, color support is not available at all
+in in \*[tx] mode.
+.PP
+The \fIpic2plot\fP(1) carries with it its own set of color names,
+essentially those recognized by the X window system with "grey"
+accepted as a variant of "gray".
 .PP
 \fBpic\fP assumes that at the beginning of a picture both glyph and fill
 color are set to the default value.
@@ -1085,7 +1148,7 @@ valid object references.  Finally, the names \fBleft\fP and \fBright\fP
 can be prefixed with \fBupper\fP and \fBlower\fP which both have the
 obvious meaning.
 .PP
-Arc objects also have compass point; they are the compass points of
+Arc objects also have compass points; they are the compass points of
 the implied circle.
 .PP
 Non-closed objects (line, arrow, or spline) have compass points too, but
@@ -2789,9 +2852,22 @@ box.
 .PP
 A text item consists of a string or sprintf-expression, optionally
 followed by positioning information.  Text (or strings specified with
-`sprintf') may contain [gtn]roff font changes, size changes, and local
+`sprintf') may contain font changes, size changes, and local
 motions, provided those changes are undone before the end of the current
-item.
+item.  Text may also contain \e-escapes denoting special characters.
+The base font and specific set of escapes supported is implementation
+dependent, but supported escapes always include the following:
+.IP "\efR, \ef1"
+Set Roman style (the default)
+.IP "\efI, \ef2"
+Set Italic style
+.IP "\efB, \ef3"
+Set Bold style
+.IP "\efP\ \ \ \ \ \ "
+Revert to previous style; only works one level deep, does not stack.
+.PP
+Color names are dependent on the \gBpic\fR implementation, but in 
+all modern versions color names recognized by the X window system are supported.
 .PP
 A position is an (x,y) coordinate pair.  There are lots of different
 ways to specify positions:
@@ -3074,11 +3150,15 @@ research/cstr').  There have been two revisions, in 1984 and 1991.
 .PP
 The document you are reading effectively subsumes Kernighan's
 description; it was written to fill in lacun\[ae] in the exposition and
-integrate in descriptions of the GNU \fIgpic\/\fP(1) features.
+integrate in descriptions of the GNU \fIgpic\/\fP(1) and
+\fIpic2plot\/\fP(1) features.
 .PP
 The GNU \fBgpic\fR implementation was written by James Clark
 \[la]\,\fIjjc@jclark.com\/\fP\[ra].  It is currently maintained by Werner
 Lemberg \[la]\,\fIwl@gnu.org\/\fP\[ra].
+.PP
+The GNU \fBpic2plot\fR implementation is based on James Clark's parser
+code and maintained by Robert Maier, principal author of \fBplotutils\fP.
 .
 .
 .NH 1
