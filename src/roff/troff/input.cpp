@@ -198,6 +198,8 @@ void restore_escape_char()
   skip_line();
 }
 
+struct arg_list;
+
 class input_iterator {
 public:
   input_iterator();
@@ -217,6 +219,7 @@ private:
   virtual int has_args() { return 0; }
   virtual int nargs() { return 0; }
   virtual input_iterator *get_arg(int) { return 0; }
+  virtual arg_list *get_arg_list() { return 0; }
   virtual int space_follows_arg(int) { return 0; }
   virtual int get_break_flag() { return 0; }
   virtual int get_location(int, const char **, int *) { return 0; }
@@ -418,6 +421,7 @@ public:
   static int peek();
   static void push(input_iterator *);
   static input_iterator *get_arg(int);
+  static arg_list *get_arg_list();
   static int space_follows_arg(int);
   static int get_break_flag();
   static int nargs();
@@ -623,6 +627,15 @@ input_iterator *input_stack::get_arg(int i)
   for (p = top; p != 0; p = p->next)
     if (p->has_args())
       return p->get_arg(i);
+  return 0;
+}
+
+arg_list *input_stack::get_arg_list()
+{
+  input_iterator *p;
+  for (p = top; p != 0; p = p->next)
+    if (p->has_args())
+      return p->get_arg_list();
   return 0;
 }
 
@@ -3185,7 +3198,7 @@ macro::~macro()
 }
 
 macro::macro()
-: is_a_diversion(0)
+: is_a_diversion(0), is_a_string(1)
 {
   if (!input_stack::get_location(1, &filename, &lineno)) {
     filename = 0;
@@ -3198,14 +3211,15 @@ macro::macro()
 
 macro::macro(const macro &m)
 : filename(m.filename), lineno(m.lineno), len(m.len),
-  empty_macro(m.empty_macro), is_a_diversion(m.is_a_diversion), p(m.p)
+  empty_macro(m.empty_macro), is_a_diversion(m.is_a_diversion),
+  is_a_string(m.is_a_string), p(m.p)
 {
   if (p != 0)
     p->count++;
 }
 
 macro::macro(int is_div)
-  : is_a_diversion(is_div)
+: is_a_diversion(is_div)
 {
   if (!input_stack::get_location(1, &filename, &lineno)) {
     filename = 0;
@@ -3213,12 +3227,23 @@ macro::macro(int is_div)
   }
   len = 0;
   empty_macro = 1;
+  is_a_string = 1;
   p = 0;
 }
 
 int macro::is_diversion()
 {
   return is_a_diversion;
+}
+
+int macro::is_string()
+{
+  return is_a_string;
+}
+
+void macro::clear_string_flag()
+{
+  is_a_string = 0;
 }
 
 macro &macro::operator=(const macro &m)
@@ -3234,6 +3259,7 @@ macro &macro::operator=(const macro &m)
   len = m.len;
   empty_macro = m.empty_macro;
   is_a_diversion = m.is_a_diversion;
+  is_a_string = m.is_a_string;
   return *this;
 }
 
@@ -3608,11 +3634,26 @@ struct arg_list {
   int space_follows;
   arg_list *next;
   arg_list(const macro &, int);
+  arg_list(const arg_list *);
   ~arg_list();
 };
 
 arg_list::arg_list(const macro &m, int s) : mac(m), space_follows(s), next(0)
 {
+}
+
+arg_list::arg_list(const arg_list *al)
+: next(0)
+{
+  mac = al->mac;
+  space_follows = al->space_follows;
+  arg_list **a = &next;
+  arg_list *p = al->next;
+  while (p) {
+    *a = new arg_list(p->mac, p->space_follows);
+    p = p->next;
+    a = &(*a)->next;
+  }
 }
 
 arg_list::~arg_list()
@@ -3624,11 +3665,12 @@ class macro_iterator : public string_iterator {
   int argc;
   int with_break;		// whether called as .foo or 'foo
 public:
-  macro_iterator(symbol, macro &, const char *how_invoked = "macro");
+  macro_iterator(symbol, macro &, const char * = "macro", int = 0);
   macro_iterator();
   ~macro_iterator();
   int has_args() { return 1; }
   input_iterator *get_arg(int);
+  arg_list *get_arg_list();
   int space_follows_arg(int);
   int get_break_flag() { return with_break; }
   int nargs() { return argc; }
@@ -3652,6 +3694,11 @@ input_iterator *macro_iterator::get_arg(int i)
   }
   else
     return 0;
+}
+
+arg_list *macro_iterator::get_arg_list()
+{
+  return args;
 }
 
 int macro_iterator::space_follows_arg(int i)
@@ -3883,9 +3930,17 @@ int macro::empty()
   return empty_macro == 1;
 }
 
-macro_iterator::macro_iterator(symbol s, macro &m, const char *how_called)
+macro_iterator::macro_iterator(symbol s, macro &m, const char *how_called,
+			       int init_args)
 : string_iterator(m, how_called, s), args(0), argc(0), with_break(break_flag)
 {
+  if (init_args) {
+    arg_list *al = input_stack::get_arg_list();
+    if (al) {
+      args = new arg_list(al);
+      argc = input_stack::nargs();
+    }
+  }
 }
 
 macro_iterator::macro_iterator() : args(0), argc(0), with_break(break_flag)
@@ -4134,12 +4189,12 @@ void do_define_string(define_mode mode, comp_mode comp)
       mac.append((unsigned char)c);
     c = get_copy(&n);
   }
+  if (comp == COMP_DISABLE || comp == COMP_ENABLE)
+    mac.append(POP_GROFFCOMP_MODE);
   if (!mm) {
     mm = new macro;
     request_dictionary.define(nm, mm);
   }
-  if (comp == COMP_DISABLE || comp == COMP_ENABLE)
-    mac.append(POP_GROFFCOMP_MODE);
   *mm = mac;
   tok.next();
 }
@@ -4252,8 +4307,14 @@ static void interpolate_string(symbol nm)
   if (!m)
     error("you can only invoke a string or macro using \\*");
   else {
-    string_iterator *si = new string_iterator(*m, "string", nm);
-    input_stack::push(si);
+    if (m->is_string()) {
+      string_iterator *si = new string_iterator(*m, "string", nm);
+      input_stack::push(si);
+     }
+    else {
+      macro_iterator *mi = new macro_iterator(nm, *m, "string", 1);
+      input_stack::push(mi);
+    }
   }
 }
 
@@ -4442,6 +4503,8 @@ void do_define_macro(define_mode mode, calling_mode calling, comp_mode comp)
   else if (comp == COMP_ENABLE)
     mac.append(PUSH_COMP_MODE);
   for (;;) {
+    if (c == '\n')
+      mac.clear_string_flag();
     while (c == ESCAPE_NEWLINE) {
       if (mode == DEFINE_NORMAL || mode == DEFINE_APPEND)
 	mac.append(c);

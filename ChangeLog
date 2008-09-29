@@ -1,3 +1,34 @@
+2008-09-29  Werner LEMBERG  <wl@gnu.org>
+
+	Make \\*[xxx]\\ within a macro (with `xxx' a macro too) work as
+	expected.  Without the patch,
+
+	  .de aaa
+	  \\*[bbb]\\
+	  .  tm \\$*
+	  ..
+	  .de bbb
+	  .  shift
+	  ..
+	  .aaa 1 2 3
+
+	prints `2 3' instead of `1 2 3'.
+
+	* src/roff/troff/input.cpp (input_iterator, input_stack,
+	macro_iterator): Add `get_arg_list' member function.
+	(macro): Add `is_a_string', `is_string', and `clear_string_flag'
+	members.
+	Update constructors and operators.
+	(arg_list): Add copy constructor.
+	(macro_iterator): Add optional argument to constructor to indicate
+	whether arguments shall be inherited from calling macro.
+	(interpolate_string): If string argument is a macro, push a macro
+	iterator on the stack.
+	(do_define_macro): Call clear_string_flag if macro data contains a
+	newline.
+
+	* src/roff/troff/request.h: Updated.
+
 2008-09-29  Eric S. Raymond  <esr@snark.thyrsus.com>
 
 	* doc/pic.ms: Fold in documentation of pic2plot(1) capabilities.

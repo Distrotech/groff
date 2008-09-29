@@ -50,6 +50,7 @@ class macro : public request_or_macro {
   int len;
   int empty_macro;
   int is_a_diversion;
+  int is_a_string;		// if it contains no newline
 public:
   macro_header *p;
   macro();
@@ -70,6 +71,8 @@ public:
   void print_size();
   int empty();
   int is_diversion();
+  int is_string();
+  void clear_string_flag();
   friend class string_iterator;
   friend void chop_macro();
   friend void substring_request();
