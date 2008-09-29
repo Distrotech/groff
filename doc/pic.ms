@@ -1,19 +1,19 @@
 .\" Copyright (C) 2006, 2007, 2008
 .\"   Free Software Foundation, Inc.
 .\"      Written by Eric S. Raymond <esr@thyrsus.com>
-.\" 
+.\"
 .\" This file is part of groff.
-.\" 
+.\"
 .\" groff is free software; you can redistribute it and/or modify it under
 .\" the terms of the GNU General Public License as published by the Free
 .\" Software Foundation; either version 2, or (at your option) any later
 .\" version.
-.\" 
+.\"
 .\" groff is distributed in the hope that it will be useful, but WITHOUT ANY
 .\" WARRANTY; without even the implied warranty of MERCHANTABILITY or
 .\" FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 .\" for more details.
-.\" 
+.\"
 .\" You should have received a copy of the GNU General Public License along
 .\" with groff; see the file COPYING.  If not, write to the Free Software
 .\" Foundation, 51 Franklin St - Fifth Floor, Boston, MA 02110-1301, USA.
@@ -25,7 +25,7 @@
 .\" Comments beginning with %% are cut lines so portions of this
 .\" document can be automatically extracted.  %%TUTORIAL%% begins the
 .\" tutorial part; %%REFERENCE%% the reference part.  %%POSTLUDE%% the
-.\" bibliography and end matter after the reference part.  
+.\" bibliography and end matter after the reference part.
 .\"
 .\" This document was written for free use and redistribution by
 .\" Eric S. Raymond <esr@thyrsus.com> in August 1995.  It has been put
@@ -86,7 +86,7 @@ layouts, and other kinds of illustration involving repetitive uses of
 simple geometric forms and splines.  Because these descriptions are
 procedural and object-based, they are both compact and easy to modify.
 .PP
-The phrase "GNU pic" may refer to either of two \fBpic\fP
+The phrase \[lq]GNU pic\[rq] may refer to either of two \fBpic\fP
 implementations distributed by the Free Software Foundation and
 intended to accept the same input language.  The \fIgpic\/\fP(1)
 implementation is for use with the \fIgroff\/\fP(1) implementation of
@@ -109,17 +109,16 @@ end of this document.
 .PP
 The \fBpic2plot\fR program does not require the rest of the
 \fIgroff\/\fP(1) toolchain to render graphics.  It can display
-\fBpic\fR diagrams in a X window, or generate output plots in a large
-number of different formats not supported by GNU \fB\fR.  These
-formats include: PNG, PBM, PGM, PPM, GIF, SVG, Adobe Illustrator
-format, idraw-editable Postscript, the WebCGM format for Web-based
-vector graphics, the format used by the `xfig' drawing editor, the
-Hewlett-Packard PCL 5 printer language, the Hewlett-Packard Graphics
-Language (by default, HP-GL/2), the ReGIS (remote graphics instruction
-set) format developed by DEC, Tektronix format, and device-independent
-GNU graphics metafile format.
+\fBpic\fR diagrams in a X\~window, or generate output plots in a large
+number of other formats.  These formats include: PNG, PBM, PGM, PPM, GIF,
+SVG, Adobe Illustrator format, idraw-editable Postscript, the WebCGM
+format for Web-based vector graphics, the format used by the \fBxfig\fP
+drawing editor, the Hewlett-Packard PCL\~5 printer language, the
+Hewlett-Packard Graphics Language (by default, HP-GL/2), the ReGIS
+(remote graphics instruction set) format developed by DEC, Tektronix
+format, and device-independent GNU graphics metafile format.
 .PP
-In this document, \fIgpic\/\fP(1) and \fIpic2plot\fP(1) extensions are
+In this document, \fIgpic\/\fP(1) and \fIpic2plot\/\fP(1) extensions are
 marked as such.
 .
 .
@@ -127,10 +126,10 @@ marked as such.
 Invoking PIC
 .PP
 Every \fBpic\fP description is a little program describing drawing
-actions.  The \fB[gtn]roff\fP-dependent versions compile the program into
+actions.  The \fB[gtn]roff\fP-dependent versions compile the program
 by \fIpic\/\fP(1) into \fIgtroff\/\fP(1) macros; the
-\fIpic32plot\fP(1) implementation uses a plotting library to draw the
-picture directly.).  Programs that process or display
+\fIpic2plot\/\fP(1) implementation uses a plotting library to draw the
+picture directly.  Programs that process or display
 \fIgtroff\/\fP(1) output need not know or care that parts of the image
 began life as \fBpic\fP descriptions.
 .PP
@@ -356,7 +355,7 @@ and height attributes or by the defaults \fBtextwid\fR and
 default font size).
 .
 .
-.NH 1 
+.NH 1
 Sizes and Spacing
 .PP
 Sizes are specified in inches.  If you don't like inches, it's
@@ -392,14 +391,15 @@ _
 The simplest way to think about these defaults is that they make the
 other basic objects fit snugly into a default-sized box.
 .PP
-\fIpic2plot\fP(1) does not necessarily emit a physical inch for
-each virtual inch in its drawing coordinate system.  Instead it draws
-on a canvas 8 virtual inches by 8 virtual inches wide.  If its
-output page size is "letter", these virtual inches will map to
-real ones.  Specifying a different page size (such as, say, "a4") 
-will scale virtual inches so they are output as one eighth
-of the page width.  Also, \fIpic2plot\fP(1) centers all images 
-by default, though the -n option can be used to prevent this. 
+\fIpic2plot\/\fP(1) does not necessarily emit a physical inch for
+each virtual inch in its drawing coordinate system.  Instead, it draws
+on a canvas 8\~virtual inches by 8\~virtual inches wide.  If its
+output page size is \[lq]letter\[rq], these virtual inches will map to
+real ones.  Specifying a different page size (such as, say,
+\[lq]a4\[rq]) will scale virtual inches so they are output as one
+eighth of the page width.  Also, \fIpic2plot\/\fP(1) centers all
+images by default, though the \fB\-n\fP option can be used to prevent
+this.
 .
 .NH 2
 Objects Do Not Stretch!
@@ -520,7 +520,7 @@ define gridarrow
 				sprintf("\fBarrow up left %g\fP", $1)
 			}
 		]
-	] 
+	]
 	move right 0.1 from last [] .e;
 }
 gridarrow(0.5);
@@ -541,7 +541,7 @@ keyword \fBthen\fP.
 .KS
 .PS
 define zigzag { $1 right 1 then down .5 left 1 then right 1 }
-zigzag(line); 
+zigzag(line);
 .PE
 .CE "2: \fBline right 1 then down .5 left 1 then right 1\fP"
 .PP
@@ -574,7 +574,7 @@ undef zigzag;
 .CE "3: \fBspline right 1 then down .5 left 1 then right 1\fP"
 .PP
 You can describe many natural-looking but irregular curves this
-way.  For example: 
+way.  For example:
 .KS
 .PS
 [spline right then up then left then down ->;]
@@ -619,8 +619,8 @@ environment at the time the picture is rendered.
 .PP
 \fBpic2plot\fP replaces \fB[gtn]roff\fP horizontal- and vertical-motion
 escapes with \e-escapes of its own.  Troff special glyphs are not
-available, but in most back ends Latin-1 special characters and a s
-square-root radical will be. See the \fBpic2plot\fP documentation for 
+available, but in most back ends Latin-1 special characters and a
+square-root radical will be.  See the \fBpic2plot\fP documentation for
 full details.
 .
 .NH 2
@@ -680,11 +680,11 @@ box rad 0.05 "rad 0.05";
 move;
 box rad 0.1 "rad 0.1";
 move;
-box rad 0.15 "rad 0.15"; 
+box rad 0.15 "rad 0.15";
 move;
-box rad 0.2 "rad 0.2"; 
+box rad 0.2 "rad 0.2";
 move;
-box rad 0.25 "rad 0.25"; 
+box rad 0.25 "rad 0.25";
 .PE
 .CE "3: \fBbox rad\fP with increasing radius values"
 .PP
@@ -740,7 +740,7 @@ always filled with the current outline color.
 Line Thickness
 .PP
 It's also possible to change the line thickness of an object (this is
-a GNU extension, DWB \fBpic\fP doesn't support it).  
+a GNU extension, DWB \fBpic\fP doesn't support it).
 The default thickness of the lines used to draw objects is controlled by the
 .B linethick
 variable.
@@ -797,7 +797,7 @@ has been filled, so that the text is not obscured by the filling.
 .PP
 The closed-object modifier \fBsolid\fP is equivalent to \fBfill\fP
 with the darkest fill value (DWB \fBpic\fP had this capability but
-mentioned it only in a reference section).  
+mentioned it only in a reference section).
 .
 .NH 2
 Colored Objects
@@ -821,11 +821,11 @@ implementations are defined in the device macro files, for example
 \f(CWps.tmac\fP; additional colors can be defined with the
 \fB.defcolor\fP request (see the manual page of GNU \fItroff\/\fP(1)
 for more details).  Currently, color support is not available at all
-in in \*[tx] mode.
+in \*[tx] mode.
 .PP
-The \fIpic2plot\fP(1) carries with it its own set of color names,
-essentially those recognized by the X window system with "grey"
-accepted as a variant of "gray".
+The \fIpic2plot\/\fP(1) carries with its own set of color names,
+essentially those recognized by the X\~window system with \[lq]grey\[rq]
+accepted as a variant of \[lq]gray\[rq].
 .PP
 \fBpic\fP assumes that at the beginning of a picture both glyph and fill
 color are set to the default value.
@@ -844,9 +844,9 @@ one half line space in the given direction.
 Text attributes can be combined:
 .KS
 .PS
-[line up "ljust text" ljust;] 
+[line up "ljust text" ljust;]
 move 1.5;
-[line up "rjust text" rjust;] 
+[line up "rjust text" rjust;]
 move;
 [arrow 1 "ljust above" ljust above;]
 move;
@@ -918,7 +918,7 @@ move right 2 from last [] .e;
 .PE
 .CE "2: Effects of different motion directions (up and down)"
 .PP
-Something that may appear surprising happens if you change directions 
+Something that may appear surprising happens if you change directions
 in the obvious way:
 .KS
 .PS
@@ -1042,12 +1042,12 @@ arrow right at A .r;
 The \fBat\fP statement in the fourth line uses the label \fBA\fP (the
 behavior of \fBat\fP is explained in the next section).  We'll
 see later on that labels are most useful for referring to block composite
-objects.  
+objects.
 .PP
 Labels are not constants but variables (you can view colon as a sort
 of assignment).  You can say something like \fBA: A + (1,0);\fP
 and the effect is to reassign the label \fBA\fR to designate a
-position one inch to the right of its old value. 
+position one inch to the right of its old value.
 .
 .
 .NH 1
@@ -1055,7 +1055,7 @@ Describing locations
 .PP
 The location of points can be described in many different ways.  All these
 forms are interchangeable as for as the \fBpic\fP language syntax is
-concerned; where you can use one, any of the others that would make 
+concerned; where you can use one, any of the others that would make
 semantic sense are allowed.
 .PP
 The special label \fBHere\fR always refers to the current position.
@@ -1065,11 +1065,11 @@ Absolute Coordinates
 .PP
 The simplest is absolute coordinates in inches; \fBpic\fP uses a
 Cartesian system with (0,0) at the lower left corner of the virtual
-drawing surface for each picture (that is, X increases to the right
-and Y increases upwards).  An absolute location may always be written in the
+drawing surface for each picture (that is, X\~increases to the right
+and Y\~increases upwards).  An absolute location may always be written in the
 conventional form as two comma-separated numbers surrounded by
 parentheses (and this is recommended for clarity).  In contexts where
-it creates no ambiguity, the pair of X and Y coordinates suffices
+it creates no ambiguity, the pair of X and Y\~coordinates suffices
 without parentheses.
 .PP
 It is a good idea to avoid absolute coordinates, however.  They tend
@@ -1194,7 +1194,7 @@ Positions may be added or subtracted to yield a new position (to be
 more precise, you can only add a position and an expression pair; the
 latter must be on the right side of the addition or subtraction sign).
 The result is the conventional vector sum or difference of coordinates.
-For example, \fBlast box .ne + (0.1, 0)\fP is a valid position.  This 
+For example, \fBlast box .ne + (0.1, 0)\fP is a valid position.  This
 example illustrates a common use, to define a position slightly offset
 from a named one (say, for captioning purposes).
 .NH 3
@@ -1246,7 +1246,7 @@ Note the use of the short form for interpolating points.
 Projections of Points
 .PP
 Given two positions \fIp\fP and \fIq\fP, the position
-\fB(\,\fP\fIp\fP\fB,\fP \fIq\fP\fB)\fP has the X coordinate of \fIp\fP
+\fB(\,\fP\fIp\fP\fB,\fP \fIq\fP\fB)\fP has the X\~coordinate of \fIp\fP
 and the Y coordinate of \fIq\fP.  This can be helpful in placing an
 object at one of the corners of the virtual box defined by two other
 objects.
@@ -1334,18 +1334,18 @@ move from last [].e 1.5
 The `chop' Modifier
 .PP
 When drawing lines between circles that don't intersect them at a
-compass point, it is useful to be able to shorten a line by the radius 
+compass point, it is useful to be able to shorten a line by the radius
 of the circle at either or both ends.  Consider the following program:
 .KS
 .DS
 .CW
 \&.PS
 circle "x"
-circle "y" at 1st circle - (0.4, 0.6) 
-circle "z" at 1st circle + (0.4, -0.6) 
-arrow from 1st circle to 2nd circle chop 
-arrow from 2nd circle to 3rd circle chop 
-arrow from 3rd circle to 1st circle chop 
+circle "y" at 1st circle - (0.4, 0.6)
+circle "z" at 1st circle + (0.4, -0.6)
+arrow from 1st circle to 2nd circle chop
+arrow from 2nd circle to 3rd circle chop
+arrow from 3rd circle to 1st circle chop
 \&.PE
 .DE
 .R
@@ -1355,11 +1355,11 @@ It yields the following:
 .KS
 .PS
 circle "x"
-circle "y" at 1st circle - (0.4, 0.6) 
-circle "z" at 1st circle + (0.4, -0.6) 
-arrow from 1st circle to 2nd circle chop 
-arrow from 2nd circle to 3rd circle chop 
-arrow from 3rd circle to 1st circle chop 
+circle "y" at 1st circle - (0.4, 0.6)
+circle "z" at 1st circle + (0.4, -0.6)
+arrow from 1st circle to 2nd circle chop
+arrow from 2nd circle to 3rd circle chop
+arrow from 3rd circle to 1st circle chop
 .PE
 .CE "8: The \fBchop\fR modifier"
 .LP
@@ -1404,7 +1404,7 @@ A: [
     line down 1 at last circle .s;
     line right 1 at last circle .e;
     line left 1 at last circle .w;
-    box dashed with .nw at last circle .se + (0.2, -0.2); 
+    box dashed with .nw at last circle .se + (0.2, -0.2);
     Caption: center of last box;
 ]
 .R
@@ -1422,7 +1422,7 @@ define junction {
 	line down 1 at last circle .s;
 	line right 1 at last circle .e;
 	line left 1 at last circle .w;
-	box dashed with .nw at last circle .se + (0.2, -0.2); 
+	box dashed with .nw at last circle .se + (0.2, -0.2);
 	Caption: center of last box;
 }
 [junction();]
@@ -1436,7 +1436,7 @@ To refer to one of the composite's attachment points, you can say
 are a class.  You could write \fBlast [] .s\fP as an equivalent
 reference, usable anywhere a location is needed.  This construction is
 very important for putting together large, multi-part diagrams.
-.PP 
+.PP
 Blocks are also a variable-scoping mechanism, like a \fIgroff\/\fP(1)
 environment.  All variable assignments done inside a block are undone
 at the end of it.  To get at values within a block, write a name of
@@ -1486,8 +1486,8 @@ move from last [].e 2
 Blocks may be nested.  This means you can use block attachment points
 to build up complex diagrams hierarchically, from the inside out.
 Note that \fBlast\fP and the other sequential naming mechanisms
-don't look inside blocks, so if you have a program that looks 
-like 
+don't look inside blocks, so if you have a program that looks
+like
 .KS
 .DS
 .CW
@@ -1503,7 +1503,7 @@ arrow from 2nd last [];
 .DE
 .KE
 .LP
-the arrow in the last line is attached to object \fBP\fP, not 
+the arrow in the last line is attached to object \fBP\fP, not
 object \fBQ\fP.
 .PP
 In DWB \fBpic\fP, only references one level deep into enclosed blocks
@@ -1645,7 +1645,7 @@ Various built-in functions are supported: \fBsin(\fIx\fB)\fR,
 \fBint(\fIx\fB)\fR, \fBrand()\fP, and \fBsrand()\fP.
 Both \fBexp\fP and \fBlog\fP are
 base\~10; \fBint\fP does integer truncation; \fBrand()\fP returns a
-random number in [0-1), and \fBsrand()\fP sets the seed for 
+random number in [0-1), and \fBsrand()\fP sets the seed for
 a new sequence of pseudo-random numbers to be returned by \fBrand()\fP
 (\fBsrand()\fP is a GNU extension).
 .PP
@@ -1674,7 +1674,7 @@ The syntax is
 .DE
 .LP
 This defines \fIname\fR as a macro to be replaced by the replacement
-text (not including the braces).  The macro may be called as 
+text (not including the braces).  The macro may be called as
 .DS
 .CW
 \fIname\fB(\fIarg1, arg2, \|.\|.\|.\& argn\fB)\fR
@@ -1818,7 +1818,7 @@ Any \fB.PS\fP/\fB.PE\fP pair in the file is ignored.  You
 can use this to include pre-generated images.
 .PP
 A variant of this statement replicates the \fBcopy thru\fP feature of
-\fIgrap\fP(1).  The call
+\fIgrap\/\fP(1).  The call
 .DS
 \f(CWcopy\fP \fIfilename\fR \f(CWthru\fP \fImacro\fP
 .DE
@@ -1927,7 +1927,7 @@ x is 14.
 .NH 2
 Executing Shell Commands
 .PP
-The command 
+The command
 .DS
 \f(CWsh\fP \f(CW{\fP \fIanything.\|.\|.\fP \f(CW}\fP
 .DE
@@ -2318,7 +2318,7 @@ define gridarrow
             then { "\efBline up left\efP" } \e
             else { sprintf("\efBarrow up left %g\efP", $1) };
         ]
-    ] 
+    ]
     move right 0.1 from last [] .e;
 }
 gridarrow(0.5);
@@ -2351,7 +2351,7 @@ define gridarrow
 			then { "\fBline up left\fP" } \
 			else { sprintf("\fBarrow up left %g\fP", $1) };
 		]
-	] 
+	]
 	move right 0.1 from last [] .e;
 }
 gridarrow(0.5);
@@ -2866,8 +2866,9 @@ Set Bold style
 .IP "\efP\ \ \ \ \ \ "
 Revert to previous style; only works one level deep, does not stack.
 .PP
-Color names are dependent on the \gBpic\fR implementation, but in 
-all modern versions color names recognized by the X window system are supported.
+Color names are dependent on the \gBpic\fR implementation, but in
+all modern versions color names recognized by the X\~window system are
+supported.
 .PP
 A position is an (x,y) coordinate pair.  There are lots of different
 ways to specify positions:
@@ -3037,8 +3038,8 @@ arrowht@0.1@Length of arrowhead along shaft
 arrowwid@0.05@Width of rear of arrowhead
 arrowhead@1@Enable/disable arrowhead filling
 dashwid@0.05@Interval for dashed lines
-maxpswid@11@Maximum width of picture
-maxpsht@8.5@Maximum height of picture
+maxpswid@8.5@Maximum width of picture
+maxpsht@11@Maximum height of picture
 scale@1@Unit scale factor
 fillval@0.5@Default fill value
 .sp 5p
@@ -3106,7 +3107,7 @@ These may be used to define pseudo-functions.
 .DE
 .LP
 This defines \fIname\fR as a macro to be replaced by the replacement
-text (not including the braces).  The macro may be called as 
+text (not including the braces).  The macro may be called as
 .DS
 .CW
 \fIname\/\fB(\,\fIarg1, arg2, .\|.\|., argn\fB\/)\fR
