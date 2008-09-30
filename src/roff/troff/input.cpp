@@ -220,6 +220,7 @@ private:
   virtual int nargs() { return 0; }
   virtual input_iterator *get_arg(int) { return 0; }
   virtual arg_list *get_arg_list() { return 0; }
+  virtual symbol get_macro_name() { return NULL_SYMBOL; }
   virtual int space_follows_arg(int) { return 0; }
   virtual int get_break_flag() { return 0; }
   virtual int get_location(int, const char **, int *) { return 0; }
@@ -422,6 +423,7 @@ public:
   static void push(input_iterator *);
   static input_iterator *get_arg(int);
   static arg_list *get_arg_list();
+  static symbol get_macro_name();
   static int space_follows_arg(int);
   static int get_break_flag();
   static int nargs();
@@ -637,6 +639,15 @@ arg_list *input_stack::get_arg_list()
     if (p->has_args())
       return p->get_arg_list();
   return 0;
+}
+
+symbol input_stack::get_macro_name()
+{
+  input_iterator *p;
+  for (p = top; p != 0; p = p->next)
+    if (p->has_args())
+      return p->get_macro_name();
+  return NULL_SYMBOL;
 }
 
 int input_stack::space_follows_arg(int i)
@@ -3671,6 +3682,7 @@ public:
   int has_args() { return 1; }
   input_iterator *get_arg(int);
   arg_list *get_arg_list();
+  symbol get_macro_name();
   int space_follows_arg(int);
   int get_break_flag() { return with_break; }
   int nargs() { return argc; }
@@ -3699,6 +3711,11 @@ input_iterator *macro_iterator::get_arg(int i)
 arg_list *macro_iterator::get_arg_list()
 {
   return args;
+}
+
+symbol macro_iterator::get_macro_name()
+{
+  return nm;
 }
 
 int macro_iterator::space_follows_arg(int i)
@@ -4312,7 +4329,9 @@ static void interpolate_string(symbol nm)
       input_stack::push(si);
      }
     else {
-      macro_iterator *mi = new macro_iterator(nm, *m, "string", 1);
+      // if a macro is called as a string, \$0 doesn't get changed
+      macro_iterator *mi = new macro_iterator(input_stack::get_macro_name(),
+					      *m, "string", 1);
       input_stack::push(mi);
     }
   }
