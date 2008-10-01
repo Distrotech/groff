@@ -3,11 +3,11 @@ groff_trace.7
 
 File position: <groff-source>/tmac/groff_trace.man
 
-Last update: 20 Feb 2007
+Last update: 01 Oct 2008
 
 This file is part of groff, the GNU roff type-setting system.
 
-Copyright (C) 2002, 2006, 2007 Free Software Foundation, Inc.
+Copyright (C) 2002, 2006, 2007, 2008 Free Software Foundation, Inc.
 written by Bernd Warken.
 
 Permission is granted to copy, distribute and/or modify this document
@@ -28,9 +28,8 @@ FDL in the main directory of the groff source package.
 groff_trace \- groff macro package trace.tmac
 .
 .\" --------------------------------------------------------------------
-.\" SH SYNOPSIS
-.\" --------------------------------------------------------------------
 .SH SYNOPSIS
+.\" --------------------------------------------------------------------
 .
 .SY "groff \-m trace"
 .RI [ options
@@ -50,7 +49,7 @@ macro package of
 can be a valuable tool for debugging documents written in the roff
 formatting language.
 .
-A call stack trace is protocolled on standard error, that means, a
+A call stack trace is protocolled on standard error, this is, a
 diagnostic message is emitted on entering and exiting of a macro call.
 .
 This greatly eases to track down an error in some macro.
@@ -68,6 +67,13 @@ A finer control can be obtained by including the macro file within the
 document by the groff macro call
 .BR .mso\ trace.tmac .
 Only macros that are defined after this line are traced.
+.
+.
+.P
+If command line option
+.B \-r\ trace-full=1
+is given (or if this register is set in the document), number and string
+register assignments together with some other requests are traced also.
 .
 .
 .P
@@ -96,7 +102,7 @@ standard input.
 .
 As we are only interested in the diagnostic messages (standard error)
 on the terminal, the normal formatted output (standard output) is
-redirected into the nirvana device
+redirected to the nirvana device
 .IR /dev/null .
 The resulting diagnostic messages are displayed directly below the
 corresponding example.
@@ -116,10 +122,11 @@ Example:
 > .test_macro some dummy arguments
 > ' | groff -m trace >/dev/null
 
-*** de trace enter: test_macro
-*** trace exit: test_macro
-*** de trace enter: test_macro "some" "dummy" "arguments"
-*** trace exit: test_macro "some" "dummy" "arguments"
+*** .de test_macro
+*** de trace enter: .test_macro
+*** trace exit: .test_macro
+*** de trace enter: .test_macro "some" "dummy" "arguments"
+*** trace exit: .test_macro "some" "dummy" "arguments"
 .EE
 .RE
 .
@@ -144,10 +151,12 @@ Example:
 > .parent
 > ' | groff -m trace >/dev/null
 
-*** de trace enter: parent
-*** de trace enter: child
-*** trace exit: child
-*** trace exit: parent
+*** .de child
+*** .de parent
+*** de trace enter: .parent
+ *** de trace enter: .child
+ *** trace exit: .child
+*** trace exit: .parent
 .EE
 .RE
 .
@@ -175,8 +184,8 @@ Example:
 > .before
 >  ' | groff >/dev/null
 
-*** de trace enter: after
-*** trace exit: after
+*** de trace enter: .after
+*** trace exit: .after
 .EE
 .RE
 .
@@ -259,7 +268,7 @@ for details.
 .SH AUTHOR
 .\" --------------------------------------------------------------------
 .
-Copyright (C) 2002, 2006, 2007 Free Software Foundation, Inc.
+Copyright (C) 2002, 2006, 2007, 2008 Free Software Foundation, Inc.
 .
 .P
 This document is distributed under the terms of the FDL (GNU Free
