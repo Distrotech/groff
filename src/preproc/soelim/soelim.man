@@ -1,6 +1,6 @@
 '\" p
 .ig
-Copyright (C) 1989-2000, 2001, 2003, 2004, 2006
+Copyright (C) 1989-2000, 2001, 2003, 2004, 2006, 2008
 Free Software Foundation, Inc.
 
 Permission is granted to make and distribute verbatim copies of
@@ -31,16 +31,12 @@ the original English.
 .
 .SH SYNOPSIS
 .
-.B @g@soelim
-[
-.B \-Crtv
-]
-[
-.BI \-I dir
-]
-[
-.IR files \|.\|.\|.\|
-]
+.SY @g@soelim
+.OP \-Crtv
+.OP \-I dir
+.RI [ files
+.IR \|.\|.\|. ]
+.YS
 .
 .PP
 It is possible to have whitespace between the
@@ -55,12 +51,12 @@ reads
 .I files
 and replaces lines of the form
 .IP
-.BI .so\  file
+.BI .so\~ file
 .LP
 by the contents of
 .IR file .
 It is useful if files included with
-.B so
+.B .so
 need to be preprocessed.
 Normally,
 .B @g@soelim
@@ -79,8 +75,9 @@ makes
 ignore the whole line.
 .
 .PP
-Note that there must be no whitespace between the leading dot and
-the two characters `s' and `o'.  Otherwise, only
+Note that there must be no whitespace between the leading dot and the two
+characters `s' and `o'.
+Otherwise, only
 .B groff
 interprets the
 .B .so
@@ -99,23 +96,32 @@ even when followed by a character other than space or newline.
 .
 .TP
 .BI \-I dir
-This option may be used to specify a directory to search for
-files (both those on the command line and those named in
+This option may be used to add a directory to the search path for files
+(both those on the command line and those named in
 .B .so
 requests).
-The current directory is always searched first.
-This option may be specified more than once,
-the directories are searched in the order specified.
-No directory search is performed for files specified using an absolute path.
+The search path is initialized with the current directory.
+This option may be specified more than once; the directories are then
+searched in the order specified (but before the current directory).
+If you want to make the current directory be read before other directories,
+add
+.B \-I.\&
+at the appropriate place.
+.IP
+No directory search is performed for files with an absolute file name.
 .
 .TP
 .B \-r
-Do not add \&.lf requests (for general use, with non-groff files).
+Do not add
+.B .lf
+requests (for general use, with non-groff files).
 .
 .TP
 .B \-t
-Don't emit \&.lf requests but TeX comment lines (starting with `%') giving
-the current file and line number.
+Don't emit
+.B .lf
+requests but TeX comment lines (starting with `%') giving the current file
+and line number.
 .
 .TP
 .B \-v
@@ -129,6 +135,8 @@ The normal processing sequence of groff is this:
 .PP
 .ie t \{\
 .PS
+.ps 10
+.vs 12
 box invisible width 0.5 height 0.4 "input" "file";
 move to last box .bottom;
 down;
@@ -151,6 +159,8 @@ move to last box .bottom;
 down;
 arrow 0.3;
 box invisible width 0.5 height 0.4 "output" "file"
+.ps
+.vs
 .PE
 .\}
 .el \{\
@@ -183,8 +193,7 @@ required for
 to source files.
 .
 .PP
-If a file to be sourced should also be preprocessed, it must
-already be read
+If a file to be sourced should also be preprocessed, it must already be read
 .I before
 the input file passes through the preprocessor.
 This is handled by
@@ -193,6 +202,8 @@ This is handled by
 .PP
 .ie t \{\
 .PS
+.ps 10
+.vs 12
 box invisible width 0.5 height 0.4 "input" "file";
 move to last box .bottom;
 down;
@@ -212,6 +223,8 @@ move to last box .bottom;
 down;
 arrow 0.3;
 box invisible width 0.5 height 0.4 "output" "file"
+.ps
+.vs
 .PE
 .\}
 .el \{\

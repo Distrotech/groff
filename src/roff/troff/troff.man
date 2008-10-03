@@ -154,14 +154,19 @@ processed.
 .
 .TP
 .BI \-I dir
-This option may be used to specify a directory to search for
-files (both those on the command line and those named in
+This option may be used to add a directory to the search path for files
+(both those on the command line and those named in
 .B \&.psbb
 requests).
-The current directory is always searched first.
-This option may be specified more than once;
-the directories will be searched in the order specified.
-No directory search is performed for files specified using an absolute path.
+The search path is initialized with the current directory.
+This option may be specified more than once; the directories are then
+searched in the order specified (but before the current directory).
+If you want to make the current directory be read before other directories,
+add
+.B \-I.\&
+at the appropriate place.
+.IP
+No directory search is performed for files with an absolute file name.
 .
 .TP
 .BI \-m name

@@ -611,8 +611,8 @@ Revert to previous style; only works one level deep, does not stack.
 .PP
 In the \fBpic\fP implementations that are preprocessors for a
 toolchain that include \fB[gtn]roff\fP, text objects may also contain
-\fB[gtn]roff\fP vertical- and horizontal-motion escapes such as \efI, \efB,
-\efR, \efP.  Troff special glyphs are also available.  All \e-escapes will be
+\fB[gtn]roff\fP vertical- and horizontal-motion escapes such as \eh or \ev.
+Troff special glyphs are also available.  All \e-escapes will be
 passed through to the postprocessing stage and have their normal
 effects.  The base font family is set by the \fB[gtn]roff\fP
 environment at the time the picture is rendered.

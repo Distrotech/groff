@@ -18,21 +18,12 @@ translations approved by the Free Software Foundation instead of in
 the original English.
 ..
 .
-.do nr grops_C \n[.C]
-.cp 0
-.
 .
 .\" Like TP, but if specified indent is more than half
 .\" the current line-length - indent, use the default indent.
 .de Tp
 .  ie \\n(.$=0:((0\\$1)*2u>(\\n(.lu-\\n(.iu)) .TP
 .  el .TP "\\$1"
-..
-.
-.de TQ
-.  br
-.  ns
-.  TP \\$1
 ..
 .
 .de FT
@@ -44,22 +35,13 @@ the original English.
 .
 .
 .SH NAME
+.
 grops \- PostScript driver for groff
 .
 .
 .SH SYNOPSIS
-.nr a \n(.j
-.ad l
-.nr i \n(.i
-.in +\w'\fBgrops 'u
-.ti \niu
-.B grops
 .
-.de OP
-.  ie \\n(.$-1 .RI "[\ \fB\\$1\fP" "\%\\$2" "\ ]"
-.  el .RB "[\ " "\\$1" "\ ]"
-..
-.
+.SY grops
 .OP \-glmv
 .OP \-b n
 .OP \-c n
@@ -68,16 +50,17 @@ grops \- PostScript driver for groff
 .OP \-p papersize
 .OP \-P prologue
 .OP \-w n
-.RI "[\ " files\|.\|.\|. "\ ]"
-.br
-.ad \na
+.RI [ files
+.IR .\|.\|. ]
+.YS
 .
-.PP
+.LP
 It is possible to have whitespace between a command line option and its
 parameter.
 .
 .
 .SH DESCRIPTION
+.
 .B grops
 translates the output of GNU
 .B troff
@@ -115,7 +98,7 @@ using
 .B \-P
 option.
 .
-.PP
+.LP
 Note that
 .B grops
 doesn't produce a valid document structure (conforming to the Document
@@ -131,6 +114,7 @@ below for a guide how to install fonts for
 .
 .
 .SH OPTIONS
+.
 .TP
 .BI \-b n
 Provide workarounds for older printers, broken spoolers, and previewers.
@@ -246,19 +230,25 @@ both on letter (8.5\[mu]11) paper and on A4 paper without change.
 .
 .TP
 .BI \-I dir
-This option may be used to specify a directory to search for
+This option may be used to add a directory to the search path for
 files on the command line and files named in
 .B \[rs]X'ps: import'
 and
 .B \[rs]X'ps: file'
 escapes.
 .
-The current directory is always searched first.
+The search path is initialized with the current directory.
 .
-This option may be specified more than once;
-the directories are searched in the order specified.
+This option may be specified more than once; the directories are then
+searched in the order specified (but before the current directory).
 .
-No directory search is performed for files specified using an absolute path.
+If you want to make the current directory be read before other directories,
+add
+.B \-I.\&
+at the appropriate place.
+.
+.IP
+No directory search is performed for files with an absolute file name.
 .
 .TP
 .B \-l
@@ -311,6 +301,7 @@ Print the version number.
 .
 .
 .SH USAGE
+.
 The input to
 .B grops
 must be in the format output by
@@ -1194,6 +1185,7 @@ This font editor can convert most outline font formats.
 .
 .
 .SH FONT INSTALLATION
+.
 This section gives a summary of the above explanations; it can serve
 as a step-by-step font installation guide for
 .BR grops .
@@ -1321,13 +1313,18 @@ field in the `FBB' file), thus the following line should be added to
 .
 .
 .SH OLD FONTS
+.
 groff versions 1.19.2 and earlier contain a slightly different set of
 the 35 Adobe core fonts; the difference is mainly the lack of the `Euro'
 glyph and a reduced set of kerning pairs.
 .
 For backwards compatibility, these old fonts are installed also in the
-directory
-.BR @OLDFONTDIR@/devps .
+.
+.IP
+.BR @OLDFONTDIR@/devps
+.
+.LP
+directory.
 .
 .LP
 To use them, make sure that
@@ -1339,7 +1336,7 @@ to
 .B grops
 .
 .IP
-.B groff \-Tps \-P\-F -P@OLDFONTDIR@ .\|.\|.
+.B groff \-Tps \-P\-F \-P@OLDFONTDIR@ .\|.\|.
 .
 .LP
 or add the directory to groff's font path environment variable
@@ -1349,6 +1346,7 @@ or add the directory to groff's font path environment variable
 .
 .
 .SH ENVIRONMENT
+.
 .TP
 .SM
 .B GROPS_PROLOGUE
@@ -1381,6 +1379,7 @@ for more details.
 .
 .
 .SH FILES
+.
 .Tp \w'\fB@FONTDIR@/devps/download'u+2n
 .B @FONTDIR@/devps/DESC
 Device description file.
@@ -1424,6 +1423,7 @@ Temporary file.
 .
 .
 .SH "SEE ALSO"
+.
 .BR \%afmtodit (@MAN1EXT@),
 .BR groff (@MAN1EXT@),
 .BR @g@troff (@MAN1EXT@),
@@ -1433,12 +1433,11 @@ Temporary file.
 .BR \%groff_char (@MAN7EXT@),
 .BR \%groff_tmac (@MAN5EXT@)
 .
-.PP
+.LP
 .UR http://\:partners.adobe.com/\:public/\:developer/\:en/\:ps/\:5001.DSC_Spec.pdf
 PostScript Language Document Structuring Conventions Specification
 .UE
 .
-.cp \n[grops_C]
 .
 .\" Local Variables:
 .\" mode: nroff
