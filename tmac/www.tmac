@@ -1369,10 +1369,30 @@ HTML always denotes XHTML also.
 .\"
 .\" now set up TS, TE, EQ, EN default macros
 .\"
-.do if !d TS .do als TS HTML-IMAGE\"
-.do if !d TE .do als TE HTML-IMAGE-END\"
-.do if !d EQ .do als EQ EQN-HTML-IMAGE\"
-.do if !d EN .do als EN EQN-HTML-IMAGE-END\"
+.\" we must not use `.als': the definition of .TE in s.tmac, for example,
+.\" calls .HTML-IMAGE-END, which would refer to itself due to the alias,
+.\" causing an endless loop
+.\"
+.if !d TS \{\
+.  de TS
+.    nop \\*[HTML-IMAGE]\\
+.  .
+.\}
+.if !d TE \{\
+.  de TE
+.    nop \\*[HTML-IMAGE-END]\\
+.  .
+.\}
+.if !d EQ \{\
+.  de EQ
+.    nop \\*[EQN-HTML-IMAGE]\\
+.  .
+.\}
+.if !d EN \{\
+.  de EN
+.    nop \\*[EQN-HTML-IMAGE-END]\\
+.  .
+.\}
 .
 .\" --------------------------------------------------------------------
 .\" JOBNAME
