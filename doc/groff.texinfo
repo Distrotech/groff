@@ -4937,7 +4937,7 @@ Pica.  Another typesetting measurement.  6@tie{}Picas to an inch (and
 @item f
 @cindex @code{f} unit
 @cindex unit, @code{f}
-Fractions. Value is 65536.
+Fractions.  Value is 65536.
 @xref{Colors}, for usage.
 @end table
 
@@ -10324,7 +10324,7 @@ The @code{\*} escape @dfn{interpolates} (expands in-place) a
 previously-defined string variable.  To be more precise, the stored
 string is pushed onto the input stack which is then parsed by
 @code{gtroff}.  Similar to number registers, it is possible to nest
-strings, i.e. string variables can be called within string variables.
+strings, i.e., string variables can be called within string variables.
 
 If the string named by the @code{\*} escape does not exist, it is
 defined as empty, and a warning of type @samp{mac} is emitted (see
@@ -10604,9 +10604,52 @@ treats subsequent invocations as if the object had never been defined.
 @cindex diversion, creating alias (@code{als})
 Create an alias named @var{new} for the request, string, macro, or
 diversion object named @var{old}.  The new name and the old name are
-exactly equivalent (it is similar to a hard rather than a soft link). If
+exactly equivalent (it is similar to a hard rather than a soft link).  If
 @var{old} is undefined, @code{gtroff} generates a warning of type
 @samp{mac} and ignores the request.
+
+To understand how the @code{als} request works it is probably best to
+think of two different pools: one pool for objects (macros, strings,
+etc.), and another one for names.  As soon as an object is defined,
+@code{gtroff} adds it to the object pool, adds its name to the name
+pool, and creates a link between them.  When @code{als} creates an
+alias, it adds a new name to the name pool which gets linked to the same
+object as the old name.
+
+Now consider this example.
+
+@Example
+.de foo
+..
+.
+.als bar foo
+.
+.de bar
+.  foo
+..
+.
+.bar
+    @result{} input stack limit exceeded
+@endExample
+
+@noindent
+The definition of macro @code{bar} replaces the old object this name is
+linked to.  However, the alias to @code{foo} is still active!  With
+other words, @code{foo} is still linked to the same object as
+@code{bar}, and the result of calling @code{bar} is an infinite,
+recursive loop which finally leads to an error.
+
+@cindex alias, string, removing (@code{rm})
+@cindex alias, macro, removing (@code{rm})
+@cindex alias, diversion, removing (@code{rm})
+@cindex removing alias, for string (@code{rm})
+@cindex removing alias, for macro (@code{rm})
+@cindex removing alias, for diversion (@code{rm})
+@cindex string, removing alias (@code{rm})
+@cindex macro, removing alias (@code{rm})
+@cindex diversion, removing alias (@code{rm})
+To undo an alias, simply call @code{rm} on the aliased name.  The object
+itself is not destroyed until there are no more aliases.
 @endDefreq
 
 @Defreq {chop, xx}
@@ -11127,7 +11170,8 @@ Using @file{trace.tmac}, you can trace calls to @code{am} and
 @code{am1}.
 @endDefreq
 
-@xref{Strings}, for the @code{als} request to rename a macro.
+@xref{Strings}, for the @code{als} and @code{rn} request to create an
+alias and rename a macro, respectively.
 
 The @code{de}, @code{am}, @code{di}, @code{da}, @code{ds}, and @code{as}
 requests (together with its variants) only create a new object if the
