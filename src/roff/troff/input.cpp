@@ -109,8 +109,8 @@ int is_html = 0;
 int begin_level = 0;		// number of nested \O escapes
 
 int have_input = 0;		// whether \f, \F, \D'F...', \H, \m, \M,
-				// \R, \s, or \S has been processed in
-				// token::next()
+				// \O[345], \R, \s, or \S has been processed
+				// in token::next()
 int old_have_input = 0;		// value of have_input right before \n
 int tcommand_flag = 0;
 int unsafe_flag = 0;		// safer by default
@@ -5496,9 +5496,11 @@ static node *do_suppress(symbol nm)
       return new suppress_node(1, 1);
     break;
   case '3':
+    have_input = 1;
     begin_level++;
     break;
   case '4':
+    have_input = 1;
     begin_level--;
     break;
   case '5':
@@ -5524,6 +5526,8 @@ static node *do_suppress(symbol nm)
       image_no++;
       if (begin_level == 0)
 	return new suppress_node(symbol(s), position, image_no);
+      else
+	have_input = 1;
     }
     break;
   default:
