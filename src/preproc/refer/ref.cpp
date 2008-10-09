@@ -1,5 +1,5 @@
 // -*- C++ -*-
-/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2003
+/* Copyright (C) 1989, 1990, 1991, 1992, 2001, 2003, 2008
    Free Software Foundation, Inc.
 Written by James Clark (jjc@jclark.com)
 
@@ -420,8 +420,11 @@ void reference::compute_sort_key()
     return;
   sort_fields += '\0';
   const char *sf = sort_fields.contents();
+  int first_time = 1;
   while (*sf != '\0') {
-    sort_key += SORT_SEP;
+    if (!first_time)
+      sort_key += SORT_SEP;
+    first_time = 0;
     char f = *sf++;
     int n = 1;
     if (*sf == '+') {
